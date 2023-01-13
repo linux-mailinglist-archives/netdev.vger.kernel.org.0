@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA269668D02
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 07:30:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 329CB668D6E
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 07:31:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240773AbjAMG3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 01:29:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60798 "EHLO
+        id S241264AbjAMG3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 01:29:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240573AbjAMGZP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 01:25:15 -0500
+        with ESMTP id S238988AbjAMG0A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 01:26:00 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE1410073;
-        Thu, 12 Jan 2023 22:24:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D22146ADB5;
+        Thu, 12 Jan 2023 22:24:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=yNX/9/e3mCL8Z9/A5TRWG0UKPW9ZyWcnD51C6LTuRVI=; b=Ylt8A4HngYHMxsdrT3HnhJDlSV
-        iJ170NFOhoE5/jm4B0r2iZEgG/7ENapsBN7EG3eTyLKpN5X9ZYXjsypPqcTfmEHfo+RwMWyPpP/3+
-        mjrTudLbbjWOokwEpDHR/SYDPQjEdYu2BrhFltpnBqms3qC6BjqFpSVzUExolaX5+7GIWz7XCFYWp
-        EnNcdwUy6QpwLO2RM/m2LT0BcRLf2dwVUO5JUTWY6khIjWo2kMDSALL69dwv9d7JksbiErk0cYjJy
-        F0GEfksn110Oud3Mh6LP7zQRl0CYW85Mx25oaHsuUudRug/Y9kNkATuSeuGsCBnzF27GOv603zDC4
-        VB09RLNw==;
+        bh=MJk6s+8b6KYMNlhUC5nzS/N+A6apIFVw1hILXQyK8sM=; b=4aX9m/LAsEnu/amlmHHN9qi/0u
+        zdvzwtFiXV2hV80LUxcxGDXsChrQd8jMp+jKMTuSvrY0qTBD58rdMCqI/ngGqaQs6FFjVCoafntTb
+        AmfWU8KmFsLNOXbWjkniZr/tZE5aeAM4I9W5ey0lyswi5x2SsWs6W1Gajk9FRJZSOV+eBWk9zjLRg
+        35w/nEwVtrQwgbIuI/yotaMp/uzQ81EKUYmP773aKcT+RDQF7EvANcKSaSemsYhDczevW3IsSQImA
+        z+h3K6bAYqyYMzLRZbqLNdllCOkyD+S0Zh91drNTYnYZab4XSuGpGyWDvNUbwy0Pxqt58tlmAJvde
+        8FQx6Ihg==;
 Received: from [2001:4bb8:181:656b:9509:7d20:8d39:f895] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pGDUH-000ljq-PK; Fri, 13 Jan 2023 06:24:26 +0000
+        id 1pGDUK-000lml-NO; Fri, 13 Jan 2023 06:24:31 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Yoshinori Sato <ysato@users.sourceforge.jp>,
         Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
@@ -45,378 +45,21677 @@ Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
         linux-sh@vger.kernel.org
-Subject: [PATCH 12/22] net/ethernet/8390: remove stnic
-Date:   Fri, 13 Jan 2023 07:23:29 +0100
-Message-Id: <20230113062339.1909087-13-hch@lst.de>
+Subject: [PATCH 13/22] pinctrl: remove renesas sh controllers
+Date:   Fri, 13 Jan 2023 07:23:30 +0100
+Message-Id: <20230113062339.1909087-14-hch@lst.de>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230113062339.1909087-1-hch@lst.de>
 References: <20230113062339.1909087-1-hch@lst.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-        lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that arch/sh is removed this driver is dead code.
+Now that arch/sh is removed these drivers are dead code.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/net/ethernet/8390/Kconfig  |  12 --
- drivers/net/ethernet/8390/Makefile |   1 -
- drivers/net/ethernet/8390/stnic.c  | 302 -----------------------------
- 3 files changed, 315 deletions(-)
- delete mode 100644 drivers/net/ethernet/8390/stnic.c
+ drivers/pinctrl/renesas/Kconfig      |   63 +-
+ drivers/pinctrl/renesas/Makefile     |   27 -
+ drivers/pinctrl/renesas/core.c       |  598 ------
+ drivers/pinctrl/renesas/pfc-sh7203.c | 1577 --------------
+ drivers/pinctrl/renesas/pfc-sh7264.c | 2131 -------------------
+ drivers/pinctrl/renesas/pfc-sh7269.c | 2851 --------------------------
+ drivers/pinctrl/renesas/pfc-sh7720.c | 1201 -----------
+ drivers/pinctrl/renesas/pfc-sh7722.c | 1703 ---------------
+ drivers/pinctrl/renesas/pfc-sh7723.c | 1902 -----------------
+ drivers/pinctrl/renesas/pfc-sh7724.c | 2177 --------------------
+ drivers/pinctrl/renesas/pfc-sh7734.c | 2408 ----------------------
+ drivers/pinctrl/renesas/pfc-sh7757.c | 2219 --------------------
+ drivers/pinctrl/renesas/pfc-sh7785.c | 1258 ------------
+ drivers/pinctrl/renesas/pfc-sh7786.c |  809 --------
+ drivers/pinctrl/renesas/pfc-shx3.c   |  557 -----
+ 15 files changed, 2 insertions(+), 21479 deletions(-)
+ delete mode 100644 drivers/pinctrl/renesas/pfc-sh7203.c
+ delete mode 100644 drivers/pinctrl/renesas/pfc-sh7264.c
+ delete mode 100644 drivers/pinctrl/renesas/pfc-sh7269.c
+ delete mode 100644 drivers/pinctrl/renesas/pfc-sh7720.c
+ delete mode 100644 drivers/pinctrl/renesas/pfc-sh7722.c
+ delete mode 100644 drivers/pinctrl/renesas/pfc-sh7723.c
+ delete mode 100644 drivers/pinctrl/renesas/pfc-sh7724.c
+ delete mode 100644 drivers/pinctrl/renesas/pfc-sh7734.c
+ delete mode 100644 drivers/pinctrl/renesas/pfc-sh7757.c
+ delete mode 100644 drivers/pinctrl/renesas/pfc-sh7785.c
+ delete mode 100644 drivers/pinctrl/renesas/pfc-sh7786.c
+ delete mode 100644 drivers/pinctrl/renesas/pfc-shx3.c
 
-diff --git a/drivers/net/ethernet/8390/Kconfig b/drivers/net/ethernet/8390/Kconfig
-index eb90de04c88419..a7976743be9ee3 100644
---- a/drivers/net/ethernet/8390/Kconfig
-+++ b/drivers/net/ethernet/8390/Kconfig
-@@ -155,18 +155,6 @@ config PCMCIA_PCNET
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called pcnet_cs.  If unsure, say N.
+diff --git a/drivers/pinctrl/renesas/Kconfig b/drivers/pinctrl/renesas/Kconfig
+index 0903a0a4183198..fe4475c51920cd 100644
+--- a/drivers/pinctrl/renesas/Kconfig
++++ b/drivers/pinctrl/renesas/Kconfig
+@@ -6,8 +6,8 @@
+ menu "Renesas pinctrl drivers"
  
--config STNIC
--	tristate "National DP83902AV  support"
--	depends on SUPERH
--	select CRC32
--	help
--	  Support for cards based on the National Semiconductor DP83902AV
--	  ST-NIC Serial Network Interface Controller for Twisted Pair.  This
--	  is a 10Mbit/sec Ethernet controller.  Product overview and specs at
--	  <http://www.national.com/pf/DP/DP83902A.html>.
+ config PINCTRL_RENESAS
+-	bool "Renesas SoC pin control support" if COMPILE_TEST && !(ARCH_RENESAS || SUPERH)
+-	default y if ARCH_RENESAS || SUPERH
++	bool "Renesas SoC pin control support" if COMPILE_TEST && ARCH_RENESAS
++	default y if ARCH_RENESAS
+ 	select PINCTRL_PFC_EMEV2 if ARCH_EMEV2
+ 	select PINCTRL_PFC_R8A73A4 if ARCH_R8A73A4
+ 	select PINCTRL_PFC_R8A7740 if ARCH_R8A7740
+@@ -41,19 +41,7 @@ config PINCTRL_RENESAS
+ 	select PINCTRL_PFC_R8A779G0 if ARCH_R8A779G0
+ 	select PINCTRL_RZG2L if ARCH_RZG2L
+ 	select PINCTRL_RZV2M if ARCH_R9A09G011
+-	select PINCTRL_PFC_SH7203 if CPU_SUBTYPE_SH7203
+-	select PINCTRL_PFC_SH7264 if CPU_SUBTYPE_SH7264
+-	select PINCTRL_PFC_SH7269 if CPU_SUBTYPE_SH7269
+ 	select PINCTRL_PFC_SH73A0 if ARCH_SH73A0
+-	select PINCTRL_PFC_SH7720 if CPU_SUBTYPE_SH7720
+-	select PINCTRL_PFC_SH7722 if CPU_SUBTYPE_SH7722
+-	select PINCTRL_PFC_SH7723 if CPU_SUBTYPE_SH7723
+-	select PINCTRL_PFC_SH7724 if CPU_SUBTYPE_SH7724
+-	select PINCTRL_PFC_SH7734 if CPU_SUBTYPE_SH7734
+-	select PINCTRL_PFC_SH7757 if CPU_SUBTYPE_SH7757
+-	select PINCTRL_PFC_SH7785 if CPU_SUBTYPE_SH7785
+-	select PINCTRL_PFC_SH7786 if CPU_SUBTYPE_SH7786
+-	select PINCTRL_PFC_SHX3 if CPU_SUBTYPE_SHX3
+ 	help
+ 	  This enables pin control drivers for Renesas SuperH and ARM platforms
+ 
+@@ -255,57 +243,10 @@ config PINCTRL_RZV2M
+ 	  This selects GPIO and pinctrl driver for Renesas RZ/V2M
+ 	  platforms.
+ 
+-config PINCTRL_PFC_SH7203
+-	bool "pin control support for SH7203" if COMPILE_TEST
+-	select PINCTRL_SH_FUNC_GPIO
 -
--	  If unsure, say N.
+-config PINCTRL_PFC_SH7264
+-	bool "pin control support for SH7264" if COMPILE_TEST
+-	select PINCTRL_SH_FUNC_GPIO
 -
- config ULTRA
- 	tristate "SMC Ultra support"
- 	depends on ISA
-diff --git a/drivers/net/ethernet/8390/Makefile b/drivers/net/ethernet/8390/Makefile
-index 85c83c566ec663..3819a3bb75a1c9 100644
---- a/drivers/net/ethernet/8390/Makefile
-+++ b/drivers/net/ethernet/8390/Makefile
-@@ -13,7 +13,6 @@ obj-$(CONFIG_NE2000) += ne.o 8390p.o
- obj-$(CONFIG_NE2K_PCI) += ne2k-pci.o 8390.o
- obj-$(CONFIG_PCMCIA_AXNET) += axnet_cs.o 8390.o
- obj-$(CONFIG_PCMCIA_PCNET) += pcnet_cs.o 8390.o
--obj-$(CONFIG_STNIC) += stnic.o 8390.o
- obj-$(CONFIG_ULTRA) += smc-ultra.o 8390.o
- obj-$(CONFIG_WD80x3) += wd.o 8390.o
- obj-$(CONFIG_XSURF100) += xsurf100.o
-diff --git a/drivers/net/ethernet/8390/stnic.c b/drivers/net/ethernet/8390/stnic.c
+-config PINCTRL_PFC_SH7269
+-	bool "pin control support for SH7269" if COMPILE_TEST
+-	select PINCTRL_SH_FUNC_GPIO
+-
+-config PINCTRL_PFC_SH7720
+-	bool "pin control support for SH7720" if COMPILE_TEST
+-	select PINCTRL_SH_FUNC_GPIO
+-
+-config PINCTRL_PFC_SH7722
+-	bool "pin control support for SH7722" if COMPILE_TEST
+-	select PINCTRL_SH_FUNC_GPIO
+-
+-config PINCTRL_PFC_SH7734
+-	bool "pin control support for SH7734" if COMPILE_TEST
+-	select PINCTRL_SH_FUNC_GPIO
+-
+-config PINCTRL_PFC_SH7757
+-	bool "pin control support for SH7757" if COMPILE_TEST
+-	select PINCTRL_SH_FUNC_GPIO
+-
+-config PINCTRL_PFC_SH7785
+-	bool "pin control support for SH7785" if COMPILE_TEST
+-	select PINCTRL_SH_FUNC_GPIO
+-
+-config PINCTRL_PFC_SH7786
+-	bool "pin control support for SH7786" if COMPILE_TEST
+-	select PINCTRL_SH_FUNC_GPIO
+ 
+ config PINCTRL_PFC_SH73A0
+ 	bool "pin control support for SH-Mobile AG5" if COMPILE_TEST
+ 	select PINCTRL_SH_PFC_GPIO
+ 	select REGULATOR
+ 
+-config PINCTRL_PFC_SH7723
+-	bool "pin control support for SH-Mobile R2" if COMPILE_TEST
+-	select PINCTRL_SH_FUNC_GPIO
+-
+-config PINCTRL_PFC_SH7724
+-	bool "pin control support for SH-Mobile R2R" if COMPILE_TEST
+-	select PINCTRL_SH_FUNC_GPIO
+-
+-config PINCTRL_PFC_SHX3
+-	bool "pin control support for SH-X3" if COMPILE_TEST
+-	select PINCTRL_SH_FUNC_GPIO
+-
+ endmenu
+diff --git a/drivers/pinctrl/renesas/Makefile b/drivers/pinctrl/renesas/Makefile
+index 558b30ce0dec98..115f6565948c7d 100644
+--- a/drivers/pinctrl/renesas/Makefile
++++ b/drivers/pinctrl/renesas/Makefile
+@@ -32,37 +32,10 @@ obj-$(CONFIG_PINCTRL_PFC_R8A77995)	+= pfc-r8a77995.o
+ obj-$(CONFIG_PINCTRL_PFC_R8A779A0)	+= pfc-r8a779a0.o
+ obj-$(CONFIG_PINCTRL_PFC_R8A779F0)	+= pfc-r8a779f0.o
+ obj-$(CONFIG_PINCTRL_PFC_R8A779G0)	+= pfc-r8a779g0.o
+-obj-$(CONFIG_PINCTRL_PFC_SH7203)	+= pfc-sh7203.o
+-obj-$(CONFIG_PINCTRL_PFC_SH7264)	+= pfc-sh7264.o
+-obj-$(CONFIG_PINCTRL_PFC_SH7269)	+= pfc-sh7269.o
+ obj-$(CONFIG_PINCTRL_PFC_SH73A0)	+= pfc-sh73a0.o
+-obj-$(CONFIG_PINCTRL_PFC_SH7720)	+= pfc-sh7720.o
+-obj-$(CONFIG_PINCTRL_PFC_SH7722)	+= pfc-sh7722.o
+-obj-$(CONFIG_PINCTRL_PFC_SH7723)	+= pfc-sh7723.o
+-obj-$(CONFIG_PINCTRL_PFC_SH7724)	+= pfc-sh7724.o
+-obj-$(CONFIG_PINCTRL_PFC_SH7734)	+= pfc-sh7734.o
+-obj-$(CONFIG_PINCTRL_PFC_SH7757)	+= pfc-sh7757.o
+-obj-$(CONFIG_PINCTRL_PFC_SH7785)	+= pfc-sh7785.o
+-obj-$(CONFIG_PINCTRL_PFC_SH7786)	+= pfc-sh7786.o
+-obj-$(CONFIG_PINCTRL_PFC_SHX3)		+= pfc-shx3.o
+ 
+ obj-$(CONFIG_PINCTRL_RZA1)	+= pinctrl-rza1.o
+ obj-$(CONFIG_PINCTRL_RZA2)	+= pinctrl-rza2.o
+ obj-$(CONFIG_PINCTRL_RZG2L)	+= pinctrl-rzg2l.o
+ obj-$(CONFIG_PINCTRL_RZN1)	+= pinctrl-rzn1.o
+ obj-$(CONFIG_PINCTRL_RZV2M)	+= pinctrl-rzv2m.o
+-
+-ifeq ($(CONFIG_COMPILE_TEST),y)
+-CFLAGS_pfc-sh7203.o	+= -I$(srctree)/arch/sh/include/cpu-sh2a
+-CFLAGS_pfc-sh7264.o	+= -I$(srctree)/arch/sh/include/cpu-sh2a
+-CFLAGS_pfc-sh7269.o	+= -I$(srctree)/arch/sh/include/cpu-sh2a
+-CFLAGS_pfc-sh7720.o	+= -I$(srctree)/arch/sh/include/cpu-sh3
+-CFLAGS_pfc-sh7722.o	+= -I$(srctree)/arch/sh/include/cpu-sh4
+-CFLAGS_pfc-sh7723.o	+= -I$(srctree)/arch/sh/include/cpu-sh4
+-CFLAGS_pfc-sh7724.o	+= -I$(srctree)/arch/sh/include/cpu-sh4
+-CFLAGS_pfc-sh7734.o	+= -I$(srctree)/arch/sh/include/cpu-sh4
+-CFLAGS_pfc-sh7757.o	+= -I$(srctree)/arch/sh/include/cpu-sh4
+-CFLAGS_pfc-sh7785.o	+= -I$(srctree)/arch/sh/include/cpu-sh4
+-CFLAGS_pfc-sh7786.o	+= -I$(srctree)/arch/sh/include/cpu-sh4
+-CFLAGS_pfc-shx3.o	+= -I$(srctree)/arch/sh/include/cpu-sh4
+-endif
+diff --git a/drivers/pinctrl/renesas/core.c b/drivers/pinctrl/renesas/core.c
+index c91102d3f1d155..47f2cc786cbb76 100644
+--- a/drivers/pinctrl/renesas/core.c
++++ b/drivers/pinctrl/renesas/core.c
+@@ -753,562 +753,6 @@ static int sh_pfc_suspend_init(struct sh_pfc *pfc) { return 0; }
+ #define DEV_PM_OPS	NULL
+ #endif /* CONFIG_PM_SLEEP && CONFIG_ARM_PSCI_FW */
+ 
+-#ifdef DEBUG
+-#define SH_PFC_MAX_REGS		300
+-#define SH_PFC_MAX_ENUMS	5000
+-
+-static unsigned int sh_pfc_errors __initdata;
+-static unsigned int sh_pfc_warnings __initdata;
+-static bool sh_pfc_bias_done __initdata;
+-static bool sh_pfc_drive_done __initdata;
+-static bool sh_pfc_power_done __initdata;
+-static struct {
+-	u32 reg;
+-	u32 bits;
+-} *sh_pfc_regs __initdata;
+-static u32 sh_pfc_num_regs __initdata;
+-static u16 *sh_pfc_enums __initdata;
+-static u32 sh_pfc_num_enums __initdata;
+-
+-#define sh_pfc_err(fmt, ...)					\
+-	do {							\
+-		pr_err("%s: " fmt, drvname, ##__VA_ARGS__);	\
+-		sh_pfc_errors++;				\
+-	} while (0)
+-
+-#define sh_pfc_err_once(type, fmt, ...)				\
+-	do {							\
+-		if (!sh_pfc_ ## type ## _done) {		\
+-			sh_pfc_ ## type ## _done = true;	\
+-			sh_pfc_err(fmt, ##__VA_ARGS__);		\
+-		}						\
+-	} while (0)
+-
+-#define sh_pfc_warn(fmt, ...)					\
+-	do {							\
+-		pr_warn("%s: " fmt, drvname, ##__VA_ARGS__);	\
+-		sh_pfc_warnings++;				\
+-	} while (0)
+-
+-static bool __init is0s(const u16 *enum_ids, unsigned int n)
+-{
+-	unsigned int i;
+-
+-	for (i = 0; i < n; i++)
+-		if (enum_ids[i])
+-			return false;
+-
+-	return true;
+-}
+-
+-static bool __init same_name(const char *a, const char *b)
+-{
+-	return a && b && !strcmp(a, b);
+-}
+-
+-static void __init sh_pfc_check_reg(const char *drvname, u32 reg, u32 bits)
+-{
+-	unsigned int i;
+-
+-	for (i = 0; i < sh_pfc_num_regs; i++) {
+-		if (reg != sh_pfc_regs[i].reg)
+-			continue;
+-
+-		if (bits & sh_pfc_regs[i].bits)
+-			sh_pfc_err("reg 0x%x: bits 0x%x conflict\n", reg,
+-				   bits & sh_pfc_regs[i].bits);
+-
+-		sh_pfc_regs[i].bits |= bits;
+-		return;
+-	}
+-
+-	if (sh_pfc_num_regs == SH_PFC_MAX_REGS) {
+-		pr_warn_once("%s: Please increase SH_PFC_MAX_REGS\n", drvname);
+-		return;
+-	}
+-
+-	sh_pfc_regs[sh_pfc_num_regs].reg = reg;
+-	sh_pfc_regs[sh_pfc_num_regs].bits = bits;
+-	sh_pfc_num_regs++;
+-}
+-
+-static int __init sh_pfc_check_enum(const char *drvname, u16 enum_id)
+-{
+-	unsigned int i;
+-
+-	for (i = 0; i < sh_pfc_num_enums; i++) {
+-		if (enum_id == sh_pfc_enums[i])
+-			return -EINVAL;
+-	}
+-
+-	if (sh_pfc_num_enums == SH_PFC_MAX_ENUMS) {
+-		pr_warn_once("%s: Please increase SH_PFC_MAX_ENUMS\n", drvname);
+-		return 0;
+-	}
+-
+-	sh_pfc_enums[sh_pfc_num_enums++] = enum_id;
+-	return 0;
+-}
+-
+-static void __init sh_pfc_check_reg_enums(const char *drvname, u32 reg,
+-					  const u16 *enums, unsigned int n)
+-{
+-	unsigned int i;
+-
+-	for (i = 0; i < n; i++) {
+-		if (enums[i] && sh_pfc_check_enum(drvname, enums[i]))
+-			sh_pfc_err("reg 0x%x enum_id %u conflict\n", reg,
+-				   enums[i]);
+-	}
+-}
+-
+-static const struct sh_pfc_pin __init *sh_pfc_find_pin(
+-	const struct sh_pfc_soc_info *info, u32 reg, unsigned int pin)
+-{
+-	const char *drvname = info->name;
+-	unsigned int i;
+-
+-	if (pin == SH_PFC_PIN_NONE)
+-		return NULL;
+-
+-	for (i = 0; i < info->nr_pins; i++) {
+-		if (pin == info->pins[i].pin)
+-			return &info->pins[i];
+-	}
+-
+-	sh_pfc_err("reg 0x%x: pin %u not found\n", reg, pin);
+-	return NULL;
+-}
+-
+-static void __init sh_pfc_check_cfg_reg(const char *drvname,
+-					const struct pinmux_cfg_reg *cfg_reg)
+-{
+-	unsigned int i, n, rw, r;
+-	int fw;
+-
+-	sh_pfc_check_reg(drvname, cfg_reg->reg,
+-			 GENMASK(cfg_reg->reg_width - 1, 0));
+-
+-	if (cfg_reg->field_width) {
+-		fw = cfg_reg->field_width;
+-		n = (cfg_reg->reg_width / fw) << fw;
+-		for (i = 0, r = 0; i < n; i += 1 << fw) {
+-			if (is0s(&cfg_reg->enum_ids[i], 1 << fw))
+-				r++;
+-		}
+-
+-		if ((r << fw) * sizeof(u16) > cfg_reg->reg_width / fw)
+-			sh_pfc_warn("reg 0x%x can be described with variable-width reserved fields\n",
+-				    cfg_reg->reg);
+-
+-		/* Skip field checks (done at build time) */
+-		goto check_enum_ids;
+-	}
+-
+-	for (i = 0, n = 0, rw = 0; (fw = cfg_reg->var_field_width[i]); i++) {
+-		if (fw < 0) {
+-			rw += -fw;
+-		} else {
+-			if (is0s(&cfg_reg->enum_ids[n], 1 << fw))
+-				sh_pfc_warn("reg 0x%x: field [%u:%u] can be described as reserved\n",
+-					    cfg_reg->reg, rw, rw + fw - 1);
+-			n += 1 << fw;
+-			rw += fw;
+-		}
+-	}
+-
+-	if (rw != cfg_reg->reg_width)
+-		sh_pfc_err("reg 0x%x: var_field_width declares %u instead of %u bits\n",
+-			   cfg_reg->reg, rw, cfg_reg->reg_width);
+-
+-	if (n != cfg_reg->nr_enum_ids)
+-		sh_pfc_err("reg 0x%x: enum_ids[] has %u instead of %u values\n",
+-			   cfg_reg->reg, cfg_reg->nr_enum_ids, n);
+-
+-check_enum_ids:
+-	sh_pfc_check_reg_enums(drvname, cfg_reg->reg, cfg_reg->enum_ids, n);
+-}
+-
+-static void __init sh_pfc_check_drive_reg(const struct sh_pfc_soc_info *info,
+-					  const struct pinmux_drive_reg *drive)
+-{
+-	const char *drvname = info->name;
+-	const struct sh_pfc_pin *pin;
+-	unsigned int i;
+-
+-	for (i = 0; i < ARRAY_SIZE(drive->fields); i++) {
+-		const struct pinmux_drive_reg_field *field = &drive->fields[i];
+-
+-		if (!field->pin && !field->offset && !field->size)
+-			continue;
+-
+-		sh_pfc_check_reg(info->name, drive->reg,
+-				 GENMASK(field->offset + field->size - 1,
+-					 field->offset));
+-
+-		pin = sh_pfc_find_pin(info, drive->reg, field->pin);
+-		if (pin && !(pin->configs & SH_PFC_PIN_CFG_DRIVE_STRENGTH))
+-			sh_pfc_err("drive_reg 0x%x: field %u: pin %s lacks SH_PFC_PIN_CFG_DRIVE_STRENGTH flag\n",
+-				   drive->reg, i, pin->name);
+-	}
+-}
+-
+-static void __init sh_pfc_check_bias_reg(const struct sh_pfc_soc_info *info,
+-					 const struct pinmux_bias_reg *bias)
+-{
+-	const char *drvname = info->name;
+-	const struct sh_pfc_pin *pin;
+-	unsigned int i;
+-	u32 bits;
+-
+-	for (i = 0, bits = 0; i < ARRAY_SIZE(bias->pins); i++)
+-		if (bias->pins[i] != SH_PFC_PIN_NONE)
+-			bits |= BIT(i);
+-
+-	if (bias->puen)
+-		sh_pfc_check_reg(info->name, bias->puen, bits);
+-	if (bias->pud)
+-		sh_pfc_check_reg(info->name, bias->pud, bits);
+-	for (i = 0; i < ARRAY_SIZE(bias->pins); i++) {
+-		pin = sh_pfc_find_pin(info, bias->puen, bias->pins[i]);
+-		if (!pin)
+-			continue;
+-
+-		if (bias->puen && bias->pud) {
+-			/*
+-			 * Pull-enable and pull-up/down control registers
+-			 * As some SoCs have pins that support only pull-up
+-			 * or pull-down, we just check for one of them
+-			 */
+-			if (!(pin->configs & SH_PFC_PIN_CFG_PULL_UP_DOWN))
+-				sh_pfc_err("bias_reg 0x%x:%u: pin %s lacks one or more SH_PFC_PIN_CFG_PULL_* flags\n",
+-					   bias->puen, i, pin->name);
+-		} else if (bias->puen) {
+-			/* Pull-up control register only */
+-			if (!(pin->configs & SH_PFC_PIN_CFG_PULL_UP))
+-				sh_pfc_err("bias_reg 0x%x:%u: pin %s lacks SH_PFC_PIN_CFG_PULL_UP flag\n",
+-					   bias->puen, i, pin->name);
+-		} else if (bias->pud) {
+-			/* Pull-down control register only */
+-			if (!(pin->configs & SH_PFC_PIN_CFG_PULL_DOWN))
+-				sh_pfc_err("bias_reg 0x%x:%u: pin %s lacks SH_PFC_PIN_CFG_PULL_DOWN flag\n",
+-					   bias->pud, i, pin->name);
+-		}
+-	}
+-}
+-
+-static void __init sh_pfc_compare_groups(const char *drvname,
+-					 const struct sh_pfc_pin_group *a,
+-					 const struct sh_pfc_pin_group *b)
+-{
+-	unsigned int i;
+-	size_t len;
+-
+-	if (same_name(a->name, b->name))
+-		sh_pfc_err("group %s: name conflict\n", a->name);
+-
+-	if (a->nr_pins > b->nr_pins)
+-		swap(a, b);
+-
+-	len = a->nr_pins * sizeof(a->pins[0]);
+-	for (i = 0; i <= b->nr_pins - a->nr_pins; i++) {
+-		if (a->pins == b->pins + i || a->mux == b->mux + i ||
+-		    memcmp(a->pins, b->pins + i, len) ||
+-		    memcmp(a->mux, b->mux + i, len))
+-			continue;
+-
+-		if (a->nr_pins == b->nr_pins)
+-			sh_pfc_warn("group %s can be an alias for %s\n",
+-				    a->name, b->name);
+-		else
+-			sh_pfc_warn("group %s is a subset of %s\n", a->name,
+-				    b->name);
+-	}
+-}
+-
+-static void __init sh_pfc_check_info(const struct sh_pfc_soc_info *info)
+-{
+-	const struct pinmux_drive_reg *drive_regs = info->drive_regs;
+-#define drive_nfields	ARRAY_SIZE(drive_regs->fields)
+-#define drive_ofs(i)	drive_regs[(i) / drive_nfields]
+-#define drive_reg(i)	drive_ofs(i).reg
+-#define drive_bit(i)	((i) % drive_nfields)
+-#define drive_field(i)	drive_ofs(i).fields[drive_bit(i)]
+-	const struct pinmux_bias_reg *bias_regs = info->bias_regs;
+-#define bias_npins	ARRAY_SIZE(bias_regs->pins)
+-#define bias_ofs(i)	bias_regs[(i) / bias_npins]
+-#define bias_puen(i)	bias_ofs(i).puen
+-#define bias_pud(i)	bias_ofs(i).pud
+-#define bias_bit(i)	((i) % bias_npins)
+-#define bias_pin(i)	bias_ofs(i).pins[bias_bit(i)]
+-	const char *drvname = info->name;
+-	unsigned int *refcnts;
+-	unsigned int i, j, k;
+-
+-	pr_info("sh_pfc: Checking %s\n", drvname);
+-	sh_pfc_num_regs = 0;
+-	sh_pfc_num_enums = 0;
+-	sh_pfc_bias_done = false;
+-	sh_pfc_drive_done = false;
+-	sh_pfc_power_done = false;
+-
+-	/* Check pins */
+-	for (i = 0; i < info->nr_pins; i++) {
+-		const struct sh_pfc_pin *pin = &info->pins[i];
+-		unsigned int x;
+-
+-		if (!pin->name) {
+-			sh_pfc_err("empty pin %u\n", i);
+-			continue;
+-		}
+-		for (j = 0; j < i; j++) {
+-			const struct sh_pfc_pin *pin2 = &info->pins[j];
+-
+-			if (same_name(pin->name, pin2->name))
+-				sh_pfc_err("pin %s: name conflict\n",
+-					   pin->name);
+-
+-			if (pin->pin != (u16)-1 && pin->pin == pin2->pin)
+-				sh_pfc_err("pin %s/%s: pin %u conflict\n",
+-					   pin->name, pin2->name, pin->pin);
+-
+-			if (pin->enum_id && pin->enum_id == pin2->enum_id)
+-				sh_pfc_err("pin %s/%s: enum_id %u conflict\n",
+-					   pin->name, pin2->name,
+-					   pin->enum_id);
+-		}
+-
+-		if (pin->configs & SH_PFC_PIN_CFG_PULL_UP_DOWN) {
+-			if (!info->ops || !info->ops->get_bias ||
+-			    !info->ops->set_bias)
+-				sh_pfc_err_once(bias, "SH_PFC_PIN_CFG_PULL_* flag set but .[gs]et_bias() not implemented\n");
+-
+-			if (!bias_regs &&
+-			     (!info->ops || !info->ops->pin_to_portcr))
+-				sh_pfc_err_once(bias, "SH_PFC_PIN_CFG_PULL_UP flag set but no bias_regs defined and .pin_to_portcr() not implemented\n");
+-		}
+-
+-		if ((pin->configs & SH_PFC_PIN_CFG_PULL_UP_DOWN) && bias_regs) {
+-			const struct pinmux_bias_reg *bias_reg =
+-				rcar_pin_to_bias_reg(info, pin->pin, &x);
+-
+-			if (!bias_reg ||
+-			    ((pin->configs & SH_PFC_PIN_CFG_PULL_UP) &&
+-			     !bias_reg->puen))
+-				sh_pfc_err("pin %s: SH_PFC_PIN_CFG_PULL_UP flag set but pin not in bias_regs\n",
+-					   pin->name);
+-
+-			if (!bias_reg ||
+-			    ((pin->configs & SH_PFC_PIN_CFG_PULL_DOWN) &&
+-			     !bias_reg->pud))
+-				sh_pfc_err("pin %s: SH_PFC_PIN_CFG_PULL_DOWN flag set but pin not in bias_regs\n",
+-					   pin->name);
+-		}
+-
+-		if (pin->configs & SH_PFC_PIN_CFG_DRIVE_STRENGTH) {
+-			if (!drive_regs) {
+-				sh_pfc_err_once(drive, "SH_PFC_PIN_CFG_DRIVE_STRENGTH flag set but drive_regs missing\n");
+-			} else {
+-				for (j = 0; drive_reg(j); j++) {
+-					if (!drive_field(j).pin &&
+-					    !drive_field(j).offset &&
+-					    !drive_field(j).size)
+-						continue;
+-
+-					if (drive_field(j).pin == pin->pin)
+-						break;
+-				}
+-
+-				if (!drive_reg(j))
+-					sh_pfc_err("pin %s: SH_PFC_PIN_CFG_DRIVE_STRENGTH flag set but not in drive_regs\n",
+-						   pin->name);
+-			}
+-		}
+-
+-		if (pin->configs & SH_PFC_PIN_CFG_IO_VOLTAGE) {
+-			if (!info->ops || !info->ops->pin_to_pocctrl)
+-				sh_pfc_err_once(power, "SH_PFC_PIN_CFG_IO_VOLTAGE flag set but .pin_to_pocctrl() not implemented\n");
+-			else if (info->ops->pin_to_pocctrl(pin->pin, &x) < 0)
+-				sh_pfc_err("pin %s: SH_PFC_PIN_CFG_IO_VOLTAGE set but invalid pin_to_pocctrl()\n",
+-					   pin->name);
+-		} else if (info->ops && info->ops->pin_to_pocctrl &&
+-			   info->ops->pin_to_pocctrl(pin->pin, &x) >= 0) {
+-			sh_pfc_warn("pin %s: SH_PFC_PIN_CFG_IO_VOLTAGE not set but valid pin_to_pocctrl()\n",
+-				    pin->name);
+-		}
+-	}
+-
+-	/* Check groups and functions */
+-	refcnts = kcalloc(info->nr_groups, sizeof(*refcnts), GFP_KERNEL);
+-	if (!refcnts)
+-		return;
+-
+-	for (i = 0; i < info->nr_functions; i++) {
+-		const struct sh_pfc_function *func = &info->functions[i];
+-
+-		if (!func->name) {
+-			sh_pfc_err("empty function %u\n", i);
+-			continue;
+-		}
+-		for (j = 0; j < i; j++) {
+-			if (same_name(func->name, info->functions[j].name))
+-				sh_pfc_err("function %s: name conflict\n",
+-					   func->name);
+-		}
+-		for (j = 0; j < func->nr_groups; j++) {
+-			for (k = 0; k < info->nr_groups; k++) {
+-				if (same_name(func->groups[j],
+-					      info->groups[k].name)) {
+-					refcnts[k]++;
+-					break;
+-				}
+-			}
+-
+-			if (k == info->nr_groups)
+-				sh_pfc_err("function %s: group %s not found\n",
+-					   func->name, func->groups[j]);
+-		}
+-	}
+-
+-	for (i = 0; i < info->nr_groups; i++) {
+-		const struct sh_pfc_pin_group *group = &info->groups[i];
+-
+-		if (!group->name) {
+-			sh_pfc_err("empty group %u\n", i);
+-			continue;
+-		}
+-		for (j = 0; j < i; j++)
+-			sh_pfc_compare_groups(drvname, group, &info->groups[j]);
+-
+-		if (!refcnts[i])
+-			sh_pfc_err("orphan group %s\n", group->name);
+-		else if (refcnts[i] > 1)
+-			sh_pfc_warn("group %s referenced by %u functions\n",
+-				    group->name, refcnts[i]);
+-	}
+-
+-	kfree(refcnts);
+-
+-	/* Check config register descriptions */
+-	for (i = 0; info->cfg_regs && info->cfg_regs[i].reg; i++)
+-		sh_pfc_check_cfg_reg(drvname, &info->cfg_regs[i]);
+-
+-	/* Check drive strength registers */
+-	for (i = 0; drive_regs && drive_regs[i].reg; i++)
+-		sh_pfc_check_drive_reg(info, &drive_regs[i]);
+-
+-	for (i = 0; drive_regs && drive_reg(i); i++) {
+-		if (!drive_field(i).pin && !drive_field(i).offset &&
+-		    !drive_field(i).size)
+-			continue;
+-
+-		for (j = 0; j < i; j++) {
+-			if (drive_field(i).pin == drive_field(j).pin &&
+-			    drive_field(j).offset && drive_field(j).size) {
+-				sh_pfc_err("drive_reg 0x%x:%zu/0x%x:%zu: pin conflict\n",
+-					   drive_reg(i), drive_bit(i),
+-					   drive_reg(j), drive_bit(j));
+-			}
+-		}
+-	}
+-
+-	/* Check bias registers */
+-	for (i = 0; bias_regs && (bias_regs[i].puen || bias_regs[i].pud); i++)
+-		sh_pfc_check_bias_reg(info, &bias_regs[i]);
+-
+-	for (i = 0; bias_regs && (bias_puen(i) || bias_pud(i)); i++) {
+-		if (bias_pin(i) == SH_PFC_PIN_NONE)
+-			continue;
+-
+-		for (j = 0; j < i; j++) {
+-			if (bias_pin(i) != bias_pin(j))
+-				continue;
+-
+-			if (bias_puen(i) && bias_puen(j))
+-				sh_pfc_err("bias_reg 0x%x:%zu/0x%x:%zu: pin conflict\n",
+-					   bias_puen(i), bias_bit(i),
+-					   bias_puen(j), bias_bit(j));
+-			if (bias_pud(i) && bias_pud(j))
+-				sh_pfc_err("bias_reg 0x%x:%zu/0x%x:%zu: pin conflict\n",
+-					   bias_pud(i), bias_bit(i),
+-					   bias_pud(j), bias_bit(j));
+-		}
+-	}
+-
+-	/* Check ioctrl registers */
+-	for (i = 0; info->ioctrl_regs && info->ioctrl_regs[i].reg; i++)
+-		sh_pfc_check_reg(drvname, info->ioctrl_regs[i].reg, U32_MAX);
+-
+-	/* Check data registers */
+-	for (i = 0; info->data_regs && info->data_regs[i].reg; i++) {
+-		sh_pfc_check_reg(drvname, info->data_regs[i].reg,
+-				 GENMASK(info->data_regs[i].reg_width - 1, 0));
+-		sh_pfc_check_reg_enums(drvname, info->data_regs[i].reg,
+-				       info->data_regs[i].enum_ids,
+-				       info->data_regs[i].reg_width);
+-	}
+-
+-#ifdef CONFIG_PINCTRL_SH_FUNC_GPIO
+-	/* Check function GPIOs */
+-	for (i = 0; i < info->nr_func_gpios; i++) {
+-		const struct pinmux_func *func = &info->func_gpios[i];
+-
+-		if (!func->name) {
+-			sh_pfc_err("empty function gpio %u\n", i);
+-			continue;
+-		}
+-		for (j = 0; j < i; j++) {
+-			if (same_name(func->name, info->func_gpios[j].name))
+-				sh_pfc_err("func_gpio %s: name conflict\n",
+-					   func->name);
+-		}
+-		if (sh_pfc_check_enum(drvname, func->enum_id))
+-			sh_pfc_err("%s enum_id %u conflict\n", func->name,
+-				   func->enum_id);
+-	}
+-#endif
+-}
+-
+-static void __init sh_pfc_check_driver(const struct platform_driver *pdrv)
+-{
+-	unsigned int i;
+-
+-	if (!IS_ENABLED(CONFIG_SUPERH) &&
+-	    !of_find_matching_node(NULL, pdrv->driver.of_match_table))
+-		return;
+-
+-	sh_pfc_regs = kcalloc(SH_PFC_MAX_REGS, sizeof(*sh_pfc_regs),
+-			      GFP_KERNEL);
+-	if (!sh_pfc_regs)
+-		return;
+-
+-	sh_pfc_enums = kcalloc(SH_PFC_MAX_ENUMS, sizeof(*sh_pfc_enums),
+-			      GFP_KERNEL);
+-	if (!sh_pfc_enums)
+-		goto free_regs;
+-
+-	pr_warn("sh_pfc: Checking builtin pinmux tables\n");
+-
+-	for (i = 0; pdrv->id_table[i].name[0]; i++)
+-		sh_pfc_check_info((void *)pdrv->id_table[i].driver_data);
+-
+-#ifdef CONFIG_OF
+-	for (i = 0; pdrv->driver.of_match_table[i].compatible[0]; i++)
+-		sh_pfc_check_info(pdrv->driver.of_match_table[i].data);
+-#endif
+-
+-	pr_warn("sh_pfc: Detected %u errors and %u warnings\n", sh_pfc_errors,
+-		sh_pfc_warnings);
+-
+-	kfree(sh_pfc_enums);
+-free_regs:
+-	kfree(sh_pfc_regs);
+-}
+-
+-#else /* !DEBUG */
+-static inline void sh_pfc_check_driver(struct platform_driver *pdrv) {}
+-#endif /* !DEBUG */
+-
+ #ifdef CONFIG_OF
+ static const void *sh_pfc_quirk_match(void)
+ {
+@@ -1409,49 +853,8 @@ static int sh_pfc_probe(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-static const struct platform_device_id sh_pfc_id_table[] = {
+-#ifdef CONFIG_PINCTRL_PFC_SH7203
+-	{ "pfc-sh7203", (kernel_ulong_t)&sh7203_pinmux_info },
+-#endif
+-#ifdef CONFIG_PINCTRL_PFC_SH7264
+-	{ "pfc-sh7264", (kernel_ulong_t)&sh7264_pinmux_info },
+-#endif
+-#ifdef CONFIG_PINCTRL_PFC_SH7269
+-	{ "pfc-sh7269", (kernel_ulong_t)&sh7269_pinmux_info },
+-#endif
+-#ifdef CONFIG_PINCTRL_PFC_SH7720
+-	{ "pfc-sh7720", (kernel_ulong_t)&sh7720_pinmux_info },
+-#endif
+-#ifdef CONFIG_PINCTRL_PFC_SH7722
+-	{ "pfc-sh7722", (kernel_ulong_t)&sh7722_pinmux_info },
+-#endif
+-#ifdef CONFIG_PINCTRL_PFC_SH7723
+-	{ "pfc-sh7723", (kernel_ulong_t)&sh7723_pinmux_info },
+-#endif
+-#ifdef CONFIG_PINCTRL_PFC_SH7724
+-	{ "pfc-sh7724", (kernel_ulong_t)&sh7724_pinmux_info },
+-#endif
+-#ifdef CONFIG_PINCTRL_PFC_SH7734
+-	{ "pfc-sh7734", (kernel_ulong_t)&sh7734_pinmux_info },
+-#endif
+-#ifdef CONFIG_PINCTRL_PFC_SH7757
+-	{ "pfc-sh7757", (kernel_ulong_t)&sh7757_pinmux_info },
+-#endif
+-#ifdef CONFIG_PINCTRL_PFC_SH7785
+-	{ "pfc-sh7785", (kernel_ulong_t)&sh7785_pinmux_info },
+-#endif
+-#ifdef CONFIG_PINCTRL_PFC_SH7786
+-	{ "pfc-sh7786", (kernel_ulong_t)&sh7786_pinmux_info },
+-#endif
+-#ifdef CONFIG_PINCTRL_PFC_SHX3
+-	{ "pfc-shx3", (kernel_ulong_t)&shx3_pinmux_info },
+-#endif
+-	{ },
+-};
+-
+ static struct platform_driver sh_pfc_driver = {
+ 	.probe		= sh_pfc_probe,
+-	.id_table	= sh_pfc_id_table,
+ 	.driver		= {
+ 		.name	= DRV_NAME,
+ 		.of_match_table = of_match_ptr(sh_pfc_of_table),
+@@ -1461,7 +864,6 @@ static struct platform_driver sh_pfc_driver = {
+ 
+ static int __init sh_pfc_init(void)
+ {
+-	sh_pfc_check_driver(&sh_pfc_driver);
+ 	return platform_driver_register(&sh_pfc_driver);
+ }
+ postcore_initcall(sh_pfc_init);
+diff --git a/drivers/pinctrl/renesas/pfc-sh7203.c b/drivers/pinctrl/renesas/pfc-sh7203.c
 deleted file mode 100644
-index bd89ca8a92dfbc..00000000000000
---- a/drivers/net/ethernet/8390/stnic.c
+index 19735746b1bb21..00000000000000
+--- a/drivers/pinctrl/renesas/pfc-sh7203.c
 +++ /dev/null
-@@ -1,302 +0,0 @@
--/* stnic.c : A SH7750 specific part of driver for NS DP83902A ST-NIC.
+@@ -1,1577 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * SH7203 Pinmux
 - *
-- * This file is subject to the terms and conditions of the GNU General Public
-- * License.  See the file "COPYING" in the main directory of this archive
-- * for more details.
-- *
-- * Copyright (C) 1999 kaz Kojima
+- *  Copyright (C) 2008  Magnus Damm
 - */
 -
--#include <linux/module.h>
 -#include <linux/kernel.h>
--#include <linux/errno.h>
--#include <linux/interrupt.h>
--#include <linux/ioport.h>
--#include <linux/netdevice.h>
--#include <linux/etherdevice.h>
--#include <linux/init.h>
--#include <linux/delay.h>
+-#include <cpu/sh7203.h>
 -
--#include <asm/io.h>
--#include <mach-se/mach/se.h>
--#include <asm/machvec.h>
--#ifdef CONFIG_SH_STANDARD_BIOS
--#include <asm/sh_bios.h>
+-#include "sh_pfc.h"
+-
+-enum {
+-	PINMUX_RESERVED = 0,
+-
+-	PINMUX_DATA_BEGIN,
+-	PA7_DATA, PA6_DATA, PA5_DATA, PA4_DATA,
+-	PA3_DATA, PA2_DATA, PA1_DATA, PA0_DATA,
+-	PB12_DATA,
+-	PB11_DATA, PB10_DATA, PB9_DATA, PB8_DATA,
+-	PB7_DATA, PB6_DATA, PB5_DATA, PB4_DATA,
+-	PB3_DATA, PB2_DATA, PB1_DATA, PB0_DATA,
+-	PC14_DATA, PC13_DATA, PC12_DATA,
+-	PC11_DATA, PC10_DATA, PC9_DATA, PC8_DATA,
+-	PC7_DATA, PC6_DATA, PC5_DATA, PC4_DATA,
+-	PC3_DATA, PC2_DATA, PC1_DATA, PC0_DATA,
+-	PD15_DATA, PD14_DATA, PD13_DATA, PD12_DATA,
+-	PD11_DATA, PD10_DATA, PD9_DATA, PD8_DATA,
+-	PD7_DATA, PD6_DATA, PD5_DATA, PD4_DATA,
+-	PD3_DATA, PD2_DATA, PD1_DATA, PD0_DATA,
+-	PE15_DATA, PE14_DATA, PE13_DATA, PE12_DATA,
+-	PE11_DATA, PE10_DATA, PE9_DATA, PE8_DATA,
+-	PE7_DATA, PE6_DATA, PE5_DATA, PE4_DATA,
+-	PE3_DATA, PE2_DATA, PE1_DATA, PE0_DATA,
+-	PF30_DATA, PF29_DATA, PF28_DATA,
+-	PF27_DATA, PF26_DATA, PF25_DATA, PF24_DATA,
+-	PF23_DATA, PF22_DATA, PF21_DATA, PF20_DATA,
+-	PF19_DATA, PF18_DATA, PF17_DATA, PF16_DATA,
+-	PF15_DATA, PF14_DATA, PF13_DATA, PF12_DATA,
+-	PF11_DATA, PF10_DATA, PF9_DATA, PF8_DATA,
+-	PF7_DATA, PF6_DATA, PF5_DATA, PF4_DATA,
+-	PF3_DATA, PF2_DATA, PF1_DATA, PF0_DATA,
+-	PINMUX_DATA_END,
+-
+-	PINMUX_INPUT_BEGIN,
+-	FORCE_IN,
+-	PA7_IN, PA6_IN, PA5_IN, PA4_IN,
+-	PA3_IN, PA2_IN, PA1_IN, PA0_IN,
+-	PB11_IN, PB10_IN, PB9_IN, PB8_IN,
+-	PC14_IN, PC13_IN, PC12_IN,
+-	PC11_IN, PC10_IN, PC9_IN, PC8_IN,
+-	PC7_IN, PC6_IN, PC5_IN, PC4_IN,
+-	PC3_IN, PC2_IN, PC1_IN, PC0_IN,
+-	PD15_IN, PD14_IN, PD13_IN, PD12_IN,
+-	PD11_IN, PD10_IN, PD9_IN, PD8_IN,
+-	PD7_IN, PD6_IN, PD5_IN, PD4_IN,
+-	PD3_IN, PD2_IN, PD1_IN, PD0_IN,
+-	PE15_IN, PE14_IN, PE13_IN, PE12_IN,
+-	PE11_IN, PE10_IN, PE9_IN, PE8_IN,
+-	PE7_IN, PE6_IN, PE5_IN, PE4_IN,
+-	PE3_IN, PE2_IN, PE1_IN, PE0_IN,
+-	PF30_IN, PF29_IN, PF28_IN,
+-	PF27_IN, PF26_IN, PF25_IN, PF24_IN,
+-	PF23_IN, PF22_IN, PF21_IN, PF20_IN,
+-	PF19_IN, PF18_IN, PF17_IN, PF16_IN,
+-	PF15_IN, PF14_IN, PF13_IN, PF12_IN,
+-	PF11_IN, PF10_IN, PF9_IN, PF8_IN,
+-	PF7_IN, PF6_IN, PF5_IN, PF4_IN,
+-	PF3_IN, PF2_IN, PF1_IN, PF0_IN,
+-	PINMUX_INPUT_END,
+-
+-	PINMUX_OUTPUT_BEGIN,
+-	FORCE_OUT,
+-	PB11_OUT, PB10_OUT, PB9_OUT, PB8_OUT,
+-	PC14_OUT, PC13_OUT, PC12_OUT,
+-	PC11_OUT, PC10_OUT, PC9_OUT, PC8_OUT,
+-	PC7_OUT, PC6_OUT, PC5_OUT, PC4_OUT,
+-	PC3_OUT, PC2_OUT, PC1_OUT, PC0_OUT,
+-	PD15_OUT, PD14_OUT, PD13_OUT, PD12_OUT,
+-	PD11_OUT, PD10_OUT, PD9_OUT, PD8_OUT,
+-	PD7_OUT, PD6_OUT, PD5_OUT, PD4_OUT,
+-	PD3_OUT, PD2_OUT, PD1_OUT, PD0_OUT,
+-	PE15_OUT, PE14_OUT, PE13_OUT, PE12_OUT,
+-	PE11_OUT, PE10_OUT, PE9_OUT, PE8_OUT,
+-	PE7_OUT, PE6_OUT, PE5_OUT, PE4_OUT,
+-	PE3_OUT, PE2_OUT, PE1_OUT, PE0_OUT,
+-	PF30_OUT, PF29_OUT, PF28_OUT,
+-	PF27_OUT, PF26_OUT, PF25_OUT, PF24_OUT,
+-	PF23_OUT, PF22_OUT, PF21_OUT, PF20_OUT,
+-	PF19_OUT, PF18_OUT, PF17_OUT, PF16_OUT,
+-	PF15_OUT, PF14_OUT, PF13_OUT, PF12_OUT,
+-	PF11_OUT, PF10_OUT, PF9_OUT, PF8_OUT,
+-	PF7_OUT, PF6_OUT, PF5_OUT, PF4_OUT,
+-	PF3_OUT, PF2_OUT, PF1_OUT, PF0_OUT,
+-	PINMUX_OUTPUT_END,
+-
+-	PINMUX_FUNCTION_BEGIN,
+-	PB11_IOR_IN, PB11_IOR_OUT,
+-	PB10_IOR_IN, PB10_IOR_OUT,
+-	PB9_IOR_IN, PB9_IOR_OUT,
+-	PB8_IOR_IN, PB8_IOR_OUT,
+-	PB12MD_00, PB12MD_01, PB12MD_10, PB12MD_11,
+-	PB11MD_0, PB11MD_1,
+-	PB10MD_0, PB10MD_1,
+-	PB9MD_00, PB9MD_01, PB9MD_10,
+-	PB8MD_00, PB8MD_01, PB8MD_10,
+-	PB7MD_00, PB7MD_01, PB7MD_10, PB7MD_11,
+-	PB6MD_00, PB6MD_01, PB6MD_10, PB6MD_11,
+-	PB5MD_00, PB5MD_01, PB5MD_10, PB5MD_11,
+-	PB4MD_00, PB4MD_01, PB4MD_10, PB4MD_11,
+-	PB3MD_00, PB3MD_01, PB3MD_10, PB3MD_11,
+-	PB2MD_00, PB2MD_01, PB2MD_10, PB2MD_11,
+-	PB1MD_00, PB1MD_01, PB1MD_10, PB1MD_11,
+-	PB0MD_00, PB0MD_01, PB0MD_10, PB0MD_11,
+-
+-	PB12IRQ_00, PB12IRQ_01, PB12IRQ_10,
+-
+-	PC14MD_0, PC14MD_1,
+-	PC13MD_0, PC13MD_1,
+-	PC12MD_0, PC12MD_1,
+-	PC11MD_00, PC11MD_01, PC11MD_10,
+-	PC10MD_00, PC10MD_01, PC10MD_10,
+-	PC9MD_0, PC9MD_1,
+-	PC8MD_0, PC8MD_1,
+-	PC7MD_0, PC7MD_1,
+-	PC6MD_0, PC6MD_1,
+-	PC5MD_0, PC5MD_1,
+-	PC4MD_0, PC4MD_1,
+-	PC3MD_0, PC3MD_1,
+-	PC2MD_0, PC2MD_1,
+-	PC1MD_0, PC1MD_1,
+-	PC0MD_00, PC0MD_01, PC0MD_10,
+-
+-	PD15MD_000, PD15MD_001, PD15MD_010, PD15MD_100, PD15MD_101,
+-	PD14MD_000, PD14MD_001, PD14MD_010, PD14MD_101,
+-	PD13MD_000, PD13MD_001, PD13MD_010, PD13MD_100, PD13MD_101,
+-	PD12MD_000, PD12MD_001, PD12MD_010, PD12MD_100, PD12MD_101,
+-	PD11MD_000, PD11MD_001, PD11MD_010, PD11MD_100, PD11MD_101,
+-	PD10MD_000, PD10MD_001, PD10MD_010, PD10MD_100, PD10MD_101,
+-	PD9MD_000, PD9MD_001, PD9MD_010, PD9MD_100, PD9MD_101,
+-	PD8MD_000, PD8MD_001, PD8MD_010, PD8MD_100, PD8MD_101,
+-	PD7MD_000, PD7MD_001, PD7MD_010, PD7MD_011, PD7MD_100, PD7MD_101,
+-	PD6MD_000, PD6MD_001, PD6MD_010, PD6MD_011, PD6MD_100, PD6MD_101,
+-	PD5MD_000, PD5MD_001, PD5MD_010, PD5MD_011, PD5MD_100, PD5MD_101,
+-	PD4MD_000, PD4MD_001, PD4MD_010, PD4MD_011, PD4MD_100, PD4MD_101,
+-	PD3MD_000, PD3MD_001, PD3MD_010, PD3MD_011, PD3MD_100, PD3MD_101,
+-	PD2MD_000, PD2MD_001, PD2MD_010, PD2MD_011, PD2MD_100, PD2MD_101,
+-	PD1MD_000, PD1MD_001, PD1MD_010, PD1MD_011, PD1MD_100, PD1MD_101,
+-	PD0MD_000, PD0MD_001, PD0MD_010, PD0MD_011, PD0MD_100, PD0MD_101,
+-
+-	PE15MD_00, PE15MD_01, PE15MD_11,
+-	PE14MD_00, PE14MD_01, PE14MD_11,
+-	PE13MD_00, PE13MD_11,
+-	PE12MD_00, PE12MD_11,
+-	PE11MD_000, PE11MD_001, PE11MD_010, PE11MD_100,
+-	PE10MD_000, PE10MD_001, PE10MD_010, PE10MD_100,
+-	PE9MD_00, PE9MD_01, PE9MD_10, PE9MD_11,
+-	PE8MD_00, PE8MD_01, PE8MD_10, PE8MD_11,
+-	PE7MD_000, PE7MD_001, PE7MD_010, PE7MD_011, PE7MD_100,
+-	PE6MD_000, PE6MD_001, PE6MD_010, PE6MD_011, PE6MD_100,
+-	PE5MD_000, PE5MD_001, PE5MD_010, PE5MD_011, PE5MD_100,
+-	PE4MD_000, PE4MD_001, PE4MD_010, PE4MD_011, PE4MD_100,
+-	PE3MD_00, PE3MD_01, PE3MD_11,
+-	PE2MD_00, PE2MD_01, PE2MD_11,
+-	PE1MD_00, PE1MD_01, PE1MD_10, PE1MD_11,
+-	PE0MD_000, PE0MD_001, PE0MD_011, PE0MD_100,
+-
+-	PF30MD_0, PF30MD_1,
+-	PF29MD_0, PF29MD_1,
+-	PF28MD_0, PF28MD_1,
+-	PF27MD_0, PF27MD_1,
+-	PF26MD_0, PF26MD_1,
+-	PF25MD_0, PF25MD_1,
+-	PF24MD_0, PF24MD_1,
+-	PF23MD_00, PF23MD_01, PF23MD_10,
+-	PF22MD_00, PF22MD_01, PF22MD_10,
+-	PF21MD_00, PF21MD_01, PF21MD_10,
+-	PF20MD_00, PF20MD_01, PF20MD_10,
+-	PF19MD_00, PF19MD_01, PF19MD_10,
+-	PF18MD_00, PF18MD_01, PF18MD_10,
+-	PF17MD_00, PF17MD_01, PF17MD_10,
+-	PF16MD_00, PF16MD_01, PF16MD_10,
+-	PF15MD_00, PF15MD_01, PF15MD_10,
+-	PF14MD_00, PF14MD_01, PF14MD_10,
+-	PF13MD_00, PF13MD_01, PF13MD_10,
+-	PF12MD_00, PF12MD_01, PF12MD_10,
+-	PF11MD_00, PF11MD_01, PF11MD_10,
+-	PF10MD_00, PF10MD_01, PF10MD_10,
+-	PF9MD_00, PF9MD_01, PF9MD_10,
+-	PF8MD_00, PF8MD_01, PF8MD_10,
+-	PF7MD_00, PF7MD_01, PF7MD_10, PF7MD_11,
+-	PF6MD_00, PF6MD_01, PF6MD_10, PF6MD_11,
+-	PF5MD_00, PF5MD_01, PF5MD_10, PF5MD_11,
+-	PF4MD_00, PF4MD_01, PF4MD_10, PF4MD_11,
+-	PF3MD_00, PF3MD_01, PF3MD_10, PF3MD_11,
+-	PF2MD_00, PF2MD_01, PF2MD_10, PF2MD_11,
+-	PF1MD_00, PF1MD_01, PF1MD_10, PF1MD_11,
+-	PF0MD_00, PF0MD_01, PF0MD_10, PF0MD_11,
+-	PINMUX_FUNCTION_END,
+-
+-	PINMUX_MARK_BEGIN,
+-	PINT7_PB_MARK, PINT6_PB_MARK, PINT5_PB_MARK, PINT4_PB_MARK,
+-	PINT3_PB_MARK, PINT2_PB_MARK, PINT1_PB_MARK, PINT0_PB_MARK,
+-	PINT7_PD_MARK, PINT6_PD_MARK, PINT5_PD_MARK, PINT4_PD_MARK,
+-	PINT3_PD_MARK, PINT2_PD_MARK, PINT1_PD_MARK, PINT0_PD_MARK,
+-	IRQ7_PB_MARK, IRQ6_PB_MARK, IRQ5_PB_MARK, IRQ4_PB_MARK,
+-	IRQ3_PB_MARK, IRQ2_PB_MARK, IRQ1_PB_MARK, IRQ0_PB_MARK,
+-	IRQ7_PD_MARK, IRQ6_PD_MARK, IRQ5_PD_MARK, IRQ4_PD_MARK,
+-	IRQ3_PD_MARK, IRQ2_PD_MARK, IRQ1_PD_MARK, IRQ0_PD_MARK,
+-	IRQ7_PE_MARK, IRQ6_PE_MARK, IRQ5_PE_MARK, IRQ4_PE_MARK,
+-	IRQ3_PE_MARK, IRQ2_PE_MARK, IRQ1_PE_MARK, IRQ0_PE_MARK,
+-	WDTOVF_MARK, IRQOUT_MARK, REFOUT_MARK, IRQOUT_REFOUT_MARK,
+-	UBCTRG_MARK,
+-	CTX1_MARK, CRX1_MARK, CTX0_MARK, CTX0_CTX1_MARK,
+-	CRX0_MARK, CRX0_CRX1_MARK,
+-	SDA3_MARK, SCL3_MARK,
+-	SDA2_MARK, SCL2_MARK,
+-	SDA1_MARK, SCL1_MARK,
+-	SDA0_MARK, SCL0_MARK,
+-	TEND0_PD_MARK, TEND0_PE_MARK, DACK0_PD_MARK, DACK0_PE_MARK,
+-	DREQ0_PD_MARK, DREQ0_PE_MARK, TEND1_PD_MARK, TEND1_PE_MARK,
+-	DACK1_PD_MARK, DACK1_PE_MARK, DREQ1_PD_MARK, DREQ1_PE_MARK,
+-	DACK2_MARK, DREQ2_MARK, DACK3_MARK, DREQ3_MARK,
+-	ADTRG_PD_MARK, ADTRG_PE_MARK,
+-	D31_MARK, D30_MARK, D29_MARK, D28_MARK,
+-	D27_MARK, D26_MARK, D25_MARK, D24_MARK,
+-	D23_MARK, D22_MARK, D21_MARK, D20_MARK,
+-	D19_MARK, D18_MARK, D17_MARK, D16_MARK,
+-	A25_MARK, A24_MARK, A23_MARK, A22_MARK,
+-	A21_MARK, CS4_MARK, MRES_MARK, BS_MARK,
+-	IOIS16_MARK, CS1_MARK, CS6_CE1B_MARK, CE2B_MARK,
+-	CS5_CE1A_MARK, CE2A_MARK, FRAME_MARK, WAIT_MARK,
+-	RDWR_MARK, CKE_MARK, CASU_MARK,	BREQ_MARK,
+-	RASU_MARK, BACK_MARK, CASL_MARK, RASL_MARK,
+-	WE3_DQMUU_AH_ICIO_WR_MARK, WE2_DQMUL_ICIORD_MARK,
+-	WE1_DQMLU_WE_MARK, WE0_DQMLL_MARK,
+-	CS3_MARK, CS2_MARK, A1_MARK, A0_MARK, CS7_MARK,
+-	TIOC4D_MARK, TIOC4C_MARK, TIOC4B_MARK, TIOC4A_MARK,
+-	TIOC3D_MARK, TIOC3C_MARK, TIOC3B_MARK, TIOC3A_MARK,
+-	TIOC2B_MARK, TIOC1B_MARK, TIOC2A_MARK, TIOC1A_MARK,
+-	TIOC0D_MARK, TIOC0C_MARK, TIOC0B_MARK, TIOC0A_MARK,
+-	TCLKD_PD_MARK, TCLKC_PD_MARK, TCLKB_PD_MARK, TCLKA_PD_MARK,
+-	TCLKD_PF_MARK, TCLKC_PF_MARK, TCLKB_PF_MARK, TCLKA_PF_MARK,
+-	SCS0_PD_MARK, SSO0_PD_MARK, SSI0_PD_MARK, SSCK0_PD_MARK,
+-	SCS0_PF_MARK, SSO0_PF_MARK, SSI0_PF_MARK, SSCK0_PF_MARK,
+-	SCS1_PD_MARK, SSO1_PD_MARK, SSI1_PD_MARK, SSCK1_PD_MARK,
+-	SCS1_PF_MARK, SSO1_PF_MARK, SSI1_PF_MARK, SSCK1_PF_MARK,
+-	TXD0_MARK, RXD0_MARK, SCK0_MARK,
+-	TXD1_MARK, RXD1_MARK, SCK1_MARK,
+-	TXD2_MARK, RXD2_MARK, SCK2_MARK,
+-	RTS3_MARK, CTS3_MARK, TXD3_MARK,
+-	RXD3_MARK, SCK3_MARK,
+-	AUDIO_CLK_MARK,
+-	SSIDATA3_MARK, SSIWS3_MARK, SSISCK3_MARK,
+-	SSIDATA2_MARK, SSIWS2_MARK, SSISCK2_MARK,
+-	SSIDATA1_MARK, SSIWS1_MARK, SSISCK1_MARK,
+-	SSIDATA0_MARK, SSIWS0_MARK, SSISCK0_MARK,
+-	FCE_MARK, FRB_MARK,
+-	NAF7_MARK, NAF6_MARK, NAF5_MARK, NAF4_MARK,
+-	NAF3_MARK, NAF2_MARK, NAF1_MARK, NAF0_MARK,
+-	FSC_MARK, FOE_MARK, FCDE_MARK, FWE_MARK,
+-	LCD_VEPWC_MARK, LCD_VCPWC_MARK,	LCD_CLK_MARK, LCD_FLM_MARK,
+-	LCD_M_DISP_MARK, LCD_CL2_MARK, LCD_CL1_MARK, LCD_DON_MARK,
+-	LCD_DATA15_MARK, LCD_DATA14_MARK, LCD_DATA13_MARK, LCD_DATA12_MARK,
+-	LCD_DATA11_MARK, LCD_DATA10_MARK, LCD_DATA9_MARK, LCD_DATA8_MARK,
+-	LCD_DATA7_MARK, LCD_DATA6_MARK, LCD_DATA5_MARK, LCD_DATA4_MARK,
+-	LCD_DATA3_MARK, LCD_DATA2_MARK, LCD_DATA1_MARK, LCD_DATA0_MARK,
+-	PINMUX_MARK_END,
+-};
+-
+-static const u16 pinmux_data[] = {
+-	/* PA */
+-	PINMUX_DATA(PA7_DATA, PA7_IN),
+-	PINMUX_DATA(PA6_DATA, PA6_IN),
+-	PINMUX_DATA(PA5_DATA, PA5_IN),
+-	PINMUX_DATA(PA4_DATA, PA4_IN),
+-	PINMUX_DATA(PA3_DATA, PA3_IN),
+-	PINMUX_DATA(PA2_DATA, PA2_IN),
+-	PINMUX_DATA(PA1_DATA, PA1_IN),
+-	PINMUX_DATA(PA0_DATA, PA0_IN),
+-
+-	/* PB */
+-	PINMUX_DATA(PB12_DATA, PB12MD_00, FORCE_OUT),
+-	PINMUX_DATA(WDTOVF_MARK, PB12MD_01),
+-	PINMUX_DATA(IRQOUT_MARK, PB12MD_10, PB12IRQ_00),
+-	PINMUX_DATA(REFOUT_MARK, PB12MD_10, PB12IRQ_01),
+-	PINMUX_DATA(IRQOUT_REFOUT_MARK, PB12MD_10, PB12IRQ_10),
+-	PINMUX_DATA(UBCTRG_MARK, PB12MD_11),
+-
+-	PINMUX_DATA(PB11_DATA, PB11MD_0, PB11_IN, PB11_OUT),
+-	PINMUX_DATA(CTX1_MARK, PB11MD_1),
+-
+-	PINMUX_DATA(PB10_DATA, PB10MD_0, PB10_IN, PB10_OUT),
+-	PINMUX_DATA(CRX1_MARK, PB10MD_1),
+-
+-	PINMUX_DATA(PB9_DATA, PB9MD_00, PB9_IN, PB9_OUT),
+-	PINMUX_DATA(CTX0_MARK, PB9MD_01),
+-	PINMUX_DATA(CTX0_CTX1_MARK, PB9MD_10),
+-
+-	PINMUX_DATA(PB8_DATA, PB8MD_00, PB8_IN, PB8_OUT),
+-	PINMUX_DATA(CRX0_MARK, PB8MD_01),
+-	PINMUX_DATA(CRX0_CRX1_MARK, PB8MD_10),
+-
+-	PINMUX_DATA(PB7_DATA, PB7MD_00, FORCE_IN),
+-	PINMUX_DATA(SDA3_MARK, PB7MD_01),
+-	PINMUX_DATA(PINT7_PB_MARK, PB7MD_10),
+-	PINMUX_DATA(IRQ7_PB_MARK, PB7MD_11),
+-
+-	PINMUX_DATA(PB6_DATA, PB6MD_00, FORCE_IN),
+-	PINMUX_DATA(SCL3_MARK, PB6MD_01),
+-	PINMUX_DATA(PINT6_PB_MARK, PB6MD_10),
+-	PINMUX_DATA(IRQ6_PB_MARK, PB6MD_11),
+-
+-	PINMUX_DATA(PB5_DATA, PB5MD_00, FORCE_IN),
+-	PINMUX_DATA(SDA2_MARK, PB6MD_01),
+-	PINMUX_DATA(PINT5_PB_MARK, PB6MD_10),
+-	PINMUX_DATA(IRQ5_PB_MARK, PB6MD_11),
+-
+-	PINMUX_DATA(PB4_DATA, PB4MD_00, FORCE_IN),
+-	PINMUX_DATA(SCL2_MARK, PB4MD_01),
+-	PINMUX_DATA(PINT4_PB_MARK, PB4MD_10),
+-	PINMUX_DATA(IRQ4_PB_MARK, PB4MD_11),
+-
+-	PINMUX_DATA(PB3_DATA, PB3MD_00, FORCE_IN),
+-	PINMUX_DATA(SDA1_MARK, PB3MD_01),
+-	PINMUX_DATA(PINT3_PB_MARK, PB3MD_10),
+-	PINMUX_DATA(IRQ3_PB_MARK, PB3MD_11),
+-
+-	PINMUX_DATA(PB2_DATA, PB2MD_00, FORCE_IN),
+-	PINMUX_DATA(SCL1_MARK, PB2MD_01),
+-	PINMUX_DATA(PINT2_PB_MARK, PB2MD_10),
+-	PINMUX_DATA(IRQ2_PB_MARK, PB2MD_11),
+-
+-	PINMUX_DATA(PB1_DATA, PB1MD_00, FORCE_IN),
+-	PINMUX_DATA(SDA0_MARK, PB1MD_01),
+-	PINMUX_DATA(PINT1_PB_MARK, PB1MD_10),
+-	PINMUX_DATA(IRQ1_PB_MARK, PB1MD_11),
+-
+-	PINMUX_DATA(PB0_DATA, PB0MD_00, FORCE_IN),
+-	PINMUX_DATA(SCL0_MARK, PB0MD_01),
+-	PINMUX_DATA(PINT0_PB_MARK, PB0MD_10),
+-	PINMUX_DATA(IRQ0_PB_MARK, PB0MD_11),
+-
+-	/* PC */
+-	PINMUX_DATA(PC14_DATA, PC14MD_0, PC14_IN, PC14_OUT),
+-	PINMUX_DATA(WAIT_MARK, PC14MD_1),
+-
+-	PINMUX_DATA(PC13_DATA, PC13MD_0, PC13_IN, PC13_OUT),
+-	PINMUX_DATA(RDWR_MARK, PC13MD_1),
+-
+-	PINMUX_DATA(PC12_DATA, PC12MD_0, PC12_IN, PC12_OUT),
+-	PINMUX_DATA(CKE_MARK, PC12MD_1),
+-
+-	PINMUX_DATA(PC11_DATA, PC11MD_00, PC11_IN, PC11_OUT),
+-	PINMUX_DATA(CASU_MARK, PC11MD_01),
+-	PINMUX_DATA(BREQ_MARK, PC11MD_10),
+-
+-	PINMUX_DATA(PC10_DATA, PC10MD_00, PC10_IN, PC10_OUT),
+-	PINMUX_DATA(RASU_MARK, PC10MD_01),
+-	PINMUX_DATA(BACK_MARK, PC10MD_10),
+-
+-	PINMUX_DATA(PC9_DATA, PC9MD_0, PC9_IN, PC9_OUT),
+-	PINMUX_DATA(CASL_MARK, PC9MD_1),
+-
+-	PINMUX_DATA(PC8_DATA, PC8MD_0, PC8_IN, PC8_OUT),
+-	PINMUX_DATA(RASL_MARK, PC8MD_1),
+-
+-	PINMUX_DATA(PC7_DATA, PC7MD_0, PC7_IN, PC7_OUT),
+-	PINMUX_DATA(WE3_DQMUU_AH_ICIO_WR_MARK, PC7MD_1),
+-
+-	PINMUX_DATA(PC6_DATA, PC6MD_0, PC6_IN, PC6_OUT),
+-	PINMUX_DATA(WE2_DQMUL_ICIORD_MARK, PC6MD_1),
+-
+-	PINMUX_DATA(PC5_DATA, PC5MD_0, PC5_IN, PC5_OUT),
+-	PINMUX_DATA(WE1_DQMLU_WE_MARK, PC5MD_1),
+-
+-	PINMUX_DATA(PC4_DATA, PC4MD_0, PC4_IN, PC4_OUT),
+-	PINMUX_DATA(WE0_DQMLL_MARK, PC4MD_1),
+-
+-	PINMUX_DATA(PC3_DATA, PC3MD_0, PC3_IN, PC3_OUT),
+-	PINMUX_DATA(CS3_MARK, PC3MD_1),
+-
+-	PINMUX_DATA(PC2_DATA, PC2MD_0, PC2_IN, PC2_OUT),
+-	PINMUX_DATA(CS2_MARK, PC2MD_1),
+-
+-	PINMUX_DATA(PC1_DATA, PC1MD_0, PC1_IN, PC1_OUT),
+-	PINMUX_DATA(A1_MARK, PC1MD_1),
+-
+-	PINMUX_DATA(PC0_DATA, PC0MD_00, PC0_IN, PC0_OUT),
+-	PINMUX_DATA(A0_MARK, PC0MD_01),
+-	PINMUX_DATA(CS7_MARK, PC0MD_10),
+-
+-	/* PD */
+-	PINMUX_DATA(PD15_DATA, PD15MD_000, PD15_IN, PD15_OUT),
+-	PINMUX_DATA(D31_MARK, PD15MD_001),
+-	PINMUX_DATA(PINT7_PD_MARK, PD15MD_010),
+-	PINMUX_DATA(ADTRG_PD_MARK, PD15MD_100),
+-	PINMUX_DATA(TIOC4D_MARK, PD15MD_101),
+-
+-	PINMUX_DATA(PD14_DATA, PD14MD_000, PD14_IN, PD14_OUT),
+-	PINMUX_DATA(D30_MARK, PD14MD_001),
+-	PINMUX_DATA(PINT6_PD_MARK, PD14MD_010),
+-	PINMUX_DATA(TIOC4C_MARK, PD14MD_101),
+-
+-	PINMUX_DATA(PD13_DATA, PD13MD_000, PD13_IN, PD13_OUT),
+-	PINMUX_DATA(D29_MARK, PD13MD_001),
+-	PINMUX_DATA(PINT5_PD_MARK, PD13MD_010),
+-	PINMUX_DATA(TEND1_PD_MARK, PD13MD_100),
+-	PINMUX_DATA(TIOC4B_MARK, PD13MD_101),
+-
+-	PINMUX_DATA(PD12_DATA, PD12MD_000, PD12_IN, PD12_OUT),
+-	PINMUX_DATA(D28_MARK, PD12MD_001),
+-	PINMUX_DATA(PINT4_PD_MARK, PD12MD_010),
+-	PINMUX_DATA(DACK1_PD_MARK, PD12MD_100),
+-	PINMUX_DATA(TIOC4A_MARK, PD12MD_101),
+-
+-	PINMUX_DATA(PD11_DATA, PD11MD_000, PD11_IN, PD11_OUT),
+-	PINMUX_DATA(D27_MARK, PD11MD_001),
+-	PINMUX_DATA(PINT3_PD_MARK, PD11MD_010),
+-	PINMUX_DATA(DREQ1_PD_MARK, PD11MD_100),
+-	PINMUX_DATA(TIOC3D_MARK, PD11MD_101),
+-
+-	PINMUX_DATA(PD10_DATA, PD10MD_000, PD10_IN, PD10_OUT),
+-	PINMUX_DATA(D26_MARK, PD10MD_001),
+-	PINMUX_DATA(PINT2_PD_MARK, PD10MD_010),
+-	PINMUX_DATA(TEND0_PD_MARK, PD10MD_100),
+-	PINMUX_DATA(TIOC3C_MARK, PD10MD_101),
+-
+-	PINMUX_DATA(PD9_DATA, PD9MD_000, PD9_IN, PD9_OUT),
+-	PINMUX_DATA(D25_MARK, PD9MD_001),
+-	PINMUX_DATA(PINT1_PD_MARK, PD9MD_010),
+-	PINMUX_DATA(DACK0_PD_MARK, PD9MD_100),
+-	PINMUX_DATA(TIOC3B_MARK, PD9MD_101),
+-
+-	PINMUX_DATA(PD8_DATA, PD8MD_000, PD8_IN, PD8_OUT),
+-	PINMUX_DATA(D24_MARK, PD8MD_001),
+-	PINMUX_DATA(PINT0_PD_MARK, PD8MD_010),
+-	PINMUX_DATA(DREQ0_PD_MARK, PD8MD_100),
+-	PINMUX_DATA(TIOC3A_MARK, PD8MD_101),
+-
+-	PINMUX_DATA(PD7_DATA, PD7MD_000, PD7_IN, PD7_OUT),
+-	PINMUX_DATA(D23_MARK, PD7MD_001),
+-	PINMUX_DATA(IRQ7_PD_MARK, PD7MD_010),
+-	PINMUX_DATA(SCS1_PD_MARK, PD7MD_011),
+-	PINMUX_DATA(TCLKD_PD_MARK, PD7MD_100),
+-	PINMUX_DATA(TIOC2B_MARK, PD7MD_101),
+-
+-	PINMUX_DATA(PD6_DATA, PD6MD_000, PD6_IN, PD6_OUT),
+-	PINMUX_DATA(D22_MARK, PD6MD_001),
+-	PINMUX_DATA(IRQ6_PD_MARK, PD6MD_010),
+-	PINMUX_DATA(SSO1_PD_MARK, PD6MD_011),
+-	PINMUX_DATA(TCLKC_PD_MARK, PD6MD_100),
+-	PINMUX_DATA(TIOC2A_MARK, PD6MD_101),
+-
+-	PINMUX_DATA(PD5_DATA, PD5MD_000, PD5_IN, PD5_OUT),
+-	PINMUX_DATA(D21_MARK, PD5MD_001),
+-	PINMUX_DATA(IRQ5_PD_MARK, PD5MD_010),
+-	PINMUX_DATA(SSI1_PD_MARK, PD5MD_011),
+-	PINMUX_DATA(TCLKB_PD_MARK, PD5MD_100),
+-	PINMUX_DATA(TIOC1B_MARK, PD5MD_101),
+-
+-	PINMUX_DATA(PD4_DATA, PD4MD_000, PD4_IN, PD4_OUT),
+-	PINMUX_DATA(D20_MARK, PD4MD_001),
+-	PINMUX_DATA(IRQ4_PD_MARK, PD4MD_010),
+-	PINMUX_DATA(SSCK1_PD_MARK, PD4MD_011),
+-	PINMUX_DATA(TCLKA_PD_MARK, PD4MD_100),
+-	PINMUX_DATA(TIOC1A_MARK, PD4MD_101),
+-
+-	PINMUX_DATA(PD3_DATA, PD3MD_000, PD3_IN, PD3_OUT),
+-	PINMUX_DATA(D19_MARK, PD3MD_001),
+-	PINMUX_DATA(IRQ3_PD_MARK, PD3MD_010),
+-	PINMUX_DATA(SCS0_PD_MARK, PD3MD_011),
+-	PINMUX_DATA(DACK3_MARK, PD3MD_100),
+-	PINMUX_DATA(TIOC0D_MARK, PD3MD_101),
+-
+-	PINMUX_DATA(PD2_DATA, PD2MD_000, PD2_IN, PD2_OUT),
+-	PINMUX_DATA(D18_MARK, PD2MD_001),
+-	PINMUX_DATA(IRQ2_PD_MARK, PD2MD_010),
+-	PINMUX_DATA(SSO0_PD_MARK, PD2MD_011),
+-	PINMUX_DATA(DREQ3_MARK, PD2MD_100),
+-	PINMUX_DATA(TIOC0C_MARK, PD2MD_101),
+-
+-	PINMUX_DATA(PD1_DATA, PD1MD_000, PD1_IN, PD1_OUT),
+-	PINMUX_DATA(D17_MARK, PD1MD_001),
+-	PINMUX_DATA(IRQ1_PD_MARK, PD1MD_010),
+-	PINMUX_DATA(SSI0_PD_MARK, PD1MD_011),
+-	PINMUX_DATA(DACK2_MARK, PD1MD_100),
+-	PINMUX_DATA(TIOC0B_MARK, PD1MD_101),
+-
+-	PINMUX_DATA(PD0_DATA, PD0MD_000, PD0_IN, PD0_OUT),
+-	PINMUX_DATA(D16_MARK, PD0MD_001),
+-	PINMUX_DATA(IRQ0_PD_MARK, PD0MD_010),
+-	PINMUX_DATA(SSCK0_PD_MARK, PD0MD_011),
+-	PINMUX_DATA(DREQ2_MARK, PD0MD_100),
+-	PINMUX_DATA(TIOC0A_MARK, PD0MD_101),
+-
+-	/* PE */
+-	PINMUX_DATA(PE15_DATA, PE15MD_00, PE15_IN, PE15_OUT),
+-	PINMUX_DATA(IOIS16_MARK, PE15MD_01),
+-	PINMUX_DATA(RTS3_MARK, PE15MD_11),
+-
+-	PINMUX_DATA(PE14_DATA, PE14MD_00, PE14_IN, PE14_OUT),
+-	PINMUX_DATA(CS1_MARK, PE14MD_01),
+-	PINMUX_DATA(CTS3_MARK, PE14MD_11),
+-
+-	PINMUX_DATA(PE13_DATA, PE13MD_00, PE13_IN, PE13_OUT),
+-	PINMUX_DATA(TXD3_MARK, PE13MD_11),
+-
+-	PINMUX_DATA(PE12_DATA, PE12MD_00, PE12_IN, PE12_OUT),
+-	PINMUX_DATA(RXD3_MARK, PE12MD_11),
+-
+-	PINMUX_DATA(PE11_DATA, PE11MD_000, PE11_IN, PE11_OUT),
+-	PINMUX_DATA(CS6_CE1B_MARK, PE11MD_001),
+-	PINMUX_DATA(IRQ7_PE_MARK, PE11MD_010),
+-	PINMUX_DATA(TEND1_PE_MARK, PE11MD_100),
+-
+-	PINMUX_DATA(PE10_DATA, PE10MD_000, PE10_IN, PE10_OUT),
+-	PINMUX_DATA(CE2B_MARK, PE10MD_001),
+-	PINMUX_DATA(IRQ6_PE_MARK, PE10MD_010),
+-	PINMUX_DATA(TEND0_PE_MARK, PE10MD_100),
+-
+-	PINMUX_DATA(PE9_DATA, PE9MD_00, PE9_IN, PE9_OUT),
+-	PINMUX_DATA(CS5_CE1A_MARK, PE9MD_01),
+-	PINMUX_DATA(IRQ5_PE_MARK, PE9MD_10),
+-	PINMUX_DATA(SCK3_MARK, PE9MD_11),
+-
+-	PINMUX_DATA(PE8_DATA, PE8MD_00, PE8_IN, PE8_OUT),
+-	PINMUX_DATA(CE2A_MARK, PE8MD_01),
+-	PINMUX_DATA(IRQ4_PE_MARK, PE8MD_10),
+-	PINMUX_DATA(SCK2_MARK, PE8MD_11),
+-
+-	PINMUX_DATA(PE7_DATA, PE7MD_000, PE7_IN, PE7_OUT),
+-	PINMUX_DATA(FRAME_MARK, PE7MD_001),
+-	PINMUX_DATA(IRQ3_PE_MARK, PE7MD_010),
+-	PINMUX_DATA(TXD2_MARK, PE7MD_011),
+-	PINMUX_DATA(DACK1_PE_MARK, PE7MD_100),
+-
+-	PINMUX_DATA(PE6_DATA, PE6MD_000, PE6_IN, PE6_OUT),
+-	PINMUX_DATA(A25_MARK, PE6MD_001),
+-	PINMUX_DATA(IRQ2_PE_MARK, PE6MD_010),
+-	PINMUX_DATA(RXD2_MARK, PE6MD_011),
+-	PINMUX_DATA(DREQ1_PE_MARK, PE6MD_100),
+-
+-	PINMUX_DATA(PE5_DATA, PE5MD_000, PE5_IN, PE5_OUT),
+-	PINMUX_DATA(A24_MARK, PE5MD_001),
+-	PINMUX_DATA(IRQ1_PE_MARK, PE5MD_010),
+-	PINMUX_DATA(TXD1_MARK, PE5MD_011),
+-	PINMUX_DATA(DACK0_PE_MARK, PE5MD_100),
+-
+-	PINMUX_DATA(PE4_DATA, PE4MD_000, PE4_IN, PE4_OUT),
+-	PINMUX_DATA(A23_MARK, PE4MD_001),
+-	PINMUX_DATA(IRQ0_PE_MARK, PE4MD_010),
+-	PINMUX_DATA(RXD1_MARK, PE4MD_011),
+-	PINMUX_DATA(DREQ0_PE_MARK, PE4MD_100),
+-
+-	PINMUX_DATA(PE3_DATA, PE3MD_00, PE3_IN, PE3_OUT),
+-	PINMUX_DATA(A22_MARK, PE3MD_01),
+-	PINMUX_DATA(SCK1_MARK, PE3MD_11),
+-
+-	PINMUX_DATA(PE2_DATA, PE2MD_00, PE2_IN, PE2_OUT),
+-	PINMUX_DATA(A21_MARK, PE2MD_01),
+-	PINMUX_DATA(SCK0_MARK, PE2MD_11),
+-
+-	PINMUX_DATA(PE1_DATA, PE1MD_00, PE1_IN, PE1_OUT),
+-	PINMUX_DATA(CS4_MARK, PE1MD_01),
+-	PINMUX_DATA(MRES_MARK, PE1MD_10),
+-	PINMUX_DATA(TXD0_MARK, PE1MD_11),
+-
+-	PINMUX_DATA(PE0_DATA, PE0MD_000, PE0_IN, PE0_OUT),
+-	PINMUX_DATA(BS_MARK, PE0MD_001),
+-	PINMUX_DATA(RXD0_MARK, PE0MD_011),
+-	PINMUX_DATA(ADTRG_PE_MARK, PE0MD_100),
+-
+-	/* PF */
+-	PINMUX_DATA(PF30_DATA, PF30MD_0, PF30_IN, PF30_OUT),
+-	PINMUX_DATA(AUDIO_CLK_MARK, PF30MD_1),
+-
+-	PINMUX_DATA(PF29_DATA, PF29MD_0, PF29_IN, PF29_OUT),
+-	PINMUX_DATA(SSIDATA3_MARK, PF29MD_1),
+-
+-	PINMUX_DATA(PF28_DATA, PF28MD_0, PF28_IN, PF28_OUT),
+-	PINMUX_DATA(SSIWS3_MARK, PF28MD_1),
+-
+-	PINMUX_DATA(PF27_DATA, PF27MD_0, PF27_IN, PF27_OUT),
+-	PINMUX_DATA(SSISCK3_MARK, PF27MD_1),
+-
+-	PINMUX_DATA(PF26_DATA, PF26MD_0, PF26_IN, PF26_OUT),
+-	PINMUX_DATA(SSIDATA2_MARK, PF26MD_1),
+-
+-	PINMUX_DATA(PF25_DATA, PF25MD_0, PF25_IN, PF25_OUT),
+-	PINMUX_DATA(SSIWS2_MARK, PF25MD_1),
+-
+-	PINMUX_DATA(PF24_DATA, PF24MD_0, PF24_IN, PF24_OUT),
+-	PINMUX_DATA(SSISCK2_MARK, PF24MD_1),
+-
+-	PINMUX_DATA(PF23_DATA, PF23MD_00, PF23_IN, PF23_OUT),
+-	PINMUX_DATA(SSIDATA1_MARK, PF23MD_01),
+-	PINMUX_DATA(LCD_VEPWC_MARK, PF23MD_10),
+-
+-	PINMUX_DATA(PF22_DATA, PF22MD_00, PF22_IN, PF22_OUT),
+-	PINMUX_DATA(SSIWS1_MARK, PF22MD_01),
+-	PINMUX_DATA(LCD_VCPWC_MARK, PF22MD_10),
+-
+-	PINMUX_DATA(PF21_DATA, PF21MD_00, PF21_IN, PF21_OUT),
+-	PINMUX_DATA(SSISCK1_MARK, PF21MD_01),
+-	PINMUX_DATA(LCD_CLK_MARK, PF21MD_10),
+-
+-	PINMUX_DATA(PF20_DATA, PF20MD_00, PF20_IN, PF20_OUT),
+-	PINMUX_DATA(SSIDATA0_MARK, PF20MD_01),
+-	PINMUX_DATA(LCD_FLM_MARK, PF20MD_10),
+-
+-	PINMUX_DATA(PF19_DATA, PF19MD_00, PF19_IN, PF19_OUT),
+-	PINMUX_DATA(SSIWS0_MARK, PF19MD_01),
+-	PINMUX_DATA(LCD_M_DISP_MARK, PF19MD_10),
+-
+-	PINMUX_DATA(PF18_DATA, PF18MD_00, PF18_IN, PF18_OUT),
+-	PINMUX_DATA(SSISCK0_MARK, PF18MD_01),
+-	PINMUX_DATA(LCD_CL2_MARK, PF18MD_10),
+-
+-	PINMUX_DATA(PF17_DATA, PF17MD_00, PF17_IN, PF17_OUT),
+-	PINMUX_DATA(FCE_MARK, PF17MD_01),
+-	PINMUX_DATA(LCD_CL1_MARK, PF17MD_10),
+-
+-	PINMUX_DATA(PF16_DATA, PF16MD_00, PF16_IN, PF16_OUT),
+-	PINMUX_DATA(FRB_MARK, PF16MD_01),
+-	PINMUX_DATA(LCD_DON_MARK, PF16MD_10),
+-
+-	PINMUX_DATA(PF15_DATA, PF15MD_00, PF15_IN, PF15_OUT),
+-	PINMUX_DATA(NAF7_MARK, PF15MD_01),
+-	PINMUX_DATA(LCD_DATA15_MARK, PF15MD_10),
+-
+-	PINMUX_DATA(PF14_DATA, PF14MD_00, PF14_IN, PF14_OUT),
+-	PINMUX_DATA(NAF6_MARK, PF14MD_01),
+-	PINMUX_DATA(LCD_DATA14_MARK, PF14MD_10),
+-
+-	PINMUX_DATA(PF13_DATA, PF13MD_00, PF13_IN, PF13_OUT),
+-	PINMUX_DATA(NAF5_MARK, PF13MD_01),
+-	PINMUX_DATA(LCD_DATA13_MARK, PF13MD_10),
+-
+-	PINMUX_DATA(PF12_DATA, PF12MD_00, PF12_IN, PF12_OUT),
+-	PINMUX_DATA(NAF4_MARK, PF12MD_01),
+-	PINMUX_DATA(LCD_DATA12_MARK, PF12MD_10),
+-
+-	PINMUX_DATA(PF11_DATA, PF11MD_00, PF11_IN, PF11_OUT),
+-	PINMUX_DATA(NAF3_MARK, PF11MD_01),
+-	PINMUX_DATA(LCD_DATA11_MARK, PF11MD_10),
+-
+-	PINMUX_DATA(PF10_DATA, PF10MD_00, PF10_IN, PF10_OUT),
+-	PINMUX_DATA(NAF2_MARK, PF10MD_01),
+-	PINMUX_DATA(LCD_DATA10_MARK, PF10MD_10),
+-
+-	PINMUX_DATA(PF9_DATA, PF9MD_00, PF9_IN, PF9_OUT),
+-	PINMUX_DATA(NAF1_MARK, PF9MD_01),
+-	PINMUX_DATA(LCD_DATA9_MARK, PF9MD_10),
+-
+-	PINMUX_DATA(PF8_DATA, PF8MD_00, PF8_IN, PF8_OUT),
+-	PINMUX_DATA(NAF0_MARK, PF8MD_01),
+-	PINMUX_DATA(LCD_DATA8_MARK, PF8MD_10),
+-
+-	PINMUX_DATA(PF7_DATA, PF7MD_00, PF7_IN, PF7_OUT),
+-	PINMUX_DATA(FSC_MARK, PF7MD_01),
+-	PINMUX_DATA(LCD_DATA7_MARK, PF7MD_10),
+-	PINMUX_DATA(SCS1_PF_MARK, PF7MD_11),
+-
+-	PINMUX_DATA(PF6_DATA, PF6MD_00, PF6_IN, PF6_OUT),
+-	PINMUX_DATA(FOE_MARK, PF6MD_01),
+-	PINMUX_DATA(LCD_DATA6_MARK, PF6MD_10),
+-	PINMUX_DATA(SSO1_PF_MARK, PF6MD_11),
+-
+-	PINMUX_DATA(PF5_DATA, PF5MD_00, PF5_IN, PF5_OUT),
+-	PINMUX_DATA(FCDE_MARK, PF5MD_01),
+-	PINMUX_DATA(LCD_DATA5_MARK, PF5MD_10),
+-	PINMUX_DATA(SSI1_PF_MARK, PF5MD_11),
+-
+-	PINMUX_DATA(PF4_DATA, PF4MD_00, PF4_IN, PF4_OUT),
+-	PINMUX_DATA(FWE_MARK, PF4MD_01),
+-	PINMUX_DATA(LCD_DATA4_MARK, PF4MD_10),
+-	PINMUX_DATA(SSCK1_PF_MARK, PF4MD_11),
+-
+-	PINMUX_DATA(PF3_DATA, PF3MD_00, PF3_IN, PF3_OUT),
+-	PINMUX_DATA(TCLKD_PF_MARK, PF3MD_01),
+-	PINMUX_DATA(LCD_DATA3_MARK, PF3MD_10),
+-	PINMUX_DATA(SCS0_PF_MARK, PF3MD_11),
+-
+-	PINMUX_DATA(PF2_DATA, PF2MD_00, PF2_IN, PF2_OUT),
+-	PINMUX_DATA(TCLKC_PF_MARK, PF2MD_01),
+-	PINMUX_DATA(LCD_DATA2_MARK, PF2MD_10),
+-	PINMUX_DATA(SSO0_PF_MARK, PF2MD_11),
+-
+-	PINMUX_DATA(PF1_DATA, PF1MD_00, PF1_IN, PF1_OUT),
+-	PINMUX_DATA(TCLKB_PF_MARK, PF1MD_01),
+-	PINMUX_DATA(LCD_DATA1_MARK, PF1MD_10),
+-	PINMUX_DATA(SSI0_PF_MARK, PF1MD_11),
+-
+-	PINMUX_DATA(PF0_DATA, PF0MD_00, PF0_IN, PF0_OUT),
+-	PINMUX_DATA(TCLKA_PF_MARK, PF0MD_01),
+-	PINMUX_DATA(LCD_DATA0_MARK, PF0MD_10),
+-	PINMUX_DATA(SSCK0_PF_MARK, PF0MD_11),
+-};
+-
+-static const struct sh_pfc_pin pinmux_pins[] = {
+-	/* PA */
+-	PINMUX_GPIO(PA7),
+-	PINMUX_GPIO(PA6),
+-	PINMUX_GPIO(PA5),
+-	PINMUX_GPIO(PA4),
+-	PINMUX_GPIO(PA3),
+-	PINMUX_GPIO(PA2),
+-	PINMUX_GPIO(PA1),
+-	PINMUX_GPIO(PA0),
+-
+-	/* PB */
+-	PINMUX_GPIO(PB12),
+-	PINMUX_GPIO(PB11),
+-	PINMUX_GPIO(PB10),
+-	PINMUX_GPIO(PB9),
+-	PINMUX_GPIO(PB8),
+-	PINMUX_GPIO(PB7),
+-	PINMUX_GPIO(PB6),
+-	PINMUX_GPIO(PB5),
+-	PINMUX_GPIO(PB4),
+-	PINMUX_GPIO(PB3),
+-	PINMUX_GPIO(PB2),
+-	PINMUX_GPIO(PB1),
+-	PINMUX_GPIO(PB0),
+-
+-	/* PC */
+-	PINMUX_GPIO(PC14),
+-	PINMUX_GPIO(PC13),
+-	PINMUX_GPIO(PC12),
+-	PINMUX_GPIO(PC11),
+-	PINMUX_GPIO(PC10),
+-	PINMUX_GPIO(PC9),
+-	PINMUX_GPIO(PC8),
+-	PINMUX_GPIO(PC7),
+-	PINMUX_GPIO(PC6),
+-	PINMUX_GPIO(PC5),
+-	PINMUX_GPIO(PC4),
+-	PINMUX_GPIO(PC3),
+-	PINMUX_GPIO(PC2),
+-	PINMUX_GPIO(PC1),
+-	PINMUX_GPIO(PC0),
+-
+-	/* PD */
+-	PINMUX_GPIO(PD15),
+-	PINMUX_GPIO(PD14),
+-	PINMUX_GPIO(PD13),
+-	PINMUX_GPIO(PD12),
+-	PINMUX_GPIO(PD11),
+-	PINMUX_GPIO(PD10),
+-	PINMUX_GPIO(PD9),
+-	PINMUX_GPIO(PD8),
+-	PINMUX_GPIO(PD7),
+-	PINMUX_GPIO(PD6),
+-	PINMUX_GPIO(PD5),
+-	PINMUX_GPIO(PD4),
+-	PINMUX_GPIO(PD3),
+-	PINMUX_GPIO(PD2),
+-	PINMUX_GPIO(PD1),
+-	PINMUX_GPIO(PD0),
+-
+-	/* PE */
+-	PINMUX_GPIO(PE15),
+-	PINMUX_GPIO(PE14),
+-	PINMUX_GPIO(PE13),
+-	PINMUX_GPIO(PE12),
+-	PINMUX_GPIO(PE11),
+-	PINMUX_GPIO(PE10),
+-	PINMUX_GPIO(PE9),
+-	PINMUX_GPIO(PE8),
+-	PINMUX_GPIO(PE7),
+-	PINMUX_GPIO(PE6),
+-	PINMUX_GPIO(PE5),
+-	PINMUX_GPIO(PE4),
+-	PINMUX_GPIO(PE3),
+-	PINMUX_GPIO(PE2),
+-	PINMUX_GPIO(PE1),
+-	PINMUX_GPIO(PE0),
+-
+-	/* PF */
+-	PINMUX_GPIO(PF30),
+-	PINMUX_GPIO(PF29),
+-	PINMUX_GPIO(PF28),
+-	PINMUX_GPIO(PF27),
+-	PINMUX_GPIO(PF26),
+-	PINMUX_GPIO(PF25),
+-	PINMUX_GPIO(PF24),
+-	PINMUX_GPIO(PF23),
+-	PINMUX_GPIO(PF22),
+-	PINMUX_GPIO(PF21),
+-	PINMUX_GPIO(PF20),
+-	PINMUX_GPIO(PF19),
+-	PINMUX_GPIO(PF18),
+-	PINMUX_GPIO(PF17),
+-	PINMUX_GPIO(PF16),
+-	PINMUX_GPIO(PF15),
+-	PINMUX_GPIO(PF14),
+-	PINMUX_GPIO(PF13),
+-	PINMUX_GPIO(PF12),
+-	PINMUX_GPIO(PF11),
+-	PINMUX_GPIO(PF10),
+-	PINMUX_GPIO(PF9),
+-	PINMUX_GPIO(PF8),
+-	PINMUX_GPIO(PF7),
+-	PINMUX_GPIO(PF6),
+-	PINMUX_GPIO(PF5),
+-	PINMUX_GPIO(PF4),
+-	PINMUX_GPIO(PF3),
+-	PINMUX_GPIO(PF2),
+-	PINMUX_GPIO(PF1),
+-	PINMUX_GPIO(PF0),
+-};
+-
+-#define PINMUX_FN_BASE	ARRAY_SIZE(pinmux_pins)
+-
+-static const struct pinmux_func pinmux_func_gpios[] = {
+-	/* INTC */
+-	GPIO_FN(PINT7_PB),
+-	GPIO_FN(PINT6_PB),
+-	GPIO_FN(PINT5_PB),
+-	GPIO_FN(PINT4_PB),
+-	GPIO_FN(PINT3_PB),
+-	GPIO_FN(PINT2_PB),
+-	GPIO_FN(PINT1_PB),
+-	GPIO_FN(PINT0_PB),
+-	GPIO_FN(PINT7_PD),
+-	GPIO_FN(PINT6_PD),
+-	GPIO_FN(PINT5_PD),
+-	GPIO_FN(PINT4_PD),
+-	GPIO_FN(PINT3_PD),
+-	GPIO_FN(PINT2_PD),
+-	GPIO_FN(PINT1_PD),
+-	GPIO_FN(PINT0_PD),
+-	GPIO_FN(IRQ7_PB),
+-	GPIO_FN(IRQ6_PB),
+-	GPIO_FN(IRQ5_PB),
+-	GPIO_FN(IRQ4_PB),
+-	GPIO_FN(IRQ3_PB),
+-	GPIO_FN(IRQ2_PB),
+-	GPIO_FN(IRQ1_PB),
+-	GPIO_FN(IRQ0_PB),
+-	GPIO_FN(IRQ7_PD),
+-	GPIO_FN(IRQ6_PD),
+-	GPIO_FN(IRQ5_PD),
+-	GPIO_FN(IRQ4_PD),
+-	GPIO_FN(IRQ3_PD),
+-	GPIO_FN(IRQ2_PD),
+-	GPIO_FN(IRQ1_PD),
+-	GPIO_FN(IRQ0_PD),
+-	GPIO_FN(IRQ7_PE),
+-	GPIO_FN(IRQ6_PE),
+-	GPIO_FN(IRQ5_PE),
+-	GPIO_FN(IRQ4_PE),
+-	GPIO_FN(IRQ3_PE),
+-	GPIO_FN(IRQ2_PE),
+-	GPIO_FN(IRQ1_PE),
+-	GPIO_FN(IRQ0_PE),
+-
+-	GPIO_FN(WDTOVF),
+-	GPIO_FN(IRQOUT),
+-	GPIO_FN(REFOUT),
+-	GPIO_FN(IRQOUT_REFOUT),
+-	GPIO_FN(UBCTRG),
+-
+-	/* CAN */
+-	GPIO_FN(CTX1),
+-	GPIO_FN(CRX1),
+-	GPIO_FN(CTX0),
+-	GPIO_FN(CTX0_CTX1),
+-	GPIO_FN(CRX0),
+-	GPIO_FN(CRX0_CRX1),
+-
+-	/* IIC3 */
+-	GPIO_FN(SDA3),
+-	GPIO_FN(SCL3),
+-	GPIO_FN(SDA2),
+-	GPIO_FN(SCL2),
+-	GPIO_FN(SDA1),
+-	GPIO_FN(SCL1),
+-	GPIO_FN(SDA0),
+-	GPIO_FN(SCL0),
+-
+-	/* DMAC */
+-	GPIO_FN(TEND0_PD),
+-	GPIO_FN(TEND0_PE),
+-	GPIO_FN(DACK0_PD),
+-	GPIO_FN(DACK0_PE),
+-	GPIO_FN(DREQ0_PD),
+-	GPIO_FN(DREQ0_PE),
+-	GPIO_FN(TEND1_PD),
+-	GPIO_FN(TEND1_PE),
+-	GPIO_FN(DACK1_PD),
+-	GPIO_FN(DACK1_PE),
+-	GPIO_FN(DREQ1_PD),
+-	GPIO_FN(DREQ1_PE),
+-	GPIO_FN(DACK2),
+-	GPIO_FN(DREQ2),
+-	GPIO_FN(DACK3),
+-	GPIO_FN(DREQ3),
+-
+-	/* ADC */
+-	GPIO_FN(ADTRG_PD),
+-	GPIO_FN(ADTRG_PE),
+-
+-	/* BSC */
+-	GPIO_FN(D31),
+-	GPIO_FN(D30),
+-	GPIO_FN(D29),
+-	GPIO_FN(D28),
+-	GPIO_FN(D27),
+-	GPIO_FN(D26),
+-	GPIO_FN(D25),
+-	GPIO_FN(D24),
+-	GPIO_FN(D23),
+-	GPIO_FN(D22),
+-	GPIO_FN(D21),
+-	GPIO_FN(D20),
+-	GPIO_FN(D19),
+-	GPIO_FN(D18),
+-	GPIO_FN(D17),
+-	GPIO_FN(D16),
+-	GPIO_FN(A25),
+-	GPIO_FN(A24),
+-	GPIO_FN(A23),
+-	GPIO_FN(A22),
+-	GPIO_FN(A21),
+-	GPIO_FN(CS4),
+-	GPIO_FN(MRES),
+-	GPIO_FN(BS),
+-	GPIO_FN(IOIS16),
+-	GPIO_FN(CS1),
+-	GPIO_FN(CS6_CE1B),
+-	GPIO_FN(CE2B),
+-	GPIO_FN(CS5_CE1A),
+-	GPIO_FN(CE2A),
+-	GPIO_FN(FRAME),
+-	GPIO_FN(WAIT),
+-	GPIO_FN(RDWR),
+-	GPIO_FN(CKE),
+-	GPIO_FN(CASU),
+-	GPIO_FN(BREQ),
+-	GPIO_FN(RASU),
+-	GPIO_FN(BACK),
+-	GPIO_FN(CASL),
+-	GPIO_FN(RASL),
+-	GPIO_FN(WE3_DQMUU_AH_ICIO_WR),
+-	GPIO_FN(WE2_DQMUL_ICIORD),
+-	GPIO_FN(WE1_DQMLU_WE),
+-	GPIO_FN(WE0_DQMLL),
+-	GPIO_FN(CS3),
+-	GPIO_FN(CS2),
+-	GPIO_FN(A1),
+-	GPIO_FN(A0),
+-	GPIO_FN(CS7),
+-
+-	/* TMU */
+-	GPIO_FN(TIOC4D),
+-	GPIO_FN(TIOC4C),
+-	GPIO_FN(TIOC4B),
+-	GPIO_FN(TIOC4A),
+-	GPIO_FN(TIOC3D),
+-	GPIO_FN(TIOC3C),
+-	GPIO_FN(TIOC3B),
+-	GPIO_FN(TIOC3A),
+-	GPIO_FN(TIOC2B),
+-	GPIO_FN(TIOC1B),
+-	GPIO_FN(TIOC2A),
+-	GPIO_FN(TIOC1A),
+-	GPIO_FN(TIOC0D),
+-	GPIO_FN(TIOC0C),
+-	GPIO_FN(TIOC0B),
+-	GPIO_FN(TIOC0A),
+-	GPIO_FN(TCLKD_PD),
+-	GPIO_FN(TCLKC_PD),
+-	GPIO_FN(TCLKB_PD),
+-	GPIO_FN(TCLKA_PD),
+-	GPIO_FN(TCLKD_PF),
+-	GPIO_FN(TCLKC_PF),
+-	GPIO_FN(TCLKB_PF),
+-	GPIO_FN(TCLKA_PF),
+-
+-	/* SSU */
+-	GPIO_FN(SCS0_PD),
+-	GPIO_FN(SSO0_PD),
+-	GPIO_FN(SSI0_PD),
+-	GPIO_FN(SSCK0_PD),
+-	GPIO_FN(SCS0_PF),
+-	GPIO_FN(SSO0_PF),
+-	GPIO_FN(SSI0_PF),
+-	GPIO_FN(SSCK0_PF),
+-	GPIO_FN(SCS1_PD),
+-	GPIO_FN(SSO1_PD),
+-	GPIO_FN(SSI1_PD),
+-	GPIO_FN(SSCK1_PD),
+-	GPIO_FN(SCS1_PF),
+-	GPIO_FN(SSO1_PF),
+-	GPIO_FN(SSI1_PF),
+-	GPIO_FN(SSCK1_PF),
+-
+-	/* SCIF */
+-	GPIO_FN(TXD0),
+-	GPIO_FN(RXD0),
+-	GPIO_FN(SCK0),
+-	GPIO_FN(TXD1),
+-	GPIO_FN(RXD1),
+-	GPIO_FN(SCK1),
+-	GPIO_FN(TXD2),
+-	GPIO_FN(RXD2),
+-	GPIO_FN(SCK2),
+-	GPIO_FN(RTS3),
+-	GPIO_FN(CTS3),
+-	GPIO_FN(TXD3),
+-	GPIO_FN(RXD3),
+-	GPIO_FN(SCK3),
+-
+-	/* SSI */
+-	GPIO_FN(AUDIO_CLK),
+-	GPIO_FN(SSIDATA3),
+-	GPIO_FN(SSIWS3),
+-	GPIO_FN(SSISCK3),
+-	GPIO_FN(SSIDATA2),
+-	GPIO_FN(SSIWS2),
+-	GPIO_FN(SSISCK2),
+-	GPIO_FN(SSIDATA1),
+-	GPIO_FN(SSIWS1),
+-	GPIO_FN(SSISCK1),
+-	GPIO_FN(SSIDATA0),
+-	GPIO_FN(SSIWS0),
+-	GPIO_FN(SSISCK0),
+-
+-	/* FLCTL */
+-	GPIO_FN(FCE),
+-	GPIO_FN(FRB),
+-	GPIO_FN(NAF7),
+-	GPIO_FN(NAF6),
+-	GPIO_FN(NAF5),
+-	GPIO_FN(NAF4),
+-	GPIO_FN(NAF3),
+-	GPIO_FN(NAF2),
+-	GPIO_FN(NAF1),
+-	GPIO_FN(NAF0),
+-	GPIO_FN(FSC),
+-	GPIO_FN(FOE),
+-	GPIO_FN(FCDE),
+-	GPIO_FN(FWE),
+-
+-	/* LCDC */
+-	GPIO_FN(LCD_VEPWC),
+-	GPIO_FN(LCD_VCPWC),
+-	GPIO_FN(LCD_CLK),
+-	GPIO_FN(LCD_FLM),
+-	GPIO_FN(LCD_M_DISP),
+-	GPIO_FN(LCD_CL2),
+-	GPIO_FN(LCD_CL1),
+-	GPIO_FN(LCD_DON),
+-	GPIO_FN(LCD_DATA15),
+-	GPIO_FN(LCD_DATA14),
+-	GPIO_FN(LCD_DATA13),
+-	GPIO_FN(LCD_DATA12),
+-	GPIO_FN(LCD_DATA11),
+-	GPIO_FN(LCD_DATA10),
+-	GPIO_FN(LCD_DATA9),
+-	GPIO_FN(LCD_DATA8),
+-	GPIO_FN(LCD_DATA7),
+-	GPIO_FN(LCD_DATA6),
+-	GPIO_FN(LCD_DATA5),
+-	GPIO_FN(LCD_DATA4),
+-	GPIO_FN(LCD_DATA3),
+-	GPIO_FN(LCD_DATA2),
+-	GPIO_FN(LCD_DATA1),
+-	GPIO_FN(LCD_DATA0),
+-};
+-
+-static const struct pinmux_cfg_reg pinmux_config_regs[] = {
+-	{ PINMUX_CFG_REG_VAR("PBIORL", 0xfffe3886, 16,
+-			     GROUP(-4, 1, 1, 1, 1, -8),
+-			     GROUP(
+-		/* RESERVED [4] */
+-		PB11_IN, PB11_OUT,
+-		PB10_IN, PB10_OUT,
+-		PB9_IN, PB9_OUT,
+-		PB8_IN, PB8_OUT,
+-		/* RESERVED [8] */ ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PBCRL4", 0xfffe3890, 16,
+-			     GROUP(-12, 4),
+-			     GROUP(
+-		/* RESERVED [12] */
+-		PB12MD_00, PB12MD_01, PB12MD_10, PB12MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PBCRL3", 0xfffe3892, 16, 4, GROUP(
+-		PB11MD_0, PB11MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB10MD_0, PB10MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB9MD_00, PB9MD_01, PB9MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB8MD_00, PB8MD_01, PB8MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PBCRL2", 0xfffe3894, 16, 4, GROUP(
+-		PB7MD_00, PB7MD_01, PB7MD_10, PB7MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB6MD_00, PB6MD_01, PB6MD_10, PB6MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB5MD_00, PB5MD_01, PB5MD_10, PB5MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB4MD_00, PB4MD_01, PB4MD_10, PB4MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PBCRL1", 0xfffe3896, 16, 4, GROUP(
+-		PB3MD_00, PB3MD_01, PB3MD_10, PB3MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB2MD_00, PB2MD_01, PB2MD_10, PB2MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB1MD_00, PB1MD_01, PB1MD_10, PB1MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB0MD_00, PB0MD_01, PB0MD_10, PB0MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("IFCR", 0xfffe38a2, 16,
+-			     GROUP(-12, 4),
+-			     GROUP(
+-		/* RESERVED [12] */
+-		PB12IRQ_00, PB12IRQ_01, PB12IRQ_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PCIORL", 0xfffe3906, 16, 1, GROUP(
+-		0, 0,
+-		PC14_IN, PC14_OUT,
+-		PC13_IN, PC13_OUT,
+-		PC12_IN, PC12_OUT,
+-		PC11_IN, PC11_OUT,
+-		PC10_IN, PC10_OUT,
+-		PC9_IN, PC9_OUT,
+-		PC8_IN, PC8_OUT,
+-		PC7_IN, PC7_OUT,
+-		PC6_IN, PC6_OUT,
+-		PC5_IN, PC5_OUT,
+-		PC4_IN, PC4_OUT,
+-		PC3_IN, PC3_OUT,
+-		PC2_IN, PC2_OUT,
+-		PC1_IN, PC1_OUT,
+-		PC0_IN, PC0_OUT ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PCCRL4", 0xfffe3910, 16,
+-			     GROUP(-4, 4, 4, 4),
+-			     GROUP(
+-		/* RESERVED [4] */
+-		PC14MD_0, PC14MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PC13MD_0, PC13MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PC12MD_0, PC12MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PCCRL3", 0xfffe3912, 16, 4, GROUP(
+-		PC11MD_00, PC11MD_01, PC11MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PC10MD_00, PC10MD_01, PC10MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PC9MD_0, PC9MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PC8MD_0, PC8MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PCCRL2", 0xfffe3914, 16, 4, GROUP(
+-		PC7MD_0, PC7MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PC6MD_0, PC6MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PC5MD_0, PC5MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PC4MD_0, PC4MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PCCRL1", 0xfffe3916, 16, 4, GROUP(
+-		PC3MD_0, PC3MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PC2MD_0, PC2MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PC1MD_0, PC1MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PC0MD_00, PC0MD_01, PC0MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PDIORL", 0xfffe3986, 16, 1, GROUP(
+-		PD15_IN, PD15_OUT,
+-		PD14_IN, PD14_OUT,
+-		PD13_IN, PD13_OUT,
+-		PD12_IN, PD12_OUT,
+-		PD11_IN, PD11_OUT,
+-		PD10_IN, PD10_OUT,
+-		PD9_IN, PD9_OUT,
+-		PD8_IN, PD8_OUT,
+-		PD7_IN, PD7_OUT,
+-		PD6_IN, PD6_OUT,
+-		PD5_IN, PD5_OUT,
+-		PD4_IN, PD4_OUT,
+-		PD3_IN, PD3_OUT,
+-		PD2_IN, PD2_OUT,
+-		PD1_IN, PD1_OUT,
+-		PD0_IN, PD0_OUT ))
+-	},
+-	{ PINMUX_CFG_REG("PDCRL4", 0xfffe3990, 16, 4, GROUP(
+-		PD15MD_000, PD15MD_001, PD15MD_010, 0,
+-		PD15MD_100, PD15MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD14MD_000, PD14MD_001, PD14MD_010, 0,
+-		0, PD14MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD13MD_000, PD13MD_001, PD13MD_010, 0,
+-		PD13MD_100, PD13MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD12MD_000, PD12MD_001, PD12MD_010, 0,
+-		PD12MD_100, PD12MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PDCRL3", 0xfffe3992, 16, 4, GROUP(
+-		PD11MD_000, PD11MD_001, PD11MD_010, 0,
+-		PD11MD_100, PD11MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD10MD_000, PD10MD_001, PD10MD_010, 0,
+-		PD10MD_100, PD10MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD9MD_000, PD9MD_001, PD9MD_010, 0,
+-		PD9MD_100, PD9MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD8MD_000, PD8MD_001, PD8MD_010, 0,
+-		PD8MD_100, PD8MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PDCRL2", 0xfffe3994, 16, 4, GROUP(
+-		PD7MD_000, PD7MD_001, PD7MD_010, PD7MD_011,
+-		PD7MD_100, PD7MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD6MD_000, PD6MD_001, PD6MD_010, PD6MD_011,
+-		PD6MD_100, PD6MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD5MD_000, PD5MD_001, PD5MD_010, PD5MD_011,
+-		PD5MD_100, PD5MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD4MD_000, PD4MD_001, PD4MD_010, PD4MD_011,
+-		PD4MD_100, PD4MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PDCRL1", 0xfffe3996, 16, 4, GROUP(
+-		PD3MD_000, PD3MD_001, PD3MD_010, PD3MD_011,
+-		PD3MD_100, PD3MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD2MD_000, PD2MD_001, PD2MD_010, PD2MD_011,
+-		PD2MD_100, PD2MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD1MD_000, PD1MD_001, PD1MD_010, PD1MD_011,
+-		PD1MD_100, PD1MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD0MD_000, PD0MD_001, PD0MD_010, PD0MD_011,
+-		PD0MD_100, PD0MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PEIORL", 0xfffe3a06, 16, 1, GROUP(
+-		PE15_IN, PE15_OUT,
+-		PE14_IN, PE14_OUT,
+-		PE13_IN, PE13_OUT,
+-		PE12_IN, PE12_OUT,
+-		PE11_IN, PE11_OUT,
+-		PE10_IN, PE10_OUT,
+-		PE9_IN, PE9_OUT,
+-		PE8_IN, PE8_OUT,
+-		PE7_IN, PE7_OUT,
+-		PE6_IN, PE6_OUT,
+-		PE5_IN, PE5_OUT,
+-		PE4_IN, PE4_OUT,
+-		PE3_IN, PE3_OUT,
+-		PE2_IN, PE2_OUT,
+-		PE1_IN, PE1_OUT,
+-		PE0_IN, PE0_OUT ))
+-	},
+-	{ PINMUX_CFG_REG("PECRL4", 0xfffe3a10, 16, 4, GROUP(
+-		PE15MD_00, PE15MD_01, 0, PE15MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE14MD_00, PE14MD_01, 0, PE14MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE13MD_00, 0, 0, PE13MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE12MD_00, 0, 0, PE12MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PECRL3", 0xfffe3a12, 16, 4, GROUP(
+-		PE11MD_000, PE11MD_001, PE11MD_010, 0,
+-		PE11MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE10MD_000, PE10MD_001, PE10MD_010, 0,
+-		PE10MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE9MD_00, PE9MD_01, PE9MD_10, PE9MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE8MD_00, PE8MD_01, PE8MD_10, PE8MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PECRL2", 0xfffe3a14, 16, 4, GROUP(
+-		PE7MD_000, PE7MD_001, PE7MD_010, PE7MD_011,
+-		PE7MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE6MD_000, PE6MD_001, PE6MD_010, PE6MD_011,
+-		PE6MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE5MD_000, PE5MD_001, PE5MD_010, PE5MD_011,
+-		PE5MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE4MD_000, PE4MD_001, PE4MD_010, PE4MD_011,
+-		PE4MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PECRL1", 0xfffe3a16, 16, 4, GROUP(
+-		PE3MD_00, PE3MD_01, 0, PE3MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE2MD_00, PE2MD_01, 0, PE2MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE1MD_00, PE1MD_01, PE1MD_10, PE1MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE0MD_000, PE0MD_001, 0, PE0MD_011,
+-		PE0MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PFIORH", 0xfffe3a84, 16, 1, GROUP(
+-		0, 0,
+-		PF30_IN, PF30_OUT,
+-		PF29_IN, PF29_OUT,
+-		PF28_IN, PF28_OUT,
+-		PF27_IN, PF27_OUT,
+-		PF26_IN, PF26_OUT,
+-		PF25_IN, PF25_OUT,
+-		PF24_IN, PF24_OUT,
+-		PF23_IN, PF23_OUT,
+-		PF22_IN, PF22_OUT,
+-		PF21_IN, PF21_OUT,
+-		PF20_IN, PF20_OUT,
+-		PF19_IN, PF19_OUT,
+-		PF18_IN, PF18_OUT,
+-		PF17_IN, PF17_OUT,
+-		PF16_IN, PF16_OUT ))
+-	},
+-	{ PINMUX_CFG_REG("PFIORL", 0xfffe3a86, 16, 1, GROUP(
+-		PF15_IN, PF15_OUT,
+-		PF14_IN, PF14_OUT,
+-		PF13_IN, PF13_OUT,
+-		PF12_IN, PF12_OUT,
+-		PF11_IN, PF11_OUT,
+-		PF10_IN, PF10_OUT,
+-		PF9_IN, PF9_OUT,
+-		PF8_IN, PF8_OUT,
+-		PF7_IN, PF7_OUT,
+-		PF6_IN, PF6_OUT,
+-		PF5_IN, PF5_OUT,
+-		PF4_IN, PF4_OUT,
+-		PF3_IN, PF3_OUT,
+-		PF2_IN, PF2_OUT,
+-		PF1_IN, PF1_OUT,
+-		PF0_IN, PF0_OUT ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PFCRH4", 0xfffe3a88, 16,
+-			     GROUP(-4, 4, 4, 4),
+-			     GROUP(
+-		/* RESERVED [4] */
+-
+-		PF30MD_0, PF30MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF29MD_0, PF29MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF28MD_0, PF28MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PFCRH3", 0xfffe3a8a, 16, 4, GROUP(
+-		PF27MD_0, PF27MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF26MD_0, PF26MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF25MD_0, PF25MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF24MD_0, PF24MD_1,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PFCRH2", 0xfffe3a8c, 16, 4, GROUP(
+-		PF23MD_00, PF23MD_01, PF23MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF22MD_00, PF22MD_01, PF22MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF21MD_00, PF21MD_01, PF21MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF20MD_00, PF20MD_01, PF20MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PFCRH1", 0xfffe3a8e, 16, 4, GROUP(
+-		PF19MD_00, PF19MD_01, PF19MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF18MD_00, PF18MD_01, PF18MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF17MD_00, PF17MD_01, PF17MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF16MD_00, PF16MD_01, PF16MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PFCRL4", 0xfffe3a90, 16, 4, GROUP(
+-		PF15MD_00, PF15MD_01, PF15MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF14MD_00, PF14MD_01, PF14MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF13MD_00, PF13MD_01, PF13MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF12MD_00, PF12MD_01, PF12MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PFCRL3", 0xfffe3a92, 16, 4, GROUP(
+-		PF11MD_00, PF11MD_01, PF11MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF10MD_00, PF10MD_01, PF10MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF9MD_00, PF9MD_01, PF9MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF8MD_00, PF8MD_01, PF8MD_10, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PFCRL2", 0xfffe3a94, 16, 4, GROUP(
+-		PF7MD_00, PF7MD_01, PF7MD_10, PF7MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF6MD_00, PF6MD_01, PF6MD_10, PF6MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF5MD_00, PF5MD_01, PF5MD_10, PF5MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF4MD_00, PF4MD_01, PF4MD_10, PF4MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PFCRL1", 0xfffe3a96, 16, 4, GROUP(
+-		PF3MD_00, PF3MD_01, PF3MD_10, PF3MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF2MD_00, PF2MD_01, PF2MD_10, PF2MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF1MD_00, PF1MD_01, PF1MD_10, PF1MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF0MD_00, PF0MD_01, PF0MD_10, PF0MD_11,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{}
+-};
+-
+-static const struct pinmux_data_reg pinmux_data_regs[] = {
+-	{ PINMUX_DATA_REG("PADRL", 0xfffe3802, 16, GROUP(
+-		0, 0, 0, 0,
+-		0, 0, 0, 0,
+-		PA7_DATA, PA6_DATA, PA5_DATA, PA4_DATA,
+-		PA3_DATA, PA2_DATA, PA1_DATA, PA0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PBDRL", 0xfffe3882, 16, GROUP(
+-		0, 0, 0, PB12_DATA,
+-		PB11_DATA, PB10_DATA, PB9_DATA, PB8_DATA,
+-		PB7_DATA, PB6_DATA, PB5_DATA, PB4_DATA,
+-		PB3_DATA, PB2_DATA, PB1_DATA, PB0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PCDRL", 0xfffe3902, 16, GROUP(
+-		0, PC14_DATA, PC13_DATA, PC12_DATA,
+-		PC11_DATA, PC10_DATA, PC9_DATA, PC8_DATA,
+-		PC7_DATA, PC6_DATA, PC5_DATA, PC4_DATA,
+-		PC3_DATA, PC2_DATA, PC1_DATA, PC0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PDDRL", 0xfffe3982, 16, GROUP(
+-		PD15_DATA, PD14_DATA, PD13_DATA, PD12_DATA,
+-		PD11_DATA, PD10_DATA, PD9_DATA, PD8_DATA,
+-		PD7_DATA, PD6_DATA, PD5_DATA, PD4_DATA,
+-		PD3_DATA, PD2_DATA, PD1_DATA, PD0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PEDRL", 0xfffe3a02, 16, GROUP(
+-		PE15_DATA, PE14_DATA, PE13_DATA, PE12_DATA,
+-		PE11_DATA, PE10_DATA, PE9_DATA, PE8_DATA,
+-		PE7_DATA, PE6_DATA, PE5_DATA, PE4_DATA,
+-		PE3_DATA, PE2_DATA, PE1_DATA, PE0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PFDRH", 0xfffe3a80, 16, GROUP(
+-		0, PF30_DATA, PF29_DATA, PF28_DATA,
+-		PF27_DATA, PF26_DATA, PF25_DATA, PF24_DATA,
+-		PF23_DATA, PF22_DATA, PF21_DATA, PF20_DATA,
+-		PF19_DATA, PF18_DATA, PF17_DATA, PF16_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PFDRL", 0xfffe3a82, 16, GROUP(
+-		PF15_DATA, PF14_DATA, PF13_DATA, PF12_DATA,
+-		PF11_DATA, PF10_DATA, PF9_DATA, PF8_DATA,
+-		PF7_DATA, PF6_DATA, PF5_DATA, PF4_DATA,
+-		PF3_DATA, PF2_DATA, PF1_DATA, PF0_DATA ))
+-	},
+-	{ },
+-};
+-
+-const struct sh_pfc_soc_info sh7203_pinmux_info = {
+-	.name = "sh7203_pfc",
+-	.input = { PINMUX_INPUT_BEGIN, PINMUX_INPUT_END, FORCE_IN },
+-	.output = { PINMUX_OUTPUT_BEGIN, PINMUX_OUTPUT_END, FORCE_OUT },
+-	.function = { PINMUX_FUNCTION_BEGIN, PINMUX_FUNCTION_END },
+-
+-	.pins = pinmux_pins,
+-	.nr_pins = ARRAY_SIZE(pinmux_pins),
+-	.func_gpios = pinmux_func_gpios,
+-	.nr_func_gpios = ARRAY_SIZE(pinmux_func_gpios),
+-
+-	.cfg_regs = pinmux_config_regs,
+-	.data_regs = pinmux_data_regs,
+-
+-	.pinmux_data = pinmux_data,
+-	.pinmux_data_size = ARRAY_SIZE(pinmux_data),
+-};
+diff --git a/drivers/pinctrl/renesas/pfc-sh7264.c b/drivers/pinctrl/renesas/pfc-sh7264.c
+deleted file mode 100644
+index 30096925a70c5d..00000000000000
+--- a/drivers/pinctrl/renesas/pfc-sh7264.c
++++ /dev/null
+@@ -1,2131 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * SH7264 Pinmux
+- *
+- *  Copyright (C) 2012  Renesas Electronics Europe Ltd
+- */
+-
+-#include <linux/kernel.h>
+-#include <cpu/sh7264.h>
+-
+-#include "sh_pfc.h"
+-
+-enum {
+-	PINMUX_RESERVED = 0,
+-
+-	PINMUX_DATA_BEGIN,
+-	/* Port A */
+-	PA3_DATA, PA2_DATA, PA1_DATA, PA0_DATA,
+-	/* Port B */
+-	PB22_DATA, PB21_DATA, PB20_DATA,
+-	PB19_DATA, PB18_DATA, PB17_DATA, PB16_DATA,
+-	PB15_DATA, PB14_DATA, PB13_DATA, PB12_DATA,
+-	PB11_DATA, PB10_DATA, PB9_DATA, PB8_DATA,
+-	PB7_DATA, PB6_DATA, PB5_DATA, PB4_DATA,
+-	PB3_DATA, PB2_DATA, PB1_DATA,
+-	/* Port C */
+-	PC10_DATA, PC9_DATA, PC8_DATA,
+-	PC7_DATA, PC6_DATA, PC5_DATA, PC4_DATA,
+-	PC3_DATA, PC2_DATA, PC1_DATA, PC0_DATA,
+-	/* Port D */
+-	PD15_DATA, PD14_DATA, PD13_DATA, PD12_DATA,
+-	PD11_DATA, PD10_DATA, PD9_DATA, PD8_DATA,
+-	PD7_DATA, PD6_DATA, PD5_DATA, PD4_DATA,
+-	PD3_DATA, PD2_DATA, PD1_DATA, PD0_DATA,
+-	/* Port E */
+-	PE5_DATA, PE4_DATA,
+-	PE3_DATA, PE2_DATA, PE1_DATA, PE0_DATA,
+-	/* Port F */
+-	PF12_DATA,
+-	PF11_DATA, PF10_DATA, PF9_DATA, PF8_DATA,
+-	PF7_DATA, PF6_DATA, PF5_DATA, PF4_DATA,
+-	PF3_DATA, PF2_DATA, PF1_DATA, PF0_DATA,
+-	/* Port G */
+-	PG24_DATA,
+-	PG23_DATA, PG22_DATA, PG21_DATA, PG20_DATA,
+-	PG19_DATA, PG18_DATA, PG17_DATA, PG16_DATA,
+-	PG15_DATA, PG14_DATA, PG13_DATA, PG12_DATA,
+-	PG11_DATA, PG10_DATA, PG9_DATA, PG8_DATA,
+-	PG7_DATA, PG6_DATA, PG5_DATA, PG4_DATA,
+-	PG3_DATA, PG2_DATA, PG1_DATA, PG0_DATA,
+-	/* Port H */
+-	/* NOTE - Port H does not have a Data Register, but PH Data is
+-	   connected to PH Port Register */
+-	PH7_DATA, PH6_DATA, PH5_DATA, PH4_DATA,
+-	PH3_DATA, PH2_DATA, PH1_DATA, PH0_DATA,
+-	/* Port I - not on device */
+-	/* Port J */
+-	PJ12_DATA,
+-	PJ11_DATA, PJ10_DATA, PJ9_DATA, PJ8_DATA,
+-	PJ7_DATA, PJ6_DATA, PJ5_DATA, PJ4_DATA,
+-	PJ3_DATA, PJ2_DATA, PJ1_DATA, PJ0_DATA,
+-	/* Port K */
+-	PK12_DATA,
+-	PK11_DATA, PK10_DATA, PK9_DATA, PK8_DATA,
+-	PK7_DATA, PK6_DATA, PK5_DATA, PK4_DATA,
+-	PK3_DATA, PK2_DATA, PK1_DATA, PK0_DATA,
+-	PINMUX_DATA_END,
+-
+-	PINMUX_INPUT_BEGIN,
+-	FORCE_IN,
+-	/* Port A */
+-	PA3_IN, PA2_IN, PA1_IN, PA0_IN,
+-	/* Port B */
+-	PB22_IN, PB21_IN, PB20_IN,
+-	PB19_IN, PB18_IN, PB17_IN, PB16_IN,
+-	PB15_IN, PB14_IN, PB13_IN, PB12_IN,
+-	PB11_IN, PB10_IN, PB9_IN, PB8_IN,
+-	PB7_IN, PB6_IN, PB5_IN, PB4_IN,
+-	PB3_IN, PB2_IN, PB1_IN,
+-	/* Port C */
+-	PC10_IN, PC9_IN, PC8_IN,
+-	PC7_IN, PC6_IN, PC5_IN, PC4_IN,
+-	PC3_IN, PC2_IN, PC1_IN, PC0_IN,
+-	/* Port D */
+-	PD15_IN, PD14_IN, PD13_IN, PD12_IN,
+-	PD11_IN, PD10_IN, PD9_IN, PD8_IN,
+-	PD7_IN, PD6_IN, PD5_IN, PD4_IN,
+-	PD3_IN, PD2_IN, PD1_IN, PD0_IN,
+-	/* Port E */
+-	PE5_IN, PE4_IN,
+-	PE3_IN, PE2_IN, PE1_IN, PE0_IN,
+-	/* Port F */
+-	PF12_IN,
+-	PF11_IN, PF10_IN, PF9_IN, PF8_IN,
+-	PF7_IN, PF6_IN, PF5_IN, PF4_IN,
+-	PF3_IN, PF2_IN, PF1_IN, PF0_IN,
+-	/* Port G */
+-	PG24_IN,
+-	PG23_IN, PG22_IN, PG21_IN, PG20_IN,
+-	PG19_IN, PG18_IN, PG17_IN, PG16_IN,
+-	PG15_IN, PG14_IN, PG13_IN, PG12_IN,
+-	PG11_IN, PG10_IN, PG9_IN, PG8_IN,
+-	PG7_IN, PG6_IN, PG5_IN, PG4_IN,
+-	PG3_IN, PG2_IN, PG1_IN, PG0_IN,
+-	/* Port H - Port H does not have a Data Register */
+-	/* Port I - not on device */
+-	/* Port J */
+-	PJ12_IN,
+-	PJ11_IN, PJ10_IN, PJ9_IN, PJ8_IN,
+-	PJ7_IN, PJ6_IN, PJ5_IN, PJ4_IN,
+-	PJ3_IN, PJ2_IN, PJ1_IN, PJ0_IN,
+-	/* Port K */
+-	PK12_IN,
+-	PK11_IN, PK10_IN, PK9_IN, PK8_IN,
+-	PK7_IN, PK6_IN, PK5_IN, PK4_IN,
+-	PK3_IN, PK2_IN, PK1_IN, PK0_IN,
+-	PINMUX_INPUT_END,
+-
+-	PINMUX_OUTPUT_BEGIN,
+-	FORCE_OUT,
+-	/* Port A */
+-	PA3_OUT, PA2_OUT, PA1_OUT, PA0_OUT,
+-	/* Port B */
+-	PB22_OUT, PB21_OUT, PB20_OUT,
+-	PB19_OUT, PB18_OUT, PB17_OUT, PB16_OUT,
+-	PB15_OUT, PB14_OUT, PB13_OUT, PB12_OUT,
+-	PB11_OUT, PB10_OUT, PB9_OUT, PB8_OUT,
+-	PB7_OUT, PB6_OUT, PB5_OUT, PB4_OUT,
+-	PB3_OUT, PB2_OUT, PB1_OUT,
+-	/* Port C */
+-	PC10_OUT, PC9_OUT, PC8_OUT,
+-	PC7_OUT, PC6_OUT, PC5_OUT, PC4_OUT,
+-	PC3_OUT, PC2_OUT, PC1_OUT, PC0_OUT,
+-	/* Port D */
+-	PD15_OUT, PD14_OUT, PD13_OUT, PD12_OUT,
+-	PD11_OUT, PD10_OUT, PD9_OUT, PD8_OUT,
+-	PD7_OUT, PD6_OUT, PD5_OUT, PD4_OUT,
+-	PD3_OUT, PD2_OUT, PD1_OUT, PD0_OUT,
+-	/* Port E */
+-	PE5_OUT, PE4_OUT,
+-	PE3_OUT, PE2_OUT, PE1_OUT, PE0_OUT,
+-	/* Port F */
+-	PF12_OUT,
+-	PF11_OUT, PF10_OUT, PF9_OUT, PF8_OUT,
+-	PF7_OUT, PF6_OUT, PF5_OUT, PF4_OUT,
+-	PF3_OUT, PF2_OUT, PF1_OUT, PF0_OUT,
+-	/* Port G */
+-	PG24_OUT,
+-	PG23_OUT, PG22_OUT, PG21_OUT, PG20_OUT,
+-	PG19_OUT, PG18_OUT, PG17_OUT, PG16_OUT,
+-	PG15_OUT, PG14_OUT, PG13_OUT, PG12_OUT,
+-	PG11_OUT, PG10_OUT, PG9_OUT, PG8_OUT,
+-	PG7_OUT, PG6_OUT, PG5_OUT, PG4_OUT,
+-	PG3_OUT, PG2_OUT, PG1_OUT, PG0_OUT,
+-	/* Port H - Port H does not have a Data Register */
+-	/* Port I - not on device */
+-	/* Port J */
+-	PJ12_OUT,
+-	PJ11_OUT, PJ10_OUT, PJ9_OUT, PJ8_OUT,
+-	PJ7_OUT, PJ6_OUT, PJ5_OUT, PJ4_OUT,
+-	PJ3_OUT, PJ2_OUT, PJ1_OUT, PJ0_OUT,
+-	/* Port K */
+-	PK12_OUT,
+-	PK11_OUT, PK10_OUT, PK9_OUT, PK8_OUT,
+-	PK7_OUT, PK6_OUT, PK5_OUT, PK4_OUT,
+-	PK3_OUT, PK2_OUT, PK1_OUT, PK0_OUT,
+-	PINMUX_OUTPUT_END,
+-
+-	PINMUX_FUNCTION_BEGIN,
+-	/* Port A */
+-	PA3_IOR_IN, PA3_IOR_OUT,
+-	PA2_IOR_IN, PA2_IOR_OUT,
+-	PA1_IOR_IN, PA1_IOR_OUT,
+-	PA0_IOR_IN, PA0_IOR_OUT,
+-
+-	/* Port B */
+-	PB11_IOR_IN, PB11_IOR_OUT,
+-	PB10_IOR_IN, PB10_IOR_OUT,
+-	PB9_IOR_IN, PB9_IOR_OUT,
+-	PB8_IOR_IN, PB8_IOR_OUT,
+-
+-	PB22MD_00, PB22MD_01, PB22MD_10,
+-	PB21MD_0, PB21MD_1,
+-	PB20MD_0, PB20MD_1,
+-	PB19MD_00, PB19MD_01, PB19MD_10, PB19MD_11,
+-	PB18MD_00, PB18MD_01, PB18MD_10, PB18MD_11,
+-	PB17MD_00, PB17MD_01, PB17MD_10, PB17MD_11,
+-	PB16MD_00, PB16MD_01, PB16MD_10, PB16MD_11,
+-	PB15MD_00, PB15MD_01, PB15MD_10, PB15MD_11,
+-	PB14MD_00, PB14MD_01, PB14MD_10, PB14MD_11,
+-	PB13MD_00, PB13MD_01, PB13MD_10, PB13MD_11,
+-	PB12MD_00, PB12MD_01, PB12MD_10, PB12MD_11,
+-	PB11MD_00, PB11MD_01, PB11MD_10, PB11MD_11,
+-	PB10MD_00, PB10MD_01, PB10MD_10, PB10MD_11,
+-	PB9MD_00, PB9MD_01, PB9MD_10, PB9MD_11,
+-	PB8MD_00, PB8MD_01, PB8MD_10, PB8MD_11,
+-	PB7MD_00, PB7MD_01, PB7MD_10, PB7MD_11,
+-	PB6MD_00, PB6MD_01, PB6MD_10, PB6MD_11,
+-	PB5MD_00, PB5MD_01, PB5MD_10, PB5MD_11,
+-	PB4MD_00, PB4MD_01, PB4MD_10, PB4MD_11,
+-	PB3MD_0, PB3MD_1,
+-	PB2MD_0, PB2MD_1,
+-	PB1MD_0, PB1MD_1,
+-
+-	/* Port C */
+-	PC14_IOR_IN, PC14_IOR_OUT,
+-	PC13_IOR_IN, PC13_IOR_OUT,
+-	PC12_IOR_IN, PC12_IOR_OUT,
+-	PC11_IOR_IN, PC11_IOR_OUT,
+-	PC10_IOR_IN, PC10_IOR_OUT,
+-	PC9_IOR_IN, PC9_IOR_OUT,
+-	PC8_IOR_IN, PC8_IOR_OUT,
+-	PC7_IOR_IN, PC7_IOR_OUT,
+-	PC6_IOR_IN, PC6_IOR_OUT,
+-	PC5_IOR_IN, PC5_IOR_OUT,
+-	PC4_IOR_IN, PC4_IOR_OUT,
+-	PC3_IOR_IN, PC3_IOR_OUT,
+-	PC2_IOR_IN, PC2_IOR_OUT,
+-	PC1_IOR_IN, PC1_IOR_OUT,
+-	PC0_IOR_IN, PC0_IOR_OUT,
+-
+-	PC10MD_0, PC10MD_1,
+-	PC9MD_0, PC9MD_1,
+-	PC8MD_00, PC8MD_01, PC8MD_10, PC8MD_11,
+-	PC7MD_00, PC7MD_01, PC7MD_10, PC7MD_11,
+-	PC6MD_00, PC6MD_01, PC6MD_10, PC6MD_11,
+-	PC5MD_00, PC5MD_01, PC5MD_10, PC5MD_11,
+-	PC4MD_0, PC4MD_1,
+-	PC3MD_0, PC3MD_1,
+-	PC2MD_0, PC2MD_1,
+-	PC1MD_0, PC1MD_1,
+-	PC0MD_0, PC0MD_1,
+-
+-	/* Port D */
+-	PD15_IOR_IN, PD15_IOR_OUT,
+-	PD14_IOR_IN, PD14_IOR_OUT,
+-	PD13_IOR_IN, PD13_IOR_OUT,
+-	PD12_IOR_IN, PD12_IOR_OUT,
+-	PD11_IOR_IN, PD11_IOR_OUT,
+-	PD10_IOR_IN, PD10_IOR_OUT,
+-	PD9_IOR_IN, PD9_IOR_OUT,
+-	PD8_IOR_IN, PD8_IOR_OUT,
+-	PD7_IOR_IN, PD7_IOR_OUT,
+-	PD6_IOR_IN, PD6_IOR_OUT,
+-	PD5_IOR_IN, PD5_IOR_OUT,
+-	PD4_IOR_IN, PD4_IOR_OUT,
+-	PD3_IOR_IN, PD3_IOR_OUT,
+-	PD2_IOR_IN, PD2_IOR_OUT,
+-	PD1_IOR_IN, PD1_IOR_OUT,
+-	PD0_IOR_IN, PD0_IOR_OUT,
+-
+-	PD15MD_00, PD15MD_01, PD15MD_10, PD15MD_11,
+-	PD14MD_00, PD14MD_01, PD14MD_10, PD14MD_11,
+-	PD13MD_00, PD13MD_01, PD13MD_10, PD13MD_11,
+-	PD12MD_00, PD12MD_01, PD12MD_10, PD12MD_11,
+-	PD11MD_00, PD11MD_01, PD11MD_10, PD11MD_11,
+-	PD10MD_00, PD10MD_01, PD10MD_10, PD10MD_11,
+-	PD9MD_00, PD9MD_01, PD9MD_10, PD9MD_11,
+-	PD8MD_00, PD8MD_01, PD8MD_10, PD8MD_11,
+-	PD7MD_00, PD7MD_01, PD7MD_10, PD7MD_11,
+-	PD6MD_00, PD6MD_01, PD6MD_10, PD6MD_11,
+-	PD5MD_00, PD5MD_01, PD5MD_10, PD5MD_11,
+-	PD4MD_00, PD4MD_01, PD4MD_10, PD4MD_11,
+-	PD3MD_00, PD3MD_01, PD3MD_10, PD3MD_11,
+-	PD2MD_00, PD2MD_01, PD2MD_10, PD2MD_11,
+-	PD1MD_00, PD1MD_01, PD1MD_10, PD1MD_11,
+-	PD0MD_00, PD0MD_01, PD0MD_10, PD0MD_11,
+-
+-	/* Port E */
+-	PE5_IOR_IN, PE5_IOR_OUT,
+-	PE4_IOR_IN, PE4_IOR_OUT,
+-	PE3_IOR_IN, PE3_IOR_OUT,
+-	PE2_IOR_IN, PE2_IOR_OUT,
+-	PE1_IOR_IN, PE1_IOR_OUT,
+-	PE0_IOR_IN, PE0_IOR_OUT,
+-
+-	PE5MD_00, PE5MD_01, PE5MD_10, PE5MD_11,
+-	PE4MD_00, PE4MD_01, PE4MD_10, PE4MD_11,
+-	PE3MD_00, PE3MD_01, PE3MD_10, PE3MD_11,
+-	PE2MD_00, PE2MD_01, PE2MD_10, PE2MD_11,
+-	PE1MD_000, PE1MD_001, PE1MD_010, PE1MD_011,
+-	PE1MD_100, PE1MD_101, PE1MD_110, PE1MD_111,
+-	PE0MD_00, PE0MD_01, PE0MD_10, PE0MD_11,
+-
+-	/* Port F */
+-	PF12_IOR_IN, PF12_IOR_OUT,
+-	PF11_IOR_IN, PF11_IOR_OUT,
+-	PF10_IOR_IN, PF10_IOR_OUT,
+-	PF9_IOR_IN, PF9_IOR_OUT,
+-	PF8_IOR_IN, PF8_IOR_OUT,
+-	PF7_IOR_IN, PF7_IOR_OUT,
+-	PF6_IOR_IN, PF6_IOR_OUT,
+-	PF5_IOR_IN, PF5_IOR_OUT,
+-	PF4_IOR_IN, PF4_IOR_OUT,
+-	PF3_IOR_IN, PF3_IOR_OUT,
+-	PF2_IOR_IN, PF2_IOR_OUT,
+-	PF1_IOR_IN, PF1_IOR_OUT,
+-	PF0_IOR_IN, PF0_IOR_OUT,
+-
+-	PF12MD_000, PF12MD_001, PF12MD_010, PF12MD_011,
+-	PF12MD_100, PF12MD_101, PF12MD_110, PF12MD_111,
+-	PF11MD_000, PF11MD_001, PF11MD_010, PF11MD_011,
+-	PF11MD_100, PF11MD_101, PF11MD_110, PF11MD_111,
+-	PF10MD_000, PF10MD_001, PF10MD_010, PF10MD_011,
+-	PF10MD_100, PF10MD_101, PF10MD_110, PF10MD_111,
+-	PF9MD_000, PF9MD_001, PF9MD_010, PF9MD_011,
+-	PF9MD_100, PF9MD_101, PF9MD_110, PF9MD_111,
+-	PF8MD_00, PF8MD_01, PF8MD_10, PF8MD_11,
+-	PF7MD_000, PF7MD_001, PF7MD_010, PF7MD_011,
+-	PF7MD_100, PF7MD_101, PF7MD_110, PF7MD_111,
+-	PF6MD_000, PF6MD_001, PF6MD_010, PF6MD_011,
+-	PF6MD_100, PF6MD_101, PF6MD_110, PF6MD_111,
+-	PF5MD_000, PF5MD_001, PF5MD_010, PF5MD_011,
+-	PF5MD_100, PF5MD_101, PF5MD_110, PF5MD_111,
+-	PF4MD_000, PF4MD_001, PF4MD_010, PF4MD_011,
+-	PF4MD_100, PF4MD_101, PF4MD_110, PF4MD_111,
+-	PF3MD_000, PF3MD_001, PF3MD_010, PF3MD_011,
+-	PF3MD_100, PF3MD_101, PF3MD_110, PF3MD_111,
+-	PF2MD_000, PF2MD_001, PF2MD_010, PF2MD_011,
+-	PF2MD_100, PF2MD_101, PF2MD_110, PF2MD_111,
+-	PF1MD_000, PF1MD_001, PF1MD_010, PF1MD_011,
+-	PF1MD_100, PF1MD_101, PF1MD_110, PF1MD_111,
+-	PF0MD_000, PF0MD_001, PF0MD_010, PF0MD_011,
+-	PF0MD_100, PF0MD_101, PF0MD_110, PF0MD_111,
+-
+-	/* Port G */
+-	PG24_IOR_IN, PG24_IOR_OUT,
+-	PG23_IOR_IN, PG23_IOR_OUT,
+-	PG22_IOR_IN, PG22_IOR_OUT,
+-	PG21_IOR_IN, PG21_IOR_OUT,
+-	PG20_IOR_IN, PG20_IOR_OUT,
+-	PG19_IOR_IN, PG19_IOR_OUT,
+-	PG18_IOR_IN, PG18_IOR_OUT,
+-	PG17_IOR_IN, PG17_IOR_OUT,
+-	PG16_IOR_IN, PG16_IOR_OUT,
+-	PG15_IOR_IN, PG15_IOR_OUT,
+-	PG14_IOR_IN, PG14_IOR_OUT,
+-	PG13_IOR_IN, PG13_IOR_OUT,
+-	PG12_IOR_IN, PG12_IOR_OUT,
+-	PG11_IOR_IN, PG11_IOR_OUT,
+-	PG10_IOR_IN, PG10_IOR_OUT,
+-	PG9_IOR_IN, PG9_IOR_OUT,
+-	PG8_IOR_IN, PG8_IOR_OUT,
+-	PG7_IOR_IN, PG7_IOR_OUT,
+-	PG6_IOR_IN, PG6_IOR_OUT,
+-	PG5_IOR_IN, PG5_IOR_OUT,
+-	PG4_IOR_IN, PG4_IOR_OUT,
+-	PG3_IOR_IN, PG3_IOR_OUT,
+-	PG2_IOR_IN, PG2_IOR_OUT,
+-	PG1_IOR_IN, PG1_IOR_OUT,
+-	PG0_IOR_IN, PG0_IOR_OUT,
+-
+-	PG24MD_00, PG24MD_01, PG24MD_10, PG24MD_11,
+-	PG23MD_00, PG23MD_01, PG23MD_10, PG23MD_11,
+-	PG22MD_00, PG22MD_01, PG22MD_10, PG22MD_11,
+-	PG21MD_00, PG21MD_01, PG21MD_10, PG21MD_11,
+-	PG20MD_000, PG20MD_001, PG20MD_010, PG20MD_011,
+-	PG20MD_100, PG20MD_101, PG20MD_110, PG20MD_111,
+-	PG19MD_000, PG19MD_001, PG19MD_010, PG19MD_011,
+-	PG19MD_100, PG19MD_101, PG19MD_110, PG19MD_111,
+-	PG18MD_000, PG18MD_001, PG18MD_010, PG18MD_011,
+-	PG18MD_100, PG18MD_101, PG18MD_110, PG18MD_111,
+-	PG17MD_000, PG17MD_001, PG17MD_010, PG17MD_011,
+-	PG17MD_100, PG17MD_101, PG17MD_110, PG17MD_111,
+-	PG16MD_000, PG16MD_001, PG16MD_010, PG16MD_011,
+-	PG16MD_100, PG16MD_101, PG16MD_110, PG16MD_111,
+-	PG15MD_000, PG15MD_001, PG15MD_010, PG15MD_011,
+-	PG15MD_100, PG15MD_101, PG15MD_110, PG15MD_111,
+-	PG14MD_000, PG14MD_001, PG14MD_010, PG14MD_011,
+-	PG14MD_100, PG14MD_101, PG14MD_110, PG14MD_111,
+-	PG13MD_000, PG13MD_001, PG13MD_010, PG13MD_011,
+-	PG13MD_100, PG13MD_101, PG13MD_110, PG13MD_111,
+-	PG12MD_000, PG12MD_001, PG12MD_010, PG12MD_011,
+-	PG12MD_100, PG12MD_101, PG12MD_110, PG12MD_111,
+-	PG11MD_000, PG11MD_001, PG11MD_010, PG11MD_011,
+-	PG11MD_100, PG11MD_101, PG11MD_110, PG11MD_111,
+-	PG10MD_000, PG10MD_001, PG10MD_010, PG10MD_011,
+-	PG10MD_100, PG10MD_101, PG10MD_110, PG10MD_111,
+-	PG9MD_000, PG9MD_001, PG9MD_010, PG9MD_011,
+-	PG9MD_100, PG9MD_101, PG9MD_110, PG9MD_111,
+-	PG8MD_000, PG8MD_001, PG8MD_010, PG8MD_011,
+-	PG8MD_100, PG8MD_101, PG8MD_110, PG8MD_111,
+-	PG7MD_00, PG7MD_01, PG7MD_10, PG7MD_11,
+-	PG6MD_00, PG6MD_01, PG6MD_10, PG6MD_11,
+-	PG5MD_00, PG5MD_01, PG5MD_10, PG5MD_11,
+-	PG4MD_00, PG4MD_01, PG4MD_10, PG4MD_11,
+-	PG3MD_00, PG3MD_01, PG3MD_10, PG3MD_11,
+-	PG2MD_00, PG2MD_01, PG2MD_10, PG2MD_11,
+-	PG1MD_00, PG1MD_01, PG1MD_10, PG1MD_11,
+-	PG0MD_000, PG0MD_001, PG0MD_010, PG0MD_011,
+-	PG0MD_100, PG0MD_101, PG0MD_110, PG0MD_111,
+-
+-	/* Port H */
+-	PH7MD_0, PH7MD_1,
+-	PH6MD_0, PH6MD_1,
+-	PH5MD_0, PH5MD_1,
+-	PH4MD_0, PH4MD_1,
+-	PH3MD_0, PH3MD_1,
+-	PH2MD_0, PH2MD_1,
+-	PH1MD_0, PH1MD_1,
+-	PH0MD_0, PH0MD_1,
+-
+-	/* Port I - not on device */
+-
+-	/* Port J */
+-	PJ11_IOR_IN, PJ11_IOR_OUT,
+-	PJ10_IOR_IN, PJ10_IOR_OUT,
+-	PJ9_IOR_IN, PJ9_IOR_OUT,
+-	PJ8_IOR_IN, PJ8_IOR_OUT,
+-	PJ7_IOR_IN, PJ7_IOR_OUT,
+-	PJ6_IOR_IN, PJ6_IOR_OUT,
+-	PJ5_IOR_IN, PJ5_IOR_OUT,
+-	PJ4_IOR_IN, PJ4_IOR_OUT,
+-	PJ3_IOR_IN, PJ3_IOR_OUT,
+-	PJ2_IOR_IN, PJ2_IOR_OUT,
+-	PJ1_IOR_IN, PJ1_IOR_OUT,
+-	PJ0_IOR_IN, PJ0_IOR_OUT,
+-
+-	PJ11MD_00, PJ11MD_01, PJ11MD_10, PJ11MD_11,
+-	PJ10MD_00, PJ10MD_01, PJ10MD_10, PJ10MD_11,
+-	PJ9MD_00, PJ9MD_01, PJ9MD_10, PJ9MD_11,
+-	PJ8MD_00, PJ8MD_01, PJ8MD_10, PJ8MD_11,
+-	PJ7MD_00, PJ7MD_01, PJ7MD_10, PJ7MD_11,
+-	PJ6MD_00, PJ6MD_01, PJ6MD_10, PJ6MD_11,
+-	PJ5MD_00, PJ5MD_01, PJ5MD_10, PJ5MD_11,
+-	PJ4MD_00, PJ4MD_01, PJ4MD_10, PJ4MD_11,
+-	PJ3MD_00, PJ3MD_01, PJ3MD_10, PJ3MD_11,
+-	PJ2MD_000, PJ2MD_001, PJ2MD_010, PJ2MD_011,
+-	PJ2MD_100, PJ2MD_101, PJ2MD_110, PJ2MD_111,
+-	PJ1MD_000, PJ1MD_001, PJ1MD_010, PJ1MD_011,
+-	PJ1MD_100, PJ1MD_101, PJ1MD_110, PJ1MD_111,
+-	PJ0MD_000, PJ0MD_001, PJ0MD_010, PJ0MD_011,
+-	PJ0MD_100, PJ0MD_101, PJ0MD_110, PJ0MD_111,
+-
+-	/* Port K */
+-	PK11_IOR_IN, PK11_IOR_OUT,
+-	PK10_IOR_IN, PK10_IOR_OUT,
+-	PK9_IOR_IN, PK9_IOR_OUT,
+-	PK8_IOR_IN, PK8_IOR_OUT,
+-	PK7_IOR_IN, PK7_IOR_OUT,
+-	PK6_IOR_IN, PK6_IOR_OUT,
+-	PK5_IOR_IN, PK5_IOR_OUT,
+-	PK4_IOR_IN, PK4_IOR_OUT,
+-	PK3_IOR_IN, PK3_IOR_OUT,
+-	PK2_IOR_IN, PK2_IOR_OUT,
+-	PK1_IOR_IN, PK1_IOR_OUT,
+-	PK0_IOR_IN, PK0_IOR_OUT,
+-
+-	PK11MD_00, PK11MD_01, PK11MD_10, PK11MD_11,
+-	PK10MD_00, PK10MD_01, PK10MD_10, PK10MD_11,
+-	PK9MD_00, PK9MD_01, PK9MD_10, PK9MD_11,
+-	PK8MD_00, PK8MD_01, PK8MD_10, PK8MD_11,
+-	PK7MD_00, PK7MD_01, PK7MD_10, PK7MD_11,
+-	PK6MD_00, PK6MD_01, PK6MD_10, PK6MD_11,
+-	PK5MD_00, PK5MD_01, PK5MD_10, PK5MD_11,
+-	PK4MD_00, PK4MD_01, PK4MD_10, PK4MD_11,
+-	PK3MD_00, PK3MD_01, PK3MD_10, PK3MD_11,
+-	PK2MD_00, PK2MD_01, PK2MD_10, PK2MD_11,
+-	PK1MD_00, PK1MD_01, PK1MD_10, PK1MD_11,
+-	PK0MD_00, PK0MD_01, PK0MD_10, PK0MD_11,
+-	PINMUX_FUNCTION_END,
+-
+-	PINMUX_MARK_BEGIN,
+-	/* Port A */
+-
+-	/* Port B */
+-
+-	/* Port C */
+-
+-	/* Port D */
+-
+-	/* Port E */
+-
+-	/* Port F */
+-
+-	/* Port G */
+-
+-	/* Port H */
+-	PHAN7_MARK, PHAN6_MARK, PHAN5_MARK, PHAN4_MARK,
+-	PHAN3_MARK, PHAN2_MARK, PHAN1_MARK, PHAN0_MARK,
+-
+-	/* Port I - not on device */
+-
+-	/* Port J */
+-
+-	/* Port K */
+-
+-	IRQ7_PC_MARK, IRQ6_PC_MARK, IRQ5_PC_MARK, IRQ4_PC_MARK,
+-	IRQ3_PG_MARK, IRQ2_PG_MARK, IRQ1_PJ_MARK, IRQ0_PJ_MARK,
+-	IRQ3_PE_MARK, IRQ2_PE_MARK, IRQ1_PE_MARK, IRQ0_PE_MARK,
+-
+-	PINT7_PG_MARK, PINT6_PG_MARK, PINT5_PG_MARK, PINT4_PG_MARK,
+-	PINT3_PG_MARK, PINT2_PG_MARK, PINT1_PG_MARK, PINT0_PG_MARK,
+-
+-	SD_CD_MARK, SD_D0_MARK, SD_D1_MARK, SD_D2_MARK, SD_D3_MARK,
+-	SD_WP_MARK, SD_CLK_MARK, SD_CMD_MARK,
+-	CRX0_MARK, CRX1_MARK,
+-	CTX0_MARK, CTX1_MARK,
+-	CRX0_CRX1_MARK, CTX0_CTX1_MARK,
+-
+-	PWM1A_MARK, PWM1B_MARK, PWM1C_MARK, PWM1D_MARK,
+-	PWM1E_MARK, PWM1F_MARK, PWM1G_MARK, PWM1H_MARK,
+-	PWM2A_MARK, PWM2B_MARK, PWM2C_MARK, PWM2D_MARK,
+-	PWM2E_MARK, PWM2F_MARK, PWM2G_MARK, PWM2H_MARK,
+-	IERXD_MARK, IETXD_MARK,
+-	WDTOVF_MARK,
+-
+-	/* DMAC */
+-	TEND0_MARK, DACK0_MARK, DREQ0_MARK,
+-	TEND1_MARK, DACK1_MARK, DREQ1_MARK,
+-
+-	/* ADC */
+-	ADTRG_MARK,
+-
+-	/* BSC */
+-	A25_MARK, A24_MARK,
+-	A23_MARK, A22_MARK, A21_MARK, A20_MARK,
+-	A19_MARK, A18_MARK, A17_MARK, A16_MARK,
+-	A15_MARK, A14_MARK, A13_MARK, A12_MARK,
+-	A11_MARK, A10_MARK, A9_MARK, A8_MARK,
+-	A7_MARK, A6_MARK, A5_MARK, A4_MARK,
+-	A3_MARK, A2_MARK, A1_MARK, A0_MARK,
+-	D15_MARK, D14_MARK, D13_MARK, D12_MARK,
+-	D11_MARK, D10_MARK, D9_MARK, D8_MARK,
+-	D7_MARK, D6_MARK, D5_MARK, D4_MARK,
+-	D3_MARK, D2_MARK, D1_MARK, D0_MARK,
+-	BS_MARK,
+-	CS4_MARK, CS3_MARK, CS2_MARK, CS1_MARK, CS0_MARK,
+-	CS6CE1B_MARK, CS5CE1A_MARK,
+-	CE2A_MARK, CE2B_MARK,
+-	RD_MARK, RDWR_MARK,
+-	ICIOWRAH_MARK,
+-	ICIORD_MARK,
+-	WE1DQMUWE_MARK,
+-	WE0DQML_MARK,
+-	RAS_MARK, CAS_MARK, CKE_MARK,
+-	WAIT_MARK, BREQ_MARK, BACK_MARK, IOIS16_MARK,
+-
+-	/* TMU */
+-	TIOC0A_MARK, TIOC0B_MARK, TIOC0C_MARK, TIOC0D_MARK,
+-	TIOC1A_MARK, TIOC1B_MARK,
+-	TIOC2A_MARK, TIOC2B_MARK,
+-	TIOC3A_MARK, TIOC3B_MARK, TIOC3C_MARK, TIOC3D_MARK,
+-	TIOC4A_MARK, TIOC4B_MARK, TIOC4C_MARK, TIOC4D_MARK,
+-	TCLKA_MARK,	TCLKB_MARK, TCLKC_MARK, TCLKD_MARK,
+-
+-	/* SCIF */
+-	SCK0_MARK, SCK1_MARK, SCK2_MARK, SCK3_MARK,
+-	RXD0_MARK, RXD1_MARK, RXD2_MARK, RXD3_MARK,
+-	TXD0_MARK, TXD1_MARK, TXD2_MARK, TXD3_MARK,
+-	RXD4_MARK, RXD5_MARK, RXD6_MARK, RXD7_MARK,
+-	TXD4_MARK, TXD5_MARK, TXD6_MARK, TXD7_MARK,
+-	RTS1_MARK, RTS3_MARK,
+-	CTS1_MARK, CTS3_MARK,
+-
+-	/* RSPI */
+-	RSPCK0_MARK, RSPCK1_MARK,
+-	MOSI0_MARK, MOSI1_MARK,
+-	MISO0_PF12_MARK, MISO1_MARK, MISO1_PG19_MARK,
+-	SSL00_MARK, SSL10_MARK,
+-
+-	/* IIC3 */
+-	SCL0_MARK, SCL1_MARK, SCL2_MARK,
+-	SDA0_MARK, SDA1_MARK, SDA2_MARK,
+-
+-	/* SSI */
+-	SSISCK0_MARK,
+-	SSIWS0_MARK,
+-	SSITXD0_MARK,
+-	SSIRXD0_MARK,
+-	SSIWS1_MARK, SSIWS2_MARK, SSIWS3_MARK,
+-	SSISCK1_MARK, SSISCK2_MARK, SSISCK3_MARK,
+-	SSIDATA1_MARK, SSIDATA2_MARK, SSIDATA3_MARK,
+-	AUDIO_CLK_MARK,
+-
+-	/* SIOF */ /* NOTE Shares AUDIO_CLK with SSI */
+-	SIOFTXD_MARK, SIOFRXD_MARK, SIOFSYNC_MARK, SIOFSCK_MARK,
+-
+-	/* SPDIF */ /* NOTE Shares AUDIO_CLK with SSI */
+-	SPDIF_IN_MARK, SPDIF_OUT_MARK,
+-
+-	/* NANDFMC */ /* NOTE Controller is not available in boot mode 0 */
+-	FCE_MARK,
+-	FRB_MARK,
+-
+-	/* VDC3 */
+-	DV_CLK_MARK,
+-	DV_VSYNC_MARK, DV_HSYNC_MARK,
+-	DV_DATA7_MARK, DV_DATA6_MARK, DV_DATA5_MARK, DV_DATA4_MARK,
+-	DV_DATA3_MARK, DV_DATA2_MARK, DV_DATA1_MARK, DV_DATA0_MARK,
+-	LCD_CLK_MARK, LCD_EXTCLK_MARK,
+-	LCD_VSYNC_MARK, LCD_HSYNC_MARK, LCD_DE_MARK,
+-	LCD_DATA15_MARK, LCD_DATA14_MARK, LCD_DATA13_MARK, LCD_DATA12_MARK,
+-	LCD_DATA11_MARK, LCD_DATA10_MARK, LCD_DATA9_MARK, LCD_DATA8_MARK,
+-	LCD_DATA7_MARK, LCD_DATA6_MARK, LCD_DATA5_MARK, LCD_DATA4_MARK,
+-	LCD_DATA3_MARK, LCD_DATA2_MARK, LCD_DATA1_MARK, LCD_DATA0_MARK,
+-	LCD_M_DISP_MARK,
+-	PINMUX_MARK_END,
+-};
+-
+-static const u16 pinmux_data[] = {
+-	/* Port A */
+-	PINMUX_DATA(PA3_DATA, PA3_IN),
+-	PINMUX_DATA(PA2_DATA, PA2_IN),
+-	PINMUX_DATA(PA1_DATA, PA1_IN),
+-	PINMUX_DATA(PA0_DATA, PA0_IN),
+-
+-	/* Port B */
+-	PINMUX_DATA(PB22_DATA, PB22MD_00, PB22_IN, PB22_OUT),
+-	PINMUX_DATA(A22_MARK, PB22MD_01),
+-	PINMUX_DATA(CS4_MARK, PB22MD_10),
+-
+-	PINMUX_DATA(PB21_DATA, PB21MD_0, PB21_IN, PB21_OUT),
+-	PINMUX_DATA(A21_MARK, PB21MD_1),
+-	PINMUX_DATA(A20_MARK, PB20MD_1),
+-	PINMUX_DATA(A19_MARK, PB19MD_01),
+-	PINMUX_DATA(A18_MARK, PB18MD_01),
+-	PINMUX_DATA(A17_MARK, PB17MD_01),
+-	PINMUX_DATA(A16_MARK, PB16MD_01),
+-	PINMUX_DATA(A15_MARK, PB15MD_01),
+-	PINMUX_DATA(A14_MARK, PB14MD_01),
+-	PINMUX_DATA(A13_MARK, PB13MD_01),
+-	PINMUX_DATA(A12_MARK, PB12MD_01),
+-	PINMUX_DATA(A11_MARK, PB11MD_01),
+-	PINMUX_DATA(A10_MARK, PB10MD_01),
+-	PINMUX_DATA(A9_MARK, PB9MD_01),
+-	PINMUX_DATA(A8_MARK, PB8MD_01),
+-	PINMUX_DATA(A7_MARK, PB7MD_01),
+-	PINMUX_DATA(A6_MARK, PB6MD_01),
+-	PINMUX_DATA(A5_MARK, PB5MD_01),
+-	PINMUX_DATA(A4_MARK, PB4MD_01),
+-	PINMUX_DATA(A3_MARK, PB3MD_1),
+-	PINMUX_DATA(A2_MARK, PB2MD_1),
+-	PINMUX_DATA(A1_MARK, PB1MD_1),
+-
+-	/* Port C */
+-	PINMUX_DATA(PC10_DATA, PC10MD_0),
+-	PINMUX_DATA(TIOC2B_MARK, PC1MD_1),
+-	PINMUX_DATA(PC9_DATA, PC9MD_0),
+-	PINMUX_DATA(TIOC2A_MARK, PC9MD_1),
+-	PINMUX_DATA(PC8_DATA, PC8MD_00),
+-	PINMUX_DATA(CS3_MARK, PC8MD_01),
+-	PINMUX_DATA(TIOC4D_MARK, PC8MD_10),
+-	PINMUX_DATA(IRQ7_PC_MARK, PC8MD_11),
+-	PINMUX_DATA(PC7_DATA, PC7MD_00),
+-	PINMUX_DATA(CKE_MARK, PC7MD_01),
+-	PINMUX_DATA(TIOC4C_MARK, PC7MD_10),
+-	PINMUX_DATA(IRQ6_PC_MARK, PC7MD_11),
+-	PINMUX_DATA(PC6_DATA, PC6MD_00),
+-	PINMUX_DATA(CAS_MARK, PC6MD_01),
+-	PINMUX_DATA(TIOC4B_MARK, PC6MD_10),
+-	PINMUX_DATA(IRQ5_PC_MARK, PC6MD_11),
+-	PINMUX_DATA(PC5_DATA, PC5MD_00),
+-	PINMUX_DATA(RAS_MARK, PC5MD_01),
+-	PINMUX_DATA(TIOC4A_MARK, PC5MD_10),
+-	PINMUX_DATA(IRQ4_PC_MARK, PC5MD_11),
+-	PINMUX_DATA(PC4_DATA, PC4MD_0),
+-	PINMUX_DATA(WE1DQMUWE_MARK, PC4MD_1),
+-	PINMUX_DATA(PC3_DATA, PC3MD_0),
+-	PINMUX_DATA(WE0DQML_MARK, PC3MD_1),
+-	PINMUX_DATA(PC2_DATA, PC2MD_0),
+-	PINMUX_DATA(RDWR_MARK, PC2MD_1),
+-	PINMUX_DATA(PC1_DATA, PC1MD_0),
+-	PINMUX_DATA(RD_MARK, PC1MD_1),
+-	PINMUX_DATA(PC0_DATA, PC0MD_0),
+-	PINMUX_DATA(CS0_MARK, PC0MD_1),
+-
+-	/* Port D */
+-	PINMUX_DATA(D15_MARK, PD15MD_01),
+-	PINMUX_DATA(D14_MARK, PD14MD_01),
+-	PINMUX_DATA(D13_MARK, PD13MD_01),
+-	PINMUX_DATA(D12_MARK, PD12MD_01),
+-	PINMUX_DATA(D11_MARK, PD11MD_01),
+-	PINMUX_DATA(D10_MARK, PD10MD_01),
+-	PINMUX_DATA(D9_MARK, PD9MD_01),
+-	PINMUX_DATA(D8_MARK, PD8MD_01),
+-	PINMUX_DATA(D7_MARK, PD7MD_01),
+-	PINMUX_DATA(D6_MARK, PD6MD_01),
+-	PINMUX_DATA(D5_MARK, PD5MD_01),
+-	PINMUX_DATA(D4_MARK, PD4MD_01),
+-	PINMUX_DATA(D3_MARK, PD3MD_01),
+-	PINMUX_DATA(D2_MARK, PD2MD_01),
+-	PINMUX_DATA(D1_MARK, PD1MD_01),
+-	PINMUX_DATA(D0_MARK, PD0MD_01),
+-
+-	/* Port E */
+-	PINMUX_DATA(PE5_DATA, PE5MD_00),
+-	PINMUX_DATA(SDA2_MARK, PE5MD_01),
+-	PINMUX_DATA(DV_HSYNC_MARK, PE5MD_11),
+-
+-	PINMUX_DATA(PE4_DATA, PE4MD_00),
+-	PINMUX_DATA(SCL2_MARK, PE4MD_01),
+-	PINMUX_DATA(DV_VSYNC_MARK, PE4MD_11),
+-
+-	PINMUX_DATA(PE3_DATA, PE3MD_00),
+-	PINMUX_DATA(SDA1_MARK, PE3MD_01),
+-	PINMUX_DATA(IRQ3_PE_MARK, PE3MD_11),
+-
+-	PINMUX_DATA(PE2_DATA, PE2MD_00),
+-	PINMUX_DATA(SCL1_MARK, PE2MD_01),
+-	PINMUX_DATA(IRQ2_PE_MARK, PE2MD_11),
+-
+-	PINMUX_DATA(PE1_DATA, PE1MD_000),
+-	PINMUX_DATA(SDA0_MARK, PE1MD_001),
+-	PINMUX_DATA(IOIS16_MARK, PE1MD_010),
+-	PINMUX_DATA(IRQ1_PE_MARK, PE1MD_011),
+-	PINMUX_DATA(TCLKA_MARK, PE1MD_100),
+-	PINMUX_DATA(ADTRG_MARK, PE1MD_101),
+-
+-	PINMUX_DATA(PE0_DATA, PE0MD_00),
+-	PINMUX_DATA(SCL0_MARK, PE0MD_01),
+-	PINMUX_DATA(AUDIO_CLK_MARK, PE0MD_10),
+-	PINMUX_DATA(IRQ0_PE_MARK, PE0MD_11),
+-
+-	/* Port F */
+-	PINMUX_DATA(PF12_DATA, PF12MD_000),
+-	PINMUX_DATA(BS_MARK, PF12MD_001),
+-	PINMUX_DATA(MISO0_PF12_MARK, PF12MD_011),
+-	PINMUX_DATA(TIOC3D_MARK, PF12MD_100),
+-	PINMUX_DATA(SPDIF_OUT_MARK, PF12MD_101),
+-
+-	PINMUX_DATA(PF11_DATA, PF11MD_000),
+-	PINMUX_DATA(A25_MARK, PF11MD_001),
+-	PINMUX_DATA(SSIDATA3_MARK, PF11MD_010),
+-	PINMUX_DATA(MOSI0_MARK, PF11MD_011),
+-	PINMUX_DATA(TIOC3C_MARK, PF11MD_100),
+-	PINMUX_DATA(SPDIF_IN_MARK, PF11MD_101),
+-
+-	PINMUX_DATA(PF10_DATA, PF10MD_000),
+-	PINMUX_DATA(A24_MARK, PF10MD_001),
+-	PINMUX_DATA(SSIWS3_MARK, PF10MD_010),
+-	PINMUX_DATA(SSL00_MARK, PF10MD_011),
+-	PINMUX_DATA(TIOC3B_MARK, PF10MD_100),
+-	PINMUX_DATA(FCE_MARK, PF10MD_101),
+-
+-	PINMUX_DATA(PF9_DATA, PF9MD_000),
+-	PINMUX_DATA(A23_MARK, PF9MD_001),
+-	PINMUX_DATA(SSISCK3_MARK, PF9MD_010),
+-	PINMUX_DATA(RSPCK0_MARK, PF9MD_011),
+-	PINMUX_DATA(TIOC3A_MARK, PF9MD_100),
+-	PINMUX_DATA(FRB_MARK, PF9MD_101),
+-
+-	PINMUX_DATA(PF8_DATA, PF8MD_00),
+-	PINMUX_DATA(CE2B_MARK, PF8MD_01),
+-	PINMUX_DATA(SSIDATA3_MARK, PF8MD_10),
+-	PINMUX_DATA(DV_CLK_MARK, PF8MD_11),
+-
+-	PINMUX_DATA(PF7_DATA, PF7MD_000),
+-	PINMUX_DATA(CE2A_MARK, PF7MD_001),
+-	PINMUX_DATA(SSIWS3_MARK, PF7MD_010),
+-	PINMUX_DATA(DV_DATA7_MARK, PF7MD_011),
+-	PINMUX_DATA(TCLKD_MARK, PF7MD_100),
+-
+-	PINMUX_DATA(PF6_DATA, PF6MD_000),
+-	PINMUX_DATA(CS6CE1B_MARK, PF6MD_001),
+-	PINMUX_DATA(SSISCK3_MARK, PF6MD_010),
+-	PINMUX_DATA(DV_DATA6_MARK, PF6MD_011),
+-	PINMUX_DATA(TCLKB_MARK, PF6MD_100),
+-
+-	PINMUX_DATA(PF5_DATA, PF5MD_000),
+-	PINMUX_DATA(CS5CE1A_MARK, PF5MD_001),
+-	PINMUX_DATA(SSIDATA2_MARK, PF5MD_010),
+-	PINMUX_DATA(DV_DATA5_MARK, PF5MD_011),
+-	PINMUX_DATA(TCLKC_MARK, PF5MD_100),
+-
+-	PINMUX_DATA(PF4_DATA, PF4MD_000),
+-	PINMUX_DATA(ICIOWRAH_MARK, PF4MD_001),
+-	PINMUX_DATA(SSIWS2_MARK, PF4MD_010),
+-	PINMUX_DATA(DV_DATA4_MARK, PF4MD_011),
+-	PINMUX_DATA(TXD3_MARK, PF4MD_100),
+-
+-	PINMUX_DATA(PF3_DATA, PF3MD_000),
+-	PINMUX_DATA(ICIORD_MARK, PF3MD_001),
+-	PINMUX_DATA(SSISCK2_MARK, PF3MD_010),
+-	PINMUX_DATA(DV_DATA3_MARK, PF3MD_011),
+-	PINMUX_DATA(RXD3_MARK, PF3MD_100),
+-
+-	PINMUX_DATA(PF2_DATA, PF2MD_000),
+-	PINMUX_DATA(BACK_MARK, PF2MD_001),
+-	PINMUX_DATA(SSIDATA1_MARK, PF2MD_010),
+-	PINMUX_DATA(DV_DATA2_MARK, PF2MD_011),
+-	PINMUX_DATA(TXD2_MARK, PF2MD_100),
+-	PINMUX_DATA(DACK0_MARK, PF2MD_101),
+-
+-	PINMUX_DATA(PF1_DATA, PF1MD_000),
+-	PINMUX_DATA(BREQ_MARK, PF1MD_001),
+-	PINMUX_DATA(SSIWS1_MARK, PF1MD_010),
+-	PINMUX_DATA(DV_DATA1_MARK, PF1MD_011),
+-	PINMUX_DATA(RXD2_MARK, PF1MD_100),
+-	PINMUX_DATA(DREQ0_MARK, PF1MD_101),
+-
+-	PINMUX_DATA(PF0_DATA, PF0MD_000),
+-	PINMUX_DATA(WAIT_MARK, PF0MD_001),
+-	PINMUX_DATA(SSISCK1_MARK, PF0MD_010),
+-	PINMUX_DATA(DV_DATA0_MARK, PF0MD_011),
+-	PINMUX_DATA(SCK2_MARK, PF0MD_100),
+-	PINMUX_DATA(TEND0_MARK, PF0MD_101),
+-
+-	/* Port G */
+-	PINMUX_DATA(PG24_DATA, PG24MD_00),
+-	PINMUX_DATA(MOSI0_MARK, PG24MD_01),
+-	PINMUX_DATA(TIOC0D_MARK, PG24MD_10),
+-
+-	PINMUX_DATA(PG23_DATA, PG23MD_00),
+-	PINMUX_DATA(MOSI1_MARK, PG23MD_01),
+-	PINMUX_DATA(TIOC0C_MARK, PG23MD_10),
+-
+-	PINMUX_DATA(PG22_DATA, PG22MD_00),
+-	PINMUX_DATA(SSL10_MARK, PG22MD_01),
+-	PINMUX_DATA(TIOC0B_MARK, PG22MD_10),
+-
+-	PINMUX_DATA(PG21_DATA, PG21MD_00),
+-	PINMUX_DATA(RSPCK1_MARK, PG21MD_01),
+-	PINMUX_DATA(TIOC0A_MARK, PG21MD_10),
+-
+-	PINMUX_DATA(PG20_DATA, PG20MD_000),
+-	PINMUX_DATA(LCD_EXTCLK_MARK, PG20MD_001),
+-	PINMUX_DATA(MISO1_MARK, PG20MD_011),
+-	PINMUX_DATA(TXD7_MARK, PG20MD_100),
+-
+-	PINMUX_DATA(PG19_DATA, PG19MD_000),
+-	PINMUX_DATA(LCD_CLK_MARK, PG19MD_001),
+-	PINMUX_DATA(TIOC2B_MARK, PG19MD_010),
+-	PINMUX_DATA(MISO1_PG19_MARK, PG19MD_011),
+-	PINMUX_DATA(RXD7_MARK, PG19MD_100),
+-
+-	PINMUX_DATA(PG18_DATA, PG18MD_000),
+-	PINMUX_DATA(LCD_DE_MARK, PG18MD_001),
+-	PINMUX_DATA(TIOC2A_MARK, PG18MD_010),
+-	PINMUX_DATA(SSL10_MARK, PG18MD_011),
+-	PINMUX_DATA(TXD6_MARK, PG18MD_100),
+-
+-	PINMUX_DATA(PG17_DATA, PG17MD_000),
+-	PINMUX_DATA(LCD_HSYNC_MARK, PG17MD_001),
+-	PINMUX_DATA(TIOC1B_MARK, PG17MD_010),
+-	PINMUX_DATA(RSPCK1_MARK, PG17MD_011),
+-	PINMUX_DATA(RXD6_MARK, PG17MD_100),
+-
+-	PINMUX_DATA(PG16_DATA, PG16MD_000),
+-	PINMUX_DATA(LCD_VSYNC_MARK, PG16MD_001),
+-	PINMUX_DATA(TIOC1A_MARK, PG16MD_010),
+-	PINMUX_DATA(TXD3_MARK, PG16MD_011),
+-	PINMUX_DATA(CTS1_MARK, PG16MD_100),
+-
+-	PINMUX_DATA(PG15_DATA, PG15MD_000),
+-	PINMUX_DATA(LCD_DATA15_MARK, PG15MD_001),
+-	PINMUX_DATA(TIOC0D_MARK, PG15MD_010),
+-	PINMUX_DATA(RXD3_MARK, PG15MD_011),
+-	PINMUX_DATA(RTS1_MARK, PG15MD_100),
+-
+-	PINMUX_DATA(PG14_DATA, PG14MD_000),
+-	PINMUX_DATA(LCD_DATA14_MARK, PG14MD_001),
+-	PINMUX_DATA(TIOC0C_MARK, PG14MD_010),
+-	PINMUX_DATA(SCK1_MARK, PG14MD_100),
+-
+-	PINMUX_DATA(PG13_DATA, PG13MD_000),
+-	PINMUX_DATA(LCD_DATA13_MARK, PG13MD_001),
+-	PINMUX_DATA(TIOC0B_MARK, PG13MD_010),
+-	PINMUX_DATA(TXD1_MARK, PG13MD_100),
+-
+-	PINMUX_DATA(PG12_DATA, PG12MD_000),
+-	PINMUX_DATA(LCD_DATA12_MARK, PG12MD_001),
+-	PINMUX_DATA(TIOC0A_MARK, PG12MD_010),
+-	PINMUX_DATA(RXD1_MARK, PG12MD_100),
+-
+-	PINMUX_DATA(PG11_DATA, PG11MD_000),
+-	PINMUX_DATA(LCD_DATA11_MARK, PG11MD_001),
+-	PINMUX_DATA(SSITXD0_MARK, PG11MD_010),
+-	PINMUX_DATA(IRQ3_PG_MARK, PG11MD_011),
+-	PINMUX_DATA(TXD5_MARK, PG11MD_100),
+-	PINMUX_DATA(SIOFTXD_MARK, PG11MD_101),
+-
+-	PINMUX_DATA(PG10_DATA, PG10MD_000),
+-	PINMUX_DATA(LCD_DATA10_MARK, PG10MD_001),
+-	PINMUX_DATA(SSIRXD0_MARK, PG10MD_010),
+-	PINMUX_DATA(IRQ2_PG_MARK, PG10MD_011),
+-	PINMUX_DATA(RXD5_MARK, PG10MD_100),
+-	PINMUX_DATA(SIOFRXD_MARK, PG10MD_101),
+-
+-	PINMUX_DATA(PG9_DATA, PG9MD_000),
+-	PINMUX_DATA(LCD_DATA9_MARK, PG9MD_001),
+-	PINMUX_DATA(SSIWS0_MARK, PG9MD_010),
+-	PINMUX_DATA(TXD4_MARK, PG9MD_100),
+-	PINMUX_DATA(SIOFSYNC_MARK, PG9MD_101),
+-
+-	PINMUX_DATA(PG8_DATA, PG8MD_000),
+-	PINMUX_DATA(LCD_DATA8_MARK, PG8MD_001),
+-	PINMUX_DATA(SSISCK0_MARK, PG8MD_010),
+-	PINMUX_DATA(RXD4_MARK, PG8MD_100),
+-	PINMUX_DATA(SIOFSCK_MARK, PG8MD_101),
+-
+-	PINMUX_DATA(PG7_DATA, PG7MD_00),
+-	PINMUX_DATA(LCD_DATA7_MARK, PG7MD_01),
+-	PINMUX_DATA(SD_CD_MARK, PG7MD_10),
+-	PINMUX_DATA(PINT7_PG_MARK, PG7MD_11),
+-
+-	PINMUX_DATA(PG6_DATA, PG7MD_00),
+-	PINMUX_DATA(LCD_DATA6_MARK, PG7MD_01),
+-	PINMUX_DATA(SD_WP_MARK, PG7MD_10),
+-	PINMUX_DATA(PINT6_PG_MARK, PG7MD_11),
+-
+-	PINMUX_DATA(PG5_DATA, PG5MD_00),
+-	PINMUX_DATA(LCD_DATA5_MARK, PG5MD_01),
+-	PINMUX_DATA(SD_D1_MARK, PG5MD_10),
+-	PINMUX_DATA(PINT5_PG_MARK, PG5MD_11),
+-
+-	PINMUX_DATA(PG4_DATA, PG4MD_00),
+-	PINMUX_DATA(LCD_DATA4_MARK, PG4MD_01),
+-	PINMUX_DATA(SD_D0_MARK, PG4MD_10),
+-	PINMUX_DATA(PINT4_PG_MARK, PG4MD_11),
+-
+-	PINMUX_DATA(PG3_DATA, PG3MD_00),
+-	PINMUX_DATA(LCD_DATA3_MARK, PG3MD_01),
+-	PINMUX_DATA(SD_CLK_MARK, PG3MD_10),
+-	PINMUX_DATA(PINT3_PG_MARK, PG3MD_11),
+-
+-	PINMUX_DATA(PG2_DATA, PG2MD_00),
+-	PINMUX_DATA(LCD_DATA2_MARK, PG2MD_01),
+-	PINMUX_DATA(SD_CMD_MARK, PG2MD_10),
+-	PINMUX_DATA(PINT2_PG_MARK, PG2MD_11),
+-
+-	PINMUX_DATA(PG1_DATA, PG1MD_00),
+-	PINMUX_DATA(LCD_DATA1_MARK, PG1MD_01),
+-	PINMUX_DATA(SD_D3_MARK, PG1MD_10),
+-	PINMUX_DATA(PINT1_PG_MARK, PG1MD_11),
+-
+-	PINMUX_DATA(PG0_DATA, PG0MD_000),
+-	PINMUX_DATA(LCD_DATA0_MARK, PG0MD_001),
+-	PINMUX_DATA(SD_D2_MARK, PG0MD_010),
+-	PINMUX_DATA(PINT0_PG_MARK, PG0MD_011),
+-	PINMUX_DATA(WDTOVF_MARK, PG0MD_100),
+-
+-	/* Port H */
+-	PINMUX_DATA(PH7_DATA, PH7MD_0),
+-	PINMUX_DATA(PHAN7_MARK, PH7MD_1),
+-
+-	PINMUX_DATA(PH6_DATA, PH6MD_0),
+-	PINMUX_DATA(PHAN6_MARK, PH6MD_1),
+-
+-	PINMUX_DATA(PH5_DATA, PH5MD_0),
+-	PINMUX_DATA(PHAN5_MARK, PH5MD_1),
+-
+-	PINMUX_DATA(PH4_DATA, PH4MD_0),
+-	PINMUX_DATA(PHAN4_MARK, PH4MD_1),
+-
+-	PINMUX_DATA(PH3_DATA, PH3MD_0),
+-	PINMUX_DATA(PHAN3_MARK, PH3MD_1),
+-
+-	PINMUX_DATA(PH2_DATA, PH2MD_0),
+-	PINMUX_DATA(PHAN2_MARK, PH2MD_1),
+-
+-	PINMUX_DATA(PH1_DATA, PH1MD_0),
+-	PINMUX_DATA(PHAN1_MARK, PH1MD_1),
+-
+-	PINMUX_DATA(PH0_DATA, PH0MD_0),
+-	PINMUX_DATA(PHAN0_MARK, PH0MD_1),
+-
+-	/* Port I - not on device */
+-
+-	/* Port J */
+-	PINMUX_DATA(PJ11_DATA, PJ11MD_00),
+-	PINMUX_DATA(PWM2H_MARK, PJ11MD_01),
+-	PINMUX_DATA(DACK1_MARK, PJ11MD_10),
+-
+-	PINMUX_DATA(PJ10_DATA, PJ10MD_00),
+-	PINMUX_DATA(PWM2G_MARK, PJ10MD_01),
+-	PINMUX_DATA(DREQ1_MARK, PJ10MD_10),
+-
+-	PINMUX_DATA(PJ9_DATA, PJ9MD_00),
+-	PINMUX_DATA(PWM2F_MARK, PJ9MD_01),
+-	PINMUX_DATA(TEND1_MARK, PJ9MD_10),
+-
+-	PINMUX_DATA(PJ8_DATA, PJ8MD_00),
+-	PINMUX_DATA(PWM2E_MARK, PJ8MD_01),
+-	PINMUX_DATA(RTS3_MARK, PJ8MD_10),
+-
+-	PINMUX_DATA(PJ7_DATA, PJ7MD_00),
+-	PINMUX_DATA(TIOC1B_MARK, PJ7MD_01),
+-	PINMUX_DATA(CTS3_MARK, PJ7MD_10),
+-
+-	PINMUX_DATA(PJ6_DATA, PJ6MD_00),
+-	PINMUX_DATA(TIOC1A_MARK, PJ6MD_01),
+-	PINMUX_DATA(SCK3_MARK, PJ6MD_10),
+-
+-	PINMUX_DATA(PJ5_DATA, PJ5MD_00),
+-	PINMUX_DATA(IERXD_MARK, PJ5MD_01),
+-	PINMUX_DATA(TXD3_MARK, PJ5MD_10),
+-
+-	PINMUX_DATA(PJ4_DATA, PJ4MD_00),
+-	PINMUX_DATA(IETXD_MARK, PJ4MD_01),
+-	PINMUX_DATA(RXD3_MARK, PJ4MD_10),
+-
+-	PINMUX_DATA(PJ3_DATA, PJ3MD_00),
+-	PINMUX_DATA(CRX1_MARK, PJ3MD_01),
+-	PINMUX_DATA(CRX0_CRX1_MARK, PJ3MD_10),
+-	PINMUX_DATA(IRQ1_PJ_MARK, PJ3MD_11),
+-
+-	PINMUX_DATA(PJ2_DATA, PJ2MD_000),
+-	PINMUX_DATA(CTX1_MARK, PJ2MD_001),
+-	PINMUX_DATA(CTX0_CTX1_MARK, PJ2MD_010),
+-	PINMUX_DATA(CS2_MARK, PJ2MD_011),
+-	PINMUX_DATA(SCK0_MARK, PJ2MD_100),
+-	PINMUX_DATA(LCD_M_DISP_MARK, PJ2MD_101),
+-
+-	PINMUX_DATA(PJ1_DATA, PJ1MD_000),
+-	PINMUX_DATA(CRX0_MARK, PJ1MD_001),
+-	PINMUX_DATA(IERXD_MARK, PJ1MD_010),
+-	PINMUX_DATA(IRQ0_PJ_MARK, PJ1MD_011),
+-	PINMUX_DATA(RXD0_MARK, PJ1MD_100),
+-
+-	PINMUX_DATA(PJ0_DATA, PJ0MD_000),
+-	PINMUX_DATA(CTX0_MARK, PJ0MD_001),
+-	PINMUX_DATA(IERXD_MARK, PJ0MD_010),
+-	PINMUX_DATA(CS1_MARK, PJ0MD_011),
+-	PINMUX_DATA(TXD0_MARK, PJ0MD_100),
+-	PINMUX_DATA(A0_MARK, PJ0MD_101),
+-
+-	/* Port K */
+-	PINMUX_DATA(PK11_DATA, PK11MD_00),
+-	PINMUX_DATA(PWM2D_MARK, PK11MD_01),
+-	PINMUX_DATA(SSITXD0_MARK, PK11MD_10),
+-
+-	PINMUX_DATA(PK10_DATA, PK10MD_00),
+-	PINMUX_DATA(PWM2C_MARK, PK10MD_01),
+-	PINMUX_DATA(SSIRXD0_MARK, PK10MD_10),
+-
+-	PINMUX_DATA(PK9_DATA, PK9MD_00),
+-	PINMUX_DATA(PWM2B_MARK, PK9MD_01),
+-	PINMUX_DATA(SSIWS0_MARK, PK9MD_10),
+-
+-	PINMUX_DATA(PK8_DATA, PK8MD_00),
+-	PINMUX_DATA(PWM2A_MARK, PK8MD_01),
+-	PINMUX_DATA(SSISCK0_MARK, PK8MD_10),
+-
+-	PINMUX_DATA(PK7_DATA, PK7MD_00),
+-	PINMUX_DATA(PWM1H_MARK, PK7MD_01),
+-	PINMUX_DATA(SD_CD_MARK, PK7MD_10),
+-
+-	PINMUX_DATA(PK6_DATA, PK6MD_00),
+-	PINMUX_DATA(PWM1G_MARK, PK6MD_01),
+-	PINMUX_DATA(SD_WP_MARK, PK6MD_10),
+-
+-	PINMUX_DATA(PK5_DATA, PK5MD_00),
+-	PINMUX_DATA(PWM1F_MARK, PK5MD_01),
+-	PINMUX_DATA(SD_D1_MARK, PK5MD_10),
+-
+-	PINMUX_DATA(PK4_DATA, PK4MD_00),
+-	PINMUX_DATA(PWM1E_MARK, PK4MD_01),
+-	PINMUX_DATA(SD_D0_MARK, PK4MD_10),
+-
+-	PINMUX_DATA(PK3_DATA, PK3MD_00),
+-	PINMUX_DATA(PWM1D_MARK, PK3MD_01),
+-	PINMUX_DATA(SD_CLK_MARK, PK3MD_10),
+-
+-	PINMUX_DATA(PK2_DATA, PK2MD_00),
+-	PINMUX_DATA(PWM1C_MARK, PK2MD_01),
+-	PINMUX_DATA(SD_CMD_MARK, PK2MD_10),
+-
+-	PINMUX_DATA(PK1_DATA, PK1MD_00),
+-	PINMUX_DATA(PWM1B_MARK, PK1MD_01),
+-	PINMUX_DATA(SD_D3_MARK, PK1MD_10),
+-
+-	PINMUX_DATA(PK0_DATA, PK0MD_00),
+-	PINMUX_DATA(PWM1A_MARK, PK0MD_01),
+-	PINMUX_DATA(SD_D2_MARK, PK0MD_10),
+-};
+-
+-static const struct sh_pfc_pin pinmux_pins[] = {
+-	/* Port A */
+-	PINMUX_GPIO(PA3),
+-	PINMUX_GPIO(PA2),
+-	PINMUX_GPIO(PA1),
+-	PINMUX_GPIO(PA0),
+-
+-	/* Port B */
+-	PINMUX_GPIO(PB22),
+-	PINMUX_GPIO(PB21),
+-	PINMUX_GPIO(PB20),
+-	PINMUX_GPIO(PB19),
+-	PINMUX_GPIO(PB18),
+-	PINMUX_GPIO(PB17),
+-	PINMUX_GPIO(PB16),
+-	PINMUX_GPIO(PB15),
+-	PINMUX_GPIO(PB14),
+-	PINMUX_GPIO(PB13),
+-	PINMUX_GPIO(PB12),
+-	PINMUX_GPIO(PB11),
+-	PINMUX_GPIO(PB10),
+-	PINMUX_GPIO(PB9),
+-	PINMUX_GPIO(PB8),
+-	PINMUX_GPIO(PB7),
+-	PINMUX_GPIO(PB6),
+-	PINMUX_GPIO(PB5),
+-	PINMUX_GPIO(PB4),
+-	PINMUX_GPIO(PB3),
+-	PINMUX_GPIO(PB2),
+-	PINMUX_GPIO(PB1),
+-
+-	/* Port C */
+-	PINMUX_GPIO(PC10),
+-	PINMUX_GPIO(PC9),
+-	PINMUX_GPIO(PC8),
+-	PINMUX_GPIO(PC7),
+-	PINMUX_GPIO(PC6),
+-	PINMUX_GPIO(PC5),
+-	PINMUX_GPIO(PC4),
+-	PINMUX_GPIO(PC3),
+-	PINMUX_GPIO(PC2),
+-	PINMUX_GPIO(PC1),
+-	PINMUX_GPIO(PC0),
+-
+-	/* Port D */
+-	PINMUX_GPIO(PD15),
+-	PINMUX_GPIO(PD14),
+-	PINMUX_GPIO(PD13),
+-	PINMUX_GPIO(PD12),
+-	PINMUX_GPIO(PD11),
+-	PINMUX_GPIO(PD10),
+-	PINMUX_GPIO(PD9),
+-	PINMUX_GPIO(PD8),
+-	PINMUX_GPIO(PD7),
+-	PINMUX_GPIO(PD6),
+-	PINMUX_GPIO(PD5),
+-	PINMUX_GPIO(PD4),
+-	PINMUX_GPIO(PD3),
+-	PINMUX_GPIO(PD2),
+-	PINMUX_GPIO(PD1),
+-	PINMUX_GPIO(PD0),
+-
+-	/* Port E */
+-	PINMUX_GPIO(PE5),
+-	PINMUX_GPIO(PE4),
+-	PINMUX_GPIO(PE3),
+-	PINMUX_GPIO(PE2),
+-	PINMUX_GPIO(PE1),
+-	PINMUX_GPIO(PE0),
+-
+-	/* Port F */
+-	PINMUX_GPIO(PF12),
+-	PINMUX_GPIO(PF11),
+-	PINMUX_GPIO(PF10),
+-	PINMUX_GPIO(PF9),
+-	PINMUX_GPIO(PF8),
+-	PINMUX_GPIO(PF7),
+-	PINMUX_GPIO(PF6),
+-	PINMUX_GPIO(PF5),
+-	PINMUX_GPIO(PF4),
+-	PINMUX_GPIO(PF3),
+-	PINMUX_GPIO(PF2),
+-	PINMUX_GPIO(PF1),
+-	PINMUX_GPIO(PF0),
+-
+-	/* Port G */
+-	PINMUX_GPIO(PG24),
+-	PINMUX_GPIO(PG23),
+-	PINMUX_GPIO(PG22),
+-	PINMUX_GPIO(PG21),
+-	PINMUX_GPIO(PG20),
+-	PINMUX_GPIO(PG19),
+-	PINMUX_GPIO(PG18),
+-	PINMUX_GPIO(PG17),
+-	PINMUX_GPIO(PG16),
+-	PINMUX_GPIO(PG15),
+-	PINMUX_GPIO(PG14),
+-	PINMUX_GPIO(PG13),
+-	PINMUX_GPIO(PG12),
+-	PINMUX_GPIO(PG11),
+-	PINMUX_GPIO(PG10),
+-	PINMUX_GPIO(PG9),
+-	PINMUX_GPIO(PG8),
+-	PINMUX_GPIO(PG7),
+-	PINMUX_GPIO(PG6),
+-	PINMUX_GPIO(PG5),
+-	PINMUX_GPIO(PG4),
+-	PINMUX_GPIO(PG3),
+-	PINMUX_GPIO(PG2),
+-	PINMUX_GPIO(PG1),
+-	PINMUX_GPIO(PG0),
+-
+-	/* Port H - Port H does not have a Data Register */
+-
+-	/* Port I - not on device */
+-
+-	/* Port J */
+-	PINMUX_GPIO(PJ11),
+-	PINMUX_GPIO(PJ10),
+-	PINMUX_GPIO(PJ9),
+-	PINMUX_GPIO(PJ8),
+-	PINMUX_GPIO(PJ7),
+-	PINMUX_GPIO(PJ6),
+-	PINMUX_GPIO(PJ5),
+-	PINMUX_GPIO(PJ4),
+-	PINMUX_GPIO(PJ3),
+-	PINMUX_GPIO(PJ2),
+-	PINMUX_GPIO(PJ1),
+-	PINMUX_GPIO(PJ0),
+-
+-	/* Port K */
+-	PINMUX_GPIO(PK11),
+-	PINMUX_GPIO(PK10),
+-	PINMUX_GPIO(PK9),
+-	PINMUX_GPIO(PK8),
+-	PINMUX_GPIO(PK7),
+-	PINMUX_GPIO(PK6),
+-	PINMUX_GPIO(PK5),
+-	PINMUX_GPIO(PK4),
+-	PINMUX_GPIO(PK3),
+-	PINMUX_GPIO(PK2),
+-	PINMUX_GPIO(PK1),
+-	PINMUX_GPIO(PK0),
+-};
+-
+-#define PINMUX_FN_BASE	ARRAY_SIZE(pinmux_pins)
+-
+-static const struct pinmux_func pinmux_func_gpios[] = {
+-	/* INTC */
+-	GPIO_FN(PINT7_PG),
+-	GPIO_FN(PINT6_PG),
+-	GPIO_FN(PINT5_PG),
+-	GPIO_FN(PINT4_PG),
+-	GPIO_FN(PINT3_PG),
+-	GPIO_FN(PINT2_PG),
+-	GPIO_FN(PINT1_PG),
+-
+-	GPIO_FN(IRQ7_PC),
+-	GPIO_FN(IRQ6_PC),
+-	GPIO_FN(IRQ5_PC),
+-	GPIO_FN(IRQ4_PC),
+-	GPIO_FN(IRQ3_PG),
+-	GPIO_FN(IRQ2_PG),
+-	GPIO_FN(IRQ1_PJ),
+-	GPIO_FN(IRQ0_PJ),
+-	GPIO_FN(IRQ3_PE),
+-	GPIO_FN(IRQ2_PE),
+-	GPIO_FN(IRQ1_PE),
+-	GPIO_FN(IRQ0_PE),
+-
+-	/* WDT */
+-	GPIO_FN(WDTOVF),
+-
+-	/* CAN */
+-	GPIO_FN(CTX1),
+-	GPIO_FN(CRX1),
+-	GPIO_FN(CTX0),
+-	GPIO_FN(CTX0_CTX1),
+-	GPIO_FN(CRX0),
+-	GPIO_FN(CRX0_CRX1),
+-
+-	/* DMAC */
+-	GPIO_FN(TEND0),
+-	GPIO_FN(DACK0),
+-	GPIO_FN(DREQ0),
+-	GPIO_FN(TEND1),
+-	GPIO_FN(DACK1),
+-	GPIO_FN(DREQ1),
+-
+-	/* ADC */
+-	GPIO_FN(ADTRG),
+-
+-	/* BSCh */
+-	GPIO_FN(A25),
+-	GPIO_FN(A24),
+-	GPIO_FN(A23),
+-	GPIO_FN(A22),
+-	GPIO_FN(A21),
+-	GPIO_FN(A20),
+-	GPIO_FN(A19),
+-	GPIO_FN(A18),
+-	GPIO_FN(A17),
+-	GPIO_FN(A16),
+-	GPIO_FN(A15),
+-	GPIO_FN(A14),
+-	GPIO_FN(A13),
+-	GPIO_FN(A12),
+-	GPIO_FN(A11),
+-	GPIO_FN(A10),
+-	GPIO_FN(A9),
+-	GPIO_FN(A8),
+-	GPIO_FN(A7),
+-	GPIO_FN(A6),
+-	GPIO_FN(A5),
+-	GPIO_FN(A4),
+-	GPIO_FN(A3),
+-	GPIO_FN(A2),
+-	GPIO_FN(A1),
+-	GPIO_FN(A0),
+-
+-	GPIO_FN(D15),
+-	GPIO_FN(D14),
+-	GPIO_FN(D13),
+-	GPIO_FN(D12),
+-	GPIO_FN(D11),
+-	GPIO_FN(D10),
+-	GPIO_FN(D9),
+-	GPIO_FN(D8),
+-	GPIO_FN(D7),
+-	GPIO_FN(D6),
+-	GPIO_FN(D5),
+-	GPIO_FN(D4),
+-	GPIO_FN(D3),
+-	GPIO_FN(D2),
+-	GPIO_FN(D1),
+-	GPIO_FN(D0),
+-
+-	GPIO_FN(BS),
+-	GPIO_FN(CS4),
+-	GPIO_FN(CS3),
+-	GPIO_FN(CS2),
+-	GPIO_FN(CS1),
+-	GPIO_FN(CS0),
+-	GPIO_FN(CS6CE1B),
+-	GPIO_FN(CS5CE1A),
+-	GPIO_FN(CE2A),
+-	GPIO_FN(CE2B),
+-	GPIO_FN(RD),
+-	GPIO_FN(RDWR),
+-	GPIO_FN(ICIOWRAH),
+-	GPIO_FN(ICIORD),
+-	GPIO_FN(WE1DQMUWE),
+-	GPIO_FN(WE0DQML),
+-	GPIO_FN(RAS),
+-	GPIO_FN(CAS),
+-	GPIO_FN(CKE),
+-	GPIO_FN(WAIT),
+-	GPIO_FN(BREQ),
+-	GPIO_FN(BACK),
+-	GPIO_FN(IOIS16),
+-
+-	/* TMU */
+-	GPIO_FN(TIOC4D),
+-	GPIO_FN(TIOC4C),
+-	GPIO_FN(TIOC4B),
+-	GPIO_FN(TIOC4A),
+-	GPIO_FN(TIOC3D),
+-	GPIO_FN(TIOC3C),
+-	GPIO_FN(TIOC3B),
+-	GPIO_FN(TIOC3A),
+-	GPIO_FN(TIOC2B),
+-	GPIO_FN(TIOC1B),
+-	GPIO_FN(TIOC2A),
+-	GPIO_FN(TIOC1A),
+-	GPIO_FN(TIOC0D),
+-	GPIO_FN(TIOC0C),
+-	GPIO_FN(TIOC0B),
+-	GPIO_FN(TIOC0A),
+-	GPIO_FN(TCLKD),
+-	GPIO_FN(TCLKC),
+-	GPIO_FN(TCLKB),
+-	GPIO_FN(TCLKA),
+-
+-	/* SCIF */
+-	GPIO_FN(TXD0),
+-	GPIO_FN(RXD0),
+-	GPIO_FN(SCK0),
+-	GPIO_FN(TXD1),
+-	GPIO_FN(RXD1),
+-	GPIO_FN(SCK1),
+-	GPIO_FN(TXD2),
+-	GPIO_FN(RXD2),
+-	GPIO_FN(SCK2),
+-	GPIO_FN(RTS3),
+-	GPIO_FN(CTS3),
+-	GPIO_FN(TXD3),
+-	GPIO_FN(RXD3),
+-	GPIO_FN(SCK3),
+-	GPIO_FN(TXD4),
+-	GPIO_FN(RXD4),
+-	GPIO_FN(TXD5),
+-	GPIO_FN(RXD5),
+-	GPIO_FN(TXD6),
+-	GPIO_FN(RXD6),
+-	GPIO_FN(TXD7),
+-	GPIO_FN(RXD7),
+-	GPIO_FN(RTS1),
+-	GPIO_FN(CTS1),
+-
+-	/* RSPI */
+-	GPIO_FN(RSPCK0),
+-	GPIO_FN(MOSI0),
+-	GPIO_FN(MISO0_PF12),
+-	GPIO_FN(MISO1),
+-	GPIO_FN(SSL00),
+-	GPIO_FN(RSPCK1),
+-	GPIO_FN(MOSI1),
+-	GPIO_FN(MISO1_PG19),
+-	GPIO_FN(SSL10),
+-
+-	/* IIC3 */
+-	GPIO_FN(SCL0),
+-	GPIO_FN(SCL1),
+-	GPIO_FN(SCL2),
+-	GPIO_FN(SDA0),
+-	GPIO_FN(SDA1),
+-	GPIO_FN(SDA2),
+-
+-	/* SSI */
+-	GPIO_FN(SSISCK0),
+-	GPIO_FN(SSIWS0),
+-	GPIO_FN(SSITXD0),
+-	GPIO_FN(SSIRXD0),
+-	GPIO_FN(SSIWS1),
+-	GPIO_FN(SSIWS2),
+-	GPIO_FN(SSIWS3),
+-	GPIO_FN(SSISCK1),
+-	GPIO_FN(SSISCK2),
+-	GPIO_FN(SSISCK3),
+-	GPIO_FN(SSIDATA1),
+-	GPIO_FN(SSIDATA2),
+-	GPIO_FN(SSIDATA3),
+-	GPIO_FN(AUDIO_CLK),
+-
+-	/* SIOF */ /* NOTE Shares AUDIO_CLK with SSI */
+-	GPIO_FN(SIOFTXD),
+-	GPIO_FN(SIOFRXD),
+-	GPIO_FN(SIOFSYNC),
+-	GPIO_FN(SIOFSCK),
+-
+-	/* SPDIF */ /* NOTE Shares AUDIO_CLK with SSI */
+-	GPIO_FN(SPDIF_IN),
+-	GPIO_FN(SPDIF_OUT),
+-
+-	/* NANDFMC */ /* NOTE Controller is not available in boot mode 0 */
+-	GPIO_FN(FCE),
+-	GPIO_FN(FRB),
+-
+-	/* VDC3 */
+-	GPIO_FN(DV_CLK),
+-	GPIO_FN(DV_VSYNC),
+-	GPIO_FN(DV_HSYNC),
+-
+-	GPIO_FN(DV_DATA7),
+-	GPIO_FN(DV_DATA6),
+-	GPIO_FN(DV_DATA5),
+-	GPIO_FN(DV_DATA4),
+-	GPIO_FN(DV_DATA3),
+-	GPIO_FN(DV_DATA2),
+-	GPIO_FN(DV_DATA1),
+-	GPIO_FN(DV_DATA0),
+-
+-	GPIO_FN(LCD_CLK),
+-	GPIO_FN(LCD_EXTCLK),
+-	GPIO_FN(LCD_VSYNC),
+-	GPIO_FN(LCD_HSYNC),
+-	GPIO_FN(LCD_DE),
+-
+-	GPIO_FN(LCD_DATA15),
+-	GPIO_FN(LCD_DATA14),
+-	GPIO_FN(LCD_DATA13),
+-	GPIO_FN(LCD_DATA12),
+-	GPIO_FN(LCD_DATA11),
+-	GPIO_FN(LCD_DATA10),
+-	GPIO_FN(LCD_DATA9),
+-	GPIO_FN(LCD_DATA8),
+-	GPIO_FN(LCD_DATA7),
+-	GPIO_FN(LCD_DATA6),
+-	GPIO_FN(LCD_DATA5),
+-	GPIO_FN(LCD_DATA4),
+-	GPIO_FN(LCD_DATA3),
+-	GPIO_FN(LCD_DATA2),
+-	GPIO_FN(LCD_DATA1),
+-	GPIO_FN(LCD_DATA0),
+-
+-	GPIO_FN(LCD_M_DISP),
+-};
+-
+-static const struct pinmux_cfg_reg pinmux_config_regs[] = {
+-	{ PINMUX_CFG_REG_VAR("PAIOR0", 0xfffe3812, 16,
+-			     GROUP(-12, 1, 1, 1, 1),
+-			     GROUP(
+-		/* RESERVED [12] */
+-		PA3_IN, PA3_OUT,
+-		PA2_IN, PA2_OUT,
+-		PA1_IN, PA1_OUT,
+-		PA0_IN,	PA0_OUT ))
+-	},
+-
+-	{ PINMUX_CFG_REG_VAR("PBCR5", 0xfffe3824, 16,
+-			     GROUP(-4, 4, 4, 4),
+-			     GROUP(
+-		/* RESERVED [4] */
+-		PB22MD_00, PB22MD_01, PB22MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PB21MD_0, PB21MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PB20MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-
+-	},
+-	{ PINMUX_CFG_REG("PBCR4", 0xfffe3826, 16, 4, GROUP(
+-		0, PB19MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PB18MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PB17MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PB16MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PBCR3", 0xfffe3828, 16, 4, GROUP(
+-		0, PB15MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PB14MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PB13MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PB12MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PBCR2", 0xfffe382a, 16, 4, GROUP(
+-		0, PB11MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PB10MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PB9MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PB8MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PBCR1", 0xfffe382c, 16, 4, GROUP(
+-		0, PB7MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PB6MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PB5MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PB4MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PBCR0", 0xfffe382e, 16,
+-			     GROUP(4, 4, 4, -4),
+-			     GROUP(
+-		0, PB3MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PB2MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PB1MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		/* RESERVED [4] */ ))
+-	},
+-
+-	{ PINMUX_CFG_REG_VAR("PBIOR1", 0xfffe3830, 16,
+-			     GROUP(-9, 1, 1, 1, 1, 1, 1, 1),
+-			     GROUP(
+-		/* RESERVED [9] */
+-		PB22_IN, PB22_OUT,
+-		PB21_IN, PB21_OUT,
+-		PB20_IN, PB20_OUT,
+-		PB19_IN, PB19_OUT,
+-		PB18_IN, PB18_OUT,
+-		PB17_IN, PB17_OUT,
+-		PB16_IN, PB16_OUT ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PBIOR0", 0xfffe3832, 16, 1, GROUP(
+-		PB15_IN, PB15_OUT,
+-		PB14_IN, PB14_OUT,
+-		PB13_IN, PB13_OUT,
+-		PB12_IN, PB12_OUT,
+-		PB11_IN, PB11_OUT,
+-		PB10_IN, PB10_OUT,
+-		PB9_IN, PB9_OUT,
+-		PB8_IN, PB8_OUT,
+-		PB7_IN, PB7_OUT,
+-		PB6_IN, PB6_OUT,
+-		PB5_IN, PB5_OUT,
+-		PB4_IN, PB4_OUT,
+-		PB3_IN, PB3_OUT,
+-		PB2_IN, PB2_OUT,
+-		PB1_IN, PB1_OUT,
+-		0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG_VAR("PCCR2", 0xfffe384a, 16,
+-			     GROUP(-4, 4, 4, 4),
+-			     GROUP(
+-		/* RESERVED [4] */
+-		PC10MD_0, PC10MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PC9MD_0, PC9MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PC8MD_00, PC8MD_01, PC8MD_10, PC8MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PCCR1", 0xfffe384c, 16, 4, GROUP(
+-		PC7MD_00, PC7MD_01, PC7MD_10, PC7MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PC6MD_00, PC6MD_01, PC6MD_10, PC6MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PC5MD_00, PC5MD_01, PC5MD_10, PC5MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PC4MD_0, PC4MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PCCR0", 0xfffe384e, 16, 4, GROUP(
+-		PC3MD_0, PC3MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PC2MD_0, PC2MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PC1MD_0, PC1MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PC0MD_0, PC0MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG_VAR("PCIOR0", 0xfffe3852, 16,
+-			     GROUP(-5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+-			     GROUP(
+-		/* RESERVED [5] */
+-		PC10_IN, PC10_OUT,
+-		PC9_IN, PC9_OUT,
+-		PC8_IN, PC8_OUT,
+-		PC7_IN, PC7_OUT,
+-		PC6_IN, PC6_OUT,
+-		PC5_IN, PC5_OUT,
+-		PC4_IN, PC4_OUT,
+-		PC3_IN, PC3_OUT,
+-		PC2_IN, PC2_OUT,
+-		PC1_IN, PC1_OUT,
+-		PC0_IN, PC0_OUT
+-	 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PDCR3", 0xfffe3868, 16, 4, GROUP(
+-		0, PD15MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PD14MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PD13MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PD12MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PDCR2", 0xfffe386a, 16, 4, GROUP(
+-		0, PD11MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PD10MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PD9MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PD8MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PDCR1", 0xfffe386c, 16, 4, GROUP(
+-		0, PD7MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PD6MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PD5MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PD4MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PDCR0", 0xfffe386e, 16, 4, GROUP(
+-		0, PD3MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PD2MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PD1MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PD0MD_01, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PDIOR0", 0xfffe3872, 16, 1, GROUP(
+-		PD15_IN, PD15_OUT,
+-		PD14_IN, PD14_OUT,
+-		PD13_IN, PD13_OUT,
+-		PD12_IN, PD12_OUT,
+-		PD11_IN, PD11_OUT,
+-		PD10_IN, PD10_OUT,
+-		PD9_IN, PD9_OUT,
+-		PD8_IN, PD8_OUT,
+-		PD7_IN, PD7_OUT,
+-		PD6_IN, PD6_OUT,
+-		PD5_IN, PD5_OUT,
+-		PD4_IN, PD4_OUT,
+-		PD3_IN, PD3_OUT,
+-		PD2_IN, PD2_OUT,
+-		PD1_IN, PD1_OUT,
+-		PD0_IN, PD0_OUT ))
+-	},
+-
+-	{ PINMUX_CFG_REG_VAR("PECR1", 0xfffe388c, 16,
+-			     GROUP(-8, 4, 4),
+-			     GROUP(
+-		/* RESERVED [8] */
+-		PE5MD_00, PE5MD_01, 0, PE5MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PE4MD_00, PE4MD_01, 0, PE4MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PECR0", 0xfffe388e, 16, 4, GROUP(
+-		PE3MD_00, PE3MD_01, 0, PE3MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PE2MD_00, PE2MD_01, 0, PE2MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PE1MD_000, PE1MD_001, PE1MD_010, PE1MD_011,
+-		PE1MD_100, PE1MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PE0MD_00, PE0MD_01, PE0MD_10, PE0MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG_VAR("PEIOR0", 0xfffe3892, 16,
+-			     GROUP(-10, 1, 1, 1, 1, 1, 1),
+-			     GROUP(
+-		/* RESERVED [10] */
+-		PE5_IN, PE5_OUT,
+-		PE4_IN, PE4_OUT,
+-		PE3_IN, PE3_OUT,
+-		PE2_IN, PE2_OUT,
+-		PE1_IN, PE1_OUT,
+-		PE0_IN, PE0_OUT ))
+-	},
+-
+-	{ PINMUX_CFG_REG_VAR("PFCR3", 0xfffe38a8, 16,
+-			     GROUP(-12, 4),
+-			     GROUP(
+-		/* RESERVED [12] */
+-		PF12MD_000, PF12MD_001, 0, PF12MD_011,
+-		PF12MD_100, PF12MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PFCR2", 0xfffe38aa, 16, 4, GROUP(
+-		PF11MD_000, PF11MD_001, PF11MD_010, PF11MD_011,
+-		PF11MD_100, PF11MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PF10MD_000, PF10MD_001, PF10MD_010, PF10MD_011,
+-		PF10MD_100, PF10MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PF9MD_000, PF9MD_001, PF9MD_010, PF9MD_011,
+-		PF9MD_100, PF9MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PF8MD_00, PF8MD_01, PF8MD_10, PF8MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PFCR1", 0xfffe38ac, 16, 4, GROUP(
+-		PF7MD_000, PF7MD_001, PF7MD_010, PF7MD_011,
+-		PF7MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PF6MD_000, PF6MD_001, PF6MD_010, PF6MD_011,
+-		PF6MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PF5MD_000, PF5MD_001, PF5MD_010, PF5MD_011,
+-		PF5MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PF4MD_000, PF4MD_001, PF4MD_010, PF4MD_011,
+-		PF4MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PFCR0", 0xfffe38ae, 16, 4, GROUP(
+-		PF3MD_000, PF3MD_001, PF3MD_010, PF3MD_011,
+-		PF3MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PF2MD_000, PF2MD_001, PF2MD_010, PF2MD_011,
+-		PF2MD_100, PF2MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PF1MD_000, PF1MD_001, PF1MD_010, PF1MD_011,
+-		PF1MD_100, PF1MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PF0MD_000, PF0MD_001, PF0MD_010, PF0MD_011,
+-		PF0MD_100, PF0MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PFIOR0", 0xfffe38b2, 16, 1, GROUP(
+-		0, 0, 0, 0, 0, 0,
+-		PF12_IN, PF12_OUT,
+-		PF11_IN, PF11_OUT,
+-		PF10_IN, PF10_OUT,
+-		PF9_IN, PF9_OUT,
+-		PF8_IN, PF8_OUT,
+-		PF7_IN, PF7_OUT,
+-		PF6_IN, PF6_OUT,
+-		PF5_IN, PF5_OUT,
+-		PF4_IN, PF4_OUT,
+-		PF3_IN, PF3_OUT,
+-		PF2_IN, PF2_OUT,
+-		PF1_IN, PF1_OUT,
+-		PF0_IN, PF0_OUT ))
+-	},
+-
+-	{ PINMUX_CFG_REG_VAR("PGCR7", 0xfffe38c0, 16,
+-			     GROUP(-12, 4),
+-			     GROUP(
+-		/* RESERVED [12] */
+-		PG0MD_000, PG0MD_001, PG0MD_010, PG0MD_011,
+-		PG0MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG_VAR("PGCR6", 0xfffe38c2, 16,
+-			     GROUP(-12, 4),
+-			     GROUP(
+-		/* RESERVED [12] */
+-		PG24MD_00, PG24MD_01, PG24MD_10, PG24MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PGCR5", 0xfffe38c4, 16, 4, GROUP(
+-		PG23MD_00, PG23MD_01, PG23MD_10, PG23MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG22MD_00, PG22MD_01, PG22MD_10, PG22MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG21MD_00, PG21MD_01, PG21MD_10, PG21MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG20MD_000, PG20MD_001, PG20MD_010, PG20MD_011,
+-		PG20MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PGCR4", 0xfffe38c6, 16, 4, GROUP(
+-		PG19MD_000, PG19MD_001, PG19MD_010, PG19MD_011,
+-		PG19MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG18MD_000, PG18MD_001, PG18MD_010, PG18MD_011,
+-		PG18MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG17MD_000, PG17MD_001, PG17MD_010, PG17MD_011,
+-		PG17MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG16MD_000, PG16MD_001, PG16MD_010, PG16MD_011,
+-		PG16MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PGCR3", 0xfffe38c8, 16, 4, GROUP(
+-		PG15MD_000, PG15MD_001, PG15MD_010, PG15MD_011,
+-		PG15MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG14MD_000, PG14MD_001, PG14MD_010, 0,
+-		PG14MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG13MD_000, PG13MD_001, PG13MD_010, 0,
+-		PG13MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG12MD_000, PG12MD_001, PG12MD_010, 0,
+-		PG12MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PGCR2", 0xfffe38ca, 16, 4, GROUP(
+-		PG11MD_000, PG11MD_001, PG11MD_010, PG11MD_011,
+-		PG11MD_100, PG11MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG10MD_000, PG10MD_001, PG10MD_010, PG10MD_011,
+-		PG10MD_100, PG10MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG9MD_000, PG9MD_001, PG9MD_010, PG9MD_011,
+-		PG9MD_100, PG9MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG8MD_000, PG8MD_001, PG8MD_010, PG8MD_011,
+-		PG8MD_100, PG8MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PGCR1", 0xfffe38cc, 16, 4, GROUP(
+-		PG7MD_00, PG7MD_01, PG7MD_10, PG7MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG6MD_00, PG6MD_01, PG6MD_10, PG6MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG5MD_00, PG5MD_01, PG5MD_10, PG5MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG4MD_00, PG4MD_01, PG4MD_10, PG4MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PGCR0", 0xfffe38ce, 16,
+-			     GROUP(4, 4, 4, -4),
+-			     GROUP(
+-		PG3MD_00, PG3MD_01, PG3MD_10, PG3MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG2MD_00, PG2MD_01, PG2MD_10, PG2MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG1MD_00, PG1MD_01, PG1MD_10, PG1MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		/* RESERVED [4] */ ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PGIOR1", 0xfffe38d0, 16,
+-			     GROUP(-7, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+-			     GROUP(
+-		/* RESERVED [7] */
+-		PG24_IN, PG24_OUT,
+-		PG23_IN, PG23_OUT,
+-		PG22_IN, PG22_OUT,
+-		PG21_IN, PG21_OUT,
+-		PG20_IN, PG20_OUT,
+-		PG19_IN, PG19_OUT,
+-		PG18_IN, PG18_OUT,
+-		PG17_IN, PG17_OUT,
+-		PG16_IN, PG16_OUT ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PGIOR0", 0xfffe38d2, 16, 1, GROUP(
+-		PG15_IN, PG15_OUT,
+-		PG14_IN, PG14_OUT,
+-		PG13_IN, PG13_OUT,
+-		PG12_IN, PG12_OUT,
+-		PG11_IN, PG11_OUT,
+-		PG10_IN, PG10_OUT,
+-		PG9_IN, PG9_OUT,
+-		PG8_IN, PG8_OUT,
+-		PG7_IN, PG7_OUT,
+-		PG6_IN, PG6_OUT,
+-		PG5_IN, PG5_OUT,
+-		PG4_IN, PG4_OUT,
+-		PG3_IN, PG3_OUT,
+-		PG2_IN, PG2_OUT,
+-		PG1_IN, PG1_OUT,
+-		PG0_IN, PG0_OUT
+-	 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PHCR1", 0xfffe38ec, 16, 4, GROUP(
+-		PH7MD_0, PH7MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PH6MD_0, PH6MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PH5MD_0, PH5MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PH4MD_0, PH4MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PHCR0", 0xfffe38ee, 16, 4, GROUP(
+-		PH3MD_0, PH3MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PH2MD_0, PH2MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PH1MD_0, PH1MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PH0MD_0, PH0MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PJCR2", 0xfffe390a, 16, 4, GROUP(
+-		PJ11MD_00, PJ11MD_01, PJ11MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PJ10MD_00, PJ10MD_01, PJ10MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PJ9MD_00, PJ9MD_01, PJ9MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PJ8MD_00, PJ8MD_01, PJ8MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PJCR1", 0xfffe390c, 16, 4, GROUP(
+-		PJ7MD_00, PJ7MD_01, PJ7MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PJ6MD_00, PJ6MD_01, PJ6MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PJ5MD_00, PJ5MD_01, PJ5MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PJ4MD_00, PJ4MD_01, PJ4MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PJCR0", 0xfffe390e, 16, 4, GROUP(
+-		PJ3MD_00, PJ3MD_01, PJ3MD_10, PJ3MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PJ2MD_000, PJ2MD_001, PJ2MD_010, PJ2MD_011,
+-		PJ2MD_100, PJ2MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PJ1MD_000, PJ1MD_001, PJ1MD_010, PJ1MD_011,
+-		PJ1MD_100, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PJ0MD_000, PJ0MD_001, PJ0MD_010, PJ0MD_011,
+-		PJ0MD_100, PJ0MD_101, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, ))
+-	},
+-	{ PINMUX_CFG_REG("PJIOR0", 0xfffe3912, 16, 1, GROUP(
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PJ11_IN, PJ11_OUT,
+-		PJ10_IN, PJ10_OUT,
+-		PJ9_IN, PJ9_OUT,
+-		PJ8_IN, PJ8_OUT,
+-		PJ7_IN, PJ7_OUT,
+-		PJ6_IN, PJ6_OUT,
+-		PJ5_IN, PJ5_OUT,
+-		PJ4_IN, PJ4_OUT,
+-		PJ3_IN, PJ3_OUT,
+-		PJ2_IN, PJ2_OUT,
+-		PJ1_IN, PJ1_OUT,
+-		PJ0_IN, PJ0_OUT ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PKCR2", 0xfffe392a, 16, 4, GROUP(
+-		PK11MD_00, PK11MD_01, PK11MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PK10MD_00, PK10MD_01, PK10MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PK9MD_00, PK9MD_01, PK9MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PK8MD_00, PK8MD_01, PK8MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PKCR1", 0xfffe392c, 16, 4, GROUP(
+-		PK7MD_00, PK7MD_01, PK7MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PK6MD_00, PK6MD_01, PK6MD_10, 0,  0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PK5MD_00, PK5MD_01, PK5MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PK4MD_00, PK4MD_01, PK4MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PKCR0", 0xfffe392e, 16, 4, GROUP(
+-		PK3MD_00, PK3MD_01, PK3MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PK2MD_00, PK2MD_01, PK2MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PK1MD_00, PK1MD_01, PK1MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PK0MD_00, PK0MD_01, PK0MD_10, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PKIOR0", 0xfffe3932, 16, 1, GROUP(
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PK11_IN, PK11_OUT,
+-		PK10_IN, PK10_OUT,
+-		PK9_IN, PK9_OUT,
+-		PK8_IN, PK8_OUT,
+-		PK7_IN, PK7_OUT,
+-		PK6_IN, PK6_OUT,
+-		PK5_IN, PK5_OUT,
+-		PK4_IN, PK4_OUT,
+-		PK3_IN, PK3_OUT,
+-		PK2_IN, PK2_OUT,
+-		PK1_IN, PK1_OUT,
+-		PK0_IN, PK0_OUT ))
+-	},
+-	{}
+-};
+-
+-static const struct pinmux_data_reg pinmux_data_regs[] = {
+-	{ PINMUX_DATA_REG("PADR1", 0xfffe3814, 16, GROUP(
+-		0, 0, 0, 0, 0, 0, 0, PA3_DATA,
+-		0, 0, 0, 0, 0, 0, 0, PA2_DATA ))
+-	},
+-
+-	{ PINMUX_DATA_REG("PADR0", 0xfffe3816, 16, GROUP(
+-		0, 0, 0, 0, 0, 0, 0, PA1_DATA,
+-		0, 0, 0, 0, 0, 0, 0, PA0_DATA ))
+-	},
+-
+-	{ PINMUX_DATA_REG("PBDR1", 0xfffe3834, 16, GROUP(
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PB22_DATA, PB21_DATA, PB20_DATA,
+-		PB19_DATA, PB18_DATA, PB17_DATA, PB16_DATA ))
+-	},
+-
+-	{ PINMUX_DATA_REG("PBDR0", 0xfffe3836, 16, GROUP(
+-		PB15_DATA, PB14_DATA, PB13_DATA, PB12_DATA,
+-		PB11_DATA, PB10_DATA, PB9_DATA, PB8_DATA,
+-		PB7_DATA, PB6_DATA, PB5_DATA, PB4_DATA,
+-		PB3_DATA, PB2_DATA, PB1_DATA, 0 ))
+-	},
+-
+-	{ PINMUX_DATA_REG("PCDR0", 0xfffe3856, 16, GROUP(
+-		0, 0, 0, 0,
+-		0, PC10_DATA, PC9_DATA, PC8_DATA,
+-		PC7_DATA, PC6_DATA, PC5_DATA, PC4_DATA,
+-		PC3_DATA, PC2_DATA, PC1_DATA, PC0_DATA ))
+-	},
+-
+-	{ PINMUX_DATA_REG("PDDR0", 0xfffe3876, 16, GROUP(
+-		PD15_DATA, PD14_DATA, PD13_DATA, PD12_DATA,
+-		PD11_DATA, PD10_DATA, PD9_DATA, PD8_DATA,
+-		PD7_DATA, PD6_DATA, PD5_DATA, PD4_DATA,
+-		PD3_DATA, PD2_DATA, PD1_DATA, PD0_DATA ))
+-	},
+-
+-	{ PINMUX_DATA_REG("PEDR0", 0xfffe3896, 16, GROUP(
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, 0, PE5_DATA, PE4_DATA,
+-		PE3_DATA, PE2_DATA, PE1_DATA, PE0_DATA ))
+-	},
+-
+-	{ PINMUX_DATA_REG("PFDR0", 0xfffe38b6, 16, GROUP(
+-		0, 0, 0, PF12_DATA,
+-		PF11_DATA, PF10_DATA, PF9_DATA, PF8_DATA,
+-		PF7_DATA, PF6_DATA, PF5_DATA, PF4_DATA,
+-		PF3_DATA, PF2_DATA, PF1_DATA, PF0_DATA ))
+-	},
+-
+-	{ PINMUX_DATA_REG("PGDR1", 0xfffe38d4, 16, GROUP(
+-		0, 0, 0, 0, 0, 0, 0, PG24_DATA,
+-		PG23_DATA, PG22_DATA, PG21_DATA, PG20_DATA,
+-		PG19_DATA, PG18_DATA, PG17_DATA, PG16_DATA ))
+-	},
+-
+-	{ PINMUX_DATA_REG("PGDR0", 0xfffe38d6, 16, GROUP(
+-		PG15_DATA, PG14_DATA, PG13_DATA, PG12_DATA,
+-		PG11_DATA, PG10_DATA, PG9_DATA, PG8_DATA,
+-		PG7_DATA, PG6_DATA, PG5_DATA, PG4_DATA,
+-		PG3_DATA, PG2_DATA, PG1_DATA, PG0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PJDR0", 0xfffe3916, 16, GROUP(
+-		0, 0, 0, PJ12_DATA,
+-		PJ11_DATA, PJ10_DATA, PJ9_DATA, PJ8_DATA,
+-		PJ7_DATA, PJ6_DATA, PJ5_DATA, PJ4_DATA,
+-		PJ3_DATA, PJ2_DATA, PJ1_DATA, PJ0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PKDR0", 0xfffe3936, 16, GROUP(
+-		0, 0, 0, PK12_DATA,
+-		PK11_DATA, PK10_DATA, PK9_DATA, PK8_DATA,
+-		PK7_DATA, PK6_DATA, PK5_DATA, PK4_DATA,
+-		PK3_DATA, PK2_DATA, PK1_DATA, PK0_DATA ))
+-	},
+-	{ }
+-};
+-
+-const struct sh_pfc_soc_info sh7264_pinmux_info = {
+-	.name = "sh7264_pfc",
+-	.input = { PINMUX_INPUT_BEGIN, PINMUX_INPUT_END, FORCE_IN },
+-	.output = { PINMUX_OUTPUT_BEGIN, PINMUX_OUTPUT_END, FORCE_OUT },
+-	.function = { PINMUX_FUNCTION_BEGIN, PINMUX_FUNCTION_END },
+-
+-	.pins = pinmux_pins,
+-	.nr_pins = ARRAY_SIZE(pinmux_pins),
+-	.func_gpios = pinmux_func_gpios,
+-	.nr_func_gpios = ARRAY_SIZE(pinmux_func_gpios),
+-
+-	.cfg_regs = pinmux_config_regs,
+-	.data_regs = pinmux_data_regs,
+-
+-	.pinmux_data = pinmux_data,
+-	.pinmux_data_size = ARRAY_SIZE(pinmux_data),
+-};
+diff --git a/drivers/pinctrl/renesas/pfc-sh7269.c b/drivers/pinctrl/renesas/pfc-sh7269.c
+deleted file mode 100644
+index f59f558d75ae25..00000000000000
+--- a/drivers/pinctrl/renesas/pfc-sh7269.c
++++ /dev/null
+@@ -1,2851 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * SH7269 Pinmux
+- *
+- * Copyright (C) 2012  Renesas Electronics Europe Ltd
+- * Copyright (C) 2012  Phil Edworthy
+- */
+-
+-#include <linux/kernel.h>
+-#include <cpu/sh7269.h>
+-
+-#include "sh_pfc.h"
+-
+-enum {
+-	PINMUX_RESERVED = 0,
+-
+-	PINMUX_DATA_BEGIN,
+-	/* Port A */
+-	PA1_DATA, PA0_DATA,
+-	/* Port B */
+-	PB22_DATA, PB21_DATA, PB20_DATA,
+-	PB19_DATA, PB18_DATA, PB17_DATA, PB16_DATA,
+-	PB15_DATA, PB14_DATA, PB13_DATA, PB12_DATA,
+-	PB11_DATA, PB10_DATA, PB9_DATA, PB8_DATA,
+-	PB7_DATA, PB6_DATA, PB5_DATA, PB4_DATA,
+-	PB3_DATA, PB2_DATA, PB1_DATA,
+-	/* Port C */
+-	PC8_DATA,
+-	PC7_DATA, PC6_DATA, PC5_DATA, PC4_DATA,
+-	PC3_DATA, PC2_DATA, PC1_DATA, PC0_DATA,
+-	/* Port D */
+-	PD15_DATA, PD14_DATA, PD13_DATA, PD12_DATA,
+-	PD11_DATA, PD10_DATA, PD9_DATA, PD8_DATA,
+-	PD7_DATA, PD6_DATA, PD5_DATA, PD4_DATA,
+-	PD3_DATA, PD2_DATA, PD1_DATA, PD0_DATA,
+-	/* Port E */
+-	PE7_DATA, PE6_DATA, PE5_DATA, PE4_DATA,
+-	PE3_DATA, PE2_DATA, PE1_DATA, PE0_DATA,
+-	/* Port F */
+-	PF23_DATA, PF22_DATA, PF21_DATA, PF20_DATA,
+-	PF19_DATA, PF18_DATA, PF17_DATA, PF16_DATA,
+-	PF15_DATA, PF14_DATA, PF13_DATA, PF12_DATA,
+-	PF11_DATA, PF10_DATA, PF9_DATA, PF8_DATA,
+-	PF7_DATA, PF6_DATA, PF5_DATA, PF4_DATA,
+-	PF3_DATA, PF2_DATA, PF1_DATA, PF0_DATA,
+-	/* Port G */
+-	PG27_DATA, PG26_DATA, PG25_DATA, PG24_DATA,
+-	PG23_DATA, PG22_DATA, PG21_DATA, PG20_DATA,
+-	PG19_DATA, PG18_DATA, PG17_DATA, PG16_DATA,
+-	PG15_DATA, PG14_DATA, PG13_DATA, PG12_DATA,
+-	PG11_DATA, PG10_DATA, PG9_DATA, PG8_DATA,
+-	PG7_DATA, PG6_DATA, PG5_DATA, PG4_DATA,
+-	PG3_DATA, PG2_DATA, PG1_DATA, PG0_DATA,
+-	/* Port H */
+-	/* NOTE - Port H does not have a Data Register, but PH Data is
+-	   connected to PH Port Register */
+-	PH7_DATA, PH6_DATA, PH5_DATA, PH4_DATA,
+-	PH3_DATA, PH2_DATA, PH1_DATA, PH0_DATA,
+-	/* Port I - not on device */
+-	/* Port J */
+-	PJ31_DATA, PJ30_DATA, PJ29_DATA, PJ28_DATA,
+-	PJ27_DATA, PJ26_DATA, PJ25_DATA, PJ24_DATA,
+-	PJ23_DATA, PJ22_DATA, PJ21_DATA, PJ20_DATA,
+-	PJ19_DATA, PJ18_DATA, PJ17_DATA, PJ16_DATA,
+-	PJ15_DATA, PJ14_DATA, PJ13_DATA, PJ12_DATA,
+-	PJ11_DATA, PJ10_DATA, PJ9_DATA, PJ8_DATA,
+-	PJ7_DATA, PJ6_DATA, PJ5_DATA, PJ4_DATA,
+-	PJ3_DATA, PJ2_DATA, PJ1_DATA, PJ0_DATA,
+-	PINMUX_DATA_END,
+-
+-	PINMUX_INPUT_BEGIN,
+-	FORCE_IN,
+-	/* Port A */
+-	PA1_IN, PA0_IN,
+-	/* Port B */
+-	PB22_IN, PB21_IN, PB20_IN,
+-	PB19_IN, PB18_IN, PB17_IN, PB16_IN,
+-	PB15_IN, PB14_IN, PB13_IN, PB12_IN,
+-	PB11_IN, PB10_IN, PB9_IN, PB8_IN,
+-	PB7_IN, PB6_IN, PB5_IN, PB4_IN,
+-	PB3_IN, PB2_IN, PB1_IN,
+-	/* Port C */
+-	PC8_IN,
+-	PC7_IN, PC6_IN, PC5_IN, PC4_IN,
+-	PC3_IN, PC2_IN, PC1_IN, PC0_IN,
+-	/* Port D */
+-	PD15_IN, PD14_IN, PD13_IN, PD12_IN,
+-	PD11_IN, PD10_IN, PD9_IN, PD8_IN,
+-	PD7_IN, PD6_IN, PD5_IN, PD4_IN,
+-	PD3_IN, PD2_IN, PD1_IN, PD0_IN,
+-	/* Port E */
+-	PE7_IN, PE6_IN, PE5_IN, PE4_IN,
+-	PE3_IN, PE2_IN, PE1_IN, PE0_IN,
+-	/* Port F */
+-	PF23_IN, PF22_IN, PF21_IN, PF20_IN,
+-	PF19_IN, PF18_IN, PF17_IN, PF16_IN,
+-	PF15_IN, PF14_IN, PF13_IN, PF12_IN,
+-	PF11_IN, PF10_IN, PF9_IN, PF8_IN,
+-	PF7_IN, PF6_IN, PF5_IN, PF4_IN,
+-	PF3_IN, PF2_IN, PF1_IN, PF0_IN,
+-	/* Port G */
+-	PG27_IN, PG26_IN, PG25_IN, PG24_IN,
+-	PG23_IN, PG22_IN, PG21_IN, PG20_IN,
+-	PG19_IN, PG18_IN, PG17_IN, PG16_IN,
+-	PG15_IN, PG14_IN, PG13_IN, PG12_IN,
+-	PG11_IN, PG10_IN, PG9_IN, PG8_IN,
+-	PG7_IN, PG6_IN, PG5_IN, PG4_IN,
+-	PG3_IN, PG2_IN, PG1_IN, PG0_IN,
+-	/* Port H - Port H does not have a Data Register */
+-	/* Port I - not on device */
+-	/* Port J */
+-	PJ31_IN, PJ30_IN, PJ29_IN, PJ28_IN,
+-	PJ27_IN, PJ26_IN, PJ25_IN, PJ24_IN,
+-	PJ23_IN, PJ22_IN, PJ21_IN, PJ20_IN,
+-	PJ19_IN, PJ18_IN, PJ17_IN, PJ16_IN,
+-	PJ15_IN, PJ14_IN, PJ13_IN, PJ12_IN,
+-	PJ11_IN, PJ10_IN, PJ9_IN, PJ8_IN,
+-	PJ7_IN, PJ6_IN, PJ5_IN, PJ4_IN,
+-	PJ3_IN, PJ2_IN, PJ1_IN, PJ0_IN,
+-	PINMUX_INPUT_END,
+-
+-	PINMUX_OUTPUT_BEGIN,
+-	FORCE_OUT,
+-	/* Port A */
+-	PA1_OUT, PA0_OUT,
+-	/* Port B */
+-	PB22_OUT, PB21_OUT, PB20_OUT,
+-	PB19_OUT, PB18_OUT, PB17_OUT, PB16_OUT,
+-	PB15_OUT, PB14_OUT, PB13_OUT, PB12_OUT,
+-	PB11_OUT, PB10_OUT, PB9_OUT, PB8_OUT,
+-	PB7_OUT, PB6_OUT, PB5_OUT, PB4_OUT,
+-	PB3_OUT, PB2_OUT, PB1_OUT,
+-	/* Port C */
+-	PC8_OUT,
+-	PC7_OUT, PC6_OUT, PC5_OUT, PC4_OUT,
+-	PC3_OUT, PC2_OUT, PC1_OUT, PC0_OUT,
+-	/* Port D */
+-	PD15_OUT, PD14_OUT, PD13_OUT, PD12_OUT,
+-	PD11_OUT, PD10_OUT, PD9_OUT, PD8_OUT,
+-	PD7_OUT, PD6_OUT, PD5_OUT, PD4_OUT,
+-	PD3_OUT, PD2_OUT, PD1_OUT, PD0_OUT,
+-	/* Port E */
+-	PE7_OUT, PE6_OUT, PE5_OUT, PE4_OUT,
+-	PE3_OUT, PE2_OUT, PE1_OUT, PE0_OUT,
+-	/* Port F */
+-	PF23_OUT, PF22_OUT, PF21_OUT, PF20_OUT,
+-	PF19_OUT, PF18_OUT, PF17_OUT, PF16_OUT,
+-	PF15_OUT, PF14_OUT, PF13_OUT, PF12_OUT,
+-	PF11_OUT, PF10_OUT, PF9_OUT, PF8_OUT,
+-	PF7_OUT, PF6_OUT, PF5_OUT, PF4_OUT,
+-	PF3_OUT, PF2_OUT, PF1_OUT, PF0_OUT,
+-	/* Port G */
+-	PG27_OUT, PG26_OUT, PG25_OUT, PG24_OUT,
+-	PG23_OUT, PG22_OUT, PG21_OUT, PG20_OUT,
+-	PG19_OUT, PG18_OUT, PG17_OUT, PG16_OUT,
+-	PG15_OUT, PG14_OUT, PG13_OUT, PG12_OUT,
+-	PG11_OUT, PG10_OUT, PG9_OUT, PG8_OUT,
+-	PG7_OUT, PG6_OUT, PG5_OUT, PG4_OUT,
+-	PG3_OUT, PG2_OUT, PG1_OUT, PG0_OUT,
+-	/* Port H - Port H does not have a Data Register */
+-	/* Port I - not on device */
+-	/* Port J */
+-	PJ31_OUT, PJ30_OUT, PJ29_OUT, PJ28_OUT,
+-	PJ27_OUT, PJ26_OUT, PJ25_OUT, PJ24_OUT,
+-	PJ23_OUT, PJ22_OUT, PJ21_OUT, PJ20_OUT,
+-	PJ19_OUT, PJ18_OUT, PJ17_OUT, PJ16_OUT,
+-	PJ15_OUT, PJ14_OUT, PJ13_OUT, PJ12_OUT,
+-	PJ11_OUT, PJ10_OUT, PJ9_OUT, PJ8_OUT,
+-	PJ7_OUT, PJ6_OUT, PJ5_OUT, PJ4_OUT,
+-	PJ3_OUT, PJ2_OUT, PJ1_OUT, PJ0_OUT,
+-	PINMUX_OUTPUT_END,
+-
+-	PINMUX_FUNCTION_BEGIN,
+-	/* Port A */
+-	PA1_IOR_IN, PA1_IOR_OUT,
+-	PA0_IOR_IN, PA0_IOR_OUT,
+-
+-	/* Port B */
+-	PB22_IOR_IN, PB22_IOR_OUT,
+-	PB21_IOR_IN, PB21_IOR_OUT,
+-	PB20_IOR_IN, PB20_IOR_OUT,
+-	PB19_IOR_IN, PB19_IOR_OUT,
+-	PB18_IOR_IN, PB18_IOR_OUT,
+-	PB17_IOR_IN, PB17_IOR_OUT,
+-	PB16_IOR_IN, PB16_IOR_OUT,
+-
+-	PB15_IOR_IN, PB15_IOR_OUT,
+-	PB14_IOR_IN, PB14_IOR_OUT,
+-	PB13_IOR_IN, PB13_IOR_OUT,
+-	PB12_IOR_IN, PB12_IOR_OUT,
+-	PB11_IOR_IN, PB11_IOR_OUT,
+-	PB10_IOR_IN, PB10_IOR_OUT,
+-	PB9_IOR_IN, PB9_IOR_OUT,
+-	PB8_IOR_IN, PB8_IOR_OUT,
+-
+-	PB7_IOR_IN, PB7_IOR_OUT,
+-	PB6_IOR_IN, PB6_IOR_OUT,
+-	PB5_IOR_IN, PB5_IOR_OUT,
+-	PB4_IOR_IN, PB4_IOR_OUT,
+-	PB3_IOR_IN, PB3_IOR_OUT,
+-	PB2_IOR_IN, PB2_IOR_OUT,
+-	PB1_IOR_IN, PB1_IOR_OUT,
+-	PB0_IOR_IN, PB0_IOR_OUT,
+-
+-	PB22MD_000, PB22MD_001, PB22MD_010, PB22MD_011,
+-	PB22MD_100, PB22MD_101, PB22MD_110, PB22MD_111,
+-	PB21MD_00, PB21MD_01, PB21MD_10, PB21MD_11,
+-	PB20MD_000, PB20MD_001, PB20MD_010, PB20MD_011,
+-	PB20MD_100, PB20MD_101, PB20MD_110, PB20MD_111,
+-	PB19MD_000, PB19MD_001, PB19MD_010, PB19MD_011,
+-	PB19MD_100, PB19MD_101, PB19MD_110, PB19MD_111,
+-	PB18MD_000, PB18MD_001, PB18MD_010, PB18MD_011,
+-	PB18MD_100, PB18MD_101, PB18MD_110, PB18MD_111,
+-	PB17MD_000, PB17MD_001, PB17MD_010, PB17MD_011,
+-	PB17MD_100, PB17MD_101, PB17MD_110, PB17MD_111,
+-	PB16MD_000, PB16MD_001, PB16MD_010, PB16MD_011,
+-	PB16MD_100, PB16MD_101, PB16MD_110, PB16MD_111,
+-	PB15MD_000, PB15MD_001, PB15MD_010, PB15MD_011,
+-	PB15MD_100, PB15MD_101, PB15MD_110, PB15MD_111,
+-	PB14MD_000, PB14MD_001, PB14MD_010, PB14MD_011,
+-	PB14MD_100, PB14MD_101, PB14MD_110, PB14MD_111,
+-	PB13MD_000, PB13MD_001, PB13MD_010, PB13MD_011,
+-	PB13MD_100, PB13MD_101, PB13MD_110, PB13MD_111,
+-	PB12MD_00, PB12MD_01, PB12MD_10, PB12MD_11,
+-
+-	PB11MD_00, PB11MD_01, PB11MD_10, PB11MD_11,
+-	PB10MD_00, PB10MD_01, PB10MD_10, PB10MD_11,
+-	PB9MD_00, PB9MD_01, PB9MD_10, PB9MD_11,
+-	PB8MD_00, PB8MD_01, PB8MD_10, PB8MD_11,
+-
+-	PB7MD_00, PB7MD_01, PB7MD_10, PB7MD_11,
+-	PB6MD_00, PB6MD_01, PB6MD_10, PB6MD_11,
+-	PB5MD_00, PB5MD_01, PB5MD_10, PB5MD_11,
+-	PB4MD_00, PB4MD_01, PB4MD_10, PB4MD_11,
+-
+-	PB3MD_00, PB3MD_01, PB3MD_10, PB3MD_11,
+-	PB2MD_00, PB2MD_01, PB2MD_10, PB2MD_11,
+-	PB1MD_00, PB1MD_01, PB1MD_10, PB1MD_11,
+-
+-	/* Port C */
+-	PC8_IOR_IN, PC8_IOR_OUT,
+-	PC7_IOR_IN, PC7_IOR_OUT,
+-	PC6_IOR_IN, PC6_IOR_OUT,
+-	PC5_IOR_IN, PC5_IOR_OUT,
+-	PC4_IOR_IN, PC4_IOR_OUT,
+-	PC3_IOR_IN, PC3_IOR_OUT,
+-	PC2_IOR_IN, PC2_IOR_OUT,
+-	PC1_IOR_IN, PC1_IOR_OUT,
+-	PC0_IOR_IN, PC0_IOR_OUT,
+-
+-	PC8MD_000, PC8MD_001, PC8MD_010, PC8MD_011,
+-	PC8MD_100, PC8MD_101, PC8MD_110, PC8MD_111,
+-	PC7MD_000, PC7MD_001, PC7MD_010, PC7MD_011,
+-	PC7MD_100, PC7MD_101, PC7MD_110, PC7MD_111,
+-	PC6MD_000, PC6MD_001, PC6MD_010, PC6MD_011,
+-	PC6MD_100, PC6MD_101, PC6MD_110, PC6MD_111,
+-	PC5MD_000, PC5MD_001, PC5MD_010, PC5MD_011,
+-	PC5MD_100, PC5MD_101, PC5MD_110, PC5MD_111,
+-	PC4MD_00, PC4MD_01, PC4MD_10, PC4MD_11,
+-
+-	PC3MD_00, PC3MD_01, PC3MD_10, PC3MD_11,
+-	PC2MD_00, PC2MD_01, PC2MD_10, PC2MD_11,
+-	PC1MD_0, PC1MD_1,
+-	PC0MD_0, PC0MD_1,
+-
+-	/* Port D */
+-	PD15_IOR_IN, PD15_IOR_OUT,
+-	PD14_IOR_IN, PD14_IOR_OUT,
+-	PD13_IOR_IN, PD13_IOR_OUT,
+-	PD12_IOR_IN, PD12_IOR_OUT,
+-	PD11_IOR_IN, PD11_IOR_OUT,
+-	PD10_IOR_IN, PD10_IOR_OUT,
+-	PD9_IOR_IN, PD9_IOR_OUT,
+-	PD8_IOR_IN, PD8_IOR_OUT,
+-	PD7_IOR_IN, PD7_IOR_OUT,
+-	PD6_IOR_IN, PD6_IOR_OUT,
+-	PD5_IOR_IN, PD5_IOR_OUT,
+-	PD4_IOR_IN, PD4_IOR_OUT,
+-	PD3_IOR_IN, PD3_IOR_OUT,
+-	PD2_IOR_IN, PD2_IOR_OUT,
+-	PD1_IOR_IN, PD1_IOR_OUT,
+-	PD0_IOR_IN, PD0_IOR_OUT,
+-
+-	PD15MD_00, PD15MD_01, PD15MD_10, PD15MD_11,
+-	PD14MD_00, PD14MD_01, PD14MD_10, PD14MD_11,
+-	PD13MD_00, PD13MD_01, PD13MD_10, PD13MD_11,
+-	PD12MD_00, PD12MD_01, PD12MD_10, PD12MD_11,
+-
+-	PD11MD_00, PD11MD_01, PD11MD_10, PD11MD_11,
+-	PD10MD_00, PD10MD_01, PD10MD_10, PD10MD_11,
+-	PD9MD_00, PD9MD_01, PD9MD_10, PD9MD_11,
+-	PD8MD_00, PD8MD_01, PD8MD_10, PD8MD_11,
+-
+-	PD7MD_00, PD7MD_01, PD7MD_10, PD7MD_11,
+-	PD6MD_00, PD6MD_01, PD6MD_10, PD6MD_11,
+-	PD5MD_00, PD5MD_01, PD5MD_10, PD5MD_11,
+-	PD4MD_00, PD4MD_01, PD4MD_10, PD4MD_11,
+-
+-	PD3MD_00, PD3MD_01, PD3MD_10, PD3MD_11,
+-	PD2MD_00, PD2MD_01, PD2MD_10, PD2MD_11,
+-	PD1MD_00, PD1MD_01, PD1MD_10, PD1MD_11,
+-	PD0MD_00, PD0MD_01, PD0MD_10, PD0MD_11,
+-
+-	/* Port E */
+-	PE7_IOR_IN, PE7_IOR_OUT,
+-	PE6_IOR_IN, PE6_IOR_OUT,
+-	PE5_IOR_IN, PE5_IOR_OUT,
+-	PE4_IOR_IN, PE4_IOR_OUT,
+-	PE3_IOR_IN, PE3_IOR_OUT,
+-	PE2_IOR_IN, PE2_IOR_OUT,
+-	PE1_IOR_IN, PE1_IOR_OUT,
+-	PE0_IOR_IN, PE0_IOR_OUT,
+-
+-	PE7MD_00, PE7MD_01, PE7MD_10, PE7MD_11,
+-	PE6MD_00, PE6MD_01, PE6MD_10, PE6MD_11,
+-	PE5MD_00, PE5MD_01, PE5MD_10, PE5MD_11,
+-	PE4MD_00, PE4MD_01, PE4MD_10, PE4MD_11,
+-
+-	PE3MD_000, PE3MD_001, PE3MD_010, PE3MD_011,
+-	PE3MD_100, PE3MD_101, PE3MD_110, PE3MD_111,
+-	PE2MD_000, PE2MD_001, PE2MD_010, PE2MD_011,
+-	PE2MD_100, PE2MD_101, PE2MD_110, PE2MD_111,
+-	PE1MD_000, PE1MD_001, PE1MD_010, PE1MD_011,
+-	PE1MD_100, PE1MD_101, PE1MD_110, PE1MD_111,
+-	PE0MD_00, PE0MD_01, PE0MD_10, PE0MD_11,
+-
+-	/* Port F */
+-	PF23_IOR_IN, PF23_IOR_OUT,
+-	PF22_IOR_IN, PF22_IOR_OUT,
+-	PF21_IOR_IN, PF21_IOR_OUT,
+-	PF20_IOR_IN, PF20_IOR_OUT,
+-	PF19_IOR_IN, PF19_IOR_OUT,
+-	PF18_IOR_IN, PF18_IOR_OUT,
+-	PF17_IOR_IN, PF17_IOR_OUT,
+-	PF16_IOR_IN, PF16_IOR_OUT,
+-	PF15_IOR_IN, PF15_IOR_OUT,
+-	PF14_IOR_IN, PF14_IOR_OUT,
+-	PF13_IOR_IN, PF13_IOR_OUT,
+-	PF12_IOR_IN, PF12_IOR_OUT,
+-	PF11_IOR_IN, PF11_IOR_OUT,
+-	PF10_IOR_IN, PF10_IOR_OUT,
+-	PF9_IOR_IN, PF9_IOR_OUT,
+-	PF8_IOR_IN, PF8_IOR_OUT,
+-	PF7_IOR_IN, PF7_IOR_OUT,
+-	PF6_IOR_IN, PF6_IOR_OUT,
+-	PF5_IOR_IN, PF5_IOR_OUT,
+-	PF4_IOR_IN, PF4_IOR_OUT,
+-	PF3_IOR_IN, PF3_IOR_OUT,
+-	PF2_IOR_IN, PF2_IOR_OUT,
+-	PF1_IOR_IN, PF1_IOR_OUT,
+-	PF0_IOR_IN, PF0_IOR_OUT,
+-
+-	PF23MD_000, PF23MD_001, PF23MD_010, PF23MD_011,
+-	PF23MD_100, PF23MD_101, PF23MD_110, PF23MD_111,
+-	PF22MD_000, PF22MD_001, PF22MD_010, PF22MD_011,
+-	PF22MD_100, PF22MD_101, PF22MD_110, PF22MD_111,
+-	PF21MD_000, PF21MD_001, PF21MD_010, PF21MD_011,
+-	PF21MD_100, PF21MD_101, PF21MD_110, PF21MD_111,
+-	PF20MD_000, PF20MD_001, PF20MD_010, PF20MD_011,
+-	PF20MD_100, PF20MD_101, PF20MD_110, PF20MD_111,
+-
+-	PF19MD_000, PF19MD_001, PF19MD_010, PF19MD_011,
+-	PF19MD_100, PF19MD_101, PF19MD_110, PF19MD_111,
+-	PF18MD_000, PF18MD_001, PF18MD_010, PF18MD_011,
+-	PF18MD_100, PF18MD_101, PF18MD_110, PF18MD_111,
+-	PF17MD_000, PF17MD_001, PF17MD_010, PF17MD_011,
+-	PF17MD_100, PF17MD_101, PF17MD_110, PF17MD_111,
+-	PF16MD_000, PF16MD_001, PF16MD_010, PF16MD_011,
+-	PF16MD_100, PF16MD_101, PF16MD_110, PF16MD_111,
+-
+-	PF15MD_000, PF15MD_001, PF15MD_010, PF15MD_011,
+-	PF15MD_100, PF15MD_101, PF15MD_110, PF15MD_111,
+-	PF14MD_000, PF14MD_001, PF14MD_010, PF14MD_011,
+-	PF14MD_100, PF14MD_101, PF14MD_110, PF14MD_111,
+-	PF13MD_000, PF13MD_001, PF13MD_010, PF13MD_011,
+-	PF13MD_100, PF13MD_101, PF13MD_110, PF13MD_111,
+-	PF12MD_000, PF12MD_001, PF12MD_010, PF12MD_011,
+-	PF12MD_100, PF12MD_101, PF12MD_110, PF12MD_111,
+-
+-	PF11MD_000, PF11MD_001, PF11MD_010, PF11MD_011,
+-	PF11MD_100, PF11MD_101, PF11MD_110, PF11MD_111,
+-	PF10MD_000, PF10MD_001, PF10MD_010, PF10MD_011,
+-	PF10MD_100, PF10MD_101, PF10MD_110, PF10MD_111,
+-	PF9MD_000, PF9MD_001, PF9MD_010, PF9MD_011,
+-	PF9MD_100, PF9MD_101, PF9MD_110, PF9MD_111,
+-	PF8MD_000, PF8MD_001, PF8MD_010, PF8MD_011,
+-	PF8MD_100, PF8MD_101, PF8MD_110, PF8MD_111,
+-
+-	PF7MD_000, PF7MD_001, PF7MD_010, PF7MD_011,
+-	PF7MD_100, PF7MD_101, PF7MD_110, PF7MD_111,
+-	PF6MD_000, PF6MD_001, PF6MD_010, PF6MD_011,
+-	PF6MD_100, PF6MD_101, PF6MD_110, PF6MD_111,
+-	PF5MD_000, PF5MD_001, PF5MD_010, PF5MD_011,
+-	PF5MD_100, PF5MD_101, PF5MD_110, PF5MD_111,
+-	PF4MD_000, PF4MD_001, PF4MD_010, PF4MD_011,
+-	PF4MD_100, PF4MD_101, PF4MD_110, PF4MD_111,
+-
+-	PF3MD_000, PF3MD_001, PF3MD_010, PF3MD_011,
+-	PF3MD_100, PF3MD_101, PF3MD_110, PF3MD_111,
+-	PF2MD_000, PF2MD_001, PF2MD_010, PF2MD_011,
+-	PF2MD_100, PF2MD_101, PF2MD_110, PF2MD_111,
+-	PF1MD_000, PF1MD_001, PF1MD_010, PF1MD_011,
+-	PF1MD_100, PF1MD_101, PF1MD_110, PF1MD_111,
+-	PF0MD_000, PF0MD_001, PF0MD_010, PF0MD_011,
+-	PF0MD_100, PF0MD_101, PF0MD_110, PF0MD_111,
+-
+-	/* Port G */
+-	PG27_IOR_IN, PG27_IOR_OUT,
+-	PG26_IOR_IN, PG26_IOR_OUT,
+-	PG25_IOR_IN, PG25_IOR_OUT,
+-	PG24_IOR_IN, PG24_IOR_OUT,
+-	PG23_IOR_IN, PG23_IOR_OUT,
+-	PG22_IOR_IN, PG22_IOR_OUT,
+-	PG21_IOR_IN, PG21_IOR_OUT,
+-	PG20_IOR_IN, PG20_IOR_OUT,
+-	PG19_IOR_IN, PG19_IOR_OUT,
+-	PG18_IOR_IN, PG18_IOR_OUT,
+-	PG17_IOR_IN, PG17_IOR_OUT,
+-	PG16_IOR_IN, PG16_IOR_OUT,
+-	PG15_IOR_IN, PG15_IOR_OUT,
+-	PG14_IOR_IN, PG14_IOR_OUT,
+-	PG13_IOR_IN, PG13_IOR_OUT,
+-	PG12_IOR_IN, PG12_IOR_OUT,
+-	PG11_IOR_IN, PG11_IOR_OUT,
+-	PG10_IOR_IN, PG10_IOR_OUT,
+-	PG9_IOR_IN, PG9_IOR_OUT,
+-	PG8_IOR_IN, PG8_IOR_OUT,
+-	PG7_IOR_IN, PG7_IOR_OUT,
+-	PG6_IOR_IN, PG6_IOR_OUT,
+-	PG5_IOR_IN, PG5_IOR_OUT,
+-	PG4_IOR_IN, PG4_IOR_OUT,
+-	PG3_IOR_IN, PG3_IOR_OUT,
+-	PG2_IOR_IN, PG2_IOR_OUT,
+-	PG1_IOR_IN, PG1_IOR_OUT,
+-	PG0_IOR_IN, PG0_IOR_OUT,
+-
+-	PG27MD_00, PG27MD_01, PG27MD_10, PG27MD_11,
+-	PG26MD_00, PG26MD_01, PG26MD_10, PG26MD_11,
+-	PG25MD_00, PG25MD_01, PG25MD_10, PG25MD_11,
+-	PG24MD_00, PG24MD_01, PG24MD_10, PG24MD_11,
+-
+-	PG23MD_000, PG23MD_001, PG23MD_010, PG23MD_011,
+-	PG23MD_100, PG23MD_101, PG23MD_110, PG23MD_111,
+-	PG22MD_000, PG22MD_001, PG22MD_010, PG22MD_011,
+-	PG22MD_100, PG22MD_101, PG22MD_110, PG22MD_111,
+-	PG21MD_000, PG21MD_001, PG21MD_010, PG21MD_011,
+-	PG21MD_100, PG21MD_101, PG21MD_110, PG21MD_111,
+-	PG20MD_000, PG20MD_001, PG20MD_010, PG20MD_011,
+-	PG20MD_100, PG20MD_101, PG20MD_110, PG20MD_111,
+-
+-	PG19MD_000, PG19MD_001, PG19MD_010, PG19MD_011,
+-	PG19MD_100, PG19MD_101, PG19MD_110, PG19MD_111,
+-	PG18MD_000, PG18MD_001, PG18MD_010, PG18MD_011,
+-	PG18MD_100, PG18MD_101, PG18MD_110, PG18MD_111,
+-	PG17MD_00, PG17MD_01, PG17MD_10, PG17MD_11,
+-	PG16MD_00, PG16MD_01, PG16MD_10, PG16MD_11,
+-
+-	PG15MD_00, PG15MD_01, PG15MD_10, PG15MD_11,
+-	PG14MD_00, PG14MD_01, PG14MD_10, PG14MD_11,
+-	PG13MD_00, PG13MD_01, PG13MD_10, PG13MD_11,
+-	PG12MD_00, PG12MD_01, PG12MD_10, PG12MD_11,
+-
+-	PG11MD_000, PG11MD_001, PG11MD_010, PG11MD_011,
+-	PG11MD_100, PG11MD_101, PG11MD_110, PG11MD_111,
+-	PG10MD_000, PG10MD_001, PG10MD_010, PG10MD_011,
+-	PG10MD_100, PG10MD_101, PG10MD_110, PG10MD_111,
+-	PG9MD_000, PG9MD_001, PG9MD_010, PG9MD_011,
+-	PG9MD_100, PG9MD_101, PG9MD_110, PG9MD_111,
+-	PG8MD_000, PG8MD_001, PG8MD_010, PG8MD_011,
+-	PG8MD_100, PG8MD_101, PG8MD_110, PG8MD_111,
+-
+-	PG7MD_000, PG7MD_001, PG7MD_010, PG7MD_011,
+-	PG7MD_100, PG7MD_101, PG7MD_110, PG7MD_111,
+-	PG6MD_000, PG6MD_001, PG6MD_010, PG6MD_011,
+-	PG6MD_100, PG6MD_101, PG6MD_110, PG6MD_111,
+-	PG5MD_000, PG5MD_001, PG5MD_010, PG5MD_011,
+-	PG5MD_100, PG5MD_101, PG5MD_110, PG5MD_111,
+-	PG4MD_000, PG4MD_001, PG4MD_010, PG4MD_011,
+-	PG4MD_100, PG4MD_101, PG4MD_110, PG4MD_111,
+-
+-	PG3MD_000, PG3MD_001, PG3MD_010, PG3MD_011,
+-	PG3MD_100, PG3MD_101, PG3MD_110, PG3MD_111,
+-	PG2MD_000, PG2MD_001, PG2MD_010, PG2MD_011,
+-	PG2MD_100, PG2MD_101, PG2MD_110, PG2MD_111,
+-	PG1MD_000, PG1MD_001, PG1MD_010, PG1MD_011,
+-	PG1MD_100, PG1MD_101, PG1MD_110, PG1MD_111,
+-	PG0MD_000, PG0MD_001, PG0MD_010, PG0MD_011,
+-	PG0MD_100, PG0MD_101, PG0MD_110, PG0MD_111,
+-
+-	/* Port H */
+-	PH7MD_00, PH7MD_01, PH7MD_10, PH7MD_11,
+-	PH6MD_00, PH6MD_01, PH6MD_10, PH6MD_11,
+-	PH5MD_00, PH5MD_01, PH5MD_10, PH5MD_11,
+-	PH4MD_00, PH4MD_01, PH4MD_10, PH4MD_11,
+-
+-	PH3MD_00, PH3MD_01, PH3MD_10, PH3MD_11,
+-	PH2MD_00, PH2MD_01, PH2MD_10, PH2MD_11,
+-	PH1MD_00, PH1MD_01, PH1MD_10, PH1MD_11,
+-	PH0MD_00, PH0MD_01, PH0MD_10, PH0MD_11,
+-
+-	/* Port I - not on device */
+-
+-	/* Port J */
+-	PJ31_IOR_IN, PJ31_IOR_OUT,
+-	PJ30_IOR_IN, PJ30_IOR_OUT,
+-	PJ29_IOR_IN, PJ29_IOR_OUT,
+-	PJ28_IOR_IN, PJ28_IOR_OUT,
+-	PJ27_IOR_IN, PJ27_IOR_OUT,
+-	PJ26_IOR_IN, PJ26_IOR_OUT,
+-	PJ25_IOR_IN, PJ25_IOR_OUT,
+-	PJ24_IOR_IN, PJ24_IOR_OUT,
+-	PJ23_IOR_IN, PJ23_IOR_OUT,
+-	PJ22_IOR_IN, PJ22_IOR_OUT,
+-	PJ21_IOR_IN, PJ21_IOR_OUT,
+-	PJ20_IOR_IN, PJ20_IOR_OUT,
+-	PJ19_IOR_IN, PJ19_IOR_OUT,
+-	PJ18_IOR_IN, PJ18_IOR_OUT,
+-	PJ17_IOR_IN, PJ17_IOR_OUT,
+-	PJ16_IOR_IN, PJ16_IOR_OUT,
+-	PJ15_IOR_IN, PJ15_IOR_OUT,
+-	PJ14_IOR_IN, PJ14_IOR_OUT,
+-	PJ13_IOR_IN, PJ13_IOR_OUT,
+-	PJ12_IOR_IN, PJ12_IOR_OUT,
+-	PJ11_IOR_IN, PJ11_IOR_OUT,
+-	PJ10_IOR_IN, PJ10_IOR_OUT,
+-	PJ9_IOR_IN, PJ9_IOR_OUT,
+-	PJ8_IOR_IN, PJ8_IOR_OUT,
+-	PJ7_IOR_IN, PJ7_IOR_OUT,
+-	PJ6_IOR_IN, PJ6_IOR_OUT,
+-	PJ5_IOR_IN, PJ5_IOR_OUT,
+-	PJ4_IOR_IN, PJ4_IOR_OUT,
+-	PJ3_IOR_IN, PJ3_IOR_OUT,
+-	PJ2_IOR_IN, PJ2_IOR_OUT,
+-	PJ1_IOR_IN, PJ1_IOR_OUT,
+-	PJ0_IOR_IN, PJ0_IOR_OUT,
+-
+-	PJ31MD_0, PJ31MD_1,
+-	PJ30MD_000, PJ30MD_001, PJ30MD_010, PJ30MD_011,
+-	PJ30MD_100, PJ30MD_101, PJ30MD_110, PJ30MD_111,
+-	PJ29MD_000, PJ29MD_001, PJ29MD_010, PJ29MD_011,
+-	PJ29MD_100, PJ29MD_101, PJ29MD_110, PJ29MD_111,
+-	PJ28MD_000, PJ28MD_001, PJ28MD_010, PJ28MD_011,
+-	PJ28MD_100, PJ28MD_101, PJ28MD_110, PJ28MD_111,
+-
+-	PJ27MD_000, PJ27MD_001, PJ27MD_010, PJ27MD_011,
+-	PJ27MD_100, PJ27MD_101, PJ27MD_110, PJ27MD_111,
+-	PJ26MD_000, PJ26MD_001, PJ26MD_010, PJ26MD_011,
+-	PJ26MD_100, PJ26MD_101, PJ26MD_110, PJ26MD_111,
+-	PJ25MD_000, PJ25MD_001, PJ25MD_010, PJ25MD_011,
+-	PJ25MD_100, PJ25MD_101, PJ25MD_110, PJ25MD_111,
+-	PJ24MD_000, PJ24MD_001, PJ24MD_010, PJ24MD_011,
+-	PJ24MD_100, PJ24MD_101, PJ24MD_110, PJ24MD_111,
+-
+-	PJ23MD_000, PJ23MD_001, PJ23MD_010, PJ23MD_011,
+-	PJ23MD_100, PJ23MD_101, PJ23MD_110, PJ23MD_111,
+-	PJ22MD_000, PJ22MD_001, PJ22MD_010, PJ22MD_011,
+-	PJ22MD_100, PJ22MD_101, PJ22MD_110, PJ22MD_111,
+-	PJ21MD_000, PJ21MD_001, PJ21MD_010, PJ21MD_011,
+-	PJ21MD_100, PJ21MD_101, PJ21MD_110, PJ21MD_111,
+-	PJ20MD_000, PJ20MD_001, PJ20MD_010, PJ20MD_011,
+-	PJ20MD_100, PJ20MD_101, PJ20MD_110, PJ20MD_111,
+-
+-	PJ19MD_000, PJ19MD_001, PJ19MD_010, PJ19MD_011,
+-	PJ19MD_100, PJ19MD_101, PJ19MD_110, PJ19MD_111,
+-	PJ18MD_000, PJ18MD_001, PJ18MD_010, PJ18MD_011,
+-	PJ18MD_100, PJ18MD_101, PJ18MD_110, PJ18MD_111,
+-	PJ17MD_000, PJ17MD_001, PJ17MD_010, PJ17MD_011,
+-	PJ17MD_100, PJ17MD_101, PJ17MD_110, PJ17MD_111,
+-	PJ16MD_000, PJ16MD_001, PJ16MD_010, PJ16MD_011,
+-	PJ16MD_100, PJ16MD_101, PJ16MD_110, PJ16MD_111,
+-
+-	PJ15MD_000, PJ15MD_001, PJ15MD_010, PJ15MD_011,
+-	PJ15MD_100, PJ15MD_101, PJ15MD_110, PJ15MD_111,
+-	PJ14MD_000, PJ14MD_001, PJ14MD_010, PJ14MD_011,
+-	PJ14MD_100, PJ14MD_101, PJ14MD_110, PJ14MD_111,
+-	PJ13MD_000, PJ13MD_001, PJ13MD_010, PJ13MD_011,
+-	PJ13MD_100, PJ13MD_101, PJ13MD_110, PJ13MD_111,
+-	PJ12MD_000, PJ12MD_001, PJ12MD_010, PJ12MD_011,
+-	PJ12MD_100, PJ12MD_101, PJ12MD_110, PJ12MD_111,
+-
+-	PJ11MD_000, PJ11MD_001, PJ11MD_010, PJ11MD_011,
+-	PJ11MD_100, PJ11MD_101, PJ11MD_110, PJ11MD_111,
+-	PJ10MD_000, PJ10MD_001, PJ10MD_010, PJ10MD_011,
+-	PJ10MD_100, PJ10MD_101, PJ10MD_110, PJ10MD_111,
+-	PJ9MD_000, PJ9MD_001, PJ9MD_010, PJ9MD_011,
+-	PJ9MD_100, PJ9MD_101, PJ9MD_110, PJ9MD_111,
+-	PJ8MD_000, PJ8MD_001, PJ8MD_010, PJ8MD_011,
+-	PJ8MD_100, PJ8MD_101, PJ8MD_110, PJ8MD_111,
+-
+-	PJ7MD_000, PJ7MD_001, PJ7MD_010, PJ7MD_011,
+-	PJ7MD_100, PJ7MD_101, PJ7MD_110, PJ7MD_111,
+-	PJ6MD_000, PJ6MD_001, PJ6MD_010, PJ6MD_011,
+-	PJ6MD_100, PJ6MD_101, PJ6MD_110, PJ6MD_111,
+-	PJ5MD_000, PJ5MD_001, PJ5MD_010, PJ5MD_011,
+-	PJ5MD_100, PJ5MD_101, PJ5MD_110, PJ5MD_111,
+-	PJ4MD_000, PJ4MD_001, PJ4MD_010, PJ4MD_011,
+-	PJ4MD_100, PJ4MD_101, PJ4MD_110, PJ4MD_111,
+-
+-	PJ3MD_000, PJ3MD_001, PJ3MD_010, PJ3MD_011,
+-	PJ3MD_100, PJ3MD_101, PJ3MD_110, PJ3MD_111,
+-	PJ2MD_000, PJ2MD_001, PJ2MD_010, PJ2MD_011,
+-	PJ2MD_100, PJ2MD_101, PJ2MD_110, PJ2MD_111,
+-	PJ1MD_000, PJ1MD_001, PJ1MD_010, PJ1MD_011,
+-	PJ1MD_100, PJ1MD_101, PJ1MD_110, PJ1MD_111,
+-	PJ0MD_000, PJ0MD_001, PJ0MD_010, PJ0MD_011,
+-	PJ0MD_100, PJ0MD_101, PJ0MD_110, PJ0MD_111,
+-
+-	PINMUX_FUNCTION_END,
+-
+-	PINMUX_MARK_BEGIN,
+-	/* Port H */
+-	PHAN7_MARK, PHAN6_MARK, PHAN5_MARK, PHAN4_MARK,
+-	PHAN3_MARK, PHAN2_MARK, PHAN1_MARK, PHAN0_MARK,
+-
+-	/* IRQs */
+-	IRQ7_PG_MARK, IRQ6_PG_MARK, IRQ5_PG_MARK, IRQ4_PG_MARK,
+-	IRQ3_PG_MARK, IRQ2_PG_MARK, IRQ1_PG_MARK, IRQ0_PG_MARK,
+-	IRQ7_PF_MARK, IRQ6_PF_MARK, IRQ5_PF_MARK, IRQ4_PF_MARK,
+-	IRQ3_PJ_MARK, IRQ2_PJ_MARK, IRQ1_PJ_MARK, IRQ0_PJ_MARK,
+-	IRQ1_PC_MARK, IRQ0_PC_MARK,
+-
+-	PINT7_PG_MARK, PINT6_PG_MARK, PINT5_PG_MARK, PINT4_PG_MARK,
+-	PINT3_PG_MARK, PINT2_PG_MARK, PINT1_PG_MARK, PINT0_PG_MARK,
+-	PINT7_PH_MARK, PINT6_PH_MARK, PINT5_PH_MARK, PINT4_PH_MARK,
+-	PINT3_PH_MARK, PINT2_PH_MARK, PINT1_PH_MARK, PINT0_PH_MARK,
+-	PINT7_PJ_MARK, PINT6_PJ_MARK, PINT5_PJ_MARK, PINT4_PJ_MARK,
+-	PINT3_PJ_MARK, PINT2_PJ_MARK, PINT1_PJ_MARK, PINT0_PJ_MARK,
+-
+-	/* SD */
+-	SD_D0_MARK, SD_D1_MARK, SD_D2_MARK, SD_D3_MARK,
+-	SD_WP_MARK, SD_CLK_MARK, SD_CMD_MARK, SD_CD_MARK,
+-
+-	/* MMC */
+-	MMC_D0_MARK, MMC_D1_MARK, MMC_D2_MARK, MMC_D3_MARK,
+-	MMC_D4_MARK, MMC_D5_MARK, MMC_D6_MARK, MMC_D7_MARK,
+-	MMC_CLK_MARK, MMC_CMD_MARK, MMC_CD_MARK,
+-
+-	/* PWM */
+-	PWM1A_MARK, PWM1B_MARK, PWM1C_MARK, PWM1D_MARK,
+-	PWM1E_MARK, PWM1F_MARK, PWM1G_MARK, PWM1H_MARK,
+-	PWM2A_MARK, PWM2B_MARK, PWM2C_MARK, PWM2D_MARK,
+-	PWM2E_MARK, PWM2F_MARK, PWM2G_MARK, PWM2H_MARK,
+-
+-	/* IEBus */
+-	IERXD_MARK, IETXD_MARK,
+-
+-	/* WDT */
+-	WDTOVF_MARK,
+-
+-	/* DMAC */
+-	TEND0_MARK, DACK0_MARK, DREQ0_MARK,
+-	TEND1_MARK, DACK1_MARK, DREQ1_MARK,
+-
+-	/* ADC */
+-	ADTRG_MARK,
+-
+-	/* BSC */
+-	A25_MARK, A24_MARK,
+-	A23_MARK, A22_MARK, A21_MARK, A20_MARK,
+-	A19_MARK, A18_MARK, A17_MARK, A16_MARK,
+-	A15_MARK, A14_MARK, A13_MARK, A12_MARK,
+-	A11_MARK, A10_MARK, A9_MARK, A8_MARK,
+-	A7_MARK, A6_MARK, A5_MARK, A4_MARK,
+-	A3_MARK, A2_MARK, A1_MARK, A0_MARK,
+-	D31_MARK, D30_MARK, D29_MARK, D28_MARK,
+-	D27_MARK, D26_MARK, D25_MARK, D24_MARK,
+-	D23_MARK, D22_MARK, D21_MARK, D20_MARK,
+-	D19_MARK, D18_MARK, D17_MARK, D16_MARK,
+-	D15_MARK, D14_MARK, D13_MARK, D12_MARK,
+-	D11_MARK, D10_MARK, D9_MARK, D8_MARK,
+-	D7_MARK, D6_MARK, D5_MARK, D4_MARK,
+-	D3_MARK, D2_MARK, D1_MARK, D0_MARK,
+-	BS_MARK,
+-	CS4_MARK, CS3_MARK, CS2_MARK, CS1_MARK, CS0_MARK,
+-	CS5CE1A_MARK,
+-	CE2A_MARK, CE2B_MARK,
+-	RD_MARK, RDWR_MARK,
+-	WE3ICIOWRAHDQMUU_MARK,
+-	WE2ICIORDDQMUL_MARK,
+-	WE1DQMUWE_MARK,
+-	WE0DQML_MARK,
+-	RAS_MARK, CAS_MARK, CKE_MARK,
+-	WAIT_MARK, BREQ_MARK, BACK_MARK, IOIS16_MARK,
+-
+-	/* TMU */
+-	TIOC0A_MARK, TIOC0B_MARK, TIOC0C_MARK, TIOC0D_MARK,
+-	TIOC1A_MARK, TIOC1B_MARK,
+-	TIOC2A_MARK, TIOC2B_MARK,
+-	TIOC3A_MARK, TIOC3B_MARK, TIOC3C_MARK, TIOC3D_MARK,
+-	TIOC4A_MARK, TIOC4B_MARK, TIOC4C_MARK, TIOC4D_MARK,
+-	TCLKA_MARK, TCLKB_MARK, TCLKC_MARK, TCLKD_MARK,
+-
+-	/* SCIF */
+-	SCK0_MARK, RXD0_MARK, TXD0_MARK,
+-	SCK1_MARK, RXD1_MARK, TXD1_MARK, RTS1_MARK, CTS1_MARK,
+-	SCK2_MARK, RXD2_MARK, TXD2_MARK,
+-	SCK3_MARK, RXD3_MARK, TXD3_MARK,
+-	SCK4_MARK, RXD4_MARK, TXD4_MARK,
+-	SCK5_MARK, RXD5_MARK, TXD5_MARK, RTS5_MARK, CTS5_MARK,
+-	SCK6_MARK, RXD6_MARK, TXD6_MARK,
+-	SCK7_MARK, RXD7_MARK, TXD7_MARK, RTS7_MARK, CTS7_MARK,
+-
+-	/* RSPI */
+-	MISO0_PB20_MARK, MOSI0_PB19_MARK, SSL00_PB18_MARK, RSPCK0_PB17_MARK,
+-	MISO0_PJ19_MARK, MOSI0_PJ18_MARK, SSL00_PJ17_MARK, RSPCK0_PJ16_MARK,
+-	MISO1_MARK, MOSI1_MARK, SSL10_MARK, RSPCK1_MARK,
+-
+-	/* IIC3 */
+-	SCL0_MARK, SDA0_MARK,
+-	SCL1_MARK, SDA1_MARK,
+-	SCL2_MARK, SDA2_MARK,
+-	SCL3_MARK, SDA3_MARK,
+-
+-	/* SSI */
+-	SSISCK0_MARK, SSIWS0_MARK, SSITXD0_MARK, SSIRXD0_MARK,
+-	SSISCK1_MARK, SSIWS1_MARK, SSIDATA1_MARK,
+-	SSISCK2_MARK, SSIWS2_MARK, SSIDATA2_MARK,
+-	SSISCK3_MARK, SSIWS3_MARK, SSIDATA3_MARK,
+-	SSISCK4_MARK, SSIWS4_MARK, SSIDATA4_MARK,
+-	SSISCK5_MARK, SSIWS5_MARK, SSIDATA5_MARK,
+-	AUDIO_CLK_MARK,
+-	AUDIO_XOUT_MARK,
+-
+-	/* SIOF */ /* NOTE Shares AUDIO_CLK with SSI */
+-	SIOFTXD_MARK, SIOFRXD_MARK, SIOFSYNC_MARK, SIOFSCK_MARK,
+-
+-	/* SPDIF */ /* NOTE Shares AUDIO_CLK with SSI */
+-	SPDIF_IN_MARK, SPDIF_OUT_MARK,
+-	SPDIF_IN_PJ24_MARK, SPDIF_OUT_PJ25_MARK,
+-
+-	/* NANDFMC */ /* NOTE Controller is not available in boot mode 0 */
+-	FCE_MARK,
+-	FRB_MARK,
+-
+-	/* CAN */
+-	CRX0_MARK, CTX0_MARK,
+-	CRX1_MARK, CTX1_MARK,
+-	CRX2_MARK, CTX2_MARK,
+-	CRX0_CRX1_MARK, CTX0_CTX1_MARK,
+-	CRX0_CRX1_CRX2_MARK, CTX0_CTX1_CTX2_MARK,
+-	CRX1_PJ22_MARK, CTX1_PJ23_MARK,
+-	CRX2_PJ20_MARK, CTX2_PJ21_MARK,
+-	CRX0_CRX1_PJ22_MARK, CTX0_CTX1_PJ23_MARK,
+-	CRX0_CRX1_CRX2_PJ20_MARK, CTX0_CTX1_CTX2_PJ21_MARK,
+-
+-	/* VDC */
+-	DV_CLK_MARK,
+-	DV_VSYNC_MARK, DV_HSYNC_MARK,
+-	DV_DATA23_MARK, DV_DATA22_MARK, DV_DATA21_MARK, DV_DATA20_MARK,
+-	DV_DATA19_MARK, DV_DATA18_MARK, DV_DATA17_MARK, DV_DATA16_MARK,
+-	DV_DATA15_MARK, DV_DATA14_MARK, DV_DATA13_MARK, DV_DATA12_MARK,
+-	DV_DATA11_MARK, DV_DATA10_MARK, DV_DATA9_MARK, DV_DATA8_MARK,
+-	DV_DATA7_MARK, DV_DATA6_MARK, DV_DATA5_MARK, DV_DATA4_MARK,
+-	DV_DATA3_MARK, DV_DATA2_MARK, DV_DATA1_MARK, DV_DATA0_MARK,
+-	LCD_CLK_MARK, LCD_EXTCLK_MARK,
+-	LCD_VSYNC_MARK, LCD_HSYNC_MARK, LCD_DE_MARK,
+-	LCD_DATA23_PG23_MARK, LCD_DATA22_PG22_MARK, LCD_DATA21_PG21_MARK,
+-	LCD_DATA20_PG20_MARK, LCD_DATA19_PG19_MARK, LCD_DATA18_PG18_MARK,
+-	LCD_DATA17_PG17_MARK, LCD_DATA16_PG16_MARK, LCD_DATA15_PG15_MARK,
+-	LCD_DATA14_PG14_MARK, LCD_DATA13_PG13_MARK, LCD_DATA12_PG12_MARK,
+-	LCD_DATA11_PG11_MARK, LCD_DATA10_PG10_MARK, LCD_DATA9_PG9_MARK,
+-	LCD_DATA8_PG8_MARK, LCD_DATA7_PG7_MARK, LCD_DATA6_PG6_MARK,
+-	LCD_DATA5_PG5_MARK, LCD_DATA4_PG4_MARK, LCD_DATA3_PG3_MARK,
+-	LCD_DATA2_PG2_MARK, LCD_DATA1_PG1_MARK, LCD_DATA0_PG0_MARK,
+-	LCD_DATA23_PJ23_MARK, LCD_DATA22_PJ22_MARK, LCD_DATA21_PJ21_MARK,
+-	LCD_DATA20_PJ20_MARK, LCD_DATA19_PJ19_MARK, LCD_DATA18_PJ18_MARK,
+-	LCD_DATA17_PJ17_MARK, LCD_DATA16_PJ16_MARK, LCD_DATA15_PJ15_MARK,
+-	LCD_DATA14_PJ14_MARK, LCD_DATA13_PJ13_MARK, LCD_DATA12_PJ12_MARK,
+-	LCD_DATA11_PJ11_MARK, LCD_DATA10_PJ10_MARK, LCD_DATA9_PJ9_MARK,
+-	LCD_DATA8_PJ8_MARK, LCD_DATA7_PJ7_MARK, LCD_DATA6_PJ6_MARK,
+-	LCD_DATA5_PJ5_MARK, LCD_DATA4_PJ4_MARK, LCD_DATA3_PJ3_MARK,
+-	LCD_DATA2_PJ2_MARK, LCD_DATA1_PJ1_MARK, LCD_DATA0_PJ0_MARK,
+-	LCD_TCON6_MARK, LCD_TCON5_MARK, LCD_TCON4_MARK,
+-	LCD_TCON3_MARK, LCD_TCON2_MARK, LCD_TCON1_MARK, LCD_TCON0_MARK,
+-	LCD_M_DISP_MARK,
+-	PINMUX_MARK_END,
+-};
+-
+-static const u16 pinmux_data[] = {
+-	/* Port A */
+-	PINMUX_DATA(PA1_DATA, PA1_IN),
+-	PINMUX_DATA(PA0_DATA, PA0_IN),
+-
+-	/* Port B */
+-	PINMUX_DATA(PB22_DATA, PB22MD_000, PB22_IN, PB22_OUT),
+-	PINMUX_DATA(A22_MARK, PB22MD_001),
+-	PINMUX_DATA(CTX2_MARK, PB22MD_010),
+-	PINMUX_DATA(IETXD_MARK, PB22MD_011),
+-	PINMUX_DATA(CS4_MARK, PB22MD_100),
+-
+-	PINMUX_DATA(PB21_DATA, PB21MD_00, PB21_IN, PB21_OUT),
+-	PINMUX_DATA(A21_MARK, PB21MD_01),
+-	PINMUX_DATA(CRX2_MARK, PB21MD_10),
+-	PINMUX_DATA(IERXD_MARK, PB21MD_11),
+-
+-	PINMUX_DATA(A20_MARK, PB20MD_001),
+-	PINMUX_DATA(A19_MARK, PB19MD_001),
+-	PINMUX_DATA(A18_MARK, PB18MD_001),
+-	PINMUX_DATA(A17_MARK, PB17MD_001),
+-	PINMUX_DATA(A16_MARK, PB16MD_001),
+-	PINMUX_DATA(A15_MARK, PB15MD_001),
+-	PINMUX_DATA(A14_MARK, PB14MD_001),
+-	PINMUX_DATA(A13_MARK, PB13MD_001),
+-	PINMUX_DATA(A12_MARK, PB12MD_01),
+-	PINMUX_DATA(A11_MARK, PB11MD_01),
+-	PINMUX_DATA(A10_MARK, PB10MD_01),
+-	PINMUX_DATA(A9_MARK, PB9MD_01),
+-	PINMUX_DATA(A8_MARK, PB8MD_01),
+-	PINMUX_DATA(A7_MARK, PB7MD_01),
+-	PINMUX_DATA(A6_MARK, PB6MD_01),
+-	PINMUX_DATA(A5_MARK, PB5MD_01),
+-	PINMUX_DATA(A4_MARK, PB4MD_01),
+-	PINMUX_DATA(A3_MARK, PB3MD_01),
+-	PINMUX_DATA(A2_MARK, PB2MD_01),
+-	PINMUX_DATA(A1_MARK, PB1MD_01),
+-
+-	/* Port C */
+-	PINMUX_DATA(PC8_DATA, PC8MD_000),
+-	PINMUX_DATA(CS3_MARK, PC8MD_001),
+-	PINMUX_DATA(TXD7_MARK, PC8MD_010),
+-	PINMUX_DATA(CTX1_MARK, PC8MD_011),
+-	PINMUX_DATA(CTX0_CTX1_MARK, PC8MD_100),
+-
+-	PINMUX_DATA(PC7_DATA, PC7MD_000),
+-	PINMUX_DATA(CKE_MARK, PC7MD_001),
+-	PINMUX_DATA(RXD7_MARK, PC7MD_010),
+-	PINMUX_DATA(CRX1_MARK, PC7MD_011),
+-	PINMUX_DATA(CRX0_CRX1_MARK, PC7MD_100),
+-	PINMUX_DATA(IRQ1_PC_MARK, PC7MD_101),
+-
+-	PINMUX_DATA(PC6_DATA, PC6MD_000),
+-	PINMUX_DATA(CAS_MARK, PC6MD_001),
+-	PINMUX_DATA(SCK7_MARK, PC6MD_010),
+-	PINMUX_DATA(CTX0_MARK, PC6MD_011),
+-	PINMUX_DATA(CTX0_CTX1_CTX2_MARK, PC6MD_100),
+-
+-	PINMUX_DATA(PC5_DATA, PC5MD_000),
+-	PINMUX_DATA(RAS_MARK, PC5MD_001),
+-	PINMUX_DATA(CRX0_MARK, PC5MD_011),
+-	PINMUX_DATA(CTX0_CTX1_CTX2_MARK, PC5MD_100),
+-	PINMUX_DATA(IRQ0_PC_MARK, PC5MD_101),
+-
+-	PINMUX_DATA(PC4_DATA, PC4MD_00),
+-	PINMUX_DATA(WE1DQMUWE_MARK, PC4MD_01),
+-	PINMUX_DATA(TXD6_MARK, PC4MD_10),
+-
+-	PINMUX_DATA(PC3_DATA, PC3MD_00),
+-	PINMUX_DATA(WE0DQML_MARK, PC3MD_01),
+-	PINMUX_DATA(RXD6_MARK, PC3MD_10),
+-
+-	PINMUX_DATA(PC2_DATA, PC2MD_00),
+-	PINMUX_DATA(RDWR_MARK, PC2MD_01),
+-	PINMUX_DATA(SCK5_MARK, PC2MD_10),
+-
+-	PINMUX_DATA(PC1_DATA, PC1MD_0),
+-	PINMUX_DATA(RD_MARK, PC1MD_1),
+-
+-	PINMUX_DATA(PC0_DATA, PC0MD_0),
+-	PINMUX_DATA(CS0_MARK, PC0MD_1),
+-
+-	/* Port D */
+-	PINMUX_DATA(D15_MARK, PD15MD_01),
+-	PINMUX_DATA(D14_MARK, PD14MD_01),
+-
+-	PINMUX_DATA(PD13_DATA, PD13MD_00),
+-	PINMUX_DATA(D13_MARK, PD13MD_01),
+-	PINMUX_DATA(PWM2F_MARK, PD13MD_10),
+-
+-	PINMUX_DATA(PD12_DATA, PD12MD_00),
+-	PINMUX_DATA(D12_MARK, PD12MD_01),
+-	PINMUX_DATA(PWM2E_MARK, PD12MD_10),
+-
+-	PINMUX_DATA(D11_MARK, PD11MD_01),
+-	PINMUX_DATA(D10_MARK, PD10MD_01),
+-	PINMUX_DATA(D9_MARK, PD9MD_01),
+-	PINMUX_DATA(D8_MARK, PD8MD_01),
+-	PINMUX_DATA(D7_MARK, PD7MD_01),
+-	PINMUX_DATA(D6_MARK, PD6MD_01),
+-	PINMUX_DATA(D5_MARK, PD5MD_01),
+-	PINMUX_DATA(D4_MARK, PD4MD_01),
+-	PINMUX_DATA(D3_MARK, PD3MD_01),
+-	PINMUX_DATA(D2_MARK, PD2MD_01),
+-	PINMUX_DATA(D1_MARK, PD1MD_01),
+-	PINMUX_DATA(D0_MARK, PD0MD_01),
+-
+-	/* Port E */
+-	PINMUX_DATA(PE7_DATA, PE7MD_00),
+-	PINMUX_DATA(SDA3_MARK, PE7MD_01),
+-	PINMUX_DATA(RXD7_MARK, PE7MD_10),
+-
+-	PINMUX_DATA(PE6_DATA, PE6MD_00),
+-	PINMUX_DATA(SCL3_MARK, PE6MD_01),
+-	PINMUX_DATA(RXD6_MARK, PE6MD_10),
+-
+-	PINMUX_DATA(PE5_DATA, PE5MD_00),
+-	PINMUX_DATA(SDA2_MARK, PE5MD_01),
+-	PINMUX_DATA(RXD5_MARK, PE5MD_10),
+-	PINMUX_DATA(DV_HSYNC_MARK, PE5MD_11),
+-
+-	PINMUX_DATA(PE4_DATA, PE4MD_00),
+-	PINMUX_DATA(SCL2_MARK, PE4MD_01),
+-	PINMUX_DATA(DV_VSYNC_MARK, PE4MD_11),
+-
+-	PINMUX_DATA(PE3_DATA, PE3MD_000),
+-	PINMUX_DATA(SDA1_MARK, PE3MD_001),
+-	PINMUX_DATA(TCLKD_MARK, PE3MD_010),
+-	PINMUX_DATA(ADTRG_MARK, PE3MD_011),
+-	PINMUX_DATA(DV_HSYNC_MARK, PE3MD_100),
+-
+-	PINMUX_DATA(PE2_DATA, PE2MD_000),
+-	PINMUX_DATA(SCL1_MARK, PE2MD_001),
+-	PINMUX_DATA(TCLKD_MARK, PE2MD_010),
+-	PINMUX_DATA(IOIS16_MARK, PE2MD_011),
+-	PINMUX_DATA(DV_VSYNC_MARK, PE2MD_100),
+-
+-	PINMUX_DATA(PE1_DATA, PE1MD_000),
+-	PINMUX_DATA(SDA0_MARK, PE1MD_001),
+-	PINMUX_DATA(TCLKB_MARK, PE1MD_010),
+-	PINMUX_DATA(AUDIO_CLK_MARK, PE1MD_010),
+-	PINMUX_DATA(DV_CLK_MARK, PE1MD_100),
+-
+-	PINMUX_DATA(PE0_DATA, PE0MD_00),
+-	PINMUX_DATA(SCL0_MARK, PE0MD_01),
+-	PINMUX_DATA(TCLKA_MARK, PE0MD_10),
+-	PINMUX_DATA(LCD_EXTCLK_MARK, PE0MD_11),
+-
+-	/* Port F */
+-	PINMUX_DATA(PF23_DATA, PF23MD_000),
+-	PINMUX_DATA(SD_D2_MARK, PF23MD_001),
+-	PINMUX_DATA(TXD3_MARK, PF23MD_100),
+-	PINMUX_DATA(MMC_D2_MARK, PF23MD_101),
+-
+-	PINMUX_DATA(PF22_DATA, PF22MD_000),
+-	PINMUX_DATA(SD_D3_MARK, PF22MD_001),
+-	PINMUX_DATA(RXD3_MARK, PF22MD_100),
+-	PINMUX_DATA(MMC_D3_MARK, PF22MD_101),
+-
+-	PINMUX_DATA(PF21_DATA, PF21MD_000),
+-	PINMUX_DATA(SD_CMD_MARK, PF21MD_001),
+-	PINMUX_DATA(SCK3_MARK, PF21MD_100),
+-	PINMUX_DATA(MMC_CMD_MARK, PF21MD_101),
+-
+-	PINMUX_DATA(PF20_DATA, PF20MD_000),
+-	PINMUX_DATA(SD_CLK_MARK, PF20MD_001),
+-	PINMUX_DATA(SSIDATA3_MARK, PF20MD_010),
+-	PINMUX_DATA(MMC_CLK_MARK, PF20MD_101),
+-
+-	PINMUX_DATA(PF19_DATA, PF19MD_000),
+-	PINMUX_DATA(SD_D0_MARK, PF19MD_001),
+-	PINMUX_DATA(SSIWS3_MARK, PF19MD_010),
+-	PINMUX_DATA(IRQ7_PF_MARK, PF19MD_100),
+-	PINMUX_DATA(MMC_D0_MARK, PF19MD_101),
+-
+-	PINMUX_DATA(PF18_DATA, PF18MD_000),
+-	PINMUX_DATA(SD_D1_MARK, PF18MD_001),
+-	PINMUX_DATA(SSISCK3_MARK, PF18MD_010),
+-	PINMUX_DATA(IRQ6_PF_MARK, PF18MD_100),
+-	PINMUX_DATA(MMC_D1_MARK, PF18MD_101),
+-
+-	PINMUX_DATA(PF17_DATA, PF17MD_000),
+-	PINMUX_DATA(SD_WP_MARK, PF17MD_001),
+-	PINMUX_DATA(FRB_MARK, PF17MD_011),
+-	PINMUX_DATA(IRQ5_PF_MARK, PF17MD_100),
+-
+-	PINMUX_DATA(PF16_DATA, PF16MD_000),
+-	PINMUX_DATA(SD_CD_MARK, PF16MD_001),
+-	PINMUX_DATA(FCE_MARK, PF16MD_011),
+-	PINMUX_DATA(IRQ4_PF_MARK, PF16MD_100),
+-	PINMUX_DATA(MMC_CD_MARK, PF16MD_101),
+-
+-	PINMUX_DATA(PF15_DATA, PF15MD_000),
+-	PINMUX_DATA(A0_MARK, PF15MD_001),
+-	PINMUX_DATA(SSIDATA2_MARK, PF15MD_010),
+-	PINMUX_DATA(WDTOVF_MARK, PF15MD_011),
+-	PINMUX_DATA(TXD2_MARK, PF15MD_100),
+-
+-	PINMUX_DATA(PF14_DATA, PF14MD_000),
+-	PINMUX_DATA(A25_MARK, PF14MD_001),
+-	PINMUX_DATA(SSIWS2_MARK, PF14MD_010),
+-	PINMUX_DATA(RXD2_MARK, PF14MD_100),
+-
+-	PINMUX_DATA(PF13_DATA, PF13MD_000),
+-	PINMUX_DATA(A24_MARK, PF13MD_001),
+-	PINMUX_DATA(SSISCK2_MARK, PF13MD_010),
+-	PINMUX_DATA(SCK2_MARK, PF13MD_100),
+-
+-	PINMUX_DATA(PF12_DATA, PF12MD_000),
+-	PINMUX_DATA(SSIDATA1_MARK, PF12MD_010),
+-	PINMUX_DATA(DV_DATA12_MARK, PF12MD_011),
+-	PINMUX_DATA(TXD1_MARK, PF12MD_100),
+-	PINMUX_DATA(MMC_D7_MARK, PF12MD_101),
+-
+-	PINMUX_DATA(PF11_DATA, PF11MD_000),
+-	PINMUX_DATA(SSIWS1_MARK, PF11MD_010),
+-	PINMUX_DATA(DV_DATA2_MARK, PF11MD_011),
+-	PINMUX_DATA(RXD1_MARK, PF11MD_100),
+-	PINMUX_DATA(MMC_D6_MARK, PF11MD_101),
+-
+-	PINMUX_DATA(PF10_DATA, PF10MD_000),
+-	PINMUX_DATA(CS1_MARK, PF10MD_001),
+-	PINMUX_DATA(SSISCK1_MARK, PF10MD_010),
+-	PINMUX_DATA(DV_DATA1_MARK, PF10MD_011),
+-	PINMUX_DATA(SCK1_MARK, PF10MD_100),
+-	PINMUX_DATA(MMC_D5_MARK, PF10MD_101),
+-
+-	PINMUX_DATA(PF9_DATA, PF9MD_000),
+-	PINMUX_DATA(BS_MARK, PF9MD_001),
+-	PINMUX_DATA(DV_DATA0_MARK, PF9MD_011),
+-	PINMUX_DATA(SCK0_MARK, PF9MD_100),
+-	PINMUX_DATA(MMC_D4_MARK, PF9MD_101),
+-	PINMUX_DATA(RTS1_MARK, PF9MD_110),
+-
+-	PINMUX_DATA(PF8_DATA, PF8MD_000),
+-	PINMUX_DATA(A23_MARK, PF8MD_001),
+-	PINMUX_DATA(TXD0_MARK, PF8MD_100),
+-
+-	PINMUX_DATA(PF7_DATA, PF7MD_000),
+-	PINMUX_DATA(SSIRXD0_MARK, PF7MD_010),
+-	PINMUX_DATA(RXD0_MARK, PF7MD_100),
+-	PINMUX_DATA(CTS1_MARK, PF7MD_110),
+-
+-	PINMUX_DATA(PF6_DATA, PF6MD_000),
+-	PINMUX_DATA(CE2A_MARK, PF6MD_001),
+-	PINMUX_DATA(SSITXD0_MARK, PF6MD_010),
+-
+-	PINMUX_DATA(PF5_DATA, PF5MD_000),
+-	PINMUX_DATA(SSIWS0_MARK, PF5MD_010),
+-
+-	PINMUX_DATA(PF4_DATA, PF4MD_000),
+-	PINMUX_DATA(CS5CE1A_MARK, PF4MD_001),
+-	PINMUX_DATA(SSISCK0_MARK, PF4MD_010),
+-
+-	PINMUX_DATA(PF3_DATA, PF3MD_000),
+-	PINMUX_DATA(CS2_MARK, PF3MD_001),
+-	PINMUX_DATA(MISO1_MARK, PF3MD_011),
+-	PINMUX_DATA(TIOC4D_MARK, PF3MD_100),
+-
+-	PINMUX_DATA(PF2_DATA, PF2MD_000),
+-	PINMUX_DATA(WAIT_MARK, PF2MD_001),
+-	PINMUX_DATA(MOSI1_MARK, PF2MD_011),
+-	PINMUX_DATA(TIOC4C_MARK, PF2MD_100),
+-	PINMUX_DATA(TEND0_MARK, PF2MD_101),
+-
+-	PINMUX_DATA(PF1_DATA, PF1MD_000),
+-	PINMUX_DATA(BACK_MARK, PF1MD_001),
+-	PINMUX_DATA(SSL10_MARK, PF1MD_011),
+-	PINMUX_DATA(TIOC4B_MARK, PF1MD_100),
+-	PINMUX_DATA(DACK0_MARK, PF1MD_101),
+-
+-	PINMUX_DATA(PF0_DATA, PF0MD_000),
+-	PINMUX_DATA(BREQ_MARK, PF0MD_001),
+-	PINMUX_DATA(RSPCK1_MARK, PF0MD_011),
+-	PINMUX_DATA(TIOC4A_MARK, PF0MD_100),
+-	PINMUX_DATA(DREQ0_MARK, PF0MD_101),
+-
+-	/* Port G */
+-	PINMUX_DATA(PG27_DATA, PG27MD_00),
+-	PINMUX_DATA(LCD_TCON2_MARK, PG27MD_10),
+-	PINMUX_DATA(LCD_EXTCLK_MARK, PG27MD_11),
+-	PINMUX_DATA(LCD_DE_MARK, PG27MD_11),
+-
+-	PINMUX_DATA(PG26_DATA, PG26MD_00),
+-	PINMUX_DATA(LCD_TCON1_MARK, PG26MD_10),
+-	PINMUX_DATA(LCD_HSYNC_MARK, PG26MD_10),
+-
+-	PINMUX_DATA(PG25_DATA, PG25MD_00),
+-	PINMUX_DATA(LCD_TCON0_MARK, PG25MD_10),
+-	PINMUX_DATA(LCD_VSYNC_MARK, PG25MD_10),
+-
+-	PINMUX_DATA(PG24_DATA, PG24MD_00),
+-	PINMUX_DATA(LCD_CLK_MARK, PG24MD_10),
+-
+-	PINMUX_DATA(PG23_DATA, PG23MD_000),
+-	PINMUX_DATA(LCD_DATA23_PG23_MARK, PG23MD_010),
+-	PINMUX_DATA(LCD_TCON6_MARK, PG23MD_011),
+-	PINMUX_DATA(TXD5_MARK, PG23MD_100),
+-
+-	PINMUX_DATA(PG22_DATA, PG22MD_000),
+-	PINMUX_DATA(LCD_DATA22_PG22_MARK, PG22MD_010),
+-	PINMUX_DATA(LCD_TCON5_MARK, PG22MD_011),
+-	PINMUX_DATA(RXD5_MARK, PG22MD_100),
+-
+-	PINMUX_DATA(PG21_DATA, PG21MD_000),
+-	PINMUX_DATA(DV_DATA7_MARK, PG21MD_001),
+-	PINMUX_DATA(LCD_DATA21_PG21_MARK, PG21MD_010),
+-	PINMUX_DATA(LCD_TCON4_MARK, PG21MD_011),
+-	PINMUX_DATA(TXD4_MARK, PG21MD_100),
+-
+-	PINMUX_DATA(PG20_DATA, PG20MD_000),
+-	PINMUX_DATA(DV_DATA6_MARK, PG20MD_001),
+-	PINMUX_DATA(LCD_DATA20_PG20_MARK, PG21MD_010),
+-	PINMUX_DATA(LCD_TCON3_MARK, PG20MD_011),
+-	PINMUX_DATA(RXD4_MARK, PG20MD_100),
+-
+-	PINMUX_DATA(PG19_DATA, PG19MD_000),
+-	PINMUX_DATA(DV_DATA5_MARK, PG19MD_001),
+-	PINMUX_DATA(LCD_DATA19_PG19_MARK, PG19MD_010),
+-	PINMUX_DATA(SPDIF_OUT_MARK, PG19MD_011),
+-	PINMUX_DATA(SCK5_MARK, PG19MD_100),
+-
+-	PINMUX_DATA(PG18_DATA, PG18MD_000),
+-	PINMUX_DATA(DV_DATA4_MARK, PG18MD_001),
+-	PINMUX_DATA(LCD_DATA18_PG18_MARK, PG18MD_010),
+-	PINMUX_DATA(SPDIF_IN_MARK, PG18MD_011),
+-	PINMUX_DATA(SCK4_MARK, PG18MD_100),
+-
+-// TODO hardware manual has PG17 3 bits wide in reg picture and 2 bits in description
+-// we're going with 2 bits
+-	PINMUX_DATA(PG17_DATA, PG17MD_00),
+-	PINMUX_DATA(WE3ICIOWRAHDQMUU_MARK, PG17MD_01),
+-	PINMUX_DATA(LCD_DATA17_PG17_MARK, PG17MD_10),
+-
+-// TODO hardware manual has PG16 3 bits wide in reg picture and 2 bits in description
+-// we're going with 2 bits
+-	PINMUX_DATA(PG16_DATA, PG16MD_00),
+-	PINMUX_DATA(WE2ICIORDDQMUL_MARK, PG16MD_01),
+-	PINMUX_DATA(LCD_DATA16_PG16_MARK, PG16MD_10),
+-
+-	PINMUX_DATA(PG15_DATA, PG15MD_00),
+-	PINMUX_DATA(D31_MARK, PG15MD_01),
+-	PINMUX_DATA(LCD_DATA15_PG15_MARK, PG15MD_10),
+-	PINMUX_DATA(PINT7_PG_MARK, PG15MD_11),
+-
+-	PINMUX_DATA(PG14_DATA, PG14MD_00),
+-	PINMUX_DATA(D30_MARK, PG14MD_01),
+-	PINMUX_DATA(LCD_DATA14_PG14_MARK, PG14MD_10),
+-	PINMUX_DATA(PINT6_PG_MARK, PG14MD_11),
+-
+-	PINMUX_DATA(PG13_DATA, PG13MD_00),
+-	PINMUX_DATA(D29_MARK, PG13MD_01),
+-	PINMUX_DATA(LCD_DATA13_PG13_MARK, PG13MD_10),
+-	PINMUX_DATA(PINT5_PG_MARK, PG13MD_11),
+-
+-	PINMUX_DATA(PG12_DATA, PG12MD_00),
+-	PINMUX_DATA(D28_MARK, PG12MD_01),
+-	PINMUX_DATA(LCD_DATA12_PG12_MARK, PG12MD_10),
+-	PINMUX_DATA(PINT4_PG_MARK, PG12MD_11),
+-
+-	PINMUX_DATA(PG11_DATA, PG11MD_000),
+-	PINMUX_DATA(D27_MARK, PG11MD_001),
+-	PINMUX_DATA(LCD_DATA11_PG11_MARK, PG11MD_010),
+-	PINMUX_DATA(PINT3_PG_MARK, PG11MD_011),
+-	PINMUX_DATA(TIOC3D_MARK, PG11MD_100),
+-
+-	PINMUX_DATA(PG10_DATA, PG10MD_000),
+-	PINMUX_DATA(D26_MARK, PG10MD_001),
+-	PINMUX_DATA(LCD_DATA10_PG10_MARK, PG10MD_010),
+-	PINMUX_DATA(PINT2_PG_MARK, PG10MD_011),
+-	PINMUX_DATA(TIOC3C_MARK, PG10MD_100),
+-
+-	PINMUX_DATA(PG9_DATA, PG9MD_000),
+-	PINMUX_DATA(D25_MARK, PG9MD_001),
+-	PINMUX_DATA(LCD_DATA9_PG9_MARK, PG9MD_010),
+-	PINMUX_DATA(PINT1_PG_MARK, PG9MD_011),
+-	PINMUX_DATA(TIOC3B_MARK, PG9MD_100),
+-
+-	PINMUX_DATA(PG8_DATA, PG8MD_000),
+-	PINMUX_DATA(D24_MARK, PG8MD_001),
+-	PINMUX_DATA(LCD_DATA8_PG8_MARK, PG8MD_010),
+-	PINMUX_DATA(PINT0_PG_MARK, PG8MD_011),
+-	PINMUX_DATA(TIOC3A_MARK, PG8MD_100),
+-
+-	PINMUX_DATA(PG7_DATA, PG7MD_000),
+-	PINMUX_DATA(D23_MARK, PG7MD_001),
+-	PINMUX_DATA(LCD_DATA7_PG7_MARK, PG7MD_010),
+-	PINMUX_DATA(IRQ7_PG_MARK, PG7MD_011),
+-	PINMUX_DATA(TIOC2B_MARK, PG7MD_100),
+-
+-	PINMUX_DATA(PG6_DATA, PG6MD_000),
+-	PINMUX_DATA(D22_MARK, PG6MD_001),
+-	PINMUX_DATA(LCD_DATA6_PG6_MARK, PG6MD_010),
+-	PINMUX_DATA(IRQ6_PG_MARK, PG6MD_011),
+-	PINMUX_DATA(TIOC2A_MARK, PG6MD_100),
+-
+-	PINMUX_DATA(PG5_DATA, PG5MD_000),
+-	PINMUX_DATA(D21_MARK, PG5MD_001),
+-	PINMUX_DATA(LCD_DATA5_PG5_MARK, PG5MD_010),
+-	PINMUX_DATA(IRQ5_PG_MARK, PG5MD_011),
+-	PINMUX_DATA(TIOC1B_MARK, PG5MD_100),
+-
+-	PINMUX_DATA(PG4_DATA, PG4MD_000),
+-	PINMUX_DATA(D20_MARK, PG4MD_001),
+-	PINMUX_DATA(LCD_DATA4_PG4_MARK, PG4MD_010),
+-	PINMUX_DATA(IRQ4_PG_MARK, PG4MD_011),
+-	PINMUX_DATA(TIOC1A_MARK, PG4MD_100),
+-
+-	PINMUX_DATA(PG3_DATA, PG3MD_000),
+-	PINMUX_DATA(D19_MARK, PG3MD_001),
+-	PINMUX_DATA(LCD_DATA3_PG3_MARK, PG3MD_010),
+-	PINMUX_DATA(IRQ3_PG_MARK, PG3MD_011),
+-	PINMUX_DATA(TIOC0D_MARK, PG3MD_100),
+-
+-	PINMUX_DATA(PG2_DATA, PG2MD_000),
+-	PINMUX_DATA(D18_MARK, PG2MD_001),
+-	PINMUX_DATA(LCD_DATA2_PG2_MARK, PG2MD_010),
+-	PINMUX_DATA(IRQ2_PG_MARK, PG2MD_011),
+-	PINMUX_DATA(TIOC0C_MARK, PG2MD_100),
+-
+-	PINMUX_DATA(PG1_DATA, PG1MD_000),
+-	PINMUX_DATA(D17_MARK, PG1MD_001),
+-	PINMUX_DATA(LCD_DATA1_PG1_MARK, PG1MD_010),
+-	PINMUX_DATA(IRQ1_PG_MARK, PG1MD_011),
+-	PINMUX_DATA(TIOC0B_MARK, PG1MD_100),
+-
+-	PINMUX_DATA(PG0_DATA, PG0MD_000),
+-	PINMUX_DATA(D16_MARK, PG0MD_001),
+-	PINMUX_DATA(LCD_DATA0_PG0_MARK, PG0MD_010),
+-	PINMUX_DATA(IRQ0_PG_MARK, PG0MD_011),
+-	PINMUX_DATA(TIOC0A_MARK, PG0MD_100),
+-
+-	/* Port H */
+-	PINMUX_DATA(PH7_DATA, PH7MD_00),
+-	PINMUX_DATA(PHAN7_MARK, PH7MD_01),
+-	PINMUX_DATA(PINT7_PH_MARK, PH7MD_10),
+-
+-	PINMUX_DATA(PH6_DATA, PH6MD_00),
+-	PINMUX_DATA(PHAN6_MARK, PH6MD_01),
+-	PINMUX_DATA(PINT6_PH_MARK, PH6MD_10),
+-
+-	PINMUX_DATA(PH5_DATA, PH5MD_00),
+-	PINMUX_DATA(PHAN5_MARK, PH5MD_01),
+-	PINMUX_DATA(PINT5_PH_MARK, PH5MD_10),
+-	PINMUX_DATA(LCD_EXTCLK_MARK, PH5MD_11),
+-
+-	PINMUX_DATA(PH4_DATA, PH4MD_00),
+-	PINMUX_DATA(PHAN4_MARK, PH4MD_01),
+-	PINMUX_DATA(PINT4_PH_MARK, PH4MD_10),
+-
+-	PINMUX_DATA(PH3_DATA, PH3MD_00),
+-	PINMUX_DATA(PHAN3_MARK, PH3MD_01),
+-	PINMUX_DATA(PINT3_PH_MARK, PH3MD_10),
+-
+-	PINMUX_DATA(PH2_DATA, PH2MD_00),
+-	PINMUX_DATA(PHAN2_MARK, PH2MD_01),
+-	PINMUX_DATA(PINT2_PH_MARK, PH2MD_10),
+-
+-	PINMUX_DATA(PH1_DATA, PH1MD_00),
+-	PINMUX_DATA(PHAN1_MARK, PH1MD_01),
+-	PINMUX_DATA(PINT1_PH_MARK, PH1MD_10),
+-
+-	PINMUX_DATA(PH0_DATA, PH0MD_00),
+-	PINMUX_DATA(PHAN0_MARK, PH0MD_01),
+-	PINMUX_DATA(PINT0_PH_MARK, PH0MD_10),
+-
+-	/* Port I - not on device */
+-
+-	/* Port J */
+-	PINMUX_DATA(PJ31_DATA, PJ31MD_0),
+-	PINMUX_DATA(DV_CLK_MARK, PJ31MD_1),
+-
+-	PINMUX_DATA(PJ30_DATA, PJ30MD_000),
+-	PINMUX_DATA(SSIDATA5_MARK, PJ30MD_010),
+-	PINMUX_DATA(TIOC2B_MARK, PJ30MD_100),
+-	PINMUX_DATA(IETXD_MARK, PJ30MD_101),
+-
+-	PINMUX_DATA(PJ29_DATA, PJ29MD_000),
+-	PINMUX_DATA(SSIWS5_MARK, PJ29MD_010),
+-	PINMUX_DATA(TIOC2A_MARK, PJ29MD_100),
+-	PINMUX_DATA(IERXD_MARK, PJ29MD_101),
+-
+-	PINMUX_DATA(PJ28_DATA, PJ28MD_000),
+-	PINMUX_DATA(SSISCK5_MARK, PJ28MD_010),
+-	PINMUX_DATA(TIOC1B_MARK, PJ28MD_100),
+-	PINMUX_DATA(RTS7_MARK, PJ28MD_101),
+-
+-	PINMUX_DATA(PJ27_DATA, PJ27MD_000),
+-	PINMUX_DATA(TIOC1A_MARK, PJ27MD_100),
+-	PINMUX_DATA(CTS7_MARK, PJ27MD_101),
+-
+-	PINMUX_DATA(PJ26_DATA, PJ26MD_000),
+-	PINMUX_DATA(SSIDATA4_MARK, PJ26MD_010),
+-	PINMUX_DATA(LCD_TCON5_MARK, PJ26MD_011),
+-	PINMUX_DATA(TXD7_MARK, PJ26MD_101),
+-
+-	PINMUX_DATA(PJ25_DATA, PJ25MD_000),
+-	PINMUX_DATA(SSIWS4_MARK, PJ25MD_010),
+-	PINMUX_DATA(LCD_TCON4_MARK, PJ25MD_011),
+-	PINMUX_DATA(SPDIF_OUT_MARK, PJ25MD_100),
+-	PINMUX_DATA(RXD7_MARK, PJ25MD_101),
+-
+-	PINMUX_DATA(PJ24_DATA, PJ24MD_000),
+-	PINMUX_DATA(SSISCK4_MARK, PJ24MD_010),
+-	PINMUX_DATA(LCD_TCON3_MARK, PJ24MD_011),
+-	PINMUX_DATA(SPDIF_IN_MARK, PJ24MD_100),
+-	PINMUX_DATA(SCK7_MARK, PJ24MD_101),
+-
+-	PINMUX_DATA(PJ23_DATA, PJ23MD_000),
+-	PINMUX_DATA(DV_DATA23_MARK, PJ23MD_001),
+-	PINMUX_DATA(LCD_DATA23_PJ23_MARK, PJ23MD_010),
+-	PINMUX_DATA(LCD_TCON6_MARK, PJ23MD_011),
+-	PINMUX_DATA(IRQ3_PJ_MARK, PJ23MD_100),
+-	PINMUX_DATA(CTX1_PJ23_MARK, PJ23MD_101),
+-	PINMUX_DATA(CTX0_CTX1_PJ23_MARK, PJ23MD_110),
+-
+-	PINMUX_DATA(PJ22_DATA, PJ22MD_000),
+-	PINMUX_DATA(DV_DATA22_MARK, PJ22MD_001),
+-	PINMUX_DATA(LCD_DATA22_PJ22_MARK, PJ22MD_010),
+-	PINMUX_DATA(LCD_TCON5_MARK, PJ22MD_011),
+-	PINMUX_DATA(IRQ2_PJ_MARK, PJ22MD_100),
+-	PINMUX_DATA(CRX1_PJ22_MARK, PJ22MD_101),
+-	PINMUX_DATA(CRX0_CRX1_PJ22_MARK, PJ22MD_110),
+-
+-	PINMUX_DATA(PJ21_DATA, PJ21MD_000),
+-	PINMUX_DATA(DV_DATA21_MARK, PJ21MD_001),
+-	PINMUX_DATA(LCD_DATA21_PJ21_MARK, PJ21MD_010),
+-	PINMUX_DATA(LCD_TCON4_MARK, PJ21MD_011),
+-	PINMUX_DATA(IRQ1_PJ_MARK, PJ21MD_100),
+-	PINMUX_DATA(CTX2_PJ21_MARK, PJ21MD_101),
+-	PINMUX_DATA(CTX0_CTX1_CTX2_PJ21_MARK, PJ21MD_110),
+-
+-	PINMUX_DATA(PJ20_DATA, PJ20MD_000),
+-	PINMUX_DATA(DV_DATA20_MARK, PJ20MD_001),
+-	PINMUX_DATA(LCD_DATA20_PJ20_MARK, PJ20MD_010),
+-	PINMUX_DATA(LCD_TCON3_MARK, PJ20MD_011),
+-	PINMUX_DATA(IRQ0_PJ_MARK, PJ20MD_100),
+-	PINMUX_DATA(CRX2_PJ20_MARK, PJ20MD_101),
+-	PINMUX_DATA(CRX0_CRX1_CRX2_PJ20_MARK, PJ20MD_110),
+-
+-	PINMUX_DATA(PJ19_DATA, PJ19MD_000),
+-	PINMUX_DATA(DV_DATA19_MARK, PJ19MD_001),
+-	PINMUX_DATA(LCD_DATA19_PJ19_MARK, PJ19MD_010),
+-	PINMUX_DATA(MISO0_PJ19_MARK, PJ19MD_011),
+-	PINMUX_DATA(TIOC0D_MARK, PJ19MD_100),
+-	PINMUX_DATA(SIOFRXD_MARK, PJ19MD_101),
+-	PINMUX_DATA(AUDIO_XOUT_MARK, PJ19MD_110),
+-
+-	PINMUX_DATA(PJ18_DATA, PJ18MD_000),
+-	PINMUX_DATA(DV_DATA18_MARK, PJ18MD_001),
+-	PINMUX_DATA(LCD_DATA18_PJ18_MARK, PJ18MD_010),
+-	PINMUX_DATA(MOSI0_PJ18_MARK, PJ18MD_011),
+-	PINMUX_DATA(TIOC0C_MARK, PJ18MD_100),
+-	PINMUX_DATA(SIOFTXD_MARK, PJ18MD_101),
+-
+-	PINMUX_DATA(PJ17_DATA, PJ17MD_000),
+-	PINMUX_DATA(DV_DATA17_MARK, PJ17MD_001),
+-	PINMUX_DATA(LCD_DATA17_PJ17_MARK, PJ17MD_010),
+-	PINMUX_DATA(SSL00_PJ17_MARK, PJ17MD_011),
+-	PINMUX_DATA(TIOC0B_MARK, PJ17MD_100),
+-	PINMUX_DATA(SIOFSYNC_MARK, PJ17MD_101),
+-
+-	PINMUX_DATA(PJ16_DATA, PJ16MD_000),
+-	PINMUX_DATA(DV_DATA16_MARK, PJ16MD_001),
+-	PINMUX_DATA(LCD_DATA16_PJ16_MARK, PJ16MD_010),
+-	PINMUX_DATA(RSPCK0_PJ16_MARK, PJ16MD_011),
+-	PINMUX_DATA(TIOC0A_MARK, PJ16MD_100),
+-	PINMUX_DATA(SIOFSCK_MARK, PJ16MD_101),
+-
+-	PINMUX_DATA(PJ15_DATA, PJ15MD_000),
+-	PINMUX_DATA(DV_DATA15_MARK, PJ15MD_001),
+-	PINMUX_DATA(LCD_DATA15_PJ15_MARK, PJ15MD_010),
+-	PINMUX_DATA(PINT7_PJ_MARK, PJ15MD_011),
+-	PINMUX_DATA(PWM2H_MARK, PJ15MD_100),
+-	PINMUX_DATA(TXD7_MARK, PJ15MD_101),
+-
+-	PINMUX_DATA(PJ14_DATA, PJ14MD_000),
+-	PINMUX_DATA(DV_DATA14_MARK, PJ14MD_001),
+-	PINMUX_DATA(LCD_DATA14_PJ14_MARK, PJ14MD_010),
+-	PINMUX_DATA(PINT6_PJ_MARK, PJ14MD_011),
+-	PINMUX_DATA(PWM2G_MARK, PJ14MD_100),
+-	PINMUX_DATA(TXD6_MARK, PJ14MD_101),
+-
+-	PINMUX_DATA(PJ13_DATA, PJ13MD_000),
+-	PINMUX_DATA(DV_DATA13_MARK, PJ13MD_001),
+-	PINMUX_DATA(LCD_DATA13_PJ13_MARK, PJ13MD_010),
+-	PINMUX_DATA(PINT5_PJ_MARK, PJ13MD_011),
+-	PINMUX_DATA(PWM2F_MARK, PJ13MD_100),
+-	PINMUX_DATA(TXD5_MARK, PJ13MD_101),
+-
+-	PINMUX_DATA(PJ12_DATA, PJ12MD_000),
+-	PINMUX_DATA(DV_DATA12_MARK, PJ12MD_001),
+-	PINMUX_DATA(LCD_DATA12_PJ12_MARK, PJ12MD_010),
+-	PINMUX_DATA(PINT4_PJ_MARK, PJ12MD_011),
+-	PINMUX_DATA(PWM2E_MARK, PJ12MD_100),
+-	PINMUX_DATA(SCK7_MARK, PJ12MD_101),
+-
+-	PINMUX_DATA(PJ11_DATA, PJ11MD_000),
+-	PINMUX_DATA(DV_DATA11_MARK, PJ11MD_001),
+-	PINMUX_DATA(LCD_DATA11_PJ11_MARK, PJ11MD_010),
+-	PINMUX_DATA(PINT3_PJ_MARK, PJ11MD_011),
+-	PINMUX_DATA(PWM2D_MARK, PJ11MD_100),
+-	PINMUX_DATA(SCK6_MARK, PJ11MD_101),
+-
+-	PINMUX_DATA(PJ10_DATA, PJ10MD_000),
+-	PINMUX_DATA(DV_DATA10_MARK, PJ10MD_001),
+-	PINMUX_DATA(LCD_DATA10_PJ10_MARK, PJ10MD_010),
+-	PINMUX_DATA(PINT2_PJ_MARK, PJ10MD_011),
+-	PINMUX_DATA(PWM2C_MARK, PJ10MD_100),
+-	PINMUX_DATA(SCK5_MARK, PJ10MD_101),
+-
+-	PINMUX_DATA(PJ9_DATA, PJ9MD_000),
+-	PINMUX_DATA(DV_DATA9_MARK, PJ9MD_001),
+-	PINMUX_DATA(LCD_DATA9_PJ9_MARK, PJ9MD_010),
+-	PINMUX_DATA(PINT1_PJ_MARK, PJ9MD_011),
+-	PINMUX_DATA(PWM2B_MARK, PJ9MD_100),
+-	PINMUX_DATA(RTS5_MARK, PJ9MD_101),
+-
+-	PINMUX_DATA(PJ8_DATA, PJ8MD_000),
+-	PINMUX_DATA(DV_DATA8_MARK, PJ8MD_001),
+-	PINMUX_DATA(LCD_DATA8_PJ8_MARK, PJ8MD_010),
+-	PINMUX_DATA(PINT0_PJ_MARK, PJ8MD_011),
+-	PINMUX_DATA(PWM2A_MARK, PJ8MD_100),
+-	PINMUX_DATA(CTS5_MARK, PJ8MD_101),
+-
+-	PINMUX_DATA(PJ7_DATA, PJ7MD_000),
+-	PINMUX_DATA(DV_DATA7_MARK, PJ7MD_001),
+-	PINMUX_DATA(LCD_DATA7_PJ7_MARK, PJ7MD_010),
+-	PINMUX_DATA(SD_D2_MARK, PJ7MD_011),
+-	PINMUX_DATA(PWM1H_MARK, PJ7MD_100),
+-
+-	PINMUX_DATA(PJ6_DATA, PJ6MD_000),
+-	PINMUX_DATA(DV_DATA6_MARK, PJ6MD_001),
+-	PINMUX_DATA(LCD_DATA6_PJ6_MARK, PJ6MD_010),
+-	PINMUX_DATA(SD_D3_MARK, PJ6MD_011),
+-	PINMUX_DATA(PWM1G_MARK, PJ6MD_100),
+-
+-	PINMUX_DATA(PJ5_DATA, PJ5MD_000),
+-	PINMUX_DATA(DV_DATA5_MARK, PJ5MD_001),
+-	PINMUX_DATA(LCD_DATA5_PJ5_MARK, PJ5MD_010),
+-	PINMUX_DATA(SD_CMD_MARK, PJ5MD_011),
+-	PINMUX_DATA(PWM1F_MARK, PJ5MD_100),
+-
+-	PINMUX_DATA(PJ4_DATA, PJ4MD_000),
+-	PINMUX_DATA(DV_DATA4_MARK, PJ4MD_001),
+-	PINMUX_DATA(LCD_DATA4_PJ4_MARK, PJ4MD_010),
+-	PINMUX_DATA(SD_CLK_MARK, PJ4MD_011),
+-	PINMUX_DATA(PWM1E_MARK, PJ4MD_100),
+-
+-	PINMUX_DATA(PJ3_DATA, PJ3MD_000),
+-	PINMUX_DATA(DV_DATA3_MARK, PJ3MD_001),
+-	PINMUX_DATA(LCD_DATA3_PJ3_MARK, PJ3MD_010),
+-	PINMUX_DATA(SD_D0_MARK, PJ3MD_011),
+-	PINMUX_DATA(PWM1D_MARK, PJ3MD_100),
+-
+-	PINMUX_DATA(PJ2_DATA, PJ2MD_000),
+-	PINMUX_DATA(DV_DATA2_MARK, PJ2MD_001),
+-	PINMUX_DATA(LCD_DATA2_PJ2_MARK, PJ2MD_010),
+-	PINMUX_DATA(SD_D1_MARK, PJ2MD_011),
+-	PINMUX_DATA(PWM1C_MARK, PJ2MD_100),
+-
+-	PINMUX_DATA(PJ1_DATA, PJ1MD_000),
+-	PINMUX_DATA(DV_DATA1_MARK, PJ1MD_001),
+-	PINMUX_DATA(LCD_DATA1_PJ1_MARK, PJ1MD_010),
+-	PINMUX_DATA(SD_WP_MARK, PJ1MD_011),
+-	PINMUX_DATA(PWM1B_MARK, PJ1MD_100),
+-
+-	PINMUX_DATA(PJ0_DATA, PJ0MD_000),
+-	PINMUX_DATA(DV_DATA0_MARK, PJ0MD_001),
+-	PINMUX_DATA(LCD_DATA0_PJ0_MARK, PJ0MD_010),
+-	PINMUX_DATA(SD_CD_MARK, PJ0MD_011),
+-	PINMUX_DATA(PWM1A_MARK, PJ0MD_100),
+-};
+-
+-static const struct sh_pfc_pin pinmux_pins[] = {
+-	/* Port A */
+-	PINMUX_GPIO(PA1),
+-	PINMUX_GPIO(PA0),
+-
+-	/* Port B */
+-	PINMUX_GPIO(PB22),
+-	PINMUX_GPIO(PB21),
+-	PINMUX_GPIO(PB20),
+-	PINMUX_GPIO(PB19),
+-	PINMUX_GPIO(PB18),
+-	PINMUX_GPIO(PB17),
+-	PINMUX_GPIO(PB16),
+-	PINMUX_GPIO(PB15),
+-	PINMUX_GPIO(PB14),
+-	PINMUX_GPIO(PB13),
+-	PINMUX_GPIO(PB12),
+-	PINMUX_GPIO(PB11),
+-	PINMUX_GPIO(PB10),
+-	PINMUX_GPIO(PB9),
+-	PINMUX_GPIO(PB8),
+-	PINMUX_GPIO(PB7),
+-	PINMUX_GPIO(PB6),
+-	PINMUX_GPIO(PB5),
+-	PINMUX_GPIO(PB4),
+-	PINMUX_GPIO(PB3),
+-	PINMUX_GPIO(PB2),
+-	PINMUX_GPIO(PB1),
+-
+-	/* Port C */
+-	PINMUX_GPIO(PC8),
+-	PINMUX_GPIO(PC7),
+-	PINMUX_GPIO(PC6),
+-	PINMUX_GPIO(PC5),
+-	PINMUX_GPIO(PC4),
+-	PINMUX_GPIO(PC3),
+-	PINMUX_GPIO(PC2),
+-	PINMUX_GPIO(PC1),
+-	PINMUX_GPIO(PC0),
+-
+-	/* Port D */
+-	PINMUX_GPIO(PD15),
+-	PINMUX_GPIO(PD14),
+-	PINMUX_GPIO(PD13),
+-	PINMUX_GPIO(PD12),
+-	PINMUX_GPIO(PD11),
+-	PINMUX_GPIO(PD10),
+-	PINMUX_GPIO(PD9),
+-	PINMUX_GPIO(PD8),
+-	PINMUX_GPIO(PD7),
+-	PINMUX_GPIO(PD6),
+-	PINMUX_GPIO(PD5),
+-	PINMUX_GPIO(PD4),
+-	PINMUX_GPIO(PD3),
+-	PINMUX_GPIO(PD2),
+-	PINMUX_GPIO(PD1),
+-	PINMUX_GPIO(PD0),
+-
+-	/* Port E */
+-	PINMUX_GPIO(PE7),
+-	PINMUX_GPIO(PE6),
+-	PINMUX_GPIO(PE5),
+-	PINMUX_GPIO(PE4),
+-	PINMUX_GPIO(PE3),
+-	PINMUX_GPIO(PE2),
+-	PINMUX_GPIO(PE1),
+-	PINMUX_GPIO(PE0),
+-
+-	/* Port F */
+-	PINMUX_GPIO(PF23),
+-	PINMUX_GPIO(PF22),
+-	PINMUX_GPIO(PF21),
+-	PINMUX_GPIO(PF20),
+-	PINMUX_GPIO(PF19),
+-	PINMUX_GPIO(PF18),
+-	PINMUX_GPIO(PF17),
+-	PINMUX_GPIO(PF16),
+-	PINMUX_GPIO(PF15),
+-	PINMUX_GPIO(PF14),
+-	PINMUX_GPIO(PF13),
+-	PINMUX_GPIO(PF12),
+-	PINMUX_GPIO(PF11),
+-	PINMUX_GPIO(PF10),
+-	PINMUX_GPIO(PF9),
+-	PINMUX_GPIO(PF8),
+-	PINMUX_GPIO(PF7),
+-	PINMUX_GPIO(PF6),
+-	PINMUX_GPIO(PF5),
+-	PINMUX_GPIO(PF4),
+-	PINMUX_GPIO(PF3),
+-	PINMUX_GPIO(PF2),
+-	PINMUX_GPIO(PF1),
+-	PINMUX_GPIO(PF0),
+-
+-	/* Port G */
+-	PINMUX_GPIO(PG27),
+-	PINMUX_GPIO(PG26),
+-	PINMUX_GPIO(PG25),
+-	PINMUX_GPIO(PG24),
+-	PINMUX_GPIO(PG23),
+-	PINMUX_GPIO(PG22),
+-	PINMUX_GPIO(PG21),
+-	PINMUX_GPIO(PG20),
+-	PINMUX_GPIO(PG19),
+-	PINMUX_GPIO(PG18),
+-	PINMUX_GPIO(PG17),
+-	PINMUX_GPIO(PG16),
+-	PINMUX_GPIO(PG15),
+-	PINMUX_GPIO(PG14),
+-	PINMUX_GPIO(PG13),
+-	PINMUX_GPIO(PG12),
+-	PINMUX_GPIO(PG11),
+-	PINMUX_GPIO(PG10),
+-	PINMUX_GPIO(PG9),
+-	PINMUX_GPIO(PG8),
+-	PINMUX_GPIO(PG7),
+-	PINMUX_GPIO(PG6),
+-	PINMUX_GPIO(PG5),
+-	PINMUX_GPIO(PG4),
+-	PINMUX_GPIO(PG3),
+-	PINMUX_GPIO(PG2),
+-	PINMUX_GPIO(PG1),
+-	PINMUX_GPIO(PG0),
+-
+-	/* Port H - Port H does not have a Data Register */
+-
+-	/* Port I - not on device */
+-
+-	/* Port J */
+-	PINMUX_GPIO(PJ31),
+-	PINMUX_GPIO(PJ30),
+-	PINMUX_GPIO(PJ29),
+-	PINMUX_GPIO(PJ28),
+-	PINMUX_GPIO(PJ27),
+-	PINMUX_GPIO(PJ26),
+-	PINMUX_GPIO(PJ25),
+-	PINMUX_GPIO(PJ24),
+-	PINMUX_GPIO(PJ23),
+-	PINMUX_GPIO(PJ22),
+-	PINMUX_GPIO(PJ21),
+-	PINMUX_GPIO(PJ20),
+-	PINMUX_GPIO(PJ19),
+-	PINMUX_GPIO(PJ18),
+-	PINMUX_GPIO(PJ17),
+-	PINMUX_GPIO(PJ16),
+-	PINMUX_GPIO(PJ15),
+-	PINMUX_GPIO(PJ14),
+-	PINMUX_GPIO(PJ13),
+-	PINMUX_GPIO(PJ12),
+-	PINMUX_GPIO(PJ11),
+-	PINMUX_GPIO(PJ10),
+-	PINMUX_GPIO(PJ9),
+-	PINMUX_GPIO(PJ8),
+-	PINMUX_GPIO(PJ7),
+-	PINMUX_GPIO(PJ6),
+-	PINMUX_GPIO(PJ5),
+-	PINMUX_GPIO(PJ4),
+-	PINMUX_GPIO(PJ3),
+-	PINMUX_GPIO(PJ2),
+-	PINMUX_GPIO(PJ1),
+-	PINMUX_GPIO(PJ0),
+-};
+-
+-#define PINMUX_FN_BASE	ARRAY_SIZE(pinmux_pins)
+-
+-static const struct pinmux_func pinmux_func_gpios[] = {
+-	/* INTC */
+-	GPIO_FN(IRQ7_PG),
+-	GPIO_FN(IRQ6_PG),
+-	GPIO_FN(IRQ5_PG),
+-	GPIO_FN(IRQ4_PG),
+-	GPIO_FN(IRQ3_PG),
+-	GPIO_FN(IRQ2_PG),
+-	GPIO_FN(IRQ1_PG),
+-	GPIO_FN(IRQ0_PG),
+-	GPIO_FN(IRQ7_PF),
+-	GPIO_FN(IRQ6_PF),
+-	GPIO_FN(IRQ5_PF),
+-	GPIO_FN(IRQ4_PF),
+-	GPIO_FN(IRQ3_PJ),
+-	GPIO_FN(IRQ2_PJ),
+-	GPIO_FN(IRQ1_PJ),
+-	GPIO_FN(IRQ0_PJ),
+-	GPIO_FN(IRQ1_PC),
+-	GPIO_FN(IRQ0_PC),
+-
+-	GPIO_FN(PINT7_PG),
+-	GPIO_FN(PINT6_PG),
+-	GPIO_FN(PINT5_PG),
+-	GPIO_FN(PINT4_PG),
+-	GPIO_FN(PINT3_PG),
+-	GPIO_FN(PINT2_PG),
+-	GPIO_FN(PINT1_PG),
+-	GPIO_FN(PINT0_PG),
+-	GPIO_FN(PINT7_PH),
+-	GPIO_FN(PINT6_PH),
+-	GPIO_FN(PINT5_PH),
+-	GPIO_FN(PINT4_PH),
+-	GPIO_FN(PINT3_PH),
+-	GPIO_FN(PINT2_PH),
+-	GPIO_FN(PINT1_PH),
+-	GPIO_FN(PINT0_PH),
+-	GPIO_FN(PINT7_PJ),
+-	GPIO_FN(PINT6_PJ),
+-	GPIO_FN(PINT5_PJ),
+-	GPIO_FN(PINT4_PJ),
+-	GPIO_FN(PINT3_PJ),
+-	GPIO_FN(PINT2_PJ),
+-	GPIO_FN(PINT1_PJ),
+-	GPIO_FN(PINT0_PJ),
+-
+-	/* WDT */
+-	GPIO_FN(WDTOVF),
+-
+-	/* CAN */
+-	GPIO_FN(CTX2),
+-	GPIO_FN(CRX2),
+-	GPIO_FN(CTX1),
+-	GPIO_FN(CRX1),
+-	GPIO_FN(CTX0),
+-	GPIO_FN(CRX0),
+-	GPIO_FN(CTX0_CTX1),
+-	GPIO_FN(CRX0_CRX1),
+-	GPIO_FN(CTX0_CTX1_CTX2),
+-	GPIO_FN(CRX0_CRX1_CRX2),
+-	GPIO_FN(CTX2_PJ21),
+-	GPIO_FN(CRX2_PJ20),
+-	GPIO_FN(CTX1_PJ23),
+-	GPIO_FN(CRX1_PJ22),
+-	GPIO_FN(CTX0_CTX1_PJ23),
+-	GPIO_FN(CRX0_CRX1_PJ22),
+-	GPIO_FN(CTX0_CTX1_CTX2_PJ21),
+-	GPIO_FN(CRX0_CRX1_CRX2_PJ20),
+-
+-	/* DMAC */
+-	GPIO_FN(TEND0),
+-	GPIO_FN(DACK0),
+-	GPIO_FN(DREQ0),
+-	GPIO_FN(TEND1),
+-	GPIO_FN(DACK1),
+-	GPIO_FN(DREQ1),
+-
+-	/* ADC */
+-	GPIO_FN(ADTRG),
+-
+-	/* BSCh */
+-	GPIO_FN(A25),
+-	GPIO_FN(A24),
+-	GPIO_FN(A23),
+-	GPIO_FN(A22),
+-	GPIO_FN(A21),
+-	GPIO_FN(A20),
+-	GPIO_FN(A19),
+-	GPIO_FN(A18),
+-	GPIO_FN(A17),
+-	GPIO_FN(A16),
+-	GPIO_FN(A15),
+-	GPIO_FN(A14),
+-	GPIO_FN(A13),
+-	GPIO_FN(A12),
+-	GPIO_FN(A11),
+-	GPIO_FN(A10),
+-	GPIO_FN(A9),
+-	GPIO_FN(A8),
+-	GPIO_FN(A7),
+-	GPIO_FN(A6),
+-	GPIO_FN(A5),
+-	GPIO_FN(A4),
+-	GPIO_FN(A3),
+-	GPIO_FN(A2),
+-	GPIO_FN(A1),
+-	GPIO_FN(A0),
+-
+-	GPIO_FN(D15),
+-	GPIO_FN(D14),
+-	GPIO_FN(D13),
+-	GPIO_FN(D12),
+-	GPIO_FN(D11),
+-	GPIO_FN(D10),
+-	GPIO_FN(D9),
+-	GPIO_FN(D8),
+-	GPIO_FN(D7),
+-	GPIO_FN(D6),
+-	GPIO_FN(D5),
+-	GPIO_FN(D4),
+-	GPIO_FN(D3),
+-	GPIO_FN(D2),
+-	GPIO_FN(D1),
+-	GPIO_FN(D0),
+-
+-	GPIO_FN(BS),
+-	GPIO_FN(CS4),
+-	GPIO_FN(CS3),
+-	GPIO_FN(CS2),
+-	GPIO_FN(CS1),
+-	GPIO_FN(CS0),
+-	GPIO_FN(CS5CE1A),
+-	GPIO_FN(CE2A),
+-	GPIO_FN(CE2B),
+-	GPIO_FN(RD),
+-	GPIO_FN(RDWR),
+-	GPIO_FN(WE3ICIOWRAHDQMUU),
+-	GPIO_FN(WE2ICIORDDQMUL),
+-	GPIO_FN(WE1DQMUWE),
+-	GPIO_FN(WE0DQML),
+-	GPIO_FN(RAS),
+-	GPIO_FN(CAS),
+-	GPIO_FN(CKE),
+-	GPIO_FN(WAIT),
+-	GPIO_FN(BREQ),
+-	GPIO_FN(BACK),
+-	GPIO_FN(IOIS16),
+-
+-	/* TMU */
+-	GPIO_FN(TIOC4D),
+-	GPIO_FN(TIOC4C),
+-	GPIO_FN(TIOC4B),
+-	GPIO_FN(TIOC4A),
+-	GPIO_FN(TIOC3D),
+-	GPIO_FN(TIOC3C),
+-	GPIO_FN(TIOC3B),
+-	GPIO_FN(TIOC3A),
+-	GPIO_FN(TIOC2B),
+-	GPIO_FN(TIOC1B),
+-	GPIO_FN(TIOC2A),
+-	GPIO_FN(TIOC1A),
+-	GPIO_FN(TIOC0D),
+-	GPIO_FN(TIOC0C),
+-	GPIO_FN(TIOC0B),
+-	GPIO_FN(TIOC0A),
+-	GPIO_FN(TCLKD),
+-	GPIO_FN(TCLKC),
+-	GPIO_FN(TCLKB),
+-	GPIO_FN(TCLKA),
+-
+-	/* SCIF */
+-	GPIO_FN(SCK0),
+-	GPIO_FN(TXD0),
+-	GPIO_FN(RXD0),
+-	GPIO_FN(SCK1),
+-	GPIO_FN(TXD1),
+-	GPIO_FN(RXD1),
+-	GPIO_FN(RTS1),
+-	GPIO_FN(CTS1),
+-	GPIO_FN(SCK2),
+-	GPIO_FN(TXD2),
+-	GPIO_FN(RXD2),
+-	GPIO_FN(SCK3),
+-	GPIO_FN(TXD3),
+-	GPIO_FN(RXD3),
+-	GPIO_FN(SCK4),
+-	GPIO_FN(TXD4),
+-	GPIO_FN(RXD4),
+-	GPIO_FN(SCK5),
+-	GPIO_FN(TXD5),
+-	GPIO_FN(RXD5),
+-	GPIO_FN(RTS5),
+-	GPIO_FN(CTS5),
+-	GPIO_FN(SCK6),
+-	GPIO_FN(TXD6),
+-	GPIO_FN(RXD6),
+-	GPIO_FN(SCK7),
+-	GPIO_FN(TXD7),
+-	GPIO_FN(RXD7),
+-	GPIO_FN(RTS7),
+-	GPIO_FN(CTS7),
+-
+-	/* RSPI */
+-	GPIO_FN(RSPCK0_PJ16),
+-	GPIO_FN(SSL00_PJ17),
+-	GPIO_FN(MOSI0_PJ18),
+-	GPIO_FN(MISO0_PJ19),
+-	GPIO_FN(RSPCK0_PB17),
+-	GPIO_FN(SSL00_PB18),
+-	GPIO_FN(MOSI0_PB19),
+-	GPIO_FN(MISO0_PB20),
+-	GPIO_FN(RSPCK1),
+-	GPIO_FN(MOSI1),
+-	GPIO_FN(MISO1),
+-	GPIO_FN(SSL10),
+-
+-	/* IIC3 */
+-	GPIO_FN(SCL0),
+-	GPIO_FN(SCL1),
+-	GPIO_FN(SCL2),
+-	GPIO_FN(SDA0),
+-	GPIO_FN(SDA1),
+-	GPIO_FN(SDA2),
+-
+-	/* SSI */
+-	GPIO_FN(SSISCK0),
+-	GPIO_FN(SSIWS0),
+-	GPIO_FN(SSITXD0),
+-	GPIO_FN(SSIRXD0),
+-	GPIO_FN(SSIWS1),
+-	GPIO_FN(SSIWS2),
+-	GPIO_FN(SSIWS3),
+-	GPIO_FN(SSISCK1),
+-	GPIO_FN(SSISCK2),
+-	GPIO_FN(SSISCK3),
+-	GPIO_FN(SSIDATA1),
+-	GPIO_FN(SSIDATA2),
+-	GPIO_FN(SSIDATA3),
+-	GPIO_FN(AUDIO_CLK),
+-	GPIO_FN(AUDIO_XOUT),
+-
+-	/* SIOF */ /* NOTE Shares AUDIO_CLK with SSI */
+-	GPIO_FN(SIOFTXD),
+-	GPIO_FN(SIOFRXD),
+-	GPIO_FN(SIOFSYNC),
+-	GPIO_FN(SIOFSCK),
+-
+-	/* SPDIF */ /* NOTE Shares AUDIO_CLK with SSI */
+-	GPIO_FN(SPDIF_IN),
+-	GPIO_FN(SPDIF_OUT),
+-
+-	/* NANDFMC */ /* NOTE Controller is not available in boot mode 0 */
+-	GPIO_FN(FCE),
+-	GPIO_FN(FRB),
+-
+-	/* VDC3 */
+-	GPIO_FN(DV_CLK),
+-	GPIO_FN(DV_VSYNC),
+-	GPIO_FN(DV_HSYNC),
+-
+-	GPIO_FN(DV_DATA23),
+-	GPIO_FN(DV_DATA22),
+-	GPIO_FN(DV_DATA21),
+-	GPIO_FN(DV_DATA20),
+-	GPIO_FN(DV_DATA19),
+-	GPIO_FN(DV_DATA18),
+-	GPIO_FN(DV_DATA17),
+-	GPIO_FN(DV_DATA16),
+-	GPIO_FN(DV_DATA15),
+-	GPIO_FN(DV_DATA14),
+-	GPIO_FN(DV_DATA13),
+-	GPIO_FN(DV_DATA12),
+-	GPIO_FN(DV_DATA11),
+-	GPIO_FN(DV_DATA10),
+-	GPIO_FN(DV_DATA9),
+-	GPIO_FN(DV_DATA8),
+-	GPIO_FN(DV_DATA7),
+-	GPIO_FN(DV_DATA6),
+-	GPIO_FN(DV_DATA5),
+-	GPIO_FN(DV_DATA4),
+-	GPIO_FN(DV_DATA3),
+-	GPIO_FN(DV_DATA2),
+-	GPIO_FN(DV_DATA1),
+-	GPIO_FN(DV_DATA0),
+-
+-	GPIO_FN(LCD_CLK),
+-	GPIO_FN(LCD_EXTCLK),
+-	GPIO_FN(LCD_VSYNC),
+-	GPIO_FN(LCD_HSYNC),
+-	GPIO_FN(LCD_DE),
+-
+-	GPIO_FN(LCD_DATA23_PG23),
+-	GPIO_FN(LCD_DATA22_PG22),
+-	GPIO_FN(LCD_DATA21_PG21),
+-	GPIO_FN(LCD_DATA20_PG20),
+-	GPIO_FN(LCD_DATA19_PG19),
+-	GPIO_FN(LCD_DATA18_PG18),
+-	GPIO_FN(LCD_DATA17_PG17),
+-	GPIO_FN(LCD_DATA16_PG16),
+-	GPIO_FN(LCD_DATA15_PG15),
+-	GPIO_FN(LCD_DATA14_PG14),
+-	GPIO_FN(LCD_DATA13_PG13),
+-	GPIO_FN(LCD_DATA12_PG12),
+-	GPIO_FN(LCD_DATA11_PG11),
+-	GPIO_FN(LCD_DATA10_PG10),
+-	GPIO_FN(LCD_DATA9_PG9),
+-	GPIO_FN(LCD_DATA8_PG8),
+-	GPIO_FN(LCD_DATA7_PG7),
+-	GPIO_FN(LCD_DATA6_PG6),
+-	GPIO_FN(LCD_DATA5_PG5),
+-	GPIO_FN(LCD_DATA4_PG4),
+-	GPIO_FN(LCD_DATA3_PG3),
+-	GPIO_FN(LCD_DATA2_PG2),
+-	GPIO_FN(LCD_DATA1_PG1),
+-	GPIO_FN(LCD_DATA0_PG0),
+-
+-	GPIO_FN(LCD_DATA23_PJ23),
+-	GPIO_FN(LCD_DATA22_PJ22),
+-	GPIO_FN(LCD_DATA21_PJ21),
+-	GPIO_FN(LCD_DATA20_PJ20),
+-	GPIO_FN(LCD_DATA19_PJ19),
+-	GPIO_FN(LCD_DATA18_PJ18),
+-	GPIO_FN(LCD_DATA17_PJ17),
+-	GPIO_FN(LCD_DATA16_PJ16),
+-	GPIO_FN(LCD_DATA15_PJ15),
+-	GPIO_FN(LCD_DATA14_PJ14),
+-	GPIO_FN(LCD_DATA13_PJ13),
+-	GPIO_FN(LCD_DATA12_PJ12),
+-	GPIO_FN(LCD_DATA11_PJ11),
+-	GPIO_FN(LCD_DATA10_PJ10),
+-	GPIO_FN(LCD_DATA9_PJ9),
+-	GPIO_FN(LCD_DATA8_PJ8),
+-	GPIO_FN(LCD_DATA7_PJ7),
+-	GPIO_FN(LCD_DATA6_PJ6),
+-	GPIO_FN(LCD_DATA5_PJ5),
+-	GPIO_FN(LCD_DATA4_PJ4),
+-	GPIO_FN(LCD_DATA3_PJ3),
+-	GPIO_FN(LCD_DATA2_PJ2),
+-	GPIO_FN(LCD_DATA1_PJ1),
+-	GPIO_FN(LCD_DATA0_PJ0),
+-
+-	GPIO_FN(LCD_M_DISP),
+-};
+-
+-static const struct pinmux_cfg_reg pinmux_config_regs[] = {
+-	/* "name" addr register_size Field_Width */
+-
+-	/* where Field_Width is 1 for single mode registers or 4 for up to 16
+-	 * mode registers and modes are described in assending order [0..15]
+-	 */
+-
+-	{ PINMUX_CFG_REG_VAR("PAIOR0", 0xfffe3812, 16,
+-			     GROUP(-7, 1, -7, 1),
+-			     GROUP(
+-		/* RESERVED [7] */
+-		PA1_IN, PA1_OUT,
+-		/* RESERVED [7] */
+-		PA0_IN, PA0_OUT ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PBCR5", 0xfffe3824, 16,
+-			     GROUP(-4, 4, 4, 4),
+-			     GROUP(
+-		/* RESERVED [4] */
+-		PB22MD_000, PB22MD_001, PB22MD_010, PB22MD_011,
+-		PB22MD_100, PB22MD_101, PB22MD_110, PB22MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB21MD_00, PB21MD_01, PB21MD_10, PB21MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB20MD_000, PB20MD_001, PB20MD_010, PB20MD_011,
+-		PB20MD_100, PB20MD_101, PB20MD_110, PB20MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PBCR4", 0xfffe3826, 16, 4, GROUP(
+-		PB19MD_000, PB19MD_001, PB19MD_010, PB19MD_011,
+-		PB19MD_100, PB19MD_101, PB19MD_110, PB19MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB18MD_000, PB18MD_001, PB18MD_010, PB18MD_011,
+-		PB18MD_100, PB18MD_101, PB18MD_110, PB18MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB17MD_000, PB17MD_001, PB17MD_010, PB17MD_011,
+-		PB17MD_100, PB17MD_101, PB17MD_110, PB17MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB16MD_000, PB16MD_001, PB16MD_010, PB16MD_011,
+-		PB16MD_100, PB16MD_101, PB16MD_110, PB16MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PBCR3", 0xfffe3828, 16, 4, GROUP(
+-		PB15MD_000, PB15MD_001, PB15MD_010, PB15MD_011,
+-		PB15MD_100, PB15MD_101, PB15MD_110, PB15MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB14MD_000, PB14MD_001, PB14MD_010, PB14MD_011,
+-		PB14MD_100, PB14MD_101, PB14MD_110, PB14MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB13MD_000, PB13MD_001, PB13MD_010, PB13MD_011,
+-		PB13MD_100, PB13MD_101, PB13MD_110, PB13MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB12MD_00, PB12MD_01, PB12MD_10, PB12MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PBCR2", 0xfffe382a, 16, 4, GROUP(
+-		PB11MD_00, PB11MD_01, PB11MD_10, PB11MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB10MD_00, PB10MD_01, PB10MD_10, PB10MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB9MD_00, PB9MD_01, PB9MD_10, PB9MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB8MD_00, PB8MD_01, PB8MD_10, PB8MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PBCR1", 0xfffe382c, 16, 4, GROUP(
+-		PB7MD_00, PB7MD_01, PB7MD_10, PB7MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB6MD_00, PB6MD_01, PB6MD_10, PB6MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB5MD_00, PB5MD_01, PB5MD_10, PB5MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB4MD_00, PB4MD_01, PB4MD_10, PB4MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PBCR0", 0xfffe382e, 16,
+-			     GROUP(4, 4, 4, -4),
+-			     GROUP(
+-		PB3MD_00, PB3MD_01, PB3MD_10, PB3MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB2MD_00, PB2MD_01, PB2MD_10, PB2MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PB1MD_00, PB1MD_01, PB1MD_10, PB1MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		/* RESERVED [4] */ ))
+-	},
+-
+-	{ PINMUX_CFG_REG_VAR("PBIOR1", 0xfffe3830, 16,
+-			     GROUP(-9, 1, 1, 1, 1, 1, 1, 1),
+-			     GROUP(
+-		/* RESERVED [9] */
+-		PB22_IN, PB22_OUT,
+-		PB21_IN, PB21_OUT,
+-		PB20_IN, PB20_OUT,
+-		PB19_IN, PB19_OUT,
+-		PB18_IN, PB18_OUT,
+-		PB17_IN, PB17_OUT,
+-		PB16_IN, PB16_OUT ))
+-	},
+-	{ PINMUX_CFG_REG("PBIOR0", 0xfffe3832, 16, 1, GROUP(
+-		PB15_IN, PB15_OUT,
+-		PB14_IN, PB14_OUT,
+-		PB13_IN, PB13_OUT,
+-		PB12_IN, PB12_OUT,
+-		PB11_IN, PB11_OUT,
+-		PB10_IN, PB10_OUT,
+-		PB9_IN, PB9_OUT,
+-		PB8_IN, PB8_OUT,
+-		PB7_IN, PB7_OUT,
+-		PB6_IN, PB6_OUT,
+-		PB5_IN, PB5_OUT,
+-		PB4_IN, PB4_OUT,
+-		PB3_IN, PB3_OUT,
+-		PB2_IN, PB2_OUT,
+-		PB1_IN, PB1_OUT,
+-		0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG_VAR("PCCR2", 0xfffe384a, 16,
+-			     GROUP(-12, 4),
+-			     GROUP(
+-		/* RESERVED [12] */
+-		PC8MD_000, PC8MD_001, PC8MD_010, PC8MD_011,
+-		PC8MD_100, PC8MD_101, PC8MD_110, PC8MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PCCR1", 0xfffe384c, 16, 4, GROUP(
+-		PC7MD_000, PC7MD_001, PC7MD_010, PC7MD_011,
+-		PC7MD_100, PC7MD_101, PC7MD_110, PC7MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PC6MD_000, PC6MD_001, PC6MD_010, PC6MD_011,
+-		PC6MD_100, PC6MD_101, PC6MD_110, PC6MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PC5MD_000, PC5MD_001, PC5MD_010, PC5MD_011,
+-		PC5MD_100, PC5MD_101, PC5MD_110, PC5MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PC4MD_00, PC4MD_01, PC4MD_10, PC4MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PCCR0", 0xfffe384e, 16, 4, GROUP(
+-		PC3MD_00, PC3MD_01, PC3MD_10, PC3MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PC2MD_00, PC2MD_01, PC2MD_10, PC2MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PC1MD_0, PC1MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PC0MD_0, PC0MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG_VAR("PCIOR0", 0xfffe3852, 16,
+-			     GROUP(-7, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+-			     GROUP(
+-		/* RESERVED [7] */
+-		PC8_IN, PC8_OUT,
+-		PC7_IN, PC7_OUT,
+-		PC6_IN, PC6_OUT,
+-		PC5_IN, PC5_OUT,
+-		PC4_IN, PC4_OUT,
+-		PC3_IN, PC3_OUT,
+-		PC2_IN, PC2_OUT,
+-		PC1_IN, PC1_OUT,
+-		PC0_IN, PC0_OUT ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PDCR3", 0xfffe3868, 16, 4, GROUP(
+-		PD15MD_00, PD15MD_01, PD15MD_10, PD15MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD14MD_00, PD14MD_01, PD14MD_10, PD14MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD13MD_00, PD13MD_01, PD13MD_10, PD13MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD12MD_00, PD12MD_01, PD12MD_10, PD12MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PDCR2", 0xfffe386a, 16, 4, GROUP(
+-		PD11MD_00, PD11MD_01, PD11MD_10, PD11MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD10MD_00, PD10MD_01, PD10MD_10, PD10MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD9MD_00, PD9MD_01, PD9MD_10, PD9MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD8MD_00, PD8MD_01, PD8MD_10, PD8MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PDCR1", 0xfffe386c, 16, 4, GROUP(
+-		PD7MD_00, PD7MD_01, PD7MD_10, PD7MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD6MD_00, PD6MD_01, PD6MD_10, PD6MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD5MD_00, PD5MD_01, PD5MD_10, PD5MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD4MD_00, PD4MD_01, PD4MD_10, PD4MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PDCR0", 0xfffe386e, 16, 4, GROUP(
+-		PD3MD_00, PD3MD_01, PD3MD_10, PD3MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD2MD_00, PD2MD_01, PD2MD_10, PD2MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD1MD_00, PD1MD_01, PD1MD_10, PD1MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PD0MD_00, PD0MD_01, PD0MD_10, PD0MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PDIOR0", 0xfffe3872, 16, 1, GROUP(
+-		PD15_IN, PD15_OUT,
+-		PD14_IN, PD14_OUT,
+-		PD13_IN, PD13_OUT,
+-		PD12_IN, PD12_OUT,
+-		PD11_IN, PD11_OUT,
+-		PD10_IN, PD10_OUT,
+-		PD9_IN, PD9_OUT,
+-		PD8_IN, PD8_OUT,
+-		PD7_IN, PD7_OUT,
+-		PD6_IN, PD6_OUT,
+-		PD5_IN, PD5_OUT,
+-		PD4_IN, PD4_OUT,
+-		PD3_IN, PD3_OUT,
+-		PD2_IN, PD2_OUT,
+-		PD1_IN, PD1_OUT,
+-		PD0_IN, PD0_OUT ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PECR1", 0xfffe388c, 16, 4, GROUP(
+-		PE7MD_00, PE7MD_01, PE7MD_10, PE7MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE6MD_00, PE6MD_01, PE6MD_10, PE6MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE5MD_00, PE5MD_01, PE5MD_10, PE5MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE4MD_00, PE4MD_01, PE4MD_10, PE4MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PECR0", 0xfffe388e, 16, 4, GROUP(
+-		PE3MD_000, PE3MD_001, PE3MD_010, PE3MD_011,
+-		PE3MD_100, PE3MD_101, PE3MD_110, PE3MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE2MD_000, PE2MD_001, PE2MD_010, PE2MD_011,
+-		PE2MD_100, PE2MD_101, PE2MD_110, PE2MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE1MD_000, PE1MD_001, PE1MD_010, PE1MD_011,
+-		PE1MD_100, PE1MD_101, PE1MD_110, PE1MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PE0MD_00, PE0MD_01, PE0MD_10, PE0MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PEIOR0", 0xfffe3892, 16,
+-			     GROUP(-8, 1, 1, 1, 1, 1, 1, 1, 1),
+-			     GROUP(
+-		/* RESERVED [8] */
+-		PE7_IN, PE7_OUT,
+-		PE6_IN, PE6_OUT,
+-		PE5_IN, PE5_OUT,
+-		PE4_IN, PE4_OUT,
+-		PE3_IN, PE3_OUT,
+-		PE2_IN, PE2_OUT,
+-		PE1_IN, PE1_OUT,
+-		PE0_IN, PE0_OUT ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PFCR6", 0xfffe38a2, 16, 4, GROUP(
+-		PF23MD_000, PF23MD_001, PF23MD_010, PF23MD_011,
+-		PF23MD_100, PF23MD_101, PF23MD_110, PF23MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF22MD_000, PF22MD_001, PF22MD_010, PF22MD_011,
+-		PF22MD_100, PF22MD_101, PF22MD_110, PF22MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF21MD_000, PF21MD_001, PF21MD_010, PF21MD_011,
+-		PF21MD_100, PF21MD_101, PF21MD_110, PF21MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF20MD_000, PF20MD_001, PF20MD_010, PF20MD_011,
+-		PF20MD_100, PF20MD_101, PF20MD_110, PF20MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PFCR5", 0xfffe38a4, 16, 4, GROUP(
+-		PF19MD_000, PF19MD_001, PF19MD_010, PF19MD_011,
+-		PF19MD_100, PF19MD_101, PF19MD_110, PF19MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF18MD_000, PF18MD_001, PF18MD_010, PF18MD_011,
+-		PF18MD_100, PF18MD_101, PF18MD_110, PF18MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF17MD_000, PF17MD_001, PF17MD_010, PF17MD_011,
+-		PF17MD_100, PF17MD_101, PF17MD_110, PF17MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF16MD_000, PF16MD_001, PF16MD_010, PF16MD_011,
+-		PF16MD_100, PF16MD_101, PF16MD_110, PF16MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PFCR4", 0xfffe38a6, 16,
+-			     GROUP(-12, 4),
+-			     GROUP(
+-		/* RESERVED [12] */
+-		PF15MD_000, PF15MD_001, PF15MD_010, PF15MD_011,
+-		PF15MD_100, PF15MD_101, PF15MD_110, PF15MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PFCR3", 0xfffe38a8, 16,
+-			     GROUP(-4, 4, 4, 4),
+-			     GROUP(
+-		/* RESERVED [4] */
+-		PF14MD_000, PF14MD_001, PF14MD_010, PF14MD_011,
+-		PF14MD_100, PF14MD_101, PF14MD_110, PF14MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF13MD_000, PF13MD_001, PF13MD_010, PF13MD_011,
+-		PF13MD_100, PF13MD_101, PF13MD_110, PF13MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF12MD_000, PF12MD_001, PF12MD_010, PF12MD_011,
+-		PF12MD_100, PF12MD_101, PF12MD_110, PF12MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PFCR2", 0xfffe38aa, 16, 4, GROUP(
+-		PF11MD_000, PF11MD_001, PF11MD_010, PF11MD_011,
+-		PF11MD_100, PF11MD_101, PF11MD_110, PF11MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF10MD_000, PF10MD_001, PF10MD_010, PF10MD_011,
+-		PF10MD_100, PF10MD_101, PF10MD_110, PF10MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF9MD_000, PF9MD_001, PF9MD_010, PF9MD_011,
+-		PF9MD_100, PF9MD_101, PF9MD_110, PF9MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF8MD_000, PF8MD_001, PF8MD_010, PF8MD_011,
+-		PF8MD_100, PF8MD_101, PF8MD_110, PF8MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PFCR1", 0xfffe38ac, 16, 4, GROUP(
+-		PF7MD_000, PF7MD_001, PF7MD_010, PF7MD_011,
+-		PF7MD_100, PF7MD_101, PF7MD_110, PF7MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF6MD_000, PF6MD_001, PF6MD_010, PF6MD_011,
+-		PF6MD_100, PF6MD_101, PF6MD_110, PF6MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF5MD_000, PF5MD_001, PF5MD_010, PF5MD_011,
+-		PF5MD_100, PF5MD_101, PF5MD_110, PF5MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF4MD_000, PF4MD_001, PF4MD_010, PF4MD_011,
+-		PF4MD_100, PF4MD_101, PF4MD_110, PF4MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PFCR0", 0xfffe38ae, 16, 4, GROUP(
+-		PF3MD_000, PF3MD_001, PF3MD_010, PF3MD_011,
+-		PF3MD_100, PF3MD_101, PF3MD_110, PF3MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF2MD_000, PF2MD_001, PF2MD_010, PF2MD_011,
+-		PF2MD_100, PF2MD_101, PF2MD_110, PF2MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF1MD_000, PF1MD_001, PF1MD_010, PF1MD_011,
+-		PF1MD_100, PF1MD_101, PF1MD_110, PF1MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PF0MD_000, PF0MD_001, PF0MD_010, PF0MD_011,
+-		PF0MD_100, PF0MD_101, PF0MD_110, PF0MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG_VAR("PFIOR1", 0xfffe38b0, 16,
+-			     GROUP(-8, 1, 1, 1, 1, 1, 1, 1, 1),
+-			     GROUP(
+-		/* RESERVED [8] */
+-		PF23_IN, PF23_OUT,
+-		PF22_IN, PF22_OUT,
+-		PF21_IN, PF21_OUT,
+-		PF20_IN, PF20_OUT,
+-		PF19_IN, PF19_OUT,
+-		PF18_IN, PF18_OUT,
+-		PF17_IN, PF17_OUT,
+-		PF16_IN, PF16_OUT ))
+-	},
+-	{ PINMUX_CFG_REG("PFIOR0", 0xfffe38b2, 16, 1, GROUP(
+-		PF15_IN, PF15_OUT,
+-		PF14_IN, PF14_OUT,
+-		PF13_IN, PF13_OUT,
+-		PF12_IN, PF12_OUT,
+-		PF11_IN, PF11_OUT,
+-		PF10_IN, PF10_OUT,
+-		PF9_IN, PF9_OUT,
+-		PF8_IN, PF8_OUT,
+-		PF7_IN, PF7_OUT,
+-		PF6_IN, PF6_OUT,
+-		PF5_IN, PF5_OUT,
+-		PF4_IN, PF4_OUT,
+-		PF3_IN, PF3_OUT,
+-		PF2_IN, PF2_OUT,
+-		PF1_IN, PF1_OUT,
+-		PF0_IN, PF0_OUT ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PGCR6", 0xfffe38c2, 16, 4, GROUP(
+-		PG27MD_00, PG27MD_01, PG27MD_10, PG27MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG26MD_00, PG26MD_01, PG26MD_10, PG26MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG25MD_00, PG25MD_01, PG25MD_10, PG25MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG24MD_00, PG24MD_01, PG24MD_10, PG24MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PGCR5", 0xfffe38c4, 16, 4, GROUP(
+-		PG23MD_000, PG23MD_001, PG23MD_010, PG23MD_011,
+-		PG23MD_100, PG23MD_101, PG23MD_110, PG23MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG22MD_000, PG22MD_001, PG22MD_010, PG22MD_011,
+-		PG22MD_100, PG22MD_101, PG22MD_110, PG22MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG21MD_000, PG21MD_001, PG21MD_010, PG21MD_011,
+-		PG21MD_100, PG21MD_101, PG21MD_110, PG21MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG20MD_000, PG20MD_001, PG20MD_010, PG20MD_011,
+-		PG20MD_100, PG20MD_101, PG20MD_110, PG20MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PGCR4", 0xfffe38c6, 16, 4, GROUP(
+-		PG19MD_000, PG19MD_001, PG19MD_010, PG19MD_011,
+-		PG19MD_100, PG19MD_101, PG19MD_110, PG19MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG18MD_000, PG18MD_001, PG18MD_010, PG18MD_011,
+-		PG18MD_100, PG18MD_101, PG18MD_110, PG18MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG17MD_00, PG17MD_01, PG17MD_10, PG17MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG16MD_00, PG16MD_01, PG16MD_10, PG16MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PGCR3", 0xfffe38c8, 16, 4, GROUP(
+-		PG15MD_00, PG15MD_01, PG15MD_10, PG15MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG14MD_00, PG14MD_01, PG14MD_10, PG14MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG13MD_00, PG13MD_01, PG13MD_10, PG13MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG12MD_00, PG12MD_01, PG12MD_10, PG12MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PGCR2", 0xfffe38ca, 16, 4, GROUP(
+-		PG11MD_000, PG11MD_001, PG11MD_010, PG11MD_011,
+-		PG11MD_100, PG11MD_101, PG11MD_110, PG11MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG10MD_000, PG10MD_001, PG10MD_010, PG10MD_011,
+-		PG10MD_100, PG10MD_101, PG10MD_110, PG10MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG9MD_000, PG9MD_001, PG9MD_010, PG9MD_011,
+-		PG9MD_100, PG9MD_101, PG9MD_110, PG9MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG8MD_000, PG8MD_001, PG8MD_010, PG8MD_011,
+-		PG8MD_100, PG8MD_101, PG8MD_110, PG8MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PGCR1", 0xfffe38cc, 16, 4, GROUP(
+-		PG7MD_000, PG7MD_001, PG7MD_010, PG7MD_011,
+-		PG7MD_100, PG7MD_101, PG7MD_110, PG7MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG6MD_000, PG6MD_001, PG6MD_010, PG6MD_011,
+-		PG6MD_100, PG6MD_101, PG6MD_110, PG6MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG5MD_000, PG5MD_001, PG5MD_010, PG5MD_011,
+-		PG5MD_100, PG5MD_101, PG5MD_110, PG5MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG4MD_000, PG4MD_001, PG4MD_010, PG4MD_011,
+-		PG4MD_100, PG4MD_101, PG4MD_110, PG4MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PGCR0", 0xfffe38ce, 16, 4, GROUP(
+-		PG3MD_000, PG3MD_001, PG3MD_010, PG3MD_011,
+-		PG3MD_100, PG3MD_101, PG3MD_110, PG3MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG2MD_000, PG2MD_001, PG2MD_010, PG2MD_011,
+-		PG2MD_100, PG2MD_101, PG2MD_110, PG2MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG1MD_000, PG1MD_001, PG1MD_010, PG1MD_011,
+-		PG1MD_100, PG1MD_101, PG1MD_110, PG1MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PG0MD_000, PG0MD_001, PG0MD_010, PG0MD_011,
+-		PG0MD_100, PG0MD_101, PG0MD_110, PG0MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PGIOR1", 0xfffe38d0, 16, 1, GROUP(
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG27_IN, PG27_OUT,
+-		PG26_IN, PG26_OUT,
+-		PG25_IN, PG25_OUT,
+-		PG24_IN, PG24_OUT,
+-		PG23_IN, PG23_OUT,
+-		PG22_IN, PG22_OUT,
+-		PG21_IN, PG21_OUT,
+-		PG20_IN, PG20_OUT,
+-		PG19_IN, PG19_OUT,
+-		PG18_IN, PG18_OUT,
+-		PG17_IN, PG17_OUT,
+-		PG16_IN, PG16_OUT ))
+-	},
+-	{ PINMUX_CFG_REG("PGIOR0", 0xfffe38d2, 16, 1, GROUP(
+-		PG15_IN, PG15_OUT,
+-		PG14_IN, PG14_OUT,
+-		PG13_IN, PG13_OUT,
+-		PG12_IN, PG12_OUT,
+-		PG11_IN, PG11_OUT,
+-		PG10_IN, PG10_OUT,
+-		PG9_IN, PG9_OUT,
+-		PG8_IN, PG8_OUT,
+-		PG7_IN, PG7_OUT,
+-		PG6_IN, PG6_OUT,
+-		PG5_IN, PG5_OUT,
+-		PG4_IN, PG4_OUT,
+-		PG3_IN, PG3_OUT,
+-		PG2_IN, PG2_OUT,
+-		PG1_IN, PG1_OUT,
+-		PG0_IN, PG0_OUT ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PHCR1", 0xfffe38ec, 16, 4, GROUP(
+-		PH7MD_00, PH7MD_01, PH7MD_10, PH7MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PH6MD_00, PH6MD_01, PH6MD_10, PH6MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PH5MD_00, PH5MD_01, PH5MD_10, PH5MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PH4MD_00, PH4MD_01, PH4MD_10, PH4MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PHCR0", 0xfffe38ee, 16, 4, GROUP(
+-		PH3MD_00, PH3MD_01, PH3MD_10, PH3MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PH2MD_00, PH2MD_01, PH2MD_10, PH2MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PH1MD_00, PH1MD_01, PH1MD_10, PH1MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PH0MD_00, PH0MD_01, PH0MD_10, PH0MD_11, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PJCR7", 0xfffe3900, 16, 4, GROUP(
+-		PJ31MD_0, PJ31MD_1, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ30MD_000, PJ30MD_001, PJ30MD_010, PJ30MD_011,
+-		PJ30MD_100, PJ30MD_101, PJ30MD_110, PJ30MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ29MD_000, PJ29MD_001, PJ29MD_010, PJ29MD_011,
+-		PJ29MD_100, PJ29MD_101, PJ29MD_110, PJ29MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ28MD_000, PJ28MD_001, PJ28MD_010, PJ28MD_011,
+-		PJ28MD_100, PJ28MD_101, PJ28MD_110, PJ28MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PJCR6", 0xfffe3902, 16, 4, GROUP(
+-		PJ27MD_000, PJ27MD_001, PJ27MD_010, PJ27MD_011,
+-		PJ27MD_100, PJ27MD_101, PJ27MD_110, PJ27MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ26MD_000, PJ26MD_001, PJ26MD_010, PJ26MD_011,
+-		PJ26MD_100, PJ26MD_101, PJ26MD_110, PJ26MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ25MD_000, PJ25MD_001, PJ25MD_010, PJ25MD_011,
+-		PJ25MD_100, PJ25MD_101, PJ25MD_110, PJ25MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ24MD_000, PJ24MD_001, PJ24MD_010, PJ24MD_011,
+-		PJ24MD_100, PJ24MD_101, PJ24MD_110, PJ24MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PJCR5", 0xfffe3904, 16, 4, GROUP(
+-		PJ23MD_000, PJ23MD_001, PJ23MD_010, PJ23MD_011,
+-		PJ23MD_100, PJ23MD_101, PJ23MD_110, PJ23MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ22MD_000, PJ22MD_001, PJ22MD_010, PJ22MD_011,
+-		PJ22MD_100, PJ22MD_101, PJ22MD_110, PJ22MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ21MD_000, PJ21MD_001, PJ21MD_010, PJ21MD_011,
+-		PJ21MD_100, PJ21MD_101, PJ21MD_110, PJ21MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ20MD_000, PJ20MD_001, PJ20MD_010, PJ20MD_011,
+-		PJ20MD_100, PJ20MD_101, PJ20MD_110, PJ20MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PJCR4", 0xfffe3906, 16, 4, GROUP(
+-		PJ19MD_000, PJ19MD_001, PJ19MD_010, PJ19MD_011,
+-		PJ19MD_100, PJ19MD_101, PJ19MD_110, PJ19MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ18MD_000, PJ18MD_001, PJ18MD_010, PJ18MD_011,
+-		PJ18MD_100, PJ18MD_101, PJ18MD_110, PJ18MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ17MD_000, PJ17MD_001, PJ17MD_010, PJ17MD_011,
+-		PJ17MD_100, PJ17MD_101, PJ17MD_110, PJ17MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ16MD_000, PJ16MD_001, PJ16MD_010, PJ16MD_011,
+-		PJ16MD_100, PJ16MD_101, PJ16MD_110, PJ16MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PJCR3", 0xfffe3908, 16, 4, GROUP(
+-		PJ15MD_000, PJ15MD_001, PJ15MD_010, PJ15MD_011,
+-		PJ15MD_100, PJ15MD_101, PJ15MD_110, PJ15MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ14MD_000, PJ14MD_001, PJ14MD_010, PJ14MD_011,
+-		PJ14MD_100, PJ14MD_101, PJ14MD_110, PJ14MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ13MD_000, PJ13MD_001, PJ13MD_010, PJ13MD_011,
+-		PJ13MD_100, PJ13MD_101, PJ13MD_110, PJ13MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ12MD_000, PJ12MD_001, PJ12MD_010, PJ12MD_011,
+-		PJ12MD_100, PJ12MD_101, PJ12MD_110, PJ12MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PJCR2", 0xfffe390a, 16, 4, GROUP(
+-		PJ11MD_000, PJ11MD_001, PJ11MD_010, PJ11MD_011,
+-		PJ11MD_100, PJ11MD_101, PJ11MD_110, PJ11MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ10MD_000, PJ10MD_001, PJ10MD_010, PJ10MD_011,
+-		PJ10MD_100, PJ10MD_101, PJ10MD_110, PJ10MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ9MD_000, PJ9MD_001, PJ9MD_010, PJ9MD_011,
+-		PJ9MD_100, PJ9MD_101, PJ9MD_110, PJ9MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ8MD_000, PJ8MD_001, PJ8MD_010, PJ8MD_011,
+-		PJ8MD_100, PJ8MD_101, PJ8MD_110, PJ8MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PJCR1", 0xfffe390c, 16, 4, GROUP(
+-		PJ7MD_000, PJ7MD_001, PJ7MD_010, PJ7MD_011,
+-		PJ7MD_100, PJ7MD_101, PJ7MD_110, PJ7MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ6MD_000, PJ6MD_001, PJ6MD_010, PJ6MD_011,
+-		PJ6MD_100, PJ6MD_101, PJ6MD_110, PJ6MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ5MD_000, PJ5MD_001, PJ5MD_010, PJ5MD_011,
+-		PJ5MD_100, PJ5MD_101, PJ5MD_110, PJ5MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ4MD_000, PJ4MD_001, PJ4MD_010, PJ4MD_011,
+-		PJ4MD_100, PJ4MD_101, PJ4MD_110, PJ4MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PJCR0", 0xfffe390e, 16, 4, GROUP(
+-		PJ3MD_000, PJ3MD_001, PJ3MD_010, PJ3MD_011,
+-		PJ3MD_100, PJ3MD_101, PJ3MD_110, PJ3MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ2MD_000, PJ2MD_001, PJ2MD_010, PJ2MD_011,
+-		PJ2MD_100, PJ2MD_101, PJ2MD_110, PJ2MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ1MD_000, PJ1MD_001, PJ1MD_010, PJ1MD_011,
+-		PJ1MD_100, PJ1MD_101, PJ1MD_110, PJ1MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-
+-		PJ0MD_000, PJ0MD_001, PJ0MD_010, PJ0MD_011,
+-		PJ0MD_100, PJ0MD_101, PJ0MD_110, PJ0MD_111,
+-		0, 0, 0, 0, 0, 0, 0, 0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("PJIOR1", 0xfffe3910, 16, 1, GROUP(
+-		PJ31_IN, PJ31_OUT,
+-		PJ30_IN, PJ30_OUT,
+-		PJ29_IN, PJ29_OUT,
+-		PJ28_IN, PJ28_OUT,
+-		PJ27_IN, PJ27_OUT,
+-		PJ26_IN, PJ26_OUT,
+-		PJ25_IN, PJ25_OUT,
+-		PJ24_IN, PJ24_OUT,
+-		PJ23_IN, PJ23_OUT,
+-		PJ22_IN, PJ22_OUT,
+-		PJ21_IN, PJ21_OUT,
+-		PJ20_IN, PJ20_OUT,
+-		PJ19_IN, PJ19_OUT,
+-		PJ18_IN, PJ18_OUT,
+-		PJ17_IN, PJ17_OUT,
+-		PJ16_IN, PJ16_OUT ))
+-	},
+-	{ PINMUX_CFG_REG("PJIOR0", 0xfffe3912, 16, 1, GROUP(
+-		PJ15_IN, PJ15_OUT,
+-		PJ14_IN, PJ14_OUT,
+-		PJ13_IN, PJ13_OUT,
+-		PJ12_IN, PJ12_OUT,
+-		PJ11_IN, PJ11_OUT,
+-		PJ10_IN, PJ10_OUT,
+-		PJ9_IN, PJ9_OUT,
+-		PJ8_IN, PJ8_OUT,
+-		PJ7_IN, PJ7_OUT,
+-		PJ6_IN, PJ6_OUT,
+-		PJ5_IN, PJ5_OUT,
+-		PJ4_IN, PJ4_OUT,
+-		PJ3_IN, PJ3_OUT,
+-		PJ2_IN, PJ2_OUT,
+-		PJ1_IN, PJ1_OUT,
+-		PJ0_IN, PJ0_OUT ))
+-	},
+-
+-	{}
+-};
+-
+-static const struct pinmux_data_reg pinmux_data_regs[] = {
+-	{ PINMUX_DATA_REG("PADR0", 0xfffe3816, 16, GROUP(
+-		0, 0, 0, 0, 0, 0, 0, PA1_DATA,
+-		0, 0, 0, 0, 0, 0, 0, PA0_DATA ))
+-	},
+-
+-	{ PINMUX_DATA_REG("PBDR1", 0xfffe3834, 16, GROUP(
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, PB22_DATA, PB21_DATA, PB20_DATA,
+-		PB19_DATA, PB18_DATA, PB17_DATA, PB16_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PBDR0", 0xfffe3836, 16, GROUP(
+-		PB15_DATA, PB14_DATA, PB13_DATA, PB12_DATA,
+-		PB11_DATA, PB10_DATA, PB9_DATA, PB8_DATA,
+-		PB7_DATA, PB6_DATA, PB5_DATA, PB4_DATA,
+-		PB3_DATA, PB2_DATA, PB1_DATA, 0 ))
+-	},
+-
+-	{ PINMUX_DATA_REG("PCDR0", 0xfffe3856, 16, GROUP(
+-		0, 0, 0, 0,
+-		0, 0, 0, PC8_DATA,
+-		PC7_DATA, PC6_DATA, PC5_DATA, PC4_DATA,
+-		PC3_DATA, PC2_DATA, PC1_DATA, PC0_DATA ))
+-	},
+-
+-	{ PINMUX_DATA_REG("PDDR0", 0xfffe3876, 16, GROUP(
+-		PD15_DATA, PD14_DATA, PD13_DATA, PD12_DATA,
+-		PD11_DATA, PD10_DATA, PD9_DATA, PD8_DATA,
+-		PD7_DATA, PD6_DATA, PD5_DATA, PD4_DATA,
+-		PD3_DATA, PD2_DATA, PD1_DATA, PD0_DATA ))
+-	},
+-
+-	{ PINMUX_DATA_REG("PEDR0", 0xfffe3896, 16, GROUP(
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PE7_DATA, PE6_DATA, PE5_DATA, PE4_DATA,
+-		PE3_DATA, PE2_DATA, PE1_DATA, PE0_DATA ))
+-	},
+-
+-	{ PINMUX_DATA_REG("PFDR1", 0xfffe38b4, 16, GROUP(
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PF23_DATA, PF22_DATA, PF21_DATA, PF20_DATA,
+-		PF19_DATA, PF18_DATA, PF17_DATA, PF16_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PFDR0", 0xfffe38b6, 16, GROUP(
+-		PF15_DATA, PF14_DATA, PF13_DATA, PF12_DATA,
+-		PF11_DATA, PF10_DATA, PF9_DATA, PF8_DATA,
+-		PF7_DATA, PF6_DATA, PF5_DATA, PF4_DATA,
+-		PF3_DATA, PF2_DATA, PF1_DATA, PF0_DATA ))
+-	},
+-
+-	{ PINMUX_DATA_REG("PGDR1", 0xfffe38d4, 16, GROUP(
+-		0, 0, 0, 0,
+-		PG27_DATA, PG26_DATA, PG25_DATA, PG24_DATA,
+-		PG23_DATA, PG22_DATA, PG21_DATA, PG20_DATA,
+-		PG19_DATA, PG18_DATA, PG17_DATA, PG16_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PGDR0", 0xfffe38d6, 16, GROUP(
+-		PG15_DATA, PG14_DATA, PG13_DATA, PG12_DATA,
+-		PG11_DATA, PG10_DATA, PG9_DATA, PG8_DATA,
+-		PG7_DATA, PG6_DATA, PG5_DATA, PG4_DATA,
+-		PG3_DATA, PG2_DATA, PG1_DATA, PG0_DATA ))
+-	},
+-
+-	{ PINMUX_DATA_REG("PJDR1", 0xfffe3914, 16, GROUP(
+-		PJ31_DATA, PJ30_DATA, PJ29_DATA, PJ28_DATA,
+-		PJ27_DATA, PJ26_DATA, PJ25_DATA, PJ24_DATA,
+-		PJ23_DATA, PJ22_DATA, PJ21_DATA, PJ20_DATA,
+-		PJ19_DATA, PJ18_DATA, PJ17_DATA, PJ16_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PJDR0", 0xfffe3916, 16, GROUP(
+-		PJ15_DATA, PJ14_DATA, PJ13_DATA, PJ12_DATA,
+-		PJ11_DATA, PJ10_DATA, PJ9_DATA, PJ8_DATA,
+-		PJ7_DATA, PJ6_DATA, PJ5_DATA, PJ4_DATA,
+-		PJ3_DATA, PJ2_DATA, PJ1_DATA, PJ0_DATA ))
+-	},
+-
+-	{ }
+-};
+-
+-const struct sh_pfc_soc_info sh7269_pinmux_info = {
+-	.name = "sh7269_pfc",
+-	.input = { PINMUX_INPUT_BEGIN, PINMUX_INPUT_END, FORCE_IN },
+-	.output = { PINMUX_OUTPUT_BEGIN, PINMUX_OUTPUT_END, FORCE_OUT },
+-	.function = { PINMUX_FUNCTION_BEGIN, PINMUX_FUNCTION_END },
+-
+-	.pins = pinmux_pins,
+-	.nr_pins = ARRAY_SIZE(pinmux_pins),
+-	.func_gpios = pinmux_func_gpios,
+-	.nr_func_gpios = ARRAY_SIZE(pinmux_func_gpios),
+-
+-	.cfg_regs = pinmux_config_regs,
+-	.data_regs = pinmux_data_regs,
+-
+-	.pinmux_data = pinmux_data,
+-	.pinmux_data_size = ARRAY_SIZE(pinmux_data),
+-};
+diff --git a/drivers/pinctrl/renesas/pfc-sh7720.c b/drivers/pinctrl/renesas/pfc-sh7720.c
+deleted file mode 100644
+index 6eedcc5bbb4d67..00000000000000
+--- a/drivers/pinctrl/renesas/pfc-sh7720.c
++++ /dev/null
+@@ -1,1201 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * SH7720 Pinmux
+- *
+- *  Copyright (C) 2008  Magnus Damm
+- */
+-
+-#include <linux/kernel.h>
+-#include <cpu/sh7720.h>
+-
+-#include "sh_pfc.h"
+-
+-enum {
+-	PINMUX_RESERVED = 0,
+-
+-	PINMUX_DATA_BEGIN,
+-	PTA7_DATA, PTA6_DATA, PTA5_DATA, PTA4_DATA,
+-	PTA3_DATA, PTA2_DATA, PTA1_DATA, PTA0_DATA,
+-	PTB7_DATA, PTB6_DATA, PTB5_DATA, PTB4_DATA,
+-	PTB3_DATA, PTB2_DATA, PTB1_DATA, PTB0_DATA,
+-	PTC7_DATA, PTC6_DATA, PTC5_DATA, PTC4_DATA,
+-	PTC3_DATA, PTC2_DATA, PTC1_DATA, PTC0_DATA,
+-	PTD7_DATA, PTD6_DATA, PTD5_DATA, PTD4_DATA,
+-	PTD3_DATA, PTD2_DATA, PTD1_DATA, PTD0_DATA,
+-	PTE6_DATA, PTE5_DATA, PTE4_DATA,
+-	PTE3_DATA, PTE2_DATA, PTE1_DATA, PTE0_DATA,
+-	PTF6_DATA, PTF5_DATA, PTF4_DATA,
+-	PTF3_DATA, PTF2_DATA, PTF1_DATA, PTF0_DATA,
+-	PTG6_DATA, PTG5_DATA, PTG4_DATA,
+-	PTG3_DATA, PTG2_DATA, PTG1_DATA, PTG0_DATA,
+-	PTH6_DATA, PTH5_DATA, PTH4_DATA,
+-	PTH3_DATA, PTH2_DATA, PTH1_DATA, PTH0_DATA,
+-	PTJ6_DATA, PTJ5_DATA, PTJ4_DATA,
+-	PTJ3_DATA, PTJ2_DATA, PTJ1_DATA, PTJ0_DATA,
+-	PTK3_DATA, PTK2_DATA, PTK1_DATA, PTK0_DATA,
+-	PTL7_DATA, PTL6_DATA, PTL5_DATA, PTL4_DATA, PTL3_DATA,
+-	PTM7_DATA, PTM6_DATA, PTM5_DATA, PTM4_DATA,
+-	PTM3_DATA, PTM2_DATA, PTM1_DATA, PTM0_DATA,
+-	PTP4_DATA, PTP3_DATA, PTP2_DATA, PTP1_DATA, PTP0_DATA,
+-	PTR7_DATA, PTR6_DATA, PTR5_DATA, PTR4_DATA,
+-	PTR3_DATA, PTR2_DATA, PTR1_DATA, PTR0_DATA,
+-	PTS4_DATA, PTS3_DATA, PTS2_DATA, PTS1_DATA, PTS0_DATA,
+-	PTT4_DATA, PTT3_DATA, PTT2_DATA, PTT1_DATA, PTT0_DATA,
+-	PTU4_DATA, PTU3_DATA, PTU2_DATA, PTU1_DATA, PTU0_DATA,
+-	PTV4_DATA, PTV3_DATA, PTV2_DATA, PTV1_DATA, PTV0_DATA,
+-	PINMUX_DATA_END,
+-
+-	PINMUX_INPUT_BEGIN,
+-	PTA7_IN, PTA6_IN, PTA5_IN, PTA4_IN,
+-	PTA3_IN, PTA2_IN, PTA1_IN, PTA0_IN,
+-	PTB7_IN, PTB6_IN, PTB5_IN, PTB4_IN,
+-	PTB3_IN, PTB2_IN, PTB1_IN, PTB0_IN,
+-	PTC7_IN, PTC6_IN, PTC5_IN, PTC4_IN,
+-	PTC3_IN, PTC2_IN, PTC1_IN, PTC0_IN,
+-	PTD7_IN, PTD6_IN, PTD5_IN, PTD4_IN,
+-	PTD3_IN, PTD2_IN, PTD1_IN, PTD0_IN,
+-	PTE6_IN, PTE5_IN, PTE4_IN,
+-	PTE3_IN, PTE2_IN, PTE1_IN, PTE0_IN,
+-	PTF6_IN, PTF5_IN, PTF4_IN,
+-	PTF3_IN, PTF2_IN, PTF1_IN, PTF0_IN,
+-	PTG6_IN, PTG5_IN, PTG4_IN,
+-	PTG3_IN, PTG2_IN, PTG1_IN, PTG0_IN,
+-	PTH6_IN, PTH5_IN, PTH4_IN,
+-	PTH3_IN, PTH2_IN, PTH1_IN, PTH0_IN,
+-	PTJ6_IN, PTJ5_IN, PTJ4_IN,
+-	PTJ3_IN, PTJ2_IN, PTJ1_IN, PTJ0_IN,
+-	PTK3_IN, PTK2_IN, PTK1_IN, PTK0_IN,
+-	PTL7_IN, PTL6_IN, PTL5_IN, PTL4_IN, PTL3_IN,
+-	PTM7_IN, PTM6_IN, PTM5_IN, PTM4_IN,
+-	PTM3_IN, PTM2_IN, PTM1_IN, PTM0_IN,
+-	PTP4_IN, PTP3_IN, PTP2_IN, PTP1_IN, PTP0_IN,
+-	PTR7_IN, PTR6_IN, PTR5_IN, PTR4_IN,
+-	PTR3_IN, PTR2_IN, PTR1_IN, PTR0_IN,
+-	PTS4_IN, PTS3_IN, PTS2_IN, PTS1_IN, PTS0_IN,
+-	PTT4_IN, PTT3_IN, PTT2_IN, PTT1_IN, PTT0_IN,
+-	PTU4_IN, PTU3_IN, PTU2_IN, PTU1_IN, PTU0_IN,
+-	PTV4_IN, PTV3_IN, PTV2_IN, PTV1_IN, PTV0_IN,
+-	PINMUX_INPUT_END,
+-
+-	PINMUX_OUTPUT_BEGIN,
+-	PTA7_OUT, PTA6_OUT, PTA5_OUT, PTA4_OUT,
+-	PTA3_OUT, PTA2_OUT, PTA1_OUT, PTA0_OUT,
+-	PTB7_OUT, PTB6_OUT, PTB5_OUT, PTB4_OUT,
+-	PTB3_OUT, PTB2_OUT, PTB1_OUT, PTB0_OUT,
+-	PTC7_OUT, PTC6_OUT, PTC5_OUT, PTC4_OUT,
+-	PTC3_OUT, PTC2_OUT, PTC1_OUT, PTC0_OUT,
+-	PTD7_OUT, PTD6_OUT, PTD5_OUT, PTD4_OUT,
+-	PTD3_OUT, PTD2_OUT, PTD1_OUT, PTD0_OUT,
+-	PTE4_OUT, PTE3_OUT, PTE2_OUT, PTE1_OUT, PTE0_OUT,
+-	PTF0_OUT,
+-	PTG6_OUT, PTG5_OUT, PTG4_OUT,
+-	PTG3_OUT, PTG2_OUT, PTG1_OUT, PTG0_OUT,
+-	PTH6_OUT, PTH5_OUT, PTH4_OUT,
+-	PTH3_OUT, PTH2_OUT, PTH1_OUT, PTH0_OUT,
+-	PTJ6_OUT, PTJ5_OUT, PTJ4_OUT,
+-	PTJ3_OUT, PTJ2_OUT, PTJ1_OUT, PTJ0_OUT,
+-	PTK3_OUT, PTK2_OUT, PTK1_OUT, PTK0_OUT,
+-	PTL7_OUT, PTL6_OUT, PTL5_OUT, PTL4_OUT, PTL3_OUT,
+-	PTM7_OUT, PTM6_OUT, PTM5_OUT, PTM4_OUT,
+-	PTM3_OUT, PTM2_OUT, PTM1_OUT, PTM0_OUT,
+-	PTP4_OUT, PTP3_OUT, PTP2_OUT, PTP1_OUT, PTP0_OUT,
+-	PTR7_OUT, PTR6_OUT, PTR5_OUT, PTR4_OUT,
+-	PTR3_OUT, PTR2_OUT, PTR1_OUT, PTR0_OUT,
+-	PTS4_OUT, PTS3_OUT, PTS2_OUT, PTS1_OUT, PTS0_OUT,
+-	PTT4_OUT, PTT3_OUT, PTT2_OUT, PTT1_OUT, PTT0_OUT,
+-	PTU4_OUT, PTU3_OUT, PTU2_OUT, PTU1_OUT, PTU0_OUT,
+-	PTV4_OUT, PTV3_OUT, PTV2_OUT, PTV1_OUT, PTV0_OUT,
+-	PINMUX_OUTPUT_END,
+-
+-	PINMUX_FUNCTION_BEGIN,
+-	PTA7_FN, PTA6_FN, PTA5_FN, PTA4_FN,
+-	PTA3_FN, PTA2_FN, PTA1_FN, PTA0_FN,
+-	PTB7_FN, PTB6_FN, PTB5_FN, PTB4_FN,
+-	PTB3_FN, PTB2_FN, PTB1_FN, PTB0_FN,
+-	PTC7_FN, PTC6_FN, PTC5_FN, PTC4_FN,
+-	PTC3_FN, PTC2_FN, PTC1_FN, PTC0_FN,
+-	PTD7_FN, PTD6_FN, PTD5_FN, PTD4_FN,
+-	PTD3_FN, PTD2_FN, PTD1_FN, PTD0_FN,
+-	PTE6_FN, PTE5_FN, PTE4_FN,
+-	PTE3_FN, PTE2_FN, PTE1_FN, PTE0_FN,
+-	PTF6_FN, PTF5_FN, PTF4_FN,
+-	PTF3_FN, PTF2_FN, PTF1_FN, PTF0_FN,
+-	PTG6_FN, PTG5_FN, PTG4_FN,
+-	PTG3_FN, PTG2_FN, PTG1_FN, PTG0_FN,
+-	PTH6_FN, PTH5_FN, PTH4_FN,
+-	PTH3_FN, PTH2_FN, PTH1_FN, PTH0_FN,
+-	PTJ6_FN, PTJ5_FN, PTJ4_FN,
+-	PTJ3_FN, PTJ2_FN, PTJ1_FN, PTJ0_FN,
+-	PTK3_FN, PTK2_FN, PTK1_FN, PTK0_FN,
+-	PTL7_FN, PTL6_FN, PTL5_FN, PTL4_FN, PTL3_FN,
+-	PTM7_FN, PTM6_FN, PTM5_FN, PTM4_FN,
+-	PTM3_FN, PTM2_FN, PTM1_FN, PTM0_FN,
+-	PTP4_FN, PTP3_FN, PTP2_FN, PTP1_FN, PTP0_FN,
+-	PTR7_FN, PTR6_FN, PTR5_FN, PTR4_FN,
+-	PTR3_FN, PTR2_FN, PTR1_FN, PTR0_FN,
+-	PTS4_FN, PTS3_FN, PTS2_FN, PTS1_FN, PTS0_FN,
+-	PTT4_FN, PTT3_FN, PTT2_FN, PTT1_FN, PTT0_FN,
+-	PTU4_FN, PTU3_FN, PTU2_FN, PTU1_FN, PTU0_FN,
+-	PTV4_FN, PTV3_FN, PTV2_FN, PTV1_FN, PTV0_FN,
+-
+-	PSELA_1_0_00, PSELA_1_0_01, PSELA_1_0_10,
+-	PSELA_3_2_00, PSELA_3_2_01, PSELA_3_2_10, PSELA_3_2_11,
+-	PSELA_5_4_00, PSELA_5_4_01, PSELA_5_4_10, PSELA_5_4_11,
+-	PSELA_7_6_00, PSELA_7_6_01, PSELA_7_6_10,
+-	PSELA_9_8_00, PSELA_9_8_01, PSELA_9_8_10,
+-	PSELA_11_10_00, PSELA_11_10_01, PSELA_11_10_10,
+-	PSELA_13_12_00, PSELA_13_12_10,
+-	PSELA_15_14_00, PSELA_15_14_10,
+-	PSELB_9_8_00, PSELB_9_8_11,
+-	PSELB_11_10_00, PSELB_11_10_01, PSELB_11_10_10, PSELB_11_10_11,
+-	PSELB_13_12_00, PSELB_13_12_01, PSELB_13_12_10, PSELB_13_12_11,
+-	PSELB_15_14_00, PSELB_15_14_11,
+-	PSELC_9_8_00, PSELC_9_8_10,
+-	PSELC_11_10_00, PSELC_11_10_10,
+-	PSELC_13_12_00,	PSELC_13_12_01,	PSELC_13_12_10,
+-	PSELC_15_14_00,	PSELC_15_14_01,	PSELC_15_14_10,
+-	PSELD_1_0_00, PSELD_1_0_10,
+-	PSELD_11_10_00,	PSELD_11_10_01,
+-	PSELD_15_14_00,	PSELD_15_14_01,	PSELD_15_14_10,
+-	PINMUX_FUNCTION_END,
+-
+-	PINMUX_MARK_BEGIN,
+-	D31_MARK, D30_MARK, D29_MARK, D28_MARK,
+-	D27_MARK, D26_MARK, D25_MARK, D24_MARK,
+-	D23_MARK, D22_MARK, D21_MARK, D20_MARK,
+-	D19_MARK, D18_MARK, D17_MARK, D16_MARK,
+-	IOIS16_MARK, RAS_MARK, CAS_MARK, CKE_MARK,
+-	CS5B_CE1A_MARK, CS6B_CE1B_MARK,
+-	A25_MARK, A24_MARK, A23_MARK, A22_MARK,
+-	A21_MARK, A20_MARK, A19_MARK, A0_MARK,
+-	REFOUT_MARK, IRQOUT_MARK,
+-	LCD_DATA15_MARK, LCD_DATA14_MARK,
+-	LCD_DATA13_MARK, LCD_DATA12_MARK,
+-	LCD_DATA11_MARK, LCD_DATA10_MARK,
+-	LCD_DATA9_MARK, LCD_DATA8_MARK,
+-	LCD_DATA7_MARK, LCD_DATA6_MARK,
+-	LCD_DATA5_MARK, LCD_DATA4_MARK,
+-	LCD_DATA3_MARK, LCD_DATA2_MARK,
+-	LCD_DATA1_MARK, LCD_DATA0_MARK,
+-	LCD_M_DISP_MARK,
+-	LCD_CL1_MARK, LCD_CL2_MARK,
+-	LCD_DON_MARK, LCD_FLM_MARK,
+-	LCD_VEPWC_MARK, LCD_VCPWC_MARK,
+-	AFE_RXIN_MARK, AFE_RDET_MARK,
+-	AFE_FS_MARK, AFE_TXOUT_MARK,
+-	AFE_SCLK_MARK, AFE_RLYCNT_MARK,
+-	AFE_HC1_MARK,
+-	IIC_SCL_MARK, IIC_SDA_MARK,
+-	DA1_MARK, DA0_MARK,
+-	AN3_MARK, AN2_MARK, AN1_MARK, AN0_MARK, ADTRG_MARK,
+-	USB1D_RCV_MARK, USB1D_TXSE0_MARK,
+-	USB1D_TXDPLS_MARK, USB1D_DMNS_MARK,
+-	USB1D_DPLS_MARK, USB1D_SPEED_MARK,
+-	USB1D_TXENL_MARK,
+-	USB2_PWR_EN_MARK, USB1_PWR_EN_USBF_UPLUP_MARK, USB1D_SUSPEND_MARK,
+-	IRQ5_MARK, IRQ4_MARK,
+-	IRQ3_IRL3_MARK, IRQ2_IRL2_MARK,
+-	IRQ1_IRL1_MARK, IRQ0_IRL0_MARK,
+-	PCC_REG_MARK, PCC_DRV_MARK,
+-	PCC_BVD2_MARK, PCC_BVD1_MARK,
+-	PCC_CD2_MARK, PCC_CD1_MARK,
+-	PCC_RESET_MARK, PCC_RDY_MARK,
+-	PCC_VS2_MARK, PCC_VS1_MARK,
+-	AUDATA3_MARK, AUDATA2_MARK, AUDATA1_MARK, AUDATA0_MARK,
+-	AUDCK_MARK, AUDSYNC_MARK, ASEBRKAK_MARK, TRST_MARK,
+-	TMS_MARK, TDO_MARK, TDI_MARK, TCK_MARK,
+-	DACK1_MARK, DREQ1_MARK, DACK0_MARK, DREQ0_MARK,
+-	TEND1_MARK, TEND0_MARK,
+-	SIOF0_SYNC_MARK, SIOF0_MCLK_MARK,
+-	SIOF0_TXD_MARK, SIOF0_RXD_MARK,
+-	SIOF0_SCK_MARK,
+-	SIOF1_SYNC_MARK, SIOF1_MCLK_MARK,
+-	SIOF1_TXD_MARK, SIOF1_RXD_MARK,
+-	SIOF1_SCK_MARK,
+-	SCIF0_TXD_MARK, SCIF0_RXD_MARK,
+-	SCIF0_RTS_MARK, SCIF0_CTS_MARK, SCIF0_SCK_MARK,
+-	SCIF1_TXD_MARK, SCIF1_RXD_MARK,
+-	SCIF1_RTS_MARK, SCIF1_CTS_MARK, SCIF1_SCK_MARK,
+-	TPU_TO1_MARK, TPU_TO0_MARK,
+-	TPU_TI3B_MARK, TPU_TI3A_MARK,
+-	TPU_TI2B_MARK, TPU_TI2A_MARK,
+-	TPU_TO3_MARK, TPU_TO2_MARK,
+-	SIM_D_MARK, SIM_CLK_MARK, SIM_RST_MARK,
+-	MMC_DAT_MARK, MMC_CMD_MARK,
+-	MMC_CLK_MARK, MMC_VDDON_MARK,
+-	MMC_ODMOD_MARK,
+-	STATUS0_MARK, STATUS1_MARK,
+-	PINMUX_MARK_END,
+-};
+-
+-static const u16 pinmux_data[] = {
+-	/* PTA GPIO */
+-	PINMUX_DATA(PTA7_DATA, PTA7_IN, PTA7_OUT),
+-	PINMUX_DATA(PTA6_DATA, PTA6_IN, PTA6_OUT),
+-	PINMUX_DATA(PTA5_DATA, PTA5_IN, PTA5_OUT),
+-	PINMUX_DATA(PTA4_DATA, PTA4_IN, PTA4_OUT),
+-	PINMUX_DATA(PTA3_DATA, PTA3_IN, PTA3_OUT),
+-	PINMUX_DATA(PTA2_DATA, PTA2_IN, PTA2_OUT),
+-	PINMUX_DATA(PTA1_DATA, PTA1_IN, PTA1_OUT),
+-	PINMUX_DATA(PTA0_DATA, PTA0_IN, PTA0_OUT),
+-
+-	/* PTB GPIO */
+-	PINMUX_DATA(PTB7_DATA, PTB7_IN, PTB7_OUT),
+-	PINMUX_DATA(PTB6_DATA, PTB6_IN, PTB6_OUT),
+-	PINMUX_DATA(PTB5_DATA, PTB5_IN, PTB5_OUT),
+-	PINMUX_DATA(PTB4_DATA, PTB4_IN, PTB4_OUT),
+-	PINMUX_DATA(PTB3_DATA, PTB3_IN, PTB3_OUT),
+-	PINMUX_DATA(PTB2_DATA, PTB2_IN, PTB2_OUT),
+-	PINMUX_DATA(PTB1_DATA, PTB1_IN, PTB1_OUT),
+-	PINMUX_DATA(PTB0_DATA, PTB0_IN, PTB0_OUT),
+-
+-	/* PTC GPIO */
+-	PINMUX_DATA(PTC7_DATA, PTC7_IN, PTC7_OUT),
+-	PINMUX_DATA(PTC6_DATA, PTC6_IN, PTC6_OUT),
+-	PINMUX_DATA(PTC5_DATA, PTC5_IN, PTC5_OUT),
+-	PINMUX_DATA(PTC4_DATA, PTC4_IN, PTC4_OUT),
+-	PINMUX_DATA(PTC3_DATA, PTC3_IN, PTC3_OUT),
+-	PINMUX_DATA(PTC2_DATA, PTC2_IN, PTC2_OUT),
+-	PINMUX_DATA(PTC1_DATA, PTC1_IN, PTC1_OUT),
+-	PINMUX_DATA(PTC0_DATA, PTC0_IN, PTC0_OUT),
+-
+-	/* PTD GPIO */
+-	PINMUX_DATA(PTD7_DATA, PTD7_IN, PTD7_OUT),
+-	PINMUX_DATA(PTD6_DATA, PTD6_IN, PTD6_OUT),
+-	PINMUX_DATA(PTD5_DATA, PTD5_IN, PTD5_OUT),
+-	PINMUX_DATA(PTD4_DATA, PTD4_IN, PTD4_OUT),
+-	PINMUX_DATA(PTD3_DATA, PTD3_IN, PTD3_OUT),
+-	PINMUX_DATA(PTD2_DATA, PTD2_IN, PTD2_OUT),
+-	PINMUX_DATA(PTD1_DATA, PTD1_IN, PTD1_OUT),
+-	PINMUX_DATA(PTD0_DATA, PTD0_IN, PTD0_OUT),
+-
+-	/* PTE GPIO */
+-	PINMUX_DATA(PTE6_DATA, PTE6_IN),
+-	PINMUX_DATA(PTE5_DATA, PTE5_IN),
+-	PINMUX_DATA(PTE4_DATA, PTE4_IN, PTE4_OUT),
+-	PINMUX_DATA(PTE3_DATA, PTE3_IN, PTE3_OUT),
+-	PINMUX_DATA(PTE2_DATA, PTE2_IN, PTE2_OUT),
+-	PINMUX_DATA(PTE1_DATA, PTE1_IN, PTE1_OUT),
+-	PINMUX_DATA(PTE0_DATA, PTE0_IN, PTE0_OUT),
+-
+-	/* PTF GPIO */
+-	PINMUX_DATA(PTF6_DATA, PTF6_IN),
+-	PINMUX_DATA(PTF5_DATA, PTF5_IN),
+-	PINMUX_DATA(PTF4_DATA, PTF4_IN),
+-	PINMUX_DATA(PTF3_DATA, PTF3_IN),
+-	PINMUX_DATA(PTF2_DATA, PTF2_IN),
+-	PINMUX_DATA(PTF1_DATA, PTF1_IN),
+-	PINMUX_DATA(PTF0_DATA, PTF0_IN, PTF0_OUT),
+-
+-	/* PTG GPIO */
+-	PINMUX_DATA(PTG6_DATA, PTG6_IN, PTG6_OUT),
+-	PINMUX_DATA(PTG5_DATA, PTG5_IN, PTG5_OUT),
+-	PINMUX_DATA(PTG4_DATA, PTG4_IN, PTG4_OUT),
+-	PINMUX_DATA(PTG3_DATA, PTG3_IN, PTG3_OUT),
+-	PINMUX_DATA(PTG2_DATA, PTG2_IN, PTG2_OUT),
+-	PINMUX_DATA(PTG1_DATA, PTG1_IN, PTG1_OUT),
+-	PINMUX_DATA(PTG0_DATA, PTG0_IN, PTG0_OUT),
+-
+-	/* PTH GPIO */
+-	PINMUX_DATA(PTH6_DATA, PTH6_IN, PTH6_OUT),
+-	PINMUX_DATA(PTH5_DATA, PTH5_IN, PTH5_OUT),
+-	PINMUX_DATA(PTH4_DATA, PTH4_IN, PTH4_OUT),
+-	PINMUX_DATA(PTH3_DATA, PTH3_IN, PTH3_OUT),
+-	PINMUX_DATA(PTH2_DATA, PTH2_IN, PTH2_OUT),
+-	PINMUX_DATA(PTH1_DATA, PTH1_IN, PTH1_OUT),
+-	PINMUX_DATA(PTH0_DATA, PTH0_IN, PTH0_OUT),
+-
+-	/* PTJ GPIO */
+-	PINMUX_DATA(PTJ6_DATA, PTJ6_IN, PTJ6_OUT),
+-	PINMUX_DATA(PTJ5_DATA, PTJ5_IN, PTJ5_OUT),
+-	PINMUX_DATA(PTJ4_DATA, PTJ4_IN, PTJ4_OUT),
+-	PINMUX_DATA(PTJ3_DATA, PTJ3_IN, PTJ3_OUT),
+-	PINMUX_DATA(PTJ2_DATA, PTJ2_IN, PTJ2_OUT),
+-	PINMUX_DATA(PTJ1_DATA, PTJ1_IN, PTJ1_OUT),
+-	PINMUX_DATA(PTJ0_DATA, PTJ0_IN, PTJ0_OUT),
+-
+-	/* PTK GPIO */
+-	PINMUX_DATA(PTK3_DATA, PTK3_IN, PTK3_OUT),
+-	PINMUX_DATA(PTK2_DATA, PTK2_IN, PTK2_OUT),
+-	PINMUX_DATA(PTK1_DATA, PTK1_IN, PTK1_OUT),
+-	PINMUX_DATA(PTK0_DATA, PTK0_IN, PTK0_OUT),
+-
+-	/* PTL GPIO */
+-	PINMUX_DATA(PTL7_DATA, PTL7_IN, PTL7_OUT),
+-	PINMUX_DATA(PTL6_DATA, PTL6_IN, PTL6_OUT),
+-	PINMUX_DATA(PTL5_DATA, PTL5_IN, PTL5_OUT),
+-	PINMUX_DATA(PTL4_DATA, PTL4_IN, PTL4_OUT),
+-	PINMUX_DATA(PTL3_DATA, PTL3_IN, PTL3_OUT),
+-
+-	/* PTM GPIO */
+-	PINMUX_DATA(PTM7_DATA, PTM7_IN, PTM7_OUT),
+-	PINMUX_DATA(PTM6_DATA, PTM6_IN, PTM6_OUT),
+-	PINMUX_DATA(PTM5_DATA, PTM5_IN, PTM5_OUT),
+-	PINMUX_DATA(PTM4_DATA, PTM4_IN, PTM4_OUT),
+-	PINMUX_DATA(PTM3_DATA, PTM3_IN, PTM3_OUT),
+-	PINMUX_DATA(PTM2_DATA, PTM2_IN, PTM2_OUT),
+-	PINMUX_DATA(PTM1_DATA, PTM1_IN, PTM1_OUT),
+-	PINMUX_DATA(PTM0_DATA, PTM0_IN, PTM0_OUT),
+-
+-	/* PTP GPIO */
+-	PINMUX_DATA(PTP4_DATA, PTP4_IN, PTP4_OUT),
+-	PINMUX_DATA(PTP3_DATA, PTP3_IN, PTP3_OUT),
+-	PINMUX_DATA(PTP2_DATA, PTP2_IN, PTP2_OUT),
+-	PINMUX_DATA(PTP1_DATA, PTP1_IN, PTP1_OUT),
+-	PINMUX_DATA(PTP0_DATA, PTP0_IN, PTP0_OUT),
+-
+-	/* PTR GPIO */
+-	PINMUX_DATA(PTR7_DATA, PTR7_IN, PTR7_OUT),
+-	PINMUX_DATA(PTR6_DATA, PTR6_IN, PTR6_OUT),
+-	PINMUX_DATA(PTR5_DATA, PTR5_IN, PTR5_OUT),
+-	PINMUX_DATA(PTR4_DATA, PTR4_IN, PTR4_OUT),
+-	PINMUX_DATA(PTR3_DATA, PTR3_IN, PTR3_OUT),
+-	PINMUX_DATA(PTR2_DATA, PTR2_IN, PTR2_OUT),
+-	PINMUX_DATA(PTR1_DATA, PTR1_IN, PTR1_OUT),
+-	PINMUX_DATA(PTR0_DATA, PTR0_IN, PTR0_OUT),
+-
+-	/* PTS GPIO */
+-	PINMUX_DATA(PTS4_DATA, PTS4_IN, PTS4_OUT),
+-	PINMUX_DATA(PTS3_DATA, PTS3_IN, PTS3_OUT),
+-	PINMUX_DATA(PTS2_DATA, PTS2_IN, PTS2_OUT),
+-	PINMUX_DATA(PTS1_DATA, PTS1_IN, PTS1_OUT),
+-	PINMUX_DATA(PTS0_DATA, PTS0_IN, PTS0_OUT),
+-
+-	/* PTT GPIO */
+-	PINMUX_DATA(PTT4_DATA, PTT4_IN, PTT4_OUT),
+-	PINMUX_DATA(PTT3_DATA, PTT3_IN, PTT3_OUT),
+-	PINMUX_DATA(PTT2_DATA, PTT2_IN, PTT2_OUT),
+-	PINMUX_DATA(PTT1_DATA, PTT1_IN, PTT1_OUT),
+-	PINMUX_DATA(PTT0_DATA, PTT0_IN, PTT0_OUT),
+-
+-	/* PTU GPIO */
+-	PINMUX_DATA(PTU4_DATA, PTU4_IN, PTU4_OUT),
+-	PINMUX_DATA(PTU3_DATA, PTU3_IN, PTU3_OUT),
+-	PINMUX_DATA(PTU2_DATA, PTU2_IN, PTU2_OUT),
+-	PINMUX_DATA(PTU1_DATA, PTU1_IN, PTU1_OUT),
+-	PINMUX_DATA(PTU0_DATA, PTU0_IN, PTU0_OUT),
+-
+-	/* PTV GPIO */
+-	PINMUX_DATA(PTV4_DATA, PTV4_IN, PTV4_OUT),
+-	PINMUX_DATA(PTV3_DATA, PTV3_IN, PTV3_OUT),
+-	PINMUX_DATA(PTV2_DATA, PTV2_IN, PTV2_OUT),
+-	PINMUX_DATA(PTV1_DATA, PTV1_IN, PTV1_OUT),
+-	PINMUX_DATA(PTV0_DATA, PTV0_IN, PTV0_OUT),
+-
+-	/* PTA FN */
+-	PINMUX_DATA(D23_MARK, PTA7_FN),
+-	PINMUX_DATA(D22_MARK, PTA6_FN),
+-	PINMUX_DATA(D21_MARK, PTA5_FN),
+-	PINMUX_DATA(D20_MARK, PTA4_FN),
+-	PINMUX_DATA(D19_MARK, PTA3_FN),
+-	PINMUX_DATA(D18_MARK, PTA2_FN),
+-	PINMUX_DATA(D17_MARK, PTA1_FN),
+-	PINMUX_DATA(D16_MARK, PTA0_FN),
+-
+-	/* PTB FN */
+-	PINMUX_DATA(D31_MARK, PTB7_FN),
+-	PINMUX_DATA(D30_MARK, PTB6_FN),
+-	PINMUX_DATA(D29_MARK, PTB5_FN),
+-	PINMUX_DATA(D28_MARK, PTB4_FN),
+-	PINMUX_DATA(D27_MARK, PTB3_FN),
+-	PINMUX_DATA(D26_MARK, PTB2_FN),
+-	PINMUX_DATA(D25_MARK, PTB1_FN),
+-	PINMUX_DATA(D24_MARK, PTB0_FN),
+-
+-	/* PTC FN */
+-	PINMUX_DATA(LCD_DATA7_MARK, PTC7_FN),
+-	PINMUX_DATA(LCD_DATA6_MARK, PTC6_FN),
+-	PINMUX_DATA(LCD_DATA5_MARK, PTC5_FN),
+-	PINMUX_DATA(LCD_DATA4_MARK, PTC4_FN),
+-	PINMUX_DATA(LCD_DATA3_MARK, PTC3_FN),
+-	PINMUX_DATA(LCD_DATA2_MARK, PTC2_FN),
+-	PINMUX_DATA(LCD_DATA1_MARK, PTC1_FN),
+-	PINMUX_DATA(LCD_DATA0_MARK, PTC0_FN),
+-
+-	/* PTD FN */
+-	PINMUX_DATA(LCD_DATA15_MARK, PTD7_FN),
+-	PINMUX_DATA(LCD_DATA14_MARK, PTD6_FN),
+-	PINMUX_DATA(LCD_DATA13_MARK, PTD5_FN),
+-	PINMUX_DATA(LCD_DATA12_MARK, PTD4_FN),
+-	PINMUX_DATA(LCD_DATA11_MARK, PTD3_FN),
+-	PINMUX_DATA(LCD_DATA10_MARK, PTD2_FN),
+-	PINMUX_DATA(LCD_DATA9_MARK, PTD1_FN),
+-	PINMUX_DATA(LCD_DATA8_MARK, PTD0_FN),
+-
+-	/* PTE FN */
+-	PINMUX_DATA(IIC_SCL_MARK, PSELB_9_8_00, PTE6_FN),
+-	PINMUX_DATA(AFE_RXIN_MARK, PSELB_9_8_11, PTE6_FN),
+-	PINMUX_DATA(IIC_SDA_MARK, PSELB_9_8_00, PTE5_FN),
+-	PINMUX_DATA(AFE_RDET_MARK, PSELB_9_8_11, PTE5_FN),
+-	PINMUX_DATA(LCD_M_DISP_MARK, PTE4_FN),
+-	PINMUX_DATA(LCD_CL1_MARK, PTE3_FN),
+-	PINMUX_DATA(LCD_CL2_MARK, PTE2_FN),
+-	PINMUX_DATA(LCD_DON_MARK, PTE1_FN),
+-	PINMUX_DATA(LCD_FLM_MARK, PTE0_FN),
+-
+-	/* PTF FN */
+-	PINMUX_DATA(DA1_MARK, PTF6_FN),
+-	PINMUX_DATA(DA0_MARK, PTF5_FN),
+-	PINMUX_DATA(AN3_MARK, PTF4_FN),
+-	PINMUX_DATA(AN2_MARK, PTF3_FN),
+-	PINMUX_DATA(AN1_MARK, PTF2_FN),
+-	PINMUX_DATA(AN0_MARK, PTF1_FN),
+-	PINMUX_DATA(ADTRG_MARK, PTF0_FN),
+-
+-	/* PTG FN */
+-	PINMUX_DATA(USB1D_RCV_MARK, PSELA_3_2_00, PTG6_FN),
+-	PINMUX_DATA(AFE_FS_MARK, PSELA_3_2_01, PTG6_FN),
+-	PINMUX_DATA(PCC_REG_MARK, PSELA_3_2_10, PTG6_FN),
+-	PINMUX_DATA(IRQ5_MARK, PSELA_3_2_11, PTG6_FN),
+-	PINMUX_DATA(USB1D_TXSE0_MARK, PSELA_5_4_00, PTG5_FN),
+-	PINMUX_DATA(AFE_TXOUT_MARK, PSELA_5_4_01, PTG5_FN),
+-	PINMUX_DATA(PCC_DRV_MARK, PSELA_5_4_10, PTG5_FN),
+-	PINMUX_DATA(IRQ4_MARK, PSELA_5_4_11, PTG5_FN),
+-	PINMUX_DATA(USB1D_TXDPLS_MARK, PSELA_7_6_00, PTG4_FN),
+-	PINMUX_DATA(AFE_SCLK_MARK, PSELA_7_6_01, PTG4_FN),
+-	PINMUX_DATA(IOIS16_MARK, PSELA_7_6_10, PTG4_FN),
+-	PINMUX_DATA(USB1D_DMNS_MARK, PSELA_9_8_00, PTG3_FN),
+-	PINMUX_DATA(AFE_RLYCNT_MARK, PSELA_9_8_01, PTG3_FN),
+-	PINMUX_DATA(PCC_BVD2_MARK, PSELA_9_8_10, PTG3_FN),
+-	PINMUX_DATA(USB1D_DPLS_MARK, PSELA_11_10_00, PTG2_FN),
+-	PINMUX_DATA(AFE_HC1_MARK, PSELA_11_10_01, PTG2_FN),
+-	PINMUX_DATA(PCC_BVD1_MARK, PSELA_11_10_10, PTG2_FN),
+-	PINMUX_DATA(USB1D_SPEED_MARK, PSELA_13_12_00, PTG1_FN),
+-	PINMUX_DATA(PCC_CD2_MARK, PSELA_13_12_10, PTG1_FN),
+-	PINMUX_DATA(USB1D_TXENL_MARK, PSELA_15_14_00, PTG0_FN),
+-	PINMUX_DATA(PCC_CD1_MARK, PSELA_15_14_10, PTG0_FN),
+-
+-	/* PTH FN */
+-	PINMUX_DATA(RAS_MARK, PTH6_FN),
+-	PINMUX_DATA(CAS_MARK, PTH5_FN),
+-	PINMUX_DATA(CKE_MARK, PTH4_FN),
+-	PINMUX_DATA(STATUS1_MARK, PTH3_FN),
+-	PINMUX_DATA(STATUS0_MARK, PTH2_FN),
+-	PINMUX_DATA(USB2_PWR_EN_MARK, PTH1_FN),
+-	PINMUX_DATA(USB1_PWR_EN_USBF_UPLUP_MARK, PTH0_FN),
+-
+-	/* PTJ FN */
+-	PINMUX_DATA(AUDCK_MARK, PTJ6_FN),
+-	PINMUX_DATA(ASEBRKAK_MARK, PTJ5_FN),
+-	PINMUX_DATA(AUDATA3_MARK, PTJ4_FN),
+-	PINMUX_DATA(AUDATA2_MARK, PTJ3_FN),
+-	PINMUX_DATA(AUDATA1_MARK, PTJ2_FN),
+-	PINMUX_DATA(AUDATA0_MARK, PTJ1_FN),
+-	PINMUX_DATA(AUDSYNC_MARK, PTJ0_FN),
+-
+-	/* PTK FN */
+-	PINMUX_DATA(PCC_RESET_MARK, PTK3_FN),
+-	PINMUX_DATA(PCC_RDY_MARK, PTK2_FN),
+-	PINMUX_DATA(PCC_VS2_MARK, PTK1_FN),
+-	PINMUX_DATA(PCC_VS1_MARK, PTK0_FN),
+-
+-	/* PTL FN */
+-	PINMUX_DATA(TRST_MARK, PTL7_FN),
+-	PINMUX_DATA(TMS_MARK, PTL6_FN),
+-	PINMUX_DATA(TDO_MARK, PTL5_FN),
+-	PINMUX_DATA(TDI_MARK, PTL4_FN),
+-	PINMUX_DATA(TCK_MARK, PTL3_FN),
+-
+-	/* PTM FN */
+-	PINMUX_DATA(DREQ1_MARK, PTM7_FN),
+-	PINMUX_DATA(DREQ0_MARK, PTM6_FN),
+-	PINMUX_DATA(DACK1_MARK, PTM5_FN),
+-	PINMUX_DATA(DACK0_MARK, PTM4_FN),
+-	PINMUX_DATA(TEND1_MARK, PTM3_FN),
+-	PINMUX_DATA(TEND0_MARK, PTM2_FN),
+-	PINMUX_DATA(CS5B_CE1A_MARK, PTM1_FN),
+-	PINMUX_DATA(CS6B_CE1B_MARK, PTM0_FN),
+-
+-	/* PTP FN */
+-	PINMUX_DATA(USB1D_SUSPEND_MARK, PSELA_1_0_00, PTP4_FN),
+-	PINMUX_DATA(REFOUT_MARK, PSELA_1_0_01, PTP4_FN),
+-	PINMUX_DATA(IRQOUT_MARK, PSELA_1_0_10, PTP4_FN),
+-	PINMUX_DATA(IRQ3_IRL3_MARK, PTP3_FN),
+-	PINMUX_DATA(IRQ2_IRL2_MARK, PTP2_FN),
+-	PINMUX_DATA(IRQ1_IRL1_MARK, PTP1_FN),
+-	PINMUX_DATA(IRQ0_IRL0_MARK, PTP0_FN),
+-
+-	/* PTR FN */
+-	PINMUX_DATA(A25_MARK, PTR7_FN),
+-	PINMUX_DATA(A24_MARK, PTR6_FN),
+-	PINMUX_DATA(A23_MARK, PTR5_FN),
+-	PINMUX_DATA(A22_MARK, PTR4_FN),
+-	PINMUX_DATA(A21_MARK, PTR3_FN),
+-	PINMUX_DATA(A20_MARK, PTR2_FN),
+-	PINMUX_DATA(A19_MARK, PTR1_FN),
+-	PINMUX_DATA(A0_MARK, PTR0_FN),
+-
+-	/* PTS FN */
+-	PINMUX_DATA(SIOF0_SYNC_MARK, PTS4_FN),
+-	PINMUX_DATA(SIOF0_MCLK_MARK, PTS3_FN),
+-	PINMUX_DATA(SIOF0_TXD_MARK, PTS2_FN),
+-	PINMUX_DATA(SIOF0_RXD_MARK, PTS1_FN),
+-	PINMUX_DATA(SIOF0_SCK_MARK, PTS0_FN),
+-
+-	/* PTT FN */
+-	PINMUX_DATA(SCIF0_CTS_MARK, PSELB_15_14_00, PTT4_FN),
+-	PINMUX_DATA(TPU_TO1_MARK, PSELB_15_14_11, PTT4_FN),
+-	PINMUX_DATA(SCIF0_RTS_MARK, PSELB_15_14_00, PTT3_FN),
+-	PINMUX_DATA(TPU_TO0_MARK, PSELB_15_14_11, PTT3_FN),
+-	PINMUX_DATA(SCIF0_TXD_MARK, PTT2_FN),
+-	PINMUX_DATA(SCIF0_RXD_MARK, PTT1_FN),
+-	PINMUX_DATA(SCIF0_SCK_MARK, PTT0_FN),
+-
+-	/* PTU FN */
+-	PINMUX_DATA(SIOF1_SYNC_MARK, PTU4_FN),
+-	PINMUX_DATA(SIOF1_MCLK_MARK, PSELD_11_10_00, PTU3_FN),
+-	PINMUX_DATA(TPU_TI3B_MARK, PSELD_11_10_01, PTU3_FN),
+-	PINMUX_DATA(SIOF1_TXD_MARK, PSELD_15_14_00, PTU2_FN),
+-	PINMUX_DATA(TPU_TI3A_MARK, PSELD_15_14_01, PTU2_FN),
+-	PINMUX_DATA(MMC_DAT_MARK, PSELD_15_14_10, PTU2_FN),
+-	PINMUX_DATA(SIOF1_RXD_MARK, PSELC_13_12_00, PTU1_FN),
+-	PINMUX_DATA(TPU_TI2B_MARK, PSELC_13_12_01, PTU1_FN),
+-	PINMUX_DATA(MMC_CMD_MARK, PSELC_13_12_10, PTU1_FN),
+-	PINMUX_DATA(SIOF1_SCK_MARK, PSELC_15_14_00, PTU0_FN),
+-	PINMUX_DATA(TPU_TI2A_MARK, PSELC_15_14_01, PTU0_FN),
+-	PINMUX_DATA(MMC_CLK_MARK, PSELC_15_14_10, PTU0_FN),
+-
+-	/* PTV FN */
+-	PINMUX_DATA(SCIF1_CTS_MARK, PSELB_11_10_00, PTV4_FN),
+-	PINMUX_DATA(TPU_TO3_MARK, PSELB_11_10_01, PTV4_FN),
+-	PINMUX_DATA(MMC_VDDON_MARK, PSELB_11_10_10, PTV4_FN),
+-	PINMUX_DATA(LCD_VEPWC_MARK, PSELB_11_10_11, PTV4_FN),
+-	PINMUX_DATA(SCIF1_RTS_MARK, PSELB_13_12_00, PTV3_FN),
+-	PINMUX_DATA(TPU_TO2_MARK, PSELB_13_12_01, PTV3_FN),
+-	PINMUX_DATA(MMC_ODMOD_MARK, PSELB_13_12_10, PTV3_FN),
+-	PINMUX_DATA(LCD_VCPWC_MARK, PSELB_13_12_11, PTV3_FN),
+-	PINMUX_DATA(SCIF1_TXD_MARK, PSELC_9_8_00, PTV2_FN),
+-	PINMUX_DATA(SIM_D_MARK, PSELC_9_8_10, PTV2_FN),
+-	PINMUX_DATA(SCIF1_RXD_MARK, PSELC_11_10_00, PTV1_FN),
+-	PINMUX_DATA(SIM_RST_MARK, PSELC_11_10_10, PTV1_FN),
+-	PINMUX_DATA(SCIF1_SCK_MARK, PSELD_1_0_00, PTV0_FN),
+-	PINMUX_DATA(SIM_CLK_MARK, PSELD_1_0_10, PTV0_FN),
+-};
+-
+-static const struct sh_pfc_pin pinmux_pins[] = {
+-	/* PTA */
+-	PINMUX_GPIO(PTA7),
+-	PINMUX_GPIO(PTA6),
+-	PINMUX_GPIO(PTA5),
+-	PINMUX_GPIO(PTA4),
+-	PINMUX_GPIO(PTA3),
+-	PINMUX_GPIO(PTA2),
+-	PINMUX_GPIO(PTA1),
+-	PINMUX_GPIO(PTA0),
+-
+-	/* PTB */
+-	PINMUX_GPIO(PTB7),
+-	PINMUX_GPIO(PTB6),
+-	PINMUX_GPIO(PTB5),
+-	PINMUX_GPIO(PTB4),
+-	PINMUX_GPIO(PTB3),
+-	PINMUX_GPIO(PTB2),
+-	PINMUX_GPIO(PTB1),
+-	PINMUX_GPIO(PTB0),
+-
+-	/* PTC */
+-	PINMUX_GPIO(PTC7),
+-	PINMUX_GPIO(PTC6),
+-	PINMUX_GPIO(PTC5),
+-	PINMUX_GPIO(PTC4),
+-	PINMUX_GPIO(PTC3),
+-	PINMUX_GPIO(PTC2),
+-	PINMUX_GPIO(PTC1),
+-	PINMUX_GPIO(PTC0),
+-
+-	/* PTD */
+-	PINMUX_GPIO(PTD7),
+-	PINMUX_GPIO(PTD6),
+-	PINMUX_GPIO(PTD5),
+-	PINMUX_GPIO(PTD4),
+-	PINMUX_GPIO(PTD3),
+-	PINMUX_GPIO(PTD2),
+-	PINMUX_GPIO(PTD1),
+-	PINMUX_GPIO(PTD0),
+-
+-	/* PTE */
+-	PINMUX_GPIO(PTE6),
+-	PINMUX_GPIO(PTE5),
+-	PINMUX_GPIO(PTE4),
+-	PINMUX_GPIO(PTE3),
+-	PINMUX_GPIO(PTE2),
+-	PINMUX_GPIO(PTE1),
+-	PINMUX_GPIO(PTE0),
+-
+-	/* PTF */
+-	PINMUX_GPIO(PTF6),
+-	PINMUX_GPIO(PTF5),
+-	PINMUX_GPIO(PTF4),
+-	PINMUX_GPIO(PTF3),
+-	PINMUX_GPIO(PTF2),
+-	PINMUX_GPIO(PTF1),
+-	PINMUX_GPIO(PTF0),
+-
+-	/* PTG */
+-	PINMUX_GPIO(PTG6),
+-	PINMUX_GPIO(PTG5),
+-	PINMUX_GPIO(PTG4),
+-	PINMUX_GPIO(PTG3),
+-	PINMUX_GPIO(PTG2),
+-	PINMUX_GPIO(PTG1),
+-	PINMUX_GPIO(PTG0),
+-
+-	/* PTH */
+-	PINMUX_GPIO(PTH6),
+-	PINMUX_GPIO(PTH5),
+-	PINMUX_GPIO(PTH4),
+-	PINMUX_GPIO(PTH3),
+-	PINMUX_GPIO(PTH2),
+-	PINMUX_GPIO(PTH1),
+-	PINMUX_GPIO(PTH0),
+-
+-	/* PTJ */
+-	PINMUX_GPIO(PTJ6),
+-	PINMUX_GPIO(PTJ5),
+-	PINMUX_GPIO(PTJ4),
+-	PINMUX_GPIO(PTJ3),
+-	PINMUX_GPIO(PTJ2),
+-	PINMUX_GPIO(PTJ1),
+-	PINMUX_GPIO(PTJ0),
+-
+-	/* PTK */
+-	PINMUX_GPIO(PTK3),
+-	PINMUX_GPIO(PTK2),
+-	PINMUX_GPIO(PTK1),
+-	PINMUX_GPIO(PTK0),
+-
+-	/* PTL */
+-	PINMUX_GPIO(PTL7),
+-	PINMUX_GPIO(PTL6),
+-	PINMUX_GPIO(PTL5),
+-	PINMUX_GPIO(PTL4),
+-	PINMUX_GPIO(PTL3),
+-
+-	/* PTM */
+-	PINMUX_GPIO(PTM7),
+-	PINMUX_GPIO(PTM6),
+-	PINMUX_GPIO(PTM5),
+-	PINMUX_GPIO(PTM4),
+-	PINMUX_GPIO(PTM3),
+-	PINMUX_GPIO(PTM2),
+-	PINMUX_GPIO(PTM1),
+-	PINMUX_GPIO(PTM0),
+-
+-	/* PTP */
+-	PINMUX_GPIO(PTP4),
+-	PINMUX_GPIO(PTP3),
+-	PINMUX_GPIO(PTP2),
+-	PINMUX_GPIO(PTP1),
+-	PINMUX_GPIO(PTP0),
+-
+-	/* PTR */
+-	PINMUX_GPIO(PTR7),
+-	PINMUX_GPIO(PTR6),
+-	PINMUX_GPIO(PTR5),
+-	PINMUX_GPIO(PTR4),
+-	PINMUX_GPIO(PTR3),
+-	PINMUX_GPIO(PTR2),
+-	PINMUX_GPIO(PTR1),
+-	PINMUX_GPIO(PTR0),
+-
+-	/* PTS */
+-	PINMUX_GPIO(PTS4),
+-	PINMUX_GPIO(PTS3),
+-	PINMUX_GPIO(PTS2),
+-	PINMUX_GPIO(PTS1),
+-	PINMUX_GPIO(PTS0),
+-
+-	/* PTT */
+-	PINMUX_GPIO(PTT4),
+-	PINMUX_GPIO(PTT3),
+-	PINMUX_GPIO(PTT2),
+-	PINMUX_GPIO(PTT1),
+-	PINMUX_GPIO(PTT0),
+-
+-	/* PTU */
+-	PINMUX_GPIO(PTU4),
+-	PINMUX_GPIO(PTU3),
+-	PINMUX_GPIO(PTU2),
+-	PINMUX_GPIO(PTU1),
+-	PINMUX_GPIO(PTU0),
+-
+-	/* PTV */
+-	PINMUX_GPIO(PTV4),
+-	PINMUX_GPIO(PTV3),
+-	PINMUX_GPIO(PTV2),
+-	PINMUX_GPIO(PTV1),
+-	PINMUX_GPIO(PTV0),
+-};
+-
+-#define PINMUX_FN_BASE	ARRAY_SIZE(pinmux_pins)
+-
+-static const struct pinmux_func pinmux_func_gpios[] = {
+-	/* BSC */
+-	GPIO_FN(D31),
+-	GPIO_FN(D30),
+-	GPIO_FN(D29),
+-	GPIO_FN(D28),
+-	GPIO_FN(D27),
+-	GPIO_FN(D26),
+-	GPIO_FN(D25),
+-	GPIO_FN(D24),
+-	GPIO_FN(D23),
+-	GPIO_FN(D22),
+-	GPIO_FN(D21),
+-	GPIO_FN(D20),
+-	GPIO_FN(D19),
+-	GPIO_FN(D18),
+-	GPIO_FN(D17),
+-	GPIO_FN(D16),
+-	GPIO_FN(IOIS16),
+-	GPIO_FN(RAS),
+-	GPIO_FN(CAS),
+-	GPIO_FN(CKE),
+-	GPIO_FN(CS5B_CE1A),
+-	GPIO_FN(CS6B_CE1B),
+-	GPIO_FN(A25),
+-	GPIO_FN(A24),
+-	GPIO_FN(A23),
+-	GPIO_FN(A22),
+-	GPIO_FN(A21),
+-	GPIO_FN(A20),
+-	GPIO_FN(A19),
+-	GPIO_FN(A0),
+-	GPIO_FN(REFOUT),
+-	GPIO_FN(IRQOUT),
+-
+-	/* LCDC */
+-	GPIO_FN(LCD_DATA15),
+-	GPIO_FN(LCD_DATA14),
+-	GPIO_FN(LCD_DATA13),
+-	GPIO_FN(LCD_DATA12),
+-	GPIO_FN(LCD_DATA11),
+-	GPIO_FN(LCD_DATA10),
+-	GPIO_FN(LCD_DATA9),
+-	GPIO_FN(LCD_DATA8),
+-	GPIO_FN(LCD_DATA7),
+-	GPIO_FN(LCD_DATA6),
+-	GPIO_FN(LCD_DATA5),
+-	GPIO_FN(LCD_DATA4),
+-	GPIO_FN(LCD_DATA3),
+-	GPIO_FN(LCD_DATA2),
+-	GPIO_FN(LCD_DATA1),
+-	GPIO_FN(LCD_DATA0),
+-	GPIO_FN(LCD_M_DISP),
+-	GPIO_FN(LCD_CL1),
+-	GPIO_FN(LCD_CL2),
+-	GPIO_FN(LCD_DON),
+-	GPIO_FN(LCD_FLM),
+-	GPIO_FN(LCD_VEPWC),
+-	GPIO_FN(LCD_VCPWC),
+-
+-	/* AFEIF */
+-	GPIO_FN(AFE_RXIN),
+-	GPIO_FN(AFE_RDET),
+-	GPIO_FN(AFE_FS),
+-	GPIO_FN(AFE_TXOUT),
+-	GPIO_FN(AFE_SCLK),
+-	GPIO_FN(AFE_RLYCNT),
+-	GPIO_FN(AFE_HC1),
+-
+-	/* IIC */
+-	GPIO_FN(IIC_SCL),
+-	GPIO_FN(IIC_SDA),
+-
+-	/* DAC */
+-	GPIO_FN(DA1),
+-	GPIO_FN(DA0),
+-
+-	/* ADC */
+-	GPIO_FN(AN3),
+-	GPIO_FN(AN2),
+-	GPIO_FN(AN1),
+-	GPIO_FN(AN0),
+-	GPIO_FN(ADTRG),
+-
+-	/* USB */
+-	GPIO_FN(USB1D_RCV),
+-	GPIO_FN(USB1D_TXSE0),
+-	GPIO_FN(USB1D_TXDPLS),
+-	GPIO_FN(USB1D_DMNS),
+-	GPIO_FN(USB1D_DPLS),
+-	GPIO_FN(USB1D_SPEED),
+-	GPIO_FN(USB1D_TXENL),
+-
+-	GPIO_FN(USB2_PWR_EN),
+-	GPIO_FN(USB1_PWR_EN_USBF_UPLUP),
+-	GPIO_FN(USB1D_SUSPEND),
+-
+-	/* INTC */
+-	GPIO_FN(IRQ5),
+-	GPIO_FN(IRQ4),
+-	GPIO_FN(IRQ3_IRL3),
+-	GPIO_FN(IRQ2_IRL2),
+-	GPIO_FN(IRQ1_IRL1),
+-	GPIO_FN(IRQ0_IRL0),
+-
+-	/* PCC */
+-	GPIO_FN(PCC_REG),
+-	GPIO_FN(PCC_DRV),
+-	GPIO_FN(PCC_BVD2),
+-	GPIO_FN(PCC_BVD1),
+-	GPIO_FN(PCC_CD2),
+-	GPIO_FN(PCC_CD1),
+-	GPIO_FN(PCC_RESET),
+-	GPIO_FN(PCC_RDY),
+-	GPIO_FN(PCC_VS2),
+-	GPIO_FN(PCC_VS1),
+-
+-	/* HUDI */
+-	GPIO_FN(AUDATA3),
+-	GPIO_FN(AUDATA2),
+-	GPIO_FN(AUDATA1),
+-	GPIO_FN(AUDATA0),
+-	GPIO_FN(AUDCK),
+-	GPIO_FN(AUDSYNC),
+-	GPIO_FN(ASEBRKAK),
+-	GPIO_FN(TRST),
+-	GPIO_FN(TMS),
+-	GPIO_FN(TDO),
+-	GPIO_FN(TDI),
+-	GPIO_FN(TCK),
+-
+-	/* DMAC */
+-	GPIO_FN(DACK1),
+-	GPIO_FN(DREQ1),
+-	GPIO_FN(DACK0),
+-	GPIO_FN(DREQ0),
+-	GPIO_FN(TEND1),
+-	GPIO_FN(TEND0),
+-
+-	/* SIOF0 */
+-	GPIO_FN(SIOF0_SYNC),
+-	GPIO_FN(SIOF0_MCLK),
+-	GPIO_FN(SIOF0_TXD),
+-	GPIO_FN(SIOF0_RXD),
+-	GPIO_FN(SIOF0_SCK),
+-
+-	/* SIOF1 */
+-	GPIO_FN(SIOF1_SYNC),
+-	GPIO_FN(SIOF1_MCLK),
+-	GPIO_FN(SIOF1_TXD),
+-	GPIO_FN(SIOF1_RXD),
+-	GPIO_FN(SIOF1_SCK),
+-
+-	/* SCIF0 */
+-	GPIO_FN(SCIF0_TXD),
+-	GPIO_FN(SCIF0_RXD),
+-	GPIO_FN(SCIF0_RTS),
+-	GPIO_FN(SCIF0_CTS),
+-	GPIO_FN(SCIF0_SCK),
+-
+-	/* SCIF1 */
+-	GPIO_FN(SCIF1_TXD),
+-	GPIO_FN(SCIF1_RXD),
+-	GPIO_FN(SCIF1_RTS),
+-	GPIO_FN(SCIF1_CTS),
+-	GPIO_FN(SCIF1_SCK),
+-
+-	/* TPU */
+-	GPIO_FN(TPU_TO1),
+-	GPIO_FN(TPU_TO0),
+-	GPIO_FN(TPU_TI3B),
+-	GPIO_FN(TPU_TI3A),
+-	GPIO_FN(TPU_TI2B),
+-	GPIO_FN(TPU_TI2A),
+-	GPIO_FN(TPU_TO3),
+-	GPIO_FN(TPU_TO2),
+-
+-	/* SIM */
+-	GPIO_FN(SIM_D),
+-	GPIO_FN(SIM_CLK),
+-	GPIO_FN(SIM_RST),
+-
+-	/* MMC */
+-	GPIO_FN(MMC_DAT),
+-	GPIO_FN(MMC_CMD),
+-	GPIO_FN(MMC_CLK),
+-	GPIO_FN(MMC_VDDON),
+-	GPIO_FN(MMC_ODMOD),
+-
+-	/* SYSC */
+-	GPIO_FN(STATUS0),
+-	GPIO_FN(STATUS1),
+-};
+-
+-static const struct pinmux_cfg_reg pinmux_config_regs[] = {
+-	{ PINMUX_CFG_REG("PACR", 0xa4050100, 16, 2, GROUP(
+-		PTA7_FN, PTA7_OUT, 0, PTA7_IN,
+-		PTA6_FN, PTA6_OUT, 0, PTA6_IN,
+-		PTA5_FN, PTA5_OUT, 0, PTA5_IN,
+-		PTA4_FN, PTA4_OUT, 0, PTA4_IN,
+-		PTA3_FN, PTA3_OUT, 0, PTA3_IN,
+-		PTA2_FN, PTA2_OUT, 0, PTA2_IN,
+-		PTA1_FN, PTA1_OUT, 0, PTA1_IN,
+-		PTA0_FN, PTA0_OUT, 0, PTA0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PBCR", 0xa4050102, 16, 2, GROUP(
+-		PTB7_FN, PTB7_OUT, 0, PTB7_IN,
+-		PTB6_FN, PTB6_OUT, 0, PTB6_IN,
+-		PTB5_FN, PTB5_OUT, 0, PTB5_IN,
+-		PTB4_FN, PTB4_OUT, 0, PTB4_IN,
+-		PTB3_FN, PTB3_OUT, 0, PTB3_IN,
+-		PTB2_FN, PTB2_OUT, 0, PTB2_IN,
+-		PTB1_FN, PTB1_OUT, 0, PTB1_IN,
+-		PTB0_FN, PTB0_OUT, 0, PTB0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PCCR", 0xa4050104, 16, 2, GROUP(
+-		PTC7_FN, PTC7_OUT, 0, PTC7_IN,
+-		PTC6_FN, PTC6_OUT, 0, PTC6_IN,
+-		PTC5_FN, PTC5_OUT, 0, PTC5_IN,
+-		PTC4_FN, PTC4_OUT, 0, PTC4_IN,
+-		PTC3_FN, PTC3_OUT, 0, PTC3_IN,
+-		PTC2_FN, PTC2_OUT, 0, PTC2_IN,
+-		PTC1_FN, PTC1_OUT, 0, PTC1_IN,
+-		PTC0_FN, PTC0_OUT, 0, PTC0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PDCR", 0xa4050106, 16, 2, GROUP(
+-		PTD7_FN, PTD7_OUT, 0, PTD7_IN,
+-		PTD6_FN, PTD6_OUT, 0, PTD6_IN,
+-		PTD5_FN, PTD5_OUT, 0, PTD5_IN,
+-		PTD4_FN, PTD4_OUT, 0, PTD4_IN,
+-		PTD3_FN, PTD3_OUT, 0, PTD3_IN,
+-		PTD2_FN, PTD2_OUT, 0, PTD2_IN,
+-		PTD1_FN, PTD1_OUT, 0, PTD1_IN,
+-		PTD0_FN, PTD0_OUT, 0, PTD0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PECR", 0xa4050108, 16, 2, GROUP(
+-		0, 0, 0, 0,
+-		PTE6_FN, 0, 0, PTE6_IN,
+-		PTE5_FN, 0, 0, PTE5_IN,
+-		PTE4_FN, PTE4_OUT, 0, PTE4_IN,
+-		PTE3_FN, PTE3_OUT, 0, PTE3_IN,
+-		PTE2_FN, PTE2_OUT, 0, PTE2_IN,
+-		PTE1_FN, PTE1_OUT, 0, PTE1_IN,
+-		PTE0_FN, PTE0_OUT, 0, PTE0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PFCR", 0xa405010a, 16, 2, GROUP(
+-		0, 0, 0, 0,
+-		PTF6_FN, 0, 0, PTF6_IN,
+-		PTF5_FN, 0, 0, PTF5_IN,
+-		PTF4_FN, 0, 0, PTF4_IN,
+-		PTF3_FN, 0, 0, PTF3_IN,
+-		PTF2_FN, 0, 0, PTF2_IN,
+-		PTF1_FN, 0, 0, PTF1_IN,
+-		PTF0_FN, 0, 0, PTF0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PGCR", 0xa405010c, 16, 2, GROUP(
+-		0, 0, 0, 0,
+-		PTG6_FN, PTG6_OUT, 0, PTG6_IN,
+-		PTG5_FN, PTG5_OUT, 0, PTG5_IN,
+-		PTG4_FN, PTG4_OUT, 0, PTG4_IN,
+-		PTG3_FN, PTG3_OUT, 0, PTG3_IN,
+-		PTG2_FN, PTG2_OUT, 0, PTG2_IN,
+-		PTG1_FN, PTG1_OUT, 0, PTG1_IN,
+-		PTG0_FN, PTG0_OUT, 0, PTG0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PHCR", 0xa405010e, 16, 2, GROUP(
+-		0, 0, 0, 0,
+-		PTH6_FN, PTH6_OUT, 0, PTH6_IN,
+-		PTH5_FN, PTH5_OUT, 0, PTH5_IN,
+-		PTH4_FN, PTH4_OUT, 0, PTH4_IN,
+-		PTH3_FN, PTH3_OUT, 0, PTH3_IN,
+-		PTH2_FN, PTH2_OUT, 0, PTH2_IN,
+-		PTH1_FN, PTH1_OUT, 0, PTH1_IN,
+-		PTH0_FN, PTH0_OUT, 0, PTH0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PJCR", 0xa4050110, 16, 2, GROUP(
+-		0, 0, 0, 0,
+-		PTJ6_FN, PTJ6_OUT, 0, PTJ6_IN,
+-		PTJ5_FN, PTJ5_OUT, 0, PTJ5_IN,
+-		PTJ4_FN, PTJ4_OUT, 0, PTJ4_IN,
+-		PTJ3_FN, PTJ3_OUT, 0, PTJ3_IN,
+-		PTJ2_FN, PTJ2_OUT, 0, PTJ2_IN,
+-		PTJ1_FN, PTJ1_OUT, 0, PTJ1_IN,
+-		PTJ0_FN, PTJ0_OUT, 0, PTJ0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PKCR", 0xa4050112, 16,
+-			     GROUP(-8, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [8] */
+-		PTK3_FN, PTK3_OUT, 0, PTK3_IN,
+-		PTK2_FN, PTK2_OUT, 0, PTK2_IN,
+-		PTK1_FN, PTK1_OUT, 0, PTK1_IN,
+-		PTK0_FN, PTK0_OUT, 0, PTK0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PLCR", 0xa4050114, 16,
+-			     GROUP(2, 2, 2, 2, 2, -6),
+-			     GROUP(
+-		PTL7_FN, PTL7_OUT, 0, PTL7_IN,
+-		PTL6_FN, PTL6_OUT, 0, PTL6_IN,
+-		PTL5_FN, PTL5_OUT, 0, PTL5_IN,
+-		PTL4_FN, PTL4_OUT, 0, PTL4_IN,
+-		PTL3_FN, PTL3_OUT, 0, PTL3_IN,
+-		/* RESERVED [6] */ ))
+-	},
+-	{ PINMUX_CFG_REG("PMCR", 0xa4050116, 16, 2, GROUP(
+-		PTM7_FN, PTM7_OUT, 0, PTM7_IN,
+-		PTM6_FN, PTM6_OUT, 0, PTM6_IN,
+-		PTM5_FN, PTM5_OUT, 0, PTM5_IN,
+-		PTM4_FN, PTM4_OUT, 0, PTM4_IN,
+-		PTM3_FN, PTM3_OUT, 0, PTM3_IN,
+-		PTM2_FN, PTM2_OUT, 0, PTM2_IN,
+-		PTM1_FN, PTM1_OUT, 0, PTM1_IN,
+-		PTM0_FN, PTM0_OUT, 0, PTM0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PPCR", 0xa4050118, 16,
+-			     GROUP(-6, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [6] */
+-		PTP4_FN, PTP4_OUT, 0, PTP4_IN,
+-		PTP3_FN, PTP3_OUT, 0, PTP3_IN,
+-		PTP2_FN, PTP2_OUT, 0, PTP2_IN,
+-		PTP1_FN, PTP1_OUT, 0, PTP1_IN,
+-		PTP0_FN, PTP0_OUT, 0, PTP0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PRCR", 0xa405011a, 16, 2, GROUP(
+-		PTR7_FN, PTR7_OUT, 0, PTR7_IN,
+-		PTR6_FN, PTR6_OUT, 0, PTR6_IN,
+-		PTR5_FN, PTR5_OUT, 0, PTR5_IN,
+-		PTR4_FN, PTR4_OUT, 0, PTR4_IN,
+-		PTR3_FN, PTR3_OUT, 0, PTR3_IN,
+-		PTR2_FN, PTR2_OUT, 0, PTR2_IN,
+-		PTR1_FN, PTR1_OUT, 0, PTR1_IN,
+-		PTR0_FN, PTR0_OUT, 0, PTR0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PSCR", 0xa405011c, 16,
+-			     GROUP(-6, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [6] */
+-		PTS4_FN, PTS4_OUT, 0, PTS4_IN,
+-		PTS3_FN, PTS3_OUT, 0, PTS3_IN,
+-		PTS2_FN, PTS2_OUT, 0, PTS2_IN,
+-		PTS1_FN, PTS1_OUT, 0, PTS1_IN,
+-		PTS0_FN, PTS0_OUT, 0, PTS0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PTCR", 0xa405011e, 16,
+-			     GROUP(-6, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [6] */
+-		PTT4_FN, PTT4_OUT, 0, PTT4_IN,
+-		PTT3_FN, PTT3_OUT, 0, PTT3_IN,
+-		PTT2_FN, PTT2_OUT, 0, PTT2_IN,
+-		PTT1_FN, PTT1_OUT, 0, PTT1_IN,
+-		PTT0_FN, PTT0_OUT, 0, PTT0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PUCR", 0xa4050120, 16,
+-			     GROUP(-6, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [6] */
+-		PTU4_FN, PTU4_OUT, 0, PTU4_IN,
+-		PTU3_FN, PTU3_OUT, 0, PTU3_IN,
+-		PTU2_FN, PTU2_OUT, 0, PTU2_IN,
+-		PTU1_FN, PTU1_OUT, 0, PTU1_IN,
+-		PTU0_FN, PTU0_OUT, 0, PTU0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PVCR", 0xa4050122, 16,
+-			     GROUP(-6, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [6] */
+-		PTV4_FN, PTV4_OUT, 0, PTV4_IN,
+-		PTV3_FN, PTV3_OUT, 0, PTV3_IN,
+-		PTV2_FN, PTV2_OUT, 0, PTV2_IN,
+-		PTV1_FN, PTV1_OUT, 0, PTV1_IN,
+-		PTV0_FN, PTV0_OUT, 0, PTV0_IN ))
+-	},
+-	{}
+-};
+-
+-static const struct pinmux_data_reg pinmux_data_regs[] = {
+-	{ PINMUX_DATA_REG("PADR", 0xa4050140, 8, GROUP(
+-		PTA7_DATA, PTA6_DATA, PTA5_DATA, PTA4_DATA,
+-		PTA3_DATA, PTA2_DATA, PTA1_DATA, PTA0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PBDR", 0xa4050142, 8, GROUP(
+-		PTB7_DATA, PTB6_DATA, PTB5_DATA, PTB4_DATA,
+-		PTB3_DATA, PTB2_DATA, PTB1_DATA, PTB0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PCDR", 0xa4050144, 8, GROUP(
+-		PTC7_DATA, PTC6_DATA, PTC5_DATA, PTC4_DATA,
+-		PTC3_DATA, PTC2_DATA, PTC1_DATA, PTC0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PDDR", 0xa4050126, 8, GROUP(
+-		PTD7_DATA, PTD6_DATA, PTD5_DATA, PTD4_DATA,
+-		PTD3_DATA, PTD2_DATA, PTD1_DATA, PTD0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PEDR", 0xa4050148, 8, GROUP(
+-		0, PTE6_DATA, PTE5_DATA, PTE4_DATA,
+-		PTE3_DATA, PTE2_DATA, PTE1_DATA, PTE0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PFDR", 0xa405014a, 8, GROUP(
+-		0, PTF6_DATA, PTF5_DATA, PTF4_DATA,
+-		PTF3_DATA, PTF2_DATA, PTF1_DATA, PTF0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PGDR", 0xa405014c, 8, GROUP(
+-		0, PTG6_DATA, PTG5_DATA, PTG4_DATA,
+-		PTG3_DATA, PTG2_DATA, PTG1_DATA, PTG0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PHDR", 0xa405014e, 8, GROUP(
+-		0, PTH6_DATA, PTH5_DATA, PTH4_DATA,
+-		PTH3_DATA, PTH2_DATA, PTH1_DATA, PTH0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PJDR", 0xa4050150, 8, GROUP(
+-		0, PTJ6_DATA, PTJ5_DATA, PTJ4_DATA,
+-		PTJ3_DATA, PTJ2_DATA, PTJ1_DATA, PTJ0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PKDR", 0xa4050152, 8, GROUP(
+-		0, 0, 0, 0,
+-		PTK3_DATA, PTK2_DATA, PTK1_DATA, PTK0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PLDR", 0xa4050154, 8, GROUP(
+-		PTL7_DATA, PTL6_DATA, PTL5_DATA, PTL4_DATA,
+-		PTL3_DATA, 0, 0, 0 ))
+-	},
+-	{ PINMUX_DATA_REG("PMDR", 0xa4050156, 8, GROUP(
+-		PTM7_DATA, PTM6_DATA, PTM5_DATA, PTM4_DATA,
+-		PTM3_DATA, PTM2_DATA, PTM1_DATA, PTM0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PPDR", 0xa4050158, 8, GROUP(
+-		0, 0, 0, PTP4_DATA,
+-		PTP3_DATA, PTP2_DATA, PTP1_DATA, PTP0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PRDR", 0xa405015a, 8, GROUP(
+-		PTR7_DATA, PTR6_DATA, PTR5_DATA, PTR4_DATA,
+-		PTR3_DATA, PTR2_DATA, PTR1_DATA, PTR0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PSDR", 0xa405015c, 8, GROUP(
+-		0, 0, 0, PTS4_DATA,
+-		PTS3_DATA, PTS2_DATA, PTS1_DATA, PTS0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PTDR", 0xa405015e, 8, GROUP(
+-		0, 0, 0, PTT4_DATA,
+-		PTT3_DATA, PTT2_DATA, PTT1_DATA, PTT0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PUDR", 0xa4050160, 8, GROUP(
+-		0, 0, 0, PTU4_DATA,
+-		PTU3_DATA, PTU2_DATA, PTU1_DATA, PTU0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PVDR", 0xa4050162, 8, GROUP(
+-		0, 0, 0, PTV4_DATA,
+-		PTV3_DATA, PTV2_DATA, PTV1_DATA, PTV0_DATA ))
+-	},
+-	{ },
+-};
+-
+-const struct sh_pfc_soc_info sh7720_pinmux_info = {
+-	.name = "sh7720_pfc",
+-	.input = { PINMUX_INPUT_BEGIN, PINMUX_INPUT_END },
+-	.output = { PINMUX_OUTPUT_BEGIN, PINMUX_OUTPUT_END },
+-	.function = { PINMUX_FUNCTION_BEGIN, PINMUX_FUNCTION_END },
+-
+-	.pins = pinmux_pins,
+-	.nr_pins = ARRAY_SIZE(pinmux_pins),
+-	.func_gpios = pinmux_func_gpios,
+-	.nr_func_gpios = ARRAY_SIZE(pinmux_func_gpios),
+-
+-	.cfg_regs = pinmux_config_regs,
+-	.data_regs = pinmux_data_regs,
+-
+-	.pinmux_data = pinmux_data,
+-	.pinmux_data_size = ARRAY_SIZE(pinmux_data),
+-};
+diff --git a/drivers/pinctrl/renesas/pfc-sh7722.c b/drivers/pinctrl/renesas/pfc-sh7722.c
+deleted file mode 100644
+index 4b82ac2c5e91d7..00000000000000
+--- a/drivers/pinctrl/renesas/pfc-sh7722.c
++++ /dev/null
+@@ -1,1703 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-#include <linux/kernel.h>
+-#include <cpu/sh7722.h>
+-
+-#include "sh_pfc.h"
+-
+-enum {
+-	PINMUX_RESERVED = 0,
+-
+-	PINMUX_DATA_BEGIN,
+-	PTA7_DATA, PTA6_DATA, PTA5_DATA, PTA4_DATA,
+-	PTA3_DATA, PTA2_DATA, PTA1_DATA, PTA0_DATA,
+-	PTB7_DATA, PTB6_DATA, PTB5_DATA, PTB4_DATA,
+-	PTB3_DATA, PTB2_DATA, PTB1_DATA, PTB0_DATA,
+-	PTC7_DATA, PTC5_DATA, PTC4_DATA, PTC3_DATA, PTC2_DATA, PTC0_DATA,
+-	PTD7_DATA, PTD6_DATA, PTD5_DATA, PTD4_DATA,
+-	PTD3_DATA, PTD2_DATA, PTD1_DATA, PTD0_DATA,
+-	PTE7_DATA, PTE6_DATA, PTE5_DATA, PTE4_DATA, PTE1_DATA, PTE0_DATA,
+-	PTF6_DATA, PTF5_DATA, PTF4_DATA,
+-	PTF3_DATA, PTF2_DATA, PTF1_DATA, PTF0_DATA,
+-	PTG4_DATA, PTG3_DATA, PTG2_DATA, PTG1_DATA, PTG0_DATA,
+-	PTH7_DATA, PTH6_DATA, PTH5_DATA, PTH4_DATA,
+-	PTH3_DATA, PTH2_DATA, PTH1_DATA, PTH0_DATA,
+-	PTJ7_DATA, PTJ6_DATA, PTJ5_DATA, PTJ1_DATA, PTJ0_DATA,
+-	PTK6_DATA, PTK5_DATA, PTK4_DATA,
+-	PTK3_DATA, PTK2_DATA, PTK1_DATA, PTK0_DATA,
+-	PTL7_DATA, PTL6_DATA, PTL5_DATA, PTL4_DATA,
+-	PTL3_DATA, PTL2_DATA, PTL1_DATA, PTL0_DATA,
+-	PTM7_DATA, PTM6_DATA, PTM5_DATA, PTM4_DATA,
+-	PTM3_DATA, PTM2_DATA, PTM1_DATA, PTM0_DATA,
+-	PTN7_DATA, PTN6_DATA, PTN5_DATA, PTN4_DATA,
+-	PTN3_DATA, PTN2_DATA, PTN1_DATA, PTN0_DATA,
+-	PTQ6_DATA, PTQ5_DATA, PTQ4_DATA,
+-	PTQ3_DATA, PTQ2_DATA, PTQ1_DATA, PTQ0_DATA,
+-	PTR4_DATA, PTR3_DATA, PTR2_DATA, PTR1_DATA, PTR0_DATA,
+-	PTS4_DATA, PTS3_DATA, PTS2_DATA, PTS1_DATA, PTS0_DATA,
+-	PTT4_DATA, PTT3_DATA, PTT2_DATA, PTT1_DATA, PTT0_DATA,
+-	PTU4_DATA, PTU3_DATA, PTU2_DATA, PTU1_DATA, PTU0_DATA,
+-	PTV4_DATA, PTV3_DATA, PTV2_DATA, PTV1_DATA, PTV0_DATA,
+-	PTW6_DATA, PTW5_DATA, PTW4_DATA,
+-	PTW3_DATA, PTW2_DATA, PTW1_DATA, PTW0_DATA,
+-	PTX6_DATA, PTX5_DATA, PTX4_DATA,
+-	PTX3_DATA, PTX2_DATA, PTX1_DATA, PTX0_DATA,
+-	PTY6_DATA, PTY5_DATA, PTY4_DATA,
+-	PTY3_DATA, PTY2_DATA, PTY1_DATA, PTY0_DATA,
+-	PTZ5_DATA, PTZ4_DATA, PTZ3_DATA, PTZ2_DATA, PTZ1_DATA, PTZ0_DATA,
+-	PINMUX_DATA_END,
+-
+-	PINMUX_INPUT_BEGIN,
+-	PTA7_IN, PTA6_IN, PTA5_IN, PTA4_IN,
+-	PTA3_IN, PTA2_IN, PTA1_IN, PTA0_IN,
+-	PTB7_IN, PTB6_IN, PTB5_IN, PTB4_IN,
+-	PTB3_IN, PTB2_IN, PTB1_IN, PTB0_IN,
+-	PTC7_IN, PTC5_IN, PTC4_IN, PTC3_IN, PTC2_IN, PTC0_IN,
+-	PTD7_IN, PTD6_IN, PTD5_IN, PTD4_IN, PTD3_IN, PTD2_IN, PTD1_IN,
+-	PTE7_IN, PTE6_IN, PTE5_IN, PTE4_IN, PTE1_IN, PTE0_IN,
+-	PTF6_IN, PTF5_IN, PTF4_IN, PTF3_IN, PTF2_IN, PTF1_IN,
+-	PTH6_IN, PTH5_IN, PTH1_IN, PTH0_IN,
+-	PTJ1_IN, PTJ0_IN,
+-	PTK6_IN, PTK5_IN, PTK4_IN, PTK3_IN, PTK2_IN, PTK0_IN,
+-	PTL7_IN, PTL6_IN, PTL5_IN, PTL4_IN,
+-	PTL3_IN, PTL2_IN, PTL1_IN, PTL0_IN,
+-	PTM7_IN, PTM6_IN, PTM5_IN, PTM4_IN,
+-	PTM3_IN, PTM2_IN, PTM1_IN, PTM0_IN,
+-	PTN7_IN, PTN6_IN, PTN5_IN, PTN4_IN,
+-	PTN3_IN, PTN2_IN, PTN1_IN, PTN0_IN,
+-	PTQ5_IN, PTQ4_IN, PTQ3_IN, PTQ2_IN, PTQ0_IN,
+-	PTR2_IN,
+-	PTS4_IN, PTS2_IN, PTS1_IN,
+-	PTT4_IN, PTT3_IN, PTT2_IN, PTT1_IN,
+-	PTU4_IN, PTU3_IN, PTU2_IN, PTU1_IN, PTU0_IN,
+-	PTV4_IN, PTV3_IN, PTV2_IN, PTV1_IN, PTV0_IN,
+-	PTW6_IN, PTW4_IN, PTW3_IN, PTW2_IN, PTW1_IN, PTW0_IN,
+-	PTX6_IN, PTX5_IN, PTX4_IN, PTX3_IN, PTX2_IN, PTX1_IN, PTX0_IN,
+-	PTY5_IN, PTY4_IN, PTY3_IN, PTY2_IN, PTY0_IN,
+-	PTZ5_IN, PTZ4_IN, PTZ3_IN, PTZ2_IN, PTZ1_IN,
+-	PINMUX_INPUT_END,
+-
+-	PINMUX_OUTPUT_BEGIN,
+-	PTA7_OUT, PTA5_OUT,
+-	PTB7_OUT, PTB6_OUT, PTB5_OUT, PTB4_OUT,
+-	PTB3_OUT, PTB2_OUT, PTB1_OUT, PTB0_OUT,
+-	PTC4_OUT, PTC3_OUT, PTC2_OUT, PTC0_OUT,
+-	PTD6_OUT, PTD5_OUT, PTD4_OUT,
+-	PTD3_OUT, PTD2_OUT, PTD1_OUT, PTD0_OUT,
+-	PTE7_OUT, PTE6_OUT, PTE5_OUT, PTE4_OUT, PTE1_OUT, PTE0_OUT,
+-	PTF6_OUT, PTF5_OUT, PTF4_OUT, PTF3_OUT, PTF2_OUT, PTF0_OUT,
+-	PTG4_OUT, PTG3_OUT, PTG2_OUT, PTG1_OUT, PTG0_OUT,
+-	PTH7_OUT, PTH6_OUT, PTH5_OUT, PTH4_OUT,
+-	PTH3_OUT, PTH2_OUT, PTH1_OUT, PTH0_OUT,
+-	PTJ7_OUT, PTJ6_OUT, PTJ5_OUT, PTJ1_OUT, PTJ0_OUT,
+-	PTK6_OUT, PTK5_OUT, PTK4_OUT, PTK3_OUT, PTK1_OUT, PTK0_OUT,
+-	PTL7_OUT, PTL6_OUT, PTL5_OUT, PTL4_OUT,
+-	PTL3_OUT, PTL2_OUT, PTL1_OUT, PTL0_OUT,
+-	PTM7_OUT, PTM6_OUT, PTM5_OUT, PTM4_OUT,
+-	PTM3_OUT, PTM2_OUT, PTM1_OUT, PTM0_OUT,
+-	PTN7_OUT, PTN6_OUT, PTN5_OUT, PTN4_OUT,
+-	PTN3_OUT, PTN2_OUT, PTN1_OUT, PTN0_OUT,	PTQ6_OUT, PTQ5_OUT, PTQ4_OUT,
+-	PTQ3_OUT, PTQ2_OUT, PTQ1_OUT, PTQ0_OUT,
+-	PTR4_OUT, PTR3_OUT, PTR1_OUT, PTR0_OUT,
+-	PTS3_OUT, PTS2_OUT, PTS0_OUT,
+-	PTT4_OUT, PTT3_OUT, PTT2_OUT, PTT0_OUT,
+-	PTU4_OUT, PTU3_OUT, PTU2_OUT, PTU0_OUT,
+-	PTV4_OUT, PTV3_OUT, PTV2_OUT, PTV1_OUT, PTV0_OUT,
+-	PTW5_OUT, PTW4_OUT, PTW3_OUT, PTW2_OUT, PTW1_OUT, PTW0_OUT,
+-	PTX6_OUT, PTX5_OUT, PTX4_OUT, PTX3_OUT, PTX2_OUT, PTX1_OUT, PTX0_OUT,
+-	PTY5_OUT, PTY4_OUT, PTY3_OUT, PTY2_OUT, PTY1_OUT, PTY0_OUT,
+-	PINMUX_OUTPUT_END,
+-
+-	PINMUX_MARK_BEGIN,
+-	SCIF0_TXD_MARK, SCIF0_RXD_MARK,
+-	SCIF0_RTS_MARK, SCIF0_CTS_MARK, SCIF0_SCK_MARK,
+-	SCIF1_TXD_MARK, SCIF1_RXD_MARK,
+-	SCIF1_RTS_MARK, SCIF1_CTS_MARK, SCIF1_SCK_MARK,
+-	SCIF2_TXD_MARK, SCIF2_RXD_MARK,
+-	SCIF2_RTS_MARK, SCIF2_CTS_MARK, SCIF2_SCK_MARK,
+-	SIOTXD_MARK, SIORXD_MARK,
+-	SIOD_MARK, SIOSTRB0_MARK, SIOSTRB1_MARK,
+-	SIOSCK_MARK, SIOMCK_MARK,
+-	VIO_D15_MARK, VIO_D14_MARK, VIO_D13_MARK, VIO_D12_MARK,
+-	VIO_D11_MARK, VIO_D10_MARK, VIO_D9_MARK, VIO_D8_MARK,
+-	VIO_D7_MARK, VIO_D6_MARK, VIO_D5_MARK, VIO_D4_MARK,
+-	VIO_D3_MARK, VIO_D2_MARK, VIO_D1_MARK, VIO_D0_MARK,
+-	VIO_CLK_MARK, VIO_VD_MARK, VIO_HD_MARK, VIO_FLD_MARK,
+-	VIO_CKO_MARK, VIO_STEX_MARK, VIO_STEM_MARK, VIO_VD2_MARK,
+-	VIO_HD2_MARK, VIO_CLK2_MARK,
+-	LCDD23_MARK, LCDD22_MARK, LCDD21_MARK, LCDD20_MARK,
+-	LCDD19_MARK, LCDD18_MARK, LCDD17_MARK, LCDD16_MARK,
+-	LCDD15_MARK, LCDD14_MARK, LCDD13_MARK, LCDD12_MARK,
+-	LCDD11_MARK, LCDD10_MARK, LCDD9_MARK, LCDD8_MARK,
+-	LCDD7_MARK, LCDD6_MARK, LCDD5_MARK, LCDD4_MARK,
+-	LCDD3_MARK, LCDD2_MARK, LCDD1_MARK, LCDD0_MARK,
+-	LCDLCLK_MARK, LCDDON_MARK, LCDVCPWC_MARK, LCDVEPWC_MARK,
+-	LCDVSYN_MARK, LCDDCK_MARK, LCDHSYN_MARK, LCDDISP_MARK,
+-	LCDRS_MARK, LCDCS_MARK, LCDWR_MARK, LCDRD_MARK,
+-	LCDDON2_MARK, LCDVCPWC2_MARK, LCDVEPWC2_MARK, LCDVSYN2_MARK,
+-	LCDCS2_MARK,
+-	IOIS16_MARK, A25_MARK, A24_MARK, A23_MARK, A22_MARK,
+-	BS_MARK, CS6B_CE1B_MARK, WAIT_MARK, CS6A_CE2B_MARK,
+-	HPD63_MARK, HPD62_MARK, HPD61_MARK, HPD60_MARK,
+-	HPD59_MARK, HPD58_MARK, HPD57_MARK, HPD56_MARK,
+-	HPD55_MARK, HPD54_MARK, HPD53_MARK, HPD52_MARK,
+-	HPD51_MARK, HPD50_MARK, HPD49_MARK, HPD48_MARK,
+-	HPDQM7_MARK, HPDQM6_MARK, HPDQM5_MARK, HPDQM4_MARK,
+-	IRQ0_MARK, IRQ1_MARK, IRQ2_MARK, IRQ3_MARK,
+-	IRQ4_MARK, IRQ5_MARK, IRQ6_MARK, IRQ7_MARK,
+-	SDHICD_MARK, SDHIWP_MARK, SDHID3_MARK, SDHID2_MARK,
+-	SDHID1_MARK, SDHID0_MARK, SDHICMD_MARK, SDHICLK_MARK,
+-	SIUAOLR_MARK, SIUAOBT_MARK, SIUAISLD_MARK, SIUAILR_MARK,
+-	SIUAIBT_MARK, SIUAOSLD_MARK, SIUMCKA_MARK, SIUFCKA_MARK,
+-	SIUBOLR_MARK, SIUBOBT_MARK, SIUBISLD_MARK, SIUBILR_MARK,
+-	SIUBIBT_MARK, SIUBOSLD_MARK, SIUMCKB_MARK, SIUFCKB_MARK,
+-	AUDSYNC_MARK, AUDATA3_MARK, AUDATA2_MARK, AUDATA1_MARK,	AUDATA0_MARK,
+-	DACK_MARK, DREQ0_MARK,
+-	DV_CLKI_MARK, DV_CLK_MARK, DV_HSYNC_MARK, DV_VSYNC_MARK,
+-	DV_D15_MARK, DV_D14_MARK, DV_D13_MARK, DV_D12_MARK,
+-	DV_D11_MARK, DV_D10_MARK, DV_D9_MARK, DV_D8_MARK,
+-	DV_D7_MARK, DV_D6_MARK, DV_D5_MARK, DV_D4_MARK,
+-	DV_D3_MARK, DV_D2_MARK, DV_D1_MARK, DV_D0_MARK,
+-	STATUS0_MARK, PDSTATUS_MARK,
+-	SIOF0_MCK_MARK, SIOF0_SCK_MARK,
+-	SIOF0_SYNC_MARK, SIOF0_SS1_MARK, SIOF0_SS2_MARK,
+-	SIOF0_TXD_MARK,	SIOF0_RXD_MARK,
+-	SIOF1_MCK_MARK, SIOF1_SCK_MARK,
+-	SIOF1_SYNC_MARK, SIOF1_SS1_MARK, SIOF1_SS2_MARK,
+-	SIOF1_TXD_MARK, SIOF1_RXD_MARK,
+-	SIM_D_MARK, SIM_CLK_MARK, SIM_RST_MARK,
+-	TS_SDAT_MARK, TS_SCK_MARK, TS_SDEN_MARK, TS_SPSYNC_MARK,
+-	IRDA_IN_MARK, IRDA_OUT_MARK,
+-	TPUTO_MARK,
+-	FCE_MARK, NAF7_MARK, NAF6_MARK, NAF5_MARK, NAF4_MARK,
+-	NAF3_MARK, NAF2_MARK, NAF1_MARK, NAF0_MARK, FCDE_MARK,
+-	FOE_MARK, FSC_MARK, FWE_MARK, FRB_MARK,
+-	KEYIN0_MARK, KEYIN1_MARK, KEYIN2_MARK, KEYIN3_MARK, KEYIN4_MARK,
+-	KEYOUT0_MARK, KEYOUT1_MARK, KEYOUT2_MARK, KEYOUT3_MARK,
+-	KEYOUT4_IN6_MARK, KEYOUT5_IN5_MARK,
+-	PINMUX_MARK_END,
+-
+-	PINMUX_FUNCTION_BEGIN,
+-	VIO_D7_SCIF1_SCK, VIO_D6_SCIF1_RXD, VIO_D5_SCIF1_TXD, VIO_D4,
+-	VIO_D3, VIO_D2, VIO_D1, VIO_D0_LCDLCLK,
+-	HPD55, HPD54, HPD53, HPD52, HPD51, HPD50, HPD49, HPD48,
+-	IOIS16, HPDQM7, HPDQM6, HPDQM5, HPDQM4,
+-	SDHICD, SDHIWP, SDHID3, IRQ2_SDHID2, SDHID1, SDHID0, SDHICMD, SDHICLK,
+-	A25, A24, A23, A22, IRQ5, IRQ4_BS,
+-	PTF6, SIOSCK_SIUBOBT, SIOSTRB1_SIUBOLR,
+-	SIOSTRB0_SIUBIBT, SIOD_SIUBILR, SIORXD_SIUBISLD, SIOTXD_SIUBOSLD,
+-	AUDSYNC, AUDATA3, AUDATA2, AUDATA1, AUDATA0,
+-	LCDVCPWC_LCDVCPWC2, LCDVSYN2_DACK, LCDVSYN, LCDDISP_LCDRS,
+-	LCDHSYN_LCDCS, LCDDON_LCDDON2, LCDD17_DV_HSYNC, LCDD16_DV_VSYNC,
+-	STATUS0, PDSTATUS, IRQ1, IRQ0,
+-	SIUAILR_SIOF1_SS2, SIUAIBT_SIOF1_SS1, SIUAOLR_SIOF1_SYNC,
+-	SIUAOBT_SIOF1_SCK, SIUAISLD_SIOF1_RXD, SIUAOSLD_SIOF1_TXD, PTK0,
+-	LCDD15_DV_D15, LCDD14_DV_D14, LCDD13_DV_D13, LCDD12_DV_D12,
+-	LCDD11_DV_D11, LCDD10_DV_D10, LCDD9_DV_D9, LCDD8_DV_D8,
+-	LCDD7_DV_D7, LCDD6_DV_D6, LCDD5_DV_D5, LCDD4_DV_D4,
+-	LCDD3_DV_D3, LCDD2_DV_D2, LCDD1_DV_D1, LCDD0_DV_D0,
+-	HPD63, HPD62, HPD61, HPD60, HPD59, HPD58, HPD57, HPD56,
+-	SIOF0_SS2_SIM_RST, SIOF0_SS1_TS_SPSYNC, SIOF0_SYNC_TS_SDEN,
+-	SIOF0_SCK_TS_SCK, PTQ2, PTQ1, PTQ0,
+-	LCDRD, CS6B_CE1B_LCDCS2, WAIT, LCDDCK_LCDWR, LCDVEPWC_LCDVEPWC2,
+-	SCIF0_CTS_SIUAISPD, SCIF0_RTS_SIUAOSPD,
+-	SCIF0_SCK_TPUTO, SCIF0_RXD, SCIF0_TXD,
+-	FOE_VIO_VD2, FWE, FSC, DREQ0, FCDE,
+-	NAF2_VIO_D10, NAF1_VIO_D9, NAF0_VIO_D8,
+-	FRB_VIO_CLK2, FCE_VIO_HD2,
+-	NAF7_VIO_D15, NAF6_VIO_D14, NAF5_VIO_D13, NAF4_VIO_D12, NAF3_VIO_D11,
+-	VIO_FLD_SCIF2_CTS, VIO_CKO_SCIF2_RTS, VIO_STEX_SCIF2_SCK,
+-	VIO_STEM_SCIF2_TXD, VIO_HD_SCIF2_RXD,
+-	VIO_VD_SCIF1_CTS, VIO_CLK_SCIF1_RTS,
+-	CS6A_CE2B, LCDD23, LCDD22, LCDD21, LCDD20,
+-	LCDD19_DV_CLKI, LCDD18_DV_CLK,
+-	KEYOUT5_IN5, KEYOUT4_IN6, KEYOUT3, KEYOUT2, KEYOUT1, KEYOUT0,
+-	KEYIN4_IRQ7, KEYIN3, KEYIN2, KEYIN1, KEYIN0_IRQ6,
+-
+-	PSA15_KEYIN0, PSA15_IRQ6, PSA14_KEYIN4, PSA14_IRQ7,
+-	PSA9_IRQ4, PSA9_BS, PSA4_IRQ2, PSA4_SDHID2,
+-	PSB15_SIOTXD, PSB15_SIUBOSLD, PSB14_SIORXD, PSB14_SIUBISLD,
+-	PSB13_SIOD, PSB13_SIUBILR, PSB12_SIOSTRB0, PSB12_SIUBIBT,
+-	PSB11_SIOSTRB1, PSB11_SIUBOLR, PSB10_SIOSCK, PSB10_SIUBOBT,
+-	PSB9_SIOMCK, PSB9_SIUMCKB, PSB8_SIOF0_MCK, PSB8_IRQ3,
+-	PSB7_SIOF0_TXD, PSB7_IRDA_OUT, PSB6_SIOF0_RXD, PSB6_IRDA_IN,
+-	PSB5_SIOF0_SCK, PSB5_TS_SCK, PSB4_SIOF0_SYNC, PSB4_TS_SDEN,
+-	PSB3_SIOF0_SS1, PSB3_TS_SPSYNC, PSB2_SIOF0_SS2, PSB2_SIM_RST,
+-	PSB1_SIUMCKA, PSB1_SIOF1_MCK, PSB0_SIUAOSLD, PSB0_SIOF1_TXD,
+-	PSC15_SIUAISLD, PSC15_SIOF1_RXD, PSC14_SIUAOBT, PSC14_SIOF1_SCK,
+-	PSC13_SIUAOLR, PSC13_SIOF1_SYNC, PSC12_SIUAIBT, PSC12_SIOF1_SS1,
+-	PSC11_SIUAILR, PSC11_SIOF1_SS2, PSC0_NAF, PSC0_VIO,
+-	PSD13_VIO, PSD13_SCIF2, PSD12_VIO, PSD12_SCIF1,
+-	PSD11_VIO, PSD11_SCIF1, PSD10_VIO_D0, PSD10_LCDLCLK,
+-	PSD9_SIOMCK_SIUMCKB, PSD9_SIUFCKB, PSD8_SCIF0_SCK, PSD8_TPUTO,
+-	PSD7_SCIF0_RTS, PSD7_SIUAOSPD, PSD6_SCIF0_CTS, PSD6_SIUAISPD,
+-	PSD5_CS6B_CE1B, PSD5_LCDCS2,
+-	PSD3_LCDVEPWC_LCDVCPWC, PSD3_LCDVEPWC2_LCDVCPWC2,
+-	PSD2_LCDDON, PSD2_LCDDON2, PSD0_LCDD19_LCDD0, PSD0_DV,
+-	PSE15_SIOF0_MCK_IRQ3, PSE15_SIM_D,
+-	PSE14_SIOF0_TXD_IRDA_OUT, PSE14_SIM_CLK,
+-	PSE13_SIOF0_RXD_IRDA_IN, PSE13_TS_SDAT, PSE12_LCDVSYN2, PSE12_DACK,
+-	PSE11_SIUMCKA_SIOF1_MCK, PSE11_SIUFCKA,
+-	PSE3_FLCTL, PSE3_VIO, PSE2_NAF2, PSE2_VIO_D10,
+-	PSE1_NAF1, PSE1_VIO_D9, PSE0_NAF0, PSE0_VIO_D8,
+-
+-	HIZA14_KEYSC, HIZA14_HIZ,
+-	HIZA10_NAF, HIZA10_HIZ,
+-	HIZA9_VIO, HIZA9_HIZ,
+-	HIZA8_LCDC, HIZA8_HIZ,
+-	HIZA7_LCDC, HIZA7_HIZ,
+-	HIZA6_LCDC, HIZA6_HIZ,
+-	HIZB4_SIUA, HIZB4_HIZ,
+-	HIZB1_VIO, HIZB1_HIZ,
+-	HIZB0_VIO, HIZB0_HIZ,
+-	HIZC15_IRQ7, HIZC15_HIZ,
+-	HIZC14_IRQ6, HIZC14_HIZ,
+-	HIZC13_IRQ5, HIZC13_HIZ,
+-	HIZC12_IRQ4, HIZC12_HIZ,
+-	HIZC11_IRQ3, HIZC11_HIZ,
+-	HIZC10_IRQ2, HIZC10_HIZ,
+-	HIZC9_IRQ1, HIZC9_HIZ,
+-	HIZC8_IRQ0, HIZC8_HIZ,
+-	MSELB9_VIO, MSELB9_VIO2,
+-	MSELB8_RGB, MSELB8_SYS,
+-	PINMUX_FUNCTION_END,
+-};
+-
+-static const u16 pinmux_data[] = {
+-	/* PTA */
+-	PINMUX_DATA(PTA7_DATA, PTA7_IN, PTA7_OUT),
+-	PINMUX_DATA(PTA6_DATA, PTA6_IN),
+-	PINMUX_DATA(PTA5_DATA, PTA5_IN, PTA5_OUT),
+-	PINMUX_DATA(PTA4_DATA, PTA4_IN),
+-	PINMUX_DATA(PTA3_DATA, PTA3_IN),
+-	PINMUX_DATA(PTA2_DATA, PTA2_IN),
+-	PINMUX_DATA(PTA1_DATA, PTA1_IN),
+-	PINMUX_DATA(PTA0_DATA, PTA0_IN),
+-
+-	/* PTB */
+-	PINMUX_DATA(PTB7_DATA, PTB7_IN, PTB7_OUT),
+-	PINMUX_DATA(PTB6_DATA, PTB6_IN, PTB6_OUT),
+-	PINMUX_DATA(PTB5_DATA, PTB5_IN, PTB5_OUT),
+-	PINMUX_DATA(PTB4_DATA, PTB4_IN, PTB4_OUT),
+-	PINMUX_DATA(PTB3_DATA, PTB3_IN, PTB3_OUT),
+-	PINMUX_DATA(PTB2_DATA, PTB2_IN, PTB2_OUT),
+-	PINMUX_DATA(PTB1_DATA, PTB1_IN, PTB1_OUT),
+-	PINMUX_DATA(PTB0_DATA, PTB0_IN, PTB0_OUT),
+-
+-	/* PTC */
+-	PINMUX_DATA(PTC7_DATA, PTC7_IN),
+-	PINMUX_DATA(PTC5_DATA, PTC5_IN),
+-	PINMUX_DATA(PTC4_DATA, PTC4_IN, PTC4_OUT),
+-	PINMUX_DATA(PTC3_DATA, PTC3_IN, PTC3_OUT),
+-	PINMUX_DATA(PTC2_DATA, PTC2_IN, PTC2_OUT),
+-	PINMUX_DATA(PTC0_DATA, PTC0_IN, PTC0_OUT),
+-
+-	/* PTD */
+-	PINMUX_DATA(PTD7_DATA, PTD7_IN),
+-	PINMUX_DATA(PTD6_DATA, PTD6_OUT, PTD6_IN),
+-	PINMUX_DATA(PTD5_DATA, PTD5_OUT, PTD5_IN),
+-	PINMUX_DATA(PTD4_DATA, PTD4_OUT, PTD4_IN),
+-	PINMUX_DATA(PTD3_DATA, PTD3_OUT, PTD3_IN),
+-	PINMUX_DATA(PTD2_DATA, PTD2_OUT, PTD2_IN),
+-	PINMUX_DATA(PTD1_DATA, PTD1_OUT, PTD1_IN),
+-	PINMUX_DATA(PTD0_DATA, PTD0_OUT),
+-
+-	/* PTE */
+-	PINMUX_DATA(PTE7_DATA, PTE7_OUT, PTE7_IN),
+-	PINMUX_DATA(PTE6_DATA, PTE6_OUT, PTE6_IN),
+-	PINMUX_DATA(PTE5_DATA, PTE5_OUT, PTE5_IN),
+-	PINMUX_DATA(PTE4_DATA, PTE4_OUT, PTE4_IN),
+-	PINMUX_DATA(PTE1_DATA, PTE1_OUT, PTE1_IN),
+-	PINMUX_DATA(PTE0_DATA, PTE0_OUT, PTE0_IN),
+-
+-	/* PTF */
+-	PINMUX_DATA(PTF6_DATA, PTF6_OUT, PTF6_IN),
+-	PINMUX_DATA(PTF5_DATA, PTF5_OUT, PTF5_IN),
+-	PINMUX_DATA(PTF4_DATA, PTF4_OUT, PTF4_IN),
+-	PINMUX_DATA(PTF3_DATA, PTF3_OUT, PTF3_IN),
+-	PINMUX_DATA(PTF2_DATA, PTF2_OUT, PTF2_IN),
+-	PINMUX_DATA(PTF1_DATA, PTF1_IN),
+-	PINMUX_DATA(PTF0_DATA, PTF0_OUT),
+-
+-	/* PTG */
+-	PINMUX_DATA(PTG4_DATA, PTG4_OUT),
+-	PINMUX_DATA(PTG3_DATA, PTG3_OUT),
+-	PINMUX_DATA(PTG2_DATA, PTG2_OUT),
+-	PINMUX_DATA(PTG1_DATA, PTG1_OUT),
+-	PINMUX_DATA(PTG0_DATA, PTG0_OUT),
+-
+-	/* PTH */
+-	PINMUX_DATA(PTH7_DATA, PTH7_OUT),
+-	PINMUX_DATA(PTH6_DATA, PTH6_OUT, PTH6_IN),
+-	PINMUX_DATA(PTH5_DATA, PTH5_OUT, PTH5_IN),
+-	PINMUX_DATA(PTH4_DATA, PTH4_OUT),
+-	PINMUX_DATA(PTH3_DATA, PTH3_OUT),
+-	PINMUX_DATA(PTH2_DATA, PTH2_OUT),
+-	PINMUX_DATA(PTH1_DATA, PTH1_OUT, PTH1_IN),
+-	PINMUX_DATA(PTH0_DATA, PTH0_OUT, PTH0_IN),
+-
+-	/* PTJ */
+-	PINMUX_DATA(PTJ7_DATA, PTJ7_OUT),
+-	PINMUX_DATA(PTJ6_DATA, PTJ6_OUT),
+-	PINMUX_DATA(PTJ5_DATA, PTJ5_OUT),
+-	PINMUX_DATA(PTJ1_DATA, PTJ1_OUT, PTJ1_IN),
+-	PINMUX_DATA(PTJ0_DATA, PTJ0_OUT, PTJ0_IN),
+-
+-	/* PTK */
+-	PINMUX_DATA(PTK6_DATA, PTK6_OUT, PTK6_IN),
+-	PINMUX_DATA(PTK5_DATA, PTK5_OUT, PTK5_IN),
+-	PINMUX_DATA(PTK4_DATA, PTK4_OUT, PTK4_IN),
+-	PINMUX_DATA(PTK3_DATA, PTK3_OUT, PTK3_IN),
+-	PINMUX_DATA(PTK2_DATA, PTK2_IN),
+-	PINMUX_DATA(PTK1_DATA, PTK1_OUT),
+-	PINMUX_DATA(PTK0_DATA, PTK0_OUT, PTK0_IN),
+-
+-	/* PTL */
+-	PINMUX_DATA(PTL7_DATA, PTL7_OUT, PTL7_IN),
+-	PINMUX_DATA(PTL6_DATA, PTL6_OUT, PTL6_IN),
+-	PINMUX_DATA(PTL5_DATA, PTL5_OUT, PTL5_IN),
+-	PINMUX_DATA(PTL4_DATA, PTL4_OUT, PTL4_IN),
+-	PINMUX_DATA(PTL3_DATA, PTL3_OUT, PTL3_IN),
+-	PINMUX_DATA(PTL2_DATA, PTL2_OUT, PTL2_IN),
+-	PINMUX_DATA(PTL1_DATA, PTL1_OUT, PTL1_IN),
+-	PINMUX_DATA(PTL0_DATA, PTL0_OUT, PTL0_IN),
+-
+-	/* PTM */
+-	PINMUX_DATA(PTM7_DATA, PTM7_OUT, PTM7_IN),
+-	PINMUX_DATA(PTM6_DATA, PTM6_OUT, PTM6_IN),
+-	PINMUX_DATA(PTM5_DATA, PTM5_OUT, PTM5_IN),
+-	PINMUX_DATA(PTM4_DATA, PTM4_OUT, PTM4_IN),
+-	PINMUX_DATA(PTM3_DATA, PTM3_OUT, PTM3_IN),
+-	PINMUX_DATA(PTM2_DATA, PTM2_OUT, PTM2_IN),
+-	PINMUX_DATA(PTM1_DATA, PTM1_OUT, PTM1_IN),
+-	PINMUX_DATA(PTM0_DATA, PTM0_OUT, PTM0_IN),
+-
+-	/* PTN */
+-	PINMUX_DATA(PTN7_DATA, PTN7_OUT, PTN7_IN),
+-	PINMUX_DATA(PTN6_DATA, PTN6_OUT, PTN6_IN),
+-	PINMUX_DATA(PTN5_DATA, PTN5_OUT, PTN5_IN),
+-	PINMUX_DATA(PTN4_DATA, PTN4_OUT, PTN4_IN),
+-	PINMUX_DATA(PTN3_DATA, PTN3_OUT, PTN3_IN),
+-	PINMUX_DATA(PTN2_DATA, PTN2_OUT, PTN2_IN),
+-	PINMUX_DATA(PTN1_DATA, PTN1_OUT, PTN1_IN),
+-	PINMUX_DATA(PTN0_DATA, PTN0_OUT, PTN0_IN),
+-
+-	/* PTQ */
+-	PINMUX_DATA(PTQ6_DATA, PTQ6_OUT),
+-	PINMUX_DATA(PTQ5_DATA, PTQ5_OUT, PTQ5_IN),
+-	PINMUX_DATA(PTQ4_DATA, PTQ4_OUT, PTQ4_IN),
+-	PINMUX_DATA(PTQ3_DATA, PTQ3_OUT, PTQ3_IN),
+-	PINMUX_DATA(PTQ2_DATA, PTQ2_IN),
+-	PINMUX_DATA(PTQ1_DATA, PTQ1_OUT),
+-	PINMUX_DATA(PTQ0_DATA, PTQ0_OUT, PTQ0_IN),
+-
+-	/* PTR */
+-	PINMUX_DATA(PTR4_DATA, PTR4_OUT),
+-	PINMUX_DATA(PTR3_DATA, PTR3_OUT),
+-	PINMUX_DATA(PTR2_DATA, PTR2_IN),
+-	PINMUX_DATA(PTR1_DATA, PTR1_OUT),
+-	PINMUX_DATA(PTR0_DATA, PTR0_OUT),
+-
+-	/* PTS */
+-	PINMUX_DATA(PTS4_DATA, PTS4_IN),
+-	PINMUX_DATA(PTS3_DATA, PTS3_OUT),
+-	PINMUX_DATA(PTS2_DATA, PTS2_OUT, PTS2_IN),
+-	PINMUX_DATA(PTS1_DATA, PTS1_IN),
+-	PINMUX_DATA(PTS0_DATA, PTS0_OUT),
+-
+-	/* PTT */
+-	PINMUX_DATA(PTT4_DATA, PTT4_OUT, PTT4_IN),
+-	PINMUX_DATA(PTT3_DATA, PTT3_OUT, PTT3_IN),
+-	PINMUX_DATA(PTT2_DATA, PTT2_OUT, PTT2_IN),
+-	PINMUX_DATA(PTT1_DATA, PTT1_IN),
+-	PINMUX_DATA(PTT0_DATA, PTT0_OUT),
+-
+-	/* PTU */
+-	PINMUX_DATA(PTU4_DATA, PTU4_OUT, PTU4_IN),
+-	PINMUX_DATA(PTU3_DATA, PTU3_OUT, PTU3_IN),
+-	PINMUX_DATA(PTU2_DATA, PTU2_OUT, PTU2_IN),
+-	PINMUX_DATA(PTU1_DATA, PTU1_IN),
+-	PINMUX_DATA(PTU0_DATA, PTU0_OUT, PTU0_IN),
+-
+-	/* PTV */
+-	PINMUX_DATA(PTV4_DATA, PTV4_OUT, PTV4_IN),
+-	PINMUX_DATA(PTV3_DATA, PTV3_OUT, PTV3_IN),
+-	PINMUX_DATA(PTV2_DATA, PTV2_OUT, PTV2_IN),
+-	PINMUX_DATA(PTV1_DATA, PTV1_OUT, PTV1_IN),
+-	PINMUX_DATA(PTV0_DATA, PTV0_OUT, PTV0_IN),
+-
+-	/* PTW */
+-	PINMUX_DATA(PTW6_DATA, PTW6_IN),
+-	PINMUX_DATA(PTW5_DATA, PTW5_OUT),
+-	PINMUX_DATA(PTW4_DATA, PTW4_OUT, PTW4_IN),
+-	PINMUX_DATA(PTW3_DATA, PTW3_OUT, PTW3_IN),
+-	PINMUX_DATA(PTW2_DATA, PTW2_OUT, PTW2_IN),
+-	PINMUX_DATA(PTW1_DATA, PTW1_OUT, PTW1_IN),
+-	PINMUX_DATA(PTW0_DATA, PTW0_OUT, PTW0_IN),
+-
+-	/* PTX */
+-	PINMUX_DATA(PTX6_DATA, PTX6_OUT, PTX6_IN),
+-	PINMUX_DATA(PTX5_DATA, PTX5_OUT, PTX5_IN),
+-	PINMUX_DATA(PTX4_DATA, PTX4_OUT, PTX4_IN),
+-	PINMUX_DATA(PTX3_DATA, PTX3_OUT, PTX3_IN),
+-	PINMUX_DATA(PTX2_DATA, PTX2_OUT, PTX2_IN),
+-	PINMUX_DATA(PTX1_DATA, PTX1_OUT, PTX1_IN),
+-	PINMUX_DATA(PTX0_DATA, PTX0_OUT, PTX0_IN),
+-
+-	/* PTY */
+-	PINMUX_DATA(PTY5_DATA, PTY5_OUT, PTY5_IN),
+-	PINMUX_DATA(PTY4_DATA, PTY4_OUT, PTY4_IN),
+-	PINMUX_DATA(PTY3_DATA, PTY3_OUT, PTY3_IN),
+-	PINMUX_DATA(PTY2_DATA, PTY2_OUT, PTY2_IN),
+-	PINMUX_DATA(PTY1_DATA, PTY1_OUT),
+-	PINMUX_DATA(PTY0_DATA, PTY0_OUT, PTY0_IN),
+-
+-	/* PTZ */
+-	PINMUX_DATA(PTZ5_DATA, PTZ5_IN),
+-	PINMUX_DATA(PTZ4_DATA, PTZ4_IN),
+-	PINMUX_DATA(PTZ3_DATA, PTZ3_IN),
+-	PINMUX_DATA(PTZ2_DATA, PTZ2_IN),
+-	PINMUX_DATA(PTZ1_DATA, PTZ1_IN),
+-
+-	/* SCIF0 */
+-	PINMUX_DATA(SCIF0_TXD_MARK, SCIF0_TXD),
+-	PINMUX_DATA(SCIF0_RXD_MARK, SCIF0_RXD),
+-	PINMUX_DATA(SCIF0_RTS_MARK, PSD7_SCIF0_RTS, SCIF0_RTS_SIUAOSPD),
+-	PINMUX_DATA(SCIF0_CTS_MARK, PSD6_SCIF0_CTS, SCIF0_CTS_SIUAISPD),
+-	PINMUX_DATA(SCIF0_SCK_MARK, PSD8_SCIF0_SCK, SCIF0_SCK_TPUTO),
+-
+-	/* SCIF1 */
+-	PINMUX_DATA(SCIF1_TXD_MARK, PSD11_SCIF1, VIO_D5_SCIF1_TXD),
+-	PINMUX_DATA(SCIF1_RXD_MARK, PSD11_SCIF1, VIO_D6_SCIF1_RXD),
+-	PINMUX_DATA(SCIF1_RTS_MARK, PSD12_SCIF1, VIO_CLK_SCIF1_RTS),
+-	PINMUX_DATA(SCIF1_CTS_MARK, PSD12_SCIF1, VIO_VD_SCIF1_CTS),
+-	PINMUX_DATA(SCIF1_SCK_MARK, PSD11_SCIF1, VIO_D7_SCIF1_SCK),
+-
+-	/* SCIF2 */
+-	PINMUX_DATA(SCIF2_TXD_MARK, PSD13_SCIF2, VIO_STEM_SCIF2_TXD),
+-	PINMUX_DATA(SCIF2_RXD_MARK, PSD13_SCIF2, VIO_HD_SCIF2_RXD),
+-	PINMUX_DATA(SCIF2_RTS_MARK, PSD13_SCIF2, VIO_CKO_SCIF2_RTS),
+-	PINMUX_DATA(SCIF2_CTS_MARK, PSD13_SCIF2, VIO_FLD_SCIF2_CTS),
+-	PINMUX_DATA(SCIF2_SCK_MARK, PSD13_SCIF2, VIO_STEX_SCIF2_SCK),
+-
+-	/* SIO */
+-	PINMUX_DATA(SIOTXD_MARK, PSB15_SIOTXD, SIOTXD_SIUBOSLD),
+-	PINMUX_DATA(SIORXD_MARK, PSB14_SIORXD, SIORXD_SIUBISLD),
+-	PINMUX_DATA(SIOD_MARK, PSB13_SIOD, SIOD_SIUBILR),
+-	PINMUX_DATA(SIOSTRB0_MARK, PSB12_SIOSTRB0, SIOSTRB0_SIUBIBT),
+-	PINMUX_DATA(SIOSTRB1_MARK, PSB11_SIOSTRB1, SIOSTRB1_SIUBOLR),
+-	PINMUX_DATA(SIOSCK_MARK, PSB10_SIOSCK, SIOSCK_SIUBOBT),
+-	PINMUX_DATA(SIOMCK_MARK, PSD9_SIOMCK_SIUMCKB, PSB9_SIOMCK, PTF6),
+-
+-	/* CEU */
+-	PINMUX_DATA(VIO_D15_MARK, PSC0_VIO, HIZA10_NAF, NAF7_VIO_D15),
+-	PINMUX_DATA(VIO_D14_MARK, PSC0_VIO, HIZA10_NAF, NAF6_VIO_D14),
+-	PINMUX_DATA(VIO_D13_MARK, PSC0_VIO, HIZA10_NAF, NAF5_VIO_D13),
+-	PINMUX_DATA(VIO_D12_MARK, PSC0_VIO, HIZA10_NAF, NAF4_VIO_D12),
+-	PINMUX_DATA(VIO_D11_MARK, PSC0_VIO, HIZA10_NAF, NAF3_VIO_D11),
+-	PINMUX_DATA(VIO_D10_MARK, PSE2_VIO_D10, HIZB0_VIO, NAF2_VIO_D10),
+-	PINMUX_DATA(VIO_D9_MARK, PSE1_VIO_D9, HIZB0_VIO, NAF1_VIO_D9),
+-	PINMUX_DATA(VIO_D8_MARK, PSE0_VIO_D8, HIZB0_VIO, NAF0_VIO_D8),
+-	PINMUX_DATA(VIO_D7_MARK, PSD11_VIO, VIO_D7_SCIF1_SCK),
+-	PINMUX_DATA(VIO_D6_MARK, PSD11_VIO, VIO_D6_SCIF1_RXD),
+-	PINMUX_DATA(VIO_D5_MARK, PSD11_VIO, VIO_D5_SCIF1_TXD),
+-	PINMUX_DATA(VIO_D4_MARK, VIO_D4),
+-	PINMUX_DATA(VIO_D3_MARK, VIO_D3),
+-	PINMUX_DATA(VIO_D2_MARK, VIO_D2),
+-	PINMUX_DATA(VIO_D1_MARK, VIO_D1),
+-	PINMUX_DATA(VIO_D0_MARK, PSD10_VIO_D0, VIO_D0_LCDLCLK),
+-	PINMUX_DATA(VIO_CLK_MARK, PSD12_VIO, MSELB9_VIO, VIO_CLK_SCIF1_RTS),
+-	PINMUX_DATA(VIO_VD_MARK, PSD12_VIO, MSELB9_VIO, VIO_VD_SCIF1_CTS),
+-	PINMUX_DATA(VIO_HD_MARK, PSD13_VIO, MSELB9_VIO, VIO_HD_SCIF2_RXD),
+-	PINMUX_DATA(VIO_FLD_MARK, PSD13_VIO, HIZA9_VIO, VIO_FLD_SCIF2_CTS),
+-	PINMUX_DATA(VIO_CKO_MARK, PSD13_VIO, HIZA9_VIO, VIO_CKO_SCIF2_RTS),
+-	PINMUX_DATA(VIO_STEX_MARK, PSD13_VIO, HIZA9_VIO, VIO_STEX_SCIF2_SCK),
+-	PINMUX_DATA(VIO_STEM_MARK, PSD13_VIO, HIZA9_VIO, VIO_STEM_SCIF2_TXD),
+-	PINMUX_DATA(VIO_VD2_MARK, PSE3_VIO, MSELB9_VIO2,
+-		    HIZB0_VIO, FOE_VIO_VD2),
+-	PINMUX_DATA(VIO_HD2_MARK, PSE3_VIO, MSELB9_VIO2,
+-		    HIZB1_VIO, FCE_VIO_HD2),
+-	PINMUX_DATA(VIO_CLK2_MARK, PSE3_VIO, MSELB9_VIO2,
+-		    HIZB1_VIO, FRB_VIO_CLK2),
+-
+-	/* LCDC */
+-	PINMUX_DATA(LCDD23_MARK, HIZA8_LCDC, LCDD23),
+-	PINMUX_DATA(LCDD22_MARK, HIZA8_LCDC, LCDD22),
+-	PINMUX_DATA(LCDD21_MARK, HIZA8_LCDC, LCDD21),
+-	PINMUX_DATA(LCDD20_MARK, HIZA8_LCDC, LCDD20),
+-	PINMUX_DATA(LCDD19_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD19_DV_CLKI),
+-	PINMUX_DATA(LCDD18_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD18_DV_CLK),
+-	PINMUX_DATA(LCDD17_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC,
+-		    LCDD17_DV_HSYNC),
+-	PINMUX_DATA(LCDD16_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC,
+-		    LCDD16_DV_VSYNC),
+-	PINMUX_DATA(LCDD15_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD15_DV_D15),
+-	PINMUX_DATA(LCDD14_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD14_DV_D14),
+-	PINMUX_DATA(LCDD13_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD13_DV_D13),
+-	PINMUX_DATA(LCDD12_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD12_DV_D12),
+-	PINMUX_DATA(LCDD11_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD11_DV_D11),
+-	PINMUX_DATA(LCDD10_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD10_DV_D10),
+-	PINMUX_DATA(LCDD9_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD9_DV_D9),
+-	PINMUX_DATA(LCDD8_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD8_DV_D8),
+-	PINMUX_DATA(LCDD7_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD7_DV_D7),
+-	PINMUX_DATA(LCDD6_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD6_DV_D6),
+-	PINMUX_DATA(LCDD5_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD5_DV_D5),
+-	PINMUX_DATA(LCDD4_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD4_DV_D4),
+-	PINMUX_DATA(LCDD3_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD3_DV_D3),
+-	PINMUX_DATA(LCDD2_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD2_DV_D2),
+-	PINMUX_DATA(LCDD1_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD1_DV_D1),
+-	PINMUX_DATA(LCDD0_MARK, PSD0_LCDD19_LCDD0, HIZA8_LCDC, LCDD0_DV_D0),
+-	PINMUX_DATA(LCDLCLK_MARK, PSD10_LCDLCLK, VIO_D0_LCDLCLK),
+-	/* Main LCD */
+-	PINMUX_DATA(LCDDON_MARK, PSD2_LCDDON, HIZA7_LCDC, LCDDON_LCDDON2),
+-	PINMUX_DATA(LCDVCPWC_MARK, PSD3_LCDVEPWC_LCDVCPWC,
+-		    HIZA6_LCDC, LCDVCPWC_LCDVCPWC2),
+-	PINMUX_DATA(LCDVEPWC_MARK, PSD3_LCDVEPWC_LCDVCPWC,
+-		    HIZA6_LCDC, LCDVEPWC_LCDVEPWC2),
+-	PINMUX_DATA(LCDVSYN_MARK, HIZA7_LCDC, LCDVSYN),
+-	/* Main LCD - RGB Mode */
+-	PINMUX_DATA(LCDDCK_MARK, MSELB8_RGB, HIZA8_LCDC, LCDDCK_LCDWR),
+-	PINMUX_DATA(LCDHSYN_MARK, MSELB8_RGB, HIZA7_LCDC, LCDHSYN_LCDCS),
+-	PINMUX_DATA(LCDDISP_MARK, MSELB8_RGB, HIZA7_LCDC, LCDDISP_LCDRS),
+-	/* Main LCD - SYS Mode */
+-	PINMUX_DATA(LCDRS_MARK, MSELB8_SYS, HIZA7_LCDC, LCDDISP_LCDRS),
+-	PINMUX_DATA(LCDCS_MARK, MSELB8_SYS, HIZA7_LCDC, LCDHSYN_LCDCS),
+-	PINMUX_DATA(LCDWR_MARK, MSELB8_SYS, HIZA8_LCDC, LCDDCK_LCDWR),
+-	PINMUX_DATA(LCDRD_MARK, HIZA7_LCDC, LCDRD),
+-	/* Sub LCD - SYS Mode */
+-	PINMUX_DATA(LCDDON2_MARK, PSD2_LCDDON2, HIZA7_LCDC, LCDDON_LCDDON2),
+-	PINMUX_DATA(LCDVCPWC2_MARK, PSD3_LCDVEPWC2_LCDVCPWC2,
+-		    HIZA6_LCDC, LCDVCPWC_LCDVCPWC2),
+-	PINMUX_DATA(LCDVEPWC2_MARK, PSD3_LCDVEPWC2_LCDVCPWC2,
+-		    HIZA6_LCDC, LCDVEPWC_LCDVEPWC2),
+-	PINMUX_DATA(LCDVSYN2_MARK, PSE12_LCDVSYN2, HIZA8_LCDC, LCDVSYN2_DACK),
+-	PINMUX_DATA(LCDCS2_MARK, PSD5_LCDCS2, CS6B_CE1B_LCDCS2),
+-
+-	/* BSC */
+-	PINMUX_DATA(IOIS16_MARK, IOIS16),
+-	PINMUX_DATA(A25_MARK, A25),
+-	PINMUX_DATA(A24_MARK, A24),
+-	PINMUX_DATA(A23_MARK, A23),
+-	PINMUX_DATA(A22_MARK, A22),
+-	PINMUX_DATA(BS_MARK, PSA9_BS, IRQ4_BS),
+-	PINMUX_DATA(CS6B_CE1B_MARK, PSD5_CS6B_CE1B, CS6B_CE1B_LCDCS2),
+-	PINMUX_DATA(WAIT_MARK, WAIT),
+-	PINMUX_DATA(CS6A_CE2B_MARK, CS6A_CE2B),
+-
+-	/* SBSC */
+-	PINMUX_DATA(HPD63_MARK, HPD63),
+-	PINMUX_DATA(HPD62_MARK, HPD62),
+-	PINMUX_DATA(HPD61_MARK, HPD61),
+-	PINMUX_DATA(HPD60_MARK, HPD60),
+-	PINMUX_DATA(HPD59_MARK, HPD59),
+-	PINMUX_DATA(HPD58_MARK, HPD58),
+-	PINMUX_DATA(HPD57_MARK, HPD57),
+-	PINMUX_DATA(HPD56_MARK, HPD56),
+-	PINMUX_DATA(HPD55_MARK, HPD55),
+-	PINMUX_DATA(HPD54_MARK, HPD54),
+-	PINMUX_DATA(HPD53_MARK, HPD53),
+-	PINMUX_DATA(HPD52_MARK, HPD52),
+-	PINMUX_DATA(HPD51_MARK, HPD51),
+-	PINMUX_DATA(HPD50_MARK, HPD50),
+-	PINMUX_DATA(HPD49_MARK, HPD49),
+-	PINMUX_DATA(HPD48_MARK, HPD48),
+-	PINMUX_DATA(HPDQM7_MARK, HPDQM7),
+-	PINMUX_DATA(HPDQM6_MARK, HPDQM6),
+-	PINMUX_DATA(HPDQM5_MARK, HPDQM5),
+-	PINMUX_DATA(HPDQM4_MARK, HPDQM4),
+-
+-	/* IRQ */
+-	PINMUX_DATA(IRQ0_MARK, HIZC8_IRQ0, IRQ0),
+-	PINMUX_DATA(IRQ1_MARK, HIZC9_IRQ1, IRQ1),
+-	PINMUX_DATA(IRQ2_MARK, PSA4_IRQ2, HIZC10_IRQ2, IRQ2_SDHID2),
+-	PINMUX_DATA(IRQ3_MARK, PSE15_SIOF0_MCK_IRQ3, PSB8_IRQ3,
+-		    HIZC11_IRQ3, PTQ0),
+-	PINMUX_DATA(IRQ4_MARK, PSA9_IRQ4, HIZC12_IRQ4, IRQ4_BS),
+-	PINMUX_DATA(IRQ5_MARK, HIZC13_IRQ5, IRQ5),
+-	PINMUX_DATA(IRQ6_MARK, PSA15_IRQ6, HIZC14_IRQ6, KEYIN0_IRQ6),
+-	PINMUX_DATA(IRQ7_MARK, PSA14_IRQ7, HIZC15_IRQ7, KEYIN4_IRQ7),
+-
+-	/* SDHI */
+-	PINMUX_DATA(SDHICD_MARK, SDHICD),
+-	PINMUX_DATA(SDHIWP_MARK, SDHIWP),
+-	PINMUX_DATA(SDHID3_MARK, SDHID3),
+-	PINMUX_DATA(SDHID2_MARK, PSA4_SDHID2, IRQ2_SDHID2),
+-	PINMUX_DATA(SDHID1_MARK, SDHID1),
+-	PINMUX_DATA(SDHID0_MARK, SDHID0),
+-	PINMUX_DATA(SDHICMD_MARK, SDHICMD),
+-	PINMUX_DATA(SDHICLK_MARK, SDHICLK),
+-
+-	/* SIU - Port A */
+-	PINMUX_DATA(SIUAOLR_MARK, PSC13_SIUAOLR, HIZB4_SIUA, SIUAOLR_SIOF1_SYNC),
+-	PINMUX_DATA(SIUAOBT_MARK, PSC14_SIUAOBT, HIZB4_SIUA, SIUAOBT_SIOF1_SCK),
+-	PINMUX_DATA(SIUAISLD_MARK, PSC15_SIUAISLD, HIZB4_SIUA, SIUAISLD_SIOF1_RXD),
+-	PINMUX_DATA(SIUAILR_MARK, PSC11_SIUAILR, HIZB4_SIUA, SIUAILR_SIOF1_SS2),
+-	PINMUX_DATA(SIUAIBT_MARK, PSC12_SIUAIBT, HIZB4_SIUA, SIUAIBT_SIOF1_SS1),
+-	PINMUX_DATA(SIUAOSLD_MARK, PSB0_SIUAOSLD, HIZB4_SIUA, SIUAOSLD_SIOF1_TXD),
+-	PINMUX_DATA(SIUMCKA_MARK, PSE11_SIUMCKA_SIOF1_MCK, HIZB4_SIUA, PSB1_SIUMCKA, PTK0),
+-	PINMUX_DATA(SIUFCKA_MARK, PSE11_SIUFCKA, HIZB4_SIUA, PTK0),
+-
+-	/* SIU - Port B */
+-	PINMUX_DATA(SIUBOLR_MARK, PSB11_SIUBOLR, SIOSTRB1_SIUBOLR),
+-	PINMUX_DATA(SIUBOBT_MARK, PSB10_SIUBOBT, SIOSCK_SIUBOBT),
+-	PINMUX_DATA(SIUBISLD_MARK, PSB14_SIUBISLD, SIORXD_SIUBISLD),
+-	PINMUX_DATA(SIUBILR_MARK, PSB13_SIUBILR, SIOD_SIUBILR),
+-	PINMUX_DATA(SIUBIBT_MARK, PSB12_SIUBIBT, SIOSTRB0_SIUBIBT),
+-	PINMUX_DATA(SIUBOSLD_MARK, PSB15_SIUBOSLD, SIOTXD_SIUBOSLD),
+-	PINMUX_DATA(SIUMCKB_MARK, PSD9_SIOMCK_SIUMCKB, PSB9_SIUMCKB, PTF6),
+-	PINMUX_DATA(SIUFCKB_MARK, PSD9_SIUFCKB, PTF6),
+-
+-	/* AUD */
+-	PINMUX_DATA(AUDSYNC_MARK, AUDSYNC),
+-	PINMUX_DATA(AUDATA3_MARK, AUDATA3),
+-	PINMUX_DATA(AUDATA2_MARK, AUDATA2),
+-	PINMUX_DATA(AUDATA1_MARK, AUDATA1),
+-	PINMUX_DATA(AUDATA0_MARK, AUDATA0),
+-
+-	/* DMAC */
+-	PINMUX_DATA(DACK_MARK, PSE12_DACK, LCDVSYN2_DACK),
+-	PINMUX_DATA(DREQ0_MARK, DREQ0),
+-
+-	/* VOU */
+-	PINMUX_DATA(DV_CLKI_MARK, PSD0_DV, LCDD19_DV_CLKI),
+-	PINMUX_DATA(DV_CLK_MARK, PSD0_DV, LCDD18_DV_CLK),
+-	PINMUX_DATA(DV_HSYNC_MARK, PSD0_DV, LCDD17_DV_HSYNC),
+-	PINMUX_DATA(DV_VSYNC_MARK, PSD0_DV, LCDD16_DV_VSYNC),
+-	PINMUX_DATA(DV_D15_MARK, PSD0_DV, LCDD15_DV_D15),
+-	PINMUX_DATA(DV_D14_MARK, PSD0_DV, LCDD14_DV_D14),
+-	PINMUX_DATA(DV_D13_MARK, PSD0_DV, LCDD13_DV_D13),
+-	PINMUX_DATA(DV_D12_MARK, PSD0_DV, LCDD12_DV_D12),
+-	PINMUX_DATA(DV_D11_MARK, PSD0_DV, LCDD11_DV_D11),
+-	PINMUX_DATA(DV_D10_MARK, PSD0_DV, LCDD10_DV_D10),
+-	PINMUX_DATA(DV_D9_MARK, PSD0_DV, LCDD9_DV_D9),
+-	PINMUX_DATA(DV_D8_MARK, PSD0_DV, LCDD8_DV_D8),
+-	PINMUX_DATA(DV_D7_MARK, PSD0_DV, LCDD7_DV_D7),
+-	PINMUX_DATA(DV_D6_MARK, PSD0_DV, LCDD6_DV_D6),
+-	PINMUX_DATA(DV_D5_MARK, PSD0_DV, LCDD5_DV_D5),
+-	PINMUX_DATA(DV_D4_MARK, PSD0_DV, LCDD4_DV_D4),
+-	PINMUX_DATA(DV_D3_MARK, PSD0_DV, LCDD3_DV_D3),
+-	PINMUX_DATA(DV_D2_MARK, PSD0_DV, LCDD2_DV_D2),
+-	PINMUX_DATA(DV_D1_MARK, PSD0_DV, LCDD1_DV_D1),
+-	PINMUX_DATA(DV_D0_MARK, PSD0_DV, LCDD0_DV_D0),
+-
+-	/* CPG */
+-	PINMUX_DATA(STATUS0_MARK, STATUS0),
+-	PINMUX_DATA(PDSTATUS_MARK, PDSTATUS),
+-
+-	/* SIOF0 */
+-	PINMUX_DATA(SIOF0_MCK_MARK, PSE15_SIOF0_MCK_IRQ3, PSB8_SIOF0_MCK, PTQ0),
+-	PINMUX_DATA(SIOF0_SCK_MARK, PSB5_SIOF0_SCK, SIOF0_SCK_TS_SCK),
+-	PINMUX_DATA(SIOF0_SYNC_MARK, PSB4_SIOF0_SYNC, SIOF0_SYNC_TS_SDEN),
+-	PINMUX_DATA(SIOF0_SS1_MARK, PSB3_SIOF0_SS1, SIOF0_SS1_TS_SPSYNC),
+-	PINMUX_DATA(SIOF0_SS2_MARK, PSB2_SIOF0_SS2, SIOF0_SS2_SIM_RST),
+-	PINMUX_DATA(SIOF0_TXD_MARK, PSE14_SIOF0_TXD_IRDA_OUT,
+-		    PSB7_SIOF0_TXD, PTQ1),
+-	PINMUX_DATA(SIOF0_RXD_MARK, PSE13_SIOF0_RXD_IRDA_IN,
+-		    PSB6_SIOF0_RXD, PTQ2),
+-
+-	/* SIOF1 */
+-	PINMUX_DATA(SIOF1_MCK_MARK, PSE11_SIUMCKA_SIOF1_MCK,
+-		    PSB1_SIOF1_MCK, PTK0),
+-	PINMUX_DATA(SIOF1_SCK_MARK, PSC14_SIOF1_SCK, SIUAOBT_SIOF1_SCK),
+-	PINMUX_DATA(SIOF1_SYNC_MARK, PSC13_SIOF1_SYNC, SIUAOLR_SIOF1_SYNC),
+-	PINMUX_DATA(SIOF1_SS1_MARK, PSC12_SIOF1_SS1, SIUAIBT_SIOF1_SS1),
+-	PINMUX_DATA(SIOF1_SS2_MARK, PSC11_SIOF1_SS2, SIUAILR_SIOF1_SS2),
+-	PINMUX_DATA(SIOF1_TXD_MARK, PSB0_SIOF1_TXD, SIUAOSLD_SIOF1_TXD),
+-	PINMUX_DATA(SIOF1_RXD_MARK, PSC15_SIOF1_RXD, SIUAISLD_SIOF1_RXD),
+-
+-	/* SIM */
+-	PINMUX_DATA(SIM_D_MARK, PSE15_SIM_D, PTQ0),
+-	PINMUX_DATA(SIM_CLK_MARK, PSE14_SIM_CLK, PTQ1),
+-	PINMUX_DATA(SIM_RST_MARK, PSB2_SIM_RST, SIOF0_SS2_SIM_RST),
+-
+-	/* TSIF */
+-	PINMUX_DATA(TS_SDAT_MARK, PSE13_TS_SDAT, PTQ2),
+-	PINMUX_DATA(TS_SCK_MARK, PSB5_TS_SCK, SIOF0_SCK_TS_SCK),
+-	PINMUX_DATA(TS_SDEN_MARK, PSB4_TS_SDEN, SIOF0_SYNC_TS_SDEN),
+-	PINMUX_DATA(TS_SPSYNC_MARK, PSB3_TS_SPSYNC, SIOF0_SS1_TS_SPSYNC),
+-
+-	/* IRDA */
+-	PINMUX_DATA(IRDA_IN_MARK, PSE13_SIOF0_RXD_IRDA_IN, PSB6_IRDA_IN, PTQ2),
+-	PINMUX_DATA(IRDA_OUT_MARK, PSE14_SIOF0_TXD_IRDA_OUT,
+-		    PSB7_IRDA_OUT, PTQ1),
+-
+-	/* TPU */
+-	PINMUX_DATA(TPUTO_MARK, PSD8_TPUTO, SCIF0_SCK_TPUTO),
+-
+-	/* FLCTL */
+-	PINMUX_DATA(FCE_MARK, PSE3_FLCTL, FCE_VIO_HD2),
+-	PINMUX_DATA(NAF7_MARK, PSC0_NAF, HIZA10_NAF, NAF7_VIO_D15),
+-	PINMUX_DATA(NAF6_MARK, PSC0_NAF, HIZA10_NAF, NAF6_VIO_D14),
+-	PINMUX_DATA(NAF5_MARK, PSC0_NAF, HIZA10_NAF, NAF5_VIO_D13),
+-	PINMUX_DATA(NAF4_MARK, PSC0_NAF, HIZA10_NAF, NAF4_VIO_D12),
+-	PINMUX_DATA(NAF3_MARK, PSC0_NAF, HIZA10_NAF, NAF3_VIO_D11),
+-	PINMUX_DATA(NAF2_MARK, PSE2_NAF2, HIZB0_VIO, NAF2_VIO_D10),
+-	PINMUX_DATA(NAF1_MARK, PSE1_NAF1, HIZB0_VIO, NAF1_VIO_D9),
+-	PINMUX_DATA(NAF0_MARK, PSE0_NAF0, HIZB0_VIO, NAF0_VIO_D8),
+-	PINMUX_DATA(FCDE_MARK, FCDE),
+-	PINMUX_DATA(FOE_MARK, PSE3_FLCTL, HIZB0_VIO, FOE_VIO_VD2),
+-	PINMUX_DATA(FSC_MARK, FSC),
+-	PINMUX_DATA(FWE_MARK, FWE),
+-	PINMUX_DATA(FRB_MARK, PSE3_FLCTL, FRB_VIO_CLK2),
+-
+-	/* KEYSC */
+-	PINMUX_DATA(KEYIN0_MARK, PSA15_KEYIN0, HIZC14_IRQ6, KEYIN0_IRQ6),
+-	PINMUX_DATA(KEYIN1_MARK, HIZA14_KEYSC, KEYIN1),
+-	PINMUX_DATA(KEYIN2_MARK, HIZA14_KEYSC, KEYIN2),
+-	PINMUX_DATA(KEYIN3_MARK, HIZA14_KEYSC, KEYIN3),
+-	PINMUX_DATA(KEYIN4_MARK, PSA14_KEYIN4, HIZC15_IRQ7, KEYIN4_IRQ7),
+-	PINMUX_DATA(KEYOUT0_MARK, HIZA14_KEYSC, KEYOUT0),
+-	PINMUX_DATA(KEYOUT1_MARK, HIZA14_KEYSC, KEYOUT1),
+-	PINMUX_DATA(KEYOUT2_MARK, HIZA14_KEYSC, KEYOUT2),
+-	PINMUX_DATA(KEYOUT3_MARK, HIZA14_KEYSC, KEYOUT3),
+-	PINMUX_DATA(KEYOUT4_IN6_MARK, HIZA14_KEYSC, KEYOUT4_IN6),
+-	PINMUX_DATA(KEYOUT5_IN5_MARK, HIZA14_KEYSC, KEYOUT5_IN5),
+-};
+-
+-static const struct sh_pfc_pin pinmux_pins[] = {
+-	/* PTA */
+-	PINMUX_GPIO(PTA7),
+-	PINMUX_GPIO(PTA6),
+-	PINMUX_GPIO(PTA5),
+-	PINMUX_GPIO(PTA4),
+-	PINMUX_GPIO(PTA3),
+-	PINMUX_GPIO(PTA2),
+-	PINMUX_GPIO(PTA1),
+-	PINMUX_GPIO(PTA0),
+-
+-	/* PTB */
+-	PINMUX_GPIO(PTB7),
+-	PINMUX_GPIO(PTB6),
+-	PINMUX_GPIO(PTB5),
+-	PINMUX_GPIO(PTB4),
+-	PINMUX_GPIO(PTB3),
+-	PINMUX_GPIO(PTB2),
+-	PINMUX_GPIO(PTB1),
+-	PINMUX_GPIO(PTB0),
+-
+-	/* PTC */
+-	PINMUX_GPIO(PTC7),
+-	PINMUX_GPIO(PTC5),
+-	PINMUX_GPIO(PTC4),
+-	PINMUX_GPIO(PTC3),
+-	PINMUX_GPIO(PTC2),
+-	PINMUX_GPIO(PTC0),
+-
+-	/* PTD */
+-	PINMUX_GPIO(PTD7),
+-	PINMUX_GPIO(PTD6),
+-	PINMUX_GPIO(PTD5),
+-	PINMUX_GPIO(PTD4),
+-	PINMUX_GPIO(PTD3),
+-	PINMUX_GPIO(PTD2),
+-	PINMUX_GPIO(PTD1),
+-	PINMUX_GPIO(PTD0),
+-
+-	/* PTE */
+-	PINMUX_GPIO(PTE7),
+-	PINMUX_GPIO(PTE6),
+-	PINMUX_GPIO(PTE5),
+-	PINMUX_GPIO(PTE4),
+-	PINMUX_GPIO(PTE1),
+-	PINMUX_GPIO(PTE0),
+-
+-	/* PTF */
+-	PINMUX_GPIO(PTF6),
+-	PINMUX_GPIO(PTF5),
+-	PINMUX_GPIO(PTF4),
+-	PINMUX_GPIO(PTF3),
+-	PINMUX_GPIO(PTF2),
+-	PINMUX_GPIO(PTF1),
+-	PINMUX_GPIO(PTF0),
+-
+-	/* PTG */
+-	PINMUX_GPIO(PTG4),
+-	PINMUX_GPIO(PTG3),
+-	PINMUX_GPIO(PTG2),
+-	PINMUX_GPIO(PTG1),
+-	PINMUX_GPIO(PTG0),
+-
+-	/* PTH */
+-	PINMUX_GPIO(PTH7),
+-	PINMUX_GPIO(PTH6),
+-	PINMUX_GPIO(PTH5),
+-	PINMUX_GPIO(PTH4),
+-	PINMUX_GPIO(PTH3),
+-	PINMUX_GPIO(PTH2),
+-	PINMUX_GPIO(PTH1),
+-	PINMUX_GPIO(PTH0),
+-
+-	/* PTJ */
+-	PINMUX_GPIO(PTJ7),
+-	PINMUX_GPIO(PTJ6),
+-	PINMUX_GPIO(PTJ5),
+-	PINMUX_GPIO(PTJ1),
+-	PINMUX_GPIO(PTJ0),
+-
+-	/* PTK */
+-	PINMUX_GPIO(PTK6),
+-	PINMUX_GPIO(PTK5),
+-	PINMUX_GPIO(PTK4),
+-	PINMUX_GPIO(PTK3),
+-	PINMUX_GPIO(PTK2),
+-	PINMUX_GPIO(PTK1),
+-	PINMUX_GPIO(PTK0),
+-
+-	/* PTL */
+-	PINMUX_GPIO(PTL7),
+-	PINMUX_GPIO(PTL6),
+-	PINMUX_GPIO(PTL5),
+-	PINMUX_GPIO(PTL4),
+-	PINMUX_GPIO(PTL3),
+-	PINMUX_GPIO(PTL2),
+-	PINMUX_GPIO(PTL1),
+-	PINMUX_GPIO(PTL0),
+-
+-	/* PTM */
+-	PINMUX_GPIO(PTM7),
+-	PINMUX_GPIO(PTM6),
+-	PINMUX_GPIO(PTM5),
+-	PINMUX_GPIO(PTM4),
+-	PINMUX_GPIO(PTM3),
+-	PINMUX_GPIO(PTM2),
+-	PINMUX_GPIO(PTM1),
+-	PINMUX_GPIO(PTM0),
+-
+-	/* PTN */
+-	PINMUX_GPIO(PTN7),
+-	PINMUX_GPIO(PTN6),
+-	PINMUX_GPIO(PTN5),
+-	PINMUX_GPIO(PTN4),
+-	PINMUX_GPIO(PTN3),
+-	PINMUX_GPIO(PTN2),
+-	PINMUX_GPIO(PTN1),
+-	PINMUX_GPIO(PTN0),
+-
+-	/* PTQ */
+-	PINMUX_GPIO(PTQ6),
+-	PINMUX_GPIO(PTQ5),
+-	PINMUX_GPIO(PTQ4),
+-	PINMUX_GPIO(PTQ3),
+-	PINMUX_GPIO(PTQ2),
+-	PINMUX_GPIO(PTQ1),
+-	PINMUX_GPIO(PTQ0),
+-
+-	/* PTR */
+-	PINMUX_GPIO(PTR4),
+-	PINMUX_GPIO(PTR3),
+-	PINMUX_GPIO(PTR2),
+-	PINMUX_GPIO(PTR1),
+-	PINMUX_GPIO(PTR0),
+-
+-	/* PTS */
+-	PINMUX_GPIO(PTS4),
+-	PINMUX_GPIO(PTS3),
+-	PINMUX_GPIO(PTS2),
+-	PINMUX_GPIO(PTS1),
+-	PINMUX_GPIO(PTS0),
+-
+-	/* PTT */
+-	PINMUX_GPIO(PTT4),
+-	PINMUX_GPIO(PTT3),
+-	PINMUX_GPIO(PTT2),
+-	PINMUX_GPIO(PTT1),
+-	PINMUX_GPIO(PTT0),
+-
+-	/* PTU */
+-	PINMUX_GPIO(PTU4),
+-	PINMUX_GPIO(PTU3),
+-	PINMUX_GPIO(PTU2),
+-	PINMUX_GPIO(PTU1),
+-	PINMUX_GPIO(PTU0),
+-
+-	/* PTV */
+-	PINMUX_GPIO(PTV4),
+-	PINMUX_GPIO(PTV3),
+-	PINMUX_GPIO(PTV2),
+-	PINMUX_GPIO(PTV1),
+-	PINMUX_GPIO(PTV0),
+-
+-	/* PTW */
+-	PINMUX_GPIO(PTW6),
+-	PINMUX_GPIO(PTW5),
+-	PINMUX_GPIO(PTW4),
+-	PINMUX_GPIO(PTW3),
+-	PINMUX_GPIO(PTW2),
+-	PINMUX_GPIO(PTW1),
+-	PINMUX_GPIO(PTW0),
+-
+-	/* PTX */
+-	PINMUX_GPIO(PTX6),
+-	PINMUX_GPIO(PTX5),
+-	PINMUX_GPIO(PTX4),
+-	PINMUX_GPIO(PTX3),
+-	PINMUX_GPIO(PTX2),
+-	PINMUX_GPIO(PTX1),
+-	PINMUX_GPIO(PTX0),
+-
+-	/* PTY */
+-	PINMUX_GPIO(PTY5),
+-	PINMUX_GPIO(PTY4),
+-	PINMUX_GPIO(PTY3),
+-	PINMUX_GPIO(PTY2),
+-	PINMUX_GPIO(PTY1),
+-	PINMUX_GPIO(PTY0),
+-
+-	/* PTZ */
+-	PINMUX_GPIO(PTZ5),
+-	PINMUX_GPIO(PTZ4),
+-	PINMUX_GPIO(PTZ3),
+-	PINMUX_GPIO(PTZ2),
+-	PINMUX_GPIO(PTZ1),
+-};
+-
+-#define PINMUX_FN_BASE	ARRAY_SIZE(pinmux_pins)
+-
+-static const struct pinmux_func pinmux_func_gpios[] = {
+-	/* SCIF0 */
+-	GPIO_FN(SCIF0_TXD),
+-	GPIO_FN(SCIF0_RXD),
+-	GPIO_FN(SCIF0_RTS),
+-	GPIO_FN(SCIF0_CTS),
+-	GPIO_FN(SCIF0_SCK),
+-
+-	/* SCIF1 */
+-	GPIO_FN(SCIF1_TXD),
+-	GPIO_FN(SCIF1_RXD),
+-	GPIO_FN(SCIF1_RTS),
+-	GPIO_FN(SCIF1_CTS),
+-	GPIO_FN(SCIF1_SCK),
+-
+-	/* SCIF2 */
+-	GPIO_FN(SCIF2_TXD),
+-	GPIO_FN(SCIF2_RXD),
+-	GPIO_FN(SCIF2_RTS),
+-	GPIO_FN(SCIF2_CTS),
+-	GPIO_FN(SCIF2_SCK),
+-
+-	/* SIO */
+-	GPIO_FN(SIOTXD),
+-	GPIO_FN(SIORXD),
+-	GPIO_FN(SIOD),
+-	GPIO_FN(SIOSTRB0),
+-	GPIO_FN(SIOSTRB1),
+-	GPIO_FN(SIOSCK),
+-	GPIO_FN(SIOMCK),
+-
+-	/* CEU */
+-	GPIO_FN(VIO_D15),
+-	GPIO_FN(VIO_D14),
+-	GPIO_FN(VIO_D13),
+-	GPIO_FN(VIO_D12),
+-	GPIO_FN(VIO_D11),
+-	GPIO_FN(VIO_D10),
+-	GPIO_FN(VIO_D9),
+-	GPIO_FN(VIO_D8),
+-	GPIO_FN(VIO_D7),
+-	GPIO_FN(VIO_D6),
+-	GPIO_FN(VIO_D5),
+-	GPIO_FN(VIO_D4),
+-	GPIO_FN(VIO_D3),
+-	GPIO_FN(VIO_D2),
+-	GPIO_FN(VIO_D1),
+-	GPIO_FN(VIO_D0),
+-	GPIO_FN(VIO_CLK),
+-	GPIO_FN(VIO_VD),
+-	GPIO_FN(VIO_HD),
+-	GPIO_FN(VIO_FLD),
+-	GPIO_FN(VIO_CKO),
+-	GPIO_FN(VIO_STEX),
+-	GPIO_FN(VIO_STEM),
+-	GPIO_FN(VIO_VD2),
+-	GPIO_FN(VIO_HD2),
+-	GPIO_FN(VIO_CLK2),
+-
+-	/* LCDC */
+-	GPIO_FN(LCDD23),
+-	GPIO_FN(LCDD22),
+-	GPIO_FN(LCDD21),
+-	GPIO_FN(LCDD20),
+-	GPIO_FN(LCDD19),
+-	GPIO_FN(LCDD18),
+-	GPIO_FN(LCDD17),
+-	GPIO_FN(LCDD16),
+-	GPIO_FN(LCDD15),
+-	GPIO_FN(LCDD14),
+-	GPIO_FN(LCDD13),
+-	GPIO_FN(LCDD12),
+-	GPIO_FN(LCDD11),
+-	GPIO_FN(LCDD10),
+-	GPIO_FN(LCDD9),
+-	GPIO_FN(LCDD8),
+-	GPIO_FN(LCDD7),
+-	GPIO_FN(LCDD6),
+-	GPIO_FN(LCDD5),
+-	GPIO_FN(LCDD4),
+-	GPIO_FN(LCDD3),
+-	GPIO_FN(LCDD2),
+-	GPIO_FN(LCDD1),
+-	GPIO_FN(LCDD0),
+-	GPIO_FN(LCDLCLK),
+-	/* Main LCD */
+-	GPIO_FN(LCDDON),
+-	GPIO_FN(LCDVCPWC),
+-	GPIO_FN(LCDVEPWC),
+-	GPIO_FN(LCDVSYN),
+-	/* Main LCD - RGB Mode */
+-	GPIO_FN(LCDDCK),
+-	GPIO_FN(LCDHSYN),
+-	GPIO_FN(LCDDISP),
+-	/* Main LCD - SYS Mode */
+-	GPIO_FN(LCDRS),
+-	GPIO_FN(LCDCS),
+-	GPIO_FN(LCDWR),
+-	GPIO_FN(LCDRD),
+-	/* Sub LCD - SYS Mode */
+-	GPIO_FN(LCDDON2),
+-	GPIO_FN(LCDVCPWC2),
+-	GPIO_FN(LCDVEPWC2),
+-	GPIO_FN(LCDVSYN2),
+-	GPIO_FN(LCDCS2),
+-
+-	/* BSC */
+-	GPIO_FN(IOIS16),
+-	GPIO_FN(A25),
+-	GPIO_FN(A24),
+-	GPIO_FN(A23),
+-	GPIO_FN(A22),
+-	GPIO_FN(BS),
+-	GPIO_FN(CS6B_CE1B),
+-	GPIO_FN(WAIT),
+-	GPIO_FN(CS6A_CE2B),
+-
+-	/* SBSC */
+-	GPIO_FN(HPD63),
+-	GPIO_FN(HPD62),
+-	GPIO_FN(HPD61),
+-	GPIO_FN(HPD60),
+-	GPIO_FN(HPD59),
+-	GPIO_FN(HPD58),
+-	GPIO_FN(HPD57),
+-	GPIO_FN(HPD56),
+-	GPIO_FN(HPD55),
+-	GPIO_FN(HPD54),
+-	GPIO_FN(HPD53),
+-	GPIO_FN(HPD52),
+-	GPIO_FN(HPD51),
+-	GPIO_FN(HPD50),
+-	GPIO_FN(HPD49),
+-	GPIO_FN(HPD48),
+-	GPIO_FN(HPDQM7),
+-	GPIO_FN(HPDQM6),
+-	GPIO_FN(HPDQM5),
+-	GPIO_FN(HPDQM4),
+-
+-	/* IRQ */
+-	GPIO_FN(IRQ0),
+-	GPIO_FN(IRQ1),
+-	GPIO_FN(IRQ2),
+-	GPIO_FN(IRQ3),
+-	GPIO_FN(IRQ4),
+-	GPIO_FN(IRQ5),
+-	GPIO_FN(IRQ6),
+-	GPIO_FN(IRQ7),
+-
+-	/* SDHI */
+-	GPIO_FN(SDHICD),
+-	GPIO_FN(SDHIWP),
+-	GPIO_FN(SDHID3),
+-	GPIO_FN(SDHID2),
+-	GPIO_FN(SDHID1),
+-	GPIO_FN(SDHID0),
+-	GPIO_FN(SDHICMD),
+-	GPIO_FN(SDHICLK),
+-
+-	/* SIU - Port A */
+-	GPIO_FN(SIUAOLR),
+-	GPIO_FN(SIUAOBT),
+-	GPIO_FN(SIUAISLD),
+-	GPIO_FN(SIUAILR),
+-	GPIO_FN(SIUAIBT),
+-	GPIO_FN(SIUAOSLD),
+-	GPIO_FN(SIUMCKA),
+-	GPIO_FN(SIUFCKA),
+-
+-	/* SIU - Port B */
+-	GPIO_FN(SIUBOLR),
+-	GPIO_FN(SIUBOBT),
+-	GPIO_FN(SIUBISLD),
+-	GPIO_FN(SIUBILR),
+-	GPIO_FN(SIUBIBT),
+-	GPIO_FN(SIUBOSLD),
+-	GPIO_FN(SIUMCKB),
+-	GPIO_FN(SIUFCKB),
+-
+-	/* AUD */
+-	GPIO_FN(AUDSYNC),
+-	GPIO_FN(AUDATA3),
+-	GPIO_FN(AUDATA2),
+-	GPIO_FN(AUDATA1),
+-	GPIO_FN(AUDATA0),
+-
+-	/* DMAC */
+-	GPIO_FN(DACK),
+-	GPIO_FN(DREQ0),
+-
+-	/* VOU */
+-	GPIO_FN(DV_CLKI),
+-	GPIO_FN(DV_CLK),
+-	GPIO_FN(DV_HSYNC),
+-	GPIO_FN(DV_VSYNC),
+-	GPIO_FN(DV_D15),
+-	GPIO_FN(DV_D14),
+-	GPIO_FN(DV_D13),
+-	GPIO_FN(DV_D12),
+-	GPIO_FN(DV_D11),
+-	GPIO_FN(DV_D10),
+-	GPIO_FN(DV_D9),
+-	GPIO_FN(DV_D8),
+-	GPIO_FN(DV_D7),
+-	GPIO_FN(DV_D6),
+-	GPIO_FN(DV_D5),
+-	GPIO_FN(DV_D4),
+-	GPIO_FN(DV_D3),
+-	GPIO_FN(DV_D2),
+-	GPIO_FN(DV_D1),
+-	GPIO_FN(DV_D0),
+-
+-	/* CPG */
+-	GPIO_FN(STATUS0),
+-	GPIO_FN(PDSTATUS),
+-
+-	/* SIOF0 */
+-	GPIO_FN(SIOF0_MCK),
+-	GPIO_FN(SIOF0_SCK),
+-	GPIO_FN(SIOF0_SYNC),
+-	GPIO_FN(SIOF0_SS1),
+-	GPIO_FN(SIOF0_SS2),
+-	GPIO_FN(SIOF0_TXD),
+-	GPIO_FN(SIOF0_RXD),
+-
+-	/* SIOF1 */
+-	GPIO_FN(SIOF1_MCK),
+-	GPIO_FN(SIOF1_SCK),
+-	GPIO_FN(SIOF1_SYNC),
+-	GPIO_FN(SIOF1_SS1),
+-	GPIO_FN(SIOF1_SS2),
+-	GPIO_FN(SIOF1_TXD),
+-	GPIO_FN(SIOF1_RXD),
+-
+-	/* SIM */
+-	GPIO_FN(SIM_D),
+-	GPIO_FN(SIM_CLK),
+-	GPIO_FN(SIM_RST),
+-
+-	/* TSIF */
+-	GPIO_FN(TS_SDAT),
+-	GPIO_FN(TS_SCK),
+-	GPIO_FN(TS_SDEN),
+-	GPIO_FN(TS_SPSYNC),
+-
+-	/* IRDA */
+-	GPIO_FN(IRDA_IN),
+-	GPIO_FN(IRDA_OUT),
+-
+-	/* TPU */
+-	GPIO_FN(TPUTO),
+-
+-	/* FLCTL */
+-	GPIO_FN(FCE),
+-	GPIO_FN(NAF7),
+-	GPIO_FN(NAF6),
+-	GPIO_FN(NAF5),
+-	GPIO_FN(NAF4),
+-	GPIO_FN(NAF3),
+-	GPIO_FN(NAF2),
+-	GPIO_FN(NAF1),
+-	GPIO_FN(NAF0),
+-	GPIO_FN(FCDE),
+-	GPIO_FN(FOE),
+-	GPIO_FN(FSC),
+-	GPIO_FN(FWE),
+-	GPIO_FN(FRB),
+-
+-	/* KEYSC */
+-	GPIO_FN(KEYIN0),
+-	GPIO_FN(KEYIN1),
+-	GPIO_FN(KEYIN2),
+-	GPIO_FN(KEYIN3),
+-	GPIO_FN(KEYIN4),
+-	GPIO_FN(KEYOUT0),
+-	GPIO_FN(KEYOUT1),
+-	GPIO_FN(KEYOUT2),
+-	GPIO_FN(KEYOUT3),
+-	GPIO_FN(KEYOUT4_IN6),
+-	GPIO_FN(KEYOUT5_IN5),
+-};
+-
+-static const struct pinmux_cfg_reg pinmux_config_regs[] = {
+-	{ PINMUX_CFG_REG("PACR", 0xa4050100, 16, 2, GROUP(
+-		VIO_D7_SCIF1_SCK, PTA7_OUT, 0, PTA7_IN,
+-		VIO_D6_SCIF1_RXD, 0, 0, PTA6_IN,
+-		VIO_D5_SCIF1_TXD, PTA5_OUT, 0, PTA5_IN,
+-		VIO_D4, 0, 0, PTA4_IN,
+-		VIO_D3, 0, 0, PTA3_IN,
+-		VIO_D2, 0, 0, PTA2_IN,
+-		VIO_D1, 0, 0, PTA1_IN,
+-		VIO_D0_LCDLCLK, 0, 0, PTA0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PBCR", 0xa4050102, 16, 2, GROUP(
+-		HPD55, PTB7_OUT, 0, PTB7_IN,
+-		HPD54, PTB6_OUT, 0, PTB6_IN,
+-		HPD53, PTB5_OUT, 0, PTB5_IN,
+-		HPD52, PTB4_OUT, 0, PTB4_IN,
+-		HPD51, PTB3_OUT, 0, PTB3_IN,
+-		HPD50, PTB2_OUT, 0, PTB2_IN,
+-		HPD49, PTB1_OUT, 0, PTB1_IN,
+-		HPD48, PTB0_OUT, 0, PTB0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PCCR", 0xa4050104, 16,
+-			     GROUP(2, -2, 2, 2, 2, 2, -2, 2),
+-			     GROUP(
+-		0, 0, 0, PTC7_IN,
+-		/* RESERVED [2] */
+-		IOIS16, 0, 0, PTC5_IN,
+-		HPDQM7, PTC4_OUT, 0, PTC4_IN,
+-		HPDQM6, PTC3_OUT, 0, PTC3_IN,
+-		HPDQM5, PTC2_OUT, 0, PTC2_IN,
+-		/* RESERVED [2] */
+-		HPDQM4, PTC0_OUT, 0, PTC0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PDCR", 0xa4050106, 16, 2, GROUP(
+-		SDHICD, 0, 0, PTD7_IN,
+-		SDHIWP, PTD6_OUT, 0, PTD6_IN,
+-		SDHID3, PTD5_OUT, 0, PTD5_IN,
+-		IRQ2_SDHID2, PTD4_OUT, 0, PTD4_IN,
+-		SDHID1, PTD3_OUT, 0, PTD3_IN,
+-		SDHID0, PTD2_OUT, 0, PTD2_IN,
+-		SDHICMD, PTD1_OUT, 0, PTD1_IN,
+-		SDHICLK, PTD0_OUT, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PECR", 0xa4050108, 16,
+-			     GROUP(2, 2, 2, 2, -4, 2, 2),
+-			     GROUP(
+-		A25, PTE7_OUT, 0, PTE7_IN,
+-		A24, PTE6_OUT, 0, PTE6_IN,
+-		A23, PTE5_OUT, 0, PTE5_IN,
+-		A22, PTE4_OUT, 0, PTE4_IN,
+-		/* RESERVED [4] */
+-		IRQ5, PTE1_OUT, 0, PTE1_IN,
+-		IRQ4_BS, PTE0_OUT, 0, PTE0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PFCR", 0xa405010a, 16, 2, GROUP(
+-		0, 0, 0, 0,
+-		PTF6, PTF6_OUT, 0, PTF6_IN,
+-		SIOSCK_SIUBOBT, PTF5_OUT, 0, PTF5_IN,
+-		SIOSTRB1_SIUBOLR, PTF4_OUT, 0, PTF4_IN,
+-		SIOSTRB0_SIUBIBT, PTF3_OUT, 0, PTF3_IN,
+-		SIOD_SIUBILR, PTF2_OUT, 0, PTF2_IN,
+-		SIORXD_SIUBISLD, 0, 0, PTF1_IN,
+-		SIOTXD_SIUBOSLD, PTF0_OUT, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PGCR", 0xa405010c, 16,
+-			     GROUP(-6, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [6] */
+-		AUDSYNC, PTG4_OUT, 0, 0,
+-		AUDATA3, PTG3_OUT, 0, 0,
+-		AUDATA2, PTG2_OUT, 0, 0,
+-		AUDATA1, PTG1_OUT, 0, 0,
+-		AUDATA0, PTG0_OUT, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PHCR", 0xa405010e, 16, 2, GROUP(
+-		LCDVCPWC_LCDVCPWC2, PTH7_OUT, 0, 0,
+-		LCDVSYN2_DACK, PTH6_OUT, 0, PTH6_IN,
+-		LCDVSYN, PTH5_OUT, 0, PTH5_IN,
+-		LCDDISP_LCDRS, PTH4_OUT, 0, 0,
+-		LCDHSYN_LCDCS, PTH3_OUT, 0, 0,
+-		LCDDON_LCDDON2, PTH2_OUT, 0, 0,
+-		LCDD17_DV_HSYNC, PTH1_OUT, 0, PTH1_IN,
+-		LCDD16_DV_VSYNC, PTH0_OUT, 0, PTH0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PJCR", 0xa4050110, 16,
+-			     GROUP(2, 2, 2, -6, 2, 2),
+-			     GROUP(
+-		STATUS0, PTJ7_OUT, 0, 0,
+-		0, PTJ6_OUT, 0, 0,
+-		PDSTATUS, PTJ5_OUT, 0, 0,
+-		/* RESERVED [6] */
+-		IRQ1, PTJ1_OUT, 0, PTJ1_IN,
+-		IRQ0, PTJ0_OUT, 0, PTJ0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PKCR", 0xa4050112, 16, 2, GROUP(
+-		0, 0, 0, 0,
+-		SIUAILR_SIOF1_SS2, PTK6_OUT, 0, PTK6_IN,
+-		SIUAIBT_SIOF1_SS1, PTK5_OUT, 0, PTK5_IN,
+-		SIUAOLR_SIOF1_SYNC, PTK4_OUT, 0, PTK4_IN,
+-		SIUAOBT_SIOF1_SCK, PTK3_OUT, 0, PTK3_IN,
+-		SIUAISLD_SIOF1_RXD, 0, 0, PTK2_IN,
+-		SIUAOSLD_SIOF1_TXD, PTK1_OUT, 0, 0,
+-		PTK0, PTK0_OUT, 0, PTK0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PLCR", 0xa4050114, 16, 2, GROUP(
+-		LCDD15_DV_D15, PTL7_OUT, 0, PTL7_IN,
+-		LCDD14_DV_D14, PTL6_OUT, 0, PTL6_IN,
+-		LCDD13_DV_D13, PTL5_OUT, 0, PTL5_IN,
+-		LCDD12_DV_D12, PTL4_OUT, 0, PTL4_IN,
+-		LCDD11_DV_D11, PTL3_OUT, 0, PTL3_IN,
+-		LCDD10_DV_D10, PTL2_OUT, 0, PTL2_IN,
+-		LCDD9_DV_D9, PTL1_OUT, 0, PTL1_IN,
+-		LCDD8_DV_D8, PTL0_OUT, 0, PTL0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PMCR", 0xa4050116, 16, 2, GROUP(
+-		LCDD7_DV_D7, PTM7_OUT, 0, PTM7_IN,
+-		LCDD6_DV_D6, PTM6_OUT, 0, PTM6_IN,
+-		LCDD5_DV_D5, PTM5_OUT, 0, PTM5_IN,
+-		LCDD4_DV_D4, PTM4_OUT, 0, PTM4_IN,
+-		LCDD3_DV_D3, PTM3_OUT, 0, PTM3_IN,
+-		LCDD2_DV_D2, PTM2_OUT, 0, PTM2_IN,
+-		LCDD1_DV_D1, PTM1_OUT, 0, PTM1_IN,
+-		LCDD0_DV_D0, PTM0_OUT, 0, PTM0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PNCR", 0xa4050118, 16, 2, GROUP(
+-		HPD63, PTN7_OUT, 0, PTN7_IN,
+-		HPD62, PTN6_OUT, 0, PTN6_IN,
+-		HPD61, PTN5_OUT, 0, PTN5_IN,
+-		HPD60, PTN4_OUT, 0, PTN4_IN,
+-		HPD59, PTN3_OUT, 0, PTN3_IN,
+-		HPD58, PTN2_OUT, 0, PTN2_IN,
+-		HPD57, PTN1_OUT, 0, PTN1_IN,
+-		HPD56, PTN0_OUT, 0, PTN0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PQCR", 0xa405011a, 16, 2, GROUP(
+-		0, 0, 0, 0,
+-		SIOF0_SS2_SIM_RST, PTQ6_OUT, 0, 0,
+-		SIOF0_SS1_TS_SPSYNC, PTQ5_OUT, 0, PTQ5_IN,
+-		SIOF0_SYNC_TS_SDEN, PTQ4_OUT, 0, PTQ4_IN,
+-		SIOF0_SCK_TS_SCK, PTQ3_OUT, 0, PTQ3_IN,
+-		PTQ2, 0, 0, PTQ2_IN,
+-		PTQ1, PTQ1_OUT, 0, 0,
+-		PTQ0, PTQ0_OUT, 0, PTQ0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PRCR", 0xa405011c, 16,
+-			     GROUP(-6, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [6] */
+-		LCDRD, PTR4_OUT, 0, 0,
+-		CS6B_CE1B_LCDCS2, PTR3_OUT, 0, 0,
+-		WAIT, 0, 0, PTR2_IN,
+-		LCDDCK_LCDWR, PTR1_OUT, 0, 0,
+-		LCDVEPWC_LCDVEPWC2, PTR0_OUT, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PSCR", 0xa405011e, 16,
+-			     GROUP(-6, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [6] */
+-		SCIF0_CTS_SIUAISPD, 0, 0, PTS4_IN,
+-		SCIF0_RTS_SIUAOSPD, PTS3_OUT, 0, 0,
+-		SCIF0_SCK_TPUTO, PTS2_OUT, 0, PTS2_IN,
+-		SCIF0_RXD, 0, 0, PTS1_IN,
+-		SCIF0_TXD, PTS0_OUT, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PTCR", 0xa4050140, 16,
+-			     GROUP(-6, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [6] */
+-		FOE_VIO_VD2, PTT4_OUT, 0, PTT4_IN,
+-		FWE, PTT3_OUT, 0, PTT3_IN,
+-		FSC, PTT2_OUT, 0, PTT2_IN,
+-		DREQ0, 0, 0, PTT1_IN,
+-		FCDE, PTT0_OUT, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PUCR", 0xa4050142, 16,
+-			     GROUP(-6, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [6] */
+-		NAF2_VIO_D10, PTU4_OUT, 0, PTU4_IN,
+-		NAF1_VIO_D9, PTU3_OUT, 0, PTU3_IN,
+-		NAF0_VIO_D8, PTU2_OUT, 0, PTU2_IN,
+-		FRB_VIO_CLK2, 0, 0, PTU1_IN,
+-		FCE_VIO_HD2, PTU0_OUT, 0, PTU0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PVCR", 0xa4050144, 16,
+-			     GROUP(-6, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [6] */
+-		NAF7_VIO_D15, PTV4_OUT, 0, PTV4_IN,
+-		NAF6_VIO_D14, PTV3_OUT, 0, PTV3_IN,
+-		NAF5_VIO_D13, PTV2_OUT, 0, PTV2_IN,
+-		NAF4_VIO_D12, PTV1_OUT, 0, PTV1_IN,
+-		NAF3_VIO_D11, PTV0_OUT, 0, PTV0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PWCR", 0xa4050146, 16, 2, GROUP(
+-		0, 0, 0, 0,
+-		VIO_FLD_SCIF2_CTS, 0, 0, PTW6_IN,
+-		VIO_CKO_SCIF2_RTS, PTW5_OUT, 0, 0,
+-		VIO_STEX_SCIF2_SCK, PTW4_OUT, 0, PTW4_IN,
+-		VIO_STEM_SCIF2_TXD, PTW3_OUT, 0, PTW3_IN,
+-		VIO_HD_SCIF2_RXD, PTW2_OUT, 0, PTW2_IN,
+-		VIO_VD_SCIF1_CTS, PTW1_OUT, 0, PTW1_IN,
+-		VIO_CLK_SCIF1_RTS, PTW0_OUT, 0, PTW0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PXCR", 0xa4050148, 16, 2, GROUP(
+-		0, 0, 0, 0,
+-		CS6A_CE2B, PTX6_OUT, 0, PTX6_IN,
+-		LCDD23, PTX5_OUT, 0, PTX5_IN,
+-		LCDD22, PTX4_OUT, 0, PTX4_IN,
+-		LCDD21, PTX3_OUT, 0, PTX3_IN,
+-		LCDD20, PTX2_OUT, 0, PTX2_IN,
+-		LCDD19_DV_CLKI, PTX1_OUT, 0, PTX1_IN,
+-		LCDD18_DV_CLK, PTX0_OUT, 0, PTX0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PYCR", 0xa405014a, 16,
+-			     GROUP(-4, 2, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [4] */
+-		KEYOUT5_IN5, PTY5_OUT, 0, PTY5_IN,
+-		KEYOUT4_IN6, PTY4_OUT, 0, PTY4_IN,
+-		KEYOUT3, PTY3_OUT, 0, PTY3_IN,
+-		KEYOUT2, PTY2_OUT, 0, PTY2_IN,
+-		KEYOUT1, PTY1_OUT, 0, 0,
+-		KEYOUT0, PTY0_OUT, 0, PTY0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PZCR", 0xa405014c, 16,
+-			     GROUP(-4, 2, 2, 2, 2, 2, -2),
+-			     GROUP(
+-		/* RESERVED [4] */
+-		KEYIN4_IRQ7, 0, 0, PTZ5_IN,
+-		KEYIN3, 0, 0, PTZ4_IN,
+-		KEYIN2, 0, 0, PTZ3_IN,
+-		KEYIN1, 0, 0, PTZ2_IN,
+-		KEYIN0_IRQ6, 0, 0, PTZ1_IN,
+-		/* RESERVED [2] */ ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PSELA", 0xa405014e, 16,
+-			     GROUP(1, 1, -4, 1, -4, 1, -4),
+-			     GROUP(
+-		PSA15_KEYIN0, PSA15_IRQ6,
+-		PSA14_KEYIN4, PSA14_IRQ7,
+-		/* RESERVED [4] */
+-		PSA9_IRQ4, PSA9_BS,
+-		/* RESERVED [4] */
+-		PSA4_IRQ2, PSA4_SDHID2,
+-		/* RESERVED [4] */ ))
+-	},
+-	{ PINMUX_CFG_REG("PSELB", 0xa4050150, 16, 1, GROUP(
+-		PSB15_SIOTXD, PSB15_SIUBOSLD,
+-		PSB14_SIORXD, PSB14_SIUBISLD,
+-		PSB13_SIOD, PSB13_SIUBILR,
+-		PSB12_SIOSTRB0, PSB12_SIUBIBT,
+-		PSB11_SIOSTRB1, PSB11_SIUBOLR,
+-		PSB10_SIOSCK, PSB10_SIUBOBT,
+-		PSB9_SIOMCK, PSB9_SIUMCKB,
+-		PSB8_SIOF0_MCK, PSB8_IRQ3,
+-		PSB7_SIOF0_TXD, PSB7_IRDA_OUT,
+-		PSB6_SIOF0_RXD, PSB6_IRDA_IN,
+-		PSB5_SIOF0_SCK, PSB5_TS_SCK,
+-		PSB4_SIOF0_SYNC, PSB4_TS_SDEN,
+-		PSB3_SIOF0_SS1, PSB3_TS_SPSYNC,
+-		PSB2_SIOF0_SS2, PSB2_SIM_RST,
+-		PSB1_SIUMCKA, PSB1_SIOF1_MCK,
+-		PSB0_SIUAOSLD, PSB0_SIOF1_TXD ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PSELC", 0xa4050152, 16,
+-			     GROUP(1, 1, 1, 1, 1, -10, 1),
+-			     GROUP(
+-		PSC15_SIUAISLD, PSC15_SIOF1_RXD,
+-		PSC14_SIUAOBT, PSC14_SIOF1_SCK,
+-		PSC13_SIUAOLR, PSC13_SIOF1_SYNC,
+-		PSC12_SIUAIBT, PSC12_SIOF1_SS1,
+-		PSC11_SIUAILR, PSC11_SIOF1_SS2,
+-		/* RESERVED [10] */
+-		PSC0_NAF, PSC0_VIO ))
+-	},
+-	{ PINMUX_CFG_REG("PSELD", 0xa4050154, 16, 1, GROUP(
+-		0, 0,
+-		0, 0,
+-		PSD13_VIO, PSD13_SCIF2,
+-		PSD12_VIO, PSD12_SCIF1,
+-		PSD11_VIO, PSD11_SCIF1,
+-		PSD10_VIO_D0, PSD10_LCDLCLK,
+-		PSD9_SIOMCK_SIUMCKB, PSD9_SIUFCKB,
+-		PSD8_SCIF0_SCK, PSD8_TPUTO,
+-		PSD7_SCIF0_RTS, PSD7_SIUAOSPD,
+-		PSD6_SCIF0_CTS, PSD6_SIUAISPD,
+-		PSD5_CS6B_CE1B, PSD5_LCDCS2,
+-		0, 0,
+-		PSD3_LCDVEPWC_LCDVCPWC, PSD3_LCDVEPWC2_LCDVCPWC2,
+-		PSD2_LCDDON, PSD2_LCDDON2,
+-		0, 0,
+-		PSD0_LCDD19_LCDD0, PSD0_DV ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PSELE", 0xa4050156, 16,
+-			     GROUP(1, 1, 1, 1, 1, -7, 1, 1, 1, 1),
+-			     GROUP(
+-		PSE15_SIOF0_MCK_IRQ3, PSE15_SIM_D,
+-		PSE14_SIOF0_TXD_IRDA_OUT, PSE14_SIM_CLK,
+-		PSE13_SIOF0_RXD_IRDA_IN, PSE13_TS_SDAT,
+-		PSE12_LCDVSYN2, PSE12_DACK,
+-		PSE11_SIUMCKA_SIOF1_MCK, PSE11_SIUFCKA,
+-		/* RESERVED [7] */
+-		PSE3_FLCTL, PSE3_VIO,
+-		PSE2_NAF2, PSE2_VIO_D10,
+-		PSE1_NAF1, PSE1_VIO_D9,
+-		PSE0_NAF0, PSE0_VIO_D8 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("HIZCRA", 0xa4050158, 16,
+-			     GROUP(-1, 1, -3, 1, 1, 1, 1, 1, -6),
+-			     GROUP(
+-		/* RESERVED [1] */
+-		HIZA14_KEYSC, HIZA14_HIZ,
+-		/* RESERVED [3] */
+-		HIZA10_NAF, HIZA10_HIZ,
+-		HIZA9_VIO, HIZA9_HIZ,
+-		HIZA8_LCDC, HIZA8_HIZ,
+-		HIZA7_LCDC, HIZA7_HIZ,
+-		HIZA6_LCDC, HIZA6_HIZ,
+-		/* RESERVED [6] */ ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("HIZCRB", 0xa405015a, 16,
+-			     GROUP(-11, 1, -2, 1, 1),
+-			     GROUP(
+-		/* RESERVED [11] */
+-		HIZB4_SIUA, HIZB4_HIZ,
+-		/* RESERVED [2] */
+-		HIZB1_VIO, HIZB1_HIZ,
+-		HIZB0_VIO, HIZB0_HIZ ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("HIZCRC", 0xa405015c, 16,
+-			     GROUP(1, 1, 1, 1, 1, 1, 1, 1, -8),
+-			     GROUP(
+-		HIZC15_IRQ7, HIZC15_HIZ,
+-		HIZC14_IRQ6, HIZC14_HIZ,
+-		HIZC13_IRQ5, HIZC13_HIZ,
+-		HIZC12_IRQ4, HIZC12_HIZ,
+-		HIZC11_IRQ3, HIZC11_HIZ,
+-		HIZC10_IRQ2, HIZC10_HIZ,
+-		HIZC9_IRQ1, HIZC9_HIZ,
+-		HIZC8_IRQ0, HIZC8_HIZ,
+-		/* RESERVED [8] */ ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("MSELCRB", 0xa4050182, 16,
+-			     GROUP(-6, 1, 1, -8),
+-			     GROUP(
+-		/* RESERVED [6] */
+-		MSELB9_VIO, MSELB9_VIO2,
+-		MSELB8_RGB, MSELB8_SYS,
+-		/* RESERVED [8] */ ))
+-	},
+-	{}
+-};
+-
+-static const struct pinmux_data_reg pinmux_data_regs[] = {
+-	{ PINMUX_DATA_REG("PADR", 0xa4050120, 8, GROUP(
+-		PTA7_DATA, PTA6_DATA, PTA5_DATA, PTA4_DATA,
+-		PTA3_DATA, PTA2_DATA, PTA1_DATA, PTA0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PBDR", 0xa4050122, 8, GROUP(
+-		PTB7_DATA, PTB6_DATA, PTB5_DATA, PTB4_DATA,
+-		PTB3_DATA, PTB2_DATA, PTB1_DATA, PTB0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PCDR", 0xa4050124, 8, GROUP(
+-		PTC7_DATA, 0, PTC5_DATA, PTC4_DATA,
+-		PTC3_DATA, PTC2_DATA, 0, PTC0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PDDR", 0xa4050126, 8, GROUP(
+-		PTD7_DATA, PTD6_DATA, PTD5_DATA, PTD4_DATA,
+-		PTD3_DATA, PTD2_DATA, PTD1_DATA, PTD0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PEDR", 0xa4050128, 8, GROUP(
+-		PTE7_DATA, PTE6_DATA, PTE5_DATA, PTE4_DATA,
+-		0, 0, PTE1_DATA, PTE0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PFDR", 0xa405012a, 8, GROUP(
+-		0, PTF6_DATA, PTF5_DATA, PTF4_DATA,
+-		PTF3_DATA, PTF2_DATA, PTF1_DATA, PTF0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PGDR", 0xa405012c, 8, GROUP(
+-		0, 0, 0, PTG4_DATA,
+-		PTG3_DATA, PTG2_DATA, PTG1_DATA, PTG0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PHDR", 0xa405012e, 8, GROUP(
+-		PTH7_DATA, PTH6_DATA, PTH5_DATA, PTH4_DATA,
+-		PTH3_DATA, PTH2_DATA, PTH1_DATA, PTH0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PJDR", 0xa4050130, 8, GROUP(
+-		PTJ7_DATA, PTJ6_DATA, PTJ5_DATA, 0,
+-		0, 0, PTJ1_DATA, PTJ0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PKDR", 0xa4050132, 8, GROUP(
+-		0, PTK6_DATA, PTK5_DATA, PTK4_DATA,
+-		PTK3_DATA, PTK2_DATA, PTK1_DATA, PTK0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PLDR", 0xa4050134, 8, GROUP(
+-		PTL7_DATA, PTL6_DATA, PTL5_DATA, PTL4_DATA,
+-		PTL3_DATA, PTL2_DATA, PTL1_DATA, PTL0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PMDR", 0xa4050136, 8, GROUP(
+-		PTM7_DATA, PTM6_DATA, PTM5_DATA, PTM4_DATA,
+-		PTM3_DATA, PTM2_DATA, PTM1_DATA, PTM0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PNDR", 0xa4050138, 8, GROUP(
+-		PTN7_DATA, PTN6_DATA, PTN5_DATA, PTN4_DATA,
+-		PTN3_DATA, PTN2_DATA, PTN1_DATA, PTN0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PQDR", 0xa405013a, 8, GROUP(
+-		0, PTQ6_DATA, PTQ5_DATA, PTQ4_DATA,
+-		PTQ3_DATA, PTQ2_DATA, PTQ1_DATA, PTQ0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PRDR", 0xa405013c, 8, GROUP(
+-		0, 0, 0, PTR4_DATA,
+-		PTR3_DATA, PTR2_DATA, PTR1_DATA, PTR0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PSDR", 0xa405013e, 8, GROUP(
+-		0, 0, 0, PTS4_DATA,
+-		PTS3_DATA, PTS2_DATA, PTS1_DATA, PTS0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PTDR", 0xa4050160, 8, GROUP(
+-		0, 0, 0, PTT4_DATA,
+-		PTT3_DATA, PTT2_DATA, PTT1_DATA, PTT0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PUDR", 0xa4050162, 8, GROUP(
+-		0, 0, 0, PTU4_DATA,
+-		PTU3_DATA, PTU2_DATA, PTU1_DATA, PTU0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PVDR", 0xa4050164, 8, GROUP(
+-		0, 0, 0, PTV4_DATA,
+-		PTV3_DATA, PTV2_DATA, PTV1_DATA, PTV0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PWDR", 0xa4050166, 8, GROUP(
+-		0, PTW6_DATA, PTW5_DATA, PTW4_DATA,
+-		PTW3_DATA, PTW2_DATA, PTW1_DATA, PTW0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PXDR", 0xa4050168, 8, GROUP(
+-		0, PTX6_DATA, PTX5_DATA, PTX4_DATA,
+-		PTX3_DATA, PTX2_DATA, PTX1_DATA, PTX0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PYDR", 0xa405016a, 8, GROUP(
+-		0, PTY6_DATA, PTY5_DATA, PTY4_DATA,
+-		PTY3_DATA, PTY2_DATA, PTY1_DATA, PTY0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PZDR", 0xa405016c, 8, GROUP(
+-		0, 0, PTZ5_DATA, PTZ4_DATA,
+-		PTZ3_DATA, PTZ2_DATA, PTZ1_DATA, PTZ0_DATA ))
+-	},
+-	{ },
+-};
+-
+-const struct sh_pfc_soc_info sh7722_pinmux_info = {
+-	.name = "sh7722_pfc",
+-	.input = { PINMUX_INPUT_BEGIN, PINMUX_INPUT_END },
+-	.output = { PINMUX_OUTPUT_BEGIN, PINMUX_OUTPUT_END },
+-	.function = { PINMUX_FUNCTION_BEGIN, PINMUX_FUNCTION_END },
+-
+-	.pins = pinmux_pins,
+-	.nr_pins = ARRAY_SIZE(pinmux_pins),
+-	.func_gpios = pinmux_func_gpios,
+-	.nr_func_gpios = ARRAY_SIZE(pinmux_func_gpios),
+-
+-	.cfg_regs = pinmux_config_regs,
+-	.data_regs = pinmux_data_regs,
+-
+-	.pinmux_data = pinmux_data,
+-	.pinmux_data_size = ARRAY_SIZE(pinmux_data),
+-};
+diff --git a/drivers/pinctrl/renesas/pfc-sh7723.c b/drivers/pinctrl/renesas/pfc-sh7723.c
+deleted file mode 100644
+index 95344281966e6e..00000000000000
+--- a/drivers/pinctrl/renesas/pfc-sh7723.c
++++ /dev/null
+@@ -1,1902 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * SH7723 Pinmux
+- *
+- *  Copyright (C) 2008  Magnus Damm
+- */
+-
+-#include <linux/kernel.h>
+-#include <cpu/sh7723.h>
+-
+-#include "sh_pfc.h"
+-
+-enum {
+-	PINMUX_RESERVED = 0,
+-
+-	PINMUX_DATA_BEGIN,
+-	PTA7_DATA, PTA6_DATA, PTA5_DATA, PTA4_DATA,
+-	PTA3_DATA, PTA2_DATA, PTA1_DATA, PTA0_DATA,
+-	PTB7_DATA, PTB6_DATA, PTB5_DATA, PTB4_DATA,
+-	PTB3_DATA, PTB2_DATA, PTB1_DATA, PTB0_DATA,
+-	PTC7_DATA, PTC6_DATA, PTC5_DATA, PTC4_DATA,
+-	PTC3_DATA, PTC2_DATA, PTC1_DATA, PTC0_DATA,
+-	PTD7_DATA, PTD6_DATA, PTD5_DATA, PTD4_DATA,
+-	PTD3_DATA, PTD2_DATA, PTD1_DATA, PTD0_DATA,
+-	PTE5_DATA, PTE4_DATA, PTE3_DATA, PTE2_DATA, PTE1_DATA, PTE0_DATA,
+-	PTF7_DATA, PTF6_DATA, PTF5_DATA, PTF4_DATA,
+-	PTF3_DATA, PTF2_DATA, PTF1_DATA, PTF0_DATA,
+-	PTG5_DATA, PTG4_DATA, PTG3_DATA, PTG2_DATA, PTG1_DATA, PTG0_DATA,
+-	PTH7_DATA, PTH6_DATA, PTH5_DATA, PTH4_DATA,
+-	PTH3_DATA, PTH2_DATA, PTH1_DATA, PTH0_DATA,
+-	PTJ7_DATA, PTJ5_DATA, PTJ3_DATA, PTJ2_DATA, PTJ1_DATA, PTJ0_DATA,
+-	PTK7_DATA, PTK6_DATA, PTK5_DATA, PTK4_DATA,
+-	PTK3_DATA, PTK2_DATA, PTK1_DATA, PTK0_DATA,
+-	PTL7_DATA, PTL6_DATA, PTL5_DATA, PTL4_DATA,
+-	PTL3_DATA, PTL2_DATA, PTL1_DATA, PTL0_DATA,
+-	PTM7_DATA, PTM6_DATA, PTM5_DATA, PTM4_DATA,
+-	PTM3_DATA, PTM2_DATA, PTM1_DATA, PTM0_DATA,
+-	PTN7_DATA, PTN6_DATA, PTN5_DATA, PTN4_DATA,
+-	PTN3_DATA, PTN2_DATA, PTN1_DATA, PTN0_DATA,
+-	PTQ3_DATA, PTQ2_DATA, PTQ1_DATA, PTQ0_DATA,
+-	PTR7_DATA, PTR6_DATA, PTR5_DATA, PTR4_DATA,
+-	PTR3_DATA, PTR2_DATA, PTR1_DATA, PTR0_DATA,
+-	PTS7_DATA, PTS6_DATA, PTS5_DATA, PTS4_DATA,
+-	PTS3_DATA, PTS2_DATA, PTS1_DATA, PTS0_DATA,
+-	PTT5_DATA, PTT4_DATA, PTT3_DATA, PTT2_DATA, PTT1_DATA, PTT0_DATA,
+-	PTU5_DATA, PTU4_DATA, PTU3_DATA, PTU2_DATA, PTU1_DATA, PTU0_DATA,
+-	PTV7_DATA, PTV6_DATA, PTV5_DATA, PTV4_DATA,
+-	PTV3_DATA, PTV2_DATA, PTV1_DATA, PTV0_DATA,
+-	PTW7_DATA, PTW6_DATA, PTW5_DATA, PTW4_DATA,
+-	PTW3_DATA, PTW2_DATA, PTW1_DATA, PTW0_DATA,
+-	PTX7_DATA, PTX6_DATA, PTX5_DATA, PTX4_DATA,
+-	PTX3_DATA, PTX2_DATA, PTX1_DATA, PTX0_DATA,
+-	PTY7_DATA, PTY6_DATA, PTY5_DATA, PTY4_DATA,
+-	PTY3_DATA, PTY2_DATA, PTY1_DATA, PTY0_DATA,
+-	PTZ7_DATA, PTZ6_DATA, PTZ5_DATA, PTZ4_DATA,
+-	PTZ3_DATA, PTZ2_DATA, PTZ1_DATA, PTZ0_DATA,
+-	PINMUX_DATA_END,
+-
+-	PINMUX_INPUT_BEGIN,
+-	PTA7_IN, PTA6_IN, PTA5_IN, PTA4_IN,
+-	PTA3_IN, PTA2_IN, PTA1_IN, PTA0_IN,
+-	PTB7_IN, PTB6_IN, PTB5_IN, PTB4_IN,
+-	PTB3_IN, PTB2_IN, PTB1_IN, PTB0_IN,
+-	PTC7_IN, PTC6_IN, PTC5_IN, PTC4_IN,
+-	PTC3_IN, PTC2_IN, PTC1_IN, PTC0_IN,
+-	PTD7_IN, PTD6_IN, PTD5_IN, PTD4_IN,
+-	PTD3_IN, PTD2_IN, PTD1_IN, PTD0_IN,
+-	PTE5_IN, PTE4_IN, PTE3_IN, PTE2_IN, PTE1_IN, PTE0_IN,
+-	PTF7_IN, PTF6_IN, PTF5_IN, PTF4_IN,
+-	PTF3_IN, PTF2_IN, PTF1_IN, PTF0_IN,
+-	PTH7_IN, PTH6_IN, PTH5_IN, PTH4_IN,
+-	PTH3_IN, PTH2_IN, PTH1_IN, PTH0_IN,
+-	PTJ3_IN, PTJ2_IN, PTJ1_IN, PTJ0_IN,
+-	PTK7_IN, PTK6_IN, PTK5_IN, PTK4_IN,
+-	PTK3_IN, PTK2_IN, PTK1_IN, PTK0_IN,
+-	PTL7_IN, PTL6_IN, PTL5_IN, PTL4_IN,
+-	PTL3_IN, PTL2_IN, PTL1_IN, PTL0_IN,
+-	PTM7_IN, PTM6_IN, PTM5_IN, PTM4_IN,
+-	PTM3_IN, PTM2_IN, PTM1_IN, PTM0_IN,
+-	PTN7_IN, PTN6_IN, PTN5_IN, PTN4_IN,
+-	PTN3_IN, PTN2_IN, PTN1_IN, PTN0_IN,
+-	PTQ3_IN, PTQ2_IN, PTQ1_IN, PTQ0_IN,
+-	PTR7_IN, PTR6_IN, PTR5_IN, PTR4_IN,
+-	PTR3_IN, PTR2_IN, PTR1_IN, PTR0_IN,
+-	PTS7_IN, PTS6_IN, PTS5_IN, PTS4_IN,
+-	PTS3_IN, PTS2_IN, PTS1_IN, PTS0_IN,
+-	PTT5_IN, PTT4_IN, PTT3_IN, PTT2_IN, PTT1_IN, PTT0_IN,
+-	PTU5_IN, PTU4_IN, PTU3_IN, PTU2_IN, PTU1_IN, PTU0_IN,
+-	PTV7_IN, PTV6_IN, PTV5_IN, PTV4_IN,
+-	PTV3_IN, PTV2_IN, PTV1_IN, PTV0_IN,
+-	PTW7_IN, PTW6_IN, PTW5_IN, PTW4_IN,
+-	PTW3_IN, PTW2_IN, PTW1_IN, PTW0_IN,
+-	PTX7_IN, PTX6_IN, PTX5_IN, PTX4_IN,
+-	PTX3_IN, PTX2_IN, PTX1_IN, PTX0_IN,
+-	PTY7_IN, PTY6_IN, PTY5_IN, PTY4_IN,
+-	PTY3_IN, PTY2_IN, PTY1_IN, PTY0_IN,
+-	PTZ7_IN, PTZ6_IN, PTZ5_IN, PTZ4_IN,
+-	PTZ3_IN, PTZ2_IN, PTZ1_IN, PTZ0_IN,
+-	PINMUX_INPUT_END,
+-
+-	PINMUX_OUTPUT_BEGIN,
+-	PTA7_OUT, PTA6_OUT, PTA5_OUT, PTA4_OUT,
+-	PTA3_OUT, PTA2_OUT, PTA1_OUT, PTA0_OUT,
+-	PTB7_OUT, PTB6_OUT, PTB5_OUT, PTB4_OUT,
+-	PTB3_OUT, PTB2_OUT, PTB1_OUT, PTB0_OUT,
+-	PTC7_OUT, PTC6_OUT, PTC5_OUT, PTC4_OUT,
+-	PTC3_OUT, PTC2_OUT, PTC1_OUT, PTC0_OUT,
+-	PTD7_OUT, PTD6_OUT, PTD5_OUT, PTD4_OUT,
+-	PTD3_OUT, PTD2_OUT, PTD1_OUT, PTD0_OUT,
+-	PTE5_OUT, PTE4_OUT, PTE3_OUT, PTE2_OUT, PTE1_OUT, PTE0_OUT,
+-	PTF7_OUT, PTF6_OUT, PTF5_OUT, PTF4_OUT,
+-	PTF3_OUT, PTF2_OUT, PTF1_OUT, PTF0_OUT,
+-	PTG5_OUT, PTG4_OUT, PTG3_OUT, PTG2_OUT, PTG1_OUT, PTG0_OUT,
+-	PTH7_OUT, PTH6_OUT, PTH5_OUT, PTH4_OUT,
+-	PTH3_OUT, PTH2_OUT, PTH1_OUT, PTH0_OUT,
+-	PTJ7_OUT, PTJ5_OUT, PTJ3_OUT, PTJ2_OUT, PTJ1_OUT, PTJ0_OUT,
+-	PTK7_OUT, PTK6_OUT, PTK5_OUT, PTK4_OUT,
+-	PTK3_OUT, PTK2_OUT, PTK1_OUT, PTK0_OUT,
+-	PTL7_OUT, PTL6_OUT, PTL5_OUT, PTL4_OUT,
+-	PTL3_OUT, PTL2_OUT, PTL1_OUT, PTL0_OUT,
+-	PTM7_OUT, PTM6_OUT, PTM5_OUT, PTM4_OUT,
+-	PTM3_OUT, PTM2_OUT, PTM1_OUT, PTM0_OUT,
+-	PTN7_OUT, PTN6_OUT, PTN5_OUT, PTN4_OUT,
+-	PTN3_OUT, PTN2_OUT, PTN1_OUT, PTN0_OUT,
+-	PTR7_OUT, PTR6_OUT, PTR5_OUT, PTR4_OUT,
+-	PTR1_OUT, PTR0_OUT,
+-	PTS7_OUT, PTS6_OUT, PTS5_OUT, PTS4_OUT,
+-	PTS3_OUT, PTS2_OUT, PTS1_OUT, PTS0_OUT,
+-	PTT5_OUT, PTT4_OUT, PTT3_OUT, PTT2_OUT, PTT1_OUT, PTT0_OUT,
+-	PTU5_OUT, PTU4_OUT, PTU3_OUT, PTU2_OUT, PTU1_OUT, PTU0_OUT,
+-	PTV7_OUT, PTV6_OUT, PTV5_OUT, PTV4_OUT,
+-	PTV3_OUT, PTV2_OUT, PTV1_OUT, PTV0_OUT,
+-	PTW7_OUT, PTW6_OUT, PTW5_OUT, PTW4_OUT,
+-	PTW3_OUT, PTW2_OUT, PTW1_OUT, PTW0_OUT,
+-	PTX7_OUT, PTX6_OUT, PTX5_OUT, PTX4_OUT,
+-	PTX3_OUT, PTX2_OUT, PTX1_OUT, PTX0_OUT,
+-	PTY7_OUT, PTY6_OUT, PTY5_OUT, PTY4_OUT,
+-	PTY3_OUT, PTY2_OUT, PTY1_OUT, PTY0_OUT,
+-	PTZ7_OUT, PTZ6_OUT, PTZ5_OUT, PTZ4_OUT,
+-	PTZ3_OUT, PTZ2_OUT, PTZ1_OUT, PTZ0_OUT,
+-	PINMUX_OUTPUT_END,
+-
+-	PINMUX_FUNCTION_BEGIN,
+-	PTA7_FN, PTA6_FN, PTA5_FN, PTA4_FN,
+-	PTA3_FN, PTA2_FN, PTA1_FN, PTA0_FN,
+-	PTB7_FN, PTB6_FN, PTB5_FN, PTB4_FN,
+-	PTB3_FN, PTB2_FN, PTB1_FN, PTB0_FN,
+-	PTC7_FN, PTC6_FN, PTC5_FN, PTC4_FN,
+-	PTC3_FN, PTC2_FN, PTC1_FN, PTC0_FN,
+-	PTD7_FN, PTD6_FN, PTD5_FN, PTD4_FN,
+-	PTD3_FN, PTD2_FN, PTD1_FN, PTD0_FN,
+-	PTE5_FN, PTE4_FN, PTE3_FN, PTE2_FN, PTE1_FN, PTE0_FN,
+-	PTF7_FN, PTF6_FN, PTF5_FN, PTF4_FN,
+-	PTF3_FN, PTF2_FN, PTF1_FN, PTF0_FN,
+-	PTG5_FN, PTG4_FN, PTG3_FN, PTG2_FN, PTG1_FN, PTG0_FN,
+-	PTH7_FN, PTH6_FN, PTH5_FN, PTH4_FN,
+-	PTH3_FN, PTH2_FN, PTH1_FN, PTH0_FN,
+-	PTJ7_FN, PTJ5_FN, PTJ3_FN, PTJ2_FN, PTJ1_FN, PTJ0_FN,
+-	PTK7_FN, PTK6_FN, PTK5_FN, PTK4_FN,
+-	PTK3_FN, PTK2_FN, PTK1_FN, PTK0_FN,
+-	PTL7_FN, PTL6_FN, PTL5_FN, PTL4_FN,
+-	PTL3_FN, PTL2_FN, PTL1_FN, PTL0_FN,
+-	PTM7_FN, PTM6_FN, PTM5_FN, PTM4_FN,
+-	PTM3_FN, PTM2_FN, PTM1_FN, PTM0_FN,
+-	PTN7_FN, PTN6_FN, PTN5_FN, PTN4_FN,
+-	PTN3_FN, PTN2_FN, PTN1_FN, PTN0_FN,
+-	PTQ3_FN, PTQ2_FN, PTQ1_FN, PTQ0_FN,
+-	PTR7_FN, PTR6_FN, PTR5_FN, PTR4_FN,
+-	PTR3_FN, PTR2_FN, PTR1_FN, PTR0_FN,
+-	PTS7_FN, PTS6_FN, PTS5_FN, PTS4_FN,
+-	PTS3_FN, PTS2_FN, PTS1_FN, PTS0_FN,
+-	PTT5_FN, PTT4_FN, PTT3_FN, PTT2_FN, PTT1_FN, PTT0_FN,
+-	PTU5_FN, PTU4_FN, PTU3_FN, PTU2_FN, PTU1_FN, PTU0_FN,
+-	PTV7_FN, PTV6_FN, PTV5_FN, PTV4_FN,
+-	PTV3_FN, PTV2_FN, PTV1_FN, PTV0_FN,
+-	PTW7_FN, PTW6_FN, PTW5_FN, PTW4_FN,
+-	PTW3_FN, PTW2_FN, PTW1_FN, PTW0_FN,
+-	PTX7_FN, PTX6_FN, PTX5_FN, PTX4_FN,
+-	PTX3_FN, PTX2_FN, PTX1_FN, PTX0_FN,
+-	PTY7_FN, PTY6_FN, PTY5_FN, PTY4_FN,
+-	PTY3_FN, PTY2_FN, PTY1_FN, PTY0_FN,
+-	PTZ7_FN, PTZ6_FN, PTZ5_FN, PTZ4_FN,
+-	PTZ3_FN, PTZ2_FN, PTZ1_FN, PTZ0_FN,
+-
+-
+-	PSA15_PSA14_FN1, PSA15_PSA14_FN2,
+-	PSA13_PSA12_FN1, PSA13_PSA12_FN2,
+-	PSA11_PSA10_FN1, PSA11_PSA10_FN2,
+-	PSA5_PSA4_FN1, PSA5_PSA4_FN2, PSA5_PSA4_FN3,
+-	PSA3_PSA2_FN1, PSA3_PSA2_FN2,
+-	PSB15_PSB14_FN1, PSB15_PSB14_FN2,
+-	PSB13_PSB12_LCDC_RGB, PSB13_PSB12_LCDC_SYS,
+-	PSB9_PSB8_FN1, PSB9_PSB8_FN2, PSB9_PSB8_FN3,
+-	PSB7_PSB6_FN1, PSB7_PSB6_FN2,
+-	PSB5_PSB4_FN1, PSB5_PSB4_FN2,
+-	PSB3_PSB2_FN1, PSB3_PSB2_FN2,
+-	PSC15_PSC14_FN1, PSC15_PSC14_FN2,
+-	PSC13_PSC12_FN1, PSC13_PSC12_FN2,
+-	PSC11_PSC10_FN1, PSC11_PSC10_FN2, PSC11_PSC10_FN3,
+-	PSC9_PSC8_FN1, PSC9_PSC8_FN2,
+-	PSC7_PSC6_FN1, PSC7_PSC6_FN2, PSC7_PSC6_FN3,
+-	PSD15_PSD14_FN1, PSD15_PSD14_FN2,
+-	PSD13_PSD12_FN1, PSD13_PSD12_FN2,
+-	PSD11_PSD10_FN1, PSD11_PSD10_FN2, PSD11_PSD10_FN3,
+-	PSD9_PSD8_FN1, PSD9_PSD8_FN2,
+-	PSD7_PSD6_FN1, PSD7_PSD6_FN2,
+-	PSD5_PSD4_FN1, PSD5_PSD4_FN2,
+-	PSD3_PSD2_FN1, PSD3_PSD2_FN2,
+-	PSD1_PSD0_FN1, PSD1_PSD0_FN2,
+-	PINMUX_FUNCTION_END,
+-
+-	PINMUX_MARK_BEGIN,
+-	SCIF0_PTT_TXD_MARK, SCIF0_PTT_RXD_MARK,
+-	SCIF0_PTT_SCK_MARK, SCIF0_PTU_TXD_MARK,
+-	SCIF0_PTU_RXD_MARK, SCIF0_PTU_SCK_MARK,
+-
+-	SCIF1_PTS_TXD_MARK, SCIF1_PTS_RXD_MARK,
+-	SCIF1_PTS_SCK_MARK, SCIF1_PTV_TXD_MARK,
+-	SCIF1_PTV_RXD_MARK, SCIF1_PTV_SCK_MARK,
+-
+-	SCIF2_PTT_TXD_MARK, SCIF2_PTT_RXD_MARK,
+-	SCIF2_PTT_SCK_MARK, SCIF2_PTU_TXD_MARK,
+-	SCIF2_PTU_RXD_MARK, SCIF2_PTU_SCK_MARK,
+-
+-	SCIF3_PTS_TXD_MARK, SCIF3_PTS_RXD_MARK,
+-	SCIF3_PTS_SCK_MARK, SCIF3_PTS_RTS_MARK,
+-	SCIF3_PTS_CTS_MARK, SCIF3_PTV_TXD_MARK,
+-	SCIF3_PTV_RXD_MARK, SCIF3_PTV_SCK_MARK,
+-	SCIF3_PTV_RTS_MARK, SCIF3_PTV_CTS_MARK,
+-
+-	SCIF4_PTE_TXD_MARK, SCIF4_PTE_RXD_MARK,
+-	SCIF4_PTE_SCK_MARK, SCIF4_PTN_TXD_MARK,
+-	SCIF4_PTN_RXD_MARK, SCIF4_PTN_SCK_MARK,
+-
+-	SCIF5_PTE_TXD_MARK, SCIF5_PTE_RXD_MARK,
+-	SCIF5_PTE_SCK_MARK, SCIF5_PTN_TXD_MARK,
+-	SCIF5_PTN_RXD_MARK, SCIF5_PTN_SCK_MARK,
+-
+-	VIO_D15_MARK, VIO_D14_MARK, VIO_D13_MARK, VIO_D12_MARK,
+-	VIO_D11_MARK, VIO_D10_MARK, VIO_D9_MARK, VIO_D8_MARK,
+-	VIO_D7_MARK, VIO_D6_MARK, VIO_D5_MARK, VIO_D4_MARK,
+-	VIO_D3_MARK, VIO_D2_MARK, VIO_D1_MARK, VIO_D0_MARK,
+-	VIO_FLD_MARK, VIO_CKO_MARK,
+-	VIO_VD1_MARK, VIO_HD1_MARK, VIO_CLK1_MARK,
+-	VIO_HD2_MARK, VIO_VD2_MARK, VIO_CLK2_MARK,
+-
+-	LCDD23_MARK, LCDD22_MARK, LCDD21_MARK, LCDD20_MARK,
+-	LCDD19_MARK, LCDD18_MARK, LCDD17_MARK, LCDD16_MARK,
+-	LCDD15_MARK, LCDD14_MARK, LCDD13_MARK, LCDD12_MARK,
+-	LCDD11_MARK, LCDD10_MARK, LCDD9_MARK, LCDD8_MARK,
+-	LCDD7_MARK, LCDD6_MARK, LCDD5_MARK, LCDD4_MARK,
+-	LCDD3_MARK, LCDD2_MARK, LCDD1_MARK, LCDD0_MARK,
+-	LCDDON_MARK, LCDVCPWC_MARK, LCDVEPWC_MARK,
+-	LCDVSYN_MARK, LCDDCK_MARK, LCDHSYN_MARK, LCDDISP_MARK,
+-	LCDRS_MARK, LCDCS_MARK, LCDWR_MARK, LCDRD_MARK,
+-	LCDLCLK_PTR_MARK, LCDLCLK_PTW_MARK,
+-
+-	IRQ0_MARK, IRQ1_MARK, IRQ2_MARK, IRQ3_MARK,
+-	IRQ4_MARK, IRQ5_MARK, IRQ6_MARK, IRQ7_MARK,
+-
+-	AUDATA3_MARK, AUDATA2_MARK, AUDATA1_MARK, AUDATA0_MARK,
+-	AUDCK_MARK, AUDSYNC_MARK,
+-
+-	SDHI0CD_PTD_MARK, SDHI0WP_PTD_MARK,
+-	SDHI0D3_PTD_MARK, SDHI0D2_PTD_MARK,
+-	SDHI0D1_PTD_MARK, SDHI0D0_PTD_MARK,
+-	SDHI0CMD_PTD_MARK, SDHI0CLK_PTD_MARK,
+-
+-	SDHI0CD_PTS_MARK, SDHI0WP_PTS_MARK,
+-	SDHI0D3_PTS_MARK, SDHI0D2_PTS_MARK,
+-	SDHI0D1_PTS_MARK, SDHI0D0_PTS_MARK,
+-	SDHI0CMD_PTS_MARK, SDHI0CLK_PTS_MARK,
+-
+-	SDHI1CD_MARK, SDHI1WP_MARK, SDHI1D3_MARK, SDHI1D2_MARK,
+-	SDHI1D1_MARK, SDHI1D0_MARK, SDHI1CMD_MARK, SDHI1CLK_MARK,
+-
+-	SIUAFCK_MARK, SIUAILR_MARK, SIUAIBT_MARK, SIUAISLD_MARK,
+-	SIUAOLR_MARK, SIUAOBT_MARK, SIUAOSLD_MARK, SIUAMCK_MARK,
+-	SIUAISPD_MARK, SIUAOSPD_MARK,
+-
+-	SIUBFCK_MARK, SIUBILR_MARK, SIUBIBT_MARK, SIUBISLD_MARK,
+-	SIUBOLR_MARK, SIUBOBT_MARK, SIUBOSLD_MARK, SIUBMCK_MARK,
+-
+-	IRDA_IN_MARK, IRDA_OUT_MARK,
+-
+-	DV_CLKI_MARK, DV_CLK_MARK, DV_HSYNC_MARK, DV_VSYNC_MARK,
+-	DV_D15_MARK, DV_D14_MARK, DV_D13_MARK, DV_D12_MARK,
+-	DV_D11_MARK, DV_D10_MARK, DV_D9_MARK, DV_D8_MARK,
+-	DV_D7_MARK, DV_D6_MARK, DV_D5_MARK, DV_D4_MARK,
+-	DV_D3_MARK, DV_D2_MARK, DV_D1_MARK, DV_D0_MARK,
+-
+-	KEYIN0_MARK, KEYIN1_MARK, KEYIN2_MARK, KEYIN3_MARK, KEYIN4_MARK,
+-	KEYOUT0_MARK, KEYOUT1_MARK, KEYOUT2_MARK, KEYOUT3_MARK,
+-	KEYOUT4_IN6_MARK, KEYOUT5_IN5_MARK,
+-
+-	MSIOF0_PTF_TXD_MARK, MSIOF0_PTF_RXD_MARK, MSIOF0_PTF_MCK_MARK,
+-	MSIOF0_PTF_TSYNC_MARK, MSIOF0_PTF_TSCK_MARK, MSIOF0_PTF_RSYNC_MARK,
+-	MSIOF0_PTF_RSCK_MARK, MSIOF0_PTF_SS1_MARK, MSIOF0_PTF_SS2_MARK,
+-
+-	MSIOF0_PTT_TXD_MARK, MSIOF0_PTT_RXD_MARK, MSIOF0_PTX_MCK_MARK,
+-	MSIOF0_PTT_TSYNC_MARK, MSIOF0_PTT_TSCK_MARK, MSIOF0_PTT_RSYNC_MARK,
+-	MSIOF0_PTT_RSCK_MARK, MSIOF0_PTT_SS1_MARK, MSIOF0_PTT_SS2_MARK,
+-
+-	MSIOF1_TXD_MARK, MSIOF1_RXD_MARK, MSIOF1_MCK_MARK,
+-	MSIOF1_TSYNC_MARK, MSIOF1_TSCK_MARK, MSIOF1_RSYNC_MARK,
+-	MSIOF1_RSCK_MARK, MSIOF1_SS1_MARK, MSIOF1_SS2_MARK,
+-
+-	TS0_SDAT_MARK, TS0_SCK_MARK, TS0_SDEN_MARK, TS0_SPSYNC_MARK,
+-
+-	FCE_MARK, NAF7_MARK, NAF6_MARK, NAF5_MARK, NAF4_MARK,
+-	NAF3_MARK, NAF2_MARK, NAF1_MARK, NAF0_MARK, FCDE_MARK,
+-	FOE_MARK, FSC_MARK, FWE_MARK, FRB_MARK,
+-
+-	DACK1_MARK, DREQ1_MARK, DACK0_MARK, DREQ0_MARK,
+-
+-	AN3_MARK, AN2_MARK, AN1_MARK, AN0_MARK, ADTRG_MARK,
+-
+-	STATUS0_MARK, PDSTATUS_MARK,
+-
+-	TPUTO3_MARK, TPUTO2_MARK, TPUTO1_MARK, TPUTO0_MARK,
+-
+-	D31_MARK, D30_MARK, D29_MARK, D28_MARK,
+-	D27_MARK, D26_MARK, D25_MARK, D24_MARK,
+-	D23_MARK, D22_MARK, D21_MARK, D20_MARK,
+-	D19_MARK, D18_MARK, D17_MARK, D16_MARK,
+-	IOIS16_MARK, WAIT_MARK, BS_MARK,
+-	A25_MARK, A24_MARK, A23_MARK, A22_MARK,
+-	CS6B_CE1B_MARK, CS6A_CE2B_MARK,
+-	CS5B_CE1A_MARK, CS5A_CE2A_MARK,
+-	WE3_ICIOWR_MARK, WE2_ICIORD_MARK,
+-
+-	IDED15_MARK, IDED14_MARK, IDED13_MARK, IDED12_MARK,
+-	IDED11_MARK, IDED10_MARK, IDED9_MARK, IDED8_MARK,
+-	IDED7_MARK, IDED6_MARK, IDED5_MARK, IDED4_MARK,
+-	IDED3_MARK, IDED2_MARK, IDED1_MARK, IDED0_MARK,
+-	DIRECTION_MARK, EXBUF_ENB_MARK, IDERST_MARK, IODACK_MARK,
+-	IODREQ_MARK, IDEIORDY_MARK, IDEINT_MARK, IDEIOWR_MARK,
+-	IDEIORD_MARK, IDECS1_MARK, IDECS0_MARK, IDEA2_MARK,
+-	IDEA1_MARK, IDEA0_MARK,
+-	PINMUX_MARK_END,
+-};
+-
+-static const u16 pinmux_data[] = {
+-	/* PTA GPIO */
+-	PINMUX_DATA(PTA7_DATA, PTA7_IN, PTA7_OUT),
+-	PINMUX_DATA(PTA6_DATA, PTA6_IN, PTA6_OUT),
+-	PINMUX_DATA(PTA5_DATA, PTA5_IN, PTA5_OUT),
+-	PINMUX_DATA(PTA4_DATA, PTA4_IN, PTA4_OUT),
+-	PINMUX_DATA(PTA3_DATA, PTA3_IN, PTA3_OUT),
+-	PINMUX_DATA(PTA2_DATA, PTA2_IN, PTA2_OUT),
+-	PINMUX_DATA(PTA1_DATA, PTA1_IN, PTA1_OUT),
+-	PINMUX_DATA(PTA0_DATA, PTA0_IN, PTA0_OUT),
+-
+-	/* PTB GPIO */
+-	PINMUX_DATA(PTB7_DATA, PTB7_IN, PTB7_OUT),
+-	PINMUX_DATA(PTB6_DATA, PTB6_IN, PTB6_OUT),
+-	PINMUX_DATA(PTB5_DATA, PTB5_IN, PTB5_OUT),
+-	PINMUX_DATA(PTB4_DATA, PTB4_IN, PTB4_OUT),
+-	PINMUX_DATA(PTB3_DATA, PTB3_IN, PTB3_OUT),
+-	PINMUX_DATA(PTB2_DATA, PTB2_IN, PTB2_OUT),
+-	PINMUX_DATA(PTB1_DATA, PTB1_IN, PTB1_OUT),
+-	PINMUX_DATA(PTB0_DATA, PTB0_IN, PTB0_OUT),
+-
+-	/* PTC GPIO */
+-	PINMUX_DATA(PTC7_DATA, PTC7_IN, PTC7_OUT),
+-	PINMUX_DATA(PTC6_DATA, PTC6_IN, PTC6_OUT),
+-	PINMUX_DATA(PTC5_DATA, PTC5_IN, PTC5_OUT),
+-	PINMUX_DATA(PTC4_DATA, PTC4_IN, PTC4_OUT),
+-	PINMUX_DATA(PTC3_DATA, PTC3_IN, PTC3_OUT),
+-	PINMUX_DATA(PTC2_DATA, PTC2_IN, PTC2_OUT),
+-	PINMUX_DATA(PTC1_DATA, PTC1_IN, PTC1_OUT),
+-	PINMUX_DATA(PTC0_DATA, PTC0_IN, PTC0_OUT),
+-
+-	/* PTD GPIO */
+-	PINMUX_DATA(PTD7_DATA, PTD7_IN, PTD7_OUT),
+-	PINMUX_DATA(PTD6_DATA, PTD6_IN, PTD6_OUT),
+-	PINMUX_DATA(PTD5_DATA, PTD5_IN, PTD5_OUT),
+-	PINMUX_DATA(PTD4_DATA, PTD4_IN, PTD4_OUT),
+-	PINMUX_DATA(PTD3_DATA, PTD3_IN, PTD3_OUT),
+-	PINMUX_DATA(PTD2_DATA, PTD2_IN, PTD2_OUT),
+-	PINMUX_DATA(PTD1_DATA, PTD1_IN, PTD1_OUT),
+-	PINMUX_DATA(PTD0_DATA, PTD0_IN, PTD0_OUT),
+-
+-	/* PTE GPIO */
+-	PINMUX_DATA(PTE5_DATA, PTE5_IN, PTE5_OUT),
+-	PINMUX_DATA(PTE4_DATA, PTE4_IN, PTE4_OUT),
+-	PINMUX_DATA(PTE3_DATA, PTE3_IN, PTE3_OUT),
+-	PINMUX_DATA(PTE2_DATA, PTE2_IN, PTE2_OUT),
+-	PINMUX_DATA(PTE1_DATA, PTE1_IN, PTE1_OUT),
+-	PINMUX_DATA(PTE0_DATA, PTE0_IN, PTE0_OUT),
+-
+-	/* PTF GPIO */
+-	PINMUX_DATA(PTF7_DATA, PTF7_IN, PTF7_OUT),
+-	PINMUX_DATA(PTF6_DATA, PTF6_IN, PTF6_OUT),
+-	PINMUX_DATA(PTF5_DATA, PTF5_IN, PTF5_OUT),
+-	PINMUX_DATA(PTF4_DATA, PTF4_IN, PTF4_OUT),
+-	PINMUX_DATA(PTF3_DATA, PTF3_IN, PTF3_OUT),
+-	PINMUX_DATA(PTF2_DATA, PTF2_IN, PTF2_OUT),
+-	PINMUX_DATA(PTF1_DATA, PTF1_IN, PTF1_OUT),
+-	PINMUX_DATA(PTF0_DATA, PTF0_IN, PTF0_OUT),
+-
+-	/* PTG GPIO */
+-	PINMUX_DATA(PTG5_DATA, PTG5_OUT),
+-	PINMUX_DATA(PTG4_DATA, PTG4_OUT),
+-	PINMUX_DATA(PTG3_DATA, PTG3_OUT),
+-	PINMUX_DATA(PTG2_DATA, PTG2_OUT),
+-	PINMUX_DATA(PTG1_DATA, PTG1_OUT),
+-	PINMUX_DATA(PTG0_DATA, PTG0_OUT),
+-
+-	/* PTH GPIO */
+-	PINMUX_DATA(PTH7_DATA, PTH7_IN, PTH7_OUT),
+-	PINMUX_DATA(PTH6_DATA, PTH6_IN, PTH6_OUT),
+-	PINMUX_DATA(PTH5_DATA, PTH5_IN, PTH5_OUT),
+-	PINMUX_DATA(PTH4_DATA, PTH4_IN, PTH4_OUT),
+-	PINMUX_DATA(PTH3_DATA, PTH3_IN, PTH3_OUT),
+-	PINMUX_DATA(PTH2_DATA, PTH2_IN, PTH2_OUT),
+-	PINMUX_DATA(PTH1_DATA, PTH1_IN, PTH1_OUT),
+-	PINMUX_DATA(PTH0_DATA, PTH0_IN, PTH0_OUT),
+-
+-	/* PTJ GPIO */
+-	PINMUX_DATA(PTJ7_DATA, PTJ7_OUT),
+-	PINMUX_DATA(PTJ5_DATA, PTJ5_OUT),
+-	PINMUX_DATA(PTJ3_DATA, PTJ3_IN, PTJ3_OUT),
+-	PINMUX_DATA(PTJ2_DATA, PTJ2_IN, PTJ2_OUT),
+-	PINMUX_DATA(PTJ1_DATA, PTJ1_IN, PTJ1_OUT),
+-	PINMUX_DATA(PTJ0_DATA, PTJ0_IN, PTJ0_OUT),
+-
+-	/* PTK GPIO */
+-	PINMUX_DATA(PTK7_DATA, PTK7_IN, PTK7_OUT),
+-	PINMUX_DATA(PTK6_DATA, PTK6_IN, PTK6_OUT),
+-	PINMUX_DATA(PTK5_DATA, PTK5_IN, PTK5_OUT),
+-	PINMUX_DATA(PTK4_DATA, PTK4_IN, PTK4_OUT),
+-	PINMUX_DATA(PTK3_DATA, PTK3_IN, PTK3_OUT),
+-	PINMUX_DATA(PTK2_DATA, PTK2_IN, PTK2_OUT),
+-	PINMUX_DATA(PTK1_DATA, PTK1_IN, PTK1_OUT),
+-	PINMUX_DATA(PTK0_DATA, PTK0_IN, PTK0_OUT),
+-
+-	/* PTL GPIO */
+-	PINMUX_DATA(PTL7_DATA, PTL7_IN, PTL7_OUT),
+-	PINMUX_DATA(PTL6_DATA, PTL6_IN, PTL6_OUT),
+-	PINMUX_DATA(PTL5_DATA, PTL5_IN, PTL5_OUT),
+-	PINMUX_DATA(PTL4_DATA, PTL4_IN, PTL4_OUT),
+-	PINMUX_DATA(PTL3_DATA, PTL3_IN, PTL3_OUT),
+-	PINMUX_DATA(PTL2_DATA, PTL2_IN, PTL2_OUT),
+-	PINMUX_DATA(PTL1_DATA, PTL1_IN, PTL1_OUT),
+-	PINMUX_DATA(PTL0_DATA, PTL0_IN, PTL0_OUT),
+-
+-	/* PTM GPIO */
+-	PINMUX_DATA(PTM7_DATA, PTM7_IN, PTM7_OUT),
+-	PINMUX_DATA(PTM6_DATA, PTM6_IN, PTM6_OUT),
+-	PINMUX_DATA(PTM5_DATA, PTM5_IN, PTM5_OUT),
+-	PINMUX_DATA(PTM4_DATA, PTM4_IN, PTM4_OUT),
+-	PINMUX_DATA(PTM3_DATA, PTM3_IN, PTM3_OUT),
+-	PINMUX_DATA(PTM2_DATA, PTM2_IN, PTM2_OUT),
+-	PINMUX_DATA(PTM1_DATA, PTM1_IN, PTM1_OUT),
+-	PINMUX_DATA(PTM0_DATA, PTM0_IN, PTM0_OUT),
+-
+-	/* PTN GPIO */
+-	PINMUX_DATA(PTN7_DATA, PTN7_IN, PTN7_OUT),
+-	PINMUX_DATA(PTN6_DATA, PTN6_IN, PTN6_OUT),
+-	PINMUX_DATA(PTN5_DATA, PTN5_IN, PTN5_OUT),
+-	PINMUX_DATA(PTN4_DATA, PTN4_IN, PTN4_OUT),
+-	PINMUX_DATA(PTN3_DATA, PTN3_IN, PTN3_OUT),
+-	PINMUX_DATA(PTN2_DATA, PTN2_IN, PTN2_OUT),
+-	PINMUX_DATA(PTN1_DATA, PTN1_IN, PTN1_OUT),
+-	PINMUX_DATA(PTN0_DATA, PTN0_IN, PTN0_OUT),
+-
+-	/* PTQ GPIO */
+-	PINMUX_DATA(PTQ3_DATA, PTQ3_IN),
+-	PINMUX_DATA(PTQ2_DATA, PTQ2_IN),
+-	PINMUX_DATA(PTQ1_DATA, PTQ1_IN),
+-	PINMUX_DATA(PTQ0_DATA, PTQ0_IN),
+-
+-	/* PTR GPIO */
+-	PINMUX_DATA(PTR7_DATA, PTR7_IN, PTR7_OUT),
+-	PINMUX_DATA(PTR6_DATA, PTR6_IN, PTR6_OUT),
+-	PINMUX_DATA(PTR5_DATA, PTR5_IN, PTR5_OUT),
+-	PINMUX_DATA(PTR4_DATA, PTR4_IN, PTR4_OUT),
+-	PINMUX_DATA(PTR3_DATA, PTR3_IN),
+-	PINMUX_DATA(PTR2_DATA, PTR2_IN),
+-	PINMUX_DATA(PTR1_DATA, PTR1_IN, PTR1_OUT),
+-	PINMUX_DATA(PTR0_DATA, PTR0_IN, PTR0_OUT),
+-
+-	/* PTS GPIO */
+-	PINMUX_DATA(PTS7_DATA, PTS7_IN, PTS7_OUT),
+-	PINMUX_DATA(PTS6_DATA, PTS6_IN, PTS6_OUT),
+-	PINMUX_DATA(PTS5_DATA, PTS5_IN, PTS5_OUT),
+-	PINMUX_DATA(PTS4_DATA, PTS4_IN, PTS4_OUT),
+-	PINMUX_DATA(PTS3_DATA, PTS3_IN, PTS3_OUT),
+-	PINMUX_DATA(PTS2_DATA, PTS2_IN, PTS2_OUT),
+-	PINMUX_DATA(PTS1_DATA, PTS1_IN, PTS1_OUT),
+-	PINMUX_DATA(PTS0_DATA, PTS0_IN, PTS0_OUT),
+-
+-	/* PTT GPIO */
+-	PINMUX_DATA(PTT5_DATA, PTT5_IN, PTT5_OUT),
+-	PINMUX_DATA(PTT4_DATA, PTT4_IN, PTT4_OUT),
+-	PINMUX_DATA(PTT3_DATA, PTT3_IN, PTT3_OUT),
+-	PINMUX_DATA(PTT2_DATA, PTT2_IN, PTT2_OUT),
+-	PINMUX_DATA(PTT1_DATA, PTT1_IN, PTT1_OUT),
+-	PINMUX_DATA(PTT0_DATA, PTT0_IN, PTT0_OUT),
+-
+-	/* PTU GPIO */
+-	PINMUX_DATA(PTU5_DATA, PTU5_IN, PTU5_OUT),
+-	PINMUX_DATA(PTU4_DATA, PTU4_IN, PTU4_OUT),
+-	PINMUX_DATA(PTU3_DATA, PTU3_IN, PTU3_OUT),
+-	PINMUX_DATA(PTU2_DATA, PTU2_IN, PTU2_OUT),
+-	PINMUX_DATA(PTU1_DATA, PTU1_IN, PTU1_OUT),
+-	PINMUX_DATA(PTU0_DATA, PTU0_IN, PTU0_OUT),
+-
+-	/* PTV GPIO */
+-	PINMUX_DATA(PTV7_DATA, PTV7_IN, PTV7_OUT),
+-	PINMUX_DATA(PTV6_DATA, PTV6_IN, PTV6_OUT),
+-	PINMUX_DATA(PTV5_DATA, PTV5_IN, PTV5_OUT),
+-	PINMUX_DATA(PTV4_DATA, PTV4_IN, PTV4_OUT),
+-	PINMUX_DATA(PTV3_DATA, PTV3_IN, PTV3_OUT),
+-	PINMUX_DATA(PTV2_DATA, PTV2_IN, PTV2_OUT),
+-	PINMUX_DATA(PTV1_DATA, PTV1_IN, PTV1_OUT),
+-	PINMUX_DATA(PTV0_DATA, PTV0_IN, PTV0_OUT),
+-
+-	/* PTW GPIO */
+-	PINMUX_DATA(PTW7_DATA, PTW7_IN, PTW7_OUT),
+-	PINMUX_DATA(PTW6_DATA, PTW6_IN, PTW6_OUT),
+-	PINMUX_DATA(PTW5_DATA, PTW5_IN, PTW5_OUT),
+-	PINMUX_DATA(PTW4_DATA, PTW4_IN, PTW4_OUT),
+-	PINMUX_DATA(PTW3_DATA, PTW3_IN, PTW3_OUT),
+-	PINMUX_DATA(PTW2_DATA, PTW2_IN, PTW2_OUT),
+-	PINMUX_DATA(PTW1_DATA, PTW1_IN, PTW1_OUT),
+-	PINMUX_DATA(PTW0_DATA, PTW0_IN, PTW0_OUT),
+-
+-	/* PTX GPIO */
+-	PINMUX_DATA(PTX7_DATA, PTX7_IN, PTX7_OUT),
+-	PINMUX_DATA(PTX6_DATA, PTX6_IN, PTX6_OUT),
+-	PINMUX_DATA(PTX5_DATA, PTX5_IN, PTX5_OUT),
+-	PINMUX_DATA(PTX4_DATA, PTX4_IN, PTX4_OUT),
+-	PINMUX_DATA(PTX3_DATA, PTX3_IN, PTX3_OUT),
+-	PINMUX_DATA(PTX2_DATA, PTX2_IN, PTX2_OUT),
+-	PINMUX_DATA(PTX1_DATA, PTX1_IN, PTX1_OUT),
+-	PINMUX_DATA(PTX0_DATA, PTX0_IN, PTX0_OUT),
+-
+-	/* PTY GPIO */
+-	PINMUX_DATA(PTY7_DATA, PTY7_IN, PTY7_OUT),
+-	PINMUX_DATA(PTY6_DATA, PTY6_IN, PTY6_OUT),
+-	PINMUX_DATA(PTY5_DATA, PTY5_IN, PTY5_OUT),
+-	PINMUX_DATA(PTY4_DATA, PTY4_IN, PTY4_OUT),
+-	PINMUX_DATA(PTY3_DATA, PTY3_IN, PTY3_OUT),
+-	PINMUX_DATA(PTY2_DATA, PTY2_IN, PTY2_OUT),
+-	PINMUX_DATA(PTY1_DATA, PTY1_IN, PTY1_OUT),
+-	PINMUX_DATA(PTY0_DATA, PTY0_IN, PTY0_OUT),
+-
+-	/* PTZ GPIO */
+-	PINMUX_DATA(PTZ7_DATA, PTZ7_IN, PTZ7_OUT),
+-	PINMUX_DATA(PTZ6_DATA, PTZ6_IN, PTZ6_OUT),
+-	PINMUX_DATA(PTZ5_DATA, PTZ5_IN, PTZ5_OUT),
+-	PINMUX_DATA(PTZ4_DATA, PTZ4_IN, PTZ4_OUT),
+-	PINMUX_DATA(PTZ3_DATA, PTZ3_IN, PTZ3_OUT),
+-	PINMUX_DATA(PTZ2_DATA, PTZ2_IN, PTZ2_OUT),
+-	PINMUX_DATA(PTZ1_DATA, PTZ1_IN, PTZ1_OUT),
+-	PINMUX_DATA(PTZ0_DATA, PTZ0_IN, PTZ0_OUT),
+-
+-	/* PTA FN */
+-	PINMUX_DATA(D23_MARK, PSA15_PSA14_FN1, PTA7_FN),
+-	PINMUX_DATA(KEYOUT2_MARK, PSA15_PSA14_FN2, PTA7_FN),
+-	PINMUX_DATA(D22_MARK, PSA15_PSA14_FN1, PTA6_FN),
+-	PINMUX_DATA(KEYOUT1_MARK, PSA15_PSA14_FN2, PTA6_FN),
+-	PINMUX_DATA(D21_MARK, PSA15_PSA14_FN1, PTA5_FN),
+-	PINMUX_DATA(KEYOUT0_MARK, PSA15_PSA14_FN2, PTA5_FN),
+-	PINMUX_DATA(D20_MARK, PSA15_PSA14_FN1, PTA4_FN),
+-	PINMUX_DATA(KEYIN4_MARK, PSA15_PSA14_FN2, PTA4_FN),
+-	PINMUX_DATA(D19_MARK, PSA15_PSA14_FN1, PTA3_FN),
+-	PINMUX_DATA(KEYIN3_MARK, PSA15_PSA14_FN2, PTA3_FN),
+-	PINMUX_DATA(D18_MARK, PSA15_PSA14_FN1, PTA2_FN),
+-	PINMUX_DATA(KEYIN2_MARK, PSA15_PSA14_FN2, PTA2_FN),
+-	PINMUX_DATA(D17_MARK, PSA15_PSA14_FN1, PTA1_FN),
+-	PINMUX_DATA(KEYIN1_MARK, PSA15_PSA14_FN2, PTA1_FN),
+-	PINMUX_DATA(D16_MARK, PSA15_PSA14_FN1, PTA0_FN),
+-	PINMUX_DATA(KEYIN0_MARK, PSA15_PSA14_FN2, PTA0_FN),
+-
+-	/* PTB FN */
+-	PINMUX_DATA(D31_MARK, PTB7_FN),
+-	PINMUX_DATA(D30_MARK, PTB6_FN),
+-	PINMUX_DATA(D29_MARK, PTB5_FN),
+-	PINMUX_DATA(D28_MARK, PTB4_FN),
+-	PINMUX_DATA(D27_MARK, PTB3_FN),
+-	PINMUX_DATA(D26_MARK, PSA15_PSA14_FN1, PTB2_FN),
+-	PINMUX_DATA(KEYOUT5_IN5_MARK, PSA15_PSA14_FN2, PTB2_FN),
+-	PINMUX_DATA(D25_MARK, PSA15_PSA14_FN1, PTB1_FN),
+-	PINMUX_DATA(KEYOUT4_IN6_MARK, PSA15_PSA14_FN2, PTB1_FN),
+-	PINMUX_DATA(D24_MARK, PSA15_PSA14_FN1, PTB0_FN),
+-	PINMUX_DATA(KEYOUT3_MARK, PSA15_PSA14_FN2, PTB0_FN),
+-
+-	/* PTC FN */
+-	PINMUX_DATA(IDED15_MARK, PSA11_PSA10_FN1, PTC7_FN),
+-	PINMUX_DATA(SDHI1CD_MARK, PSA11_PSA10_FN2, PTC7_FN),
+-	PINMUX_DATA(IDED14_MARK, PSA11_PSA10_FN1, PTC6_FN),
+-	PINMUX_DATA(SDHI1WP_MARK, PSA11_PSA10_FN2, PTC6_FN),
+-	PINMUX_DATA(IDED13_MARK, PSA11_PSA10_FN1, PTC5_FN),
+-	PINMUX_DATA(SDHI1D3_MARK, PSA11_PSA10_FN2, PTC5_FN),
+-	PINMUX_DATA(IDED12_MARK, PSA11_PSA10_FN1, PTC4_FN),
+-	PINMUX_DATA(SDHI1D2_MARK, PSA11_PSA10_FN2, PTC4_FN),
+-	PINMUX_DATA(IDED11_MARK, PSA11_PSA10_FN1, PTC3_FN),
+-	PINMUX_DATA(SDHI1D1_MARK, PSA11_PSA10_FN2, PTC3_FN),
+-	PINMUX_DATA(IDED10_MARK, PSA11_PSA10_FN1, PTC2_FN),
+-	PINMUX_DATA(SDHI1D0_MARK, PSA11_PSA10_FN2, PTC2_FN),
+-	PINMUX_DATA(IDED9_MARK, PSA11_PSA10_FN1, PTC1_FN),
+-	PINMUX_DATA(SDHI1CMD_MARK, PSA11_PSA10_FN2, PTC1_FN),
+-	PINMUX_DATA(IDED8_MARK, PSA11_PSA10_FN1, PTC0_FN),
+-	PINMUX_DATA(SDHI1CLK_MARK, PSA11_PSA10_FN2, PTC0_FN),
+-
+-	/* PTD FN */
+-	PINMUX_DATA(IDED7_MARK, PSA11_PSA10_FN1, PTD7_FN),
+-	PINMUX_DATA(SDHI0CD_PTD_MARK, PSA11_PSA10_FN2, PTD7_FN),
+-	PINMUX_DATA(IDED6_MARK, PSA11_PSA10_FN1, PTD6_FN),
+-	PINMUX_DATA(SDHI0WP_PTD_MARK, PSA11_PSA10_FN2, PTD6_FN),
+-	PINMUX_DATA(IDED5_MARK, PSA11_PSA10_FN1, PTD5_FN),
+-	PINMUX_DATA(SDHI0D3_PTD_MARK, PSA11_PSA10_FN2, PTD5_FN),
+-	PINMUX_DATA(IDED4_MARK, PSA11_PSA10_FN1, PTD4_FN),
+-	PINMUX_DATA(SDHI0D2_PTD_MARK, PSA11_PSA10_FN2, PTD4_FN),
+-	PINMUX_DATA(IDED3_MARK, PSA11_PSA10_FN1, PTD3_FN),
+-	PINMUX_DATA(SDHI0D1_PTD_MARK, PSA11_PSA10_FN2, PTD3_FN),
+-	PINMUX_DATA(IDED2_MARK, PSA11_PSA10_FN1, PTD2_FN),
+-	PINMUX_DATA(SDHI0D0_PTD_MARK, PSA11_PSA10_FN2, PTD2_FN),
+-	PINMUX_DATA(IDED1_MARK, PSA11_PSA10_FN1, PTD1_FN),
+-	PINMUX_DATA(SDHI0CMD_PTD_MARK, PSA11_PSA10_FN2, PTD1_FN),
+-	PINMUX_DATA(IDED0_MARK, PSA11_PSA10_FN1, PTD0_FN),
+-	PINMUX_DATA(SDHI0CLK_PTD_MARK, PSA11_PSA10_FN2, PTD0_FN),
+-
+-	/* PTE FN */
+-	PINMUX_DATA(DIRECTION_MARK, PSA11_PSA10_FN1, PTE5_FN),
+-	PINMUX_DATA(SCIF5_PTE_SCK_MARK, PSA11_PSA10_FN2, PTE5_FN),
+-	PINMUX_DATA(EXBUF_ENB_MARK, PSA11_PSA10_FN1, PTE4_FN),
+-	PINMUX_DATA(SCIF5_PTE_RXD_MARK, PSA11_PSA10_FN2, PTE4_FN),
+-	PINMUX_DATA(IDERST_MARK, PSA11_PSA10_FN1, PTE3_FN),
+-	PINMUX_DATA(SCIF5_PTE_TXD_MARK, PSA11_PSA10_FN2, PTE3_FN),
+-	PINMUX_DATA(IODACK_MARK, PSA11_PSA10_FN1, PTE2_FN),
+-	PINMUX_DATA(SCIF4_PTE_SCK_MARK, PSA11_PSA10_FN2, PTE2_FN),
+-	PINMUX_DATA(IODREQ_MARK, PSA11_PSA10_FN1, PTE1_FN),
+-	PINMUX_DATA(SCIF4_PTE_RXD_MARK, PSA11_PSA10_FN2, PTE1_FN),
+-	PINMUX_DATA(IDEIORDY_MARK, PSA11_PSA10_FN1, PTE0_FN),
+-	PINMUX_DATA(SCIF4_PTE_TXD_MARK, PSA11_PSA10_FN2, PTE0_FN),
+-
+-	/* PTF FN */
+-	PINMUX_DATA(IDEINT_MARK, PTF7_FN),
+-	PINMUX_DATA(IDEIOWR_MARK, PSA5_PSA4_FN1, PTF6_FN),
+-	PINMUX_DATA(MSIOF0_PTF_SS2_MARK, PSA5_PSA4_FN2, PTF6_FN),
+-	PINMUX_DATA(MSIOF0_PTF_RSYNC_MARK, PSA5_PSA4_FN3, PTF6_FN),
+-	PINMUX_DATA(IDEIORD_MARK, PSA5_PSA4_FN1, PTF5_FN),
+-	PINMUX_DATA(MSIOF0_PTF_SS1_MARK, PSA5_PSA4_FN2, PTF5_FN),
+-	PINMUX_DATA(MSIOF0_PTF_RSCK_MARK, PSA5_PSA4_FN3, PTF5_FN),
+-	PINMUX_DATA(IDECS1_MARK, PSA11_PSA10_FN1, PTF4_FN),
+-	PINMUX_DATA(MSIOF0_PTF_TSYNC_MARK, PSA11_PSA10_FN2, PTF4_FN),
+-	PINMUX_DATA(IDECS0_MARK, PSA11_PSA10_FN1, PTF3_FN),
+-	PINMUX_DATA(MSIOF0_PTF_TSCK_MARK, PSA11_PSA10_FN2, PTF3_FN),
+-	PINMUX_DATA(IDEA2_MARK, PSA11_PSA10_FN1, PTF2_FN),
+-	PINMUX_DATA(MSIOF0_PTF_RXD_MARK, PSA11_PSA10_FN2, PTF2_FN),
+-	PINMUX_DATA(IDEA1_MARK, PSA11_PSA10_FN1, PTF1_FN),
+-	PINMUX_DATA(MSIOF0_PTF_TXD_MARK, PSA11_PSA10_FN2, PTF1_FN),
+-	PINMUX_DATA(IDEA0_MARK, PSA11_PSA10_FN1, PTF0_FN),
+-	PINMUX_DATA(MSIOF0_PTF_MCK_MARK, PSA11_PSA10_FN2, PTF0_FN),
+-
+-	/* PTG FN */
+-	PINMUX_DATA(AUDCK_MARK, PTG5_FN),
+-	PINMUX_DATA(AUDSYNC_MARK, PTG4_FN),
+-	PINMUX_DATA(AUDATA3_MARK, PSA3_PSA2_FN1, PTG3_FN),
+-	PINMUX_DATA(TPUTO3_MARK, PSA3_PSA2_FN2, PTG3_FN),
+-	PINMUX_DATA(AUDATA2_MARK, PSA3_PSA2_FN1, PTG2_FN),
+-	PINMUX_DATA(TPUTO2_MARK, PSA3_PSA2_FN2, PTG2_FN),
+-	PINMUX_DATA(AUDATA1_MARK, PSA3_PSA2_FN1, PTG1_FN),
+-	PINMUX_DATA(TPUTO1_MARK, PSA3_PSA2_FN2, PTG1_FN),
+-	PINMUX_DATA(AUDATA0_MARK, PSA3_PSA2_FN1, PTG0_FN),
+-	PINMUX_DATA(TPUTO0_MARK, PSA3_PSA2_FN2, PTG0_FN),
+-
+-	/* PTG FN */
+-	PINMUX_DATA(LCDVCPWC_MARK, PTH7_FN),
+-	PINMUX_DATA(LCDRD_MARK, PSB15_PSB14_FN1, PTH6_FN),
+-	PINMUX_DATA(DV_CLKI_MARK, PSB15_PSB14_FN2, PTH6_FN),
+-	PINMUX_DATA(LCDVSYN_MARK, PSB15_PSB14_FN1, PTH5_FN),
+-	PINMUX_DATA(DV_CLK_MARK, PSB15_PSB14_FN2, PTH5_FN),
+-	PINMUX_DATA(LCDDISP_MARK, PSB13_PSB12_LCDC_RGB, PTH4_FN),
+-	PINMUX_DATA(LCDRS_MARK, PSB13_PSB12_LCDC_SYS, PTH4_FN),
+-	PINMUX_DATA(LCDHSYN_MARK, PSB13_PSB12_LCDC_RGB, PTH3_FN),
+-	PINMUX_DATA(LCDCS_MARK, PSB13_PSB12_LCDC_SYS, PTH3_FN),
+-	PINMUX_DATA(LCDDON_MARK, PTH2_FN),
+-	PINMUX_DATA(LCDDCK_MARK, PSB13_PSB12_LCDC_RGB, PTH1_FN),
+-	PINMUX_DATA(LCDWR_MARK, PSB13_PSB12_LCDC_SYS, PTH1_FN),
+-	PINMUX_DATA(LCDVEPWC_MARK, PTH0_FN),
+-
+-	/* PTJ FN */
+-	PINMUX_DATA(STATUS0_MARK, PTJ7_FN),
+-	PINMUX_DATA(PDSTATUS_MARK, PTJ5_FN),
+-	PINMUX_DATA(A25_MARK, PTJ3_FN),
+-	PINMUX_DATA(A24_MARK, PTJ2_FN),
+-	PINMUX_DATA(A23_MARK, PTJ1_FN),
+-	PINMUX_DATA(A22_MARK, PTJ0_FN),
+-
+-	/* PTK FN */
+-	PINMUX_DATA(SIUAFCK_MARK, PTK7_FN),
+-	PINMUX_DATA(SIUAILR_MARK, PSB9_PSB8_FN1, PTK6_FN),
+-	PINMUX_DATA(MSIOF1_SS2_MARK, PSB9_PSB8_FN2, PTK6_FN),
+-	PINMUX_DATA(MSIOF1_RSYNC_MARK, PSB9_PSB8_FN3, PTK6_FN),
+-	PINMUX_DATA(SIUAIBT_MARK, PSB9_PSB8_FN1, PTK5_FN),
+-	PINMUX_DATA(MSIOF1_SS1_MARK, PSB9_PSB8_FN2, PTK5_FN),
+-	PINMUX_DATA(MSIOF1_RSCK_MARK, PSB9_PSB8_FN3, PTK5_FN),
+-	PINMUX_DATA(SIUAISLD_MARK, PSB7_PSB6_FN1, PTK4_FN),
+-	PINMUX_DATA(MSIOF1_RXD_MARK, PSB7_PSB6_FN2, PTK4_FN),
+-	PINMUX_DATA(SIUAOLR_MARK, PSB7_PSB6_FN1, PTK3_FN),
+-	PINMUX_DATA(MSIOF1_TSYNC_MARK, PSB7_PSB6_FN2, PTK3_FN),
+-	PINMUX_DATA(SIUAOBT_MARK, PSB7_PSB6_FN1, PTK2_FN),
+-	PINMUX_DATA(MSIOF1_TSCK_MARK, PSB7_PSB6_FN2, PTK2_FN),
+-	PINMUX_DATA(SIUAOSLD_MARK, PSB7_PSB6_FN1, PTK1_FN),
+-	PINMUX_DATA(MSIOF1_RXD_MARK, PSB7_PSB6_FN2, PTK1_FN),
+-	PINMUX_DATA(SIUAMCK_MARK, PSB7_PSB6_FN1, PTK0_FN),
+-	PINMUX_DATA(MSIOF1_MCK_MARK, PSB7_PSB6_FN2, PTK0_FN),
+-
+-	/* PTL FN */
+-	PINMUX_DATA(LCDD15_MARK, PSB5_PSB4_FN1, PTL7_FN),
+-	PINMUX_DATA(DV_D15_MARK, PSB5_PSB4_FN2, PTL7_FN),
+-	PINMUX_DATA(LCDD14_MARK, PSB5_PSB4_FN1, PTL6_FN),
+-	PINMUX_DATA(DV_D14_MARK, PSB5_PSB4_FN2, PTL6_FN),
+-	PINMUX_DATA(LCDD13_MARK, PSB5_PSB4_FN1, PTL5_FN),
+-	PINMUX_DATA(DV_D13_MARK, PSB5_PSB4_FN2, PTL5_FN),
+-	PINMUX_DATA(LCDD12_MARK, PSB5_PSB4_FN1, PTL4_FN),
+-	PINMUX_DATA(DV_D12_MARK, PSB5_PSB4_FN2, PTL4_FN),
+-	PINMUX_DATA(LCDD11_MARK, PSB5_PSB4_FN1, PTL3_FN),
+-	PINMUX_DATA(DV_D11_MARK, PSB5_PSB4_FN2, PTL3_FN),
+-	PINMUX_DATA(LCDD10_MARK, PSB5_PSB4_FN1, PTL2_FN),
+-	PINMUX_DATA(DV_D10_MARK, PSB5_PSB4_FN2, PTL2_FN),
+-	PINMUX_DATA(LCDD9_MARK, PSB5_PSB4_FN1, PTL1_FN),
+-	PINMUX_DATA(DV_D9_MARK, PSB5_PSB4_FN2, PTL1_FN),
+-	PINMUX_DATA(LCDD8_MARK, PSB5_PSB4_FN1, PTL0_FN),
+-	PINMUX_DATA(DV_D8_MARK, PSB5_PSB4_FN2, PTL0_FN),
+-
+-	/* PTM FN */
+-	PINMUX_DATA(LCDD7_MARK, PSB5_PSB4_FN1, PTM7_FN),
+-	PINMUX_DATA(DV_D7_MARK, PSB5_PSB4_FN2, PTM7_FN),
+-	PINMUX_DATA(LCDD6_MARK, PSB5_PSB4_FN1, PTM6_FN),
+-	PINMUX_DATA(DV_D6_MARK, PSB5_PSB4_FN2, PTM6_FN),
+-	PINMUX_DATA(LCDD5_MARK, PSB5_PSB4_FN1, PTM5_FN),
+-	PINMUX_DATA(DV_D5_MARK, PSB5_PSB4_FN2, PTM5_FN),
+-	PINMUX_DATA(LCDD4_MARK, PSB5_PSB4_FN1, PTM4_FN),
+-	PINMUX_DATA(DV_D4_MARK, PSB5_PSB4_FN2, PTM4_FN),
+-	PINMUX_DATA(LCDD3_MARK, PSB5_PSB4_FN1, PTM3_FN),
+-	PINMUX_DATA(DV_D3_MARK, PSB5_PSB4_FN2, PTM3_FN),
+-	PINMUX_DATA(LCDD2_MARK, PSB5_PSB4_FN1, PTM2_FN),
+-	PINMUX_DATA(DV_D2_MARK, PSB5_PSB4_FN2, PTM2_FN),
+-	PINMUX_DATA(LCDD1_MARK, PSB5_PSB4_FN1, PTM1_FN),
+-	PINMUX_DATA(DV_D1_MARK, PSB5_PSB4_FN2, PTM1_FN),
+-	PINMUX_DATA(LCDD0_MARK, PSB5_PSB4_FN1, PTM0_FN),
+-	PINMUX_DATA(DV_D0_MARK, PSB5_PSB4_FN2, PTM0_FN),
+-
+-	/* PTN FN */
+-	PINMUX_DATA(LCDD23_MARK, PSB3_PSB2_FN1, PTN7_FN),
+-	PINMUX_DATA(SCIF5_PTN_SCK_MARK, PSB3_PSB2_FN2, PTN7_FN),
+-	PINMUX_DATA(LCDD22_MARK, PSB3_PSB2_FN1, PTN6_FN),
+-	PINMUX_DATA(SCIF5_PTN_RXD_MARK, PSB3_PSB2_FN2, PTN6_FN),
+-	PINMUX_DATA(LCDD21_MARK, PSB3_PSB2_FN1, PTN5_FN),
+-	PINMUX_DATA(SCIF5_PTN_TXD_MARK, PSB3_PSB2_FN2, PTN5_FN),
+-	PINMUX_DATA(LCDD20_MARK, PSB3_PSB2_FN1, PTN4_FN),
+-	PINMUX_DATA(SCIF4_PTN_SCK_MARK, PSB3_PSB2_FN2, PTN4_FN),
+-	PINMUX_DATA(LCDD19_MARK, PSB3_PSB2_FN1, PTN3_FN),
+-	PINMUX_DATA(SCIF4_PTN_RXD_MARK, PSB3_PSB2_FN2, PTN3_FN),
+-	PINMUX_DATA(LCDD18_MARK, PSB3_PSB2_FN1, PTN2_FN),
+-	PINMUX_DATA(SCIF4_PTN_TXD_MARK, PSB3_PSB2_FN2, PTN2_FN),
+-	PINMUX_DATA(LCDD17_MARK, PSB5_PSB4_FN1, PTN1_FN),
+-	PINMUX_DATA(DV_VSYNC_MARK, PSB5_PSB4_FN2, PTN1_FN),
+-	PINMUX_DATA(LCDD16_MARK, PSB5_PSB4_FN1, PTN0_FN),
+-	PINMUX_DATA(DV_HSYNC_MARK, PSB5_PSB4_FN2, PTN0_FN),
+-
+-	/* PTQ FN */
+-	PINMUX_DATA(AN3_MARK, PTQ3_FN),
+-	PINMUX_DATA(AN2_MARK, PTQ2_FN),
+-	PINMUX_DATA(AN1_MARK, PTQ1_FN),
+-	PINMUX_DATA(AN0_MARK, PTQ0_FN),
+-
+-	/* PTR FN */
+-	PINMUX_DATA(CS6B_CE1B_MARK, PTR7_FN),
+-	PINMUX_DATA(CS6A_CE2B_MARK, PTR6_FN),
+-	PINMUX_DATA(CS5B_CE1A_MARK, PTR5_FN),
+-	PINMUX_DATA(CS5A_CE2A_MARK, PTR4_FN),
+-	PINMUX_DATA(IOIS16_MARK, PSA13_PSA12_FN1, PTR3_FN),
+-	PINMUX_DATA(LCDLCLK_PTR_MARK, PSA13_PSA12_FN2, PTR3_FN),
+-	PINMUX_DATA(WAIT_MARK, PTR2_FN),
+-	PINMUX_DATA(WE3_ICIOWR_MARK, PTR1_FN),
+-	PINMUX_DATA(WE2_ICIORD_MARK, PTR0_FN),
+-
+-	/* PTS FN */
+-	PINMUX_DATA(SCIF1_PTS_SCK_MARK, PSC15_PSC14_FN1, PTS7_FN),
+-	PINMUX_DATA(SDHI0CD_PTS_MARK, PSC15_PSC14_FN2, PTS7_FN),
+-	PINMUX_DATA(SCIF1_PTS_RXD_MARK, PSC15_PSC14_FN1, PTS6_FN),
+-	PINMUX_DATA(SDHI0WP_PTS_MARK, PSC15_PSC14_FN2, PTS6_FN),
+-	PINMUX_DATA(SCIF1_PTS_TXD_MARK, PSC15_PSC14_FN1, PTS5_FN),
+-	PINMUX_DATA(SDHI0D3_PTS_MARK, PSC15_PSC14_FN2, PTS5_FN),
+-	PINMUX_DATA(SCIF3_PTS_CTS_MARK, PSC15_PSC14_FN1, PTS4_FN),
+-	PINMUX_DATA(SDHI0D2_PTS_MARK, PSC15_PSC14_FN2, PTS4_FN),
+-	PINMUX_DATA(SCIF3_PTS_RTS_MARK, PSC15_PSC14_FN1, PTS3_FN),
+-	PINMUX_DATA(SDHI0D1_PTS_MARK, PSC15_PSC14_FN2, PTS3_FN),
+-	PINMUX_DATA(SCIF3_PTS_SCK_MARK, PSC15_PSC14_FN1, PTS2_FN),
+-	PINMUX_DATA(SDHI0D0_PTS_MARK, PSC15_PSC14_FN2, PTS2_FN),
+-	PINMUX_DATA(SCIF3_PTS_RXD_MARK, PSC15_PSC14_FN1, PTS1_FN),
+-	PINMUX_DATA(SDHI0CMD_PTS_MARK, PSC15_PSC14_FN2, PTS1_FN),
+-	PINMUX_DATA(SCIF3_PTS_TXD_MARK, PSC15_PSC14_FN1, PTS0_FN),
+-	PINMUX_DATA(SDHI0CLK_PTS_MARK, PSC15_PSC14_FN2, PTS0_FN),
+-
+-	/* PTT FN */
+-	PINMUX_DATA(SCIF0_PTT_SCK_MARK, PSC13_PSC12_FN1, PTT5_FN),
+-	PINMUX_DATA(MSIOF0_PTT_TSCK_MARK, PSC13_PSC12_FN2, PTT5_FN),
+-	PINMUX_DATA(SCIF0_PTT_RXD_MARK, PSC13_PSC12_FN1, PTT4_FN),
+-	PINMUX_DATA(MSIOF0_PTT_RXD_MARK, PSC13_PSC12_FN2, PTT4_FN),
+-	PINMUX_DATA(SCIF0_PTT_TXD_MARK, PSC13_PSC12_FN1, PTT3_FN),
+-	PINMUX_DATA(MSIOF0_PTT_TXD_MARK, PSC13_PSC12_FN2, PTT3_FN),
+-	PINMUX_DATA(SCIF2_PTT_SCK_MARK, PSC11_PSC10_FN1, PTT2_FN),
+-	PINMUX_DATA(MSIOF0_PTT_TSYNC_MARK, PSC11_PSC10_FN2, PTT2_FN),
+-	PINMUX_DATA(SCIF2_PTT_RXD_MARK, PSC11_PSC10_FN1, PTT1_FN),
+-	PINMUX_DATA(MSIOF0_PTT_SS1_MARK, PSC11_PSC10_FN2, PTT1_FN),
+-	PINMUX_DATA(MSIOF0_PTT_RSCK_MARK, PSC11_PSC10_FN3, PTT1_FN),
+-	PINMUX_DATA(SCIF2_PTT_TXD_MARK, PSC11_PSC10_FN1, PTT0_FN),
+-	PINMUX_DATA(MSIOF0_PTT_SS2_MARK, PSC11_PSC10_FN2, PTT0_FN),
+-	PINMUX_DATA(MSIOF0_PTT_RSYNC_MARK, PSC11_PSC10_FN3, PTT0_FN),
+-
+-	/* PTU FN */
+-	PINMUX_DATA(FCDE_MARK, PSC9_PSC8_FN1, PTU5_FN),
+-	PINMUX_DATA(SCIF0_PTU_SCK_MARK, PSC9_PSC8_FN2, PTU5_FN),
+-	PINMUX_DATA(FSC_MARK, PSC9_PSC8_FN1, PTU4_FN),
+-	PINMUX_DATA(SCIF0_PTU_RXD_MARK, PSC9_PSC8_FN2, PTU4_FN),
+-	PINMUX_DATA(FWE_MARK, PSC9_PSC8_FN1, PTU3_FN),
+-	PINMUX_DATA(SCIF0_PTU_TXD_MARK, PSC9_PSC8_FN2, PTU3_FN),
+-	PINMUX_DATA(FOE_MARK, PSC7_PSC6_FN1, PTU2_FN),
+-	PINMUX_DATA(SCIF2_PTU_SCK_MARK, PSC7_PSC6_FN2, PTU2_FN),
+-	PINMUX_DATA(VIO_VD2_MARK, PSC7_PSC6_FN3, PTU2_FN),
+-	PINMUX_DATA(FRB_MARK, PSC7_PSC6_FN1, PTU1_FN),
+-	PINMUX_DATA(SCIF2_PTU_RXD_MARK, PSC7_PSC6_FN2, PTU1_FN),
+-	PINMUX_DATA(VIO_CLK2_MARK, PSC7_PSC6_FN3, PTU1_FN),
+-	PINMUX_DATA(FCE_MARK, PSC7_PSC6_FN1, PTU0_FN),
+-	PINMUX_DATA(SCIF2_PTU_TXD_MARK, PSC7_PSC6_FN2, PTU0_FN),
+-	PINMUX_DATA(VIO_HD2_MARK, PSC7_PSC6_FN3, PTU0_FN),
+-
+-	/* PTV FN */
+-	PINMUX_DATA(NAF7_MARK, PSC7_PSC6_FN1, PTV7_FN),
+-	PINMUX_DATA(SCIF1_PTV_SCK_MARK, PSC7_PSC6_FN2, PTV7_FN),
+-	PINMUX_DATA(VIO_D15_MARK, PSC7_PSC6_FN3, PTV7_FN),
+-	PINMUX_DATA(NAF6_MARK, PSC7_PSC6_FN1, PTV6_FN),
+-	PINMUX_DATA(SCIF1_PTV_RXD_MARK, PSC7_PSC6_FN2, PTV6_FN),
+-	PINMUX_DATA(VIO_D14_MARK, PSC7_PSC6_FN3, PTV6_FN),
+-	PINMUX_DATA(NAF5_MARK, PSC7_PSC6_FN1, PTV5_FN),
+-	PINMUX_DATA(SCIF1_PTV_TXD_MARK, PSC7_PSC6_FN2, PTV5_FN),
+-	PINMUX_DATA(VIO_D13_MARK, PSC7_PSC6_FN3, PTV5_FN),
+-	PINMUX_DATA(NAF4_MARK, PSC7_PSC6_FN1, PTV4_FN),
+-	PINMUX_DATA(SCIF3_PTV_CTS_MARK, PSC7_PSC6_FN2, PTV4_FN),
+-	PINMUX_DATA(VIO_D12_MARK, PSC7_PSC6_FN3, PTV4_FN),
+-	PINMUX_DATA(NAF3_MARK, PSC7_PSC6_FN1, PTV3_FN),
+-	PINMUX_DATA(SCIF3_PTV_RTS_MARK, PSC7_PSC6_FN2, PTV3_FN),
+-	PINMUX_DATA(VIO_D11_MARK, PSC7_PSC6_FN3, PTV3_FN),
+-	PINMUX_DATA(NAF2_MARK, PSC7_PSC6_FN1, PTV2_FN),
+-	PINMUX_DATA(SCIF3_PTV_SCK_MARK, PSC7_PSC6_FN2, PTV2_FN),
+-	PINMUX_DATA(VIO_D10_MARK, PSC7_PSC6_FN3, PTV2_FN),
+-	PINMUX_DATA(NAF1_MARK, PSC7_PSC6_FN1, PTV1_FN),
+-	PINMUX_DATA(SCIF3_PTV_RXD_MARK, PSC7_PSC6_FN2, PTV1_FN),
+-	PINMUX_DATA(VIO_D9_MARK, PSC7_PSC6_FN3, PTV1_FN),
+-	PINMUX_DATA(NAF0_MARK, PSC7_PSC6_FN1, PTV0_FN),
+-	PINMUX_DATA(SCIF3_PTV_TXD_MARK, PSC7_PSC6_FN2, PTV0_FN),
+-	PINMUX_DATA(VIO_D8_MARK, PSC7_PSC6_FN3, PTV0_FN),
+-
+-	/* PTW FN */
+-	PINMUX_DATA(IRQ7_MARK, PTW7_FN),
+-	PINMUX_DATA(IRQ6_MARK, PTW6_FN),
+-	PINMUX_DATA(IRQ5_MARK, PTW5_FN),
+-	PINMUX_DATA(IRQ4_MARK, PSD15_PSD14_FN1, PTW4_FN),
+-	PINMUX_DATA(LCDLCLK_PTW_MARK, PSD15_PSD14_FN2, PTW4_FN),
+-	PINMUX_DATA(IRQ3_MARK, PSD13_PSD12_FN1, PTW3_FN),
+-	PINMUX_DATA(ADTRG_MARK, PSD13_PSD12_FN2, PTW3_FN),
+-	PINMUX_DATA(IRQ2_MARK, PSD11_PSD10_FN1, PTW2_FN),
+-	PINMUX_DATA(BS_MARK, PSD11_PSD10_FN2, PTW2_FN),
+-	PINMUX_DATA(VIO_CKO_MARK, PSD11_PSD10_FN3, PTW2_FN),
+-	PINMUX_DATA(IRQ1_MARK, PSD9_PSD8_FN1, PTW1_FN),
+-	PINMUX_DATA(SIUAISPD_MARK, PSD9_PSD8_FN2, PTW1_FN),
+-	PINMUX_DATA(IRQ0_MARK, PSD7_PSD6_FN1, PTW0_FN),
+-	PINMUX_DATA(SIUAOSPD_MARK, PSD7_PSD6_FN2, PTW0_FN),
+-
+-	/* PTX FN */
+-	PINMUX_DATA(DACK1_MARK, PTX7_FN),
+-	PINMUX_DATA(DREQ1_MARK, PSD3_PSD2_FN1, PTX6_FN),
+-	PINMUX_DATA(MSIOF0_PTX_MCK_MARK, PSD3_PSD2_FN2, PTX6_FN),
+-	PINMUX_DATA(DACK1_MARK, PTX5_FN),
+-	PINMUX_DATA(IRDA_OUT_MARK, PSD5_PSD4_FN2, PTX5_FN),
+-	PINMUX_DATA(DREQ1_MARK, PTX4_FN),
+-	PINMUX_DATA(IRDA_IN_MARK, PSD5_PSD4_FN2, PTX4_FN),
+-	PINMUX_DATA(TS0_SDAT_MARK, PTX3_FN),
+-	PINMUX_DATA(TS0_SCK_MARK, PTX2_FN),
+-	PINMUX_DATA(TS0_SDEN_MARK, PTX1_FN),
+-	PINMUX_DATA(TS0_SPSYNC_MARK, PTX0_FN),
+-
+-	/* PTY FN */
+-	PINMUX_DATA(VIO_D7_MARK, PTY7_FN),
+-	PINMUX_DATA(VIO_D6_MARK, PTY6_FN),
+-	PINMUX_DATA(VIO_D5_MARK, PTY5_FN),
+-	PINMUX_DATA(VIO_D4_MARK, PTY4_FN),
+-	PINMUX_DATA(VIO_D3_MARK, PTY3_FN),
+-	PINMUX_DATA(VIO_D2_MARK, PTY2_FN),
+-	PINMUX_DATA(VIO_D1_MARK, PTY1_FN),
+-	PINMUX_DATA(VIO_D0_MARK, PTY0_FN),
+-
+-	/* PTZ FN */
+-	PINMUX_DATA(SIUBOBT_MARK, PTZ7_FN),
+-	PINMUX_DATA(SIUBOLR_MARK, PTZ6_FN),
+-	PINMUX_DATA(SIUBOSLD_MARK, PTZ5_FN),
+-	PINMUX_DATA(SIUBMCK_MARK, PTZ4_FN),
+-	PINMUX_DATA(VIO_FLD_MARK, PSD1_PSD0_FN1, PTZ3_FN),
+-	PINMUX_DATA(SIUBFCK_MARK, PSD1_PSD0_FN2, PTZ3_FN),
+-	PINMUX_DATA(VIO_HD1_MARK, PSD1_PSD0_FN1, PTZ2_FN),
+-	PINMUX_DATA(SIUBILR_MARK, PSD1_PSD0_FN2, PTZ2_FN),
+-	PINMUX_DATA(VIO_VD1_MARK, PSD1_PSD0_FN1, PTZ1_FN),
+-	PINMUX_DATA(SIUBIBT_MARK, PSD1_PSD0_FN2, PTZ1_FN),
+-	PINMUX_DATA(VIO_CLK1_MARK, PSD1_PSD0_FN1, PTZ0_FN),
+-	PINMUX_DATA(SIUBISLD_MARK, PSD1_PSD0_FN2, PTZ0_FN),
+-};
+-
+-static const struct sh_pfc_pin pinmux_pins[] = {
+-	/* PTA */
+-	PINMUX_GPIO(PTA7),
+-	PINMUX_GPIO(PTA6),
+-	PINMUX_GPIO(PTA5),
+-	PINMUX_GPIO(PTA4),
+-	PINMUX_GPIO(PTA3),
+-	PINMUX_GPIO(PTA2),
+-	PINMUX_GPIO(PTA1),
+-	PINMUX_GPIO(PTA0),
+-
+-	/* PTB */
+-	PINMUX_GPIO(PTB7),
+-	PINMUX_GPIO(PTB6),
+-	PINMUX_GPIO(PTB5),
+-	PINMUX_GPIO(PTB4),
+-	PINMUX_GPIO(PTB3),
+-	PINMUX_GPIO(PTB2),
+-	PINMUX_GPIO(PTB1),
+-	PINMUX_GPIO(PTB0),
+-
+-	/* PTC */
+-	PINMUX_GPIO(PTC7),
+-	PINMUX_GPIO(PTC6),
+-	PINMUX_GPIO(PTC5),
+-	PINMUX_GPIO(PTC4),
+-	PINMUX_GPIO(PTC3),
+-	PINMUX_GPIO(PTC2),
+-	PINMUX_GPIO(PTC1),
+-	PINMUX_GPIO(PTC0),
+-
+-	/* PTD */
+-	PINMUX_GPIO(PTD7),
+-	PINMUX_GPIO(PTD6),
+-	PINMUX_GPIO(PTD5),
+-	PINMUX_GPIO(PTD4),
+-	PINMUX_GPIO(PTD3),
+-	PINMUX_GPIO(PTD2),
+-	PINMUX_GPIO(PTD1),
+-	PINMUX_GPIO(PTD0),
+-
+-	/* PTE */
+-	PINMUX_GPIO(PTE5),
+-	PINMUX_GPIO(PTE4),
+-	PINMUX_GPIO(PTE3),
+-	PINMUX_GPIO(PTE2),
+-	PINMUX_GPIO(PTE1),
+-	PINMUX_GPIO(PTE0),
+-
+-	/* PTF */
+-	PINMUX_GPIO(PTF7),
+-	PINMUX_GPIO(PTF6),
+-	PINMUX_GPIO(PTF5),
+-	PINMUX_GPIO(PTF4),
+-	PINMUX_GPIO(PTF3),
+-	PINMUX_GPIO(PTF2),
+-	PINMUX_GPIO(PTF1),
+-	PINMUX_GPIO(PTF0),
+-
+-	/* PTG */
+-	PINMUX_GPIO(PTG5),
+-	PINMUX_GPIO(PTG4),
+-	PINMUX_GPIO(PTG3),
+-	PINMUX_GPIO(PTG2),
+-	PINMUX_GPIO(PTG1),
+-	PINMUX_GPIO(PTG0),
+-
+-	/* PTH */
+-	PINMUX_GPIO(PTH7),
+-	PINMUX_GPIO(PTH6),
+-	PINMUX_GPIO(PTH5),
+-	PINMUX_GPIO(PTH4),
+-	PINMUX_GPIO(PTH3),
+-	PINMUX_GPIO(PTH2),
+-	PINMUX_GPIO(PTH1),
+-	PINMUX_GPIO(PTH0),
+-
+-	/* PTJ */
+-	PINMUX_GPIO(PTJ7),
+-	PINMUX_GPIO(PTJ5),
+-	PINMUX_GPIO(PTJ3),
+-	PINMUX_GPIO(PTJ2),
+-	PINMUX_GPIO(PTJ1),
+-	PINMUX_GPIO(PTJ0),
+-
+-	/* PTK */
+-	PINMUX_GPIO(PTK7),
+-	PINMUX_GPIO(PTK6),
+-	PINMUX_GPIO(PTK5),
+-	PINMUX_GPIO(PTK4),
+-	PINMUX_GPIO(PTK3),
+-	PINMUX_GPIO(PTK2),
+-	PINMUX_GPIO(PTK1),
+-	PINMUX_GPIO(PTK0),
+-
+-	/* PTL */
+-	PINMUX_GPIO(PTL7),
+-	PINMUX_GPIO(PTL6),
+-	PINMUX_GPIO(PTL5),
+-	PINMUX_GPIO(PTL4),
+-	PINMUX_GPIO(PTL3),
+-	PINMUX_GPIO(PTL2),
+-	PINMUX_GPIO(PTL1),
+-	PINMUX_GPIO(PTL0),
+-
+-	/* PTM */
+-	PINMUX_GPIO(PTM7),
+-	PINMUX_GPIO(PTM6),
+-	PINMUX_GPIO(PTM5),
+-	PINMUX_GPIO(PTM4),
+-	PINMUX_GPIO(PTM3),
+-	PINMUX_GPIO(PTM2),
+-	PINMUX_GPIO(PTM1),
+-	PINMUX_GPIO(PTM0),
+-
+-	/* PTN */
+-	PINMUX_GPIO(PTN7),
+-	PINMUX_GPIO(PTN6),
+-	PINMUX_GPIO(PTN5),
+-	PINMUX_GPIO(PTN4),
+-	PINMUX_GPIO(PTN3),
+-	PINMUX_GPIO(PTN2),
+-	PINMUX_GPIO(PTN1),
+-	PINMUX_GPIO(PTN0),
+-
+-	/* PTQ */
+-	PINMUX_GPIO(PTQ3),
+-	PINMUX_GPIO(PTQ2),
+-	PINMUX_GPIO(PTQ1),
+-	PINMUX_GPIO(PTQ0),
+-
+-	/* PTR */
+-	PINMUX_GPIO(PTR7),
+-	PINMUX_GPIO(PTR6),
+-	PINMUX_GPIO(PTR5),
+-	PINMUX_GPIO(PTR4),
+-	PINMUX_GPIO(PTR3),
+-	PINMUX_GPIO(PTR2),
+-	PINMUX_GPIO(PTR1),
+-	PINMUX_GPIO(PTR0),
+-
+-	/* PTS */
+-	PINMUX_GPIO(PTS7),
+-	PINMUX_GPIO(PTS6),
+-	PINMUX_GPIO(PTS5),
+-	PINMUX_GPIO(PTS4),
+-	PINMUX_GPIO(PTS3),
+-	PINMUX_GPIO(PTS2),
+-	PINMUX_GPIO(PTS1),
+-	PINMUX_GPIO(PTS0),
+-
+-	/* PTT */
+-	PINMUX_GPIO(PTT5),
+-	PINMUX_GPIO(PTT4),
+-	PINMUX_GPIO(PTT3),
+-	PINMUX_GPIO(PTT2),
+-	PINMUX_GPIO(PTT1),
+-	PINMUX_GPIO(PTT0),
+-
+-	/* PTU */
+-	PINMUX_GPIO(PTU5),
+-	PINMUX_GPIO(PTU4),
+-	PINMUX_GPIO(PTU3),
+-	PINMUX_GPIO(PTU2),
+-	PINMUX_GPIO(PTU1),
+-	PINMUX_GPIO(PTU0),
+-
+-	/* PTV */
+-	PINMUX_GPIO(PTV7),
+-	PINMUX_GPIO(PTV6),
+-	PINMUX_GPIO(PTV5),
+-	PINMUX_GPIO(PTV4),
+-	PINMUX_GPIO(PTV3),
+-	PINMUX_GPIO(PTV2),
+-	PINMUX_GPIO(PTV1),
+-	PINMUX_GPIO(PTV0),
+-
+-	/* PTW */
+-	PINMUX_GPIO(PTW7),
+-	PINMUX_GPIO(PTW6),
+-	PINMUX_GPIO(PTW5),
+-	PINMUX_GPIO(PTW4),
+-	PINMUX_GPIO(PTW3),
+-	PINMUX_GPIO(PTW2),
+-	PINMUX_GPIO(PTW1),
+-	PINMUX_GPIO(PTW0),
+-
+-	/* PTX */
+-	PINMUX_GPIO(PTX7),
+-	PINMUX_GPIO(PTX6),
+-	PINMUX_GPIO(PTX5),
+-	PINMUX_GPIO(PTX4),
+-	PINMUX_GPIO(PTX3),
+-	PINMUX_GPIO(PTX2),
+-	PINMUX_GPIO(PTX1),
+-	PINMUX_GPIO(PTX0),
+-
+-	/* PTY */
+-	PINMUX_GPIO(PTY7),
+-	PINMUX_GPIO(PTY6),
+-	PINMUX_GPIO(PTY5),
+-	PINMUX_GPIO(PTY4),
+-	PINMUX_GPIO(PTY3),
+-	PINMUX_GPIO(PTY2),
+-	PINMUX_GPIO(PTY1),
+-	PINMUX_GPIO(PTY0),
+-
+-	/* PTZ */
+-	PINMUX_GPIO(PTZ7),
+-	PINMUX_GPIO(PTZ6),
+-	PINMUX_GPIO(PTZ5),
+-	PINMUX_GPIO(PTZ4),
+-	PINMUX_GPIO(PTZ3),
+-	PINMUX_GPIO(PTZ2),
+-	PINMUX_GPIO(PTZ1),
+-	PINMUX_GPIO(PTZ0),
+-};
+-
+-#define PINMUX_FN_BASE	ARRAY_SIZE(pinmux_pins)
+-
+-static const struct pinmux_func pinmux_func_gpios[] = {
+-	/* SCIF0 */
+-	GPIO_FN(SCIF0_PTT_TXD),
+-	GPIO_FN(SCIF0_PTT_RXD),
+-	GPIO_FN(SCIF0_PTT_SCK),
+-	GPIO_FN(SCIF0_PTU_TXD),
+-	GPIO_FN(SCIF0_PTU_RXD),
+-	GPIO_FN(SCIF0_PTU_SCK),
+-
+-	/* SCIF1 */
+-	GPIO_FN(SCIF1_PTS_TXD),
+-	GPIO_FN(SCIF1_PTS_RXD),
+-	GPIO_FN(SCIF1_PTS_SCK),
+-	GPIO_FN(SCIF1_PTV_TXD),
+-	GPIO_FN(SCIF1_PTV_RXD),
+-	GPIO_FN(SCIF1_PTV_SCK),
+-
+-	/* SCIF2 */
+-	GPIO_FN(SCIF2_PTT_TXD),
+-	GPIO_FN(SCIF2_PTT_RXD),
+-	GPIO_FN(SCIF2_PTT_SCK),
+-	GPIO_FN(SCIF2_PTU_TXD),
+-	GPIO_FN(SCIF2_PTU_RXD),
+-	GPIO_FN(SCIF2_PTU_SCK),
+-
+-	/* SCIF3 */
+-	GPIO_FN(SCIF3_PTS_TXD),
+-	GPIO_FN(SCIF3_PTS_RXD),
+-	GPIO_FN(SCIF3_PTS_SCK),
+-	GPIO_FN(SCIF3_PTS_RTS),
+-	GPIO_FN(SCIF3_PTS_CTS),
+-	GPIO_FN(SCIF3_PTV_TXD),
+-	GPIO_FN(SCIF3_PTV_RXD),
+-	GPIO_FN(SCIF3_PTV_SCK),
+-	GPIO_FN(SCIF3_PTV_RTS),
+-	GPIO_FN(SCIF3_PTV_CTS),
+-
+-	/* SCIF4 */
+-	GPIO_FN(SCIF4_PTE_TXD),
+-	GPIO_FN(SCIF4_PTE_RXD),
+-	GPIO_FN(SCIF4_PTE_SCK),
+-	GPIO_FN(SCIF4_PTN_TXD),
+-	GPIO_FN(SCIF4_PTN_RXD),
+-	GPIO_FN(SCIF4_PTN_SCK),
+-
+-	/* SCIF5 */
+-	GPIO_FN(SCIF5_PTE_TXD),
+-	GPIO_FN(SCIF5_PTE_RXD),
+-	GPIO_FN(SCIF5_PTE_SCK),
+-	GPIO_FN(SCIF5_PTN_TXD),
+-	GPIO_FN(SCIF5_PTN_RXD),
+-	GPIO_FN(SCIF5_PTN_SCK),
+-
+-	/* CEU */
+-	GPIO_FN(VIO_D15),
+-	GPIO_FN(VIO_D14),
+-	GPIO_FN(VIO_D13),
+-	GPIO_FN(VIO_D12),
+-	GPIO_FN(VIO_D11),
+-	GPIO_FN(VIO_D10),
+-	GPIO_FN(VIO_D9),
+-	GPIO_FN(VIO_D8),
+-	GPIO_FN(VIO_D7),
+-	GPIO_FN(VIO_D6),
+-	GPIO_FN(VIO_D5),
+-	GPIO_FN(VIO_D4),
+-	GPIO_FN(VIO_D3),
+-	GPIO_FN(VIO_D2),
+-	GPIO_FN(VIO_D1),
+-	GPIO_FN(VIO_D0),
+-	GPIO_FN(VIO_CLK1),
+-	GPIO_FN(VIO_VD1),
+-	GPIO_FN(VIO_HD1),
+-	GPIO_FN(VIO_FLD),
+-	GPIO_FN(VIO_CKO),
+-	GPIO_FN(VIO_VD2),
+-	GPIO_FN(VIO_HD2),
+-	GPIO_FN(VIO_CLK2),
+-
+-	/* LCDC */
+-	GPIO_FN(LCDD23),
+-	GPIO_FN(LCDD22),
+-	GPIO_FN(LCDD21),
+-	GPIO_FN(LCDD20),
+-	GPIO_FN(LCDD19),
+-	GPIO_FN(LCDD18),
+-	GPIO_FN(LCDD17),
+-	GPIO_FN(LCDD16),
+-	GPIO_FN(LCDD15),
+-	GPIO_FN(LCDD14),
+-	GPIO_FN(LCDD13),
+-	GPIO_FN(LCDD12),
+-	GPIO_FN(LCDD11),
+-	GPIO_FN(LCDD10),
+-	GPIO_FN(LCDD9),
+-	GPIO_FN(LCDD8),
+-	GPIO_FN(LCDD7),
+-	GPIO_FN(LCDD6),
+-	GPIO_FN(LCDD5),
+-	GPIO_FN(LCDD4),
+-	GPIO_FN(LCDD3),
+-	GPIO_FN(LCDD2),
+-	GPIO_FN(LCDD1),
+-	GPIO_FN(LCDD0),
+-	GPIO_FN(LCDLCLK_PTR),
+-	GPIO_FN(LCDLCLK_PTW),
+-	/* Main LCD */
+-	GPIO_FN(LCDDON),
+-	GPIO_FN(LCDVCPWC),
+-	GPIO_FN(LCDVEPWC),
+-	GPIO_FN(LCDVSYN),
+-	/* Main LCD - RGB Mode */
+-	GPIO_FN(LCDDCK),
+-	GPIO_FN(LCDHSYN),
+-	GPIO_FN(LCDDISP),
+-	/* Main LCD - SYS Mode */
+-	GPIO_FN(LCDRS),
+-	GPIO_FN(LCDCS),
+-	GPIO_FN(LCDWR),
+-	GPIO_FN(LCDRD),
+-
+-	/* IRQ */
+-	GPIO_FN(IRQ0),
+-	GPIO_FN(IRQ1),
+-	GPIO_FN(IRQ2),
+-	GPIO_FN(IRQ3),
+-	GPIO_FN(IRQ4),
+-	GPIO_FN(IRQ5),
+-	GPIO_FN(IRQ6),
+-	GPIO_FN(IRQ7),
+-
+-	/* AUD */
+-	GPIO_FN(AUDCK),
+-	GPIO_FN(AUDSYNC),
+-	GPIO_FN(AUDATA3),
+-	GPIO_FN(AUDATA2),
+-	GPIO_FN(AUDATA1),
+-	GPIO_FN(AUDATA0),
+-
+-	/* SDHI0 (PTD) */
+-	GPIO_FN(SDHI0CD_PTD),
+-	GPIO_FN(SDHI0WP_PTD),
+-	GPIO_FN(SDHI0D3_PTD),
+-	GPIO_FN(SDHI0D2_PTD),
+-	GPIO_FN(SDHI0D1_PTD),
+-	GPIO_FN(SDHI0D0_PTD),
+-	GPIO_FN(SDHI0CMD_PTD),
+-	GPIO_FN(SDHI0CLK_PTD),
+-
+-	/* SDHI0 (PTS) */
+-	GPIO_FN(SDHI0CD_PTS),
+-	GPIO_FN(SDHI0WP_PTS),
+-	GPIO_FN(SDHI0D3_PTS),
+-	GPIO_FN(SDHI0D2_PTS),
+-	GPIO_FN(SDHI0D1_PTS),
+-	GPIO_FN(SDHI0D0_PTS),
+-	GPIO_FN(SDHI0CMD_PTS),
+-	GPIO_FN(SDHI0CLK_PTS),
+-
+-	/* SDHI1 */
+-	GPIO_FN(SDHI1CD),
+-	GPIO_FN(SDHI1WP),
+-	GPIO_FN(SDHI1D3),
+-	GPIO_FN(SDHI1D2),
+-	GPIO_FN(SDHI1D1),
+-	GPIO_FN(SDHI1D0),
+-	GPIO_FN(SDHI1CMD),
+-	GPIO_FN(SDHI1CLK),
+-
+-	/* SIUA */
+-	GPIO_FN(SIUAFCK),
+-	GPIO_FN(SIUAILR),
+-	GPIO_FN(SIUAIBT),
+-	GPIO_FN(SIUAISLD),
+-	GPIO_FN(SIUAOLR),
+-	GPIO_FN(SIUAOBT),
+-	GPIO_FN(SIUAOSLD),
+-	GPIO_FN(SIUAMCK),
+-	GPIO_FN(SIUAISPD),
+-	GPIO_FN(SIUAOSPD),
+-
+-	/* SIUB */
+-	GPIO_FN(SIUBFCK),
+-	GPIO_FN(SIUBILR),
+-	GPIO_FN(SIUBIBT),
+-	GPIO_FN(SIUBISLD),
+-	GPIO_FN(SIUBOLR),
+-	GPIO_FN(SIUBOBT),
+-	GPIO_FN(SIUBOSLD),
+-	GPIO_FN(SIUBMCK),
+-
+-	/* IRDA */
+-	GPIO_FN(IRDA_IN),
+-	GPIO_FN(IRDA_OUT),
+-
+-	/* VOU */
+-	GPIO_FN(DV_CLKI),
+-	GPIO_FN(DV_CLK),
+-	GPIO_FN(DV_HSYNC),
+-	GPIO_FN(DV_VSYNC),
+-	GPIO_FN(DV_D15),
+-	GPIO_FN(DV_D14),
+-	GPIO_FN(DV_D13),
+-	GPIO_FN(DV_D12),
+-	GPIO_FN(DV_D11),
+-	GPIO_FN(DV_D10),
+-	GPIO_FN(DV_D9),
+-	GPIO_FN(DV_D8),
+-	GPIO_FN(DV_D7),
+-	GPIO_FN(DV_D6),
+-	GPIO_FN(DV_D5),
+-	GPIO_FN(DV_D4),
+-	GPIO_FN(DV_D3),
+-	GPIO_FN(DV_D2),
+-	GPIO_FN(DV_D1),
+-	GPIO_FN(DV_D0),
+-
+-	/* KEYSC */
+-	GPIO_FN(KEYIN0),
+-	GPIO_FN(KEYIN1),
+-	GPIO_FN(KEYIN2),
+-	GPIO_FN(KEYIN3),
+-	GPIO_FN(KEYIN4),
+-	GPIO_FN(KEYOUT0),
+-	GPIO_FN(KEYOUT1),
+-	GPIO_FN(KEYOUT2),
+-	GPIO_FN(KEYOUT3),
+-	GPIO_FN(KEYOUT4_IN6),
+-	GPIO_FN(KEYOUT5_IN5),
+-
+-	/* MSIOF0 (PTF) */
+-	GPIO_FN(MSIOF0_PTF_TXD),
+-	GPIO_FN(MSIOF0_PTF_RXD),
+-	GPIO_FN(MSIOF0_PTF_MCK),
+-	GPIO_FN(MSIOF0_PTF_TSYNC),
+-	GPIO_FN(MSIOF0_PTF_TSCK),
+-	GPIO_FN(MSIOF0_PTF_RSYNC),
+-	GPIO_FN(MSIOF0_PTF_RSCK),
+-	GPIO_FN(MSIOF0_PTF_SS1),
+-	GPIO_FN(MSIOF0_PTF_SS2),
+-
+-	/* MSIOF0 (PTT+PTX) */
+-	GPIO_FN(MSIOF0_PTT_TXD),
+-	GPIO_FN(MSIOF0_PTT_RXD),
+-	GPIO_FN(MSIOF0_PTX_MCK),
+-	GPIO_FN(MSIOF0_PTT_TSYNC),
+-	GPIO_FN(MSIOF0_PTT_TSCK),
+-	GPIO_FN(MSIOF0_PTT_RSYNC),
+-	GPIO_FN(MSIOF0_PTT_RSCK),
+-	GPIO_FN(MSIOF0_PTT_SS1),
+-	GPIO_FN(MSIOF0_PTT_SS2),
+-
+-	/* MSIOF1 */
+-	GPIO_FN(MSIOF1_TXD),
+-	GPIO_FN(MSIOF1_RXD),
+-	GPIO_FN(MSIOF1_MCK),
+-	GPIO_FN(MSIOF1_TSYNC),
+-	GPIO_FN(MSIOF1_TSCK),
+-	GPIO_FN(MSIOF1_RSYNC),
+-	GPIO_FN(MSIOF1_RSCK),
+-	GPIO_FN(MSIOF1_SS1),
+-	GPIO_FN(MSIOF1_SS2),
+-
+-	/* TSIF */
+-	GPIO_FN(TS0_SDAT),
+-	GPIO_FN(TS0_SCK),
+-	GPIO_FN(TS0_SDEN),
+-	GPIO_FN(TS0_SPSYNC),
+-
+-	/* FLCTL */
+-	GPIO_FN(FCE),
+-	GPIO_FN(NAF7),
+-	GPIO_FN(NAF6),
+-	GPIO_FN(NAF5),
+-	GPIO_FN(NAF4),
+-	GPIO_FN(NAF3),
+-	GPIO_FN(NAF2),
+-	GPIO_FN(NAF1),
+-	GPIO_FN(NAF0),
+-	GPIO_FN(FCDE),
+-	GPIO_FN(FOE),
+-	GPIO_FN(FSC),
+-	GPIO_FN(FWE),
+-	GPIO_FN(FRB),
+-
+-	/* DMAC */
+-	GPIO_FN(DACK1),
+-	GPIO_FN(DREQ1),
+-	GPIO_FN(DACK0),
+-	GPIO_FN(DREQ0),
+-
+-	/* ADC */
+-	GPIO_FN(AN3),
+-	GPIO_FN(AN2),
+-	GPIO_FN(AN1),
+-	GPIO_FN(AN0),
+-	GPIO_FN(ADTRG),
+-
+-	/* CPG */
+-	GPIO_FN(STATUS0),
+-	GPIO_FN(PDSTATUS),
+-
+-	/* TPU */
+-	GPIO_FN(TPUTO0),
+-	GPIO_FN(TPUTO1),
+-	GPIO_FN(TPUTO2),
+-	GPIO_FN(TPUTO3),
+-
+-	/* BSC */
+-	GPIO_FN(D31),
+-	GPIO_FN(D30),
+-	GPIO_FN(D29),
+-	GPIO_FN(D28),
+-	GPIO_FN(D27),
+-	GPIO_FN(D26),
+-	GPIO_FN(D25),
+-	GPIO_FN(D24),
+-	GPIO_FN(D23),
+-	GPIO_FN(D22),
+-	GPIO_FN(D21),
+-	GPIO_FN(D20),
+-	GPIO_FN(D19),
+-	GPIO_FN(D18),
+-	GPIO_FN(D17),
+-	GPIO_FN(D16),
+-	GPIO_FN(IOIS16),
+-	GPIO_FN(WAIT),
+-	GPIO_FN(BS),
+-	GPIO_FN(A25),
+-	GPIO_FN(A24),
+-	GPIO_FN(A23),
+-	GPIO_FN(A22),
+-	GPIO_FN(CS6B_CE1B),
+-	GPIO_FN(CS6A_CE2B),
+-	GPIO_FN(CS5B_CE1A),
+-	GPIO_FN(CS5A_CE2A),
+-	GPIO_FN(WE3_ICIOWR),
+-	GPIO_FN(WE2_ICIORD),
+-
+-	/* ATAPI */
+-	GPIO_FN(IDED15),
+-	GPIO_FN(IDED14),
+-	GPIO_FN(IDED13),
+-	GPIO_FN(IDED12),
+-	GPIO_FN(IDED11),
+-	GPIO_FN(IDED10),
+-	GPIO_FN(IDED9),
+-	GPIO_FN(IDED8),
+-	GPIO_FN(IDED7),
+-	GPIO_FN(IDED6),
+-	GPIO_FN(IDED5),
+-	GPIO_FN(IDED4),
+-	GPIO_FN(IDED3),
+-	GPIO_FN(IDED2),
+-	GPIO_FN(IDED1),
+-	GPIO_FN(IDED0),
+-	GPIO_FN(DIRECTION),
+-	GPIO_FN(EXBUF_ENB),
+-	GPIO_FN(IDERST),
+-	GPIO_FN(IODACK),
+-	GPIO_FN(IODREQ),
+-	GPIO_FN(IDEIORDY),
+-	GPIO_FN(IDEINT),
+-	GPIO_FN(IDEIOWR),
+-	GPIO_FN(IDEIORD),
+-	GPIO_FN(IDECS1),
+-	GPIO_FN(IDECS0),
+-	GPIO_FN(IDEA2),
+-	GPIO_FN(IDEA1),
+-	GPIO_FN(IDEA0),
+-};
+-
+-static const struct pinmux_cfg_reg pinmux_config_regs[] = {
+-	{ PINMUX_CFG_REG("PACR", 0xa4050100, 16, 2, GROUP(
+-		PTA7_FN, PTA7_OUT, 0, PTA7_IN,
+-		PTA6_FN, PTA6_OUT, 0, PTA6_IN,
+-		PTA5_FN, PTA5_OUT, 0, PTA5_IN,
+-		PTA4_FN, PTA4_OUT, 0, PTA4_IN,
+-		PTA3_FN, PTA3_OUT, 0, PTA3_IN,
+-		PTA2_FN, PTA2_OUT, 0, PTA2_IN,
+-		PTA1_FN, PTA1_OUT, 0, PTA1_IN,
+-		PTA0_FN, PTA0_OUT, 0, PTA0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PBCR", 0xa4050102, 16, 2, GROUP(
+-		PTB7_FN, PTB7_OUT, 0, PTB7_IN,
+-		PTB6_FN, PTB6_OUT, 0, PTB6_IN,
+-		PTB5_FN, PTB5_OUT, 0, PTB5_IN,
+-		PTB4_FN, PTB4_OUT, 0, PTB4_IN,
+-		PTB3_FN, PTB3_OUT, 0, PTB3_IN,
+-		PTB2_FN, PTB2_OUT, 0, PTB2_IN,
+-		PTB1_FN, PTB1_OUT, 0, PTB1_IN,
+-		PTB0_FN, PTB0_OUT, 0, PTB0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PCCR", 0xa4050104, 16, 2, GROUP(
+-		PTC7_FN, PTC7_OUT, 0, PTC7_IN,
+-		PTC6_FN, PTC6_OUT, 0, PTC6_IN,
+-		PTC5_FN, PTC5_OUT, 0, PTC5_IN,
+-		PTC4_FN, PTC4_OUT, 0, PTC4_IN,
+-		PTC3_FN, PTC3_OUT, 0, PTC3_IN,
+-		PTC2_FN, PTC2_OUT, 0, PTC2_IN,
+-		PTC1_FN, PTC1_OUT, 0, PTC1_IN,
+-		PTC0_FN, PTC0_OUT, 0, PTC0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PDCR", 0xa4050106, 16, 2, GROUP(
+-		PTD7_FN, PTD7_OUT, 0, PTD7_IN,
+-		PTD6_FN, PTD6_OUT, 0, PTD6_IN,
+-		PTD5_FN, PTD5_OUT, 0, PTD5_IN,
+-		PTD4_FN, PTD4_OUT, 0, PTD4_IN,
+-		PTD3_FN, PTD3_OUT, 0, PTD3_IN,
+-		PTD2_FN, PTD2_OUT, 0, PTD2_IN,
+-		PTD1_FN, PTD1_OUT, 0, PTD1_IN,
+-		PTD0_FN, PTD0_OUT, 0, PTD0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PECR", 0xa4050108, 16,
+-			     GROUP(-4, 2, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [4] */
+-		PTE5_FN, PTE5_OUT, 0, PTE5_IN,
+-		PTE4_FN, PTE4_OUT, 0, PTE4_IN,
+-		PTE3_FN, PTE3_OUT, 0, PTE3_IN,
+-		PTE2_FN, PTE2_OUT, 0, PTE2_IN,
+-		PTE1_FN, PTE1_OUT, 0, PTE1_IN,
+-		PTE0_FN, PTE0_OUT, 0, PTE0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PFCR", 0xa405010a, 16, 2, GROUP(
+-		PTF7_FN, PTF7_OUT, 0, PTF7_IN,
+-		PTF6_FN, PTF6_OUT, 0, PTF6_IN,
+-		PTF5_FN, PTF5_OUT, 0, PTF5_IN,
+-		PTF4_FN, PTF4_OUT, 0, PTF4_IN,
+-		PTF3_FN, PTF3_OUT, 0, PTF3_IN,
+-		PTF2_FN, PTF2_OUT, 0, PTF2_IN,
+-		PTF1_FN, PTF1_OUT, 0, PTF1_IN,
+-		PTF0_FN, PTF0_OUT, 0, PTF0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PGCR", 0xa405010c, 16,
+-			     GROUP(-4, 2, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [4] */
+-		PTG5_FN, PTG5_OUT, 0, 0,
+-		PTG4_FN, PTG4_OUT, 0, 0,
+-		PTG3_FN, PTG3_OUT, 0, 0,
+-		PTG2_FN, PTG2_OUT, 0, 0,
+-		PTG1_FN, PTG1_OUT, 0, 0,
+-		PTG0_FN, PTG0_OUT, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PHCR", 0xa405010e, 16, 2, GROUP(
+-		PTH7_FN, PTH7_OUT, 0, PTH7_IN,
+-		PTH6_FN, PTH6_OUT, 0, PTH6_IN,
+-		PTH5_FN, PTH5_OUT, 0, PTH5_IN,
+-		PTH4_FN, PTH4_OUT, 0, PTH4_IN,
+-		PTH3_FN, PTH3_OUT, 0, PTH3_IN,
+-		PTH2_FN, PTH2_OUT, 0, PTH2_IN,
+-		PTH1_FN, PTH1_OUT, 0, PTH1_IN,
+-		PTH0_FN, PTH0_OUT, 0, PTH0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PJCR", 0xa4050110, 16,
+-			     GROUP(2, -2, 2, -2, 2, 2, 2, 2),
+-			     GROUP(
+-		PTJ7_FN, PTJ7_OUT, 0, 0,
+-		/* RESERVED [2] */
+-		PTJ5_FN, PTJ5_OUT, 0, 0,
+-		/* RESERVED [2] */
+-		PTJ3_FN, PTJ3_OUT, 0, PTJ3_IN,
+-		PTJ2_FN, PTJ2_OUT, 0, PTJ2_IN,
+-		PTJ1_FN, PTJ1_OUT, 0, PTJ1_IN,
+-		PTJ0_FN, PTJ0_OUT, 0, PTJ0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PKCR", 0xa4050112, 16, 2, GROUP(
+-		PTK7_FN, PTK7_OUT, 0, PTK7_IN,
+-		PTK6_FN, PTK6_OUT, 0, PTK6_IN,
+-		PTK5_FN, PTK5_OUT, 0, PTK5_IN,
+-		PTK4_FN, PTK4_OUT, 0, PTK4_IN,
+-		PTK3_FN, PTK3_OUT, 0, PTK3_IN,
+-		PTK2_FN, PTK2_OUT, 0, PTK2_IN,
+-		PTK1_FN, PTK1_OUT, 0, PTK1_IN,
+-		PTK0_FN, PTK0_OUT, 0, PTK0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PLCR", 0xa4050114, 16, 2, GROUP(
+-		PTL7_FN, PTL7_OUT, 0, PTL7_IN,
+-		PTL6_FN, PTL6_OUT, 0, PTL6_IN,
+-		PTL5_FN, PTL5_OUT, 0, PTL5_IN,
+-		PTL4_FN, PTL4_OUT, 0, PTL4_IN,
+-		PTL3_FN, PTL3_OUT, 0, PTL3_IN,
+-		PTL2_FN, PTL2_OUT, 0, PTL2_IN,
+-		PTL1_FN, PTL1_OUT, 0, PTL1_IN,
+-		PTL0_FN, PTL0_OUT, 0, PTL0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PMCR", 0xa4050116, 16, 2, GROUP(
+-		PTM7_FN, PTM7_OUT, 0, PTM7_IN,
+-		PTM6_FN, PTM6_OUT, 0, PTM6_IN,
+-		PTM5_FN, PTM5_OUT, 0, PTM5_IN,
+-		PTM4_FN, PTM4_OUT, 0, PTM4_IN,
+-		PTM3_FN, PTM3_OUT, 0, PTM3_IN,
+-		PTM2_FN, PTM2_OUT, 0, PTM2_IN,
+-		PTM1_FN, PTM1_OUT, 0, PTM1_IN,
+-		PTM0_FN, PTM0_OUT, 0, PTM0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PNCR", 0xa4050118, 16, 2, GROUP(
+-		PTN7_FN, PTN7_OUT, 0, PTN7_IN,
+-		PTN6_FN, PTN6_OUT, 0, PTN6_IN,
+-		PTN5_FN, PTN5_OUT, 0, PTN5_IN,
+-		PTN4_FN, PTN4_OUT, 0, PTN4_IN,
+-		PTN3_FN, PTN3_OUT, 0, PTN3_IN,
+-		PTN2_FN, PTN2_OUT, 0, PTN2_IN,
+-		PTN1_FN, PTN1_OUT, 0, PTN1_IN,
+-		PTN0_FN, PTN0_OUT, 0, PTN0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PQCR", 0xa405011a, 16,
+-			     GROUP(-8, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [8] */
+-		PTQ3_FN, 0, 0, PTQ3_IN,
+-		PTQ2_FN, 0, 0, PTQ2_IN,
+-		PTQ1_FN, 0, 0, PTQ1_IN,
+-		PTQ0_FN, 0, 0, PTQ0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PRCR", 0xa405011c, 16, 2, GROUP(
+-		PTR7_FN, PTR7_OUT, 0, PTR7_IN,
+-		PTR6_FN, PTR6_OUT, 0, PTR6_IN,
+-		PTR5_FN, PTR5_OUT, 0, PTR5_IN,
+-		PTR4_FN, PTR4_OUT, 0, PTR4_IN,
+-		PTR3_FN, 0, 0, PTR3_IN,
+-		PTR2_FN, 0, 0, PTR2_IN,
+-		PTR1_FN, PTR1_OUT, 0, PTR1_IN,
+-		PTR0_FN, PTR0_OUT, 0, PTR0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PSCR", 0xa405011e, 16, 2, GROUP(
+-		PTS7_FN, PTS7_OUT, 0, PTS7_IN,
+-		PTS6_FN, PTS6_OUT, 0, PTS6_IN,
+-		PTS5_FN, PTS5_OUT, 0, PTS5_IN,
+-		PTS4_FN, PTS4_OUT, 0, PTS4_IN,
+-		PTS3_FN, PTS3_OUT, 0, PTS3_IN,
+-		PTS2_FN, PTS2_OUT, 0, PTS2_IN,
+-		PTS1_FN, PTS1_OUT, 0, PTS1_IN,
+-		PTS0_FN, PTS0_OUT, 0, PTS0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PTCR", 0xa4050140, 16,
+-			     GROUP(-4, 2, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [4] */
+-		PTT5_FN, PTT5_OUT, 0, PTT5_IN,
+-		PTT4_FN, PTT4_OUT, 0, PTT4_IN,
+-		PTT3_FN, PTT3_OUT, 0, PTT3_IN,
+-		PTT2_FN, PTT2_OUT, 0, PTT2_IN,
+-		PTT1_FN, PTT1_OUT, 0, PTT1_IN,
+-		PTT0_FN, PTT0_OUT, 0, PTT0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PUCR", 0xa4050142, 16,
+-			     GROUP(-4, 2, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [4] */
+-		PTU5_FN, PTU5_OUT, 0, PTU5_IN,
+-		PTU4_FN, PTU4_OUT, 0, PTU4_IN,
+-		PTU3_FN, PTU3_OUT, 0, PTU3_IN,
+-		PTU2_FN, PTU2_OUT, 0, PTU2_IN,
+-		PTU1_FN, PTU1_OUT, 0, PTU1_IN,
+-		PTU0_FN, PTU0_OUT, 0, PTU0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PVCR", 0xa4050144, 16, 2, GROUP(
+-		PTV7_FN, PTV7_OUT, 0, PTV7_IN,
+-		PTV6_FN, PTV6_OUT, 0, PTV6_IN,
+-		PTV5_FN, PTV5_OUT, 0, PTV5_IN,
+-		PTV4_FN, PTV4_OUT, 0, PTV4_IN,
+-		PTV3_FN, PTV3_OUT, 0, PTV3_IN,
+-		PTV2_FN, PTV2_OUT, 0, PTV2_IN,
+-		PTV1_FN, PTV1_OUT, 0, PTV1_IN,
+-		PTV0_FN, PTV0_OUT, 0, PTV0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PWCR", 0xa4050146, 16, 2, GROUP(
+-		PTW7_FN, PTW7_OUT, 0, PTW7_IN,
+-		PTW6_FN, PTW6_OUT, 0, PTW6_IN,
+-		PTW5_FN, PTW5_OUT, 0, PTW5_IN,
+-		PTW4_FN, PTW4_OUT, 0, PTW4_IN,
+-		PTW3_FN, PTW3_OUT, 0, PTW3_IN,
+-		PTW2_FN, PTW2_OUT, 0, PTW2_IN,
+-		PTW1_FN, PTW1_OUT, 0, PTW1_IN,
+-		PTW0_FN, PTW0_OUT, 0, PTW0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PXCR", 0xa4050148, 16, 2, GROUP(
+-		PTX7_FN, PTX7_OUT, 0, PTX7_IN,
+-		PTX6_FN, PTX6_OUT, 0, PTX6_IN,
+-		PTX5_FN, PTX5_OUT, 0, PTX5_IN,
+-		PTX4_FN, PTX4_OUT, 0, PTX4_IN,
+-		PTX3_FN, PTX3_OUT, 0, PTX3_IN,
+-		PTX2_FN, PTX2_OUT, 0, PTX2_IN,
+-		PTX1_FN, PTX1_OUT, 0, PTX1_IN,
+-		PTX0_FN, PTX0_OUT, 0, PTX0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PYCR", 0xa405014a, 16, 2, GROUP(
+-		PTY7_FN, PTY7_OUT, 0, PTY7_IN,
+-		PTY6_FN, PTY6_OUT, 0, PTY6_IN,
+-		PTY5_FN, PTY5_OUT, 0, PTY5_IN,
+-		PTY4_FN, PTY4_OUT, 0, PTY4_IN,
+-		PTY3_FN, PTY3_OUT, 0, PTY3_IN,
+-		PTY2_FN, PTY2_OUT, 0, PTY2_IN,
+-		PTY1_FN, PTY1_OUT, 0, PTY1_IN,
+-		PTY0_FN, PTY0_OUT, 0, PTY0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PZCR", 0xa405014c, 16, 2, GROUP(
+-		PTZ7_FN, PTZ7_OUT, 0, PTZ7_IN,
+-		PTZ6_FN, PTZ6_OUT, 0, PTZ6_IN,
+-		PTZ5_FN, PTZ5_OUT, 0, PTZ5_IN,
+-		PTZ4_FN, PTZ4_OUT, 0, PTZ4_IN,
+-		PTZ3_FN, PTZ3_OUT, 0, PTZ3_IN,
+-		PTZ2_FN, PTZ2_OUT, 0, PTZ2_IN,
+-		PTZ1_FN, PTZ1_OUT, 0, PTZ1_IN,
+-		PTZ0_FN, PTZ0_OUT, 0, PTZ0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PSELA", 0xa405014e, 16,
+-			     GROUP(2, 2, 2, -4, 2, 2, -2),
+-			     GROUP(
+-		PSA15_PSA14_FN1, PSA15_PSA14_FN2, 0, 0,
+-		PSA13_PSA12_FN1, PSA13_PSA12_FN2, 0, 0,
+-		PSA11_PSA10_FN1, PSA11_PSA10_FN2, 0, 0,
+-		/* RESERVED [4] */
+-		PSA5_PSA4_FN1, PSA5_PSA4_FN2, PSA5_PSA4_FN3, 0,
+-		PSA3_PSA2_FN1, PSA3_PSA2_FN2, 0, 0,
+-		/* RESERVED [2] */ ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PSELB", 0xa4050150, 16,
+-			     GROUP(2, 2, -2, 2, 2, 2, 2, -2),
+-			     GROUP(
+-		PSB15_PSB14_FN1, PSB15_PSB14_FN2, 0, 0,
+-		PSB13_PSB12_LCDC_RGB, PSB13_PSB12_LCDC_SYS, 0, 0,
+-		/* RESERVED [2] */
+-		PSB9_PSB8_FN1, PSB9_PSB8_FN2, PSB9_PSB8_FN3, 0,
+-		PSB7_PSB6_FN1, PSB7_PSB6_FN2, 0, 0,
+-		PSB5_PSB4_FN1, PSB5_PSB4_FN2, 0, 0,
+-		PSB3_PSB2_FN1, PSB3_PSB2_FN2, 0, 0,
+-		/* RESERVED [2] */ ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PSELC", 0xa4050152, 16,
+-			     GROUP(2, 2, 2, 2, 2, -6),
+-			     GROUP(
+-		PSC15_PSC14_FN1, PSC15_PSC14_FN2, 0, 0,
+-		PSC13_PSC12_FN1, PSC13_PSC12_FN2, 0, 0,
+-		PSC11_PSC10_FN1, PSC11_PSC10_FN2, PSC11_PSC10_FN3, 0,
+-		PSC9_PSC8_FN1, PSC9_PSC8_FN2, 0, 0,
+-		PSC7_PSC6_FN1, PSC7_PSC6_FN2, PSC7_PSC6_FN3, 0,
+-		/* RESERVED [3] */ ))
+-	},
+-	{ PINMUX_CFG_REG("PSELD", 0xa4050154, 16, 2, GROUP(
+-		PSD15_PSD14_FN1, PSD15_PSD14_FN2, 0, 0,
+-		PSD13_PSD12_FN1, PSD13_PSD12_FN2, 0, 0,
+-		PSD11_PSD10_FN1, PSD11_PSD10_FN2, PSD11_PSD10_FN3, 0,
+-		PSD9_PSD8_FN1, PSD9_PSD8_FN2, 0, 0,
+-		PSD7_PSD6_FN1, PSD7_PSD6_FN2, 0, 0,
+-		PSD5_PSD4_FN1, PSD5_PSD4_FN2, 0, 0,
+-		PSD3_PSD2_FN1, PSD3_PSD2_FN2, 0, 0,
+-		PSD1_PSD0_FN1, PSD1_PSD0_FN2, 0, 0 ))
+-	},
+-	{}
+-};
+-
+-static const struct pinmux_data_reg pinmux_data_regs[] = {
+-	{ PINMUX_DATA_REG("PADR", 0xa4050120, 8, GROUP(
+-		PTA7_DATA, PTA6_DATA, PTA5_DATA, PTA4_DATA,
+-		PTA3_DATA, PTA2_DATA, PTA1_DATA, PTA0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PBDR", 0xa4050122, 8, GROUP(
+-		PTB7_DATA, PTB6_DATA, PTB5_DATA, PTB4_DATA,
+-		PTB3_DATA, PTB2_DATA, PTB1_DATA, PTB0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PCDR", 0xa4050124, 8, GROUP(
+-		PTC7_DATA, PTC6_DATA, PTC5_DATA, PTC4_DATA,
+-		PTC3_DATA, PTC2_DATA, PTC1_DATA, PTC0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PDDR", 0xa4050126, 8, GROUP(
+-		PTD7_DATA, PTD6_DATA, PTD5_DATA, PTD4_DATA,
+-		PTD3_DATA, PTD2_DATA, PTD1_DATA, PTD0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PEDR", 0xa4050128, 8, GROUP(
+-		0, 0, PTE5_DATA, PTE4_DATA,
+-		PTE3_DATA, PTE2_DATA, PTE1_DATA, PTE0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PFDR", 0xa405012a, 8, GROUP(
+-		PTF7_DATA, PTF6_DATA, PTF5_DATA, PTF4_DATA,
+-		PTF3_DATA, PTF2_DATA, PTF1_DATA, PTF0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PGDR", 0xa405012c, 8, GROUP(
+-		0, 0, PTG5_DATA, PTG4_DATA,
+-		PTG3_DATA, PTG2_DATA, PTG1_DATA, PTG0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PHDR", 0xa405012e, 8, GROUP(
+-		PTH7_DATA, PTH6_DATA, PTH5_DATA, PTH4_DATA,
+-		PTH3_DATA, PTH2_DATA, PTH1_DATA, PTH0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PJDR", 0xa4050130, 8, GROUP(
+-		PTJ7_DATA, 0, PTJ5_DATA, 0,
+-		PTJ3_DATA, PTJ2_DATA, PTJ1_DATA, PTJ0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PKDR", 0xa4050132, 8, GROUP(
+-		PTK7_DATA, PTK6_DATA, PTK5_DATA, PTK4_DATA,
+-		PTK3_DATA, PTK2_DATA, PTK1_DATA, PTK0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PLDR", 0xa4050134, 8, GROUP(
+-		PTL7_DATA, PTL6_DATA, PTL5_DATA, PTL4_DATA,
+-		PTL3_DATA, PTL2_DATA, PTL1_DATA, PTL0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PMDR", 0xa4050136, 8, GROUP(
+-		PTM7_DATA, PTM6_DATA, PTM5_DATA, PTM4_DATA,
+-		PTM3_DATA, PTM2_DATA, PTM1_DATA, PTM0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PNDR", 0xa4050138, 8, GROUP(
+-		PTN7_DATA, PTN6_DATA, PTN5_DATA, PTN4_DATA,
+-		PTN3_DATA, PTN2_DATA, PTN1_DATA, PTN0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PQDR", 0xa405013a, 8, GROUP(
+-		0, 0, 0, 0,
+-		PTQ3_DATA, PTQ2_DATA, PTQ1_DATA, PTQ0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PRDR", 0xa405013c, 8, GROUP(
+-		PTR7_DATA, PTR6_DATA, PTR5_DATA, PTR4_DATA,
+-		PTR3_DATA, PTR2_DATA, PTR1_DATA, PTR0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PSDR", 0xa405013e, 8, GROUP(
+-		PTS7_DATA, PTS6_DATA, PTS5_DATA, PTS4_DATA,
+-		PTS3_DATA, PTS2_DATA, PTS1_DATA, PTS0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PTDR", 0xa4050160, 8, GROUP(
+-		0, 0, PTT5_DATA, PTT4_DATA,
+-		PTT3_DATA, PTT2_DATA, PTT1_DATA, PTT0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PUDR", 0xa4050162, 8, GROUP(
+-		0, 0, PTU5_DATA, PTU4_DATA,
+-		PTU3_DATA, PTU2_DATA, PTU1_DATA, PTU0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PVDR", 0xa4050164, 8, GROUP(
+-		PTV7_DATA, PTV6_DATA, PTV5_DATA, PTV4_DATA,
+-		PTV3_DATA, PTV2_DATA, PTV1_DATA, PTV0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PWDR", 0xa4050166, 8, GROUP(
+-		PTW7_DATA, PTW6_DATA, PTW5_DATA, PTW4_DATA,
+-		PTW3_DATA, PTW2_DATA, PTW1_DATA, PTW0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PXDR", 0xa4050168, 8, GROUP(
+-		PTX7_DATA, PTX6_DATA, PTX5_DATA, PTX4_DATA,
+-		PTX3_DATA, PTX2_DATA, PTX1_DATA, PTX0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PYDR", 0xa405016a, 8, GROUP(
+-		PTY7_DATA, PTY6_DATA, PTY5_DATA, PTY4_DATA,
+-		PTY3_DATA, PTY2_DATA, PTY1_DATA, PTY0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PZDR", 0xa405016c, 8, GROUP(
+-		PTZ7_DATA, PTZ6_DATA, PTZ5_DATA, PTZ4_DATA,
+-		PTZ3_DATA, PTZ2_DATA, PTZ1_DATA, PTZ0_DATA ))
+-	},
+-	{ },
+-};
+-
+-const struct sh_pfc_soc_info sh7723_pinmux_info = {
+-	.name = "sh7723_pfc",
+-	.input = { PINMUX_INPUT_BEGIN, PINMUX_INPUT_END },
+-	.output = { PINMUX_OUTPUT_BEGIN, PINMUX_OUTPUT_END },
+-	.function = { PINMUX_FUNCTION_BEGIN, PINMUX_FUNCTION_END },
+-
+-	.pins = pinmux_pins,
+-	.nr_pins = ARRAY_SIZE(pinmux_pins),
+-	.func_gpios = pinmux_func_gpios,
+-	.nr_func_gpios = ARRAY_SIZE(pinmux_func_gpios),
+-
+-	.cfg_regs = pinmux_config_regs,
+-	.data_regs = pinmux_data_regs,
+-
+-	.pinmux_data = pinmux_data,
+-	.pinmux_data_size = ARRAY_SIZE(pinmux_data),
+-};
+diff --git a/drivers/pinctrl/renesas/pfc-sh7724.c b/drivers/pinctrl/renesas/pfc-sh7724.c
+deleted file mode 100644
+index 26517ad26a0fd1..00000000000000
+--- a/drivers/pinctrl/renesas/pfc-sh7724.c
++++ /dev/null
+@@ -1,2177 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * SH7724 Pinmux
+- *
+- * Copyright (C) 2009 Renesas Solutions Corp.
+- *
+- * Kuninori Morimoto <morimoto.kuninori@renesas.com>
+- *
+- * Based on SH7723 Pinmux
+- *  Copyright (C) 2008  Magnus Damm
+- */
+-
+-#include <linux/kernel.h>
+-#include <cpu/sh7724.h>
+-
+-#include "sh_pfc.h"
+-
+-enum {
+-	PINMUX_RESERVED = 0,
+-
+-	PINMUX_DATA_BEGIN,
+-	PTA7_DATA, PTA6_DATA, PTA5_DATA, PTA4_DATA,
+-	PTA3_DATA, PTA2_DATA, PTA1_DATA, PTA0_DATA,
+-	PTB7_DATA, PTB6_DATA, PTB5_DATA, PTB4_DATA,
+-	PTB3_DATA, PTB2_DATA, PTB1_DATA, PTB0_DATA,
+-	PTC7_DATA, PTC6_DATA, PTC5_DATA, PTC4_DATA,
+-	PTC3_DATA, PTC2_DATA, PTC1_DATA, PTC0_DATA,
+-	PTD7_DATA, PTD6_DATA, PTD5_DATA, PTD4_DATA,
+-	PTD3_DATA, PTD2_DATA, PTD1_DATA, PTD0_DATA,
+-	PTE7_DATA, PTE6_DATA, PTE5_DATA, PTE4_DATA,
+-	PTE3_DATA, PTE2_DATA, PTE1_DATA, PTE0_DATA,
+-	PTF7_DATA, PTF6_DATA, PTF5_DATA, PTF4_DATA,
+-	PTF3_DATA, PTF2_DATA, PTF1_DATA, PTF0_DATA,
+-			      PTG5_DATA, PTG4_DATA,
+-	PTG3_DATA, PTG2_DATA, PTG1_DATA, PTG0_DATA,
+-	PTH7_DATA, PTH6_DATA, PTH5_DATA, PTH4_DATA,
+-	PTH3_DATA, PTH2_DATA, PTH1_DATA, PTH0_DATA,
+-	PTJ7_DATA, PTJ6_DATA, PTJ5_DATA,
+-	PTJ3_DATA, PTJ2_DATA, PTJ1_DATA, PTJ0_DATA,
+-	PTK7_DATA, PTK6_DATA, PTK5_DATA, PTK4_DATA,
+-	PTK3_DATA, PTK2_DATA, PTK1_DATA, PTK0_DATA,
+-	PTL7_DATA, PTL6_DATA, PTL5_DATA, PTL4_DATA,
+-	PTL3_DATA, PTL2_DATA, PTL1_DATA, PTL0_DATA,
+-	PTM7_DATA, PTM6_DATA, PTM5_DATA, PTM4_DATA,
+-	PTM3_DATA, PTM2_DATA, PTM1_DATA, PTM0_DATA,
+-	PTN7_DATA, PTN6_DATA, PTN5_DATA, PTN4_DATA,
+-	PTN3_DATA, PTN2_DATA, PTN1_DATA, PTN0_DATA,
+-	PTQ7_DATA, PTQ6_DATA, PTQ5_DATA, PTQ4_DATA,
+-	PTQ3_DATA, PTQ2_DATA, PTQ1_DATA, PTQ0_DATA,
+-	PTR7_DATA, PTR6_DATA, PTR5_DATA, PTR4_DATA,
+-	PTR3_DATA, PTR2_DATA, PTR1_DATA, PTR0_DATA,
+-		   PTS6_DATA, PTS5_DATA, PTS4_DATA,
+-	PTS3_DATA, PTS2_DATA, PTS1_DATA, PTS0_DATA,
+-	PTT7_DATA, PTT6_DATA, PTT5_DATA, PTT4_DATA,
+-	PTT3_DATA, PTT2_DATA, PTT1_DATA, PTT0_DATA,
+-	PTU7_DATA, PTU6_DATA, PTU5_DATA, PTU4_DATA,
+-	PTU3_DATA, PTU2_DATA, PTU1_DATA, PTU0_DATA,
+-	PTV7_DATA, PTV6_DATA, PTV5_DATA, PTV4_DATA,
+-	PTV3_DATA, PTV2_DATA, PTV1_DATA, PTV0_DATA,
+-	PTW7_DATA, PTW6_DATA, PTW5_DATA, PTW4_DATA,
+-	PTW3_DATA, PTW2_DATA, PTW1_DATA, PTW0_DATA,
+-	PTX7_DATA, PTX6_DATA, PTX5_DATA, PTX4_DATA,
+-	PTX3_DATA, PTX2_DATA, PTX1_DATA, PTX0_DATA,
+-	PTY7_DATA, PTY6_DATA, PTY5_DATA, PTY4_DATA,
+-	PTY3_DATA, PTY2_DATA, PTY1_DATA, PTY0_DATA,
+-	PTZ7_DATA, PTZ6_DATA, PTZ5_DATA, PTZ4_DATA,
+-	PTZ3_DATA, PTZ2_DATA, PTZ1_DATA, PTZ0_DATA,
+-	PINMUX_DATA_END,
+-
+-	PINMUX_INPUT_BEGIN,
+-	PTA7_IN, PTA6_IN, PTA5_IN, PTA4_IN,
+-	PTA3_IN, PTA2_IN, PTA1_IN, PTA0_IN,
+-	PTB7_IN, PTB6_IN, PTB5_IN, PTB4_IN,
+-	PTB3_IN, PTB2_IN, PTB1_IN, PTB0_IN,
+-	PTC7_IN, PTC6_IN, PTC5_IN, PTC4_IN,
+-	PTC3_IN, PTC2_IN, PTC1_IN, PTC0_IN,
+-	PTD7_IN, PTD6_IN, PTD5_IN, PTD4_IN,
+-	PTD3_IN, PTD2_IN, PTD1_IN, PTD0_IN,
+-	PTE7_IN, PTE6_IN, PTE5_IN, PTE4_IN,
+-	PTE3_IN, PTE2_IN, PTE1_IN, PTE0_IN,
+-	PTF7_IN, PTF6_IN, PTF5_IN, PTF4_IN,
+-	PTF3_IN, PTF2_IN, PTF1_IN, PTF0_IN,
+-	PTH7_IN, PTH6_IN, PTH5_IN, PTH4_IN,
+-	PTH3_IN, PTH2_IN, PTH1_IN, PTH0_IN,
+-	PTJ3_IN, PTJ2_IN, PTJ1_IN, PTJ0_IN,
+-	PTK7_IN, PTK6_IN, PTK5_IN, PTK4_IN,
+-	PTK3_IN, PTK2_IN, PTK1_IN, PTK0_IN,
+-	PTL7_IN, PTL6_IN, PTL5_IN, PTL4_IN,
+-	PTL3_IN, PTL2_IN, PTL1_IN, PTL0_IN,
+-	PTM7_IN, PTM6_IN, PTM5_IN, PTM4_IN,
+-	PTM3_IN, PTM2_IN, PTM1_IN, PTM0_IN,
+-	PTN7_IN, PTN6_IN, PTN5_IN, PTN4_IN,
+-	PTN3_IN, PTN2_IN, PTN1_IN, PTN0_IN,
+-	PTQ7_IN, PTQ6_IN, PTQ5_IN, PTQ4_IN,
+-	PTQ3_IN, PTQ2_IN, PTQ1_IN, PTQ0_IN,
+-	PTR7_IN, PTR6_IN, PTR5_IN, PTR4_IN,
+-	PTR3_IN, PTR2_IN, PTR1_IN, PTR0_IN,
+-		 PTS6_IN, PTS5_IN, PTS4_IN,
+-	PTS3_IN, PTS2_IN, PTS1_IN, PTS0_IN,
+-	PTT7_IN, PTT6_IN, PTT5_IN, PTT4_IN,
+-	PTT3_IN, PTT2_IN, PTT1_IN, PTT0_IN,
+-	PTU7_IN, PTU6_IN, PTU5_IN, PTU4_IN,
+-	PTU3_IN, PTU2_IN, PTU1_IN, PTU0_IN,
+-	PTV7_IN, PTV6_IN, PTV5_IN, PTV4_IN,
+-	PTV3_IN, PTV2_IN, PTV1_IN, PTV0_IN,
+-	PTW7_IN, PTW6_IN, PTW5_IN, PTW4_IN,
+-	PTW3_IN, PTW2_IN, PTW1_IN, PTW0_IN,
+-	PTX7_IN, PTX6_IN, PTX5_IN, PTX4_IN,
+-	PTX3_IN, PTX2_IN, PTX1_IN, PTX0_IN,
+-	PTY7_IN, PTY6_IN, PTY5_IN, PTY4_IN,
+-	PTY3_IN, PTY2_IN, PTY1_IN, PTY0_IN,
+-	PTZ7_IN, PTZ6_IN, PTZ5_IN, PTZ4_IN,
+-	PTZ3_IN, PTZ2_IN, PTZ1_IN, PTZ0_IN,
+-	PINMUX_INPUT_END,
+-
+-	PINMUX_OUTPUT_BEGIN,
+-	PTA7_OUT, PTA6_OUT, PTA5_OUT, PTA4_OUT,
+-	PTA3_OUT, PTA2_OUT, PTA1_OUT, PTA0_OUT,
+-	PTB7_OUT, PTB6_OUT, PTB5_OUT, PTB4_OUT,
+-	PTB3_OUT, PTB2_OUT, PTB1_OUT, PTB0_OUT,
+-	PTC7_OUT, PTC6_OUT, PTC5_OUT, PTC4_OUT,
+-	PTC3_OUT, PTC2_OUT, PTC1_OUT, PTC0_OUT,
+-	PTD7_OUT, PTD6_OUT, PTD5_OUT, PTD4_OUT,
+-	PTD3_OUT, PTD2_OUT, PTD1_OUT, PTD0_OUT,
+-	PTE7_OUT, PTE6_OUT, PTE5_OUT, PTE4_OUT,
+-	PTE3_OUT, PTE2_OUT, PTE1_OUT, PTE0_OUT,
+-	PTF7_OUT, PTF6_OUT, PTF5_OUT, PTF4_OUT,
+-	PTF3_OUT, PTF2_OUT, PTF1_OUT, PTF0_OUT,
+-			    PTG5_OUT, PTG4_OUT,
+-	PTG3_OUT, PTG2_OUT, PTG1_OUT, PTG0_OUT,
+-	PTH7_OUT, PTH6_OUT, PTH5_OUT, PTH4_OUT,
+-	PTH3_OUT, PTH2_OUT, PTH1_OUT, PTH0_OUT,
+-	PTJ7_OUT, PTJ6_OUT, PTJ5_OUT,
+-	PTJ3_OUT, PTJ2_OUT, PTJ1_OUT, PTJ0_OUT,
+-	PTK7_OUT, PTK6_OUT, PTK5_OUT, PTK4_OUT,
+-	PTK3_OUT, PTK2_OUT, PTK1_OUT, PTK0_OUT,
+-	PTL7_OUT, PTL6_OUT, PTL5_OUT, PTL4_OUT,
+-	PTL3_OUT, PTL2_OUT, PTL1_OUT, PTL0_OUT,
+-	PTM7_OUT, PTM6_OUT, PTM5_OUT, PTM4_OUT,
+-	PTM3_OUT, PTM2_OUT, PTM1_OUT, PTM0_OUT,
+-	PTN7_OUT, PTN6_OUT, PTN5_OUT, PTN4_OUT,
+-	PTN3_OUT, PTN2_OUT, PTN1_OUT, PTN0_OUT,
+-	PTQ7_OUT, PTQ6_OUT, PTQ5_OUT, PTQ4_OUT,
+-	PTQ3_OUT, PTQ2_OUT, PTQ1_OUT, PTQ0_OUT,
+-	PTR7_OUT, PTR6_OUT, PTR5_OUT, PTR4_OUT,
+-			    PTR1_OUT, PTR0_OUT,
+-		  PTS6_OUT, PTS5_OUT, PTS4_OUT,
+-	PTS3_OUT, PTS2_OUT, PTS1_OUT, PTS0_OUT,
+-	PTT7_OUT, PTT6_OUT, PTT5_OUT, PTT4_OUT,
+-	PTT3_OUT, PTT2_OUT, PTT1_OUT, PTT0_OUT,
+-	PTU7_OUT, PTU6_OUT, PTU5_OUT, PTU4_OUT,
+-	PTU3_OUT, PTU2_OUT, PTU1_OUT, PTU0_OUT,
+-	PTV7_OUT, PTV6_OUT, PTV5_OUT, PTV4_OUT,
+-	PTV3_OUT, PTV2_OUT, PTV1_OUT, PTV0_OUT,
+-	PTW7_OUT, PTW6_OUT, PTW5_OUT, PTW4_OUT,
+-	PTW3_OUT, PTW2_OUT, PTW1_OUT, PTW0_OUT,
+-	PTX7_OUT, PTX6_OUT, PTX5_OUT, PTX4_OUT,
+-	PTX3_OUT, PTX2_OUT, PTX1_OUT, PTX0_OUT,
+-	PTY7_OUT, PTY6_OUT, PTY5_OUT, PTY4_OUT,
+-	PTY3_OUT, PTY2_OUT, PTY1_OUT, PTY0_OUT,
+-	PTZ7_OUT, PTZ6_OUT, PTZ5_OUT, PTZ4_OUT,
+-	PTZ3_OUT, PTZ2_OUT, PTZ1_OUT, PTZ0_OUT,
+-	PINMUX_OUTPUT_END,
+-
+-	PINMUX_FUNCTION_BEGIN,
+-	PTA7_FN, PTA6_FN, PTA5_FN, PTA4_FN,
+-	PTA3_FN, PTA2_FN, PTA1_FN, PTA0_FN,
+-	PTB7_FN, PTB6_FN, PTB5_FN, PTB4_FN,
+-	PTB3_FN, PTB2_FN, PTB1_FN, PTB0_FN,
+-	PTC7_FN, PTC6_FN, PTC5_FN, PTC4_FN,
+-	PTC3_FN, PTC2_FN, PTC1_FN, PTC0_FN,
+-	PTD7_FN, PTD6_FN, PTD5_FN, PTD4_FN,
+-	PTD3_FN, PTD2_FN, PTD1_FN, PTD0_FN,
+-	PTE7_FN, PTE6_FN, PTE5_FN, PTE4_FN,
+-	PTE3_FN, PTE2_FN, PTE1_FN, PTE0_FN,
+-	PTF7_FN, PTF6_FN, PTF5_FN, PTF4_FN,
+-	PTF3_FN, PTF2_FN, PTF1_FN, PTF0_FN,
+-			  PTG5_FN, PTG4_FN,
+-	PTG3_FN, PTG2_FN, PTG1_FN, PTG0_FN,
+-	PTH7_FN, PTH6_FN, PTH5_FN, PTH4_FN,
+-	PTH3_FN, PTH2_FN, PTH1_FN, PTH0_FN,
+-	PTJ7_FN, PTJ6_FN, PTJ5_FN,
+-	PTJ3_FN, PTJ2_FN, PTJ1_FN, PTJ0_FN,
+-	PTK7_FN, PTK6_FN, PTK5_FN, PTK4_FN,
+-	PTK3_FN, PTK2_FN, PTK1_FN, PTK0_FN,
+-	PTL7_FN, PTL6_FN, PTL5_FN, PTL4_FN,
+-	PTL3_FN, PTL2_FN, PTL1_FN, PTL0_FN,
+-	PTM7_FN, PTM6_FN, PTM5_FN, PTM4_FN,
+-	PTM3_FN, PTM2_FN, PTM1_FN, PTM0_FN,
+-	PTN7_FN, PTN6_FN, PTN5_FN, PTN4_FN,
+-	PTN3_FN, PTN2_FN, PTN1_FN, PTN0_FN,
+-	PTQ7_FN, PTQ6_FN, PTQ5_FN, PTQ4_FN,
+-	PTQ3_FN, PTQ2_FN, PTQ1_FN, PTQ0_FN,
+-	PTR7_FN, PTR6_FN, PTR5_FN, PTR4_FN,
+-	PTR3_FN, PTR2_FN, PTR1_FN, PTR0_FN,
+-		 PTS6_FN, PTS5_FN, PTS4_FN,
+-	PTS3_FN, PTS2_FN, PTS1_FN, PTS0_FN,
+-	PTT7_FN, PTT6_FN, PTT5_FN, PTT4_FN,
+-	PTT3_FN, PTT2_FN, PTT1_FN, PTT0_FN,
+-	PTU7_FN, PTU6_FN, PTU5_FN, PTU4_FN,
+-	PTU3_FN, PTU2_FN, PTU1_FN, PTU0_FN,
+-	PTV7_FN, PTV6_FN, PTV5_FN, PTV4_FN,
+-	PTV3_FN, PTV2_FN, PTV1_FN, PTV0_FN,
+-	PTW7_FN, PTW6_FN, PTW5_FN, PTW4_FN,
+-	PTW3_FN, PTW2_FN, PTW1_FN, PTW0_FN,
+-	PTX7_FN, PTX6_FN, PTX5_FN, PTX4_FN,
+-	PTX3_FN, PTX2_FN, PTX1_FN, PTX0_FN,
+-	PTY7_FN, PTY6_FN, PTY5_FN, PTY4_FN,
+-	PTY3_FN, PTY2_FN, PTY1_FN, PTY0_FN,
+-	PTZ7_FN, PTZ6_FN, PTZ5_FN, PTZ4_FN,
+-	PTZ3_FN, PTZ2_FN, PTZ1_FN, PTZ0_FN,
+-
+-
+-	PSA15_0, PSA15_1,
+-	PSA14_0, PSA14_1,
+-	PSA13_0, PSA13_1,
+-	PSA12_0, PSA12_1,
+-	PSA10_0, PSA10_1,
+-	PSA9_0,  PSA9_1,
+-	PSA8_0,  PSA8_1,
+-	PSA7_0,  PSA7_1,
+-	PSA6_0,  PSA6_1,
+-	PSA5_0,  PSA5_1,
+-	PSA3_0,  PSA3_1,
+-	PSA2_0,  PSA2_1,
+-	PSA1_0,  PSA1_1,
+-	PSA0_0,  PSA0_1,
+-
+-	PSB14_0, PSB14_1,
+-	PSB13_0, PSB13_1,
+-	PSB12_0, PSB12_1,
+-	PSB11_0, PSB11_1,
+-	PSB10_0, PSB10_1,
+-	PSB9_0,  PSB9_1,
+-	PSB8_0,  PSB8_1,
+-	PSB7_0,  PSB7_1,
+-	PSB6_0,  PSB6_1,
+-	PSB5_0,  PSB5_1,
+-	PSB4_0,  PSB4_1,
+-	PSB3_0,  PSB3_1,
+-	PSB2_0,  PSB2_1,
+-	PSB1_0,  PSB1_1,
+-	PSB0_0,  PSB0_1,
+-
+-	PSC15_0, PSC15_1,
+-	PSC14_0, PSC14_1,
+-	PSC13_0, PSC13_1,
+-	PSC12_0, PSC12_1,
+-	PSC11_0, PSC11_1,
+-	PSC10_0, PSC10_1,
+-	PSC9_0,  PSC9_1,
+-	PSC8_0,  PSC8_1,
+-	PSC7_0,  PSC7_1,
+-	PSC6_0,  PSC6_1,
+-	PSC5_0,  PSC5_1,
+-	PSC4_0,  PSC4_1,
+-	PSC2_0,  PSC2_1,
+-	PSC1_0,  PSC1_1,
+-	PSC0_0,  PSC0_1,
+-
+-	PSD15_0, PSD15_1,
+-	PSD14_0, PSD14_1,
+-	PSD13_0, PSD13_1,
+-	PSD12_0, PSD12_1,
+-	PSD11_0, PSD11_1,
+-	PSD10_0, PSD10_1,
+-	PSD9_0,  PSD9_1,
+-	PSD8_0,  PSD8_1,
+-	PSD7_0,  PSD7_1,
+-	PSD6_0,  PSD6_1,
+-	PSD5_0,  PSD5_1,
+-	PSD4_0,  PSD4_1,
+-	PSD3_0,  PSD3_1,
+-	PSD2_0,  PSD2_1,
+-	PSD1_0,  PSD1_1,
+-	PSD0_0,  PSD0_1,
+-
+-	PSE15_0, PSE15_1,
+-	PSE14_0, PSE14_1,
+-	PSE13_0, PSE13_1,
+-	PSE12_0, PSE12_1,
+-	PSE11_0, PSE11_1,
+-	PSE10_0, PSE10_1,
+-	PSE9_0,  PSE9_1,
+-	PSE8_0,  PSE8_1,
+-	PSE7_0,  PSE7_1,
+-	PSE6_0,  PSE6_1,
+-	PSE5_0,  PSE5_1,
+-	PSE4_0,  PSE4_1,
+-	PSE3_0,  PSE3_1,
+-	PSE2_0,  PSE2_1,
+-	PSE1_0,  PSE1_1,
+-	PSE0_0,  PSE0_1,
+-	PINMUX_FUNCTION_END,
+-
+-	PINMUX_MARK_BEGIN,
+-	/*PTA*/
+-	D23_MARK,	KEYOUT2_MARK,		IDED15_MARK,
+-	D22_MARK,	KEYOUT1_MARK,		IDED14_MARK,
+-	D21_MARK,	KEYOUT0_MARK,		IDED13_MARK,
+-	D20_MARK,	KEYIN4_MARK,		IDED12_MARK,
+-	D19_MARK,	KEYIN3_MARK,		IDED11_MARK,
+-	D18_MARK,	KEYIN2_MARK,		IDED10_MARK,
+-	D17_MARK,	KEYIN1_MARK,		IDED9_MARK,
+-	D16_MARK,	KEYIN0_MARK,		IDED8_MARK,
+-
+-	/*PTB*/
+-	D31_MARK,	TPUTO1_MARK,		IDEA1_MARK,
+-	D30_MARK,	TPUTO0_MARK,		IDEA0_MARK,
+-	D29_MARK,				IODREQ_MARK,
+-	D28_MARK,				IDECS0_MARK,
+-	D27_MARK,				IDECS1_MARK,
+-	D26_MARK,	KEYOUT5_IN5_MARK,	IDEIORD_MARK,
+-	D25_MARK,	KEYOUT4_IN6_MARK,	IDEIOWR_MARK,
+-	D24_MARK,	KEYOUT3_MARK,		IDEINT_MARK,
+-
+-	/*PTC*/
+-	LCDD7_MARK,
+-	LCDD6_MARK,
+-	LCDD5_MARK,
+-	LCDD4_MARK,
+-	LCDD3_MARK,
+-	LCDD2_MARK,
+-	LCDD1_MARK,
+-	LCDD0_MARK,
+-
+-	/*PTD*/
+-	LCDD15_MARK,
+-	LCDD14_MARK,
+-	LCDD13_MARK,
+-	LCDD12_MARK,
+-	LCDD11_MARK,
+-	LCDD10_MARK,
+-	LCDD9_MARK,
+-	LCDD8_MARK,
+-
+-	/*PTE*/
+-	FSIMCKB_MARK,
+-	FSIMCKA_MARK,
+-	LCDD21_MARK,	SCIF2_L_TXD_MARK,
+-	LCDD20_MARK,	SCIF4_SCK_MARK,
+-	LCDD19_MARK,	SCIF4_RXD_MARK,
+-	LCDD18_MARK,	SCIF4_TXD_MARK,
+-	LCDD17_MARK,
+-	LCDD16_MARK,
+-
+-	/*PTF*/
+-	LCDVSYN_MARK,
+-	LCDDISP_MARK,	LCDRS_MARK,
+-	LCDHSYN_MARK,	LCDCS_MARK,
+-	LCDDON_MARK,
+-	LCDDCK_MARK,	LCDWR_MARK,
+-	LCDVEPWC_MARK,	SCIF0_TXD_MARK,
+-	LCDD23_MARK,	SCIF2_L_SCK_MARK,
+-	LCDD22_MARK,	SCIF2_L_RXD_MARK,
+-
+-	/*PTG*/
+-	AUDCK_MARK,
+-	AUDSYNC_MARK,
+-	AUDATA3_MARK,
+-	AUDATA2_MARK,
+-	AUDATA1_MARK,
+-	AUDATA0_MARK,
+-
+-	/*PTH*/
+-	VIO0_VD_MARK,
+-	VIO0_CLK_MARK,
+-	VIO0_D7_MARK,
+-	VIO0_D6_MARK,
+-	VIO0_D5_MARK,
+-	VIO0_D4_MARK,
+-	VIO0_D3_MARK,
+-	VIO0_D2_MARK,
+-
+-	/*PTJ*/
+-	PDSTATUS_MARK,
+-	STATUS2_MARK,
+-	STATUS0_MARK,
+-	A25_MARK,		BS_MARK,
+-	A24_MARK,
+-	A23_MARK,
+-	A22_MARK,
+-
+-	/*PTK*/
+-	VIO1_D5_MARK,	VIO0_D13_MARK,	IDED5_MARK,
+-	VIO1_D4_MARK,	VIO0_D12_MARK,	IDED4_MARK,
+-	VIO1_D3_MARK,	VIO0_D11_MARK,	IDED3_MARK,
+-	VIO1_D2_MARK,	VIO0_D10_MARK,	IDED2_MARK,
+-	VIO1_D1_MARK,	VIO0_D9_MARK,	IDED1_MARK,
+-	VIO1_D0_MARK,	VIO0_D8_MARK,	IDED0_MARK,
+-	VIO0_FLD_MARK,
+-	VIO0_HD_MARK,
+-
+-	/*PTL*/
+-	DV_D5_MARK,	SCIF3_V_SCK_MARK,	RMII_RXD0_MARK,
+-	DV_D4_MARK,	SCIF3_V_RXD_MARK,	RMII_RXD1_MARK,
+-	DV_D3_MARK,	SCIF3_V_TXD_MARK,	RMII_REF_CLK_MARK,
+-	DV_D2_MARK,	SCIF1_SCK_MARK,		RMII_TX_EN_MARK,
+-	DV_D1_MARK,	SCIF1_RXD_MARK,		RMII_TXD0_MARK,
+-	DV_D0_MARK,	SCIF1_TXD_MARK,		RMII_TXD1_MARK,
+-	DV_D15_MARK,
+-	DV_D14_MARK,	MSIOF0_MCK_MARK,
+-
+-	/*PTM*/
+-	DV_D13_MARK,	MSIOF0_TSCK_MARK,
+-	DV_D12_MARK,	MSIOF0_RXD_MARK,
+-	DV_D11_MARK,	MSIOF0_TXD_MARK,
+-	DV_D10_MARK,	MSIOF0_TSYNC_MARK,
+-	DV_D9_MARK,	MSIOF0_SS1_MARK,	MSIOF0_RSCK_MARK,
+-	DV_D8_MARK,	MSIOF0_SS2_MARK,	MSIOF0_RSYNC_MARK,
+-	LCDVCPWC_MARK,	SCIF0_RXD_MARK,
+-	LCDRD_MARK,	SCIF0_SCK_MARK,
+-
+-	/*PTN*/
+-	VIO0_D1_MARK,
+-	VIO0_D0_MARK,
+-	DV_CLKI_MARK,
+-	DV_CLK_MARK,	SCIF2_V_SCK_MARK,
+-	DV_VSYNC_MARK,	SCIF2_V_RXD_MARK,
+-	DV_HSYNC_MARK,	SCIF2_V_TXD_MARK,
+-	DV_D7_MARK,	SCIF3_V_CTS_MARK,	RMII_RX_ER_MARK,
+-	DV_D6_MARK,	SCIF3_V_RTS_MARK,	RMII_CRS_DV_MARK,
+-
+-	/*PTQ*/
+-	D7_MARK,
+-	D6_MARK,
+-	D5_MARK,
+-	D4_MARK,
+-	D3_MARK,
+-	D2_MARK,
+-	D1_MARK,
+-	D0_MARK,
+-
+-	/*PTR*/
+-	CS6B_CE1B_MARK,
+-	CS6A_CE2B_MARK,
+-	CS5B_CE1A_MARK,
+-	CS5A_CE2A_MARK,
+-	IOIS16_MARK,		LCDLCLK_MARK,
+-	WAIT_MARK,
+-	WE3_ICIOWR_MARK,	TPUTO3_MARK,	TPUTI3_MARK,
+-	WE2_ICIORD_MARK,	TPUTO2_MARK,	IDEA2_MARK,
+-
+-	/*PTS*/
+-	VIO_CKO_MARK,
+-	VIO1_FLD_MARK,	TPUTI2_MARK,		IDEIORDY_MARK,
+-	VIO1_HD_MARK,	SCIF5_SCK_MARK,
+-	VIO1_VD_MARK,	SCIF5_RXD_MARK,
+-	VIO1_CLK_MARK,	SCIF5_TXD_MARK,
+-	VIO1_D7_MARK,	VIO0_D15_MARK,		IDED7_MARK,
+-	VIO1_D6_MARK,	VIO0_D14_MARK,		IDED6_MARK,
+-
+-	/*PTT*/
+-	D15_MARK,
+-	D14_MARK,
+-	D13_MARK,
+-	D12_MARK,
+-	D11_MARK,
+-	D10_MARK,
+-	D9_MARK,
+-	D8_MARK,
+-
+-	/*PTU*/
+-	DMAC_DACK0_MARK,
+-	DMAC_DREQ0_MARK,
+-	FSIOASD_MARK,
+-	FSIIABCK_MARK,
+-	FSIIALRCK_MARK,
+-	FSIOABCK_MARK,
+-	FSIOALRCK_MARK,
+-	CLKAUDIOAO_MARK,
+-
+-	/*PTV*/
+-	FSIIBSD_MARK,		MSIOF1_SS2_MARK,	MSIOF1_RSYNC_MARK,
+-	FSIOBSD_MARK,		MSIOF1_SS1_MARK,	MSIOF1_RSCK_MARK,
+-	FSIIBBCK_MARK,		MSIOF1_RXD_MARK,
+-	FSIIBLRCK_MARK,		MSIOF1_TSYNC_MARK,
+-	FSIOBBCK_MARK,		MSIOF1_TSCK_MARK,
+-	FSIOBLRCK_MARK,		MSIOF1_TXD_MARK,
+-	CLKAUDIOBO_MARK,	MSIOF1_MCK_MARK,
+-	FSIIASD_MARK,
+-
+-	/*PTW*/
+-	MMC_D7_MARK,		SDHI1CD_MARK,		IODACK_MARK,
+-	MMC_D6_MARK,		SDHI1WP_MARK,		IDERST_MARK,
+-	MMC_D5_MARK,		SDHI1D3_MARK,		EXBUF_ENB_MARK,
+-	MMC_D4_MARK,		SDHI1D2_MARK,		DIRECTION_MARK,
+-	MMC_D3_MARK,		SDHI1D1_MARK,
+-	MMC_D2_MARK,		SDHI1D0_MARK,
+-	MMC_D1_MARK,		SDHI1CMD_MARK,
+-	MMC_D0_MARK,		SDHI1CLK_MARK,
+-
+-	/*PTX*/
+-	DMAC_DACK1_MARK,	IRDA_OUT_MARK,
+-	DMAC_DREQ1_MARK,	IRDA_IN_MARK,
+-	TSIF_TS0_SDAT_MARK,				LNKSTA_MARK,
+-	TSIF_TS0_SCK_MARK,				MDIO_MARK,
+-	TSIF_TS0_SDEN_MARK,				MDC_MARK,
+-	TSIF_TS0_SPSYNC_MARK,
+-	MMC_CLK_MARK,
+-	MMC_CMD_MARK,
+-
+-	/*PTY*/
+-	SDHI0CD_MARK,
+-	SDHI0WP_MARK,
+-	SDHI0D3_MARK,
+-	SDHI0D2_MARK,
+-	SDHI0D1_MARK,
+-	SDHI0D0_MARK,
+-	SDHI0CMD_MARK,
+-	SDHI0CLK_MARK,
+-
+-	/*PTZ*/
+-	INTC_IRQ7_MARK,		SCIF3_I_CTS_MARK,
+-	INTC_IRQ6_MARK,		SCIF3_I_RTS_MARK,
+-	INTC_IRQ5_MARK,		SCIF3_I_SCK_MARK,
+-	INTC_IRQ4_MARK,		SCIF3_I_RXD_MARK,
+-	INTC_IRQ3_MARK,		SCIF3_I_TXD_MARK,
+-	INTC_IRQ2_MARK,
+-	INTC_IRQ1_MARK,
+-	INTC_IRQ0_MARK,
+-	PINMUX_MARK_END,
+-};
+-
+-static const u16 pinmux_data[] = {
+-	/* PTA GPIO */
+-	PINMUX_DATA(PTA7_DATA, PTA7_IN, PTA7_OUT),
+-	PINMUX_DATA(PTA6_DATA, PTA6_IN, PTA6_OUT),
+-	PINMUX_DATA(PTA5_DATA, PTA5_IN, PTA5_OUT),
+-	PINMUX_DATA(PTA4_DATA, PTA4_IN, PTA4_OUT),
+-	PINMUX_DATA(PTA3_DATA, PTA3_IN, PTA3_OUT),
+-	PINMUX_DATA(PTA2_DATA, PTA2_IN, PTA2_OUT),
+-	PINMUX_DATA(PTA1_DATA, PTA1_IN, PTA1_OUT),
+-	PINMUX_DATA(PTA0_DATA, PTA0_IN, PTA0_OUT),
+-
+-	/* PTB GPIO */
+-	PINMUX_DATA(PTB7_DATA, PTB7_IN, PTB7_OUT),
+-	PINMUX_DATA(PTB6_DATA, PTB6_IN, PTB6_OUT),
+-	PINMUX_DATA(PTB5_DATA, PTB5_IN, PTB5_OUT),
+-	PINMUX_DATA(PTB4_DATA, PTB4_IN, PTB4_OUT),
+-	PINMUX_DATA(PTB3_DATA, PTB3_IN, PTB3_OUT),
+-	PINMUX_DATA(PTB2_DATA, PTB2_IN, PTB2_OUT),
+-	PINMUX_DATA(PTB1_DATA, PTB1_IN, PTB1_OUT),
+-	PINMUX_DATA(PTB0_DATA, PTB0_IN, PTB0_OUT),
+-
+-	/* PTC GPIO */
+-	PINMUX_DATA(PTC7_DATA, PTC7_IN, PTC7_OUT),
+-	PINMUX_DATA(PTC6_DATA, PTC6_IN, PTC6_OUT),
+-	PINMUX_DATA(PTC5_DATA, PTC5_IN, PTC5_OUT),
+-	PINMUX_DATA(PTC4_DATA, PTC4_IN, PTC4_OUT),
+-	PINMUX_DATA(PTC3_DATA, PTC3_IN, PTC3_OUT),
+-	PINMUX_DATA(PTC2_DATA, PTC2_IN, PTC2_OUT),
+-	PINMUX_DATA(PTC1_DATA, PTC1_IN, PTC1_OUT),
+-	PINMUX_DATA(PTC0_DATA, PTC0_IN, PTC0_OUT),
+-
+-	/* PTD GPIO */
+-	PINMUX_DATA(PTD7_DATA, PTD7_IN, PTD7_OUT),
+-	PINMUX_DATA(PTD6_DATA, PTD6_IN, PTD6_OUT),
+-	PINMUX_DATA(PTD5_DATA, PTD5_IN, PTD5_OUT),
+-	PINMUX_DATA(PTD4_DATA, PTD4_IN, PTD4_OUT),
+-	PINMUX_DATA(PTD3_DATA, PTD3_IN, PTD3_OUT),
+-	PINMUX_DATA(PTD2_DATA, PTD2_IN, PTD2_OUT),
+-	PINMUX_DATA(PTD1_DATA, PTD1_IN, PTD1_OUT),
+-	PINMUX_DATA(PTD0_DATA, PTD0_IN, PTD0_OUT),
+-
+-	/* PTE GPIO */
+-	PINMUX_DATA(PTE7_DATA, PTE7_IN, PTE7_OUT),
+-	PINMUX_DATA(PTE6_DATA, PTE6_IN, PTE6_OUT),
+-	PINMUX_DATA(PTE5_DATA, PTE5_IN, PTE5_OUT),
+-	PINMUX_DATA(PTE4_DATA, PTE4_IN, PTE4_OUT),
+-	PINMUX_DATA(PTE3_DATA, PTE3_IN, PTE3_OUT),
+-	PINMUX_DATA(PTE2_DATA, PTE2_IN, PTE2_OUT),
+-	PINMUX_DATA(PTE1_DATA, PTE1_IN, PTE1_OUT),
+-	PINMUX_DATA(PTE0_DATA, PTE0_IN, PTE0_OUT),
+-
+-	/* PTF GPIO */
+-	PINMUX_DATA(PTF7_DATA, PTF7_IN, PTF7_OUT),
+-	PINMUX_DATA(PTF6_DATA, PTF6_IN, PTF6_OUT),
+-	PINMUX_DATA(PTF5_DATA, PTF5_IN, PTF5_OUT),
+-	PINMUX_DATA(PTF4_DATA, PTF4_IN, PTF4_OUT),
+-	PINMUX_DATA(PTF3_DATA, PTF3_IN, PTF3_OUT),
+-	PINMUX_DATA(PTF2_DATA, PTF2_IN, PTF2_OUT),
+-	PINMUX_DATA(PTF1_DATA, PTF1_IN, PTF1_OUT),
+-	PINMUX_DATA(PTF0_DATA, PTF0_IN, PTF0_OUT),
+-
+-	/* PTG GPIO */
+-	PINMUX_DATA(PTG5_DATA, PTG5_OUT),
+-	PINMUX_DATA(PTG4_DATA, PTG4_OUT),
+-	PINMUX_DATA(PTG3_DATA, PTG3_OUT),
+-	PINMUX_DATA(PTG2_DATA, PTG2_OUT),
+-	PINMUX_DATA(PTG1_DATA, PTG1_OUT),
+-	PINMUX_DATA(PTG0_DATA, PTG0_OUT),
+-
+-	/* PTH GPIO */
+-	PINMUX_DATA(PTH7_DATA, PTH7_IN, PTH7_OUT),
+-	PINMUX_DATA(PTH6_DATA, PTH6_IN, PTH6_OUT),
+-	PINMUX_DATA(PTH5_DATA, PTH5_IN, PTH5_OUT),
+-	PINMUX_DATA(PTH4_DATA, PTH4_IN, PTH4_OUT),
+-	PINMUX_DATA(PTH3_DATA, PTH3_IN, PTH3_OUT),
+-	PINMUX_DATA(PTH2_DATA, PTH2_IN, PTH2_OUT),
+-	PINMUX_DATA(PTH1_DATA, PTH1_IN, PTH1_OUT),
+-	PINMUX_DATA(PTH0_DATA, PTH0_IN, PTH0_OUT),
+-
+-	/* PTJ GPIO */
+-	PINMUX_DATA(PTJ7_DATA, PTJ7_OUT),
+-	PINMUX_DATA(PTJ6_DATA, PTJ6_OUT),
+-	PINMUX_DATA(PTJ5_DATA, PTJ5_OUT),
+-	PINMUX_DATA(PTJ3_DATA, PTJ3_IN, PTJ3_OUT),
+-	PINMUX_DATA(PTJ2_DATA, PTJ2_IN, PTJ2_OUT),
+-	PINMUX_DATA(PTJ1_DATA, PTJ1_IN, PTJ1_OUT),
+-	PINMUX_DATA(PTJ0_DATA, PTJ0_IN, PTJ0_OUT),
+-
+-	/* PTK GPIO */
+-	PINMUX_DATA(PTK7_DATA, PTK7_IN, PTK7_OUT),
+-	PINMUX_DATA(PTK6_DATA, PTK6_IN, PTK6_OUT),
+-	PINMUX_DATA(PTK5_DATA, PTK5_IN, PTK5_OUT),
+-	PINMUX_DATA(PTK4_DATA, PTK4_IN, PTK4_OUT),
+-	PINMUX_DATA(PTK3_DATA, PTK3_IN, PTK3_OUT),
+-	PINMUX_DATA(PTK2_DATA, PTK2_IN, PTK2_OUT),
+-	PINMUX_DATA(PTK1_DATA, PTK1_IN, PTK1_OUT),
+-	PINMUX_DATA(PTK0_DATA, PTK0_IN, PTK0_OUT),
+-
+-	/* PTL GPIO */
+-	PINMUX_DATA(PTL7_DATA, PTL7_IN, PTL7_OUT),
+-	PINMUX_DATA(PTL6_DATA, PTL6_IN, PTL6_OUT),
+-	PINMUX_DATA(PTL5_DATA, PTL5_IN, PTL5_OUT),
+-	PINMUX_DATA(PTL4_DATA, PTL4_IN, PTL4_OUT),
+-	PINMUX_DATA(PTL3_DATA, PTL3_IN, PTL3_OUT),
+-	PINMUX_DATA(PTL2_DATA, PTL2_IN, PTL2_OUT),
+-	PINMUX_DATA(PTL1_DATA, PTL1_IN, PTL1_OUT),
+-	PINMUX_DATA(PTL0_DATA, PTL0_IN, PTL0_OUT),
+-
+-	/* PTM GPIO */
+-	PINMUX_DATA(PTM7_DATA, PTM7_IN, PTM7_OUT),
+-	PINMUX_DATA(PTM6_DATA, PTM6_IN, PTM6_OUT),
+-	PINMUX_DATA(PTM5_DATA, PTM5_IN, PTM5_OUT),
+-	PINMUX_DATA(PTM4_DATA, PTM4_IN, PTM4_OUT),
+-	PINMUX_DATA(PTM3_DATA, PTM3_IN, PTM3_OUT),
+-	PINMUX_DATA(PTM2_DATA, PTM2_IN, PTM2_OUT),
+-	PINMUX_DATA(PTM1_DATA, PTM1_IN, PTM1_OUT),
+-	PINMUX_DATA(PTM0_DATA, PTM0_IN, PTM0_OUT),
+-
+-	/* PTN GPIO */
+-	PINMUX_DATA(PTN7_DATA, PTN7_IN, PTN7_OUT),
+-	PINMUX_DATA(PTN6_DATA, PTN6_IN, PTN6_OUT),
+-	PINMUX_DATA(PTN5_DATA, PTN5_IN, PTN5_OUT),
+-	PINMUX_DATA(PTN4_DATA, PTN4_IN, PTN4_OUT),
+-	PINMUX_DATA(PTN3_DATA, PTN3_IN, PTN3_OUT),
+-	PINMUX_DATA(PTN2_DATA, PTN2_IN, PTN2_OUT),
+-	PINMUX_DATA(PTN1_DATA, PTN1_IN, PTN1_OUT),
+-	PINMUX_DATA(PTN0_DATA, PTN0_IN, PTN0_OUT),
+-
+-	/* PTQ GPIO */
+-	PINMUX_DATA(PTQ7_DATA, PTQ7_IN, PTQ7_OUT),
+-	PINMUX_DATA(PTQ6_DATA, PTQ6_IN, PTQ6_OUT),
+-	PINMUX_DATA(PTQ5_DATA, PTQ5_IN, PTQ5_OUT),
+-	PINMUX_DATA(PTQ4_DATA, PTQ4_IN, PTQ4_OUT),
+-	PINMUX_DATA(PTQ3_DATA, PTQ3_IN, PTQ3_OUT),
+-	PINMUX_DATA(PTQ2_DATA, PTQ2_IN, PTQ2_OUT),
+-	PINMUX_DATA(PTQ1_DATA, PTQ1_IN, PTQ1_OUT),
+-	PINMUX_DATA(PTQ0_DATA, PTQ0_IN, PTQ0_OUT),
+-
+-	/* PTR GPIO */
+-	PINMUX_DATA(PTR7_DATA, PTR7_IN, PTR7_OUT),
+-	PINMUX_DATA(PTR6_DATA, PTR6_IN, PTR6_OUT),
+-	PINMUX_DATA(PTR5_DATA, PTR5_IN, PTR5_OUT),
+-	PINMUX_DATA(PTR4_DATA, PTR4_IN, PTR4_OUT),
+-	PINMUX_DATA(PTR3_DATA, PTR3_IN),
+-	PINMUX_DATA(PTR2_DATA, PTR2_IN),
+-	PINMUX_DATA(PTR1_DATA, PTR1_IN, PTR1_OUT),
+-	PINMUX_DATA(PTR0_DATA, PTR0_IN, PTR0_OUT),
+-
+-	/* PTS GPIO */
+-	PINMUX_DATA(PTS6_DATA, PTS6_IN, PTS6_OUT),
+-	PINMUX_DATA(PTS5_DATA, PTS5_IN, PTS5_OUT),
+-	PINMUX_DATA(PTS4_DATA, PTS4_IN, PTS4_OUT),
+-	PINMUX_DATA(PTS3_DATA, PTS3_IN, PTS3_OUT),
+-	PINMUX_DATA(PTS2_DATA, PTS2_IN, PTS2_OUT),
+-	PINMUX_DATA(PTS1_DATA, PTS1_IN, PTS1_OUT),
+-	PINMUX_DATA(PTS0_DATA, PTS0_IN, PTS0_OUT),
+-
+-	/* PTT GPIO */
+-	PINMUX_DATA(PTT7_DATA, PTT7_IN, PTT7_OUT),
+-	PINMUX_DATA(PTT6_DATA, PTT6_IN, PTT6_OUT),
+-	PINMUX_DATA(PTT5_DATA, PTT5_IN, PTT5_OUT),
+-	PINMUX_DATA(PTT4_DATA, PTT4_IN, PTT4_OUT),
+-	PINMUX_DATA(PTT3_DATA, PTT3_IN, PTT3_OUT),
+-	PINMUX_DATA(PTT2_DATA, PTT2_IN, PTT2_OUT),
+-	PINMUX_DATA(PTT1_DATA, PTT1_IN, PTT1_OUT),
+-	PINMUX_DATA(PTT0_DATA, PTT0_IN, PTT0_OUT),
+-
+-	/* PTU GPIO */
+-	PINMUX_DATA(PTU7_DATA, PTU7_IN, PTU7_OUT),
+-	PINMUX_DATA(PTU6_DATA, PTU6_IN, PTU6_OUT),
+-	PINMUX_DATA(PTU5_DATA, PTU5_IN, PTU5_OUT),
+-	PINMUX_DATA(PTU4_DATA, PTU4_IN, PTU4_OUT),
+-	PINMUX_DATA(PTU3_DATA, PTU3_IN, PTU3_OUT),
+-	PINMUX_DATA(PTU2_DATA, PTU2_IN, PTU2_OUT),
+-	PINMUX_DATA(PTU1_DATA, PTU1_IN, PTU1_OUT),
+-	PINMUX_DATA(PTU0_DATA, PTU0_IN, PTU0_OUT),
+-
+-	/* PTV GPIO */
+-	PINMUX_DATA(PTV7_DATA, PTV7_IN, PTV7_OUT),
+-	PINMUX_DATA(PTV6_DATA, PTV6_IN, PTV6_OUT),
+-	PINMUX_DATA(PTV5_DATA, PTV5_IN, PTV5_OUT),
+-	PINMUX_DATA(PTV4_DATA, PTV4_IN, PTV4_OUT),
+-	PINMUX_DATA(PTV3_DATA, PTV3_IN, PTV3_OUT),
+-	PINMUX_DATA(PTV2_DATA, PTV2_IN, PTV2_OUT),
+-	PINMUX_DATA(PTV1_DATA, PTV1_IN, PTV1_OUT),
+-	PINMUX_DATA(PTV0_DATA, PTV0_IN, PTV0_OUT),
+-
+-	/* PTW GPIO */
+-	PINMUX_DATA(PTW7_DATA, PTW7_IN, PTW7_OUT),
+-	PINMUX_DATA(PTW6_DATA, PTW6_IN, PTW6_OUT),
+-	PINMUX_DATA(PTW5_DATA, PTW5_IN, PTW5_OUT),
+-	PINMUX_DATA(PTW4_DATA, PTW4_IN, PTW4_OUT),
+-	PINMUX_DATA(PTW3_DATA, PTW3_IN, PTW3_OUT),
+-	PINMUX_DATA(PTW2_DATA, PTW2_IN, PTW2_OUT),
+-	PINMUX_DATA(PTW1_DATA, PTW1_IN, PTW1_OUT),
+-	PINMUX_DATA(PTW0_DATA, PTW0_IN, PTW0_OUT),
+-
+-	/* PTX GPIO */
+-	PINMUX_DATA(PTX7_DATA, PTX7_IN, PTX7_OUT),
+-	PINMUX_DATA(PTX6_DATA, PTX6_IN, PTX6_OUT),
+-	PINMUX_DATA(PTX5_DATA, PTX5_IN, PTX5_OUT),
+-	PINMUX_DATA(PTX4_DATA, PTX4_IN, PTX4_OUT),
+-	PINMUX_DATA(PTX3_DATA, PTX3_IN, PTX3_OUT),
+-	PINMUX_DATA(PTX2_DATA, PTX2_IN, PTX2_OUT),
+-	PINMUX_DATA(PTX1_DATA, PTX1_IN, PTX1_OUT),
+-	PINMUX_DATA(PTX0_DATA, PTX0_IN, PTX0_OUT),
+-
+-	/* PTY GPIO */
+-	PINMUX_DATA(PTY7_DATA, PTY7_IN, PTY7_OUT),
+-	PINMUX_DATA(PTY6_DATA, PTY6_IN, PTY6_OUT),
+-	PINMUX_DATA(PTY5_DATA, PTY5_IN, PTY5_OUT),
+-	PINMUX_DATA(PTY4_DATA, PTY4_IN, PTY4_OUT),
+-	PINMUX_DATA(PTY3_DATA, PTY3_IN, PTY3_OUT),
+-	PINMUX_DATA(PTY2_DATA, PTY2_IN, PTY2_OUT),
+-	PINMUX_DATA(PTY1_DATA, PTY1_IN, PTY1_OUT),
+-	PINMUX_DATA(PTY0_DATA, PTY0_IN, PTY0_OUT),
+-
+-	/* PTZ GPIO */
+-	PINMUX_DATA(PTZ7_DATA, PTZ7_IN, PTZ7_OUT),
+-	PINMUX_DATA(PTZ6_DATA, PTZ6_IN, PTZ6_OUT),
+-	PINMUX_DATA(PTZ5_DATA, PTZ5_IN, PTZ5_OUT),
+-	PINMUX_DATA(PTZ4_DATA, PTZ4_IN, PTZ4_OUT),
+-	PINMUX_DATA(PTZ3_DATA, PTZ3_IN, PTZ3_OUT),
+-	PINMUX_DATA(PTZ2_DATA, PTZ2_IN, PTZ2_OUT),
+-	PINMUX_DATA(PTZ1_DATA, PTZ1_IN, PTZ1_OUT),
+-	PINMUX_DATA(PTZ0_DATA, PTZ0_IN, PTZ0_OUT),
+-
+-	/* PTA FN */
+-	PINMUX_DATA(D23_MARK,	PSA15_0, PSA14_0, PTA7_FN),
+-	PINMUX_DATA(D22_MARK,	PSA15_0, PSA14_0, PTA6_FN),
+-	PINMUX_DATA(D21_MARK,	PSA15_0, PSA14_0, PTA5_FN),
+-	PINMUX_DATA(D20_MARK,	PSA15_0, PSA14_0, PTA4_FN),
+-	PINMUX_DATA(D19_MARK,	PSA15_0, PSA14_0, PTA3_FN),
+-	PINMUX_DATA(D18_MARK,	PSA15_0, PSA14_0, PTA2_FN),
+-	PINMUX_DATA(D17_MARK,	PSA15_0, PSA14_0, PTA1_FN),
+-	PINMUX_DATA(D16_MARK,	PSA15_0, PSA14_0, PTA0_FN),
+-
+-	PINMUX_DATA(KEYOUT2_MARK,	PSA15_0, PSA14_1, PTA7_FN),
+-	PINMUX_DATA(KEYOUT1_MARK,	PSA15_0, PSA14_1, PTA6_FN),
+-	PINMUX_DATA(KEYOUT0_MARK,	PSA15_0, PSA14_1, PTA5_FN),
+-	PINMUX_DATA(KEYIN4_MARK,	PSA15_0, PSA14_1, PTA4_FN),
+-	PINMUX_DATA(KEYIN3_MARK,	PSA15_0, PSA14_1, PTA3_FN),
+-	PINMUX_DATA(KEYIN2_MARK,	PSA15_0, PSA14_1, PTA2_FN),
+-	PINMUX_DATA(KEYIN1_MARK,	PSA15_0, PSA14_1, PTA1_FN),
+-	PINMUX_DATA(KEYIN0_MARK,	PSA15_0, PSA14_1, PTA0_FN),
+-
+-	PINMUX_DATA(IDED15_MARK,	PSA15_1, PSA14_0, PTA7_FN),
+-	PINMUX_DATA(IDED14_MARK,	PSA15_1, PSA14_0, PTA6_FN),
+-	PINMUX_DATA(IDED13_MARK,	PSA15_1, PSA14_0, PTA5_FN),
+-	PINMUX_DATA(IDED12_MARK,	PSA15_1, PSA14_0, PTA4_FN),
+-	PINMUX_DATA(IDED11_MARK,	PSA15_1, PSA14_0, PTA3_FN),
+-	PINMUX_DATA(IDED10_MARK,	PSA15_1, PSA14_0, PTA2_FN),
+-	PINMUX_DATA(IDED9_MARK,		PSA15_1, PSA14_0, PTA1_FN),
+-	PINMUX_DATA(IDED8_MARK,		PSA15_1, PSA14_0, PTA0_FN),
+-
+-	/* PTB FN */
+-	PINMUX_DATA(D31_MARK,		PSE15_0, PSE14_0, PTB7_FN),
+-	PINMUX_DATA(D30_MARK,		PSE15_0, PSE14_0, PTB6_FN),
+-	PINMUX_DATA(D29_MARK,		PSE11_0,          PTB5_FN),
+-	PINMUX_DATA(D28_MARK,		PSE11_0,          PTB4_FN),
+-	PINMUX_DATA(D27_MARK,		PSE11_0,          PTB3_FN),
+-	PINMUX_DATA(D26_MARK,		PSA15_0, PSA14_0, PTB2_FN),
+-	PINMUX_DATA(D25_MARK,		PSA15_0, PSA14_0, PTB1_FN),
+-	PINMUX_DATA(D24_MARK,		PSA15_0, PSA14_0, PTB0_FN),
+-
+-	PINMUX_DATA(IDEA1_MARK,		PSE15_1, PSE14_0, PTB7_FN),
+-	PINMUX_DATA(IDEA0_MARK,		PSE15_1, PSE14_0, PTB6_FN),
+-	PINMUX_DATA(IODREQ_MARK,	PSE11_1,          PTB5_FN),
+-	PINMUX_DATA(IDECS0_MARK,	PSE11_1,          PTB4_FN),
+-	PINMUX_DATA(IDECS1_MARK,	PSE11_1,          PTB3_FN),
+-	PINMUX_DATA(IDEIORD_MARK,	PSA15_1, PSA14_0, PTB2_FN),
+-	PINMUX_DATA(IDEIOWR_MARK,	PSA15_1, PSA14_0, PTB1_FN),
+-	PINMUX_DATA(IDEINT_MARK,	PSA15_1, PSA14_0, PTB0_FN),
+-
+-	PINMUX_DATA(TPUTO1_MARK,	PSE15_0, PSE14_1, PTB7_FN),
+-	PINMUX_DATA(TPUTO0_MARK,	PSE15_0, PSE14_1, PTB6_FN),
+-
+-	PINMUX_DATA(KEYOUT5_IN5_MARK,	PSA15_0, PSA14_1, PTB2_FN),
+-	PINMUX_DATA(KEYOUT4_IN6_MARK,	PSA15_0, PSA14_1, PTB1_FN),
+-	PINMUX_DATA(KEYOUT3_MARK,	PSA15_0, PSA14_1, PTB0_FN),
+-
+-	/* PTC FN */
+-	PINMUX_DATA(LCDD7_MARK, PSD5_0, PTC7_FN),
+-	PINMUX_DATA(LCDD6_MARK, PSD5_0, PTC6_FN),
+-	PINMUX_DATA(LCDD5_MARK, PSD5_0, PTC5_FN),
+-	PINMUX_DATA(LCDD4_MARK, PSD5_0, PTC4_FN),
+-	PINMUX_DATA(LCDD3_MARK, PSD5_0, PTC3_FN),
+-	PINMUX_DATA(LCDD2_MARK, PSD5_0, PTC2_FN),
+-	PINMUX_DATA(LCDD1_MARK, PSD5_0, PTC1_FN),
+-	PINMUX_DATA(LCDD0_MARK, PSD5_0, PTC0_FN),
+-
+-	/* PTD FN */
+-	PINMUX_DATA(LCDD15_MARK, PSD5_0, PTD7_FN),
+-	PINMUX_DATA(LCDD14_MARK, PSD5_0, PTD6_FN),
+-	PINMUX_DATA(LCDD13_MARK, PSD5_0, PTD5_FN),
+-	PINMUX_DATA(LCDD12_MARK, PSD5_0, PTD4_FN),
+-	PINMUX_DATA(LCDD11_MARK, PSD5_0, PTD3_FN),
+-	PINMUX_DATA(LCDD10_MARK, PSD5_0, PTD2_FN),
+-	PINMUX_DATA(LCDD9_MARK,  PSD5_0, PTD1_FN),
+-	PINMUX_DATA(LCDD8_MARK,  PSD5_0, PTD0_FN),
+-
+-	/* PTE FN */
+-	PINMUX_DATA(FSIMCKB_MARK, PTE7_FN),
+-	PINMUX_DATA(FSIMCKA_MARK, PTE6_FN),
+-
+-	PINMUX_DATA(LCDD21_MARK,	PSC5_0, PSC4_0, PTE5_FN),
+-	PINMUX_DATA(LCDD20_MARK,	PSD3_0, PSD2_0, PTE4_FN),
+-	PINMUX_DATA(LCDD19_MARK,	PSA3_0, PSA2_0, PTE3_FN),
+-	PINMUX_DATA(LCDD18_MARK,	PSA3_0, PSA2_0, PTE2_FN),
+-	PINMUX_DATA(LCDD17_MARK,	PSD5_0,         PTE1_FN),
+-	PINMUX_DATA(LCDD16_MARK,	PSD5_0,         PTE0_FN),
+-
+-	PINMUX_DATA(SCIF2_L_TXD_MARK,	PSC5_0, PSC4_1, PTE5_FN),
+-	PINMUX_DATA(SCIF4_SCK_MARK,	PSD3_0, PSD2_1, PTE4_FN),
+-	PINMUX_DATA(SCIF4_RXD_MARK,	PSA3_0, PSA2_1, PTE3_FN),
+-	PINMUX_DATA(SCIF4_TXD_MARK,	PSA3_0, PSA2_1, PTE2_FN),
+-
+-	/* PTF FN */
+-	PINMUX_DATA(LCDVSYN_MARK,	PSD8_0,          PTF7_FN),
+-	PINMUX_DATA(LCDDISP_MARK,	PSD10_0, PSD9_0, PTF6_FN),
+-	PINMUX_DATA(LCDHSYN_MARK,	PSD10_0, PSD9_0, PTF5_FN),
+-	PINMUX_DATA(LCDDON_MARK,	PSD8_0,          PTF4_FN),
+-	PINMUX_DATA(LCDDCK_MARK,	PSD10_0, PSD9_0, PTF3_FN),
+-	PINMUX_DATA(LCDVEPWC_MARK,	PSA6_0,          PTF2_FN),
+-	PINMUX_DATA(LCDD23_MARK,	PSC7_0,  PSC6_0, PTF1_FN),
+-	PINMUX_DATA(LCDD22_MARK,	PSC5_0,  PSC4_0, PTF0_FN),
+-
+-	PINMUX_DATA(LCDRS_MARK,		PSD10_0, PSD9_1, PTF6_FN),
+-	PINMUX_DATA(LCDCS_MARK,		PSD10_0, PSD9_1, PTF5_FN),
+-	PINMUX_DATA(LCDWR_MARK,		PSD10_0, PSD9_1, PTF3_FN),
+-
+-	PINMUX_DATA(SCIF0_TXD_MARK,	PSA6_1,          PTF2_FN),
+-	PINMUX_DATA(SCIF2_L_SCK_MARK,	PSC7_0,  PSC6_1, PTF1_FN),
+-	PINMUX_DATA(SCIF2_L_RXD_MARK,	PSC5_0,  PSC4_1, PTF0_FN),
+-
+-	/* PTG FN */
+-	PINMUX_DATA(AUDCK_MARK,   PTG5_FN),
+-	PINMUX_DATA(AUDSYNC_MARK, PTG4_FN),
+-	PINMUX_DATA(AUDATA3_MARK, PTG3_FN),
+-	PINMUX_DATA(AUDATA2_MARK, PTG2_FN),
+-	PINMUX_DATA(AUDATA1_MARK, PTG1_FN),
+-	PINMUX_DATA(AUDATA0_MARK, PTG0_FN),
+-
+-	/* PTH FN */
+-	PINMUX_DATA(VIO0_VD_MARK,  PTH7_FN),
+-	PINMUX_DATA(VIO0_CLK_MARK, PTH6_FN),
+-	PINMUX_DATA(VIO0_D7_MARK,  PTH5_FN),
+-	PINMUX_DATA(VIO0_D6_MARK,  PTH4_FN),
+-	PINMUX_DATA(VIO0_D5_MARK,  PTH3_FN),
+-	PINMUX_DATA(VIO0_D4_MARK,  PTH2_FN),
+-	PINMUX_DATA(VIO0_D3_MARK,  PTH1_FN),
+-	PINMUX_DATA(VIO0_D2_MARK,  PTH0_FN),
+-
+-	/* PTJ FN */
+-	PINMUX_DATA(PDSTATUS_MARK,	PTJ7_FN),
+-	PINMUX_DATA(STATUS2_MARK,	PTJ6_FN),
+-	PINMUX_DATA(STATUS0_MARK,	PTJ5_FN),
+-	PINMUX_DATA(A25_MARK,		PSA8_0, PTJ3_FN),
+-	PINMUX_DATA(BS_MARK,		PSA8_1, PTJ3_FN),
+-	PINMUX_DATA(A24_MARK,		PTJ2_FN),
+-	PINMUX_DATA(A23_MARK,		PTJ1_FN),
+-	PINMUX_DATA(A22_MARK,		PTJ0_FN),
+-
+-	/* PTK FN */
+-	PINMUX_DATA(VIO1_D5_MARK,	PSB7_0, PSB6_0, PTK7_FN),
+-	PINMUX_DATA(VIO1_D4_MARK,	PSB7_0, PSB6_0, PTK6_FN),
+-	PINMUX_DATA(VIO1_D3_MARK,	PSB7_0, PSB6_0, PTK5_FN),
+-	PINMUX_DATA(VIO1_D2_MARK,	PSB7_0, PSB6_0, PTK4_FN),
+-	PINMUX_DATA(VIO1_D1_MARK,	PSB7_0, PSB6_0, PTK3_FN),
+-	PINMUX_DATA(VIO1_D0_MARK,	PSB7_0, PSB6_0, PTK2_FN),
+-
+-	PINMUX_DATA(VIO0_D13_MARK,	PSB7_0, PSB6_1, PTK7_FN),
+-	PINMUX_DATA(VIO0_D12_MARK,	PSB7_0, PSB6_1, PTK6_FN),
+-	PINMUX_DATA(VIO0_D11_MARK,	PSB7_0, PSB6_1, PTK5_FN),
+-	PINMUX_DATA(VIO0_D10_MARK,	PSB7_0, PSB6_1, PTK4_FN),
+-	PINMUX_DATA(VIO0_D9_MARK,	PSB7_0, PSB6_1, PTK3_FN),
+-	PINMUX_DATA(VIO0_D8_MARK,	PSB7_0, PSB6_1, PTK2_FN),
+-
+-	PINMUX_DATA(IDED5_MARK,		PSB7_1, PSB6_0, PTK7_FN),
+-	PINMUX_DATA(IDED4_MARK,		PSB7_1, PSB6_0, PTK6_FN),
+-	PINMUX_DATA(IDED3_MARK,		PSB7_1, PSB6_0, PTK5_FN),
+-	PINMUX_DATA(IDED2_MARK,		PSB7_1, PSB6_0, PTK4_FN),
+-	PINMUX_DATA(IDED1_MARK,		PSB7_1, PSB6_0, PTK3_FN),
+-	PINMUX_DATA(IDED0_MARK,		PSB7_1, PSB6_0, PTK2_FN),
+-
+-	PINMUX_DATA(VIO0_FLD_MARK,	PTK1_FN),
+-	PINMUX_DATA(VIO0_HD_MARK,	PTK0_FN),
+-
+-	/* PTL FN */
+-	PINMUX_DATA(DV_D5_MARK,		PSB9_0, PSB8_0, PTL7_FN),
+-	PINMUX_DATA(DV_D4_MARK,		PSB9_0, PSB8_0, PTL6_FN),
+-	PINMUX_DATA(DV_D3_MARK,		PSE7_0, PSE6_0, PTL5_FN),
+-	PINMUX_DATA(DV_D2_MARK,		PSC9_0, PSC8_0, PTL4_FN),
+-	PINMUX_DATA(DV_D1_MARK,		PSC9_0, PSC8_0, PTL3_FN),
+-	PINMUX_DATA(DV_D0_MARK,		PSC9_0, PSC8_0, PTL2_FN),
+-	PINMUX_DATA(DV_D15_MARK,	PSD4_0,         PTL1_FN),
+-	PINMUX_DATA(DV_D14_MARK,	PSE5_0, PSE4_0, PTL0_FN),
+-
+-	PINMUX_DATA(SCIF3_V_SCK_MARK,	PSB9_0, PSB8_1, PTL7_FN),
+-	PINMUX_DATA(SCIF3_V_RXD_MARK,	PSB9_0, PSB8_1, PTL6_FN),
+-	PINMUX_DATA(SCIF3_V_TXD_MARK,	PSE7_0, PSE6_1, PTL5_FN),
+-	PINMUX_DATA(SCIF1_SCK_MARK,	PSC9_0, PSC8_1, PTL4_FN),
+-	PINMUX_DATA(SCIF1_RXD_MARK,	PSC9_0, PSC8_1, PTL3_FN),
+-	PINMUX_DATA(SCIF1_TXD_MARK,	PSC9_0, PSC8_1, PTL2_FN),
+-
+-	PINMUX_DATA(RMII_RXD0_MARK,	PSB9_1, PSB8_0, PTL7_FN),
+-	PINMUX_DATA(RMII_RXD1_MARK,	PSB9_1, PSB8_0, PTL6_FN),
+-	PINMUX_DATA(RMII_REF_CLK_MARK,	PSE7_1, PSE6_0, PTL5_FN),
+-	PINMUX_DATA(RMII_TX_EN_MARK,	PSC9_1, PSC8_0, PTL4_FN),
+-	PINMUX_DATA(RMII_TXD0_MARK,	PSC9_1, PSC8_0, PTL3_FN),
+-	PINMUX_DATA(RMII_TXD1_MARK,	PSC9_1, PSC8_0, PTL2_FN),
+-
+-	PINMUX_DATA(MSIOF0_MCK_MARK,	PSE5_0, PSE4_1, PTL0_FN),
+-
+-	/* PTM FN */
+-	PINMUX_DATA(DV_D13_MARK,	PSC13_0, PSC12_0, PTM7_FN),
+-	PINMUX_DATA(DV_D12_MARK,	PSC13_0, PSC12_0, PTM6_FN),
+-	PINMUX_DATA(DV_D11_MARK,	PSC13_0, PSC12_0, PTM5_FN),
+-	PINMUX_DATA(DV_D10_MARK,	PSC13_0, PSC12_0, PTM4_FN),
+-	PINMUX_DATA(DV_D9_MARK,		PSC11_0, PSC10_0, PTM3_FN),
+-	PINMUX_DATA(DV_D8_MARK,		PSC11_0, PSC10_0, PTM2_FN),
+-
+-	PINMUX_DATA(MSIOF0_TSCK_MARK,	PSC13_0, PSC12_1, PTM7_FN),
+-	PINMUX_DATA(MSIOF0_RXD_MARK,	PSC13_0, PSC12_1, PTM6_FN),
+-	PINMUX_DATA(MSIOF0_TXD_MARK,	PSC13_0, PSC12_1, PTM5_FN),
+-	PINMUX_DATA(MSIOF0_TSYNC_MARK,	PSC13_0, PSC12_1, PTM4_FN),
+-	PINMUX_DATA(MSIOF0_SS1_MARK,	PSC11_0, PSC10_1, PTM3_FN),
+-	PINMUX_DATA(MSIOF0_RSCK_MARK,	PSC11_1, PSC10_0, PTM3_FN),
+-	PINMUX_DATA(MSIOF0_SS2_MARK,	PSC11_0, PSC10_1, PTM2_FN),
+-	PINMUX_DATA(MSIOF0_RSYNC_MARK,	PSC11_1, PSC10_0, PTM2_FN),
+-
+-	PINMUX_DATA(LCDVCPWC_MARK,	PSA6_0, PTM1_FN),
+-	PINMUX_DATA(LCDRD_MARK,		PSA7_0, PTM0_FN),
+-
+-	PINMUX_DATA(SCIF0_RXD_MARK,	PSA6_1, PTM1_FN),
+-	PINMUX_DATA(SCIF0_SCK_MARK,	PSA7_1, PTM0_FN),
+-
+-	/* PTN FN */
+-	PINMUX_DATA(VIO0_D1_MARK,	PTN7_FN),
+-	PINMUX_DATA(VIO0_D0_MARK,	PTN6_FN),
+-
+-	PINMUX_DATA(DV_CLKI_MARK,	PSD11_0,          PTN5_FN),
+-	PINMUX_DATA(DV_CLK_MARK,	PSD13_0, PSD12_0, PTN4_FN),
+-	PINMUX_DATA(DV_VSYNC_MARK,	PSD15_0, PSD14_0, PTN3_FN),
+-	PINMUX_DATA(DV_HSYNC_MARK,	PSB5_0,  PSB4_0,  PTN2_FN),
+-	PINMUX_DATA(DV_D7_MARK,		PSB3_0,  PSB2_0,  PTN1_FN),
+-	PINMUX_DATA(DV_D6_MARK,		PSB1_0,  PSB0_0,  PTN0_FN),
+-
+-	PINMUX_DATA(SCIF2_V_SCK_MARK,	PSD13_0, PSD12_1, PTN4_FN),
+-	PINMUX_DATA(SCIF2_V_RXD_MARK,	PSD15_0, PSD14_1, PTN3_FN),
+-	PINMUX_DATA(SCIF2_V_TXD_MARK,	PSB5_0,  PSB4_1,  PTN2_FN),
+-	PINMUX_DATA(SCIF3_V_CTS_MARK,	PSB3_0,  PSB2_1,  PTN1_FN),
+-	PINMUX_DATA(SCIF3_V_RTS_MARK,	PSB1_0,  PSB0_1,  PTN0_FN),
+-
+-	PINMUX_DATA(RMII_RX_ER_MARK,	PSB3_1, PSB2_0, PTN1_FN),
+-	PINMUX_DATA(RMII_CRS_DV_MARK,	PSB1_1, PSB0_0, PTN0_FN),
+-
+-	/* PTQ FN */
+-	PINMUX_DATA(D7_MARK, PTQ7_FN),
+-	PINMUX_DATA(D6_MARK, PTQ6_FN),
+-	PINMUX_DATA(D5_MARK, PTQ5_FN),
+-	PINMUX_DATA(D4_MARK, PTQ4_FN),
+-	PINMUX_DATA(D3_MARK, PTQ3_FN),
+-	PINMUX_DATA(D2_MARK, PTQ2_FN),
+-	PINMUX_DATA(D1_MARK, PTQ1_FN),
+-	PINMUX_DATA(D0_MARK, PTQ0_FN),
+-
+-	/* PTR FN */
+-	PINMUX_DATA(CS6B_CE1B_MARK,	                PTR7_FN),
+-	PINMUX_DATA(CS6A_CE2B_MARK,	                PTR6_FN),
+-	PINMUX_DATA(CS5B_CE1A_MARK,	                PTR5_FN),
+-	PINMUX_DATA(CS5A_CE2A_MARK,	                PTR4_FN),
+-	PINMUX_DATA(IOIS16_MARK,	PSA5_0,         PTR3_FN),
+-	PINMUX_DATA(WAIT_MARK,		                PTR2_FN),
+-	PINMUX_DATA(WE3_ICIOWR_MARK,	PSA1_0, PSA0_0, PTR1_FN),
+-	PINMUX_DATA(WE2_ICIORD_MARK,	PSD1_0, PSD0_0, PTR0_FN),
+-
+-	PINMUX_DATA(LCDLCLK_MARK,	PSA5_1,         PTR3_FN),
+-
+-	PINMUX_DATA(IDEA2_MARK,		PSD1_1, PSD0_0, PTR0_FN),
+-
+-	PINMUX_DATA(TPUTO3_MARK,	PSA1_0, PSA0_1, PTR1_FN),
+-	PINMUX_DATA(TPUTI3_MARK,	PSA1_1, PSA0_0, PTR1_FN),
+-	PINMUX_DATA(TPUTO2_MARK,	PSD1_0, PSD0_1, PTR0_FN),
+-
+-	/* PTS FN */
+-	PINMUX_DATA(VIO_CKO_MARK,	PTS6_FN),
+-
+-	PINMUX_DATA(TPUTI2_MARK,	PSE9_0, PSE8_1, PTS5_FN),
+-
+-	PINMUX_DATA(IDEIORDY_MARK,	PSE9_1, PSE8_0, PTS5_FN),
+-
+-	PINMUX_DATA(VIO1_FLD_MARK,	PSE9_0, PSE8_0, PTS5_FN),
+-	PINMUX_DATA(VIO1_HD_MARK,	PSA10_0,        PTS4_FN),
+-	PINMUX_DATA(VIO1_VD_MARK,	PSA9_0,         PTS3_FN),
+-	PINMUX_DATA(VIO1_CLK_MARK,	PSA9_0,         PTS2_FN),
+-	PINMUX_DATA(VIO1_D7_MARK,	PSB7_0, PSB6_0, PTS1_FN),
+-	PINMUX_DATA(VIO1_D6_MARK,	PSB7_0, PSB6_0, PTS0_FN),
+-
+-	PINMUX_DATA(SCIF5_SCK_MARK,	PSA10_1, PTS4_FN),
+-	PINMUX_DATA(SCIF5_RXD_MARK,	PSA9_1,  PTS3_FN),
+-	PINMUX_DATA(SCIF5_TXD_MARK,	PSA9_1,  PTS2_FN),
+-
+-	PINMUX_DATA(VIO0_D15_MARK,	PSB7_0, PSB6_1, PTS1_FN),
+-	PINMUX_DATA(VIO0_D14_MARK,	PSB7_0, PSB6_1, PTS0_FN),
+-
+-	PINMUX_DATA(IDED7_MARK,		PSB7_1, PSB6_0, PTS1_FN),
+-	PINMUX_DATA(IDED6_MARK,		PSB7_1, PSB6_0, PTS0_FN),
+-
+-	/* PTT FN */
+-	PINMUX_DATA(D15_MARK, PTT7_FN),
+-	PINMUX_DATA(D14_MARK, PTT6_FN),
+-	PINMUX_DATA(D13_MARK, PTT5_FN),
+-	PINMUX_DATA(D12_MARK, PTT4_FN),
+-	PINMUX_DATA(D11_MARK, PTT3_FN),
+-	PINMUX_DATA(D10_MARK, PTT2_FN),
+-	PINMUX_DATA(D9_MARK,  PTT1_FN),
+-	PINMUX_DATA(D8_MARK,  PTT0_FN),
+-
+-	/* PTU FN */
+-	PINMUX_DATA(DMAC_DACK0_MARK, PTU7_FN),
+-	PINMUX_DATA(DMAC_DREQ0_MARK, PTU6_FN),
+-
+-	PINMUX_DATA(FSIOASD_MARK,	PSE1_0, PTU5_FN),
+-	PINMUX_DATA(FSIIABCK_MARK,	PSE1_0, PTU4_FN),
+-	PINMUX_DATA(FSIIALRCK_MARK,	PSE1_0, PTU3_FN),
+-	PINMUX_DATA(FSIOABCK_MARK,	PSE1_0, PTU2_FN),
+-	PINMUX_DATA(FSIOALRCK_MARK,	PSE1_0, PTU1_FN),
+-	PINMUX_DATA(CLKAUDIOAO_MARK,	PSE0_0, PTU0_FN),
+-
+-	/* PTV FN */
+-	PINMUX_DATA(FSIIBSD_MARK,	PSD7_0,  PSD6_0,  PTV7_FN),
+-	PINMUX_DATA(FSIOBSD_MARK,	PSD7_0,  PSD6_0,  PTV6_FN),
+-	PINMUX_DATA(FSIIBBCK_MARK,	PSC15_0, PSC14_0, PTV5_FN),
+-	PINMUX_DATA(FSIIBLRCK_MARK,	PSC15_0, PSC14_0, PTV4_FN),
+-	PINMUX_DATA(FSIOBBCK_MARK,	PSC15_0, PSC14_0, PTV3_FN),
+-	PINMUX_DATA(FSIOBLRCK_MARK,	PSC15_0, PSC14_0, PTV2_FN),
+-	PINMUX_DATA(CLKAUDIOBO_MARK,	PSE3_0,  PSE2_0,  PTV1_FN),
+-	PINMUX_DATA(FSIIASD_MARK,	PSE10_0,          PTV0_FN),
+-
+-	PINMUX_DATA(MSIOF1_SS2_MARK,	PSD7_0,  PSD6_1,  PTV7_FN),
+-	PINMUX_DATA(MSIOF1_RSYNC_MARK,	PSD7_1,  PSD6_0,  PTV7_FN),
+-	PINMUX_DATA(MSIOF1_SS1_MARK,	PSD7_0,  PSD6_1,  PTV6_FN),
+-	PINMUX_DATA(MSIOF1_RSCK_MARK,	PSD7_1,  PSD6_0,  PTV6_FN),
+-	PINMUX_DATA(MSIOF1_RXD_MARK,	PSC15_0, PSC14_1, PTV5_FN),
+-	PINMUX_DATA(MSIOF1_TSYNC_MARK,	PSC15_0, PSC14_1, PTV4_FN),
+-	PINMUX_DATA(MSIOF1_TSCK_MARK,	PSC15_0, PSC14_1, PTV3_FN),
+-	PINMUX_DATA(MSIOF1_TXD_MARK,	PSC15_0, PSC14_1, PTV2_FN),
+-	PINMUX_DATA(MSIOF1_MCK_MARK,	PSE3_0,  PSE2_1,  PTV1_FN),
+-
+-	/* PTW FN */
+-	PINMUX_DATA(MMC_D7_MARK,	PSE13_0, PSE12_0, PTW7_FN),
+-	PINMUX_DATA(MMC_D6_MARK,	PSE13_0, PSE12_0, PTW6_FN),
+-	PINMUX_DATA(MMC_D5_MARK,	PSE13_0, PSE12_0, PTW5_FN),
+-	PINMUX_DATA(MMC_D4_MARK,	PSE13_0, PSE12_0, PTW4_FN),
+-	PINMUX_DATA(MMC_D3_MARK,	PSA13_0,          PTW3_FN),
+-	PINMUX_DATA(MMC_D2_MARK,	PSA13_0,          PTW2_FN),
+-	PINMUX_DATA(MMC_D1_MARK,	PSA13_0,          PTW1_FN),
+-	PINMUX_DATA(MMC_D0_MARK,	PSA13_0,          PTW0_FN),
+-
+-	PINMUX_DATA(SDHI1CD_MARK,	PSE13_0, PSE12_1, PTW7_FN),
+-	PINMUX_DATA(SDHI1WP_MARK,	PSE13_0, PSE12_1, PTW6_FN),
+-	PINMUX_DATA(SDHI1D3_MARK,	PSE13_0, PSE12_1, PTW5_FN),
+-	PINMUX_DATA(SDHI1D2_MARK,	PSE13_0, PSE12_1, PTW4_FN),
+-	PINMUX_DATA(SDHI1D1_MARK,	PSA13_1,          PTW3_FN),
+-	PINMUX_DATA(SDHI1D0_MARK,	PSA13_1,          PTW2_FN),
+-	PINMUX_DATA(SDHI1CMD_MARK,	PSA13_1,          PTW1_FN),
+-	PINMUX_DATA(SDHI1CLK_MARK,	PSA13_1,          PTW0_FN),
+-
+-	PINMUX_DATA(IODACK_MARK,	PSE13_1, PSE12_0, PTW7_FN),
+-	PINMUX_DATA(IDERST_MARK,	PSE13_1, PSE12_0, PTW6_FN),
+-	PINMUX_DATA(EXBUF_ENB_MARK,	PSE13_1, PSE12_0, PTW5_FN),
+-	PINMUX_DATA(DIRECTION_MARK,	PSE13_1, PSE12_0, PTW4_FN),
+-
+-	/* PTX FN */
+-	PINMUX_DATA(DMAC_DACK1_MARK,	PSA12_0, PTX7_FN),
+-	PINMUX_DATA(DMAC_DREQ1_MARK,	PSA12_0, PTX6_FN),
+-
+-	PINMUX_DATA(IRDA_OUT_MARK,	PSA12_1, PTX7_FN),
+-	PINMUX_DATA(IRDA_IN_MARK,	PSA12_1, PTX6_FN),
+-
+-	PINMUX_DATA(TSIF_TS0_SDAT_MARK,	PSC0_0, PTX5_FN),
+-	PINMUX_DATA(TSIF_TS0_SCK_MARK,	PSC1_0, PTX4_FN),
+-	PINMUX_DATA(TSIF_TS0_SDEN_MARK,	PSC2_0, PTX3_FN),
+-	PINMUX_DATA(TSIF_TS0_SPSYNC_MARK,       PTX2_FN),
+-
+-	PINMUX_DATA(LNKSTA_MARK,	PSC0_1, PTX5_FN),
+-	PINMUX_DATA(MDIO_MARK,		PSC1_1, PTX4_FN),
+-	PINMUX_DATA(MDC_MARK,		PSC2_1, PTX3_FN),
+-
+-	PINMUX_DATA(MMC_CLK_MARK, PTX1_FN),
+-	PINMUX_DATA(MMC_CMD_MARK, PTX0_FN),
+-
+-	/* PTY FN */
+-	PINMUX_DATA(SDHI0CD_MARK,  PTY7_FN),
+-	PINMUX_DATA(SDHI0WP_MARK,  PTY6_FN),
+-	PINMUX_DATA(SDHI0D3_MARK,  PTY5_FN),
+-	PINMUX_DATA(SDHI0D2_MARK,  PTY4_FN),
+-	PINMUX_DATA(SDHI0D1_MARK,  PTY3_FN),
+-	PINMUX_DATA(SDHI0D0_MARK,  PTY2_FN),
+-	PINMUX_DATA(SDHI0CMD_MARK, PTY1_FN),
+-	PINMUX_DATA(SDHI0CLK_MARK, PTY0_FN),
+-
+-	/* PTZ FN */
+-	PINMUX_DATA(INTC_IRQ7_MARK,	PSB10_0, PTZ7_FN),
+-	PINMUX_DATA(INTC_IRQ6_MARK,	PSB11_0, PTZ6_FN),
+-	PINMUX_DATA(INTC_IRQ5_MARK,	PSB12_0, PTZ5_FN),
+-	PINMUX_DATA(INTC_IRQ4_MARK,	PSB13_0, PTZ4_FN),
+-	PINMUX_DATA(INTC_IRQ3_MARK,	PSB14_0, PTZ3_FN),
+-	PINMUX_DATA(INTC_IRQ2_MARK,	         PTZ2_FN),
+-	PINMUX_DATA(INTC_IRQ1_MARK,	         PTZ1_FN),
+-	PINMUX_DATA(INTC_IRQ0_MARK,	         PTZ0_FN),
+-
+-	PINMUX_DATA(SCIF3_I_CTS_MARK,	PSB10_1, PTZ7_FN),
+-	PINMUX_DATA(SCIF3_I_RTS_MARK,	PSB11_1, PTZ6_FN),
+-	PINMUX_DATA(SCIF3_I_SCK_MARK,	PSB12_1, PTZ5_FN),
+-	PINMUX_DATA(SCIF3_I_RXD_MARK,	PSB13_1, PTZ4_FN),
+-	PINMUX_DATA(SCIF3_I_TXD_MARK,	PSB14_1, PTZ3_FN),
+-};
+-
+-static const struct sh_pfc_pin pinmux_pins[] = {
+-	/* PTA */
+-	PINMUX_GPIO(PTA7),
+-	PINMUX_GPIO(PTA6),
+-	PINMUX_GPIO(PTA5),
+-	PINMUX_GPIO(PTA4),
+-	PINMUX_GPIO(PTA3),
+-	PINMUX_GPIO(PTA2),
+-	PINMUX_GPIO(PTA1),
+-	PINMUX_GPIO(PTA0),
+-
+-	/* PTB */
+-	PINMUX_GPIO(PTB7),
+-	PINMUX_GPIO(PTB6),
+-	PINMUX_GPIO(PTB5),
+-	PINMUX_GPIO(PTB4),
+-	PINMUX_GPIO(PTB3),
+-	PINMUX_GPIO(PTB2),
+-	PINMUX_GPIO(PTB1),
+-	PINMUX_GPIO(PTB0),
+-
+-	/* PTC */
+-	PINMUX_GPIO(PTC7),
+-	PINMUX_GPIO(PTC6),
+-	PINMUX_GPIO(PTC5),
+-	PINMUX_GPIO(PTC4),
+-	PINMUX_GPIO(PTC3),
+-	PINMUX_GPIO(PTC2),
+-	PINMUX_GPIO(PTC1),
+-	PINMUX_GPIO(PTC0),
+-
+-	/* PTD */
+-	PINMUX_GPIO(PTD7),
+-	PINMUX_GPIO(PTD6),
+-	PINMUX_GPIO(PTD5),
+-	PINMUX_GPIO(PTD4),
+-	PINMUX_GPIO(PTD3),
+-	PINMUX_GPIO(PTD2),
+-	PINMUX_GPIO(PTD1),
+-	PINMUX_GPIO(PTD0),
+-
+-	/* PTE */
+-	PINMUX_GPIO(PTE7),
+-	PINMUX_GPIO(PTE6),
+-	PINMUX_GPIO(PTE5),
+-	PINMUX_GPIO(PTE4),
+-	PINMUX_GPIO(PTE3),
+-	PINMUX_GPIO(PTE2),
+-	PINMUX_GPIO(PTE1),
+-	PINMUX_GPIO(PTE0),
+-
+-	/* PTF */
+-	PINMUX_GPIO(PTF7),
+-	PINMUX_GPIO(PTF6),
+-	PINMUX_GPIO(PTF5),
+-	PINMUX_GPIO(PTF4),
+-	PINMUX_GPIO(PTF3),
+-	PINMUX_GPIO(PTF2),
+-	PINMUX_GPIO(PTF1),
+-	PINMUX_GPIO(PTF0),
+-
+-	/* PTG */
+-	PINMUX_GPIO(PTG5),
+-	PINMUX_GPIO(PTG4),
+-	PINMUX_GPIO(PTG3),
+-	PINMUX_GPIO(PTG2),
+-	PINMUX_GPIO(PTG1),
+-	PINMUX_GPIO(PTG0),
+-
+-	/* PTH */
+-	PINMUX_GPIO(PTH7),
+-	PINMUX_GPIO(PTH6),
+-	PINMUX_GPIO(PTH5),
+-	PINMUX_GPIO(PTH4),
+-	PINMUX_GPIO(PTH3),
+-	PINMUX_GPIO(PTH2),
+-	PINMUX_GPIO(PTH1),
+-	PINMUX_GPIO(PTH0),
+-
+-	/* PTJ */
+-	PINMUX_GPIO(PTJ7),
+-	PINMUX_GPIO(PTJ6),
+-	PINMUX_GPIO(PTJ5),
+-	PINMUX_GPIO(PTJ3),
+-	PINMUX_GPIO(PTJ2),
+-	PINMUX_GPIO(PTJ1),
+-	PINMUX_GPIO(PTJ0),
+-
+-	/* PTK */
+-	PINMUX_GPIO(PTK7),
+-	PINMUX_GPIO(PTK6),
+-	PINMUX_GPIO(PTK5),
+-	PINMUX_GPIO(PTK4),
+-	PINMUX_GPIO(PTK3),
+-	PINMUX_GPIO(PTK2),
+-	PINMUX_GPIO(PTK1),
+-	PINMUX_GPIO(PTK0),
+-
+-	/* PTL */
+-	PINMUX_GPIO(PTL7),
+-	PINMUX_GPIO(PTL6),
+-	PINMUX_GPIO(PTL5),
+-	PINMUX_GPIO(PTL4),
+-	PINMUX_GPIO(PTL3),
+-	PINMUX_GPIO(PTL2),
+-	PINMUX_GPIO(PTL1),
+-	PINMUX_GPIO(PTL0),
+-
+-	/* PTM */
+-	PINMUX_GPIO(PTM7),
+-	PINMUX_GPIO(PTM6),
+-	PINMUX_GPIO(PTM5),
+-	PINMUX_GPIO(PTM4),
+-	PINMUX_GPIO(PTM3),
+-	PINMUX_GPIO(PTM2),
+-	PINMUX_GPIO(PTM1),
+-	PINMUX_GPIO(PTM0),
+-
+-	/* PTN */
+-	PINMUX_GPIO(PTN7),
+-	PINMUX_GPIO(PTN6),
+-	PINMUX_GPIO(PTN5),
+-	PINMUX_GPIO(PTN4),
+-	PINMUX_GPIO(PTN3),
+-	PINMUX_GPIO(PTN2),
+-	PINMUX_GPIO(PTN1),
+-	PINMUX_GPIO(PTN0),
+-
+-	/* PTQ */
+-	PINMUX_GPIO(PTQ7),
+-	PINMUX_GPIO(PTQ6),
+-	PINMUX_GPIO(PTQ5),
+-	PINMUX_GPIO(PTQ4),
+-	PINMUX_GPIO(PTQ3),
+-	PINMUX_GPIO(PTQ2),
+-	PINMUX_GPIO(PTQ1),
+-	PINMUX_GPIO(PTQ0),
+-
+-	/* PTR */
+-	PINMUX_GPIO(PTR7),
+-	PINMUX_GPIO(PTR6),
+-	PINMUX_GPIO(PTR5),
+-	PINMUX_GPIO(PTR4),
+-	PINMUX_GPIO(PTR3),
+-	PINMUX_GPIO(PTR2),
+-	PINMUX_GPIO(PTR1),
+-	PINMUX_GPIO(PTR0),
+-
+-	/* PTS */
+-	PINMUX_GPIO(PTS6),
+-	PINMUX_GPIO(PTS5),
+-	PINMUX_GPIO(PTS4),
+-	PINMUX_GPIO(PTS3),
+-	PINMUX_GPIO(PTS2),
+-	PINMUX_GPIO(PTS1),
+-	PINMUX_GPIO(PTS0),
+-
+-	/* PTT */
+-	PINMUX_GPIO(PTT7),
+-	PINMUX_GPIO(PTT6),
+-	PINMUX_GPIO(PTT5),
+-	PINMUX_GPIO(PTT4),
+-	PINMUX_GPIO(PTT3),
+-	PINMUX_GPIO(PTT2),
+-	PINMUX_GPIO(PTT1),
+-	PINMUX_GPIO(PTT0),
+-
+-	/* PTU */
+-	PINMUX_GPIO(PTU7),
+-	PINMUX_GPIO(PTU6),
+-	PINMUX_GPIO(PTU5),
+-	PINMUX_GPIO(PTU4),
+-	PINMUX_GPIO(PTU3),
+-	PINMUX_GPIO(PTU2),
+-	PINMUX_GPIO(PTU1),
+-	PINMUX_GPIO(PTU0),
+-
+-	/* PTV */
+-	PINMUX_GPIO(PTV7),
+-	PINMUX_GPIO(PTV6),
+-	PINMUX_GPIO(PTV5),
+-	PINMUX_GPIO(PTV4),
+-	PINMUX_GPIO(PTV3),
+-	PINMUX_GPIO(PTV2),
+-	PINMUX_GPIO(PTV1),
+-	PINMUX_GPIO(PTV0),
+-
+-	/* PTW */
+-	PINMUX_GPIO(PTW7),
+-	PINMUX_GPIO(PTW6),
+-	PINMUX_GPIO(PTW5),
+-	PINMUX_GPIO(PTW4),
+-	PINMUX_GPIO(PTW3),
+-	PINMUX_GPIO(PTW2),
+-	PINMUX_GPIO(PTW1),
+-	PINMUX_GPIO(PTW0),
+-
+-	/* PTX */
+-	PINMUX_GPIO(PTX7),
+-	PINMUX_GPIO(PTX6),
+-	PINMUX_GPIO(PTX5),
+-	PINMUX_GPIO(PTX4),
+-	PINMUX_GPIO(PTX3),
+-	PINMUX_GPIO(PTX2),
+-	PINMUX_GPIO(PTX1),
+-	PINMUX_GPIO(PTX0),
+-
+-	/* PTY */
+-	PINMUX_GPIO(PTY7),
+-	PINMUX_GPIO(PTY6),
+-	PINMUX_GPIO(PTY5),
+-	PINMUX_GPIO(PTY4),
+-	PINMUX_GPIO(PTY3),
+-	PINMUX_GPIO(PTY2),
+-	PINMUX_GPIO(PTY1),
+-	PINMUX_GPIO(PTY0),
+-
+-	/* PTZ */
+-	PINMUX_GPIO(PTZ7),
+-	PINMUX_GPIO(PTZ6),
+-	PINMUX_GPIO(PTZ5),
+-	PINMUX_GPIO(PTZ4),
+-	PINMUX_GPIO(PTZ3),
+-	PINMUX_GPIO(PTZ2),
+-	PINMUX_GPIO(PTZ1),
+-	PINMUX_GPIO(PTZ0),
+-};
+-
+-#define PINMUX_FN_BASE	ARRAY_SIZE(pinmux_pins)
+-
+-static const struct pinmux_func pinmux_func_gpios[] = {
+-	/* BSC */
+-	GPIO_FN(D31),
+-	GPIO_FN(D30),
+-	GPIO_FN(D29),
+-	GPIO_FN(D28),
+-	GPIO_FN(D27),
+-	GPIO_FN(D26),
+-	GPIO_FN(D25),
+-	GPIO_FN(D24),
+-	GPIO_FN(D23),
+-	GPIO_FN(D22),
+-	GPIO_FN(D21),
+-	GPIO_FN(D20),
+-	GPIO_FN(D19),
+-	GPIO_FN(D18),
+-	GPIO_FN(D17),
+-	GPIO_FN(D16),
+-	GPIO_FN(D15),
+-	GPIO_FN(D14),
+-	GPIO_FN(D13),
+-	GPIO_FN(D12),
+-	GPIO_FN(D11),
+-	GPIO_FN(D10),
+-	GPIO_FN(D9),
+-	GPIO_FN(D8),
+-	GPIO_FN(D7),
+-	GPIO_FN(D6),
+-	GPIO_FN(D5),
+-	GPIO_FN(D4),
+-	GPIO_FN(D3),
+-	GPIO_FN(D2),
+-	GPIO_FN(D1),
+-	GPIO_FN(D0),
+-	GPIO_FN(A25),
+-	GPIO_FN(A24),
+-	GPIO_FN(A23),
+-	GPIO_FN(A22),
+-	GPIO_FN(CS6B_CE1B),
+-	GPIO_FN(CS6A_CE2B),
+-	GPIO_FN(CS5B_CE1A),
+-	GPIO_FN(CS5A_CE2A),
+-	GPIO_FN(WE3_ICIOWR),
+-	GPIO_FN(WE2_ICIORD),
+-	GPIO_FN(IOIS16),
+-	GPIO_FN(WAIT),
+-	GPIO_FN(BS),
+-
+-	/* KEYSC */
+-	GPIO_FN(KEYOUT5_IN5),
+-	GPIO_FN(KEYOUT4_IN6),
+-	GPIO_FN(KEYIN4),
+-	GPIO_FN(KEYIN3),
+-	GPIO_FN(KEYIN2),
+-	GPIO_FN(KEYIN1),
+-	GPIO_FN(KEYIN0),
+-	GPIO_FN(KEYOUT3),
+-	GPIO_FN(KEYOUT2),
+-	GPIO_FN(KEYOUT1),
+-	GPIO_FN(KEYOUT0),
+-
+-	/* ATAPI */
+-	GPIO_FN(IDED15),
+-	GPIO_FN(IDED14),
+-	GPIO_FN(IDED13),
+-	GPIO_FN(IDED12),
+-	GPIO_FN(IDED11),
+-	GPIO_FN(IDED10),
+-	GPIO_FN(IDED9),
+-	GPIO_FN(IDED8),
+-	GPIO_FN(IDED7),
+-	GPIO_FN(IDED6),
+-	GPIO_FN(IDED5),
+-	GPIO_FN(IDED4),
+-	GPIO_FN(IDED3),
+-	GPIO_FN(IDED2),
+-	GPIO_FN(IDED1),
+-	GPIO_FN(IDED0),
+-	GPIO_FN(IDEA2),
+-	GPIO_FN(IDEA1),
+-	GPIO_FN(IDEA0),
+-	GPIO_FN(IDEIOWR),
+-	GPIO_FN(IODREQ),
+-	GPIO_FN(IDECS0),
+-	GPIO_FN(IDECS1),
+-	GPIO_FN(IDEIORD),
+-	GPIO_FN(DIRECTION),
+-	GPIO_FN(EXBUF_ENB),
+-	GPIO_FN(IDERST),
+-	GPIO_FN(IODACK),
+-	GPIO_FN(IDEINT),
+-	GPIO_FN(IDEIORDY),
+-
+-	/* TPU */
+-	GPIO_FN(TPUTO3),
+-	GPIO_FN(TPUTO2),
+-	GPIO_FN(TPUTO1),
+-	GPIO_FN(TPUTO0),
+-	GPIO_FN(TPUTI3),
+-	GPIO_FN(TPUTI2),
+-
+-	/* LCDC */
+-	GPIO_FN(LCDD23),
+-	GPIO_FN(LCDD22),
+-	GPIO_FN(LCDD21),
+-	GPIO_FN(LCDD20),
+-	GPIO_FN(LCDD19),
+-	GPIO_FN(LCDD18),
+-	GPIO_FN(LCDD17),
+-	GPIO_FN(LCDD16),
+-	GPIO_FN(LCDD15),
+-	GPIO_FN(LCDD14),
+-	GPIO_FN(LCDD13),
+-	GPIO_FN(LCDD12),
+-	GPIO_FN(LCDD11),
+-	GPIO_FN(LCDD10),
+-	GPIO_FN(LCDD9),
+-	GPIO_FN(LCDD8),
+-	GPIO_FN(LCDD7),
+-	GPIO_FN(LCDD6),
+-	GPIO_FN(LCDD5),
+-	GPIO_FN(LCDD4),
+-	GPIO_FN(LCDD3),
+-	GPIO_FN(LCDD2),
+-	GPIO_FN(LCDD1),
+-	GPIO_FN(LCDD0),
+-	GPIO_FN(LCDVSYN),
+-	GPIO_FN(LCDDISP),
+-	GPIO_FN(LCDRS),
+-	GPIO_FN(LCDHSYN),
+-	GPIO_FN(LCDCS),
+-	GPIO_FN(LCDDON),
+-	GPIO_FN(LCDDCK),
+-	GPIO_FN(LCDWR),
+-	GPIO_FN(LCDVEPWC),
+-	GPIO_FN(LCDVCPWC),
+-	GPIO_FN(LCDRD),
+-	GPIO_FN(LCDLCLK),
+-
+-	/* SCIF0 */
+-	GPIO_FN(SCIF0_TXD),
+-	GPIO_FN(SCIF0_RXD),
+-	GPIO_FN(SCIF0_SCK),
+-
+-	/* SCIF1 */
+-	GPIO_FN(SCIF1_SCK),
+-	GPIO_FN(SCIF1_RXD),
+-	GPIO_FN(SCIF1_TXD),
+-
+-	/* SCIF2 */
+-	GPIO_FN(SCIF2_L_TXD),
+-	GPIO_FN(SCIF2_L_SCK),
+-	GPIO_FN(SCIF2_L_RXD),
+-	GPIO_FN(SCIF2_V_TXD),
+-	GPIO_FN(SCIF2_V_SCK),
+-	GPIO_FN(SCIF2_V_RXD),
+-
+-	/* SCIF3 */
+-	GPIO_FN(SCIF3_V_SCK),
+-	GPIO_FN(SCIF3_V_RXD),
+-	GPIO_FN(SCIF3_V_TXD),
+-	GPIO_FN(SCIF3_V_CTS),
+-	GPIO_FN(SCIF3_V_RTS),
+-	GPIO_FN(SCIF3_I_SCK),
+-	GPIO_FN(SCIF3_I_RXD),
+-	GPIO_FN(SCIF3_I_TXD),
+-	GPIO_FN(SCIF3_I_CTS),
+-	GPIO_FN(SCIF3_I_RTS),
+-
+-	/* SCIF4 */
+-	GPIO_FN(SCIF4_SCK),
+-	GPIO_FN(SCIF4_RXD),
+-	GPIO_FN(SCIF4_TXD),
+-
+-	/* SCIF5 */
+-	GPIO_FN(SCIF5_SCK),
+-	GPIO_FN(SCIF5_RXD),
+-	GPIO_FN(SCIF5_TXD),
+-
+-	/* FSI */
+-	GPIO_FN(FSIMCKB),
+-	GPIO_FN(FSIMCKA),
+-	GPIO_FN(FSIOASD),
+-	GPIO_FN(FSIIABCK),
+-	GPIO_FN(FSIIALRCK),
+-	GPIO_FN(FSIOABCK),
+-	GPIO_FN(FSIOALRCK),
+-	GPIO_FN(CLKAUDIOAO),
+-	GPIO_FN(FSIIBSD),
+-	GPIO_FN(FSIOBSD),
+-	GPIO_FN(FSIIBBCK),
+-	GPIO_FN(FSIIBLRCK),
+-	GPIO_FN(FSIOBBCK),
+-	GPIO_FN(FSIOBLRCK),
+-	GPIO_FN(CLKAUDIOBO),
+-	GPIO_FN(FSIIASD),
+-
+-	/* AUD */
+-	GPIO_FN(AUDCK),
+-	GPIO_FN(AUDSYNC),
+-	GPIO_FN(AUDATA3),
+-	GPIO_FN(AUDATA2),
+-	GPIO_FN(AUDATA1),
+-	GPIO_FN(AUDATA0),
+-
+-	/* VIO */
+-	GPIO_FN(VIO_CKO),
+-
+-	/* VIO0 */
+-	GPIO_FN(VIO0_D15),
+-	GPIO_FN(VIO0_D14),
+-	GPIO_FN(VIO0_D13),
+-	GPIO_FN(VIO0_D12),
+-	GPIO_FN(VIO0_D11),
+-	GPIO_FN(VIO0_D10),
+-	GPIO_FN(VIO0_D9),
+-	GPIO_FN(VIO0_D8),
+-	GPIO_FN(VIO0_D7),
+-	GPIO_FN(VIO0_D6),
+-	GPIO_FN(VIO0_D5),
+-	GPIO_FN(VIO0_D4),
+-	GPIO_FN(VIO0_D3),
+-	GPIO_FN(VIO0_D2),
+-	GPIO_FN(VIO0_D1),
+-	GPIO_FN(VIO0_D0),
+-	GPIO_FN(VIO0_VD),
+-	GPIO_FN(VIO0_CLK),
+-	GPIO_FN(VIO0_FLD),
+-	GPIO_FN(VIO0_HD),
+-
+-	/* VIO1 */
+-	GPIO_FN(VIO1_D7),
+-	GPIO_FN(VIO1_D6),
+-	GPIO_FN(VIO1_D5),
+-	GPIO_FN(VIO1_D4),
+-	GPIO_FN(VIO1_D3),
+-	GPIO_FN(VIO1_D2),
+-	GPIO_FN(VIO1_D1),
+-	GPIO_FN(VIO1_D0),
+-	GPIO_FN(VIO1_FLD),
+-	GPIO_FN(VIO1_HD),
+-	GPIO_FN(VIO1_VD),
+-	GPIO_FN(VIO1_CLK),
+-
+-	/* Eth */
+-	GPIO_FN(RMII_RXD0),
+-	GPIO_FN(RMII_RXD1),
+-	GPIO_FN(RMII_TXD0),
+-	GPIO_FN(RMII_TXD1),
+-	GPIO_FN(RMII_REF_CLK),
+-	GPIO_FN(RMII_TX_EN),
+-	GPIO_FN(RMII_RX_ER),
+-	GPIO_FN(RMII_CRS_DV),
+-	GPIO_FN(LNKSTA),
+-	GPIO_FN(MDIO),
+-	GPIO_FN(MDC),
+-
+-	/* System */
+-	GPIO_FN(PDSTATUS),
+-	GPIO_FN(STATUS2),
+-	GPIO_FN(STATUS0),
+-
+-	/* VOU */
+-	GPIO_FN(DV_D15),
+-	GPIO_FN(DV_D14),
+-	GPIO_FN(DV_D13),
+-	GPIO_FN(DV_D12),
+-	GPIO_FN(DV_D11),
+-	GPIO_FN(DV_D10),
+-	GPIO_FN(DV_D9),
+-	GPIO_FN(DV_D8),
+-	GPIO_FN(DV_D7),
+-	GPIO_FN(DV_D6),
+-	GPIO_FN(DV_D5),
+-	GPIO_FN(DV_D4),
+-	GPIO_FN(DV_D3),
+-	GPIO_FN(DV_D2),
+-	GPIO_FN(DV_D1),
+-	GPIO_FN(DV_D0),
+-	GPIO_FN(DV_CLKI),
+-	GPIO_FN(DV_CLK),
+-	GPIO_FN(DV_VSYNC),
+-	GPIO_FN(DV_HSYNC),
+-
+-	/* MSIOF0 */
+-	GPIO_FN(MSIOF0_RXD),
+-	GPIO_FN(MSIOF0_TXD),
+-	GPIO_FN(MSIOF0_MCK),
+-	GPIO_FN(MSIOF0_TSCK),
+-	GPIO_FN(MSIOF0_SS1),
+-	GPIO_FN(MSIOF0_SS2),
+-	GPIO_FN(MSIOF0_TSYNC),
+-	GPIO_FN(MSIOF0_RSCK),
+-	GPIO_FN(MSIOF0_RSYNC),
+-
+-	/* MSIOF1 */
+-	GPIO_FN(MSIOF1_RXD),
+-	GPIO_FN(MSIOF1_TXD),
+-	GPIO_FN(MSIOF1_MCK),
+-	GPIO_FN(MSIOF1_TSCK),
+-	GPIO_FN(MSIOF1_SS1),
+-	GPIO_FN(MSIOF1_SS2),
+-	GPIO_FN(MSIOF1_TSYNC),
+-	GPIO_FN(MSIOF1_RSCK),
+-	GPIO_FN(MSIOF1_RSYNC),
+-
+-	/* DMAC */
+-	GPIO_FN(DMAC_DACK0),
+-	GPIO_FN(DMAC_DREQ0),
+-	GPIO_FN(DMAC_DACK1),
+-	GPIO_FN(DMAC_DREQ1),
+-
+-	/* SDHI0 */
+-	GPIO_FN(SDHI0CD),
+-	GPIO_FN(SDHI0WP),
+-	GPIO_FN(SDHI0CMD),
+-	GPIO_FN(SDHI0CLK),
+-	GPIO_FN(SDHI0D3),
+-	GPIO_FN(SDHI0D2),
+-	GPIO_FN(SDHI0D1),
+-	GPIO_FN(SDHI0D0),
+-
+-	/* SDHI1 */
+-	GPIO_FN(SDHI1CD),
+-	GPIO_FN(SDHI1WP),
+-	GPIO_FN(SDHI1CMD),
+-	GPIO_FN(SDHI1CLK),
+-	GPIO_FN(SDHI1D3),
+-	GPIO_FN(SDHI1D2),
+-	GPIO_FN(SDHI1D1),
+-	GPIO_FN(SDHI1D0),
+-
+-	/* MMC */
+-	GPIO_FN(MMC_D7),
+-	GPIO_FN(MMC_D6),
+-	GPIO_FN(MMC_D5),
+-	GPIO_FN(MMC_D4),
+-	GPIO_FN(MMC_D3),
+-	GPIO_FN(MMC_D2),
+-	GPIO_FN(MMC_D1),
+-	GPIO_FN(MMC_D0),
+-	GPIO_FN(MMC_CLK),
+-	GPIO_FN(MMC_CMD),
+-
+-	/* IrDA */
+-	GPIO_FN(IRDA_OUT),
+-	GPIO_FN(IRDA_IN),
+-
+-	/* TSIF */
+-	GPIO_FN(TSIF_TS0_SDAT),
+-	GPIO_FN(TSIF_TS0_SCK),
+-	GPIO_FN(TSIF_TS0_SDEN),
+-	GPIO_FN(TSIF_TS0_SPSYNC),
+-
+-	/* IRQ */
+-	GPIO_FN(INTC_IRQ7),
+-	GPIO_FN(INTC_IRQ6),
+-	GPIO_FN(INTC_IRQ5),
+-	GPIO_FN(INTC_IRQ4),
+-	GPIO_FN(INTC_IRQ3),
+-	GPIO_FN(INTC_IRQ2),
+-	GPIO_FN(INTC_IRQ1),
+-	GPIO_FN(INTC_IRQ0),
+-};
+-
+-static const struct pinmux_cfg_reg pinmux_config_regs[] = {
+-	{ PINMUX_CFG_REG("PACR", 0xa4050100, 16, 2, GROUP(
+-		PTA7_FN, PTA7_OUT, 0, PTA7_IN,
+-		PTA6_FN, PTA6_OUT, 0, PTA6_IN,
+-		PTA5_FN, PTA5_OUT, 0, PTA5_IN,
+-		PTA4_FN, PTA4_OUT, 0, PTA4_IN,
+-		PTA3_FN, PTA3_OUT, 0, PTA3_IN,
+-		PTA2_FN, PTA2_OUT, 0, PTA2_IN,
+-		PTA1_FN, PTA1_OUT, 0, PTA1_IN,
+-		PTA0_FN, PTA0_OUT, 0, PTA0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PBCR", 0xa4050102, 16, 2, GROUP(
+-		PTB7_FN, PTB7_OUT, 0, PTB7_IN,
+-		PTB6_FN, PTB6_OUT, 0, PTB6_IN,
+-		PTB5_FN, PTB5_OUT, 0, PTB5_IN,
+-		PTB4_FN, PTB4_OUT, 0, PTB4_IN,
+-		PTB3_FN, PTB3_OUT, 0, PTB3_IN,
+-		PTB2_FN, PTB2_OUT, 0, PTB2_IN,
+-		PTB1_FN, PTB1_OUT, 0, PTB1_IN,
+-		PTB0_FN, PTB0_OUT, 0, PTB0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PCCR", 0xa4050104, 16, 2, GROUP(
+-		PTC7_FN, PTC7_OUT, 0, PTC7_IN,
+-		PTC6_FN, PTC6_OUT, 0, PTC6_IN,
+-		PTC5_FN, PTC5_OUT, 0, PTC5_IN,
+-		PTC4_FN, PTC4_OUT, 0, PTC4_IN,
+-		PTC3_FN, PTC3_OUT, 0, PTC3_IN,
+-		PTC2_FN, PTC2_OUT, 0, PTC2_IN,
+-		PTC1_FN, PTC1_OUT, 0, PTC1_IN,
+-		PTC0_FN, PTC0_OUT, 0, PTC0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PDCR", 0xa4050106, 16, 2, GROUP(
+-		PTD7_FN, PTD7_OUT, 0, PTD7_IN,
+-		PTD6_FN, PTD6_OUT, 0, PTD6_IN,
+-		PTD5_FN, PTD5_OUT, 0, PTD5_IN,
+-		PTD4_FN, PTD4_OUT, 0, PTD4_IN,
+-		PTD3_FN, PTD3_OUT, 0, PTD3_IN,
+-		PTD2_FN, PTD2_OUT, 0, PTD2_IN,
+-		PTD1_FN, PTD1_OUT, 0, PTD1_IN,
+-		PTD0_FN, PTD0_OUT, 0, PTD0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PECR", 0xa4050108, 16, 2, GROUP(
+-		PTE7_FN, PTE7_OUT, 0, PTE7_IN,
+-		PTE6_FN, PTE6_OUT, 0, PTE6_IN,
+-		PTE5_FN, PTE5_OUT, 0, PTE5_IN,
+-		PTE4_FN, PTE4_OUT, 0, PTE4_IN,
+-		PTE3_FN, PTE3_OUT, 0, PTE3_IN,
+-		PTE2_FN, PTE2_OUT, 0, PTE2_IN,
+-		PTE1_FN, PTE1_OUT, 0, PTE1_IN,
+-		PTE0_FN, PTE0_OUT, 0, PTE0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PFCR", 0xa405010a, 16, 2, GROUP(
+-		PTF7_FN, PTF7_OUT, 0, PTF7_IN,
+-		PTF6_FN, PTF6_OUT, 0, PTF6_IN,
+-		PTF5_FN, PTF5_OUT, 0, PTF5_IN,
+-		PTF4_FN, PTF4_OUT, 0, PTF4_IN,
+-		PTF3_FN, PTF3_OUT, 0, PTF3_IN,
+-		PTF2_FN, PTF2_OUT, 0, PTF2_IN,
+-		PTF1_FN, PTF1_OUT, 0, PTF1_IN,
+-		PTF0_FN, PTF0_OUT, 0, PTF0_IN ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PGCR", 0xa405010c, 16,
+-			     GROUP(-4, 2, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [4] */
+-		PTG5_FN, PTG5_OUT, 0, 0,
+-		PTG4_FN, PTG4_OUT, 0, 0,
+-		PTG3_FN, PTG3_OUT, 0, 0,
+-		PTG2_FN, PTG2_OUT, 0, 0,
+-		PTG1_FN, PTG1_OUT, 0, 0,
+-		PTG0_FN, PTG0_OUT, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PHCR", 0xa405010e, 16, 2, GROUP(
+-		PTH7_FN, PTH7_OUT, 0, PTH7_IN,
+-		PTH6_FN, PTH6_OUT, 0, PTH6_IN,
+-		PTH5_FN, PTH5_OUT, 0, PTH5_IN,
+-		PTH4_FN, PTH4_OUT, 0, PTH4_IN,
+-		PTH3_FN, PTH3_OUT, 0, PTH3_IN,
+-		PTH2_FN, PTH2_OUT, 0, PTH2_IN,
+-		PTH1_FN, PTH1_OUT, 0, PTH1_IN,
+-		PTH0_FN, PTH0_OUT, 0, PTH0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PJCR", 0xa4050110, 16, 2, GROUP(
+-		PTJ7_FN, PTJ7_OUT, 0, 0,
+-		PTJ6_FN, PTJ6_OUT, 0, 0,
+-		PTJ5_FN, PTJ5_OUT, 0, 0,
+-		0, 0, 0, 0,
+-		PTJ3_FN, PTJ3_OUT, 0, PTJ3_IN,
+-		PTJ2_FN, PTJ2_OUT, 0, PTJ2_IN,
+-		PTJ1_FN, PTJ1_OUT, 0, PTJ1_IN,
+-		PTJ0_FN, PTJ0_OUT, 0, PTJ0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PKCR", 0xa4050112, 16, 2, GROUP(
+-		PTK7_FN, PTK7_OUT, 0, PTK7_IN,
+-		PTK6_FN, PTK6_OUT, 0, PTK6_IN,
+-		PTK5_FN, PTK5_OUT, 0, PTK5_IN,
+-		PTK4_FN, PTK4_OUT, 0, PTK4_IN,
+-		PTK3_FN, PTK3_OUT, 0, PTK3_IN,
+-		PTK2_FN, PTK2_OUT, 0, PTK2_IN,
+-		PTK1_FN, PTK1_OUT, 0, PTK1_IN,
+-		PTK0_FN, PTK0_OUT, 0, PTK0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PLCR", 0xa4050114, 16, 2, GROUP(
+-		PTL7_FN, PTL7_OUT, 0, PTL7_IN,
+-		PTL6_FN, PTL6_OUT, 0, PTL6_IN,
+-		PTL5_FN, PTL5_OUT, 0, PTL5_IN,
+-		PTL4_FN, PTL4_OUT, 0, PTL4_IN,
+-		PTL3_FN, PTL3_OUT, 0, PTL3_IN,
+-		PTL2_FN, PTL2_OUT, 0, PTL2_IN,
+-		PTL1_FN, PTL1_OUT, 0, PTL1_IN,
+-		PTL0_FN, PTL0_OUT, 0, PTL0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PMCR", 0xa4050116, 16, 2, GROUP(
+-		PTM7_FN, PTM7_OUT, 0, PTM7_IN,
+-		PTM6_FN, PTM6_OUT, 0, PTM6_IN,
+-		PTM5_FN, PTM5_OUT, 0, PTM5_IN,
+-		PTM4_FN, PTM4_OUT, 0, PTM4_IN,
+-		PTM3_FN, PTM3_OUT, 0, PTM3_IN,
+-		PTM2_FN, PTM2_OUT, 0, PTM2_IN,
+-		PTM1_FN, PTM1_OUT, 0, PTM1_IN,
+-		PTM0_FN, PTM0_OUT, 0, PTM0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PNCR", 0xa4050118, 16, 2, GROUP(
+-		PTN7_FN, PTN7_OUT, 0, PTN7_IN,
+-		PTN6_FN, PTN6_OUT, 0, PTN6_IN,
+-		PTN5_FN, PTN5_OUT, 0, PTN5_IN,
+-		PTN4_FN, PTN4_OUT, 0, PTN4_IN,
+-		PTN3_FN, PTN3_OUT, 0, PTN3_IN,
+-		PTN2_FN, PTN2_OUT, 0, PTN2_IN,
+-		PTN1_FN, PTN1_OUT, 0, PTN1_IN,
+-		PTN0_FN, PTN0_OUT, 0, PTN0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PQCR", 0xa405011a, 16, 2, GROUP(
+-		PTQ7_FN, PTQ7_OUT, 0, PTQ7_IN,
+-		PTQ6_FN, PTQ6_OUT, 0, PTQ6_IN,
+-		PTQ5_FN, PTQ5_OUT, 0, PTQ5_IN,
+-		PTQ4_FN, PTQ4_OUT, 0, PTQ4_IN,
+-		PTQ3_FN, PTQ3_OUT, 0, PTQ3_IN,
+-		PTQ2_FN, PTQ2_OUT, 0, PTQ2_IN,
+-		PTQ1_FN, PTQ1_OUT, 0, PTQ1_IN,
+-		PTQ0_FN, PTQ0_OUT, 0, PTQ0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PRCR", 0xa405011c, 16, 2, GROUP(
+-		PTR7_FN, PTR7_OUT, 0, PTR7_IN,
+-		PTR6_FN, PTR6_OUT, 0, PTR6_IN,
+-		PTR5_FN, PTR5_OUT, 0, PTR5_IN,
+-		PTR4_FN, PTR4_OUT, 0, PTR4_IN,
+-		PTR3_FN, 0,        0, PTR3_IN,
+-		PTR2_FN, 0,        0, PTR2_IN,
+-		PTR1_FN, PTR1_OUT, 0, PTR1_IN,
+-		PTR0_FN, PTR0_OUT, 0, PTR0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PSCR", 0xa405011e, 16, 2, GROUP(
+-		0, 0, 0, 0,
+-		PTS6_FN, PTS6_OUT, 0, PTS6_IN,
+-		PTS5_FN, PTS5_OUT, 0, PTS5_IN,
+-		PTS4_FN, PTS4_OUT, 0, PTS4_IN,
+-		PTS3_FN, PTS3_OUT, 0, PTS3_IN,
+-		PTS2_FN, PTS2_OUT, 0, PTS2_IN,
+-		PTS1_FN, PTS1_OUT, 0, PTS1_IN,
+-		PTS0_FN, PTS0_OUT, 0, PTS0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PTCR", 0xa4050140, 16, 2, GROUP(
+-		PTT7_FN, PTT7_OUT, 0, PTT7_IN,
+-		PTT6_FN, PTT6_OUT, 0, PTT6_IN,
+-		PTT5_FN, PTT5_OUT, 0, PTT5_IN,
+-		PTT4_FN, PTT4_OUT, 0, PTT4_IN,
+-		PTT3_FN, PTT3_OUT, 0, PTT3_IN,
+-		PTT2_FN, PTT2_OUT, 0, PTT2_IN,
+-		PTT1_FN, PTT1_OUT, 0, PTT1_IN,
+-		PTT0_FN, PTT0_OUT, 0, PTT0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PUCR", 0xa4050142, 16, 2, GROUP(
+-		PTU7_FN, PTU7_OUT, 0, PTU7_IN,
+-		PTU6_FN, PTU6_OUT, 0, PTU6_IN,
+-		PTU5_FN, PTU5_OUT, 0, PTU5_IN,
+-		PTU4_FN, PTU4_OUT, 0, PTU4_IN,
+-		PTU3_FN, PTU3_OUT, 0, PTU3_IN,
+-		PTU2_FN, PTU2_OUT, 0, PTU2_IN,
+-		PTU1_FN, PTU1_OUT, 0, PTU1_IN,
+-		PTU0_FN, PTU0_OUT, 0, PTU0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PVCR", 0xa4050144, 16, 2, GROUP(
+-		PTV7_FN, PTV7_OUT, 0, PTV7_IN,
+-		PTV6_FN, PTV6_OUT, 0, PTV6_IN,
+-		PTV5_FN, PTV5_OUT, 0, PTV5_IN,
+-		PTV4_FN, PTV4_OUT, 0, PTV4_IN,
+-		PTV3_FN, PTV3_OUT, 0, PTV3_IN,
+-		PTV2_FN, PTV2_OUT, 0, PTV2_IN,
+-		PTV1_FN, PTV1_OUT, 0, PTV1_IN,
+-		PTV0_FN, PTV0_OUT, 0, PTV0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PWCR", 0xa4050146, 16, 2, GROUP(
+-		PTW7_FN, PTW7_OUT, 0, PTW7_IN,
+-		PTW6_FN, PTW6_OUT, 0, PTW6_IN,
+-		PTW5_FN, PTW5_OUT, 0, PTW5_IN,
+-		PTW4_FN, PTW4_OUT, 0, PTW4_IN,
+-		PTW3_FN, PTW3_OUT, 0, PTW3_IN,
+-		PTW2_FN, PTW2_OUT, 0, PTW2_IN,
+-		PTW1_FN, PTW1_OUT, 0, PTW1_IN,
+-		PTW0_FN, PTW0_OUT, 0, PTW0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PXCR", 0xa4050148, 16, 2, GROUP(
+-		PTX7_FN, PTX7_OUT, 0, PTX7_IN,
+-		PTX6_FN, PTX6_OUT, 0, PTX6_IN,
+-		PTX5_FN, PTX5_OUT, 0, PTX5_IN,
+-		PTX4_FN, PTX4_OUT, 0, PTX4_IN,
+-		PTX3_FN, PTX3_OUT, 0, PTX3_IN,
+-		PTX2_FN, PTX2_OUT, 0, PTX2_IN,
+-		PTX1_FN, PTX1_OUT, 0, PTX1_IN,
+-		PTX0_FN, PTX0_OUT, 0, PTX0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PYCR", 0xa405014a, 16, 2, GROUP(
+-		PTY7_FN, PTY7_OUT, 0, PTY7_IN,
+-		PTY6_FN, PTY6_OUT, 0, PTY6_IN,
+-		PTY5_FN, PTY5_OUT, 0, PTY5_IN,
+-		PTY4_FN, PTY4_OUT, 0, PTY4_IN,
+-		PTY3_FN, PTY3_OUT, 0, PTY3_IN,
+-		PTY2_FN, PTY2_OUT, 0, PTY2_IN,
+-		PTY1_FN, PTY1_OUT, 0, PTY1_IN,
+-		PTY0_FN, PTY0_OUT, 0, PTY0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PZCR", 0xa405014c, 16, 2, GROUP(
+-		PTZ7_FN, PTZ7_OUT, 0, PTZ7_IN,
+-		PTZ6_FN, PTZ6_OUT, 0, PTZ6_IN,
+-		PTZ5_FN, PTZ5_OUT, 0, PTZ5_IN,
+-		PTZ4_FN, PTZ4_OUT, 0, PTZ4_IN,
+-		PTZ3_FN, PTZ3_OUT, 0, PTZ3_IN,
+-		PTZ2_FN, PTZ2_OUT, 0, PTZ2_IN,
+-		PTZ1_FN, PTZ1_OUT, 0, PTZ1_IN,
+-		PTZ0_FN, PTZ0_OUT, 0, PTZ0_IN ))
+-	},
+-	{ PINMUX_CFG_REG("PSELA", 0xa405014e, 16, 1, GROUP(
+-		PSA15_0, PSA15_1,
+-		PSA14_0, PSA14_1,
+-		PSA13_0, PSA13_1,
+-		PSA12_0, PSA12_1,
+-		0, 0,
+-		PSA10_0, PSA10_1,
+-		PSA9_0,  PSA9_1,
+-		PSA8_0,  PSA8_1,
+-		PSA7_0,  PSA7_1,
+-		PSA6_0,  PSA6_1,
+-		PSA5_0,  PSA5_1,
+-		0, 0,
+-		PSA3_0,  PSA3_1,
+-		PSA2_0,  PSA2_1,
+-		PSA1_0,  PSA1_1,
+-		PSA0_0,  PSA0_1))
+-	},
+-	{ PINMUX_CFG_REG("PSELB", 0xa4050150, 16, 1, GROUP(
+-		0, 0,
+-		PSB14_0, PSB14_1,
+-		PSB13_0, PSB13_1,
+-		PSB12_0, PSB12_1,
+-		PSB11_0, PSB11_1,
+-		PSB10_0, PSB10_1,
+-		PSB9_0,  PSB9_1,
+-		PSB8_0,  PSB8_1,
+-		PSB7_0,  PSB7_1,
+-		PSB6_0,  PSB6_1,
+-		PSB5_0,  PSB5_1,
+-		PSB4_0,  PSB4_1,
+-		PSB3_0,  PSB3_1,
+-		PSB2_0,  PSB2_1,
+-		PSB1_0,  PSB1_1,
+-		PSB0_0,  PSB0_1))
+-	},
+-	{ PINMUX_CFG_REG("PSELC", 0xa4050152, 16, 1, GROUP(
+-		PSC15_0, PSC15_1,
+-		PSC14_0, PSC14_1,
+-		PSC13_0, PSC13_1,
+-		PSC12_0, PSC12_1,
+-		PSC11_0, PSC11_1,
+-		PSC10_0, PSC10_1,
+-		PSC9_0,  PSC9_1,
+-		PSC8_0,  PSC8_1,
+-		PSC7_0,  PSC7_1,
+-		PSC6_0,  PSC6_1,
+-		PSC5_0,  PSC5_1,
+-		PSC4_0,  PSC4_1,
+-		0, 0,
+-		PSC2_0,  PSC2_1,
+-		PSC1_0,  PSC1_1,
+-		PSC0_0,  PSC0_1))
+-	},
+-	{ PINMUX_CFG_REG("PSELD", 0xa4050154, 16, 1, GROUP(
+-		PSD15_0, PSD15_1,
+-		PSD14_0, PSD14_1,
+-		PSD13_0, PSD13_1,
+-		PSD12_0, PSD12_1,
+-		PSD11_0, PSD11_1,
+-		PSD10_0, PSD10_1,
+-		PSD9_0,  PSD9_1,
+-		PSD8_0,  PSD8_1,
+-		PSD7_0,  PSD7_1,
+-		PSD6_0,  PSD6_1,
+-		PSD5_0,  PSD5_1,
+-		PSD4_0,  PSD4_1,
+-		PSD3_0,  PSD3_1,
+-		PSD2_0,  PSD2_1,
+-		PSD1_0,  PSD1_1,
+-		PSD0_0,  PSD0_1))
+-	},
+-	{ PINMUX_CFG_REG("PSELE", 0xa4050156, 16, 1, GROUP(
+-		PSE15_0, PSE15_1,
+-		PSE14_0, PSE14_1,
+-		PSE13_0, PSE13_1,
+-		PSE12_0, PSE12_1,
+-		PSE11_0, PSE11_1,
+-		PSE10_0, PSE10_1,
+-		PSE9_0,  PSE9_1,
+-		PSE8_0,  PSE8_1,
+-		PSE7_0,  PSE7_1,
+-		PSE6_0,  PSE6_1,
+-		PSE5_0,  PSE5_1,
+-		PSE4_0,  PSE4_1,
+-		PSE3_0,  PSE3_1,
+-		PSE2_0,  PSE2_1,
+-		PSE1_0,  PSE1_1,
+-		PSE0_0,  PSE0_1))
+-	},
+-	{}
+-};
+-
+-static const struct pinmux_data_reg pinmux_data_regs[] = {
+-	{ PINMUX_DATA_REG("PADR", 0xa4050120, 8, GROUP(
+-		PTA7_DATA, PTA6_DATA, PTA5_DATA, PTA4_DATA,
+-		PTA3_DATA, PTA2_DATA, PTA1_DATA, PTA0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PBDR", 0xa4050122, 8, GROUP(
+-		PTB7_DATA, PTB6_DATA, PTB5_DATA, PTB4_DATA,
+-		PTB3_DATA, PTB2_DATA, PTB1_DATA, PTB0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PCDR", 0xa4050124, 8, GROUP(
+-		PTC7_DATA, PTC6_DATA, PTC5_DATA, PTC4_DATA,
+-		PTC3_DATA, PTC2_DATA, PTC1_DATA, PTC0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PDDR", 0xa4050126, 8, GROUP(
+-		PTD7_DATA, PTD6_DATA, PTD5_DATA, PTD4_DATA,
+-		PTD3_DATA, PTD2_DATA, PTD1_DATA, PTD0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PEDR", 0xa4050128, 8, GROUP(
+-		PTE7_DATA, PTE6_DATA, PTE5_DATA, PTE4_DATA,
+-		PTE3_DATA, PTE2_DATA, PTE1_DATA, PTE0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PFDR", 0xa405012a, 8, GROUP(
+-		PTF7_DATA, PTF6_DATA, PTF5_DATA, PTF4_DATA,
+-		PTF3_DATA, PTF2_DATA, PTF1_DATA, PTF0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PGDR", 0xa405012c, 8, GROUP(
+-		0,         0,         PTG5_DATA, PTG4_DATA,
+-		PTG3_DATA, PTG2_DATA, PTG1_DATA, PTG0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PHDR", 0xa405012e, 8, GROUP(
+-		PTH7_DATA, PTH6_DATA, PTH5_DATA, PTH4_DATA,
+-		PTH3_DATA, PTH2_DATA, PTH1_DATA, PTH0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PJDR", 0xa4050130, 8, GROUP(
+-		PTJ7_DATA, PTJ6_DATA, PTJ5_DATA, 0,
+-		PTJ3_DATA, PTJ2_DATA, PTJ1_DATA, PTJ0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PKDR", 0xa4050132, 8, GROUP(
+-		PTK7_DATA, PTK6_DATA, PTK5_DATA, PTK4_DATA,
+-		PTK3_DATA, PTK2_DATA, PTK1_DATA, PTK0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PLDR", 0xa4050134, 8, GROUP(
+-		PTL7_DATA, PTL6_DATA, PTL5_DATA, PTL4_DATA,
+-		PTL3_DATA, PTL2_DATA, PTL1_DATA, PTL0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PMDR", 0xa4050136, 8, GROUP(
+-		PTM7_DATA, PTM6_DATA, PTM5_DATA, PTM4_DATA,
+-		PTM3_DATA, PTM2_DATA, PTM1_DATA, PTM0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PNDR", 0xa4050138, 8, GROUP(
+-		PTN7_DATA, PTN6_DATA, PTN5_DATA, PTN4_DATA,
+-		PTN3_DATA, PTN2_DATA, PTN1_DATA, PTN0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PQDR", 0xa405013a, 8, GROUP(
+-		PTQ7_DATA, PTQ6_DATA, PTQ5_DATA, PTQ4_DATA,
+-		PTQ3_DATA, PTQ2_DATA, PTQ1_DATA, PTQ0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PRDR", 0xa405013c, 8, GROUP(
+-		PTR7_DATA, PTR6_DATA, PTR5_DATA, PTR4_DATA,
+-		PTR3_DATA, PTR2_DATA, PTR1_DATA, PTR0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PSDR", 0xa405013e, 8, GROUP(
+-		0,         PTS6_DATA, PTS5_DATA, PTS4_DATA,
+-		PTS3_DATA, PTS2_DATA, PTS1_DATA, PTS0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PTDR", 0xa4050160, 8, GROUP(
+-		PTT7_DATA, PTT6_DATA, PTT5_DATA, PTT4_DATA,
+-		PTT3_DATA, PTT2_DATA, PTT1_DATA, PTT0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PUDR", 0xa4050162, 8, GROUP(
+-		PTU7_DATA, PTU6_DATA, PTU5_DATA, PTU4_DATA,
+-		PTU3_DATA, PTU2_DATA, PTU1_DATA, PTU0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PVDR", 0xa4050164, 8, GROUP(
+-		PTV7_DATA, PTV6_DATA, PTV5_DATA, PTV4_DATA,
+-		PTV3_DATA, PTV2_DATA, PTV1_DATA, PTV0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PWDR", 0xa4050166, 8, GROUP(
+-		PTW7_DATA, PTW6_DATA, PTW5_DATA, PTW4_DATA,
+-		PTW3_DATA, PTW2_DATA, PTW1_DATA, PTW0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PXDR", 0xa4050168, 8, GROUP(
+-		PTX7_DATA, PTX6_DATA, PTX5_DATA, PTX4_DATA,
+-		PTX3_DATA, PTX2_DATA, PTX1_DATA, PTX0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PYDR", 0xa405016a, 8, GROUP(
+-		PTY7_DATA, PTY6_DATA, PTY5_DATA, PTY4_DATA,
+-		PTY3_DATA, PTY2_DATA, PTY1_DATA, PTY0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PZDR", 0xa405016c, 8, GROUP(
+-		PTZ7_DATA, PTZ6_DATA, PTZ5_DATA, PTZ4_DATA,
+-		PTZ3_DATA, PTZ2_DATA, PTZ1_DATA, PTZ0_DATA ))
+-	},
+-	{ },
+-};
+-
+-const struct sh_pfc_soc_info sh7724_pinmux_info = {
+-	.name = "sh7724_pfc",
+-	.input = { PINMUX_INPUT_BEGIN, PINMUX_INPUT_END },
+-	.output = { PINMUX_OUTPUT_BEGIN, PINMUX_OUTPUT_END },
+-	.function = { PINMUX_FUNCTION_BEGIN, PINMUX_FUNCTION_END },
+-
+-	.pins = pinmux_pins,
+-	.nr_pins = ARRAY_SIZE(pinmux_pins),
+-	.func_gpios = pinmux_func_gpios,
+-	.nr_func_gpios = ARRAY_SIZE(pinmux_func_gpios),
+-
+-	.cfg_regs = pinmux_config_regs,
+-	.data_regs = pinmux_data_regs,
+-
+-	.pinmux_data = pinmux_data,
+-	.pinmux_data_size = ARRAY_SIZE(pinmux_data),
+-};
+diff --git a/drivers/pinctrl/renesas/pfc-sh7734.c b/drivers/pinctrl/renesas/pfc-sh7734.c
+deleted file mode 100644
+index 106a500ad13d16..00000000000000
+--- a/drivers/pinctrl/renesas/pfc-sh7734.c
++++ /dev/null
+@@ -1,2408 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * SH7734 processor support - PFC hardware block
+- *
+- * Copyright (C) 2012  Renesas Solutions Corp.
+- * Copyright (C) 2012  Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
+- */
+-#include <linux/kernel.h>
+-#include <cpu/sh7734.h>
+-
+-#include "sh_pfc.h"
+-
+-#define CPU_ALL_GP(fn, sfx)						\
+-	PORT_GP_32(0, fn, sfx),						\
+-	PORT_GP_32(1, fn, sfx),						\
+-	PORT_GP_32(2, fn, sfx),						\
+-	PORT_GP_32(3, fn, sfx),						\
+-	PORT_GP_32(4, fn, sfx),						\
+-	PORT_GP_12(5, fn, sfx)
+-
+-#undef _GP_DATA
+-#define _GP_DATA(bank, pin, name, sfx, cfg)				\
+-	PINMUX_DATA(name##_DATA, name##_FN, name##_IN, name##_OUT)
+-
+-#define _GP_INOUTSEL(bank, pin, name, sfx, cfg)	name##_IN, name##_OUT
+-#define _GP_INDT(bank, pin, name, sfx, cfg)	name##_DATA
+-#define GP_INOUTSEL(bank)	PORT_GP_32_REV(bank, _GP_INOUTSEL, unused)
+-#define GP_INDT(bank)		PORT_GP_32_REV(bank, _GP_INDT, unused)
+-
+-enum {
+-	PINMUX_RESERVED = 0,
+-
+-	PINMUX_DATA_BEGIN,
+-	GP_ALL(DATA), /* GP_0_0_DATA -> GP_5_11_DATA */
+-	PINMUX_DATA_END,
+-
+-	PINMUX_INPUT_BEGIN,
+-	GP_ALL(IN), /* GP_0_0_IN -> GP_5_11_IN */
+-	PINMUX_INPUT_END,
+-
+-	PINMUX_OUTPUT_BEGIN,
+-	GP_ALL(OUT), /* GP_0_0_OUT -> GP_5_11_OUT */
+-	PINMUX_OUTPUT_END,
+-
+-	PINMUX_FUNCTION_BEGIN,
+-	GP_ALL(FN), /* GP_0_0_FN -> GP_5_11_FN */
+-
+-	/* GPSR0 */
+-	FN_IP1_9_8, FN_IP1_11_10, FN_IP1_13_12, FN_IP1_15_14,
+-	FN_IP0_7_6, FN_IP0_9_8, FN_IP0_11_10, FN_IP0_13_12,
+-	FN_IP0_15_14, FN_IP0_17_16, FN_IP0_19_18, FN_IP0_21_20,
+-	FN_IP0_23_22, FN_IP0_25_24, FN_IP0_27_26, FN_IP0_29_28,
+-	FN_IP0_31_30, FN_IP1_1_0, FN_IP1_3_2, FN_IP1_5_4,
+-	FN_IP1_7_6, FN_IP11_28, FN_IP0_1_0, FN_IP0_3_2,
+-	FN_IP0_5_4, FN_IP1_17_16, FN_IP1_19_18, FN_IP1_22_20,
+-	FN_IP1_25_23, FN_IP1_28_26, FN_IP1_31_29, FN_IP2_2_0,
+-
+-	/* GPSR1 */
+-	FN_IP3_20, FN_IP3_29_27, FN_IP11_20_19, FN_IP11_22_21,
+-	FN_IP2_16_14, FN_IP2_19_17, FN_IP2_22_20, FN_IP2_24_23,
+-	FN_IP2_27_25, FN_IP2_30_28, FN_IP3_1_0, FN_CLKOUT,
+-	FN_BS, FN_CS0, FN_IP3_2, FN_EX_CS0,
+-	FN_IP3_5_3, FN_IP3_8_6, FN_IP3_11_9, FN_IP3_14_12,
+-	FN_IP3_17_15, FN_RD, FN_IP3_19_18, FN_WE0,
+-	FN_WE1, FN_IP2_4_3, FN_IP3_23_21, FN_IP3_26_24,
+-	FN_IP2_7_5, FN_IP2_10_8, FN_IP2_13_11, FN_IP11_25_23,
+-
+-	/* GPSR2 */
+-	FN_IP11_6_4, FN_IP11_9_7, FN_IP11_11_10, FN_IP4_2_0,
+-	FN_IP8_29_28, FN_IP11_27_26, FN_IP8_22_20, FN_IP8_25_23,
+-	FN_IP11_12, FN_IP8_27_26, FN_IP4_5_3, FN_IP4_8_6,
+-	FN_IP4_11_9, FN_IP4_14_12, FN_IP4_17_15, FN_IP4_19_18,
+-	FN_IP4_21_20, FN_IP4_23_22, FN_IP4_25_24, FN_IP4_27_26,
+-	FN_IP4_29_28, FN_IP4_31_30, FN_IP5_2_0, FN_IP5_5_3,
+-	FN_IP5_8_6, FN_IP5_11_9, FN_IP5_14_12, FN_IP5_17_15,
+-	FN_IP5_20_18, FN_IP5_22_21, FN_IP5_24_23, FN_IP5_26_25,
+-
+-	/* GPSR3 */
+-	FN_IP6_2_0, FN_IP6_5_3, FN_IP6_7_6, FN_IP6_9_8,
+-	FN_IP6_11_10, FN_IP6_13_12, FN_IP6_15_14, FN_IP6_17_16,
+-	FN_IP6_20_18, FN_IP6_23_21, FN_IP7_2_0, FN_IP7_5_3,
+-	FN_IP7_8_6, FN_IP7_11_9, FN_IP7_14_12, FN_IP7_17_15,
+-	FN_IP7_20_18, FN_IP7_23_21, FN_IP7_26_24, FN_IP7_28_27,
+-	FN_IP7_30_29, FN_IP8_1_0, FN_IP8_3_2, FN_IP8_5_4,
+-	FN_IP8_7_6, FN_IP8_9_8, FN_IP8_11_10, FN_IP8_13_12,
+-	FN_IP8_15_14, FN_IP8_17_16, FN_IP8_19_18, FN_IP9_1_0,
+-
+-	/* GPSR4 */
+-	FN_IP9_19_18, FN_IP9_21_20, FN_IP9_23_22, FN_IP9_25_24,
+-	FN_IP9_11_10, FN_IP9_13_12, FN_IP9_15_14, FN_IP9_17_16,
+-	FN_IP9_3_2, FN_IP9_5_4, FN_IP9_7_6, FN_IP9_9_8,
+-	FN_IP9_27_26, FN_IP9_29_28, FN_IP10_2_0, FN_IP10_5_3,
+-	FN_IP10_8_6, FN_IP10_11_9, FN_IP10_14_12, FN_IP10_15,
+-	FN_IP10_18_16, FN_IP10_21_19, FN_IP11_0, FN_IP11_1,
+-	FN_SCL0, FN_IP11_2, FN_PENC0, FN_IP11_15_13, /* Need check*/
+-	FN_USB_OVC0, FN_IP11_18_16,
+-	FN_IP10_22, FN_IP10_24_23,
+-
+-	/* GPSR5 */
+-	FN_IP10_25, FN_IP11_3, FN_IRQ2_B, FN_IRQ3_B,
+-	FN_IP10_27_26, /* 10 */
+-	FN_IP10_29_28, /* 11 */
+-
+-	/* IPSR0 */
+-	FN_A15, FN_ST0_VCO_CLKIN, FN_LCD_DATA15_A, FN_TIOC3D_C,
+-	FN_A14, FN_LCD_DATA14_A, FN_TIOC3C_C,
+-	FN_A13, FN_LCD_DATA13_A, FN_TIOC3B_C,
+-	FN_A12, FN_LCD_DATA12_A, FN_TIOC3A_C,
+-	FN_A11, FN_ST0_D7, FN_LCD_DATA11_A, FN_TIOC2B_C,
+-	FN_A10, FN_ST0_D6, FN_LCD_DATA10_A, FN_TIOC2A_C,
+-	FN_A9, FN_ST0_D5, FN_LCD_DATA9_A, FN_TIOC1B_C,
+-	FN_A8, FN_ST0_D4, FN_LCD_DATA8_A, FN_TIOC1A_C,
+-	FN_A7, FN_ST0_D3, FN_LCD_DATA7_A, FN_TIOC0D_C,
+-	FN_A6, FN_ST0_D2, FN_LCD_DATA6_A, FN_TIOC0C_C,
+-	FN_A5, FN_ST0_D1, FN_LCD_DATA5_A, FN_TIOC0B_C,
+-	FN_A4, FN_ST0_D0, FN_LCD_DATA4_A, FN_TIOC0A_C,
+-	FN_A3, FN_ST0_VLD, FN_LCD_DATA3_A, FN_TCLKD_C,
+-	FN_A2, FN_ST0_SYC, FN_LCD_DATA2_A, FN_TCLKC_C,
+-	FN_A1, FN_ST0_REQ, FN_LCD_DATA1_A, FN_TCLKB_C,
+-	FN_A0, FN_ST0_CLKIN, FN_LCD_DATA0_A, FN_TCLKA_C,
+-
+-	/* IPSR1 */
+-	FN_D3, FN_SD0_DAT3_A, FN_MMC_D3_A, FN_ST1_D6, FN_FD3_A,
+-	FN_D2, FN_SD0_DAT2_A, FN_MMC_D2_A, FN_ST1_D5, FN_FD2_A,
+-	FN_D1, FN_SD0_DAT1_A, FN_MMC_D1_A, FN_ST1_D4, FN_FD1_A,
+-	FN_D0, FN_SD0_DAT0_A, FN_MMC_D0_A, FN_ST1_D3, FN_FD0_A,
+-	FN_A25, FN_TX2_D, FN_ST1_D2,
+-	FN_A24, FN_RX2_D, FN_ST1_D1,
+-	FN_A23, FN_ST1_D0, FN_LCD_M_DISP_A,
+-	FN_A22, FN_ST1_VLD, FN_LCD_VEPWC_A,
+-	FN_A21, FN_ST1_SYC, FN_LCD_VCPWC_A,
+-	FN_A20, FN_ST1_REQ, FN_LCD_FLM_A,
+-	FN_A19, FN_ST1_CLKIN, FN_LCD_CLK_A,	FN_TIOC4D_C,
+-	FN_A18, FN_ST1_PWM, FN_LCD_CL2_A, FN_TIOC4C_C,
+-	FN_A17, FN_ST1_VCO_CLKIN, FN_LCD_CL1_A,	FN_TIOC4B_C,
+-	FN_A16, FN_ST0_PWM, FN_LCD_DON_A, FN_TIOC4A_C,
+-
+-	/* IPSR2 */
+-	FN_D14, FN_TX2_B, FN_FSE_A, FN_ET0_TX_CLK_B,
+-	FN_D13, FN_RX2_B, FN_FRB_A,	FN_ET0_ETXD6_B,
+-	FN_D12, FN_FWE_A, FN_ET0_ETXD5_B,
+-	FN_D11, FN_RSPI_MISO_A, FN_QMI_QIO1_A, FN_FRE_A,
+-		FN_ET0_ETXD3_B,
+-	FN_D10, FN_RSPI_MOSI_A, FN_QMO_QIO0_A, FN_FALE_A,
+-		FN_ET0_ETXD2_B,
+-	FN_D9, FN_SD0_CMD_A, FN_MMC_CMD_A, FN_QIO3_A, FN_FCLE_A,
+-		FN_ET0_ETXD1_B,
+-	FN_D8, FN_SD0_CLK_A, FN_MMC_CLK_A, FN_QIO2_A, FN_FCE_A,
+-		FN_ET0_GTX_CLK_B,
+-	FN_D7, FN_RSPI_SSL_A, FN_MMC_D7_A, FN_QSSL_A, FN_FD7_A,
+-	FN_D6, FN_RSPI_RSPCK_A, FN_MMC_D6_A, FN_QSPCLK_A, FN_FD6_A,
+-	FN_D5, FN_SD0_WP_A, FN_MMC_D5_A, FN_FD5_A,
+-	FN_D4, FN_SD0_CD_A, FN_MMC_D4_A, FN_ST1_D7, FN_FD4_A,
+-
+-	/* IPSR3 */
+-	FN_DRACK0, FN_SD1_DAT2_A, FN_ATAG, FN_TCLK1_A, FN_ET0_ETXD7,
+-	FN_EX_WAIT2, FN_SD1_DAT1_A, FN_DACK2, FN_CAN1_RX_C,
+-		FN_ET0_MAGIC_C, FN_ET0_ETXD6_A,
+-	FN_EX_WAIT1, FN_SD1_DAT0_A, FN_DREQ2, FN_CAN1_TX_C,
+-		FN_ET0_LINK_C, FN_ET0_ETXD5_A,
+-	FN_EX_WAIT0, FN_TCLK1_B,
+-	FN_RD_WR, FN_TCLK0, FN_CAN_CLK_B, FN_ET0_ETXD4,
+-	FN_EX_CS5, FN_SD1_CMD_A, FN_ATADIR, FN_QSSL_B, FN_ET0_ETXD3_A,
+-	FN_EX_CS4, FN_SD1_WP_A, FN_ATAWR, FN_QMI_QIO1_B, FN_ET0_ETXD2_A,
+-	FN_EX_CS3, FN_SD1_CD_A, FN_ATARD, FN_QMO_QIO0_B, FN_ET0_ETXD1_A,
+-	FN_EX_CS2, FN_TX3_B, FN_ATACS1, FN_QSPCLK_B, FN_ET0_GTX_CLK_A,
+-	FN_EX_CS1, FN_RX3_B, FN_ATACS0, FN_QIO2_B, FN_ET0_ETXD0,
+-	FN_CS1_A26, FN_QIO3_B,
+-	FN_D15, FN_SCK2_B,
+-
+-	/* IPSR4 */
+-	FN_SCK2_A, FN_VI0_G3,
+-	FN_RTS1_B, FN_VI0_G2,
+-	FN_CTS1_B, FN_VI0_DATA7_VI0_G1,
+-	FN_TX1_B, FN_VI0_DATA6_VI0_G0, FN_ET0_PHY_INT_A,
+-	FN_RX1_B, FN_VI0_DATA5_VI0_B5, FN_ET0_MAGIC_A,
+-	FN_SCK1_B, FN_VI0_DATA4_VI0_B4, FN_ET0_LINK_A,
+-	FN_RTS0_B, FN_VI0_DATA3_VI0_B3, FN_ET0_MDIO_A,
+-	FN_CTS0_B, FN_VI0_DATA2_VI0_B2, FN_RMII0_MDIO_A, FN_ET0_MDC,
+-	FN_HTX0_A, FN_TX1_A, FN_VI0_DATA1_VI0_B1, FN_RMII0_MDC_A, FN_ET0_COL,
+-	FN_HRX0_A, FN_RX1_A, FN_VI0_DATA0_VI0_B0, FN_RMII0_CRS_DV_A, FN_ET0_CRS,
+-	FN_HSCK0_A, FN_SCK1_A, FN_VI0_VSYNC, FN_RMII0_RX_ER_A, FN_ET0_RX_ER,
+-	FN_HRTS0_A, FN_RTS1_A, FN_VI0_HSYNC, FN_RMII0_TXD_EN_A, FN_ET0_RX_DV,
+-	FN_HCTS0_A, FN_CTS1_A, FN_VI0_FIELD, FN_RMII0_RXD1_A, FN_ET0_ERXD7,
+-
+-	/* IPSR5 */
+-	FN_SD2_CLK_A, FN_RX2_A, FN_VI0_G4, FN_ET0_RX_CLK_B,
+-	FN_SD2_CMD_A, FN_TX2_A, FN_VI0_G5, FN_ET0_ERXD2_B,
+-	FN_SD2_DAT0_A, FN_RX3_A, FN_VI0_R0, FN_ET0_ERXD3_B,
+-	FN_SD2_DAT1_A, FN_TX3_A, FN_VI0_R1, FN_ET0_MDIO_B,
+-	FN_SD2_DAT2_A, FN_RX4_A, FN_VI0_R2, FN_ET0_LINK_B,
+-	FN_SD2_DAT3_A, FN_TX4_A, FN_VI0_R3, FN_ET0_MAGIC_B,
+-	FN_SD2_CD_A, FN_RX5_A, FN_VI0_R4, FN_ET0_PHY_INT_B,
+-	FN_SD2_WP_A, FN_TX5_A, FN_VI0_R5,
+-	FN_REF125CK, FN_ADTRG, FN_RX5_C,
+-	FN_REF50CK, FN_CTS1_E, FN_HCTS0_D,
+-
+-	/* IPSR6 */
+-	FN_DU0_DR0, FN_SCIF_CLK_B, FN_HRX0_D, FN_IETX_A, FN_TCLKA_A, FN_HIFD00,
+-	FN_DU0_DR1, FN_SCK0_B, FN_HTX0_D, FN_IERX_A, FN_TCLKB_A, FN_HIFD01,
+-	FN_DU0_DR2, FN_RX0_B, FN_TCLKC_A, FN_HIFD02,
+-	FN_DU0_DR3, FN_TX0_B, FN_TCLKD_A, FN_HIFD03,
+-	FN_DU0_DR4, FN_CTS0_C, FN_TIOC0A_A, FN_HIFD04,
+-	FN_DU0_DR5, FN_RTS0_C, FN_TIOC0B_A, FN_HIFD05,
+-	FN_DU0_DR6, FN_SCK1_C, FN_TIOC0C_A, FN_HIFD06,
+-	FN_DU0_DR7, FN_RX1_C, FN_TIOC0D_A, FN_HIFD07,
+-	FN_DU0_DG0, FN_TX1_C, FN_HSCK0_D, FN_IECLK_A, FN_TIOC1A_A, FN_HIFD08,
+-	FN_DU0_DG1, FN_CTS1_C, FN_HRTS0_D, FN_TIOC1B_A, FN_HIFD09,
+-
+-	/* IPSR7 */
+-	FN_DU0_DG2, FN_RTS1_C, FN_RMII0_MDC_B, FN_TIOC2A_A, FN_HIFD10,
+-	FN_DU0_DG3, FN_SCK2_C, FN_RMII0_MDIO_B, FN_TIOC2B_A, FN_HIFD11,
+-	FN_DU0_DG4, FN_RX2_C, FN_RMII0_CRS_DV_B, FN_TIOC3A_A, FN_HIFD12,
+-	FN_DU0_DG5, FN_TX2_C, FN_RMII0_RX_ER_B, FN_TIOC3B_A, FN_HIFD13,
+-	FN_DU0_DG6, FN_RX3_C, FN_RMII0_RXD0_B, FN_TIOC3C_A, FN_HIFD14,
+-	FN_DU0_DG7, FN_TX3_C, FN_RMII0_RXD1_B, FN_TIOC3D_A, FN_HIFD15,
+-	FN_DU0_DB0, FN_RX4_C, FN_RMII0_TXD_EN_B, FN_TIOC4A_A, FN_HIFCS,
+-	FN_DU0_DB1, FN_TX4_C, FN_RMII0_TXD0_B, FN_TIOC4B_A, FN_HIFRS,
+-	FN_DU0_DB2, FN_RX5_B, FN_RMII0_TXD1_B, FN_TIOC4C_A, FN_HIFWR,
+-	FN_DU0_DB3, FN_TX5_B, FN_TIOC4D_A, FN_HIFRD,
+-	FN_DU0_DB4, FN_HIFINT,
+-
+-	/* IPSR8 */
+-	FN_DU0_DB5, FN_HIFDREQ,
+-	FN_DU0_DB6, FN_HIFRDY,
+-	FN_DU0_DB7, FN_SSI_SCK0_B, FN_HIFEBL_B,
+-	FN_DU0_DOTCLKIN, FN_HSPI_CS0_C, FN_SSI_WS0_B,
+-	FN_DU0_DOTCLKOUT, FN_HSPI_CLK0_C, FN_SSI_SDATA0_B,
+-	FN_DU0_EXHSYNC_DU0_HSYNC, FN_HSPI_TX0_C, FN_SSI_SCK1_B,
+-	FN_DU0_EXVSYNC_DU0_VSYNC, FN_HSPI_RX0_C, FN_SSI_WS1_B,
+-	FN_DU0_EXODDF_DU0_ODDF, FN_CAN0_RX_B, FN_HSCK0_B, FN_SSI_SDATA1_B,
+-	FN_DU0_DISP, FN_CAN0_TX_B, FN_HRX0_B, FN_AUDIO_CLKA_B,
+-	FN_DU0_CDE, FN_HTX0_B, FN_AUDIO_CLKB_B, FN_LCD_VCPWC_B,
+-	FN_IRQ0_A, FN_HSPI_TX_B, FN_RX3_E, FN_ET0_ERXD0,
+-	FN_IRQ1_A, FN_HSPI_RX_B, FN_TX3_E, FN_ET0_ERXD1,
+-	FN_IRQ2_A, FN_CTS0_A, FN_HCTS0_B, FN_ET0_ERXD2_A,
+-	FN_IRQ3_A, FN_RTS0_A, FN_HRTS0_B, FN_ET0_ERXD3_A,
+-
+-	/* IPSR9 */
+-	FN_VI1_CLK_A, FN_FD0_B, FN_LCD_DATA0_B,
+-	FN_VI1_0_A, FN_FD1_B, FN_LCD_DATA1_B,
+-	FN_VI1_1_A, FN_FD2_B, FN_LCD_DATA2_B,
+-	FN_VI1_2_A, FN_FD3_B, FN_LCD_DATA3_B,
+-	FN_VI1_3_A, FN_FD4_B, FN_LCD_DATA4_B,
+-	FN_VI1_4_A, FN_FD5_B, FN_LCD_DATA5_B,
+-	FN_VI1_5_A, FN_FD6_B, FN_LCD_DATA6_B,
+-	FN_VI1_6_A, FN_FD7_B, FN_LCD_DATA7_B,
+-	FN_VI1_7_A, FN_FCE_B, FN_LCD_DATA8_B,
+-	FN_SSI_SCK0_A, FN_TIOC1A_B, FN_LCD_DATA9_B,
+-	FN_SSI_WS0_A, FN_TIOC1B_B, FN_LCD_DATA10_B,
+-	FN_SSI_SDATA0_A, FN_VI1_0_B, FN_TIOC2A_B, FN_LCD_DATA11_B,
+-	FN_SSI_SCK1_A, FN_VI1_1_B, FN_TIOC2B_B, FN_LCD_DATA12_B,
+-	FN_SSI_WS1_A, FN_VI1_2_B, FN_LCD_DATA13_B,
+-	FN_SSI_SDATA1_A, FN_VI1_3_B, FN_LCD_DATA14_B,
+-
+-	/* IPSR10 */
+-	FN_SSI_SCK23, FN_VI1_4_B, FN_RX1_D, FN_FCLE_B, FN_LCD_DATA15_B,
+-	FN_SSI_WS23, FN_VI1_5_B, FN_TX1_D, FN_HSCK0_C, FN_FALE_B, FN_LCD_DON_B,
+-	FN_SSI_SDATA2, FN_VI1_6_B, FN_HRX0_C, FN_FRE_B, FN_LCD_CL1_B,
+-	FN_SSI_SDATA3, FN_VI1_7_B, FN_HTX0_C, FN_FWE_B, FN_LCD_CL2_B,
+-	FN_AUDIO_CLKA_A, FN_VI1_CLK_B, FN_SCK1_D, FN_IECLK_B, FN_LCD_FLM_B,
+-	FN_AUDIO_CLKB_A, FN_LCD_CLK_B,
+-	FN_AUDIO_CLKC, FN_SCK1_E, FN_HCTS0_C, FN_FRB_B, FN_LCD_VEPWC_B,
+-	FN_AUDIO_CLKOUT, FN_TX1_E, FN_HRTS0_C, FN_FSE_B, FN_LCD_M_DISP_B,
+-	FN_CAN_CLK_A, FN_RX4_D,
+-	FN_CAN0_TX_A, FN_TX4_D, FN_MLB_CLK,
+-	FN_CAN1_RX_A, FN_IRQ1_B,
+-	FN_CAN0_RX_A, FN_IRQ0_B, FN_MLB_SIG,
+-	FN_CAN1_TX_A, FN_TX5_C, FN_MLB_DAT,
+-
+-	/* IPSR11 */
+-	FN_SCL1, FN_SCIF_CLK_C,
+-	FN_SDA1, FN_RX1_E,
+-	FN_SDA0, FN_HIFEBL_A,
+-	FN_SDSELF, FN_RTS1_E,
+-	FN_SCIF_CLK_A, FN_HSPI_CLK_A, FN_VI0_CLK, FN_RMII0_TXD0_A, FN_ET0_ERXD4,
+-	FN_SCK0_A, FN_HSPI_CS_A, FN_VI0_CLKENB, FN_RMII0_TXD1_A, FN_ET0_ERXD5,
+-	FN_RX0_A, FN_HSPI_RX_A, FN_RMII0_RXD0_A, FN_ET0_ERXD6,
+-	FN_TX0_A, FN_HSPI_TX_A,
+-	FN_PENC1, FN_TX3_D, FN_CAN1_TX_B, FN_TX5_D, FN_IETX_B,
+-	FN_USB_OVC1, FN_RX3_D, FN_CAN1_RX_B, FN_RX5_D, FN_IERX_B,
+-	FN_DREQ0, FN_SD1_CLK_A, FN_ET0_TX_EN,
+-	FN_DACK0, FN_SD1_DAT3_A, FN_ET0_TX_ER,
+-	FN_DREQ1, FN_HSPI_CLK_B, FN_RX4_B, FN_ET0_PHY_INT_C, FN_ET0_TX_CLK_A,
+-	FN_DACK1, FN_HSPI_CS_B, FN_TX4_B, FN_ET0_RX_CLK_A,
+-	FN_PRESETOUT, FN_ST_CLKOUT,
+-
+-	/* MOD_SEL1 */
+-	FN_SEL_IEBUS_0, FN_SEL_IEBUS_1,
+-	FN_SEL_RQSPI_0, FN_SEL_RQSPI_1,
+-	FN_SEL_VIN1_0, FN_SEL_VIN1_1,
+-	FN_SEL_HIF_0, FN_SEL_HIF_1,
+-	FN_SEL_RSPI_0, FN_SEL_RSPI_1,
+-	FN_SEL_LCDC_0, FN_SEL_LCDC_1,
+-	FN_SEL_ET0_CTL_0, FN_SEL_ET0_CTL_1, FN_SEL_ET0_CTL_2,
+-	FN_SEL_ET0_0, FN_SEL_ET0_1,
+-	FN_SEL_RMII_0, FN_SEL_RMII_1,
+-	FN_SEL_TMU_0, FN_SEL_TMU_1,
+-	FN_SEL_HSPI_0, FN_SEL_HSPI_1, FN_SEL_HSPI_2,
+-	FN_SEL_HSCIF_0, FN_SEL_HSCIF_1, FN_SEL_HSCIF_2, FN_SEL_HSCIF_3,
+-	FN_SEL_RCAN_CLK_0, FN_SEL_RCAN_CLK_1,
+-	FN_SEL_RCAN1_0, FN_SEL_RCAN1_1, FN_SEL_RCAN1_2,
+-	FN_SEL_RCAN0_0, FN_SEL_RCAN0_1,
+-	FN_SEL_SDHI2_0, FN_SEL_SDHI2_1,
+-	FN_SEL_SDHI1_0, FN_SEL_SDHI1_1,
+-	FN_SEL_SDHI0_0, FN_SEL_SDHI0_1,
+-	FN_SEL_SSI1_0, FN_SEL_SSI1_1,
+-	FN_SEL_SSI0_0, FN_SEL_SSI0_1,
+-	FN_SEL_AUDIO_CLKB_0, FN_SEL_AUDIO_CLKB_1,
+-	FN_SEL_AUDIO_CLKA_0, FN_SEL_AUDIO_CLKA_1,
+-	FN_SEL_FLCTL_0, FN_SEL_FLCTL_1,
+-	FN_SEL_MMC_0, FN_SEL_MMC_1,
+-	FN_SEL_INTC_0, FN_SEL_INTC_1,
+-
+-	/* MOD_SEL2 */
+-	FN_SEL_MTU2_CLK_0, FN_SEL_MTU2_CLK_1,
+-	FN_SEL_MTU2_CH4_0, FN_SEL_MTU2_CH4_1,
+-	FN_SEL_MTU2_CH3_0, FN_SEL_MTU2_CH3_1,
+-	FN_SEL_MTU2_CH2_0, FN_SEL_MTU2_CH2_1, FN_SEL_MTU2_CH2_2,
+-	FN_SEL_MTU2_CH1_0, FN_SEL_MTU2_CH1_1, FN_SEL_MTU2_CH1_2,
+-	FN_SEL_MTU2_CH0_0, FN_SEL_MTU2_CH0_1,
+-	FN_SEL_SCIF5_0, FN_SEL_SCIF5_1,
+-	FN_SEL_SCIF5_2, FN_SEL_SCIF5_3,
+-	FN_SEL_SCIF4_0, FN_SEL_SCIF4_1,
+-	FN_SEL_SCIF4_2, FN_SEL_SCIF4_3,
+-	FN_SEL_SCIF3_0, FN_SEL_SCIF3_1, FN_SEL_SCIF3_2,
+-		FN_SEL_SCIF3_3, FN_SEL_SCIF3_4,
+-	FN_SEL_SCIF2_0, FN_SEL_SCIF2_1, FN_SEL_SCIF2_2,
+-		FN_SEL_SCIF2_3,
+-	FN_SEL_SCIF1_0, FN_SEL_SCIF1_1, FN_SEL_SCIF1_2,
+-		FN_SEL_SCIF1_3, FN_SEL_SCIF1_4,
+-	FN_SEL_SCIF0_0, FN_SEL_SCIF0_1, FN_SEL_SCIF0_2,
+-	FN_SEL_SCIF_CLK_0, FN_SEL_SCIF_CLK_1, FN_SEL_SCIF_CLK_2,
+-
+-	PINMUX_FUNCTION_END,
+-
+-	PINMUX_MARK_BEGIN,
+-
+-	CLKOUT_MARK, BS_MARK, CS0_MARK, EX_CS0_MARK, RD_MARK,
+-	WE0_MARK, WE1_MARK,
+-
+-	SCL0_MARK, PENC0_MARK, USB_OVC0_MARK,
+-
+-	IRQ2_B_MARK, IRQ3_B_MARK,
+-
+-	/* IPSR0 */
+-	A15_MARK, ST0_VCO_CLKIN_MARK, LCD_DATA15_A_MARK, TIOC3D_C_MARK,
+-	A14_MARK, LCD_DATA14_A_MARK, TIOC3C_C_MARK,
+-	A13_MARK, LCD_DATA13_A_MARK, TIOC3B_C_MARK,
+-	A12_MARK, LCD_DATA12_A_MARK, TIOC3A_C_MARK,
+-	A11_MARK, ST0_D7_MARK, LCD_DATA11_A_MARK, TIOC2B_C_MARK,
+-	A10_MARK, ST0_D6_MARK, LCD_DATA10_A_MARK, TIOC2A_C_MARK,
+-	A9_MARK, ST0_D5_MARK, LCD_DATA9_A_MARK, TIOC1B_C_MARK,
+-	A8_MARK, ST0_D4_MARK, LCD_DATA8_A_MARK, TIOC1A_C_MARK,
+-	A7_MARK, ST0_D3_MARK, LCD_DATA7_A_MARK, TIOC0D_C_MARK,
+-	A6_MARK, ST0_D2_MARK, LCD_DATA6_A_MARK, TIOC0C_C_MARK,
+-	A5_MARK, ST0_D1_MARK, LCD_DATA5_A_MARK, TIOC0B_C_MARK,
+-	A4_MARK, ST0_D0_MARK, LCD_DATA4_A_MARK, TIOC0A_C_MARK,
+-	A3_MARK, ST0_VLD_MARK, LCD_DATA3_A_MARK, TCLKD_C_MARK,
+-	A2_MARK, ST0_SYC_MARK, LCD_DATA2_A_MARK, TCLKC_C_MARK,
+-	A1_MARK, ST0_REQ_MARK, LCD_DATA1_A_MARK, TCLKB_C_MARK,
+-	A0_MARK, ST0_CLKIN_MARK, LCD_DATA0_A_MARK, TCLKA_C_MARK,
+-
+-	/* IPSR1 */
+-	D3_MARK, SD0_DAT3_A_MARK, MMC_D3_A_MARK, ST1_D6_MARK, FD3_A_MARK,
+-	D2_MARK, SD0_DAT2_A_MARK, MMC_D2_A_MARK, ST1_D5_MARK, FD2_A_MARK,
+-	D1_MARK, SD0_DAT1_A_MARK, MMC_D1_A_MARK, ST1_D4_MARK, FD1_A_MARK,
+-	D0_MARK, SD0_DAT0_A_MARK, MMC_D0_A_MARK, ST1_D3_MARK, FD0_A_MARK,
+-	A25_MARK, TX2_D_MARK, ST1_D2_MARK,
+-	A24_MARK, RX2_D_MARK, ST1_D1_MARK,
+-	A23_MARK, ST1_D0_MARK, LCD_M_DISP_A_MARK,
+-	A22_MARK, ST1_VLD_MARK, LCD_VEPWC_A_MARK,
+-	A21_MARK, ST1_SYC_MARK, LCD_VCPWC_A_MARK,
+-	A20_MARK, ST1_REQ_MARK, LCD_FLM_A_MARK,
+-	A19_MARK, ST1_CLKIN_MARK, LCD_CLK_A_MARK,	TIOC4D_C_MARK,
+-	A18_MARK, ST1_PWM_MARK, LCD_CL2_A_MARK, TIOC4C_C_MARK,
+-	A17_MARK, ST1_VCO_CLKIN_MARK, LCD_CL1_A_MARK, TIOC4B_C_MARK,
+-	A16_MARK, ST0_PWM_MARK, LCD_DON_A_MARK, TIOC4A_C_MARK,
+-
+-	/* IPSR2 */
+-	D14_MARK, TX2_B_MARK, FSE_A_MARK, ET0_TX_CLK_B_MARK,
+-	D13_MARK, RX2_B_MARK, FRB_A_MARK, ET0_ETXD6_B_MARK,
+-	D12_MARK, FWE_A_MARK, ET0_ETXD5_B_MARK,
+-	D11_MARK, RSPI_MISO_A_MARK, QMI_QIO1_A_MARK, FRE_A_MARK,
+-		ET0_ETXD3_B_MARK,
+-	D10_MARK, RSPI_MOSI_A_MARK, QMO_QIO0_A_MARK, FALE_A_MARK,
+-		ET0_ETXD2_B_MARK,
+-	D9_MARK, SD0_CMD_A_MARK, MMC_CMD_A_MARK, QIO3_A_MARK,
+-		FCLE_A_MARK, ET0_ETXD1_B_MARK,
+-	D8_MARK, SD0_CLK_A_MARK, MMC_CLK_A_MARK, QIO2_A_MARK,
+-		FCE_A_MARK, ET0_GTX_CLK_B_MARK,
+-	D7_MARK, RSPI_SSL_A_MARK, MMC_D7_A_MARK, QSSL_A_MARK,
+-		FD7_A_MARK,
+-	D6_MARK, RSPI_RSPCK_A_MARK, MMC_D6_A_MARK, QSPCLK_A_MARK,
+-		FD6_A_MARK,
+-	D5_MARK, SD0_WP_A_MARK, MMC_D5_A_MARK, FD5_A_MARK,
+-	D4_MARK, SD0_CD_A_MARK, MMC_D4_A_MARK, ST1_D7_MARK,
+-		FD4_A_MARK,
+-
+-	/* IPSR3 */
+-	DRACK0_MARK, SD1_DAT2_A_MARK, ATAG_MARK, TCLK1_A_MARK, ET0_ETXD7_MARK,
+-	EX_WAIT2_MARK, SD1_DAT1_A_MARK, DACK2_MARK, CAN1_RX_C_MARK,
+-		ET0_MAGIC_C_MARK, ET0_ETXD6_A_MARK,
+-	EX_WAIT1_MARK, SD1_DAT0_A_MARK, DREQ2_MARK, CAN1_TX_C_MARK,
+-		ET0_LINK_C_MARK, ET0_ETXD5_A_MARK,
+-	EX_WAIT0_MARK, TCLK1_B_MARK,
+-	RD_WR_MARK, TCLK0_MARK, CAN_CLK_B_MARK, ET0_ETXD4_MARK,
+-	EX_CS5_MARK, SD1_CMD_A_MARK, ATADIR_MARK, QSSL_B_MARK,
+-		ET0_ETXD3_A_MARK,
+-	EX_CS4_MARK, SD1_WP_A_MARK, ATAWR_MARK, QMI_QIO1_B_MARK,
+-		ET0_ETXD2_A_MARK,
+-	EX_CS3_MARK, SD1_CD_A_MARK, ATARD_MARK, QMO_QIO0_B_MARK,
+-		ET0_ETXD1_A_MARK,
+-	EX_CS2_MARK, TX3_B_MARK, ATACS1_MARK, QSPCLK_B_MARK,
+-		ET0_GTX_CLK_A_MARK,
+-	EX_CS1_MARK, RX3_B_MARK, ATACS0_MARK, QIO2_B_MARK,
+-		ET0_ETXD0_MARK,
+-	CS1_A26_MARK, QIO3_B_MARK,
+-	D15_MARK, SCK2_B_MARK,
+-
+-	/* IPSR4 */
+-	SCK2_A_MARK, VI0_G3_MARK,
+-	RTS1_B_MARK, VI0_G2_MARK,
+-	CTS1_B_MARK, VI0_DATA7_VI0_G1_MARK,
+-	TX1_B_MARK, VI0_DATA6_VI0_G0_MARK, ET0_PHY_INT_A_MARK,
+-	RX1_B_MARK, VI0_DATA5_VI0_B5_MARK, ET0_MAGIC_A_MARK,
+-	SCK1_B_MARK, VI0_DATA4_VI0_B4_MARK, ET0_LINK_A_MARK,
+-	RTS0_B_MARK, VI0_DATA3_VI0_B3_MARK, ET0_MDIO_A_MARK,
+-	CTS0_B_MARK, VI0_DATA2_VI0_B2_MARK, RMII0_MDIO_A_MARK,
+-		ET0_MDC_MARK,
+-	HTX0_A_MARK, TX1_A_MARK, VI0_DATA1_VI0_B1_MARK,
+-		RMII0_MDC_A_MARK, ET0_COL_MARK,
+-	HRX0_A_MARK, RX1_A_MARK, VI0_DATA0_VI0_B0_MARK,
+-		RMII0_CRS_DV_A_MARK, ET0_CRS_MARK,
+-	HSCK0_A_MARK, SCK1_A_MARK, VI0_VSYNC_MARK,
+-		RMII0_RX_ER_A_MARK, ET0_RX_ER_MARK,
+-	HRTS0_A_MARK, RTS1_A_MARK, VI0_HSYNC_MARK,
+-		RMII0_TXD_EN_A_MARK, ET0_RX_DV_MARK,
+-	HCTS0_A_MARK, CTS1_A_MARK, VI0_FIELD_MARK,
+-		RMII0_RXD1_A_MARK, ET0_ERXD7_MARK,
+-
+-	/* IPSR5 */
+-	SD2_CLK_A_MARK, RX2_A_MARK, VI0_G4_MARK, ET0_RX_CLK_B_MARK,
+-	SD2_CMD_A_MARK, TX2_A_MARK, VI0_G5_MARK, ET0_ERXD2_B_MARK,
+-	SD2_DAT0_A_MARK, RX3_A_MARK, VI0_R0_MARK, ET0_ERXD3_B_MARK,
+-	SD2_DAT1_A_MARK, TX3_A_MARK, VI0_R1_MARK, ET0_MDIO_B_MARK,
+-	SD2_DAT2_A_MARK, RX4_A_MARK, VI0_R2_MARK, ET0_LINK_B_MARK,
+-	SD2_DAT3_A_MARK, TX4_A_MARK, VI0_R3_MARK, ET0_MAGIC_B_MARK,
+-	SD2_CD_A_MARK, RX5_A_MARK, VI0_R4_MARK, ET0_PHY_INT_B_MARK,
+-	SD2_WP_A_MARK, TX5_A_MARK, VI0_R5_MARK,
+-	REF125CK_MARK, ADTRG_MARK, RX5_C_MARK,
+-	REF50CK_MARK, CTS1_E_MARK, HCTS0_D_MARK,
+-
+-	/* IPSR6 */
+-	DU0_DR0_MARK, SCIF_CLK_B_MARK, HRX0_D_MARK, IETX_A_MARK,
+-		TCLKA_A_MARK, HIFD00_MARK,
+-	DU0_DR1_MARK, SCK0_B_MARK, HTX0_D_MARK, IERX_A_MARK,
+-		TCLKB_A_MARK, HIFD01_MARK,
+-	DU0_DR2_MARK, RX0_B_MARK, TCLKC_A_MARK, HIFD02_MARK,
+-	DU0_DR3_MARK, TX0_B_MARK, TCLKD_A_MARK, HIFD03_MARK,
+-	DU0_DR4_MARK, CTS0_C_MARK, TIOC0A_A_MARK, HIFD04_MARK,
+-	DU0_DR5_MARK, RTS0_C_MARK, TIOC0B_A_MARK, HIFD05_MARK,
+-	DU0_DR6_MARK, SCK1_C_MARK, TIOC0C_A_MARK, HIFD06_MARK,
+-	DU0_DR7_MARK, RX1_C_MARK, TIOC0D_A_MARK, HIFD07_MARK,
+-	DU0_DG0_MARK, TX1_C_MARK, HSCK0_D_MARK, IECLK_A_MARK,
+-		TIOC1A_A_MARK, HIFD08_MARK,
+-	DU0_DG1_MARK, CTS1_C_MARK, HRTS0_D_MARK, TIOC1B_A_MARK,
+-		HIFD09_MARK,
+-
+-	/* IPSR7 */
+-	DU0_DG2_MARK, RTS1_C_MARK, RMII0_MDC_B_MARK, TIOC2A_A_MARK,
+-		HIFD10_MARK,
+-	DU0_DG3_MARK, SCK2_C_MARK, RMII0_MDIO_B_MARK, TIOC2B_A_MARK,
+-		HIFD11_MARK,
+-	DU0_DG4_MARK, RX2_C_MARK, RMII0_CRS_DV_B_MARK, TIOC3A_A_MARK,
+-		HIFD12_MARK,
+-	DU0_DG5_MARK, TX2_C_MARK, RMII0_RX_ER_B_MARK, TIOC3B_A_MARK,
+-		HIFD13_MARK,
+-	DU0_DG6_MARK, RX3_C_MARK, RMII0_RXD0_B_MARK, TIOC3C_A_MARK,
+-		HIFD14_MARK,
+-	DU0_DG7_MARK, TX3_C_MARK, RMII0_RXD1_B_MARK, TIOC3D_A_MARK,
+-		HIFD15_MARK,
+-	DU0_DB0_MARK, RX4_C_MARK, RMII0_TXD_EN_B_MARK, TIOC4A_A_MARK,
+-		HIFCS_MARK,
+-	DU0_DB1_MARK, TX4_C_MARK, RMII0_TXD0_B_MARK, TIOC4B_A_MARK,
+-		HIFRS_MARK,
+-	DU0_DB2_MARK, RX5_B_MARK, RMII0_TXD1_B_MARK, TIOC4C_A_MARK,
+-		HIFWR_MARK,
+-	DU0_DB3_MARK, TX5_B_MARK, TIOC4D_A_MARK, HIFRD_MARK,
+-	DU0_DB4_MARK, HIFINT_MARK,
+-
+-	/* IPSR8 */
+-	DU0_DB5_MARK, HIFDREQ_MARK,
+-	DU0_DB6_MARK, HIFRDY_MARK,
+-	DU0_DB7_MARK, SSI_SCK0_B_MARK, HIFEBL_B_MARK,
+-	DU0_DOTCLKIN_MARK, HSPI_CS0_C_MARK, SSI_WS0_B_MARK,
+-	DU0_DOTCLKOUT_MARK, HSPI_CLK0_C_MARK, SSI_SDATA0_B_MARK,
+-	DU0_EXHSYNC_DU0_HSYNC_MARK, HSPI_TX0_C_MARK, SSI_SCK1_B_MARK,
+-	DU0_EXVSYNC_DU0_VSYNC_MARK, HSPI_RX0_C_MARK, SSI_WS1_B_MARK,
+-	DU0_EXODDF_DU0_ODDF_MARK, CAN0_RX_B_MARK, HSCK0_B_MARK,
+-		SSI_SDATA1_B_MARK,
+-	DU0_DISP_MARK, CAN0_TX_B_MARK, HRX0_B_MARK, AUDIO_CLKA_B_MARK,
+-	DU0_CDE_MARK, HTX0_B_MARK, AUDIO_CLKB_B_MARK, LCD_VCPWC_B_MARK,
+-	IRQ0_A_MARK, HSPI_TX_B_MARK, RX3_E_MARK, ET0_ERXD0_MARK,
+-	IRQ1_A_MARK, HSPI_RX_B_MARK, TX3_E_MARK, ET0_ERXD1_MARK,
+-	IRQ2_A_MARK, CTS0_A_MARK, HCTS0_B_MARK, ET0_ERXD2_A_MARK,
+-	IRQ3_A_MARK, RTS0_A_MARK, HRTS0_B_MARK, ET0_ERXD3_A_MARK,
+-
+-	/* IPSR9 */
+-	VI1_CLK_A_MARK, FD0_B_MARK, LCD_DATA0_B_MARK,
+-	VI1_0_A_MARK, FD1_B_MARK, LCD_DATA1_B_MARK,
+-	VI1_1_A_MARK, FD2_B_MARK, LCD_DATA2_B_MARK,
+-	VI1_2_A_MARK, FD3_B_MARK, LCD_DATA3_B_MARK,
+-	VI1_3_A_MARK, FD4_B_MARK, LCD_DATA4_B_MARK,
+-	VI1_4_A_MARK, FD5_B_MARK, LCD_DATA5_B_MARK,
+-	VI1_5_A_MARK, FD6_B_MARK, LCD_DATA6_B_MARK,
+-	VI1_6_A_MARK, FD7_B_MARK, LCD_DATA7_B_MARK,
+-	VI1_7_A_MARK, FCE_B_MARK, LCD_DATA8_B_MARK,
+-	SSI_SCK0_A_MARK, TIOC1A_B_MARK, LCD_DATA9_B_MARK,
+-	SSI_WS0_A_MARK, TIOC1B_B_MARK, LCD_DATA10_B_MARK,
+-	SSI_SDATA0_A_MARK, VI1_0_B_MARK, TIOC2A_B_MARK, LCD_DATA11_B_MARK,
+-	SSI_SCK1_A_MARK, VI1_1_B_MARK, TIOC2B_B_MARK, LCD_DATA12_B_MARK,
+-	SSI_WS1_A_MARK, VI1_2_B_MARK, LCD_DATA13_B_MARK,
+-	SSI_SDATA1_A_MARK, VI1_3_B_MARK, LCD_DATA14_B_MARK,
+-
+-	/* IPSR10 */
+-	SSI_SCK23_MARK, VI1_4_B_MARK, RX1_D_MARK, FCLE_B_MARK,
+-		LCD_DATA15_B_MARK,
+-	SSI_WS23_MARK, VI1_5_B_MARK, TX1_D_MARK, HSCK0_C_MARK,
+-		FALE_B_MARK, LCD_DON_B_MARK,
+-	SSI_SDATA2_MARK, VI1_6_B_MARK, HRX0_C_MARK, FRE_B_MARK,
+-		LCD_CL1_B_MARK,
+-	SSI_SDATA3_MARK, VI1_7_B_MARK, HTX0_C_MARK, FWE_B_MARK,
+-		LCD_CL2_B_MARK,
+-	AUDIO_CLKA_A_MARK, VI1_CLK_B_MARK, SCK1_D_MARK, IECLK_B_MARK,
+-		LCD_FLM_B_MARK,
+-	AUDIO_CLKB_A_MARK, LCD_CLK_B_MARK,
+-	AUDIO_CLKC_MARK, SCK1_E_MARK, HCTS0_C_MARK, FRB_B_MARK,
+-		LCD_VEPWC_B_MARK,
+-	AUDIO_CLKOUT_MARK, TX1_E_MARK, HRTS0_C_MARK, FSE_B_MARK,
+-		LCD_M_DISP_B_MARK,
+-	CAN_CLK_A_MARK, RX4_D_MARK,
+-	CAN0_TX_A_MARK, TX4_D_MARK, MLB_CLK_MARK,
+-	CAN1_RX_A_MARK, IRQ1_B_MARK,
+-	CAN0_RX_A_MARK, IRQ0_B_MARK, MLB_SIG_MARK,
+-	CAN1_TX_A_MARK, TX5_C_MARK, MLB_DAT_MARK,
+-
+-	/* IPSR11 */
+-	SCL1_MARK, SCIF_CLK_C_MARK,
+-	SDA1_MARK, RX1_E_MARK,
+-	SDA0_MARK, HIFEBL_A_MARK,
+-	SDSELF_MARK, RTS1_E_MARK,
+-	SCIF_CLK_A_MARK, HSPI_CLK_A_MARK, VI0_CLK_MARK, RMII0_TXD0_A_MARK,
+-		ET0_ERXD4_MARK,
+-	SCK0_A_MARK, HSPI_CS_A_MARK, VI0_CLKENB_MARK, RMII0_TXD1_A_MARK,
+-		ET0_ERXD5_MARK,
+-	RX0_A_MARK, HSPI_RX_A_MARK, RMII0_RXD0_A_MARK, ET0_ERXD6_MARK,
+-	TX0_A_MARK, HSPI_TX_A_MARK,
+-	PENC1_MARK, TX3_D_MARK, CAN1_TX_B_MARK, TX5_D_MARK,
+-		IETX_B_MARK,
+-	USB_OVC1_MARK, RX3_D_MARK, CAN1_RX_B_MARK, RX5_D_MARK,
+-		IERX_B_MARK,
+-	DREQ0_MARK, SD1_CLK_A_MARK, ET0_TX_EN_MARK,
+-	DACK0_MARK, SD1_DAT3_A_MARK, ET0_TX_ER_MARK,
+-	DREQ1_MARK, HSPI_CLK_B_MARK, RX4_B_MARK, ET0_PHY_INT_C_MARK,
+-		ET0_TX_CLK_A_MARK,
+-	DACK1_MARK, HSPI_CS_B_MARK, TX4_B_MARK, ET0_RX_CLK_A_MARK,
+-	PRESETOUT_MARK, ST_CLKOUT_MARK,
+-
+-	PINMUX_MARK_END,
+-};
+-
+-static const u16 pinmux_data[] = {
+-	PINMUX_DATA_GP_ALL(), /* PINMUX_DATA(GP_M_N_DATA, GP_M_N_FN...), */
+-
+-	PINMUX_SINGLE(CLKOUT),
+-	PINMUX_SINGLE(BS),
+-	PINMUX_SINGLE(CS0),
+-	PINMUX_SINGLE(EX_CS0),
+-	PINMUX_SINGLE(RD),
+-	PINMUX_SINGLE(WE0),
+-	PINMUX_SINGLE(WE1),
+-	PINMUX_SINGLE(SCL0),
+-	PINMUX_SINGLE(PENC0),
+-	PINMUX_SINGLE(USB_OVC0),
+-	PINMUX_SINGLE(IRQ2_B),
+-	PINMUX_SINGLE(IRQ3_B),
+-
+-	/* IPSR0 */
+-	PINMUX_IPSR_GPSR(IP0_1_0, A0),
+-	PINMUX_IPSR_GPSR(IP0_1_0, ST0_CLKIN),
+-	PINMUX_IPSR_MSEL(IP0_1_0, LCD_DATA0_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP0_1_0, TCLKA_C, SEL_MTU2_CLK_1),
+-
+-	PINMUX_IPSR_GPSR(IP0_3_2, A1),
+-	PINMUX_IPSR_GPSR(IP0_3_2, ST0_REQ),
+-	PINMUX_IPSR_MSEL(IP0_3_2, LCD_DATA1_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP0_3_2, TCLKB_C, SEL_MTU2_CLK_1),
+-
+-	PINMUX_IPSR_GPSR(IP0_5_4, A2),
+-	PINMUX_IPSR_GPSR(IP0_5_4, ST0_SYC),
+-	PINMUX_IPSR_MSEL(IP0_5_4, LCD_DATA2_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP0_5_4, TCLKC_C, SEL_MTU2_CLK_1),
+-
+-	PINMUX_IPSR_GPSR(IP0_7_6, A3),
+-	PINMUX_IPSR_GPSR(IP0_7_6, ST0_VLD),
+-	PINMUX_IPSR_MSEL(IP0_7_6, LCD_DATA3_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP0_7_6, TCLKD_C, SEL_MTU2_CLK_1),
+-
+-	PINMUX_IPSR_GPSR(IP0_9_8, A4),
+-	PINMUX_IPSR_GPSR(IP0_9_8, ST0_D0),
+-	PINMUX_IPSR_MSEL(IP0_9_8, LCD_DATA4_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP0_9_8, TIOC0A_C, SEL_MTU2_CH0_1),
+-
+-	PINMUX_IPSR_GPSR(IP0_11_10, A5),
+-	PINMUX_IPSR_GPSR(IP0_11_10, ST0_D1),
+-	PINMUX_IPSR_MSEL(IP0_11_10, LCD_DATA5_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP0_11_10, TIOC0B_C, SEL_MTU2_CH0_1),
+-
+-	PINMUX_IPSR_GPSR(IP0_13_12, A6),
+-	PINMUX_IPSR_GPSR(IP0_13_12, ST0_D2),
+-	PINMUX_IPSR_MSEL(IP0_13_12, LCD_DATA6_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP0_13_12, TIOC0C_C, SEL_MTU2_CH0_1),
+-
+-	PINMUX_IPSR_GPSR(IP0_15_14, A7),
+-	PINMUX_IPSR_GPSR(IP0_15_14, ST0_D3),
+-	PINMUX_IPSR_MSEL(IP0_15_14, LCD_DATA7_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP0_15_14, TIOC0D_C, SEL_MTU2_CH0_1),
+-
+-	PINMUX_IPSR_GPSR(IP0_17_16, A8),
+-	PINMUX_IPSR_GPSR(IP0_17_16, ST0_D4),
+-	PINMUX_IPSR_MSEL(IP0_17_16, LCD_DATA8_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP0_17_16, TIOC1A_C, SEL_MTU2_CH1_2),
+-
+-	PINMUX_IPSR_GPSR(IP0_19_18, A9),
+-	PINMUX_IPSR_GPSR(IP0_19_18, ST0_D5),
+-	PINMUX_IPSR_MSEL(IP0_19_18, LCD_DATA9_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP0_19_18, TIOC1B_C, SEL_MTU2_CH1_2),
+-
+-	PINMUX_IPSR_GPSR(IP0_21_20, A10),
+-	PINMUX_IPSR_GPSR(IP0_21_20, ST0_D6),
+-	PINMUX_IPSR_MSEL(IP0_21_20, LCD_DATA10_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP0_21_20, TIOC2A_C, SEL_MTU2_CH2_2),
+-
+-	PINMUX_IPSR_GPSR(IP0_23_22, A11),
+-	PINMUX_IPSR_GPSR(IP0_23_22, ST0_D7),
+-	PINMUX_IPSR_MSEL(IP0_23_22, LCD_DATA11_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP0_23_22, TIOC2B_C, SEL_MTU2_CH2_2),
+-
+-	PINMUX_IPSR_GPSR(IP0_25_24, A12),
+-	PINMUX_IPSR_MSEL(IP0_25_24, LCD_DATA12_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP0_25_24, TIOC3A_C, SEL_MTU2_CH3_1),
+-
+-	PINMUX_IPSR_GPSR(IP0_27_26, A13),
+-	PINMUX_IPSR_MSEL(IP0_27_26, LCD_DATA13_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP0_27_26, TIOC3B_C, SEL_MTU2_CH3_1),
+-
+-	PINMUX_IPSR_GPSR(IP0_29_28, A14),
+-	PINMUX_IPSR_MSEL(IP0_29_28, LCD_DATA14_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP0_29_28, TIOC3C_C, SEL_MTU2_CH3_1),
+-
+-	PINMUX_IPSR_GPSR(IP0_31_30, A15),
+-	PINMUX_IPSR_GPSR(IP0_31_30, ST0_VCO_CLKIN),
+-	PINMUX_IPSR_MSEL(IP0_31_30, LCD_DATA15_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP0_31_30, TIOC3D_C, SEL_MTU2_CH3_1),
+-
+-
+-	/* IPSR1 */
+-	PINMUX_IPSR_GPSR(IP1_1_0, A16),
+-	PINMUX_IPSR_GPSR(IP1_1_0, ST0_PWM),
+-	PINMUX_IPSR_MSEL(IP1_1_0, LCD_DON_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP1_1_0, TIOC4A_C, SEL_MTU2_CH4_1),
+-
+-	PINMUX_IPSR_GPSR(IP1_3_2, A17),
+-	PINMUX_IPSR_GPSR(IP1_3_2, ST1_VCO_CLKIN),
+-	PINMUX_IPSR_MSEL(IP1_3_2, LCD_CL1_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP1_3_2, TIOC4B_C, SEL_MTU2_CH4_1),
+-
+-	PINMUX_IPSR_GPSR(IP1_5_4, A18),
+-	PINMUX_IPSR_GPSR(IP1_5_4, ST1_PWM),
+-	PINMUX_IPSR_MSEL(IP1_5_4, LCD_CL2_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP1_5_4, TIOC4C_C, SEL_MTU2_CH4_1),
+-
+-	PINMUX_IPSR_GPSR(IP1_7_6, A19),
+-	PINMUX_IPSR_GPSR(IP1_7_6, ST1_CLKIN),
+-	PINMUX_IPSR_MSEL(IP1_7_6, LCD_CLK_A, SEL_LCDC_0),
+-	PINMUX_IPSR_MSEL(IP1_7_6, TIOC4D_C, SEL_MTU2_CH4_1),
+-
+-	PINMUX_IPSR_GPSR(IP1_9_8, A20),
+-	PINMUX_IPSR_GPSR(IP1_9_8, ST1_REQ),
+-	PINMUX_IPSR_MSEL(IP1_9_8, LCD_FLM_A, SEL_LCDC_0),
+-
+-	PINMUX_IPSR_GPSR(IP1_11_10, A21),
+-	PINMUX_IPSR_GPSR(IP1_11_10, ST1_SYC),
+-	PINMUX_IPSR_MSEL(IP1_11_10, LCD_VCPWC_A, SEL_LCDC_0),
+-
+-	PINMUX_IPSR_GPSR(IP1_13_12, A22),
+-	PINMUX_IPSR_GPSR(IP1_13_12, ST1_VLD),
+-	PINMUX_IPSR_MSEL(IP1_13_12, LCD_VEPWC_A, SEL_LCDC_0),
+-
+-	PINMUX_IPSR_GPSR(IP1_15_14, A23),
+-	PINMUX_IPSR_GPSR(IP1_15_14, ST1_D0),
+-	PINMUX_IPSR_MSEL(IP1_15_14, LCD_M_DISP_A, SEL_LCDC_0),
+-
+-	PINMUX_IPSR_GPSR(IP1_17_16, A24),
+-	PINMUX_IPSR_MSEL(IP1_17_16, RX2_D, SEL_SCIF2_3),
+-	PINMUX_IPSR_GPSR(IP1_17_16, ST1_D1),
+-
+-	PINMUX_IPSR_GPSR(IP1_19_18, A25),
+-	PINMUX_IPSR_MSEL(IP1_17_16, RX2_D, SEL_SCIF2_3),
+-	PINMUX_IPSR_GPSR(IP1_17_16, ST1_D2),
+-
+-	PINMUX_IPSR_GPSR(IP1_22_20, D0),
+-	PINMUX_IPSR_MSEL(IP1_22_20, SD0_DAT0_A, SEL_SDHI0_0),
+-	PINMUX_IPSR_MSEL(IP1_22_20, MMC_D0_A, SEL_MMC_0),
+-	PINMUX_IPSR_GPSR(IP1_22_20, ST1_D3),
+-	PINMUX_IPSR_MSEL(IP1_22_20, FD0_A, SEL_FLCTL_0),
+-
+-	PINMUX_IPSR_GPSR(IP1_25_23, D1),
+-	PINMUX_IPSR_MSEL(IP1_25_23, SD0_DAT0_A, SEL_SDHI0_0),
+-	PINMUX_IPSR_MSEL(IP1_25_23, MMC_D1_A, SEL_MMC_0),
+-	PINMUX_IPSR_GPSR(IP1_25_23, ST1_D4),
+-	PINMUX_IPSR_MSEL(IP1_25_23, FD1_A, SEL_FLCTL_0),
+-
+-	PINMUX_IPSR_GPSR(IP1_28_26, D2),
+-	PINMUX_IPSR_MSEL(IP1_28_26, SD0_DAT0_A, SEL_SDHI0_0),
+-	PINMUX_IPSR_MSEL(IP1_28_26, MMC_D2_A, SEL_MMC_0),
+-	PINMUX_IPSR_GPSR(IP1_28_26, ST1_D5),
+-	PINMUX_IPSR_MSEL(IP1_28_26, FD2_A, SEL_FLCTL_0),
+-
+-	PINMUX_IPSR_GPSR(IP1_31_29, D3),
+-	PINMUX_IPSR_MSEL(IP1_31_29, SD0_DAT0_A, SEL_SDHI0_0),
+-	PINMUX_IPSR_MSEL(IP1_31_29, MMC_D3_A, SEL_MMC_0),
+-	PINMUX_IPSR_GPSR(IP1_31_29, ST1_D6),
+-	PINMUX_IPSR_MSEL(IP1_31_29, FD3_A, SEL_FLCTL_0),
+-
+-	/* IPSR2 */
+-	PINMUX_IPSR_GPSR(IP2_2_0, D4),
+-	PINMUX_IPSR_MSEL(IP2_2_0, SD0_CD_A, SEL_SDHI0_0),
+-	PINMUX_IPSR_MSEL(IP2_2_0, MMC_D4_A, SEL_MMC_0),
+-	PINMUX_IPSR_GPSR(IP2_2_0, ST1_D7),
+-	PINMUX_IPSR_MSEL(IP2_2_0, FD4_A, SEL_FLCTL_0),
+-
+-	PINMUX_IPSR_GPSR(IP2_4_3, D5),
+-	PINMUX_IPSR_MSEL(IP2_4_3, SD0_WP_A, SEL_SDHI0_0),
+-	PINMUX_IPSR_MSEL(IP2_4_3, MMC_D5_A, SEL_MMC_0),
+-	PINMUX_IPSR_MSEL(IP2_4_3, FD5_A, SEL_FLCTL_0),
+-
+-	PINMUX_IPSR_GPSR(IP2_7_5, D6),
+-	PINMUX_IPSR_MSEL(IP2_7_5, RSPI_RSPCK_A, SEL_RSPI_0),
+-	PINMUX_IPSR_MSEL(IP2_7_5, MMC_D6_A, SEL_MMC_0),
+-	PINMUX_IPSR_MSEL(IP2_7_5, QSPCLK_A, SEL_RQSPI_0),
+-	PINMUX_IPSR_MSEL(IP2_7_5, FD6_A, SEL_FLCTL_0),
+-
+-	PINMUX_IPSR_GPSR(IP2_10_8, D7),
+-	PINMUX_IPSR_MSEL(IP2_10_8, RSPI_SSL_A, SEL_RSPI_0),
+-	PINMUX_IPSR_MSEL(IP2_10_8, MMC_D7_A, SEL_MMC_0),
+-	PINMUX_IPSR_MSEL(IP2_10_8, QSSL_A, SEL_RQSPI_0),
+-	PINMUX_IPSR_MSEL(IP2_10_8, FD7_A, SEL_FLCTL_0),
+-
+-	PINMUX_IPSR_GPSR(IP2_13_11, D8),
+-	PINMUX_IPSR_MSEL(IP2_13_11, SD0_CLK_A, SEL_SDHI0_0),
+-	PINMUX_IPSR_MSEL(IP2_13_11, MMC_CLK_A, SEL_MMC_0),
+-	PINMUX_IPSR_MSEL(IP2_13_11, QIO2_A, SEL_RQSPI_0),
+-	PINMUX_IPSR_MSEL(IP2_13_11, FCE_A, SEL_FLCTL_0),
+-	PINMUX_IPSR_MSEL(IP2_13_11, ET0_GTX_CLK_B, SEL_ET0_1),
+-
+-	PINMUX_IPSR_GPSR(IP2_16_14, D9),
+-	PINMUX_IPSR_MSEL(IP2_16_14, SD0_CMD_A, SEL_SDHI0_0),
+-	PINMUX_IPSR_MSEL(IP2_16_14, MMC_CMD_A, SEL_MMC_0),
+-	PINMUX_IPSR_MSEL(IP2_16_14, QIO3_A, SEL_RQSPI_0),
+-	PINMUX_IPSR_MSEL(IP2_16_14, FCLE_A, SEL_FLCTL_0),
+-	PINMUX_IPSR_MSEL(IP2_16_14, ET0_ETXD1_B, SEL_ET0_1),
+-
+-	PINMUX_IPSR_GPSR(IP2_19_17, D10),
+-	PINMUX_IPSR_MSEL(IP2_19_17, RSPI_MOSI_A, SEL_RSPI_0),
+-	PINMUX_IPSR_MSEL(IP2_19_17, QMO_QIO0_A, SEL_RQSPI_0),
+-	PINMUX_IPSR_MSEL(IP2_19_17, FALE_A, SEL_FLCTL_0),
+-	PINMUX_IPSR_MSEL(IP2_19_17, ET0_ETXD2_B, SEL_ET0_1),
+-
+-	PINMUX_IPSR_GPSR(IP2_22_20, D11),
+-	PINMUX_IPSR_MSEL(IP2_22_20, RSPI_MISO_A, SEL_RSPI_0),
+-	PINMUX_IPSR_MSEL(IP2_22_20, QMI_QIO1_A, SEL_RQSPI_0),
+-	PINMUX_IPSR_MSEL(IP2_22_20, FRE_A, SEL_FLCTL_0),
+-
+-	PINMUX_IPSR_GPSR(IP2_24_23, D12),
+-	PINMUX_IPSR_MSEL(IP2_24_23, FWE_A, SEL_FLCTL_0),
+-	PINMUX_IPSR_MSEL(IP2_24_23, ET0_ETXD5_B, SEL_ET0_1),
+-
+-	PINMUX_IPSR_GPSR(IP2_27_25, D13),
+-	PINMUX_IPSR_MSEL(IP2_27_25, RX2_B, SEL_SCIF2_1),
+-	PINMUX_IPSR_MSEL(IP2_27_25, FRB_A, SEL_FLCTL_0),
+-	PINMUX_IPSR_MSEL(IP2_27_25, ET0_ETXD6_B, SEL_ET0_1),
+-
+-	PINMUX_IPSR_GPSR(IP2_30_28, D14),
+-	PINMUX_IPSR_MSEL(IP2_30_28, TX2_B, SEL_SCIF2_1),
+-	PINMUX_IPSR_MSEL(IP2_30_28, FSE_A, SEL_FLCTL_0),
+-	PINMUX_IPSR_MSEL(IP2_30_28, ET0_TX_CLK_B, SEL_ET0_1),
+-
+-	/* IPSR3 */
+-	PINMUX_IPSR_GPSR(IP3_1_0, D15),
+-	PINMUX_IPSR_MSEL(IP3_1_0, SCK2_B, SEL_SCIF2_1),
+-
+-	PINMUX_IPSR_GPSR(IP3_2, CS1_A26),
+-	PINMUX_IPSR_MSEL(IP3_2, QIO3_B, SEL_RQSPI_1),
+-
+-	PINMUX_IPSR_GPSR(IP3_5_3, EX_CS1),
+-	PINMUX_IPSR_MSEL(IP3_5_3, RX3_B, SEL_SCIF2_1),
+-	PINMUX_IPSR_GPSR(IP3_5_3, ATACS0),
+-	PINMUX_IPSR_MSEL(IP3_5_3, QIO2_B, SEL_RQSPI_1),
+-	PINMUX_IPSR_GPSR(IP3_5_3, ET0_ETXD0),
+-
+-	PINMUX_IPSR_GPSR(IP3_8_6, EX_CS2),
+-	PINMUX_IPSR_MSEL(IP3_8_6, TX3_B, SEL_SCIF3_1),
+-	PINMUX_IPSR_GPSR(IP3_8_6, ATACS1),
+-	PINMUX_IPSR_MSEL(IP3_8_6, QSPCLK_B, SEL_RQSPI_1),
+-	PINMUX_IPSR_MSEL(IP3_8_6, ET0_GTX_CLK_A, SEL_ET0_0),
+-
+-	PINMUX_IPSR_GPSR(IP3_11_9, EX_CS3),
+-	PINMUX_IPSR_MSEL(IP3_11_9, SD1_CD_A, SEL_SDHI1_0),
+-	PINMUX_IPSR_GPSR(IP3_11_9, ATARD),
+-	PINMUX_IPSR_MSEL(IP3_11_9, QMO_QIO0_B, SEL_RQSPI_1),
+-	PINMUX_IPSR_MSEL(IP3_11_9, ET0_ETXD1_A, SEL_ET0_0),
+-
+-	PINMUX_IPSR_GPSR(IP3_14_12, EX_CS4),
+-	PINMUX_IPSR_MSEL(IP3_14_12, SD1_WP_A, SEL_SDHI1_0),
+-	PINMUX_IPSR_GPSR(IP3_14_12, ATAWR),
+-	PINMUX_IPSR_MSEL(IP3_14_12, QMI_QIO1_B, SEL_RQSPI_1),
+-	PINMUX_IPSR_MSEL(IP3_14_12, ET0_ETXD2_A, SEL_ET0_0),
+-
+-	PINMUX_IPSR_GPSR(IP3_17_15, EX_CS5),
+-	PINMUX_IPSR_MSEL(IP3_17_15, SD1_CMD_A, SEL_SDHI1_0),
+-	PINMUX_IPSR_GPSR(IP3_17_15, ATADIR),
+-	PINMUX_IPSR_MSEL(IP3_17_15, QSSL_B, SEL_RQSPI_1),
+-	PINMUX_IPSR_MSEL(IP3_17_15, ET0_ETXD3_A, SEL_ET0_0),
+-
+-	PINMUX_IPSR_GPSR(IP3_19_18, RD_WR),
+-	PINMUX_IPSR_GPSR(IP3_19_18, TCLK0),
+-	PINMUX_IPSR_MSEL(IP3_19_18, CAN_CLK_B, SEL_RCAN_CLK_1),
+-	PINMUX_IPSR_GPSR(IP3_19_18, ET0_ETXD4),
+-
+-	PINMUX_IPSR_GPSR(IP3_20, EX_WAIT0),
+-	PINMUX_IPSR_MSEL(IP3_20, TCLK1_B, SEL_TMU_1),
+-
+-	PINMUX_IPSR_GPSR(IP3_23_21, EX_WAIT1),
+-	PINMUX_IPSR_MSEL(IP3_23_21, SD1_DAT0_A, SEL_SDHI1_0),
+-	PINMUX_IPSR_GPSR(IP3_23_21, DREQ2),
+-	PINMUX_IPSR_MSEL(IP3_23_21, CAN1_TX_C, SEL_RCAN1_2),
+-	PINMUX_IPSR_MSEL(IP3_23_21, ET0_LINK_C, SEL_ET0_CTL_2),
+-	PINMUX_IPSR_MSEL(IP3_23_21, ET0_ETXD5_A, SEL_ET0_0),
+-
+-	PINMUX_IPSR_GPSR(IP3_26_24, EX_WAIT2),
+-	PINMUX_IPSR_MSEL(IP3_26_24, SD1_DAT1_A, SEL_SDHI1_0),
+-	PINMUX_IPSR_GPSR(IP3_26_24, DACK2),
+-	PINMUX_IPSR_MSEL(IP3_26_24, CAN1_RX_C, SEL_RCAN1_2),
+-	PINMUX_IPSR_MSEL(IP3_26_24, ET0_MAGIC_C, SEL_ET0_CTL_2),
+-	PINMUX_IPSR_MSEL(IP3_26_24, ET0_ETXD6_A, SEL_ET0_0),
+-
+-	PINMUX_IPSR_GPSR(IP3_29_27, DRACK0),
+-	PINMUX_IPSR_MSEL(IP3_29_27, SD1_DAT2_A, SEL_SDHI1_0),
+-	PINMUX_IPSR_GPSR(IP3_29_27, ATAG),
+-	PINMUX_IPSR_MSEL(IP3_29_27, TCLK1_A, SEL_TMU_0),
+-	PINMUX_IPSR_GPSR(IP3_29_27, ET0_ETXD7),
+-
+-	/* IPSR4 */
+-	PINMUX_IPSR_MSEL(IP4_2_0, HCTS0_A, SEL_HSCIF_0),
+-	PINMUX_IPSR_MSEL(IP4_2_0, CTS1_A, SEL_SCIF1_0),
+-	PINMUX_IPSR_GPSR(IP4_2_0, VI0_FIELD),
+-	PINMUX_IPSR_MSEL(IP4_2_0, RMII0_RXD1_A, SEL_RMII_0),
+-	PINMUX_IPSR_GPSR(IP4_2_0, ET0_ERXD7),
+-
+-	PINMUX_IPSR_MSEL(IP4_5_3, HRTS0_A, SEL_HSCIF_0),
+-	PINMUX_IPSR_MSEL(IP4_5_3, RTS1_A, SEL_SCIF1_0),
+-	PINMUX_IPSR_GPSR(IP4_5_3, VI0_HSYNC),
+-	PINMUX_IPSR_MSEL(IP4_5_3, RMII0_TXD_EN_A, SEL_RMII_0),
+-	PINMUX_IPSR_GPSR(IP4_5_3, ET0_RX_DV),
+-
+-	PINMUX_IPSR_MSEL(IP4_8_6, HSCK0_A, SEL_HSCIF_0),
+-	PINMUX_IPSR_MSEL(IP4_8_6, SCK1_A, SEL_SCIF1_0),
+-	PINMUX_IPSR_GPSR(IP4_8_6, VI0_VSYNC),
+-	PINMUX_IPSR_MSEL(IP4_8_6, RMII0_RX_ER_A, SEL_RMII_0),
+-	PINMUX_IPSR_GPSR(IP4_8_6, ET0_RX_ER),
+-
+-	PINMUX_IPSR_MSEL(IP4_11_9, HRX0_A, SEL_HSCIF_0),
+-	PINMUX_IPSR_MSEL(IP4_11_9, RX1_A, SEL_SCIF1_0),
+-	PINMUX_IPSR_GPSR(IP4_11_9, VI0_DATA0_VI0_B0),
+-	PINMUX_IPSR_MSEL(IP4_11_9, RMII0_CRS_DV_A, SEL_RMII_0),
+-	PINMUX_IPSR_GPSR(IP4_11_9, ET0_CRS),
+-
+-	PINMUX_IPSR_MSEL(IP4_14_12, HTX0_A, SEL_HSCIF_0),
+-	PINMUX_IPSR_MSEL(IP4_14_12, TX1_A, SEL_SCIF1_0),
+-	PINMUX_IPSR_GPSR(IP4_14_12, VI0_DATA1_VI0_B1),
+-	PINMUX_IPSR_MSEL(IP4_14_12, RMII0_MDC_A, SEL_RMII_0),
+-	PINMUX_IPSR_GPSR(IP4_14_12, ET0_COL),
+-
+-	PINMUX_IPSR_MSEL(IP4_17_15, CTS0_B, SEL_SCIF0_1),
+-	PINMUX_IPSR_GPSR(IP4_17_15, VI0_DATA2_VI0_B2),
+-	PINMUX_IPSR_MSEL(IP4_17_15, RMII0_MDIO_A, SEL_RMII_0),
+-	PINMUX_IPSR_GPSR(IP4_17_15, ET0_MDC),
+-
+-	PINMUX_IPSR_MSEL(IP4_19_18, RTS0_B, SEL_SCIF0_1),
+-	PINMUX_IPSR_GPSR(IP4_19_18, VI0_DATA3_VI0_B3),
+-	PINMUX_IPSR_MSEL(IP4_19_18, ET0_MDIO_A, SEL_ET0_0),
+-
+-	PINMUX_IPSR_MSEL(IP4_21_20, SCK1_B, SEL_SCIF1_1),
+-	PINMUX_IPSR_GPSR(IP4_21_20, VI0_DATA4_VI0_B4),
+-	PINMUX_IPSR_MSEL(IP4_21_20, ET0_LINK_A, SEL_ET0_CTL_0),
+-
+-	PINMUX_IPSR_MSEL(IP4_23_22, RX1_B, SEL_SCIF1_1),
+-	PINMUX_IPSR_GPSR(IP4_23_22, VI0_DATA5_VI0_B5),
+-	PINMUX_IPSR_MSEL(IP4_23_22, ET0_MAGIC_A, SEL_ET0_CTL_0),
+-
+-	PINMUX_IPSR_MSEL(IP4_25_24, TX1_B, SEL_SCIF1_1),
+-	PINMUX_IPSR_GPSR(IP4_25_24, VI0_DATA6_VI0_G0),
+-	PINMUX_IPSR_MSEL(IP4_25_24, ET0_PHY_INT_A, SEL_ET0_CTL_0),
+-
+-	PINMUX_IPSR_MSEL(IP4_27_26, CTS1_B, SEL_SCIF1_1),
+-	PINMUX_IPSR_GPSR(IP4_27_26, VI0_DATA7_VI0_G1),
+-
+-	PINMUX_IPSR_MSEL(IP4_29_28, RTS1_B, SEL_SCIF1_1),
+-	PINMUX_IPSR_GPSR(IP4_29_28, VI0_G2),
+-
+-	PINMUX_IPSR_MSEL(IP4_31_30, SCK2_A, SEL_SCIF2_0),
+-	PINMUX_IPSR_GPSR(IP4_31_30, VI0_G3),
+-
+-	/* IPSR5 */
+-	PINMUX_IPSR_MSEL(IP5_2_0, SD2_CLK_A, SEL_SDHI2_0),
+-	PINMUX_IPSR_MSEL(IP5_2_0, RX2_A, SEL_SCIF2_0),
+-	PINMUX_IPSR_GPSR(IP5_2_0, VI0_G4),
+-	PINMUX_IPSR_MSEL(IP5_2_0, ET0_RX_CLK_B, SEL_ET0_1),
+-
+-	PINMUX_IPSR_MSEL(IP5_5_3, SD2_CMD_A, SEL_SDHI2_0),
+-	PINMUX_IPSR_MSEL(IP5_5_3, TX2_A, SEL_SCIF2_0),
+-	PINMUX_IPSR_GPSR(IP5_5_3, VI0_G5),
+-	PINMUX_IPSR_MSEL(IP5_5_3, ET0_ERXD2_B, SEL_ET0_1),
+-
+-	PINMUX_IPSR_MSEL(IP5_8_6, SD2_DAT0_A, SEL_SDHI2_0),
+-	PINMUX_IPSR_MSEL(IP5_8_6, RX3_A, SEL_SCIF3_0),
+-	PINMUX_IPSR_GPSR(IP4_8_6, VI0_R0),
+-	PINMUX_IPSR_MSEL(IP4_8_6, ET0_ERXD2_B, SEL_ET0_1),
+-
+-	PINMUX_IPSR_MSEL(IP5_11_9, SD2_DAT1_A, SEL_SDHI2_0),
+-	PINMUX_IPSR_MSEL(IP5_11_9, TX3_A, SEL_SCIF3_0),
+-	PINMUX_IPSR_GPSR(IP5_11_9, VI0_R1),
+-	PINMUX_IPSR_MSEL(IP5_11_9, ET0_MDIO_B, SEL_ET0_1),
+-
+-	PINMUX_IPSR_MSEL(IP5_14_12, SD2_DAT2_A, SEL_SDHI2_0),
+-	PINMUX_IPSR_MSEL(IP5_14_12, RX4_A, SEL_SCIF4_0),
+-	PINMUX_IPSR_GPSR(IP5_14_12, VI0_R2),
+-	PINMUX_IPSR_MSEL(IP5_14_12, ET0_LINK_B, SEL_ET0_CTL_1),
+-
+-	PINMUX_IPSR_MSEL(IP5_17_15, SD2_DAT3_A, SEL_SDHI2_0),
+-	PINMUX_IPSR_MSEL(IP5_17_15, TX4_A, SEL_SCIF4_0),
+-	PINMUX_IPSR_GPSR(IP5_17_15, VI0_R3),
+-	PINMUX_IPSR_MSEL(IP5_17_15, ET0_MAGIC_B, SEL_ET0_CTL_1),
+-
+-	PINMUX_IPSR_MSEL(IP5_20_18, SD2_CD_A, SEL_SDHI2_0),
+-	PINMUX_IPSR_MSEL(IP5_20_18, RX5_A, SEL_SCIF5_0),
+-	PINMUX_IPSR_GPSR(IP5_20_18, VI0_R4),
+-	PINMUX_IPSR_MSEL(IP5_20_18, ET0_PHY_INT_B, SEL_ET0_CTL_1),
+-
+-	PINMUX_IPSR_MSEL(IP5_22_21, SD2_WP_A, SEL_SDHI2_0),
+-	PINMUX_IPSR_MSEL(IP5_22_21, TX5_A, SEL_SCIF5_0),
+-	PINMUX_IPSR_GPSR(IP5_22_21, VI0_R5),
+-
+-	PINMUX_IPSR_GPSR(IP5_24_23, REF125CK),
+-	PINMUX_IPSR_GPSR(IP5_24_23, ADTRG),
+-	PINMUX_IPSR_MSEL(IP5_24_23, RX5_C, SEL_SCIF5_2),
+-	PINMUX_IPSR_GPSR(IP5_26_25, REF50CK),
+-	PINMUX_IPSR_MSEL(IP5_26_25, CTS1_E, SEL_SCIF1_3),
+-	PINMUX_IPSR_MSEL(IP5_26_25, HCTS0_D, SEL_HSCIF_3),
+-
+-	/* IPSR6 */
+-	PINMUX_IPSR_GPSR(IP6_2_0, DU0_DR0),
+-	PINMUX_IPSR_MSEL(IP6_2_0, SCIF_CLK_B, SEL_SCIF_CLK_1),
+-	PINMUX_IPSR_MSEL(IP6_2_0, HRX0_D, SEL_HSCIF_3),
+-	PINMUX_IPSR_MSEL(IP6_2_0, IETX_A, SEL_IEBUS_0),
+-	PINMUX_IPSR_MSEL(IP6_2_0, TCLKA_A, SEL_MTU2_CLK_0),
+-	PINMUX_IPSR_GPSR(IP6_2_0, HIFD00),
+-
+-	PINMUX_IPSR_GPSR(IP6_5_3, DU0_DR1),
+-	PINMUX_IPSR_MSEL(IP6_5_3, SCK0_B, SEL_SCIF0_1),
+-	PINMUX_IPSR_MSEL(IP6_5_3, HTX0_D, SEL_HSCIF_3),
+-	PINMUX_IPSR_MSEL(IP6_5_3, IERX_A, SEL_IEBUS_0),
+-	PINMUX_IPSR_MSEL(IP6_5_3, TCLKB_A, SEL_MTU2_CLK_0),
+-	PINMUX_IPSR_GPSR(IP6_5_3, HIFD01),
+-
+-	PINMUX_IPSR_GPSR(IP6_7_6, DU0_DR2),
+-	PINMUX_IPSR_MSEL(IP6_7_6, RX0_B, SEL_SCIF0_1),
+-	PINMUX_IPSR_MSEL(IP6_7_6, TCLKC_A, SEL_MTU2_CLK_0),
+-	PINMUX_IPSR_GPSR(IP6_7_6, HIFD02),
+-
+-	PINMUX_IPSR_GPSR(IP6_9_8, DU0_DR3),
+-	PINMUX_IPSR_MSEL(IP6_9_8, TX0_B, SEL_SCIF0_1),
+-	PINMUX_IPSR_MSEL(IP6_9_8, TCLKD_A, SEL_MTU2_CLK_0),
+-	PINMUX_IPSR_GPSR(IP6_9_8, HIFD03),
+-
+-	PINMUX_IPSR_GPSR(IP6_11_10, DU0_DR4),
+-	PINMUX_IPSR_MSEL(IP6_11_10, CTS0_C, SEL_SCIF0_2),
+-	PINMUX_IPSR_MSEL(IP6_11_10, TIOC0A_A, SEL_MTU2_CH0_0),
+-	PINMUX_IPSR_GPSR(IP6_11_10, HIFD04),
+-
+-	PINMUX_IPSR_GPSR(IP6_13_12, DU0_DR5),
+-	PINMUX_IPSR_MSEL(IP6_13_12, RTS0_C, SEL_SCIF0_1),
+-	PINMUX_IPSR_MSEL(IP6_13_12, TIOC0B_A, SEL_MTU2_CH0_0),
+-	PINMUX_IPSR_GPSR(IP6_13_12, HIFD05),
+-
+-	PINMUX_IPSR_GPSR(IP6_15_14, DU0_DR6),
+-	PINMUX_IPSR_MSEL(IP6_15_14, SCK1_C, SEL_SCIF1_2),
+-	PINMUX_IPSR_MSEL(IP6_15_14, TIOC0C_A, SEL_MTU2_CH0_0),
+-	PINMUX_IPSR_GPSR(IP6_15_14, HIFD06),
+-
+-	PINMUX_IPSR_GPSR(IP6_17_16, DU0_DR7),
+-	PINMUX_IPSR_MSEL(IP6_17_16, RX1_C, SEL_SCIF1_2),
+-	PINMUX_IPSR_MSEL(IP6_17_16, TIOC0D_A, SEL_MTU2_CH0_0),
+-	PINMUX_IPSR_GPSR(IP6_17_16, HIFD07),
+-
+-	PINMUX_IPSR_GPSR(IP6_20_18, DU0_DG0),
+-	PINMUX_IPSR_MSEL(IP6_20_18, TX1_C, SEL_SCIF1_2),
+-	PINMUX_IPSR_MSEL(IP6_20_18, HSCK0_D, SEL_HSCIF_3),
+-	PINMUX_IPSR_MSEL(IP6_20_18, IECLK_A, SEL_IEBUS_0),
+-	PINMUX_IPSR_MSEL(IP6_20_18, TIOC1A_A, SEL_MTU2_CH1_0),
+-	PINMUX_IPSR_GPSR(IP6_20_18, HIFD08),
+-
+-	PINMUX_IPSR_GPSR(IP6_23_21, DU0_DG1),
+-	PINMUX_IPSR_MSEL(IP6_23_21, CTS1_C, SEL_SCIF1_2),
+-	PINMUX_IPSR_MSEL(IP6_23_21, HRTS0_D, SEL_HSCIF_3),
+-	PINMUX_IPSR_MSEL(IP6_23_21, TIOC1B_A, SEL_MTU2_CH1_0),
+-	PINMUX_IPSR_GPSR(IP6_23_21, HIFD09),
+-
+-	/* IPSR7 */
+-	PINMUX_IPSR_GPSR(IP7_2_0, DU0_DG2),
+-	PINMUX_IPSR_MSEL(IP7_2_0, RTS1_C, SEL_SCIF1_2),
+-	PINMUX_IPSR_MSEL(IP7_2_0, RMII0_MDC_B, SEL_RMII_1),
+-	PINMUX_IPSR_MSEL(IP7_2_0, TIOC2A_A, SEL_MTU2_CH2_0),
+-	PINMUX_IPSR_GPSR(IP7_2_0, HIFD10),
+-
+-	PINMUX_IPSR_GPSR(IP7_5_3, DU0_DG3),
+-	PINMUX_IPSR_MSEL(IP7_5_3, SCK2_C, SEL_SCIF2_2),
+-	PINMUX_IPSR_MSEL(IP7_5_3, RMII0_MDIO_B, SEL_RMII_1),
+-	PINMUX_IPSR_MSEL(IP7_5_3, TIOC2B_A, SEL_MTU2_CH2_0),
+-	PINMUX_IPSR_GPSR(IP7_5_3, HIFD11),
+-
+-	PINMUX_IPSR_GPSR(IP7_8_6, DU0_DG4),
+-	PINMUX_IPSR_MSEL(IP7_8_6, RX2_C, SEL_SCIF2_2),
+-	PINMUX_IPSR_MSEL(IP7_8_6, RMII0_CRS_DV_B, SEL_RMII_1),
+-	PINMUX_IPSR_MSEL(IP7_8_6, TIOC3A_A, SEL_MTU2_CH3_0),
+-	PINMUX_IPSR_GPSR(IP7_8_6, HIFD12),
+-
+-	PINMUX_IPSR_GPSR(IP7_11_9, DU0_DG5),
+-	PINMUX_IPSR_MSEL(IP7_11_9, TX2_C, SEL_SCIF2_2),
+-	PINMUX_IPSR_MSEL(IP7_11_9, RMII0_RX_ER_B, SEL_RMII_1),
+-	PINMUX_IPSR_MSEL(IP7_11_9, TIOC3B_A, SEL_MTU2_CH3_0),
+-	PINMUX_IPSR_GPSR(IP7_11_9, HIFD13),
+-
+-	PINMUX_IPSR_GPSR(IP7_14_12, DU0_DG6),
+-	PINMUX_IPSR_MSEL(IP7_14_12, RX3_C, SEL_SCIF3_2),
+-	PINMUX_IPSR_MSEL(IP7_14_12, RMII0_RXD0_B, SEL_RMII_1),
+-	PINMUX_IPSR_MSEL(IP7_14_12, TIOC3C_A, SEL_MTU2_CH3_0),
+-	PINMUX_IPSR_GPSR(IP7_14_12, HIFD14),
+-
+-	PINMUX_IPSR_GPSR(IP7_17_15, DU0_DG7),
+-	PINMUX_IPSR_MSEL(IP7_17_15, TX3_C, SEL_SCIF3_2),
+-	PINMUX_IPSR_MSEL(IP7_17_15, RMII0_RXD1_B, SEL_RMII_1),
+-	PINMUX_IPSR_MSEL(IP7_17_15, TIOC3D_A, SEL_MTU2_CH3_0),
+-	PINMUX_IPSR_GPSR(IP7_17_15, HIFD15),
+-
+-	PINMUX_IPSR_GPSR(IP7_20_18, DU0_DB0),
+-	PINMUX_IPSR_MSEL(IP7_20_18, RX4_C, SEL_SCIF4_2),
+-	PINMUX_IPSR_MSEL(IP7_20_18, RMII0_TXD_EN_B, SEL_RMII_1),
+-	PINMUX_IPSR_MSEL(IP7_20_18, TIOC4A_A, SEL_MTU2_CH4_0),
+-	PINMUX_IPSR_GPSR(IP7_20_18, HIFCS),
+-
+-	PINMUX_IPSR_GPSR(IP7_23_21, DU0_DB1),
+-	PINMUX_IPSR_MSEL(IP7_23_21, TX4_C, SEL_SCIF4_2),
+-	PINMUX_IPSR_MSEL(IP7_23_21, RMII0_TXD0_B, SEL_RMII_1),
+-	PINMUX_IPSR_MSEL(IP7_23_21, TIOC4B_A, SEL_MTU2_CH4_0),
+-	PINMUX_IPSR_GPSR(IP7_23_21, HIFWR),
+-
+-	PINMUX_IPSR_GPSR(IP7_26_24, DU0_DB2),
+-	PINMUX_IPSR_MSEL(IP7_26_24, RX5_B, SEL_SCIF5_1),
+-	PINMUX_IPSR_MSEL(IP7_26_24, RMII0_TXD1_B, SEL_RMII_1),
+-	PINMUX_IPSR_MSEL(IP7_26_24, TIOC4C_A, SEL_MTU2_CH4_0),
+-
+-	PINMUX_IPSR_GPSR(IP7_28_27, DU0_DB3),
+-	PINMUX_IPSR_MSEL(IP7_28_27, TX5_B, SEL_SCIF5_1),
+-	PINMUX_IPSR_MSEL(IP7_28_27, TIOC4D_A, SEL_MTU2_CH4_0),
+-	PINMUX_IPSR_GPSR(IP7_28_27, HIFRD),
+-
+-	PINMUX_IPSR_GPSR(IP7_30_29, DU0_DB4),
+-	PINMUX_IPSR_GPSR(IP7_30_29, HIFINT),
+-
+-	/* IPSR8 */
+-	PINMUX_IPSR_GPSR(IP8_1_0, DU0_DB5),
+-	PINMUX_IPSR_GPSR(IP8_1_0, HIFDREQ),
+-
+-	PINMUX_IPSR_GPSR(IP8_3_2, DU0_DB6),
+-	PINMUX_IPSR_GPSR(IP8_3_2, HIFRDY),
+-
+-	PINMUX_IPSR_GPSR(IP8_5_4, DU0_DB7),
+-	PINMUX_IPSR_MSEL(IP8_5_4, SSI_SCK0_B, SEL_SSI0_1),
+-	PINMUX_IPSR_MSEL(IP8_5_4, HIFEBL_B, SEL_HIF_1),
+-
+-	PINMUX_IPSR_GPSR(IP8_7_6, DU0_DOTCLKIN),
+-	PINMUX_IPSR_MSEL(IP8_7_6, HSPI_CS0_C, SEL_HSPI_2),
+-	PINMUX_IPSR_MSEL(IP8_7_6, SSI_WS0_B, SEL_SSI0_1),
+-
+-	PINMUX_IPSR_GPSR(IP8_9_8, DU0_DOTCLKOUT),
+-	PINMUX_IPSR_MSEL(IP8_9_8, HSPI_CLK0_C, SEL_HSPI_2),
+-	PINMUX_IPSR_MSEL(IP8_9_8, SSI_SDATA0_B, SEL_SSI0_1),
+-
+-	PINMUX_IPSR_GPSR(IP8_11_10, DU0_EXHSYNC_DU0_HSYNC),
+-	PINMUX_IPSR_MSEL(IP8_11_10, HSPI_TX0_C, SEL_HSPI_2),
+-	PINMUX_IPSR_MSEL(IP8_11_10, SSI_SCK1_B, SEL_SSI1_1),
+-
+-	PINMUX_IPSR_GPSR(IP8_13_12, DU0_EXVSYNC_DU0_VSYNC),
+-	PINMUX_IPSR_MSEL(IP8_13_12, HSPI_RX0_C, SEL_HSPI_2),
+-	PINMUX_IPSR_MSEL(IP8_13_12, SSI_WS1_B, SEL_SSI1_1),
+-
+-	PINMUX_IPSR_GPSR(IP8_15_14, DU0_EXODDF_DU0_ODDF),
+-	PINMUX_IPSR_MSEL(IP8_15_14, CAN0_RX_B, SEL_RCAN0_1),
+-	PINMUX_IPSR_MSEL(IP8_15_14, HSCK0_B, SEL_HSCIF_1),
+-	PINMUX_IPSR_MSEL(IP8_15_14, SSI_SDATA1_B, SEL_SSI1_1),
+-
+-	PINMUX_IPSR_GPSR(IP8_17_16, DU0_DISP),
+-	PINMUX_IPSR_MSEL(IP8_17_16, CAN0_TX_B, SEL_RCAN0_1),
+-	PINMUX_IPSR_MSEL(IP8_17_16, HRX0_B, SEL_HSCIF_1),
+-	PINMUX_IPSR_MSEL(IP8_17_16, AUDIO_CLKA_B, SEL_AUDIO_CLKA_1),
+-
+-	PINMUX_IPSR_GPSR(IP8_19_18, DU0_CDE),
+-	PINMUX_IPSR_MSEL(IP8_19_18, HTX0_B, SEL_HSCIF_1),
+-	PINMUX_IPSR_MSEL(IP8_19_18, AUDIO_CLKB_B, SEL_AUDIO_CLKB_1),
+-	PINMUX_IPSR_MSEL(IP8_19_18, LCD_VCPWC_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP8_22_20, IRQ0_A, SEL_INTC_0),
+-	PINMUX_IPSR_MSEL(IP8_22_20, HSPI_TX_B, SEL_HSPI_1),
+-	PINMUX_IPSR_MSEL(IP8_22_20, RX3_E, SEL_SCIF3_4),
+-	PINMUX_IPSR_GPSR(IP8_22_20, ET0_ERXD0),
+-
+-	PINMUX_IPSR_MSEL(IP8_25_23, IRQ1_A, SEL_INTC_0),
+-	PINMUX_IPSR_MSEL(IP8_25_23, HSPI_RX_B, SEL_HSPI_1),
+-	PINMUX_IPSR_MSEL(IP8_25_23, TX3_E, SEL_SCIF3_4),
+-	PINMUX_IPSR_GPSR(IP8_25_23, ET0_ERXD1),
+-
+-	PINMUX_IPSR_MSEL(IP8_27_26, IRQ2_A, SEL_INTC_0),
+-	PINMUX_IPSR_MSEL(IP8_27_26, CTS0_A, SEL_SCIF0_0),
+-	PINMUX_IPSR_MSEL(IP8_27_26, HCTS0_B, SEL_HSCIF_1),
+-	PINMUX_IPSR_MSEL(IP8_27_26, ET0_ERXD2_A, SEL_ET0_0),
+-
+-	PINMUX_IPSR_MSEL(IP8_29_28, IRQ3_A, SEL_INTC_0),
+-	PINMUX_IPSR_MSEL(IP8_29_28, RTS0_A, SEL_SCIF0_0),
+-	PINMUX_IPSR_MSEL(IP8_29_28, HRTS0_B, SEL_HSCIF_1),
+-	PINMUX_IPSR_MSEL(IP8_29_28, ET0_ERXD3_A, SEL_ET0_0),
+-
+-	/* IPSR9 */
+-	PINMUX_IPSR_MSEL(IP9_1_0, VI1_CLK_A, SEL_VIN1_0),
+-	PINMUX_IPSR_MSEL(IP9_1_0, FD0_B, SEL_FLCTL_1),
+-	PINMUX_IPSR_MSEL(IP9_1_0, LCD_DATA0_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP9_3_2, VI1_0_A, SEL_VIN1_0),
+-	PINMUX_IPSR_MSEL(IP9_3_2, FD1_B, SEL_FLCTL_1),
+-	PINMUX_IPSR_MSEL(IP9_3_2, LCD_DATA1_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP9_5_4, VI1_1_A, SEL_VIN1_0),
+-	PINMUX_IPSR_MSEL(IP9_5_4, FD2_B, SEL_FLCTL_1),
+-	PINMUX_IPSR_MSEL(IP9_5_4, LCD_DATA2_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP9_7_6, VI1_2_A, SEL_VIN1_0),
+-	PINMUX_IPSR_MSEL(IP9_7_6, FD3_B, SEL_FLCTL_1),
+-	PINMUX_IPSR_MSEL(IP9_7_6, LCD_DATA3_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP9_9_8, VI1_3_A, SEL_VIN1_0),
+-	PINMUX_IPSR_MSEL(IP9_9_8, FD4_B, SEL_FLCTL_1),
+-	PINMUX_IPSR_MSEL(IP9_9_8, LCD_DATA4_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP9_11_10, VI1_4_A, SEL_VIN1_0),
+-	PINMUX_IPSR_MSEL(IP9_11_10, FD5_B, SEL_FLCTL_1),
+-	PINMUX_IPSR_MSEL(IP9_11_10, LCD_DATA5_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP9_13_12, VI1_5_A, SEL_VIN1_0),
+-	PINMUX_IPSR_MSEL(IP9_13_12, FD6_B, SEL_FLCTL_1),
+-	PINMUX_IPSR_MSEL(IP9_13_12, LCD_DATA6_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP9_15_14, VI1_6_A, SEL_VIN1_0),
+-	PINMUX_IPSR_MSEL(IP9_15_14, FD7_B, SEL_FLCTL_1),
+-	PINMUX_IPSR_MSEL(IP9_15_14, LCD_DATA7_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP9_17_16, VI1_7_A, SEL_VIN1_0),
+-	PINMUX_IPSR_MSEL(IP9_17_16, FCE_B, SEL_FLCTL_1),
+-	PINMUX_IPSR_MSEL(IP9_17_16, LCD_DATA8_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP9_19_18, SSI_SCK0_A, SEL_SSI0_0),
+-	PINMUX_IPSR_MSEL(IP9_19_18, TIOC1A_B, SEL_MTU2_CH1_1),
+-	PINMUX_IPSR_MSEL(IP9_19_18, LCD_DATA9_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP9_21_20, SSI_WS0_A, SEL_SSI0_0),
+-	PINMUX_IPSR_MSEL(IP9_21_20, TIOC1B_B, SEL_MTU2_CH1_1),
+-	PINMUX_IPSR_MSEL(IP9_21_20, LCD_DATA10_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP9_23_22, SSI_SDATA0_A, SEL_SSI0_0),
+-	PINMUX_IPSR_MSEL(IP9_23_22, VI1_0_B, SEL_VIN1_1),
+-	PINMUX_IPSR_MSEL(IP9_23_22, TIOC2A_B, SEL_MTU2_CH2_1),
+-	PINMUX_IPSR_MSEL(IP9_23_22, LCD_DATA11_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP9_25_24, SSI_SCK1_A, SEL_SSI1_0),
+-	PINMUX_IPSR_MSEL(IP9_25_24, VI1_1_B, SEL_VIN1_1),
+-	PINMUX_IPSR_MSEL(IP9_25_24, TIOC2B_B, SEL_MTU2_CH2_1),
+-	PINMUX_IPSR_MSEL(IP9_25_24, LCD_DATA12_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP9_27_26, SSI_WS1_A, SEL_SSI1_0),
+-	PINMUX_IPSR_MSEL(IP9_27_26, VI1_2_B, SEL_VIN1_1),
+-	PINMUX_IPSR_MSEL(IP9_27_26, LCD_DATA13_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP9_29_28, SSI_SDATA1_A, SEL_SSI1_0),
+-	PINMUX_IPSR_MSEL(IP9_29_28, VI1_3_B, SEL_VIN1_1),
+-	PINMUX_IPSR_MSEL(IP9_29_28, LCD_DATA14_B, SEL_LCDC_1),
+-
+-	/* IPSE10 */
+-	PINMUX_IPSR_GPSR(IP10_2_0, SSI_SCK23),
+-	PINMUX_IPSR_MSEL(IP10_2_0, VI1_4_B, SEL_VIN1_1),
+-	PINMUX_IPSR_MSEL(IP10_2_0, RX1_D, SEL_SCIF1_3),
+-	PINMUX_IPSR_MSEL(IP10_2_0, FCLE_B, SEL_FLCTL_1),
+-	PINMUX_IPSR_MSEL(IP10_2_0, LCD_DATA15_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_GPSR(IP10_5_3, SSI_WS23),
+-	PINMUX_IPSR_MSEL(IP10_5_3, VI1_5_B, SEL_VIN1_1),
+-	PINMUX_IPSR_MSEL(IP10_5_3, TX1_D, SEL_SCIF1_3),
+-	PINMUX_IPSR_MSEL(IP10_5_3, HSCK0_C, SEL_HSCIF_2),
+-	PINMUX_IPSR_MSEL(IP10_5_3, FALE_B, SEL_FLCTL_1),
+-	PINMUX_IPSR_MSEL(IP10_5_3, LCD_DON_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_GPSR(IP10_8_6, SSI_SDATA2),
+-	PINMUX_IPSR_MSEL(IP10_8_6, VI1_6_B, SEL_VIN1_1),
+-	PINMUX_IPSR_MSEL(IP10_8_6, HRX0_C, SEL_HSCIF_2),
+-	PINMUX_IPSR_MSEL(IP10_8_6, FRE_B, SEL_FLCTL_1),
+-	PINMUX_IPSR_MSEL(IP10_8_6, LCD_CL1_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_GPSR(IP10_11_9, SSI_SDATA3),
+-	PINMUX_IPSR_MSEL(IP10_11_9, VI1_7_B, SEL_VIN1_1),
+-	PINMUX_IPSR_MSEL(IP10_11_9, HTX0_C, SEL_HSCIF_2),
+-	PINMUX_IPSR_MSEL(IP10_11_9, FWE_B, SEL_FLCTL_1),
+-	PINMUX_IPSR_MSEL(IP10_11_9, LCD_CL2_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP10_14_12, AUDIO_CLKA_A, SEL_AUDIO_CLKA_0),
+-	PINMUX_IPSR_MSEL(IP10_14_12, VI1_CLK_B, SEL_VIN1_1),
+-	PINMUX_IPSR_MSEL(IP10_14_12, SCK1_D, SEL_SCIF1_3),
+-	PINMUX_IPSR_MSEL(IP10_14_12, IECLK_B, SEL_IEBUS_1),
+-	PINMUX_IPSR_MSEL(IP10_14_12, LCD_FLM_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP10_15, AUDIO_CLKB_A, SEL_AUDIO_CLKB_0),
+-	PINMUX_IPSR_MSEL(IP10_15, LCD_CLK_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_GPSR(IP10_18_16, AUDIO_CLKC),
+-	PINMUX_IPSR_MSEL(IP10_18_16, SCK1_E, SEL_SCIF1_4),
+-	PINMUX_IPSR_MSEL(IP10_18_16, HCTS0_C, SEL_HSCIF_2),
+-	PINMUX_IPSR_MSEL(IP10_18_16, FRB_B, SEL_FLCTL_1),
+-	PINMUX_IPSR_MSEL(IP10_18_16, LCD_VEPWC_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_GPSR(IP10_21_19, AUDIO_CLKOUT),
+-	PINMUX_IPSR_MSEL(IP10_21_19, TX1_E, SEL_SCIF1_4),
+-	PINMUX_IPSR_MSEL(IP10_21_19, HRTS0_C, SEL_HSCIF_2),
+-	PINMUX_IPSR_MSEL(IP10_21_19, FSE_B, SEL_FLCTL_1),
+-	PINMUX_IPSR_MSEL(IP10_21_19, LCD_M_DISP_B, SEL_LCDC_1),
+-
+-	PINMUX_IPSR_MSEL(IP10_22, CAN_CLK_A, SEL_RCAN_CLK_0),
+-	PINMUX_IPSR_MSEL(IP10_22, RX4_D, SEL_SCIF4_3),
+-
+-	PINMUX_IPSR_MSEL(IP10_24_23, CAN0_TX_A, SEL_RCAN0_0),
+-	PINMUX_IPSR_MSEL(IP10_24_23, TX4_D, SEL_SCIF4_3),
+-	PINMUX_IPSR_GPSR(IP10_24_23, MLB_CLK),
+-
+-	PINMUX_IPSR_MSEL(IP10_25, CAN1_RX_A, SEL_RCAN1_0),
+-	PINMUX_IPSR_MSEL(IP10_25, IRQ1_B, SEL_INTC_1),
+-
+-	PINMUX_IPSR_MSEL(IP10_27_26, CAN0_RX_A, SEL_RCAN0_0),
+-	PINMUX_IPSR_MSEL(IP10_27_26, IRQ0_B, SEL_INTC_1),
+-	PINMUX_IPSR_GPSR(IP10_27_26, MLB_SIG),
+-
+-	PINMUX_IPSR_MSEL(IP10_29_28, CAN1_TX_A, SEL_RCAN1_0),
+-	PINMUX_IPSR_MSEL(IP10_29_28, TX5_C, SEL_SCIF1_2),
+-	PINMUX_IPSR_GPSR(IP10_29_28, MLB_DAT),
+-
+-	/* IPSR11 */
+-	PINMUX_IPSR_GPSR(IP11_0, SCL1),
+-	PINMUX_IPSR_MSEL(IP11_0, SCIF_CLK_C, SEL_SCIF_CLK_2),
+-
+-	PINMUX_IPSR_GPSR(IP11_1, SDA1),
+-	PINMUX_IPSR_MSEL(IP11_0, RX1_E, SEL_SCIF1_4),
+-
+-	PINMUX_IPSR_GPSR(IP11_2, SDA0),
+-	PINMUX_IPSR_MSEL(IP11_2, HIFEBL_A, SEL_HIF_0),
+-
+-	PINMUX_IPSR_GPSR(IP11_3, SDSELF),
+-	PINMUX_IPSR_MSEL(IP11_3, RTS1_E, SEL_SCIF1_3),
+-
+-	PINMUX_IPSR_MSEL(IP11_6_4, SCIF_CLK_A, SEL_SCIF_CLK_0),
+-	PINMUX_IPSR_MSEL(IP11_6_4, HSPI_CLK_A, SEL_HSPI_0),
+-	PINMUX_IPSR_GPSR(IP11_6_4, VI0_CLK),
+-	PINMUX_IPSR_MSEL(IP11_6_4, RMII0_TXD0_A, SEL_RMII_0),
+-	PINMUX_IPSR_GPSR(IP11_6_4, ET0_ERXD4),
+-
+-	PINMUX_IPSR_MSEL(IP11_9_7, SCK0_A, SEL_SCIF0_0),
+-	PINMUX_IPSR_MSEL(IP11_9_7, HSPI_CS_A, SEL_HSPI_0),
+-	PINMUX_IPSR_GPSR(IP11_9_7, VI0_CLKENB),
+-	PINMUX_IPSR_MSEL(IP11_9_7, RMII0_TXD1_A, SEL_RMII_0),
+-	PINMUX_IPSR_GPSR(IP11_9_7, ET0_ERXD5),
+-
+-	PINMUX_IPSR_MSEL(IP11_11_10, RX0_A, SEL_SCIF0_0),
+-	PINMUX_IPSR_MSEL(IP11_11_10, HSPI_RX_A, SEL_HSPI_0),
+-	PINMUX_IPSR_MSEL(IP11_11_10, RMII0_RXD0_A, SEL_RMII_0),
+-	PINMUX_IPSR_GPSR(IP11_11_10, ET0_ERXD6),
+-
+-	PINMUX_IPSR_MSEL(IP11_12, TX0_A, SEL_SCIF0_0),
+-	PINMUX_IPSR_MSEL(IP11_12, HSPI_TX_A, SEL_HSPI_0),
+-
+-	PINMUX_IPSR_GPSR(IP11_15_13, PENC1),
+-	PINMUX_IPSR_MSEL(IP11_15_13, TX3_D, SEL_SCIF3_3),
+-	PINMUX_IPSR_MSEL(IP11_15_13, CAN1_TX_B,  SEL_RCAN1_1),
+-	PINMUX_IPSR_MSEL(IP11_15_13, TX5_D, SEL_SCIF5_3),
+-	PINMUX_IPSR_MSEL(IP11_15_13, IETX_B, SEL_IEBUS_1),
+-
+-	PINMUX_IPSR_GPSR(IP11_18_16, USB_OVC1),
+-	PINMUX_IPSR_MSEL(IP11_18_16, RX3_D, SEL_SCIF3_3),
+-	PINMUX_IPSR_MSEL(IP11_18_16, CAN1_RX_B, SEL_RCAN1_1),
+-	PINMUX_IPSR_MSEL(IP11_18_16, RX5_D, SEL_SCIF5_3),
+-	PINMUX_IPSR_MSEL(IP11_18_16, IERX_B, SEL_IEBUS_1),
+-
+-	PINMUX_IPSR_GPSR(IP11_20_19, DREQ0),
+-	PINMUX_IPSR_MSEL(IP11_20_19, SD1_CLK_A, SEL_SDHI1_0),
+-	PINMUX_IPSR_GPSR(IP11_20_19, ET0_TX_EN),
+-
+-	PINMUX_IPSR_GPSR(IP11_22_21, DACK0),
+-	PINMUX_IPSR_MSEL(IP11_22_21, SD1_DAT3_A, SEL_SDHI1_0),
+-	PINMUX_IPSR_GPSR(IP11_22_21, ET0_TX_ER),
+-
+-	PINMUX_IPSR_GPSR(IP11_25_23, DREQ1),
+-	PINMUX_IPSR_MSEL(IP11_25_23, HSPI_CLK_B, SEL_HSPI_1),
+-	PINMUX_IPSR_MSEL(IP11_25_23, RX4_B, SEL_SCIF4_1),
+-	PINMUX_IPSR_MSEL(IP11_25_23, ET0_PHY_INT_C, SEL_ET0_CTL_0),
+-	PINMUX_IPSR_MSEL(IP11_25_23, ET0_TX_CLK_A, SEL_ET0_0),
+-
+-	PINMUX_IPSR_GPSR(IP11_27_26, DACK1),
+-	PINMUX_IPSR_MSEL(IP11_27_26, HSPI_CS_B, SEL_HSPI_1),
+-	PINMUX_IPSR_MSEL(IP11_27_26, TX4_B, SEL_SCIF3_1),
+-	PINMUX_IPSR_MSEL(IP11_27_26, ET0_RX_CLK_A, SEL_ET0_0),
+-
+-	PINMUX_IPSR_GPSR(IP11_28, PRESETOUT),
+-	PINMUX_IPSR_GPSR(IP11_28, ST_CLKOUT),
+-};
+-
+-static const struct sh_pfc_pin pinmux_pins[] = {
+-	PINMUX_GPIO_GP_ALL(),
+-};
+-
+-#define PINMUX_FN_BASE	ARRAY_SIZE(pinmux_pins)
+-
+-static const struct pinmux_func pinmux_func_gpios[] = {
+-	GPIO_FN(CLKOUT), GPIO_FN(BS), GPIO_FN(CS0), GPIO_FN(EX_CS0),
+-	GPIO_FN(RD), GPIO_FN(WE0), GPIO_FN(WE1),
+-	GPIO_FN(SCL0), GPIO_FN(PENC0), GPIO_FN(USB_OVC0),
+-	GPIO_FN(IRQ2_B), GPIO_FN(IRQ3_B),
+-
+-	/* IPSR0 */
+-	GPIO_FN(A0), GPIO_FN(ST0_CLKIN), GPIO_FN(LCD_DATA0_A),
+-	GPIO_FN(TCLKA_C),
+-	GPIO_FN(A1), GPIO_FN(ST0_REQ), GPIO_FN(LCD_DATA1_A),
+-	GPIO_FN(TCLKB_C),
+-	GPIO_FN(A2), GPIO_FN(ST0_SYC), GPIO_FN(LCD_DATA2_A),
+-	GPIO_FN(TCLKC_C),
+-	GPIO_FN(A3), GPIO_FN(ST0_VLD), GPIO_FN(LCD_DATA3_A),
+-	GPIO_FN(TCLKD_C),
+-	GPIO_FN(A4), GPIO_FN(ST0_D0), GPIO_FN(LCD_DATA4_A),
+-	GPIO_FN(TIOC0A_C),
+-	GPIO_FN(A5), GPIO_FN(ST0_D1), GPIO_FN(LCD_DATA5_A),
+-	GPIO_FN(TIOC0B_C),
+-	GPIO_FN(A6), GPIO_FN(ST0_D2), GPIO_FN(LCD_DATA6_A),
+-	GPIO_FN(TIOC0C_C),
+-	GPIO_FN(A7), GPIO_FN(ST0_D3), GPIO_FN(LCD_DATA7_A),
+-	GPIO_FN(TIOC0D_C),
+-	GPIO_FN(A8), GPIO_FN(ST0_D4), GPIO_FN(LCD_DATA8_A),
+-	GPIO_FN(TIOC1A_C),
+-	GPIO_FN(A9), GPIO_FN(ST0_D5), GPIO_FN(LCD_DATA9_A),
+-	GPIO_FN(TIOC1B_C),
+-	GPIO_FN(A10), GPIO_FN(ST0_D6), GPIO_FN(LCD_DATA10_A),
+-	GPIO_FN(TIOC2A_C),
+-	GPIO_FN(A11), GPIO_FN(ST0_D7), GPIO_FN(LCD_DATA11_A),
+-	GPIO_FN(TIOC2B_C),
+-	GPIO_FN(A12), GPIO_FN(LCD_DATA12_A), GPIO_FN(TIOC3A_C),
+-	GPIO_FN(A13), GPIO_FN(LCD_DATA13_A), GPIO_FN(TIOC3B_C),
+-	GPIO_FN(A14), GPIO_FN(LCD_DATA14_A), GPIO_FN(TIOC3C_C),
+-	GPIO_FN(A15), GPIO_FN(ST0_VCO_CLKIN), GPIO_FN(LCD_DATA15_A),
+-	GPIO_FN(TIOC3D_C),
+-
+-	/* IPSR1 */
+-	GPIO_FN(A16), GPIO_FN(ST0_PWM), GPIO_FN(LCD_DON_A),
+-	GPIO_FN(TIOC4A_C),
+-	GPIO_FN(A17), GPIO_FN(ST1_VCO_CLKIN), GPIO_FN(LCD_CL1_A),
+-	GPIO_FN(TIOC4B_C),
+-	GPIO_FN(A18), GPIO_FN(ST1_PWM), GPIO_FN(LCD_CL2_A),
+-	GPIO_FN(TIOC4C_C),
+-	GPIO_FN(A19), GPIO_FN(ST1_CLKIN), GPIO_FN(LCD_CLK_A),
+-	GPIO_FN(TIOC4D_C),
+-	GPIO_FN(A20), GPIO_FN(ST1_REQ), GPIO_FN(LCD_FLM_A),
+-	GPIO_FN(A21), GPIO_FN(ST1_SYC), GPIO_FN(LCD_VCPWC_A),
+-	GPIO_FN(A22), GPIO_FN(ST1_VLD), GPIO_FN(LCD_VEPWC_A),
+-	GPIO_FN(A23), GPIO_FN(ST1_D0), GPIO_FN(LCD_M_DISP_A),
+-	GPIO_FN(A24), GPIO_FN(RX2_D), GPIO_FN(ST1_D1),
+-	GPIO_FN(A25), GPIO_FN(TX2_D), GPIO_FN(ST1_D2),
+-	GPIO_FN(D0), GPIO_FN(SD0_DAT0_A), GPIO_FN(MMC_D0_A),
+-	GPIO_FN(ST1_D3), GPIO_FN(FD0_A),
+-	GPIO_FN(D1), GPIO_FN(SD0_DAT1_A), GPIO_FN(MMC_D1_A),
+-	GPIO_FN(ST1_D4), GPIO_FN(FD1_A),
+-	GPIO_FN(D2), GPIO_FN(SD0_DAT2_A), GPIO_FN(MMC_D2_A),
+-	GPIO_FN(ST1_D5), GPIO_FN(FD2_A),
+-	GPIO_FN(D3), GPIO_FN(SD0_DAT3_A), GPIO_FN(MMC_D3_A),
+-	GPIO_FN(ST1_D6), GPIO_FN(FD3_A),
+-
+-	/* IPSR2 */
+-	GPIO_FN(D4), GPIO_FN(SD0_CD_A), GPIO_FN(MMC_D4_A), GPIO_FN(ST1_D7),
+-	GPIO_FN(FD4_A),
+-	GPIO_FN(D5), GPIO_FN(SD0_WP_A), GPIO_FN(MMC_D5_A), GPIO_FN(FD5_A),
+-	GPIO_FN(D6), GPIO_FN(RSPI_RSPCK_A), GPIO_FN(MMC_D6_A),
+-		GPIO_FN(QSPCLK_A),
+-	GPIO_FN(FD6_A),
+-	GPIO_FN(D7), GPIO_FN(RSPI_SSL_A), GPIO_FN(MMC_D7_A), GPIO_FN(QSSL_A),
+-	GPIO_FN(FD7_A),
+-	GPIO_FN(D8), GPIO_FN(SD0_CLK_A), GPIO_FN(MMC_CLK_A), GPIO_FN(QIO2_A),
+-	GPIO_FN(FCE_A), GPIO_FN(ET0_GTX_CLK_B),
+-	GPIO_FN(D9), GPIO_FN(SD0_CMD_A), GPIO_FN(MMC_CMD_A), GPIO_FN(QIO3_A),
+-	GPIO_FN(FCLE_A), GPIO_FN(ET0_ETXD1_B),
+-	GPIO_FN(D10), GPIO_FN(RSPI_MOSI_A), GPIO_FN(QMO_QIO0_A),
+-		GPIO_FN(FALE_A), GPIO_FN(ET0_ETXD2_B),
+-	GPIO_FN(D11), GPIO_FN(RSPI_MISO_A), GPIO_FN(QMI_QIO1_A), GPIO_FN(FRE_A),
+-		GPIO_FN(ET0_ETXD3_B),
+-	GPIO_FN(D12), GPIO_FN(FWE_A), GPIO_FN(ET0_ETXD5_B),
+-	GPIO_FN(D13), GPIO_FN(RX2_B), GPIO_FN(FRB_A), GPIO_FN(ET0_ETXD6_B),
+-	GPIO_FN(D14), GPIO_FN(TX2_B), GPIO_FN(FSE_A), GPIO_FN(ET0_TX_CLK_B),
+-
+-	/* IPSR3 */
+-	GPIO_FN(D15), GPIO_FN(SCK2_B),
+-	GPIO_FN(CS1_A26), GPIO_FN(QIO3_B),
+-	GPIO_FN(EX_CS1), GPIO_FN(RX3_B), GPIO_FN(ATACS0), GPIO_FN(QIO2_B),
+-	GPIO_FN(ET0_ETXD0),
+-	GPIO_FN(EX_CS2), GPIO_FN(TX3_B), GPIO_FN(ATACS1), GPIO_FN(QSPCLK_B),
+-	GPIO_FN(ET0_GTX_CLK_A),
+-	GPIO_FN(EX_CS3), GPIO_FN(SD1_CD_A), GPIO_FN(ATARD), GPIO_FN(QMO_QIO0_B),
+-	GPIO_FN(ET0_ETXD1_A),
+-	GPIO_FN(EX_CS4), GPIO_FN(SD1_WP_A), GPIO_FN(ATAWR), GPIO_FN(QMI_QIO1_B),
+-	GPIO_FN(ET0_ETXD2_A),
+-	GPIO_FN(EX_CS5), GPIO_FN(SD1_CMD_A), GPIO_FN(ATADIR), GPIO_FN(QSSL_B),
+-	GPIO_FN(ET0_ETXD3_A),
+-	GPIO_FN(RD_WR), GPIO_FN(TCLK0), GPIO_FN(CAN_CLK_B), GPIO_FN(ET0_ETXD4),
+-	GPIO_FN(EX_WAIT0), GPIO_FN(TCLK1_B),
+-	GPIO_FN(EX_WAIT1), GPIO_FN(SD1_DAT0_A), GPIO_FN(DREQ2),
+-		GPIO_FN(CAN1_TX_C), GPIO_FN(ET0_LINK_C), GPIO_FN(ET0_ETXD5_A),
+-	GPIO_FN(EX_WAIT2), GPIO_FN(SD1_DAT1_A), GPIO_FN(DACK2),
+-		GPIO_FN(CAN1_RX_C), GPIO_FN(ET0_MAGIC_C), GPIO_FN(ET0_ETXD6_A),
+-	GPIO_FN(DRACK0), GPIO_FN(SD1_DAT2_A), GPIO_FN(ATAG), GPIO_FN(TCLK1_A),
+-	GPIO_FN(ET0_ETXD7),
+-
+-	/* IPSR4 */
+-	GPIO_FN(HCTS0_A), GPIO_FN(CTS1_A), GPIO_FN(VI0_FIELD),
+-		GPIO_FN(RMII0_RXD1_A), GPIO_FN(ET0_ERXD7),
+-	GPIO_FN(HRTS0_A), GPIO_FN(RTS1_A), GPIO_FN(VI0_HSYNC),
+-		GPIO_FN(RMII0_TXD_EN_A), GPIO_FN(ET0_RX_DV),
+-	GPIO_FN(HSCK0_A), GPIO_FN(SCK1_A), GPIO_FN(VI0_VSYNC),
+-		GPIO_FN(RMII0_RX_ER_A), GPIO_FN(ET0_RX_ER),
+-	GPIO_FN(HRX0_A), GPIO_FN(RX1_A), GPIO_FN(VI0_DATA0_VI0_B0),
+-		GPIO_FN(RMII0_CRS_DV_A), GPIO_FN(ET0_CRS),
+-	GPIO_FN(HTX0_A), GPIO_FN(TX1_A), GPIO_FN(VI0_DATA1_VI0_B1),
+-		GPIO_FN(RMII0_MDC_A), GPIO_FN(ET0_COL),
+-	GPIO_FN(CTS0_B), GPIO_FN(VI0_DATA2_VI0_B2), GPIO_FN(RMII0_MDIO_A),
+-		GPIO_FN(ET0_MDC),
+-	GPIO_FN(RTS0_B), GPIO_FN(VI0_DATA3_VI0_B3), GPIO_FN(ET0_MDIO_A),
+-	GPIO_FN(SCK1_B), GPIO_FN(VI0_DATA4_VI0_B4), GPIO_FN(ET0_LINK_A),
+-	GPIO_FN(RX1_B), GPIO_FN(VI0_DATA5_VI0_B5), GPIO_FN(ET0_MAGIC_A),
+-	GPIO_FN(TX1_B), GPIO_FN(VI0_DATA6_VI0_G0), GPIO_FN(ET0_PHY_INT_A),
+-	GPIO_FN(CTS1_B), GPIO_FN(VI0_DATA7_VI0_G1),
+-	GPIO_FN(RTS1_B), GPIO_FN(VI0_G2),
+-	GPIO_FN(SCK2_A), GPIO_FN(VI0_G3),
+-
+-	/* IPSR5 */
+-	GPIO_FN(REF50CK), GPIO_FN(CTS1_E), GPIO_FN(HCTS0_D),
+-	GPIO_FN(REF125CK), GPIO_FN(ADTRG), GPIO_FN(RX5_C),
+-	GPIO_FN(SD2_WP_A), GPIO_FN(TX5_A), GPIO_FN(VI0_R5),
+-	GPIO_FN(SD2_CD_A), GPIO_FN(RX5_A), GPIO_FN(VI0_R4),
+-		GPIO_FN(ET0_PHY_INT_B),
+-	GPIO_FN(SD2_DAT3_A), GPIO_FN(TX4_A), GPIO_FN(VI0_R3),
+-		GPIO_FN(ET0_MAGIC_B),
+-	GPIO_FN(SD2_DAT2_A), GPIO_FN(RX4_A), GPIO_FN(VI0_R2),
+-		GPIO_FN(ET0_LINK_B),
+-	GPIO_FN(SD2_DAT1_A), GPIO_FN(TX3_A), GPIO_FN(VI0_R1),
+-		GPIO_FN(ET0_MDIO_B),
+-	GPIO_FN(SD2_DAT0_A), GPIO_FN(RX3_A), GPIO_FN(VI0_R0),
+-		GPIO_FN(ET0_ERXD3_B),
+-	GPIO_FN(SD2_CMD_A), GPIO_FN(TX2_A), GPIO_FN(VI0_G5),
+-		GPIO_FN(ET0_ERXD2_B),
+-	GPIO_FN(SD2_CLK_A), GPIO_FN(RX2_A), GPIO_FN(VI0_G4),
+-		GPIO_FN(ET0_RX_CLK_B),
+-
+-	/* IPSR6 */
+-	GPIO_FN(DU0_DG1), GPIO_FN(CTS1_C), GPIO_FN(HRTS0_D),
+-		GPIO_FN(TIOC1B_A), GPIO_FN(HIFD09),
+-	GPIO_FN(DU0_DG0), GPIO_FN(TX1_C), GPIO_FN(HSCK0_D),
+-		GPIO_FN(IECLK_A), GPIO_FN(TIOC1A_A), GPIO_FN(HIFD08),
+-	GPIO_FN(DU0_DR7), GPIO_FN(RX1_C), GPIO_FN(TIOC0D_A),
+-		GPIO_FN(HIFD07),
+-	GPIO_FN(DU0_DR6), GPIO_FN(SCK1_C), GPIO_FN(TIOC0C_A),
+-		GPIO_FN(HIFD06),
+-	GPIO_FN(DU0_DR5), GPIO_FN(RTS0_C), GPIO_FN(TIOC0B_A),
+-		GPIO_FN(HIFD05),
+-	GPIO_FN(DU0_DR4), GPIO_FN(CTS0_C), GPIO_FN(TIOC0A_A),
+-		GPIO_FN(HIFD04),
+-	GPIO_FN(DU0_DR3), GPIO_FN(TX0_B), GPIO_FN(TCLKD_A), GPIO_FN(HIFD03),
+-	GPIO_FN(DU0_DR2), GPIO_FN(RX0_B), GPIO_FN(TCLKC_A), GPIO_FN(HIFD02),
+-	GPIO_FN(DU0_DR1), GPIO_FN(SCK0_B), GPIO_FN(HTX0_D),
+-		GPIO_FN(IERX_A), GPIO_FN(TCLKB_A), GPIO_FN(HIFD01),
+-	GPIO_FN(DU0_DR0), GPIO_FN(SCIF_CLK_B), GPIO_FN(HRX0_D),
+-		GPIO_FN(IETX_A), GPIO_FN(TCLKA_A), GPIO_FN(HIFD00),
+-
+-	/* IPSR7 */
+-	GPIO_FN(DU0_DB4), GPIO_FN(HIFINT),
+-	GPIO_FN(DU0_DB3), GPIO_FN(TX5_B), GPIO_FN(TIOC4D_A), GPIO_FN(HIFRD),
+-	GPIO_FN(DU0_DB2), GPIO_FN(RX5_B), GPIO_FN(RMII0_TXD1_B),
+-		GPIO_FN(TIOC4C_A), GPIO_FN(HIFWR),
+-	GPIO_FN(DU0_DB1), GPIO_FN(TX4_C), GPIO_FN(RMII0_TXD0_B),
+-		GPIO_FN(TIOC4B_A), GPIO_FN(HIFRS),
+-	GPIO_FN(DU0_DB0), GPIO_FN(RX4_C), GPIO_FN(RMII0_TXD_EN_B),
+-		GPIO_FN(TIOC4A_A), GPIO_FN(HIFCS),
+-	GPIO_FN(DU0_DG7), GPIO_FN(TX3_C), GPIO_FN(RMII0_RXD1_B),
+-		GPIO_FN(TIOC3D_A), GPIO_FN(HIFD15),
+-	GPIO_FN(DU0_DG6), GPIO_FN(RX3_C), GPIO_FN(RMII0_RXD0_B),
+-		GPIO_FN(TIOC3C_A), GPIO_FN(HIFD14),
+-	GPIO_FN(DU0_DG5), GPIO_FN(TX2_C), GPIO_FN(RMII0_RX_ER_B),
+-		GPIO_FN(TIOC3B_A), GPIO_FN(HIFD13),
+-	GPIO_FN(DU0_DG4), GPIO_FN(RX2_C), GPIO_FN(RMII0_CRS_DV_B),
+-		GPIO_FN(TIOC3A_A), GPIO_FN(HIFD12),
+-	GPIO_FN(DU0_DG3), GPIO_FN(SCK2_C), GPIO_FN(RMII0_MDIO_B),
+-		GPIO_FN(TIOC2B_A), GPIO_FN(HIFD11),
+-	GPIO_FN(DU0_DG2), GPIO_FN(RTS1_C), GPIO_FN(RMII0_MDC_B),
+-		GPIO_FN(TIOC2A_A), GPIO_FN(HIFD10),
+-
+-	/* IPSR8 */
+-	GPIO_FN(IRQ3_A), GPIO_FN(RTS0_A), GPIO_FN(HRTS0_B),
+-		GPIO_FN(ET0_ERXD3_A),
+-	GPIO_FN(IRQ2_A), GPIO_FN(CTS0_A), GPIO_FN(HCTS0_B),
+-		GPIO_FN(ET0_ERXD2_A),
+-	GPIO_FN(IRQ1_A), GPIO_FN(HSPI_RX_B), GPIO_FN(TX3_E),
+-		GPIO_FN(ET0_ERXD1),
+-	GPIO_FN(IRQ0_A), GPIO_FN(HSPI_TX_B), GPIO_FN(RX3_E),
+-		GPIO_FN(ET0_ERXD0),
+-	GPIO_FN(DU0_CDE), GPIO_FN(HTX0_B), GPIO_FN(AUDIO_CLKB_B),
+-		GPIO_FN(LCD_VCPWC_B),
+-	GPIO_FN(DU0_DISP), GPIO_FN(CAN0_TX_B), GPIO_FN(HRX0_B),
+-		GPIO_FN(AUDIO_CLKA_B),
+-	GPIO_FN(DU0_EXODDF_DU0_ODDF), GPIO_FN(CAN0_RX_B), GPIO_FN(HSCK0_B),
+-		GPIO_FN(SSI_SDATA1_B),
+-	GPIO_FN(DU0_EXVSYNC_DU0_VSYNC), GPIO_FN(HSPI_RX0_C),
+-		GPIO_FN(SSI_WS1_B),
+-	GPIO_FN(DU0_EXHSYNC_DU0_HSYNC), GPIO_FN(HSPI_TX0_C),
+-		GPIO_FN(SSI_SCK1_B),
+-	GPIO_FN(DU0_DOTCLKOUT), GPIO_FN(HSPI_CLK0_C),
+-		GPIO_FN(SSI_SDATA0_B),
+-	GPIO_FN(DU0_DOTCLKIN), GPIO_FN(HSPI_CS0_C),
+-		GPIO_FN(SSI_WS0_B),
+-	GPIO_FN(DU0_DB7), GPIO_FN(SSI_SCK0_B), GPIO_FN(HIFEBL_B),
+-	GPIO_FN(DU0_DB6), GPIO_FN(HIFRDY),
+-	GPIO_FN(DU0_DB5), GPIO_FN(HIFDREQ),
+-
+-	/* IPSR9 */
+-	GPIO_FN(SSI_SDATA1_A), GPIO_FN(VI1_3_B), GPIO_FN(LCD_DATA14_B),
+-	GPIO_FN(SSI_WS1_A), GPIO_FN(VI1_2_B), GPIO_FN(LCD_DATA13_B),
+-	GPIO_FN(SSI_SCK1_A), GPIO_FN(VI1_1_B), GPIO_FN(TIOC2B_B),
+-		GPIO_FN(LCD_DATA12_B),
+-	GPIO_FN(SSI_SDATA0_A), GPIO_FN(VI1_0_B), GPIO_FN(TIOC2A_B),
+-		GPIO_FN(LCD_DATA11_B),
+-	GPIO_FN(SSI_WS0_A), GPIO_FN(TIOC1B_B), GPIO_FN(LCD_DATA10_B),
+-	GPIO_FN(SSI_SCK0_A), GPIO_FN(TIOC1A_B), GPIO_FN(LCD_DATA9_B),
+-	GPIO_FN(VI1_7_A), GPIO_FN(FCE_B), GPIO_FN(LCD_DATA8_B),
+-	GPIO_FN(VI1_6_A), GPIO_FN(FD7_B), GPIO_FN(LCD_DATA7_B),
+-	GPIO_FN(VI1_5_A), GPIO_FN(FD6_B), GPIO_FN(LCD_DATA6_B),
+-	GPIO_FN(VI1_4_A), GPIO_FN(FD5_B), GPIO_FN(LCD_DATA5_B),
+-	GPIO_FN(VI1_3_A), GPIO_FN(FD4_B), GPIO_FN(LCD_DATA4_B),
+-	GPIO_FN(VI1_2_A), GPIO_FN(FD3_B), GPIO_FN(LCD_DATA3_B),
+-	GPIO_FN(VI1_1_A), GPIO_FN(FD2_B), GPIO_FN(LCD_DATA2_B),
+-	GPIO_FN(VI1_0_A), GPIO_FN(FD1_B), GPIO_FN(LCD_DATA1_B),
+-	GPIO_FN(VI1_CLK_A), GPIO_FN(FD0_B), GPIO_FN(LCD_DATA0_B),
+-
+-	/* IPSR10 */
+-	GPIO_FN(CAN1_TX_A), GPIO_FN(TX5_C), GPIO_FN(MLB_DAT),
+-	GPIO_FN(CAN0_RX_A), GPIO_FN(IRQ0_B), GPIO_FN(MLB_SIG),
+-	GPIO_FN(CAN1_RX_A), GPIO_FN(IRQ1_B),
+-	GPIO_FN(CAN0_TX_A), GPIO_FN(TX4_D), GPIO_FN(MLB_CLK),
+-	GPIO_FN(CAN_CLK_A), GPIO_FN(RX4_D),
+-	GPIO_FN(AUDIO_CLKOUT), GPIO_FN(TX1_E), GPIO_FN(HRTS0_C),
+-		GPIO_FN(FSE_B), GPIO_FN(LCD_M_DISP_B),
+-	GPIO_FN(AUDIO_CLKC), GPIO_FN(SCK1_E), GPIO_FN(HCTS0_C),
+-		GPIO_FN(FRB_B), GPIO_FN(LCD_VEPWC_B),
+-	GPIO_FN(AUDIO_CLKB_A), GPIO_FN(LCD_CLK_B),
+-	GPIO_FN(AUDIO_CLKA_A), GPIO_FN(VI1_CLK_B), GPIO_FN(SCK1_D),
+-		GPIO_FN(IECLK_B), GPIO_FN(LCD_FLM_B),
+-	GPIO_FN(SSI_SDATA3), GPIO_FN(VI1_7_B), GPIO_FN(HTX0_C),
+-		GPIO_FN(FWE_B), GPIO_FN(LCD_CL2_B),
+-	GPIO_FN(SSI_SDATA2), GPIO_FN(VI1_6_B), GPIO_FN(HRX0_C),
+-		GPIO_FN(FRE_B), GPIO_FN(LCD_CL1_B),
+-	GPIO_FN(SSI_WS23), GPIO_FN(VI1_5_B), GPIO_FN(TX1_D),
+-		GPIO_FN(HSCK0_C), GPIO_FN(FALE_B), GPIO_FN(LCD_DON_B),
+-	GPIO_FN(SSI_SCK23), GPIO_FN(VI1_4_B), GPIO_FN(RX1_D),
+-		GPIO_FN(FCLE_B), GPIO_FN(LCD_DATA15_B),
+-
+-	/* IPSR11 */
+-	GPIO_FN(PRESETOUT), GPIO_FN(ST_CLKOUT),
+-	GPIO_FN(DACK1), GPIO_FN(HSPI_CS_B), GPIO_FN(TX4_B),
+-		GPIO_FN(ET0_RX_CLK_A),
+-	GPIO_FN(DREQ1), GPIO_FN(HSPI_CLK_B), GPIO_FN(RX4_B),
+-		GPIO_FN(ET0_PHY_INT_C), GPIO_FN(ET0_TX_CLK_A),
+-	GPIO_FN(DACK0), GPIO_FN(SD1_DAT3_A), GPIO_FN(ET0_TX_ER),
+-	GPIO_FN(DREQ0), GPIO_FN(SD1_CLK_A), GPIO_FN(ET0_TX_EN),
+-	GPIO_FN(USB_OVC1), GPIO_FN(RX3_D), GPIO_FN(CAN1_RX_B),
+-		GPIO_FN(RX5_D), GPIO_FN(IERX_B),
+-	GPIO_FN(PENC1), GPIO_FN(TX3_D), GPIO_FN(CAN1_TX_B),
+-		GPIO_FN(TX5_D), GPIO_FN(IETX_B),
+-	GPIO_FN(TX0_A), GPIO_FN(HSPI_TX_A),
+-	GPIO_FN(RX0_A), GPIO_FN(HSPI_RX_A), GPIO_FN(RMII0_RXD0_A),
+-		GPIO_FN(ET0_ERXD6),
+-	GPIO_FN(SCK0_A), GPIO_FN(HSPI_CS_A), GPIO_FN(VI0_CLKENB),
+-		GPIO_FN(RMII0_TXD1_A), GPIO_FN(ET0_ERXD5),
+-	GPIO_FN(SCIF_CLK_A), GPIO_FN(HSPI_CLK_A), GPIO_FN(VI0_CLK),
+-		GPIO_FN(RMII0_TXD0_A), GPIO_FN(ET0_ERXD4),
+-	GPIO_FN(SDSELF), GPIO_FN(RTS1_E),
+-	GPIO_FN(SDA0), GPIO_FN(HIFEBL_A),
+-	GPIO_FN(SDA1), GPIO_FN(RX1_E),
+-	GPIO_FN(SCL1), GPIO_FN(SCIF_CLK_C),
+-};
+-
+-static const struct pinmux_cfg_reg pinmux_config_regs[] = {
+-	{ PINMUX_CFG_REG("GPSR0", 0xFFFC0004, 32, 1, GROUP(
+-		GP_0_31_FN, FN_IP2_2_0,
+-		GP_0_30_FN, FN_IP1_31_29,
+-		GP_0_29_FN, FN_IP1_28_26,
+-		GP_0_28_FN, FN_IP1_25_23,
+-		GP_0_27_FN, FN_IP1_22_20,
+-		GP_0_26_FN, FN_IP1_19_18,
+-		GP_0_25_FN, FN_IP1_17_16,
+-		GP_0_24_FN, FN_IP0_5_4,
+-		GP_0_23_FN, FN_IP0_3_2,
+-		GP_0_22_FN, FN_IP0_1_0,
+-		GP_0_21_FN, FN_IP11_28,
+-		GP_0_20_FN, FN_IP1_7_6,
+-		GP_0_19_FN, FN_IP1_5_4,
+-		GP_0_18_FN, FN_IP1_3_2,
+-		GP_0_17_FN, FN_IP1_1_0,
+-		GP_0_16_FN, FN_IP0_31_30,
+-		GP_0_15_FN, FN_IP0_29_28,
+-		GP_0_14_FN, FN_IP0_27_26,
+-		GP_0_13_FN, FN_IP0_25_24,
+-		GP_0_12_FN, FN_IP0_23_22,
+-		GP_0_11_FN, FN_IP0_21_20,
+-		GP_0_10_FN, FN_IP0_19_18,
+-		GP_0_9_FN, FN_IP0_17_16,
+-		GP_0_8_FN, FN_IP0_15_14,
+-		GP_0_7_FN, FN_IP0_13_12,
+-		GP_0_6_FN, FN_IP0_11_10,
+-		GP_0_5_FN, FN_IP0_9_8,
+-		GP_0_4_FN, FN_IP0_7_6,
+-		GP_0_3_FN, FN_IP1_15_14,
+-		GP_0_2_FN, FN_IP1_13_12,
+-		GP_0_1_FN, FN_IP1_11_10,
+-		GP_0_0_FN, FN_IP1_9_8 ))
+-	},
+-	{ PINMUX_CFG_REG("GPSR1", 0xFFFC0008, 32, 1, GROUP(
+-		GP_1_31_FN, FN_IP11_25_23,
+-		GP_1_30_FN, FN_IP2_13_11,
+-		GP_1_29_FN, FN_IP2_10_8,
+-		GP_1_28_FN, FN_IP2_7_5,
+-		GP_1_27_FN, FN_IP3_26_24,
+-		GP_1_26_FN, FN_IP3_23_21,
+-		GP_1_25_FN, FN_IP2_4_3,
+-		GP_1_24_FN, FN_WE1,
+-		GP_1_23_FN, FN_WE0,
+-		GP_1_22_FN, FN_IP3_19_18,
+-		GP_1_21_FN, FN_RD,
+-		GP_1_20_FN, FN_IP3_17_15,
+-		GP_1_19_FN, FN_IP3_14_12,
+-		GP_1_18_FN, FN_IP3_11_9,
+-		GP_1_17_FN, FN_IP3_8_6,
+-		GP_1_16_FN, FN_IP3_5_3,
+-		GP_1_15_FN, FN_EX_CS0,
+-		GP_1_14_FN, FN_IP3_2,
+-		GP_1_13_FN, FN_CS0,
+-		GP_1_12_FN, FN_BS,
+-		GP_1_11_FN, FN_CLKOUT,
+-		GP_1_10_FN, FN_IP3_1_0,
+-		GP_1_9_FN, FN_IP2_30_28,
+-		GP_1_8_FN, FN_IP2_27_25,
+-		GP_1_7_FN, FN_IP2_24_23,
+-		GP_1_6_FN, FN_IP2_22_20,
+-		GP_1_5_FN, FN_IP2_19_17,
+-		GP_1_4_FN, FN_IP2_16_14,
+-		GP_1_3_FN, FN_IP11_22_21,
+-		GP_1_2_FN, FN_IP11_20_19,
+-		GP_1_1_FN, FN_IP3_29_27,
+-		GP_1_0_FN, FN_IP3_20 ))
+-	},
+-	{ PINMUX_CFG_REG("GPSR2", 0xFFFC000C, 32, 1, GROUP(
+-		GP_2_31_FN, FN_IP4_31_30,
+-		GP_2_30_FN, FN_IP5_2_0,
+-		GP_2_29_FN, FN_IP5_5_3,
+-		GP_2_28_FN, FN_IP5_8_6,
+-		GP_2_27_FN, FN_IP5_11_9,
+-		GP_2_26_FN, FN_IP5_14_12,
+-		GP_2_25_FN, FN_IP5_17_15,
+-		GP_2_24_FN, FN_IP5_20_18,
+-		GP_2_23_FN, FN_IP5_22_21,
+-		GP_2_22_FN, FN_IP5_24_23,
+-		GP_2_21_FN, FN_IP5_26_25,
+-		GP_2_20_FN, FN_IP4_29_28,
+-		GP_2_19_FN, FN_IP4_27_26,
+-		GP_2_18_FN, FN_IP4_25_24,
+-		GP_2_17_FN, FN_IP4_23_22,
+-		GP_2_16_FN, FN_IP4_21_20,
+-		GP_2_15_FN, FN_IP4_19_18,
+-		GP_2_14_FN, FN_IP4_17_15,
+-		GP_2_13_FN, FN_IP4_14_12,
+-		GP_2_12_FN, FN_IP4_11_9,
+-		GP_2_11_FN, FN_IP4_8_6,
+-		GP_2_10_FN, FN_IP4_5_3,
+-		GP_2_9_FN, FN_IP8_27_26,
+-		GP_2_8_FN, FN_IP11_12,
+-		GP_2_7_FN, FN_IP8_25_23,
+-		GP_2_6_FN, FN_IP8_22_20,
+-		GP_2_5_FN, FN_IP11_27_26,
+-		GP_2_4_FN, FN_IP8_29_28,
+-		GP_2_3_FN, FN_IP4_2_0,
+-		GP_2_2_FN, FN_IP11_11_10,
+-		GP_2_1_FN, FN_IP11_9_7,
+-		GP_2_0_FN, FN_IP11_6_4 ))
+-	},
+-	{ PINMUX_CFG_REG("GPSR3", 0xFFFC0010, 32, 1, GROUP(
+-		GP_3_31_FN, FN_IP9_1_0,
+-		GP_3_30_FN, FN_IP8_19_18,
+-		GP_3_29_FN, FN_IP8_17_16,
+-		GP_3_28_FN, FN_IP8_15_14,
+-		GP_3_27_FN, FN_IP8_13_12,
+-		GP_3_26_FN, FN_IP8_11_10,
+-		GP_3_25_FN, FN_IP8_9_8,
+-		GP_3_24_FN, FN_IP8_7_6,
+-		GP_3_23_FN, FN_IP8_5_4,
+-		GP_3_22_FN, FN_IP8_3_2,
+-		GP_3_21_FN, FN_IP8_1_0,
+-		GP_3_20_FN, FN_IP7_30_29,
+-		GP_3_19_FN, FN_IP7_28_27,
+-		GP_3_18_FN, FN_IP7_26_24,
+-		GP_3_17_FN, FN_IP7_23_21,
+-		GP_3_16_FN, FN_IP7_20_18,
+-		GP_3_15_FN, FN_IP7_17_15,
+-		GP_3_14_FN, FN_IP7_14_12,
+-		GP_3_13_FN, FN_IP7_11_9,
+-		GP_3_12_FN, FN_IP7_8_6,
+-		GP_3_11_FN, FN_IP7_5_3,
+-		GP_3_10_FN, FN_IP7_2_0,
+-		GP_3_9_FN, FN_IP6_23_21,
+-		GP_3_8_FN, FN_IP6_20_18,
+-		GP_3_7_FN, FN_IP6_17_16,
+-		GP_3_6_FN, FN_IP6_15_14,
+-		GP_3_5_FN, FN_IP6_13_12,
+-		GP_3_4_FN, FN_IP6_11_10,
+-		GP_3_3_FN, FN_IP6_9_8,
+-		GP_3_2_FN, FN_IP6_7_6,
+-		GP_3_1_FN, FN_IP6_5_3,
+-		GP_3_0_FN, FN_IP6_2_0 ))
+-	},
+-
+-	{ PINMUX_CFG_REG("GPSR4", 0xFFFC0014, 32, 1, GROUP(
+-		GP_4_31_FN, FN_IP10_24_23,
+-		GP_4_30_FN, FN_IP10_22,
+-		GP_4_29_FN, FN_IP11_18_16,
+-		GP_4_28_FN, FN_USB_OVC0,
+-		GP_4_27_FN, FN_IP11_15_13,
+-		GP_4_26_FN, FN_PENC0,
+-		GP_4_25_FN, FN_IP11_2,
+-		GP_4_24_FN, FN_SCL0,
+-		GP_4_23_FN, FN_IP11_1,
+-		GP_4_22_FN, FN_IP11_0,
+-		GP_4_21_FN, FN_IP10_21_19,
+-		GP_4_20_FN, FN_IP10_18_16,
+-		GP_4_19_FN, FN_IP10_15,
+-		GP_4_18_FN, FN_IP10_14_12,
+-		GP_4_17_FN, FN_IP10_11_9,
+-		GP_4_16_FN, FN_IP10_8_6,
+-		GP_4_15_FN, FN_IP10_5_3,
+-		GP_4_14_FN, FN_IP10_2_0,
+-		GP_4_13_FN, FN_IP9_29_28,
+-		GP_4_12_FN, FN_IP9_27_26,
+-		GP_4_11_FN, FN_IP9_9_8,
+-		GP_4_10_FN, FN_IP9_7_6,
+-		GP_4_9_FN, FN_IP9_5_4,
+-		GP_4_8_FN, FN_IP9_3_2,
+-		GP_4_7_FN, FN_IP9_17_16,
+-		GP_4_6_FN, FN_IP9_15_14,
+-		GP_4_5_FN, FN_IP9_13_12,
+-		GP_4_4_FN, FN_IP9_11_10,
+-		GP_4_3_FN, FN_IP9_25_24,
+-		GP_4_2_FN, FN_IP9_23_22,
+-		GP_4_1_FN, FN_IP9_21_20,
+-		GP_4_0_FN, FN_IP9_19_18 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("GPSR5", 0xFFFC0018, 32,
+-			     GROUP(-20, 1, 1, -6, 1, 1, 1, 1),
+-			     GROUP(
+-		/* GP5_31_12 RESERVED */
+-		GP_5_11_FN, FN_IP10_29_28,
+-		GP_5_10_FN, FN_IP10_27_26,
+-		/* GP5_9_4 RESERVED */
+-		GP_5_3_FN, FN_IRQ3_B,
+-		GP_5_2_FN, FN_IRQ2_B,
+-		GP_5_1_FN, FN_IP11_3,
+-		GP_5_0_FN, FN_IP10_25 ))
+-	},
+-
+-	{ PINMUX_CFG_REG_VAR("IPSR0", 0xFFFC001C, 32,
+-			GROUP(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2),
+-			GROUP(
+-		/* IP0_31_30 [2] */
+-		FN_A15, FN_ST0_VCO_CLKIN, FN_LCD_DATA15_A,
+-			FN_TIOC3D_C,
+-		/* IP0_29_28 [2] */
+-		FN_A14, FN_LCD_DATA14_A, FN_TIOC3C_C, 0,
+-		/* IP0_27_26 [2] */
+-		FN_A13, FN_LCD_DATA13_A, FN_TIOC3B_C, 0,
+-		/* IP0_25_24 [2] */
+-		FN_A12, FN_LCD_DATA12_A, FN_TIOC3A_C, 0,
+-		/* IP0_23_22 [2] */
+-		FN_A11, FN_ST0_D7, FN_LCD_DATA11_A, FN_TIOC2B_C,
+-		/* IP0_21_20 [2] */
+-		FN_A10, FN_ST0_D6, FN_LCD_DATA10_A, FN_TIOC2A_C,
+-		/* IP0_19_18 [2] */
+-		FN_A9, FN_ST0_D5, FN_LCD_DATA9_A, FN_TIOC1B_C,
+-		/* IP0_17_16 [2] */
+-		FN_A8, FN_ST0_D4, FN_LCD_DATA8_A, FN_TIOC1A_C,
+-		/* IP0_15_14 [2] */
+-		FN_A7, FN_ST0_D3, FN_LCD_DATA7_A, FN_TIOC0D_C,
+-		/* IP0_13_12 [2] */
+-		FN_A6, FN_ST0_D2, FN_LCD_DATA6_A, FN_TIOC0C_C,
+-		/* IP0_11_10 [2] */
+-		FN_A5, FN_ST0_D1, FN_LCD_DATA5_A, FN_TIOC0B_C,
+-		/* IP0_9_8 [2] */
+-		FN_A4, FN_ST0_D0, FN_LCD_DATA4_A, FN_TIOC0A_C,
+-		/* IP0_7_6 [2] */
+-		FN_A3, FN_ST0_VLD, FN_LCD_DATA3_A, FN_TCLKD_C,
+-		/* IP0_5_4 [2] */
+-		FN_A2, FN_ST0_SYC, FN_LCD_DATA2_A, FN_TCLKC_C,
+-		/* IP0_3_2 [2] */
+-		FN_A1, FN_ST0_REQ, FN_LCD_DATA1_A, FN_TCLKB_C,
+-		/* IP0_1_0 [2] */
+-		FN_A0, FN_ST0_CLKIN, FN_LCD_DATA0_A, FN_TCLKA_C ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("IPSR1", 0xFFFC0020, 32,
+-			GROUP(3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2),
+-			GROUP(
+-		/* IP1_31_29 [3] */
+-		FN_D3, FN_SD0_DAT3_A, FN_MMC_D3_A, FN_ST1_D6,
+-			FN_FD3_A, 0, 0, 0,
+-		/* IP1_28_26 [3] */
+-		FN_D2, FN_SD0_DAT2_A, FN_MMC_D2_A, FN_ST1_D5,
+-			FN_FD2_A, 0, 0, 0,
+-		/* IP1_25_23 [3] */
+-		FN_D1, FN_SD0_DAT1_A, FN_MMC_D1_A, FN_ST1_D4,
+-			FN_FD1_A, 0, 0, 0,
+-		/* IP1_22_20 [3] */
+-		FN_D0, FN_SD0_DAT0_A, FN_MMC_D0_A, FN_ST1_D3,
+-			FN_FD0_A, 0, 0, 0,
+-		/* IP1_19_18 [2] */
+-		FN_A25, FN_TX2_D, FN_ST1_D2, 0,
+-		/* IP1_17_16 [2] */
+-		FN_A24, FN_RX2_D, FN_ST1_D1, 0,
+-		/* IP1_15_14 [2] */
+-		FN_A23, FN_ST1_D0, FN_LCD_M_DISP_A, 0,
+-		/* IP1_13_12 [2] */
+-		FN_A22, FN_ST1_VLD, FN_LCD_VEPWC_A, 0,
+-		/* IP1_11_10 [2] */
+-		FN_A21, FN_ST1_SYC, FN_LCD_VCPWC_A, 0,
+-		/* IP1_9_8 [2] */
+-		FN_A20, FN_ST1_REQ, FN_LCD_FLM_A, 0,
+-		/* IP1_7_6 [2] */
+-		FN_A19, FN_ST1_CLKIN, FN_LCD_CLK_A,	FN_TIOC4D_C,
+-		/* IP1_5_4 [2] */
+-		FN_A18, FN_ST1_PWM, FN_LCD_CL2_A, FN_TIOC4C_C,
+-		/* IP1_3_2 [2] */
+-		FN_A17, FN_ST1_VCO_CLKIN, FN_LCD_CL1_A,	FN_TIOC4B_C,
+-		/* IP1_1_0 [2] */
+-		FN_A16, FN_ST0_PWM, FN_LCD_DON_A, FN_TIOC4A_C ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("IPSR2", 0xFFFC0024, 32,
+-			     GROUP(-1, 3, 3, 2, 3, 3, 3, 3, 3, 3, 2, 3),
+-			     GROUP(
+-		/* IP2_31 [1] RESERVED */
+-		/* IP2_30_28 [3] */
+-		FN_D14, FN_TX2_B, 0, FN_FSE_A,
+-			FN_ET0_TX_CLK_B, 0, 0, 0,
+-		/* IP2_27_25 [3] */
+-		FN_D13, FN_RX2_B, 0, FN_FRB_A,
+-			FN_ET0_ETXD6_B, 0, 0, 0,
+-		/* IP2_24_23 [2] */
+-		FN_D12, 0, FN_FWE_A, FN_ET0_ETXD5_B,
+-		/* IP2_22_20 [3] */
+-		FN_D11, FN_RSPI_MISO_A, 0, FN_QMI_QIO1_A,
+-			FN_FRE_A, FN_ET0_ETXD3_B, 0, 0,
+-		/* IP2_19_17 [3] */
+-		FN_D10, FN_RSPI_MOSI_A, 0, FN_QMO_QIO0_A,
+-			FN_FALE_A, FN_ET0_ETXD2_B, 0, 0,
+-		/* IP2_16_14 [3] */
+-		FN_D9, FN_SD0_CMD_A, FN_MMC_CMD_A, FN_QIO3_A,
+-			FN_FCLE_A, FN_ET0_ETXD1_B, 0, 0,
+-		/* IP2_13_11 [3] */
+-		FN_D8, FN_SD0_CLK_A, FN_MMC_CLK_A, FN_QIO2_A,
+-			FN_FCE_A, FN_ET0_GTX_CLK_B, 0, 0,
+-		/* IP2_10_8 [3] */
+-		FN_D7, FN_RSPI_SSL_A, FN_MMC_D7_A, FN_QSSL_A,
+-			FN_FD7_A, 0, 0, 0,
+-		/* IP2_7_5 [3] */
+-		FN_D6, FN_RSPI_RSPCK_A, FN_MMC_D6_A, FN_QSPCLK_A,
+-			FN_FD6_A, 0, 0, 0,
+-		/* IP2_4_3 [2] */
+-		FN_D5, FN_SD0_WP_A, FN_MMC_D5_A, FN_FD5_A,
+-		/* IP2_2_0 [3] */
+-		FN_D4, FN_SD0_CD_A, FN_MMC_D4_A, FN_ST1_D7,
+-			FN_FD4_A, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("IPSR3", 0xFFFC0028, 32,
+-			     GROUP(-2, 3, 3, 3, 1, 2, 3, 3, 3, 3, 3, 1, 2),
+-			     GROUP(
+-	    /* IP3_31_30 [2] RESERVED */
+-	    /* IP3_29_27 [3] */
+-		FN_DRACK0, FN_SD1_DAT2_A, FN_ATAG, FN_TCLK1_A,
+-		FN_ET0_ETXD7, 0, 0, 0,
+-	    /* IP3_26_24 [3] */
+-		FN_EX_WAIT2, FN_SD1_DAT1_A, FN_DACK2, FN_CAN1_RX_C,
+-		FN_ET0_MAGIC_C, FN_ET0_ETXD6_A, 0, 0,
+-	    /* IP3_23_21 [3] */
+-		FN_EX_WAIT1, FN_SD1_DAT0_A, FN_DREQ2, FN_CAN1_TX_C,
+-		FN_ET0_LINK_C, FN_ET0_ETXD5_A, 0, 0,
+-	    /* IP3_20 [1] */
+-		FN_EX_WAIT0, FN_TCLK1_B,
+-	    /* IP3_19_18 [2] */
+-		FN_RD_WR, FN_TCLK0, FN_CAN_CLK_B, FN_ET0_ETXD4,
+-	    /* IP3_17_15 [3] */
+-		FN_EX_CS5, FN_SD1_CMD_A, FN_ATADIR, FN_QSSL_B,
+-		FN_ET0_ETXD3_A, 0, 0, 0,
+-	    /* IP3_14_12 [3] */
+-		FN_EX_CS4, FN_SD1_WP_A, FN_ATAWR, FN_QMI_QIO1_B,
+-		FN_ET0_ETXD2_A, 0, 0, 0,
+-	    /* IP3_11_9 [3] */
+-		FN_EX_CS3, FN_SD1_CD_A, FN_ATARD, FN_QMO_QIO0_B,
+-		FN_ET0_ETXD1_A, 0, 0, 0,
+-	    /* IP3_8_6 [3] */
+-		FN_EX_CS2, FN_TX3_B, FN_ATACS1, FN_QSPCLK_B,
+-		FN_ET0_GTX_CLK_A, 0, 0, 0,
+-	    /* IP3_5_3 [3] */
+-		FN_EX_CS1, FN_RX3_B, FN_ATACS0, FN_QIO2_B,
+-		FN_ET0_ETXD0, 0, 0, 0,
+-	    /* IP3_2 [1] */
+-		FN_CS1_A26, FN_QIO3_B,
+-	    /* IP3_1_0 [2] */
+-		FN_D15, FN_SCK2_B, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("IPSR4", 0xFFFC002C, 32,
+-			     GROUP(2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3),
+-			     GROUP(
+-	    /* IP4_31_30 [2] */
+-		0, FN_SCK2_A, FN_VI0_G3, 0,
+-	    /* IP4_29_28 [2] */
+-		0, FN_RTS1_B, FN_VI0_G2, 0,
+-	    /* IP4_27_26 [2] */
+-		0, FN_CTS1_B, FN_VI0_DATA7_VI0_G1, 0,
+-	    /* IP4_25_24 [2] */
+-		0, FN_TX1_B, FN_VI0_DATA6_VI0_G0, FN_ET0_PHY_INT_A,
+-	    /* IP4_23_22 [2] */
+-		0, FN_RX1_B, FN_VI0_DATA5_VI0_B5, FN_ET0_MAGIC_A,
+-	    /* IP4_21_20 [2] */
+-		0, FN_SCK1_B, FN_VI0_DATA4_VI0_B4, FN_ET0_LINK_A,
+-	    /* IP4_19_18 [2] */
+-		0, FN_RTS0_B, FN_VI0_DATA3_VI0_B3, FN_ET0_MDIO_A,
+-	    /* IP4_17_15 [3] */
+-		0, FN_CTS0_B, FN_VI0_DATA2_VI0_B2, FN_RMII0_MDIO_A,
+-			FN_ET0_MDC, 0, 0, 0,
+-	    /* IP4_14_12 [3] */
+-		FN_HTX0_A, FN_TX1_A, FN_VI0_DATA1_VI0_B1, FN_RMII0_MDC_A,
+-			FN_ET0_COL, 0, 0, 0,
+-	    /* IP4_11_9 [3] */
+-		FN_HRX0_A, FN_RX1_A, FN_VI0_DATA0_VI0_B0, FN_RMII0_CRS_DV_A,
+-			FN_ET0_CRS, 0, 0, 0,
+-	    /* IP4_8_6 [3] */
+-		FN_HSCK0_A, FN_SCK1_A, FN_VI0_VSYNC, FN_RMII0_RX_ER_A,
+-			FN_ET0_RX_ER, 0, 0, 0,
+-	    /* IP4_5_3 [3] */
+-		FN_HRTS0_A, FN_RTS1_A, FN_VI0_HSYNC, FN_RMII0_TXD_EN_A,
+-			FN_ET0_RX_DV, 0, 0, 0,
+-	    /* IP4_2_0 [3] */
+-		FN_HCTS0_A, FN_CTS1_A, FN_VI0_FIELD, FN_RMII0_RXD1_A,
+-			FN_ET0_ERXD7, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("IPSR5", 0xFFFC0030, 32,
+-			     GROUP(-5, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3),
+-			     GROUP(
+-	    /* IP5_31_27 [5] RESERVED */
+-	    /* IP5_26_25 [2] */
+-		FN_REF50CK, FN_CTS1_E, FN_HCTS0_D, 0,
+-	    /* IP5_24_23 [2] */
+-		FN_REF125CK, FN_ADTRG, FN_RX5_C, 0,
+-	    /* IP5_22_21 [2] */
+-		FN_SD2_WP_A, FN_TX5_A, FN_VI0_R5, 0,
+-	    /* IP5_20_18 [3] */
+-		FN_SD2_CD_A, FN_RX5_A, FN_VI0_R4, 0,
+-		0, 0, 0, FN_ET0_PHY_INT_B,
+-	    /* IP5_17_15 [3] */
+-		FN_SD2_DAT3_A, FN_TX4_A, FN_VI0_R3, 0,
+-		0, 0, 0, FN_ET0_MAGIC_B,
+-	    /* IP5_14_12 [3] */
+-		FN_SD2_DAT2_A, FN_RX4_A, FN_VI0_R2, 0,
+-		0, 0, 0, FN_ET0_LINK_B,
+-	    /* IP5_11_9 [3] */
+-		FN_SD2_DAT1_A, FN_TX3_A, FN_VI0_R1, 0,
+-		0, 0, 0, FN_ET0_MDIO_B,
+-	    /* IP5_8_6 [3] */
+-		FN_SD2_DAT0_A, FN_RX3_A, FN_VI0_R0, 0,
+-		0, 0, 0, FN_ET0_ERXD3_B,
+-	    /* IP5_5_3 [3] */
+-		FN_SD2_CMD_A, FN_TX2_A, FN_VI0_G5, 0,
+-		0, 0, 0, FN_ET0_ERXD2_B,
+-	    /* IP5_2_0 [3] */
+-		FN_SD2_CLK_A, FN_RX2_A, FN_VI0_G4, 0,
+-		FN_ET0_RX_CLK_B, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("IPSR6", 0xFFFC0034, 32,
+-			     GROUP(-8, 3, 3, 2, 2, 2, 2, 2, 2, 3, 3),
+-			     GROUP(
+-	    /* IP5_31_24 [8] RESERVED */
+-	    /* IP6_23_21 [3] */
+-		FN_DU0_DG1, FN_CTS1_C, FN_HRTS0_D, FN_TIOC1B_A,
+-		FN_HIFD09, 0, 0, 0,
+-	    /* IP6_20_18 [3] */
+-		FN_DU0_DG0, FN_TX1_C, FN_HSCK0_D, FN_IECLK_A,
+-		FN_TIOC1A_A, FN_HIFD08, 0, 0,
+-	    /* IP6_17_16 [2] */
+-		FN_DU0_DR7, FN_RX1_C, FN_TIOC0D_A, FN_HIFD07,
+-	    /* IP6_15_14 [2] */
+-		FN_DU0_DR6, FN_SCK1_C, FN_TIOC0C_A, FN_HIFD06,
+-	    /* IP6_13_12 [2] */
+-		FN_DU0_DR5, FN_RTS0_C, FN_TIOC0B_A, FN_HIFD05,
+-	    /* IP6_11_10 [2] */
+-		FN_DU0_DR4, FN_CTS0_C, FN_TIOC0A_A, FN_HIFD04,
+-	    /* IP6_9_8 [2] */
+-		FN_DU0_DR3, FN_TX0_B, FN_TCLKD_A, FN_HIFD03,
+-	    /* IP6_7_6 [2] */
+-		FN_DU0_DR2, FN_RX0_B, FN_TCLKC_A, FN_HIFD02,
+-	    /* IP6_5_3 [3] */
+-		FN_DU0_DR1, FN_SCK0_B, FN_HTX0_D, FN_IERX_A,
+-		FN_TCLKB_A, FN_HIFD01, 0, 0,
+-	    /* IP6_2_0 [3] */
+-		FN_DU0_DR0, FN_SCIF_CLK_B, FN_HRX0_D, FN_IETX_A,
+-		FN_TCLKA_A, FN_HIFD00, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("IPSR7", 0xFFFC0038, 32,
+-			     GROUP(-1, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+-			     GROUP(
+-	    /* IP7_31 [1] RESERVED */
+-	    /* IP7_30_29 [2] */
+-		FN_DU0_DB4, 0, FN_HIFINT, 0,
+-	    /* IP7_28_27 [2] */
+-		FN_DU0_DB3, FN_TX5_B, FN_TIOC4D_A, FN_HIFRD,
+-	    /* IP7_26_24 [3] */
+-		FN_DU0_DB2, FN_RX5_B, FN_RMII0_TXD1_B, FN_TIOC4C_A,
+-		FN_HIFWR, 0, 0, 0,
+-	    /* IP7_23_21 [3] */
+-		FN_DU0_DB1, FN_TX4_C, FN_RMII0_TXD0_B, FN_TIOC4B_A,
+-		FN_HIFRS, 0, 0, 0,
+-	    /* IP7_20_18 [3] */
+-		FN_DU0_DB0, FN_RX4_C, FN_RMII0_TXD_EN_B, FN_TIOC4A_A,
+-		FN_HIFCS, 0, 0, 0,
+-	    /* IP7_17_15 [3] */
+-		FN_DU0_DG7, FN_TX3_C, FN_RMII0_RXD1_B, FN_TIOC3D_A,
+-		FN_HIFD15, 0, 0, 0,
+-	    /* IP7_14_12 [3] */
+-		FN_DU0_DG6, FN_RX3_C, FN_RMII0_RXD0_B, FN_TIOC3C_A,
+-		FN_HIFD14, 0, 0, 0,
+-	    /* IP7_11_9 [3] */
+-		FN_DU0_DG5, FN_TX2_C, FN_RMII0_RX_ER_B, FN_TIOC3B_A,
+-		FN_HIFD13, 0, 0, 0,
+-	    /* IP7_8_6 [3] */
+-		FN_DU0_DG4, FN_RX2_C, FN_RMII0_CRS_DV_B, FN_TIOC3A_A,
+-		FN_HIFD12, 0, 0, 0,
+-	    /* IP7_5_3 [3] */
+-		FN_DU0_DG3, FN_SCK2_C, FN_RMII0_MDIO_B, FN_TIOC2B_A,
+-		FN_HIFD11, 0, 0, 0,
+-	    /* IP7_2_0 [3] */
+-		FN_DU0_DG2, FN_RTS1_C, FN_RMII0_MDC_B, FN_TIOC2A_A,
+-		FN_HIFD10, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("IPSR8", 0xFFFC003C, 32,
+-			     GROUP(-2, 2, 2, 3, 3, 2, 2, 2, 2, 2, 2, 2,
+-				   2, 2, 2),
+-			     GROUP(
+-	    /* IP9_31_30 [2] RESERVED */
+-	    /* IP8_29_28 [2] */
+-		FN_IRQ3_A, FN_RTS0_A, FN_HRTS0_B, FN_ET0_ERXD3_A,
+-	    /* IP8_27_26 [2] */
+-		FN_IRQ2_A, FN_CTS0_A, FN_HCTS0_B, FN_ET0_ERXD2_A,
+-	    /* IP8_25_23 [3] */
+-		FN_IRQ1_A, 0, FN_HSPI_RX_B, FN_TX3_E,
+-			FN_ET0_ERXD1, 0, 0, 0,
+-	    /* IP8_22_20 [3] */
+-		FN_IRQ0_A, 0, FN_HSPI_TX_B, FN_RX3_E,
+-			FN_ET0_ERXD0, 0, 0, 0,
+-	    /* IP8_19_18 [2] */
+-		FN_DU0_CDE, FN_HTX0_B, FN_AUDIO_CLKB_B, FN_LCD_VCPWC_B,
+-	    /* IP8_17_16 [2] */
+-		FN_DU0_DISP, FN_CAN0_TX_B, FN_HRX0_B, FN_AUDIO_CLKA_B,
+-	    /* IP8_15_14 [2] */
+-		FN_DU0_EXODDF_DU0_ODDF, FN_CAN0_RX_B, FN_HSCK0_B,
+-			FN_SSI_SDATA1_B,
+-	    /* IP8_13_12 [2] */
+-		FN_DU0_EXVSYNC_DU0_VSYNC, 0, FN_HSPI_RX0_C, FN_SSI_WS1_B,
+-	    /* IP8_11_10 [2] */
+-		FN_DU0_EXHSYNC_DU0_HSYNC, 0, FN_HSPI_TX0_C, FN_SSI_SCK1_B,
+-	    /* IP8_9_8 [2] */
+-		FN_DU0_DOTCLKOUT, 0, FN_HSPI_CLK0_C, FN_SSI_SDATA0_B,
+-	    /* IP8_7_6 [2] */
+-		FN_DU0_DOTCLKIN, 0, FN_HSPI_CS0_C, FN_SSI_WS0_B,
+-	    /* IP8_5_4 [2] */
+-		FN_DU0_DB7, 0, FN_SSI_SCK0_B, FN_HIFEBL_B,
+-	    /* IP8_3_2 [2] */
+-		FN_DU0_DB6, 0, FN_HIFRDY, 0,
+-	    /* IP8_1_0 [2] */
+-		FN_DU0_DB5, 0, FN_HIFDREQ, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("IPSR9", 0xFFFC0040, 32,
+-			     GROUP(-2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+-				   2, 2, 2, 2),
+-			     GROUP(
+-	    /* IP9_31_30 [2] RESERVED */
+-	    /* IP9_29_28 [2] */
+-		FN_SSI_SDATA1_A, FN_VI1_3_B, FN_LCD_DATA14_B, 0,
+-	    /* IP9_27_26 [2] */
+-		FN_SSI_WS1_A, FN_VI1_2_B, FN_LCD_DATA13_B, 0,
+-	    /* IP9_25_24 [2] */
+-		FN_SSI_SCK1_A, FN_VI1_1_B, FN_TIOC2B_B, FN_LCD_DATA12_B,
+-	    /* IP9_23_22 [2] */
+-		FN_SSI_SDATA0_A, FN_VI1_0_B, FN_TIOC2A_B, FN_LCD_DATA11_B,
+-	    /* IP9_21_20 [2] */
+-		FN_SSI_WS0_A, FN_TIOC1B_B, FN_LCD_DATA10_B, 0,
+-	    /* IP9_19_18 [2] */
+-		FN_SSI_SCK0_A, FN_TIOC1A_B, FN_LCD_DATA9_B, 0,
+-	    /* IP9_17_16 [2] */
+-		FN_VI1_7_A, FN_FCE_B, FN_LCD_DATA8_B, 0,
+-	    /* IP9_15_14 [2] */
+-		FN_VI1_6_A, 0, FN_FD7_B, FN_LCD_DATA7_B,
+-	    /* IP9_13_12 [2] */
+-		FN_VI1_5_A, 0, FN_FD6_B, FN_LCD_DATA6_B,
+-	    /* IP9_11_10 [2] */
+-		FN_VI1_4_A, 0, FN_FD5_B, FN_LCD_DATA5_B,
+-	    /* IP9_9_8 [2] */
+-		FN_VI1_3_A, 0, FN_FD4_B, FN_LCD_DATA4_B,
+-	    /* IP9_7_6 [2] */
+-		FN_VI1_2_A, 0, FN_FD3_B, FN_LCD_DATA3_B,
+-	    /* IP9_5_4 [2] */
+-		FN_VI1_1_A, 0, FN_FD2_B, FN_LCD_DATA2_B,
+-	    /* IP9_3_2 [2] */
+-		FN_VI1_0_A, 0, FN_FD1_B, FN_LCD_DATA1_B,
+-	    /* IP9_1_0 [2] */
+-		FN_VI1_CLK_A, 0, FN_FD0_B, FN_LCD_DATA0_B ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("IPSR10", 0xFFFC0044, 32,
+-			     GROUP(-2, 2, 2, 1, 2, 1, 3, 3, 1, 3, 3, 3, 3, 3),
+-			     GROUP(
+-	    /* IP9_31_30 [2] RESERVED */
+-	    /* IP10_29_28 [2] */
+-		FN_CAN1_TX_A, FN_TX5_C, FN_MLB_DAT, 0,
+-	    /* IP10_27_26 [2] */
+-		FN_CAN0_RX_A, FN_IRQ0_B, FN_MLB_SIG, 0,
+-	    /* IP10_25 [1] */
+-		FN_CAN1_RX_A, FN_IRQ1_B,
+-	    /* IP10_24_23 [2] */
+-		FN_CAN0_TX_A, FN_TX4_D, FN_MLB_CLK, 0,
+-	    /* IP10_22 [1] */
+-		FN_CAN_CLK_A, FN_RX4_D,
+-	    /* IP10_21_19 [3] */
+-		FN_AUDIO_CLKOUT, FN_TX1_E, 0, FN_HRTS0_C, FN_FSE_B,
+-		FN_LCD_M_DISP_B, 0, 0,
+-	    /* IP10_18_16 [3] */
+-		FN_AUDIO_CLKC, FN_SCK1_E, 0, FN_HCTS0_C, FN_FRB_B,
+-		FN_LCD_VEPWC_B, 0, 0,
+-	    /* IP10_15 [1] */
+-		FN_AUDIO_CLKB_A, FN_LCD_CLK_B,
+-	    /* IP10_14_12 [3] */
+-		FN_AUDIO_CLKA_A, FN_VI1_CLK_B, FN_SCK1_D, FN_IECLK_B,
+-		FN_LCD_FLM_B, 0, 0, 0,
+-	    /* IP10_11_9 [3] */
+-		FN_SSI_SDATA3, FN_VI1_7_B, 0, FN_HTX0_C, FN_FWE_B,
+-		FN_LCD_CL2_B, 0, 0,
+-	    /* IP10_8_6 [3] */
+-		FN_SSI_SDATA2, FN_VI1_6_B, 0, FN_HRX0_C, FN_FRE_B,
+-		FN_LCD_CL1_B, 0, 0,
+-	    /* IP10_5_3 [3] */
+-		FN_SSI_WS23, FN_VI1_5_B, FN_TX1_D, FN_HSCK0_C, FN_FALE_B,
+-		FN_LCD_DON_B, 0, 0,
+-	    /* IP10_2_0 [3] */
+-		FN_SSI_SCK23, FN_VI1_4_B, FN_RX1_D, FN_FCLE_B,
+-		FN_LCD_DATA15_B, 0, 0, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("IPSR11", 0xFFFC0048, 32,
+-			     GROUP(-3, 1, 2, 3, 2, 2, 3, 3, 1, 2, 3, 3,
+-				   1, 1, 1, 1),
+-			     GROUP(
+-	    /* IP11_31_29 [3] RESERVED */
+-	    /* IP11_28 [1] */
+-		FN_PRESETOUT, FN_ST_CLKOUT,
+-	    /* IP11_27_26 [2] */
+-		FN_DACK1, FN_HSPI_CS_B, FN_TX4_B, FN_ET0_RX_CLK_A,
+-	    /* IP11_25_23 [3] */
+-		FN_DREQ1, FN_HSPI_CLK_B, FN_RX4_B, FN_ET0_PHY_INT_C,
+-		FN_ET0_TX_CLK_A, 0, 0, 0,
+-	    /* IP11_22_21 [2] */
+-		FN_DACK0, FN_SD1_DAT3_A, FN_ET0_TX_ER, 0,
+-	    /* IP11_20_19 [2] */
+-		FN_DREQ0, FN_SD1_CLK_A, FN_ET0_TX_EN, 0,
+-	    /* IP11_18_16 [3] */
+-		FN_USB_OVC1, FN_RX3_D, FN_CAN1_RX_B, FN_RX5_D,
+-		FN_IERX_B, 0, 0, 0,
+-	    /* IP11_15_13 [3] */
+-		FN_PENC1, FN_TX3_D, FN_CAN1_TX_B, FN_TX5_D,
+-		FN_IETX_B, 0, 0, 0,
+-	    /* IP11_12 [1] */
+-		FN_TX0_A, FN_HSPI_TX_A,
+-	    /* IP11_11_10 [2] */
+-		FN_RX0_A, FN_HSPI_RX_A, FN_RMII0_RXD0_A, FN_ET0_ERXD6,
+-	    /* IP11_9_7 [3] */
+-		FN_SCK0_A, FN_HSPI_CS_A, FN_VI0_CLKENB, FN_RMII0_TXD1_A,
+-		FN_ET0_ERXD5, 0, 0, 0,
+-	    /* IP11_6_4 [3] */
+-		FN_SCIF_CLK_A, FN_HSPI_CLK_A, FN_VI0_CLK, FN_RMII0_TXD0_A,
+-		FN_ET0_ERXD4, 0, 0, 0,
+-	    /* IP11_3 [1] */
+-		FN_SDSELF, FN_RTS1_E,
+-	    /* IP11_2 [1] */
+-		FN_SDA0, FN_HIFEBL_A,
+-	    /* IP11_1 [1] */
+-		FN_SDA1, FN_RX1_E,
+-	    /* IP11_0 [1] */
+-		FN_SCL1, FN_SCIF_CLK_C ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("MOD_SEL1", 0xFFFC004C, 32,
+-			     GROUP(-3, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2,
+-				   2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+-			     GROUP(
+-		/* SEL1_31_29 [3] RESERVED */
+-		/* SEL1_28 [1] */
+-		FN_SEL_IEBUS_0, FN_SEL_IEBUS_1,
+-		/* SEL1_27 [1] */
+-		FN_SEL_RQSPI_0, FN_SEL_RQSPI_1,
+-		/* SEL1_26 [1] */
+-		FN_SEL_VIN1_0, FN_SEL_VIN1_1,
+-		/* SEL1_25 [1] */
+-		FN_SEL_HIF_0, FN_SEL_HIF_1,
+-		/* SEL1_24 [1] */
+-		FN_SEL_RSPI_0, FN_SEL_RSPI_1,
+-		/* SEL1_23 [1] */
+-		FN_SEL_LCDC_0, FN_SEL_LCDC_1,
+-		/* SEL1_22_21 [2] */
+-		FN_SEL_ET0_CTL_0, FN_SEL_ET0_CTL_1, FN_SEL_ET0_CTL_2, 0,
+-		/* SEL1_20 [1] */
+-		FN_SEL_ET0_0, FN_SEL_ET0_1,
+-		/* SEL1_19 [1] */
+-		FN_SEL_RMII_0, FN_SEL_RMII_1,
+-		/* SEL1_18 [1] */
+-		FN_SEL_TMU_0, FN_SEL_TMU_1,
+-		/* SEL1_17_16 [2] */
+-		FN_SEL_HSPI_0, FN_SEL_HSPI_1, FN_SEL_HSPI_2, 0,
+-		/* SEL1_15_14 [2] */
+-		FN_SEL_HSCIF_0, FN_SEL_HSCIF_1, FN_SEL_HSCIF_2, FN_SEL_HSCIF_3,
+-		/* SEL1_13 [1] */
+-		FN_SEL_RCAN_CLK_0, FN_SEL_RCAN_CLK_1,
+-		/* SEL1_12_11 [2] */
+-		FN_SEL_RCAN1_0, FN_SEL_RCAN1_1, FN_SEL_RCAN1_2, 0,
+-		/* SEL1_10 [1] */
+-		FN_SEL_RCAN0_0, FN_SEL_RCAN0_1,
+-		/* SEL1_9 [1] */
+-		FN_SEL_SDHI2_0, FN_SEL_SDHI2_1,
+-		/* SEL1_8 [1] */
+-		FN_SEL_SDHI1_0, FN_SEL_SDHI1_1,
+-		/* SEL1_7 [1] */
+-		FN_SEL_SDHI0_0, FN_SEL_SDHI0_1,
+-		/* SEL1_6 [1] */
+-		FN_SEL_SSI1_0, FN_SEL_SSI1_1,
+-		/* SEL1_5 [1] */
+-		FN_SEL_SSI0_0, FN_SEL_SSI0_1,
+-		/* SEL1_4 [1] */
+-		FN_SEL_AUDIO_CLKB_0, FN_SEL_AUDIO_CLKB_1,
+-		/* SEL1_3 [1] */
+-		FN_SEL_AUDIO_CLKA_0, FN_SEL_AUDIO_CLKA_1,
+-		/* SEL1_2 [1] */
+-		FN_SEL_FLCTL_0, FN_SEL_FLCTL_1,
+-		/* SEL1_1 [1] */
+-		FN_SEL_MMC_0, FN_SEL_MMC_1,
+-		/* SEL1_0 [1] */
+-		FN_SEL_INTC_0, FN_SEL_INTC_1 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("MOD_SEL2", 0xFFFC0050, 32,
+-			     GROUP(-8, 1, 1, 1, 2, 2, 1, 2, 2, 3, 2, 3, 2, 2),
+-			     GROUP(
+-		/* SEL2_31_24 [8] RESERVED */
+-		/* SEL2_23 [1] */
+-		FN_SEL_MTU2_CLK_0, FN_SEL_MTU2_CLK_1,
+-		/* SEL2_22 [1] */
+-		FN_SEL_MTU2_CH4_0, FN_SEL_MTU2_CH4_1,
+-		/* SEL2_21 [1] */
+-		FN_SEL_MTU2_CH3_0, FN_SEL_MTU2_CH3_1,
+-		/* SEL2_20_19 [2] */
+-		FN_SEL_MTU2_CH2_0, FN_SEL_MTU2_CH2_1, FN_SEL_MTU2_CH2_2, 0,
+-		/* SEL2_18_17 [2] */
+-		FN_SEL_MTU2_CH1_0, FN_SEL_MTU2_CH1_1, FN_SEL_MTU2_CH1_2, 0,
+-		/* SEL2_16 [1] */
+-		FN_SEL_MTU2_CH0_0, FN_SEL_MTU2_CH0_1,
+-		/* SEL2_15_14 [2] */
+-		FN_SEL_SCIF5_0, FN_SEL_SCIF5_1, FN_SEL_SCIF5_2, FN_SEL_SCIF5_3,
+-		/* SEL2_13_12 [2] */
+-		FN_SEL_SCIF4_0, FN_SEL_SCIF4_1, FN_SEL_SCIF4_2, FN_SEL_SCIF4_3,
+-		/* SEL2_11_9 [3] */
+-		FN_SEL_SCIF3_0, FN_SEL_SCIF3_1, FN_SEL_SCIF3_2, FN_SEL_SCIF3_3,
+-		FN_SEL_SCIF3_4, 0, 0, 0,
+-		/* SEL2_8_7 [2] */
+-		FN_SEL_SCIF2_0, FN_SEL_SCIF2_1, FN_SEL_SCIF2_2, FN_SEL_SCIF2_3,
+-		/* SEL2_6_4 [3] */
+-		FN_SEL_SCIF1_0, FN_SEL_SCIF1_1, FN_SEL_SCIF1_2, FN_SEL_SCIF1_3,
+-			FN_SEL_SCIF1_4, 0, 0, 0,
+-		/* SEL2_3_2 [2] */
+-		FN_SEL_SCIF0_0, FN_SEL_SCIF0_1, FN_SEL_SCIF0_2, 0,
+-		/* SEL2_1_0 [2] */
+-		FN_SEL_SCIF_CLK_0, FN_SEL_SCIF_CLK_1, FN_SEL_SCIF_CLK_2, 0  ))
+-	},
+-	/* GPIO 0 - 5*/
+-	{ PINMUX_CFG_REG("INOUTSEL0", 0xFFC40004, 32, 1, GROUP(GP_INOUTSEL(0)))
+-	},
+-	{ PINMUX_CFG_REG("INOUTSEL1", 0xFFC41004, 32, 1, GROUP(GP_INOUTSEL(1)))
+-	},
+-	{ PINMUX_CFG_REG("INOUTSEL2", 0xFFC42004, 32, 1, GROUP(GP_INOUTSEL(2)))
+-	},
+-	{ PINMUX_CFG_REG("INOUTSEL3", 0xFFC43004, 32, 1, GROUP(GP_INOUTSEL(3)))
+-	},
+-	{ PINMUX_CFG_REG("INOUTSEL4", 0xFFC44004, 32, 1, GROUP(GP_INOUTSEL(4)))
+-	},
+-	{ PINMUX_CFG_REG_VAR("INOUTSEL5", 0xffc45004, 32,
+-			     GROUP(-20, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+-			     GROUP(
+-		/* GP5_31_12 RESERVED */
+-		GP_5_11_IN, GP_5_11_OUT,
+-		GP_5_10_IN, GP_5_10_OUT,
+-		GP_5_9_IN, GP_5_9_OUT,
+-		GP_5_8_IN, GP_5_8_OUT,
+-		GP_5_7_IN, GP_5_7_OUT,
+-		GP_5_6_IN, GP_5_6_OUT,
+-		GP_5_5_IN, GP_5_5_OUT,
+-		GP_5_4_IN, GP_5_4_OUT,
+-		GP_5_3_IN, GP_5_3_OUT,
+-		GP_5_2_IN, GP_5_2_OUT,
+-		GP_5_1_IN, GP_5_1_OUT,
+-		GP_5_0_IN, GP_5_0_OUT ))
+-	},
+-	{ },
+-};
+-
+-static const struct pinmux_data_reg pinmux_data_regs[] = {
+-	/* GPIO 0 - 5*/
+-	{ PINMUX_DATA_REG("INDT0", 0xFFC4000C, 32, GROUP(GP_INDT(0))) },
+-	{ PINMUX_DATA_REG("INDT1", 0xFFC4100C, 32, GROUP(GP_INDT(1))) },
+-	{ PINMUX_DATA_REG("INDT2", 0xFFC4200C, 32, GROUP(GP_INDT(2))) },
+-	{ PINMUX_DATA_REG("INDT3", 0xFFC4300C, 32, GROUP(GP_INDT(3))) },
+-	{ PINMUX_DATA_REG("INDT4", 0xFFC4400C, 32, GROUP(GP_INDT(4))) },
+-	{ PINMUX_DATA_REG("INDT5", 0xFFC4500C, 32, GROUP(
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0,
+-		GP_5_11_DATA, GP_5_10_DATA, GP_5_9_DATA, GP_5_8_DATA,
+-		GP_5_7_DATA, GP_5_6_DATA, GP_5_5_DATA, GP_5_4_DATA,
+-		GP_5_3_DATA, GP_5_2_DATA, GP_5_1_DATA, GP_5_0_DATA ))
+-	},
+-	{ },
+-};
+-
+-const struct sh_pfc_soc_info sh7734_pinmux_info = {
+-	.name = "sh7734_pfc",
+-
+-	.unlock_reg = 0xFFFC0000,
+-
+-	.input = { PINMUX_INPUT_BEGIN, PINMUX_INPUT_END },
+-	.output = { PINMUX_OUTPUT_BEGIN, PINMUX_OUTPUT_END },
+-	.function = { PINMUX_FUNCTION_BEGIN, PINMUX_FUNCTION_END },
+-
+-	.pins = pinmux_pins,
+-	.nr_pins = ARRAY_SIZE(pinmux_pins),
+-	.func_gpios = pinmux_func_gpios,
+-	.nr_func_gpios = ARRAY_SIZE(pinmux_func_gpios),
+-
+-	.cfg_regs = pinmux_config_regs,
+-	.data_regs = pinmux_data_regs,
+-
+-	.pinmux_data = pinmux_data,
+-	.pinmux_data_size = ARRAY_SIZE(pinmux_data),
+-};
+diff --git a/drivers/pinctrl/renesas/pfc-sh7757.c b/drivers/pinctrl/renesas/pfc-sh7757.c
+deleted file mode 100644
+index 0d7857d7efefb4..00000000000000
+--- a/drivers/pinctrl/renesas/pfc-sh7757.c
++++ /dev/null
+@@ -1,2219 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * SH7757 (B0 step) Pinmux
+- *
+- *  Copyright (C) 2009-2010  Renesas Solutions Corp.
+- *
+- *  Author : Yoshihiro Shimoda <shimoda.yoshihiro@renesas.com>
+- *
+- * Based on SH7723 Pinmux
+- *  Copyright (C) 2008  Magnus Damm
+- */
+-
+-#include <linux/kernel.h>
+-#include <cpu/sh7757.h>
+-
+-#include "sh_pfc.h"
+-
+-enum {
+-	PINMUX_RESERVED = 0,
+-
+-	PINMUX_DATA_BEGIN,
+-	PTA7_DATA, PTA6_DATA, PTA5_DATA, PTA4_DATA,
+-	PTA3_DATA, PTA2_DATA, PTA1_DATA, PTA0_DATA,
+-	PTB7_DATA, PTB6_DATA, PTB5_DATA, PTB4_DATA,
+-	PTB3_DATA, PTB2_DATA, PTB1_DATA, PTB0_DATA,
+-	PTC7_DATA, PTC6_DATA, PTC5_DATA, PTC4_DATA,
+-	PTC3_DATA, PTC2_DATA, PTC1_DATA, PTC0_DATA,
+-	PTD7_DATA, PTD6_DATA, PTD5_DATA, PTD4_DATA,
+-	PTD3_DATA, PTD2_DATA, PTD1_DATA, PTD0_DATA,
+-	PTE7_DATA, PTE6_DATA, PTE5_DATA, PTE4_DATA,
+-	PTE3_DATA, PTE2_DATA, PTE1_DATA, PTE0_DATA,
+-	PTF7_DATA, PTF6_DATA, PTF5_DATA, PTF4_DATA,
+-	PTF3_DATA, PTF2_DATA, PTF1_DATA, PTF0_DATA,
+-	PTG7_DATA, PTG6_DATA, PTG5_DATA, PTG4_DATA,
+-	PTG3_DATA, PTG2_DATA, PTG1_DATA, PTG0_DATA,
+-	PTH7_DATA, PTH6_DATA, PTH5_DATA, PTH4_DATA,
+-	PTH3_DATA, PTH2_DATA, PTH1_DATA, PTH0_DATA,
+-	PTI7_DATA, PTI6_DATA, PTI5_DATA, PTI4_DATA,
+-	PTI3_DATA, PTI2_DATA, PTI1_DATA, PTI0_DATA,
+-		   PTJ6_DATA, PTJ5_DATA, PTJ4_DATA,
+-	PTJ3_DATA, PTJ2_DATA, PTJ1_DATA, PTJ0_DATA,
+-	PTK7_DATA, PTK6_DATA, PTK5_DATA, PTK4_DATA,
+-	PTK3_DATA, PTK2_DATA, PTK1_DATA, PTK0_DATA,
+-		   PTL6_DATA, PTL5_DATA, PTL4_DATA,
+-	PTL3_DATA, PTL2_DATA, PTL1_DATA, PTL0_DATA,
+-	PTM7_DATA, PTM6_DATA, PTM5_DATA, PTM4_DATA,
+-	PTM3_DATA, PTM2_DATA, PTM1_DATA, PTM0_DATA,
+-		   PTN6_DATA, PTN5_DATA, PTN4_DATA,
+-	PTN3_DATA, PTN2_DATA, PTN1_DATA, PTN0_DATA,
+-	PTO7_DATA, PTO6_DATA, PTO5_DATA, PTO4_DATA,
+-	PTO3_DATA, PTO2_DATA, PTO1_DATA, PTO0_DATA,
+-	PTP7_DATA, PTP6_DATA, PTP5_DATA, PTP4_DATA,
+-	PTP3_DATA, PTP2_DATA, PTP1_DATA, PTP0_DATA,
+-		   PTQ6_DATA, PTQ5_DATA, PTQ4_DATA,
+-	PTQ3_DATA, PTQ2_DATA, PTQ1_DATA, PTQ0_DATA,
+-	PTR7_DATA, PTR6_DATA, PTR5_DATA, PTR4_DATA,
+-	PTR3_DATA, PTR2_DATA, PTR1_DATA, PTR0_DATA,
+-	PTS7_DATA, PTS6_DATA, PTS5_DATA, PTS4_DATA,
+-	PTS3_DATA, PTS2_DATA, PTS1_DATA, PTS0_DATA,
+-	PTT7_DATA, PTT6_DATA, PTT5_DATA, PTT4_DATA,
+-	PTT3_DATA, PTT2_DATA, PTT1_DATA, PTT0_DATA,
+-	PTU7_DATA, PTU6_DATA, PTU5_DATA, PTU4_DATA,
+-	PTU3_DATA, PTU2_DATA, PTU1_DATA, PTU0_DATA,
+-	PTV7_DATA, PTV6_DATA, PTV5_DATA, PTV4_DATA,
+-	PTV3_DATA, PTV2_DATA, PTV1_DATA, PTV0_DATA,
+-	PTW7_DATA, PTW6_DATA, PTW5_DATA, PTW4_DATA,
+-	PTW3_DATA, PTW2_DATA, PTW1_DATA, PTW0_DATA,
+-	PTX7_DATA, PTX6_DATA, PTX5_DATA, PTX4_DATA,
+-	PTX3_DATA, PTX2_DATA, PTX1_DATA, PTX0_DATA,
+-	PTY7_DATA, PTY6_DATA, PTY5_DATA, PTY4_DATA,
+-	PTY3_DATA, PTY2_DATA, PTY1_DATA, PTY0_DATA,
+-	PTZ7_DATA, PTZ6_DATA, PTZ5_DATA, PTZ4_DATA,
+-	PTZ3_DATA, PTZ2_DATA, PTZ1_DATA, PTZ0_DATA,
+-	PINMUX_DATA_END,
+-
+-	PINMUX_INPUT_BEGIN,
+-	PTA7_IN, PTA6_IN, PTA5_IN, PTA4_IN,
+-	PTA3_IN, PTA2_IN, PTA1_IN, PTA0_IN,
+-	PTB7_IN, PTB6_IN, PTB5_IN, PTB4_IN,
+-	PTB3_IN, PTB2_IN, PTB1_IN, PTB0_IN,
+-	PTC7_IN, PTC6_IN, PTC5_IN, PTC4_IN,
+-	PTC3_IN, PTC2_IN, PTC1_IN, PTC0_IN,
+-	PTD7_IN, PTD6_IN, PTD5_IN, PTD4_IN,
+-	PTD3_IN, PTD2_IN, PTD1_IN, PTD0_IN,
+-	PTE7_IN, PTE6_IN, PTE5_IN, PTE4_IN,
+-	PTE3_IN, PTE2_IN, PTE1_IN, PTE0_IN,
+-	PTF7_IN, PTF6_IN, PTF5_IN, PTF4_IN,
+-	PTF3_IN, PTF2_IN, PTF1_IN, PTF0_IN,
+-	PTG7_IN, PTG6_IN, PTG5_IN, PTG4_IN,
+-	PTG3_IN, PTG2_IN, PTG1_IN, PTG0_IN,
+-	PTH7_IN, PTH6_IN, PTH5_IN, PTH4_IN,
+-	PTH3_IN, PTH2_IN, PTH1_IN, PTH0_IN,
+-	PTI7_IN, PTI6_IN, PTI5_IN, PTI4_IN,
+-	PTI3_IN, PTI2_IN, PTI1_IN, PTI0_IN,
+-		 PTJ6_IN, PTJ5_IN, PTJ4_IN,
+-	PTJ3_IN, PTJ2_IN, PTJ1_IN, PTJ0_IN,
+-	PTK7_IN, PTK6_IN, PTK5_IN, PTK4_IN,
+-	PTK3_IN, PTK2_IN, PTK1_IN, PTK0_IN,
+-		 PTL6_IN, PTL5_IN, PTL4_IN,
+-	PTL3_IN, PTL2_IN, PTL1_IN, PTL0_IN,
+-	PTM7_IN, PTM6_IN, PTM5_IN, PTM4_IN,
+-	PTM3_IN, PTM2_IN, PTM1_IN, PTM0_IN,
+-		 PTN6_IN, PTN5_IN, PTN4_IN,
+-	PTN3_IN, PTN2_IN, PTN1_IN, PTN0_IN,
+-	PTO7_IN, PTO6_IN, PTO5_IN, PTO4_IN,
+-	PTO3_IN, PTO2_IN, PTO1_IN, PTO0_IN,
+-	PTP7_IN, PTP6_IN, PTP5_IN, PTP4_IN,
+-	PTP3_IN, PTP2_IN, PTP1_IN, PTP0_IN,
+-		 PTQ6_IN, PTQ5_IN, PTQ4_IN,
+-	PTQ3_IN, PTQ2_IN, PTQ1_IN, PTQ0_IN,
+-	PTR7_IN, PTR6_IN, PTR5_IN, PTR4_IN,
+-	PTR3_IN, PTR2_IN, PTR1_IN, PTR0_IN,
+-	PTS7_IN, PTS6_IN, PTS5_IN, PTS4_IN,
+-	PTS3_IN, PTS2_IN, PTS1_IN, PTS0_IN,
+-	PTT7_IN, PTT6_IN, PTT5_IN, PTT4_IN,
+-	PTT3_IN, PTT2_IN, PTT1_IN, PTT0_IN,
+-	PTU7_IN, PTU6_IN, PTU5_IN, PTU4_IN,
+-	PTU3_IN, PTU2_IN, PTU1_IN, PTU0_IN,
+-	PTV7_IN, PTV6_IN, PTV5_IN, PTV4_IN,
+-	PTV3_IN, PTV2_IN, PTV1_IN, PTV0_IN,
+-	PTW7_IN, PTW6_IN, PTW5_IN, PTW4_IN,
+-	PTW3_IN, PTW2_IN, PTW1_IN, PTW0_IN,
+-	PTX7_IN, PTX6_IN, PTX5_IN, PTX4_IN,
+-	PTX3_IN, PTX2_IN, PTX1_IN, PTX0_IN,
+-	PTY7_IN, PTY6_IN, PTY5_IN, PTY4_IN,
+-	PTY3_IN, PTY2_IN, PTY1_IN, PTY0_IN,
+-	PTZ7_IN, PTZ6_IN, PTZ5_IN, PTZ4_IN,
+-	PTZ3_IN, PTZ2_IN, PTZ1_IN, PTZ0_IN,
+-	PINMUX_INPUT_END,
+-
+-	PINMUX_OUTPUT_BEGIN,
+-	PTA7_OUT, PTA6_OUT, PTA5_OUT, PTA4_OUT,
+-	PTA3_OUT, PTA2_OUT, PTA1_OUT, PTA0_OUT,
+-	PTB7_OUT, PTB6_OUT, PTB5_OUT, PTB4_OUT,
+-	PTB3_OUT, PTB2_OUT, PTB1_OUT, PTB0_OUT,
+-	PTC7_OUT, PTC6_OUT, PTC5_OUT, PTC4_OUT,
+-	PTC3_OUT, PTC2_OUT, PTC1_OUT, PTC0_OUT,
+-	PTD7_OUT, PTD6_OUT, PTD5_OUT, PTD4_OUT,
+-	PTD3_OUT, PTD2_OUT, PTD1_OUT, PTD0_OUT,
+-	PTE7_OUT, PTE6_OUT, PTE5_OUT, PTE4_OUT,
+-	PTE3_OUT, PTE2_OUT, PTE1_OUT, PTE0_OUT,
+-	PTF7_OUT, PTF6_OUT, PTF5_OUT, PTF4_OUT,
+-	PTF3_OUT, PTF2_OUT, PTF1_OUT, PTF0_OUT,
+-	PTG7_OUT, PTG6_OUT, PTG5_OUT, PTG4_OUT,
+-	PTG3_OUT, PTG2_OUT, PTG1_OUT, PTG0_OUT,
+-	PTH7_OUT, PTH6_OUT, PTH5_OUT, PTH4_OUT,
+-	PTH3_OUT, PTH2_OUT, PTH1_OUT, PTH0_OUT,
+-	PTI7_OUT, PTI6_OUT, PTI5_OUT, PTI4_OUT,
+-	PTI3_OUT, PTI2_OUT, PTI1_OUT, PTI0_OUT,
+-		  PTJ6_OUT, PTJ5_OUT, PTJ4_OUT,
+-	PTJ3_OUT, PTJ2_OUT, PTJ1_OUT, PTJ0_OUT,
+-	PTK7_OUT, PTK6_OUT, PTK5_OUT, PTK4_OUT,
+-	PTK3_OUT, PTK2_OUT, PTK1_OUT, PTK0_OUT,
+-		  PTL6_OUT, PTL5_OUT, PTL4_OUT,
+-	PTL3_OUT, PTL2_OUT, PTL1_OUT, PTL0_OUT,
+-	PTM7_OUT, PTM6_OUT, PTM5_OUT, PTM4_OUT,
+-	PTM3_OUT, PTM2_OUT, PTM1_OUT, PTM0_OUT,
+-		  PTN6_OUT, PTN5_OUT, PTN4_OUT,
+-	PTN3_OUT, PTN2_OUT, PTN1_OUT, PTN0_OUT,
+-	PTO7_OUT, PTO6_OUT, PTO5_OUT, PTO4_OUT,
+-	PTO3_OUT, PTO2_OUT, PTO1_OUT, PTO0_OUT,
+-	PTP7_OUT, PTP6_OUT, PTP5_OUT, PTP4_OUT,
+-	PTP3_OUT, PTP2_OUT, PTP1_OUT, PTP0_OUT,
+-		  PTQ6_OUT, PTQ5_OUT, PTQ4_OUT,
+-	PTQ3_OUT, PTQ2_OUT, PTQ1_OUT, PTQ0_OUT,
+-	PTR7_OUT, PTR6_OUT, PTR5_OUT, PTR4_OUT,
+-	PTR3_OUT, PTR2_OUT, PTR1_OUT, PTR0_OUT,
+-	PTS7_OUT, PTS6_OUT, PTS5_OUT, PTS4_OUT,
+-	PTS3_OUT, PTS2_OUT, PTS1_OUT, PTS0_OUT,
+-	PTT7_OUT, PTT6_OUT, PTT5_OUT, PTT4_OUT,
+-	PTT3_OUT, PTT2_OUT, PTT1_OUT, PTT0_OUT,
+-	PTU7_OUT, PTU6_OUT, PTU5_OUT, PTU4_OUT,
+-	PTU3_OUT, PTU2_OUT, PTU1_OUT, PTU0_OUT,
+-	PTV7_OUT, PTV6_OUT, PTV5_OUT, PTV4_OUT,
+-	PTV3_OUT, PTV2_OUT, PTV1_OUT, PTV0_OUT,
+-	PTW7_OUT, PTW6_OUT, PTW5_OUT, PTW4_OUT,
+-	PTW3_OUT, PTW2_OUT, PTW1_OUT, PTW0_OUT,
+-	PTX7_OUT, PTX6_OUT, PTX5_OUT, PTX4_OUT,
+-	PTX3_OUT, PTX2_OUT, PTX1_OUT, PTX0_OUT,
+-	PTY7_OUT, PTY6_OUT, PTY5_OUT, PTY4_OUT,
+-	PTY3_OUT, PTY2_OUT, PTY1_OUT, PTY0_OUT,
+-	PTZ7_OUT, PTZ6_OUT, PTZ5_OUT, PTZ4_OUT,
+-	PTZ3_OUT, PTZ2_OUT, PTZ1_OUT, PTZ0_OUT,
+-	PINMUX_OUTPUT_END,
+-
+-	PINMUX_FUNCTION_BEGIN,
+-	PTA7_FN, PTA6_FN, PTA5_FN, PTA4_FN,
+-	PTA3_FN, PTA2_FN, PTA1_FN, PTA0_FN,
+-	PTB7_FN, PTB6_FN, PTB5_FN, PTB4_FN,
+-	PTB3_FN, PTB2_FN, PTB1_FN, PTB0_FN,
+-	PTC7_FN, PTC6_FN, PTC5_FN, PTC4_FN,
+-	PTC3_FN, PTC2_FN, PTC1_FN, PTC0_FN,
+-	PTD7_FN, PTD6_FN, PTD5_FN, PTD4_FN,
+-	PTD3_FN, PTD2_FN, PTD1_FN, PTD0_FN,
+-	PTE7_FN, PTE6_FN, PTE5_FN, PTE4_FN,
+-	PTE3_FN, PTE2_FN, PTE1_FN, PTE0_FN,
+-	PTF7_FN, PTF6_FN, PTF5_FN, PTF4_FN,
+-	PTF3_FN, PTF2_FN, PTF1_FN, PTF0_FN,
+-	PTG7_FN, PTG6_FN, PTG5_FN, PTG4_FN,
+-	PTG3_FN, PTG2_FN, PTG1_FN, PTG0_FN,
+-	PTH7_FN, PTH6_FN, PTH5_FN, PTH4_FN,
+-	PTH3_FN, PTH2_FN, PTH1_FN, PTH0_FN,
+-	PTI7_FN, PTI6_FN, PTI5_FN, PTI4_FN,
+-	PTI3_FN, PTI2_FN, PTI1_FN, PTI0_FN,
+-		 PTJ6_FN, PTJ5_FN, PTJ4_FN,
+-	PTJ3_FN, PTJ2_FN, PTJ1_FN, PTJ0_FN,
+-	PTK7_FN, PTK6_FN, PTK5_FN, PTK4_FN,
+-	PTK3_FN, PTK2_FN, PTK1_FN, PTK0_FN,
+-		 PTL6_FN, PTL5_FN, PTL4_FN,
+-	PTL3_FN, PTL2_FN, PTL1_FN, PTL0_FN,
+-	PTM7_FN, PTM6_FN, PTM5_FN, PTM4_FN,
+-	PTM3_FN, PTM2_FN, PTM1_FN, PTM0_FN,
+-		 PTN6_FN, PTN5_FN, PTN4_FN,
+-	PTN3_FN, PTN2_FN, PTN1_FN, PTN0_FN,
+-	PTO7_FN, PTO6_FN, PTO5_FN, PTO4_FN,
+-	PTO3_FN, PTO2_FN, PTO1_FN, PTO0_FN,
+-	PTP7_FN, PTP6_FN, PTP5_FN, PTP4_FN,
+-	PTP3_FN, PTP2_FN, PTP1_FN, PTP0_FN,
+-		 PTQ6_FN, PTQ5_FN, PTQ4_FN,
+-	PTQ3_FN, PTQ2_FN, PTQ1_FN, PTQ0_FN,
+-	PTR7_FN, PTR6_FN, PTR5_FN, PTR4_FN,
+-	PTR3_FN, PTR2_FN, PTR1_FN, PTR0_FN,
+-	PTS7_FN, PTS6_FN, PTS5_FN, PTS4_FN,
+-	PTS3_FN, PTS2_FN, PTS1_FN, PTS0_FN,
+-	PTT7_FN, PTT6_FN, PTT5_FN, PTT4_FN,
+-	PTT3_FN, PTT2_FN, PTT1_FN, PTT0_FN,
+-	PTU7_FN, PTU6_FN, PTU5_FN, PTU4_FN,
+-	PTU3_FN, PTU2_FN, PTU1_FN, PTU0_FN,
+-	PTV7_FN, PTV6_FN, PTV5_FN, PTV4_FN,
+-	PTV3_FN, PTV2_FN, PTV1_FN, PTV0_FN,
+-	PTW7_FN, PTW6_FN, PTW5_FN, PTW4_FN,
+-	PTW3_FN, PTW2_FN, PTW1_FN, PTW0_FN,
+-	PTX7_FN, PTX6_FN, PTX5_FN, PTX4_FN,
+-	PTX3_FN, PTX2_FN, PTX1_FN, PTX0_FN,
+-	PTY7_FN, PTY6_FN, PTY5_FN, PTY4_FN,
+-	PTY3_FN, PTY2_FN, PTY1_FN, PTY0_FN,
+-	PTZ7_FN, PTZ6_FN, PTZ5_FN, PTZ4_FN,
+-	PTZ3_FN, PTZ2_FN, PTZ1_FN, PTZ0_FN,
+-
+-	PS0_15_FN1, PS0_15_FN2,
+-	PS0_14_FN1, PS0_14_FN2,
+-	PS0_13_FN1, PS0_13_FN2,
+-	PS0_12_FN1, PS0_12_FN2,
+-	PS0_11_FN1, PS0_11_FN2,
+-	PS0_10_FN1, PS0_10_FN2,
+-	PS0_9_FN1, PS0_9_FN2,
+-	PS0_8_FN1, PS0_8_FN2,
+-	PS0_7_FN1, PS0_7_FN2,
+-	PS0_6_FN1, PS0_6_FN2,
+-	PS0_5_FN1, PS0_5_FN2,
+-	PS0_4_FN1, PS0_4_FN2,
+-	PS0_3_FN1, PS0_3_FN2,
+-	PS0_2_FN1, PS0_2_FN2,
+-
+-	PS1_10_FN1, PS1_10_FN2,
+-	PS1_9_FN1, PS1_9_FN2,
+-	PS1_8_FN1, PS1_8_FN2,
+-	PS1_2_FN1, PS1_2_FN2,
+-
+-	PS2_13_FN1, PS2_13_FN2,
+-	PS2_12_FN1, PS2_12_FN2,
+-	PS2_7_FN1, PS2_7_FN2,
+-	PS2_6_FN1, PS2_6_FN2,
+-	PS2_5_FN1, PS2_5_FN2,
+-	PS2_4_FN1, PS2_4_FN2,
+-	PS2_2_FN1, PS2_2_FN2,
+-
+-	PS3_15_FN1, PS3_15_FN2,
+-	PS3_14_FN1, PS3_14_FN2,
+-	PS3_13_FN1, PS3_13_FN2,
+-	PS3_12_FN1, PS3_12_FN2,
+-	PS3_11_FN1, PS3_11_FN2,
+-	PS3_10_FN1, PS3_10_FN2,
+-	PS3_9_FN1, PS3_9_FN2,
+-	PS3_8_FN1, PS3_8_FN2,
+-	PS3_7_FN1, PS3_7_FN2,
+-	PS3_2_FN1, PS3_2_FN2,
+-	PS3_1_FN1, PS3_1_FN2,
+-
+-	PS4_14_FN1, PS4_14_FN2,
+-	PS4_13_FN1, PS4_13_FN2,
+-	PS4_12_FN1, PS4_12_FN2,
+-	PS4_10_FN1, PS4_10_FN2,
+-	PS4_9_FN1, PS4_9_FN2,
+-	PS4_8_FN1, PS4_8_FN2,
+-	PS4_4_FN1, PS4_4_FN2,
+-	PS4_3_FN1, PS4_3_FN2,
+-	PS4_2_FN1, PS4_2_FN2,
+-	PS4_1_FN1, PS4_1_FN2,
+-	PS4_0_FN1, PS4_0_FN2,
+-
+-	PS5_11_FN1, PS5_11_FN2,
+-	PS5_10_FN1, PS5_10_FN2,
+-	PS5_9_FN1, PS5_9_FN2,
+-	PS5_8_FN1, PS5_8_FN2,
+-	PS5_7_FN1, PS5_7_FN2,
+-	PS5_6_FN1, PS5_6_FN2,
+-	PS5_5_FN1, PS5_5_FN2,
+-	PS5_4_FN1, PS5_4_FN2,
+-	PS5_3_FN1, PS5_3_FN2,
+-	PS5_2_FN1, PS5_2_FN2,
+-
+-	PS6_15_FN1, PS6_15_FN2,
+-	PS6_14_FN1, PS6_14_FN2,
+-	PS6_13_FN1, PS6_13_FN2,
+-	PS6_12_FN1, PS6_12_FN2,
+-	PS6_11_FN1, PS6_11_FN2,
+-	PS6_10_FN1, PS6_10_FN2,
+-	PS6_9_FN1, PS6_9_FN2,
+-	PS6_8_FN1, PS6_8_FN2,
+-	PS6_7_FN1, PS6_7_FN2,
+-	PS6_6_FN1, PS6_6_FN2,
+-	PS6_5_FN1, PS6_5_FN2,
+-	PS6_4_FN1, PS6_4_FN2,
+-	PS6_3_FN1, PS6_3_FN2,
+-	PS6_2_FN1, PS6_2_FN2,
+-	PS6_1_FN1, PS6_1_FN2,
+-	PS6_0_FN1, PS6_0_FN2,
+-
+-	PS7_15_FN1, PS7_15_FN2,
+-	PS7_14_FN1, PS7_14_FN2,
+-	PS7_13_FN1, PS7_13_FN2,
+-	PS7_12_FN1, PS7_12_FN2,
+-	PS7_11_FN1, PS7_11_FN2,
+-	PS7_10_FN1, PS7_10_FN2,
+-	PS7_9_FN1, PS7_9_FN2,
+-	PS7_8_FN1, PS7_8_FN2,
+-	PS7_7_FN1, PS7_7_FN2,
+-	PS7_6_FN1, PS7_6_FN2,
+-	PS7_5_FN1, PS7_5_FN2,
+-	PS7_4_FN1, PS7_4_FN2,
+-
+-	PS8_15_FN1, PS8_15_FN2,
+-	PS8_14_FN1, PS8_14_FN2,
+-	PS8_13_FN1, PS8_13_FN2,
+-	PS8_12_FN1, PS8_12_FN2,
+-	PS8_11_FN1, PS8_11_FN2,
+-	PS8_10_FN1, PS8_10_FN2,
+-	PS8_9_FN1, PS8_9_FN2,
+-	PS8_8_FN1, PS8_8_FN2,
+-	PINMUX_FUNCTION_END,
+-
+-	PINMUX_MARK_BEGIN,
+-	/* PTA (mobule: LBSC, RGMII) */
+-	BS_MARK,	RDWR_MARK,	WE1_MARK,	RDY_MARK,
+-	ET0_MDC_MARK,	ET0_MDIO_MARK,	ET1_MDC_MARK,	ET1_MDIO_MARK,
+-
+-	/* PTB (mobule: INTC, ONFI, TMU) */
+-	IRQ15_MARK,	IRQ14_MARK,	IRQ13_MARK,	IRQ12_MARK,
+-	IRQ11_MARK,	IRQ10_MARK,	IRQ9_MARK,	IRQ8_MARK,
+-	ON_NRE_MARK,	ON_NWE_MARK,	ON_NWP_MARK,	ON_NCE0_MARK,
+-	ON_R_B0_MARK,	ON_ALE_MARK,	ON_CLE_MARK,	TCLK_MARK,
+-
+-	/* PTC (mobule: IRQ, PWMU) */
+-	IRQ7_MARK,	IRQ6_MARK,	IRQ5_MARK,	IRQ4_MARK,
+-	IRQ3_MARK,	IRQ2_MARK,	IRQ1_MARK,	IRQ0_MARK,
+-	PWMU0_MARK,	PWMU1_MARK,	PWMU2_MARK,	PWMU3_MARK,
+-	PWMU4_MARK,	PWMU5_MARK,
+-
+-	/* PTD (mobule: SPI0, DMAC) */
+-	SP0_MOSI_MARK,	SP0_MISO_MARK,	SP0_SCK_MARK,	SP0_SCK_FB_MARK,
+-	SP0_SS0_MARK,	SP0_SS1_MARK,	SP0_SS2_MARK,	SP0_SS3_MARK,
+-	DREQ0_MARK,	DACK0_MARK,	TEND0_MARK,
+-
+-	/* PTE (mobule: RMII) */
+-	RMII0_CRS_DV_MARK,	RMII0_TXD1_MARK,
+-	RMII0_TXD0_MARK,	RMII0_TXEN_MARK,
+-	RMII0_REFCLK_MARK,	RMII0_RXD1_MARK,
+-	RMII0_RXD0_MARK,	RMII0_RX_ER_MARK,
+-
+-	/* PTF (mobule: RMII, SerMux) */
+-	RMII1_CRS_DV_MARK,	RMII1_TXD1_MARK,
+-	RMII1_TXD0_MARK,	RMII1_TXEN_MARK,
+-	RMII1_REFCLK_MARK,	RMII1_RXD1_MARK,
+-	RMII1_RXD0_MARK,	RMII1_RX_ER_MARK,
+-	RAC_RI_MARK,
+-
+-	/* PTG (mobule: system, LBSC, LPC, WDT, LPC, eMMC) */
+-	BOOTFMS_MARK,	BOOTWP_MARK,	A25_MARK,	A24_MARK,
+-	SERIRQ_MARK,	WDTOVF_MARK,	LPCPD_MARK,	LDRQ_MARK,
+-	MMCCLK_MARK,	MMCCMD_MARK,
+-
+-	/* PTH (mobule: SPI1, LPC, DMAC, ADC) */
+-	SP1_MOSI_MARK,	SP1_MISO_MARK,	SP1_SCK_MARK,	SP1_SCK_FB_MARK,
+-	SP1_SS0_MARK,	SP1_SS1_MARK,	WP_MARK,	FMS0_MARK,
+-	TEND1_MARK,	DREQ1_MARK,	DACK1_MARK,	ADTRG1_MARK,
+-	ADTRG0_MARK,
+-
+-	/* PTI (mobule: LBSC, SDHI) */
+-	D15_MARK,	D14_MARK,	D13_MARK,	D12_MARK,
+-	D11_MARK,	D10_MARK,	D9_MARK,	D8_MARK,
+-	SD_WP_MARK,	SD_CD_MARK,	SD_CLK_MARK,	SD_CMD_MARK,
+-	SD_D3_MARK,	SD_D2_MARK,	SD_D1_MARK,	SD_D0_MARK,
+-
+-	/* PTJ (mobule: SCIF234) */
+-	RTS3_MARK,	CTS3_MARK,	TXD3_MARK,	RXD3_MARK,
+-	RTS4_MARK,	RXD4_MARK,	TXD4_MARK,
+-
+-	/* PTK (mobule: SERMUX, LBSC, SCIF) */
+-	COM2_TXD_MARK,	COM2_RXD_MARK,	COM2_RTS_MARK,	COM2_CTS_MARK,
+-	COM2_DTR_MARK,	COM2_DSR_MARK,	COM2_DCD_MARK,	CLKOUT_MARK,
+-	SCK2_MARK,	SCK4_MARK,	SCK3_MARK,
+-
+-	/* PTL (mobule: SERMUX, SCIF, LBSC, AUD) */
+-	RAC_RXD_MARK,	RAC_RTS_MARK,	RAC_CTS_MARK,	RAC_DTR_MARK,
+-	RAC_DSR_MARK,	RAC_DCD_MARK,	RAC_TXD_MARK,	RXD2_MARK,
+-	CS5_MARK,	CS6_MARK,	AUDSYNC_MARK,	AUDCK_MARK,
+-	TXD2_MARK,
+-
+-	/* PTM (mobule: LBSC, IIC) */
+-	CS4_MARK,	RD_MARK,	WE0_MARK,	CS0_MARK,
+-	SDA6_MARK,	SCL6_MARK,	SDA7_MARK,	SCL7_MARK,
+-
+-	/* PTN (mobule: USB, JMC, SGPIO, WDT) */
+-	VBUS_EN_MARK,	VBUS_OC_MARK,	JMCTCK_MARK,	JMCTMS_MARK,
+-	JMCTDO_MARK,	JMCTDI_MARK,	JMCTRST_MARK,
+-	SGPIO1_CLK_MARK,	SGPIO1_LOAD_MARK,	SGPIO1_DI_MARK,
+-	SGPIO1_DO_MARK,		SUB_CLKIN_MARK,
+-
+-	/* PTO (mobule: SGPIO, SerMux) */
+-	SGPIO0_CLK_MARK,	SGPIO0_LOAD_MARK,	SGPIO0_DI_MARK,
+-	SGPIO0_DO_MARK,		SGPIO2_CLK_MARK,	SGPIO2_LOAD_MARK,
+-	SGPIO2_DI_MARK,		SGPIO2_DO_MARK,
+-	COM1_TXD_MARK,	COM1_RXD_MARK,	COM1_RTS_MARK,	COM1_CTS_MARK,
+-
+-	/* PTQ (mobule: LPC) */
+-	LAD3_MARK,	LAD2_MARK,	LAD1_MARK,	LAD0_MARK,
+-	LFRAME_MARK,	LRESET_MARK,	LCLK_MARK,
+-
+-	/* PTR (mobule: GRA, IIC) */
+-	DDC3_MARK,	DDC2_MARK,	SDA2_MARK,	SCL2_MARK,
+-	SDA1_MARK,	SCL1_MARK,	SDA0_MARK,	SCL0_MARK,
+-	SDA8_MARK,	SCL8_MARK,
+-
+-	/* PTS (mobule: GRA, IIC) */
+-	DDC1_MARK,	DDC0_MARK,	SDA5_MARK,	SCL5_MARK,
+-	SDA4_MARK,	SCL4_MARK,	SDA3_MARK,	SCL3_MARK,
+-	SDA9_MARK,	SCL9_MARK,
+-
+-	/* PTT (mobule: PWMX, AUD) */
+-	PWMX7_MARK,	PWMX6_MARK,	PWMX5_MARK,	PWMX4_MARK,
+-	PWMX3_MARK,	PWMX2_MARK,	PWMX1_MARK,	PWMX0_MARK,
+-	AUDATA3_MARK,	AUDATA2_MARK,	AUDATA1_MARK,	AUDATA0_MARK,
+-	STATUS1_MARK,	STATUS0_MARK,
+-
+-	/* PTU (mobule: LPC, APM) */
+-	LGPIO7_MARK,	LGPIO6_MARK,	LGPIO5_MARK,	LGPIO4_MARK,
+-	LGPIO3_MARK,	LGPIO2_MARK,	LGPIO1_MARK,	LGPIO0_MARK,
+-	APMONCTL_O_MARK,	APMPWBTOUT_O_MARK,	APMSCI_O_MARK,
+-	APMVDDON_MARK,	APMSLPBTN_MARK,	APMPWRBTN_MARK,	APMS5N_MARK,
+-	APMS3N_MARK,
+-
+-	/* PTV (mobule: LBSC, SerMux, R-SPI, EVC, GRA) */
+-	A23_MARK,	A22_MARK,	A21_MARK,	A20_MARK,
+-	A19_MARK,	A18_MARK,	A17_MARK,	A16_MARK,
+-	COM2_RI_MARK,		R_SPI_MOSI_MARK,	R_SPI_MISO_MARK,
+-	R_SPI_RSPCK_MARK,	R_SPI_SSL0_MARK,	R_SPI_SSL1_MARK,
+-	EVENT7_MARK,	EVENT6_MARK,	VBIOS_DI_MARK,	VBIOS_DO_MARK,
+-	VBIOS_CLK_MARK,	VBIOS_CS_MARK,
+-
+-	/* PTW (mobule: LBSC, EVC, SCIF) */
+-	A15_MARK,	A14_MARK,	A13_MARK,	A12_MARK,
+-	A11_MARK,	A10_MARK,	A9_MARK,	A8_MARK,
+-	EVENT5_MARK,	EVENT4_MARK,	EVENT3_MARK,	EVENT2_MARK,
+-	EVENT1_MARK,	EVENT0_MARK,	CTS4_MARK,	CTS2_MARK,
+-
+-	/* PTX (mobule: LBSC, SCIF, SIM) */
+-	A7_MARK,	A6_MARK,	A5_MARK,	A4_MARK,
+-	A3_MARK,	A2_MARK,	A1_MARK,	A0_MARK,
+-	RTS2_MARK,	SIM_D_MARK,	SIM_CLK_MARK,	SIM_RST_MARK,
+-
+-	/* PTY (mobule: LBSC) */
+-	D7_MARK,	D6_MARK,	D5_MARK,	D4_MARK,
+-	D3_MARK,	D2_MARK,	D1_MARK,	D0_MARK,
+-
+-	/* PTZ (mobule: eMMC, ONFI) */
+-	MMCDAT7_MARK,	MMCDAT6_MARK,	MMCDAT5_MARK,	MMCDAT4_MARK,
+-	MMCDAT3_MARK,	MMCDAT2_MARK,	MMCDAT1_MARK,	MMCDAT0_MARK,
+-	ON_DQ7_MARK,	ON_DQ6_MARK,	ON_DQ5_MARK,	ON_DQ4_MARK,
+-	ON_DQ3_MARK,	ON_DQ2_MARK,	ON_DQ1_MARK,	ON_DQ0_MARK,
+-
+-	PINMUX_MARK_END,
+-};
+-
+-static const u16 pinmux_data[] = {
+-	/* PTA GPIO */
+-	PINMUX_DATA(PTA7_DATA, PTA7_IN, PTA7_OUT),
+-	PINMUX_DATA(PTA6_DATA, PTA6_IN, PTA6_OUT),
+-	PINMUX_DATA(PTA5_DATA, PTA5_IN, PTA5_OUT),
+-	PINMUX_DATA(PTA4_DATA, PTA4_IN, PTA4_OUT),
+-	PINMUX_DATA(PTA3_DATA, PTA3_IN, PTA3_OUT),
+-	PINMUX_DATA(PTA2_DATA, PTA2_IN, PTA2_OUT),
+-	PINMUX_DATA(PTA1_DATA, PTA1_IN, PTA1_OUT),
+-	PINMUX_DATA(PTA0_DATA, PTA0_IN, PTA0_OUT),
+-
+-	/* PTB GPIO */
+-	PINMUX_DATA(PTB7_DATA, PTB7_IN, PTB7_OUT),
+-	PINMUX_DATA(PTB6_DATA, PTB6_IN, PTB6_OUT),
+-	PINMUX_DATA(PTB5_DATA, PTB5_IN, PTB5_OUT),
+-	PINMUX_DATA(PTB4_DATA, PTB4_IN, PTB4_OUT),
+-	PINMUX_DATA(PTB3_DATA, PTB3_IN, PTB3_OUT),
+-	PINMUX_DATA(PTB2_DATA, PTB2_IN, PTB2_OUT),
+-	PINMUX_DATA(PTB1_DATA, PTB1_IN, PTB1_OUT),
+-	PINMUX_DATA(PTB0_DATA, PTB0_IN, PTB0_OUT),
+-
+-	/* PTC GPIO */
+-	PINMUX_DATA(PTC7_DATA, PTC7_IN, PTC7_OUT),
+-	PINMUX_DATA(PTC6_DATA, PTC6_IN, PTC6_OUT),
+-	PINMUX_DATA(PTC5_DATA, PTC5_IN, PTC5_OUT),
+-	PINMUX_DATA(PTC4_DATA, PTC4_IN, PTC4_OUT),
+-	PINMUX_DATA(PTC3_DATA, PTC3_IN, PTC3_OUT),
+-	PINMUX_DATA(PTC2_DATA, PTC2_IN, PTC2_OUT),
+-	PINMUX_DATA(PTC1_DATA, PTC1_IN, PTC1_OUT),
+-	PINMUX_DATA(PTC0_DATA, PTC0_IN, PTC0_OUT),
+-
+-	/* PTD GPIO */
+-	PINMUX_DATA(PTD7_DATA, PTD7_IN, PTD7_OUT),
+-	PINMUX_DATA(PTD6_DATA, PTD6_IN, PTD6_OUT),
+-	PINMUX_DATA(PTD5_DATA, PTD5_IN, PTD5_OUT),
+-	PINMUX_DATA(PTD4_DATA, PTD4_IN, PTD4_OUT),
+-	PINMUX_DATA(PTD3_DATA, PTD3_IN, PTD3_OUT),
+-	PINMUX_DATA(PTD2_DATA, PTD2_IN, PTD2_OUT),
+-	PINMUX_DATA(PTD1_DATA, PTD1_IN, PTD1_OUT),
+-	PINMUX_DATA(PTD0_DATA, PTD0_IN, PTD0_OUT),
+-
+-	/* PTE GPIO */
+-	PINMUX_DATA(PTE7_DATA, PTE7_IN, PTE7_OUT),
+-	PINMUX_DATA(PTE6_DATA, PTE6_IN, PTE6_OUT),
+-	PINMUX_DATA(PTE5_DATA, PTE5_IN, PTE5_OUT),
+-	PINMUX_DATA(PTE4_DATA, PTE4_IN, PTE4_OUT),
+-	PINMUX_DATA(PTE3_DATA, PTE3_IN, PTE3_OUT),
+-	PINMUX_DATA(PTE2_DATA, PTE2_IN, PTE2_OUT),
+-	PINMUX_DATA(PTE1_DATA, PTE1_IN, PTE1_OUT),
+-	PINMUX_DATA(PTE0_DATA, PTE0_IN, PTE0_OUT),
+-
+-	/* PTF GPIO */
+-	PINMUX_DATA(PTF7_DATA, PTF7_IN, PTF7_OUT),
+-	PINMUX_DATA(PTF6_DATA, PTF6_IN, PTF6_OUT),
+-	PINMUX_DATA(PTF5_DATA, PTF5_IN, PTF5_OUT),
+-	PINMUX_DATA(PTF4_DATA, PTF4_IN, PTF4_OUT),
+-	PINMUX_DATA(PTF3_DATA, PTF3_IN, PTF3_OUT),
+-	PINMUX_DATA(PTF2_DATA, PTF2_IN, PTF2_OUT),
+-	PINMUX_DATA(PTF1_DATA, PTF1_IN, PTF1_OUT),
+-	PINMUX_DATA(PTF0_DATA, PTF0_IN, PTF0_OUT),
+-
+-	/* PTG GPIO */
+-	PINMUX_DATA(PTG7_DATA, PTG7_IN, PTG7_OUT),
+-	PINMUX_DATA(PTG6_DATA, PTG6_IN, PTG6_OUT),
+-	PINMUX_DATA(PTG5_DATA, PTG5_IN, PTG5_OUT),
+-	PINMUX_DATA(PTG4_DATA, PTG4_IN, PTG4_OUT),
+-	PINMUX_DATA(PTG3_DATA, PTG3_IN, PTG3_OUT),
+-	PINMUX_DATA(PTG2_DATA, PTG2_IN, PTG2_OUT),
+-	PINMUX_DATA(PTG1_DATA, PTG1_IN, PTG1_OUT),
+-	PINMUX_DATA(PTG0_DATA, PTG0_IN, PTG0_OUT),
+-
+-	/* PTH GPIO */
+-	PINMUX_DATA(PTH7_DATA, PTH7_IN, PTH7_OUT),
+-	PINMUX_DATA(PTH6_DATA, PTH6_IN, PTH6_OUT),
+-	PINMUX_DATA(PTH5_DATA, PTH5_IN, PTH5_OUT),
+-	PINMUX_DATA(PTH4_DATA, PTH4_IN, PTH4_OUT),
+-	PINMUX_DATA(PTH3_DATA, PTH3_IN, PTH3_OUT),
+-	PINMUX_DATA(PTH2_DATA, PTH2_IN, PTH2_OUT),
+-	PINMUX_DATA(PTH1_DATA, PTH1_IN, PTH1_OUT),
+-	PINMUX_DATA(PTH0_DATA, PTH0_IN, PTH0_OUT),
+-
+-	/* PTI GPIO */
+-	PINMUX_DATA(PTI7_DATA, PTI7_IN, PTI7_OUT),
+-	PINMUX_DATA(PTI6_DATA, PTI6_IN, PTI6_OUT),
+-	PINMUX_DATA(PTI5_DATA, PTI5_IN, PTI5_OUT),
+-	PINMUX_DATA(PTI4_DATA, PTI4_IN, PTI4_OUT),
+-	PINMUX_DATA(PTI3_DATA, PTI3_IN, PTI3_OUT),
+-	PINMUX_DATA(PTI2_DATA, PTI2_IN, PTI2_OUT),
+-	PINMUX_DATA(PTI1_DATA, PTI1_IN, PTI1_OUT),
+-	PINMUX_DATA(PTI0_DATA, PTI0_IN, PTI0_OUT),
+-
+-	/* PTJ GPIO */
+-	PINMUX_DATA(PTJ6_DATA, PTJ6_IN, PTJ6_OUT),
+-	PINMUX_DATA(PTJ5_DATA, PTJ5_IN, PTJ5_OUT),
+-	PINMUX_DATA(PTJ4_DATA, PTJ4_IN, PTJ4_OUT),
+-	PINMUX_DATA(PTJ3_DATA, PTJ3_IN, PTJ3_OUT),
+-	PINMUX_DATA(PTJ2_DATA, PTJ2_IN, PTJ2_OUT),
+-	PINMUX_DATA(PTJ1_DATA, PTJ1_IN, PTJ1_OUT),
+-	PINMUX_DATA(PTJ0_DATA, PTJ0_IN, PTJ0_OUT),
+-
+-	/* PTK GPIO */
+-	PINMUX_DATA(PTK7_DATA, PTK7_IN, PTK7_OUT),
+-	PINMUX_DATA(PTK6_DATA, PTK6_IN, PTK6_OUT),
+-	PINMUX_DATA(PTK5_DATA, PTK5_IN, PTK5_OUT),
+-	PINMUX_DATA(PTK4_DATA, PTK4_IN, PTK4_OUT),
+-	PINMUX_DATA(PTK3_DATA, PTK3_IN, PTK3_OUT),
+-	PINMUX_DATA(PTK2_DATA, PTK2_IN, PTK2_OUT),
+-	PINMUX_DATA(PTK1_DATA, PTK1_IN, PTK1_OUT),
+-	PINMUX_DATA(PTK0_DATA, PTK0_IN, PTK0_OUT),
+-
+-	/* PTL GPIO */
+-	PINMUX_DATA(PTL6_DATA, PTL6_IN, PTL6_OUT),
+-	PINMUX_DATA(PTL5_DATA, PTL5_IN, PTL5_OUT),
+-	PINMUX_DATA(PTL4_DATA, PTL4_IN, PTL4_OUT),
+-	PINMUX_DATA(PTL3_DATA, PTL3_IN, PTL3_OUT),
+-	PINMUX_DATA(PTL2_DATA, PTL2_IN, PTL2_OUT),
+-	PINMUX_DATA(PTL1_DATA, PTL1_IN, PTL1_OUT),
+-	PINMUX_DATA(PTL0_DATA, PTL0_IN, PTL0_OUT),
+-
+-	/* PTM GPIO */
+-	PINMUX_DATA(PTM6_DATA, PTM6_IN, PTM6_OUT),
+-	PINMUX_DATA(PTM5_DATA, PTM5_IN, PTM5_OUT),
+-	PINMUX_DATA(PTM4_DATA, PTM4_IN, PTM4_OUT),
+-	PINMUX_DATA(PTM3_DATA, PTM3_IN, PTM3_OUT),
+-	PINMUX_DATA(PTM2_DATA, PTM2_IN, PTM2_OUT),
+-	PINMUX_DATA(PTM1_DATA, PTM1_IN, PTM1_OUT),
+-	PINMUX_DATA(PTM0_DATA, PTM0_IN, PTM0_OUT),
+-
+-	/* PTN GPIO */
+-	PINMUX_DATA(PTN6_DATA, PTN6_IN, PTN6_OUT),
+-	PINMUX_DATA(PTN5_DATA, PTN5_IN, PTN5_OUT),
+-	PINMUX_DATA(PTN4_DATA, PTN4_IN, PTN4_OUT),
+-	PINMUX_DATA(PTN3_DATA, PTN3_IN, PTN3_OUT),
+-	PINMUX_DATA(PTN2_DATA, PTN2_IN, PTN2_OUT),
+-	PINMUX_DATA(PTN1_DATA, PTN1_IN, PTN1_OUT),
+-	PINMUX_DATA(PTN0_DATA, PTN0_IN, PTN0_OUT),
+-
+-	/* PTO GPIO */
+-	PINMUX_DATA(PTO7_DATA, PTO7_IN, PTO7_OUT),
+-	PINMUX_DATA(PTO6_DATA, PTO6_IN, PTO6_OUT),
+-	PINMUX_DATA(PTO5_DATA, PTO5_IN, PTO5_OUT),
+-	PINMUX_DATA(PTO4_DATA, PTO4_IN, PTO4_OUT),
+-	PINMUX_DATA(PTO3_DATA, PTO3_IN, PTO3_OUT),
+-	PINMUX_DATA(PTO2_DATA, PTO2_IN, PTO2_OUT),
+-	PINMUX_DATA(PTO1_DATA, PTO1_IN, PTO1_OUT),
+-	PINMUX_DATA(PTO0_DATA, PTO0_IN, PTO0_OUT),
+-
+-	/* PTQ GPIO */
+-	PINMUX_DATA(PTQ6_DATA, PTQ6_IN, PTQ6_OUT),
+-	PINMUX_DATA(PTQ5_DATA, PTQ5_IN, PTQ5_OUT),
+-	PINMUX_DATA(PTQ4_DATA, PTQ4_IN, PTQ4_OUT),
+-	PINMUX_DATA(PTQ3_DATA, PTQ3_IN, PTQ3_OUT),
+-	PINMUX_DATA(PTQ2_DATA, PTQ2_IN, PTQ2_OUT),
+-	PINMUX_DATA(PTQ1_DATA, PTQ1_IN, PTQ1_OUT),
+-	PINMUX_DATA(PTQ0_DATA, PTQ0_IN, PTQ0_OUT),
+-
+-	/* PTR GPIO */
+-	PINMUX_DATA(PTR7_DATA, PTR7_IN, PTR7_OUT),
+-	PINMUX_DATA(PTR6_DATA, PTR6_IN, PTR6_OUT),
+-	PINMUX_DATA(PTR5_DATA, PTR5_IN, PTR5_OUT),
+-	PINMUX_DATA(PTR4_DATA, PTR4_IN, PTR4_OUT),
+-	PINMUX_DATA(PTR3_DATA, PTR3_IN, PTR3_OUT),
+-	PINMUX_DATA(PTR2_DATA, PTR2_IN, PTR2_OUT),
+-	PINMUX_DATA(PTR1_DATA, PTR1_IN, PTR1_OUT),
+-	PINMUX_DATA(PTR0_DATA, PTR0_IN, PTR0_OUT),
+-
+-	/* PTS GPIO */
+-	PINMUX_DATA(PTS7_DATA, PTS7_IN, PTS7_OUT),
+-	PINMUX_DATA(PTS6_DATA, PTS6_IN, PTS6_OUT),
+-	PINMUX_DATA(PTS5_DATA, PTS5_IN, PTS5_OUT),
+-	PINMUX_DATA(PTS4_DATA, PTS4_IN, PTS4_OUT),
+-	PINMUX_DATA(PTS3_DATA, PTS3_IN, PTS3_OUT),
+-	PINMUX_DATA(PTS2_DATA, PTS2_IN, PTS2_OUT),
+-	PINMUX_DATA(PTS1_DATA, PTS1_IN, PTS1_OUT),
+-	PINMUX_DATA(PTS0_DATA, PTS0_IN, PTS0_OUT),
+-
+-	/* PTT GPIO */
+-	PINMUX_DATA(PTT7_DATA, PTT7_IN, PTT7_OUT),
+-	PINMUX_DATA(PTT6_DATA, PTT6_IN, PTT6_OUT),
+-	PINMUX_DATA(PTT5_DATA, PTT5_IN, PTT5_OUT),
+-	PINMUX_DATA(PTT4_DATA, PTT4_IN, PTT4_OUT),
+-	PINMUX_DATA(PTT3_DATA, PTT3_IN, PTT3_OUT),
+-	PINMUX_DATA(PTT2_DATA, PTT2_IN, PTT2_OUT),
+-	PINMUX_DATA(PTT1_DATA, PTT1_IN, PTT1_OUT),
+-	PINMUX_DATA(PTT0_DATA, PTT0_IN, PTT0_OUT),
+-
+-	/* PTU GPIO */
+-	PINMUX_DATA(PTU7_DATA, PTU7_IN, PTU7_OUT),
+-	PINMUX_DATA(PTU6_DATA, PTU6_IN, PTU6_OUT),
+-	PINMUX_DATA(PTU5_DATA, PTU5_IN, PTU5_OUT),
+-	PINMUX_DATA(PTU4_DATA, PTU4_IN, PTU4_OUT),
+-	PINMUX_DATA(PTU3_DATA, PTU3_IN, PTU3_OUT),
+-	PINMUX_DATA(PTU2_DATA, PTU2_IN, PTU2_OUT),
+-	PINMUX_DATA(PTU1_DATA, PTU1_IN, PTU1_OUT),
+-	PINMUX_DATA(PTU0_DATA, PTU0_IN, PTU0_OUT),
+-
+-	/* PTV GPIO */
+-	PINMUX_DATA(PTV7_DATA, PTV7_IN, PTV7_OUT),
+-	PINMUX_DATA(PTV6_DATA, PTV6_IN, PTV6_OUT),
+-	PINMUX_DATA(PTV5_DATA, PTV5_IN, PTV5_OUT),
+-	PINMUX_DATA(PTV4_DATA, PTV4_IN, PTV4_OUT),
+-	PINMUX_DATA(PTV3_DATA, PTV3_IN, PTV3_OUT),
+-	PINMUX_DATA(PTV2_DATA, PTV2_IN, PTV2_OUT),
+-	PINMUX_DATA(PTV1_DATA, PTV1_IN, PTV1_OUT),
+-	PINMUX_DATA(PTV0_DATA, PTV0_IN, PTV0_OUT),
+-
+-	/* PTW GPIO */
+-	PINMUX_DATA(PTW7_DATA, PTW7_IN, PTW7_OUT),
+-	PINMUX_DATA(PTW6_DATA, PTW6_IN, PTW6_OUT),
+-	PINMUX_DATA(PTW5_DATA, PTW5_IN, PTW5_OUT),
+-	PINMUX_DATA(PTW4_DATA, PTW4_IN, PTW4_OUT),
+-	PINMUX_DATA(PTW3_DATA, PTW3_IN, PTW3_OUT),
+-	PINMUX_DATA(PTW2_DATA, PTW2_IN, PTW2_OUT),
+-	PINMUX_DATA(PTW1_DATA, PTW1_IN, PTW1_OUT),
+-	PINMUX_DATA(PTW0_DATA, PTW0_IN, PTW0_OUT),
+-
+-	/* PTX GPIO */
+-	PINMUX_DATA(PTX7_DATA, PTX7_IN, PTX7_OUT),
+-	PINMUX_DATA(PTX6_DATA, PTX6_IN, PTX6_OUT),
+-	PINMUX_DATA(PTX5_DATA, PTX5_IN, PTX5_OUT),
+-	PINMUX_DATA(PTX4_DATA, PTX4_IN, PTX4_OUT),
+-	PINMUX_DATA(PTX3_DATA, PTX3_IN, PTX3_OUT),
+-	PINMUX_DATA(PTX2_DATA, PTX2_IN, PTX2_OUT),
+-	PINMUX_DATA(PTX1_DATA, PTX1_IN, PTX1_OUT),
+-	PINMUX_DATA(PTX0_DATA, PTX0_IN, PTX0_OUT),
+-
+-	/* PTY GPIO */
+-	PINMUX_DATA(PTY7_DATA, PTY7_IN, PTY7_OUT),
+-	PINMUX_DATA(PTY6_DATA, PTY6_IN, PTY6_OUT),
+-	PINMUX_DATA(PTY5_DATA, PTY5_IN, PTY5_OUT),
+-	PINMUX_DATA(PTY4_DATA, PTY4_IN, PTY4_OUT),
+-	PINMUX_DATA(PTY3_DATA, PTY3_IN, PTY3_OUT),
+-	PINMUX_DATA(PTY2_DATA, PTY2_IN, PTY2_OUT),
+-	PINMUX_DATA(PTY1_DATA, PTY1_IN, PTY1_OUT),
+-	PINMUX_DATA(PTY0_DATA, PTY0_IN, PTY0_OUT),
+-
+-	/* PTZ GPIO */
+-	PINMUX_DATA(PTZ7_DATA, PTZ7_IN, PTZ7_OUT),
+-	PINMUX_DATA(PTZ6_DATA, PTZ6_IN, PTZ6_OUT),
+-	PINMUX_DATA(PTZ5_DATA, PTZ5_IN, PTZ5_OUT),
+-	PINMUX_DATA(PTZ4_DATA, PTZ4_IN, PTZ4_OUT),
+-	PINMUX_DATA(PTZ3_DATA, PTZ3_IN, PTZ3_OUT),
+-	PINMUX_DATA(PTZ2_DATA, PTZ2_IN, PTZ2_OUT),
+-	PINMUX_DATA(PTZ1_DATA, PTZ1_IN, PTZ1_OUT),
+-	PINMUX_DATA(PTZ0_DATA, PTZ0_IN, PTZ0_OUT),
+-
+-	/* PTA FN */
+-	PINMUX_DATA(BS_MARK, PTA7_FN),
+-	PINMUX_DATA(RDWR_MARK, PTA6_FN),
+-	PINMUX_DATA(WE1_MARK, PTA5_FN),
+-	PINMUX_DATA(RDY_MARK, PTA4_FN),
+-	PINMUX_DATA(ET0_MDC_MARK, PTA3_FN),
+-	PINMUX_DATA(ET0_MDIO_MARK, PTA2_FN),
+-	PINMUX_DATA(ET1_MDC_MARK, PTA1_FN),
+-	PINMUX_DATA(ET1_MDIO_MARK, PTA0_FN),
+-
+-	/* PTB FN */
+-	PINMUX_DATA(IRQ15_MARK, PS0_15_FN1, PTB7_FN),
+-	PINMUX_DATA(ON_NRE_MARK, PS0_15_FN2, PTB7_FN),
+-	PINMUX_DATA(IRQ14_MARK, PS0_14_FN1, PTB6_FN),
+-	PINMUX_DATA(ON_NWE_MARK, PS0_14_FN2, PTB6_FN),
+-	PINMUX_DATA(IRQ13_MARK, PS0_13_FN1, PTB5_FN),
+-	PINMUX_DATA(ON_NWP_MARK, PS0_13_FN2, PTB5_FN),
+-	PINMUX_DATA(IRQ12_MARK, PS0_12_FN1, PTB4_FN),
+-	PINMUX_DATA(ON_NCE0_MARK, PS0_12_FN2, PTB4_FN),
+-	PINMUX_DATA(IRQ11_MARK, PS0_11_FN1, PTB3_FN),
+-	PINMUX_DATA(ON_R_B0_MARK, PS0_11_FN2, PTB3_FN),
+-	PINMUX_DATA(IRQ10_MARK, PS0_10_FN1, PTB2_FN),
+-	PINMUX_DATA(ON_ALE_MARK, PS0_10_FN2, PTB2_FN),
+-	PINMUX_DATA(IRQ9_MARK, PS0_9_FN1, PTB1_FN),
+-	PINMUX_DATA(ON_CLE_MARK, PS0_9_FN2, PTB1_FN),
+-	PINMUX_DATA(IRQ8_MARK, PS0_8_FN1, PTB0_FN),
+-	PINMUX_DATA(TCLK_MARK, PS0_8_FN2, PTB0_FN),
+-
+-	/* PTC FN */
+-	PINMUX_DATA(IRQ7_MARK, PS0_7_FN1, PTC7_FN),
+-	PINMUX_DATA(PWMU0_MARK, PS0_7_FN2, PTC7_FN),
+-	PINMUX_DATA(IRQ6_MARK, PS0_6_FN1, PTC6_FN),
+-	PINMUX_DATA(PWMU1_MARK, PS0_6_FN2, PTC6_FN),
+-	PINMUX_DATA(IRQ5_MARK, PS0_5_FN1, PTC5_FN),
+-	PINMUX_DATA(PWMU2_MARK, PS0_5_FN2, PTC5_FN),
+-	PINMUX_DATA(IRQ4_MARK, PS0_4_FN1, PTC5_FN),
+-	PINMUX_DATA(PWMU3_MARK, PS0_4_FN2, PTC4_FN),
+-	PINMUX_DATA(IRQ3_MARK, PS0_3_FN1, PTC3_FN),
+-	PINMUX_DATA(PWMU4_MARK, PS0_3_FN2, PTC3_FN),
+-	PINMUX_DATA(IRQ2_MARK, PS0_2_FN1, PTC2_FN),
+-	PINMUX_DATA(PWMU5_MARK, PS0_2_FN2, PTC2_FN),
+-	PINMUX_DATA(IRQ1_MARK, PTC1_FN),
+-	PINMUX_DATA(IRQ0_MARK, PTC0_FN),
+-
+-	/* PTD FN */
+-	PINMUX_DATA(SP0_MOSI_MARK, PTD7_FN),
+-	PINMUX_DATA(SP0_MISO_MARK, PTD6_FN),
+-	PINMUX_DATA(SP0_SCK_MARK, PTD5_FN),
+-	PINMUX_DATA(SP0_SCK_FB_MARK, PTD4_FN),
+-	PINMUX_DATA(SP0_SS0_MARK, PTD3_FN),
+-	PINMUX_DATA(SP0_SS1_MARK, PS1_10_FN1, PTD2_FN),
+-	PINMUX_DATA(DREQ0_MARK, PS1_10_FN2, PTD2_FN),
+-	PINMUX_DATA(SP0_SS2_MARK, PS1_9_FN1, PTD1_FN),
+-	PINMUX_DATA(DACK0_MARK, PS1_9_FN2, PTD1_FN),
+-	PINMUX_DATA(SP0_SS3_MARK, PS1_8_FN1, PTD0_FN),
+-	PINMUX_DATA(TEND0_MARK, PS1_8_FN2, PTD0_FN),
+-
+-	/* PTE FN */
+-	PINMUX_DATA(RMII0_CRS_DV_MARK, PTE7_FN),
+-	PINMUX_DATA(RMII0_TXD1_MARK, PTE6_FN),
+-	PINMUX_DATA(RMII0_TXD0_MARK, PTE5_FN),
+-	PINMUX_DATA(RMII0_TXEN_MARK, PTE4_FN),
+-	PINMUX_DATA(RMII0_REFCLK_MARK, PTE3_FN),
+-	PINMUX_DATA(RMII0_RXD1_MARK, PTE2_FN),
+-	PINMUX_DATA(RMII0_RXD0_MARK, PTE1_FN),
+-	PINMUX_DATA(RMII0_RX_ER_MARK, PTE0_FN),
+-
+-	/* PTF FN */
+-	PINMUX_DATA(RMII1_CRS_DV_MARK, PTF7_FN),
+-	PINMUX_DATA(RMII1_TXD1_MARK, PTF6_FN),
+-	PINMUX_DATA(RMII1_TXD0_MARK, PTF5_FN),
+-	PINMUX_DATA(RMII1_TXEN_MARK, PTF4_FN),
+-	PINMUX_DATA(RMII1_REFCLK_MARK, PTF3_FN),
+-	PINMUX_DATA(RMII1_RXD1_MARK, PS1_2_FN1, PTF2_FN),
+-	PINMUX_DATA(RAC_RI_MARK, PS1_2_FN2, PTF2_FN),
+-	PINMUX_DATA(RMII1_RXD0_MARK, PTF1_FN),
+-	PINMUX_DATA(RMII1_RX_ER_MARK, PTF0_FN),
+-
+-	/* PTG FN */
+-	PINMUX_DATA(BOOTFMS_MARK, PTG7_FN),
+-	PINMUX_DATA(BOOTWP_MARK, PTG6_FN),
+-	PINMUX_DATA(A25_MARK, PS2_13_FN1, PTG5_FN),
+-	PINMUX_DATA(MMCCLK_MARK, PS2_13_FN2, PTG5_FN),
+-	PINMUX_DATA(A24_MARK, PS2_12_FN1, PTG4_FN),
+-	PINMUX_DATA(MMCCMD_MARK, PS2_12_FN2, PTG4_FN),
+-	PINMUX_DATA(SERIRQ_MARK, PTG3_FN),
+-	PINMUX_DATA(WDTOVF_MARK, PTG2_FN),
+-	PINMUX_DATA(LPCPD_MARK, PTG1_FN),
+-	PINMUX_DATA(LDRQ_MARK, PTG0_FN),
+-
+-	/* PTH FN */
+-	PINMUX_DATA(SP1_MOSI_MARK, PS2_7_FN1, PTH7_FN),
+-	PINMUX_DATA(TEND1_MARK, PS2_7_FN2, PTH7_FN),
+-	PINMUX_DATA(SP1_MISO_MARK, PS2_6_FN1, PTH6_FN),
+-	PINMUX_DATA(DREQ1_MARK, PS2_6_FN2, PTH6_FN),
+-	PINMUX_DATA(SP1_SCK_MARK, PS2_5_FN1, PTH5_FN),
+-	PINMUX_DATA(DACK1_MARK, PS2_5_FN2, PTH5_FN),
+-	PINMUX_DATA(SP1_SCK_FB_MARK, PS2_4_FN1, PTH4_FN),
+-	PINMUX_DATA(ADTRG1_MARK, PS2_4_FN2, PTH4_FN),
+-	PINMUX_DATA(SP1_SS0_MARK, PTH3_FN),
+-	PINMUX_DATA(SP1_SS1_MARK, PS2_2_FN1, PTH2_FN),
+-	PINMUX_DATA(ADTRG0_MARK, PS2_2_FN2, PTH2_FN),
+-	PINMUX_DATA(WP_MARK, PTH1_FN),
+-	PINMUX_DATA(FMS0_MARK, PTH0_FN),
+-
+-	/* PTI FN */
+-	PINMUX_DATA(D15_MARK, PS3_15_FN1, PTI7_FN),
+-	PINMUX_DATA(SD_WP_MARK, PS3_15_FN2, PTI7_FN),
+-	PINMUX_DATA(D14_MARK, PS3_14_FN1, PTI6_FN),
+-	PINMUX_DATA(SD_CD_MARK, PS3_14_FN2, PTI6_FN),
+-	PINMUX_DATA(D13_MARK, PS3_13_FN1, PTI5_FN),
+-	PINMUX_DATA(SD_CLK_MARK, PS3_13_FN2, PTI5_FN),
+-	PINMUX_DATA(D12_MARK, PS3_12_FN1, PTI4_FN),
+-	PINMUX_DATA(SD_CMD_MARK, PS3_12_FN2, PTI4_FN),
+-	PINMUX_DATA(D11_MARK, PS3_11_FN1, PTI3_FN),
+-	PINMUX_DATA(SD_D3_MARK, PS3_11_FN2, PTI3_FN),
+-	PINMUX_DATA(D10_MARK, PS3_10_FN1, PTI2_FN),
+-	PINMUX_DATA(SD_D2_MARK, PS3_10_FN2, PTI2_FN),
+-	PINMUX_DATA(D9_MARK, PS3_9_FN1, PTI1_FN),
+-	PINMUX_DATA(SD_D1_MARK, PS3_9_FN2, PTI1_FN),
+-	PINMUX_DATA(D8_MARK, PS3_8_FN1, PTI0_FN),
+-	PINMUX_DATA(SD_D0_MARK, PS3_8_FN2, PTI0_FN),
+-
+-	/* PTJ FN */
+-	PINMUX_DATA(RTS3_MARK, PTJ6_FN),
+-	PINMUX_DATA(CTS3_MARK, PTJ5_FN),
+-	PINMUX_DATA(TXD3_MARK, PTJ4_FN),
+-	PINMUX_DATA(RXD3_MARK, PTJ3_FN),
+-	PINMUX_DATA(RTS4_MARK, PTJ2_FN),
+-	PINMUX_DATA(RXD4_MARK, PTJ1_FN),
+-	PINMUX_DATA(TXD4_MARK, PTJ0_FN),
+-
+-	/* PTK FN */
+-	PINMUX_DATA(COM2_TXD_MARK, PS3_7_FN1, PTK7_FN),
+-	PINMUX_DATA(SCK2_MARK, PS3_7_FN2, PTK7_FN),
+-	PINMUX_DATA(COM2_RXD_MARK, PTK6_FN),
+-	PINMUX_DATA(COM2_RTS_MARK, PTK5_FN),
+-	PINMUX_DATA(COM2_CTS_MARK, PTK4_FN),
+-	PINMUX_DATA(COM2_DTR_MARK, PTK3_FN),
+-	PINMUX_DATA(COM2_DSR_MARK, PS3_2_FN1, PTK2_FN),
+-	PINMUX_DATA(SCK4_MARK, PS3_2_FN2, PTK2_FN),
+-	PINMUX_DATA(COM2_DCD_MARK, PS3_1_FN1, PTK1_FN),
+-	PINMUX_DATA(SCK3_MARK, PS3_1_FN2, PTK1_FN),
+-	PINMUX_DATA(CLKOUT_MARK, PTK0_FN),
+-
+-	/* PTL FN */
+-	PINMUX_DATA(RAC_RXD_MARK, PS4_14_FN1, PTL6_FN),
+-	PINMUX_DATA(RXD2_MARK, PS4_14_FN2, PTL6_FN),
+-	PINMUX_DATA(RAC_RTS_MARK, PS4_13_FN1, PTL5_FN),
+-	PINMUX_DATA(CS5_MARK, PS4_13_FN2, PTL5_FN),
+-	PINMUX_DATA(RAC_CTS_MARK, PS4_12_FN1, PTL4_FN),
+-	PINMUX_DATA(CS6_MARK, PS4_12_FN2, PTL4_FN),
+-	PINMUX_DATA(RAC_DTR_MARK, PTL3_FN),
+-	PINMUX_DATA(RAC_DSR_MARK, PS4_10_FN1, PTL2_FN),
+-	PINMUX_DATA(AUDSYNC_MARK, PS4_10_FN2, PTL2_FN),
+-	PINMUX_DATA(RAC_DCD_MARK, PS4_9_FN1, PTL1_FN),
+-	PINMUX_DATA(AUDCK_MARK, PS4_9_FN2, PTL1_FN),
+-	PINMUX_DATA(RAC_TXD_MARK, PS4_8_FN1, PTL0_FN),
+-	PINMUX_DATA(TXD2_MARK, PS4_8_FN1, PTL0_FN),
+-
+-	/* PTM FN */
+-	PINMUX_DATA(CS4_MARK, PTM7_FN),
+-	PINMUX_DATA(RD_MARK, PTM6_FN),
+-	PINMUX_DATA(WE0_MARK, PTM7_FN),
+-	PINMUX_DATA(CS0_MARK, PTM4_FN),
+-	PINMUX_DATA(SDA6_MARK, PTM3_FN),
+-	PINMUX_DATA(SCL6_MARK, PTM2_FN),
+-	PINMUX_DATA(SDA7_MARK, PTM1_FN),
+-	PINMUX_DATA(SCL7_MARK, PTM0_FN),
+-
+-	/* PTN FN */
+-	PINMUX_DATA(VBUS_EN_MARK, PTN6_FN),
+-	PINMUX_DATA(VBUS_OC_MARK, PTN5_FN),
+-	PINMUX_DATA(JMCTCK_MARK, PS4_4_FN1, PTN4_FN),
+-	PINMUX_DATA(SGPIO1_CLK_MARK, PS4_4_FN2, PTN4_FN),
+-	PINMUX_DATA(JMCTMS_MARK, PS4_3_FN1, PTN5_FN),
+-	PINMUX_DATA(SGPIO1_LOAD_MARK, PS4_3_FN2, PTN5_FN),
+-	PINMUX_DATA(JMCTDO_MARK, PS4_2_FN1, PTN2_FN),
+-	PINMUX_DATA(SGPIO1_DO_MARK, PS4_2_FN2, PTN2_FN),
+-	PINMUX_DATA(JMCTDI_MARK, PS4_1_FN1, PTN1_FN),
+-	PINMUX_DATA(SGPIO1_DI_MARK, PS4_1_FN2, PTN1_FN),
+-	PINMUX_DATA(JMCTRST_MARK, PS4_0_FN1, PTN0_FN),
+-	PINMUX_DATA(SUB_CLKIN_MARK, PS4_0_FN2, PTN0_FN),
+-
+-	/* PTO FN */
+-	PINMUX_DATA(SGPIO0_CLK_MARK, PTO7_FN),
+-	PINMUX_DATA(SGPIO0_LOAD_MARK, PTO6_FN),
+-	PINMUX_DATA(SGPIO0_DI_MARK, PTO5_FN),
+-	PINMUX_DATA(SGPIO0_DO_MARK, PTO4_FN),
+-	PINMUX_DATA(SGPIO2_CLK_MARK, PS5_11_FN1, PTO3_FN),
+-	PINMUX_DATA(COM1_TXD_MARK, PS5_11_FN2, PTO3_FN),
+-	PINMUX_DATA(SGPIO2_LOAD_MARK, PS5_10_FN1, PTO2_FN),
+-	PINMUX_DATA(COM1_RXD_MARK, PS5_10_FN2, PTO2_FN),
+-	PINMUX_DATA(SGPIO2_DI_MARK, PS5_9_FN1, PTO1_FN),
+-	PINMUX_DATA(COM1_RTS_MARK, PS5_9_FN2, PTO1_FN),
+-	PINMUX_DATA(SGPIO2_DO_MARK, PS5_8_FN1, PTO0_FN),
+-	PINMUX_DATA(COM1_CTS_MARK, PS5_8_FN2, PTO0_FN),
+-
+-	/* PTP FN */
+-
+-	/* PTQ FN */
+-	PINMUX_DATA(LAD3_MARK, PTQ6_FN),
+-	PINMUX_DATA(LAD2_MARK, PTQ5_FN),
+-	PINMUX_DATA(LAD1_MARK, PTQ4_FN),
+-	PINMUX_DATA(LAD0_MARK, PTQ3_FN),
+-	PINMUX_DATA(LFRAME_MARK, PTQ2_FN),
+-	PINMUX_DATA(LRESET_MARK, PTQ1_FN),
+-	PINMUX_DATA(LCLK_MARK, PTQ0_FN),
+-
+-	/* PTR FN */
+-	PINMUX_DATA(SDA8_MARK, PTR7_FN),	/* DDC3? */
+-	PINMUX_DATA(SCL8_MARK, PTR6_FN),	/* DDC2? */
+-	PINMUX_DATA(SDA2_MARK, PTR5_FN),
+-	PINMUX_DATA(SCL2_MARK, PTR4_FN),
+-	PINMUX_DATA(SDA1_MARK, PTR3_FN),
+-	PINMUX_DATA(SCL1_MARK, PTR2_FN),
+-	PINMUX_DATA(SDA0_MARK, PTR1_FN),
+-	PINMUX_DATA(SCL0_MARK, PTR0_FN),
+-
+-	/* PTS FN */
+-	PINMUX_DATA(SDA9_MARK, PTS7_FN),	/* DDC1? */
+-	PINMUX_DATA(SCL9_MARK, PTS6_FN),	/* DDC0? */
+-	PINMUX_DATA(SDA5_MARK, PTS5_FN),
+-	PINMUX_DATA(SCL5_MARK, PTS4_FN),
+-	PINMUX_DATA(SDA4_MARK, PTS3_FN),
+-	PINMUX_DATA(SCL4_MARK, PTS2_FN),
+-	PINMUX_DATA(SDA3_MARK, PTS1_FN),
+-	PINMUX_DATA(SCL3_MARK, PTS0_FN),
+-
+-	/* PTT FN */
+-	PINMUX_DATA(PWMX7_MARK, PS5_7_FN1, PTT7_FN),
+-	PINMUX_DATA(AUDATA3_MARK, PS5_7_FN2, PTT7_FN),
+-	PINMUX_DATA(PWMX6_MARK, PS5_6_FN1, PTT6_FN),
+-	PINMUX_DATA(AUDATA2_MARK, PS5_6_FN2, PTT6_FN),
+-	PINMUX_DATA(PWMX5_MARK, PS5_5_FN1, PTT5_FN),
+-	PINMUX_DATA(AUDATA1_MARK, PS5_5_FN2, PTT5_FN),
+-	PINMUX_DATA(PWMX4_MARK, PS5_4_FN1, PTT4_FN),
+-	PINMUX_DATA(AUDATA0_MARK, PS5_4_FN2, PTT4_FN),
+-	PINMUX_DATA(PWMX3_MARK, PS5_3_FN1, PTT3_FN),
+-	PINMUX_DATA(STATUS1_MARK, PS5_3_FN2, PTT3_FN),
+-	PINMUX_DATA(PWMX2_MARK, PS5_2_FN1, PTT2_FN),
+-	PINMUX_DATA(STATUS0_MARK, PS5_2_FN2, PTT2_FN),
+-	PINMUX_DATA(PWMX1_MARK, PTT1_FN),
+-	PINMUX_DATA(PWMX0_MARK, PTT0_FN),
+-
+-	/* PTU FN */
+-	PINMUX_DATA(LGPIO7_MARK, PS6_15_FN1, PTU7_FN),
+-	PINMUX_DATA(APMONCTL_O_MARK, PS6_15_FN2, PTU7_FN),
+-	PINMUX_DATA(LGPIO6_MARK, PS6_14_FN1, PTU6_FN),
+-	PINMUX_DATA(APMPWBTOUT_O_MARK, PS6_14_FN2, PTU6_FN),
+-	PINMUX_DATA(LGPIO5_MARK, PS6_13_FN1, PTU5_FN),
+-	PINMUX_DATA(APMSCI_O_MARK, PS6_13_FN2, PTU5_FN),
+-	PINMUX_DATA(LGPIO4_MARK, PS6_12_FN1, PTU4_FN),
+-	PINMUX_DATA(APMVDDON_MARK, PS6_12_FN2, PTU4_FN),
+-	PINMUX_DATA(LGPIO3_MARK, PS6_11_FN1, PTU3_FN),
+-	PINMUX_DATA(APMSLPBTN_MARK, PS6_11_FN2, PTU3_FN),
+-	PINMUX_DATA(LGPIO2_MARK, PS6_10_FN1, PTU2_FN),
+-	PINMUX_DATA(APMPWRBTN_MARK, PS6_10_FN2, PTU2_FN),
+-	PINMUX_DATA(LGPIO1_MARK, PS6_9_FN1, PTU1_FN),
+-	PINMUX_DATA(APMS5N_MARK, PS6_9_FN2, PTU1_FN),
+-	PINMUX_DATA(LGPIO0_MARK, PS6_8_FN1, PTU0_FN),
+-	PINMUX_DATA(APMS3N_MARK, PS6_8_FN2, PTU0_FN),
+-
+-	/* PTV FN */
+-	PINMUX_DATA(A23_MARK, PS6_7_FN1, PTV7_FN),
+-	PINMUX_DATA(COM2_RI_MARK, PS6_7_FN2, PTV7_FN),
+-	PINMUX_DATA(A22_MARK, PS6_6_FN1, PTV6_FN),
+-	PINMUX_DATA(R_SPI_MOSI_MARK, PS6_6_FN2, PTV6_FN),
+-	PINMUX_DATA(A21_MARK, PS6_5_FN1, PTV5_FN),
+-	PINMUX_DATA(R_SPI_MISO_MARK, PS6_5_FN2, PTV5_FN),
+-	PINMUX_DATA(A20_MARK, PS6_4_FN1, PTV4_FN),
+-	PINMUX_DATA(R_SPI_RSPCK_MARK, PS6_4_FN2, PTV4_FN),
+-	PINMUX_DATA(A19_MARK, PS6_3_FN1, PTV3_FN),
+-	PINMUX_DATA(R_SPI_SSL0_MARK, PS6_3_FN2, PTV3_FN),
+-	PINMUX_DATA(A18_MARK, PS6_2_FN1, PTV2_FN),
+-	PINMUX_DATA(R_SPI_SSL1_MARK, PS6_2_FN2, PTV2_FN),
+-	PINMUX_DATA(A17_MARK, PS6_1_FN1, PTV1_FN),
+-	PINMUX_DATA(EVENT7_MARK, PS6_1_FN2, PTV1_FN),
+-	PINMUX_DATA(A16_MARK, PS6_0_FN1, PTV0_FN),
+-	PINMUX_DATA(EVENT6_MARK, PS6_0_FN1, PTV0_FN),
+-
+-	/* PTW FN */
+-	PINMUX_DATA(A15_MARK, PS7_15_FN1, PTW7_FN),
+-	PINMUX_DATA(EVENT5_MARK, PS7_15_FN2, PTW7_FN),
+-	PINMUX_DATA(A14_MARK, PS7_14_FN1, PTW6_FN),
+-	PINMUX_DATA(EVENT4_MARK, PS7_14_FN2, PTW6_FN),
+-	PINMUX_DATA(A13_MARK, PS7_13_FN1, PTW5_FN),
+-	PINMUX_DATA(EVENT3_MARK, PS7_13_FN2, PTW5_FN),
+-	PINMUX_DATA(A12_MARK, PS7_12_FN1, PTW4_FN),
+-	PINMUX_DATA(EVENT2_MARK, PS7_12_FN2, PTW4_FN),
+-	PINMUX_DATA(A11_MARK, PS7_11_FN1, PTW3_FN),
+-	PINMUX_DATA(EVENT1_MARK, PS7_11_FN2, PTW3_FN),
+-	PINMUX_DATA(A10_MARK, PS7_10_FN1, PTW2_FN),
+-	PINMUX_DATA(EVENT0_MARK, PS7_10_FN2, PTW2_FN),
+-	PINMUX_DATA(A9_MARK, PS7_9_FN1, PTW1_FN),
+-	PINMUX_DATA(CTS4_MARK, PS7_9_FN2, PTW1_FN),
+-	PINMUX_DATA(A8_MARK, PS7_8_FN1, PTW0_FN),
+-	PINMUX_DATA(CTS2_MARK, PS7_8_FN2, PTW0_FN),
+-
+-	/* PTX FN */
+-	PINMUX_DATA(A7_MARK, PS7_7_FN1, PTX7_FN),
+-	PINMUX_DATA(RTS2_MARK, PS7_7_FN2, PTX7_FN),
+-	PINMUX_DATA(A6_MARK, PS7_6_FN1, PTX6_FN),
+-	PINMUX_DATA(SIM_D_MARK, PS7_6_FN2, PTX6_FN),
+-	PINMUX_DATA(A5_MARK, PS7_5_FN1, PTX5_FN),
+-	PINMUX_DATA(SIM_CLK_MARK, PS7_5_FN2, PTX5_FN),
+-	PINMUX_DATA(A4_MARK, PS7_4_FN1, PTX4_FN),
+-	PINMUX_DATA(SIM_RST_MARK, PS7_4_FN2, PTX4_FN),
+-	PINMUX_DATA(A3_MARK, PTX3_FN),
+-	PINMUX_DATA(A2_MARK, PTX2_FN),
+-	PINMUX_DATA(A1_MARK, PTX1_FN),
+-	PINMUX_DATA(A0_MARK, PTX0_FN),
+-
+-	/* PTY FN */
+-	PINMUX_DATA(D7_MARK, PTY7_FN),
+-	PINMUX_DATA(D6_MARK, PTY6_FN),
+-	PINMUX_DATA(D5_MARK, PTY5_FN),
+-	PINMUX_DATA(D4_MARK, PTY4_FN),
+-	PINMUX_DATA(D3_MARK, PTY3_FN),
+-	PINMUX_DATA(D2_MARK, PTY2_FN),
+-	PINMUX_DATA(D1_MARK, PTY1_FN),
+-	PINMUX_DATA(D0_MARK, PTY0_FN),
+-
+-	/* PTZ FN */
+-	PINMUX_DATA(MMCDAT7_MARK, PS8_15_FN1, PTZ7_FN),
+-	PINMUX_DATA(ON_DQ7_MARK, PS8_15_FN2, PTZ7_FN),
+-	PINMUX_DATA(MMCDAT6_MARK, PS8_14_FN1, PTZ6_FN),
+-	PINMUX_DATA(ON_DQ6_MARK, PS8_14_FN2, PTZ6_FN),
+-	PINMUX_DATA(MMCDAT5_MARK, PS8_13_FN1, PTZ5_FN),
+-	PINMUX_DATA(ON_DQ5_MARK, PS8_13_FN2, PTZ5_FN),
+-	PINMUX_DATA(MMCDAT4_MARK, PS8_12_FN1, PTZ4_FN),
+-	PINMUX_DATA(ON_DQ4_MARK, PS8_12_FN2, PTZ4_FN),
+-	PINMUX_DATA(MMCDAT3_MARK, PS8_11_FN1, PTZ3_FN),
+-	PINMUX_DATA(ON_DQ3_MARK, PS8_11_FN2, PTZ3_FN),
+-	PINMUX_DATA(MMCDAT2_MARK, PS8_10_FN1, PTZ2_FN),
+-	PINMUX_DATA(ON_DQ2_MARK, PS8_10_FN2, PTZ2_FN),
+-	PINMUX_DATA(MMCDAT1_MARK, PS8_9_FN1, PTZ1_FN),
+-	PINMUX_DATA(ON_DQ1_MARK, PS8_9_FN2, PTZ1_FN),
+-	PINMUX_DATA(MMCDAT0_MARK, PS8_8_FN1, PTZ0_FN),
+-	PINMUX_DATA(ON_DQ0_MARK, PS8_8_FN2, PTZ0_FN),
+-};
+-
+-static const struct sh_pfc_pin pinmux_pins[] = {
+-	/* PTA */
+-	PINMUX_GPIO(PTA7),
+-	PINMUX_GPIO(PTA6),
+-	PINMUX_GPIO(PTA5),
+-	PINMUX_GPIO(PTA4),
+-	PINMUX_GPIO(PTA3),
+-	PINMUX_GPIO(PTA2),
+-	PINMUX_GPIO(PTA1),
+-	PINMUX_GPIO(PTA0),
+-
+-	/* PTB */
+-	PINMUX_GPIO(PTB7),
+-	PINMUX_GPIO(PTB6),
+-	PINMUX_GPIO(PTB5),
+-	PINMUX_GPIO(PTB4),
+-	PINMUX_GPIO(PTB3),
+-	PINMUX_GPIO(PTB2),
+-	PINMUX_GPIO(PTB1),
+-	PINMUX_GPIO(PTB0),
+-
+-	/* PTC */
+-	PINMUX_GPIO(PTC7),
+-	PINMUX_GPIO(PTC6),
+-	PINMUX_GPIO(PTC5),
+-	PINMUX_GPIO(PTC4),
+-	PINMUX_GPIO(PTC3),
+-	PINMUX_GPIO(PTC2),
+-	PINMUX_GPIO(PTC1),
+-	PINMUX_GPIO(PTC0),
+-
+-	/* PTD */
+-	PINMUX_GPIO(PTD7),
+-	PINMUX_GPIO(PTD6),
+-	PINMUX_GPIO(PTD5),
+-	PINMUX_GPIO(PTD4),
+-	PINMUX_GPIO(PTD3),
+-	PINMUX_GPIO(PTD2),
+-	PINMUX_GPIO(PTD1),
+-	PINMUX_GPIO(PTD0),
+-
+-	/* PTE */
+-	PINMUX_GPIO(PTE7),
+-	PINMUX_GPIO(PTE6),
+-	PINMUX_GPIO(PTE5),
+-	PINMUX_GPIO(PTE4),
+-	PINMUX_GPIO(PTE3),
+-	PINMUX_GPIO(PTE2),
+-	PINMUX_GPIO(PTE1),
+-	PINMUX_GPIO(PTE0),
+-
+-	/* PTF */
+-	PINMUX_GPIO(PTF7),
+-	PINMUX_GPIO(PTF6),
+-	PINMUX_GPIO(PTF5),
+-	PINMUX_GPIO(PTF4),
+-	PINMUX_GPIO(PTF3),
+-	PINMUX_GPIO(PTF2),
+-	PINMUX_GPIO(PTF1),
+-	PINMUX_GPIO(PTF0),
+-
+-	/* PTG */
+-	PINMUX_GPIO(PTG7),
+-	PINMUX_GPIO(PTG6),
+-	PINMUX_GPIO(PTG5),
+-	PINMUX_GPIO(PTG4),
+-	PINMUX_GPIO(PTG3),
+-	PINMUX_GPIO(PTG2),
+-	PINMUX_GPIO(PTG1),
+-	PINMUX_GPIO(PTG0),
+-
+-	/* PTH */
+-	PINMUX_GPIO(PTH7),
+-	PINMUX_GPIO(PTH6),
+-	PINMUX_GPIO(PTH5),
+-	PINMUX_GPIO(PTH4),
+-	PINMUX_GPIO(PTH3),
+-	PINMUX_GPIO(PTH2),
+-	PINMUX_GPIO(PTH1),
+-	PINMUX_GPIO(PTH0),
+-
+-	/* PTI */
+-	PINMUX_GPIO(PTI7),
+-	PINMUX_GPIO(PTI6),
+-	PINMUX_GPIO(PTI5),
+-	PINMUX_GPIO(PTI4),
+-	PINMUX_GPIO(PTI3),
+-	PINMUX_GPIO(PTI2),
+-	PINMUX_GPIO(PTI1),
+-	PINMUX_GPIO(PTI0),
+-
+-	/* PTJ */
+-	PINMUX_GPIO(PTJ6),
+-	PINMUX_GPIO(PTJ5),
+-	PINMUX_GPIO(PTJ4),
+-	PINMUX_GPIO(PTJ3),
+-	PINMUX_GPIO(PTJ2),
+-	PINMUX_GPIO(PTJ1),
+-	PINMUX_GPIO(PTJ0),
+-
+-	/* PTK */
+-	PINMUX_GPIO(PTK7),
+-	PINMUX_GPIO(PTK6),
+-	PINMUX_GPIO(PTK5),
+-	PINMUX_GPIO(PTK4),
+-	PINMUX_GPIO(PTK3),
+-	PINMUX_GPIO(PTK2),
+-	PINMUX_GPIO(PTK1),
+-	PINMUX_GPIO(PTK0),
+-
+-	/* PTL */
+-	PINMUX_GPIO(PTL6),
+-	PINMUX_GPIO(PTL5),
+-	PINMUX_GPIO(PTL4),
+-	PINMUX_GPIO(PTL3),
+-	PINMUX_GPIO(PTL2),
+-	PINMUX_GPIO(PTL1),
+-	PINMUX_GPIO(PTL0),
+-
+-	/* PTM */
+-	PINMUX_GPIO(PTM7),
+-	PINMUX_GPIO(PTM6),
+-	PINMUX_GPIO(PTM5),
+-	PINMUX_GPIO(PTM4),
+-	PINMUX_GPIO(PTM3),
+-	PINMUX_GPIO(PTM2),
+-	PINMUX_GPIO(PTM1),
+-	PINMUX_GPIO(PTM0),
+-
+-	/* PTN */
+-	PINMUX_GPIO(PTN6),
+-	PINMUX_GPIO(PTN5),
+-	PINMUX_GPIO(PTN4),
+-	PINMUX_GPIO(PTN3),
+-	PINMUX_GPIO(PTN2),
+-	PINMUX_GPIO(PTN1),
+-	PINMUX_GPIO(PTN0),
+-
+-	/* PTO */
+-	PINMUX_GPIO(PTO7),
+-	PINMUX_GPIO(PTO6),
+-	PINMUX_GPIO(PTO5),
+-	PINMUX_GPIO(PTO4),
+-	PINMUX_GPIO(PTO3),
+-	PINMUX_GPIO(PTO2),
+-	PINMUX_GPIO(PTO1),
+-	PINMUX_GPIO(PTO0),
+-
+-	/* PTP */
+-	PINMUX_GPIO(PTP7),
+-	PINMUX_GPIO(PTP6),
+-	PINMUX_GPIO(PTP5),
+-	PINMUX_GPIO(PTP4),
+-	PINMUX_GPIO(PTP3),
+-	PINMUX_GPIO(PTP2),
+-	PINMUX_GPIO(PTP1),
+-	PINMUX_GPIO(PTP0),
+-
+-	/* PTQ */
+-	PINMUX_GPIO(PTQ6),
+-	PINMUX_GPIO(PTQ5),
+-	PINMUX_GPIO(PTQ4),
+-	PINMUX_GPIO(PTQ3),
+-	PINMUX_GPIO(PTQ2),
+-	PINMUX_GPIO(PTQ1),
+-	PINMUX_GPIO(PTQ0),
+-
+-	/* PTR */
+-	PINMUX_GPIO(PTR7),
+-	PINMUX_GPIO(PTR6),
+-	PINMUX_GPIO(PTR5),
+-	PINMUX_GPIO(PTR4),
+-	PINMUX_GPIO(PTR3),
+-	PINMUX_GPIO(PTR2),
+-	PINMUX_GPIO(PTR1),
+-	PINMUX_GPIO(PTR0),
+-
+-	/* PTS */
+-	PINMUX_GPIO(PTS7),
+-	PINMUX_GPIO(PTS6),
+-	PINMUX_GPIO(PTS5),
+-	PINMUX_GPIO(PTS4),
+-	PINMUX_GPIO(PTS3),
+-	PINMUX_GPIO(PTS2),
+-	PINMUX_GPIO(PTS1),
+-	PINMUX_GPIO(PTS0),
+-
+-	/* PTT */
+-	PINMUX_GPIO(PTT7),
+-	PINMUX_GPIO(PTT6),
+-	PINMUX_GPIO(PTT5),
+-	PINMUX_GPIO(PTT4),
+-	PINMUX_GPIO(PTT3),
+-	PINMUX_GPIO(PTT2),
+-	PINMUX_GPIO(PTT1),
+-	PINMUX_GPIO(PTT0),
+-
+-	/* PTU */
+-	PINMUX_GPIO(PTU7),
+-	PINMUX_GPIO(PTU6),
+-	PINMUX_GPIO(PTU5),
+-	PINMUX_GPIO(PTU4),
+-	PINMUX_GPIO(PTU3),
+-	PINMUX_GPIO(PTU2),
+-	PINMUX_GPIO(PTU1),
+-	PINMUX_GPIO(PTU0),
+-
+-	/* PTV */
+-	PINMUX_GPIO(PTV7),
+-	PINMUX_GPIO(PTV6),
+-	PINMUX_GPIO(PTV5),
+-	PINMUX_GPIO(PTV4),
+-	PINMUX_GPIO(PTV3),
+-	PINMUX_GPIO(PTV2),
+-	PINMUX_GPIO(PTV1),
+-	PINMUX_GPIO(PTV0),
+-
+-	/* PTW */
+-	PINMUX_GPIO(PTW7),
+-	PINMUX_GPIO(PTW6),
+-	PINMUX_GPIO(PTW5),
+-	PINMUX_GPIO(PTW4),
+-	PINMUX_GPIO(PTW3),
+-	PINMUX_GPIO(PTW2),
+-	PINMUX_GPIO(PTW1),
+-	PINMUX_GPIO(PTW0),
+-
+-	/* PTX */
+-	PINMUX_GPIO(PTX7),
+-	PINMUX_GPIO(PTX6),
+-	PINMUX_GPIO(PTX5),
+-	PINMUX_GPIO(PTX4),
+-	PINMUX_GPIO(PTX3),
+-	PINMUX_GPIO(PTX2),
+-	PINMUX_GPIO(PTX1),
+-	PINMUX_GPIO(PTX0),
+-
+-	/* PTY */
+-	PINMUX_GPIO(PTY7),
+-	PINMUX_GPIO(PTY6),
+-	PINMUX_GPIO(PTY5),
+-	PINMUX_GPIO(PTY4),
+-	PINMUX_GPIO(PTY3),
+-	PINMUX_GPIO(PTY2),
+-	PINMUX_GPIO(PTY1),
+-	PINMUX_GPIO(PTY0),
+-
+-	/* PTZ */
+-	PINMUX_GPIO(PTZ7),
+-	PINMUX_GPIO(PTZ6),
+-	PINMUX_GPIO(PTZ5),
+-	PINMUX_GPIO(PTZ4),
+-	PINMUX_GPIO(PTZ3),
+-	PINMUX_GPIO(PTZ2),
+-	PINMUX_GPIO(PTZ1),
+-	PINMUX_GPIO(PTZ0),
+-};
+-
+-#define PINMUX_FN_BASE	ARRAY_SIZE(pinmux_pins)
+-
+-static const struct pinmux_func pinmux_func_gpios[] = {
+-	/* PTA (mobule: LBSC, RGMII) */
+-	GPIO_FN(BS),
+-	GPIO_FN(RDWR),
+-	GPIO_FN(WE1),
+-	GPIO_FN(RDY),
+-	GPIO_FN(ET0_MDC),
+-	GPIO_FN(ET0_MDIO),
+-	GPIO_FN(ET1_MDC),
+-	GPIO_FN(ET1_MDIO),
+-
+-	/* PTB (mobule: INTC, ONFI, TMU) */
+-	GPIO_FN(IRQ15),
+-	GPIO_FN(IRQ14),
+-	GPIO_FN(IRQ13),
+-	GPIO_FN(IRQ12),
+-	GPIO_FN(IRQ11),
+-	GPIO_FN(IRQ10),
+-	GPIO_FN(IRQ9),
+-	GPIO_FN(IRQ8),
+-	GPIO_FN(ON_NRE),
+-	GPIO_FN(ON_NWE),
+-	GPIO_FN(ON_NWP),
+-	GPIO_FN(ON_NCE0),
+-	GPIO_FN(ON_R_B0),
+-	GPIO_FN(ON_ALE),
+-	GPIO_FN(ON_CLE),
+-	GPIO_FN(TCLK),
+-
+-	/* PTC (mobule: IRQ, PWMU) */
+-	GPIO_FN(IRQ7),
+-	GPIO_FN(IRQ6),
+-	GPIO_FN(IRQ5),
+-	GPIO_FN(IRQ4),
+-	GPIO_FN(IRQ3),
+-	GPIO_FN(IRQ2),
+-	GPIO_FN(IRQ1),
+-	GPIO_FN(IRQ0),
+-	GPIO_FN(PWMU0),
+-	GPIO_FN(PWMU1),
+-	GPIO_FN(PWMU2),
+-	GPIO_FN(PWMU3),
+-	GPIO_FN(PWMU4),
+-	GPIO_FN(PWMU5),
+-
+-	/* PTD (mobule: SPI0, DMAC) */
+-	GPIO_FN(SP0_MOSI),
+-	GPIO_FN(SP0_MISO),
+-	GPIO_FN(SP0_SCK),
+-	GPIO_FN(SP0_SCK_FB),
+-	GPIO_FN(SP0_SS0),
+-	GPIO_FN(SP0_SS1),
+-	GPIO_FN(SP0_SS2),
+-	GPIO_FN(SP0_SS3),
+-	GPIO_FN(DREQ0),
+-	GPIO_FN(DACK0),
+-	GPIO_FN(TEND0),
+-
+-	/* PTE (mobule: RMII) */
+-	GPIO_FN(RMII0_CRS_DV),
+-	GPIO_FN(RMII0_TXD1),
+-	GPIO_FN(RMII0_TXD0),
+-	GPIO_FN(RMII0_TXEN),
+-	GPIO_FN(RMII0_REFCLK),
+-	GPIO_FN(RMII0_RXD1),
+-	GPIO_FN(RMII0_RXD0),
+-	GPIO_FN(RMII0_RX_ER),
+-
+-	/* PTF (mobule: RMII, SerMux) */
+-	GPIO_FN(RMII1_CRS_DV),
+-	GPIO_FN(RMII1_TXD1),
+-	GPIO_FN(RMII1_TXD0),
+-	GPIO_FN(RMII1_TXEN),
+-	GPIO_FN(RMII1_REFCLK),
+-	GPIO_FN(RMII1_RXD1),
+-	GPIO_FN(RMII1_RXD0),
+-	GPIO_FN(RMII1_RX_ER),
+-	GPIO_FN(RAC_RI),
+-
+-	/* PTG (mobule: system, LBSC, LPC, WDT, LPC, eMMC) */
+-	GPIO_FN(BOOTFMS),
+-	GPIO_FN(BOOTWP),
+-	GPIO_FN(A25),
+-	GPIO_FN(A24),
+-	GPIO_FN(SERIRQ),
+-	GPIO_FN(WDTOVF),
+-	GPIO_FN(LPCPD),
+-	GPIO_FN(LDRQ),
+-	GPIO_FN(MMCCLK),
+-	GPIO_FN(MMCCMD),
+-
+-	/* PTH (mobule: SPI1, LPC, DMAC, ADC) */
+-	GPIO_FN(SP1_MOSI),
+-	GPIO_FN(SP1_MISO),
+-	GPIO_FN(SP1_SCK),
+-	GPIO_FN(SP1_SCK_FB),
+-	GPIO_FN(SP1_SS0),
+-	GPIO_FN(SP1_SS1),
+-	GPIO_FN(WP),
+-	GPIO_FN(FMS0),
+-	GPIO_FN(TEND1),
+-	GPIO_FN(DREQ1),
+-	GPIO_FN(DACK1),
+-	GPIO_FN(ADTRG1),
+-	GPIO_FN(ADTRG0),
+-
+-	/* PTI (mobule: LBSC, SDHI) */
+-	GPIO_FN(D15),
+-	GPIO_FN(D14),
+-	GPIO_FN(D13),
+-	GPIO_FN(D12),
+-	GPIO_FN(D11),
+-	GPIO_FN(D10),
+-	GPIO_FN(D9),
+-	GPIO_FN(D8),
+-	GPIO_FN(SD_WP),
+-	GPIO_FN(SD_CD),
+-	GPIO_FN(SD_CLK),
+-	GPIO_FN(SD_CMD),
+-	GPIO_FN(SD_D3),
+-	GPIO_FN(SD_D2),
+-	GPIO_FN(SD_D1),
+-	GPIO_FN(SD_D0),
+-
+-	/* PTJ (mobule: SCIF234, SERMUX) */
+-	GPIO_FN(RTS3),
+-	GPIO_FN(CTS3),
+-	GPIO_FN(TXD3),
+-	GPIO_FN(RXD3),
+-	GPIO_FN(RTS4),
+-	GPIO_FN(RXD4),
+-	GPIO_FN(TXD4),
+-
+-	/* PTK (mobule: SERMUX, LBSC, SCIF) */
+-	GPIO_FN(COM2_TXD),
+-	GPIO_FN(COM2_RXD),
+-	GPIO_FN(COM2_RTS),
+-	GPIO_FN(COM2_CTS),
+-	GPIO_FN(COM2_DTR),
+-	GPIO_FN(COM2_DSR),
+-	GPIO_FN(COM2_DCD),
+-	GPIO_FN(CLKOUT),
+-	GPIO_FN(SCK2),
+-	GPIO_FN(SCK4),
+-	GPIO_FN(SCK3),
+-
+-	/* PTL (mobule: SERMUX, SCIF, LBSC, AUD) */
+-	GPIO_FN(RAC_RXD),
+-	GPIO_FN(RAC_RTS),
+-	GPIO_FN(RAC_CTS),
+-	GPIO_FN(RAC_DTR),
+-	GPIO_FN(RAC_DSR),
+-	GPIO_FN(RAC_DCD),
+-	GPIO_FN(RAC_TXD),
+-	GPIO_FN(RXD2),
+-	GPIO_FN(CS5),
+-	GPIO_FN(CS6),
+-	GPIO_FN(AUDSYNC),
+-	GPIO_FN(AUDCK),
+-	GPIO_FN(TXD2),
+-
+-	/* PTM (mobule: LBSC, IIC) */
+-	GPIO_FN(CS4),
+-	GPIO_FN(RD),
+-	GPIO_FN(WE0),
+-	GPIO_FN(CS0),
+-	GPIO_FN(SDA6),
+-	GPIO_FN(SCL6),
+-	GPIO_FN(SDA7),
+-	GPIO_FN(SCL7),
+-
+-	/* PTN (mobule: USB, JMC, SGPIO, WDT) */
+-	GPIO_FN(VBUS_EN),
+-	GPIO_FN(VBUS_OC),
+-	GPIO_FN(JMCTCK),
+-	GPIO_FN(JMCTMS),
+-	GPIO_FN(JMCTDO),
+-	GPIO_FN(JMCTDI),
+-	GPIO_FN(JMCTRST),
+-	GPIO_FN(SGPIO1_CLK),
+-	GPIO_FN(SGPIO1_LOAD),
+-	GPIO_FN(SGPIO1_DI),
+-	GPIO_FN(SGPIO1_DO),
+-	GPIO_FN(SUB_CLKIN),
+-
+-	/* PTO (mobule: SGPIO, SerMux) */
+-	GPIO_FN(SGPIO0_CLK),
+-	GPIO_FN(SGPIO0_LOAD),
+-	GPIO_FN(SGPIO0_DI),
+-	GPIO_FN(SGPIO0_DO),
+-	GPIO_FN(SGPIO2_CLK),
+-	GPIO_FN(SGPIO2_LOAD),
+-	GPIO_FN(SGPIO2_DI),
+-	GPIO_FN(SGPIO2_DO),
+-	GPIO_FN(COM1_TXD),
+-	GPIO_FN(COM1_RXD),
+-	GPIO_FN(COM1_RTS),
+-	GPIO_FN(COM1_CTS),
+-
+-	/* PTP (mobule: EVC, ADC) */
+-
+-	/* PTQ (mobule: LPC) */
+-	GPIO_FN(LAD3),
+-	GPIO_FN(LAD2),
+-	GPIO_FN(LAD1),
+-	GPIO_FN(LAD0),
+-	GPIO_FN(LFRAME),
+-	GPIO_FN(LRESET),
+-	GPIO_FN(LCLK),
+-
+-	/* PTR (mobule: GRA, IIC) */
+-	GPIO_FN(DDC3),
+-	GPIO_FN(DDC2),
+-	GPIO_FN(SDA8),
+-	GPIO_FN(SCL8),
+-	GPIO_FN(SDA2),
+-	GPIO_FN(SCL2),
+-	GPIO_FN(SDA1),
+-	GPIO_FN(SCL1),
+-	GPIO_FN(SDA0),
+-	GPIO_FN(SCL0),
+-
+-	/* PTS (mobule: GRA, IIC) */
+-	GPIO_FN(DDC1),
+-	GPIO_FN(DDC0),
+-	GPIO_FN(SDA9),
+-	GPIO_FN(SCL9),
+-	GPIO_FN(SDA5),
+-	GPIO_FN(SCL5),
+-	GPIO_FN(SDA4),
+-	GPIO_FN(SCL4),
+-	GPIO_FN(SDA3),
+-	GPIO_FN(SCL3),
+-
+-	/* PTT (mobule: PWMX, AUD) */
+-	GPIO_FN(PWMX7),
+-	GPIO_FN(PWMX6),
+-	GPIO_FN(PWMX5),
+-	GPIO_FN(PWMX4),
+-	GPIO_FN(PWMX3),
+-	GPIO_FN(PWMX2),
+-	GPIO_FN(PWMX1),
+-	GPIO_FN(PWMX0),
+-	GPIO_FN(AUDATA3),
+-	GPIO_FN(AUDATA2),
+-	GPIO_FN(AUDATA1),
+-	GPIO_FN(AUDATA0),
+-	GPIO_FN(STATUS1),
+-	GPIO_FN(STATUS0),
+-
+-	/* PTU (mobule: LPC, APM) */
+-	GPIO_FN(LGPIO7),
+-	GPIO_FN(LGPIO6),
+-	GPIO_FN(LGPIO5),
+-	GPIO_FN(LGPIO4),
+-	GPIO_FN(LGPIO3),
+-	GPIO_FN(LGPIO2),
+-	GPIO_FN(LGPIO1),
+-	GPIO_FN(LGPIO0),
+-	GPIO_FN(APMONCTL_O),
+-	GPIO_FN(APMPWBTOUT_O),
+-	GPIO_FN(APMSCI_O),
+-	GPIO_FN(APMVDDON),
+-	GPIO_FN(APMSLPBTN),
+-	GPIO_FN(APMPWRBTN),
+-	GPIO_FN(APMS5N),
+-	GPIO_FN(APMS3N),
+-
+-	/* PTV (mobule: LBSC, SerMux, R-SPI, EVC, GRA) */
+-	GPIO_FN(A23),
+-	GPIO_FN(A22),
+-	GPIO_FN(A21),
+-	GPIO_FN(A20),
+-	GPIO_FN(A19),
+-	GPIO_FN(A18),
+-	GPIO_FN(A17),
+-	GPIO_FN(A16),
+-	GPIO_FN(COM2_RI),
+-	GPIO_FN(R_SPI_MOSI),
+-	GPIO_FN(R_SPI_MISO),
+-	GPIO_FN(R_SPI_RSPCK),
+-	GPIO_FN(R_SPI_SSL0),
+-	GPIO_FN(R_SPI_SSL1),
+-	GPIO_FN(EVENT7),
+-	GPIO_FN(EVENT6),
+-	GPIO_FN(VBIOS_DI),
+-	GPIO_FN(VBIOS_DO),
+-	GPIO_FN(VBIOS_CLK),
+-	GPIO_FN(VBIOS_CS),
+-
+-	/* PTW (mobule: LBSC, EVC, SCIF) */
+-	GPIO_FN(A15),
+-	GPIO_FN(A14),
+-	GPIO_FN(A13),
+-	GPIO_FN(A12),
+-	GPIO_FN(A11),
+-	GPIO_FN(A10),
+-	GPIO_FN(A9),
+-	GPIO_FN(A8),
+-	GPIO_FN(EVENT5),
+-	GPIO_FN(EVENT4),
+-	GPIO_FN(EVENT3),
+-	GPIO_FN(EVENT2),
+-	GPIO_FN(EVENT1),
+-	GPIO_FN(EVENT0),
+-	GPIO_FN(CTS4),
+-	GPIO_FN(CTS2),
+-
+-	/* PTX (mobule: LBSC) */
+-	GPIO_FN(A7),
+-	GPIO_FN(A6),
+-	GPIO_FN(A5),
+-	GPIO_FN(A4),
+-	GPIO_FN(A3),
+-	GPIO_FN(A2),
+-	GPIO_FN(A1),
+-	GPIO_FN(A0),
+-	GPIO_FN(RTS2),
+-	GPIO_FN(SIM_D),
+-	GPIO_FN(SIM_CLK),
+-	GPIO_FN(SIM_RST),
+-
+-	/* PTY (mobule: LBSC) */
+-	GPIO_FN(D7),
+-	GPIO_FN(D6),
+-	GPIO_FN(D5),
+-	GPIO_FN(D4),
+-	GPIO_FN(D3),
+-	GPIO_FN(D2),
+-	GPIO_FN(D1),
+-	GPIO_FN(D0),
+-
+-	/* PTZ (mobule: eMMC, ONFI) */
+-	GPIO_FN(MMCDAT7),
+-	GPIO_FN(MMCDAT6),
+-	GPIO_FN(MMCDAT5),
+-	GPIO_FN(MMCDAT4),
+-	GPIO_FN(MMCDAT3),
+-	GPIO_FN(MMCDAT2),
+-	GPIO_FN(MMCDAT1),
+-	GPIO_FN(MMCDAT0),
+-	GPIO_FN(ON_DQ7),
+-	GPIO_FN(ON_DQ6),
+-	GPIO_FN(ON_DQ5),
+-	GPIO_FN(ON_DQ4),
+-	GPIO_FN(ON_DQ3),
+-	GPIO_FN(ON_DQ2),
+-	GPIO_FN(ON_DQ1),
+-	GPIO_FN(ON_DQ0),
+-};
+-
+-static const struct pinmux_cfg_reg pinmux_config_regs[] = {
+-	{ PINMUX_CFG_REG("PACR", 0xffec0000, 16, 2, GROUP(
+-		PTA7_FN, PTA7_OUT, PTA7_IN, 0,
+-		PTA6_FN, PTA6_OUT, PTA6_IN, 0,
+-		PTA5_FN, PTA5_OUT, PTA5_IN, 0,
+-		PTA4_FN, PTA4_OUT, PTA4_IN, 0,
+-		PTA3_FN, PTA3_OUT, PTA3_IN, 0,
+-		PTA2_FN, PTA2_OUT, PTA2_IN, 0,
+-		PTA1_FN, PTA1_OUT, PTA1_IN, 0,
+-		PTA0_FN, PTA0_OUT, PTA0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PBCR", 0xffec0002, 16, 2, GROUP(
+-		PTB7_FN, PTB7_OUT, PTB7_IN, 0,
+-		PTB6_FN, PTB6_OUT, PTB6_IN, 0,
+-		PTB5_FN, PTB5_OUT, PTB5_IN, 0,
+-		PTB4_FN, PTB4_OUT, PTB4_IN, 0,
+-		PTB3_FN, PTB3_OUT, PTB3_IN, 0,
+-		PTB2_FN, PTB2_OUT, PTB2_IN, 0,
+-		PTB1_FN, PTB1_OUT, PTB1_IN, 0,
+-		PTB0_FN, PTB0_OUT, PTB0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PCCR", 0xffec0004, 16, 2, GROUP(
+-		PTC7_FN, PTC7_OUT, PTC7_IN, 0,
+-		PTC6_FN, PTC6_OUT, PTC6_IN, 0,
+-		PTC5_FN, PTC5_OUT, PTC5_IN, 0,
+-		PTC4_FN, PTC4_OUT, PTC4_IN, 0,
+-		PTC3_FN, PTC3_OUT, PTC3_IN, 0,
+-		PTC2_FN, PTC2_OUT, PTC2_IN, 0,
+-		PTC1_FN, PTC1_OUT, PTC1_IN, 0,
+-		PTC0_FN, PTC0_OUT, PTC0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PDCR", 0xffec0006, 16, 2, GROUP(
+-		PTD7_FN, PTD7_OUT, PTD7_IN, 0,
+-		PTD6_FN, PTD6_OUT, PTD6_IN, 0,
+-		PTD5_FN, PTD5_OUT, PTD5_IN, 0,
+-		PTD4_FN, PTD4_OUT, PTD4_IN, 0,
+-		PTD3_FN, PTD3_OUT, PTD3_IN, 0,
+-		PTD2_FN, PTD2_OUT, PTD2_IN, 0,
+-		PTD1_FN, PTD1_OUT, PTD1_IN, 0,
+-		PTD0_FN, PTD0_OUT, PTD0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PECR", 0xffec0008, 16, 2, GROUP(
+-		PTE7_FN, PTE7_OUT, PTE7_IN, 0,
+-		PTE6_FN, PTE6_OUT, PTE6_IN, 0,
+-		PTE5_FN, PTE5_OUT, PTE5_IN, 0,
+-		PTE4_FN, PTE4_OUT, PTE4_IN, 0,
+-		PTE3_FN, PTE3_OUT, PTE3_IN, 0,
+-		PTE2_FN, PTE2_OUT, PTE2_IN, 0,
+-		PTE1_FN, PTE1_OUT, PTE1_IN, 0,
+-		PTE0_FN, PTE0_OUT, PTE0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PFCR", 0xffec000a, 16, 2, GROUP(
+-		PTF7_FN, PTF7_OUT, PTF7_IN, 0,
+-		PTF6_FN, PTF6_OUT, PTF6_IN, 0,
+-		PTF5_FN, PTF5_OUT, PTF5_IN, 0,
+-		PTF4_FN, PTF4_OUT, PTF4_IN, 0,
+-		PTF3_FN, PTF3_OUT, PTF3_IN, 0,
+-		PTF2_FN, PTF2_OUT, PTF2_IN, 0,
+-		PTF1_FN, PTF1_OUT, PTF1_IN, 0,
+-		PTF0_FN, PTF0_OUT, PTF0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PGCR", 0xffec000c, 16, 2, GROUP(
+-		PTG7_FN, PTG7_OUT, PTG7_IN, 0,
+-		PTG6_FN, PTG6_OUT, PTG6_IN, 0,
+-		PTG5_FN, PTG5_OUT, PTG5_IN, 0,
+-		PTG4_FN, PTG4_OUT, PTG4_IN, 0,
+-		PTG3_FN, PTG3_OUT, PTG3_IN, 0,
+-		PTG2_FN, PTG2_OUT, PTG2_IN, 0,
+-		PTG1_FN, PTG1_OUT, PTG1_IN, 0,
+-		PTG0_FN, PTG0_OUT, PTG0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PHCR", 0xffec000e, 16, 2, GROUP(
+-		PTH7_FN, PTH7_OUT, PTH7_IN, 0,
+-		PTH6_FN, PTH6_OUT, PTH6_IN, 0,
+-		PTH5_FN, PTH5_OUT, PTH5_IN, 0,
+-		PTH4_FN, PTH4_OUT, PTH4_IN, 0,
+-		PTH3_FN, PTH3_OUT, PTH3_IN, 0,
+-		PTH2_FN, PTH2_OUT, PTH2_IN, 0,
+-		PTH1_FN, PTH1_OUT, PTH1_IN, 0,
+-		PTH0_FN, PTH0_OUT, PTH0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PICR", 0xffec0010, 16, 2, GROUP(
+-		PTI7_FN, PTI7_OUT, PTI7_IN, 0,
+-		PTI6_FN, PTI6_OUT, PTI6_IN, 0,
+-		PTI5_FN, PTI5_OUT, PTI5_IN, 0,
+-		PTI4_FN, PTI4_OUT, PTI4_IN, 0,
+-		PTI3_FN, PTI3_OUT, PTI3_IN, 0,
+-		PTI2_FN, PTI2_OUT, PTI2_IN, 0,
+-		PTI1_FN, PTI1_OUT, PTI1_IN, 0,
+-		PTI0_FN, PTI0_OUT, PTI0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PJCR", 0xffec0012, 16, 2, GROUP(
+-		0, 0, 0, 0,	/* reserved: always set 1 */
+-		PTJ6_FN, PTJ6_OUT, PTJ6_IN, 0,
+-		PTJ5_FN, PTJ5_OUT, PTJ5_IN, 0,
+-		PTJ4_FN, PTJ4_OUT, PTJ4_IN, 0,
+-		PTJ3_FN, PTJ3_OUT, PTJ3_IN, 0,
+-		PTJ2_FN, PTJ2_OUT, PTJ2_IN, 0,
+-		PTJ1_FN, PTJ1_OUT, PTJ1_IN, 0,
+-		PTJ0_FN, PTJ0_OUT, PTJ0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PKCR", 0xffec0014, 16, 2, GROUP(
+-		PTK7_FN, PTK7_OUT, PTK7_IN, 0,
+-		PTK6_FN, PTK6_OUT, PTK6_IN, 0,
+-		PTK5_FN, PTK5_OUT, PTK5_IN, 0,
+-		PTK4_FN, PTK4_OUT, PTK4_IN, 0,
+-		PTK3_FN, PTK3_OUT, PTK3_IN, 0,
+-		PTK2_FN, PTK2_OUT, PTK2_IN, 0,
+-		PTK1_FN, PTK1_OUT, PTK1_IN, 0,
+-		PTK0_FN, PTK0_OUT, PTK0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PLCR", 0xffec0016, 16, 2, GROUP(
+-		0, 0, 0, 0,	/* reserved: always set 1 */
+-		PTL6_FN, PTL6_OUT, PTL6_IN, 0,
+-		PTL5_FN, PTL5_OUT, PTL5_IN, 0,
+-		PTL4_FN, PTL4_OUT, PTL4_IN, 0,
+-		PTL3_FN, PTL3_OUT, PTL3_IN, 0,
+-		PTL2_FN, PTL2_OUT, PTL2_IN, 0,
+-		PTL1_FN, PTL1_OUT, PTL1_IN, 0,
+-		PTL0_FN, PTL0_OUT, PTL0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PMCR", 0xffec0018, 16, 2, GROUP(
+-		PTM7_FN, PTM7_OUT, PTM7_IN, 0,
+-		PTM6_FN, PTM6_OUT, PTM6_IN, 0,
+-		PTM5_FN, PTM5_OUT, PTM5_IN, 0,
+-		PTM4_FN, PTM4_OUT, PTM4_IN, 0,
+-		PTM3_FN, PTM3_OUT, PTM3_IN, 0,
+-		PTM2_FN, PTM2_OUT, PTM2_IN, 0,
+-		PTM1_FN, PTM1_OUT, PTM1_IN, 0,
+-		PTM0_FN, PTM0_OUT, PTM0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PNCR", 0xffec001a, 16, 2, GROUP(
+-		0, 0, 0, 0,	/* reserved: always set 1 */
+-		PTN6_FN, PTN6_OUT, PTN6_IN, 0,
+-		PTN5_FN, PTN5_OUT, PTN5_IN, 0,
+-		PTN4_FN, PTN4_OUT, PTN4_IN, 0,
+-		PTN3_FN, PTN3_OUT, PTN3_IN, 0,
+-		PTN2_FN, PTN2_OUT, PTN2_IN, 0,
+-		PTN1_FN, PTN1_OUT, PTN1_IN, 0,
+-		PTN0_FN, PTN0_OUT, PTN0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("POCR", 0xffec001c, 16, 2, GROUP(
+-		PTO7_FN, PTO7_OUT, PTO7_IN, 0,
+-		PTO6_FN, PTO6_OUT, PTO6_IN, 0,
+-		PTO5_FN, PTO5_OUT, PTO5_IN, 0,
+-		PTO4_FN, PTO4_OUT, PTO4_IN, 0,
+-		PTO3_FN, PTO3_OUT, PTO3_IN, 0,
+-		PTO2_FN, PTO2_OUT, PTO2_IN, 0,
+-		PTO1_FN, PTO1_OUT, PTO1_IN, 0,
+-		PTO0_FN, PTO0_OUT, PTO0_IN, 0 ))
+-	},
+-#if 0	/* FIXME: Remove it? */
+-	{ PINMUX_CFG_REG("PPCR", 0xffec001e, 16, 2, GROUP(
+-		0, 0, 0, 0,	/* reserved: always set 1 */
+-		PTP6_FN, PTP6_OUT, PTP6_IN, 0,
+-		PTP5_FN, PTP5_OUT, PTP5_IN, 0,
+-		PTP4_FN, PTP4_OUT, PTP4_IN, 0,
+-		PTP3_FN, PTP3_OUT, PTP3_IN, 0,
+-		PTP2_FN, PTP2_OUT, PTP2_IN, 0,
+-		PTP1_FN, PTP1_OUT, PTP1_IN, 0,
+-		PTP0_FN, PTP0_OUT, PTP0_IN, 0 ))
+-	},
 -#endif
+-	{ PINMUX_CFG_REG("PQCR", 0xffec0020, 16, 2, GROUP(
+-		0, 0, 0, 0,	/* reserved: always set 1 */
+-		PTQ6_FN, PTQ6_OUT, PTQ6_IN, 0,
+-		PTQ5_FN, PTQ5_OUT, PTQ5_IN, 0,
+-		PTQ4_FN, PTQ4_OUT, PTQ4_IN, 0,
+-		PTQ3_FN, PTQ3_OUT, PTQ3_IN, 0,
+-		PTQ2_FN, PTQ2_OUT, PTQ2_IN, 0,
+-		PTQ1_FN, PTQ1_OUT, PTQ1_IN, 0,
+-		PTQ0_FN, PTQ0_OUT, PTQ0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PRCR", 0xffec0022, 16, 2, GROUP(
+-		PTR7_FN, PTR7_OUT, PTR7_IN, 0,
+-		PTR6_FN, PTR6_OUT, PTR6_IN, 0,
+-		PTR5_FN, PTR5_OUT, PTR5_IN, 0,
+-		PTR4_FN, PTR4_OUT, PTR4_IN, 0,
+-		PTR3_FN, PTR3_OUT, PTR3_IN, 0,
+-		PTR2_FN, PTR2_OUT, PTR2_IN, 0,
+-		PTR1_FN, PTR1_OUT, PTR1_IN, 0,
+-		PTR0_FN, PTR0_OUT, PTR0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PSCR", 0xffec0024, 16, 2, GROUP(
+-		PTS7_FN, PTS7_OUT, PTS7_IN, 0,
+-		PTS6_FN, PTS6_OUT, PTS6_IN, 0,
+-		PTS5_FN, PTS5_OUT, PTS5_IN, 0,
+-		PTS4_FN, PTS4_OUT, PTS4_IN, 0,
+-		PTS3_FN, PTS3_OUT, PTS3_IN, 0,
+-		PTS2_FN, PTS2_OUT, PTS2_IN, 0,
+-		PTS1_FN, PTS1_OUT, PTS1_IN, 0,
+-		PTS0_FN, PTS0_OUT, PTS0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PTCR", 0xffec0026, 16, 2, GROUP(
+-		PTT7_FN, PTT7_OUT, PTT7_IN, 0,
+-		PTT6_FN, PTT6_OUT, PTT6_IN, 0,
+-		PTT5_FN, PTT5_OUT, PTT5_IN, 0,
+-		PTT4_FN, PTT4_OUT, PTT4_IN, 0,
+-		PTT3_FN, PTT3_OUT, PTT3_IN, 0,
+-		PTT2_FN, PTT2_OUT, PTT2_IN, 0,
+-		PTT1_FN, PTT1_OUT, PTT1_IN, 0,
+-		PTT0_FN, PTT0_OUT, PTT0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PUCR", 0xffec0028, 16, 2, GROUP(
+-		PTU7_FN, PTU7_OUT, PTU7_IN, 0,
+-		PTU6_FN, PTU6_OUT, PTU6_IN, 0,
+-		PTU5_FN, PTU5_OUT, PTU5_IN, 0,
+-		PTU4_FN, PTU4_OUT, PTU4_IN, 0,
+-		PTU3_FN, PTU3_OUT, PTU3_IN, 0,
+-		PTU2_FN, PTU2_OUT, PTU2_IN, 0,
+-		PTU1_FN, PTU1_OUT, PTU1_IN, 0,
+-		PTU0_FN, PTU0_OUT, PTU0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PVCR", 0xffec002a, 16, 2, GROUP(
+-		PTV7_FN, PTV7_OUT, PTV7_IN, 0,
+-		PTV6_FN, PTV6_OUT, PTV6_IN, 0,
+-		PTV5_FN, PTV5_OUT, PTV5_IN, 0,
+-		PTV4_FN, PTV4_OUT, PTV4_IN, 0,
+-		PTV3_FN, PTV3_OUT, PTV3_IN, 0,
+-		PTV2_FN, PTV2_OUT, PTV2_IN, 0,
+-		PTV1_FN, PTV1_OUT, PTV1_IN, 0,
+-		PTV0_FN, PTV0_OUT, PTV0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PWCR", 0xffec002c, 16, 2, GROUP(
+-		PTW7_FN, PTW7_OUT, PTW7_IN, 0,
+-		PTW6_FN, PTW6_OUT, PTW6_IN, 0,
+-		PTW5_FN, PTW5_OUT, PTW5_IN, 0,
+-		PTW4_FN, PTW4_OUT, PTW4_IN, 0,
+-		PTW3_FN, PTW3_OUT, PTW3_IN, 0,
+-		PTW2_FN, PTW2_OUT, PTW2_IN, 0,
+-		PTW1_FN, PTW1_OUT, PTW1_IN, 0,
+-		PTW0_FN, PTW0_OUT, PTW0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PXCR", 0xffec002e, 16, 2, GROUP(
+-		PTX7_FN, PTX7_OUT, PTX7_IN, 0,
+-		PTX6_FN, PTX6_OUT, PTX6_IN, 0,
+-		PTX5_FN, PTX5_OUT, PTX5_IN, 0,
+-		PTX4_FN, PTX4_OUT, PTX4_IN, 0,
+-		PTX3_FN, PTX3_OUT, PTX3_IN, 0,
+-		PTX2_FN, PTX2_OUT, PTX2_IN, 0,
+-		PTX1_FN, PTX1_OUT, PTX1_IN, 0,
+-		PTX0_FN, PTX0_OUT, PTX0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PYCR", 0xffec0030, 16, 2, GROUP(
+-		PTY7_FN, PTY7_OUT, PTY7_IN, 0,
+-		PTY6_FN, PTY6_OUT, PTY6_IN, 0,
+-		PTY5_FN, PTY5_OUT, PTY5_IN, 0,
+-		PTY4_FN, PTY4_OUT, PTY4_IN, 0,
+-		PTY3_FN, PTY3_OUT, PTY3_IN, 0,
+-		PTY2_FN, PTY2_OUT, PTY2_IN, 0,
+-		PTY1_FN, PTY1_OUT, PTY1_IN, 0,
+-		PTY0_FN, PTY0_OUT, PTY0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PZCR", 0xffec0032, 16, 2, GROUP(
+-		PTZ7_FN, PTZ7_OUT, PTZ7_IN, 0,
+-		PTZ6_FN, PTZ6_OUT, PTZ6_IN, 0,
+-		PTZ5_FN, PTZ5_OUT, PTZ5_IN, 0,
+-		PTZ4_FN, PTZ4_OUT, PTZ4_IN, 0,
+-		PTZ3_FN, PTZ3_OUT, PTZ3_IN, 0,
+-		PTZ2_FN, PTZ2_OUT, PTZ2_IN, 0,
+-		PTZ1_FN, PTZ1_OUT, PTZ1_IN, 0,
+-		PTZ0_FN, PTZ0_OUT, PTZ0_IN, 0 ))
+-	},
 -
--#include "8390.h"
+-	{ PINMUX_CFG_REG("PSEL0", 0xffec0070, 16, 1, GROUP(
+-		PS0_15_FN1, PS0_15_FN2,
+-		PS0_14_FN1, PS0_14_FN2,
+-		PS0_13_FN1, PS0_13_FN2,
+-		PS0_12_FN1, PS0_12_FN2,
+-		PS0_11_FN1, PS0_11_FN2,
+-		PS0_10_FN1, PS0_10_FN2,
+-		PS0_9_FN1, PS0_9_FN2,
+-		PS0_8_FN1, PS0_8_FN2,
+-		PS0_7_FN1, PS0_7_FN2,
+-		PS0_6_FN1, PS0_6_FN2,
+-		PS0_5_FN1, PS0_5_FN2,
+-		PS0_4_FN1, PS0_4_FN2,
+-		PS0_3_FN1, PS0_3_FN2,
+-		PS0_2_FN1, PS0_2_FN2,
+-		0, 0,
+-		0, 0, ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PSEL1", 0xffec0072, 16,
+-			     GROUP(-5, 1, 1, 1, -5, 1, -2),
+-			     GROUP(
+-		/* RESERVED [5] */
+-		PS1_10_FN1, PS1_10_FN2,
+-		PS1_9_FN1, PS1_9_FN2,
+-		PS1_8_FN1, PS1_8_FN2,
+-		/* RESERVED [5] */
+-		PS1_2_FN1, PS1_2_FN2,
+-		/* RESERVED [2] */ ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PSEL2", 0xffec0074, 16,
+-			     GROUP(-2, 1, 1, -4, 1, 1, 1, 1, -1, 1, -2),
+-			     GROUP(
+-		/* RESERVED [2] */
+-		PS2_13_FN1, PS2_13_FN2,
+-		PS2_12_FN1, PS2_12_FN2,
+-		/* RESERVED [4] */
+-		PS2_7_FN1, PS2_7_FN2,
+-		PS2_6_FN1, PS2_6_FN2,
+-		PS2_5_FN1, PS2_5_FN2,
+-		PS2_4_FN1, PS2_4_FN2,
+-		/* RESERVED [1] */
+-		PS2_2_FN1, PS2_2_FN2,
+-		/* RESERVED [2] */ ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PSEL3", 0xffec0076, 16,
+-			     GROUP(1, 1, 1, 1, 1, 1, 1, 1, 1, -4, 1, 1, -1),
+-			     GROUP(
+-		PS3_15_FN1, PS3_15_FN2,
+-		PS3_14_FN1, PS3_14_FN2,
+-		PS3_13_FN1, PS3_13_FN2,
+-		PS3_12_FN1, PS3_12_FN2,
+-		PS3_11_FN1, PS3_11_FN2,
+-		PS3_10_FN1, PS3_10_FN2,
+-		PS3_9_FN1, PS3_9_FN2,
+-		PS3_8_FN1, PS3_8_FN2,
+-		PS3_7_FN1, PS3_7_FN2,
+-		/* RESERVED [4] */
+-		PS3_2_FN1, PS3_2_FN2,
+-		PS3_1_FN1, PS3_1_FN2,
+-		/* RESERVED [1] */ ))
+-	},
 -
--#define DRV_NAME "stnic"
+-	{ PINMUX_CFG_REG_VAR("PSEL4", 0xffec0078, 16,
+-			     GROUP(-1, 1, 1, 1, -1, 1, 1, 1, -3, 1, 1, 1,
+-				   1, 1),
+-			     GROUP(
+-		/* RESERVED [1] */
+-		PS4_14_FN1, PS4_14_FN2,
+-		PS4_13_FN1, PS4_13_FN2,
+-		PS4_12_FN1, PS4_12_FN2,
+-		/* RESERVED [1] */
+-		PS4_10_FN1, PS4_10_FN2,
+-		PS4_9_FN1, PS4_9_FN2,
+-		PS4_8_FN1, PS4_8_FN2,
+-		/* RESERVED [3] */
+-		PS4_4_FN1, PS4_4_FN2,
+-		PS4_3_FN1, PS4_3_FN2,
+-		PS4_2_FN1, PS4_2_FN2,
+-		PS4_1_FN1, PS4_1_FN2,
+-		PS4_0_FN1, PS4_0_FN2, ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PSEL5", 0xffec007a, 16,
+-			     GROUP(-4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -2),
+-			     GROUP(
+-		/* RESERVED [4] */
+-		PS5_11_FN1, PS5_11_FN2,
+-		PS5_10_FN1, PS5_10_FN2,
+-		PS5_9_FN1, PS5_9_FN2,
+-		PS5_8_FN1, PS5_8_FN2,
+-		PS5_7_FN1, PS5_7_FN2,
+-		PS5_6_FN1, PS5_6_FN2,
+-		PS5_5_FN1, PS5_5_FN2,
+-		PS5_4_FN1, PS5_4_FN2,
+-		PS5_3_FN1, PS5_3_FN2,
+-		PS5_2_FN1, PS5_2_FN2,
+-		/* RESERVED [2] */ ))
+-	},
+-	{ PINMUX_CFG_REG("PSEL6", 0xffec007c, 16, 1, GROUP(
+-		PS6_15_FN1, PS6_15_FN2,
+-		PS6_14_FN1, PS6_14_FN2,
+-		PS6_13_FN1, PS6_13_FN2,
+-		PS6_12_FN1, PS6_12_FN2,
+-		PS6_11_FN1, PS6_11_FN2,
+-		PS6_10_FN1, PS6_10_FN2,
+-		PS6_9_FN1, PS6_9_FN2,
+-		PS6_8_FN1, PS6_8_FN2,
+-		PS6_7_FN1, PS6_7_FN2,
+-		PS6_6_FN1, PS6_6_FN2,
+-		PS6_5_FN1, PS6_5_FN2,
+-		PS6_4_FN1, PS6_4_FN2,
+-		PS6_3_FN1, PS6_3_FN2,
+-		PS6_2_FN1, PS6_2_FN2,
+-		PS6_1_FN1, PS6_1_FN2,
+-		PS6_0_FN1, PS6_0_FN2, ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PSEL7", 0xffec0082, 16,
+-			     GROUP(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -5),
+-			     GROUP(
+-		PS7_15_FN1, PS7_15_FN2,
+-		PS7_14_FN1, PS7_14_FN2,
+-		PS7_13_FN1, PS7_13_FN2,
+-		PS7_12_FN1, PS7_12_FN2,
+-		PS7_11_FN1, PS7_11_FN2,
+-		PS7_10_FN1, PS7_10_FN2,
+-		PS7_9_FN1, PS7_9_FN2,
+-		PS7_8_FN1, PS7_8_FN2,
+-		PS7_7_FN1, PS7_7_FN2,
+-		PS7_6_FN1, PS7_6_FN2,
+-		PS7_5_FN1, PS7_5_FN2,
+-		/* RESERVED [5] */ ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PSEL8", 0xffec0084, 16,
+-			     GROUP(1, 1, 1, 1, 1, 1, 1, 1, -8),
+-			     GROUP(
+-		PS8_15_FN1, PS8_15_FN2,
+-		PS8_14_FN1, PS8_14_FN2,
+-		PS8_13_FN1, PS8_13_FN2,
+-		PS8_12_FN1, PS8_12_FN2,
+-		PS8_11_FN1, PS8_11_FN2,
+-		PS8_10_FN1, PS8_10_FN2,
+-		PS8_9_FN1, PS8_9_FN2,
+-		PS8_8_FN1, PS8_8_FN2,
+-		/* RESERVED [8] */ ))
+-	},
+-	{}
+-};
 -
--#define byte	unsigned char
--#define half	unsigned short
--#define word	unsigned int
--#define vbyte	volatile unsigned char
--#define vhalf	volatile unsigned short
--#define vword	volatile unsigned int
+-static const struct pinmux_data_reg pinmux_data_regs[] = {
+-	{ PINMUX_DATA_REG("PADR", 0xffec0034, 8, GROUP(
+-		PTA7_DATA, PTA6_DATA, PTA5_DATA, PTA4_DATA,
+-		PTA3_DATA, PTA2_DATA, PTA1_DATA, PTA0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PBDR", 0xffec0036, 8, GROUP(
+-		PTB7_DATA, PTB6_DATA, PTB5_DATA, PTB4_DATA,
+-		PTB3_DATA, PTB2_DATA, PTB1_DATA, PTB0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PCDR", 0xffec0038, 8, GROUP(
+-		PTC7_DATA, PTC6_DATA, PTC5_DATA, PTC4_DATA,
+-		PTC3_DATA, PTC2_DATA, PTC1_DATA, PTC0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PDDR", 0xffec003a, 8, GROUP(
+-		PTD7_DATA, PTD6_DATA, PTD5_DATA, PTD4_DATA,
+-		PTD3_DATA, PTD2_DATA, PTD1_DATA, PTD0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PEDR", 0xffec003c, 8, GROUP(
+-		PTE7_DATA, PTE6_DATA, PTE5_DATA, PTE4_DATA,
+-		PTE3_DATA, PTE2_DATA, PTE1_DATA, PTE0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PFDR", 0xffec003e, 8, GROUP(
+-		PTF7_DATA, PTF6_DATA, PTF5_DATA, PTF4_DATA,
+-		PTF3_DATA, PTF2_DATA, PTF1_DATA, PTF0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PGDR", 0xffec0040, 8, GROUP(
+-		PTG7_DATA, PTG6_DATA, PTG5_DATA, PTG4_DATA,
+-		PTG3_DATA, PTG2_DATA, PTG1_DATA, PTG0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PHDR", 0xffec0042, 8, GROUP(
+-		PTH7_DATA, PTH6_DATA, PTH5_DATA, PTH4_DATA,
+-		PTH3_DATA, PTH2_DATA, PTH1_DATA, PTH0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PIDR", 0xffec0044, 8, GROUP(
+-		PTI7_DATA, PTI6_DATA, PTI5_DATA, PTI4_DATA,
+-		PTI3_DATA, PTI2_DATA, PTI1_DATA, PTI0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PJDR", 0xffec0046, 8, GROUP(
+-		0, PTJ6_DATA, PTJ5_DATA, PTJ4_DATA,
+-		PTJ3_DATA, PTJ2_DATA, PTJ1_DATA, PTJ0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PKDR", 0xffec0048, 8, GROUP(
+-		PTK7_DATA, PTK6_DATA, PTK5_DATA, PTK4_DATA,
+-		PTK3_DATA, PTK2_DATA, PTK1_DATA, PTK0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PLDR", 0xffec004a, 8, GROUP(
+-		0, PTL6_DATA, PTL5_DATA, PTL4_DATA,
+-		PTL3_DATA, PTL2_DATA, PTL1_DATA, PTL0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PMDR", 0xffec004c, 8, GROUP(
+-		PTM7_DATA, PTM6_DATA, PTM5_DATA, PTM4_DATA,
+-		PTM3_DATA, PTM2_DATA, PTM1_DATA, PTM0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PNDR", 0xffec004e, 8, GROUP(
+-		0, PTN6_DATA, PTN5_DATA, PTN4_DATA,
+-		PTN3_DATA, PTN2_DATA, PTN1_DATA, PTN0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PODR", 0xffec0050, 8, GROUP(
+-		PTO7_DATA, PTO6_DATA, PTO5_DATA, PTO4_DATA,
+-		PTO3_DATA, PTO2_DATA, PTO1_DATA, PTO0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PPDR", 0xffec0052, 8, GROUP(
+-		PTP7_DATA, PTP6_DATA, PTP5_DATA, PTP4_DATA,
+-		PTP3_DATA, PTP2_DATA, PTP1_DATA, PTP0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PQDR", 0xffec0054, 8, GROUP(
+-		0, PTQ6_DATA, PTQ5_DATA, PTQ4_DATA,
+-		PTQ3_DATA, PTQ2_DATA, PTQ1_DATA, PTQ0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PRDR", 0xffec0056, 8, GROUP(
+-		PTR7_DATA, PTR6_DATA, PTR5_DATA, PTR4_DATA,
+-		PTR3_DATA, PTR2_DATA, PTR1_DATA, PTR0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PSDR", 0xffec0058, 8, GROUP(
+-		PTS7_DATA, PTS6_DATA, PTS5_DATA, PTS4_DATA,
+-		PTS3_DATA, PTS2_DATA, PTS1_DATA, PTS0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PTDR", 0xffec005a, 8, GROUP(
+-		PTT7_DATA, PTT6_DATA, PTT5_DATA, PTT4_DATA,
+-		PTT3_DATA, PTT2_DATA, PTT1_DATA, PTT0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PUDR", 0xffec005c, 8, GROUP(
+-		PTU7_DATA, PTU6_DATA, PTU5_DATA, PTU4_DATA,
+-		PTU3_DATA, PTU2_DATA, PTU1_DATA, PTU0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PVDR", 0xffec005e, 8, GROUP(
+-		PTV7_DATA, PTV6_DATA, PTV5_DATA, PTV4_DATA,
+-		PTV3_DATA, PTV2_DATA, PTV1_DATA, PTV0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PWDR", 0xffec0060, 8, GROUP(
+-		PTW7_DATA, PTW6_DATA, PTW5_DATA, PTW4_DATA,
+-		PTW3_DATA, PTW2_DATA, PTW1_DATA, PTW0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PXDR", 0xffec0062, 8, GROUP(
+-		PTX7_DATA, PTX6_DATA, PTX5_DATA, PTX4_DATA,
+-		PTX3_DATA, PTX2_DATA, PTX1_DATA, PTX0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PYDR", 0xffec0064, 8, GROUP(
+-		PTY7_DATA, PTY6_DATA, PTY5_DATA, PTY4_DATA,
+-		PTY3_DATA, PTY2_DATA, PTY1_DATA, PTY0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PZDR", 0xffec0066, 8, GROUP(
+-		PTZ7_DATA, PTZ6_DATA, PTZ5_DATA, PTZ4_DATA,
+-		PTZ3_DATA, PTZ2_DATA, PTZ1_DATA, PTZ0_DATA ))
+-	},
+-	{ },
+-};
 -
--#define STNIC_RUN	0x01	/* 1 == Run, 0 == reset. */
+-const struct sh_pfc_soc_info sh7757_pinmux_info = {
+-	.name = "sh7757_pfc",
+-	.input = { PINMUX_INPUT_BEGIN, PINMUX_INPUT_END },
+-	.output = { PINMUX_OUTPUT_BEGIN, PINMUX_OUTPUT_END },
+-	.function = { PINMUX_FUNCTION_BEGIN, PINMUX_FUNCTION_END },
 -
--#define START_PG	0	/* First page of TX buffer */
--#define STOP_PG		128	/* Last page +1 of RX ring */
+-	.pins = pinmux_pins,
+-	.nr_pins = ARRAY_SIZE(pinmux_pins),
+-	.func_gpios = pinmux_func_gpios,
+-	.nr_func_gpios = ARRAY_SIZE(pinmux_func_gpios),
 -
--/* Alias */
--#define STNIC_CR	E8390_CMD
--#define PG0_RSAR0	EN0_RSARLO
--#define PG0_RSAR1	EN0_RSARHI
--#define PG0_RBCR0	EN0_RCNTLO
--#define PG0_RBCR1	EN0_RCNTHI
+-	.cfg_regs = pinmux_config_regs,
+-	.data_regs = pinmux_data_regs,
 -
--#define CR_RRD		E8390_RREAD
--#define CR_RWR		E8390_RWRITE
--#define CR_PG0		E8390_PAGE0
--#define CR_STA		E8390_START
--#define CR_RDMA		E8390_NODMA
+-	.pinmux_data = pinmux_data,
+-	.pinmux_data_size = ARRAY_SIZE(pinmux_data),
+-};
+diff --git a/drivers/pinctrl/renesas/pfc-sh7785.c b/drivers/pinctrl/renesas/pfc-sh7785.c
+deleted file mode 100644
+index 126b663bb6eb3a..00000000000000
+--- a/drivers/pinctrl/renesas/pfc-sh7785.c
++++ /dev/null
+@@ -1,1258 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * SH7785 Pinmux
+- *
+- *  Copyright (C) 2008  Magnus Damm
+- */
 -
--/* FIXME! YOU MUST SET YOUR OWN ETHER ADDRESS.  */
--static byte stnic_eadr[6] =
--{0x00, 0xc0, 0x6e, 0x00, 0x00, 0x07};
+-#include <linux/kernel.h>
+-#include <cpu/sh7785.h>
 -
--static struct net_device *stnic_dev;
+-#include "sh_pfc.h"
 -
--static void stnic_reset (struct net_device *dev);
--static void stnic_get_hdr (struct net_device *dev, struct e8390_pkt_hdr *hdr,
--			   int ring_page);
--static void stnic_block_input (struct net_device *dev, int count,
--			       struct sk_buff *skb , int ring_offset);
--static void stnic_block_output (struct net_device *dev, int count,
--				const unsigned char *buf, int start_page);
+-enum {
+-	PINMUX_RESERVED = 0,
 -
--static void stnic_init (struct net_device *dev);
+-	PINMUX_DATA_BEGIN,
+-	PA7_DATA, PA6_DATA, PA5_DATA, PA4_DATA,
+-	PA3_DATA, PA2_DATA, PA1_DATA, PA0_DATA,
+-	PB7_DATA, PB6_DATA, PB5_DATA, PB4_DATA,
+-	PB3_DATA, PB2_DATA, PB1_DATA, PB0_DATA,
+-	PC7_DATA, PC6_DATA, PC5_DATA, PC4_DATA,
+-	PC3_DATA, PC2_DATA, PC1_DATA, PC0_DATA,
+-	PD7_DATA, PD6_DATA, PD5_DATA, PD4_DATA,
+-	PD3_DATA, PD2_DATA, PD1_DATA, PD0_DATA,
+-	PE5_DATA, PE4_DATA, PE3_DATA, PE2_DATA, PE1_DATA, PE0_DATA,
+-	PF7_DATA, PF6_DATA, PF5_DATA, PF4_DATA,
+-	PF3_DATA, PF2_DATA, PF1_DATA, PF0_DATA,
+-	PG7_DATA, PG6_DATA, PG5_DATA, PG4_DATA,
+-	PG3_DATA, PG2_DATA, PG1_DATA, PG0_DATA,
+-	PH7_DATA, PH6_DATA, PH5_DATA, PH4_DATA,
+-	PH3_DATA, PH2_DATA, PH1_DATA, PH0_DATA,
+-	PJ7_DATA, PJ6_DATA, PJ5_DATA, PJ4_DATA,
+-	PJ3_DATA, PJ2_DATA, PJ1_DATA, PJ0_DATA,
+-	PK7_DATA, PK6_DATA, PK5_DATA, PK4_DATA,
+-	PK3_DATA, PK2_DATA, PK1_DATA, PK0_DATA,
+-	PL7_DATA, PL6_DATA, PL5_DATA, PL4_DATA,
+-	PL3_DATA, PL2_DATA, PL1_DATA, PL0_DATA,
+-	PM1_DATA, PM0_DATA,
+-	PN7_DATA, PN6_DATA, PN5_DATA, PN4_DATA,
+-	PN3_DATA, PN2_DATA, PN1_DATA, PN0_DATA,
+-	PP5_DATA, PP4_DATA, PP3_DATA, PP2_DATA, PP1_DATA, PP0_DATA,
+-	PQ4_DATA, PQ3_DATA, PQ2_DATA, PQ1_DATA, PQ0_DATA,
+-	PR3_DATA, PR2_DATA, PR1_DATA, PR0_DATA,
+-	PINMUX_DATA_END,
 -
--static u32 stnic_msg_enable;
+-	PINMUX_INPUT_BEGIN,
+-	PA7_IN, PA6_IN, PA5_IN, PA4_IN,
+-	PA3_IN, PA2_IN, PA1_IN, PA0_IN,
+-	PB7_IN, PB6_IN, PB5_IN, PB4_IN,
+-	PB3_IN, PB2_IN, PB1_IN, PB0_IN,
+-	PC7_IN, PC6_IN, PC5_IN, PC4_IN,
+-	PC3_IN, PC2_IN, PC1_IN, PC0_IN,
+-	PD7_IN, PD6_IN, PD5_IN, PD4_IN,
+-	PD3_IN, PD2_IN, PD1_IN, PD0_IN,
+-	PE5_IN, PE4_IN, PE3_IN, PE2_IN, PE1_IN, PE0_IN,
+-	PF7_IN, PF6_IN, PF5_IN, PF4_IN,
+-	PF3_IN, PF2_IN, PF1_IN, PF0_IN,
+-	PG7_IN, PG6_IN, PG5_IN, PG4_IN,
+-	PG3_IN, PG2_IN, PG1_IN, PG0_IN,
+-	PH7_IN, PH6_IN, PH5_IN, PH4_IN,
+-	PH3_IN, PH2_IN, PH1_IN, PH0_IN,
+-	PJ7_IN, PJ6_IN, PJ5_IN, PJ4_IN,
+-	PJ3_IN, PJ2_IN, PJ1_IN, PJ0_IN,
+-	PK7_IN, PK6_IN, PK5_IN, PK4_IN,
+-	PK3_IN, PK2_IN, PK1_IN, PK0_IN,
+-	PL7_IN, PL6_IN, PL5_IN, PL4_IN,
+-	PL3_IN, PL2_IN, PL1_IN, PL0_IN,
+-	PM1_IN, PM0_IN,
+-	PN7_IN, PN6_IN, PN5_IN, PN4_IN,
+-	PN3_IN, PN2_IN, PN1_IN, PN0_IN,
+-	PP5_IN, PP4_IN, PP3_IN, PP2_IN, PP1_IN, PP0_IN,
+-	PQ4_IN, PQ3_IN, PQ2_IN, PQ1_IN, PQ0_IN,
+-	PR3_IN, PR2_IN, PR1_IN, PR0_IN,
+-	PINMUX_INPUT_END,
 -
--module_param_named(msg_enable, stnic_msg_enable, uint, 0444);
--MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
+-	PINMUX_OUTPUT_BEGIN,
+-	PA7_OUT, PA6_OUT, PA5_OUT, PA4_OUT,
+-	PA3_OUT, PA2_OUT, PA1_OUT, PA0_OUT,
+-	PB7_OUT, PB6_OUT, PB5_OUT, PB4_OUT,
+-	PB3_OUT, PB2_OUT, PB1_OUT, PB0_OUT,
+-	PC7_OUT, PC6_OUT, PC5_OUT, PC4_OUT,
+-	PC3_OUT, PC2_OUT, PC1_OUT, PC0_OUT,
+-	PD7_OUT, PD6_OUT, PD5_OUT, PD4_OUT,
+-	PD3_OUT, PD2_OUT, PD1_OUT, PD0_OUT,
+-	PE5_OUT, PE4_OUT, PE3_OUT, PE2_OUT, PE1_OUT, PE0_OUT,
+-	PF7_OUT, PF6_OUT, PF5_OUT, PF4_OUT,
+-	PF3_OUT, PF2_OUT, PF1_OUT, PF0_OUT,
+-	PG7_OUT, PG6_OUT, PG5_OUT, PG4_OUT,
+-	PG3_OUT, PG2_OUT, PG1_OUT, PG0_OUT,
+-	PH7_OUT, PH6_OUT, PH5_OUT, PH4_OUT,
+-	PH3_OUT, PH2_OUT, PH1_OUT, PH0_OUT,
+-	PJ7_OUT, PJ6_OUT, PJ5_OUT, PJ4_OUT,
+-	PJ3_OUT, PJ2_OUT, PJ1_OUT, PJ0_OUT,
+-	PK7_OUT, PK6_OUT, PK5_OUT, PK4_OUT,
+-	PK3_OUT, PK2_OUT, PK1_OUT, PK0_OUT,
+-	PL7_OUT, PL6_OUT, PL5_OUT, PL4_OUT,
+-	PL3_OUT, PL2_OUT, PL1_OUT, PL0_OUT,
+-	PM1_OUT, PM0_OUT,
+-	PN7_OUT, PN6_OUT, PN5_OUT, PN4_OUT,
+-	PN3_OUT, PN2_OUT, PN1_OUT, PN0_OUT,
+-	PP5_OUT, PP4_OUT, PP3_OUT, PP2_OUT, PP1_OUT, PP0_OUT,
+-	PQ4_OUT, PQ3_OUT, PQ2_OUT, PQ1_OUT, PQ0_OUT,
+-	PR3_OUT, PR2_OUT, PR1_OUT, PR0_OUT,
+-	PINMUX_OUTPUT_END,
 -
--/* SH7750 specific read/write io. */
--static inline void
--STNIC_DELAY (void)
--{
--  vword trash;
--  trash = *(vword *) 0xa0000000;
--  trash = *(vword *) 0xa0000000;
--  trash = *(vword *) 0xa0000000;
--}
+-	PINMUX_FUNCTION_BEGIN,
+-	PA7_FN, PA6_FN, PA5_FN, PA4_FN,
+-	PA3_FN, PA2_FN, PA1_FN, PA0_FN,
+-	PB7_FN, PB6_FN, PB5_FN, PB4_FN,
+-	PB3_FN, PB2_FN, PB1_FN, PB0_FN,
+-	PC7_FN, PC6_FN, PC5_FN, PC4_FN,
+-	PC3_FN, PC2_FN, PC1_FN, PC0_FN,
+-	PD7_FN, PD6_FN, PD5_FN, PD4_FN,
+-	PD3_FN, PD2_FN, PD1_FN, PD0_FN,
+-	PE5_FN, PE4_FN, PE3_FN, PE2_FN, PE1_FN, PE0_FN,
+-	PF7_FN, PF6_FN, PF5_FN, PF4_FN,
+-	PF3_FN, PF2_FN, PF1_FN, PF0_FN,
+-	PG7_FN, PG6_FN, PG5_FN, PG4_FN,
+-	PG3_FN, PG2_FN, PG1_FN, PG0_FN,
+-	PH7_FN, PH6_FN, PH5_FN, PH4_FN,
+-	PH3_FN, PH2_FN, PH1_FN, PH0_FN,
+-	PJ7_FN, PJ6_FN, PJ5_FN, PJ4_FN,
+-	PJ3_FN, PJ2_FN, PJ1_FN, PJ0_FN,
+-	PK7_FN, PK6_FN, PK5_FN, PK4_FN,
+-	PK3_FN, PK2_FN, PK1_FN, PK0_FN,
+-	PL7_FN, PL6_FN, PL5_FN, PL4_FN,
+-	PL3_FN, PL2_FN, PL1_FN, PL0_FN,
+-	PM1_FN, PM0_FN,
+-	PN7_FN, PN6_FN, PN5_FN, PN4_FN,
+-	PN3_FN, PN2_FN, PN1_FN, PN0_FN,
+-	PP5_FN, PP4_FN, PP3_FN, PP2_FN, PP1_FN, PP0_FN,
+-	PQ4_FN, PQ3_FN, PQ2_FN, PQ1_FN, PQ0_FN,
+-	PR3_FN, PR2_FN, PR1_FN, PR0_FN,
+-	P1MSEL15_0, P1MSEL15_1,
+-	P1MSEL14_0, P1MSEL14_1,
+-	P1MSEL13_0, P1MSEL13_1,
+-	P1MSEL12_0, P1MSEL12_1,
+-	P1MSEL11_0, P1MSEL11_1,
+-	P1MSEL10_0, P1MSEL10_1,
+-	P1MSEL9_0, P1MSEL9_1,
+-	P1MSEL8_0, P1MSEL8_1,
+-	P1MSEL7_0, P1MSEL7_1,
+-	P1MSEL6_0, P1MSEL6_1,
+-	P1MSEL5_0,
+-	P1MSEL4_0, P1MSEL4_1,
+-	P1MSEL3_0, P1MSEL3_1,
+-	P1MSEL2_0, P1MSEL2_1,
+-	P1MSEL1_0, P1MSEL1_1,
+-	P1MSEL0_0, P1MSEL0_1,
+-	P2MSEL2_0, P2MSEL2_1,
+-	P2MSEL1_0, P2MSEL1_1,
+-	P2MSEL0_0, P2MSEL0_1,
+-	PINMUX_FUNCTION_END,
 -
--static inline byte
--STNIC_READ (int reg)
--{
--  byte val;
+-	PINMUX_MARK_BEGIN,
+-	D63_AD31_MARK,
+-	D62_AD30_MARK,
+-	D61_AD29_MARK,
+-	D60_AD28_MARK,
+-	D59_AD27_MARK,
+-	D58_AD26_MARK,
+-	D57_AD25_MARK,
+-	D56_AD24_MARK,
+-	D55_AD23_MARK,
+-	D54_AD22_MARK,
+-	D53_AD21_MARK,
+-	D52_AD20_MARK,
+-	D51_AD19_MARK,
+-	D50_AD18_MARK,
+-	D49_AD17_DB5_MARK,
+-	D48_AD16_DB4_MARK,
+-	D47_AD15_DB3_MARK,
+-	D46_AD14_DB2_MARK,
+-	D45_AD13_DB1_MARK,
+-	D44_AD12_DB0_MARK,
+-	D43_AD11_DG5_MARK,
+-	D42_AD10_DG4_MARK,
+-	D41_AD9_DG3_MARK,
+-	D40_AD8_DG2_MARK,
+-	D39_AD7_DG1_MARK,
+-	D38_AD6_DG0_MARK,
+-	D37_AD5_DR5_MARK,
+-	D36_AD4_DR4_MARK,
+-	D35_AD3_DR3_MARK,
+-	D34_AD2_DR2_MARK,
+-	D33_AD1_DR1_MARK,
+-	D32_AD0_DR0_MARK,
+-	REQ1_MARK,
+-	REQ2_MARK,
+-	REQ3_MARK,
+-	GNT1_MARK,
+-	GNT2_MARK,
+-	GNT3_MARK,
+-	MMCCLK_MARK,
+-	D31_MARK,
+-	D30_MARK,
+-	D29_MARK,
+-	D28_MARK,
+-	D27_MARK,
+-	D26_MARK,
+-	D25_MARK,
+-	D24_MARK,
+-	D23_MARK,
+-	D22_MARK,
+-	D21_MARK,
+-	D20_MARK,
+-	D19_MARK,
+-	D18_MARK,
+-	D17_MARK,
+-	D16_MARK,
+-	SCIF1_SCK_MARK,
+-	SCIF1_RXD_MARK,
+-	SCIF1_TXD_MARK,
+-	SCIF0_CTS_MARK,
+-	INTD_MARK,
+-	FCE_MARK,
+-	SCIF0_RTS_MARK,
+-	HSPI_CS_MARK,
+-	FSE_MARK,
+-	SCIF0_SCK_MARK,
+-	HSPI_CLK_MARK,
+-	FRE_MARK,
+-	SCIF0_RXD_MARK,
+-	HSPI_RX_MARK,
+-	FRB_MARK,
+-	SCIF0_TXD_MARK,
+-	HSPI_TX_MARK,
+-	FWE_MARK,
+-	SCIF5_TXD_MARK,
+-	HAC1_SYNC_MARK,
+-	SSI1_WS_MARK,
+-	SIOF_TXD_PJ_MARK,
+-	HAC0_SDOUT_MARK,
+-	SSI0_SDATA_MARK,
+-	SIOF_RXD_PJ_MARK,
+-	HAC0_SDIN_MARK,
+-	SSI0_SCK_MARK,
+-	SIOF_SYNC_PJ_MARK,
+-	HAC0_SYNC_MARK,
+-	SSI0_WS_MARK,
+-	SIOF_MCLK_PJ_MARK,
+-	HAC_RES_MARK,
+-	SIOF_SCK_PJ_MARK,
+-	HAC0_BITCLK_MARK,
+-	SSI0_CLK_MARK,
+-	HAC1_BITCLK_MARK,
+-	SSI1_CLK_MARK,
+-	TCLK_MARK,
+-	IOIS16_MARK,
+-	STATUS0_MARK,
+-	DRAK0_PK3_MARK,
+-	STATUS1_MARK,
+-	DRAK1_PK2_MARK,
+-	DACK2_MARK,
+-	SCIF2_TXD_MARK,
+-	MMCCMD_MARK,
+-	SIOF_TXD_PK_MARK,
+-	DACK3_MARK,
+-	SCIF2_SCK_MARK,
+-	MMCDAT_MARK,
+-	SIOF_SCK_PK_MARK,
+-	DREQ0_MARK,
+-	DREQ1_MARK,
+-	DRAK0_PK1_MARK,
+-	DRAK1_PK0_MARK,
+-	DREQ2_MARK,
+-	INTB_MARK,
+-	DREQ3_MARK,
+-	INTC_MARK,
+-	DRAK2_MARK,
+-	CE2A_MARK,
+-	IRL4_MARK,
+-	FD4_MARK,
+-	IRL5_MARK,
+-	FD5_MARK,
+-	IRL6_MARK,
+-	FD6_MARK,
+-	IRL7_MARK,
+-	FD7_MARK,
+-	DRAK3_MARK,
+-	CE2B_MARK,
+-	BREQ_BSACK_MARK,
+-	BACK_BSREQ_MARK,
+-	SCIF5_RXD_MARK,
+-	HAC1_SDIN_MARK,
+-	SSI1_SCK_MARK,
+-	SCIF5_SCK_MARK,
+-	HAC1_SDOUT_MARK,
+-	SSI1_SDATA_MARK,
+-	SCIF3_TXD_MARK,
+-	FCLE_MARK,
+-	SCIF3_RXD_MARK,
+-	FALE_MARK,
+-	SCIF3_SCK_MARK,
+-	FD0_MARK,
+-	SCIF4_TXD_MARK,
+-	FD1_MARK,
+-	SCIF4_RXD_MARK,
+-	FD2_MARK,
+-	SCIF4_SCK_MARK,
+-	FD3_MARK,
+-	DEVSEL_DCLKOUT_MARK,
+-	STOP_CDE_MARK,
+-	LOCK_ODDF_MARK,
+-	TRDY_DISPL_MARK,
+-	IRDY_HSYNC_MARK,
+-	PCIFRAME_VSYNC_MARK,
+-	INTA_MARK,
+-	GNT0_GNTIN_MARK,
+-	REQ0_REQOUT_MARK,
+-	PERR_MARK,
+-	SERR_MARK,
+-	WE7_CBE3_MARK,
+-	WE6_CBE2_MARK,
+-	WE5_CBE1_MARK,
+-	WE4_CBE0_MARK,
+-	SCIF2_RXD_MARK,
+-	SIOF_RXD_MARK,
+-	MRESETOUT_MARK,
+-	IRQOUT_MARK,
+-	PINMUX_MARK_END,
+-};
 -
--  val = (*(vhalf *) (PA_83902 + ((reg) << 1)) >> 8) & 0xff;
--  STNIC_DELAY ();
--  return val;
--}
+-static const u16 pinmux_data[] = {
+-	/* PA GPIO */
+-	PINMUX_DATA(PA7_DATA, PA7_IN, PA7_OUT),
+-	PINMUX_DATA(PA6_DATA, PA6_IN, PA6_OUT),
+-	PINMUX_DATA(PA5_DATA, PA5_IN, PA5_OUT),
+-	PINMUX_DATA(PA4_DATA, PA4_IN, PA4_OUT),
+-	PINMUX_DATA(PA3_DATA, PA3_IN, PA3_OUT),
+-	PINMUX_DATA(PA2_DATA, PA2_IN, PA2_OUT),
+-	PINMUX_DATA(PA1_DATA, PA1_IN, PA1_OUT),
+-	PINMUX_DATA(PA0_DATA, PA0_IN, PA0_OUT),
 -
--static inline void
--STNIC_WRITE (int reg, byte val)
--{
--  *(vhalf *) (PA_83902 + ((reg) << 1)) = ((half) (val) << 8);
--  STNIC_DELAY ();
--}
+-	/* PB GPIO */
+-	PINMUX_DATA(PB7_DATA, PB7_IN, PB7_OUT),
+-	PINMUX_DATA(PB6_DATA, PB6_IN, PB6_OUT),
+-	PINMUX_DATA(PB5_DATA, PB5_IN, PB5_OUT),
+-	PINMUX_DATA(PB4_DATA, PB4_IN, PB4_OUT),
+-	PINMUX_DATA(PB3_DATA, PB3_IN, PB3_OUT),
+-	PINMUX_DATA(PB2_DATA, PB2_IN, PB2_OUT),
+-	PINMUX_DATA(PB1_DATA, PB1_IN, PB1_OUT),
+-	PINMUX_DATA(PB0_DATA, PB0_IN, PB0_OUT),
 -
--static int __init stnic_probe(void)
--{
--  struct net_device *dev;
--  struct ei_device *ei_local;
--  int err;
+-	/* PC GPIO */
+-	PINMUX_DATA(PC7_DATA, PC7_IN, PC7_OUT),
+-	PINMUX_DATA(PC6_DATA, PC6_IN, PC6_OUT),
+-	PINMUX_DATA(PC5_DATA, PC5_IN, PC5_OUT),
+-	PINMUX_DATA(PC4_DATA, PC4_IN, PC4_OUT),
+-	PINMUX_DATA(PC3_DATA, PC3_IN, PC3_OUT),
+-	PINMUX_DATA(PC2_DATA, PC2_IN, PC2_OUT),
+-	PINMUX_DATA(PC1_DATA, PC1_IN, PC1_OUT),
+-	PINMUX_DATA(PC0_DATA, PC0_IN, PC0_OUT),
 -
--  /* If we are not running on a SolutionEngine, give up now */
--  if (! MACH_SE)
--    return -ENODEV;
+-	/* PD GPIO */
+-	PINMUX_DATA(PD7_DATA, PD7_IN, PD7_OUT),
+-	PINMUX_DATA(PD6_DATA, PD6_IN, PD6_OUT),
+-	PINMUX_DATA(PD5_DATA, PD5_IN, PD5_OUT),
+-	PINMUX_DATA(PD4_DATA, PD4_IN, PD4_OUT),
+-	PINMUX_DATA(PD3_DATA, PD3_IN, PD3_OUT),
+-	PINMUX_DATA(PD2_DATA, PD2_IN, PD2_OUT),
+-	PINMUX_DATA(PD1_DATA, PD1_IN, PD1_OUT),
+-	PINMUX_DATA(PD0_DATA, PD0_IN, PD0_OUT),
 -
--  /* New style probing API */
--  dev = alloc_ei_netdev();
--  if (!dev)
--	return -ENOMEM;
+-	/* PE GPIO */
+-	PINMUX_DATA(PE5_DATA, PE5_IN, PE5_OUT),
+-	PINMUX_DATA(PE4_DATA, PE4_IN, PE4_OUT),
+-	PINMUX_DATA(PE3_DATA, PE3_IN, PE3_OUT),
+-	PINMUX_DATA(PE2_DATA, PE2_IN, PE2_OUT),
+-	PINMUX_DATA(PE1_DATA, PE1_IN, PE1_OUT),
+-	PINMUX_DATA(PE0_DATA, PE0_IN, PE0_OUT),
 -
--#ifdef CONFIG_SH_STANDARD_BIOS
--  sh_bios_get_node_addr (stnic_eadr);
--#endif
--  eth_hw_addr_set(dev, stnic_eadr);
+-	/* PF GPIO */
+-	PINMUX_DATA(PF7_DATA, PF7_IN, PF7_OUT),
+-	PINMUX_DATA(PF6_DATA, PF6_IN, PF6_OUT),
+-	PINMUX_DATA(PF5_DATA, PF5_IN, PF5_OUT),
+-	PINMUX_DATA(PF4_DATA, PF4_IN, PF4_OUT),
+-	PINMUX_DATA(PF3_DATA, PF3_IN, PF3_OUT),
+-	PINMUX_DATA(PF2_DATA, PF2_IN, PF2_OUT),
+-	PINMUX_DATA(PF1_DATA, PF1_IN, PF1_OUT),
+-	PINMUX_DATA(PF0_DATA, PF0_IN, PF0_OUT),
 -
--  /* Set the base address to point to the NIC, not the "real" base! */
--  dev->base_addr = 0x1000;
--  dev->irq = IRQ_STNIC;
--  dev->netdev_ops = &ei_netdev_ops;
+-	/* PG GPIO */
+-	PINMUX_DATA(PG7_DATA, PG7_IN, PG7_OUT),
+-	PINMUX_DATA(PG6_DATA, PG6_IN, PG6_OUT),
+-	PINMUX_DATA(PG5_DATA, PG5_IN, PG5_OUT),
+-	PINMUX_DATA(PG4_DATA, PG4_IN, PG4_OUT),
+-	PINMUX_DATA(PG3_DATA, PG3_IN, PG3_OUT),
+-	PINMUX_DATA(PG2_DATA, PG2_IN, PG2_OUT),
+-	PINMUX_DATA(PG1_DATA, PG1_IN, PG1_OUT),
+-	PINMUX_DATA(PG0_DATA, PG0_IN, PG0_OUT),
 -
--  /* Snarf the interrupt now.  There's no point in waiting since we cannot
--     share and the board will usually be enabled. */
--  err = request_irq (dev->irq, ei_interrupt, 0, DRV_NAME, dev);
--  if (err)  {
--	netdev_emerg(dev, " unable to get IRQ %d.\n", dev->irq);
--	free_netdev(dev);
--	return err;
--  }
+-	/* PH GPIO */
+-	PINMUX_DATA(PH7_DATA, PH7_IN, PH7_OUT),
+-	PINMUX_DATA(PH6_DATA, PH6_IN, PH6_OUT),
+-	PINMUX_DATA(PH5_DATA, PH5_IN, PH5_OUT),
+-	PINMUX_DATA(PH4_DATA, PH4_IN, PH4_OUT),
+-	PINMUX_DATA(PH3_DATA, PH3_IN, PH3_OUT),
+-	PINMUX_DATA(PH2_DATA, PH2_IN, PH2_OUT),
+-	PINMUX_DATA(PH1_DATA, PH1_IN, PH1_OUT),
+-	PINMUX_DATA(PH0_DATA, PH0_IN, PH0_OUT),
 -
--  ei_status.name = dev->name;
--  ei_status.word16 = 1;
--#ifdef __LITTLE_ENDIAN__
--  ei_status.bigendian = 0;
--#else
--  ei_status.bigendian = 1;
--#endif
--  ei_status.tx_start_page = START_PG;
--  ei_status.rx_start_page = START_PG + TX_PAGES;
--  ei_status.stop_page = STOP_PG;
+-	/* PJ GPIO */
+-	PINMUX_DATA(PJ7_DATA, PJ7_IN, PJ7_OUT),
+-	PINMUX_DATA(PJ6_DATA, PJ6_IN, PJ6_OUT),
+-	PINMUX_DATA(PJ5_DATA, PJ5_IN, PJ5_OUT),
+-	PINMUX_DATA(PJ4_DATA, PJ4_IN, PJ4_OUT),
+-	PINMUX_DATA(PJ3_DATA, PJ3_IN, PJ3_OUT),
+-	PINMUX_DATA(PJ2_DATA, PJ2_IN, PJ2_OUT),
+-	PINMUX_DATA(PJ1_DATA, PJ1_IN, PJ1_OUT),
+-	PINMUX_DATA(PJ0_DATA, PJ0_IN, PJ0_OUT),
 -
--  ei_status.reset_8390 = &stnic_reset;
--  ei_status.get_8390_hdr = &stnic_get_hdr;
--  ei_status.block_input = &stnic_block_input;
--  ei_status.block_output = &stnic_block_output;
+-	/* PK GPIO */
+-	PINMUX_DATA(PK7_DATA, PK7_IN, PK7_OUT),
+-	PINMUX_DATA(PK6_DATA, PK6_IN, PK6_OUT),
+-	PINMUX_DATA(PK5_DATA, PK5_IN, PK5_OUT),
+-	PINMUX_DATA(PK4_DATA, PK4_IN, PK4_OUT),
+-	PINMUX_DATA(PK3_DATA, PK3_IN, PK3_OUT),
+-	PINMUX_DATA(PK2_DATA, PK2_IN, PK2_OUT),
+-	PINMUX_DATA(PK1_DATA, PK1_IN, PK1_OUT),
+-	PINMUX_DATA(PK0_DATA, PK0_IN, PK0_OUT),
 -
--  stnic_init (dev);
--  ei_local = netdev_priv(dev);
--  ei_local->msg_enable = stnic_msg_enable;
+-	/* PL GPIO */
+-	PINMUX_DATA(PL7_DATA, PL7_IN, PL7_OUT),
+-	PINMUX_DATA(PL6_DATA, PL6_IN, PL6_OUT),
+-	PINMUX_DATA(PL5_DATA, PL5_IN, PL5_OUT),
+-	PINMUX_DATA(PL4_DATA, PL4_IN, PL4_OUT),
+-	PINMUX_DATA(PL3_DATA, PL3_IN, PL3_OUT),
+-	PINMUX_DATA(PL2_DATA, PL2_IN, PL2_OUT),
+-	PINMUX_DATA(PL1_DATA, PL1_IN, PL1_OUT),
+-	PINMUX_DATA(PL0_DATA, PL0_IN, PL0_OUT),
 -
--  err = register_netdev(dev);
--  if (err) {
--    free_irq(dev->irq, dev);
--    free_netdev(dev);
--    return err;
--  }
--  stnic_dev = dev;
+-	/* PM GPIO */
+-	PINMUX_DATA(PM1_DATA, PM1_IN, PM1_OUT),
+-	PINMUX_DATA(PM0_DATA, PM0_IN, PM0_OUT),
 -
--  netdev_info(dev, "NS ST-NIC 83902A\n");
+-	/* PN GPIO */
+-	PINMUX_DATA(PN7_DATA, PN7_IN, PN7_OUT),
+-	PINMUX_DATA(PN6_DATA, PN6_IN, PN6_OUT),
+-	PINMUX_DATA(PN5_DATA, PN5_IN, PN5_OUT),
+-	PINMUX_DATA(PN4_DATA, PN4_IN, PN4_OUT),
+-	PINMUX_DATA(PN3_DATA, PN3_IN, PN3_OUT),
+-	PINMUX_DATA(PN2_DATA, PN2_IN, PN2_OUT),
+-	PINMUX_DATA(PN1_DATA, PN1_IN, PN1_OUT),
+-	PINMUX_DATA(PN0_DATA, PN0_IN, PN0_OUT),
 -
--  return 0;
--}
+-	/* PP GPIO */
+-	PINMUX_DATA(PP5_DATA, PP5_IN, PP5_OUT),
+-	PINMUX_DATA(PP4_DATA, PP4_IN, PP4_OUT),
+-	PINMUX_DATA(PP3_DATA, PP3_IN, PP3_OUT),
+-	PINMUX_DATA(PP2_DATA, PP2_IN, PP2_OUT),
+-	PINMUX_DATA(PP1_DATA, PP1_IN, PP1_OUT),
+-	PINMUX_DATA(PP0_DATA, PP0_IN, PP0_OUT),
 -
--static void
--stnic_reset (struct net_device *dev)
--{
--  struct ei_device *ei_local = netdev_priv(dev);
+-	/* PQ GPIO */
+-	PINMUX_DATA(PQ4_DATA, PQ4_IN, PQ4_OUT),
+-	PINMUX_DATA(PQ3_DATA, PQ3_IN, PQ3_OUT),
+-	PINMUX_DATA(PQ2_DATA, PQ2_IN, PQ2_OUT),
+-	PINMUX_DATA(PQ1_DATA, PQ1_IN, PQ1_OUT),
+-	PINMUX_DATA(PQ0_DATA, PQ0_IN, PQ0_OUT),
 -
--  *(vhalf *) PA_83902_RST = 0;
--  udelay (5);
--  netif_warn(ei_local, hw, dev, "8390 reset done (%ld).\n", jiffies);
--  *(vhalf *) PA_83902_RST = ~0;
--  udelay (5);
--}
+-	/* PR GPIO */
+-	PINMUX_DATA(PR3_DATA, PR3_IN, PR3_OUT),
+-	PINMUX_DATA(PR2_DATA, PR2_IN, PR2_OUT),
+-	PINMUX_DATA(PR1_DATA, PR1_IN, PR1_OUT),
+-	PINMUX_DATA(PR0_DATA, PR0_IN, PR0_OUT),
 -
--static void
--stnic_get_hdr (struct net_device *dev, struct e8390_pkt_hdr *hdr,
--	       int ring_page)
--{
--  struct ei_device *ei_local = netdev_priv(dev);
+-	/* PA FN */
+-	PINMUX_DATA(D63_AD31_MARK, PA7_FN),
+-	PINMUX_DATA(D62_AD30_MARK, PA6_FN),
+-	PINMUX_DATA(D61_AD29_MARK, PA5_FN),
+-	PINMUX_DATA(D60_AD28_MARK, PA4_FN),
+-	PINMUX_DATA(D59_AD27_MARK, PA3_FN),
+-	PINMUX_DATA(D58_AD26_MARK, PA2_FN),
+-	PINMUX_DATA(D57_AD25_MARK, PA1_FN),
+-	PINMUX_DATA(D56_AD24_MARK, PA0_FN),
 -
--  half buf[2];
+-	/* PB FN */
+-	PINMUX_DATA(D55_AD23_MARK, PB7_FN),
+-	PINMUX_DATA(D54_AD22_MARK, PB6_FN),
+-	PINMUX_DATA(D53_AD21_MARK, PB5_FN),
+-	PINMUX_DATA(D52_AD20_MARK, PB4_FN),
+-	PINMUX_DATA(D51_AD19_MARK, PB3_FN),
+-	PINMUX_DATA(D50_AD18_MARK, PB2_FN),
+-	PINMUX_DATA(D49_AD17_DB5_MARK, PB1_FN),
+-	PINMUX_DATA(D48_AD16_DB4_MARK, PB0_FN),
 -
--  STNIC_WRITE (PG0_RSAR0, 0);
--  STNIC_WRITE (PG0_RSAR1, ring_page);
--  STNIC_WRITE (PG0_RBCR0, 4);
--  STNIC_WRITE (PG0_RBCR1, 0);
--  STNIC_WRITE (STNIC_CR, CR_RRD | CR_PG0 | CR_STA);
+-	/* PC FN */
+-	PINMUX_DATA(D47_AD15_DB3_MARK, PC7_FN),
+-	PINMUX_DATA(D46_AD14_DB2_MARK, PC6_FN),
+-	PINMUX_DATA(D45_AD13_DB1_MARK, PC5_FN),
+-	PINMUX_DATA(D44_AD12_DB0_MARK, PC4_FN),
+-	PINMUX_DATA(D43_AD11_DG5_MARK, PC3_FN),
+-	PINMUX_DATA(D42_AD10_DG4_MARK, PC2_FN),
+-	PINMUX_DATA(D41_AD9_DG3_MARK, PC1_FN),
+-	PINMUX_DATA(D40_AD8_DG2_MARK, PC0_FN),
 -
--  buf[0] = *(vhalf *) PA_83902_IF;
--  STNIC_DELAY ();
--  buf[1] = *(vhalf *) PA_83902_IF;
--  STNIC_DELAY ();
--  hdr->next = buf[0] >> 8;
--  hdr->status = buf[0] & 0xff;
--#ifdef __LITTLE_ENDIAN__
--  hdr->count = buf[1];
--#else
--  hdr->count = ((buf[1] >> 8) & 0xff) | (buf[1] << 8);
--#endif
+-	/* PD FN */
+-	PINMUX_DATA(D39_AD7_DG1_MARK, PD7_FN),
+-	PINMUX_DATA(D38_AD6_DG0_MARK, PD6_FN),
+-	PINMUX_DATA(D37_AD5_DR5_MARK, PD5_FN),
+-	PINMUX_DATA(D36_AD4_DR4_MARK, PD4_FN),
+-	PINMUX_DATA(D35_AD3_DR3_MARK, PD3_FN),
+-	PINMUX_DATA(D34_AD2_DR2_MARK, PD2_FN),
+-	PINMUX_DATA(D33_AD1_DR1_MARK, PD1_FN),
+-	PINMUX_DATA(D32_AD0_DR0_MARK, PD0_FN),
 -
--  netif_dbg(ei_local, probe, dev, "ring %x status %02x next %02x count %04x.\n",
--	    ring_page, hdr->status, hdr->next, hdr->count);
+-	/* PE FN */
+-	PINMUX_DATA(REQ1_MARK, PE5_FN),
+-	PINMUX_DATA(REQ2_MARK, PE4_FN),
+-	PINMUX_DATA(REQ3_MARK, P2MSEL0_0, PE3_FN),
+-	PINMUX_DATA(GNT1_MARK, PE2_FN),
+-	PINMUX_DATA(GNT2_MARK, PE1_FN),
+-	PINMUX_DATA(GNT3_MARK, P2MSEL0_0, PE0_FN),
+-	PINMUX_DATA(MMCCLK_MARK, P2MSEL0_1, PE0_FN),
 -
--  STNIC_WRITE (STNIC_CR, CR_RDMA | CR_PG0 | CR_STA);
--}
+-	/* PF FN */
+-	PINMUX_DATA(D31_MARK, PF7_FN),
+-	PINMUX_DATA(D30_MARK, PF6_FN),
+-	PINMUX_DATA(D29_MARK, PF5_FN),
+-	PINMUX_DATA(D28_MARK, PF4_FN),
+-	PINMUX_DATA(D27_MARK, PF3_FN),
+-	PINMUX_DATA(D26_MARK, PF2_FN),
+-	PINMUX_DATA(D25_MARK, PF1_FN),
+-	PINMUX_DATA(D24_MARK, PF0_FN),
 -
--/* Block input and output, similar to the Crynwr packet driver. If you are
--   porting to a new ethercard look at the packet driver source for hints.
--   The HP LAN doesn't use shared memory -- we put the packet
--   out through the "remote DMA" dataport. */
+-	/* PF FN */
+-	PINMUX_DATA(D23_MARK, PG7_FN),
+-	PINMUX_DATA(D22_MARK, PG6_FN),
+-	PINMUX_DATA(D21_MARK, PG5_FN),
+-	PINMUX_DATA(D20_MARK, PG4_FN),
+-	PINMUX_DATA(D19_MARK, PG3_FN),
+-	PINMUX_DATA(D18_MARK, PG2_FN),
+-	PINMUX_DATA(D17_MARK, PG1_FN),
+-	PINMUX_DATA(D16_MARK, PG0_FN),
 -
--static void
--stnic_block_input (struct net_device *dev, int length, struct sk_buff *skb,
--		   int offset)
--{
--  char *buf = skb->data;
--  half val;
+-	/* PH FN */
+-	PINMUX_DATA(SCIF1_SCK_MARK, PH7_FN),
+-	PINMUX_DATA(SCIF1_RXD_MARK, PH6_FN),
+-	PINMUX_DATA(SCIF1_TXD_MARK, PH5_FN),
+-	PINMUX_DATA(SCIF0_CTS_MARK, PH4_FN),
+-	PINMUX_DATA(INTD_MARK, P1MSEL7_1, PH4_FN),
+-	PINMUX_DATA(FCE_MARK, P1MSEL8_1, P1MSEL7_0, PH4_FN),
+-	PINMUX_DATA(SCIF0_RTS_MARK, P1MSEL8_0, P1MSEL7_0, PH3_FN),
+-	PINMUX_DATA(HSPI_CS_MARK, P1MSEL8_0, P1MSEL7_1, PH3_FN),
+-	PINMUX_DATA(FSE_MARK, P1MSEL8_1, P1MSEL7_0, PH3_FN),
+-	PINMUX_DATA(SCIF0_SCK_MARK, P1MSEL8_0, P1MSEL7_0, PH2_FN),
+-	PINMUX_DATA(HSPI_CLK_MARK, P1MSEL8_0, P1MSEL7_1, PH2_FN),
+-	PINMUX_DATA(FRE_MARK, P1MSEL8_1, P1MSEL7_0, PH2_FN),
+-	PINMUX_DATA(SCIF0_RXD_MARK, P1MSEL8_0, P1MSEL7_0, PH1_FN),
+-	PINMUX_DATA(HSPI_RX_MARK, P1MSEL8_0, P1MSEL7_1, PH1_FN),
+-	PINMUX_DATA(FRB_MARK, P1MSEL8_1, P1MSEL7_0, PH1_FN),
+-	PINMUX_DATA(SCIF0_TXD_MARK, P1MSEL8_0, P1MSEL7_0, PH0_FN),
+-	PINMUX_DATA(HSPI_TX_MARK, P1MSEL8_0, P1MSEL7_1, PH0_FN),
+-	PINMUX_DATA(FWE_MARK, P1MSEL8_1, P1MSEL7_0, PH0_FN),
 -
--  STNIC_WRITE (PG0_RSAR0, offset & 0xff);
--  STNIC_WRITE (PG0_RSAR1, offset >> 8);
--  STNIC_WRITE (PG0_RBCR0, length & 0xff);
--  STNIC_WRITE (PG0_RBCR1, length >> 8);
--  STNIC_WRITE (STNIC_CR, CR_RRD | CR_PG0 | CR_STA);
+-	/* PJ FN */
+-	PINMUX_DATA(SCIF5_TXD_MARK, P1MSEL2_0, P1MSEL1_0, PJ7_FN),
+-	PINMUX_DATA(HAC1_SYNC_MARK, P1MSEL2_0, P1MSEL1_1, PJ7_FN),
+-	PINMUX_DATA(SSI1_WS_MARK, P1MSEL2_1, P1MSEL1_0, PJ7_FN),
+-	PINMUX_DATA(SIOF_TXD_PJ_MARK, P2MSEL1_0, P1MSEL4_0, P1MSEL3_0, PJ6_FN),
+-	PINMUX_DATA(HAC0_SDOUT_MARK, P1MSEL4_0, P1MSEL3_1, PJ6_FN),
+-	PINMUX_DATA(SSI0_SDATA_MARK, P1MSEL4_1, P1MSEL3_0, PJ6_FN),
+-	PINMUX_DATA(SIOF_RXD_PJ_MARK, P2MSEL1_0, P1MSEL4_0, P1MSEL3_0, PJ5_FN),
+-	PINMUX_DATA(HAC0_SDIN_MARK, P1MSEL4_0, P1MSEL3_1, PJ5_FN),
+-	PINMUX_DATA(SSI0_SCK_MARK, P1MSEL4_1, P1MSEL3_0, PJ5_FN),
+-	PINMUX_DATA(SIOF_SYNC_PJ_MARK, P2MSEL1_0, P1MSEL4_0, P1MSEL3_0, PJ4_FN),
+-	PINMUX_DATA(HAC0_SYNC_MARK, P1MSEL4_0, P1MSEL3_1, PJ4_FN),
+-	PINMUX_DATA(SSI0_WS_MARK, P1MSEL4_1, P1MSEL3_0, PJ4_FN),
+-	PINMUX_DATA(SIOF_MCLK_PJ_MARK, P2MSEL1_0, P1MSEL4_0, P1MSEL3_0, PJ3_FN),
+-	PINMUX_DATA(HAC_RES_MARK, P1MSEL4_0, P1MSEL3_1, PJ3_FN),
+-	PINMUX_DATA(SIOF_SCK_PJ_MARK, P2MSEL1_0, P1MSEL4_0, P1MSEL3_0, PJ2_FN),
+-	PINMUX_DATA(HAC0_BITCLK_MARK, P1MSEL4_0, P1MSEL3_1, PJ2_FN),
+-	PINMUX_DATA(SSI0_CLK_MARK, P1MSEL4_1, P1MSEL3_0, PJ2_FN),
+-	PINMUX_DATA(HAC1_BITCLK_MARK, P1MSEL2_0, PJ1_FN),
+-	PINMUX_DATA(SSI1_CLK_MARK, P1MSEL2_1, P1MSEL1_0, PJ1_FN),
+-	PINMUX_DATA(TCLK_MARK, P1MSEL9_0, PJ0_FN),
+-	PINMUX_DATA(IOIS16_MARK, P1MSEL9_1, PJ0_FN),
 -
--  if (length & 1)
--    length++;
+-	/* PK FN */
+-	PINMUX_DATA(STATUS0_MARK, P1MSEL15_0, PK7_FN),
+-	PINMUX_DATA(DRAK0_PK3_MARK, P1MSEL15_1, PK7_FN),
+-	PINMUX_DATA(STATUS1_MARK, P1MSEL15_0, PK6_FN),
+-	PINMUX_DATA(DRAK1_PK2_MARK, P1MSEL15_1, PK6_FN),
+-	PINMUX_DATA(DACK2_MARK, P1MSEL12_0, P1MSEL11_0, PK5_FN),
+-	PINMUX_DATA(SCIF2_TXD_MARK, P1MSEL12_1, P1MSEL11_0, PK5_FN),
+-	PINMUX_DATA(MMCCMD_MARK, P1MSEL12_1, P1MSEL11_1, PK5_FN),
+-	PINMUX_DATA(SIOF_TXD_PK_MARK, P2MSEL1_1,
+-		    P1MSEL12_0, P1MSEL11_1, PK5_FN),
+-	PINMUX_DATA(DACK3_MARK, P1MSEL12_0, P1MSEL11_0, PK4_FN),
+-	PINMUX_DATA(SCIF2_SCK_MARK, P1MSEL12_1, P1MSEL11_0, PK4_FN),
+-	PINMUX_DATA(MMCDAT_MARK, P1MSEL12_1, P1MSEL11_1, PK4_FN),
+-	PINMUX_DATA(SIOF_SCK_PK_MARK, P2MSEL1_1,
+-		    P1MSEL12_0, P1MSEL11_1, PK4_FN),
+-	PINMUX_DATA(DREQ0_MARK, PK3_FN),
+-	PINMUX_DATA(DREQ1_MARK, PK2_FN),
+-	PINMUX_DATA(DRAK0_PK1_MARK, PK1_FN),
+-	PINMUX_DATA(DRAK1_PK0_MARK, PK0_FN),
 -
--  while (length > 0)
--    {
--      val = *(vhalf *) PA_83902_IF;
--#ifdef __LITTLE_ENDIAN__
--      *buf++ = val & 0xff;
--      *buf++ = val >> 8;
--#else
--      *buf++ = val >> 8;
--      *buf++ = val & 0xff;
--#endif
--      STNIC_DELAY ();
--      length -= sizeof (half);
--    }
+-	/* PL FN */
+-	PINMUX_DATA(DREQ2_MARK, P1MSEL13_0, PL7_FN),
+-	PINMUX_DATA(INTB_MARK, P1MSEL13_1, PL7_FN),
+-	PINMUX_DATA(DREQ3_MARK, P1MSEL13_0, PL6_FN),
+-	PINMUX_DATA(INTC_MARK, P1MSEL13_1, PL6_FN),
+-	PINMUX_DATA(DRAK2_MARK, P1MSEL10_0, PL5_FN),
+-	PINMUX_DATA(CE2A_MARK, P1MSEL10_1, PL5_FN),
+-	PINMUX_DATA(IRL4_MARK, P1MSEL14_0, PL4_FN),
+-	PINMUX_DATA(FD4_MARK, P1MSEL14_1, PL4_FN),
+-	PINMUX_DATA(IRL5_MARK, P1MSEL14_0, PL3_FN),
+-	PINMUX_DATA(FD5_MARK, P1MSEL14_1, PL3_FN),
+-	PINMUX_DATA(IRL6_MARK, P1MSEL14_0, PL2_FN),
+-	PINMUX_DATA(FD6_MARK, P1MSEL14_1, PL2_FN),
+-	PINMUX_DATA(IRL7_MARK, P1MSEL14_0, PL1_FN),
+-	PINMUX_DATA(FD7_MARK, P1MSEL14_1, PL1_FN),
+-	PINMUX_DATA(DRAK3_MARK, P1MSEL10_0, PL0_FN),
+-	PINMUX_DATA(CE2B_MARK, P1MSEL10_1, PL0_FN),
 -
--  STNIC_WRITE (STNIC_CR, CR_RDMA | CR_PG0 | CR_STA);
--}
+-	/* PM FN */
+-	PINMUX_DATA(BREQ_BSACK_MARK, PM1_FN),
+-	PINMUX_DATA(BACK_BSREQ_MARK, PM0_FN),
 -
--static void
--stnic_block_output (struct net_device *dev, int length,
--		    const unsigned char *buf, int output_page)
--{
--  STNIC_WRITE (PG0_RBCR0, 1);	/* Write non-zero value */
--  STNIC_WRITE (STNIC_CR, CR_RRD | CR_PG0 | CR_STA);
--  STNIC_DELAY ();
+-	/* PN FN */
+-	PINMUX_DATA(SCIF5_RXD_MARK, P1MSEL2_0, P1MSEL1_0, PN7_FN),
+-	PINMUX_DATA(HAC1_SDIN_MARK, P1MSEL2_0, P1MSEL1_1, PN7_FN),
+-	PINMUX_DATA(SSI1_SCK_MARK, P1MSEL2_1, P1MSEL1_0, PN7_FN),
+-	PINMUX_DATA(SCIF5_SCK_MARK, P1MSEL2_0, P1MSEL1_0, PN6_FN),
+-	PINMUX_DATA(HAC1_SDOUT_MARK, P1MSEL2_0, P1MSEL1_1, PN6_FN),
+-	PINMUX_DATA(SSI1_SDATA_MARK, P1MSEL2_1, P1MSEL1_0, PN6_FN),
+-	PINMUX_DATA(SCIF3_TXD_MARK, P1MSEL0_0, PN5_FN),
+-	PINMUX_DATA(FCLE_MARK, P1MSEL0_1, PN5_FN),
+-	PINMUX_DATA(SCIF3_RXD_MARK, P1MSEL0_0, PN4_FN),
+-	PINMUX_DATA(FALE_MARK, P1MSEL0_1, PN4_FN),
+-	PINMUX_DATA(SCIF3_SCK_MARK, P1MSEL0_0, PN3_FN),
+-	PINMUX_DATA(FD0_MARK, P1MSEL0_1, PN3_FN),
+-	PINMUX_DATA(SCIF4_TXD_MARK, P1MSEL0_0, PN2_FN),
+-	PINMUX_DATA(FD1_MARK, P1MSEL0_1, PN2_FN),
+-	PINMUX_DATA(SCIF4_RXD_MARK, P1MSEL0_0, PN1_FN),
+-	PINMUX_DATA(FD2_MARK, P1MSEL0_1, PN1_FN),
+-	PINMUX_DATA(SCIF4_SCK_MARK, P1MSEL0_0, PN0_FN),
+-	PINMUX_DATA(FD3_MARK, P1MSEL0_1, PN0_FN),
 -
--  STNIC_WRITE (PG0_RBCR0, length & 0xff);
--  STNIC_WRITE (PG0_RBCR1, length >> 8);
--  STNIC_WRITE (PG0_RSAR0, 0);
--  STNIC_WRITE (PG0_RSAR1, output_page);
--  STNIC_WRITE (STNIC_CR, CR_RWR | CR_PG0 | CR_STA);
+-	/* PP FN */
+-	PINMUX_DATA(DEVSEL_DCLKOUT_MARK, PP5_FN),
+-	PINMUX_DATA(STOP_CDE_MARK, PP4_FN),
+-	PINMUX_DATA(LOCK_ODDF_MARK, PP3_FN),
+-	PINMUX_DATA(TRDY_DISPL_MARK, PP2_FN),
+-	PINMUX_DATA(IRDY_HSYNC_MARK, PP1_FN),
+-	PINMUX_DATA(PCIFRAME_VSYNC_MARK, PP0_FN),
 -
--  if (length & 1)
--    length++;
+-	/* PQ FN */
+-	PINMUX_DATA(INTA_MARK, PQ4_FN),
+-	PINMUX_DATA(GNT0_GNTIN_MARK, PQ3_FN),
+-	PINMUX_DATA(REQ0_REQOUT_MARK, PQ2_FN),
+-	PINMUX_DATA(PERR_MARK, PQ1_FN),
+-	PINMUX_DATA(SERR_MARK, PQ0_FN),
 -
--  while (length > 0)
--    {
--#ifdef __LITTLE_ENDIAN__
--      *(vhalf *) PA_83902_IF = ((half) buf[1] << 8) | buf[0];
--#else
--      *(vhalf *) PA_83902_IF = ((half) buf[0] << 8) | buf[1];
--#endif
--      STNIC_DELAY ();
--      buf += sizeof (half);
--      length -= sizeof (half);
--    }
+-	/* PR FN */
+-	PINMUX_DATA(WE7_CBE3_MARK, PR3_FN),
+-	PINMUX_DATA(WE6_CBE2_MARK, PR2_FN),
+-	PINMUX_DATA(WE5_CBE1_MARK, PR1_FN),
+-	PINMUX_DATA(WE4_CBE0_MARK, PR0_FN),
 -
--  STNIC_WRITE (STNIC_CR, CR_RDMA | CR_PG0 | CR_STA);
--}
+-	/* MISC FN */
+-	PINMUX_DATA(SCIF2_RXD_MARK, P1MSEL6_0, P1MSEL5_0),
+-	PINMUX_DATA(SIOF_RXD_MARK, P2MSEL1_1, P1MSEL6_1, P1MSEL5_0),
+-	PINMUX_DATA(MRESETOUT_MARK, P2MSEL2_0),
+-	PINMUX_DATA(IRQOUT_MARK, P2MSEL2_1),
+-};
 -
--/* This function resets the STNIC if something screws up.  */
--static void
--stnic_init (struct net_device *dev)
--{
--  stnic_reset (dev);
--  NS8390_init (dev, 0);
--}
+-static const struct sh_pfc_pin pinmux_pins[] = {
+-	/* PA */
+-	PINMUX_GPIO(PA7),
+-	PINMUX_GPIO(PA6),
+-	PINMUX_GPIO(PA5),
+-	PINMUX_GPIO(PA4),
+-	PINMUX_GPIO(PA3),
+-	PINMUX_GPIO(PA2),
+-	PINMUX_GPIO(PA1),
+-	PINMUX_GPIO(PA0),
 -
--static void __exit stnic_cleanup(void)
--{
--	unregister_netdev(stnic_dev);
--	free_irq(stnic_dev->irq, stnic_dev);
--	free_netdev(stnic_dev);
--}
+-	/* PB */
+-	PINMUX_GPIO(PB7),
+-	PINMUX_GPIO(PB6),
+-	PINMUX_GPIO(PB5),
+-	PINMUX_GPIO(PB4),
+-	PINMUX_GPIO(PB3),
+-	PINMUX_GPIO(PB2),
+-	PINMUX_GPIO(PB1),
+-	PINMUX_GPIO(PB0),
 -
--module_init(stnic_probe);
--module_exit(stnic_cleanup);
--MODULE_LICENSE("GPL");
+-	/* PC */
+-	PINMUX_GPIO(PC7),
+-	PINMUX_GPIO(PC6),
+-	PINMUX_GPIO(PC5),
+-	PINMUX_GPIO(PC4),
+-	PINMUX_GPIO(PC3),
+-	PINMUX_GPIO(PC2),
+-	PINMUX_GPIO(PC1),
+-	PINMUX_GPIO(PC0),
+-
+-	/* PD */
+-	PINMUX_GPIO(PD7),
+-	PINMUX_GPIO(PD6),
+-	PINMUX_GPIO(PD5),
+-	PINMUX_GPIO(PD4),
+-	PINMUX_GPIO(PD3),
+-	PINMUX_GPIO(PD2),
+-	PINMUX_GPIO(PD1),
+-	PINMUX_GPIO(PD0),
+-
+-	/* PE */
+-	PINMUX_GPIO(PE5),
+-	PINMUX_GPIO(PE4),
+-	PINMUX_GPIO(PE3),
+-	PINMUX_GPIO(PE2),
+-	PINMUX_GPIO(PE1),
+-	PINMUX_GPIO(PE0),
+-
+-	/* PF */
+-	PINMUX_GPIO(PF7),
+-	PINMUX_GPIO(PF6),
+-	PINMUX_GPIO(PF5),
+-	PINMUX_GPIO(PF4),
+-	PINMUX_GPIO(PF3),
+-	PINMUX_GPIO(PF2),
+-	PINMUX_GPIO(PF1),
+-	PINMUX_GPIO(PF0),
+-
+-	/* PG */
+-	PINMUX_GPIO(PG7),
+-	PINMUX_GPIO(PG6),
+-	PINMUX_GPIO(PG5),
+-	PINMUX_GPIO(PG4),
+-	PINMUX_GPIO(PG3),
+-	PINMUX_GPIO(PG2),
+-	PINMUX_GPIO(PG1),
+-	PINMUX_GPIO(PG0),
+-
+-	/* PH */
+-	PINMUX_GPIO(PH7),
+-	PINMUX_GPIO(PH6),
+-	PINMUX_GPIO(PH5),
+-	PINMUX_GPIO(PH4),
+-	PINMUX_GPIO(PH3),
+-	PINMUX_GPIO(PH2),
+-	PINMUX_GPIO(PH1),
+-	PINMUX_GPIO(PH0),
+-
+-	/* PJ */
+-	PINMUX_GPIO(PJ7),
+-	PINMUX_GPIO(PJ6),
+-	PINMUX_GPIO(PJ5),
+-	PINMUX_GPIO(PJ4),
+-	PINMUX_GPIO(PJ3),
+-	PINMUX_GPIO(PJ2),
+-	PINMUX_GPIO(PJ1),
+-	PINMUX_GPIO(PJ0),
+-
+-	/* PK */
+-	PINMUX_GPIO(PK7),
+-	PINMUX_GPIO(PK6),
+-	PINMUX_GPIO(PK5),
+-	PINMUX_GPIO(PK4),
+-	PINMUX_GPIO(PK3),
+-	PINMUX_GPIO(PK2),
+-	PINMUX_GPIO(PK1),
+-	PINMUX_GPIO(PK0),
+-
+-	/* PL */
+-	PINMUX_GPIO(PL7),
+-	PINMUX_GPIO(PL6),
+-	PINMUX_GPIO(PL5),
+-	PINMUX_GPIO(PL4),
+-	PINMUX_GPIO(PL3),
+-	PINMUX_GPIO(PL2),
+-	PINMUX_GPIO(PL1),
+-	PINMUX_GPIO(PL0),
+-
+-	/* PM */
+-	PINMUX_GPIO(PM1),
+-	PINMUX_GPIO(PM0),
+-
+-	/* PN */
+-	PINMUX_GPIO(PN7),
+-	PINMUX_GPIO(PN6),
+-	PINMUX_GPIO(PN5),
+-	PINMUX_GPIO(PN4),
+-	PINMUX_GPIO(PN3),
+-	PINMUX_GPIO(PN2),
+-	PINMUX_GPIO(PN1),
+-	PINMUX_GPIO(PN0),
+-
+-	/* PP */
+-	PINMUX_GPIO(PP5),
+-	PINMUX_GPIO(PP4),
+-	PINMUX_GPIO(PP3),
+-	PINMUX_GPIO(PP2),
+-	PINMUX_GPIO(PP1),
+-	PINMUX_GPIO(PP0),
+-
+-	/* PQ */
+-	PINMUX_GPIO(PQ4),
+-	PINMUX_GPIO(PQ3),
+-	PINMUX_GPIO(PQ2),
+-	PINMUX_GPIO(PQ1),
+-	PINMUX_GPIO(PQ0),
+-
+-	/* PR */
+-	PINMUX_GPIO(PR3),
+-	PINMUX_GPIO(PR2),
+-	PINMUX_GPIO(PR1),
+-	PINMUX_GPIO(PR0),
+-};
+-
+-#define PINMUX_FN_BASE	ARRAY_SIZE(pinmux_pins)
+-
+-static const struct pinmux_func pinmux_func_gpios[] = {
+-	/* FN */
+-	GPIO_FN(D63_AD31),
+-	GPIO_FN(D62_AD30),
+-	GPIO_FN(D61_AD29),
+-	GPIO_FN(D60_AD28),
+-	GPIO_FN(D59_AD27),
+-	GPIO_FN(D58_AD26),
+-	GPIO_FN(D57_AD25),
+-	GPIO_FN(D56_AD24),
+-	GPIO_FN(D55_AD23),
+-	GPIO_FN(D54_AD22),
+-	GPIO_FN(D53_AD21),
+-	GPIO_FN(D52_AD20),
+-	GPIO_FN(D51_AD19),
+-	GPIO_FN(D50_AD18),
+-	GPIO_FN(D49_AD17_DB5),
+-	GPIO_FN(D48_AD16_DB4),
+-	GPIO_FN(D47_AD15_DB3),
+-	GPIO_FN(D46_AD14_DB2),
+-	GPIO_FN(D45_AD13_DB1),
+-	GPIO_FN(D44_AD12_DB0),
+-	GPIO_FN(D43_AD11_DG5),
+-	GPIO_FN(D42_AD10_DG4),
+-	GPIO_FN(D41_AD9_DG3),
+-	GPIO_FN(D40_AD8_DG2),
+-	GPIO_FN(D39_AD7_DG1),
+-	GPIO_FN(D38_AD6_DG0),
+-	GPIO_FN(D37_AD5_DR5),
+-	GPIO_FN(D36_AD4_DR4),
+-	GPIO_FN(D35_AD3_DR3),
+-	GPIO_FN(D34_AD2_DR2),
+-	GPIO_FN(D33_AD1_DR1),
+-	GPIO_FN(D32_AD0_DR0),
+-	GPIO_FN(REQ1),
+-	GPIO_FN(REQ2),
+-	GPIO_FN(REQ3),
+-	GPIO_FN(GNT1),
+-	GPIO_FN(GNT2),
+-	GPIO_FN(GNT3),
+-	GPIO_FN(MMCCLK),
+-	GPIO_FN(D31),
+-	GPIO_FN(D30),
+-	GPIO_FN(D29),
+-	GPIO_FN(D28),
+-	GPIO_FN(D27),
+-	GPIO_FN(D26),
+-	GPIO_FN(D25),
+-	GPIO_FN(D24),
+-	GPIO_FN(D23),
+-	GPIO_FN(D22),
+-	GPIO_FN(D21),
+-	GPIO_FN(D20),
+-	GPIO_FN(D19),
+-	GPIO_FN(D18),
+-	GPIO_FN(D17),
+-	GPIO_FN(D16),
+-	GPIO_FN(SCIF1_SCK),
+-	GPIO_FN(SCIF1_RXD),
+-	GPIO_FN(SCIF1_TXD),
+-	GPIO_FN(SCIF0_CTS),
+-	GPIO_FN(INTD),
+-	GPIO_FN(FCE),
+-	GPIO_FN(SCIF0_RTS),
+-	GPIO_FN(HSPI_CS),
+-	GPIO_FN(FSE),
+-	GPIO_FN(SCIF0_SCK),
+-	GPIO_FN(HSPI_CLK),
+-	GPIO_FN(FRE),
+-	GPIO_FN(SCIF0_RXD),
+-	GPIO_FN(HSPI_RX),
+-	GPIO_FN(FRB),
+-	GPIO_FN(SCIF0_TXD),
+-	GPIO_FN(HSPI_TX),
+-	GPIO_FN(FWE),
+-	GPIO_FN(SCIF5_TXD),
+-	GPIO_FN(HAC1_SYNC),
+-	GPIO_FN(SSI1_WS),
+-	GPIO_FN(SIOF_TXD_PJ),
+-	GPIO_FN(HAC0_SDOUT),
+-	GPIO_FN(SSI0_SDATA),
+-	GPIO_FN(SIOF_RXD_PJ),
+-	GPIO_FN(HAC0_SDIN),
+-	GPIO_FN(SSI0_SCK),
+-	GPIO_FN(SIOF_SYNC_PJ),
+-	GPIO_FN(HAC0_SYNC),
+-	GPIO_FN(SSI0_WS),
+-	GPIO_FN(SIOF_MCLK_PJ),
+-	GPIO_FN(HAC_RES),
+-	GPIO_FN(SIOF_SCK_PJ),
+-	GPIO_FN(HAC0_BITCLK),
+-	GPIO_FN(SSI0_CLK),
+-	GPIO_FN(HAC1_BITCLK),
+-	GPIO_FN(SSI1_CLK),
+-	GPIO_FN(TCLK),
+-	GPIO_FN(IOIS16),
+-	GPIO_FN(STATUS0),
+-	GPIO_FN(DRAK0_PK3),
+-	GPIO_FN(STATUS1),
+-	GPIO_FN(DRAK1_PK2),
+-	GPIO_FN(DACK2),
+-	GPIO_FN(SCIF2_TXD),
+-	GPIO_FN(MMCCMD),
+-	GPIO_FN(SIOF_TXD_PK),
+-	GPIO_FN(DACK3),
+-	GPIO_FN(SCIF2_SCK),
+-	GPIO_FN(MMCDAT),
+-	GPIO_FN(SIOF_SCK_PK),
+-	GPIO_FN(DREQ0),
+-	GPIO_FN(DREQ1),
+-	GPIO_FN(DRAK0_PK1),
+-	GPIO_FN(DRAK1_PK0),
+-	GPIO_FN(DREQ2),
+-	GPIO_FN(INTB),
+-	GPIO_FN(DREQ3),
+-	GPIO_FN(INTC),
+-	GPIO_FN(DRAK2),
+-	GPIO_FN(CE2A),
+-	GPIO_FN(IRL4),
+-	GPIO_FN(FD4),
+-	GPIO_FN(IRL5),
+-	GPIO_FN(FD5),
+-	GPIO_FN(IRL6),
+-	GPIO_FN(FD6),
+-	GPIO_FN(IRL7),
+-	GPIO_FN(FD7),
+-	GPIO_FN(DRAK3),
+-	GPIO_FN(CE2B),
+-	GPIO_FN(BREQ_BSACK),
+-	GPIO_FN(BACK_BSREQ),
+-	GPIO_FN(SCIF5_RXD),
+-	GPIO_FN(HAC1_SDIN),
+-	GPIO_FN(SSI1_SCK),
+-	GPIO_FN(SCIF5_SCK),
+-	GPIO_FN(HAC1_SDOUT),
+-	GPIO_FN(SSI1_SDATA),
+-	GPIO_FN(SCIF3_TXD),
+-	GPIO_FN(FCLE),
+-	GPIO_FN(SCIF3_RXD),
+-	GPIO_FN(FALE),
+-	GPIO_FN(SCIF3_SCK),
+-	GPIO_FN(FD0),
+-	GPIO_FN(SCIF4_TXD),
+-	GPIO_FN(FD1),
+-	GPIO_FN(SCIF4_RXD),
+-	GPIO_FN(FD2),
+-	GPIO_FN(SCIF4_SCK),
+-	GPIO_FN(FD3),
+-	GPIO_FN(DEVSEL_DCLKOUT),
+-	GPIO_FN(STOP_CDE),
+-	GPIO_FN(LOCK_ODDF),
+-	GPIO_FN(TRDY_DISPL),
+-	GPIO_FN(IRDY_HSYNC),
+-	GPIO_FN(PCIFRAME_VSYNC),
+-	GPIO_FN(INTA),
+-	GPIO_FN(GNT0_GNTIN),
+-	GPIO_FN(REQ0_REQOUT),
+-	GPIO_FN(PERR),
+-	GPIO_FN(SERR),
+-	GPIO_FN(WE7_CBE3),
+-	GPIO_FN(WE6_CBE2),
+-	GPIO_FN(WE5_CBE1),
+-	GPIO_FN(WE4_CBE0),
+-	GPIO_FN(SCIF2_RXD),
+-	GPIO_FN(SIOF_RXD),
+-	GPIO_FN(MRESETOUT),
+-	GPIO_FN(IRQOUT),
+-};
+-
+-static const struct pinmux_cfg_reg pinmux_config_regs[] = {
+-	{ PINMUX_CFG_REG("PACR", 0xffe70000, 16, 2, GROUP(
+-		PA7_FN, PA7_OUT, PA7_IN, 0,
+-		PA6_FN, PA6_OUT, PA6_IN, 0,
+-		PA5_FN, PA5_OUT, PA5_IN, 0,
+-		PA4_FN, PA4_OUT, PA4_IN, 0,
+-		PA3_FN, PA3_OUT, PA3_IN, 0,
+-		PA2_FN, PA2_OUT, PA2_IN, 0,
+-		PA1_FN, PA1_OUT, PA1_IN, 0,
+-		PA0_FN, PA0_OUT, PA0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PBCR", 0xffe70002, 16, 2, GROUP(
+-		PB7_FN, PB7_OUT, PB7_IN, 0,
+-		PB6_FN, PB6_OUT, PB6_IN, 0,
+-		PB5_FN, PB5_OUT, PB5_IN, 0,
+-		PB4_FN, PB4_OUT, PB4_IN, 0,
+-		PB3_FN, PB3_OUT, PB3_IN, 0,
+-		PB2_FN, PB2_OUT, PB2_IN, 0,
+-		PB1_FN, PB1_OUT, PB1_IN, 0,
+-		PB0_FN, PB0_OUT, PB0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PCCR", 0xffe70004, 16, 2, GROUP(
+-		PC7_FN, PC7_OUT, PC7_IN, 0,
+-		PC6_FN, PC6_OUT, PC6_IN, 0,
+-		PC5_FN, PC5_OUT, PC5_IN, 0,
+-		PC4_FN, PC4_OUT, PC4_IN, 0,
+-		PC3_FN, PC3_OUT, PC3_IN, 0,
+-		PC2_FN, PC2_OUT, PC2_IN, 0,
+-		PC1_FN, PC1_OUT, PC1_IN, 0,
+-		PC0_FN, PC0_OUT, PC0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PDCR", 0xffe70006, 16, 2, GROUP(
+-		PD7_FN, PD7_OUT, PD7_IN, 0,
+-		PD6_FN, PD6_OUT, PD6_IN, 0,
+-		PD5_FN, PD5_OUT, PD5_IN, 0,
+-		PD4_FN, PD4_OUT, PD4_IN, 0,
+-		PD3_FN, PD3_OUT, PD3_IN, 0,
+-		PD2_FN, PD2_OUT, PD2_IN, 0,
+-		PD1_FN, PD1_OUT, PD1_IN, 0,
+-		PD0_FN, PD0_OUT, PD0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PECR", 0xffe70008, 16,
+-			     GROUP(-4, 2, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [4] */
+-		PE5_FN, PE5_OUT, PE5_IN, 0,
+-		PE4_FN, PE4_OUT, PE4_IN, 0,
+-		PE3_FN, PE3_OUT, PE3_IN, 0,
+-		PE2_FN, PE2_OUT, PE2_IN, 0,
+-		PE1_FN, PE1_OUT, PE1_IN, 0,
+-		PE0_FN, PE0_OUT, PE0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PFCR", 0xffe7000a, 16, 2, GROUP(
+-		PF7_FN, PF7_OUT, PF7_IN, 0,
+-		PF6_FN, PF6_OUT, PF6_IN, 0,
+-		PF5_FN, PF5_OUT, PF5_IN, 0,
+-		PF4_FN, PF4_OUT, PF4_IN, 0,
+-		PF3_FN, PF3_OUT, PF3_IN, 0,
+-		PF2_FN, PF2_OUT, PF2_IN, 0,
+-		PF1_FN, PF1_OUT, PF1_IN, 0,
+-		PF0_FN, PF0_OUT, PF0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PGCR", 0xffe7000c, 16, 2, GROUP(
+-		PG7_FN, PG7_OUT, PG7_IN, 0,
+-		PG6_FN, PG6_OUT, PG6_IN, 0,
+-		PG5_FN, PG5_OUT, PG5_IN, 0,
+-		PG4_FN, PG4_OUT, PG4_IN, 0,
+-		PG3_FN, PG3_OUT, PG3_IN, 0,
+-		PG2_FN, PG2_OUT, PG2_IN, 0,
+-		PG1_FN, PG1_OUT, PG1_IN, 0,
+-		PG0_FN, PG0_OUT, PG0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PHCR", 0xffe7000e, 16, 2, GROUP(
+-		PH7_FN, PH7_OUT, PH7_IN, 0,
+-		PH6_FN, PH6_OUT, PH6_IN, 0,
+-		PH5_FN, PH5_OUT, PH5_IN, 0,
+-		PH4_FN, PH4_OUT, PH4_IN, 0,
+-		PH3_FN, PH3_OUT, PH3_IN, 0,
+-		PH2_FN, PH2_OUT, PH2_IN, 0,
+-		PH1_FN, PH1_OUT, PH1_IN, 0,
+-		PH0_FN, PH0_OUT, PH0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PJCR", 0xffe70010, 16, 2, GROUP(
+-		PJ7_FN, PJ7_OUT, PJ7_IN, 0,
+-		PJ6_FN, PJ6_OUT, PJ6_IN, 0,
+-		PJ5_FN, PJ5_OUT, PJ5_IN, 0,
+-		PJ4_FN, PJ4_OUT, PJ4_IN, 0,
+-		PJ3_FN, PJ3_OUT, PJ3_IN, 0,
+-		PJ2_FN, PJ2_OUT, PJ2_IN, 0,
+-		PJ1_FN, PJ1_OUT, PJ1_IN, 0,
+-		PJ0_FN, PJ0_OUT, PJ0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PKCR", 0xffe70012, 16, 2, GROUP(
+-		PK7_FN, PK7_OUT, PK7_IN, 0,
+-		PK6_FN, PK6_OUT, PK6_IN, 0,
+-		PK5_FN, PK5_OUT, PK5_IN, 0,
+-		PK4_FN, PK4_OUT, PK4_IN, 0,
+-		PK3_FN, PK3_OUT, PK3_IN, 0,
+-		PK2_FN, PK2_OUT, PK2_IN, 0,
+-		PK1_FN, PK1_OUT, PK1_IN, 0,
+-		PK0_FN, PK0_OUT, PK0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PLCR", 0xffe70014, 16, 2, GROUP(
+-		PL7_FN, PL7_OUT, PL7_IN, 0,
+-		PL6_FN, PL6_OUT, PL6_IN, 0,
+-		PL5_FN, PL5_OUT, PL5_IN, 0,
+-		PL4_FN, PL4_OUT, PL4_IN, 0,
+-		PL3_FN, PL3_OUT, PL3_IN, 0,
+-		PL2_FN, PL2_OUT, PL2_IN, 0,
+-		PL1_FN, PL1_OUT, PL1_IN, 0,
+-		PL0_FN, PL0_OUT, PL0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PMCR", 0xffe70016, 16,
+-			     GROUP(-12, 2, 2),
+-			     GROUP(
+-		/* RESERVED [12] */
+-		PM1_FN, PM1_OUT, PM1_IN, 0,
+-		PM0_FN, PM0_OUT, PM0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PNCR", 0xffe70018, 16, 2, GROUP(
+-		PN7_FN, PN7_OUT, PN7_IN, 0,
+-		PN6_FN, PN6_OUT, PN6_IN, 0,
+-		PN5_FN, PN5_OUT, PN5_IN, 0,
+-		PN4_FN, PN4_OUT, PN4_IN, 0,
+-		PN3_FN, PN3_OUT, PN3_IN, 0,
+-		PN2_FN, PN2_OUT, PN2_IN, 0,
+-		PN1_FN, PN1_OUT, PN1_IN, 0,
+-		PN0_FN, PN0_OUT, PN0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PPCR", 0xffe7001a, 16,
+-			     GROUP(-4, 2, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [4] */
+-		PP5_FN, PP5_OUT, PP5_IN, 0,
+-		PP4_FN, PP4_OUT, PP4_IN, 0,
+-		PP3_FN, PP3_OUT, PP3_IN, 0,
+-		PP2_FN, PP2_OUT, PP2_IN, 0,
+-		PP1_FN, PP1_OUT, PP1_IN, 0,
+-		PP0_FN, PP0_OUT, PP0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PQCR", 0xffe7001c, 16,
+-			     GROUP(-6, 2, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [6] */
+-		PQ4_FN, PQ4_OUT, PQ4_IN, 0,
+-		PQ3_FN, PQ3_OUT, PQ3_IN, 0,
+-		PQ2_FN, PQ2_OUT, PQ2_IN, 0,
+-		PQ1_FN, PQ1_OUT, PQ1_IN, 0,
+-		PQ0_FN, PQ0_OUT, PQ0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PRCR", 0xffe7001e, 16,
+-			     GROUP(-8, 2, 2, 2, 2),
+-			     GROUP(
+-		/* RESERVED [8] */
+-		PR3_FN, PR3_OUT, PR3_IN, 0,
+-		PR2_FN, PR2_OUT, PR2_IN, 0,
+-		PR1_FN, PR1_OUT, PR1_IN, 0,
+-		PR0_FN, PR0_OUT, PR0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("P1MSELR", 0xffe70080, 16, 1, GROUP(
+-		P1MSEL15_0, P1MSEL15_1,
+-		P1MSEL14_0, P1MSEL14_1,
+-		P1MSEL13_0, P1MSEL13_1,
+-		P1MSEL12_0, P1MSEL12_1,
+-		P1MSEL11_0, P1MSEL11_1,
+-		P1MSEL10_0, P1MSEL10_1,
+-		P1MSEL9_0, P1MSEL9_1,
+-		P1MSEL8_0, P1MSEL8_1,
+-		P1MSEL7_0, P1MSEL7_1,
+-		P1MSEL6_0, P1MSEL6_1,
+-		P1MSEL5_0, 0,
+-		P1MSEL4_0, P1MSEL4_1,
+-		P1MSEL3_0, P1MSEL3_1,
+-		P1MSEL2_0, P1MSEL2_1,
+-		P1MSEL1_0, P1MSEL1_1,
+-		P1MSEL0_0, P1MSEL0_1 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("P2MSELR", 0xffe70082, 16,
+-			     GROUP(-13, 1, 1, 1),
+-			     GROUP(
+-		/* RESERVED [13] */
+-		P2MSEL2_0, P2MSEL2_1,
+-		P2MSEL1_0, P2MSEL1_1,
+-		P2MSEL0_0, P2MSEL0_1 ))
+-	},
+-	{}
+-};
+-
+-static const struct pinmux_data_reg pinmux_data_regs[] = {
+-	{ PINMUX_DATA_REG("PADR", 0xffe70020, 8, GROUP(
+-		PA7_DATA, PA6_DATA, PA5_DATA, PA4_DATA,
+-		PA3_DATA, PA2_DATA, PA1_DATA, PA0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PBDR", 0xffe70022, 8, GROUP(
+-		PB7_DATA, PB6_DATA, PB5_DATA, PB4_DATA,
+-		PB3_DATA, PB2_DATA, PB1_DATA, PB0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PCDR", 0xffe70024, 8, GROUP(
+-		PC7_DATA, PC6_DATA, PC5_DATA, PC4_DATA,
+-		PC3_DATA, PC2_DATA, PC1_DATA, PC0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PDDR", 0xffe70026, 8, GROUP(
+-		PD7_DATA, PD6_DATA, PD5_DATA, PD4_DATA,
+-		PD3_DATA, PD2_DATA, PD1_DATA, PD0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PEDR", 0xffe70028, 8, GROUP(
+-		0, 0, PE5_DATA, PE4_DATA,
+-		PE3_DATA, PE2_DATA, PE1_DATA, PE0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PFDR", 0xffe7002a, 8, GROUP(
+-		PF7_DATA, PF6_DATA, PF5_DATA, PF4_DATA,
+-		PF3_DATA, PF2_DATA, PF1_DATA, PF0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PGDR", 0xffe7002c, 8, GROUP(
+-		PG7_DATA, PG6_DATA, PG5_DATA, PG4_DATA,
+-		PG3_DATA, PG2_DATA, PG1_DATA, PG0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PHDR", 0xffe7002e, 8, GROUP(
+-		PH7_DATA, PH6_DATA, PH5_DATA, PH4_DATA,
+-		PH3_DATA, PH2_DATA, PH1_DATA, PH0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PJDR", 0xffe70030, 8, GROUP(
+-		PJ7_DATA, PJ6_DATA, PJ5_DATA, PJ4_DATA,
+-		PJ3_DATA, PJ2_DATA, PJ1_DATA, PJ0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PKDR", 0xffe70032, 8, GROUP(
+-		PK7_DATA, PK6_DATA, PK5_DATA, PK4_DATA,
+-		PK3_DATA, PK2_DATA, PK1_DATA, PK0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PLDR", 0xffe70034, 8, GROUP(
+-		PL7_DATA, PL6_DATA, PL5_DATA, PL4_DATA,
+-		PL3_DATA, PL2_DATA, PL1_DATA, PL0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PMDR", 0xffe70036, 8, GROUP(
+-		0, 0, 0, 0,
+-		0, 0, PM1_DATA, PM0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PNDR", 0xffe70038, 8, GROUP(
+-		PN7_DATA, PN6_DATA, PN5_DATA, PN4_DATA,
+-		PN3_DATA, PN2_DATA, PN1_DATA, PN0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PPDR", 0xffe7003a, 8, GROUP(
+-		0, 0, PP5_DATA, PP4_DATA,
+-		PP3_DATA, PP2_DATA, PP1_DATA, PP0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PQDR", 0xffe7003c, 8, GROUP(
+-		0, 0, 0, PQ4_DATA,
+-		PQ3_DATA, PQ2_DATA, PQ1_DATA, PQ0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PRDR", 0xffe7003e, 8, GROUP(
+-		0, 0, 0, 0,
+-		PR3_DATA, PR2_DATA, PR1_DATA, PR0_DATA ))
+-	},
+-	{ },
+-};
+-
+-const struct sh_pfc_soc_info sh7785_pinmux_info = {
+-	.name = "sh7785_pfc",
+-	.input = { PINMUX_INPUT_BEGIN, PINMUX_INPUT_END },
+-	.output = { PINMUX_OUTPUT_BEGIN, PINMUX_OUTPUT_END },
+-	.function = { PINMUX_FUNCTION_BEGIN, PINMUX_FUNCTION_END },
+-
+-	.pins = pinmux_pins,
+-	.nr_pins = ARRAY_SIZE(pinmux_pins),
+-	.func_gpios = pinmux_func_gpios,
+-	.nr_func_gpios = ARRAY_SIZE(pinmux_func_gpios),
+-
+-	.cfg_regs = pinmux_config_regs,
+-	.data_regs = pinmux_data_regs,
+-
+-	.pinmux_data = pinmux_data,
+-	.pinmux_data_size = ARRAY_SIZE(pinmux_data),
+-};
+diff --git a/drivers/pinctrl/renesas/pfc-sh7786.c b/drivers/pinctrl/renesas/pfc-sh7786.c
+deleted file mode 100644
+index f09f4a76901088..00000000000000
+--- a/drivers/pinctrl/renesas/pfc-sh7786.c
++++ /dev/null
+@@ -1,809 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * SH7786 Pinmux
+- *
+- * Copyright (C) 2008, 2009  Renesas Solutions Corp.
+- * Kuninori Morimoto <morimoto.kuninori@renesas.com>
+- *
+- *  Based on SH7785 pinmux
+- *
+- *  Copyright (C) 2008  Magnus Damm
+- */
+-
+-#include <linux/kernel.h>
+-#include <cpu/sh7786.h>
+-
+-#include "sh_pfc.h"
+-
+-enum {
+-	PINMUX_RESERVED = 0,
+-
+-	PINMUX_DATA_BEGIN,
+-	PA7_DATA, PA6_DATA, PA5_DATA, PA4_DATA,
+-	PA3_DATA, PA2_DATA, PA1_DATA, PA0_DATA,
+-	PB7_DATA, PB6_DATA, PB5_DATA, PB4_DATA,
+-	PB3_DATA, PB2_DATA, PB1_DATA, PB0_DATA,
+-	PC7_DATA, PC6_DATA, PC5_DATA, PC4_DATA,
+-	PC3_DATA, PC2_DATA, PC1_DATA, PC0_DATA,
+-	PD7_DATA, PD6_DATA, PD5_DATA, PD4_DATA,
+-	PD3_DATA, PD2_DATA, PD1_DATA, PD0_DATA,
+-	PE7_DATA, PE6_DATA,
+-	PF7_DATA, PF6_DATA, PF5_DATA, PF4_DATA,
+-	PF3_DATA, PF2_DATA, PF1_DATA, PF0_DATA,
+-	PG7_DATA, PG6_DATA, PG5_DATA,
+-	PH7_DATA, PH6_DATA, PH5_DATA, PH4_DATA,
+-	PH3_DATA, PH2_DATA, PH1_DATA, PH0_DATA,
+-	PJ7_DATA, PJ6_DATA, PJ5_DATA, PJ4_DATA,
+-	PJ3_DATA, PJ2_DATA, PJ1_DATA,
+-	PINMUX_DATA_END,
+-
+-	PINMUX_INPUT_BEGIN,
+-	PA7_IN, PA6_IN, PA5_IN, PA4_IN,
+-	PA3_IN, PA2_IN, PA1_IN, PA0_IN,
+-	PB7_IN, PB6_IN, PB5_IN, PB4_IN,
+-	PB3_IN, PB2_IN, PB1_IN, PB0_IN,
+-	PC7_IN, PC6_IN, PC5_IN, PC4_IN,
+-	PC3_IN, PC2_IN, PC1_IN, PC0_IN,
+-	PD7_IN, PD6_IN, PD5_IN, PD4_IN,
+-	PD3_IN, PD2_IN, PD1_IN, PD0_IN,
+-	PE7_IN, PE6_IN,
+-	PF7_IN, PF6_IN, PF5_IN, PF4_IN,
+-	PF3_IN, PF2_IN, PF1_IN, PF0_IN,
+-	PG7_IN, PG6_IN, PG5_IN,
+-	PH7_IN, PH6_IN, PH5_IN, PH4_IN,
+-	PH3_IN, PH2_IN, PH1_IN, PH0_IN,
+-	PJ7_IN, PJ6_IN, PJ5_IN, PJ4_IN,
+-	PJ3_IN, PJ2_IN, PJ1_IN,
+-	PINMUX_INPUT_END,
+-
+-	PINMUX_OUTPUT_BEGIN,
+-	PA7_OUT, PA6_OUT, PA5_OUT, PA4_OUT,
+-	PA3_OUT, PA2_OUT, PA1_OUT, PA0_OUT,
+-	PB7_OUT, PB6_OUT, PB5_OUT, PB4_OUT,
+-	PB3_OUT, PB2_OUT, PB1_OUT, PB0_OUT,
+-	PC7_OUT, PC6_OUT, PC5_OUT, PC4_OUT,
+-	PC3_OUT, PC2_OUT, PC1_OUT, PC0_OUT,
+-	PD7_OUT, PD6_OUT, PD5_OUT, PD4_OUT,
+-	PD3_OUT, PD2_OUT, PD1_OUT, PD0_OUT,
+-	PE7_OUT, PE6_OUT,
+-	PF7_OUT, PF6_OUT, PF5_OUT, PF4_OUT,
+-	PF3_OUT, PF2_OUT, PF1_OUT, PF0_OUT,
+-	PG7_OUT, PG6_OUT, PG5_OUT,
+-	PH7_OUT, PH6_OUT, PH5_OUT, PH4_OUT,
+-	PH3_OUT, PH2_OUT, PH1_OUT, PH0_OUT,
+-	PJ7_OUT, PJ6_OUT, PJ5_OUT, PJ4_OUT,
+-	PJ3_OUT, PJ2_OUT, PJ1_OUT,
+-	PINMUX_OUTPUT_END,
+-
+-	PINMUX_FUNCTION_BEGIN,
+-	PA7_FN, PA6_FN, PA5_FN, PA4_FN,
+-	PA3_FN, PA2_FN, PA1_FN, PA0_FN,
+-	PB7_FN, PB6_FN, PB5_FN, PB4_FN,
+-	PB3_FN, PB2_FN, PB1_FN, PB0_FN,
+-	PC7_FN, PC6_FN, PC5_FN, PC4_FN,
+-	PC3_FN, PC2_FN, PC1_FN, PC0_FN,
+-	PD7_FN, PD6_FN, PD5_FN, PD4_FN,
+-	PD3_FN, PD2_FN, PD1_FN, PD0_FN,
+-	PE7_FN, PE6_FN,
+-	PF7_FN, PF6_FN, PF5_FN, PF4_FN,
+-	PF3_FN, PF2_FN, PF1_FN, PF0_FN,
+-	PG7_FN, PG6_FN, PG5_FN,
+-	PH7_FN, PH6_FN, PH5_FN, PH4_FN,
+-	PH3_FN, PH2_FN, PH1_FN, PH0_FN,
+-	PJ7_FN, PJ6_FN, PJ5_FN, PJ4_FN,
+-	PJ3_FN, PJ2_FN, PJ1_FN,
+-	P1MSEL14_0, P1MSEL14_1,
+-	P1MSEL13_0, P1MSEL13_1,
+-	P1MSEL12_0, P1MSEL12_1,
+-	P1MSEL11_0, P1MSEL11_1,
+-	P1MSEL10_0, P1MSEL10_1,
+-	P1MSEL9_0, P1MSEL9_1,
+-	P1MSEL8_0, P1MSEL8_1,
+-	P1MSEL7_0, P1MSEL7_1,
+-	P1MSEL6_0, P1MSEL6_1,
+-	P1MSEL5_0, P1MSEL5_1,
+-	P1MSEL4_0, P1MSEL4_1,
+-	P1MSEL3_0, P1MSEL3_1,
+-	P1MSEL2_0, P1MSEL2_1,
+-	P1MSEL1_0, P1MSEL1_1,
+-	P1MSEL0_0, P1MSEL0_1,
+-
+-	P2MSEL15_0, P2MSEL15_1,
+-	P2MSEL14_0, P2MSEL14_1,
+-	P2MSEL13_0, P2MSEL13_1,
+-	P2MSEL12_0, P2MSEL12_1,
+-	P2MSEL11_0, P2MSEL11_1,
+-	P2MSEL10_0, P2MSEL10_1,
+-	P2MSEL9_0, P2MSEL9_1,
+-	P2MSEL8_0, P2MSEL8_1,
+-	P2MSEL7_0, P2MSEL7_1,
+-	P2MSEL6_0, P2MSEL6_1,
+-	P2MSEL5_0, P2MSEL5_1,
+-	P2MSEL4_0, P2MSEL4_1,
+-	P2MSEL3_0, P2MSEL3_1,
+-	P2MSEL2_0, P2MSEL2_1,
+-	P2MSEL1_0, P2MSEL1_1,
+-	P2MSEL0_0, P2MSEL0_1,
+-	PINMUX_FUNCTION_END,
+-
+-	PINMUX_MARK_BEGIN,
+-	DCLKIN_MARK, DCLKOUT_MARK, ODDF_MARK,
+-	VSYNC_MARK, HSYNC_MARK, CDE_MARK, DISP_MARK,
+-	DR0_MARK, DR1_MARK, DR2_MARK, DR3_MARK, DR4_MARK, DR5_MARK,
+-	DG0_MARK, DG1_MARK, DG2_MARK, DG3_MARK, DG4_MARK, DG5_MARK,
+-	DB0_MARK, DB1_MARK, DB2_MARK, DB3_MARK, DB4_MARK, DB5_MARK,
+-	ETH_MAGIC_MARK, ETH_LINK_MARK, ETH_TX_ER_MARK, ETH_TX_EN_MARK,
+-	ETH_MDIO_MARK, ETH_RX_CLK_MARK, ETH_MDC_MARK, ETH_COL_MARK,
+-	ETH_TX_CLK_MARK, ETH_CRS_MARK, ETH_RX_DV_MARK, ETH_RX_ER_MARK,
+-	ETH_TXD3_MARK, ETH_TXD2_MARK, ETH_TXD1_MARK, ETH_TXD0_MARK,
+-	ETH_RXD3_MARK, ETH_RXD2_MARK, ETH_RXD1_MARK, ETH_RXD0_MARK,
+-	HSPI_CLK_MARK, HSPI_CS_MARK, HSPI_RX_MARK, HSPI_TX_MARK,
+-	SCIF0_CTS_MARK, SCIF0_RTS_MARK,
+-	SCIF0_SCK_MARK, SCIF0_RXD_MARK, SCIF0_TXD_MARK,
+-	SCIF1_SCK_MARK, SCIF1_RXD_MARK, SCIF1_TXD_MARK,
+-	SCIF3_SCK_MARK, SCIF3_RXD_MARK, SCIF3_TXD_MARK,
+-	SCIF4_SCK_MARK, SCIF4_RXD_MARK, SCIF4_TXD_MARK,
+-	SCIF5_SCK_MARK, SCIF5_RXD_MARK, SCIF5_TXD_MARK,
+-	BREQ_MARK, IOIS16_MARK, CE2B_MARK, CE2A_MARK, BACK_MARK,
+-	FALE_MARK, FRB_MARK, FSTATUS_MARK,
+-	FSE_MARK, FCLE_MARK,
+-	DACK0_MARK, DACK1_MARK, DACK2_MARK, DACK3_MARK,
+-	DREQ0_MARK, DREQ1_MARK, DREQ2_MARK, DREQ3_MARK,
+-	DRAK0_MARK, DRAK1_MARK, DRAK2_MARK, DRAK3_MARK,
+-	USB_OVC1_MARK, USB_OVC0_MARK,
+-	USB_PENC1_MARK, USB_PENC0_MARK,
+-	HAC_RES_MARK,
+-	HAC1_SDOUT_MARK, HAC1_SDIN_MARK, HAC1_SYNC_MARK, HAC1_BITCLK_MARK,
+-	HAC0_SDOUT_MARK, HAC0_SDIN_MARK, HAC0_SYNC_MARK, HAC0_BITCLK_MARK,
+-	SSI0_SDATA_MARK, SSI0_SCK_MARK, SSI0_WS_MARK, SSI0_CLK_MARK,
+-	SSI1_SDATA_MARK, SSI1_SCK_MARK, SSI1_WS_MARK, SSI1_CLK_MARK,
+-	SSI2_SDATA_MARK, SSI2_SCK_MARK, SSI2_WS_MARK,
+-	SSI3_SDATA_MARK, SSI3_SCK_MARK, SSI3_WS_MARK,
+-	SDIF1CMD_MARK, SDIF1CD_MARK, SDIF1WP_MARK, SDIF1CLK_MARK,
+-	SDIF1D3_MARK, SDIF1D2_MARK, SDIF1D1_MARK, SDIF1D0_MARK,
+-	SDIF0CMD_MARK, SDIF0CD_MARK, SDIF0WP_MARK, SDIF0CLK_MARK,
+-	SDIF0D3_MARK, SDIF0D2_MARK, SDIF0D1_MARK, SDIF0D0_MARK,
+-	TCLK_MARK,
+-	IRL7_MARK, IRL6_MARK, IRL5_MARK, IRL4_MARK,
+-	PINMUX_MARK_END,
+-};
+-
+-static const u16 pinmux_data[] = {
+-	/* PA GPIO */
+-	PINMUX_DATA(PA7_DATA, PA7_IN, PA7_OUT),
+-	PINMUX_DATA(PA6_DATA, PA6_IN, PA6_OUT),
+-	PINMUX_DATA(PA5_DATA, PA5_IN, PA5_OUT),
+-	PINMUX_DATA(PA4_DATA, PA4_IN, PA4_OUT),
+-	PINMUX_DATA(PA3_DATA, PA3_IN, PA3_OUT),
+-	PINMUX_DATA(PA2_DATA, PA2_IN, PA2_OUT),
+-	PINMUX_DATA(PA1_DATA, PA1_IN, PA1_OUT),
+-	PINMUX_DATA(PA0_DATA, PA0_IN, PA0_OUT),
+-
+-	/* PB GPIO */
+-	PINMUX_DATA(PB7_DATA, PB7_IN, PB7_OUT),
+-	PINMUX_DATA(PB6_DATA, PB6_IN, PB6_OUT),
+-	PINMUX_DATA(PB5_DATA, PB5_IN, PB5_OUT),
+-	PINMUX_DATA(PB4_DATA, PB4_IN, PB4_OUT),
+-	PINMUX_DATA(PB3_DATA, PB3_IN, PB3_OUT),
+-	PINMUX_DATA(PB2_DATA, PB2_IN, PB2_OUT),
+-	PINMUX_DATA(PB1_DATA, PB1_IN, PB1_OUT),
+-	PINMUX_DATA(PB0_DATA, PB0_IN, PB0_OUT),
+-
+-	/* PC GPIO */
+-	PINMUX_DATA(PC7_DATA, PC7_IN, PC7_OUT),
+-	PINMUX_DATA(PC6_DATA, PC6_IN, PC6_OUT),
+-	PINMUX_DATA(PC5_DATA, PC5_IN, PC5_OUT),
+-	PINMUX_DATA(PC4_DATA, PC4_IN, PC4_OUT),
+-	PINMUX_DATA(PC3_DATA, PC3_IN, PC3_OUT),
+-	PINMUX_DATA(PC2_DATA, PC2_IN, PC2_OUT),
+-	PINMUX_DATA(PC1_DATA, PC1_IN, PC1_OUT),
+-	PINMUX_DATA(PC0_DATA, PC0_IN, PC0_OUT),
+-
+-	/* PD GPIO */
+-	PINMUX_DATA(PD7_DATA, PD7_IN, PD7_OUT),
+-	PINMUX_DATA(PD6_DATA, PD6_IN, PD6_OUT),
+-	PINMUX_DATA(PD5_DATA, PD5_IN, PD5_OUT),
+-	PINMUX_DATA(PD4_DATA, PD4_IN, PD4_OUT),
+-	PINMUX_DATA(PD3_DATA, PD3_IN, PD3_OUT),
+-	PINMUX_DATA(PD2_DATA, PD2_IN, PD2_OUT),
+-	PINMUX_DATA(PD1_DATA, PD1_IN, PD1_OUT),
+-	PINMUX_DATA(PD0_DATA, PD0_IN, PD0_OUT),
+-
+-	/* PE GPIO */
+-	PINMUX_DATA(PE7_DATA, PE7_IN, PE7_OUT),
+-	PINMUX_DATA(PE6_DATA, PE6_IN, PE6_OUT),
+-
+-	/* PF GPIO */
+-	PINMUX_DATA(PF7_DATA, PF7_IN, PF7_OUT),
+-	PINMUX_DATA(PF6_DATA, PF6_IN, PF6_OUT),
+-	PINMUX_DATA(PF5_DATA, PF5_IN, PF5_OUT),
+-	PINMUX_DATA(PF4_DATA, PF4_IN, PF4_OUT),
+-	PINMUX_DATA(PF3_DATA, PF3_IN, PF3_OUT),
+-	PINMUX_DATA(PF2_DATA, PF2_IN, PF2_OUT),
+-	PINMUX_DATA(PF1_DATA, PF1_IN, PF1_OUT),
+-	PINMUX_DATA(PF0_DATA, PF0_IN, PF0_OUT),
+-
+-	/* PG GPIO */
+-	PINMUX_DATA(PG7_DATA, PG7_IN, PG7_OUT),
+-	PINMUX_DATA(PG6_DATA, PG6_IN, PG6_OUT),
+-	PINMUX_DATA(PG5_DATA, PG5_IN, PG5_OUT),
+-
+-	/* PH GPIO */
+-	PINMUX_DATA(PH7_DATA, PH7_IN, PH7_OUT),
+-	PINMUX_DATA(PH6_DATA, PH6_IN, PH6_OUT),
+-	PINMUX_DATA(PH5_DATA, PH5_IN, PH5_OUT),
+-	PINMUX_DATA(PH4_DATA, PH4_IN, PH4_OUT),
+-	PINMUX_DATA(PH3_DATA, PH3_IN, PH3_OUT),
+-	PINMUX_DATA(PH2_DATA, PH2_IN, PH2_OUT),
+-	PINMUX_DATA(PH1_DATA, PH1_IN, PH1_OUT),
+-	PINMUX_DATA(PH0_DATA, PH0_IN, PH0_OUT),
+-
+-	/* PJ GPIO */
+-	PINMUX_DATA(PJ7_DATA, PJ7_IN, PJ7_OUT),
+-	PINMUX_DATA(PJ6_DATA, PJ6_IN, PJ6_OUT),
+-	PINMUX_DATA(PJ5_DATA, PJ5_IN, PJ5_OUT),
+-	PINMUX_DATA(PJ4_DATA, PJ4_IN, PJ4_OUT),
+-	PINMUX_DATA(PJ3_DATA, PJ3_IN, PJ3_OUT),
+-	PINMUX_DATA(PJ2_DATA, PJ2_IN, PJ2_OUT),
+-	PINMUX_DATA(PJ1_DATA, PJ1_IN, PJ1_OUT),
+-
+-	/* PA FN */
+-	PINMUX_DATA(CDE_MARK,		P1MSEL2_0, PA7_FN),
+-	PINMUX_DATA(DISP_MARK,		P1MSEL2_0, PA6_FN),
+-	PINMUX_DATA(DR5_MARK,		P1MSEL2_0, PA5_FN),
+-	PINMUX_DATA(DR4_MARK,		P1MSEL2_0, PA4_FN),
+-	PINMUX_DATA(DR3_MARK,		P1MSEL2_0, PA3_FN),
+-	PINMUX_DATA(DR2_MARK,		P1MSEL2_0, PA2_FN),
+-	PINMUX_DATA(DR1_MARK,		P1MSEL2_0, PA1_FN),
+-	PINMUX_DATA(DR0_MARK,		P1MSEL2_0, PA0_FN),
+-	PINMUX_DATA(ETH_MAGIC_MARK,	P1MSEL2_1, PA7_FN),
+-	PINMUX_DATA(ETH_LINK_MARK,	P1MSEL2_1, PA6_FN),
+-	PINMUX_DATA(ETH_TX_ER_MARK,	P1MSEL2_1, PA5_FN),
+-	PINMUX_DATA(ETH_TX_EN_MARK,	P1MSEL2_1, PA4_FN),
+-	PINMUX_DATA(ETH_TXD3_MARK,	P1MSEL2_1, PA3_FN),
+-	PINMUX_DATA(ETH_TXD2_MARK,	P1MSEL2_1, PA2_FN),
+-	PINMUX_DATA(ETH_TXD1_MARK,	P1MSEL2_1, PA1_FN),
+-	PINMUX_DATA(ETH_TXD0_MARK,	P1MSEL2_1, PA0_FN),
+-
+-	/* PB FN */
+-	PINMUX_DATA(VSYNC_MARK,		P1MSEL3_0, PB7_FN),
+-	PINMUX_DATA(ODDF_MARK,		P1MSEL3_0, PB6_FN),
+-	PINMUX_DATA(DG5_MARK,		P1MSEL2_0, PB5_FN),
+-	PINMUX_DATA(DG4_MARK,		P1MSEL2_0, PB4_FN),
+-	PINMUX_DATA(DG3_MARK,		P1MSEL2_0, PB3_FN),
+-	PINMUX_DATA(DG2_MARK,		P1MSEL2_0, PB2_FN),
+-	PINMUX_DATA(DG1_MARK,		P1MSEL2_0, PB1_FN),
+-	PINMUX_DATA(DG0_MARK,		P1MSEL2_0, PB0_FN),
+-	PINMUX_DATA(HSPI_CLK_MARK,	P1MSEL3_1, PB7_FN),
+-	PINMUX_DATA(HSPI_CS_MARK,	P1MSEL3_1, PB6_FN),
+-	PINMUX_DATA(ETH_MDIO_MARK,	P1MSEL2_1, PB5_FN),
+-	PINMUX_DATA(ETH_RX_CLK_MARK,	P1MSEL2_1, PB4_FN),
+-	PINMUX_DATA(ETH_MDC_MARK,	P1MSEL2_1, PB3_FN),
+-	PINMUX_DATA(ETH_COL_MARK,	P1MSEL2_1, PB2_FN),
+-	PINMUX_DATA(ETH_TX_CLK_MARK,	P1MSEL2_1, PB1_FN),
+-	PINMUX_DATA(ETH_CRS_MARK,	P1MSEL2_1, PB0_FN),
+-
+-	/* PC FN */
+-	PINMUX_DATA(DCLKIN_MARK,	P1MSEL3_0, PC7_FN),
+-	PINMUX_DATA(HSYNC_MARK,		P1MSEL3_0, PC6_FN),
+-	PINMUX_DATA(DB5_MARK,		P1MSEL2_0, PC5_FN),
+-	PINMUX_DATA(DB4_MARK,		P1MSEL2_0, PC4_FN),
+-	PINMUX_DATA(DB3_MARK,		P1MSEL2_0, PC3_FN),
+-	PINMUX_DATA(DB2_MARK,		P1MSEL2_0, PC2_FN),
+-	PINMUX_DATA(DB1_MARK,		P1MSEL2_0, PC1_FN),
+-	PINMUX_DATA(DB0_MARK,		P1MSEL2_0, PC0_FN),
+-
+-	PINMUX_DATA(HSPI_RX_MARK,	P1MSEL3_1, PC7_FN),
+-	PINMUX_DATA(HSPI_TX_MARK,	P1MSEL3_1, PC6_FN),
+-	PINMUX_DATA(ETH_RXD3_MARK,	P1MSEL2_1, PC5_FN),
+-	PINMUX_DATA(ETH_RXD2_MARK,	P1MSEL2_1, PC4_FN),
+-	PINMUX_DATA(ETH_RXD1_MARK,	P1MSEL2_1, PC3_FN),
+-	PINMUX_DATA(ETH_RXD0_MARK,	P1MSEL2_1, PC2_FN),
+-	PINMUX_DATA(ETH_RX_DV_MARK,	P1MSEL2_1, PC1_FN),
+-	PINMUX_DATA(ETH_RX_ER_MARK,	P1MSEL2_1, PC0_FN),
+-
+-	/* PD FN */
+-	PINMUX_DATA(DCLKOUT_MARK,	PD7_FN),
+-	PINMUX_DATA(SCIF1_SCK_MARK,	PD6_FN),
+-	PINMUX_DATA(SCIF1_RXD_MARK,	PD5_FN),
+-	PINMUX_DATA(SCIF1_TXD_MARK,	PD4_FN),
+-	PINMUX_DATA(DACK1_MARK,		P1MSEL13_1, P1MSEL12_0, PD3_FN),
+-	PINMUX_DATA(BACK_MARK,		P1MSEL13_0, P1MSEL12_1, PD3_FN),
+-	PINMUX_DATA(FALE_MARK,		P1MSEL13_0, P1MSEL12_0, PD3_FN),
+-	PINMUX_DATA(DACK0_MARK,		P1MSEL14_1, PD2_FN),
+-	PINMUX_DATA(FCLE_MARK,		P1MSEL14_0, PD2_FN),
+-	PINMUX_DATA(DREQ1_MARK,		P1MSEL10_0, P1MSEL9_1, PD1_FN),
+-	PINMUX_DATA(BREQ_MARK,		P1MSEL10_1, P1MSEL9_0, PD1_FN),
+-	PINMUX_DATA(USB_OVC1_MARK,	P1MSEL10_0, P1MSEL9_0, PD1_FN),
+-	PINMUX_DATA(DREQ0_MARK,		P1MSEL11_1, PD0_FN),
+-	PINMUX_DATA(USB_OVC0_MARK,	P1MSEL11_0, PD0_FN),
+-
+-	/* PE FN */
+-	PINMUX_DATA(USB_PENC1_MARK,	PE7_FN),
+-	PINMUX_DATA(USB_PENC0_MARK,	PE6_FN),
+-
+-	/* PF FN */
+-	PINMUX_DATA(HAC1_SDOUT_MARK,	P2MSEL15_0, P2MSEL14_0, PF7_FN),
+-	PINMUX_DATA(HAC1_SDIN_MARK,	P2MSEL15_0, P2MSEL14_0, PF6_FN),
+-	PINMUX_DATA(HAC1_SYNC_MARK,	P2MSEL15_0, P2MSEL14_0, PF5_FN),
+-	PINMUX_DATA(HAC1_BITCLK_MARK,	P2MSEL15_0, P2MSEL14_0, PF4_FN),
+-	PINMUX_DATA(HAC0_SDOUT_MARK,	P2MSEL13_0, P2MSEL12_0, PF3_FN),
+-	PINMUX_DATA(HAC0_SDIN_MARK,	P2MSEL13_0, P2MSEL12_0, PF2_FN),
+-	PINMUX_DATA(HAC0_SYNC_MARK,	P2MSEL13_0, P2MSEL12_0, PF1_FN),
+-	PINMUX_DATA(HAC0_BITCLK_MARK,	P2MSEL13_0, P2MSEL12_0, PF0_FN),
+-	PINMUX_DATA(SSI1_SDATA_MARK,	P2MSEL15_0, P2MSEL14_1, PF7_FN),
+-	PINMUX_DATA(SSI1_SCK_MARK,	P2MSEL15_0, P2MSEL14_1, PF6_FN),
+-	PINMUX_DATA(SSI1_WS_MARK,	P2MSEL15_0, P2MSEL14_1, PF5_FN),
+-	PINMUX_DATA(SSI1_CLK_MARK,	P2MSEL15_0, P2MSEL14_1, PF4_FN),
+-	PINMUX_DATA(SSI0_SDATA_MARK,	P2MSEL13_0, P2MSEL12_1, PF3_FN),
+-	PINMUX_DATA(SSI0_SCK_MARK,	P2MSEL13_0, P2MSEL12_1, PF2_FN),
+-	PINMUX_DATA(SSI0_WS_MARK,	P2MSEL13_0, P2MSEL12_1, PF1_FN),
+-	PINMUX_DATA(SSI0_CLK_MARK,	P2MSEL13_0, P2MSEL12_1, PF0_FN),
+-	PINMUX_DATA(SDIF1CMD_MARK,	P2MSEL15_1, P2MSEL14_0, PF7_FN),
+-	PINMUX_DATA(SDIF1CD_MARK,	P2MSEL15_1, P2MSEL14_0, PF6_FN),
+-	PINMUX_DATA(SDIF1WP_MARK,	P2MSEL15_1, P2MSEL14_0, PF5_FN),
+-	PINMUX_DATA(SDIF1CLK_MARK,	P2MSEL15_1, P2MSEL14_0, PF4_FN),
+-	PINMUX_DATA(SDIF1D3_MARK,	P2MSEL13_1, P2MSEL12_0, PF3_FN),
+-	PINMUX_DATA(SDIF1D2_MARK,	P2MSEL13_1, P2MSEL12_0, PF2_FN),
+-	PINMUX_DATA(SDIF1D1_MARK,	P2MSEL13_1, P2MSEL12_0, PF1_FN),
+-	PINMUX_DATA(SDIF1D0_MARK,	P2MSEL13_1, P2MSEL12_0, PF0_FN),
+-
+-	/* PG FN */
+-	PINMUX_DATA(SCIF3_SCK_MARK,	P1MSEL8_0, PG7_FN),
+-	PINMUX_DATA(SSI2_SDATA_MARK,	P1MSEL8_1, PG7_FN),
+-	PINMUX_DATA(SCIF3_RXD_MARK,	P1MSEL7_0, P1MSEL6_0, PG6_FN),
+-	PINMUX_DATA(SSI2_SCK_MARK,	P1MSEL7_1, P1MSEL6_0, PG6_FN),
+-	PINMUX_DATA(TCLK_MARK,		P1MSEL7_0, P1MSEL6_1, PG6_FN),
+-	PINMUX_DATA(SCIF3_TXD_MARK,	P1MSEL5_0, P1MSEL4_0, PG5_FN),
+-	PINMUX_DATA(SSI2_WS_MARK,	P1MSEL5_1, P1MSEL4_0, PG5_FN),
+-	PINMUX_DATA(HAC_RES_MARK,	P1MSEL5_0, P1MSEL4_1, PG5_FN),
+-
+-	/* PH FN */
+-	PINMUX_DATA(DACK3_MARK,		P2MSEL4_0, PH7_FN),
+-	PINMUX_DATA(SDIF0CMD_MARK,	P2MSEL4_1, PH7_FN),
+-	PINMUX_DATA(DACK2_MARK,		P2MSEL4_0, PH6_FN),
+-	PINMUX_DATA(SDIF0CD_MARK,	P2MSEL4_1, PH6_FN),
+-	PINMUX_DATA(DREQ3_MARK,		P2MSEL4_0, PH5_FN),
+-	PINMUX_DATA(SDIF0WP_MARK,	P2MSEL4_1, PH5_FN),
+-	PINMUX_DATA(DREQ2_MARK,		P2MSEL3_0, P2MSEL2_1, PH4_FN),
+-	PINMUX_DATA(SDIF0CLK_MARK,	P2MSEL3_1, P2MSEL2_0, PH4_FN),
+-	PINMUX_DATA(SCIF0_CTS_MARK,	P2MSEL3_0, P2MSEL2_0, PH4_FN),
+-	PINMUX_DATA(SDIF0D3_MARK,	P2MSEL1_1, P2MSEL0_0, PH3_FN),
+-	PINMUX_DATA(SCIF0_RTS_MARK,	P2MSEL1_0, P2MSEL0_0, PH3_FN),
+-	PINMUX_DATA(IRL7_MARK,		P2MSEL1_0, P2MSEL0_1, PH3_FN),
+-	PINMUX_DATA(SDIF0D2_MARK,	P2MSEL1_1, P2MSEL0_0, PH2_FN),
+-	PINMUX_DATA(SCIF0_SCK_MARK,	P2MSEL1_0, P2MSEL0_0, PH2_FN),
+-	PINMUX_DATA(IRL6_MARK,		P2MSEL1_0, P2MSEL0_1, PH2_FN),
+-	PINMUX_DATA(SDIF0D1_MARK,	P2MSEL1_1, P2MSEL0_0, PH1_FN),
+-	PINMUX_DATA(SCIF0_RXD_MARK,	P2MSEL1_0, P2MSEL0_0, PH1_FN),
+-	PINMUX_DATA(IRL5_MARK,		P2MSEL1_0, P2MSEL0_1, PH1_FN),
+-	PINMUX_DATA(SDIF0D0_MARK,	P2MSEL1_1, P2MSEL0_0, PH0_FN),
+-	PINMUX_DATA(SCIF0_TXD_MARK,	P2MSEL1_0, P2MSEL0_0, PH0_FN),
+-	PINMUX_DATA(IRL4_MARK,		P2MSEL1_0, P2MSEL0_1, PH0_FN),
+-
+-	/* PJ FN */
+-	PINMUX_DATA(SCIF5_SCK_MARK,	P2MSEL11_1, PJ7_FN),
+-	PINMUX_DATA(FRB_MARK,		P2MSEL11_0, PJ7_FN),
+-	PINMUX_DATA(SCIF5_RXD_MARK,	P2MSEL10_0, PJ6_FN),
+-	PINMUX_DATA(IOIS16_MARK,	P2MSEL10_1, PJ6_FN),
+-	PINMUX_DATA(SCIF5_TXD_MARK,	P2MSEL10_0, PJ5_FN),
+-	PINMUX_DATA(CE2B_MARK,		P2MSEL10_1, PJ5_FN),
+-	PINMUX_DATA(DRAK3_MARK,		P2MSEL7_0, PJ4_FN),
+-	PINMUX_DATA(CE2A_MARK,		P2MSEL7_1, PJ4_FN),
+-	PINMUX_DATA(SCIF4_SCK_MARK,	P2MSEL9_0, P2MSEL8_0, PJ3_FN),
+-	PINMUX_DATA(DRAK2_MARK,		P2MSEL9_0, P2MSEL8_1, PJ3_FN),
+-	PINMUX_DATA(SSI3_WS_MARK,	P2MSEL9_1, P2MSEL8_0, PJ3_FN),
+-	PINMUX_DATA(SCIF4_RXD_MARK,	P2MSEL6_1, P2MSEL5_0, PJ2_FN),
+-	PINMUX_DATA(DRAK1_MARK,		P2MSEL6_0, P2MSEL5_1, PJ2_FN),
+-	PINMUX_DATA(FSTATUS_MARK,	P2MSEL6_0, P2MSEL5_0, PJ2_FN),
+-	PINMUX_DATA(SSI3_SDATA_MARK,	P2MSEL6_1, P2MSEL5_1, PJ2_FN),
+-	PINMUX_DATA(SCIF4_TXD_MARK,	P2MSEL6_1, P2MSEL5_0, PJ1_FN),
+-	PINMUX_DATA(DRAK0_MARK,		P2MSEL6_0, P2MSEL5_1, PJ1_FN),
+-	PINMUX_DATA(FSE_MARK,		P2MSEL6_0, P2MSEL5_0, PJ1_FN),
+-	PINMUX_DATA(SSI3_SCK_MARK,	P2MSEL6_1, P2MSEL5_1, PJ1_FN),
+-};
+-
+-static const struct sh_pfc_pin pinmux_pins[] = {
+-	/* PA */
+-	PINMUX_GPIO(PA7),
+-	PINMUX_GPIO(PA6),
+-	PINMUX_GPIO(PA5),
+-	PINMUX_GPIO(PA4),
+-	PINMUX_GPIO(PA3),
+-	PINMUX_GPIO(PA2),
+-	PINMUX_GPIO(PA1),
+-	PINMUX_GPIO(PA0),
+-
+-	/* PB */
+-	PINMUX_GPIO(PB7),
+-	PINMUX_GPIO(PB6),
+-	PINMUX_GPIO(PB5),
+-	PINMUX_GPIO(PB4),
+-	PINMUX_GPIO(PB3),
+-	PINMUX_GPIO(PB2),
+-	PINMUX_GPIO(PB1),
+-	PINMUX_GPIO(PB0),
+-
+-	/* PC */
+-	PINMUX_GPIO(PC7),
+-	PINMUX_GPIO(PC6),
+-	PINMUX_GPIO(PC5),
+-	PINMUX_GPIO(PC4),
+-	PINMUX_GPIO(PC3),
+-	PINMUX_GPIO(PC2),
+-	PINMUX_GPIO(PC1),
+-	PINMUX_GPIO(PC0),
+-
+-	/* PD */
+-	PINMUX_GPIO(PD7),
+-	PINMUX_GPIO(PD6),
+-	PINMUX_GPIO(PD5),
+-	PINMUX_GPIO(PD4),
+-	PINMUX_GPIO(PD3),
+-	PINMUX_GPIO(PD2),
+-	PINMUX_GPIO(PD1),
+-	PINMUX_GPIO(PD0),
+-
+-	/* PE */
+-	PINMUX_GPIO(PE7),
+-	PINMUX_GPIO(PE6),
+-
+-	/* PF */
+-	PINMUX_GPIO(PF7),
+-	PINMUX_GPIO(PF6),
+-	PINMUX_GPIO(PF5),
+-	PINMUX_GPIO(PF4),
+-	PINMUX_GPIO(PF3),
+-	PINMUX_GPIO(PF2),
+-	PINMUX_GPIO(PF1),
+-	PINMUX_GPIO(PF0),
+-
+-	/* PG */
+-	PINMUX_GPIO(PG7),
+-	PINMUX_GPIO(PG6),
+-	PINMUX_GPIO(PG5),
+-
+-	/* PH */
+-	PINMUX_GPIO(PH7),
+-	PINMUX_GPIO(PH6),
+-	PINMUX_GPIO(PH5),
+-	PINMUX_GPIO(PH4),
+-	PINMUX_GPIO(PH3),
+-	PINMUX_GPIO(PH2),
+-	PINMUX_GPIO(PH1),
+-	PINMUX_GPIO(PH0),
+-
+-	/* PJ */
+-	PINMUX_GPIO(PJ7),
+-	PINMUX_GPIO(PJ6),
+-	PINMUX_GPIO(PJ5),
+-	PINMUX_GPIO(PJ4),
+-	PINMUX_GPIO(PJ3),
+-	PINMUX_GPIO(PJ2),
+-	PINMUX_GPIO(PJ1),
+-};
+-
+-#define PINMUX_FN_BASE	ARRAY_SIZE(pinmux_pins)
+-
+-static const struct pinmux_func pinmux_func_gpios[] = {
+-	/* FN */
+-	GPIO_FN(CDE),
+-	GPIO_FN(ETH_MAGIC),
+-	GPIO_FN(DISP),
+-	GPIO_FN(ETH_LINK),
+-	GPIO_FN(DR5),
+-	GPIO_FN(ETH_TX_ER),
+-	GPIO_FN(DR4),
+-	GPIO_FN(ETH_TX_EN),
+-	GPIO_FN(DR3),
+-	GPIO_FN(ETH_TXD3),
+-	GPIO_FN(DR2),
+-	GPIO_FN(ETH_TXD2),
+-	GPIO_FN(DR1),
+-	GPIO_FN(ETH_TXD1),
+-	GPIO_FN(DR0),
+-	GPIO_FN(ETH_TXD0),
+-	GPIO_FN(VSYNC),
+-	GPIO_FN(HSPI_CLK),
+-	GPIO_FN(ODDF),
+-	GPIO_FN(HSPI_CS),
+-	GPIO_FN(DG5),
+-	GPIO_FN(ETH_MDIO),
+-	GPIO_FN(DG4),
+-	GPIO_FN(ETH_RX_CLK),
+-	GPIO_FN(DG3),
+-	GPIO_FN(ETH_MDC),
+-	GPIO_FN(DG2),
+-	GPIO_FN(ETH_COL),
+-	GPIO_FN(DG1),
+-	GPIO_FN(ETH_TX_CLK),
+-	GPIO_FN(DG0),
+-	GPIO_FN(ETH_CRS),
+-	GPIO_FN(DCLKIN),
+-	GPIO_FN(HSPI_RX),
+-	GPIO_FN(HSYNC),
+-	GPIO_FN(HSPI_TX),
+-	GPIO_FN(DB5),
+-	GPIO_FN(ETH_RXD3),
+-	GPIO_FN(DB4),
+-	GPIO_FN(ETH_RXD2),
+-	GPIO_FN(DB3),
+-	GPIO_FN(ETH_RXD1),
+-	GPIO_FN(DB2),
+-	GPIO_FN(ETH_RXD0),
+-	GPIO_FN(DB1),
+-	GPIO_FN(ETH_RX_DV),
+-	GPIO_FN(DB0),
+-	GPIO_FN(ETH_RX_ER),
+-	GPIO_FN(DCLKOUT),
+-	GPIO_FN(SCIF1_SCK),
+-	GPIO_FN(SCIF1_RXD),
+-	GPIO_FN(SCIF1_TXD),
+-	GPIO_FN(DACK1),
+-	GPIO_FN(BACK),
+-	GPIO_FN(FALE),
+-	GPIO_FN(DACK0),
+-	GPIO_FN(FCLE),
+-	GPIO_FN(DREQ1),
+-	GPIO_FN(BREQ),
+-	GPIO_FN(USB_OVC1),
+-	GPIO_FN(DREQ0),
+-	GPIO_FN(USB_OVC0),
+-	GPIO_FN(USB_PENC1),
+-	GPIO_FN(USB_PENC0),
+-	GPIO_FN(HAC1_SDOUT),
+-	GPIO_FN(SSI1_SDATA),
+-	GPIO_FN(SDIF1CMD),
+-	GPIO_FN(HAC1_SDIN),
+-	GPIO_FN(SSI1_SCK),
+-	GPIO_FN(SDIF1CD),
+-	GPIO_FN(HAC1_SYNC),
+-	GPIO_FN(SSI1_WS),
+-	GPIO_FN(SDIF1WP),
+-	GPIO_FN(HAC1_BITCLK),
+-	GPIO_FN(SSI1_CLK),
+-	GPIO_FN(SDIF1CLK),
+-	GPIO_FN(HAC0_SDOUT),
+-	GPIO_FN(SSI0_SDATA),
+-	GPIO_FN(SDIF1D3),
+-	GPIO_FN(HAC0_SDIN),
+-	GPIO_FN(SSI0_SCK),
+-	GPIO_FN(SDIF1D2),
+-	GPIO_FN(HAC0_SYNC),
+-	GPIO_FN(SSI0_WS),
+-	GPIO_FN(SDIF1D1),
+-	GPIO_FN(HAC0_BITCLK),
+-	GPIO_FN(SSI0_CLK),
+-	GPIO_FN(SDIF1D0),
+-	GPIO_FN(SCIF3_SCK),
+-	GPIO_FN(SSI2_SDATA),
+-	GPIO_FN(SCIF3_RXD),
+-	GPIO_FN(TCLK),
+-	GPIO_FN(SSI2_SCK),
+-	GPIO_FN(SCIF3_TXD),
+-	GPIO_FN(HAC_RES),
+-	GPIO_FN(SSI2_WS),
+-	GPIO_FN(DACK3),
+-	GPIO_FN(SDIF0CMD),
+-	GPIO_FN(DACK2),
+-	GPIO_FN(SDIF0CD),
+-	GPIO_FN(DREQ3),
+-	GPIO_FN(SDIF0WP),
+-	GPIO_FN(SCIF0_CTS),
+-	GPIO_FN(DREQ2),
+-	GPIO_FN(SDIF0CLK),
+-	GPIO_FN(SCIF0_RTS),
+-	GPIO_FN(IRL7),
+-	GPIO_FN(SDIF0D3),
+-	GPIO_FN(SCIF0_SCK),
+-	GPIO_FN(IRL6),
+-	GPIO_FN(SDIF0D2),
+-	GPIO_FN(SCIF0_RXD),
+-	GPIO_FN(IRL5),
+-	GPIO_FN(SDIF0D1),
+-	GPIO_FN(SCIF0_TXD),
+-	GPIO_FN(IRL4),
+-	GPIO_FN(SDIF0D0),
+-	GPIO_FN(SCIF5_SCK),
+-	GPIO_FN(FRB),
+-	GPIO_FN(SCIF5_RXD),
+-	GPIO_FN(IOIS16),
+-	GPIO_FN(SCIF5_TXD),
+-	GPIO_FN(CE2B),
+-	GPIO_FN(DRAK3),
+-	GPIO_FN(CE2A),
+-	GPIO_FN(SCIF4_SCK),
+-	GPIO_FN(DRAK2),
+-	GPIO_FN(SSI3_WS),
+-	GPIO_FN(SCIF4_RXD),
+-	GPIO_FN(DRAK1),
+-	GPIO_FN(SSI3_SDATA),
+-	GPIO_FN(FSTATUS),
+-	GPIO_FN(SCIF4_TXD),
+-	GPIO_FN(DRAK0),
+-	GPIO_FN(SSI3_SCK),
+-	GPIO_FN(FSE),
+-};
+-
+-static const struct pinmux_cfg_reg pinmux_config_regs[] = {
+-	{ PINMUX_CFG_REG("PACR", 0xffcc0000, 16, 2, GROUP(
+-		PA7_FN, PA7_OUT, PA7_IN, 0,
+-		PA6_FN, PA6_OUT, PA6_IN, 0,
+-		PA5_FN, PA5_OUT, PA5_IN, 0,
+-		PA4_FN, PA4_OUT, PA4_IN, 0,
+-		PA3_FN, PA3_OUT, PA3_IN, 0,
+-		PA2_FN, PA2_OUT, PA2_IN, 0,
+-		PA1_FN, PA1_OUT, PA1_IN, 0,
+-		PA0_FN, PA0_OUT, PA0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PBCR", 0xffcc0002, 16, 2, GROUP(
+-		PB7_FN, PB7_OUT, PB7_IN, 0,
+-		PB6_FN, PB6_OUT, PB6_IN, 0,
+-		PB5_FN, PB5_OUT, PB5_IN, 0,
+-		PB4_FN, PB4_OUT, PB4_IN, 0,
+-		PB3_FN, PB3_OUT, PB3_IN, 0,
+-		PB2_FN, PB2_OUT, PB2_IN, 0,
+-		PB1_FN, PB1_OUT, PB1_IN, 0,
+-		PB0_FN, PB0_OUT, PB0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PCCR", 0xffcc0004, 16, 2, GROUP(
+-		PC7_FN, PC7_OUT, PC7_IN, 0,
+-		PC6_FN, PC6_OUT, PC6_IN, 0,
+-		PC5_FN, PC5_OUT, PC5_IN, 0,
+-		PC4_FN, PC4_OUT, PC4_IN, 0,
+-		PC3_FN, PC3_OUT, PC3_IN, 0,
+-		PC2_FN, PC2_OUT, PC2_IN, 0,
+-		PC1_FN, PC1_OUT, PC1_IN, 0,
+-		PC0_FN, PC0_OUT, PC0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PDCR", 0xffcc0006, 16, 2, GROUP(
+-		PD7_FN, PD7_OUT, PD7_IN, 0,
+-		PD6_FN, PD6_OUT, PD6_IN, 0,
+-		PD5_FN, PD5_OUT, PD5_IN, 0,
+-		PD4_FN, PD4_OUT, PD4_IN, 0,
+-		PD3_FN, PD3_OUT, PD3_IN, 0,
+-		PD2_FN, PD2_OUT, PD2_IN, 0,
+-		PD1_FN, PD1_OUT, PD1_IN, 0,
+-		PD0_FN, PD0_OUT, PD0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PECR", 0xffcc0008, 16,
+-			     GROUP(2, 2, -12),
+-			     GROUP(
+-		PE7_FN, PE7_OUT, PE7_IN, 0,
+-		PE6_FN, PE6_OUT, PE6_IN, 0,
+-		/* RESERVED [12] */ ))
+-	},
+-	{ PINMUX_CFG_REG("PFCR", 0xffcc000a, 16, 2, GROUP(
+-		PF7_FN, PF7_OUT, PF7_IN, 0,
+-		PF6_FN, PF6_OUT, PF6_IN, 0,
+-		PF5_FN, PF5_OUT, PF5_IN, 0,
+-		PF4_FN, PF4_OUT, PF4_IN, 0,
+-		PF3_FN, PF3_OUT, PF3_IN, 0,
+-		PF2_FN, PF2_OUT, PF2_IN, 0,
+-		PF1_FN, PF1_OUT, PF1_IN, 0,
+-		PF0_FN, PF0_OUT, PF0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG_VAR("PGCR", 0xffcc000c, 16,
+-			     GROUP(2, 2, 2, -10),
+-			     GROUP(
+-		PG7_FN, PG7_OUT, PG7_IN, 0,
+-		PG6_FN, PG6_OUT, PG6_IN, 0,
+-		PG5_FN, PG5_OUT, PG5_IN, 0,
+-		/* RESERVED [10] */ ))
+-	},
+-	{ PINMUX_CFG_REG("PHCR", 0xffcc000e, 16, 2, GROUP(
+-		PH7_FN, PH7_OUT, PH7_IN, 0,
+-		PH6_FN, PH6_OUT, PH6_IN, 0,
+-		PH5_FN, PH5_OUT, PH5_IN, 0,
+-		PH4_FN, PH4_OUT, PH4_IN, 0,
+-		PH3_FN, PH3_OUT, PH3_IN, 0,
+-		PH2_FN, PH2_OUT, PH2_IN, 0,
+-		PH1_FN, PH1_OUT, PH1_IN, 0,
+-		PH0_FN, PH0_OUT, PH0_IN, 0 ))
+-	},
+-	{ PINMUX_CFG_REG("PJCR", 0xffcc0010, 16, 2, GROUP(
+-		PJ7_FN, PJ7_OUT, PJ7_IN, 0,
+-		PJ6_FN, PJ6_OUT, PJ6_IN, 0,
+-		PJ5_FN, PJ5_OUT, PJ5_IN, 0,
+-		PJ4_FN, PJ4_OUT, PJ4_IN, 0,
+-		PJ3_FN, PJ3_OUT, PJ3_IN, 0,
+-		PJ2_FN, PJ2_OUT, PJ2_IN, 0,
+-		PJ1_FN, PJ1_OUT, PJ1_IN, 0,
+-		0, 0, 0, 0, ))
+-	},
+-	{ PINMUX_CFG_REG("P1MSELR", 0xffcc0080, 16, 1, GROUP(
+-		0, 0,
+-		P1MSEL14_0, P1MSEL14_1,
+-		P1MSEL13_0, P1MSEL13_1,
+-		P1MSEL12_0, P1MSEL12_1,
+-		P1MSEL11_0, P1MSEL11_1,
+-		P1MSEL10_0, P1MSEL10_1,
+-		P1MSEL9_0,  P1MSEL9_1,
+-		P1MSEL8_0,  P1MSEL8_1,
+-		P1MSEL7_0,  P1MSEL7_1,
+-		P1MSEL6_0,  P1MSEL6_1,
+-		P1MSEL5_0,  P1MSEL5_1,
+-		P1MSEL4_0,  P1MSEL4_1,
+-		P1MSEL3_0,  P1MSEL3_1,
+-		P1MSEL2_0,  P1MSEL2_1,
+-		P1MSEL1_0,  P1MSEL1_1,
+-		P1MSEL0_0,  P1MSEL0_1 ))
+-	},
+-	{ PINMUX_CFG_REG("P2MSELR", 0xffcc0082, 16, 1, GROUP(
+-		P2MSEL15_0, P2MSEL15_1,
+-		P2MSEL14_0, P2MSEL14_1,
+-		P2MSEL13_0, P2MSEL13_1,
+-		P2MSEL12_0, P2MSEL12_1,
+-		P2MSEL11_0, P2MSEL11_1,
+-		P2MSEL10_0, P2MSEL10_1,
+-		P2MSEL9_0,  P2MSEL9_1,
+-		P2MSEL8_0,  P2MSEL8_1,
+-		P2MSEL7_0,  P2MSEL7_1,
+-		P2MSEL6_0,  P2MSEL6_1,
+-		P2MSEL5_0,  P2MSEL5_1,
+-		P2MSEL4_0,  P2MSEL4_1,
+-		P2MSEL3_0,  P2MSEL3_1,
+-		P2MSEL2_0,  P2MSEL2_1,
+-		P2MSEL1_0,  P2MSEL1_1,
+-		P2MSEL0_0,  P2MSEL0_1 ))
+-	},
+-	{}
+-};
+-
+-static const struct pinmux_data_reg pinmux_data_regs[] = {
+-	{ PINMUX_DATA_REG("PADR", 0xffcc0020, 8, GROUP(
+-		PA7_DATA, PA6_DATA, PA5_DATA, PA4_DATA,
+-		PA3_DATA, PA2_DATA, PA1_DATA, PA0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PBDR", 0xffcc0022, 8, GROUP(
+-		PB7_DATA, PB6_DATA, PB5_DATA, PB4_DATA,
+-		PB3_DATA, PB2_DATA, PB1_DATA, PB0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PCDR", 0xffcc0024, 8, GROUP(
+-		PC7_DATA, PC6_DATA, PC5_DATA, PC4_DATA,
+-		PC3_DATA, PC2_DATA, PC1_DATA, PC0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PDDR", 0xffcc0026, 8, GROUP(
+-		PD7_DATA, PD6_DATA, PD5_DATA, PD4_DATA,
+-		PD3_DATA, PD2_DATA, PD1_DATA, PD0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PEDR", 0xffcc0028, 8, GROUP(
+-		PE7_DATA, PE6_DATA,
+-		0, 0, 0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_DATA_REG("PFDR", 0xffcc002a, 8, GROUP(
+-		PF7_DATA, PF6_DATA, PF5_DATA, PF4_DATA,
+-		PF3_DATA, PF2_DATA, PF1_DATA, PF0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PGDR", 0xffcc002c, 8, GROUP(
+-		PG7_DATA, PG6_DATA, PG5_DATA, 0,
+-		0, 0, 0, 0 ))
+-	},
+-	{ PINMUX_DATA_REG("PHDR", 0xffcc002e, 8, GROUP(
+-		PH7_DATA, PH6_DATA, PH5_DATA, PH4_DATA,
+-		PH3_DATA, PH2_DATA, PH1_DATA, PH0_DATA ))
+-	},
+-	{ PINMUX_DATA_REG("PJDR", 0xffcc0030, 8, GROUP(
+-		PJ7_DATA, PJ6_DATA, PJ5_DATA, PJ4_DATA,
+-		PJ3_DATA, PJ2_DATA, PJ1_DATA, 0 ))
+-	},
+-	{ },
+-};
+-
+-const struct sh_pfc_soc_info sh7786_pinmux_info = {
+-	.name = "sh7786_pfc",
+-	.input = { PINMUX_INPUT_BEGIN, PINMUX_INPUT_END },
+-	.output = { PINMUX_OUTPUT_BEGIN, PINMUX_OUTPUT_END },
+-	.function = { PINMUX_FUNCTION_BEGIN, PINMUX_FUNCTION_END },
+-
+-	.pins = pinmux_pins,
+-	.nr_pins = ARRAY_SIZE(pinmux_pins),
+-	.func_gpios = pinmux_func_gpios,
+-	.nr_func_gpios = ARRAY_SIZE(pinmux_func_gpios),
+-
+-	.cfg_regs = pinmux_config_regs,
+-	.data_regs = pinmux_data_regs,
+-
+-	.pinmux_data = pinmux_data,
+-	.pinmux_data_size = ARRAY_SIZE(pinmux_data),
+-};
+diff --git a/drivers/pinctrl/renesas/pfc-shx3.c b/drivers/pinctrl/renesas/pfc-shx3.c
+deleted file mode 100644
+index 96a65d83774f16..00000000000000
+--- a/drivers/pinctrl/renesas/pfc-shx3.c
++++ /dev/null
+@@ -1,557 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * SH-X3 prototype CPU pinmux
+- *
+- * Copyright (C) 2010  Paul Mundt
+- */
+-#include <linux/kernel.h>
+-#include <cpu/shx3.h>
+-
+-#include "sh_pfc.h"
+-
+-enum {
+-	PINMUX_RESERVED = 0,
+-
+-	PINMUX_DATA_BEGIN,
+-	PA7_DATA, PA6_DATA, PA5_DATA, PA4_DATA,
+-	PA3_DATA, PA2_DATA, PA1_DATA, PA0_DATA,
+-	PB7_DATA, PB6_DATA, PB5_DATA, PB4_DATA,
+-	PB3_DATA, PB2_DATA, PB1_DATA, PB0_DATA,
+-	PC7_DATA, PC6_DATA, PC5_DATA, PC4_DATA,
+-	PC3_DATA, PC2_DATA, PC1_DATA, PC0_DATA,
+-	PD7_DATA, PD6_DATA, PD5_DATA, PD4_DATA,
+-	PD3_DATA, PD2_DATA, PD1_DATA, PD0_DATA,
+-	PE7_DATA, PE6_DATA, PE5_DATA, PE4_DATA,
+-	PE3_DATA, PE2_DATA, PE1_DATA, PE0_DATA,
+-	PF7_DATA, PF6_DATA, PF5_DATA, PF4_DATA,
+-	PF3_DATA, PF2_DATA, PF1_DATA, PF0_DATA,
+-	PG7_DATA, PG6_DATA, PG5_DATA, PG4_DATA,
+-	PG3_DATA, PG2_DATA, PG1_DATA, PG0_DATA,
+-
+-	PH5_DATA, PH4_DATA,
+-	PH3_DATA, PH2_DATA, PH1_DATA, PH0_DATA,
+-	PINMUX_DATA_END,
+-
+-	PINMUX_INPUT_BEGIN,
+-	PA7_IN, PA6_IN, PA5_IN, PA4_IN,
+-	PA3_IN, PA2_IN, PA1_IN, PA0_IN,
+-	PB7_IN, PB6_IN, PB5_IN, PB4_IN,
+-	PB3_IN, PB2_IN, PB1_IN, PB0_IN,
+-	PC7_IN, PC6_IN, PC5_IN, PC4_IN,
+-	PC3_IN, PC2_IN, PC1_IN, PC0_IN,
+-	PD7_IN, PD6_IN, PD5_IN, PD4_IN,
+-	PD3_IN, PD2_IN, PD1_IN, PD0_IN,
+-	PE7_IN, PE6_IN, PE5_IN, PE4_IN,
+-	PE3_IN, PE2_IN, PE1_IN, PE0_IN,
+-	PF7_IN, PF6_IN, PF5_IN, PF4_IN,
+-	PF3_IN, PF2_IN, PF1_IN, PF0_IN,
+-	PG7_IN, PG6_IN, PG5_IN, PG4_IN,
+-	PG3_IN, PG2_IN, PG1_IN, PG0_IN,
+-
+-	PH5_IN, PH4_IN,
+-	PH3_IN, PH2_IN, PH1_IN, PH0_IN,
+-	PINMUX_INPUT_END,
+-
+-	PINMUX_OUTPUT_BEGIN,
+-	PA7_OUT, PA6_OUT, PA5_OUT, PA4_OUT,
+-	PA3_OUT, PA2_OUT, PA1_OUT, PA0_OUT,
+-	PB7_OUT, PB6_OUT, PB5_OUT, PB4_OUT,
+-	PB3_OUT, PB2_OUT, PB1_OUT, PB0_OUT,
+-	PC7_OUT, PC6_OUT, PC5_OUT, PC4_OUT,
+-	PC3_OUT, PC2_OUT, PC1_OUT, PC0_OUT,
+-	PD7_OUT, PD6_OUT, PD5_OUT, PD4_OUT,
+-	PD3_OUT, PD2_OUT, PD1_OUT, PD0_OUT,
+-	PE7_OUT, PE6_OUT, PE5_OUT, PE4_OUT,
+-	PE3_OUT, PE2_OUT, PE1_OUT, PE0_OUT,
+-	PF7_OUT, PF6_OUT, PF5_OUT, PF4_OUT,
+-	PF3_OUT, PF2_OUT, PF1_OUT, PF0_OUT,
+-	PG7_OUT, PG6_OUT, PG5_OUT, PG4_OUT,
+-	PG3_OUT, PG2_OUT, PG1_OUT, PG0_OUT,
+-
+-	PH5_OUT, PH4_OUT,
+-	PH3_OUT, PH2_OUT, PH1_OUT, PH0_OUT,
+-	PINMUX_OUTPUT_END,
+-
+-	PINMUX_FUNCTION_BEGIN,
+-	PA7_FN, PA6_FN, PA5_FN, PA4_FN,
+-	PA3_FN, PA2_FN, PA1_FN, PA0_FN,
+-	PB7_FN, PB6_FN, PB5_FN, PB4_FN,
+-	PB3_FN, PB2_FN, PB1_FN, PB0_FN,
+-	PC7_FN, PC6_FN, PC5_FN, PC4_FN,
+-	PC3_FN, PC2_FN, PC1_FN, PC0_FN,
+-	PD7_FN, PD6_FN, PD5_FN, PD4_FN,
+-	PD3_FN, PD2_FN, PD1_FN, PD0_FN,
+-	PE7_FN, PE6_FN, PE5_FN, PE4_FN,
+-	PE3_FN, PE2_FN, PE1_FN, PE0_FN,
+-	PF7_FN, PF6_FN, PF5_FN, PF4_FN,
+-	PF3_FN, PF2_FN, PF1_FN, PF0_FN,
+-	PG7_FN, PG6_FN, PG5_FN, PG4_FN,
+-	PG3_FN, PG2_FN, PG1_FN, PG0_FN,
+-
+-	PH5_FN, PH4_FN,
+-	PH3_FN, PH2_FN, PH1_FN, PH0_FN,
+-	PINMUX_FUNCTION_END,
+-
+-	PINMUX_MARK_BEGIN,
+-
+-	D31_MARK, D30_MARK, D29_MARK, D28_MARK, D27_MARK, D26_MARK,
+-	D25_MARK, D24_MARK, D23_MARK, D22_MARK, D21_MARK, D20_MARK,
+-	D19_MARK, D18_MARK, D17_MARK, D16_MARK,
+-
+-	BACK_MARK, BREQ_MARK,
+-	WE3_MARK, WE2_MARK,
+-	CS6_MARK, CS5_MARK, CS4_MARK,
+-	CLKOUTENB_MARK,
+-
+-	DACK3_MARK, DACK2_MARK, DACK1_MARK, DACK0_MARK,
+-	DREQ3_MARK, DREQ2_MARK, DREQ1_MARK, DREQ0_MARK,
+-
+-	IRQ3_MARK, IRQ2_MARK, IRQ1_MARK, IRQ0_MARK,
+-
+-	DRAK3_MARK, DRAK2_MARK, DRAK1_MARK, DRAK0_MARK,
+-
+-	SCK3_MARK, SCK2_MARK, SCK1_MARK, SCK0_MARK,
+-	IRL3_MARK, IRL2_MARK, IRL1_MARK, IRL0_MARK,
+-	TXD3_MARK, TXD2_MARK, TXD1_MARK, TXD0_MARK,
+-	RXD3_MARK, RXD2_MARK, RXD1_MARK, RXD0_MARK,
+-
+-	CE2B_MARK, CE2A_MARK, IOIS16_MARK,
+-	STATUS1_MARK, STATUS0_MARK,
+-
+-	IRQOUT_MARK,
+-
+-	PINMUX_MARK_END,
+-};
+-
+-static const u16 pinmux_data[] = {
+-	/* PA GPIO */
+-	PINMUX_DATA(PA7_DATA, PA7_IN, PA7_OUT),
+-	PINMUX_DATA(PA6_DATA, PA6_IN, PA6_OUT),
+-	PINMUX_DATA(PA5_DATA, PA5_IN, PA5_OUT),
+-	PINMUX_DATA(PA4_DATA, PA4_IN, PA4_OUT),
+-	PINMUX_DATA(PA3_DATA, PA3_IN, PA3_OUT),
+-	PINMUX_DATA(PA2_DATA, PA2_IN, PA2_OUT),
+-	PINMUX_DATA(PA1_DATA, PA1_IN, PA1_OUT),
+-	PINMUX_DATA(PA0_DATA, PA0_IN, PA0_OUT),
+-
+-	/* PB GPIO */
+-	PINMUX_DATA(PB7_DATA, PB7_IN, PB7_OUT),
+-	PINMUX_DATA(PB6_DATA, PB6_IN, PB6_OUT),
+-	PINMUX_DATA(PB5_DATA, PB5_IN, PB5_OUT),
+-	PINMUX_DATA(PB4_DATA, PB4_IN, PB4_OUT),
+-	PINMUX_DATA(PB3_DATA, PB3_IN, PB3_OUT),
+-	PINMUX_DATA(PB2_DATA, PB2_IN, PB2_OUT),
+-	PINMUX_DATA(PB1_DATA, PB1_IN, PB1_OUT),
+-	PINMUX_DATA(PB0_DATA, PB0_IN, PB0_OUT),
+-
+-	/* PC GPIO */
+-	PINMUX_DATA(PC7_DATA, PC7_IN, PC7_OUT),
+-	PINMUX_DATA(PC6_DATA, PC6_IN, PC6_OUT),
+-	PINMUX_DATA(PC5_DATA, PC5_IN, PC5_OUT),
+-	PINMUX_DATA(PC4_DATA, PC4_IN, PC4_OUT),
+-	PINMUX_DATA(PC3_DATA, PC3_IN, PC3_OUT),
+-	PINMUX_DATA(PC2_DATA, PC2_IN, PC2_OUT),
+-	PINMUX_DATA(PC1_DATA, PC1_IN, PC1_OUT),
+-	PINMUX_DATA(PC0_DATA, PC0_IN, PC0_OUT),
+-
+-	/* PD GPIO */
+-	PINMUX_DATA(PD7_DATA, PD7_IN, PD7_OUT),
+-	PINMUX_DATA(PD6_DATA, PD6_IN, PD6_OUT),
+-	PINMUX_DATA(PD5_DATA, PD5_IN, PD5_OUT),
+-	PINMUX_DATA(PD4_DATA, PD4_IN, PD4_OUT),
+-	PINMUX_DATA(PD3_DATA, PD3_IN, PD3_OUT),
+-	PINMUX_DATA(PD2_DATA, PD2_IN, PD2_OUT),
+-	PINMUX_DATA(PD1_DATA, PD1_IN, PD1_OUT),
+-	PINMUX_DATA(PD0_DATA, PD0_IN, PD0_OUT),
+-
+-	/* PE GPIO */
+-	PINMUX_DATA(PE7_DATA, PE7_IN, PE7_OUT),
+-	PINMUX_DATA(PE6_DATA, PE6_IN, PE6_OUT),
+-	PINMUX_DATA(PE5_DATA, PE5_IN, PE5_OUT),
+-	PINMUX_DATA(PE4_DATA, PE4_IN, PE4_OUT),
+-	PINMUX_DATA(PE3_DATA, PE3_IN, PE3_OUT),
+-	PINMUX_DATA(PE2_DATA, PE2_IN, PE2_OUT),
+-	PINMUX_DATA(PE1_DATA, PE1_IN, PE1_OUT),
+-	PINMUX_DATA(PE0_DATA, PE0_IN, PE0_OUT),
+-
+-	/* PF GPIO */
+-	PINMUX_DATA(PF7_DATA, PF7_IN, PF7_OUT),
+-	PINMUX_DATA(PF6_DATA, PF6_IN, PF6_OUT),
+-	PINMUX_DATA(PF5_DATA, PF5_IN, PF5_OUT),
+-	PINMUX_DATA(PF4_DATA, PF4_IN, PF4_OUT),
+-	PINMUX_DATA(PF3_DATA, PF3_IN, PF3_OUT),
+-	PINMUX_DATA(PF2_DATA, PF2_IN, PF2_OUT),
+-	PINMUX_DATA(PF1_DATA, PF1_IN, PF1_OUT),
+-	PINMUX_DATA(PF0_DATA, PF0_IN, PF0_OUT),
+-
+-	/* PG GPIO */
+-	PINMUX_DATA(PG7_DATA, PG7_IN, PG7_OUT),
+-	PINMUX_DATA(PG6_DATA, PG6_IN, PG6_OUT),
+-	PINMUX_DATA(PG5_DATA, PG5_IN, PG5_OUT),
+-	PINMUX_DATA(PG4_DATA, PG4_IN, PG4_OUT),
+-	PINMUX_DATA(PG3_DATA, PG3_IN, PG3_OUT),
+-	PINMUX_DATA(PG2_DATA, PG2_IN, PG2_OUT),
+-	PINMUX_DATA(PG1_DATA, PG1_IN, PG1_OUT),
+-	PINMUX_DATA(PG0_DATA, PG0_IN, PG0_OUT),
+-
+-	/* PH GPIO */
+-	PINMUX_DATA(PH5_DATA, PH5_IN, PH5_OUT),
+-	PINMUX_DATA(PH4_DATA, PH4_IN, PH4_OUT),
+-	PINMUX_DATA(PH3_DATA, PH3_IN, PH3_OUT),
+-	PINMUX_DATA(PH2_DATA, PH2_IN, PH2_OUT),
+-	PINMUX_DATA(PH1_DATA, PH1_IN, PH1_OUT),
+-	PINMUX_DATA(PH0_DATA, PH0_IN, PH0_OUT),
+-
+-	/* PA FN */
+-	PINMUX_DATA(D31_MARK, PA7_FN),
+-	PINMUX_DATA(D30_MARK, PA6_FN),
+-	PINMUX_DATA(D29_MARK, PA5_FN),
+-	PINMUX_DATA(D28_MARK, PA4_FN),
+-	PINMUX_DATA(D27_MARK, PA3_FN),
+-	PINMUX_DATA(D26_MARK, PA2_FN),
+-	PINMUX_DATA(D25_MARK, PA1_FN),
+-	PINMUX_DATA(D24_MARK, PA0_FN),
+-
+-	/* PB FN */
+-	PINMUX_DATA(D23_MARK, PB7_FN),
+-	PINMUX_DATA(D22_MARK, PB6_FN),
+-	PINMUX_DATA(D21_MARK, PB5_FN),
+-	PINMUX_DATA(D20_MARK, PB4_FN),
+-	PINMUX_DATA(D19_MARK, PB3_FN),
+-	PINMUX_DATA(D18_MARK, PB2_FN),
+-	PINMUX_DATA(D17_MARK, PB1_FN),
+-	PINMUX_DATA(D16_MARK, PB0_FN),
+-
+-	/* PC FN */
+-	PINMUX_DATA(BACK_MARK,		PC7_FN),
+-	PINMUX_DATA(BREQ_MARK,		PC6_FN),
+-	PINMUX_DATA(WE3_MARK,		PC5_FN),
+-	PINMUX_DATA(WE2_MARK,		PC4_FN),
+-	PINMUX_DATA(CS6_MARK,		PC3_FN),
+-	PINMUX_DATA(CS5_MARK,		PC2_FN),
+-	PINMUX_DATA(CS4_MARK,		PC1_FN),
+-	PINMUX_DATA(CLKOUTENB_MARK,	PC0_FN),
+-
+-	/* PD FN */
+-	PINMUX_DATA(DACK3_MARK,	PD7_FN),
+-	PINMUX_DATA(DACK2_MARK, PD6_FN),
+-	PINMUX_DATA(DACK1_MARK, PD5_FN),
+-	PINMUX_DATA(DACK0_MARK, PD4_FN),
+-	PINMUX_DATA(DREQ3_MARK, PD3_FN),
+-	PINMUX_DATA(DREQ2_MARK, PD2_FN),
+-	PINMUX_DATA(DREQ1_MARK, PD1_FN),
+-	PINMUX_DATA(DREQ0_MARK, PD0_FN),
+-
+-	/* PE FN */
+-	PINMUX_DATA(IRQ3_MARK,	PE7_FN),
+-	PINMUX_DATA(IRQ2_MARK,	PE6_FN),
+-	PINMUX_DATA(IRQ1_MARK,	PE5_FN),
+-	PINMUX_DATA(IRQ0_MARK,	PE4_FN),
+-	PINMUX_DATA(DRAK3_MARK, PE3_FN),
+-	PINMUX_DATA(DRAK2_MARK, PE2_FN),
+-	PINMUX_DATA(DRAK1_MARK, PE1_FN),
+-	PINMUX_DATA(DRAK0_MARK, PE0_FN),
+-
+-	/* PF FN */
+-	PINMUX_DATA(SCK3_MARK, PF7_FN),
+-	PINMUX_DATA(SCK2_MARK, PF6_FN),
+-	PINMUX_DATA(SCK1_MARK, PF5_FN),
+-	PINMUX_DATA(SCK0_MARK, PF4_FN),
+-	PINMUX_DATA(IRL3_MARK, PF3_FN),
+-	PINMUX_DATA(IRL2_MARK, PF2_FN),
+-	PINMUX_DATA(IRL1_MARK, PF1_FN),
+-	PINMUX_DATA(IRL0_MARK, PF0_FN),
+-
+-	/* PG FN */
+-	PINMUX_DATA(TXD3_MARK, PG7_FN),
+-	PINMUX_DATA(TXD2_MARK, PG6_FN),
+-	PINMUX_DATA(TXD1_MARK, PG5_FN),
+-	PINMUX_DATA(TXD0_MARK, PG4_FN),
+-	PINMUX_DATA(RXD3_MARK, PG3_FN),
+-	PINMUX_DATA(RXD2_MARK, PG2_FN),
+-	PINMUX_DATA(RXD1_MARK, PG1_FN),
+-	PINMUX_DATA(RXD0_MARK, PG0_FN),
+-
+-	/* PH FN */
+-	PINMUX_DATA(CE2B_MARK,		PH5_FN),
+-	PINMUX_DATA(CE2A_MARK,		PH4_FN),
+-	PINMUX_DATA(IOIS16_MARK,	PH3_FN),
+-	PINMUX_DATA(STATUS1_MARK,	PH2_FN),
+-	PINMUX_DATA(STATUS0_MARK,	PH1_FN),
+-	PINMUX_DATA(IRQOUT_MARK,	PH0_FN),
+-};
+-
+-static const struct sh_pfc_pin pinmux_pins[] = {
+-	/* PA */
+-	PINMUX_GPIO(PA7),
+-	PINMUX_GPIO(PA6),
+-	PINMUX_GPIO(PA5),
+-	PINMUX_GPIO(PA4),
+-	PINMUX_GPIO(PA3),
+-	PINMUX_GPIO(PA2),
+-	PINMUX_GPIO(PA1),
+-	PINMUX_GPIO(PA0),
+-
+-	/* PB */
+-	PINMUX_GPIO(PB7),
+-	PINMUX_GPIO(PB6),
+-	PINMUX_GPIO(PB5),
+-	PINMUX_GPIO(PB4),
+-	PINMUX_GPIO(PB3),
+-	PINMUX_GPIO(PB2),
+-	PINMUX_GPIO(PB1),
+-	PINMUX_GPIO(PB0),
+-
+-	/* PC */
+-	PINMUX_GPIO(PC7),
+-	PINMUX_GPIO(PC6),
+-	PINMUX_GPIO(PC5),
+-	PINMUX_GPIO(PC4),
+-	PINMUX_GPIO(PC3),
+-	PINMUX_GPIO(PC2),
+-	PINMUX_GPIO(PC1),
+-	PINMUX_GPIO(PC0),
+-
+-	/* PD */
+-	PINMUX_GPIO(PD7),
+-	PINMUX_GPIO(PD6),
+-	PINMUX_GPIO(PD5),
+-	PINMUX_GPIO(PD4),
+-	PINMUX_GPIO(PD3),
+-	PINMUX_GPIO(PD2),
+-	PINMUX_GPIO(PD1),
+-	PINMUX_GPIO(PD0),
+-
+-	/* PE */
+-	PINMUX_GPIO(PE7),
+-	PINMUX_GPIO(PE6),
+-	PINMUX_GPIO(PE5),
+-	PINMUX_GPIO(PE4),
+-	PINMUX_GPIO(PE3),
+-	PINMUX_GPIO(PE2),
+-	PINMUX_GPIO(PE1),
+-	PINMUX_GPIO(PE0),
+-
+-	/* PF */
+-	PINMUX_GPIO(PF7),
+-	PINMUX_GPIO(PF6),
+-	PINMUX_GPIO(PF5),
+-	PINMUX_GPIO(PF4),
+-	PINMUX_GPIO(PF3),
+-	PINMUX_GPIO(PF2),
+-	PINMUX_GPIO(PF1),
+-	PINMUX_GPIO(PF0),
+-
+-	/* PG */
+-	PINMUX_GPIO(PG7),
+-	PINMUX_GPIO(PG6),
+-	PINMUX_GPIO(PG5),
+-	PINMUX_GPIO(PG4),
+-	PINMUX_GPIO(PG3),
+-	PINMUX_GPIO(PG2),
+-	PINMUX_GPIO(PG1),
+-	PINMUX_GPIO(PG0),
+-
+-	/* PH */
+-	PINMUX_GPIO(PH5),
+-	PINMUX_GPIO(PH4),
+-	PINMUX_GPIO(PH3),
+-	PINMUX_GPIO(PH2),
+-	PINMUX_GPIO(PH1),
+-	PINMUX_GPIO(PH0),
+-};
+-
+-#define PINMUX_FN_BASE	ARRAY_SIZE(pinmux_pins)
+-
+-static const struct pinmux_func pinmux_func_gpios[] = {
+-	/* FN */
+-	GPIO_FN(D31),
+-	GPIO_FN(D30),
+-	GPIO_FN(D29),
+-	GPIO_FN(D28),
+-	GPIO_FN(D27),
+-	GPIO_FN(D26),
+-	GPIO_FN(D25),
+-	GPIO_FN(D24),
+-	GPIO_FN(D23),
+-	GPIO_FN(D22),
+-	GPIO_FN(D21),
+-	GPIO_FN(D20),
+-	GPIO_FN(D19),
+-	GPIO_FN(D18),
+-	GPIO_FN(D17),
+-	GPIO_FN(D16),
+-	GPIO_FN(BACK),
+-	GPIO_FN(BREQ),
+-	GPIO_FN(WE3),
+-	GPIO_FN(WE2),
+-	GPIO_FN(CS6),
+-	GPIO_FN(CS5),
+-	GPIO_FN(CS4),
+-	GPIO_FN(CLKOUTENB),
+-	GPIO_FN(DACK3),
+-	GPIO_FN(DACK2),
+-	GPIO_FN(DACK1),
+-	GPIO_FN(DACK0),
+-	GPIO_FN(DREQ3),
+-	GPIO_FN(DREQ2),
+-	GPIO_FN(DREQ1),
+-	GPIO_FN(DREQ0),
+-	GPIO_FN(IRQ3),
+-	GPIO_FN(IRQ2),
+-	GPIO_FN(IRQ1),
+-	GPIO_FN(IRQ0),
+-	GPIO_FN(DRAK3),
+-	GPIO_FN(DRAK2),
+-	GPIO_FN(DRAK1),
+-	GPIO_FN(DRAK0),
+-	GPIO_FN(SCK3),
+-	GPIO_FN(SCK2),
+-	GPIO_FN(SCK1),
+-	GPIO_FN(SCK0),
+-	GPIO_FN(IRL3),
+-	GPIO_FN(IRL2),
+-	GPIO_FN(IRL1),
+-	GPIO_FN(IRL0),
+-	GPIO_FN(TXD3),
+-	GPIO_FN(TXD2),
+-	GPIO_FN(TXD1),
+-	GPIO_FN(TXD0),
+-	GPIO_FN(RXD3),
+-	GPIO_FN(RXD2),
+-	GPIO_FN(RXD1),
+-	GPIO_FN(RXD0),
+-	GPIO_FN(CE2B),
+-	GPIO_FN(CE2A),
+-	GPIO_FN(IOIS16),
+-	GPIO_FN(STATUS1),
+-	GPIO_FN(STATUS0),
+-	GPIO_FN(IRQOUT),
+-};
+-
+-static const struct pinmux_cfg_reg pinmux_config_regs[] = {
+-	{ PINMUX_CFG_REG("PABCR", 0xffc70000, 32, 2, GROUP(
+-		PA7_FN, PA7_OUT, PA7_IN, 0,
+-		PA6_FN, PA6_OUT, PA6_IN, 0,
+-		PA5_FN, PA5_OUT, PA5_IN, 0,
+-		PA4_FN, PA4_OUT, PA4_IN, 0,
+-		PA3_FN, PA3_OUT, PA3_IN, 0,
+-		PA2_FN, PA2_OUT, PA2_IN, 0,
+-		PA1_FN, PA1_OUT, PA1_IN, 0,
+-		PA0_FN, PA0_OUT, PA0_IN, 0,
+-		PB7_FN, PB7_OUT, PB7_IN, 0,
+-		PB6_FN, PB6_OUT, PB6_IN, 0,
+-		PB5_FN, PB5_OUT, PB5_IN, 0,
+-		PB4_FN, PB4_OUT, PB4_IN, 0,
+-		PB3_FN, PB3_OUT, PB3_IN, 0,
+-		PB2_FN, PB2_OUT, PB2_IN, 0,
+-		PB1_FN, PB1_OUT, PB1_IN, 0,
+-		PB0_FN, PB0_OUT, PB0_IN, 0, ))
+-	},
+-	{ PINMUX_CFG_REG("PCDCR", 0xffc70004, 32, 2, GROUP(
+-		PC7_FN, PC7_OUT, PC7_IN, 0,
+-		PC6_FN, PC6_OUT, PC6_IN, 0,
+-		PC5_FN, PC5_OUT, PC5_IN, 0,
+-		PC4_FN, PC4_OUT, PC4_IN, 0,
+-		PC3_FN, PC3_OUT, PC3_IN, 0,
+-		PC2_FN, PC2_OUT, PC2_IN, 0,
+-		PC1_FN, PC1_OUT, PC1_IN, 0,
+-		PC0_FN, PC0_OUT, PC0_IN, 0,
+-		PD7_FN, PD7_OUT, PD7_IN, 0,
+-		PD6_FN, PD6_OUT, PD6_IN, 0,
+-		PD5_FN, PD5_OUT, PD5_IN, 0,
+-		PD4_FN, PD4_OUT, PD4_IN, 0,
+-		PD3_FN, PD3_OUT, PD3_IN, 0,
+-		PD2_FN, PD2_OUT, PD2_IN, 0,
+-		PD1_FN, PD1_OUT, PD1_IN, 0,
+-		PD0_FN, PD0_OUT, PD0_IN, 0, ))
+-	},
+-	{ PINMUX_CFG_REG("PEFCR", 0xffc70008, 32, 2, GROUP(
+-		PE7_FN, PE7_OUT, PE7_IN, 0,
+-		PE6_FN, PE6_OUT, PE6_IN, 0,
+-		PE5_FN, PE5_OUT, PE5_IN, 0,
+-		PE4_FN, PE4_OUT, PE4_IN, 0,
+-		PE3_FN, PE3_OUT, PE3_IN, 0,
+-		PE2_FN, PE2_OUT, PE2_IN, 0,
+-		PE1_FN, PE1_OUT, PE1_IN, 0,
+-		PE0_FN, PE0_OUT, PE0_IN, 0,
+-		PF7_FN, PF7_OUT, PF7_IN, 0,
+-		PF6_FN, PF6_OUT, PF6_IN, 0,
+-		PF5_FN, PF5_OUT, PF5_IN, 0,
+-		PF4_FN, PF4_OUT, PF4_IN, 0,
+-		PF3_FN, PF3_OUT, PF3_IN, 0,
+-		PF2_FN, PF2_OUT, PF2_IN, 0,
+-		PF1_FN, PF1_OUT, PF1_IN, 0,
+-		PF0_FN, PF0_OUT, PF0_IN, 0, ))
+-	},
+-	{ PINMUX_CFG_REG("PGHCR", 0xffc7000c, 32, 2, GROUP(
+-		PG7_FN, PG7_OUT, PG7_IN, 0,
+-		PG6_FN, PG6_OUT, PG6_IN, 0,
+-		PG5_FN, PG5_OUT, PG5_IN, 0,
+-		PG4_FN, PG4_OUT, PG4_IN, 0,
+-		PG3_FN, PG3_OUT, PG3_IN, 0,
+-		PG2_FN, PG2_OUT, PG2_IN, 0,
+-		PG1_FN, PG1_OUT, PG1_IN, 0,
+-		PG0_FN, PG0_OUT, PG0_IN, 0,
+-		0, 0, 0, 0,
+-		0, 0, 0, 0,
+-		PH5_FN, PH5_OUT, PH5_IN, 0,
+-		PH4_FN, PH4_OUT, PH4_IN, 0,
+-		PH3_FN, PH3_OUT, PH3_IN, 0,
+-		PH2_FN, PH2_OUT, PH2_IN, 0,
+-		PH1_FN, PH1_OUT, PH1_IN, 0,
+-		PH0_FN, PH0_OUT, PH0_IN, 0, ))
+-	},
+-	{ },
+-};
+-
+-static const struct pinmux_data_reg pinmux_data_regs[] = {
+-	{ PINMUX_DATA_REG("PABDR", 0xffc70010, 32, GROUP(
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PA7_DATA, PA6_DATA, PA5_DATA, PA4_DATA,
+-		PA3_DATA, PA2_DATA, PA1_DATA, PA0_DATA,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PB7_DATA, PB6_DATA, PB5_DATA, PB4_DATA,
+-		PB3_DATA, PB2_DATA, PB1_DATA, PB0_DATA, ))
+-	},
+-	{ PINMUX_DATA_REG("PCDDR", 0xffc70014, 32, GROUP(
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PC7_DATA, PC6_DATA, PC5_DATA, PC4_DATA,
+-		PC3_DATA, PC2_DATA, PC1_DATA, PC0_DATA,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PD7_DATA, PD6_DATA, PD5_DATA, PD4_DATA,
+-		PD3_DATA, PD2_DATA, PD1_DATA, PD0_DATA, ))
+-	},
+-	{ PINMUX_DATA_REG("PEFDR", 0xffc70018, 32, GROUP(
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PE7_DATA, PE6_DATA, PE5_DATA, PE4_DATA,
+-		PE3_DATA, PE2_DATA, PE1_DATA, PE0_DATA,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PF7_DATA, PF6_DATA, PF5_DATA, PF4_DATA,
+-		PF3_DATA, PF2_DATA, PF1_DATA, PF0_DATA, ))
+-	},
+-	{ PINMUX_DATA_REG("PGHDR", 0xffc7001c, 32, GROUP(
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		PG7_DATA, PG6_DATA, PG5_DATA, PG4_DATA,
+-		PG3_DATA, PG2_DATA, PG1_DATA, PG0_DATA,
+-		0, 0, 0, 0, 0, 0, 0, 0,
+-		0, 0, PH5_DATA, PH4_DATA,
+-		PH3_DATA, PH2_DATA, PH1_DATA, PH0_DATA, ))
+-	},
+-	{ },
+-};
+-
+-const struct sh_pfc_soc_info shx3_pinmux_info = {
+-	.name		= "shx3_pfc",
+-	.input		= { PINMUX_INPUT_BEGIN,	   PINMUX_INPUT_END },
+-	.output		= { PINMUX_OUTPUT_BEGIN,   PINMUX_OUTPUT_END },
+-	.function	= { PINMUX_FUNCTION_BEGIN, PINMUX_FUNCTION_END },
+-	.pins		= pinmux_pins,
+-	.nr_pins	= ARRAY_SIZE(pinmux_pins),
+-	.func_gpios	= pinmux_func_gpios,
+-	.nr_func_gpios	= ARRAY_SIZE(pinmux_func_gpios),
+-	.pinmux_data	= pinmux_data,
+-	.pinmux_data_size = ARRAY_SIZE(pinmux_data),
+-	.cfg_regs	= pinmux_config_regs,
+-	.data_regs	= pinmux_data_regs,
+-};
 -- 
 2.39.0
 
