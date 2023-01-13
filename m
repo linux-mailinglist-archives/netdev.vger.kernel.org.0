@@ -2,161 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3304566992F
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 14:55:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09AB5669933
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 14:57:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241645AbjAMNzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 08:55:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51910 "EHLO
+        id S241571AbjAMN5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 08:57:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241553AbjAMNzN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 08:55:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 377B2DF5D
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 05:52:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673617928;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=x0XileK0BdObn4mSHgihspHyNqZhpMQEFASomg0cqBM=;
-        b=NVrv9Apc9ZCXhtMYTh0ZLmMV3Qjf3nVMD1XAz613LV/53SaBXSbhDL70967e+RFrSb0A+J
-        zgpmD9wOxKAEcJ2rwEIAz6KgAIuRSV88QtvHSG3k7vgGcU7uRqzGVFH6RGGlgUu4hPYgJ0
-        TYdX9V5l9gG58J5IBjLEhGZcoddqCe8=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-68-hHMX5lpwNseDkeUXKvb2sg-1; Fri, 13 Jan 2023 08:52:06 -0500
-X-MC-Unique: hHMX5lpwNseDkeUXKvb2sg-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DE3091C08997;
-        Fri, 13 Jan 2023 13:52:05 +0000 (UTC)
-Received: from firesoul.localdomain (ovpn-208-34.brq.redhat.com [10.40.208.34])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9964D492B01;
-        Fri, 13 Jan 2023 13:52:05 +0000 (UTC)
-Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id A0D4C30721A6C;
-        Fri, 13 Jan 2023 14:52:04 +0100 (CET)
-Subject: [PATCH net-next V2 2/2] net: kfree_skb_list use kmem_cache_free_bulk
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        with ESMTP id S237550AbjAMN4n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 08:56:43 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F7EBD0;
+        Fri, 13 Jan 2023 05:53:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=TsFuSkwR1WlHnCqE1Bje3dfaKMH46M3DRmRqT/WlQow=; b=G23umAhl+TT9CsE3I2NGNOA/gR
+        9ZIz+nKz0V2p3Mtxlq67IyRIWo3+z0o2UC4QXKnySEeydWyqpTWwfxUWzQdxBA4mW6SRBTgeIyYsB
+        id7C23royuWvIg1RsXg/siSXUu/Ewr9zVVbiCCxrb6EVnnCTcYs21XI5rayGJxJzg/Us=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pGKUV-0020Nc-Mz; Fri, 13 Jan 2023 14:53:07 +0100
+Date:   Fri, 13 Jan 2023 14:53:07 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lukasz Majewski <lukma@denx.de>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        pabeni@redhat.com
-Date:   Fri, 13 Jan 2023 14:52:04 +0100
-Message-ID: <167361792462.531803.224198635706602340.stgit@firesoul>
-In-Reply-To: <167361788585.531803.686364041841425360.stgit@firesoul>
-References: <167361788585.531803.686364041841425360.stgit@firesoul>
-User-Agent: StGit/1.4
+        Russell King <linux@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/3] dsa: marvell: Provide per device information
+ about max frame size
+Message-ID: <Y8FiQ3Fv25QJyawQ@lunn.ch>
+References: <20230106101651.1137755-1-lukma@denx.de>
+ <20230106101651.1137755-1-lukma@denx.de>
+ <20230106145109.mrv2n3ppcz52jwa2@skbuf>
+ <20230113131331.28ba7997@wsk>
+ <20230113122754.52qvl3pvwpdy5iqk@skbuf>
+ <20230113142017.78184ce1@wsk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230113142017.78184ce1@wsk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The kfree_skb_list function walks SKB (via skb->next) and frees them
-individually to the SLUB/SLAB allocator (kmem_cache). It is more
-efficient to bulk free them via the kmem_cache_free_bulk API.
-
-This patches create a stack local array with SKBs to bulk free while
-walking the list. Bulk array size is limited to 16 SKBs to trade off
-stack usage and efficiency. The SLUB kmem_cache "skbuff_head_cache"
-uses objsize 256 bytes usually in an order-1 page 8192 bytes that is
-32 objects per slab (can vary on archs and due to SLUB sharing). Thus,
-for SLUB the optimal bulk free case is 32 objects belonging to same
-slab, but runtime this isn't likely to occur.
-
-The expected gain from using kmem_cache bulk alloc and free API
-have been assessed via a microbencmark kernel module[1].
-
-The module 'slab_bulk_test01' results at bulk 16 element:
- kmem-in-loop Per elem: 109 cycles(tsc) 30.532 ns (step:16)
- kmem-bulk    Per elem: 64 cycles(tsc) 17.905 ns (step:16)
-
-More detailed description of benchmarks avail in [2].
-
-[1] https://github.com/netoptimizer/prototype-kernel/tree/master/kernel/mm
-[2] https://github.com/xdp-project/xdp-project/blob/master/areas/mem/kfree_skb_list01.org
-
-V2: rename function to kfree_skb_add_bulk.
-
-Reviewed-by: Saeed Mahameed <saeed@kernel.org>
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- net/core/skbuff.c |   40 +++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 39 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 007a5fbe284b..79c9e795a964 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -964,16 +964,54 @@ kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason)
- }
- EXPORT_SYMBOL(kfree_skb_reason);
- 
-+#define KFREE_SKB_BULK_SIZE	16
-+
-+struct skb_free_array {
-+	unsigned int skb_count;
-+	void *skb_array[KFREE_SKB_BULK_SIZE];
-+};
-+
-+static void kfree_skb_add_bulk(struct sk_buff *skb,
-+			       struct skb_free_array *sa,
-+			       enum skb_drop_reason reason)
-+{
-+	/* if SKB is a clone, don't handle this case */
-+	if (unlikely(skb->fclone != SKB_FCLONE_UNAVAILABLE)) {
-+		__kfree_skb(skb);
-+		return;
-+	}
-+
-+	skb_release_all(skb, reason);
-+	sa->skb_array[sa->skb_count++] = skb;
-+
-+	if (unlikely(sa->skb_count == KFREE_SKB_BULK_SIZE)) {
-+		kmem_cache_free_bulk(skbuff_head_cache, KFREE_SKB_BULK_SIZE,
-+				     sa->skb_array);
-+		sa->skb_count = 0;
-+	}
-+}
-+
- void __fix_address
- kfree_skb_list_reason(struct sk_buff *segs, enum skb_drop_reason reason)
- {
-+	struct skb_free_array sa;
-+
-+	sa.skb_count = 0;
-+
- 	while (segs) {
- 		struct sk_buff *next = segs->next;
- 
-+		skb_mark_not_on_list(segs);
-+
- 		if (__kfree_skb_reason(segs, reason))
--			__kfree_skb(segs);
-+			kfree_skb_add_bulk(segs, &sa, reason);
-+
- 		segs = next;
- 	}
-+
-+	if (sa.skb_count)
-+		kmem_cache_free_bulk(skbuff_head_cache, sa.skb_count,
-+				     sa.skb_array);
- }
- EXPORT_SYMBOL(kfree_skb_list_reason);
- 
+> I tend to agree... The number of switched which suppor 1522 B max frame
+> is only six. This may be why the problem was not noticed.
+> 
+> The fixed function maybe should look like below:
+> 
+> 
+> static int mv88e6xxx_get_max_mtu(struct dsa_switch *ds, int port)
+> {
+> 	....
+> 
+> 	
+> 	int max_mtu;
+> 
+> 	max_mtu = chip->info->max_frame_size - VLAN_ETH_HLEN -
+> 		  ETH_FCS_LE;
+> 
+> 	if (dsa_is_dsa_port(ds, port) || dsa_is_cpu_port(ds, port))
+> 		  max_mtu -= EDSA_HLEN;
+> 
+> 	return max_mtu;
+> }
+> 
+> Comments more than welcome.
 
 
+I would suggest some comments are added, explaining what is going on
+here. Given the number of Fixes: tags in this area, it is clearly
+tricky to get right, given how different switches operate.
+
+I've not looked back to the email archive, but i have a vague
+recollection that it could be some switches don't impose the MTU limit
+on CPU and DSA ports, just the user ports. So the value reported for
+those ports can actually be bigger than then the max mtu, in order to
+accommodate the DSA header.
+
+	Andrew
