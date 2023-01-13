@@ -2,126 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E87C66A552
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 22:49:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95B2B66A556
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 22:49:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230192AbjAMVtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 16:49:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42442 "EHLO
+        id S229673AbjAMVto (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 16:49:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230439AbjAMVs7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 16:48:59 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AAF1892DD;
-        Fri, 13 Jan 2023 13:48:55 -0800 (PST)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 55C861645;
-        Fri, 13 Jan 2023 22:48:53 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1673646533;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=X7itDCsidDp1tXSi/vZ6Jh/Qu1ORs+1kkBuFUxVYwzY=;
-        b=JDV/8c38SkgGz2HItHdY1EvZ7EyfFu8vAYD0oGYDXpG/32fhLRbola8uD9GTFQmMINy7Z3
-        j9lqa9JUlwsZA6DBz6PS1c2WgPUaKWCqszZ70FvFdjfwichaovwPprPuI+vi9Q+ks3BNEA
-        NWyyFAM5ltTncxUhOVddY5hgfh7EHbKNCwmQuLMY3JmwXPx27WCDw9AoQ3aiBSCRyJa+ra
-        lEmck058HmdI0fh3nVSxDfudFylo77pbsDVZAZKPZ19UfaBZTnpUdbVoo7jyAMtnY+TwNg
-        FqHVAEWTAcP55sZOs//f/QgqlqElAc5PAyVm4CAPktcF95HKVUduUt0srNfUUw==
+        with ESMTP id S229526AbjAMVto (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 16:49:44 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D05955AE
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 13:49:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673646583; x=1705182583;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Ld03bwsmnv1jRFXbl5Jxc7/2sTRXdKxq3mTZRJJNurM=;
+  b=mlRQFMFEjqw56KruPR6Vv+LdX8ksavWcsztFQbndK38x3dCCY4J1be4J
+   xKKA62ycpqrm2A1uKFfHAT6/fkorC7gvnLmvWqG7LYVlCbdswgBw3+uPq
+   WVL8cRW4eyKJmCY5TR8ik8JA2eJ1NVuETNjsOkJQs3qXHEI83nVYpqwcA
+   fbj2obFL0qBHBlW0I3TmiNZzF/HF7zCKXOWaL9xQMMnhS0r3K629K5kl3
+   8zfBfB9y8q/03RUQTNxOAgZnHz6oRNIHzIlZSPdLzDJYtOIkvXzYK/CJM
+   wXIkxcdUEcjTjTvnIaxlPB7ZRVfXYnRgTFdG+W6J5Ham621lv3FlOof/d
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10589"; a="307663220"
+X-IronPort-AV: E=Sophos;i="5.97,214,1669104000"; 
+   d="scan'208";a="307663220"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2023 13:49:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10589"; a="800727720"
+X-IronPort-AV: E=Sophos;i="5.97,214,1669104000"; 
+   d="scan'208";a="800727720"
+Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
+  by fmsmga001.fm.intel.com with ESMTP; 13 Jan 2023 13:49:42 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Slawomir Laba <slawomirx.laba@intel.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, jan.sokolowski@intel.com,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Marek Szlosek <marek.szlosek@intel.com>
+Subject: [PATCH net 1/1] iavf: Fix shutdown pci callback to match the remove one
+Date:   Fri, 13 Jan 2023 13:50:12 -0800
+Message-Id: <20230113215012.971028-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Date:   Fri, 13 Jan 2023 22:48:53 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Rob Herring <robh@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Xu Liang <lxu@maxlinear.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 2/4] dt-bindings: net: phy: add MaxLinear
- GPY2xx bindings
-In-Reply-To: <CAL_JsqKMo6op93WQHpuVdBV6tOPYa9Pyu4geRQmOeQAicEsLWg@mail.gmail.com>
-References: <20230109123013.3094144-1-michael@walle.cc>
- <20230109123013.3094144-3-michael@walle.cc>
- <20230111202639.GA1236027-robh@kernel.org>
- <73f8aad30e0d5c3badbd62030e545ef6@walle.cc>
- <CAL_JsqKMo6op93WQHpuVdBV6tOPYa9Pyu4geRQmOeQAicEsLWg@mail.gmail.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <da96809052c936581b5e6b258e1b2133@walle.cc>
-X-Sender: michael@walle.cc
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2023-01-13 17:38, schrieb Rob Herring:
-> On Wed, Jan 11, 2023 at 4:30 PM Michael Walle <michael@walle.cc> wrote:
->> 
->> Am 2023-01-11 21:26, schrieb Rob Herring:
->> > On Mon, Jan 09, 2023 at 01:30:11PM +0100, Michael Walle wrote:
->> >> Add the device tree bindings for the MaxLinear GPY2xx PHYs, which
->> >> essentially adds just one flag: maxlinear,use-broken-interrupts.
->> >>
->> >> One might argue, that if interrupts are broken, just don't use
->> >> the interrupt property in the first place. But it needs to be more
->> >> nuanced. First, this interrupt line is also used to wake up systems by
->> >> WoL, which has nothing to do with the (broken) PHY interrupt handling.
->> >
->> > I don't understand how this is useful. If the interrupt line is
->> > asserted
->> > after the 1st interrupt, how is it ever deasserted later on to be
->> > useful.
->> 
->> Nobody said, that the interrupt line will stay asserted. The broken
->> behavior is that of the PHY doesn't respond *immediately* with a
->> deassertion of the interrupt line after the its internal status
->> register is cleared. Instead there is a random delay of up to 2ms.
-> 
-> With only "keep the interrupt line asserted even after the interrupt
-> status register is cleared", I assume that means forever, not some
-> delay.
+From: Slawomir Laba <slawomirx.laba@intel.com>
 
-Fair enough. I'll send a doc patch.
+Make the flow for pci shutdown be the same to the pci remove.
 
->> There is already a workaround to avoid an interrupt storm by delaying
->> the ISR until the line is actually cleared. *But* if this line is
->> a shared one. The line is blocked by these 2ms and important
->> interrupts (like PTP timestaming) of other devices on this line
->> will get delayed. Therefore, the only viabale option is to disable
->> the interrupts handling in the broken PHY altogether. I.e. the line
->> will never be asserted by the broken PHY.
-> 
-> Okay, that makes more sense.
-> 
-> So really, this is just an 'is shared interrupt' flag. If not shared,
-> then there's no reason to not use the interrupt?
+iavf_shutdown was implementing an incomplete version
+of iavf_remove. It misses several calls to the kernel like
+iavf_free_misc_irq, iavf_reset_interrupt_capability, iounmap
+that might break the system on reboot or hibernation.
 
-Correct.
+Implement the call of iavf_remove directly in iavf_shutdown to
+close this gap.
 
-> Assuming all
-> interrupts are described in DT, we already have that information. It's
-> just hard and inefficient to get it. You have to parse all interrupts
-> with the same parent and check for the same cells. If we're going to
-> add something more explicit, we should consider something common. It's
-> not the first time shared interrupts have come up, and we probably
-> have some properties already. For something common, I'd probably make
-> this a flag in interrupt cells rather than a property. That would
-> handle cases with multiple interrupts better.
+Fixes: 5eae00c57f5e ("i40evf: main driver core")
+Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Tested-by: Marek Szlosek <marek.szlosek@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 40 +++++++--------------
+ 1 file changed, 12 insertions(+), 28 deletions(-)
 
-What kind of flag do you have in mind? Could you give an example?
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index adc02adef83a..34c9bd62546b 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -4812,34 +4812,6 @@ int iavf_process_config(struct iavf_adapter *adapter)
+ 	return 0;
+ }
+ 
+-/**
+- * iavf_shutdown - Shutdown the device in preparation for a reboot
+- * @pdev: pci device structure
+- **/
+-static void iavf_shutdown(struct pci_dev *pdev)
+-{
+-	struct iavf_adapter *adapter = iavf_pdev_to_adapter(pdev);
+-	struct net_device *netdev = adapter->netdev;
+-
+-	netif_device_detach(netdev);
+-
+-	if (netif_running(netdev))
+-		iavf_close(netdev);
+-
+-	if (iavf_lock_timeout(&adapter->crit_lock, 5000))
+-		dev_warn(&adapter->pdev->dev, "%s: failed to acquire crit_lock\n", __func__);
+-	/* Prevent the watchdog from running. */
+-	iavf_change_state(adapter, __IAVF_REMOVE);
+-	adapter->aq_required = 0;
+-	mutex_unlock(&adapter->crit_lock);
+-
+-#ifdef CONFIG_PM
+-	pci_save_state(pdev);
+-
+-#endif
+-	pci_disable_device(pdev);
+-}
+-
+ /**
+  * iavf_probe - Device Initialization Routine
+  * @pdev: PCI device information struct
+@@ -5177,6 +5149,18 @@ static void iavf_remove(struct pci_dev *pdev)
+ 	pci_disable_device(pdev);
+ }
+ 
++/**
++ * iavf_shutdown - Shutdown the device in preparation for a reboot
++ * @pdev: pci device structure
++ **/
++static void iavf_shutdown(struct pci_dev *pdev)
++{
++	iavf_remove(pdev);
++
++	if (system_state == SYSTEM_POWER_OFF)
++		pci_set_power_state(pdev, PCI_D3hot);
++}
++
+ static SIMPLE_DEV_PM_OPS(iavf_pm_ops, iavf_suspend, iavf_resume);
+ 
+ static struct pci_driver iavf_driver = {
+-- 
+2.38.1
 
--michael
