@@ -2,45 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FF27668FF4
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 09:03:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 400E866900B
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 09:04:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240826AbjAMIC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 03:02:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46152 "EHLO
+        id S240805AbjAMIEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 03:04:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240196AbjAMIBi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 03:01:38 -0500
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A736E0CB;
-        Fri, 13 Jan 2023 00:00:33 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VZTr3DY_1673596826;
-Received: from localhost(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0VZTr3DY_1673596826)
-          by smtp.aliyun-inc.com;
-          Fri, 13 Jan 2023 16:00:26 +0800
-From:   Heng Qi <hengqi@linux.alibaba.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Subject: [PATCH net-next v4 10/10] virtio-net: support multi-buffer xdp
-Date:   Fri, 13 Jan 2023 16:00:16 +0800
-Message-Id: <20230113080016.45505-11-hengqi@linux.alibaba.com>
-X-Mailer: git-send-email 2.19.1.6.gb485710b
-In-Reply-To: <20230113080016.45505-1-hengqi@linux.alibaba.com>
-References: <20230113080016.45505-1-hengqi@linux.alibaba.com>
+        with ESMTP id S240570AbjAMIDZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 03:03:25 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69CDE25E2;
+        Fri, 13 Jan 2023 00:01:06 -0800 (PST)
+Received: from pendragon.ideasonboard.com (85-76-5-15-nat.elisa-mobile.fi [85.76.5.15])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 64BE84D4;
+        Fri, 13 Jan 2023 09:01:03 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1673596863;
+        bh=cznkdyRGPN+MgO59A5w6zSqYoDDyC4/o8zwGoYFpT/4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=X3sDjCHvncH8nOCQqph3lRWmzA+o7ZBGUupBaWsIqvlyia+dSiapzD4cCl/9rmiPJ
+         B4jr8NUwZemj7FrJVUMSVm/jr/syT5jAqqHnHz/VIkiEeZojpijB4wyQF8mSckYAYI
+         I5Uhh6NRqZJYChzv/4ySxybQmm9DouIDL6rp5RZU=
+Date:   Fri, 13 Jan 2023 10:01:02 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
+        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-sh@vger.kernel.org
+Subject: Re: [PATCH 20/22] media: remove sh_vou
+Message-ID: <Y8EPvllOwhODRUiP@pendragon.ideasonboard.com>
+References: <20230113062339.1909087-1-hch@lst.de>
+ <20230113062339.1909087-21-hch@lst.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230113062339.1909087-21-hch@lst.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -48,127 +60,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Driver can pass the skb to stack by build_skb_from_xdp_buff().
+Hi Christoph,
 
-Driver forwards multi-buffer packets using the send queue
-when XDP_TX and XDP_REDIRECT, and clears the reference of multi
-pages when XDP_DROP.
+Thank you for the patch.
 
-Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
-Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
----
- drivers/net/virtio_net.c | 65 +++++++---------------------------------
- 1 file changed, 10 insertions(+), 55 deletions(-)
+On Fri, Jan 13, 2023 at 07:23:37AM +0100, Christoph Hellwig wrote:
+> Now that arch/sh is removed this driver is dead code.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  drivers/media/platform/renesas/Kconfig  |    9 -
+>  drivers/media/platform/renesas/Makefile |    1 -
+>  drivers/media/platform/renesas/sh_vou.c | 1375 -----------------------
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 2c7dcad049fb..aaa6fe9b214a 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -1083,7 +1083,6 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 	struct bpf_prog *xdp_prog;
- 	unsigned int truesize = mergeable_ctx_to_truesize(ctx);
- 	unsigned int headroom = mergeable_ctx_to_headroom(ctx);
--	unsigned int metasize = 0;
- 	unsigned int tailroom = headroom ? sizeof(struct skb_shared_info) : 0;
- 	unsigned int room = SKB_DATA_ALIGN(headroom + tailroom);
- 	unsigned int frame_sz, xdp_room;
-@@ -1179,63 +1178,24 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 
- 		switch (act) {
- 		case XDP_PASS:
--			metasize = xdp.data - xdp.data_meta;
--
--			/* recalculate offset to account for any header
--			 * adjustments and minus the metasize to copy the
--			 * metadata in page_to_skb(). Note other cases do not
--			 * build an skb and avoid using offset
--			 */
--			offset = xdp.data - page_address(xdp_page) -
--				 vi->hdr_len - metasize;
--
--			/* recalculate len if xdp.data, xdp.data_end or
--			 * xdp.data_meta were adjusted
--			 */
--			len = xdp.data_end - xdp.data + vi->hdr_len + metasize;
--
--			/* recalculate headroom if xdp.data or xdp_data_meta
--			 * were adjusted, note that offset should always point
--			 * to the start of the reserved bytes for virtio_net
--			 * header which are followed by xdp.data, that means
--			 * that offset is equal to the headroom (when buf is
--			 * starting at the beginning of the page, otherwise
--			 * there is a base offset inside the page) but it's used
--			 * with a different starting point (buf start) than
--			 * xdp.data (buf start + vnet hdr size). If xdp.data or
--			 * data_meta were adjusted by the xdp prog then the
--			 * headroom size has changed and so has the offset, we
--			 * can use data_hard_start, which points at buf start +
--			 * vnet hdr size, to calculate the new headroom and use
--			 * it later to compute buf start in page_to_skb()
--			 */
--			headroom = xdp.data - xdp.data_hard_start - metasize;
--
--			/* We can only create skb based on xdp_page. */
--			if (unlikely(xdp_page != page)) {
--				rcu_read_unlock();
-+			if (unlikely(xdp_page != page))
- 				put_page(page);
--				head_skb = page_to_skb(vi, rq, xdp_page, offset,
--						       len, PAGE_SIZE);
--				return head_skb;
--			}
--			break;
-+			head_skb = build_skb_from_xdp_buff(dev, vi, &xdp, xdp_frags_truesz);
-+			rcu_read_unlock();
-+			return head_skb;
- 		case XDP_TX:
- 			stats->xdp_tx++;
- 			xdpf = xdp_convert_buff_to_frame(&xdp);
- 			if (unlikely(!xdpf)) {
--				if (unlikely(xdp_page != page))
--					put_page(xdp_page);
--				goto err_xdp;
-+				netdev_dbg(dev, "convert buff to frame failed for xdp\n");
-+				goto err_xdp_frags;
- 			}
- 			err = virtnet_xdp_xmit(dev, 1, &xdpf, 0);
- 			if (unlikely(!err)) {
- 				xdp_return_frame_rx_napi(xdpf);
- 			} else if (unlikely(err < 0)) {
- 				trace_xdp_exception(vi->dev, xdp_prog, act);
--				if (unlikely(xdp_page != page))
--					put_page(xdp_page);
--				goto err_xdp;
-+				goto err_xdp_frags;
- 			}
- 			*xdp_xmit |= VIRTIO_XDP_TX;
- 			if (unlikely(xdp_page != page))
-@@ -1245,11 +1205,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 		case XDP_REDIRECT:
- 			stats->xdp_redirects++;
- 			err = xdp_do_redirect(dev, &xdp, xdp_prog);
--			if (err) {
--				if (unlikely(xdp_page != page))
--					put_page(xdp_page);
--				goto err_xdp;
--			}
-+			if (err)
-+				goto err_xdp_frags;
- 			*xdp_xmit |= VIRTIO_XDP_REDIR;
- 			if (unlikely(xdp_page != page))
- 				put_page(page);
-@@ -1262,9 +1219,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 			trace_xdp_exception(vi->dev, xdp_prog, act);
- 			fallthrough;
- 		case XDP_DROP:
--			if (unlikely(xdp_page != page))
--				__free_pages(xdp_page, 0);
--			goto err_xdp;
-+			goto err_xdp_frags;
- 		}
- err_xdp_frags:
- 		if (unlikely(xdp_page != page))
+You can also emove include/media/drv-intf/sh_vou.sh. With that, and the
+corresponding MAINTAINERS entry dropped,
+
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+
+>  3 files changed, 1385 deletions(-)
+>  delete mode 100644 drivers/media/platform/renesas/sh_vou.c
+
 -- 
-2.19.1.6.gb485710b
+Regards,
 
+Laurent Pinchart
