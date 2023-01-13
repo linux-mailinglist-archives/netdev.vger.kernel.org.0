@@ -2,135 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB24966897E
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 03:19:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D7736689B9
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 03:51:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231400AbjAMCTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 21:19:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52188 "EHLO
+        id S232536AbjAMCvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 21:51:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231331AbjAMCTW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 21:19:22 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4529E574C7
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 18:19:20 -0800 (PST)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NtQ6f43y4zRrFK;
-        Fri, 13 Jan 2023 10:17:30 +0800 (CST)
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 13 Jan
- 2023 10:19:14 +0800
-Subject: Re: [PATCH v3 00/26] Split netmem from struct page
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>
-CC:     <brouer@redhat.com>, Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        <netdev@vger.kernel.org>, <linux-mm@kvack.org>,
-        Shakeel Butt <shakeelb@google.com>
-References: <20230111042214.907030-1-willy@infradead.org>
- <e9bb4841-6f9d-65c2-0f78-b307615b009a@huawei.com>
- <Y763vcTFUZvWNgYv@casper.infradead.org>
- <9cdc89f3-8c00-3673-5fdb-4f5bebd95d7a@redhat.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <9857b63e-5f7d-e45a-d837-bae8737c3c55@huawei.com>
-Date:   Fri, 13 Jan 2023 10:19:14 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        with ESMTP id S232523AbjAMCuy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 21:50:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBDE25D8AA
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 18:50:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673578207;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=odERJ73Z3UfAhcbzEnILTL+WyS7927XUH/5iYtkYUew=;
+        b=HY9I/kryrb59A20J+kbw9WRGO79tlF2SollYBfReDzqmZo3/OiBOurR8CCMTybbx3KrfGu
+        lJnLp33RGE6gwCsITtl8+LnaxojGCO8vzxCXI+xJmmcHyurYYEL7sF6lIEslSGfW7PCdVm
+        JLjWI8S3I1wcdaOmcMcEpcJnXOUq4HM=
+Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com
+ [209.85.214.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-609-QER0yvJmOzGBMWYU3KE2mA-1; Thu, 12 Jan 2023 21:50:05 -0500
+X-MC-Unique: QER0yvJmOzGBMWYU3KE2mA-1
+Received: by mail-pl1-f200.google.com with SMTP id l17-20020a170902f69100b001928d6b3efcso13785243plg.2
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 18:50:05 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=odERJ73Z3UfAhcbzEnILTL+WyS7927XUH/5iYtkYUew=;
+        b=QJslvfmPkS6r/Y4mvdkE+F6nl/6LW9DavD6RUpHLmH54PFkZCoZ9XJKx5e1DeUdd1s
+         VktRQfZkmGR6AEV43HA6/jX4WTjr12CeydDGiXGXWXVV6Oahww9qvnGGLDFirJoCAwhT
+         hrobZDARh0dYTN/982urCNjTw0Xk7YvY3VVdQciSYNfX27vpFOWbbjFN1HHiCVX1CRoB
+         /V2LpB1rPMo2sicGKIY5Dw1Iqt9Zdgbrv8Qu/ze7ZSdPsE/rzA66INR8gAAIvhJEqqVC
+         uAyFxK5shyeg56vbRIw8o4R/4UPIqPn8o4TsRhlyjPnG/3CTfGA3zWxiYUpu0gNFfBC6
+         ba8Q==
+X-Gm-Message-State: AFqh2kpcLV7Zgu/IcRZHwcW4bNm0NBIztCJAxfX4KP7E1i4BY+cbgXGz
+        mdaEiZFIyZH8SKbWf0SVffQV8CF+gt2bl0kAV1jbqTvoELjG44tyPeLh9YhHo5elhgo5udyq+aY
+        /xxeZk5Ya6z71Sovw
+X-Received: by 2002:a17:90a:6344:b0:225:ce95:dc15 with SMTP id v4-20020a17090a634400b00225ce95dc15mr68433133pjs.29.1673578204456;
+        Thu, 12 Jan 2023 18:50:04 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXvjkjbMP4vKqVA3kL5O3q2YuiKZMzH0b0ScPMkUSeUY2VDrz1aY78FXrrFA3oTZm1pFUn6Fqw==
+X-Received: by 2002:a17:90a:6344:b0:225:ce95:dc15 with SMTP id v4-20020a17090a634400b00225ce95dc15mr68433119pjs.29.1673578204181;
+        Thu, 12 Jan 2023 18:50:04 -0800 (PST)
+Received: from [10.72.12.164] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id mn23-20020a17090b189700b00227223c58ecsm7212010pjb.42.2023.01.12.18.50.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Jan 2023 18:50:03 -0800 (PST)
+Message-ID: <b99c54de-550e-fa4c-a26f-428096680f00@redhat.com>
+Date:   Fri, 13 Jan 2023 10:49:54 +0800
 MIME-Version: 1.0
-In-Reply-To: <9cdc89f3-8c00-3673-5fdb-4f5bebd95d7a@redhat.com>
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.6.1
+Subject: Re: [PATCH v3 2/9] virtio-net: set up xdp for multi buffer packets
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+To:     Heng Qi <hengqi@linux.alibaba.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     "Michael S . Tsirkin" <mst@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+References: <20230103064012.108029-1-hengqi@linux.alibaba.com>
+ <20230103064012.108029-3-hengqi@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20230103064012.108029-3-hengqi@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/1/12 18:15, Jesper Dangaard Brouer wrote:> On 11/01/2023 14.21, Matthew Wilcox wrote:
->> On Wed, Jan 11, 2023 at 04:25:46PM +0800, Yunsheng Lin wrote:
->>> On 2023/1/11 12:21, Matthew Wilcox (Oracle) wrote:
->>>> The MM subsystem is trying to reduce struct page to a single pointer.
->>>> The first step towards that is splitting struct page by its individual
->>>> users, as has already been done with folio and slab.  This patchset does
->>>> that for netmem which is used for page pools.
->>> As page pool is only used for rx side in the net stack depending on the
->>> driver, a lot more memory for the net stack is from page_frag_alloc_align(),
->>> kmem cache, etc.
->>> naming it netmem seems a little overkill, perhaps a more specific name for
->>> the page pool? such as pp_cache.
->>>
->>> @Jesper & Ilias
->>> Any better idea?
-> 
-> I like the 'netmem' name.
 
-Fair enough.
-I just pointed out why netmem might not be appropriate when we are not
-figuring out how netmem will work through the whole networking stack yet.
-It is eventually your and david/jakub's call to decide the naming anyway.
-
-> 
->>> And it seem some API may need changing too, as we are not pooling 'pages'
->>> now.
-> 
-> IMHO it would be overkill to rename the page_pool to e.g. netmem_pool.
-> as it would generate too much churn and will be hard to follow in git
-> as the code filename page_pool.c would also have to be renamed.
-> It guess we keep page_pool for historical reasons ;-)
-
-I think this is a matter of conflict between backward and forward maintainability.
-IMHO we should prefer forward maintainability over backward maintainability.
-
-And greg offers a possible way to fix the backport problem:
-https://www.spinics.net/lists/kernel/msg4648826.html
-
-For git history, I suppose that is a pain we have to pay for the future
-maintainability.
-
-> 
->> I raised the question of naming in v1, six weeks ago, and nobody had
->> any better names.  Seems a little unfair to ignore the question at first
->> and then bring it up now.  I'd hate to miss the merge window because of
->> a late-breaking major request like this.
->>
->> https://lore.kernel.org/netdev/20221130220803.3657490-1-willy@infradead.org/
->>
->> I'd like to understand what we think we'll do in networking when we trim
->> struct page down to a single pointer,  All these usages that aren't from
->> page_pool -- what information does networking need to track per-allocation?
->> Would it make sense for the netmem to describe all memory used by the
->> networking stack, and have allocators other than page_pool also return
->> netmem, 
-> 
-> This is also how I see the future, that other netstack "allocators" can
-> return and work-with 'netmem' objects.   IMHO we are already cramming
-
-I am not sure how "other netstack 'allocators' can return and work-with
-'netmem' objects" works, I suppose putting different union for different
-allocators in struct netmem like struct page does? Isn't that bringing
-the similar problem Matthew is trying to fix in this patchset?
+在 2023/1/3 14:40, Heng Qi 写道:
+> When the xdp program sets xdp.frags, which means it can process
+> multi-buffer packets over larger MTU, so we continue to support xdp.
+> But for single-buffer xdp, we should keep checking for MTU.
+>
+> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> ---
+>   drivers/net/virtio_net.c | 10 ++++++----
+>   1 file changed, 6 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 443aa7b8f0ad..60e199811212 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -3074,7 +3074,9 @@ static int virtnet_restore_guest_offloads(struct virtnet_info *vi)
+>   static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>   			   struct netlink_ext_ack *extack)
+>   {
+> -	unsigned long int max_sz = PAGE_SIZE - sizeof(struct padded_vnet_hdr);
+> +	unsigned int room = SKB_DATA_ALIGN(VIRTIO_XDP_HEADROOM +
+> +					   sizeof(struct skb_shared_info));
+> +	unsigned int max_sz = PAGE_SIZE - room - ETH_HLEN;
+>   	struct virtnet_info *vi = netdev_priv(dev);
+>   	struct bpf_prog *old_prog;
+>   	u16 xdp_qp = 0, curr_qp;
+> @@ -3095,9 +3097,9 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>   		return -EINVAL;
+>   	}
+>   
+> -	if (dev->mtu > max_sz) {
+> -		NL_SET_ERR_MSG_MOD(extack, "MTU too large to enable XDP");
+> -		netdev_warn(dev, "XDP requires MTU less than %lu\n", max_sz);
+> +	if (prog && !prog->aux->xdp_has_frags && dev->mtu > max_sz) {
+> +		NL_SET_ERR_MSG_MOD(extack, "MTU too large to enable XDP without frags");
+> +		netdev_warn(dev, "single-buffer XDP requires MTU less than %u\n", max_sz);
+>   		return -EINVAL;
+>   	}
 
 
-> too many use-cases into page_pool (like the frag support Yunsheng
-> added).  IMHO there are room for other netstack "allocators" that can
+I think we probably need to backport this to -stable. So I suggest to 
+move/squash the check of !prog->aux->xdp_has_frags to one of the 
+following patch.
 
-I do not understand why frag support is viewed as "cramming use-cases to
-page pool".
-In my defence, the frag support for rx is fix in the page pool, it just
-extend the page pool to return smaller buffer than before. If I create other
-allocator for that, I might invent a lot of wheel page pool already invented.
+With this,
 
-> utilize netmem.  The page_pool is optimized for RX-NAPI workloads, using
-> it for other purposes is a mistake IMHO.  People should create other
-> netstack "allocators" that solves their specific use-cases.  E.g. The TX
-> path likely needs another "allocator" optimized for this TX use-case.
-> 
+Acked-by: Jason Wang <jasowang@redhat.com>
+
+Thanks
+
+
+>   
+
