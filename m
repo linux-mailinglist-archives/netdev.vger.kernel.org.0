@@ -2,164 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1958766889A
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 01:36:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 272446688B1
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 01:50:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233217AbjAMAgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 19:36:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43280 "EHLO
+        id S240589AbjAMAtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 19:49:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233365AbjAMAgs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 19:36:48 -0500
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2EE18B3D;
-        Thu, 12 Jan 2023 16:36:46 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4NtMtN0Yjnz4x1R;
-        Fri, 13 Jan 2023 11:36:43 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1673570204;
-        bh=XUQvRQpyDENYtvUFcxm/gNeE046GNGYCUyfJaUM2ajA=;
-        h=Date:From:To:Cc:Subject:From;
-        b=X7cB0I/NjuUKqTCUwpyDlh3e0x289Q3FuYK6NgKrclCRcAyvahQKGd4oJI7+Yc5r9
-         38X/AJKVjUnKsT0KGK2+gnx9k3jnmzy78H7tYw/kXF3tE1QScBtHzmkhPAvDOM1msS
-         PASelMadhww48ctLR3cUsAWqC9PHdXW97CfMhCkGAgT/QPA3pz9vXxvOqf1dgmwGDM
-         PDtl+jgXat7Zr6yLMpYPM9yqD7ZsG1w6ZYfYk4OrHuodymBecZatXA+0BpnxHkVK+l
-         2p/odKAUhdboKpuxjaK7u9KgpddkWzxujWwsPYDco5+gN8mcsqrMKY7FW9WyjDz4k+
-         6+OHQCSsKHfWg==
-Date:   Fri, 13 Jan 2023 11:36:42 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        =?UTF-8?B?QmrDuHJu?= Mork <bjorn@mork.no>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20230113113339.658c4723@canb.auug.org.au>
+        with ESMTP id S235201AbjAMAtR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 19:49:17 -0500
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C90D8621A4;
+        Thu, 12 Jan 2023 16:48:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1673570928; x=1705106928;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=5DJhPhyTPYZUC+Q0Y4NJeiMhiQyq2unFpEyaenv0cBs=;
+  b=auGbLHOJ5/VrNkrG/Spkv91hA1v6D5CczcxqupgqeArLOhLjriwlf4/H
+   VkbRwM5bIU7aelC7jAZ35m9OWagEB6bOIKVfW9xaFNXgWuvrfRsW4BK4Z
+   ap0MA7zrmT8ok8BDdV2gWjEIU2p1dOtvSQBSDvO2kAdK+lgjmM/eQRVzs
+   U=;
+X-IronPort-AV: E=Sophos;i="5.97,212,1669075200"; 
+   d="scan'208";a="170739339"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-fad5e78e.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2023 00:48:38 +0000
+Received: from EX13MTAUWB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2c-m6i4x-fad5e78e.us-west-2.amazon.com (Postfix) with ESMTPS id 730D8A110F;
+        Fri, 13 Jan 2023 00:48:37 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.45; Fri, 13 Jan 2023 00:48:36 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.56) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.7;
+ Fri, 13 Jan 2023 00:48:32 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <borrello@diag.uniroma1.it>
+CC:     <c.giuffrida@vu.nl>, <davem@davemloft.net>, <dsahern@kernel.org>,
+        <edumazet@google.com>, <h.j.bos@vu.nl>, <jkl820.git@gmail.com>,
+        <kuba@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>,
+        <yoshfuji@linux-ipv6.org>, <kuniyu@amazon.com>
+Subject: Re: [PATCH] inet: fix fast path in __inet_hash_connect()
+Date:   Fri, 13 Jan 2023 09:48:13 +0900
+Message-ID: <20230113004813.82874-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230112-inet_hash_connect_bind_head-v1-1-7e3c770157c8@diag.uniroma1.it>
+References: <20230112-inet_hash_connect_bind_head-v1-1-7e3c770157c8@diag.uniroma1.it>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/9qhutx.lCu63yAJj.ZYuH4u";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,
-        UPPERCASE_50_75 autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.56]
+X-ClientProxiedBy: EX13D28UWC002.ant.amazon.com (10.43.162.145) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/9qhutx.lCu63yAJj.ZYuH4u
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From:   Pietro Borrello <borrello@diag.uniroma1.it>
+Date:   Thu, 12 Jan 2023 15:39:23 +0000
+> __inet_hash_connect() has a fast path taken if sk_head(&tb->owners) is
+> equal to the sk parameter.
+> sk_head() returns the list_entry() with respect to the sk_node field.
 
-Hi all,
+nit: s/list_entry/hlist_entry/
 
-Today's linux-next merge of the net-next tree got a conflict in:
+> However entries in the tb->owners list are inserted with respect to the
+> sk_bind_node field with sk_add_bind_node().
+> Thus the check would never pass and the fast path never execute.
+> 
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Signed-off-by: Pietro Borrello <borrello@diag.uniroma1.it>
 
-  drivers/net/usb/r8152.c
+Good catch!
+Other than the nit above, looks good to me.
 
-between commit:
+Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-  be53771c87f4 ("r8152: add vendor/device ID pair for Microsoft Devkit")
+Thank you.
 
-from the net tree and commit:
 
-  ec51fbd1b8a2 ("r8152: add USB device driver for config selection")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc drivers/net/usb/r8152.c
-index 23da1d9dafd1,66e70b5f8417..000000000000
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@@ -9817,40 -9820,31 +9820,32 @@@ static void rtl8152_disconnect(struct u
-  /* table of devices that work with this driver */
-  static const struct usb_device_id rtl8152_table[] =3D {
-  	/* Realtek */
-- 	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8050),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8053),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8152),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8153),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8155),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8156),
-+ 	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8050) },
-+ 	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8053) },
-+ 	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8152) },
-+ 	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8153) },
-+ 	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8155) },
-+ 	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8156) },
- =20
-  	/* Microsoft */
-- 	REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07ab),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07c6),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x0927),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x0c5e),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_SAMSUNG, 0xa101),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x304f),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3054),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3062),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3069),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3082),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7205),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x720c),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7214),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x721e),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0xa387),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_LINKSYS, 0x0041),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_NVIDIA,  0x09ff),
-- 	REALTEK_USB_DEVICE(VENDOR_ID_TPLINK,  0x0601),
-+ 	{ USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07ab) },
-+ 	{ USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07c6) },
-+ 	{ USB_DEVICE(VENDOR_ID_MICROSOFT, 0x0927) },
-++	{ USB_DEVICE(VENDOR_ID_MICROSOFT, 0x0c5e) },
-+ 	{ USB_DEVICE(VENDOR_ID_SAMSUNG, 0xa101) },
-+ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x304f) },
-+ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x3054) },
-+ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x3062) },
-+ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x3069) },
-+ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x3082) },
-+ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x7205) },
-+ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x720c) },
-+ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x7214) },
-+ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x721e) },
-+ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0xa387) },
-+ 	{ USB_DEVICE(VENDOR_ID_LINKSYS, 0x0041) },
-+ 	{ USB_DEVICE(VENDOR_ID_NVIDIA,  0x09ff) },
-+ 	{ USB_DEVICE(VENDOR_ID_TPLINK,  0x0601) },
-  	{}
-  };
- =20
-
---Sig_/9qhutx.lCu63yAJj.ZYuH4u
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmPAp5oACgkQAVBC80lX
-0Gwkqwf8CA9D0ibfAJABp7KBzVjqS8Q9fHMcb/29YK3Zdp7eIB26FpeJUcXeCe+y
-j3l/OKExix8JMLjJoL1HADdD5bDwfIh9XkJfP3Nqcieg2d97ydDraG0LJzwmFYlf
-k/sc0S/lfcaKobwojQK0uQB9013PYRlh37+BO8M6GCZWuXuJRL0uEMNTRodpONiP
-zyeDs4BW1WqQKfhrXnDVmuKGkAROu5CJpybIbll1KCG7kMEOgRBbIeERm4vOvGEv
-EJusOu+GGoqtXrUE+X+84ZN5z9S1ZANqop/qulhu+Qa7/7OXEMmLvWwtz02nGEq4
-X2cydp0oA3punJck/UD19WnZXZVxlg==
-=ameD
------END PGP SIGNATURE-----
-
---Sig_/9qhutx.lCu63yAJj.ZYuH4u--
+> ---
+>  include/net/sock.h         | 10 ++++++++++
+>  net/ipv4/inet_hashtables.c |  2 +-
+>  2 files changed, 11 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index dcd72e6285b2..23fc403284db 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -860,6 +860,16 @@ static inline void sk_nulls_add_node_rcu(struct sock *sk, struct hlist_nulls_hea
+>  	__sk_nulls_add_node_rcu(sk, list);
+>  }
+>  
+> +static inline struct sock *__sk_bind_head(const struct hlist_head *head)
+> +{
+> +	return hlist_entry(head->first, struct sock, sk_bind_node);
+> +}
+> +
+> +static inline struct sock *sk_bind_head(const struct hlist_head *head)
+> +{
+> +	return hlist_empty(head) ? NULL : __sk_bind_head(head);
+> +}
+> +
+>  static inline void __sk_del_bind_node(struct sock *sk)
+>  {
+>  	__hlist_del(&sk->sk_bind_node);
+> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> index d039b4e732a3..a805e086fb48 100644
+> --- a/net/ipv4/inet_hashtables.c
+> +++ b/net/ipv4/inet_hashtables.c
+> @@ -998,7 +998,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+>  						  hinfo->bhash_size)];
+>  		tb = inet_csk(sk)->icsk_bind_hash;
+>  		spin_lock_bh(&head->lock);
+> -		if (sk_head(&tb->owners) == sk && !sk->sk_bind_node.next) {
+> +		if (sk_bind_head(&tb->owners) == sk && !sk->sk_bind_node.next) {
+>  			inet_ehash_nolisten(sk, NULL, NULL);
+>  			spin_unlock_bh(&head->lock);
+>  			return 0;
+> 
+> ---
+> base-commit: 1b929c02afd37871d5afb9d498426f83432e71c2
+> change-id: 20230112-inet_hash_connect_bind_head-8f2dc98f08b1
+> 
+> Best regards,
+> -- 
+> Pietro Borrello <borrello@diag.uniroma1.it>
