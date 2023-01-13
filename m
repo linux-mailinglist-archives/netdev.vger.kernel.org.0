@@ -2,147 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 136A5669651
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 13:03:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B950F6696C5
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 13:19:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241289AbjAMMCt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 07:02:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44792 "EHLO
+        id S241025AbjAMMTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 07:19:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232924AbjAMMB5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 07:01:57 -0500
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92CE820C9;
-        Fri, 13 Jan 2023 03:53:48 -0800 (PST)
-Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 69F2485265;
-        Fri, 13 Jan 2023 12:53:45 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1673610826;
-        bh=RxrDXcJ07buIhbEVcWKHYp0D9nS5B01WBXeK3QVU//Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=t1aXcoDKHREWY7AWLw2T2CBaWeYMwRLE1+XFEPPYH3dXOWewbYfw0lEPIg8CyPWwb
-         DVguK1k2KuCMB4hNEFMdmKvWJLijG7EyVyFlCkYPtQTAIkvh+idQKJ+ZW/Txlyu83r
-         7qzF0jJ8RXGVM+yw6L9a4avymv4zaUoqdTldharmKtM61x1+MhJ4v53zy4M7RmqKz0
-         PQHeDPearYer+2TzBMF20/eyqtzqR0EqKjWM0Yn0FFoIVFpdomBbq/3hVlN4hNUhq1
-         RJRGDzV5hvzQxs0CekGdz2lmro/971UzVoa7mSIAjd8ANe7tEn2hcgRka5rEfYgDeJ
-         nDIysbxPf9Yxg==
-Date:   Fri, 13 Jan 2023 12:53:38 +0100
-From:   Lukasz Majewski <lukma@denx.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/3] dsa: marvell: Provide per device information
- about max frame size
-Message-ID: <20230113125338.02d44137@wsk>
-In-Reply-To: <20230113111401.hyq7xogfo5tx77e7@skbuf>
-References: <20230106101651.1137755-1-lukma@denx.de>
-        <Y7gdNlrKkfi2JvQk@lunn.ch>
-        <20230113113908.5e92b3a5@wsk>
-        <20230113104937.75umsf4avujoxbaq@skbuf>
-        <20230113120219.7dc931c1@wsk>
-        <20230113111401.hyq7xogfo5tx77e7@skbuf>
-Organization: denx.de
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S241451AbjAMMSd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 07:18:33 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E4BF59F97
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 04:11:47 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id u9so51916768ejo.0
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 04:11:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=IPJSg4Zmt3zIF1jwOF51a0Egys8yUgt0jOK5/EupfkE=;
+        b=VLl1Ajn3MlZ5ERaYDB9LRWELgbetfSa8z1cxnG+wb5ES3bSr8Oub8ar8TjffBkcnjd
+         MPx4leKbJLxCP0nvqdApzLNwIjLPC1MNfKcdLJ1ymJwNAutaU0xhlZ2PlIjgNJFCIwtl
+         ll/6kCs0rrM1ilkogyOnQC5598ZeVCDZveFxUaRkZSYgCrCCFLL+yA7nzjmU69NwQYUW
+         Vi6W7BjsYUc/VC4xwm5ktFTQqd9dvlE7ESM79mZnxkN2bVp/z7c2bU/psjVuZZ7i3viq
+         y1klB9hmZ7o3aSGUYJpdgF/gSBaKQBjEewMGbuaHRt6Rziq3wUpmnuM50TpbRu0u9g/V
+         BG5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=IPJSg4Zmt3zIF1jwOF51a0Egys8yUgt0jOK5/EupfkE=;
+        b=m/i0mH8Dm//JHrQAHDyONFTxiXiLYWUV1PHcpR83PwdxC08ryn50Yw8+RkTfUq2Zph
+         otTBiTZTADu3YIvYuuWLwy7rFl2+uk7JLhMf2guhygFF9GhB9LQJXbZ0kOpUg7S+3oQP
+         OXbfhVfaV+KJx9huUJpDo0FYvRddg4Xi7ZrBremFs++IMF0txLFodlMq8qlFFTew5VYB
+         MmZi4HCzElyG+0goCzNsbduCC86jRetY8IZy2N5Z1xz6SibeWZuxhxv+aGrUmL4xwVu6
+         jUg+ZLBuMKmjA8AsT3HRld5i8kF6SfJJOq/i3SuobkGNcvHta2Pi18bAk5C99wPxlfL8
+         j2ew==
+X-Gm-Message-State: AFqh2konPj5TWG1w/eqn4J5t4lEvxH9R6YW20XlnRW6vSLdptqAQXtAz
+        +/FHkEwKyI/d+qIcLY/m3qgDDw==
+X-Google-Smtp-Source: AMrXdXtTnYm2ahDtT2Fc3hNhQJ2Qbn2zsMBf/+9ai6bmBO+J8tlWVPudhisWuV6WiUGeiR1xTosMCA==
+X-Received: by 2002:a17:906:5dad:b0:7c0:dfba:54d3 with SMTP id n13-20020a1709065dad00b007c0dfba54d3mr11022747ejv.20.1673611905595;
+        Fri, 13 Jan 2023 04:11:45 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id g18-20020a1709061c9200b007c1675d2626sm8592741ejh.96.2023.01.13.04.11.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 Jan 2023 04:11:44 -0800 (PST)
+Message-ID: <435a6047-834c-ef3d-9aac-8bafa5e322ff@linaro.org>
+Date:   Fri, 13 Jan 2023 13:11:42 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/vqs.jyD9W5E=3qeQNzhxo_h";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH V2 3/7] dt-bindings: net: fec: add mx93 description
+Content-Language: en-US
+To:     Clark Wang <xiaoning.wang@nxp.com>, wei.fang@nxp.com,
+        shenwei.wang@nxp.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, festevam@gmail.com, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        mcoquelin.stm32@gmail.com, richardcochran@gmail.com
+Cc:     linux-imx@nxp.com, kernel@pengutronix.de, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+References: <20230113033347.264135-1-xiaoning.wang@nxp.com>
+ <20230113033347.264135-4-xiaoning.wang@nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230113033347.264135-4-xiaoning.wang@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/vqs.jyD9W5E=3qeQNzhxo_h
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 13/01/2023 04:33, Clark Wang wrote:
+> Add mx93 compatible string for fec driver.
+> 
+> Signed-off-by: Clark Wang <xiaoning.wang@nxp.com>
+> ---
+> New patch added in V2 for FEC
+> ---
 
-Hi Vladimir,
-
-> On Fri, Jan 13, 2023 at 12:02:19PM +0100, Lukasz Majewski wrote:
-> > Hi Vladimir,
-> >  =20
-> > > On Fri, Jan 13, 2023 at 11:39:08AM +0100, Lukasz Majewski wrote: =20
-> > > > Are there any more comments, or is this patch set eligible for
-> > > > pulling into net-next tree?   =20
-> > >=20
-> > > How about responding to the comment that was already posted
-> > > first? =20
-> >=20
-> > Could you be more specific?
-> >=20
-> >=20
-> > On the beginning (first posted version) the patch included 9 patches
-> > (which included work for ADDR4 for some mv88e6020 setup).
-> >=20
-> > But after the discussion, I've decided to split this patch set to
-> > smaller pieces;
-> >=20
-> > First to add the set_max_frame size with basic definition for
-> > mv88e6020 and mv88e6071 and then follow with more complicated
-> > changes (for which there is no agreement on how to tackle them).
-> >=20
-> > For the 'set_max_frame' feature Alexander Dyuck had some comments
-> > regarding defensive programming approach, but finally he agreed with
-> > Andrew's approach.
-> >=20
-> > As of now - the v4 has been Acked by Andrew, so it looks like at
-> > least this "part" of the work is eligible for upstreaming.
-> >=20
-> >=20
-> > Or there are any more issues about which I've forgotten ? =20
->=20
-> Do you agree that for the chip families which neither implement
-> port_set_jumbo_size() nor set_max_frame_size(), a max MTU of 1492 will
-> be returned, which currently produces warnings at probe time and
-> should be fixed first, prior to refactoring the code?
-> https://patchwork.kernel.org/project/netdevbpf/patch/20230106101651.11377=
-55-1-lukma@denx.de/#25149891
-
-Sorry, but I've overlooked your reply.
-
-I will write my comments as a reply to it.
-
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 Best regards,
+Krzysztof
 
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Erika Unter
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/vqs.jyD9W5E=3qeQNzhxo_h
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmPBRkIACgkQAR8vZIA0
-zr2AXwf/T4uUIY2bpV+qMXldZk8K/BXHzCf1wpH+/GjLC4/sREZevkZ0Ue+RXscQ
-NoUvoHxusq3F3XJk23m2Zt/dmvMOf764iQFDGPu+V5H2n2qLTH1ecT9u5F3woiIR
-8fg/wHC8xBFUBoWe4/BQWpxGMrdExxi29f/4zG4zxf+7aIUCRSKEwr/msr/muvKS
-f+9xk5A2D7JxJqNQBgMzwFdk1wt4uq4R+tNnYvPd32Mqjor56QAtA7Co7RKT8izW
-kmkXYMve93T1kCmZKX+3laYGxj779c0JQAVLPsg7K6m5Oqj6IkaPi9B+21ldEk54
-bjCHhQJ0YS/Mco1gmpWIn4cNwYrLMQ==
-=Fh38
------END PGP SIGNATURE-----
-
---Sig_/vqs.jyD9W5E=3qeQNzhxo_h--
