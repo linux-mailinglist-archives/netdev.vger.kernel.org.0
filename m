@@ -2,149 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 77E73668850
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 01:21:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1958766889A
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 01:36:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237200AbjAMAVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 19:21:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36200 "EHLO
+        id S233217AbjAMAgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 19:36:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240516AbjAMAUm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 19:20:42 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25036671B1;
-        Thu, 12 Jan 2023 16:16:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=SYbG/8N9ErbjViYnu7EiBZn310fX/7/4xAw1q8PMG7o=; b=GjQScXq/c0QbBUryLlGecDs+js
-        dJ5KeAonx+R6mdr6BTmqMGkPF8G66DQ3NQwehDg9Om8PMewBE14IUqGxzuCU1Ce4lbxR5bUHrMghz
-        wCs6pRdhx1wAYWdFSHSW7d39gZrz0VEfE5l6Q5CthB9yAh5cWgs/hmyPKV86xXwkW9QUrPxIyN7zY
-        ybu2L9ajG81/3dyAzEsAXsiOnHXhWG74fI9ta6StNb74sm7VAvS7rfzDI2+GEa/6ZgCAbqR4/FZvW
-        vDWEtZcQCsy6TVZuBgwe0kDzlBxe7z+a9dzh05LtvcvdYMjZnLHmCngIQ+nDWDpefowHr406V5stx
-        1eSHmuUQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36078)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pG7kG-00079x-HR; Fri, 13 Jan 2023 00:16:32 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pG7kF-0002dd-J0; Fri, 13 Jan 2023 00:16:31 +0000
-Date:   Fri, 13 Jan 2023 00:16:31 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org
-Subject: Re: 6.1: possible bug with netfilter conntrack?
-Message-ID: <Y8Ci39eQNgqkTe4j@shell.armlinux.org.uk>
-References: <Y8CR3CvOIAa6QIZ4@shell.armlinux.org.uk>
- <20230112233808.GA19463@breakpoint.cc>
+        with ESMTP id S233365AbjAMAgs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 19:36:48 -0500
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2EE18B3D;
+        Thu, 12 Jan 2023 16:36:46 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4NtMtN0Yjnz4x1R;
+        Fri, 13 Jan 2023 11:36:43 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1673570204;
+        bh=XUQvRQpyDENYtvUFcxm/gNeE046GNGYCUyfJaUM2ajA=;
+        h=Date:From:To:Cc:Subject:From;
+        b=X7cB0I/NjuUKqTCUwpyDlh3e0x289Q3FuYK6NgKrclCRcAyvahQKGd4oJI7+Yc5r9
+         38X/AJKVjUnKsT0KGK2+gnx9k3jnmzy78H7tYw/kXF3tE1QScBtHzmkhPAvDOM1msS
+         PASelMadhww48ctLR3cUsAWqC9PHdXW97CfMhCkGAgT/QPA3pz9vXxvOqf1dgmwGDM
+         PDtl+jgXat7Zr6yLMpYPM9yqD7ZsG1w6ZYfYk4OrHuodymBecZatXA+0BpnxHkVK+l
+         2p/odKAUhdboKpuxjaK7u9KgpddkWzxujWwsPYDco5+gN8mcsqrMKY7FW9WyjDz4k+
+         6+OHQCSsKHfWg==
+Date:   Fri, 13 Jan 2023 11:36:42 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Andre Przywara <andre.przywara@arm.com>,
+        =?UTF-8?B?QmrDuHJu?= Mork <bjorn@mork.no>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20230113113339.658c4723@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230112233808.GA19463@breakpoint.cc>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/9qhutx.lCu63yAJj.ZYuH4u";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,
+        UPPERCASE_50_75 autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+--Sig_/9qhutx.lCu63yAJj.ZYuH4u
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for the quick reply.
+Hi all,
 
-On Fri, Jan 13, 2023 at 12:38:08AM +0100, Florian Westphal wrote:
-> Russell King (Oracle) <linux@armlinux.org.uk> wrote:
-> > Hi,
-> > 
-> > I've noticed that my network at home is rather struggling, and having
-> > done some investigation, I find that the router VM is dropping packets
-> > due to lots of:
-> > 
-> > nf_conntrack: nf_conntrack: table full, dropping packet
-> > 
-> > I find that there are about 2380 established and assured connections
-> > with a destination of my incoming mail server with destination port 25,
-> > and 2 packets. In the reverse direction, apparently only one packet was
-> > sent according to conntrack. E.g.:
-> > 
-> > tcp      6 340593 ESTABLISHED src=180.173.2.183 dst=78.32.30.218
-> > sport=49694 dport=25 packets=2 bytes=92 src=78.32.30.218
-> > dst=180.173.2.183 sport=25 dport=49694 packets=1 bytes=44 [ASSURED]
-> > use=1
-> 
-> Non-early-evictable entry that will expire in ~4 days, so not really
-> surprising that this eventually fills the table.
-> 
-> I'd suggest to reduce the
-> net.netfilter.nf_conntrack_tcp_timeout_established
-> sysctl to something more sane, e.g. 2 minutes or so unless you need
-> to have longer timeouts.
-> 
-> But this did not change, so not the root cause of this problem.
+Today's linux-next merge of the net-next tree got a conflict in:
 
-I'll hold off trying that for now - I do tend to have some connections
-that may be idle...
+  drivers/net/usb/r8152.c
 
-> > However, if I look at the incoming mail server, its kernel believes
-> > there are no incoming port 25 connetions, which matches exim.
-> > 
-> > I hadn't noticed any issues prior to upgrading from 5.16 to 6.1 on the
-> > router VM, and the firewall rules have been the same for much of
-> > 2021/2022.
-> >
-> > Is this is known issue? Something changed between 5.16 and 6.1 in the
-> > way conntrack works?
-> 
-> Nothing that should have such an impact.
-> 
-> Does 'sysctl net.netfilter.nf_conntrack_tcp_loose=0' avoid the buildup
-> of such entries? I'm wondering if conntrack misses the connection
-> shutdown or if its perhaps triggering the entries because of late
-> packets or similar.
-> 
-> If that doesn't help. you could also check if
-> 
-> 'sysctl net.netfilter.nf_conntrack_tcp_be_liberal=1' helps -- if it
-> does, its time for more debugging but its too early to start digging
-> atm.  This would point at conntrack ignoring/discarding fin/reset
-> packets.
+between commit:
 
-I think first I need to work out how the issue arises, since it seems
-to be behaving normally at the moment. I have for example:
+  be53771c87f4 ("r8152: add vendor/device ID pair for Microsoft Devkit")
 
-$ grep 173.239.196.95 bad-conntrack.log | wc -l
-314
+from the net tree and commit:
 
-and this resolves to 173-239-196-95.azu1ez9l.com. It looks like exim
-was happy with that, so would have issued its SMTP banner very shortly
-after the connection was established, but all the entries in the
-conntrack table show packets=2...packets=1 meaning conntrack only
-saw the SYN, SYNACK and ACK packets establishing the connection, but
-not the packet sending the SMTP banner which seems mightily weird.
+  ec51fbd1b8a2 ("r8152: add USB device driver for config selection")
 
-I've just tried this from a machine on the 'net, telneting in to the
-SMTP port, the conntrack packet counters increase beyond 2/1, and when
-exim times out the connection, the conntrack entry goes away - so
-everything seems to work how it should.
+from the net-next tree.
 
-Digging through the logs, it looks like the first table-full happened
-twice on Dec 30th, just two and a half days after boot. Then eight
-times on Jan 10th, and from the 11th at about 11pm, the logs have been
-sporadically flooded with the conntrack table full messages.
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
 
-I'll try to keep an eye on it and dig out something a bit more useful
-which may help locate what the issue is, but it seems the trigger
-mechanism isn't something obvious.
+--=20
+Cheers,
+Stephen Rothwell
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+diff --cc drivers/net/usb/r8152.c
+index 23da1d9dafd1,66e70b5f8417..000000000000
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@@ -9817,40 -9820,31 +9820,32 @@@ static void rtl8152_disconnect(struct u
+  /* table of devices that work with this driver */
+  static const struct usb_device_id rtl8152_table[] =3D {
+  	/* Realtek */
+- 	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8050),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8053),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8152),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8153),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8155),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8156),
++ 	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8050) },
++ 	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8053) },
++ 	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8152) },
++ 	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8153) },
++ 	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8155) },
++ 	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8156) },
+ =20
+  	/* Microsoft */
+- 	REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07ab),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07c6),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x0927),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x0c5e),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_SAMSUNG, 0xa101),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x304f),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3054),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3062),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3069),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3082),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7205),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x720c),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7214),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x721e),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0xa387),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_LINKSYS, 0x0041),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_NVIDIA,  0x09ff),
+- 	REALTEK_USB_DEVICE(VENDOR_ID_TPLINK,  0x0601),
++ 	{ USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07ab) },
++ 	{ USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07c6) },
++ 	{ USB_DEVICE(VENDOR_ID_MICROSOFT, 0x0927) },
+++	{ USB_DEVICE(VENDOR_ID_MICROSOFT, 0x0c5e) },
++ 	{ USB_DEVICE(VENDOR_ID_SAMSUNG, 0xa101) },
++ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x304f) },
++ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x3054) },
++ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x3062) },
++ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x3069) },
++ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x3082) },
++ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x7205) },
++ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x720c) },
++ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x7214) },
++ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x721e) },
++ 	{ USB_DEVICE(VENDOR_ID_LENOVO,  0xa387) },
++ 	{ USB_DEVICE(VENDOR_ID_LINKSYS, 0x0041) },
++ 	{ USB_DEVICE(VENDOR_ID_NVIDIA,  0x09ff) },
++ 	{ USB_DEVICE(VENDOR_ID_TPLINK,  0x0601) },
+  	{}
+  };
+ =20
+
+--Sig_/9qhutx.lCu63yAJj.ZYuH4u
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmPAp5oACgkQAVBC80lX
+0Gwkqwf8CA9D0ibfAJABp7KBzVjqS8Q9fHMcb/29YK3Zdp7eIB26FpeJUcXeCe+y
+j3l/OKExix8JMLjJoL1HADdD5bDwfIh9XkJfP3Nqcieg2d97ydDraG0LJzwmFYlf
+k/sc0S/lfcaKobwojQK0uQB9013PYRlh37+BO8M6GCZWuXuJRL0uEMNTRodpONiP
+zyeDs4BW1WqQKfhrXnDVmuKGkAROu5CJpybIbll1KCG7kMEOgRBbIeERm4vOvGEv
+EJusOu+GGoqtXrUE+X+84ZN5z9S1ZANqop/qulhu+Qa7/7OXEMmLvWwtz02nGEq4
+X2cydp0oA3punJck/UD19WnZXZVxlg==
+=ameD
+-----END PGP SIGNATURE-----
+
+--Sig_/9qhutx.lCu63yAJj.ZYuH4u--
