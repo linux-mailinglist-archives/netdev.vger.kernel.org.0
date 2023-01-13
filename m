@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1C88669A97
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 15:36:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D2AC669A8A
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 15:35:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230095AbjAMOgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 09:36:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57048 "EHLO
+        id S230028AbjAMOfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 09:35:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229926AbjAMOeg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 09:34:36 -0500
+        with ESMTP id S230054AbjAMOdd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 09:33:33 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91A9E544CE
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 06:28:10 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9784F123
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 06:27:59 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pGL1e-0006Dw-Pw; Fri, 13 Jan 2023 15:27:22 +0100
+        id 1pGL1f-0006F5-E2; Fri, 13 Jan 2023 15:27:23 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pGL1d-005myg-U6; Fri, 13 Jan 2023 15:27:21 +0100
+        id 1pGL1e-005mys-KT; Fri, 13 Jan 2023 15:27:22 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pGL1b-00CkQD-Ch; Fri, 13 Jan 2023 15:27:19 +0100
+        id 1pGL1b-00CkQM-DP; Fri, 13 Jan 2023 15:27:19 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -42,9 +42,9 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         Russell King <linux@armlinux.org.uk>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-clk@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v1 05/20] ARM: dts: imx6qdl: use enet_clk_ref instead of enet_out for the FEC node
-Date:   Fri, 13 Jan 2023 15:27:03 +0100
-Message-Id: <20230113142718.3038265-6-o.rempel@pengutronix.de>
+Subject: [PATCH v1 06/20] ARM: dts: imx6dl-lanmcu: configure ethernet reference clock parent
+Date:   Fri, 13 Jan 2023 15:27:04 +0100
+Message-Id: <20230113142718.3038265-7-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230113142718.3038265-1-o.rempel@pengutronix.de>
 References: <20230113142718.3038265-1-o.rempel@pengutronix.de>
@@ -63,38 +63,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Old imx6q machine code makes RGMII/RMII clock direction decision based on
-configuration of "ptp" clock. "enet_out" is not used and make no real
-sense, since we can't configure it as output or use it as clock
-provider.
-
-Instead of "enet_out" use "enet_clk_ref" which is actual selector to
-choose between internal and external clock source:
-
-FEC MAC <---------- enet_clk_ref <--------- SoC PLL
-                         \
-			  ^------<-> refclock PAD (bi directional)
+Configure Ethernet reference clock parent in an obvious way instead of
+using cryptic ptp way.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- arch/arm/boot/dts/imx6qdl.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/imx6dl-lanmcu.dts | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6qdl.dtsi b/arch/arm/boot/dts/imx6qdl.dtsi
-index ff1e0173b39b..71522263031a 100644
---- a/arch/arm/boot/dts/imx6qdl.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl.dtsi
-@@ -1050,8 +1050,8 @@ fec: ethernet@2188000 {
- 				clocks = <&clks IMX6QDL_CLK_ENET>,
- 					 <&clks IMX6QDL_CLK_ENET>,
- 					 <&clks IMX6QDL_CLK_ENET_REF>,
--					 <&clks IMX6QDL_CLK_ENET_REF>;
--				clock-names = "ipg", "ahb", "ptp", "enet_out";
-+					 <&clks IMX6QDL_CLK_ENET_REF_SEL>;
-+				clock-names = "ipg", "ahb", "ptp", "enet_clk_ref";
- 				fsl,stop-mode = <&gpr 0x34 27>;
- 				status = "disabled";
- 			};
+diff --git a/arch/arm/boot/dts/imx6dl-lanmcu.dts b/arch/arm/boot/dts/imx6dl-lanmcu.dts
+index 6b6e6fcdea9c..fa823988312d 100644
+--- a/arch/arm/boot/dts/imx6dl-lanmcu.dts
++++ b/arch/arm/boot/dts/imx6dl-lanmcu.dts
+@@ -21,6 +21,7 @@ clock_ksz8081: clock-ksz8081 {
+ 		compatible = "fixed-clock";
+ 		#clock-cells = <0>;
+ 		clock-frequency = <50000000>;
++		clock-output-names = "enet_ref_pad";
+ 	};
+ 
+ 	backlight: backlight {
+@@ -109,14 +110,17 @@ &can2 {
+ 	status = "okay";
+ };
+ 
++&clks {
++	clocks = <&clock_ksz8081>;
++	clock-names = "enet_ref_pad";
++	assigned-clocks = <&clks IMX6QDL_CLK_ENET_REF_SEL>;
++	assigned-clock-parents = <&clock_ksz8081>;
++};
++
+ &fec {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_enet>;
+ 	phy-mode = "rmii";
+-	clocks = <&clks IMX6QDL_CLK_ENET>,
+-		 <&clks IMX6QDL_CLK_ENET>,
+-		 <&clock_ksz8081>;
+-	clock-names = "ipg", "ahb", "ptp";
+ 	phy-handle = <&rgmii_phy>;
+ 	status = "okay";
+ 
 -- 
 2.30.2
 
