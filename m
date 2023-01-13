@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1FE9669A7A
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 15:34:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5042D669AA1
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 15:36:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229941AbjAMOej (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 09:34:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58352 "EHLO
+        id S230010AbjAMOgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 09:36:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230008AbjAMOd2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 09:33:28 -0500
+        with ESMTP id S229708AbjAMOe5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 09:34:57 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E764E42F
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 06:27:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC5959F8C
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 06:28:16 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pGL1g-0006JS-LY; Fri, 13 Jan 2023 15:27:24 +0100
+        id 1pGL1e-0006Dy-Uv; Fri, 13 Jan 2023 15:27:22 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pGL1f-005mzh-SY; Fri, 13 Jan 2023 15:27:23 +0100
+        id 1pGL1e-005myj-3i; Fri, 13 Jan 2023 15:27:22 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pGL1b-00CkQw-G7; Fri, 13 Jan 2023 15:27:19 +0100
+        id 1pGL1b-00CkR5-Gj; Fri, 13 Jan 2023 15:27:19 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -42,9 +42,9 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         Russell King <linux@armlinux.org.uk>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-clk@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v1 10/20] ARM: dts: imx6dl-prtmvt: configure ethernet reference clock parent
-Date:   Fri, 13 Jan 2023 15:27:08 +0100
-Message-Id: <20230113142718.3038265-11-o.rempel@pengutronix.de>
+Subject: [PATCH v1 11/20] ARM: dts: imx6dl-victgo: configure ethernet reference clock parent
+Date:   Fri, 13 Jan 2023 15:27:09 +0100
+Message-Id: <20230113142718.3038265-12-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230113142718.3038265-1-o.rempel@pengutronix.de>
 References: <20230113142718.3038265-1-o.rempel@pengutronix.de>
@@ -68,35 +68,36 @@ using cryptic ptp way.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- arch/arm/boot/dts/imx6dl-prtmvt.dts | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ arch/arm/boot/dts/imx6dl-victgo.dts | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6dl-prtmvt.dts b/arch/arm/boot/dts/imx6dl-prtmvt.dts
-index 1f8cddd83ccb..5f4fa796ca18 100644
---- a/arch/arm/boot/dts/imx6dl-prtmvt.dts
-+++ b/arch/arm/boot/dts/imx6dl-prtmvt.dts
-@@ -193,6 +193,7 @@ clk50m_phy: phy-clock {
+diff --git a/arch/arm/boot/dts/imx6dl-victgo.dts b/arch/arm/boot/dts/imx6dl-victgo.dts
+index 72df1dba83be..23274be08e61 100644
+--- a/arch/arm/boot/dts/imx6dl-victgo.dts
++++ b/arch/arm/boot/dts/imx6dl-victgo.dts
+@@ -54,6 +54,7 @@ clk50m_phy: phy-clock {
  		compatible = "fixed-clock";
  		#clock-cells = <0>;
  		clock-frequency = <50000000>;
 +		clock-output-names = "enet_ref_pad";
  	};
  
- 	reg_1v8: regulator-1v8 {
-@@ -293,8 +294,10 @@ &can2 {
+ 	rotary-encoder {
+@@ -134,6 +135,13 @@ vdiv_hitch_pos: voltage-divider-hitch-pos {
+ 	};
  };
  
- &clks {
--	assigned-clocks = <&clks IMX6QDL_CLK_LDB_DI0_SEL>;
--	assigned-clock-parents = <&clks IMX6QDL_CLK_PLL5_VIDEO_DIV>;
++&clks {
 +	clocks = <&clk50m_phy>;
 +	clock-names = "enet_ref_pad";
-+	assigned-clocks = <&clks IMX6QDL_CLK_LDB_DI0_SEL>, <&clks IMX6QDL_CLK_ENET_REF_SEL>;
-+	assigned-clock-parents = <&clks IMX6QDL_CLK_PLL5_VIDEO_DIV>, <&clk50m_phy>;
- };
- 
- &ecspi1 {
-@@ -314,10 +317,6 @@ &fec {
++	assigned-clocks = <&clks IMX6QDL_CLK_ENET_REF_SEL>;
++	assigned-clock-parents = <&clk50m_phy>;
++};
++
+ &ecspi2 {
+ 	cs-gpios = <&gpio5 12 GPIO_ACTIVE_LOW>;
+ 	pinctrl-names = "default";
+@@ -182,10 +190,6 @@ &fec {
  	pinctrl-names = "default";
  	pinctrl-0 = <&pinctrl_enet>;
  	phy-mode = "rmii";
