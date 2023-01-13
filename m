@@ -2,193 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B74066A72E
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 00:41:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75EDF66A730
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 00:41:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230356AbjAMXld (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 18:41:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44210 "EHLO
+        id S231183AbjAMXlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 18:41:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230445AbjAMXlc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 18:41:32 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69428CBFB
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 15:41:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673653291; x=1705189291;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=inIfniUrhA7Kcp3SOztVdGaFs+LAOGmS5e0FBy+I3Tc=;
-  b=ZujS7jkXGHzWUCThpq0PPLfkhX1C/BRvqYZZrKhKsb4BIaYWqOTJA9FQ
-   4KaOs0WeTJkdbrNWSMHlsVjeW7PoOSBTAn5fQNBXzVSHF2BxJca9lqqpK
-   kld28oGTlF6JRwL9U2SANeajYKe4ZGaCUT0fEghBUbEHcSZQDmT0FmbeM
-   aEYOfwogVRo4xRijWqxjP5kPWzaLWJGiTbtAsowsPhUqVWleZaZ7osJ/f
-   60PHneJXPCoFRzlBOPMSTOTfaCLotv7n30u4q1+LaiQHhHzAhP+S9eLpn
-   4zDdxogWiORaddpkcaIRlgtpWXoM9iCm8RU4QTvL7QpdKwV8jJrecIgyb
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10589"; a="326186662"
-X-IronPort-AV: E=Sophos;i="5.97,215,1669104000"; 
-   d="scan'208";a="326186662"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2023 15:41:31 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10589"; a="690659280"
-X-IronPort-AV: E=Sophos;i="5.97,215,1669104000"; 
-   d="scan'208";a="690659280"
-Received: from namnguy3-mobl.amr.corp.intel.com (HELO vcostago-mobl3) ([10.252.142.187])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2023 15:41:30 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        with ESMTP id S230204AbjAMXlw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 18:41:52 -0500
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA4D8D397
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 15:41:51 -0800 (PST)
+Received: by mail-pl1-x633.google.com with SMTP id k12so2875033plk.0
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 15:41:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=q6MHYbwLCd4MXDktCkUEHbUjwJCPzByBEFcKICE41Wc=;
+        b=oTZuy2QPWn8Ttcvpqg8Wf+v1IVfqF7e+evU+pjT9cDt2BTwDYJE0G5bkNpMF6ezT3g
+         +SEvjpRmiSNsLRYN9qdquMxFrzldCiMPoVdF6prKORkPqeIap777PZoxpIHMOGBqf/A2
+         umpAryvMGRtP/6LszPqvra+mLhvn9hhxyqa3s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=q6MHYbwLCd4MXDktCkUEHbUjwJCPzByBEFcKICE41Wc=;
+        b=a/nb7Hz1iLKWwl6OfWJ9IAQ/tk2ro2koFLrGDprFohTyt7pzCedWjXMn5TXDIItot4
+         1GJ6aP1KMchEv5Gz9tzPX4TTBHyoKTFwIbInH3GTxENlc0vhBjgeXqLwj0NWeaZ72Gq8
+         UdxUXj+1bdeh7hXevCzLQFqXftaDW+cuHP0PpYnsSEzrx5GxN0Gd2ivgXU0U44HC43fz
+         Yf2c4/FkHXKzwAcz2RkkeTB/Fovr1NdS+lo+Dq/fJemNOdhyTfNt+FHIsBBjOXjuZE4Q
+         /lZKS7pSoVlRb/7c6uX9JLHqXrLemO4WajoNN6dXGuE6/2+SuyPeNNV58plOeIY3SIiJ
+         9mGA==
+X-Gm-Message-State: AFqh2ko8yafvimI+b4n3MxWjfMZBI8tpf/7ncoLxUWzdaO3pkB0CPoa+
+        ++6R3p/kav8J+YSQ65jC8hqTuw==
+X-Google-Smtp-Source: AMrXdXuZ+U95h1w+2Ck1r1tekdH9Z21e+CKOPUB5dzyfgK6c9cASSF6xg9nIODJAgNZMvedmhtP+eA==
+X-Received: by 2002:a05:6a20:c906:b0:b4:f66a:99a9 with SMTP id gx6-20020a056a20c90600b000b4f66a99a9mr43708881pzb.60.1673653310583;
+        Fri, 13 Jan 2023 15:41:50 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id v14-20020a17090a4ece00b002194319662asm14592813pjl.42.2023.01.13.15.41.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Jan 2023 15:41:50 -0800 (PST)
+From:   coverity-bot <keescook@chromium.org>
+X-Google-Original-From: coverity-bot <keescook+coverity-bot@chromium.org>
+Date:   Fri, 13 Jan 2023 15:41:49 -0800
+To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Alexander Potapenko <glider@google.com>
-Subject: Re: [PATCH net] net/sched: sch_taprio: fix possible use-after-free
-In-Reply-To: <20230113164849.4004848-1-edumazet@google.com>
-References: <20230113164849.4004848-1-edumazet@google.com>
-Date:   Fri, 13 Jan 2023 15:41:30 -0800
-Message-ID: <871qny9f4l.fsf@intel.com>
+        Andrew Lunn <andrew@lunn.ch>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        linux-next@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Coverity: genphy_c45_plca_set_cfg(): UNINIT
+Message-ID: <202301131541.741EBE0@keescook>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello!
 
-Eric Dumazet <edumazet@google.com> writes:
+This is an experimental semi-automated report about issues detected by
+Coverity from a scan of next-20230113 as part of the linux-next scan project:
+https://scan.coverity.com/projects/linux-next-weekly-scan
 
-> syzbot reported a nasty crash [1] in net_tx_action() which
-> made little sense until we got a repro.
->
-> This repro installs a taprio qdisc, but providing an
-> invalid TCA_RATE attribute.
->
-> qdisc_create() has to destroy the just initialized
-> taprio qdisc, and taprio_destroy() is called.
->
-> However, the hrtimer used by taprio had already fired,
-> therefore advance_sched() called __netif_schedule().
->
-> Then net_tx_action was trying to use a destroyed qdisc.
->
-> We can not undo the __netif_schedule(), so we must wait
-> until one cpu serviced the qdisc before we can proceed.
->
-> Many thanks to Alexander Potapenko for his help.
->
-> [1]
-> BUG: KMSAN: uninit-value in queued_spin_trylock include/asm-generic/qspinlock.h:94 [inline]
-> BUG: KMSAN: uninit-value in do_raw_spin_trylock include/linux/spinlock.h:191 [inline]
-> BUG: KMSAN: uninit-value in __raw_spin_trylock include/linux/spinlock_api_smp.h:89 [inline]
-> BUG: KMSAN: uninit-value in _raw_spin_trylock+0x92/0xa0 kernel/locking/spinlock.c:138
->  queued_spin_trylock include/asm-generic/qspinlock.h:94 [inline]
->  do_raw_spin_trylock include/linux/spinlock.h:191 [inline]
->  __raw_spin_trylock include/linux/spinlock_api_smp.h:89 [inline]
->  _raw_spin_trylock+0x92/0xa0 kernel/locking/spinlock.c:138
->  spin_trylock include/linux/spinlock.h:359 [inline]
->  qdisc_run_begin include/net/sch_generic.h:187 [inline]
->  qdisc_run+0xee/0x540 include/net/pkt_sched.h:125
->  net_tx_action+0x77c/0x9a0 net/core/dev.c:5086
->  __do_softirq+0x1cc/0x7fb kernel/softirq.c:571
->  run_ksoftirqd+0x2c/0x50 kernel/softirq.c:934
->  smpboot_thread_fn+0x554/0x9f0 kernel/smpboot.c:164
->  kthread+0x31b/0x430 kernel/kthread.c:376
->  ret_from_fork+0x1f/0x30
->
-> Uninit was created at:
->  slab_post_alloc_hook mm/slab.h:732 [inline]
->  slab_alloc_node mm/slub.c:3258 [inline]
->  __kmalloc_node_track_caller+0x814/0x1250 mm/slub.c:4970
->  kmalloc_reserve net/core/skbuff.c:358 [inline]
->  __alloc_skb+0x346/0xcf0 net/core/skbuff.c:430
->  alloc_skb include/linux/skbuff.h:1257 [inline]
->  nlmsg_new include/net/netlink.h:953 [inline]
->  netlink_ack+0x5f3/0x12b0 net/netlink/af_netlink.c:2436
->  netlink_rcv_skb+0x55d/0x6c0 net/netlink/af_netlink.c:2507
->  rtnetlink_rcv+0x30/0x40 net/core/rtnetlink.c:6108
->  netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
->  netlink_unicast+0xf3b/0x1270 net/netlink/af_netlink.c:1345
->  netlink_sendmsg+0x1288/0x1440 net/netlink/af_netlink.c:1921
->  sock_sendmsg_nosec net/socket.c:714 [inline]
->  sock_sendmsg net/socket.c:734 [inline]
->  ____sys_sendmsg+0xabc/0xe90 net/socket.c:2482
->  ___sys_sendmsg+0x2a1/0x3f0 net/socket.c:2536
->  __sys_sendmsg net/socket.c:2565 [inline]
->  __do_sys_sendmsg net/socket.c:2574 [inline]
->  __se_sys_sendmsg net/socket.c:2572 [inline]
->  __x64_sys_sendmsg+0x367/0x540 net/socket.c:2572
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x63/0xcd
->
-> CPU: 0 PID: 13 Comm: ksoftirqd/0 Not tainted 6.0.0-rc2-syzkaller-47461-gac3859c02d7f #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
->
-> Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio scheduler")
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Alexander Potapenko <glider@google.com>
-> Cc: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-> ---
->  include/net/sch_generic.h | 7 +++++++
->  net/sched/sch_taprio.c    | 3 +++
->  2 files changed, 10 insertions(+)
->
-> diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-> index d5517719af4ef22282f0a15b132f8e8a07ae4179..af4aa66aaa4eba8f2eacdd00bc8fef31165c6a90 100644
-> --- a/include/net/sch_generic.h
-> +++ b/include/net/sch_generic.h
-> @@ -1288,4 +1288,11 @@ void mq_change_real_num_tx(struct Qdisc *sch, unsigned int new_real_tx);
->  
->  int sch_frag_xmit_hook(struct sk_buff *skb, int (*xmit)(struct sk_buff *skb));
->  
-> +/* Make sure qdisc is no longer in SCHED state. */
-> +static inline void qdisc_synchronize(const struct Qdisc *q)
-> +{
-> +	while (test_bit(__QDISC_STATE_SCHED, &q->state))
-> +		msleep(1);
-> +}
-> +
->  #endif
-> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-> index 570389f6cdd7dbab5749dc06d886555305cbf623..9a11a499ea2df8d18c9c062496fdcbcf5a861391 100644
-> --- a/net/sched/sch_taprio.c
-> +++ b/net/sched/sch_taprio.c
-> @@ -1700,6 +1700,8 @@ static void taprio_reset(struct Qdisc *sch)
->  	int i;
->  
->  	hrtimer_cancel(&q->advance_timer);
-> +	qdisc_synchronize(sch);
-> +
+You're getting this email because you were associated with the identified
+lines of code (noted below) that were touched by commits:
 
-From the commit message, I got the impression that only the one
-qdisc_synchronize() in taprio_destroy() would be needed.
+  Wed Jan 11 08:35:02 2023 +0000
+    493323416fed ("drivers/net/phy: add helpers to get/set PLCA configuration")
 
->  	if (q->qdiscs) {
->  		for (i = 0; i < dev->num_tx_queues; i++)
->  			if (q->qdiscs[i])
-> @@ -1720,6 +1722,7 @@ static void taprio_destroy(struct Qdisc *sch)
->  	 * happens in qdisc_create(), after taprio_init() has been called.
->  	 */
->  	hrtimer_cancel(&q->advance_timer);
-> +	qdisc_synchronize(sch);
->  
->  	taprio_disable_offload(dev, q, NULL);
->  
-> -- 
-> 2.39.0.314.g84b9a713c41-goog
->
+Coverity reported the following:
 
+*** CID 1530573:    (UNINIT)
+drivers/net/phy/phy-c45.c:1036 in genphy_c45_plca_set_cfg()
+1030     				return ret;
+1031
+1032     			val = ret;
+1033     		}
+1034
+1035     		if (plca_cfg->node_cnt >= 0)
+vvv     CID 1530573:    (UNINIT)
+vvv     Using uninitialized value "val".
+1036     			val = (val & ~MDIO_OATC14_PLCA_NCNT) |
+1037     			      (plca_cfg->node_cnt << 8);
+1038
+1039     		if (plca_cfg->node_id >= 0)
+1040     			val = (val & ~MDIO_OATC14_PLCA_ID) |
+1041     			      (plca_cfg->node_id);
+drivers/net/phy/phy-c45.c:1076 in genphy_c45_plca_set_cfg()
+1070     				return ret;
+1071
+1072     			val = ret;
+1073     		}
+1074
+1075     		if (plca_cfg->burst_cnt >= 0)
+vvv     CID 1530573:    (UNINIT)
+vvv     Using uninitialized value "val".
+1076     			val = (val & ~MDIO_OATC14_PLCA_MAXBC) |
+1077     			      (plca_cfg->burst_cnt << 8);
+1078
+1079     		if (plca_cfg->burst_tmr >= 0)
+1080     			val = (val & ~MDIO_OATC14_PLCA_BTMR) |
+1081     			      (plca_cfg->burst_tmr);
 
-Cheers,
+If this is a false positive, please let us know so we can mark it as
+such, or teach the Coverity rules to be smarter. If not, please make
+sure fixes get into linux-next. :) For patches fixing this, please
+include these lines (but double-check the "Fixes" first):
+
+Reported-by: coverity-bot <keescook+coverity-bot@chromium.org>
+Addresses-Coverity-ID: 1530573 ("UNINIT")
+Fixes: 493323416fed ("drivers/net/phy: add helpers to get/set PLCA configuration")
+
+Thanks for your attention!
+
 -- 
-Vinicius
+Coverity-bot
