@@ -2,131 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DF3766947C
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 11:41:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD1CE66949F
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 11:49:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232777AbjAMKlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 05:41:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42782 "EHLO
+        id S234092AbjAMKtW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 05:49:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241393AbjAMKkJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 05:40:09 -0500
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE50477D04;
-        Fri, 13 Jan 2023 02:39:18 -0800 (PST)
-Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 9A7A68514E;
-        Fri, 13 Jan 2023 11:39:15 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1673606356;
-        bh=KA96RYD1CKneCE6gPLEvOa5cIlBMyFJqP0xgdi3fmD0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=U4LkekVgfIm7B7PeGyUswQhaexHQDre9hj3Zrv33hKTCzUre0l/zql2Wr5AhEUXxF
-         944dbhxxmkWMcezJIR0JFCX1cMXG2vKRsLVC5ikFTSXBozaQkH0wnLyJtuAjiAsngM
-         FleVQLvha8bIRhwRdafV6EjfWgYje9Ac1ru0jM3QhqKv2nj0Vfb6mWtGmbxOEXKLyv
-         /i0fgLQ7DKRvcToc6hVApXHCT/LZKu0z4Sun/Qm2GhSrxHoW+9UgR/Bfal/VccXPUx
-         wH9U6/zLbmLOzFYoP4UYIzDzgcCwXdYfiCyfPZIrygPbmmd76RMde5emEGBuuJaxxn
-         nqtP/yD1O+ZPw==
-Date:   Fri, 13 Jan 2023 11:39:08 +0100
-From:   Lukasz Majewski <lukma@denx.de>
-To:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/3] dsa: marvell: Provide per device information
- about max frame size
-Message-ID: <20230113113908.5e92b3a5@wsk>
-In-Reply-To: <Y7gdNlrKkfi2JvQk@lunn.ch>
-References: <20230106101651.1137755-1-lukma@denx.de>
-        <Y7gdNlrKkfi2JvQk@lunn.ch>
-Organization: denx.de
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S241303AbjAMKsw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 05:48:52 -0500
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D303C0DC;
+        Fri, 13 Jan 2023 02:48:41 -0800 (PST)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 30DAmLB1097763;
+        Fri, 13 Jan 2023 04:48:21 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1673606901;
+        bh=WJ9UuLgWz8SP3k1RFSO2Xiza+7K4iTe0h1mDCgwDg/o=;
+        h=From:To:CC:Subject:Date;
+        b=r9iJDThJxCE/XbwtLw3N0QRRB04ZFILEDVyN4maBDQQ6DuE/sn3k5sUvzFo/VoUqp
+         FPdzkTfaLWpBQwZL8j7dxD6FO+QN4vIbVEgS87aKbbVei8fTkuw6YsJl+hpWLKOtX2
+         ivgppFXF/2DkL8pMDSSZu6PbOQ/F+J49dAp01VS4=
+Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 30DAmL87026161
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 13 Jan 2023 04:48:21 -0600
+Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Fri, 13
+ Jan 2023 04:48:20 -0600
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Fri, 13 Jan 2023 04:48:20 -0600
+Received: from uda0492258.dhcp.ti.com (ileaxei01-snat.itg.ti.com [10.180.69.5])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 30DAmHBI125976;
+        Fri, 13 Jan 2023 04:48:17 -0600
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <linux@armlinux.org.uk>, <pabeni@redhat.com>, <rogerq@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <vigneshr@ti.com>,
+        <srk@ti.com>, <s-vadapalli@ti.com>
+Subject: [PATCH net-next] net: ethernet: ti: am65-cpsw/cpts: Fix CPTS release action
+Date:   Fri, 13 Jan 2023 16:18:16 +0530
+Message-ID: <20230113104816.132815-1-s-vadapalli@ti.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/yp1o9E.Cc4ROXEhjWoeWoyK";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/yp1o9E.Cc4ROXEhjWoeWoyK
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+The am65_cpts_release() function is registered as a devm_action in the
+am65_cpts_create() function in am65-cpts driver. When the am65-cpsw driver
+invokes am65_cpts_create(), am65_cpts_release() is added in the set of devm
+actions associated with the am65-cpsw driver's device.
 
-Hi Andrew, Vladimir,
+In the event of probe failure or probe deferral, the platform_drv_probe()
+function invokes dev_pm_domain_detach() which powers off the CPSW and the
+CPSW's CPTS hardware, both of which share the same power domain. Since the
+am65_cpts_disable() function invoked by the am65_cpts_release() function
+attempts to reset the CPTS hardware by writing to its registers, the CPTS
+hardware is assumed to be powered on at this point. However, the hardware
+is powered off before the devm actions are executed.
 
-> On Fri, Jan 06, 2023 at 11:16:49AM +0100, Lukasz Majewski wrote:
-> > Different Marvell DSA switches support different size of max frame
-> > bytes to be sent. This value corresponds to the memory allocated
-> > in switch to store single frame.
-> >=20
-> > For example mv88e6185 supports max 1632 bytes, which is now
-> > in-driver standard value. On the other hand - mv88e6250 supports
-> > 2048 bytes. To be more interresting - devices supporting jumbo
-> > frames - use yet another value (10240 bytes)
-> >=20
-> > As this value is internal and may be different for each switch IC,
-> > new entry in struct mv88e6xxx_info has been added to store it.
-> >=20
-> > This commit doesn't change the code functionality - it just provides
-> > the max frame size value explicitly - up till now it has been
-> > assigned depending on the callback provided by the IC driver
-> > (e.g. .set_max_frame_size, .port_set_jumbo_size).
-> >=20
-> > Signed-off-by: Lukasz Majewski <lukma@denx.de> =20
->=20
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
->=20
-> FYI: It is normal to include a patch 0/X for a patchset, which
-> explains the big picture of the patchset. Please try to remember this
-> for your next patchset.
->=20
->     Andrew
->=20
->=20
+Fix this by getting rid of the devm action for am65_cpts_release() and
+invoking it directly on the cleanup and exit paths.
 
-Are there any more comments, or is this patch set eligible for pulling
-into net-next tree?
+Fixes: f6bd59526ca5 ("net: ethernet: ti: introduce am654 common platform time sync driver")
+Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+---
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c |  8 ++++++++
+ drivers/net/ethernet/ti/am65-cpts.c      | 15 +++++----------
+ drivers/net/ethernet/ti/am65-cpts.h      |  1 +
+ 3 files changed, 14 insertions(+), 10 deletions(-)
 
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index 5cac98284184..9e7ec97dea5d 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -1913,6 +1913,12 @@ static int am65_cpsw_am654_get_efuse_macid(struct device_node *of_node,
+ 	return 0;
+ }
+ 
++static void am65_cpsw_cpts_cleanup(struct am65_cpsw_common *common)
++{
++	if (common->cpts)
++		am65_cpts_release(common->cpts);
++}
++
+ static int am65_cpsw_init_cpts(struct am65_cpsw_common *common)
+ {
+ 	struct device *dev = common->dev;
+@@ -2917,6 +2923,7 @@ static int am65_cpsw_nuss_probe(struct platform_device *pdev)
+ 
+ err_free_phylink:
+ 	am65_cpsw_nuss_phylink_cleanup(common);
++	am65_cpsw_cpts_cleanup(common);
+ err_of_clear:
+ 	of_platform_device_destroy(common->mdio_dev, NULL);
+ err_pm_clear:
+@@ -2945,6 +2952,7 @@ static int am65_cpsw_nuss_remove(struct platform_device *pdev)
+ 	 */
+ 	am65_cpsw_nuss_cleanup_ndev(common);
+ 	am65_cpsw_nuss_phylink_cleanup(common);
++	am65_cpsw_cpts_cleanup(common);
+ 	am65_cpsw_disable_serdes_phy(common);
+ 
+ 	of_platform_device_destroy(common->mdio_dev, NULL);
+diff --git a/drivers/net/ethernet/ti/am65-cpts.c b/drivers/net/ethernet/ti/am65-cpts.c
+index 9535396b28cd..b7db72ab32c1 100644
+--- a/drivers/net/ethernet/ti/am65-cpts.c
++++ b/drivers/net/ethernet/ti/am65-cpts.c
+@@ -929,14 +929,13 @@ static int am65_cpts_of_parse(struct am65_cpts *cpts, struct device_node *node)
+ 	return cpts_of_mux_clk_setup(cpts, node);
+ }
+ 
+-static void am65_cpts_release(void *data)
++void am65_cpts_release(struct am65_cpts *cpts)
+ {
+-	struct am65_cpts *cpts = data;
+-
+ 	ptp_clock_unregister(cpts->ptp_clock);
+ 	am65_cpts_disable(cpts);
+ 	clk_disable_unprepare(cpts->refclk);
+ }
++EXPORT_SYMBOL_GPL(am65_cpts_release);
+ 
+ struct am65_cpts *am65_cpts_create(struct device *dev, void __iomem *regs,
+ 				   struct device_node *node)
+@@ -1014,18 +1013,12 @@ struct am65_cpts *am65_cpts_create(struct device *dev, void __iomem *regs,
+ 	}
+ 	cpts->phc_index = ptp_clock_index(cpts->ptp_clock);
+ 
+-	ret = devm_add_action_or_reset(dev, am65_cpts_release, cpts);
+-	if (ret) {
+-		dev_err(dev, "failed to add ptpclk reset action %d", ret);
+-		return ERR_PTR(ret);
+-	}
+-
+ 	ret = devm_request_threaded_irq(dev, cpts->irq, NULL,
+ 					am65_cpts_interrupt,
+ 					IRQF_ONESHOT, dev_name(dev), cpts);
+ 	if (ret < 0) {
+ 		dev_err(cpts->dev, "error attaching irq %d\n", ret);
+-		return ERR_PTR(ret);
++		goto reset_ptpclk;
+ 	}
+ 
+ 	dev_info(dev, "CPTS ver 0x%08x, freq:%u, add_val:%u\n",
+@@ -1034,6 +1027,8 @@ struct am65_cpts *am65_cpts_create(struct device *dev, void __iomem *regs,
+ 
+ 	return cpts;
+ 
++reset_ptpclk:
++	am65_cpts_release(cpts);
+ refclk_disable:
+ 	clk_disable_unprepare(cpts->refclk);
+ 	return ERR_PTR(ret);
+diff --git a/drivers/net/ethernet/ti/am65-cpts.h b/drivers/net/ethernet/ti/am65-cpts.h
+index bd08f4b2edd2..22bf22bb37a5 100644
+--- a/drivers/net/ethernet/ti/am65-cpts.h
++++ b/drivers/net/ethernet/ti/am65-cpts.h
+@@ -18,6 +18,7 @@ struct am65_cpts_estf_cfg {
+ };
+ 
+ #if IS_ENABLED(CONFIG_TI_K3_AM65_CPTS)
++void am65_cpts_release(struct am65_cpts *cpts);
+ struct am65_cpts *am65_cpts_create(struct device *dev, void __iomem *regs,
+ 				   struct device_node *node);
+ int am65_cpts_phc_index(struct am65_cpts *cpts);
+-- 
+2.25.1
 
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Erika Unter
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/yp1o9E.Cc4ROXEhjWoeWoyK
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmPBNMwACgkQAR8vZIA0
-zr1cSwf/ec82AhBqwAtzjvWFakY3UEKFtL0GB9AaXOL0OVaZ6+nrn8xlYOY3MEfI
-zMTODeB2irm7qKgTYUp2piS/hMc9E/UjNlqzZigPKqJH0+p5TbwATWBDIx4/U+vW
-/WydbKBlo7RwkJoLDctsJWP0W6jFfKKZDg4xK2Ya/hcJzaGLt3VZwoETBu0nxL/c
-Pm8jPo7qmDm9H7BB94yOKshQ6xR/yU1gCOmiD75IdOIvSKxO6Z7zGh3V5sHJX1nL
-4j3CRqK9+WlHM652NdLUXgSr365DgYd+ciy1hizHWly4Q9faZPmo28Fc96CnHZEX
-7t82LsJfp/0/bQwWrfPLEiGDu6aX8Q==
-=fVB1
------END PGP SIGNATURE-----
-
---Sig_/yp1o9E.Cc4ROXEhjWoeWoyK--
