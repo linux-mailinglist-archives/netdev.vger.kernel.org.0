@@ -2,126 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F60066945A
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 11:38:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DF3766947C
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 11:41:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241202AbjAMKil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 05:38:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39206 "EHLO
+        id S232777AbjAMKlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 05:41:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241315AbjAMKh6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 05:37:58 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C757577AC8
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 02:36:13 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q/J+rSQ973W/qWYSHLjfsn4thnz5MJXzoYJ75q6d/PwAu4pkrlHUx6Tke+klTuNX2J5wU+XrIvymURewluAHiK99mIAW2SjN5h5wvaBjzI7Xl0mbb/0v+D+QwX8Ef63mJiHcLxAV5cJTq6kxBf0YJe72/XsLs5Le/3ZCx7PaRjk0sqjaf+Pw02IkRzXdCnQECR5SS0lhaj3GYY8cwdbbP0NKhqazjzshxWqm1KfleMLMt9K9gwSzYd//ZzMWEzNzrksaPa9UenjzznqtUtKuJrVCvJbhRPgc3eWDJ/dig4yqw2kB3xjwbRlqc5riiddUjCsBVOWZyggiE7s5jQN5cQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=J6hRwYt7ugogrrUpwM7xaP2UgejmGmPRRnkzkRiXSDM=;
- b=LD3/SqQNe+KWA4TFhSOdmRGmKQZ0RZnDAl66Y66tZH4+jqbvwZ8aFWyCvSjhEdwyZGsG6hJXjHDf6lY2vuzDmpAXVY38YLL6fs47KddiQjg5VSUYM4VQz9HMPnUWubMqFXZtHNxj7u99DTIZoa0iKAWwEZb1Gesn1rm0azoecxhoK8Sh/bUz4X5OWQ+3OBS/uT5dDo+G+pzAhJydiJnkA4tTRaEkAXyjfL3EV3Z9ZxExD2RjDU0kbpcLKsZQ1m4/LgM0d7Z7Kzye7UarFpiX08I6G16jxahR1kFTxbCVDFxm+rGeH6+/zXdEEO1SEjKKwf+tP7Sf3U3MFoHwyw6sbQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=J6hRwYt7ugogrrUpwM7xaP2UgejmGmPRRnkzkRiXSDM=;
- b=mdXT+AJgH1knoYj88lAxwJ0+LirdRwvWxmfgof3Ow6QuoCZNonxzV8+U68qRCYRW3XUGgzwNKg0k6k5YA0eZTQ63Y0mDFhmpItoBIhGlwK/jXnkVwgsq0bll5MyIcXPcSbDMWvB1vRARVOIDsU0ZOsijybXd37jYNyz67erlzO0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM8PR13MB5206.namprd13.prod.outlook.com (2603:10b6:8:1::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5986.19; Fri, 13 Jan 2023 10:36:11 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65%5]) with mapi id 15.20.5986.019; Fri, 13 Jan 2023
- 10:36:11 +0000
-Date:   Fri, 13 Jan 2023 11:36:05 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2 00/10] SPDX cleanups
-Message-ID: <Y8E0Fej++QpZaUDb@corigine.com>
-References: <20230111031712.19037-1-stephen@networkplumber.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230111031712.19037-1-stephen@networkplumber.org>
-X-ClientProxiedBy: AM0PR01CA0143.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:168::48) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S241393AbjAMKkJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 05:40:09 -0500
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE50477D04;
+        Fri, 13 Jan 2023 02:39:18 -0800 (PST)
+Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: lukma@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 9A7A68514E;
+        Fri, 13 Jan 2023 11:39:15 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1673606356;
+        bh=KA96RYD1CKneCE6gPLEvOa5cIlBMyFJqP0xgdi3fmD0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=U4LkekVgfIm7B7PeGyUswQhaexHQDre9hj3Zrv33hKTCzUre0l/zql2Wr5AhEUXxF
+         944dbhxxmkWMcezJIR0JFCX1cMXG2vKRsLVC5ikFTSXBozaQkH0wnLyJtuAjiAsngM
+         FleVQLvha8bIRhwRdafV6EjfWgYje9Ac1ru0jM3QhqKv2nj0Vfb6mWtGmbxOEXKLyv
+         /i0fgLQ7DKRvcToc6hVApXHCT/LZKu0z4Sun/Qm2GhSrxHoW+9UgR/Bfal/VccXPUx
+         wH9U6/zLbmLOzFYoP4UYIzDzgcCwXdYfiCyfPZIrygPbmmd76RMde5emEGBuuJaxxn
+         nqtP/yD1O+ZPw==
+Date:   Fri, 13 Jan 2023 11:39:08 +0100
+From:   Lukasz Majewski <lukma@denx.de>
+To:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/3] dsa: marvell: Provide per device information
+ about max frame size
+Message-ID: <20230113113908.5e92b3a5@wsk>
+In-Reply-To: <Y7gdNlrKkfi2JvQk@lunn.ch>
+References: <20230106101651.1137755-1-lukma@denx.de>
+        <Y7gdNlrKkfi2JvQk@lunn.ch>
+Organization: denx.de
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM8PR13MB5206:EE_
-X-MS-Office365-Filtering-Correlation-Id: 36fe012a-a9b4-4f0f-f643-08daf551fd30
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 96cG1tPq9XE90555D1Sb4Y8IZKib4axPHIXc6zriOdO2CgTySYc+7DzSvXA/E/t4Gd2ZOTD9l2Jlaw1hodpaxsnPLwWq4FHw1n25N5gUkIpj7nyH8kilNjRoFG6JnZ2xBkx+Iep/OnvHLWYzLT3L6V3fEZFhH8XoKn2+nR2WTKpendUwTZv50pu8rLEfhbZS2o/X7Ger63Mgfs5uEhtBdwgIc07krmRZd9oK/MD3UBggR+mjDUnQcHHHsdnfJmZcfPN4aaV2jacv5WnBEH6FugmM6Vx1cYUkQWKkGuAwN0jZxd2Fhav50O22gsKstDOzMSJCDrrL4OHt1LvqVmsBmEroWwwVt0FN+YoR5c6IfTBR2ZOPHUCLlkmuLAjM0UnZBzXivdTMmRC8i505BU7HUdGD7DmYaD16sTtqlHG3cNucQFbYdqpBgf+PClqmIB0mdwEe/NaqVR+zxMjCshSrG9+IxP2xh5XnQaYyEF/BwAxK9NoFKGpTM0EsOtAoDD5QLMK2mEXZqxVP/y/vofDYpOflepOfNZz0WQungFj5J1wIzOvyCwkpElzE5atGVoU4/+tk4HHu27RtK39uOkQmDEVe4jjokkY7A0FFHMEmiHcoD4tEOIGeI6sYpYijaQbKJEYZo+1VDWQwXYB/gE52UA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(39840400004)(366004)(396003)(376002)(346002)(451199015)(66946007)(66556008)(2616005)(41300700001)(6512007)(4326008)(66476007)(8676002)(186003)(36756003)(86362001)(5660300002)(8936002)(6666004)(6916009)(478600001)(6506007)(316002)(6486002)(4744005)(38100700002)(2906002)(44832011);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QPrGtLCWn6Ua8yjGy/MAx8xKevvfFSNTiIKsczuLENNowZwRnFlMwTs7XHqO?=
- =?us-ascii?Q?oW4bCBhrw7O9ZIQ6MM+qf10Qwl7P/Rj+zTDcjl3krQbT7rlpiPqJ5XLl1YG9?=
- =?us-ascii?Q?38EtV40JsQxiuyVKn3vQNYD8C6pg3NvAWxyFAs8S6bYKz/n7WUbD9FnKkN0g?=
- =?us-ascii?Q?CU1rmlL2H7vTV0u6EVCIRlabUr8fZtnI+uFTIJa3smyw6z2Nl6gSk4ZekcZD?=
- =?us-ascii?Q?v1GAdIEgxuU7bRQRZFdY2zWaeHNQlOTK4H0v3rlOJh7JI4kbswmuHnTMcZvD?=
- =?us-ascii?Q?KNb+wpDg0FMvpMpKCHL3Zw1WqqBR5ZmCchQ3zCiW6QqiUFQs5H0RynFltFSV?=
- =?us-ascii?Q?wWGXRvhwtycG50KxQsU+ah+BoP8Wkt+sAZGqOWcrtzPJ6PTkkMGik2Fi5TMM?=
- =?us-ascii?Q?Gi2b95GL2nPRVDGA7XLeMaJEU4i+q7lTqPyuUfgFc+NJSJ+/Fq+pwXCZutVK?=
- =?us-ascii?Q?y7Q3O+0pG/O51JXPUutUaBrDBH6xCfdTZ5j89HInDVcGJ6C1br9XKb9poHdV?=
- =?us-ascii?Q?0jq/Egrts+0KaZuKNi8H2p1KhSM8IUXu+jwC3OO6B6L/57vJTFNRBhrZj0YF?=
- =?us-ascii?Q?SJVTEnJ7sCtXaBSFxDEX19l6lVRFpsugHPJeIyJeOtL5+wiuBryfT9HGmqN6?=
- =?us-ascii?Q?tbbuwNOX839mhcklem7OqmpAM7bJsqFqeyPych+vrBrjaGWPmCJpBMEJcPB0?=
- =?us-ascii?Q?kGMKernIjNSkfYV4r2g7XjkFmB503H44s/mNCCJJZutclDw4FMCgBoUH+0+H?=
- =?us-ascii?Q?/l1BYatLl2eH4hYF6DtqWDUFRwoKfYHAjq2a8GXX1wWo1QL/8FInUxhyjnGn?=
- =?us-ascii?Q?SjFHD6XYO1eTcm+JRZ8JyuN9MxgQ+u35WqvMw5PxhSf5mkaMc1uGkIXXu8yc?=
- =?us-ascii?Q?q7s8wUPHRvujnOuzo0ojdLSQSeElrDXbJKbcDRcL5ydTJHcBrAqSW0URcmGH?=
- =?us-ascii?Q?who5nVECgVLeaxNSF8fVz+q/a9J2cgseMFCmWQNX4JxjvN6rHd6bryui407I?=
- =?us-ascii?Q?GKvcg8B2sy3Z8ChMG35v99fiRCnkuZKupqwGqMbz9OFQtCi0ZllUbqK+sQfp?=
- =?us-ascii?Q?ia21tkuIwhwV0hlI0iGrAVJ5UUt+zQBxdIhWEdlOpTrUS/E1EBWFU2cJMbZ+?=
- =?us-ascii?Q?2wd8aWgq+2vYlzqHFNxHRppGFuwdl9CeuQ6RqGwfJM8HlC1JmP/UfATudNam?=
- =?us-ascii?Q?KArbg7B9s0TKAuE0zNdCz/0HmMT2b86WaVWVES3u+zW5WwkeiqYll/vEB348?=
- =?us-ascii?Q?zH4m1knprQf0erapRLKqs1MMcj2UUAFTnOVYQxMiYEL12tnprIOJixc310/3?=
- =?us-ascii?Q?F7/MEdlA5FDeK8x5RHE5rnihMiwttTTOFIq5hs2voDrB9EJhVUwQpy4tHgOn?=
- =?us-ascii?Q?84CBCuXG04MEwJz+7NtT86rQqNZx5dTLNVqHNvJlBC2PGoi2wdZXpc8LbYSq?=
- =?us-ascii?Q?mCrqrZdlM24wrgdPhg1dmDXT9+Kzhn69v+1lPzPiB5C7qGS0VrXnxsfojj2Z?=
- =?us-ascii?Q?/IYukA6ahKoy+C5q3noD3WCjPgyLkicev66xOiF8UOyqYUN3QE/Pp5d5VcR1?=
- =?us-ascii?Q?kaLWDSxjPhMCBW+US4qtDiV0e1Nsm8WOMwLbUpIwTLSFc+G5IKdpeByh9hf+?=
- =?us-ascii?Q?YSRSs6wPOPiHpPIik+xHzQiAn2aQSMiFYdlaFcZD4lJINcX6ixtwGjiZ0zPm?=
- =?us-ascii?Q?ogrLrA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 36fe012a-a9b4-4f0f-f643-08daf551fd30
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2023 10:36:11.7065
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HPpHbGhVZ7eRIKq5I5fGc+oVLdIjG/1n0414ZNb4r7XfVxQDzb8j6eTJH1PT0hAGMl7T4neeyUxie7NXWEUV1TxZJZs5L1eiIltdKHVV+eM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR13MB5206
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/yp1o9E.Cc4ROXEhjWoeWoyK";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 10, 2023 at 07:17:02PM -0800, Stephen Hemminger wrote:
-> Cleanout the GPL boiler plate in iproute.
-> Better to use modern SPDX to document the license
-> rather than copy/paste same text in multiple places.
-> 
-> There is no change in licensing here, and none is planned.
+--Sig_/yp1o9E.Cc4ROXEhjWoeWoyK
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Hi Stephen,
+Hi Andrew, Vladimir,
 
-FWIIW, this series looks good to me, modulo a minor comment
-on patch 09/10 which I am happy for you to ignore.
+> On Fri, Jan 06, 2023 at 11:16:49AM +0100, Lukasz Majewski wrote:
+> > Different Marvell DSA switches support different size of max frame
+> > bytes to be sent. This value corresponds to the memory allocated
+> > in switch to store single frame.
+> >=20
+> > For example mv88e6185 supports max 1632 bytes, which is now
+> > in-driver standard value. On the other hand - mv88e6250 supports
+> > 2048 bytes. To be more interresting - devices supporting jumbo
+> > frames - use yet another value (10240 bytes)
+> >=20
+> > As this value is internal and may be different for each switch IC,
+> > new entry in struct mv88e6xxx_info has been added to store it.
+> >=20
+> > This commit doesn't change the code functionality - it just provides
+> > the max frame size value explicitly - up till now it has been
+> > assigned depending on the callback provided by the IC driver
+> > (e.g. .set_max_frame_size, .port_set_jumbo_size).
+> >=20
+> > Signed-off-by: Lukasz Majewski <lukma@denx.de> =20
+>=20
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+>=20
+> FYI: It is normal to include a patch 0/X for a patchset, which
+> explains the big picture of the patchset. Please try to remember this
+> for your next patchset.
+>=20
+>     Andrew
+>=20
+>=20
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Are there any more comments, or is this patch set eligible for pulling
+into net-next tree?
 
+
+Best regards,
+
+Lukasz Majewski
+
+--
+
+DENX Software Engineering GmbH,      Managing Director: Erika Unter
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
+
+--Sig_/yp1o9E.Cc4ROXEhjWoeWoyK
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmPBNMwACgkQAR8vZIA0
+zr1cSwf/ec82AhBqwAtzjvWFakY3UEKFtL0GB9AaXOL0OVaZ6+nrn8xlYOY3MEfI
+zMTODeB2irm7qKgTYUp2piS/hMc9E/UjNlqzZigPKqJH0+p5TbwATWBDIx4/U+vW
+/WydbKBlo7RwkJoLDctsJWP0W6jFfKKZDg4xK2Ya/hcJzaGLt3VZwoETBu0nxL/c
+Pm8jPo7qmDm9H7BB94yOKshQ6xR/yU1gCOmiD75IdOIvSKxO6Z7zGh3V5sHJX1nL
+4j3CRqK9+WlHM652NdLUXgSr365DgYd+ciy1hizHWly4Q9faZPmo28Fc96CnHZEX
+7t82LsJfp/0/bQwWrfPLEiGDu6aX8Q==
+=fVB1
+-----END PGP SIGNATURE-----
+
+--Sig_/yp1o9E.Cc4ROXEhjWoeWoyK--
