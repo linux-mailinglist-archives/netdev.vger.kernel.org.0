@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1401C668D3F
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 07:31:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 107AF668D1D
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 07:30:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241237AbjAMG31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 01:29:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60484 "EHLO
+        id S240793AbjAMG3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 01:29:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240122AbjAMGZG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 01:25:06 -0500
+        with ESMTP id S239960AbjAMGZF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 01:25:05 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 888386AD81;
-        Thu, 12 Jan 2023 22:24:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A72D5F;
+        Thu, 12 Jan 2023 22:24:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=uYJHAXXmLLwNQhTzaxgylPcAhRmrIofyohyZoeMvH6A=; b=O9iHd8tTAdld8bSk+ZYkR0XYZy
-        2FuVzfaL8+QL6xMnlPS9ImDdfrVmrsT0bBu6ltAfdqg3tZ8KHWyQj3fcy7LsIMSUyZEf4JyF1NO/u
-        2Ts4+jOpsmzngPoutWMosurrp3mGqo1ovVKSnCoZsYAwo0uVYE6mREk0pxLXWhs9KHUyyY4RrDi1s
-        ckbuJtm4E90O4qjKhGszRSFnFx2n1e7KSOOiE2NOT+ddsS+UK8qKQjoMHxsg7UASbpmlsrI2MUcNr
-        U3LKQcwW662AanMhRCQ9l+fUskCCYGWjf3f0p00y4z00yMr4itbMdi+aRN3kbJr3aDbphSgt4Qqgh
-        s26wPgJg==;
+        bh=2hPC7zlGA9AoDVV3UDFLI3T20RnHyuVZW1qr++X92oI=; b=U0IxPDIbDusxYyls7GAP+XZ9hs
+        WK31Rw57DTsJeVGBg+mDkhc5spH2HTT6S2bZUnUWnMFMzjuRTQxHiqWupbwLk1M9gy0H80/2TyLAr
+        4yZAcNURNOrPm5QlFyeBEx9lyjEDdoNyEPtXoGtYw9kpeDRvlQIm1jqEylL4Lcd6JGXKqeXaBK+NJ
+        +uk9CHMdgG+2G6uVa800FbCPfygKQQtSqfcvxslcKVFQl/oOPnfpUDUTut6HA5FBLlzfI2NTovRY8
+        7+tTh7eQy6PkL+5LvQ1o6k2FC089tht54mg8KW+qjbhQzzqpgcZGx2HuDPkTk929Z5PbzaycfkZ5t
+        Zk42lm1g==;
 Received: from [2001:4bb8:181:656b:9509:7d20:8d39:f895] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pGDU4-000lZR-IG; Fri, 13 Jan 2023 06:24:13 +0000
+        id 1pGDU8-000lc0-50; Fri, 13 Jan 2023 06:24:16 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Yoshinori Sato <ysato@users.sourceforge.jp>,
         Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
@@ -45,9 +45,9 @@ Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
         linux-sh@vger.kernel.org
-Subject: [PATCH 08/22] dmaengine: remove the shdmac driver
-Date:   Fri, 13 Jan 2023 07:23:25 +0100
-Message-Id: <20230113062339.1909087-9-hch@lst.de>
+Subject: [PATCH 09/22] i2c: remove i2c-sh7760
+Date:   Fri, 13 Jan 2023 07:23:26 +0100
+Message-Id: <20230113062339.1909087-10-hch@lst.de>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230113062339.1909087-1-hch@lst.de>
 References: <20230113062339.1909087-1-hch@lst.de>
@@ -68,2161 +68,615 @@ Now that arch/sh is removed this driver is dead code.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/dma/sh/Kconfig      |   20 -
- drivers/dma/sh/Makefile     |   13 -
- drivers/dma/sh/shdma-base.c | 1052 -----------------------------------
- drivers/dma/sh/shdma.h      |   61 --
- drivers/dma/sh/shdmac.c     |  938 -------------------------------
- include/linux/shdma-base.h  |    4 -
- 6 files changed, 2088 deletions(-)
- delete mode 100644 drivers/dma/sh/shdma-base.c
- delete mode 100644 drivers/dma/sh/shdma.h
- delete mode 100644 drivers/dma/sh/shdmac.c
+ drivers/i2c/busses/Kconfig      |   9 -
+ drivers/i2c/busses/Makefile     |   1 -
+ drivers/i2c/busses/i2c-sh7760.c | 565 --------------------------------
+ 3 files changed, 575 deletions(-)
+ delete mode 100644 drivers/i2c/busses/i2c-sh7760.c
 
-diff --git a/drivers/dma/sh/Kconfig b/drivers/dma/sh/Kconfig
-index c0b2997ab7fd93..744d4d8ff5353b 100644
---- a/drivers/dma/sh/Kconfig
-+++ b/drivers/dma/sh/Kconfig
-@@ -7,30 +7,10 @@ config RENESAS_DMA
- 	bool
- 	select DMA_ENGINE
+diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
+index 22602c512a6e50..44267a023fd19a 100644
+--- a/drivers/i2c/busses/Kconfig
++++ b/drivers/i2c/busses/Kconfig
+@@ -1016,15 +1016,6 @@ config I2C_S3C2410
+ 	  Say Y here to include support for I2C controller in the
+ 	  Samsung SoCs (S3C, S5Pv210, Exynos).
  
--#
--# DMA Engine Helpers
--#
--
--config SH_DMAE_BASE
--	bool "Renesas SuperH DMA Engine support"
--	depends on SUPERH || COMPILE_TEST
--	depends on !SUPERH || SH_DMA
--	depends on !SH_DMA_API
--	default y
--	select RENESAS_DMA
+-config I2C_SH7760
+-	tristate "Renesas SH7760 I2C Controller"
+-	depends on CPU_SUBTYPE_SH7760
 -	help
--	  Enable support for the Renesas SuperH DMA controllers.
+-	  This driver supports the 2 I2C interfaces on the Renesas SH7760.
 -
- #
- # DMA Controllers
- #
- 
--config SH_DMAE
--	tristate "Renesas SuperH DMAC support"
--	depends on SH_DMAE_BASE
--	help
--	  Enable support for the Renesas SuperH DMA controllers.
+-	  This driver can also be built as a module.  If so, the module
+-	  will be called i2c-sh7760.
 -
- config RCAR_DMAC
- 	tristate "Renesas R-Car Gen{2,3} and RZ/G{1,2} DMA Controller"
+ config I2C_SH_MOBILE
+ 	tristate "SuperH Mobile I2C Controller"
  	depends on ARCH_RENESAS || COMPILE_TEST
-diff --git a/drivers/dma/sh/Makefile b/drivers/dma/sh/Makefile
-index 360ab6d25e769d..07178651aa7279 100644
---- a/drivers/dma/sh/Makefile
-+++ b/drivers/dma/sh/Makefile
-@@ -1,17 +1,4 @@
- # SPDX-License-Identifier: GPL-2.0
--#
--# DMA Engine Helpers
--#
--
--obj-$(CONFIG_SH_DMAE_BASE) += shdma-base.o
--
--#
--# DMA Controllers
--#
--
--shdma-y := shdmac.o
--shdma-objs := $(shdma-y)
--obj-$(CONFIG_SH_DMAE) += shdma.o
- 
- obj-$(CONFIG_RCAR_DMAC) += rcar-dmac.o
- obj-$(CONFIG_RENESAS_USB_DMAC) += usb-dmac.o
-diff --git a/drivers/dma/sh/shdma-base.c b/drivers/dma/sh/shdma-base.c
+diff --git a/drivers/i2c/busses/Makefile b/drivers/i2c/busses/Makefile
+index e73cdb1d2b5a85..6be213e5e4dd16 100644
+--- a/drivers/i2c/busses/Makefile
++++ b/drivers/i2c/busses/Makefile
+@@ -104,7 +104,6 @@ obj-$(CONFIG_I2C_RIIC)		+= i2c-riic.o
+ obj-$(CONFIG_I2C_RK3X)		+= i2c-rk3x.o
+ obj-$(CONFIG_I2C_RZV2M)		+= i2c-rzv2m.o
+ obj-$(CONFIG_I2C_S3C2410)	+= i2c-s3c2410.o
+-obj-$(CONFIG_I2C_SH7760)	+= i2c-sh7760.o
+ obj-$(CONFIG_I2C_SH_MOBILE)	+= i2c-sh_mobile.o
+ obj-$(CONFIG_I2C_SIMTEC)	+= i2c-simtec.o
+ obj-$(CONFIG_I2C_SPRD)		+= i2c-sprd.o
+diff --git a/drivers/i2c/busses/i2c-sh7760.c b/drivers/i2c/busses/i2c-sh7760.c
 deleted file mode 100644
-index 158e5e7defaeb0..00000000000000
---- a/drivers/dma/sh/shdma-base.c
+index 319d1fa617c883..00000000000000
+--- a/drivers/i2c/busses/i2c-sh7760.c
 +++ /dev/null
-@@ -1,1052 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
+@@ -1,565 +0,0 @@
 -/*
-- * Dmaengine driver base library for DMA controllers, found on SH-based SoCs
+- * I2C bus driver for the SH7760 I2C Interfaces.
 - *
-- * extracted from shdma.c
+- * (c) 2005-2008 MSC Vertriebsges.m.b.H, Manuel Lauss <mlau@msc-ge.com>
 - *
-- * Copyright (C) 2011-2012 Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-- * Copyright (C) 2009 Nobuhiro Iwamatsu <iwamatsu.nobuhiro@renesas.com>
-- * Copyright (C) 2009 Renesas Solutions, Inc. All rights reserved.
-- * Copyright (C) 2007 Freescale Semiconductor, Inc. All rights reserved.
+- * licensed under the terms outlined in the file COPYING.
+- *
 - */
 -
+-#include <linux/completion.h>
 -#include <linux/delay.h>
--#include <linux/shdma-base.h>
--#include <linux/dmaengine.h>
--#include <linux/init.h>
+-#include <linux/err.h>
+-#include <linux/i2c.h>
 -#include <linux/interrupt.h>
--#include <linux/module.h>
--#include <linux/pm_runtime.h>
+-#include <linux/ioport.h>
+-#include <linux/platform_device.h>
 -#include <linux/slab.h>
--#include <linux/spinlock.h>
+-#include <linux/io.h>
+-#include <linux/module.h>
 -
--#include "../dmaengine.h"
+-#include <asm/clock.h>
+-#include <asm/i2c-sh7760.h>
 -
--/* DMA descriptor control */
--enum shdma_desc_status {
--	DESC_IDLE,
--	DESC_PREPARED,
--	DESC_SUBMITTED,
--	DESC_COMPLETED,	/* completed, have to call callback */
--	DESC_WAITING,	/* callback called, waiting for ack / re-submit */
+-/* register offsets */
+-#define I2CSCR		0x0		/* slave ctrl		*/
+-#define I2CMCR		0x4		/* master ctrl		*/
+-#define I2CSSR		0x8		/* slave status		*/
+-#define I2CMSR		0xC		/* master status	*/
+-#define I2CSIER		0x10		/* slave irq enable	*/
+-#define I2CMIER		0x14		/* master irq enable	*/
+-#define I2CCCR		0x18		/* clock dividers	*/
+-#define I2CSAR		0x1c		/* slave address	*/
+-#define I2CMAR		0x20		/* master address	*/
+-#define I2CRXTX		0x24		/* data port		*/
+-#define I2CFCR		0x28		/* fifo control		*/
+-#define I2CFSR		0x2C		/* fifo status		*/
+-#define I2CFIER		0x30		/* fifo irq enable	*/
+-#define I2CRFDR		0x34		/* rx fifo count	*/
+-#define I2CTFDR		0x38		/* tx fifo count	*/
+-
+-#define REGSIZE		0x3C
+-
+-#define MCR_MDBS	0x80		/* non-fifo mode switch	*/
+-#define MCR_FSCL	0x40		/* override SCL pin	*/
+-#define MCR_FSDA	0x20		/* override SDA pin	*/
+-#define MCR_OBPC	0x10		/* override pins	*/
+-#define MCR_MIE		0x08		/* master if enable	*/
+-#define MCR_TSBE	0x04
+-#define MCR_FSB		0x02		/* force stop bit	*/
+-#define MCR_ESG		0x01		/* en startbit gen.	*/
+-
+-#define MSR_MNR		0x40		/* nack received	*/
+-#define MSR_MAL		0x20		/* arbitration lost	*/
+-#define MSR_MST		0x10		/* sent a stop		*/
+-#define MSR_MDE		0x08
+-#define MSR_MDT		0x04
+-#define MSR_MDR		0x02
+-#define MSR_MAT		0x01		/* slave addr xfer done	*/
+-
+-#define MIE_MNRE	0x40		/* nack irq en		*/
+-#define MIE_MALE	0x20		/* arblos irq en	*/
+-#define MIE_MSTE	0x10		/* stop irq en		*/
+-#define MIE_MDEE	0x08
+-#define MIE_MDTE	0x04
+-#define MIE_MDRE	0x02
+-#define MIE_MATE	0x01		/* address sent irq en	*/
+-
+-#define FCR_RFRST	0x02		/* reset rx fifo	*/
+-#define FCR_TFRST	0x01		/* reset tx fifo	*/
+-
+-#define FSR_TEND	0x04		/* last byte sent	*/
+-#define FSR_RDF		0x02		/* rx fifo trigger	*/
+-#define FSR_TDFE	0x01		/* tx fifo empty	*/
+-
+-#define FIER_TEIE	0x04		/* tx fifo empty irq en	*/
+-#define FIER_RXIE	0x02		/* rx fifo trig irq en	*/
+-#define FIER_TXIE	0x01		/* tx fifo trig irq en	*/
+-
+-#define FIFO_SIZE	16
+-
+-struct cami2c {
+-	void __iomem *iobase;
+-	struct i2c_adapter adap;
+-
+-	/* message processing */
+-	struct i2c_msg	*msg;
+-#define IDF_SEND	1
+-#define IDF_RECV	2
+-#define IDF_STOP	4
+-	int		flags;
+-
+-#define IDS_DONE	1
+-#define IDS_ARBLOST	2
+-#define IDS_NACK	4
+-	int		status;
+-	struct completion xfer_done;
+-
+-	int irq;
+-	struct resource *ioarea;
 -};
 -
--#define NR_DESCS_PER_CHANNEL 32
+-static inline void OUT32(struct cami2c *cam, int reg, unsigned long val)
+-{
+-	__raw_writel(val, (unsigned long)cam->iobase + reg);
+-}
 -
--#define to_shdma_chan(c) container_of(c, struct shdma_chan, dma_chan)
--#define to_shdma_dev(d) container_of(d, struct shdma_dev, dma_dev)
+-static inline unsigned long IN32(struct cami2c *cam, int reg)
+-{
+-	return __raw_readl((unsigned long)cam->iobase + reg);
+-}
 -
--/*
-- * For slave DMA we assume, that there is a finite number of DMA slaves in the
-- * system, and that each such slave can only use a finite number of channels.
-- * We use slave channel IDs to make sure, that no such slave channel ID is
-- * allocated more than once.
+-static irqreturn_t sh7760_i2c_irq(int irq, void *ptr)
+-{
+-	struct cami2c *id = ptr;
+-	struct i2c_msg *msg = id->msg;
+-	char *data = msg->buf;
+-	unsigned long msr, fsr, fier, len;
+-
+-	msr = IN32(id, I2CMSR);
+-	fsr = IN32(id, I2CFSR);
+-
+-	/* arbitration lost */
+-	if (msr & MSR_MAL) {
+-		OUT32(id, I2CMCR, 0);
+-		OUT32(id, I2CSCR, 0);
+-		OUT32(id, I2CSAR, 0);
+-		id->status |= IDS_DONE | IDS_ARBLOST;
+-		goto out;
+-	}
+-
+-	if (msr & MSR_MNR) {
+-		/* NACK handling is very screwed up.  After receiving a
+-		 * NAK IRQ one has to wait a bit  before writing to any
+-		 * registers, or the ctl will lock up. After that delay
+-		 * do a normal i2c stop. Then wait at least 1 ms before
+-		 * attempting another transfer or ctl will stop working
+-		 */
+-		udelay(100);	/* wait or risk ctl hang */
+-		OUT32(id, I2CFCR, FCR_RFRST | FCR_TFRST);
+-		OUT32(id, I2CMCR, MCR_MIE | MCR_FSB);
+-		OUT32(id, I2CFIER, 0);
+-		OUT32(id, I2CMIER, MIE_MSTE);
+-		OUT32(id, I2CSCR, 0);
+-		OUT32(id, I2CSAR, 0);
+-		id->status |= IDS_NACK;
+-		msr &= ~MSR_MAT;
+-		fsr = 0;
+-		/* In some cases the MST bit is also set. */
+-	}
+-
+-	/* i2c-stop was sent */
+-	if (msr & MSR_MST) {
+-		id->status |= IDS_DONE;
+-		goto out;
+-	}
+-
+-	/* i2c slave addr was sent; set to "normal" operation */
+-	if (msr & MSR_MAT)
+-		OUT32(id, I2CMCR, MCR_MIE);
+-
+-	fier = IN32(id, I2CFIER);
+-
+-	if (fsr & FSR_RDF) {
+-		len = IN32(id, I2CRFDR);
+-		if (msg->len <= len) {
+-			if (id->flags & IDF_STOP) {
+-				OUT32(id, I2CMCR, MCR_MIE | MCR_FSB);
+-				OUT32(id, I2CFIER, 0);
+-				/* manual says: wait >= 0.5 SCL times */
+-				udelay(5);
+-				/* next int should be MST */
+-			} else {
+-				id->status |= IDS_DONE;
+-				/* keep the RDF bit: ctrl holds SCL low
+-				 * until the setup for the next i2c_msg
+-				 * clears this bit.
+-				 */
+-				fsr &= ~FSR_RDF;
+-			}
+-		}
+-		while (msg->len && len) {
+-			*data++ = IN32(id, I2CRXTX);
+-			msg->len--;
+-			len--;
+-		}
+-
+-		if (msg->len) {
+-			len = (msg->len >= FIFO_SIZE) ? FIFO_SIZE - 1
+-						      : msg->len - 1;
+-
+-			OUT32(id, I2CFCR, FCR_TFRST | ((len & 0xf) << 4));
+-		}
+-
+-	} else if (id->flags & IDF_SEND) {
+-		if ((fsr & FSR_TEND) && (msg->len < 1)) {
+-			if (id->flags & IDF_STOP) {
+-				OUT32(id, I2CMCR, MCR_MIE | MCR_FSB);
+-			} else {
+-				id->status |= IDS_DONE;
+-				/* keep the TEND bit: ctl holds SCL low
+-				 * until the setup for the next i2c_msg
+-				 * clears this bit.
+-				 */
+-				fsr &= ~FSR_TEND;
+-			}
+-		}
+-		if (fsr & FSR_TDFE) {
+-			while (msg->len && (IN32(id, I2CTFDR) < FIFO_SIZE)) {
+-				OUT32(id, I2CRXTX, *data++);
+-				msg->len--;
+-			}
+-
+-			if (msg->len < 1) {
+-				fier &= ~FIER_TXIE;
+-				OUT32(id, I2CFIER, fier);
+-			} else {
+-				len = (msg->len >= FIFO_SIZE) ? 2 : 0;
+-				OUT32(id, I2CFCR,
+-					  FCR_RFRST | ((len & 3) << 2));
+-			}
+-		}
+-	}
+-out:
+-	if (id->status & IDS_DONE) {
+-		OUT32(id, I2CMIER, 0);
+-		OUT32(id, I2CFIER, 0);
+-		id->msg = NULL;
+-		complete(&id->xfer_done);
+-	}
+-	/* clear status flags and ctrl resumes work */
+-	OUT32(id, I2CMSR, ~msr);
+-	OUT32(id, I2CFSR, ~fsr);
+-	OUT32(id, I2CSSR, 0);
+-
+-	return IRQ_HANDLED;
+-}
+-
+-
+-/* prepare and start a master receive operation */
+-static void sh7760_i2c_mrecv(struct cami2c *id)
+-{
+-	int len;
+-
+-	id->flags |= IDF_RECV;
+-
+-	/* set the slave addr reg; otherwise rcv wont work! */
+-	OUT32(id, I2CSAR, 0xfe);
+-	OUT32(id, I2CMAR, (id->msg->addr << 1) | 1);
+-
+-	/* adjust rx fifo trigger */
+-	if (id->msg->len >= FIFO_SIZE)
+-		len = FIFO_SIZE - 1;	/* trigger at fifo full */
+-	else
+-		len = id->msg->len - 1;	/* trigger before all received */
+-
+-	OUT32(id, I2CFCR, FCR_RFRST | FCR_TFRST);
+-	OUT32(id, I2CFCR, FCR_TFRST | ((len & 0xF) << 4));
+-
+-	OUT32(id, I2CMSR, 0);
+-	OUT32(id, I2CMCR, MCR_MIE | MCR_ESG);
+-	OUT32(id, I2CMIER, MIE_MNRE | MIE_MALE | MIE_MSTE | MIE_MATE);
+-	OUT32(id, I2CFIER, FIER_RXIE);
+-}
+-
+-/* prepare and start a master send operation */
+-static void sh7760_i2c_msend(struct cami2c *id)
+-{
+-	int len;
+-
+-	id->flags |= IDF_SEND;
+-
+-	/* set the slave addr reg; otherwise xmit wont work! */
+-	OUT32(id, I2CSAR, 0xfe);
+-	OUT32(id, I2CMAR, (id->msg->addr << 1) | 0);
+-
+-	/* adjust tx fifo trigger */
+-	if (id->msg->len >= FIFO_SIZE)
+-		len = 2;	/* trig: 2 bytes left in TX fifo */
+-	else
+-		len = 0;	/* trig: 8 bytes left in TX fifo */
+-
+-	OUT32(id, I2CFCR, FCR_RFRST | FCR_TFRST);
+-	OUT32(id, I2CFCR, FCR_RFRST | ((len & 3) << 2));
+-
+-	while (id->msg->len && IN32(id, I2CTFDR) < FIFO_SIZE) {
+-		OUT32(id, I2CRXTX, *(id->msg->buf));
+-		(id->msg->len)--;
+-		(id->msg->buf)++;
+-	}
+-
+-	OUT32(id, I2CMSR, 0);
+-	OUT32(id, I2CMCR, MCR_MIE | MCR_ESG);
+-	OUT32(id, I2CFSR, 0);
+-	OUT32(id, I2CMIER, MIE_MNRE | MIE_MALE | MIE_MSTE | MIE_MATE);
+-	OUT32(id, I2CFIER, FIER_TEIE | (id->msg->len ? FIER_TXIE : 0));
+-}
+-
+-static inline int sh7760_i2c_busy_check(struct cami2c *id)
+-{
+-	return (IN32(id, I2CMCR) & MCR_FSDA);
+-}
+-
+-static int sh7760_i2c_master_xfer(struct i2c_adapter *adap,
+-				  struct i2c_msg *msgs,
+-				  int num)
+-{
+-	struct cami2c *id = adap->algo_data;
+-	int i, retr;
+-
+-	if (sh7760_i2c_busy_check(id)) {
+-		dev_err(&adap->dev, "sh7760-i2c%d: bus busy!\n", adap->nr);
+-		return -EBUSY;
+-	}
+-
+-	i = 0;
+-	while (i < num) {
+-		retr = adap->retries;
+-retry:
+-		id->flags = ((i == (num-1)) ? IDF_STOP : 0);
+-		id->status = 0;
+-		id->msg = msgs;
+-		init_completion(&id->xfer_done);
+-
+-		if (msgs->flags & I2C_M_RD)
+-			sh7760_i2c_mrecv(id);
+-		else
+-			sh7760_i2c_msend(id);
+-
+-		wait_for_completion(&id->xfer_done);
+-
+-		if (id->status == 0) {
+-			num = -EIO;
+-			break;
+-		}
+-
+-		if (id->status & IDS_NACK) {
+-			/* wait a bit or i2c module stops working */
+-			mdelay(1);
+-			num = -EREMOTEIO;
+-			break;
+-		}
+-
+-		if (id->status & IDS_ARBLOST) {
+-			if (retr--) {
+-				mdelay(2);
+-				goto retry;
+-			}
+-			num = -EREMOTEIO;
+-			break;
+-		}
+-
+-		msgs++;
+-		i++;
+-	}
+-
+-	id->msg = NULL;
+-	id->flags = 0;
+-	id->status = 0;
+-
+-	OUT32(id, I2CMCR, 0);
+-	OUT32(id, I2CMSR, 0);
+-	OUT32(id, I2CMIER, 0);
+-	OUT32(id, I2CFIER, 0);
+-
+-	/* reset slave module registers too: master mode enables slave
+-	 * module for receive ops (ack, data). Without this reset,
+-	 * eternal bus activity might be reported after NACK / ARBLOST.
+-	 */
+-	OUT32(id, I2CSCR, 0);
+-	OUT32(id, I2CSAR, 0);
+-	OUT32(id, I2CSSR, 0);
+-
+-	return num;
+-}
+-
+-static u32 sh7760_i2c_func(struct i2c_adapter *adap)
+-{
+-	return I2C_FUNC_I2C | (I2C_FUNC_SMBUS_EMUL & ~I2C_FUNC_SMBUS_QUICK);
+-}
+-
+-static const struct i2c_algorithm sh7760_i2c_algo = {
+-	.master_xfer	= sh7760_i2c_master_xfer,
+-	.functionality	= sh7760_i2c_func,
+-};
+-
+-/* calculate CCR register setting for a desired scl clock.  SCL clock is
+- * derived from I2C module clock  (iclk)  which in turn is derived from
+- * peripheral module clock (mclk, usually around 33MHz):
+- * iclk = mclk/(CDF + 1).  iclk must be < 20MHz.
+- * scl = iclk/(SCGD*8 + 20).
 - */
--static unsigned int slave_num = 256;
--module_param(slave_num, uint, 0444);
--
--/* A bitmask with slave_num bits */
--static unsigned long *shdma_slave_used;
--
--/* Called under spin_lock_irq(&schan->chan_lock") */
--static void shdma_chan_xfer_ld_queue(struct shdma_chan *schan)
+-static int calc_CCR(unsigned long scl_hz)
 -{
--	struct shdma_dev *sdev = to_shdma_dev(schan->dma_chan.device);
--	const struct shdma_ops *ops = sdev->ops;
--	struct shdma_desc *sdesc;
+-	struct clk *mclk;
+-	unsigned long mck, m1, dff, odff, iclk;
+-	signed char cdf, cdfm;
+-	int scgd, scgdm, scgds;
 -
--	/* DMA work check */
--	if (ops->channel_busy(schan))
--		return;
--
--	/* Find the first not transferred descriptor */
--	list_for_each_entry(sdesc, &schan->ld_queue, node)
--		if (sdesc->mark == DESC_SUBMITTED) {
--			ops->start_xfer(schan, sdesc);
--			break;
--		}
--}
--
--static dma_cookie_t shdma_tx_submit(struct dma_async_tx_descriptor *tx)
--{
--	struct shdma_desc *chunk, *c, *desc =
--		container_of(tx, struct shdma_desc, async_tx);
--	struct shdma_chan *schan = to_shdma_chan(tx->chan);
--	dma_async_tx_callback callback = tx->callback;
--	dma_cookie_t cookie;
--	bool power_up;
--
--	spin_lock_irq(&schan->chan_lock);
--
--	power_up = list_empty(&schan->ld_queue);
--
--	cookie = dma_cookie_assign(tx);
--
--	/* Mark all chunks of this descriptor as submitted, move to the queue */
--	list_for_each_entry_safe(chunk, c, desc->node.prev, node) {
--		/*
--		 * All chunks are on the global ld_free, so, we have to find
--		 * the end of the chain ourselves
--		 */
--		if (chunk != desc && (chunk->mark == DESC_IDLE ||
--				      chunk->async_tx.cookie > 0 ||
--				      chunk->async_tx.cookie == -EBUSY ||
--				      &chunk->node == &schan->ld_free))
--			break;
--		chunk->mark = DESC_SUBMITTED;
--		if (chunk->chunks == 1) {
--			chunk->async_tx.callback = callback;
--			chunk->async_tx.callback_param = tx->callback_param;
--		} else {
--			/* Callback goes to the last chunk */
--			chunk->async_tx.callback = NULL;
--		}
--		chunk->cookie = cookie;
--		list_move_tail(&chunk->node, &schan->ld_queue);
--
--		dev_dbg(schan->dev, "submit #%d@%p on %d\n",
--			tx->cookie, &chunk->async_tx, schan->id);
--	}
--
--	if (power_up) {
--		int ret;
--		schan->pm_state = SHDMA_PM_BUSY;
--
--		ret = pm_runtime_get(schan->dev);
--
--		spin_unlock_irq(&schan->chan_lock);
--		if (ret < 0)
--			dev_err(schan->dev, "%s(): GET = %d\n", __func__, ret);
--
--		pm_runtime_barrier(schan->dev);
--
--		spin_lock_irq(&schan->chan_lock);
--
--		/* Have we been reset, while waiting? */
--		if (schan->pm_state != SHDMA_PM_ESTABLISHED) {
--			struct shdma_dev *sdev =
--				to_shdma_dev(schan->dma_chan.device);
--			const struct shdma_ops *ops = sdev->ops;
--			dev_dbg(schan->dev, "Bring up channel %d\n",
--				schan->id);
--			/*
--			 * TODO: .xfer_setup() might fail on some platforms.
--			 * Make it int then, on error remove chunks from the
--			 * queue again
--			 */
--			ops->setup_xfer(schan, schan->slave_id);
--
--			if (schan->pm_state == SHDMA_PM_PENDING)
--				shdma_chan_xfer_ld_queue(schan);
--			schan->pm_state = SHDMA_PM_ESTABLISHED;
--		}
+-	mclk = clk_get(NULL, "peripheral_clk");
+-	if (IS_ERR(mclk)) {
+-		return PTR_ERR(mclk);
 -	} else {
--		/*
--		 * Tell .device_issue_pending() not to run the queue, interrupts
--		 * will do it anyway
--		 */
--		schan->pm_state = SHDMA_PM_PENDING;
+-		mck = mclk->rate;
+-		clk_put(mclk);
 -	}
 -
--	spin_unlock_irq(&schan->chan_lock);
--
--	return cookie;
--}
--
--/* Called with desc_lock held */
--static struct shdma_desc *shdma_get_desc(struct shdma_chan *schan)
--{
--	struct shdma_desc *sdesc;
--
--	list_for_each_entry(sdesc, &schan->ld_free, node)
--		if (sdesc->mark != DESC_PREPARED) {
--			BUG_ON(sdesc->mark != DESC_IDLE);
--			list_del(&sdesc->node);
--			return sdesc;
+-	odff = scl_hz;
+-	scgdm = cdfm = m1 = 0;
+-	for (cdf = 3; cdf >= 0; cdf--) {
+-		iclk = mck / (1 + cdf);
+-		if (iclk >= 20000000)
+-			continue;
+-		scgds = ((iclk / scl_hz) - 20) >> 3;
+-		for (scgd = scgds; (scgd < 63) && scgd <= scgds + 1; scgd++) {
+-			m1 = iclk / (20 + (scgd << 3));
+-			dff = abs(scl_hz - m1);
+-			if (dff < odff) {
+-				odff = dff;
+-				cdfm = cdf;
+-				scgdm = scgd;
+-			}
 -		}
--
--	return NULL;
--}
--
--static int shdma_setup_slave(struct shdma_chan *schan, dma_addr_t slave_addr)
--{
--	struct shdma_dev *sdev = to_shdma_dev(schan->dma_chan.device);
--	const struct shdma_ops *ops = sdev->ops;
--	int ret, match;
--
--	if (schan->dev->of_node) {
--		match = schan->hw_req;
--		ret = ops->set_slave(schan, match, slave_addr, true);
--		if (ret < 0)
--			return ret;
--	} else {
--		match = schan->real_slave_id;
 -	}
--
--	if (schan->real_slave_id < 0 || schan->real_slave_id >= slave_num)
+-	/* fail if more than 25% off of requested SCL */
+-	if (odff > (scl_hz >> 2))
 -		return -EINVAL;
 -
--	if (test_and_set_bit(schan->real_slave_id, shdma_slave_used))
--		return -EBUSY;
--
--	ret = ops->set_slave(schan, match, slave_addr, false);
--	if (ret < 0) {
--		clear_bit(schan->real_slave_id, shdma_slave_used);
--		return ret;
--	}
--
--	schan->slave_id = schan->real_slave_id;
--
--	return 0;
+-	/* create a CCR register value */
+-	return ((scgdm << 2) | cdfm);
 -}
 -
--static int shdma_alloc_chan_resources(struct dma_chan *chan)
+-static int sh7760_i2c_probe(struct platform_device *pdev)
 -{
--	struct shdma_chan *schan = to_shdma_chan(chan);
--	struct shdma_dev *sdev = to_shdma_dev(schan->dma_chan.device);
--	const struct shdma_ops *ops = sdev->ops;
--	struct shdma_desc *desc;
--	struct shdma_slave *slave = chan->private;
--	int ret, i;
--
--	/*
--	 * This relies on the guarantee from dmaengine that alloc_chan_resources
--	 * never runs concurrently with itself or free_chan_resources.
--	 */
--	if (slave) {
--		/* Legacy mode: .private is set in filter */
--		schan->real_slave_id = slave->slave_id;
--		ret = shdma_setup_slave(schan, 0);
--		if (ret < 0)
--			goto esetslave;
--	} else {
--		/* Normal mode: real_slave_id was set by filter */
--		schan->slave_id = -EINVAL;
--	}
--
--	schan->desc = kcalloc(NR_DESCS_PER_CHANNEL,
--			      sdev->desc_size, GFP_KERNEL);
--	if (!schan->desc) {
--		ret = -ENOMEM;
--		goto edescalloc;
--	}
--	schan->desc_num = NR_DESCS_PER_CHANNEL;
--
--	for (i = 0; i < NR_DESCS_PER_CHANNEL; i++) {
--		desc = ops->embedded_desc(schan->desc, i);
--		dma_async_tx_descriptor_init(&desc->async_tx,
--					     &schan->dma_chan);
--		desc->async_tx.tx_submit = shdma_tx_submit;
--		desc->mark = DESC_IDLE;
--
--		list_add(&desc->node, &schan->ld_free);
--	}
--
--	return NR_DESCS_PER_CHANNEL;
--
--edescalloc:
--	if (slave)
--esetslave:
--		clear_bit(slave->slave_id, shdma_slave_used);
--	chan->private = NULL;
--	return ret;
--}
--
--/*
-- * This is the standard shdma filter function to be used as a replacement to the
-- * "old" method, using the .private pointer.
-- * You always have to pass a valid slave id as the argument, old drivers that
-- * pass ERR_PTR(-EINVAL) as a filter parameter and set it up in dma_slave_config
-- * need to be updated so we can remove the slave_id field from dma_slave_config.
-- * parameter. If this filter is used, the slave driver, after calling
-- * dma_request_channel(), will also have to call dmaengine_slave_config() with
-- * .direction, and either .src_addr or .dst_addr set.
-- *
-- * NOTE: this filter doesn't support multiple DMAC drivers with the DMA_SLAVE
-- * capability! If this becomes a requirement, hardware glue drivers, using this
-- * services would have to provide their own filters, which first would check
-- * the device driver, similar to how other DMAC drivers, e.g., sa11x0-dma.c, do
-- * this, and only then, in case of a match, call this common filter.
-- * NOTE 2: This filter function is also used in the DT case by shdma_of_xlate().
-- * In that case the MID-RID value is used for slave channel filtering and is
-- * passed to this function in the "arg" parameter.
-- */
--bool shdma_chan_filter(struct dma_chan *chan, void *arg)
--{
--	struct shdma_chan *schan;
--	struct shdma_dev *sdev;
--	int slave_id = (long)arg;
+-	struct sh7760_i2c_platdata *pd;
+-	struct resource *res;
+-	struct cami2c *id;
 -	int ret;
 -
--	/* Only support channels handled by this driver. */
--	if (chan->device->device_alloc_chan_resources !=
--	    shdma_alloc_chan_resources)
--		return false;
--
--	schan = to_shdma_chan(chan);
--	sdev = to_shdma_dev(chan->device);
--
--	/*
--	 * For DT, the schan->slave_id field is generated by the
--	 * set_slave function from the slave ID that is passed in
--	 * from xlate. For the non-DT case, the slave ID is
--	 * directly passed into the filter function by the driver
--	 */
--	if (schan->dev->of_node) {
--		ret = sdev->ops->set_slave(schan, slave_id, 0, true);
--		if (ret < 0)
--			return false;
--
--		schan->real_slave_id = schan->slave_id;
--		return true;
+-	pd = dev_get_platdata(&pdev->dev);
+-	if (!pd) {
+-		dev_err(&pdev->dev, "no platform_data!\n");
+-		ret = -ENODEV;
+-		goto out0;
 -	}
 -
--	if (slave_id < 0) {
--		/* No slave requested - arbitrary channel */
--		dev_warn(sdev->dma_dev.dev, "invalid slave ID passed to dma_request_slave\n");
--		return true;
+-	id = kzalloc(sizeof(struct cami2c), GFP_KERNEL);
+-	if (!id) {
+-		dev_err(&pdev->dev, "no mem for private data\n");
+-		ret = -ENOMEM;
+-		goto out0;
 -	}
 -
--	if (slave_id >= slave_num)
--		return false;
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!res) {
+-		dev_err(&pdev->dev, "no mmio resources\n");
+-		ret = -ENODEV;
+-		goto out1;
+-	}
 -
--	ret = sdev->ops->set_slave(schan, slave_id, 0, true);
+-	id->ioarea = request_mem_region(res->start, REGSIZE, pdev->name);
+-	if (!id->ioarea) {
+-		dev_err(&pdev->dev, "mmio already reserved\n");
+-		ret = -EBUSY;
+-		goto out1;
+-	}
+-
+-	id->iobase = ioremap(res->start, REGSIZE);
+-	if (!id->iobase) {
+-		dev_err(&pdev->dev, "cannot ioremap\n");
+-		ret = -ENODEV;
+-		goto out2;
+-	}
+-
+-	ret = platform_get_irq(pdev, 0);
 -	if (ret < 0)
--		return false;
+-		goto out3;
+-	id->irq = ret;
 -
--	schan->real_slave_id = slave_id;
+-	id->adap.nr = pdev->id;
+-	id->adap.algo = &sh7760_i2c_algo;
+-	id->adap.class = I2C_CLASS_HWMON | I2C_CLASS_SPD;
+-	id->adap.retries = 3;
+-	id->adap.algo_data = id;
+-	id->adap.dev.parent = &pdev->dev;
+-	snprintf(id->adap.name, sizeof(id->adap.name),
+-		"SH7760 I2C at %08lx", (unsigned long)res->start);
 -
--	return true;
--}
--EXPORT_SYMBOL(shdma_chan_filter);
+-	OUT32(id, I2CMCR, 0);
+-	OUT32(id, I2CMSR, 0);
+-	OUT32(id, I2CMIER, 0);
+-	OUT32(id, I2CMAR, 0);
+-	OUT32(id, I2CSIER, 0);
+-	OUT32(id, I2CSAR, 0);
+-	OUT32(id, I2CSCR, 0);
+-	OUT32(id, I2CSSR, 0);
+-	OUT32(id, I2CFIER, 0);
+-	OUT32(id, I2CFCR, FCR_RFRST | FCR_TFRST);
+-	OUT32(id, I2CFSR, 0);
 -
--static dma_async_tx_callback __ld_cleanup(struct shdma_chan *schan, bool all)
--{
--	struct shdma_desc *desc, *_desc;
--	/* Is the "exposed" head of a chain acked? */
--	bool head_acked = false;
--	dma_cookie_t cookie = 0;
--	dma_async_tx_callback callback = NULL;
--	struct dmaengine_desc_callback cb;
--	unsigned long flags;
--	LIST_HEAD(cyclic_list);
+-	ret = calc_CCR(pd->speed_khz * 1000);
+-	if (ret < 0) {
+-		dev_err(&pdev->dev, "invalid SCL clock: %dkHz\n",
+-			pd->speed_khz);
+-		goto out3;
+-	}
+-	OUT32(id, I2CCCR, ret);
 -
--	memset(&cb, 0, sizeof(cb));
--	spin_lock_irqsave(&schan->chan_lock, flags);
--	list_for_each_entry_safe(desc, _desc, &schan->ld_queue, node) {
--		struct dma_async_tx_descriptor *tx = &desc->async_tx;
--
--		BUG_ON(tx->cookie > 0 && tx->cookie != desc->cookie);
--		BUG_ON(desc->mark != DESC_SUBMITTED &&
--		       desc->mark != DESC_COMPLETED &&
--		       desc->mark != DESC_WAITING);
--
--		/*
--		 * queue is ordered, and we use this loop to (1) clean up all
--		 * completed descriptors, and to (2) update descriptor flags of
--		 * any chunks in a (partially) completed chain
--		 */
--		if (!all && desc->mark == DESC_SUBMITTED &&
--		    desc->cookie != cookie)
--			break;
--
--		if (tx->cookie > 0)
--			cookie = tx->cookie;
--
--		if (desc->mark == DESC_COMPLETED && desc->chunks == 1) {
--			if (schan->dma_chan.completed_cookie != desc->cookie - 1)
--				dev_dbg(schan->dev,
--					"Completing cookie %d, expected %d\n",
--					desc->cookie,
--					schan->dma_chan.completed_cookie + 1);
--			schan->dma_chan.completed_cookie = desc->cookie;
--		}
--
--		/* Call callback on the last chunk */
--		if (desc->mark == DESC_COMPLETED && tx->callback) {
--			desc->mark = DESC_WAITING;
--			dmaengine_desc_get_callback(tx, &cb);
--			callback = tx->callback;
--			dev_dbg(schan->dev, "descriptor #%d@%p on %d callback\n",
--				tx->cookie, tx, schan->id);
--			BUG_ON(desc->chunks != 1);
--			break;
--		}
--
--		if (tx->cookie > 0 || tx->cookie == -EBUSY) {
--			if (desc->mark == DESC_COMPLETED) {
--				BUG_ON(tx->cookie < 0);
--				desc->mark = DESC_WAITING;
--			}
--			head_acked = async_tx_test_ack(tx);
--		} else {
--			switch (desc->mark) {
--			case DESC_COMPLETED:
--				desc->mark = DESC_WAITING;
--				fallthrough;
--			case DESC_WAITING:
--				if (head_acked)
--					async_tx_ack(&desc->async_tx);
--			}
--		}
--
--		dev_dbg(schan->dev, "descriptor %p #%d completed.\n",
--			tx, tx->cookie);
--
--		if (((desc->mark == DESC_COMPLETED ||
--		      desc->mark == DESC_WAITING) &&
--		     async_tx_test_ack(&desc->async_tx)) || all) {
--
--			if (all || !desc->cyclic) {
--				/* Remove from ld_queue list */
--				desc->mark = DESC_IDLE;
--				list_move(&desc->node, &schan->ld_free);
--			} else {
--				/* reuse as cyclic */
--				desc->mark = DESC_SUBMITTED;
--				list_move_tail(&desc->node, &cyclic_list);
--			}
--
--			if (list_empty(&schan->ld_queue)) {
--				dev_dbg(schan->dev, "Bring down channel %d\n", schan->id);
--				pm_runtime_put(schan->dev);
--				schan->pm_state = SHDMA_PM_ESTABLISHED;
--			} else if (schan->pm_state == SHDMA_PM_PENDING) {
--				shdma_chan_xfer_ld_queue(schan);
--			}
--		}
+-	if (request_irq(id->irq, sh7760_i2c_irq, 0,
+-			SH7760_I2C_DEVNAME, id)) {
+-		dev_err(&pdev->dev, "cannot get irq %d\n", id->irq);
+-		ret = -EBUSY;
+-		goto out3;
 -	}
 -
--	if (all && !callback)
--		/*
--		 * Terminating and the loop completed normally: forgive
--		 * uncompleted cookies
--		 */
--		schan->dma_chan.completed_cookie = schan->dma_chan.cookie;
--
--	list_splice_tail(&cyclic_list, &schan->ld_queue);
--
--	spin_unlock_irqrestore(&schan->chan_lock, flags);
--
--	dmaengine_desc_callback_invoke(&cb, NULL);
--
--	return callback;
--}
--
--/*
-- * shdma_chan_ld_cleanup - Clean up link descriptors
-- *
-- * Clean up the ld_queue of DMA channel.
-- */
--static void shdma_chan_ld_cleanup(struct shdma_chan *schan, bool all)
--{
--	while (__ld_cleanup(schan, all))
--		;
--}
--
--/*
-- * shdma_free_chan_resources - Free all resources of the channel.
-- */
--static void shdma_free_chan_resources(struct dma_chan *chan)
--{
--	struct shdma_chan *schan = to_shdma_chan(chan);
--	struct shdma_dev *sdev = to_shdma_dev(chan->device);
--	const struct shdma_ops *ops = sdev->ops;
--	LIST_HEAD(list);
--
--	/* Protect against ISR */
--	spin_lock_irq(&schan->chan_lock);
--	ops->halt_channel(schan);
--	spin_unlock_irq(&schan->chan_lock);
--
--	/* Now no new interrupts will occur */
--
--	/* Prepared and not submitted descriptors can still be on the queue */
--	if (!list_empty(&schan->ld_queue))
--		shdma_chan_ld_cleanup(schan, true);
--
--	if (schan->slave_id >= 0) {
--		/* The caller is holding dma_list_mutex */
--		clear_bit(schan->slave_id, shdma_slave_used);
--		chan->private = NULL;
--	}
--
--	schan->real_slave_id = 0;
--
--	spin_lock_irq(&schan->chan_lock);
--
--	list_splice_init(&schan->ld_free, &list);
--	schan->desc_num = 0;
--
--	spin_unlock_irq(&schan->chan_lock);
--
--	kfree(schan->desc);
--}
--
--/**
-- * shdma_add_desc - get, set up and return one transfer descriptor
-- * @schan:	DMA channel
-- * @flags:	DMA transfer flags
-- * @dst:	destination DMA address, incremented when direction equals
-- *		DMA_DEV_TO_MEM or DMA_MEM_TO_MEM
-- * @src:	source DMA address, incremented when direction equals
-- *		DMA_MEM_TO_DEV or DMA_MEM_TO_MEM
-- * @len:	DMA transfer length
-- * @first:	if NULL, set to the current descriptor and cookie set to -EBUSY
-- * @direction:	needed for slave DMA to decide which address to keep constant,
-- *		equals DMA_MEM_TO_MEM for MEMCPY
-- * Returns 0 or an error
-- * Locks: called with desc_lock held
-- */
--static struct shdma_desc *shdma_add_desc(struct shdma_chan *schan,
--	unsigned long flags, dma_addr_t *dst, dma_addr_t *src, size_t *len,
--	struct shdma_desc **first, enum dma_transfer_direction direction)
--{
--	struct shdma_dev *sdev = to_shdma_dev(schan->dma_chan.device);
--	const struct shdma_ops *ops = sdev->ops;
--	struct shdma_desc *new;
--	size_t copy_size = *len;
--
--	if (!copy_size)
--		return NULL;
--
--	/* Allocate the link descriptor from the free list */
--	new = shdma_get_desc(schan);
--	if (!new) {
--		dev_err(schan->dev, "No free link descriptor available\n");
--		return NULL;
--	}
--
--	ops->desc_setup(schan, new, *src, *dst, &copy_size);
--
--	if (!*first) {
--		/* First desc */
--		new->async_tx.cookie = -EBUSY;
--		*first = new;
--	} else {
--		/* Other desc - invisible to the user */
--		new->async_tx.cookie = -EINVAL;
--	}
--
--	dev_dbg(schan->dev,
--		"chaining (%zu/%zu)@%pad -> %pad with %p, cookie %d\n",
--		copy_size, *len, src, dst, &new->async_tx,
--		new->async_tx.cookie);
--
--	new->mark = DESC_PREPARED;
--	new->async_tx.flags = flags;
--	new->direction = direction;
--	new->partial = 0;
--
--	*len -= copy_size;
--	if (direction == DMA_MEM_TO_MEM || direction == DMA_MEM_TO_DEV)
--		*src += copy_size;
--	if (direction == DMA_MEM_TO_MEM || direction == DMA_DEV_TO_MEM)
--		*dst += copy_size;
--
--	return new;
--}
--
--/*
-- * shdma_prep_sg - prepare transfer descriptors from an SG list
-- *
-- * Common routine for public (MEMCPY) and slave DMA. The MEMCPY case is also
-- * converted to scatter-gather to guarantee consistent locking and a correct
-- * list manipulation. For slave DMA direction carries the usual meaning, and,
-- * logically, the SG list is RAM and the addr variable contains slave address,
-- * e.g., the FIFO I/O register. For MEMCPY direction equals DMA_MEM_TO_MEM
-- * and the SG list contains only one element and points at the source buffer.
-- */
--static struct dma_async_tx_descriptor *shdma_prep_sg(struct shdma_chan *schan,
--	struct scatterlist *sgl, unsigned int sg_len, dma_addr_t *addr,
--	enum dma_transfer_direction direction, unsigned long flags, bool cyclic)
--{
--	struct scatterlist *sg;
--	struct shdma_desc *first = NULL, *new = NULL /* compiler... */;
--	LIST_HEAD(tx_list);
--	int chunks = 0;
--	unsigned long irq_flags;
--	int i;
--
--	for_each_sg(sgl, sg, sg_len, i)
--		chunks += DIV_ROUND_UP(sg_dma_len(sg), schan->max_xfer_len);
--
--	/* Have to lock the whole loop to protect against concurrent release */
--	spin_lock_irqsave(&schan->chan_lock, irq_flags);
--
--	/*
--	 * Chaining:
--	 * first descriptor is what user is dealing with in all API calls, its
--	 *	cookie is at first set to -EBUSY, at tx-submit to a positive
--	 *	number
--	 * if more than one chunk is needed further chunks have cookie = -EINVAL
--	 * the last chunk, if not equal to the first, has cookie = -ENOSPC
--	 * all chunks are linked onto the tx_list head with their .node heads
--	 *	only during this function, then they are immediately spliced
--	 *	back onto the free list in form of a chain
--	 */
--	for_each_sg(sgl, sg, sg_len, i) {
--		dma_addr_t sg_addr = sg_dma_address(sg);
--		size_t len = sg_dma_len(sg);
--
--		if (!len)
--			goto err_get_desc;
--
--		do {
--			dev_dbg(schan->dev, "Add SG #%d@%p[%zu], dma %pad\n",
--				i, sg, len, &sg_addr);
--
--			if (direction == DMA_DEV_TO_MEM)
--				new = shdma_add_desc(schan, flags,
--						&sg_addr, addr, &len, &first,
--						direction);
--			else
--				new = shdma_add_desc(schan, flags,
--						addr, &sg_addr, &len, &first,
--						direction);
--			if (!new)
--				goto err_get_desc;
--
--			new->cyclic = cyclic;
--			if (cyclic)
--				new->chunks = 1;
--			else
--				new->chunks = chunks--;
--			list_add_tail(&new->node, &tx_list);
--		} while (len);
--	}
--
--	if (new != first)
--		new->async_tx.cookie = -ENOSPC;
--
--	/* Put them back on the free list, so, they don't get lost */
--	list_splice_tail(&tx_list, &schan->ld_free);
--
--	spin_unlock_irqrestore(&schan->chan_lock, irq_flags);
--
--	return &first->async_tx;
--
--err_get_desc:
--	list_for_each_entry(new, &tx_list, node)
--		new->mark = DESC_IDLE;
--	list_splice(&tx_list, &schan->ld_free);
--
--	spin_unlock_irqrestore(&schan->chan_lock, irq_flags);
--
--	return NULL;
--}
--
--static struct dma_async_tx_descriptor *shdma_prep_memcpy(
--	struct dma_chan *chan, dma_addr_t dma_dest, dma_addr_t dma_src,
--	size_t len, unsigned long flags)
--{
--	struct shdma_chan *schan = to_shdma_chan(chan);
--	struct scatterlist sg;
--
--	if (!chan || !len)
--		return NULL;
--
--	BUG_ON(!schan->desc_num);
--
--	sg_init_table(&sg, 1);
--	sg_set_page(&sg, pfn_to_page(PFN_DOWN(dma_src)), len,
--		    offset_in_page(dma_src));
--	sg_dma_address(&sg) = dma_src;
--	sg_dma_len(&sg) = len;
--
--	return shdma_prep_sg(schan, &sg, 1, &dma_dest, DMA_MEM_TO_MEM,
--			     flags, false);
--}
--
--static struct dma_async_tx_descriptor *shdma_prep_slave_sg(
--	struct dma_chan *chan, struct scatterlist *sgl, unsigned int sg_len,
--	enum dma_transfer_direction direction, unsigned long flags, void *context)
--{
--	struct shdma_chan *schan = to_shdma_chan(chan);
--	struct shdma_dev *sdev = to_shdma_dev(schan->dma_chan.device);
--	const struct shdma_ops *ops = sdev->ops;
--	int slave_id = schan->slave_id;
--	dma_addr_t slave_addr;
--
--	if (!chan)
--		return NULL;
--
--	BUG_ON(!schan->desc_num);
--
--	/* Someone calling slave DMA on a generic channel? */
--	if (slave_id < 0 || !sg_len) {
--		dev_warn(schan->dev, "%s: bad parameter: len=%d, id=%d\n",
--			 __func__, sg_len, slave_id);
--		return NULL;
--	}
--
--	slave_addr = ops->slave_addr(schan);
--
--	return shdma_prep_sg(schan, sgl, sg_len, &slave_addr,
--			     direction, flags, false);
--}
--
--#define SHDMA_MAX_SG_LEN 32
--
--static struct dma_async_tx_descriptor *shdma_prep_dma_cyclic(
--	struct dma_chan *chan, dma_addr_t buf_addr, size_t buf_len,
--	size_t period_len, enum dma_transfer_direction direction,
--	unsigned long flags)
--{
--	struct shdma_chan *schan = to_shdma_chan(chan);
--	struct shdma_dev *sdev = to_shdma_dev(schan->dma_chan.device);
--	struct dma_async_tx_descriptor *desc;
--	const struct shdma_ops *ops = sdev->ops;
--	unsigned int sg_len = buf_len / period_len;
--	int slave_id = schan->slave_id;
--	dma_addr_t slave_addr;
--	struct scatterlist *sgl;
--	int i;
--
--	if (!chan)
--		return NULL;
--
--	BUG_ON(!schan->desc_num);
--
--	if (sg_len > SHDMA_MAX_SG_LEN) {
--		dev_err(schan->dev, "sg length %d exceeds limit %d",
--				sg_len, SHDMA_MAX_SG_LEN);
--		return NULL;
--	}
--
--	/* Someone calling slave DMA on a generic channel? */
--	if (slave_id < 0 || (buf_len < period_len)) {
--		dev_warn(schan->dev,
--			"%s: bad parameter: buf_len=%zu, period_len=%zu, id=%d\n",
--			__func__, buf_len, period_len, slave_id);
--		return NULL;
--	}
--
--	slave_addr = ops->slave_addr(schan);
--
--	/*
--	 * Allocate the sg list dynamically as it would consumer too much stack
--	 * space.
--	 */
--	sgl = kmalloc_array(sg_len, sizeof(*sgl), GFP_KERNEL);
--	if (!sgl)
--		return NULL;
--
--	sg_init_table(sgl, sg_len);
--
--	for (i = 0; i < sg_len; i++) {
--		dma_addr_t src = buf_addr + (period_len * i);
--
--		sg_set_page(&sgl[i], pfn_to_page(PFN_DOWN(src)), period_len,
--			    offset_in_page(src));
--		sg_dma_address(&sgl[i]) = src;
--		sg_dma_len(&sgl[i]) = period_len;
--	}
--
--	desc = shdma_prep_sg(schan, sgl, sg_len, &slave_addr,
--			     direction, flags, true);
--
--	kfree(sgl);
--	return desc;
--}
--
--static int shdma_terminate_all(struct dma_chan *chan)
--{
--	struct shdma_chan *schan = to_shdma_chan(chan);
--	struct shdma_dev *sdev = to_shdma_dev(chan->device);
--	const struct shdma_ops *ops = sdev->ops;
--	unsigned long flags;
--
--	spin_lock_irqsave(&schan->chan_lock, flags);
--	ops->halt_channel(schan);
--
--	if (ops->get_partial && !list_empty(&schan->ld_queue)) {
--		/* Record partial transfer */
--		struct shdma_desc *desc = list_first_entry(&schan->ld_queue,
--							   struct shdma_desc, node);
--		desc->partial = ops->get_partial(schan, desc);
--	}
--
--	spin_unlock_irqrestore(&schan->chan_lock, flags);
--
--	shdma_chan_ld_cleanup(schan, true);
--
--	return 0;
--}
--
--static int shdma_config(struct dma_chan *chan,
--			struct dma_slave_config *config)
--{
--	struct shdma_chan *schan = to_shdma_chan(chan);
--
--	/*
--	 * So far only .slave_id is used, but the slave drivers are
--	 * encouraged to also set a transfer direction and an address.
--	 */
--	if (!config)
--		return -EINVAL;
--
--	/*
--	 * We could lock this, but you shouldn't be configuring the
--	 * channel, while using it...
--	 */
--	return shdma_setup_slave(schan,
--				 config->direction == DMA_DEV_TO_MEM ?
--				 config->src_addr : config->dst_addr);
--}
--
--static void shdma_issue_pending(struct dma_chan *chan)
--{
--	struct shdma_chan *schan = to_shdma_chan(chan);
--
--	spin_lock_irq(&schan->chan_lock);
--	if (schan->pm_state == SHDMA_PM_ESTABLISHED)
--		shdma_chan_xfer_ld_queue(schan);
--	else
--		schan->pm_state = SHDMA_PM_PENDING;
--	spin_unlock_irq(&schan->chan_lock);
--}
--
--static enum dma_status shdma_tx_status(struct dma_chan *chan,
--					dma_cookie_t cookie,
--					struct dma_tx_state *txstate)
--{
--	struct shdma_chan *schan = to_shdma_chan(chan);
--	enum dma_status status;
--	unsigned long flags;
--
--	shdma_chan_ld_cleanup(schan, false);
--
--	spin_lock_irqsave(&schan->chan_lock, flags);
--
--	status = dma_cookie_status(chan, cookie, txstate);
--
--	/*
--	 * If we don't find cookie on the queue, it has been aborted and we have
--	 * to report error
--	 */
--	if (status != DMA_COMPLETE) {
--		struct shdma_desc *sdesc;
--		status = DMA_ERROR;
--		list_for_each_entry(sdesc, &schan->ld_queue, node)
--			if (sdesc->cookie == cookie) {
--				status = DMA_IN_PROGRESS;
--				break;
--			}
--	}
--
--	spin_unlock_irqrestore(&schan->chan_lock, flags);
--
--	return status;
--}
--
--/* Called from error IRQ or NMI */
--bool shdma_reset(struct shdma_dev *sdev)
--{
--	const struct shdma_ops *ops = sdev->ops;
--	struct shdma_chan *schan;
--	unsigned int handled = 0;
--	int i;
--
--	/* Reset all channels */
--	shdma_for_each_chan(schan, sdev, i) {
--		struct shdma_desc *sdesc;
--		LIST_HEAD(dl);
--
--		if (!schan)
--			continue;
--
--		spin_lock(&schan->chan_lock);
--
--		/* Stop the channel */
--		ops->halt_channel(schan);
--
--		list_splice_init(&schan->ld_queue, &dl);
--
--		if (!list_empty(&dl)) {
--			dev_dbg(schan->dev, "Bring down channel %d\n", schan->id);
--			pm_runtime_put(schan->dev);
--		}
--		schan->pm_state = SHDMA_PM_ESTABLISHED;
--
--		spin_unlock(&schan->chan_lock);
--
--		/* Complete all  */
--		list_for_each_entry(sdesc, &dl, node) {
--			struct dma_async_tx_descriptor *tx = &sdesc->async_tx;
--
--			sdesc->mark = DESC_IDLE;
--			dmaengine_desc_get_callback_invoke(tx, NULL);
--		}
--
--		spin_lock(&schan->chan_lock);
--		list_splice(&dl, &schan->ld_free);
--		spin_unlock(&schan->chan_lock);
--
--		handled++;
--	}
--
--	return !!handled;
--}
--EXPORT_SYMBOL(shdma_reset);
--
--static irqreturn_t chan_irq(int irq, void *dev)
--{
--	struct shdma_chan *schan = dev;
--	const struct shdma_ops *ops =
--		to_shdma_dev(schan->dma_chan.device)->ops;
--	irqreturn_t ret;
--
--	spin_lock(&schan->chan_lock);
--
--	ret = ops->chan_irq(schan, irq) ? IRQ_WAKE_THREAD : IRQ_NONE;
--
--	spin_unlock(&schan->chan_lock);
--
--	return ret;
--}
--
--static irqreturn_t chan_irqt(int irq, void *dev)
--{
--	struct shdma_chan *schan = dev;
--	const struct shdma_ops *ops =
--		to_shdma_dev(schan->dma_chan.device)->ops;
--	struct shdma_desc *sdesc;
--
--	spin_lock_irq(&schan->chan_lock);
--	list_for_each_entry(sdesc, &schan->ld_queue, node) {
--		if (sdesc->mark == DESC_SUBMITTED &&
--		    ops->desc_completed(schan, sdesc)) {
--			dev_dbg(schan->dev, "done #%d@%p\n",
--				sdesc->async_tx.cookie, &sdesc->async_tx);
--			sdesc->mark = DESC_COMPLETED;
--			break;
--		}
--	}
--	/* Next desc */
--	shdma_chan_xfer_ld_queue(schan);
--	spin_unlock_irq(&schan->chan_lock);
--
--	shdma_chan_ld_cleanup(schan, false);
--
--	return IRQ_HANDLED;
--}
--
--int shdma_request_irq(struct shdma_chan *schan, int irq,
--			   unsigned long flags, const char *name)
--{
--	int ret = devm_request_threaded_irq(schan->dev, irq, chan_irq,
--					    chan_irqt, flags, name, schan);
--
--	schan->irq = ret < 0 ? ret : irq;
--
--	return ret;
--}
--EXPORT_SYMBOL(shdma_request_irq);
--
--void shdma_chan_probe(struct shdma_dev *sdev,
--			   struct shdma_chan *schan, int id)
--{
--	schan->pm_state = SHDMA_PM_ESTABLISHED;
--
--	/* reference struct dma_device */
--	schan->dma_chan.device = &sdev->dma_dev;
--	dma_cookie_init(&schan->dma_chan);
--
--	schan->dev = sdev->dma_dev.dev;
--	schan->id = id;
--
--	if (!schan->max_xfer_len)
--		schan->max_xfer_len = PAGE_SIZE;
--
--	spin_lock_init(&schan->chan_lock);
--
--	/* Init descripter manage list */
--	INIT_LIST_HEAD(&schan->ld_queue);
--	INIT_LIST_HEAD(&schan->ld_free);
--
--	/* Add the channel to DMA device channel list */
--	list_add_tail(&schan->dma_chan.device_node,
--			&sdev->dma_dev.channels);
--	sdev->schan[id] = schan;
--}
--EXPORT_SYMBOL(shdma_chan_probe);
--
--void shdma_chan_remove(struct shdma_chan *schan)
--{
--	list_del(&schan->dma_chan.device_node);
--}
--EXPORT_SYMBOL(shdma_chan_remove);
--
--int shdma_init(struct device *dev, struct shdma_dev *sdev,
--		    int chan_num)
--{
--	struct dma_device *dma_dev = &sdev->dma_dev;
--
--	/*
--	 * Require all call-backs for now, they can trivially be made optional
--	 * later as required
--	 */
--	if (!sdev->ops ||
--	    !sdev->desc_size ||
--	    !sdev->ops->embedded_desc ||
--	    !sdev->ops->start_xfer ||
--	    !sdev->ops->setup_xfer ||
--	    !sdev->ops->set_slave ||
--	    !sdev->ops->desc_setup ||
--	    !sdev->ops->slave_addr ||
--	    !sdev->ops->channel_busy ||
--	    !sdev->ops->halt_channel ||
--	    !sdev->ops->desc_completed)
--		return -EINVAL;
--
--	sdev->schan = kcalloc(chan_num, sizeof(*sdev->schan), GFP_KERNEL);
--	if (!sdev->schan)
--		return -ENOMEM;
--
--	INIT_LIST_HEAD(&dma_dev->channels);
--
--	/* Common and MEMCPY operations */
--	dma_dev->device_alloc_chan_resources
--		= shdma_alloc_chan_resources;
--	dma_dev->device_free_chan_resources = shdma_free_chan_resources;
--	dma_dev->device_prep_dma_memcpy = shdma_prep_memcpy;
--	dma_dev->device_tx_status = shdma_tx_status;
--	dma_dev->device_issue_pending = shdma_issue_pending;
--
--	/* Compulsory for DMA_SLAVE fields */
--	dma_dev->device_prep_slave_sg = shdma_prep_slave_sg;
--	dma_dev->device_prep_dma_cyclic = shdma_prep_dma_cyclic;
--	dma_dev->device_config = shdma_config;
--	dma_dev->device_terminate_all = shdma_terminate_all;
--
--	dma_dev->dev = dev;
--
--	return 0;
--}
--EXPORT_SYMBOL(shdma_init);
--
--void shdma_cleanup(struct shdma_dev *sdev)
--{
--	kfree(sdev->schan);
--}
--EXPORT_SYMBOL(shdma_cleanup);
--
--static int __init shdma_enter(void)
--{
--	shdma_slave_used = bitmap_zalloc(slave_num, GFP_KERNEL);
--	if (!shdma_slave_used)
--		return -ENOMEM;
--	return 0;
--}
--module_init(shdma_enter);
--
--static void __exit shdma_exit(void)
--{
--	bitmap_free(shdma_slave_used);
--}
--module_exit(shdma_exit);
--
--MODULE_LICENSE("GPL v2");
--MODULE_DESCRIPTION("SH-DMA driver base library");
--MODULE_AUTHOR("Guennadi Liakhovetski <g.liakhovetski@gmx.de>");
-diff --git a/drivers/dma/sh/shdma.h b/drivers/dma/sh/shdma.h
-deleted file mode 100644
-index 9c121a4b33ad82..00000000000000
---- a/drivers/dma/sh/shdma.h
-+++ /dev/null
-@@ -1,61 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0+ */
--/*
-- * Renesas SuperH DMA Engine support
-- *
-- * Copyright (C) 2009 Nobuhiro Iwamatsu <iwamatsu.nobuhiro@renesas.com>
-- * Copyright (C) 2009 Renesas Solutions, Inc. All rights reserved.
-- *
-- */
--#ifndef __DMA_SHDMA_H
--#define __DMA_SHDMA_H
--
--#include <linux/sh_dma.h>
--#include <linux/shdma-base.h>
--#include <linux/dmaengine.h>
--#include <linux/interrupt.h>
--#include <linux/list.h>
--
--#define SH_DMAE_MAX_CHANNELS 20
--#define SH_DMAE_TCR_MAX 0x00FFFFFF	/* 16MB */
--
--struct device;
--
--struct sh_dmae_chan {
--	struct shdma_chan shdma_chan;
--	const struct sh_dmae_slave_config *config; /* Slave DMA configuration */
--	int xmit_shift;			/* log_2(bytes_per_xfer) */
--	void __iomem *base;
--	char dev_id[16];		/* unique name per DMAC of channel */
--	int pm_error;
--	dma_addr_t slave_addr;
--};
--
--struct sh_dmae_device {
--	struct shdma_dev shdma_dev;
--	struct sh_dmae_chan *chan[SH_DMAE_MAX_CHANNELS];
--	const struct sh_dmae_pdata *pdata;
--	struct list_head node;
--	void __iomem *chan_reg;
--	void __iomem *dmars;
--	unsigned int chcr_offset;
--	u32 chcr_ie_bit;
--};
--
--struct sh_dmae_regs {
--	u32 sar; /* SAR / source address */
--	u32 dar; /* DAR / destination address */
--	u32 tcr; /* TCR / transfer count */
--};
--
--struct sh_dmae_desc {
--	struct sh_dmae_regs hw;
--	struct shdma_desc shdma_desc;
--};
--
--#define to_sh_chan(chan) container_of(chan, struct sh_dmae_chan, shdma_chan)
--#define to_sh_desc(lh) container_of(lh, struct sh_desc, node)
--#define tx_to_sh_desc(tx) container_of(tx, struct sh_desc, async_tx)
--#define to_sh_dev(chan) container_of(chan->shdma_chan.dma_chan.device,\
--				     struct sh_dmae_device, shdma_dev.dma_dev)
--
--#endif	/* __DMA_SHDMA_H */
-diff --git a/drivers/dma/sh/shdmac.c b/drivers/dma/sh/shdmac.c
-deleted file mode 100644
-index 5aafe548ca5f30..00000000000000
---- a/drivers/dma/sh/shdmac.c
-+++ /dev/null
-@@ -1,938 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0+
--/*
-- * Renesas SuperH DMA Engine support
-- *
-- * base is drivers/dma/flsdma.c
-- *
-- * Copyright (C) 2011-2012 Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-- * Copyright (C) 2009 Nobuhiro Iwamatsu <iwamatsu.nobuhiro@renesas.com>
-- * Copyright (C) 2009 Renesas Solutions, Inc. All rights reserved.
-- * Copyright (C) 2007 Freescale Semiconductor, Inc. All rights reserved.
-- *
-- * - DMA of SuperH does not have Hardware DMA chain mode.
-- * - MAX DMA size is 16MB.
-- *
-- */
--
--#include <linux/delay.h>
--#include <linux/dmaengine.h>
--#include <linux/err.h>
--#include <linux/init.h>
--#include <linux/interrupt.h>
--#include <linux/kdebug.h>
--#include <linux/module.h>
--#include <linux/notifier.h>
--#include <linux/of.h>
--#include <linux/of_device.h>
--#include <linux/platform_device.h>
--#include <linux/pm_runtime.h>
--#include <linux/rculist.h>
--#include <linux/sh_dma.h>
--#include <linux/slab.h>
--#include <linux/spinlock.h>
--
--#include "../dmaengine.h"
--#include "shdma.h"
--
--/* DMA registers */
--#define SAR	0x00	/* Source Address Register */
--#define DAR	0x04	/* Destination Address Register */
--#define TCR	0x08	/* Transfer Count Register */
--#define CHCR	0x0C	/* Channel Control Register */
--#define DMAOR	0x40	/* DMA Operation Register */
--
--#define TEND	0x18 /* USB-DMAC */
--
--#define SH_DMAE_DRV_NAME "sh-dma-engine"
--
--/* Default MEMCPY transfer size = 2^2 = 4 bytes */
--#define LOG2_DEFAULT_XFER_SIZE	2
--#define SH_DMA_SLAVE_NUMBER 256
--#define SH_DMA_TCR_MAX (16 * 1024 * 1024 - 1)
--
--/*
-- * Used for write-side mutual exclusion for the global device list,
-- * read-side synchronization by way of RCU, and per-controller data.
-- */
--static DEFINE_SPINLOCK(sh_dmae_lock);
--static LIST_HEAD(sh_dmae_devices);
--
--/*
-- * Different DMAC implementations provide different ways to clear DMA channels:
-- * (1) none - no CHCLR registers are available
-- * (2) one CHCLR register per channel - 0 has to be written to it to clear
-- *     channel buffers
-- * (3) one CHCLR per several channels - 1 has to be written to the bit,
-- *     corresponding to the specific channel to reset it
-- */
--static void channel_clear(struct sh_dmae_chan *sh_dc)
--{
--	struct sh_dmae_device *shdev = to_sh_dev(sh_dc);
--	const struct sh_dmae_channel *chan_pdata = shdev->pdata->channel +
--		sh_dc->shdma_chan.id;
--	u32 val = shdev->pdata->chclr_bitwise ? 1 << chan_pdata->chclr_bit : 0;
--
--	__raw_writel(val, shdev->chan_reg + chan_pdata->chclr_offset);
--}
--
--static void sh_dmae_writel(struct sh_dmae_chan *sh_dc, u32 data, u32 reg)
--{
--	__raw_writel(data, sh_dc->base + reg);
--}
--
--static u32 sh_dmae_readl(struct sh_dmae_chan *sh_dc, u32 reg)
--{
--	return __raw_readl(sh_dc->base + reg);
--}
--
--static u16 dmaor_read(struct sh_dmae_device *shdev)
--{
--	void __iomem *addr = shdev->chan_reg + DMAOR;
--
--	if (shdev->pdata->dmaor_is_32bit)
--		return __raw_readl(addr);
--	else
--		return __raw_readw(addr);
--}
--
--static void dmaor_write(struct sh_dmae_device *shdev, u16 data)
--{
--	void __iomem *addr = shdev->chan_reg + DMAOR;
--
--	if (shdev->pdata->dmaor_is_32bit)
--		__raw_writel(data, addr);
--	else
--		__raw_writew(data, addr);
--}
--
--static void chcr_write(struct sh_dmae_chan *sh_dc, u32 data)
--{
--	struct sh_dmae_device *shdev = to_sh_dev(sh_dc);
--
--	__raw_writel(data, sh_dc->base + shdev->chcr_offset);
--}
--
--static u32 chcr_read(struct sh_dmae_chan *sh_dc)
--{
--	struct sh_dmae_device *shdev = to_sh_dev(sh_dc);
--
--	return __raw_readl(sh_dc->base + shdev->chcr_offset);
--}
--
--/*
-- * Reset DMA controller
-- *
-- * SH7780 has two DMAOR register
-- */
--static void sh_dmae_ctl_stop(struct sh_dmae_device *shdev)
--{
--	unsigned short dmaor;
--	unsigned long flags;
--
--	spin_lock_irqsave(&sh_dmae_lock, flags);
--
--	dmaor = dmaor_read(shdev);
--	dmaor_write(shdev, dmaor & ~(DMAOR_NMIF | DMAOR_AE | DMAOR_DME));
--
--	spin_unlock_irqrestore(&sh_dmae_lock, flags);
--}
--
--static int sh_dmae_rst(struct sh_dmae_device *shdev)
--{
--	unsigned short dmaor;
--	unsigned long flags;
--
--	spin_lock_irqsave(&sh_dmae_lock, flags);
--
--	dmaor = dmaor_read(shdev) & ~(DMAOR_NMIF | DMAOR_AE | DMAOR_DME);
--
--	if (shdev->pdata->chclr_present) {
--		int i;
--		for (i = 0; i < shdev->pdata->channel_num; i++) {
--			struct sh_dmae_chan *sh_chan = shdev->chan[i];
--			if (sh_chan)
--				channel_clear(sh_chan);
--		}
--	}
--
--	dmaor_write(shdev, dmaor | shdev->pdata->dmaor_init);
--
--	dmaor = dmaor_read(shdev);
--
--	spin_unlock_irqrestore(&sh_dmae_lock, flags);
--
--	if (dmaor & (DMAOR_AE | DMAOR_NMIF)) {
--		dev_warn(shdev->shdma_dev.dma_dev.dev, "Can't initialize DMAOR.\n");
--		return -EIO;
--	}
--	if (shdev->pdata->dmaor_init & ~dmaor)
--		dev_warn(shdev->shdma_dev.dma_dev.dev,
--			 "DMAOR=0x%x hasn't latched the initial value 0x%x.\n",
--			 dmaor, shdev->pdata->dmaor_init);
--	return 0;
--}
--
--static bool dmae_is_busy(struct sh_dmae_chan *sh_chan)
--{
--	u32 chcr = chcr_read(sh_chan);
--
--	if ((chcr & (CHCR_DE | CHCR_TE)) == CHCR_DE)
--		return true; /* working */
--
--	return false; /* waiting */
--}
--
--static unsigned int calc_xmit_shift(struct sh_dmae_chan *sh_chan, u32 chcr)
--{
--	struct sh_dmae_device *shdev = to_sh_dev(sh_chan);
--	const struct sh_dmae_pdata *pdata = shdev->pdata;
--	int cnt = ((chcr & pdata->ts_low_mask) >> pdata->ts_low_shift) |
--		((chcr & pdata->ts_high_mask) >> pdata->ts_high_shift);
--
--	if (cnt >= pdata->ts_shift_num)
--		cnt = 0;
--
--	return pdata->ts_shift[cnt];
--}
--
--static u32 log2size_to_chcr(struct sh_dmae_chan *sh_chan, int l2size)
--{
--	struct sh_dmae_device *shdev = to_sh_dev(sh_chan);
--	const struct sh_dmae_pdata *pdata = shdev->pdata;
--	int i;
--
--	for (i = 0; i < pdata->ts_shift_num; i++)
--		if (pdata->ts_shift[i] == l2size)
--			break;
--
--	if (i == pdata->ts_shift_num)
--		i = 0;
--
--	return ((i << pdata->ts_low_shift) & pdata->ts_low_mask) |
--		((i << pdata->ts_high_shift) & pdata->ts_high_mask);
--}
--
--static void dmae_set_reg(struct sh_dmae_chan *sh_chan, struct sh_dmae_regs *hw)
--{
--	sh_dmae_writel(sh_chan, hw->sar, SAR);
--	sh_dmae_writel(sh_chan, hw->dar, DAR);
--	sh_dmae_writel(sh_chan, hw->tcr >> sh_chan->xmit_shift, TCR);
--}
--
--static void dmae_start(struct sh_dmae_chan *sh_chan)
--{
--	struct sh_dmae_device *shdev = to_sh_dev(sh_chan);
--	u32 chcr = chcr_read(sh_chan);
--
--	if (shdev->pdata->needs_tend_set)
--		sh_dmae_writel(sh_chan, 0xFFFFFFFF, TEND);
--
--	chcr |= CHCR_DE | shdev->chcr_ie_bit;
--	chcr_write(sh_chan, chcr & ~CHCR_TE);
--}
--
--static void dmae_init(struct sh_dmae_chan *sh_chan)
--{
--	/*
--	 * Default configuration for dual address memory-memory transfer.
--	 */
--	u32 chcr = DM_INC | SM_INC | RS_AUTO | log2size_to_chcr(sh_chan,
--						   LOG2_DEFAULT_XFER_SIZE);
--	sh_chan->xmit_shift = calc_xmit_shift(sh_chan, chcr);
--	chcr_write(sh_chan, chcr);
--}
--
--static int dmae_set_chcr(struct sh_dmae_chan *sh_chan, u32 val)
--{
--	/* If DMA is active, cannot set CHCR. TODO: remove this superfluous check */
--	if (dmae_is_busy(sh_chan))
--		return -EBUSY;
--
--	sh_chan->xmit_shift = calc_xmit_shift(sh_chan, val);
--	chcr_write(sh_chan, val);
--
--	return 0;
--}
--
--static int dmae_set_dmars(struct sh_dmae_chan *sh_chan, u16 val)
--{
--	struct sh_dmae_device *shdev = to_sh_dev(sh_chan);
--	const struct sh_dmae_pdata *pdata = shdev->pdata;
--	const struct sh_dmae_channel *chan_pdata = &pdata->channel[sh_chan->shdma_chan.id];
--	void __iomem *addr = shdev->dmars;
--	unsigned int shift = chan_pdata->dmars_bit;
--
--	if (dmae_is_busy(sh_chan))
--		return -EBUSY;
--
--	if (pdata->no_dmars)
--		return 0;
--
--	/* in the case of a missing DMARS resource use first memory window */
--	if (!addr)
--		addr = shdev->chan_reg;
--	addr += chan_pdata->dmars;
--
--	__raw_writew((__raw_readw(addr) & (0xff00 >> shift)) | (val << shift),
--		     addr);
--
--	return 0;
--}
--
--static void sh_dmae_start_xfer(struct shdma_chan *schan,
--			       struct shdma_desc *sdesc)
--{
--	struct sh_dmae_chan *sh_chan = container_of(schan, struct sh_dmae_chan,
--						    shdma_chan);
--	struct sh_dmae_desc *sh_desc = container_of(sdesc,
--					struct sh_dmae_desc, shdma_desc);
--	dev_dbg(sh_chan->shdma_chan.dev, "Queue #%d to %d: %u@%x -> %x\n",
--		sdesc->async_tx.cookie, sh_chan->shdma_chan.id,
--		sh_desc->hw.tcr, sh_desc->hw.sar, sh_desc->hw.dar);
--	/* Get the ld start address from ld_queue */
--	dmae_set_reg(sh_chan, &sh_desc->hw);
--	dmae_start(sh_chan);
--}
--
--static bool sh_dmae_channel_busy(struct shdma_chan *schan)
--{
--	struct sh_dmae_chan *sh_chan = container_of(schan, struct sh_dmae_chan,
--						    shdma_chan);
--	return dmae_is_busy(sh_chan);
--}
--
--static void sh_dmae_setup_xfer(struct shdma_chan *schan,
--			       int slave_id)
--{
--	struct sh_dmae_chan *sh_chan = container_of(schan, struct sh_dmae_chan,
--						    shdma_chan);
--
--	if (slave_id >= 0) {
--		const struct sh_dmae_slave_config *cfg =
--			sh_chan->config;
--
--		dmae_set_dmars(sh_chan, cfg->mid_rid);
--		dmae_set_chcr(sh_chan, cfg->chcr);
--	} else {
--		dmae_init(sh_chan);
--	}
--}
--
--/*
-- * Find a slave channel configuration from the contoller list by either a slave
-- * ID in the non-DT case, or by a MID/RID value in the DT case
-- */
--static const struct sh_dmae_slave_config *dmae_find_slave(
--	struct sh_dmae_chan *sh_chan, int match)
--{
--	struct sh_dmae_device *shdev = to_sh_dev(sh_chan);
--	const struct sh_dmae_pdata *pdata = shdev->pdata;
--	const struct sh_dmae_slave_config *cfg;
--	int i;
--
--	if (!sh_chan->shdma_chan.dev->of_node) {
--		if (match >= SH_DMA_SLAVE_NUMBER)
--			return NULL;
--
--		for (i = 0, cfg = pdata->slave; i < pdata->slave_num; i++, cfg++)
--			if (cfg->slave_id == match)
--				return cfg;
--	} else {
--		for (i = 0, cfg = pdata->slave; i < pdata->slave_num; i++, cfg++)
--			if (cfg->mid_rid == match) {
--				sh_chan->shdma_chan.slave_id = i;
--				return cfg;
--			}
--	}
--
--	return NULL;
--}
--
--static int sh_dmae_set_slave(struct shdma_chan *schan,
--			     int slave_id, dma_addr_t slave_addr, bool try)
--{
--	struct sh_dmae_chan *sh_chan = container_of(schan, struct sh_dmae_chan,
--						    shdma_chan);
--	const struct sh_dmae_slave_config *cfg = dmae_find_slave(sh_chan, slave_id);
--	if (!cfg)
--		return -ENXIO;
--
--	if (!try) {
--		sh_chan->config = cfg;
--		sh_chan->slave_addr = slave_addr ? : cfg->addr;
--	}
--
--	return 0;
--}
--
--static void dmae_halt(struct sh_dmae_chan *sh_chan)
--{
--	struct sh_dmae_device *shdev = to_sh_dev(sh_chan);
--	u32 chcr = chcr_read(sh_chan);
--
--	chcr &= ~(CHCR_DE | CHCR_TE | shdev->chcr_ie_bit);
--	chcr_write(sh_chan, chcr);
--}
--
--static int sh_dmae_desc_setup(struct shdma_chan *schan,
--			      struct shdma_desc *sdesc,
--			      dma_addr_t src, dma_addr_t dst, size_t *len)
--{
--	struct sh_dmae_desc *sh_desc = container_of(sdesc,
--					struct sh_dmae_desc, shdma_desc);
--
--	if (*len > schan->max_xfer_len)
--		*len = schan->max_xfer_len;
--
--	sh_desc->hw.sar = src;
--	sh_desc->hw.dar = dst;
--	sh_desc->hw.tcr = *len;
--
--	return 0;
--}
--
--static void sh_dmae_halt(struct shdma_chan *schan)
--{
--	struct sh_dmae_chan *sh_chan = container_of(schan, struct sh_dmae_chan,
--						    shdma_chan);
--	dmae_halt(sh_chan);
--}
--
--static bool sh_dmae_chan_irq(struct shdma_chan *schan, int irq)
--{
--	struct sh_dmae_chan *sh_chan = container_of(schan, struct sh_dmae_chan,
--						    shdma_chan);
--
--	if (!(chcr_read(sh_chan) & CHCR_TE))
--		return false;
--
--	/* DMA stop */
--	dmae_halt(sh_chan);
--
--	return true;
--}
--
--static size_t sh_dmae_get_partial(struct shdma_chan *schan,
--				  struct shdma_desc *sdesc)
--{
--	struct sh_dmae_chan *sh_chan = container_of(schan, struct sh_dmae_chan,
--						    shdma_chan);
--	struct sh_dmae_desc *sh_desc = container_of(sdesc,
--					struct sh_dmae_desc, shdma_desc);
--	return sh_desc->hw.tcr -
--		(sh_dmae_readl(sh_chan, TCR) << sh_chan->xmit_shift);
--}
--
--/* Called from error IRQ or NMI */
--static bool sh_dmae_reset(struct sh_dmae_device *shdev)
--{
--	bool ret;
--
--	/* halt the dma controller */
--	sh_dmae_ctl_stop(shdev);
--
--	/* We cannot detect, which channel caused the error, have to reset all */
--	ret = shdma_reset(&shdev->shdma_dev);
--
--	sh_dmae_rst(shdev);
--
--	return ret;
--}
--
--static irqreturn_t sh_dmae_err(int irq, void *data)
--{
--	struct sh_dmae_device *shdev = data;
--
--	if (!(dmaor_read(shdev) & DMAOR_AE))
--		return IRQ_NONE;
--
--	sh_dmae_reset(shdev);
--	return IRQ_HANDLED;
--}
--
--static bool sh_dmae_desc_completed(struct shdma_chan *schan,
--				   struct shdma_desc *sdesc)
--{
--	struct sh_dmae_chan *sh_chan = container_of(schan,
--					struct sh_dmae_chan, shdma_chan);
--	struct sh_dmae_desc *sh_desc = container_of(sdesc,
--					struct sh_dmae_desc, shdma_desc);
--	u32 sar_buf = sh_dmae_readl(sh_chan, SAR);
--	u32 dar_buf = sh_dmae_readl(sh_chan, DAR);
--
--	return	(sdesc->direction == DMA_DEV_TO_MEM &&
--		 (sh_desc->hw.dar + sh_desc->hw.tcr) == dar_buf) ||
--		(sdesc->direction != DMA_DEV_TO_MEM &&
--		 (sh_desc->hw.sar + sh_desc->hw.tcr) == sar_buf);
--}
--
--static bool sh_dmae_nmi_notify(struct sh_dmae_device *shdev)
--{
--	/* Fast path out if NMIF is not asserted for this controller */
--	if ((dmaor_read(shdev) & DMAOR_NMIF) == 0)
--		return false;
--
--	return sh_dmae_reset(shdev);
--}
--
--static int sh_dmae_nmi_handler(struct notifier_block *self,
--			       unsigned long cmd, void *data)
--{
--	struct sh_dmae_device *shdev;
--	int ret = NOTIFY_DONE;
--	bool triggered;
--
--	/*
--	 * Only concern ourselves with NMI events.
--	 *
--	 * Normally we would check the die chain value, but as this needs
--	 * to be architecture independent, check for NMI context instead.
--	 */
--	if (!in_nmi())
--		return NOTIFY_DONE;
--
--	rcu_read_lock();
--	list_for_each_entry_rcu(shdev, &sh_dmae_devices, node) {
--		/*
--		 * Only stop if one of the controllers has NMIF asserted,
--		 * we do not want to interfere with regular address error
--		 * handling or NMI events that don't concern the DMACs.
--		 */
--		triggered = sh_dmae_nmi_notify(shdev);
--		if (triggered == true)
--			ret = NOTIFY_OK;
--	}
--	rcu_read_unlock();
--
--	return ret;
--}
--
--static struct notifier_block sh_dmae_nmi_notifier __read_mostly = {
--	.notifier_call	= sh_dmae_nmi_handler,
--
--	/* Run before NMI debug handler and KGDB */
--	.priority	= 1,
--};
--
--static int sh_dmae_chan_probe(struct sh_dmae_device *shdev, int id,
--					int irq, unsigned long flags)
--{
--	const struct sh_dmae_channel *chan_pdata = &shdev->pdata->channel[id];
--	struct shdma_dev *sdev = &shdev->shdma_dev;
--	struct platform_device *pdev = to_platform_device(sdev->dma_dev.dev);
--	struct sh_dmae_chan *sh_chan;
--	struct shdma_chan *schan;
--	int err;
--
--	sh_chan = devm_kzalloc(sdev->dma_dev.dev, sizeof(struct sh_dmae_chan),
--			       GFP_KERNEL);
--	if (!sh_chan)
--		return -ENOMEM;
--
--	schan = &sh_chan->shdma_chan;
--	schan->max_xfer_len = SH_DMA_TCR_MAX + 1;
--
--	shdma_chan_probe(sdev, schan, id);
--
--	sh_chan->base = shdev->chan_reg + chan_pdata->offset;
--
--	/* set up channel irq */
--	if (pdev->id >= 0)
--		snprintf(sh_chan->dev_id, sizeof(sh_chan->dev_id),
--			 "sh-dmae%d.%d", pdev->id, id);
--	else
--		snprintf(sh_chan->dev_id, sizeof(sh_chan->dev_id),
--			 "sh-dma%d", id);
--
--	err = shdma_request_irq(schan, irq, flags, sh_chan->dev_id);
--	if (err) {
--		dev_err(sdev->dma_dev.dev,
--			"DMA channel %d request_irq error %d\n",
--			id, err);
--		goto err_no_irq;
--	}
--
--	shdev->chan[id] = sh_chan;
--	return 0;
--
--err_no_irq:
--	/* remove from dmaengine device node */
--	shdma_chan_remove(schan);
--	return err;
--}
--
--static void sh_dmae_chan_remove(struct sh_dmae_device *shdev)
--{
--	struct shdma_chan *schan;
--	int i;
--
--	shdma_for_each_chan(schan, &shdev->shdma_dev, i) {
--		BUG_ON(!schan);
--
--		shdma_chan_remove(schan);
--	}
--}
--
--#ifdef CONFIG_PM
--static int sh_dmae_runtime_suspend(struct device *dev)
--{
--	struct sh_dmae_device *shdev = dev_get_drvdata(dev);
--
--	sh_dmae_ctl_stop(shdev);
--	return 0;
--}
--
--static int sh_dmae_runtime_resume(struct device *dev)
--{
--	struct sh_dmae_device *shdev = dev_get_drvdata(dev);
--
--	return sh_dmae_rst(shdev);
--}
--#endif
--
--#ifdef CONFIG_PM_SLEEP
--static int sh_dmae_suspend(struct device *dev)
--{
--	struct sh_dmae_device *shdev = dev_get_drvdata(dev);
--
--	sh_dmae_ctl_stop(shdev);
--	return 0;
--}
--
--static int sh_dmae_resume(struct device *dev)
--{
--	struct sh_dmae_device *shdev = dev_get_drvdata(dev);
--	int i, ret;
--
--	ret = sh_dmae_rst(shdev);
+-	ret = i2c_add_numbered_adapter(&id->adap);
 -	if (ret < 0)
--		dev_err(dev, "Failed to reset!\n");
+-		goto out4;
 -
--	for (i = 0; i < shdev->pdata->channel_num; i++) {
--		struct sh_dmae_chan *sh_chan = shdev->chan[i];
+-	platform_set_drvdata(pdev, id);
 -
--		if (!sh_chan->shdma_chan.desc_num)
--			continue;
--
--		if (sh_chan->shdma_chan.slave_id >= 0) {
--			const struct sh_dmae_slave_config *cfg = sh_chan->config;
--			dmae_set_dmars(sh_chan, cfg->mid_rid);
--			dmae_set_chcr(sh_chan, cfg->chcr);
--		} else {
--			dmae_init(sh_chan);
--		}
--	}
+-	dev_info(&pdev->dev, "%d kHz mmio %08x irq %d\n",
+-		 pd->speed_khz, res->start, id->irq);
 -
 -	return 0;
--}
--#endif
 -
--static const struct dev_pm_ops sh_dmae_pm = {
--	SET_SYSTEM_SLEEP_PM_OPS(sh_dmae_suspend, sh_dmae_resume)
--	SET_RUNTIME_PM_OPS(sh_dmae_runtime_suspend, sh_dmae_runtime_resume,
--			   NULL)
--};
--
--static dma_addr_t sh_dmae_slave_addr(struct shdma_chan *schan)
--{
--	struct sh_dmae_chan *sh_chan = container_of(schan,
--					struct sh_dmae_chan, shdma_chan);
--
--	/*
--	 * Implicit BUG_ON(!sh_chan->config)
--	 * This is an exclusive slave DMA operation, may only be called after a
--	 * successful slave configuration.
--	 */
--	return sh_chan->slave_addr;
+-out4:
+-	free_irq(id->irq, id);
+-out3:
+-	iounmap(id->iobase);
+-out2:
+-	release_resource(id->ioarea);
+-	kfree(id->ioarea);
+-out1:
+-	kfree(id);
+-out0:
+-	return ret;
 -}
 -
--static struct shdma_desc *sh_dmae_embedded_desc(void *buf, int i)
+-static int sh7760_i2c_remove(struct platform_device *pdev)
 -{
--	return &((struct sh_dmae_desc *)buf)[i].shdma_desc;
--}
+-	struct cami2c *id = platform_get_drvdata(pdev);
 -
--static const struct shdma_ops sh_dmae_shdma_ops = {
--	.desc_completed = sh_dmae_desc_completed,
--	.halt_channel = sh_dmae_halt,
--	.channel_busy = sh_dmae_channel_busy,
--	.slave_addr = sh_dmae_slave_addr,
--	.desc_setup = sh_dmae_desc_setup,
--	.set_slave = sh_dmae_set_slave,
--	.setup_xfer = sh_dmae_setup_xfer,
--	.start_xfer = sh_dmae_start_xfer,
--	.embedded_desc = sh_dmae_embedded_desc,
--	.chan_irq = sh_dmae_chan_irq,
--	.get_partial = sh_dmae_get_partial,
--};
--
--static int sh_dmae_probe(struct platform_device *pdev)
--{
--	const enum dma_slave_buswidth widths =
--		DMA_SLAVE_BUSWIDTH_1_BYTE   | DMA_SLAVE_BUSWIDTH_2_BYTES |
--		DMA_SLAVE_BUSWIDTH_4_BYTES  | DMA_SLAVE_BUSWIDTH_8_BYTES |
--		DMA_SLAVE_BUSWIDTH_16_BYTES | DMA_SLAVE_BUSWIDTH_32_BYTES;
--	const struct sh_dmae_pdata *pdata;
--	unsigned long chan_flag[SH_DMAE_MAX_CHANNELS] = {};
--	int chan_irq[SH_DMAE_MAX_CHANNELS];
--	unsigned long irqflags = 0;
--	int err, errirq, i, irq_cnt = 0, irqres = 0, irq_cap = 0;
--	struct sh_dmae_device *shdev;
--	struct dma_device *dma_dev;
--	struct resource *chan, *dmars, *errirq_res, *chanirq_res;
--
--	if (pdev->dev.of_node)
--		pdata = of_device_get_match_data(&pdev->dev);
--	else
--		pdata = dev_get_platdata(&pdev->dev);
--
--	/* get platform data */
--	if (!pdata || !pdata->channel_num)
--		return -ENODEV;
--
--	chan = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	/* DMARS area is optional */
--	dmars = platform_get_resource(pdev, IORESOURCE_MEM, 1);
--	/*
--	 * IRQ resources:
--	 * 1. there always must be at least one IRQ IO-resource. On SH4 it is
--	 *    the error IRQ, in which case it is the only IRQ in this resource:
--	 *    start == end. If it is the only IRQ resource, all channels also
--	 *    use the same IRQ.
--	 * 2. DMA channel IRQ resources can be specified one per resource or in
--	 *    ranges (start != end)
--	 * 3. iff all events (channels and, optionally, error) on this
--	 *    controller use the same IRQ, only one IRQ resource can be
--	 *    specified, otherwise there must be one IRQ per channel, even if
--	 *    some of them are equal
--	 * 4. if all IRQs on this controller are equal or if some specific IRQs
--	 *    specify IORESOURCE_IRQ_SHAREABLE in their resources, they will be
--	 *    requested with the IRQF_SHARED flag
--	 */
--	errirq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
--	if (!chan || !errirq_res)
--		return -ENODEV;
--
--	shdev = devm_kzalloc(&pdev->dev, sizeof(struct sh_dmae_device),
--			     GFP_KERNEL);
--	if (!shdev)
--		return -ENOMEM;
--
--	dma_dev = &shdev->shdma_dev.dma_dev;
--
--	shdev->chan_reg = devm_ioremap_resource(&pdev->dev, chan);
--	if (IS_ERR(shdev->chan_reg))
--		return PTR_ERR(shdev->chan_reg);
--	if (dmars) {
--		shdev->dmars = devm_ioremap_resource(&pdev->dev, dmars);
--		if (IS_ERR(shdev->dmars))
--			return PTR_ERR(shdev->dmars);
--	}
--
--	dma_dev->src_addr_widths = widths;
--	dma_dev->dst_addr_widths = widths;
--	dma_dev->directions = BIT(DMA_MEM_TO_DEV) | BIT(DMA_DEV_TO_MEM);
--	dma_dev->residue_granularity = DMA_RESIDUE_GRANULARITY_DESCRIPTOR;
--
--	if (!pdata->slave_only)
--		dma_cap_set(DMA_MEMCPY, dma_dev->cap_mask);
--	if (pdata->slave && pdata->slave_num)
--		dma_cap_set(DMA_SLAVE, dma_dev->cap_mask);
--
--	/* Default transfer size of 32 bytes requires 32-byte alignment */
--	dma_dev->copy_align = LOG2_DEFAULT_XFER_SIZE;
--
--	shdev->shdma_dev.ops = &sh_dmae_shdma_ops;
--	shdev->shdma_dev.desc_size = sizeof(struct sh_dmae_desc);
--	err = shdma_init(&pdev->dev, &shdev->shdma_dev,
--			      pdata->channel_num);
--	if (err < 0)
--		goto eshdma;
--
--	/* platform data */
--	shdev->pdata = pdata;
--
--	if (pdata->chcr_offset)
--		shdev->chcr_offset = pdata->chcr_offset;
--	else
--		shdev->chcr_offset = CHCR;
--
--	if (pdata->chcr_ie_bit)
--		shdev->chcr_ie_bit = pdata->chcr_ie_bit;
--	else
--		shdev->chcr_ie_bit = CHCR_IE;
--
--	platform_set_drvdata(pdev, shdev);
--
--	pm_runtime_enable(&pdev->dev);
--	err = pm_runtime_get_sync(&pdev->dev);
--	if (err < 0)
--		dev_err(&pdev->dev, "%s(): GET = %d\n", __func__, err);
--
--	spin_lock_irq(&sh_dmae_lock);
--	list_add_tail_rcu(&shdev->node, &sh_dmae_devices);
--	spin_unlock_irq(&sh_dmae_lock);
--
--	/* reset dma controller - only needed as a test */
--	err = sh_dmae_rst(shdev);
--	if (err)
--		goto rst_err;
--
--	if (IS_ENABLED(CONFIG_CPU_SH4) || IS_ENABLED(CONFIG_ARCH_RENESAS)) {
--		chanirq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 1);
--
--		if (!chanirq_res)
--			chanirq_res = errirq_res;
--		else
--			irqres++;
--
--		if (chanirq_res == errirq_res ||
--		    (errirq_res->flags & IORESOURCE_BITS) == IORESOURCE_IRQ_SHAREABLE)
--			irqflags = IRQF_SHARED;
--
--		errirq = errirq_res->start;
--
--		err = devm_request_irq(&pdev->dev, errirq, sh_dmae_err,
--				       irqflags, "DMAC Address Error", shdev);
--		if (err) {
--			dev_err(&pdev->dev,
--				"DMA failed requesting irq #%d, error %d\n",
--				errirq, err);
--			goto eirq_err;
--		}
--	} else {
--		chanirq_res = errirq_res;
--	}
--
--	if (chanirq_res->start == chanirq_res->end &&
--	    !platform_get_resource(pdev, IORESOURCE_IRQ, 1)) {
--		/* Special case - all multiplexed */
--		for (; irq_cnt < pdata->channel_num; irq_cnt++) {
--			if (irq_cnt < SH_DMAE_MAX_CHANNELS) {
--				chan_irq[irq_cnt] = chanirq_res->start;
--				chan_flag[irq_cnt] = IRQF_SHARED;
--			} else {
--				irq_cap = 1;
--				break;
--			}
--		}
--	} else {
--		do {
--			for (i = chanirq_res->start; i <= chanirq_res->end; i++) {
--				if (irq_cnt >= SH_DMAE_MAX_CHANNELS) {
--					irq_cap = 1;
--					break;
--				}
--
--				if ((errirq_res->flags & IORESOURCE_BITS) ==
--				    IORESOURCE_IRQ_SHAREABLE)
--					chan_flag[irq_cnt] = IRQF_SHARED;
--				else
--					chan_flag[irq_cnt] = 0;
--				dev_dbg(&pdev->dev,
--					"Found IRQ %d for channel %d\n",
--					i, irq_cnt);
--				chan_irq[irq_cnt++] = i;
--			}
--
--			if (irq_cnt >= SH_DMAE_MAX_CHANNELS)
--				break;
--
--			chanirq_res = platform_get_resource(pdev,
--						IORESOURCE_IRQ, ++irqres);
--		} while (irq_cnt < pdata->channel_num && chanirq_res);
--	}
--
--	/* Create DMA Channel */
--	for (i = 0; i < irq_cnt; i++) {
--		err = sh_dmae_chan_probe(shdev, i, chan_irq[i], chan_flag[i]);
--		if (err)
--			goto chan_probe_err;
--	}
--
--	if (irq_cap)
--		dev_notice(&pdev->dev, "Attempting to register %d DMA "
--			   "channels when a maximum of %d are supported.\n",
--			   pdata->channel_num, SH_DMAE_MAX_CHANNELS);
--
--	pm_runtime_put(&pdev->dev);
--
--	err = dma_async_device_register(&shdev->shdma_dev.dma_dev);
--	if (err < 0)
--		goto edmadevreg;
--
--	return err;
--
--edmadevreg:
--	pm_runtime_get(&pdev->dev);
--
--chan_probe_err:
--	sh_dmae_chan_remove(shdev);
--
--eirq_err:
--rst_err:
--	spin_lock_irq(&sh_dmae_lock);
--	list_del_rcu(&shdev->node);
--	spin_unlock_irq(&sh_dmae_lock);
--
--	pm_runtime_put(&pdev->dev);
--	pm_runtime_disable(&pdev->dev);
--
--	shdma_cleanup(&shdev->shdma_dev);
--eshdma:
--	synchronize_rcu();
--
--	return err;
--}
--
--static int sh_dmae_remove(struct platform_device *pdev)
--{
--	struct sh_dmae_device *shdev = platform_get_drvdata(pdev);
--	struct dma_device *dma_dev = &shdev->shdma_dev.dma_dev;
--
--	dma_async_device_unregister(dma_dev);
--
--	spin_lock_irq(&sh_dmae_lock);
--	list_del_rcu(&shdev->node);
--	spin_unlock_irq(&sh_dmae_lock);
--
--	pm_runtime_disable(&pdev->dev);
--
--	sh_dmae_chan_remove(shdev);
--	shdma_cleanup(&shdev->shdma_dev);
--
--	synchronize_rcu();
+-	i2c_del_adapter(&id->adap);
+-	free_irq(id->irq, id);
+-	iounmap(id->iobase);
+-	release_resource(id->ioarea);
+-	kfree(id->ioarea);
+-	kfree(id);
 -
 -	return 0;
 -}
 -
--static struct platform_driver sh_dmae_driver = {
--	.driver		= {
--		.pm	= &sh_dmae_pm,
--		.name	= SH_DMAE_DRV_NAME,
+-static struct platform_driver sh7760_i2c_drv = {
+-	.driver	= {
+-		.name	= SH7760_I2C_DEVNAME,
 -	},
--	.remove		= sh_dmae_remove,
+-	.probe		= sh7760_i2c_probe,
+-	.remove		= sh7760_i2c_remove,
 -};
 -
--static int __init sh_dmae_init(void)
--{
--	/* Wire up NMI handling */
--	int err = register_die_notifier(&sh_dmae_nmi_notifier);
--	if (err)
--		return err;
+-module_platform_driver(sh7760_i2c_drv);
 -
--	return platform_driver_probe(&sh_dmae_driver, sh_dmae_probe);
--}
--module_init(sh_dmae_init);
--
--static void __exit sh_dmae_exit(void)
--{
--	platform_driver_unregister(&sh_dmae_driver);
--
--	unregister_die_notifier(&sh_dmae_nmi_notifier);
--}
--module_exit(sh_dmae_exit);
--
--MODULE_AUTHOR("Nobuhiro Iwamatsu <iwamatsu.nobuhiro@renesas.com>");
--MODULE_DESCRIPTION("Renesas SH DMA Engine driver");
 -MODULE_LICENSE("GPL");
--MODULE_ALIAS("platform:" SH_DMAE_DRV_NAME);
-diff --git a/include/linux/shdma-base.h b/include/linux/shdma-base.h
-index 6dfd05ef5c2d9f..dd32aba344757f 100644
---- a/include/linux/shdma-base.h
-+++ b/include/linux/shdma-base.h
-@@ -122,13 +122,9 @@ void shdma_chan_remove(struct shdma_chan *schan);
- int shdma_init(struct device *dev, struct shdma_dev *sdev,
- 		    int chan_num);
- void shdma_cleanup(struct shdma_dev *sdev);
--#if IS_ENABLED(CONFIG_SH_DMAE_BASE)
--bool shdma_chan_filter(struct dma_chan *chan, void *arg);
--#else
- static inline bool shdma_chan_filter(struct dma_chan *chan, void *arg)
- {
- 	return false;
- }
--#endif
- 
- #endif
+-MODULE_DESCRIPTION("SH7760 I2C bus driver");
+-MODULE_AUTHOR("Manuel Lauss <mano@roarinelk.homelinux.net>");
 -- 
 2.39.0
 
