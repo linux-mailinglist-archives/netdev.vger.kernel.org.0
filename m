@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F065668D01
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 07:30:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 810EB668CD1
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 07:30:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238226AbjAMGZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 01:25:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33442 "EHLO
+        id S240755AbjAMG0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 01:26:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239005AbjAMGYb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 01:24:31 -0500
+        with ESMTP id S234761AbjAMGYg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 01:24:36 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E0669B33;
-        Thu, 12 Jan 2023 22:24:11 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 498495C1E9;
+        Thu, 12 Jan 2023 22:24:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=YWdaNZZD6eiGGHiQwqB4d/n7vbdllZAZ4PVlQ9KrUog=; b=XtPGvVCciAHH/ZLi442ryHF6rq
-        FvgKnRpeqvwCx9UPgqvxyoSez2P7/TsQH4CCdKmAVKMjtEs7KN5fhRpLHTjMdmTb4fMzzf6CmNKlf
-        rXdbPlEScIlBvjJrEpLQ9Qz+cT5QX9vrjKWKFTMLmEzur4VlSN6Xl4jhStM3ZSCwOvwfNkCRTuNnR
-        wJyIbeNnp1Bzl3/RFdCiY+e0gUrTlrvJFtmxx0gpbmv+sIP/JUZGEtJIDk593yDFSk9RClQJfmg7Y
-        4kjnLNtrXGl9NJsEFRSHVUmWUakVHMHmyXzQxjKYElq0QLSA3Qcs/NoVXvf4FXw2zlWkEQ7IFJk43
-        R2e+Go7Q==;
+        bh=erzrm4Ty5idHGyu1jH564OsyzlBO2Da+dsAYs2Uai6g=; b=PetC+G54fA2MHOPn5yey+DdmCl
+        R14MH27shd3orjHYKWEFGSdK5sHDVqWEit9ROBI9QtItF8PeoTYlNLc27qCKd4mBlGl8jANIltvc4
+        5uvf/bF6LMZMC3fRULQGtDiirUzaHq9DinFdafA4frKBNm+yAMh94U6OnJ7LGL0XptNiPpS5DsIWd
+        GO3TjAdGZQt0xM+O6jEYTtFY/OIcQA9dsgy6SBP+X4K3WFPlg8cv17nlZY99em0nT73cU9pNa99ua
+        b3uzExO4rYmov4NBJ22hBeTV6aNAU0ZwIK9zJ00YufRoOb+tROzO9aXzsvT/iQZ6VeSKM1biDvQti
+        x8bvB2Pg==;
 Received: from [2001:4bb8:181:656b:9509:7d20:8d39:f895] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pGDTr-000lRy-FI; Fri, 13 Jan 2023 06:24:00 +0000
+        id 1pGDTu-000lTC-Dy; Fri, 13 Jan 2023 06:24:04 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Yoshinori Sato <ysato@users.sourceforge.jp>,
         Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
@@ -45,9 +45,9 @@ Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
         linux-sh@vger.kernel.org
-Subject: [PATCH 04/22] sound: remove sound/sh
-Date:   Fri, 13 Jan 2023 07:23:21 +0100
-Message-Id: <20230113062339.1909087-5-hch@lst.de>
+Subject: [PATCH 05/22] sound: remove sh-specific sounds/soc/sh drivers
+Date:   Fri, 13 Jan 2023 07:23:22 +0100
+Message-Id: <20230113062339.1909087-6-hch@lst.de>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230113062339.1909087-1-hch@lst.de>
 References: <20230113062339.1909087-1-hch@lst.de>
@@ -68,1227 +68,3091 @@ Now that arch/sh is removed these drivers are dead code.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- sound/Kconfig           |   2 -
- sound/Makefile          |   2 +-
- sound/sh/Kconfig        |  32 --
- sound/sh/Makefile       |  11 -
- sound/sh/aica.c         | 628 ----------------------------------------
- sound/sh/aica.h         |  68 -----
- sound/sh/sh_dac_audio.c | 412 --------------------------
- 7 files changed, 1 insertion(+), 1154 deletions(-)
- delete mode 100644 sound/sh/Kconfig
- delete mode 100644 sound/sh/Makefile
- delete mode 100644 sound/sh/aica.c
- delete mode 100644 sound/sh/aica.h
- delete mode 100644 sound/sh/sh_dac_audio.c
+ sound/soc/sh/Kconfig       |  44 --
+ sound/soc/sh/Makefile      |  16 -
+ sound/soc/sh/dma-sh7760.c  | 334 ----------------
+ sound/soc/sh/fsi.c         |   9 -
+ sound/soc/sh/hac.c         | 345 ----------------
+ sound/soc/sh/migor.c       | 205 ----------
+ sound/soc/sh/sh7760-ac97.c |  72 ----
+ sound/soc/sh/siu.h         | 180 ---------
+ sound/soc/sh/siu_dai.c     | 799 -------------------------------------
+ sound/soc/sh/siu_pcm.c     | 553 -------------------------
+ sound/soc/sh/ssi.c         | 403 -------------------
+ 11 files changed, 2960 deletions(-)
+ delete mode 100644 sound/soc/sh/dma-sh7760.c
+ delete mode 100644 sound/soc/sh/hac.c
+ delete mode 100644 sound/soc/sh/migor.c
+ delete mode 100644 sound/soc/sh/sh7760-ac97.c
+ delete mode 100644 sound/soc/sh/siu.h
+ delete mode 100644 sound/soc/sh/siu_dai.c
+ delete mode 100644 sound/soc/sh/siu_pcm.c
+ delete mode 100644 sound/soc/sh/ssi.c
 
-diff --git a/sound/Kconfig b/sound/Kconfig
-index e56d96d2b11cae..14361bb428baa1 100644
---- a/sound/Kconfig
-+++ b/sound/Kconfig
-@@ -75,8 +75,6 @@ source "sound/spi/Kconfig"
+diff --git a/sound/soc/sh/Kconfig b/sound/soc/sh/Kconfig
+index 793a0326f32b46..4367927b81df20 100644
+--- a/sound/soc/sh/Kconfig
++++ b/sound/soc/sh/Kconfig
+@@ -2,25 +2,10 @@
+ menu "SoC Audio support for Renesas SoCs"
+ 	depends on ARCH_RENESAS || COMPILE_TEST
  
- source "sound/mips/Kconfig"
+-config SND_SOC_PCM_SH7760
+-	tristate "SoC Audio support for Renesas SH7760"
+-	depends on CPU_SUBTYPE_SH7760 && SH_DMABRG
+-	help
+-	  Enable this option for SH7760 AC97/I2S audio support.
+-
+-
+ ##
+ ## Audio unit modules
+ ##
  
--source "sound/sh/Kconfig"
+-config SND_SOC_SH4_HAC
+-	tristate
+-	select AC97_BUS
+-	select SND_SOC_AC97_BUS
 -
- # the following will depend on the order of config.
- # here assuming USB is defined before ALSA
- source "sound/usb/Kconfig"
-diff --git a/sound/Makefile b/sound/Makefile
-index 04ef04b1168f39..bb4b8806321c67 100644
---- a/sound/Makefile
-+++ b/sound/Makefile
-@@ -4,7 +4,7 @@
+-config SND_SOC_SH4_SSI
+-	tristate
+-
+ config SND_SOC_SH4_FSI
+ 	tristate "SH4 FSI support"
+ 	depends on COMMON_CLK
+@@ -28,14 +13,6 @@ config SND_SOC_SH4_FSI
+ 	help
+ 	  This option enables FSI sound support
  
- obj-$(CONFIG_SOUND) += soundcore.o
- obj-$(CONFIG_DMASOUND) += oss/dmasound/
--obj-$(CONFIG_SND) += core/ i2c/ drivers/ isa/ pci/ ppc/ arm/ sh/ synth/ usb/ \
-+obj-$(CONFIG_SND) += core/ i2c/ drivers/ isa/ pci/ ppc/ arm/ synth/ usb/ \
- 	firewire/ sparc/ spi/ parisc/ pcmcia/ mips/ soc/ atmel/ hda/ x86/ xen/ \
- 	virtio/
- obj-$(CONFIG_SND_AOA) += aoa/
-diff --git a/sound/sh/Kconfig b/sound/sh/Kconfig
-deleted file mode 100644
-index b75fbb3236a7b9..00000000000000
---- a/sound/sh/Kconfig
-+++ /dev/null
-@@ -1,32 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0-only
--# ALSA SH drivers
+-config SND_SOC_SH4_SIU
+-	tristate
+-	depends on ARCH_SHMOBILE && HAVE_CLK
+-	depends on DMADEVICES
+-	select DMA_ENGINE
+-	select SH_DMAE
+-	select FW_LOADER
 -
--menuconfig SND_SUPERH
--	bool "SUPERH sound devices"
--	depends on SUPERH
--	default y
+ config SND_SOC_RCAR
+ 	tristate "R-Car series SRU/SCU/SSIU/SSI support"
+ 	depends on COMMON_CLK
+@@ -51,25 +28,4 @@ config SND_SOC_RZ
+ 	help
+ 	  This option enables RZ/G2L SSIF-2 sound support.
+ 
+-##
+-## Boards
+-##
+-
+-config SND_SH7760_AC97
+-	tristate "SH7760 AC97 sound support"
+-	depends on CPU_SUBTYPE_SH7760 && SND_SOC_PCM_SH7760
+-	select SND_SOC_SH4_HAC
+-	select SND_SOC_AC97_CODEC
 -	help
--	  Support for sound devices specific to SUPERH architectures.
--	  Drivers that are implemented on ASoC can be found in
--	  "ALSA for SoC audio support" section.
+-	  This option enables generic sound support for the first
+-	  AC97 unit of the SH7760.
 -
--if SND_SUPERH
--
--config SND_AICA
--	tristate "Dreamcast Yamaha AICA sound"
--	depends on SH_DREAMCAST
--	select SND_PCM
--	select G2_DMA
+-config SND_SIU_MIGOR
+-	tristate "SIU sound support on Migo-R"
+-	depends on SH_MIGOR && I2C
+-	select SND_SOC_SH4_SIU
+-	select SND_SOC_WM8978
 -	help
--	  ALSA Sound driver for the SEGA Dreamcast console.
+-	  This option enables sound support for the SH7722 Migo-R board
 -
--config SND_SH_DAC_AUDIO
--	tristate "SuperH DAC audio support"
--	depends on SND
--	depends on CPU_SH3 && HIGH_RES_TIMERS
--	select SND_PCM
--	help
--	  Say Y here to include support for the on-chip DAC.
+ endmenu
+diff --git a/sound/soc/sh/Makefile b/sound/soc/sh/Makefile
+index f6fd79948f6ae9..c308dda887e633 100644
+--- a/sound/soc/sh/Makefile
++++ b/sound/soc/sh/Makefile
+@@ -1,28 +1,12 @@
+ # SPDX-License-Identifier: GPL-2.0
+-## DMA engines
+-snd-soc-dma-sh7760-objs	:= dma-sh7760.o
+-obj-$(CONFIG_SND_SOC_PCM_SH7760)	+= snd-soc-dma-sh7760.o
+ 
+ ## audio units found on some SH-4
+-snd-soc-hac-objs	:= hac.o
+-snd-soc-ssi-objs	:= ssi.o
+ snd-soc-fsi-objs	:= fsi.o
+-snd-soc-siu-objs	:= siu_pcm.o siu_dai.o
+-obj-$(CONFIG_SND_SOC_SH4_HAC)	+= snd-soc-hac.o
+-obj-$(CONFIG_SND_SOC_SH4_SSI)	+= snd-soc-ssi.o
+ obj-$(CONFIG_SND_SOC_SH4_FSI)	+= snd-soc-fsi.o
+-obj-$(CONFIG_SND_SOC_SH4_SIU)	+= snd-soc-siu.o
+ 
+ ## audio units for R-Car
+ obj-$(CONFIG_SND_SOC_RCAR)	+= rcar/
+ 
+-## boards
+-snd-soc-sh7760-ac97-objs	:= sh7760-ac97.o
+-snd-soc-migor-objs		:= migor.o
 -
--endif	# SND_SUPERH
+-obj-$(CONFIG_SND_SH7760_AC97)	+= snd-soc-sh7760-ac97.o
+-obj-$(CONFIG_SND_SIU_MIGOR)	+= snd-soc-migor.o
 -
-diff --git a/sound/sh/Makefile b/sound/sh/Makefile
+ # RZ/G2L
+ snd-soc-rz-ssi-objs		:= rz-ssi.o
+ obj-$(CONFIG_SND_SOC_RZ)	+= snd-soc-rz-ssi.o
+diff --git a/sound/soc/sh/dma-sh7760.c b/sound/soc/sh/dma-sh7760.c
 deleted file mode 100644
-index c0bbc500c17c73..00000000000000
---- a/sound/sh/Makefile
+index 121e48f984c50c..00000000000000
+--- a/sound/soc/sh/dma-sh7760.c
 +++ /dev/null
-@@ -1,11 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0-only
--#
--# Makefile for ALSA
--#
+@@ -1,334 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-//
+-// SH7760 ("camelot") DMABRG audio DMA unit support
+-//
+-// Copyright (C) 2007 Manuel Lauss <mano@roarinelk.homelinux.net>
+-//
+-// The SH7760 DMABRG provides 4 dma channels (2x rec, 2x play), which
+-// trigger an interrupt when one half of the programmed transfer size
+-// has been xmitted.
+-//
+-// FIXME: little-endian only for now
 -
--snd-aica-objs := aica.o
--snd-sh_dac_audio-objs := sh_dac_audio.o
--
--# Toplevel Module Dependency
--obj-$(CONFIG_SND_AICA) += snd-aica.o
--obj-$(CONFIG_SND_SH_DAC_AUDIO) += snd-sh_dac_audio.o
-diff --git a/sound/sh/aica.c b/sound/sh/aica.c
-deleted file mode 100644
-index 6e9d6bd67369af..00000000000000
---- a/sound/sh/aica.c
-+++ /dev/null
-@@ -1,628 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-only
--/*
--*
--* Copyright Adrian McMenamin 2005, 2006, 2007
--* <adrian@mcmen.demon.co.uk>
--* Requires firmware (BSD licenced) available from:
--* http://linuxdc.cvs.sourceforge.net/linuxdc/linux-sh-dc/sound/oss/aica/firmware/
--* or the maintainer
--*/
--
--#include <linux/init.h>
--#include <linux/jiffies.h>
--#include <linux/slab.h>
--#include <linux/time.h>
--#include <linux/wait.h>
 -#include <linux/module.h>
+-#include <linux/gfp.h>
+-#include <linux/init.h>
 -#include <linux/platform_device.h>
--#include <linux/firmware.h>
--#include <linux/timer.h>
--#include <linux/delay.h>
--#include <linux/workqueue.h>
--#include <linux/io.h>
+-#include <linux/dma-mapping.h>
 -#include <sound/core.h>
--#include <sound/control.h>
 -#include <sound/pcm.h>
--#include <sound/initval.h>
--#include <sound/info.h>
--#include <asm/dma.h>
--#include <mach/sysasic.h>
--#include "aica.h"
+-#include <sound/pcm_params.h>
+-#include <sound/soc.h>
+-#include <asm/dmabrg.h>
 -
--MODULE_AUTHOR("Adrian McMenamin <adrian@mcmen.demon.co.uk>");
--MODULE_DESCRIPTION("Dreamcast AICA sound (pcm) driver");
--MODULE_LICENSE("GPL");
--MODULE_FIRMWARE("aica_firmware.bin");
 -
--/* module parameters */
--#define CARD_NAME "AICA"
--static int index = -1;
--static char *id;
--static bool enable = 1;
--module_param(index, int, 0444);
--MODULE_PARM_DESC(index, "Index value for " CARD_NAME " soundcard.");
--module_param(id, charp, 0444);
--MODULE_PARM_DESC(id, "ID string for " CARD_NAME " soundcard.");
--module_param(enable, bool, 0644);
--MODULE_PARM_DESC(enable, "Enable " CARD_NAME " soundcard.");
+-/* registers and bits */
+-#define BRGATXSAR	0x00
+-#define BRGARXDAR	0x04
+-#define BRGATXTCR	0x08
+-#define BRGARXTCR	0x0C
+-#define BRGACR		0x10
+-#define BRGATXTCNT	0x14
+-#define BRGARXTCNT	0x18
 -
--/* Simple platform device */
--static struct platform_device *pd;
--static struct resource aica_memory_space[2] = {
+-#define ACR_RAR		(1 << 18)
+-#define ACR_RDS		(1 << 17)
+-#define ACR_RDE		(1 << 16)
+-#define ACR_TAR		(1 << 2)
+-#define ACR_TDS		(1 << 1)
+-#define ACR_TDE		(1 << 0)
+-
+-/* receiver/transmitter data alignment */
+-#define ACR_RAM_NONE	(0 << 24)
+-#define ACR_RAM_4BYTE	(1 << 24)
+-#define ACR_RAM_2WORD	(2 << 24)
+-#define ACR_TAM_NONE	(0 << 8)
+-#define ACR_TAM_4BYTE	(1 << 8)
+-#define ACR_TAM_2WORD	(2 << 8)
+-
+-
+-struct camelot_pcm {
+-	unsigned long mmio;  /* DMABRG audio channel control reg MMIO */
+-	unsigned int txid;    /* ID of first DMABRG IRQ for this unit */
+-
+-	struct snd_pcm_substream *tx_ss;
+-	unsigned long tx_period_size;
+-	unsigned int  tx_period;
+-
+-	struct snd_pcm_substream *rx_ss;
+-	unsigned long rx_period_size;
+-	unsigned int  rx_period;
+-
+-} cam_pcm_data[2] = {
 -	{
--	 .name = "AICA ARM CONTROL",
--	 .start = ARM_RESET_REGISTER,
--	 .flags = IORESOURCE_MEM,
--	 .end = ARM_RESET_REGISTER + 3,
--	 },
+-		.mmio	=	0xFE3C0040,
+-		.txid	=	DMABRGIRQ_A0TXF,
+-	},
 -	{
--	 .name = "AICA Sound RAM",
--	 .start = SPU_MEMORY_BASE,
--	 .flags = IORESOURCE_MEM,
--	 .end = SPU_MEMORY_BASE + 0x200000 - 1,
--	 },
+-		.mmio	=	0xFE3C0060,
+-		.txid	=	DMABRGIRQ_A1TXF,
+-	},
 -};
 -
--/* SPU specific functions */
--/* spu_write_wait - wait for G2-SH FIFO to clear */
--static void spu_write_wait(void)
+-#define BRGREG(x)	(*(unsigned long *)(cam->mmio + (x)))
+-
+-/*
+- * set a minimum of 16kb per period, to avoid interrupt-"storm" and
+- * resulting skipping. In general, the bigger the minimum size, the
+- * better for overall system performance. (The SH7760 is a puny CPU
+- * with a slow SDRAM interface and poor internal bus bandwidth,
+- * *especially* when the LCDC is active).  The minimum for the DMAC
+- * is 8 bytes; 16kbytes are enough to get skip-free playback of a
+- * 44kHz/16bit/stereo MP3 on a lightly loaded system, and maintain
+- * reasonable responsiveness in MPlayer.
+- */
+-#define DMABRG_PERIOD_MIN		16 * 1024
+-#define DMABRG_PERIOD_MAX		0x03fffffc
+-#define DMABRG_PREALLOC_BUFFER		32 * 1024
+-#define DMABRG_PREALLOC_BUFFER_MAX	32 * 1024
+-
+-static const struct snd_pcm_hardware camelot_pcm_hardware = {
+-	.info = (SNDRV_PCM_INFO_MMAP |
+-		SNDRV_PCM_INFO_INTERLEAVED |
+-		SNDRV_PCM_INFO_BLOCK_TRANSFER |
+-		SNDRV_PCM_INFO_MMAP_VALID |
+-		SNDRV_PCM_INFO_BATCH),
+-	.buffer_bytes_max =	DMABRG_PERIOD_MAX,
+-	.period_bytes_min =	DMABRG_PERIOD_MIN,
+-	.period_bytes_max =	DMABRG_PERIOD_MAX / 2,
+-	.periods_min =		2,
+-	.periods_max =		2,
+-	.fifo_size =		128,
+-};
+-
+-static void camelot_txdma(void *data)
 -{
--	int time_count;
--	time_count = 0;
--	while (1) {
--		if (!(readl(G2_FIFO) & 0x11))
--			break;
--		/* To ensure hardware failure doesn't wedge kernel */
--		time_count++;
--		if (time_count > 0x10000) {
--			snd_printk
--			    ("WARNING: G2 FIFO appears to be blocked.\n");
--			break;
+-	struct camelot_pcm *cam = data;
+-	cam->tx_period ^= 1;
+-	snd_pcm_period_elapsed(cam->tx_ss);
+-}
+-
+-static void camelot_rxdma(void *data)
+-{
+-	struct camelot_pcm *cam = data;
+-	cam->rx_period ^= 1;
+-	snd_pcm_period_elapsed(cam->rx_ss);
+-}
+-
+-static int camelot_pcm_open(struct snd_soc_component *component,
+-			    struct snd_pcm_substream *substream)
+-{
+-	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+-	struct camelot_pcm *cam = &cam_pcm_data[asoc_rtd_to_cpu(rtd, 0)->id];
+-	int recv = substream->stream == SNDRV_PCM_STREAM_PLAYBACK ? 0:1;
+-	int ret, dmairq;
+-
+-	snd_soc_set_runtime_hwparams(substream, &camelot_pcm_hardware);
+-
+-	/* DMABRG buffer half/full events */
+-	dmairq = (recv) ? cam->txid + 2 : cam->txid;
+-	if (recv) {
+-		cam->rx_ss = substream;
+-		ret = dmabrg_request_irq(dmairq, camelot_rxdma, cam);
+-		if (unlikely(ret)) {
+-			pr_debug("audio unit %d irqs already taken!\n",
+-			     asoc_rtd_to_cpu(rtd, 0)->id);
+-			return -EBUSY;
 -		}
+-		(void)dmabrg_request_irq(dmairq + 1,camelot_rxdma, cam);
+-	} else {
+-		cam->tx_ss = substream;
+-		ret = dmabrg_request_irq(dmairq, camelot_txdma, cam);
+-		if (unlikely(ret)) {
+-			pr_debug("audio unit %d irqs already taken!\n",
+-			     asoc_rtd_to_cpu(rtd, 0)->id);
+-			return -EBUSY;
+-		}
+-		(void)dmabrg_request_irq(dmairq + 1, camelot_txdma, cam);
 -	}
+-	return 0;
 -}
 -
--/* spu_memset - write to memory in SPU address space */
--static void spu_memset(u32 toi, u32 what, int length)
--{
--	int i;
--	unsigned long flags;
--	if (snd_BUG_ON(length % 4))
--		return;
--	for (i = 0; i < length; i++) {
--		if (!(i % 8))
--			spu_write_wait();
--		local_irq_save(flags);
--		writel(what, toi + SPU_MEMORY_BASE);
--		local_irq_restore(flags);
--		toi++;
--	}
--}
--
--/* spu_memload - write to SPU address space */
--static void spu_memload(u32 toi, const void *from, int length)
--{
--	unsigned long flags;
--	const u32 *froml = from;
--	u32 __iomem *to = (u32 __iomem *) (SPU_MEMORY_BASE + toi);
--	int i;
--	u32 val;
--	length = DIV_ROUND_UP(length, 4);
--	spu_write_wait();
--	for (i = 0; i < length; i++) {
--		if (!(i % 8))
--			spu_write_wait();
--		val = *froml;
--		local_irq_save(flags);
--		writel(val, to);
--		local_irq_restore(flags);
--		froml++;
--		to++;
--	}
--}
--
--/* spu_disable - set spu registers to stop sound output */
--static void spu_disable(void)
--{
--	int i;
--	unsigned long flags;
--	u32 regval;
--	spu_write_wait();
--	regval = readl(ARM_RESET_REGISTER);
--	regval |= 1;
--	spu_write_wait();
--	local_irq_save(flags);
--	writel(regval, ARM_RESET_REGISTER);
--	local_irq_restore(flags);
--	for (i = 0; i < 64; i++) {
--		spu_write_wait();
--		regval = readl(SPU_REGISTER_BASE + (i * 0x80));
--		regval = (regval & ~0x4000) | 0x8000;
--		spu_write_wait();
--		local_irq_save(flags);
--		writel(regval, SPU_REGISTER_BASE + (i * 0x80));
--		local_irq_restore(flags);
--	}
--}
--
--/* spu_enable - set spu registers to enable sound output */
--static void spu_enable(void)
--{
--	unsigned long flags;
--	u32 regval = readl(ARM_RESET_REGISTER);
--	regval &= ~1;
--	spu_write_wait();
--	local_irq_save(flags);
--	writel(regval, ARM_RESET_REGISTER);
--	local_irq_restore(flags);
--}
--
--/* 
-- * Halt the sound processor, clear the memory,
-- * load some default ARM7 code, and then restart ARM7
--*/
--static void spu_reset(void)
--{
--	unsigned long flags;
--	spu_disable();
--	spu_memset(0, 0, 0x200000 / 4);
--	/* Put ARM7 in endless loop */
--	local_irq_save(flags);
--	__raw_writel(0xea000002, SPU_MEMORY_BASE);
--	local_irq_restore(flags);
--	spu_enable();
--}
--
--/* aica_chn_start - write to spu to start playback */
--static void aica_chn_start(void)
--{
--	unsigned long flags;
--	spu_write_wait();
--	local_irq_save(flags);
--	writel(AICA_CMD_KICK | AICA_CMD_START, (u32 *) AICA_CONTROL_POINT);
--	local_irq_restore(flags);
--}
--
--/* aica_chn_halt - write to spu to halt playback */
--static void aica_chn_halt(void)
--{
--	unsigned long flags;
--	spu_write_wait();
--	local_irq_save(flags);
--	writel(AICA_CMD_KICK | AICA_CMD_STOP, (u32 *) AICA_CONTROL_POINT);
--	local_irq_restore(flags);
--}
--
--/* ALSA code below */
--static const struct snd_pcm_hardware snd_pcm_aica_playback_hw = {
--	.info = (SNDRV_PCM_INFO_NONINTERLEAVED),
--	.formats =
--	    (SNDRV_PCM_FMTBIT_S8 | SNDRV_PCM_FMTBIT_S16_LE |
--	     SNDRV_PCM_FMTBIT_IMA_ADPCM),
--	.rates = SNDRV_PCM_RATE_8000_48000,
--	.rate_min = 8000,
--	.rate_max = 48000,
--	.channels_min = 1,
--	.channels_max = 2,
--	.buffer_bytes_max = AICA_BUFFER_SIZE,
--	.period_bytes_min = AICA_PERIOD_SIZE,
--	.period_bytes_max = AICA_PERIOD_SIZE,
--	.periods_min = AICA_PERIOD_NUMBER,
--	.periods_max = AICA_PERIOD_NUMBER,
--};
--
--static int aica_dma_transfer(int channels, int buffer_size,
+-static int camelot_pcm_close(struct snd_soc_component *component,
 -			     struct snd_pcm_substream *substream)
 -{
--	int q, err, period_offset;
--	struct snd_card_aica *dreamcastcard;
--	struct snd_pcm_runtime *runtime;
--	unsigned long flags;
--	err = 0;
--	dreamcastcard = substream->pcm->private_data;
--	period_offset = dreamcastcard->clicks;
--	period_offset %= (AICA_PERIOD_NUMBER / channels);
--	runtime = substream->runtime;
--	for (q = 0; q < channels; q++) {
--		local_irq_save(flags);
--		err = dma_xfer(AICA_DMA_CHANNEL,
--			       (unsigned long) (runtime->dma_area +
--						(AICA_BUFFER_SIZE * q) /
--						channels +
--						AICA_PERIOD_SIZE *
--						period_offset),
--			       AICA_CHANNEL0_OFFSET + q * CHANNEL_OFFSET +
--			       AICA_PERIOD_SIZE * period_offset,
--			       buffer_size / channels, AICA_DMA_MODE);
--		if (unlikely(err < 0)) {
--			local_irq_restore(flags);
--			break;
--		}
--		dma_wait_for_completion(AICA_DMA_CHANNEL);
--		local_irq_restore(flags);
--	}
--	return err;
+-	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+-	struct camelot_pcm *cam = &cam_pcm_data[asoc_rtd_to_cpu(rtd, 0)->id];
+-	int recv = substream->stream == SNDRV_PCM_STREAM_PLAYBACK ? 0:1;
+-	int dmairq;
+-
+-	dmairq = (recv) ? cam->txid + 2 : cam->txid;
+-
+-	if (recv)
+-		cam->rx_ss = NULL;
+-	else
+-		cam->tx_ss = NULL;
+-
+-	dmabrg_free_irq(dmairq + 1);
+-	dmabrg_free_irq(dmairq);
+-
+-	return 0;
 -}
 -
--static void startup_aica(struct snd_card_aica *dreamcastcard)
+-static int camelot_hw_params(struct snd_soc_component *component,
+-			     struct snd_pcm_substream *substream,
+-			     struct snd_pcm_hw_params *hw_params)
 -{
--	spu_memload(AICA_CHANNEL0_CONTROL_OFFSET,
--		    dreamcastcard->channel, sizeof(struct aica_channel));
--	aica_chn_start();
--}
+-	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+-	struct camelot_pcm *cam = &cam_pcm_data[asoc_rtd_to_cpu(rtd, 0)->id];
+-	int recv = substream->stream == SNDRV_PCM_STREAM_PLAYBACK ? 0:1;
 -
--static void run_spu_dma(struct work_struct *work)
--{
--	int buffer_size;
--	struct snd_pcm_runtime *runtime;
--	struct snd_card_aica *dreamcastcard;
--	dreamcastcard =
--	    container_of(work, struct snd_card_aica, spu_dma_work);
--	runtime = dreamcastcard->substream->runtime;
--	if (unlikely(dreamcastcard->dma_check == 0)) {
--		buffer_size =
--		    frames_to_bytes(runtime, runtime->buffer_size);
--		if (runtime->channels > 1)
--			dreamcastcard->channel->flags |= 0x01;
--		aica_dma_transfer(runtime->channels, buffer_size,
--				  dreamcastcard->substream);
--		startup_aica(dreamcastcard);
--		dreamcastcard->clicks =
--		    buffer_size / (AICA_PERIOD_SIZE * runtime->channels);
--		return;
+-	if (recv) {
+-		cam->rx_period_size = params_period_bytes(hw_params);
+-		cam->rx_period = 0;
 -	} else {
--		aica_dma_transfer(runtime->channels,
--				  AICA_PERIOD_SIZE * runtime->channels,
--				  dreamcastcard->substream);
--		snd_pcm_period_elapsed(dreamcastcard->substream);
--		dreamcastcard->clicks++;
--		if (unlikely(dreamcastcard->clicks >= AICA_PERIOD_NUMBER))
--			dreamcastcard->clicks %= AICA_PERIOD_NUMBER;
--		mod_timer(&dreamcastcard->timer, jiffies + 1);
+-		cam->tx_period_size = params_period_bytes(hw_params);
+-		cam->tx_period = 0;
 -	}
+-	return 0;
 -}
 -
--static void aica_period_elapsed(struct timer_list *t)
+-static int camelot_prepare(struct snd_soc_component *component,
+-			   struct snd_pcm_substream *substream)
 -{
--	struct snd_card_aica *dreamcastcard = from_timer(dreamcastcard,
--							      t, timer);
--	struct snd_pcm_substream *substream = dreamcastcard->substream;
--	/*timer function - so cannot sleep */
--	int play_period;
--	struct snd_pcm_runtime *runtime;
--	runtime = substream->runtime;
--	dreamcastcard = substream->pcm->private_data;
--	/* Have we played out an additional period? */
--	play_period =
--	    frames_to_bytes(runtime,
--			    readl
--			    (AICA_CONTROL_CHANNEL_SAMPLE_NUMBER)) /
--	    AICA_PERIOD_SIZE;
--	if (play_period == dreamcastcard->current_period) {
--		/* reschedule the timer */
--		mod_timer(&(dreamcastcard->timer), jiffies + 1);
--		return;
+-	struct snd_pcm_runtime *runtime = substream->runtime;
+-	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+-	struct camelot_pcm *cam = &cam_pcm_data[asoc_rtd_to_cpu(rtd, 0)->id];
+-
+-	pr_debug("PCM data: addr 0x%08lx len %d\n",
+-		 (u32)runtime->dma_addr, runtime->dma_bytes);
+- 
+-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+-		BRGREG(BRGATXSAR) = (unsigned long)runtime->dma_area;
+-		BRGREG(BRGATXTCR) = runtime->dma_bytes;
+-	} else {
+-		BRGREG(BRGARXDAR) = (unsigned long)runtime->dma_area;
+-		BRGREG(BRGARXTCR) = runtime->dma_bytes;
 -	}
--	if (runtime->channels > 1)
--		dreamcastcard->current_period = play_period;
--	if (unlikely(dreamcastcard->dma_check == 0))
--		dreamcastcard->dma_check = 1;
--	schedule_work(&(dreamcastcard->spu_dma_work));
--}
 -
--static void spu_begin_dma(struct snd_pcm_substream *substream)
--{
--	struct snd_card_aica *dreamcastcard;
--	struct snd_pcm_runtime *runtime;
--	runtime = substream->runtime;
--	dreamcastcard = substream->pcm->private_data;
--	/*get the queue to do the work */
--	schedule_work(&(dreamcastcard->spu_dma_work));
--	mod_timer(&dreamcastcard->timer, jiffies + 4);
--}
--
--static int snd_aicapcm_pcm_open(struct snd_pcm_substream
--				*substream)
--{
--	struct snd_pcm_runtime *runtime;
--	struct aica_channel *channel;
--	struct snd_card_aica *dreamcastcard;
--	if (!enable)
--		return -ENOENT;
--	dreamcastcard = substream->pcm->private_data;
--	channel = kmalloc(sizeof(struct aica_channel), GFP_KERNEL);
--	if (!channel)
--		return -ENOMEM;
--	/* set defaults for channel */
--	channel->sfmt = SM_8BIT;
--	channel->cmd = AICA_CMD_START;
--	channel->vol = dreamcastcard->master_volume;
--	channel->pan = 0x80;
--	channel->pos = 0;
--	channel->flags = 0;	/* default to mono */
--	dreamcastcard->channel = channel;
--	runtime = substream->runtime;
--	runtime->hw = snd_pcm_aica_playback_hw;
--	spu_enable();
--	dreamcastcard->clicks = 0;
--	dreamcastcard->current_period = 0;
--	dreamcastcard->dma_check = 0;
 -	return 0;
 -}
 -
--static int snd_aicapcm_pcm_close(struct snd_pcm_substream
--				 *substream)
+-static inline void dmabrg_play_dma_start(struct camelot_pcm *cam)
 -{
--	struct snd_card_aica *dreamcastcard = substream->pcm->private_data;
--	flush_work(&(dreamcastcard->spu_dma_work));
--	del_timer(&dreamcastcard->timer);
--	dreamcastcard->substream = NULL;
--	kfree(dreamcastcard->channel);
--	spu_disable();
--	return 0;
+-	unsigned long acr = BRGREG(BRGACR) & ~(ACR_TDS | ACR_RDS);
+-	/* start DMABRG engine: XFER start, auto-addr-reload */
+-	BRGREG(BRGACR) = acr | ACR_TDE | ACR_TAR | ACR_TAM_2WORD;
 -}
 -
--static int snd_aicapcm_pcm_prepare(struct snd_pcm_substream
--				   *substream)
+-static inline void dmabrg_play_dma_stop(struct camelot_pcm *cam)
 -{
--	struct snd_card_aica *dreamcastcard = substream->pcm->private_data;
--	if ((substream->runtime)->format == SNDRV_PCM_FORMAT_S16_LE)
--		dreamcastcard->channel->sfmt = SM_16BIT;
--	dreamcastcard->channel->freq = substream->runtime->rate;
--	dreamcastcard->substream = substream;
--	return 0;
+-	unsigned long acr = BRGREG(BRGACR) & ~(ACR_TDS | ACR_RDS);
+-	/* forcibly terminate data transmission */
+-	BRGREG(BRGACR) = acr | ACR_TDS;
 -}
 -
--static int snd_aicapcm_pcm_trigger(struct snd_pcm_substream
--				   *substream, int cmd)
+-static inline void dmabrg_rec_dma_start(struct camelot_pcm *cam)
 -{
+-	unsigned long acr = BRGREG(BRGACR) & ~(ACR_TDS | ACR_RDS);
+-	/* start DMABRG engine: recv start, auto-reload */
+-	BRGREG(BRGACR) = acr | ACR_RDE | ACR_RAR | ACR_RAM_2WORD;
+-}
+-
+-static inline void dmabrg_rec_dma_stop(struct camelot_pcm *cam)
+-{
+-	unsigned long acr = BRGREG(BRGACR) & ~(ACR_TDS | ACR_RDS);
+-	/* forcibly terminate data receiver */
+-	BRGREG(BRGACR) = acr | ACR_RDS;
+-}
+-
+-static int camelot_trigger(struct snd_soc_component *component,
+-			   struct snd_pcm_substream *substream, int cmd)
+-{
+-	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+-	struct camelot_pcm *cam = &cam_pcm_data[asoc_rtd_to_cpu(rtd, 0)->id];
+-	int recv = substream->stream == SNDRV_PCM_STREAM_PLAYBACK ? 0:1;
+-
 -	switch (cmd) {
 -	case SNDRV_PCM_TRIGGER_START:
--		spu_begin_dma(substream);
+-		if (recv)
+-			dmabrg_rec_dma_start(cam);
+-		else
+-			dmabrg_play_dma_start(cam);
 -		break;
 -	case SNDRV_PCM_TRIGGER_STOP:
--		aica_chn_halt();
+-		if (recv)
+-			dmabrg_rec_dma_stop(cam);
+-		else
+-			dmabrg_play_dma_stop(cam);
 -		break;
 -	default:
 -		return -EINVAL;
 -	}
+-
 -	return 0;
 -}
 -
--static unsigned long snd_aicapcm_pcm_pointer(struct snd_pcm_substream
--					     *substream)
+-static snd_pcm_uframes_t camelot_pos(struct snd_soc_component *component,
+-				     struct snd_pcm_substream *substream)
 -{
--	return readl(AICA_CONTROL_CHANNEL_SAMPLE_NUMBER);
--}
+-	struct snd_pcm_runtime *runtime = substream->runtime;
+-	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+-	struct camelot_pcm *cam = &cam_pcm_data[asoc_rtd_to_cpu(rtd, 0)->id];
+-	int recv = substream->stream == SNDRV_PCM_STREAM_PLAYBACK ? 0:1;
+-	unsigned long pos;
 -
--static const struct snd_pcm_ops snd_aicapcm_playback_ops = {
--	.open = snd_aicapcm_pcm_open,
--	.close = snd_aicapcm_pcm_close,
--	.prepare = snd_aicapcm_pcm_prepare,
--	.trigger = snd_aicapcm_pcm_trigger,
--	.pointer = snd_aicapcm_pcm_pointer,
--};
--
--/* TO DO: set up to handle more than one pcm instance */
--static int __init snd_aicapcmchip(struct snd_card_aica
--				  *dreamcastcard, int pcm_index)
--{
--	struct snd_pcm *pcm;
--	int err;
--	/* AICA has no capture ability */
--	err =
--	    snd_pcm_new(dreamcastcard->card, "AICA PCM", pcm_index, 1, 0,
--			&pcm);
--	if (unlikely(err < 0))
--		return err;
--	pcm->private_data = dreamcastcard;
--	strcpy(pcm->name, "AICA PCM");
--	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK,
--			&snd_aicapcm_playback_ops);
--	/* Allocate the DMA buffers */
--	snd_pcm_set_managed_buffer_all(pcm,
--				       SNDRV_DMA_TYPE_CONTINUOUS,
--				       NULL,
--				       AICA_BUFFER_SIZE,
--				       AICA_BUFFER_SIZE);
--	return 0;
--}
--
--/* Mixer controls */
--#define aica_pcmswitch_info		snd_ctl_boolean_mono_info
--
--static int aica_pcmswitch_get(struct snd_kcontrol *kcontrol,
--			      struct snd_ctl_elem_value *ucontrol)
--{
--	ucontrol->value.integer.value[0] = 1;	/* TO DO: Fix me */
--	return 0;
--}
--
--static int aica_pcmswitch_put(struct snd_kcontrol *kcontrol,
--			      struct snd_ctl_elem_value *ucontrol)
--{
--	if (ucontrol->value.integer.value[0] == 1)
--		return 0;	/* TO DO: Fix me */
+-	/* cannot use the DMABRG pointer register: under load, by the
+-	 * time ALSA comes around to read the register, it is already
+-	 * far ahead (or worse, already done with the fragment) of the
+-	 * position at the time the IRQ was triggered, which results in
+-	 * fast-playback sound in my test application (ScummVM)
+-	 */
+-	if (recv)
+-		pos = cam->rx_period ? cam->rx_period_size : 0;
 -	else
--		aica_chn_halt();
+-		pos = cam->tx_period ? cam->tx_period_size : 0;
+-
+-	return bytes_to_frames(runtime, pos);
+-}
+-
+-static int camelot_pcm_new(struct snd_soc_component *component,
+-			   struct snd_soc_pcm_runtime *rtd)
+-{
+-	struct snd_pcm *pcm = rtd->pcm;
+-
+-	/* dont use SNDRV_DMA_TYPE_DEV, since it will oops the SH kernel
+-	 * in MMAP mode (i.e. aplay -M)
+-	 */
+-	snd_pcm_set_managed_buffer_all(pcm,
+-		SNDRV_DMA_TYPE_CONTINUOUS,
+-		NULL,
+-		DMABRG_PREALLOC_BUFFER,	DMABRG_PREALLOC_BUFFER_MAX);
+-
 -	return 0;
 -}
 -
--static int aica_pcmvolume_info(struct snd_kcontrol *kcontrol,
--			       struct snd_ctl_elem_info *uinfo)
--{
--	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
--	uinfo->count = 1;
--	uinfo->value.integer.min = 0;
--	uinfo->value.integer.max = 0xFF;
--	return 0;
--}
--
--static int aica_pcmvolume_get(struct snd_kcontrol *kcontrol,
--			      struct snd_ctl_elem_value *ucontrol)
--{
--	struct snd_card_aica *dreamcastcard;
--	dreamcastcard = kcontrol->private_data;
--	if (unlikely(!dreamcastcard->channel))
--		return -ETXTBSY;	/* we've not yet been set up */
--	ucontrol->value.integer.value[0] = dreamcastcard->channel->vol;
--	return 0;
--}
--
--static int aica_pcmvolume_put(struct snd_kcontrol *kcontrol,
--			      struct snd_ctl_elem_value *ucontrol)
--{
--	struct snd_card_aica *dreamcastcard;
--	unsigned int vol;
--	dreamcastcard = kcontrol->private_data;
--	if (unlikely(!dreamcastcard->channel))
--		return -ETXTBSY;
--	vol = ucontrol->value.integer.value[0];
--	if (vol > 0xff)
--		return -EINVAL;
--	if (unlikely(dreamcastcard->channel->vol == vol))
--		return 0;
--	dreamcastcard->channel->vol = ucontrol->value.integer.value[0];
--	dreamcastcard->master_volume = ucontrol->value.integer.value[0];
--	spu_memload(AICA_CHANNEL0_CONTROL_OFFSET,
--		    dreamcastcard->channel, sizeof(struct aica_channel));
--	return 1;
--}
--
--static const struct snd_kcontrol_new snd_aica_pcmswitch_control = {
--	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
--	.name = "PCM Playback Switch",
--	.index = 0,
--	.info = aica_pcmswitch_info,
--	.get = aica_pcmswitch_get,
--	.put = aica_pcmswitch_put
+-static const struct snd_soc_component_driver sh7760_soc_component = {
+-	.open		= camelot_pcm_open,
+-	.close		= camelot_pcm_close,
+-	.hw_params	= camelot_hw_params,
+-	.prepare	= camelot_prepare,
+-	.trigger	= camelot_trigger,
+-	.pointer	= camelot_pos,
+-	.pcm_construct	= camelot_pcm_new,
 -};
 -
--static const struct snd_kcontrol_new snd_aica_pcmvolume_control = {
--	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
--	.name = "PCM Playback Volume",
--	.index = 0,
--	.info = aica_pcmvolume_info,
--	.get = aica_pcmvolume_get,
--	.put = aica_pcmvolume_put
--};
--
--static int load_aica_firmware(void)
+-static int sh7760_soc_platform_probe(struct platform_device *pdev)
 -{
--	int err;
--	const struct firmware *fw_entry;
--	spu_reset();
--	err = request_firmware(&fw_entry, "aica_firmware.bin", &pd->dev);
--	if (unlikely(err))
--		return err;
--	/* write firmware into memory */
--	spu_disable();
--	spu_memload(0, fw_entry->data, fw_entry->size);
--	spu_enable();
--	release_firmware(fw_entry);
--	return err;
+-	return devm_snd_soc_register_component(&pdev->dev, &sh7760_soc_component,
+-					       NULL, 0);
 -}
 -
--static int add_aicamixer_controls(struct snd_card_aica *dreamcastcard)
--{
--	int err;
--	err = snd_ctl_add
--	    (dreamcastcard->card,
--	     snd_ctl_new1(&snd_aica_pcmvolume_control, dreamcastcard));
--	if (unlikely(err < 0))
--		return err;
--	err = snd_ctl_add
--	    (dreamcastcard->card,
--	     snd_ctl_new1(&snd_aica_pcmswitch_control, dreamcastcard));
--	if (unlikely(err < 0))
--		return err;
--	return 0;
--}
--
--static int snd_aica_remove(struct platform_device *devptr)
--{
--	struct snd_card_aica *dreamcastcard;
--	dreamcastcard = platform_get_drvdata(devptr);
--	if (unlikely(!dreamcastcard))
--		return -ENODEV;
--	snd_card_free(dreamcastcard->card);
--	kfree(dreamcastcard);
--	return 0;
--}
--
--static int snd_aica_probe(struct platform_device *devptr)
--{
--	int err;
--	struct snd_card_aica *dreamcastcard;
--	dreamcastcard = kzalloc(sizeof(struct snd_card_aica), GFP_KERNEL);
--	if (unlikely(!dreamcastcard))
--		return -ENOMEM;
--	err = snd_card_new(&devptr->dev, index, SND_AICA_DRIVER,
--			   THIS_MODULE, 0, &dreamcastcard->card);
--	if (unlikely(err < 0)) {
--		kfree(dreamcastcard);
--		return err;
--	}
--	strcpy(dreamcastcard->card->driver, "snd_aica");
--	strcpy(dreamcastcard->card->shortname, SND_AICA_DRIVER);
--	strcpy(dreamcastcard->card->longname,
--	       "Yamaha AICA Super Intelligent Sound Processor for SEGA Dreamcast");
--	/* Prepare to use the queue */
--	INIT_WORK(&(dreamcastcard->spu_dma_work), run_spu_dma);
--	timer_setup(&dreamcastcard->timer, aica_period_elapsed, 0);
--	/* Load the PCM 'chip' */
--	err = snd_aicapcmchip(dreamcastcard, 0);
--	if (unlikely(err < 0))
--		goto freedreamcast;
--	/* Add basic controls */
--	err = add_aicamixer_controls(dreamcastcard);
--	if (unlikely(err < 0))
--		goto freedreamcast;
--	/* Register the card with ALSA subsystem */
--	err = snd_card_register(dreamcastcard->card);
--	if (unlikely(err < 0))
--		goto freedreamcast;
--	platform_set_drvdata(devptr, dreamcastcard);
--	snd_printk
--	    ("ALSA Driver for Yamaha AICA Super Intelligent Sound Processor\n");
--	return 0;
--      freedreamcast:
--	snd_card_free(dreamcastcard->card);
--	kfree(dreamcastcard);
--	return err;
--}
--
--static struct platform_driver snd_aica_driver = {
--	.probe = snd_aica_probe,
--	.remove = snd_aica_remove,
+-static struct platform_driver sh7760_pcm_driver = {
 -	.driver = {
--		.name = SND_AICA_DRIVER,
+-			.name = "sh7760-pcm-audio",
 -	},
+-
+-	.probe = sh7760_soc_platform_probe,
 -};
 -
--static int __init aica_init(void)
--{
--	int err;
--	err = platform_driver_register(&snd_aica_driver);
--	if (unlikely(err < 0))
--		return err;
--	pd = platform_device_register_simple(SND_AICA_DRIVER, -1,
--					     aica_memory_space, 2);
--	if (IS_ERR(pd)) {
--		platform_driver_unregister(&snd_aica_driver);
--		return PTR_ERR(pd);
--	}
--	/* Load the firmware */
--	return load_aica_firmware();
--}
+-module_platform_driver(sh7760_pcm_driver);
 -
--static void __exit aica_exit(void)
--{
--	platform_device_unregister(pd);
--	platform_driver_unregister(&snd_aica_driver);
--	/* Kill any sound still playing and reset ARM7 to safe state */
--	spu_reset();
--}
+-MODULE_LICENSE("GPL v2");
+-MODULE_DESCRIPTION("SH7760 Audio DMA (DMABRG) driver");
+-MODULE_AUTHOR("Manuel Lauss <mano@roarinelk.homelinux.net>");
+diff --git a/sound/soc/sh/fsi.c b/sound/soc/sh/fsi.c
+index f3edc2e3d9d7c4..c599070f2210f4 100644
+--- a/sound/soc/sh/fsi.c
++++ b/sound/soc/sh/fsi.c
+@@ -1372,16 +1372,7 @@ static int fsi_dma_probe(struct fsi_priv *fsi, struct fsi_stream *io, struct dev
+ {
+ 	int is_play = fsi_stream_is_play(fsi, io);
+ 
+-#ifdef CONFIG_SUPERH
+-	dma_cap_mask_t mask;
+-	dma_cap_zero(mask);
+-	dma_cap_set(DMA_SLAVE, mask);
 -
--module_init(aica_init);
--module_exit(aica_exit);
-diff --git a/sound/sh/aica.h b/sound/sh/aica.h
+-	io->chan = dma_request_channel(mask, shdma_chan_filter,
+-				       (void *)io->dma_id);
+-#else
+ 	io->chan = dma_request_slave_channel(dev, is_play ? "tx" : "rx");
+-#endif
+ 	if (io->chan) {
+ 		struct dma_slave_config cfg = {};
+ 		int ret;
+diff --git a/sound/soc/sh/hac.c b/sound/soc/sh/hac.c
 deleted file mode 100644
-index 021b132e088e82..00000000000000
---- a/sound/sh/aica.h
+index 46d145cbaf2970..00000000000000
+--- a/sound/soc/sh/hac.c
 +++ /dev/null
-@@ -1,68 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-only */
--/* aica.h
-- * Header file for ALSA driver for
-- * Sega Dreamcast Yamaha AICA sound
-- * Copyright Adrian McMenamin
-- * <adrian@mcmen.demon.co.uk>
-- * 2006
+@@ -1,345 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-//
+-// Hitachi Audio Controller (AC97) support for SH7760/SH7780
+-//
+-// Copyright (c) 2007 Manuel Lauss <mano@roarinelk.homelinux.net>
+-//
+-// dont forget to set IPSEL/OMSEL register bits (in your board code) to
+-// enable HAC output pins!
+-
+-/* BIG FAT FIXME: although the SH7760 has 2 independent AC97 units, only
+- * the FIRST can be used since ASoC does not pass any information to the
+- * ac97_read/write() functions regarding WHICH unit to use.  You'll have
+- * to edit the code a bit to use the other AC97 unit.		--mlau
 - */
 -
--/* SPU memory and register constants etc */
--#define G2_FIFO 0xa05f688c
--#define SPU_MEMORY_BASE 0xA0800000
--#define ARM_RESET_REGISTER 0xA0702C00
--#define SPU_REGISTER_BASE 0xA0700000
+-#include <linux/init.h>
+-#include <linux/module.h>
+-#include <linux/platform_device.h>
+-#include <linux/interrupt.h>
+-#include <linux/wait.h>
+-#include <linux/delay.h>
+-#include <sound/core.h>
+-#include <sound/pcm.h>
+-#include <sound/ac97_codec.h>
+-#include <sound/initval.h>
+-#include <sound/soc.h>
 -
--/* AICA channels stuff */
--#define AICA_CONTROL_POINT 0xA0810000
--#define AICA_CONTROL_CHANNEL_SAMPLE_NUMBER 0xA0810008
--#define AICA_CHANNEL0_CONTROL_OFFSET 0x10004
+-/* regs and bits */
+-#define HACCR		0x08
+-#define HACCSAR		0x20
+-#define HACCSDR		0x24
+-#define HACPCML		0x28
+-#define HACPCMR		0x2C
+-#define HACTIER		0x50
+-#define	HACTSR		0x54
+-#define HACRIER		0x58
+-#define HACRSR		0x5C
+-#define HACACR		0x60
 -
--/* Command values */
--#define AICA_CMD_KICK 0x80000000
--#define AICA_CMD_NONE 0
--#define AICA_CMD_START 1
--#define AICA_CMD_STOP 2
--#define AICA_CMD_VOL 3
+-#define CR_CR		(1 << 15)	/* "codec-ready" indicator */
+-#define CR_CDRT		(1 << 11)	/* cold reset */
+-#define CR_WMRT		(1 << 10)	/* warm reset */
+-#define CR_B9		(1 << 9)	/* the mysterious "bit 9" */
+-#define CR_ST		(1 << 5)	/* AC97 link start bit */
 -
--/* Sound modes */
--#define SM_8BIT		1
--#define SM_16BIT	0
--#define SM_ADPCM	2
+-#define CSAR_RD		(1 << 19)	/* AC97 data read bit */
+-#define CSAR_WR		(0)
 -
--/* Buffer and period size */
--#define AICA_BUFFER_SIZE 0x8000
--#define AICA_PERIOD_SIZE 0x800
--#define AICA_PERIOD_NUMBER 16
+-#define TSR_CMDAMT	(1 << 31)
+-#define TSR_CMDDMT	(1 << 30)
 -
--#define AICA_CHANNEL0_OFFSET 0x11000
--#define AICA_CHANNEL1_OFFSET 0x21000
--#define CHANNEL_OFFSET 0x10000
+-#define RSR_STARY	(1 << 22)
+-#define RSR_STDRY	(1 << 21)
 -
--#define AICA_DMA_CHANNEL 5
--#define AICA_DMA_MODE 5
+-#define ACR_DMARX16	(1 << 30)
+-#define ACR_DMATX16	(1 << 29)
+-#define ACR_TX12ATOM	(1 << 26)
+-#define ACR_DMARX20	((1 << 24) | (1 << 22))
+-#define ACR_DMATX20	((1 << 23) | (1 << 21))
 -
--#define SND_AICA_DRIVER "AICA"
+-#define CSDR_SHIFT	4
+-#define CSDR_MASK	(0xffff << CSDR_SHIFT)
+-#define CSAR_SHIFT	12
+-#define CSAR_MASK	(0x7f << CSAR_SHIFT)
 -
--struct aica_channel {
--	uint32_t cmd;		/* Command ID           */
--	uint32_t pos;		/* Sample position      */
--	uint32_t length;	/* Sample length        */
--	uint32_t freq;		/* Frequency            */
--	uint32_t vol;		/* Volume 0-255         */
--	uint32_t pan;		/* Pan 0-255            */
--	uint32_t sfmt;		/* Sound format         */
--	uint32_t flags;		/* Bit flags            */
+-#define AC97_WRITE_RETRY	1
+-#define AC97_READ_RETRY		5
+-
+-/* manual-suggested AC97 codec access timeouts (us) */
+-#define TMO_E1	500	/* 21 < E1 < 1000 */
+-#define TMO_E2	13	/* 13 < E2 */
+-#define TMO_E3	21	/* 21 < E3 */
+-#define TMO_E4	500	/* 21 < E4 < 1000 */
+-
+-struct hac_priv {
+-	unsigned long mmio;	/* HAC base address */
+-} hac_cpu_data[] = {
+-#if defined(CONFIG_CPU_SUBTYPE_SH7760)
+-	{
+-		.mmio	= 0xFE240000,
+-	},
+-	{
+-		.mmio	= 0xFE250000,
+-	},
+-#elif defined(CONFIG_CPU_SUBTYPE_SH7780)
+-	{
+-		.mmio	= 0xFFE40000,
+-	},
+-#else
+-#error "Unsupported SuperH SoC"
+-#endif
 -};
 -
--struct snd_card_aica {
--	struct work_struct spu_dma_work;
--	struct snd_card *card;
--	struct aica_channel *channel;
--	struct snd_pcm_substream *substream;
--	int clicks;
--	int current_period;
--	struct timer_list timer;
--	int master_volume;
--	int dma_check;
--};
-diff --git a/sound/sh/sh_dac_audio.c b/sound/sh/sh_dac_audio.c
-deleted file mode 100644
-index 8ebd972846acb5..00000000000000
---- a/sound/sh/sh_dac_audio.c
-+++ /dev/null
-@@ -1,412 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-or-later
+-#define HACREG(reg)	(*(unsigned long *)(hac->mmio + (reg)))
+-
 -/*
-- * sh_dac_audio.c - SuperH DAC audio driver for ALSA
-- *
-- * Copyright (c) 2009 by Rafael Ignacio Zurita <rizurita@yahoo.com>
-- *
-- * Based on sh_dac_audio.c (Copyright (C) 2004, 2005 by Andriy Skulysh)
+- * AC97 read/write flow as outlined in the SH7760 manual (pages 903-906)
 - */
+-static int hac_get_codec_data(struct hac_priv *hac, unsigned short r,
+-			      unsigned short *v)
+-{
+-	unsigned int to1, to2, i;
+-	unsigned short adr;
 -
--#include <linux/hrtimer.h>
+-	for (i = AC97_READ_RETRY; i; i--) {
+-		*v = 0;
+-		/* wait for HAC to receive something from the codec */
+-		for (to1 = TMO_E4;
+-		     to1 && !(HACREG(HACRSR) & RSR_STARY);
+-		     --to1)
+-			udelay(1);
+-		for (to2 = TMO_E4; 
+-		     to2 && !(HACREG(HACRSR) & RSR_STDRY);
+-		     --to2)
+-			udelay(1);
+-
+-		if (!to1 && !to2)
+-			return 0;	/* codec comm is down */
+-
+-		adr = ((HACREG(HACCSAR) & CSAR_MASK) >> CSAR_SHIFT);
+-		*v  = ((HACREG(HACCSDR) & CSDR_MASK) >> CSDR_SHIFT);
+-
+-		HACREG(HACRSR) &= ~(RSR_STDRY | RSR_STARY);
+-
+-		if (r == adr)
+-			break;
+-
+-		/* manual says: wait at least 21 usec before retrying */
+-		udelay(21);
+-	}
+-	HACREG(HACRSR) &= ~(RSR_STDRY | RSR_STARY);
+-	return i;
+-}
+-
+-static unsigned short hac_read_codec_aux(struct hac_priv *hac,
+-					 unsigned short reg)
+-{
+-	unsigned short val;
+-	unsigned int i, to;
+-
+-	for (i = AC97_READ_RETRY; i; i--) {
+-		/* send_read_request */
+-		local_irq_disable();
+-		HACREG(HACTSR) &= ~(TSR_CMDAMT);
+-		HACREG(HACCSAR) = (reg << CSAR_SHIFT) | CSAR_RD;
+-		local_irq_enable();
+-
+-		for (to = TMO_E3;
+-		     to && !(HACREG(HACTSR) & TSR_CMDAMT);
+-		     --to)
+-			udelay(1);
+-
+-		HACREG(HACTSR) &= ~TSR_CMDAMT;
+-		val = 0;
+-		if (hac_get_codec_data(hac, reg, &val) != 0)
+-			break;
+-	}
+-
+-	return i ? val : ~0;
+-}
+-
+-static void hac_ac97_write(struct snd_ac97 *ac97, unsigned short reg,
+-			   unsigned short val)
+-{
+-	int unit_id = 0 /* ac97->private_data */;
+-	struct hac_priv *hac = &hac_cpu_data[unit_id];
+-	unsigned int i, to;
+-	/* write_codec_aux */
+-	for (i = AC97_WRITE_RETRY; i; i--) {
+-		/* send_write_request */
+-		local_irq_disable();
+-		HACREG(HACTSR) &= ~(TSR_CMDDMT | TSR_CMDAMT);
+-		HACREG(HACCSDR) = (val << CSDR_SHIFT);
+-		HACREG(HACCSAR) = (reg << CSAR_SHIFT) & (~CSAR_RD);
+-		local_irq_enable();
+-
+-		/* poll-wait for CMDAMT and CMDDMT */
+-		for (to = TMO_E1;
+-		     to && !(HACREG(HACTSR) & (TSR_CMDAMT|TSR_CMDDMT));
+-		     --to)
+-			udelay(1);
+-
+-		HACREG(HACTSR) &= ~(TSR_CMDAMT | TSR_CMDDMT);
+-		if (to)
+-			break;
+-		/* timeout, try again */
+-	}
+-}
+-
+-static unsigned short hac_ac97_read(struct snd_ac97 *ac97,
+-				    unsigned short reg)
+-{
+-	int unit_id = 0 /* ac97->private_data */;
+-	struct hac_priv *hac = &hac_cpu_data[unit_id];
+-	return hac_read_codec_aux(hac, reg);
+-}
+-
+-static void hac_ac97_warmrst(struct snd_ac97 *ac97)
+-{
+-	int unit_id = 0 /* ac97->private_data */;
+-	struct hac_priv *hac = &hac_cpu_data[unit_id];
+-	unsigned int tmo;
+-
+-	HACREG(HACCR) = CR_WMRT | CR_ST | CR_B9;
+-	msleep(10);
+-	HACREG(HACCR) = CR_ST | CR_B9;
+-	for (tmo = 1000; (tmo > 0) && !(HACREG(HACCR) & CR_CR); tmo--)
+-		udelay(1);
+-
+-	if (!tmo)
+-		printk(KERN_INFO "hac: reset: AC97 link down!\n");
+-	/* settings this bit lets us have a conversation with codec */
+-	HACREG(HACACR) |= ACR_TX12ATOM;
+-}
+-
+-static void hac_ac97_coldrst(struct snd_ac97 *ac97)
+-{
+-	int unit_id = 0 /* ac97->private_data */;
+-	struct hac_priv *hac;
+-	hac = &hac_cpu_data[unit_id];
+-
+-	HACREG(HACCR) = 0;
+-	HACREG(HACCR) = CR_CDRT | CR_ST | CR_B9;
+-	msleep(10);
+-	hac_ac97_warmrst(ac97);
+-}
+-
+-static struct snd_ac97_bus_ops hac_ac97_ops = {
+-	.read	= hac_ac97_read,
+-	.write	= hac_ac97_write,
+-	.reset	= hac_ac97_coldrst,
+-	.warm_reset = hac_ac97_warmrst,
+-};
+-
+-static int hac_hw_params(struct snd_pcm_substream *substream,
+-			 struct snd_pcm_hw_params *params,
+-			 struct snd_soc_dai *dai)
+-{
+-	struct hac_priv *hac = &hac_cpu_data[dai->id];
+-	int d = substream->stream == SNDRV_PCM_STREAM_PLAYBACK ? 0 : 1;
+-
+-	switch (params->msbits) {
+-	case 16:
+-		HACREG(HACACR) |= d ?  ACR_DMARX16 :  ACR_DMATX16;
+-		HACREG(HACACR) &= d ? ~ACR_DMARX20 : ~ACR_DMATX20;
+-		break;
+-	case 20:
+-		HACREG(HACACR) &= d ? ~ACR_DMARX16 : ~ACR_DMATX16;
+-		HACREG(HACACR) |= d ?  ACR_DMARX20 :  ACR_DMATX20;
+-		break;
+-	default:
+-		pr_debug("hac: invalid depth %d bit\n", params->msbits);
+-		return -EINVAL;
+-		break;
+-	}
+-
+-	return 0;
+-}
+-
+-#define AC97_RATES	\
+-	SNDRV_PCM_RATE_8000_192000
+-
+-#define AC97_FMTS	\
+-	SNDRV_PCM_FMTBIT_S16_LE
+-
+-static const struct snd_soc_dai_ops hac_dai_ops = {
+-	.hw_params	= hac_hw_params,
+-};
+-
+-static struct snd_soc_dai_driver sh4_hac_dai[] = {
+-{
+-	.name			= "hac-dai.0",
+-	.playback = {
+-		.rates		= AC97_RATES,
+-		.formats	= AC97_FMTS,
+-		.channels_min	= 2,
+-		.channels_max	= 2,
+-	},
+-	.capture = {
+-		.rates		= AC97_RATES,
+-		.formats	= AC97_FMTS,
+-		.channels_min	= 2,
+-		.channels_max	= 2,
+-	},
+-	.ops = &hac_dai_ops,
+-},
+-#ifdef CONFIG_CPU_SUBTYPE_SH7760
+-{
+-	.name			= "hac-dai.1",
+-	.id			= 1,
+-	.playback = {
+-		.rates		= AC97_RATES,
+-		.formats	= AC97_FMTS,
+-		.channels_min	= 2,
+-		.channels_max	= 2,
+-	},
+-	.capture = {
+-		.rates		= AC97_RATES,
+-		.formats	= AC97_FMTS,
+-		.channels_min	= 2,
+-		.channels_max	= 2,
+-	},
+-	.ops = &hac_dai_ops,
+-
+-},
+-#endif
+-};
+-
+-static const struct snd_soc_component_driver sh4_hac_component = {
+-	.name			= "sh4-hac",
+-	.legacy_dai_naming	= 1,
+-};
+-
+-static int hac_soc_platform_probe(struct platform_device *pdev)
+-{
+-	int ret;
+-
+-	ret = snd_soc_set_ac97_ops(&hac_ac97_ops);
+-	if (ret != 0)
+-		return ret;
+-
+-	return devm_snd_soc_register_component(&pdev->dev, &sh4_hac_component,
+-					  sh4_hac_dai, ARRAY_SIZE(sh4_hac_dai));
+-}
+-
+-static int hac_soc_platform_remove(struct platform_device *pdev)
+-{
+-	snd_soc_set_ac97_ops(NULL);
+-	return 0;
+-}
+-
+-static struct platform_driver hac_pcm_driver = {
+-	.driver = {
+-			.name = "hac-pcm-audio",
+-	},
+-
+-	.probe = hac_soc_platform_probe,
+-	.remove = hac_soc_platform_remove,
+-};
+-
+-module_platform_driver(hac_pcm_driver);
+-
+-MODULE_LICENSE("GPL v2");
+-MODULE_DESCRIPTION("SuperH onchip HAC (AC97) audio driver");
+-MODULE_AUTHOR("Manuel Lauss <mano@roarinelk.homelinux.net>");
+diff --git a/sound/soc/sh/migor.c b/sound/soc/sh/migor.c
+deleted file mode 100644
+index 7082c12d3bf238..00000000000000
+--- a/sound/soc/sh/migor.c
++++ /dev/null
+@@ -1,205 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-//
+-// ALSA SoC driver for Migo-R
+-//
+-// Copyright (C) 2009-2010 Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+-
+-#include <linux/clkdev.h>
+-#include <linux/device.h>
+-#include <linux/firmware.h>
+-#include <linux/module.h>
+-
+-#include <asm/clock.h>
+-
+-#include <cpu/sh7722.h>
+-
+-#include <sound/core.h>
+-#include <sound/pcm.h>
+-#include <sound/soc.h>
+-
+-#include "../codecs/wm8978.h"
+-#include "siu.h"
+-
+-/* Default 8000Hz sampling frequency */
+-static unsigned long codec_freq = 8000 * 512;
+-
+-static unsigned int use_count;
+-
+-/* External clock, sourced from the codec at the SIUMCKB pin */
+-static unsigned long siumckb_recalc(struct clk *clk)
+-{
+-	return codec_freq;
+-}
+-
+-static struct sh_clk_ops siumckb_clk_ops = {
+-	.recalc = siumckb_recalc,
+-};
+-
+-static struct clk siumckb_clk = {
+-	.ops		= &siumckb_clk_ops,
+-	.rate		= 0, /* initialised at run-time */
+-};
+-
+-static struct clk_lookup *siumckb_lookup;
+-
+-static int migor_hw_params(struct snd_pcm_substream *substream,
+-			   struct snd_pcm_hw_params *params)
+-{
+-	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+-	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
+-	int ret;
+-	unsigned int rate = params_rate(params);
+-
+-	ret = snd_soc_dai_set_sysclk(codec_dai, WM8978_PLL, 13000000,
+-				     SND_SOC_CLOCK_IN);
+-	if (ret < 0)
+-		return ret;
+-
+-	ret = snd_soc_dai_set_clkdiv(codec_dai, WM8978_OPCLKRATE, rate * 512);
+-	if (ret < 0)
+-		return ret;
+-
+-	codec_freq = rate * 512;
+-	/*
+-	 * This propagates the parent frequency change to children and
+-	 * recalculates the frequency table
+-	 */
+-	clk_set_rate(&siumckb_clk, codec_freq);
+-	dev_dbg(codec_dai->dev, "%s: configure %luHz\n", __func__, codec_freq);
+-
+-	ret = snd_soc_dai_set_sysclk(asoc_rtd_to_cpu(rtd, 0), SIU_CLKB_EXT,
+-				     codec_freq / 2, SND_SOC_CLOCK_IN);
+-
+-	if (!ret)
+-		use_count++;
+-
+-	return ret;
+-}
+-
+-static int migor_hw_free(struct snd_pcm_substream *substream)
+-{
+-	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+-	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
+-
+-	if (use_count) {
+-		use_count--;
+-
+-		if (!use_count)
+-			snd_soc_dai_set_sysclk(codec_dai, WM8978_PLL, 0,
+-					       SND_SOC_CLOCK_IN);
+-	} else {
+-		dev_dbg(codec_dai->dev, "Unbalanced hw_free!\n");
+-	}
+-
+-	return 0;
+-}
+-
+-static const struct snd_soc_ops migor_dai_ops = {
+-	.hw_params = migor_hw_params,
+-	.hw_free = migor_hw_free,
+-};
+-
+-static const struct snd_soc_dapm_widget migor_dapm_widgets[] = {
+-	SND_SOC_DAPM_HP("Headphone", NULL),
+-	SND_SOC_DAPM_MIC("Onboard Microphone", NULL),
+-	SND_SOC_DAPM_MIC("External Microphone", NULL),
+-};
+-
+-static const struct snd_soc_dapm_route audio_map[] = {
+-	/* Headphone output connected to LHP/RHP, enable OUT4 for VMID */
+-	{ "Headphone", NULL,  "OUT4 VMID" },
+-	{ "OUT4 VMID", NULL,  "LHP" },
+-	{ "OUT4 VMID", NULL,  "RHP" },
+-
+-	/* On-board microphone */
+-	{ "RMICN", NULL, "Mic Bias" },
+-	{ "RMICP", NULL, "Mic Bias" },
+-	{ "Mic Bias", NULL, "Onboard Microphone" },
+-
+-	/* External microphone */
+-	{ "LMICN", NULL, "Mic Bias" },
+-	{ "LMICP", NULL, "Mic Bias" },
+-	{ "Mic Bias", NULL, "External Microphone" },
+-};
+-
+-/* migor digital audio interface glue - connects codec <--> CPU */
+-SND_SOC_DAILINK_DEFS(wm8978,
+-	DAILINK_COMP_ARRAY(COMP_CPU("siu-pcm-audio")),
+-	DAILINK_COMP_ARRAY(COMP_CODEC("wm8978.0-001a", "wm8978-hifi")),
+-	DAILINK_COMP_ARRAY(COMP_PLATFORM("siu-pcm-audio")));
+-
+-static struct snd_soc_dai_link migor_dai = {
+-	.name = "wm8978",
+-	.stream_name = "WM8978",
+-	.dai_fmt = SND_SOC_DAIFMT_NB_IF | SND_SOC_DAIFMT_I2S |
+-		   SND_SOC_DAIFMT_CBS_CFS,
+-	.ops = &migor_dai_ops,
+-	SND_SOC_DAILINK_REG(wm8978),
+-};
+-
+-/* migor audio machine driver */
+-static struct snd_soc_card snd_soc_migor = {
+-	.name = "Migo-R",
+-	.owner = THIS_MODULE,
+-	.dai_link = &migor_dai,
+-	.num_links = 1,
+-
+-	.dapm_widgets = migor_dapm_widgets,
+-	.num_dapm_widgets = ARRAY_SIZE(migor_dapm_widgets),
+-	.dapm_routes = audio_map,
+-	.num_dapm_routes = ARRAY_SIZE(audio_map),
+-};
+-
+-static struct platform_device *migor_snd_device;
+-
+-static int __init migor_init(void)
+-{
+-	int ret;
+-
+-	ret = clk_register(&siumckb_clk);
+-	if (ret < 0)
+-		return ret;
+-
+-	siumckb_lookup = clkdev_create(&siumckb_clk, "siumckb_clk", NULL);
+-	if (!siumckb_lookup) {
+-		ret = -ENOMEM;
+-		goto eclkdevalloc;
+-	}
+-
+-	/* Port number used on this machine: port B */
+-	migor_snd_device = platform_device_alloc("soc-audio", 1);
+-	if (!migor_snd_device) {
+-		ret = -ENOMEM;
+-		goto epdevalloc;
+-	}
+-
+-	platform_set_drvdata(migor_snd_device, &snd_soc_migor);
+-
+-	ret = platform_device_add(migor_snd_device);
+-	if (ret)
+-		goto epdevadd;
+-
+-	return 0;
+-
+-epdevadd:
+-	platform_device_put(migor_snd_device);
+-epdevalloc:
+-	clkdev_drop(siumckb_lookup);
+-eclkdevalloc:
+-	clk_unregister(&siumckb_clk);
+-	return ret;
+-}
+-
+-static void __exit migor_exit(void)
+-{
+-	clkdev_drop(siumckb_lookup);
+-	clk_unregister(&siumckb_clk);
+-	platform_device_unregister(migor_snd_device);
+-}
+-
+-module_init(migor_init);
+-module_exit(migor_exit);
+-
+-MODULE_AUTHOR("Guennadi Liakhovetski <g.liakhovetski@gmx.de>");
+-MODULE_DESCRIPTION("ALSA SoC Migor");
+-MODULE_LICENSE("GPL v2");
+diff --git a/sound/soc/sh/sh7760-ac97.c b/sound/soc/sh/sh7760-ac97.c
+deleted file mode 100644
+index d267243a159ba6..00000000000000
+--- a/sound/soc/sh/sh7760-ac97.c
++++ /dev/null
+@@ -1,72 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-//
+-// Generic AC97 sound support for SH7760
+-//
+-// (c) 2007 Manuel Lauss
+-
+-#include <linux/module.h>
+-#include <linux/moduleparam.h>
+-#include <linux/platform_device.h>
+-#include <sound/core.h>
+-#include <sound/pcm.h>
+-#include <sound/soc.h>
+-#include <asm/io.h>
+-
+-#define IPSEL 0xFE400034
+-
+-SND_SOC_DAILINK_DEFS(ac97,
+-	DAILINK_COMP_ARRAY(COMP_CPU("hac-dai.0")),	/* HAC0 */
+-	DAILINK_COMP_ARRAY(COMP_CODEC("ac97-codec", "ac97-hifi")),
+-	DAILINK_COMP_ARRAY(COMP_PLATFORM("sh7760-pcm-audio")));
+-
+-static struct snd_soc_dai_link sh7760_ac97_dai = {
+-	.name = "AC97",
+-	.stream_name = "AC97 HiFi",
+-	SND_SOC_DAILINK_REG(ac97),
+-};
+-
+-static struct snd_soc_card sh7760_ac97_soc_machine  = {
+-	.name = "SH7760 AC97",
+-	.owner = THIS_MODULE,
+-	.dai_link = &sh7760_ac97_dai,
+-	.num_links = 1,
+-};
+-
+-static struct platform_device *sh7760_ac97_snd_device;
+-
+-static int __init sh7760_ac97_init(void)
+-{
+-	int ret;
+-	unsigned short ipsel;
+-
+-	/* enable both AC97 controllers in pinmux reg */
+-	ipsel = __raw_readw(IPSEL);
+-	__raw_writew(ipsel | (3 << 10), IPSEL);
+-
+-	ret = -ENOMEM;
+-	sh7760_ac97_snd_device = platform_device_alloc("soc-audio", -1);
+-	if (!sh7760_ac97_snd_device)
+-		goto out;
+-
+-	platform_set_drvdata(sh7760_ac97_snd_device,
+-			     &sh7760_ac97_soc_machine);
+-	ret = platform_device_add(sh7760_ac97_snd_device);
+-
+-	if (ret)
+-		platform_device_put(sh7760_ac97_snd_device);
+-
+-out:
+-	return ret;
+-}
+-
+-static void __exit sh7760_ac97_exit(void)
+-{
+-	platform_device_unregister(sh7760_ac97_snd_device);
+-}
+-
+-module_init(sh7760_ac97_init);
+-module_exit(sh7760_ac97_exit);
+-
+-MODULE_LICENSE("GPL v2");
+-MODULE_DESCRIPTION("Generic SH7760 AC97 sound machine");
+-MODULE_AUTHOR("Manuel Lauss <mano@roarinelk.homelinux.net>");
+diff --git a/sound/soc/sh/siu.h b/sound/soc/sh/siu.h
+deleted file mode 100644
+index a675c36fc9d956..00000000000000
+--- a/sound/soc/sh/siu.h
++++ /dev/null
+@@ -1,180 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0+
+-//
+-// siu.h - ALSA SoC driver for Renesas SH7343, SH7722 SIU peripheral.
+-//
+-// Copyright (C) 2009-2010 Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+-// Copyright (C) 2006 Carlos Munoz <carlos@kenati.com>
+-
+-#ifndef SIU_H
+-#define SIU_H
+-
+-/* Common kernel and user-space firmware-building defines and types */
+-
+-#define YRAM0_SIZE		(0x0040 / 4)		/* 16 */
+-#define YRAM1_SIZE		(0x0080 / 4)		/* 32 */
+-#define YRAM2_SIZE		(0x0040 / 4)		/* 16 */
+-#define YRAM3_SIZE		(0x0080 / 4)		/* 32 */
+-#define YRAM4_SIZE		(0x0080 / 4)		/* 32 */
+-#define YRAM_DEF_SIZE		(YRAM0_SIZE + YRAM1_SIZE + YRAM2_SIZE + \
+-				 YRAM3_SIZE + YRAM4_SIZE)
+-#define YRAM_FIR_SIZE		(0x0400 / 4)		/* 256 */
+-#define YRAM_IIR_SIZE		(0x0200 / 4)		/* 128 */
+-
+-#define XRAM0_SIZE		(0x0400 / 4)		/* 256 */
+-#define XRAM1_SIZE		(0x0200 / 4)		/* 128 */
+-#define XRAM2_SIZE		(0x0200 / 4)		/* 128 */
+-
+-/* PRAM program array size */
+-#define PRAM0_SIZE		(0x0100 / 4)		/* 64 */
+-#define PRAM1_SIZE		((0x2000 - 0x0100) / 4)	/* 1984 */
+-
+-#include <linux/types.h>
+-
+-struct siu_spb_param {
+-	__u32	ab1a;	/* input FIFO address */
+-	__u32	ab0a;	/* output FIFO address */
+-	__u32	dir;	/* 0=the ather except CPUOUTPUT, 1=CPUINPUT */
+-	__u32	event;	/* SPB program starting conditions */
+-	__u32	stfifo;	/* STFIFO register setting value */
+-	__u32	trdat;	/* TRDAT register setting value */
+-};
+-
+-struct siu_firmware {
+-	__u32			yram_fir_coeff[YRAM_FIR_SIZE];
+-	__u32			pram0[PRAM0_SIZE];
+-	__u32			pram1[PRAM1_SIZE];
+-	__u32			yram0[YRAM0_SIZE];
+-	__u32			yram1[YRAM1_SIZE];
+-	__u32			yram2[YRAM2_SIZE];
+-	__u32			yram3[YRAM3_SIZE];
+-	__u32			yram4[YRAM4_SIZE];
+-	__u32			spbpar_num;
+-	struct siu_spb_param	spbpar[32];
+-};
+-
+-#ifdef __KERNEL__
+-
+-#include <linux/dmaengine.h>
 -#include <linux/interrupt.h>
 -#include <linux/io.h>
--#include <linux/platform_device.h>
+-#include <linux/sh_dma.h>
+-
+-#include <sound/core.h>
+-#include <sound/pcm.h>
+-#include <sound/soc.h>
+-
+-#define SIU_PERIOD_BYTES_MAX	8192		/* DMA transfer/period size */
+-#define SIU_PERIOD_BYTES_MIN	256		/* DMA transfer/period size */
+-#define SIU_PERIODS_MAX		64		/* Max periods in buffer */
+-#define SIU_PERIODS_MIN		4		/* Min periods in buffer */
+-#define SIU_BUFFER_BYTES_MAX	(SIU_PERIOD_BYTES_MAX * SIU_PERIODS_MAX)
+-
+-/* SIU ports: only one can be used at a time */
+-enum {
+-	SIU_PORT_A,
+-	SIU_PORT_B,
+-	SIU_PORT_NUM,
+-};
+-
+-/* SIU clock configuration */
+-enum {
+-	SIU_CLKA_PLL,
+-	SIU_CLKA_EXT,
+-	SIU_CLKB_PLL,
+-	SIU_CLKB_EXT
+-};
+-
+-struct device;
+-struct siu_info {
+-	struct device		*dev;
+-	int			port_id;
+-	u32 __iomem		*pram;
+-	u32 __iomem		*xram;
+-	u32 __iomem		*yram;
+-	u32 __iomem		*reg;
+-	struct siu_firmware	fw;
+-};
+-
+-struct siu_stream {
+-	struct work_struct		work;
+-	struct snd_pcm_substream	*substream;
+-	snd_pcm_format_t		format;
+-	size_t				buf_bytes;
+-	size_t				period_bytes;
+-	int				cur_period;	/* Period currently in dma */
+-	u32				volume;
+-	snd_pcm_sframes_t		xfer_cnt;	/* Number of frames */
+-	u8				rw_flg;		/* transfer status */
+-	/* DMA status */
+-	struct dma_chan			*chan;		/* DMA channel */
+-	struct dma_async_tx_descriptor	*tx_desc;
+-	dma_cookie_t			cookie;
+-	struct sh_dmae_slave		param;
+-};
+-
+-struct siu_port {
+-	unsigned long		play_cap;	/* Used to track full duplex */
+-	struct snd_pcm		*pcm;
+-	struct siu_stream	playback;
+-	struct siu_stream	capture;
+-	u32			stfifo;		/* STFIFO value from firmware */
+-	u32			trdat;		/* TRDAT value from firmware */
+-};
+-
+-extern struct siu_port *siu_ports[SIU_PORT_NUM];
+-
+-static inline struct siu_port *siu_port_info(struct snd_pcm_substream *substream)
+-{
+-	struct platform_device *pdev =
+-		to_platform_device(substream->pcm->card->dev);
+-	return siu_ports[pdev->id];
+-}
+-
+-/* Register access */
+-static inline void siu_write32(u32 __iomem *addr, u32 val)
+-{
+-	__raw_writel(val, addr);
+-}
+-
+-static inline u32 siu_read32(u32 __iomem *addr)
+-{
+-	return __raw_readl(addr);
+-}
+-
+-/* SIU registers */
+-#define SIU_IFCTL	(0x000 / sizeof(u32))
+-#define SIU_SRCTL	(0x004 / sizeof(u32))
+-#define SIU_SFORM	(0x008 / sizeof(u32))
+-#define SIU_CKCTL	(0x00c / sizeof(u32))
+-#define SIU_TRDAT	(0x010 / sizeof(u32))
+-#define SIU_STFIFO	(0x014 / sizeof(u32))
+-#define SIU_DPAK	(0x01c / sizeof(u32))
+-#define SIU_CKREV	(0x020 / sizeof(u32))
+-#define SIU_EVNTC	(0x028 / sizeof(u32))
+-#define SIU_SBCTL	(0x040 / sizeof(u32))
+-#define SIU_SBPSET	(0x044 / sizeof(u32))
+-#define SIU_SBFSTS	(0x068 / sizeof(u32))
+-#define SIU_SBDVCA	(0x06c / sizeof(u32))
+-#define SIU_SBDVCB	(0x070 / sizeof(u32))
+-#define SIU_SBACTIV	(0x074 / sizeof(u32))
+-#define SIU_DMAIA	(0x090 / sizeof(u32))
+-#define SIU_DMAIB	(0x094 / sizeof(u32))
+-#define SIU_DMAOA	(0x098 / sizeof(u32))
+-#define SIU_DMAOB	(0x09c / sizeof(u32))
+-#define SIU_DMAML	(0x0a0 / sizeof(u32))
+-#define SIU_SPSTS	(0x0cc / sizeof(u32))
+-#define SIU_SPCTL	(0x0d0 / sizeof(u32))
+-#define SIU_BRGASEL	(0x100 / sizeof(u32))
+-#define SIU_BRRA	(0x104 / sizeof(u32))
+-#define SIU_BRGBSEL	(0x108 / sizeof(u32))
+-#define SIU_BRRB	(0x10c / sizeof(u32))
+-
+-extern const struct snd_soc_component_driver siu_component;
+-extern struct siu_info *siu_i2s_data;
+-
+-int siu_init_port(int port, struct siu_port **port_info, struct snd_card *card);
+-void siu_free_port(struct siu_port *port_info);
+-
+-#endif
+-
+-#endif /* SIU_H */
+diff --git a/sound/soc/sh/siu_dai.c b/sound/soc/sh/siu_dai.c
+deleted file mode 100644
+index f2a386fcd92e4d..00000000000000
+--- a/sound/soc/sh/siu_dai.c
++++ /dev/null
+@@ -1,799 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0+
+-//
+-// siu_dai.c - ALSA SoC driver for Renesas SH7343, SH7722 SIU peripheral.
+-//
+-// Copyright (C) 2009-2010 Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+-// Copyright (C) 2006 Carlos Munoz <carlos@kenati.com>
+-
+-#include <linux/delay.h>
+-#include <linux/firmware.h>
+-#include <linux/pm_runtime.h>
 -#include <linux/slab.h>
 -#include <linux/module.h>
--#include <sound/core.h>
--#include <sound/initval.h>
--#include <sound/pcm.h>
--#include <sound/sh_dac_audio.h>
+-
 -#include <asm/clock.h>
--#include <asm/hd64461.h>
--#include <mach/hp6xx.h>
--#include <cpu/dac.h>
+-#include <asm/siu.h>
 -
--MODULE_AUTHOR("Rafael Ignacio Zurita <rizurita@yahoo.com>");
--MODULE_DESCRIPTION("SuperH DAC audio driver");
--MODULE_LICENSE("GPL");
+-#include <sound/control.h>
+-#include <sound/soc.h>
 -
--/* Module Parameters */
--static int index = SNDRV_DEFAULT_IDX1;
--static char *id = SNDRV_DEFAULT_STR1;
--module_param(index, int, 0444);
--MODULE_PARM_DESC(index, "Index value for SuperH DAC audio.");
--module_param(id, charp, 0444);
--MODULE_PARM_DESC(id, "ID string for SuperH DAC audio.");
+-#include "siu.h"
 -
--/* main struct */
--struct snd_sh_dac {
--	struct snd_card *card;
--	struct snd_pcm_substream *substream;
--	struct hrtimer hrtimer;
--	ktime_t wakeups_per_second;
+-/* Board specifics */
+-#if defined(CONFIG_CPU_SUBTYPE_SH7722)
+-# define SIU_MAX_VOLUME		0x1000
+-#else
+-# define SIU_MAX_VOLUME		0x7fff
+-#endif
 -
--	int rate;
--	int empty;
--	char *data_buffer, *buffer_begin, *buffer_end;
--	int processed; /* bytes proccesed, to compare with period_size */
--	int buffer_size;
--	struct dac_audio_pdata *pdata;
--};
+-#define PRAM_SIZE	0x2000
+-#define XRAM_SIZE	0x800
+-#define YRAM_SIZE	0x800
 -
+-#define XRAM_OFFSET	0x4000
+-#define YRAM_OFFSET	0x6000
+-#define REG_OFFSET	0xc000
 -
--static void dac_audio_start_timer(struct snd_sh_dac *chip)
--{
--	hrtimer_start(&chip->hrtimer, chip->wakeups_per_second,
--		      HRTIMER_MODE_REL);
--}
+-#define PLAYBACK_ENABLED	1
+-#define CAPTURE_ENABLED		2
 -
--static void dac_audio_stop_timer(struct snd_sh_dac *chip)
--{
--	hrtimer_cancel(&chip->hrtimer);
--}
--
--static void dac_audio_reset(struct snd_sh_dac *chip)
--{
--	dac_audio_stop_timer(chip);
--	chip->buffer_begin = chip->buffer_end = chip->data_buffer;
--	chip->processed = 0;
--	chip->empty = 1;
--}
--
--static void dac_audio_set_rate(struct snd_sh_dac *chip)
--{
--	chip->wakeups_per_second = 1000000000 / chip->rate;
--}
--
--
--/* PCM INTERFACE */
--
--static const struct snd_pcm_hardware snd_sh_dac_pcm_hw = {
--	.info			= (SNDRV_PCM_INFO_MMAP |
--					SNDRV_PCM_INFO_MMAP_VALID |
--					SNDRV_PCM_INFO_INTERLEAVED |
--					SNDRV_PCM_INFO_HALF_DUPLEX),
--	.formats		= SNDRV_PCM_FMTBIT_U8,
--	.rates			= SNDRV_PCM_RATE_8000,
--	.rate_min		= 8000,
--	.rate_max		= 8000,
--	.channels_min		= 1,
--	.channels_max		= 1,
--	.buffer_bytes_max	= (48*1024),
--	.period_bytes_min	= 1,
--	.period_bytes_max	= (48*1024),
--	.periods_min		= 1,
--	.periods_max		= 1024,
--};
--
--static int snd_sh_dac_pcm_open(struct snd_pcm_substream *substream)
--{
--	struct snd_sh_dac *chip = snd_pcm_substream_chip(substream);
--	struct snd_pcm_runtime *runtime = substream->runtime;
--
--	runtime->hw = snd_sh_dac_pcm_hw;
--
--	chip->substream = substream;
--	chip->buffer_begin = chip->buffer_end = chip->data_buffer;
--	chip->processed = 0;
--	chip->empty = 1;
--
--	chip->pdata->start(chip->pdata);
--
--	return 0;
--}
--
--static int snd_sh_dac_pcm_close(struct snd_pcm_substream *substream)
--{
--	struct snd_sh_dac *chip = snd_pcm_substream_chip(substream);
--
--	chip->substream = NULL;
--
--	dac_audio_stop_timer(chip);
--	chip->pdata->stop(chip->pdata);
--
--	return 0;
--}
--
--static int snd_sh_dac_pcm_prepare(struct snd_pcm_substream *substream)
--{
--	struct snd_sh_dac *chip = snd_pcm_substream_chip(substream);
--	struct snd_pcm_runtime *runtime = chip->substream->runtime;
--
--	chip->buffer_size = runtime->buffer_size;
--	memset(chip->data_buffer, 0, chip->pdata->buffer_size);
--
--	return 0;
--}
--
--static int snd_sh_dac_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
--{
--	struct snd_sh_dac *chip = snd_pcm_substream_chip(substream);
--
--	switch (cmd) {
--	case SNDRV_PCM_TRIGGER_START:
--		dac_audio_start_timer(chip);
--		break;
--	case SNDRV_PCM_TRIGGER_STOP:
--		chip->buffer_begin = chip->buffer_end = chip->data_buffer;
--		chip->processed = 0;
--		chip->empty = 1;
--		dac_audio_stop_timer(chip);
--		break;
--	default:
--		 return -EINVAL;
--	}
--
--	return 0;
--}
--
--static int snd_sh_dac_pcm_copy(struct snd_pcm_substream *substream,
--			       int channel, unsigned long pos,
--			       void __user *src, unsigned long count)
--{
--	/* channel is not used (interleaved data) */
--	struct snd_sh_dac *chip = snd_pcm_substream_chip(substream);
--
--	if (copy_from_user_toio(chip->data_buffer + pos, src, count))
--		return -EFAULT;
--	chip->buffer_end = chip->data_buffer + pos + count;
--
--	if (chip->empty) {
--		chip->empty = 0;
--		dac_audio_start_timer(chip);
--	}
--
--	return 0;
--}
--
--static int snd_sh_dac_pcm_copy_kernel(struct snd_pcm_substream *substream,
--				      int channel, unsigned long pos,
--				      void *src, unsigned long count)
--{
--	/* channel is not used (interleaved data) */
--	struct snd_sh_dac *chip = snd_pcm_substream_chip(substream);
--
--	memcpy_toio(chip->data_buffer + pos, src, count);
--	chip->buffer_end = chip->data_buffer + pos + count;
--
--	if (chip->empty) {
--		chip->empty = 0;
--		dac_audio_start_timer(chip);
--	}
--
--	return 0;
--}
--
--static int snd_sh_dac_pcm_silence(struct snd_pcm_substream *substream,
--				  int channel, unsigned long pos,
--				  unsigned long count)
--{
--	/* channel is not used (interleaved data) */
--	struct snd_sh_dac *chip = snd_pcm_substream_chip(substream);
--
--	memset_io(chip->data_buffer + pos, 0, count);
--	chip->buffer_end = chip->data_buffer + pos + count;
--
--	if (chip->empty) {
--		chip->empty = 0;
--		dac_audio_start_timer(chip);
--	}
--
--	return 0;
--}
--
--static
--snd_pcm_uframes_t snd_sh_dac_pcm_pointer(struct snd_pcm_substream *substream)
--{
--	struct snd_sh_dac *chip = snd_pcm_substream_chip(substream);
--	int pointer = chip->buffer_begin - chip->data_buffer;
--
--	return pointer;
--}
--
--/* pcm ops */
--static const struct snd_pcm_ops snd_sh_dac_pcm_ops = {
--	.open		= snd_sh_dac_pcm_open,
--	.close		= snd_sh_dac_pcm_close,
--	.prepare	= snd_sh_dac_pcm_prepare,
--	.trigger	= snd_sh_dac_pcm_trigger,
--	.pointer	= snd_sh_dac_pcm_pointer,
--	.copy_user	= snd_sh_dac_pcm_copy,
--	.copy_kernel	= snd_sh_dac_pcm_copy_kernel,
--	.fill_silence	= snd_sh_dac_pcm_silence,
--	.mmap		= snd_pcm_lib_mmap_iomem,
--};
--
--static int snd_sh_dac_pcm(struct snd_sh_dac *chip, int device)
--{
--	int err;
--	struct snd_pcm *pcm;
--
--	/* device should be always 0 for us */
--	err = snd_pcm_new(chip->card, "SH_DAC PCM", device, 1, 0, &pcm);
--	if (err < 0)
--		return err;
--
--	pcm->private_data = chip;
--	strcpy(pcm->name, "SH_DAC PCM");
--	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &snd_sh_dac_pcm_ops);
--
--	/* buffer size=48K */
--	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_CONTINUOUS,
--				       NULL, 48 * 1024, 48 * 1024);
--
--	return 0;
--}
--/* END OF PCM INTERFACE */
--
--
--/* driver .remove  --  destructor */
--static int snd_sh_dac_remove(struct platform_device *devptr)
--{
--	snd_card_free(platform_get_drvdata(devptr));
--	return 0;
--}
--
--/* free -- it has been defined by create */
--static int snd_sh_dac_free(struct snd_sh_dac *chip)
--{
--	/* release the data */
--	kfree(chip->data_buffer);
--	kfree(chip);
--
--	return 0;
--}
--
--static int snd_sh_dac_dev_free(struct snd_device *device)
--{
--	struct snd_sh_dac *chip = device->device_data;
--
--	return snd_sh_dac_free(chip);
--}
--
--static enum hrtimer_restart sh_dac_audio_timer(struct hrtimer *handle)
--{
--	struct snd_sh_dac *chip = container_of(handle, struct snd_sh_dac,
--					       hrtimer);
--	struct snd_pcm_runtime *runtime = chip->substream->runtime;
--	ssize_t b_ps = frames_to_bytes(runtime, runtime->period_size);
--
--	if (!chip->empty) {
--		sh_dac_output(*chip->buffer_begin, chip->pdata->channel);
--		chip->buffer_begin++;
--
--		chip->processed++;
--		if (chip->processed >= b_ps) {
--			chip->processed -= b_ps;
--			snd_pcm_period_elapsed(chip->substream);
--		}
--
--		if (chip->buffer_begin == (chip->data_buffer +
--					   chip->buffer_size - 1))
--			chip->buffer_begin = chip->data_buffer;
--
--		if (chip->buffer_begin == chip->buffer_end)
--			chip->empty = 1;
--
--	}
--
--	if (!chip->empty)
--		hrtimer_start(&chip->hrtimer, chip->wakeups_per_second,
--			      HRTIMER_MODE_REL);
--
--	return HRTIMER_NORESTART;
--}
--
--/* create  --  chip-specific constructor for the cards components */
--static int snd_sh_dac_create(struct snd_card *card,
--			     struct platform_device *devptr,
--			     struct snd_sh_dac **rchip)
--{
--	struct snd_sh_dac *chip;
--	int err;
--
--	static const struct snd_device_ops ops = {
--		   .dev_free = snd_sh_dac_dev_free,
--	};
--
--	*rchip = NULL;
--
--	chip = kzalloc(sizeof(*chip), GFP_KERNEL);
--	if (chip == NULL)
--		return -ENOMEM;
--
--	chip->card = card;
--
--	hrtimer_init(&chip->hrtimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
--	chip->hrtimer.function = sh_dac_audio_timer;
--
--	dac_audio_reset(chip);
--	chip->rate = 8000;
--	dac_audio_set_rate(chip);
--
--	chip->pdata = devptr->dev.platform_data;
--
--	chip->data_buffer = kmalloc(chip->pdata->buffer_size, GFP_KERNEL);
--	if (chip->data_buffer == NULL) {
--		kfree(chip);
--		return -ENOMEM;
--	}
--
--	err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops);
--	if (err < 0) {
--		snd_sh_dac_free(chip);
--		return err;
--	}
--
--	*rchip = chip;
--
--	return 0;
--}
--
--/* driver .probe  --  constructor */
--static int snd_sh_dac_probe(struct platform_device *devptr)
--{
--	struct snd_sh_dac *chip;
--	struct snd_card *card;
--	int err;
--
--	err = snd_card_new(&devptr->dev, index, id, THIS_MODULE, 0, &card);
--	if (err < 0) {
--			snd_printk(KERN_ERR "cannot allocate the card\n");
--			return err;
--	}
--
--	err = snd_sh_dac_create(card, devptr, &chip);
--	if (err < 0)
--		goto probe_error;
--
--	err = snd_sh_dac_pcm(chip, 0);
--	if (err < 0)
--		goto probe_error;
--
--	strcpy(card->driver, "snd_sh_dac");
--	strcpy(card->shortname, "SuperH DAC audio driver");
--	printk(KERN_INFO "%s %s", card->longname, card->shortname);
--
--	err = snd_card_register(card);
--	if (err < 0)
--		goto probe_error;
--
--	snd_printk(KERN_INFO "ALSA driver for SuperH DAC audio");
--
--	platform_set_drvdata(devptr, card);
--	return 0;
--
--probe_error:
--	snd_card_free(card);
--	return err;
--}
+-#define VOLUME_CAPTURE		0
+-#define VOLUME_PLAYBACK		1
+-#define DFLT_VOLUME_LEVEL	0x08000800
 -
 -/*
-- * "driver" definition
+- * SPDIF is only available on port A and on some SIU implementations it is only
+- * available for input. Due to the lack of hardware to test it, SPDIF is left
+- * disabled in this driver version
 - */
--static struct platform_driver sh_dac_driver = {
--	.probe	= snd_sh_dac_probe,
--	.remove = snd_sh_dac_remove,
--	.driver = {
--		.name = "dac_audio",
+-struct format_flag {
+-	u32	i2s;
+-	u32	pcm;
+-	u32	spdif;
+-	u32	mask;
+-};
+-
+-struct port_flag {
+-	struct format_flag	playback;
+-	struct format_flag	capture;
+-};
+-
+-struct siu_info *siu_i2s_data;
+-
+-static struct port_flag siu_flags[SIU_PORT_NUM] = {
+-	[SIU_PORT_A] = {
+-		.playback = {
+-			.i2s	= 0x50000000,
+-			.pcm	= 0x40000000,
+-			.spdif	= 0x80000000,	/* not on all SIU versions */
+-			.mask	= 0xd0000000,
+-		},
+-		.capture = {
+-			.i2s	= 0x05000000,
+-			.pcm	= 0x04000000,
+-			.spdif	= 0x08000000,
+-			.mask	= 0x0d000000,
+-		},
+-	},
+-	[SIU_PORT_B] = {
+-		.playback = {
+-			.i2s	= 0x00500000,
+-			.pcm	= 0x00400000,
+-			.spdif	= 0,		/* impossible - turn off */
+-			.mask	= 0x00500000,
+-		},
+-		.capture = {
+-			.i2s	= 0x00050000,
+-			.pcm	= 0x00040000,
+-			.spdif	= 0,		/* impossible - turn off */
+-			.mask	= 0x00050000,
+-		},
 -	},
 -};
 -
--module_platform_driver(sh_dac_driver);
+-static void siu_dai_start(struct siu_port *port_info)
+-{
+-	struct siu_info *info = siu_i2s_data;
+-	u32 __iomem *base = info->reg;
+-
+-	dev_dbg(port_info->pcm->card->dev, "%s\n", __func__);
+-
+-	/* Issue software reset to siu */
+-	siu_write32(base + SIU_SRCTL, 0);
+-
+-	/* Wait for the reset to take effect */
+-	udelay(1);
+-
+-	port_info->stfifo = 0;
+-	port_info->trdat = 0;
+-
+-	/* portA, portB, SIU operate */
+-	siu_write32(base + SIU_SRCTL, 0x301);
+-
+-	/* portA=256fs, portB=256fs */
+-	siu_write32(base + SIU_CKCTL, 0x40400000);
+-
+-	/* portA's BRG does not divide SIUCKA */
+-	siu_write32(base + SIU_BRGASEL, 0);
+-	siu_write32(base + SIU_BRRA, 0);
+-
+-	/* portB's BRG divides SIUCKB by half */
+-	siu_write32(base + SIU_BRGBSEL, 1);
+-	siu_write32(base + SIU_BRRB, 0);
+-
+-	siu_write32(base + SIU_IFCTL, 0x44440000);
+-
+-	/* portA: 32 bit/fs, master; portB: 32 bit/fs, master */
+-	siu_write32(base + SIU_SFORM, 0x0c0c0000);
+-
+-	/*
+-	 * Volume levels: looks like the DSP firmware implements volume controls
+-	 * differently from what's described in the datasheet
+-	 */
+-	siu_write32(base + SIU_SBDVCA, port_info->playback.volume);
+-	siu_write32(base + SIU_SBDVCB, port_info->capture.volume);
+-}
+-
+-static void siu_dai_stop(struct siu_port *port_info)
+-{
+-	struct siu_info *info = siu_i2s_data;
+-	u32 __iomem *base = info->reg;
+-
+-	/* SIU software reset */
+-	siu_write32(base + SIU_SRCTL, 0);
+-}
+-
+-static void siu_dai_spbAselect(struct siu_port *port_info)
+-{
+-	struct siu_info *info = siu_i2s_data;
+-	struct siu_firmware *fw = &info->fw;
+-	u32 *ydef = fw->yram0;
+-	u32 idx;
+-
+-	/* path A use */
+-	if (!info->port_id)
+-		idx = 1;		/* portA */
+-	else
+-		idx = 2;		/* portB */
+-
+-	ydef[0] = (fw->spbpar[idx].ab1a << 16) |
+-		(fw->spbpar[idx].ab0a << 8) |
+-		(fw->spbpar[idx].dir << 7) | 3;
+-	ydef[1] = fw->yram0[1];	/* 0x03000300 */
+-	ydef[2] = (16 / 2) << 24;
+-	ydef[3] = fw->yram0[3];	/* 0 */
+-	ydef[4] = fw->yram0[4];	/* 0 */
+-	ydef[7] = fw->spbpar[idx].event;
+-	port_info->stfifo |= fw->spbpar[idx].stfifo;
+-	port_info->trdat |= fw->spbpar[idx].trdat;
+-}
+-
+-static void siu_dai_spbBselect(struct siu_port *port_info)
+-{
+-	struct siu_info *info = siu_i2s_data;
+-	struct siu_firmware *fw = &info->fw;
+-	u32 *ydef = fw->yram0;
+-	u32 idx;
+-
+-	/* path B use */
+-	if (!info->port_id)
+-		idx = 7;		/* portA */
+-	else
+-		idx = 8;		/* portB */
+-
+-	ydef[5] = (fw->spbpar[idx].ab1a << 16) |
+-		(fw->spbpar[idx].ab0a << 8) | 1;
+-	ydef[6] = fw->spbpar[idx].event;
+-	port_info->stfifo |= fw->spbpar[idx].stfifo;
+-	port_info->trdat |= fw->spbpar[idx].trdat;
+-}
+-
+-static void siu_dai_open(struct siu_stream *siu_stream)
+-{
+-	struct siu_info *info = siu_i2s_data;
+-	u32 __iomem *base = info->reg;
+-	u32 srctl, ifctl;
+-
+-	srctl = siu_read32(base + SIU_SRCTL);
+-	ifctl = siu_read32(base + SIU_IFCTL);
+-
+-	switch (info->port_id) {
+-	case SIU_PORT_A:
+-		/* portA operates */
+-		srctl |= 0x200;
+-		ifctl &= ~0xc2;
+-		break;
+-	case SIU_PORT_B:
+-		/* portB operates */
+-		srctl |= 0x100;
+-		ifctl &= ~0x31;
+-		break;
+-	}
+-
+-	siu_write32(base + SIU_SRCTL, srctl);
+-	/* Unmute and configure portA */
+-	siu_write32(base + SIU_IFCTL, ifctl);
+-}
+-
+-/*
+- * At the moment only fixed Left-upper, Left-lower, Right-upper, Right-lower
+- * packing is supported
+- */
+-static void siu_dai_pcmdatapack(struct siu_stream *siu_stream)
+-{
+-	struct siu_info *info = siu_i2s_data;
+-	u32 __iomem *base = info->reg;
+-	u32 dpak;
+-
+-	dpak = siu_read32(base + SIU_DPAK);
+-
+-	switch (info->port_id) {
+-	case SIU_PORT_A:
+-		dpak &= ~0xc0000000;
+-		break;
+-	case SIU_PORT_B:
+-		dpak &= ~0x00c00000;
+-		break;
+-	}
+-
+-	siu_write32(base + SIU_DPAK, dpak);
+-}
+-
+-static int siu_dai_spbstart(struct siu_port *port_info)
+-{
+-	struct siu_info *info = siu_i2s_data;
+-	u32 __iomem *base = info->reg;
+-	struct siu_firmware *fw = &info->fw;
+-	u32 *ydef = fw->yram0;
+-	int cnt;
+-	u32 __iomem *add;
+-	u32 *ptr;
+-
+-	/* Load SPB Program in PRAM */
+-	ptr = fw->pram0;
+-	add = info->pram;
+-	for (cnt = 0; cnt < PRAM0_SIZE; cnt++, add++, ptr++)
+-		siu_write32(add, *ptr);
+-
+-	ptr = fw->pram1;
+-	add = info->pram + (0x0100 / sizeof(u32));
+-	for (cnt = 0; cnt < PRAM1_SIZE; cnt++, add++, ptr++)
+-		siu_write32(add, *ptr);
+-
+-	/* XRAM initialization */
+-	add = info->xram;
+-	for (cnt = 0; cnt < XRAM0_SIZE + XRAM1_SIZE + XRAM2_SIZE; cnt++, add++)
+-		siu_write32(add, 0);
+-
+-	/* YRAM variable area initialization */
+-	add = info->yram;
+-	for (cnt = 0; cnt < YRAM_DEF_SIZE; cnt++, add++)
+-		siu_write32(add, ydef[cnt]);
+-
+-	/* YRAM FIR coefficient area initialization */
+-	add = info->yram + (0x0200 / sizeof(u32));
+-	for (cnt = 0; cnt < YRAM_FIR_SIZE; cnt++, add++)
+-		siu_write32(add, fw->yram_fir_coeff[cnt]);
+-
+-	/* YRAM IIR coefficient area initialization */
+-	add = info->yram + (0x0600 / sizeof(u32));
+-	for (cnt = 0; cnt < YRAM_IIR_SIZE; cnt++, add++)
+-		siu_write32(add, 0);
+-
+-	siu_write32(base + SIU_TRDAT, port_info->trdat);
+-	port_info->trdat = 0x0;
+-
+-
+-	/* SPB start condition: software */
+-	siu_write32(base + SIU_SBACTIV, 0);
+-	/* Start SPB */
+-	siu_write32(base + SIU_SBCTL, 0xc0000000);
+-	/* Wait for program to halt */
+-	cnt = 0x10000;
+-	while (--cnt && siu_read32(base + SIU_SBCTL) != 0x80000000)
+-		cpu_relax();
+-
+-	if (!cnt)
+-		return -EBUSY;
+-
+-	/* SPB program start address setting */
+-	siu_write32(base + SIU_SBPSET, 0x00400000);
+-	/* SPB hardware start(FIFOCTL source) */
+-	siu_write32(base + SIU_SBACTIV, 0xc0000000);
+-
+-	return 0;
+-}
+-
+-static void siu_dai_spbstop(struct siu_port *port_info)
+-{
+-	struct siu_info *info = siu_i2s_data;
+-	u32 __iomem *base = info->reg;
+-
+-	siu_write32(base + SIU_SBACTIV, 0);
+-	/* SPB stop */
+-	siu_write32(base + SIU_SBCTL, 0);
+-
+-	port_info->stfifo = 0;
+-}
+-
+-/*		API functions		*/
+-
+-/* Playback and capture hardware properties are identical */
+-static const struct snd_pcm_hardware siu_dai_pcm_hw = {
+-	.info			= SNDRV_PCM_INFO_INTERLEAVED,
+-	.formats		= SNDRV_PCM_FMTBIT_S16,
+-	.rates			= SNDRV_PCM_RATE_8000_48000,
+-	.rate_min		= 8000,
+-	.rate_max		= 48000,
+-	.channels_min		= 2,
+-	.channels_max		= 2,
+-	.buffer_bytes_max	= SIU_BUFFER_BYTES_MAX,
+-	.period_bytes_min	= SIU_PERIOD_BYTES_MIN,
+-	.period_bytes_max	= SIU_PERIOD_BYTES_MAX,
+-	.periods_min		= SIU_PERIODS_MIN,
+-	.periods_max		= SIU_PERIODS_MAX,
+-};
+-
+-static int siu_dai_info_volume(struct snd_kcontrol *kctrl,
+-			       struct snd_ctl_elem_info *uinfo)
+-{
+-	struct siu_port *port_info = snd_kcontrol_chip(kctrl);
+-
+-	dev_dbg(port_info->pcm->card->dev, "%s\n", __func__);
+-
+-	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
+-	uinfo->count = 2;
+-	uinfo->value.integer.min = 0;
+-	uinfo->value.integer.max = SIU_MAX_VOLUME;
+-
+-	return 0;
+-}
+-
+-static int siu_dai_get_volume(struct snd_kcontrol *kctrl,
+-			      struct snd_ctl_elem_value *ucontrol)
+-{
+-	struct siu_port *port_info = snd_kcontrol_chip(kctrl);
+-	struct device *dev = port_info->pcm->card->dev;
+-	u32 vol;
+-
+-	dev_dbg(dev, "%s\n", __func__);
+-
+-	switch (kctrl->private_value) {
+-	case VOLUME_PLAYBACK:
+-		/* Playback is always on port 0 */
+-		vol = port_info->playback.volume;
+-		ucontrol->value.integer.value[0] = vol & 0xffff;
+-		ucontrol->value.integer.value[1] = vol >> 16 & 0xffff;
+-		break;
+-	case VOLUME_CAPTURE:
+-		/* Capture is always on port 1 */
+-		vol = port_info->capture.volume;
+-		ucontrol->value.integer.value[0] = vol & 0xffff;
+-		ucontrol->value.integer.value[1] = vol >> 16 & 0xffff;
+-		break;
+-	default:
+-		dev_err(dev, "%s() invalid private_value=%ld\n",
+-			__func__, kctrl->private_value);
+-		return -EINVAL;
+-	}
+-
+-	return 0;
+-}
+-
+-static int siu_dai_put_volume(struct snd_kcontrol *kctrl,
+-			      struct snd_ctl_elem_value *ucontrol)
+-{
+-	struct siu_port *port_info = snd_kcontrol_chip(kctrl);
+-	struct device *dev = port_info->pcm->card->dev;
+-	struct siu_info *info = siu_i2s_data;
+-	u32 __iomem *base = info->reg;
+-	u32 new_vol;
+-	u32 cur_vol;
+-
+-	dev_dbg(dev, "%s\n", __func__);
+-
+-	if (ucontrol->value.integer.value[0] < 0 ||
+-	    ucontrol->value.integer.value[0] > SIU_MAX_VOLUME ||
+-	    ucontrol->value.integer.value[1] < 0 ||
+-	    ucontrol->value.integer.value[1] > SIU_MAX_VOLUME)
+-		return -EINVAL;
+-
+-	new_vol = ucontrol->value.integer.value[0] |
+-		ucontrol->value.integer.value[1] << 16;
+-
+-	/* See comment above - DSP firmware implementation */
+-	switch (kctrl->private_value) {
+-	case VOLUME_PLAYBACK:
+-		/* Playback is always on port 0 */
+-		cur_vol = port_info->playback.volume;
+-		siu_write32(base + SIU_SBDVCA, new_vol);
+-		port_info->playback.volume = new_vol;
+-		break;
+-	case VOLUME_CAPTURE:
+-		/* Capture is always on port 1 */
+-		cur_vol = port_info->capture.volume;
+-		siu_write32(base + SIU_SBDVCB, new_vol);
+-		port_info->capture.volume = new_vol;
+-		break;
+-	default:
+-		dev_err(dev, "%s() invalid private_value=%ld\n",
+-			__func__, kctrl->private_value);
+-		return -EINVAL;
+-	}
+-
+-	if (cur_vol != new_vol)
+-		return 1;
+-
+-	return 0;
+-}
+-
+-static const struct snd_kcontrol_new playback_controls = {
+-	.iface		= SNDRV_CTL_ELEM_IFACE_MIXER,
+-	.name		= "PCM Playback Volume",
+-	.index		= 0,
+-	.info		= siu_dai_info_volume,
+-	.get		= siu_dai_get_volume,
+-	.put		= siu_dai_put_volume,
+-	.private_value	= VOLUME_PLAYBACK,
+-};
+-
+-static const struct snd_kcontrol_new capture_controls = {
+-	.iface		= SNDRV_CTL_ELEM_IFACE_MIXER,
+-	.name		= "PCM Capture Volume",
+-	.index		= 0,
+-	.info		= siu_dai_info_volume,
+-	.get		= siu_dai_get_volume,
+-	.put		= siu_dai_put_volume,
+-	.private_value	= VOLUME_CAPTURE,
+-};
+-
+-int siu_init_port(int port, struct siu_port **port_info, struct snd_card *card)
+-{
+-	struct device *dev = card->dev;
+-	struct snd_kcontrol *kctrl;
+-	int ret;
+-
+-	*port_info = kzalloc(sizeof(**port_info), GFP_KERNEL);
+-	if (!*port_info)
+-		return -ENOMEM;
+-
+-	dev_dbg(dev, "%s: port #%d@%p\n", __func__, port, *port_info);
+-
+-	(*port_info)->playback.volume = DFLT_VOLUME_LEVEL;
+-	(*port_info)->capture.volume = DFLT_VOLUME_LEVEL;
+-
+-	/*
+-	 * Add mixer support. The SPB is used to change the volume. Both
+-	 * ports use the same SPB. Therefore, we only register one
+-	 * control instance since it will be used by both channels.
+-	 * In error case we continue without controls.
+-	 */
+-	kctrl = snd_ctl_new1(&playback_controls, *port_info);
+-	ret = snd_ctl_add(card, kctrl);
+-	if (ret < 0)
+-		dev_err(dev,
+-			"failed to add playback controls %p port=%d err=%d\n",
+-			kctrl, port, ret);
+-
+-	kctrl = snd_ctl_new1(&capture_controls, *port_info);
+-	ret = snd_ctl_add(card, kctrl);
+-	if (ret < 0)
+-		dev_err(dev,
+-			"failed to add capture controls %p port=%d err=%d\n",
+-			kctrl, port, ret);
+-
+-	return 0;
+-}
+-
+-void siu_free_port(struct siu_port *port_info)
+-{
+-	kfree(port_info);
+-}
+-
+-static int siu_dai_startup(struct snd_pcm_substream *substream,
+-			   struct snd_soc_dai *dai)
+-{
+-	struct siu_info *info = snd_soc_dai_get_drvdata(dai);
+-	struct snd_pcm_runtime *rt = substream->runtime;
+-	struct siu_port	*port_info = siu_port_info(substream);
+-	int ret;
+-
+-	dev_dbg(substream->pcm->card->dev, "%s: port=%d@%p\n", __func__,
+-		info->port_id, port_info);
+-
+-	snd_soc_set_runtime_hwparams(substream, &siu_dai_pcm_hw);
+-
+-	ret = snd_pcm_hw_constraint_integer(rt, SNDRV_PCM_HW_PARAM_PERIODS);
+-	if (unlikely(ret < 0))
+-		return ret;
+-
+-	siu_dai_start(port_info);
+-
+-	return 0;
+-}
+-
+-static void siu_dai_shutdown(struct snd_pcm_substream *substream,
+-			     struct snd_soc_dai *dai)
+-{
+-	struct siu_info *info = snd_soc_dai_get_drvdata(dai);
+-	struct siu_port	*port_info = siu_port_info(substream);
+-
+-	dev_dbg(substream->pcm->card->dev, "%s: port=%d@%p\n", __func__,
+-		info->port_id, port_info);
+-
+-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
+-		port_info->play_cap &= ~PLAYBACK_ENABLED;
+-	else
+-		port_info->play_cap &= ~CAPTURE_ENABLED;
+-
+-	/* Stop the siu if the other stream is not using it */
+-	if (!port_info->play_cap) {
+-		/* during stmread or stmwrite ? */
+-		if (WARN_ON(port_info->playback.rw_flg || port_info->capture.rw_flg))
+-			return;
+-		siu_dai_spbstop(port_info);
+-		siu_dai_stop(port_info);
+-	}
+-}
+-
+-/* PCM part of siu_dai_playback_prepare() / siu_dai_capture_prepare() */
+-static int siu_dai_prepare(struct snd_pcm_substream *substream,
+-			   struct snd_soc_dai *dai)
+-{
+-	struct siu_info *info = snd_soc_dai_get_drvdata(dai);
+-	struct snd_pcm_runtime *rt = substream->runtime;
+-	struct siu_port *port_info = siu_port_info(substream);
+-	struct siu_stream *siu_stream;
+-	int self, ret;
+-
+-	dev_dbg(substream->pcm->card->dev,
+-		"%s: port %d, active streams %lx, %d channels\n",
+-		__func__, info->port_id, port_info->play_cap, rt->channels);
+-
+-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+-		self = PLAYBACK_ENABLED;
+-		siu_stream = &port_info->playback;
+-	} else {
+-		self = CAPTURE_ENABLED;
+-		siu_stream = &port_info->capture;
+-	}
+-
+-	/* Set up the siu if not already done */
+-	if (!port_info->play_cap) {
+-		siu_stream->rw_flg = 0;	/* stream-data transfer flag */
+-
+-		siu_dai_spbAselect(port_info);
+-		siu_dai_spbBselect(port_info);
+-
+-		siu_dai_open(siu_stream);
+-
+-		siu_dai_pcmdatapack(siu_stream);
+-
+-		ret = siu_dai_spbstart(port_info);
+-		if (ret < 0)
+-			goto fail;
+-	} else {
+-		ret = 0;
+-	}
+-
+-	port_info->play_cap |= self;
+-
+-fail:
+-	return ret;
+-}
+-
+-/*
+- * SIU can set bus format to I2S / PCM / SPDIF independently for playback and
+- * capture, however, the current API sets the bus format globally for a DAI.
+- */
+-static int siu_dai_set_fmt(struct snd_soc_dai *dai,
+-			   unsigned int fmt)
+-{
+-	struct siu_info *info = snd_soc_dai_get_drvdata(dai);
+-	u32 __iomem *base = info->reg;
+-	u32 ifctl;
+-
+-	dev_dbg(dai->dev, "%s: fmt 0x%x on port %d\n",
+-		__func__, fmt, info->port_id);
+-
+-	if (info->port_id < 0)
+-		return -ENODEV;
+-
+-	/* Here select between I2S / PCM / SPDIF */
+-	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
+-	case SND_SOC_DAIFMT_I2S:
+-		ifctl = siu_flags[info->port_id].playback.i2s |
+-			siu_flags[info->port_id].capture.i2s;
+-		break;
+-	case SND_SOC_DAIFMT_LEFT_J:
+-		ifctl = siu_flags[info->port_id].playback.pcm |
+-			siu_flags[info->port_id].capture.pcm;
+-		break;
+-	/* SPDIF disabled - see comment at the top */
+-	default:
+-		return -EINVAL;
+-	}
+-
+-	ifctl |= ~(siu_flags[info->port_id].playback.mask |
+-		   siu_flags[info->port_id].capture.mask) &
+-		siu_read32(base + SIU_IFCTL);
+-	siu_write32(base + SIU_IFCTL, ifctl);
+-
+-	return 0;
+-}
+-
+-static int siu_dai_set_sysclk(struct snd_soc_dai *dai, int clk_id,
+-			      unsigned int freq, int dir)
+-{
+-	struct clk *siu_clk, *parent_clk;
+-	char *siu_name, *parent_name;
+-	int ret;
+-
+-	if (dir != SND_SOC_CLOCK_IN)
+-		return -EINVAL;
+-
+-	dev_dbg(dai->dev, "%s: using clock %d\n", __func__, clk_id);
+-
+-	switch (clk_id) {
+-	case SIU_CLKA_PLL:
+-		siu_name = "siua_clk";
+-		parent_name = "pll_clk";
+-		break;
+-	case SIU_CLKA_EXT:
+-		siu_name = "siua_clk";
+-		parent_name = "siumcka_clk";
+-		break;
+-	case SIU_CLKB_PLL:
+-		siu_name = "siub_clk";
+-		parent_name = "pll_clk";
+-		break;
+-	case SIU_CLKB_EXT:
+-		siu_name = "siub_clk";
+-		parent_name = "siumckb_clk";
+-		break;
+-	default:
+-		return -EINVAL;
+-	}
+-
+-	siu_clk = clk_get(dai->dev, siu_name);
+-	if (IS_ERR(siu_clk)) {
+-		dev_err(dai->dev, "%s: cannot get a SIU clock: %ld\n", __func__,
+-			PTR_ERR(siu_clk));
+-		return PTR_ERR(siu_clk);
+-	}
+-
+-	parent_clk = clk_get(dai->dev, parent_name);
+-	if (IS_ERR(parent_clk)) {
+-		ret = PTR_ERR(parent_clk);
+-		dev_err(dai->dev, "cannot get a SIU clock parent: %d\n", ret);
+-		goto epclkget;
+-	}
+-
+-	ret = clk_set_parent(siu_clk, parent_clk);
+-	if (ret < 0) {
+-		dev_err(dai->dev, "cannot reparent the SIU clock: %d\n", ret);
+-		goto eclksetp;
+-	}
+-
+-	ret = clk_set_rate(siu_clk, freq);
+-	if (ret < 0)
+-		dev_err(dai->dev, "cannot set SIU clock rate: %d\n", ret);
+-
+-	/* TODO: when clkdev gets reference counting we'll move these to siu_dai_shutdown() */
+-eclksetp:
+-	clk_put(parent_clk);
+-epclkget:
+-	clk_put(siu_clk);
+-
+-	return ret;
+-}
+-
+-static const struct snd_soc_dai_ops siu_dai_ops = {
+-	.startup	= siu_dai_startup,
+-	.shutdown	= siu_dai_shutdown,
+-	.prepare	= siu_dai_prepare,
+-	.set_sysclk	= siu_dai_set_sysclk,
+-	.set_fmt	= siu_dai_set_fmt,
+-};
+-
+-static struct snd_soc_dai_driver siu_i2s_dai = {
+-	.name	= "siu-i2s-dai",
+-	.playback = {
+-		.channels_min = 2,
+-		.channels_max = 2,
+-		.formats = SNDRV_PCM_FMTBIT_S16,
+-		.rates = SNDRV_PCM_RATE_8000_48000,
+-	},
+-	.capture = {
+-		.channels_min = 2,
+-		.channels_max = 2,
+-		.formats = SNDRV_PCM_FMTBIT_S16,
+-		.rates = SNDRV_PCM_RATE_8000_48000,
+-	 },
+-	.ops = &siu_dai_ops,
+-};
+-
+-static int siu_probe(struct platform_device *pdev)
+-{
+-	const struct firmware *fw_entry;
+-	struct resource *res, *region;
+-	struct siu_info *info;
+-	int ret;
+-
+-	info = devm_kmalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
+-	if (!info)
+-		return -ENOMEM;
+-	siu_i2s_data = info;
+-	info->dev = &pdev->dev;
+-
+-	ret = request_firmware(&fw_entry, "siu_spb.bin", &pdev->dev);
+-	if (ret)
+-		return ret;
+-
+-	/*
+-	 * Loaded firmware is "const" - read only, but we have to modify it in
+-	 * snd_siu_sh7343_spbAselect() and snd_siu_sh7343_spbBselect()
+-	 */
+-	memcpy(&info->fw, fw_entry->data, fw_entry->size);
+-
+-	release_firmware(fw_entry);
+-
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!res)
+-		return -ENODEV;
+-
+-	region = devm_request_mem_region(&pdev->dev, res->start,
+-					 resource_size(res), pdev->name);
+-	if (!region) {
+-		dev_err(&pdev->dev, "SIU region already claimed\n");
+-		return -EBUSY;
+-	}
+-
+-	info->pram = devm_ioremap(&pdev->dev, res->start, PRAM_SIZE);
+-	if (!info->pram)
+-		return -ENOMEM;
+-	info->xram = devm_ioremap(&pdev->dev, res->start + XRAM_OFFSET,
+-				  XRAM_SIZE);
+-	if (!info->xram)
+-		return -ENOMEM;
+-	info->yram = devm_ioremap(&pdev->dev, res->start + YRAM_OFFSET,
+-				  YRAM_SIZE);
+-	if (!info->yram)
+-		return -ENOMEM;
+-	info->reg = devm_ioremap(&pdev->dev, res->start + REG_OFFSET,
+-			    resource_size(res) - REG_OFFSET);
+-	if (!info->reg)
+-		return -ENOMEM;
+-
+-	dev_set_drvdata(&pdev->dev, info);
+-
+-	/* register using ARRAY version so we can keep dai name */
+-	ret = devm_snd_soc_register_component(&pdev->dev, &siu_component,
+-					      &siu_i2s_dai, 1);
+-	if (ret < 0)
+-		return ret;
+-
+-	pm_runtime_enable(&pdev->dev);
+-
+-	return 0;
+-}
+-
+-static int siu_remove(struct platform_device *pdev)
+-{
+-	pm_runtime_disable(&pdev->dev);
+-	return 0;
+-}
+-
+-static struct platform_driver siu_driver = {
+-	.driver 	= {
+-		.name	= "siu-pcm-audio",
+-	},
+-	.probe		= siu_probe,
+-	.remove		= siu_remove,
+-};
+-
+-module_platform_driver(siu_driver);
+-
+-MODULE_AUTHOR("Carlos Munoz <carlos@kenati.com>");
+-MODULE_DESCRIPTION("ALSA SoC SH7722 SIU driver");
+-MODULE_LICENSE("GPL");
+diff --git a/sound/soc/sh/siu_pcm.c b/sound/soc/sh/siu_pcm.c
+deleted file mode 100644
+index f15ff36e793455..00000000000000
+--- a/sound/soc/sh/siu_pcm.c
++++ /dev/null
+@@ -1,553 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0+
+-//
+-// siu_pcm.c - ALSA driver for Renesas SH7343, SH7722 SIU peripheral.
+-//
+-// Copyright (C) 2009-2010 Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+-// Copyright (C) 2006 Carlos Munoz <carlos@kenati.com>
+-
+-#include <linux/delay.h>
+-#include <linux/dma-mapping.h>
+-#include <linux/dmaengine.h>
+-#include <linux/interrupt.h>
+-#include <linux/module.h>
+-#include <linux/platform_device.h>
+-
+-#include <sound/control.h>
+-#include <sound/core.h>
+-#include <sound/pcm.h>
+-#include <sound/pcm_params.h>
+-#include <sound/soc.h>
+-
+-#include <asm/siu.h>
+-
+-#include "siu.h"
+-
+-#define DRV_NAME "siu-i2s"
+-#define GET_MAX_PERIODS(buf_bytes, period_bytes) \
+-				((buf_bytes) / (period_bytes))
+-#define PERIOD_OFFSET(buf_addr, period_num, period_bytes) \
+-				((buf_addr) + ((period_num) * (period_bytes)))
+-
+-#define RWF_STM_RD		0x01		/* Read in progress */
+-#define RWF_STM_WT		0x02		/* Write in progress */
+-
+-struct siu_port *siu_ports[SIU_PORT_NUM];
+-
+-/* transfersize is number of u32 dma transfers per period */
+-static int siu_pcm_stmwrite_stop(struct siu_port *port_info)
+-{
+-	struct siu_info *info = siu_i2s_data;
+-	u32 __iomem *base = info->reg;
+-	struct siu_stream *siu_stream = &port_info->playback;
+-	u32 stfifo;
+-
+-	if (!siu_stream->rw_flg)
+-		return -EPERM;
+-
+-	/* output FIFO disable */
+-	stfifo = siu_read32(base + SIU_STFIFO);
+-	siu_write32(base + SIU_STFIFO, stfifo & ~0x0c180c18);
+-	pr_debug("%s: STFIFO %x -> %x\n", __func__,
+-		 stfifo, stfifo & ~0x0c180c18);
+-
+-	/* during stmwrite clear */
+-	siu_stream->rw_flg = 0;
+-
+-	return 0;
+-}
+-
+-static int siu_pcm_stmwrite_start(struct siu_port *port_info)
+-{
+-	struct siu_stream *siu_stream = &port_info->playback;
+-
+-	if (siu_stream->rw_flg)
+-		return -EPERM;
+-
+-	/* Current period in buffer */
+-	port_info->playback.cur_period = 0;
+-
+-	/* during stmwrite flag set */
+-	siu_stream->rw_flg = RWF_STM_WT;
+-
+-	/* DMA transfer start */
+-	queue_work(system_highpri_wq, &siu_stream->work);
+-
+-	return 0;
+-}
+-
+-static void siu_dma_tx_complete(void *arg)
+-{
+-	struct siu_stream *siu_stream = arg;
+-
+-	if (!siu_stream->rw_flg)
+-		return;
+-
+-	/* Update completed period count */
+-	if (++siu_stream->cur_period >=
+-	    GET_MAX_PERIODS(siu_stream->buf_bytes,
+-			    siu_stream->period_bytes))
+-		siu_stream->cur_period = 0;
+-
+-	pr_debug("%s: done period #%d (%u/%u bytes), cookie %d\n",
+-		__func__, siu_stream->cur_period,
+-		siu_stream->cur_period * siu_stream->period_bytes,
+-		siu_stream->buf_bytes, siu_stream->cookie);
+-
+-	queue_work(system_highpri_wq, &siu_stream->work);
+-
+-	/* Notify alsa: a period is done */
+-	snd_pcm_period_elapsed(siu_stream->substream);
+-}
+-
+-static int siu_pcm_wr_set(struct siu_port *port_info,
+-			  dma_addr_t buff, u32 size)
+-{
+-	struct siu_info *info = siu_i2s_data;
+-	u32 __iomem *base = info->reg;
+-	struct siu_stream *siu_stream = &port_info->playback;
+-	struct snd_pcm_substream *substream = siu_stream->substream;
+-	struct device *dev = substream->pcm->card->dev;
+-	struct dma_async_tx_descriptor *desc;
+-	dma_cookie_t cookie;
+-	struct scatterlist sg;
+-	u32 stfifo;
+-
+-	sg_init_table(&sg, 1);
+-	sg_set_page(&sg, pfn_to_page(PFN_DOWN(buff)),
+-		    size, offset_in_page(buff));
+-	sg_dma_len(&sg) = size;
+-	sg_dma_address(&sg) = buff;
+-
+-	desc = dmaengine_prep_slave_sg(siu_stream->chan,
+-		&sg, 1, DMA_MEM_TO_DEV, DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+-	if (!desc) {
+-		dev_err(dev, "Failed to allocate a dma descriptor\n");
+-		return -ENOMEM;
+-	}
+-
+-	desc->callback = siu_dma_tx_complete;
+-	desc->callback_param = siu_stream;
+-	cookie = dmaengine_submit(desc);
+-	if (cookie < 0) {
+-		dev_err(dev, "Failed to submit a dma transfer\n");
+-		return cookie;
+-	}
+-
+-	siu_stream->tx_desc = desc;
+-	siu_stream->cookie = cookie;
+-
+-	dma_async_issue_pending(siu_stream->chan);
+-
+-	/* only output FIFO enable */
+-	stfifo = siu_read32(base + SIU_STFIFO);
+-	siu_write32(base + SIU_STFIFO, stfifo | (port_info->stfifo & 0x0c180c18));
+-	dev_dbg(dev, "%s: STFIFO %x -> %x\n", __func__,
+-		stfifo, stfifo | (port_info->stfifo & 0x0c180c18));
+-
+-	return 0;
+-}
+-
+-static int siu_pcm_rd_set(struct siu_port *port_info,
+-			  dma_addr_t buff, size_t size)
+-{
+-	struct siu_info *info = siu_i2s_data;
+-	u32 __iomem *base = info->reg;
+-	struct siu_stream *siu_stream = &port_info->capture;
+-	struct snd_pcm_substream *substream = siu_stream->substream;
+-	struct device *dev = substream->pcm->card->dev;
+-	struct dma_async_tx_descriptor *desc;
+-	dma_cookie_t cookie;
+-	struct scatterlist sg;
+-	u32 stfifo;
+-
+-	dev_dbg(dev, "%s: %u@%llx\n", __func__, size, (unsigned long long)buff);
+-
+-	sg_init_table(&sg, 1);
+-	sg_set_page(&sg, pfn_to_page(PFN_DOWN(buff)),
+-		    size, offset_in_page(buff));
+-	sg_dma_len(&sg) = size;
+-	sg_dma_address(&sg) = buff;
+-
+-	desc = dmaengine_prep_slave_sg(siu_stream->chan,
+-		&sg, 1, DMA_DEV_TO_MEM, DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+-	if (!desc) {
+-		dev_err(dev, "Failed to allocate dma descriptor\n");
+-		return -ENOMEM;
+-	}
+-
+-	desc->callback = siu_dma_tx_complete;
+-	desc->callback_param = siu_stream;
+-	cookie = dmaengine_submit(desc);
+-	if (cookie < 0) {
+-		dev_err(dev, "Failed to submit dma descriptor\n");
+-		return cookie;
+-	}
+-
+-	siu_stream->tx_desc = desc;
+-	siu_stream->cookie = cookie;
+-
+-	dma_async_issue_pending(siu_stream->chan);
+-
+-	/* only input FIFO enable */
+-	stfifo = siu_read32(base + SIU_STFIFO);
+-	siu_write32(base + SIU_STFIFO, siu_read32(base + SIU_STFIFO) |
+-		    (port_info->stfifo & 0x13071307));
+-	dev_dbg(dev, "%s: STFIFO %x -> %x\n", __func__,
+-		stfifo, stfifo | (port_info->stfifo & 0x13071307));
+-
+-	return 0;
+-}
+-
+-static void siu_io_work(struct work_struct *work)
+-{
+-	struct siu_stream *siu_stream = container_of(work, struct siu_stream,
+-						     work);
+-	struct snd_pcm_substream *substream = siu_stream->substream;
+-	struct device *dev = substream->pcm->card->dev;
+-	struct snd_pcm_runtime *rt = substream->runtime;
+-	struct siu_port *port_info = siu_port_info(substream);
+-
+-	dev_dbg(dev, "%s: flags %x\n", __func__, siu_stream->rw_flg);
+-
+-	if (!siu_stream->rw_flg) {
+-		dev_dbg(dev, "%s: stream inactive\n", __func__);
+-		return;
+-	}
+-
+-	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
+-		dma_addr_t buff;
+-		size_t count;
+-
+-		buff = (dma_addr_t)PERIOD_OFFSET(rt->dma_addr,
+-						siu_stream->cur_period,
+-						siu_stream->period_bytes);
+-		count = siu_stream->period_bytes;
+-
+-		/* DMA transfer start */
+-		siu_pcm_rd_set(port_info, buff, count);
+-	} else {
+-		siu_pcm_wr_set(port_info,
+-			       (dma_addr_t)PERIOD_OFFSET(rt->dma_addr,
+-						siu_stream->cur_period,
+-						siu_stream->period_bytes),
+-			       siu_stream->period_bytes);
+-	}
+-}
+-
+-/* Capture */
+-static int siu_pcm_stmread_start(struct siu_port *port_info)
+-{
+-	struct siu_stream *siu_stream = &port_info->capture;
+-
+-	if (siu_stream->xfer_cnt > 0x1000000)
+-		return -EINVAL;
+-	if (siu_stream->rw_flg)
+-		return -EPERM;
+-
+-	/* Current period in buffer */
+-	siu_stream->cur_period = 0;
+-
+-	/* during stmread flag set */
+-	siu_stream->rw_flg = RWF_STM_RD;
+-
+-	queue_work(system_highpri_wq, &siu_stream->work);
+-
+-	return 0;
+-}
+-
+-static int siu_pcm_stmread_stop(struct siu_port *port_info)
+-{
+-	struct siu_info *info = siu_i2s_data;
+-	u32 __iomem *base = info->reg;
+-	struct siu_stream *siu_stream = &port_info->capture;
+-	struct device *dev = siu_stream->substream->pcm->card->dev;
+-	u32 stfifo;
+-
+-	if (!siu_stream->rw_flg)
+-		return -EPERM;
+-
+-	/* input FIFO disable */
+-	stfifo = siu_read32(base + SIU_STFIFO);
+-	siu_write32(base + SIU_STFIFO, stfifo & ~0x13071307);
+-	dev_dbg(dev, "%s: STFIFO %x -> %x\n", __func__,
+-		stfifo, stfifo & ~0x13071307);
+-
+-	/* during stmread flag clear */
+-	siu_stream->rw_flg = 0;
+-
+-	return 0;
+-}
+-
+-static bool filter(struct dma_chan *chan, void *secondary)
+-{
+-	struct sh_dmae_slave *param = secondary;
+-
+-	pr_debug("%s: secondary ID %d\n", __func__, param->shdma_slave.slave_id);
+-
+-	chan->private = &param->shdma_slave;
+-	return true;
+-}
+-
+-static int siu_pcm_open(struct snd_soc_component *component,
+-			struct snd_pcm_substream *ss)
+-{
+-	/* Playback / Capture */
+-	struct siu_platform *pdata = component->dev->platform_data;
+-	struct siu_info *info = siu_i2s_data;
+-	struct siu_port *port_info = siu_port_info(ss);
+-	struct siu_stream *siu_stream;
+-	u32 port = info->port_id;
+-	struct device *dev = ss->pcm->card->dev;
+-	dma_cap_mask_t mask;
+-	struct sh_dmae_slave *param;
+-
+-	dma_cap_zero(mask);
+-	dma_cap_set(DMA_SLAVE, mask);
+-
+-	dev_dbg(dev, "%s, port=%d@%p\n", __func__, port, port_info);
+-
+-	if (ss->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+-		siu_stream = &port_info->playback;
+-		param = &siu_stream->param;
+-		param->shdma_slave.slave_id = port ? pdata->dma_slave_tx_b :
+-			pdata->dma_slave_tx_a;
+-	} else {
+-		siu_stream = &port_info->capture;
+-		param = &siu_stream->param;
+-		param->shdma_slave.slave_id = port ? pdata->dma_slave_rx_b :
+-			pdata->dma_slave_rx_a;
+-	}
+-
+-	/* Get DMA channel */
+-	siu_stream->chan = dma_request_channel(mask, filter, param);
+-	if (!siu_stream->chan) {
+-		dev_err(dev, "DMA channel allocation failed!\n");
+-		return -EBUSY;
+-	}
+-
+-	siu_stream->substream = ss;
+-
+-	return 0;
+-}
+-
+-static int siu_pcm_close(struct snd_soc_component *component,
+-			 struct snd_pcm_substream *ss)
+-{
+-	struct siu_info *info = siu_i2s_data;
+-	struct device *dev = ss->pcm->card->dev;
+-	struct siu_port *port_info = siu_port_info(ss);
+-	struct siu_stream *siu_stream;
+-
+-	dev_dbg(dev, "%s: port=%d\n", __func__, info->port_id);
+-
+-	if (ss->stream == SNDRV_PCM_STREAM_PLAYBACK)
+-		siu_stream = &port_info->playback;
+-	else
+-		siu_stream = &port_info->capture;
+-
+-	dma_release_channel(siu_stream->chan);
+-	siu_stream->chan = NULL;
+-
+-	siu_stream->substream = NULL;
+-
+-	return 0;
+-}
+-
+-static int siu_pcm_prepare(struct snd_soc_component *component,
+-			   struct snd_pcm_substream *ss)
+-{
+-	struct siu_info *info = siu_i2s_data;
+-	struct siu_port *port_info = siu_port_info(ss);
+-	struct device *dev = ss->pcm->card->dev;
+-	struct snd_pcm_runtime *rt;
+-	struct siu_stream *siu_stream;
+-	snd_pcm_sframes_t xfer_cnt;
+-
+-	if (ss->stream == SNDRV_PCM_STREAM_PLAYBACK)
+-		siu_stream = &port_info->playback;
+-	else
+-		siu_stream = &port_info->capture;
+-
+-	rt = siu_stream->substream->runtime;
+-
+-	siu_stream->buf_bytes = snd_pcm_lib_buffer_bytes(ss);
+-	siu_stream->period_bytes = snd_pcm_lib_period_bytes(ss);
+-
+-	dev_dbg(dev, "%s: port=%d, %d channels, period=%u bytes\n", __func__,
+-		info->port_id, rt->channels, siu_stream->period_bytes);
+-
+-	/* We only support buffers that are multiples of the period */
+-	if (siu_stream->buf_bytes % siu_stream->period_bytes) {
+-		dev_err(dev, "%s() - buffer=%d not multiple of period=%d\n",
+-		       __func__, siu_stream->buf_bytes,
+-		       siu_stream->period_bytes);
+-		return -EINVAL;
+-	}
+-
+-	xfer_cnt = bytes_to_frames(rt, siu_stream->period_bytes);
+-	if (!xfer_cnt || xfer_cnt > 0x1000000)
+-		return -EINVAL;
+-
+-	siu_stream->format = rt->format;
+-	siu_stream->xfer_cnt = xfer_cnt;
+-
+-	dev_dbg(dev, "port=%d buf=%lx buf_bytes=%d period_bytes=%d "
+-		"format=%d channels=%d xfer_cnt=%d\n", info->port_id,
+-		(unsigned long)rt->dma_addr, siu_stream->buf_bytes,
+-		siu_stream->period_bytes,
+-		siu_stream->format, rt->channels, (int)xfer_cnt);
+-
+-	return 0;
+-}
+-
+-static int siu_pcm_trigger(struct snd_soc_component *component,
+-			   struct snd_pcm_substream *ss, int cmd)
+-{
+-	struct siu_info *info = siu_i2s_data;
+-	struct device *dev = ss->pcm->card->dev;
+-	struct siu_port *port_info = siu_port_info(ss);
+-	int ret;
+-
+-	dev_dbg(dev, "%s: port=%d@%p, cmd=%d\n", __func__,
+-		info->port_id, port_info, cmd);
+-
+-	switch (cmd) {
+-	case SNDRV_PCM_TRIGGER_START:
+-		if (ss->stream == SNDRV_PCM_STREAM_PLAYBACK)
+-			ret = siu_pcm_stmwrite_start(port_info);
+-		else
+-			ret = siu_pcm_stmread_start(port_info);
+-
+-		if (ret < 0)
+-			dev_warn(dev, "%s: start failed on port=%d\n",
+-				 __func__, info->port_id);
+-
+-		break;
+-	case SNDRV_PCM_TRIGGER_STOP:
+-		if (ss->stream == SNDRV_PCM_STREAM_PLAYBACK)
+-			siu_pcm_stmwrite_stop(port_info);
+-		else
+-			siu_pcm_stmread_stop(port_info);
+-		ret = 0;
+-
+-		break;
+-	default:
+-		dev_err(dev, "%s() unsupported cmd=%d\n", __func__, cmd);
+-		ret = -EINVAL;
+-	}
+-
+-	return ret;
+-}
+-
+-/*
+- * So far only resolution of one period is supported, subject to extending the
+- * dmangine API
+- */
+-static snd_pcm_uframes_t
+-siu_pcm_pointer_dma(struct snd_soc_component *component,
+-		    struct snd_pcm_substream *ss)
+-{
+-	struct device *dev = ss->pcm->card->dev;
+-	struct siu_info *info = siu_i2s_data;
+-	u32 __iomem *base = info->reg;
+-	struct siu_port *port_info = siu_port_info(ss);
+-	struct snd_pcm_runtime *rt = ss->runtime;
+-	size_t ptr;
+-	struct siu_stream *siu_stream;
+-
+-	if (ss->stream == SNDRV_PCM_STREAM_PLAYBACK)
+-		siu_stream = &port_info->playback;
+-	else
+-		siu_stream = &port_info->capture;
+-
+-	/*
+-	 * ptr is the offset into the buffer where the dma is currently at. We
+-	 * check if the dma buffer has just wrapped.
+-	 */
+-	ptr = PERIOD_OFFSET(rt->dma_addr,
+-			    siu_stream->cur_period,
+-			    siu_stream->period_bytes) - rt->dma_addr;
+-
+-	dev_dbg(dev,
+-		"%s: port=%d, events %x, FSTS %x, xferred %u/%u, cookie %d\n",
+-		__func__, info->port_id, siu_read32(base + SIU_EVNTC),
+-		siu_read32(base + SIU_SBFSTS), ptr, siu_stream->buf_bytes,
+-		siu_stream->cookie);
+-
+-	if (ptr >= siu_stream->buf_bytes)
+-		ptr = 0;
+-
+-	return bytes_to_frames(ss->runtime, ptr);
+-}
+-
+-static int siu_pcm_new(struct snd_soc_component *component,
+-		       struct snd_soc_pcm_runtime *rtd)
+-{
+-	/* card->dev == socdev->dev, see snd_soc_new_pcms() */
+-	struct snd_card *card = rtd->card->snd_card;
+-	struct snd_pcm *pcm = rtd->pcm;
+-	struct siu_info *info = siu_i2s_data;
+-	struct platform_device *pdev = to_platform_device(card->dev);
+-	int ret;
+-	int i;
+-
+-	/* pdev->id selects between SIUA and SIUB */
+-	if (pdev->id < 0 || pdev->id >= SIU_PORT_NUM)
+-		return -EINVAL;
+-
+-	info->port_id = pdev->id;
+-
+-	/*
+-	 * While the siu has 2 ports, only one port can be on at a time (only 1
+-	 * SPB). So far all the boards using the siu had only one of the ports
+-	 * wired to a codec. To simplify things, we only register one port with
+-	 * alsa. In case both ports are needed, it should be changed here
+-	 */
+-	for (i = pdev->id; i < pdev->id + 1; i++) {
+-		struct siu_port **port_info = &siu_ports[i];
+-
+-		ret = siu_init_port(i, port_info, card);
+-		if (ret < 0)
+-			return ret;
+-
+-		snd_pcm_set_managed_buffer_all(pcm,
+-				SNDRV_DMA_TYPE_DEV, card->dev,
+-				SIU_BUFFER_BYTES_MAX, SIU_BUFFER_BYTES_MAX);
+-
+-		(*port_info)->pcm = pcm;
+-
+-		/* IO works */
+-		INIT_WORK(&(*port_info)->playback.work, siu_io_work);
+-		INIT_WORK(&(*port_info)->capture.work, siu_io_work);
+-	}
+-
+-	dev_info(card->dev, "SuperH SIU driver initialized.\n");
+-	return 0;
+-}
+-
+-static void siu_pcm_free(struct snd_soc_component *component,
+-			 struct snd_pcm *pcm)
+-{
+-	struct platform_device *pdev = to_platform_device(pcm->card->dev);
+-	struct siu_port *port_info = siu_ports[pdev->id];
+-
+-	cancel_work_sync(&port_info->capture.work);
+-	cancel_work_sync(&port_info->playback.work);
+-
+-	siu_free_port(port_info);
+-
+-	dev_dbg(pcm->card->dev, "%s\n", __func__);
+-}
+-
+-const struct snd_soc_component_driver siu_component = {
+-	.name			= DRV_NAME,
+-	.open			= siu_pcm_open,
+-	.close			= siu_pcm_close,
+-	.prepare		= siu_pcm_prepare,
+-	.trigger		= siu_pcm_trigger,
+-	.pointer		= siu_pcm_pointer_dma,
+-	.pcm_construct		= siu_pcm_new,
+-	.pcm_destruct		= siu_pcm_free,
+-	.legacy_dai_naming	= 1,
+-};
+-EXPORT_SYMBOL_GPL(siu_component);
+diff --git a/sound/soc/sh/ssi.c b/sound/soc/sh/ssi.c
+deleted file mode 100644
+index 96cf523c227343..00000000000000
+--- a/sound/soc/sh/ssi.c
++++ /dev/null
+@@ -1,403 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-//
+-// Serial Sound Interface (I2S) support for SH7760/SH7780
+-//
+-// Copyright (c) 2007 Manuel Lauss <mano@roarinelk.homelinux.net>
+-//
+-// dont forget to set IPSEL/OMSEL register bits (in your board code) to
+-// enable SSI output pins!
+-
+-/*
+- * LIMITATIONS:
+- *	The SSI unit has only one physical data line, so full duplex is
+- *	impossible.  This can be remedied  on the  SH7760 by  using the
+- *	other SSI unit for recording; however the SH7780 has only 1 SSI
+- *	unit, and its pins are shared with the AC97 unit,  among others.
+- *
+- * FEATURES:
+- *	The SSI features "compressed mode": in this mode it continuously
+- *	streams PCM data over the I2S lines and uses LRCK as a handshake
+- *	signal.  Can be used to send compressed data (AC3/DTS) to a DSP.
+- *	The number of bits sent over the wire in a frame can be adjusted
+- *	and can be independent from the actual sample bit depth. This is
+- *	useful to support TDM mode codecs like the AD1939 which have a
+- *	fixed TDM slot size, regardless of sample resolution.
+- */
+-
+-#include <linux/init.h>
+-#include <linux/module.h>
+-#include <linux/platform_device.h>
+-#include <sound/core.h>
+-#include <sound/pcm.h>
+-#include <sound/initval.h>
+-#include <sound/soc.h>
+-#include <asm/io.h>
+-
+-#define SSICR	0x00
+-#define SSISR	0x04
+-
+-#define CR_DMAEN	(1 << 28)
+-#define CR_CHNL_SHIFT	22
+-#define CR_CHNL_MASK	(3 << CR_CHNL_SHIFT)
+-#define CR_DWL_SHIFT	19
+-#define CR_DWL_MASK	(7 << CR_DWL_SHIFT)
+-#define CR_SWL_SHIFT	16
+-#define CR_SWL_MASK	(7 << CR_SWL_SHIFT)
+-#define CR_SCK_MASTER	(1 << 15)	/* bitclock master bit */
+-#define CR_SWS_MASTER	(1 << 14)	/* wordselect master bit */
+-#define CR_SCKP		(1 << 13)	/* I2Sclock polarity */
+-#define CR_SWSP		(1 << 12)	/* LRCK polarity */
+-#define CR_SPDP		(1 << 11)
+-#define CR_SDTA		(1 << 10)	/* i2s alignment (msb/lsb) */
+-#define CR_PDTA		(1 << 9)	/* fifo data alignment */
+-#define CR_DEL		(1 << 8)	/* delay data by 1 i2sclk */
+-#define CR_BREN		(1 << 7)	/* clock gating in burst mode */
+-#define CR_CKDIV_SHIFT	4
+-#define CR_CKDIV_MASK	(7 << CR_CKDIV_SHIFT)	/* bitclock divider */
+-#define CR_MUTE		(1 << 3)	/* SSI mute */
+-#define CR_CPEN		(1 << 2)	/* compressed mode */
+-#define CR_TRMD		(1 << 1)	/* transmit/receive select */
+-#define CR_EN		(1 << 0)	/* enable SSI */
+-
+-#define SSIREG(reg)	(*(unsigned long *)(ssi->mmio + (reg)))
+-
+-struct ssi_priv {
+-	unsigned long mmio;
+-	unsigned long sysclk;
+-	int inuse;
+-} ssi_cpu_data[] = {
+-#if defined(CONFIG_CPU_SUBTYPE_SH7760)
+-	{
+-		.mmio	= 0xFE680000,
+-	},
+-	{
+-		.mmio	= 0xFE690000,
+-	},
+-#elif defined(CONFIG_CPU_SUBTYPE_SH7780)
+-	{
+-		.mmio	= 0xFFE70000,
+-	},
+-#else
+-#error "Unsupported SuperH SoC"
+-#endif
+-};
+-
+-/*
+- * track usage of the SSI; it is simplex-only so prevent attempts of
+- * concurrent playback + capture. FIXME: any locking required?
+- */
+-static int ssi_startup(struct snd_pcm_substream *substream,
+-		       struct snd_soc_dai *dai)
+-{
+-	struct ssi_priv *ssi = &ssi_cpu_data[dai->id];
+-	if (ssi->inuse) {
+-		pr_debug("ssi: already in use!\n");
+-		return -EBUSY;
+-	} else
+-		ssi->inuse = 1;
+-	return 0;
+-}
+-
+-static void ssi_shutdown(struct snd_pcm_substream *substream,
+-			 struct snd_soc_dai *dai)
+-{
+-	struct ssi_priv *ssi = &ssi_cpu_data[dai->id];
+-
+-	ssi->inuse = 0;
+-}
+-
+-static int ssi_trigger(struct snd_pcm_substream *substream, int cmd,
+-		       struct snd_soc_dai *dai)
+-{
+-	struct ssi_priv *ssi = &ssi_cpu_data[dai->id];
+-
+-	switch (cmd) {
+-	case SNDRV_PCM_TRIGGER_START:
+-		SSIREG(SSICR) |= CR_DMAEN | CR_EN;
+-		break;
+-	case SNDRV_PCM_TRIGGER_STOP:
+-		SSIREG(SSICR) &= ~(CR_DMAEN | CR_EN);
+-		break;
+-	default:
+-		return -EINVAL;
+-	}
+-
+-	return 0;
+-}
+-
+-static int ssi_hw_params(struct snd_pcm_substream *substream,
+-			 struct snd_pcm_hw_params *params,
+-			 struct snd_soc_dai *dai)
+-{
+-	struct ssi_priv *ssi = &ssi_cpu_data[dai->id];
+-	unsigned long ssicr = SSIREG(SSICR);
+-	unsigned int bits, channels, swl, recv, i;
+-
+-	channels = params_channels(params);
+-	bits = params->msbits;
+-	recv = (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) ? 0 : 1;
+-
+-	pr_debug("ssi_hw_params() enter\nssicr was    %08lx\n", ssicr);
+-	pr_debug("bits: %u channels: %u\n", bits, channels);
+-
+-	ssicr &= ~(CR_TRMD | CR_CHNL_MASK | CR_DWL_MASK | CR_PDTA |
+-		   CR_SWL_MASK);
+-
+-	/* direction (send/receive) */
+-	if (!recv)
+-		ssicr |= CR_TRMD;	/* transmit */
+-
+-	/* channels */
+-	if ((channels < 2) || (channels > 8) || (channels & 1)) {
+-		pr_debug("ssi: invalid number of channels\n");
+-		return -EINVAL;
+-	}
+-	ssicr |= ((channels >> 1) - 1) << CR_CHNL_SHIFT;
+-
+-	/* DATA WORD LENGTH (DWL): databits in audio sample */
+-	i = 0;
+-	switch (bits) {
+-	case 32: ++i;
+-	case 24: ++i;
+-	case 22: ++i;
+-	case 20: ++i;
+-	case 18: ++i;
+-	case 16: ++i;
+-		 ssicr |= i << CR_DWL_SHIFT;
+-	case 8:	 break;
+-	default:
+-		pr_debug("ssi: invalid sample width\n");
+-		return -EINVAL;
+-	}
+-
+-	/*
+-	 * SYSTEM WORD LENGTH: size in bits of half a frame over the I2S
+-	 * wires. This is usually bits_per_sample x channels/2;  i.e. in
+-	 * Stereo mode  the SWL equals DWL.  SWL can  be bigger than the
+-	 * product of (channels_per_slot x samplebits), e.g.  for codecs
+-	 * like the AD1939 which  only accept 32bit wide TDM slots.  For
+-	 * "standard" I2S operation we set SWL = chans / 2 * DWL here.
+-	 * Waiting for ASoC to get TDM support ;-)
+-	 */
+-	if ((bits > 16) && (bits <= 24)) {
+-		bits = 24;	/* these are padded by the SSI */
+-		/*ssicr |= CR_PDTA;*/ /* cpu/data endianness ? */
+-	}
+-	i = 0;
+-	swl = (bits * channels) / 2;
+-	switch (swl) {
+-	case 256: ++i;
+-	case 128: ++i;
+-	case 64:  ++i;
+-	case 48:  ++i;
+-	case 32:  ++i;
+-	case 16:  ++i;
+-		  ssicr |= i << CR_SWL_SHIFT;
+-	case 8:   break;
+-	default:
+-		pr_debug("ssi: invalid system word length computed\n");
+-		return -EINVAL;
+-	}
+-
+-	SSIREG(SSICR) = ssicr;
+-
+-	pr_debug("ssi_hw_params() leave\nssicr is now %08lx\n", ssicr);
+-	return 0;
+-}
+-
+-static int ssi_set_sysclk(struct snd_soc_dai *cpu_dai, int clk_id,
+-			  unsigned int freq, int dir)
+-{
+-	struct ssi_priv *ssi = &ssi_cpu_data[cpu_dai->id];
+-
+-	ssi->sysclk = freq;
+-
+-	return 0;
+-}
+-
+-/*
+- * This divider is used to generate the SSI_SCK (I2S bitclock) from the
+- * clock at the HAC_BIT_CLK ("oversampling clock") pin.
+- */
+-static int ssi_set_clkdiv(struct snd_soc_dai *dai, int did, int div)
+-{
+-	struct ssi_priv *ssi = &ssi_cpu_data[dai->id];
+-	unsigned long ssicr;
+-	int i;
+-
+-	i = 0;
+-	ssicr = SSIREG(SSICR) & ~CR_CKDIV_MASK;
+-	switch (div) {
+-	case 16: ++i;
+-	case 8:  ++i;
+-	case 4:  ++i;
+-	case 2:  ++i;
+-		 SSIREG(SSICR) = ssicr | (i << CR_CKDIV_SHIFT);
+-	case 1:  break;
+-	default:
+-		pr_debug("ssi: invalid sck divider %d\n", div);
+-		return -EINVAL;
+-	}
+-
+-	return 0;
+-}
+-
+-static int ssi_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
+-{
+-	struct ssi_priv *ssi = &ssi_cpu_data[dai->id];
+-	unsigned long ssicr = SSIREG(SSICR);
+-
+-	pr_debug("ssi_set_fmt()\nssicr was    0x%08lx\n", ssicr);
+-
+-	ssicr &= ~(CR_DEL | CR_PDTA | CR_BREN | CR_SWSP | CR_SCKP |
+-		   CR_SWS_MASTER | CR_SCK_MASTER);
+-
+-	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
+-	case SND_SOC_DAIFMT_I2S:
+-		break;
+-	case SND_SOC_DAIFMT_RIGHT_J:
+-		ssicr |= CR_DEL | CR_PDTA;
+-		break;
+-	case SND_SOC_DAIFMT_LEFT_J:
+-		ssicr |= CR_DEL;
+-		break;
+-	default:
+-		pr_debug("ssi: unsupported format\n");
+-		return -EINVAL;
+-	}
+-
+-	switch (fmt & SND_SOC_DAIFMT_CLOCK_MASK) {
+-	case SND_SOC_DAIFMT_CONT:
+-		break;
+-	case SND_SOC_DAIFMT_GATED:
+-		ssicr |= CR_BREN;
+-		break;
+-	}
+-
+-	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
+-	case SND_SOC_DAIFMT_NB_NF:
+-		ssicr |= CR_SCKP;	/* sample data at low clkedge */
+-		break;
+-	case SND_SOC_DAIFMT_NB_IF:
+-		ssicr |= CR_SCKP | CR_SWSP;
+-		break;
+-	case SND_SOC_DAIFMT_IB_NF:
+-		break;
+-	case SND_SOC_DAIFMT_IB_IF:
+-		ssicr |= CR_SWSP;	/* word select starts low */
+-		break;
+-	default:
+-		pr_debug("ssi: invalid inversion\n");
+-		return -EINVAL;
+-	}
+-
+-	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
+-	case SND_SOC_DAIFMT_BC_FC:
+-		break;
+-	case SND_SOC_DAIFMT_BP_FC:
+-		ssicr |= CR_SCK_MASTER;
+-		break;
+-	case SND_SOC_DAIFMT_BC_FP:
+-		ssicr |= CR_SWS_MASTER;
+-		break;
+-	case SND_SOC_DAIFMT_BP_FP:
+-		ssicr |= CR_SWS_MASTER | CR_SCK_MASTER;
+-		break;
+-	default:
+-		pr_debug("ssi: invalid master/secondary configuration\n");
+-		return -EINVAL;
+-	}
+-
+-	SSIREG(SSICR) = ssicr;
+-	pr_debug("ssi_set_fmt() leave\nssicr is now 0x%08lx\n", ssicr);
+-
+-	return 0;
+-}
+-
+-/* the SSI depends on an external clocksource (at HAC_BIT_CLK) even in
+- * Master mode,  so really this is board specific;  the SSI can do any
+- * rate with the right bitclk and divider settings.
+- */
+-#define SSI_RATES	\
+-	SNDRV_PCM_RATE_8000_192000
+-
+-/* the SSI can do 8-32 bit samples, with 8 possible channels */
+-#define SSI_FMTS	\
+-	(SNDRV_PCM_FMTBIT_S8      | SNDRV_PCM_FMTBIT_U8      |	\
+-	 SNDRV_PCM_FMTBIT_S16_LE  | SNDRV_PCM_FMTBIT_U16_LE  |	\
+-	 SNDRV_PCM_FMTBIT_S20_3LE | SNDRV_PCM_FMTBIT_U20_3LE |	\
+-	 SNDRV_PCM_FMTBIT_S24_3LE | SNDRV_PCM_FMTBIT_U24_3LE |	\
+-	 SNDRV_PCM_FMTBIT_S32_LE  | SNDRV_PCM_FMTBIT_U32_LE)
+-
+-static const struct snd_soc_dai_ops ssi_dai_ops = {
+-	.startup	= ssi_startup,
+-	.shutdown	= ssi_shutdown,
+-	.trigger	= ssi_trigger,
+-	.hw_params	= ssi_hw_params,
+-	.set_sysclk	= ssi_set_sysclk,
+-	.set_clkdiv	= ssi_set_clkdiv,
+-	.set_fmt	= ssi_set_fmt,
+-};
+-
+-static struct snd_soc_dai_driver sh4_ssi_dai[] = {
+-{
+-	.name			= "ssi-dai.0",
+-	.playback = {
+-		.rates		= SSI_RATES,
+-		.formats	= SSI_FMTS,
+-		.channels_min	= 2,
+-		.channels_max	= 8,
+-	},
+-	.capture = {
+-		.rates		= SSI_RATES,
+-		.formats	= SSI_FMTS,
+-		.channels_min	= 2,
+-		.channels_max	= 8,
+-	},
+-	.ops = &ssi_dai_ops,
+-},
+-#ifdef CONFIG_CPU_SUBTYPE_SH7760
+-{
+-	.name			= "ssi-dai.1",
+-	.playback = {
+-		.rates		= SSI_RATES,
+-		.formats	= SSI_FMTS,
+-		.channels_min	= 2,
+-		.channels_max	= 8,
+-	},
+-	.capture = {
+-		.rates		= SSI_RATES,
+-		.formats	= SSI_FMTS,
+-		.channels_min	= 2,
+-		.channels_max	= 8,
+-	},
+-	.ops = &ssi_dai_ops,
+-},
+-#endif
+-};
+-
+-static const struct snd_soc_component_driver sh4_ssi_component = {
+-	.name			= "sh4-ssi",
+-	.legacy_dai_naming	= 1,
+-};
+-
+-static int sh4_soc_dai_probe(struct platform_device *pdev)
+-{
+-	return devm_snd_soc_register_component(&pdev->dev, &sh4_ssi_component,
+-					       sh4_ssi_dai,
+-					       ARRAY_SIZE(sh4_ssi_dai));
+-}
+-
+-static struct platform_driver sh4_ssi_driver = {
+-	.driver = {
+-			.name = "sh4-ssi-dai",
+-	},
+-
+-	.probe = sh4_soc_dai_probe,
+-};
+-
+-module_platform_driver(sh4_ssi_driver);
+-
+-MODULE_LICENSE("GPL v2");
+-MODULE_DESCRIPTION("SuperH onchip SSI (I2S) audio driver");
+-MODULE_AUTHOR("Manuel Lauss <mano@roarinelk.homelinux.net>");
 -- 
 2.39.0
 
