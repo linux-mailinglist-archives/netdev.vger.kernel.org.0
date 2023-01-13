@@ -2,165 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A337D669EDA
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 17:57:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAC0B669EE3
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 17:58:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229947AbjAMQ5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 11:57:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46620 "EHLO
+        id S229758AbjAMQ6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 11:58:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbjAMQ5U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 11:57:20 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2078.outbound.protection.outlook.com [40.107.237.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7428D3AB1D;
-        Fri, 13 Jan 2023 08:57:01 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=X/fd3kjGGmgZKqGVlvsya057rbgx59tXhaMcOqFT2P9dF5QYHGNzw4GinQXug5tazgPAFfcs6SBS04nPy+2YquOBfLXa64wNynUY7fX1fec1/iY3g0ZFrrKyWrKLwXsjAkSuZJke3wCWBV9B/0TUl500dD/96d3u0C8aOH1LtkCoe6DZuoatPLw7xyZxztc4pcftpmQtcEoyck9U1/FRStIgC/E8skIRhwFCRxdrAji5vo4qIQ96q6MVAsMWO17INGhOS/D3lmEReYXoYwbraFwe+GnQxDfBG05IDDUeBgBO4si06SNd6wWzGEd97E85Lq+pY3vKBTd+hXrIL6vWfQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JLcQDuTm7f0BQbsr+DZXqTDP8Fsw23ph80Ixl7U15/8=;
- b=keKxuBxru32qQc5ia6IrqVLYkVUGNb7QmAoK9BnrUzFyCzprv3xybyq9IOx0iIAPIYjxc/f1FHW1LuFTZuxNNMNTQC5DQovVCYCXRI/j8M9bkxCvJHNV02s0LVa9/gY5N7JPDuD8EGBD9PNPIWfDAg174ZS38eJB2jS0cSss5C9APPy4F3zcl4tcKB8mex4ny03x1sjnDpTCGey0XgcCaClQmsjaHYwu6TzRf3p7ZhukKXwR9FUy8rKtKYhM/mYjKnIN2pQ65afHzJ0O9hZs/EobyIcdaHHLR/pTK4xC+Hn4DgErE2VwKBfvw6RjxZRQPezZ/XYou7WnjHUpR8tHpw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JLcQDuTm7f0BQbsr+DZXqTDP8Fsw23ph80Ixl7U15/8=;
- b=DXlXLO7Bmv6409z5gbpU/XwcU1vW9qtb+iCL9UoEl1bT0NObKZJMK9zOCxfZrqmtaczdhKm5Lto5xAgfaP7gQT6Nd6/Y1XNG4SyU5IrjJ6qTSrj7+HTp0MvFeuJwgdSxGyQuy2C3QZC6A/mAKt8bFtDSEXQYmR+mWMUSBR0hKrSRI5gAOi3VE8KEa1B3zqasDRMKssT4lh0adFlCMrnVRTMp+H2mQj55ei9kKJ0N4KtZYGcjN8fC9JpaKe483jOurBDx/NPGfjreLXflQZ2fFuu2ShH3C9YvFaR5/tcJ+lLuOJzRgZO73QipZhuZjD9F+RNkR3aKZ2/V7kRPGNmCgA==
-Received: from DS7PR06CA0028.namprd06.prod.outlook.com (2603:10b6:8:54::33) by
- IA1PR12MB6235.namprd12.prod.outlook.com (2603:10b6:208:3e5::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Fri, 13 Jan
- 2023 16:56:59 +0000
-Received: from DM6NAM11FT049.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:54:cafe::e0) by DS7PR06CA0028.outlook.office365.com
- (2603:10b6:8:54::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.16 via Frontend
- Transport; Fri, 13 Jan 2023 16:56:59 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT049.mail.protection.outlook.com (10.13.172.188) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6002.13 via Frontend Transport; Fri, 13 Jan 2023 16:56:59 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 13 Jan
- 2023 08:56:51 -0800
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 13 Jan
- 2023 08:56:50 -0800
-Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server id 15.2.986.36 via Frontend Transport; Fri, 13 Jan
- 2023 08:56:47 -0800
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <pablo@netfilter.org>
-CC:     <netdev@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <ozsh@nvidia.com>, <marcelo.leitner@gmail.com>,
-        <simon.horman@corigine.com>, Vlad Buslov <vladbu@nvidia.com>
-Subject: [PATCH net-next v2 7/7] netfilter: nf_conntrack: allow early drop of offloaded UDP conns
-Date:   Fri, 13 Jan 2023 17:55:48 +0100
-Message-ID: <20230113165548.2692720-8-vladbu@nvidia.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20230113165548.2692720-1-vladbu@nvidia.com>
-References: <20230113165548.2692720-1-vladbu@nvidia.com>
+        with ESMTP id S230090AbjAMQ6D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 11:58:03 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6F56158
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 08:58:01 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id q10so2319755wrs.2
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 08:58:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2za1A8nEEuXINFLtQr3tDlzj07s9HFmHzlMPC09jSd0=;
+        b=OK7Wwp5zU0zZXuRQVDH/O6Wrvo4Pw5eo1kTFc7Sf48Mezyt3uOnZYh/d+XTw9KXSFV
+         aZCAB+d1bzv7NekUH8Hzse7dK0fj0cAizMAz3PS3B7VQOYRbt8jiXJ47qGBBH0xZvXh3
+         EOTniB1wPK/9yVWp4pvGF6DgoRYB/NjBfvr+gkzLog91nXaUoUdUty2RPioJxTIssTb2
+         rCh1WRYZxLSxlAHhbLgeZLIOYrb+MDlAH+X/iL/YJO23rYRIsCi8RNSy6Y5znlP/5rgh
+         RPTM5wLSZsp0oDowRPr807q/WQNCz8p0q+fQG5EtHxNX9ofyJWptS0wNjmX0yYyq5dC+
+         g4oA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=2za1A8nEEuXINFLtQr3tDlzj07s9HFmHzlMPC09jSd0=;
+        b=xh8YzBGPzRBOrtADfnP+KWL1en5Q+E+RkYTmIJwn5FLlOTiji/4MABMQ+LETgAaMaX
+         /soo5dsVSpvXBlcrscEHRH8Bu9pib0JN3G6h+Twp82TQU8jjZYtL/HeU9+3bbECEeaXW
+         hQGrL15GYGl/BrQjvWqpZKQ8nkATGtF3rAeO2YsvSbOzb3zN5ULVIaKiWJm/VtjOX5Ys
+         bBzlZzh2zmWhf2wCXcSzyGWerPrdqfjNSNznqv39ZlgtEViUxf2KHVN8EJ/E/qyCazNs
+         biLVLjCVlEIHoryLBITJ+fYmcAPuTwAnu0KFh4gKRJ1MkjryUxqsv5Bkrfc/4ODrN5Kl
+         G3uw==
+X-Gm-Message-State: AFqh2kpyXCLDsUIbiMb/s17hW3miw2Qeg79gYYUvzVSeFI17cT6GfyQ0
+        d0QN0ocB/tXamKYPP54yAmNBwk7d0YgWcKafq9k=
+X-Google-Smtp-Source: AMrXdXubsg436oD9uFeC3J1e2iqQtJC2kt8nActN1+81qvrNW3PGRtrX8wqYKkQvKRhjtX2P0skin1dfKliXsuE6Lyw=
+X-Received: by 2002:a5d:604d:0:b0:2bb:ea44:2b5a with SMTP id
+ j13-20020a5d604d000000b002bbea442b5amr476212wrt.430.1673629079631; Fri, 13
+ Jan 2023 08:57:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT049:EE_|IA1PR12MB6235:EE_
-X-MS-Office365-Filtering-Correlation-Id: 215b8433-3deb-44c1-ffc2-08daf5872f80
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OAA6YB9elCgV6W0cgS+JAIVNw8RmMWQETD4VKpi1psmjYpIME2OB/U+CXBwO7u1lO+kAHr9OQYeMuhLJRdAPgnQwWExY58Hd85/bYSPnPVRiWONYwSAQ1reMPuX0wkF5JSyxNuXUVyCj8UzgseKtUdrBq/ndlZLJg6kZp9c1uvaYlBpIR+7v+1vMysGz6Jvl7hBZTv/mBm2iZXtPQbeL1dcprEoDC+0SeUaN1eov/2CrlY5383q9sz9f5wj6nGX2fqqT2ip2OvW5Hyq+D+hS/ja/vKNdzsetW8hC1hIAfMrdXpx+dXxeYpuEl6WaY1ZqZYcCOVtuvnsGdDbWLfIW2OWXIWGMqeL+g7TOypC8y1rJ12t7FdfsuIEhOCvl+EKruS/sLnMXLX8jCY61xDLnMmQOYe0mMiXm0JxUTtY5VtbsMezNWcxmBnxigHc7+HzOEqkXcZjzfJ3/rUixnFqA97NzT4qekXRrZCj6dN/yryLVVLcwZzLO3hqcv033cTOC6p31MSihYzdl8vlhTZeyYZJWyeY30U5VewEecYYl9SKDL1o5CpejLR1Ms9KSyi7wxn/cS9xFcYDBQO98/Gm8AQPPhjSI5xnBr6MGZBMfuLmcaFpKfPF/WD3E4elUOnOuNN4W6sYq+NXs5i9SITmrWXrnDN7OP7D0Rj/drrrIrejHm0OPROginssR5DmA9nHsZKSD7tZmaposYbwCs5aX0KrYHZFz7r8xvNSWjbFK3bg=
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(396003)(376002)(346002)(451199015)(46966006)(36840700001)(40470700004)(2906002)(107886003)(26005)(7696005)(478600001)(186003)(8676002)(40480700001)(83380400001)(2616005)(70586007)(110136005)(36756003)(1076003)(316002)(54906003)(336012)(70206006)(40460700003)(47076005)(426003)(4326008)(41300700001)(82740400003)(7416002)(7636003)(86362001)(36860700001)(82310400005)(8936002)(5660300002)(356005)(2101003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2023 16:56:59.1313
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 215b8433-3deb-44c1-ffc2-08daf5872f80
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT049.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6235
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+References: <20230111130520.483222-1-dnlplm@gmail.com> <b8f798f7b29a257741ba172d43456c3a79454e9c.camel@gmail.com>
+ <CAGRyCJGFhNfbHs=qhdOg9DYOq_tLOska2r2B08WTBbnFyXXjhw@mail.gmail.com> <CAKgT0Ueb7AA3NrwxFX7VjS_h1j-kOdXUGYchTjwCh9ah1kpbZA@mail.gmail.com>
+In-Reply-To: <CAKgT0Ueb7AA3NrwxFX7VjS_h1j-kOdXUGYchTjwCh9ah1kpbZA@mail.gmail.com>
+From:   Dave Taht <dave.taht@gmail.com>
+Date:   Fri, 13 Jan 2023 08:57:48 -0800
+Message-ID: <CAA93jw78pvJENnj5ob7WX8GV676CZprYADWeQjaciasopNTv5A@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 0/3] add tx packets aggregation to ethtool and rmnet
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Daniele Palmas <dnlplm@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
+        Sean Tranchetti <quic_stranche@quicinc.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Gal Pressman <gal@nvidia.com>,
+        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Both synchronous early drop algorithm and asynchronous gc worker completely
-ignore connections with IPS_OFFLOAD_BIT status bit set. With new
-functionality that enabled UDP NEW connection offload in action CT
-malicious user can flood the conntrack table with offloaded UDP connections
-by just sending a single packet per 5tuple because such connections can no
-longer be deleted by early drop algorithm.
+Dear Alexander:
 
-To mitigate the issue allow both early drop and gc to consider offloaded
-UDP connections for deletion.
+Thank you for taking a look at this thread. In earlier tests, the
+aggregation was indeed an improvement over the default behavior,
+but the amount of data that ended up living in the device was best
+case, 150ms, and worst case, 25 seconds, in the flent tcp_nup case. A
+better test would be the staggered start tcp_4up_squarewave test which
+would show only one tcp out of the 4, able to start with the current
+overall structure of this portion of the stack, once that buffer gets
+filled.
 
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
----
- net/netfilter/nf_conntrack_core.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+The shiny new rust based Crusader test (
+https://github.com/Zoxc/crusader ) has also now got a nice staggered
+start test that shows this problem in more detail.
 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 496c4920505b..52b824a60176 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -1374,9 +1374,6 @@ static unsigned int early_drop_list(struct net *net,
- 	hlist_nulls_for_each_entry_rcu(h, n, head, hnnode) {
- 		tmp = nf_ct_tuplehash_to_ctrack(h);
- 
--		if (test_bit(IPS_OFFLOAD_BIT, &tmp->status))
--			continue;
--
- 		if (nf_ct_is_expired(tmp)) {
- 			nf_ct_gc_expired(tmp);
- 			continue;
-@@ -1446,11 +1443,14 @@ static bool gc_worker_skip_ct(const struct nf_conn *ct)
- static bool gc_worker_can_early_drop(const struct nf_conn *ct)
- {
- 	const struct nf_conntrack_l4proto *l4proto;
-+	u8 protonum = nf_ct_protonum(ct);
- 
-+	if (test_bit(IPS_OFFLOAD_BIT, &ct->status) && protonum != IPPROTO_UDP)
-+		return false;
- 	if (!test_bit(IPS_ASSURED_BIT, &ct->status))
- 		return true;
- 
--	l4proto = nf_ct_l4proto_find(nf_ct_protonum(ct));
-+	l4proto = nf_ct_l4proto_find(protonum);
- 	if (l4proto->can_early_drop && l4proto->can_early_drop(ct))
- 		return true;
- 
-@@ -1507,7 +1507,8 @@ static void gc_worker(struct work_struct *work)
- 
- 			if (test_bit(IPS_OFFLOAD_BIT, &tmp->status)) {
- 				nf_ct_offload_timeout(tmp);
--				continue;
-+				if (!nf_conntrack_max95)
-+					continue;
- 			}
- 
- 			if (expired_count > GC_SCAN_EXPIRED_MAX) {
--- 
-2.38.1
+I was so peeved about 4g/5g behaviors like this in general that I was
+going to dedicate a blog entry to it; this recent rant only touches
+upon the real problem with engineering to the test, here:
 
+https://blog.cerowrt.org/post/speedtests/
+
+Unfortunately your post is more about leveraging xmit_more - which is
+good, but the BQL structure for ethernet, itself leverages the concept
+of a completion interrupt (when the packets actually hit the air or
+wire), which I dearly wish was some previously unknown, single line
+hack to the driver or message in the usb API for 4g/5g etc.
+
+On Fri, Jan 13, 2023 at 8:17 AM Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
+>
+> On Fri, Jan 13, 2023 at 7:50 AM Daniele Palmas <dnlplm@gmail.com> wrote:
+> >
+> > Hello Alexander,
+> >
+> > Il giorno ven 13 gen 2023 alle ore 00:00 Alexander H Duyck
+> > <alexander.duyck@gmail.com> ha scritto:
+> > >
+> > > On Wed, 2023-01-11 at 14:05 +0100, Daniele Palmas wrote:
+> > > > Hello maintainers and all,
+> > > >
+> > > > this patchset implements tx qmap packets aggregation in rmnet and g=
+eneric
+> > > > ethtool support for that.
+> > > >
+> > > > Some low-cat Thread-x based modems are not capable of properly reac=
+hing the maximum
+> > > > allowed throughput both in tx and rx during a bidirectional test if=
+ tx packets
+> > > > aggregation is not enabled.
+> > >
+> > > One question I would have about this is if you are making use of Byte
+> > > Queue Limits and netdev_xmit_more at all? I know for high speed devic=
+es
+> > > most of us added support for xmit_more because PCIe bandwidth was
+> > > limiting when we were writing the Tx ring indexes/doorbells with ever=
+y
+> > > packet. To overcome that we added netdev_xmit_more which told us when
+> > > the Qdisc had more packets to give us. This allowed us to better
+> > > utilize the PCIe bus by bursting packets through without adding
+> > > additional latency.
+> > >
+> >
+> > no, I was not aware of BQL: this development has been basically
+> > modelled on what other mobile broadband drivers do (e.g.
+> > cdc_mbim/cdc_ncm, Qualcomm downstream rmnet implementation), that are
+> > not using BQL.
+> >
+> > If I understand properly documentation
+> >
+> > rmnet0/queues/tx-0/byte_queue_limits/limit_max
+> >
+> > would be the candidate for replacing ETHTOOL_A_COALESCE_TX_AGGR_MAX_BYT=
+ES.
+>
+> Yes the general idea is that you end up targeting the upper limit for
+> how many frames can be sent in a single burst.
+>
+> > But I can't find anything for ETHTOOL_A_COALESCE_TX_AGGR_MAX_FRAMES
+> > and ETHTOOL_A_COALESCE_TX_AGGR_TIME_USECS, something that should work
+> > in combination with the bytes limit: at least the first one is
+> > mandatory, since the modem can't receive more than a certain number
+> > (this is a variable value depending on the modem model and is
+> > collected through userspace tools).
+>
+> In terms of MAX_FRAMES there isn't necessarily anything like that, but
+> at the same time it isn't something that is already controlled by the
+> netdev itself by using the netif_stop_queue or netif_stop_subqueue
+> when there isn't space to store another frame. As such most devices
+> control this by just manipulating their descriptor ring size via
+> "ethtool -G <dev> tx <N>"
+>
+> As far as the TIME_USECS that is something I tried to propose a decade
+> ago and was essentially given a hard "NAK" before xmit_more was
+> introduced. We shouldn't be adding latency when we don't need to.
+> Between GSO and xmit_more you should find that the network stack
+> itself will naturally want to give you larger bursts of frames with
+> xmit_more set. In addition, adding latency can mess with certain TCP
+> algorithms and cause problematic behaviors.
+>
+> > ETHTOOL_A_COALESCE_TX_AGGR_MAX_FRAMES works also as a way to determine
+> > that tx aggregation has been enabled by the userspace tool managing
+> > the qmi requests, otherwise no aggregation should be performed.
+>
+> Is there a specific reason why you wouldn't want to take advantage of
+> aggregation that is already provided by the stack in the form of
+> things such as GSO and the qdisc layer? I know most of the high speed
+> NICs are always making use of xmit_more since things like GSO can take
+> advantage of it to increase the throughput. Enabling BQL is a way of
+> taking that one step further and enabling the non-GSO cases.
+>
+> > > > I verified this problem with rmnet + qmi_wwan by using a MDM9207 Ca=
+t. 4 based modem
+> > > > (50Mbps/150Mbps max throughput). What is actually happening is pict=
+ured at
+> > > > https://drive.google.com/file/d/1gSbozrtd9h0X63i6vdkNpN68d-9sg8f9/v=
+iew
+> > > >
+> > > > Testing with iperf TCP, when rx and tx flows are tested singularly =
+there's no issue
+> > > > in tx and minor issues in rx (not able to reach max throughput). Wh=
+en there are concurrent
+> > > > tx and rx flows, tx throughput has an huge drop. rx a minor one, bu=
+t still present.
+> > > >
+> > > > The same scenario with tx aggregation enabled is pictured at
+> > > > https://drive.google.com/file/d/1jcVIKNZD7K3lHtwKE5W02mpaloudYYih/v=
+iew
+> > > > showing a regular graph.
+> > > >
+> > > > This issue does not happen with high-cat modems (e.g. SDX20), or at=
+ least it
+> > > > does not happen at the throughputs I'm able to test currently: mayb=
+e the same
+> > > > could happen when moving close to the maximum rates supported by th=
+ose modems.
+> > > > Anyway, having the tx aggregation enabled should not hurt.
+> > > >
+> > > > The first attempt to solve this issue was in qmi_wwan qmap implemen=
+tation,
+> > > > see the discussion at https://lore.kernel.org/netdev/20221019132503=
+.6783-1-dnlplm@gmail.com/
+> > > >
+> > > > However, it turned out that rmnet was a better candidate for the im=
+plementation.
+> > > >
+> > > > Moreover, Greg and Jakub suggested also to use ethtool for the conf=
+iguration:
+> > > > not sure if I got their advice right, but this patchset add also ge=
+neric ethtool
+> > > > support for tx aggregation.
+> > >
+> > > I have concerns about this essentially moving queueing disciplines do=
+wn
+> > > into the device. The idea of doing Tx aggregation seems like somethin=
+g
+> > > that should be done with the qdisc rather than the device driver.
+> > > Otherwise we are looking at having multiple implementations of this
+> > > aggregation floating around. It seems like it would make more sense t=
+o
+> > > have this batching happen at the qdisc layer, and then the qdisc laye=
+r
+> > > would pass down a batch of frames w/ xmit_more set to indicate it is
+> > > flushing the batch.
+> >
+> > Honestly, I'm not expert enough to give a reliable opinion about this.
+> >
+> > I feel like these settings are more related to the hardware, requiring
+> > also a configuration on the hardware itself done by the user, so
+> > ethtool would seem to me a good choice, but I may be biased since I
+> > did this development :-)
+>
+> Yeah, I get that. I went through something similar when I had
+> submitted a patch to defer Tx tail writes in order to try and improve
+> the PCIe throughput. I would be open to revisiting this if we gave
+> xmit_more and BQL a try and it doesn't take care of this, but from my
+> past experience odds are the combination will likely resolve most of
+> what you are seeing without adding additional latency. At a minimum
+> the xmit_more should show a significant improvement in Tx throughput
+> just from the benefits of GSO sending bursts of frames through that
+> can easily be batched.
+
+
+
+--=20
+This song goes out to all the folk that thought Stadia would work:
+https://www.linkedin.com/posts/dtaht_the-mushroom-song-activity-69813666656=
+07352320-FXtz
+Dave T=C3=A4ht CEO, TekLibre, LLC
