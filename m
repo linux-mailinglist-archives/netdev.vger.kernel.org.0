@@ -2,68 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A8E966A0F0
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 18:45:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05E7766A202
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 19:27:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbjAMRpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 12:45:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55212 "EHLO
+        id S231190AbjAMS1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 13:27:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230315AbjAMRoj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 12:44:39 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0510F801F8
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 09:32:06 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id b9-20020a17090a7ac900b00226ef160dcaso23313718pjl.2
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 09:32:06 -0800 (PST)
+        with ESMTP id S229436AbjAMS0p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 13:26:45 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 379ED49167;
+        Fri, 13 Jan 2023 10:22:50 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id mp20so7586429ejc.7;
+        Fri, 13 Jan 2023 10:22:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XVnLHHo48N4X0rBFMBvhdxO1Y7Dk3ROmqzRUxVRtK/s=;
-        b=HtXud1rLxFVNr5f3xf5/SHj2a47laUZH4UdYFlg+uXi4Il0MK5EMSwmBpFAb3CzWo8
-         jzlJ4VmAz8EX4yYz2abwULHPpQUt+QuMXlxsqFeGTrVBMmFZlpVzYTV6gQ/HdYcBVXIG
-         nLHmyaE3eAT1MDTWNjBjxZlW7hIN6VNrrEZu9DsuTgDZZWOSkPNN+wHHBm9LtRjHC/zQ
-         IsfTKyOuCarrh7N6BxBB7SNetlMCObs5pS3Uhp53KpoPcT8rPLbltIqjKwh/iEcQ6JC6
-         hp8/EdzhOxwaw7yfXU0FNEuvcd4BekTp6CBLJ6ZApm72ZJTPDRY6t5p1dJWojRcrNfB8
-         GxLw==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=SwxEeoGBgqRIV/iTuXNna3YResob5aMiHbzkuhRkD6k=;
+        b=qrUJyijRNovU1IU30Vqk0MDytJbYIrCDe+OrzY8r2B4HvjGDXaETA9j1xBZPQcrRyw
+         lCQZ55u//NbIUmrKleGsDP742Lmxmdk5dSwrm9rFkHry5YqZQa2/CP5Ur6Da/a/iHqiP
+         Sj0OAU9aYU3OC9HxwMV2FWdJicVaAY7KrwVCCjUe88QFVWHfoLG+G+IijWkdsKTQSgNI
+         Vgq8HapnzEAqUXZ5b3B3TOScfQAuZT8jQgxizfPPowxJ/ocSti634/M+SH7jySsbBsVe
+         +SnU8Pigbn6pL+U///bJs1il7DueHjH6vYVjQoR0qltcmxPeFiTuLdM4FpVwEpOm7a+X
+         Dxsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=XVnLHHo48N4X0rBFMBvhdxO1Y7Dk3ROmqzRUxVRtK/s=;
-        b=GKmFza/mfc3p6FhiXW1tk/3DGlElqSMqDztEeoGDKidVuKy5EDDDaaua4RjzNqbcNw
-         gu8IQ2prtCEC5KfXL6LDt/xykOZYg5A2DNpgcpTpDb1omV5yvimMvKA5Lyka+Gng8rxl
-         VW7XgF18eCvY5EMVvStexaRPhNU/2b0fxcPjp+tY6KV+hc/pp/lU92E4ap7TTbW8Rbnj
-         G1S/2tb+HRSt7jRVoYuuDFVzfZ+iRlZ6sAvUWBIZZSqxjkO1GdV4fx+hrQDLwSc7GNvq
-         iiwugRAo1ILCZQcLpk6G+wyMHCOgXojxGCMkod/O4SB1VtYK3p1tGZZfkdDvq0E7y4kl
-         OHDQ==
-X-Gm-Message-State: AFqh2krqjS2ScKpm5+8aFpvuqVF0G3ciLqSzqXsnQcyEPcLZvFF0jdMD
-        edFF6mlcv2voljx+0HougexDifDHkM7KipG67+c=
-X-Google-Smtp-Source: AMrXdXtn9FrL0XvK+CQiXw3YQEIiR9d+w8sfVzo6q9KBGxaVS7Eqdswt9burBfCSUKxdZI7/WPjCnQ==
-X-Received: by 2002:a17:902:6b89:b0:189:cf92:6f5c with SMTP id p9-20020a1709026b8900b00189cf926f5cmr84371882plk.52.1673631125480;
-        Fri, 13 Jan 2023 09:32:05 -0800 (PST)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id s14-20020a170902ea0e00b001926bff074fsm14367308plg.276.2023.01.13.09.32.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Jan 2023 09:32:05 -0800 (PST)
-Date:   Fri, 13 Jan 2023 09:32:03 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2 09/10] tc: use SPDX
-Message-ID: <20230113093203.50235913@hermes.local>
-In-Reply-To: <Y8Ez09UmY9qzMlfi@corigine.com>
-References: <20230111031712.19037-1-stephen@networkplumber.org>
-        <20230111031712.19037-10-stephen@networkplumber.org>
-        <Y8Ez09UmY9qzMlfi@corigine.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=SwxEeoGBgqRIV/iTuXNna3YResob5aMiHbzkuhRkD6k=;
+        b=IQmWoIuOjqqO/bXoJIpIvZCCBedD3X6TXVfSLQwYQGPfC/H15XVEbDgHKGrvAo1D06
+         1BWOvk3DCd8VKgTpP34yJd05NF9HtL/ZkfnoO3QnA3r7iDjok5CsPXuPwCJQvRmmJsHX
+         KblX9s83IZ8u6d67hj4PE810h/UD65DD2AWH2vmxc18pwe6GR8W8JxjWzwaMOwyL50hW
+         Ojx5pA9PPiohbQEGDp3NWWg69r7GTQAKBQJXNcwA3iB6cCiDNRCarXdEVV28Ssjjw8uH
+         kUPXmnkzABGvbT+pT9vlflZd/cR91efYwfS9ThNkRr43Gl/doTZrGlfulU5iDpZuHntJ
+         /XCw==
+X-Gm-Message-State: AFqh2krbWCAcIkKrXGF3OidnlKfvGWj63CgGPHLffRCP/FB2iis8yheZ
+        5eyapFbaFAUKxk6oPkMWMY344Y+vb10Kb/sViF8=
+X-Google-Smtp-Source: AMrXdXtDQ5zbeXxwiqexSN7tlDEbCSIXvSEfo9MUWeOCXq3VPu76R7iqDQmEY6zHzqbrZU0+ecj+i45QIdtFWZ+WGwc=
+X-Received: by 2002:a17:906:75a:b0:855:d6ed:60d8 with SMTP id
+ z26-20020a170906075a00b00855d6ed60d8mr1030695ejb.302.1673634169384; Fri, 13
+ Jan 2023 10:22:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <cover.1671462950.git.lorenzo@kernel.org> <6cce9b15a57345402bb94366434a5ac5609583b8.1671462951.git.lorenzo@kernel.org>
+ <CAEf4BzbOF-S3kjbNVXCZR-K=TGarfi06ZwG1cbNF=HSSodwEfg@mail.gmail.com> <Y72f1U2/dw8jo0/0@lore-desk>
+In-Reply-To: <Y72f1U2/dw8jo0/0@lore-desk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 13 Jan 2023 10:22:37 -0800
+Message-ID: <CAEf4BzawqXs6q18U8e5GD5d+9v1_w2+QOJYqmEpNb9rZ40E1Tw@mail.gmail.com>
+Subject: Re: [RFC bpf-next 6/8] libbpf: add API to get XDP/XSK supported features
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, toke@redhat.com, memxor@gmail.com,
+        alardam@gmail.com, saeedm@nvidia.com, anthony.l.nguyen@intel.com,
+        gospo@broadcom.com, vladimir.oltean@nxp.com, nbd@nbd.name,
+        john@phrozen.org, leon@kernel.org, simon.horman@corigine.com,
+        aelior@marvell.com, christophe.jaillet@wanadoo.fr,
+        ecree.xilinx@gmail.com, grygorii.strashko@ti.com, mst@redhat.com,
+        bjorn@kernel.org, magnus.karlsson@intel.com,
+        maciej.fijalkowski@intel.com, intel-wired-lan@lists.osuosl.org,
+        lorenzo.bianconi@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,53 +77,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 13 Jan 2023 11:34:59 +0100
-Simon Horman <simon.horman@corigine.com> wrote:
+On Tue, Jan 10, 2023 at 9:26 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>
+> > On Mon, Dec 19, 2022 at 7:42 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> > >
+> > > From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > >
+> > > Add functions to get XDP/XSK supported function of netdev over route
+> > > netlink interface. These functions provide functionalities that are
+> > > going to be used in upcoming change.
+> > >
+> > > The newly added bpf_xdp_query_features takes a fflags_cnt parameter,
+> > > which denotes the number of elements in the output fflags array. This
+> > > must be at least 1 and maybe greater than XDP_FEATURES_WORDS. The
+> > > function only writes to words which is min of fflags_cnt and
+> > > XDP_FEATURES_WORDS.
+> > >
+> > > Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > > Co-developed-by: Marek Majtyka <alardam@gmail.com>
+> > > Signed-off-by: Marek Majtyka <alardam@gmail.com>
+> > > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > > ---
+> > >  tools/lib/bpf/libbpf.h   |  1 +
+> > >  tools/lib/bpf/libbpf.map |  1 +
+> > >  tools/lib/bpf/netlink.c  | 62 ++++++++++++++++++++++++++++++++++++++++
+> > >  3 files changed, 64 insertions(+)
+> > >
+> > > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> > > index eee883f007f9..9d102eb5007e 100644
+> > > --- a/tools/lib/bpf/libbpf.h
+> > > +++ b/tools/lib/bpf/libbpf.h
+> > > @@ -967,6 +967,7 @@ LIBBPF_API int bpf_xdp_detach(int ifindex, __u32 flags,
+> > >                               const struct bpf_xdp_attach_opts *opts);
+> > >  LIBBPF_API int bpf_xdp_query(int ifindex, int flags, struct bpf_xdp_query_opts *opts);
+> > >  LIBBPF_API int bpf_xdp_query_id(int ifindex, int flags, __u32 *prog_id);
+> > > +LIBBPF_API int bpf_xdp_query_features(int ifindex, __u32 *fflags, __u32 *fflags_cnt);
+> >
+> > no need to add new API, just extend bpf_xdp_query()?
+>
+> Hi Andrii,
+>
+> AFAIK libbpf supports just NETLINK_ROUTE protocol. In order to connect with the
+> genl family code shared by Jakub we need to add NETLINK_GENERIC protocol support
+> to libbf. Is it ok to introduce a libmnl or libnl dependency in libbpf or do you
+> prefer to add open code to just what we need?
 
-> On Tue, Jan 10, 2023 at 07:17:11PM -0800, Stephen Hemminger wrote:
-> > Replace GPL boilerplate with SPDX.
-> > 
-> > Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>  
-> 
-> ...
-> 
-> >  #include <stdio.h>
-> > diff --git a/tc/q_atm.c b/tc/q_atm.c
-> > index 77b56825f777..07866ccf2fce 100644
-> > --- a/tc/q_atm.c
-> > +++ b/tc/q_atm.c
-> > @@ -3,7 +3,6 @@
-> >   * q_atm.c		ATM.
-> >   *
-> >   * Hacked 1998-2000 by Werner Almesberger, EPFL ICA
-> > - *
-> >   */
-> >  
-> >  #include <stdio.h>  
-> 
-> Maybe add an SPDX header here?
-> I assume it is GPL-2.0-or-later.
-> Or is that pushing our luck?
-> 
-> >  #include <stdio.h>
-> > diff --git a/tc/q_dsmark.c b/tc/q_dsmark.c
-> > index d3e8292d777c..9adceba59c99 100644
-> > --- a/tc/q_dsmark.c
-> > +++ b/tc/q_dsmark.c
-> > @@ -3,7 +3,6 @@
-> >   * q_dsmark.c		Differentiated Services field marking.
-> >   *
-> >   * Hacked 1998,1999 by Werner Almesberger, EPFL ICA
-> > - *
-> >   */
-> >  
-> >  #include <stdio.h>  
-> 
-> Ditto.
+I'd very much like to avoid any extra dependencies. But I also have no
+clue how much new code we are talking about, tbh. Either way, the less
+dependencies, the better, if the result is an acceptable amount of
+extra code to maintain.
 
-Both q_dsmark.c and q_atm.c for 1st pass on using SPDX
-and both had no previous specific license text.
+> I guess we should have a dedicated API to dump xdp features in this case since
+> all the other code relies on NETLINK_ROUTE protocol. What do you think?
+>
 
-At the time, my arbitrary decision was that if no other license
-was specified the original author expected that the code would
-be GPL2.0 only like the kernel.
+From API standpoint it looks like an extension to bpf_xdp_query()
+family of APIs, which is already extendable through opts. Which is why
+I suggested that there is no need for new API. NETLINK_ROUTE vs
+NETLINK_GENERIC seems like an internal implementation detail (but
+again, I spent literally zero time trying to understand what's going
+on here).
+
+> Regards,
+> Lorenzo
+>
+> >
+> > >
+> > >  /* TC related API */
+> > >  enum bpf_tc_attach_point {
+> > > diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+> > > index 71bf5691a689..9c2abb58fa4b 100644
+> > > --- a/tools/lib/bpf/libbpf.map
+> > > +++ b/tools/lib/bpf/libbpf.map
+> > > @@ -362,6 +362,7 @@ LIBBPF_1.0.0 {
+> > >                 bpf_program__set_autoattach;
+> > >                 btf__add_enum64;
+> > >                 btf__add_enum64_value;
+> > > +               bpf_xdp_query_features;
+> > >                 libbpf_bpf_attach_type_str;
+> > >                 libbpf_bpf_link_type_str;
+> > >                 libbpf_bpf_map_type_str;
+> >
+> > [...]
