@@ -2,134 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3781866A23D
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 19:41:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 270E966A27E
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 20:00:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229703AbjAMSlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 13:41:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48796 "EHLO
+        id S230499AbjAMTAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 14:00:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229633AbjAMSlH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 13:41:07 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9B01ADB8
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 10:41:03 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id bj3so20048151pjb.0
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 10:41:03 -0800 (PST)
+        with ESMTP id S230362AbjAMS7y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 13:59:54 -0500
+Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C404551FC
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 10:59:50 -0800 (PST)
+Received: by mail-oo1-xc2f.google.com with SMTP id s10-20020a4aa54a000000b004f240f120b3so1959602oom.1
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 10:59:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=c0+Sdo0KEI7o1bohHc1jHwiM206A+991wKrqsl42gBA=;
-        b=PBjE6fpa3XZ0R5lmeJaHS88HKwQd9U/loRunVFiGhmLwRqhpknZ9+P6RbsMgk3PDL1
-         PgLj8+ehJmtj4zrs/d19QRniRQHhylp9ECRge3nOAok3HgG/eSF5Ym1Nqq+DUSeyVh9J
-         GXuA9hPbl/TGZTbC4iwiqwta7/olfZdvm9dJ4=
+        d=landley-net.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=bTIDomgS8mXkDJCvxm5Zm+LjWmMOagP4MCI8VhlfZ4M=;
+        b=PS9bts8WEYUdHc2dq03MseWIdo5SmkGasWJ1IHK/82VNd2x1nauvFpnIRKJHReewV4
+         qHgmemCtG+n4JzEug1j/TkXXGr7XuvlNF4IBzbNfnN6lagwFrOKhEymKlD3N/LDBaGvv
+         sKYDqBaLKXsSv5VTvSWrpB1Ro6mV2B1zSTvwS3WrXPPhGJgdWKpIwnEsYL1x49CphPxG
+         SL4YOgYdR5jGUY39ZZius3Ig7i4WfTYOC67k8Vh1lto4GbCgV9uKa97KEalM5EmLMGPn
+         3yGQHE93+pmLVFjd1TlIZLJrfjBmFeNgyn5vD6/2wKe8LZIYKJC7joRnrftdzonfyS0K
+         +t4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=c0+Sdo0KEI7o1bohHc1jHwiM206A+991wKrqsl42gBA=;
-        b=aQLOWf7/5t08i0cMBmg8svniqNeY1R7PkYfDFwCiVCfQ8DigNha9V1jLN6/48Ftexq
-         6AZEgHKFAfaegOC9qaPOJVT17dzJflx5Vdw2v1KhcWjZlwLSiSd/LPR9sQPB8B90dBLu
-         tXyM0uPuYal7R5TxKJLNiCSGLURcIbNS0E6mz5sADwLjZxns5GZdixL9q6e7kY+ikhbl
-         G2SKsEZIY3dAsKf8TU0e3QrgwKsUTR2rW1kCDgOTUrkSHhTHOSfkyFOkhADD/y+N9Is4
-         y/08lDpaaYX3uFd3VHOqcf12AKoFwMsSYYL4fYqgVj559/B522/F3aJ03cXnc3WKPgMB
-         8RTA==
-X-Gm-Message-State: AFqh2kp2DlB7NZS0WlEMOthNQpjBGNeDZRiaCuyFhsnQY1uCqbRURj1i
-        Fm1+tOfXgHH0XreLyZde9CF19A==
-X-Google-Smtp-Source: AMrXdXtp0c0JUJUWnsyKvdP7j8ZaYi2JqXlPXCfJ6A2WBcV5A5fqLTp0v6thjvEtH6OYKXj/pGtg1g==
-X-Received: by 2002:a17:90a:7e14:b0:219:eeb9:943f with SMTP id i20-20020a17090a7e1400b00219eeb9943fmr82718118pjl.49.1673635262948;
-        Fri, 13 Jan 2023 10:41:02 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id w1-20020a17090a1b8100b0022721df27e9sm1724684pjc.11.2023.01.13.10.41.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Jan 2023 10:41:02 -0800 (PST)
-Date:   Fri, 13 Jan 2023 10:41:01 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Yupeng Li <liyupeng@zbhlos.com>, tariqt@nvidia.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Caicai <caizp2008@163.com>
-Subject: Re: [PATCH 1/1] net/mlx4: Fix build error use array_size() helper in
- copy_to_user()
-Message-ID: <202301131039.7354AD35CF@keescook>
-References: <20230107072725.673064-1-liyupeng@zbhlos.com>
- <Y7wb1hCpJiGEdbav@ziepe.ca>
+        bh=bTIDomgS8mXkDJCvxm5Zm+LjWmMOagP4MCI8VhlfZ4M=;
+        b=JRPk/qHXaS9OiW61+ffKId09ZZnAdmAzDdBU+kkzd0+ar/hyajtkGatsOXAyqRcrWs
+         DeM15YnKlKddhjhEU7ihC8cq72aTBy9Sn16/21xmii9uU0IJ8m5mQ9DxGhs3U6B8vE5s
+         2ZXMJXdn8IMwOK62kWlUiPGzzZ+4x4oXbVqkr7VhKPfGDG5ET6NnsJRYz+0E4FDy88Gf
+         NmxVhW2AmcMCrf2iwVbHrEAmUatLfdev80ZHkNYuq1iw+aDpH4EzDn+U4/38arvRsefn
+         +WgxJd0DqFQrVDafsTVA0gNvuB1Ya3Es1g/+jCxDXTi39+DhtEiKqKKtEAOu+YXzO2Cj
+         OwTg==
+X-Gm-Message-State: AFqh2kot48aoG+W+0PBR1/qd/YelQkLSD5BuBCdYtOvta2+W2M+D2UlS
+        zXUQLV3PorLvV98G2HDbfZxjWQ==
+X-Google-Smtp-Source: AMrXdXvaOiO0G10Az4EGLc64Vx6N+KrZr3PuLGXv0M+M3iF7lrA3WUc8R2fIq6AYtp8ZC6Mk4E9lCQ==
+X-Received: by 2002:a4a:c594:0:b0:4e7:5d43:a654 with SMTP id x20-20020a4ac594000000b004e75d43a654mr22358114oop.0.1673636389556;
+        Fri, 13 Jan 2023 10:59:49 -0800 (PST)
+Received: from [192.168.86.224] ([136.62.38.22])
+        by smtp.gmail.com with ESMTPSA id bc31-20020a056820169f00b0049f8b4b2095sm10111163oob.44.2023.01.13.10.59.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 Jan 2023 10:59:48 -0800 (PST)
+Message-ID: <6891afb6-4190-6a52-0319-745b3f138d97@landley.net>
+Date:   Fri, 13 Jan 2023 13:11:56 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Y7wb1hCpJiGEdbav@ziepe.ca>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: remove arch/sh
+Content-Language: en-US
+To:     John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
+        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-sh@vger.kernel.org
+References: <20230113062339.1909087-1-hch@lst.de>
+ <11e2e0a8-eabe-2d8c-d612-9cdd4bcc3648@physik.fu-berlin.de>
+ <CAMuHMdUcnP6a9Ch5=_CMPq-io-YWK5pshkOT2nZmP1hvNcwBAg@mail.gmail.com>
+ <142532fb-5997-bdc1-0811-a80ae33f4ba4@physik.fu-berlin.de>
+From:   Rob Landley <rob@landley.net>
+In-Reply-To: <142532fb-5997-bdc1-0811-a80ae33f4ba4@physik.fu-berlin.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 09, 2023 at 09:51:18AM -0400, Jason Gunthorpe wrote:
-> On Sat, Jan 07, 2023 at 03:27:25PM +0800, Yupeng Li wrote:
-> > When CONFIG_64BIT was disabled, check_copy_size() was declared with
-> > attribute error: copy source size is too small, array_size() for 32BIT
-> > was wrong size, some compiled msg with error like:
-> > 
-> >   CALL    scripts/checksyscalls.sh
-> >   CC [M]  drivers/net/ethernet/mellanox/mlx4/cq.o
-> > In file included from ./arch/x86/include/asm/preempt.h:7,
-> >                  from ./include/linux/preempt.h:78,
-> >                  from ./include/linux/percpu.h:6,
-> >                  from ./include/linux/context_tracking_state.h:5,
-> >                  from ./include/linux/hardirq.h:5,
-> >                  from drivers/net/ethernet/mellanox/mlx4/cq.c:37:
-> > In function ‘check_copy_size’,
-> >     inlined from ‘copy_to_user’ at ./include/linux/uaccess.h:168:6,
-> >     inlined from ‘mlx4_init_user_cqes’ at drivers/net/ethernet/mellanox/mlx4/cq.c:317:9,
-> >     inlined from ‘mlx4_cq_alloc’ at drivers/net/ethernet/mellanox/mlx4/cq.c:394:10:
-> > ./include/linux/thread_info.h:228:4: error: call to ‘__bad_copy_from’ declared with attribute error: copy source size is too small
-> >   228 |    __bad_copy_from();
-> >       |    ^~~~~~~~~~~~~~~~~
-> > make[6]: *** [scripts/Makefile.build:250：drivers/net/ethernet/mellanox/mlx4/cq.o] 错误 1
-> > make[5]: *** [scripts/Makefile.build:500：drivers/net/ethernet/mellanox/mlx4] 错误 2
-> > make[5]: *** 正在等待未完成的任务....
-> > make[4]: *** [scripts/Makefile.build:500：drivers/net/ethernet/mellanox] 错误 2
-> > make[3]: *** [scripts/Makefile.build:500：drivers/net/ethernet] 错误 2
-> > make[3]: *** 正在等待未完成的任务....
-> > make[2]: *** [scripts/Makefile.build:500：drivers/net] 错误 2
-> > make[2]: *** 正在等待未完成的任务....
-> > make[1]: *** [scripts/Makefile.build:500：drivers] 错误 2
-> > make: *** [Makefile:1992：.] 错误 2
-> > 
-> > Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
-> > Reviewed-by: Caicai <caizp2008@163.com>
-> > ---
-> >  drivers/net/ethernet/mellanox/mlx4/cq.c | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> > 
-> > diff --git a/drivers/net/ethernet/mellanox/mlx4/cq.c b/drivers/net/ethernet/mellanox/mlx4/cq.c
-> > index 4d4f9cf9facb..7dadd7227480 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx4/cq.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx4/cq.c
-> > @@ -315,7 +315,11 @@ static int mlx4_init_user_cqes(void *buf, int entries, int cqe_size)
-> >  		}
-> >  	} else {
-> >  		err = copy_to_user((void __user *)buf, init_ents,
-> > +#ifdef CONFIG_64BIT
-> >  				   array_size(entries, cqe_size)) ?
-> > +#else
-> > +				   entries * cqe_size) ?
-> > +#endif
-> >  			-EFAULT : 0;
+On 1/13/23 02:52, John Paul Adrian Glaubitz wrote:
+> Hi Geert!
 > 
-> This can't possibly make sense, Kees?
+> On 1/13/23 09:26, Geert Uytterhoeven wrote:
+>> Indeed.  The main issue is not the lack of people sending patches and
+>> fixes, but those patches never being applied by the maintainers.
+>> Perhaps someone is willing to stand up to take over maintainership?
+> 
+> I actually would be willing to do it but I'm a bit hesitant as I'm not 100%
+> sure my skills are sufficient. Maybe if someone can assist me?
 
-Uuuuh, that's really weird. What compiler version and arch? I'll see if
-I can reproduce this.
+My skills aren't sufficient and I dunno how much time I have, but I can
+certainly assist. I test sh4 regularlyish and it's in the list of architectures
+I ship binaries and tiny VM images for, just refreshed tuesday:
 
--- 
-Kees Cook
+https://landley.net/toybox/downloads/binaries/0.8.9/
+https://landley.net/toybox/downloads/binaries/mkroot/0.8.9/
+
+(The sh2eb isn't a VM, it's a physical board I have here...)
+
+There is definitely interest in this architecture. I'm aware Rich hasn't been
+the most responsive maintainer. (I'm told he's on vacation with his family at
+the moment, according to the text I got about this issue from the J-core
+hardware guys in Japan.)
+
+The main reason we haven't converted everything to device tree is we only have
+access to test hardware for a subset of the boards. Pruning the list of
+supported boards and converting the rest to device tree might make sense. We can
+always add/convert boards back later...
+
+Rob
