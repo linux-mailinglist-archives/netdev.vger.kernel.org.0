@@ -2,120 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B1C466956A
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 12:21:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B35966695BE
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 12:37:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241008AbjAMLVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 06:21:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44882 "EHLO
+        id S236486AbjAMLhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 06:37:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240334AbjAMLUc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 06:20:32 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E223A809A1;
-        Fri, 13 Jan 2023 03:14:05 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id fy8so51413947ejc.13;
-        Fri, 13 Jan 2023 03:14:05 -0800 (PST)
+        with ESMTP id S240935AbjAMLgs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 06:36:48 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 446CB6542
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 03:24:08 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id o18so976511pji.1
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 03:24:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=SlAsx/PqlcNVFzMCgHrp9fmyc40IkW8ms/Rh0bpr8X4=;
-        b=PE+kIkPbJVaxAgR8K+ZZOuxcHYsnOBqDXN34xzCxwiP2WAI9Ze7n6Gf0mc6YOZPu2A
-         JS06+ptYUe6cNl7RKqeldRVNcegDQfdw+2PkH6OTDb5aKrs9VF+HatDU99NZ+49Wmq3L
-         XXhSnUkkC5ugjDXfNjivXpGyZWGrt+BQSmSlqR2zXdvHIAg3eN/lhlWcYvqO116BWD/g
-         yZ6wqEvMcHh37472JsL0bFTEa7XmUErUmm/wDuc6L+Ye0zLXsqUoNnPCJC1Nt1Kd8HbI
-         cRaglv8aPbrjdhk1pNsqsnM28OccuyOUYsIq+XPd6wiOi66tl29H1kqI+1ZCL3E9jEcz
-         mBdQ==
+        bh=nOKltmOsXPyNKe1uYloIrl4n+T0JFIJ4CzRVVMvS6LY=;
+        b=ettxfXGGn22lN/zb8s/n80BHiUp/+R30ro+s/M6ULXIpdz2kiSFwSTHgDOazEZpVnn
+         q42D5X89VZ+nF0QF9yIHFVFRboLt+XLTIhjHTUSCSz8I21vvbBUovrNCPxnrNgxPO/kL
+         amMeBR7KbhPFoRBC91Xqfkc0lvWrE0dGej0ySjYFGV2OzYwVxy0RVhMAPvkXxQsEkX5t
+         viMVllRet7rixd6YgoE3P14qgHYxkI+F0XJmG/BTGthGhbB9ro09MZ8LAmpCwnV9pm7K
+         TwHkfulI4/QWqDLeMM0vPSRrOzeGmnQd/QxieJ53awM+SBvJn2NT/seNB/sRFdGjmKS6
+         0zxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SlAsx/PqlcNVFzMCgHrp9fmyc40IkW8ms/Rh0bpr8X4=;
-        b=L9MnSD4YNxEInBa6GF0ytDTYa1+5ce9HVnlJ7gDWmWr3uvDPfcYSyInG1tsWVoV/9c
-         +xPmmYScmNg8rmn34wO1vqpqJuzFRrkM1VnrdjtSdAGHUe0zOnauWPszqxizre++KLkl
-         e8GYYsqnj9/NL4lQ7H6X44DnUJKt4jTJEWnrYOxW3fu22+UNVWiTwDoAsnT+6E4fEtDi
-         gb1/OQQLpkXmFrGj4fEjWifJPHPxxEw8sD4jy6XIJ8zzaFK0tVp8yyCX92VDJmrPXy/F
-         P+MztyrjKEaa2vL+cAgdTfRQEkF+XQauVXv/FEDz4YZa6e7vyjPwqoj4oyjTGCqWtU0Z
-         W3KA==
-X-Gm-Message-State: AFqh2kr4uMKbyu5cHLzt195yeKp7+3k2x3VvNaFq1+9Y0KH6tcrPcNYV
-        cQEMDE0bLjRU+ytVZVEYSnI=
-X-Google-Smtp-Source: AMrXdXsEA5AnfSAZ+cdsRvCpn9hOwRmoJ2j4M29EA1ia0f++obBAbDPdbXxmmgLuNLSQWzURGbh6LQ==
-X-Received: by 2002:a17:906:d973:b0:7c1:5982:d729 with SMTP id rp19-20020a170906d97300b007c15982d729mr2797413ejb.56.1673608444366;
-        Fri, 13 Jan 2023 03:14:04 -0800 (PST)
-Received: from skbuf ([188.26.184.223])
-        by smtp.gmail.com with ESMTPSA id c10-20020a17090618aa00b0084d14646fd9sm8293024ejf.165.2023.01.13.03.14.03
+        bh=nOKltmOsXPyNKe1uYloIrl4n+T0JFIJ4CzRVVMvS6LY=;
+        b=npGxBJ0ysYD3lz1AgQxJTiCcJ6WIPv7KeSB/KfutnfXA50cplS2lux0fbdcm5dGbX4
+         OyaPrlO6qbLl1dUzA2OKDddiru/59ybcI7HkQQryHZueTGbCjsdjPbxA77uailu29al3
+         lHUVviNm1lZi+ARnBuco3NAeS0/9t5GegPbsi9CI+tnlCOwhJU8QzwSwZP+rAA7Gu20s
+         SXzF3riBZtF2uGEeLpEFDDiEAv4wd/DkucDyjULUaJXRknf8juL8B6tf9AGdie+9o5nL
+         jfsBMjFAHUxAYD/8Xj728ONKWr51/NRVh2XknCxWHeUHQmbedllDESICpg62IW22i2Ke
+         D/gg==
+X-Gm-Message-State: AFqh2krlwjs3GDswNikf5PRKWuJkHlUeKjwea9Vog2yejzZweKN5cs9E
+        TAI6sbObkaAT2yVVzMvjKoo=
+X-Google-Smtp-Source: AMrXdXuHfSVkr7YaD/r354nbLVYVruipq3R59Amrhmyg8bbDRZ5Vzjv/H8wjenC+83jwcyGtENYZ3w==
+X-Received: by 2002:a17:90a:f404:b0:229:557:8a21 with SMTP id ch4-20020a17090af40400b0022905578a21mr5515148pjb.7.1673609047682;
+        Fri, 13 Jan 2023 03:24:07 -0800 (PST)
+Received: from localhost ([23.129.64.222])
+        by smtp.gmail.com with ESMTPSA id qb14-20020a17090b280e00b002291295fc2dsm1907292pjb.17.2023.01.13.03.24.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Jan 2023 03:14:03 -0800 (PST)
-Date:   Fri, 13 Jan 2023 13:14:01 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Lukasz Majewski <lukma@denx.de>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Fri, 13 Jan 2023 03:24:06 -0800 (PST)
+Date:   Fri, 13 Jan 2023 13:24:02 +0200
+From:   Maxim Mikityanskiy <maxtram95@gmail.com>
+To:     Rahul Rameshbabu <rrameshbabu@nvidia.com>
+Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
         Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/3] dsa: marvell: Provide per device information
- about max frame size
-Message-ID: <20230113111401.hyq7xogfo5tx77e7@skbuf>
-References: <20230106101651.1137755-1-lukma@denx.de>
- <Y7gdNlrKkfi2JvQk@lunn.ch>
- <20230113113908.5e92b3a5@wsk>
- <20230113104937.75umsf4avujoxbaq@skbuf>
- <20230113120219.7dc931c1@wsk>
+        Paolo Abeni <pabeni@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net v3] sch_htb: Avoid grafting on
+ htb_destroy_class_offload when destroying htb
+Message-ID: <Y8E/UnlyiqeH30Yr@mail.gmail.com>
+References: <20230113005528.302625-1-rrameshbabu@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230113120219.7dc931c1@wsk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230113005528.302625-1-rrameshbabu@nvidia.com>
+X-Spam-Status: No, score=2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_BL_SPAMCOP_NET,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 13, 2023 at 12:02:19PM +0100, Lukasz Majewski wrote:
-> Hi Vladimir,
+On Thu, Jan 12, 2023 at 04:55:29PM -0800, Rahul Rameshbabu wrote:
+> Peek at old qdisc and graft only when deleting a leaf class in the htb,
+> rather than when deleting the htb itself. Do not peek at the qdisc of the
+> netdev queue when destroying the htb. The caller may already have grafted a
+> new qdisc that is not part of the htb structure being destroyed.
 > 
-> > On Fri, Jan 13, 2023 at 11:39:08AM +0100, Lukasz Majewski wrote:
-> > > Are there any more comments, or is this patch set eligible for
-> > > pulling into net-next tree?  
-> > 
-> > How about responding to the comment that was already posted first?
+> This fix resolves two use cases.
 > 
-> Could you be more specific?
+>   1. Using tc to destroy the htb.
+>     - Netdev was being prematurely activated before the htb was fully
+>       destroyed.
+>   2. Using tc to replace the htb with another qdisc (which also leads to
+>      the htb being destroyed).
+>     - Premature netdev activation like previous case. Newly grafted qdisc
+>       was also getting accidentally overwritten when destroying the htb.
 > 
-> 
-> On the beginning (first posted version) the patch included 9 patches
-> (which included work for ADDR4 for some mv88e6020 setup).
-> 
-> But after the discussion, I've decided to split this patch set to
-> smaller pieces;
-> 
-> First to add the set_max_frame size with basic definition for mv88e6020
-> and mv88e6071 and then follow with more complicated changes (for which
-> there is no agreement on how to tackle them).
-> 
-> For the 'set_max_frame' feature Alexander Dyuck had some comments
-> regarding defensive programming approach, but finally he agreed with
-> Andrew's approach.
-> 
-> As of now - the v4 has been Acked by Andrew, so it looks like at least
-> this "part" of the work is eligible for upstreaming.
-> 
-> 
-> Or there are any more issues about which I've forgotten ?
+> Fixes: d03b195b5aa0 ("sch_htb: Hierarchical QoS hardware offload")
+> Signed-off-by: Rahul Rameshbabu <rrameshbabu@nvidia.com>
+> Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Maxim Mikityanskiy <maxtram95@gmail.com>
+> ---
 
-Do you agree that for the chip families which neither implement
-port_set_jumbo_size() nor set_max_frame_size(), a max MTU of 1492 will
-be returned, which currently produces warnings at probe time and should
-be fixed first, prior to refactoring the code?
-https://patchwork.kernel.org/project/netdevbpf/patch/20230106101651.1137755-1-lukma@denx.de/#25149891
+Thanks, looks good to me!
+
+Reviewed-by: Maxim Mikityanskiy <maxtram95@gmail.com>
