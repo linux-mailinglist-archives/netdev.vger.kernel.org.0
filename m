@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DA56669E64
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 17:42:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67180669D97
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 17:23:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229941AbjAMQml (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 11:42:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56812 "EHLO
+        id S229552AbjAMQXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 11:23:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229959AbjAMQmR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 11:42:17 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2079.outbound.protection.outlook.com [40.107.93.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8A4639B;
-        Fri, 13 Jan 2023 08:40:44 -0800 (PST)
+        with ESMTP id S229835AbjAMQXE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 11:23:04 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2055.outbound.protection.outlook.com [40.107.220.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3836282FA1;
+        Fri, 13 Jan 2023 08:17:36 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JmTmVJO4X32f9y7JqfYGS4rNXV+kNXvr+YUTYVb6UIIEieLuJJszWzUtwVkG2ftXmVXxYCuwJwTI0NxGtVHsdcZtlfon5Ymax4oj8IlNun1bk+qym4W/b8Nekthygtv7z+gE2vGtEFi/0RZUi6vM/jOK/eGooDTbxlPGF7+tV2lK8VfQZRAg4h99R3JQwklXf5mwvsoE9lXP4ficUAjZcJFaGwqhVRhqPoUyJraFJwy9Qm1kaKzpa734xGfW+1SPinRdpETJ1RemqpFBce8pPVG1hxNDPhKQsjx852vENns9hGH5r28WssXDwXwSxcf0y8CibiXAtKC379IH0BOSsQ==
+ b=a0Dx+rNfZANFn9r8KMVFAKM/bN/0Shdbpgj0WPPDS4p1WIQDdBYUglSr8YIXICdoSiKWIcX8jcRo74ZNijmZt7jz7UKzElrYxJ3ofZA54Bvo9yjzvU5B1QHkF5jaAVFVUm9AJs4XZK5XeqdF1Ub8n8EaloVZfaWCfHgepji5bRXhA86B3TzcP/SNTbCj5Nn+i2wH0KSZEUrPldTkbhRRDL9HUUuOWNji/ZcsrlP+Gizrx4vlfP11PXDCMiZGfaUC8pEDTCZzJD2mbNyLO0097VwtCKLMK4zyaS197t3kXHKe0W9Qk7s+Fe+HGIGEP8LB+3cS1v4CNOJCYbjRUk1PVA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yNFI1ODvT1qxWxuUYeT6CbLyos3m+5BrA5L0BY6iWEc=;
- b=HOEkUpctNyNckRLZTFXkF9DvdKAdMXzTC4hN5xo9JPkYU1uCGKQpX//iY6C2Vt4XpjWgfhXcLvbuqBljnKjkekoNsa6zldYwgaup7Lke8r2yaPJgXd1pkCblXFzzqjmJ1zKfr+gHP/LVuQ9DZ2U+rq/tbCXGqs+Ahu2QnQqbGhwmXWPJaxhCkYto5eZMInoEo+BB9I2bsmn8QJRQlDuln1xr6l1PQ24L8R4kmJ8J/jzwEdzVXWx0C5ndf0qfy+G8q+vAmvjxSswcZVUxS0BjXGvjHt7LbXcg5qVJmVsAjP1H1TMnPjZyirFQEpYLg56nVBpIH+kXv7EzRZLA1zs35w==
+ bh=1j71EpxK4BnlovmwaU7LhilO61nIzRbIciR5ytVKevw=;
+ b=EBRWpJelJQU2mpTpTb25jugbkBI4ebQqIQ4T6g7RG9NzPpm9uW7kC12DHBab0iE1Jg7WYo1VwmUuNNvSm+Q9DyskwpJmrkzaB66jGszQiE13Z/yAEoKoMOVzSAZI4372b4ktxrgDsJ7xf4Iui/1wBdRUZt3r06G/903p9D3yKmfUP2hgfp2w5aqLCHqEDIuBv3/2ESoF92OL6GGpqaJ3tQqZYmHD7j2B3Z0uUPrFXhUsvwwTBH/smI5H9YpbKVPicTY5Enbi+xD/jR5gg1O/MfXR31qBULPZd2ysL8JOzk2YGEe+73yQd0fzRWGmSIjWwToiNJ+mbbykfu/3wgCnjw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ 216.228.117.160) smtp.rcpttodomain=corigine.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yNFI1ODvT1qxWxuUYeT6CbLyos3m+5BrA5L0BY6iWEc=;
- b=g889N5AYG/onY1r49SbbU9cDImXgFl8sqlKP0/MBTg3nN/sisooAXWM40sIQvDMhUmh3y+WCX9Q3wib2eYBLG9bRh17SGThkIsOwxIXsdtsKuETYNcZMxNQtNeOchrbNhRLpV6dNoF4x8xBBPXbc35RzVYVBz61+VjA1bGLkfHghitIFS2w0DR5KRz3u7gx5lE0tUx15GzS/qFn04cVl5kUsSiqx8EfIPR1jPmmUVJlmsB/jzUl015MJ18d+GlLA+ddqxuVbMAxmRsm5G3of4LL1fdjQeO79ogGsqseQf9zpZ7FxDMVtZ7SzKzGjj2VUSVAWhgQ8Qio8D1+GzBnuHA==
-Received: from DS7PR03CA0106.namprd03.prod.outlook.com (2603:10b6:5:3b7::21)
- by DM6PR12MB5023.namprd12.prod.outlook.com (2603:10b6:5:1b6::15) with
+ bh=1j71EpxK4BnlovmwaU7LhilO61nIzRbIciR5ytVKevw=;
+ b=FRlgQRaGaABNCRf3F0W0sbaWa/4CLIX4yq0DFsVkvTUR640h82GcE55RrVaLf+5m2fmktYVF4ANCYYGsaPSUEOFBJlv8xLKoV/Dcr0cUbwUaU9JmWaU8zL4TZzAOoGFDAtZoWcC08wVLSm4/PbbpVu74AD0G/Tu9+VGqAS244LyXxfhy+Wl1zcVZ2CbjclGBDc+ivCZALR/X/3J+793gr5VWlqIBVbMMvqkB5k24/62dqPjF31RnK8/7XpQdTzOSFfF1Bp4pg7QGgktBhmuTdCk/SWEfVJNQEiPhQoDYLRk5tC9PGAZ8dNY6BkLZLx1tiPdvNwxt4ehn8tfP4BPOKg==
+Received: from BN0PR02CA0028.namprd02.prod.outlook.com (2603:10b6:408:e4::33)
+ by DM4PR12MB5070.namprd12.prod.outlook.com (2603:10b6:5:389::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Fri, 13 Jan
- 2023 16:40:42 +0000
-Received: from DS1PEPF0000B077.namprd05.prod.outlook.com
- (2603:10b6:5:3b7:cafe::59) by DS7PR03CA0106.outlook.office365.com
- (2603:10b6:5:3b7::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.16 via Frontend
- Transport; Fri, 13 Jan 2023 16:40:42 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.19; Fri, 13 Jan
+ 2023 16:17:34 +0000
+Received: from BL02EPF000108EA.namprd05.prod.outlook.com
+ (2603:10b6:408:e4:cafe::60) by BN0PR02CA0028.outlook.office365.com
+ (2603:10b6:408:e4::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.14 via Frontend
+ Transport; Fri, 13 Jan 2023 16:17:34 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -47,58 +47,59 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.160 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.160) by
- DS1PEPF0000B077.mail.protection.outlook.com (10.167.17.8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6002.11 via Frontend Transport; Fri, 13 Jan 2023 16:40:41 +0000
+ BL02EPF000108EA.mail.protection.outlook.com (10.167.241.203) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6002.11 via Frontend Transport; Fri, 13 Jan 2023 16:17:33 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
  (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 13 Jan
- 2023 08:40:35 -0800
-Received: from yaviefel (10.126.231.37) by rnnvmail201.nvidia.com
+ 2023 08:17:18 -0800
+Received: from fedora.nvidia.com (10.126.230.37) by rnnvmail201.nvidia.com
  (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 13 Jan
- 2023 08:40:31 -0800
-References: <20230112201554.752144-1-daniel.machon@microchip.com>
+ 2023 08:17:14 -0800
+References: <20230110133023.2366381-1-vladbu@nvidia.com>
+ <20230110133023.2366381-2-vladbu@nvidia.com>
+ <Y8EghrLt1rtcYSv/@corigine.com>
 User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     Daniel Machon <daniel.machon@microchip.com>
-CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <lars.povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <joe@perches.com>,
-        <error27@gmail.com>, <horatiu.vultur@microchip.com>,
-        <Julia.Lawall@inria.fr>, <petrm@nvidia.com>,
-        <vladimir.oltean@nxp.com>, <maxime.chevallier@bootlin.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/6] Introduce new DCB rewrite table
-Date:   Fri, 13 Jan 2023 17:11:50 +0100
-In-Reply-To: <20230112201554.752144-1-daniel.machon@microchip.com>
-Message-ID: <87wn5qxu9u.fsf@nvidia.com>
+From:   Vlad Buslov <vladbu@nvidia.com>
+To:     Simon Horman <simon.horman@corigine.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <pablo@netfilter.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>, <ozsh@nvidia.com>,
+        <marcelo.leitner@gmail.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        <oss-drivers@corigine.com>
+Subject: Re: [PATCH net-next v1 1/7] net: flow_offload: provision conntrack
+ info in ct_metadata
+Date:   Fri, 13 Jan 2023 18:15:55 +0200
+In-Reply-To: <Y8EghrLt1rtcYSv/@corigine.com>
+Message-ID: <875yda4dfc.fsf@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.126.231.37]
-X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+X-Originating-IP: [10.126.230.37]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF0000B077:EE_|DM6PR12MB5023:EE_
-X-MS-Office365-Filtering-Correlation-Id: fdbe7ac6-0666-4e11-d518-08daf584e90b
+X-MS-TrafficTypeDiagnostic: BL02EPF000108EA:EE_|DM4PR12MB5070:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5666007a-1619-4fc3-668f-08daf581ad9c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: J2tlInTGlRBpGOIrFGVCpo0vw5kJGa9e529yEljVKNl7q/r7chHfvUm/Mtler9EersQWIgmE3yovBQcOKE+RVHxqSEFles4j2koqrFVxyS+rec3lrp2B8HFeRRe7BTeJEPUP7LkxGbQ0oXVZgalBvDr/Sdjg3J3bJHQCL937zNXpM4c3/Yb/AQ1fgdnuiQBbIanmtP4iEzA6t2egNiJovcy/geaBAd9+iQrBwfFdr2f2X60IB5h9t0ESvLBVWRd4RRBhh49l9PfvMibAPTmRA1FNDgfmwqVeXCGA1ZOjHI7IgbWJ6ha+y6eAq9wfMxKw7OVg06oGq0MlIUZhYYmztpEgsb3C76ukZEMfFvOdp1rZsqvotj4KWNNqyIkZbhnspd8TJNhYFv0j8NKHh4wOwZz9g/mHEBp2fGBuddl+PCGg/+ZwAl/DJNHFhmU82EeNw/e8w+lE0/VUecH5fN7NKBgfodPhz6PEZu5y539pZm68ljf5ty9NBm8JOI+bfwfwqJloy4MWu27uKTWGJYFUiRmjdnq1iUr3/5L0i5Oo+TZOyccTLt7uS0fEjb+5bTNBaP7j039mLEAbxRn+3wIxDKBSJnxcvsEIjOQsS6THgeqDDiKslu8HrMiijUlp4eSCGsq9JqxeI4/N6iJklX8gGNUNaunmzsc4UvUWbGWfIXR7rW9OiGcyPgLrPtwSym4HPyzWj53bDiaAdT4s8MakyQ==
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(136003)(396003)(39860400002)(451199015)(40470700004)(36840700001)(46966006)(70586007)(36756003)(2906002)(7416002)(82310400005)(7636003)(5660300002)(8936002)(356005)(41300700001)(47076005)(83380400001)(426003)(36860700001)(82740400003)(66899015)(54906003)(86362001)(70206006)(6666004)(8676002)(2616005)(40460700003)(186003)(316002)(40480700001)(478600001)(26005)(4326008)(6916009)(16526019)(336012);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: YEt4yX0XsvSo34Hbda6CZyMrcFBp+KA66vYpiq2lMXfdIeDdYzg0jCVp9Fg0psMYlTP2xGId0xBlW6j0mlHQ48deLaS0pz02cdtBOs/JMcbUEcwiH/nLbe/XQ0N/9Yj4JUAMIbGv6CoWZ9mQY9AjTqnuify6bmtbKWflFFgInEqo9zSjjYnQ+zVikv3PMmjws1b0kXnwRPSdhPG1FXkkBedHioElglHIZDrity6CI+KQgAlMydse5NB2btwJG2r4c2Fd7MrwoBulpEIgcBA3BFPJmgOYl+wOinjpal5OQIk9vs4MwZp7b+BVa23c1WfJl09Aanp4tf4/sx8v4bOLmw7Lvr7NL7Eia0vRP4/Ene2emDulBIfigDtGtFIXXjsqvIq/B4OQUjk+JnmOFCYJCUqGpvHdUZjV0sWFCP6quDlxOja1S7sMoF+nC2sYYK04upB74C2KJ6YWrYRMhUS8AhDASd/VnB/nVXQ6bttm4TA+4IBswOTbtovRIPJR0Un6/cd0Ch/YbOw+EBGaujvHMyRGX5vyX1rm47x0q6tCM+h6cRcP5Z/4zPV30IripRjSJbC+GEPeluSSMX+mN+eeDxboj8n33qTMal3+egRWPuA/Q6ri7x4Nuij97MIgV+1BgiGrGZdjawHEgueyZ4XUUttmxZ2l9L6B1Yx43sHROgLbiAE/PFDhdcs42Tdch8us
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(376002)(346002)(39860400002)(451199015)(46966006)(40470700004)(36840700001)(8936002)(6666004)(8676002)(70206006)(41300700001)(70586007)(6916009)(4326008)(54906003)(316002)(82310400005)(2616005)(36756003)(2906002)(7416002)(40460700003)(5660300002)(36860700001)(40480700001)(86362001)(26005)(7696005)(82740400003)(478600001)(16526019)(356005)(186003)(7636003)(336012)(47076005)(426003)(83380400001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2023 16:40:41.9139
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2023 16:17:33.6609
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fdbe7ac6-0666-4e11-d518-08daf584e90b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5666007a-1619-4fc3-668f-08daf581ad9c
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000B077.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BL02EPF000108EA.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB5023
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5070
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -109,43 +110,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Daniel Machon <daniel.machon@microchip.com> writes:
-
-> There is currently no support for per-port egress mapping of priority to PCP and
-> priority to DSCP. Some support for expressing egress mapping of PCP is supported
-> through ip link, with the 'egress-qos-map', however this command only maps
-> priority to PCP, and for vlan interfaces only. DCB APP already has support for
-> per-port ingress mapping of PCP/DEI, DSCP and a bunch of other stuff. So why not
-> take advantage of this fact, and add a new table that does the reverse.
+On Fri 13 Jan 2023 at 10:12, Simon Horman <simon.horman@corigine.com> wrote:
+> + Baowen Zheng, oss-drivers@corigine.com
 >
-> This patch series introduces the new DCB rewrite table. Whereas the DCB
-> APP table deals with ingress mapping of PID (protocol identifier) to priority,
-> the rewrite table deals with egress mapping of priority to PID.
+> On Tue, Jan 10, 2023 at 02:30:17PM +0100, Vlad Buslov wrote:
+>> In order to offload connections in other states besides "established" the
+>> driver offload callbacks need to have access to connection conntrack info.
+>> Extend flow offload intermediate representation data structure
+>> flow_action_entry->ct_metadata with new enum ip_conntrack_info field and
+>> fill it in tcf_ct_flow_table_add_action_meta() callback.
+>> 
+>> Reject offloading IP_CT_NEW connections for now by returning an error in
+>> relevant driver callbacks based on value of ctinfo. Support for offloading
+>> such connections will need to be added to the drivers afterwards.
+>> 
+>> Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+>> ---
 >
-> It is indeed possible to integrate rewrite in the existing APP table, by
-> introducing new dedicated rewrite selectors, and altering existing functions
-> to treat rewrite entries specially. However, I feel like this is not a good
-> solution, and will pollute the APP namespace. APP is well-defined in IEEE, and
-> some userspace relies of advertised entries - for this fact, separating APP and
-> rewrite into to completely separate objects, seems to me the best solution.
+> ...
 >
-> The new table shares much functionality with the APP table, and as such, much
-> existing code is reused, or slightly modified, to work for both.
+>> diff --git a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
+>> index f693119541d5..2c550a1792b7 100644
+>> --- a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
+>> +++ b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
+>> @@ -1964,6 +1964,23 @@ int nfp_fl_ct_stats(struct flow_cls_offload *flow,
+>>  	return 0;
+>>  }
+>>  
+>> +static bool
+>> +nfp_fl_ct_offload_supported(struct flow_cls_offload *flow)
+>> +{
+>> +	struct flow_rule *flow_rule = flow->rule;
+>> +	struct flow_action *flow_action =
+>> +		&flow_rule->action;
+>> +	struct flow_action_entry *act;
+>> +	int i;
+>> +
+>> +	flow_action_for_each(i, act, flow_action) {
+>> +		if (act->id == FLOW_ACTION_CT_METADATA)
+>> +			return act->ct_metadata.ctinfo != IP_CT_NEW;
+>> +	}
+>> +
+>> +	return false;
+>> +}
+>> +
 >
-> ================================================================================
-> DCB rewrite table in a nutshell
-> ================================================================================
-> The table is implemented as a simple linked list, and uses the same lock as the
-> APP table. New functions for getting, setting and deleting entries have been
-> added, and these are exported, so they can be used by the stack or drivers.
-> Additionnaly, new dcbnl_setrewr and dcnl_delrewr hooks has been added, to
-> support hardware offload of the entries.
+> Hi Vlad,
+>
+> Some feedback from Baowen Zheng, who asked me to pass it on here:
+>
+>   It is confusing that after FLOW_ACTION_CT_METADATA check, this functoin
+>   will return false, that is -EOPNOTSUPP.
+>
+>   Since this function is only used to check nft table, It seems better to
+>   change its name to nfp_fl_ct_offload_nft_supported(). This would make things
+>   clearer and may avoid it being used in the wrong way.
 
-Looks good to me overall.
+Thanks for the suggestions! I will change the naming and send V2.
 
-I just want to add that to configure rewrite, mlxsw currently reverses
-the APP prioritization table. That's not ideal, and is lossy as
-well--certain configurations simply can't be expressed however you set
-up in-driver heuristics. The proposed interfaces would make
-configuration of the rewrite functionality very straightforward.
