@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F4A366ABAF
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 14:43:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E020266ABB4
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 14:43:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229820AbjANNnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Jan 2023 08:43:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49470 "EHLO
+        id S229895AbjANNnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Jan 2023 08:43:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230026AbjANNnG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 08:43:06 -0500
+        with ESMTP id S230112AbjANNnJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 08:43:09 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1608C8A64;
-        Sat, 14 Jan 2023 05:43:03 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA34C9000;
+        Sat, 14 Jan 2023 05:43:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1673703784; x=1705239784;
+  t=1673703786; x=1705239786;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=k8qLRz4WlerBuljRtmY04TgPesINkumKLjkupuffhAk=;
-  b=OwJvqS9JXded4z1J5htngf4zzwxAwF5DCedm/G5bQ1A6JdRMj8NAGTbZ
-   AhPw17R9cJi48cLdL880LXtBqAqvNsKpY16+euVX8Kxj9MMthohqoa4aT
-   Fm7lLX1Bn5uo3s2nJFNdrSSewSVfuT6P8/LIJgRApTg9/olJtwTUtKNvI
-   DiNVaBRCxxhKqFX28aebGNN0hIBWcZwJFmoWX0oSPQ0P/rCdGYZUKnP4O
-   5mDNHNFhz2g7lFfuDeSby9mFYrk1o3XAD9iV15tb53D+XyFTnBB0jtg0r
-   0QAY4aT1SqMhiG+OQHKBI/WtF7a6e2JBcJE7B9RCf2JLGZfJ5zgICuTw7
-   g==;
+  bh=sVBU5+yXVCOKw9uzzbU9k115psywRdSIpadeaOx5cPc=;
+  b=q2qBbhKNpoVHbB2OtTAsHkiXVvhHnF2GC07wwhYcrM3AXsv3g/hBgxRS
+   IWqSdPT9YBBJTu7U4MXjxzZFnAk8QXrp+V/ZuhIM9mq5w27Wz3o2MQ84d
+   eWAX/2+IG/O2IvlCIGd0mOwuqInPEKAybouyZKIv0+achTCJJEPj2O6zP
+   wxuOrT5MaKhJJkubiyq1MAjGMy1NKMqIjfqW6SEnmiqMXYoNJaERiP80Z
+   poS1JZX8ceNWd6zyTdSvSyvVLZ30fkQzlWa+5WTNVzElUWIjEIE1v58XQ
+   Q1gv4HWipMiyaRMGFZ47YcLfyJLIM7NIIxlTCJREYWL+wvSJw0BFmNygi
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.97,216,1669100400"; 
-   d="scan'208";a="192264075"
+   d="scan'208";a="132355235"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jan 2023 06:43:03 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jan 2023 06:43:06 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Sat, 14 Jan 2023 06:43:01 -0700
+ 15.1.2507.16; Sat, 14 Jan 2023 06:43:05 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Sat, 14 Jan 2023 06:42:58 -0700
+ 15.1.2507.16 via Frontend Transport; Sat, 14 Jan 2023 06:43:02 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -58,9 +58,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>,
         Dan Carpenter <error27@gmail.com>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v4 3/8] net: microchip: vcap api: Always enable VCAP lookups
-Date:   Sat, 14 Jan 2023 14:42:37 +0100
-Message-ID: <20230114134242.3737446-4-steen.hegelund@microchip.com>
+Subject: [PATCH net-next v4 4/8] net: microchip: vcap api: Convert multi-word keys/actions when encoding
+Date:   Sat, 14 Jan 2023 14:42:38 +0100
+Message-ID: <20230114134242.3737446-5-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230114134242.3737446-1-steen.hegelund@microchip.com>
 References: <20230114134242.3737446-1-steen.hegelund@microchip.com>
@@ -77,245 +77,342 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This changes the VCAP lookups state to always be enabled so that it is
-possible to add "internal" VCAP rules that must be available even though
-the user has not yet enabled the VCAP chains via a TC matchall filter.
-
-The API callback to enable and disable VCAP lookups is therefore removed.
+The conversion to the platform specific multi-word format is moved from the
+key/action add functions to the encoding key/action.
+This allows rules that are disabled (not in VCAP HW) to use the same format
+for keys/actions as rules that have just been read from VCAP HW.
 
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 ---
- .../microchip/lan966x/lan966x_vcap_impl.c     | 21 ++++----------
- .../microchip/sparx5/sparx5_vcap_debugfs.c    |  2 +-
- .../microchip/sparx5/sparx5_vcap_impl.c       | 29 ++++---------------
- .../net/ethernet/microchip/vcap/vcap_api.c    |  6 +---
- .../net/ethernet/microchip/vcap/vcap_api.h    |  5 ----
- .../microchip/vcap/vcap_api_debugfs_kunit.c   |  9 +-----
- .../ethernet/microchip/vcap/vcap_api_kunit.c  |  9 +-----
- 7 files changed, 16 insertions(+), 65 deletions(-)
+ .../net/ethernet/microchip/vcap/vcap_api.c    | 243 ++++++++++--------
+ 1 file changed, 134 insertions(+), 109 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_vcap_impl.c b/drivers/net/ethernet/microchip/lan966x/lan966x_vcap_impl.c
-index a54c0426a35f..76a9fb113f50 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_vcap_impl.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_vcap_impl.c
-@@ -390,20 +390,6 @@ static int lan966x_vcap_port_info(struct net_device *dev,
- 	return 0;
- }
- 
--static int lan966x_vcap_enable(struct net_device *dev,
--			       struct vcap_admin *admin,
--			       bool enable)
--{
--	struct lan966x_port *port = netdev_priv(dev);
--	struct lan966x *lan966x = port->lan966x;
--
--	lan_rmw(ANA_VCAP_S2_CFG_ENA_SET(enable),
--		ANA_VCAP_S2_CFG_ENA,
--		lan966x, ANA_VCAP_S2_CFG(port->chip_port));
--
--	return 0;
--}
--
- static struct vcap_operations lan966x_vcap_ops = {
- 	.validate_keyset = lan966x_vcap_validate_keyset,
- 	.add_default_fields = lan966x_vcap_add_default_fields,
-@@ -414,7 +400,6 @@ static struct vcap_operations lan966x_vcap_ops = {
- 	.update = lan966x_vcap_update,
- 	.move = lan966x_vcap_move,
- 	.port_info = lan966x_vcap_port_info,
--	.enable = lan966x_vcap_enable,
- };
- 
- static void lan966x_vcap_admin_free(struct vcap_admin *admin)
-@@ -521,6 +506,12 @@ int lan966x_vcap_init(struct lan966x *lan966x)
- 		list_add_tail(&admin->list, &ctrl->list);
- 	}
- 
-+	for (int p = 0; p < lan966x->num_phys_ports; ++p)
-+		if (lan966x->ports[p])
-+			lan_rmw(ANA_VCAP_S2_CFG_ENA_SET(true),
-+				ANA_VCAP_S2_CFG_ENA, lan966x,
-+				ANA_VCAP_S2_CFG(lan966x->ports[p]->chip_port));
-+
- 	lan966x->vcap_ctrl = ctrl;
- 
- 	return 0;
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_debugfs.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_debugfs.c
-index b91e05ffe2f4..c9423adc92ce 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_debugfs.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_debugfs.c
-@@ -29,7 +29,7 @@ static void sparx5_vcap_port_keys(struct sparx5 *sparx5,
- 		/* Get lookup state */
- 		value = spx5_rd(sparx5, ANA_ACL_VCAP_S2_CFG(port->portno));
- 		out->prf(out->dst, "\n      state: ");
--		if (ANA_ACL_VCAP_S2_CFG_SEC_ENA_GET(value))
-+		if (ANA_ACL_VCAP_S2_CFG_SEC_ENA_GET(value) & BIT(lookup))
- 			out->prf(out->dst, "on");
- 		else
- 			out->prf(out->dst, "off");
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
-index a0c126ba9a87..0d4b40997bb4 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
-@@ -510,28 +510,6 @@ static void sparx5_vcap_move(struct net_device *ndev, struct vcap_admin *admin,
- 	sparx5_vcap_wait_super_update(sparx5);
- }
- 
--/* Enable all lookups in the VCAP instance */
--static int sparx5_vcap_enable(struct net_device *ndev,
--			      struct vcap_admin *admin,
--			      bool enable)
--{
--	struct sparx5_port *port = netdev_priv(ndev);
--	struct sparx5 *sparx5;
--	int portno;
--
--	sparx5 = port->sparx5;
--	portno = port->portno;
--
--	/* For now we only consider IS2 */
--	if (enable)
--		spx5_wr(ANA_ACL_VCAP_S2_CFG_SEC_ENA_SET(0xf), sparx5,
--			ANA_ACL_VCAP_S2_CFG(portno));
--	else
--		spx5_wr(ANA_ACL_VCAP_S2_CFG_SEC_ENA_SET(0), sparx5,
--			ANA_ACL_VCAP_S2_CFG(portno));
--	return 0;
--}
--
- /* API callback operations: only IS2 is supported for now */
- static struct vcap_operations sparx5_vcap_ops = {
- 	.validate_keyset = sparx5_vcap_validate_keyset,
-@@ -543,7 +521,6 @@ static struct vcap_operations sparx5_vcap_ops = {
- 	.update = sparx5_vcap_update,
- 	.move = sparx5_vcap_move,
- 	.port_info = sparx5_port_info,
--	.enable = sparx5_vcap_enable,
- };
- 
- /* Enable lookups per port and set the keyset generation: only IS2 for now */
-@@ -568,6 +545,12 @@ static void sparx5_vcap_port_key_selection(struct sparx5 *sparx5,
- 				ANA_ACL_VCAP_S2_KEY_SEL(portno, lookup));
- 		}
- 	}
-+	/* IS2 lookups are in bit 0:3 */
-+	for (portno = 0; portno < SPX5_PORTS; ++portno)
-+		spx5_rmw(ANA_ACL_VCAP_S2_CFG_SEC_ENA_SET(0xf),
-+			 ANA_ACL_VCAP_S2_CFG_SEC_ENA,
-+			 sparx5,
-+			 ANA_ACL_VCAP_S2_CFG(portno));
- }
- 
- /* Disable lookups per port and set the keyset generation: only IS2 for now */
 diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-index 8bbbd1b0b552..b597008399ea 100644
+index b597008399ea..a0fddd8744d3 100644
 --- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
 +++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-@@ -738,7 +738,7 @@ int vcap_api_check(struct vcap_control *ctrl)
- 	    !ctrl->ops->add_default_fields || !ctrl->ops->cache_erase ||
- 	    !ctrl->ops->cache_write || !ctrl->ops->cache_read ||
- 	    !ctrl->ops->init || !ctrl->ops->update || !ctrl->ops->move ||
--	    !ctrl->ops->port_info || !ctrl->ops->enable) {
-+	    !ctrl->ops->port_info) {
- 		pr_err("%s:%d: client operations are missing\n",
- 		       __func__, __LINE__);
- 		return -ENOENT;
-@@ -2656,10 +2656,6 @@ int vcap_enable_lookups(struct vcap_control *vctrl, struct net_device *ndev,
- 	if (admin->vinst || chain_id > admin->first_cid)
- 		return -EFAULT;
+@@ -508,10 +508,133 @@ static void vcap_encode_keyfield_typegroups(struct vcap_control *vctrl,
+ 	vcap_encode_typegroups(cache->maskstream, sw_width, tgt, true);
+ }
  
--	err = vctrl->ops->enable(ndev, admin, enable);
--	if (err)
--		return err;
++/* Copy data from src to dst but reverse the data in chunks of 32bits.
++ * For example if src is 00:11:22:33:44:55 where 55 is LSB the dst will
++ * have the value 22:33:44:55:00:11.
++ */
++static void vcap_copy_to_w32be(u8 *dst, const u8 *src, int size)
++{
++	for (int idx = 0; idx < size; ++idx) {
++		int first_byte_index = 0;
++		int nidx;
++
++		first_byte_index = size - (((idx >> 2) + 1) << 2);
++		if (first_byte_index < 0)
++			first_byte_index = 0;
++		nidx = idx + first_byte_index - (idx & ~0x3);
++		dst[nidx] = src[idx];
++	}
++}
++
++static void
++vcap_copy_from_client_keyfield(struct vcap_rule *rule,
++			       struct vcap_client_keyfield *dst,
++			       const struct vcap_client_keyfield *src)
++{
++	struct vcap_rule_internal *ri = to_intrule(rule);
++	const struct vcap_client_keyfield_data *sdata;
++	struct vcap_client_keyfield_data *ddata;
++	int size;
++
++	dst->ctrl.type = src->ctrl.type;
++	dst->ctrl.key = src->ctrl.key;
++	INIT_LIST_HEAD(&dst->ctrl.list);
++	sdata = &src->data;
++	ddata = &dst->data;
++
++	if (!ri->admin->w32be) {
++		memcpy(ddata, sdata, sizeof(dst->data));
++		return;
++	}
++
++	size = keyfield_size_table[dst->ctrl.type] / 2;
++
++	switch (dst->ctrl.type) {
++	case VCAP_FIELD_BIT:
++	case VCAP_FIELD_U32:
++		memcpy(ddata, sdata, sizeof(dst->data));
++		break;
++	case VCAP_FIELD_U48:
++		vcap_copy_to_w32be(ddata->u48.value, src->data.u48.value, size);
++		vcap_copy_to_w32be(ddata->u48.mask,  src->data.u48.mask, size);
++		break;
++	case VCAP_FIELD_U56:
++		vcap_copy_to_w32be(ddata->u56.value, sdata->u56.value, size);
++		vcap_copy_to_w32be(ddata->u56.mask,  sdata->u56.mask, size);
++		break;
++	case VCAP_FIELD_U64:
++		vcap_copy_to_w32be(ddata->u64.value, sdata->u64.value, size);
++		vcap_copy_to_w32be(ddata->u64.mask,  sdata->u64.mask, size);
++		break;
++	case VCAP_FIELD_U72:
++		vcap_copy_to_w32be(ddata->u72.value, sdata->u72.value, size);
++		vcap_copy_to_w32be(ddata->u72.mask,  sdata->u72.mask, size);
++		break;
++	case VCAP_FIELD_U112:
++		vcap_copy_to_w32be(ddata->u112.value, sdata->u112.value, size);
++		vcap_copy_to_w32be(ddata->u112.mask,  sdata->u112.mask, size);
++		break;
++	case VCAP_FIELD_U128:
++		vcap_copy_to_w32be(ddata->u128.value, sdata->u128.value, size);
++		vcap_copy_to_w32be(ddata->u128.mask,  sdata->u128.mask, size);
++		break;
++	}
++}
++
++static void
++vcap_copy_from_client_actionfield(struct vcap_rule *rule,
++				  struct vcap_client_actionfield *dst,
++				  const struct vcap_client_actionfield *src)
++{
++	struct vcap_rule_internal *ri = to_intrule(rule);
++	const struct vcap_client_actionfield_data *sdata;
++	struct vcap_client_actionfield_data *ddata;
++	int size;
++
++	dst->ctrl.type = src->ctrl.type;
++	dst->ctrl.action = src->ctrl.action;
++	INIT_LIST_HEAD(&dst->ctrl.list);
++	sdata = &src->data;
++	ddata = &dst->data;
++
++	if (!ri->admin->w32be) {
++		memcpy(ddata, sdata, sizeof(dst->data));
++		return;
++	}
++
++	size = actionfield_size_table[dst->ctrl.type];
++
++	switch (dst->ctrl.type) {
++	case VCAP_FIELD_BIT:
++	case VCAP_FIELD_U32:
++		memcpy(ddata, sdata, sizeof(dst->data));
++		break;
++	case VCAP_FIELD_U48:
++		vcap_copy_to_w32be(ddata->u48.value, sdata->u48.value, size);
++		break;
++	case VCAP_FIELD_U56:
++		vcap_copy_to_w32be(ddata->u56.value, sdata->u56.value, size);
++		break;
++	case VCAP_FIELD_U64:
++		vcap_copy_to_w32be(ddata->u64.value, sdata->u64.value, size);
++		break;
++	case VCAP_FIELD_U72:
++		vcap_copy_to_w32be(ddata->u72.value, sdata->u72.value, size);
++		break;
++	case VCAP_FIELD_U112:
++		vcap_copy_to_w32be(ddata->u112.value, sdata->u112.value, size);
++		break;
++	case VCAP_FIELD_U128:
++		vcap_copy_to_w32be(ddata->u128.value, sdata->u128.value, size);
++		break;
++	}
++}
++
+ static int vcap_encode_rule_keyset(struct vcap_rule_internal *ri)
+ {
+ 	const struct vcap_client_keyfield *ckf;
+ 	const struct vcap_typegroup *tg_table;
++	struct vcap_client_keyfield tempkf;
+ 	const struct vcap_field *kf_table;
+ 	int keyset_size;
+ 
+@@ -552,7 +675,9 @@ static int vcap_encode_rule_keyset(struct vcap_rule_internal *ri)
+ 			       __func__, __LINE__, ckf->ctrl.key);
+ 			return -EINVAL;
+ 		}
+-		vcap_encode_keyfield(ri, ckf, &kf_table[ckf->ctrl.key], tg_table);
++		vcap_copy_from_client_keyfield(&ri->data, &tempkf, ckf);
++		vcap_encode_keyfield(ri, &tempkf, &kf_table[ckf->ctrl.key],
++				     tg_table);
+ 	}
+ 	/* Add typegroup bits to the key/mask bitstreams */
+ 	vcap_encode_keyfield_typegroups(ri->vctrl, ri, tg_table);
+@@ -667,6 +792,7 @@ static int vcap_encode_rule_actionset(struct vcap_rule_internal *ri)
+ {
+ 	const struct vcap_client_actionfield *caf;
+ 	const struct vcap_typegroup *tg_table;
++	struct vcap_client_actionfield tempaf;
+ 	const struct vcap_field *af_table;
+ 	int actionset_size;
+ 
+@@ -707,8 +833,9 @@ static int vcap_encode_rule_actionset(struct vcap_rule_internal *ri)
+ 			       __func__, __LINE__, caf->ctrl.action);
+ 			return -EINVAL;
+ 		}
+-		vcap_encode_actionfield(ri, caf, &af_table[caf->ctrl.action],
+-					tg_table);
++		vcap_copy_from_client_actionfield(&ri->data, &tempaf, caf);
++		vcap_encode_actionfield(ri, &tempaf,
++					&af_table[caf->ctrl.action], tg_table);
+ 	}
+ 	/* Add typegroup bits to the entry bitstreams */
+ 	vcap_encode_actionfield_typegroups(ri, tg_table);
+@@ -2142,69 +2269,6 @@ const struct vcap_field *vcap_lookup_keyfield(struct vcap_rule *rule,
+ }
+ EXPORT_SYMBOL_GPL(vcap_lookup_keyfield);
+ 
+-/* Copy data from src to dst but reverse the data in chunks of 32bits.
+- * For example if src is 00:11:22:33:44:55 where 55 is LSB the dst will
+- * have the value 22:33:44:55:00:11.
+- */
+-static void vcap_copy_to_w32be(u8 *dst, u8 *src, int size)
+-{
+-	for (int idx = 0; idx < size; ++idx) {
+-		int first_byte_index = 0;
+-		int nidx;
 -
- 	if (chain_id) {
- 		if (vcap_is_enabled(admin, ndev, cookie))
- 			return -EADDRINUSE;
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.h b/drivers/net/ethernet/microchip/vcap/vcap_api.h
-index 689c7270f2a8..c61f13a65030 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api.h
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api.h
-@@ -259,11 +259,6 @@ struct vcap_operations {
- 		(struct net_device *ndev,
- 		 struct vcap_admin *admin,
- 		 struct vcap_output_print *out);
--	/* enable/disable the lookups in a vcap instance */
--	int (*enable)
--		(struct net_device *ndev,
--		 struct vcap_admin *admin,
--		 bool enable);
- };
+-		first_byte_index = size - (((idx >> 2) + 1) << 2);
+-		if (first_byte_index < 0)
+-			first_byte_index = 0;
+-		nidx = idx + first_byte_index - (idx & ~0x3);
+-		dst[nidx] = src[idx];
+-	}
+-}
+-
+-static void vcap_copy_from_client_keyfield(struct vcap_rule *rule,
+-					   struct vcap_client_keyfield *field,
+-					   struct vcap_client_keyfield_data *data)
+-{
+-	struct vcap_rule_internal *ri = to_intrule(rule);
+-	int size;
+-
+-	if (!ri->admin->w32be) {
+-		memcpy(&field->data, data, sizeof(field->data));
+-		return;
+-	}
+-
+-	size = keyfield_size_table[field->ctrl.type] / 2;
+-	switch (field->ctrl.type) {
+-	case VCAP_FIELD_BIT:
+-	case VCAP_FIELD_U32:
+-		memcpy(&field->data, data, sizeof(field->data));
+-		break;
+-	case VCAP_FIELD_U48:
+-		vcap_copy_to_w32be(field->data.u48.value, data->u48.value, size);
+-		vcap_copy_to_w32be(field->data.u48.mask,  data->u48.mask, size);
+-		break;
+-	case VCAP_FIELD_U56:
+-		vcap_copy_to_w32be(field->data.u56.value, data->u56.value, size);
+-		vcap_copy_to_w32be(field->data.u56.mask,  data->u56.mask, size);
+-		break;
+-	case VCAP_FIELD_U64:
+-		vcap_copy_to_w32be(field->data.u64.value, data->u64.value, size);
+-		vcap_copy_to_w32be(field->data.u64.mask,  data->u64.mask, size);
+-		break;
+-	case VCAP_FIELD_U72:
+-		vcap_copy_to_w32be(field->data.u72.value, data->u72.value, size);
+-		vcap_copy_to_w32be(field->data.u72.mask,  data->u72.mask, size);
+-		break;
+-	case VCAP_FIELD_U112:
+-		vcap_copy_to_w32be(field->data.u112.value, data->u112.value, size);
+-		vcap_copy_to_w32be(field->data.u112.mask,  data->u112.mask, size);
+-		break;
+-	case VCAP_FIELD_U128:
+-		vcap_copy_to_w32be(field->data.u128.value, data->u128.value, size);
+-		vcap_copy_to_w32be(field->data.u128.mask,  data->u128.mask, size);
+-		break;
+-	}
+-}
+-
+ /* Check if the keyfield is already in the rule */
+ static bool vcap_keyfield_unique(struct vcap_rule *rule,
+ 				 enum vcap_key_field key)
+@@ -2262,9 +2326,9 @@ static int vcap_rule_add_key(struct vcap_rule *rule,
+ 	field = kzalloc(sizeof(*field), GFP_KERNEL);
+ 	if (!field)
+ 		return -ENOMEM;
++	memcpy(&field->data, data, sizeof(field->data));
+ 	field->ctrl.key = key;
+ 	field->ctrl.type = ftype;
+-	vcap_copy_from_client_keyfield(rule, field, data);
+ 	list_add_tail(&field->ctrl.list, &rule->keyfields);
+ 	return 0;
+ }
+@@ -2372,45 +2436,6 @@ vcap_find_actionfield(struct vcap_rule *rule, enum vcap_action_field act)
+ 	return NULL;
+ }
  
- /* VCAP API Client control interface */
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
-index cf594668d5d9..bef0b28a4a50 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
-@@ -221,13 +221,6 @@ static int vcap_test_port_info(struct net_device *ndev,
+-static void vcap_copy_from_client_actionfield(struct vcap_rule *rule,
+-					      struct vcap_client_actionfield *field,
+-					      struct vcap_client_actionfield_data *data)
+-{
+-	struct vcap_rule_internal *ri = to_intrule(rule);
+-	int size;
+-
+-	if (!ri->admin->w32be) {
+-		memcpy(&field->data, data, sizeof(field->data));
+-		return;
+-	}
+-
+-	size = actionfield_size_table[field->ctrl.type];
+-	switch (field->ctrl.type) {
+-	case VCAP_FIELD_BIT:
+-	case VCAP_FIELD_U32:
+-		memcpy(&field->data, data, sizeof(field->data));
+-		break;
+-	case VCAP_FIELD_U48:
+-		vcap_copy_to_w32be(field->data.u48.value, data->u48.value, size);
+-		break;
+-	case VCAP_FIELD_U56:
+-		vcap_copy_to_w32be(field->data.u56.value, data->u56.value, size);
+-		break;
+-	case VCAP_FIELD_U64:
+-		vcap_copy_to_w32be(field->data.u64.value, data->u64.value, size);
+-		break;
+-	case VCAP_FIELD_U72:
+-		vcap_copy_to_w32be(field->data.u72.value, data->u72.value, size);
+-		break;
+-	case VCAP_FIELD_U112:
+-		vcap_copy_to_w32be(field->data.u112.value, data->u112.value, size);
+-		break;
+-	case VCAP_FIELD_U128:
+-		vcap_copy_to_w32be(field->data.u128.value, data->u128.value, size);
+-		break;
+-	}
+-}
+-
+ /* Check if the actionfield is already in the rule */
+ static bool vcap_actionfield_unique(struct vcap_rule *rule,
+ 				    enum vcap_action_field act)
+@@ -2468,9 +2493,9 @@ static int vcap_rule_add_action(struct vcap_rule *rule,
+ 	field = kzalloc(sizeof(*field), GFP_KERNEL);
+ 	if (!field)
+ 		return -ENOMEM;
++	memcpy(&field->data, data, sizeof(field->data));
+ 	field->ctrl.action = action;
+ 	field->ctrl.type = ftype;
+-	vcap_copy_from_client_actionfield(rule, field, data);
+ 	list_add_tail(&field->ctrl.list, &rule->actionfields);
+ 	return 0;
+ }
+@@ -2747,7 +2772,7 @@ static int vcap_rule_mod_key(struct vcap_rule *rule,
+ 	field = vcap_find_keyfield(rule, key);
+ 	if (!field)
+ 		return vcap_rule_add_key(rule, key, ftype, data);
+-	vcap_copy_from_client_keyfield(rule, field, data);
++	memcpy(&field->data, data, sizeof(field->data));
  	return 0;
  }
  
--static int vcap_test_enable(struct net_device *ndev,
--			    struct vcap_admin *admin,
--			    bool enable)
--{
--	return 0;
--}
--
- static struct vcap_operations test_callbacks = {
- 	.validate_keyset = test_val_keyset,
- 	.add_default_fields = test_add_def_fields,
-@@ -238,7 +231,6 @@ static struct vcap_operations test_callbacks = {
- 	.update = test_cache_update,
- 	.move = test_cache_move,
- 	.port_info = vcap_test_port_info,
--	.enable = vcap_test_enable,
- };
- 
- static struct vcap_control test_vctrl = {
-@@ -253,6 +245,7 @@ static void vcap_test_api_init(struct vcap_admin *admin)
- 	INIT_LIST_HEAD(&test_vctrl.list);
- 	INIT_LIST_HEAD(&admin->list);
- 	INIT_LIST_HEAD(&admin->rules);
-+	INIT_LIST_HEAD(&admin->enabled);
- 	list_add_tail(&admin->list, &test_vctrl.list);
- 	memset(test_updateaddr, 0, sizeof(test_updateaddr));
- 	test_updateaddridx = 0;
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-index 944de5cb9114..cc6a62338162 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-@@ -211,13 +211,6 @@ static int vcap_test_port_info(struct net_device *ndev,
+@@ -2773,7 +2798,7 @@ static int vcap_rule_mod_action(struct vcap_rule *rule,
+ 	field = vcap_find_actionfield(rule, action);
+ 	if (!field)
+ 		return vcap_rule_add_action(rule, action, ftype, data);
+-	vcap_copy_from_client_actionfield(rule, field, data);
++	memcpy(&field->data, data, sizeof(field->data));
  	return 0;
  }
  
--static int vcap_test_enable(struct net_device *ndev,
--			    struct vcap_admin *admin,
--			    bool enable)
--{
--	return 0;
--}
--
- static struct vcap_operations test_callbacks = {
- 	.validate_keyset = test_val_keyset,
- 	.add_default_fields = test_add_def_fields,
-@@ -228,7 +221,6 @@ static struct vcap_operations test_callbacks = {
- 	.update = test_cache_update,
- 	.move = test_cache_move,
- 	.port_info = vcap_test_port_info,
--	.enable = vcap_test_enable,
- };
- 
- static struct vcap_control test_vctrl = {
-@@ -243,6 +235,7 @@ static void vcap_test_api_init(struct vcap_admin *admin)
- 	INIT_LIST_HEAD(&test_vctrl.list);
- 	INIT_LIST_HEAD(&admin->list);
- 	INIT_LIST_HEAD(&admin->rules);
-+	INIT_LIST_HEAD(&admin->enabled);
- 	list_add_tail(&admin->list, &test_vctrl.list);
- 	memset(test_updateaddr, 0, sizeof(test_updateaddr));
- 	test_updateaddridx = 0;
 -- 
 2.39.0
 
