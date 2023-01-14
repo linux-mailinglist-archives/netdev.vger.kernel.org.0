@@ -2,61 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4083D66A74A
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 00:57:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 831AC66A761
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 01:09:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231326AbjAMX5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 18:57:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48618 "EHLO
+        id S231241AbjANAJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 19:09:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231224AbjAMX5n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 18:57:43 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB277466F
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 15:57:41 -0800 (PST)
+        with ESMTP id S230356AbjANAJX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 19:09:23 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F148D5F2
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 16:09:21 -0800 (PST)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id DE8385C6F0;
-        Fri, 13 Jan 2023 23:57:38 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 55B9E34AB8;
+        Sat, 14 Jan 2023 00:09:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1673654258; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1673654960; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=n/Vx8UJUHuHTIzKG7+ocWPm84VMGhwGCVMYDbmIXrJs=;
-        b=gHr/m2RduLJ/BDvGk7nspPc3o7JJZuiEziDKm/Jzc+HUcLYQnqNoKvaOoSv5/MEnyehcgc
-        0QRvy5CIEehreImVYhYq+lQEf6tq/Fjlv+4NuQhirjjI8kwmP+1y2QCdK2Bk0m8kRKK3Ig
-        WydPl8mKdQffpCG3GZLzwHExQox/pQ4=
+        bh=PEZiHvi1g7h0Tro9i8mi/dHTTw2Sc5zFielHZoKTaFY=;
+        b=sEdZovnRpuQE2RW6q/ii3oKmACbsY0/+8shkH590hiPVKL0V3ev0C+d4PZxKsjPD9rOxVq
+        1RsnohX7Kw26ZX52AsrgKSvBuGoVztlEGMpvlAjUFTBiBgLSe90Sc0EqEy6+HV1EePP1IH
+        FJ7bYmgTALBVyho38TxBlDqV0Tq1CpA=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1673654258;
+        s=susede2_ed25519; t=1673654960;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=n/Vx8UJUHuHTIzKG7+ocWPm84VMGhwGCVMYDbmIXrJs=;
-        b=qYUCEZTKUk6syGfxpGPMFSexTVWC60SKF8gDA8P6ERMi7lS5uTMJ3GlF6nMgqlSfF4VucK
-        8eCLhfGIce9AB3BA==
+        bh=PEZiHvi1g7h0Tro9i8mi/dHTTw2Sc5zFielHZoKTaFY=;
+        b=m8FlpiQD3WBBwJHvSQbcOdwnR2wbs3Mw6rFiljTu083aveycVUdeCwCYN89QrpLd+vzpYB
+        9CRuFv9uDUE0Z4AA==
 Received: from lion.mk-sys.cz (unknown [10.100.200.14])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id D21462C141;
-        Fri, 13 Jan 2023 23:57:38 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 4A1E02C141;
+        Sat, 14 Jan 2023 00:09:20 +0000 (UTC)
 Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id ACAB860330; Sat, 14 Jan 2023 00:57:38 +0100 (CET)
-Date:   Sat, 14 Jan 2023 00:57:38 +0100
+        id 1FD2B60330; Sat, 14 Jan 2023 01:09:20 +0100 (CET)
+Date:   Sat, 14 Jan 2023 01:09:20 +0100
 From:   Michal Kubecek <mkubecek@suse.cz>
 To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     netdev@vger.kernel.org, Markus Mayer <mmayer@broadcom.com>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH ethtool 1/3] misc: Fix build with kernel headers < v4.11
-Message-ID: <20230113235738.wyaf3rg63olkwixw@lion.mk-sys.cz>
+Subject: Re: [PATCH ethtool 2/3] netlink: Fix maybe uninitialized 'meters'
+ variable
+Message-ID: <20230114000920.izp4tzfcn4cbciec@lion.mk-sys.cz>
 References: <20230113233148.235543-1-f.fainelli@gmail.com>
- <20230113233148.235543-2-f.fainelli@gmail.com>
+ <20230113233148.235543-3-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="2vyyi26fe2shrq3h"
+        protocol="application/pgp-signature"; boundary="osmy37lkpwcoj5ac"
 Content-Disposition: inline
-In-Reply-To: <20230113233148.235543-2-f.fainelli@gmail.com>
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+In-Reply-To: <20230113233148.235543-3-f.fainelli@gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_SOFTFAIL autolearn=ham autolearn_force=no version=3.4.6
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -64,57 +65,58 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---2vyyi26fe2shrq3h
+--osmy37lkpwcoj5ac
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jan 13, 2023 at 03:31:46PM -0800, Florian Fainelli wrote:
-> Not all toolchain kernel headers may contain upstream commit
-> 2618be7dccf8739b89e1906b64bd8d551af351e6 ("uapi: fix linux/if.h
-> userspace compilation errors") which is included in v4.11 and onwards.
-> Err on the side of caution by including sys/socket.h ahead of including
-> linux/if.h.
+On Fri, Jan 13, 2023 at 03:31:47PM -0800, Florian Fainelli wrote:
+> GCC12 warns that 'meters' may be uninitialized, initialize it
+> accordingly.
 >=20
-> Fixes: 1fa60003a8b8 ("misc: header includes cleanup")
-> Reported-by: Markus Mayer <mmayer@broadcom.com>
+> Fixes: 9561db9b76f4 ("Add cable test TDR support")
 > Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 > ---
->  internal.h | 1 +
->  1 file changed, 1 insertion(+)
+>  netlink/parser.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >=20
-> diff --git a/internal.h b/internal.h
-> index b80f77afa4c0..f7aaaf5229f4 100644
-> --- a/internal.h
-> +++ b/internal.h
-> @@ -21,6 +21,7 @@
->  #include <unistd.h>
->  #include <endian.h>
->  #include <sys/ioctl.h>
-> +#include <sys/socket.h>
->  #include <linux/if.h>
+> diff --git a/netlink/parser.c b/netlink/parser.c
+> index f982f229a040..6f863610a490 100644
+> --- a/netlink/parser.c
+> +++ b/netlink/parser.c
+> @@ -237,7 +237,7 @@ int nl_parse_direct_m2cm(struct nl_context *nlctx, ui=
+nt16_t type,
+>  			 struct nl_msg_buff *msgbuff, void *dest)
+>  {
+>  	const char *arg =3D *nlctx->argp;
+> -	float meters;
+> +	float meters =3D 0.0;
+>  	uint32_t cm;
+>  	int ret;
 > =20
->  #include "json_writer.h"
 
-No objection but I wonder if it wouldn't make sense to add linux/if.h to
-the header copies in uapi/ instead as then we could also drop the
-fallback definition of ALTIFNAMSIZ and perhaps more similar hacks.
+No problem here either but it's quite surprising as I check build with
+gcc versions 7 and 11-13 (10-12 until recently) for each new commit and
+I never saw this warning. As the warning is actually incorrect (either
+parse_float() returns an error and we bail out or it assigns a value to
+meters), it may be a gcc issue that was fixed in a later version. But
+initializing the variable does no harm so let's do it.
 
 Michal
 
---2vyyi26fe2shrq3h
+--osmy37lkpwcoj5ac
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmPB7+0ACgkQ538sG/LR
-dpUH0gf/dzEcNgyveKQXD4iFgRj+CHxTNPexKV49WlXd/Vm6IDqk1sm+YXfFzx5t
-FOc/sKttEOSN6znfl+c2Kdkj7I8dwgh7Lr+/qIT2zN/hkd7MfdOJBmVH6uLsi80D
-nTS3BwSHSz3Bc7hNov4FTlKyAwJZMeLrMK3xhscHy5mtiD1sLPlnCoP+kpRbu50V
-oG1kKTkhwT9sdEC8OzDMYUbwOlM1mvxR16ZJ6sU7Ki/i4iSETY8wrW3NcDbg5PHq
-tC3TQCyfXkQLPmsZBX+IJVDYRytZ8SiNd0/jsEOnwfDONokQHp0gHUAW49ubs+jH
-BN45B1ijwuL6oATGcTXayKXHwDEicw==
-=il/w
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmPB8qwACgkQ538sG/LR
+dpVq1wf7BG3DU3GWhSMJF2SlsgjKO1rFjnmB0ljEqs/X+9xjrdzQGLu+i3cZg/R3
+UmOfCZeH7fDR5a1tKBV7jbE8dLVKG391xLX/Nmt9Q1LRXvqGNOg37+pzQUkVMQER
+x89RrQSONmsYk1DmIDTrU1R7NIs7SjyARG4mdMX8esRJRN5ga5nzcop96l8PgHBL
+bfuGFXBOkopTyGVgB99xWZoxMSglXn57hvF0w5rK3W9JnTpCJayPZ7lCXVhp8paR
+iy4uSzhM4llwA7wvEgpVVmynXWMuHIP1ZXtxQyVYAdOfvXLIQ29/uLReF1TeBigC
+dw1OVn4oVb3G02hAf8erC9R8/+zqRQ==
+=jY2I
 -----END PGP SIGNATURE-----
 
---2vyyi26fe2shrq3h--
+--osmy37lkpwcoj5ac--
