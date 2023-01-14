@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45D9B66ACC3
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 18:02:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F39ED66ACC4
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 18:02:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230269AbjANRB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Jan 2023 12:01:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
+        id S230095AbjANRCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Jan 2023 12:02:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230265AbjANRBz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 12:01:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DDFEB747
-        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 09:01:50 -0800 (PST)
+        with ESMTP id S230267AbjANRB4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 12:01:56 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094F15BAB
+        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 09:01:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 075B6B808C2
-        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 17:01:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25455C433D2;
-        Sat, 14 Jan 2023 17:01:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C79F9B808C2
+        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 17:01:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7162C433D2;
+        Sat, 14 Jan 2023 17:01:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673715707;
-        bh=zevNKp2vdrUmHCbN5J+IRKScfBIAsEmbkqKwfJMFFrg=;
+        s=k20201202; t=1673715711;
+        bh=hBQiA1JIv0iPAes21MGsmY3WSTZN9Hv50q5oeJnV1GA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o4oeYM2wpMgutTPkb42Mu+oPWn4NQNeu54bl8WXJAvyn+JJ5gC1jcjWajAASGevSF
-         FO5ce7ugS0yXLd7OkOYHDUHR+9+504ANl/Fu9ZkRztOYXq12CJeTCBLbtRkpVQzznx
-         D8Dwsq/5uHZ4WmralN+QaZIJKdczQo2MmsWCscCBxNRVXtxATs/SV3EamnpG0FeL3Y
-         0oef7xrnpmygc/PU3BItHe6hTljzdv7/qrdS191QbCYRuApvuJIqc6QAVFyEKBvmgE
-         CimokxDq571ScQsVceEUmtoRbhbZhEDdLVR3QZkupyiK90MISvc7q6rrCkl9693sj6
-         UolPw/nMeuHng==
+        b=SqH1rwF+ko74n0j351jQzr0C53mWjyomY8yu31J4W7/YI1hIn1kmP1ULAqwoARq70
+         vkNay8ekAkYlSSYtBf2xJcm/qSoIna21F9f2xRBIEErIgj0h2KK9HGVQRp5LoQNUEO
+         PTW8/NV4vsoCYLNN5ll2S6zkFu/BAhIx4p827cz2dc9TUzSZrThpvsIqkKJ6BLxlk7
+         6ITgP1GEU98ly9j3jPwojZDmyzYp7KIYK84VqCaa5hXd7tndF3xCU4o40sE5snb9Bu
+         2taPphY3Q+IJJK/ZAm2hQ9K9lvAh4zMTNLmkdLFXTyrgHXTFPZBhmC9+3mAMLtHh2H
+         TRUhHKNtNsmkQ==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
@@ -38,9 +38,9 @@ Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         john@phrozen.org, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
         sujuan.chen@mediatek.com, daniel@makrotopia.org, leon@kernel.org,
         alexander.duyck@gmail.com
-Subject: [PATCH v6 net-next 2/5] net: ethernet: mtk_eth_soc: introduce mtk_hw_warm_reset support
-Date:   Sat, 14 Jan 2023 18:01:29 +0100
-Message-Id: <b9c45ec0e58c8642b0a84d04f5aa4d2dc8ffd9bc.1673715298.git.lorenzo@kernel.org>
+Subject: [PATCH v6 net-next 3/5] net: ethernet: mtk_eth_soc: align reset procedure to vendor sdk
+Date:   Sat, 14 Jan 2023 18:01:30 +0100
+Message-Id: <a976fa3b99bf3021530d51d62e35211747c4c7bd.1673715298.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <cover.1673715298.git.lorenzo@kernel.org>
 References: <cover.1673715298.git.lorenzo@kernel.org>
@@ -55,9 +55,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce mtk_hw_warm_reset utility routine. This is a preliminary patch
-to align reset procedure to vendor sdk and avoid to power down the chip
-during hw reset.
+Avoid to power-down the ethernet chip during hw reset and align reset
+procedure to vendor sdk.
 
 Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 Tested-by: Daniel Golle <daniel@makrotopia.org>
@@ -65,101 +64,269 @@ Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
 Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 60 +++++++++++++++++++--
- 1 file changed, 56 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c  | 92 +++++++++++++++-----
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h  | 12 +++
+ drivers/net/ethernet/mediatek/mtk_ppe.c      | 27 ++++++
+ drivers/net/ethernet/mediatek/mtk_ppe.h      |  1 +
+ drivers/net/ethernet/mediatek/mtk_ppe_regs.h |  6 ++
+ 5 files changed, 115 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index d5ffb8290855..a8b03998b564 100644
+index a8b03998b564..773e2b9e9122 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -3538,7 +3538,54 @@ static void mtk_hw_reset(struct mtk_eth *eth)
- 			     0x3ffffff);
+@@ -3030,14 +3030,29 @@ static void mtk_dma_free(struct mtk_eth *eth)
+ 	kfree(eth->scratch_head);
  }
  
--static int mtk_hw_init(struct mtk_eth *eth)
-+static u32 mtk_hw_reset_read(struct mtk_eth *eth)
++static bool mtk_hw_reset_check(struct mtk_eth *eth)
++{
++	u32 val = mtk_r32(eth, MTK_INT_STATUS2);
++
++	return (val & MTK_FE_INT_FQ_EMPTY) || (val & MTK_FE_INT_RFIFO_UF) ||
++	       (val & MTK_FE_INT_RFIFO_OV) || (val & MTK_FE_INT_TSO_FAIL) ||
++	       (val & MTK_FE_INT_TSO_ALIGN) || (val & MTK_FE_INT_TSO_ILLEGAL);
++}
++
+ static void mtk_tx_timeout(struct net_device *dev, unsigned int txqueue)
+ {
+ 	struct mtk_mac *mac = netdev_priv(dev);
+ 	struct mtk_eth *eth = mac->hw;
+ 
++	if (test_bit(MTK_RESETTING, &eth->state))
++		return;
++
++	if (!mtk_hw_reset_check(eth))
++		return;
++
+ 	eth->netdev[mac->id]->stats.tx_errors++;
+-	netif_err(eth, tx_err, dev,
+-		  "transmit timed out\n");
++	netif_err(eth, tx_err, dev, "transmit timed out\n");
++
+ 	schedule_work(&eth->pending_work);
+ }
+ 
+@@ -3592,15 +3607,17 @@ static int mtk_hw_init(struct mtk_eth *eth, bool reset)
+ 	const struct mtk_reg_map *reg_map = eth->soc->reg_map;
+ 	int i, val, ret;
+ 
+-	if (test_and_set_bit(MTK_HW_INIT, &eth->state))
++	if (!reset && test_and_set_bit(MTK_HW_INIT, &eth->state))
+ 		return 0;
+ 
+-	pm_runtime_enable(eth->dev);
+-	pm_runtime_get_sync(eth->dev);
++	if (!reset) {
++		pm_runtime_enable(eth->dev);
++		pm_runtime_get_sync(eth->dev);
+ 
+-	ret = mtk_clk_enable(eth);
+-	if (ret)
+-		goto err_disable_pm;
++		ret = mtk_clk_enable(eth);
++		if (ret)
++			goto err_disable_pm;
++	}
+ 
+ 	if (eth->ethsys)
+ 		regmap_update_bits(eth->ethsys, ETHSYS_DMA_AG_MAP, dma_mask,
+@@ -3733,8 +3750,10 @@ static int mtk_hw_init(struct mtk_eth *eth, bool reset)
+ 	return 0;
+ 
+ err_disable_pm:
+-	pm_runtime_put_sync(eth->dev);
+-	pm_runtime_disable(eth->dev);
++	if (!reset) {
++		pm_runtime_put_sync(eth->dev);
++		pm_runtime_disable(eth->dev);
++	}
+ 
+ 	return ret;
+ }
+@@ -3813,30 +3832,53 @@ static int mtk_do_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 	return -EOPNOTSUPP;
+ }
+ 
++static void mtk_prepare_for_reset(struct mtk_eth *eth)
 +{
 +	u32 val;
++	int i;
 +
-+	regmap_read(eth->ethsys, ETHSYS_RSTCTRL, &val);
-+	return val;
-+}
-+
-+static void mtk_hw_warm_reset(struct mtk_eth *eth)
-+{
-+	u32 rst_mask, val;
-+
-+	regmap_update_bits(eth->ethsys, ETHSYS_RSTCTRL, RSTCTRL_FE,
-+			   RSTCTRL_FE);
-+	if (readx_poll_timeout_atomic(mtk_hw_reset_read, eth, val,
-+				      val & RSTCTRL_FE, 1, 1000)) {
-+		dev_err(eth->dev, "warm reset failed\n");
-+		mtk_hw_reset(eth);
-+		return;
-+	}
-+
-+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2))
-+		rst_mask = RSTCTRL_ETH | RSTCTRL_PPE0_V2;
-+	else
-+		rst_mask = RSTCTRL_ETH | RSTCTRL_PPE0;
-+
++	/* disabe FE P3 and P4 */
++	val = mtk_r32(eth, MTK_FE_GLO_CFG) | MTK_FE_LINK_DOWN_P3;
 +	if (MTK_HAS_CAPS(eth->soc->caps, MTK_RSTCTRL_PPE1))
-+		rst_mask |= RSTCTRL_PPE1;
++		val |= MTK_FE_LINK_DOWN_P4;
++	mtk_w32(eth, val, MTK_FE_GLO_CFG);
 +
-+	regmap_update_bits(eth->ethsys, ETHSYS_RSTCTRL, rst_mask, rst_mask);
++	/* adjust PPE configurations to prepare for reset */
++	for (i = 0; i < ARRAY_SIZE(eth->ppe); i++)
++		mtk_ppe_prepare_reset(eth->ppe[i]);
 +
-+	udelay(1);
-+	val = mtk_hw_reset_read(eth);
-+	if (!(val & rst_mask))
-+		dev_err(eth->dev, "warm reset stage0 failed %08x (%08x)\n",
-+			val, rst_mask);
++	/* disable NETSYS interrupts */
++	mtk_w32(eth, 0, MTK_FE_INT_ENABLE);
 +
-+	rst_mask |= RSTCTRL_FE;
-+	regmap_update_bits(eth->ethsys, ETHSYS_RSTCTRL, rst_mask, ~rst_mask);
-+
-+	udelay(1);
-+	val = mtk_hw_reset_read(eth);
-+	if (val & rst_mask)
-+		dev_err(eth->dev, "warm reset stage1 failed %08x (%08x)\n",
-+			val, rst_mask);
++	/* force link down GMAC */
++	for (i = 0; i < 2; i++) {
++		val = mtk_r32(eth, MTK_MAC_MCR(i)) & ~MAC_MCR_FORCE_LINK;
++		mtk_w32(eth, val, MTK_MAC_MCR(i));
++	}
 +}
 +
-+static int mtk_hw_init(struct mtk_eth *eth, bool reset)
+ static void mtk_pending_work(struct work_struct *work)
  {
- 	u32 dma_mask = ETHSYS_DMA_AG_MAP_PDMA | ETHSYS_DMA_AG_MAP_QDMA |
- 		       ETHSYS_DMA_AG_MAP_PPE;
-@@ -3577,7 +3624,12 @@ static int mtk_hw_init(struct mtk_eth *eth)
- 		return 0;
- 	}
+ 	struct mtk_eth *eth = container_of(work, struct mtk_eth, pending_work);
+-	int err, i;
+ 	unsigned long restart = 0;
++	u32 val;
++	int i;
  
--	mtk_hw_reset(eth);
-+	msleep(100);
+ 	rtnl_lock();
+-
+-	dev_dbg(eth->dev, "[%s][%d] reset\n", __func__, __LINE__);
+ 	set_bit(MTK_RESETTING, &eth->state);
+ 
++	mtk_prepare_for_reset(eth);
 +
-+	if (reset)
-+		mtk_hw_warm_reset(eth);
-+	else
-+		mtk_hw_reset(eth);
+ 	/* stop all devices to make sure that dma is properly shut down */
+ 	for (i = 0; i < MTK_MAC_COUNT; i++) {
+-		if (!eth->netdev[i])
++		if (!eth->netdev[i] || !netif_running(eth->netdev[i]))
+ 			continue;
++
+ 		mtk_stop(eth->netdev[i]);
+ 		__set_bit(i, &restart);
+ 	}
+-	dev_dbg(eth->dev, "[%s][%d] mtk_stop ends\n", __func__, __LINE__);
  
- 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
- 		/* Set FE to PDMAv2 if necessary */
-@@ -3789,7 +3841,7 @@ static void mtk_pending_work(struct work_struct *work)
+-	/* restart underlying hardware such as power, clock, pin mux
+-	 * and the connected phy
+-	 */
+-	mtk_hw_deinit(eth);
++	usleep_range(15000, 16000);
+ 
  	if (eth->dev->pins)
  		pinctrl_select_state(eth->dev->pins->p,
- 				     eth->dev->pins->default_state);
--	mtk_hw_init(eth);
-+	mtk_hw_init(eth, true);
- 
- 	/* restart DMA and enable IRQs */
+@@ -3847,15 +3889,19 @@ static void mtk_pending_work(struct work_struct *work)
  	for (i = 0; i < MTK_MAC_COUNT; i++) {
-@@ -4418,7 +4470,7 @@ static int mtk_probe(struct platform_device *pdev)
- 	eth->msg_enable = netif_msg_init(mtk_msg_level, MTK_DEFAULT_MSG_ENABLE);
- 	INIT_WORK(&eth->pending_work, mtk_pending_work);
+ 		if (!test_bit(i, &restart))
+ 			continue;
+-		err = mtk_open(eth->netdev[i]);
+-		if (err) {
++
++		if (mtk_open(eth->netdev[i])) {
+ 			netif_alert(eth, ifup, eth->netdev[i],
+-			      "Driver up/down cycle failed, closing device.\n");
++				    "Driver up/down cycle failed\n");
+ 			dev_close(eth->netdev[i]);
+ 		}
+ 	}
  
--	err = mtk_hw_init(eth);
-+	err = mtk_hw_init(eth, false);
- 	if (err)
- 		goto err_wed_exit;
+-	dev_dbg(eth->dev, "[%s][%d] reset done\n", __func__, __LINE__);
++	/* enabe FE P3 and P4 */
++	val = mtk_r32(eth, MTK_FE_GLO_CFG) & ~MTK_FE_LINK_DOWN_P3;
++	if (MTK_HAS_CAPS(eth->soc->caps, MTK_RSTCTRL_PPE1))
++		val &= ~MTK_FE_LINK_DOWN_P4;
++	mtk_w32(eth, val, MTK_FE_GLO_CFG);
  
+ 	clear_bit(MTK_RESETTING, &eth->state);
+ 
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+index 18a50529ce7b..a8066b3ee3ed 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+@@ -77,12 +77,24 @@
+ #define	MTK_HW_LRO_REPLACE_DELTA	1000
+ #define	MTK_HW_LRO_SDL_REMAIN_ROOM	1522
+ 
++/* Frame Engine Global Configuration */
++#define MTK_FE_GLO_CFG		0x00
++#define MTK_FE_LINK_DOWN_P3	BIT(11)
++#define MTK_FE_LINK_DOWN_P4	BIT(12)
++
+ /* Frame Engine Global Reset Register */
+ #define MTK_RST_GL		0x04
+ #define RST_GL_PSE		BIT(0)
+ 
+ /* Frame Engine Interrupt Status Register */
+ #define MTK_INT_STATUS2		0x08
++#define MTK_FE_INT_ENABLE	0x0c
++#define MTK_FE_INT_FQ_EMPTY	BIT(8)
++#define MTK_FE_INT_TSO_FAIL	BIT(12)
++#define MTK_FE_INT_TSO_ILLEGAL	BIT(13)
++#define MTK_FE_INT_TSO_ALIGN	BIT(14)
++#define MTK_FE_INT_RFIFO_OV	BIT(18)
++#define MTK_FE_INT_RFIFO_UF	BIT(19)
+ #define MTK_GDM1_AF		BIT(28)
+ #define MTK_GDM2_AF		BIT(29)
+ 
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
+index 269208a841c7..451a87b1bc20 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
+@@ -730,6 +730,33 @@ int mtk_foe_entry_idle_time(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
+ 	return __mtk_foe_entry_idle_time(ppe, entry->data.ib1);
+ }
+ 
++int mtk_ppe_prepare_reset(struct mtk_ppe *ppe)
++{
++	if (!ppe)
++		return -EINVAL;
++
++	/* disable KA */
++	ppe_clear(ppe, MTK_PPE_TB_CFG, MTK_PPE_TB_CFG_KEEPALIVE);
++	ppe_clear(ppe, MTK_PPE_BIND_LMT1, MTK_PPE_NTU_KEEPALIVE);
++	ppe_w32(ppe, MTK_PPE_KEEPALIVE, 0);
++	usleep_range(10000, 11000);
++
++	/* set KA timer to maximum */
++	ppe_set(ppe, MTK_PPE_BIND_LMT1, MTK_PPE_NTU_KEEPALIVE);
++	ppe_w32(ppe, MTK_PPE_KEEPALIVE, 0xffffffff);
++
++	/* set KA tick select */
++	ppe_set(ppe, MTK_PPE_TB_CFG, MTK_PPE_TB_TICK_SEL);
++	ppe_set(ppe, MTK_PPE_TB_CFG, MTK_PPE_TB_CFG_KEEPALIVE);
++	usleep_range(10000, 11000);
++
++	/* disable scan mode */
++	ppe_clear(ppe, MTK_PPE_TB_CFG, MTK_PPE_TB_CFG_SCAN_MODE);
++	usleep_range(10000, 11000);
++
++	return mtk_ppe_wait_busy(ppe);
++}
++
+ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
+ 			     int version, int index)
+ {
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.h b/drivers/net/ethernet/mediatek/mtk_ppe.h
+index ea64fac1d425..16b02e1d4649 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe.h
++++ b/drivers/net/ethernet/mediatek/mtk_ppe.h
+@@ -309,6 +309,7 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
+ void mtk_ppe_deinit(struct mtk_eth *eth);
+ void mtk_ppe_start(struct mtk_ppe *ppe);
+ int mtk_ppe_stop(struct mtk_ppe *ppe);
++int mtk_ppe_prepare_reset(struct mtk_ppe *ppe);
+ 
+ void __mtk_ppe_check_skb(struct mtk_ppe *ppe, struct sk_buff *skb, u16 hash);
+ 
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_regs.h b/drivers/net/ethernet/mediatek/mtk_ppe_regs.h
+index 59596d823d8b..0fdb983b0a88 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe_regs.h
++++ b/drivers/net/ethernet/mediatek/mtk_ppe_regs.h
+@@ -58,6 +58,12 @@
+ #define MTK_PPE_TB_CFG_SCAN_MODE		GENMASK(17, 16)
+ #define MTK_PPE_TB_CFG_HASH_DEBUG		GENMASK(19, 18)
+ #define MTK_PPE_TB_CFG_INFO_SEL			BIT(20)
++#define MTK_PPE_TB_TICK_SEL			BIT(24)
++
++#define MTK_PPE_BIND_LMT1			0x230
++#define MTK_PPE_NTU_KEEPALIVE			GENMASK(23, 16)
++
++#define MTK_PPE_KEEPALIVE			0x234
+ 
+ enum {
+ 	MTK_PPE_SCAN_MODE_DISABLED,
 -- 
 2.39.0
 
