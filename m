@@ -2,75 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C895D66A766
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 01:12:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC98466A767
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 01:13:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231259AbjANAMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 19:12:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53646 "EHLO
+        id S231285AbjANANu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 19:13:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231142AbjANAMs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 19:12:48 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF3797D1CF
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 16:12:47 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id v23so20104555plo.1
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 16:12:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=h+wuFIogdRNmOhV3/uucr1qV5lysOspbgejki0Cx1DE=;
-        b=aUlw8BKDe3SEOL07UjbzEUzyZXKtSIToARRUbmAOCkcP16arXy2zAQvtL+0vNEq9+N
-         F7Fh2MT/fKnBLLNh97HNu9H7V6nd1Y212oryuXBlomZB/JQgWmhoB0xB2oIxnpPCzyYx
-         cInk1DannkJdSW3SEGZL6CtdTuYQxTt2ua7agx92WK6z8pa1g8V+HAWQLc74uvHm9SlU
-         6UNkSG1T46rZEflLXl8XxZAqzyd2vPIqmS5V7JGt8HffjXllnMhwHbSgx1AxTsDB68vf
-         Hc7wbKQobSaLGagM/JJqze40TYzA4gqGIAAU1VZB2rMhJc4CLL67VaJx62bUsLFK6FAY
-         UX8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=h+wuFIogdRNmOhV3/uucr1qV5lysOspbgejki0Cx1DE=;
-        b=EQwWu1yCSAHiPE5Uyc8wMDoF6SP7UM87rU/R2+eiJOn636VoxmFK2gEID0uh4Eupv3
-         wkG9uyVbAtCpndn0q34nGRxvttV5eNLAqb5k4y6TePQGO6w4NxfywfasNSI8DyA/Z6BL
-         /mupJhRZ0ev6BX20AMPKRuHEaR3kjkhTSObMkSO+mXb/kKu7dyJlRC4V91i+V516FASe
-         aKDjIAglqyMHs608GPDad2LOmgNqCgz8hffFaUN+DgZT39mNnfcN89Gj4rNhqnaK61cp
-         +eVVG2+hvmVyE93doQAFLO+A9sTf6xp1YScxSwje3hMjwPLpAstG3fLttBfPzj2a3ydE
-         nhVw==
-X-Gm-Message-State: AFqh2koEVK/9j2nbK16qCehNwkJPKT4t4i4ZW8xGM/mvdnZfO1l+XRtR
-        32pz+pyz/2ILgy3nZ49cSTA=
-X-Google-Smtp-Source: AMrXdXuFai9XLuYypGYv/lkEf5TFgrvNT4SJTF8BHIvFQOYqGtbJndmp1JAfooP0gHuTIkLbySRS9g==
-X-Received: by 2002:a17:902:8484:b0:192:d631:be14 with SMTP id c4-20020a170902848400b00192d631be14mr37692659plo.13.1673655167143;
-        Fri, 13 Jan 2023 16:12:47 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id w13-20020a170902ca0d00b001930b189b32sm1808631pld.189.2023.01.13.16.12.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Jan 2023 16:12:46 -0800 (PST)
-Message-ID: <4074be6b-8e3e-9cd3-93ee-b958388a2e5c@gmail.com>
-Date:   Fri, 13 Jan 2023 16:12:45 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH ethtool 2/3] netlink: Fix maybe uninitialized 'meters'
- variable
-Content-Language: en-US
-To:     Michal Kubecek <mkubecek@suse.cz>
+        with ESMTP id S231250AbjANANt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 19:13:49 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58399869DC
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 16:13:48 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 111D85C7E9;
+        Sat, 14 Jan 2023 00:13:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1673655227; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+nsUMq54FPhuJ1/XVGnKipIvwrCPzZG9npI7coSJXRs=;
+        b=BrFro3DR94wOj24/Bb5wNX34oB/MdtxP59T7Xfbi2A4jf3d8lMHn3wXVlXrPERtwvmnNS1
+        xlU++gnJ1jiO4F4jUifNXGtfLzRBr5sV55VQbHDX1DWKE4r1+jov/2foU4KCLWLA17DpPy
+        TqXq7EimeQvHisPz8/VOF0wTzQ88usU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1673655227;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+nsUMq54FPhuJ1/XVGnKipIvwrCPzZG9npI7coSJXRs=;
+        b=Pz1B44hFR3KzDieP/E02Q+tbpEVkEQSLScsbKPK70kEJ3up0nW9fm1+ILBU2s5GMSLqOad
+        I86C/RLy+cHqCcDg==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 042E42C141;
+        Sat, 14 Jan 2023 00:13:47 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id C85DD60330; Sat, 14 Jan 2023 01:13:46 +0100 (CET)
+Date:   Sat, 14 Jan 2023 01:13:46 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     netdev@vger.kernel.org, Markus Mayer <mmayer@broadcom.com>,
         Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH ethtool 3/3] marvell.c: Fix build with musl-libc
+Message-ID: <20230114001346.tm3f7f5px7swjuzf@lion.mk-sys.cz>
 References: <20230113233148.235543-1-f.fainelli@gmail.com>
- <20230113233148.235543-3-f.fainelli@gmail.com>
- <20230114000920.izp4tzfcn4cbciec@lion.mk-sys.cz>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230114000920.izp4tzfcn4cbciec@lion.mk-sys.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+ <20230113233148.235543-4-f.fainelli@gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="s5rcijuhrxyeliyt"
+Content-Disposition: inline
+In-Reply-To: <20230113233148.235543-4-f.fainelli@gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -78,40 +64,57 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--s5rcijuhrxyeliyt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 1/13/2023 4:09 PM, Michal Kubecek wrote:
-> On Fri, Jan 13, 2023 at 03:31:47PM -0800, Florian Fainelli wrote:
->> GCC12 warns that 'meters' may be uninitialized, initialize it
->> accordingly.
->>
->> Fixes: 9561db9b76f4 ("Add cable test TDR support")
->> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
->> ---
->>   netlink/parser.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/netlink/parser.c b/netlink/parser.c
->> index f982f229a040..6f863610a490 100644
->> --- a/netlink/parser.c
->> +++ b/netlink/parser.c
->> @@ -237,7 +237,7 @@ int nl_parse_direct_m2cm(struct nl_context *nlctx, uint16_t type,
->>   			 struct nl_msg_buff *msgbuff, void *dest)
->>   {
->>   	const char *arg = *nlctx->argp;
->> -	float meters;
->> +	float meters = 0.0;
->>   	uint32_t cm;
->>   	int ret;
->>   
-> 
-> No problem here either but it's quite surprising as I check build with
-> gcc versions 7 and 11-13 (10-12 until recently) for each new commit and
-> I never saw this warning. As the warning is actually incorrect (either
-> parse_float() returns an error and we bail out or it assigns a value to
-> meters), it may be a gcc issue that was fixed in a later version. But
-> initializing the variable does no harm so let's do it.
+On Fri, Jan 13, 2023 at 03:31:48PM -0800, Florian Fainelli wrote:
+> After commit 1fa60003a8b8 ("misc: header includes cleanup") we stopped
+> including net/if.h which resolved the proper defines to pull in
+> sys/types.h and provide a definition for u_int32_t. With musl-libc we
+> need to define _GNU_SOURCE to ensure that sys/types.h does provide a
+> definition for u_int32_t.
+>=20
+> Fixes: 1fa60003a8b8 ("misc: header includes cleanup")
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>  marvell.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/marvell.c b/marvell.c
+> index d3d570e4d4ad..be2fc36b8fc5 100644
+> --- a/marvell.c
+> +++ b/marvell.c
+> @@ -6,7 +6,7 @@
+>   */
+> =20
+>  #include <stdio.h>
+> -
+> +#define _GNU_SOURCE
+>  #include "internal.h"
+> =20
+>  static void dump_addr(int n, const u8 *a)
 
-Yes that might be the case, this was seen with GCC 11.3 as well. I 
-definitively did use a GCC12 pre-release at some point, too.
--- 
-Florian
+I would prefer replacing u_intXX_t types with standard uintXX_t and
+including <stdint.h>. That would be consistent with the rest of the
+code which uses ISO uintXX_t types or (older code) kernel uXX types.
+
+Michal
+
+--s5rcijuhrxyeliyt
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmPB87YACgkQ538sG/LR
+dpVy8AgAx/mjoBZtlF0Sd2gBNVfB9/aR9GuZe8/xXg5YfBgg/Z2NGAhyiN/xA6/I
+I6B8xdSQeIBRbLbxPLL3Ig6fOsctMl32L6OwTEpJL6T8x2fFYlJOq9jd6XaFIsEy
+RMCobhaQbBWZg+l7GirSMbgDuY1jVxkEA/y1jNh/rByA8MCVqIGkh7Wl9NFl0Oh4
+8zHYOt1jq8zA/DaI/Iz7DdH3vvEpbUWPc8dqbcjQqnuP6jdweo7wOgVi0fm4aJGg
+l9JX1CM+5+Xh/dARxw5LPTlFR1RVpdGEaVUpLB72FvY6fBBs5RyxqxtSjbZLHoa1
+Ud594xldhNegy3ahx8a4+3gvEq8PbA==
+=+Els
+-----END PGP SIGNATURE-----
+
+--s5rcijuhrxyeliyt--
