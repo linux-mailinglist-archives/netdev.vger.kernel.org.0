@@ -2,101 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A8AE66ACC6
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 18:02:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EC0B66ACDB
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 18:03:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230286AbjANRCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Jan 2023 12:02:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37114 "EHLO
+        id S230285AbjANRDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Jan 2023 12:03:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230272AbjANRB7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 12:01:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A4CC4ECA
-        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 09:01:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37C5D60BD8
-        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 17:01:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A090AC433EF;
-        Sat, 14 Jan 2023 17:01:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673715717;
-        bh=nRiD7bZOj3MYgPtgPyty3vnNvwXc5vsGUusc44NhPj4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Wn60HyFdTXqvwvQCeNOn6bBQI5WP8SJaSEe0BL/rhaQOOsRr0kBls+x5BPhtGABTW
-         YKfJyz2AI/ncANFRuS0E6zkoXzVA7rsXAXQx6DRgyZWY1+j8oOvzTFlXivXIs+11VJ
-         29ynFM2i72emFE1RyOMqajESlesCUC5PtN9GdyJH4NRy+ikVMg9WLTDUFnS2uwfjqW
-         vOCmJeKhfVLOdhxDTd5xkTp5CAOK79wuF/8FwS0TW/Fo854RVMWqa19E4NTMVZXdL4
-         P/8wBpqBOngZceKbSnogMxMBnX41IEAH7GVlRm94Qr4scjJA0HdcRnHAaaVbCSonrS
-         VnINX9f0xw93Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 81016E21EE0;
-        Sat, 14 Jan 2023 17:01:57 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230296AbjANRDP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 12:03:15 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8483A5EE
+        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 09:03:14 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id u1-20020a17090a450100b0022936a63a21so3528900pjg.4
+        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 09:03:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jAyU/yP68iqzJ2kud5jWM3/r3xGFbJxy3E5zhpASiXk=;
+        b=1bYzDuSwEF8sC6arKe0YqrbMA6J3EfEW/C04T0UWsa8d0L4XdvHDVZ+qPOjUYt12HI
+         62fR8CYVxwmNygVtvXtUkqLX8XVYLbUcSCfl8lwogQmT5jCN5/FcRGeeU+tXaV4t1ZOS
+         tXARbY31A6jDA9bR2BW4xBXuwA8iZX2wakGP6xIq/Ny574J7h9MhV29xpM5T8rRKQtwj
+         YXzzxOBnpJ9+kunGPi2xKNphqSlf8jwCWQx5VwgHEIBIKQz0vJ6Ng5lVttz0iyOP3dIL
+         ETzK24z3U1/kBSFdwSEUKT9cBt6q9QIXAuJ1Ru1lYhegv2u35jt/07SK1wSLSCRNcSfJ
+         JW2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=jAyU/yP68iqzJ2kud5jWM3/r3xGFbJxy3E5zhpASiXk=;
+        b=0n9EPAh0U/a1bXsDI1h1RdHrb4izxYr2R0TKF6YTFm3TpcU3Of9AXdp82abSWf79sS
+         N/tHrSP2/m1Y7xsLBQCO9Ccc9cgquMGK7WVMOlR0L4pIN2keEpWllG+1SP3VNjetCyz5
+         t7U8ICd+OJtRFZcpo1kzmMTQSfv+fti/cSgeLGbEXhUf30XH5PMHllg3TlnPLnB23WKU
+         5qGw35/2f2D23mRyBxRL4/ltJb5hKPZ64PU5tl+yJMmM6dPpaVHQMvY15Q/FRPhIL3Wo
+         yANaOxlnDqT57/DLPilQ8m5zJ5ew3LloUGjV/mOY0aKdLNHzbNjEpegGtCWzF7Jnjfu+
+         nDAw==
+X-Gm-Message-State: AFqh2koAqZu1zcdFm7H9FySgO08z5/45cLNpjVMfk9DcQzT5PhI0QlsD
+        gskVHkRUlG3zvtragBWMPtNaVg==
+X-Google-Smtp-Source: AMrXdXu8cGMR28sq4pslDOt4lAwltyvm3apC7Hfe3MMnCIl1Y48kaQz/dBuc0vXaLVv+5Womauu9Dw==
+X-Received: by 2002:a05:6a20:7d9c:b0:ad:2abb:5a5e with SMTP id v28-20020a056a207d9c00b000ad2abb5a5emr20047538pzj.61.1673715794358;
+        Sat, 14 Jan 2023 09:03:14 -0800 (PST)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id m12-20020a634c4c000000b0047063eb4098sm12951484pgl.37.2023.01.14.09.03.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 14 Jan 2023 09:03:14 -0800 (PST)
+Date:   Sat, 14 Jan 2023 09:03:11 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@kernel.org>
+Subject: Re: [PATCH iproute2-next 2/2] tc: add new attr TCA_EXT_WARN_MSG
+Message-ID: <20230114090311.1adf0176@hermes.local>
+In-Reply-To: <CAM0EoMmw+uQuXkVZprspDbqtoQLGHEM0An0ogzD5bFdOJEqWXg@mail.gmail.com>
+References: <20230113034353.2766735-1-liuhangbin@gmail.com>
+        <20230113034617.2767057-1-liuhangbin@gmail.com>
+        <20230113034617.2767057-2-liuhangbin@gmail.com>
+        <20230112203019.738d9744@hermes.local>
+        <CAM0EoMmw+uQuXkVZprspDbqtoQLGHEM0An0ogzD5bFdOJEqWXg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 iproute2 00/11] SPDX cleanups
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167371571751.23476.13414787521832179174.git-patchwork-notify@kernel.org>
-Date:   Sat, 14 Jan 2023 17:01:57 +0000
-References: <20230111185227.69093-1-stephen@networkplumber.org>
-In-Reply-To: <20230111185227.69093-1-stephen@networkplumber.org>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Sat, 14 Jan 2023 07:59:39 -0500
+Jamal Hadi Salim <jhs@mojatatu.com> wrote:
 
-This series was applied to iproute2/iproute2.git (main)
-by Stephen Hemminger <stephen@networkplumber.org>:
-
-On Wed, 11 Jan 2023 10:52:16 -0800 you wrote:
-> Cleanout the GPL boiler plate in iproute.
-> Better to use modern SPDX to document the license
-> rather than copy/paste same text in multiple places.
+> This is not really an error IMO (and therefore doesnt belong in
+> stderr). If i send a request to add an
+> entry and ask that it is installed both in the kernel as well as
+> offloaded into h/w and half of that
+> worked (example hardware rejected it for some reason) then the event
+> generated (as observed by
+> f.e. tc mon) will appear in TCA_EXT_WARN_MSG and the consumer of that
+> event needs to see it
+> if they are using the json format.
 > 
-> There is no change in licensing here, and none is planned.
-> 
-> v2 rebase and found some more missing SPDX places
-> 
-> [...]
 
-Here is the summary with links:
-  - [v2,iproute2,01/11] bridge: use SPDX
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=9458a2c1f568
-  - [v2,iproute2,02/11] genl: use SPDX
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=8aa217546e9e
-  - [v2,iproute2,03/11] lib: replace GPL boilerplate with SPDX
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=9e7e786ae49a
-  - [v2,iproute2,04/11] devlink: use SPDX
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=18a13ec516a3
-  - [v2,iproute2,05/11] ip: use SPDX
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=c37d21944bca
-  - [v2,iproute2,06/11] testsuite: use SPDX
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=2a5fb175fa01
-  - [v2,iproute2,07/11] tipc: use SPDX
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=d2c5676eec06
-  - [v2,iproute2,08/11] tc: replace GPL-BSD boilerplate in codel and fq
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=01bdedff993b
-  - [v2,iproute2,09/11] tc: use SPDX
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=b3a091d10004
-  - [v2,iproute2,10/11] misc: use SPDX
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=6af63cc73287
-  - [v2,iproute2,11/11] netem: add SPDX license header
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=07b65f312f59
+Ok, but use lower case for JSON tag following existing conventions.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Note: json support in monitor mode is incomplete for many of the
+commands bridge, ip, tc, devlink. It doesn't always generate valid JSON
+yet.
