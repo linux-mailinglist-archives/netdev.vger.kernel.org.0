@@ -2,53 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9271C66A999
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 07:21:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92AB866A99C
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 07:25:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229506AbjANGVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Jan 2023 01:21:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39270 "EHLO
+        id S229535AbjANGZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Jan 2023 01:25:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbjANGVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 01:21:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CEB230DB
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 22:21:11 -0800 (PST)
+        with ESMTP id S229498AbjANGZF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 01:25:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AF5A4EC9;
+        Fri, 13 Jan 2023 22:25:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E74D160B04
-        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 06:21:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 43E0CC433EF;
-        Sat, 14 Jan 2023 06:21:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E9844B80122;
+        Sat, 14 Jan 2023 06:25:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D619C433EF;
+        Sat, 14 Jan 2023 06:25:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673677270;
-        bh=4f8WjXkLIMpxprsdR4zY6Zu1am9KsIi3YuBAhU9cufs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=r8rBDoik7opjxeLSia8ZypvDeh9b0UtjZzmhtOmiKCBcev5IA4s3oPG0NoLOQ57GG
-         5mWZ0thgsDXclQ5z17G7gVADUWLF3OJrnchs2X+uwfk5Z1PPLSAC7BW+t5xK9yufaa
-         zKVBi8lt5LdgDJMwd0AlL2zDKRsbqnRrHhLbySLstze39CQHCBRWjhoBNHfpdITTIj
-         3qQXC+1YtYRVfA48ZhmVweHfd8cUWfjglPS7v4LaQVxH7l8WZaQxbqsn1gNE8SuCCV
-         0RuqzJA6ZoQL3xPIpvG3iyHUjdSADVqb6ofPhf6QK9VriQ6vJ5z/nKXyoFV33QQRGk
-         /fq+dHWq+jpPQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1A0D5C395C8;
-        Sat, 14 Jan 2023 06:21:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1673677501;
+        bh=BxbY2iPC00wCDK4obIhGuz2z/2bIbAxjqwRqPKY7e48=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VLDXUZoJg3IBpYQccVAqXKsVtXq4KVhqFot0w/aNudWED3/9ABkV6IVcP4fbPkDDS
+         b/Tsb5Nj81U+3o1NMSoQWfA+iv1nLwofTqUKQL/WbWU9j34m0bBeS+LCrYP+XQHqen
+         jx+R9n+lbY4fp5a+k3ieEjd98MVsuwan2eqrjfo8TcpnQQlONKhaeTx55EEuuPIqbc
+         dPfp0mWL6GTxbrcKXnxpzG4m9okWVGJxEq+X055oNT42qf+K04Q+rN3ayhn5o9s+oZ
+         SWm20HOaHgafKEnD7mIYwyptDtVRejKKjPX6yQAyWjEkCISyVU6/OOBsnwucdgLCl8
+         VWEjcpoD6sODg==
+Date:   Fri, 13 Jan 2023 22:24:59 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Heng Qi <hengqi@linux.alibaba.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH net-next v4 02/10] virtio-net: fix calculation of MTU
+ for single buffer xdp
+Message-ID: <20230113222459.3f7b21df@kernel.org>
+In-Reply-To: <20230113080016.45505-3-hengqi@linux.alibaba.com>
+References: <20230113080016.45505-1-hengqi@linux.alibaba.com>
+        <20230113080016.45505-3-hengqi@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v3] sch_htb: Avoid grafting on htb_destroy_class_offload
- when destroying htb
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167367727010.27500.2744425299070821375.git-patchwork-notify@kernel.org>
-Date:   Sat, 14 Jan 2023 06:21:10 +0000
-References: <20230113005528.302625-1-rrameshbabu@nvidia.com>
-In-Reply-To: <20230113005528.302625-1-rrameshbabu@nvidia.com>
-To:     Rahul Rameshbabu <rrameshbabu@nvidia.com>
-Cc:     netdev@vger.kernel.org, tariqt@nvidia.com, gal@nvidia.com,
-        saeedm@nvidia.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, kuba@kernel.org, pabeni@redhat.com,
-        davem@davemloft.net, edumazet@google.com, maxtram95@gmail.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,28 +62,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, 13 Jan 2023 16:00:08 +0800 Heng Qi wrote:
+> When single-buffer xdp is loaded, the size of the buffer filled each time
+> is 'sz = (PAGE_SIZE - headroom - tailroom)', which is the maximum packet
+> length that the driver allows the device to pass in. Otherwise, the packet
+> with a length greater than sz will come in, so num_buf will be greater than
+> or equal to 2, and then xdp_linearize_page() will be performed and the
+> packet will be dropped because the total length is greater than PAGE_SIZE.
+> So the maximum value of MTU for single-buffer xdp is 'max_sz = sz - ETH_HLEN'.
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 12 Jan 2023 16:55:29 -0800 you wrote:
-> Peek at old qdisc and graft only when deleting a leaf class in the htb,
-> rather than when deleting the htb itself. Do not peek at the qdisc of the
-> netdev queue when destroying the htb. The caller may already have grafted a
-> new qdisc that is not part of the htb structure being destroyed.
-> 
-> This fix resolves two use cases.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net,v3] sch_htb: Avoid grafting on htb_destroy_class_offload when destroying htb
-    https://git.kernel.org/netdev/net/c/a22b7388d658
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+drivers/net/virtio_net.c:3111:56: warning: format specifies type 'unsigned long' but the argument has type 'unsigned int' [-Wformat]
+                netdev_warn(dev, "XDP requires MTU less than %lu\n", max_sz);
+                                                             ~~~     ^~~~~~
+                                                             %u
