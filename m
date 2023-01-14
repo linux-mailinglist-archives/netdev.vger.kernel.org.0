@@ -2,100 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FDDF66AB37
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 12:39:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E2FD66AB45
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 13:06:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbjANLjq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Jan 2023 06:39:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54352 "EHLO
+        id S229752AbjANMFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Jan 2023 07:05:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbjANLjq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 06:39:46 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2CEF3A9E;
-        Sat, 14 Jan 2023 03:39:44 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id 207so1814315pfv.5;
-        Sat, 14 Jan 2023 03:39:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=FJvgwP2yhKq5HRMv+nGTGGcOYvJiL+zhxVk6tWVvWYs=;
-        b=gbq+otLy1KBkkCrGFkFCqFwOhcIuV4PULSfpPUszRaHQr/f+pUidKShev/xBAHgtHU
-         yLhonT8wUsEuVEV0CZy2CauJhNr3UvlMsAU5gOmgENToKuNcxPCVMT6nHCQIQ+0NZ3L+
-         sL/uV7R/azABne/VgB632a8L0J7dq1d2LHJQBKyGiV1Qz6HIDodyCdwl7XrASNyrtWgs
-         vEQOavb3x1DDYh4unwD83x71J1ns2a7MKnLWKUrVzMLnHMug15owLyL10K73tT5yYuM/
-         q+OG5C8CMLB227KG++3NRP/l4MQSnLi/rJsRRwN0umyIQKK+X+9mDL6JzwwVjQNugh++
-         9e4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=FJvgwP2yhKq5HRMv+nGTGGcOYvJiL+zhxVk6tWVvWYs=;
-        b=iP7kQZxHW0KZTh1/tAZQ3YsUskM6/40r6QsIvc0AJ2XQAkU4OBlTrqdHjBJdGkfAZo
-         dicH+gsS47iwZaVWMOACTNfbdqOWuMs8R8LLmZz0MiuLohnqJlMvVt8yCjoEtDITOqak
-         HpSf+spwQTKLw9QA1U7qURDB/zSZ9djA4bJn9vWxdtVFf68knIO7ClPNmom11e7Qa+85
-         17xfd5UkdzleGldHebtd0wGKExZq9umr+gkq6qtWa6isl4Xxi2iYcYSvwKrp72LknRku
-         bmq/B5dBgeGIz7fPz9EMA8SKQgzdBX5eUvmBv4CBbafZYPMz9KPi+PXrRb6hTJc2pNo2
-         KdBA==
-X-Gm-Message-State: AFqh2kp7KAQtGjPiuWbgTbHJWkV8Tf6B7/jE57KFVP+bwIWiy49tyJQI
-        9kibgllwGeE/15MZrDpPF0sk/sCZDpLHAlu4AOE=
-X-Google-Smtp-Source: AMrXdXuG4YlWidLin5pPzaupNzmOUxneWxv+FS2QYfh/LEJq9SXxtq8AhqG2++3ACqChh2B8EHBBrzXi9F+llg4AffI=
-X-Received: by 2002:a63:154c:0:b0:4ad:7773:fd02 with SMTP id
- 12-20020a63154c000000b004ad7773fd02mr1636466pgv.603.1673696384290; Sat, 14
- Jan 2023 03:39:44 -0800 (PST)
+        with ESMTP id S229723AbjANMFd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 07:05:33 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 680BD59DD
+        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 04:05:32 -0800 (PST)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1673697929;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ZNQUxrexq+SGlCNMDyxm1etQA6NjevWDm17rYmoWxvs=;
+        b=yke8jv+LjgkotXSM7PKxqcpHE7qw3XPxnw09flP+XzJBgxC0fTqmZb1q76mm35EbHHBqjz
+        2OWsMfxIrxuDvZKMlviaYQwb8TBCEQZgquNdp6fRX4iUaAnufc+omsX6jdtY9WC3M+yVxF
+        EhwHjPHl5SW8dLdiIw7zIbwmlqyD0btceCVFfdtd14Bb8AQsp5uWOkneWUshU85wPedLhZ
+        4QVoQq4claTUYy6UPeTUsYMGXrjrgqcxV6HxJG/qZcLLXDb0kG+51NS0A+t9+XkO7sjFSc
+        QMvf7eiQh+yjZwBktiZ3z6MavUN14L1kYCVXkNTT1nznEznaqjnocHinOE8Cog==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1673697929;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ZNQUxrexq+SGlCNMDyxm1etQA6NjevWDm17rYmoWxvs=;
+        b=+eO09YP07+aMH9J8vYT/wWjcHR0iTrFmLUeVuYmzQzkS+Tlvr/zVCA0+xrbcHPNaqb29qp
+        +DoOslFrIAVjssAg==
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>,
+        Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Subject: [PATCH net v1] net: stmmac: Fix queue statistics reading
+Date:   Sat, 14 Jan 2023 13:04:37 +0100
+Message-Id: <20230114120437.383514-1-kurt@linutronix.de>
 MIME-Version: 1.0
-References: <20230113142718.3038265-1-o.rempel@pengutronix.de> <20230113142718.3038265-9-o.rempel@pengutronix.de>
-In-Reply-To: <20230113142718.3038265-9-o.rempel@pengutronix.de>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Sat, 14 Jan 2023 08:39:27 -0300
-Message-ID: <CAOMZO5C8SSVZF8z2HngxG-d59aa=CmAQRThxkC3xaR695uKFSA@mail.gmail.com>
-Subject: Re: [PATCH v1 08/20] ARM: dts: imx6dl-plybas: configure ethernet
- reference clock parent
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Abel Vesa <abelvesa@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        kernel@pengutronix.de, NXP Linux Team <linux-imx@nxp.com>,
-        Lee Jones <lee@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Oleksij,
+Correct queue statistics reading. All queue statistics are stored as unsigned
+long values. The retrieval for ethtool fetches these values as u64. However, on
+some systems the size of the counters are 32 bit. That yields wrong queue
+statistic counters e.g., on arm32 systems such as the stm32mp157. Fix it by
+using the correct data type.
 
-On Fri, Jan 13, 2023 at 11:27 AM Oleksij Rempel <o.rempel@pengutronix.de> wrote:
->
-> Configure Ethernet reference clock parent in an obvious way instead of
-> using cryptic ptp way.
+Tested on Olimex STMP157-OLinuXino-LIME2 by simple running linuxptp for a short
+period of time:
 
-Could you please improve the commit log?
+Non-patched kernel:
+|root@st1:~# ethtool -S eth0 | grep q0
+|     q0_tx_pkt_n: 3775276254951 # ???
+|     q0_tx_irq_n: 879
+|     q0_rx_pkt_n: 1194000908909 # ???
+|     q0_rx_irq_n: 278
 
-The "obvious way" is not obvious for people that don't have the board
-schematics.
+Patched kernel:
+|root@st1:~# ethtool -S eth0 | grep q0
+|     q0_tx_pkt_n: 2434
+|     q0_tx_irq_n: 1274
+|     q0_rx_pkt_n: 1604
+|     q0_rx_irq_n: 846
 
-I like better the way you described the 20/20 patch:
+Fixes: 68e9c5dee1cf ("net: stmmac: add ethtool per-queue statistic framework")
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+Cc: Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>
+Cc: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-"On this board the PHY is the ref clock provider. So, configure ethernet
-reference clock as input."
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+index f453b0d09366..35c8dd92d369 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+@@ -551,16 +551,16 @@ static void stmmac_get_per_qstats(struct stmmac_priv *priv, u64 *data)
+ 		p = (char *)priv + offsetof(struct stmmac_priv,
+ 					    xstats.txq_stats[q].tx_pkt_n);
+ 		for (stat = 0; stat < STMMAC_TXQ_STATS; stat++) {
+-			*data++ = (*(u64 *)p);
+-			p += sizeof(u64 *);
++			*data++ = (*(unsigned long *)p);
++			p += sizeof(unsigned long);
+ 		}
+ 	}
+ 	for (q = 0; q < rx_cnt; q++) {
+ 		p = (char *)priv + offsetof(struct stmmac_priv,
+ 					    xstats.rxq_stats[q].rx_pkt_n);
+ 		for (stat = 0; stat < STMMAC_RXQ_STATS; stat++) {
+-			*data++ = (*(u64 *)p);
+-			p += sizeof(u64 *);
++			*data++ = (*(unsigned long *)p);
++			p += sizeof(unsigned long);
+ 		}
+ 	}
+ }
+-- 
+2.30.2
 
-Please use this format globally in the series, as it becomes clear who
-is providing the ref clock.
-
-Thanks
