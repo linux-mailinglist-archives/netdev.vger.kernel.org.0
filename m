@@ -2,172 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83B3C66AA28
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 09:23:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C52766AA56
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 10:11:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229921AbjANIXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Jan 2023 03:23:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35816 "EHLO
+        id S229862AbjANJLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Jan 2023 04:11:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229875AbjANIWx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 03:22:53 -0500
-Received: from out30-98.freemail.mail.aliyun.com (out30-98.freemail.mail.aliyun.com [115.124.30.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15EB259E5;
-        Sat, 14 Jan 2023 00:22:45 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VZX88.T_1673684560;
-Received: from localhost(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0VZX88.T_1673684560)
-          by smtp.aliyun-inc.com;
-          Sat, 14 Jan 2023 16:22:41 +0800
-From:   Heng Qi <hengqi@linux.alibaba.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
+        with ESMTP id S229572AbjANJLQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 04:11:16 -0500
+Received: from smtp.smtpout.orange.fr (smtp-20.smtpout.orange.fr [80.12.242.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C4DB4480
+        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 01:11:14 -0800 (PST)
+Received: from pop-os.home ([86.243.2.178])
+        by smtp.orange.fr with ESMTPA
+        id GcZDpq3gg29hWGcZDp72BO; Sat, 14 Jan 2023 10:11:13 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sat, 14 Jan 2023 10:11:13 +0100
+X-ME-IP: 86.243.2.178
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Subject: [PATCH net-next v5 10/10] virtio-net: support multi-buffer xdp
-Date:   Sat, 14 Jan 2023 16:22:29 +0800
-Message-Id: <20230114082229.62143-11-hengqi@linux.alibaba.com>
-X-Mailer: git-send-email 2.19.1.6.gb485710b
-In-Reply-To: <20230114082229.62143-1-hengqi@linux.alibaba.com>
-References: <20230114082229.62143-1-hengqi@linux.alibaba.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v2] Bluetooth: hci_debugfs: Use kstrtobool() instead of strtobool()
+Date:   Sat, 14 Jan 2023 10:11:04 +0100
+Message-Id: <58207d5b81c5739c037c030893fb08ea3dbedc57.1673687451.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Driver can pass the skb to stack by build_skb_from_xdp_buff().
+strtobool() is the same as kstrtobool().
+However, the latter is more used within the kernel.
 
-Driver forwards multi-buffer packets using the send queue
-when XDP_TX and XDP_REDIRECT, and clears the reference of multi
-pages when XDP_DROP.
+In order to remove strtobool() and slightly simplify kstrtox.h, switch to
+the other function name.
 
-Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
-Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+While at it, include the corresponding header file (<linux/kstrtox.h>)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- drivers/net/virtio_net.c | 65 +++++++---------------------------------
- 1 file changed, 10 insertions(+), 55 deletions(-)
+This patch was already sent as a part of a serie ([1]) that axed all usages
+of strtobool().
+Most of the patches have been merged in -next.
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 2c7dcad049fb..aaa6fe9b214a 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -1083,7 +1083,6 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 	struct bpf_prog *xdp_prog;
- 	unsigned int truesize = mergeable_ctx_to_truesize(ctx);
- 	unsigned int headroom = mergeable_ctx_to_headroom(ctx);
--	unsigned int metasize = 0;
- 	unsigned int tailroom = headroom ? sizeof(struct skb_shared_info) : 0;
- 	unsigned int room = SKB_DATA_ALIGN(headroom + tailroom);
- 	unsigned int frame_sz, xdp_room;
-@@ -1179,63 +1178,24 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+I synch'ed with latest -next and re-send the remaining ones as individual
+patches.
+
+Changes in v2:
+  - No change
+
+[1]: https://lore.kernel.org/all/cover.1667336095.git.christophe.jaillet@wanadoo.fr/
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ net/bluetooth/hci_debugfs.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/hci_debugfs.c b/net/bluetooth/hci_debugfs.c
+index b7f682922a16..f1ef60ddd4a6 100644
+--- a/net/bluetooth/hci_debugfs.c
++++ b/net/bluetooth/hci_debugfs.c
+@@ -22,6 +22,7 @@
+ */
  
- 		switch (act) {
- 		case XDP_PASS:
--			metasize = xdp.data - xdp.data_meta;
--
--			/* recalculate offset to account for any header
--			 * adjustments and minus the metasize to copy the
--			 * metadata in page_to_skb(). Note other cases do not
--			 * build an skb and avoid using offset
--			 */
--			offset = xdp.data - page_address(xdp_page) -
--				 vi->hdr_len - metasize;
--
--			/* recalculate len if xdp.data, xdp.data_end or
--			 * xdp.data_meta were adjusted
--			 */
--			len = xdp.data_end - xdp.data + vi->hdr_len + metasize;
--
--			/* recalculate headroom if xdp.data or xdp_data_meta
--			 * were adjusted, note that offset should always point
--			 * to the start of the reserved bytes for virtio_net
--			 * header which are followed by xdp.data, that means
--			 * that offset is equal to the headroom (when buf is
--			 * starting at the beginning of the page, otherwise
--			 * there is a base offset inside the page) but it's used
--			 * with a different starting point (buf start) than
--			 * xdp.data (buf start + vnet hdr size). If xdp.data or
--			 * data_meta were adjusted by the xdp prog then the
--			 * headroom size has changed and so has the offset, we
--			 * can use data_hard_start, which points at buf start +
--			 * vnet hdr size, to calculate the new headroom and use
--			 * it later to compute buf start in page_to_skb()
--			 */
--			headroom = xdp.data - xdp.data_hard_start - metasize;
--
--			/* We can only create skb based on xdp_page. */
--			if (unlikely(xdp_page != page)) {
--				rcu_read_unlock();
-+			if (unlikely(xdp_page != page))
- 				put_page(page);
--				head_skb = page_to_skb(vi, rq, xdp_page, offset,
--						       len, PAGE_SIZE);
--				return head_skb;
--			}
--			break;
-+			head_skb = build_skb_from_xdp_buff(dev, vi, &xdp, xdp_frags_truesz);
-+			rcu_read_unlock();
-+			return head_skb;
- 		case XDP_TX:
- 			stats->xdp_tx++;
- 			xdpf = xdp_convert_buff_to_frame(&xdp);
- 			if (unlikely(!xdpf)) {
--				if (unlikely(xdp_page != page))
--					put_page(xdp_page);
--				goto err_xdp;
-+				netdev_dbg(dev, "convert buff to frame failed for xdp\n");
-+				goto err_xdp_frags;
- 			}
- 			err = virtnet_xdp_xmit(dev, 1, &xdpf, 0);
- 			if (unlikely(!err)) {
- 				xdp_return_frame_rx_napi(xdpf);
- 			} else if (unlikely(err < 0)) {
- 				trace_xdp_exception(vi->dev, xdp_prog, act);
--				if (unlikely(xdp_page != page))
--					put_page(xdp_page);
--				goto err_xdp;
-+				goto err_xdp_frags;
- 			}
- 			*xdp_xmit |= VIRTIO_XDP_TX;
- 			if (unlikely(xdp_page != page))
-@@ -1245,11 +1205,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 		case XDP_REDIRECT:
- 			stats->xdp_redirects++;
- 			err = xdp_do_redirect(dev, &xdp, xdp_prog);
--			if (err) {
--				if (unlikely(xdp_page != page))
--					put_page(xdp_page);
--				goto err_xdp;
--			}
-+			if (err)
-+				goto err_xdp_frags;
- 			*xdp_xmit |= VIRTIO_XDP_REDIR;
- 			if (unlikely(xdp_page != page))
- 				put_page(page);
-@@ -1262,9 +1219,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 			trace_xdp_exception(vi->dev, xdp_prog, act);
- 			fallthrough;
- 		case XDP_DROP:
--			if (unlikely(xdp_page != page))
--				__free_pages(xdp_page, 0);
--			goto err_xdp;
-+			goto err_xdp_frags;
- 		}
- err_xdp_frags:
- 		if (unlikely(xdp_page != page))
+ #include <linux/debugfs.h>
++#include <linux/kstrtox.h>
+ 
+ #include <net/bluetooth/bluetooth.h>
+ #include <net/bluetooth/hci_core.h>
+@@ -1152,7 +1153,7 @@ static ssize_t force_no_mitm_write(struct file *file,
+ 		return -EFAULT;
+ 
+ 	buf[buf_size] = '\0';
+-	if (strtobool(buf, &enable))
++	if (kstrtobool(buf, &enable))
+ 		return -EINVAL;
+ 
+ 	if (enable == hci_dev_test_flag(hdev, HCI_FORCE_NO_MITM))
 -- 
-2.19.1.6.gb485710b
+2.34.1
 
