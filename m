@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AF5566A8FC
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 04:32:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAA7566A8FD
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 04:32:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231365AbjANDcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 22:32:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33396 "EHLO
+        id S230432AbjANDcS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 22:32:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230324AbjANDb6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 22:31:58 -0500
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F0F8D3B2
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 19:31:48 -0800 (PST)
-Received: by mail-qt1-x833.google.com with SMTP id s5so16243942qtx.6
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 19:31:48 -0800 (PST)
+        with ESMTP id S230192AbjANDcL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 22:32:11 -0500
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 655368F8CB
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 19:31:49 -0800 (PST)
+Received: by mail-qt1-x82f.google.com with SMTP id fd15so10755448qtb.9
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 19:31:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=g25VrYNhgWPcNaigv0uqQ4+TsAmwRXVlaxYNX2jHt3I=;
-        b=PRFcr16QkS0MM0XdBH/RUCWffgSTLhuh07E3Zjl2tmHjerDvxsg4pMB5GLXpe/Zr08
-         1XN8vC/y81TJmtelzg8wc+pMywYI1NnKDTplUoxyigxdIvi0MbCPAYSGYr29Ke55xAsa
-         D6hxGyq1MJ1uCUhHjn27We8/JGyENH99TblL/tYzX0VpjAojubq+yFkT880iPYF5n/4x
-         S4b3NQq3T2HN7sDtr34tvOdPjScXMfXM7lOUZahgr2yy8keivG+s1qMTiSfqXzVLM35b
-         InxoLcDhjkePixg9beHnRiwcslmL3gqpD0ixCVyh3pFn2xFVR8EoN4CtHeDoWRni0XwP
-         ShmA==
+        bh=o/UeqT4DY2zDY3VtP4bF5KQAgTN1r5Nv8/OY6W808rs=;
+        b=PQv3TkD/mZtx1fDtgj9bqeNbA84WB2YOjYgo8j+uKImfNEhVXN1QA4aoybffEPfGTL
+         jIM/RzruhjUr4DOaoaOVlOrm5jDJii8e+qyH5Fqg0ueD9y0BnH8TVLjglPXxTTRACQo6
+         /5zA0rvgN0qWVPuAY2Ca5dc9WTrN+AO1pNbgWK7IDr/vJWFyGBszSiiwUNipW+B5m3/4
+         mqpGYZxpASzro3wutvPDZUJPKUY/SDv6P056rKCU/1uYewC3g95pzoYmL0ukItZm4T4F
+         7ihdtPwC6LeDF36rOuu725cxOXN6yY8dolvKMRXgExta3ai5ZX1lc+D+B0fBgD5Vm34B
+         VFrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=g25VrYNhgWPcNaigv0uqQ4+TsAmwRXVlaxYNX2jHt3I=;
-        b=FIzu/6zJUN+qF+5sBPtfKnsOxglzE2DBTR19RCdgLsGh1aYxeIveqKXrPLdrAR/6R2
-         5ypWZYwa1hIdnKPldVmCx7QhAru/iMmm8cpYZ6IYfTfMKGIynQ+RNRkMg2V9qTmRC9QY
-         +NahBoMBDhBIm07mS7XRfSAMsQTNpisP+mQeM++CX1mb2Gucy9ZyrF79U5DCOM1Xz+18
-         c1ypJl5Ifnw6vHXdWaQEYjfos3bV8uN15Y/3hiSyA1a6qUSdD9zp9MEyioGZcEkAmuWe
-         qQFb5U35o9EEms6ClL+aqxmTcb568pQC6IKN8AWa6sjykMAXNzlGK9QsgTLUuF8ejv0Z
-         PDuQ==
-X-Gm-Message-State: AFqh2kqpBjAArjG6fG0iq//CJTxVq8LoaXXdhd/WGxJLLQY/GUdfNNxC
-        p4i2/JHR8UbOypQVC8lmnhGFEs74OfvNYQ==
-X-Google-Smtp-Source: AMrXdXsRSwUorb6F2ugQoCN6jPI2kz/FsdDd5B61L+7GAojYJue+xAOPJqnTGe9kJnszVfYx0PPfZA==
-X-Received: by 2002:a05:622a:1e88:b0:3ac:c2b8:18 with SMTP id bz8-20020a05622a1e8800b003acc2b80018mr38326478qtb.19.1673667107052;
-        Fri, 13 Jan 2023 19:31:47 -0800 (PST)
+        bh=o/UeqT4DY2zDY3VtP4bF5KQAgTN1r5Nv8/OY6W808rs=;
+        b=S6VS0HFtrHFmE+rOEz/sY42GoBkpAXzS9AXbIMdeM7+VL9krJpRQAx8mmkAamO/zyO
+         vFZ9mIcxMa8xhs7jj+SUuzLI+SRPpAYO0PFWtmDsrg3sGF2vuPpnlY+YTDnUkcOKSh+V
+         f0l0V+oHWxm4hEPQ77p3padQpjiLdrrhjQl6Sa2byf69vfsw0rvdGn/90GE57LZxsMNN
+         RrfKusZE/cxaeJv9PMiY5s626X6pUH6yHdpniL/1LT4Idt2gsTFfsgttaaaoDqqyn+r3
+         lyqzkB2UEkdVXrVhHGM6vhMd+AjH9FDSLgEQ627gDqvtISfd98pLfQcXiH+ffOYdTU4N
+         EwQA==
+X-Gm-Message-State: AFqh2kozxnVB4OjvTsA1aBDOjmej9IoNeTImwfC7nHkFWNqgXonuxIDW
+        SE771d2J82vhcyU5g1WHKApnMxMDwQ4q7g==
+X-Google-Smtp-Source: AMrXdXsXm1zOxlYkDu2Su1Hog3IJZ5s/d3VX8MMucsnqXDwnaPmccbufXBj/vgCQHeYCgdkmewtBUw==
+X-Received: by 2002:a05:622a:514:b0:3ab:d187:9e7 with SMTP id l20-20020a05622a051400b003abd18709e7mr62642655qtx.44.1673667108350;
+        Fri, 13 Jan 2023 19:31:48 -0800 (PST)
 Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id jt14-20020a05622aa00e00b003adc7f652a0sm7878846qtb.66.2023.01.13.19.31.45
+        by smtp.gmail.com with ESMTPSA id jt14-20020a05622aa00e00b003adc7f652a0sm7878846qtb.66.2023.01.13.19.31.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Jan 2023 19:31:46 -0800 (PST)
+        Fri, 13 Jan 2023 19:31:48 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -70,9 +70,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         Mahesh Bandewar <maheshb@google.com>,
         Paul Moore <paul@paul-moore.com>,
         Guillaume Nault <gnault@redhat.com>
-Subject: [PATCH net-next 08/10] net: add support for ipv4 big tcp
-Date:   Fri, 13 Jan 2023 22:31:32 -0500
-Message-Id: <c28bb5c3d730677be7f90a44a9e29fec56393443.1673666803.git.lucien.xin@gmail.com>
+Subject: [PATCH net-next 09/10] netfilter: get ipv6 pktlen properly in length_mt6
+Date:   Fri, 13 Jan 2023 22:31:33 -0500
+Message-Id: <de91843a7f59feb065475ca82be22c275bede3df.1673666803.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1673666803.git.lucien.xin@gmail.com>
 References: <cover.1673666803.git.lucien.xin@gmail.com>
@@ -88,138 +88,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to Eric's IPv6 BIG TCP, this patch is to enable IPv4 BIG TCP.
+For IPv6 jumbogram packets, the packet size is bigger than 65535,
+it's not right to get it from payload_len and save it to an u16
+variable.
 
-Firstly, allow sk->sk_gso_max_size to be set to a value greater than
-GSO_LEGACY_MAX_SIZE by not trimming gso_max_size in sk_trim_gso_size()
-for IPv4 TCP sockets.
+This patch only fixes it for IPv6 BIG TCP packets, so instead of
+parsing IPV6_TLV_JUMBO exthdr, which is quite some work, it only
+gets the pktlen via 'skb->len - skb_network_offset(skb)' when
+skb_is_gso_v6() and saves it to an u32 variable, similar to IPv4
+BIG TCP packets.
 
-Then on TX path, set IP header tot_len to 0 when skb->len > IP_MAX_MTU
-in __ip_local_out() to allow to send BIG TCP packets, and this implies
-that skb->len is the length of a IPv4 packet; On RX path, use skb->len
-as the length of the IPv4 packet when the IP header tot_len is 0 and
-skb->len > IP_MAX_MTU in ip_rcv_core(). As the API iph_set_totlen() and
-skb_ip_totlen() are used in __ip_local_out() and ip_rcv_core(), we only
-need to update these APIs.
-
-Also in GRO receive, add the check for ETH_P_IP/IPPROTO_TCP, and allows
-the merged packet size >= GRO_LEGACY_MAX_SIZE in skb_gro_receive(). In
-GRO complete, set IP header tot_len to 0 when the merged packet size
-greater than IP_MAX_MTU in iph_set_totlen() so that it can be processed
-on RX path.
-
-Note that by checking skb_is_gso_tcp() in API iph_totlen(), it makes
-this implementation safe to use iph->len == 0 indicates IPv4 BIG TCP
-packets.
+This fix will also help us add selftest for IPv6 BIG TCP in the
+following patch.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- net/core/gro.c       |  6 +++---
- net/core/sock.c      | 11 ++---------
- net/ipv4/af_inet.c   |  7 ++++---
- net/ipv4/ip_input.c  |  2 +-
- net/ipv4/ip_output.c |  2 +-
- 5 files changed, 11 insertions(+), 17 deletions(-)
+ include/linux/ipv6.h      | 9 +++++++++
+ net/netfilter/xt_length.c | 3 +--
+ 2 files changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/gro.c b/net/core/gro.c
-index 506f83d715f8..82656dc787f2 100644
---- a/net/core/gro.c
-+++ b/net/core/gro.c
-@@ -169,9 +169,9 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
- 		return -E2BIG;
- 
- 	if (unlikely(p->len + len >= GRO_LEGACY_MAX_SIZE)) {
--		if (p->protocol != htons(ETH_P_IPV6) ||
--		    skb_headroom(p) < sizeof(struct hop_jumbo_hdr) ||
--		    ipv6_hdr(p)->nexthdr != IPPROTO_TCP ||
-+		if (NAPI_GRO_CB(skb)->proto != IPPROTO_TCP ||
-+		    (p->protocol == htons(ETH_P_IPV6) &&
-+		     skb_headroom(p) < sizeof(struct hop_jumbo_hdr)) ||
- 		    p->encapsulation)
- 			return -E2BIG;
- 	}
-diff --git a/net/core/sock.c b/net/core/sock.c
-index f954d5893e79..554aa09fe504 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -2375,15 +2375,8 @@ EXPORT_SYMBOL_GPL(sk_free_unlock_clone);
- 
- static void sk_trim_gso_size(struct sock *sk)
- {
--	if (sk->sk_gso_max_size <= GSO_LEGACY_MAX_SIZE)
--		return;
--#if IS_ENABLED(CONFIG_IPV6)
--	if (sk->sk_family == AF_INET6 &&
--	    sk_is_tcp(sk) &&
--	    !ipv6_addr_v4mapped(&sk->sk_v6_rcv_saddr))
--		return;
--#endif
--	sk->sk_gso_max_size = GSO_LEGACY_MAX_SIZE;
-+	if (sk->sk_gso_max_size > GSO_LEGACY_MAX_SIZE && !sk_is_tcp(sk))
-+		sk->sk_gso_max_size = GSO_LEGACY_MAX_SIZE;
+diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+index 37dfdcfcdd54..b8edd6c599eb 100644
+--- a/include/linux/ipv6.h
++++ b/include/linux/ipv6.h
+@@ -175,6 +175,15 @@ static inline bool inet6_is_jumbogram(const struct sk_buff *skb)
+ 	return !!(IP6CB(skb)->flags & IP6SKB_JUMBOGRAM);
  }
  
- void sk_setup_caps(struct sock *sk, struct dst_entry *dst)
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 6c0ec2789943..2f992a323b95 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1485,6 +1485,7 @@ struct sk_buff *inet_gro_receive(struct list_head *head, struct sk_buff *skb)
- 	if (unlikely(ip_fast_csum((u8 *)iph, 5)))
- 		goto out;
- 
-+	NAPI_GRO_CB(skb)->proto = proto;
- 	id = ntohl(*(__be32 *)&iph->id);
- 	flush = (u16)((ntohl(*(__be32 *)iph) ^ skb_gro_len(skb)) | (id & ~IP_DF));
- 	id >>= 16;
-@@ -1618,9 +1619,9 @@ int inet_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len)
- 
- int inet_gro_complete(struct sk_buff *skb, int nhoff)
++static inline unsigned int skb_ipv6_totlen(const struct sk_buff *skb)
++{
++	u32 pl = ntohs(ipv6_hdr(skb)->payload_len);
++
++	return pl ? pl + sizeof(struct ipv6hdr)
++		  : (skb_is_gso_v6(skb) ? skb->len - skb_network_offset(skb)
++					: pl + sizeof(struct ipv6hdr));
++}
++
+ /* can not be used in TCP layer after tcp_v6_fill_cb */
+ static inline int inet6_sdif(const struct sk_buff *skb)
  {
--	__be16 newlen = htons(skb->len - nhoff);
- 	struct iphdr *iph = (struct iphdr *)(skb->data + nhoff);
- 	const struct net_offload *ops;
-+	__be16 totlen = iph->tot_len;
- 	int proto = iph->protocol;
- 	int err = -ENOSYS;
- 
-@@ -1629,8 +1630,8 @@ int inet_gro_complete(struct sk_buff *skb, int nhoff)
- 		skb_set_inner_network_header(skb, nhoff);
- 	}
- 
--	csum_replace2(&iph->check, iph->tot_len, newlen);
--	iph->tot_len = newlen;
-+	iph_set_totlen(iph, skb->len - nhoff);
-+	csum_replace2(&iph->check, totlen, iph->tot_len);
- 
- 	ops = rcu_dereference(inet_offloads[proto]);
- 	if (WARN_ON(!ops || !ops->callbacks.gro_complete))
-diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-index e880ce77322a..0aa8c49b4e1b 100644
---- a/net/ipv4/ip_input.c
-+++ b/net/ipv4/ip_input.c
-@@ -511,7 +511,7 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
- 	if (unlikely(ip_fast_csum((u8 *)iph, iph->ihl)))
- 		goto csum_error;
- 
--	len = ntohs(iph->tot_len);
-+	len = skb_ip_totlen(skb);
- 	if (skb->len < len) {
- 		drop_reason = SKB_DROP_REASON_PKT_TOO_SMALL;
- 		__IP_INC_STATS(net, IPSTATS_MIB_INTRUNCATEDPKTS);
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 922c87ef1ab5..4e4e308c3230 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -100,7 +100,7 @@ int __ip_local_out(struct net *net, struct sock *sk, struct sk_buff *skb)
+diff --git a/net/netfilter/xt_length.c b/net/netfilter/xt_length.c
+index b3d623a52885..61518ec05c6e 100644
+--- a/net/netfilter/xt_length.c
++++ b/net/netfilter/xt_length.c
+@@ -30,8 +30,7 @@ static bool
+ length_mt6(const struct sk_buff *skb, struct xt_action_param *par)
  {
- 	struct iphdr *iph = ip_hdr(skb);
+ 	const struct xt_length_info *info = par->matchinfo;
+-	const u_int16_t pktlen = ntohs(ipv6_hdr(skb)->payload_len) +
+-				 sizeof(struct ipv6hdr);
++	u32 pktlen = skb_ipv6_totlen(skb);
  
--	iph->tot_len = htons(skb->len);
-+	iph_set_totlen(iph, skb->len);
- 	ip_send_check(iph);
- 
- 	/* if egress device is enslaved to an L3 master device pass the
+ 	return (pktlen >= info->min && pktlen <= info->max) ^ info->invert;
+ }
 -- 
 2.31.1
 
