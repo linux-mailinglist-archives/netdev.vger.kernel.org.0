@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 646EB66AD44
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 19:24:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2425366AD4A
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 19:36:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230327AbjANSYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Jan 2023 13:24:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53348 "EHLO
+        id S230210AbjANSgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Jan 2023 13:36:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230118AbjANSYK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 13:24:10 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F07547EE3;
-        Sat, 14 Jan 2023 10:24:08 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id f34so37405032lfv.10;
-        Sat, 14 Jan 2023 10:24:08 -0800 (PST)
+        with ESMTP id S230340AbjANSgB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 13:36:01 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C876C2683
+        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 10:35:57 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id j34-20020a05600c1c2200b003da1b054057so5151409wms.5
+        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 10:35:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=WHI6tGRe0cD63H1ZI0cQg/EKz93hem5gCf2mi4XYKxU=;
-        b=JeTS+Kks5lelgY47PuxV8p9YUYtL+qgIwzrJPdgD3gcJRUEjX3oVMu8t5gzT9yD5zM
-         61RZkoxAzYY+oq/noeWJX7jwk7Jm5EXE+yQ8jXK4gIVUW3gpN/jxZ9o8kahBxazwVd7Q
-         JLcCj3SbH+OK7yCrc7ipwTU/xwAxpyHoEmwKu1hZOX8TrmgryUnsYKRz6a6Do6YsVGRu
-         sYmyLlGg8K3wer4r5JKBE3x9av9dAwoQgz3zFLGEPPXgVYHRMkYQEdu0UxgD1OT2dN+6
-         eSIR8+Wy9Uw/zBPs9t56rzxgSedCnQYSnPrA8MRmSUZk/rywBywXRdDNaTXFruz7CiM6
-         Bebg==
+        bh=7swTTODSHlYSLX2GAmbKfQRHYdse8pkHcdxtmKU5cYQ=;
+        b=AdJ6P+g8tkLBY6++qVkG6kibKDRA0qe+JDeeLfDX/OzuvFwHCJSrhdU+H7DOY/WmC0
+         wi9+ztuc+D7dNrjxCaof0y7ZYp02ffYfAknqdhHTXsSDAQv6pen2Oq+5JgdLMJyTGDfv
+         B6DUoINkQXVGVlgqbWmUB02+M308Wfh9gk42S0/QxkUpOFZ8uocI2gFOiC6ShcDNWS8D
+         7Lw1UVC8Bmyy9AwstFWoIcUOHNERmLGZgxeKKzIkiKn44F/1rKTZut+gR+90ee3b7NQ9
+         jCYNenEDDKrtuK0RDAPs6OF78ta5mCJctqItJpxR0J2jgzemIU3DwAeJfK/YMBews3rE
+         OpTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=WHI6tGRe0cD63H1ZI0cQg/EKz93hem5gCf2mi4XYKxU=;
-        b=yvGyQTYRURkvBKCdDag3PyqTr8xNm1yEaXzHL2JVkQNJHqVSQy79F2+/99tnriSLan
-         8cftrmCgSzUCLRbVv4TFdKfXQFgPkPqVdoh2yGDzEJxukaS4vl6AbhDff/VCYj2HWE6c
-         YiOTWoLytva5AFS+dXb0GH6S9LrNuEEICfJbrqdCIPBFF7HmZZ2ZKRLppmXdIOsrJIdj
-         tMKSdzJvnhenT2El6mcpQCcmXJ8W+zwOuXiElsNdMI44HSbYviEO/Ii5sapnQRDJ7qOp
-         lo6NWrljkA74IkzRu852QysOO6Mmj+1P7kLlctOCNAXoMllC2MpyIsquwVw0cutBEoqa
-         iLng==
-X-Gm-Message-State: AFqh2kqC2nB0oPCzKv3pFdh6WUpdySlQi0N4yjOPDZNMvBQK9cN9Wm6g
-        HCW2YQrBMAgUHlD0rfjOP3g=
-X-Google-Smtp-Source: AMrXdXv+LMxlwjN2wZ8qnuZBk2vQ7BkL5DbqOm8b7YkPOp3d2vJDk3jMXqCLOof+jvQs29r3+hKWfA==
-X-Received: by 2002:ac2:4f13:0:b0:4b6:f3b3:fe14 with SMTP id k19-20020ac24f13000000b004b6f3b3fe14mr23441066lfr.1.1673720647204;
-        Sat, 14 Jan 2023 10:24:07 -0800 (PST)
-Received: from localhost.localdomain (077222238029.warszawa.vectranet.pl. [77.222.238.29])
-        by smtp.googlemail.com with ESMTPSA id t5-20020a05651c204500b0027ff129de9fsm2983883ljo.24.2023.01.14.10.24.05
+        bh=7swTTODSHlYSLX2GAmbKfQRHYdse8pkHcdxtmKU5cYQ=;
+        b=0/ldatuqCEdzaIMl+BECMaQQKxSbdWuXz7ePQIbQbgsLMjR654WucFOLqDriSG4WHo
+         vMFvabCAv9oq3owYmjJz9HaXhe6pe1TCl30MH5YdpgWERmIGB7cNeiPoTIFOMFAqDEl+
+         Oq5nsvDpiqOw7/Tj6MoXbyI9HvXCKR7VYljJVtmzZjyWpFUPG3qiXGudV0kzIBIdBQT3
+         hEtUj+2KNenQolYL8VDtQ2sk2RWE0MzGM3BQDVsA1zb+jyTDM0bisCdgHd47OQ0km1i2
+         dd8rRYX+JoblSEXSAgaP4NcUqxKOdY+0FCOiTE3ThogV3SS86gUOfMSiu4dP+OGFu8rE
+         LCvg==
+X-Gm-Message-State: AFqh2kop0jmKI//vM82dojjj+zkBLqO6V3Euct9E/ArlE+sTwTfG8rlx
+        UgBbSl++Q11pS2qfrOBoh8sXPHTWQHI=
+X-Google-Smtp-Source: AMrXdXuGuqtOtJ11UetKKP03qJ8fwCEOriQx9fBwo1hXUq6Osc/S+8KdNU8P/ftX/c/LFjqEPyKRlA==
+X-Received: by 2002:a05:600c:4e51:b0:3cf:7b8b:6521 with SMTP id e17-20020a05600c4e5100b003cf7b8b6521mr61677375wmq.32.1673721356206;
+        Sat, 14 Jan 2023 10:35:56 -0800 (PST)
+Received: from bulach.nilcons.com ([2001:1620:5344::4])
+        by smtp.gmail.com with ESMTPSA id ay13-20020a05600c1e0d00b003d34faca949sm28631574wmb.39.2023.01.14.10.35.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Jan 2023 10:24:06 -0800 (PST)
-From:   Szymon Heidrich <szymon.heidrich@gmail.com>
-To:     davem@davemloft.net, edumazet@google.com
-Cc:     kuba@kernel.org, pabeni@redhat.com, szymon.heidrich@gmail.com,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: usb: sr9700: Handle negative len
-Date:   Sat, 14 Jan 2023 19:23:26 +0100
-Message-Id: <20230114182326.30479-1-szymon.heidrich@gmail.com>
+        Sat, 14 Jan 2023 10:35:55 -0800 (PST)
+From:   Gergely Risko <gergely.risko@gmail.com>
+X-Google-Original-From: Gergely Risko <errge@nilcons.com>
+To:     netdev@vger.kernel.org
+Cc:     Gergely Risko <gergely.risko@gmail.com>
+Subject: [PATCH net-next] ipv6: fix reachability confirmation with proxy_ndp
+Date:   Sat, 14 Jan 2023 19:35:52 +0100
+Message-Id: <20230114183552.3262509-1-errge@nilcons.com>
 X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -69,32 +68,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Packet len computed as difference of length word extracted from
-skb data and four may result in a negative value. In such case
-processing of the buffer should be interrupted rather than
-setting sr_skb->len to an unexpectedly large value (due to cast
-from signed to unsigned integer) and passing sr_skb to
-usbnet_skb_return.
+From: Gergely Risko <gergely.risko@gmail.com>
 
-Fixes: e9da0b56fe27 ("sr9700: sanity check for packet length")
-Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
+When proxying IPv6 NDP requests, the adverts to the initial multicast
+solicits are correct and working.  On the other hand, when a
+reachability confirmation is requested (on unicast), no reply is sent.
+
+This causes the neighbor entry expiring on the sending host, which is
+mostly a non-issue, as a new multicast request is sent.  There are
+routers, where the multicast requests are intentionally delayed, and in
+these environments the current implementation causes periodic packet
+loss for the proxied endpoints.
+
+The root causes is the erroneous decrease of the hop limit, as this
+is checked in ndisc.c and no answer is generated when it's 254 instead
+of the correct 255.
+
+Signed-off-by: Gergely Risko <gergely.risko@gmail.com>
 ---
- drivers/net/usb/sr9700.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv6/ip6_output.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/sr9700.c b/drivers/net/usb/sr9700.c
-index 5a53e63d3..3164451e1 100644
---- a/drivers/net/usb/sr9700.c
-+++ b/drivers/net/usb/sr9700.c
-@@ -413,7 +413,7 @@ static int sr9700_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
- 		/* ignore the CRC length */
- 		len = (skb->data[1] | (skb->data[2] << 8)) - 4;
- 
--		if (len > ETH_FRAME_LEN || len > skb->len)
-+		if (len > ETH_FRAME_LEN || len > skb->len || len < 0)
- 			return 0;
- 
- 		/* the last packet of current skb */
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 60fd91bb5171..c314fdde0097 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -547,7 +547,20 @@ int ip6_forward(struct sk_buff *skb)
+ 	    pneigh_lookup(&nd_tbl, net, &hdr->daddr, skb->dev, 0)) {
+ 		int proxied = ip6_forward_proxy_check(skb);
+ 		if (proxied > 0) {
+-			hdr->hop_limit--;
++			/* It's tempting to decrease the hop limit
++			 * here by 1, as we do at the end of the
++			 * function too.
++			 *
++			 * But that would be incorrect, as proxying is
++			 * not forwarding.  The ip6_input function
++			 * will handle this packet locally, and it
++			 * depends on the hop limit being unchanged.
++			 *
++			 * One example is the NDP hop limit, that
++			 * always has to stay 255, but other would be
++			 * similar checks around RA packets, where the
++			 * user can even change the desired limit.
++			 */
+ 			return ip6_input(skb);
+ 		} else if (proxied < 0) {
+ 			__IP6_INC_STATS(net, idev, IPSTATS_MIB_INDISCARDS);
 -- 
 2.39.0
 
