@@ -2,220 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0B3F66AC1E
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 16:33:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2954F66AC2F
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 16:39:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229802AbjANPdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Jan 2023 10:33:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42748 "EHLO
+        id S229879AbjANPjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Jan 2023 10:39:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229612AbjANPdU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 10:33:20 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3801265B7
-        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 07:33:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673710398;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rocdlOE7cHWC1zE1mEMZfdO9OdSReGB8PfyH9d+AaeU=;
-        b=WEHyMsI/Ot0/h32F/IgPOhM3e5eO08uQfsNOu4JXGddM4kFD3niDO4pBAkRFuIHR0zBsUp
-        HfxCCH7kFDi7JkBSid7h8SL+OO0ISF57IBR2vz2GGFlz1Q+BLBB/12A8qIH8p0HfGXv0DE
-        /uaVD8SHgVOhVlbbE7e0T1mc51ZQerU=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-194-uF1PGPRiNvW8ZDewX8YzzA-1; Sat, 14 Jan 2023 10:33:16 -0500
-X-MC-Unique: uF1PGPRiNvW8ZDewX8YzzA-1
-Received: by mail-wm1-f69.google.com with SMTP id o33-20020a05600c512100b003da1f94e8f7so2918366wms.8
-        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 07:33:16 -0800 (PST)
+        with ESMTP id S229948AbjANPjM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 10:39:12 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207567A9C
+        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 07:39:11 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id 7so16857270pga.1
+        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 07:39:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore.com; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=ksDCogpM44p1MYL9LvFyCbpk9oMtoefLtPsNaDS+1Uw=;
+        b=IThA4Qp/47WBuI8os4H/m5l293jq3yndtbTSIqr6XNO4cHloGhTf4aQC+MrbVp/iCg
+         uQUFidWlLHRRd+h6RcmveluRwt5NZoo2An/ZrpKUusSIBQtWwpEke2+cvnxAvRBHtHLn
+         RgYxP8kmNXGdxXI3I/NGNv1AVMLLxyQB+nIQVYY65yK5WtqyLqwXo/aIyA2PTaUbJf3x
+         7gB93AeEoKRWKe6ebRVReiDQucBx/ON1ULR2srNsmWevrdVVSgPuAe1wvJR5eBHrGpwe
+         f0wYNYh56HFn2p+lw/2LgcxemNgqos5uyxPZZJwz8Y6x5DkpKBMS/7pS536sxtq8Yj34
+         5wrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rocdlOE7cHWC1zE1mEMZfdO9OdSReGB8PfyH9d+AaeU=;
-        b=KYJLXW/R9/0BTkD64Cp/VYrCas0HXAMRRat30eZaPSN7TIE9rid5TtlvV7SDhEXHfN
-         iuGR4Iz1WPa9K0GVUQHTRDUosq9uI7vqt1O+s3PnJGDGy0Dwtuz5eU5SJFFeZltGlHrL
-         wX+yiVN1DgENZCX6L0EMG6JE9qL7GWFKD8hbg9f6rc3IWk2qUj0Q+eDzL2o9IvSA+1wp
-         O8Jy8nVDyxazPcQxFJVV6/NrDuFMf8Znp2jP8IcUI3lqwIeythF0iRgNvMi1zed8jG4k
-         YxLZOoI0bqVyQ0hB3as5rlroElgHmqdN3PPVeYWZ7NSc04iWJ2hs2MimuvdkrnBPZPoO
-         TVow==
-X-Gm-Message-State: AFqh2kru3+PB67ttR7/NUtipiCXVBTJpp8nQaMuDrwq8S24y5xmFURQw
-        ecGp2tfGk+vBb0OpaW+6QK0RnBgYet84JDxTieePKS/MpSwkNIS6f/DY+cWUN02r6PiybAt5131
-        tnbpKJLPvIvDgmIWX
-X-Received: by 2002:a05:600c:331d:b0:3d6:ecc4:6279 with SMTP id q29-20020a05600c331d00b003d6ecc46279mr2876538wmp.27.1673710395573;
-        Sat, 14 Jan 2023 07:33:15 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXvW1I48o8cgiyW4Lk1zD/zOvGZMEH2HKEq45sGbIyCQoT2K7GCZqzn0n1PQCFPsX8CzChG+pA==
-X-Received: by 2002:a05:600c:331d:b0:3d6:ecc4:6279 with SMTP id q29-20020a05600c331d00b003d6ecc46279mr2876501wmp.27.1673710395255;
-        Sat, 14 Jan 2023 07:33:15 -0800 (PST)
-Received: from localhost (net-188-216-77-84.cust.vodafonedsl.it. [188.216.77.84])
-        by smtp.gmail.com with ESMTPSA id i8-20020a1c5408000000b003da065105c9sm12488884wmb.40.2023.01.14.07.33.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Jan 2023 07:33:14 -0800 (PST)
-Date:   Sat, 14 Jan 2023 16:33:11 +0100
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        hawk@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        toke@redhat.com, memxor@gmail.com, alardam@gmail.com,
-        saeedm@nvidia.com, anthony.l.nguyen@intel.com, gospo@broadcom.com,
-        vladimir.oltean@nxp.com, nbd@nbd.name, john@phrozen.org,
-        leon@kernel.org, simon.horman@corigine.com, aelior@marvell.com,
-        christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
-        grygorii.strashko@ti.com, mst@redhat.com, bjorn@kernel.org,
-        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        intel-wired-lan@lists.osuosl.org
-Subject: Re: [RFC bpf-next 6/8] libbpf: add API to get XDP/XSK supported
- features
-Message-ID: <Y8LLN5qiTDlLNQcK@lore-desk>
-References: <cover.1671462950.git.lorenzo@kernel.org>
- <6cce9b15a57345402bb94366434a5ac5609583b8.1671462951.git.lorenzo@kernel.org>
- <CAEf4BzbOF-S3kjbNVXCZR-K=TGarfi06ZwG1cbNF=HSSodwEfg@mail.gmail.com>
- <Y72f1U2/dw8jo0/0@lore-desk>
- <CAEf4BzawqXs6q18U8e5GD5d+9v1_w2+QOJYqmEpNb9rZ40E1Tw@mail.gmail.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ksDCogpM44p1MYL9LvFyCbpk9oMtoefLtPsNaDS+1Uw=;
+        b=FJBwWDCKrgYAXQfYn/CZVAOPf6SF5J6itSHdfWu0iPpgP+Q00da0nYKyCpR4fmkKCG
+         zOlYyj9pvZmbcATR96LupWkFIv/lwneRCx2THZXeu0q5uwvo/l/slvduewSgWiyn1eys
+         f+kEMG3XOcjot1lJ3ai6UDrozyERlhM9DUKd1fDKi65EKPetamIL0SPXKmdxtRyzg2qO
+         3NA5ATffCswpREQeIkQfm1swtaxRhMkqYu71IzXQUW8JxJB/Z8YGpdFV6uVp8oFmfud+
+         w/bF8WbyJvLdcRtvfJK7tHIZpbEVQrlIoCDxwUENh4JRSwtXBeHjqZFr6xsJeEJSoAjR
+         +tsg==
+X-Gm-Message-State: AFqh2koIf6zp+aV4Et7gZQBZgpRU2AdU+PXgLxsXFFFdsuZ1Y3uNQ9Ra
+        vVd8fdlI6HSarRqYlUXmV4jHAaXwE4wC2RhM29A/
+X-Google-Smtp-Source: AMrXdXv4BoDUHdpVNEYbOge+hC2COffpE8YpFO3Rq+AKRcoghZ8QDj5/8j6P++J0htEwejt6n9QXCwzM9ZhEw+/GTlc=
+X-Received: by 2002:a63:ea10:0:b0:4c7:ac8f:9e9c with SMTP id
+ c16-20020a63ea10000000b004c7ac8f9e9cmr99166pgi.92.1673710750546; Sat, 14 Jan
+ 2023 07:39:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="n89kErnvPkHUjfpP"
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzawqXs6q18U8e5GD5d+9v1_w2+QOJYqmEpNb9rZ40E1Tw@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <cover.1673666803.git.lucien.xin@gmail.com> <d19e0bd55ea5477d94567c00735b78d8da6a38cb.1673666803.git.lucien.xin@gmail.com>
+In-Reply-To: <d19e0bd55ea5477d94567c00735b78d8da6a38cb.1673666803.git.lucien.xin@gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Sat, 14 Jan 2023 10:38:59 -0500
+Message-ID: <CAHC9VhRXd+RkHSRLUt=0HFm42xPKGsSdSkxA6EHwipDukZH_mA@mail.gmail.com>
+Subject: Re: [PATCH net-next 06/10] cipso_ipv4: use iph_set_totlen in skbuff_setattr
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Aaron Conole <aconole@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jan 13, 2023 at 10:31 PM Xin Long <lucien.xin@gmail.com> wrote:
+>
+> It may process IPv4 TCP GSO packets in cipso_v4_skbuff_setattr(), so
+> the iph->tot_len update should use iph_set_totlen().
+>
+> Note that for these non GSO packets, the new iph tot_len with extra
+> iph option len added may become greater than 65535, the old process
+> will cast it and set iph->tot_len to it, which is a bug. In theory,
+> iph options shouldn't be added for these big packets in here, a fix
+> may be needed here in the future. For now this patch is only to set
+> iph->tot_len to 0 when it happens.
 
---n89kErnvPkHUjfpP
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I'm not entirely clear on the paragraph above, but we do need to be
+able to set/modify the IP options in cipso_v4_skbuff_setattr() in
+order to support CIPSO labeling.  I'm open to better and/or
+alternative solutions compared to what we are doing now, but I can't
+support a change that is a bug waiting to bite us.  My apologies if
+I'm interpreting your comments incorrectly and that isn't the case
+here.
 
-> On Tue, Jan 10, 2023 at 9:26 AM Lorenzo Bianconi <lorenzo@kernel.org> wro=
-te:
-> >
-> > > On Mon, Dec 19, 2022 at 7:42 AM Lorenzo Bianconi <lorenzo@kernel.org>=
- wrote:
-> > > >
-> > > > From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > > >
-> > > > Add functions to get XDP/XSK supported function of netdev over route
-> > > > netlink interface. These functions provide functionalities that are
-> > > > going to be used in upcoming change.
-> > > >
-> > > > The newly added bpf_xdp_query_features takes a fflags_cnt parameter,
-> > > > which denotes the number of elements in the output fflags array. Th=
-is
-> > > > must be at least 1 and maybe greater than XDP_FEATURES_WORDS. The
-> > > > function only writes to words which is min of fflags_cnt and
-> > > > XDP_FEATURES_WORDS.
-> > > >
-> > > > Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > > Co-developed-by: Marek Majtyka <alardam@gmail.com>
-> > > > Signed-off-by: Marek Majtyka <alardam@gmail.com>
-> > > > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > > > ---
-> > > >  tools/lib/bpf/libbpf.h   |  1 +
-> > > >  tools/lib/bpf/libbpf.map |  1 +
-> > > >  tools/lib/bpf/netlink.c  | 62 ++++++++++++++++++++++++++++++++++++=
-++++
-> > > >  3 files changed, 64 insertions(+)
-> > > >
-> > > > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> > > > index eee883f007f9..9d102eb5007e 100644
-> > > > --- a/tools/lib/bpf/libbpf.h
-> > > > +++ b/tools/lib/bpf/libbpf.h
-> > > > @@ -967,6 +967,7 @@ LIBBPF_API int bpf_xdp_detach(int ifindex, __u3=
-2 flags,
-> > > >                               const struct bpf_xdp_attach_opts *opt=
-s);
-> > > >  LIBBPF_API int bpf_xdp_query(int ifindex, int flags, struct bpf_xd=
-p_query_opts *opts);
-> > > >  LIBBPF_API int bpf_xdp_query_id(int ifindex, int flags, __u32 *pro=
-g_id);
-> > > > +LIBBPF_API int bpf_xdp_query_features(int ifindex, __u32 *fflags, =
-__u32 *fflags_cnt);
-> > >
-> > > no need to add new API, just extend bpf_xdp_query()?
-> >
-> > Hi Andrii,
-> >
-> > AFAIK libbpf supports just NETLINK_ROUTE protocol. In order to connect =
-with the
-> > genl family code shared by Jakub we need to add NETLINK_GENERIC protoco=
-l support
-> > to libbf. Is it ok to introduce a libmnl or libnl dependency in libbpf =
-or do you
-> > prefer to add open code to just what we need?
->=20
-> I'd very much like to avoid any extra dependencies. But I also have no
-> clue how much new code we are talking about, tbh. Either way, the less
-> dependencies, the better, if the result is an acceptable amount of
-> extra code to maintain.
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  net/ipv4/cipso_ipv4.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/net/ipv4/cipso_ipv4.c b/net/ipv4/cipso_ipv4.c
+> index 6cd3b6c559f0..79ae7204e8ed 100644
+> --- a/net/ipv4/cipso_ipv4.c
+> +++ b/net/ipv4/cipso_ipv4.c
+> @@ -2222,7 +2222,7 @@ int cipso_v4_skbuff_setattr(struct sk_buff *skb,
+>                 memset((char *)(iph + 1) + buf_len, 0, opt_len - buf_len);
+>         if (len_delta != 0) {
+>                 iph->ihl = 5 + (opt_len >> 2);
+> -               iph->tot_len = htons(skb->len);
+> +               iph_set_totlen(iph, skb->len);
+>         }
+>         ip_send_check(iph);
+>
+> --
+> 2.31.1
 
-ack, I avoided to introduce an extra dependencies since most of the protocol
-is already implemented in libbpf and I added just few code.
-
->=20
-> > I guess we should have a dedicated API to dump xdp features in this cas=
-e since
-> > all the other code relies on NETLINK_ROUTE protocol. What do you think?
-> >
->=20
-> From API standpoint it looks like an extension to bpf_xdp_query()
-> family of APIs, which is already extendable through opts. Which is why
-> I suggested that there is no need for new API. NETLINK_ROUTE vs
-> NETLINK_GENERIC seems like an internal implementation detail (but
-> again, I spent literally zero time trying to understand what's going
-> on here).
-
-ack, I extended bpf_xdp_query routine instead of adding a new API.
-
-Regards,
-Lorenzo
-
->=20
-> > Regards,
-> > Lorenzo
-> >
-> > >
-> > > >
-> > > >  /* TC related API */
-> > > >  enum bpf_tc_attach_point {
-> > > > diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> > > > index 71bf5691a689..9c2abb58fa4b 100644
-> > > > --- a/tools/lib/bpf/libbpf.map
-> > > > +++ b/tools/lib/bpf/libbpf.map
-> > > > @@ -362,6 +362,7 @@ LIBBPF_1.0.0 {
-> > > >                 bpf_program__set_autoattach;
-> > > >                 btf__add_enum64;
-> > > >                 btf__add_enum64_value;
-> > > > +               bpf_xdp_query_features;
-> > > >                 libbpf_bpf_attach_type_str;
-> > > >                 libbpf_bpf_link_type_str;
-> > > >                 libbpf_bpf_map_type_str;
-> > >
-> > > [...]
->=20
-
---n89kErnvPkHUjfpP
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY8LLNwAKCRA6cBh0uS2t
-rHQpAP9S1nRxJxn6VI8kE+ZgcmpcM4bn41k/iKTInZDlJMnuRgD/UDwB7wgWf7IR
-N84yItCjaXrkRBsk+05kHyYqvmSVTwI=
-=5cEs
------END PGP SIGNATURE-----
-
---n89kErnvPkHUjfpP--
-
+--
+paul-moore.com
