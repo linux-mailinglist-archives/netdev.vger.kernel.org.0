@@ -2,44 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C52766AA56
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 10:11:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B32366AA69
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 10:27:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229862AbjANJLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Jan 2023 04:11:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47546 "EHLO
+        id S229599AbjANJ1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Jan 2023 04:27:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbjANJLQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 04:11:16 -0500
-Received: from smtp.smtpout.orange.fr (smtp-20.smtpout.orange.fr [80.12.242.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C4DB4480
-        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 01:11:14 -0800 (PST)
-Received: from pop-os.home ([86.243.2.178])
-        by smtp.orange.fr with ESMTPA
-        id GcZDpq3gg29hWGcZDp72BO; Sat, 14 Jan 2023 10:11:13 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sat, 14 Jan 2023 10:11:13 +0100
-X-ME-IP: 86.243.2.178
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v2] Bluetooth: hci_debugfs: Use kstrtobool() instead of strtobool()
-Date:   Sat, 14 Jan 2023 10:11:04 +0100
-Message-Id: <58207d5b81c5739c037c030893fb08ea3dbedc57.1673687451.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229808AbjANJ1F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 04:27:05 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A93566EA1
+        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 01:27:04 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id v19so19194039ybv.1
+        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 01:27:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=tRWaSL38FmpAF6MPoHC1wRCjc6lWX1x9mpgNKX5zaWg=;
+        b=Ya0DpzZCRqbqljug8xIthWmr/m149CoU6y0Jt0icrVrEE3WSmdvgCHTG2HveJO7YrM
+         mc26mQlJ+mJPrdeiaIH9L9ei67TjbHAhlV9XH7zeoJ7h2+KMusPQpouQkwTidvqp94sE
+         eh2h7ks/goJQvBVQ8baHrnFF4W6pbfkOb6/l6zUFO48JyJ2uEHDoioT5u8A7w4XMMj9Q
+         dBlZDGdRcl2nNggZvroChfxwLeIoGqJll187ufZbvSDXPkXBDrQWruVNNvVEw5vG57Hg
+         ec+Rqs8LGBKWz915eZ4OVlRut9xptyt87FA9uR2X4MVVtOL7liq7IOH1VjAFYXLyK7MN
+         vBHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=tRWaSL38FmpAF6MPoHC1wRCjc6lWX1x9mpgNKX5zaWg=;
+        b=1cFTrbMR1zKypJIodMCjle3reMm/m5O11uuU9sopx4HHIj7uq4aydLJ+6NgxmXpbv/
+         NhZjupZ+ikoos/BpraXEguFOkQWyvc0cfG28k3uqOnffMoGqherdl51JSPXiVwC57jVD
+         beHLMW4/jHbbYioiO+9uesU2wLX7KNS2nJ59n6I6gq2Br/mD2aHVqEgSPENuYYdS8QEb
+         rYrWMTvzKhjxWZqfJ67i2r4K2XSvdTL/o7Qp4E6IA5W+JcaJnB4XBAMiTVfpbUiZ/UW9
+         WMzd9TnM3oZEsbjy8ERRI0VluTHL4IvJll/hc+uCyL0PE799VWbZEJu6A6AGqnbwQmcC
+         3vHA==
+X-Gm-Message-State: AFqh2kpawObp/l2pqSE2w6KLxjnxYweHLTE6uryt6Od+Qrro37Sit/3x
+        Gob28Ljr7zMa3dc84fOEH2Rduz3eV72lo9rvq/GiAQ==
+X-Google-Smtp-Source: AMrXdXuY84iL+h74+AYEZClAYaIUhhzThKZDRFK9FaDJDdeCFEDa7PkmvXO91tTikALOXNnlSb/Crq4Ag31QUij99kA=
+X-Received: by 2002:a25:46c6:0:b0:7b8:a0b8:f7ec with SMTP id
+ t189-20020a2546c6000000b007b8a0b8f7ecmr3812185yba.36.1673688423236; Sat, 14
+ Jan 2023 01:27:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
+References: <20230112065336.41034-1-kerneljasonxing@gmail.com> <CAL+tcoB2ZpgM6HM+m=wF2EkQ5caeettcbeUQQBxpLWVuwSSxbw@mail.gmail.com>
+In-Reply-To: <CAL+tcoB2ZpgM6HM+m=wF2EkQ5caeettcbeUQQBxpLWVuwSSxbw@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Sat, 14 Jan 2023 10:26:52 +0100
+Message-ID: <CANn89i+W_1ux=5ixjCdf9LoGuDb6LEJ_XgWCNcYztjPQ0R4L1Q@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: avoid the lookup process failing to get sk in
+ ehash table
+To:     Jason Xing <kerneljasonxing@gmail.com>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        pabeni@redhat.com, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Xing <kernelxing@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -47,54 +69,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-strtobool() is the same as kstrtobool().
-However, the latter is more used within the kernel.
+On Sat, Jan 14, 2023 at 3:15 AM Jason Xing <kerneljasonxing@gmail.com> wrote:
 
-In order to remove strtobool() and slightly simplify kstrtox.h, switch to
-the other function name.
+>
+> So could someone please take some time to help me review the patch?
+> It's not complicated. Thank you from the bottom of my heart in
+> advance.
 
-While at it, include the corresponding header file (<linux/kstrtox.h>)
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-This patch was already sent as a part of a serie ([1]) that axed all usages
-of strtobool().
-Most of the patches have been merged in -next.
+Sure.
 
-I synch'ed with latest -next and re-send the remaining ones as individual
-patches.
+Please be patient, and accept the fact that maintainers are
+overwhelmed by mixes of patches and company work.
 
-Changes in v2:
-  - No change
-
-[1]: https://lore.kernel.org/all/cover.1667336095.git.christophe.jaillet@wanadoo.fr/
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- net/bluetooth/hci_debugfs.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/bluetooth/hci_debugfs.c b/net/bluetooth/hci_debugfs.c
-index b7f682922a16..f1ef60ddd4a6 100644
---- a/net/bluetooth/hci_debugfs.c
-+++ b/net/bluetooth/hci_debugfs.c
-@@ -22,6 +22,7 @@
- */
- 
- #include <linux/debugfs.h>
-+#include <linux/kstrtox.h>
- 
- #include <net/bluetooth/bluetooth.h>
- #include <net/bluetooth/hci_core.h>
-@@ -1152,7 +1153,7 @@ static ssize_t force_no_mitm_write(struct file *file,
- 		return -EFAULT;
- 
- 	buf[buf_size] = '\0';
--	if (strtobool(buf, &enable))
-+	if (kstrtobool(buf, &enable))
- 		return -EINVAL;
- 
- 	if (enable == hci_dev_test_flag(hdev, HCI_FORCE_NO_MITM))
--- 
-2.34.1
-
+In the meantime, can you double check if the transition from
+established to timewait socket is also covered by your patch ?
