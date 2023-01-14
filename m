@@ -2,65 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4E3466A947
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 05:43:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D965066A950
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 06:00:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230021AbjANEnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 23:43:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52550 "EHLO
+        id S229485AbjANFAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Jan 2023 00:00:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229894AbjANEnk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 23:43:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E819A4;
-        Fri, 13 Jan 2023 20:43:40 -0800 (PST)
+        with ESMTP id S229464AbjANFAS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 00:00:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1840235A9
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 21:00:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C53A60244;
-        Sat, 14 Jan 2023 04:43:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94EC1C433EF;
-        Sat, 14 Jan 2023 04:43:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A1D1608CC
+        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 05:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EA380C433EF;
+        Sat, 14 Jan 2023 05:00:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673671419;
-        bh=Aw1JOVEKYhI6P8qbtUHjmC7jHC2m7SKSHccHTWk4hnU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dhZOMye8WuOwIbtWLRD2HsU6aDCR0iV7kCl3rRMnP3RvWOACTltc5Tm0ferN1uL3m
-         vydqEMMX5tlNnntK9rTUyHc+JQ91q6xdD2ZJ5fHHx8g/MinjcSbJPCbEsBs0hMWwR1
-         id1avQjeVaNHl/6kOzqQ9LjQNOLcTg5bwNl8x+UnhioYfX/aQC2ZytjDl9tfLtbROP
-         19sbo19XVRPkeU+8swtsGsn3nw5jX7td6zXKqwmd//bmtPsMHrKmAXNY/Dlx0Mzd+R
-         Rax0A6EfHNsUVCNg4gJKxVFYsBb1m7B5BLe6ge0UlMdVh9jBKmGuoVt+Yr/oBIekjY
-         uRkX1vfLWy2gg==
-Date:   Fri, 13 Jan 2023 20:43:36 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Rui Sousa <rui.sousa@nxp.com>,
-        Ferenc Fejes <ferenc.fejes@ericsson.com>,
-        Pranavi Somisetty <pranavi.somisetty@amd.com>,
-        Harini Katakam <harini.katakam@amd.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH v2 net-next 04/12] net: ethtool: netlink: retrieve stats
- from multiple sources (eMAC, pMAC)
-Message-ID: <20230113204336.401a2062@kernel.org>
-In-Reply-To: <20230111161706.1465242-5-vladimir.oltean@nxp.com>
-References: <20230111161706.1465242-1-vladimir.oltean@nxp.com>
-        <20230111161706.1465242-5-vladimir.oltean@nxp.com>
+        s=k20201202; t=1673672417;
+        bh=dc2MVpECuOJTMizyMIBi/mQIo33ZGQ7MoFMp1bGcTJY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=UmgT5Vfs3r+plLBLt5d1LhqUARICffFBYhPZYnR/zDEV7ydd9ZADxGR54wA3wb5o+
+         9AOvfGdS9yipRWEFY0ft8MIh3IDQVpY6lWrdUViDZAa49Re1l6h6wI1k5TMKmKA53r
+         +T0VkDE8oWDceNCQ/BDLiWpR7iu+onM6Z5WrWYeRmgcMD4XUMJvfMhAjjefXyBhs0u
+         DLSCUMj3RfCggDzxi71p2VK9IC1UBesX0E54ftLuQEVg5cEmup1OCCOCGHSln9KCh1
+         /1ZOhFtPHSzi9V/hDUPp4NkoIHvwTq8h1Dx66CvxmzPVQajMnFlWDLcKfHybwUGrpN
+         18zqXyBgeaVKA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C6E62C395C8;
+        Sat, 14 Jan 2023 05:00:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4] net: nfc: Fix use-after-free in local_cleanup()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167367241680.28163.5038142496471587881.git-patchwork-notify@kernel.org>
+Date:   Sat, 14 Jan 2023 05:00:16 +0000
+References: <20230111131914.3338838-1-jisoo.jang@yonsei.ac.kr>
+In-Reply-To: <20230111131914.3338838-1-jisoo.jang@yonsei.ac.kr>
+To:     Jisoo Jang <jisoo.jang@yonsei.ac.kr>
+Cc:     pabeni@redhat.com, krzysztof.kozlowski@linaro.org,
+        netdev@vger.kernel.org, edumazet@google.com, kuba@kernel.org,
+        dokyungs@yonsei.ac.kr, linuxlovemin@yonsei.ac.kr
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -70,30 +56,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Jan 2023 18:16:58 +0200 Vladimir Oltean wrote:
-> +/**
-> + * enum ethtool_stats_src - source of ethtool statistics
-> + * @ETHTOOL_STATS_SRC_AGGREGATE:
-> + *	if device supports a MAC merge layer, this retrieves the aggregate
-> + *	statistics of the eMAC and pMAC. Otherwise, it retrieves just the
-> + *	statistics of the single (express) MAC.
-> + * @ETHTOOL_STATS_SRC_EMAC:
-> + *	if device supports a MM layer, this retrieves the eMAC statistics.
-> + *	Otherwise, it retrieves the statistics of the single (express) MAC.
-> + * @ETHTOOL_STATS_SRC_PMAC:
-> + *	if device supports a MM layer, this retrieves the pMAC statistics.
-> + */
-> +enum ethtool_stats_src {
-> +	ETHTOOL_STATS_SRC_AGGREGATE,
-> +	ETHTOOL_STATS_SRC_EMAC,
-> +	ETHTOOL_STATS_SRC_PMAC,
-> +};
+Hello:
 
-Should we somehow call it "MAC stats"?
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Right now its named like a generic attribute, but it's not part of 
-the header nest (ETHTOOL_A_HEADER_*).
+On Wed, 11 Jan 2023 22:19:14 +0900 you wrote:
+> Fix a use-after-free that occurs in kfree_skb() called from
+> local_cleanup(). This could happen when killing nfc daemon (e.g. neard)
+> after detaching an nfc device.
+> When detaching an nfc device, local_cleanup() called from
+> nfc_llcp_unregister_device() frees local->rx_pending and decreases
+> local->ref by kref_put() in nfc_llcp_local_put().
+> In the terminating process, nfc daemon releases all sockets and it leads
+> to decreasing local->ref. After the last release of local->ref,
+> local_cleanup() called from local_release() frees local->rx_pending
+> again, which leads to the bug.
+> 
+> [...]
 
-I'm not sure myself which way is better, but feels like either it
-should be generic, in the header nest, and parsed by the common code;
-or named more specifically and stay in the per-cmd attrs.
+Here is the summary with links:
+  - [v4] net: nfc: Fix use-after-free in local_cleanup()
+    https://git.kernel.org/netdev/net/c/4bb4db7f3187
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
