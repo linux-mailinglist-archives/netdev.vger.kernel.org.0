@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8528D66ACC5
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 18:02:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86ACE66ACC9
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 18:02:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230338AbjANRCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Jan 2023 12:02:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37118 "EHLO
+        id S230316AbjANRCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Jan 2023 12:02:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230284AbjANRB7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 12:01:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA01AA5E8
-        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 09:01:57 -0800 (PST)
+        with ESMTP id S230288AbjANRCC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 12:02:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7405A5E9
+        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 09:02:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78A75B80A08
-        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 17:01:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC593C433EF;
-        Sat, 14 Jan 2023 17:01:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 509D8B80A08
+        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 17:02:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 768A4C43398;
+        Sat, 14 Jan 2023 17:01:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673715715;
-        bh=8zrrDzm5tCdjDzREpTvONFj/L54onmdRf957zYgL7KA=;
+        s=k20201202; t=1673715718;
+        bh=A12fmAkynm8mYZXaVJfdQDYz63GTBX01zHiZRV30ORA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I/80IXbiEdAhCTSHLKzWUotK0DcarENHJaRm2SpQebmqOdTkxExOduUPUTdmlw4lr
-         wIjttAyhTmZCuiBc0hOZhWzSALwZbvVJE4z2jlpjUGFZca78V6Ri92WMKJblxS3Mtg
-         IgAFCsMe8rKil/NWkynH6dPo7RTCgERuYoI/lwESv8bNMDzWXJIlyp5usiL5rkDoeq
-         ecWUT7ZYaihQ+jyFiTuo0tdmAXvEliYLXj3A9rnlat7hPUGe4gKcNlD9b/gy977Fs6
-         WkAKR2OINrjaGfiN3r9hYHO0nOWZwFtHq4Hz+T+fzoYPeJYmhRw1LE4UPR2njIEZ08
-         Ell74nrPDEiqA==
+        b=em0pkWolClwP4Htgd+zsljhyP+moaJaKgcoU7uYLIuxAGq3EjpKxWm0f+3h1TpN+M
+         5sQkSOZ8s5SwGujV7HprFMqTfXdEK7HADi60l97VB2RfTBY5wPC+gsWvIqWQJg2J+C
+         pgAcdjrEMuOY8n5IedK9gYS+JDMt+mVbEaUUL9sahCjSQPKMYCeyIrzTKA1uTPaNNv
+         BtKso1C1MmY6mJzJo0r/cOhz37/NGKtCWreBuC9NZDQuk7K1JK2UUd88z29KGSoEgj
+         KN9ntpBVlarj1NWTtdJEu7ggLuxaLgNSeI3cGqu0Uvh5WxhXYpgJz08Qj6b+Fu07Ru
+         GKjq6QgKHVOyw==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
@@ -38,9 +38,9 @@ Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         john@phrozen.org, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
         sujuan.chen@mediatek.com, daniel@makrotopia.org, leon@kernel.org,
         alexander.duyck@gmail.com
-Subject: [PATCH v6 net-next 4/5] net: ethernet: mtk_eth_soc: add dma checks to mtk_hw_reset_check
-Date:   Sat, 14 Jan 2023 18:01:31 +0100
-Message-Id: <83b6d901d24dd2d8c4f6729685923535c5dad00d.1673715298.git.lorenzo@kernel.org>
+Subject: [PATCH v6 net-next 5/5] net: ethernet: mtk_wed: add reset/reset_complete callbacks
+Date:   Sat, 14 Jan 2023 18:01:32 +0100
+Message-Id: <db70e7117c34ff2f91f937f015371d455bfe8b2d.1673715298.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <cover.1673715298.git.lorenzo@kernel.org>
 References: <cover.1673715298.git.lorenzo@kernel.org>
@@ -55,256 +55,142 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce mtk_hw_check_dma_hang routine to monitor possible dma hangs.
+Introduce reset and reset_complete wlan callback to schedule WLAN driver
+reset when ethernet/wed driver is resetting.
 
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 Tested-by: Daniel Golle <daniel@makrotopia.org>
 Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
 Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 106 ++++++++++++++++++++
- drivers/net/ethernet/mediatek/mtk_eth_soc.h |  26 +++++
- 2 files changed, 132 insertions(+)
+reset and reset_complete callbacks are implemented in the following
+mt76 wireless driver series:
+https://lore.kernel.org/linux-wireless/cover.1673103214.git.lorenzo@kernel.org/T/#md34b4ffcb07056794378fa4e8079458ecca69109
+---
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c |  7 ++++
+ drivers/net/ethernet/mediatek/mtk_wed.c     | 42 +++++++++++++++++++++
+ drivers/net/ethernet/mediatek/mtk_wed.h     |  9 +++++
+ include/linux/soc/mediatek/mtk_wed.h        |  2 +
+ 4 files changed, 60 insertions(+)
 
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 773e2b9e9122..5d398595ead0 100644
+index 5d398595ead0..75bbb1e7766c 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -51,6 +51,7 @@ static const struct mtk_reg_map mtk_reg_map = {
- 		.delay_irq	= 0x0a0c,
- 		.irq_status	= 0x0a20,
- 		.irq_mask	= 0x0a28,
-+		.adma_rx_dbg0	= 0x0a38,
- 		.int_grp	= 0x0a50,
- 	},
- 	.qdma = {
-@@ -82,6 +83,8 @@ static const struct mtk_reg_map mtk_reg_map = {
- 		[0]		= 0x2800,
- 		[1]		= 0x2c00,
- 	},
-+	.pse_iq_sta		= 0x0110,
-+	.pse_oq_sta		= 0x0118,
- };
+@@ -3970,6 +3970,11 @@ static void mtk_pending_work(struct work_struct *work)
+ 	set_bit(MTK_RESETTING, &eth->state);
  
- static const struct mtk_reg_map mt7628_reg_map = {
-@@ -112,6 +115,7 @@ static const struct mtk_reg_map mt7986_reg_map = {
- 		.delay_irq	= 0x620c,
- 		.irq_status	= 0x6220,
- 		.irq_mask	= 0x6228,
-+		.adma_rx_dbg0	= 0x6238,
- 		.int_grp	= 0x6250,
- 	},
- 	.qdma = {
-@@ -143,6 +147,8 @@ static const struct mtk_reg_map mt7986_reg_map = {
- 		[0]		= 0x4800,
- 		[1]		= 0x4c00,
- 	},
-+	.pse_iq_sta		= 0x0180,
-+	.pse_oq_sta		= 0x01a0,
- };
+ 	mtk_prepare_for_reset(eth);
++	mtk_wed_fe_reset();
++	/* Run again reset preliminary configuration in order to avoid any
++	 * possible race during FE reset since it can run releasing RTNL lock.
++	 */
++	mtk_prepare_for_reset(eth);
  
- /* strings used by ethtool */
-@@ -3600,6 +3606,102 @@ static void mtk_hw_warm_reset(struct mtk_eth *eth)
- 			val, rst_mask);
+ 	/* stop all devices to make sure that dma is properly shut down */
+ 	for (i = 0; i < MTK_MAC_COUNT; i++) {
+@@ -4007,6 +4012,8 @@ static void mtk_pending_work(struct work_struct *work)
+ 
+ 	clear_bit(MTK_RESETTING, &eth->state);
+ 
++	mtk_wed_fe_reset_complete();
++
+ 	rtnl_unlock();
  }
  
-+static bool mtk_hw_check_dma_hang(struct mtk_eth *eth)
+diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/ethernet/mediatek/mtk_wed.c
+index a6271449617f..95ac4f71d2b2 100644
+--- a/drivers/net/ethernet/mediatek/mtk_wed.c
++++ b/drivers/net/ethernet/mediatek/mtk_wed.c
+@@ -206,6 +206,48 @@ mtk_wed_wo_reset(struct mtk_wed_device *dev)
+ 	iounmap(reg);
+ }
+ 
++void mtk_wed_fe_reset(void)
 +{
-+	const struct mtk_reg_map *reg_map = eth->soc->reg_map;
-+	bool gmac1_tx, gmac2_tx, gdm1_tx, gdm2_tx;
-+	bool oq_hang, cdm1_busy, adma_busy;
-+	bool wtx_busy, cdm_full, oq_free;
-+	u32 wdidx, val, gdm1_fc, gdm2_fc;
-+	bool qfsm_hang, qfwd_hang;
-+	bool ret = false;
++	int i;
 +
-+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628))
-+		return false;
++	mutex_lock(&hw_lock);
 +
-+	/* WDMA sanity checks */
-+	wdidx = mtk_r32(eth, reg_map->wdma_base[0] + 0xc);
++	for (i = 0; i < ARRAY_SIZE(hw_list); i++) {
++		struct mtk_wed_hw *hw = hw_list[i];
++		struct mtk_wed_device *dev = hw->wed_dev;
++		int err;
 +
-+	val = mtk_r32(eth, reg_map->wdma_base[0] + 0x204);
-+	wtx_busy = FIELD_GET(MTK_TX_DMA_BUSY, val);
++		if (!dev || !dev->wlan.reset)
++			continue;
 +
-+	val = mtk_r32(eth, reg_map->wdma_base[0] + 0x230);
-+	cdm_full = !FIELD_GET(MTK_CDM_TXFIFO_RDY, val);
-+
-+	oq_free  = (!(mtk_r32(eth, reg_map->pse_oq_sta) & GENMASK(24, 16)) &&
-+		    !(mtk_r32(eth, reg_map->pse_oq_sta + 0x4) & GENMASK(8, 0)) &&
-+		    !(mtk_r32(eth, reg_map->pse_oq_sta + 0x10) & GENMASK(24, 16)));
-+
-+	if (wdidx == eth->reset.wdidx && wtx_busy && cdm_full && oq_free) {
-+		if (++eth->reset.wdma_hang_count > 2) {
-+			eth->reset.wdma_hang_count = 0;
-+			ret = true;
-+		}
-+		goto out;
++		/* reset callback blocks until WLAN reset is completed */
++		err = dev->wlan.reset(dev);
++		if (err)
++			dev_err(dev->dev, "wlan reset failed: %d\n", err);
 +	}
 +
-+	/* QDMA sanity checks */
-+	qfsm_hang = !!mtk_r32(eth, reg_map->qdma.qtx_cfg + 0x234);
-+	qfwd_hang = !mtk_r32(eth, reg_map->qdma.qtx_cfg + 0x308);
-+
-+	gdm1_tx = FIELD_GET(GENMASK(31, 16), mtk_r32(eth, MTK_FE_GDM1_FSM)) > 0;
-+	gdm2_tx = FIELD_GET(GENMASK(31, 16), mtk_r32(eth, MTK_FE_GDM2_FSM)) > 0;
-+	gmac1_tx = FIELD_GET(GENMASK(31, 24), mtk_r32(eth, MTK_MAC_FSM(0))) != 1;
-+	gmac2_tx = FIELD_GET(GENMASK(31, 24), mtk_r32(eth, MTK_MAC_FSM(1))) != 1;
-+	gdm1_fc = mtk_r32(eth, reg_map->gdm1_cnt + 0x24);
-+	gdm2_fc = mtk_r32(eth, reg_map->gdm1_cnt + 0x64);
-+
-+	if (qfsm_hang && qfwd_hang &&
-+	    ((gdm1_tx && gmac1_tx && gdm1_fc < 1) ||
-+	     (gdm2_tx && gmac2_tx && gdm2_fc < 1))) {
-+		if (++eth->reset.qdma_hang_count > 2) {
-+			eth->reset.qdma_hang_count = 0;
-+			ret = true;
-+		}
-+		goto out;
-+	}
-+
-+	/* ADMA sanity checks */
-+	oq_hang = !!(mtk_r32(eth, reg_map->pse_oq_sta) & GENMASK(8, 0));
-+	cdm1_busy = !!(mtk_r32(eth, MTK_FE_CDM1_FSM) & GENMASK(31, 16));
-+	adma_busy = !(mtk_r32(eth, reg_map->pdma.adma_rx_dbg0) & GENMASK(4, 0)) &&
-+		    !(mtk_r32(eth, reg_map->pdma.adma_rx_dbg0) & BIT(6));
-+
-+	if (oq_hang && cdm1_busy && adma_busy) {
-+		if (++eth->reset.adma_hang_count > 2) {
-+			eth->reset.adma_hang_count = 0;
-+			ret = true;
-+		}
-+		goto out;
-+	}
-+
-+	eth->reset.wdma_hang_count = 0;
-+	eth->reset.qdma_hang_count = 0;
-+	eth->reset.adma_hang_count = 0;
-+out:
-+	eth->reset.wdidx = wdidx;
-+
-+	return ret;
++	mutex_unlock(&hw_lock);
 +}
 +
-+static void mtk_hw_reset_monitor_work(struct work_struct *work)
++void mtk_wed_fe_reset_complete(void)
 +{
-+	struct delayed_work *del_work = to_delayed_work(work);
-+	struct mtk_eth *eth = container_of(del_work, struct mtk_eth,
-+					   reset.monitor_work);
++	int i;
 +
-+	if (test_bit(MTK_RESETTING, &eth->state))
-+		goto out;
++	mutex_lock(&hw_lock);
 +
-+	/* DMA stuck checks */
-+	if (mtk_hw_check_dma_hang(eth))
-+		schedule_work(&eth->pending_work);
++	for (i = 0; i < ARRAY_SIZE(hw_list); i++) {
++		struct mtk_wed_hw *hw = hw_list[i];
++		struct mtk_wed_device *dev = hw->wed_dev;
 +
-+out:
-+	schedule_delayed_work(&eth->reset.monitor_work,
-+			      MTK_DMA_MONITOR_TIMEOUT);
++		if (!dev || !dev->wlan.reset_complete)
++			continue;
++
++		dev->wlan.reset_complete(dev);
++	}
++
++	mutex_unlock(&hw_lock);
 +}
 +
- static int mtk_hw_init(struct mtk_eth *eth, bool reset)
+ static struct mtk_wed_hw *
+ mtk_wed_assign(struct mtk_wed_device *dev)
  {
- 	u32 dma_mask = ETHSYS_DMA_AG_MAP_PDMA | ETHSYS_DMA_AG_MAP_QDMA |
-@@ -3949,6 +4051,7 @@ static int mtk_cleanup(struct mtk_eth *eth)
- 	mtk_unreg_dev(eth);
- 	mtk_free_dev(eth);
- 	cancel_work_sync(&eth->pending_work);
-+	cancel_delayed_work_sync(&eth->reset.monitor_work);
- 
- 	return 0;
+diff --git a/drivers/net/ethernet/mediatek/mtk_wed.h b/drivers/net/ethernet/mediatek/mtk_wed.h
+index e012b8a82133..43ab77eaf683 100644
+--- a/drivers/net/ethernet/mediatek/mtk_wed.h
++++ b/drivers/net/ethernet/mediatek/mtk_wed.h
+@@ -128,6 +128,8 @@ void mtk_wed_add_hw(struct device_node *np, struct mtk_eth *eth,
+ void mtk_wed_exit(void);
+ int mtk_wed_flow_add(int index);
+ void mtk_wed_flow_remove(int index);
++void mtk_wed_fe_reset(void);
++void mtk_wed_fe_reset_complete(void);
+ #else
+ static inline void
+ mtk_wed_add_hw(struct device_node *np, struct mtk_eth *eth,
+@@ -147,6 +149,13 @@ static inline void mtk_wed_flow_remove(int index)
+ {
  }
-@@ -4403,6 +4506,7 @@ static int mtk_probe(struct platform_device *pdev)
  
- 	eth->rx_dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_EQE;
- 	INIT_WORK(&eth->rx_dim.work, mtk_dim_rx);
-+	INIT_DELAYED_WORK(&eth->reset.monitor_work, mtk_hw_reset_monitor_work);
- 
- 	eth->tx_dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_EQE;
- 	INIT_WORK(&eth->tx_dim.work, mtk_dim_tx);
-@@ -4605,6 +4709,8 @@ static int mtk_probe(struct platform_device *pdev)
- 	netif_napi_add(&eth->dummy_dev, &eth->rx_napi, mtk_napi_rx);
- 
- 	platform_set_drvdata(pdev, eth);
-+	schedule_delayed_work(&eth->reset.monitor_work,
-+			      MTK_DMA_MONITOR_TIMEOUT);
- 
- 	return 0;
- 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index a8066b3ee3ed..dff0e3ad2de6 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -284,6 +284,8 @@
- 
- #define MTK_RX_DONE_INT_V2	BIT(14)
- 
-+#define MTK_CDM_TXFIFO_RDY	BIT(7)
++static inline void mtk_wed_fe_reset(void)
++{
++}
 +
- /* QDMA Interrupt grouping registers */
- #define MTK_RLS_DONE_INT	BIT(0)
++static inline void mtk_wed_fe_reset_complete(void)
++{
++}
+ #endif
  
-@@ -574,6 +576,17 @@
- #define MT7628_SDM_RBCNT	(MT7628_SDM_OFFSET + 0x10c)
- #define MT7628_SDM_CS_ERR	(MT7628_SDM_OFFSET + 0x110)
- 
-+#define MTK_FE_CDM1_FSM		0x220
-+#define MTK_FE_CDM2_FSM		0x224
-+#define MTK_FE_CDM3_FSM		0x238
-+#define MTK_FE_CDM4_FSM		0x298
-+#define MTK_FE_CDM5_FSM		0x318
-+#define MTK_FE_CDM6_FSM		0x328
-+#define MTK_FE_GDM1_FSM		0x228
-+#define MTK_FE_GDM2_FSM		0x22C
-+
-+#define MTK_MAC_FSM(x)		(0x1010C + ((x) * 0x100))
-+
- struct mtk_rx_dma {
- 	unsigned int rxd1;
- 	unsigned int rxd2;
-@@ -970,6 +983,7 @@ struct mtk_reg_map {
- 		u32	delay_irq;	/* delay interrupt */
- 		u32	irq_status;	/* interrupt status */
- 		u32	irq_mask;	/* interrupt mask */
-+		u32	adma_rx_dbg0;
- 		u32	int_grp;
- 	} pdma;
- 	struct {
-@@ -998,6 +1012,8 @@ struct mtk_reg_map {
- 	u32	gdma_to_ppe;
- 	u32	ppe_base;
- 	u32	wdma_base[2];
-+	u32	pse_iq_sta;
-+	u32	pse_oq_sta;
+ #ifdef CONFIG_DEBUG_FS
+diff --git a/include/linux/soc/mediatek/mtk_wed.h b/include/linux/soc/mediatek/mtk_wed.h
+index db637a13888d..fd0b0605cf90 100644
+--- a/include/linux/soc/mediatek/mtk_wed.h
++++ b/include/linux/soc/mediatek/mtk_wed.h
+@@ -150,6 +150,8 @@ struct mtk_wed_device {
+ 		void (*release_rx_buf)(struct mtk_wed_device *wed);
+ 		void (*update_wo_rx_stats)(struct mtk_wed_device *wed,
+ 					   struct mtk_wed_wo_rx_stats *stats);
++		int (*reset)(struct mtk_wed_device *wed);
++		void (*reset_complete)(struct mtk_wed_device *wed);
+ 	} wlan;
+ #endif
  };
- 
- /* struct mtk_eth_data -	This is the structure holding all differences
-@@ -1040,6 +1056,8 @@ struct mtk_soc_data {
- 	} txrx;
- };
- 
-+#define MTK_DMA_MONITOR_TIMEOUT		msecs_to_jiffies(1000)
-+
- /* currently no SoC has more than 2 macs */
- #define MTK_MAX_DEVS			2
- 
-@@ -1164,6 +1182,14 @@ struct mtk_eth {
- 	struct rhashtable		flow_table;
- 
- 	struct bpf_prog			__rcu *prog;
-+
-+	struct {
-+		struct delayed_work monitor_work;
-+		u32 wdidx;
-+		u8 wdma_hang_count;
-+		u8 qdma_hang_count;
-+		u8 adma_hang_count;
-+	} reset;
- };
- 
- /* struct mtk_mac -	the structure that holds the info about the MACs of the
 -- 
 2.39.0
 
