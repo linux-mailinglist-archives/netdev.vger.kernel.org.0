@@ -2,61 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A80D966ACA3
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 17:34:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39DC666ACA5
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 17:34:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230088AbjANQe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Jan 2023 11:34:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59080 "EHLO
+        id S230004AbjANQe3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Jan 2023 11:34:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230004AbjANQeX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 11:34:23 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41BCD8A53
-        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 08:34:22 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id o18so4136025pji.1
-        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 08:34:22 -0800 (PST)
+        with ESMTP id S230015AbjANQeY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 11:34:24 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1BDC558B
+        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 08:34:23 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id d15so26370983pls.6
+        for <netdev@vger.kernel.org>; Sat, 14 Jan 2023 08:34:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=zT+siSJYVYwvV9tFbZ1JFFaTZyh4ISeabbc/8gUHtes=;
-        b=qWHkLmrPfF1ho8xcbQRIeiAOF0VLG1vAhFu/Bbfz0Xrvt2moZ94JcEEfF6jlUekMIU
-         8JwHy5ZYQE5T8P5eoYRkMWwJT2QzCXegtEkz2ga5Rf62jyoXOJhKigcTbv+NrWk1DUKU
-         ejpv53W5ESCMnWpkgGHC6sQZ+w9RksBoS1sXVak4Zx9BLkrCpsExHazKe2SZpGx7BZ2w
-         cL93e4MCDpizMR9G2X8kGy+sH7QqDzdK6+Yo92OVj3++WciH40SeloFVMWl/tN/JF+DX
-         oZRO0utUzK4DIJdTr75gEzxmY94zVFzZ6N/TTU5XYMd4+v6rkkEVaj+5a895iwiMoBpx
-         ClRg==
+        bh=uAWCEh2Sg/ca4zDkccA/HyXugy+m4RYAciqyOUmIt98=;
+        b=dw6jChuvzMhHjmluOW0wyTz4/lAQKARipVuXcBw0rLQ11L1NGLKwJbiyqyu+4bO78v
+         7gaFVs/4YlsWPiop/bsTQZR91F/ROcD7UfhNUmJm7mYvMz9nAMIWUmx5XneQQJvOJZpi
+         pzSI5Rh5mWum+r00uAeZjHZdts7lQ9mQBodjoC/BZxLG8rRytB0JOf6KqVmegxey6PQp
+         7/ShfuyUp92w2zWdOU+ovQxien6XEBUAfFRLtxXFJfwm6AMORjblLHXq0CJhzLFepJ/l
+         f1ODJHqDzmJkEkVdHSOkeaxlTobXcHvkuGXRIdFT1eYDdirb2blv1XOPMPcdgsP8yfOH
+         /hfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=zT+siSJYVYwvV9tFbZ1JFFaTZyh4ISeabbc/8gUHtes=;
-        b=w6MLSafOdHj9NQP79jzC7uyIRrsrxwNq706g0ul540tutmEAjmOquMnSXFOQHCcN38
-         8VWjUfa8EfRz2Jaw37i7DwyDBe5m9i6MUWDs6WmHFxqYayut1TwPLKiEFfpN+bh07Bjw
-         jXDvfQw+Y0F2VmbY/TBk4/jAA1/zoNI0m7URn4xWrertZEePEY1eHL+iG3bfuCEbUgwc
-         TvxOQk/yc7BqhsO6gQlcdt1wbJGKqrsJhnHrhnET6dbuIBPb3f40hUCP4BoednK8RjW4
-         329BiuwQthNcyuiprkRzqfstabD6Emt/WBfiWy1iuMR01ROD1j8kE9DXeF5ypzb9gNH6
-         QMKw==
-X-Gm-Message-State: AFqh2kq9esf6wBNgfIBGjmZ16Av9T3wgA7UHxz52IWTMANrqBQMMOe1Z
-        47bdyXBSKDPqef7z8Tf6HnMugTny7pU=
-X-Google-Smtp-Source: AMrXdXvJ8ykUZ5UnFRcb1kQlov1P97bifX0wyNSrQKynUY4+rXbIADCbCcZ9okCAr8u59+eayZpfuQ==
-X-Received: by 2002:a17:90a:590b:b0:227:1ae2:ec80 with SMTP id k11-20020a17090a590b00b002271ae2ec80mr16468384pji.17.1673714060977;
-        Sat, 14 Jan 2023 08:34:20 -0800 (PST)
+        bh=uAWCEh2Sg/ca4zDkccA/HyXugy+m4RYAciqyOUmIt98=;
+        b=VhRCT/F7lnsmhMRudN+WgWZ9dcWacY9wOyWmJitlU8ppGBH/0URgBDtfFTIiZay7cG
+         yUAPIGyhq5lcfKv63h8HO4nrJDVb8xMQijqq2lnXdoYR7DkRwyMhyavFFHUVrksflchA
+         kGmQSHS4RuGOzkJHlA+3Wb0FE3cibhd0z9MIJg/gFu6OaYVkh7nmKEYomZFPAErXg+xW
+         4UimhFta/9m6gjv/JkG24Poc1fBqOI+ctFnA2AdcgE6ScriJH4MTAkYntdLjx+lc+OB0
+         dhyBvLj/GXISotKSFQDiSanwm84I+JU8erk4qzty5kLy1MTCPZlDc3WfUBq9zWY79sMO
+         jHBQ==
+X-Gm-Message-State: AFqh2kq+wwga8n8tHzVpm5cztUHOYxExBZTt4OpP2NhgR9uYFp+79Kst
+        cJRVtsCQ+3ewXW/CjF+cdScm7pscFis=
+X-Google-Smtp-Source: AMrXdXs+/txpq9mMZmlszMx555HtHQexbhK+mf/HzmE3/qt+Pc+08u9j33/LmESuWzQdFqoH9YLdGw==
+X-Received: by 2002:a17:90a:aa84:b0:227:1a22:d182 with SMTP id l4-20020a17090aaa8400b002271a22d182mr22145984pjq.42.1673714062598;
+        Sat, 14 Jan 2023 08:34:22 -0800 (PST)
 Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id z7-20020a17090ad78700b002270155254csm11864797pju.24.2023.01.14.08.34.19
+        by smtp.gmail.com with ESMTPSA id z7-20020a17090ad78700b002270155254csm11864797pju.24.2023.01.14.08.34.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Jan 2023 08:34:20 -0800 (PST)
+        Sat, 14 Jan 2023 08:34:21 -0800 (PST)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
         Markus Mayer <mmayer@broadcom.com>,
-        Michal Kubecek <mkubecek@suse.cz>, Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH ethtool v2 1/3] uapi: Bring in if.h
-Date:   Sat, 14 Jan 2023 08:34:09 -0800
-Message-Id: <20230114163411.3290201-2-f.fainelli@gmail.com>
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH ethtool v2 2/3] netlink: Fix maybe uninitialized 'meters' variable
+Date:   Sat, 14 Jan 2023 08:34:10 -0800
+Message-Id: <20230114163411.3290201-3-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230114163411.3290201-1-f.fainelli@gmail.com>
 References: <20230114163411.3290201-1-f.fainelli@gmail.com>
@@ -72,476 +73,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bring in if.h from commit eec517cdb481 ("net: Add IF_OPER_TESTING") as
-well as uapi/linux/hdlc/ioctl.h. Ensure that we define all of the
-necessary guards to provide updated definitions of ifmap, ifreq and
-IFNAMSIZ. This resolves build issues with kernel headers < 4.11 which
-lacked 2618be7dccf8739b89e1906b64bd8d551af351e6 ("uapi: fix linux/if.h
-userspace compilation errors").
+GCC12 warns that 'meters' may be uninitialized, initialize it
+accordingly.
 
-Fixes: 1fa60003a8b8 ("misc: header includes cleanup")
-Reported-by: Markus Mayer <mmayer@broadcom.com>
+Fixes: 9561db9b76f4 ("Add cable test TDR support")
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- Makefile.am             |   6 +-
- internal.h              |   7 +-
- uapi/linux/hdlc/ioctl.h |  94 +++++++++++++
- uapi/linux/if.h         | 296 ++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 397 insertions(+), 6 deletions(-)
- create mode 100644 uapi/linux/hdlc/ioctl.h
- create mode 100644 uapi/linux/if.h
+ netlink/parser.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Makefile.am b/Makefile.am
-index 663f40a07b7d..691a20ed49c6 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -7,7 +7,8 @@ EXTRA_DIST = LICENSE ethtool.8 ethtool.spec.in aclocal.m4 ChangeLog autogen.sh
+diff --git a/netlink/parser.c b/netlink/parser.c
+index f982f229a040..6f863610a490 100644
+--- a/netlink/parser.c
++++ b/netlink/parser.c
+@@ -237,7 +237,7 @@ int nl_parse_direct_m2cm(struct nl_context *nlctx, uint16_t type,
+ 			 struct nl_msg_buff *msgbuff, void *dest)
+ {
+ 	const char *arg = *nlctx->argp;
+-	float meters;
++	float meters = 0.0;
+ 	uint32_t cm;
+ 	int ret;
  
- sbin_PROGRAMS = ethtool
- ethtool_SOURCES = ethtool.c uapi/linux/ethtool.h internal.h \
--		  uapi/linux/net_tstamp.h rxclass.c common.c common.h \
-+		  uapi/linux/net_tstamp.h uapi/linux/if.h uapi/linux/hdlc/ioctl.h \
-+		  rxclass.c common.c common.h \
- 		  json_writer.c json_writer.h json_print.c json_print.h \
- 		  list.h
- if ETHTOOL_ENABLE_PRETTY_DUMP
-@@ -43,7 +44,8 @@ ethtool_SOURCES += \
- 		  netlink/desc-rtnl.c netlink/cable_test.c netlink/tunnels.c \
- 		  uapi/linux/ethtool_netlink.h \
- 		  uapi/linux/netlink.h uapi/linux/genetlink.h \
--		  uapi/linux/rtnetlink.h uapi/linux/if_link.h
-+		  uapi/linux/rtnetlink.h uapi/linux/if_link.h \
-+		  uapi/linux/if.h uapi/linux/hdlc/ioctl.h
- AM_CPPFLAGS += @MNL_CFLAGS@
- LDADD += @MNL_LIBS@
- endif
-diff --git a/internal.h b/internal.h
-index b80f77afa4c0..3923719c39d5 100644
---- a/internal.h
-+++ b/internal.h
-@@ -21,6 +21,9 @@
- #include <unistd.h>
- #include <endian.h>
- #include <sys/ioctl.h>
-+#define __UAPI_DEF_IF_IFNAMSIZ	1
-+#define __UAPI_DEF_IF_IFMAP	1
-+#define __UAPI_DEF_IF_IFREQ	1
- #include <linux/if.h>
- 
- #include "json_writer.h"
-@@ -52,10 +55,6 @@ typedef int32_t s32;
- #define __KERNEL_DIV_ROUND_UP(n, d) (((n) + (d) - 1) / (d))
- #endif
- 
--#ifndef ALTIFNAMSIZ
--#define ALTIFNAMSIZ 128
--#endif
--
- #include <linux/ethtool.h>
- #include <linux/net_tstamp.h>
- 
-diff --git a/uapi/linux/hdlc/ioctl.h b/uapi/linux/hdlc/ioctl.h
-new file mode 100644
-index 000000000000..b06341acab5e
---- /dev/null
-+++ b/uapi/linux/hdlc/ioctl.h
-@@ -0,0 +1,94 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+#ifndef __HDLC_IOCTL_H__
-+#define __HDLC_IOCTL_H__
-+
-+
-+#define GENERIC_HDLC_VERSION 4	/* For synchronization with sethdlc utility */
-+
-+#define CLOCK_DEFAULT   0	/* Default setting */
-+#define CLOCK_EXT	1	/* External TX and RX clock - DTE */
-+#define CLOCK_INT	2	/* Internal TX and RX clock - DCE */
-+#define CLOCK_TXINT	3	/* Internal TX and external RX clock */
-+#define CLOCK_TXFROMRX	4	/* TX clock derived from external RX clock */
-+
-+
-+#define ENCODING_DEFAULT	0 /* Default setting */
-+#define ENCODING_NRZ		1
-+#define ENCODING_NRZI		2
-+#define ENCODING_FM_MARK	3
-+#define ENCODING_FM_SPACE	4
-+#define ENCODING_MANCHESTER	5
-+
-+
-+#define PARITY_DEFAULT		0 /* Default setting */
-+#define PARITY_NONE		1 /* No parity */
-+#define PARITY_CRC16_PR0	2 /* CRC16, initial value 0x0000 */
-+#define PARITY_CRC16_PR1	3 /* CRC16, initial value 0xFFFF */
-+#define PARITY_CRC16_PR0_CCITT	4 /* CRC16, initial 0x0000, ITU-T version */
-+#define PARITY_CRC16_PR1_CCITT	5 /* CRC16, initial 0xFFFF, ITU-T version */
-+#define PARITY_CRC32_PR0_CCITT	6 /* CRC32, initial value 0x00000000 */
-+#define PARITY_CRC32_PR1_CCITT	7 /* CRC32, initial value 0xFFFFFFFF */
-+
-+#define LMI_DEFAULT		0 /* Default setting */
-+#define LMI_NONE		1 /* No LMI, all PVCs are static */
-+#define LMI_ANSI		2 /* ANSI Annex D */
-+#define LMI_CCITT		3 /* ITU-T Annex A */
-+#define LMI_CISCO		4 /* The "original" LMI, aka Gang of Four */
-+
-+#ifndef __ASSEMBLY__
-+
-+typedef struct {
-+	unsigned int clock_rate; /* bits per second */
-+	unsigned int clock_type; /* internal, external, TX-internal etc. */
-+	unsigned short loopback;
-+} sync_serial_settings;          /* V.35, V.24, X.21 */
-+
-+typedef struct {
-+	unsigned int clock_rate; /* bits per second */
-+	unsigned int clock_type; /* internal, external, TX-internal etc. */
-+	unsigned short loopback;
-+	unsigned int slot_map;
-+} te1_settings;                  /* T1, E1 */
-+
-+typedef struct {
-+	unsigned short encoding;
-+	unsigned short parity;
-+} raw_hdlc_proto;
-+
-+typedef struct {
-+	unsigned int t391;
-+	unsigned int t392;
-+	unsigned int n391;
-+	unsigned int n392;
-+	unsigned int n393;
-+	unsigned short lmi;
-+	unsigned short dce; /* 1 for DCE (network side) operation */
-+} fr_proto;
-+
-+typedef struct {
-+	unsigned int dlci;
-+} fr_proto_pvc;          /* for creating/deleting FR PVCs */
-+
-+typedef struct {
-+	unsigned int dlci;
-+	char master[IFNAMSIZ];	/* Name of master FRAD device */
-+}fr_proto_pvc_info;		/* for returning PVC information only */
-+
-+typedef struct {
-+    unsigned int interval;
-+    unsigned int timeout;
-+} cisco_proto;
-+
-+typedef struct {
-+	unsigned short dce; /* 1 for DCE (network side) operation */
-+	unsigned int modulo; /* modulo (8 = basic / 128 = extended) */
-+	unsigned int window; /* frame window size */
-+	unsigned int t1; /* timeout t1 */
-+	unsigned int t2; /* timeout t2 */
-+	unsigned int n2; /* frame retry counter */
-+} x25_hdlc_proto;
-+
-+/* PPP doesn't need any info now - supply length = 0 to ioctl */
-+
-+#endif /* __ASSEMBLY__ */
-+#endif /* __HDLC_IOCTL_H__ */
-diff --git a/uapi/linux/if.h b/uapi/linux/if.h
-new file mode 100644
-index 000000000000..b287b2a0bb77
---- /dev/null
-+++ b/uapi/linux/if.h
-@@ -0,0 +1,296 @@
-+/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-+/*
-+ * INET		An implementation of the TCP/IP protocol suite for the LINUX
-+ *		operating system.  INET is implemented using the  BSD Socket
-+ *		interface as the means of communication with the user level.
-+ *
-+ *		Global definitions for the INET interface module.
-+ *
-+ * Version:	@(#)if.h	1.0.2	04/18/93
-+ *
-+ * Authors:	Original taken from Berkeley UNIX 4.3, (c) UCB 1982-1988
-+ *		Ross Biro
-+ *		Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
-+ *
-+ *		This program is free software; you can redistribute it and/or
-+ *		modify it under the terms of the GNU General Public License
-+ *		as published by the Free Software Foundation; either version
-+ *		2 of the License, or (at your option) any later version.
-+ */
-+#ifndef _LINUX_IF_H
-+#define _LINUX_IF_H
-+
-+#include <linux/libc-compat.h>          /* for compatibility with glibc */
-+#include <linux/types.h>		/* for "__kernel_caddr_t" et al	*/
-+#include <linux/socket.h>		/* for "struct sockaddr" et al	*/
-+		/* for "__user" et al           */
-+
-+#include <sys/socket.h>			/* for struct sockaddr.		*/
-+
-+#if __UAPI_DEF_IF_IFNAMSIZ
-+#define	IFNAMSIZ	16
-+#endif /* __UAPI_DEF_IF_IFNAMSIZ */
-+#define	IFALIASZ	256
-+#define	ALTIFNAMSIZ	128
-+#include <linux/hdlc/ioctl.h>
-+
-+/* For glibc compatibility. An empty enum does not compile. */
-+#if __UAPI_DEF_IF_NET_DEVICE_FLAGS_LOWER_UP_DORMANT_ECHO != 0 || \
-+    __UAPI_DEF_IF_NET_DEVICE_FLAGS != 0
-+/**
-+ * enum net_device_flags - &struct net_device flags
-+ *
-+ * These are the &struct net_device flags, they can be set by drivers, the
-+ * kernel and some can be triggered by userspace. Userspace can query and
-+ * set these flags using userspace utilities but there is also a sysfs
-+ * entry available for all dev flags which can be queried and set. These flags
-+ * are shared for all types of net_devices. The sysfs entries are available
-+ * via /sys/class/net/<dev>/flags. Flags which can be toggled through sysfs
-+ * are annotated below, note that only a few flags can be toggled and some
-+ * other flags are always preserved from the original net_device flags
-+ * even if you try to set them via sysfs. Flags which are always preserved
-+ * are kept under the flag grouping @IFF_VOLATILE. Flags which are __volatile__
-+ * are annotated below as such.
-+ *
-+ * You should have a pretty good reason to be extending these flags.
-+ *
-+ * @IFF_UP: interface is up. Can be toggled through sysfs.
-+ * @IFF_BROADCAST: broadcast address valid. Volatile.
-+ * @IFF_DEBUG: turn on debugging. Can be toggled through sysfs.
-+ * @IFF_LOOPBACK: is a loopback net. Volatile.
-+ * @IFF_POINTOPOINT: interface is has p-p link. Volatile.
-+ * @IFF_NOTRAILERS: avoid use of trailers. Can be toggled through sysfs.
-+ *	Volatile.
-+ * @IFF_RUNNING: interface RFC2863 OPER_UP. Volatile.
-+ * @IFF_NOARP: no ARP protocol. Can be toggled through sysfs. Volatile.
-+ * @IFF_PROMISC: receive all packets. Can be toggled through sysfs.
-+ * @IFF_ALLMULTI: receive all multicast packets. Can be toggled through
-+ *	sysfs.
-+ * @IFF_MASTER: master of a load balancer. Volatile.
-+ * @IFF_SLAVE: slave of a load balancer. Volatile.
-+ * @IFF_MULTICAST: Supports multicast. Can be toggled through sysfs.
-+ * @IFF_PORTSEL: can set media type. Can be toggled through sysfs.
-+ * @IFF_AUTOMEDIA: auto media select active. Can be toggled through sysfs.
-+ * @IFF_DYNAMIC: dialup device with changing addresses. Can be toggled
-+ *	through sysfs.
-+ * @IFF_LOWER_UP: driver signals L1 up. Volatile.
-+ * @IFF_DORMANT: driver signals dormant. Volatile.
-+ * @IFF_ECHO: echo sent packets. Volatile.
-+ */
-+enum net_device_flags {
-+/* for compatibility with glibc net/if.h */
-+#if __UAPI_DEF_IF_NET_DEVICE_FLAGS
-+	IFF_UP				= 1<<0,  /* sysfs */
-+	IFF_BROADCAST			= 1<<1,  /* __volatile__ */
-+	IFF_DEBUG			= 1<<2,  /* sysfs */
-+	IFF_LOOPBACK			= 1<<3,  /* __volatile__ */
-+	IFF_POINTOPOINT			= 1<<4,  /* __volatile__ */
-+	IFF_NOTRAILERS			= 1<<5,  /* sysfs */
-+	IFF_RUNNING			= 1<<6,  /* __volatile__ */
-+	IFF_NOARP			= 1<<7,  /* sysfs */
-+	IFF_PROMISC			= 1<<8,  /* sysfs */
-+	IFF_ALLMULTI			= 1<<9,  /* sysfs */
-+	IFF_MASTER			= 1<<10, /* __volatile__ */
-+	IFF_SLAVE			= 1<<11, /* __volatile__ */
-+	IFF_MULTICAST			= 1<<12, /* sysfs */
-+	IFF_PORTSEL			= 1<<13, /* sysfs */
-+	IFF_AUTOMEDIA			= 1<<14, /* sysfs */
-+	IFF_DYNAMIC			= 1<<15, /* sysfs */
-+#endif /* __UAPI_DEF_IF_NET_DEVICE_FLAGS */
-+#if __UAPI_DEF_IF_NET_DEVICE_FLAGS_LOWER_UP_DORMANT_ECHO
-+	IFF_LOWER_UP			= 1<<16, /* __volatile__ */
-+	IFF_DORMANT			= 1<<17, /* __volatile__ */
-+	IFF_ECHO			= 1<<18, /* __volatile__ */
-+#endif /* __UAPI_DEF_IF_NET_DEVICE_FLAGS_LOWER_UP_DORMANT_ECHO */
-+};
-+#endif /* __UAPI_DEF_IF_NET_DEVICE_FLAGS_LOWER_UP_DORMANT_ECHO != 0 || __UAPI_DEF_IF_NET_DEVICE_FLAGS != 0 */
-+
-+/* for compatibility with glibc net/if.h */
-+#if __UAPI_DEF_IF_NET_DEVICE_FLAGS
-+#define IFF_UP				IFF_UP
-+#define IFF_BROADCAST			IFF_BROADCAST
-+#define IFF_DEBUG			IFF_DEBUG
-+#define IFF_LOOPBACK			IFF_LOOPBACK
-+#define IFF_POINTOPOINT			IFF_POINTOPOINT
-+#define IFF_NOTRAILERS			IFF_NOTRAILERS
-+#define IFF_RUNNING			IFF_RUNNING
-+#define IFF_NOARP			IFF_NOARP
-+#define IFF_PROMISC			IFF_PROMISC
-+#define IFF_ALLMULTI			IFF_ALLMULTI
-+#define IFF_MASTER			IFF_MASTER
-+#define IFF_SLAVE			IFF_SLAVE
-+#define IFF_MULTICAST			IFF_MULTICAST
-+#define IFF_PORTSEL			IFF_PORTSEL
-+#define IFF_AUTOMEDIA			IFF_AUTOMEDIA
-+#define IFF_DYNAMIC			IFF_DYNAMIC
-+#endif /* __UAPI_DEF_IF_NET_DEVICE_FLAGS */
-+
-+#if __UAPI_DEF_IF_NET_DEVICE_FLAGS_LOWER_UP_DORMANT_ECHO
-+#define IFF_LOWER_UP			IFF_LOWER_UP
-+#define IFF_DORMANT			IFF_DORMANT
-+#define IFF_ECHO			IFF_ECHO
-+#endif /* __UAPI_DEF_IF_NET_DEVICE_FLAGS_LOWER_UP_DORMANT_ECHO */
-+
-+#define IFF_VOLATILE	(IFF_LOOPBACK|IFF_POINTOPOINT|IFF_BROADCAST|IFF_ECHO|\
-+		IFF_MASTER|IFF_SLAVE|IFF_RUNNING|IFF_LOWER_UP|IFF_DORMANT)
-+
-+#define IF_GET_IFACE	0x0001		/* for querying only */
-+#define IF_GET_PROTO	0x0002
-+
-+/* For definitions see hdlc.h */
-+#define IF_IFACE_V35	0x1000		/* V.35 serial interface	*/
-+#define IF_IFACE_V24	0x1001		/* V.24 serial interface	*/
-+#define IF_IFACE_X21	0x1002		/* X.21 serial interface	*/
-+#define IF_IFACE_T1	0x1003		/* T1 telco serial interface	*/
-+#define IF_IFACE_E1	0x1004		/* E1 telco serial interface	*/
-+#define IF_IFACE_SYNC_SERIAL 0x1005	/* can't be set by software	*/
-+#define IF_IFACE_X21D   0x1006          /* X.21 Dual Clocking (FarSite) */
-+
-+/* For definitions see hdlc.h */
-+#define IF_PROTO_HDLC	0x2000		/* raw HDLC protocol		*/
-+#define IF_PROTO_PPP	0x2001		/* PPP protocol			*/
-+#define IF_PROTO_CISCO	0x2002		/* Cisco HDLC protocol		*/
-+#define IF_PROTO_FR	0x2003		/* Frame Relay protocol		*/
-+#define IF_PROTO_FR_ADD_PVC 0x2004	/*    Create FR PVC		*/
-+#define IF_PROTO_FR_DEL_PVC 0x2005	/*    Delete FR PVC		*/
-+#define IF_PROTO_X25	0x2006		/* X.25				*/
-+#define IF_PROTO_HDLC_ETH 0x2007	/* raw HDLC, Ethernet emulation	*/
-+#define IF_PROTO_FR_ADD_ETH_PVC 0x2008	/*  Create FR Ethernet-bridged PVC */
-+#define IF_PROTO_FR_DEL_ETH_PVC 0x2009	/*  Delete FR Ethernet-bridged PVC */
-+#define IF_PROTO_FR_PVC	0x200A		/* for reading PVC status	*/
-+#define IF_PROTO_FR_ETH_PVC 0x200B
-+#define IF_PROTO_RAW    0x200C          /* RAW Socket                   */
-+
-+/* RFC 2863 operational status */
-+enum {
-+	IF_OPER_UNKNOWN,
-+	IF_OPER_NOTPRESENT,
-+	IF_OPER_DOWN,
-+	IF_OPER_LOWERLAYERDOWN,
-+	IF_OPER_TESTING,
-+	IF_OPER_DORMANT,
-+	IF_OPER_UP,
-+};
-+
-+/* link modes */
-+enum {
-+	IF_LINK_MODE_DEFAULT,
-+	IF_LINK_MODE_DORMANT,	/* limit upward transition to dormant */
-+	IF_LINK_MODE_TESTING,	/* limit upward transition to testing */
-+};
-+
-+/*
-+ *	Device mapping structure. I'd just gone off and designed a 
-+ *	beautiful scheme using only loadable modules with arguments
-+ *	for driver options and along come the PCMCIA people 8)
-+ *
-+ *	Ah well. The get() side of this is good for WDSETUP, and it'll
-+ *	be handy for debugging things. The set side is fine for now and
-+ *	being very small might be worth keeping for clean configuration.
-+ */
-+
-+/* for compatibility with glibc net/if.h */
-+#if __UAPI_DEF_IF_IFMAP
-+struct ifmap {
-+	unsigned long mem_start;
-+	unsigned long mem_end;
-+	unsigned short base_addr; 
-+	unsigned char irq;
-+	unsigned char dma;
-+	unsigned char port;
-+	/* 3 bytes spare */
-+};
-+#endif /* __UAPI_DEF_IF_IFMAP */
-+
-+struct if_settings {
-+	unsigned int type;	/* Type of physical device or protocol */
-+	unsigned int size;	/* Size of the data allocated by the caller */
-+	union {
-+		/* {atm/eth/dsl}_settings anyone ? */
-+		raw_hdlc_proto		*raw_hdlc;
-+		cisco_proto		*cisco;
-+		fr_proto		*fr;
-+		fr_proto_pvc		*fr_pvc;
-+		fr_proto_pvc_info	*fr_pvc_info;
-+		x25_hdlc_proto		*x25;
-+
-+		/* interface settings */
-+		sync_serial_settings	*sync;
-+		te1_settings		*te1;
-+	} ifs_ifsu;
-+};
-+
-+/*
-+ * Interface request structure used for socket
-+ * ioctl's.  All interface ioctl's must have parameter
-+ * definitions which begin with ifr_name.  The
-+ * remainder may be interface specific.
-+ */
-+
-+/* for compatibility with glibc net/if.h */
-+#if __UAPI_DEF_IF_IFREQ
-+struct ifreq {
-+#define IFHWADDRLEN	6
-+	union
-+	{
-+		char	ifrn_name[IFNAMSIZ];		/* if name, e.g. "en0" */
-+	} ifr_ifrn;
-+	
-+	union {
-+		struct	sockaddr ifru_addr;
-+		struct	sockaddr ifru_dstaddr;
-+		struct	sockaddr ifru_broadaddr;
-+		struct	sockaddr ifru_netmask;
-+		struct  sockaddr ifru_hwaddr;
-+		short	ifru_flags;
-+		int	ifru_ivalue;
-+		int	ifru_mtu;
-+		struct  ifmap ifru_map;
-+		char	ifru_slave[IFNAMSIZ];	/* Just fits the size */
-+		char	ifru_newname[IFNAMSIZ];
-+		void *	ifru_data;
-+		struct	if_settings ifru_settings;
-+	} ifr_ifru;
-+};
-+#endif /* __UAPI_DEF_IF_IFREQ */
-+
-+#define ifr_name	ifr_ifrn.ifrn_name	/* interface name 	*/
-+#define ifr_hwaddr	ifr_ifru.ifru_hwaddr	/* MAC address 		*/
-+#define	ifr_addr	ifr_ifru.ifru_addr	/* address		*/
-+#define	ifr_dstaddr	ifr_ifru.ifru_dstaddr	/* other end of p-p lnk	*/
-+#define	ifr_broadaddr	ifr_ifru.ifru_broadaddr	/* broadcast address	*/
-+#define	ifr_netmask	ifr_ifru.ifru_netmask	/* interface net mask	*/
-+#define	ifr_flags	ifr_ifru.ifru_flags	/* flags		*/
-+#define	ifr_metric	ifr_ifru.ifru_ivalue	/* metric		*/
-+#define	ifr_mtu		ifr_ifru.ifru_mtu	/* mtu			*/
-+#define ifr_map		ifr_ifru.ifru_map	/* device map		*/
-+#define ifr_slave	ifr_ifru.ifru_slave	/* slave device		*/
-+#define	ifr_data	ifr_ifru.ifru_data	/* for use by interface	*/
-+#define ifr_ifindex	ifr_ifru.ifru_ivalue	/* interface index	*/
-+#define ifr_bandwidth	ifr_ifru.ifru_ivalue    /* link bandwidth	*/
-+#define ifr_qlen	ifr_ifru.ifru_ivalue	/* Queue length 	*/
-+#define ifr_newname	ifr_ifru.ifru_newname	/* New name		*/
-+#define ifr_settings	ifr_ifru.ifru_settings	/* Device/proto settings*/
-+
-+/*
-+ * Structure used in SIOCGIFCONF request.
-+ * Used to retrieve interface configuration
-+ * for machine (useful for programs which
-+ * must know all networks accessible).
-+ */
-+
-+/* for compatibility with glibc net/if.h */
-+#if __UAPI_DEF_IF_IFCONF
-+struct ifconf  {
-+	int	ifc_len;			/* size of buffer	*/
-+	union {
-+		char *ifcu_buf;
-+		struct ifreq *ifcu_req;
-+	} ifc_ifcu;
-+};
-+#endif /* __UAPI_DEF_IF_IFCONF */
-+
-+#define	ifc_buf	ifc_ifcu.ifcu_buf		/* buffer address	*/
-+#define	ifc_req	ifc_ifcu.ifcu_req		/* array of structures	*/
-+
-+#endif /* _LINUX_IF_H */
 -- 
 2.25.1
 
