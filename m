@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B65B66ABB1
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 14:43:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F4A366ABAF
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 14:43:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230025AbjANNnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Jan 2023 08:43:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49366 "EHLO
+        id S229820AbjANNnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Jan 2023 08:43:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230002AbjANNm7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 08:42:59 -0500
+        with ESMTP id S230026AbjANNnG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Jan 2023 08:43:06 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D458A6EAF;
-        Sat, 14 Jan 2023 05:42:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1608C8A64;
+        Sat, 14 Jan 2023 05:43:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1673703779; x=1705239779;
+  t=1673703784; x=1705239784;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=TlE8JkFNzlYrrSINYDLNdYw3yFo8m325dlUNlSj6BFw=;
-  b=Ub7qeUor1aULy1jv1Ivp7xivly/WcjRa2GCGfkcfc/CNktBq6EonrbgV
-   PN+Tm2PIGxgGTcV8L17k1fFO7SJMyFkFm4wJS8P1UWL99iObuz6oZrp57
-   lg9df1cuGNNnStwawQypBc1yyStYjmBmKfEQCNv1jVyeEf/Vlxu5x3QYN
-   2osWcJ4SdIVZFOAU1WkphvoFKV2UzyMxJS55CgcdgE7vpVxsOI/IYp7VP
-   teXw4QMfoZK+i9YOljPhvJDIXUTKJXYvzCegNNLnUH8VFnLxgcbdmC0Um
-   6a4g2SFWojdyy7vbCPOxeHSYEsqlitDfKii89EwVkO//cWjIl3nO2i5C/
-   Q==;
+  bh=k8qLRz4WlerBuljRtmY04TgPesINkumKLjkupuffhAk=;
+  b=OwJvqS9JXded4z1J5htngf4zzwxAwF5DCedm/G5bQ1A6JdRMj8NAGTbZ
+   AhPw17R9cJi48cLdL880LXtBqAqvNsKpY16+euVX8Kxj9MMthohqoa4aT
+   Fm7lLX1Bn5uo3s2nJFNdrSSewSVfuT6P8/LIJgRApTg9/olJtwTUtKNvI
+   DiNVaBRCxxhKqFX28aebGNN0hIBWcZwJFmoWX0oSPQ0P/rCdGYZUKnP4O
+   5mDNHNFhz2g7lFfuDeSby9mFYrk1o3XAD9iV15tb53D+XyFTnBB0jtg0r
+   0QAY4aT1SqMhiG+OQHKBI/WtF7a6e2JBcJE7B9RCf2JLGZfJ5zgICuTw7
+   g==;
 X-IronPort-AV: E=Sophos;i="5.97,216,1669100400"; 
-   d="scan'208";a="192264073"
+   d="scan'208";a="192264075"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jan 2023 06:42:59 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jan 2023 06:43:03 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Sat, 14 Jan 2023 06:42:57 -0700
+ 15.1.2507.16; Sat, 14 Jan 2023 06:43:01 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Sat, 14 Jan 2023 06:42:54 -0700
+ 15.1.2507.16 via Frontend Transport; Sat, 14 Jan 2023 06:42:58 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -58,9 +58,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>,
         Dan Carpenter <error27@gmail.com>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v4 2/8] net: microchip: sparx5: Reset VCAP counter for new rules
-Date:   Sat, 14 Jan 2023 14:42:36 +0100
-Message-ID: <20230114134242.3737446-3-steen.hegelund@microchip.com>
+Subject: [PATCH net-next v4 3/8] net: microchip: vcap api: Always enable VCAP lookups
+Date:   Sat, 14 Jan 2023 14:42:37 +0100
+Message-ID: <20230114134242.3737446-4-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230114134242.3737446-1-steen.hegelund@microchip.com>
 References: <20230114134242.3737446-1-steen.hegelund@microchip.com>
@@ -77,56 +77,245 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a rule counter is external to the VCAP such as the Sparx5 IS2 counters
-are, then this counter must be reset when a new rule is created.
+This changes the VCAP lookups state to always be enabled so that it is
+possible to add "internal" VCAP rules that must be available even though
+the user has not yet enabled the VCAP chains via a TC matchall filter.
 
+The API callback to enable and disable VCAP lookups is therefore removed.
+
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 ---
- drivers/net/ethernet/microchip/vcap/vcap_api.c       | 7 ++++++-
- drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c | 4 ++--
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ .../microchip/lan966x/lan966x_vcap_impl.c     | 21 ++++----------
+ .../microchip/sparx5/sparx5_vcap_debugfs.c    |  2 +-
+ .../microchip/sparx5/sparx5_vcap_impl.c       | 29 ++++---------------
+ .../net/ethernet/microchip/vcap/vcap_api.c    |  6 +---
+ .../net/ethernet/microchip/vcap/vcap_api.h    |  5 ----
+ .../microchip/vcap/vcap_api_debugfs_kunit.c   |  9 +-----
+ .../ethernet/microchip/vcap/vcap_api_kunit.c  |  9 +-----
+ 7 files changed, 16 insertions(+), 65 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-index b9b6432f4094..8bbbd1b0b552 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-@@ -1808,6 +1808,7 @@ int vcap_add_rule(struct vcap_rule *rule)
- {
- 	struct vcap_rule_internal *ri = to_intrule(rule);
- 	struct vcap_rule_move move = {0};
-+	struct vcap_counter ctr = {0};
- 	int ret;
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_vcap_impl.c b/drivers/net/ethernet/microchip/lan966x/lan966x_vcap_impl.c
+index a54c0426a35f..76a9fb113f50 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_vcap_impl.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_vcap_impl.c
+@@ -390,20 +390,6 @@ static int lan966x_vcap_port_info(struct net_device *dev,
+ 	return 0;
+ }
  
- 	ret = vcap_api_check(ri->vctrl);
-@@ -1831,8 +1832,12 @@ int vcap_add_rule(struct vcap_rule *rule)
+-static int lan966x_vcap_enable(struct net_device *dev,
+-			       struct vcap_admin *admin,
+-			       bool enable)
+-{
+-	struct lan966x_port *port = netdev_priv(dev);
+-	struct lan966x *lan966x = port->lan966x;
+-
+-	lan_rmw(ANA_VCAP_S2_CFG_ENA_SET(enable),
+-		ANA_VCAP_S2_CFG_ENA,
+-		lan966x, ANA_VCAP_S2_CFG(port->chip_port));
+-
+-	return 0;
+-}
+-
+ static struct vcap_operations lan966x_vcap_ops = {
+ 	.validate_keyset = lan966x_vcap_validate_keyset,
+ 	.add_default_fields = lan966x_vcap_add_default_fields,
+@@ -414,7 +400,6 @@ static struct vcap_operations lan966x_vcap_ops = {
+ 	.update = lan966x_vcap_update,
+ 	.move = lan966x_vcap_move,
+ 	.port_info = lan966x_vcap_port_info,
+-	.enable = lan966x_vcap_enable,
+ };
+ 
+ static void lan966x_vcap_admin_free(struct vcap_admin *admin)
+@@ -521,6 +506,12 @@ int lan966x_vcap_init(struct lan966x *lan966x)
+ 		list_add_tail(&admin->list, &ctrl->list);
  	}
  
- 	ret = vcap_write_rule(ri);
--	if (ret)
-+	if (ret) {
- 		pr_err("%s:%d: rule write error: %d\n", __func__, __LINE__, ret);
-+		goto out;
-+	}
-+	/* Set the counter to zero */
-+	ret = vcap_write_counter(ri, &ctr);
- out:
- 	mutex_unlock(&ri->admin->lock);
- 	return ret;
++	for (int p = 0; p < lan966x->num_phys_ports; ++p)
++		if (lan966x->ports[p])
++			lan_rmw(ANA_VCAP_S2_CFG_ENA_SET(true),
++				ANA_VCAP_S2_CFG_ENA, lan966x,
++				ANA_VCAP_S2_CFG(lan966x->ports[p]->chip_port));
++
+ 	lan966x->vcap_ctrl = ctrl;
+ 
+ 	return 0;
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_debugfs.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_debugfs.c
+index b91e05ffe2f4..c9423adc92ce 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_debugfs.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_debugfs.c
+@@ -29,7 +29,7 @@ static void sparx5_vcap_port_keys(struct sparx5 *sparx5,
+ 		/* Get lookup state */
+ 		value = spx5_rd(sparx5, ANA_ACL_VCAP_S2_CFG(port->portno));
+ 		out->prf(out->dst, "\n      state: ");
+-		if (ANA_ACL_VCAP_S2_CFG_SEC_ENA_GET(value))
++		if (ANA_ACL_VCAP_S2_CFG_SEC_ENA_GET(value) & BIT(lookup))
+ 			out->prf(out->dst, "on");
+ 		else
+ 			out->prf(out->dst, "off");
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
+index a0c126ba9a87..0d4b40997bb4 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
+@@ -510,28 +510,6 @@ static void sparx5_vcap_move(struct net_device *ndev, struct vcap_admin *admin,
+ 	sparx5_vcap_wait_super_update(sparx5);
+ }
+ 
+-/* Enable all lookups in the VCAP instance */
+-static int sparx5_vcap_enable(struct net_device *ndev,
+-			      struct vcap_admin *admin,
+-			      bool enable)
+-{
+-	struct sparx5_port *port = netdev_priv(ndev);
+-	struct sparx5 *sparx5;
+-	int portno;
+-
+-	sparx5 = port->sparx5;
+-	portno = port->portno;
+-
+-	/* For now we only consider IS2 */
+-	if (enable)
+-		spx5_wr(ANA_ACL_VCAP_S2_CFG_SEC_ENA_SET(0xf), sparx5,
+-			ANA_ACL_VCAP_S2_CFG(portno));
+-	else
+-		spx5_wr(ANA_ACL_VCAP_S2_CFG_SEC_ENA_SET(0), sparx5,
+-			ANA_ACL_VCAP_S2_CFG(portno));
+-	return 0;
+-}
+-
+ /* API callback operations: only IS2 is supported for now */
+ static struct vcap_operations sparx5_vcap_ops = {
+ 	.validate_keyset = sparx5_vcap_validate_keyset,
+@@ -543,7 +521,6 @@ static struct vcap_operations sparx5_vcap_ops = {
+ 	.update = sparx5_vcap_update,
+ 	.move = sparx5_vcap_move,
+ 	.port_info = sparx5_port_info,
+-	.enable = sparx5_vcap_enable,
+ };
+ 
+ /* Enable lookups per port and set the keyset generation: only IS2 for now */
+@@ -568,6 +545,12 @@ static void sparx5_vcap_port_key_selection(struct sparx5 *sparx5,
+ 				ANA_ACL_VCAP_S2_KEY_SEL(portno, lookup));
+ 		}
+ 	}
++	/* IS2 lookups are in bit 0:3 */
++	for (portno = 0; portno < SPX5_PORTS; ++portno)
++		spx5_rmw(ANA_ACL_VCAP_S2_CFG_SEC_ENA_SET(0xf),
++			 ANA_ACL_VCAP_S2_CFG_SEC_ENA,
++			 sparx5,
++			 ANA_ACL_VCAP_S2_CFG(portno));
+ }
+ 
+ /* Disable lookups per port and set the keyset generation: only IS2 for now */
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+index 8bbbd1b0b552..b597008399ea 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+@@ -738,7 +738,7 @@ int vcap_api_check(struct vcap_control *ctrl)
+ 	    !ctrl->ops->add_default_fields || !ctrl->ops->cache_erase ||
+ 	    !ctrl->ops->cache_write || !ctrl->ops->cache_read ||
+ 	    !ctrl->ops->init || !ctrl->ops->update || !ctrl->ops->move ||
+-	    !ctrl->ops->port_info || !ctrl->ops->enable) {
++	    !ctrl->ops->port_info) {
+ 		pr_err("%s:%d: client operations are missing\n",
+ 		       __func__, __LINE__);
+ 		return -ENOENT;
+@@ -2656,10 +2656,6 @@ int vcap_enable_lookups(struct vcap_control *vctrl, struct net_device *ndev,
+ 	if (admin->vinst || chain_id > admin->first_cid)
+ 		return -EFAULT;
+ 
+-	err = vctrl->ops->enable(ndev, admin, enable);
+-	if (err)
+-		return err;
+-
+ 	if (chain_id) {
+ 		if (vcap_is_enabled(admin, ndev, cookie))
+ 			return -EADDRINUSE;
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.h b/drivers/net/ethernet/microchip/vcap/vcap_api.h
+index 689c7270f2a8..c61f13a65030 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api.h
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api.h
+@@ -259,11 +259,6 @@ struct vcap_operations {
+ 		(struct net_device *ndev,
+ 		 struct vcap_admin *admin,
+ 		 struct vcap_output_print *out);
+-	/* enable/disable the lookups in a vcap instance */
+-	int (*enable)
+-		(struct net_device *ndev,
+-		 struct vcap_admin *admin,
+-		 bool enable);
+ };
+ 
+ /* VCAP API Client control interface */
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
+index cf594668d5d9..bef0b28a4a50 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
+@@ -221,13 +221,6 @@ static int vcap_test_port_info(struct net_device *ndev,
+ 	return 0;
+ }
+ 
+-static int vcap_test_enable(struct net_device *ndev,
+-			    struct vcap_admin *admin,
+-			    bool enable)
+-{
+-	return 0;
+-}
+-
+ static struct vcap_operations test_callbacks = {
+ 	.validate_keyset = test_val_keyset,
+ 	.add_default_fields = test_add_def_fields,
+@@ -238,7 +231,6 @@ static struct vcap_operations test_callbacks = {
+ 	.update = test_cache_update,
+ 	.move = test_cache_move,
+ 	.port_info = vcap_test_port_info,
+-	.enable = vcap_test_enable,
+ };
+ 
+ static struct vcap_control test_vctrl = {
+@@ -253,6 +245,7 @@ static void vcap_test_api_init(struct vcap_admin *admin)
+ 	INIT_LIST_HEAD(&test_vctrl.list);
+ 	INIT_LIST_HEAD(&admin->list);
+ 	INIT_LIST_HEAD(&admin->rules);
++	INIT_LIST_HEAD(&admin->enabled);
+ 	list_add_tail(&admin->list, &test_vctrl.list);
+ 	memset(test_updateaddr, 0, sizeof(test_updateaddr));
+ 	test_updateaddridx = 0;
 diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-index 76a31215ebfb..944de5cb9114 100644
+index 944de5cb9114..cc6a62338162 100644
 --- a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
 +++ b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-@@ -1343,8 +1343,8 @@ static void vcap_api_encode_rule_test(struct kunit *test)
- 	u32 port_mask_rng_mask = 0x0f;
- 	u32 igr_port_mask_value = 0xffabcd01;
- 	u32 igr_port_mask_mask = ~0;
--	/* counter is not written yet, so it is not in expwriteaddr */
--	u32 expwriteaddr[] = {792, 793, 794, 795, 796, 797, 0};
-+	/* counter is written as the last operation */
-+	u32 expwriteaddr[] = {792, 793, 794, 795, 796, 797, 792};
- 	int idx;
+@@ -211,13 +211,6 @@ static int vcap_test_port_info(struct net_device *ndev,
+ 	return 0;
+ }
  
- 	vcap_test_api_init(&is2_admin);
+-static int vcap_test_enable(struct net_device *ndev,
+-			    struct vcap_admin *admin,
+-			    bool enable)
+-{
+-	return 0;
+-}
+-
+ static struct vcap_operations test_callbacks = {
+ 	.validate_keyset = test_val_keyset,
+ 	.add_default_fields = test_add_def_fields,
+@@ -228,7 +221,6 @@ static struct vcap_operations test_callbacks = {
+ 	.update = test_cache_update,
+ 	.move = test_cache_move,
+ 	.port_info = vcap_test_port_info,
+-	.enable = vcap_test_enable,
+ };
+ 
+ static struct vcap_control test_vctrl = {
+@@ -243,6 +235,7 @@ static void vcap_test_api_init(struct vcap_admin *admin)
+ 	INIT_LIST_HEAD(&test_vctrl.list);
+ 	INIT_LIST_HEAD(&admin->list);
+ 	INIT_LIST_HEAD(&admin->rules);
++	INIT_LIST_HEAD(&admin->enabled);
+ 	list_add_tail(&admin->list, &test_vctrl.list);
+ 	memset(test_updateaddr, 0, sizeof(test_updateaddr));
+ 	test_updateaddridx = 0;
 -- 
 2.39.0
 
