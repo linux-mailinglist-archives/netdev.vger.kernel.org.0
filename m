@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C8C266B338
-	for <lists+netdev@lfdr.de>; Sun, 15 Jan 2023 18:35:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A542966B344
+	for <lists+netdev@lfdr.de>; Sun, 15 Jan 2023 18:43:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231276AbjAORfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Jan 2023 12:35:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58296 "EHLO
+        id S231462AbjAORn2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Jan 2023 12:43:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231213AbjAORfH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 12:35:07 -0500
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E48CC2D
-        for <netdev@vger.kernel.org>; Sun, 15 Jan 2023 09:35:07 -0800 (PST)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-4d59d518505so184207427b3.1
-        for <netdev@vger.kernel.org>; Sun, 15 Jan 2023 09:35:07 -0800 (PST)
+        with ESMTP id S231349AbjAORn1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 12:43:27 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FEC9C17E
+        for <netdev@vger.kernel.org>; Sun, 15 Jan 2023 09:43:27 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id 203so27907685yby.10
+        for <netdev@vger.kernel.org>; Sun, 15 Jan 2023 09:43:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=NuJoryL383uO6k5eiG0JSyVCLOGubfiyW3tqGSoQqEk=;
-        b=nF/Yaaq3t5Jw5PpzLEdA/B614/0hEJ807HO5mTHuPPloAD9gfPqA0v06Yw0F5ZRt66
-         NypJ3PKhRClBectPE1PkYovH6GTYJC2YLcCQg39IBS3DuQ2lePNj/ATAPW9gmdq1e/ft
-         or7lSxu7s5EGauWQ6N8xZ2/XRvvWUHIY5o8llDv4hmO1eC2z60UAfpN9O518PIGXuh6A
-         PgWeKbxFnOdYznYTlqoDdu0/R4W6m2mMC+BxIxcx/7HOCZu2bMo93UQaJNlfBFWsObam
-         7zw8qPZiYpIma/xDKIbzFdiYR0Bc0GV+5qx62jamtdzZ+SrktIrVSVEq5S4wZ+ZZfcSb
-         x03A==
+        bh=GAM3HYWSTLTnCy31OkAcTBJEmYkTqwqGKKfF0/Vv6Yk=;
+        b=UmPtoWqq8ACAqNhMAV7nmYqW182qZi8V/fZKfKuUkC0Sr0qG6VfA0YMUM6Gtf1zA/K
+         /0dbiVpyTvzf46RhCMt06EdstVtycJEQzXLU6/ajccb4rHHt/Lp4R7CJkBMLTMvuMLR0
+         gGZ/nPb7NWqDAhwX1CV2TKyTFcHzpfk8WgsgL149Bq3umdqPYbT729FEBf1T3jBMmHMo
+         iMn4DdmhZjl9+KCEErITEU/1yThcmgYxPQh0jbqoKl9m9ybRRtTy+wJwDEYpobN/zYhA
+         fG40qi7lbWs/hgxAkidORLpXA1BSfXMBeoeqgUXEKVIB5RAzkYTHqOXNsYzF94FjEniG
+         OElA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=NuJoryL383uO6k5eiG0JSyVCLOGubfiyW3tqGSoQqEk=;
-        b=sCt7aH68zpUFO/R11iMs/qaOS9ae9aDPoY06ApnHGKFsaYnD7GwJEvAt3ox4i+FUoS
-         BYjIJxKWU8pwtnPVBCne+bFmHobc6SC5HTlkMm5e81ddykG+HCkHK25PIKXzloCfR+Or
-         Wsyrm+LNjVR0NlIQhDqrBgkw+di+f9CmLe8X8qKggs94I3OWZ72/87a8Ga9D/OAh6rje
-         xGF8SgTjLcg3Pe0I5ggtvkvdGeDFdvlZQ8jjKhTIEcmeLQub1ZSxCxgBAXgY+Apd+L/S
-         6a4jc1KdesYXAVDd3S7x3dAYdY0As7St9nz7qGHQpp0SFTAjo7uSqSdOXLhGnphwToa1
-         GTiw==
-X-Gm-Message-State: AFqh2kq7UVi7pdSN77wymnGlaEncDQuE4haRt1B0W3FiTHidI90f55UX
-        Vc8fPBZuvHYJtBXJYLrtGwwnqbmsl8WFHnEJUvY=
-X-Google-Smtp-Source: AMrXdXtpNNEQv5bJUANCxLBpsuTwF+UdKfoGXjZX9NQoQU/+ZjP3LluHAUL9gZKisd6m7JoSq80PSoUOQDYtOZsgldE=
-X-Received: by 2002:a05:690c:78a:b0:3c7:ef88:b857 with SMTP id
- bw10-20020a05690c078a00b003c7ef88b857mr3377920ywb.253.1673804106308; Sun, 15
- Jan 2023 09:35:06 -0800 (PST)
+        bh=GAM3HYWSTLTnCy31OkAcTBJEmYkTqwqGKKfF0/Vv6Yk=;
+        b=7Iqt2X+1S6kuWQkGApcIyLq7ACn4nTGkX6/kT8TY2npFEgg25xFTNQWuuy9Rp/kaQ1
+         ayyigSA7dxpHBQoIRPuPlSjnv8SDDBEizuGmUNnUsLAxgWqVkSB+24OWbMaFgYfzAgcm
+         P8fFkRJegdAOtWMRLrkuuimHMicVIcwEFHZHU4Mcej6xXkaBAPRTv7KOTtQrzBxRUj6g
+         4fLrcvNWq/aSxydTUp5fvLo2wZ83CuPzvemofAjBdqD2SuGMSDuifsvWZJa/XAe9HDTG
+         FYJYJRpM6OgXF6ykPQfcF3mVGOEeF/zcyQBzYkYpkPKMWnk4B2pGKyPOGmRo8KirJ6WN
+         PNjg==
+X-Gm-Message-State: AFqh2ko4CVYnZxnF0zXHsxz7PF46D/3n2Lb9jkt3cVyVipth2o9l1JfT
+        NixILmORtx9hHVC1ZL+BgE2nW7gg86/OBQ5cihg=
+X-Google-Smtp-Source: AMrXdXsxw5FriAcFneMIAzGDNum9+5zKNC71ijjEIZK/E5iJmEm5HihnWwnz2P8XjdLZMuiLlYKslcokwlCNQ3PEows=
+X-Received: by 2002:a25:8b04:0:b0:7b9:d00b:5892 with SMTP id
+ i4-20020a258b04000000b007b9d00b5892mr3402400ybl.470.1673804606178; Sun, 15
+ Jan 2023 09:43:26 -0800 (PST)
 MIME-Version: 1.0
-References: <cover.1673666803.git.lucien.xin@gmail.com> <CANn89i+Zovpi6rO9755zrCd6R=2a7Wm86n_=xdnhrtjrnapR_g@mail.gmail.com>
-In-Reply-To: <CANn89i+Zovpi6rO9755zrCd6R=2a7Wm86n_=xdnhrtjrnapR_g@mail.gmail.com>
+References: <cover.1673666803.git.lucien.xin@gmail.com> <de91843a7f59feb065475ca82be22c275bede3df.1673666803.git.lucien.xin@gmail.com>
+ <b0a1bebc-7d44-05bc-347c-94da4cf2ef27@gmail.com>
+In-Reply-To: <b0a1bebc-7d44-05bc-347c-94da4cf2ef27@gmail.com>
 From:   Xin Long <lucien.xin@gmail.com>
-Date:   Sun, 15 Jan 2023 12:33:47 -0500
-Message-ID: <CADvbK_c1dZsvSXvMqizGxd7K_4_O5N_Yzs8EJqDzUgZ7R=4C2w@mail.gmail.com>
-Subject: Re: [PATCH net-next 00/10] net: support ipv4 big tcp
-To:     Eric Dumazet <edumazet@google.com>
+Date:   Sun, 15 Jan 2023 12:42:07 -0500
+Message-ID: <CADvbK_cxQa0=ximH1F2bA-r0Q2+nMGAsSKhbaKzFTHOrcCF11A@mail.gmail.com>
+Subject: Re: [PATCH net-next 09/10] netfilter: get ipv6 pktlen properly in length_mt6
+To:     David Ahern <dsahern@gmail.com>
 Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
+        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Pravin B Shelar <pshelar@ovn.org>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
@@ -82,60 +83,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 15, 2023 at 11:05 AM Eric Dumazet <edumazet@google.com> wrote:
+On Sun, Jan 15, 2023 at 10:41 AM David Ahern <dsahern@gmail.com> wrote:
 >
-> On Sat, Jan 14, 2023 at 4:31 AM Xin Long <lucien.xin@gmail.com> wrote:
+> On 1/13/23 8:31 PM, Xin Long wrote:
+> > For IPv6 jumbogram packets, the packet size is bigger than 65535,
+> > it's not right to get it from payload_len and save it to an u16
+> > variable.
 > >
-> > This is similar to the BIG TCP patchset added by Eric for IPv6:
+> > This patch only fixes it for IPv6 BIG TCP packets, so instead of
+> > parsing IPV6_TLV_JUMBO exthdr, which is quite some work, it only
+> > gets the pktlen via 'skb->len - skb_network_offset(skb)' when
+> > skb_is_gso_v6() and saves it to an u32 variable, similar to IPv4
+> > BIG TCP packets.
 > >
-> >   https://lwn.net/Articles/895398/
-> >
-> > Different from IPv6, IPv4 tot_len is 16-bit long only, and IPv4 header
-> > doesn't have exthdrs(options) for the BIG TCP packets' length. To make
-> > it simple, as David and Paolo suggested, we set IPv4 tot_len to 0 to
-> > indicate this might be a BIG TCP packet and use skb->len as the real
-> > IPv4 total length.
-> >
-> > This will work safely, as all BIG TCP packets are GSO/GRO packets and
-> > processed on the same host as they were created; There is no padding
-> > in GSO/GRO packets, and skb->len - network_offset is exactly the IPv4
-> > packet total length; Also, before implementing the feature, all those
-> > places that may get iph tot_len from BIG TCP packets are taken care
-> > with some new APIs:
-> >
-> > Patch 1 adds some APIs for iph tot_len setting and getting, which are
-> > used in all these places where IPv4 BIG TCP packets may reach in Patch
-> > 2-7, and Patch 8 implements this feature and Patch 10 adds a selftest
-> > for it. Patch 9 is a fix in netfilter length_mt6 so that the selftest
-> > can also cover IPv6 BIG TCP.
-> >
-> > Note that the similar change as in Patch 2-7 are also needed for IPv6
-> > BIG TCP packets, and will be addressed in another patchset.
-> >
-> > The similar performance test is done for IPv4 BIG TCP with 25Gbit NIC
-> > and 1.5K MTU:
+> > This fix will also help us add selftest for IPv6 BIG TCP in the
+> > following patch.
 > >
 >
-> This is broken, sorry.
+> If this is a bug fix for the existing IPv6 support, send it outside of
+> this set for -net.
 >
-> There are reasons BIG TCP was implemented for IPv6 only, it seems you
-> missed a lot of them.
->
-> Networking needs observability and diagnostic tools.
->
-> Until you come back with a proper way for tcpdump to not mess things,
-> there is no way I can ACK these changes.
-For the installed tcpdump, it's just parsing iph->tot_len from the raw pkt,
-and I'm not sure how to make it without any change in tcpdump. But,
+Sure,
+I was thinking of adding it here to be able to support selftest for
+IPv6 too in the next patch. But it seems to make more sense to
+get it into -net first, then add this selftest after it goes to net-next.
 
-https://github.com/the-tcpdump-group/tcpdump/commit/c8623960f050cb81c12b31107070021f27f14b18
+I will post it and all other fixes I mentioned in the cover-letter for
+IPv6 BIG TCP for -net.
 
-As this is already in tcpdump, we can build tcpdump with "-DGUESS_TSO":
-
-# ./configure CFLAGS=-DGUESS_TSO
-
-It seems someone had met such problems even without IPv4 BIG TCP, not
-sure in Linux or other OS.
-Now it's time to enable this CFLAG. :-)
+But before that, I hope Eric can confirm it is okay to read the length
+of IPv6 BIG TCP packets with skb_ipv6_totlen() defined in this patch,
+instead of parsing JUMBO exthdr?
 
 Thanks.
