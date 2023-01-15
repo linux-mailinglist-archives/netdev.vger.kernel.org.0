@@ -2,133 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02B8B66B4D8
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 00:55:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 721E466B4DC
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 00:57:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231630AbjAOXzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Jan 2023 18:55:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35136 "EHLO
+        id S231631AbjAOX5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Jan 2023 18:57:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231624AbjAOXzo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 18:55:44 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8EC16321;
-        Sun, 15 Jan 2023 15:55:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=C9kBaSGomzBeY39dSxemuW01FKp1Lm9mgpLGAgSDUjc=; b=afjDdP892qLrNfjmmt/PHGmLDR
-        HhNB1yaxhrJPKkqVkNohnn5LYDbsNPViPuZvkqXw2voZxehopsUQNRAYmEqE31IHvwITkZpa/t5X/
-        2BdPrE49BrkaWyHnJZgo3mBfjNT0LL3nrEDW1WZKMKVwXVcZCGMTbSTZ6STf5PCg1W80=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pHCqV-002A4x-6c; Mon, 16 Jan 2023 00:55:27 +0100
-Date:   Mon, 16 Jan 2023 00:55:27 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Lars-Peter Clausen <lars@metafoo.de>
-Cc:     Pierluigi Passaro <pierluigi.passaro@gmail.com>,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        eran.m@variscite.com, nate.d@variscite.com,
-        francesco.f@variscite.com, pierluigi.p@variscite.com
-Subject: Re: [PATCH] net: mdio: force deassert MDIO reset signal
-Message-ID: <Y8SSb+tJsfJ3/DvH@lunn.ch>
-References: <20230115161006.16431-1-pierluigi.p@variscite.com>
- <Y8QzI2VUY6//uBa/@lunn.ch>
- <f691f339-9e50-b968-01e1-1821a2f696e7@metafoo.de>
+        with ESMTP id S231446AbjAOX5k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 18:57:40 -0500
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C714C67E
+        for <netdev@vger.kernel.org>; Sun, 15 Jan 2023 15:57:39 -0800 (PST)
+Received: by mail-il1-x12d.google.com with SMTP id u8so13384231ilg.0
+        for <netdev@vger.kernel.org>; Sun, 15 Jan 2023 15:57:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=XknCUbek0HUyR7hMqJ+X+TKXZD2oRjo4VurNLGt9IEw=;
+        b=mG40FLk769xG5ZLZh/B3zBijXI8u4KwzNYreDwgD7NUJM8Lm6W0jfEhoTml7HDVURi
+         QLfN2mwotehtuOMY1Qlgb/pJTIwEhOrX7QUlkQxSgSKsoFpISbYLAw5QEmbsOR9meaKH
+         ZCebWNmwk6QEmsDGuwXfl1A9svAceUsX06TQYgKMD9AuTP3E7eKHqKeJ/PpkrURJYXDe
+         5OWQrHIvDglsskt/GtxWP/geJXvCE+3pkBE/yevUK8PPCRwDhMIv3YWmDm15Q3ifUfxe
+         fxLN3CpPMlCGnaKv4WCu7daLwrRfiwJIfEfsJpjDc8emNReQIFp6PpiGzAPB9MyxbA8i
+         oo2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XknCUbek0HUyR7hMqJ+X+TKXZD2oRjo4VurNLGt9IEw=;
+        b=ZSl56yZLi0HX4/ShQqu7wNcufYIMjXu8r4oyIkqg69LZ5U2SVWw4x0lqXpOQV1kWkv
+         l/b7H08iEDBZbn3wAPSbD2t0GvsEs6KCUwHiNZqzmGpToNPMtkpscig7CbbVbTZdHKQk
+         idL3tBWFKHfh2ym1gZchcLb8HSuc0uFhcmbk9ahrHBTdtGtPbXcg5Bvi9KZ8PvzNCU5J
+         VspkgqHbU6iUWVVTImasse6zaKXWvO69IOKgvDfgMYz4aWaQ0GSkMYfweituLcvnAX79
+         aeZmMPtWzW2M/E2YiIbPlkF4EcszN2/YnJvZkyaF9DT78q6vTc8gNymboi/SuF2eUe5s
+         XC9A==
+X-Gm-Message-State: AFqh2kq/dhmZb1K/20Xw6dgrK0HsewjkCNDMmAnb9Nmw8nYV2wp/EuWd
+        0u6K6LI3SjzUeLma52rcOlg=
+X-Google-Smtp-Source: AMrXdXs/7rlNVBLWIxduUZTum0p8LdO1X8pqZb0nlGyk5jJrayoort1uWpdJzXx9uODZ9vYEDX8jVg==
+X-Received: by 2002:a05:6e02:108:b0:30c:5c54:c264 with SMTP id t8-20020a056e02010800b0030c5c54c264mr34101498ilm.13.1673827058444;
+        Sun, 15 Jan 2023 15:57:38 -0800 (PST)
+Received: from ?IPV6:2601:284:8200:b700:7de9:438a:dc6b:e300? ([2601:284:8200:b700:7de9:438a:dc6b:e300])
+        by smtp.googlemail.com with ESMTPSA id q20-20020a056e02097400b0030bf7ae141esm8050282ilt.2.2023.01.15.15.57.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 15 Jan 2023 15:57:37 -0800 (PST)
+Message-ID: <7181c170-3d10-fd3a-2769-7e8e40d54b41@gmail.com>
+Date:   Sun, 15 Jan 2023 16:57:36 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f691f339-9e50-b968-01e1-1821a2f696e7@metafoo.de>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.6.1
+Subject: Re: [PATCH net-next 09/10] netfilter: get ipv6 pktlen properly in
+ length_mt6
+Content-Language: en-US
+To:     Xin Long <lucien.xin@gmail.com>, Eric Dumazet <edumazet@google.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Aaron Conole <aconole@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Guillaume Nault <gnault@redhat.com>
+References: <cover.1673666803.git.lucien.xin@gmail.com>
+ <de91843a7f59feb065475ca82be22c275bede3df.1673666803.git.lucien.xin@gmail.com>
+ <b0a1bebc-7d44-05bc-347c-94da4cf2ef27@gmail.com>
+ <CADvbK_cxQa0=ximH1F2bA-r0Q2+nMGAsSKhbaKzFTHOrcCF11A@mail.gmail.com>
+ <CANn89iK4oSgoxJVkXO5rZXLzG1xw-xP31QbGHGvjhXqR2SSsRQ@mail.gmail.com>
+ <CADvbK_c+RAFyrwuL+dfU3hc5U+ytOHC=TQ_xrkvXb4bB7XKjEA@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <CADvbK_c+RAFyrwuL+dfU3hc5U+ytOHC=TQ_xrkvXb4bB7XKjEA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Specifying the ID as part of the compatible string works for clause 22 PHYs,
-> but for clause 45 PHYs it does not work. The code always wants to read the
-> ID from the PHY itself. But I do not understand things well enough to tell
-> whether that's a fundamental restriction of C45 or just our implementation
-> and the implementation can be changed to fix it.
+On 1/15/23 1:14 PM, Xin Long wrote:
+>>
+>> So skb->len is not the root of trust. Some transport mediums might add paddings.
+>>
+
+That padding is to meet minimum packet sizes AIUI.
+
+Ethernet for example has a minimum packet length of 60B. Some protocols
+running over ethernet can generate packets less than 60B. For example,
+ARP is 52B as I recall so something in the hardware pipeline must pad
+that out to 60B. IPv4 with UDP and small L4 payloads is another example.
+So the trim is to remove the padding added to meet a minimum size. That
+should not be relevant for large packets.
+
+>> Ipv4 has a similar logic in ip_rcv_core().
+>>
+>> len = ntohs(iph->tot_len);
+>> if (skb->len < len) {
+>>      drop_reason = SKB_DROP_REASON_PKT_TOO_SMALL;
+>>      __IP_INC_STATS(net, IPSTATS_MIB_INTRUNCATEDPKTS);
+>>     goto drop;
+>> } else if (len < (iph->ihl*4))
+>>      goto inhdr_error;
+>>
+>> /* Our transport medium may have padded the buffer out. Now we know it
+>> * is IP we can trim to the true length of the frame.
+>> * Note this now means skb->len holds ntohs(iph->tot_len).
+>> */
+>> if (pskb_trim_rcsum(skb, len)) {
+>>       __IP_INC_STATS(net, IPSTATS_MIB_INDISCARDS);
+>>       goto drop;
+>> }
+>>
+>> After your changes, we might accept illegal packets that were properly
+>> dropped before.
+> I think skb->len is trustable for GSO/GRO packets.
+
+That is my understanding as well.
+
+> In ipv6_gro_complete/inet_gro_complete():
+> The new length for payload_len or iph->tot_len are all calculated from skb->len.
+> As I said in the cover-letter, "there is no padding in GSO/GRO packets".
+> Or am I missing something?
 > 
-> Do you have some thoughts on this?
+> Thanks.
 
-Do you have more details about what goes wrong? Which PHY driver is
-it? What compatibles do you put into DT for the PHY?
-
-To some extent, the ID is only used to find the driver. A C45 device
-has a lot of ID register, and all of them are used by phy_bus_match()
-to see if a driver matches. So you need to be careful which ID you
-pick, it needs to match the driver.
-
-It is the driver which decides to use C22 or C45 to talk to the PHY.
-However, we do have:
-
-static int phy_probe(struct device *dev)
-{
-...
-        else if (phydev->is_c45)
-                err = genphy_c45_pma_read_abilities(phydev);
-        else
-                err = genphy_read_abilities(phydev);
-
-so it could be a C45 PHY probed using an ID does not have
-phydev->is_c45 set, and so it looks in the wrong place for the
-capabilities. Make sure you also have the compatible
-"ethernet-phy-ieee802.3-c45" which i think should cause is_c45 to be
-set.
-
-There is no fundamental restriction that i know of here, it probably
-just needs somebody to debug it and find where it goes wrong.
-
-Ah!
-
-int fwnode_mdiobus_register_phy(struct mii_bus *bus,
-                                struct fwnode_handle *child, u32 addr)
-{
-...
-        rc = fwnode_property_match_string(child, "compatible",
-                                          "ethernet-phy-ieee802.3-c45");
-        if (rc >= 0)
-                is_c45 = true;
-
-        if (is_c45 || fwnode_get_phy_id(child, &phy_id))
-                phy = get_phy_device(bus, addr, is_c45);
-        else
-                phy = phy_device_create(bus, addr, phy_id, 0, NULL);
-
-
-So compatible "ethernet-phy-ieee802.3-c45" results in is_c45 being set
-true. The if (is_c45 || is then true, so it does not need to call
-fwnode_get_phy_id(child, &phy_id) so ignores whatever ID is in DT and
-asks the PHY.
-
-Try this, totally untested:
-
-diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
-index b782c35c4ac1..13be23f8ac97 100644
---- a/drivers/net/mdio/fwnode_mdio.c
-+++ b/drivers/net/mdio/fwnode_mdio.c
-@@ -134,10 +134,10 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
-        if (rc >= 0)
-                is_c45 = true;
- 
--       if (is_c45 || fwnode_get_phy_id(child, &phy_id))
-+       if (fwnode_get_phy_id (child, &phy_id))
-                phy = get_phy_device(bus, addr, is_c45);
-        else
--               phy = phy_device_create(bus, addr, phy_id, 0, NULL);
-+               phy = phy_device_create(bus, addr, phy_id, is_c45, NULL);
-        if (IS_ERR(phy)) {
-                rc = PTR_ERR(phy);
-                goto clean_mii_ts;
-
-
-     Andrew
