@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96AFA66AFA5
-	for <lists+netdev@lfdr.de>; Sun, 15 Jan 2023 08:17:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E446866AFA9
+	for <lists+netdev@lfdr.de>; Sun, 15 Jan 2023 08:18:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230152AbjAOHRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Jan 2023 02:17:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
+        id S230478AbjAOHSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Jan 2023 02:18:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230224AbjAOHQu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 02:16:50 -0500
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5FE9B45B;
-        Sat, 14 Jan 2023 23:16:34 -0800 (PST)
-Received: by mail-pg1-x533.google.com with SMTP id d10so17594379pgm.13;
-        Sat, 14 Jan 2023 23:16:34 -0800 (PST)
+        with ESMTP id S229676AbjAOHQy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 02:16:54 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 952D3B472;
+        Sat, 14 Jan 2023 23:16:38 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id s67so17625361pgs.3;
+        Sat, 14 Jan 2023 23:16:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=8kDnC+/cfUMMOFjYmAxLkFmwnVT0UDNBRF4bIPq83UM=;
-        b=WJBB9wETNIDP9BCZ8yiYzbgE4gUzl/NBgPPpHtMTfcpfqit0N3GbiI8YvI41bpJgsJ
-         I9xWAhVYU+9n5PeiKcxN/bFD5UTUSDQiOa1VODh815qQbOoXIA3fRgtln0TySVhXRC3p
-         zaNFRpUPqKXx8BMN6bjtGc9oqpcH/cEydxE8xJbl+LtfKUa/QxmFOWiKjvqdHzX/PJmE
-         B8Vqyk9PH3kJD2T3Gva4HJaTy/TEwCk8gmb/QUXppfcEOxI9RZ8r4P6+YcqIE/WbUn0R
-         0Rztbhz55NpkHgNfXqNf1Il9XavHUoCWYaAuJwJxqpOrRiMhF3Hybo0XxkKFkoNmalpw
-         Dw5w==
+        bh=ocnqdzwpiFm+OPG+OonsFNnUBEnRsSpKIXYgKGCflvM=;
+        b=avku4lgBI86PlqIWq2y/K7eXXy2PIl42YwD3nvVmwTYZZNs9TiqB7Rh4kzSq/j62yh
+         r0XWG0Fb22GzgGE1Ng1s/dRlSHD7eKbsMJ8+B3pbZ9QEIPXyHaaJd25j79MsinPTQ2Tu
+         L2p4ww7RByq34+eyFC4dXZsbfRLuduXRXh5pyn1LG/uWpqjK8Se/404erVYTKyqBWmqL
+         xuXRX0+msqVkupYpLBrED8LFsFWNIeJvnVbZhjrkVZZHaEuYKBSZqIODdg1bfGwDZMaW
+         ByIxI5wjJiBUJUP3b0EiQptnqw98r0twcXGYR5kZbvGNlXUcynCuNE6iI6faHWDc+dBk
+         pHJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=8kDnC+/cfUMMOFjYmAxLkFmwnVT0UDNBRF4bIPq83UM=;
-        b=MGf2NL/w+hWzzj5e0MNAFPdjDY0Ulo5eRs/sotCFGZtGH4AzeiKcmhJy9jtyoFg51j
-         3AL945h7OJkvdSDAjkMWnVUM9PZGCZKB3f+3yhIlkWgLekEYsxBhWhZ6jQEngohi0CiF
-         N7vF2w2a4IjMoF2obEgRAI91o2PHurT7BuHyUBSKfWrgeKzH5N2EtEEBfd5bJ+jwrVBP
-         mbAKZ4bPPvDBpakyC1iY/MDzPQbPmi5A1bjQUvyLI9+RI4Y0Ws4DZttFf0nl4TeKXEvM
-         dBmsrLIRo16UdSHdxIBcAJi7BTf4x364nAhzZi+NGeyQEfBb0qOZPaTHmehbGUZisaqf
-         CWqQ==
-X-Gm-Message-State: AFqh2krnKe4GS5nd1TEz2YErxnq//jPLpr8Xb8QMxf2lcHZyA9AFRfmR
-        xH47fn94S9JggHFKkXUtQg==
-X-Google-Smtp-Source: AMrXdXvVXQbZbTni1a0PSp7fjVXAWGUbUYO/UC+BynA6En81L8SzbO9iG26ZdF41L7P7k0u1fei3jQ==
-X-Received: by 2002:a05:6a00:1a55:b0:58d:9791:44bc with SMTP id h21-20020a056a001a5500b0058d979144bcmr1773337pfv.9.1673766994350;
-        Sat, 14 Jan 2023 23:16:34 -0800 (PST)
+        bh=ocnqdzwpiFm+OPG+OonsFNnUBEnRsSpKIXYgKGCflvM=;
+        b=SJwD445wwcmnKT/ShlaDKstA58wQiwFd7sBwnMD2CAcTCt2hyoyk1xyVujhfXu2fHf
+         sS2su2RCNay84gjaZec3EVr3MErURto14//uZ3tA4l/7jdJmpHzhPbGcneTLY7iWeYL5
+         Ma/P/h/NsvIVU47MxkjQ8GoH4NzERZGaRqcpRYz0vK0ad5a702uyhjdyW3YT5gb7W1Z0
+         uAvcTq+01uch/dhvw/OvGaovyjqZNAbG8rwB/UmvUMTjTOaBBgr8l2LficcqLxUbWqop
+         axb4BuDKTqGXz3J3jJ1z+JywmrezBOauj8Mi+BMiuaUa/18Ib6JnIBphlLckr898VWBC
+         Q6JQ==
+X-Gm-Message-State: AFqh2kp2luwEcNlajEUcWlrVWMTotVNpAFawf33toZ+8SF1eWs4e0AoV
+        YQE3FJNEtgbglJDBKHy0jw==
+X-Google-Smtp-Source: AMrXdXvSYx/gnUhUc4jw5gULtOEwObzv6H6eMPXMjrqBkpO9MyisCKJH5Y43vpwhKmyGt632tW0ryw==
+X-Received: by 2002:a62:58c1:0:b0:573:f869:2115 with SMTP id m184-20020a6258c1000000b00573f8692115mr82117503pfb.9.1673766998054;
+        Sat, 14 Jan 2023 23:16:38 -0800 (PST)
 Received: from WDIR.. ([182.209.58.25])
-        by smtp.gmail.com with ESMTPSA id z13-20020aa7990d000000b0058a313f4e4esm10272796pff.149.2023.01.14.23.16.30
+        by smtp.gmail.com with ESMTPSA id z13-20020aa7990d000000b0058a313f4e4esm10272796pff.149.2023.01.14.23.16.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Jan 2023 23:16:33 -0800 (PST)
+        Sat, 14 Jan 2023 23:16:37 -0800 (PST)
 From:   "Daniel T. Lee" <danieltimlee@gmail.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -62,9 +62,9 @@ To:     Daniel Borkmann <daniel@iogearbox.net>,
         Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: [bpf-next 04/10] samples/bpf: fix broken cgroup socket testing
-Date:   Sun, 15 Jan 2023 16:16:07 +0900
-Message-Id: <20230115071613.125791-5-danieltimlee@gmail.com>
+Subject: [bpf-next 05/10] samples/bpf: replace broken overhead microbenchmark with fib_table_lookup
+Date:   Sun, 15 Jan 2023 16:16:08 +0900
+Message-Id: <20230115071613.125791-6-danieltimlee@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230115071613.125791-1-danieltimlee@gmail.com>
 References: <20230115071613.125791-1-danieltimlee@gmail.com>
@@ -80,82 +80,190 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, executing test_cgrp2_sock2 fails due to wrong section
-header. This 'cgroup/sock1' style section is previously used at
-'samples/bpf_load' (deprecated) BPF loader. Because this style isn't
-supported in libbpf, this commit fixes this problem by correcting the
-section header.
+The test_overhead bpf program is designed to compare performance
+between tracepoint and kprobe. Initially it used task_rename and
+urandom_read tracepoint.
 
-    $ sudo ./test_cgrp2_sock2.sh
-    libbpf: prog 'bpf_prog1': missing BPF prog type, check ELF section name 'cgroup/sock1'
-    libbpf: prog 'bpf_prog1': failed to load: -22
-    libbpf: failed to load object './sock_flags_kern.o'
-    ERROR: loading BPF object file failed
+However, commit 14c174633f34 ("random: remove unused tracepoints")
+removed urandom_read tracepoint, and for this reason the test_overhead
+got broken.
 
-In addition, this BPF program filters ping packets by comparing whether
-the socket type uses SOCK_RAW. However, after the ICMP socket[1] was
-developed, ping sends ICMP packets using SOCK_DGRAM. Therefore, in this
-commit, the packet filtering is changed to use SOCK_DGRAM instead of
-SOCK_RAW.
+This commit introduces new microbenchmark using fib_table_lookup.
+This microbenchmark sends UDP packets to localhost in order to invoke
+fib_table_lookup.
 
-    $ strace --trace socket ping -6 -c1 -w1 ::1
-    socket(AF_INET6, SOCK_DGRAM, IPPROTO_ICMPV6) = 3
+In a nutshell:
+fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+addr.sin_addr.s_addr = inet_addr(DUMMY_IP);
+addr.sin_port = htons(DUMMY_PORT);
+for() {
+    sendto(fd, buf, strlen(buf), 0,
+            (struct sockaddr *)&addr, sizeof(addr));
+}
 
-[1]: https://lwn.net/Articles/422330/
+on 4 cpus in parallel:
+                                            lookup per sec
+base (no tracepoints, no kprobes)               381k
+with kprobe at fib_table_lookup()               325k
+with tracepoint at fib:fib_table_lookup         330k
+with raw_tracepoint at fib:fib_table_lookup     365k
+
+Fixes: 14c174633f34 ("random: remove unused tracepoints")
 
 Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 ---
- samples/bpf/sock_flags_kern.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ samples/bpf/test_overhead_kprobe_kern.c |  2 +-
+ samples/bpf/test_overhead_raw_tp_kern.c |  2 +-
+ samples/bpf/test_overhead_tp_kern.c     | 26 ++++++++++++++++-------
+ samples/bpf/test_overhead_user.c        | 28 +++++++++++++++++--------
+ 4 files changed, 40 insertions(+), 18 deletions(-)
 
-diff --git a/samples/bpf/sock_flags_kern.c b/samples/bpf/sock_flags_kern.c
-index 6d0ac7569d6f..1d58cb9b6fa4 100644
---- a/samples/bpf/sock_flags_kern.c
-+++ b/samples/bpf/sock_flags_kern.c
-@@ -5,7 +5,7 @@
- #include <uapi/linux/in6.h>
- #include <bpf/bpf_helpers.h>
- 
--SEC("cgroup/sock1")
-+SEC("cgroup/sock")
- int bpf_prog1(struct bpf_sock *sk)
- {
- 	char fmt[] = "socket: family %d type %d protocol %d\n";
-@@ -17,29 +17,29 @@ int bpf_prog1(struct bpf_sock *sk)
- 	bpf_trace_printk(fmt, sizeof(fmt), sk->family, sk->type, sk->protocol);
- 	bpf_trace_printk(fmt2, sizeof(fmt2), uid, gid);
- 
--	/* block PF_INET6, SOCK_RAW, IPPROTO_ICMPV6 sockets
-+	/* block PF_INET6, SOCK_DGRAM, IPPROTO_ICMPV6 sockets
- 	 * ie., make ping6 fail
- 	 */
- 	if (sk->family == PF_INET6 &&
--	    sk->type == SOCK_RAW   &&
-+	    sk->type == SOCK_DGRAM   &&
- 	    sk->protocol == IPPROTO_ICMPV6)
- 		return 0;
- 
- 	return 1;
+diff --git a/samples/bpf/test_overhead_kprobe_kern.c b/samples/bpf/test_overhead_kprobe_kern.c
+index 8fdd2c9c56b2..ba82949338c2 100644
+--- a/samples/bpf/test_overhead_kprobe_kern.c
++++ b/samples/bpf/test_overhead_kprobe_kern.c
+@@ -39,7 +39,7 @@ int prog(struct pt_regs *ctx)
+ 	return 0;
  }
  
--SEC("cgroup/sock2")
-+SEC("cgroup/sock")
- int bpf_prog2(struct bpf_sock *sk)
+-SEC("kprobe/urandom_read")
++SEC("kprobe/fib_table_lookup")
+ int prog2(struct pt_regs *ctx)
  {
- 	char fmt[] = "socket: family %d type %d protocol %d\n";
+ 	return 0;
+diff --git a/samples/bpf/test_overhead_raw_tp_kern.c b/samples/bpf/test_overhead_raw_tp_kern.c
+index 8763181a32f3..3e29de0eca98 100644
+--- a/samples/bpf/test_overhead_raw_tp_kern.c
++++ b/samples/bpf/test_overhead_raw_tp_kern.c
+@@ -9,7 +9,7 @@ int prog(struct bpf_raw_tracepoint_args *ctx)
+ 	return 0;
+ }
  
- 	bpf_trace_printk(fmt, sizeof(fmt), sk->family, sk->type, sk->protocol);
+-SEC("raw_tracepoint/urandom_read")
++SEC("raw_tracepoint/fib_table_lookup")
+ int prog2(struct bpf_raw_tracepoint_args *ctx)
+ {
+ 	return 0;
+diff --git a/samples/bpf/test_overhead_tp_kern.c b/samples/bpf/test_overhead_tp_kern.c
+index 80edadacb692..f170e9b1ea21 100644
+--- a/samples/bpf/test_overhead_tp_kern.c
++++ b/samples/bpf/test_overhead_tp_kern.c
+@@ -22,15 +22,27 @@ int prog(struct task_rename *ctx)
+ 	return 0;
+ }
  
--	/* block PF_INET, SOCK_RAW, IPPROTO_ICMP sockets
-+	/* block PF_INET, SOCK_DGRAM, IPPROTO_ICMP sockets
- 	 * ie., make ping fail
- 	 */
- 	if (sk->family == PF_INET &&
--	    sk->type == SOCK_RAW  &&
-+	    sk->type == SOCK_DGRAM  &&
- 	    sk->protocol == IPPROTO_ICMP)
- 		return 0;
+-/* from /sys/kernel/debug/tracing/events/random/urandom_read/format */
+-struct urandom_read {
++/* from /sys/kernel/debug/tracing/events/fib/fib_table_lookup/format */
++struct fib_table_lookup {
+ 	__u64 pad;
+-	int got_bits;
+-	int pool_left;
+-	int input_left;
++	__u32 tb_id;
++	int err;
++	int oif;
++	int iif;
++	__u8 proto;
++	__u8 tos;
++	__u8 scope;
++	__u8 flags;
++	__u8 src[4];
++	__u8 dst[4];
++	__u8 gw4[4];
++	__u8 gw6[16];
++	__u16 sport;
++	__u16 dport;
++	char name[16];
+ };
+-SEC("tracepoint/random/urandom_read")
+-int prog2(struct urandom_read *ctx)
++SEC("tracepoint/fib/fib_table_lookup")
++int prog2(struct fib_table_lookup *ctx)
+ {
+ 	return 0;
+ }
+diff --git a/samples/bpf/test_overhead_user.c b/samples/bpf/test_overhead_user.c
+index 88717f8ec6ac..ce28d30f852e 100644
+--- a/samples/bpf/test_overhead_user.c
++++ b/samples/bpf/test_overhead_user.c
+@@ -11,6 +11,8 @@
+ #include <unistd.h>
+ #include <assert.h>
+ #include <sys/wait.h>
++#include <sys/socket.h>
++#include <arpa/inet.h>
+ #include <stdlib.h>
+ #include <signal.h>
+ #include <linux/bpf.h>
+@@ -20,6 +22,8 @@
+ #include <bpf/libbpf.h>
  
+ #define MAX_CNT 1000000
++#define DUMMY_IP "127.0.0.1"
++#define DUMMY_PORT 80
+ 
+ static struct bpf_link *links[2];
+ static struct bpf_object *obj;
+@@ -35,8 +39,8 @@ static __u64 time_get_ns(void)
+ 
+ static void test_task_rename(int cpu)
+ {
+-	__u64 start_time;
+ 	char buf[] = "test\n";
++	__u64 start_time;
+ 	int i, fd;
+ 
+ 	fd = open("/proc/self/comm", O_WRONLY|O_TRUNC);
+@@ -57,26 +61,32 @@ static void test_task_rename(int cpu)
+ 	close(fd);
+ }
+ 
+-static void test_urandom_read(int cpu)
++static void test_fib_table_lookup(int cpu)
+ {
++	struct sockaddr_in addr;
++	char buf[] = "test\n";
+ 	__u64 start_time;
+-	char buf[4];
+ 	int i, fd;
+ 
+-	fd = open("/dev/urandom", O_RDONLY);
++	fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+ 	if (fd < 0) {
+-		printf("couldn't open /dev/urandom\n");
++		printf("couldn't open socket\n");
+ 		exit(1);
+ 	}
++	memset((char *)&addr, 0, sizeof(addr));
++	addr.sin_addr.s_addr = inet_addr(DUMMY_IP);
++	addr.sin_port = htons(DUMMY_PORT);
++	addr.sin_family = AF_INET;
+ 	start_time = time_get_ns();
+ 	for (i = 0; i < MAX_CNT; i++) {
+-		if (read(fd, buf, sizeof(buf)) < 0) {
+-			printf("failed to read from /dev/urandom: %s\n", strerror(errno));
++		if (sendto(fd, buf, strlen(buf), 0,
++			   (struct sockaddr *)&addr, sizeof(addr)) < 0) {
++			printf("failed to start ping: %s\n", strerror(errno));
+ 			close(fd);
+ 			return;
+ 		}
+ 	}
+-	printf("urandom_read:%d: %lld events per sec\n",
++	printf("fib_table_lookup:%d: %lld events per sec\n",
+ 	       cpu, MAX_CNT * 1000000000ll / (time_get_ns() - start_time));
+ 	close(fd);
+ }
+@@ -92,7 +102,7 @@ static void loop(int cpu, int flags)
+ 	if (flags & 1)
+ 		test_task_rename(cpu);
+ 	if (flags & 2)
+-		test_urandom_read(cpu);
++		test_fib_table_lookup(cpu);
+ }
+ 
+ static void run_perf_test(int tasks, int flags)
 -- 
 2.34.1
 
