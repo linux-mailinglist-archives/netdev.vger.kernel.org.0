@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1376E66AFB1
-	for <lists+netdev@lfdr.de>; Sun, 15 Jan 2023 08:18:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B17CE66AFB4
+	for <lists+netdev@lfdr.de>; Sun, 15 Jan 2023 08:18:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231146AbjAOHSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Jan 2023 02:18:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54604 "EHLO
+        id S231143AbjAOHSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Jan 2023 02:18:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230112AbjAOHRF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 02:17:05 -0500
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49EBCB47E;
-        Sat, 14 Jan 2023 23:16:53 -0800 (PST)
-Received: by mail-pg1-x531.google.com with SMTP id r18so17603897pgr.12;
-        Sat, 14 Jan 2023 23:16:53 -0800 (PST)
+        with ESMTP id S230126AbjAOHRG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 02:17:06 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCABECDCA;
+        Sat, 14 Jan 2023 23:16:56 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id i65so15442731pfc.0;
+        Sat, 14 Jan 2023 23:16:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=IXtBMdlxptD+rgtlXku5y/M/YWWbgrzqb1KWu60anSo=;
-        b=BzmMU/twu97qKTkVkWbfv/IpCYI7V78IjtH988IqnzkiwIotFszjB/0iW4aaIh2PkQ
-         xQe9B6Yx8zLJm9PsstCTVI2RIwr+UKI4bxo9ym22HOs1l/RyiI/59YX0Zp3yGioEtYEe
-         Qu0gNltLlB1HXc11BHyTelg3OdzPMhFepJEosvg+0PATsqDbb4s+vk9Da7nYok9INw8x
-         Oer/8+qoex1iwnMcdiRWxlEg17iB7d+RubnseD5WjQcNU2Jcvs3KghAhh5WGqXkDKmCr
-         zXvczc4sy+RlwjQGGerTHnMrTyySdel0S6Ntrp/79hRz14LdUd9TdQ+IRJoVBhSto6bJ
-         IRag==
+        bh=vNXfcjpndi9wyIiNjD+j3biphdOzIRcH22L61plM07w=;
+        b=gHVR2YI5UTS/cH5MRPogzxfem3dOg2N3RxcvnIYU/aWo3J25GvQWONCnEXxN8Z9cET
+         ASme94ybWpKs0Qlc1dG9xChi9v1l4z7j5R8a6iifXz35Hz6mR/q3w0ZEn+E6RWjPVPUS
+         Qn4bTBknZR6fFtRvn+kR+YBVJNk4jFuoh9QaWOXXQpawy6nLbUFjZ9GoqyLQXvAFRPIx
+         3hlu3cEKrLfFv13vux9atAs1MzrqSJcJMcBPxD5r8TyGVXd7HYNg7Qw7Mk871a7H74Ll
+         Zf4l2Ow2bQTXuc8fzDXGTMiRUcEvB9sZg+JwDaja24vPHOlvofUIAncWNdMbXkhKEwNG
+         wbMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=IXtBMdlxptD+rgtlXku5y/M/YWWbgrzqb1KWu60anSo=;
-        b=KkMTz+65ewKEClUFOEG66F6fo/1hQiJF48z57hpRdTbbRftdk5DySBbVd6BtQ7MnfF
-         jrN3VPucX+z7pwX6y7HlpVbkk2EQGywOvrFUfvE51CASqc7nEF8540Jic5p2EamSTvBR
-         /l9yV5Oru5nN6Wd9rVy2AmK2voCRwVXEvu5P/mZzqo05zrM/2jR2LYxQBNs8jae7K/25
-         uCyccNoS8kDlHSKtuuNv7IkXxT9LJNOK9S5YdSsf6yhVOKDGSW1+1S5Ea3DM0aPt98KA
-         ZpEqkgACUui9YmtT78YyGnP9NV3DRWzusc+Ca2aGz31kjLsXaeIe55y6l93aJBczMCpS
-         shug==
-X-Gm-Message-State: AFqh2kp0b955/FFZpNLOj7uHaJIozH/qtSxy9szQ9wncMyoZollzng5A
-        n3FUejGFvVTCHVjZ8fD1NA==
-X-Google-Smtp-Source: AMrXdXs56/WCCSSciGtUdzHeaGwrcYkmERKIE5bb4yigLmTgf5G8RRH6ADAjlzf9Yi93UhS1aN6deA==
-X-Received: by 2002:a05:6a00:198c:b0:582:d44f:3948 with SMTP id d12-20020a056a00198c00b00582d44f3948mr41081152pfl.18.1673767012723;
-        Sat, 14 Jan 2023 23:16:52 -0800 (PST)
+        bh=vNXfcjpndi9wyIiNjD+j3biphdOzIRcH22L61plM07w=;
+        b=7YM6yblYx9zXEr5QmzgHgBOkCdhMCBJZiSTXJRKtSFbqew5Uvj5b92XJZDmkx9mg1l
+         nfP1ETcDED8v5CmuD4G/1L9jVeDgk2k4ErzNlzkKJmAit5IXuqn6CfcaEbX9FRxzn8Xy
+         fElSui5peoYDp5dJLYAldaNSDGc3X3125rUtRnrHIgfqjlXFZ2xo0M9ot2bD6qTC61B2
+         LL19EgchIqVIAQFeTIZgotHEVfju8OJr/ga/KIzGB6/kN81i5vcnfd/CiLeoMfnN6OMl
+         uS0O8Qq0e8HfK5Jkuw6oqWK/zFKJsZjep8w4o/Pp/RQuqtCQoHmpGOcDJNYQt1mcEb9G
+         gZDw==
+X-Gm-Message-State: AFqh2kod797Yml+WDz8uS3PPizdUCH5p8rIAPjcAe5D4gekFXtzxRCwJ
+        wqYWaXAIReFx8VUvQaCWMg==
+X-Google-Smtp-Source: AMrXdXtqqkNdeJGkDOxh0iLhZTaHoIckTCUnK1/1uyavkKn++YOTTrY9KM+n7OwgY3l/a3mdPohuXw==
+X-Received: by 2002:a05:6a00:4489:b0:58d:982a:f1e9 with SMTP id cu9-20020a056a00448900b0058d982af1e9mr1694905pfb.22.1673767016414;
+        Sat, 14 Jan 2023 23:16:56 -0800 (PST)
 Received: from WDIR.. ([182.209.58.25])
-        by smtp.gmail.com with ESMTPSA id z13-20020aa7990d000000b0058a313f4e4esm10272796pff.149.2023.01.14.23.16.49
+        by smtp.gmail.com with ESMTPSA id z13-20020aa7990d000000b0058a313f4e4esm10272796pff.149.2023.01.14.23.16.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Jan 2023 23:16:52 -0800 (PST)
+        Sat, 14 Jan 2023 23:16:55 -0800 (PST)
 From:   "Daniel T. Lee" <danieltimlee@gmail.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -62,9 +62,9 @@ To:     Daniel Borkmann <daniel@iogearbox.net>,
         Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: [bpf-next 09/10] samples/bpf: use vmlinux.h instead of implicit headers in BPF test program
-Date:   Sun, 15 Jan 2023 16:16:12 +0900
-Message-Id: <20230115071613.125791-10-danieltimlee@gmail.com>
+Subject: [bpf-next 10/10] samples/bpf: change _kern suffix to .bpf with BPF test programs
+Date:   Sun, 15 Jan 2023 16:16:13 +0900
+Message-Id: <20230115071613.125791-11-danieltimlee@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230115071613.125791-1-danieltimlee@gmail.com>
 References: <20230115071613.125791-1-danieltimlee@gmail.com>
@@ -80,158 +80,184 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit applies vmlinux.h to BPF functionality testing program.
-Macros that were not defined despite migration to "vmlinux.h" were
-defined separately in individual files.
+This commit changes the _kern suffix to .bpf with the BPF test programs.
+With this modification, test programs will inherit the benefit of the
+new CLANG-BPF compile target.
 
 Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 ---
- samples/bpf/lwt_len_hist_kern.c         |  5 +----
- samples/bpf/sock_flags_kern.c           |  6 ++----
- samples/bpf/test_cgrp2_tc_kern.c        |  3 +--
- samples/bpf/test_lwt_bpf.c              | 11 +----------
- samples/bpf/test_map_in_map_kern.c      |  7 ++++---
- samples/bpf/test_overhead_kprobe_kern.c |  4 +---
- samples/bpf/test_overhead_raw_tp_kern.c |  2 +-
- samples/bpf/test_overhead_tp_kern.c     |  3 +--
- 8 files changed, 12 insertions(+), 29 deletions(-)
+ samples/bpf/Makefile                               | 14 +++++++-------
+ .../{lwt_len_hist_kern.c => lwt_len_hist.bpf.c}    |  0
+ samples/bpf/lwt_len_hist.sh                        |  2 +-
+ .../bpf/{sock_flags_kern.c => sock_flags.bpf.c}    |  0
+ samples/bpf/test_cgrp2_sock2.sh                    |  2 +-
+ .../{test_cgrp2_tc_kern.c => test_cgrp2_tc.bpf.c}  |  0
+ samples/bpf/test_cgrp2_tc.sh                       |  2 +-
+ ...est_map_in_map_kern.c => test_map_in_map.bpf.c} |  0
+ samples/bpf/test_map_in_map_user.c                 |  2 +-
+ ...ad_kprobe_kern.c => test_overhead_kprobe.bpf.c} |  0
+ ...ad_raw_tp_kern.c => test_overhead_raw_tp.bpf.c} |  0
+ ...t_overhead_tp_kern.c => test_overhead_tp.bpf.c} |  0
+ samples/bpf/test_overhead_user.c                   |  6 +++---
+ 13 files changed, 14 insertions(+), 14 deletions(-)
+ rename samples/bpf/{lwt_len_hist_kern.c => lwt_len_hist.bpf.c} (100%)
+ rename samples/bpf/{sock_flags_kern.c => sock_flags.bpf.c} (100%)
+ rename samples/bpf/{test_cgrp2_tc_kern.c => test_cgrp2_tc.bpf.c} (100%)
+ rename samples/bpf/{test_map_in_map_kern.c => test_map_in_map.bpf.c} (100%)
+ rename samples/bpf/{test_overhead_kprobe_kern.c => test_overhead_kprobe.bpf.c} (100%)
+ rename samples/bpf/{test_overhead_raw_tp_kern.c => test_overhead_raw_tp.bpf.c} (100%)
+ rename samples/bpf/{test_overhead_tp_kern.c => test_overhead_tp.bpf.c} (100%)
 
-diff --git a/samples/bpf/lwt_len_hist_kern.c b/samples/bpf/lwt_len_hist_kern.c
-index 44ea7b56760e..dbab80e813fe 100644
---- a/samples/bpf/lwt_len_hist_kern.c
-+++ b/samples/bpf/lwt_len_hist_kern.c
-@@ -10,10 +10,7 @@
-  * General Public License for more details.
-  */
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index 22039a0a5b35..615f24ebc49c 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -131,7 +131,7 @@ always-y += tracex4_kern.o
+ always-y += tracex5_kern.o
+ always-y += tracex6_kern.o
+ always-y += tracex7_kern.o
+-always-y += sock_flags_kern.o
++always-y += sock_flags.bpf.o
+ always-y += test_probe_write_user.bpf.o
+ always-y += trace_output.bpf.o
+ always-y += tcbpf1_kern.o
+@@ -140,19 +140,19 @@ always-y += lathist_kern.o
+ always-y += offwaketime_kern.o
+ always-y += spintest_kern.o
+ always-y += map_perf_test.bpf.o
+-always-y += test_overhead_tp_kern.o
+-always-y += test_overhead_raw_tp_kern.o
+-always-y += test_overhead_kprobe_kern.o
++always-y += test_overhead_tp.bpf.o
++always-y += test_overhead_raw_tp.bpf.o
++always-y += test_overhead_kprobe.bpf.o
+ always-y += parse_varlen.o parse_simple.o parse_ldabs.o
+-always-y += test_cgrp2_tc_kern.o
++always-y += test_cgrp2_tc.bpf.o
+ always-y += xdp1_kern.o
+ always-y += xdp2_kern.o
+ always-y += test_current_task_under_cgroup.bpf.o
+ always-y += trace_event_kern.o
+ always-y += sampleip_kern.o
+-always-y += lwt_len_hist_kern.o
++always-y += lwt_len_hist.bpf.o
+ always-y += xdp_tx_iptunnel_kern.o
+-always-y += test_map_in_map_kern.o
++always-y += test_map_in_map.bpf.o
+ always-y += tcp_synrto_kern.o
+ always-y += tcp_rwnd_kern.o
+ always-y += tcp_bufs_kern.o
+diff --git a/samples/bpf/lwt_len_hist_kern.c b/samples/bpf/lwt_len_hist.bpf.c
+similarity index 100%
+rename from samples/bpf/lwt_len_hist_kern.c
+rename to samples/bpf/lwt_len_hist.bpf.c
+diff --git a/samples/bpf/lwt_len_hist.sh b/samples/bpf/lwt_len_hist.sh
+index ff7d1ba0f7ed..7078bfcc4f4d 100755
+--- a/samples/bpf/lwt_len_hist.sh
++++ b/samples/bpf/lwt_len_hist.sh
+@@ -4,7 +4,7 @@
+ NS1=lwt_ns1
+ VETH0=tst_lwt1a
+ VETH1=tst_lwt1b
+-BPF_PROG=lwt_len_hist_kern.o
++BPF_PROG=lwt_len_hist.bpf.o
+ TRACE_ROOT=/sys/kernel/debug/tracing
  
--#include <uapi/linux/bpf.h>
--#include <uapi/linux/if_ether.h>
--#include <uapi/linux/ip.h>
--#include <uapi/linux/in.h>
-+#include "vmlinux.h"
- #include <bpf/bpf_helpers.h>
+ function cleanup {
+diff --git a/samples/bpf/sock_flags_kern.c b/samples/bpf/sock_flags.bpf.c
+similarity index 100%
+rename from samples/bpf/sock_flags_kern.c
+rename to samples/bpf/sock_flags.bpf.c
+diff --git a/samples/bpf/test_cgrp2_sock2.sh b/samples/bpf/test_cgrp2_sock2.sh
+index 00cc8d15373c..82acff93d739 100755
+--- a/samples/bpf/test_cgrp2_sock2.sh
++++ b/samples/bpf/test_cgrp2_sock2.sh
+@@ -5,7 +5,7 @@ BPFFS=/sys/fs/bpf
+ MY_DIR=$(dirname $0)
+ TEST=$MY_DIR/test_cgrp2_sock2
+ LINK_PIN=$BPFFS/test_cgrp2_sock2
+-BPF_PROG=$MY_DIR/sock_flags_kern.o
++BPF_PROG=$MY_DIR/sock_flags.bpf.o
  
- struct {
-diff --git a/samples/bpf/sock_flags_kern.c b/samples/bpf/sock_flags_kern.c
-index 84837ed48eb3..0da749f6a9e1 100644
---- a/samples/bpf/sock_flags_kern.c
-+++ b/samples/bpf/sock_flags_kern.c
-@@ -1,8 +1,6 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include "vmlinux.h"
- #include "net_shared.h"
--#include <uapi/linux/bpf.h>
--#include <linux/net.h>
--#include <uapi/linux/in.h>
--#include <uapi/linux/in6.h>
- #include <bpf/bpf_helpers.h>
+ function config_device {
+ 	ip netns add at_ns0
+diff --git a/samples/bpf/test_cgrp2_tc_kern.c b/samples/bpf/test_cgrp2_tc.bpf.c
+similarity index 100%
+rename from samples/bpf/test_cgrp2_tc_kern.c
+rename to samples/bpf/test_cgrp2_tc.bpf.c
+diff --git a/samples/bpf/test_cgrp2_tc.sh b/samples/bpf/test_cgrp2_tc.sh
+index 37a2c9cba6d0..38e8dbc9d16e 100755
+--- a/samples/bpf/test_cgrp2_tc.sh
++++ b/samples/bpf/test_cgrp2_tc.sh
+@@ -4,7 +4,7 @@
+ MY_DIR=$(dirname $0)
+ # Details on the bpf prog
+ BPF_CGRP2_ARRAY_NAME='test_cgrp2_array_pin'
+-BPF_PROG="$MY_DIR/test_cgrp2_tc_kern.o"
++BPF_PROG="$MY_DIR/test_cgrp2_tc.bpf.o"
+ BPF_SECTION='filter'
  
- SEC("cgroup/sock")
-diff --git a/samples/bpf/test_cgrp2_tc_kern.c b/samples/bpf/test_cgrp2_tc_kern.c
-index 45a2f01d2029..c7d2291d676f 100644
---- a/samples/bpf/test_cgrp2_tc_kern.c
-+++ b/samples/bpf/test_cgrp2_tc_kern.c
-@@ -5,9 +5,8 @@
-  * License as published by the Free Software Foundation.
-  */
- #define KBUILD_MODNAME "foo"
-+#include "vmlinux.h"
- #include "net_shared.h"
--#include <uapi/linux/ipv6.h>
--#include <uapi/linux/bpf.h>
- #include <bpf/bpf_helpers.h>
+ [ -z "$TC" ] && TC='tc'
+diff --git a/samples/bpf/test_map_in_map_kern.c b/samples/bpf/test_map_in_map.bpf.c
+similarity index 100%
+rename from samples/bpf/test_map_in_map_kern.c
+rename to samples/bpf/test_map_in_map.bpf.c
+diff --git a/samples/bpf/test_map_in_map_user.c b/samples/bpf/test_map_in_map_user.c
+index 652ec720533d..9e79df4071f5 100644
+--- a/samples/bpf/test_map_in_map_user.c
++++ b/samples/bpf/test_map_in_map_user.c
+@@ -120,7 +120,7 @@ int main(int argc, char **argv)
+ 	struct bpf_object *obj;
+ 	char filename[256];
  
- /* copy of 'struct ethhdr' without __packed */
-diff --git a/samples/bpf/test_lwt_bpf.c b/samples/bpf/test_lwt_bpf.c
-index fc093fbc760a..9a13dbb81847 100644
---- a/samples/bpf/test_lwt_bpf.c
-+++ b/samples/bpf/test_lwt_bpf.c
-@@ -10,17 +10,8 @@
-  * General Public License for more details.
-  */
+-	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
++	snprintf(filename, sizeof(filename), "%s.bpf.o", argv[0]);
+ 	obj = bpf_object__open_file(filename, NULL);
+ 	if (libbpf_get_error(obj)) {
+ 		fprintf(stderr, "ERROR: opening BPF object file failed\n");
+diff --git a/samples/bpf/test_overhead_kprobe_kern.c b/samples/bpf/test_overhead_kprobe.bpf.c
+similarity index 100%
+rename from samples/bpf/test_overhead_kprobe_kern.c
+rename to samples/bpf/test_overhead_kprobe.bpf.c
+diff --git a/samples/bpf/test_overhead_raw_tp_kern.c b/samples/bpf/test_overhead_raw_tp.bpf.c
+similarity index 100%
+rename from samples/bpf/test_overhead_raw_tp_kern.c
+rename to samples/bpf/test_overhead_raw_tp.bpf.c
+diff --git a/samples/bpf/test_overhead_tp_kern.c b/samples/bpf/test_overhead_tp.bpf.c
+similarity index 100%
+rename from samples/bpf/test_overhead_tp_kern.c
+rename to samples/bpf/test_overhead_tp.bpf.c
+diff --git a/samples/bpf/test_overhead_user.c b/samples/bpf/test_overhead_user.c
+index ce28d30f852e..dbd86f7b1473 100644
+--- a/samples/bpf/test_overhead_user.c
++++ b/samples/bpf/test_overhead_user.c
+@@ -189,7 +189,7 @@ int main(int argc, char **argv)
  
-+#include "vmlinux.h"
- #include "net_shared.h"
--#include <stdint.h>
--#include <stddef.h>
--#include <linux/bpf.h>
--#include <linux/ip.h>
--#include <linux/in.h>
--#include <linux/in6.h>
--#include <linux/tcp.h>
--#include <linux/udp.h>
--#include <linux/icmpv6.h>
--#include <linux/if_ether.h>
- #include <bpf/bpf_helpers.h>
- #include <string.h>
+ 	if (test_flags & 0xC) {
+ 		snprintf(filename, sizeof(filename),
+-			 "%s_kprobe_kern.o", argv[0]);
++			 "%s_kprobe.bpf.o", argv[0]);
  
-diff --git a/samples/bpf/test_map_in_map_kern.c b/samples/bpf/test_map_in_map_kern.c
-index 0e17f9ade5c5..1883559e5977 100644
---- a/samples/bpf/test_map_in_map_kern.c
-+++ b/samples/bpf/test_map_in_map_kern.c
-@@ -6,16 +6,17 @@
-  * License as published by the Free Software Foundation.
-  */
- #define KBUILD_MODNAME "foo"
--#include <linux/ptrace.h>
-+#include "vmlinux.h"
- #include <linux/version.h>
--#include <uapi/linux/bpf.h>
--#include <uapi/linux/in6.h>
- #include <bpf/bpf_helpers.h>
- #include <bpf/bpf_tracing.h>
- #include <bpf/bpf_core_read.h>
+ 		printf("w/KPROBE\n");
+ 		err = load_progs(filename);
+@@ -201,7 +201,7 @@ int main(int argc, char **argv)
  
- #define MAX_NR_PORTS 65536
+ 	if (test_flags & 0x30) {
+ 		snprintf(filename, sizeof(filename),
+-			 "%s_tp_kern.o", argv[0]);
++			 "%s_tp.bpf.o", argv[0]);
+ 		printf("w/TRACEPOINT\n");
+ 		err = load_progs(filename);
+ 		if (!err)
+@@ -212,7 +212,7 @@ int main(int argc, char **argv)
  
-+#define EINVAL 22
-+#define ENOENT 2
-+
- /* map #0 */
- struct inner_a {
- 	__uint(type, BPF_MAP_TYPE_ARRAY);
-diff --git a/samples/bpf/test_overhead_kprobe_kern.c b/samples/bpf/test_overhead_kprobe_kern.c
-index ba82949338c2..c3528731e0e1 100644
---- a/samples/bpf/test_overhead_kprobe_kern.c
-+++ b/samples/bpf/test_overhead_kprobe_kern.c
-@@ -4,10 +4,8 @@
-  * modify it under the terms of version 2 of the GNU General Public
-  * License as published by the Free Software Foundation.
-  */
-+#include "vmlinux.h"
- #include <linux/version.h>
--#include <linux/ptrace.h>
--#include <linux/sched.h>
--#include <uapi/linux/bpf.h>
- #include <bpf/bpf_helpers.h>
- #include <bpf/bpf_tracing.h>
- 
-diff --git a/samples/bpf/test_overhead_raw_tp_kern.c b/samples/bpf/test_overhead_raw_tp_kern.c
-index 3e29de0eca98..6af39fe3f8dd 100644
---- a/samples/bpf/test_overhead_raw_tp_kern.c
-+++ b/samples/bpf/test_overhead_raw_tp_kern.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright (c) 2018 Facebook */
--#include <uapi/linux/bpf.h>
-+#include "vmlinux.h"
- #include <bpf/bpf_helpers.h>
- 
- SEC("raw_tracepoint/task_rename")
-diff --git a/samples/bpf/test_overhead_tp_kern.c b/samples/bpf/test_overhead_tp_kern.c
-index f170e9b1ea21..67cab3881969 100644
---- a/samples/bpf/test_overhead_tp_kern.c
-+++ b/samples/bpf/test_overhead_tp_kern.c
-@@ -4,8 +4,7 @@
-  * modify it under the terms of version 2 of the GNU General Public
-  * License as published by the Free Software Foundation.
-  */
--#include <linux/sched.h>
--#include <uapi/linux/bpf.h>
-+#include "vmlinux.h"
- #include <bpf/bpf_helpers.h>
- 
- /* from /sys/kernel/debug/tracing/events/task/task_rename/format */
+ 	if (test_flags & 0xC0) {
+ 		snprintf(filename, sizeof(filename),
+-			 "%s_raw_tp_kern.o", argv[0]);
++			 "%s_raw_tp.bpf.o", argv[0]);
+ 		printf("w/RAW_TRACEPOINT\n");
+ 		err = load_progs(filename);
+ 		if (!err)
 -- 
 2.34.1
 
