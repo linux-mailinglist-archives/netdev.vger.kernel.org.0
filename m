@@ -2,138 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DBAB66B348
-	for <lists+netdev@lfdr.de>; Sun, 15 Jan 2023 18:49:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2EDB66B352
+	for <lists+netdev@lfdr.de>; Sun, 15 Jan 2023 19:00:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231487AbjAORt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Jan 2023 12:49:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33252 "EHLO
+        id S231346AbjAOR7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Jan 2023 12:59:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231362AbjAORt0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 12:49:26 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1092CC39;
-        Sun, 15 Jan 2023 09:49:24 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id k22-20020a05600c1c9600b003d1ee3a6289so20669144wms.2;
-        Sun, 15 Jan 2023 09:49:24 -0800 (PST)
+        with ESMTP id S231271AbjAOR7a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 12:59:30 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E5DC669
+        for <netdev@vger.kernel.org>; Sun, 15 Jan 2023 09:59:28 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id bs20so25502212wrb.3
+        for <netdev@vger.kernel.org>; Sun, 15 Jan 2023 09:59:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=1pHnSVvnYc1fuLFjMyl2/Ut5FQtAdStr7PJnGlkXIg8=;
-        b=f1HqlTEwMw3oWjQEXhDxelkjzhaEGD/x80ZF65JZU32scgLJaf55oqHaBNdGL/SOfG
-         EDvpJ+hpeFQPV/IMFD4Te5GtgLhSuLzjzGVn5Pi02500Gpwi3GBkcz63VEg31kNlzpCM
-         VEQ/8Vdi27WZgpYLskgcIvv9UC9WvuGtRrlMXZg32kFA2+LwUQuniERkGh+aETdhIfsJ
-         Z1/4Gz+U98BIXVW6iGsFs74S5cEuCLHSXAb48k8kv7RR5A89eGQA36iHQptwwcDG3JfM
-         CLYuVero+HSegxFVpm6R7eu4MfJowJj3+p2rDdzNX8T52Rb040z0WdC3LnOK6oVx+ixe
-         4xbg==
+        bh=aeEkeAxRqWela9FaFXtj5Mjrbq66gbp6c2HtFsoXmUw=;
+        b=uat0UBqX+XkrHCy0UnV/s5lPDfbXjusDjB8t1rO3q9P0wCgB00ZV1hZ7fcQGVvjWPP
+         VmMGA8cp1nsF8fohNLQqks3hB6e5IXXgdFoNJfOuql84FjDb6f3wRnrHVzAB9hUtletO
+         UWhDdm+ofdTHJPMLH40+lUv8IYp5v56vIvtH5Bvw0iJum0pGgqP928soNNE6PaXN6pCq
+         t220HvDssqv2/5CZlUGthV3VXM2JomKcRIdLW1cP9JCuFUnQIz9csxQ0xeGy8EXMQDXm
+         Qp+t/6yc8+VC/ewKMoj3epsrqYOmJzNgGDKsUd9+jerebbTEpJI+Rn8RqfhjZ3aKTWlx
+         u2/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=1pHnSVvnYc1fuLFjMyl2/Ut5FQtAdStr7PJnGlkXIg8=;
-        b=6Z5WDtD6fxOJiAkyRbiv2QhkvlHz91YjnDzzW2DckaFWmqE0Sr4gqhP7SPdscdFK6J
-         NcBTGOm56D0gY5sVj9jPMRWoQyChnbKeXK6C5pGjDdddFmPz55GpyW8OO+6fgaTQ8vSF
-         ZiEazwhikNSUagZ8SAnKzuvJTk7QvJVVfD0cBPRQM+nxGYq+r29C9ahvEXev8FInud6n
-         laH0J2KGirgup6lygADuh9y/ehNW8usruINclqMaql+cwcWrLzVujCWJg8D3brVQCTjN
-         4nEvz2dj2uSJOVXgMej/zMTyor09sziHta9DqxIbJLWpCNornuXZym953R2upG+6dupn
-         3T8w==
-X-Gm-Message-State: AFqh2krpMM28e2b5+LOrSZ+hQ4IlEORxZw7T7filttPgMYSIvQIM3Uqq
-        PSxqoVPYOQOn8zLHdqe9P70=
-X-Google-Smtp-Source: AMrXdXsctyXdBH88WErUJebev9bY0+Jw1yhrw4IZYTH5rFkbjPPsVwyVGVJp7Rqo4EVVvPyCtQcUBQ==
-X-Received: by 2002:a05:600c:4aa8:b0:3d1:cee0:46d0 with SMTP id b40-20020a05600c4aa800b003d1cee046d0mr64068100wmp.25.1673804963344;
-        Sun, 15 Jan 2023 09:49:23 -0800 (PST)
-Received: from localhost.localdomain (host-79-51-7-163.retail.telecomitalia.it. [79.51.7.163])
-        by smtp.googlemail.com with ESMTPSA id iv14-20020a05600c548e00b003b47b80cec3sm41186261wmb.42.2023.01.15.09.49.21
+        bh=aeEkeAxRqWela9FaFXtj5Mjrbq66gbp6c2HtFsoXmUw=;
+        b=NxATtRTDzgMKrXmrD7/A0YxH11draLH+2c8WJclsx+HknsTKksjbqNBP6D36cyIeMk
+         2CyYhbscFLJPRNXpNkCeRkfd50MFo8IhLgdc6Ha/O54lyhFR/5UVqhSu2WIUNaIDXh0n
+         Yjv1JygQd2peM2DMxJWxsjGAxRFWpFaYaPVZi8fAeak89c+RA4BGy04Ah1p3/8y/kDCI
+         MujtdMzD824vDQbavoY3I7YSS55LpB1sWZc2fUAoCBZzv0NOibBLYRXwGOw2V2HFIcBx
+         CVhBhB7mK2ooP6MzmrZGkHdR1NkVMih1vdcm2LkevvQj3KLSiuv0jNU2bsnpFF2N8vp1
+         V+Kg==
+X-Gm-Message-State: AFqh2kr/2NFPBKHeCZYYUURdBcZSd+aiqVuXai6gopEA0VUgfudKmLTT
+        Q5GNQiUGO/QGCV0k0F1WKJ5mo1jUsxROnSpi
+X-Google-Smtp-Source: AMrXdXsXAQSRiMWFVknzYCVNJfgZQc2U1pMuRDknstTIZggPcH32L3is+TTH90WMpC+iXx4qT959KQ==
+X-Received: by 2002:a5d:5b18:0:b0:2bd:c2ce:dd5a with SMTP id bx24-20020a5d5b18000000b002bdc2cedd5amr6509184wrb.16.1673805567081;
+        Sun, 15 Jan 2023 09:59:27 -0800 (PST)
+Received: from lion.. (cpc76484-cwma10-2-0-cust274.7-3.cable.virginm.net. [82.31.201.19])
+        by smtp.gmail.com with ESMTPSA id m1-20020a5d6241000000b002bbdaf21744sm21399441wrv.113.2023.01.15.09.59.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Jan 2023 09:49:23 -0800 (PST)
-From:   Pierluigi Passaro <pierluigi.passaro@gmail.com>
-X-Google-Original-From: Pierluigi Passaro <pierluigi.p@variscite.com>
-To:     wei.fang@nxp.com, shenwei.wang@nxp.com, xiaoning.wang@nxp.com,
-        linux-imx@nxp.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     eran.m@variscite.com, nate.d@variscite.com,
-        francesco.f@variscite.com, pierluigi.p@variscite.com
-Subject: [PATCH] net: fec: manage corner deferred probe condition
-Date:   Sun, 15 Jan 2023 18:49:10 +0100
-Message-Id: <20230115174910.18353-1-pierluigi.p@variscite.com>
-X-Mailer: git-send-email 2.37.2
+        Sun, 15 Jan 2023 09:59:26 -0800 (PST)
+From:   Caleb Connolly <caleb.connolly@linaro.org>
+To:     Alex Elder <elder@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Alex Elder <elder@linaro.org>, netdev@vger.kernel.org
+Subject: [PATCH net] net: ipa: disable ipa interrupt during suspend
+Date:   Sun, 15 Jan 2023 17:59:24 +0000
+Message-Id: <20230115175925.465918-1-caleb.connolly@linaro.org>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For dual fec interfaces, external phys can only be configured by fec0.
-When the function of_mdiobus_register return -EPROBE_DEFER, the driver
-is lately called to manage fec1, which wrongly register its mii_bus as
-fec0_mii_bus.
-When fec0 retry the probe, the previous assignement prevent the MDIO bus
-registration.
-Use a static boolean to trace the orginal MDIO bus deferred probe and
-prevent further registrations until the fec0 registration completed
-succesfully.
+The IPA interrupt can fire when pm_runtime is disabled due to it racing
+with the PM suspend/resume code. This causes a splat in the interrupt
+handler when it tries to call pm_runtime_get().
 
-Signed-off-by: Pierluigi Passaro <pierluigi.p@variscite.com>
+Explicitly disable the interrupt in our ->suspend callback, and
+re-enable it in ->resume to avoid this. If there is an interrupt pending
+it will be handled after resuming. The interrupt is a wake_irq, as a
+result even when disabled if it fires it will cause the system to wake
+from suspend as well as cancel any suspend transition that may be in
+progress. If there is an interrupt pending, the ipa_isr_thread handler
+will be called after resuming.
+
+Fixes: 1aac309d3207 ("net: ipa: use autosuspend")
+Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
 ---
- drivers/net/ethernet/freescale/fec_main.c | 22 ++++++++++++++--------
- 1 file changed, 14 insertions(+), 8 deletions(-)
+ drivers/net/ipa/ipa_interrupt.c | 10 ++++++++++
+ drivers/net/ipa/ipa_interrupt.h | 16 ++++++++++++++++
+ drivers/net/ipa/ipa_power.c     | 17 +++++++++++++++++
+ 3 files changed, 43 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 644f3c963730..b4ca3bd4283f 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -2284,6 +2284,18 @@ static int fec_enet_mii_init(struct platform_device *pdev)
- 	int err = -ENXIO;
- 	u32 mii_speed, holdtime;
- 	u32 bus_freq;
-+	static bool wait_for_mdio_bus = false;
+diff --git a/drivers/net/ipa/ipa_interrupt.c b/drivers/net/ipa/ipa_interrupt.c
+index d458a35839cc..c1b3977e1ae4 100644
+--- a/drivers/net/ipa/ipa_interrupt.c
++++ b/drivers/net/ipa/ipa_interrupt.c
+@@ -127,6 +127,16 @@ static irqreturn_t ipa_isr_thread(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
+ }
+ 
++void ipa_interrupt_irq_disable(struct ipa *ipa)
++{
++	disable_irq(ipa->interrupt->irq);
++}
 +
-+	bus_freq = 2500000; /* 2.5MHz by default */
-+	node = of_get_child_by_name(pdev->dev.of_node, "mdio");
-+	if (node) {
-+		wait_for_mdio_bus = false;
-+		of_property_read_u32(node, "clock-frequency", &bus_freq);
-+		suppress_preamble = of_property_read_bool(node,
-+							  "suppress-preamble");
-+	}
-+	if (wait_for_mdio_bus)
-+		return -EPROBE_DEFER;
++void ipa_interrupt_irq_enable(struct ipa *ipa)
++{
++	enable_irq(ipa->interrupt->irq);
++}
++
+ /* Common function used to enable/disable TX_SUSPEND for an endpoint */
+ static void ipa_interrupt_suspend_control(struct ipa_interrupt *interrupt,
+ 					  u32 endpoint_id, bool enable)
+diff --git a/drivers/net/ipa/ipa_interrupt.h b/drivers/net/ipa/ipa_interrupt.h
+index f31fd9965fdc..8a1bd5b89393 100644
+--- a/drivers/net/ipa/ipa_interrupt.h
++++ b/drivers/net/ipa/ipa_interrupt.h
+@@ -85,6 +85,22 @@ void ipa_interrupt_suspend_clear_all(struct ipa_interrupt *interrupt);
+  */
+ void ipa_interrupt_simulate_suspend(struct ipa_interrupt *interrupt);
  
- 	/*
- 	 * The i.MX28 dual fec interfaces are not equal.
-@@ -2311,14 +2323,6 @@ static int fec_enet_mii_init(struct platform_device *pdev)
- 		return -ENOENT;
- 	}
++/**
++ * ipa_interrupt_irq_enable() - Enable IPA interrupts
++ * @ipa:	IPA pointer
++ *
++ * This enables the IPA interrupt line
++ */
++void ipa_interrupt_irq_enable(struct ipa *ipa);
++
++/**
++ * ipa_interrupt_irq_disable() - Disable IPA interrupts
++ * @ipa:	IPA pointer
++ *
++ * This disables the IPA interrupt line
++ */
++void ipa_interrupt_irq_disable(struct ipa *ipa);
++
+ /**
+  * ipa_interrupt_config() - Configure the IPA interrupt framework
+  * @ipa:	IPA pointer
+diff --git a/drivers/net/ipa/ipa_power.c b/drivers/net/ipa/ipa_power.c
+index 8420f93128a2..8057be8cda80 100644
+--- a/drivers/net/ipa/ipa_power.c
++++ b/drivers/net/ipa/ipa_power.c
+@@ -181,6 +181,17 @@ static int ipa_suspend(struct device *dev)
  
--	bus_freq = 2500000; /* 2.5MHz by default */
--	node = of_get_child_by_name(pdev->dev.of_node, "mdio");
--	if (node) {
--		of_property_read_u32(node, "clock-frequency", &bus_freq);
--		suppress_preamble = of_property_read_bool(node,
--							  "suppress-preamble");
--	}
--
- 	/*
- 	 * Set MII speed (= clk_get_rate() / 2 * phy_speed)
- 	 *
-@@ -2389,6 +2393,8 @@ static int fec_enet_mii_init(struct platform_device *pdev)
- 	fep->mii_bus->parent = &pdev->dev;
+ 	__set_bit(IPA_POWER_FLAG_SYSTEM, ipa->power->flags);
  
- 	err = of_mdiobus_register(fep->mii_bus, node);
-+	if (err == -EPROBE_DEFER)
-+		wait_for_mdio_bus = true;
- 	if (err)
- 		goto err_out_free_mdiobus;
- 	of_node_put(node);
++	/* Increment the disable depth to ensure that the IRQ won't
++	 * be re-enabled until the matching _enable call in
++	 * ipa_resume(). We do this to ensure that the interrupt
++	 * handler won't run whilst PM runtime is disabled.
++	 *
++	 * Note that disabling the IRQ is NOT the same as disabling
++	 * irq wake. If wakeup is enabled for the IPA then the IRQ
++	 * will still cause the system to wake up, see irq_set_irq_wake().
++	 */
++	ipa_interrupt_irq_disable(ipa);
++
+ 	return pm_runtime_force_suspend(dev);
+ }
+ 
+@@ -193,6 +204,12 @@ static int ipa_resume(struct device *dev)
+ 
+ 	__clear_bit(IPA_POWER_FLAG_SYSTEM, ipa->power->flags);
+ 
++	/* Now that PM runtime is enabled again it's safe
++	 * to turn the IRQ back on and process any data
++	 * that was received during suspend.
++	 */
++	ipa_interrupt_irq_enable(ipa);
++
+ 	return ret;
+ }
+ 
 -- 
-2.37.2
+2.39.0
 
