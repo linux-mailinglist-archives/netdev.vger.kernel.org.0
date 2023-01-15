@@ -2,109 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B98C66B3E1
-	for <lists+netdev@lfdr.de>; Sun, 15 Jan 2023 21:35:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92AA766B3E4
+	for <lists+netdev@lfdr.de>; Sun, 15 Jan 2023 21:38:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231628AbjAOUfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Jan 2023 15:35:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57774 "EHLO
+        id S231160AbjAOUiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Jan 2023 15:38:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231610AbjAOUfL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 15:35:11 -0500
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DFFE12F2C;
-        Sun, 15 Jan 2023 12:35:09 -0800 (PST)
-Received: by mail-qv1-xf33.google.com with SMTP id y8so18444944qvn.11;
-        Sun, 15 Jan 2023 12:35:09 -0800 (PST)
+        with ESMTP id S231356AbjAOUiL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 15:38:11 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F3CA12F35
+        for <netdev@vger.kernel.org>; Sun, 15 Jan 2023 12:38:09 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id ay40so18733729wmb.2
+        for <netdev@vger.kernel.org>; Sun, 15 Jan 2023 12:38:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=YsO2LsRKgK20s4o7iDJGIbwEqRob1KRtlORzs1GZn9Y=;
-        b=cJ7CkpaYEy1CX51VQAht4bwOyTMWHAFV5pbq17NYUDnUDmOVPeDZe46oE/uXPxln1A
-         FETGmutcmVcUYqeVQOgDtKdWRxhqr2jBMyQgFaiFqQbFcXKSU21jTaT3zobeW3bq6uPz
-         G+7lweSH7jetI64CxbUSivNMTVXEm4tW43Ceh7ANFldQR+XMksWc4lSm8TMI1T2vXbSN
-         tyi/BTGtFneyfa0JQQUW3DA3JLzzgw0Kszu+g+/XnS1r2Bu4zw3xx0vHVbFD/3Twgt5V
-         3iHYjQyQDEmF70snRx4+TvBzJx7pvg94lhalY8YoSLe7fUUoBqnCp94pwfkFc6jdIg4D
-         94cQ==
+        h=content-transfer-encoding:in-reply-to:subject:from:content-language
+         :references:cc:to:user-agent:mime-version:date:message-id:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=cEFlSf16WFxddMhHmvpZYMaVEQuEHnQ55NRL/ZWegJ4=;
+        b=qxU5FHdv1qSMxl7GIcCDig/+qAFuafJVkVFx/qD0B3CZLK58kfEN5uTIsmuZqmm5CR
+         bTVSlwIF94O4jgqLzTJgTVpDwdlIuf5GHf3KDZxKw0IMAmndibgnNrQi11Iiz+pG1zeo
+         ee8Ak6LM7tk2M5YrT5Ig4tf7ma2JXg6DTqCIpRnzzkN5Z9oLDxV65chQ/u0jLwPHGCVE
+         HCD6Hl9PbFn+4sWZUqwHYuCLtRIdFIDj9rgjDoWz7twueyExbTTFyj5U3nfdhzo9PzCs
+         V+I0gG6ms//r/dGN2bQ60Xx0+7htrOdiHRkS++q8BLol3OwI4T3xJm/jGO8w6z1NhbW6
+         ZGJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=YsO2LsRKgK20s4o7iDJGIbwEqRob1KRtlORzs1GZn9Y=;
-        b=00jITPn2CH7R/+6AhzPTXSZmfoxvV8+DTzIQFhBaPm3iiSCdLQTYqPU1aHwvJwgXL9
-         NsS3GOUdn0/WtCtF5BEiK7htPHiRskgY8ftwxGuZVZHmkCwYYnfeMfETPFuAh56FcrH1
-         irtwm9cRI6sIak54LQp2LeKR+2ZjKEPf1gvO+r7BDCfqhIUtOVRtLhA/pzPt5IhPsp04
-         dLcFyWdFriiZKih+eKeu6QfR3+9jGrvQpNnRgz42/O8p/r0Igjh81p/GVGtIgAx0K0rb
-         TqWfInm3SqKXflVsShowM0XYpTbwbeMjlyfZvJN6v5LGWOEO3QzKr5GZEC9BF5qWvhWc
-         wR7w==
-X-Gm-Message-State: AFqh2kp6rgYZ11PQGsB+JrhI8eL/ri4KQNVoJov1ZcFc4zvUPsyYYduJ
-        rDcrk/n6dY0ho/omyPgYqGWsmpkaEONq+GoPTZU=
-X-Google-Smtp-Source: AMrXdXuAuOQMpz/K5yvYyTHZJ6TqRNFT1Z5mX5LUcj+XjLD7BkXLVkcXEUFa3hCYIzHUUIiqHlL/5xSayYht2VhgWaE=
-X-Received: by 2002:a05:6214:184f:b0:534:1fe5:6060 with SMTP id
- d15-20020a056214184f00b005341fe56060mr1117452qvy.71.1673814908543; Sun, 15
- Jan 2023 12:35:08 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:subject:from:content-language
+         :references:cc:to:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=cEFlSf16WFxddMhHmvpZYMaVEQuEHnQ55NRL/ZWegJ4=;
+        b=OWaW3HljLl8XTudOT5ahXiTyyiWaYXmRO9+45qH6l55QUWk9Ou74I70BRV4WxXC0ye
+         xXLE1CuhbKDIILb1MY8SxwvPb8pfpFCevtdkbhUG/b2Mk2/OZjhZNCNqEesCFafHtrkU
+         XxxUsAHE3Q5/THQj0ayejWMIfAUYdw4pa9Fj0afhoozWfrAKSFX5sNKvYE71cmQsZbmg
+         16ouO3kVikNhZhJ9FnJBYeKgKWQ4h4L+jZeHrIN/46R9PZrkyOOyM2ppKMkOGzEjWtZ9
+         acqigx/PFIGI3KzvC5zcjbQBFZSyY0RgMgNxPaDCq2ycScHC3bLp67VQxiNuci/zO9DG
+         1GwA==
+X-Gm-Message-State: AFqh2kojgiCP+iww0R4/Rf1xVCBXUNj1bVsSVY5qS1sYTaUWqhr+Wj8M
+        JD7NDUgC3VBZWQUlejyoIdKpOBTzZbc=
+X-Google-Smtp-Source: AMrXdXsaBVxKQKx0Z40WV6Xqs0q2xvaWR7myGk5yZXzRG5gPyCypgGCphHNJWWhYFt2DnvpW93dpOw==
+X-Received: by 2002:a05:600c:4e08:b0:3cf:a41d:844b with SMTP id b8-20020a05600c4e0800b003cfa41d844bmr65637432wmq.5.1673815087980;
+        Sun, 15 Jan 2023 12:38:07 -0800 (PST)
+Received: from ?IPV6:2a01:c22:6e61:8c00:154f:326e:8d45:8ce7? (dynamic-2a01-0c22-6e61-8c00-154f-326e-8d45-8ce7.c22.pool.telefonica.de. [2a01:c22:6e61:8c00:154f:326e:8d45:8ce7])
+        by smtp.googlemail.com with ESMTPSA id l24-20020a1ced18000000b003d99da8d30asm35971141wmh.46.2023.01.15.12.38.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 15 Jan 2023 12:38:07 -0800 (PST)
+Message-ID: <6de25c61-c187-fb88-5bd7-477b1db1510e@gmail.com>
+Date:   Sun, 15 Jan 2023 21:38:06 +0100
 MIME-Version: 1.0
-References: <20230115161006.16431-1-pierluigi.p@variscite.com>
- <Y8QzI2VUY6//uBa/@lunn.ch> <CAJ=UCjX0YzVgedO1hDu_NsFAGhxe8HouUmHmbO6AXZqT=OUYLg@mail.gmail.com>
- <Y8RNzIuiNdAi0dnV@lunn.ch>
-In-Reply-To: <Y8RNzIuiNdAi0dnV@lunn.ch>
-From:   Pierluigi Passaro <pierluigi.passaro@gmail.com>
-Date:   Sun, 15 Jan 2023 21:34:57 +0100
-Message-ID: <CAJ=UCjXr=GBieTvUE7O2LqEg4Q_UpmOEAxUVwy2wuitfHT+2ow@mail.gmail.com>
-Subject: Re: [PATCH] net: mdio: force deassert MDIO reset signal
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        eran.m@variscite.com, nate.d@variscite.com,
-        francesco.f@variscite.com, pierluigi.p@variscite.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+To:     Neil Armstrong <neil.armstrong@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>
+References: <d75ef7df-a645-7fdd-491a-f89f70dbea01@gmail.com>
+ <Y8Qwk5H8Yd7qiN0j@lunn.ch> <03ea260e-f03c-d9d7-6f5f-ff72836f5739@gmail.com>
+ <51abd8ca-8172-edfa-1c18-b1e48231f316@linaro.org>
+Content-Language: en-US
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next] net: phy: meson-gxl: support more G12A-internal
+ PHY versions
+In-Reply-To: <51abd8ca-8172-edfa-1c18-b1e48231f316@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 15, 2023 at 8:02 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> > This behaviour is generally not visible, but easily reproducible with all NXP
-> > platforms with dual fec (iMX28, iMX6UL, iMX7, iMX8QM, iMX8QXP)
-> > where the MDIO bus is owned by the 1st interface but shared with the 2nd.
-> > When the 1st interface is probed, this causes the probe of the MDIO bus
-> > when the 2nd interface is not yet set up.
->
-> This sounds like a different issue.
->
-> We need to split the problem up into two.
->
-> 1) Does probing the MDIO bus find both PHYs?
->
-> 2) Do the MACs get linked to the PHYs.
->
-> If the reset is asserted at the point the MDIO bus is probed, you
-> probably don't find the PHY because it does not respond to register
-> reads. Your patch probably ensures it is out of reset so it is
-> enumerated.
->
-You are perfectly right: this patch fixes only the 1st problem.
-For the 2nd problem, I've already sent a dedicated patch:
-https://lore.kernel.org/all/20230115174910.18353-1-pierluigi.p@variscite.com/
->
-> For fec1, if the PHY is found during probe, connecting to the PHY will
-> work without issues. However, fec2 can potentially have ordering
-> issues. Has the MDIO bus finished being probed by the time fec2 looks
-> for it? If it is not there you want to return -EPROBE_DEFERED so that
-> the driver code will try again later.
->
-> There have been patches to do with ordering recently, but they have
-> been more to do with suspend/resume. So please make sure you are
-> testing net-next, if ordering is your real problem. You also appear to
-> be missing a lot of stable patches, so please bring you kernel up to
-> date on the 5.15 branch, you are way out of date.
->
->      Andrew
+On 15.01.2023 19:43, Neil Armstrong wrote:
+> Hi Heiner,
+> 
+> Le 15/01/2023 à 18:09, Heiner Kallweit a écrit :
+>> On 15.01.2023 17:57, Andrew Lunn wrote:
+>>> On Sun, Jan 15, 2023 at 04:19:37PM +0100, Heiner Kallweit wrote:
+>>>> On my SC2-based system the genphy driver was used because the PHY
+>>>> identifies as 0x01803300. It works normal with the meson g12a
+>>>> driver after this change.
+>>>> Switch to PHY_ID_MATCH_MODEL to cover the different sub-versions.
+>>>
+>>> Hi Heiner
+>>>
+>>> Are there any datasheets for these devices? Anything which documents
+>>> the lower nibble really is a revision?
+>>>
+>>> I'm just trying to avoid future problems where we find it is actually
+>>> a different PHY, needs its own MATCH_EXACT entry, and then we find we
+>>> break devices using 0x01803302 which we had no idea exists, but got
+>>> covered by this change.
+>>>
+>> The SC2 platform inherited a lot from G12A, therefore it's plausible
+>> that it's the same PHY. Also the vendor driver for SC2 gives a hint
+>> as it has the following compatible for the PHY:
+>>
+>> compatible = "ethernet-phy-id0180.3301", "ethernet-phy-ieee802.3-c22";
+>>
+>> But you're right, I can't say for sure as I don't have the datasheets.
+> 
+> On G12A (& GXL), the PHY ID is set in the MDIO MUX registers,
+> please see:
+> https://elixir.bootlin.com/linux/latest/source/drivers/net/mdio/mdio-mux-meson-g12a.c#L36
+> 
+> So you should either add support for the PHY mux in SC2 or check
+> what is in the ETH_PHY_CNTL0 register.
+> 
+Thanks for the hint. I just checked and reading back ETH_PHY_CNTL0 at the
+end of g12a_enable_internal_mdio() gives me the expected result of 0x33010180.
+But still the PHY reports 3300.
+Even if I write some other random value to ETH_PHY_CNTL0, I get 0180/3300
+as PHY ID.
+
+For u-boot I found the following:
+
+https://github.com/khadas/u-boot/blob/khadas-vim4-r-64bit/drivers/net/phy/amlogic.c
+
+static struct phy_driver amlogic_internal_driver = {
+	.name = "Meson GXL Internal PHY",
+	.uid = 0x01803300,
+	.mask = 0xfffffff0,
+	.features = PHY_BASIC_FEATURES,
+	.config = &meson_phy_config,
+	.startup = &meson_aml_startup,
+	.shutdown = &genphy_shutdown,
+};
+
+So it's the same PHY ID I'm seeing in Linux.
+
+My best guess is that the following is the case:
+
+The PHY compatible string in DT is the following in all cases:
+compatible = "ethernet-phy-id0180.3301", "ethernet-phy-ieee802.3-c22";
+
+Therefore id 0180/3301 is used even if the PHY reports something else.
+Means it doesn't matter which value you write to ETH_PHY_CNTL0.
+
+I reduced the compatible string to compatible = "ethernet-phy-ieee802.3-c22"
+and this resulted in the actual PHY ID being used.
+You could change the compatible in dts the same way for any g12a system
+and I assume you would get 0180/3300 too.
+
+Remaining question is why the value in ETH_PHY_CNTL0 is ignored.
+
+> Neil
+> 
+>>
+>>>     Andrew
+>>
+>> Heiner
+> 
+
