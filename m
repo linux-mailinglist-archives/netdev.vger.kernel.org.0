@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F9A766B0DB
-	for <lists+netdev@lfdr.de>; Sun, 15 Jan 2023 13:06:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3641166B0E4
+	for <lists+netdev@lfdr.de>; Sun, 15 Jan 2023 13:13:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230215AbjAOMG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Jan 2023 07:06:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44052 "EHLO
+        id S231314AbjAOMNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Jan 2023 07:13:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229988AbjAOMG0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 07:06:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F4893D4
-        for <netdev@vger.kernel.org>; Sun, 15 Jan 2023 04:06:25 -0800 (PST)
+        with ESMTP id S231133AbjAOMNv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 07:13:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A534FEC6A;
+        Sun, 15 Jan 2023 04:13:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12D9660C97
-        for <netdev@vger.kernel.org>; Sun, 15 Jan 2023 12:06:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4783C433D2;
-        Sun, 15 Jan 2023 12:06:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B20760C97;
+        Sun, 15 Jan 2023 12:13:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BF08C433D2;
+        Sun, 15 Jan 2023 12:13:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673784384;
-        bh=89DfjPUGg8AJ1fEOP8FCpq13lk8WAqt53idNmCOpsFk=;
+        s=k20201202; t=1673784829;
+        bh=sTsG13W9UebwSKWU8xglNKlA4vWEJMrgT7CdeBsW/yo=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cuMGqKbE7IF8ld7oK+NqVPoMF39KC3M9P/keqAA8tYf+MubSlvlwx5yBK/SCG+T0O
-         TGTMH1FYIcSy7Yw+Nl+xoBJ+LkpfjrOvtmtZw06dklkdidQQ+LKDNAswWDEv6Az92I
-         3LGkewyTy32wmf6tK2cMzfMHsypYsCueYTvLCI/SvdrqvHHe8S+jpMbww5skucvhxR
-         LSH+u/uUD5DXTWkmEt47VYCj62kN4+t9T43TxNw5CgCadH3uVwTI2Drztrn68K909I
-         Bvk3Id+UDT+nEW1gW9/ThjZWjy1aWeb9Uiniw4YDMKshv7WlhaZbM8cs/1STDmL0t+
-         XTMVAreUq8pcQ==
-Date:   Sun, 15 Jan 2023 14:06:19 +0200
+        b=pR6tp4JB1DxjfL72Mf8tLhqGd6OsxVetLkkIxeuWwUPIiD/KzF6zOmXKINHfBpDzM
+         wr1VFsDsLEAlV32K5zAjvNSHBJYngdok+lZ/kN9hiONjUAvbbdF8mXNfbbhMJx04OV
+         tqqSz6maeRPQjOoZEwUmjQXIhQpcehoQSix1wwWKBAsIF/295pGHV97lxOjvGuvm7q
+         OT1pwYLInsBuZIzWNfcnByuuERosUDU6i+LwbE6RiS/3gKpWhbgbGaTMw/2GO8hMIf
+         AomtLaGMNRdUrxITO7/AfIuhQSXikFwlPxKvOKVALwej/NnC6xAqiQbIR6Jn/Tc9OZ
+         IqpoCykvYY9kQ==
+Date:   Sun, 15 Jan 2023 14:13:44 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, Slawomir Laba <slawomirx.laba@intel.com>,
-        netdev@vger.kernel.org, jan.sokolowski@intel.com,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Marek Szlosek <marek.szlosek@intel.com>
-Subject: Re: [PATCH net 1/1] iavf: Fix shutdown pci callback to match the
- remove one
-Message-ID: <Y8PsO9J3PghkBjEs@unreal>
-References: <20230113215012.971028-1-anthony.l.nguyen@intel.com>
+To:     Lizhe <sensor1010@163.com>
+Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, johannes.berg@intel.com,
+        alexander@wetzel-home.de, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] wireless/at76c50x-usb.c : Use devm_kmalloc replaces
+ kmalloc
+Message-ID: <Y8Pt+IdfWBVy8nIA@unreal>
+References: <20230113141231.71892-1-sensor1010@163.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230113215012.971028-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20230113141231.71892-1-sensor1010@163.com>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,96 +55,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 13, 2023 at 01:50:12PM -0800, Tony Nguyen wrote:
-> From: Slawomir Laba <slawomirx.laba@intel.com>
+On Fri, Jan 13, 2023 at 06:12:31AM -0800, Lizhe wrote:
+> use devm_kmalloc replaces kmalloc
+
+No, it is not.
+
 > 
-> Make the flow for pci shutdown be the same to the pci remove.
-> 
-> iavf_shutdown was implementing an incomplete version
-> of iavf_remove. It misses several calls to the kernel like
-> iavf_free_misc_irq, iavf_reset_interrupt_capability, iounmap
-> that might break the system on reboot or hibernation.
-> 
-> Implement the call of iavf_remove directly in iavf_shutdown to
-> close this gap.
-> 
-> Fixes: 5eae00c57f5e ("i40evf: main driver core")
-> Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
-> Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-> Tested-by: Marek Szlosek <marek.szlosek@intel.com>
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> Signed-off-by: Lizhe <sensor1010@163.com>
 > ---
->  drivers/net/ethernet/intel/iavf/iavf_main.c | 40 +++++++--------------
->  1 file changed, 12 insertions(+), 28 deletions(-)
+>  drivers/net/wireless/atmel/at76c50x-usb.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-> index adc02adef83a..34c9bd62546b 100644
-> --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-> +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-> @@ -4812,34 +4812,6 @@ int iavf_process_config(struct iavf_adapter *adapter)
->  	return 0;
->  }
+> diff --git a/drivers/net/wireless/atmel/at76c50x-usb.c b/drivers/net/wireless/atmel/at76c50x-usb.c
+> index 009bca34ece3..f486ddb83d46 100644
+> --- a/drivers/net/wireless/atmel/at76c50x-usb.c
+> +++ b/drivers/net/wireless/atmel/at76c50x-usb.c
+> @@ -2444,7 +2444,7 @@ static int at76_probe(struct usb_interface *interface,
 >  
-> -/**
-> - * iavf_shutdown - Shutdown the device in preparation for a reboot
-> - * @pdev: pci device structure
-> - **/
-> -static void iavf_shutdown(struct pci_dev *pdev)
-> -{
-> -	struct iavf_adapter *adapter = iavf_pdev_to_adapter(pdev);
-> -	struct net_device *netdev = adapter->netdev;
-> -
-> -	netif_device_detach(netdev);
-> -
-> -	if (netif_running(netdev))
-> -		iavf_close(netdev);
-> -
-> -	if (iavf_lock_timeout(&adapter->crit_lock, 5000))
-> -		dev_warn(&adapter->pdev->dev, "%s: failed to acquire crit_lock\n", __func__);
-> -	/* Prevent the watchdog from running. */
-> -	iavf_change_state(adapter, __IAVF_REMOVE);
-> -	adapter->aq_required = 0;
-> -	mutex_unlock(&adapter->crit_lock);
-> -
-> -#ifdef CONFIG_PM
-> -	pci_save_state(pdev);
-> -
-> -#endif
-> -	pci_disable_device(pdev);
-> -}
-> -
->  /**
->   * iavf_probe - Device Initialization Routine
->   * @pdev: PCI device information struct
-> @@ -5177,6 +5149,18 @@ static void iavf_remove(struct pci_dev *pdev)
->  	pci_disable_device(pdev);
->  }
+>  	udev = usb_get_dev(interface_to_usbdev(interface));
 >  
-> +/**
-> + * iavf_shutdown - Shutdown the device in preparation for a reboot
-> + * @pdev: pci device structure
-> + **/
-> +static void iavf_shutdown(struct pci_dev *pdev)
-> +{
-> +	iavf_remove(pdev);
-> +
-> +	if (system_state == SYSTEM_POWER_OFF)
-> +		pci_set_power_state(pdev, PCI_D3hot);
-
-Why do you need it? and why does "system_state == SYSTEM_POWER_OFF" line
-exist in small number of old drivers?
-
-What is missing in PCI core power state management, which pushes you
-to set D3 state in hibernation?
-
-Thanks
-
-
-> +}
-> +
->  static SIMPLE_DEV_PM_OPS(iavf_pm_ops, iavf_suspend, iavf_resume);
+> -	fwv = kmalloc(sizeof(*fwv), GFP_KERNEL);
+> +	fwv = devm_kmalloc(sizeof(*fwv), GFP_KERNEL);
+>  	if (!fwv) {
+>  		ret = -ENOMEM;
+>  		goto exit;
+> @@ -2535,7 +2535,6 @@ static int at76_probe(struct usb_interface *interface,
+>  		at76_delete_device(priv);
 >  
->  static struct pci_driver iavf_driver = {
+>  exit:
+> -	kfree(fwv);
+>  	if (ret < 0)
+>  		usb_put_dev(udev);
+>  	return ret;
 > -- 
-> 2.38.1
+> 2.17.1
 > 
