@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97A5E66AF9B
-	for <lists+netdev@lfdr.de>; Sun, 15 Jan 2023 08:16:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C61ED66AF9D
+	for <lists+netdev@lfdr.de>; Sun, 15 Jan 2023 08:16:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230071AbjAOHQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Jan 2023 02:16:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54304 "EHLO
+        id S230286AbjAOHQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Jan 2023 02:16:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229758AbjAOHQV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 02:16:21 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43AFCB474;
-        Sat, 14 Jan 2023 23:16:20 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id v3so17624754pgh.4;
-        Sat, 14 Jan 2023 23:16:20 -0800 (PST)
+        with ESMTP id S229676AbjAOHQc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 02:16:32 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C071FCDC1;
+        Sat, 14 Jan 2023 23:16:23 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id s13-20020a17090a6e4d00b0022900843652so9496623pjm.1;
+        Sat, 14 Jan 2023 23:16:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=R9CHFhBMgqNJEnQ3chqPAxmsVXAr4YKXK2i1ZVINvLg=;
-        b=XqSRSVCvFkKBeAg26jNKZVupLRr127JM0zvt31D8riSgiKoCef8OyxVO/MgTCf10HI
-         rl/u8XCUNe8mXXKLR+C6QiK10Vts7dQHO5gaSvhCul8DDnt0/PZ+JRiClBPUpIjqtmq8
-         AQKgan0xpubim8DE9ZMXHrXSBUxiAPleXxa3t6VVU4TZQpwE0EAafzQ96ntbxkU3oV8y
-         0dhqf/UyNtmkcAiWXdlAiD/sUCE4/d6DIWceu1/GF5lWGBWW9HdlXkZM1QgFsKHR4Ayi
-         1yqRZEdKH/mVV24dUVHsMm3AYT4ROsU0h33NppAK5WhO+eD16yAa2bJWSByCTQ6eAXaE
-         j3iA==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2pBBA/Ht2M9hrjp8K0+TAAr/in6NVCRMPTM9sEcsGTI=;
+        b=TY29OTqQECMOlR/zS6uHrCnyuLbhI6U629I5wSrhbqmPy/qdZMSf8uc7lwZIXtxlfV
+         Fwj//6L5O8VdY9fKCKuXu/FFs4VG8KV0Uf5vZpPACSJbCawh8XQ19+ShIURy1+BsDRS3
+         3V9R5xxn9rsoFO+FOr1B8GQEAtQdZvX/t4ktgyYjYoIYBG7bp4AGzI+ODDCMC0YTZmnM
+         XEYU8zjXzAvNEWzsXLUwECa2/PF2GuqbdT5QFGv2G/Ieiax7gcuLEQ25ZPLla3xsgpdl
+         w4uYn9Vyxl/tvJs1u/ux1KvULz5G6A5NoVuQJyrrHJ/HqP3qe9ko0Lv8YZ1I75N0xqjT
+         40gQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=R9CHFhBMgqNJEnQ3chqPAxmsVXAr4YKXK2i1ZVINvLg=;
-        b=BVzusJhGezH8RpInle2kzaXtNCxtfiRUbbNb0IFFhHvAPSCn68dzarGFf85M8xeja3
-         hdcrZ0GRBs6+OQcQz/awH49Zf93N26aSdIPytdrOxJ7v6m7/1c1Wq7iKmbXil7qdH41a
-         JtT/oMJRNpaoge0dO4maTeARgh8eAxKzbSyPKhLJ5Hq0FrxidVhf/idqb43TIDybmhXS
-         E3AXX136K3SzifnBaMtN3OO5W02fduELEUgqF0Uj9eTcQzMJ4x0lFtPKTndbwhc5J+YG
-         1WOhcnIPnmOoNJeK8ZnatVOybkgB3LWDtxvfSD61BQpS6GqKAX9Xr+tzJTtDeLPtO99A
-         Iu6A==
-X-Gm-Message-State: AFqh2kqrN2pIG/d18NPV1sONFQxSmYodSrQIBKn4/33L/ijtq1HKAeSQ
-        11pU+Lv9m2SfL/2euMuBVg==
-X-Google-Smtp-Source: AMrXdXszIws8hT8PC5OgCSCGyO/cNbwHz4TqDFvYlfgKsdr+p3rrlv+eDZATeo9juG3Gem8DLR4+6w==
-X-Received: by 2002:a05:6a00:1f09:b0:58b:48f5:ea28 with SMTP id be9-20020a056a001f0900b0058b48f5ea28mr15682433pfb.27.1673766979579;
-        Sat, 14 Jan 2023 23:16:19 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=2pBBA/Ht2M9hrjp8K0+TAAr/in6NVCRMPTM9sEcsGTI=;
+        b=P6VYJfelmVryS4MD3ShmNWV9Z3wnF1X1stYBHOe1I5pSnp4uQtRgw1eiCTfsMK7BGJ
+         Ww102z+otZlHygrw0a5CyGkzi495fJZw6xHmSGyg1RZtJNa7tBEY5eGYLyA0o23ax/Rl
+         BMou1u+CwBu4FoCD53MJJr9Nr/7LL5TEeny/HBSrSszr3Lb28E9Ebze3Z8+b8cBfeqiF
+         BDgyZxpyU0vYD6U3C9jLKhH7813pTuHayufQNEN9jDq3xJB3zQJPUyTTt6SH4zj1CXXp
+         U40xk6dg3m+DhCw8wYPA5tuTHYVHzA128H0LLVHbB1z44Napi9a5yFQdSrxfYNrhRHqL
+         wH9A==
+X-Gm-Message-State: AFqh2kqU1RVsBslXNDRaJWjt8saVWw79OzZfmxUo+ceQVsJoZ1FOc6Il
+        WUkTi6xyRZexZv3OSJyENw==
+X-Google-Smtp-Source: AMrXdXtzmo4m2cUEYPwfgS0qvgxnGMjTJS/9W3B/Raka4RCyzbPYiZe4IrggsnQCc5Rb2qbbMkye1A==
+X-Received: by 2002:a05:6a20:9497:b0:a4:486c:568f with SMTP id hs23-20020a056a20949700b000a4486c568fmr83748236pzb.59.1673766983249;
+        Sat, 14 Jan 2023 23:16:23 -0800 (PST)
 Received: from WDIR.. ([182.209.58.25])
-        by smtp.gmail.com with ESMTPSA id z13-20020aa7990d000000b0058a313f4e4esm10272796pff.149.2023.01.14.23.16.15
+        by smtp.gmail.com with ESMTPSA id z13-20020aa7990d000000b0058a313f4e4esm10272796pff.149.2023.01.14.23.16.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Jan 2023 23:16:19 -0800 (PST)
+        Sat, 14 Jan 2023 23:16:22 -0800 (PST)
 From:   "Daniel T. Lee" <danieltimlee@gmail.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -61,10 +62,12 @@ To:     Daniel Borkmann <daniel@iogearbox.net>,
         Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: [bpf-next 00/10] samples/bpf: modernize BPF functionality test programs
-Date:   Sun, 15 Jan 2023 16:16:03 +0900
-Message-Id: <20230115071613.125791-1-danieltimlee@gmail.com>
+Subject: [bpf-next 01/10] samples/bpf: ensure ipv6 is enabled before running tests
+Date:   Sun, 15 Jan 2023 16:16:04 +0900
+Message-Id: <20230115071613.125791-2-danieltimlee@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230115071613.125791-1-danieltimlee@gmail.com>
+References: <20230115071613.125791-1-danieltimlee@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -77,79 +80,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, there are many programs under samples/bpf to test the
-various functionality of BPF that have been developed for a long time.
-However, the kernel (BPF) has changed a lot compared to the 2016 when
-some of these test programs were first introduced.
+Currently, a few of BPF tests use ipv6 functionality. The problem here
+is that if ipv6 is disabled, these tests will fail, and even if the
+test fails, it will not tell you why it failed.
 
-Therefore, some of these programs use the deprecated function of BPF,
-and some programs no longer work normally due to changes in the API.
+    $ sudo ./test_cgrp2_sock2.sh
+    RTNETLINK answers: Permission denied
 
-To list some of the kernel changes that this patch set is focusing on,
-- legacy BPF map declaration syntax support had been dropped [1]
-- bpf_trace_printk() always append newline at the end [2]
-- deprecated styled BPF section header (bpf_load style) [3] 
-- urandom_read tracepoint is removed (used for testing overhead) [4]
-- ping sends packet with SOCK_DGRAM instead of SOCK_RAW [5]*
-- use "vmlinux.h" instead of including individual headers
+In order to fix this, this commit ensures ipv6 is enabled prior to
+running tests.
 
-In addition to this, this patchset tries to modernize the existing
-testing scripts a bit. And for network-related testing programs,
-a separate header file was created and applied. (To use the 
-Endianness conversion function from xdp_sample and bunch of constants)
+Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+---
+ samples/bpf/tc_l2_redirect.sh   | 3 +++
+ samples/bpf/test_cgrp2_sock2.sh | 4 +++-
+ samples/bpf/test_cgrp2_tc.sh    | 2 ++
+ 3 files changed, 8 insertions(+), 1 deletion(-)
 
-[1]: https://github.com/libbpf/libbpf/issues/282
-[2]: commit ac5a72ea5c89 ("bpf: Use dedicated bpf_trace_printk event instead of trace_printk()")
-[3]: commit ceb5dea56543 ("samples: bpf: Remove bpf_load loader completely")
-[4]: commit 14c174633f34 ("random: remove unused tracepoints")
-[5]: https://lwn.net/Articles/422330/
-
-*: This is quite old, but I'm not sure why the code was initially
-   developed to filter only SOCK_RAW.
-
-Daniel T. Lee (10):
-  samples/bpf: ensure ipv6 is enabled before running tests
-  samples/bpf: refactor BPF functionality testing scripts
-  samples/bpf: fix broken lightweight tunnel testing
-  samples/bpf: fix broken cgroup socket testing
-  samples/bpf: replace broken overhead microbenchmark with
-    fib_table_lookup
-  samples/bpf: replace legacy map with the BTF-defined map
-  samples/bpf: split common macros to net_shared.h
-  samples/bpf: replace BPF programs header with net_shared.h
-  samples/bpf: use vmlinux.h instead of implicit headers in BPF test
-    program
-  samples/bpf: change _kern suffix to .bpf with BPF test programs
-
- samples/bpf/Makefile                          | 14 +++---
- ...lwt_len_hist_kern.c => lwt_len_hist.bpf.c} | 29 +++--------
- samples/bpf/lwt_len_hist.sh                   |  4 +-
- samples/bpf/net_shared.h                      | 32 ++++++++++++
- .../{sock_flags_kern.c => sock_flags.bpf.c}   | 24 ++++-----
- samples/bpf/tc_l2_redirect.sh                 |  3 ++
- samples/bpf/test_cgrp2_sock.sh                | 16 +++---
- samples/bpf/test_cgrp2_sock2.sh               |  9 +++-
- ...st_cgrp2_tc_kern.c => test_cgrp2_tc.bpf.c} | 34 ++++---------
- samples/bpf/test_cgrp2_tc.sh                  |  8 +--
- samples/bpf/test_lwt_bpf.c                    | 50 ++++++++-----------
- samples/bpf/test_lwt_bpf.sh                   | 19 ++++---
- ...ap_in_map_kern.c => test_map_in_map.bpf.c} |  7 +--
- samples/bpf/test_map_in_map_user.c            |  2 +-
- ...robe_kern.c => test_overhead_kprobe.bpf.c} |  6 +--
- ...w_tp_kern.c => test_overhead_raw_tp.bpf.c} |  4 +-
- ...rhead_tp_kern.c => test_overhead_tp.bpf.c} | 29 +++++++----
- samples/bpf/test_overhead_user.c              | 34 ++++++++-----
- samples/bpf/xdp_sample.bpf.h                  | 22 +-------
- 19 files changed, 179 insertions(+), 167 deletions(-)
- rename samples/bpf/{lwt_len_hist_kern.c => lwt_len_hist.bpf.c} (75%)
- create mode 100644 samples/bpf/net_shared.h
- rename samples/bpf/{sock_flags_kern.c => sock_flags.bpf.c} (66%)
- rename samples/bpf/{test_cgrp2_tc_kern.c => test_cgrp2_tc.bpf.c} (70%)
- rename samples/bpf/{test_map_in_map_kern.c => test_map_in_map.bpf.c} (97%)
- rename samples/bpf/{test_overhead_kprobe_kern.c => test_overhead_kprobe.bpf.c} (92%)
- rename samples/bpf/{test_overhead_raw_tp_kern.c => test_overhead_raw_tp.bpf.c} (82%)
- rename samples/bpf/{test_overhead_tp_kern.c => test_overhead_tp.bpf.c} (61%)
-
+diff --git a/samples/bpf/tc_l2_redirect.sh b/samples/bpf/tc_l2_redirect.sh
+index 37d95ef3c20f..a28a8fc99dbe 100755
+--- a/samples/bpf/tc_l2_redirect.sh
++++ b/samples/bpf/tc_l2_redirect.sh
+@@ -8,6 +8,7 @@ REDIRECT_USER='./tc_l2_redirect'
+ REDIRECT_BPF='./tc_l2_redirect_kern.o'
+ 
+ RP_FILTER=$(< /proc/sys/net/ipv4/conf/all/rp_filter)
++IPV6_DISABLED=$(< /proc/sys/net/ipv6/conf/all/disable_ipv6)
+ IPV6_FORWARDING=$(< /proc/sys/net/ipv6/conf/all/forwarding)
+ 
+ function config_common {
+@@ -64,6 +65,7 @@ function config_common {
+ 
+ 	sysctl -q -w net.ipv4.conf.all.rp_filter=0
+ 	sysctl -q -w net.ipv6.conf.all.forwarding=1
++	sysctl -q -w net.ipv6.conf.all.disable_ipv6=0
+ }
+ 
+ function cleanup {
+@@ -77,6 +79,7 @@ function cleanup {
+ 	$IP link del ip6t >& /dev/null
+ 	sysctl -q -w net.ipv4.conf.all.rp_filter=$RP_FILTER
+ 	sysctl -q -w net.ipv6.conf.all.forwarding=$IPV6_FORWARDING
++	sysctl -q -w net.ipv6.conf.all.disable_ipv6=$IPV6_DISABLED
+ 	rm -f /sys/fs/bpf/tc/globals/tun_iface
+ 	[[ -z $DEBUG ]] || set -x
+ 	set -e
+diff --git a/samples/bpf/test_cgrp2_sock2.sh b/samples/bpf/test_cgrp2_sock2.sh
+index 6a3dbe642b2b..ac45828ed2bd 100755
+--- a/samples/bpf/test_cgrp2_sock2.sh
++++ b/samples/bpf/test_cgrp2_sock2.sh
+@@ -7,13 +7,15 @@ LINK_PIN=$BPFFS/test_cgrp2_sock2
+ function config_device {
+ 	ip netns add at_ns0
+ 	ip link add veth0 type veth peer name veth0b
+-	ip link set veth0b up
+ 	ip link set veth0 netns at_ns0
++	ip netns exec at_ns0 sysctl -q net.ipv6.conf.veth0.disable_ipv6=0
+ 	ip netns exec at_ns0 ip addr add 172.16.1.100/24 dev veth0
+ 	ip netns exec at_ns0 ip addr add 2401:db00::1/64 dev veth0 nodad
+ 	ip netns exec at_ns0 ip link set dev veth0 up
++	sysctl -q net.ipv6.conf.veth0b.disable_ipv6=0
+ 	ip addr add 172.16.1.101/24 dev veth0b
+ 	ip addr add 2401:db00::2/64 dev veth0b nodad
++	ip link set veth0b up
+ }
+ 
+ function config_cgroup {
+diff --git a/samples/bpf/test_cgrp2_tc.sh b/samples/bpf/test_cgrp2_tc.sh
+index 395573be6ae8..a6f1ed03ddf6 100755
+--- a/samples/bpf/test_cgrp2_tc.sh
++++ b/samples/bpf/test_cgrp2_tc.sh
+@@ -73,11 +73,13 @@ setup_net() {
+ 	start)
+ 	    $IP link add $HOST_IFC type veth peer name $NS_IFC || return $?
+ 	    $IP link set dev $HOST_IFC up || return $?
++	    sysctl -q net.ipv6.conf.$HOST_IFC.disable_ipv6=0
+ 	    sysctl -q net.ipv6.conf.$HOST_IFC.accept_dad=0
+ 
+ 	    $IP netns add ns || return $?
+ 	    $IP link set dev $NS_IFC netns ns || return $?
+ 	    $IP -n $NS link set dev $NS_IFC up || return $?
++	    $IP netns exec $NS sysctl -q net.ipv6.conf.$NS_IFC.disable_ipv6=0
+ 	    $IP netns exec $NS sysctl -q net.ipv6.conf.$NS_IFC.accept_dad=0
+ 	    $TC qdisc add dev $HOST_IFC clsact || return $?
+ 	    $TC filter add dev $HOST_IFC egress bpf da obj $BPF_PROG sec $BPF_SECTION || return $?
 -- 
 2.34.1
 
