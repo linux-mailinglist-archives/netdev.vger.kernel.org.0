@@ -2,337 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41E5066C315
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 16:00:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18D8666C309
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 15:59:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232937AbjAPPAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 10:00:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52134 "EHLO
+        id S232829AbjAPO7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 09:59:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232471AbjAPO64 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 09:58:56 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 876372A156;
-        Mon, 16 Jan 2023 06:49:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1673880568; x=1705416568;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=TxozTmbPs0Bq89lAb6eY8EV8ZkDaBK713HDS80D6e2o=;
-  b=uukDbgIlIkSQ8Fb6MVuzlmAEZi1xgARlYjkeV26q/GJp23QJ8FjOxqOY
-   FLno6PFD4GUrPU7aJp4/UhUxKz7AH7giBZjx46dIkrzGRjXkTf9Ym8aJg
-   orgSYGGvY8Fc5r1rkKfKYhJuuxhRa3Fw5QTbdcldjZWqwxtVIzAYl2Sdm
-   0HlXXbTXQ/55W7NmhbqO9QVLDcH8dX2tHr3Xyx5F7PS/xHLAao61YrDoS
-   /toacPi7rUUErHwaILCSZaSEFHbF67cNLf0wBcn1GPq2aCyoPc1o2GETA
-   kleR1IV2cSSzHiW0RS1fbFxPeCOmCBNG/FoAmdeZaX8KZ9nlOO7S6jZ+C
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.97,221,1669100400"; 
-   d="scan'208";a="196848246"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Jan 2023 07:49:27 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 16 Jan 2023 07:49:27 -0700
-Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Mon, 16 Jan 2023 07:49:24 -0700
-From:   Daniel Machon <daniel.machon@microchip.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <lars.povlsen@microchip.com>,
-        <Steen.Hegelund@microchip.com>, <daniel.machon@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <joe@perches.com>,
-        <error27@gmail.com>, <horatiu.vultur@microchip.com>,
-        <Julia.Lawall@inria.fr>, <petrm@nvidia.com>,
-        <vladimir.oltean@nxp.com>, <maxime.chevallier@bootlin.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next v2 6/6] net: microchip: sparx5: add support for DSCP rewrite
-Date:   Mon, 16 Jan 2023 15:48:53 +0100
-Message-ID: <20230116144853.2446315-7-daniel.machon@microchip.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230116144853.2446315-1-daniel.machon@microchip.com>
-References: <20230116144853.2446315-1-daniel.machon@microchip.com>
+        with ESMTP id S232942AbjAPO6n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 09:58:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E24012F36;
+        Mon, 16 Jan 2023 06:49:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EEB9160FD7;
+        Mon, 16 Jan 2023 14:49:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACBFCC433D2;
+        Mon, 16 Jan 2023 14:49:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673880551;
+        bh=SYGWAHn0hIePrfmTmgN0T/xH1F9Dw0NE2z1mOy81IJQ=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=utiXRpd/+bO4PGgblAGfbKSGuqIcwnK/RRHdbbkHCIgRrgDHaMN+yUuLz/O7oWQRI
+         eU7HGDOTxjz15DvYmtvk1u9zum+1lVKuCpK8RBFPKvDYewu/K65l1iilGDGOBJc7Dz
+         DBy6hQJyALlSIxqRyf+dNeBipg6pMcfFVhwrH34n0j3wV4SZDo7GMloZj5At7Zz2TN
+         ueJUG4VDL+dYzdpeY0xU9zULJDTTc6MeuPTsOoTxAzTNabcTRKQdP0iF+kXn7pfOQ4
+         E7jJMHcbp9kxrcn+pNxK1mY7dZn42ejRePd75AOmXfp79Oqr9zrdle38F/+/YJ3ivU
+         I0Zxp/krSZCdg==
+From:   Mark Brown <broonie@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michael Walle <michael@walle.cc>
+Cc:     Sander Vanheule <sander@svanheule.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>
+In-Reply-To: <20230116111509.4086236-1-michael@walle.cc>
+References: <20230116111509.4086236-1-michael@walle.cc>
+Subject: Re: [PATCH net-next] regmap: Rework regmap_mdio_c45_{read|write} for
+ new C45 API.
+Message-Id: <167388054729.388650.12953940088120724088.b4-ty@kernel.org>
+Date:   Mon, 16 Jan 2023 14:49:07 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: b4 0.12-dev-69c4d
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for DSCP rewrite in Sparx5 driver. On egress DSCP is
-rewritten from either classified DSCP, or frame DSCP. Classified DSCP is
-determined by the Analyzer Classifier on ingress, and is mapped from
-classified QoS class and DP level. Classification of DSCP is by default
-enabled for all ports.
+On Mon, 16 Jan 2023 12:15:09 +0100, Michael Walle wrote:
+> The MDIO subsystem is getting rid of MII_ADDR_C45 and thus also
+> encoding associated encoding of the C45 device address and register
+> address into one value. regmap-mdio also uses this encoding for the
+> C45 bus.
+> 
+> Move to the new C45 helpers for MDIO access and provide regmap-mdio
+> helper macros.
+> 
+> [...]
 
-It is required that DSCP is trusted for the egress port *and* rewrite
-table is not empty, in order to rewrite DSCP based on classified DSCP,
-otherwise DSCP is always rewritten from frame DSCP.
+Applied to
 
-classified_dscp = qos_dscp_map[8 * dp_level + qos_class];
-if (active_mappings && dscp_is_trusted)
-	rewritten_dscp = classified_dscp
-else
-	rewritten_dscp = frame_dscp
+   broonie/regmap.git for-next
 
-To rewrite DSCP to 20 for any frames with priority 7:
+Thanks!
 
-$ dcb apptrust set dev eth0 order dscp
-$ dcb rewr add dev eth0 7:20 <-- not in iproute2/dcb yet
+[1/1] regmap: Rework regmap_mdio_c45_{read|write} for new C45 API.
+      commit: 7b3c4c370c09313e22b555e79167e73d233611d1
 
-Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
----
- .../ethernet/microchip/sparx5/sparx5_dcb.c    | 35 ++++++++++++++++
- .../microchip/sparx5/sparx5_main_regs.h       | 26 ++++++++++++
- .../ethernet/microchip/sparx5/sparx5_port.c   | 40 +++++++++++++++++++
- .../ethernet/microchip/sparx5/sparx5_port.h   | 23 +++++++++++
- 4 files changed, 124 insertions(+)
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c b/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
-index dd321dd9f223..871a3e62f852 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
-@@ -133,6 +133,7 @@ static bool sparx5_dcb_apptrust_contains(int portno, u8 selector)
- 
- static int sparx5_dcb_app_update(struct net_device *dev)
- {
-+	struct dcb_ieee_app_prio_map dscp_rewr_map = {0};
- 	struct dcb_rewr_prio_pcp_map pcp_rewr_map = {0};
- 	struct sparx5_port *port = netdev_priv(dev);
- 	struct sparx5_port_qos_dscp_map *dscp_map;
-@@ -140,7 +141,9 @@ static int sparx5_dcb_app_update(struct net_device *dev)
- 	struct sparx5_port_qos qos = {0};
- 	struct dcb_app app_itr = {0};
- 	int portno = port->portno;
-+	bool dscp_rewr = false;
- 	bool pcp_rewr = false;
-+	u16 dscp;
- 	int i;
- 
- 	dscp_map = &qos.dscp.map;
-@@ -174,6 +177,26 @@ static int sparx5_dcb_app_update(struct net_device *dev)
- 		qos.pcp_rewr.map.map[i] = fls(pcp_rewr_map.map[i]) - 1;
- 	}
- 
-+	/* Get dscp rewrite mapping */
-+	dcb_getrewr_prio_dscp_mask_map(dev, &dscp_rewr_map);
-+	for (i = 0; i < ARRAY_SIZE(dscp_rewr_map.map); i++) {
-+		if (!dscp_rewr_map.map[i])
-+			continue;
-+
-+		/* The rewrite table of the switch has 32 entries; one for each
-+		 * priority for each DP level. Currently, the rewrite map does
-+		 * not indicate DP level, so we map classified QoS class to
-+		 * classified DSCP, for each classified DP level. Rewrite of
-+		 * DSCP is only enabled, if we have active mappings.
-+		 */
-+		dscp_rewr = true;
-+		dscp = fls64(dscp_rewr_map.map[i]) - 1;
-+		qos.dscp_rewr.map.map[i] = dscp;      /* DP 0 */
-+		qos.dscp_rewr.map.map[i + 8] = dscp;  /* DP 1 */
-+		qos.dscp_rewr.map.map[i + 16] = dscp; /* DP 2 */
-+		qos.dscp_rewr.map.map[i + 24] = dscp; /* DP 3 */
-+	}
-+
- 	/* Enable use of pcp for queue classification ? */
- 	if (sparx5_dcb_apptrust_contains(portno, DCB_APP_SEL_PCP)) {
- 		qos.pcp.qos_enable = true;
-@@ -189,6 +212,12 @@ static int sparx5_dcb_app_update(struct net_device *dev)
- 	if (sparx5_dcb_apptrust_contains(portno, IEEE_8021QAZ_APP_SEL_DSCP)) {
- 		qos.dscp.qos_enable = true;
- 		qos.dscp.dp_enable = qos.dscp.qos_enable;
-+		if (dscp_rewr)
-+			/* Do not enable rewrite if no mappings are active, as
-+			 * classified DSCP will then be zero for all classified
-+			 * QoS class and DP combinations.
-+			 */
-+			qos.dscp_rewr.enable = true;
- 	}
- 
- 	return sparx5_port_qos_set(port, &qos);
-@@ -366,6 +395,12 @@ int sparx5_dcb_init(struct sparx5 *sparx5)
- 		sparx5_port_apptrust[port->portno] =
- 			&sparx5_dcb_apptrust_policies
- 				[SPARX5_DCB_APPTRUST_DSCP_PCP];
-+
-+		/* Enable DSCP classification based on classified QoS class and
-+		 * DP, for all DSCP values, for all ports.
-+		 */
-+		sparx5_port_qos_dscp_rewr_mode_set(port,
-+						   SPARX5_PORT_REW_DSCP_ALL);
- 	}
- 
- 	return 0;
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h b/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
-index 0d3bf2e84102..a4a4d893dcb2 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
-@@ -885,6 +885,16 @@ enum sparx5_target {
- #define ANA_CL_DSCP_CFG_DSCP_TRUST_ENA_GET(x)\
- 	FIELD_GET(ANA_CL_DSCP_CFG_DSCP_TRUST_ENA, x)
- 
-+/*      ANA_CL:COMMON:QOS_MAP_CFG */
-+#define ANA_CL_QOS_MAP_CFG(r) \
-+	__REG(TARGET_ANA_CL, 0, 1, 166912, 0, 1, 756, 512, r, 32, 4)
-+
-+#define ANA_CL_QOS_MAP_CFG_DSCP_REWR_VAL         GENMASK(9, 4)
-+#define ANA_CL_QOS_MAP_CFG_DSCP_REWR_VAL_SET(x)\
-+	FIELD_PREP(ANA_CL_QOS_MAP_CFG_DSCP_REWR_VAL, x)
-+#define ANA_CL_QOS_MAP_CFG_DSCP_REWR_VAL_GET(x)\
-+	FIELD_GET(ANA_CL_QOS_MAP_CFG_DSCP_REWR_VAL, x)
-+
- /*      ANA_L2:COMMON:AUTO_LRN_CFG */
- #define ANA_L2_AUTO_LRN_CFG       __REG(TARGET_ANA_L2, 0, 1, 566024, 0, 1, 700, 24, 0, 1, 4)
- 
-@@ -5385,6 +5395,22 @@ enum sparx5_target {
- #define REW_DEI_MAP_DE1_DEI_DE1_GET(x)\
- 	FIELD_GET(REW_DEI_MAP_DE1_DEI_DE1, x)
- 
-+/*      REW:PORT:DSCP_MAP */
-+#define REW_DSCP_MAP(g) \
-+	__REG(TARGET_REW, 0, 1, 360448, g, 70, 256, 136, 0, 1, 4)
-+
-+#define REW_DSCP_MAP_DSCP_UPDATE_ENA             BIT(1)
-+#define REW_DSCP_MAP_DSCP_UPDATE_ENA_SET(x)\
-+	FIELD_PREP(REW_DSCP_MAP_DSCP_UPDATE_ENA, x)
-+#define REW_DSCP_MAP_DSCP_UPDATE_ENA_GET(x)\
-+	FIELD_GET(REW_DSCP_MAP_DSCP_UPDATE_ENA, x)
-+
-+#define REW_DSCP_MAP_DSCP_REMAP_ENA              BIT(0)
-+#define REW_DSCP_MAP_DSCP_REMAP_ENA_SET(x)\
-+	FIELD_PREP(REW_DSCP_MAP_DSCP_REMAP_ENA, x)
-+#define REW_DSCP_MAP_DSCP_REMAP_ENA_GET(x)\
-+	FIELD_GET(REW_DSCP_MAP_DSCP_REMAP_ENA, x)
-+
- /*      REW:PORT:TAG_CTRL */
- #define REW_TAG_CTRL(g)           __REG(TARGET_REW, 0, 1, 360448, g, 70, 256, 132, 0, 1, 4)
- 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_port.c b/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
-index c8b5087769ed..246259b2ae94 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
-@@ -1152,6 +1152,7 @@ int sparx5_port_qos_set(struct sparx5_port *port,
- 	sparx5_port_qos_dscp_set(port, &qos->dscp);
- 	sparx5_port_qos_pcp_set(port, &qos->pcp);
- 	sparx5_port_qos_pcp_rewr_set(port, &qos->pcp_rewr);
-+	sparx5_port_qos_dscp_rewr_set(port, &qos->dscp_rewr);
- 	sparx5_port_qos_default_set(port, qos);
- 
- 	return 0;
-@@ -1241,6 +1242,45 @@ int sparx5_port_qos_pcp_set(const struct sparx5_port *port,
- 	return 0;
- }
- 
-+void sparx5_port_qos_dscp_rewr_mode_set(const struct sparx5_port *port,
-+					int mode)
-+{
-+	spx5_rmw(ANA_CL_QOS_CFG_DSCP_REWR_MODE_SEL_SET(mode),
-+		 ANA_CL_QOS_CFG_DSCP_REWR_MODE_SEL, port->sparx5,
-+		 ANA_CL_QOS_CFG(port->portno));
-+}
-+
-+int sparx5_port_qos_dscp_rewr_set(const struct sparx5_port *port,
-+				  struct sparx5_port_qos_dscp_rewr *qos)
-+{
-+	struct sparx5 *sparx5 = port->sparx5;
-+	bool rewr = false;
-+	u16 dscp;
-+	int i;
-+
-+	/* On egress, rewrite DSCP value to either classified DSCP or frame
-+	 * DSCP. If enabled; classified DSCP, if disabled; frame DSCP.
-+	 */
-+	if (qos->enable)
-+		rewr = true;
-+
-+	spx5_rmw(REW_DSCP_MAP_DSCP_UPDATE_ENA_SET(rewr),
-+		 REW_DSCP_MAP_DSCP_UPDATE_ENA, sparx5,
-+		 REW_DSCP_MAP(port->portno));
-+
-+	/* On ingress, map each classified QoS class and DP to classified DSCP
-+	 * value. This mapping table is global for all ports.
-+	 */
-+	for (i = 0; i < ARRAY_SIZE(qos->map.map); i++) {
-+		dscp = qos->map.map[i];
-+		spx5_rmw(ANA_CL_QOS_MAP_CFG_DSCP_REWR_VAL_SET(dscp),
-+			 ANA_CL_QOS_MAP_CFG_DSCP_REWR_VAL, sparx5,
-+			 ANA_CL_QOS_MAP_CFG(i));
-+	}
-+
-+	return 0;
-+}
-+
- int sparx5_port_qos_dscp_set(const struct sparx5_port *port,
- 			     struct sparx5_port_qos_dscp *qos)
- {
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_port.h b/drivers/net/ethernet/microchip/sparx5/sparx5_port.h
-index b09c09d10a16..607c4ff1df6b 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_port.h
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_port.h
-@@ -14,6 +14,12 @@
- #define SPARX5_PORT_REW_TAG_CTRL_DEFAULT 1
- #define SPARX5_PORT_REW_TAG_CTRL_MAPPED  2
- 
-+/* Port DSCP rewrite mode */
-+#define SPARX5_PORT_REW_DSCP_NONE 0
-+#define SPARX5_PORT_REW_DSCP_IF_ZERO 1
-+#define SPARX5_PORT_REW_DSCP_SELECTED  2
-+#define SPARX5_PORT_REW_DSCP_ALL 3
-+
- static inline bool sparx5_port_is_2g5(int portno)
- {
- 	return portno >= 16 && portno <= 47;
-@@ -108,6 +114,11 @@ struct sparx5_port_qos_pcp_rewr_map {
- 	u16 map[SPX5_PRIOS];
- };
- 
-+#define SPARX5_PORT_QOS_DP_NUM 4
-+struct sparx5_port_qos_dscp_rewr_map {
-+	u16 map[SPX5_PRIOS * SPARX5_PORT_QOS_DP_NUM];
-+};
-+
- #define SPARX5_PORT_QOS_DSCP_COUNT 64
- struct sparx5_port_qos_dscp_map {
- 	u8 map[SPARX5_PORT_QOS_DSCP_COUNT];
-@@ -130,10 +141,16 @@ struct sparx5_port_qos_dscp {
- 	bool dp_enable;
- };
- 
-+struct sparx5_port_qos_dscp_rewr {
-+	struct sparx5_port_qos_dscp_rewr_map map;
-+	bool enable;
-+};
-+
- struct sparx5_port_qos {
- 	struct sparx5_port_qos_pcp pcp;
- 	struct sparx5_port_qos_pcp_rewr pcp_rewr;
- 	struct sparx5_port_qos_dscp dscp;
-+	struct sparx5_port_qos_dscp_rewr dscp_rewr;
- 	u8 default_prio;
- };
- 
-@@ -148,6 +165,12 @@ int sparx5_port_qos_pcp_rewr_set(const struct sparx5_port *port,
- int sparx5_port_qos_dscp_set(const struct sparx5_port *port,
- 			     struct sparx5_port_qos_dscp *qos);
- 
-+void sparx5_port_qos_dscp_rewr_mode_set(const struct sparx5_port *port,
-+					int mode);
-+
-+int sparx5_port_qos_dscp_rewr_set(const struct sparx5_port *port,
-+				  struct sparx5_port_qos_dscp_rewr *qos);
-+
- int sparx5_port_qos_default_set(const struct sparx5_port *port,
- 				const struct sparx5_port_qos *qos);
- 
--- 
-2.34.1
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
