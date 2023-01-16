@@ -2,73 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3333866CED8
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 19:30:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E22866CEF4
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 19:37:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234347AbjAPSat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 13:30:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41254 "EHLO
+        id S234619AbjAPShx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 13:37:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233644AbjAPSa3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 13:30:29 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151A75BB4;
-        Mon, 16 Jan 2023 10:16:23 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id hw16so58106217ejc.10;
-        Mon, 16 Jan 2023 10:16:23 -0800 (PST)
+        with ESMTP id S233675AbjAPSh2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 13:37:28 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B409305EF
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 10:27:37 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id ud5so70052104ejc.4
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 10:27:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=0kOKIRWpF9HuOzAZKrZQZpcRpAWjMLxyYQdRXeMnc+c=;
-        b=Kyr7d9HQhTj9x1xmzYyrZB3d0rVHrJf8i53USWmrcDBJyxlpdTJVwYYSRvzP5nJRZe
-         iTGDb78T6GxkSal2X547pTji9rOvN2E7XbXayq77KtCR5vzVyCmL1nKssju5eYmw9CHo
-         uMjyWYumwhujA63MYpph3klVLmy3xCvCzn3JFntG0S6D2LSc+5hXs2eYoSpkVbQSr1xJ
-         K22Jrho6ZCAkQXpMFZ/JTU0RU6NWgxxQg/AsmK2KsL1hGwdIdR6OSqbt61fwfQHJ6arv
-         PPUFF8EtlXlYzgYVs8CW9R7AIoA4CZiijxY7xBGXARb5DZNaqB/AKV8kFEOeab2j9FWh
-         GHdw==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=epMBQLj40t9dX5gwuafuYFxhG3Xn5KXEsQO4j44ipXI=;
+        b=R5X6w/zlZI7qhH9qVpVOYzlPdW7+MnPHfYghx7lbrIpprKgXeoY8cbyRAzrYvPCWbc
+         lvAinn6SEKWcFqIUjiUAUlOjh4uCRQHRE0QcOshQvaWR+809QGoCgesS70EnzpkXT3kK
+         LcCgzhqIbql9NnsTPF3AADxUdOc7ypyp/bdTNWuz8w+Qil4uRe/mxv2mfm3EnTuYS05Y
+         75WilG3dA/7IAg/AzPgdfR5UswYUo65/gVNE8i9xeJ6RrSRYczJayx9YZdHjPiY1Ilk+
+         qXn0D0/mg3f2pw62pLy+0JEtBDYf1AozEw3is5fDp0aKAiUu0txQatA20N9Zg5p9j/vM
+         p0CA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0kOKIRWpF9HuOzAZKrZQZpcRpAWjMLxyYQdRXeMnc+c=;
-        b=sYTNsYoSDnaJRqngAH7CUZUzZGJ2auCEgyVizikgKsXfM0zfWufNPwGODISW/xpscv
-         MO1oh5imBK44k+EOM5/hwwu2PqTdH5B8BUoaQpORR089YUzxRtllIfs25lF37R0pCq8t
-         LIrcu9M6/S2EOxImt2HXa+C6Dq/ggJt33iwHQrfOGtH+96k1L0ds9+2uQTic1qHXv5e3
-         yJcCNBWBb+3tPRRUa+GvWgCsqS9ma4fxgVDDQRGIOEOyxX+NRVXpcDS6XNUL+DaC+AGd
-         vbxV9hnS8Fcb7uOApP9y8vCs7rKPv3p5mNc6S+oe3kUxLrs0LSAWR2LFo58zgA4ZXE1K
-         Q0gw==
-X-Gm-Message-State: AFqh2kpLShf1kPVBAYjB91t4eBjacRh0BuTlWFh8Lbw3kjMnz4+c3FEY
-        5ADPzohh4NstnDepIWooJAQ=
-X-Google-Smtp-Source: AMrXdXvmQKvVKQCixeZrgIEJeCLdwRT5FQvF0jau7jT0Nl1xt+V24BGYE/CueryjLU8tC3bG7QK0hQ==
-X-Received: by 2002:a17:906:7188:b0:7c1:eb:b2a7 with SMTP id h8-20020a170906718800b007c100ebb2a7mr13030148ejk.13.1673892981577;
-        Mon, 16 Jan 2023 10:16:21 -0800 (PST)
-Received: from skbuf ([188.27.185.68])
-        by smtp.gmail.com with ESMTPSA id r1-20020a17090609c100b007e0e2e35205sm12230589eje.143.2023.01.16.10.16.20
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=epMBQLj40t9dX5gwuafuYFxhG3Xn5KXEsQO4j44ipXI=;
+        b=XXsc5xs4LWoqtwhg0GytS5ei/fftbB+XWun0tufBFxKF4ZgyW1tZWecWXVh2gIWfQ3
+         ytY0lLdpyNoYI8p/k6/uNjiRTJMszcibcN3f1rOFR0DhmJme1lptjfY2OrdNrtG1L1VK
+         +yd5dgHPrcR1abVlFbLzMXcI9mHMxoOdzP/S6snaFMO7uMbBboWQkPM5oVmMOgDUymtO
+         pb5iTiYp641cCM0n5dHiDditpG52t1LiA7e2ibtUJldxpEmAfbf/7ZSyiC1qBcRD7XGD
+         WNGyN7qYazkC/MPZCU/wJFWJ1JpxIDzzUCZgqq6oID0rdh0dKLzT13xkR//yBONeCP1g
+         npyA==
+X-Gm-Message-State: AFqh2kpL5nYn7UQSWbQwxNCJXmxjwc+ycLbabVMpVmgzvAMcvrNfxxmI
+        NSEezmu622NN5QddPO8c+XPGdeDcLfk=
+X-Google-Smtp-Source: AMrXdXsQdu7OK779t7VyfL+NVlhWBJpma82X/aQKWwmXrOinEWRSkuc53dl4l3i6CKiBiT4kuAqQVw==
+X-Received: by 2002:a17:906:1993:b0:870:5ed6:74a0 with SMTP id g19-20020a170906199300b008705ed674a0mr5421392ejd.73.1673893656054;
+        Mon, 16 Jan 2023 10:27:36 -0800 (PST)
+Received: from saproj-Latitude-5501.yandex.net ([2a02:6b8:0:40c:9996:8a14:61c5:7cf5])
+        by smtp.gmail.com with ESMTPSA id wb9-20020a170907d50900b0087045ae5935sm1745761ejc.1.2023.01.16.10.27.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Jan 2023 10:16:21 -0800 (PST)
-Date:   Mon, 16 Jan 2023 20:16:18 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Marcin Wojtas <mw@semihalf.com>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
-        rafael@kernel.org, andriy.shevchenko@linux.intel.com,
-        sean.wang@mediatek.com, Landen.Chao@mediatek.com,
-        linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, hkallweit1@gmail.com,
-        jaz@semihalf.com, tn@semihalf.com, Samer.El-Haj-Mahmoud@arm.com
-Subject: Re: [net-next: PATCH v4 2/8] net: mdio: switch fixed-link PHYs API
- to fwnode_
-Message-ID: <20230116181618.2iz54jywj7rqzygu@skbuf>
-References: <20230116173420.1278704-1-mw@semihalf.com>
- <20230116173420.1278704-3-mw@semihalf.com>
- <Y8WOVVnFInEoXLVX@shell.armlinux.org.uk>
+        Mon, 16 Jan 2023 10:27:35 -0800 (PST)
+From:   Sergei Antonov <saproj@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, vladimir.oltean@nxp.com,
+        Sergei Antonov <saproj@gmail.com>
+Subject: [PATCH net-next] net: ftmac100: handle netdev flags IFF_PROMISC and IFF_ALLMULTI
+Date:   Mon, 16 Jan 2023 21:27:16 +0300
+Message-Id: <20230116182716.302246-1-saproj@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y8WOVVnFInEoXLVX@shell.armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -79,19 +69,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 16, 2023 at 05:50:13PM +0000, Russell King (Oracle) wrote:
-> On Mon, Jan 16, 2023 at 06:34:14PM +0100, Marcin Wojtas wrote:
-> > fixed-link PHYs API is used by DSA and a number of drivers
-> > and was depending on of_. Switch to fwnode_ so to make it
-> > hardware description agnostic and allow to be used in ACPI
-> > world as well.
-> 
-> Would it be better to let the fixed-link PHY die, and have everyone use
-> the more flexible fixed link implementation in phylink?
+When netdev->flags has IFF_PROMISC or IFF_ALLMULTI, set the
+corresponding bits in the MAC Control Register (MACCR).
 
-Would it be even better if DSA had some driver-level prerequisites to
-impose for ACPI support - like phylink support rather than adjust_link -
-and we would simply branch off to a dsa_shared_port_link_register_acpi()
-function, leaving the current dsa_shared_port_link_register_of() alone,
-with all its workarounds and hacks? I don't believe that carrying all
-that logic over to a common fwnode based API is the proper way forward.
+This change is based on code from the ftgmac100 driver, see
+ftgmac100_start_hw() in ftgmac100.c
+
+Signed-off-by: Sergei Antonov <saproj@gmail.com>
+---
+ drivers/net/ethernet/faraday/ftmac100.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/ethernet/faraday/ftmac100.c b/drivers/net/ethernet/faraday/ftmac100.c
+index 6c8c78018ce6..139fe66f8bcd 100644
+--- a/drivers/net/ethernet/faraday/ftmac100.c
++++ b/drivers/net/ethernet/faraday/ftmac100.c
+@@ -182,6 +182,12 @@ static int ftmac100_start_hw(struct ftmac100 *priv)
+ 	if (netdev->mtu > ETH_DATA_LEN)
+ 		maccr |= FTMAC100_MACCR_RX_FTL;
+ 
++	/* Add other bits as needed */
++	if (netdev->flags & IFF_PROMISC)
++		maccr |= FTMAC100_MACCR_RCV_ALL;
++	if (netdev->flags & IFF_ALLMULTI)
++		maccr |= FTMAC100_MACCR_RX_MULTIPKT;
++
+ 	iowrite32(maccr, priv->base + FTMAC100_OFFSET_MACCR);
+ 	return 0;
+ }
+-- 
+2.34.1
+
