@@ -2,224 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53EF966BB27
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 11:04:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2605B66BB77
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 11:15:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229901AbjAPKEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 05:04:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51398 "EHLO
+        id S230229AbjAPKPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 05:15:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbjAPKEd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 05:04:33 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F264193D0;
-        Mon, 16 Jan 2023 02:04:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1673863464; x=1705399464;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=sTsxJqX2e2ybi62OwFJhMFA7w+2USmVJlU5/icGHZIQ=;
-  b=hbSmm/XRHUUGsqxW/uJoyYZveKtb5oNR5Y7A+fyphEsTfi2VxkSryqA4
-   /OedHjItW2YkhpiijAQSUz+WcNQACP7t6baD9J7LJl6vBnEPNiIHWv7uI
-   PkHMoHZZ1VbI5C2M12r2G5v797kocuNqR09yFITBroM8Pe/J4KPfycpjq
-   bLOQZzRUUKWd/gojGPhpAmMvVLBFSQGfuNJy+RLHiCId5rdEdwspMe4Yq
-   /TsKGRHmZDrU35IQbaH2dQbOmmMZzsdJiv+BrekudhfTPqSH1YvAGyK/A
-   GVzAG/p6xc9ffvbQ3S0IUw8SEpEZhuDrXshVuVwOae0H//ER+CZbNgTv+
-   w==;
-X-IronPort-AV: E=Sophos;i="5.97,220,1669100400"; 
-   d="scan'208";a="132508148"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Jan 2023 03:04:23 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 16 Jan 2023 03:04:21 -0700
-Received: from che-lt-i67786lx.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Mon, 16 Jan 2023 03:04:16 -0700
-From:   Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <andrew@lunn.ch>, <f.fainelli@gmail.com>, <olteanv@gmail.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <arun.ramadoss@microchip.com>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>
-Subject: [PATCH net 2/2] net: dsa: microchip: lan937x: run phy initialization during each link update
-Date:   Mon, 16 Jan 2023 15:35:00 +0530
-Message-ID: <20230116100500.614444-3-rakesh.sankaranarayanan@microchip.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230116100500.614444-1-rakesh.sankaranarayanan@microchip.com>
-References: <20230116100500.614444-1-rakesh.sankaranarayanan@microchip.com>
+        with ESMTP id S229951AbjAPKOx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 05:14:53 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E20174C3C
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 02:13:45 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id qx13so8523809ejb.13
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 02:13:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
+        bh=Oy+gx4o16WqqwDqFRZ1XOqJI2ojaSbO4NuHKCxSkBZ0=;
+        b=gj8dpUTwrCNnsB4dG2HSc8IH+mXSewxscAJGtBgLaElzCEft9fjWCqPojBvkKpnJ++
+         rXqAmfSbBRRQmD/sc2yWUWvkc8j9K5ZYN2SyYp5CPb3ymm3FTmbFn92h36+LtUuSmYyW
+         JIEtjRhX0Gm/QoU+z2H656r/2Sxzzc+C0nvyo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Oy+gx4o16WqqwDqFRZ1XOqJI2ojaSbO4NuHKCxSkBZ0=;
+        b=seJiM7C64rPWUdK16tAZSVEpTT52XBsB74fhm+H3R/8li+qjtzvV9zT6rbkGsL+iii
+         caNZsiKVKyHYEmCAMLhNrJrsL4JeSLee1RyV1KU5Q8tu/MDURIyuQsqC8b1hBnuVB6+2
+         yqDEMkqS5U4NXrk5N66Hj/rQMedarLnnsOTEqvobsc2a2T/VSCNwLYJPNS/xIm/yHcU0
+         5Ww1B5P2k+Jq4PvL0Laee4zuvI/S+ISA6pOCtt8jJ40P72jRZIOXfN0EQo+4Qsendfkm
+         bY8BVJ4KKxc8gUD17bB59jdVXS4yqJc8K1VC/+LcewcqjY3ow4Wza/KnMkoC084wnTXk
+         hcLA==
+X-Gm-Message-State: AFqh2kpczTwqthJyKpgv5WG7XQR8wnoKi02oxjF7VSxM2+pSf9weFhDA
+        Clo9hxw9fz3h+HsRNNWqyb9LZA==
+X-Google-Smtp-Source: AMrXdXsJI3OpwhbQqxhJCnW/9RCdaABAmebvyY6Tfte42X0AJF/lXJ/AKfg+Z8Gt7pb+4OK/QeS3EQ==
+X-Received: by 2002:a17:907:1c07:b0:86f:2819:2760 with SMTP id nc7-20020a1709071c0700b0086f28192760mr6487743ejc.41.1673864024464;
+        Mon, 16 Jan 2023 02:13:44 -0800 (PST)
+Received: from cloudflare.com (79.184.151.107.ipv4.supernova.orange.pl. [79.184.151.107])
+        by smtp.gmail.com with ESMTPSA id q1-20020a17090676c100b007c0d4d3a0c1sm11707096ejn.32.2023.01.16.02.13.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Jan 2023 02:13:43 -0800 (PST)
+References: <20230113-sockmap-fix-v1-1-d3cad092ee10@cloudflare.com>
+ <202301141018.w4fQc4gd-lkp@intel.com>
+User-agent: mu4e 1.6.10; emacs 28.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Dan Carpenter <error27@gmail.com>
+Cc:     oe-kbuild@lists.linux.dev, netdev@vger.kernel.org, lkp@intel.com,
+        oe-kbuild-all@lists.linux.dev, kernel-team@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        syzbot+04c21ed96d861dccc5cd@syzkaller.appspotmail.com
+Subject: Re: [PATCH bpf 1/3] bpf, sockmap: Check for any of tcp_bpf_prots
+ when cloning a listener
+Date:   Mon, 16 Jan 2023 11:09:02 +0100
+In-reply-to: <202301141018.w4fQc4gd-lkp@intel.com>
+Message-ID: <87sfgayeg9.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PHY initialization is supposed to run on every mode changes.
-"lan87xx_config_aneg()" verifies every mode change using
-"phy_modify_changed()" function. Earlier code had phy_modify_changed()
-followed by genphy_soft_reset. But soft_reset resets all the
-pre-configured register values to default state, and lost all the
-initialization done. With this reason gen_phy_reset was removed.
-But it need to go through init sequence each time the mode changed.
-Update lan97xx_config_aneg() to invoke phy_init once successful mode
-update is detected.
+Hi Dan,
 
-PHY init sequence added in lan87xx_phy_init() have slave init
-commands executed every time. Update the init sequence to run
-slave init only if phydev is in slave mode.
+On Sat, Jan 14, 2023 at 11:04 AM +03, Dan Carpenter wrote:
+> Hi Jakub,
+>
+> url:    https://github.com/intel-lab-lkp/linux/commits/Jakub-Sitnicki/bpf-sockmap-Check-for-any-of-tcp_bpf_prots-when-cloning-a-listener/20230113-230728
+> base:   e7895f017b79410bf4591396a733b876dc1e0e9d
+> patch link:    https://lore.kernel.org/r/20230113-sockmap-fix-v1-1-d3cad092ee10%40cloudflare.com
+> patch subject: [PATCH bpf 1/3] bpf, sockmap: Check for any of tcp_bpf_prots when cloning a listener
+> config: i386-randconfig-m021
+> compiler: gcc-11 (Debian 11.3.0-8) 11.3.0
+>
+> If you fix the issue, kindly add following tag where applicable
+> | Reported-by: kernel test robot <lkp@intel.com>
+> | Reported-by: Dan Carpenter <error27@gmail.com>
+>
+> smatch warnings:
+> net/ipv4/tcp_bpf.c:644 tcp_bpf_clone() error: buffer overflow 'tcp_bpf_prots' 2 <= 2
+>
+> vim +/tcp_bpf_prots +644 net/ipv4/tcp_bpf.c
+>
+> 604326b41a6fb9 Daniel Borkmann 2018-10-13  634  
+> e80251555f0bef Jakub Sitnicki  2020-02-18  635  /* If a child got cloned from a listening socket that had tcp_bpf
+> e80251555f0bef Jakub Sitnicki  2020-02-18  636   * protocol callbacks installed, we need to restore the callbacks to
+> e80251555f0bef Jakub Sitnicki  2020-02-18  637   * the default ones because the child does not inherit the psock state
+> e80251555f0bef Jakub Sitnicki  2020-02-18  638   * that tcp_bpf callbacks expect.
+> e80251555f0bef Jakub Sitnicki  2020-02-18  639   */
+> e80251555f0bef Jakub Sitnicki  2020-02-18  640  void tcp_bpf_clone(const struct sock *sk, struct sock *newsk)
+> e80251555f0bef Jakub Sitnicki  2020-02-18  641  {
+> e80251555f0bef Jakub Sitnicki  2020-02-18  642  	struct proto *prot = newsk->sk_prot;
+> e80251555f0bef Jakub Sitnicki  2020-02-18  643  
+> c2e74657613125 Jakub Sitnicki  2023-01-13 @644  	if (tcp_bpf_prots[0] <= prot && prot < tcp_bpf_prots[ARRAY_SIZE(tcp_bpf_prots)])
+>                                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> What?  Also I suspect this might cause a compile error for Clang builds.
 
-Test setup contains LAN9370 EVB connected to SAMA5D3 (Running DSA),
-and issue can be reproduced by connecting link to any of the available
-ports after SAMA5D3 boot-up. With this issue, port will fail to
-update link state. But once the SAMA5D3 is reset with LAN9370 link in
-connected state itself, on boot-up link state will be reported as UP. But
-Again after some time, if link is moved to DOWN state, it will not get
-reported.
+Can't say I see a problem B-)
 
-Fixes: b2cd2cde7d69 ("net: phy: LAN87xx: remove genphy_softreset in config_aneg")
-Signed-off-by: Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>
----
- drivers/net/phy/microchip_t1.c | 70 +++++++++++++++++++++++++++-------
- 1 file changed, 56 insertions(+), 14 deletions(-)
+tcp_bpf_prots is a 2D array:
 
-diff --git a/drivers/net/phy/microchip_t1.c b/drivers/net/phy/microchip_t1.c
-index 8569a545e0a3..78618c8cb6bf 100644
---- a/drivers/net/phy/microchip_t1.c
-+++ b/drivers/net/phy/microchip_t1.c
-@@ -245,15 +245,42 @@ static int lan87xx_config_rgmii_delay(struct phy_device *phydev)
- 			   PHYACC_ATTR_BANK_MISC, LAN87XX_CTRL_1, rc);
- }
- 
-+static int lan87xx_phy_init_cmd(struct phy_device *phydev,
-+				const struct access_ereg_val *cmd_seq, int cnt)
-+{
-+	int ret, i;
-+
-+	for (i = 0; i < cnt; i++) {
-+		if (cmd_seq[i].mode == PHYACC_ATTR_MODE_POLL &&
-+		    cmd_seq[i].bank == PHYACC_ATTR_BANK_SMI) {
-+			ret = access_smi_poll_timeout(phydev,
-+						      cmd_seq[i].offset,
-+						      cmd_seq[i].val,
-+						      cmd_seq[i].mask);
-+		} else {
-+			ret = access_ereg(phydev, cmd_seq[i].mode,
-+					  cmd_seq[i].bank, cmd_seq[i].offset,
-+					  cmd_seq[i].val);
-+		}
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return ret;
-+}
-+
- static int lan87xx_phy_init(struct phy_device *phydev)
- {
--	static const struct access_ereg_val init[] = {
-+	static const struct access_ereg_val hw_init[] = {
- 		/* TXPD/TXAMP6 Configs */
- 		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_AFE,
- 		  T1_AFE_PORT_CFG1_REG,       0x002D,  0 },
- 		/* HW_Init Hi and Force_ED */
- 		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_SMI,
- 		  T1_POWER_DOWN_CONTROL_REG,  0x0308,  0 },
-+	};
-+
-+	static const struct access_ereg_val slave_init[] = {
- 		/* Equalizer Full Duplex Freeze - T1 Slave */
- 		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
- 		  T1_EQ_FD_STG1_FRZ_CFG,     0x0002,  0 },
-@@ -267,6 +294,9 @@ static int lan87xx_phy_init(struct phy_device *phydev)
- 		  T1_EQ_WT_FD_LCK_FRZ_CFG,    0x0002,  0 },
- 		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
- 		  T1_PST_EQ_LCK_STG1_FRZ_CFG, 0x0002,  0 },
-+	};
-+
-+	static const struct access_ereg_val phy_init[] = {
- 		/* Slave Full Duplex Multi Configs */
- 		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
- 		  T1_SLV_FD_MULT_CFG_REG,     0x0D53,  0 },
-@@ -397,7 +427,7 @@ static int lan87xx_phy_init(struct phy_device *phydev)
- 		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_SMI,
- 		  T1_POWER_DOWN_CONTROL_REG,	0x0300, 0 },
- 	};
--	int rc, i;
-+	int rc;
- 
- 	/* phy Soft reset */
- 	rc = genphy_soft_reset(phydev);
-@@ -405,21 +435,28 @@ static int lan87xx_phy_init(struct phy_device *phydev)
- 		return rc;
- 
- 	/* PHY Initialization */
--	for (i = 0; i < ARRAY_SIZE(init); i++) {
--		if (init[i].mode == PHYACC_ATTR_MODE_POLL &&
--		    init[i].bank == PHYACC_ATTR_BANK_SMI) {
--			rc = access_smi_poll_timeout(phydev,
--						     init[i].offset,
--						     init[i].val,
--						     init[i].mask);
--		} else {
--			rc = access_ereg(phydev, init[i].mode, init[i].bank,
--					 init[i].offset, init[i].val);
--		}
-+	rc = lan87xx_phy_init_cmd(phydev, hw_init, ARRAY_SIZE(hw_init));
-+	if (rc < 0)
-+		return rc;
-+
-+	rc = genphy_read_master_slave(phydev);
-+	if (rc)
-+		return rc;
-+
-+	/* Following squence need to run only if phydev is in
-+	 * slave mode.
-+	 */
-+	if (phydev->master_slave_state == MASTER_SLAVE_STATE_SLAVE) {
-+		rc = lan87xx_phy_init_cmd(phydev, slave_init,
-+					  ARRAY_SIZE(slave_init));
- 		if (rc < 0)
- 			return rc;
- 	}
- 
-+	rc = lan87xx_phy_init_cmd(phydev, phy_init, ARRAY_SIZE(phy_init));
-+	if (rc < 0)
-+		return rc;
-+
- 	return lan87xx_config_rgmii_delay(phydev);
- }
- 
-@@ -775,6 +812,7 @@ static int lan87xx_read_status(struct phy_device *phydev)
- static int lan87xx_config_aneg(struct phy_device *phydev)
- {
- 	u16 ctl = 0;
-+	int ret;
- 
- 	switch (phydev->master_slave_set) {
- 	case MASTER_SLAVE_CFG_MASTER_FORCE:
-@@ -790,7 +828,11 @@ static int lan87xx_config_aneg(struct phy_device *phydev)
- 		return -EOPNOTSUPP;
- 	}
- 
--	return phy_modify_changed(phydev, MII_CTRL1000, CTL1000_AS_MASTER, ctl);
-+	ret = phy_modify_changed(phydev, MII_CTRL1000, CTL1000_AS_MASTER, ctl);
-+	if (ret == 1)
-+		return phy_init_hw(phydev);
-+
-+	return ret;
- }
- 
- static int lan87xx_get_sqi(struct phy_device *phydev)
--- 
-2.34.1
+static struct proto tcp_bpf_prots[TCP_BPF_NUM_PROTS][TCP_BPF_NUM_CFGS];
 
+... so tcp_bpf_prots[0] is the base address of the first array, while
+tcp_bpf_prots[ARRAY_SIZE(tcp_bpf_prots)] is the base address of the
+array one past the last one.
+
+Smatch doesn't seem to graps the 2D array concept here. We can make it
+happy by being explicit but harder on the eyes:
+
+	if (&tcp_bpf_prots[0][0] <= prot && prot < &tcp_bpf_prots[ARRAY_SIZE(tcp_bpf_prots)][0])
+		newsk->sk_prot = sk->sk_prot_creator;
+
+Clang can do pointer arithmetic on 2D arrays just fine :-)
