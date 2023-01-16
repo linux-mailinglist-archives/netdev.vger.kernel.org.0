@@ -2,58 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6444F66BCB4
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 12:19:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47E2666BCBD
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 12:20:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229553AbjAPLTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 06:19:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46946 "EHLO
+        id S229905AbjAPLU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 06:20:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229989AbjAPLSb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 06:18:31 -0500
+        with ESMTP id S229569AbjAPLUW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 06:20:22 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137B71E9EA;
-        Mon, 16 Jan 2023 03:18:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C31265A0;
+        Mon, 16 Jan 2023 03:20:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC9DBB80E58;
-        Mon, 16 Jan 2023 11:18:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D77E2C433EF;
-        Mon, 16 Jan 2023 11:18:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 00BDEB80E5E;
+        Mon, 16 Jan 2023 11:20:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 81B20C433F0;
+        Mon, 16 Jan 2023 11:20:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673867907;
-        bh=8PrYbyCiD04eZZG/0z88bf7npnuEKHo0T6laY8odGoM=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=OMsr+rFvO5dK7DgWTkloeRlOGNefEOoyAHywNsjkIs41BXdOKoCSID0G8lc2IZOTI
-         /tcmgfrqKZ8YybX5//WcG5XOYgLMMa5IT2W36gYlNaBI7OEK1k9vt6XKP033HIQYaF
-         cIBm/eRSw1Ol4r+0rVhI+uyNsVqgvdaO0/MAzs63Pj+Kzrhj3C35uovBFoliJyengS
-         FdZDrFC4dd+fhFNPibTKLL2k1JCUI3loFFWkm2/HfE3Zyjbp+XKIIDBi4B6unha/NQ
-         /y5FntAW/gPXxc4OpV9NkvhP5k9sl6SxcHNFmbqbIDReTMGt0zAMLB/+Lw19zM5Z/k
-         33ibAJVjRy/FA==
+        s=k20201202; t=1673868018;
+        bh=j29fL+h026AwbMOOxpMNQ+dWXbJnlnHEKqJG+DHbV1M=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ADQsalS5lZ3faYNAzgKCHT7Imz5IQB70BxZ2g1t/SO8jf+WG8zc1OqDfWwaLfKdXi
+         hpXOy15/baq/SCeEnM7HDu6OSCTsZ1vNx4tB/4NVuGq39rJBGtIuHIhDRklW2iWM4A
+         tyU2yug7cz3LpUQwkQoXbpPiq3ecN/NnfiMCwJJn44/nwEQcisZHzRJINwNBiktXo0
+         y1f1xDJQhhQGVOoo/EkZQ27aiISSeQWaxF2w7bRpKNrPgfAneoHMnrXa3lXcCjyhFB
+         8iGcrd9kOs4dKLH65Dru7jEt13YvOfj4xIXuxd7YTl3XMO24vSoJsVLXJZRQR3n9IH
+         LcJv22CaFObCQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6883CE54D2A;
+        Mon, 16 Jan 2023 11:20:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2] brcmfmac: Prefer DT board type over DMI board type
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20230106131905.81854-1-iivanov@suse.de>
-References: <20230106131905.81854-1-iivanov@suse.de>
-To:     "Ivan T. Ivanov" <iivanov@suse.de>
-Cc:     aspriel@gmail.com, marcan@marcan.st, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com, rmk+kernel@armlinux.org.uk,
-        stefan.wahren@i2se.com, pbrobinson@gmail.com,
-        jforbes@fedoraproject.org, davem@davemloft.net,
-        devicetree@vger.kernel.org, edumazet@google.com,
-        krzysztof.kozlowski+dt@linaro.org, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com,
-        "Ivan T. Ivanov" <iivanov@suse.de>, stable@vger.kernel.org
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <167386788710.4736.8327846687234426691.kvalo@kernel.org>
-Date:   Mon, 16 Jan 2023 11:18:22 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v5 00/10] virtio-net: support multi buffer xdp
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167386801842.2835.2141479981702177893.git-patchwork-notify@kernel.org>
+Date:   Mon, 16 Jan 2023 11:20:18 +0000
+References: <20230114082229.62143-1-hengqi@linux.alibaba.com>
+In-Reply-To: <20230114082229.62143-1-hengqi@linux.alibaba.com>
+To:     Heng Qi <hengqi@linux.alibaba.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, jasowang@redhat.com,
+        mst@redhat.com, pabeni@redhat.com, kuba@kernel.org,
+        john.fastabend@gmail.com, davem@davemloft.net,
+        daniel@iogearbox.net, ast@kernel.org, edumazet@google.com,
+        xuanzhuo@linux.alibaba.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -63,30 +58,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Ivan T. Ivanov" <iivanov@suse.de> wrote:
+Hello:
 
-> The introduction of support for Apple board types inadvertently changed
-> the precedence order, causing hybrid SMBIOS+DT platforms to look up the
-> firmware using the DMI information instead of the device tree compatible
-> to generate the board type. Revert back to the old behavior,
-> as affected platforms use firmwares named after the DT compatible.
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Sat, 14 Jan 2023 16:22:19 +0800 you wrote:
+> Changes since PATCH v4:
+> - Make netdev_warn() in [PATCH 2/10] independent from [PATCH 3/10].
 > 
-> Fixes: 7682de8b3351 ("wifi: brcmfmac: of: Fetch Apple properties")
+> Changes since PATCH v3:
+> - Separate fix patch [2/10] for MTU calculation of single buffer xdp.
+>   Note that this patch needs to be backported to the stable branch.
 > 
-> [1] https://bugzilla.opensuse.org/show_bug.cgi?id=1206697#c13
-> 
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Ivan T. Ivanov <iivanov@suse.de>
-> Reviewed-by: Hector Martin <marcan@marcan.st>
-> Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-> Tested-by: Peter Robinson <pbrobinson@gmail.com>
+> [...]
 
-Dave applied this directly to net tree:
+Here is the summary with links:
+  - [net-next,v5,01/10] virtio-net: disable the hole mechanism for xdp
+    https://git.kernel.org/netdev/net-next/c/484beac2ffc1
+  - [net-next,v5,02/10] virtio-net: fix calculation of MTU for single-buffer xdp
+    https://git.kernel.org/netdev/net-next/c/e814b958ad88
+  - [net-next,v5,03/10] virtio-net: set up xdp for multi buffer packets
+    https://git.kernel.org/netdev/net-next/c/8d9bc36de5fc
+  - [net-next,v5,04/10] virtio-net: update bytes calculation for xdp_frame
+    https://git.kernel.org/netdev/net-next/c/50bd14bc98fa
+  - [net-next,v5,05/10] virtio-net: build xdp_buff with multi buffers
+    https://git.kernel.org/netdev/net-next/c/ef75cb51f139
+  - [net-next,v5,06/10] virtio-net: construct multi-buffer xdp in mergeable
+    https://git.kernel.org/netdev/net-next/c/22174f79a44b
+  - [net-next,v5,07/10] virtio-net: transmit the multi-buffer xdp
+    https://git.kernel.org/netdev/net-next/c/97717e8dbda1
+  - [net-next,v5,08/10] virtio-net: build skb from multi-buffer xdp
+    https://git.kernel.org/netdev/net-next/c/b26aa481b4b7
+  - [net-next,v5,09/10] virtio-net: remove xdp related info from page_to_skb()
+    https://git.kernel.org/netdev/net-next/c/18117a842ab0
+  - [net-next,v5,10/10] virtio-net: support multi-buffer xdp
+    https://git.kernel.org/netdev/net-next/c/fab89bafa95b
 
-https://git.kernel.org/linus/a5a36720c3f6
-
+You are awesome, thank you!
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20230106131905.81854-1-iivanov@suse.de/
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
