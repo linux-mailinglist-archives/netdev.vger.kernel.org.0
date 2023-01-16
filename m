@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A550766D351
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 00:52:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFAB966D354
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 00:52:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235053AbjAPXwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 18:52:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45294 "EHLO
+        id S235028AbjAPXwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 18:52:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229842AbjAPXwt (ORCPT
+        with ESMTP id S234347AbjAPXwt (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 18:52:49 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF03822A1A;
-        Mon, 16 Jan 2023 15:52:47 -0800 (PST)
+Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B192F22A05;
+        Mon, 16 Jan 2023 15:52:48 -0800 (PST)
 Received: from mwalle01.sab.local (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id D81451645;
-        Tue, 17 Jan 2023 00:52:45 +0100 (CET)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 520EB168F;
+        Tue, 17 Jan 2023 00:52:46 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
         t=1673913166;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=qrw3VdQJ88seeNfsCmHZ0Ug/EiNIUO7V5SWjfSjWOKQ=;
-        b=rvBx26LB/U/ku27CC+lu1uAY7KDI3oh4SWNBjiMZKuPQB+vluqypoYHhh5/2/VukYWWUlc
-        UT7lV2rpdokc5dCe1bAjyAZtkHwq8etN0SQsfmTRnLepJAbIYpc6feOCz4+pNTSiWpzhn8
-        IHadilsFnOnfAEsWsBPVi+83xk/a5TeB1rOgjQfqySx9PDK2/QQ3m6Ao35i2v3GGXy4iYp
-        Wjwk75qQuCMUwq8PSkAVJFdPd0mgfRA5PJlGfZ9KfhJlVZU4lX0g/tWza991VE/YnhVlVa
-        /CyBLp1jcHEkB1AwLQMAdwxpXE3r6i4YX3YA1GEqJXimD20zJljhis3cRes2Zw==
+        bh=//jZFF/GKZSX23gW4WXwNqIqRriY0jkw/xc8m4eElhk=;
+        b=n+unXMBKmVQ6lkMZJUho3EF4QaA/MqsEgo/LrLZTw7btUrypYoJdg1HHeP55rJlFRxboNT
+        0vZiIZ2s1pbZZlpJy1qGoXqOGT67Xco90tEx+VIHUc6GGJN1fAlEbctLk/Xqf4l5Bm7pVE
+        2HY9bKMXwdfXZHQR5AAfVI9bKmwTBIyCXAo0A/lBpN4dcZLCGS1CXnzzNDWdjEPgBkp6W/
+        nhj3kcgGLDZDP1IBnrjHNVr2XP1TStjM5NOZSVmLWlrwbUFbFJeFitySL9i99nYWiYp0Xp
+        8p0TRzCxpz0jELJdAxVgbtLiwrH7HzRUBRXyBwnzYAHJ5uv8164vnFiJep+eNw==
 From:   Michael Walle <michael@walle.cc>
-Date:   Tue, 17 Jan 2023 00:52:18 +0100
-Subject: [PATCH net-next 03/12] net: nixge: Separate C22 and C45 transactions
+Date:   Tue, 17 Jan 2023 00:52:19 +0100
+Subject: [PATCH net-next 04/12] net: macb: Separate C22 and C45 transactions
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230116-net-next-c45-seperation-part-3-v1-3-0c53afa56aad@walle.cc>
+Message-Id: <20230116-net-next-c45-seperation-part-3-v1-4-0c53afa56aad@walle.cc>
 References: <20230116-net-next-c45-seperation-part-3-v1-0-0c53afa56aad@walle.cc>
 In-Reply-To: <20230116-net-next-c45-seperation-part-3-v1-0-0c53afa56aad@walle.cc>
 To:     Sean Wang <sean.wang@mediatek.com>,
@@ -79,213 +79,224 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andrew Lunn <andrew@lunn.ch>
 
-The nixge MDIO bus driver can perform both C22 and C45 transfers.
+The macb MDIO bus driver can perform both C22 and C45 transfers.
 Create separate functions for each and register the C45 versions using
 the new API calls where appropriate.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/net/ethernet/ni/nixge.c | 141 ++++++++++++++++++++++++----------------
- 1 file changed, 85 insertions(+), 56 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 161 +++++++++++++++++++++----------
+ 1 file changed, 108 insertions(+), 53 deletions(-)
 
-diff --git a/drivers/net/ethernet/ni/nixge.c b/drivers/net/ethernet/ni/nixge.c
-index 62320be4de5a..56e02cba0b8a 100644
---- a/drivers/net/ethernet/ni/nixge.c
-+++ b/drivers/net/ethernet/ni/nixge.c
-@@ -1081,40 +1081,59 @@ static const struct ethtool_ops nixge_ethtool_ops = {
- 	.get_link		= ethtool_op_get_link,
- };
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 95667b979fab..f2d08a2dadf9 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -334,7 +334,7 @@ static int macb_mdio_wait_for_idle(struct macb *bp)
+ 				  1, MACB_MDIO_TIMEOUT);
+ }
  
--static int nixge_mdio_read(struct mii_bus *bus, int phy_id, int reg)
-+static int nixge_mdio_read_c22(struct mii_bus *bus, int phy_id, int reg)
+-static int macb_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
++static int macb_mdio_read_c22(struct mii_bus *bus, int mii_id, int regnum)
  {
- 	struct nixge_priv *priv = bus->priv;
- 	u32 status, tmp;
- 	int err;
- 	u16 device;
+ 	struct macb *bp = bus->priv;
+ 	int status;
+@@ -347,31 +347,58 @@ static int macb_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
+ 	if (status < 0)
+ 		goto mdio_read_exit;
  
--	if (reg & MII_ADDR_C45) {
--		device = (reg >> 16) & 0x1f;
-+	device = reg & 0x1f;
- 
--		nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_ADDR, reg & 0xffff);
-+	tmp = NIXGE_MDIO_CLAUSE22 | NIXGE_MDIO_OP(NIXGE_MDIO_C22_READ) |
-+	      NIXGE_MDIO_ADDR(phy_id) | NIXGE_MDIO_MMD(device);
- 
--		tmp = NIXGE_MDIO_CLAUSE45 | NIXGE_MDIO_OP(NIXGE_MDIO_OP_ADDRESS)
--			| NIXGE_MDIO_ADDR(phy_id) | NIXGE_MDIO_MMD(device);
-+	nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_OP, tmp);
-+	nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_CTRL, 1);
- 
--		nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_OP, tmp);
--		nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_CTRL, 1);
-+	err = nixge_ctrl_poll_timeout(priv, NIXGE_REG_MDIO_CTRL, status,
-+				      !status, 10, 1000);
-+	if (err) {
-+		dev_err(priv->dev, "timeout setting read command");
-+		return err;
-+	}
- 
--		err = nixge_ctrl_poll_timeout(priv, NIXGE_REG_MDIO_CTRL, status,
--					      !status, 10, 1000);
--		if (err) {
--			dev_err(priv->dev, "timeout setting address");
--			return err;
--		}
-+	status = nixge_ctrl_read_reg(priv, NIXGE_REG_MDIO_DATA);
- 
--		tmp = NIXGE_MDIO_CLAUSE45 | NIXGE_MDIO_OP(NIXGE_MDIO_C45_READ) |
--			NIXGE_MDIO_ADDR(phy_id) | NIXGE_MDIO_MMD(device);
+-	if (regnum & MII_ADDR_C45) {
+-		macb_writel(bp, MAN, (MACB_BF(SOF, MACB_MAN_C45_SOF)
+-			    | MACB_BF(RW, MACB_MAN_C45_ADDR)
+-			    | MACB_BF(PHYA, mii_id)
+-			    | MACB_BF(REGA, (regnum >> 16) & 0x1F)
+-			    | MACB_BF(DATA, regnum & 0xFFFF)
+-			    | MACB_BF(CODE, MACB_MAN_C45_CODE)));
+-
+-		status = macb_mdio_wait_for_idle(bp);
+-		if (status < 0)
+-			goto mdio_read_exit;
+-
+-		macb_writel(bp, MAN, (MACB_BF(SOF, MACB_MAN_C45_SOF)
+-			    | MACB_BF(RW, MACB_MAN_C45_READ)
+-			    | MACB_BF(PHYA, mii_id)
+-			    | MACB_BF(REGA, (regnum >> 16) & 0x1F)
+-			    | MACB_BF(CODE, MACB_MAN_C45_CODE)));
 -	} else {
--		device = reg & 0x1f;
+-		macb_writel(bp, MAN, (MACB_BF(SOF, MACB_MAN_C22_SOF)
+-				| MACB_BF(RW, MACB_MAN_C22_READ)
+-				| MACB_BF(PHYA, mii_id)
+-				| MACB_BF(REGA, regnum)
+-				| MACB_BF(CODE, MACB_MAN_C22_CODE)));
++	macb_writel(bp, MAN, (MACB_BF(SOF, MACB_MAN_C22_SOF)
++			      | MACB_BF(RW, MACB_MAN_C22_READ)
++			      | MACB_BF(PHYA, mii_id)
++			      | MACB_BF(REGA, regnum)
++			      | MACB_BF(CODE, MACB_MAN_C22_CODE)));
++
++	status = macb_mdio_wait_for_idle(bp);
++	if (status < 0)
++		goto mdio_read_exit;
++
++	status = MACB_BFEXT(DATA, macb_readl(bp, MAN));
++
++mdio_read_exit:
++	pm_runtime_mark_last_busy(&bp->pdev->dev);
++	pm_runtime_put_autosuspend(&bp->pdev->dev);
++mdio_pm_exit:
 +	return status;
 +}
- 
--		tmp = NIXGE_MDIO_CLAUSE22 | NIXGE_MDIO_OP(NIXGE_MDIO_C22_READ) |
--			NIXGE_MDIO_ADDR(phy_id) | NIXGE_MDIO_MMD(device);
-+static int nixge_mdio_read_c45(struct mii_bus *bus, int phy_id, int device,
-+			       int reg)
++
++static int macb_mdio_read_c45(struct mii_bus *bus, int mii_id, int devad,
++			      int regnum)
 +{
-+	struct nixge_priv *priv = bus->priv;
-+	u32 status, tmp;
-+	int err;
++	struct macb *bp = bus->priv;
++	int status;
 +
-+	nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_ADDR, reg & 0xffff);
-+
-+	tmp = NIXGE_MDIO_CLAUSE45 |
-+	      NIXGE_MDIO_OP(NIXGE_MDIO_OP_ADDRESS) |
-+	      NIXGE_MDIO_ADDR(phy_id) | NIXGE_MDIO_MMD(device);
-+
-+	nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_OP, tmp);
-+	nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_CTRL, 1);
-+
-+	err = nixge_ctrl_poll_timeout(priv, NIXGE_REG_MDIO_CTRL, status,
-+				      !status, 10, 1000);
-+	if (err) {
-+		dev_err(priv->dev, "timeout setting address");
-+		return err;
++	status = pm_runtime_get_sync(&bp->pdev->dev);
++	if (status < 0) {
++		pm_runtime_put_noidle(&bp->pdev->dev);
++		goto mdio_pm_exit;
  	}
  
-+	tmp = NIXGE_MDIO_CLAUSE45 | NIXGE_MDIO_OP(NIXGE_MDIO_C45_READ) |
-+	      NIXGE_MDIO_ADDR(phy_id) | NIXGE_MDIO_MMD(device);
++	status = macb_mdio_wait_for_idle(bp);
++	if (status < 0)
++		goto mdio_read_exit;
 +
- 	nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_OP, tmp);
- 	nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_CTRL, 1);
- 
-@@ -1130,57 +1149,65 @@ static int nixge_mdio_read(struct mii_bus *bus, int phy_id, int reg)
++	macb_writel(bp, MAN, (MACB_BF(SOF, MACB_MAN_C45_SOF)
++			      | MACB_BF(RW, MACB_MAN_C45_ADDR)
++			      | MACB_BF(PHYA, mii_id)
++			      | MACB_BF(REGA, devad & 0x1F)
++			      | MACB_BF(DATA, regnum & 0xFFFF)
++			      | MACB_BF(CODE, MACB_MAN_C45_CODE)));
++
++	status = macb_mdio_wait_for_idle(bp);
++	if (status < 0)
++		goto mdio_read_exit;
++
++	macb_writel(bp, MAN, (MACB_BF(SOF, MACB_MAN_C45_SOF)
++			      | MACB_BF(RW, MACB_MAN_C45_READ)
++			      | MACB_BF(PHYA, mii_id)
++			      | MACB_BF(REGA, devad & 0x1F)
++			      | MACB_BF(CODE, MACB_MAN_C45_CODE)));
++
+ 	status = macb_mdio_wait_for_idle(bp);
+ 	if (status < 0)
+ 		goto mdio_read_exit;
+@@ -385,8 +412,8 @@ static int macb_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
  	return status;
  }
  
--static int nixge_mdio_write(struct mii_bus *bus, int phy_id, int reg, u16 val)
-+static int nixge_mdio_write_c22(struct mii_bus *bus, int phy_id, int reg,
-+				u16 val)
+-static int macb_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
+-			   u16 value)
++static int macb_mdio_write_c22(struct mii_bus *bus, int mii_id, int regnum,
++			       u16 value)
  {
- 	struct nixge_priv *priv = bus->priv;
- 	u32 status, tmp;
- 	u16 device;
- 	int err;
+ 	struct macb *bp = bus->priv;
+ 	int status;
+@@ -399,37 +426,63 @@ static int macb_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
+ 	if (status < 0)
+ 		goto mdio_write_exit;
  
--	if (reg & MII_ADDR_C45) {
--		device = (reg >> 16) & 0x1f;
-+	device = reg & 0x1f;
- 
--		nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_ADDR, reg & 0xffff);
-+	tmp = NIXGE_MDIO_CLAUSE22 | NIXGE_MDIO_OP(NIXGE_MDIO_C22_WRITE) |
-+	      NIXGE_MDIO_ADDR(phy_id) | NIXGE_MDIO_MMD(device);
- 
--		tmp = NIXGE_MDIO_CLAUSE45 | NIXGE_MDIO_OP(NIXGE_MDIO_OP_ADDRESS)
--			| NIXGE_MDIO_ADDR(phy_id) | NIXGE_MDIO_MMD(device);
-+	nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_DATA, val);
-+	nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_OP, tmp);
-+	nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_CTRL, 1);
- 
--		nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_OP, tmp);
--		nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_CTRL, 1);
-+	err = nixge_ctrl_poll_timeout(priv, NIXGE_REG_MDIO_CTRL, status,
-+				      !status, 10, 1000);
-+	if (err)
-+		dev_err(priv->dev, "timeout setting write command");
- 
--		err = nixge_ctrl_poll_timeout(priv, NIXGE_REG_MDIO_CTRL, status,
--					      !status, 10, 1000);
--		if (err) {
--			dev_err(priv->dev, "timeout setting address");
--			return err;
--		}
-+	return err;
-+}
- 
--		tmp = NIXGE_MDIO_CLAUSE45 | NIXGE_MDIO_OP(NIXGE_MDIO_C45_WRITE)
--			| NIXGE_MDIO_ADDR(phy_id) | NIXGE_MDIO_MMD(device);
-+static int nixge_mdio_write_c45(struct mii_bus *bus, int phy_id,
-+				int device, int reg, u16 val)
-+{
-+	struct nixge_priv *priv = bus->priv;
-+	u32 status, tmp;
-+	int err;
- 
--		nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_DATA, val);
--		nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_OP, tmp);
--		err = nixge_ctrl_poll_timeout(priv, NIXGE_REG_MDIO_CTRL, status,
--					      !status, 10, 1000);
--		if (err)
--			dev_err(priv->dev, "timeout setting write command");
+-	if (regnum & MII_ADDR_C45) {
+-		macb_writel(bp, MAN, (MACB_BF(SOF, MACB_MAN_C45_SOF)
+-			    | MACB_BF(RW, MACB_MAN_C45_ADDR)
+-			    | MACB_BF(PHYA, mii_id)
+-			    | MACB_BF(REGA, (regnum >> 16) & 0x1F)
+-			    | MACB_BF(DATA, regnum & 0xFFFF)
+-			    | MACB_BF(CODE, MACB_MAN_C45_CODE)));
+-
+-		status = macb_mdio_wait_for_idle(bp);
+-		if (status < 0)
+-			goto mdio_write_exit;
+-
+-		macb_writel(bp, MAN, (MACB_BF(SOF, MACB_MAN_C45_SOF)
+-			    | MACB_BF(RW, MACB_MAN_C45_WRITE)
+-			    | MACB_BF(PHYA, mii_id)
+-			    | MACB_BF(REGA, (regnum >> 16) & 0x1F)
+-			    | MACB_BF(CODE, MACB_MAN_C45_CODE)
+-			    | MACB_BF(DATA, value)));
 -	} else {
--		device = reg & 0x1f;
-+	nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_ADDR, reg & 0xffff);
- 
--		tmp = NIXGE_MDIO_CLAUSE22 |
--			NIXGE_MDIO_OP(NIXGE_MDIO_C22_WRITE) |
--			NIXGE_MDIO_ADDR(phy_id) | NIXGE_MDIO_MMD(device);
-+	tmp = NIXGE_MDIO_CLAUSE45 |
-+	      NIXGE_MDIO_OP(NIXGE_MDIO_OP_ADDRESS) |
-+	      NIXGE_MDIO_ADDR(phy_id) | NIXGE_MDIO_MMD(device);
- 
--		nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_DATA, val);
--		nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_OP, tmp);
--		nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_CTRL, 1);
-+	nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_OP, tmp);
-+	nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_CTRL, 1);
- 
--		err = nixge_ctrl_poll_timeout(priv, NIXGE_REG_MDIO_CTRL, status,
--					      !status, 10, 1000);
--		if (err)
--			dev_err(priv->dev, "timeout setting write command");
-+	err = nixge_ctrl_poll_timeout(priv, NIXGE_REG_MDIO_CTRL, status,
-+				      !status, 10, 1000);
-+	if (err) {
-+		dev_err(priv->dev, "timeout setting address");
-+		return err;
+-		macb_writel(bp, MAN, (MACB_BF(SOF, MACB_MAN_C22_SOF)
+-				| MACB_BF(RW, MACB_MAN_C22_WRITE)
+-				| MACB_BF(PHYA, mii_id)
+-				| MACB_BF(REGA, regnum)
+-				| MACB_BF(CODE, MACB_MAN_C22_CODE)
+-				| MACB_BF(DATA, value)));
++	macb_writel(bp, MAN, (MACB_BF(SOF, MACB_MAN_C22_SOF)
++			      | MACB_BF(RW, MACB_MAN_C22_WRITE)
++			      | MACB_BF(PHYA, mii_id)
++			      | MACB_BF(REGA, regnum)
++			      | MACB_BF(CODE, MACB_MAN_C22_CODE)
++			      | MACB_BF(DATA, value)));
++
++	status = macb_mdio_wait_for_idle(bp);
++	if (status < 0)
++		goto mdio_write_exit;
++
++mdio_write_exit:
++	pm_runtime_mark_last_busy(&bp->pdev->dev);
++	pm_runtime_put_autosuspend(&bp->pdev->dev);
++mdio_pm_exit:
++	return status;
++}
++
++static int macb_mdio_write_c45(struct mii_bus *bus, int mii_id,
++			       int devad, int regnum,
++			       u16 value)
++{
++	struct macb *bp = bus->priv;
++	int status;
++
++	status = pm_runtime_get_sync(&bp->pdev->dev);
++	if (status < 0) {
++		pm_runtime_put_noidle(&bp->pdev->dev);
++		goto mdio_pm_exit;
  	}
  
-+	tmp = NIXGE_MDIO_CLAUSE45 | NIXGE_MDIO_OP(NIXGE_MDIO_C45_WRITE) |
-+	      NIXGE_MDIO_ADDR(phy_id) | NIXGE_MDIO_MMD(device);
-+
-+	nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_DATA, val);
-+	nixge_ctrl_write_reg(priv, NIXGE_REG_MDIO_OP, tmp);
-+
-+	err = nixge_ctrl_poll_timeout(priv, NIXGE_REG_MDIO_CTRL, status,
-+				      !status, 10, 1000);
-+	if (err)
-+		dev_err(priv->dev, "timeout setting write command");
-+
- 	return err;
- }
+ 	status = macb_mdio_wait_for_idle(bp);
+ 	if (status < 0)
+ 		goto mdio_write_exit;
  
-@@ -1195,8 +1222,10 @@ static int nixge_mdio_setup(struct nixge_priv *priv, struct device_node *np)
- 	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-mii", dev_name(priv->dev));
- 	bus->priv = priv;
- 	bus->name = "nixge_mii_bus";
--	bus->read = nixge_mdio_read;
--	bus->write = nixge_mdio_write;
-+	bus->read = nixge_mdio_read_c22;
-+	bus->write = nixge_mdio_write_c22;
-+	bus->read_c45 = nixge_mdio_read_c45;
-+	bus->write_c45 = nixge_mdio_write_c45;
- 	bus->parent = priv->dev;
++	macb_writel(bp, MAN, (MACB_BF(SOF, MACB_MAN_C45_SOF)
++			      | MACB_BF(RW, MACB_MAN_C45_ADDR)
++			      | MACB_BF(PHYA, mii_id)
++			      | MACB_BF(REGA, devad & 0x1F)
++			      | MACB_BF(DATA, regnum & 0xFFFF)
++			      | MACB_BF(CODE, MACB_MAN_C45_CODE)));
++
++	status = macb_mdio_wait_for_idle(bp);
++	if (status < 0)
++		goto mdio_write_exit;
++
++	macb_writel(bp, MAN, (MACB_BF(SOF, MACB_MAN_C45_SOF)
++			      | MACB_BF(RW, MACB_MAN_C45_WRITE)
++			      | MACB_BF(PHYA, mii_id)
++			      | MACB_BF(REGA, devad & 0x1F)
++			      | MACB_BF(CODE, MACB_MAN_C45_CODE)
++			      | MACB_BF(DATA, value)));
++
++	status = macb_mdio_wait_for_idle(bp);
++	if (status < 0)
++		goto mdio_write_exit;
++
+ mdio_write_exit:
+ 	pm_runtime_mark_last_busy(&bp->pdev->dev);
+ 	pm_runtime_put_autosuspend(&bp->pdev->dev);
+@@ -902,8 +955,10 @@ static int macb_mii_init(struct macb *bp)
+ 	}
  
- 	priv->mii_bus = bus;
+ 	bp->mii_bus->name = "MACB_mii_bus";
+-	bp->mii_bus->read = &macb_mdio_read;
+-	bp->mii_bus->write = &macb_mdio_write;
++	bp->mii_bus->read = &macb_mdio_read_c22;
++	bp->mii_bus->write = &macb_mdio_write_c22;
++	bp->mii_bus->read_c45 = &macb_mdio_read_c45;
++	bp->mii_bus->write_c45 = &macb_mdio_write_c45;
+ 	snprintf(bp->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
+ 		 bp->pdev->name, bp->pdev->id);
+ 	bp->mii_bus->priv = bp;
 
 -- 
 2.30.2
