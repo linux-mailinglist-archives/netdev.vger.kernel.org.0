@@ -2,100 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18D8666C309
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 15:59:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B528866C340
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 16:08:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232829AbjAPO7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 09:59:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49732 "EHLO
+        id S232912AbjAPPH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 10:07:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232942AbjAPO6n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 09:58:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E24012F36;
-        Mon, 16 Jan 2023 06:49:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EEB9160FD7;
-        Mon, 16 Jan 2023 14:49:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACBFCC433D2;
-        Mon, 16 Jan 2023 14:49:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673880551;
-        bh=SYGWAHn0hIePrfmTmgN0T/xH1F9Dw0NE2z1mOy81IJQ=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=utiXRpd/+bO4PGgblAGfbKSGuqIcwnK/RRHdbbkHCIgRrgDHaMN+yUuLz/O7oWQRI
-         eU7HGDOTxjz15DvYmtvk1u9zum+1lVKuCpK8RBFPKvDYewu/K65l1iilGDGOBJc7Dz
-         DBy6hQJyALlSIxqRyf+dNeBipg6pMcfFVhwrH34n0j3wV4SZDo7GMloZj5At7Zz2TN
-         ueJUG4VDL+dYzdpeY0xU9zULJDTTc6MeuPTsOoTxAzTNabcTRKQdP0iF+kXn7pfOQ4
-         E7jJMHcbp9kxrcn+pNxK1mY7dZn42ejRePd75AOmXfp79Oqr9zrdle38F/+/YJ3ivU
-         I0Zxp/krSZCdg==
-From:   Mark Brown <broonie@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S232796AbjAPPHd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 10:07:33 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1F023652;
+        Mon, 16 Jan 2023 06:55:16 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id hw16so56824862ejc.10;
+        Mon, 16 Jan 2023 06:55:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=xhSjTBHJmXYr2emRMWv3c425aCY5/G3WkEL4j7Ip0kQ=;
+        b=cV/I5vBODDPK7L593lHoMfZf/+UbRNsgzNF5uZOlvyKmXVhajdjyOWq6V84XbvI2Hn
+         IY3A0t3epQZFcXTOqpXzuHJJFLFVICKkEhQT83qaLvBcgmGX/MRjY++zz5YvmNohVLSs
+         QFSUvKEohycu4uRlzKMWxoyH6N1AkxPh/hR1P6cfqtL3WaCH7jNHyeV2m6HzDHnPMHJp
+         QVkMhU4c4i7JhTV8IT11y6tek7GLDSsvJfsGzpA0bXxQmBlAwJPFiHnehDqM1eeaHKdN
+         KX4+lSMcy0uCa3cGPiVgRJZLwolXHfVY0zQM4o5cgi+Dvt/JdaziT+/uQpPP5dhBvctp
+         2TVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=xhSjTBHJmXYr2emRMWv3c425aCY5/G3WkEL4j7Ip0kQ=;
+        b=EBmU0/8eZVKaCssUqaWsVbr9GzO64wAHVXep5qH0Kzgh3xwjSD7Pxoj4WgTRRLFqK4
+         TnQKFC1Dng9kOSQdkbT2qxfcD2Unq6yLWvaCK1auAdVuv5JOwO6BmXqNUEEvLoht7xLN
+         BurttFYginXMAB8jQLNsXcOxd+kMLZZUN9QZR95vnYzlw6HCzI98BbTZBHEwsecDlrCi
+         +fucWV/zufiQRZnO6TxiRtalooytmeiNCvCQuPXVp2+mFhJHXfmQmIAegy2W4Yuf1Xzs
+         kTsrQfL0Z7j1Mga9oW5MAzvmlSQEnC5mWPhZIqbKuANJ4wYoM4yHZVe1OpItHIjjofP9
+         Y6oQ==
+X-Gm-Message-State: AFqh2krvpFBs4f7Oky68OUSkqvmwWSjYdXzwXIbegHnU6iJTeEpoeCeA
+        KDgLTAgYoYLQUhEf76YHftc=
+X-Google-Smtp-Source: AMrXdXuZLt2ra5d96V1ap4oZOPYmynDnhh0oRM2DexK1QMtc0nYqpKlsGTQkzhysV/ttrIrUy4DRrg==
+X-Received: by 2002:a17:906:704a:b0:83f:cbc0:1b30 with SMTP id r10-20020a170906704a00b0083fcbc01b30mr74170693ejj.10.1673880914876;
+        Mon, 16 Jan 2023 06:55:14 -0800 (PST)
+Received: from Tanmay.. (ip5f5ad41d.dynamic.kabel-deutschland.de. [95.90.212.29])
+        by smtp.gmail.com with ESMTPSA id q14-20020a1709066b0e00b0074134543f82sm12145666ejr.90.2023.01.16.06.55.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Jan 2023 06:55:14 -0800 (PST)
+From:   Tanmay Bhushan <007047221b@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michael Walle <michael@walle.cc>
-Cc:     Sander Vanheule <sander@svanheule.net>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>
-In-Reply-To: <20230116111509.4086236-1-michael@walle.cc>
-References: <20230116111509.4086236-1-michael@walle.cc>
-Subject: Re: [PATCH net-next] regmap: Rework regmap_mdio_c45_{read|write} for
- new C45 API.
-Message-Id: <167388054729.388650.12953940088120724088.b4-ty@kernel.org>
-Date:   Mon, 16 Jan 2023 14:49:07 +0000
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Tanmay Bhushan <007047221b@gmail.com>
+Subject: [PATCH] ipv6: Remove extra counter pull before gc
+Date:   Mon, 16 Jan 2023 15:55:00 +0100
+Message-Id: <20230116145500.44699-1-007047221b@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Mailer: b4 0.12-dev-69c4d
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        FROM_STARTS_WITH_NUMS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Jan 2023 12:15:09 +0100, Michael Walle wrote:
-> The MDIO subsystem is getting rid of MII_ADDR_C45 and thus also
-> encoding associated encoding of the C45 device address and register
-> address into one value. regmap-mdio also uses this encoding for the
-> C45 bus.
-> 
-> Move to the new C45 helpers for MDIO access and provide regmap-mdio
-> helper macros.
-> 
-> [...]
+Per cpu entries are no longer used in consideration
+for doing gc or not. Remove the extra per cpu entries
+pull to directly check for time and perform gc.
 
-Applied to
+Signed-off-by: Tanmay Bhushan <007047221b@gmail.com>
+---
+ net/ipv6/route.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-   broonie/regmap.git for-next
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index b643dda68d31..76889ceeead9 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -3294,10 +3294,6 @@ static void ip6_dst_gc(struct dst_ops *ops)
+ 	unsigned int val;
+ 	int entries;
+ 
+-	entries = dst_entries_get_fast(ops);
+-	if (entries > ops->gc_thresh)
+-		entries = dst_entries_get_slow(ops);
+-
+ 	if (time_after(rt_last_gc + rt_min_interval, jiffies))
+ 		goto out;
+ 
+-- 
+2.34.1
 
-Thanks!
-
-[1/1] regmap: Rework regmap_mdio_c45_{read|write} for new C45 API.
-      commit: 7b3c4c370c09313e22b555e79167e73d233611d1
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
