@@ -2,76 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AF4966CE8A
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 19:14:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE62666CE89
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 19:14:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230458AbjAPSOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 13:14:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57454 "EHLO
+        id S233858AbjAPSOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 13:14:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229834AbjAPSOH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 13:14:07 -0500
-Received: from dilbert.mork.no (dilbert.mork.no [IPv6:2a01:4f9:c010:a439::d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC26223DA5;
-        Mon, 16 Jan 2023 10:00:10 -0800 (PST)
-Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9a:3200:0:0:0:1])
-        (authenticated bits=0)
-        by dilbert.mork.no (8.15.2/8.15.2) with ESMTPSA id 30GHxPUE2106206
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Mon, 16 Jan 2023 17:59:26 GMT
-Received: from miraculix.mork.no ([IPv6:2a01:799:c9a:3202:549f:9f7a:c9d8:875b])
-        (authenticated bits=0)
-        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 30GHxJrP2083208
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Mon, 16 Jan 2023 18:59:19 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1673891960; bh=HDuvAz64SqsKbU9gYiKU5aaWYNXaEHcp2xofRwaGKA4=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=g3nhyG6Z9qnhfhTznf2bRAH/7kBCvKFOv8lPvw/AT4jnKqIzDU1AW1XPLuiTjt4jv
-         vkbDjFSpCUeFSafYiM5CNsN9ZXw1gTAbFrz3EVZeFt7md8AGyfKVrBc+bykMPGdnI3
-         RvLyCKn/9C59pTMdMSJv4SwPWLfA1pN8xQk/kigI=
-Received: (nullmailer pid 386524 invoked by uid 1000);
-        Mon, 16 Jan 2023 17:59:19 -0000
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Frank Wunderlich <linux@fw-web.de>,
-        linux-mediatek@lists.infradead.org,
-        Alexander Couzens <lynxis@fe80.eu>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: mtk_sgmii: implement mtk_pcs_ops
-Organization: m
-References: <Y1ansgmD69AcITWx@shell.armlinux.org.uk>
-        <trinity-defa4f3d-804e-401e-bea1-b36246cbc11b-1666685003285@3c-app-gmx-bap29>
-        <87o7qy39v5.fsf@miraculix.mork.no>
-        <Y8VVa0zHk0nCwS1w@shell.armlinux.org.uk>
-        <87h6wq35dn.fsf@miraculix.mork.no>
-        <Y8VmSrjHTlllaDy2@shell.armlinux.org.uk>
-        <87bkmy33ph.fsf@miraculix.mork.no>
-        <Y8Vt9vfEa4w8HXHQ@shell.armlinux.org.uk>
-        <875yd630cu.fsf@miraculix.mork.no> <871qnu2ztz.fsf@miraculix.mork.no>
-        <Y8WNxAQ6C6NyUUn1@shell.armlinux.org.uk>
-Date:   Mon, 16 Jan 2023 18:59:19 +0100
-In-Reply-To: <Y8WNxAQ6C6NyUUn1@shell.armlinux.org.uk> (Russell King's message
-        of "Mon, 16 Jan 2023 17:47:48 +0000")
-Message-ID: <87pmbe1hu0.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        with ESMTP id S235176AbjAPSNu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 13:13:50 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DADB22A984
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 10:00:00 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id j16-20020a05600c1c1000b003d9ef8c274bso18418269wms.0
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 10:00:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=RenzUn74Q9jLsvzuylQRKXoJxyRhnObBO6txqo8PJQw=;
+        b=nTHmktnWjCB53s98IML0269XXc7OlCoHYxqlDRaED8SHsneKzvyb1nJXLEfcFmJ4Gu
+         eTOUmV8Yl4YdmJwrR6gApDhAuE4scrxS6LXVo6UmhNxLw0mVjzGa2ulRHwmev0coMyJu
+         6mtoduX0Q8RcofD/ufYJmOxc4rPH8mi7aZcYMfDGJWWDOvqoopd+TxMhAosxNNt7gIyP
+         jIkykpkic01VIxDXxPxJV49P3MCUmZNVEYGkk5lkzB3bA2OTaFs1uBGpJqGnMT0wXkyU
+         y46uTpYoeOfcMCXUdGYJx9kk0pAysJvA/Vj5semrVThum3o5pzX2asPowScYBTfC2GZ3
+         yXCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=RenzUn74Q9jLsvzuylQRKXoJxyRhnObBO6txqo8PJQw=;
+        b=ikianJDv4a+rXOKghZhNzV2g7MMDX4kpb7wz6HNg/SYb65kd11Ji83/kJptU7GR0e8
+         xED+HOZytQCWIOngwFXSWjeF1RZph5sLIoFmuLlXDk19rv4WpMtYwQcD14kkV8MDxsk7
+         vzOofxremRct7pHRQp7cLls8uzhBD/gc6c9oe/JijkW6O6BgrfItAP6QjYlpYasm45SG
+         fa9hOteCePTCrILIKvywFaeh0XvNPk9ne87ZkBYtUHu3vGmFBJ4fXcioYbNc5FFBfhsy
+         7TS745VoaIByOtSMkJAuEdkOEYx6xlxM5aMJbGTjBCO4t8WR4DzE7RLdPwx4ePP2gQTf
+         lgBg==
+X-Gm-Message-State: AFqh2kogEcLzgo0k1MAswgHsSSavL/lJ49lBRcVBssoUhZ5KuQ22nMBg
+        6ZloyetrG+AihZ32PMI7VrMTYa3MfqA=
+X-Google-Smtp-Source: AMrXdXsfZWWnnm2l1eBt+2T80hjWxdmiyd50u4OUTAvUlk8TX1/lPnTum4YrdO4t3WysOourbXWXkA==
+X-Received: by 2002:a05:600c:1e19:b0:3da:2ba4:b97 with SMTP id ay25-20020a05600c1e1900b003da2ba40b97mr7788002wmb.19.1673891999346;
+        Mon, 16 Jan 2023 09:59:59 -0800 (PST)
+Received: from ?IPV6:2a01:c23:c4bc:ff00:1041:a2b8:3c58:ba6d? (dynamic-2a01-0c23-c4bc-ff00-1041-a2b8-3c58-ba6d.c23.pool.telefonica.de. [2a01:c23:c4bc:ff00:1041:a2b8:3c58:ba6d])
+        by smtp.googlemail.com with ESMTPSA id l36-20020a05600c1d2400b003d9fb59c16fsm23681776wms.11.2023.01.16.09.59.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 Jan 2023 09:59:58 -0800 (PST)
+Message-ID: <67a2e465-7a7b-6928-eefd-773c65a9b08d@gmail.com>
+Date:   Mon, 16 Jan 2023 18:59:54 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.7 at canardo
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH net] r8169: fix rtl8168h wol fail
+Content-Language: en-US
+To:     Hau <hau@realtek.com>, Andrew Lunn <andrew@lunn.ch>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>
+References: <714782c5-b955-4511-23c0-9688224bba84@gmail.com>
+ <Y7dAbxSPeaMnW/ly@lunn.ch> <9ee2f626bab3481697b71c58091e7def@realtek.com>
+ <4014d243-8f8a-f273-fba8-2ae5a3844ea5@gmail.com>
+ <6ff876a66e154bb4b357b31465c86741@realtek.com>
+ <d28834dc-0426-5813-a24d-181839f23c38@gmail.com>
+ <add32dc486bb4fc9abc283b2bb39efc3@realtek.com>
+ <e201750b-f3be-b62d-4dc6-2a00f4834256@gmail.com> <Y78ssmMck/eZTpYz@lunn.ch>
+ <d34e9d2f3a0d4ae8988d39b865de987b@realtek.com> <Y8GIgXKCtaYzpFdW@lunn.ch>
+ <939fae88-ab42-132a-81d8-bbedfc20344e@gmail.com>
+ <5084ca55d66f4e449253e54081e86986@realtek.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+In-Reply-To: <5084ca55d66f4e449253e54081e86986@realtek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,81 +83,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Russell King (Oracle)" <linux@armlinux.org.uk> writes:
+On 16.01.2023 18:04, Hau wrote:
+>> On 13.01.2023 17:36, Andrew Lunn wrote:
+>>> On Fri, Jan 13, 2023 at 04:23:45PM +0000, Hau wrote:
+>>>>>>>>> In this application(rtl8168h + rtl8211fs) it also supports
+>>>>>>>>> 100Mbps fiber
+>>>>>>>> module.
+>>>>>>>>
+>>>>>>>> Does RTL8211FS advertise 100Mbps and 1Gbps on the UTP/MDI side
+>> in
+>>>>>>>> case of a 100Mbps fiber module?
+>>>>>>> Yes.
+>>>>>>>
+>>>>>> I think in this case internal PHY and RTL8211FS would negotiate
+>>>>>> 1Gbps, not matching the speed of the 100Mbps fiber module.
+>>>>>> How does this work?
+>>>>
+>>>> My mistake. With 100Mbps fiber module RTL8211FS will only advertise
+>>>> 100Mbps on the UTP/MDI side. With 1Gbps fiber module it will
+>>>> advertise both 100Mbps and 1Gbps. So issue will only happen with 1Gbps
+>> fiber module.
+>>>>
+>>>>> Fibre line side has no autoneg. Both ends need to be using the same
+>>>>> speed, or the SERDES does not synchronise and does not establish link.
+>>>>>
+>>>>> You can ask the SFP module what baud rate it supports, and then use
+>>>>> anything up to that baud rate. I've got systems where the SFP is
+>>>>> fast enough to support a 2.5Gbps link, so the MAC indicates both
+>>>>> 2.5G and 1G, defaults to 2.5G, and fails to connect to a 1G link
+>>>>> peer. You need to use ethtool to force it to the lower speed before the
+>> link works.
+>>>>>
+>>>>> But from what i understand, you cannot use a 1000Base-X SFP, set the
+>>>>> MAC to 100Mbps, and expect it to connect to a 100Base-FX SFP. So for
+>>>>> me, the RTL8211FS should not be advertise 100Mbps and 1Gbps, it
+>>>>> needs to talk to the SFP figure out exactly what it is, and only
+>>>>> advertise the one mode which is supported.
+>>>>
+>>>> It is the RTL8211FS firmware bug. This patch is for workaround this issue.
+>>>
+>>> So if it is advertising both 100Mbps and 1Gbps, we know the SFP is
+>>> actually 1G, and we can remove the 100Mbps advertisement? That should
+>>> then solve all the problems?
+>>>
+>> Right, that's what I proposed too, removing 1Gbps advertisement of the
+>> RTL8168H-internal PHY via userspace tool, e.g. ethtool. For me this is the
+>> cleanest solution. Adding a workaround for a firmware bug of a specific
+>> external PHY to the r8169 MAC driver would be somewhat hacky.
+>>
+> Thanks for your suggestions. But because it needs user to execute userspace tool.
+> This workaround may not be accepted by our customer
+> 
 
-> On Mon, Jan 16, 2023 at 05:45:12PM +0100, Bj=C3=B8rn Mork wrote:
->> Bj=C3=B8rn Mork <bjorn@mork.no> writes:
->>=20
->> >> You have bmcr=3D0x1000, but the code sets two bits - SGMII_AN_RESTART=
- and
->> >> SGMII_AN_ENABLE which are bits 9 and 12, so bmcr should be 0x1200, not
->> >> 0x1000. Any ideas why?
->> >
->> > No, not really
->>=20
->> Doh! Looked over it again, and this was my fault of course.  Had an
->>=20
->>   "bmcr =3D SGMII_AN_ENABLE;"
->>=20=20=20
->> line overwriting the original value from a previous attempt without
->> changing the if condition.. Thanks for spotting that.
->>=20
->> But this still doesn't work any better:
->>=20
->> [   43.019395] mtk_soc_eth 15100000.ethernet wan: Link is Down
->> [   45.099898] mtk_sgmii_select_pcs: id=3D1
->> [   45.103653] mtk_pcs_config: interface=3D4
->> [   45.107473] offset:0 0x140
->> [   45.107476] offset:4 0x4d544950
->> [   45.110181] offset:8 0x20
->> [   45.113305] forcing AN
->> [   45.118256] mtk_pcs_config: rgc3=3D0x0, advertise=3D0x1 (changed), li=
-nk_timer=3D1600000,  sgm_mode=3D0x103, bmcr=3D0x1200, use_an=3D1
->> [   45.129191] mtk_pcs_link_up: interface=3D4
->> [   45.133100] offset:0 0x81140
->> [   45.133102] offset:4 0x4d544950
->> [   45.135967] offset:8 0x1
->> [   45.139104] mtk_soc_eth 15100000.ethernet wan: Link is Up - 1Gbps/Ful=
-l - flow control rx/tx
->
-> In your _dump_pcs_ctrl() function, please can you dump the
-> SGMSYS_SGMII_MODE register as well (offset 0x20), in case this gives
-> more clue as to what's going on.
+In this case you can provide your customer with a downstream kernel including
+your patch.
 
-
-[   49.339410] mtk_soc_eth 15100000.ethernet wan: Link is Down
-[   52.459913] mtk_sgmii_select_pcs: id=3D1
-[   52.463673] mtk_pcs_config: interface=3D4
-[   52.467494] offset:0 0x140
-[   52.467496] offset:4 0x4d544950
-[   52.470199] offset:8 0x20
-[   52.473325] offset:20 0x10000
-[   52.475929] forcing AN
-[   52.481232] mtk_pcs_config: rgc3=3D0x0, advertise=3D0x1 (changed), link_=
-timer=3D1600000,  sgm_mode=3D0x103, bmcr=3D0x1200, use_an=3D1
-[   52.492166] mtk_pcs_link_up: interface=3D4
-[   52.496072] offset:0 0x81140
-[   52.496074] offset:4 0x4d544950
-[   52.498938] offset:8 0x1
-[   52.502067] offset:20 0x10000
-[   52.504599] mtk_soc_eth 15100000.ethernet wan: Link is Up - 1Gbps/Full -=
- flow control rx/tx
-[   65.979410] mtk_soc_eth 15100000.ethernet wan: Link is Down
-[   70.139856] mtk_sgmii_select_pcs: id=3D1
-[   70.143616] mtk_pcs_config: interface=3D22
-[   70.147523] offset:0 0x81140
-[   70.147525] offset:4 0x4d544950
-[   70.150402] offset:8 0x1
-[   70.153526] offset:20 0x10000
-[   70.156049] mtk_pcs_config: rgc3=3D0x4, advertise=3D0x20 (changed), link=
-_timer=3D10000000,  sgm_mode=3D0x0, bmcr=3D0x0, use_an=3D0
-[   70.169672] mtk_pcs_link_up: interface=3D22
-[   70.173664] offset:0 0x40140
-[   70.173666] offset:4 0x4d544950
-[   70.176530] offset:8 0x20
-[   70.179659] offset:20 0x10000
-[   70.182279] mtk_soc_eth 15100000.ethernet wan: Link is Up - 2.5Gbps/Full=
- - flow control rx/tx
-
-
-Bj=C3=B8rn
