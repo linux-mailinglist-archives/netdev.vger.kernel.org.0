@@ -2,182 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8118866BA36
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 10:24:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61EA966BA3F
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 10:27:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232202AbjAPJYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 04:24:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51832 "EHLO
+        id S232331AbjAPJ1f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 04:27:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231981AbjAPJYu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 04:24:50 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F6E4ECA
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 01:24:49 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id e202so6176922ybh.11
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 01:24:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Xgt2GZb/L9Q/1cremGAMsSBPxxgcNhI+hptxQbTP/pc=;
-        b=qzcgb9z8Cma8SN4oMGdvQpTNpuMOKvr7JoQWdiZTnM2lbIPKye169cmwYWFF7MXJPO
-         /wQptEo63+HnIqIOOYL+RNk7LplLC0vNtbH2aZrEeRGTCyN1pWeU7e05VFpugob2INDw
-         z4cWf37ff6EWcImwJYgOL2ZNnz/RCUBC3zqbJUqNgY+clY4QlK+c5AOodi7DZBdFjCy7
-         9fldlvXza/Wwaz6byKIg+u1NOvYiYxCbNlWO4bn2Bf5CudMT5K7HUDQVlPnnT2I4Wwae
-         ZdjmtPBNbDWcmzRecAEIbdylo8Xd9nrKQaLJt/LbgMMGJQ4dml4YcghcBdM0P3VXfo4O
-         Yz2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Xgt2GZb/L9Q/1cremGAMsSBPxxgcNhI+hptxQbTP/pc=;
-        b=XMdV4IrbME357ptls2evVt/RTSBolEnV/belN+NbiMKiPlCCw3kEdFjD76+knAsc5H
-         W1h0kbackvF5Hurb6Fwb8ZHqlFEP6G88oCG9vfys/rEKxohq8forH37faPFc4sBOtv/J
-         NozB1/f06oPhK+kRwU6JJNcyCnJo5qNt6UPEgUmcyioy1EHExMU3bd1CVZh/CsVII8P/
-         hjLt61ox6hYjpUt99TSlV400A4lSB6i+R/HjZABVu+ifNINrvx0fk0jhe66nQyIYbPVc
-         pDsctqnKS1xP/oxX+znJZiE3sFP2uoq8jd1EB2YXja/Kg1baGJB3gPYh8LI7KxeZTCdi
-         EWyg==
-X-Gm-Message-State: AFqh2kreepxqfgpROZP/sIOl8keV2JMkEUXAToPbPqO1+fIwZsicX6nZ
-        DM1pXck2TrupvoXceybNr/RAq37Z7DGNsIFXZ2gCcQ==
-X-Google-Smtp-Source: AMrXdXsfqghz9e8iLz0g01oSjdiKEGCh1RUvAeFpg12oTV3daMaofK7k4X4ZgngeIMz1NY5WDtm7ycTZKhXWrgxoBDo=
-X-Received: by 2002:a25:b7cb:0:b0:7e7:7ad8:2ee8 with SMTP id
- u11-20020a25b7cb000000b007e77ad82ee8mr112931ybj.55.1673861088536; Mon, 16 Jan
- 2023 01:24:48 -0800 (PST)
+        with ESMTP id S232069AbjAPJ12 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 04:27:28 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D434166DF;
+        Mon, 16 Jan 2023 01:27:27 -0800 (PST)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30G8d1XS005079;
+        Mon, 16 Jan 2023 09:27:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=nBmVwqKm6pAyHknSyUy7U+JeXFcrtiZcVvJUMP/x0Z0=;
+ b=L01DLgTV0MkxN5snS3u0IC8wupUClzdW7NWpyz711dUEDnReHHMLzUdkk+R3nWr5rL5c
+ uF7Zu3tERc2F5Q5vbKcjYm9QP6KTH1GWK/dhWmIg1smFJngNBBs4cPTSI+ACPLMALSvW
+ ze8BsGAc2hV/YHmBNW9Sv2QWK16qH+h6tOBsdvIF0NnlxRPwZf0L3XVtebuombiJ/PdT
+ FKGXjO17MZ7kGJDI3wk8KcFP0IQJTIyWaTAjvuu6s7z5AC+g4Pc1Ts9Rdqx+WVgCD/ea
+ uKluakemhmZeaXNuY3uuGn/yWViSaT7kN7uj/Vr+i6Ve9df5PadMtLHGwJvhdsTGY75j 8Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3n48y5hjpj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 Jan 2023 09:27:21 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 30G9KX8C001233;
+        Mon, 16 Jan 2023 09:27:21 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3n48y5hjnt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 Jan 2023 09:27:21 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 30G1j8Ja007008;
+        Mon, 16 Jan 2023 09:27:19 GMT
+Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
+        by ppma06ams.nl.ibm.com (PPS) with ESMTPS id 3n3knfj6w2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 Jan 2023 09:27:19 +0000
+Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
+        by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 30G9RFaT24248762
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 16 Jan 2023 09:27:15 GMT
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4D1C02004B;
+        Mon, 16 Jan 2023 09:27:15 +0000 (GMT)
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C587B20040;
+        Mon, 16 Jan 2023 09:27:14 +0000 (GMT)
+Received: from LAPTOP-8S6R7U4L.localdomain (unknown [9.171.177.79])
+        by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTP;
+        Mon, 16 Jan 2023 09:27:14 +0000 (GMT)
+From:   Jan Karcher <jaka@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Thorsten Winkler <twinkler@linux.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Jan Karcher <jaka@linux.ibm.com>,
+        Nils Hoppmann <niho@linux.ibm.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Tony Lu <tonylu@linux.alibaba.com>,
+        Wen Gu <guwen@linux.alibaba.com>
+Subject: [net-next 0/8] drivers/s390/net/ism: Add generalized interface
+Date:   Mon, 16 Jan 2023 10:27:04 +0100
+Message-Id: <20230116092712.10176-1-jaka@linux.ibm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <cover.1673666803.git.lucien.xin@gmail.com> <de91843a7f59feb065475ca82be22c275bede3df.1673666803.git.lucien.xin@gmail.com>
- <b0a1bebc-7d44-05bc-347c-94da4cf2ef27@gmail.com> <CADvbK_cxQa0=ximH1F2bA-r0Q2+nMGAsSKhbaKzFTHOrcCF11A@mail.gmail.com>
- <CANn89iK4oSgoxJVkXO5rZXLzG1xw-xP31QbGHGvjhXqR2SSsRQ@mail.gmail.com> <CADvbK_c+RAFyrwuL+dfU3hc5U+ytOHC=TQ_xrkvXb4bB7XKjEA@mail.gmail.com>
-In-Reply-To: <CADvbK_c+RAFyrwuL+dfU3hc5U+ytOHC=TQ_xrkvXb4bB7XKjEA@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 16 Jan 2023 10:24:37 +0100
-Message-ID: <CANn89iLtF3dNcMkMGagCSfb+p5zA3Fa-DV9f9xMHHU_TX2CvSw@mail.gmail.com>
-Subject: Re: [PATCH net-next 09/10] netfilter: get ipv6 pktlen properly in length_mt6
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     David Ahern <dsahern@gmail.com>,
-        network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Aaron Conole <aconole@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Guillaume Nault <gnault@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: KaE-cy3lDTIzSWyxEtlHLUNoPUqx2e1F
+X-Proofpoint-ORIG-GUID: IdEAzlPz8pnWlI0wCxOx9_g_q8NQyDuT
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.923,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-01-16_06,2023-01-13_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 suspectscore=0
+ malwarescore=0 phishscore=0 clxscore=1011 spamscore=0 mlxscore=0
+ mlxlogscore=743 lowpriorityscore=0 priorityscore=1501 bulkscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2301160062
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 15, 2023 at 9:15 PM Xin Long <lucien.xin@gmail.com> wrote:
->
-> On Sun, Jan 15, 2023 at 2:40 PM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > On Sun, Jan 15, 2023 at 6:43 PM Xin Long <lucien.xin@gmail.com> wrote:
-> > >
-> > > On Sun, Jan 15, 2023 at 10:41 AM David Ahern <dsahern@gmail.com> wrote:
-> > > >
-> > > > On 1/13/23 8:31 PM, Xin Long wrote:
-> > > > > For IPv6 jumbogram packets, the packet size is bigger than 65535,
-> > > > > it's not right to get it from payload_len and save it to an u16
-> > > > > variable.
-> > > > >
-> > > > > This patch only fixes it for IPv6 BIG TCP packets, so instead of
-> > > > > parsing IPV6_TLV_JUMBO exthdr, which is quite some work, it only
-> > > > > gets the pktlen via 'skb->len - skb_network_offset(skb)' when
-> > > > > skb_is_gso_v6() and saves it to an u32 variable, similar to IPv4
-> > > > > BIG TCP packets.
-> > > > >
-> > > > > This fix will also help us add selftest for IPv6 BIG TCP in the
-> > > > > following patch.
-> > > > >
-> > > >
-> > > > If this is a bug fix for the existing IPv6 support, send it outside of
-> > > > this set for -net.
-> > > >
-> > > Sure,
-> > > I was thinking of adding it here to be able to support selftest for
-> > > IPv6 too in the next patch. But it seems to make more sense to
-> > > get it into -net first, then add this selftest after it goes to net-next.
-> > >
-> > > I will post it and all other fixes I mentioned in the cover-letter for
-> > > IPv6 BIG TCP for -net.
-> > >
-> > > But before that, I hope Eric can confirm it is okay to read the length
-> > > of IPv6 BIG TCP packets with skb_ipv6_totlen() defined in this patch,
-> > > instead of parsing JUMBO exthdr?
-> > >
-> >
-> > I do not think it is ok, but I will leave the question to netfilter maintainers.
-> Just note that the issue doesn't only exist in netfilter.
-> All the changes in Patch 2-7 from this patchset are also needed for IPv6
-> BIG TCP packets.
->
-> >
-> > Guessing things in tcpdump or other tools is up to user space implementations,
-> > trying to work around some (kernel ?) deficiencies.
-> >
-> > Yes, IPv6 extensions headers are a pain, we all agree.
-> >
-> > Look at how ip6_rcv_core() properly dissects extension headers _and_ trim
-> > skb accordingly (pskb_trim_rcsum() called either from ip6_rcv_core()
-> > or ipv6_hop_jumbo())
-> >
-> > So skb->len is not the root of trust. Some transport mediums might add paddings.
-> >
-> > Ipv4 has a similar logic in ip_rcv_core().
-> >
-> > len = ntohs(iph->tot_len);
-> > if (skb->len < len) {
-> >      drop_reason = SKB_DROP_REASON_PKT_TOO_SMALL;
-> >      __IP_INC_STATS(net, IPSTATS_MIB_INTRUNCATEDPKTS);
-> >     goto drop;
-> > } else if (len < (iph->ihl*4))
-> >      goto inhdr_error;
-> >
-> > /* Our transport medium may have padded the buffer out. Now we know it
-> > * is IP we can trim to the true length of the frame.
-> > * Note this now means skb->len holds ntohs(iph->tot_len).
-> > */
-> > if (pskb_trim_rcsum(skb, len)) {
-> >       __IP_INC_STATS(net, IPSTATS_MIB_INDISCARDS);
-> >       goto drop;
-> > }
-> >
-> > After your changes, we might accept illegal packets that were properly
-> > dropped before.
-> I think skb->len is trustable for GSO/GRO packets.
-> In ipv6_gro_complete/inet_gro_complete():
-> The new length for payload_len or iph->tot_len are all calculated from skb->len.
-> As I said in the cover-letter, "there is no padding in GSO/GRO packets".
-> Or am I missing something?
+Previously, there was no clean separation between SMC-D code and the ISM
+device driver.This patch series addresses the situation to make ISM available
+for uses outside of SMC-D.
+In detail: SMC-D offers an interface via struct smcd_ops, which only the
+ISM module implements so far. However, there is no real separation between
+the smcd and ism modules, which starts right with the ISM device
+initialization, which calls directly into the SMC-D code.
+This patch series introduces a new API in the ISM module, which allows
+registration of arbitrary clients via include/linux/ism.h: struct ism_client.
+Furthermore, it introduces a "pure" struct ism_dev (i.e. getting rid of
+dependencies on SMC-D in the device structure), and adds a number of API
+calls for data transfers via ISM (see ism_register_dmb() & friends).
+Still, the ISM module implements the SMC-D API, and therefore has a number
+of internal helper functions for that matter.
+Note that the ISM API is consciously kept thin for now (as compared to the
+SMC-D API calls), as a number of API calls are only used with SMC-D and
+hardly have any meaningful usage beyond SMC-D, e.g. the VLAN-related calls.
 
-This seems to be a contract violation with user space providing GSO packets.
+Stefan Raspl (8):
+  net/smc: Terminate connections prior to device removal
+  net/ism: Add missing calls to disable bus-mastering
+  s390/ism: Introduce struct ism_dmb
+  net/ism: Add new API for client registration
+  net/smc: Register SMC-D as ISM client
+  net/smc: Separate SMC-D and ISM APIs
+  s390/ism: Consolidate SMC-D-related code
+  net/smc: De-tangle ism and smc device initialization
 
-In our changes we added some sanity checks, inherent to JUMBO specs.
+ drivers/s390/net/ism.h     |  21 +--
+ drivers/s390/net/ism_drv.c | 376 ++++++++++++++++++++++++++++++-------
+ include/linux/ism.h        |  96 ++++++++++
+ include/net/smc.h          |  24 +--
+ net/smc/af_smc.c           |   9 +-
+ net/smc/smc_clc.c          |  11 +-
+ net/smc/smc_core.c         |  13 +-
+ net/smc/smc_diag.c         |   3 +-
+ net/smc/smc_ism.c          | 181 ++++++++++--------
+ net/smc/smc_ism.h          |   3 +-
+ net/smc/smc_pnet.c         |  40 ++--
+ 11 files changed, 561 insertions(+), 216 deletions(-)
+ create mode 100644 include/linux/ism.h
 
-Here, a GSO packet can now have a zero ip length, no matter if it is
-BIG TCP or not.
+-- 
+2.25.1
 
-It seems we lower the bar for consistency, and allow bugs (say
-changing skb->len) to not be detected.
-
-As you said, user space sniffing packets now have to guess what is the
-intent, instead of headers carrying all the needed information
-that can be fully validated by parsers.
