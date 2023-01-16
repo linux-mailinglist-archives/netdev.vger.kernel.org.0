@@ -2,113 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBEBD66B82B
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 08:30:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18AE666B845
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 08:35:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231794AbjAPHaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 02:30:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47418 "EHLO
+        id S231695AbjAPHfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 02:35:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231572AbjAPHaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 02:30:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5ED2CC3E;
-        Sun, 15 Jan 2023 23:30:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S231679AbjAPHfw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 02:35:52 -0500
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE061CDFD;
+        Sun, 15 Jan 2023 23:35:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1673854551; x=1705390551;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=YszkHojPOFwKeLehYtOFvn3DFCgr8dW4CyaPruyHuVg=;
+  b=jfc9N4Hvdi3gSQbC8i2nz1+0j0C5coSvQQ6TOoe0PQJrYFQKkSd+EVAr
+   p69HK5NMRGgnglYfPIpcmmLLZNItDPKWf5pky2bN3taxTS+KyBuMU+hn2
+   9MPL8NkSnxN0aIK5loSJjsOZMDrIRpXNdaKu5WaYcTFjt2dp+DZrq79Gn
+   RG0sJ55i5c4rEAJKu8OxUGlGMu46w8eVGAuYhHbw7gvNiykG4hbgM8ldd
+   PSob1H3NrSs6+JNIRqsIdxtt9jtkDnXSM0jMPOl9eoQKIT5VGFYY2Wz+w
+   AYd9f82lj0PRFC13RXlM94HcR5XaOQZc9hwTSBiVK63U0jx5NQBGSPiFH
+   w==;
+X-IronPort-AV: E=Sophos;i="5.97,220,1669071600"; 
+   d="scan'208";a="28437135"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 16 Jan 2023 08:35:48 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Mon, 16 Jan 2023 08:35:48 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Mon, 16 Jan 2023 08:35:48 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1673854548; x=1705390548;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=YszkHojPOFwKeLehYtOFvn3DFCgr8dW4CyaPruyHuVg=;
+  b=V05ZCuVQ0P+P7pIZXxuZzDIVOpW8NGDLQQ6vBAv2F5yTNr3TdUYXn90P
+   anCVKU+wNqO3Dli0ABt4NlaL924jq1ewMEatIVaKuOEoQ4z2e9c6YyUJo
+   s/8YY1VrS6hDX95szewhNKtnKmFxuie9Zo7UItYA1N1SGfQX5pcgnw6V5
+   sANpjK47YtdMGk0Qf7jh8n25F2Y3vn8oAoVCFQzdo+0qHzaoktC7oWJK4
+   uXyKZJUNC5Ro2UgPz5GQNL0Y+KCq1MG+DIrIL9LWnPF6hgiYW9HA5/4P4
+   WkZUobrUt0qAKhdQtwNNPm3g9ygyFxqWo47NdNmuMq0gmgShIcgC7alH4
+   g==;
+X-IronPort-AV: E=Sophos;i="5.97,220,1669071600"; 
+   d="scan'208";a="28437134"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 16 Jan 2023 08:35:48 +0100
+Received: from steina-w.localnet (unknown [10.123.53.21])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C116B80D4F;
-        Mon, 16 Jan 2023 07:30:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D346DC433EF;
-        Mon, 16 Jan 2023 07:30:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673854207;
-        bh=jXP2JXB7Ja6faI+t920dtDx9s48lo99uDFqGi3cMdhw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VK+QZeSWbPl0U8+isx6i4jz2rn9oy1VODqKr38KsZXjCMeAqSZA/A4eMJdnwspzkh
-         65MbSoS5WsO/JDgc3cpRkJGE+4/qn51o1kxPtCJ6gmMfzdURyKL9EmcIUy3ZsJrNEf
-         Vjwhlm06y8oA9M18TLEUhavuVDzEaeixoK+azBQ6aix1HBLD0LcSMg1krWKyG7PJVw
-         3T5Li7ET4uf8lXNliDioT+CRNmm9doSo7ioiE1bqt/dfA+MvKLCmDwM7e5u/TxdscZ
-         iQPnGp8x5cbi+8NEwGKKGfph3iz3KmDX4FtYQmfChLXMAHCRG7kRW08j4Hv88Q5DCp
-         1Tubn8uVHcDQA==
-Date:   Mon, 16 Jan 2023 09:30:02 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux@armlinux.org.uk, pabeni@redhat.com, rogerq@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, vigneshr@ti.com, srk@ti.com
-Subject: Re: [PATCH net-next v2] net: ethernet: ti: am65-cpsw/cpts: Fix CPTS
- release action
-Message-ID: <Y8T8+rWrvv6gfNxa@unreal>
-References: <20230116044517.310461-1-s-vadapalli@ti.com>
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 2B9DF280056;
+        Mon, 16 Jan 2023 08:35:48 +0100 (CET)
+From:   Alexander Stein <alexander.stein@ew.tq-group.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Pierluigi Passaro <pierluigi.passaro@gmail.com>
+Cc:     Pierluigi Passaro <pierluigi.p@variscite.com>, wei.fang@nxp.com,
+        shenwei.wang@nxp.com, xiaoning.wang@nxp.com, linux-imx@nxp.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, eran.m@variscite.com,
+        nate.d@variscite.com, francesco.f@variscite.com
+Subject: Re: [PATCH v2] net: fec: manage corner deferred probe condition
+Date:   Mon, 16 Jan 2023 08:35:46 +0100
+Message-ID: <5899558.lOV4Wx5bFT@steina-w>
+Organization: TQ-Systems GmbH
+In-Reply-To: <CAJ=UCjXvcpV9gAfXv8An-pp=CK8J=sGE_adAoKeNFG1C-sMgJA@mail.gmail.com>
+References: <20230115213804.26650-1-pierluigi.p@variscite.com> <Y8R2kQMwgdgE6Qlp@lunn.ch> <CAJ=UCjXvcpV9gAfXv8An-pp=CK8J=sGE_adAoKeNFG1C-sMgJA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230116044517.310461-1-s-vadapalli@ti.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 16, 2023 at 10:15:17AM +0530, Siddharth Vadapalli wrote:
-> The am65_cpts_release() function is registered as a devm_action in the
-> am65_cpts_create() function in am65-cpts driver. When the am65-cpsw driver
-> invokes am65_cpts_create(), am65_cpts_release() is added in the set of devm
-> actions associated with the am65-cpsw driver's device.
-> 
-> In the event of probe failure or probe deferral, the platform_drv_probe()
-> function invokes dev_pm_domain_detach() which powers off the CPSW and the
-> CPSW's CPTS hardware, both of which share the same power domain. Since the
-> am65_cpts_disable() function invoked by the am65_cpts_release() function
-> attempts to reset the CPTS hardware by writing to its registers, the CPTS
-> hardware is assumed to be powered on at this point. However, the hardware
-> is powered off before the devm actions are executed.
-> 
-> Fix this by getting rid of the devm action for am65_cpts_release() and
-> invoking it directly on the cleanup and exit paths.
-> 
-> Fixes: f6bd59526ca5 ("net: ethernet: ti: introduce am654 common platform time sync driver")
-> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
-> Reviewed-by: Roger Quadros <rogerq@kernel.org>
-> ---
-> Changes from v1:
-> 1. Fix the build issue when "CONFIG_TI_K3_AM65_CPTS" is not set. This
->    error was reported by kernel test robot <lkp@intel.com> at:
->    https://lore.kernel.org/r/202301142105.lt733Lt3-lkp@intel.com/
-> 2. Collect Reviewed-by tag from Roger Quadros.
-> 
-> v1:
-> https://lore.kernel.org/r/20230113104816.132815-1-s-vadapalli@ti.com/
-> 
->  drivers/net/ethernet/ti/am65-cpsw-nuss.c |  8 ++++++++
->  drivers/net/ethernet/ti/am65-cpts.c      | 15 +++++----------
->  drivers/net/ethernet/ti/am65-cpts.h      |  5 +++++
->  3 files changed, 18 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> index 5cac98284184..00f25d8a026b 100644
-> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> @@ -1913,6 +1913,12 @@ static int am65_cpsw_am654_get_efuse_macid(struct device_node *of_node,
->  	return 0;
->  }
->  
-> +static void am65_cpsw_cpts_cleanup(struct am65_cpsw_common *common)
-> +{
-> +	if (IS_ENABLED(CONFIG_TI_K3_AM65_CPTS) && common->cpts)
+Hi,
 
-Why do you have IS_ENABLED(CONFIG_TI_K3_AM65_CPTS), if
-am65_cpts_release() defined as empty when CONFIG_TI_K3_AM65_CPTS not set?
+Am Sonntag, 15. Januar 2023, 23:23:51 CET schrieb Pierluigi Passaro:
+> On Sun, Jan 15, 2023 at 10:56 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> > On Sun, Jan 15, 2023 at 10:38:04PM +0100, Pierluigi Passaro wrote:
+> > > For dual fec interfaces, external phys can only be configured by fec0.
+> > > When the function of_mdiobus_register return -EPROBE_DEFER, the driver
+> > > is lately called to manage fec1, which wrongly register its mii_bus as
+> > > fec0_mii_bus.
+> > > When fec0 retry the probe, the previous assignement prevent the MDIO bus
+> > > registration.
+> > > Use a static boolean to trace the orginal MDIO bus deferred probe and
+> > > prevent further registrations until the fec0 registration completed
+> > > succesfully.
+> > 
+> > The real problem here seems to be that fep->dev_id is not
+> > deterministic. I think a better fix would be to make the mdio bus name
+> > deterministic. Use pdev->id instead of fep->dev_id + 1. That is what
+> > most mdiobus drivers use.
+> 
+> Actually, the sequence is deterministic, fec0 and then fec1,
+> but sometimes the GPIO of fec0 is not yet available.
 
-How is it possible to have common->cpts == NULL?
+Not in every case though. On i.MX6UL has the following memory map for FEC:
+* FEC2: 0x020b4000
+* FEC1: 0x02188000
 
-And why do you need special am65_cpsw_cpts_cleanup() which does nothing
-except call to am65_cpts_release()? It will be more intuitive change
-the latter to be exported function.
+Which essentially means that fec2 will be probed first.
 
-Thanks
+> The EPROBE_DEFER does not prevent the second instance from being probed.
+> This is the origin of the problem.
+
+Is this the actual cause? There is also a problem in the case above if the 
+MDIO controlling interface (fec2) is not probed first, e.g. using fec1 for 
+MDIO access. But then again there is i.MX6ULG1 which only has fec1 
+interface...
+
+Best regards,
+Alexander
+
+
+
