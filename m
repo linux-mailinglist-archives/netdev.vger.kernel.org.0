@@ -2,80 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1106F66BFE6
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 14:36:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BAA066BFE8
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 14:36:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230503AbjAPNg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 08:36:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52662 "EHLO
+        id S231128AbjAPNgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 08:36:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230496AbjAPNg1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 08:36:27 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11EE414483;
-        Mon, 16 Jan 2023 05:36:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=68rMq7lR6DYBUEMspuiiZmjssqJolmBilxN0dR3BVAw=; b=v0gen4kt3Eesrx6UQbktoZB1D/
-        R0QDgmqZ8n9Y9IJaOYCgVXstA+ozhYZpJAVuNeABJci2bNBwAlKk94uy919M+4+Deb+ugJaClacc0
-        lEBT5dolQVJQ4EZds3reT50dywJ8qYLyFgJD+tYkOvY6q0KlAjMg41L3IGrnHJSlcGQKstJxcnpXN
-        Ziryixx+TU/lzif0TKvTHauXR4OBoQ2doiMavDTBLwBwAGFh/MWrU7WirHE2XMA9CKxSDLwTIgdH+
-        2vqMvFJccXW4BB0MXjqXC7txOPES9UGi8rluljaa89RZH8Rh33pNzlVuXpNHggxyTTVNnHCVmBN8S
-        kJdY1Dxw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36126)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pHPet-000504-Pm; Mon, 16 Jan 2023 13:36:19 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pHPer-00062x-9O; Mon, 16 Jan 2023 13:36:17 +0000
-Date:   Mon, 16 Jan 2023 13:36:17 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Pierluigi Passaro <pierluigi.p@variscite.com>
-Cc:     Simon Horman <simon.horman@corigine.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Eran Matityahu <eran.m@variscite.com>,
-        Nate Drude <Nate.D@variscite.com>,
-        Francesco Ferraro <francesco.f@variscite.com>,
-        "pierluigi.passaro@gmail.com" <pierluigi.passaro@gmail.com>
-Subject: Re: [PATCH v2] net: mdio: force deassert MDIO reset signal
-Message-ID: <Y8VS0Wlpg7TGXk2d@shell.armlinux.org.uk>
-References: <20230115213746.26601-1-pierluigi.p@variscite.com>
- <Y8UwrzenvgGw8dns@corigine.com>
- <AM6PR08MB43764E8EB99B48897327CFCCFFC19@AM6PR08MB4376.eurprd08.prod.outlook.com>
+        with ESMTP id S231135AbjAPNgb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 08:36:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B70621E1C3;
+        Mon, 16 Jan 2023 05:36:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7BFEBB80E96;
+        Mon, 16 Jan 2023 13:36:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1CEFC433EF;
+        Mon, 16 Jan 2023 13:36:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673876188;
+        bh=eyYIBkTc+aU5rlU29lHgxKy0T+h5OUzw65jzZNbXujU=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=Bm5O53gFx9vK77BY7dGcTm1p1nvPvVgjuWT4h3LdiJmqXPT9r5FUBTBWJSAAzr3lt
+         bwTtIQqPnlPOw7qTszmAKbXG8W1YgTnawhilcjbsjrshDf99JmJeDp2r/MaRfcekc+
+         wMLfX4rr72LPcZik9OZgn/IE7Jwz84LM1XJZqjTZ1VPZ+z0m/rIfC9mKlmU3rZnpDM
+         8+IOoCZ0KvNEESQzaRd4J89u6E6KDzf1+tN8JPZ9sgOTDnkLEoRlnt/IzNmPT1HF+U
+         UfN45rcf418e7Zn4E328UTljRqZQm7N2FkSoXpg8bg/JtbDEaOAP1rG+mfLQXALQ9t
+         sMsFOdZZN1ewA==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM6PR08MB43764E8EB99B48897327CFCCFFC19@AM6PR08MB4376.eurprd08.prod.outlook.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2] wifi: rtw89: Add missing check for alloc_workqueue
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20230104142901.1611-1-jiasheng@iscas.ac.cn>
+References: <20230104142901.1611-1-jiasheng@iscas.ac.cn>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     leon@kernel.org, pkshih@realtek.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <167387618418.32134.12212618077257685528.kvalo@kernel.org>
+Date:   Mon, 16 Jan 2023 13:36:25 +0000 (UTC)
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 16, 2023 at 01:13:49PM +0000, Pierluigi Passaro wrote:
-> I'm worried I'm asking something stupid: what do you mean by
-> "reverse xmas tree" ?> ...
+Jiasheng Jiang <jiasheng@iscas.ac.cn> wrote:
 
-Ordering them so that the longest is first, followed by the next longest
-all the way down to the shortest.
+> Add check for the return value of alloc_workqueue since it may return
+> NULL pointer.
+> Moreover, add destroy_workqueue when rtw89_load_firmware fails.
+> 
+> Fixes: e3ec7017f6a2 ("rtw89: add Realtek 802.11ax driver")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+> Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+
+Patch applied to wireless-next.git, thanks.
+
+ed9e6166eb09 wifi: rtw89: Add missing check for alloc_workqueue
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+https://patchwork.kernel.org/project/linux-wireless/patch/20230104142901.1611-1-jiasheng@iscas.ac.cn/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
