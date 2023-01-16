@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD01966D34D
+	by mail.lfdr.de (Postfix) with ESMTP id 3679B66D34B
 	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 00:52:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234606AbjAPXwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 18:52:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45276 "EHLO
+        id S233886AbjAPXwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 18:52:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231308AbjAPXwr (ORCPT
+        with ESMTP id S232650AbjAPXwr (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 18:52:47 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3693322A05;
+Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C859022A07;
         Mon, 16 Jan 2023 15:52:46 -0800 (PST)
 Received: from mwalle01.sab.local (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id DE3F39EF;
-        Tue, 17 Jan 2023 00:52:43 +0100 (CET)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 6F428D5C;
+        Tue, 17 Jan 2023 00:52:44 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
         t=1673913164;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=9NXyj08/VRkafMXUB3qax5P2d+sp7z57TdP+lU677PQ=;
-        b=QoNpfy8VBKQeOx6xUXRguUzScp9m6a8QuHLmFjdrfJ4Hv+VB6QWFzA9/K5FJUXhtkFIpAe
-        vVGRcUajt5L9FgpRePe0Gz1995DAO7uzFOlveXFzz/4nfK0BBWRxuzndc0GBIOusSzOJOA
-        aOExxMBt49LfEq8zFMShRC/dRfg7sIzHt+9gS/RJdqZOCrfxHblHB7Me/YBO1zCm91LCMX
-        dVMhyJzUqnldGcJVw0ArXJthYmR7NU6svZtEbAspTyvM/Ek+SHwGjvJ10I5iOdb84gGDMJ
-        LnIu0QRkmDd032PAmLZQVnaDqiJnqz+Ix40SsKp4IUl3DsFay3+CNRoGom/QRA==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fbfQoq+/nP40y3Od/7KPlEsF8XCF4vb8Tsl/JXpv37c=;
+        b=RIRLUnFhk4lbuRdXBZHwvVY5XR0+dcNDfp4iMVgeUJ/UMEQKXYirRkgdpUGsMF3lEheMEu
+        J7n7W4g5GkNe3Ys5h5VF9sorDHMDoon2yECEhIi6H+GgsOB58yXiBggLDlClmOgvMvYtuc
+        JalLhD+AYTo6z6j+OUTifMY64KrLoQeoSOzrQQwQbDgxmGlfhhf1lrqUZztKAOuRTAXK1f
+        kUqJqu9UC9YABe4lSZmAuB8eAa1kwA3Pl9ZUzsCuP9KGgYTaUswHOLtGA8/u+n4YrBxDx5
+        xUqH6i3Zxn684NGuVXqt0uHK1+Xu2e86DjuAgPpa2ZFyVlOBAMl6EmWDewyUEg==
 From:   Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next 00/12] net: mdio: Continue separating C22 and C45
 Date:   Tue, 17 Jan 2023 00:52:16 +0100
-Message-Id: <20230116-net-next-c45-seperation-part-3-v1-0-0c53afa56aad@walle.cc>
+Subject: [PATCH net-next 01/12] net: dsa: mt7530: Separate C22 and C45 MDIO
+ bus transactions
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIADDjxWMC/zWNwQrCMBBEf6Xs2YWmsSr+injYpBubgzHshlIo/
- Xe3goc5PIZ5s4GyZFa4dxsIL1nzpxi4UwdxpvJizJMxDP3ge+cuWLhZ1obxPKJyZaFmG6wkDT2m
- 0d+uIU7JM4FJAiljECpxPjRv0sZyFFU45fX3/IC/FJ77/gWfYfhdkwAAAA==
+Message-Id: <20230116-net-next-c45-seperation-part-3-v1-1-0c53afa56aad@walle.cc>
+References: <20230116-net-next-c45-seperation-part-3-v1-0-0c53afa56aad@walle.cc>
+In-Reply-To: <20230116-net-next-c45-seperation-part-3-v1-0-0c53afa56aad@walle.cc>
 To:     Sean Wang <sean.wang@mediatek.com>,
         Landen Chao <Landen.Chao@mediatek.com>,
         DENG Qingfang <dqfext@gmail.com>,
@@ -77,88 +78,235 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I've picked this older series from Andrew up and rebased it onto
-the latest net-next.
+From: Andrew Lunn <andrew@lunn.ch>
 
-This is the third (and hopefully last) patch set in the series which
-separates the C22 and C45 MDIO bus transactions at the API level to the
-MDIO bus drivers.
+mt7530 does support C45, but its uses a mix of registering its MDIO
+bus and providing its private MDIO bus to the DSA core, too. This makes
+the change a bit more complex.
 
-The first patch is a newer version of the former "net: dsa: Separate C22
-and C45 MDIO bus transaction methods", which only contains the mt7530
-changes. Although posted as v1, because this is a new series, there is a
-changelog included in the patch comment section.
-
-The last patch is a new one, which isn't from Andrew's tree.
-
-To: Sean Wang <sean.wang@mediatek.com>
-To: Landen Chao <Landen.Chao@mediatek.com>
-To: DENG Qingfang <dqfext@gmail.com>
-To: Florian Fainelli <f.fainelli@gmail.com>
-To: Vladimir Oltean <olteanv@gmail.com>
-To: "David S. Miller" <davem@davemloft.net>
-To: Eric Dumazet <edumazet@google.com>
-To: Jakub Kicinski <kuba@kernel.org>
-To: Paolo Abeni <pabeni@redhat.com>
-To: Matthias Brugger <matthias.bgg@gmail.com>
-To: Russell King <linux@armlinux.org.uk>
-To: Byungho An <bh74.an@samsung.com>
-To: Nicolas Ferre <nicolas.ferre@microchip.com>
-To: Claudiu Beznea <claudiu.beznea@microchip.com>
-To: Jesse Brandeburg <jesse.brandeburg@intel.com>
-To: Tony Nguyen <anthony.l.nguyen@intel.com>
-To: Yisen Zhuang <yisen.zhuang@huawei.com>
-To: Salil Mehta <salil.mehta@huawei.com>
-To: Tom Lendacky <thomas.lendacky@amd.com>
-To: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-To: Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc: netdev@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-mediatek@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-Cc: intel-wired-lan@lists.osuosl.org
-Cc: linux-renesas-soc@vger.kernel.org
-Cc: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Michael Walle <michael@walle.cc>
-
 ---
-Andrew Lunn (11):
-      net: dsa: mt7530: Separate C22 and C45 MDIO bus transactions
-      net: sxgbe: Separate C22 and C45 transactions
-      net: nixge: Separate C22 and C45 transactions
-      net: macb: Separate C22 and C45 transactions
-      ixgbe: Separate C22 and C45 transactions
-      ixgbe: Use C45 mdiobus accessors
-      net: hns: Separate C22 and C45 transactions
-      amd-xgbe: Separate C22 and C45 transactions
-      amd-xgbe: Replace MII_ADDR_C45 with XGBE_ADDR_C45
-      net: dsa: sja1105: C45 only transactions for PCS
-      net: dsa: sja1105: Separate C22 and C45 transactions for T1 MDIO bus
+v3 (the 'new' v1):
+[mw] Remove dsa core comment
+[mw] Rephrase commit message
 
-Michael Walle (1):
-      net: ethernet: renesas: rswitch: C45 only transactions
-
- drivers/net/dsa/mt7530.c                        |  87 ++++-----
- drivers/net/dsa/mt7530.h                        |  15 +-
- drivers/net/dsa/sja1105/sja1105.h               |  16 +-
- drivers/net/dsa/sja1105/sja1105_mdio.c          | 131 ++++++-------
- drivers/net/dsa/sja1105/sja1105_spi.c           |  24 +--
- drivers/net/ethernet/amd/xgbe/xgbe-common.h     |  11 +-
- drivers/net/ethernet/amd/xgbe/xgbe-dev.c        |  91 ++++++---
- drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c     | 120 +++++++++---
- drivers/net/ethernet/amd/xgbe/xgbe.h            |   7 +-
- drivers/net/ethernet/cadence/macb_main.c        | 161 ++++++++++------
- drivers/net/ethernet/hisilicon/hns_mdio.c       | 192 +++++++++++++------
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c   |   6 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c    | 237 ++++++++++++++++++------
- drivers/net/ethernet/ni/nixge.c                 | 141 ++++++++------
- drivers/net/ethernet/renesas/rswitch.c          |  28 +--
- drivers/net/ethernet/samsung/sxgbe/sxgbe_mdio.c | 105 ++++++++---
- 16 files changed, 906 insertions(+), 466 deletions(-)
+v2:
+[al] Remove conditional c45, since all switches support c45
+[al] Remove dsa core changes, they are not needed
+[al] Add comment that DSA provided MDIO bus is C22 only.
 ---
-base-commit: c941c0a15bee01a702d82793fe605326d453d9a7
-change-id: 20230116-net-next-c45-seperation-part-3-f5387bcdf3ea
+ drivers/net/dsa/mt7530.c | 87 ++++++++++++++++++++++++------------------------
+ drivers/net/dsa/mt7530.h | 15 ++++++---
+ 2 files changed, 55 insertions(+), 47 deletions(-)
 
-Best regards,
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 908fa89444c9..616b21c90d05 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -608,17 +608,29 @@ mt7530_mib_reset(struct dsa_switch *ds)
+ 	mt7530_write(priv, MT7530_MIB_CCR, CCR_MIB_ACTIVATE);
+ }
+ 
+-static int mt7530_phy_read(struct mt7530_priv *priv, int port, int regnum)
++static int mt7530_phy_read_c22(struct mt7530_priv *priv, int port, int regnum)
+ {
+ 	return mdiobus_read_nested(priv->bus, port, regnum);
+ }
+ 
+-static int mt7530_phy_write(struct mt7530_priv *priv, int port, int regnum,
+-			    u16 val)
++static int mt7530_phy_write_c22(struct mt7530_priv *priv, int port, int regnum,
++				u16 val)
+ {
+ 	return mdiobus_write_nested(priv->bus, port, regnum, val);
+ }
+ 
++static int mt7530_phy_read_c45(struct mt7530_priv *priv, int port,
++			       int devad, int regnum)
++{
++	return mdiobus_c45_read_nested(priv->bus, port, devad, regnum);
++}
++
++static int mt7530_phy_write_c45(struct mt7530_priv *priv, int port, int devad,
++				int regnum, u16 val)
++{
++	return mdiobus_c45_write_nested(priv->bus, port, devad, regnum, val);
++}
++
+ static int
+ mt7531_ind_c45_phy_read(struct mt7530_priv *priv, int port, int devad,
+ 			int regnum)
+@@ -670,7 +682,7 @@ mt7531_ind_c45_phy_read(struct mt7530_priv *priv, int port, int devad,
+ 
+ static int
+ mt7531_ind_c45_phy_write(struct mt7530_priv *priv, int port, int devad,
+-			 int regnum, u32 data)
++			 int regnum, u16 data)
+ {
+ 	struct mii_bus *bus = priv->bus;
+ 	struct mt7530_dummy_poll p;
+@@ -793,55 +805,36 @@ mt7531_ind_c22_phy_write(struct mt7530_priv *priv, int port, int regnum,
+ }
+ 
+ static int
+-mt7531_ind_phy_read(struct mt7530_priv *priv, int port, int regnum)
++mt753x_phy_read_c22(struct mii_bus *bus, int port, int regnum)
+ {
+-	int devad;
+-	int ret;
+-
+-	if (regnum & MII_ADDR_C45) {
+-		devad = (regnum >> MII_DEVADDR_C45_SHIFT) & 0x1f;
+-		ret = mt7531_ind_c45_phy_read(priv, port, devad,
+-					      regnum & MII_REGADDR_C45_MASK);
+-	} else {
+-		ret = mt7531_ind_c22_phy_read(priv, port, regnum);
+-	}
++	struct mt7530_priv *priv = bus->priv;
+ 
+-	return ret;
++	return priv->info->phy_read_c22(priv, port, regnum);
+ }
+ 
+ static int
+-mt7531_ind_phy_write(struct mt7530_priv *priv, int port, int regnum,
+-		     u16 data)
++mt753x_phy_read_c45(struct mii_bus *bus, int port, int devad, int regnum)
+ {
+-	int devad;
+-	int ret;
+-
+-	if (regnum & MII_ADDR_C45) {
+-		devad = (regnum >> MII_DEVADDR_C45_SHIFT) & 0x1f;
+-		ret = mt7531_ind_c45_phy_write(priv, port, devad,
+-					       regnum & MII_REGADDR_C45_MASK,
+-					       data);
+-	} else {
+-		ret = mt7531_ind_c22_phy_write(priv, port, regnum, data);
+-	}
++	struct mt7530_priv *priv = bus->priv;
+ 
+-	return ret;
++	return priv->info->phy_read_c45(priv, port, devad, regnum);
+ }
+ 
+ static int
+-mt753x_phy_read(struct mii_bus *bus, int port, int regnum)
++mt753x_phy_write_c22(struct mii_bus *bus, int port, int regnum, u16 val)
+ {
+ 	struct mt7530_priv *priv = bus->priv;
+ 
+-	return priv->info->phy_read(priv, port, regnum);
++	return priv->info->phy_write_c22(priv, port, regnum, val);
+ }
+ 
+ static int
+-mt753x_phy_write(struct mii_bus *bus, int port, int regnum, u16 val)
++mt753x_phy_write_c45(struct mii_bus *bus, int port, int devad, int regnum,
++		     u16 val)
+ {
+ 	struct mt7530_priv *priv = bus->priv;
+ 
+-	return priv->info->phy_write(priv, port, regnum, val);
++	return priv->info->phy_write_c45(priv, port, devad, regnum, val);
+ }
+ 
+ static void
+@@ -2086,8 +2079,10 @@ mt7530_setup_mdio(struct mt7530_priv *priv)
+ 	bus->priv = priv;
+ 	bus->name = KBUILD_MODNAME "-mii";
+ 	snprintf(bus->id, MII_BUS_ID_SIZE, KBUILD_MODNAME "-%d", idx++);
+-	bus->read = mt753x_phy_read;
+-	bus->write = mt753x_phy_write;
++	bus->read = mt753x_phy_read_c22;
++	bus->write = mt753x_phy_write_c22;
++	bus->read_c45 = mt753x_phy_read_c45;
++	bus->write_c45 = mt753x_phy_write_c45;
+ 	bus->parent = dev;
+ 	bus->phy_mask = ~ds->phys_mii_mask;
+ 
+@@ -3182,8 +3177,10 @@ static const struct mt753x_info mt753x_table[] = {
+ 		.id = ID_MT7621,
+ 		.pcs_ops = &mt7530_pcs_ops,
+ 		.sw_setup = mt7530_setup,
+-		.phy_read = mt7530_phy_read,
+-		.phy_write = mt7530_phy_write,
++		.phy_read_c22 = mt7530_phy_read_c22,
++		.phy_write_c22 = mt7530_phy_write_c22,
++		.phy_read_c45 = mt7530_phy_read_c45,
++		.phy_write_c45 = mt7530_phy_write_c45,
+ 		.pad_setup = mt7530_pad_clk_setup,
+ 		.mac_port_get_caps = mt7530_mac_port_get_caps,
+ 		.mac_port_config = mt7530_mac_config,
+@@ -3192,8 +3189,10 @@ static const struct mt753x_info mt753x_table[] = {
+ 		.id = ID_MT7530,
+ 		.pcs_ops = &mt7530_pcs_ops,
+ 		.sw_setup = mt7530_setup,
+-		.phy_read = mt7530_phy_read,
+-		.phy_write = mt7530_phy_write,
++		.phy_read_c22 = mt7530_phy_read_c22,
++		.phy_write_c22 = mt7530_phy_write_c22,
++		.phy_read_c45 = mt7530_phy_read_c45,
++		.phy_write_c45 = mt7530_phy_write_c45,
+ 		.pad_setup = mt7530_pad_clk_setup,
+ 		.mac_port_get_caps = mt7530_mac_port_get_caps,
+ 		.mac_port_config = mt7530_mac_config,
+@@ -3202,8 +3201,10 @@ static const struct mt753x_info mt753x_table[] = {
+ 		.id = ID_MT7531,
+ 		.pcs_ops = &mt7531_pcs_ops,
+ 		.sw_setup = mt7531_setup,
+-		.phy_read = mt7531_ind_phy_read,
+-		.phy_write = mt7531_ind_phy_write,
++		.phy_read_c22 = mt7531_ind_c22_phy_read,
++		.phy_write_c22 = mt7531_ind_c22_phy_write,
++		.phy_read_c45 = mt7531_ind_c45_phy_read,
++		.phy_write_c45 = mt7531_ind_c45_phy_write,
+ 		.pad_setup = mt7531_pad_setup,
+ 		.cpu_port_config = mt7531_cpu_port_config,
+ 		.mac_port_get_caps = mt7531_mac_port_get_caps,
+@@ -3263,7 +3264,7 @@ mt7530_probe(struct mdio_device *mdiodev)
+ 	 * properly.
+ 	 */
+ 	if (!priv->info->sw_setup || !priv->info->pad_setup ||
+-	    !priv->info->phy_read || !priv->info->phy_write ||
++	    !priv->info->phy_read_c22 || !priv->info->phy_write_c22 ||
+ 	    !priv->info->mac_port_get_caps ||
+ 	    !priv->info->mac_port_config)
+ 		return -EINVAL;
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index e8d966435350..6b2fc6290ea8 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -750,8 +750,10 @@ struct mt753x_pcs {
+ /* struct mt753x_info -	This is the main data structure for holding the specific
+  *			part for each supported device
+  * @sw_setup:		Holding the handler to a device initialization
+- * @phy_read:		Holding the way reading PHY port
+- * @phy_write:		Holding the way writing PHY port
++ * @phy_read_c22:	Holding the way reading PHY port using C22
++ * @phy_write_c22:	Holding the way writing PHY port using C22
++ * @phy_read_c45:	Holding the way reading PHY port using C45
++ * @phy_write_c45:	Holding the way writing PHY port using C45
+  * @pad_setup:		Holding the way setting up the bus pad for a certain
+  *			MAC port
+  * @phy_mode_supported:	Check if the PHY type is being supported on a certain
+@@ -767,8 +769,13 @@ struct mt753x_info {
+ 	const struct phylink_pcs_ops *pcs_ops;
+ 
+ 	int (*sw_setup)(struct dsa_switch *ds);
+-	int (*phy_read)(struct mt7530_priv *priv, int port, int regnum);
+-	int (*phy_write)(struct mt7530_priv *priv, int port, int regnum, u16 val);
++	int (*phy_read_c22)(struct mt7530_priv *priv, int port, int regnum);
++	int (*phy_write_c22)(struct mt7530_priv *priv, int port, int regnum,
++			     u16 val);
++	int (*phy_read_c45)(struct mt7530_priv *priv, int port, int devad,
++			    int regnum);
++	int (*phy_write_c45)(struct mt7530_priv *priv, int port, int devad,
++			     int regnum, u16 val);
+ 	int (*pad_setup)(struct dsa_switch *ds, phy_interface_t interface);
+ 	int (*cpu_port_config)(struct dsa_switch *ds, int port);
+ 	void (*mac_port_get_caps)(struct dsa_switch *ds, int port,
+
 -- 
-Michael Walle <michael@walle.cc>
+2.30.2
