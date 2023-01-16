@@ -2,92 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ECA366B964
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 09:52:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEB2F66B97D
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 09:56:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232306AbjAPIwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 03:52:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57744 "EHLO
+        id S232427AbjAPI4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 03:56:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232371AbjAPIw0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 03:52:26 -0500
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2646044A1;
-        Mon, 16 Jan 2023 00:52:24 -0800 (PST)
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.95)
-          with esmtps (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1pHLDw-0003Fv-T9; Mon, 16 Jan 2023 09:52:12 +0100
-Received: from p57bd9464.dip0.t-ipconnect.de ([87.189.148.100] helo=[192.168.178.81])
-          by inpost2.zedat.fu-berlin.de (Exim 4.95)
-          with esmtpsa (TLS1.3)
-          tls TLS_AES_128_GCM_SHA256
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1pHLDw-000TdQ-Lf; Mon, 16 Jan 2023 09:52:12 +0100
-Message-ID: <40dc1bc1-d9cd-d9be-188e-5167ebae235c@physik.fu-berlin.de>
-Date:   Mon, 16 Jan 2023 09:52:10 +0100
+        with ESMTP id S232328AbjAPIz6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 03:55:58 -0500
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D67A6F777;
+        Mon, 16 Jan 2023 00:55:56 -0800 (PST)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 30G8teAd064470;
+        Mon, 16 Jan 2023 02:55:40 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1673859340;
+        bh=BiIyJEi0pp6Nt7svGW9SqzoYZ1kZspHk47MZdNhzGyE=;
+        h=From:To:CC:Subject:Date;
+        b=WQyY+RGp8XwPkF0Ivu8mw76qXxYR7/+dsz18PggXIqLogDQy7MiwvODkR5TcFtMDI
+         ODBaGevk0FnZf2WtBDFoFw8Xegxhxxeri72PJWjZimmx+WUsSxW4i5NsvZwXUefdbl
+         hS5ZmLrKrSjYOBYh9AxH2Cx6ASor/IaieURgOvAk=
+Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 30G8teci076507
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 16 Jan 2023 02:55:40 -0600
+Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Mon, 16
+ Jan 2023 02:55:40 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Mon, 16 Jan 2023 02:55:40 -0600
+Received: from uda0492258.dhcp.ti.com (ileaxei01-snat.itg.ti.com [10.180.69.5])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 30G8tZwH040368;
+        Mon, 16 Jan 2023 02:55:36 -0600
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <vigneshr@ti.com>,
+        <rogerq@kernel.org>, <nsekhar@ti.com>
+CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
+        <s-vadapalli@ti.com>
+Subject: [PATCH net-next v2 0/3] Add PPS support to am65-cpts driver
+Date:   Mon, 16 Jan 2023 14:25:31 +0530
+Message-ID: <20230116085534.440820-1-s-vadapalli@ti.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: remove arch/sh
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-sh@vger.kernel.org
-References: <20230113062339.1909087-1-hch@lst.de>
- <11e2e0a8-eabe-2d8c-d612-9cdd4bcc3648@physik.fu-berlin.de>
- <20230116071306.GA15848@lst.de>
-Content-Language: en-US
-From:   John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-In-Reply-To: <20230116071306.GA15848@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-Originating-IP: 87.189.148.100
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Christoph!
+The CPTS hardware doesn't support PPS signal generation. Using the GenFx
+(periodic signal generator) function, it is possible to model a PPS signal
+followed by routing it via the time sync router to the CPTS_HWy_TS_PUSH
+(hardware time stamp) input, in order to generate timestamps at 1 second
+intervals.
 
-On 1/16/23 08:13, Christoph Hellwig wrote:
-> On Fri, Jan 13, 2023 at 09:09:52AM +0100, John Paul Adrian Glaubitz wrote:
->> I'm still maintaining and using this port in Debian.
->>
->> It's a bit disappointing that people keep hammering on it. It works fine for me.
-> 
-> What platforms do you (or your users) use it on?
+This series adds driver support for enabling PPS signal generation.
+Additionally, the documentation for the am65-cpts driver is updated with
+the bindings for the "ti,pps" property, which is used to inform the
+pair [CPTS_HWy_TS_PUSH, GenFx] to the cpts driver.
 
-We have had a discussion between multiple people invested in the SuperH port and
-I have decided to volunteer as a co-maintainer of the port to support Rich Felker
-when he isn't available.
+Changes from v1:
+1. Drop device-tree patches.
+2. Address Roger's comments on the:
+   "net: ethernet: ti: am65-cpts: add pps support" patch.
+3. Collect Reviewed-by tag from Rob Herring.
 
-Adrian
+v1:
+https://lore.kernel.org/r/20230111114429.1297557-1-s-vadapalli@ti.com/
+
+Grygorii Strashko (3):
+  dt-binding: net: ti: am65x-cpts: add 'ti,pps' property
+  net: ethernet: ti: am65-cpts: add pps support
+  net: ethernet: ti: am65-cpts: adjust pps following ptp changes
+
+ .../bindings/net/ti,k3-am654-cpts.yaml        |   8 +
+ drivers/net/ethernet/ti/am65-cpts.c           | 155 ++++++++++++++++--
+ 2 files changed, 148 insertions(+), 15 deletions(-)
 
 -- 
-  .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer
-`. `'   Physicist
-   `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+2.25.1
 
