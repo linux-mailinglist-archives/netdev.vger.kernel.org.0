@@ -2,162 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0A6566BA77
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 10:34:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE19966BA89
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 10:36:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232279AbjAPJeu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 04:34:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58218 "EHLO
+        id S232301AbjAPJgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 04:36:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232229AbjAPJem (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 04:34:42 -0500
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5CB1B741
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 01:34:41 -0800 (PST)
-Received: by mail-io1-f69.google.com with SMTP id b21-20020a5d8d95000000b006fa39fbb94eso17479750ioj.17
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 01:34:41 -0800 (PST)
+        with ESMTP id S231808AbjAPJgn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 04:36:43 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F27218B14
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 01:36:40 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id p188so29605462yba.5
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 01:36:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=kH9aOCT6pj2r+4BZGThJVSbzJzQ1mNrsB6FBxKTTGqE=;
+        b=eOtBVqiBeGmZPWN27QSU1M6fP7OicpcS+hV2YAjRQjwwvxMcwQWxgXQlQj9FKZWzub
+         u/7PvvD4wY7SqD8VJrQXaB9lSJ8mXYzeXRg+8b2XDdpmNr0JACKxBG00I6alfq36srC6
+         lHBo54oSyFPEbzTMfrJfM5/sfDwku8d8b0ulBgW7vEzxVwOiYPLdSLqicejJuyqisG19
+         lXeltti1jfjhgUz3p3x3d44dt57IV/uzSzGN2o3hMT7/ApKfWcDQHMm0yDb7ctcT1pSi
+         rzXSsAy6XUJ4AcEKpLnUpZt27wZARnUn2YVk9PkveQEU32S5BSADb3S8CoXxIrEKi7GB
+         sCzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=XG+8BKQZXmEP0/38FNg8FgT9PiBrBcckD5PCX9//6rU=;
-        b=u9Ymtvm8GNl73La60EvW2qgwPM79p6Xt4xNzY3SOg3k3W391gs4ocaUxv6r289qQ4N
-         K6Ed5+USpceYofCHOcpkqBK2uMxWZGnuYVN+SDRW9yUb3PsRUZ1qSCtOk3dNj2cJxbmQ
-         nNrXs2h7aWHk6TCCx8FW2CoiG/Nvslxu6M6MlnqX+s/eZsdrD7t0padmcWrtqmzaMdV2
-         zxykn3jPe2h2gv1+I4YluHVR9/pk5VmPIFZjyDOwc6QMmzWYds2hZ7jpigji8wUIoGQl
-         V3JfU6Ugs5zlPFxK5j9e3mr7gYY4b6OTgQIRyg1FRjlNeUUmurifC39DaV0zbzkWWdPn
-         LbWw==
-X-Gm-Message-State: AFqh2kqlZGIxgOVrIRp+r+TF+1wJMav6VbCMDlKqipp5lm8AVlrg6Xm9
-        +APHLQVbRmYlGBA0pOkyxLhT7j41rPu0oUNNHyP4HUdc1twH
-X-Google-Smtp-Source: AMrXdXtBLIVPzMJ8XpSauUJN2DKRtc8QZaJS45FfN41f/bGLULX92rcj7lmH8JfkgZvHuYsG9bJuxoQi7SZfmB+9vDLqiPOPvhzP
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=kH9aOCT6pj2r+4BZGThJVSbzJzQ1mNrsB6FBxKTTGqE=;
+        b=K9nrKYv7EW6YZ7e7ENzXNpTiWRm1s4WDOjPdN1IiAfYD9CAKWvk9e0sIjJq+I7GOjx
+         oVDE/11zJp6TncHK0sE2rek7b969kMvzAHaODXOgvN19K4eX/pLFt1Iu89G6HrKzDBwq
+         PCu6brN821LF5EWjDFGL3sa75/kp4h+3MxY4EN+Ch8tBwykIU0WrPwI3AvAbskUbPM/H
+         Hs1fGuvEaBfKlP8Da7E0eJtCkLex6uoyazQA+hp57rH7LDXIy4JiqNlaOvxZxoObSF6L
+         jDdGvDYwgx8kbS+V47XrTd27fJNBs45iw4JrI7GdCryIPxKsjmyYKqWriraltqVCBU5M
+         T/gg==
+X-Gm-Message-State: AFqh2krFDgkQq0vsCUOtuiBJLNNijhUQpNPUtf0pVT1HDDD5NvdEXmK6
+        I9e9bIDsnTyOeddaqF4osXbKm+nm0zIshPlMEV8dgQ==
+X-Google-Smtp-Source: AMrXdXuD+tsmHoIqUJWVVTasVjhctdpPpJF8HvcFM29cYFrWRdfpAMv4nC3r4lpzdd67kAEfUsoyFcHL5UtSOpenRx8=
+X-Received: by 2002:a25:46c6:0:b0:7b8:a0b8:f7ec with SMTP id
+ t189-20020a2546c6000000b007b8a0b8f7ecmr4695150yba.36.1673861799025; Mon, 16
+ Jan 2023 01:36:39 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a02:aa18:0:b0:39e:a033:90c with SMTP id
- r24-20020a02aa18000000b0039ea033090cmr2060004jam.254.1673861681074; Mon, 16
- Jan 2023 01:34:41 -0800 (PST)
-Date:   Mon, 16 Jan 2023 01:34:41 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e75aad05f25e4a1e@google.com>
-Subject: [syzbot] general protection fault in sock_poll
-From:   syzbot <syzbot+026ab7dc882b578abd78@syzkaller.appspotmail.com>
-To:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        richardcochran@gmail.com, syzkaller-bugs@googlegroups.com
+References: <20230113164849.4004848-1-edumazet@google.com> <Y8Sb7LYDN/xjDBQy@pop-os.localdomain>
+In-Reply-To: <Y8Sb7LYDN/xjDBQy@pop-os.localdomain>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 16 Jan 2023 10:36:28 +0100
+Message-ID: <CANn89i+42Yk50N+D9KQmm+gvO84Wjnmk8WJa2mk++-kXy5CvEQ@mail.gmail.com>
+Subject: Re: [PATCH net] net/sched: sch_taprio: fix possible use-after-free
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        eric.dumazet@gmail.com, syzbot <syzkaller@googlegroups.com>,
+        Alexander Potapenko <glider@google.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Jan 16, 2023 at 1:35 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> On Fri, Jan 13, 2023 at 04:48:49PM +0000, Eric Dumazet wrote:
+> > syzbot reported a nasty crash [1] in net_tx_action() which
+> > made little sense until we got a repro.
+> >
+> > This repro installs a taprio qdisc, but providing an
+> > invalid TCA_RATE attribute.
+> >
+> > qdisc_create() has to destroy the just initialized
+> > taprio qdisc, and taprio_destroy() is called.
+> >
+> > However, the hrtimer used by taprio had already fired,
+> > therefore advance_sched() called __netif_schedule().
+> >
+> > Then net_tx_action was trying to use a destroyed qdisc.
+> >
+> > We can not undo the __netif_schedule(), so we must wait
+> > until one cpu serviced the qdisc before we can proceed.
+> >
+>
+> This workaround looks a bit ugly. I think we _may_ be able to make
+> hrtimer_start() as the last step of the initialization, IOW, move other
+> validations and allocations before it.
+>
 
-syzbot found the following issue on:
+taprio_init() detects no error.
 
-HEAD commit:    0a093b2893c7 Add linux-next specific files for 20230112
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=13a3e136480000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=835f3591019836d5
-dashboard link: https://syzkaller.appspot.com/bug?extid=026ab7dc882b578abd78
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+So moving around the hrtimer_start() inside it won't help.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+The error comes later from a wrong TCA_RATE attempt can then:
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/8111a570d6cb/disk-0a093b28.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/ecc135b7fc9a/vmlinux-0a093b28.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/ca8d73b446ea/bzImage-0a093b28.xz
+static struct Qdisc *qdisc_create(...
+...
+err = gen_new_estimator(...);
+if (err) {
+    NL_SET_ERR_MSG(extack, "Failed to generate new estimator");
+    goto err_out4;
+}
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+026ab7dc882b578abd78@syzkaller.appspotmail.com
+...
 
-general protection fault, probably for non-canonical address 0xdffffc0000000008: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000040-0x0000000000000047]
-CPU: 1 PID: 24704 Comm: syz-executor.0 Not tainted 6.2.0-rc3-next-20230112-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-RIP: 0010:sock_poll+0xc0/0x5d0 net/socket.c:1341
-Code: 4c 89 f2 48 c1 ea 03 80 3c 02 00 0f 85 7e 04 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 5d 20 48 8d 7b 40 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 51 04 00 00 48 8b 5b 40 31 c0 48 85 db 74 7f e8
-RSP: 0000:ffffc900037d79e0 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc90004011000
-RDX: 0000000000000008 RSI: ffffffff87bf3d08 RDI: 0000000000000040
-RBP: ffff88808540aa00 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: ffffc900037d7a88
-R13: ffff88802bfad900 R14: ffff88808540aa20 R15: ffff888083c93a78
-FS:  00007f544b91d700(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f8c14da8000 CR3: 000000001da7b000 CR4: 00000000003526e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- vfs_poll include/linux/poll.h:88 [inline]
- io_poll_check_events io_uring/poll.c:279 [inline]
- io_poll_task_func+0x3a6/0x1220 io_uring/poll.c:327
- handle_tw_list+0xa8/0x460 io_uring/io_uring.c:1169
- tctx_task_work+0x12e/0x530 io_uring/io_uring.c:1224
- task_work_run+0x16f/0x270 kernel/task_work.c:179
- get_signal+0x1c7/0x24f0 kernel/signal.c:2635
- arch_do_signal_or_restart+0x79/0x5c0 arch/x86/kernel/signal.c:306
- exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
- exit_to_user_mode_prepare+0x11f/0x240 kernel/entry/common.c:204
- __syscall_exit_to_user_mode_work kernel/entry/common.c:286 [inline]
- syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:297
- do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f544ac8c0c9
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f544b91d218 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
-RAX: 0000000000000001 RBX: 00007f544adabf88 RCX: 00007f544ac8c0c9
-RDX: 00000000000f4240 RSI: 0000000000000081 RDI: 00007f544adabf8c
-RBP: 00007f544adabf80 R08: 00007ffdfa9bc080 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000246 R12: 00007f544adabf8c
-R13: 00007ffdfa9359ef R14: 00007f544b91d300 R15: 0000000000022000
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:sock_poll+0xc0/0x5d0 net/socket.c:1341
-Code: 4c 89 f2 48 c1 ea 03 80 3c 02 00 0f 85 7e 04 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 5d 20 48 8d 7b 40 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 51 04 00 00 48 8b 5b 40 31 c0 48 85 db 74 7f e8
-RSP: 0000:ffffc900037d79e0 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc90004011000
-RDX: 0000000000000008 RSI: ffffffff87bf3d08 RDI: 0000000000000040
-RBP: ffff88808540aa00 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: ffffc900037d7a88
-R13: ffff88802bfad900 R14: ffff88808540aa20 R15: ffff888083c93a78
-FS:  00007f544b91d700(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b3343a000 CR3: 000000001da7b000 CR4: 00000000003526e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	4c 89 f2             	mov    %r14,%rdx
-   3:	48 c1 ea 03          	shr    $0x3,%rdx
-   7:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1)
-   b:	0f 85 7e 04 00 00    	jne    0x48f
-  11:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  18:	fc ff df
-  1b:	48 8b 5d 20          	mov    0x20(%rbp),%rbx
-  1f:	48 8d 7b 40          	lea    0x40(%rbx),%rdi
-  23:	48 89 fa             	mov    %rdi,%rdx
-  26:	48 c1 ea 03          	shr    $0x3,%rdx
-* 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
-  2e:	0f 85 51 04 00 00    	jne    0x485
-  34:	48 8b 5b 40          	mov    0x40(%rbx),%rbx
-  38:	31 c0                	xor    %eax,%eax
-  3a:	48 85 db             	test   %rbx,%rbx
-  3d:	74 7f                	je     0xbe
-  3f:	e8                   	.byte 0xe8
+err_out4:
+qdisc_put_stab(rtnl_dereference(sch->stab));
+ if (ops->destroy)
+     ops->destroy(sch);
+goto err_out3;
 
+This is why we need to make sure ->destroy will fully undo what ->init did,
+including the possible fact that the hrtimer already fired.
+This seems to be taprio specific.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Or we would need a new method, like   ->post_init(), that should be
+called once all steps have been a success.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Or call the hrtimer_start() at first taprio_enqueue(), adding a
+conditional in fast path...
+
+> Can you share your reproducer?
+
+Not publicly.
+
+Although I think the bug is clear enough.
