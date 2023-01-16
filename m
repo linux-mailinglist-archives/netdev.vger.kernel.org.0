@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93A6166BCE4
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 12:29:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 232B266BCED
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 12:30:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230162AbjAPL3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 06:29:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52866 "EHLO
+        id S229911AbjAPLam (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 06:30:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230347AbjAPL2m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 06:28:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA8B1F5D0;
-        Mon, 16 Jan 2023 03:28:41 -0800 (PST)
+        with ESMTP id S230010AbjAPLaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 06:30:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74A761F4A3
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 03:30:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1527CB80E59;
-        Mon, 16 Jan 2023 11:28:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E02FC433D2;
-        Mon, 16 Jan 2023 11:28:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08DBD60F7B
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 11:30:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 560FCC433F0;
+        Mon, 16 Jan 2023 11:30:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673868518;
-        bh=m8r+MA8M9SSTC6lPE34HeHkrHNMpB1WU90h6CeoFNkM=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=aosC56xLVELNoaaT32vZpAaADbjkcp3GKCBZapKF/pycro35XRHMSl2Q33jtK6W3g
-         qXLDOhYSAm3gpRpfk0bOstzJYTbzXillz6DjTKV1MbS7wQuOfKpz/Gv5osjIu0XbJW
-         irkK4MR9dsntQTN1di3Pc4znIDUVWaWOvuNd9ge5ege1e8BNEEErlH9SLRL7T3QXKK
-         xdB34hEPOh0N9gXEsOt/V230tUYFmiEPwiUjFB7So+geFCBL2gA8skywj37VnMX7T3
-         fatS4s3IXYyAlMpG2w0ecAZtJsh08KMlCZTo4keHrD0OrOr3BDJ83/avGkQJ91DST5
-         0ChW7DdbjNczw==
+        s=k20201202; t=1673868616;
+        bh=/34I9lVzsPTJb4398uI4DPfixBtWO1J6acrvoxfZP7c=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=o5YVNEjkwirSj6r7J7v+xViPXP4kkC+ICTzm8EGkFEbGT6xQ+VMq3KLP1gakWnfNk
+         GlKWkendykVp5qEfsuR7Rcoo7NBRarZTDsCXKg54ofjDY9Y7UgsV/a7X6A7wLSO17h
+         FtrNistwaOtR5PJbVynwYXUPc/Tx3ZMV9WiZqHc2qcAQoGV9SYEBgoFtgKTPiFQRPG
+         UZZwpYO/eUpf4LhN+hdcbNY5TIurrO7B4x9uGrblGo5HUKrsfhdTG58mngefYggaWv
+         7Fa+J6uYnZbfDiA6KVIy65TSefTIetXZCL54+jwPx7aNFReXv+DO5gKn3khREMP4/a
+         DcJ6gDCa44yXA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 329D7E54D2A;
+        Mon, 16 Jan 2023 11:30:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [v2] wifi: rndis_wlan: Prevent buffer overflow in rndis_query_oid
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20230111175031.7049-1-szymon.heidrich@gmail.com>
-References: <20230111175031.7049-1-szymon.heidrich@gmail.com>
-To:     Szymon Heidrich <szymon.heidrich@gmail.com>
-Cc:     alexander.duyck@gmail.com, jussi.kivilinna@iki.fi,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, greg@kroah.com, szymon.heidrich@gmail.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <167386851260.4736.15589868061067872069.kvalo@kernel.org>
-Date:   Mon, 16 Jan 2023 11:28:36 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2] unix: Improve locking scheme in
+ unix_show_fdinfo()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167386861620.7624.707492607828278885.git-patchwork-notify@kernel.org>
+Date:   Mon, 16 Jan 2023 11:30:16 +0000
+References: <c6c7084c-56c7-cd37-befe-df718e080597@ya.ru>
+In-Reply-To: <c6c7084c-56c7-cd37-befe-df718e080597@ya.ru>
+To:     Kirill Tkhai <tkhai@ya.ru>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, kuniyu@amazon.com, netdev@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,29 +56,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Szymon Heidrich <szymon.heidrich@gmail.com> wrote:
+Hello:
 
-> Since resplen and respoffs are signed integers sufficiently
-> large values of unsigned int len and offset members of RNDIS
-> response will result in negative values of prior variables.
-> This may be utilized to bypass implemented security checks
-> to either extract memory contents by manipulating offset or
-> overflow the data buffer via memcpy by manipulating both
-> offset and len.
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Sat, 14 Jan 2023 12:35:02 +0300 you wrote:
+> After switching to TCP_ESTABLISHED or TCP_LISTEN sk_state, alive SOCK_STREAM
+> and SOCK_SEQPACKET sockets can't change it anymore (since commit 3ff8bff704f4
+> "unix: Fix race in SOCK_SEQPACKET's unix_dgram_sendmsg()").
 > 
-> Additionally assure that sum of resplen and respoffs does not
-> overflow so buffer boundaries are kept.
+> Thus, we do not need to take lock here.
 > 
-> Fixes: 80f8c5b434f9 ("rndis_wlan: copy only useful data from rndis_command respond")
-> Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
-> Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+> Signed-off-by: Kirill Tkhai <tkhai@ya.ru>
+> 
+> [...]
 
-Patch applied to wireless.git, thanks.
+Here is the summary with links:
+  - [net-next,v2] unix: Improve locking scheme in unix_show_fdinfo()
+    https://git.kernel.org/netdev/net-next/c/b27401a30ee4
 
-b870e73a56c4 wifi: rndis_wlan: Prevent buffer overflow in rndis_query_oid
-
+You are awesome, thank you!
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20230111175031.7049-1-szymon.heidrich@gmail.com/
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
