@@ -2,53 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C35A066BFD2
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 14:31:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE0C266BFE2
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 14:36:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230120AbjAPNb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 08:31:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49504 "EHLO
+        id S230499AbjAPNgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 08:36:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230013AbjAPNb1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 08:31:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41056B77F;
-        Mon, 16 Jan 2023 05:31:26 -0800 (PST)
+        with ESMTP id S230484AbjAPNgA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 08:36:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA2FB1E1C3;
+        Mon, 16 Jan 2023 05:35:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 039F7B80E90;
-        Mon, 16 Jan 2023 13:31:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 008D5C433D2;
-        Mon, 16 Jan 2023 13:31:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 43D7160FB8;
+        Mon, 16 Jan 2023 13:35:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78513C433D2;
+        Mon, 16 Jan 2023 13:35:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673875883;
-        bh=qPUBxUXK2GS1PEFHaWB30Wa1xJGfN6u8M0tQhMj7ZJM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=amx9IsfXvgQ1Jy104SsPx7bm8BWVKd0z/6jVPkJmWfJ4ImJ7KVUccPsv2d99NJeBh
-         Jy0N2p6r0ZgIKMMI3rquHvmMJ6YTA13rAlil3ol4+OZ6KzgcXxwKtYbeJzmETTTsM+
-         jreHbQaEZ5cdSQnM07XOMbtCI2AExtcU+yoEP+oFnDIM15Y4tFdKpgme3CLDKObIkk
-         pdyWW+Gj3kpfOODcCn9edLAg12e33iI6E9FEH9n3WmMy17DZGfUggJZ1GWMKRXJeeX
-         lRxFgIe76nciW3DLSbV95tKhgZ77sDbyFea2rLiokJzDqQL4ed7jxpP6OxA34/P87u
-         htnlO+1HdCCyA==
-Date:   Mon, 16 Jan 2023 15:31:19 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     yang.yang29@zte.com.cn, aspriel@gmail.com, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        sha-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, xu.panda@zte.com.cn
-Subject: Re: [PATCH net-next] brcm80211: use strscpy() to instead of strncpy()
-Message-ID: <Y8VRpzodki/YAcvC@unreal>
-References: <202212231037210142246@zte.com.cn>
- <167387451256.32134.6493247488948126794.kvalo@kernel.org>
+        s=k20201202; t=1673876157;
+        bh=VGDHasLw5K/OcysDOXC+d/X98n+wpKKIJ36v49TyMnE=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=W85pTBDdk1gqnpNirDMTKNhWQkLWGQf29BfgmNk1ToLV6m7kMwJCj/LEYojADGN4B
+         yFAlTjHrwRM2gLCnoRRrYBxHciel39gv3i207ub2cr5ZiSacR1XduAJKE+qz8o7Q55
+         Cn9I3En77pt/kkAXUvLEe/o4JIexLY4rzDI0pAHzkaIhcV7YIMvkLNotb44Bea60vA
+         eW9Ej6L+gX5mJOQKKGQGFNfraGJB/+Fypp1SbyBTu3aS983ohKazvgOXgKfYTPFkse
+         zxb38g9ITiWwgLEKiIacP+P1PJoQLQ7WD7S6zI/U7KjLHdEiOqykq3+dNiSzauzEuh
+         MPoEzSPPCXbIg==
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 756B7900F2D; Mon, 16 Jan 2023 14:35:54 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [bpf-next 00/10] samples/bpf: modernize BPF functionality test
+ programs
+In-Reply-To: <CAEKGpzgzxabXqUKXz4A-dYx6B05vbDkGELadRDBnbCF_hLxMAQ@mail.gmail.com>
+References: <20230115071613.125791-1-danieltimlee@gmail.com>
+ <CAADnVQ+zP5bkjkSa97k+dK7=NabkdoLWQtZ1qRwRTUQgGdqhVA@mail.gmail.com>
+ <CAEKGpzgzxabXqUKXz4A-dYx6B05vbDkGELadRDBnbCF_hLxMAQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 16 Jan 2023 14:35:54 +0100
+Message-ID: <87ilh6eh51.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <167387451256.32134.6493247488948126794.kvalo@kernel.org>
+Content-Type: text/plain
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,35 +68,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 16, 2023 at 01:08:36PM +0000, Kalle Valo wrote:
-> <yang.yang29@zte.com.cn> wrote:
-> 
-> > From: Xu Panda <xu.panda@zte.com.cn>
-> > 
-> > The implementation of strscpy() is more robust and safer.
-> > That's now the recommended way to copy NUL-terminated strings.
-> > 
-> > Signed-off-by: Xu Panda <xu.panda@zte.com.cn>
-> > Signed-off-by: Yang Yang <yang.yang29@zte.com>
-> 
-> Mismatch email in From and Signed-off-by lines:
-> 
-> From: <yang.yang29@zte.com.cn>
-> Signed-off-by: Yang Yang <yang.yang29@zte.com>
-> 
-> Patch set to Changes Requested.
+"Daniel T. Lee" <danieltimlee@gmail.com> writes:
 
-Kalle, please be aware of this response
-https://lore.kernel.org/netdev/20230113112817.623f58fa@kernel.org/
+> On Mon, Jan 16, 2023 at 6:38 AM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+>>
+>> On Sat, Jan 14, 2023 at 11:16 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+>> >
+>> > Currently, there are many programs under samples/bpf to test the
+>> > various functionality of BPF that have been developed for a long time.
+>> > However, the kernel (BPF) has changed a lot compared to the 2016 when
+>> > some of these test programs were first introduced.
+>> >
+>> > Therefore, some of these programs use the deprecated function of BPF,
+>> > and some programs no longer work normally due to changes in the API.
+>> >
+>> > To list some of the kernel changes that this patch set is focusing on,
+>> > - legacy BPF map declaration syntax support had been dropped [1]
+>> > - bpf_trace_printk() always append newline at the end [2]
+>> > - deprecated styled BPF section header (bpf_load style) [3]
+>> > - urandom_read tracepoint is removed (used for testing overhead) [4]
+>> > - ping sends packet with SOCK_DGRAM instead of SOCK_RAW [5]*
+>> > - use "vmlinux.h" instead of including individual headers
+>> >
+>> > In addition to this, this patchset tries to modernize the existing
+>> > testing scripts a bit. And for network-related testing programs,
+>> > a separate header file was created and applied. (To use the
+>> > Endianness conversion function from xdp_sample and bunch of constants)
+>>
+>> Nice set of cleanups. Applied.
+>> As a follow up could you convert some of them to proper selftests/bpf ?
+>> Unfortunately samples/bpf will keep bit rotting despite your herculean efforts.
+>
+> I really appreciate for your compliment!
+> I'll try to convert the existing sample to selftest in the next patch.
 
-"I don't trust that you know what you're doing. So please don't send
-any more strncpy() -> strscpy() conversions for networking."
+Maybe this is a good time to mention that we recently ported some of the
+XDP utilities from samples/bpf to xdp-tools, in the form of the
+'xdp-bench' utility:
+https://github.com/xdp-project/xdp-tools/tree/master/xdp-bench
 
-Thanks
+It's basically a combination of all the xdp_redirect* samples, but also
+includes the functionality from the xdp_rxq_info sample program (i.e.,
+the ability to monitor RXQs and use other return codes).
 
-> 
-> -- 
-> https://patchwork.kernel.org/project/linux-wireless/patch/202212231037210142246@zte.com.cn/
-> 
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-> 
+I'm planning to submit a patch to remove those utilities from
+samples/bpf after we tag the next release of xdp-tools (have one or two
+outstanding issues to clear before we do that), but wanted to give you a
+head's up so you don't spend any time on those particular utilities when
+you're cleaning up samples :)
+
+-Toke
