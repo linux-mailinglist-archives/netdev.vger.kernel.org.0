@@ -2,106 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B28866C00E
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 14:47:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD6BE66C015
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 14:50:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231394AbjAPNry (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 08:47:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59228 "EHLO
+        id S231316AbjAPNuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 08:50:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231165AbjAPNrw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 08:47:52 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7F261F939;
-        Mon, 16 Jan 2023 05:47:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=0HTUfVc3oaZYPyu8hVJiRYYIklNVSq9G9JrqltNQOXM=; b=RP2SFlEOO71CljwuB1Qv7OjmU2
-        IJYZFTHcIFP1VVxWt3NSd+fslR/AUTg+OtdKfy7ldH9E8mYWmFSrGOTR1K+1HHyDT8wY3PEXc31+E
-        FtNkSzJtizDqPyB/RCTOite3k+4UYyQnJESYwx71VBYd7B+QJWwxc8JCNeqh9ip8luwR5xEhF1lGD
-        IPUFoKIuBHFIKA0gGGSgAt1/A9kj0GHYxwZ2s+wXxWF//5X/5Q8dvFmkWgZUoEJqQxtLDxHpobXn8
-        09t8pWFNJEjsd8ytxoGBBrUeOW996pQ7PHQkvFJBprOWWDhKj5+GZ16hzsRM9u8a43jlqIXTyzLVo
-        StJ17BKA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36128)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pHPph-00051t-EG; Mon, 16 Jan 2023 13:47:29 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pHPpb-00063u-18; Mon, 16 Jan 2023 13:47:23 +0000
-Date:   Mon, 16 Jan 2023 13:47:23 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Frank Wunderlich <linux@fw-web.de>,
-        linux-mediatek@lists.infradead.org,
-        Alexander Couzens <lynxis@fe80.eu>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: mtk_sgmii: implement mtk_pcs_ops
-Message-ID: <Y8VVa0zHk0nCwS1w@shell.armlinux.org.uk>
-References: <trinity-1d4cc306-d1a4-4ccf-b853-d315553515ce-1666543305596@3c-app-gmx-bs01>
- <Y1V/asUompZKj0ct@shell.armlinux.org.uk>
- <trinity-ac9a840b-cb06-4710-827a-4c4423686074-1666551838763@3c-app-gmx-bs01>
- <trinity-169e3c3f-3a64-485c-9a43-b7cc595531a9-1666552897046@3c-app-gmx-bs01>
- <Y1Wfc+M/zVdw9Di3@shell.armlinux.org.uk>
- <Y1Zah4+hyFk50JC6@shell.armlinux.org.uk>
- <trinity-d2f74581-c020-4473-a5f4-0fc591233293-1666622740261@3c-app-gmx-bap55>
- <Y1ansgmD69AcITWx@shell.armlinux.org.uk>
- <trinity-defa4f3d-804e-401e-bea1-b36246cbc11b-1666685003285@3c-app-gmx-bap29>
- <87o7qy39v5.fsf@miraculix.mork.no>
+        with ESMTP id S231202AbjAPNuU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 08:50:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B151F5C5
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 05:50:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E758CB80F03
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 13:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 90C4AC433D2;
+        Mon, 16 Jan 2023 13:50:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673877016;
+        bh=nzf2otbHCxuLRHphkL+1gzPPjA3GsV2GVV35sLnUim8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ik10OzstdDUDVP4sXKhSHaTfrfGjKuStDTo58B3sSJUXAU+HVqzvm2Ws/67RjkjUl
+         CAWp3OfJdyULE4bqjUzDtqi+ZeObX3RmLtITWgSWjDLOu8NFbx4Oi0ZaO5fNIU6UCN
+         cekzf0LeH3AV1p9tJWW01/xm5rnpig8csmRJmQ+PoGmEuEGvFdUhEqEnPLq+fDQQ+Q
+         Fs66R2FnvyidtP95l2nTrEFtT2WWm+r+svkg4Tjp/9bWcOUw72bHv/gOQE/lBqNJPg
+         UwJzJCb8SeKDfuZSwLTKoBGjQQK/Sm9nyPp2waXFS4RAob3NaIQXXKTNE0pgc+rNHG
+         SCb78/uSk/swA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7382DE54D2E;
+        Mon, 16 Jan 2023 13:50:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <87o7qy39v5.fsf@miraculix.mork.no>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [Patch net v3 0/2] l2tp: fix race conditions in
+ l2tp_tunnel_register()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167387701646.13526.1819803351438649697.git-patchwork-notify@kernel.org>
+Date:   Mon, 16 Jan 2023 13:50:16 +0000
+References: <20230114030137.672706-1-xiyou.wangcong@gmail.com>
+In-Reply-To: <20230114030137.672706-1-xiyou.wangcong@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org, saeed@kernel.org, gnault@redhat.com,
+        tparkin@katalix.com, cong.wang@bytedance.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 16, 2023 at 02:08:30PM +0100, Bjørn Mork wrote:
-> Frank Wunderlich <frank-w@public-files.de> writes:
-> 
-> > apart from this little problem it works much better than it actually is so imho more
-> > people should test it on different platforms.
-> 
-> Hello!  I've been banging my head against an MT7986 board with two
-> Maxlinear GPY211C phys for a while. One of those phys is connected to
-> port 5 of the MT7531 switch.  This is working perfectly.
-> 
-> The other GPY211C is connected to the second MT7986 mac.  This one is
-> giving me a headache...
-> 
-> I can only get the port to work at 2500Mb/s.  Changing the speed to
-> anything lower looks fine in ethtool etc, but traffic is blocked.
+Hello:
 
-My guess would be that the GPY PHY is using in-band SGMII negotiation
-(it sets VSPEC1_SGMII_ANEN_ANRS when entering SGMII mode and clears
-it in 2500base-X), but as the link is not using in-band mode on the
-PCS side, the PHY never sees its in-band negotiation complete, so the
-link between PCS and PHY never comes up.
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Both sides need to agree on that detail.
+On Fri, 13 Jan 2023 19:01:35 -0800 you wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+> 
+> This patchset contains two patches, the first one is a preparation for
+> the second one which is the actual fix. Please find more details in
+> each patch description.
+> 
+> I have ran the l2tp test (https://github.com/katalix/l2tp-ktest),
+> all test cases are passed.
+> 
+> [...]
 
+Here is the summary with links:
+  - [net,v3,1/2] l2tp: convert l2tp_tunnel_list to idr
+    https://git.kernel.org/netdev/net/c/c4d48a58f32c
+  - [net,v3,2/2] l2tp: close all race conditions in l2tp_tunnel_register()
+    https://git.kernel.org/netdev/net/c/0b2c59720e65
+
+You are awesome, thank you!
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
