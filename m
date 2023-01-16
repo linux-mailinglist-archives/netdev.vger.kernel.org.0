@@ -2,129 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AF5866C3F7
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 16:33:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39A0066C404
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 16:35:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231648AbjAPPc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 10:32:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50258 "EHLO
+        id S229543AbjAPPfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 10:35:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230509AbjAPPcb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 10:32:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A21918B2E;
-        Mon, 16 Jan 2023 07:29:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DD7361001;
-        Mon, 16 Jan 2023 15:29:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBB26C433EF;
-        Mon, 16 Jan 2023 15:29:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673882946;
-        bh=7a330a17Z1uu7izXrb4SAEzyi7d8G4tr45dHBjsd2hw=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=s6+766aYmdjyi+Ct4qcqyNxJjBIsuvHhSbklxmt2AmNeJ1yq1EGEuTTaCqJZB/V26
-         mRQ0HD8DOHhX+x9m7Tc7yHsENMY07gUiuiEICq7J2fqKUq2as8DnqEw2yVjHkns6/f
-         yXpsTLLeNFgMC7LlkEw4+IlQVQiD/PVBOvIvHvrS878JE/0zRG6oGP5Xf2kLzvfmtp
-         xiBoU8uJSvwiFN+LaXSEjTYWt8bKQlFkZlXJo1VY6L3VRx1dPLSAvf/BQJgMGPC9tF
-         77IcZVWtOm1LA5x8hwFsqdrzO4kYsQeHcKG39XYZmuENwUy+cpAe5uEAomwW1E93ij
-         ie9Ryr3XI8g7w==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH net] Revert "wifi: mac80211: fix memory leak in
- ieee80211_if_add()"
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20230113124326.3533978-1-edumazet@google.com>
-References: <20230113124326.3533978-1-edumazet@google.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S230411AbjAPPem (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 10:34:42 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 930054EE8;
+        Mon, 16 Jan 2023 07:32:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=uu7nSecGWseQ3bOuTyemkP6Mkcu9D4Vr+8fK+fSf+bU=; b=SdDjm8sXL/UOT1grM+JtNQ/Ux6
+        En1SAU0mVmdeycI1VuSFQC7EbaHARW+S3qRy2OMHH7YmsFQYeyY66oB8kYxSWwEHg7hCw26UV3es3
+        6gB4ZQaIuFstj+VoxPf1hodh+V8K3DC2Zr2hkBMnnEVqBgXamgxEsCRcZMtJRl3hwTyOK6vFZMoV7
+        s45ICygDMZk1NxE5295RXxy0/M9FPHw5VeqLegB1u9eB7Ae1s97d2gBZO+ReEezxC/nl4E+tNDQeo
+        DbiniybZGTOE0LwdKCAAjmQzgPDQyvsY1+uP9+LZRfs3VkrbK0D8tCSA6EWBOeYvvPb86003AaCI+
+        akm0Urww==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36132)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pHRT1-0005H6-2n; Mon, 16 Jan 2023 15:32:10 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pHRSw-00067Q-Ao; Mon, 16 Jan 2023 15:32:06 +0000
+Date:   Mon, 16 Jan 2023 15:32:06 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Frank Wunderlich <linux@fw-web.de>,
+        linux-mediatek@lists.infradead.org,
+        Alexander Couzens <lynxis@fe80.eu>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Zhengchao Shao <shaozhengchao@huawei.com>,
-        Johannes Berg <johannes.berg@intel.com>
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <167388294128.25993.17967935961425220437.kvalo@kernel.org>
-Date:   Mon, 16 Jan 2023 15:29:03 +0000 (UTC)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: mtk_sgmii: implement mtk_pcs_ops
+Message-ID: <Y8Vt9vfEa4w8HXHQ@shell.armlinux.org.uk>
+References: <Y1Wfc+M/zVdw9Di3@shell.armlinux.org.uk>
+ <Y1Zah4+hyFk50JC6@shell.armlinux.org.uk>
+ <trinity-d2f74581-c020-4473-a5f4-0fc591233293-1666622740261@3c-app-gmx-bap55>
+ <Y1ansgmD69AcITWx@shell.armlinux.org.uk>
+ <trinity-defa4f3d-804e-401e-bea1-b36246cbc11b-1666685003285@3c-app-gmx-bap29>
+ <87o7qy39v5.fsf@miraculix.mork.no>
+ <Y8VVa0zHk0nCwS1w@shell.armlinux.org.uk>
+ <87h6wq35dn.fsf@miraculix.mork.no>
+ <Y8VmSrjHTlllaDy2@shell.armlinux.org.uk>
+ <87bkmy33ph.fsf@miraculix.mork.no>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87bkmy33ph.fsf@miraculix.mork.no>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eric Dumazet <edumazet@google.com> wrote:
+On Mon, Jan 16, 2023 at 04:21:30PM +0100, Bjørn Mork wrote:
+> [   54.539438] mtk_soc_eth 15100000.ethernet wan: Link is Down
+> [   56.619937] mtk_sgmii_select_pcs: id=1
+> [   56.623690] mtk_pcs_config: interface=4
+> [   56.627511] offset:0 0x140
+> [   56.627513] offset:4 0x4d544950
+> [   56.630215] offset:8 0x20
+> [   56.633340] forcing AN
+> [   56.638292] mtk_pcs_config: rgc3=0x0, advertise=0x1 (changed), link_timer=1600000,  sgm_mode=0x103, bmcr=0x1000, use_an=1
+> [   56.649226] mtk_pcs_link_up: interface=4
+> [   56.653135] offset:0 0x81140
+> [   56.653137] offset:4 0x4d544950
+> [   56.656001] offset:8 0x1
+> [   56.659137] mtk_soc_eth 15100000.ethernet wan: Link is Up - 1Gbps/Full - flow control rx/tx
 
-> This reverts commit 13e5afd3d773c6fc6ca2b89027befaaaa1ea7293.
-> 
-> ieee80211_if_free() is already called from free_netdev(ndev)
-> because ndev->priv_destructor == ieee80211_if_free
-> 
-> syzbot reported:
-> 
-> general protection fault, probably for non-canonical address 0xdffffc0000000004: 0000 [#1] PREEMPT SMP KASAN
-> KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
-> CPU: 0 PID: 10041 Comm: syz-executor.0 Not tainted 6.2.0-rc2-syzkaller-00388-g55b98837e37d #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-> RIP: 0010:pcpu_get_page_chunk mm/percpu.c:262 [inline]
-> RIP: 0010:pcpu_chunk_addr_search mm/percpu.c:1619 [inline]
-> RIP: 0010:free_percpu mm/percpu.c:2271 [inline]
-> RIP: 0010:free_percpu+0x186/0x10f0 mm/percpu.c:2254
-> Code: 80 3c 02 00 0f 85 f5 0e 00 00 48 8b 3b 48 01 ef e8 cf b3 0b 00 48 ba 00 00 00 00 00 fc ff df 48 8d 78 20 48 89 f9 48 c1 e9 03 <80> 3c 11 00 0f 85 3b 0e 00 00 48 8b 58 20 48 b8 00 00 00 00 00 fc
-> RSP: 0018:ffffc90004ba7068 EFLAGS: 00010002
-> RAX: 0000000000000000 RBX: ffff88823ffe2b80 RCX: 0000000000000004
-> RDX: dffffc0000000000 RSI: ffffffff81c1f4e7 RDI: 0000000000000020
-> RBP: ffffe8fffe8fc220 R08: 0000000000000005 R09: 0000000000000000
-> R10: 0000000000000000 R11: 1ffffffff2179ab2 R12: ffff8880b983d000
-> R13: 0000000000000003 R14: 0000607f450fc220 R15: ffff88823ffe2988
-> FS: 00007fcb349de700(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-> CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000001b32220000 CR3: 000000004914f000 CR4: 00000000003506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
-> <TASK>
-> netdev_run_todo+0x6bf/0x1100 net/core/dev.c:10352
-> ieee80211_register_hw+0x2663/0x4040 net/mac80211/main.c:1411
-> mac80211_hwsim_new_radio+0x2537/0x4d80 drivers/net/wireless/mac80211_hwsim.c:4583
-> hwsim_new_radio_nl+0xa09/0x10f0 drivers/net/wireless/mac80211_hwsim.c:5176
-> genl_family_rcv_msg_doit.isra.0+0x1e6/0x2d0 net/netlink/genetlink.c:968
-> genl_family_rcv_msg net/netlink/genetlink.c:1048 [inline]
-> genl_rcv_msg+0x4ff/0x7e0 net/netlink/genetlink.c:1065
-> netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2564
-> genl_rcv+0x28/0x40 net/netlink/genetlink.c:1076
-> netlink_unicast_kernel net/netlink/af_netlink.c:1330 [inline]
-> netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1356
-> netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1932
-> sock_sendmsg_nosec net/socket.c:714 [inline]
-> sock_sendmsg+0xd3/0x120 net/socket.c:734
-> ____sys_sendmsg+0x712/0x8c0 net/socket.c:2476
-> ___sys_sendmsg+0x110/0x1b0 net/socket.c:2530
-> __sys_sendmsg+0xf7/0x1c0 net/socket.c:2559
-> do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
-> entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> 
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Fixes: 13e5afd3d773 ("wifi: mac80211: fix memory leak in ieee80211_if_add()")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Zhengchao Shao <shaozhengchao@huawei.com>
-> Cc: Johannes Berg <johannes.berg@intel.com>
+Thanks - there seems to be something weird with the bmcr value printed
+above in the mtk_pcs_config line.
 
-Patch applied to wireless.git, thanks.
+You have bmcr=0x1000, but the code sets two bits - SGMII_AN_RESTART and
+SGMII_AN_ENABLE which are bits 9 and 12, so bmcr should be 0x1200, not
+0x1000. Any ideas why?
 
-80f8a66dede0 Revert "wifi: mac80211: fix memory leak in ieee80211_if_add()"
+Can you also hint at what the bits in the PHY register you quote mean
+please?
+
+Thanks.
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20230113124326.3533978-1-edumazet@google.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
