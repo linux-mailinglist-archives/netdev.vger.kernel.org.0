@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3679B66D34B
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 00:52:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15E1466D350
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 00:52:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233886AbjAPXwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 18:52:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45278 "EHLO
+        id S232650AbjAPXwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 18:52:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232650AbjAPXwr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 18:52:47 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C859022A07;
-        Mon, 16 Jan 2023 15:52:46 -0800 (PST)
+        with ESMTP id S233038AbjAPXwt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 18:52:49 -0500
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870A522A11;
+        Mon, 16 Jan 2023 15:52:47 -0800 (PST)
 Received: from mwalle01.sab.local (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 6F428D5C;
-        Tue, 17 Jan 2023 00:52:44 +0100 (CET)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 1799DD5D;
+        Tue, 17 Jan 2023 00:52:45 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1673913164;
+        t=1673913165;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fbfQoq+/nP40y3Od/7KPlEsF8XCF4vb8Tsl/JXpv37c=;
-        b=RIRLUnFhk4lbuRdXBZHwvVY5XR0+dcNDfp4iMVgeUJ/UMEQKXYirRkgdpUGsMF3lEheMEu
-        J7n7W4g5GkNe3Ys5h5VF9sorDHMDoon2yECEhIi6H+GgsOB58yXiBggLDlClmOgvMvYtuc
-        JalLhD+AYTo6z6j+OUTifMY64KrLoQeoSOzrQQwQbDgxmGlfhhf1lrqUZztKAOuRTAXK1f
-        kUqJqu9UC9YABe4lSZmAuB8eAa1kwA3Pl9ZUzsCuP9KGgYTaUswHOLtGA8/u+n4YrBxDx5
-        xUqH6i3Zxn684NGuVXqt0uHK1+Xu2e86DjuAgPpa2ZFyVlOBAMl6EmWDewyUEg==
+        bh=kLjDb6Z8ltzyK2BgVssXp9+2hjvKuJoCm2q3gVXDY64=;
+        b=XItSZsfnJuwjkmNaFwtcgj+Y7MpJYfyoWA7PaQkMzgeEmESyAyLYKWX9qam1NV2ZXuQuxt
+        k1GZsNnjqa0pKwncLNhxKXnQQ8BSKBcE9/n7CLgAbsv5UV4OIVTW3DqJp1XA4iq/fNXcyY
+        MVdBjdGSZDN9f1SEF3EcZYfftynKEKUNGq0/06LeEcLY6eszPLLosepdF0q3fSSI/zYzib
+        VS8hplpbKetRNCUM7SZbN+WOzuwgmDwi2TwPpmZcz7EcSgCgosWxidTzYe1I4+0qJqkwCp
+        OQo5dIiT6ZsvMoZHqGpAR/xWyBA7ChtO655PnnLhyNVbbn4AFIOLK0ZS1Jayow==
 From:   Michael Walle <michael@walle.cc>
-Date:   Tue, 17 Jan 2023 00:52:16 +0100
-Subject: [PATCH net-next 01/12] net: dsa: mt7530: Separate C22 and C45 MDIO
- bus transactions
+Date:   Tue, 17 Jan 2023 00:52:17 +0100
+Subject: [PATCH net-next 02/12] net: sxgbe: Separate C22 and C45 transactions
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230116-net-next-c45-seperation-part-3-v1-1-0c53afa56aad@walle.cc>
+Message-Id: <20230116-net-next-c45-seperation-part-3-v1-2-0c53afa56aad@walle.cc>
 References: <20230116-net-next-c45-seperation-part-3-v1-0-0c53afa56aad@walle.cc>
 In-Reply-To: <20230116-net-next-c45-seperation-part-3-v1-0-0c53afa56aad@walle.cc>
 To:     Sean Wang <sean.wang@mediatek.com>,
@@ -80,233 +79,188 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andrew Lunn <andrew@lunn.ch>
 
-mt7530 does support C45, but its uses a mix of registering its MDIO
-bus and providing its private MDIO bus to the DSA core, too. This makes
-the change a bit more complex.
+The sxgdb MDIO bus driver can perform both C22 and C45 transfers.
+Create separate functions for each and register the C45 versions using
+the new API calls where appropriate.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
-v3 (the 'new' v1):
-[mw] Remove dsa core comment
-[mw] Rephrase commit message
+ drivers/net/ethernet/samsung/sxgbe/sxgbe_mdio.c | 105 ++++++++++++++++++------
+ 1 file changed, 81 insertions(+), 24 deletions(-)
 
-v2:
-[al] Remove conditional c45, since all switches support c45
-[al] Remove dsa core changes, they are not needed
-[al] Add comment that DSA provided MDIO bus is C22 only.
----
- drivers/net/dsa/mt7530.c | 87 ++++++++++++++++++++++++------------------------
- drivers/net/dsa/mt7530.h | 15 ++++++---
- 2 files changed, 55 insertions(+), 47 deletions(-)
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 908fa89444c9..616b21c90d05 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -608,17 +608,29 @@ mt7530_mib_reset(struct dsa_switch *ds)
- 	mt7530_write(priv, MT7530_MIB_CCR, CCR_MIB_ACTIVATE);
+diff --git a/drivers/net/ethernet/samsung/sxgbe/sxgbe_mdio.c b/drivers/net/ethernet/samsung/sxgbe/sxgbe_mdio.c
+index fceb6d637235..0227223c06fa 100644
+--- a/drivers/net/ethernet/samsung/sxgbe/sxgbe_mdio.c
++++ b/drivers/net/ethernet/samsung/sxgbe/sxgbe_mdio.c
+@@ -50,12 +50,12 @@ static void sxgbe_mdio_ctrl_data(struct sxgbe_priv_data *sp, u32 cmd,
  }
  
--static int mt7530_phy_read(struct mt7530_priv *priv, int port, int regnum)
-+static int mt7530_phy_read_c22(struct mt7530_priv *priv, int port, int regnum)
+ static void sxgbe_mdio_c45(struct sxgbe_priv_data *sp, u32 cmd, int phyaddr,
+-			   int phyreg, u16 phydata)
++			   int devad, int phyreg, u16 phydata)
  {
- 	return mdiobus_read_nested(priv->bus, port, regnum);
+ 	u32 reg;
+ 
+ 	/* set mdio address register */
+-	reg = ((phyreg >> 16) & 0x1f) << 21;
++	reg = (devad & 0x1f) << 21;
+ 	reg |= (phyaddr << 16) | (phyreg & 0xffff);
+ 	writel(reg, sp->ioaddr + sp->hw->mii.addr);
+ 
+@@ -76,8 +76,8 @@ static void sxgbe_mdio_c22(struct sxgbe_priv_data *sp, u32 cmd, int phyaddr,
+ 	sxgbe_mdio_ctrl_data(sp, cmd, phydata);
  }
  
--static int mt7530_phy_write(struct mt7530_priv *priv, int port, int regnum,
--			    u16 val)
-+static int mt7530_phy_write_c22(struct mt7530_priv *priv, int port, int regnum,
-+				u16 val)
+-static int sxgbe_mdio_access(struct sxgbe_priv_data *sp, u32 cmd, int phyaddr,
+-			     int phyreg, u16 phydata)
++static int sxgbe_mdio_access_c22(struct sxgbe_priv_data *sp, u32 cmd,
++				 int phyaddr, int phyreg, u16 phydata)
  {
- 	return mdiobus_write_nested(priv->bus, port, regnum, val);
- }
+ 	const struct mii_regs *mii = &sp->hw->mii;
+ 	int rc;
+@@ -86,33 +86,46 @@ static int sxgbe_mdio_access(struct sxgbe_priv_data *sp, u32 cmd, int phyaddr,
+ 	if (rc < 0)
+ 		return rc;
  
-+static int mt7530_phy_read_c45(struct mt7530_priv *priv, int port,
-+			       int devad, int regnum)
-+{
-+	return mdiobus_c45_read_nested(priv->bus, port, devad, regnum);
+-	if (phyreg & MII_ADDR_C45) {
+-		sxgbe_mdio_c45(sp, cmd, phyaddr, phyreg, phydata);
+-	} else {
+-		 /* Ports 0-3 only support C22. */
+-		if (phyaddr >= 4)
+-			return -ENODEV;
++	/* Ports 0-3 only support C22. */
++	if (phyaddr >= 4)
++		return -ENODEV;
+ 
+-		sxgbe_mdio_c22(sp, cmd, phyaddr, phyreg, phydata);
+-	}
++	sxgbe_mdio_c22(sp, cmd, phyaddr, phyreg, phydata);
++
++	return sxgbe_mdio_busy_wait(sp->ioaddr, mii->data);
 +}
 +
-+static int mt7530_phy_write_c45(struct mt7530_priv *priv, int port, int devad,
-+				int regnum, u16 val)
++static int sxgbe_mdio_access_c45(struct sxgbe_priv_data *sp, u32 cmd,
++				 int phyaddr, int devad, int phyreg,
++				 u16 phydata)
 +{
-+	return mdiobus_c45_write_nested(priv->bus, port, devad, regnum, val);
++	const struct mii_regs *mii = &sp->hw->mii;
++	int rc;
++
++	rc = sxgbe_mdio_busy_wait(sp->ioaddr, mii->data);
++	if (rc < 0)
++		return rc;
++
++	sxgbe_mdio_c45(sp, cmd, phyaddr, devad, phyreg, phydata);
+ 
+ 	return sxgbe_mdio_busy_wait(sp->ioaddr, mii->data);
+ }
+ 
+ /**
+- * sxgbe_mdio_read
++ * sxgbe_mdio_read_c22
+  * @bus: points to the mii_bus structure
+  * @phyaddr: address of phy port
+  * @phyreg: address of register with in phy register
+- * Description: this function used for C45 and C22 MDIO Read
++ * Description: this function used for C22 MDIO Read
+  */
+-static int sxgbe_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
++static int sxgbe_mdio_read_c22(struct mii_bus *bus, int phyaddr, int phyreg)
+ {
+ 	struct net_device *ndev = bus->priv;
+ 	struct sxgbe_priv_data *priv = netdev_priv(ndev);
+ 	int rc;
+ 
+-	rc = sxgbe_mdio_access(priv, SXGBE_SMA_READ_CMD, phyaddr, phyreg, 0);
++	rc = sxgbe_mdio_access_c22(priv, SXGBE_SMA_READ_CMD, phyaddr,
++				   phyreg, 0);
+ 	if (rc < 0)
+ 		return rc;
+ 
+@@ -120,21 +133,63 @@ static int sxgbe_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
+ }
+ 
+ /**
+- * sxgbe_mdio_write
++ * sxgbe_mdio_read_c45
++ * @bus: points to the mii_bus structure
++ * @phyaddr: address of phy port
++ * @devad: device (MMD) address
++ * @phyreg: address of register with in phy register
++ * Description: this function used for C45 MDIO Read
++ */
++static int sxgbe_mdio_read_c45(struct mii_bus *bus, int phyaddr, int devad,
++			       int phyreg)
++{
++	struct net_device *ndev = bus->priv;
++	struct sxgbe_priv_data *priv = netdev_priv(ndev);
++	int rc;
++
++	rc = sxgbe_mdio_access_c45(priv, SXGBE_SMA_READ_CMD, phyaddr,
++				   devad, phyreg, 0);
++	if (rc < 0)
++		return rc;
++
++	return readl(priv->ioaddr + priv->hw->mii.data) & 0xffff;
 +}
 +
- static int
- mt7531_ind_c45_phy_read(struct mt7530_priv *priv, int port, int devad,
- 			int regnum)
-@@ -670,7 +682,7 @@ mt7531_ind_c45_phy_read(struct mt7530_priv *priv, int port, int devad,
- 
- static int
- mt7531_ind_c45_phy_write(struct mt7530_priv *priv, int port, int devad,
--			 int regnum, u32 data)
-+			 int regnum, u16 data)
++/**
++ * sxgbe_mdio_write_c22
++ * @bus: points to the mii_bus structure
++ * @phyaddr: address of phy port
++ * @phyreg: address of phy registers
++ * @phydata: data to be written into phy register
++ * Description: this function is used for C22 MDIO write
++ */
++static int sxgbe_mdio_write_c22(struct mii_bus *bus, int phyaddr, int phyreg,
++				u16 phydata)
++{
++	struct net_device *ndev = bus->priv;
++	struct sxgbe_priv_data *priv = netdev_priv(ndev);
++
++	return sxgbe_mdio_access_c22(priv, SXGBE_SMA_WRITE_CMD, phyaddr, phyreg,
++				     phydata);
++}
++
++/**
++ * sxgbe_mdio_write_c45
+  * @bus: points to the mii_bus structure
+  * @phyaddr: address of phy port
+  * @phyreg: address of phy registers
++ * @devad: device (MMD) address
+  * @phydata: data to be written into phy register
+- * Description: this function is used for C45 and C22 MDIO write
++ * Description: this function is used for C45 MDIO write
+  */
+-static int sxgbe_mdio_write(struct mii_bus *bus, int phyaddr, int phyreg,
+-			     u16 phydata)
++static int sxgbe_mdio_write_c45(struct mii_bus *bus, int phyaddr, int devad,
++				int phyreg, u16 phydata)
  {
- 	struct mii_bus *bus = priv->bus;
- 	struct mt7530_dummy_poll p;
-@@ -793,55 +805,36 @@ mt7531_ind_c22_phy_write(struct mt7530_priv *priv, int port, int regnum,
+ 	struct net_device *ndev = bus->priv;
+ 	struct sxgbe_priv_data *priv = netdev_priv(ndev);
+ 
+-	return sxgbe_mdio_access(priv, SXGBE_SMA_WRITE_CMD, phyaddr, phyreg,
+-				 phydata);
++	return sxgbe_mdio_access_c45(priv, SXGBE_SMA_WRITE_CMD, phyaddr,
++				     devad, phyreg, phydata);
  }
  
- static int
--mt7531_ind_phy_read(struct mt7530_priv *priv, int port, int regnum)
-+mt753x_phy_read_c22(struct mii_bus *bus, int port, int regnum)
- {
--	int devad;
--	int ret;
--
--	if (regnum & MII_ADDR_C45) {
--		devad = (regnum >> MII_DEVADDR_C45_SHIFT) & 0x1f;
--		ret = mt7531_ind_c45_phy_read(priv, port, devad,
--					      regnum & MII_REGADDR_C45_MASK);
--	} else {
--		ret = mt7531_ind_c22_phy_read(priv, port, regnum);
--	}
-+	struct mt7530_priv *priv = bus->priv;
+ int sxgbe_mdio_register(struct net_device *ndev)
+@@ -161,8 +216,10 @@ int sxgbe_mdio_register(struct net_device *ndev)
  
--	return ret;
-+	return priv->info->phy_read_c22(priv, port, regnum);
- }
- 
- static int
--mt7531_ind_phy_write(struct mt7530_priv *priv, int port, int regnum,
--		     u16 data)
-+mt753x_phy_read_c45(struct mii_bus *bus, int port, int devad, int regnum)
- {
--	int devad;
--	int ret;
--
--	if (regnum & MII_ADDR_C45) {
--		devad = (regnum >> MII_DEVADDR_C45_SHIFT) & 0x1f;
--		ret = mt7531_ind_c45_phy_write(priv, port, devad,
--					       regnum & MII_REGADDR_C45_MASK,
--					       data);
--	} else {
--		ret = mt7531_ind_c22_phy_write(priv, port, regnum, data);
--	}
-+	struct mt7530_priv *priv = bus->priv;
- 
--	return ret;
-+	return priv->info->phy_read_c45(priv, port, devad, regnum);
- }
- 
- static int
--mt753x_phy_read(struct mii_bus *bus, int port, int regnum)
-+mt753x_phy_write_c22(struct mii_bus *bus, int port, int regnum, u16 val)
- {
- 	struct mt7530_priv *priv = bus->priv;
- 
--	return priv->info->phy_read(priv, port, regnum);
-+	return priv->info->phy_write_c22(priv, port, regnum, val);
- }
- 
- static int
--mt753x_phy_write(struct mii_bus *bus, int port, int regnum, u16 val)
-+mt753x_phy_write_c45(struct mii_bus *bus, int port, int devad, int regnum,
-+		     u16 val)
- {
- 	struct mt7530_priv *priv = bus->priv;
- 
--	return priv->info->phy_write(priv, port, regnum, val);
-+	return priv->info->phy_write_c45(priv, port, devad, regnum, val);
- }
- 
- static void
-@@ -2086,8 +2079,10 @@ mt7530_setup_mdio(struct mt7530_priv *priv)
- 	bus->priv = priv;
- 	bus->name = KBUILD_MODNAME "-mii";
- 	snprintf(bus->id, MII_BUS_ID_SIZE, KBUILD_MODNAME "-%d", idx++);
--	bus->read = mt753x_phy_read;
--	bus->write = mt753x_phy_write;
-+	bus->read = mt753x_phy_read_c22;
-+	bus->write = mt753x_phy_write_c22;
-+	bus->read_c45 = mt753x_phy_read_c45;
-+	bus->write_c45 = mt753x_phy_write_c45;
- 	bus->parent = dev;
- 	bus->phy_mask = ~ds->phys_mii_mask;
- 
-@@ -3182,8 +3177,10 @@ static const struct mt753x_info mt753x_table[] = {
- 		.id = ID_MT7621,
- 		.pcs_ops = &mt7530_pcs_ops,
- 		.sw_setup = mt7530_setup,
--		.phy_read = mt7530_phy_read,
--		.phy_write = mt7530_phy_write,
-+		.phy_read_c22 = mt7530_phy_read_c22,
-+		.phy_write_c22 = mt7530_phy_write_c22,
-+		.phy_read_c45 = mt7530_phy_read_c45,
-+		.phy_write_c45 = mt7530_phy_write_c45,
- 		.pad_setup = mt7530_pad_clk_setup,
- 		.mac_port_get_caps = mt7530_mac_port_get_caps,
- 		.mac_port_config = mt7530_mac_config,
-@@ -3192,8 +3189,10 @@ static const struct mt753x_info mt753x_table[] = {
- 		.id = ID_MT7530,
- 		.pcs_ops = &mt7530_pcs_ops,
- 		.sw_setup = mt7530_setup,
--		.phy_read = mt7530_phy_read,
--		.phy_write = mt7530_phy_write,
-+		.phy_read_c22 = mt7530_phy_read_c22,
-+		.phy_write_c22 = mt7530_phy_write_c22,
-+		.phy_read_c45 = mt7530_phy_read_c45,
-+		.phy_write_c45 = mt7530_phy_write_c45,
- 		.pad_setup = mt7530_pad_clk_setup,
- 		.mac_port_get_caps = mt7530_mac_port_get_caps,
- 		.mac_port_config = mt7530_mac_config,
-@@ -3202,8 +3201,10 @@ static const struct mt753x_info mt753x_table[] = {
- 		.id = ID_MT7531,
- 		.pcs_ops = &mt7531_pcs_ops,
- 		.sw_setup = mt7531_setup,
--		.phy_read = mt7531_ind_phy_read,
--		.phy_write = mt7531_ind_phy_write,
-+		.phy_read_c22 = mt7531_ind_c22_phy_read,
-+		.phy_write_c22 = mt7531_ind_c22_phy_write,
-+		.phy_read_c45 = mt7531_ind_c45_phy_read,
-+		.phy_write_c45 = mt7531_ind_c45_phy_write,
- 		.pad_setup = mt7531_pad_setup,
- 		.cpu_port_config = mt7531_cpu_port_config,
- 		.mac_port_get_caps = mt7531_mac_port_get_caps,
-@@ -3263,7 +3264,7 @@ mt7530_probe(struct mdio_device *mdiodev)
- 	 * properly.
- 	 */
- 	if (!priv->info->sw_setup || !priv->info->pad_setup ||
--	    !priv->info->phy_read || !priv->info->phy_write ||
-+	    !priv->info->phy_read_c22 || !priv->info->phy_write_c22 ||
- 	    !priv->info->mac_port_get_caps ||
- 	    !priv->info->mac_port_config)
- 		return -EINVAL;
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index e8d966435350..6b2fc6290ea8 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -750,8 +750,10 @@ struct mt753x_pcs {
- /* struct mt753x_info -	This is the main data structure for holding the specific
-  *			part for each supported device
-  * @sw_setup:		Holding the handler to a device initialization
-- * @phy_read:		Holding the way reading PHY port
-- * @phy_write:		Holding the way writing PHY port
-+ * @phy_read_c22:	Holding the way reading PHY port using C22
-+ * @phy_write_c22:	Holding the way writing PHY port using C22
-+ * @phy_read_c45:	Holding the way reading PHY port using C45
-+ * @phy_write_c45:	Holding the way writing PHY port using C45
-  * @pad_setup:		Holding the way setting up the bus pad for a certain
-  *			MAC port
-  * @phy_mode_supported:	Check if the PHY type is being supported on a certain
-@@ -767,8 +769,13 @@ struct mt753x_info {
- 	const struct phylink_pcs_ops *pcs_ops;
- 
- 	int (*sw_setup)(struct dsa_switch *ds);
--	int (*phy_read)(struct mt7530_priv *priv, int port, int regnum);
--	int (*phy_write)(struct mt7530_priv *priv, int port, int regnum, u16 val);
-+	int (*phy_read_c22)(struct mt7530_priv *priv, int port, int regnum);
-+	int (*phy_write_c22)(struct mt7530_priv *priv, int port, int regnum,
-+			     u16 val);
-+	int (*phy_read_c45)(struct mt7530_priv *priv, int port, int devad,
-+			    int regnum);
-+	int (*phy_write_c45)(struct mt7530_priv *priv, int port, int devad,
-+			     int regnum, u16 val);
- 	int (*pad_setup)(struct dsa_switch *ds, phy_interface_t interface);
- 	int (*cpu_port_config)(struct dsa_switch *ds, int port);
- 	void (*mac_port_get_caps)(struct dsa_switch *ds, int port,
+ 	/* assign mii bus fields */
+ 	mdio_bus->name = "sxgbe";
+-	mdio_bus->read = &sxgbe_mdio_read;
+-	mdio_bus->write = &sxgbe_mdio_write;
++	mdio_bus->read = sxgbe_mdio_read_c22;
++	mdio_bus->write = sxgbe_mdio_write_c22;
++	mdio_bus->read_c45 = sxgbe_mdio_read_c45;
++	mdio_bus->write_c45 = sxgbe_mdio_write_c45;
+ 	snprintf(mdio_bus->id, MII_BUS_ID_SIZE, "%s-%x",
+ 		 mdio_bus->name, priv->plat->bus_id);
+ 	mdio_bus->priv = ndev;
 
 -- 
 2.30.2
