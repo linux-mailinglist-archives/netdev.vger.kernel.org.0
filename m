@@ -2,151 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD18666B5A5
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 03:42:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 271E966B598
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 03:25:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231745AbjAPCmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Jan 2023 21:42:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49716 "EHLO
+        id S231765AbjAPCZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Jan 2023 21:25:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231672AbjAPCl7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 21:41:59 -0500
-Received: from www381.your-server.de (www381.your-server.de [78.46.137.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86ADE6E89;
-        Sun, 15 Jan 2023 18:41:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-        s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=hCZxbNgzCUm7L6wl89cgCzaIwaOm944bt7U2/u6+A/s=; b=F5Lxokx1vKgOV3tLL77tJ2k8tj
-        wvbKScP+A/iaNLF3TRDUQzWg79Fna6QajqMSbuPzF5lzZ1LVR70KTSllRtgjiS37NU7VfL05sZbyU
-        WxF1D1psqtNFu4X9kKsLi7dS+iNBFO2c4w49VKm+G1FNtI/a7MqlNrBrvnslLbXADcKTcSM3dTLs/
-        gFCQrDppmL+DuMqHQqu4wuIyW9czCB6vGuWbG5wxnJKuvJ9ftbliXOyGj5w5TX5x9WnfxP0BxJ+UQ
-        oi+rFo6S8fTrTx/u3K1vBPil8APTxM8NdUPNoF9DhkuOLCqrsWiIA3IDh9jwRglY4Ey1PEIOKfScg
-        32uyrz2w==;
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www381.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <lars@metafoo.de>)
-        id 1pHF84-000OdC-Qc; Mon, 16 Jan 2023 03:21:44 +0100
-Received: from [2604:5500:c0e5:eb00:da5e:d3ff:feff:933b]
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1pHF84-000HTx-72; Mon, 16 Jan 2023 03:21:44 +0100
-Message-ID: <cc338014-8a2b-87e9-7684-20b57aae4ac3@metafoo.de>
-Date:   Sun, 15 Jan 2023 18:21:40 -0800
+        with ESMTP id S231791AbjAPCYq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 21:24:46 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD026A78;
+        Sun, 15 Jan 2023 18:24:43 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id v6so21852738ejg.6;
+        Sun, 15 Jan 2023 18:24:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=ieAvDpUTB6fur3o/45AvL4GwmJeyZ8yDVKySYt8c7jc=;
+        b=JoyqPEAWZwkWZ+yWyHE4C0FUaBXwaiRjUz9F4eByEMphBQChIHNMLOYXBUjwIg1BzX
+         TrKZ53Dnaa3t01P0prcslC9whuuAr1+ecD6nbP8lYPHB8GdExskzRpsPd2NNZLhxgFbz
+         SSilhEnH/eEd/vE0hHyCL1BGoY2C//nb3h4Z7nQ/Cv5hpiSO3hcXwCcFFyz5NEyEzIS4
+         HnIgUWLgnwVsQ+fCiyzxJI8jdOztb9AYHGJpY2F2CLbgS+ABpLzwfIgDiL/52EwY49K8
+         Ocxr6BeJ98Taf4cHfltokR2t3gASuaq/4ssMaKK6sAxqJkk0JSZ/oi2OMRF2LclHjBba
+         ka9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ieAvDpUTB6fur3o/45AvL4GwmJeyZ8yDVKySYt8c7jc=;
+        b=2jOAnc/nCgKDTip0jjDIqlQHAepTF2a8XgMzvkU8X/o9eJ4kC4ERRpIUwYmn8FQ2T2
+         c5KjFS6N6gFuLmNGb5MDnQvKclFH6RRS42mkUX2k/rJqmD33llWwezqu6ZEbdt6PwNTG
+         7i7FTYuekJ7dz6xwQhMn//ZKPdR0/zjxwCw/OF8qiA93P2VIBX+mupJw0w23QCc15EfN
+         vqJb8ZQLjNcE/ob5DSFPgzuafrhWeN6DRDEEBVVUWDXPXcaVPloAoq/ZpkeBc24YMGK4
+         fjAXhLlesNpq7RBij4Eh8zZ7hySupeXC+mFlYzvEQ3HyrOioZjncgsjZA5zQcRFiqhuX
+         MqGg==
+X-Gm-Message-State: AFqh2kosDzphkjeZB3t5dKixrjBKREcsjKOgJ9v7rJziZA0N5Z8pDtTS
+        oQzAiGOijfF4SOfyg6PRqFZEKBlfqvXKdZSF1pA=
+X-Google-Smtp-Source: AMrXdXuU4SMso3XSHFTrDLZGet4nUKmvsnS3QNycJVB0t5Tex0hzmHfjxju2vbPKJkdn6T3p6E1adT4XQxiRNe2mSVA=
+X-Received: by 2002:a17:906:c0c9:b0:86d:ec8c:5b3f with SMTP id
+ bn9-20020a170906c0c900b0086dec8c5b3fmr290445ejb.50.1673835882109; Sun, 15 Jan
+ 2023 18:24:42 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH] net: mdio: force deassert MDIO reset signal
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Pierluigi Passaro <pierluigi.passaro@gmail.com>,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        eran.m@variscite.com, nate.d@variscite.com,
-        francesco.f@variscite.com, pierluigi.p@variscite.com
-References: <20230115161006.16431-1-pierluigi.p@variscite.com>
- <Y8QzI2VUY6//uBa/@lunn.ch> <f691f339-9e50-b968-01e1-1821a2f696e7@metafoo.de>
- <Y8SSb+tJsfJ3/DvH@lunn.ch>
-From:   Lars-Peter Clausen <lars@metafoo.de>
-In-Reply-To: <Y8SSb+tJsfJ3/DvH@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.103.7/26782/Sun Jan 15 09:20:34 2023)
+References: <20230114132705.78400-1-kerneljasonxing@gmail.com>
+ <CANn89iJ+KW+=Z13o_K4RpZfoxO8rGaXRXQ07jZfpE5RMH0Uweg@mail.gmail.com> <CAL+tcoD-V-XKrXMMEheBnohD-h6ig12zhtQUAt6ATE4jWcuLvQ@mail.gmail.com>
+In-Reply-To: <CAL+tcoD-V-XKrXMMEheBnohD-h6ig12zhtQUAt6ATE4jWcuLvQ@mail.gmail.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Mon, 16 Jan 2023 10:24:05 +0800
+Message-ID: <CAL+tcoDXZhptPXK8D_OSS_m8+LAvdZy6wKXaZvtOYQobzuosxg@mail.gmail.com>
+Subject: Re: [PATCH v2 net] tcp: avoid the lookup process failing to get sk in
+ ehash table
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Xing <kernelxing@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/15/23 15:55, Andrew Lunn wrote:
->> Specifying the ID as part of the compatible string works for clause 22 PHYs,
->> but for clause 45 PHYs it does not work. The code always wants to read the
->> ID from the PHY itself. But I do not understand things well enough to tell
->> whether that's a fundamental restriction of C45 or just our implementation
->> and the implementation can be changed to fix it.
->>
->> Do you have some thoughts on this?
-> Do you have more details about what goes wrong? Which PHY driver is
-> it? What compatibles do you put into DT for the PHY?
+On Mon, Jan 16, 2023 at 8:36 AM Jason Xing <kerneljasonxing@gmail.com> wrote:
 >
-> To some extent, the ID is only used to find the driver. A C45 device
-> has a lot of ID register, and all of them are used by phy_bus_match()
-> to see if a driver matches. So you need to be careful which ID you
-> pick, it needs to match the driver.
->
-> It is the driver which decides to use C22 or C45 to talk to the PHY.
-> However, we do have:
->
-> static int phy_probe(struct device *dev)
-> {
-> ...
->          else if (phydev->is_c45)
->                  err = genphy_c45_pma_read_abilities(phydev);
->          else
->                  err = genphy_read_abilities(phydev);
->
-> so it could be a C45 PHY probed using an ID does not have
-> phydev->is_c45 set, and so it looks in the wrong place for the
-> capabilities. Make sure you also have the compatible
-> "ethernet-phy-ieee802.3-c45" which i think should cause is_c45 to be
-> set.
->
-> There is no fundamental restriction that i know of here, it probably
-> just needs somebody to debug it and find where it goes wrong.
->
-> Ah!
->
-> int fwnode_mdiobus_register_phy(struct mii_bus *bus,
->                                  struct fwnode_handle *child, u32 addr)
-> {
-> ...
->          rc = fwnode_property_match_string(child, "compatible",
->                                            "ethernet-phy-ieee802.3-c45");
->          if (rc >= 0)
->                  is_c45 = true;
->
->          if (is_c45 || fwnode_get_phy_id(child, &phy_id))
->                  phy = get_phy_device(bus, addr, is_c45);
->          else
->                  phy = phy_device_create(bus, addr, phy_id, 0, NULL);
->
->
-> So compatible "ethernet-phy-ieee802.3-c45" results in is_c45 being set
-> true. The if (is_c45 || is then true, so it does not need to call
-> fwnode_get_phy_id(child, &phy_id) so ignores whatever ID is in DT and
-> asks the PHY.
->
-> Try this, totally untested:
->
-> diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
-> index b782c35c4ac1..13be23f8ac97 100644
-> --- a/drivers/net/mdio/fwnode_mdio.c
-> +++ b/drivers/net/mdio/fwnode_mdio.c
-> @@ -134,10 +134,10 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
->          if (rc >= 0)
->                  is_c45 = true;
->   
-> -       if (is_c45 || fwnode_get_phy_id(child, &phy_id))
-> +       if (fwnode_get_phy_id (child, &phy_id))
->                  phy = get_phy_device(bus, addr, is_c45);
->          else
-> -               phy = phy_device_create(bus, addr, phy_id, 0, NULL);
-> +               phy = phy_device_create(bus, addr, phy_id, is_c45, NULL);
->          if (IS_ERR(phy)) {
->                  rc = PTR_ERR(phy);
->                  goto clean_mii_ts;
->
-I think part of the problem is that for C45 there are a few other fields 
-that get populated by the ID detection, such as devices_in_package and 
-mmds_present. Is this something we can do after running the PHY drivers 
-probe function? Or is it too late at that point?
+> On Mon, Jan 16, 2023 at 12:12 AM Eric Dumazet <edumazet@google.com> wrote:
+> >
+> > On Sat, Jan 14, 2023 at 2:27 PM Jason Xing <kerneljasonxing@gmail.com> wrote:
+> > >
+> > > From: Jason Xing <kernelxing@tencent.com>
+> > >
+> > >
+> > > Fixes: 5e0724d027f0 ("tcp/dccp: fix hashdance race for passive sessions")
+> > > Suggested-by: Eric Dumazet <edumazet@google.com>
+> > > Signed-off-by: Jason Xing <kernelxing@tencent.com>
+> > > Link: https://lore.kernel.org/lkml/20230112065336.41034-1-kerneljasonxing@gmail.com/
+> > > ---
+> > > v2:
+> > > 1) adding the sk node into the tail of list to prevent the race.
+> > > 2) fix the race condition when handling time-wait socket hashdance.
+> > > ---
+> > >  net/ipv4/inet_hashtables.c    | 10 ++++++++++
+> > >  net/ipv4/inet_timewait_sock.c |  6 +++---
+> > >  2 files changed, 13 insertions(+), 3 deletions(-)
+> > >
+> > > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> > > index 24a38b56fab9..b0b54ad55507 100644
+> > > --- a/net/ipv4/inet_hashtables.c
+> > > +++ b/net/ipv4/inet_hashtables.c
+> > > @@ -650,7 +650,16 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
+> > >         spin_lock(lock);
+> > >         if (osk) {
+> > >                 WARN_ON_ONCE(sk->sk_hash != osk->sk_hash);
+> > > +               if (sk_hashed(osk))
+> >
+> >
+> > nit: this should be:
+> >
+> > if (sk_hashed(osk)) {  [1]
+> >     /* multi-line ....
+> >      * .... comment.
+> >      */
+> >    ret = sk_nulls_del_node_init_rcu(osk);
+> >    goto unlock;
+> > }
 
+Well, after I dug into this part, I found something as below.
+If we enter into the 'if (osk) {', we should always skip the next
+if-statement which is 'if (found_dup_sk) {' and return a proper value
+depending on if the osk is hashed.
+However, the code as above would leave variable @ret to be true if the
+sk_hashed(osk) returned false, then It would not go to unlock and then
+add the node to the list and at last return true which is unexpected.
+
+> > if (found_dup_sk) {  [2]
+> >
+> > 1) parentheses needed in [1]
+
+> > 2) No else if in [2], since you added a "goto unlock;"
+
+I think this modification is fine and makes the code clearer.
+
+Thanks,
+Jason
+
+> >
+>
+> I'll do that. It looks much better.
+>
+> Thanks,
+> Jason
+>
+> > > +                       /* Before deleting the node, we insert a new one to make
+> > > +                        * sure that the look-up-sk process would not miss either
+> > > +                        * of them and that at least one node would exist in ehash
+> > > +                        * table all the time. Otherwise there's a tiny chance
+> > > +                        * that lookup process could find nothing in ehash table.
+> > > +                        */
+> > > +                       __sk_nulls_add_node_tail_rcu(sk, list);
+> > >                 ret = sk_nulls_del_node_init_rcu(osk);
+> > > +               goto unlock;
+> > >         } else if (found_dup_sk) {
+> > >                 *found_dup_sk = inet_ehash_lookup_by_sk(sk, list);
+> > >                 if (*found_dup_sk)
+> > > @@ -660,6 +669,7 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
+> > >         if (ret)
+> > >                 __sk_nulls_add_node_rcu(sk, list);
+> > >
+> > > +unlock:
+> > >         spin_unlock(lock);
+> >
+> > Thanks.
