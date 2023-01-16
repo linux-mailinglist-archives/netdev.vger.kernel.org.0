@@ -2,82 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18AE666B845
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 08:35:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F421766B84D
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 08:38:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231695AbjAPHfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 02:35:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49618 "EHLO
+        id S231912AbjAPHi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 02:38:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231679AbjAPHfw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 02:35:52 -0500
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE061CDFD;
-        Sun, 15 Jan 2023 23:35:50 -0800 (PST)
+        with ESMTP id S231658AbjAPHi0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 02:38:26 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271AAEC5A;
+        Sun, 15 Jan 2023 23:38:26 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id a184so20328616pfa.9;
+        Sun, 15 Jan 2023 23:38:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1673854551; x=1705390551;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YszkHojPOFwKeLehYtOFvn3DFCgr8dW4CyaPruyHuVg=;
-  b=jfc9N4Hvdi3gSQbC8i2nz1+0j0C5coSvQQ6TOoe0PQJrYFQKkSd+EVAr
-   p69HK5NMRGgnglYfPIpcmmLLZNItDPKWf5pky2bN3taxTS+KyBuMU+hn2
-   9MPL8NkSnxN0aIK5loSJjsOZMDrIRpXNdaKu5WaYcTFjt2dp+DZrq79Gn
-   RG0sJ55i5c4rEAJKu8OxUGlGMu46w8eVGAuYhHbw7gvNiykG4hbgM8ldd
-   PSob1H3NrSs6+JNIRqsIdxtt9jtkDnXSM0jMPOl9eoQKIT5VGFYY2Wz+w
-   AYd9f82lj0PRFC13RXlM94HcR5XaOQZc9hwTSBiVK63U0jx5NQBGSPiFH
-   w==;
-X-IronPort-AV: E=Sophos;i="5.97,220,1669071600"; 
-   d="scan'208";a="28437135"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 16 Jan 2023 08:35:48 +0100
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Mon, 16 Jan 2023 08:35:48 +0100
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Mon, 16 Jan 2023 08:35:48 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1673854548; x=1705390548;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YszkHojPOFwKeLehYtOFvn3DFCgr8dW4CyaPruyHuVg=;
-  b=V05ZCuVQ0P+P7pIZXxuZzDIVOpW8NGDLQQ6vBAv2F5yTNr3TdUYXn90P
-   anCVKU+wNqO3Dli0ABt4NlaL924jq1ewMEatIVaKuOEoQ4z2e9c6YyUJo
-   s/8YY1VrS6hDX95szewhNKtnKmFxuie9Zo7UItYA1N1SGfQX5pcgnw6V5
-   sANpjK47YtdMGk0Qf7jh8n25F2Y3vn8oAoVCFQzdo+0qHzaoktC7oWJK4
-   uXyKZJUNC5Ro2UgPz5GQNL0Y+KCq1MG+DIrIL9LWnPF6hgiYW9HA5/4P4
-   WkZUobrUt0qAKhdQtwNNPm3g9ygyFxqWo47NdNmuMq0gmgShIcgC7alH4
-   g==;
-X-IronPort-AV: E=Sophos;i="5.97,220,1669071600"; 
-   d="scan'208";a="28437134"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 16 Jan 2023 08:35:48 +0100
-Received: from steina-w.localnet (unknown [10.123.53.21])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 2B9DF280056;
-        Mon, 16 Jan 2023 08:35:48 +0100 (CET)
-From:   Alexander Stein <alexander.stein@ew.tq-group.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Pierluigi Passaro <pierluigi.passaro@gmail.com>
-Cc:     Pierluigi Passaro <pierluigi.p@variscite.com>, wei.fang@nxp.com,
-        shenwei.wang@nxp.com, xiaoning.wang@nxp.com, linux-imx@nxp.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, eran.m@variscite.com,
-        nate.d@variscite.com, francesco.f@variscite.com
-Subject: Re: [PATCH v2] net: fec: manage corner deferred probe condition
-Date:   Mon, 16 Jan 2023 08:35:46 +0100
-Message-ID: <5899558.lOV4Wx5bFT@steina-w>
-Organization: TQ-Systems GmbH
-In-Reply-To: <CAJ=UCjXvcpV9gAfXv8An-pp=CK8J=sGE_adAoKeNFG1C-sMgJA@mail.gmail.com>
-References: <20230115213804.26650-1-pierluigi.p@variscite.com> <Y8R2kQMwgdgE6Qlp@lunn.ch> <CAJ=UCjXvcpV9gAfXv8An-pp=CK8J=sGE_adAoKeNFG1C-sMgJA@mail.gmail.com>
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=wg2T7VbG1bTB43Zc6Xhxiu8pDGnHxwrmqsD8uohWqzI=;
+        b=c/o2eejMpCEX9+LbXr0G3W+lLXEAq4aJO5DeAj/rq6nDlhFyWsdWwFMtsrqPALIkdZ
+         tO+Y9ltQyunuUhqscifD/9mjbBvIyKUYr3Nvba6fJnXI7hNfRERcmUyB8r/a5skNHOg/
+         e3CDBO2QkkgI54Ta0X3Y4NgO5NkOw4i0ktxzKy1cVoiaUWeb0SuRwRQhSUsSyjlKoyOc
+         sPtFlq0uLnvuFNqiakRog1fj1jI4fyuv0LE0x7Ub/b7tw0SqIDOFU/BgUo+wADZiAE5H
+         ozJmFiDkd/KBJgNeqgD4jwFECBqETrj12WCr1W/ybTb7APyrK83CvkwBfjBCLfdP1pt8
+         qItQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wg2T7VbG1bTB43Zc6Xhxiu8pDGnHxwrmqsD8uohWqzI=;
+        b=Dctd58H+AR8+tvfRIzR8c8jfuzyUkPH8CLggVd0PVOksYqTbDaPeIdZZEfyTcX8OzT
+         QnfuD+mJGAOo3ylHQOlikWydI0+VN7T8uHjrigLrUR78PbPQQ9iyoesOT4aJYjmbUTcO
+         URig7/iJKQ6yNKrLCOWfulHk+672o+SOKPRUbUFuv6XyDYB3KE5a0gcberpwg5s8DOcr
+         eCzrbiJqzDUBqexTCRGS0qk+PN1xoAY+sFfiaQ9JoDCId6VMyXQErJHcwQ+EuhkpcCkA
+         Kfda5CClJ0L9pnEQP7okhzp7dkKsvXPuszQ0XiBtJ2dY7Hg6/J+brzhA6Q7F/S5BEYoo
+         L1tA==
+X-Gm-Message-State: AFqh2kqyHy/AXI8sxUrrd6heZ/FC3Jl12D9iM4Q8z+UErhXDW2YG7e5+
+        jYj1VCVT+jFJmJQXq+AqEQE=
+X-Google-Smtp-Source: AMrXdXuA1AF7GFtm9Vbyh7WL1RWa6Q2O0F8ZmIdRf8KnJWCmui4roXckeQ41N3CzYX+F7LLWJGPq9w==
+X-Received: by 2002:a05:6a00:bf5:b0:57c:2ab7:2c0b with SMTP id x53-20020a056a000bf500b0057c2ab72c0bmr12295617pfu.28.1673854705586;
+        Sun, 15 Jan 2023 23:38:25 -0800 (PST)
+Received: from KERNELXING-MB0.tencent.com ([103.7.29.31])
+        by smtp.gmail.com with ESMTPSA id 65-20020a621844000000b005877d374069sm15020304pfy.10.2023.01.15.23.38.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Jan 2023 23:38:25 -0800 (PST)
+From:   Jason Xing <kerneljasonxing@gmail.com>
+To:     edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kerneljasonxing@gmail.com, Jason Xing <kernelxing@tencent.com>
+Subject: [PATCH v4 net] tcp: avoid the lookup process failing to get sk in ehash table
+Date:   Mon, 16 Jan 2023 15:38:13 +0800
+Message-Id: <20230116073813.24097-1-kerneljasonxing@gmail.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,45 +69,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Jason Xing <kernelxing@tencent.com>
 
-Am Sonntag, 15. Januar 2023, 23:23:51 CET schrieb Pierluigi Passaro:
-> On Sun, Jan 15, 2023 at 10:56 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> > On Sun, Jan 15, 2023 at 10:38:04PM +0100, Pierluigi Passaro wrote:
-> > > For dual fec interfaces, external phys can only be configured by fec0.
-> > > When the function of_mdiobus_register return -EPROBE_DEFER, the driver
-> > > is lately called to manage fec1, which wrongly register its mii_bus as
-> > > fec0_mii_bus.
-> > > When fec0 retry the probe, the previous assignement prevent the MDIO bus
-> > > registration.
-> > > Use a static boolean to trace the orginal MDIO bus deferred probe and
-> > > prevent further registrations until the fec0 registration completed
-> > > succesfully.
-> > 
-> > The real problem here seems to be that fep->dev_id is not
-> > deterministic. I think a better fix would be to make the mdio bus name
-> > deterministic. Use pdev->id instead of fep->dev_id + 1. That is what
-> > most mdiobus drivers use.
-> 
-> Actually, the sequence is deterministic, fec0 and then fec1,
-> but sometimes the GPIO of fec0 is not yet available.
+While one cpu is working on looking up the right socket from ehash
+table, another cpu is done deleting the request socket and is about
+to add (or is adding) the big socket from the table. It means that
+we could miss both of them, even though it has little chance.
 
-Not in every case though. On i.MX6UL has the following memory map for FEC:
-* FEC2: 0x020b4000
-* FEC1: 0x02188000
+Let me draw a call trace map of the server side.
+   CPU 0                           CPU 1
+   -----                           -----
+tcp_v4_rcv()                  syn_recv_sock()
+                            inet_ehash_insert()
+                            -> sk_nulls_del_node_init_rcu(osk)
+__inet_lookup_established()
+                            -> __sk_nulls_add_node_rcu(sk, list)
 
-Which essentially means that fec2 will be probed first.
+Notice that the CPU 0 is receiving the data after the final ack
+during 3-way shakehands and CPU 1 is still handling the final ack.
 
-> The EPROBE_DEFER does not prevent the second instance from being probed.
-> This is the origin of the problem.
+Why could this be a real problem?
+This case is happening only when the final ack and the first data
+receiving by different CPUs. Then the server receiving data with
+ACK flag tries to search one proper established socket from ehash
+table, but apparently it fails as my map shows above. After that,
+the server fetches a listener socket and then sends a RST because
+it finds a ACK flag in the skb (data), which obeys RST definition
+in RFC 793.
 
-Is this the actual cause? There is also a problem in the case above if the 
-MDIO controlling interface (fec2) is not probed first, e.g. using fec1 for 
-MDIO access. But then again there is i.MX6ULG1 which only has fec1 
-interface...
+Besides, Eric pointed out there's one more race condition where it
+handles tw socket hashdance. Only by adding to the tail of the list
+before deleting the old one can we avoid the race if the reader has
+already begun the bucket traversal and it would possibly miss the head.
 
-Best regards,
-Alexander
+Many thanks to Eric for great help from beginning to end.
 
+Fixes: 5e0724d027f0 ("tcp/dccp: fix hashdance race for passive sessions")
+Suggested-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Jason Xing <kernelxing@tencent.com>
+Link: https://lore.kernel.org/lkml/20230112065336.41034-1-kerneljasonxing@gmail.com/
+---
+v4:
+1) adjust the code style and make it easier to read.
 
+v3:
+1) get rid of else-if statement.
+
+v2:
+1) adding the sk node into the tail of list to prevent the race.
+2) fix the race condition when handling time-wait socket hashdance.
+---
+ net/ipv4/inet_hashtables.c    | 18 ++++++++++++++++--
+ net/ipv4/inet_timewait_sock.c |  6 +++---
+ 2 files changed, 19 insertions(+), 5 deletions(-)
+
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 24a38b56fab9..c64eec874b31 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -650,8 +650,21 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
+ 	spin_lock(lock);
+ 	if (osk) {
+ 		WARN_ON_ONCE(sk->sk_hash != osk->sk_hash);
+-		ret = sk_nulls_del_node_init_rcu(osk);
+-	} else if (found_dup_sk) {
++		if (sk_hashed(osk)) {
++			/* Before deleting the node, we insert a new one to make
++			 * sure that the look-up-sk process would not miss either
++			 * of them and that at least one node would exist in ehash
++			 * table all the time. Otherwise there's a tiny chance
++			 * that lookup process could find nothing in ehash table.
++			 */
++			__sk_nulls_add_node_tail_rcu(sk, list);
++			sk_nulls_del_node_init_rcu(osk);
++		} else {
++			ret = false;
++		}
++		goto unlock;
++	}
++	if (found_dup_sk) {
+ 		*found_dup_sk = inet_ehash_lookup_by_sk(sk, list);
+ 		if (*found_dup_sk)
+ 			ret = false;
+@@ -660,6 +673,7 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
+ 	if (ret)
+ 		__sk_nulls_add_node_rcu(sk, list);
+ 
++unlock:
+ 	spin_unlock(lock);
+ 
+ 	return ret;
+diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
+index 1d77d992e6e7..6d681ef52bb2 100644
+--- a/net/ipv4/inet_timewait_sock.c
++++ b/net/ipv4/inet_timewait_sock.c
+@@ -91,10 +91,10 @@ void inet_twsk_put(struct inet_timewait_sock *tw)
+ }
+ EXPORT_SYMBOL_GPL(inet_twsk_put);
+ 
+-static void inet_twsk_add_node_rcu(struct inet_timewait_sock *tw,
++static void inet_twsk_add_node_tail_rcu(struct inet_timewait_sock *tw,
+ 				   struct hlist_nulls_head *list)
+ {
+-	hlist_nulls_add_head_rcu(&tw->tw_node, list);
++	hlist_nulls_add_tail_rcu(&tw->tw_node, list);
+ }
+ 
+ static void inet_twsk_add_bind_node(struct inet_timewait_sock *tw,
+@@ -147,7 +147,7 @@ void inet_twsk_hashdance(struct inet_timewait_sock *tw, struct sock *sk,
+ 
+ 	spin_lock(lock);
+ 
+-	inet_twsk_add_node_rcu(tw, &ehead->chain);
++	inet_twsk_add_node_tail_rcu(tw, &ehead->chain);
+ 
+ 	/* Step 3: Remove SK from hash chain */
+ 	if (__sk_nulls_del_node_init_rcu(sk))
+-- 
+2.37.3
 
