@@ -2,53 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47E2666BCBD
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 12:20:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6F7F66BCD1
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 12:25:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229905AbjAPLU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 06:20:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47770 "EHLO
+        id S229725AbjAPLZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 06:25:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229569AbjAPLUW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 06:20:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C31265A0;
-        Mon, 16 Jan 2023 03:20:21 -0800 (PST)
+        with ESMTP id S229553AbjAPLZS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 06:25:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4FE81DB99
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 03:25:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00BDEB80E5E;
-        Mon, 16 Jan 2023 11:20:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 81B20C433F0;
-        Mon, 16 Jan 2023 11:20:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B52DB80E59
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 11:25:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE862C433EF;
+        Mon, 16 Jan 2023 11:25:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673868018;
-        bh=j29fL+h026AwbMOOxpMNQ+dWXbJnlnHEKqJG+DHbV1M=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ADQsalS5lZ3faYNAzgKCHT7Imz5IQB70BxZ2g1t/SO8jf+WG8zc1OqDfWwaLfKdXi
-         hpXOy15/baq/SCeEnM7HDu6OSCTsZ1vNx4tB/4NVuGq39rJBGtIuHIhDRklW2iWM4A
-         tyU2yug7cz3LpUQwkQoXbpPiq3ecN/NnfiMCwJJn44/nwEQcisZHzRJINwNBiktXo0
-         y1f1xDJQhhQGVOoo/EkZQ27aiISSeQWaxF2w7bRpKNrPgfAneoHMnrXa3lXcCjyhFB
-         8iGcrd9kOs4dKLH65Dru7jEt13YvOfj4xIXuxd7YTl3XMO24vSoJsVLXJZRQR3n9IH
-         LcJv22CaFObCQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6883CE54D2A;
-        Mon, 16 Jan 2023 11:20:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1673868315;
+        bh=EiLwQcjX0WGBq7/8/0LFZXRHhMC6vnz9O4+0U2bSa5Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=q279AOnC2558QQW7vnUY0XwA1j20PRQR4mds1wxupOCAi1q0s0gmv8iM68gnT4ynp
+         eKwhE+0DDfjScuzkHBy0lfQ28XJ0JvD6/iZQIr+CHkqFp9MMLUSeuaB5oRR9uU34m3
+         8aR1gOgvtBzlNFRwVpugjAdkPZ0EifaPOvgzM18tNdyvjjsYoFFzWWR1um9u67rMlF
+         /HraNrZiv32KIz26GcAW2fGJcNpKYNQb+7Tt6Vay5nz9FgwwatiBuRGTav9fj89xKe
+         uJLEdlUUDmiaxlEAsDZHCnAxBJaVdMot4YBl9tLr6fOKGfvURuK/kgowYlL0RVo9xe
+         WUlBiVGAIRx7g==
+Date:   Mon, 16 Jan 2023 13:25:08 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com
+Subject: Re: [PATCH net-next 7/9] devlink: allow registering parameters after
+ the instance
+Message-ID: <Y8U0FBgExl2FSVPZ@unreal>
+References: <20230110122222.57b0b70e@kernel.org>
+ <Y76CHc18xSlcXdWJ@nanopsycho>
+ <20230111084549.258b32fb@kernel.org>
+ <f5d9201b-fb73-ebfe-3ad3-4172164a33f3@intel.com>
+ <Y7+xv6gKaU+Horrk@unreal>
+ <Y8AgaVjRGgWtbq5X@nanopsycho>
+ <Y8BmgpxAuqJKe8Pc@unreal>
+ <Y8ENScADGSf2AUDA@nanopsycho>
+ <Y8O67bd/PuxVGTFf@unreal>
+ <Y8Un4cJdm/aBcIOK@nanopsycho>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v5 00/10] virtio-net: support multi buffer xdp
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167386801842.2835.2141479981702177893.git-patchwork-notify@kernel.org>
-Date:   Mon, 16 Jan 2023 11:20:18 +0000
-References: <20230114082229.62143-1-hengqi@linux.alibaba.com>
-In-Reply-To: <20230114082229.62143-1-hengqi@linux.alibaba.com>
-To:     Heng Qi <hengqi@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, jasowang@redhat.com,
-        mst@redhat.com, pabeni@redhat.com, kuba@kernel.org,
-        john.fastabend@gmail.com, davem@davemloft.net,
-        daniel@iogearbox.net, ast@kernel.org, edumazet@google.com,
-        xuanzhuo@linux.alibaba.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y8Un4cJdm/aBcIOK@nanopsycho>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,46 +63,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Sat, 14 Jan 2023 16:22:19 +0800 you wrote:
-> Changes since PATCH v4:
-> - Make netdev_warn() in [PATCH 2/10] independent from [PATCH 3/10].
+On Mon, Jan 16, 2023 at 11:33:05AM +0100, Jiri Pirko wrote:
+> Sun, Jan 15, 2023 at 09:35:57AM CET, leon@kernel.org wrote:
+> >On Fri, Jan 13, 2023 at 08:50:33AM +0100, Jiri Pirko wrote:
+> >> Thu, Jan 12, 2023 at 08:58:58PM CET, leon@kernel.org wrote:
+> >> >On Thu, Jan 12, 2023 at 03:59:53PM +0100, Jiri Pirko wrote:
+> >> >> Thu, Jan 12, 2023 at 08:07:43AM CET, leon@kernel.org wrote:
+> >> >> >On Wed, Jan 11, 2023 at 01:29:03PM -0800, Jacob Keller wrote:
+> >> >> >> 
+> >> >> >> 
+> >> >> >> On 1/11/2023 8:45 AM, Jakub Kicinski wrote:
+> >> >> >> > On Wed, 11 Jan 2023 10:32:13 +0100 Jiri Pirko wrote:
+> >> >> >> >>>> I'm confused. You want to register objects after instance register?  
+> >> >> >> >>>
+> >> >> >> >>> +1, I think it's an anti-pattern.  
+> >> >> >> >>
+> >> >> >> >> Could you elaborate a bit please?
+> >> >> >> > 
+> >> >> >> > Mixing registering sub-objects before and after the instance is a bit
+> >> >> >> > of an anti-pattern. Easy to introduce bugs during reload and reset /
+> >> >> >> > error recovery. I thought that's what you were saying as well.
+> >> >> >> 
+> >> >> >> I was thinking of a case where an object is dynamic and might get added
+> >> >> >> based on events occurring after the devlink was registered.
+> >> >> >> 
+> >> >> >> But the more I think about it the less that makes sense. What events
+> >> >> >> would cause a whole subobject to be registerd which we wouldn't already
+> >> >> >> know about during initialization of devlink?
+> >> >> >> 
+> >> >> >> We do need some dynamic support because situations like "add port" will
+> >> >> >> add a port and then the ports subresources after the main devlink, but I
+> >> >> >> think that is already supported well and we'd add the port sub-resources
+> >> >> >> at the same time as the port.
+> >> >> >> 
+> >> >> >> But thinking more on this, there isn't really another good example since
+> >> >> >> we'd register things like health reporters, regions, resources, etc all
+> >> >> >> during initialization. Each of these sub objects may have dynamic
+> >> >> >> portions (ex: region captures, health events, etc) but the need for the
+> >> >> >> object should be known about during init time if its supported by the
+> >> >> >> device driver.
+> >> >> >
+> >> >> >As a user, I don't want to see any late dynamic object addition which is
+> >> >> >not triggered by me explicitly. As it doesn't make any sense to add
+> >> >> >various delays per-vendor/kernel in configuration scripts just because
+> >> >> >not everything is ready. Users need predictability, lazy addition of
+> >> >> >objects adds chaos instead.
+> >> >> >
+> >> >> >Agree with Jakub, it is anti-pattern.
+> >> >> 
+> >> >> Yeah, but, we have reload. And during reload, instance is still
+> >> >> registered yet the subobject disappear and reappear. So that would be
+> >> >> inconsistent with the init/fini flow.
+> >> >> 
+> >> >> Perhaps during reload we should emulate complete fini/init notification
+> >> >> flow to the user?
+> >> >
+> >> >"reload" is triggered by me explicitly and I will get success/fail result
+> >> >at the end. There is no much meaning in subobject notifications during
+> >> >that operation.
+> >> 
+> >> Definitelly not. User would trigger reload, however another entity
+> >> (systemd for example) would listen to the notifications and react
+> >> if necessary.
+> >
+> >Listen yes, however it is not clear if notification sequence should
+> >mimic fini/init flow.
 > 
-> Changes since PATCH v3:
-> - Separate fix patch [2/10] for MTU calculation of single buffer xdp.
->   Note that this patch needs to be backported to the stable branch.
+> Well, it makes sense to me. Why do you think it should not?
+
+After all this years, I still don't understand the mandate of devlink
+reload. It doesn't load/unload driver completely and as such not really
+performs probe/remove sequences. There is no requirement from the driver
+to do anything even close to fini/init too. 
+
+Sometimes, devlink reload behaves as fini/init, but not always.
+
+This is why I'm not sure.
+
+Thanks
+
 > 
-> [...]
-
-Here is the summary with links:
-  - [net-next,v5,01/10] virtio-net: disable the hole mechanism for xdp
-    https://git.kernel.org/netdev/net-next/c/484beac2ffc1
-  - [net-next,v5,02/10] virtio-net: fix calculation of MTU for single-buffer xdp
-    https://git.kernel.org/netdev/net-next/c/e814b958ad88
-  - [net-next,v5,03/10] virtio-net: set up xdp for multi buffer packets
-    https://git.kernel.org/netdev/net-next/c/8d9bc36de5fc
-  - [net-next,v5,04/10] virtio-net: update bytes calculation for xdp_frame
-    https://git.kernel.org/netdev/net-next/c/50bd14bc98fa
-  - [net-next,v5,05/10] virtio-net: build xdp_buff with multi buffers
-    https://git.kernel.org/netdev/net-next/c/ef75cb51f139
-  - [net-next,v5,06/10] virtio-net: construct multi-buffer xdp in mergeable
-    https://git.kernel.org/netdev/net-next/c/22174f79a44b
-  - [net-next,v5,07/10] virtio-net: transmit the multi-buffer xdp
-    https://git.kernel.org/netdev/net-next/c/97717e8dbda1
-  - [net-next,v5,08/10] virtio-net: build skb from multi-buffer xdp
-    https://git.kernel.org/netdev/net-next/c/b26aa481b4b7
-  - [net-next,v5,09/10] virtio-net: remove xdp related info from page_to_skb()
-    https://git.kernel.org/netdev/net-next/c/18117a842ab0
-  - [net-next,v5,10/10] virtio-net: support multi-buffer xdp
-    https://git.kernel.org/netdev/net-next/c/fab89bafa95b
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> >
+> >Thanks
+> >
+> >> 
+> >> >
+> >> >Thanks
