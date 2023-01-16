@@ -2,84 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0785966BC8E
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 12:13:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4667D66BC91
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 12:13:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229490AbjAPLNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 06:13:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42554 "EHLO
+        id S229753AbjAPLNa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 06:13:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbjAPLNH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 06:13:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C64D01DB80
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 03:12:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673867535;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Xk0ru0w9+e9EAkvTNXaYhN64TcjBSGHtatyySaOd8KM=;
-        b=DZrXyrHxpxw/oVlkOjLDlHTsmss1JcdtL3Ia5JMlWApr1I0ZC7CBKvP131MpAQetFBBLjT
-        jCIVvq517Xrxt/avNsOVOf7zBmIxV+eEw8zsZvgSiGO/tUS/m9ZWhsh+JpLLxEoDTeLdSv
-        H4ce+LpLY382LvNbA1SvWLck54RPLq4=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-444-P-DsGZ9sNqeJqsTE313UXQ-1; Mon, 16 Jan 2023 06:12:13 -0500
-X-MC-Unique: P-DsGZ9sNqeJqsTE313UXQ-1
-Received: by mail-qk1-f199.google.com with SMTP id de38-20020a05620a372600b0070224de1c6eso20627392qkb.17
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 03:12:13 -0800 (PST)
+        with ESMTP id S230035AbjAPLNR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 06:13:17 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90D011C33B
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 03:13:15 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id d2so6998411wrp.8
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 03:13:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=nmj5GlePH1m1v4jjTuyZYeEMUXxnTC/9kTjujEoJMs0=;
+        b=d6H8HAsNEMGyEdrbdLq7DiHkcwqesRiEn5ysZDwwRCpvMePhphV208q/GxUktf/l/a
+         pAPAJpBi2EYQtR/teF0VrCWW/JVIkblu4eZ4CW7kcosBFsUTIcRYkOsSk1JrX6J/Kjdw
+         Q6ZzBEdHw6SeVbjiHHSS17E4NfTaYUesBXXD4+xnuiGEYa2FUka7vgBLzgjeUfkSDEjO
+         INV7b1K9dn6XnyCJIKQjc1auZSWGNSbYNRCluxTRjLkgvLf549SAR/61/Mtn5sd1/kT0
+         M6ivyuZAHGo54jRlaOHwx+HULdbHGvNcujBWXQnceg4hB2wcTgp5/fTRRDzHD1dJnUls
+         CqQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Xk0ru0w9+e9EAkvTNXaYhN64TcjBSGHtatyySaOd8KM=;
-        b=1+EnDjI+3ErEMP3NJwKcbdBrh0CYZx687sgOiCXIhuKETo/u9k54wfl9NIMjougUx7
-         7VoS6hf4WwfSlo/uGzYiwxk2XCCqfUJOAjLXwgIq8gumBMu91kpM5AT7tyHubIEs8JTb
-         tyjkJTPn0ikNMVmepb+Rmufs+gIh/FkBg6EFGiefiOA0No2mbWJVsMIdd/Cppr+Uz0hn
-         pn9t7GVfTyTCkm9+6b3occk2TMo9UsPrbizFELgrQ2opzOfFHrFP5mUFYN3CyNkXQJKs
-         ozREtPnEGCyzalWX+5X0qVuihukIxKrAg7IM/aOoZlMk4ZtALl2R7OXC817aY5GPGIyA
-         /1fA==
-X-Gm-Message-State: AFqh2kpE3glb3B1+R9f2iO0oPrkibqdVz8iWHqncnV9KRmITZQYcuNTb
-        +HYt45Uvb4/mWZ2bZNFNi+pZkGfrAvA46e3LEj0UOE9q93BxMDILF/rOExl/8sVeODvVNYlwmXE
-        iT52CW/jYmWqXvjrr
-X-Received: by 2002:a05:622a:4a15:b0:3af:b6bd:aba7 with SMTP id fv21-20020a05622a4a1500b003afb6bdaba7mr35212436qtb.43.1673867533201;
-        Mon, 16 Jan 2023 03:12:13 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXvUnYT51VUVH61+cDwTfIaOq8om38/xZLMDlzmwknNhKAsbceeU8IOMbufPUB8nUrZ/3z1C8A==
-X-Received: by 2002:a05:622a:4a15:b0:3af:b6bd:aba7 with SMTP id fv21-20020a05622a4a1500b003afb6bdaba7mr35212399qtb.43.1673867532964;
-        Mon, 16 Jan 2023 03:12:12 -0800 (PST)
-Received: from sgarzare-redhat (host-79-46-200-72.retail.telecomitalia.it. [79.46.200.72])
-        by smtp.gmail.com with ESMTPSA id do26-20020a05620a2b1a00b0070648cf78bdsm3938908qkb.54.2023.01.16.03.12.09
+        bh=nmj5GlePH1m1v4jjTuyZYeEMUXxnTC/9kTjujEoJMs0=;
+        b=wXYjzdeMcJQoYKWpZsDMRuH6vCIyJJuLfb/0V1wazfSWwXyPDAqciPRFRmf8nyUcqM
+         Zyatl2h+waqlqYop6IDrdlmO+3v0dym0rOS/2J2Q8v1FGpthma7PylhM3eBy5SyyAGo7
+         x8otW2izIzsgG8bXXIP9Tm5x0dW0XKj1Hqg9HTlqR6WDlePBYnJPfpfPn8eK6KEKHl1k
+         +5c0WXlkpxRqAnXPIMkWY6lbIlvol73xcUuRrQKxzokH5i3Yq5tI/zM0Hbqq7d2A2xc5
+         YFmSp2BnuE2Zv50gDUlSy1QXK4pAzPhOvJZ6YmzfPvoX8DyHynparkoNsncH7XXOq4I/
+         ld9A==
+X-Gm-Message-State: AFqh2krXO4RpAZsiY5Z/1JKXBx3wCqAkTEdbpEubbaQQUgXHPH/4h8O5
+        ciRaOCwctD0L9ddPlNssI/I=
+X-Google-Smtp-Source: AMrXdXuKN4rVrN2BmOdoxS7iAkhLVDXr8ESjJSdhLJh8rGn/DGc6pF+Xk2X4luvYiYo481YVXrNvsw==
+X-Received: by 2002:adf:e911:0:b0:2bd:da56:230c with SMTP id f17-20020adfe911000000b002bdda56230cmr10385772wrm.40.1673867593953;
+        Mon, 16 Jan 2023 03:13:13 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id l1-20020adfe9c1000000b00289bdda07b7sm25392040wrn.92.2023.01.16.03.13.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Jan 2023 03:12:12 -0800 (PST)
-Date:   Mon, 16 Jan 2023 12:12:07 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Bobby Eshleman <bobby.eshleman@bytedance.com>
-Cc:     Bobby Eshleman <bobbyeshleman@gmail.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Mon, 16 Jan 2023 03:13:13 -0800 (PST)
+Date:   Mon, 16 Jan 2023 14:13:10 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     oe-kbuild@lists.linux.dev, netdev@vger.kernel.org, lkp@intel.com,
+        oe-kbuild-all@lists.linux.dev, kernel-team@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v10] virtio/vsock: replace virtio_vsock_pkt with
- sk_buff
-Message-ID: <20230116111207.yxlwh4jlejtn4ple@sgarzare-redhat>
-References: <20230113222137.2490173-1-bobby.eshleman@bytedance.com>
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        syzbot+04c21ed96d861dccc5cd@syzkaller.appspotmail.com
+Subject: Re: [PATCH bpf 1/3] bpf, sockmap: Check for any of tcp_bpf_prots
+ when cloning a listener
+Message-ID: <Y8UxRmxdqGv92Szw@kadam>
+References: <20230113-sockmap-fix-v1-1-d3cad092ee10@cloudflare.com>
+ <202301141018.w4fQc4gd-lkp@intel.com>
+ <87sfgayeg9.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230113222137.2490173-1-bobby.eshleman@bytedance.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+In-Reply-To: <87sfgayeg9.fsf@cloudflare.com>
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -87,43 +79,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 13, 2023 at 10:21:37PM +0000, Bobby Eshleman wrote:
->This commit changes virtio/vsock to use sk_buff instead of
->virtio_vsock_pkt. Beyond better conforming to other net code, using
->sk_buff allows vsock to use sk_buff-dependent features in the future
->(such as sockmap) and improves throughput.
->
->This patch introduces the following performance changes:
->
->Tool: Uperf
->Env: Phys Host + L1 Guest
->Payload: 64k
->Threads: 16
->Test Runs: 10
->Type: SOCK_STREAM
->Before: commit b7bfaa761d760 ("Linux 6.2-rc3")
->
->Before
->------
->g2h: 16.77Gb/s
->h2g: 10.56Gb/s
->
->After
->-----
->g2h: 21.04Gb/s
->h2g: 10.76Gb/s
->
->Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
->
->---
->Changes in v10:
->- vhost/vsock: use virtio_vsock_skb_dequeue()
->- vhost/vsock: remove extra iov_length() call
->- vhost/vsock: also consider hdr when evaluating that incoming size is
->  valid
->- new uperf data
+On Mon, Jan 16, 2023 at 11:09:02AM +0100, Jakub Sitnicki wrote:
+> Hi Dan,
+> 
+> On Sat, Jan 14, 2023 at 11:04 AM +03, Dan Carpenter wrote:
+> > Hi Jakub,
+> >
+> > url:    https://github.com/intel-lab-lkp/linux/commits/Jakub-Sitnicki/bpf-sockmap-Check-for-any-of-tcp_bpf_prots-when-cloning-a-listener/20230113-230728
+> > base:   e7895f017b79410bf4591396a733b876dc1e0e9d
+> > patch link:    https://lore.kernel.org/r/20230113-sockmap-fix-v1-1-d3cad092ee10%40cloudflare.com
+> > patch subject: [PATCH bpf 1/3] bpf, sockmap: Check for any of tcp_bpf_prots when cloning a listener
+> > config: i386-randconfig-m021
+> > compiler: gcc-11 (Debian 11.3.0-8) 11.3.0
+> >
+> > If you fix the issue, kindly add following tag where applicable
+> > | Reported-by: kernel test robot <lkp@intel.com>
+> > | Reported-by: Dan Carpenter <error27@gmail.com>
+> >
+> > smatch warnings:
+> > net/ipv4/tcp_bpf.c:644 tcp_bpf_clone() error: buffer overflow 'tcp_bpf_prots' 2 <= 2
+> >
+> > vim +/tcp_bpf_prots +644 net/ipv4/tcp_bpf.c
+> >
+> > 604326b41a6fb9 Daniel Borkmann 2018-10-13  634  
+> > e80251555f0bef Jakub Sitnicki  2020-02-18  635  /* If a child got cloned from a listening socket that had tcp_bpf
+> > e80251555f0bef Jakub Sitnicki  2020-02-18  636   * protocol callbacks installed, we need to restore the callbacks to
+> > e80251555f0bef Jakub Sitnicki  2020-02-18  637   * the default ones because the child does not inherit the psock state
+> > e80251555f0bef Jakub Sitnicki  2020-02-18  638   * that tcp_bpf callbacks expect.
+> > e80251555f0bef Jakub Sitnicki  2020-02-18  639   */
+> > e80251555f0bef Jakub Sitnicki  2020-02-18  640  void tcp_bpf_clone(const struct sock *sk, struct sock *newsk)
+> > e80251555f0bef Jakub Sitnicki  2020-02-18  641  {
+> > e80251555f0bef Jakub Sitnicki  2020-02-18  642  	struct proto *prot = newsk->sk_prot;
+> > e80251555f0bef Jakub Sitnicki  2020-02-18  643  
+> > c2e74657613125 Jakub Sitnicki  2023-01-13 @644  	if (tcp_bpf_prots[0] <= prot && prot < tcp_bpf_prots[ARRAY_SIZE(tcp_bpf_prots)])
+> >                                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> > What?  Also I suspect this might cause a compile error for Clang builds.
+> 
+> Can't say I see a problem B-)
+> 
+> tcp_bpf_prots is a 2D array:
+> 
+> static struct proto tcp_bpf_prots[TCP_BPF_NUM_PROTS][TCP_BPF_NUM_CFGS];
+> 
+> ... so tcp_bpf_prots[0] is the base address of the first array, while
+> tcp_bpf_prots[ARRAY_SIZE(tcp_bpf_prots)] is the base address of the
+> array one past the last one.
+> 
+> Smatch doesn't seem to graps the 2D array concept here. We can make it
+> happy by being explicit but harder on the eyes:
+> 
+> 	if (&tcp_bpf_prots[0][0] <= prot && prot < &tcp_bpf_prots[ARRAY_SIZE(tcp_bpf_prots)][0])
+> 		newsk->sk_prot = sk->sk_prot_creator;
 
-Tests seem fine!
+Huh.  I can silence this false positive in Smatch...  It never even
+occured to me that this was a two dimensional array (I only have the
+information in the email).
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+> 
+> Clang can do pointer arithmetic on 2D arrays just fine :-)
 
+Heh.  I must have an older version of Clang.
+
+  CC      net/ipv4/tcp_bpf.o
+net/ipv4/tcp_bpf.c:644:41: warning: array index 2 is past the end of the array (that has type 'struct proto[2][4]') [-Warray-bounds]
+        if (tcp_bpf_prots[0] <= prot && prot < tcp_bpf_prots[ARRAY_SIZE(tcp_bpf_prots)])
+                                               ^             ~~~~~~~~~~~~~~~~~~~~~~~~~
+net/ipv4/tcp_bpf.c:544:1: note: array 'tcp_bpf_prots' declared here
+static struct proto tcp_bpf_prots[TCP_BPF_NUM_PROTS][TCP_BPF_NUM_CFGS];
+^
+1 warning generated.
+
+regards,
+dan carpetner
