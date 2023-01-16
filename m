@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13FF766BEB5
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 14:07:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CDBA66BEC7
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 14:07:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231517AbjAPNHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 08:07:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56848 "EHLO
+        id S230238AbjAPNHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 08:07:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231478AbjAPNGk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 08:06:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CEF146AD;
-        Mon, 16 Jan 2023 05:06:31 -0800 (PST)
+        with ESMTP id S229817AbjAPNGx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 08:06:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A2803A90;
+        Mon, 16 Jan 2023 05:06:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 298E360F8C;
-        Mon, 16 Jan 2023 13:06:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5839C433EF;
-        Mon, 16 Jan 2023 13:06:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4F1060F97;
+        Mon, 16 Jan 2023 13:06:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88B85C433D2;
+        Mon, 16 Jan 2023 13:06:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673874390;
-        bh=IB+veTmklBKw7PiVo8v/NfpEJifNCfbu55nd+mTVPUg=;
+        s=k20201202; t=1673874411;
+        bh=yXankd3ADXRZerTodbpyETr0H4Qj01JdsQgtwpw0Dpo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zq1PeBxWasNH9Dc8TC5hkRkJlGnfrUF4cWKlF4/fG9vW4QUdGsdaxsghZtSzGekgL
-         Ql33dt1b+c8IiQ26vu0nGPhqhXCrfk9adXxFZXDxdtwDHR4x6iJ3SaSyZYBepeCwBZ
-         Kc1h7HaqLwA7JpvpcHUpLHDiYeVw/LVwcm3Qkh0MIpAuak9cURPQnFRsQWsR/l+0Yk
-         wUKGvViiPRzzYkrTDFpzf2TnxIG8excmNjlptAdTQM7ps0xm/RB3itb2zPmaoGw6tz
-         ZlhHeHiLEOPWtUTi0h9Lawmhs2MdwmLgHHbEwdPoDN5CS39q3fayP03G9NKAQ6Vrgl
-         DHhkfMNo2J7fQ==
+        b=fgIjibUjt1g+aWE/ux7w8lldiqti9MPTOYrg664GTgeLLIko4iPlQIWTchtK4PPS2
+         E/Nj7bdo+U8PXiZB22s69BYxYSo2jkj8gYzgB/2jWsva2ntMUuI2Aq3657DptC5dE5
+         4Jr0jMc+OseLWn678RNGP/CbyWwuU5rWZ4YS+wtBZ9xex7dzm7e7WMNr0g149oyV5g
+         bV1mGiJJ9b8fsOyoNu+nM/BzhRhn01fxJYL0KHLx7WVH9RdBd24jGTRwxpOzoj8iDi
+         A66sE/zByovan3DalETwgdA4lfwZfOcUxm25T0qqmVAvszBo4pnTSvZLqnjof6c1O+
+         WQcxe4oVbyRIg==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Jason Gunthorpe <jgg@nvidia.com>
 Cc:     Israel Rukshin <israelr@nvidia.com>,
@@ -50,9 +50,9 @@ Cc:     Israel Rukshin <israelr@nvidia.com>,
         Steven Rostedt <rostedt@goodmis.org>,
         Vishnu Dasa <vdasa@vmware.com>,
         Yishai Hadas <yishaih@nvidia.com>
-Subject: [PATCH rdma-next 07/13] RDMA/core: Add support for creating crypto enabled QPs
-Date:   Mon, 16 Jan 2023 15:05:54 +0200
-Message-Id: <7a772388d517a28052fa5f0b8ea507cb3fe471fe.1673873422.git.leon@kernel.org>
+Subject: [PATCH rdma-next 08/13] RDMA/mlx5: Add cryptographic device capabilities
+Date:   Mon, 16 Jan 2023 15:05:55 +0200
+Message-Id: <39ba2f3cd1786e47f2541f4a7be59cc5af4b03c7.1673873422.git.leon@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <cover.1673873422.git.leon@kernel.org>
 References: <cover.1673873422.git.leon@kernel.org>
@@ -69,81 +69,133 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Israel Rukshin <israelr@nvidia.com>
 
-Add a list of crypto MRs and introduce a crypto WR type to post
-on those QPs.
+The capabilities provide information on general cryptographic support,
+maximum number of DEKs and status for RDMA devices. Also, they include
+the supported cryptographic engines and their import method (wrapped or
+plaintext). Wrapped crypto operational flag indicates the import method
+mode that can be used. For now, add only AES-XTS cryptographic support.
 
 Signed-off-by: Israel Rukshin <israelr@nvidia.com>
 Signed-off-by: Leon Romanovsky <leon@kernel.org>
 ---
- drivers/infiniband/core/verbs.c |  3 +++
- include/rdma/ib_verbs.h         | 12 +++++++++++-
- 2 files changed, 14 insertions(+), 1 deletion(-)
+ drivers/infiniband/hw/mlx5/Makefile  |  1 +
+ drivers/infiniband/hw/mlx5/crypto.c  | 31 ++++++++++++++++++++++++++++
+ drivers/infiniband/hw/mlx5/crypto.h  | 11 ++++++++++
+ drivers/infiniband/hw/mlx5/main.c    |  5 +++++
+ drivers/infiniband/hw/mlx5/mlx5_ib.h |  2 ++
+ 5 files changed, 50 insertions(+)
+ create mode 100644 drivers/infiniband/hw/mlx5/crypto.c
+ create mode 100644 drivers/infiniband/hw/mlx5/crypto.h
 
-diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
-index 61473fee4b54..01aefff6760e 100644
---- a/drivers/infiniband/core/verbs.c
-+++ b/drivers/infiniband/core/verbs.c
-@@ -1223,6 +1223,7 @@ static struct ib_qp *create_qp(struct ib_device *dev, struct ib_pd *pd,
- 	spin_lock_init(&qp->mr_lock);
- 	INIT_LIST_HEAD(&qp->rdma_mrs);
- 	INIT_LIST_HEAD(&qp->sig_mrs);
-+	INIT_LIST_HEAD(&qp->crypto_mrs);
+diff --git a/drivers/infiniband/hw/mlx5/Makefile b/drivers/infiniband/hw/mlx5/Makefile
+index 612ee8190a2d..d6ae1a08b5b2 100644
+--- a/drivers/infiniband/hw/mlx5/Makefile
++++ b/drivers/infiniband/hw/mlx5/Makefile
+@@ -6,6 +6,7 @@ mlx5_ib-y := ah.o \
+ 	     cong.o \
+ 	     counters.o \
+ 	     cq.o \
++	     crypto.o \
+ 	     dm.o \
+ 	     doorbell.o \
+ 	     gsi.o \
+diff --git a/drivers/infiniband/hw/mlx5/crypto.c b/drivers/infiniband/hw/mlx5/crypto.c
+new file mode 100644
+index 000000000000..6fad9084877e
+--- /dev/null
++++ b/drivers/infiniband/hw/mlx5/crypto.c
+@@ -0,0 +1,31 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. */
++
++#include "crypto.h"
++
++void mlx5r_crypto_caps_init(struct mlx5_ib_dev *dev)
++{
++	struct ib_crypto_caps *caps = &dev->crypto_caps;
++	struct mlx5_core_dev *mdev = dev->mdev;
++
++	if (!(MLX5_CAP_GEN_64(dev->mdev, general_obj_types) &
++	      MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_ENCRYPTION_KEY))
++		return;
++
++	if (!MLX5_CAP_GEN(mdev, aes_xts_multi_block_le_tweak) &&
++	    !MLX5_CAP_GEN(mdev, aes_xts_multi_block_be_tweak))
++		return;
++
++	if (MLX5_CAP_CRYPTO(mdev, wrapped_import_method) &
++	    MLX5_CRYPTO_WRAPPED_IMPORT_METHOD_CAP_AES_XTS)
++		return;
++
++	if (MLX5_CAP_CRYPTO(mdev, failed_selftests)) {
++		mlx5_ib_warn(dev, "crypto self-tests failed with error 0x%x\n",
++			     MLX5_CAP_CRYPTO(mdev, failed_selftests));
++		return;
++	}
++
++	caps->crypto_engines |= IB_CRYPTO_ENGINES_CAP_AES_XTS;
++	caps->max_num_deks = 1 << MLX5_CAP_CRYPTO(mdev, log_max_num_deks);
++}
+diff --git a/drivers/infiniband/hw/mlx5/crypto.h b/drivers/infiniband/hw/mlx5/crypto.h
+new file mode 100644
+index 000000000000..8686ac6fb0b0
+--- /dev/null
++++ b/drivers/infiniband/hw/mlx5/crypto.h
+@@ -0,0 +1,11 @@
++/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
++/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. */
++
++#ifndef _MLX5_IB_CRYPTO_H
++#define _MLX5_IB_CRYPTO_H
++
++#include "mlx5_ib.h"
++
++void mlx5r_crypto_caps_init(struct mlx5_ib_dev *dev);
++
++#endif /* _MLX5_IB_CRYPTO_H */
+diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
+index fb0d97bd4074..10f12e9a4dc3 100644
+--- a/drivers/infiniband/hw/mlx5/main.c
++++ b/drivers/infiniband/hw/mlx5/main.c
+@@ -39,6 +39,7 @@
+ #include "srq.h"
+ #include "qp.h"
+ #include "wr.h"
++#include "crypto.h"
+ #include "restrack.h"
+ #include "counters.h"
+ #include "umr.h"
+@@ -989,6 +990,7 @@ static int mlx5_ib_query_device(struct ib_device *ibdev,
+ 	props->max_ah = INT_MAX;
+ 	props->hca_core_clock = MLX5_CAP_GEN(mdev, device_frequency_khz);
+ 	props->timestamp_mask = 0x7FFFFFFFFFFFFFFFULL;
++	props->crypto_caps = dev->crypto_caps;
  
- 	qp->send_cq = attr->send_cq;
- 	qp->recv_cq = attr->recv_cq;
-@@ -1363,6 +1364,8 @@ struct ib_qp *ib_create_qp_kernel(struct ib_pd *pd,
- 				 device->attrs.max_sge_rd);
- 	if (qp_init_attr->create_flags & IB_QP_CREATE_INTEGRITY_EN)
- 		qp->integrity_en = true;
-+	if (qp_init_attr->create_flags & IB_QP_CREATE_CRYPTO_EN)
-+		qp->crypto_en = true;
+ 	if (IS_ENABLED(CONFIG_INFINIBAND_ON_DEMAND_PAGING)) {
+ 		if (dev->odp_caps.general_caps & IB_ODP_SUPPORT)
+@@ -3826,6 +3828,9 @@ static int mlx5_ib_stage_caps_init(struct mlx5_ib_dev *dev)
+ 	if (MLX5_CAP_GEN(mdev, xrc))
+ 		ib_set_device_ops(&dev->ib_dev, &mlx5_ib_dev_xrc_ops);
  
- 	return qp;
++	if (MLX5_CAP_GEN(mdev, crypto))
++		mlx5r_crypto_caps_init(dev);
++
+ 	if (MLX5_CAP_DEV_MEM(mdev, memic) ||
+ 	    MLX5_CAP_GEN_64(dev->mdev, general_obj_types) &
+ 	    MLX5_GENERAL_OBJ_TYPES_CAP_SW_ICM)
+diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
+index 295502692da2..8f6850539542 100644
+--- a/drivers/infiniband/hw/mlx5/mlx5_ib.h
++++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
+@@ -1100,6 +1100,8 @@ struct mlx5_ib_dev {
+ 	struct mlx5_ib_delay_drop	delay_drop;
+ 	const struct mlx5_ib_profile	*profile;
  
-diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
-index 7507661c78d0..1770cd30c0f0 100644
---- a/include/rdma/ib_verbs.h
-+++ b/include/rdma/ib_verbs.h
-@@ -1175,6 +1175,8 @@ enum ib_qp_create_flags {
- 	IB_QP_CREATE_INTEGRITY_EN		= 1ULL << 34,
- 	/* Create an accelerated UD QP */
- 	IB_QP_CREATE_NETDEV_USE			= 1ULL << 35,
-+	/* The created QP can carry out cryptographic handover operations */
-+	IB_QP_CREATE_CRYPTO_EN			= 1ULL << 36,
- };
- 
- /*
-@@ -1352,6 +1354,12 @@ enum ib_wr_opcode {
- 	/* These are kernel only and can not be issued by userspace */
- 	IB_WR_REG_MR = 0x20,
- 	IB_WR_REG_MR_INTEGRITY,
-+	/*
-+	 * It is used to assign crypto properties to a MKey. Use the MKey in
-+	 * any RDMA transaction (SEND/RECV/READ/WRITE) to encrypt/decrypt data
-+	 * on-the-fly.
-+	 */
-+	IB_WR_REG_MR_CRYPTO,
- 
- 	/* reserve values for low level drivers' internal use.
- 	 * These values will not be used at all in the ib core layer.
-@@ -1800,6 +1808,7 @@ struct ib_qp {
- 	int			mrs_used;
- 	struct list_head	rdma_mrs;
- 	struct list_head	sig_mrs;
-+	struct list_head	crypto_mrs;
- 	struct ib_srq	       *srq;
- 	struct ib_xrcd	       *xrcd; /* XRC TGT QPs only */
- 	struct list_head	xrcd_list;
-@@ -1822,7 +1831,8 @@ struct ib_qp {
- 	struct ib_qp_security  *qp_sec;
- 	u32			port;
- 
--	bool			integrity_en;
-+	u8			integrity_en:1;
-+	u8			crypto_en:1;
- 	/*
- 	 * Implementation details of the RDMA core, don't use in drivers:
- 	 */
++	struct ib_crypto_caps		crypto_caps;
++
+ 	struct mlx5_ib_lb_state		lb;
+ 	u8			umr_fence;
+ 	struct list_head	ib_dev_list;
 -- 
 2.39.0
 
