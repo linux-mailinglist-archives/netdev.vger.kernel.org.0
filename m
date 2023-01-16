@@ -2,153 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B676466BDA5
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 13:18:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BEAB66BDE5
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 13:33:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230423AbjAPMSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 07:18:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49570 "EHLO
+        id S229932AbjAPMdU convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 16 Jan 2023 07:33:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230284AbjAPMRw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 07:17:52 -0500
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2047.outbound.protection.outlook.com [40.107.7.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C02E1E29A;
-        Mon, 16 Jan 2023 04:17:32 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RWvfjPLitYt164zaS7/BjZTfIR8KUZEaTN+QVlOu4AjutT/bJkPz/8jGzaeJuVq/Hb6CwXjoMttFx7syPuKmdvADwdmKvumHlyIZcnJQfBh6HyhodqOOqBpl7cjzpN7CLcEuuuRVQ8niczRhJEa4QPlQq8al+SbzG+kkDKazAOZC2P9H6NIQwtX7VBMYundwL9BlEKRHVzCrTjBgqko6QnOR7fdZFJ3n1TzSz/ZFwEIza6BZtgujuh96uM0aabZT07EsC3iY5V8CPD3EXaj0vpRyKeZu5MTGIpWh6hYZj00nphI9ER78AJ2inrMDQc86U+4TekQn6qZfL0nLZHmq+w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1Wq2GoUm1Ep3bz/1sRkIXS6kV41mKnZ1Cb4ZCARJAN4=;
- b=X2B+iUwwTVjVe7MzV4IWxWZBGBnZbKFqZQhLCeiioGTnZ2cLa2sqOz2QFDKVa5NPozrIsQyq/NG13SOj0JWNuuuR5rioW65k3wcgTl5uQjcHLyPHhxxV7U816UQrrSDMehjp5BEM0TINzhtBRxg1WEl5sla2t2KTrJd3QoOukCjafp69bP+QcRejwAspaPDDlJPCaEvbls8rTw/rcDx5wjG3UwP0ler/XDpmGYlLZz1zw/Cc8vr2KlxX73TvAGR9/xnYGneSms0hlXkADh4x0HcOW51JI9E1C/kOuSs54Scm1bHU9g+A8vR06sAxBWETFM+HfPZGZLUcOE339ftsTw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1Wq2GoUm1Ep3bz/1sRkIXS6kV41mKnZ1Cb4ZCARJAN4=;
- b=Qra4NGHZQAznTA1WCB0VauEDgfE9qTQ3sIHypB0NU7rgOsF+uHKLqn3EeCHOp35LH2HvyX2S9tRs+ym81G8ymkAQmuyLVzc97k6LnK/ig6hVsbWeKdFB4DI3HwXLsK+guk6GDtHtPuXL+cX63w3l9Qr7sTuci21SxqsMYBhIAlU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AS4PR04MB9313.eurprd04.prod.outlook.com (2603:10a6:20b:4e4::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Mon, 16 Jan
- 2023 12:17:29 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3cfb:3ae7:1686:a68b%4]) with mapi id 15.20.5986.023; Mon, 16 Jan 2023
- 12:17:29 +0000
-Date:   Mon, 16 Jan 2023 14:17:25 +0200
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     "Somisetty, Pranavi" <pranavi.somisetty@amd.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        with ESMTP id S229603AbjAPMdT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 07:33:19 -0500
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9401C338;
+        Mon, 16 Jan 2023 04:33:18 -0800 (PST)
+Received: by mail-ot1-f42.google.com with SMTP id cm26-20020a056830651a00b00684e5c0108dso2292330otb.9;
+        Mon, 16 Jan 2023 04:33:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=F61H973BIjXBatem9Exy4ACFKfXqK3XYvjoCLybvptw=;
+        b=urS35smwwuNshpl0oM6fGqd1FUOAUSSCG6iA9TwpE6BUtpsYi/YpbzTmZMgjHpcAfd
+         HGsvbGF7Dw15wCdOnlpyNU5lisCA/0nS+X/2EGhE344d65eB4eHn/IdE3tb8fzP8RyPy
+         PHBfqHASoxMerIsu4s+QfAOaqj1fDbox2n6NyyqbfLeZXhamLIIyIc6vt1ndqgHpp/6y
+         JzVV1hcdonSrOP+L8ngIu4VnyMqjAjzg94I2CjiVQ0wFJ5CxK3n1fv24j5ZBbSrVKCip
+         Fqt+NrnE2omBjKmea25KMRJR7T+8/3phO+8q5lDX7reWI9gwuHWN3iyaxYRkvbRHnzys
+         LcWw==
+X-Gm-Message-State: AFqh2kr5AsMBreOS8pc3dhjc4i2heHPTqTYsOOHydPBshOteu7kCN5KY
+        atc9jQ+8mAnXSNENqYgvRM4bV0Fk6l1Xig==
+X-Google-Smtp-Source: AMrXdXtzSsNph0ejn7p8tIAE0wWLdos/hFo+vZ3ENfRhvFwTvGYdif1ebIp2V3Kjt1CZrmTBvLG4aA==
+X-Received: by 2002:a05:6830:2084:b0:685:134:b73d with SMTP id y4-20020a056830208400b006850134b73dmr2168892otq.23.1673872397164;
+        Mon, 16 Jan 2023 04:33:17 -0800 (PST)
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com. [209.85.210.51])
+        by smtp.gmail.com with ESMTPSA id cb2-20020a056830618200b0068460566f4bsm14613187otb.30.2023.01.16.04.33.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 Jan 2023 04:33:17 -0800 (PST)
+Received: by mail-ot1-f51.google.com with SMTP id d6-20020a056830138600b0068585c52f86so1403698otq.4;
+        Mon, 16 Jan 2023 04:33:16 -0800 (PST)
+X-Received: by 2002:a25:5189:0:b0:7bf:d201:60cb with SMTP id
+ f131-20020a255189000000b007bfd20160cbmr1936519ybb.365.1673872073848; Mon, 16
+ Jan 2023 04:27:53 -0800 (PST)
+MIME-Version: 1.0
+References: <20230116103926.276869-1-clement.leger@bootlin.com> <20230116103926.276869-5-clement.leger@bootlin.com>
+In-Reply-To: <20230116103926.276869-5-clement.leger@bootlin.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 16 Jan 2023 13:27:42 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVsa4t61AOnEHzuda7czE1fk-16-R8fXsp-MB3hZMJTEQ@mail.gmail.com>
+Message-ID: <CAMuHMdVsa4t61AOnEHzuda7czE1fk-16-R8fXsp-MB3hZMJTEQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 4/6] dt-bindings: net: renesas,rzn1-gmac:
+ Document RZ/N1 GMAC support
+To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Wong Vee Khee <veekhee@apple.com>,
         Kurt Kanzenbach <kurt@linutronix.de>,
-        Rui Sousa <rui.sousa@nxp.com>,
-        Ferenc Fejes <ferenc.fejes@ericsson.com>,
-        "Katakam, Harini" <harini.katakam@amd.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH v2 net-next 02/12] net: ethtool: add support for MAC
- Merge layer
-Message-ID: <20230116121725.wsf3hfv3biyozno4@skbuf>
-References: <20230111161706.1465242-1-vladimir.oltean@nxp.com>
- <20230111161706.1465242-3-vladimir.oltean@nxp.com>
- <BN8PR12MB28529854BAE0543212FF8E13F7C19@BN8PR12MB2852.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN8PR12MB28529854BAE0543212FF8E13F7C19@BN8PR12MB2852.namprd12.prod.outlook.com>
-X-ClientProxiedBy: VI1PR04CA0110.eurprd04.prod.outlook.com
- (2603:10a6:803:64::45) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS4PR04MB9313:EE_
-X-MS-Office365-Filtering-Correlation-Id: aa8620d0-d859-4e2f-e391-08daf7bba2eb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 79tgCEDQXdeOITF5FtpwIuDmNMrie/gqU4zmjfKkmWHQQ4t34wDO5H89pY50qPfI7tUoh+18iiUCvWwDJoN9LipTf/PvufHXv42QVTY9ErPivCgiTKuOFGAAF99b7ZShexj0QjP0lEnIgtX9jCGgwaCaz0kUbCMc07R+5TJWzY/IgCo0cl7lj50QKnBq0Z+FXhJ+DXXHWOHINv0/NN4cgIvPJWXcHQAx4rhRil/EVUFPxM1fjxCgabbpsun8uAsN5/7YLoWvxhx7YYbkbWXkSpHhzFjZc5lQfzlSZfT01oL/pLtvu19YGZUGy6oTCc+ZZgEOl+r1wXXR+avRw4Fh5ic60oMDVP0rebMB3hxcfplY3kpqGviUu1bdPWKuRkCapUY5zCwxpzlxyD6H0A3IM3k0VzMXuYAGfmENxQTRdxQSRyGL2KgNOSf6E1zvPpqqpdbFcV8eO4zerIahOXkKaxN67ys3Fj5uOBpcTepWu7Y77CCwmte43Gkv/lhXZlAuE33RmYostXyyf5OWjm4VHZAg5qEuQZe+AUAT8j7wUdkczDJzIiQmzmqd75F9Rn7XFxyQMZMdNT+udWGRs8O73SY/RPeMKsoKJP6xoWf8BqJMXwmElAKEdIthj67dZs10mH5FHRXDgcykYzHb8epGwQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(346002)(396003)(366004)(376002)(136003)(39860400002)(451199015)(86362001)(66556008)(8936002)(44832011)(6916009)(8676002)(66946007)(66476007)(2906002)(5660300002)(7416002)(4326008)(83380400001)(38100700002)(478600001)(6486002)(54906003)(6666004)(316002)(33716001)(41300700001)(1076003)(6512007)(9686003)(26005)(6506007)(186003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bU84YpP2HKKgC2gXa3Cu2fUZ+0UsYJ+oBCCcro0fiYql4QrIR8HVGKd0wwvm?=
- =?us-ascii?Q?zsWLi5xZ9rSuq1nPXIDTADLUqxxVlMeZdFc6PNDp/A7NWsZ49G4n2AeFIagT?=
- =?us-ascii?Q?TwQxeamE6WmC/4R2eI43Xw7DsDPblBpxPdoLSLqyo+I5tPkb8tEEsw3ejxdG?=
- =?us-ascii?Q?Y8uAzD+xYE4DpEajWRBMGyEoC+Rc3G7xRQqVRXvDzIusW/OiuM3IMUnRhIZw?=
- =?us-ascii?Q?VpZtRs8x9Czxye8v1pUMrb3Y9xhQ6roixtwyIoW9J3bUas3JLRAtDqFnlCAW?=
- =?us-ascii?Q?8y6qBmIZ+S/LRbXHFWzJqranAxQTFIhuOpd5jt/zXZHlb44F0ausabX6ZttW?=
- =?us-ascii?Q?4hCQAeQJaU0EmIKmR251JINNdpfJ6v7Z1YLNaCdtTpe2jytL9SLQnQEI+MVl?=
- =?us-ascii?Q?6p+LFfBYdnwemo/RwP9Vgqm/3P2dcK0zw9w4YMUNNYA4OE7lCGaHHO+Cc7BF?=
- =?us-ascii?Q?KztDepjFoq9/7x3zIQlkh8KeLZ0Iol5bjHkmzi29fDF0uD9IjHIl3D1IV9/0?=
- =?us-ascii?Q?1IvRT4zvtPBrQU0HBRqwIl6DZ1ORxpfT48DInbters/gFct2nAB5uWKT3MhV?=
- =?us-ascii?Q?k1aoQIUn0f86DaepCPuIJjMdg0XCIphWbTgkOzcsr29/n1Si/6PoN1nwx3Fa?=
- =?us-ascii?Q?itkq7XF4eam3VEdgtFI8nBUf+Nk0TJ8WwPv4fcDYkGHi3nw6doUd64ioASsZ?=
- =?us-ascii?Q?Ur/1wxapWTg7/isXPySVPKq/rk8YH05rDF1oW2VVlI3vXGRRyoSkdfZ86NUX?=
- =?us-ascii?Q?d2Vs3dn4vAQfvyH7MKDZsE0ZodNfVRKcsL2MTaVFbwQ/U4jTdySdkEw6Y9m7?=
- =?us-ascii?Q?f8pJiYqyzVvfgp8irHriYXAdfdJBDkhDsr+DfPmZ72ma4CwPm2ZD6ND9YDLv?=
- =?us-ascii?Q?fto3lSexeu0RueoOy7pSq70K6iyNo/4vOMegKRkle3asm8SrWW0Rfd3GeaqX?=
- =?us-ascii?Q?xgk50SyjAZw5V5XRbfyWQO2ZWEzyVSCOCnDvbF2l3hp1gcT2CVd8+zb61xeN?=
- =?us-ascii?Q?aNe1gV5/o+hp3RmFDiqE8E9QYBJezrH1JBni6WsFmhBK6mAUF5E9p4jWheRc?=
- =?us-ascii?Q?9ZXJ3034MQxZC4VetJ1CeWZ37+sdjM/mY+2wycXbvlzZmQg8CWT+cdZqV0VW?=
- =?us-ascii?Q?mqp9sjrGFGL9nSnpJeMR3qZnD1bmJf+Cpl7MRaIl2lt8zX2hss12YUAUFkY/?=
- =?us-ascii?Q?/EZM/m/clsQSEMOJX3jHM+j4REGT+/YtAD2exI+6gNzzmSplPIo9Pcz1+mAq?=
- =?us-ascii?Q?BiDouGfkwD1yJSC9vKXAU+9UozDyYrjyVo2I7tnSo1jNCA1Aks7SKWR9v2cN?=
- =?us-ascii?Q?1f9ir9873efMuJo3h/LM6uMgYHyGI1f/vB0KK++QE1wpHHySf5vBvviLlLfj?=
- =?us-ascii?Q?ywEyYPzHkkRct5LXRpXl2g8z9Y9X3PHwfRphzrgHRiM7t6iUr4QBuHN0PkTo?=
- =?us-ascii?Q?AVg3H03rjkpPe+y7t44czAE6M0QYrUaKDspyo65LkfpnWxaGOnUrtYD26FnR?=
- =?us-ascii?Q?8qvODEeCSB19BK26NcUeSeG+qJ/16vv+JRGFb2SVOc3h39lirFu4N+cgTkPP?=
- =?us-ascii?Q?w+qud5QfZLYgQ5yq696BADz6OZ8fn4mlD9Jy6EtefRSnQZHwkWQhy++u/qJS?=
- =?us-ascii?Q?EA=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa8620d0-d859-4e2f-e391-08daf7bba2eb
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jan 2023 12:17:29.3784
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tgSoXCpU4cZ5DkTvrd+JUFmxOTo3DYXIymht4ykTw++fGMiys94jl+KwuwnVRugZC+DE7E8U8glDkfFNnnQYdQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4PR04MB9313
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Revanth Kumar Uppala <ruppala@nvidia.com>,
+        Tan Tee Min <tee.min.tan@linux.intel.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
+        Jon Hunter <jonathanh@nvidia.com>, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 16, 2023 at 09:02:55AM +0000, Somisetty, Pranavi wrote:
-> Does it make sense to have two separate functions, one to
-> enable/disable pmac and tx preemption status and configure additional
-> fragment size (both parameters can be configured after negotiating
-> with the link partner), and another to modify the verification related
-> parameters, i.e, enable/disable verification and verify time value?
-> 
-> For example, if the user wants to change the verify time value, Is
-> there a way to change it without disturbing the value of the
-> additional fragment size that has been set through LLDP after
-> negotiating with the link partner?
+Hi Clément,
 
-Could you please clarify what you mean by "disturbing"? The handler for
-the ETHTOOL_MSG_MM_SET message first calls get_mm(struct ethtool_mm_state),
-then mm_state_to_cfg(struct ethtool_mm_state, struct ethtool_mm_cfg),
-then set_mm(struct ethtool_mm_cfg). In other words, a SET ethtool
-command translates into a read-modify-write in the kernel. If user space
-did not request the modification of the additional fragment size, just
-the verify time, then the set_mm() call will contain the old additional
-fragment size and the new verify time.
+Thanks for your patch!
+
+On Mon, Jan 16, 2023 at 11:37 AM Clément Léger
+<clement.leger@bootlin.com> wrote:
+> Add "renesas,rzn1-gmac" binding documention which is compatible which
+
+documentation
+
+> "snps,dwmac" compatible driver but uses a custom PCS to communicate
+> with the phy.
+>
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> ---
+>  .../bindings/net/renesas,rzn1-gmac.yaml       | 71 +++++++++++++++++++
+>  1 file changed, 71 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/renesas,rzn1-gmac.yaml
+>
+> diff --git a/Documentation/devicetree/bindings/net/renesas,rzn1-gmac.yaml b/Documentation/devicetree/bindings/net/renesas,rzn1-gmac.yaml
+> new file mode 100644
+> index 000000000000..effb9a312832
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/renesas,rzn1-gmac.yaml
+> @@ -0,0 +1,71 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/renesas,rzn1-gmac.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Renesas GMAC1 Device Tree Bindings
+> +
+> +maintainers:
+> +  - Clément Léger <clement.leger@bootlin.com>
+> +
+> +select:
+> +  properties:
+> +    compatible:
+> +      contains:
+> +        enum:
+> +          - renesas,r9a06g032-gmac
+> +          - renesas,rzn1-gmac
+> +  required:
+> +    - compatible
+> +
+> +allOf:
+> +  - $ref: "snps,dwmac.yaml#"
+> +
+> +properties:
+> +  compatible:
+> +    additionalItems: true
+> +    maxItems: 3
+> +    items:
+> +      - enum:
+> +          - renesas,r9a06g032-gmac
+> +          - renesas,rzn1-gmac
+> +    contains:
+> +      enum:
+> +        - snps,dwmac
+
+Why not just
+
+    items:
+      - enum:
+          - renesas,r9a06g032-gmac
+          - renesas,rzn1-gmac
+          - snps,dwmac
+
+?
+
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/r9a06g032-sysctrl.h>
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +
+> +    ethernet@44000000 {
+> +      compatible = "renesas,rzn1-gmac";
+
+Documentation/devicetree/bindings/net/renesas,rzn1-gmac.example.dtb:
+ethernet@44000000: compatible: ['renesas,rzn1-gmac'] does not contain
+items matching the given schema
+
+> +      reg = <0x44000000 0x2000>;
+> +      interrupt-parent = <&gic>;
+> +      interrupts = <GIC_SPI 34 IRQ_TYPE_LEVEL_HIGH>,
+> +             <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>,
+> +             <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
+> +      interrupt-names = "macirq", "eth_wake_irq", "eth_lpi";
+> +      clock-names = "stmmaceth";
+> +      clocks = <&sysctrl R9A06G032_HCLK_GMAC0>;
+> +      snps,multicast-filter-bins = <256>;
+> +      snps,perfect-filter-entries = <128>;
+> +      tx-fifo-depth = <2048>;
+> +      rx-fifo-depth = <4096>;
+> +      pcs-handle = <&mii_conv1>;
+> +      phy-mode = "mii";
+> +    };
+> +
+> +...
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
