@@ -2,127 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2605B66BB77
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 11:15:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A24C66BB8F
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 11:19:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230229AbjAPKPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 05:15:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33404 "EHLO
+        id S230146AbjAPKTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 05:19:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229951AbjAPKOx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 05:14:53 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E20174C3C
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 02:13:45 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id qx13so8523809ejb.13
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 02:13:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=Oy+gx4o16WqqwDqFRZ1XOqJI2ojaSbO4NuHKCxSkBZ0=;
-        b=gj8dpUTwrCNnsB4dG2HSc8IH+mXSewxscAJGtBgLaElzCEft9fjWCqPojBvkKpnJ++
-         rXqAmfSbBRRQmD/sc2yWUWvkc8j9K5ZYN2SyYp5CPb3ymm3FTmbFn92h36+LtUuSmYyW
-         JIEtjRhX0Gm/QoU+z2H656r/2Sxzzc+C0nvyo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Oy+gx4o16WqqwDqFRZ1XOqJI2ojaSbO4NuHKCxSkBZ0=;
-        b=seJiM7C64rPWUdK16tAZSVEpTT52XBsB74fhm+H3R/8li+qjtzvV9zT6rbkGsL+iii
-         caNZsiKVKyHYEmCAMLhNrJrsL4JeSLee1RyV1KU5Q8tu/MDURIyuQsqC8b1hBnuVB6+2
-         yqDEMkqS5U4NXrk5N66Hj/rQMedarLnnsOTEqvobsc2a2T/VSCNwLYJPNS/xIm/yHcU0
-         5Ww1B5P2k+Jq4PvL0Laee4zuvI/S+ISA6pOCtt8jJ40P72jRZIOXfN0EQo+4Qsendfkm
-         bY8BVJ4KKxc8gUD17bB59jdVXS4yqJc8K1VC/+LcewcqjY3ow4Wza/KnMkoC084wnTXk
-         hcLA==
-X-Gm-Message-State: AFqh2kpczTwqthJyKpgv5WG7XQR8wnoKi02oxjF7VSxM2+pSf9weFhDA
-        Clo9hxw9fz3h+HsRNNWqyb9LZA==
-X-Google-Smtp-Source: AMrXdXsJI3OpwhbQqxhJCnW/9RCdaABAmebvyY6Tfte42X0AJF/lXJ/AKfg+Z8Gt7pb+4OK/QeS3EQ==
-X-Received: by 2002:a17:907:1c07:b0:86f:2819:2760 with SMTP id nc7-20020a1709071c0700b0086f28192760mr6487743ejc.41.1673864024464;
-        Mon, 16 Jan 2023 02:13:44 -0800 (PST)
-Received: from cloudflare.com (79.184.151.107.ipv4.supernova.orange.pl. [79.184.151.107])
-        by smtp.gmail.com with ESMTPSA id q1-20020a17090676c100b007c0d4d3a0c1sm11707096ejn.32.2023.01.16.02.13.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Jan 2023 02:13:43 -0800 (PST)
-References: <20230113-sockmap-fix-v1-1-d3cad092ee10@cloudflare.com>
- <202301141018.w4fQc4gd-lkp@intel.com>
-User-agent: mu4e 1.6.10; emacs 28.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Dan Carpenter <error27@gmail.com>
-Cc:     oe-kbuild@lists.linux.dev, netdev@vger.kernel.org, lkp@intel.com,
-        oe-kbuild-all@lists.linux.dev, kernel-team@cloudflare.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        syzbot+04c21ed96d861dccc5cd@syzkaller.appspotmail.com
-Subject: Re: [PATCH bpf 1/3] bpf, sockmap: Check for any of tcp_bpf_prots
- when cloning a listener
-Date:   Mon, 16 Jan 2023 11:09:02 +0100
-In-reply-to: <202301141018.w4fQc4gd-lkp@intel.com>
-Message-ID: <87sfgayeg9.fsf@cloudflare.com>
+        with ESMTP id S229947AbjAPKTZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 05:19:25 -0500
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2089.outbound.protection.outlook.com [40.107.237.89])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E200B18AAB;
+        Mon, 16 Jan 2023 02:19:23 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fQcLsjNwx6/hCv2N5/ENyhX4KmTz+A2E+Enes+6/R2ymOegQC6m6vP4bQQ1O/YlgAj6su2/EnLYLWMpsF7ZL11sqU0E10/ilEj5RHOWmcPsn/h+yKeYW4ra0mxI/1rc1VLkWrbhMqXnvzsgHRw8wffIm6jsGaxLRR2bmCVwuxjh0jiZnh3UdyZLUF3D7AUsJRH1nDxAjfM/q+2RG5uO4iMwDjr0AZpba5xl8MUq7M0tRQNPbv1cBgu/IGreLFPnXAJLAQlrAdybZI8w7GEKNPhZJCbklUXsKlZQy+8xZakgnpzcZruwcYrd3hkN0saxhJP1b6Nwka1LHeZh0sNYAvg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+/9pcMkfpajz9Q8TDICXii2eL6jbq34iW7HgssDX2Gk=;
+ b=mB+PaN6XNBFAhxrWZEMXyAslSzIGSJ5XrZT4goEnLtF153pt6zQa4wuqDMlevageg/B6t/yffqouuSptizTXV17N04MDGNYeDJ+3tpbAKxGjNuHADdV9VUawL6nGGd/ugs1f/Yhhhyuwbd3bZliRYwouB24E4LgVhh+XhNrThTWrFsnxmJGPiKwhiWZaE/24kV39WDiwG/KV6ybdY5/a8IY7H0RfWiK5ZMv7WKx7R6QCVSmiU6ignOW2QgJ2fyDsOHjdSk1V1JSd9zs8JF8ZKdpV7cFYahi5CFTkAEw1g8agMgLVYStqh6+yTfy9+wb2KNWGwybHrBFxR7XE65w1iw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+/9pcMkfpajz9Q8TDICXii2eL6jbq34iW7HgssDX2Gk=;
+ b=pFYiPvagtfYKfk0+IGgNmwJdtNvX7KT4YCJ0hTFdi1kD34r/bww1YrirsLiZH+zzl0fVLzPrgQ9GwNfhDlzPvuUXGWz0esYgOT0gWR9JgV9r3fUoSbKxjJB24mx9GG/wdzL4uk6Zohk7h3MxF/hvZKXKOrlNfZvyVJYP2cyF+5qr5S5Rl5zJRqxM+pmHVy7eREB65HbO+H3d/6qwAO8VqRKcchZ6xZDlqC1GstI7BWNeQ+wwO/mq/Up/+U/wRSxvaVu4epz99vK1k57gY8B8vyArOW+KFAwrmrDUcWTF8shhl/1DMzAsbGYsq6LgMGlm8u8f+rqkts7u9dnQ1qf5TA==
+Received: from MW4PR04CA0115.namprd04.prod.outlook.com (2603:10b6:303:83::30)
+ by MN0PR12MB5860.namprd12.prod.outlook.com (2603:10b6:208:37b::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Mon, 16 Jan
+ 2023 10:19:22 +0000
+Received: from CO1NAM11FT103.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:83:cafe::c) by MW4PR04CA0115.outlook.office365.com
+ (2603:10b6:303:83::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.19 via Frontend
+ Transport; Mon, 16 Jan 2023 10:19:21 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ CO1NAM11FT103.mail.protection.outlook.com (10.13.174.252) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6002.13 via Frontend Transport; Mon, 16 Jan 2023 10:19:21 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Mon, 16 Jan
+ 2023 02:19:18 -0800
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.36; Mon, 16 Jan 2023 02:19:17 -0800
+Received: from ubu1604-desktop.nvidia.com (10.127.8.10) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server id 15.2.986.36 via Frontend
+ Transport; Mon, 16 Jan 2023 02:19:15 -0800
+From:   Sushil Singh <sushilkumars@nvidia.com>
+To:     <thierry.reding@gmail.com>
+CC:     <jonathanh@nvidia.com>, <linux-tegra@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <vbhadram@nvidia.com>,
+        Sushil Singh <sushilkumars@nvidia.com>
+Subject: [PATCH] soc:tegra:pmc: Add wake source interrupt for mgbe.
+Date:   Mon, 16 Jan 2023 15:49:12 +0530
+Message-ID: <1673864352-17212-1-git-send-email-sushilkumars@nvidia.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT103:EE_|MN0PR12MB5860:EE_
+X-MS-Office365-Filtering-Correlation-Id: 95390b1e-d596-42c4-22d5-08daf7ab22a6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /4FEqVOD4Ncc9XJ0dO6zl1vV2dyOzOCPCC6aIiwbXXEK6W6+oeKvP5f9yhrxzJ1wmGW6AqQ+6+3rehSq1wVM58aNBjTPtTEQaBwvr/IZ56wW4lclhuU30LhRbG0B3xHIhVwTJeKgvnRWRZLSYW8TdjSc39geJHaR4Pmr3E17JAZE2jpXlq26OoSGWwmpH47Gbm9ZvSDFm4N9mIZetflSE8CTTdZmyG2fCHnuws2Vg8J6+12wAj1jXa+wJl+/2A1vgSHqXC2kx7ZE9e7FHL1SG6xkdXbe3UCvQ4J8ke24gMY+l1xPpjD2+5OVPUBJ5pUIYTYmquSAZ9frXVXVjYM+ZbZsQPFyzmKt2nn9fQCnsrSovNwL2Hx5y1zaP5SvF8Mqu4n02VvlU/88zpwjtlA1PaYYAYZGgDhs9tfl7ePTpB+W9o2FBaJwJIfr1DJLVRbHK7WjAGU03uL0g/vzYOk4kefK0hs5YJ7RTLFCBDg7SqbbqgFNCchDcWmV4jgN6ofyyC6iG8cjpbU45k10YV3vhXvt/6587k4eJ5e94mxHIStjg5ba76UcaSVv+Ho7DBWkWBH+QIeI7vyXX2m3In4LxGkDCDpVGjpcnkklNJBcgtpc4NyyO4DVEwH9umz2OwbFJbHzYZP5rJzsVr93R6mKZJWzcrQqeb+2RKZQkQlqX/QrpQi2hDn30i9hio7gKkbOPaMNzD+bTNW9Do1kc+T7mg==
+X-Forefront-Antispam-Report: CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(39860400002)(136003)(396003)(451199015)(46966006)(36840700001)(40470700004)(82740400003)(107886003)(36860700001)(7636003)(2906002)(6666004)(356005)(2616005)(40480700001)(4744005)(7696005)(26005)(478600001)(316002)(5660300002)(186003)(82310400005)(83380400001)(86362001)(36756003)(8936002)(426003)(41300700001)(47076005)(70586007)(336012)(8676002)(40460700003)(70206006)(54906003)(4326008)(6916009);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jan 2023 10:19:21.8346
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 95390b1e-d596-42c4-22d5-08daf7ab22a6
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT103.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5860
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dan,
+Add mgbe ethernet GPIO wake interrupt
 
-On Sat, Jan 14, 2023 at 11:04 AM +03, Dan Carpenter wrote:
-> Hi Jakub,
->
-> url:    https://github.com/intel-lab-lkp/linux/commits/Jakub-Sitnicki/bpf-sockmap-Check-for-any-of-tcp_bpf_prots-when-cloning-a-listener/20230113-230728
-> base:   e7895f017b79410bf4591396a733b876dc1e0e9d
-> patch link:    https://lore.kernel.org/r/20230113-sockmap-fix-v1-1-d3cad092ee10%40cloudflare.com
-> patch subject: [PATCH bpf 1/3] bpf, sockmap: Check for any of tcp_bpf_prots when cloning a listener
-> config: i386-randconfig-m021
-> compiler: gcc-11 (Debian 11.3.0-8) 11.3.0
->
-> If you fix the issue, kindly add following tag where applicable
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Reported-by: Dan Carpenter <error27@gmail.com>
->
-> smatch warnings:
-> net/ipv4/tcp_bpf.c:644 tcp_bpf_clone() error: buffer overflow 'tcp_bpf_prots' 2 <= 2
->
-> vim +/tcp_bpf_prots +644 net/ipv4/tcp_bpf.c
->
-> 604326b41a6fb9 Daniel Borkmann 2018-10-13  634  
-> e80251555f0bef Jakub Sitnicki  2020-02-18  635  /* If a child got cloned from a listening socket that had tcp_bpf
-> e80251555f0bef Jakub Sitnicki  2020-02-18  636   * protocol callbacks installed, we need to restore the callbacks to
-> e80251555f0bef Jakub Sitnicki  2020-02-18  637   * the default ones because the child does not inherit the psock state
-> e80251555f0bef Jakub Sitnicki  2020-02-18  638   * that tcp_bpf callbacks expect.
-> e80251555f0bef Jakub Sitnicki  2020-02-18  639   */
-> e80251555f0bef Jakub Sitnicki  2020-02-18  640  void tcp_bpf_clone(const struct sock *sk, struct sock *newsk)
-> e80251555f0bef Jakub Sitnicki  2020-02-18  641  {
-> e80251555f0bef Jakub Sitnicki  2020-02-18  642  	struct proto *prot = newsk->sk_prot;
-> e80251555f0bef Jakub Sitnicki  2020-02-18  643  
-> c2e74657613125 Jakub Sitnicki  2023-01-13 @644  	if (tcp_bpf_prots[0] <= prot && prot < tcp_bpf_prots[ARRAY_SIZE(tcp_bpf_prots)])
->                                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> What?  Also I suspect this might cause a compile error for Clang builds.
+Signed-off-by: Sushil Singh <sushilkumars@nvidia.com>
+---
+ drivers/soc/tegra/pmc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Can't say I see a problem B-)
+diff --git a/drivers/soc/tegra/pmc.c b/drivers/soc/tegra/pmc.c
+index cf4cfbf..f4abc7f 100644
+--- a/drivers/soc/tegra/pmc.c
++++ b/drivers/soc/tegra/pmc.c
+@@ -3,7 +3,7 @@
+  * drivers/soc/tegra/pmc.c
+  *
+  * Copyright (c) 2010 Google, Inc
+- * Copyright (c) 2018-2022, NVIDIA CORPORATION. All rights reserved.
++ * Copyright (c) 2018-2023, NVIDIA CORPORATION. All rights reserved.
+  *
+  * Author:
+  *	Colin Cross <ccross@google.com>
+@@ -4227,6 +4227,7 @@ static const char * const tegra234_reset_sources[] = {
+ static const struct tegra_wake_event tegra234_wake_events[] = {
+ 	TEGRA_WAKE_GPIO("power", 29, 1, TEGRA234_AON_GPIO(EE, 4)),
+ 	TEGRA_WAKE_IRQ("rtc", 73, 10),
++	TEGRA_WAKE_GPIO("mgbe_wake", 56, 0, TEGRA234_MAIN_GPIO(Y, 3)),
+ };
+ 
+ static const struct tegra_pmc_soc tegra234_pmc_soc = {
+-- 
+2.7.4
 
-tcp_bpf_prots is a 2D array:
-
-static struct proto tcp_bpf_prots[TCP_BPF_NUM_PROTS][TCP_BPF_NUM_CFGS];
-
-... so tcp_bpf_prots[0] is the base address of the first array, while
-tcp_bpf_prots[ARRAY_SIZE(tcp_bpf_prots)] is the base address of the
-array one past the last one.
-
-Smatch doesn't seem to graps the 2D array concept here. We can make it
-happy by being explicit but harder on the eyes:
-
-	if (&tcp_bpf_prots[0][0] <= prot && prot < &tcp_bpf_prots[ARRAY_SIZE(tcp_bpf_prots)][0])
-		newsk->sk_prot = sk->sk_prot_creator;
-
-Clang can do pointer arithmetic on 2D arrays just fine :-)
