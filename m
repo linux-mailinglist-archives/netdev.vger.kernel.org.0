@@ -2,89 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A90D66D291
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 00:08:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70D5A66D318
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 00:23:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233684AbjAPXIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 18:08:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48096 "EHLO
+        id S235343AbjAPXW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 18:22:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232611AbjAPXIy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 18:08:54 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E855E9EE6
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 15:08:10 -0800 (PST)
+        with ESMTP id S235474AbjAPXUu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 18:20:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26BA3457C
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 15:13:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673910490;
+        s=mimecast20190719; t=1673910731;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=C0JW58nBSMHYj9bsnV2rJ7yxCnH8Mz39Aj6dzwUznZA=;
-        b=DsCnx5TtXFC2YVo/FWZMqEv7zmUWf3vKMAGBMY6ONugxSG75GzF2NXmf3e4tDUVrBxX3id
-        6j5ZZg8lXEC1ezMO4bDuR3/6ODii/8jTzJaZ/hFHRwxBwEa7p58Ysx6/uROphujiRFMvbu
-        sqFFPqpG0ZnjMs7KWCWm3JjKQsHOTp0=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kr0mxDWcfk97y+SD+0NWqgRc5pNq3uh0Z5vIhOFCaC0=;
+        b=RP5z+FoNqVVDhprJ6d/PduSTcXBQBKl+IbCY8cyFnT1nKgsytOAFLV9F+pvDDnlYn16rSw
+        brBOPlsrneJDGuB8/gANXWS8o2w3WqfkvNJPyZuHKD9LCS0rE/FtR92PCWqPp+173v3H0+
+        /3j+uyzt0mTPcm/wrJgEogGWdEi9QJE=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-235-GJYj0EjBM4qvyti9d-2JNA-1; Mon, 16 Jan 2023 18:08:06 -0500
-X-MC-Unique: GJYj0EjBM4qvyti9d-2JNA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+ us-mta-70-WiODrIuvPam5N8R9hwNvnA-1; Mon, 16 Jan 2023 18:12:05 -0500
+X-MC-Unique: WiODrIuvPam5N8R9hwNvnA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B588C3815EE7;
-        Mon, 16 Jan 2023 23:08:04 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0F5C03C0F660;
+        Mon, 16 Jan 2023 23:12:05 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.23])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 08299C15BA0;
-        Mon, 16 Jan 2023 23:07:57 +0000 (UTC)
-Subject: [PATCH v6 00/34] iov_iter: Improve page extraction (ref,
- pin or just list)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8DEF914171B8;
+        Mon, 16 Jan 2023 23:12:02 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH v6 33/34] net: [RFC][WIP] Mark each skb_frags as to how they
+ should be cleaned up
 From:   David Howells <dhowells@redhat.com>
 To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>, Paulo Alcantara <pc@cjr.nz>,
-        linux-scsi@vger.kernel.org, Steve French <sfrench@samba.org>,
-        Stefan Metzmacher <metze@samba.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rohith Surabattula <rohiths.msft@gmail.com>,
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Anna Schumaker <anna@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-        Shyam Prasad N <nspmangalore@gmail.com>,
-        Tom Talpey <tom@talpey.com>, linux-rdma@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Christian Schoenebeck <linux_oss@crudebyte.com>,
-        linux-mm@kvack.org, linux-crypto@vger.kernel.org,
-        linux-nfs@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        linux-fsdevel@vger.kernel.org,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Long Li <longli@microsoft.com>, Jan Kara <jack@suse.cz>,
-        linux-cachefs@redhat.com, linux-block@vger.kernel.org,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-cifs@vger.kernel.org, Steve French <smfrench@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>, dhowells@redhat.com,
-        Christoph Hellwig <hch@infradead.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        dhowells@redhat.com, Christoph Hellwig <hch@infradead.org>,
         Matthew Wilcox <willy@infradead.org>,
         Jens Axboe <axboe@kernel.dk>, Jan Kara <jack@suse.cz>,
         Jeff Layton <jlayton@kernel.org>,
         Logan Gunthorpe <logang@deltatee.com>,
         linux-fsdevel@vger.kernel.org, linux-block@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Date:   Mon, 16 Jan 2023 23:07:57 +0000
-Message-ID: <167391047703.2311931.8115712773222260073.stgit@warthog.procyon.org.uk>
+Date:   Mon, 16 Jan 2023 23:12:02 +0000
+Message-ID: <167391072201.2311931.4013360052592980054.stgit@warthog.procyon.org.uk>
+In-Reply-To: <167391047703.2311931.8115712773222260073.stgit@warthog.procyon.org.uk>
+References: <167391047703.2311931.8115712773222260073.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.5
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
@@ -95,301 +75,600 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+ [!] NOTE: This patch is mostly for illustrative/discussion purposes and
+     makes an incomplete change and the networking code may not compile
+     thereafter.
 
-Hi Al, Christoph,
+There are a couple of problems with pasting foreign pages into sk_buffs
+with zerocopy that are analogous to the problems with direct I/O:
 
-Here are patches clean up some use of READ/WRITE and ITER_SOURCE/DEST,
-patches to provide support for extracting pages from an iov_iter and a
-patch to use the primary extraction function in the block layer bio code.
-I've also added a bunch of other conversions and had a tentative stab at
-the networking code.
+ (1) Pages derived from kernel buffers, such as KVEC iterators should not
+     have refs taken on them.  Rather, the caller should do whatever it
+     needs to to retain the memory.
 
-The patches make the following changes:
+ (2) Pages derived from userspace buffers must not have refs taken on them
+     if they're going to be written to (analogous to direct I/O read) as
+     this may cause a malfunction of the VM CoW mechanism with a concurrent
+     fork.  Rather, they should have pins taken on them (FOLL_PIN).  This
+     will affect zerocopy-recvmsg where that is exists (eg. TLS, I think,
+     though that might be decrypt-offload).
 
- (1) Deal with switching from using the iterator data_source to indicate
-     the I/O direction to deriving this from other information, eg.:
-     IOCB_WRITE, IOMAP_WRITE and the REQ_OP_* number.  This allows
-     iov_iter_rw() to be removed eventually.
+This is further complicated by the possibility of a sk_buff containing data
+from mixed sources - for example a network filesystem might generate a
+message consisting of some metadata from a kernel buffer (which should not
+be pinned) and some data from userspace (which should have a ref taken).
 
- (2) Define FOLL_SOURCE_BUF and FOLL_DEST_BUF and pass these into
-     iov_iter_get_pages*() to indicate the I/O direction with regards to
-     how the buffer described by the iterator is to be used.  This is
-     included in the gup_flags passed in with Logan's patches.
+To this end, each page fragment attached to a sk_buff needs labelling with
+the appropriate cleanup to be applied.  Do this by:
 
-     Calls to iov_iter_get_pages*2() are replaced with calls to
-     iov_iter_get_pages*() and the former is removed.
+ (1) Replace struct bio_vec as the basis of skb_frag_t with a new struct
+     skb_frag.  This has an offset and a length, as before, plus a
+     'page_and_mode' member that contains the cleanup mode in the bottom
+     two bits and the page pointer in the remaining bits.
 
- (3) Add a function, iov_iter_extract_pages() to replace
-     iov_iter_get_pages*() that gets refs, pins or just lists the pages as
-     appropriate to the iterator type and the I/O direction.
+     (FOLL_GET and FOLL_PIN got renumbered to bits 0 and 1 in an earlier
+     patch).
 
-     Add a function, iov_iter_extract_mode() that will indicate from the
-     iterator type and the I/O direction how the cleanup is to be
-     performed, returning FOLL_GET, FOLL_PIN or 0.
+ (2) The cleanup mode can be one of FOLL_GET (put a ref on the page),
+     FOLL_PIN (unpin the page) or 0 (do nothing).
 
-     Add a function, folio_put_unpin(), and a wrapper, page_put_unpin(),
-     that take a page and the return from iov_iter_extract_mode() and do
-     the right thing to clean up the page.
+ (3) skb_frag_page() is used to access the page pointer as before.
 
- (4) Make the bio struct carry a pair of flags to indicate the cleanup
-     mode.  BIO_NO_PAGE_REF is replaced with BIO_PAGE_REFFED (equivalent to
-     FOLL_GET) and BIO_PAGE_PINNED (equivalent to BIO_PAGE_PINNED) is
-     added.  These are forced to have the same value as the FOLL_* flags so
-     they can be passed to the previously mentioned cleanup function.
+ (4) __skb_frag_set_page() and skb_frag_set_page() acquire an extra
+     argument to indicate the cleanup mode.
 
- (5) Make the iter-to-bio code use iov_iter_extract_pages() to
-     appropriately retain the pages and clean them up later.
+ (5) The cleanup mode is set to FOLL_GET on everything for the moment.
 
- (6) Fix bio_flagged() so that it doesn't prevent a gcc optimisation.
+ (6) __skb_frag_ref() will call try_grab_page(), passing the cleanup mode
+     to indicate whether an extra ref, an extra pin or nothing is required.
 
- (7) Add a function in netfslib, netfs_extract_user_iter(), to extract a
-     UBUF- or IOVEC-type iterator to a page list in a BVEC-type iterator,
-     with all the pages suitably ref'd or pinned.
+     [!] NOTE: If the cleanup mode was 0, this skbuff will also not pin the
+     page and the caller needs to be aware of that.
 
- (8) Add a function in netfslib, netfs_extract_iter_to_sg(), to extract a
-     UBUF-, IOVEC-, BVEC-, XARRAY- or KVEC-type iterator to a scatterlist.
-     The first two types appropriately ref or pin pages; the latter three
-     don't perform any retention, leaving that to the caller.
+ (7) __skb_frag_unref() will call page_put_unpin() to do the appropriate
+     cleanup, based on the mode.
 
-     Note that I can make use of this in the SCSI and AF_ALG code and
-     possibly the networking code, so this might merit being moved to core
-     code.
-
- (9) Make AF_ALG use iov_iter_extract_pages() and possibly go further and
-     make it use netfs_extract_iter_to_sg() instead.
-
-(10) Make SCSI vhost use netfs_extract_iter_to_sg().
-
-(11) Make fs/direct-io.c use iov_iter_extract_pages().
-
-(13) Make splice-to-pipe use iov_iter_extract_pages(), but limit the usage
-     to a cleanup mode of FOLL_GET.
-
-(13) Make the 9P, FUSE and NFS filesystems use iov_iter_extract_pages().
-
-(14) Make the CIFS filesystem use iterators from the top all the way down
-     to the socket on the simple path.  Make it use
-     netfs_extract_user_iter() to use an XARRAY-type iterator or to build a
-     BVEC-type iterator in the top layers from a UBUF- or IOVEC-type
-     iterator and attach the iterator to the operation descriptors.
-
-     netfs_extract_iter_to_sg() is used to build scatterlists for doing
-     transport crypto and a function, smb_extract_iter_to_rdma(), is
-     provided to build an RDMA SGE list directly from an iterator without
-     going via a page list and then a scatter list.
-
-(15) A couple of work-in-progress patches to try and make sk_buff fragments
-     record the information needed to clean them up in the lowest two bits
-     of the page pointer in the fragment struct.
-
-This leaves:
-
- (*) Four calls to iov_iter_get_pages() in CEPH.  That will be helped by
-     patches to pass an iterator down to the transport layer instead of
-     converting to a page list high up and passing that down, but the
-     transport layer could do with some massaging so that it doesn't covert
-     the iterator to a page list and then the pages individually back to
-     iterators to pass to the socket.
-
- (*) One call to iov_iter_get_pages() each in the networking core, RDS and
-     TLS, all related to zero-copy.  TLS seems to do zerocopy-read (or
-     maybe decrypt-offload) and should be doing FOLL_PIN, not FOLL_GET for
-     user-provided buffers.
-
-
-Changes:
-========
-ver #6)
- - Fix write() syscall and co. not setting IOCB_WRITE.
- - Added iocb_is_read() and iocb_is_write() to check IOCB_WRITE.
- - Use op_is_write() in bio_copy_user_iov().
- - Drop the iterator direction checks from smbd_recv().
- - Define FOLL_SOURCE_BUF and FOLL_DEST_BUF and pass them in as part of
-   gup_flags to iov_iter_get/extract_pages*().
- - Replace iov_iter_get_pages*2() with iov_iter_get_pages*() and remove.
- - Add back the function to indicate the cleanup mode.
- - Drop the cleanup_mode return arg to iov_iter_extract_pages().
- - Provide a helper to clean up a page.
- - Renumbered FOLL_GET and FOLL_PIN and made BIO_PAGE_REFFED/PINNED have
-   the same numerical values, enforced with an assertion.
- - Converted AF_ALG, SCSI vhost, generic DIO, FUSE, splice to pipe, 9P and
-   NFS.
- - Added in the patches to make CIFS do top-to-bottom iterators and use
-   various of the added extraction functions.
- - Added a pair of work-in-progess patches to make sk_buff fragments store
-   FOLL_GET and FOLL_PIN.
-
-ver #5)
- - Replace BIO_NO_PAGE_REF with BIO_PAGE_REFFED and split into own patch.
- - Transcribe FOLL_GET/PIN into BIO_PAGE_REFFED/PINNED flags.
- - Add patch to allow bio_flagged() to be combined by gcc.
-
-ver #4)
- - Drop the patch to move the FOLL_* flags to linux/mm_types.h as they're
-   no longer referenced by linux/uio.h.
- - Add ITER_SOURCE/DEST cleanup patches.
- - Make iov_iter/netfslib iter extraction patches use ITER_SOURCE/DEST.
- - Allow additional gup_flags to be passed into iov_iter_extract_pages().
- - Add struct bio patch.
-
-ver #3)
- - Switch to using EXPORT_SYMBOL_GPL to prevent indirect 3rd-party access
-   to get/pin_user_pages_fast()[1].
-
-ver #2)
- - Rolled the extraction cleanup mode query function into the extraction
-   function, returning the indication through the argument list.
- - Fixed patch 4 (extract to scatterlist) to actually use the new
-   extraction API.
-
-I've pushed the patches (excluding the two WIP networking patches) here
-also:
-
-	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=iov-extract
-
-David
-
-Link: https://lore.kernel.org/r/Y3zFzdWnWlEJ8X8/@infradead.org/ [1]
-Link: https://lore.kernel.org/r/166697254399.61150.1256557652599252121.stgit@warthog.procyon.org.uk/ # rfc
-Link: https://lore.kernel.org/r/166722777223.2555743.162508599131141451.stgit@warthog.procyon.org.uk/ # rfc
-Link: https://lore.kernel.org/r/166732024173.3186319.18204305072070871546.stgit@warthog.procyon.org.uk/ # rfc
-Link: https://lore.kernel.org/r/166869687556.3723671.10061142538708346995.stgit@warthog.procyon.org.uk/ # rfc
-Link: https://lore.kernel.org/r/166920902005.1461876.2786264600108839814.stgit@warthog.procyon.org.uk/ # v2
-Link: https://lore.kernel.org/r/166997419665.9475.15014699817597102032.stgit@warthog.procyon.org.uk/ # v3
-Link: https://lore.kernel.org/r/167305160937.1521586.133299343565358971.stgit@warthog.procyon.org.uk/ # v4
-Link: https://lore.kernel.org/r/167344725490.2425628.13771289553670112965.stgit@warthog.procyon.org.uk/ # v5
-
-Previous versions of the CIFS patch sets can be found here:
-Link: https://lore.kernel.org/r/164311902471.2806745.10187041199819525677.stgit@warthog.procyon.org.uk/ # rfc
-Link: https://lore.kernel.org/r/164928615045.457102.10607899252434268982.stgit@warthog.procyon.org.uk/ # v1
-Link: https://lore.kernel.org/r/165211416682.3154751.17287804906832979514.stgit@warthog.procyon.org.uk/ # v1
-Link: https://lore.kernel.org/r/165348876794.2106726.9240233279581920208.stgit@warthog.procyon.org.uk/ # v1
-Link: https://lore.kernel.org/r/165364823513.3334034.11209090728654641458.stgit@warthog.procyon.org.uk/ # v3
-Link: https://lore.kernel.org/r/166126392703.708021.14465850073772688008.stgit@warthog.procyon.org.uk/ # v1
-Link: https://lore.kernel.org/r/166697254399.61150.1256557652599252121.stgit@warthog.procyon.org.uk/ # rfc
-Link: https://lore.kernel.org/r/166732024173.3186319.18204305072070871546.stgit@warthog.procyon.org.uk/ # rfc
-
-
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: "David S. Miller" <davem@davemloft.net>
+cc: Eric Dumazet <edumazet@google.com>
+cc: Jakub Kicinski <kuba@kernel.org>
+cc: Paolo Abeni <pabeni@redhat.com>
+cc: netdev@vger.kernel.org
 ---
-David Howells (34):
-      vfs: Unconditionally set IOCB_WRITE in call_write_iter()
-      iov_iter: Use IOCB/IOMAP_WRITE/op_is_write rather than iterator direction
-      iov_iter: Pass I/O direction into iov_iter_get_pages*()
-      iov_iter: Remove iov_iter_get_pages2/pages_alloc2()
-      iov_iter: Change the direction macros into an enum
-      iov_iter: Use the direction in the iterator functions
-      iov_iter: Add a function to extract a page list from an iterator
-      mm: Provide a helper to drop a pin/ref on a page
-      bio: Rename BIO_NO_PAGE_REF to BIO_PAGE_REFFED and invert the meaning
-      mm, block: Make BIO_PAGE_REFFED/PINNED the same as FOLL_GET/PIN numerically
-      iov_iter, block: Make bio structs pin pages rather than ref'ing if appropriate
-      bio: Fix bio_flagged() so that gcc can better optimise it
-      netfs: Add a function to extract a UBUF or IOVEC into a BVEC iterator
-      netfs: Add a function to extract an iterator into a scatterlist
-      af_alg: Pin pages rather than ref'ing if appropriate
-      af_alg: [RFC] Use netfs_extract_iter_to_sg() to create scatterlists
-      scsi: [RFC] Use netfs_extract_iter_to_sg()
-      dio: Pin pages rather than ref'ing if appropriate
-      fuse:  Pin pages rather than ref'ing if appropriate
-      vfs: Make splice use iov_iter_extract_pages()
-      9p: Pin pages rather than ref'ing if appropriate
-      nfs: Pin pages rather than ref'ing if appropriate
-      cifs: Implement splice_read to pass down ITER_BVEC not ITER_PIPE
-      cifs: Add a function to build an RDMA SGE list from an iterator
-      cifs: Add a function to Hash the contents of an iterator
-      cifs: Add some helper functions
-      cifs: Add a function to read into an iter from a socket
-      cifs: Change the I/O paths to use an iterator rather than a page list
-      cifs: Build the RDMA SGE list directly from an iterator
-      cifs: Remove unused code
-      cifs: Fix problem with encrypted RDMA data read
-      cifs: DIO to/from KVEC-type iterators should now work
-      net: [RFC][WIP] Mark each skb_frags as to how they should be cleaned up
-      net: [RFC][WIP] Make __zerocopy_sg_from_iter() correctly pin or leave pages unref'd
 
+ drivers/net/tun.c      |    2 -
+ include/linux/skbuff.h |  124 ++++++++++++++++++++++++++++++------------------
+ io_uring/net.c         |    2 -
+ net/bpf/test_run.c     |    2 -
+ net/core/datagram.c    |    3 +
+ net/core/gro.c         |    2 -
+ net/core/skbuff.c      |   16 +++---
+ net/ipv4/ip_output.c   |    2 -
+ net/ipv4/tcp.c         |    4 +-
+ net/ipv6/esp6.c        |    5 +-
+ net/ipv6/ip6_output.c  |    2 -
+ net/packet/af_packet.c |    2 -
+ net/xfrm/xfrm_ipcomp.c |    2 -
+ 13 files changed, 101 insertions(+), 67 deletions(-)
 
- block/bio.c               |   48 +-
- block/blk-map.c           |   26 +-
- block/blk.h               |   25 +
- block/fops.c              |    8 +-
- crypto/af_alg.c           |   57 +-
- crypto/algif_hash.c       |   20 +-
- drivers/net/tun.c         |    2 +-
- drivers/vhost/scsi.c      |   75 +-
- fs/9p/vfs_addr.c          |    2 +-
- fs/affs/file.c            |    4 +-
- fs/ceph/addr.c            |    2 +-
- fs/ceph/file.c            |   16 +-
- fs/cifs/Kconfig           |    1 +
- fs/cifs/cifsencrypt.c     |  172 +++-
- fs/cifs/cifsfs.c          |   12 +-
- fs/cifs/cifsfs.h          |    6 +
- fs/cifs/cifsglob.h        |   66 +-
- fs/cifs/cifsproto.h       |   11 +-
- fs/cifs/cifssmb.c         |   13 +-
- fs/cifs/connect.c         |   16 +
- fs/cifs/file.c            | 1851 +++++++++++++++++--------------------
- fs/cifs/fscache.c         |   22 +-
- fs/cifs/fscache.h         |   10 +-
- fs/cifs/misc.c            |  132 +--
- fs/cifs/smb2ops.c         |  374 ++++----
- fs/cifs/smb2pdu.c         |   45 +-
- fs/cifs/smbdirect.c       |  511 ++++++----
- fs/cifs/smbdirect.h       |    4 +-
- fs/cifs/transport.c       |   57 +-
- fs/dax.c                  |    6 +-
- fs/direct-io.c            |   77 +-
- fs/exfat/inode.c          |    6 +-
- fs/ext2/inode.c           |    2 +-
- fs/f2fs/file.c            |   10 +-
- fs/fat/inode.c            |    4 +-
- fs/fuse/dax.c             |    2 +-
- fs/fuse/dev.c             |   24 +-
- fs/fuse/file.c            |   34 +-
- fs/fuse/fuse_i.h          |    1 +
- fs/hfs/inode.c            |    2 +-
- fs/hfsplus/inode.c        |    2 +-
- fs/iomap/direct-io.c      |    6 +-
- fs/jfs/inode.c            |    2 +-
- fs/netfs/Makefile         |    1 +
- fs/netfs/iterator.c       |  371 ++++++++
- fs/nfs/direct.c           |   32 +-
- fs/nilfs2/inode.c         |    2 +-
- fs/ntfs3/inode.c          |    2 +-
- fs/ocfs2/aops.c           |    2 +-
- fs/orangefs/inode.c       |    2 +-
- fs/reiserfs/inode.c       |    2 +-
- fs/splice.c               |   10 +-
- fs/udf/inode.c            |    2 +-
- include/crypto/if_alg.h   |    7 +-
- include/linux/bio.h       |   23 +-
- include/linux/blk_types.h |    3 +-
- include/linux/fs.h        |   11 +
- include/linux/mm.h        |   32 +-
- include/linux/netfs.h     |    6 +
- include/linux/skbuff.h    |  124 ++-
- include/linux/uio.h       |   83 +-
- io_uring/net.c            |    2 +-
- lib/iov_iter.c            |  428 ++++++++-
- mm/gup.c                  |   47 +
- mm/vmalloc.c              |    1 +
- net/9p/trans_common.c     |    6 +-
- net/9p/trans_common.h     |    3 +-
- net/9p/trans_virtio.c     |   91 +-
- net/bpf/test_run.c        |    2 +-
- net/core/datagram.c       |   23 +-
- net/core/gro.c            |    2 +-
- net/core/skbuff.c         |   16 +-
- net/core/skmsg.c          |    4 +-
- net/ipv4/ip_output.c      |    2 +-
- net/ipv4/tcp.c            |    4 +-
- net/ipv6/esp6.c           |    5 +-
- net/ipv6/ip6_output.c     |    2 +-
- net/packet/af_packet.c    |    2 +-
- net/rds/message.c         |    4 +-
- net/tls/tls_sw.c          |    5 +-
- net/xfrm/xfrm_ipcomp.c    |    2 +-
- 81 files changed, 3006 insertions(+), 2126 deletions(-)
- create mode 100644 fs/netfs/iterator.c
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index a7d17c680f4a..6c467c5163b2 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -1496,7 +1496,7 @@ static struct sk_buff *tun_napi_alloc_frags(struct tun_file *tfile,
+ 		}
+ 		page = virt_to_head_page(frag);
+ 		skb_fill_page_desc(skb, i - 1, page,
+-				   frag - page_address(page), fragsz);
++				   frag - page_address(page), fragsz, FOLL_GET);
+ 	}
+ 
+ 	return skb;
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 4c8492401a10..a1a77909509b 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -357,7 +357,51 @@ extern int sysctl_max_skb_frags;
+  */
+ #define GSO_BY_FRAGS	0xFFFF
+ 
+-typedef struct bio_vec skb_frag_t;
++struct skb_frag {
++	unsigned long	page_and_mode;	/* page pointer | cleanup_mode (0/FOLL_GET/PIN) */
++	unsigned int	len;
++	unsigned int	offset;
++};
++typedef struct skb_frag skb_frag_t;
++
++/**
++ * skb_frag_cleanup() - Returns the cleanup mode for an skb fragment
++ * @frag: skb fragment
++ *
++ * Returns the cleanup mode associated with @frag.  It will be FOLL_GET,
++ * FOLL_PUT or 0.
++ */
++static inline unsigned int skb_frag_cleanup(const skb_frag_t *frag)
++{
++	return frag->page_and_mode & 3;
++}
++
++/**
++ * skb_frag_page() - Returns the page in an skb fragment
++ * @frag: skb fragment
++ *
++ * Returns the &struct page associated with @frag.
++ */
++static inline struct page *skb_frag_page(const skb_frag_t *frag)
++{
++	return (struct page *)(frag->page_and_mode & ~3);
++}
++
++/**
++ * __skb_frag_set_page() - Sets the page in an skb fragment
++ * @frag: skb fragment
++ * @page: The page to set
++ * @cleanup_mode: The cleanup mode to set (0, FOLL_GET, FOLL_PIN)
++ *
++ * Sets the fragment @frag to contain @page with the specified method of
++ * cleaning it up.
++ */
++static inline void __skb_frag_set_page(skb_frag_t *frag, struct page *page,
++				       unsigned int cleanup_mode)
++{
++	cleanup_mode &= FOLL_GET | FOLL_PIN;
++	frag->page_and_mode = (unsigned long)page | cleanup_mode;
++}
+ 
+ /**
+  * skb_frag_size() - Returns the size of a skb fragment
+@@ -365,7 +409,7 @@ typedef struct bio_vec skb_frag_t;
+  */
+ static inline unsigned int skb_frag_size(const skb_frag_t *frag)
+ {
+-	return frag->bv_len;
++	return frag->len;
+ }
+ 
+ /**
+@@ -375,7 +419,7 @@ static inline unsigned int skb_frag_size(const skb_frag_t *frag)
+  */
+ static inline void skb_frag_size_set(skb_frag_t *frag, unsigned int size)
+ {
+-	frag->bv_len = size;
++	frag->len = size;
+ }
+ 
+ /**
+@@ -385,7 +429,7 @@ static inline void skb_frag_size_set(skb_frag_t *frag, unsigned int size)
+  */
+ static inline void skb_frag_size_add(skb_frag_t *frag, int delta)
+ {
+-	frag->bv_len += delta;
++	frag->len += delta;
+ }
+ 
+ /**
+@@ -395,7 +439,7 @@ static inline void skb_frag_size_add(skb_frag_t *frag, int delta)
+  */
+ static inline void skb_frag_size_sub(skb_frag_t *frag, int delta)
+ {
+-	frag->bv_len -= delta;
++	frag->len -= delta;
+ }
+ 
+ /**
+@@ -2388,7 +2432,8 @@ static inline unsigned int skb_pagelen(const struct sk_buff *skb)
+ 
+ static inline void __skb_fill_page_desc_noacc(struct skb_shared_info *shinfo,
+ 					      int i, struct page *page,
+-					      int off, int size)
++					      int off, int size,
++					      unsigned int cleanup_mode)
+ {
+ 	skb_frag_t *frag = &shinfo->frags[i];
+ 
+@@ -2397,9 +2442,9 @@ static inline void __skb_fill_page_desc_noacc(struct skb_shared_info *shinfo,
+ 	 * that not all callers have unique ownership of the page but rely
+ 	 * on page_is_pfmemalloc doing the right thing(tm).
+ 	 */
+-	frag->bv_page		  = page;
+-	frag->bv_offset		  = off;
++	__skb_frag_set_page(frag, page, cleanup_mode);
+ 	skb_frag_size_set(frag, size);
++	frag->offset = off;
+ }
+ 
+ /**
+@@ -2421,6 +2466,7 @@ static inline void skb_len_add(struct sk_buff *skb, int delta)
+  * @page: the page to use for this fragment
+  * @off: the offset to the data with @page
+  * @size: the length of the data
++ * @cleanup_mode: The cleanup mode to set (0, FOLL_GET, FOLL_PIN)
+  *
+  * Initialises the @i'th fragment of @skb to point to &size bytes at
+  * offset @off within @page.
+@@ -2428,9 +2474,11 @@ static inline void skb_len_add(struct sk_buff *skb, int delta)
+  * Does not take any additional reference on the fragment.
+  */
+ static inline void __skb_fill_page_desc(struct sk_buff *skb, int i,
+-					struct page *page, int off, int size)
++					struct page *page, int off, int size,
++					unsigned int cleanup_mode)
+ {
+-	__skb_fill_page_desc_noacc(skb_shinfo(skb), i, page, off, size);
++	__skb_fill_page_desc_noacc(skb_shinfo(skb), i, page, off, size,
++				   cleanup_mode);
+ 	page = compound_head(page);
+ 	if (page_is_pfmemalloc(page))
+ 		skb->pfmemalloc	= true;
+@@ -2443,6 +2491,7 @@ static inline void __skb_fill_page_desc(struct sk_buff *skb, int i,
+  * @page: the page to use for this fragment
+  * @off: the offset to the data with @page
+  * @size: the length of the data
++ * @cleanup_mode: The cleanup mode to set (0, FOLL_GET, FOLL_PIN)
+  *
+  * As per __skb_fill_page_desc() -- initialises the @i'th fragment of
+  * @skb to point to @size bytes at offset @off within @page. In
+@@ -2451,9 +2500,10 @@ static inline void __skb_fill_page_desc(struct sk_buff *skb, int i,
+  * Does not take any additional reference on the fragment.
+  */
+ static inline void skb_fill_page_desc(struct sk_buff *skb, int i,
+-				      struct page *page, int off, int size)
++				      struct page *page, int off, int size,
++				      unsigned int cleanup_mode)
+ {
+-	__skb_fill_page_desc(skb, i, page, off, size);
++	__skb_fill_page_desc(skb, i, page, off, size, cleanup_mode);
+ 	skb_shinfo(skb)->nr_frags = i + 1;
+ }
+ 
+@@ -2464,17 +2514,18 @@ static inline void skb_fill_page_desc(struct sk_buff *skb, int i,
+  * @page: the page to use for this fragment
+  * @off: the offset to the data with @page
+  * @size: the length of the data
++ * @cleanup_mode: The cleanup mode to set (0, FOLL_GET, FOLL_PIN)
+  *
+  * Variant of skb_fill_page_desc() which does not deal with
+  * pfmemalloc, if page is not owned by us.
+  */
+ static inline void skb_fill_page_desc_noacc(struct sk_buff *skb, int i,
+ 					    struct page *page, int off,
+-					    int size)
++					    int size, unsigned int cleanup_mode)
+ {
+ 	struct skb_shared_info *shinfo = skb_shinfo(skb);
+ 
+-	__skb_fill_page_desc_noacc(shinfo, i, page, off, size);
++	__skb_fill_page_desc_noacc(shinfo, i, page, off, size, cleanup_mode);
+ 	shinfo->nr_frags = i + 1;
+ }
+ 
+@@ -3301,7 +3352,7 @@ static inline void skb_propagate_pfmemalloc(const struct page *page,
+  */
+ static inline unsigned int skb_frag_off(const skb_frag_t *frag)
+ {
+-	return frag->bv_offset;
++	return frag->offset;
+ }
+ 
+ /**
+@@ -3311,7 +3362,7 @@ static inline unsigned int skb_frag_off(const skb_frag_t *frag)
+  */
+ static inline void skb_frag_off_add(skb_frag_t *frag, int delta)
+ {
+-	frag->bv_offset += delta;
++	frag->offset += delta;
+ }
+ 
+ /**
+@@ -3321,7 +3372,7 @@ static inline void skb_frag_off_add(skb_frag_t *frag, int delta)
+  */
+ static inline void skb_frag_off_set(skb_frag_t *frag, unsigned int offset)
+ {
+-	frag->bv_offset = offset;
++	frag->offset = offset;
+ }
+ 
+ /**
+@@ -3332,18 +3383,7 @@ static inline void skb_frag_off_set(skb_frag_t *frag, unsigned int offset)
+ static inline void skb_frag_off_copy(skb_frag_t *fragto,
+ 				     const skb_frag_t *fragfrom)
+ {
+-	fragto->bv_offset = fragfrom->bv_offset;
+-}
+-
+-/**
+- * skb_frag_page - retrieve the page referred to by a paged fragment
+- * @frag: the paged fragment
+- *
+- * Returns the &struct page associated with @frag.
+- */
+-static inline struct page *skb_frag_page(const skb_frag_t *frag)
+-{
+-	return frag->bv_page;
++	fragto->offset = fragfrom->offset;
+ }
+ 
+ /**
+@@ -3354,7 +3394,9 @@ static inline struct page *skb_frag_page(const skb_frag_t *frag)
+  */
+ static inline void __skb_frag_ref(skb_frag_t *frag)
+ {
+-	get_page(skb_frag_page(frag));
++	struct page *page = skb_frag_page(frag);
++
++	try_grab_page(page, skb_frag_cleanup(frag));
+ }
+ 
+ /**
+@@ -3385,7 +3427,7 @@ static inline void __skb_frag_unref(skb_frag_t *frag, bool recycle)
+ 	if (recycle && page_pool_return_skb_page(page))
+ 		return;
+ #endif
+-	put_page(page);
++	page_put_unpin(page, skb_frag_cleanup(frag));
+ }
+ 
+ /**
+@@ -3439,19 +3481,7 @@ static inline void *skb_frag_address_safe(const skb_frag_t *frag)
+ static inline void skb_frag_page_copy(skb_frag_t *fragto,
+ 				      const skb_frag_t *fragfrom)
+ {
+-	fragto->bv_page = fragfrom->bv_page;
+-}
+-
+-/**
+- * __skb_frag_set_page - sets the page contained in a paged fragment
+- * @frag: the paged fragment
+- * @page: the page to set
+- *
+- * Sets the fragment @frag to contain @page.
+- */
+-static inline void __skb_frag_set_page(skb_frag_t *frag, struct page *page)
+-{
+-	frag->bv_page = page;
++	fragto->page_and_mode = fragfrom->page_and_mode;
+ }
+ 
+ /**
+@@ -3459,13 +3489,15 @@ static inline void __skb_frag_set_page(skb_frag_t *frag, struct page *page)
+  * @skb: the buffer
+  * @f: the fragment offset
+  * @page: the page to set
++ * @cleanup_mode: The cleanup mode to set (0, FOLL_GET, FOLL_PIN)
+  *
+  * Sets the @f'th fragment of @skb to contain @page.
+  */
+ static inline void skb_frag_set_page(struct sk_buff *skb, int f,
+-				     struct page *page)
++				     struct page *page,
++				     unsigned int cleanup_mode)
+ {
+-	__skb_frag_set_page(&skb_shinfo(skb)->frags[f], page);
++	__skb_frag_set_page(&skb_shinfo(skb)->frags[f], page, cleanup_mode);
+ }
+ 
+ bool skb_page_frag_refill(unsigned int sz, struct page_frag *pfrag, gfp_t prio);
+diff --git a/io_uring/net.c b/io_uring/net.c
+index fbc34a7c2743..1d3e24404d75 100644
+--- a/io_uring/net.c
++++ b/io_uring/net.c
+@@ -1043,7 +1043,7 @@ static int io_sg_from_iter(struct sock *sk, struct sk_buff *skb,
+ 		copied += v.bv_len;
+ 		truesize += PAGE_ALIGN(v.bv_len + v.bv_offset);
+ 		__skb_fill_page_desc_noacc(shinfo, frag++, v.bv_page,
+-					   v.bv_offset, v.bv_len);
++					   v.bv_offset, v.bv_len, FOLL_GET);
+ 		bvec_iter_advance_single(from->bvec, &bi, v.bv_len);
+ 	}
+ 	if (bi.bi_size)
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index 2723623429ac..9ed2de52e1be 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -1370,7 +1370,7 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
+ 			}
+ 
+ 			frag = &sinfo->frags[sinfo->nr_frags++];
+-			__skb_frag_set_page(frag, page);
++			__skb_frag_set_page(frag, page, FOLL_GET);
+ 
+ 			data_len = min_t(u32, kattr->test.data_size_in - size,
+ 					 PAGE_SIZE);
+diff --git a/net/core/datagram.c b/net/core/datagram.c
+index 9f0914b781ad..122bfb144d32 100644
+--- a/net/core/datagram.c
++++ b/net/core/datagram.c
+@@ -678,7 +678,8 @@ int __zerocopy_sg_from_iter(struct msghdr *msg, struct sock *sk,
+ 				page_ref_sub(last_head, refs);
+ 				refs = 0;
+ 			}
+-			skb_fill_page_desc_noacc(skb, frag++, head, start, size);
++			skb_fill_page_desc_noacc(skb, frag++, head, start, size,
++						 FOLL_GET);
+ 		}
+ 		if (refs)
+ 			page_ref_sub(last_head, refs);
+diff --git a/net/core/gro.c b/net/core/gro.c
+index fd8c6a7e8d3e..dfbf2279ce5c 100644
+--- a/net/core/gro.c
++++ b/net/core/gro.c
+@@ -228,7 +228,7 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
+ 
+ 		pinfo->nr_frags = nr_frags + 1 + skbinfo->nr_frags;
+ 
+-		__skb_frag_set_page(frag, page);
++		__skb_frag_set_page(frag, page, FOLL_GET);
+ 		skb_frag_off_set(frag, first_offset);
+ 		skb_frag_size_set(frag, first_size);
+ 
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 4a0eb5593275..a6a21a27ebb4 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -765,7 +765,7 @@ EXPORT_SYMBOL(__napi_alloc_skb);
+ void skb_add_rx_frag(struct sk_buff *skb, int i, struct page *page, int off,
+ 		     int size, unsigned int truesize)
+ {
+-	skb_fill_page_desc(skb, i, page, off, size);
++	skb_fill_page_desc(skb, i, page, off, size, FOLL_GET);
+ 	skb->len += size;
+ 	skb->data_len += size;
+ 	skb->truesize += truesize;
+@@ -1666,10 +1666,10 @@ int skb_copy_ubufs(struct sk_buff *skb, gfp_t gfp_mask)
+ 
+ 	/* skb frags point to kernel buffers */
+ 	for (i = 0; i < new_frags - 1; i++) {
+-		__skb_fill_page_desc(skb, i, head, 0, PAGE_SIZE);
++		__skb_fill_page_desc(skb, i, head, 0, PAGE_SIZE, FOLL_GET);
+ 		head = (struct page *)page_private(head);
+ 	}
+-	__skb_fill_page_desc(skb, new_frags - 1, head, 0, d_off);
++	__skb_fill_page_desc(skb, new_frags - 1, head, 0, d_off, FOLL_GET);
+ 	skb_shinfo(skb)->nr_frags = new_frags;
+ 
+ release:
+@@ -3389,7 +3389,7 @@ skb_zerocopy(struct sk_buff *to, struct sk_buff *from, int len, int hlen)
+ 		if (plen) {
+ 			page = virt_to_head_page(from->head);
+ 			offset = from->data - (unsigned char *)page_address(page);
+-			__skb_fill_page_desc(to, 0, page, offset, plen);
++			__skb_fill_page_desc(to, 0, page, offset, plen, FOLL_GET);
+ 			get_page(page);
+ 			j = 1;
+ 			len -= plen;
+@@ -4040,7 +4040,7 @@ int skb_append_pagefrags(struct sk_buff *skb, struct page *page,
+ 	} else if (i < MAX_SKB_FRAGS) {
+ 		skb_zcopy_downgrade_managed(skb);
+ 		get_page(page);
+-		skb_fill_page_desc_noacc(skb, i, page, offset, size);
++		skb_fill_page_desc_noacc(skb, i, page, offset, size, FOLL_GET);
+ 	} else {
+ 		return -EMSGSIZE;
+ 	}
+@@ -4077,7 +4077,7 @@ static inline skb_frag_t skb_head_frag_to_page_desc(struct sk_buff *frag_skb)
+ 	struct page *page;
+ 
+ 	page = virt_to_head_page(frag_skb->head);
+-	__skb_frag_set_page(&head_frag, page);
++	__skb_frag_set_page(&head_frag, page, FOLL_GET);
+ 	skb_frag_off_set(&head_frag, frag_skb->data -
+ 			 (unsigned char *)page_address(page));
+ 	skb_frag_size_set(&head_frag, skb_headlen(frag_skb));
+@@ -5521,7 +5521,7 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
+ 		offset = from->data - (unsigned char *)page_address(page);
+ 
+ 		skb_fill_page_desc(to, to_shinfo->nr_frags,
+-				   page, offset, skb_headlen(from));
++				   page, offset, skb_headlen(from), FOLL_GET);
+ 		*fragstolen = true;
+ 	} else {
+ 		if (to_shinfo->nr_frags +
+@@ -6221,7 +6221,7 @@ struct sk_buff *alloc_skb_with_frags(unsigned long header_len,
+ fill_page:
+ 		chunk = min_t(unsigned long, data_len,
+ 			      PAGE_SIZE << order);
+-		skb_fill_page_desc(skb, i, page, 0, chunk);
++		skb_fill_page_desc(skb, i, page, 0, chunk, FOLL_GET);
+ 		data_len -= chunk;
+ 		npages -= 1 << order;
+ 	}
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 922c87ef1ab5..43ea2e7aeeea 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1221,7 +1221,7 @@ static int __ip_append_data(struct sock *sk,
+ 					goto error;
+ 
+ 				__skb_fill_page_desc(skb, i, pfrag->page,
+-						     pfrag->offset, 0);
++						     pfrag->offset, 0, FOLL_GET);
+ 				skb_shinfo(skb)->nr_frags = ++i;
+ 				get_page(pfrag->page);
+ 			}
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index c567d5e8053e..2cb88e67e152 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1016,7 +1016,7 @@ static struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
+ 		skb_frag_size_add(&skb_shinfo(skb)->frags[i - 1], copy);
+ 	} else {
+ 		get_page(page);
+-		skb_fill_page_desc_noacc(skb, i, page, offset, copy);
++		skb_fill_page_desc_noacc(skb, i, page, offset, copy, FOLL_GET);
+ 	}
+ 
+ 	if (!(flags & MSG_NO_SHARED_FRAGS))
+@@ -1385,7 +1385,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 				skb_frag_size_add(&skb_shinfo(skb)->frags[i - 1], copy);
+ 			} else {
+ 				skb_fill_page_desc(skb, i, pfrag->page,
+-						   pfrag->offset, copy);
++						   pfrag->offset, copy, FOLL_GET);
+ 				page_ref_inc(pfrag->page);
+ 			}
+ 			pfrag->offset += copy;
+diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
+index 14ed868680c6..13e9d36e132e 100644
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -529,7 +529,7 @@ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
+ 			nfrags = skb_shinfo(skb)->nr_frags;
+ 
+ 			__skb_fill_page_desc(skb, nfrags, page, pfrag->offset,
+-					     tailen);
++					     tailen, FOLL_GET);
+ 			skb_shinfo(skb)->nr_frags = ++nfrags;
+ 
+ 			pfrag->offset = pfrag->offset + allocsize;
+@@ -635,7 +635,8 @@ int esp6_output_tail(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
+ 		page = pfrag->page;
+ 		get_page(page);
+ 		/* replace page frags in skb with new page */
+-		__skb_fill_page_desc(skb, 0, page, pfrag->offset, skb->data_len);
++		__skb_fill_page_desc(skb, 0, page, pfrag->offset, skb->data_len,
++				     FOLL_GET);
+ 		pfrag->offset = pfrag->offset + allocsize;
+ 		spin_unlock_bh(&x->lock);
+ 
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 60fd91bb5171..117fb2bdad02 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1780,7 +1780,7 @@ static int __ip6_append_data(struct sock *sk,
+ 					goto error;
+ 
+ 				__skb_fill_page_desc(skb, i, pfrag->page,
+-						     pfrag->offset, 0);
++						     pfrag->offset, 0, FOLL_GET);
+ 				skb_shinfo(skb)->nr_frags = ++i;
+ 				get_page(pfrag->page);
+ 			}
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index b5ab98ca2511..15c9f17ce7d8 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -2630,7 +2630,7 @@ static int tpacket_fill_skb(struct packet_sock *po, struct sk_buff *skb,
+ 		data += len;
+ 		flush_dcache_page(page);
+ 		get_page(page);
+-		skb_fill_page_desc(skb, nr_frags, page, offset, len);
++		skb_fill_page_desc(skb, nr_frags, page, offset, len, FOLL_GET);
+ 		to_write -= len;
+ 		offset = 0;
+ 		len_max = PAGE_SIZE;
+diff --git a/net/xfrm/xfrm_ipcomp.c b/net/xfrm/xfrm_ipcomp.c
+index 80143360bf09..8e9574e00cd0 100644
+--- a/net/xfrm/xfrm_ipcomp.c
++++ b/net/xfrm/xfrm_ipcomp.c
+@@ -74,7 +74,7 @@ static int ipcomp_decompress(struct xfrm_state *x, struct sk_buff *skb)
+ 		if (!page)
+ 			return -ENOMEM;
+ 
+-		__skb_frag_set_page(frag, page);
++		__skb_frag_set_page(frag, page, FOLL_GET);
+ 
+ 		len = PAGE_SIZE;
+ 		if (dlen < len)
 
 
