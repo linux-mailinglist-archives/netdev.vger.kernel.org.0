@@ -2,184 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 017A066B93D
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 09:45:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58DF266B94B
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 09:51:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232069AbjAPIp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 03:45:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55104 "EHLO
+        id S232348AbjAPIvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 03:51:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231996AbjAPIpy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 03:45:54 -0500
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87ADB1206D;
-        Mon, 16 Jan 2023 00:45:51 -0800 (PST)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id E682C100002;
-        Mon, 16 Jan 2023 08:45:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1673858749;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=n/b403PRq8EYGPXwjQ32wy0AeZyf2Q6Ii5wKNkPIYQs=;
-        b=PWlMcI1wVuALAcPFRY/9LfptlImGujZpLQaWGHOGuocEpoLSlZfDNIW9OEuA5O7ui7v7v5
-        gFQUTshslMyQdyHmnM1bNTju8GYm8R5hRI4RWaHgS8NPQsFhCl3TeoEN0m6xz5NwP1YFCP
-        b8hwqtUk6J29k/1JoQVyKwpvCDpY++k0wCsJ7XY42CmxbUG0kg0xCeGltMpfxS+9Je1fzB
-        gki9k3EofdqyGxnOIxaFXzL+0H0Ualk9fmTvdWPV2eVTpBopIY+HxxafTPO8DZ3BvY8nd3
-        UUKp8d1Rsh6j9o3/mZs3BVvxtXQxZ75a4ZFEam+k+ZPr5dJ6M+o6WcNQnKs7yg==
-Date:   Mon, 16 Jan 2023 09:48:01 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     <Arun.Ramadoss@microchip.com>
-Cc:     <olteanv@gmail.com>, <andrew@lunn.ch>, <linux@armlinux.org.uk>,
-        <f.fainelli@gmail.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <edumazet@google.com>, <davem@davemloft.net>,
-        <miquel.raynal@bootlin.com>, <linux-kernel@vger.kernel.org>,
-        <linux-renesas-soc@vger.kernel.org>, <jimmy.lalande@se.com>,
-        <herve.codina@bootlin.com>, <milan.stevanovic@se.com>,
-        <thomas.petazzoni@bootlin.com>, <pascal.eberhard@se.com>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: dsa: rzn1-a5psw: Add vlan support
-Message-ID: <20230116094801.348018de@fixe.home>
-In-Reply-To: <be08c48a21623f1ad8165023ebe986138e44be74.camel@microchip.com>
-References: <20230111115607.1146502-1-clement.leger@bootlin.com>
-        <be08c48a21623f1ad8165023ebe986138e44be74.camel@microchip.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-pc-linux-gnu)
+        with ESMTP id S231969AbjAPIvU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 03:51:20 -0500
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2045.outbound.protection.outlook.com [40.107.212.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B302716
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 00:51:18 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=N6ivOO2N4W0y/JjroJk4rwAEcYdmflOMweeE68Aq2VJziIqUbjo4b4mWsfsl5DsfdaLQMjnL1zNhCknrIaGOQGa3yTx9FCE8iMYeZ12vrBqy4xQ/D5Zvwn2UK0Xwt+uX1V1OJ8EorL6wn7n6PsDpp943WahoxOUpbA5uTeeGlf+ZEdwcFFzBaI7LKv8xtbMbSUEKHQnWcZN5m6x8IOGPTlj6MnsKAzOETaNDVK+/OukDujcrr8W3u6+tUgWuM773URQowXUm7+cESDRj3Rabr5k3muj6MWX4qJypZZyiTVllIPssblg4QgXJCCSyEbRGrmrUKO1yW1y9E+SBljRADg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mUbqQmcsxd17xaxg0eE+kheFtfwm5djPRkizU0nplio=;
+ b=KndkAgdpwPkB4YAnCg9zFpZKYnLVlYw80mHNWDuhoBNzdZVK//uQwg/AClgoKVJ7lkVMwH+tBGciMUhbNKURqoRO5Uaw6SmF8Aw0ZdgZTJXWC5Z49nAJJVv2iXkuc2m0Utox6kM5Ueh7S4BjSdes0pBvUD+fv0/gzhsrn+vFNiJ2Yg/PC/q8YZoaj3onPWTZgxbDV9LKWxpK47H9L8oc26VH69hEYyhEy96GgNbEs13VqP6Iu/GtXo0XEjAzzkwZLXOgAIZjnwnrJiGGG38xvLIJKMbUXuNIIbdtFgCQFK47UwWzjK9kgcsrB4aBhl/A2GMjh1EvffZq9Rg2Ni2NTQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mUbqQmcsxd17xaxg0eE+kheFtfwm5djPRkizU0nplio=;
+ b=vvUWiG8qbsiiFH2RYunIw2dTAEykutbRLSAjn39v6+bxkX2qiyop8Iu5LVyr3vpXxBAYo99sDyv99EwGot2rFgidKkkHaVrMDH1Fy1L62XCaZsAExvYqZRRLIY21+3DoVgnQSf8IlBFSLrOofNP2SQOorzVPLfoSLCe+nUD6ifw=
+Received: from MW4PR04CA0136.namprd04.prod.outlook.com (2603:10b6:303:84::21)
+ by BN9PR12MB5115.namprd12.prod.outlook.com (2603:10b6:408:118::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Mon, 16 Jan
+ 2023 08:51:16 +0000
+Received: from CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:84:cafe::a5) by MW4PR04CA0136.outlook.office365.com
+ (2603:10b6:303:84::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.19 via Frontend
+ Transport; Mon, 16 Jan 2023 08:51:15 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT005.mail.protection.outlook.com (10.13.174.147) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6002.13 via Frontend Transport; Mon, 16 Jan 2023 08:51:15 +0000
+Received: from jatayu.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 16 Jan
+ 2023 02:51:10 -0600
+From:   Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+To:     Tom Lendacky <thomas.lendacky@amd.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <Raju.Rangoju@amd.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+Subject: [PATCH net v2] MAINTAINERS: Update AMD XGBE driver maintainers
+Date:   Mon, 16 Jan 2023 14:20:15 +0530
+Message-ID: <20230116085015.443127-1-Shyam-sundar.S-k@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT005:EE_|BN9PR12MB5115:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5459a1a8-cd8d-4385-dea5-08daf79ed399
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VJbCRG66ASBPZ0N3/vIsCnVFDJ7dL8kFG8yxENRBD7FszQ7jDC4jaViaXHsTxUph9zwWNp+WQMc6psrPTI3w/0ojcP3q283D56R/0wmqMSjHrMSJNuNI4ykWC+nGabvnhifOrqvo/xcrCZkTXXH8HS/CuLX9RWJWrOHPB3rTAUxdAkLlkyz6tDSXy2nhMNYaiBpCs6l55akBk3jgPQ3CVbX6jDhru+aiLFLWfkB+yH5BazNpp0jhxwCJ5ugMUXw9tyad7yhsZhbGYwCAz2lqF2ZlH97eq+EBjc3/SzBcXVvL5adE2JW6gfr6FYxF/AnYOdiU1GhGPLTtvX9yB9MwKULZEoUyBG75m2d/JRGkSB7oCMhOMFD+LGyVUG/h1CVo473f1HK5nsCNBlexcEY0x6lWD97Khc1461BLdrPcEnPHYjKVHsufknVM86S0UMFn+hsrDstdcfXgJTsTFKCuKgbYQd0J2M8elsA8LYqKJRnSTkO+o9+mXMSc04b48t/TZyjFwP8lfy94EPh+v6dShf2jH7kmI/DFawqazlm16VTh9cqJdHRS46lN2kh1XhdgFA5OAIv8SyUsVciStrk3cvWkAbZSZEqV0bIg6dq8ckr+Ct+pj7gtExbKffVxF2uUPpzwjMywgKfrEpBDlk0IE+wH6PsO3+BeYbj2WOkxlvXtbl80VI2by65cYov5dWPBioDnxLzxKWSj2njxEW6AClLFLcUYjeOVKlGQ8i6D3Q8=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(136003)(396003)(39860400002)(376002)(346002)(451199015)(36840700001)(40470700004)(46966006)(36860700001)(82740400003)(83380400001)(81166007)(86362001)(356005)(8676002)(2906002)(5660300002)(4744005)(15650500001)(4326008)(70586007)(70206006)(8936002)(41300700001)(82310400005)(40480700001)(16526019)(186003)(26005)(2616005)(47076005)(336012)(1076003)(426003)(316002)(40460700003)(110136005)(54906003)(478600001)(7696005)(36756003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jan 2023 08:51:15.1754
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5459a1a8-cd8d-4385-dea5-08daf79ed399
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5115
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Fri, 13 Jan 2023 14:40:26 +0000,
-<Arun.Ramadoss@microchip.com> a =C3=A9crit :
+Due to other additional responsibilities Tom would no longer
+be able to support AMD XGBE driver.
 
-> Hi Clement,
-> On Wed, 2023-01-11 at 12:56 +0100, Cl=C3=A9ment L=C3=A9ger wrote:
-> > Add support for vlan operation (add, del, filtering) on the RZN1
-> > driver. The a5psw switch supports up to 32 VLAN IDs with filtering,
-> > tagged/untagged VLANs and PVID for each ports.
-> >=20
-> > Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
-> > ---
-> >  drivers/net/dsa/rzn1_a5psw.c | 182
-> > +++++++++++++++++++++++++++++++++++
-> >  drivers/net/dsa/rzn1_a5psw.h |  10 +-
-> >  2 files changed, 189 insertions(+), 3 deletions(-)
-> >=20
-> > diff --git a/drivers/net/dsa/rzn1_a5psw.c
-> > b/drivers/net/dsa/rzn1_a5psw.c
-> > index ed413d555bec..8ecb9214b5e6 100644
-> > --- a/drivers/net/dsa/rzn1_a5psw.c
-> > +++ b/drivers/net/dsa/rzn1_a5psw.c
-> > @@ -540,6 +540,161 @@ static int a5psw_port_fdb_dump(struct
-> > dsa_switch *ds, int port,
-> >  	return ret;
-> >  }
-> > =20
-> > +static int a5psw_port_vlan_filtering(struct dsa_switch *ds, int
-> > port,
-> > +				     bool vlan_filtering,
-> > +				     struct netlink_ext_ack *extack)
-> > +{
-> > +	u32 mask =3D BIT(port + A5PSW_VLAN_VERI_SHIFT)
-> > +		   | BIT(port + A5PSW_VLAN_DISC_SHIFT); =20
->=20
-> Operator | at the end of line
->=20
-> > +	struct a5psw *a5psw =3D ds->priv;
-> > +	u32 val =3D 0;
-> > +
-> > +	if (vlan_filtering)
-> > +		val =3D BIT(port + A5PSW_VLAN_VERI_SHIFT)
-> > +		      | BIT(port + A5PSW_VLAN_DISC_SHIFT); =20
->=20
-> Operator | at the end of line
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+---
+v1->v2
+- Update the subject prefix with "net"
 
-Hi Arun,
+ MAINTAINERS | 1 -
+ 1 file changed, 1 deletion(-)
 
-I'll fix that.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e278cd5d0de0..e5c43cbffea7 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1104,7 +1104,6 @@ S:	Supported
+ F:	arch/arm64/boot/dts/amd/
+ 
+ AMD XGBE DRIVER
+-M:	Tom Lendacky <thomas.lendacky@amd.com>
+ M:	"Shyam Sundar S K" <Shyam-sundar.S-k@amd.com>
+ L:	netdev@vger.kernel.org
+ S:	Supported
+-- 
+2.25.1
 
->=20
-> > +
-> > +	a5psw_reg_rmw(a5psw, A5PSW_VLAN_VERIFY, mask, val);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int a5psw_port_vlan_add(struct dsa_switch *ds, int port,
-> > +			       const struct switchdev_obj_port_vlan
-> > *vlan,
-> > +			       struct netlink_ext_ack *extack)
-> > +{
-> > +	bool tagged =3D !(vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED);
-> > +	bool pvid =3D vlan->flags & BRIDGE_VLAN_INFO_PVID;
-> > +	struct a5psw *a5psw =3D ds->priv;
-> > +	u16 vid =3D vlan->vid;
-> > +	int ret =3D -EINVAL;
-> > +	int vlan_res_id;
-> > +
-> > +	dev_dbg(a5psw->dev, "Add VLAN %d on port %d, %s, %s\n",
-> > +		vid, port, tagged ? "tagged" : "untagged",
-> > +		pvid ? "PVID" : "no PVID");
-> > +
-> > +	mutex_lock(&a5psw->vlan_lock);
-> > +
-> > +	vlan_res_id =3D a5psw_find_vlan_entry(a5psw, vid);
-> > +	if (vlan_res_id < 0) {
-> > +		vlan_res_id =3D a5psw_get_vlan_res_entry(a5psw, vid);
-> > +		if (vlan_res_id < 0) =20
->=20
-> nit: We can initialize ret =3D 0 initially, and assign ret =3D -EINVAL he=
-re
-> & remove ret =3D 0 at end of function.
->=20
-> > +			goto out;
-> > +	}
-> > +
-> > +	a5psw_port_vlan_cfg(a5psw, vlan_res_id, port, true);
-> > +	if (tagged)
-> > +		a5psw_port_vlan_tagged_cfg(a5psw, vlan_res_id, port,
-> > true);
-> > +
-> > +	if (pvid) {
-> > +		a5psw_reg_rmw(a5psw, A5PSW_VLAN_IN_MODE_ENA, BIT(port),
-> > +			      BIT(port));
-> > +		a5psw_reg_writel(a5psw, A5PSW_SYSTEM_TAGINFO(port),
-> > vid);
-> > +	}
-> > +
-> > +	ret =3D 0;
-> > +out:
-> > +	mutex_unlock(&a5psw->vlan_lock);
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int a5psw_port_vlan_del(struct dsa_switch *ds, int port,
-> > +			       const struct switchdev_obj_port_vlan
-> > *vlan)
-> > +{
-> > +	struct a5psw *a5psw =3D ds->priv;
-> > +	u16 vid =3D vlan->vid;
-> > +	int ret =3D -EINVAL; =20
->=20
-> Simillarly here.
-
-Since I removed the mutex thanks to the previous comments, I have
-removed all the "ret" usage.
-
-Thanks,
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
