@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 330ED66BEAB
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 14:07:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06BC566BEC1
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 14:07:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231346AbjAPNHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 08:07:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55224 "EHLO
+        id S231598AbjAPNHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 08:07:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229749AbjAPNGj (ORCPT
+        with ESMTP id S231312AbjAPNGj (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 08:06:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76B371710;
-        Mon, 16 Jan 2023 05:06:12 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E0FAD;
+        Mon, 16 Jan 2023 05:06:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 345E4B80E37;
-        Mon, 16 Jan 2023 13:06:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CDE9C433EF;
-        Mon, 16 Jan 2023 13:06:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4272B80D20;
+        Mon, 16 Jan 2023 13:06:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91A16C433D2;
+        Mon, 16 Jan 2023 13:06:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673874369;
-        bh=3vqVXUNkAHRx8zvBd2AMUzlpHePNDOP0eQM8jTGqV00=;
+        s=k20201202; t=1673874382;
+        bh=vAkRimTAOToGcO2FbKESWn7KypzSRbBcz5r9JH5CQXA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A+Ku8TJauHSmodpnxMWblBL/kJGeyDexnWB+oiYm9dRCuEjlso7zxFTrRg0d6jTQg
-         rmfHIM76X4oKr/6gENePgPcHXo05aDmeH1eVo0lGnSCqZ7iqNotTQqd9WjtTSmAWGI
-         baXQE1khBkW58+c72IQllvg0MD1qZBh4p/kFjO//+T53eeao6z7Bg/lLG0nYMCbXDh
-         EETstXcwgprT46aNeJODiKtP5G2c1HNF/gH+Q9yQXur2G56UPf/CnKa7ef1Bwvq0Xh
-         wC9F3wXlGdAAvaLdySmmiFlfOy1fBeELz6QXrn6xhWmMMtcfl0YP5dzFkoPmJYBM5Z
-         bMuaTEw7Cm0og==
+        b=ADlWSkwHACNAO2DLud+o3x07DseJaWthyhMStPks9JKa3AMvFD7TCTSQ8TZM0fQ3R
+         TXWvlPdUnDpnYl24ITlNcRdLUTeTLOuuVf9xcSA9ISNpqlNKsN/d5rGkznbmjvxyE9
+         qZiBv/tQlQfwjsPz960Yrq13RsUph72exN6wRTnzpQyRbuVxqrZA+czP5JviwZapIH
+         8BWLxK82/4kZPDyD8SyFfgxbcdcubFqUEE97PWhIiPLmUqRmsm2JDukeuGGnDcrUma
+         aPQAEvN4YMtPALZapqy/W/8UppovupAUSNeAIgEwmJ4niNNuj8tJ9dq2bl4kwefxCs
+         3BkpzLZuxGDVw==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Jason Gunthorpe <jgg@nvidia.com>
 Cc:     Israel Rukshin <israelr@nvidia.com>,
@@ -50,9 +50,9 @@ Cc:     Israel Rukshin <israelr@nvidia.com>,
         Steven Rostedt <rostedt@goodmis.org>,
         Vishnu Dasa <vdasa@vmware.com>,
         Yishai Hadas <yishaih@nvidia.com>
-Subject: [PATCH mlx5-next 01/13] net/mlx5: Introduce crypto IFC bits and structures
-Date:   Mon, 16 Jan 2023 15:05:48 +0200
-Message-Id: <92da0db17a6106230c9a1938bc43071c119b7e7f.1673873422.git.leon@kernel.org>
+Subject: [PATCH mlx5-next 02/13] net/mlx5: Introduce crypto capabilities macro
+Date:   Mon, 16 Jan 2023 15:05:49 +0200
+Message-Id: <561d70fff0ab0ebc5594e371d9faec2a2c934972.1673873422.git.leon@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <cover.1673873422.git.leon@kernel.org>
 References: <cover.1673873422.git.leon@kernel.org>
@@ -69,96 +69,68 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Israel Rukshin <israelr@nvidia.com>
 
-Add crypto related IFC structs, layouts and enumerations.
+Add MLX5_CAP_CRYPTO() macro to the list of capabilities.
 
 Signed-off-by: Israel Rukshin <israelr@nvidia.com>
+Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
 Signed-off-by: Leon Romanovsky <leon@kernel.org>
 ---
- include/linux/mlx5/mlx5_ifc.h | 36 ++++++++++++++++++++++++++++++++---
- 1 file changed, 33 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fw.c   | 6 ++++++
+ drivers/net/ethernet/mellanox/mlx5/core/main.c | 1 +
+ include/linux/mlx5/device.h                    | 4 ++++
+ 3 files changed, 11 insertions(+)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 8bbf15433bb2..170fe1081820 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -1331,6 +1331,29 @@ struct mlx5_ifc_macsec_cap_bits {
- 	u8    reserved_at_40[0x7c0];
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw.c b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
+index f34e758a2f1f..4603f7ffd8d6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
+@@ -147,6 +147,12 @@ int mlx5_query_hca_caps(struct mlx5_core_dev *dev)
+ 	if (err)
+ 		return err;
+ 
++	if (MLX5_CAP_GEN(dev, crypto)) {
++		err = mlx5_core_get_caps(dev, MLX5_CAP_CRYPTO);
++		if (err)
++			return err;
++	}
++
+ 	if (MLX5_CAP_GEN(dev, port_selection_cap)) {
+ 		err = mlx5_core_get_caps(dev, MLX5_CAP_PORT_SELECTION);
+ 		if (err)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index df134f6d32dc..81348a009666 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1555,6 +1555,7 @@ static const int types[] = {
+ 	MLX5_CAP_DEV_SHAMPO,
+ 	MLX5_CAP_MACSEC,
+ 	MLX5_CAP_ADV_VIRTUALIZATION,
++	MLX5_CAP_CRYPTO,
  };
  
-+enum {
-+	MLX5_CRYPTO_WRAPPED_IMPORT_METHOD_CAP_AES_XTS = 0x4,
-+};
-+
-+struct mlx5_ifc_crypto_cap_bits {
-+	u8         wrapped_crypto_operational[0x1];
-+	u8         reserved_at_1[0x17];
-+	u8         wrapped_import_method[0x8];
-+
-+	u8         reserved_at_20[0xb];
-+	u8         log_max_num_deks[0x5];
-+	u8         reserved_at_30[0x3];
-+	u8         log_max_num_import_keks[0x5];
-+	u8         reserved_at_38[0x3];
-+	u8         log_max_num_creds[0x5];
-+
-+	u8         failed_selftests[0x10];
-+	u8         num_nv_import_keks[0x8];
-+	u8         num_nv_credentials[0x8];
-+
-+	u8         reserved_at_60[0x7a0];
-+};
+ static void mlx5_hca_caps_free(struct mlx5_core_dev *dev)
+diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
+index 29d4b201c7b2..fd095f0ed3ec 100644
+--- a/include/linux/mlx5/device.h
++++ b/include/linux/mlx5/device.h
+@@ -1204,6 +1204,7 @@ enum mlx5_cap_type {
+ 	MLX5_CAP_VDPA_EMULATION = 0x13,
+ 	MLX5_CAP_DEV_EVENT = 0x14,
+ 	MLX5_CAP_IPSEC,
++	MLX5_CAP_CRYPTO = 0x1a,
+ 	MLX5_CAP_DEV_SHAMPO = 0x1d,
+ 	MLX5_CAP_MACSEC = 0x1f,
+ 	MLX5_CAP_GENERAL_2 = 0x20,
+@@ -1466,6 +1467,9 @@ enum mlx5_qcam_feature_groups {
+ #define MLX5_CAP_MACSEC(mdev, cap)\
+ 	MLX5_GET(macsec_cap, (mdev)->caps.hca[MLX5_CAP_MACSEC]->cur, cap)
+ 
++#define MLX5_CAP_CRYPTO(mdev, cap)\
++	MLX5_GET(crypto_cap, (mdev)->caps.hca[MLX5_CAP_CRYPTO]->cur, cap)
 +
  enum {
- 	MLX5_WQ_TYPE_LINKED_LIST  = 0x0,
- 	MLX5_WQ_TYPE_CYCLIC       = 0x1,
-@@ -1758,7 +1781,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 	u8         reserved_at_3e8[0x2];
- 	u8         vhca_state[0x1];
- 	u8         log_max_vlan_list[0x5];
--	u8         reserved_at_3f0[0x3];
-+	u8         reserved_at_3f0[0x1];
-+	u8         aes_xts_single_block_le_tweak[0x1];
-+	u8         aes_xts_multi_block_be_tweak[0x1];
- 	u8         log_max_current_mc_list[0x5];
- 	u8         reserved_at_3f8[0x3];
- 	u8         log_max_current_uc_list[0x5];
-@@ -1774,7 +1799,8 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 	u8         ats[0x1];
- 	u8         reserved_at_462[0x1];
- 	u8         log_max_uctx[0x5];
--	u8         reserved_at_468[0x2];
-+	u8         aes_xts_multi_block_le_tweak[0x1];
-+	u8         crypto[0x1];
- 	u8         ipsec_offload[0x1];
- 	u8         log_max_umem[0x5];
- 	u8         max_num_eqs[0x10];
-@@ -3377,6 +3403,7 @@ union mlx5_ifc_hca_cap_union_bits {
- 	struct mlx5_ifc_virtio_emulation_cap_bits virtio_emulation_cap;
- 	struct mlx5_ifc_shampo_cap_bits shampo_cap;
- 	struct mlx5_ifc_macsec_cap_bits macsec_cap;
-+	struct mlx5_ifc_crypto_cap_bits crypto_cap;
- 	u8         reserved_at_0[0x8000];
- };
- 
-@@ -3995,7 +4022,9 @@ struct mlx5_ifc_mkc_bits {
- 	u8         reserved_at_1d9[0x1];
- 	u8         log_page_size[0x5];
- 
--	u8         reserved_at_1e0[0x20];
-+	u8         reserved_at_1e0[0x3];
-+	u8         crypto_en[0x2];
-+	u8         reserved_at_1e5[0x1b];
- };
- 
- struct mlx5_ifc_pkey_bits {
-@@ -11978,6 +12007,7 @@ enum {
- enum {
- 	MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_TYPE_TLS = 0x1,
- 	MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_TYPE_IPSEC = 0x2,
-+	MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_TYPE_AES_XTS = 0x3,
- 	MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_TYPE_MACSEC = 0x4,
- };
- 
+ 	MLX5_CMD_STAT_OK			= 0x0,
+ 	MLX5_CMD_STAT_INT_ERR			= 0x1,
 -- 
 2.39.0
 
