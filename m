@@ -2,101 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B528866C340
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 16:08:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6D7366C35A
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 16:11:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232912AbjAPPH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 10:07:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34584 "EHLO
+        id S232241AbjAPPLq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 10:11:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232796AbjAPPHd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 10:07:33 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1F023652;
-        Mon, 16 Jan 2023 06:55:16 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id hw16so56824862ejc.10;
-        Mon, 16 Jan 2023 06:55:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=xhSjTBHJmXYr2emRMWv3c425aCY5/G3WkEL4j7Ip0kQ=;
-        b=cV/I5vBODDPK7L593lHoMfZf/+UbRNsgzNF5uZOlvyKmXVhajdjyOWq6V84XbvI2Hn
-         IY3A0t3epQZFcXTOqpXzuHJJFLFVICKkEhQT83qaLvBcgmGX/MRjY++zz5YvmNohVLSs
-         QFSUvKEohycu4uRlzKMWxoyH6N1AkxPh/hR1P6cfqtL3WaCH7jNHyeV2m6HzDHnPMHJp
-         QVkMhU4c4i7JhTV8IT11y6tek7GLDSsvJfsGzpA0bXxQmBlAwJPFiHnehDqM1eeaHKdN
-         KX4+lSMcy0uCa3cGPiVgRJZLwolXHfVY0zQM4o5cgi+Dvt/JdaziT+/uQpPP5dhBvctp
-         2TVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=xhSjTBHJmXYr2emRMWv3c425aCY5/G3WkEL4j7Ip0kQ=;
-        b=EBmU0/8eZVKaCssUqaWsVbr9GzO64wAHVXep5qH0Kzgh3xwjSD7Pxoj4WgTRRLFqK4
-         TnQKFC1Dng9kOSQdkbT2qxfcD2Unq6yLWvaCK1auAdVuv5JOwO6BmXqNUEEvLoht7xLN
-         BurttFYginXMAB8jQLNsXcOxd+kMLZZUN9QZR95vnYzlw6HCzI98BbTZBHEwsecDlrCi
-         +fucWV/zufiQRZnO6TxiRtalooytmeiNCvCQuPXVp2+mFhJHXfmQmIAegy2W4Yuf1Xzs
-         kTsrQfL0Z7j1Mga9oW5MAzvmlSQEnC5mWPhZIqbKuANJ4wYoM4yHZVe1OpItHIjjofP9
-         Y6oQ==
-X-Gm-Message-State: AFqh2krvpFBs4f7Oky68OUSkqvmwWSjYdXzwXIbegHnU6iJTeEpoeCeA
-        KDgLTAgYoYLQUhEf76YHftc=
-X-Google-Smtp-Source: AMrXdXuZLt2ra5d96V1ap4oZOPYmynDnhh0oRM2DexK1QMtc0nYqpKlsGTQkzhysV/ttrIrUy4DRrg==
-X-Received: by 2002:a17:906:704a:b0:83f:cbc0:1b30 with SMTP id r10-20020a170906704a00b0083fcbc01b30mr74170693ejj.10.1673880914876;
-        Mon, 16 Jan 2023 06:55:14 -0800 (PST)
-Received: from Tanmay.. (ip5f5ad41d.dynamic.kabel-deutschland.de. [95.90.212.29])
-        by smtp.gmail.com with ESMTPSA id q14-20020a1709066b0e00b0074134543f82sm12145666ejr.90.2023.01.16.06.55.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Jan 2023 06:55:14 -0800 (PST)
-From:   Tanmay Bhushan <007047221b@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
+        with ESMTP id S232064AbjAPPL2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 10:11:28 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B305234C7;
+        Mon, 16 Jan 2023 06:59:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=WFKnv3IXFGo/+R8aB760h27cGKXKKD/moSarcuDR1DI=; b=KiXQaWYjAzj22qeVwf+8jraFnd
+        piSsFBsu9jpccuQs1OylYmOhIxYpYJMXk9UyP8itAzdxLXZH6mTTAzAzsQlF0ezNt4NoQdpe1IkY8
+        u4k28bU9DzDlGgLhdaq2SePXFBylBp0fFPF2Gd8K/VFGgpVHIi/HDGC4TJ1MNqtbFIB3V4jZwt3Zq
+        a2jILgICyiMK0Ye8t3cBHRBaVU6/N/P71gpgPg43tBGnmXFdXv0semHNJb9z0WCUs/2JuoRMYNrSF
+        31fMcmwwLBZ8kcU/TEM9VyQ4w00g1Hv4AnsJ0drPuoayyhfQokV48ZP1CRv+eMOvMhEtJfolfdvIH
+        3bklwOgA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36130)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pHQxM-0005D4-H5; Mon, 16 Jan 2023 14:59:28 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pHQxG-00066F-Sc; Mon, 16 Jan 2023 14:59:22 +0000
+Date:   Mon, 16 Jan 2023 14:59:22 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Frank Wunderlich <linux@fw-web.de>,
+        linux-mediatek@lists.infradead.org,
+        Alexander Couzens <lynxis@fe80.eu>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Cc:     Tanmay Bhushan <007047221b@gmail.com>
-Subject: [PATCH] ipv6: Remove extra counter pull before gc
-Date:   Mon, 16 Jan 2023 15:55:00 +0100
-Message-Id: <20230116145500.44699-1-007047221b@gmail.com>
-X-Mailer: git-send-email 2.34.1
+Subject: Re: [PATCH v2] net: mtk_sgmii: implement mtk_pcs_ops
+Message-ID: <Y8VmSrjHTlllaDy2@shell.armlinux.org.uk>
+References: <trinity-ac9a840b-cb06-4710-827a-4c4423686074-1666551838763@3c-app-gmx-bs01>
+ <trinity-169e3c3f-3a64-485c-9a43-b7cc595531a9-1666552897046@3c-app-gmx-bs01>
+ <Y1Wfc+M/zVdw9Di3@shell.armlinux.org.uk>
+ <Y1Zah4+hyFk50JC6@shell.armlinux.org.uk>
+ <trinity-d2f74581-c020-4473-a5f4-0fc591233293-1666622740261@3c-app-gmx-bap55>
+ <Y1ansgmD69AcITWx@shell.armlinux.org.uk>
+ <trinity-defa4f3d-804e-401e-bea1-b36246cbc11b-1666685003285@3c-app-gmx-bap29>
+ <87o7qy39v5.fsf@miraculix.mork.no>
+ <Y8VVa0zHk0nCwS1w@shell.armlinux.org.uk>
+ <87h6wq35dn.fsf@miraculix.mork.no>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        FROM_STARTS_WITH_NUMS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <87h6wq35dn.fsf@miraculix.mork.no>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Per cpu entries are no longer used in consideration
-for doing gc or not. Remove the extra per cpu entries
-pull to directly check for time and perform gc.
+On Mon, Jan 16, 2023 at 03:45:24PM +0100, Bjørn Mork wrote:
+> "Russell King (Oracle)" <linux@armlinux.org.uk> writes:
+> > On Mon, Jan 16, 2023 at 02:08:30PM +0100, Bjørn Mork wrote:
+> >> Frank Wunderlich <frank-w@public-files.de> writes:
+> >> 
+> >> > apart from this little problem it works much better than it actually is so imho more
+> >> > people should test it on different platforms.
+> >> 
+> >> Hello!  I've been banging my head against an MT7986 board with two
+> >> Maxlinear GPY211C phys for a while. One of those phys is connected to
+> >> port 5 of the MT7531 switch.  This is working perfectly.
+> >> 
+> >> The other GPY211C is connected to the second MT7986 mac.  This one is
+> >> giving me a headache...
+> >> 
+> >> I can only get the port to work at 2500Mb/s.  Changing the speed to
+> >> anything lower looks fine in ethtool etc, but traffic is blocked.
+> >
+> > My guess would be that the GPY PHY is using in-band SGMII negotiation
+> > (it sets VSPEC1_SGMII_ANEN_ANRS when entering SGMII mode and clears
+> > it in 2500base-X), but as the link is not using in-band mode on the
+> > PCS side, the PHY never sees its in-band negotiation complete, so the
+> > link between PCS and PHY never comes up.
+> >
+> > Both sides need to agree on that detail.
+> 
+> Any hints on how I would go about doing that?  I am a little lost here,
+> changing arbitrary bits I don't understand the meaning of.
 
-Signed-off-by: Tanmay Bhushan <007047221b@gmail.com>
----
- net/ipv6/route.c | 4 ----
- 1 file changed, 4 deletions(-)
+Hi,
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index b643dda68d31..76889ceeead9 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -3294,10 +3294,6 @@ static void ip6_dst_gc(struct dst_ops *ops)
- 	unsigned int val;
- 	int entries;
- 
--	entries = dst_entries_get_fast(ops);
--	if (entries > ops->gc_thresh)
--		entries = dst_entries_get_slow(ops);
--
- 	if (time_after(rt_last_gc + rt_min_interval, jiffies))
- 		goto out;
- 
+To prove the point, in mtk_pcs_config():
+
+        if (interface == PHY_INTERFACE_MODE_SGMII) {
+                sgm_mode = SGMII_IF_MODE_SGMII;
+                if (phylink_autoneg_inband(mode)) {
+
+Force the second if() to always be true, and see whether that allows
+traffic to pass.
+
+Thanks.
+
 -- 
-2.34.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
