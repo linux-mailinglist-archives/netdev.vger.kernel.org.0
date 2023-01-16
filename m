@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFA8566BAC3
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 10:44:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30AF766BAE3
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 10:51:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231182AbjAPJod (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 04:44:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37278 "EHLO
+        id S229580AbjAPJvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 04:51:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231194AbjAPJoG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 04:44:06 -0500
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2055.outbound.protection.outlook.com [40.107.20.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCFF03ABF;
-        Mon, 16 Jan 2023 01:44:04 -0800 (PST)
+        with ESMTP id S229529AbjAPJvZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 04:51:25 -0500
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2072.outbound.protection.outlook.com [40.107.22.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB7BB14EA9;
+        Mon, 16 Jan 2023 01:51:23 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Wv67b+30s7up+C07L6mbdinnh7nHoUC3r+Pz1W70CIzO1jHzpB690P6uWT3ZlqUQrRN5d1G0PwUg4Lgf7Z4t05Z5NXJd0Xvur6oAekHCmV5L8NNi5VEUdT2smJ0cgye2jBRcF9LhMDIcHJpbr0YZ7sbJRsbLyt+aKfmLlprdtLS4aTpHaHBAQAAgMHjzToNqUYCPYPivcQZeiAFn7tZz7HcwkOiNTZolF++BARk7cM7ceaGe4UOoPsYzTl7VQetCc84ACB/JIT/vpBfjaV/ETdCL2Gn2erietrLSEsOvnMBLICuEENhYdLboWvhIFuUjAmbKjexMXYW5k4GXcWNeFg==
+ b=kdm3tpIujVVM5kO2HMTwhErpQ4RrJgdfJnk6Gw45sAuq6j+sQweneW5d6jg412J9lbADiFq7JtVDEkY4LdHEu8ewmFYwXok7Kzec0VXjUkV0X5nlDwzjVfNxmR8Lgi3FXHIfxmInWR+lMorkysaYnSkGLdd4Ma3JTdlWAC2fs60zMzfbyqxF+NSCW8AtJ81lGGQFbglOLakpkubdTVkqkdlzcS7Rn10h2L4JX1DrZQfLKNul70xTpUzBj1ruijfnzLdEx5wdUwnPURmPTZh2vT5jQW78P4brHAk8+4fChQ+0BZSjP1Eko2pYejWPMJu8Zs+q4FKh+aNCrb7qfGuXvg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VZdgzEFyjdmT3xX48hqZ93tEyyy9mCKwrrPiC+CTIxc=;
- b=SzrdeQq5xrGTP9YFzi/pBCiCsusiVx9IWvZ5RZLML1nKJKfSwW58Swy6z5559sPUptV9wkjGVNHVZGtOAeF5QmAtonz2JQryrqLCOeAueoZnh/o6ImU4Pqs6cyzjTjJgEtfP7cNWx9i4SLXtAqkYuknuqR+1dK80u+dCowCc24RvgPq+3peIEVtMSWmOixXRWn8hNmMtCV+LVa4FI/7Uaofu+fX02fpW/uvoSbmWVRpbrRDmXXdJhJBCXZmofItUGUNokMK76WzREieyuDufxfdGNfZ9B7qWnH+9Rynu5S6x58ijJ5EAYCfLF3/AjStMs1tdzAqg8R2Xszw12S/lyA==
+ bh=WF7vHq+JNZvO1KX61Hd5kyz3AeW31WuPHDdiRoS3Kpo=;
+ b=hKotgXJL/0NqrjRJzUPdTQ/4w3kLQc+YjG464fOeLTp3mURWZ+pIfDKqICUoA6rBo9IuukAgh71l++9FK8GNFq2ucxRmAImssHywCOeGTlZTxeBshsoT+rkbk5PbTqcyFEqnbc4vy+Nzn5KwK9WsoGoAyiFnRuMJGsUY5YankDhRE+GcT1DyPBo1cCFQFfee4Gs4Y3Plqguc3dd54pIQDiVTM+rsbtwREIQHBVUduib5fr5cwYyShnhhiSMQejq9C7En3zmubOhAMNhtqv0zA1lwkCbNEhGZjBNJPvd+p8RM+9O9ZsE3WLgQjoof57vktzjCazdHlGBK8zSFu+ufQQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=variscite.com; dmarc=pass action=none
  header.from=variscite.com; dkim=pass header.d=variscite.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=variscite.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VZdgzEFyjdmT3xX48hqZ93tEyyy9mCKwrrPiC+CTIxc=;
- b=Lj/f1cx/rIACs4cR04yoUf70xQV9TQqxIUdky3WhLhRrhtZzEED9ykQEU38AM2B9ipbfhrpAC5iF0og5TIAmbE67UVdM66DCMG/Ar//7nJYJWduneHO/YsS84i5wjysNPrjgVNBkPI+jQM8lrH4mYIfqJFLbSGPuTWIz2l7wHMdTNFMNadCvwYq4HeYA2hMVbNbllrwZiZFkssrC+w5jJhw1h2hkYtCdOH56Mv4T+WFVbzm4VQzLlGPYXZvhUEU3u95vcVPVdQgZJXs2tXTz57DMe+6Ujum/54E2ZGQMC3gjew2f0bKgmzpR6kSLT4gh3453NTEFdFN9jUiTGcPIRg==
+ bh=WF7vHq+JNZvO1KX61Hd5kyz3AeW31WuPHDdiRoS3Kpo=;
+ b=QDaTewEljB5b4CMPx0K1dhZ//mj+RF0kh/0b+3G5cztgl9NmFk5QYmS59w2jRkOXT4D9Gun71hds9v+pLt2KFBQC8yRUm/ZKZgC2rm5SxaMzZ7ajLwmt7v1/hMpUgUkuWyHPvjcFubmAhZPaQcFaqCNEgV6AGxLBe5p1St3NpLphsNG1p2tDn3yjU6EohGiddpx9hFw0oI0U2i7QvuxE2RYr3z9vbGZGR8Jo7awnit/Hs+31t5w+s6p/49pJ/3VJJ7wl8GaJTS53ST4QghU58+5mdfItnX1EXTtIrwCTwiyrJ2rqIapQx6tTZqox9oYrg+Fl4Vnx9VKVu1J1tdLRrw==
 Received: from AM6PR08MB4376.eurprd08.prod.outlook.com (2603:10a6:20b:bb::21)
- by AS8PR08MB6360.eurprd08.prod.outlook.com (2603:10a6:20b:33e::22) with
+ by PAWPR08MB9855.eurprd08.prod.outlook.com (2603:10a6:102:2ee::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Mon, 16 Jan
- 2023 09:44:01 +0000
+ 2023 09:51:20 +0000
 Received: from AM6PR08MB4376.eurprd08.prod.outlook.com
  ([fe80::4e5b:51c8:1237:1fee]) by AM6PR08MB4376.eurprd08.prod.outlook.com
  ([fe80::4e5b:51c8:1237:1fee%5]) with mapi id 15.20.6002.012; Mon, 16 Jan 2023
- 09:44:01 +0000
+ 09:51:20 +0000
 From:   Pierluigi Passaro <pierluigi.p@variscite.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Pierluigi Passaro <pierluigi.passaro@gmail.com>
-CC:     Lars-Peter Clausen <lars@metafoo.de>,
+To:     Lars-Peter Clausen <lars@metafoo.de>, Andrew Lunn <andrew@lunn.ch>
+CC:     Pierluigi Passaro <pierluigi.passaro@gmail.com>,
         "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
         "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
         "davem@davemloft.net" <davem@davemloft.net>,
@@ -55,14 +54,13 @@ CC:     Lars-Peter Clausen <lars@metafoo.de>,
         Francesco Ferraro <francesco.f@variscite.com>
 Subject: Re: [PATCH] net: mdio: force deassert MDIO reset signal
 Thread-Topic: [PATCH] net: mdio: force deassert MDIO reset signal
-Thread-Index: AQHZKPvgQPO0npisDkSvgN3jEdgJF66fthyAgABQ/YCAAAm5gIAAG3CAgACcr+s=
-Date:   Mon, 16 Jan 2023 09:44:01 +0000
-Message-ID: <AM6PR08MB437630CD49B50D66543EC3BDFFC19@AM6PR08MB4376.eurprd08.prod.outlook.com>
+Thread-Index: AQHZKPvgQPO0npisDkSvgN3jEdgJF66fthyAgABQ/YCAACCdgIAAKNoAgAB9T1k=
+Date:   Mon, 16 Jan 2023 09:51:20 +0000
+Message-ID: <AM6PR08MB4376669AFBED3CF8E75097D1FFC19@AM6PR08MB4376.eurprd08.prod.outlook.com>
 References: <20230115161006.16431-1-pierluigi.p@variscite.com>
  <Y8QzI2VUY6//uBa/@lunn.ch> <f691f339-9e50-b968-01e1-1821a2f696e7@metafoo.de>
- <CAJ=UCjUo3t+D9S=J_yEhxCOo5OMj3d-UW6Z6HdwY+O+Q6JO0+A@mail.gmail.com>
- <Y8SWPwM7V8yj9s+v@lunn.ch>
-In-Reply-To: <Y8SWPwM7V8yj9s+v@lunn.ch>
+ <Y8SSb+tJsfJ3/DvH@lunn.ch> <cc338014-8a2b-87e9-7684-20b57aae4ac3@metafoo.de>
+In-Reply-To: <cc338014-8a2b-87e9-7684-20b57aae4ac3@metafoo.de>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -71,56 +69,56 @@ msip_labels:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=variscite.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AM6PR08MB4376:EE_|AS8PR08MB6360:EE_
-x-ms-office365-filtering-correlation-id: 3bf54b31-6096-4cb7-9944-08daf7a632d1
+x-ms-traffictypediagnostic: AM6PR08MB4376:EE_|PAWPR08MB9855:EE_
+x-ms-office365-filtering-correlation-id: d157187e-c560-48e6-db7b-08daf7a73895
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +unKlZXRveuA6NidgaIfjdR7+mOLVootixO6uDzs8wVx74WfHzdlrrG5Qwj5ixzLBns7AmpM0pG2+786LJYgzc5OjtgzvhUNQNgsjo0Ybi2ZT2tQJnNh2BswqkLeHyQdDDNiEjdE4eloCuy32ko9WJOMBq1Efl1a47efxgrVAdkkncRvV5iBL5yLzGc51Y+06vwAK3MeGgAlNLReg3taAumRx4PSELFHUor+mHk4mBUXz1wDPDIzljOcTRxwYfVgShVqCs63wvd/Y78k/cVuQTlAY9B0G/znJk7cGH6neajRo2SD2kt17yhn3Ph8ZbCvgN8ZNvoVoS7Ogl4rWMaLdptV28Pjzr1oMYkl8N3E6R+lI6SipcSwR30GzbPU3srqlSl7V9ADVkHC1V9YGWxGVsvSEGyLH1+dYRHkikuhmYS/m4GEG2FJjm7lbbWPEsbctITgEhDo2yJ43Zcdnr6T4stcZL8D5glJsbjGmhGXQojR/BaDliEt0yG4dGgV1G8pqg27SXFJNJNnRKowzCwrf+roh5hr14WVzHIiVYauUo3xXOLP94Aeah6zZKn7Lor1Pso/UqlullTsIULPgQoE4rFSlRlN/IXHW6kIzid7Q5Pvv6toZoduAFXG0zQz3hKaXSA+sZoYshOTA6L8bqb05BJciCi9WxUz/+6tLa+4NfhF1bJqU6adE2I9HnVpzLv/g4kWsRIUcMVsmZdpuVinbTvD7uHt5BsPPwDG5mOs+NQ=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR08MB4376.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(346002)(376002)(39850400004)(366004)(396003)(136003)(451199015)(55016003)(33656002)(66556008)(4326008)(5660300002)(66446008)(91956017)(76116006)(66476007)(41300700001)(8676002)(64756008)(66946007)(6506007)(8936002)(186003)(9686003)(478600001)(26005)(52536014)(966005)(7416002)(83380400001)(53546011)(107886003)(110136005)(54906003)(316002)(71200400001)(7696005)(38070700005)(86362001)(2906002)(122000001)(38100700002);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: Ju+ISvRcswsea2x3DGMmH9eqo0NZLBdJSdbd6BrkwlFbq7OScHZ3xY1GNK4PP6ymyz9bQiuR2gDE2Ti4u9kO4U/B9xOAmDBSa1xp/4IPGkiyO3uvT4c3PazLPwYIJ9TmzHFuz90sfK1xGBxo8w8XjdZwgszNHsJmSLCexcQkuQVgfxInVWIi16OzFLj1zFF1vmUktKVutQQvXdK7Av6seGj9FbEHx/u4R2SLeE7qlSkrQxCR4ccH8ThBxhdrStq5fDqgeBdx1/6M/sXICpU/x02gRT19VQ1tY6aAL1/ITHiWs9TLOtvqIou9JkLY7AdwyN5Auzah/qEbXG6lZL/X+Lc4iGB2XmDfxhkc6tGZaaCUhuoJR2raQD01cY2pw2ihlLQEhzIVCPsa6hGGqUulr2Ut/3ofCdbvhkDQWI9ftobq2O0j/jQopy1+XNqsEkpNsb+4115VMupSYEkPA1USZOCSCNcukEVF0ZGJ6pLSaL9OtsqsR77dWcngnFWFohNxDStR8USj2ED3zMP05ZZW95+2yusigTkik8Lscl/6v/tZRy7qSVTXcueXyGH7bkwsbsH0CJ85VTmnJpQBeritpKcQ6veX2K+8PG1vSNfVvchVWpalG+9k31Ps0rhFoUcdt/Pbd1UnFipP5Wu98mU4tTWaA6SiW35oW8g+Ad2g1tNg1RLbo5NS8yPPs2qD6C47cwyN2kEJQzARYSsCxaVO3TYGl1qZuA0dVVehnwg+9jM=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR08MB4376.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(39850400004)(366004)(136003)(396003)(376002)(346002)(451199015)(122000001)(38100700002)(54906003)(107886003)(110136005)(26005)(186003)(55016003)(7696005)(9686003)(86362001)(71200400001)(966005)(33656002)(478600001)(38070700005)(5660300002)(7416002)(4326008)(41300700001)(8936002)(52536014)(83380400001)(2906002)(316002)(53546011)(6506007)(91956017)(8676002)(76116006)(66946007)(66556008)(64756008)(66476007)(66446008);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?BVLGsofk1WdjQAfJ5BfAAg/6Y6x5z9fWP6p1N7/8McFi7IU4tGqclhptId?=
- =?iso-8859-1?Q?FwXoX/Wbl8CsJqnRL2oNLi493i47ctRvOB+CzmOFRECvfewk/rgr5p/Yof?=
- =?iso-8859-1?Q?0eVz/6xUsq6cYF259TbTQrW7pijRkzznsCI53ESdvR5Pn1MOLFU4PCYHLo?=
- =?iso-8859-1?Q?KfIw15M7aMFcZMIFDJFvNropK8xGXUyJHcFDvyyanmTrSXxTWIoQjjhSEz?=
- =?iso-8859-1?Q?a/A99EC3Ef4w9+GS5nvtZCITlKgVoUXOZfUCPgmSOSb1tR5cLZdHPBj2u8?=
- =?iso-8859-1?Q?0jpSiF8hVrh0dizFA2s2MShCMW7Kj5tzeW9xBQnMaNGz5aKk9ns6aJZYHZ?=
- =?iso-8859-1?Q?zGugpRd4bA14EN8d/SK/EpjN3Ia2pWQV1qXRUWCxcUUI9qT9GjMX5l/d5g?=
- =?iso-8859-1?Q?im2SGVsRZIl9ZzBsbqWdQl5tJxAfn5yLk0EWMF5qTTrjtzbhFTH40QZcvT?=
- =?iso-8859-1?Q?QBJBCe7kP0NefpQ54n2DkfuinR4E9iCq/zifTxXZJqWCUOf7NLzLpGn5tX?=
- =?iso-8859-1?Q?aHczwKwOgFz3zfjfH4tIEoYsJFxmjlFQigoZ66B0Kp7OlyiK8p4K7wgO6/?=
- =?iso-8859-1?Q?ocAjiOKdksbbkxZIc2K01kdip3pBL3NpcUFu8yZwlSwIKrZQsVow8ByKl4?=
- =?iso-8859-1?Q?SJYoC65nOuqCR8VghrSRw9uIk6feqZfVWsqBibgY/WE43BcI0n4j2NH7Ue?=
- =?iso-8859-1?Q?ZbTb8o6yL/KbenqomcZqAfO/MWIJPlN8YWxdWRa7OiMIQizEK7Wh5r80QZ?=
- =?iso-8859-1?Q?0nJMqFGxPYm5G6N+a28/dPpSgb3mfBzi2G/bAyxITle2CzDrppUGo8P967?=
- =?iso-8859-1?Q?QVI21a5XC9+L35/28twuU1cigeuPJISbceaaGsm2LIb9oUAuZaS+Ee0BEq?=
- =?iso-8859-1?Q?hJ9ij6mz32701AXUkQJdY5jUgKHX6xgUZnGDJaPig/R7p8C8bRU/eZr4ry?=
- =?iso-8859-1?Q?KPEiYnZlV+qOyK3H1GbhxAp+/V7CUr46NZG0D0sBsnhGMHK8KoiZd632KJ?=
- =?iso-8859-1?Q?bQyquGTS6muEkOY/74JmULQ3ALIr1/UsfSto9BzfTNOarimHeOahENG35o?=
- =?iso-8859-1?Q?NDNWKfToqxGQX8qFI0Fkg45md+M/PThkL5A7GhfmWIf7YXb4fecYivzvhj?=
- =?iso-8859-1?Q?SB2GRAYsGXJeQmacyo156ixaaBA5FX+D0Eiehu6mlPz1EspuoVqzhYT4cj?=
- =?iso-8859-1?Q?XeXWknfYW7JHnwFy4Q3wZsqibCRIF4FN9HzZiJJ4+oHMCDcDNB0SwUzlCZ?=
- =?iso-8859-1?Q?hpiIpd4MVJriDW/a4MTYNIiRukMz1yfSV+idh2uNDfK5ppSYhemGB4jpER?=
- =?iso-8859-1?Q?4rB2tLIMyXL52RLHfopPf5KB7HC5Z7IissWlpKJQhm/lRCRmbRTp8hcVh1?=
- =?iso-8859-1?Q?U2BuY8WhvFpSsVfesUCOB9vIbG4oGW0a00XQBlR38DYsySoLIvncgwR6wR?=
- =?iso-8859-1?Q?H9S5wglmXfIALD0/xFuY5MiBuEsGoBgnYCL0D2RToZo+qB84amamcM9h0Z?=
- =?iso-8859-1?Q?ZAqtoG09l2pRX83nJ4EjDuMSqgkbZTv2zMlOwmrFOJ7ZB3kzmUi8ejqdfs?=
- =?iso-8859-1?Q?cLJiJpcbYrIP3MJ/MpBRWVLzsrn8El0eroeM7wVYcTcq16SJ3JBISVfbQH?=
- =?iso-8859-1?Q?nQ6NoYzPNHmScCYmoMI2AAWK743XPcRxNa?=
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?UrUZ5WmSpTFNrt8FUNMMHSgF/yJwoVB43Skx/KeALeD+WYxXIMdLF3bA+L?=
+ =?iso-8859-1?Q?a5F7ZwKRS0lOlpGvSWVqIbyA99ctsSb/kXuRxNcVU5Zy2AN9d9MK6LFiJf?=
+ =?iso-8859-1?Q?VlmzuTzvQjgULsQzCwOmWXUhkXjrSagZrEtuBns9smt70aSAJaMVwZL/gn?=
+ =?iso-8859-1?Q?tfO4/+7fdGQNiv1bBtr79HjZcc4FCSqD+RxYt4l0AYqu2GXwOV0WubKCMy?=
+ =?iso-8859-1?Q?7GaOxbzK8fEyyIaz92olgVgmyf8ntLIIdyamG3MY3MoPAPwpgINrrmnV8r?=
+ =?iso-8859-1?Q?UWU8TG9JBOIUMdog0ZGjJKTOXphQbbP4D73bdVk2MOG29tcPOV8r1JqdDf?=
+ =?iso-8859-1?Q?65zRgWn+G1gBK9Zi8SO+vT3VCzqJzmufKDJ0n2nRkVr7lknFFbVlFtMym1?=
+ =?iso-8859-1?Q?m/v4PiE74HvJxgF66y+20PbOy16ENXkZM/X6t5/6AYtq0/wGZ4mYxlE4Gg?=
+ =?iso-8859-1?Q?mO/tYLEfkVpNRzakN3reqrFAgJ1dhLdNRSpBcVy9/2XMi0s+WHq6sj8HbF?=
+ =?iso-8859-1?Q?7FmtXDoY2SbWxNNLhmpJw/itPTGSKuJeGpPwaVSjyqV4ExFMDHHkDuzM/G?=
+ =?iso-8859-1?Q?aujFrS8ULZ3lgqfEZpksn70qKzFSepEHDfeW13mA/f3D+urs4mnwX+ULlS?=
+ =?iso-8859-1?Q?otli3yzfxEGuKLGLCJ2O4pG3ttf5fn9xEGoX0c1ZATG7Xi4rapavC0aC1Y?=
+ =?iso-8859-1?Q?IrgPR81Q3JtU3WUi5yGmkY1THcmWA/C2oTRvYdmGgd8Yjap4/nesKqmboA?=
+ =?iso-8859-1?Q?RK6LNgHXIvDq07lNzIWDYmsdoN3/slGxDDXPCwdhR690atKb7MvhLQMR6P?=
+ =?iso-8859-1?Q?h1pTTylePFgHAb3S4CmeabvS8yb7JA3HrrcXmHwy/dhMtTJ3bjbaL0H1I3?=
+ =?iso-8859-1?Q?IRHaBuhOG8/tqJgVMLrs1Tb8H8qwtmPxuUWbqi4N/TNH9hwrp9VNzKR34s?=
+ =?iso-8859-1?Q?o7ltFfwPQWpgfiFx8cnJSSEuRVG/3rN50mekMq4QvtgQGQJy+TMAN9SUwn?=
+ =?iso-8859-1?Q?W3KyAbDIk83VxnoY1SYuvhqnkTGEL6zRCeWBoIUaql6sXSVKzY6KXpzJ/Z?=
+ =?iso-8859-1?Q?ng84uhY9wODlz4CK0QWSSvM5ItThBD9PsYiguqdcZtCQu/XNpjfpkoGIRD?=
+ =?iso-8859-1?Q?nFIfYi+wY3QJpaVaFtOuhm8ifdintoS3ngu1Ng7c21egRsQ8RYLdFqVAjH?=
+ =?iso-8859-1?Q?j0sYqQFGWYx1xPnlonDY/mH9xa8smR4hFHoHowlLXgSwApSf/GZ7yrhbKi?=
+ =?iso-8859-1?Q?0ImIQE3iD7HkCuZ5ajOcDXDr52X9KgOwmnFZ9qepslFxdpKlFEW/SnaZ1X?=
+ =?iso-8859-1?Q?IjaR5+ASs0QMFvrvr4czyFsAGpU9M+uNHeOwRWzKwIA47TaXOJPVkXHLff?=
+ =?iso-8859-1?Q?eSm0HPx0SXk7ArxtJvXM54Vnelpjny09Vdn1lVaGM7gK/is86vlg2oZC6i?=
+ =?iso-8859-1?Q?aeJeCCf7SuSKvP69BJBtU5dwhDhWExWwnfiYkcbY39Gasmw4wlLTiA4JQq?=
+ =?iso-8859-1?Q?w8v8Obie7l7ShOOu9NRelJy5nGJDho7IbOMlZpnrNfaBsw3LfPeJelQSPw?=
+ =?iso-8859-1?Q?W3LqWyHWdzqyQRF31eDeseZCCuKAWSiqXpkwWk1O/n8HuGii04alcYbaq4?=
+ =?iso-8859-1?Q?z7nQP5OSTUfY4a+60bciOafMSxpk6CKyVk?=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: variscite.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: AM6PR08MB4376.eurprd08.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3bf54b31-6096-4cb7-9944-08daf7a632d1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jan 2023 09:44:01.5106
+X-MS-Exchange-CrossTenant-Network-Message-Id: d157187e-c560-48e6-db7b-08daf7a73895
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jan 2023 09:51:20.6822
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 399ae6ac-38f4-4ef0-94a8-440b0ad581de
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: E6G1nbb4R1/EThExuwucA1rskLuXVn4k4k9Ov+AMAQjLkGudDIE7FHRtg3+MfRXlWrRN4qJHGSDt56BDcYci9uHoGsY1BXP01PctUCRhBzY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR08MB6360
+X-MS-Exchange-CrossTenant-userprincipalname: 0sckEb6r6e/22m0kNZBjfBeegvq4DYFxa1qFje4XrSbteLdq/GWx5pGJuEuU4zdUzbQ4W4fQ3db7A93FLd87/tKkUR6KbULg3sYQjRQr420=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR08MB9855
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
@@ -131,51 +129,116 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 16, 2023 at 1:11 AM Andrew Lunn <andrew@lunn.ch> wrote:=0A=
-> > IMHO, since the framework allows defining the reset GPIO, it does not s=
-ound=0A=
-> > reasonable to manage it only after checking if the PHY can communicate:=
+On Mon, Jan 16, 2023 at 3:41 AM Lars-Peter Clausen <lars@metafoo.de> wrote:=
 =0A=
-> > if the reset is asserted, the PHY cannot communicate at all.=0A=
-> > This patch just ensures that, if the reset GPIO is defined, it's not as=
-serted=0A=
-> > while checking the communication.=0A=
->=0A=
-> The problem is, you are only solving 1/4 of the problem. What about=0A=
-> the clock the PHY needs? And the regulator, and the linux reset=0A=
-> controller? And what order to do enable these, and how long do you=0A=
-> wait between each one?=0A=
->=0A=
-Interesting point of view: I was thinking about solving one of 4 problems ;=
-)=0A=
-This problem affects all the platforms using the reset GPIO without=0A=
-ensuring that either u-boot or the HW put a pull-up on it.=0A=
-In our test, the problem is reproducible simply setting the reset to 0 from=
+> On 1/15/23 15:55, Andrew Lunn wrote:=0A=
+> >> Specifying the ID as part of the compatible string works for clause 22=
+ PHYs,=0A=
+> >> but for clause 45 PHYs it does not work. The code always wants to read=
+ the=0A=
+> >> ID from the PHY itself. But I do not understand things well enough to =
+tell=0A=
+> >> whether that's a fundamental restriction of C45 or just our implementa=
+tion=0A=
+> >> and the implementation can be changed to fix it.=0A=
+> >>=0A=
+> >> Do you have some thoughts on this?=0A=
+> > Do you have more details about what goes wrong? Which PHY driver is=0A=
+> > it? What compatibles do you put into DT for the PHY?=0A=
+> >=0A=
+> > To some extent, the ID is only used to find the driver. A C45 device=0A=
+> > has a lot of ID register, and all of them are used by phy_bus_match()=
 =0A=
-u-boot and then use the GPIO reset as designed in the MDIO framework.=0A=
-Is this approach=A0reasonable or a comprehensive=A0solution is expected to=
+> > to see if a driver matches. So you need to be careful which ID you=0A=
+> > pick, it needs to match the driver.=0A=
+> >=0A=
+> > It is the driver which decides to use C22 or C45 to talk to the PHY.=0A=
+> > However, we do have:=0A=
+> >=0A=
+> > static int phy_probe(struct device *dev)=0A=
+> > {=0A=
+> > ...=0A=
+> > =A0 =A0 =A0 =A0 =A0else if (phydev->is_c45)=0A=
+> > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0err =3D genphy_c45_pma_read_abilitie=
+s(phydev);=0A=
+> > =A0 =A0 =A0 =A0 =A0else=0A=
+> > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0err =3D genphy_read_abilities(phydev=
+);=0A=
+> >=0A=
+> > so it could be a C45 PHY probed using an ID does not have=0A=
+> > phydev->is_c45 set, and so it looks in the wrong place for the=0A=
+> > capabilities. Make sure you also have the compatible=0A=
+> > "ethernet-phy-ieee802.3-c45" which i think should cause is_c45 to be=0A=
+> > set.=0A=
+> >=0A=
+> > There is no fundamental restriction that i know of here, it probably=0A=
+> > just needs somebody to debug it and find where it goes wrong.=0A=
+> >=0A=
+> > Ah!=0A=
+> >=0A=
+> > int fwnode_mdiobus_register_phy(struct mii_bus *bus,=0A=
+> > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0stru=
+ct fwnode_handle *child, u32 addr)=0A=
+> > {=0A=
+> > ...=0A=
+> > =A0 =A0 =A0 =A0 =A0rc =3D fwnode_property_match_string(child, "compatib=
+le",=0A=
+> > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0 =A0 =A0 =A0"ethernet-phy-ieee802.3-c45");=0A=
+> > =A0 =A0 =A0 =A0 =A0if (rc >=3D 0)=0A=
+> > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0is_c45 =3D true;=0A=
+> >=0A=
+> > =A0 =A0 =A0 =A0 =A0if (is_c45 || fwnode_get_phy_id(child, &phy_id))=0A=
+> > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0phy =3D get_phy_device(bus, addr, is=
+_c45);=0A=
+> > =A0 =A0 =A0 =A0 =A0else=0A=
+> > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0phy =3D phy_device_create(bus, addr,=
+ phy_id, 0, NULL);=0A=
+> >=0A=
+> >=0A=
+> > So compatible "ethernet-phy-ieee802.3-c45" results in is_c45 being set=
 =0A=
-cover all additional HW actors (clocks, regulators, ...) ?>=0A=
-> And why are you solving this purely for Ethernet PHYs when the same=0A=
-> problem probably affects other sorts of devices which have reset=0A=
-> GPIOs, regulators and clocks? It looks like MMC/SDIO devices have a=0A=
-> similar problem.=0A=
->=0A=
-> https://lwn.net/Articles/867740/=0A=
->=0A=
-> As i said, i've not been following this work. Has it got anywhere? Can=0A=
-> ethernet PHYs use it?=0A=
->=0A=
-> =A0 =A0 =A0 =A0 =A0Andrew=0A=
-I'm not that familiar with the article's implications, but it sounds like a=
+> > true. The if (is_c45 || is then true, so it does not need to call=0A=
+> > fwnode_get_phy_id(child, &phy_id) so ignores whatever ID is in DT and=
 =0A=
-partial redesign of the framework is needed.=0A=
-I'm not sure this is the real point.=0A=
-Let's refer to I2C/SPI/USB busses, the sequence is something like=0A=
-- probe and setup the bus=0A=
-- once the bus is up & running, start probing the connected slaves=0A=
-Apparently, in the MDIO framework there's an excessive coupling=0A=
-between the MDIO bus and the PHYs.=0A=
-I can't really understand why the MDIO bus must check the PHY presence.=0A=
-Other busses try the communication only while probing the slaves,=0A=
-never before.=
+> > asks the PHY.=0A=
+> >=0A=
+> > Try this, totally untested:=0A=
+> >=0A=
+> > diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_m=
+dio.c=0A=
+> > index b782c35c4ac1..13be23f8ac97 100644=0A=
+> > --- a/drivers/net/mdio/fwnode_mdio.c=0A=
+> > +++ b/drivers/net/mdio/fwnode_mdio.c=0A=
+> > @@ -134,10 +134,10 @@ int fwnode_mdiobus_register_phy(struct mii_bus *b=
+us,=0A=
+> > =A0 =A0 =A0 =A0 =A0if (rc >=3D 0)=0A=
+> > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0is_c45 =3D true;=0A=
+> > =A0=0A=
+> > - =A0 =A0 =A0 if (is_c45 || fwnode_get_phy_id(child, &phy_id))=0A=
+> > + =A0 =A0 =A0 if (fwnode_get_phy_id (child, &phy_id))=0A=
+> > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0phy =3D get_phy_device(bus, addr, is=
+_c45);=0A=
+> > =A0 =A0 =A0 =A0 =A0else=0A=
+> > - =A0 =A0 =A0 =A0 =A0 =A0 =A0 phy =3D phy_device_create(bus, addr, phy_=
+id, 0, NULL);=0A=
+> > + =A0 =A0 =A0 =A0 =A0 =A0 =A0 phy =3D phy_device_create(bus, addr, phy_=
+id, is_c45, NULL);=0A=
+> > =A0 =A0 =A0 =A0 =A0if (IS_ERR(phy)) {=0A=
+> > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0rc =3D PTR_ERR(phy);=0A=
+> > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0goto clean_mii_ts;=0A=
+> >=0A=
+> I think part of the problem is that for C45 there are a few other fields=
+=0A=
+> that get populated by the ID detection, such as devices_in_package and=0A=
+> mmds_present. Is this something we can do after running the PHY drivers=
+=0A=
+> probe function? Or is it too late at that point?=0A=
+>=0A=
+Unfortunately the above doesn't change the condition: this problem=0A=
+is not C45 specific.=0A=
+The call fwnode_get_phy_id just parses the device tree and always=0A=
+passes.=0A=
+This is a sample device tree=0A=
+https://github.com/varigit/linux-imx/blob/5.15-2.0.x-imx_var01/arch/arm64/b=
+oot/dts/freescale/imx8qm-var-spear.dtsi#L168-L219=
