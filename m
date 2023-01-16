@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 172B266D35E
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 00:53:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4831366D366
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 00:53:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235323AbjAPXxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 18:53:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45360 "EHLO
+        id S235369AbjAPXx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 18:53:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235082AbjAPXwy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 18:52:54 -0500
+        with ESMTP id S235216AbjAPXxQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 18:53:16 -0500
 Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2ECC22DDF;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1829D22DE8;
         Mon, 16 Jan 2023 15:52:52 -0800 (PST)
 Received: from mwalle01.sab.local (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id C5F951A3D;
-        Tue, 17 Jan 2023 00:52:50 +0100 (CET)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 377561AA3;
+        Tue, 17 Jan 2023 00:52:51 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
         t=1673913171;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=COkswAySxVV9ZpIM0zsphdnLDffX8p/RY2QGfsrBvlk=;
-        b=g9T38H6nBHcRXorUkzgRp7Ym/eOnwVbkNjQKYHN7wMMLMjyYNraA8JVO3Dok8DrIwzEW0k
-        gIdBp/1p682iBH/8jsHLciJK2nX7mUlQ9YozETBI2U1C0lKIp5EbBU6fNCyCstv13Lmv8G
-        K/ITd7str2gQaUTnXyfx/ybXX7J2ATJGeCoZMZbnXvPbDJH/591cDVM+oIUbBx3OEw+F5K
-        nLESQtbg40RSglrU3RJgr5NHPahBynQWKOUZm1QX3slza6/jq+H7MqIVxkiUOpeJFyMF32
-        ep+Lo+Mi2wgmWo9EmKsErAKmWxP7vUkSs9swoucoS6NZg1c/ZmjFiSm8mP3UdQ==
+        bh=VAC3lvYePixzcXebo4E3nrWp2H/ZNlz8TyV8NSReGQs=;
+        b=GX7X6H8lc5xEN2+bG0vGPNrbHpUIAQOgt5cogS4U1N7qThjjN2kBzzYQp/8KzT84ti0igo
+        xSB7LtanZuOWOoFLF//R6xu0DEVnKAgh2gmiPE8/wZoeTLTCRdhRpTvFILbtntC9hLuBLj
+        CnLtT1FJ5lt9YoGY5oDs0zZjipTZSuzptW13uvMVmynj6dYqNfnd42XKFSNgMGotGTUKE8
+        BXzciw/3UQuIntlC/9InYkjZ7/KD6wG+fCP+B75yawvNq2My4riw29+tbN+fKgvqe1mdeQ
+        IY10rHas3nLp7tewG0aHGrt5ZwAbQkMfxwLieYn3rr2+MYMWJ09/jxb5QTziBA==
 From:   Michael Walle <michael@walle.cc>
-Date:   Tue, 17 Jan 2023 00:52:26 +0100
-Subject: [PATCH net-next 11/12] net: dsa: sja1105: Separate C22 and C45
- transactions for T1 MDIO bus
+Date:   Tue, 17 Jan 2023 00:52:27 +0100
+Subject: [PATCH net-next 12/12] net: ethernet: renesas: rswitch: C45 only transactions
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230116-net-next-c45-seperation-part-3-v1-11-0c53afa56aad@walle.cc>
+Message-Id: <20230116-net-next-c45-seperation-part-3-v1-12-0c53afa56aad@walle.cc>
 References: <20230116-net-next-c45-seperation-part-3-v1-0-0c53afa56aad@walle.cc>
 In-Reply-To: <20230116-net-next-c45-seperation-part-3-v1-0-0c53afa56aad@walle.cc>
 To:     Sean Wang <sean.wang@mediatek.com>,
@@ -78,155 +77,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
+The rswitch MDIO bus driver only supports C45 transfers. Update the
+function names to make this clear, pass the mmd as a parameter, and
+register the accessors to the _c45 ops of the bus driver structure.
 
-The T1 MDIO bus driver can perform both C22 and C45 transfers. Create
-separate functions for each and register the C45 versions using the
-new API calls where appropriate.
-
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/net/dsa/sja1105/sja1105_mdio.c | 87 +++++++++++++++++-----------------
- 1 file changed, 43 insertions(+), 44 deletions(-)
+ drivers/net/ethernet/renesas/rswitch.c | 28 ++++++----------------------
+ 1 file changed, 6 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_mdio.c b/drivers/net/dsa/sja1105/sja1105_mdio.c
-index 8f1fcaf8e1d9..2fcb601cb4eb 100644
---- a/drivers/net/dsa/sja1105/sja1105_mdio.c
-+++ b/drivers/net/dsa/sja1105/sja1105_mdio.c
-@@ -149,7 +149,7 @@ static u64 sja1105_base_t1_encode_addr(struct sja1105_private *priv,
- 	return regs->mdio_100base_t1 | (phy << 7) | (op << 5) | (xad << 0);
+diff --git a/drivers/net/ethernet/renesas/rswitch.c b/drivers/net/ethernet/renesas/rswitch.c
+index 6441892636db..885fdb077b62 100644
+--- a/drivers/net/ethernet/renesas/rswitch.c
++++ b/drivers/net/ethernet/renesas/rswitch.c
+@@ -1024,34 +1024,18 @@ static int rswitch_etha_set_access(struct rswitch_etha *etha, bool read,
+ 	return ret;
  }
  
--static int sja1105_base_t1_mdio_read(struct mii_bus *bus, int phy, int reg)
-+static int sja1105_base_t1_mdio_read_c22(struct mii_bus *bus, int phy, int reg)
+-static int rswitch_etha_mii_read(struct mii_bus *bus, int addr, int regnum)
++static int rswitch_etha_mii_read_c45(struct mii_bus *bus, int addr, int devad,
++				     int regad)
  {
- 	struct sja1105_mdio_private *mdio_priv = bus->priv;
- 	struct sja1105_private *priv = mdio_priv->priv;
-@@ -157,30 +157,31 @@ static int sja1105_base_t1_mdio_read(struct mii_bus *bus, int phy, int reg)
- 	u32 tmp;
- 	int rc;
- 
--	if (reg & MII_ADDR_C45) {
--		u16 mmd = (reg >> MII_DEVADDR_C45_SHIFT) & 0x1f;
+ 	struct rswitch_etha *etha = bus->priv;
+-	int mode, devad, regad;
 -
--		addr = sja1105_base_t1_encode_addr(priv, phy, SJA1105_C45_ADDR,
--						   mmd);
-+	addr = sja1105_base_t1_encode_addr(priv, phy, SJA1105_C22, reg & 0x1f);
+-	mode = regnum & MII_ADDR_C45;
+-	devad = (regnum >> MII_DEVADDR_C45_SHIFT) & 0x1f;
+-	regad = regnum & MII_REGADDR_C45_MASK;
+-
+-	/* Not support Clause 22 access method */
+-	if (!mode)
+-		return -EOPNOTSUPP;
  
--		tmp = reg & MII_REGADDR_C45_MASK;
-+	rc = sja1105_xfer_u32(priv, SPI_READ, addr, &tmp, NULL);
-+	if (rc < 0)
-+		return rc;
- 
--		rc = sja1105_xfer_u32(priv, SPI_WRITE, addr, &tmp, NULL);
--		if (rc < 0)
--			return rc;
-+	return tmp & 0xffff;
-+}
- 
--		addr = sja1105_base_t1_encode_addr(priv, phy, SJA1105_C45_DATA,
--						   mmd);
-+static int sja1105_base_t1_mdio_read_c45(struct mii_bus *bus, int phy,
-+					 int mmd, int reg)
-+{
-+	struct sja1105_mdio_private *mdio_priv = bus->priv;
-+	struct sja1105_private *priv = mdio_priv->priv;
-+	u64 addr;
-+	u32 tmp;
-+	int rc;
- 
--		rc = sja1105_xfer_u32(priv, SPI_READ, addr, &tmp, NULL);
--		if (rc < 0)
--			return rc;
-+	addr = sja1105_base_t1_encode_addr(priv, phy, SJA1105_C45_ADDR, mmd);
- 
--		return tmp & 0xffff;
--	}
-+	rc = sja1105_xfer_u32(priv, SPI_WRITE, addr, &reg, NULL);
-+	if (rc < 0)
-+		return rc;
- 
--	/* Clause 22 read */
--	addr = sja1105_base_t1_encode_addr(priv, phy, SJA1105_C22, reg & 0x1f);
-+	addr = sja1105_base_t1_encode_addr(priv, phy, SJA1105_C45_DATA, mmd);
- 
- 	rc = sja1105_xfer_u32(priv, SPI_READ, addr, &tmp, NULL);
- 	if (rc < 0)
-@@ -189,41 +190,37 @@ static int sja1105_base_t1_mdio_read(struct mii_bus *bus, int phy, int reg)
- 	return tmp & 0xffff;
+ 	return rswitch_etha_set_access(etha, true, addr, devad, regad, 0);
  }
  
--static int sja1105_base_t1_mdio_write(struct mii_bus *bus, int phy, int reg,
--				      u16 val)
-+static int sja1105_base_t1_mdio_write_c22(struct mii_bus *bus, int phy, int reg,
-+					  u16 val)
+-static int rswitch_etha_mii_write(struct mii_bus *bus, int addr, int regnum, u16 val)
++static int rswitch_etha_mii_write_c45(struct mii_bus *bus, int addr, int devad,
++				      int regad, u16 val)
  {
- 	struct sja1105_mdio_private *mdio_priv = bus->priv;
- 	struct sja1105_private *priv = mdio_priv->priv;
- 	u64 addr;
- 	u32 tmp;
--	int rc;
+ 	struct rswitch_etha *etha = bus->priv;
+-	int mode, devad, regad;
 -
--	if (reg & MII_ADDR_C45) {
--		u16 mmd = (reg >> MII_DEVADDR_C45_SHIFT) & 0x1f;
+-	mode = regnum & MII_ADDR_C45;
+-	devad = (regnum >> MII_DEVADDR_C45_SHIFT) & 0x1f;
+-	regad = regnum & MII_REGADDR_C45_MASK;
 -
--		addr = sja1105_base_t1_encode_addr(priv, phy, SJA1105_C45_ADDR,
--						   mmd);
+-	/* Not support Clause 22 access method */
+-	if (!mode)
+-		return -EOPNOTSUPP;
  
--		tmp = reg & MII_REGADDR_C45_MASK;
-+	addr = sja1105_base_t1_encode_addr(priv, phy, SJA1105_C22, reg & 0x1f);
+ 	return rswitch_etha_set_access(etha, false, addr, devad, regad, val);
+ }
+@@ -1142,8 +1126,8 @@ static int rswitch_mii_register(struct rswitch_device *rdev)
+ 	mii_bus->name = "rswitch_mii";
+ 	sprintf(mii_bus->id, "etha%d", rdev->etha->index);
+ 	mii_bus->priv = rdev->etha;
+-	mii_bus->read = rswitch_etha_mii_read;
+-	mii_bus->write = rswitch_etha_mii_write;
++	mii_bus->read_c45 = rswitch_etha_mii_read_c45;
++	mii_bus->write_c45 = rswitch_etha_mii_write_c45;
+ 	mii_bus->parent = &rdev->priv->pdev->dev;
  
--		rc = sja1105_xfer_u32(priv, SPI_WRITE, addr, &tmp, NULL);
--		if (rc < 0)
--			return rc;
-+	tmp = val & 0xffff;
- 
--		addr = sja1105_base_t1_encode_addr(priv, phy, SJA1105_C45_DATA,
--						   mmd);
-+	return sja1105_xfer_u32(priv, SPI_WRITE, addr, &tmp, NULL);
-+}
- 
--		tmp = val & 0xffff;
-+static int sja1105_base_t1_mdio_write_c45(struct mii_bus *bus, int phy,
-+					  int mmd, int reg, u16 val)
-+{
-+	struct sja1105_mdio_private *mdio_priv = bus->priv;
-+	struct sja1105_private *priv = mdio_priv->priv;
-+	u64 addr;
-+	u32 tmp;
-+	int rc;
- 
--		rc = sja1105_xfer_u32(priv, SPI_WRITE, addr, &tmp, NULL);
--		if (rc < 0)
--			return rc;
-+	addr = sja1105_base_t1_encode_addr(priv, phy, SJA1105_C45_ADDR, mmd);
- 
--		return 0;
--	}
-+	rc = sja1105_xfer_u32(priv, SPI_WRITE, addr, &reg, NULL);
-+	if (rc < 0)
-+		return rc;
- 
--	/* Clause 22 write */
--	addr = sja1105_base_t1_encode_addr(priv, phy, SJA1105_C22, reg & 0x1f);
-+	addr = sja1105_base_t1_encode_addr(priv, phy, SJA1105_C45_DATA, mmd);
- 
- 	tmp = val & 0xffff;
- 
-@@ -342,8 +339,10 @@ static int sja1105_mdiobus_base_t1_register(struct sja1105_private *priv,
- 	bus->name = "SJA1110 100base-T1 MDIO bus";
- 	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-base-t1",
- 		 dev_name(priv->ds->dev));
--	bus->read = sja1105_base_t1_mdio_read;
--	bus->write = sja1105_base_t1_mdio_write;
-+	bus->read = sja1105_base_t1_mdio_read_c22;
-+	bus->write = sja1105_base_t1_mdio_write_c22;
-+	bus->read_c45 = sja1105_base_t1_mdio_read_c45;
-+	bus->write_c45 = sja1105_base_t1_mdio_write_c45;
- 	bus->parent = priv->ds->dev;
- 	mdio_priv = bus->priv;
- 	mdio_priv->priv = priv;
+ 	mdio_np = rswitch_get_mdio_node(rdev);
 
 -- 
 2.30.2
