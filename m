@@ -2,170 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B88EF66CEC3
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 19:25:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 155BE66CEC8
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 19:26:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234193AbjAPSZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 13:25:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39242 "EHLO
+        id S233973AbjAPS0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 13:26:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232033AbjAPSZB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 13:25:01 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2088.outbound.protection.outlook.com [40.107.244.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C382B623;
-        Mon, 16 Jan 2023 10:12:10 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J/UFsE4V5qEKX9nrM3Fpp9lsN2qLBmN8tD/NG9PeD4cGYzEXv1QZSuYdVFE//4FHg1Ma6T493XFEtRpkTM4FqlWZbGPCrc/cFfLLwxrTpsm8lsqsvFQtLS4yyyafn+voFdFFcrG0TTMojV4pntd025SSnrLr7POBE4YrDa1OjhuZHbBa3+gGFn0+f38Lr8xkjk2JgNY0muxgYGNi6OVVVLgtHxwJ+rwUlfqWt4R5GL48KJ7Z7XHI5FQ1n1M8ni9pLs2w1p/GiIotRkuH9ZGvQWeop4vV5shMhfTnxwdP2AiB4x4gZ/nurtq0Lidgut0ef/41TY9EMaV9O3hnEfLh6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JukM/nUwbNRHihOph/niRlYy7rWrM+EGivCRaFHD5aY=;
- b=Y12J4+7KNZig5wXRTLQsekR1C7a7ZqAgeBNtWEVpqcVctVkpxoZtSjPW+ecBi53DohA0RBb+RCTb2917d19S8pETmpUF7v4H2J1r1XOWprT5Y7jCqvc4Ckv2km4Nhw2b+zEV2d3giSiExeLOv2/yNjnNJFCSncIWHBfaYExdt5QvVTSLzMM2LFFo1zXXXi7PYLRZGHhnfCWKXdr56hGiQSBtmXVgUkL1Ou2o2CMs+z0OWqkdJqGyQ7d+6x9Bm36tIlyZCFU+iTTGha23narqdjPCoh22MA6IOXGnajumQeBWlgun5uPNBLx2GAHUQco0Mh8AxDgA7HKoTta/Ipww0A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JukM/nUwbNRHihOph/niRlYy7rWrM+EGivCRaFHD5aY=;
- b=lLUfFeJptDqLiyc5ppxVzU+amLhp9JlBmfd7Z3f4RIo1vZ33EKKlCx5fcG9Q9+hfk+SaZynmxNmQHCd5VKgtbCRDpOBKtWz4wBXZBaCDgZyO8m5k3ibIA/Z0PTrnifhDMtnvf5XL4qTK5y2+PnLnEm7Adib2B206h4Kq6ZL7Tm3xSp6oOscoaoU0aHhwTls5zwwjRUDRyrZKSdLpODmcW6Vm+14gICppJsHMxS1ioASUFhtRq/+Xz7B1P2fRFhNL1ZGkohOgn3hBTBhb7MwDPvUMHKTRNxKTDgI85ReVJtTTsVHYYKriBONbyBFKsNyRvwUjenU9O57q3oq0NGAVyQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM6PR12MB4926.namprd12.prod.outlook.com (2603:10b6:5:1bb::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Mon, 16 Jan
- 2023 18:12:08 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a%9]) with mapi id 15.20.6002.013; Mon, 16 Jan 2023
- 18:12:08 +0000
-Date:   Mon, 16 Jan 2023 14:12:07 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        ath10k@lists.infradead.org, ath11k@lists.infradead.org,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
-        kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-tegra@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, nouveau@lists.freedesktop.org,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH 1/8] iommu: Add a gfp parameter to iommu_map()
-Message-ID: <Y8WTd/37G6lWA8c5@nvidia.com>
-References: <1-v1-6e8b3997c46d+89e-iommu_map_gfp_jgg@nvidia.com>
- <4fd1b194-29ef-621d-4059-a8336058f217@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4fd1b194-29ef-621d-4059-a8336058f217@arm.com>
-X-ClientProxiedBy: MN2PR03CA0015.namprd03.prod.outlook.com
- (2603:10b6:208:23a::20) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+        with ESMTP id S233024AbjAPS0G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 13:26:06 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC632366A
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 10:13:03 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id p24so31059421plw.11
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 10:13:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore.com; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=OOLidPG4k2t/KJPWtxlpT1eReQbWaTq9bHpN0zJzCfQ=;
+        b=de7c+ZhDa5PmljPp9CFyPNry3W61iU/KuSGDaOdmt0AoFt8MuTXXQxV4c6GwNckV4I
+         wm8S93HX8J2BY0+bCtGa5mVBoUKblbBopjkkABA5Y7RVLFLQJ5u/l6WcEujRoLMiJgbg
+         lYckOX/ZFxNQZu66kb62jMmNGk2aoeCJCLwsr11jBeTdEc0ereK6ThE1jWu621yi/VN0
+         dk7TsToqL9KoG5uA5tZrgkYzua5I+btAA3TrnCTMd1UjjykqbB2SeaFSkwyywJbPh0h/
+         lCM4lA2grQ1YS0YZyiB+sjo7cEfFuy/uFAffKhZlTFYnPu9duaLKzSQfsSkDq4MQj308
+         Uhiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=OOLidPG4k2t/KJPWtxlpT1eReQbWaTq9bHpN0zJzCfQ=;
+        b=wfGWj5oMdstXUN1ydMkKp7tsoCwRXRXTY8p4Lm/qRXt2rOR6YHWo0vzlnLE5UtDzK3
+         A32cyrA4MjFiIBx6uVCej4aPVN+iUmO+lQnNawY5evWE/4nWBGTiSWmIBB+iMIT9C3Ii
+         1J0LeMrTrXin04eSz5Z/F3Jun0QCMFeRCSfGXRT16Adb89hTyd5lA3kRcI10XQlUCz5n
+         DdmtWt504AaixKYDFcepMgbx1IZtf9dayBtZdk8jqI75eX7o/sDPKgPwZ3yTMwwjPK+I
+         sAdxVb8KF0rVZ7p7j1JcFuGR184LEcEEAX6KKdwrh/MWCbgvxvOQEpIAyYuRNF8jrDA2
+         YUaA==
+X-Gm-Message-State: AFqh2krHAyZdkVRMnBFCryZm6yzzXP6vfNHrWrRZkGQL8ec+ivoX9thL
+        isg6TUh2HYepcnLlVTQmGwvedcECoGSDxGcK7FSm
+X-Google-Smtp-Source: AMrXdXuaNOK0uua7VUQ1yc62bUVgcX+r2p4LzJ4PUOz2xTWSjvwukhd3fj1vRIYtBeyNqaQA/XbhaRbPenJOGFgNgWU=
+X-Received: by 2002:a17:90a:c784:b0:227:202b:8eaa with SMTP id
+ gn4-20020a17090ac78400b00227202b8eaamr13278pjb.147.1673892782223; Mon, 16 Jan
+ 2023 10:13:02 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM6PR12MB4926:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1ae353bf-8a49-4427-7886-08daf7ed2e65
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LmqdVF6nmcepiFbzShVZrJtLnSMQtb5ZdL37qrVJuCEgC325K55hyxaaBgAeh1t0EuwOn2PZTw0fRVHCfjcGLtJKimxxGoDbIe6mAfVs2zTkRFuuOg0c3dIhgTem3blhJyHtVD3q4purpoMAkOlxNEDU+4KWrT2ZRgTBy7cCkZ9g5lLw0Miff9dah0hYz12zkDGOpQ8WfktTBTBzdIGX+Any+qP6d9u9ekNKJEsfZj92+BXKzqpr4PyfuE54C4K3z86b7KD695lmN+by7cCSVdVlnI/gyFiGDkI2LGcMGN/6aMAFivTpaFCzCAHpVNYS4XPn7m63dTNa7vqz5jC+dng5znQjMQ0N2E4+V5JVhIAKJWZAFKLFDD0j+hqXOa8N4DL1xrIFbhPBSf+fZkk6ErELg263Jrt2PHX9if7D0n8j8pw2mDhlcOhLd36lf+2TdsV5NiFBva1kPCfxSCyqCaS4NW/znjJgcT+uLe0FYupZe0EVCkxPdugrzZOkGVEj4UzhqM6AwMyeips9jtXF3sBdOAMWqhve+TQeIqZk+qyHd4hRWAv0AXxOh0u9XVSODNHMp15HVVmTPjS/DqTCtSV6MjE2KB4plAWjkUsgDLyyQA4UKeKAAMr01Um8NW1kUs2wFu/mMtGEc6eHsJKvvg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(366004)(136003)(376002)(39860400002)(396003)(451199015)(83380400001)(38100700002)(86362001)(5660300002)(4326008)(2906002)(7416002)(6916009)(8936002)(8676002)(66946007)(66476007)(66556008)(41300700001)(2616005)(186003)(6506007)(26005)(6512007)(316002)(54906003)(478600001)(6486002)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iqLAhGaMK9tC+iiHkUjnDk7PDlkLuXKmkZmL4X7DdETvVwXCClv3dh9CD5IO?=
- =?us-ascii?Q?OAdmaSHpwHYUh0LqFdcZH0zowcypIlCdqTrsNNZMT96amSHGPJIYo5xPNRN4?=
- =?us-ascii?Q?pB5QFs6HiioMgaUjam5Jz4jMHxHoss0voiYpOTM764ifpZ84u06IJv7O9xCs?=
- =?us-ascii?Q?zn9mWOn9wdBmZWKi+CPZig8OGUaEf8b2aWbU12AL8cmdhKyl1Tu3m3MMyhu6?=
- =?us-ascii?Q?nl8W1qlu7VS6SXjO2+ouAewOW8VoLVfYCjnWysa16xezT8v094Ei0iP/pd2L?=
- =?us-ascii?Q?u/x878vo3gXupx2g0ne2hm73bHqMXDswuyuj3+6khPiIV63faNnY7o+QmW2c?=
- =?us-ascii?Q?ceRHUZaloaBGVxBGmTif6jj8zbevnBKIqPxyJWR6F/LwjdHd4MVeskByB8dY?=
- =?us-ascii?Q?u3HLzdWggMZtyKgMxZksTekSbTSv9ZwsGl+PDOlsby3lvHT8UQMYKnCObafs?=
- =?us-ascii?Q?kG7ZqYzCBLZzHK/003WYjhheXBMd0KVec2OVA7geCliPO4IjOONDhjsl/h55?=
- =?us-ascii?Q?UmBRczwl1vxBWtZb2AwR6AnCqfuI708NQFDoQyDeu5d0P1iVEMCTCB7xojTT?=
- =?us-ascii?Q?raRqbsx2fvSz2woUHEHQxMGskA4P1OeS5kC7QI1DI2qiyJxQmkAlgPF2qXGj?=
- =?us-ascii?Q?gAA7YWm3nPO3j/M6Wip/8Vyscy9NKq8WvnpDSnS5HQR6E3yonGrcEmZqvHJW?=
- =?us-ascii?Q?1MDtfnUmzQQ6tkvYPZYkNntQ4pXz7yr0feHriDuu3oe1Hv7D4Mu1xwycdAkd?=
- =?us-ascii?Q?IWvHBMntrbpKSZr/5L8Z14Trfau8Pv3twD0hshgTGmTs7jKRCxiGImkjujma?=
- =?us-ascii?Q?ZaXAHmcOtUeudgUTWkbY99n8k3qQJkKkFZi6s5a54t1Xb9TaPEiXbFpsz1Xe?=
- =?us-ascii?Q?iieKK2X3CatUTcllRyGScR+ZI4HlTSZQkxOMpHTTezSrSq5DozxmeHApoQjp?=
- =?us-ascii?Q?qtTl6P+u5iPvslVGtzY4jnjydvVC+Jdelcj/PdE0l8tJcwg3Ta+kY2FoitrJ?=
- =?us-ascii?Q?DFc3HfUaQwmoxr9elXLHpLlMyomu2WzcyBuOJdWkfVF4o3scP5dwPywqt65+?=
- =?us-ascii?Q?X98pH36r6lOrOxdOgu0nnT42YZfb7GY9+VPByVUMmqkBuraljtzBpLG3gKw9?=
- =?us-ascii?Q?XmelyLXaTD6j6vDX3juV8dPW9sknkm8XYbCA+VsJLG1jgAKsRjQ/E2uSALbw?=
- =?us-ascii?Q?6NMStnh2DJUVYOb004rlbeRhsLRmxyP/YlZPVnXZ0CazxNUjJniUkpl3ppv2?=
- =?us-ascii?Q?ycxOZw8ce+O6Zolyebv6OtadcG1tyfmsOeCJq9u3FFC/KcOkvHvLTFJQmh0T?=
- =?us-ascii?Q?nDrIgLqhZxaebgzsIyz79fxuWGfzg5cz1lRfJQLFFAZsbScijd7AL1/3CEbI?=
- =?us-ascii?Q?OZfkLHXbwDYoq+i/ISmZLiwZkaOp9i7Rg6c87wGgInyeIhoncTGnX0iFaXMR?=
- =?us-ascii?Q?T1OvHR8rBeIcCrvjtSQzH5QzVYvB/BfDOTE+1Cvnm6TzVfCn+YqicLfodwVL?=
- =?us-ascii?Q?YKZJiuXxQ4Y4PGN7jDpWCrLry4zDi32WkF9JWBX72aRs99Aemolr2W65lSFV?=
- =?us-ascii?Q?lLH7gpbO42lZbGwhxobDZrm93gHOuayDu0lh5hnC?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1ae353bf-8a49-4427-7886-08daf7ed2e65
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jan 2023 18:12:08.6557
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bFw+JuKwM3CCPS5ceNOeGkRx0q3WgfvLvvzHQWweGpEiQdpepnDQCDP7V2Q/rULz
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4926
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+References: <cover.1673666803.git.lucien.xin@gmail.com> <d19e0bd55ea5477d94567c00735b78d8da6a38cb.1673666803.git.lucien.xin@gmail.com>
+ <CAHC9VhRXd+RkHSRLUt=0HFm42xPKGsSdSkxA6EHwipDukZH_mA@mail.gmail.com>
+ <CADvbK_e_V_scDpHiGw+Qqmarw8huYYES2j8Z36KYkgT2opED3w@mail.gmail.com>
+ <CAHC9VhQeaOeX-5SENhpScKN9kF1rAKoZX23KOUqQ5=uz6v92iA@mail.gmail.com> <CADvbK_cR5paEunENmWd62XfXtMSf+MHhhc-S1z_gLWp_dUx=8w@mail.gmail.com>
+In-Reply-To: <CADvbK_cR5paEunENmWd62XfXtMSf+MHhhc-S1z_gLWp_dUx=8w@mail.gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Mon, 16 Jan 2023 13:12:50 -0500
+Message-ID: <CAHC9VhSk8pYtOJHCZ1uNvv1SJiazWkJVd1BCfyiLCXPMPKe_Pg@mail.gmail.com>
+Subject: Re: [PATCH net-next 06/10] cipso_ipv4: use iph_set_totlen in skbuff_setattr
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Aaron Conole <aconole@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 06, 2023 at 05:15:28PM +0000, Robin Murphy wrote:
+On Mon, Jan 16, 2023 at 12:37 PM Xin Long <lucien.xin@gmail.com> wrote:
+> On Mon, Jan 16, 2023 at 11:46 AM Paul Moore <paul@paul-moore.com> wrote:
+> > On Sat, Jan 14, 2023 at 12:54 PM Xin Long <lucien.xin@gmail.com> wrote:
+> > > On Sat, Jan 14, 2023 at 10:39 AM Paul Moore <paul@paul-moore.com> wrote:
+> > > > On Fri, Jan 13, 2023 at 10:31 PM Xin Long <lucien.xin@gmail.com> wrote:
+> > > > >
+> > > > > It may process IPv4 TCP GSO packets in cipso_v4_skbuff_setattr(), so
+> > > > > the iph->tot_len update should use iph_set_totlen().
+> > > > >
+> > > > > Note that for these non GSO packets, the new iph tot_len with extra
+> > > > > iph option len added may become greater than 65535, the old process
+> > > > > will cast it and set iph->tot_len to it, which is a bug. In theory,
+> > > > > iph options shouldn't be added for these big packets in here, a fix
+> > > > > may be needed here in the future. For now this patch is only to set
+> > > > > iph->tot_len to 0 when it happens.
+> > > >
+> > > > I'm not entirely clear on the paragraph above, but we do need to be
+> > > > able to set/modify the IP options in cipso_v4_skbuff_setattr() in
+> > > > order to support CIPSO labeling.  I'm open to better and/or
+> > > > alternative solutions compared to what we are doing now, but I can't
+> > > > support a change that is a bug waiting to bite us.  My apologies if
+> > > > I'm interpreting your comments incorrectly and that isn't the case
+> > > > here.
+> > > setting the IP options may cause the packet size to grow (both iph->tot_len
+> > > and skb->len), for example:
+> > >
+> > > before setting it, iph->tot_len=65535,
+> > > after setting it, iph->tot_len=65535 + 14 (assume the IP option len is 14)
+> > > however, tot_len is 16 bit, and can't be set to "65535 + 14".
+> > >
+> > > Hope the above makes it clearer.
+> >
+> > Thanks, it does.
+> >
+> > > This problem exists with or without this patch. Not sure how it should
+> > > be fixed in cipso_v4 ...
+> > >
+> > > Not sure if we can skip the big packet, or segment/fragment the big packet
+> > > in cipso_v4_skbuff_setattr().
+> >
+> > We can't skip the CIPSO labeling as that would be the network packet
+> > equivalent of not assigning a owner/group/mode to a file on the
+> > filesystem, which is a Very Bad Thing :)
+> >
+> > I spent a little bit of time this morning looking at the problem and I
+> > think the right approach is two-fold: first introduce a simple check
+> > in cipso_v4_skbuff_setattr() which returns -E2BIG if the packet length
+> > grows beyond 65535.  It's rather crude, but it's a tiny patch and
+> > should at least ensure that the upper layers (NetLabel and SELinux)
+> > don't send the packet with a bogus length field; it will result in
+> > packet drops, but honestly that seems preferable to a mangled packet
+> > which will likely be dropped at some point in the network anyway.
+> >
+> > diff --git a/net/ipv4/cipso_ipv4.c b/net/ipv4/cipso_ipv4.c
+> > index 6cd3b6c559f0..f19c9beda745 100644
+> > --- a/net/ipv4/cipso_ipv4.c
+> > +++ b/net/ipv4/cipso_ipv4.c
+> > @@ -2183,8 +2183,10 @@ int cipso_v4_skbuff_setattr(struct sk_buff *skb,
+> >         * that the security label is applied to the packet - we do the same
+> >         * thing when using the socket options and it hasn't caused a problem,
+> >         * if we need to we can always revisit this choice later */
+> > -
+> >        len_delta = opt_len - opt->optlen;
+> > +       if ((skb->len + len_delta) > 65535)
+> > +               return -E2BIG;
+> > +
+>
+> Right, looks crude. :-)
 
-> However, echoing the recent activity over on the DMA API side of things, I
-> think it's still worth proactively constraining the set of permissible
-> flags, lest we end up with more weird problems if stuff that doesn't really
-> make sense, like GFP_COMP or zone flags, manages to leak through (that may
-> have been part of the reason for having the current wrappers rather than a
-> bare gfp argument in the first place, I forget now).
+Yes, but what else can we do?  There is fragmentation, but that is
+rather ugly and we would still need a solution for when the don't
+fragment bit is set.  I'm open to suggestions.
 
-I did it like this:
+> Note that for BIG TCP packets skb->len is bigger than 65535.
+> (I assume CIPSO labeling will drop BIG TCP packets.)
 
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2368,6 +2368,11 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 
- 	might_sleep_if(gfpflags_allow_blocking(gfp));
- 
-+	/* Discourage passing strange GFP flags */
-+	if (WARN_ON_ONCE(gfp & (__GFP_COMP | __GFP_DMA | __GFP_DMA32 |
-+				__GFP_HIGHMEM)))
-+		return -EINVAL;
-+
- 	ret = __iommu_map(domain, iova, paddr, size, prot, gfp);
- 	if (ret == 0 && ops->iotlb_sync_map)
- 		ops->iotlb_sync_map(domain, iova, size);
-@@ -2477,6 +2482,11 @@ ssize_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
- 
- 	might_sleep_if(gfpflags_allow_blocking(gfp));
- 
-+	/* Discourage passing strange GFP flags */
-+	if (WARN_ON_ONCE(gfp & (__GFP_COMP | __GFP_DMA | __GFP_DMA32 |
-+				__GFP_HIGHMEM)))
-+		return -EINVAL;
-+
- 	while (i <= nents) {
- 		phys_addr_t s_phys = sg_phys(sg);
- 
-Will post a v2 when the driver people take a look
+It seems like there is still ongoing discussion about even enabling
+BIG TCP for IPv4, however for this discussion let's assume that BIG
+TCP is merged for IPv4.
 
-Thanks,
-Jason
+We really should have a solution that allows CIPSO for both normal and
+BIG TCP, if we don't we force distros and admins to choose between the
+two and that isn't good.  We should do better.  If skb->len > 64k in
+the case of BIG TCP, how is the packet eventually divided/fragmented
+in such a way that the total length field in the IPv4 header doesn't
+overflow?  Or is that simply handled at the driver/device layer and we
+simply set skb->len to whatever the size is, regardless of the 16-bit
+length limit?  If that is the case, does the driver/device layer
+handle copying the IPv4 options and setting the header/total-length
+fields in each packet?  Or is it something else completely?
+
+> >        /* if we don't ensure enough headroom we could panic on the skb_push()
+> >         * call below so make sure we have enough, we are also "mangling" the
+> >         * packet so we should probably do a copy-on-write call anyway */
+> >
+> > The second step will be to add a max-length IPv4 option filled with
+> > IPOPT_NOOP to the local sockets in the case of
+> > netlbl_sock_setattr()/NETLBL_NLTYPE_ADDRSELECT.  In this case we would
+> > either end up replacing the padding with a proper CIPSO option or
+> > removing it completely in netlbl_skbuff_setattr(); in either case the
+> > total packet length remains the same or decreases so we should be
+> > "safe".
+>
+> sounds better.
+
+To be clear, it's not a one-or-the-other choice, both patches would be
+necessary as the padding route described in the second step would only
+apply to traffic generated locally from a socket.  We still have the
+ugly problem of dealing with forwarded traffic, which it looks like we
+discuss more on that below ...
+
+> > The forwarded packet case is still a bit of an issue, but I think the
+> > likelihood of someone using 64k max-size IPv4 packets on the wire
+> > *and* passing this traffic through a Linux cross-domain router with
+> > CIPSO (re)labeling is about as close to zero as one can possibly get.
+> > At least given the size check present in step one (patchlet above) the
+> > packet will be safely (?) dropped on the Linux system so an admin will
+> > have some idea where to start looking.
+>
+> don't know the likelihood of CIPSO (re)labeling on a Linux cross-domain router.
+> But 64K packets could be GRO packets merged on the interface (GRO enabled)
+> of the router, not directly from the wire.
+
+In the GRO case, is it safe to grow the packet such that skb->len is
+greater than 64k?  I presume that the device/driver is going to split
+the packet anyway and populate the IPv4 total length fields in the
+header anyway, right?  If we can't grow the packet beyond 64k, is
+there some way to signal to the driver/device at runtime that the
+largest packet we can process is 64k minus 40 bytes (for the IPv4
+options)?
+
+> > I've got some basic patches written for both, but I need to at least
+> > give them a quick sanity test before posting.
+>
+> Good that you can take care of it from the security side.
+
+It's not yet clear to me that we can, see the above questions.
+
+> I think a similar problem exists in calipso_skbuff_setattr() in
+> net/ipv6/calipso.c.
+
+Probably, but one mess at a time, especially since several of the
+questions above apply to both IPv4 and IPv6.
+
+-- 
+paul-moore.com
