@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D381766D01E
+	by mail.lfdr.de (Postfix) with ESMTP id 7E5A066D01D
 	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 21:25:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233765AbjAPUYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 15:24:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36684 "EHLO
+        id S233856AbjAPUYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 15:24:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233406AbjAPUYp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 15:24:45 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1F21B567
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 12:24:45 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id q23-20020a17090a065700b002290913a521so12702239pje.5
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 12:24:45 -0800 (PST)
+        with ESMTP id S232024AbjAPUYr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 15:24:47 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9986B244AE
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 12:24:46 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id k12so9309364plk.0
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 12:24:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=schmorgal.com; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=vSiLXb9WJcajlY3pp2A6uRr9twRUEMwHYlZPISHDuv0=;
-        b=XsFNuH67bnTw8UEEBNfdHE2Vcgqz23IF9D2M870dn4gSTgx06BaEVaJsExIs47mnz8
-         T+1zXS5SoutgfuvA6NhBNXgCPtC3nq43mDxKiISv5BzRM/2/jG9SIX/v7n1likkChona
-         ng51M+ucV9xqMHLJco+HSEJihIooXhahUBQhs=
+        bh=A0fz9zHVDO2m4yGb0WkSftssKbcC8YshpBpIYHhLj7c=;
+        b=XPqlqsns1l0j2dj0kGma04Dysnk7syDzq9rj51Ig7hKcPXe/eVEomVWcx81kHre3AT
+         K18P2DubkZjaxqj4vLRdpmGY+t3bV0eFsD8ZUchZehwL5PMPDXL2gl80emQods+1lxb+
+         WFWayssPMtJKHHm1fGBjOtGyUCx4AwINGok+c=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=vSiLXb9WJcajlY3pp2A6uRr9twRUEMwHYlZPISHDuv0=;
-        b=7p/U4gilOiyPCzAbNf6WyahpzwpzBRZm2Oo7OLcvLPWzR8q5HCqbqN1YZDsbydrCEn
-         9HXezBEvTkmHhteWYJ2+mjb2T8YBZmVtmpuV/8NHF5nBiM+or/uNNj+YcXH5lsA271Zk
-         1OAtgt5G7u27r7hCZsu90HQPQE4uY27T/CsGvx0A3IOWb+vec6MBuhkZnX7J14E/GF49
-         obR1KEAb1IACZvFjdOkMfnNxqRmwfOjaGAYvXq96sUc9N7nZgxS3TZJ66ZEIaeIJUhuq
-         fqlbJsFnnqiHs6wejuwVIt33fgUKhcq4vm3MDa0dyges7FJU5FJoan1Gv9kfJuh1lu1A
-         9CuQ==
-X-Gm-Message-State: AFqh2krFkvYNOtknh3FMUS8+JkHlDkVRcJkFKe2fwQ3XwSpN/OZt73Gf
-        G29bBSXlBv22KndttSruG4BUhQ==
-X-Google-Smtp-Source: AMrXdXt9oe/8F3xPCM5wYGBCGrW+8/kYP//0TDcFXVVJhEeyTa/3Tq0q5sx8H89hTDujmw8X/bzfWw==
-X-Received: by 2002:a17:903:3312:b0:194:85db:e224 with SMTP id jk18-20020a170903331200b0019485dbe224mr1013562plb.7.1673900684529;
-        Mon, 16 Jan 2023 12:24:44 -0800 (PST)
+        bh=A0fz9zHVDO2m4yGb0WkSftssKbcC8YshpBpIYHhLj7c=;
+        b=FFsIPT1fY5Ah51H+QIFByzjqcZxB14lvOW/c85dv/1VuY0E8+SEgESbeAGMapCHkzt
+         napbUZbntjT2sdxsERURUnizvKLk18nZ773+1VqiARu8ioKgw3gT3voYwXTSdXOcp3s1
+         cwGtuBadKaVcpAs73a4LWzeABpiom9LELWwb9TgZCfmvRsls+X96b2f6ZNGPpWRpTbkZ
+         /0B2hOYTs6lWfcAwIrFT4OFhSln7HDlJVBPIKAaZsedRerdYEu/aKHxTC/nUrwW2rMQq
+         tBr2DzLZEUgaqsC2+UZJTCbTFWZFx3ceXqKSFCHgvw0xeOVjBPTttDG9kbt0//lVVxKh
+         TZiw==
+X-Gm-Message-State: AFqh2koF9XBHXUivb+AU4R1xHK5QM0pGG2xwYjMsNVNczH31mOr/9fEB
+        0AxLwFPd8kIaT9MRXcEQJXIEIA==
+X-Google-Smtp-Source: AMrXdXuVB+N82WcfVUCAm6fO+qNeYUUV5/9FiGcTtRz8c5rfqb8OdC7lNiVla3ptxpkgTY36/Y0MMQ==
+X-Received: by 2002:a17:902:b587:b0:193:6520:73a4 with SMTP id a7-20020a170902b58700b00193652073a4mr872975pls.61.1673900686217;
+        Mon, 16 Jan 2023 12:24:46 -0800 (PST)
 Received: from doug-ryzen-5700G.. ([192.183.212.197])
-        by smtp.gmail.com with ESMTPSA id v11-20020a170902f0cb00b00180033438a0sm19782636pla.106.2023.01.16.12.24.43
+        by smtp.gmail.com with ESMTPSA id v11-20020a170902f0cb00b00180033438a0sm19782636pla.106.2023.01.16.12.24.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Jan 2023 12:24:44 -0800 (PST)
+        Mon, 16 Jan 2023 12:24:45 -0800 (PST)
 From:   Doug Brown <doug@schmorgal.com>
 To:     Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -56,9 +56,9 @@ Cc:     Dan Williams <dcbw@redhat.com>,
         Simon Horman <simon.horman@corigine.com>,
         libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, Doug Brown <doug@schmorgal.com>
-Subject: [PATCH v3 1/4] wifi: libertas: fix capitalization in mrvl_ie_data struct
-Date:   Mon, 16 Jan 2023 12:21:23 -0800
-Message-Id: <20230116202126.50400-2-doug@schmorgal.com>
+Subject: [PATCH v3 2/4] wifi: libertas: only add RSN/WPA IE in lbs_add_wpa_tlv
+Date:   Mon, 16 Jan 2023 12:21:24 -0800
+Message-Id: <20230116202126.50400-3-doug@schmorgal.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230116202126.50400-1-doug@schmorgal.com>
 References: <20230116202126.50400-1-doug@schmorgal.com>
@@ -73,27 +73,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This struct is currently unused, but it will be used in future patches.
-Fix the code style to not use camel case.
+The existing code only converts the first IE to a TLV, but it returns a
+value that takes the length of all IEs into account. When there is more
+than one IE (which happens with modern wpa_supplicant versions for
+example), the returned length is too long and extra junk TLVs get sent
+to the firmware, resulting in an association failure.
+
+Fix this by finding the first RSN or WPA IE and only adding that. This
+has the extra benefit of working properly if the RSN/WPA IE isn't the
+first one in the IE buffer.
+
+While we're at it, clean up the code to use the available structs like
+the other lbs_add_* functions instead of directly manipulating the TLV
+buffer.
 
 Signed-off-by: Doug Brown <doug@schmorgal.com>
 ---
- drivers/net/wireless/marvell/libertas/types.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/marvell/libertas/cfg.c | 28 +++++++++++++--------
+ 1 file changed, 18 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/libertas/types.h b/drivers/net/wireless/marvell/libertas/types.h
-index cd4ceb6f885d..398e3272e85f 100644
---- a/drivers/net/wireless/marvell/libertas/types.h
-+++ b/drivers/net/wireless/marvell/libertas/types.h
-@@ -105,7 +105,7 @@ struct mrvl_ie_header {
+diff --git a/drivers/net/wireless/marvell/libertas/cfg.c b/drivers/net/wireless/marvell/libertas/cfg.c
+index 3e065cbb0af9..3f35dc7a1d7d 100644
+--- a/drivers/net/wireless/marvell/libertas/cfg.c
++++ b/drivers/net/wireless/marvell/libertas/cfg.c
+@@ -416,10 +416,20 @@ static int lbs_add_cf_param_tlv(u8 *tlv)
  
- struct mrvl_ie_data {
- 	struct mrvl_ie_header header;
--	u8 Data[1];
-+	u8 data[1];
- } __packed;
+ static int lbs_add_wpa_tlv(u8 *tlv, const u8 *ie, u8 ie_len)
+ {
+-	size_t tlv_len;
++	struct mrvl_ie_data *wpatlv = (struct mrvl_ie_data *)tlv;
++	const struct element *wpaie;
++
++	/* Find the first RSN or WPA IE to use */
++	wpaie = cfg80211_find_elem(WLAN_EID_RSN, ie, ie_len);
++	if (!wpaie)
++		wpaie = cfg80211_find_vendor_elem(WLAN_OUI_MICROSOFT,
++						  WLAN_OUI_TYPE_MICROSOFT_WPA,
++						  ie, ie_len);
++	if (!wpaie || wpaie->datalen > 128)
++		return 0;
  
- struct mrvl_ie_rates_param_set {
+ 	/*
+-	 * We need just convert an IE to an TLV. IEs use u8 for the header,
++	 * Convert the found IE to a TLV. IEs use u8 for the header,
+ 	 *   u8      type
+ 	 *   u8      len
+ 	 *   u8[]    data
+@@ -428,14 +438,12 @@ static int lbs_add_wpa_tlv(u8 *tlv, const u8 *ie, u8 ie_len)
+ 	 *   __le16  len
+ 	 *   u8[]    data
+ 	 */
+-	*tlv++ = *ie++;
+-	*tlv++ = 0;
+-	tlv_len = *tlv++ = *ie++;
+-	*tlv++ = 0;
+-	while (tlv_len--)
+-		*tlv++ = *ie++;
+-	/* the TLV is two bytes larger than the IE */
+-	return ie_len + 2;
++	wpatlv->header.type = cpu_to_le16(wpaie->id);
++	wpatlv->header.len = cpu_to_le16(wpaie->datalen);
++	memcpy(wpatlv->data, wpaie->data, wpaie->datalen);
++
++	/* Return the total number of bytes added to the TLV buffer */
++	return sizeof(struct mrvl_ie_header) + wpaie->datalen;
+ }
+ 
+ /*
 -- 
 2.34.1
 
