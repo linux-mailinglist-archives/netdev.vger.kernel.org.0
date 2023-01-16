@@ -2,102 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EAAE66CB02
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 18:09:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD64666CB63
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 18:14:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234253AbjAPRJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 12:09:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33976 "EHLO
+        id S234252AbjAPROg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 12:14:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232958AbjAPRJM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 12:09:12 -0500
-Received: from dilbert.mork.no (dilbert.mork.no [IPv6:2a01:4f9:c010:a439::d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 403F323C68;
-        Mon, 16 Jan 2023 08:49:37 -0800 (PST)
-Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9a:3200:0:0:0:1])
-        (authenticated bits=0)
-        by dilbert.mork.no (8.15.2/8.15.2) with ESMTPSA id 30GGmpaU2102783
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Mon, 16 Jan 2023 16:48:52 GMT
-Received: from miraculix.mork.no ([IPv6:2a01:799:c9a:3202:549f:9f7a:c9d8:875b])
-        (authenticated bits=0)
-        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 30GGmjDj2045637
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Mon, 16 Jan 2023 17:48:45 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1673887726; bh=UD4ZhaHjRcn1J2dnBAvslht8N8U56Uf/Euv/eC9LvAo=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=PTdLyuia0bJNc5u9zqdnDShXdiE3GeI5ngqK4fbBuVluwBjD87vjwLYx+IzeNJZv/
-         taALeumzB0roYExAe6bLKOftCFkFWWhbdUomsV6d83GY5tsvqNetimULAxzYSvGevl
-         dGFFWwI74DAMZsAEcTMM6rq4JHme9kXjXVMurB0A=
-Received: (nullmailer pid 377843 invoked by uid 1000);
-        Mon, 16 Jan 2023 16:48:45 -0000
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Frank Wunderlich <linux@fw-web.de>,
-        linux-mediatek@lists.infradead.org,
-        Alexander Couzens <lynxis@fe80.eu>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: mtk_sgmii: implement mtk_pcs_ops
-Organization: m
-References: <trinity-d2f74581-c020-4473-a5f4-0fc591233293-1666622740261@3c-app-gmx-bap55>
-        <Y1ansgmD69AcITWx@shell.armlinux.org.uk>
-        <trinity-defa4f3d-804e-401e-bea1-b36246cbc11b-1666685003285@3c-app-gmx-bap29>
-        <87o7qy39v5.fsf@miraculix.mork.no>
-        <Y8VVa0zHk0nCwS1w@shell.armlinux.org.uk>
-        <87h6wq35dn.fsf@miraculix.mork.no>
-        <Y8VmSrjHTlllaDy2@shell.armlinux.org.uk>
-        <87bkmy33ph.fsf@miraculix.mork.no>
-        <Y8Vt9vfEa4w8HXHQ@shell.armlinux.org.uk>
-        <875yd630cu.fsf@miraculix.mork.no>
-        <Y8V+pvWlV6pSuDX/@shell.armlinux.org.uk>
-Date:   Mon, 16 Jan 2023 17:48:45 +0100
-In-Reply-To: <Y8V+pvWlV6pSuDX/@shell.armlinux.org.uk> (Russell King's message
-        of "Mon, 16 Jan 2023 16:43:18 +0000")
-Message-ID: <87v8l61l3m.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        with ESMTP id S234103AbjAPRNP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 12:13:15 -0500
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583E84B75E;
+        Mon, 16 Jan 2023 08:54:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1673888043; x=1705424043;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=f73zIhjCPw4GjGA0SlSo68wDm14SNx31poXnyneP/dI=;
+  b=bYRTe4iDY1aPe53ebyJb8k4G9EyHFA7InTOFY/EZZlF5w9jXW2pl3GJ6
+   39R8rRa8gOM5W3820QDG78HTVVUclWuQkfSr7PVe6ykd77aXCP1rogBaz
+   AsAsEHSRJmSDXCCDjUgSMrIl+gEzwXftWZcCnQBQNay70eoGYI6BNHb35
+   g=;
+X-IronPort-AV: E=Sophos;i="5.97,221,1669075200"; 
+   d="scan'208";a="283313528"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-5eae960a.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2023 16:54:00 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2c-m6i4x-5eae960a.us-west-2.amazon.com (Postfix) with ESMTPS id 2F84541973;
+        Mon, 16 Jan 2023 16:53:58 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.45; Mon, 16 Jan 2023 16:53:57 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.161.198) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.7;
+ Mon, 16 Jan 2023 16:53:54 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <kerneljasonxing@gmail.com>
+CC:     <davem@davemloft.net>, <dsahern@kernel.org>, <edumazet@google.com>,
+        <kernelxing@tencent.com>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>, <yoshfuji@linux-ipv6.org>, <kuniyu@amazon.com>
+Subject: Re: [PATCH v5 net] tcp: avoid the lookup process failing to get sk in ehash table
+Date:   Mon, 16 Jan 2023 08:53:44 -0800
+Message-ID: <20230116165344.30185-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230116103341.70956-1-kerneljasonxing@gmail.com>
+References: <20230116103341.70956-1-kerneljasonxing@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.7 at canardo
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.198]
+X-ClientProxiedBy: EX13D42UWB004.ant.amazon.com (10.43.161.99) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Russell King (Oracle)" <linux@armlinux.org.uk> writes:
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Mon, 16 Jan 2023 18:33:41 +0800
+> From: Jason Xing <kernelxing@tencent.com>
+> 
+> While one cpu is working on looking up the right socket from ehash
+> table, another cpu is done deleting the request socket and is about
+> to add (or is adding) the big socket from the table. It means that
+> we could miss both of them, even though it has little chance.
+> 
+> Let me draw a call trace map of the server side.
+>    CPU 0                           CPU 1
+>    -----                           -----
+> tcp_v4_rcv()                  syn_recv_sock()
+>                             inet_ehash_insert()
+>                             -> sk_nulls_del_node_init_rcu(osk)
+> __inet_lookup_established()
+>                             -> __sk_nulls_add_node_rcu(sk, list)
+> 
+> Notice that the CPU 0 is receiving the data after the final ack
+> during 3-way shakehands and CPU 1 is still handling the final ack.
+> 
+> Why could this be a real problem?
+> This case is happening only when the final ack and the first data
+> receiving by different CPUs. Then the server receiving data with
+> ACK flag tries to search one proper established socket from ehash
+> table, but apparently it fails as my map shows above. After that,
+> the server fetches a listener socket and then sends a RST because
+> it finds a ACK flag in the skb (data), which obeys RST definition
+> in RFC 793.
+> 
+> Besides, Eric pointed out there's one more race condition where it
+> handles tw socket hashdance. Only by adding to the tail of the list
+> before deleting the old one can we avoid the race if the reader has
+> already begun the bucket traversal and it would possibly miss the head.
+> 
+> Many thanks to Eric for great help from beginning to end.
+> 
+> Fixes: 5e0724d027f0 ("tcp/dccp: fix hashdance race for passive sessions")
+> Suggested-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Jason Xing <kernelxing@tencent.com>
+> Link: https://lore.kernel.org/lkml/20230112065336.41034-1-kerneljasonxing@gmail.com/
 
-> I found the document for the PHY at:
->
-> https://assets.maxlinear.com/web/documents/617792_gpy212b1vc_gpy212c0vc_d=
-s_rev1.3.pdf
->
-> It seems as I suspected, the PHY has not completed SGMII AN. Please
-> can you read register 8 when operating at 1G speeds as well
-> (VSPEC1_SGMII_CTRL)? Thanks.
+I guess there could be regression if a workload has many long-lived
+connections, but the change itself looks good.  I left a minor comment
+below.
 
-Both phys at 1G:
-
-root@OpenWrt:/# mdio mdio-bus 5:30 raw 8
-0x34da
-
-root@OpenWrt:/# mdio mdio-bus 6:30 raw 8
-0x34da
+Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 
 
-Bj=C3=B8rn
+> ---
+> v5:
+> 1) adjust the style once more.
+> 
+> v4:
+> 1) adjust the code style and make it easier to read.
+> 
+> v3:
+> 1) get rid of else-if statement.
+> 
+> v2:
+> 1) adding the sk node into the tail of list to prevent the race.
+> 2) fix the race condition when handling time-wait socket hashdance.
+> ---
+>  net/ipv4/inet_hashtables.c    | 17 +++++++++++++++--
+>  net/ipv4/inet_timewait_sock.c |  6 +++---
+>  2 files changed, 18 insertions(+), 5 deletions(-)
+> 
+> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> index 24a38b56fab9..f58d73888638 100644
+> --- a/net/ipv4/inet_hashtables.c
+> +++ b/net/ipv4/inet_hashtables.c
+> @@ -650,8 +650,20 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
+>  	spin_lock(lock);
+>  	if (osk) {
+>  		WARN_ON_ONCE(sk->sk_hash != osk->sk_hash);
+> -		ret = sk_nulls_del_node_init_rcu(osk);
+> -	} else if (found_dup_sk) {
+> +		ret = sk_hashed(osk);
+> +		if (ret) {
+> +			/* Before deleting the node, we insert a new one to make
+> +			 * sure that the look-up-sk process would not miss either
+> +			 * of them and that at least one node would exist in ehash
+> +			 * table all the time. Otherwise there's a tiny chance
+> +			 * that lookup process could find nothing in ehash table.
+> +			 */
+> +			__sk_nulls_add_node_tail_rcu(sk, list);
+> +			sk_nulls_del_node_init_rcu(osk);
+> +		}
+> +		goto unlock;
+> +	}
+> +	if (found_dup_sk) {
+>  		*found_dup_sk = inet_ehash_lookup_by_sk(sk, list);
+>  		if (*found_dup_sk)
+>  			ret = false;
+> @@ -660,6 +672,7 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
+>  	if (ret)
+>  		__sk_nulls_add_node_rcu(sk, list);
+>  
+> +unlock:
+>  	spin_unlock(lock);
+>  
+>  	return ret;
+> diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
+> index 1d77d992e6e7..6d681ef52bb2 100644
+> --- a/net/ipv4/inet_timewait_sock.c
+> +++ b/net/ipv4/inet_timewait_sock.c
+> @@ -91,10 +91,10 @@ void inet_twsk_put(struct inet_timewait_sock *tw)
+>  }
+>  EXPORT_SYMBOL_GPL(inet_twsk_put);
+>  
+> -static void inet_twsk_add_node_rcu(struct inet_timewait_sock *tw,
+> +static void inet_twsk_add_node_tail_rcu(struct inet_timewait_sock *tw,
+>  				   struct hlist_nulls_head *list)
+
+nit: Please indent here.
+
+
+>  {
+> -	hlist_nulls_add_head_rcu(&tw->tw_node, list);
+> +	hlist_nulls_add_tail_rcu(&tw->tw_node, list);
+>  }
+>  
+>  static void inet_twsk_add_bind_node(struct inet_timewait_sock *tw,
+> @@ -147,7 +147,7 @@ void inet_twsk_hashdance(struct inet_timewait_sock *tw, struct sock *sk,
+>  
+>  	spin_lock(lock);
+>  
+> -	inet_twsk_add_node_rcu(tw, &ehead->chain);
+> +	inet_twsk_add_node_tail_rcu(tw, &ehead->chain);
+>  
+>  	/* Step 3: Remove SK from hash chain */
+>  	if (__sk_nulls_del_node_init_rcu(sk))
+> -- 
+> 2.37.3
