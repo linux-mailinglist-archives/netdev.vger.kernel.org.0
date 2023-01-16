@@ -2,53 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6758A66C427
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 16:41:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 463C866C704
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 17:27:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231138AbjAPPlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 10:41:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59046 "EHLO
+        id S233106AbjAPQ13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 11:27:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230349AbjAPPlr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 10:41:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1693F16AFB;
-        Mon, 16 Jan 2023 07:41:47 -0800 (PST)
+        with ESMTP id S233038AbjAPQ1C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 11:27:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED65123C6C;
+        Mon, 16 Jan 2023 08:15:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A788C61025;
-        Mon, 16 Jan 2023 15:41:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A60DDC433F0;
-        Mon, 16 Jan 2023 15:41:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673883706;
-        bh=ZAViVdWgWJF2xmiwYZ5ME7mFHym9Ugm2BLe34iIjMPk=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=dMH7mLuDJED385miiPcmZui2MMipffpOYZLVMFlgYt+J0LHn4x7BzYXP0IJp0U+Mi
-         3+pKG3Xsy7QGTiGDR8PRnbQtFNx7TgjO7fGywaiQn6NjspzxIgB+NTgcSJaZRo0NHv
-         AfgY2todl2oUgYybgRXTpRStH8kEUTGAdeN41W+cgDgIq22exEafl1n2IEmGgRZiVh
-         7z4ZHQG93HkzDjMa7GXOiVe7UWlUdyqG9jr1+QD4hMo+yQ2E5XjgjcpuV1zl5yJzJr
-         gIOX4OVbd6BjkxhqtNIZjr3NZN4RDtDG91Be6RjDAXRysW3IbqHXslLWJrmQ7myoUI
-         08VguV/vAOl+w==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Aaron Ma <aaron.ma@canonical.com>
-Cc:     nbd@nbd.name, lorenzo@kernel.org, ryder.lee@mediatek.com,
-        shayne.chen@mediatek.com, sean.wang@mediatek.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] wifi: mt76: mt7921: fix error code of return in mt7921_acpi_read
-References: <20230116152235.1433484-1-aaron.ma@canonical.com>
-Date:   Mon, 16 Jan 2023 17:41:39 +0200
-In-Reply-To: <20230116152235.1433484-1-aaron.ma@canonical.com> (Aaron Ma's
-        message of "Mon, 16 Jan 2023 23:22:35 +0800")
-Message-ID: <87tu0qxz9o.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB8A3B80DC7;
+        Mon, 16 Jan 2023 16:15:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A516C433D2;
+        Mon, 16 Jan 2023 16:15:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1673885709;
+        bh=WqXCNM8e2JOAaSm9hO5sOOrv/C98ZtNtqiUbyI+LPL0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=e16vqbLvoLQZWbGWxBwTkO+S4PnZlZjEGyUA5JW/24rfIEM1EKqv4hH1oFZTKFFYj
+         3frNInuAKlC3jC3wzAdDAd6ydAbuZyVbcBpoT3R0yBQYcruIEwXn7a9lI3NvghMxUr
+         lYV+QU76nQX6wGLo/SVkaf4JXiPzbz3oIGwC/MrA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     stable@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        patches@lists.linux.dev, kernel test robot <lkp@intel.com>,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, netdev@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 125/658] net, proc: Provide PROC_FS=n fallback for proc_create_net_single_write()
+Date:   Mon, 16 Jan 2023 16:43:33 +0100
+Message-Id: <20230116154915.183915053@linuxfoundation.org>
+X-Mailer: git-send-email 2.39.0
+In-Reply-To: <20230116154909.645460653@linuxfoundation.org>
+References: <20230116154909.645460653@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,36 +55,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Aaron Ma <aaron.ma@canonical.com> writes:
+From: David Howells <dhowells@redhat.com>
 
-> Kernel NULL pointer dereference when ACPI SAR table isn't implemented well.
-> Fix the error code of return to mark the ACPI SAR table as invalid.
->
-> [    5.077128] mt7921e 0000:06:00.0: sar cnt = 0
-> [    5.077381] BUG: kernel NULL pointer dereference, address:
-> 0000000000000004
-> [    5.077630] #PF: supervisor read access in kernel mode
-> [    5.077883] #PF: error_code(0x0000) - not-present page
-> [    5.078138] PGD 0 P4D 0
-> [    5.078398] Oops: 0000 [#1] PREEMPT SMP NOPTI
-> [    5.079202] RIP: 0010:mt7921_init_acpi_sar+0x106/0x220
-> [mt7921_common]
-> ...
-> [    5.080786] Call Trace:
-> [    5.080786]  <TASK>
-> [    5.080786]  mt7921_register_device+0x37d/0x490 [mt7921_common]
-> [    5.080786]  mt7921_pci_probe.part.0+0x2ee/0x310 [mt7921e]
-> [    5.080786]  mt7921_pci_probe+0x52/0x70 [mt7921e]
-> [    5.080786]  local_pci_probe+0x47/0x90
-> [    5.080786]  pci_call_probe+0x55/0x190
-> [    5.080786]  pci_device_probe+0x84/0x120
->
-> Fixes: f965333e491e ("mt76: mt7921: introduce ACPI SAR support")
-> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+[ Upstream commit c3d96f690a790074b508fe183a41e36a00cd7ddd ]
 
-Felix, if this is ok should this go to v6.2?
+Provide a CONFIG_PROC_FS=n fallback for proc_create_net_single_write().
 
+Also provide a fallback for proc_create_net_data_write().
+
+Fixes: 564def71765c ("proc: Add a way to make network proc files writable")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+cc: netdev@vger.kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ include/linux/proc_fs.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/linux/proc_fs.h b/include/linux/proc_fs.h
+index 865d02c224ad..b8d41d0e7b46 100644
+--- a/include/linux/proc_fs.h
++++ b/include/linux/proc_fs.h
+@@ -127,8 +127,10 @@ static inline void proc_remove(struct proc_dir_entry *de) {}
+ static inline int remove_proc_subtree(const char *name, struct proc_dir_entry *parent) { return 0; }
+ 
+ #define proc_create_net_data(name, mode, parent, ops, state_size, data) ({NULL;})
++#define proc_create_net_data_write(name, mode, parent, ops, write, state_size, data) ({NULL;})
+ #define proc_create_net(name, mode, parent, state_size, ops) ({NULL;})
+ #define proc_create_net_single(name, mode, parent, show, data) ({NULL;})
++#define proc_create_net_single_write(name, mode, parent, show, write, data) ({NULL;})
+ 
+ static inline struct pid *tgid_pidfd_to_pid(const struct file *file)
+ {
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.35.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
+
