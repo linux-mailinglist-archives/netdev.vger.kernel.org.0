@@ -2,138 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11FD466BBA6
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 11:24:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4503466BBA8
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 11:25:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229827AbjAPKYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 05:24:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40652 "EHLO
+        id S230240AbjAPKZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 05:25:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229997AbjAPKYr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 05:24:47 -0500
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8937317CF3;
-        Mon, 16 Jan 2023 02:24:46 -0800 (PST)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 142DB2008E1;
-        Mon, 16 Jan 2023 11:24:45 +0100 (CET)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id D16392008DF;
-        Mon, 16 Jan 2023 11:24:44 +0100 (CET)
-Received: from lsv03267.swis.in-blr01.nxp.com (lsv03267.swis.in-blr01.nxp.com [92.120.147.107])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id CB780183ABEF;
-        Mon, 16 Jan 2023 18:24:43 +0800 (+08)
-From:   nikhil.gupta@nxp.com
-To:     linux-arm-kernel@lists.infradead.org,
-        Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     vakul.garg@nxp.com, rajan.gupta@nxp.com, richardcochran@gmail.com,
-        Nikhil Gupta <nikhil.gupta@nxp.com>
-Subject: [PATCH v1] ptp_qoriq: fix latency in ptp_qoriq_adjtime() operation.
-Date:   Mon, 16 Jan 2023 15:54:40 +0530
-Message-Id: <20230116102440.27189-1-nikhil.gupta@nxp.com>
-X-Mailer: git-send-email 2.17.1
-X-Virus-Scanned: ClamAV using ClamSMTP
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229475AbjAPKZY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 05:25:24 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD7117CF3;
+        Mon, 16 Jan 2023 02:25:23 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id b4so20570160edf.0;
+        Mon, 16 Jan 2023 02:25:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=YcVEcFChFoao6dFWLdC+6sKirsCf6cE7CdgCXlv/MdI=;
+        b=ccjuZwAG4Qnn/+DcpP++uZbdCwYYS0Dj306vDsQeWu7u5rv4vpbTr7XZbPnAz4abfT
+         IoOp7jNKlsbT9b39kCWgnhbbfTdy31mkigwr7FyOCvnTQtxuVZ+H1HY3vxls95uap8PR
+         vkMmzsNpU0hWsVV7DukRLioRXiEmzOaaXxVRN7MJnzPYKSA7RAkVbdenvW3JS6YlFV6+
+         uH/e3jTZcaDHk+YoOVv0M4WKB+JsWoZ7wtwCyXEjLfQbTLrDsoj2w369cqsvI2dOrRMB
+         F2cZHR3+FmxakahFDqT1anhHMIo4ibWA1kP8SJEaBkbJSddbH93kzQ7T2trpab64P1yQ
+         UIrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=YcVEcFChFoao6dFWLdC+6sKirsCf6cE7CdgCXlv/MdI=;
+        b=JWh8mbK4CP2PnBEWiEjMmrlcsgIYlQc0ZKweOYApvzvbcQZUOJbc6Ak07l0eh13e6E
+         fGProVrJ5yfzWobPljuHu68xJiivcShC7O81TXSBMKVtJRCOOzmB5SijPc0OoS+qkMaF
+         A+6vMebeyZ2RR135I8tOp6ylqlFWpPuolEXpg9Nuo17cTr6KE2wJpyua2zYr7VCOF6I3
+         kxI3XSlMNEZf1Q3cXKl0NmFPCm6D1ZpeOIE08oxlL4Roo1p+p1iYd7SZQspdNN6dtQjd
+         3z2rLOE+tt8G9w9PXi2ScsNjzjnhqrVN2zkJlWbWR9INKMOdjkjjV2m6EYDpchNnJu/Y
+         porw==
+X-Gm-Message-State: AFqh2krbueX8No5ijW2Udr5a2iNeDMJRv092z72+XQUD7mES7zxaFnEg
+        yi1e/QLL/o8leT3rAmTuvlwYpUs7u3cB6SP0SWvDblPuQXGN6A==
+X-Google-Smtp-Source: AMrXdXvpdoGOWEsrHOk8V+Y5fHqtq9UjUH/aAuJgKTxxj4Y3irS2GWTgj7gcqwnyUIXTHaDk8fGpBDgn197U6R46TMw=
+X-Received: by 2002:a05:6402:4285:b0:48f:a9a2:29ec with SMTP id
+ g5-20020a056402428500b0048fa9a229ecmr5536154edc.67.1673864721657; Mon, 16 Jan
+ 2023 02:25:21 -0800 (PST)
+MIME-Version: 1.0
+References: <20230116073813.24097-1-kerneljasonxing@gmail.com> <CANn89i+qCZOCSaNbqRxirS8zouAWJFpvPX51deT=bG9uxnJ4oA@mail.gmail.com>
+In-Reply-To: <CANn89i+qCZOCSaNbqRxirS8zouAWJFpvPX51deT=bG9uxnJ4oA@mail.gmail.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Mon, 16 Jan 2023 18:24:45 +0800
+Message-ID: <CAL+tcoCZ0vLUq+yF5_kaQAgz+fCBvzwf73cfEgewUQasPm6zDQ@mail.gmail.com>
+Subject: Re: [PATCH v4 net] tcp: avoid the lookup process failing to get sk in
+ ehash table
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Xing <kernelxing@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikhil Gupta <nikhil.gupta@nxp.com>
+On Mon, Jan 16, 2023 at 5:54 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Mon, Jan 16, 2023 at 8:38 AM Jason Xing <kerneljasonxing@gmail.com> wrote:
+> >
+> > From: Jason Xing <kernelxing@tencent.com>
+> >
+> > While one cpu is working on looking up the right socket from ehash
+> > table, another cpu is done deleting the request socket and is about
+> > to add (or is adding) the big socket from the table. It means that
+> > we could miss both of them, even though it has little chance.
+> >
+> >
+> > Fixes: 5e0724d027f0 ("tcp/dccp: fix hashdance race for passive sessions")
+> > Suggested-by: Eric Dumazet <edumazet@google.com>
+> > Signed-off-by: Jason Xing <kernelxing@tencent.com>
+> > Link: https://lore.kernel.org/lkml/20230112065336.41034-1-kerneljasonxing@gmail.com/
+> > ---
+> > v4:
+> > 1) adjust the code style and make it easier to read.
+> >
+> > v3:
+> > 1) get rid of else-if statement.
+> >
+> > v2:
+> > 1) adding the sk node into the tail of list to prevent the race.
+> > 2) fix the race condition when handling time-wait socket hashdance.
+> > ---
+> >  net/ipv4/inet_hashtables.c    | 18 ++++++++++++++++--
+> >  net/ipv4/inet_timewait_sock.c |  6 +++---
+> >  2 files changed, 19 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> > index 24a38b56fab9..c64eec874b31 100644
+> > --- a/net/ipv4/inet_hashtables.c
+> > +++ b/net/ipv4/inet_hashtables.c
+> > @@ -650,8 +650,21 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
+> >         spin_lock(lock);
+> >         if (osk) {
+> >                 WARN_ON_ONCE(sk->sk_hash != osk->sk_hash);
+> > -               ret = sk_nulls_del_node_init_rcu(osk);
+> > -       } else if (found_dup_sk) {
+> > +               if (sk_hashed(osk)) {
+> > +                       /* Before deleting the node, we insert a new one to make
+> > +                        * sure that the look-up-sk process would not miss either
+> > +                        * of them and that at least one node would exist in ehash
+> > +                        * table all the time. Otherwise there's a tiny chance
+> > +                        * that lookup process could find nothing in ehash table.
+> > +                        */
+> > +                       __sk_nulls_add_node_tail_rcu(sk, list);
+> > +                       sk_nulls_del_node_init_rcu(osk);
+> > +               } else {
+> > +                       ret = false;
+>
+>
+> Well, you added another 'else' statement...
+>
 
-1588 driver loses about 1us in adjtime operation at PTP slave.
-This is because adjtime operation uses a slow non-atomic tmr_cnt_read()
-followed by tmr_cnt_write() operation.
-In the above sequence, since the timer counter operation keeps
-incrementing, it leads to latency.
-The tmr_offset register (which is added to TMR_CNT_H/L register
-gives the current time) must be programmed with the delta
-nanoseconds.
+Yeah, I want to make the code look more concise and easy to read. I
+alway felt the previous series of commits are not human-readable
+though it could work.
 
-Signed-off-by: Nikhil Gupta <nikhil.gupta@nxp.com>
-Reviewed-by: Yangbo Lu <yangbo.lu@nxp.com>
----
- drivers/ptp/ptp_qoriq.c | 35 ++++++++++++++++++++++++++++++-----
- 1 file changed, 30 insertions(+), 5 deletions(-)
+> What about the following ?
+>
+> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> index 24a38b56fab9e9d7d893e23b30d26e275359ec70..1bcf5ce8dd1317b2144bcb47a2ad238532b9accf
+> 100644
+> --- a/net/ipv4/inet_hashtables.c
+> +++ b/net/ipv4/inet_hashtables.c
+> @@ -650,8 +650,14 @@ bool inet_ehash_insert(struct sock *sk, struct
+> sock *osk, bool *found_dup_sk)
+>         spin_lock(lock);
+>         if (osk) {
+>                 WARN_ON_ONCE(sk->sk_hash != osk->sk_hash);
+> -               ret = sk_nulls_del_node_init_rcu(osk);
+> -       } else if (found_dup_sk) {
+> +               ret = sk_hashed(osk);
+> +               if (ret) {
+> +                       __sk_nulls_add_node_tail_rcu(sk, list);
+> +                       sk_nulls_del_node_init_rcu(osk);
+> +               }
 
-diff --git a/drivers/ptp/ptp_qoriq.c b/drivers/ptp/ptp_qoriq.c
-index 08f4cf0ad9e3..69fa77b99b45 100644
---- a/drivers/ptp/ptp_qoriq.c
-+++ b/drivers/ptp/ptp_qoriq.c
-@@ -48,6 +48,29 @@ static void tmr_cnt_write(struct ptp_qoriq *ptp_qoriq, u64 ns)
- 	ptp_qoriq->write(&regs->ctrl_regs->tmr_cnt_h, hi);
- }
- 
-+static void tmr_offset_write(struct ptp_qoriq *ptp_qoriq, u64 delta_ns)
-+{
-+	struct ptp_qoriq_registers *regs = &ptp_qoriq->regs;
-+	u32 hi = delta_ns >> 32;
-+	u32 lo = delta_ns & 0xffffffff;
-+
-+	ptp_qoriq->write(&regs->ctrl_regs->tmroff_l, lo);
-+	ptp_qoriq->write(&regs->ctrl_regs->tmroff_h, hi);
-+}
-+
-+static u64 tmr_offset_read(struct ptp_qoriq *ptp_qoriq)
-+{
-+	struct ptp_qoriq_registers *regs = &ptp_qoriq->regs;
-+	u64 ns;
-+	u32 lo, hi;
-+
-+	lo = ptp_qoriq->read(&regs->ctrl_regs->tmroff_l);
-+	hi = ptp_qoriq->read(&regs->ctrl_regs->tmroff_h);
-+	ns = ((u64) hi) << 32;
-+	ns |= lo;
-+	return ns;
-+}
-+
- /* Caller must hold ptp_qoriq->lock. */
- static void set_alarm(struct ptp_qoriq *ptp_qoriq)
- {
-@@ -55,7 +78,9 @@ static void set_alarm(struct ptp_qoriq *ptp_qoriq)
- 	u64 ns;
- 	u32 lo, hi;
- 
--	ns = tmr_cnt_read(ptp_qoriq) + 1500000000ULL;
-+	ns = tmr_cnt_read(ptp_qoriq) + tmr_offset_read(ptp_qoriq)
-+				     + 1500000000ULL;
-+
- 	ns = div_u64(ns, 1000000000UL) * 1000000000ULL;
- 	ns -= ptp_qoriq->tclk_period;
- 	hi = ns >> 32;
-@@ -212,10 +237,9 @@ int ptp_qoriq_adjtime(struct ptp_clock_info *ptp, s64 delta)
- 	struct ptp_qoriq *ptp_qoriq = container_of(ptp, struct ptp_qoriq, caps);
- 
- 	spin_lock_irqsave(&ptp_qoriq->lock, flags);
--
--	now = tmr_cnt_read(ptp_qoriq);
-+	now = tmr_offset_read(ptp_qoriq);
- 	now += delta;
--	tmr_cnt_write(ptp_qoriq, now);
-+	tmr_offset_write(ptp_qoriq, now);
- 	set_fipers(ptp_qoriq);
- 
- 	spin_unlock_irqrestore(&ptp_qoriq->lock, flags);
-@@ -232,7 +256,7 @@ int ptp_qoriq_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
- 
- 	spin_lock_irqsave(&ptp_qoriq->lock, flags);
- 
--	ns = tmr_cnt_read(ptp_qoriq);
-+	ns = tmr_cnt_read(ptp_qoriq) + tmr_offset_read(ptp_qoriq);
- 
- 	spin_unlock_irqrestore(&ptp_qoriq->lock, flags);
- 
-@@ -253,6 +277,7 @@ int ptp_qoriq_settime(struct ptp_clock_info *ptp,
- 
- 	spin_lock_irqsave(&ptp_qoriq->lock, flags);
- 
-+	tmr_offset_write(ptp_qoriq, 0);
- 	tmr_cnt_write(ptp_qoriq, ns);
- 	set_fipers(ptp_qoriq);
- 
--- 
-2.17.1
+Ah, I prefer this one :)
 
+Thanks,
+Jason
+
+> +               goto unlock;
+> +       }
+> +       if (found_dup_sk) {
+>                 *found_dup_sk = inet_ehash_lookup_by_sk(sk, list);
+>                 if (*found_dup_sk)
+>                         ret = false;
+> @@ -659,7 +665,7 @@ bool inet_ehash_insert(struct sock *sk, struct
+> sock *osk, bool *found_dup_sk)
+>
+>         if (ret)
+>                 __sk_nulls_add_node_rcu(sk, list);
+> -
+> +unlock:
+>         spin_unlock(lock);
+>
+>         return ret;
