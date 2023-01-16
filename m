@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C16BB66B983
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 09:56:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F084B66B986
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 09:56:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232339AbjAPI4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 03:56:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59948 "EHLO
+        id S232475AbjAPI4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 03:56:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232271AbjAPI4C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 03:56:02 -0500
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F85413528;
-        Mon, 16 Jan 2023 00:56:00 -0800 (PST)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 30G8tn7n064498;
-        Mon, 16 Jan 2023 02:55:49 -0600
+        with ESMTP id S232411AbjAPI4P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 03:56:15 -0500
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E42213D50;
+        Mon, 16 Jan 2023 00:56:14 -0800 (PST)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 30G8tsFj047639;
+        Mon, 16 Jan 2023 02:55:54 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1673859349;
-        bh=9/dGcXdSQTYQZcts0DoejUhZKSatGGyFed0YM1Fc9UI=;
+        s=ti-com-17Q1; t=1673859354;
+        bh=eQGeU/joVMiHsxsFt6zqr2/z4nsq/vb7Ljj2B2rtXIM=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=d7mPrNH1U5tmY3yVHLCx52l6bV/U2lFOSqbfP7XQIn7kEqYVa8HU9ZG3vkSpcEBwg
-         a4/Ts4xKErGHDDUMwbHqAC8twse3fulrktlRF+xaWbmRpmIGj39ak9tCLzL0xrIRu4
-         uRUFZ90mdMHX6glcKpeNJM6TT0cIR+zUkofzPcA0=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 30G8tnJ3049655
+        b=Lr4Ga52mTMbXnfnocNKOPZmEd+1CEP/x3JE+LnylwKLzVEvWxs3FRzHRbPLWgn3yN
+         7TMQ+bDkF0X97dRs4HvHAcGjtjkJ7O7D9fN7pzbB8TSJ1tg/aM7QRXWIlFITOFbt2r
+         o76F2EhbTohyYi5qn3+f2TW6CmRWpqHYzfAsRLe0=
+Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 30G8tsvI085935
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 16 Jan 2023 02:55:49 -0600
-Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+        Mon, 16 Jan 2023 02:55:54 -0600
+Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Mon, 16
- Jan 2023 02:55:49 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ Jan 2023 02:55:53 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Mon, 16 Jan 2023 02:55:49 -0600
+ Frontend Transport; Mon, 16 Jan 2023 02:55:54 -0600
 Received: from uda0492258.dhcp.ti.com (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 30G8tZwJ040368;
-        Mon, 16 Jan 2023 02:55:45 -0600
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 30G8tZwK040368;
+        Mon, 16 Jan 2023 02:55:49 -0600
 From:   Siddharth Vadapalli <s-vadapalli@ti.com>
 To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>, <robh+dt@kernel.org>,
@@ -49,15 +49,15 @@ CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
         <s-vadapalli@ti.com>
-Subject: [PATCH net-next v2 2/3] net: ethernet: ti: am65-cpts: add pps support
-Date:   Mon, 16 Jan 2023 14:25:33 +0530
-Message-ID: <20230116085534.440820-3-s-vadapalli@ti.com>
+Subject: [PATCH net-next v2 3/3] net: ethernet: ti: am65-cpts: adjust pps following ptp changes
+Date:   Mon, 16 Jan 2023 14:25:34 +0530
+Message-ID: <20230116085534.440820-4-s-vadapalli@ti.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230116085534.440820-1-s-vadapalli@ti.com>
 References: <20230116085534.440820-1-s-vadapalli@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
@@ -70,196 +70,147 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Grygorii Strashko <grygorii.strashko@ti.com>
 
-CPTS doesn't have HW support for PPS ("pulse per second”) signal
-generation, but it can be modeled by using Time Sync Router and routing
-GenFx (periodic signal generator) output to CPTS_HWy_TS_PUSH (hardware time
-stamp) input, and configuring GenFx to generate 1sec pulses.
+When CPTS clock is sync/adjusted by running linuxptp (ptp4l) it will cause
+PPS jitter as Genf running PPS is not adjusted.
 
-     +------------------------+
-     |          CPTS          |
-     |                        |
- +--->CPTS_HW4_PUSH      GENFx+---+
- |   |                        |   |
- |   +------------------------+   |
- |                                |
- +--------------------------------+
+The same PPM adjustment has to be applied to GenF as to PHC clock to
+correct PPS length and keep them in sync.
 
-Add corresponding support to am65-cpts driver. The DT property "ti,pps"
-has to be used to enable PPS support and configure pair
-[CPTS_HWy_TS_PUSH, GenFx].
+Testing:
+ Master:
+  ptp4l -P -2 -H -i eth0 -l 6 -m -q -p /dev/ptp1 -f ptp.cfg &
+  testptp -d /dev/ptp1 -P 1
+  ppstest /dev/pps0
 
-Once enabled, PPS can be tested using ppstest tool:
- # ./ppstest /dev/pps0
+ Slave:
+  linuxptp/ptp4l -P -2 -H -i eth0 -l 6 -m -q -p /dev/ptp1 -f ptp1.cfg -s &
+    <port 1: UNCALIBRATED to SLAVE on MASTER_CLOCK_SELECTED;>
+  testptp -d /dev/ptp1 -P 1
+  ppstest /dev/pps0
+
+Master log:
+source 0 - assert 620.000000689, sequence: 530
+source 0 - assert 621.000000689, sequence: 531
+source 0 - assert 622.000000689, sequence: 532
+source 0 - assert 623.000000689, sequence: 533
+source 0 - assert 624.000000689, sequence: 534
+source 0 - assert 625.000000689, sequence: 535
+source 0 - assert 626.000000689, sequence: 536
+source 0 - assert 627.000000689, sequence: 537
+source 0 - assert 628.000000689, sequence: 538
+source 0 - assert 629.000000689, sequence: 539
+source 0 - assert 630.000000689, sequence: 540
+source 0 - assert 631.000000689, sequence: 541
+source 0 - assert 632.000000689, sequence: 542
+source 0 - assert 633.000000689, sequence: 543
+source 0 - assert 634.000000689, sequence: 544
+source 0 - assert 635.000000689, sequence: 545
+
+Slave log:
+source 0 - assert 620.000000706, sequence: 252
+source 0 - assert 621.000000709, sequence: 253
+source 0 - assert 622.000000707, sequence: 254
+source 0 - assert 623.000000707, sequence: 255
+source 0 - assert 624.000000706, sequence: 256
+source 0 - assert 625.000000705, sequence: 257
+source 0 - assert 626.000000709, sequence: 258
+source 0 - assert 627.000000709, sequence: 259
+source 0 - assert 628.000000707, sequence: 260
+source 0 - assert 629.000000706, sequence: 261
+source 0 - assert 630.000000710, sequence: 262
+source 0 - assert 631.000000708, sequence: 263
+source 0 - assert 632.000000705, sequence: 264
+source 0 - assert 633.000000710, sequence: 265
+source 0 - assert 634.000000708, sequence: 266
+source 0 - assert 635.000000707, sequence: 267
 
 Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
 Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
 ---
- drivers/net/ethernet/ti/am65-cpts.c | 96 +++++++++++++++++++++++++++--
- 1 file changed, 91 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/ti/am65-cpts.c | 59 ++++++++++++++++++++++++-----
+ 1 file changed, 49 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/ti/am65-cpts.c b/drivers/net/ethernet/ti/am65-cpts.c
-index 9535396b28cd..c405af266b41 100644
+index c405af266b41..bf0f74b20ba6 100644
 --- a/drivers/net/ethernet/ti/am65-cpts.c
 +++ b/drivers/net/ethernet/ti/am65-cpts.c
-@@ -176,6 +176,10 @@ struct am65_cpts {
- 	u32 genf_enable;
- 	u32 hw_ts_enable;
- 	struct sk_buff_head txq;
-+	bool pps_enabled;
-+	bool pps_present;
-+	u32 pps_hw_ts_idx;
-+	u32 pps_genf_idx;
- 	/* context save/restore */
- 	u64 sr_cpts_ns;
- 	u64 sr_ktime_ns;
-@@ -319,8 +323,15 @@ static int am65_cpts_fifo_read(struct am65_cpts *cpts)
- 		case AM65_CPTS_EV_HW:
- 			pevent.index = am65_cpts_event_get_port(event) - 1;
- 			pevent.timestamp = event->timestamp;
--			pevent.type = PTP_CLOCK_EXTTS;
--			dev_dbg(cpts->dev, "AM65_CPTS_EV_HW p:%d t:%llu\n",
-+			if (cpts->pps_enabled && pevent.index == cpts->pps_hw_ts_idx) {
-+				pevent.type = PTP_CLOCK_PPSUSR;
-+				pevent.pps_times.ts_real = ns_to_timespec64(pevent.timestamp);
-+			} else {
-+				pevent.type = PTP_CLOCK_EXTTS;
-+			}
-+			dev_dbg(cpts->dev, "AM65_CPTS_EV_HW:%s p:%d t:%llu\n",
-+				pevent.type == PTP_CLOCK_EXTTS ?
-+				"extts" : "pps",
- 				pevent.index, event->timestamp);
- 
- 			ptp_clock_event(cpts->ptp_clock, &pevent);
-@@ -507,7 +518,13 @@ static void am65_cpts_extts_enable_hw(struct am65_cpts *cpts, u32 index, int on)
- 
- static int am65_cpts_extts_enable(struct am65_cpts *cpts, u32 index, int on)
+@@ -405,10 +405,13 @@ static irqreturn_t am65_cpts_interrupt(int irq, void *dev_id)
+ static int am65_cpts_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
  {
--	if (!!(cpts->hw_ts_enable & BIT(index)) == !!on)
-+	if (index >= cpts->ptp_info.n_ext_ts)
-+		return -ENXIO;
-+
-+	if (cpts->pps_present && index == cpts->pps_hw_ts_idx)
-+		return -EINVAL;
-+
-+	if (((cpts->hw_ts_enable & BIT(index)) >> index) == on)
- 		return 0;
+ 	struct am65_cpts *cpts = container_of(ptp, struct am65_cpts, ptp_info);
++	u32 pps_ctrl_val = 0, pps_ppm_hi = 0, pps_ppm_low = 0;
+ 	s32 ppb = scaled_ppm_to_ppb(scaled_ppm);
++	int pps_index = cpts->pps_genf_idx;
++	u64 adj_period, pps_adj_period;
++	u32 ctrl_val, ppm_hi, ppm_low;
++	unsigned long flags;
+ 	int neg_adj = 0;
+-	u64 adj_period;
+-	u32 val;
+ 
+ 	if (ppb < 0) {
+ 		neg_adj = 1;
+@@ -428,17 +431,53 @@ static int am65_cpts_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
  
  	mutex_lock(&cpts->ptp_clk_lock);
-@@ -591,6 +608,12 @@ static void am65_cpts_perout_enable_hw(struct am65_cpts *cpts,
- static int am65_cpts_perout_enable(struct am65_cpts *cpts,
- 				   struct ptp_perout_request *req, int on)
- {
-+	if (req->index >= cpts->ptp_info.n_per_out)
-+		return -ENXIO;
-+
-+	if (cpts->pps_present && req->index == cpts->pps_genf_idx)
-+		return -EINVAL;
-+
- 	if (!!(cpts->genf_enable & BIT(req->index)) == !!on)
- 		return 0;
  
-@@ -604,6 +627,48 @@ static int am65_cpts_perout_enable(struct am65_cpts *cpts,
- 	return 0;
- }
- 
-+static int am65_cpts_pps_enable(struct am65_cpts *cpts, int on)
-+{
-+	int ret = 0;
-+	struct timespec64 ts;
-+	struct ptp_clock_request rq;
-+	u64 ns;
+-	val = am65_cpts_read32(cpts, control);
++	ctrl_val = am65_cpts_read32(cpts, control);
+ 	if (neg_adj)
+-		val |= AM65_CPTS_CONTROL_TS_PPM_DIR;
++		ctrl_val |= AM65_CPTS_CONTROL_TS_PPM_DIR;
+ 	else
+-		val &= ~AM65_CPTS_CONTROL_TS_PPM_DIR;
+-	am65_cpts_write32(cpts, val, control);
++		ctrl_val &= ~AM65_CPTS_CONTROL_TS_PPM_DIR;
 +
-+	if (!cpts->pps_present)
-+		return -EINVAL;
++	ppm_hi = upper_32_bits(adj_period) & 0x3FF;
++	ppm_low = lower_32_bits(adj_period);
 +
-+	if (cpts->pps_enabled == !!on)
-+		return 0;
++	if (cpts->pps_enabled) {
++		pps_ctrl_val = am65_cpts_read32(cpts, genf[pps_index].control);
++		if (neg_adj)
++			pps_ctrl_val &= ~BIT(1);
++		else
++			pps_ctrl_val |= BIT(1);
 +
-+	mutex_lock(&cpts->ptp_clk_lock);
-+
-+	if (on) {
-+		am65_cpts_extts_enable_hw(cpts, cpts->pps_hw_ts_idx, on);
-+
-+		ns = am65_cpts_gettime(cpts, NULL);
-+		ts = ns_to_timespec64(ns);
-+		rq.perout.period.sec = 1;
-+		rq.perout.period.nsec = 0;
-+		rq.perout.start.sec = ts.tv_sec + 2;
-+		rq.perout.start.nsec = 0;
-+		rq.perout.index = cpts->pps_genf_idx;
-+
-+		am65_cpts_perout_enable_hw(cpts, &rq.perout, on);
-+		cpts->pps_enabled = true;
-+	} else {
-+		rq.perout.index = cpts->pps_genf_idx;
-+		am65_cpts_perout_enable_hw(cpts, &rq.perout, on);
-+		am65_cpts_extts_enable_hw(cpts, cpts->pps_hw_ts_idx, on);
-+		cpts->pps_enabled = false;
++		/* GenF PPM will do correction using cpts refclk tick which is
++		 * (cpts->ts_add_val + 1) ns, so GenF length PPM adj period
++		 * need to be corrected.
++		 */
++		pps_adj_period = adj_period * (cpts->ts_add_val + 1);
++		pps_ppm_hi = upper_32_bits(pps_adj_period) & 0x3FF;
++		pps_ppm_low = lower_32_bits(pps_adj_period);
 +	}
 +
-+	mutex_unlock(&cpts->ptp_clk_lock);
-+
-+	dev_dbg(cpts->dev, "%s: pps: %s\n",
-+		__func__, on ? "enabled" : "disabled");
-+	return ret;
-+}
-+
- static int am65_cpts_ptp_enable(struct ptp_clock_info *ptp,
- 				struct ptp_clock_request *rq, int on)
- {
-@@ -614,6 +679,8 @@ static int am65_cpts_ptp_enable(struct ptp_clock_info *ptp,
- 		return am65_cpts_extts_enable(cpts, rq->extts.index, on);
- 	case PTP_CLK_REQ_PEROUT:
- 		return am65_cpts_perout_enable(cpts, &rq->perout, on);
-+	case PTP_CLK_REQ_PPS:
-+		return am65_cpts_pps_enable(cpts, on);
- 	default:
- 		break;
- 	}
-@@ -926,6 +993,23 @@ static int am65_cpts_of_parse(struct am65_cpts *cpts, struct device_node *node)
- 	if (!of_property_read_u32(node, "ti,cpts-periodic-outputs", &prop[0]))
- 		cpts->genf_num = prop[0];
++	spin_lock_irqsave(&cpts->lock, flags);
  
-+	if (!of_property_read_u32_array(node, "ti,pps", prop, 2)) {
-+		cpts->pps_present = true;
+-	val = upper_32_bits(adj_period) & 0x3FF;
+-	am65_cpts_write32(cpts, val, ts_ppm_hi);
+-	val = lower_32_bits(adj_period);
+-	am65_cpts_write32(cpts, val, ts_ppm_low);
++	/* All below writes must be done extremely fast:
++	 *  - delay between PPM dir and PPM value changes can cause err due old
++	 *    PPM correction applied in wrong direction
++	 *  - delay between CPTS-clock PPM cfg and GenF PPM cfg can cause err
++	 *    due CPTS-clock PPM working with new cfg while GenF PPM cfg still
++	 *    with old for short period of time
++	 */
 +
-+		if (prop[0] > 7) {
-+			dev_err(cpts->dev, "invalid HWx_TS_PUSH index: %u provided\n", prop[0]);
-+			cpts->pps_present = false;
-+		}
-+		if (prop[1] > 1) {
-+			dev_err(cpts->dev, "invalid GENFy index: %u provided\n", prop[1]);
-+			cpts->pps_present = false;
-+		}
-+		if (cpts->pps_present) {
-+			cpts->pps_hw_ts_idx = prop[0];
-+			cpts->pps_genf_idx = prop[1];
-+		}
++	am65_cpts_write32(cpts, ctrl_val, control);
++	am65_cpts_write32(cpts, ppm_hi, ts_ppm_hi);
++	am65_cpts_write32(cpts, ppm_low, ts_ppm_low);
++
++	if (cpts->pps_enabled) {
++		am65_cpts_write32(cpts, pps_ctrl_val, genf[pps_index].control);
++		am65_cpts_write32(cpts, pps_ppm_hi, genf[pps_index].ppm_hi);
++		am65_cpts_write32(cpts, pps_ppm_low, genf[pps_index].ppm_low);
 +	}
 +
- 	return cpts_of_mux_clk_setup(cpts, node);
- }
++	/* All GenF/EstF can be updated here the same way */
++	spin_unlock_irqrestore(&cpts->lock, flags);
  
-@@ -993,6 +1077,8 @@ struct am65_cpts *am65_cpts_create(struct device *dev, void __iomem *regs,
- 		cpts->ptp_info.n_ext_ts = cpts->ext_ts_inputs;
- 	if (cpts->genf_num)
- 		cpts->ptp_info.n_per_out = cpts->genf_num;
-+	if (cpts->pps_present)
-+		cpts->ptp_info.pps = 1;
- 
- 	am65_cpts_set_add_val(cpts);
- 
-@@ -1028,9 +1114,9 @@ struct am65_cpts *am65_cpts_create(struct device *dev, void __iomem *regs,
- 		return ERR_PTR(ret);
- 	}
- 
--	dev_info(dev, "CPTS ver 0x%08x, freq:%u, add_val:%u\n",
-+	dev_info(dev, "CPTS ver 0x%08x, freq:%u, add_val:%u pps:%d\n",
- 		 am65_cpts_read32(cpts, idver),
--		 cpts->refclk_freq, cpts->ts_add_val);
-+		 cpts->refclk_freq, cpts->ts_add_val, cpts->pps_present);
- 
- 	return cpts;
+ 	mutex_unlock(&cpts->ptp_clk_lock);
  
 -- 
 2.25.1
