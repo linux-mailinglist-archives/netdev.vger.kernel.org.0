@@ -2,122 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB46C66C303
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 15:58:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDDFE66C31C
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 16:00:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231783AbjAPO64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 09:58:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50448 "EHLO
+        id S232975AbjAPPA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 10:00:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232735AbjAPO6C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 09:58:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9271222DFA;
-        Mon, 16 Jan 2023 06:47:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50FC8B80FE3;
-        Mon, 16 Jan 2023 14:47:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F535C433F2;
-        Mon, 16 Jan 2023 14:47:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673880470;
-        bh=twPexIfKoAN+WjWTy5RLoIvwPbPlryHvq/rfgYpovQI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cSickh/w9waXiECjCIggVB6S45ipxMb5uGWzI3rQBzQqdpJ8lvIrTNLGprWPYq4mH
-         yFkMAgmuIUlgHiT/KQL6oeBJPYEg+wbmt4zEaZhULGzXUivYQ8HlqV5zzFWI+FLp3h
-         IIldZTWIFu8fanlWHEEl3brnBJq10dqyshaEooXoUHo6rP90GdX8KApGKGzLg4qbhz
-         AFzDmgw6QrHWCG3DDfXOHJr2e60X/8ZD6GSeaCuChY46tGdj+rOXFrlATRTxJ7oyKU
-         OHCvl1SiRK8ebk4Ft3jefV/+UH8E4XLkEX2A5FYp+hRVwOPQ6VjxWiCB/G/NLzzvV/
-         oNunCjRURipaQ==
-Date:   Mon, 16 Jan 2023 14:47:46 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH net-next] regmap: Rework regmap_mdio_c45_{read|write} for
- new C45 API.
-Message-ID: <Y8VjkgcWHjR9TzNw@sirena.org.uk>
-References: <20230116111509.4086236-1-michael@walle.cc>
+        with ESMTP id S232907AbjAPPAN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 10:00:13 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C240B1E1CB;
+        Mon, 16 Jan 2023 06:50:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1673880628; x=1705416628;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nt9+G0u9QCzWbTtMVs5nWHcsj6g1kfaD/vHl3p4hSNc=;
+  b=rFHs5kOuuHX1VLcEVBZ7MaDvZEt1XU4XL0uL1NbasBjlj+yjOtjjdH2w
+   GUcv1EkRXO5muyJFCdefwblIAHVvGQaXTaRXGJ7R1mvk5n955mPfExuc4
+   F3Ue/yR1XGHqQIuLgU/q4oMLUJo48zuWgg6CFaG/lQJkLcAQVArqlomOo
+   BhkJHzMhzv4ArwdgzFbU7PPCw5OBrIIQGVeytSEQWNCsi8L7HyhWA7sjl
+   EDQrj5E05WILOIiRNzw08qSNgT43Hqx1GKWxFtVuvy9zyEC6cqBeXPu4u
+   fz1UzMQHyvErqqXW0mm5CiMNojdGsZdRMqqVTs0+fBSaBVR1zTh7l5Aiq
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.97,221,1669100400"; 
+   d="scan'208";a="132549081"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Jan 2023 07:49:06 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 16 Jan 2023 07:49:05 -0700
+Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Mon, 16 Jan 2023 07:49:02 -0700
+From:   Daniel Machon <daniel.machon@microchip.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <lars.povlsen@microchip.com>,
+        <Steen.Hegelund@microchip.com>, <daniel.machon@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, <joe@perches.com>,
+        <error27@gmail.com>, <horatiu.vultur@microchip.com>,
+        <Julia.Lawall@inria.fr>, <petrm@nvidia.com>,
+        <vladimir.oltean@nxp.com>, <maxime.chevallier@bootlin.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next v2 0/6] Introduce new DCB rewrite table
+Date:   Mon, 16 Jan 2023 15:48:47 +0100
+Message-ID: <20230116144853.2446315-1-daniel.machon@microchip.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="PXispJuV/LhwcbWV"
-Content-Disposition: inline
-In-Reply-To: <20230116111509.4086236-1-michael@walle.cc>
-X-Cookie: Serving suggestion.
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+There is currently no support for per-port egress mapping of priority to PCP and
+priority to DSCP. Some support for expressing egress mapping of PCP is supported
+through ip link, with the 'egress-qos-map', however this command only maps
+priority to PCP, and for vlan interfaces only. DCB APP already has support for
+per-port ingress mapping of PCP/DEI, DSCP and a bunch of other stuff. So why not
+take advantage of this fact, and add a new table that does the reverse.
 
---PXispJuV/LhwcbWV
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch series introduces the new DCB rewrite table. Whereas the DCB
+APP table deals with ingress mapping of PID (protocol identifier) to priority,
+the rewrite table deals with egress mapping of priority to PID.
 
-On Mon, Jan 16, 2023 at 12:15:09PM +0100, Michael Walle wrote:
-> From: Andrew Lunn <andrew@lunn.ch>
->=20
-> The MDIO subsystem is getting rid of MII_ADDR_C45 and thus also
-> encoding associated encoding of the C45 device address and register
-> address into one value. regmap-mdio also uses this encoding for the
-> C45 bus.
+It is indeed possible to integrate rewrite in the existing APP table, by
+introducing new dedicated rewrite selectors, and altering existing functions
+to treat rewrite entries specially. However, I feel like this is not a good
+solution, and will pollute the APP namespace. APP is well-defined in IEEE, and
+some userspace relies of advertised entries - for this fact, separating APP and
+rewrite into to completely separate objects, seems to me the best solution.
 
-The following changes since commit 1b929c02afd37871d5afb9d498426f83432e71c2:
+The new table shares much functionality with the APP table, and as such, much
+existing code is reused, or slightly modified, to work for both.
 
-  Linux 6.2-rc1 (2022-12-25 13:41:39 -0800)
+================================================================================
+DCB rewrite table in a nutshell
+================================================================================
+The table is implemented as a simple linked list, and uses the same lock as the
+APP table. New functions for getting, setting and deleting entries have been
+added, and these are exported, so they can be used by the stack or drivers.
+Additionnaly, new dcbnl_setrewr and dcnl_delrewr hooks has been added, to
+support hardware offload of the entries.
 
-are available in the Git repository at:
+================================================================================
+Sparx5 per-port PCP rewrite support
+================================================================================
+Sparx5 supports PCP egress mapping through two eight-entry switch tables.
+One table maps QoS class 0-7 to PCP for DE0 (DP levels mapped to
+drop-eligibility 0) and the other for DE1. DCB does currently not have support
+for expressing DP/color, so instead, the tagged DEI bit will reflect the DP
+levels, for any rewrite entries> 7 ('de').
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git tags/r=
-egmap-mdio-c45-rework
+The driver will take apptrust (contributed earlier) into consideration, so
+that the mapping tables only be used, if PCP is trusted *and* the rewrite table
+has active mappings, otherwise classified PCP (same as frame PCP) will be used
+instead.
 
-for you to fetch changes up to 7b3c4c370c09313e22b555e79167e73d233611d1:
+================================================================================
+Sparx5 per-port DSCP rewrite support
+================================================================================
+Sparx5 support DSCP egress mapping through a single 32-entry table. This table
+maps classified QoS class and DP level to classified DSCP, and is consulted by
+the switch Analyzer Classifier at ingress. At egress, the frame DSCP can either
+be rewritten to classified DSCP to frame DSCP.
 
-  regmap: Rework regmap_mdio_c45_{read|write} for new C45 API. (2023-01-16 =
-13:16:09 +0000)
+The driver will take apptrust into consideration, so that the mapping tables
+only be used, if DSCP is trusted *and* the rewrite table has active mappings,
+otherwise frame DSCP will be used instead.
 
-----------------------------------------------------------------
-regmap: Rework regmap_mdio_c45_{read|write} for new C45 API.
+================================================================================
+Patches
+================================================================================
+Patch #1 modifies dcb_app_add to work for both APP and rewrite
 
-This reworks the regmap MDIO handling of C45 addresses in
-preparation for some forthcoming updates to the networking code.
+Patch #2 adds dcbnl_app_table_setdel() for setting and deleting both APP and
+         rewrite entries.
 
-----------------------------------------------------------------
-Andrew Lunn (1):
-      regmap: Rework regmap_mdio_c45_{read|write} for new C45 API.
+Patch #3 adds the rewrite table and all required functions, offload hooks and
+         bookkeeping for maintaining it.
 
- drivers/base/regmap/regmap-mdio.c | 41 ++++++++++++++++++++++-------------=
-----
- include/linux/regmap.h            |  8 ++++++++
- 2 files changed, 31 insertions(+), 18 deletions(-)
+Patch #4 adds two new helper functions for getting a priority to PCP bitmask
+         map, and a priority to DSCP bitmask map.
 
---PXispJuV/LhwcbWV
-Content-Type: application/pgp-signature; name="signature.asc"
+Patch #5 adds support for PCP rewrite in the Sparx5 driver.
+Patch #6 adds support for DSCP rewrite in the Sparx5 driver.
 
------BEGIN PGP SIGNATURE-----
+================================================================================
+v1 -> v2:
+  In dcb_setrewr() change proto to u16 as it ought to be, and remove zero
+  initialization of err. (Dan Carpenter).
+  Change name of dcbnl_apprewr_setdel -> dcbnl_app_table_setdel and change the
+  function signature to take a single function pointer. Update uses accordingly
+  (Petr Machata).
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmPFY5EACgkQJNaLcl1U
-h9CmnQf/a4CnKk3hyuNTmn52dFmhdAgCiC6NcswkaijIYDh/uwgFqWVMl93KW+rv
-35ea6TrsMQBRw7a6A/LRqiTxoOZjmi2sSAt6Ep956Q7GawgwPBCaXZ9fxuE8azlE
-zbB2B/+oK/djlS+fayHiX5o5Cr9+FtFVKu0VhEVMvMuBSO0TIcxl6TC8jjG2708+
-RVzi7sJUaIe2eghiBXl8lVOy3/u7b6zxKhAVQw2/+IID7g3GIw32grpKUlsbVIM6
-PwOXlNng5uLcMqk4btPeNe1y1twfvWXNxIKdZhfYQDq491+05j1ncxgdJ2niBzjW
-7pm9JIzaYhqoh8zYRePVC74T+UUTcA==
-=BGIb
------END PGP SIGNATURE-----
+Daniel Machon (6):
+  net: dcb: modify dcb_app_add to take list_head ptr as parameter
+  net: dcb: add new common function for set/del of app/rewr entries
+  net: dcb: add new rewrite table
+  net: dcb: add helper functions to retrieve PCP and DSCP rewrite maps
+  net: microchip: sparx5: add support for PCP rewrite
+  net: microchip: sparx5: add support for DSCP rewrite
 
---PXispJuV/LhwcbWV--
+ .../ethernet/microchip/sparx5/sparx5_dcb.c    | 121 +++++++-
+ .../microchip/sparx5/sparx5_main_regs.h       |  70 ++++-
+ .../ethernet/microchip/sparx5/sparx5_port.c   |  97 +++++++
+ .../ethernet/microchip/sparx5/sparx5_port.h   |  41 +++
+ include/net/dcbnl.h                           |  18 ++
+ include/uapi/linux/dcbnl.h                    |   2 +
+ net/dcb/dcbnl.c                               | 271 ++++++++++++++----
+ 7 files changed, 547 insertions(+), 73 deletions(-)
+
+--
+2.34.1
+
