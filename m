@@ -2,65 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7EAA66B886
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 08:58:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 508CB66B89B
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 09:01:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232078AbjAPH6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 02:58:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33196 "EHLO
+        id S232215AbjAPIBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 03:01:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232069AbjAPH6y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 02:58:54 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8891E1042C
-        for <netdev@vger.kernel.org>; Sun, 15 Jan 2023 23:58:53 -0800 (PST)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 3EB06B8B;
-        Mon, 16 Jan 2023 08:58:51 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1673855931;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1RXXuE+Cag4Wwx8kWm4EEPNjbqIiiiPPUaMdFskU58A=;
-        b=R/B4C+ndFbVos65EOm7txgAaQPxsDshaQLYT7hJHYL/onvTIUo95PFvsQR4xsoPXqP6V0J
-        7ifdjMcItIo6MIRBBdiBFTfYbxThklKdlADQaJBm1xHpPG8CSXpn/SO9p/h6mymF6nmS+R
-        MPu8bvIR9+fEBjDYA6ZfbOqtI0eDQMRkDQ6YrFca8E4jvOGVNZjaCa6iO/IZrZHSZTL2y6
-        3B2WnL+lubeYRJAvj1y7YOiYIHk9k4VoReBHPx1GY0Ce49517IukTdvF/3wO61NwofjUZx
-        7hWotN7DP6rFXCAg2n7PdjaxOhCNco2uf+8K7tvQ1UxkSkeyhRDSgBIZJEEiOQ==
+        with ESMTP id S232200AbjAPIBR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 03:01:17 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB1651205D;
+        Mon, 16 Jan 2023 00:00:52 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 30G806AA0003786, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 30G806AA0003786
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Mon, 16 Jan 2023 16:00:06 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.9; Mon, 16 Jan 2023 16:00:06 +0800
+Received: from fc34.localdomain (172.22.228.98) by RTEXMBS04.realtek.com.tw
+ (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Mon, 16 Jan
+ 2023 16:00:05 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     <kuba@kernel.org>, <davem@davemloft.net>, <bjorn@mork.no>
+CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        Hayes Wang <hayeswang@realtek.com>
+Subject: [PATCH net-next] r8152: avoid to change cfg for all devices
+Date:   Mon, 16 Jan 2023 15:59:51 +0800
+Message-ID: <20230116075951.1988-1-hayeswang@realtek.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Date:   Mon, 16 Jan 2023 08:58:51 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev <netdev@vger.kernel.org>, kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH net-next] net: mdio: cavium: Remove unneeded simicolons
-In-Reply-To: <20230115164203.510615-1-andrew@lunn.ch>
-References: <20230115164203.510615-1-andrew@lunn.ch>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <039694f9275509d0273baa8fc58fbcfe@walle.cc>
-X-Sender: michael@walle.cc
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.22.228.98]
+X-ClientProxiedBy: RTEXH36505.realtek.com.tw (172.21.6.25) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 01/16/2023 07:09:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIzLzEvMTYgpFekyCAwNjowMDowMA==?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> The recent refactoring to split C22 and C45 introduced two unneeded
-> semiconons which the kernel test bot reported. Remove them.
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Fixes: 93641ecbaa1f ("net: mdio: cavium: Separate C22 and C45 
-> transactions")
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+The rtl8152_cfgselector_probe() should set the USB configuration to the
+vendor mode only for the devices which the driver (r8152) supports.
+Otherwise, no driver would be used for such devices.
 
-Reviewed-by: Michael Walle <michael@walle.cc>
+Fixes: ec51fbd1b8a2 ("r8152: add USB device driver for config selection")
+Signed-off-by: Hayes Wang <hayeswang@realtek.com>
+---
+ drivers/net/usb/r8152.c | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index 66e70b5f8417..24be9449e4fc 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -9500,9 +9500,8 @@ static int rtl_fw_init(struct r8152 *tp)
+ 	return 0;
+ }
+ 
+-u8 rtl8152_get_version(struct usb_interface *intf)
++static u8 __rtl_get_hw_ver(struct usb_device *udev)
+ {
+-	struct usb_device *udev = interface_to_usbdev(intf);
+ 	u32 ocp_data = 0;
+ 	__le32 *tmp;
+ 	u8 version;
+@@ -9571,10 +9570,19 @@ u8 rtl8152_get_version(struct usb_interface *intf)
+ 		break;
+ 	default:
+ 		version = RTL_VER_UNKNOWN;
+-		dev_info(&intf->dev, "Unknown version 0x%04x\n", ocp_data);
++		dev_info(&udev->dev, "Unknown version 0x%04x\n", ocp_data);
+ 		break;
+ 	}
+ 
++	return version;
++}
++
++u8 rtl8152_get_version(struct usb_interface *intf)
++{
++	u8 version;
++
++	version = __rtl_get_hw_ver(interface_to_usbdev(intf));
++
+ 	dev_dbg(&intf->dev, "Detected version 0x%04x\n", version);
+ 
+ 	return version;
+@@ -9869,6 +9877,12 @@ static int rtl8152_cfgselector_probe(struct usb_device *udev)
+ 	struct usb_host_config *c;
+ 	int i, num_configs;
+ 
++	/* Swtich the device to vendor mode, if and only if the vendor mode
++	 * driver supports it.
++	 */
++	if (__rtl_get_hw_ver(udev) == RTL_VER_UNKNOWN)
++		return 0;
++
+ 	/* The vendor mode is not always config #1, so to find it out. */
+ 	c = udev->config;
+ 	num_configs = udev->descriptor.bNumConfigurations;
+-- 
+2.38.1
+
