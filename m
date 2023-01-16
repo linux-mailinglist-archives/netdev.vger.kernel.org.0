@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDDFE66C31C
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 16:00:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C42F166C320
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 16:01:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232975AbjAPPA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 10:00:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
+        id S232948AbjAPPA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 10:00:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232907AbjAPPAN (ORCPT
+        with ESMTP id S232934AbjAPPAN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 10:00:13 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C240B1E1CB;
-        Mon, 16 Jan 2023 06:50:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74406222CC;
+        Mon, 16 Jan 2023 06:50:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1673880628; x=1705416628;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=nt9+G0u9QCzWbTtMVs5nWHcsj6g1kfaD/vHl3p4hSNc=;
-  b=rFHs5kOuuHX1VLcEVBZ7MaDvZEt1XU4XL0uL1NbasBjlj+yjOtjjdH2w
-   GUcv1EkRXO5muyJFCdefwblIAHVvGQaXTaRXGJ7R1mvk5n955mPfExuc4
-   F3Ue/yR1XGHqQIuLgU/q4oMLUJo48zuWgg6CFaG/lQJkLcAQVArqlomOo
-   BhkJHzMhzv4ArwdgzFbU7PPCw5OBrIIQGVeytSEQWNCsi8L7HyhWA7sjl
-   EDQrj5E05WILOIiRNzw08qSNgT43Hqx1GKWxFtVuvy9zyEC6cqBeXPu4u
-   fz1UzMQHyvErqqXW0mm5CiMNojdGsZdRMqqVTs0+fBSaBVR1zTh7l5Aiq
-   Q==;
+  t=1673880630; x=1705416630;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=vwtYbLrA2oTbDo1HOHwwRKLWlo8AMmLQ34Uv58yjfws=;
+  b=YlLXbD/xH8kgQTkLRr+JqKIq4TuKZXlbZIHxgkTu5vCDdLk4dwTsABmQ
+   AeuYF6TBiiy6T0I1KMKlz4xfCjKe+GGFTLIr7xSGeJF6hGmvdJ3hElLEF
+   4XNPoK6pLIEzpHwSedvvoLSCcK1flJQ4APf8vwFUWkIggnIOrHLU72K8y
+   LSPmKsDYmjApKJHoWfcsexl7ta3hAP7GbdSHuQrT0op44Eu9yy+vXdNxH
+   hn/mDQg731eiNGebP//OejsTY+JjXE9gcm2hF+QQk98gFaqh4gW60BePD
+   D/yfqeL3k7gSFIL3tRPGtUB6INH746et/jMqkI32RQWqq8DhKDM1wqzW0
+   A==;
 X-IronPort-AV: E=Sophos;i="5.97,221,1669100400"; 
-   d="scan'208";a="132549081"
+   d="scan'208";a="132549087"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Jan 2023 07:49:06 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Jan 2023 07:49:09 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 16 Jan 2023 07:49:05 -0700
+ 15.1.2507.16; Mon, 16 Jan 2023 07:49:09 -0700
 Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Mon, 16 Jan 2023 07:49:02 -0700
+ 15.1.2507.16 via Frontend Transport; Mon, 16 Jan 2023 07:49:05 -0700
 From:   Daniel Machon <daniel.machon@microchip.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
@@ -49,10 +49,12 @@ CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <vladimir.oltean@nxp.com>, <maxime.chevallier@bootlin.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next v2 0/6] Introduce new DCB rewrite table
-Date:   Mon, 16 Jan 2023 15:48:47 +0100
-Message-ID: <20230116144853.2446315-1-daniel.machon@microchip.com>
+Subject: [PATCH net-next v2 1/6] net: dcb: modify dcb_app_add to take list_head ptr as parameter
+Date:   Mon, 16 Jan 2023 15:48:48 +0100
+Message-ID: <20230116144853.2446315-2-daniel.machon@microchip.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230116144853.2446315-1-daniel.machon@microchip.com>
+References: <20230116144853.2446315-1-daniel.machon@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -66,104 +68,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is currently no support for per-port egress mapping of priority to PCP and
-priority to DSCP. Some support for expressing egress mapping of PCP is supported
-through ip link, with the 'egress-qos-map', however this command only maps
-priority to PCP, and for vlan interfaces only. DCB APP already has support for
-per-port ingress mapping of PCP/DEI, DSCP and a bunch of other stuff. So why not
-take advantage of this fact, and add a new table that does the reverse.
+In preparation to DCB rewrite. Modify dcb_app_add to take new struct
+list_head * as parameter, to make the used list configurable. This is
+done to allow reusing the function for adding rewrite entries to the
+rewrite table, which is introduced in a later patch.
 
-This patch series introduces the new DCB rewrite table. Whereas the DCB
-APP table deals with ingress mapping of PID (protocol identifier) to priority,
-the rewrite table deals with egress mapping of priority to PID.
+Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
+---
+ net/dcb/dcbnl.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-It is indeed possible to integrate rewrite in the existing APP table, by
-introducing new dedicated rewrite selectors, and altering existing functions
-to treat rewrite entries specially. However, I feel like this is not a good
-solution, and will pollute the APP namespace. APP is well-defined in IEEE, and
-some userspace relies of advertised entries - for this fact, separating APP and
-rewrite into to completely separate objects, seems to me the best solution.
-
-The new table shares much functionality with the APP table, and as such, much
-existing code is reused, or slightly modified, to work for both.
-
-================================================================================
-DCB rewrite table in a nutshell
-================================================================================
-The table is implemented as a simple linked list, and uses the same lock as the
-APP table. New functions for getting, setting and deleting entries have been
-added, and these are exported, so they can be used by the stack or drivers.
-Additionnaly, new dcbnl_setrewr and dcnl_delrewr hooks has been added, to
-support hardware offload of the entries.
-
-================================================================================
-Sparx5 per-port PCP rewrite support
-================================================================================
-Sparx5 supports PCP egress mapping through two eight-entry switch tables.
-One table maps QoS class 0-7 to PCP for DE0 (DP levels mapped to
-drop-eligibility 0) and the other for DE1. DCB does currently not have support
-for expressing DP/color, so instead, the tagged DEI bit will reflect the DP
-levels, for any rewrite entries> 7 ('de').
-
-The driver will take apptrust (contributed earlier) into consideration, so
-that the mapping tables only be used, if PCP is trusted *and* the rewrite table
-has active mappings, otherwise classified PCP (same as frame PCP) will be used
-instead.
-
-================================================================================
-Sparx5 per-port DSCP rewrite support
-================================================================================
-Sparx5 support DSCP egress mapping through a single 32-entry table. This table
-maps classified QoS class and DP level to classified DSCP, and is consulted by
-the switch Analyzer Classifier at ingress. At egress, the frame DSCP can either
-be rewritten to classified DSCP to frame DSCP.
-
-The driver will take apptrust into consideration, so that the mapping tables
-only be used, if DSCP is trusted *and* the rewrite table has active mappings,
-otherwise frame DSCP will be used instead.
-
-================================================================================
-Patches
-================================================================================
-Patch #1 modifies dcb_app_add to work for both APP and rewrite
-
-Patch #2 adds dcbnl_app_table_setdel() for setting and deleting both APP and
-         rewrite entries.
-
-Patch #3 adds the rewrite table and all required functions, offload hooks and
-         bookkeeping for maintaining it.
-
-Patch #4 adds two new helper functions for getting a priority to PCP bitmask
-         map, and a priority to DSCP bitmask map.
-
-Patch #5 adds support for PCP rewrite in the Sparx5 driver.
-Patch #6 adds support for DSCP rewrite in the Sparx5 driver.
-
-================================================================================
-v1 -> v2:
-  In dcb_setrewr() change proto to u16 as it ought to be, and remove zero
-  initialization of err. (Dan Carpenter).
-  Change name of dcbnl_apprewr_setdel -> dcbnl_app_table_setdel and change the
-  function signature to take a single function pointer. Update uses accordingly
-  (Petr Machata).
-
-Daniel Machon (6):
-  net: dcb: modify dcb_app_add to take list_head ptr as parameter
-  net: dcb: add new common function for set/del of app/rewr entries
-  net: dcb: add new rewrite table
-  net: dcb: add helper functions to retrieve PCP and DSCP rewrite maps
-  net: microchip: sparx5: add support for PCP rewrite
-  net: microchip: sparx5: add support for DSCP rewrite
-
- .../ethernet/microchip/sparx5/sparx5_dcb.c    | 121 +++++++-
- .../microchip/sparx5/sparx5_main_regs.h       |  70 ++++-
- .../ethernet/microchip/sparx5/sparx5_port.c   |  97 +++++++
- .../ethernet/microchip/sparx5/sparx5_port.h   |  41 +++
- include/net/dcbnl.h                           |  18 ++
- include/uapi/linux/dcbnl.h                    |   2 +
- net/dcb/dcbnl.c                               | 271 ++++++++++++++----
- 7 files changed, 547 insertions(+), 73 deletions(-)
-
---
+diff --git a/net/dcb/dcbnl.c b/net/dcb/dcbnl.c
+index f9949e051f49..a76bdf6f0198 100644
+--- a/net/dcb/dcbnl.c
++++ b/net/dcb/dcbnl.c
+@@ -1955,7 +1955,8 @@ static struct dcb_app_type *dcb_app_lookup(const struct dcb_app *app,
+ 	return NULL;
+ }
+ 
+-static int dcb_app_add(const struct dcb_app *app, int ifindex)
++static int dcb_app_add(struct list_head *list, const struct dcb_app *app,
++		       int ifindex)
+ {
+ 	struct dcb_app_type *entry;
+ 
+@@ -1965,7 +1966,7 @@ static int dcb_app_add(const struct dcb_app *app, int ifindex)
+ 
+ 	memcpy(&entry->app, app, sizeof(*app));
+ 	entry->ifindex = ifindex;
+-	list_add(&entry->list, &dcb_app_list);
++	list_add(&entry->list, list);
+ 
+ 	return 0;
+ }
+@@ -2028,7 +2029,7 @@ int dcb_setapp(struct net_device *dev, struct dcb_app *new)
+ 	}
+ 	/* App type does not exist add new application type */
+ 	if (new->priority)
+-		err = dcb_app_add(new, dev->ifindex);
++		err = dcb_app_add(&dcb_app_list, new, dev->ifindex);
+ out:
+ 	spin_unlock_bh(&dcb_lock);
+ 	if (!err)
+@@ -2088,7 +2089,7 @@ int dcb_ieee_setapp(struct net_device *dev, struct dcb_app *new)
+ 		goto out;
+ 	}
+ 
+-	err = dcb_app_add(new, dev->ifindex);
++	err = dcb_app_add(&dcb_app_list, new, dev->ifindex);
+ out:
+ 	spin_unlock_bh(&dcb_lock);
+ 	if (!err)
+-- 
 2.34.1
 
