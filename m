@@ -2,125 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 508CB66B89B
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 09:01:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4099D66B8C8
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 09:08:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232215AbjAPIBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 03:01:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34324 "EHLO
+        id S232137AbjAPIIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 03:08:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232200AbjAPIBR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 03:01:17 -0500
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB1651205D;
-        Mon, 16 Jan 2023 00:00:52 -0800 (PST)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 30G806AA0003786, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 30G806AA0003786
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Mon, 16 Jan 2023 16:00:06 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.9; Mon, 16 Jan 2023 16:00:06 +0800
-Received: from fc34.localdomain (172.22.228.98) by RTEXMBS04.realtek.com.tw
- (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Mon, 16 Jan
- 2023 16:00:05 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     <kuba@kernel.org>, <davem@davemloft.net>, <bjorn@mork.no>
-CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
-        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        Hayes Wang <hayeswang@realtek.com>
-Subject: [PATCH net-next] r8152: avoid to change cfg for all devices
-Date:   Mon, 16 Jan 2023 15:59:51 +0800
-Message-ID: <20230116075951.1988-1-hayeswang@realtek.com>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S232218AbjAPIIG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 03:08:06 -0500
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EBE312060;
+        Mon, 16 Jan 2023 00:06:29 -0800 (PST)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id B40B3FF803;
+        Mon, 16 Jan 2023 08:06:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1673856388;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jKlqXRziLzS7Xh6vcawTt0PG/It1v0slhKbICt31lUQ=;
+        b=GKM/ipfMwzxvNvBkS2EmIVMLbKO5PqeE8Bj45ZxnA8pUUYbgJ9G0fh9ekxdn8drbt8UgKj
+        qjRFMeup/uk4imU22mKV7vUhcNCv+un9Bo2VXenVlmRXHGlxbWBJmYaf5OBXosqIYCf2N7
+        vZZDgP4Wen0f2kltgpgIGUQigSqwphxM79QmBGoIDDrSSYyQmR3t9BLNh3RHJCKEDAqWiL
+        VMpIpFZlsdhbMJp2Pf8IfCiVxc/pptGJQCgCHsnRkFLhO9ou/7wK01MQLu6IYdFvCVKI1q
+        RlKhYwTEqD9mauyiq+PZzFzL9Kuuid/FEw4svtlVXWJ0gmoyGEC9sD68V/eaIA==
+Date:   Mon, 16 Jan 2023 09:08:37 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>
+Subject: Re: [PATCH net-next] net: dsa: rzn1-a5psw: Add vlan support
+Message-ID: <20230116090837.105b42a9@fixe.home>
+In-Reply-To: <20230113153730.bcj5iqkgilgmgds3@skbuf>
+References: <20230111115607.1146502-1-clement.leger@bootlin.com>
+        <20230112213755.42f6cf75@kernel.org>
+        <Y8Fm2GdUF9R1asZs@lunn.ch>
+        <20230113153730.bcj5iqkgilgmgds3@skbuf>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [172.22.228.98]
-X-ClientProxiedBy: RTEXH36505.realtek.com.tw (172.21.6.25) To
- RTEXMBS04.realtek.com.tw (172.21.6.97)
-X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: trusted connection
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 01/16/2023 07:09:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIzLzEvMTYgpFekyCAwNjowMDowMA==?=
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The rtl8152_cfgselector_probe() should set the USB configuration to the
-vendor mode only for the devices which the driver (r8152) supports.
-Otherwise, no driver would be used for such devices.
+Le Fri, 13 Jan 2023 17:37:30 +0200,
+Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
 
-Fixes: ec51fbd1b8a2 ("r8152: add USB device driver for config selection")
-Signed-off-by: Hayes Wang <hayeswang@realtek.com>
----
- drivers/net/usb/r8152.c | 20 +++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+> On Fri, Jan 13, 2023 at 03:12:40PM +0100, Andrew Lunn wrote:
+> > On Thu, Jan 12, 2023 at 09:37:55PM -0800, Jakub Kicinski wrote: =20
+> > > On Wed, 11 Jan 2023 12:56:07 +0100 Cl=C3=A9ment L=C3=A9ger wrote: =20
+> > > > Add support for vlan operation (add, del, filtering) on the RZN1
+> > > > driver. The a5psw switch supports up to 32 VLAN IDs with filtering,
+> > > > tagged/untagged VLANs and PVID for each ports. =20
+> > >=20
+> > > noob question - do you need that mutex?=20
+> > > aren't those ops all under rtnl_lock? =20
+> >=20
+> > Hi Jakub
+> >=20
+> > Not commenting about this specific patch, but not everything in DSA is
+> > done under RTNL. So you need to deal with some parallel API calls. But
+> > they tend to be in different areas. I would not expect to see two VLAN
+> > changes as the same time, but maybe VLAN and polling in a workqueue to
+> > update the statistics for example could happen. Depending on the
+> > switch, some protect might be needed to stop these operations
+> > interfering with each other. And DSA drivers in general tend to KISS
+> > and over lock. Nothing here is particularly hot path, the switch
+> > itself is on the end of a slow bus, so the overhead of locks are
+> > minimum. =20
+>=20
+> That being said, port_vlan_add(), port_vlan_del() and port_vlan_filtering=
+()
+> are all serialized by the rtnl_lock().
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 66e70b5f8417..24be9449e4fc 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -9500,9 +9500,8 @@ static int rtl_fw_init(struct r8152 *tp)
- 	return 0;
- }
- 
--u8 rtl8152_get_version(struct usb_interface *intf)
-+static u8 __rtl_get_hw_ver(struct usb_device *udev)
- {
--	struct usb_device *udev = interface_to_usbdev(intf);
- 	u32 ocp_data = 0;
- 	__le32 *tmp;
- 	u8 version;
-@@ -9571,10 +9570,19 @@ u8 rtl8152_get_version(struct usb_interface *intf)
- 		break;
- 	default:
- 		version = RTL_VER_UNKNOWN;
--		dev_info(&intf->dev, "Unknown version 0x%04x\n", ocp_data);
-+		dev_info(&udev->dev, "Unknown version 0x%04x\n", ocp_data);
- 		break;
- 	}
- 
-+	return version;
-+}
-+
-+u8 rtl8152_get_version(struct usb_interface *intf)
-+{
-+	u8 version;
-+
-+	version = __rtl_get_hw_ver(interface_to_usbdev(intf));
-+
- 	dev_dbg(&intf->dev, "Detected version 0x%04x\n", version);
- 
- 	return version;
-@@ -9869,6 +9877,12 @@ static int rtl8152_cfgselector_probe(struct usb_device *udev)
- 	struct usb_host_config *c;
- 	int i, num_configs;
- 
-+	/* Swtich the device to vendor mode, if and only if the vendor mode
-+	 * driver supports it.
-+	 */
-+	if (__rtl_get_hw_ver(udev) == RTL_VER_UNKNOWN)
-+		return 0;
-+
- 	/* The vendor mode is not always config #1, so to find it out. */
- 	c = udev->config;
- 	num_configs = udev->descriptor.bNumConfigurations;
--- 
-2.38.1
+Ok then, I'll remove this lock and rely on the RTNL lock.
 
+Thanks,
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
