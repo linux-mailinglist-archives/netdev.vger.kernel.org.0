@@ -2,112 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7DE966C2FB
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 15:57:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB46C66C303
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 15:58:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232815AbjAPO5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 09:57:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51926 "EHLO
+        id S231783AbjAPO64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 09:58:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232475AbjAPO4o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 09:56:44 -0500
-Received: from dilbert.mork.no (dilbert.mork.no [IPv6:2a01:4f9:c010:a439::d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B1D8252A2;
-        Mon, 16 Jan 2023 06:46:17 -0800 (PST)
-Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9a:3200:0:0:0:1])
-        (authenticated bits=0)
-        by dilbert.mork.no (8.15.2/8.15.2) with ESMTPSA id 30GEjVgq2096589
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Mon, 16 Jan 2023 14:45:32 GMT
-Received: from miraculix.mork.no ([IPv6:2a01:799:c9a:3202:549f:9f7a:c9d8:875b])
-        (authenticated bits=0)
-        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 30GEjO301941354
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Mon, 16 Jan 2023 15:45:25 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1673880326; bh=mx+q3yLiLRos9hCCmecWMw+O0wMnKRMkoi7oBC1P2yw=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=l1FEWKcFwozAXZT92eOk4DYK9J5PCDmXUQrfN+v/KWtvYc2fpizFf5QuySWUej9vH
-         gtapsUguFpTOxxoGcK918w1E9C0f+tX/TELSuLMxT1uGkro6wLbp60oGBBdhkA41yz
-         ABGYMJ8pa1LLF/WVx79N1VB0rbgWi11X6tb1CLZ4=
-Received: (nullmailer pid 375753 invoked by uid 1000);
-        Mon, 16 Jan 2023 14:45:24 -0000
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Frank Wunderlich <linux@fw-web.de>,
-        linux-mediatek@lists.infradead.org,
-        Alexander Couzens <lynxis@fe80.eu>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S232735AbjAPO6C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 09:58:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9271222DFA;
+        Mon, 16 Jan 2023 06:47:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50FC8B80FE3;
+        Mon, 16 Jan 2023 14:47:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F535C433F2;
+        Mon, 16 Jan 2023 14:47:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673880470;
+        bh=twPexIfKoAN+WjWTy5RLoIvwPbPlryHvq/rfgYpovQI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cSickh/w9waXiECjCIggVB6S45ipxMb5uGWzI3rQBzQqdpJ8lvIrTNLGprWPYq4mH
+         yFkMAgmuIUlgHiT/KQL6oeBJPYEg+wbmt4zEaZhULGzXUivYQ8HlqV5zzFWI+FLp3h
+         IIldZTWIFu8fanlWHEEl3brnBJq10dqyshaEooXoUHo6rP90GdX8KApGKGzLg4qbhz
+         AFzDmgw6QrHWCG3DDfXOHJr2e60X/8ZD6GSeaCuChY46tGdj+rOXFrlATRTxJ7oyKU
+         OHCvl1SiRK8ebk4Ft3jefV/+UH8E4XLkEX2A5FYp+hRVwOPQ6VjxWiCB/G/NLzzvV/
+         oNunCjRURipaQ==
+Date:   Mon, 16 Jan 2023 14:47:46 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: mtk_sgmii: implement mtk_pcs_ops
-Organization: m
-References: <trinity-1d4cc306-d1a4-4ccf-b853-d315553515ce-1666543305596@3c-app-gmx-bs01>
-        <Y1V/asUompZKj0ct@shell.armlinux.org.uk>
-        <trinity-ac9a840b-cb06-4710-827a-4c4423686074-1666551838763@3c-app-gmx-bs01>
-        <trinity-169e3c3f-3a64-485c-9a43-b7cc595531a9-1666552897046@3c-app-gmx-bs01>
-        <Y1Wfc+M/zVdw9Di3@shell.armlinux.org.uk>
-        <Y1Zah4+hyFk50JC6@shell.armlinux.org.uk>
-        <trinity-d2f74581-c020-4473-a5f4-0fc591233293-1666622740261@3c-app-gmx-bap55>
-        <Y1ansgmD69AcITWx@shell.armlinux.org.uk>
-        <trinity-defa4f3d-804e-401e-bea1-b36246cbc11b-1666685003285@3c-app-gmx-bap29>
-        <87o7qy39v5.fsf@miraculix.mork.no>
-        <Y8VVa0zHk0nCwS1w@shell.armlinux.org.uk>
-Date:   Mon, 16 Jan 2023 15:45:24 +0100
-In-Reply-To: <Y8VVa0zHk0nCwS1w@shell.armlinux.org.uk> (Russell King's message
-        of "Mon, 16 Jan 2023 13:47:23 +0000")
-Message-ID: <87h6wq35dn.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Sander Vanheule <sander@svanheule.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH net-next] regmap: Rework regmap_mdio_c45_{read|write} for
+ new C45 API.
+Message-ID: <Y8VjkgcWHjR9TzNw@sirena.org.uk>
+References: <20230116111509.4086236-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.7 at canardo
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="PXispJuV/LhwcbWV"
+Content-Disposition: inline
+In-Reply-To: <20230116111509.4086236-1-michael@walle.cc>
+X-Cookie: Serving suggestion.
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Russell King (Oracle)" <linux@armlinux.org.uk> writes:
-> On Mon, Jan 16, 2023 at 02:08:30PM +0100, Bj=C3=B8rn Mork wrote:
->> Frank Wunderlich <frank-w@public-files.de> writes:
->>=20
->> > apart from this little problem it works much better than it actually i=
-s so imho more
->> > people should test it on different platforms.
->>=20
->> Hello!  I've been banging my head against an MT7986 board with two
->> Maxlinear GPY211C phys for a while. One of those phys is connected to
->> port 5 of the MT7531 switch.  This is working perfectly.
->>=20
->> The other GPY211C is connected to the second MT7986 mac.  This one is
->> giving me a headache...
->>=20
->> I can only get the port to work at 2500Mb/s.  Changing the speed to
->> anything lower looks fine in ethtool etc, but traffic is blocked.
->
-> My guess would be that the GPY PHY is using in-band SGMII negotiation
-> (it sets VSPEC1_SGMII_ANEN_ANRS when entering SGMII mode and clears
-> it in 2500base-X), but as the link is not using in-band mode on the
-> PCS side, the PHY never sees its in-band negotiation complete, so the
-> link between PCS and PHY never comes up.
->
-> Both sides need to agree on that detail.
 
-Any hints on how I would go about doing that?  I am a little lost here,
-changing arbitrary bits I don't understand the meaning of.
+--PXispJuV/LhwcbWV
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Mon, Jan 16, 2023 at 12:15:09PM +0100, Michael Walle wrote:
+> From: Andrew Lunn <andrew@lunn.ch>
+>=20
+> The MDIO subsystem is getting rid of MII_ADDR_C45 and thus also
+> encoding associated encoding of the C45 device address and register
+> address into one value. regmap-mdio also uses this encoding for the
+> C45 bus.
 
-Bj=C3=B8rn
+The following changes since commit 1b929c02afd37871d5afb9d498426f83432e71c2:
+
+  Linux 6.2-rc1 (2022-12-25 13:41:39 -0800)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git tags/r=
+egmap-mdio-c45-rework
+
+for you to fetch changes up to 7b3c4c370c09313e22b555e79167e73d233611d1:
+
+  regmap: Rework regmap_mdio_c45_{read|write} for new C45 API. (2023-01-16 =
+13:16:09 +0000)
+
+----------------------------------------------------------------
+regmap: Rework regmap_mdio_c45_{read|write} for new C45 API.
+
+This reworks the regmap MDIO handling of C45 addresses in
+preparation for some forthcoming updates to the networking code.
+
+----------------------------------------------------------------
+Andrew Lunn (1):
+      regmap: Rework regmap_mdio_c45_{read|write} for new C45 API.
+
+ drivers/base/regmap/regmap-mdio.c | 41 ++++++++++++++++++++++-------------=
+----
+ include/linux/regmap.h            |  8 ++++++++
+ 2 files changed, 31 insertions(+), 18 deletions(-)
+
+--PXispJuV/LhwcbWV
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmPFY5EACgkQJNaLcl1U
+h9CmnQf/a4CnKk3hyuNTmn52dFmhdAgCiC6NcswkaijIYDh/uwgFqWVMl93KW+rv
+35ea6TrsMQBRw7a6A/LRqiTxoOZjmi2sSAt6Ep956Q7GawgwPBCaXZ9fxuE8azlE
+zbB2B/+oK/djlS+fayHiX5o5Cr9+FtFVKu0VhEVMvMuBSO0TIcxl6TC8jjG2708+
+RVzi7sJUaIe2eghiBXl8lVOy3/u7b6zxKhAVQw2/+IID7g3GIw32grpKUlsbVIM6
+PwOXlNng5uLcMqk4btPeNe1y1twfvWXNxIKdZhfYQDq491+05j1ncxgdJ2niBzjW
+7pm9JIzaYhqoh8zYRePVC74T+UUTcA==
+=BGIb
+-----END PGP SIGNATURE-----
+
+--PXispJuV/LhwcbWV--
