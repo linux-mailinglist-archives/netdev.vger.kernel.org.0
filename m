@@ -2,80 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE62666CE89
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 19:14:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3FA266CE8E
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 19:15:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233858AbjAPSOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 13:14:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58294 "EHLO
+        id S234075AbjAPSPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 13:15:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235176AbjAPSNu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 13:13:50 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DADB22A984
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 10:00:00 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id j16-20020a05600c1c1000b003d9ef8c274bso18418269wms.0
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 10:00:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=RenzUn74Q9jLsvzuylQRKXoJxyRhnObBO6txqo8PJQw=;
-        b=nTHmktnWjCB53s98IML0269XXc7OlCoHYxqlDRaED8SHsneKzvyb1nJXLEfcFmJ4Gu
-         eTOUmV8Yl4YdmJwrR6gApDhAuE4scrxS6LXVo6UmhNxLw0mVjzGa2ulRHwmev0coMyJu
-         6mtoduX0Q8RcofD/ufYJmOxc4rPH8mi7aZcYMfDGJWWDOvqoopd+TxMhAosxNNt7gIyP
-         jIkykpkic01VIxDXxPxJV49P3MCUmZNVEYGkk5lkzB3bA2OTaFs1uBGpJqGnMT0wXkyU
-         y46uTpYoeOfcMCXUdGYJx9kk0pAysJvA/Vj5semrVThum3o5pzX2asPowScYBTfC2GZ3
-         yXCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=RenzUn74Q9jLsvzuylQRKXoJxyRhnObBO6txqo8PJQw=;
-        b=ikianJDv4a+rXOKghZhNzV2g7MMDX4kpb7wz6HNg/SYb65kd11Ji83/kJptU7GR0e8
-         xED+HOZytQCWIOngwFXSWjeF1RZph5sLIoFmuLlXDk19rv4WpMtYwQcD14kkV8MDxsk7
-         vzOofxremRct7pHRQp7cLls8uzhBD/gc6c9oe/JijkW6O6BgrfItAP6QjYlpYasm45SG
-         fa9hOteCePTCrILIKvywFaeh0XvNPk9ne87ZkBYtUHu3vGmFBJ4fXcioYbNc5FFBfhsy
-         7TS745VoaIByOtSMkJAuEdkOEYx6xlxM5aMJbGTjBCO4t8WR4DzE7RLdPwx4ePP2gQTf
-         lgBg==
-X-Gm-Message-State: AFqh2kogEcLzgo0k1MAswgHsSSavL/lJ49lBRcVBssoUhZ5KuQ22nMBg
-        6ZloyetrG+AihZ32PMI7VrMTYa3MfqA=
-X-Google-Smtp-Source: AMrXdXsfZWWnnm2l1eBt+2T80hjWxdmiyd50u4OUTAvUlk8TX1/lPnTum4YrdO4t3WysOourbXWXkA==
-X-Received: by 2002:a05:600c:1e19:b0:3da:2ba4:b97 with SMTP id ay25-20020a05600c1e1900b003da2ba40b97mr7788002wmb.19.1673891999346;
-        Mon, 16 Jan 2023 09:59:59 -0800 (PST)
-Received: from ?IPV6:2a01:c23:c4bc:ff00:1041:a2b8:3c58:ba6d? (dynamic-2a01-0c23-c4bc-ff00-1041-a2b8-3c58-ba6d.c23.pool.telefonica.de. [2a01:c23:c4bc:ff00:1041:a2b8:3c58:ba6d])
-        by smtp.googlemail.com with ESMTPSA id l36-20020a05600c1d2400b003d9fb59c16fsm23681776wms.11.2023.01.16.09.59.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Jan 2023 09:59:58 -0800 (PST)
-Message-ID: <67a2e465-7a7b-6928-eefd-773c65a9b08d@gmail.com>
-Date:   Mon, 16 Jan 2023 18:59:54 +0100
+        with ESMTP id S234110AbjAPSO3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 13:14:29 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF32234FB;
+        Mon, 16 Jan 2023 10:01:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673892076; x=1705428076;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=a9IkWEVze0aTO+howO3YtNxpHKbT43mKMZb2o79oLCg=;
+  b=kT8EBbnP+CTtodg+EKiQCZdgK7GBybTPgfjCN1BKE88igfh07vwx27FG
+   zlo600jHbiA4ctZXmhai2ovWIN+d/VFwnJZNM1pkipFSQFCBkSWgLFFfl
+   dhvzJ3hnwudvKb9qd1MnqivXjJXSr7wkG2JBW3GqSJBiZo5L1YCQ1DlnQ
+   1HeQu+bitkQg3Z5wTDKZ5p3w1FsRBkseJhL4W45XOxhk++lER7yrnNYKz
+   eqbe87YNImmDmJ3cDTi5WoSjSEPS66JIQLSQtViYZrV9Wq4hGqhOZJKbX
+   HoByp1YOpI44UaSiD08J1A4kCevKxNS57t4SMIY/U5l6KTleDqKZ/RyUp
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10592"; a="351765966"
+X-IronPort-AV: E=Sophos;i="5.97,221,1669104000"; 
+   d="scan'208";a="351765966"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2023 10:00:28 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10592"; a="766980666"
+X-IronPort-AV: E=Sophos;i="5.97,221,1669104000"; 
+   d="scan'208";a="766980666"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP; 16 Jan 2023 10:00:21 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1pHTmN-00ACrw-13;
+        Mon, 16 Jan 2023 20:00:19 +0200
+Date:   Mon, 16 Jan 2023 20:00:19 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, rafael@kernel.org, sean.wang@mediatek.com,
+        Landen.Chao@mediatek.com, linus.walleij@linaro.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux@armlinux.org.uk, hkallweit1@gmail.com,
+        jaz@semihalf.com, tn@semihalf.com, Samer.El-Haj-Mahmoud@arm.com
+Subject: Re: [net-next: PATCH v4 5/8] device property: introduce
+ fwnode_find_parent_dev_match
+Message-ID: <Y8WQszCL6CicJSuU@smile.fi.intel.com>
+References: <20230116173420.1278704-1-mw@semihalf.com>
+ <20230116173420.1278704-6-mw@semihalf.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH net] r8169: fix rtl8168h wol fail
-Content-Language: en-US
-To:     Hau <hau@realtek.com>, Andrew Lunn <andrew@lunn.ch>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>
-References: <714782c5-b955-4511-23c0-9688224bba84@gmail.com>
- <Y7dAbxSPeaMnW/ly@lunn.ch> <9ee2f626bab3481697b71c58091e7def@realtek.com>
- <4014d243-8f8a-f273-fba8-2ae5a3844ea5@gmail.com>
- <6ff876a66e154bb4b357b31465c86741@realtek.com>
- <d28834dc-0426-5813-a24d-181839f23c38@gmail.com>
- <add32dc486bb4fc9abc283b2bb39efc3@realtek.com>
- <e201750b-f3be-b62d-4dc6-2a00f4834256@gmail.com> <Y78ssmMck/eZTpYz@lunn.ch>
- <d34e9d2f3a0d4ae8988d39b865de987b@realtek.com> <Y8GIgXKCtaYzpFdW@lunn.ch>
- <939fae88-ab42-132a-81d8-bbedfc20344e@gmail.com>
- <5084ca55d66f4e449253e54081e86986@realtek.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-In-Reply-To: <5084ca55d66f4e449253e54081e86986@realtek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230116173420.1278704-6-mw@semihalf.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,58 +72,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16.01.2023 18:04, Hau wrote:
->> On 13.01.2023 17:36, Andrew Lunn wrote:
->>> On Fri, Jan 13, 2023 at 04:23:45PM +0000, Hau wrote:
->>>>>>>>> In this application(rtl8168h + rtl8211fs) it also supports
->>>>>>>>> 100Mbps fiber
->>>>>>>> module.
->>>>>>>>
->>>>>>>> Does RTL8211FS advertise 100Mbps and 1Gbps on the UTP/MDI side
->> in
->>>>>>>> case of a 100Mbps fiber module?
->>>>>>> Yes.
->>>>>>>
->>>>>> I think in this case internal PHY and RTL8211FS would negotiate
->>>>>> 1Gbps, not matching the speed of the 100Mbps fiber module.
->>>>>> How does this work?
->>>>
->>>> My mistake. With 100Mbps fiber module RTL8211FS will only advertise
->>>> 100Mbps on the UTP/MDI side. With 1Gbps fiber module it will
->>>> advertise both 100Mbps and 1Gbps. So issue will only happen with 1Gbps
->> fiber module.
->>>>
->>>>> Fibre line side has no autoneg. Both ends need to be using the same
->>>>> speed, or the SERDES does not synchronise and does not establish link.
->>>>>
->>>>> You can ask the SFP module what baud rate it supports, and then use
->>>>> anything up to that baud rate. I've got systems where the SFP is
->>>>> fast enough to support a 2.5Gbps link, so the MAC indicates both
->>>>> 2.5G and 1G, defaults to 2.5G, and fails to connect to a 1G link
->>>>> peer. You need to use ethtool to force it to the lower speed before the
->> link works.
->>>>>
->>>>> But from what i understand, you cannot use a 1000Base-X SFP, set the
->>>>> MAC to 100Mbps, and expect it to connect to a 100Base-FX SFP. So for
->>>>> me, the RTL8211FS should not be advertise 100Mbps and 1Gbps, it
->>>>> needs to talk to the SFP figure out exactly what it is, and only
->>>>> advertise the one mode which is supported.
->>>>
->>>> It is the RTL8211FS firmware bug. This patch is for workaround this issue.
->>>
->>> So if it is advertising both 100Mbps and 1Gbps, we know the SFP is
->>> actually 1G, and we can remove the 100Mbps advertisement? That should
->>> then solve all the problems?
->>>
->> Right, that's what I proposed too, removing 1Gbps advertisement of the
->> RTL8168H-internal PHY via userspace tool, e.g. ethtool. For me this is the
->> cleanest solution. Adding a workaround for a firmware bug of a specific
->> external PHY to the r8169 MAC driver would be somewhat hacky.
->>
-> Thanks for your suggestions. But because it needs user to execute userspace tool.
-> This workaround may not be accepted by our customer
+On Mon, Jan 16, 2023 at 06:34:17PM +0100, Marcin Wojtas wrote:
+> Add a new generic routine fwnode_find_parent_dev_match that can be used
+> e.g. as a callback for class_find_device(). It searches for the struct
+> device corresponding to a struct fwnode_handle by iterating over device
+> and its parents.
+
+If it helps you, I have no objections, hence
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+> Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+> ---
+>  include/linux/property.h |  1 +
+>  drivers/base/property.c  | 23 ++++++++++++++++++++
+>  2 files changed, 24 insertions(+)
+> 
+> diff --git a/include/linux/property.h b/include/linux/property.h
+> index 37179e3abad5..4ae20d7c5103 100644
+> --- a/include/linux/property.h
+> +++ b/include/linux/property.h
+> @@ -109,6 +109,7 @@ struct device *fwnode_get_next_parent_dev(struct fwnode_handle *fwnode);
+>  unsigned int fwnode_count_parents(const struct fwnode_handle *fwn);
+>  struct fwnode_handle *fwnode_get_nth_parent(struct fwnode_handle *fwn,
+>  					    unsigned int depth);
+> +int fwnode_find_parent_dev_match(struct device *dev, const void *data);
+>  bool fwnode_is_ancestor_of(struct fwnode_handle *ancestor, struct fwnode_handle *child);
+>  struct fwnode_handle *fwnode_get_next_child_node(
+>  	const struct fwnode_handle *fwnode, struct fwnode_handle *child);
+> diff --git a/drivers/base/property.c b/drivers/base/property.c
+> index bbb3e499ff4a..84849d4934cc 100644
+> --- a/drivers/base/property.c
+> +++ b/drivers/base/property.c
+> @@ -693,6 +693,29 @@ struct fwnode_handle *fwnode_get_nth_parent(struct fwnode_handle *fwnode,
+>  }
+>  EXPORT_SYMBOL_GPL(fwnode_get_nth_parent);
+>  
+> +/**
+> + * fwnode_find_parent_dev_match - look for a device matching the struct fwnode_handle
+> + * @dev: the struct device to initiate the search
+> + * @data: pointer passed for comparison
+> + *
+> + * Looks up the device structure corresponding with the fwnode by iterating
+> + * over @dev and its parents.
+> + * The routine can be used e.g. as a callback for class_find_device().
+> + *
+> + * Returns: %1 - match is found
+> + *          %0 - match not found
+> + */
+> +int fwnode_find_parent_dev_match(struct device *dev, const void *data)
+> +{
+> +	for (; dev; dev = dev->parent) {
+> +		if (device_match_fwnode(dev, data))
+> +			return 1;
+> +	}
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(fwnode_find_parent_dev_match);
+> +
+>  /**
+>   * fwnode_is_ancestor_of - Test if @ancestor is ancestor of @child
+>   * @ancestor: Firmware which is tested for being an ancestor
+> -- 
+> 2.29.0
 > 
 
-In this case you can provide your customer with a downstream kernel including
-your patch.
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
