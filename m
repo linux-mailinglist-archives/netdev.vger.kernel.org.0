@@ -2,217 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D98F66CEA6
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 19:21:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7341266CEA8
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 19:21:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232516AbjAPSVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 13:21:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32866 "EHLO
+        id S231987AbjAPSVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 13:21:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232181AbjAPSUh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 13:20:37 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80AD242DD8;
-        Mon, 16 Jan 2023 10:06:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1673892412; x=1705428412;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=0LI5PemXB6D5XGEF//IxS+kZvstyl16JyEFuiogcIJA=;
-  b=eHfi0n91CfhRo8sKznaciz4TWL9/q/K2ReGTiNQtFBe4ngCOUzcQvDlq
-   hOJfOKJ5eZ5oy3umQ8F5X5wLUiT4W+oyEtAlrW6a5vDrbfhxkWKo+nghl
-   0sUS7wPsvfPxtyzci7/wjG3Ni2UYCMuz8b8HEncUxyqlL3//rt8vTuxTn
-   y30J/ozzi+vnFOZ9b/lZ+/Kxn/hhdSDugKgajw5byhuqZJPqltPYFzzS0
-   iBiMIqEN7oNFZipDfWzROER9MOpfTf3CBAfdWEhMXolcdk8E1makrrhb5
-   +uFVFX7QxaYQL9w0vjjxU7ZLPBOIIUK7FucRgLa5TAoeWa4hRFkloae8s
-   g==;
-X-IronPort-AV: E=Sophos;i="5.97,221,1669100400"; 
-   d="scan'208";a="196877816"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Jan 2023 11:06:32 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 16 Jan 2023 11:06:32 -0700
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Mon, 16 Jan 2023 11:06:32 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HnZKfMxgNo2cG5VMVFoRKCXEl1TJw1d2wZ8+Q+2LQUPZhh8n2hC7nfw/+D25UNcdiieXeci6KTyztNv5GucfedXUzgPdUFBdgreSRUtu7iKvrhl5zH/Lp1ast55gdlzvr4hUDU9Pv1AHrSiuFWEbkGWhI6vdo3yRnLlyDRw2n2udVTzr47QQ1E4xiID5kohefQwyxel/6d4g3T79FohIRE6hkLuE+JaLFrfwbEs7wgpY577on0pYboDBVw3IoowAti+gfdKDZSKgavJJGRNrtE0M0KHX4p9ZvcW6uaiNQ/GPwAe9NJOtVrhD1/FjzhrfBmsoUBYSia4ucVLLQriu7A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=x53S+ftZYCX5/ZectRQ+vdP5L+rBIRWwfu69ly5z7l4=;
- b=e1QxSbfD3Iir7kUFohNTEQfIgJuQR1Jx0gF2e11LWve4Ulz8kO/YwHqK1PCGFUXf+k11lPOdhiawHmyCOdbvaCmzn6pOs7T3DGKXJQO46Q6vNci1yV50G3WQEdxsCpJmcQ7vjF/u4AU2mwKQNai9MYrM+jKAlydPWGPfnj0pb2LyI+1XY3I4lSyB7BOHd9V6S6w6g7T+j/vzFg9ulmUxjA7YQ/DGBPPjv6yWwHKhOnYQofrrYwIWtXpTQ9vjrFVbte4va7txU6CqNFjFL62kgBJ8j1dIrA6jukDJNiQVcSAXqp8xDdoNymEv+bG2keKqymDgeUzQqfrjW6CZUH3KrQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x53S+ftZYCX5/ZectRQ+vdP5L+rBIRWwfu69ly5z7l4=;
- b=fiizHW66Bedw93zw1RUFOFaRymiRQ916C6CHdswbIN69+pjAX4nOXbpkGTjexC2WPvmYRIO4YgAZJCYbWbIYiRYoEIgvJeTlim4CIWYgUdcQsqKO0WqwG8ToemoYjBTgG8Usvqu2ff/q8I2D28XxmFQsxK2psrhNBMMRfYkURSY=
-Received: from MWHPR11MB1693.namprd11.prod.outlook.com (2603:10b6:300:2b::21)
- by IA1PR11MB7679.namprd11.prod.outlook.com (2603:10b6:208:3f1::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Mon, 16 Jan
- 2023 18:06:30 +0000
-Received: from MWHPR11MB1693.namprd11.prod.outlook.com
- ([fe80::3558:8159:5c04:f09c]) by MWHPR11MB1693.namprd11.prod.outlook.com
- ([fe80::3558:8159:5c04:f09c%4]) with mapi id 15.20.5986.023; Mon, 16 Jan 2023
- 18:06:30 +0000
-From:   <Jerry.Ray@microchip.com>
-To:     <olteanv@gmail.com>
-CC:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux@armlinux.org.uk>, <jbe@pengutronix.de>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next v6 2/6] dsa: lan9303: move Turbo Mode bit init
-Thread-Topic: [PATCH net-next v6 2/6] dsa: lan9303: move Turbo Mode bit init
-Thread-Index: AQHZJHABkK7DClBc80KHKpZcwORjQq6eaqUNgAL25eA=
-Date:   Mon, 16 Jan 2023 18:06:30 +0000
-Message-ID: <MWHPR11MB1693C77544D2AF002A58DD68EFC19@MWHPR11MB1693.namprd11.prod.outlook.com>
-References: <20230109211849.32530-1-jerry.ray@microchip.com>
- <20230109211849.32530-1-jerry.ray@microchip.com>
- <20230109211849.32530-3-jerry.ray@microchip.com>
- <20230109211849.32530-3-jerry.ray@microchip.com>
- <20230114204943.jncpislrqjqvinie@skbuf>
-In-Reply-To: <20230114204943.jncpislrqjqvinie@skbuf>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: MWHPR11MB1693:EE_|IA1PR11MB7679:EE_
-x-ms-office365-filtering-correlation-id: 052206e2-9d69-4018-552d-08daf7ec6500
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: wXEVyJuQmGMYejJMBAkKtvdgRsjKbAcODyBZzQaC1sopLL2YGgqagZp4jrzcP6+q1sV56dmAEyBl1pPH729jtz0am1Y0wEwe1LtYoZ411lq3eahGLVL26/8p4pIZQxCAWliPAOTJ7j39729cwXKzmH5NUhBBLgxH1G7eU3c44nVrkUfVcq293iBA/Th6/wV/QOKtZmn0cmJiidBgmSaW19SWqlzDgogtwTkTMv09MgJfLcdzM955olLQ5dUBjijvBq1Ih0IicY4ApaHD9AIu+aCqQL5x/wxPLYqzoXg0aH1+EeB++Dvb3q/AAlaI0l6K8NN5AQjj69pz8EjVsvAywQqzmxY7/att3pJUYPu9dKTFJhsBASPmfeIAIaspY0TcBq/95AWXKcgUdfpTPg2KMYnzOBFnDuZlfcuBo7H9M6umLjbK9Z5/QyonPOE+606Ig9fe0SdqaXtjqzuZcWHL5RSSi9p314hNEXGdYoFSy1P+21K7RvgjSeyss1Qv1/UMI6pSFmelN7WRqR2G7DqA1GaUWZvnSpFhMMfhH/iIupx5Pm56gUhtD/OxhaacdXvj8nTvkL4QrnvxFwwRK9R+3DTvxKyKLGEj1Ju9m6BOFY/Ft6eN6qqAF4zs8nfQ2I8akMJ8vn8DLM6bUIm3wqgR450PfIHdAj1JgAe2NeRN9yjhC0VblfVh1rkx6iBd6y63Jc+D9MohYtf0WMMLtvOhPA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR11MB1693.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(366004)(396003)(136003)(346002)(376002)(39860400002)(451199015)(86362001)(6916009)(38070700005)(76116006)(66946007)(64756008)(66476007)(8936002)(55016003)(66556008)(52536014)(66446008)(8676002)(4326008)(2906002)(7416002)(122000001)(38100700002)(83380400001)(33656002)(5660300002)(478600001)(71200400001)(7696005)(54906003)(316002)(41300700001)(9686003)(26005)(186003)(6506007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?LZUclFjZuxTIYLCL9gKiGFBZdpf/4oHU5kKfSaMlAvB89TnHwL4z2/Xpr42G?=
- =?us-ascii?Q?Pa1hybZTQfSiyI8LrbxppFZM79jHZlG6kYWKNIqdQLkUu80HkwkYEYOzd7rR?=
- =?us-ascii?Q?gOpKEkZXj4SD+N3PFHulwG39RUY31GlPSO/MQHMoy74G9+yHjwmsvXVfA2bu?=
- =?us-ascii?Q?zsNAxFgTszuR0TsqySwQZh2MvcLnByfmzWEZzYqzPv+uI/74GNHsIZNzoJ2S?=
- =?us-ascii?Q?8neHYo4DhfqRpE0cA5O1iENh0zsMwo7aCqxbjvonhW1/RqFENqRWX/iWdbUx?=
- =?us-ascii?Q?n1YSe5BJM6WeauqaEkphbfkDtVyj+7iJ+EyD5G7URYOnL4Ev8f7egwUqGdTe?=
- =?us-ascii?Q?r817NtEg7fFRUstjwYED19/YejMvf08lCwYNYSkWbqPSmRkeRiz9TeKpevd/?=
- =?us-ascii?Q?XR1Q4SaNGldJWCMxshF2KirfdulTJuFwfa9yLjsltPZj1KmEedkbtcPGHirM?=
- =?us-ascii?Q?D8iELcmv7fcuaeAxY1Z5j60NRp3h5P0pt5Gxaz1bY6SmpRSwyuUB99vJKX+Y?=
- =?us-ascii?Q?Xoi+nJ1s92vkyQ68pxGGOG79hUzHS5e14lucI+CxPIXqLG/xOqXcVeJsdbag?=
- =?us-ascii?Q?0n3rBDa0aoHGMGUug4M5a+8ZYN/KQPuqY25UsiJA/Rf8Er/Cyp+OXNawQSKP?=
- =?us-ascii?Q?ru9HJXWIUejRG1PdjPS+Qj0UE5oYqUKZ6gEvJj4b5r8PmN1GjLS6rBH5eYhP?=
- =?us-ascii?Q?mWge51d3qfE08jIXFxY1TtqwlscbIQj0xUIjmviiXXGPPygBpkoLSEDeIVdK?=
- =?us-ascii?Q?jmQ6YJvdxFf/M5L3sxeluKXT+y+nKaVTKcqX+LqBb9o1+IzfA/yxZJ9abAFt?=
- =?us-ascii?Q?8N4FZOFpEizU9IFMM1bf106DdXjpq55xUxsdhbJJEFBEGhltrl+Eaq2JWrXr?=
- =?us-ascii?Q?iz8Z3TH5IfHIe5JA/N5sJ8NTwQmVIR6WGDFFizFXMORNWsOo7eFT4KUaIzKb?=
- =?us-ascii?Q?1uLE4xY9snwDKjP72avrRjf6oD8SdinRJpEfAZilWl3nF2F3WHQ2V/wHLpNW?=
- =?us-ascii?Q?CJIYeghud3aigdLDXpDGV8kSt93TBWgWd7azykxhAmMWFp2aB5yT/umSjZqs?=
- =?us-ascii?Q?2o9/pEjjWcTzDZWOeouZ6t1C1QN4xWO4Hv/0mYIKa6JJTDZ6xAcjbZtd8pfs?=
- =?us-ascii?Q?MKJcTL3oEf8u62EfKi9hU+nOPH+93jE5VjZiK6CsRtu0fxBqwAsxYi6cb8KX?=
- =?us-ascii?Q?6T4dZty2KjnDVREaBKex8Hhxm/eKyhXH2kEmvU33CIz9ApfQKGIlaQagHQm4?=
- =?us-ascii?Q?ZnhKFkUg/NOPgpy2NDL3s3xeKGZ7O6B88TXTvoFZEOzKSrx7ucw4BAVOqOVV?=
- =?us-ascii?Q?8oWzoxhT2A8bkOLREXiCoRsyg+6NhSHTxdfa5KW9oPyhyRFyW3HxOOK4gkvJ?=
- =?us-ascii?Q?ITREeGaYJmLxw3e8+fQIwq7Hs+o91jhIorViaIO77l4DZWfn9jzc9L35fpFX?=
- =?us-ascii?Q?PBnofQAjvkqu0uhmysEPxOIm4/v7RdNuCnHT3o/E1XhNgHzlvfalihULYc6a?=
- =?us-ascii?Q?OINkDrARTSYIRAgbcw+QUUFsgkmMzoXN7DqtR5OsIEHaUmpfHDWsO0fRwALu?=
- =?us-ascii?Q?DnGrU5Hhzh22Zzk4gcIeWey7rJk4M5opxqRVK/QK?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S232332AbjAPSVB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 13:21:01 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F712A9AA;
+        Mon, 16 Jan 2023 10:07:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=STAu0ZvL1JnFuFLemKT4UYZst/0+TtBmkzPQi1PH8dg=; b=vDiV5ggCRJN0kqAjTIaKhYIBa2
+        cV2coQaFNKsQfW51wPmzHr7n2bPhG3avdRjjBFFsyaeD28xy3jppAuF5vn8Nio7JisC6JXhaJ9Pjv
+        PNX7FIxA9No4th5njjxMUo97R8Vxa1xQ0yuv7+Uj+6FDSirBGQ4ABdSfPDXqknmaQOlKMNs2vjL8q
+        1NJ2WoiQlwXqzpiquvI4x2oX0iC38lsqYtV7oHCSAxqxF/fmzKxG8RZnzXyG3fVcYBIxHJVUOjn1A
+        Q01Fm6BBkrxY4r/+waipQdaqIvMXPOlzDU6NpzyLjKkL49hkr85pHe33jO1/mml5mQVTsYf5AxQDQ
+        7rvIg9Ow==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36142)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pHTsn-0005cC-03; Mon, 16 Jan 2023 18:06:56 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pHTsk-0006Cx-27; Mon, 16 Jan 2023 18:06:54 +0000
+Date:   Mon, 16 Jan 2023 18:06:54 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Frank Wunderlich <linux@fw-web.de>,
+        linux-mediatek@lists.infradead.org,
+        Alexander Couzens <lynxis@fe80.eu>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: mtk_sgmii: implement mtk_pcs_ops
+Message-ID: <Y8WSPjyz2TxyX3/R@shell.armlinux.org.uk>
+References: <87o7qy39v5.fsf@miraculix.mork.no>
+ <Y8VVa0zHk0nCwS1w@shell.armlinux.org.uk>
+ <87h6wq35dn.fsf@miraculix.mork.no>
+ <Y8VmSrjHTlllaDy2@shell.armlinux.org.uk>
+ <87bkmy33ph.fsf@miraculix.mork.no>
+ <Y8Vt9vfEa4w8HXHQ@shell.armlinux.org.uk>
+ <875yd630cu.fsf@miraculix.mork.no>
+ <871qnu2ztz.fsf@miraculix.mork.no>
+ <Y8WNxAQ6C6NyUUn1@shell.armlinux.org.uk>
+ <87pmbe1hu0.fsf@miraculix.mork.no>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1693.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 052206e2-9d69-4018-552d-08daf7ec6500
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jan 2023 18:06:30.4584
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: K2cZN0JSaUqv0HpETskz8X9i0h10a8GVWSVIjFFx8kYXWyGFWrAyl1Z22VdDMZS/PzkLDypBan+eOrjm9ldBIg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB7679
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87pmbe1hu0.fsf@miraculix.mork.no>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > In preparing to remove the .adjust_link api, I am moving the one-time
-> > initialization of the device's Turbo Mode bit into a different executio=
-n
-> > path. This code clears (disables) the Turbo Mode bit which is never use=
-d
-> > by this driver. Turbo Mode is a non-standard mode that would allow the
-> > 100Mbps RMII interface to run at 200Mbps.
+On Mon, Jan 16, 2023 at 06:59:19PM +0100, Bjørn Mork wrote:
+> "Russell King (Oracle)" <linux@armlinux.org.uk> writes:
+> 
+> > On Mon, Jan 16, 2023 at 05:45:12PM +0100, Bjørn Mork wrote:
+> >> Bjørn Mork <bjorn@mork.no> writes:
+> >> 
+> >> >> You have bmcr=0x1000, but the code sets two bits - SGMII_AN_RESTART and
+> >> >> SGMII_AN_ENABLE which are bits 9 and 12, so bmcr should be 0x1200, not
+> >> >> 0x1000. Any ideas why?
+> >> >
+> >> > No, not really
+> >> 
+> >> Doh! Looked over it again, and this was my fault of course.  Had an
+> >> 
+> >>   "bmcr = SGMII_AN_ENABLE;"
+> >>   
+> >> line overwriting the original value from a previous attempt without
+> >> changing the if condition.. Thanks for spotting that.
+> >> 
+> >> But this still doesn't work any better:
+> >> 
+> >> [   43.019395] mtk_soc_eth 15100000.ethernet wan: Link is Down
+> >> [   45.099898] mtk_sgmii_select_pcs: id=1
+> >> [   45.103653] mtk_pcs_config: interface=4
+> >> [   45.107473] offset:0 0x140
+> >> [   45.107476] offset:4 0x4d544950
+> >> [   45.110181] offset:8 0x20
+> >> [   45.113305] forcing AN
+> >> [   45.118256] mtk_pcs_config: rgc3=0x0, advertise=0x1 (changed), link_timer=1600000,  sgm_mode=0x103, bmcr=0x1200, use_an=1
+> >> [   45.129191] mtk_pcs_link_up: interface=4
+> >> [   45.133100] offset:0 0x81140
+> >> [   45.133102] offset:4 0x4d544950
+> >> [   45.135967] offset:8 0x1
+> >> [   45.139104] mtk_soc_eth 15100000.ethernet wan: Link is Up - 1Gbps/Full - flow control rx/tx
 > >
-> > Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
-> > ---
-> >  drivers/net/dsa/lan9303-core.c | 15 ++++++---------
-> >  1 file changed, 6 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-c=
-ore.c
-> > index 5a21fc96d479..50470fb09cb4 100644
-> > --- a/drivers/net/dsa/lan9303-core.c
-> > +++ b/drivers/net/dsa/lan9303-core.c
-> > @@ -886,6 +886,12 @@ static int lan9303_check_device(struct lan9303 *ch=
-ip)
-> >               return ret;
-> >       }
-> >
-> > +     /* Virtual Phy: Remove Turbo 200Mbit mode */
-> > +     lan9303_read(chip->regmap, LAN9303_VIRT_SPECIAL_CTRL, &reg);
-> > +
-> > +     reg &=3D ~LAN9303_VIRT_SPECIAL_TURBO;
-> > +     regmap_write(chip->regmap, LAN9303_VIRT_SPECIAL_CTRL, reg);
-> > +
->=20
-> Isn't a function whose name is lan9303_check_device() being abused for
-> this purpose (device initialization)?
->=20
-I will move this into lan9303_setup.
+> > In your _dump_pcs_ctrl() function, please can you dump the
+> > SGMSYS_SGMII_MODE register as well (offset 0x20), in case this gives
+> > more clue as to what's going on.
+> 
+> 
+> [   49.339410] mtk_soc_eth 15100000.ethernet wan: Link is Down
+> [   52.459913] mtk_sgmii_select_pcs: id=1
+> [   52.463673] mtk_pcs_config: interface=4
+> [   52.467494] offset:0 0x140
+> [   52.467496] offset:4 0x4d544950
+> [   52.470199] offset:8 0x20
+> [   52.473325] offset:20 0x10000
+> [   52.475929] forcing AN
+> [   52.481232] mtk_pcs_config: rgc3=0x0, advertise=0x1 (changed), link_timer=1600000,  sgm_mode=0x103, bmcr=0x1200, use_an=1
+> [   52.492166] mtk_pcs_link_up: interface=4
+> [   52.496072] offset:0 0x81140
+> [   52.496074] offset:4 0x4d544950
+> [   52.498938] offset:8 0x1
+> [   52.502067] offset:20 0x10000
+> [   52.504599] mtk_soc_eth 15100000.ethernet wan: Link is Up - 1Gbps/Full - flow control rx/tx
+> [   65.979410] mtk_soc_eth 15100000.ethernet wan: Link is Down
+> [   70.139856] mtk_sgmii_select_pcs: id=1
+> [   70.143616] mtk_pcs_config: interface=22
+> [   70.147523] offset:0 0x81140
+> [   70.147525] offset:4 0x4d544950
+> [   70.150402] offset:8 0x1
+> [   70.153526] offset:20 0x10000
+> [   70.156049] mtk_pcs_config: rgc3=0x4, advertise=0x20 (changed), link_timer=10000000,  sgm_mode=0x0, bmcr=0x0, use_an=0
+> [   70.169672] mtk_pcs_link_up: interface=22
+> [   70.173664] offset:0 0x40140
+> [   70.173666] offset:4 0x4d544950
+> [   70.176530] offset:8 0x20
+> [   70.179659] offset:20 0x10000
+> [   70.182279] mtk_soc_eth 15100000.ethernet wan: Link is Up - 2.5Gbps/Full - flow control rx/tx
 
-Regards,
-Jerry.
+Umm. What's at offset:20 seems to be unprogrammable - it always reads
+back with only bit 16 set! This probably explains why it's not working,
+as it looks like it can't be programmed to operate in SGMII mode!
 
-> >       return 0;
-> >  }
-> >
-> > @@ -1050,7 +1056,6 @@ static int lan9303_phy_write(struct dsa_switch *d=
-s, int phy, int regnum,
-> >  static void lan9303_adjust_link(struct dsa_switch *ds, int port,
-> >                               struct phy_device *phydev)
-> >  {
-> > -     struct lan9303 *chip =3D ds->priv;
-> >       int ctl;
-> >
-> >       if (!phy_is_pseudo_fixed_link(phydev))
-> > @@ -1073,14 +1078,6 @@ static void lan9303_adjust_link(struct dsa_switc=
-h *ds, int port,
-> >               ctl &=3D ~BMCR_FULLDPLX;
-> >
-> >       lan9303_phy_write(ds, port, MII_BMCR, ctl);
-> > -
-> > -     if (port =3D=3D chip->phy_addr_base) {
-> > -             /* Virtual Phy: Remove Turbo 200Mbit mode */
-> > -             lan9303_read(chip->regmap, LAN9303_VIRT_SPECIAL_CTRL, &ct=
-l);
-> > -
-> > -             ctl &=3D ~LAN9303_VIRT_SPECIAL_TURBO;
-> > -             regmap_write(chip->regmap, LAN9303_VIRT_SPECIAL_CTRL, ctl=
-);
-> > -     }
-> >  }
-> >
-> >  static int lan9303_port_enable(struct dsa_switch *ds, int port,
-> > --
-> > 2.17.1
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
