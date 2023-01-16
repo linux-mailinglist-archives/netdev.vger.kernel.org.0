@@ -2,180 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1836766CF6B
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 20:15:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2FFE66CF71
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 20:19:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232647AbjAPTP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 14:15:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38486 "EHLO
+        id S232841AbjAPTTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 14:19:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232346AbjAPTP0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 14:15:26 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C625D16ADA;
-        Mon, 16 Jan 2023 11:15:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=hkNFVtbzzp0XpZsfx3emQeVOO5FVZGr7hZw/Jma4LVA=; b=UupanAH6GT+TSgnVN/G70/Kw+B
-        jPITqiNGkh1JrRh4mlCwzBvLRsti1vU9cmXyJwxNBF6EbMEIaedOKbOf5aXZyJDsqzmkpMfvc18bl
-        8hRllSvXxKlcUQMjMA0GqDTdHEauQuSd7+Q0vPKWYL/ZAaMVaTUKwmZj5F6tMVh5UQVW5Si47khOP
-        D8HQcYo1QZAI0HVfnrpxtKXyWSt48mw3gp6ZHPKDTzQvP2OwOTqL8aFQ//OfBy5osBf0GYWPClAXX
-        Mtxn6D6nH3BEvK5dwzHfSQICxaXXLSBafF1KyzaFFy3Pf9AGmpBag8BDGPNkJrPhHv5ISf8I/8uIO
-        unUC1hPg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36150)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pHUwp-0005k4-0o; Mon, 16 Jan 2023 19:15:10 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pHUwl-0006Gj-Bh; Mon, 16 Jan 2023 19:15:07 +0000
-Date:   Mon, 16 Jan 2023 19:15:07 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Frank Wunderlich <linux@fw-web.de>,
-        linux-mediatek@lists.infradead.org,
-        Alexander Couzens <lynxis@fe80.eu>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: mtk_sgmii: implement mtk_pcs_ops
-Message-ID: <Y8WiO+8mkD6TPIAQ@shell.armlinux.org.uk>
-References: <87bkmy33ph.fsf@miraculix.mork.no>
- <Y8Vt9vfEa4w8HXHQ@shell.armlinux.org.uk>
- <875yd630cu.fsf@miraculix.mork.no>
- <871qnu2ztz.fsf@miraculix.mork.no>
- <Y8WNxAQ6C6NyUUn1@shell.armlinux.org.uk>
- <87pmbe1hu0.fsf@miraculix.mork.no>
- <87lem21hkq.fsf@miraculix.mork.no>
- <Y8WT6GwMqwi8rBe7@shell.armlinux.org.uk>
- <87a62i1ge4.fsf@miraculix.mork.no>
- <875yd61fg3.fsf@miraculix.mork.no>
+        with ESMTP id S232556AbjAPTTc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 14:19:32 -0500
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2067.outbound.protection.outlook.com [40.107.22.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B812B63A;
+        Mon, 16 Jan 2023 11:19:31 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XfySI6ab8HQvTLrR9o8sVKsJZjuOjyKUr9hF/CIQ6MnhV76oErH9IS/TbBy2drPucA7/gHeggNDoDBOTTz9VKfMk/GGz5HqgHtoQ8Hkf1zMnZnAH57yVziAbOvEuk63NGl4BBL7gDSrNK8fLkIT1GYCgBOIricjm6spFAQH0YfEGNXh7kZkxq5kEeYMjywF/iuNp1SGVmvNuksA6GkVuk6Ns9gPeQf2zLgb7lVhJ975jDo4dCMU6R/UQzWeOtHT6HTVsfs5Mou0SaFHQLv9EJQOeU2qRr080/i0Gcc5ioHbrhYHxfCoLleX05KXy61NiCyZllZyiiomEkImIAuasyQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sIWuEzuBR/sKsUqtXkN9X/Dre6yJbGMUvWROl97qdEU=;
+ b=RY18YCiMwg3FMmOOjJAfMicSSXIZOIFpoabPQPCD+C8W5Ok80QoHvxmab6YQeNKeCQ9HrcAFfJkSCGzWlhFveg6G8mb+JoJbR3AB+PQcubWXsv3zJhkW2tGvgvXhnQ4lNwiNCPPbvypsaWOYx2Xpdao5WBgFtThpfQ25zUlS/ifcRrFHorr5HaZTUpD38HorpWtnEycb1YvzECqpmJCxB8csyHsKl2CTCncCsdnwfZNpZDJH+8UwMYLgRfUimWXmpP4l8+hop05Y0xubqbL6oJjGcNy2OB2CWOonQZymWSRhclmmc/v0eJTgm9QqpevU5UOH/3JhNodUlX7oQHxqCg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=variscite.com; dmarc=pass action=none
+ header.from=variscite.com; dkim=pass header.d=variscite.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=variscite.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sIWuEzuBR/sKsUqtXkN9X/Dre6yJbGMUvWROl97qdEU=;
+ b=P39CLYes91XKzyjzJo4d9/LitjovRonfFBMkEdrQZfIFsIQk+KM7wHr+s6uEj3Ch8Lf3R6/3zp1YrIjOZIgGOCH35V+k4M0L+ColF3Qv6TZc6P1asLvduqwATsdxwXky2/9wqly7etwFMBR4brD7jAsp2O61LrOVExnvKFtcxWX9e6Zs1oJDXwmCvNoRbZgDYarkrwlOLVXeMm9iiBXtUxQhs8sz65AQ4pKrMyWP0k+uEmNXVzeawakEXltecBVp5egTNwyvtpCo8loYg71R5j9ePvZrckpq0ojcrRPozO272uemIJdj/SJ304jthiUkLY8cESEJaC9DScTD3cDuOw==
+Received: from AM6PR08MB4376.eurprd08.prod.outlook.com (2603:10a6:20b:bb::21)
+ by PAWPR08MB9711.eurprd08.prod.outlook.com (2603:10a6:102:2ee::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Mon, 16 Jan
+ 2023 19:19:28 +0000
+Received: from AM6PR08MB4376.eurprd08.prod.outlook.com
+ ([fe80::4e5b:51c8:1237:1fee]) by AM6PR08MB4376.eurprd08.prod.outlook.com
+ ([fe80::4e5b:51c8:1237:1fee%5]) with mapi id 15.20.6002.012; Mon, 16 Jan 2023
+ 19:19:28 +0000
+From:   Pierluigi Passaro <pierluigi.p@variscite.com>
+To:     Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Pierluigi Passaro <pierluigi.passaro@gmail.com>
+CC:     "wei.fang@nxp.com" <wei.fang@nxp.com>,
+        "shenwei.wang@nxp.com" <shenwei.wang@nxp.com>,
+        "xiaoning.wang@nxp.com" <xiaoning.wang@nxp.com>,
+        "linux-imx@nxp.com" <linux-imx@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Eran Matityahu <eran.m@variscite.com>,
+        Nate Drude <Nate.D@variscite.com>,
+        Francesco Ferraro <francesco.f@variscite.com>
+Subject: Re: [PATCH v2] net: fec: manage corner deferred probe condition
+Thread-Topic: [PATCH v2] net: fec: manage corner deferred probe condition
+Thread-Index: AQHZKSmr1PIgZgy/I0G8u4g9Yr5d7K6gBiKAgAAHoYCAAJo0AIAAw9cD
+Date:   Mon, 16 Jan 2023 19:19:28 +0000
+Message-ID: <AM6PR08MB4376E34F5E143E2676271043FFC19@AM6PR08MB4376.eurprd08.prod.outlook.com>
+References: <20230115213804.26650-1-pierluigi.p@variscite.com>
+ <Y8R2kQMwgdgE6Qlp@lunn.ch>
+ <CAJ=UCjXvcpV9gAfXv8An-pp=CK8J=sGE_adAoKeNFG1C-sMgJA@mail.gmail.com>
+ <5899558.lOV4Wx5bFT@steina-w>
+In-Reply-To: <5899558.lOV4Wx5bFT@steina-w>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=variscite.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: AM6PR08MB4376:EE_|PAWPR08MB9711:EE_
+x-ms-office365-filtering-correlation-id: 41e94324-0805-4186-1821-08daf7f69648
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 1ifgzVqtMjPjmHpTuo5Hycx03l9ItWFwqh2kOYfBkWxS++o2DLw4A/HrEbOrDa5V407YFRvBp28NZLl16jHBBYew/aS54TuKT9uES0ab6zWR90jpu/cUw3QwVev/IZ3cGTdfv0fFd+Lg0OWM9DC1Dmfk8paXtv25AscAaKQC2XCAr4NH4BSseDqW53g8C+Nv6WlwYubs24dlY/2H1NhOtCtaW2CFpRjTsH8G9PLMJ71xdDh5Lj6DfyIqvKnwOzPqfKZ6/GvygRzgR4cBnFmsoLXiHhshpHAnAH7gQaP++lCgkeq/8fYnlwSXv040pQ/SaWmlNL+9I2zLpxsr/UTYwjAXx2Gp2mp7bGacBR6RdksCUEkbcsPue9/POMLeYptw8BcEx4ffqiF7wLGUz7QtCXByMULPy0C8wjMYDKa6ZqVuLDqxUdvstVTwTLenRymLpPVWsxLv7XMJm1tSZxOxytpzoD9SgNhGW/48MooI680VM4DnJeb0JwgXtUy63tIoq7Hn0xc2w9yApDoWMFuSSceA2+P4rS822iFtzeY2XJqPbq6lNrileZJA38qg4PACq/CZ1Zf3Lj42klJuDYmIAkexzaaNpqHHLdvBaX0CKGqcwTIlLFc5hoJ7l+XIDmEe7siJ2Qv8ZI5GAHue/GTDrfvm5vzAoxfGYR+HBuIo/AXYMHgILQvAhbOq4uo1qOZObLWyI9oQJHPsxK27JMLiyQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR08MB4376.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(366004)(39840400004)(396003)(376002)(136003)(346002)(451199015)(2906002)(86362001)(122000001)(38100700002)(55016003)(33656002)(54906003)(110136005)(7696005)(71200400001)(316002)(38070700005)(76116006)(66476007)(8676002)(64756008)(41300700001)(91956017)(4326008)(66556008)(66446008)(5660300002)(7416002)(107886003)(6506007)(66946007)(52536014)(53546011)(186003)(8936002)(83380400001)(26005)(478600001)(9686003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?G8JAsMmCLcpwjDxNIgW1G33FCoq2l3RDUezomujhKA7aFFt7QrnuAdWJ+w?=
+ =?iso-8859-1?Q?k7RyaweMukr5O6pWCX08UOMxWU5L8hZvm35Vvgiz1jbFpel3QHCxM1ETyc?=
+ =?iso-8859-1?Q?1Z4rVhPYHzRyFTI8ouOdc0+XJBO2/MaBpIIXxwDztKQGgmocHLufyoffjE?=
+ =?iso-8859-1?Q?WOoWBNJ9LrGAtdH72/4YrBiwutkA+tc4nsJDI6mv5zX9bARnHrADhKmyGt?=
+ =?iso-8859-1?Q?CdYlLjLq+/8YehZFAQK2OiS/hutQM6gl5MILv3IpitUTXZv4IuMOLZbtbo?=
+ =?iso-8859-1?Q?fXz8p2GvTgXLgh1LvfQ0PZh2GOXm04uYcQm1+A7kGNVtQ4albO3WY2qIQj?=
+ =?iso-8859-1?Q?cbEZij9xfQjEcsCJe27mkj8juxdSxvo6+PotdS/wUVR4fQKyCEO8bxYd/V?=
+ =?iso-8859-1?Q?1aFREbExoYn6T2hAcwreuAhz2jiWmKoZk4RrfPGGCTZonGH809doxUH+dc?=
+ =?iso-8859-1?Q?KNsxeo4FQz1ZehFuHXJ6BLmojqOsUILcVDKDJvAE5EkXmVNm5/rqb+k7bg?=
+ =?iso-8859-1?Q?XGrFfkRHdgrx5qhvkmctWUDYD61kd1AjosmNEWhVMt3Lpr/TwaWMiFdjCS?=
+ =?iso-8859-1?Q?Cr8Fmbm/8Gfx7hwn+ikEUP5T+3gTk/brubBdsP0n+U5V3r/kRxB4/dx4Xe?=
+ =?iso-8859-1?Q?Y8It72stvafa4tRX+H71vLVZbE2gLOZPz7EgNztzDvxUowjFbuc56SxPrL?=
+ =?iso-8859-1?Q?pgzDoe7RvzlLkgwBABUNfsqPfQNfu9/mDyYXK8zoFgQYDwSFvb6H0oeO+p?=
+ =?iso-8859-1?Q?XBgftMxtV3q/eewGzVHHW5G1ZGg7qQn1Rkq8pb2riSued8DDVamxUY5GOn?=
+ =?iso-8859-1?Q?/g9xLY+n0UW63Pj+2GFBneALPcKNo+067cs7mCbL/tjQ12UI6kcoJnmPtM?=
+ =?iso-8859-1?Q?qL3oBpmt/+g8J28Uj9qPhggo4Ip1ef+3scWhwirOiv4veG87+o/Qbe+BWc?=
+ =?iso-8859-1?Q?/l2wDkEYyP/5kxwQA54KVxvzJFbbNOdTc2SDVu0qor5F7IGaw7+mxen+D8?=
+ =?iso-8859-1?Q?8Euq5xKPhHeenIAJ4LwHHDnT98Pp5MLlZXsiRdyyXX/RqEb5X7iKkxLs+2?=
+ =?iso-8859-1?Q?9kNgnwxkzcUo/ADBIuIy/DHYPSAu6sef+RRV1AVZFXUllpGN5MdMOGBiyP?=
+ =?iso-8859-1?Q?ju9V8/dEYCbQ2Hbm+sUlID/8UFRJi2PeDHbUVt0x8snBYu2/R3+2wmeybf?=
+ =?iso-8859-1?Q?8Jvyf2GQ7QMPsDBfZeKODVFeR8TmeYHfBM2qglgzRimrFA45/aL0bP3EvW?=
+ =?iso-8859-1?Q?kDe33OrD6Dn956SCXij13+XsXGafrWFb4vClzLBvBWBRB2ixZkeBid28JZ?=
+ =?iso-8859-1?Q?FVD21QWds0aLedTTuciXMRMZs/w3ZDcZ+jnWsGzE5kRPmu6lrbN/ZQ9Ly1?=
+ =?iso-8859-1?Q?P2NiniLCU21pZ4H+W7i7glzaNo3l8gvy8n8ckCt/5SAkScrxSPJ2QhYJb4?=
+ =?iso-8859-1?Q?7EQxW8PjRJlyF6cow7H3pM6Ux/RuOSfPvPXVTb560lGKiC0jW9hzTXcnD5?=
+ =?iso-8859-1?Q?fhEz65eJhKXG1zC/UOPP58vktdASTe81pQcWLUhWDxs+mkX/D1G7q6i3FI?=
+ =?iso-8859-1?Q?AUJm85+cjheqmYABKr7HlvDIbnkty5D7+D+08y1iE6nmQh1guWmnNjCNbB?=
+ =?iso-8859-1?Q?stvxIavHkcwwP+W8W2MjTETev/AIZ5HY/H?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <875yd61fg3.fsf@miraculix.mork.no>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-OriginatorOrg: variscite.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR08MB4376.eurprd08.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 41e94324-0805-4186-1821-08daf7f69648
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jan 2023 19:19:28.1356
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 399ae6ac-38f4-4ef0-94a8-440b0ad581de
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: BIddw7PfRKK7ma3jGHmjiZ0fqWOBOEe05Me/sGDqkWy6vICygMStWtEZxw2VgnqfMuhhemM3w15b6Lmc/1IT/bGpBssCETq67GZkS2tmsGY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR08MB9711
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 16, 2023 at 07:50:52PM +0100, Bjørn Mork wrote:
-> Made things fail with 2.5G, as expected I guess. But this actually works
-> with 1G!
-> 
-> Except for an unexpected packet drop.  But at least there are packets
-> coming through at 1G now.  This is the remote end of the link:
-> 
-> ns-enp3s0# ethtool -s enp3s0 autoneg off speed 1000 duplex full
-> ns-enp3s0# ping  192.168.0.1
-> PING 192.168.0.1 (192.168.0.1) 56(84) bytes of data.
-> 64 bytes from 192.168.0.1: icmp_seq=1 ttl=64 time=0.544 ms
-> 64 bytes from 192.168.0.1: icmp_seq=3 ttl=64 time=0.283 ms
-> 64 bytes from 192.168.0.1: icmp_seq=4 ttl=64 time=0.261 ms
-> 64 bytes from 192.168.0.1: icmp_seq=5 ttl=64 time=0.295 ms
-> 64 bytes from 192.168.0.1: icmp_seq=6 ttl=64 time=0.273 ms
-> 64 bytes from 192.168.0.1: icmp_seq=7 ttl=64 time=0.290 ms
-> 64 bytes from 192.168.0.1: icmp_seq=8 ttl=64 time=0.266 ms
-> 64 bytes from 192.168.0.1: icmp_seq=9 ttl=64 time=0.269 ms
-> 64 bytes from 192.168.0.1: icmp_seq=10 ttl=64 time=0.270 ms
-> 64 bytes from 192.168.0.1: icmp_seq=11 ttl=64 time=0.261 ms
-> 64 bytes from 192.168.0.1: icmp_seq=12 ttl=64 time=0.261 ms
-> 64 bytes from 192.168.0.1: icmp_seq=13 ttl=64 time=0.266 ms
-> ^C
-> --- 192.168.0.1 ping statistics ---
-> 13 packets transmitted, 12 received, 7.69231% packet loss, time 12282ms
-> rtt min/avg/max/mdev = 0.261/0.294/0.544/0.075 ms
-> ns-enp3s0# ethtool enp3s0
-> Settings for enp3s0:
->         Supported ports: [ TP ]
->         Supported link modes:   100baseT/Full
->                                 1000baseT/Full
->                                 10000baseT/Full
->                                 2500baseT/Full
->                                 5000baseT/Full
->         Supported pause frame use: Symmetric Receive-only
->         Supports auto-negotiation: Yes
->         Supported FEC modes: Not reported
->         Advertised link modes:  1000baseT/Full
->         Advertised pause frame use: Symmetric
->         Advertised auto-negotiation: No
->         Advertised FEC modes: Not reported
->         Speed: 1000Mb/s
->         Duplex: Full
->         Auto-negotiation: off
->         Port: Twisted Pair
->         PHYAD: 0
->         Transceiver: internal
->         MDI-X: Unknown
->         Supports Wake-on: pg
->         Wake-on: g
->         Current message level: 0x00000005 (5)
->                                drv link
->         Link detected: yes
-> .
-> 
-> The MT7986 end looks like this:
-> 
-> root@OpenWrt:/# [   55.659413] mtk_pcs_get_state: bm=0x81140, adv=0x1a0
-> [   55.664380] mtk_pcs_get_state: bm=0x81140, adv=0x1a0
-> [   58.779924] mtk_pcs_get_state: bm=0x81140, adv=0x1a0
-> [   58.784884] mtk_pcs_get_state: bm=0x81140, adv=0x1a0
-> [   58.789841] mtk_sgmii_select_pcs: id=1
-> [   58.793581] mtk_pcs_config: interface=4
-> [   58.797399] offset:0 0x81140
-> [   58.797401] offset:4 0x4d544950
-> [   58.800273] offset:8 0x1a0
-> [   58.803397] offset:0x20 0x31120118
-
-This looks like it's configured for 1000base-X at this point.
-
-> [   58.806089] forcing AN
-> [   58.811826] mtk_pcs_config: rgc3=0x0, advertise=0x1 (changed), link_timer=1600000,  sgm_mode=0x103, bmcr=0x1200, use_an=1
-> [   58.822759] mtk_pcs_restart_an
-> [   58.825800] mtk_pcs_get_state: bm=0x81140, adv=0xda014001
-> [   58.831184] mtk_pcs_get_state: bm=0x2c1140, adv=0xda014001
-> [   58.836649] mtk_pcs_link_up: interface=4
-> [   58.840559] offset:0 0xac1140
-> [   58.840561] offset:4 0x4d544950
-> [   58.843512] offset:8 0xda014001
-> [   58.846636] offset:0x20 0x3112011b
-
-and here we've reconfigured it for SGMII mode - and we can see the
-Mediatek PCS has set the ACK bit (bit 14) in its advertisement
-register as one would expect.
-
-> Now, if we only could figure out what the difference is between this and
-> what we configure when the mode is changed from 2500base-x to sgmii.
-
-Maybe there is something missing which we need to do on the Mediatek
-side to properly switch between 2500base-X and SGMII.
-
-It has a feel of a problem changing the underlying link speed between
-3.125 and 1.25Gbps, which is done by the ANA_RGC3 register.
-
-Hmm, maybe the PCS needs to be powered down to change the speed, in
-other words, SGMII_PHYA_PWD needs to be set before the write to the
-ANA_RGC3 register?
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+On Mon, Jan 16, 2023 at 8:35 AM Alexander Stein <alexander.stein@ew.tq-grou=
+p.com> wrote:=0A=
+> Hi,=0A=
+>=0A=
+> Am Sonntag, 15. Januar 2023, 23:23:51 CET schrieb Pierluigi Passaro:=0A=
+> > On Sun, Jan 15, 2023 at 10:56 PM Andrew Lunn <andrew@lunn.ch> wrote:=0A=
+> > > On Sun, Jan 15, 2023 at 10:38:04PM +0100, Pierluigi Passaro wrote:=0A=
+> > > > For dual fec interfaces, external phys can only be configured by fe=
+c0.=0A=
+> > > > When the function of_mdiobus_register return -EPROBE_DEFER, the dri=
+ver=0A=
+> > > > is lately called to manage fec1, which wrongly register its mii_bus=
+ as=0A=
+> > > > fec0_mii_bus.=0A=
+> > > > When fec0 retry the probe, the previous assignement prevent the MDI=
+O bus=0A=
+> > > > registration.=0A=
+> > > > Use a static boolean to trace the orginal MDIO bus deferred probe a=
+nd=0A=
+> > > > prevent further registrations until the fec0 registration completed=
+=0A=
+> > > > succesfully.=0A=
+> > >=0A=
+> > > The real problem here seems to be that fep->dev_id is not=0A=
+> > > deterministic. I think a better fix would be to make the mdio bus nam=
+e=0A=
+> > > deterministic. Use pdev->id instead of fep->dev_id + 1. That is what=
+=0A=
+> > > most mdiobus drivers use.=0A=
+> >=0A=
+> > Actually, the sequence is deterministic, fec0 and then fec1,=0A=
+> > but sometimes the GPIO of fec0 is not yet available.=0A=
+>=0A=
+> Not in every case though. On i.MX6UL has the following memory map for FEC=
+:=0A=
+> * FEC2: 0x020b4000=0A=
+> * FEC1: 0x02188000=0A=
+>=0A=
+> Which essentially means that fec2 will be probed first.=0A=
+>=0A=
+This is actually the expected behaviour, by FEC0 I refer to the 1st instanc=
+e of=0A=
+FEC, no matter the alias used for it: apologizing for the misleading notati=
+on.=0A=
+For iMX6UL, when both the FEC are present, the MDIO is owned by=0A=
+fec@0x020b4000,=A0which is the 1st instance of FEC.=0A=
+>=0A=
+> > The EPROBE_DEFER does not prevent the second instance from being probed=
+.=0A=
+> > This is the origin of the problem.=0A=
+>=0A=
+> Is this the actual cause? There is also a problem in the case above if th=
+e=0A=
+> MDIO controlling interface (fec2) is not probed first, e.g. using fec1 fo=
+r=0A=
+> MDIO access. But then again there is i.MX6ULG1 which only has fec1=0A=
+> interface...=0A=
+>=0A=
+I'm not familiar with iMX6ULG1, but I would expect that its device tree dis=
+ables=0A=
+one of the 2 fec: this patch is relevant only for dual FEC configuration.=
+=0A=
+>=0A=
+> Best regards,=0A=
+> Alexander=
