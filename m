@@ -2,83 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 232B266BCED
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 12:30:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 304C566BCF4
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 12:34:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229911AbjAPLam (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 06:30:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54254 "EHLO
+        id S229588AbjAPLeO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 06:34:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230010AbjAPLaV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 06:30:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74A761F4A3
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 03:30:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08DBD60F7B
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 11:30:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 560FCC433F0;
-        Mon, 16 Jan 2023 11:30:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673868616;
-        bh=/34I9lVzsPTJb4398uI4DPfixBtWO1J6acrvoxfZP7c=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=o5YVNEjkwirSj6r7J7v+xViPXP4kkC+ICTzm8EGkFEbGT6xQ+VMq3KLP1gakWnfNk
-         GlKWkendykVp5qEfsuR7Rcoo7NBRarZTDsCXKg54ofjDY9Y7UgsV/a7X6A7wLSO17h
-         FtrNistwaOtR5PJbVynwYXUPc/Tx3ZMV9WiZqHc2qcAQoGV9SYEBgoFtgKTPiFQRPG
-         UZZwpYO/eUpf4LhN+hdcbNY5TIurrO7B4x9uGrblGo5HUKrsfhdTG58mngefYggaWv
-         7Fa+J6uYnZbfDiA6KVIy65TSefTIetXZCL54+jwPx7aNFReXv+DO5gKn3khREMP4/a
-         DcJ6gDCa44yXA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 329D7E54D2A;
-        Mon, 16 Jan 2023 11:30:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229545AbjAPLeN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 06:34:13 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5854210E6
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 03:34:12 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id v10so39108580edi.8
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 03:34:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
+        bh=musiU/xa+beV5wDQ+48J+naON4JvwF6zzi8se9Hs4H8=;
+        b=GDWE2ZkJ1iQzUoNKqyzh3ULBoNfQV2zOsFJTiUgf7xglDzXrJPons73dgXabJICmRR
+         Qiiw05I6DwZoglyT8q8Mgy0c4jXXQUrTV5vxrUL1CFpBNCSR96ZsykrAyRN338svAsTn
+         01/h+Exdhl1hGM3yHasawzVPtKmoVArpB1iI8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=musiU/xa+beV5wDQ+48J+naON4JvwF6zzi8se9Hs4H8=;
+        b=BIBOenXrP5gw1ZL4xTRv/R4tFzokXy28fP0rHEvVAcsjM7oLcT4ng1Lu6BLi9WeyVV
+         FARmVLlpLwiwb0/Mg88eAlxJvF+N2G6jlKaiWQLX+3uT9mbOSldzLjMYnov71019aQjn
+         ZMm+5bMnzUPHiegbHB3GJ51sdUUf1dRgANHtGhLpvSstHfEf7rSTg+LiyAPzw6izvf3m
+         O41kp4l3yYAebvBSZOWExEHD+u5vEEo2uibfmuM7cd116w6bJQnUoeAA5L8tCqsGoitb
+         rfhZ1uERNCliYdEMm+neB4nAMmSTsvI2cFm5Lpxnssf4UpEelIO6VWWHuy8vVKvuvxrW
+         3kBg==
+X-Gm-Message-State: AFqh2koWGgeEjV5FI0B0AcBzziC71MatqdZMYexOjcqqAQd14PaFpeqT
+        G3cdCNJ93I6EmLfIXFchn7xIz+YskVT2CGQ5
+X-Google-Smtp-Source: AMrXdXsq9l0PKkMRmShnI9epkwxkBKszmh/AV9Wan3qmM5TCqZMCQeMSkTSAUPyWaAekGUl6xN0Bgg==
+X-Received: by 2002:aa7:c716:0:b0:479:8313:3008 with SMTP id i22-20020aa7c716000000b0047983133008mr9172281edq.0.1673868850923;
+        Mon, 16 Jan 2023 03:34:10 -0800 (PST)
+Received: from cloudflare.com (79.184.151.107.ipv4.supernova.orange.pl. [79.184.151.107])
+        by smtp.gmail.com with ESMTPSA id da11-20020a056402176b00b0049b5c746df7sm4838006edb.0.2023.01.16.03.34.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Jan 2023 03:34:10 -0800 (PST)
+References: <20230113-sockmap-fix-v1-1-d3cad092ee10@cloudflare.com>
+ <202301141018.w4fQc4gd-lkp@intel.com> <87sfgayeg9.fsf@cloudflare.com>
+ <Y8UxRmxdqGv92Szw@kadam>
+User-agent: mu4e 1.6.10; emacs 28.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Dan Carpenter <error27@gmail.com>
+Cc:     oe-kbuild@lists.linux.dev, netdev@vger.kernel.org, lkp@intel.com,
+        oe-kbuild-all@lists.linux.dev, kernel-team@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        syzbot+04c21ed96d861dccc5cd@syzkaller.appspotmail.com
+Subject: Re: [PATCH bpf 1/3] bpf, sockmap: Check for any of tcp_bpf_prots
+ when cloning a listener
+Date:   Mon, 16 Jan 2023 12:31:11 +0100
+In-reply-to: <Y8UxRmxdqGv92Szw@kadam>
+Message-ID: <87h6wqyaq6.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] unix: Improve locking scheme in
- unix_show_fdinfo()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167386861620.7624.707492607828278885.git-patchwork-notify@kernel.org>
-Date:   Mon, 16 Jan 2023 11:30:16 +0000
-References: <c6c7084c-56c7-cd37-befe-df718e080597@ya.ru>
-In-Reply-To: <c6c7084c-56c7-cd37-befe-df718e080597@ya.ru>
-To:     Kirill Tkhai <tkhai@ya.ru>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, kuniyu@amazon.com, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, Jan 16, 2023 at 02:13 PM +03, Dan Carpenter wrote:
+> On Mon, Jan 16, 2023 at 11:09:02AM +0100, Jakub Sitnicki wrote:
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+[...]
 
-On Sat, 14 Jan 2023 12:35:02 +0300 you wrote:
-> After switching to TCP_ESTABLISHED or TCP_LISTEN sk_state, alive SOCK_STREAM
-> and SOCK_SEQPACKET sockets can't change it anymore (since commit 3ff8bff704f4
-> "unix: Fix race in SOCK_SEQPACKET's unix_dgram_sendmsg()").
-> 
-> Thus, we do not need to take lock here.
-> 
-> Signed-off-by: Kirill Tkhai <tkhai@ya.ru>
-> 
-> [...]
+>> Smatch doesn't seem to graps the 2D array concept here. We can make it
+>> happy by being explicit but harder on the eyes:
+>> 
+>> 	if (&tcp_bpf_prots[0][0] <= prot && prot < &tcp_bpf_prots[ARRAY_SIZE(tcp_bpf_prots)][0])
+>> 		newsk->sk_prot = sk->sk_prot_creator;
+>
+> Huh.  I can silence this false positive in Smatch...  It never even
+> occured to me that this was a two dimensional array (I only have the
+> information in the email).
+>
 
-Here is the summary with links:
-  - [net-next,v2] unix: Improve locking scheme in unix_show_fdinfo()
-    https://git.kernel.org/netdev/net-next/c/b27401a30ee4
+No need. Eric's macro helper makes Smatch happy. I'll use it in v2.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+>> 
+>> Clang can do pointer arithmetic on 2D arrays just fine :-)
+>
+> Heh.  I must have an older version of Clang.
+>
+>   CC      net/ipv4/tcp_bpf.o
+> net/ipv4/tcp_bpf.c:644:41: warning: array index 2 is past the end of the array (that has type 'struct proto[2][4]') [-Warray-bounds]
+>         if (tcp_bpf_prots[0] <= prot && prot < tcp_bpf_prots[ARRAY_SIZE(tcp_bpf_prots)])
+>                                                ^             ~~~~~~~~~~~~~~~~~~~~~~~~~
+> net/ipv4/tcp_bpf.c:544:1: note: array 'tcp_bpf_prots' declared here
+> static struct proto tcp_bpf_prots[TCP_BPF_NUM_PROTS][TCP_BPF_NUM_CFGS];
+> ^
+> 1 warning generated.
 
+FWIW, I've checked against:
 
+$ clang --version
+clang version 15.0.6 (Fedora 15.0.6-2.fc37)
+
+Gotta keep it fresh to be able to build bpf selftests ;-)
+But I sure don't want to break builds with older Clangs.
+
+Thanks for pointing it out.
