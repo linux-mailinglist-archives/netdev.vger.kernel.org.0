@@ -2,216 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F084B66B986
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 09:56:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D864366B97E
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 09:56:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232475AbjAPI4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 03:56:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60070 "EHLO
+        id S232433AbjAPI4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 03:56:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232411AbjAPI4P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 03:56:15 -0500
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E42213D50;
-        Mon, 16 Jan 2023 00:56:14 -0800 (PST)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 30G8tsFj047639;
-        Mon, 16 Jan 2023 02:55:54 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1673859354;
-        bh=eQGeU/joVMiHsxsFt6zqr2/z4nsq/vb7Ljj2B2rtXIM=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=Lr4Ga52mTMbXnfnocNKOPZmEd+1CEP/x3JE+LnylwKLzVEvWxs3FRzHRbPLWgn3yN
-         7TMQ+bDkF0X97dRs4HvHAcGjtjkJ7O7D9fN7pzbB8TSJ1tg/aM7QRXWIlFITOFbt2r
-         o76F2EhbTohyYi5qn3+f2TW6CmRWpqHYzfAsRLe0=
-Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 30G8tsvI085935
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 16 Jan 2023 02:55:54 -0600
-Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Mon, 16
- Jan 2023 02:55:53 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Mon, 16 Jan 2023 02:55:54 -0600
-Received: from uda0492258.dhcp.ti.com (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 30G8tZwK040368;
-        Mon, 16 Jan 2023 02:55:49 -0600
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski@linaro.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <vigneshr@ti.com>,
-        <rogerq@kernel.org>, <nsekhar@ti.com>
-CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
-        <s-vadapalli@ti.com>
-Subject: [PATCH net-next v2 3/3] net: ethernet: ti: am65-cpts: adjust pps following ptp changes
-Date:   Mon, 16 Jan 2023 14:25:34 +0530
-Message-ID: <20230116085534.440820-4-s-vadapalli@ti.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230116085534.440820-1-s-vadapalli@ti.com>
-References: <20230116085534.440820-1-s-vadapalli@ti.com>
+        with ESMTP id S232406AbjAPIzu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 03:55:50 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C6F13D60;
+        Mon, 16 Jan 2023 00:55:48 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id y1so29670582plb.2;
+        Mon, 16 Jan 2023 00:55:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=5WAPbAs4qNs3+IgrwRS+Oyx6LWS3F6A1afWPeS2gaZE=;
+        b=YMhGPwgnK1MFkgW0vtH6zBaFzz+mHKFtGswwQXsNYMp0XXfCCxqhS6BVXZgtGghuVX
+         svIKmqYB8fZoeF7kBNLJTzKnFo2nSsfKBqfLBXwc9ZLA1EkIS+Zvho2LuOP4kJJcWVi4
+         1HwfaUH0FKokvOsG9nlik8bUTDvegjmhKfy6AzV0e0QzFQBcAOXqNIjP2fxCNJGZYxwp
+         XPMYylb/r8Yr0KDDMgfRc2CvE3moG6PJoJC+nfXGTrcLruQ73i6aNf/34TQ1kNQ2HGac
+         Bfz29hdQCErq3D3AyoXaNoB5EOMulFrzJU9TLJ0t874bz8m8w7+oW74v8VT+PssqQ/a2
+         0uyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=5WAPbAs4qNs3+IgrwRS+Oyx6LWS3F6A1afWPeS2gaZE=;
+        b=YGoJkepdZM4ElfWQT2PJDq/z9phhyuNQnj634LG/QxfwcscvmzGFlIIBbiIulgVdlk
+         fL+EffQB7MwM3kwiBsKTrqBaaieeUTZ3SeupHTbZ+4ATo/lLxsI4ND3kMZ6rBbbo2q9R
+         Ow1doTc6Gt2zqKZPsmeU9fEa0yZOy8t0ySBYHKOjC7bXTy//LuKB4o3L9zIV+Oqd90Ff
+         KS/PzMUO1r2QOj9g1G0erYGFGEA/Wwbfy46Vs8r7K/WesjDq525psBEB/XX1xOAt3ErA
+         km7gfcBYMJo0qOgy5B+CyNmNJM+lrSXBuPDGNR/p4u5Sae6q4jsOLF77Bo/68f3u7zp0
+         cP+Q==
+X-Gm-Message-State: AFqh2kopjIKts2+01hna+5KD8fZcMQKiIG9/bMJeFgRFZyRQtftuyLfS
+        s+RUl9YInSrwtea/B1Lr6miHq4Nv6YWPQA==
+X-Google-Smtp-Source: AMrXdXvbiLCyZhCCqXfBy8uHXLmCRGhxA639S9jHdFC2k//d9UvckT9BoegeeYFdzv4Y0r2Seas66w==
+X-Received: by 2002:a17:90a:4282:b0:223:f131:3604 with SMTP id p2-20020a17090a428200b00223f1313604mr93583016pjg.17.1673859347789;
+        Mon, 16 Jan 2023 00:55:47 -0800 (PST)
+Received: from Laptop-X1 ([2409:8a02:781c:2330:c2cc:a0ba:7da8:3e4b])
+        by smtp.gmail.com with ESMTPSA id y7-20020a17090a474700b00219463262desm15945575pjg.39.2023.01.16.00.55.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Jan 2023 00:55:46 -0800 (PST)
+Date:   Mon, 16 Jan 2023 16:55:41 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Lina Wang <lina.wang@mediatek.com>,
+        Coleman Dietsch <dietschc@csp.edu>, bpf@vger.kernel.org,
+        Maciej enczykowski <maze@google.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@rivosinc.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>
+Subject: Re: [PATCHv3 net-next] selftests/net: mv bpf/nat6to4.c to net folder
+Message-ID: <Y8URDVVQs9pRrNdU@Laptop-X1>
+References: <20221218082448.1829811-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20221218082448.1829811-1-liuhangbin@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Grygorii Strashko <grygorii.strashko@ti.com>
+Hello,
 
-When CPTS clock is sync/adjusted by running linuxptp (ptp4l) it will cause
-PPS jitter as Genf running PPS is not adjusted.
+May I ask what's the status of this patch? I saw it's deferred[1] but I don't
+know what I should do.
 
-The same PPM adjustment has to be applied to GenF as to PHC clock to
-correct PPS length and keep them in sync.
+[1] https://patchwork.kernel.org/project/netdevbpf/patch/20221218082448.1829811-1-liuhangbin@gmail.com/
 
-Testing:
- Master:
-  ptp4l -P -2 -H -i eth0 -l 6 -m -q -p /dev/ptp1 -f ptp.cfg &
-  testptp -d /dev/ptp1 -P 1
-  ppstest /dev/pps0
+Thanks
+Hangbin
 
- Slave:
-  linuxptp/ptp4l -P -2 -H -i eth0 -l 6 -m -q -p /dev/ptp1 -f ptp1.cfg -s &
-    <port 1: UNCALIBRATED to SLAVE on MASTER_CLOCK_SELECTED;>
-  testptp -d /dev/ptp1 -P 1
-  ppstest /dev/pps0
-
-Master log:
-source 0 - assert 620.000000689, sequence: 530
-source 0 - assert 621.000000689, sequence: 531
-source 0 - assert 622.000000689, sequence: 532
-source 0 - assert 623.000000689, sequence: 533
-source 0 - assert 624.000000689, sequence: 534
-source 0 - assert 625.000000689, sequence: 535
-source 0 - assert 626.000000689, sequence: 536
-source 0 - assert 627.000000689, sequence: 537
-source 0 - assert 628.000000689, sequence: 538
-source 0 - assert 629.000000689, sequence: 539
-source 0 - assert 630.000000689, sequence: 540
-source 0 - assert 631.000000689, sequence: 541
-source 0 - assert 632.000000689, sequence: 542
-source 0 - assert 633.000000689, sequence: 543
-source 0 - assert 634.000000689, sequence: 544
-source 0 - assert 635.000000689, sequence: 545
-
-Slave log:
-source 0 - assert 620.000000706, sequence: 252
-source 0 - assert 621.000000709, sequence: 253
-source 0 - assert 622.000000707, sequence: 254
-source 0 - assert 623.000000707, sequence: 255
-source 0 - assert 624.000000706, sequence: 256
-source 0 - assert 625.000000705, sequence: 257
-source 0 - assert 626.000000709, sequence: 258
-source 0 - assert 627.000000709, sequence: 259
-source 0 - assert 628.000000707, sequence: 260
-source 0 - assert 629.000000706, sequence: 261
-source 0 - assert 630.000000710, sequence: 262
-source 0 - assert 631.000000708, sequence: 263
-source 0 - assert 632.000000705, sequence: 264
-source 0 - assert 633.000000710, sequence: 265
-source 0 - assert 634.000000708, sequence: 266
-source 0 - assert 635.000000707, sequence: 267
-
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
----
- drivers/net/ethernet/ti/am65-cpts.c | 59 ++++++++++++++++++++++++-----
- 1 file changed, 49 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/ti/am65-cpts.c b/drivers/net/ethernet/ti/am65-cpts.c
-index c405af266b41..bf0f74b20ba6 100644
---- a/drivers/net/ethernet/ti/am65-cpts.c
-+++ b/drivers/net/ethernet/ti/am65-cpts.c
-@@ -405,10 +405,13 @@ static irqreturn_t am65_cpts_interrupt(int irq, void *dev_id)
- static int am65_cpts_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
- {
- 	struct am65_cpts *cpts = container_of(ptp, struct am65_cpts, ptp_info);
-+	u32 pps_ctrl_val = 0, pps_ppm_hi = 0, pps_ppm_low = 0;
- 	s32 ppb = scaled_ppm_to_ppb(scaled_ppm);
-+	int pps_index = cpts->pps_genf_idx;
-+	u64 adj_period, pps_adj_period;
-+	u32 ctrl_val, ppm_hi, ppm_low;
-+	unsigned long flags;
- 	int neg_adj = 0;
--	u64 adj_period;
--	u32 val;
- 
- 	if (ppb < 0) {
- 		neg_adj = 1;
-@@ -428,17 +431,53 @@ static int am65_cpts_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
- 
- 	mutex_lock(&cpts->ptp_clk_lock);
- 
--	val = am65_cpts_read32(cpts, control);
-+	ctrl_val = am65_cpts_read32(cpts, control);
- 	if (neg_adj)
--		val |= AM65_CPTS_CONTROL_TS_PPM_DIR;
-+		ctrl_val |= AM65_CPTS_CONTROL_TS_PPM_DIR;
- 	else
--		val &= ~AM65_CPTS_CONTROL_TS_PPM_DIR;
--	am65_cpts_write32(cpts, val, control);
-+		ctrl_val &= ~AM65_CPTS_CONTROL_TS_PPM_DIR;
-+
-+	ppm_hi = upper_32_bits(adj_period) & 0x3FF;
-+	ppm_low = lower_32_bits(adj_period);
-+
-+	if (cpts->pps_enabled) {
-+		pps_ctrl_val = am65_cpts_read32(cpts, genf[pps_index].control);
-+		if (neg_adj)
-+			pps_ctrl_val &= ~BIT(1);
-+		else
-+			pps_ctrl_val |= BIT(1);
-+
-+		/* GenF PPM will do correction using cpts refclk tick which is
-+		 * (cpts->ts_add_val + 1) ns, so GenF length PPM adj period
-+		 * need to be corrected.
-+		 */
-+		pps_adj_period = adj_period * (cpts->ts_add_val + 1);
-+		pps_ppm_hi = upper_32_bits(pps_adj_period) & 0x3FF;
-+		pps_ppm_low = lower_32_bits(pps_adj_period);
-+	}
-+
-+	spin_lock_irqsave(&cpts->lock, flags);
- 
--	val = upper_32_bits(adj_period) & 0x3FF;
--	am65_cpts_write32(cpts, val, ts_ppm_hi);
--	val = lower_32_bits(adj_period);
--	am65_cpts_write32(cpts, val, ts_ppm_low);
-+	/* All below writes must be done extremely fast:
-+	 *  - delay between PPM dir and PPM value changes can cause err due old
-+	 *    PPM correction applied in wrong direction
-+	 *  - delay between CPTS-clock PPM cfg and GenF PPM cfg can cause err
-+	 *    due CPTS-clock PPM working with new cfg while GenF PPM cfg still
-+	 *    with old for short period of time
-+	 */
-+
-+	am65_cpts_write32(cpts, ctrl_val, control);
-+	am65_cpts_write32(cpts, ppm_hi, ts_ppm_hi);
-+	am65_cpts_write32(cpts, ppm_low, ts_ppm_low);
-+
-+	if (cpts->pps_enabled) {
-+		am65_cpts_write32(cpts, pps_ctrl_val, genf[pps_index].control);
-+		am65_cpts_write32(cpts, pps_ppm_hi, genf[pps_index].ppm_hi);
-+		am65_cpts_write32(cpts, pps_ppm_low, genf[pps_index].ppm_low);
-+	}
-+
-+	/* All GenF/EstF can be updated here the same way */
-+	spin_unlock_irqrestore(&cpts->lock, flags);
- 
- 	mutex_unlock(&cpts->ptp_clk_lock);
- 
--- 
-2.25.1
-
+On Sun, Dec 18, 2022 at 04:24:48PM +0800, Hangbin Liu wrote:
+> There are some issues with the bpf/nat6to4.c building.
+> 
+> 1. It use TEST_CUSTOM_PROGS, which will add the nat6to4.o to
+>    kselftest-list file and run by common run_tests.
+> 2. When building the test via `make -C tools/testing/selftests/
+>    TARGETS="net"`, the nat6to4.o will be build in selftests/net/bpf/
+>    folder. But in test udpgro_frglist.sh it refers to ../bpf/nat6to4.o.
+>    The correct path should be ./bpf/nat6to4.o.
+> 3. If building the test via `make -C tools/testing/selftests/ TARGETS="net"
+>    install`. The nat6to4.o will be installed to kselftest_install/net/
+>    folder. Then the udpgro_frglist.sh should refer to ./nat6to4.o.
+> 
+> To fix the confusing test path, let's just move the nat6to4.c to net folder
+> and build it as TEST_GEN_FILES.
+> 
+> Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-tests")
+> Tested-by: Björn Töpel <bjorn@kernel.org>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
+> v3: remove unneeded $(OUTPUT)/bpf dir.
+> 
+> v2: Update the Makefile rules rely on commit 837a3d66d698 ("selftests:
+>     net: Add cross-compilation support for BPF programs").
+> ---
+>  tools/testing/selftests/net/Makefile          | 50 +++++++++++++++++-
+>  tools/testing/selftests/net/bpf/Makefile      | 51 -------------------
+>  .../testing/selftests/net/{bpf => }/nat6to4.c |  0
+>  tools/testing/selftests/net/udpgro_frglist.sh |  8 +--
+>  4 files changed, 52 insertions(+), 57 deletions(-)
+>  delete mode 100644 tools/testing/selftests/net/bpf/Makefile
+>  rename tools/testing/selftests/net/{bpf => }/nat6to4.c (100%)
+> 
+> diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+> index 3007e98a6d64..47314f0b3006 100644
+> --- a/tools/testing/selftests/net/Makefile
+> +++ b/tools/testing/selftests/net/Makefile
+> @@ -75,14 +75,60 @@ TEST_GEN_PROGS += so_incoming_cpu
+>  TEST_PROGS += sctp_vrf.sh
+>  TEST_GEN_FILES += sctp_hello
+>  TEST_GEN_FILES += csum
+> +TEST_GEN_FILES += nat6to4.o
+>  
+>  TEST_FILES := settings
+>  
+>  include ../lib.mk
+>  
+> -include bpf/Makefile
+> -
+>  $(OUTPUT)/reuseport_bpf_numa: LDLIBS += -lnuma
+>  $(OUTPUT)/tcp_mmap: LDLIBS += -lpthread
+>  $(OUTPUT)/tcp_inq: LDLIBS += -lpthread
+>  $(OUTPUT)/bind_bhash: LDLIBS += -lpthread
+> +
+> +# Rules to generate bpf obj nat6to4.o
+> +CLANG ?= clang
+> +SCRATCH_DIR := $(OUTPUT)/tools
+> +BUILD_DIR := $(SCRATCH_DIR)/build
+> +BPFDIR := $(abspath ../../../lib/bpf)
+> +APIDIR := $(abspath ../../../include/uapi)
+> +
+> +CCINCLUDE += -I../bpf
+> +CCINCLUDE += -I../../../../usr/include/
+> +CCINCLUDE += -I$(SCRATCH_DIR)/include
+> +
+> +BPFOBJ := $(BUILD_DIR)/libbpf/libbpf.a
+> +
+> +MAKE_DIRS := $(BUILD_DIR)/libbpf
+> +$(MAKE_DIRS):
+> +	mkdir -p $@
+> +
+> +# Get Clang's default includes on this system, as opposed to those seen by
+> +# '-target bpf'. This fixes "missing" files on some architectures/distros,
+> +# such as asm/byteorder.h, asm/socket.h, asm/sockios.h, sys/cdefs.h etc.
+> +#
+> +# Use '-idirafter': Don't interfere with include mechanics except where the
+> +# build would have failed anyways.
+> +define get_sys_includes
+> +$(shell $(1) $(2) -v -E - </dev/null 2>&1 \
+> +	| sed -n '/<...> search starts here:/,/End of search list./{ s| \(/.*\)|-idirafter \1|p }') \
+> +$(shell $(1) $(2) -dM -E - </dev/null | grep '__riscv_xlen ' | awk '{printf("-D__riscv_xlen=%d -D__BITS_PER_LONG=%d", $$3, $$3)}')
+> +endef
+> +
+> +ifneq ($(CROSS_COMPILE),)
+> +CLANG_TARGET_ARCH = --target=$(notdir $(CROSS_COMPILE:%-=%))
+> +endif
+> +
+> +CLANG_SYS_INCLUDES = $(call get_sys_includes,$(CLANG),$(CLANG_TARGET_ARCH))
+> +
+> +$(OUTPUT)/nat6to4.o: nat6to4.c $(BPFOBJ) | $(MAKE_DIRS)
+> +	$(CLANG) -O2 -target bpf -c $< $(CCINCLUDE) $(CLANG_SYS_INCLUDES) -o $@
+> +
+> +$(BPFOBJ): $(wildcard $(BPFDIR)/*.[ch] $(BPFDIR)/Makefile)		       \
+> +	   $(APIDIR)/linux/bpf.h					       \
+> +	   | $(BUILD_DIR)/libbpf
+> +	$(MAKE) $(submake_extras) -C $(BPFDIR) OUTPUT=$(BUILD_DIR)/libbpf/     \
+> +		    EXTRA_CFLAGS='-g -O0'				       \
+> +		    DESTDIR=$(SCRATCH_DIR) prefix= all install_headers
+> +
+> +EXTRA_CLEAN := $(SCRATCH_DIR)
+> diff --git a/tools/testing/selftests/net/bpf/Makefile b/tools/testing/selftests/net/bpf/Makefile
+> deleted file mode 100644
+> index 4abaf16d2077..000000000000
+> --- a/tools/testing/selftests/net/bpf/Makefile
+> +++ /dev/null
+> @@ -1,51 +0,0 @@
+> -# SPDX-License-Identifier: GPL-2.0
+> -
+> -CLANG ?= clang
+> -SCRATCH_DIR := $(OUTPUT)/tools
+> -BUILD_DIR := $(SCRATCH_DIR)/build
+> -BPFDIR := $(abspath ../../../lib/bpf)
+> -APIDIR := $(abspath ../../../include/uapi)
+> -
+> -CCINCLUDE += -I../../bpf
+> -CCINCLUDE += -I../../../../../usr/include/
+> -CCINCLUDE += -I$(SCRATCH_DIR)/include
+> -
+> -BPFOBJ := $(BUILD_DIR)/libbpf/libbpf.a
+> -
+> -MAKE_DIRS := $(BUILD_DIR)/libbpf $(OUTPUT)/bpf
+> -$(MAKE_DIRS):
+> -	mkdir -p $@
+> -
+> -TEST_CUSTOM_PROGS = $(OUTPUT)/bpf/nat6to4.o
+> -all: $(TEST_CUSTOM_PROGS)
+> -
+> -# Get Clang's default includes on this system, as opposed to those seen by
+> -# '-target bpf'. This fixes "missing" files on some architectures/distros,
+> -# such as asm/byteorder.h, asm/socket.h, asm/sockios.h, sys/cdefs.h etc.
+> -#
+> -# Use '-idirafter': Don't interfere with include mechanics except where the
+> -# build would have failed anyways.
+> -define get_sys_includes
+> -$(shell $(1) $(2) -v -E - </dev/null 2>&1 \
+> -	| sed -n '/<...> search starts here:/,/End of search list./{ s| \(/.*\)|-idirafter \1|p }') \
+> -$(shell $(1) $(2) -dM -E - </dev/null | grep '__riscv_xlen ' | awk '{printf("-D__riscv_xlen=%d -D__BITS_PER_LONG=%d", $$3, $$3)}')
+> -endef
+> -
+> -ifneq ($(CROSS_COMPILE),)
+> -CLANG_TARGET_ARCH = --target=$(notdir $(CROSS_COMPILE:%-=%))
+> -endif
+> -
+> -CLANG_SYS_INCLUDES = $(call get_sys_includes,$(CLANG),$(CLANG_TARGET_ARCH))
+> -
+> -$(TEST_CUSTOM_PROGS): $(OUTPUT)/%.o: %.c $(BPFOBJ) | $(MAKE_DIRS)
+> -	$(CLANG) -O2 -target bpf -c $< $(CCINCLUDE) $(CLANG_SYS_INCLUDES) -o $@
+> -
+> -$(BPFOBJ): $(wildcard $(BPFDIR)/*.[ch] $(BPFDIR)/Makefile)		       \
+> -	   $(APIDIR)/linux/bpf.h					       \
+> -	   | $(BUILD_DIR)/libbpf
+> -	$(MAKE) $(submake_extras) -C $(BPFDIR) OUTPUT=$(BUILD_DIR)/libbpf/     \
+> -		    EXTRA_CFLAGS='-g -O0'				       \
+> -		    DESTDIR=$(SCRATCH_DIR) prefix= all install_headers
+> -
+> -EXTRA_CLEAN := $(TEST_CUSTOM_PROGS) $(SCRATCH_DIR)
+> -
+> diff --git a/tools/testing/selftests/net/bpf/nat6to4.c b/tools/testing/selftests/net/nat6to4.c
+> similarity index 100%
+> rename from tools/testing/selftests/net/bpf/nat6to4.c
+> rename to tools/testing/selftests/net/nat6to4.c
+> diff --git a/tools/testing/selftests/net/udpgro_frglist.sh b/tools/testing/selftests/net/udpgro_frglist.sh
+> index c9c4b9d65839..0a6359bed0b9 100755
+> --- a/tools/testing/selftests/net/udpgro_frglist.sh
+> +++ b/tools/testing/selftests/net/udpgro_frglist.sh
+> @@ -40,8 +40,8 @@ run_one() {
+>  
+>  	ip -n "${PEER_NS}" link set veth1 xdp object ${BPF_FILE} section xdp
+>  	tc -n "${PEER_NS}" qdisc add dev veth1 clsact
+> -	tc -n "${PEER_NS}" filter add dev veth1 ingress prio 4 protocol ipv6 bpf object-file ../bpf/nat6to4.o section schedcls/ingress6/nat_6  direct-action
+> -	tc -n "${PEER_NS}" filter add dev veth1 egress prio 4 protocol ip bpf object-file ../bpf/nat6to4.o section schedcls/egress4/snat4 direct-action
+> +	tc -n "${PEER_NS}" filter add dev veth1 ingress prio 4 protocol ipv6 bpf object-file nat6to4.o section schedcls/ingress6/nat_6  direct-action
+> +	tc -n "${PEER_NS}" filter add dev veth1 egress prio 4 protocol ip bpf object-file nat6to4.o section schedcls/egress4/snat4 direct-action
+>          echo ${rx_args}
+>  	ip netns exec "${PEER_NS}" ./udpgso_bench_rx ${rx_args} -r &
+>  
+> @@ -88,8 +88,8 @@ if [ ! -f ${BPF_FILE} ]; then
+>  	exit -1
+>  fi
+>  
+> -if [ ! -f bpf/nat6to4.o ]; then
+> -	echo "Missing nat6to4 helper. Build bpfnat6to4.o selftest first"
+> +if [ ! -f nat6to4.o ]; then
+> +	echo "Missing nat6to4 helper. Build bpf nat6to4.o selftest first"
+>  	exit -1
+>  fi
+>  
+> -- 
+> 2.38.1
+> 
