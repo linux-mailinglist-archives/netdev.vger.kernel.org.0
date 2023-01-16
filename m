@@ -2,185 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D57FD66B5B3
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 03:47:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2F0566B5BD
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 03:50:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231680AbjAPCrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Jan 2023 21:47:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51590 "EHLO
+        id S231776AbjAPCuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Jan 2023 21:50:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231658AbjAPCrX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 21:47:23 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B187E7286;
-        Sun, 15 Jan 2023 18:47:21 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id w4-20020a17090ac98400b002186f5d7a4cso32580121pjt.0;
-        Sun, 15 Jan 2023 18:47:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=abWfWv7dx4M21bFcNtuB4f9xzNG3ZWU0shwDajE0q7k=;
-        b=TcpScGUIrGvJSXZgqAPxAiPea0EJwMAvQlVaPUDbDh0YoXF5dBbuCSkAongzzdFXdb
-         +h1Op4dUg/W7Kn3+JuBps7B51HGtvh1pcwbSLSBh5dFrmFEBozuFGWycb8xKHHbzRlRs
-         /Jn854qSvVwEGSTAOG+tjbMRLn8UliJV3K8OJxFtwmo0kHHorpdoR8WqTn/N/HgnRgVg
-         dvoVEmn7j6wLKnKeLsU5128L/0qNtyBzK/yGiq+cG3bRbsPJxuMIzkyCFcqthOkugXEa
-         MBUuF4AN+Zc32mqdbeB1Kx6AQMRydOIaiMV0UZwFXo5twKXgY1tVqXIf/sjzVvHX/yoO
-         9ywg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=abWfWv7dx4M21bFcNtuB4f9xzNG3ZWU0shwDajE0q7k=;
-        b=lOPHbmTJ26EtwBeGnGtO02Ef1RWibycFhiwK7ourG+RNM9mrfzdW873aCjD754yNMq
-         dQn45u6x4CjQM0PkCFyEieNbSKgpVbtrJsp80x8pM4VBr/gGw7hD1ESBGHUR5t6H2wpb
-         PFJ+RLMKSTyC5SB95iibs9i8qOe1tQgjxv2DmclBjVZpSJgIwVz1GyE9FcmH1NJ9gEJq
-         UkkgqL7u8iiY9iSkOzVrG5yqne+8WlV1/4gJgakkVeiKRb9PZXsNKlPy0VzLnKiiAJnd
-         Jkq1tq9oiWPBkCwrLAWDXgMtkicjE76SBuMhbW+1ycdZG/WWcACy/twuG2z2rSVbdVZ2
-         BNwg==
-X-Gm-Message-State: AFqh2kppqMleaWFBTDm2XDe4HyrLg3hfgmobJEs02SS4Mgojse7DGTNz
-        zwY+Wa8TW/L4vBTEP3RSPzU=
-X-Google-Smtp-Source: AMrXdXshFAWZ3CUECgS0/72Q4g8B4z2MmJltI2s8Aeo+GTLha1iEXGI5YktYAwT52bEgDu5d6vsEQQ==
-X-Received: by 2002:a17:902:e042:b0:194:9b4e:1c90 with SMTP id x2-20020a170902e04200b001949b4e1c90mr588179plx.57.1673837241165;
-        Sun, 15 Jan 2023 18:47:21 -0800 (PST)
-Received: from KERNELXING-MB0.tencent.com ([103.7.29.31])
-        by smtp.gmail.com with ESMTPSA id c5-20020a170902d90500b001946119c22esm7091715plz.146.2023.01.15.18.47.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Jan 2023 18:47:20 -0800 (PST)
-From:   Jason Xing <kerneljasonxing@gmail.com>
-To:     edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kerneljasonxing@gmail.com, Jason Xing <kernelxing@tencent.com>
-Subject: [PATCH v3 net] tcp: avoid the lookup process failing to get sk in ehash table
-Date:   Mon, 16 Jan 2023 10:46:07 +0800
-Message-Id: <20230116024607.47164-1-kerneljasonxing@gmail.com>
-X-Mailer: git-send-email 2.33.0
+        with ESMTP id S231806AbjAPCt6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 21:49:58 -0500
+Received: from out28-218.mail.aliyun.com (out28-218.mail.aliyun.com [115.124.28.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65607EED;
+        Sun, 15 Jan 2023 18:49:53 -0800 (PST)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.09077504|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.0574618-0.00379392-0.938744;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047207;MF=frank.sae@motor-comm.com;NM=1;PH=DS;RN=16;RT=16;SR=0;TI=SMTPD_---.QtcxEZT_1673837386;
+Received: from 10.0.2.15(mailfrom:Frank.Sae@motor-comm.com fp:SMTPD_---.QtcxEZT_1673837386)
+          by smtp.aliyun-inc.com;
+          Mon, 16 Jan 2023 10:49:47 +0800
+Message-ID: <7c38c139-9a5d-f098-3252-cbf5fe51e776@motor-comm.com>
+Date:   Mon, 16 Jan 2023 10:49:43 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next v1 1/3] dt-bindings: net: Add Motorcomm yt8xxx
+ ethernet phy Driver bindings
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Peter Geis <pgwipeout@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        xiaogang.fan@motor-comm.com, fei.zhang@motor-comm.com,
+        hua.sun@motor-comm.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20230105073024.8390-1-Frank.Sae@motor-comm.com>
+ <20230105073024.8390-2-Frank.Sae@motor-comm.com> <Y7bN4vJXMi66FF6v@lunn.ch>
+ <e762c7ac-63e7-a86e-3e3f-5c8a450b25b0@motor-comm.com>
+ <Y7goXXiRBE6XHuCc@lunn.ch>
+ <83fd7a69-7e6a-ab93-b05a-4eba8af4d245@motor-comm.com>
+ <Y760k6/pKdjwu1fU@lunn.ch>
+Content-Language: en-US
+From:   "Frank.Sae" <Frank.Sae@motor-comm.com>
+In-Reply-To: <Y760k6/pKdjwu1fU@lunn.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jason Xing <kernelxing@tencent.com>
+Hi Andrew,
 
-While one cpu is working on looking up the right socket from ehash
-table, another cpu is done deleting the request socket and is about
-to add (or is adding) the big socket from the table. It means that
-we could miss both of them, even though it has little chance.
+On 2023/1/11 21:07, Andrew Lunn wrote:
+>> RX delay = rx-delay-basic (0ns or 1.9ns) + x-delay-additional-ps
+>> (N*150ps, N = 0 ~ 15)
+>>  If rx-delay-basic is removed and controlled by phy-mode.
+>>  when phy-mode is  rgmii-id or rgmii-rxid, RX delay is 1.9ns + N*150ps.
+>>  But sometimes 1.9ns is still too big, we just need  0ns + N*150ps.
+>>
+>> For this case, can we do like following ?
+>> rx-internal-delay-ps:
+>>     enum: [ 0, 150, 300, 450, 600, 750, 900, 1050, 1200, 1350, 1500,
+>> 1650, 1800, 1900, 1950, 2050, 2100, 2200, 2250, 2350, 2500, 2650, 2800,
+>> 2950, 3100, 3250, 3400, 3550, 3700, 3850, 4000, 4150 ]
+>>     default: 0
+>>  rx-internal-delay-ps is 0ns + N*150ps and  1.9ns + N*150ps.
+>>  And check whether need rx-delay-basic (1.9ns) by the val of
+>> rx-internal-delay-ps?
+> 
+> Nothing says delays are only positive. So you could have rgmii-id or
+> rgmii-rxid and a rx-internal-delay-ps of -150, if you need less than
+> 1.9ns.
+> 
+> As i said, rx-internal-delay-ps is used to fine tune the delay.
 
-Let me draw a call trace map of the server side.
-   CPU 0                           CPU 1
-   -----                           -----
-tcp_v4_rcv()                  syn_recv_sock()
-                            inet_ehash_insert()
-                            -> sk_nulls_del_node_init_rcu(osk)
-__inet_lookup_established()
-                            -> __sk_nulls_add_node_rcu(sk, list)
+The standard type of rx-internal-delay-ps is uint32-array, so it can't
+be -150.
 
-Notice that the CPU 0 is receiving the data after the final ack
-during 3-way shakehands and CPU 1 is still handling the final ack.
+https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/property-units.yaml
 
-Why could this be a real problem?
-This case is happening only when the final ack and the first data
-receiving by different CPUs. Then the server receiving data with
-ACK flag tries to search one proper established socket from ehash
-table, but apparently it fails as my map shows above. After that,
-the server fetches a listener socket and then sends a RST because
-it finds a ACK flag in the skb (data), which obeys RST definition
-in RFC 793.
+ "-ps$":
+    $ref: types.yaml#/definitions/uint32-array
+    description: picosecond
 
-Besides, Eric pointed out there's one more race condition where it
-handles tw socket hashdance. Only by adding to the tail of the list
-before deleting the old one can we avoid the race if the reader has
-already begun the bucket traversal and it would possibly miss the head.
 
-Many thanks to Eric for great help from beginning to end.
+Can we used rx-internal-delay-ps with int32 type?
+like this:
+  rx-internal-delay-ps:
+    $ref: /schemas/types.yaml#/definitions/int32
+    enum: [ -1900, -1750, -1600, -1450, -1300, -1150, -1000, -850, -700,
+-550, -400, -250, -100, 0, 50, 150, 200, 300, 350, 450, 600, 750, 900,
+1050, 1200, 1350, 1500, 1650, 1800, 1950, 2100, 2250 ]
+    default: 0
 
-Fixes: 5e0724d027f0 ("tcp/dccp: fix hashdance race for passive sessions")
-Suggested-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Jason Xing <kernelxing@tencent.com>
-Link: https://lore.kernel.org/lkml/20230112065336.41034-1-kerneljasonxing@gmail.com/
----
-v3:
-1) get rid of else-if statement.
 
-v2:
-1) adding the sk node into the tail of list to prevent the race.
-2) fix the race condition when handling time-wait socket hashdance.
+> 
+>> We can't reduce this down to tx-clk-inverted.
+>> There are two mac and two yt8531 on their board. Each of yt8531 need
+>> different config in DTS. They need adjust tx clk delay in
+>> link_change_notify callback function according to current speed.
+>>
+>>  They configured tx-clk-xxxx-inverted like this :
+>>
+>>     speed     GMAC0             GMAC1
+>>     1000M      1                  0		tx-clk-1000-inverted
+>>     100M       1                  1		tx-clk-100-inverted
+>>     10M       0/1                0/1     	tx-clk-10-inverted
+> 
+> What MAC is this? It seems very oddly designed, getting close to
+> broken. I've not seen any other MAC/PHY combination need anything like
+> this. 
+> 
+>> Can we put tx-clk-adj-enabled, tx-clk-10-inverted, tx-clk-100-inverted
+>> and tx-clk-1000-inverted in tx-clk-10-inverted like bit in byte?
+> 
+> No, they are individual boolean properties, so should be kept as they
+> are. But i really think somebody should be looking deep into the MAC
+> design to understand why it is like this, and if the MAC can sort out
+> this mess itself.
+> 
+> 	Andrew
 
-Signed-off-by: Jason Xing <kernelxing@tencent.com>
----
- net/ipv4/inet_hashtables.c    | 14 +++++++++++++-
- net/ipv4/inet_timewait_sock.c |  6 +++---
- 2 files changed, 16 insertions(+), 4 deletions(-)
-
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index 24a38b56fab9..28374f44e3d8 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -650,8 +650,19 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
- 	spin_lock(lock);
- 	if (osk) {
- 		WARN_ON_ONCE(sk->sk_hash != osk->sk_hash);
-+		if (sk_hashed(osk)) {
-+			/* Before deleting the node, we insert a new one to make
-+			 * sure that the look-up-sk process would not miss either
-+			 * of them and that at least one node would exist in ehash
-+			 * table all the time. Otherwise there's a tiny chance
-+			 * that lookup process could find nothing in ehash table.
-+			 */
-+			__sk_nulls_add_node_tail_rcu(sk, list);
-+		}
- 		ret = sk_nulls_del_node_init_rcu(osk);
--	} else if (found_dup_sk) {
-+		goto unlock;
-+	}
-+	if (found_dup_sk) {
- 		*found_dup_sk = inet_ehash_lookup_by_sk(sk, list);
- 		if (*found_dup_sk)
- 			ret = false;
-@@ -660,6 +671,7 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
- 	if (ret)
- 		__sk_nulls_add_node_rcu(sk, list);
- 
-+unlock:
- 	spin_unlock(lock);
- 
- 	return ret;
-diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
-index 1d77d992e6e7..6d681ef52bb2 100644
---- a/net/ipv4/inet_timewait_sock.c
-+++ b/net/ipv4/inet_timewait_sock.c
-@@ -91,10 +91,10 @@ void inet_twsk_put(struct inet_timewait_sock *tw)
- }
- EXPORT_SYMBOL_GPL(inet_twsk_put);
- 
--static void inet_twsk_add_node_rcu(struct inet_timewait_sock *tw,
-+static void inet_twsk_add_node_tail_rcu(struct inet_timewait_sock *tw,
- 				   struct hlist_nulls_head *list)
- {
--	hlist_nulls_add_head_rcu(&tw->tw_node, list);
-+	hlist_nulls_add_tail_rcu(&tw->tw_node, list);
- }
- 
- static void inet_twsk_add_bind_node(struct inet_timewait_sock *tw,
-@@ -147,7 +147,7 @@ void inet_twsk_hashdance(struct inet_timewait_sock *tw, struct sock *sk,
- 
- 	spin_lock(lock);
- 
--	inet_twsk_add_node_rcu(tw, &ehead->chain);
-+	inet_twsk_add_node_tail_rcu(tw, &ehead->chain);
- 
- 	/* Step 3: Remove SK from hash chain */
- 	if (__sk_nulls_del_node_init_rcu(sk))
--- 
-2.37.3
-
+Tanks. We will remove tx-clk-xxxx-inverted and tx-clk-adj-enabled.
