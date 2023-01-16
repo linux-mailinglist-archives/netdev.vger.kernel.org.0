@@ -2,101 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 474E266BCF1
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 12:31:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0C4166BD81
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 13:07:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229517AbjAPLbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 06:31:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
+        id S229691AbjAPMHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 07:07:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbjAPLbK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 06:31:10 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF4361DBB3
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 03:31:07 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id vw16so4224617ejc.12
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 03:31:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=SAOnHwXPVdXtwryZfI27E5TBP69wt16pOek6ktQQ6k4=;
-        b=YPSxKdyv0vemU3n3JeBYbWHou1RxJV+ZCMpOJ7hPMdx5tZtYicYHOui+jxhh+tyP2u
-         rKfjR+NYG6nJKaWYJ2nHV9ka5Ocuuq9vHvAX7MnwHVc5t73GJ500oA4u6OhnUmaIGxxy
-         h2uVA7B5bKCEz67iqSKGh23bdiu5Ty3Cu0VrA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SAOnHwXPVdXtwryZfI27E5TBP69wt16pOek6ktQQ6k4=;
-        b=TiZ1BrgjwIZPJcjgJIYQuFVFF/FYwuFGX6dZRau6BKSYxAPyuqeocWpHdS8q8Q79pv
-         dMydfVSheoib1E5ztTTdeSZfQfC5kvlxPQAoNpCCP6OJpUyUI2QpbiXnIYMxjUqQyPQi
-         ghCTIgGD8Y/mHavzN7Sa+9ix8hHn0HDDTjtB1mgw3cAH+jdRjwBS7UwzXb4pB4+65ktg
-         s5bHagfMv/Y0W3iz46WaVxkWegO2trvis9U6n3EB3g6RhTtD8RcZy1FeysHvAVwFgugR
-         xkkBPEiI+tdrQJ88+KcNgyTkcR1KnBWxtyuXGFkbMKedC4sU9VarYOMWzfkpMd8MkGqw
-         bgiA==
-X-Gm-Message-State: AFqh2koS1lEeaj+ETC2QTizfW9TkUjCbeU9cKhas2bY7oF6iAsBhTHj/
-        YFdjjGK2k6WjwRKi7uJmJGnDbw==
-X-Google-Smtp-Source: AMrXdXszUtRHn1sJvd2uIBJcBgsvnMr1m2Iqr0V4lqgHz6GwPtmxkNqKtoaZku1DmjVLfTfNQEOeGg==
-X-Received: by 2002:a17:906:3687:b0:86b:914a:571 with SMTP id a7-20020a170906368700b0086b914a0571mr10054431ejc.5.1673868666301;
-        Mon, 16 Jan 2023 03:31:06 -0800 (PST)
-Received: from cloudflare.com (79.184.151.107.ipv4.supernova.orange.pl. [79.184.151.107])
-        by smtp.gmail.com with ESMTPSA id p21-20020a056402045500b0048aff8b5b70sm11257374edw.67.2023.01.16.03.31.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Jan 2023 03:31:05 -0800 (PST)
-References: <20230113-sockmap-fix-v1-1-d3cad092ee10@cloudflare.com>
- <202301141018.w4fQc4gd-lkp@intel.com> <87sfgayeg9.fsf@cloudflare.com>
- <CANn89iLanM-OJu8hThK__G_gQj0z39Rnj-5Fk=kQEmbhs2OPfA@mail.gmail.com>
-User-agent: mu4e 1.6.10; emacs 28.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Dan Carpenter <error27@gmail.com>, oe-kbuild@lists.linux.dev,
-        netdev@vger.kernel.org, lkp@intel.com,
-        oe-kbuild-all@lists.linux.dev, kernel-team@cloudflare.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        syzbot+04c21ed96d861dccc5cd@syzkaller.appspotmail.com
-Subject: Re: [PATCH bpf 1/3] bpf, sockmap: Check for any of tcp_bpf_prots
- when cloning a listener
-Date:   Mon, 16 Jan 2023 12:27:10 +0100
-In-reply-to: <CANn89iLanM-OJu8hThK__G_gQj0z39Rnj-5Fk=kQEmbhs2OPfA@mail.gmail.com>
-Message-ID: <87lem2yavb.fsf@cloudflare.com>
+        with ESMTP id S229379AbjAPMHv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 07:07:51 -0500
+X-Greylist: delayed 2406 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 16 Jan 2023 04:07:49 PST
+Received: from mail.qult.net (unknown [78.193.33.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2466B1CF5C
+        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 04:07:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=green-communications.fr; s=x; h=Content-Transfer-Encoding:Content-Type:
+        MIME-Version:Message-ID:Subject:To:From:Date:Sender:Reply-To:Cc:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ua+b1whHcAfFdXdpnTdJUOdplVMi5daW6nUcFn/QYPU=; b=vs/IR1rQypjzoBGusRy/UkClLG
+        NBnvKnOagzZOVy6sC8oteo8lQBI9+K+yySj6Sr/XfLaKHGBOZzQ9vON00px91W1mwBZZHU2kGtR/n
+        j5LVQPobL90eLBEdt+0UVYYKW2cU+rCPZ3q5IlJgFcP0M/qWnVQY9QVLQUupdoPHgw1s=;
+Received: from zenon.in.qult.net ([192.168.64.1])
+        by mail.qult.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <ignacy.gawedzki@green-communications.fr>)
+        id 1pHNeQ-0006Y3-S1
+        for netdev@vger.kernel.org; Mon, 16 Jan 2023 12:27:42 +0100
+Received: from ig by zenon.in.qult.net with local (Exim 4.96)
+        (envelope-from <ignacy.gawedzki@green-communications.fr>)
+        id 1pHNeN-0068Rc-2E
+        for netdev@vger.kernel.org;
+        Mon, 16 Jan 2023 12:27:39 +0100
+Date:   Mon, 16 Jan 2023 12:27:39 +0100
+From:   Ignacy =?utf-8?B?R2F3xJlkemtp?= 
+        <ignacy.gawedzki@green-communications.fr>
+To:     netdev@vger.kernel.org
+Subject: Much higher CPU usage when generating UDP vs. TCP traffic
+Message-ID: <20230116112739.ritnefwxhc5nyfqi@zenon.in.qult.net>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-2
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: Yes, score=6.0 required=5.0 tests=BAYES_50,DKIM_INVALID,
+        DKIM_SIGNED,KHOP_HELO_FCRDNS,MAY_BE_FORGED,PDS_RDNS_DYNAMIC_FP,
+        RCVD_IN_PBL,RDNS_DYNAMIC,SPF_HELO_NONE,SPF_SOFTFAIL autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Report: *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.4876]
+        *  3.3 RCVD_IN_PBL RBL: Received via a relay in Spamhaus PBL
+        *      [78.193.33.39 listed in zen.spamhaus.org]
+        *  0.7 SPF_SOFTFAIL SPF: sender does not match SPF record (softfail)
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        *  0.1 DKIM_INVALID DKIM or DK signature exists, but is not valid
+        *  1.0 RDNS_DYNAMIC Delivered to internal network by host with
+        *      dynamic-looking rDNS
+        *  0.0 PDS_RDNS_DYNAMIC_FP RDNS_DYNAMIC with FP steps
+        *  0.0 MAY_BE_FORGED Relay IP's reverse DNS does not resolve to IP
+        *  0.0 KHOP_HELO_FCRDNS Relay HELO differs from its IP's reverse DNS
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 16, 2023 at 11:39 AM +01, Eric Dumazet wrote:
-> We might add a generic helper to make all this a bit more clear ?
->
-> +#define is_insidevar(PTR, VAR) (                       \
-> +       ((void *)(PTR) <= (void *)(VAR)) &&             \
-> +       ((void *)(PTR) <= (void *)(VAR) + sizeof(VAR)))
-> +
->
->
-> ...
->
-> if (is_insidevar(prot, tcp_bpf_prots))
->      newsk->sk_prot = sk->sk_prot_creator;
+Hi,
 
-Sure can do. Thanks for the suggestion. I adjusted it a bit:
- - added cast to char * so we don't offend -Wpointer-arith,
- - fixed the lower and upper bound check.
+While running some network performance tests, I discovered that the
+CPU usage when generating UDP traffic is much higher than when
+generating TCP traffic.  Note that no significant difference of CPU
+usage was observed when simply forwarding UDP vs. TCP traffic.
 
-Final form would look like:
+This happens on Ethernet, on Wi-Fi, even on veth links (but not on the
+loopback interface), so it seems unrelated to any specific hardware
+driver.  BTW this difference in CPU usage decreases quite notably when
+generating UDP paquets of maximum size, resulting in 64 KiB IP paquest
+getting immediately fragmented to fit a standard MTU of 1500 bytes.
 
-#define is_insidevar(ptr, var)						\
-	((void *)(ptr) >= (void *)(var)) &&				\
-	((void *)(ptr) <  (void *)((char *)(var) + sizeof(var)))
+On platforms with more modest CPU resources, such as SoCs, this
+results in much lower maximum achievable throughput in UDP vs. TCP.
+Even more so with some Wi-Fi 6 drivers that seem to eat a significant
+portion of CPU on their own.
 
-Not sure where to stuff it. I propose include/linux/util_macros.h.
+I observed this happening on older kernels as well as the head of
+wireless.git.  Disabling any hardware offloading doesn't change much
+if anything at all.
+
+This was really unexpected to me, since I always assumed the
+processing of UDP is much simpler than that of TCP.  So I eventually
+resolved to write to this list, hoping that some knowledgeable person
+could shed some light on the matter.
+
+Many thanks in advance,
+
+Ignacy
+
+-- 
+Ignacy Gawêdzki
+R&D Engineer
+Green Communications
