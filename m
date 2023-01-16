@@ -2,166 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 685F866B4DF
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 00:58:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6804666B4E0
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 01:01:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231654AbjAOX6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Jan 2023 18:58:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36206 "EHLO
+        id S231714AbjAPAB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Jan 2023 19:01:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231661AbjAOX6i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 18:58:38 -0500
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE412CC27
-        for <netdev@vger.kernel.org>; Sun, 15 Jan 2023 15:58:35 -0800 (PST)
-Received: by mail-il1-x12c.google.com with SMTP id m7so810421ilh.7
-        for <netdev@vger.kernel.org>; Sun, 15 Jan 2023 15:58:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=nmXehuDx2Dw4AYU/FQM4t1NGahLAaHGd5zW1WzvYQSg=;
-        b=PkN/ocfprm+9auktaP2EFuMHm4hfCduyAZjXJmSFVWQAy/jaZzQoRhPt1A5mrz6rFj
-         mOwyy/1O5qURtOmeRmeLvy/AEQDrlAnGFxb1iCzqje6+Lo/R12XRaeylzp49q87Fj2aw
-         9BNGzyjmc7fq/s40kzb2+a1Kz2bbKSlTYvoeRaDB63qJuheN1rcTnboMWolgdYsNfrOh
-         LfbqHujfaPZLHGdl83OpTb903Y4Me0SN92GFuy5wtwbHvZgocMINL1/QXp0jgRDDktHW
-         M2OCD8OKYaZCkmB8IWM3anlvHmNipVevGHFIm6bQkLIbVRXY6VgDktgXvDrl1LEINEDU
-         GhSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nmXehuDx2Dw4AYU/FQM4t1NGahLAaHGd5zW1WzvYQSg=;
-        b=VTXL2tbbgm5sFiZLlggfllF3LNoVwchvrWT6JihNtlHoQg6u0QjXurPcNpItUPeHxa
-         eSd2GGj4bvj6iS20H9CdcwSBSYgCqMeoVOGqdvr/JhyYyhCL9wAhSpPH7tD6ZvMhLCrz
-         PAzjLCdUNK3KUhgxutMkl2Yxw/bpFopLl/JdhUlVF6M9c4Y8C+VpeSTPPMBxRXOvawtn
-         OtrWzlkpVsFu5nylUoUAa3i06cpQT6C15ZEfqjAHTKevt9phHPf+bajPPvQZj6CwQxqj
-         Fvgxh1Atzmvepzah5QbdRUhSTtE7dpjf99/5FXubcvEOMnVe8laYFmXmemolqEF+iy8D
-         pVQQ==
-X-Gm-Message-State: AFqh2kriFEJctqfKmU1muXY5ImUGQnbDU0Gdk01MPvxA80Pvb4W2rIBx
-        HJnOYiNXMIOm2r3530J5GE4=
-X-Google-Smtp-Source: AMrXdXv0zazo2Y87mAt1sZ5dc/LQLw091Xo8diiQrnzGoyBXY+unhEtw47AIa6ZyVEQehkn2VUZBWg==
-X-Received: by 2002:a92:360e:0:b0:30f:618:d931 with SMTP id d14-20020a92360e000000b0030f0618d931mr1459742ila.10.1673827114880;
-        Sun, 15 Jan 2023 15:58:34 -0800 (PST)
-Received: from ?IPV6:2601:284:8200:b700:7de9:438a:dc6b:e300? ([2601:284:8200:b700:7de9:438a:dc6b:e300])
-        by smtp.googlemail.com with ESMTPSA id c72-20020a02964e000000b00363d6918540sm7976751jai.171.2023.01.15.15.58.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 15 Jan 2023 15:58:34 -0800 (PST)
-Message-ID: <b643ba75-204f-acaf-b942-6c1aea01ede6@gmail.com>
-Date:   Sun, 15 Jan 2023 16:58:33 -0700
+        with ESMTP id S231706AbjAPAB0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Jan 2023 19:01:26 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1714F12F0D;
+        Sun, 15 Jan 2023 16:01:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=KEKWkIhhEZt9rbel/ZFoLJLRSd3AM63WjSh8z/u1y6I=; b=1/NPADqQNItR4p4fkcOk24w3h1
+        q66wDMD98iLQc0XVfnOCmmaBchPJJWjjxqmy3dbigAc14yh9GPyL4e1R+Io9zBqhEsnVzu3av/jnu
+        r5aWxduK3EFlAVXlo3Hf/ePr8K/44nLqDqbwAPmgU4peF+aWx0gKHr04zmpZ4Fr78GgQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pHCwB-002A7h-4V; Mon, 16 Jan 2023 01:01:19 +0100
+Date:   Mon, 16 Jan 2023 01:01:19 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pierluigi Passaro <pierluigi.passaro@gmail.com>
+Cc:     Pierluigi Passaro <pierluigi.p@variscite.com>, wei.fang@nxp.com,
+        shenwei.wang@nxp.com, xiaoning.wang@nxp.com, linux-imx@nxp.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, eran.m@variscite.com,
+        nate.d@variscite.com, francesco.f@variscite.com
+Subject: Re: [PATCH v2] net: fec: manage corner deferred probe condition
+Message-ID: <Y8STz5eOoSPfkMbU@lunn.ch>
+References: <20230115213804.26650-1-pierluigi.p@variscite.com>
+ <Y8R2kQMwgdgE6Qlp@lunn.ch>
+ <CAJ=UCjXvcpV9gAfXv8An-pp=CK8J=sGE_adAoKeNFG1C-sMgJA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [PATCH net-next 09/10] netfilter: get ipv6 pktlen properly in
- length_mt6
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>, Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Aaron Conole <aconole@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Guillaume Nault <gnault@redhat.com>
-References: <cover.1673666803.git.lucien.xin@gmail.com>
- <de91843a7f59feb065475ca82be22c275bede3df.1673666803.git.lucien.xin@gmail.com>
- <b0a1bebc-7d44-05bc-347c-94da4cf2ef27@gmail.com>
- <CADvbK_cxQa0=ximH1F2bA-r0Q2+nMGAsSKhbaKzFTHOrcCF11A@mail.gmail.com>
- <CANn89iK4oSgoxJVkXO5rZXLzG1xw-xP31QbGHGvjhXqR2SSsRQ@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <CANn89iK4oSgoxJVkXO5rZXLzG1xw-xP31QbGHGvjhXqR2SSsRQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJ=UCjXvcpV9gAfXv8An-pp=CK8J=sGE_adAoKeNFG1C-sMgJA@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/15/23 12:40 PM, Eric Dumazet wrote:
-> On Sun, Jan 15, 2023 at 6:43 PM Xin Long <lucien.xin@gmail.com> wrote:
->>
->> On Sun, Jan 15, 2023 at 10:41 AM David Ahern <dsahern@gmail.com> wrote:
->>>
->>> On 1/13/23 8:31 PM, Xin Long wrote:
->>>> For IPv6 jumbogram packets, the packet size is bigger than 65535,
->>>> it's not right to get it from payload_len and save it to an u16
->>>> variable.
->>>>
->>>> This patch only fixes it for IPv6 BIG TCP packets, so instead of
->>>> parsing IPV6_TLV_JUMBO exthdr, which is quite some work, it only
->>>> gets the pktlen via 'skb->len - skb_network_offset(skb)' when
->>>> skb_is_gso_v6() and saves it to an u32 variable, similar to IPv4
->>>> BIG TCP packets.
->>>>
->>>> This fix will also help us add selftest for IPv6 BIG TCP in the
->>>> following patch.
->>>>
->>>
->>> If this is a bug fix for the existing IPv6 support, send it outside of
->>> this set for -net.
->>>
->> Sure,
->> I was thinking of adding it here to be able to support selftest for
->> IPv6 too in the next patch. But it seems to make more sense to
->> get it into -net first, then add this selftest after it goes to net-next.
->>
->> I will post it and all other fixes I mentioned in the cover-letter for
->> IPv6 BIG TCP for -net.
->>
->> But before that, I hope Eric can confirm it is okay to read the length
->> of IPv6 BIG TCP packets with skb_ipv6_totlen() defined in this patch,
->> instead of parsing JUMBO exthdr?
->>
-> 
-> I do not think it is ok, but I will leave the question to netfilter maintainers.
-> 
-> Guessing things in tcpdump or other tools is up to user space implementations,
-> trying to work around some (kernel ?) deficiencies.
-> 
-> Yes, IPv6 extensions headers are a pain, we all agree.
-> 
-> Look at how ip6_rcv_core() properly dissects extension headers _and_ trim
-> skb accordingly (pskb_trim_rcsum() called either from ip6_rcv_core()
-> or ipv6_hop_jumbo())
-> 
-> So skb->len is not the root of trust. Some transport mediums might add paddings.
-> 
-> Ipv4 has a similar logic in ip_rcv_core().
-> 
-> len = ntohs(iph->tot_len);
-> if (skb->len < len) {
->      drop_reason = SKB_DROP_REASON_PKT_TOO_SMALL;
->      __IP_INC_STATS(net, IPSTATS_MIB_INTRUNCATEDPKTS);
->     goto drop;
-> } else if (len < (iph->ihl*4))
->      goto inhdr_error;
-> 
-> /* Our transport medium may have padded the buffer out. Now we know it
-> * is IP we can trim to the true length of the frame.
-> * Note this now means skb->len holds ntohs(iph->tot_len).
-> */
-> if (pskb_trim_rcsum(skb, len)) {
->       __IP_INC_STATS(net, IPSTATS_MIB_INDISCARDS);
->       goto drop;
-> }
-> 
-> After your changes, we might accept illegal packets that were properly
-> dropped before.
+On Sun, Jan 15, 2023 at 11:23:51PM +0100, Pierluigi Passaro wrote:
+> On Sun, Jan 15, 2023 at 10:56 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> > On Sun, Jan 15, 2023 at 10:38:04PM +0100, Pierluigi Passaro wrote:
+> > > For dual fec interfaces, external phys can only be configured by fec0.
+> > > When the function of_mdiobus_register return -EPROBE_DEFER, the driver
+> > > is lately called to manage fec1, which wrongly register its mii_bus as
+> > > fec0_mii_bus.
+> > > When fec0 retry the probe, the previous assignement prevent the MDIO bus
+> > > registration.
+> > > Use a static boolean to trace the orginal MDIO bus deferred probe and
+> > > prevent further registrations until the fec0 registration completed
+> > > succesfully.
+> >
+> > The real problem here seems to be that fep->dev_id is not
+> > deterministic. I think a better fix would be to make the mdio bus name
+> > deterministic. Use pdev->id instead of fep->dev_id + 1. That is what
+> > most mdiobus drivers use.
+> >
+> Actually, the sequence is deterministic, fec0 and then fec1,
+> but sometimes the GPIO of fec0 is not yet available.
+> The EPROBE_DEFER does not prevent the second instance from being probed.
+> This is the origin of the problem.
 
+Maybe i understood you wrongly, but it sounds like the second instance
+takes the name space of the first? And when the first probes for the
+second time, the name space is taken and the registration fails? To
+me, this is indeterminate behaviour, the name fec0_mii_bus is not
+determinate.
+
+	Andrew
