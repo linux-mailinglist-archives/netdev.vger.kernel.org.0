@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BDC366C18F
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 15:13:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D52466C22E
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 15:27:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232401AbjAPOM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 09:12:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58482 "EHLO
+        id S232732AbjAPO1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 09:27:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232143AbjAPOMB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 09:12:01 -0500
+        with ESMTP id S232713AbjAPO1Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 09:27:16 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A5F22DEC;
-        Mon, 16 Jan 2023 06:04:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9773728846;
+        Mon, 16 Jan 2023 06:10:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73DB660FD0;
-        Mon, 16 Jan 2023 14:04:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EB79C433D2;
-        Mon, 16 Jan 2023 14:04:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9850360FDF;
+        Mon, 16 Jan 2023 14:10:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E03BFC433D2;
+        Mon, 16 Jan 2023 14:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673877876;
-        bh=EV15u9dLOl8nZ4UOKjvDAxinL5mqmY/cCdKHyrLrq+s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cj3ghVatvd4iuyi29LbeiZjT+56wkx6uZOyfXzkpPI5ntFqvz3bW4F8un5RddBg6O
-         OPkSORexQ2KC/zhkfL1PZ8k9SZB629lxLRminAS51FhAdC7Z1MQC+diJ0iFCUO3sKT
-         EbkXMyeWubAwFzkT20R0w/Vs+pTaw7r5fCcL9sHRe4xHSDf2F1tfEiymL9SxaNqDUp
-         ByhmvWWGgc6ybWWo3zrFGz1sf3pv9MG6sfMwypV8/d5/UywmvLZPEzd8f70H8VeM8Z
-         bpDJ0nxt9WJWYmBZYsvEQgiI1SmSv2sQ22B7lMuRipSTfWK+Wt+kiW5NEBpc2IPjHF
-         urktmolxkVe3w==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andre Przywara <andre.przywara@arm.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, hayeswang@realtek.com,
-        jflf_kernel@gmx.com, svenva@chromium.org, dober6023@gmail.com,
-        wsa+renesas@sang-engineering.com, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 20/24] r8152: add vendor/device ID pair for Microsoft Devkit
-Date:   Mon, 16 Jan 2023 09:03:55 -0500
-Message-Id: <20230116140359.115716-20-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20230116140359.115716-1-sashal@kernel.org>
-References: <20230116140359.115716-1-sashal@kernel.org>
+        s=k20201202; t=1673878215;
+        bh=XgIJguZ7ZaiVTjSmOPmCve4AczLxN5ZWopM1ZYKEDgs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=l4iQ2KvMVKAhuz7f44UXda2iQI5ZKw8cb0vZyYGWqvdofplX/YCrhfzfhtatcyFF+
+         EFIphvEs1sZXpsDxo0xEPo2yexjeQYLW7YIgFwsz2BN348R+bvD7yipeiUK8XQ1/BP
+         tpvJCwfiDcWW3NnQ+5Kly89BFchZ8FVLULhAovfPiCuvIi2LI5cRcJt9WDRjkLm2D9
+         LKeuhAxX/X7tvM543142XK0Kavw4xqWv8IK4DiFOC5wNvnbVjZhnIX5KqXl0jITMHp
+         QbJjkrqfQWQwaagDVVIiNaFG5wk5AWDGy0ryj9E+++i2OQx1RNsWmg8equjFVKPVZk
+         TA/Me5O1yt3yg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C6346E54D2B;
+        Mon, 16 Jan 2023 14:10:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+Subject: Re: [net PATCH v2] octeontx2-pf: Avoid use of GFP_KERNEL in atomic
+ context
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167387821580.26138.13339580254916063174.git-patchwork-notify@kernel.org>
+Date:   Mon, 16 Jan 2023 14:10:15 +0000
+References: <20230113061902.6061-1-gakula@marvell.com>
+In-Reply-To: <20230113061902.6061-1-gakula@marvell.com>
+To:     Geetha sowjanya <gakula@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net,
+        edumazet@google.com, sbhatta@marvell.com, hkelam@marvell.com,
+        sgoutham@marvell.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -59,38 +58,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+Hello:
 
-[ Upstream commit be53771c87f4e322a9835d3faa9cd73a4ecdec5b ]
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-The Microsoft Devkit 2023 is a an ARM64 based machine featuring a
-Realtek 8153 USB3.0-to-GBit Ethernet adapter. As in their other
-machines, Microsoft uses a custom USB device ID.
+On Fri, 13 Jan 2023 11:49:02 +0530 you wrote:
+> Using GFP_KERNEL in preemption disable context, causing below warning
+> when CONFIG_DEBUG_ATOMIC_SLEEP is enabled.
+> 
+> [   32.542271] BUG: sleeping function called from invalid context at include/linux/sched/mm.h:274
+> [   32.550883] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 1, name: swapper/0
+> [   32.558707] preempt_count: 1, expected: 0
+> [   32.562710] RCU nest depth: 0, expected: 0
+> [   32.566800] CPU: 3 PID: 1 Comm: swapper/0 Tainted: G        W          6.2.0-rc2-00269-gae9dcb91c606 #7
+> [   32.576188] Hardware name: Marvell CN106XX board (DT)
+> [   32.581232] Call trace:
+> [   32.583670]  dump_backtrace.part.0+0xe0/0xf0
+> [   32.587937]  show_stack+0x18/0x30
+> [   32.591245]  dump_stack_lvl+0x68/0x84
+> [   32.594900]  dump_stack+0x18/0x34
+> [   32.598206]  __might_resched+0x12c/0x160
+> [   32.602122]  __might_sleep+0x48/0xa0
+> [   32.605689]  __kmem_cache_alloc_node+0x2b8/0x2e0
+> [   32.610301]  __kmalloc+0x58/0x190
+> [   32.613610]  otx2_sq_aura_pool_init+0x1a8/0x314
+> [   32.618134]  otx2_open+0x1d4/0x9d0
+> 
+> [...]
 
-Add the respective ID values to the driver. This makes Ethernet work on
-the MS Devkit device. The chip has been visually confirmed to be a
-RTL8153.
+Here is the summary with links:
+  - [net,v2] octeontx2-pf: Avoid use of GFP_KERNEL in atomic context
+    https://git.kernel.org/netdev/net/c/87b93b678e95
 
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Link: https://lore.kernel.org/r/20230111133228.190801-1-andre.przywara@arm.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/usb/r8152.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 109c288d8b47..cf6941b1d280 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -9809,6 +9809,7 @@ static const struct usb_device_id rtl8152_table[] = {
- 	REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07ab),
- 	REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07c6),
- 	REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x0927),
-+	REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x0c5e),
- 	REALTEK_USB_DEVICE(VENDOR_ID_SAMSUNG, 0xa101),
- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x304f),
- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3054),
+You are awesome, thank you!
 -- 
-2.35.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
