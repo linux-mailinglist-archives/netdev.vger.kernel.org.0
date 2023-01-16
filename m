@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8177566CB44
-	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 18:12:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FC5166CD3A
+	for <lists+netdev@lfdr.de>; Mon, 16 Jan 2023 18:34:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234370AbjAPRMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 12:12:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33746 "EHLO
+        id S234917AbjAPRen (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 12:34:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234245AbjAPRLm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 12:11:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 186F749037;
-        Mon, 16 Jan 2023 08:52:05 -0800 (PST)
+        with ESMTP id S234720AbjAPReZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 12:34:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B8230E94;
+        Mon, 16 Jan 2023 09:10:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A644461018;
-        Mon, 16 Jan 2023 16:52:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 912F8C433EF;
-        Mon, 16 Jan 2023 16:52:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D759CB8107A;
+        Mon, 16 Jan 2023 17:10:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18A2AC433F0;
+        Mon, 16 Jan 2023 17:10:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1673887924;
-        bh=iSqDLD6V+EXFHPEBmFJh4zIKI9zQjbomE3YIKznsP8c=;
+        s=korg; t=1673889029;
+        bh=BNm5SNxOTyJIY1k9U//KXsAwGgHWDnCWhJ6OxhROpTg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xYEYsn5RcZvwF926sON9mU8NtHH0CSTiIWZkHfkWwGr6s5l4nAxXAH8kqgMQSVT4m
-         5mm2tUgRmBjjr22VY4XQW4tqkTAlGYdsUAtpsEIuKYAKrAwdlSAmj7S3fDiLcGYMDj
-         jln7QbJHqcBbVnhCsdo2iZFKjbpDXyeFa+lZp+Gw=
+        b=qoS5td2BNss9Ibx9cjARqS4ydtiD9PeJ6UZQ0l6kkByQnuADbDPCJufzJG2D8PfRR
+         l9dyjGGKhvs9DFsioeodQOOU2kwIKHHbxdTfPy9qrQQf4pApJ2EJLFOBe4n6xnSXbd
+         NzJB0a5IxNInxS/7eujYCGBj9fo0uc7BME5rJMwA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -44,12 +44,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jacob Keller <jacob.e.keller@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 4.19 326/521] igb: Do not free q_vector unless new one was allocated
-Date:   Mon, 16 Jan 2023 16:49:48 +0100
-Message-Id: <20230116154901.743823137@linuxfoundation.org>
+Subject: [PATCH 4.14 231/338] igb: Do not free q_vector unless new one was allocated
+Date:   Mon, 16 Jan 2023 16:51:44 +0100
+Message-Id: <20230116154831.114401657@linuxfoundation.org>
 X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230116154847.246743274@linuxfoundation.org>
-References: <20230116154847.246743274@linuxfoundation.org>
+In-Reply-To: <20230116154820.689115727@linuxfoundation.org>
+References: <20230116154820.689115727@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -90,10 +90,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 3d2dd15859cb..87f98170ac93 100644
+index 2c1e3ea8f745..e6799913ca0b 100644
 --- a/drivers/net/ethernet/intel/igb/igb_main.c
 +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -1211,8 +1211,12 @@ static int igb_alloc_q_vector(struct igb_adapter *adapter,
+@@ -1222,8 +1222,12 @@ static int igb_alloc_q_vector(struct igb_adapter *adapter,
  	if (!q_vector) {
  		q_vector = kzalloc(size, GFP_KERNEL);
  	} else if (size > ksize(q_vector)) {
