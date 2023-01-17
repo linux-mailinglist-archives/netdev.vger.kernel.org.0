@@ -2,116 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E34B66DB6B
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 11:45:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96DBF66DB83
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 11:50:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236481AbjAQKpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 05:45:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48300 "EHLO
+        id S235958AbjAQKu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 05:50:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235963AbjAQKpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 05:45:13 -0500
-Received: from air.basealt.ru (air.basealt.ru [194.107.17.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A217F72A4;
-        Tue, 17 Jan 2023 02:45:12 -0800 (PST)
-Received: by air.basealt.ru (Postfix, from userid 490)
-        id 408F52F20230; Tue, 17 Jan 2023 10:45:11 +0000 (UTC)
+        with ESMTP id S235843AbjAQKuU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 05:50:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C902FCF0
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 02:50:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2D27B812A5
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 10:50:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4CE10C433F0;
+        Tue, 17 Jan 2023 10:50:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673952617;
+        bh=/IEm6wvtsrOpUNV1HKFCxX4chsm/uHwtx2yt9ZmwEFM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=FrErKYkx7oKG+/LB/qn8vt6gssfLNeaIEaEaX9iXDka/sB6V4PUwFeUrIDAiHEQBQ
+         sSIoXkSJ7zGFMt7Jh6w7X/QHqd+Ot/c8DOaEbqScUH4PITYJWKiCACa3mXFbJvIFQG
+         /Ho5voCfky6Od2bHQp2Q/m+hJegE2tSFyoboN+0dYf6TcmOtYJIRo4g820VWTtiR4A
+         LLl6xk61gKNHfu3HMxg8aRfLT/jvjVCsyF56wcI8E60xsPpvS2YRJ/WsPGiUHwX4MH
+         HtdqctAs4iDkeX8BPAnk70ARWhYSec9l1RgC8aEVvKwNx5K5o7EdLvCbP5fqV/L0eh
+         k981B8/cVVc7Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 32F22C43159;
+        Tue, 17 Jan 2023 10:50:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v6 net-next 0/5] net: ethernet: mtk_wed: introduce reset
+ support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167395261720.2304.3313123106989727184.git-patchwork-notify@kernel.org>
+Date:   Tue, 17 Jan 2023 10:50:17 +0000
+References: <cover.1673715298.git.lorenzo@kernel.org>
+In-Reply-To: <cover.1673715298.git.lorenzo@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, lorenzo.bianconi@redhat.com,
+        nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, sujuan.chen@mediatek.com,
+        daniel@makrotopia.org, leon@kernel.org, alexander.duyck@gmail.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
-Received: from localhost (broadband-188-32-10-232.ip.moscow.rt.ru [188.32.10.232])
-        by air.basealt.ru (Postfix) with ESMTPSA id 6A7CD2F2022A;
-        Tue, 17 Jan 2023 10:45:08 +0000 (UTC)
-Date:   Tue, 17 Jan 2023 13:45:08 +0300
-From:   "Alexey V. Vissarionov" <gremlin@altlinux.org>
-To:     Arend van Spriel <aspriel@gmail.com>
-Cc:     Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Chi-hsien Lin <chi-hsien.lin@cypress.com>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Wataru Gohda <wataru.gohda@cypress.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        lvc-project@linuxtesting.org,
-        "Alexey V. Vissarionov" <gremlin@altlinux.org>
-Subject: [PATCH] wifi: brcmfmac: Fix allocation size
-Message-ID: <20230117104508.GB12547@altlinux.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="UlVJffcvxoiEqYs2"
-Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
---UlVJffcvxoiEqYs2
-Content-Type: text/plain; charset=koi8-r
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This series was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-The "pkt" is a pointer to struct sk_buff, so it's just 4 or 8
-bytes, while the structure itself is much bigger.
+On Sat, 14 Jan 2023 18:01:27 +0100 you wrote:
+> Introduce proper reset integration between ethernet and wlan drivers in order
+> to schedule wlan driver reset when ethernet/wed driver is resetting.
+> Introduce mtk_hw_reset_monitor work in order to detect possible DMA hangs.
+> 
+> Changes since v5:
+> - log error reported by reset callback
+> - convert reset_complete callback from int to void
+> 
+> [...]
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
+Here is the summary with links:
+  - [v6,net-next,1/5] net: ethernet: mtk_eth_soc: introduce mtk_hw_reset utility routine
+    https://git.kernel.org/netdev/net-next/c/bccd19bce0b6
+  - [v6,net-next,2/5] net: ethernet: mtk_eth_soc: introduce mtk_hw_warm_reset support
+    https://git.kernel.org/netdev/net-next/c/a9724b9c477f
+  - [v6,net-next,3/5] net: ethernet: mtk_eth_soc: align reset procedure to vendor sdk
+    https://git.kernel.org/netdev/net-next/c/06127504c282
+  - [v6,net-next,4/5] net: ethernet: mtk_eth_soc: add dma checks to mtk_hw_reset_check
+    https://git.kernel.org/netdev/net-next/c/93b2591ad0d0
+  - [v6,net-next,5/5] net: ethernet: mtk_wed: add reset/reset_complete callbacks
+    https://git.kernel.org/netdev/net-next/c/08a764a7c51b
 
-Fixes: bbd1f932e7c45ef1 ("brcmfmac: cleanup ampdu-rx host reorder code")
-Signed-off-by: Alexey V. Vissarionov <gremlin@altlinux.org>
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c b/=
-drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
-index 36af81975855c525..0d283456da331464 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
-@@ -1711,7 +1711,7 @@ void brcmf_fws_rxreorder(struct brcmf_if *ifp, struct=
- sk_buff *pkt)
- 		buf_size =3D sizeof(*rfi);
- 		max_idx =3D reorder_data[BRCMF_RXREORDER_MAXIDX_OFFSET];
-=20
--		buf_size +=3D (max_idx + 1) * sizeof(pkt);
-+		buf_size +=3D (max_idx + 1) * sizeof(struct sk_buff);
-=20
- 		/* allocate space for flow reorder info */
- 		brcmf_dbg(INFO, "flow-%d: start, maxidx %d\n",
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-
---=20
-Alexey V. Vissarionov
-gremlin =F0=F2=E9 altlinux =F4=FE=EB org; +vii-cmiii-ccxxix-lxxix-xlii
-GPG: 0D92F19E1C0DC36E27F61A29CD17E2B43D879005 @ hkp://keys.gnupg.net
-
---UlVJffcvxoiEqYs2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCgAGBQJjxnw0AAoJEFv2F9znRj5KQvAP/0vVdNTgXeTXiNmYRz66mfge
-uzb0OEuTbO7b5fm+PszT9w+gArHzfoPuJIviWLJlC34vH/25WUTouZudPmF9QhG4
-WiixT07wc1Urd+1Oi62bEoSn41gs9UE431R1wRuUKENwRp5E8JVQ15xW5O9YrxLi
-oQ1KzOIHR84Z5Qi+3bQnp/8ZX5b3G+2Zs9h573szhsfGWQ7+ERBJ2MgJI76Mw5aZ
-IEy2Pmtxy4YE5pYqz7fNRSSBS8ogFSjY8AXqQkfGJcKyU5xsWEo9Pv6+QnouE55K
-jMQ8+04IxdS6sONhYh4AWawQRHsFzEwnCqLTagScUeahPgAXeHTmjWbw6n5rddF0
-hEgsby5bEgIQMoaRyAowUsnoUsBE+TXGywlVZwjHMmH6z1Gl2EElWm111wJjaNo4
-J54EFfodR8SDyHlLPj8KGq3NkBX0Ur2UTdGw69acRnoNqA4gCCBy7KobPoanRNFG
-831bqWdEdFymktaKgZlq136MC+WAAf3ZVpCM/RPY44E6iP1iZs8A0RcV2Q4nfuJE
-nLPih2ehsVYvcrOHB+Neyfxf/iNt4TUZVmYIpo8KAiIZDTm/9/RKqDZBm50vL9TI
-PPpExGb36sl83O/Pkna0PQ0v8gp37kpD453Tbhu0bcDsQaEm70Rfruexec0CNC6g
-twh9nUXNws+N5iuGCPQk
-=yQpN
------END PGP SIGNATURE-----
-
---UlVJffcvxoiEqYs2--
