@@ -2,64 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4491266E5F6
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 19:29:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2D0166E614
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 19:33:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230254AbjAQS3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 13:29:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54178 "EHLO
+        id S232329AbjAQSdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 13:33:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229629AbjAQS1z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 13:27:55 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C60F45BF7;
-        Tue, 17 Jan 2023 09:59:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=oTQ51UdTzrcO70uhBDlVnjUBjeBv3ulnXFGtTiGIm0k=; b=T+nS/B++wLjSplKMC1zkLdoVCy
-        zlTMepyVcgrVjUvgmzLOniKFcoIDT9QmRogGeAob6c9cOy+2VluTCn5AHsufqp/nOtq2HxM/GPPgz
-        Bb6Kq/kqlh18qtJPCV+JJc4PwahXaSZz9s8mBG17OtrgQrXDVHZ1xwLrMsOO0gnnuU+bbiFpvcnYT
-        oVCqkjPSNIHC5P8LiyjStPbDusChy3qM8i1IZbq5OozthAVMuyUCIZ0Og6vkfxo9+dtqZwJxGz9fp
-        k5D6QGoFM6N5dZj4hT6pO4zylc5wCLgtY0/gk67ciyQevkbPmEr7Sg1z2GhwUuFL68nQcmWzwMFMw
-        JMDpA5Cg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36164)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pHqEN-0008Cm-SG; Tue, 17 Jan 2023 17:58:43 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pHqEH-0007Ag-CE; Tue, 17 Jan 2023 17:58:37 +0000
-Date:   Tue, 17 Jan 2023 17:58:37 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Landen.Chao@mediatek.com, Samer.El-Haj-Mahmoud@arm.com,
-        andrew@lunn.ch, andriy.shevchenko@linux.intel.com,
-        davem@davemloft.net, edumazet@google.com, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, jaz@semihalf.com, kuba@kernel.org,
-        linus.walleij@linaro.org, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        olteanv@gmail.com, pabeni@redhat.com, rafael@kernel.org,
-        sean.wang@mediatek.com, tn@semihalf.com, vivien.didelot@gmail.com
-Subject: Re: [net-next: PATCH v4 2/8] net: mdio: switch fixed-link PHYs API
- to fwnode_
-Message-ID: <Y8bhzex/k05i9NCQ@shell.armlinux.org.uk>
-References: <20230116173420.1278704-1-mw@semihalf.com>
- <20230116173420.1278704-3-mw@semihalf.com>
- <Y8WOVVnFInEoXLVX@shell.armlinux.org.uk>
- <CAPv3WKcbuY0kmM0trfS++at=r4KhCsp2bZ1kBL2r+-YJe=kE3w@mail.gmail.com>
+        with ESMTP id S232501AbjAQSay (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 13:30:54 -0500
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE80E3A596;
+        Tue, 17 Jan 2023 10:01:29 -0800 (PST)
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30HG6Dci031445;
+        Tue, 17 Jan 2023 10:01:11 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=s2048-2021-q4;
+ bh=C3W07MX49DoXFn+PQhH0IS+B2wD4qZN/G+SrD2R2f7s=;
+ b=jgd9qoy9wwGIKWEegZrARlNn7qoaqmeCGq65dwq2Ax4HXERUupya4ajOQyCdz25/y3Yy
+ edcdXVFzDp9bDhDOtKpwNzrb0UNlr6tHtc0lXoSSQihleV85M549gF382DdSQOca8Xw5
+ dDKTp2nzmKafYg/RxvCC7FF2bwO0kGf2AEpy0ctYzBEAfZzosTq1pG1wNpIj0Ancta54
+ fNGP6kAgoMfA4u0bxRwpwsJBgvC4aaTjtvZarE4k4USGn4wedW0a8DKbkLHbGa8ugrVF
+ aXLdtWq1u7oUjarCwZ7ZcVMaSRShgV3qtZiap7LXA7LaAWcBYPIalNLp0BOmBt8aBUZ3 /Q== 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3n58dke2hp-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 17 Jan 2023 10:01:11 -0800
+Received: from devvm1736.cln0.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server id
+ 15.1.2375.34; Tue, 17 Jan 2023 10:01:07 -0800
+From:   Vadim Fedorenko <vadfed@meta.com>
+To:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@resnulli.us>,
+        "Arkadiusz Kubalewski" <arkadiusz.kubalewski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Vadim Fedorenko <vadfed@meta.com>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-clk@vger.kernel.org>
+Subject: [RFC PATCH v5 0/4] Create common DPLL/clock configuration API
+Date:   Tue, 17 Jan 2023 10:00:47 -0800
+Message-ID: <20230117180051.2983639-1-vadfed@meta.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPv3WKcbuY0kmM0trfS++at=r4KhCsp2bZ1kBL2r+-YJe=kE3w@mail.gmail.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+Content-Type: text/plain
+X-Originating-IP: [2620:10d:c085:108::8]
+X-Proofpoint-GUID: oLWThWXLYAjV1k9uVCliarVK2aSxfE05
+X-Proofpoint-ORIG-GUID: oLWThWXLYAjV1k9uVCliarVK2aSxfE05
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.923,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-01-17_09,2023-01-17_01,2022-06-22_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,43 +63,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marcin,
+Implement common API for clock/DPLL configuration and status reporting.
+The API utilises netlink interface as transport for commands and event
+notifications. This API aim to extend current pin configuration and
+make it flexible and easy to cover special configurations.
 
-On Tue, Jan 17, 2023 at 05:20:01PM +0100, Marcin Wojtas wrote:
-> Hi Russell,
-> 
-> 
-> pon., 16 sty 2023 o 18:50 Russell King (Oracle) <linux@armlinux.org.uk>
-> napisał(a):
-> >
-> > On Mon, Jan 16, 2023 at 06:34:14PM +0100, Marcin Wojtas wrote:
-> > > fixed-link PHYs API is used by DSA and a number of drivers
-> > > and was depending on of_. Switch to fwnode_ so to make it
-> > > hardware description agnostic and allow to be used in ACPI
-> > > world as well.
-> >
-> > Would it be better to let the fixed-link PHY die, and have everyone use
-> > the more flexible fixed link implementation in phylink?
-> >
-> ,
-> This patchset did not intend to introduce any functional change, simply
-> switch to a more generic HW description abstraction. Killing
-> of/fwnode_phy_(de)register_fixed_link entirely seems to be a challenge, as
-> there are a lot of users beyond the DSA. Otoh I see a value in having
-> of_/fwnode_phy_is_fixed_link check, afaik there is no equivalent in
-> phylink...
+v4 -> v5:
+ * fix code issues found during last reviews:
+   - replace cookie with clock id
+	 - follow one naming schema in dpll subsys
+	 - move function comments to dpll_core.c, fix exports
+	 - remove single-use helper functions
+	 - merge device register with alloc
+   - lock and unlock mutex on dpll device release
+   - move dpll_type to uapi header
+   - rename DPLLA_DUMP_FILTER to DPLLA_FILTER
+   - rename dpll_pin_state to dpll_pin_mode
+   - rename DPLL_MODE_FORCED to DPLL_MODE_MANUAL
+   - remove DPLL_CHANGE_PIN_TYPE enum value
+ * rewrite framework once again (Arkadiusz)
+   - add clock class:
+     Provide userspace with clock class value of DPLL with dpll device dump
+     netlink request. Clock class is assigned by driver allocating a dpll
+     device. Clock class values are defined as specified in:
+     ITU-T G.8273.2/Y.1368.2 recommendation.
+   - dpll device naming schema use new pattern:
+	   "dpll_%s_%d_%d", where:
+       - %s - dev_name(parent) of parent device,
+       - %d (1) - enum value of dpll type,
+       - %d (2) - device index provided by parent device.
+   - new muxed/shared pin registration:
+	   Let the kernel module to register a shared or muxed pin without finding
+     it or its parent. Instead use a parent/shared pin description to find
+     correct pin internally in dpll_core, simplifing a dpll API
+ * Implement complex DPLL design in ice driver (Arkadiusz)
+ * Remove ptp_ocp driver from the series for now
+v3 -> v4:
+ * redesign framework to make pins dynamically allocated (Arkadiusz)
+ * implement shared pins (Arkadiusz)
+v2 -> v3:
+ * implement source select mode (Arkadiusz)
+ * add documentation
+ * implementation improvements (Jakub)
+v1 -> v2:
+ * implement returning supported input/output types
+ * ptp_ocp: follow suggestions from Jonathan
+ * add linux-clk mailing list
+v0 -> v1:
+ * fix code style and errors
+ * add linux-arm mailing list
 
-Phylink provides a much improved implementation of fixed-link that is
-way more flexible than the phylib approach - it can implement speeds
-in excess of 1G. DSA already supports phylink with modern updated
-drivers that do not use the "adjust_link" implementation.
+Arkadiusz Kubalewski (2):
+  ice: add admin commands to access cgu configuration
+  ice: implement dpll interface to control cgu
 
-What I'm proposing is that we don't bring the baggage of the phylib
-based fixed link forwards into fwnode, and leave this to be DT-only.
-I think this is what Andrew and Vladimir have also said.
+Vadim Fedorenko (2):
+  dpll: documentation on DPLL subsystem interface
+  dpll: Add DPLL framework base functions
 
-Thanks.
+ Documentation/networking/dpll.rst             |  280 +++
+ Documentation/networking/index.rst            |    1 +
+ MAINTAINERS                                   |    8 +
+ drivers/Kconfig                               |    2 +
+ drivers/Makefile                              |    1 +
+ drivers/dpll/Kconfig                          |    7 +
+ drivers/dpll/Makefile                         |    9 +
+ drivers/dpll/dpll_core.c                      | 1010 ++++++++
+ drivers/dpll/dpll_core.h                      |  105 +
+ drivers/dpll/dpll_netlink.c                   |  883 +++++++
+ drivers/dpll/dpll_netlink.h                   |   24 +
+ drivers/net/ethernet/intel/Kconfig            |    1 +
+ drivers/net/ethernet/intel/ice/Makefile       |    3 +-
+ drivers/net/ethernet/intel/ice/ice.h          |    5 +
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  240 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   |  467 ++++
+ drivers/net/ethernet/intel/ice/ice_common.h   |   43 +
+ drivers/net/ethernet/intel/ice/ice_dpll.c     | 2115 +++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_dpll.h     |   99 +
+ drivers/net/ethernet/intel/ice/ice_lib.c      |   17 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |   10 +
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.c   |  408 ++++
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.h   |  240 ++
+ drivers/net/ethernet/intel/ice/ice_type.h     |    1 +
+ include/linux/dpll.h                          |  282 +++
+ include/uapi/linux/dpll.h                     |  294 +++
+ 26 files changed, 6549 insertions(+), 6 deletions(-)
+ create mode 100644 Documentation/networking/dpll.rst
+ create mode 100644 drivers/dpll/Kconfig
+ create mode 100644 drivers/dpll/Makefile
+ create mode 100644 drivers/dpll/dpll_core.c
+ create mode 100644 drivers/dpll/dpll_core.h
+ create mode 100644 drivers/dpll/dpll_netlink.c
+ create mode 100644 drivers/dpll/dpll_netlink.h
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_dpll.c
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_dpll.h
+ create mode 100644 include/linux/dpll.h
+ create mode 100644 include/uapi/linux/dpll.h
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.30.2
+
