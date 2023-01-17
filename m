@@ -2,106 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB12066E761
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 21:05:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19C0966E7FE
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 21:53:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231249AbjAQUE5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 15:04:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43328 "EHLO
+        id S232909AbjAQUxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 15:53:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232550AbjAQUCi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 15:02:38 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35A6946D44;
-        Tue, 17 Jan 2023 10:54:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF1CCB81263;
-        Tue, 17 Jan 2023 18:54:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEA69C433EF;
-        Tue, 17 Jan 2023 18:54:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673981686;
-        bh=kp5UsYKs1IV4dCBlFmKi8ZUkvTK5si51bJjpJiZUtbU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=P9e9tCj+d3Q6pIeFIhMLJQAsynNUlrMg25JsaG6CMXC4BWLvcVYsxOf4UoJh+3Zn3
-         EqW8jBbtEKujOC5x6nd3lYYK3MwGkyyS56PTcb/WKCiKRNxYSh5dQPS8r/SIHHaLAI
-         Fs8ib6i/kDPvVftaMVSsfcj05fh2mUaT/asL6wWX57Po+tJ/pVS2n618jHFFKNuiJQ
-         ldi7agz2q5l6Yp/eEJ/5lC7gzCeZzaGG6wC4BnuBHbAJ7NX2GOAAEcIr9LCFA6OZT5
-         AwXGGWl0OL1AfCXhuTvPCvKfZOza3GD81LWURXyxHUclDfe/c5N4svktp5mKtd+jjg
-         NZ7R/CtQdqA9w==
-Date:   Tue, 17 Jan 2023 10:54:44 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S235166AbjAQUtW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 15:49:22 -0500
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937C047426;
+        Tue, 17 Jan 2023 11:25:07 -0800 (PST)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 6717018835E1;
+        Tue, 17 Jan 2023 18:59:12 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 55926250007B;
+        Tue, 17 Jan 2023 18:59:12 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 4C2739EC000B; Tue, 17 Jan 2023 18:59:12 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+Received: from fujitsu.vestervang (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
+        by smtp.gigahost.dk (Postfix) with ESMTPSA id A051B91201DF;
+        Tue, 17 Jan 2023 18:59:11 +0000 (UTC)
+From:   "Hans J. Schultz" <netdev@kapio-technology.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org,
+        "Hans J. Schultz" <netdev@kapio-technology.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
         Kurt Kanzenbach <kurt@linutronix.de>,
-        Rui Sousa <rui.sousa@nxp.com>,
-        Ferenc Fejes <ferenc.fejes@ericsson.com>,
-        Pranavi Somisetty <pranavi.somisetty@amd.com>,
-        Harini Katakam <harini.katakam@amd.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        UNGLinuxDriver@microchip.com,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com (maintainer:MICROCHIP KSZ SERIES ETHERNET
+        SWITCH DRIVER), Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH v2 net-next 04/12] net: ethtool: netlink: retrieve stats
- from multiple sources (eMAC, pMAC)
-Message-ID: <20230117105444.7c1c1e35@kernel.org>
-In-Reply-To: <20230116174234.yzq6cnczs6fxww6q@skbuf>
-References: <20230111161706.1465242-1-vladimir.oltean@nxp.com>
-        <20230111161706.1465242-5-vladimir.oltean@nxp.com>
-        <20230113204336.401a2062@kernel.org>
-        <20230114232214.tj6bsfhmhfg3zjxw@skbuf>
-        <20230116174234.yzq6cnczs6fxww6q@skbuf>
+        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        linux-kernel@vger.kernel.org (open list),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Mediatek SoC
+        support),
+        linux-mediatek@lists.infradead.org (moderated list:ARM/Mediatek SoC
+        support),
+        linux-renesas-soc@vger.kernel.org (open list:RENESAS RZ/N1 A5PSW SWITCH
+        DRIVER),
+        bridge@lists.linux-foundation.org (moderated list:ETHERNET BRIDGE)
+Subject: [RFC PATCH net-next 0/5] ATU and FDB synchronization on locked ports
+Date:   Tue, 17 Jan 2023 19:57:09 +0100
+Message-Id: <20230117185714.3058453-1-netdev@kapio-technology.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,UPPERCASE_50_75 autolearn=ham
-        autolearn_force=no version=3.4.6
+Organization: Westermo Network Technologies AB
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Jan 2023 19:42:34 +0200 Vladimir Oltean wrote:
-> The request seems to be for ETHTOOL_A_PAUSE_HEADER to use a policy like this:
-> 
->  const struct nla_policy ethnl_header_policy_mac_stats[] = {
->  	[ETHTOOL_A_HEADER_DEV_INDEX]	= { .type = NLA_U32 },
->  	[ETHTOOL_A_HEADER_DEV_NAME]	= { .type = NLA_NUL_STRING,
->  					    .len = ALTIFNAMSIZ - 1 },
->  	[ETHTOOL_A_HEADER_FLAGS]	= NLA_POLICY_MASK(NLA_U32,
->  							  ETHTOOL_FLAGS_STATS),
-> +	[ETHTOOL_A_HEADER_MAC_STATS_SRC] = NLA_POLICY_MASK(NLA_U32,
-> +							   ETHTOOL_MAC_STATS_SRC_PMAC),
->  };
-> 
-> and for ETHTOOL_A_STATS_HEADER to use a policy like this:
-> 
-> const struct nla_policy ethnl_header_policy_mac_stats_src_basic[] = {
-> 	[ETHTOOL_A_HEADER_DEV_INDEX]	= { .type = NLA_U32 },
-> 	[ETHTOOL_A_HEADER_DEV_NAME]	= { .type = NLA_NUL_STRING,
-> 					    .len = ALTIFNAMSIZ - 1 },
-> 	[ETHTOOL_A_HEADER_FLAGS]	= NLA_POLICY_MASK(NLA_U32,
-> 							  ETHTOOL_FLAGS_BASIC),
-> +	[ETHTOOL_A_HEADER_MAC_STATS_SRC] = NLA_POLICY_MASK(NLA_U32,
-> +							   ETHTOOL_MAC_STATS_SRC_PMAC),
-> };
-> 
-> Did I get this right?
+This patch set makes it possible to have synchronized dynamic ATU and FDB
+entries on locked ports. As locked ports are not able to automatically
+learn, they depend on userspace added entries, where userspace can add
+static or dynamic entries. The lifetime of static entries are completely
+dependent on userspace intervention, and thus not of interest here. We
+are only concerned with dynamic entries, which can be added with a
+command like:
 
-Sorry for the delay, I was out for $national-holiday.
+bridge fdb replace ADDR dev <DEV> master dynamic
 
-This would be right, but it seems like you went for the other option 
-in v3, which is also fine.
+We choose only to support this feature on locked ports, as it involves
+utilizing the CPU to handle ATU related switchcore events (typically
+interrupts) and thus can result in significant performance loss if
+exposed to heavy traffic.
+
+On locked ports it is important for userspace to know when an authorized
+station has become silent, hence not breaking the communication of a
+station that has been authorized based on the MAC-Authentication Bypass
+(MAB) scheme. Thus if the station keeps being active after authorization,
+it will continue to have an open port as long as it is active. Only after
+a silent period will it have to be reauthorized. As the ageing process in
+the ATU is dependent on incoming traffic to the switchcore port, it is
+necessary for the ATU to signal that an entry has aged out, so that the
+FDB can be updated at the correct time.
+
+This patch set includes a solution for the Marvell mv88e6xxx driver, where
+for this driver we use the Hold-At-One feature so that an age-out
+violation interrupt occurs when a station has been silent for the
+system-set age time. The age out violation interrupt allows the switchcore
+driver to remove both the ATU and the FDB entry at the same time.
+
+It is up to the maintainers of other switchcore drivers to implement the
+feature for their specific driver.
+
+Hans J. Schultz (5):
+  net: bridge: add dynamic flag to switchdev notifier
+  net: dsa: propagate flags down towards drivers
+  drivers: net: dsa: add fdb entry flags incoming to switchcore drivers
+  net: bridge: ensure FDB offloaded flag is handled as needed
+  net: dsa: mv88e6xxx: implementation of dynamic ATU entries
+
+ drivers/net/dsa/b53/b53_common.c        | 12 ++++-
+ drivers/net/dsa/b53/b53_priv.h          |  4 +-
+ drivers/net/dsa/hirschmann/hellcreek.c  | 12 ++++-
+ drivers/net/dsa/lan9303-core.c          | 12 ++++-
+ drivers/net/dsa/lantiq_gswip.c          | 12 ++++-
+ drivers/net/dsa/microchip/ksz9477.c     |  8 ++--
+ drivers/net/dsa/microchip/ksz9477.h     |  8 ++--
+ drivers/net/dsa/microchip/ksz_common.c  | 14 ++++--
+ drivers/net/dsa/mt7530.c                | 12 ++++-
+ drivers/net/dsa/mv88e6xxx/chip.c        | 24 ++++++++--
+ drivers/net/dsa/mv88e6xxx/global1_atu.c | 21 +++++++++
+ drivers/net/dsa/mv88e6xxx/port.c        |  6 ++-
+ drivers/net/dsa/mv88e6xxx/switchdev.c   | 61 +++++++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/switchdev.h   |  5 ++
+ drivers/net/dsa/mv88e6xxx/trace.h       |  5 ++
+ drivers/net/dsa/ocelot/felix.c          | 12 ++++-
+ drivers/net/dsa/qca/qca8k-common.c      | 12 ++++-
+ drivers/net/dsa/qca/qca8k.h             |  4 +-
+ drivers/net/dsa/rzn1_a5psw.c            | 12 ++++-
+ drivers/net/dsa/sja1105/sja1105_main.c  | 19 ++++++--
+ include/net/dsa.h                       |  6 ++-
+ include/net/switchdev.h                 |  1 +
+ net/bridge/br_fdb.c                     |  5 +-
+ net/bridge/br_switchdev.c               |  1 +
+ net/dsa/port.c                          | 28 +++++++-----
+ net/dsa/port.h                          |  8 ++--
+ net/dsa/slave.c                         | 17 +++++--
+ net/dsa/switch.c                        | 30 ++++++++----
+ net/dsa/switch.h                        |  1 +
+ 29 files changed, 298 insertions(+), 74 deletions(-)
+
+-- 
+2.34.1
+
