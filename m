@@ -2,221 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FDCC670B9F
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 23:28:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6816670BAA
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 23:31:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229496AbjAQW2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 17:28:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34262 "EHLO
+        id S229629AbjAQWbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 17:31:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbjAQW1h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 17:27:37 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2128.outbound.protection.outlook.com [40.107.244.128])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FC912A148;
-        Tue, 17 Jan 2023 14:05:36 -0800 (PST)
+        with ESMTP id S229729AbjAQWa1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 17:30:27 -0500
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C484ABC3;
+        Tue, 17 Jan 2023 14:07:57 -0800 (PST)
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30HJwCGM009251;
+        Tue, 17 Jan 2023 14:07:14 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=s2048-2021-q4;
+ bh=5qUzvDCShvh+OjV46wq7elVBlLXUAKUnCywa+adcegU=;
+ b=OSeZq4Al0uvgyPoiGUw9qy16eM/8iRsb33N4JZdj4zI2TdC0+3D9+aNNcaHllw4XTDXP
+ eIH3cxDQPaEr2syfuSXXJeYO675kMLBRIuNvRKWADwk4G4JdJwd44rQwqYv+i1lYFk/F
+ PzcYHxEfCtKM7KRhWmHHvaY1jqSIcpD6BoLu/Daz0wmN6kTIheEMtWZQmQtsrJS/FvdY
+ F+NL4/OQrTkwWrOnwyL/2kopS9TiTbyP5NZVfKXELjXQAPChauY1GiebO6oIcjTjn+iu
+ 5O2WoGpgjxaj9vSjblg9zOLyXCoU61zULVFoVPBs0CV/R6t0KiLRvXPU9QKqznAmCJIy qQ== 
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2170.outbound.protection.outlook.com [104.47.55.170])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3n3u16fg46-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 17 Jan 2023 14:07:14 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=G9tVDRdYCw2sETzSgm9BEJXVg1mGJ6LH1tisEeqaVn1YTgwopJzgHjofnTJOkgCpaOA/w7UcVARZykLvagOmTlyJbVmsVAXJx2gmyZksLKMfUiA7ZAC7f7UlXq73IT1RWVhk7tBy4KQho7qu1WI4gIivay71hx2WSpHEGnG98C4+xM9OeEHj5wmgB5vnFfSUDDHu+lvt0/EUGcnfJBzuDhhEog3oYmk9jFH+mK9Obz1JzbSkjsLLo8a5NO3UnQeIbq4HwMf/nvHYsshQoDYcGIb/18L9fc6PSZvkxn0R+4avqaepmfNNh8ugB9vmScQCmm0lTGWXG7ZZwC6z21zLAw==
+ b=jf7O0wu7t1sF4nBBH82q9b2sWUBWfumah3cFXJE8tCKZDwdwOz68lu60Vkjq2/iwIZLLe7M2s/l4iiTnVPelnEm8VmmhLRJhwRW2o25lfJ5vALJScSv+izAZaknm5U4iDTOiIyTzITOucn+SONSnbTQPKcEv+L3yh+WkwpvHaS3OWw6c4Dg2XvFzvlAZyuPJQBk0d2hrmcb61xIoUB9zcFT0vDGUTpGLQwC6Ve1RqnMQgm1kASJgOpnsLgoRgOiC38twU1PPEBT6BQVsenYAVKLI7l79lSbwjZfVDW/XR0mNiYpSWybfHqN4DEkCPX+7e8Zg7YfBRsWtD8+ZDaOsDg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4gOCf4s1i8Kq5+9cyKONMeudFOEFwL+8rOiK6UAj+6Y=;
- b=F3nE6A1jlTBoumdK5Y3w5pngHyk+Qwm8QsvMe/BgIbeR5kM86ME4l2l7JwU1bx/1WepDqH1SegslGr39lMVwA0kF7Sn3E/7Iet7D4/TE7nmPlUzXkiE7R7IkM2miVUhqnaMB4rgfekN2lti2JSN+RhKS7y3eVDt0q1uRdO6+xRGaMAeekJsZWRYCmdWRqURyAWkdeK0hylzUK+3atDsOYSuJPLk++B6lTseXdbv2PCIdJYLKjEJ7A/p28o5KEsV5kT0XSAPSGTgZNsZIsPon3hyeh2Z8leDIs2fQA0pKHAs4FfO4eX/Ohy1YxBK+cuhP+ulDjT/XK0JyxV5t0bqfBw==
+ bh=5qUzvDCShvh+OjV46wq7elVBlLXUAKUnCywa+adcegU=;
+ b=HMIt3RCMehS4FErsTORAL+rCL4fmG2JwXQhdBl6Ma2a8XlW9EozoRwvGZ2IYjWHi/Us0aCE1Hfw/BOgyZGLtn/UhKqnstD5bJuymz7HesrkvsAYXK0OGsY+W5Iizn6dijANBLkO8Qy7RvsRIQQg825kcUi9630NEKUrrbYPxBzF+Y74ukRdUErqvqSixO4OO4zm4pl/FS3SrCmmUWYi8zxves8DeRgsBfvKlwz02AaUUdXxpjDPupdKnZsd7XC3MWyrxfSn3lA1Fq/mYOR/q5c/tM4zXZeDZFLgxI1oyA0HiNbNrUtckX2ep1todZHTCRodnvtTmcP1zj/Rw6fIrNw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4gOCf4s1i8Kq5+9cyKONMeudFOEFwL+8rOiK6UAj+6Y=;
- b=o+Fks4u5VnjWexIMDchO4JDgEFfP53NGMeEoHNjndZxrsS8Tr9zi2H969fxAhtfW03UItACCcMkBOC8G5QU1xjXOL4B294EoehdrZzq29Ah0RPF021b9QgnGg0jXNvi0zdBxTnfFSZLsE1hcf3DVsgvHp5qs/rQqhLTwiXzYJJI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from SJ0PR13MB6037.namprd13.prod.outlook.com (2603:10b6:a03:3e2::9)
- by MN2PR13MB3789.namprd13.prod.outlook.com (2603:10b6:208:1e4::24) with
+ smtp.mailfrom=meta.com; dmarc=pass action=none header.from=meta.com;
+ dkim=pass header.d=meta.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by CO6PR15MB4178.namprd15.prod.outlook.com (2603:10b6:5:351::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Tue, 17 Jan
- 2023 22:05:33 +0000
-Received: from SJ0PR13MB6037.namprd13.prod.outlook.com
- ([fe80::a17f:495a:6870:18c0]) by SJ0PR13MB6037.namprd13.prod.outlook.com
- ([fe80::a17f:495a:6870:18c0%9]) with mapi id 15.20.5986.023; Tue, 17 Jan 2023
- 22:05:33 +0000
-Date:   Tue, 17 Jan 2023 23:05:21 +0100
-From:   Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@corigine.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.13; Tue, 17 Jan
+ 2023 22:07:11 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::3cc9:4d23:d516:59f0]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::3cc9:4d23:d516:59f0%4]) with mapi id 15.20.5986.023; Tue, 17 Jan 2023
+ 22:07:11 +0000
+Message-ID: <5e20044c-6057-e5c7-624b-a1373c30fc12@meta.com>
+Date:   Tue, 17 Jan 2023 14:07:08 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.6.1
+Subject: Re: [RFC v2 bpf-next 3/7] xsk: add usage of XDP features flags
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
         hawk@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        memxor@gmail.com, alardam@gmail.com, saeedm@nvidia.com,
-        anthony.l.nguyen@intel.com, gospo@broadcom.com,
+        toke@redhat.com, memxor@gmail.com, alardam@gmail.com,
+        saeedm@nvidia.com, anthony.l.nguyen@intel.com, gospo@broadcom.com,
         vladimir.oltean@nxp.com, nbd@nbd.name, john@phrozen.org,
         leon@kernel.org, simon.horman@corigine.com, aelior@marvell.com,
         christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
         mst@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
         maciej.fijalkowski@intel.com, intel-wired-lan@lists.osuosl.org,
         lorenzo.bianconi@redhat.com
-Subject: Re: [RFC v2 bpf-next 2/7] drivers: net: turn on XDP features
-Message-ID: <Y8cboWSmvoOKxav2@oden.dyn.berto.se>
 References: <cover.1673710866.git.lorenzo@kernel.org>
- <b606e729c9baf36a28be246bf0bfa4d21cc097fb.1673710867.git.lorenzo@kernel.org>
- <Y8cTKOmCBbMEZK8D@sleipner.dyn.berto.se>
- <87y1q0bz6m.fsf@toke.dk>
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87y1q0bz6m.fsf@toke.dk>
-X-ClientProxiedBy: GVYP280CA0004.SWEP280.PROD.OUTLOOK.COM
- (2603:10a6:150:fa::6) To SJ0PR13MB6037.namprd13.prod.outlook.com
- (2603:10b6:a03:3e2::9)
+ <36956338853442e6d546687678a93470a164ff17.1673710867.git.lorenzo@kernel.org>
+Content-Language: en-US
+From:   Yonghong Song <yhs@meta.com>
+In-Reply-To: <36956338853442e6d546687678a93470a164ff17.1673710867.git.lorenzo@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BY5PR13CA0008.namprd13.prod.outlook.com
+ (2603:10b6:a03:180::21) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ0PR13MB6037:EE_|MN2PR13MB3789:EE_
-X-MS-Office365-Filtering-Correlation-Id: cb65b02e-9a1a-4195-3a9f-08daf8d6f485
+X-MS-TrafficTypeDiagnostic: SN6PR1501MB2064:EE_|CO6PR15MB4178:EE_
+X-MS-Office365-Filtering-Correlation-Id: da45a1e7-da22-4a87-0e5d-08daf8d72ed7
+X-FB-Source: Internal
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GWId5yEVOzJicf+DnbBKD9QSvlFnjM6LcF9ZpzJcMM9khTdqKsLOPbTiieMf7I/A5boQoibc3oRvoKt54V/Ne7eHDaktEwtPWaD39H/6brNiVIFKaLmNzaOYndiuKCG/FjVElf42q3Ckp02YmlDW9B7xIo5o8JNxjSg4NAKsOLRI7BeQ3+Xxvsb2R6YcwTgTHdSMAvNqrPkTa1fJr5dNRiM6fCJqdn4SSaTAwk2dKvGTNmeOFZnJEeL0lxlQHkxjFY1/LoqPvOV86FV9hHiFIa0eCKLuD/uQnWrj3gbA+6Dk/+egkwp6cRflDXS5ya8BOKGNqVr7zdG27nyY6dvW9gx6en8JxjODqcw3G16rvWpG9pCkyMomRiw/Ok4duzmabCq5pk6eJEpNqaSL2yc50uYu0Xu3HcOjC3UbPRGrFKp7dEOz4A2Mqk5lpmG9qG4gHRj5z89pN3aBLkilCLPv2kTXr1h2m8LU6VSj1keqkuG1KxMBwNFKxJB9y56pWMTBFO25dFPAZXFHzlIOd8M47sSlNL3xSB4jX0Q7Garoc1Qh8a7jZYJXqvugreH8RQp4At/+s0rmkSB722y4OoEJKK2m3fr6rckQTy2OwzRBjQJXzE1Gg9Qt2tVvGlS1Ifld2bc6+hjo+ZvUwTk5x3UQgj9p9L3yDGLX9X++oe35d3u4Vqe4nrHrP9vpZ1aPeCHU
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR13MB6037.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39840400004)(346002)(366004)(396003)(376002)(136003)(451199015)(38100700002)(5660300002)(2906002)(6916009)(86362001)(38350700002)(7406005)(4326008)(66946007)(66556008)(8676002)(8936002)(66476007)(7416002)(478600001)(66574015)(186003)(6506007)(53546011)(26005)(9686003)(6512007)(316002)(6486002)(52116002)(6666004)(41300700001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: AgL7NpznLQAcrVq56HV7r7ghGuCdW9EHtWlvtpx5W2jcfW20W8dyhvlToGfEMoaR5nM/7s8a7fPFLLiku4n4ognayk+C++AZkgB8Du+Q5QTWs2B8EPVKK0CEUxLd9Yp5/z7BZ7LOJ5BK03Gc3KSn7r5T+N+TR5fFvK7dgvhehsPheCFr/Fb3znFAyDG1/7ExHY0/p/LRczjwHee+HcrkYxnRX9WQivq67XzELvjX8eGr1fxZiuUkuHMWaJ6AsyEilu94MTrrQ5WleEGwbcTCMmJqTE+xdXz98wqCc2tNDfeHcJhunDm9LLaMguxiua90tqLrb1NP3I7K/pobmW+g3AiTvhEP2AA2jOL7JHYqk95KsRHrzpwvXxG8LEmWFNiF2XCtQeW0r2MNeKZNkDhmxk8FIm8CrbdkKzNQ1AYD+J8xOD2d7k7BN+RQ1C2w9AJSt+fIkMBuru1DRhT/LHtGEacycwJjja2F7tLCMjRWN23ZWM/0CgajLWhsdoHz0M4TzvRLyOnC5QKZ0hAUOMHSoIDTioJ0N4ttUx+YOW5JECP8cfLwwZGeTiTvBR+nsUc7/8iUj9nhVWPh4raEz/UkvZpxX5LE3/OvEva+vZ4vqi19LA8EWAcHdoym3Yl4o0q8BBY71cG9pSyvwRTgwPEvs0YyXEJcSRayOKbxGL3Tsu69PmOtt+/hX9P45e4FjECqAiuufcdjAD6TRtgrLgHraBEIsmCaqZeepYj7T35bgHs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(366004)(346002)(396003)(39860400002)(376002)(451199015)(2616005)(316002)(86362001)(31696002)(31686004)(6486002)(66556008)(66476007)(478600001)(186003)(66946007)(6512007)(53546011)(6506007)(6666004)(36756003)(8676002)(38100700002)(83380400001)(2906002)(4326008)(4744005)(7406005)(41300700001)(7416002)(5660300002)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?loT/c7IVnqVf+9/5ou9JmRMKida1Dq0M4hZ/zksdbxtqHA3XKacE7vNi5c?=
- =?iso-8859-1?Q?p8LgCWhwiHk71VFo/BN2iuxFuqqFnJT/yAQWu2grjQs5CgGf66ZWvtICtz?=
- =?iso-8859-1?Q?l/yhM/0vHrUyS/0Aee2S1QJZzOAkIuzQhD6setZL93kws0ICMRddYqRWVy?=
- =?iso-8859-1?Q?AXRyx89uLoye8l93BFJJcj7cs/Cm2fg10mlOHNYECHA7jiI7MBMX9690kl?=
- =?iso-8859-1?Q?ayCRA59ekzpAQu9iMS+HDny+R91Pqeir2fNDYX+wPvoxyG6B7K8w+kkHCO?=
- =?iso-8859-1?Q?D4i3kvw6YrA/h7KGLaxk5MojcvKdwAUTldRe8D5n/CrOVr9YfSWsbea+Bv?=
- =?iso-8859-1?Q?Ar1aCaEHluj+DZc+BKap31inisi6yo47LKJrGkp61DJ+0y+h7EIvajZad6?=
- =?iso-8859-1?Q?TRDUUiQY7fF+VqmSZDq2gdA1SyeAH6a+qoploF8TotilLs/xsH8wu3IFJU?=
- =?iso-8859-1?Q?5iUDRJ3DDcAk6coEZi6IeLpGb06c6j1uFbGXYr3vPpE+/FDcaArN4qlpdS?=
- =?iso-8859-1?Q?P224jOS2gvAp4PP5IailSnXPeyq4dfxoHN1+kpEgltuxHmDxT/Ce+NIH6o?=
- =?iso-8859-1?Q?aduI0cyoCf+z5mcKxGdIgi0Ziq6GEVbL2oLlJfgkiCNHGBfJi84nmeM1TK?=
- =?iso-8859-1?Q?096Mox+v+6ucNoFo+aID/8l7tuXacU9NNOjl0HKReKscNkB1BGT1yAFm4o?=
- =?iso-8859-1?Q?R0gMlthkJOvpsz4Dj5GYHic6lmSqyVWm2Hc1y7cCxF8sBfe11DH9ccdCCr?=
- =?iso-8859-1?Q?QSo6uUsbXwKDSDN6H/wME6ceDiFezBRHzRC/sCMcHTUv3GFox4iSDdfFDD?=
- =?iso-8859-1?Q?7H6anpPQMZUT7DCpb7L4x4azdkXc0AvfP/6B6cSGaIBXc0myoqsc1ctPyl?=
- =?iso-8859-1?Q?mOaJbVCNHAihBgcOlenX3zwxaMkMjBU+Qx/4zkzZZjHfyKAtPNUcPY2wJF?=
- =?iso-8859-1?Q?Z0eD/t6zOYHX3K6anyPRZjXBzLpdqeD1sO+/LSUEwos/+asBDlkgTqSa07?=
- =?iso-8859-1?Q?JU93Y4Ir166fc6msDMLFEYwAGaZr3O+c4Se7/yFvqm2bX6KEtZQzgqZbNq?=
- =?iso-8859-1?Q?JIDv1tL26/UQp7VnsXDRVMKH90EvOv8/8CCjjmN6Xn7A3II6yxLieY3k68?=
- =?iso-8859-1?Q?8Ixm2NWk4yDtZa1eBZo+R+NT1WGcnYjblmrk84pAFKzIDF0Rs+ajdjnS8Y?=
- =?iso-8859-1?Q?DvDj/S313W7ISfFcAEMfnYGn8D7dpjD/w3J8mczIzfKtphfoG0QU0yR2HR?=
- =?iso-8859-1?Q?DG8L8TVNXlMFaslT9LaH/9zn7HsEUzcPDHrZfTajIJzZUHd2kH1tzzqYqS?=
- =?iso-8859-1?Q?hDDPWwz8HKoVscK0j4npwOCxU77qeTsxbVRSHwGwlgcW3Xs2m+2b60NiJ2?=
- =?iso-8859-1?Q?OyfO7tdiY3HaAIO1Do+wBMDuX7TqQtHiV/ywEnHG3P+r+FYk5GsmOw4FTB?=
- =?iso-8859-1?Q?pphzxKcPrSjc82MCexkycBaqS4+9XxpWd1xjC1s2KMEqSi673KvtFWzgvf?=
- =?iso-8859-1?Q?wMyVE8MEBd7p64L2DJIoBdFKMC0hby6lTFumScjSm7EKy4sQdcVL5VQ/t0?=
- =?iso-8859-1?Q?gZrFDXuTuDF0N1bsxBqYarthhPibaMuC+1zxyWC+mkXj8fza2DDnZv/XJb?=
- =?iso-8859-1?Q?Fd9MRK55OlvLZ0/w50qERPPaYmwd2C/b3ZyQI0M2tQE9Y/aCRGNivIFg?=
- =?iso-8859-1?Q?=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cb65b02e-9a1a-4195-3a9f-08daf8d6f485
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR13MB6037.namprd13.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?M29Lc2N0ZU9ZTmM1azdicExZUzBpOW1rYWxQWEdyUzBMS0VuVWpNNUg0OFR2?=
+ =?utf-8?B?QmUrMDJ0QWVweFlvYW1qM2x2UUp5TGN1dDdOS3BDL2hyc1BpV1Y1Z24vTVR6?=
+ =?utf-8?B?K0xiaVg4UzdhSjc0RDRLY2RLTENCYnFJSGV3RStMeTdPVDlvQzAyZ0c1dWtO?=
+ =?utf-8?B?SS9PVVlMaFJ4dEF5cVZWNzhVNW5Ob2x4UGZuNENzMXowOE1Bb09xTVB1YXZJ?=
+ =?utf-8?B?cm1BMjkxQUs0MUh0UWpUNXArTGZLZjF6WjlOUklEa2p4Q3pJaXNac3RsMkZl?=
+ =?utf-8?B?U2RLa01vQUhWZHh3c0FJYnVJenNDNm52TzRzOXZZL2RmQjBzS2YrVGxaTHFY?=
+ =?utf-8?B?TDRibjJzaEVpVGFkUHNaVUdOSVVpdmVnRkV4dnhYbE9mWjAyaEtjc0U3eHRv?=
+ =?utf-8?B?MXlTc2NIV283aFFQbEVNY2ZwaS9CbkE5VzU0T0dpZmw4cFFTbHplU1VucER1?=
+ =?utf-8?B?bXRZS2xuU1Z2N29KRkJVSVJpVitXUEFwd0JZc0U4aXpvdVd0V0hEOEhwcGs0?=
+ =?utf-8?B?ZHJ6bm15S3VQTXQ0V3lZdjVTdlBMbG5GUVBRTFNtc3p0Zzg3QjRhRTNGZjI5?=
+ =?utf-8?B?VGwzc25JaHlseVF3SFV1M2J5M2gwVTR6UXJWRTRaYlVmMURLL2h1aW83czNB?=
+ =?utf-8?B?UmtERkowRzh6elgrY2FnM3FqbDJMMXRMTm5DcVpqc28xSVozM1pTajQ2d0E3?=
+ =?utf-8?B?eFFKdU12UzVwSysrT0xLRmt4bWh3WExHeEFXUkU4Rlk3Wmgwd0YvQzR5TUh2?=
+ =?utf-8?B?VEJYNFNpWlNBVFRET2p1Q0JvMmRnTjZaWFZ4aUFxSXpmclk5cytZK3pLbGFH?=
+ =?utf-8?B?ejRGQmRHUlgyNit0Z3ZJOHRGNUh1MDBBZE82ckhGazRCNDZ4NmU0ZFJVeFB5?=
+ =?utf-8?B?MTVyTE1rNkdKcnVPb3E1cFlaZ2lsdTJZMkxWdld6SWFiZVhCakY0T2hYWEY3?=
+ =?utf-8?B?TU8xZzRLdjVITVlsYXNWQ1RjWVhxWnVxM0d4RTVjc2d4SXplTnRTTzVqV1pq?=
+ =?utf-8?B?dG02a2E5bElkRFEwREFSZE40MTNkZTJDWHdTaWhXWEYwM2RxazNMek9hMmp2?=
+ =?utf-8?B?Tjl4SWpkVmE5UTR4K3hyaXBNUnA1b3FsMkxqU1FLT0M4N21GeFBxazRjL0JJ?=
+ =?utf-8?B?bUp2QmF0SGZZNVhrekIvVVVPbjBpMDVWWkFOY2JObmtLanZqWWljYnUxVk55?=
+ =?utf-8?B?M0xHSnplL3ZITWZNMEIxN1ZDVVU4WkZxd3lFa2g0VlMvMVVHd1N5eCtGR1Bw?=
+ =?utf-8?B?T1B1eVBMWTRjUHhzcHo3TU5KZlo4YjlTVkkwbm1ISEgxRjVrUkcvcVBUNW5a?=
+ =?utf-8?B?THBESUF0YlpzMWpRd3NzTUxzZ3dNSWJ0OXZhYjd0VE84bXp0SjVFNkRCMFlP?=
+ =?utf-8?B?UlJ2dHYrOGhUMkc2UkYyc2NaYkJqL25QTjlQU2tDWkFXM1oreC9JNE5IdmNZ?=
+ =?utf-8?B?bjZ2dHo5RzZmVDM1Y2Rnb1liK1dSUURPbVQrSVVnZDRWT0hRbUtUUG15cllR?=
+ =?utf-8?B?R0hGVHMzOFR3eTBBNGp3eVltVDdPaGNLdnVFd3NHbmJYUkRNRGNRelpnZzdL?=
+ =?utf-8?B?OTF3ZWMybWpGblAzVzhkRzJBOFF5N0xlK3lPbDgrRWxQcm1MNHZldTgwdUZJ?=
+ =?utf-8?B?aElFZ05SQTF1QTZVME8xUnFvem1ZMlE3NVUxRlRGeHZwNncxVEZoT3V6ZUZF?=
+ =?utf-8?B?ekZuZURxQkx6U21PLzdyeG1GV2xjVDZDVnI2U1N3OUgxcml0eWp4TTFrUHMz?=
+ =?utf-8?B?UW5kZE1NT2ltb1pnNjFHbTdMRkgrcmZzU3FsUGN2bEpCb0c2UDljQWxxZmla?=
+ =?utf-8?B?T01Xc3FRZ3FHNUpUQisrV3ZNVFBkUTFpbVN0TGtsRWtaNlZJM3luTG9xQTFs?=
+ =?utf-8?B?VGNZdVdlRHlrb2tCVDVhNkVXcW5ZNmllTUNGQTUwLzI5VDhZbHM5VVJRRkR6?=
+ =?utf-8?B?cDlFRUhYcGhwakVwSUtnZHZ1K1ZDWExxeDJEbGl1Nkt3OFl3MldEUGZ4SjNl?=
+ =?utf-8?B?WE1zZ00rUDFaSitzYURaZHZsNzdWRlhHdzBvSUxGWjBjdC8zNzZjMnZLWlY0?=
+ =?utf-8?B?LzhOaTBrcEZFMjhINlFCVWVtSEpmTWd2dHp4OGMxZHZiV05vWkNWeXZZcTR3?=
+ =?utf-8?B?USs5eUFHMjR2RHJmQlo1YWQ3aEhwc3lVcEFyKzBqVTJyKytlS1A3WUtSZWZD?=
+ =?utf-8?B?aHc9PQ==?=
+X-OriginatorOrg: meta.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: da45a1e7-da22-4a87-0e5d-08daf8d72ed7
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jan 2023 22:05:33.7595
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jan 2023 22:07:11.5880
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xKCagImwbfw7RBbJLGId7QgZ7hySkXJwf2NOJNlfXcnME6ejamfJatOZ8ndynrpGRYu6Hv8s2PUY69SkRU/bYrLOYHnxW6U9DNl//pi6XY0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB3789
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ew6Rpc5cWwBEq6U3RPEk7jdsKhLMxr+2vheU8owpvdILfeDj16FaUCdYfeyZw+/j
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR15MB4178
+X-Proofpoint-ORIG-GUID: ZVfEpwqPBgUgZwwsa6-nWLC1U9Ujxofe
+X-Proofpoint-GUID: ZVfEpwqPBgUgZwwsa6-nWLC1U9Ujxofe
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.923,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-01-17_10,2023-01-17_01,2022-06-22_01
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Toke,
 
-On 2023-01-17 22:58:57 +0100, Toke Høiland-Jørgensen wrote:
-> Niklas Söderlund <niklas.soderlund@corigine.com> writes:
-> 
-> > Hi Lorenzo and Marek,
-> >
-> > Thanks for your work.
-> >
-> > On 2023-01-14 16:54:32 +0100, Lorenzo Bianconi wrote:
-> >
-> > [...]
-> >
-> >> 
-> >> Turn 'hw-offload' feature flag on for:
-> >>  - netronome (nfp)
-> >>  - netdevsim.
-> >
-> > Is there a definition of the 'hw-offload' written down somewhere? From 
-> > reading this series I take it is the ability to offload a BPF program?  
-> 
-> Yeah, basically this means "allows loading and attaching programs in
-> XDP_MODE_HW", I suppose :)
-> 
-> > It would also be interesting to read documentation for the other flags 
-> > added in this series.
-> 
-> Yup, we should definitely document them :)
-> 
-> > [...]
-> >
-> >> diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c 
-> >> b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> >> index 18fc9971f1c8..5a8ddeaff74d 100644
-> >> --- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> >> +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> >> @@ -2529,10 +2529,14 @@ static void nfp_net_netdev_init(struct nfp_net *nn)
-> >>  	netdev->features &= ~NETIF_F_HW_VLAN_STAG_RX;
-> >>  	nn->dp.ctrl &= ~NFP_NET_CFG_CTRL_RXQINQ;
-> >>  
-> >> +	nn->dp.netdev->xdp_features = NETDEV_XDP_ACT_BASIC |
-> >> +				      NETDEV_XDP_ACT_HW_OFFLOAD;
-> >
-> > If my assumption about the 'hw-offload' flag above is correct I think 
-> > NETDEV_XDP_ACT_HW_OFFLOAD should be conditioned on that the BPF firmware 
-> > flavor is in use.
-> >
-> >     nn->dp.netdev->xdp_features = NETDEV_XDP_ACT_BASIC;
-> >
-> >     if (nn->app->type->id == NFP_APP_BPF_NIC)
-> >         nn->dp.netdev->xdp_features |= NETDEV_XDP_ACT_HW_OFFLOAD;
-> >
-> >> +
-> >>  	/* Finalise the netdev setup */
-> >>  	switch (nn->dp.ops->version) {
-> >>  	case NFP_NFD_VER_NFD3:
-> >>  		netdev->netdev_ops = &nfp_nfd3_netdev_ops;
-> >> +		nn->dp.netdev->xdp_features |= NETDEV_XDP_ACT_XSK_ZEROCOPY;
-> >>  		break;
-> >>  	case NFP_NFD_VER_NFDK:
-> >>  		netdev->netdev_ops = &nfp_nfdk_netdev_ops;
-> >
-> > This is also a wrinkle I would like to understand. Currently NFP support 
-> > zero-copy on NFD3, but not for offloaded BPF programs. But with the BPF 
-> > firmware flavor running the device can still support zero-copy for 
-> > non-offloaded programs.
-> >
-> > Is it a problem that the driver advertises support for both 
-> > hardware-offload _and_ zero-copy at the same time, even if they can't be 
-> > used together but separately?
-> 
-> Hmm, so the idea with this is to only expose feature flags that are
-> supported "right now" (you'll note that some of the drivers turn the
-> REDIRECT_TARGET flag on and off at runtime). Having features that are
-> "supported but in a different configuration" is one of the points of
-> user confusion we want to clear up with the explicit flags.
-> 
-> So I guess it depends a little bit what you mean by "can't be used
-> together"? I believe it's possible to load two programs at the same
-> time, one in HW mode and one in native (driver) mode, right? In this
-> case, could the driver mode program use XSK zerocopy while the HW mode
-> program is also loaded?
 
-Exactly, this is my concern. Two programs can be loaded at the same 
-time, one in HW mode and one in native mode. The program in native mode 
-can use zero-copy at the same time as another program runs in HW mode.
+On 1/14/23 7:54 AM, Lorenzo Bianconi wrote:
+> From: Marek Majtyka <alardam@gmail.com>
+> 
+> Change necessary condition check for XSK from ndo functions to
+> xdp features flags.
+> 
+> Signed-off-by: Marek Majtyka <alardam@gmail.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>   net/xdp/xsk_buff_pool.c | 3 +--
+>   1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+> index ed6c71826d31..2e6fa082142a 100644
+> --- a/net/xdp/xsk_buff_pool.c
+> +++ b/net/xdp/xsk_buff_pool.c
+> @@ -178,8 +178,7 @@ int xp_assign_dev(struct xsk_buff_pool *pool,
+>   		/* For copy-mode, we are done. */
+>   		return 0;
+>   
+> -	if (!netdev->netdev_ops->ndo_bpf ||
+> -	    !netdev->netdev_ops->ndo_xsk_wakeup) {
+> +	if ((netdev->xdp_features & NETDEV_XDP_ACT_ZC) != NETDEV_XDP_ACT_ZC) {
 
-But the program running in HW mode can never use zero-copy.
+Maybe:
+	if (!(netdev->xdp_features & NETDEV_XDP_ACT_ZC))
+?
 
--- 
-Kind Regards,
-Niklas Söderlund
+>   		err = -EOPNOTSUPP;
+>   		goto err_unreg_pool;
+>   	}
