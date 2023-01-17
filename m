@@ -2,51 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3427F66DCD4
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 12:50:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E98266DCDA
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 12:52:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236606AbjAQLuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 06:50:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60578 "EHLO
+        id S236416AbjAQLwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 06:52:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236197AbjAQLuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 06:50:20 -0500
+        with ESMTP id S236058AbjAQLwy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 06:52:54 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F51305F7
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 03:50:19 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583DF233CF;
+        Tue, 17 Jan 2023 03:52:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02529B80DC9
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 11:50:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A703FC433F0;
-        Tue, 17 Jan 2023 11:50:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 07FD5B815AA;
+        Tue, 17 Jan 2023 11:52:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F245EC433D2;
+        Tue, 17 Jan 2023 11:52:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673956216;
-        bh=x8ujYvIssNTDzn6gKr3Qre7PpMNAmba/QXQ17Fn4dN4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PmoViritPOxblnRVhLvnqpxOhKNFDXbE7bW7m6hcY+KIje1678DuS2Jry9L/Ffxno
-         dDnCpBJ2lw4Vdykp8/3z91+3P8kOSyRwiF73XioPBE1h6+6nHQV8aZ4Dq++efCzJro
-         Lc+Nu2SFhQ2q98FfgqMadNKxDgGqf+9XUI8+Au7/m6ykrD0Jh2KTD6duwszWSrWMzZ
-         mlzZZYDwYrfJ92QwA35J7/JvsSRsXHe1lbEhYM6QmWwZ6LTkqZ+OnvcbEp5rT8dBSR
-         YGVMNdfPBegvBZNGwiLTeio4YB0TmF3hBgXYZZhMEyb+oZyK7hJBT2Q3tyto4TO2Xn
-         wJ5RHQM5t1MBQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8EEC4C43147;
-        Tue, 17 Jan 2023 11:50:16 +0000 (UTC)
+        s=k20201202; t=1673956370;
+        bh=+fBuNs29t8yNPv6q51lyGENRRsy/0iZMXu1O4lAOniQ=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=Dix/JRvzda3WspkxvRp3kxxnBmsIoxY2NgLSprROHZ0qlxGw7s/fUzJ6BB0AsmhAi
+         LDhkNPFamjnwUqZndKAWqtN+NWeazr3C0tgpwfbRycye0X+SSJYz6AW/LAxKMo9P0M
+         3ltjdPBkrnSa5/f86OYQX3l9mlyGeTD6RafI61+QmsapV2/OkPtGk1Y2U7/DbZdyr6
+         uUI8RyjQdgYqmYhh/1/Fi8KYz7RM4ZuKW61y/o9g+tRmVelUvaGL5wvt5PHC7GtrkM
+         c7hIaNX9RpQCTWhVO5ithzfwSbj9cap7IM24/IO/k9ynW6fyiiS5mboZFuGiJFeOVs
+         B+W8SirZu/7Gg==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: mdio: validate parameter addr in mdiobus_get_phy()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167395621658.741.1266845429640247394.git-patchwork-notify@kernel.org>
-Date:   Tue, 17 Jan 2023 11:50:16 +0000
-References: <cdf664ea-3312-e915-73f8-021678d08887@gmail.com>
-In-Reply-To: <cdf664ea-3312-e915-73f8-021678d08887@gmail.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     andrew@lunn.ch, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org
+Subject: Re: [PATCH v4] wifi: ath9k: htc_hst: free skb in ath9k_htc_rx_msg()
+ if
+ there is no callback function
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20230104123546.51427-1-pchelkin@ispras.ru>
+References: <20230104123546.51427-1-pchelkin@ispras.ru>
+To:     Fedor Pchelkin <pchelkin@ispras.ru>
+Cc:     =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Fedor Pchelkin <pchelkin@ispras.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sujith <Sujith.Manoharan@atheros.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        Vasanthakumar Thiagarajan <vasanth@atheros.com>,
+        Senthil Balasubramanian <senthilkumar@atheros.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        lvc-project@linuxtesting.org,
+        syzbot+e008dccab31bd3647609@syzkaller.appspotmail.com,
+        syzbot+6692c72009680f7c4eb2@syzkaller.appspotmail.com
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <167395636331.22891.14427855957409091076.kvalo@kernel.org>
+Date:   Tue, 17 Jan 2023 11:52:46 +0000 (UTC)
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,28 +69,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Fedor Pchelkin <pchelkin@ispras.ru> wrote:
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Sun, 15 Jan 2023 11:54:06 +0100 you wrote:
-> The caller may pass any value as addr, what may result in an out-of-bounds
-> access to array mdio_map. One existing case is stmmac_init_phy() that
-> may pass -1 as addr. Therefore validate addr before using it.
+> It is stated that ath9k_htc_rx_msg() either frees the provided skb or
+> passes its management to another callback function. However, the skb is
+> not freed in case there is no another callback function, and Syzkaller was
+> able to cause a memory leak. Also minor comment fix.
 > 
-> Fixes: 7f854420fbfe ("phy: Add API for {un}registering an mdio device to a bus.")
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
 > 
-> [...]
+> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+> Reported-by: syzbot+e008dccab31bd3647609@syzkaller.appspotmail.com
+> Reported-by: syzbot+6692c72009680f7c4eb2@syzkaller.appspotmail.com
+> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+> Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
+> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
 
-Here is the summary with links:
-  - [net] net: mdio: validate parameter addr in mdiobus_get_phy()
-    https://git.kernel.org/netdev/net/c/867dbe784c50
+Patch applied to ath-next branch of ath.git, thanks.
 
-You are awesome, thank you!
+9b25e3985477 wifi: ath9k: htc_hst: free skb in ath9k_htc_rx_msg() if there is no callback function
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+https://patchwork.kernel.org/project/linux-wireless/patch/20230104123546.51427-1-pchelkin@ispras.ru/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
