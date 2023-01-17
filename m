@@ -2,75 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63C0266E1B1
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 16:09:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2138666E1BA
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 16:10:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233024AbjAQPJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 10:09:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47422 "EHLO
+        id S233409AbjAQPKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 10:10:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232813AbjAQPJb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 10:09:31 -0500
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AC14402EF;
-        Tue, 17 Jan 2023 07:09:27 -0800 (PST)
-Received: by mail-ot1-x331.google.com with SMTP id j16-20020a056830271000b0067202045ee9so17976750otu.7;
-        Tue, 17 Jan 2023 07:09:27 -0800 (PST)
+        with ESMTP id S233419AbjAQPJy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 10:09:54 -0500
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB3F040BC3
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 07:09:53 -0800 (PST)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-4c24993965eso419683547b3.12
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 07:09:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=TfAfhanzXfBs5e60B4ddov63nTWwre3PQSRW15sW7nY=;
-        b=ZRq3t6zo8CAt2Y4hvrlw1zFMAH9Fu/VOMpgwS5AXMO2TEbrSGx+e2dXR1qo7vRV8ch
-         kr7uVrnzb0rt+pJyylTgoD0ZiK6WNceqPhiSO6P4JnzbJvBgTg5443TRxo7HftfON5CI
-         +n4PQ4ssGqhFQ27tLqLBWH65/4fteSSly4Xk2Fdc+7m76sZ3lBVX4ETqs0vpWOK62uUz
-         Sut2Q1zSuVOM3hwxonfa3IBZMoRouD2jyYZGWIibGqoa6tpMYbjW7GkENP8UOAfqNUk0
-         04bQbV9LLldjpMKzUEmYkcbLBBFtrU6+UUT8qbW2ljFCywycUwaQi+DqcfLYLSiTjeqf
-         LlTQ==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=vO1ImiweOzoBtInzit/mjHfxkZCqptROLHafUjZGKew=;
+        b=DQxl7lLnGVlbN3kISaxo/zzCdW/2oSKfHpoor/3BNknJ06o5+2vwWhF9/vJFhcyW2X
+         2RI4uONDbdzX1Wg2qjaRcZBgtai8vQL6L+FboFwMYohd3hMs+txbM84H4JHbxRg6doJs
+         1fGDDdUshtWetqBpubwEkFa764wg3mZuy9wC++5JSX5RLn7PizDG2tMsnKIGuFfXISHI
+         0bPSwZFBMiyxOYdFJ+ik1Xi/S2fj9j19dGfwgcyRU269bYzhGroBvY0Lurb0EXlkClLs
+         OAMXzeXlVKlWneLke6hxXow6U5l3NZk18U5Zvek6vRwL24PLbqRXoqecovdpLefWGk1G
+         0V3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TfAfhanzXfBs5e60B4ddov63nTWwre3PQSRW15sW7nY=;
-        b=32VbwSm2LbOURSzvRhLxtT+Q+K9x/+OLG78jvmVO8HzdHSLAkwADJz6cMGhabBLM9h
-         dUx50pOuJg3AnFaFcwEeHMLc0cblJZiPnYv0E7HMREmcaj6gNmUVRZ2lmTFNg9uMxFZJ
-         P7Zd+4DHjQui74mw8Gd9OSrf9IRTCB2oksgV8RtB6Dpodc596LJOOBvVBSd+HlCRH1dC
-         o6Ur6B/ystrkx+KBuWherK4+PZzR0Yd1PwzlAM70pOdncx+2gjeSolx1+lWDBzu9ZGbo
-         INfL6RFJrY19ldpVwKVKW6KSZE97p3Tjdf28wNzkDybpevIj7DsuCF2xTXNyi8uROpma
-         DnNw==
-X-Gm-Message-State: AFqh2kq201kcHoj1yIMmbu5MnGZx+ZZRhBy8AbliiXpMCG6dkZWs5QIU
-        5aGFU48GB6fIBIwtNtK3t9mkYLzmxLo=
-X-Google-Smtp-Source: AMrXdXsCthi1G21x0vT9XXepYmRa1J747J7sZxYCroLg3HSfnl+aLJJEPM0OoDwP14OTmotU32wB0w==
-X-Received: by 2002:a9d:4e81:0:b0:66d:68ab:2882 with SMTP id v1-20020a9d4e81000000b0066d68ab2882mr1645048otk.11.1673968167117;
-        Tue, 17 Jan 2023 07:09:27 -0800 (PST)
-Received: from t14s.localdomain ([177.220.174.155])
-        by smtp.gmail.com with ESMTPSA id bt25-20020a05683039d900b0066e80774203sm16890577otb.43.2023.01.17.07.09.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Jan 2023 07:09:26 -0800 (PST)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-        id 057DB4AD1F9; Tue, 17 Jan 2023 12:09:25 -0300 (-03)
-Date:   Tue, 17 Jan 2023 12:09:24 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        pablo@netfilter.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, ozsh@nvidia.com,
-        simon.horman@corigine.com
-Subject: Re: [PATCH net-next v2 1/7] net: flow_offload: provision conntrack
- info in ct_metadata
-Message-ID: <Y8a6JCG6iUFTr1Q1@t14s.localdomain>
-References: <20230113165548.2692720-1-vladbu@nvidia.com>
- <20230113165548.2692720-2-vladbu@nvidia.com>
- <Y8a5AOxlm5XsrYtT@t14s.localdomain>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vO1ImiweOzoBtInzit/mjHfxkZCqptROLHafUjZGKew=;
+        b=xxlbj91YjaMCsJkmqFaWIaZWiVmyec1G74tKkbQczBovY0Wa3+6W1lkLp9H4aWCGkF
+         mY6NQ2ucjU6yW9aN5qmhMLArUcwiklXdHKgQ0+8vNLDDIHdk9ZhiDbPBRi3kYb58sGPf
+         PTwAPT0hePJAe9Z8Wz0N2hX++Siqp37a2qnzpX9IutYopLh2ZIvRd+gl6tulpDInQiQs
+         xRSJkDg4dUsbvEME0ZgL+VXfFslfDO69UHVahrRnfooouqD4xXa4LXCOwFtV3dAlBbMc
+         Vuv+XID9YROcogbtM9MUq7+qggOWgcNU8dUWVJsUs45SIvw7Qonn6ykUXnbfLJuOFnu1
+         Fe9g==
+X-Gm-Message-State: AFqh2kqK1OUf/Xv5biltl+cpuLHsK56K8y8o2xxK6MZUVgwSgogLCc+v
+        T2dOYt4A5wGoSf12A+Kmv7rVPJFOWD3bgxTB5B5UMQ==
+X-Google-Smtp-Source: AMrXdXurh3GkbPNjryC2sk/yJ2VL0TEk9w+39HaeWgAUo4d+hFSrCvnq5yI/2VkwY4eDRcvLmlZrBXFwX1wgI0B3OT8=
+X-Received: by 2002:a81:9881:0:b0:4dc:1d4b:620a with SMTP id
+ p123-20020a819881000000b004dc1d4b620amr443046ywg.360.1673968193000; Tue, 17
+ Jan 2023 07:09:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y8a5AOxlm5XsrYtT@t14s.localdomain>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20230113034353.2766735-1-liuhangbin@gmail.com>
+ <20230113034617.2767057-1-liuhangbin@gmail.com> <20230113034617.2767057-2-liuhangbin@gmail.com>
+ <20230112203019.738d9744@hermes.local> <CAM0EoMmw+uQuXkVZprspDbqtoQLGHEM0An0ogzD5bFdOJEqWXg@mail.gmail.com>
+ <20230114090311.1adf0176@hermes.local>
+In-Reply-To: <20230114090311.1adf0176@hermes.local>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Tue, 17 Jan 2023 10:09:41 -0500
+Message-ID: <CAM0EoMkOquxiQH23gKwehf_MGL4j2GbGDdZxW-cc8bpC6Jrpqw@mail.gmail.com>
+Subject: Re: [PATCH iproute2-next 2/2] tc: add new attr TCA_EXT_WARN_MSG
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,43 +74,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 17, 2023 at 12:04:32PM -0300, Marcelo Ricardo Leitner wrote:
-> On Fri, Jan 13, 2023 at 05:55:42PM +0100, Vlad Buslov wrote:
-> ...
-> >  struct flow_match {
-> > @@ -288,6 +289,7 @@ struct flow_action_entry {
-> >  		} ct;
-> >  		struct {
-> >  			unsigned long cookie;
-> > +			enum ip_conntrack_info ctinfo;
-> >  			u32 mark;
-> >  			u32 labels[4];
-> >  			bool orig_dir;
-> > diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-> > index 0ca2bb8ed026..515577f913a3 100644
-> > --- a/net/sched/act_ct.c
-> > +++ b/net/sched/act_ct.c
-> > @@ -187,6 +187,7 @@ static void tcf_ct_flow_table_add_action_meta(struct nf_conn *ct,
-> >  	/* aligns with the CT reference on the SKB nf_ct_set */
-> >  	entry->ct_metadata.cookie = (unsigned long)ct | ctinfo;
->                                                    ^^^^^^^^^^^
+On Sat, Jan 14, 2023 at 12:03 PM Stephen Hemminger
+<stephen@networkplumber.org> wrote:
+>
+> On Sat, 14 Jan 2023 07:59:39 -0500
+> Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>
 
-Hmm. Thought that just came up and still need to dig into, but wanted
-to share/ask already. Would it be a problem to update the cookie later
-on then, to reflect the new ctinfo?
+[..]
+>
+> Ok, but use lower case for JSON tag following existing conventions.
+>
+> Note: json support in monitor mode is incomplete for many of the
+> commands bridge, ip, tc, devlink. It doesn't always generate valid JSON
+> yet.
 
-> 
-> >  	entry->ct_metadata.orig_dir = dir == IP_CT_DIR_ORIGINAL;
-> > +	entry->ct_metadata.ctinfo = ctinfo;
-> 
-> tcf_ct_flow_table_restore_skb() is doing:
->         enum ip_conntrack_info ctinfo = cookie & NFCT_INFOMASK;
-> 
-> Not sure if it really needs this duplication then.
-> 
-> >  
-> >  	act_ct_labels = entry->ct_metadata.labels;
-> >  	ct_labels = nf_ct_labels_find(ct);
-> > -- 
-> > 2.38.1
-> > 
+We can work for starters with the tc one and maybe cover ip as well...
+
+cheers,
+jamal
