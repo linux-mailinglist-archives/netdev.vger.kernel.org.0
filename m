@@ -2,41 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B684F670D89
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 00:32:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F142A670D90
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 00:32:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230084AbjAQXcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 18:32:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53492 "EHLO
+        id S229605AbjAQXcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 18:32:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230003AbjAQXbe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 18:31:34 -0500
+        with ESMTP id S230029AbjAQXbd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 18:31:33 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00D78C939;
-        Tue, 17 Jan 2023 12:57:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF04D8C92E;
+        Tue, 17 Jan 2023 12:57:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
   t=1673989036; x=1705525036;
-  h=from:to:subject:date:message-id:mime-version;
-  bh=HUcDI0BDItLq7xPF3mfX4cfv5vHR9dKnvrxx0RnOSpw=;
-  b=hIHtaNoCthkwQOEzYTSI/lWkxomc4UtVqUHZkBrS5x8cCRyod7q1bJdM
-   oGfVBWfqBzV4eBXG2JtvJUz963Kph1tO7HIfASCS3GdkrYKBZcNRLcb1s
-   APNHvBbU9NKumBgTRLSw1eXsEX10rL8dkd4dieYBDrEJONSFFeUXI9Dnf
-   CjkmcqPbULtrN/+HqEsg8TrF8F+nBvrN2Rur8YiZsXJjsFuIiGCiCChU6
-   kB+9nAWDNsfedrIoRxr1Nek4MNIeDWcQHXbiPBdMT/sT/nTB4zZlBxq8+
-   QaS2gYlyXYlHkDexO6EkO+uZQvI5TQCS8UG0abbimMGZ7hMYU3EeT2lvy
-   g==;
+  h=from:to:subject:date:message-id:in-reply-to:references:
+   mime-version;
+  bh=4MVjklp+WInBd0klfJLhEVo/AmyM+BveJwsJuTHar2g=;
+  b=yXCbJKHNl0Q//BJshBsSc1Ah0dxISwVTKIh2sW94fIwOw5y5KN0QkLTI
+   3iVdgtd8z3hWrIQqLeHJcIwwiyxX9BKYmtQqlh5v8bXXbInny+dFIXOxD
+   nEI9y9kEdSTbYXFMKsHLMvaCPLUWRdIrmtxJ+CODhgUIUgbnDk4Wwm7Pb
+   tVev4QGvxT3UnnGaTPKVcDT9OJ01YGYv6l/i3/fsQHxoBZG4DWrNGD+bt
+   R6yXNewM7+EDSOhbthR0dTBn2JHAAyIeTJmyvmjdIpKQSfjjmXeVT9QHJ
+   aVmzXX6TDnD9dm4z6rkojihztE4cYP16xl9bekn/djE7uIA2cEQApARTm
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.97,224,1669100400"; 
-   d="scan'208";a="197058697"
+   d="scan'208";a="208210722"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Jan 2023 13:57:06 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Jan 2023 13:57:08 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 17 Jan 2023 13:57:06 -0700
+ 15.1.2507.16; Tue, 17 Jan 2023 13:57:08 -0700
 Received: from AUS-LT-C33025.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Tue, 17 Jan 2023 13:57:04 -0700
+ 15.1.2507.16 via Frontend Transport; Tue, 17 Jan 2023 13:57:06 -0700
 From:   Jerry Ray <jerry.ray@microchip.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -48,10 +49,12 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Russell King <linux@armlinux.org.uk>, <jbe@pengutronix.de>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Jerry Ray <jerry.ray@microchip.com>
-Subject: [net-next: PATCH v7 0/7] dsa: lan9303: Move to PHYLINK
-Date:   Tue, 17 Jan 2023 14:56:56 -0600
-Message-ID: <20230117205703.25960-1-jerry.ray@microchip.com>
+Subject: [net-next: PATCH v7 1/7] dsa: lan9303: align dsa_switch_ops members
+Date:   Tue, 17 Jan 2023 14:56:57 -0600
+Message-ID: <20230117205703.25960-2-jerry.ray@microchip.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20230117205703.25960-1-jerry.ray@microchip.com>
+References: <20230117205703.25960-1-jerry.ray@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -64,55 +67,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series moves the lan9303 driver to use the phylink
-api away from phylib.
+Whitespace preparatory patch, making the dsa_switch_ops table consistent.
+No code is added or removed.
 
-Migrating to phylink means removing the .adjust_link api. The
-functionality from the adjust_link is moved to the phylink_mac_link_up
-api.  The code being removed only affected the cpu port.  The other
-ports on the LAN9303 do not need anything from the phylink_mac_link_up
-api.
-
-Patches:
- 0001 - Whitespace only change aligning the dsa_switch_ops members.
-	No code changes.
- 0002 - Moves the Turbo bit initialization out of the adjust_link api and
-	places it in a driver initialization execution path. It only needs
-	to be initialized once, it is never changed, and it is not a
-	per-port flag.
- 0003 - Adds exception handling logic in the extremely unlikely event that
-	the read of the device fails.
- 0004 - Performance optimization that skips a slow register write if there
-	is no need to perform it.
- 0005 - Change the way we identify the xMII port as phydev will be NULL
-	when this logic is moved into phylink_mac_link_up.
- 0006 - Removes adjust_link and begins using the phylink dsa_switch_ops
-	apis.
- 0007 - Adds XMII port flow control settings in the phylink_mac_link_up()
-	api while cleaning up the ANEG / speed / duplex implementation.
+Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
 ---
-v6->v7:
-  - Moved the initialization of the Turbo bit into lan9303_setup().
-  - Added a macro for determining is a port is an XMII port.
-  - Added setting the XMII flow control in the phylink_mac_link_up() API.
-  - removed unnecessary error handling and cleaned up the code flow in
-    phylink_mac_link_up().
-v5->v6:
-  - Moved to using port number to identify xMII port for the LAN9303.
-v4->v5:
-  - Created prep patches to better show how things migrate.
-  - cleaned up comments.
-v3->v4:
-  - Addressed whitespace issues as a separate patch.
-  - Removed port_max_mtu api patch as it is unrelated to phylink migration.
-  - Reworked the implementation to preserve the adjust_link functionality
-    by including it in the phylink_mac_link_up api.
-v2->v3:
-  Added back in disabling Turbo Mode on the CPU MII interface.
-  Removed the unnecessary clearing of the phy supported interfaces.
-v1->v2:
-  corrected the reported mtu size, removing ETH_HLEN and ETH_FCS_LEN
+ drivers/net/dsa/lan9303-core.c | 38 +++++++++++++++++-----------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
 
- drivers/net/dsa/lan9303-core.c | xx ++++++++++++--------
- 1 file changed
+diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
+index 2e270b479143..f8f6f79052e3 100644
+--- a/drivers/net/dsa/lan9303-core.c
++++ b/drivers/net/dsa/lan9303-core.c
+@@ -1282,25 +1282,25 @@ static int lan9303_port_mdb_del(struct dsa_switch *ds, int port,
+ }
+ 
+ static const struct dsa_switch_ops lan9303_switch_ops = {
+-	.get_tag_protocol = lan9303_get_tag_protocol,
+-	.setup = lan9303_setup,
+-	.get_strings = lan9303_get_strings,
+-	.phy_read = lan9303_phy_read,
+-	.phy_write = lan9303_phy_write,
+-	.adjust_link = lan9303_adjust_link,
+-	.get_ethtool_stats = lan9303_get_ethtool_stats,
+-	.get_sset_count = lan9303_get_sset_count,
+-	.port_enable = lan9303_port_enable,
+-	.port_disable = lan9303_port_disable,
+-	.port_bridge_join       = lan9303_port_bridge_join,
+-	.port_bridge_leave      = lan9303_port_bridge_leave,
+-	.port_stp_state_set     = lan9303_port_stp_state_set,
+-	.port_fast_age          = lan9303_port_fast_age,
+-	.port_fdb_add           = lan9303_port_fdb_add,
+-	.port_fdb_del           = lan9303_port_fdb_del,
+-	.port_fdb_dump          = lan9303_port_fdb_dump,
+-	.port_mdb_add           = lan9303_port_mdb_add,
+-	.port_mdb_del           = lan9303_port_mdb_del,
++	.get_tag_protocol	= lan9303_get_tag_protocol,
++	.setup			= lan9303_setup,
++	.get_strings		= lan9303_get_strings,
++	.phy_read		= lan9303_phy_read,
++	.phy_write		= lan9303_phy_write,
++	.adjust_link		= lan9303_adjust_link,
++	.get_ethtool_stats	= lan9303_get_ethtool_stats,
++	.get_sset_count		= lan9303_get_sset_count,
++	.port_enable		= lan9303_port_enable,
++	.port_disable		= lan9303_port_disable,
++	.port_bridge_join	= lan9303_port_bridge_join,
++	.port_bridge_leave	= lan9303_port_bridge_leave,
++	.port_stp_state_set	= lan9303_port_stp_state_set,
++	.port_fast_age		= lan9303_port_fast_age,
++	.port_fdb_add		= lan9303_port_fdb_add,
++	.port_fdb_del		= lan9303_port_fdb_del,
++	.port_fdb_dump		= lan9303_port_fdb_dump,
++	.port_mdb_add		= lan9303_port_mdb_add,
++	.port_mdb_del		= lan9303_port_mdb_del,
+ };
+ 
+ static int lan9303_register_switch(struct lan9303 *chip)
+-- 
+2.17.1
 
