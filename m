@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D09AD66D9E7
+	by mail.lfdr.de (Postfix) with ESMTP id 8545366D9E6
 	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 10:28:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236068AbjAQJ2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 04:28:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57882 "EHLO
+        id S236408AbjAQJ2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 04:28:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236430AbjAQJ1p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 04:27:45 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07DDC265AC;
-        Tue, 17 Jan 2023 01:26:07 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id l41-20020a05600c1d2900b003daf986faaeso4029833wms.3;
-        Tue, 17 Jan 2023 01:26:06 -0800 (PST)
+        with ESMTP id S236587AbjAQJ1t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 04:27:49 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A2C2B0A8;
+        Tue, 17 Jan 2023 01:26:08 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id f25-20020a1c6a19000000b003da221fbf48so7616037wmc.1;
+        Tue, 17 Jan 2023 01:26:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HLCA8Czl5WQ/VKvIIWxUV8C56Hw+2JQ+C9JrrfhSbGo=;
-        b=jTru5zR2JAPq4quFWC8I79DsdGsYxCoutSgm2m7XyTev2bPe3VOuXAt4cXu3wrcaSB
-         BKs+loD/1MuvBKN4SKpUg9c8HOHlQDOAdsbWYxovyxdTOGLDcfn9fxjJsyjxoIxPl7+v
-         Qmfu2H19gDKtKGlrKzEvm3JT1numjOmNllTy2d8g3d+Wq4OvsNcDC4j+sqh9yWoy+r5q
-         37SIfnpuwgXeQWM2nCNLPu+okXuxdHUJI1P7YMwNEdb8oAOOwPKicqjXN/k8cCKySGna
-         I0uDDSVYMK+EtqAg3BlyS7QKRq4XqnqNVIuKigq2nRt3kqmfqegsdyhBZvnVkD7w62/h
-         GkqA==
+        bh=xuCStn9V5oARcXzlZlnENM3b/8Cc1xy/rZz8yfu4umE=;
+        b=PJn4IsJGWNquOVoX8uL9scHqVHfzRajzDZEFkK2LdugQseNexbc8pSDFCYwDMLZheg
+         Ym7No27ExKWVxoYMOHV2mm9v/bDZrw5umNjsVYLgyhFxg7+e6JO1laoSJFDmZCzjmSKB
+         CON13JslubqUQEOxvaKDycXJmc1jjyOqlhfMdEqdoTHUNvXDoO6d2Q3kFwm5qedk2Z+V
+         RMs58griQ0c7us6XdvdFYvp0Hmx6Ux5C7rpBM/NIrFhl214Pe9ew9VBvgh2SLGZntBaB
+         fqx0XtwcClTYJ3emRj6LZxHQzDYv1zozQndy9bSG4DNs/aMAZ89Srt1O3tggxu1meLEU
+         7Ytg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=HLCA8Czl5WQ/VKvIIWxUV8C56Hw+2JQ+C9JrrfhSbGo=;
-        b=Fb9prVRS67IHuGBcmktjq1B9ziUGQ2geMZRFzVZ3HFtzGhW4b78rLfHcb10/TH/NIV
-         Yd1Ad6iNvmVlxVp34b+DuNMHk2Po3BcZ/TecB1YLflQdBWUuKw3NQ/wRRBo6JhQnZjuw
-         vUkx9ePqyj+jW3KVCPOqruqsY0P3yw43v3XCbERQvzv5CXJoLKCxRWV7182cUslmUsrn
-         SWfIJMen3AgF0USR5Iqww26z6pjJ4KE6WxSS2PZuec9pBnlCZO2oxko6kSOrdO1y/dr+
-         FJkN/OTGH71bJ3Da3yc3vgYNiU2Hxhj5bO1oxozurbuEun5tYJH6NYQW91ztdZ2xXDFS
-         Dn/w==
-X-Gm-Message-State: AFqh2kpjTpn5H9EKzX6FJI92cFJqF9/sJ+j8peMl0lPoIK4MQ97mZmxC
-        18tlcEyJZ5nBZtlvcbYccvY=
-X-Google-Smtp-Source: AMrXdXvHuCNk1VtpA0OUrQyo1zFtGnK0IGNQIdV6FDXstsNqEBiwNf2yQsBIuxfMYjbnhS2So5UMHw==
-X-Received: by 2002:a05:600c:33a8:b0:3d9:ed3b:5b3e with SMTP id o40-20020a05600c33a800b003d9ed3b5b3emr2291508wmp.19.1673947565533;
-        Tue, 17 Jan 2023 01:26:05 -0800 (PST)
+        bh=xuCStn9V5oARcXzlZlnENM3b/8Cc1xy/rZz8yfu4umE=;
+        b=AUMcyYkZzKofBccGybzQs3eBbHGZGvHN9cQVIwRZPC5cJhu+9FM/wrUrH8RX2fBfk0
+         w2P+uS5/FAxujdLcsEepZ4Ax4XgvESGhxzbrCUOBYFRmOXZWeUFNG/7Ce58SI9BLSOjR
+         MvX6pypqV0XRklDslMxG2qu7RUX0vARWWk6c8Dkp6T+/fXkmI/GkG+uwO/5/TwzzC6UJ
+         8/TQ+sqkOK32aHCWlGcwRHXN4EaOexWtTXmUeNaNc2yAyErhffJ17X51rbX21ep7g6qL
+         YhuZE+aZl4BxILF8jxzmGnQPdWRQnPj0A/XlxfK5ss311r2D0DOEmFfJlyCeR6acWYX5
+         t5VA==
+X-Gm-Message-State: AFqh2koc61pEsr0IF6AlVtM/i/2ghjuEJihyvp/yJVoIFqxfOd/v6Bh3
+        a9B+RmJcuWhVeZaIsCuPEdg=
+X-Google-Smtp-Source: AMrXdXvDjoxt129uWZFHqLVwl/vcOBXNnnJ3Rjx+QizZos3M3OWWOqB8EhGi1c311sBxHjDl+rkofw==
+X-Received: by 2002:a05:600c:b54:b0:3c6:e60f:3f6f with SMTP id k20-20020a05600c0b5400b003c6e60f3f6fmr2283961wmr.38.1673947568043;
+        Tue, 17 Jan 2023 01:26:08 -0800 (PST)
 Received: from localhost.localdomain (h-176-10-254-193.A165.priv.bahnhof.se. [176.10.254.193])
-        by smtp.gmail.com with ESMTPSA id u21-20020a7bc055000000b003d9aa76dc6asm48008881wmc.0.2023.01.17.01.26.03
+        by smtp.gmail.com with ESMTPSA id u21-20020a7bc055000000b003d9aa76dc6asm48008881wmc.0.2023.01.17.01.26.05
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 17 Jan 2023 01:26:04 -0800 (PST)
+        Tue, 17 Jan 2023 01:26:07 -0800 (PST)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
@@ -59,9 +59,9 @@ To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         mst@redhat.com, jasowang@redhat.com, ioana.ciornei@nxp.com,
         madalin.bucur@nxp.com
 Cc:     bpf@vger.kernel.org
-Subject: [PATCH net 4/5] dpaa_eth: execute xdp_do_flush() before napi_complete_done()
-Date:   Tue, 17 Jan 2023 10:25:32 +0100
-Message-Id: <20230117092533.5804-5-magnus.karlsson@gmail.com>
+Subject: [PATCH net 5/5] dpaa2-eth: execute xdp_do_flush() before napi_complete_done()
+Date:   Tue, 17 Jan 2023 10:25:33 +0100
+Message-Id: <20230117092533.5804-6-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230117092533.5804-1-magnus.karlsson@gmail.com>
 References: <20230117092533.5804-1-magnus.karlsson@gmail.com>
@@ -94,38 +94,45 @@ being inside a single NAPI instance through to the xdp_do_flush() call
 for RCU protection of all in-kernel data structures. Details can be
 found in the second link below.
 
-Fixes: a1e031ffb422 ("dpaa_eth: add XDP_REDIRECT support")
+Fixes: d678be1dc1ec ("dpaa2-eth: add XDP_REDIRECT support")
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 Link: https://lore.kernel.org/r/20221220185903.1105011-1-sbohrer@cloudflare.com
 Link: https://lore.kernel.org/all/20210624160609.292325-1-toke@redhat.com/
 ---
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index 3f8032947d86..027fff9f7db0 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -2410,6 +2410,9 @@ static int dpaa_eth_poll(struct napi_struct *napi, int budget)
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index 0c35abb7d065..2e79d18fc3c7 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -1993,10 +1993,15 @@ static int dpaa2_eth_poll(struct napi_struct *napi, int budget)
+ 		if (rx_cleaned >= budget ||
+ 		    txconf_cleaned >= DPAA2_ETH_TXCONF_PER_NAPI) {
+ 			work_done = budget;
++			if (ch->xdp.res & XDP_REDIRECT)
++				xdp_do_flush();
+ 			goto out;
+ 		}
+ 	} while (store_cleaned);
  
- 	cleaned = qman_p_poll_dqrr(np->p, budget);
- 
-+	if (np->xdp_act & XDP_REDIRECT)
++	if (ch->xdp.res & XDP_REDIRECT)
 +		xdp_do_flush();
 +
- 	if (cleaned < budget) {
- 		napi_complete_done(napi, cleaned);
- 		qman_p_irqsource_add(np->p, QM_PIRQ_DQRI);
-@@ -2417,9 +2420,6 @@ static int dpaa_eth_poll(struct napi_struct *napi, int budget)
- 		qman_p_irqsource_add(np->p, QM_PIRQ_DQRI);
+ 	/* Update NET DIM with the values for this CDAN */
+ 	dpaa2_io_update_net_dim(ch->dpio, ch->stats.frames_per_cdan,
+ 				ch->stats.bytes_per_cdan);
+@@ -2032,9 +2037,7 @@ static int dpaa2_eth_poll(struct napi_struct *napi, int budget)
+ 		txc_fq->dq_bytes = 0;
  	}
  
--	if (np->xdp_act & XDP_REDIRECT)
--		xdp_do_flush();
--
- 	return cleaned;
- }
+-	if (ch->xdp.res & XDP_REDIRECT)
+-		xdp_do_flush_map();
+-	else if (rx_cleaned && ch->xdp.res & XDP_TX)
++	if (rx_cleaned && ch->xdp.res & XDP_TX)
+ 		dpaa2_eth_xdp_tx_flush(priv, ch, &priv->fq[flowid]);
  
+ 	return work_done;
 -- 
 2.34.1
 
