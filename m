@@ -2,139 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44C0066D59B
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 06:29:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05F4966D5A2
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 06:32:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235192AbjAQF3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 00:29:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41972 "EHLO
+        id S235403AbjAQFcN convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 17 Jan 2023 00:32:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235177AbjAQF3C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 00:29:02 -0500
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB039233D2;
-        Mon, 16 Jan 2023 21:29:01 -0800 (PST)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 30H5Si1c040614;
-        Mon, 16 Jan 2023 23:28:44 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1673933324;
-        bh=m6wYalfTMNF3q/k6hE7vf1IFXNcR4EAEmeW5euyuYvM=;
-        h=Date:CC:Subject:To:References:From:In-Reply-To;
-        b=RKXAy2bbS6FTxJddeKuTqFdawGMytEIgbEVb57Z7Kz5Yz7TMI0HwTKNxkM2ZR12e5
-         b96HQIyDjXWFuy2la5tSTy/6q/3NPo8c1y9vYa2xxLk9BuWaqJxL2jCKeX5mG5pl2d
-         edebBk92rm2y4rAJ4HNui10ccs54MtlZ64COODcQ=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 30H5Siwr124918
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 16 Jan 2023 23:28:44 -0600
-Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Mon, 16
- Jan 2023 23:28:44 -0600
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Mon, 16 Jan 2023 23:28:44 -0600
-Received: from [172.24.145.61] (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 30H5Sdj1093170;
-        Mon, 16 Jan 2023 23:28:39 -0600
-Message-ID: <566700c6-df9b-739b-81ff-8745eea10ff3@ti.com>
-Date:   Tue, 17 Jan 2023 10:58:38 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski@linaro.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        Roger Quadros <rogerq@kernel.org>, <nm@ti.com>,
-        <kristo@kernel.org>, <nsekhar@ti.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
-        <s-vadapalli@ti.com>
-Subject: Re: [PATCH net-next 5/5] arm64: dts: ti: k3-am625-sk: Add cpsw3g cpts
- PPS support
-Content-Language: en-US
-To:     Vignesh Raghavendra <vigneshr@ti.com>
-References: <20230111114429.1297557-1-s-vadapalli@ti.com>
- <20230111114429.1297557-6-s-vadapalli@ti.com>
- <6ae650c9-d68d-d2fc-8319-b7784cd2a749@kernel.org>
- <a889a47f-5f44-1ae6-1ab7-3b7e7011b4f7@ti.com>
- <2007adb5-0980-eee3-8d2f-e30183cf408e@kernel.org>
- <4d7ac24a-0a35-323c-045c-cc5b3d3c715a@ti.com>
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-In-Reply-To: <4d7ac24a-0a35-323c-045c-cc5b3d3c715a@ti.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S235477AbjAQFbm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 00:31:42 -0500
+Received: from bg4.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587D6274BD;
+        Mon, 16 Jan 2023 21:31:40 -0800 (PST)
+X-QQ-mid: bizesmtp63t1673933452t22prkyo
+Received: from smtpclient.apple ( [1.202.165.115])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 17 Jan 2023 13:30:49 +0800 (CST)
+X-QQ-SSF: 00000000000000709000000A0000000
+X-QQ-FEAT: AC2Z5zz8gBT5NrlZsUHrGX7M6x4b6w7laLHTaGrrBF0cvQnK+h1mht/fhRhSz
+        1fICMuYxXFczf/h6V+62SQezYwdekoTVCEs41JyNQk2aRdNP/SQ+pr+TwXxBucFOaTo9KDm
+        KeG+KNgO43dfcagWaZA2fZQHokfiuaYC3+cgrPVaT1zBQxlmaEZ20ky8h8jHbtyqh06J6A8
+        SuMuNlSvWtc/bkoYYk8F1TAtRXBMn+SRMIZJq8KrMGtrSt3zAmaSQFz7mvrdGMJtsCRy4vq
+        ajkUAeM4j5IzVSIWdgCiDJQ+vm3Km2MoX8V5DPPwuD5oGSAegbggtiSk41aBSdUrOwNURBz
+        jly3lQb6uaae1MUuE8uC2LohNgljCe+zM7/FZWTxFLtBYkFFYrITSDRYxVuW1sz84gSWReP
+X-QQ-GoodBg: 0
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.20.0.1.32\))
+Subject: Re: [bpf-next v2] bpf: drop deprecated bpf_jit_enable == 2
+From:   Tonghao Zhang <tong@infragraf.org>
+In-Reply-To: <5836b464-290e-203f-00f2-fc6632c9f570@csgroup.eu>
+Date:   Tue, 17 Jan 2023 13:30:49 +0800
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.or" 
+        <linux-arm-kernel@lists.infradead.or>,
+        "loongarch@lists.linux.dev" <loongarch@lists.linux.dev>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        Hao Luo <haoluo@google.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <song@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Jiri Olsa <jolsa@kernel.org>, Hou Tao <houtao1@huawei.com>,
+        KP Singh <kpsingh@kernel.org>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        "naveen.n.rao@linux.ibm.com" <naveen.n.rao@linux.ibm.com>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <147A796D-12C0-482F-B48A-16E67120622B@infragraf.org>
+References: <20230105030614.26842-1-tong@infragraf.org>
+ <ea7673e1-40ec-18be-af89-5f4fd0f71742@csgroup.eu>
+ <71c83f39-f85f-d990-95b7-ab6068839e6c@iogearbox.net>
+ <5836b464-290e-203f-00f2-fc6632c9f570@csgroup.eu>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Daniel Borkmann <daniel@iogearbox.net>
+X-Mailer: Apple Mail (2.3693.20.0.1.32)
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:infragraf.org:qybglogicsvr:qybglogicsvr5
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vignesh,
 
-On 16/01/23 22:00, Vignesh Raghavendra wrote:
+
+> On Jan 9, 2023, at 4:15 PM, Christophe Leroy <christophe.leroy@csgroup.eu> wrote:
 > 
 > 
-> On 16/01/23 9:35 pm, Roger Quadros wrote:
->>>>> diff --git a/arch/arm64/boot/dts/ti/k3-am625-sk.dts b/arch/arm64/boot/dts/ti/k3-am625-sk.dts
->>>>> index 4f179b146cab..962a922cc94b 100644
->>>>> --- a/arch/arm64/boot/dts/ti/k3-am625-sk.dts
->>>>> +++ b/arch/arm64/boot/dts/ti/k3-am625-sk.dts
->>>>> @@ -366,6 +366,10 @@ &cpsw3g {
->>>>>  	pinctrl-names = "default";
->>>>>  	pinctrl-0 = <&main_rgmii1_pins_default
->>>>>  		     &main_rgmii2_pins_default>;
->>>>> +
->>>>> +	cpts@3d000 {
->>>>> +		ti,pps = <2 1>;
->>>>> +	};
->>>>>  };
->>>>>  
->>>>>  &cpsw_port1 {
->>>>> @@ -464,3 +468,19 @@ partition@3fc0000 {
->>>>>  		};
->>>>>  	};
->>>>>  };
->>>>> +
->>>>> +#define TS_OFFSET(pa, val)	(0x4+(pa)*4) (0x10000 | val)
->>>> Should this go in ./include/dt-bindings/pinctrl/k3.h ?
->>>> That way every board DT file doesn't have to define it.
->>>>
->>>> The name should be made more platform specific.
->>>> e.g. K3_TS_OFFSET if it is the same for all K3 platforms.
->>>> If not then please add Platform name instead of K3.
->>> The offsets are board specific. If it is acceptable, I will add board specific
->>> macro for the TS_OFFSET definition in the ./include/dt-bindings/pinctrl/k3.h
->>> file. Please let me know.
->> If it is board specific then it should remain in the board file.
 > 
+> Le 06/01/2023 à 16:37, Daniel Borkmann a écrit :
+>> On 1/5/23 6:53 PM, Christophe Leroy wrote:
+>>> Le 05/01/2023 à 04:06, tong@infragraf.org a écrit :
+>>>> From: Tonghao Zhang <tong@infragraf.org>
+>>>> 
+>>>> The x86_64 can't dump the valid insn in this way. A test BPF prog
+>>>> which include subprog:
+>>>> 
+>>>> $ llvm-objdump -d subprog.o
+>>>> Disassembly of section .text:
+>>>> 0000000000000000 <subprog>:
+>>>>          0:       18 01 00 00 73 75 62 70 00 00 00 00 72 6f 67 00 r1 
+>>>> = 29114459903653235 ll
+>>>>          2:       7b 1a f8 ff 00 00 00 00 *(u64 *)(r10 - 8) = r1
+>>>>          3:       bf a1 00 00 00 00 00 00 r1 = r10
+>>>>          4:       07 01 00 00 f8 ff ff ff r1 += -8
+>>>>          5:       b7 02 00 00 08 00 00 00 r2 = 8
+>>>>          6:       85 00 00 00 06 00 00 00 call 6
+>>>>          7:       95 00 00 00 00 00 00 00 exit
+>>>> Disassembly of section raw_tp/sys_enter:
+>>>> 0000000000000000 <entry>:
+>>>>          0:       85 10 00 00 ff ff ff ff call -1
+>>>>          1:       b7 00 00 00 00 00 00 00 r0 = 0
+>>>>          2:       95 00 00 00 00 00 00 00 exit
+>>>> 
+>>>> kernel print message:
+>>>> [  580.775387] flen=8 proglen=51 pass=3 image=ffffffffa000c20c 
+>>>> from=kprobe-load pid=1643
+>>>> [  580.777236] JIT code: 00000000: cc cc cc cc cc cc cc cc cc cc cc 
+>>>> cc cc cc cc cc
+>>>> [  580.779037] JIT code: 00000010: cc cc cc cc cc cc cc cc cc cc cc 
+>>>> cc cc cc cc cc
+>>>> [  580.780767] JIT code: 00000020: cc cc cc cc cc cc cc cc cc cc cc 
+>>>> cc cc cc cc cc
+>>>> [  580.782568] JIT code: 00000030: cc cc cc
+>>>> 
+>>>> $ bpf_jit_disasm
+>>>> 51 bytes emitted from JIT compiler (pass:3, flen:8)
+>>>> ffffffffa000c20c + <x>:
+>>>>      0:   int3
+>>>>      1:   int3
+>>>>      2:   int3
+>>>>      3:   int3
+>>>>      4:   int3
+>>>>      5:   int3
+>>>>      ...
+>>>> 
+>>>> Until bpf_jit_binary_pack_finalize is invoked, we copy rw_header to 
+>>>> header
+>>>> and then image/insn is valid. BTW, we can use the "bpftool prog dump" 
+>>>> JITed instructions.
+>>> 
+>>> NACK.
+>>> 
+>>> Because the feature is buggy on x86_64, you remove it for all
+>>> architectures ?
+>>> 
+>>> On powerpc bpf_jit_enable == 2 works and is very usefull.
+>>> 
+>>> Last time I tried to use bpftool on powerpc/32 it didn't work. I don't
+>>> remember the details, I think it was an issue with endianess. Maybe it
+>>> is fixed now, but it needs to be verified.
+>>> 
+>>> So please, before removing a working and usefull feature, make sure
+>>> there is an alternative available to it for all architectures in all
+>>> configurations.
+>>> 
+>>> Also, I don't think bpftool is usable to dump kernel BPF selftests.
+>>> That's vital when a selftest fails if you want to have a chance to
+>>> understand why it fails.
+>> 
+>> If this is actively used by JIT developers and considered useful, I'd be
+>> ok to leave it for the time being. Overall goal is to reach feature parity
+>> among (at least major arch) JITs and not just have most functionality only
+>> available on x86-64 JIT. Could you however check what is not working with
+>> bpftool on powerpc/32? Perhaps it's not too much effort to just fix it,
+>> but details would be useful otherwise 'it didn't work' is too fuzzy.
 > 
-> The values you pass to macro maybe board specific. But the macro
-> definition itself same for a given SoC right? Also, is its same across
-> K3 family ?
+> Sure I will try to test bpftool again in the coming days.
 > 
-> Please use SoC specific prefix like AM62X_TS_OFFSET() or K3_TS_OFFSET()
-> accordingly.
+> Previous discussion about that subject is here: 
+> https://patchwork.kernel.org/project/linux-riscv/patch/20210415093250.3391257-1-Jianlin.Lv@arm.com/#24176847=
+Hi Christophe
+Any progress? We discuss to deprecate the bpf_jit_enable == 2 in 2021, but bpftool can not run on powerpc.
+Now can we fix this issue? 
+> 
+>> 
+>> Also, with regards to the last statement that bpftool is not usable to
+>> dump kernel BPF selftests. Could you elaborate some more? I haven't used
+>> bpf_jit_enable == 2 in a long time and for debugging always relied on
+>> bpftool to dump xlated insns or JIT. Or do you mean by BPF selftests
+>> the test_bpf.ko module? Given it has a big batch with kernel-only tests,
+>> there I can see it's probably still useful.
+> 
+> Yes I mean test_bpf.ko
+> 
+> I used it as the test basis when I implemented eBPF for powerpc/32. And 
+> not so long ago it helped decover and fix a bug, see 
+> https://github.com/torvalds/linux/commit/89d21e259a94f7d5582ec675aa445f5a79f347e4
+> 
+>> 
+>> Cheers,
+>> Daniel
 
-For certain SoCs including AM62X, the macro is:
-#define TS_OFFSET(pa, val)	(0x4+(pa)*4) (0x10000 | val)
-while for other SoCs (refer [0]), the macro is:
-#define TS_OFFSET(pa, val)	(0x4+(pa)*4) (0x80000000 | val)
-
-Therefore, I will use SoC specific prefix in the macro. Please let me know if
-the SoC specific macro can be added to the ./include/dt-bindings/pinctrl/k3.h
-file for each SoC. If not, I will add the SoC specific macro in the board file
-itself.
-
-[0] https://lwn.net/Articles/819313/
-
-Regards,
-Siddharth.
