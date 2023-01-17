@@ -2,134 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E04866E20C
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 16:25:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCD7466E229
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 16:29:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233148AbjAQPZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 10:25:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58982 "EHLO
+        id S231580AbjAQP3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 10:29:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231347AbjAQPZT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 10:25:19 -0500
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2108.outbound.protection.outlook.com [40.107.102.108])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F246242BF6;
-        Tue, 17 Jan 2023 07:24:49 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KdJsTo24W6gsUP5MXiSOz9Hd5DhXwEJQTHAMrmHfUgFkEtp4uU63m2RvHOv6PRi3psAM+bkl8aSmQB+1k1ZGuRm9H8/tlX/99CcMq1YDFNgm4gpjfBuahgl7ZyWAs2YYeEUjSucvimzC9KNIMEc0ynutNcHQEJzMHRD4S1eYoobHoR1flo9RrsRrSBxHciE5Ul4c9rhThmggrax3FXEY8/DrfzXFJuvnfu4nV+fuEqXMEu/kORpBR5uzPw0iZJa5EiZJKhDoZ8UagjxSuzAM8ZsrmtU3NBKSebqad5bpk/4MAL2PKpLLtoi2rkzYocDp3wbmXehAousUG2VY+56HTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QVgSo/+6KRaugzpsJQmPrC3jCSluQ8CI31I4VwZ9WL8=;
- b=J8sk1Q6bfsqtvfCuS5vzmtjdq66NtV8p/dsWO+PXYfcq3dVj3MzwEuRTzzwiD2+lrLv0taazKuVh1jyJIqRXTecPGwnoQp8vcEP63IBuJSsLTdT2hB/nOx7gkQ8HYrhTclgjUMKR0lcBBhEtjrrYwzAtD3u6VW+GpcTyfil4Yie5mfpNfrwnKyW+tq0wpU8H1cIodfq9xhJA7EBMfKLGTVYSycBVUvUUIGrNfe7KI5h3kpxJyn/zpqLKd2ynl2z/sDt/wT2RnFYBzCQtU5BVTekj3RSLsImA1lFFCsnWvXXmxUZKGzyuoUDrTkMJZSbQaJhayKySLEw6i3A6UXDEFw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S229436AbjAQP2o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 10:28:44 -0500
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7200D55BA;
+        Tue, 17 Jan 2023 07:28:43 -0800 (PST)
+Received: by mail-ot1-x334.google.com with SMTP id a1-20020a056830008100b006864df3b1f8so635430oto.3;
+        Tue, 17 Jan 2023 07:28:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QVgSo/+6KRaugzpsJQmPrC3jCSluQ8CI31I4VwZ9WL8=;
- b=CdkK9aESLYQqs4CZAC5WZF1wffAPCgnEriJNv3ZJG5uP7ditWFj5VocWP6Dc5ZGoxS3UGXIwwXpr4qfuIJAHhS6z9unbbFJZBGCz7dSIiSyQR4Vwky6rUlJBL+JAcEtTRTjJ4df6gHi9ICz7jW9n4rktKezUK3uVlsHy1LXcYHs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SA0PR13MB3933.namprd13.prod.outlook.com (2603:10b6:806:99::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Tue, 17 Jan
- 2023 15:24:47 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65%6]) with mapi id 15.20.5986.023; Tue, 17 Jan 2023
- 15:24:47 +0000
-Date:   Tue, 17 Jan 2023 16:24:39 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     "Alexey V. Vissarionov" <gremlin@altlinux.org>
-Cc:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vasanthakumar Thiagarajan <vthiagar@qca.qualcomm.com>,
-        Raja Mani <rmani@qca.qualcomm.com>,
-        Suraj Sumangala <surajs@qca.qualcomm.com>,
-        Vivek Natarajan <nataraja@qca.qualcomm.com>,
-        Joe Perches <joe@perches.com>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, lvc-project@linuxtesting.org
-Subject: Re: [PATCH] ath6kl: minor fix for allocation size
-Message-ID: <Y8a9t1HKPXV62yUM@corigine.com>
-References: <20230117110414.GC12547@altlinux.org>
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=zLXS/cUl/m4ASnk2LLn5VLUL5zFl6vQ/9rRVsXeEYh8=;
+        b=jQb/S7oKQvDlhIWm6ropMYIgbyceqrtLzxjol06kMFyAMQ9z7N+jSS4I9tEGinmdD2
+         g43SReLlSHrZLpPjEKJ6odzelN54PYQsPZ4eihdl2+9RkcDEMiRHyj9O9vKLJ0JhJI4j
+         dYL5geKABTPS781255Z2f5fkAE2iC4QMVzSOHX0jl4R3P72VtfeBAcfhf5hNrA0b9vij
+         rLJRzvJ4+ko75gh7eOymsiI0qKf2VeUxFmlKQBmeqoCwowR619Z5GLp0KQ1lmuGhtk7Y
+         t7Fj6RSczglgN7A9Ct6CzWhBAgwbs/2r60jFRpiIwRu8JLfcH3L9JPansHJFaBF91Dte
+         WxyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zLXS/cUl/m4ASnk2LLn5VLUL5zFl6vQ/9rRVsXeEYh8=;
+        b=OvN+bm5Fqu5v1CRw8ONXQAatJwRRxxr8sXAEb9zKLS3U9OndD9WydScQv7BcwCVn7c
+         U9bH4+oRafrVmj1WzAmdv4vvQWNJlNFvcdy91rufP6Hs7RvVrndLI4P3Z+dySsEGhPy8
+         zoO+8jzlHXcYdel4YcbNQ1KexOTH63mCvACthz3V5Pu8yMKizKN8VbUhOYAUAs/rsjta
+         HR0JK8RNCk1HCQQJlqp3dtPITF3EZTgYH7pBVjeCvABcDv2AfMipslxVZGRtuNV9Xytm
+         kTchWEQSNhaWcfVC10oGehCJQ1WKRYoZw4G9Zj/vOdw8rkjcXuPTXEbdyPirOBhP34dV
+         9lDg==
+X-Gm-Message-State: AFqh2kp0c3xVOy1DoaM/2E7P20OabkMP1UkJ5NNRgTBh+dg2xtd0Flqu
+        vpWi8lLIcYXa+Fi/cdHVDzM=
+X-Google-Smtp-Source: AMrXdXvvqZU5NswqEuu7QTTsS3Zbc8BQcCFmwhVRNPoB6gP7jFzzjeQoB+t6IAwTYI1zYF5ujBMbtQ==
+X-Received: by 2002:a9d:6483:0:b0:66e:98f2:edd with SMTP id g3-20020a9d6483000000b0066e98f20eddmr11381763otl.6.1673969322696;
+        Tue, 17 Jan 2023 07:28:42 -0800 (PST)
+Received: from t14s.localdomain ([2001:1284:f013:7189:754f:dfa5:a770:f05f])
+        by smtp.gmail.com with ESMTPSA id k8-20020a9d7608000000b006708a6274afsm16628372otl.25.2023.01.17.07.28.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Jan 2023 07:28:42 -0800 (PST)
+Received: by t14s.localdomain (Postfix, from userid 1000)
+        id 8F32C4AD20A; Tue, 17 Jan 2023 12:28:40 -0300 (-03)
+Date:   Tue, 17 Jan 2023 12:28:40 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Vlad Buslov <vladbu@nvidia.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        pablo@netfilter.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, ozsh@nvidia.com,
+        simon.horman@corigine.com
+Subject: Re: [PATCH net-next v2 4/7] netfilter: flowtable: allow updating
+ offloaded rules asynchronously
+Message-ID: <Y8a+qBjcr7KuPf+e@t14s.localdomain>
+References: <20230113165548.2692720-1-vladbu@nvidia.com>
+ <20230113165548.2692720-5-vladbu@nvidia.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230117110414.GC12547@altlinux.org>
-X-ClientProxiedBy: AM0PR04CA0056.eurprd04.prod.outlook.com
- (2603:10a6:208:1::33) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA0PR13MB3933:EE_
-X-MS-Office365-Filtering-Correlation-Id: a76f1937-1dbf-4a69-7142-08daf89ef7bd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lVjCgW0X4dxo41Y0LO+PiojlynwXmhlFTDtxUf8Dm13hc0DF4RGU2nO+e+lQzvTQlg0825xxjNPD+RqsFUJlX71T881mb3ZaRV9tQeMB5qYUSBSIqDZrXeFAORKNqRBnP5BizZPmiA419X8ai2pqpvKJwR+8pJEGoSFSuTl01UvIBUOSVnqQ8ScHoPm8O+3Z4DNnvgzrvtt+Ef7rrZhbXTQSbFl0Cl3zqczv0LoLz7YTu1nYeyDVpnqKihb1wMwEqNWfQIgpBj4KBNxxqfbI+6UM24L8tM71euuzTjZYvPhfjfHNlioOiA5xl8jEvJhTmJp3hVGs42xmURIonncm5hRvcDcKsq4si99aUQ0b9+9KKzhWHWJJdEviiLWQMbxn52DxiiiDzHPDoB2s80iZrRsREax7njCmVtCsgmXfyAZN1Ty+QCeo6aWqlunS8jsiq/j9PWabV/AT+RltYGY8Xbgo/hpLsSyQgxCmVadh7RtnSIp+IwxYxwYyYgdJdRvLTIH0y9PmlkiDm7rXeAaIH9Xmalv2DEjezDtSWO0NWMD9lurA6JvJRolwmjxxlya0RFmONL1GFnDUivEMztQ3tFskoITJFNuUzLo5UgbSs+6Zfiqv/h0gBJdvmR5sZvImukgNz574zo0QlZMcpNstE39AbiQugKUIe0jrYGCzFsRoffeyQ199gGwqn0lJAGsL1YmCNMh0odqN0GhUg5yUhg8DHIp9swfcgCFnsOow/iX8Itqc/2ypny996AHRfQKR
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(346002)(396003)(376002)(136003)(39840400004)(451199015)(38100700002)(36756003)(86362001)(6486002)(6512007)(66476007)(6916009)(4326008)(8676002)(66556008)(186003)(478600001)(66946007)(2616005)(54906003)(316002)(6506007)(41300700001)(8936002)(7416002)(44832011)(2906002)(5660300002)(6666004)(83380400001)(4744005)(32563001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ne7C3hM8QbGb1yjCPb7Wp1mxmkEMFvOIWbMnUptpRCESE08KJzXWNRlY29EH?=
- =?us-ascii?Q?AR7UsOoLyHtfPt8cKKTqoHX33+12hnoE2w87SDcdBxFUD7jd4f5CM7eRY+nT?=
- =?us-ascii?Q?YTL4S50MnAs7DFkmcfSSlTLmfs+hixPHbBAXWtwVaiNFMwq+nsg82xhgOHMA?=
- =?us-ascii?Q?LKriojLXi/wrcrbb01oU6Wbmj8OFOv6H8uaDksr22gDnx08Tf8UFHuQovn+r?=
- =?us-ascii?Q?BaP65w2lC1KNRq3bGhh/rqrRuoNkWRQP7PCBrgwuDna7BqvJy0g/V1/tgl6b?=
- =?us-ascii?Q?neLvVW6bVr3+YD46TxlCDXDisN0nokLnaBjznxb1ShV/HPYbqWkmzdqYx8qM?=
- =?us-ascii?Q?P45L2LUh4YNoBvaqran7qrHoR37fKktpI3fytwjtGt/Uo9YkdAmVFNpBn+8X?=
- =?us-ascii?Q?hNckve4r1OdRYyX4aSaGjnjYT85USu7eb7UA3C2L3YxwvR9XAuBVrbD07y7j?=
- =?us-ascii?Q?XRCKEc8nXfSpBdHFlA2J37ipKcI2Buel0O/gkvoryCBT3Gi8rMzbLrrr5y11?=
- =?us-ascii?Q?Eh4mn9bEkgJsw4HkyRuWR3r+maYv4gJKBtF0dqPnqa77teiTDY4EzApsecTb?=
- =?us-ascii?Q?F5XiLdVtoW2zFF42DIVqb2foFNmxL3Pep5z9TW7yCbXzvcB/QW7/Ccz/Veu2?=
- =?us-ascii?Q?4ZKecNZ5BoQdFqNBh+UExC83ncYntR/Tn48zMocxhAqnBua2QzzwCf71M0mD?=
- =?us-ascii?Q?UGkAIlrfTgY3BP+3fVYEdBen796tOXqNMot69q+ACVq25ngHNAivAEAUrdC1?=
- =?us-ascii?Q?1xa6+dIBSFb7IZh24evkTkXl1jqo/wJC6nMkK9cNqZTGZftqE8a0P9/1VG8X?=
- =?us-ascii?Q?AIyjZ3QTOxW3YaRR6HsqwQHVFSm3lgIdK+v9XiAGrLKE3b6UwKj1dI4dBhzP?=
- =?us-ascii?Q?0Tc8JP4fjtMvhuIpsSyh+PAtBt1XXQy4tsVL+iI+P/p4J/OthFk9It+/PpAG?=
- =?us-ascii?Q?ytKTPy0v18YO+xyceyK84Uuw6DWMhaOFBiNPvIOFQOYcL0dxZswy7SzUGv+r?=
- =?us-ascii?Q?F4S5sGXDtfLb9sXD9j+WhXxe551UpBM4bywXoCvdsAnFsw0MdCu/IjjkII7/?=
- =?us-ascii?Q?Cb0qu56Kc7thN01sagzTAc3lsUADiLdjGe7AEsNVT+kYFbqDcRmMoEy0fFSY?=
- =?us-ascii?Q?Q4frL37+wzKBZS+mHGHpT9m6vvIlR25iZJc8eCvxSilsXsLDY3MJmUUOFbUL?=
- =?us-ascii?Q?omZSiCZr9ku8gIRkxRNow26Xl2fL3kc9umUx607SQblAmXk7mK5rva5Gz9CC?=
- =?us-ascii?Q?pbAHzfpNIecHy7uT3MS2F0jy5dq4ypq5a9zEklugGEPLSZ8DD6YXaJkAlFuY?=
- =?us-ascii?Q?xLFzl1wfPW2lTw8LZoYTw/w3zD96UKKLK2uyLmUuzwSF5kRSca9zAnHd6537?=
- =?us-ascii?Q?F1+r5rCeqKo9g3E4VFj7r95VYbpOm37jXUP1oLUXXW1tk5Eo+JhtgHvfa9pZ?=
- =?us-ascii?Q?1isYiSvTobL2lC8lnFBqQLE441dmb+advu3qbVOJZXqOwOWGTriCY2iKTCnC?=
- =?us-ascii?Q?ThXbQ7smxSqYzzC9G7CGS3QvkZp2o7Qe8gRhxHkB7iX3W4MevYNC7iTRSTeU?=
- =?us-ascii?Q?G8wjCsMIpLhk/TSqKDyES9JSndtjDvnB6ST2z8cGrqpexidpiRlR2ntcwqCy?=
- =?us-ascii?Q?2lnPMbkUlb1M+SCw+Xv5/30sH7F1iiG5h4hE2Yf5jLnvFSJQSR7fK2OYSeDF?=
- =?us-ascii?Q?TdTYPQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a76f1937-1dbf-4a69-7142-08daf89ef7bd
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jan 2023 15:24:47.3130
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LFTfAjk0PC1bx4rVDstcJ9pyPWKhf3QX03AXoOQq/wcpQlx0vLg+5fdYobcb815g3bm00XGRdsKi6C1U53LBI78vrKn6PF5X1YexPt+/dAo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR13MB3933
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230113165548.2692720-5-vladbu@nvidia.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 17, 2023 at 02:04:14PM +0300, Alexey V. Vissarionov wrote:
-> Although the "param" pointer occupies more or equal space compared
-> to "*param", the allocation size should use the size of variable
-> itself.
+On Fri, Jan 13, 2023 at 05:55:45PM +0100, Vlad Buslov wrote:
+> Following patches in series need to update flowtable rule several times
+> during its lifetime in order to synchronize hardware offload with actual ct
+> status. However, reusing existing 'refresh' logic in act_ct would cause
+> data path to potentially schedule significant amount of spurious tasks in
+> 'add' workqueue since it is executed per-packet. Instead, introduce a new
+> flow 'update' flag and use it to schedule async flow refresh in flowtable
+> gc which will only be executed once per gc iteration.
 > 
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
+> Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+> ---
+>  include/net/netfilter/nf_flow_table.h |  3 ++-
+>  net/netfilter/nf_flow_table_core.c    | 20 +++++++++++++++-----
+>  net/netfilter/nf_flow_table_offload.c |  5 +++--
+>  3 files changed, 20 insertions(+), 8 deletions(-)
 > 
-> Fixes: bdcd81707973cf8a ("Add ath6kl cleaned up driver")
-> Signed-off-by: Alexey V. Vissarionov <gremlin@altlinux.org>
+> diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
+> index 88ab98ab41d9..e396424e2e68 100644
+> --- a/include/net/netfilter/nf_flow_table.h
+> +++ b/include/net/netfilter/nf_flow_table.h
+> @@ -165,6 +165,7 @@ enum nf_flow_flags {
+>  	NF_FLOW_HW_DEAD,
+>  	NF_FLOW_HW_PENDING,
+>  	NF_FLOW_HW_BIDIRECTIONAL,
+> +	NF_FLOW_HW_UPDATE,
+>  };
+>  
+>  enum flow_offload_type {
+> @@ -300,7 +301,7 @@ unsigned int nf_flow_offload_ipv6_hook(void *priv, struct sk_buff *skb,
+>  #define MODULE_ALIAS_NF_FLOWTABLE(family)	\
+>  	MODULE_ALIAS("nf-flowtable-" __stringify(family))
+>  
+> -void nf_flow_offload_add(struct nf_flowtable *flowtable,
+> +bool nf_flow_offload_add(struct nf_flowtable *flowtable,
+>  			 struct flow_offload *flow);
+>  void nf_flow_offload_del(struct nf_flowtable *flowtable,
+>  			 struct flow_offload *flow);
+> diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
+> index 04bd0ed4d2ae..5b495e768655 100644
+> --- a/net/netfilter/nf_flow_table_core.c
+> +++ b/net/netfilter/nf_flow_table_core.c
+> @@ -316,21 +316,28 @@ int flow_offload_add(struct nf_flowtable *flow_table, struct flow_offload *flow)
+>  }
+>  EXPORT_SYMBOL_GPL(flow_offload_add);
+>  
+> +static bool __flow_offload_refresh(struct nf_flowtable *flow_table,
+> +				   struct flow_offload *flow)
+> +{
+> +	if (likely(!nf_flowtable_hw_offload(flow_table)))
+> +		return true;
+> +
+> +	return nf_flow_offload_add(flow_table, flow);
+> +}
+> +
+>  void flow_offload_refresh(struct nf_flowtable *flow_table,
+>  			  struct flow_offload *flow)
+>  {
+>  	u32 timeout;
+>  
+>  	timeout = nf_flowtable_time_stamp + flow_offload_get_timeout(flow);
+> -	if (timeout - READ_ONCE(flow->timeout) > HZ)
+> +	if (timeout - READ_ONCE(flow->timeout) > HZ &&
+> +	    !test_bit(NF_FLOW_HW_UPDATE, &flow->flags))
+>  		WRITE_ONCE(flow->timeout, timeout);
+>  	else
+>  		return;
+>  
+> -	if (likely(!nf_flowtable_hw_offload(flow_table)))
+> -		return;
+> -
+> -	nf_flow_offload_add(flow_table, flow);
+> +	__flow_offload_refresh(flow_table, flow);
+>  }
+>  EXPORT_SYMBOL_GPL(flow_offload_refresh);
+>  
+> @@ -435,6 +442,9 @@ static void nf_flow_offload_gc_step(struct nf_flowtable *flow_table,
+>  		} else {
+>  			flow_offload_del(flow_table, flow);
+>  		}
+> +	} else if (test_and_clear_bit(NF_FLOW_HW_UPDATE, &flow->flags)) {
+> +		if (!__flow_offload_refresh(flow_table, flow))
+> +			set_bit(NF_FLOW_HW_UPDATE, &flow->flags);
+>  	} else if (test_bit(NF_FLOW_HW, &flow->flags)) {
+>  		nf_flow_offload_stats(flow_table, flow);
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+AFAICT even after this patchset it is possible to have both flags set
+at the same time.
+With that, this would cause the stats to skip a beat.
+This would be better:
+
+- 	} else if (test_bit(NF_FLOW_HW, &flow->flags)) {
+- 		nf_flow_offload_stats(flow_table, flow);
++	} else {
++		if (test_and_clear_bit(NF_FLOW_HW_UPDATE, &flow->flags))
++			if (!__flow_offload_refresh(flow_table, flow))
++				set_bit(NF_FLOW_HW_UPDATE, &flow->flags);
++	 	if (test_bit(NF_FLOW_HW, &flow->flags))
++ 			nf_flow_offload_stats(flow_table, flow);
+ 	}
+
+But a flow cannot have 2 pending actions at a time.
+Then maybe an update to nf_flow_offload_tuple() to make it handle the
+stats implicitly?
+
+>  	}
+> diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
+> index 8b852f10fab4..103b2ca8d123 100644
+> --- a/net/netfilter/nf_flow_table_offload.c
+> +++ b/net/netfilter/nf_flow_table_offload.c
+> @@ -1036,16 +1036,17 @@ nf_flow_offload_work_alloc(struct nf_flowtable *flowtable,
+>  }
+>  
+>  
+> -void nf_flow_offload_add(struct nf_flowtable *flowtable,
+> +bool nf_flow_offload_add(struct nf_flowtable *flowtable,
+>  			 struct flow_offload *flow)
+>  {
+>  	struct flow_offload_work *offload;
+>  
+>  	offload = nf_flow_offload_work_alloc(flowtable, flow, FLOW_CLS_REPLACE);
+>  	if (!offload)
+> -		return;
+> +		return false;
+>  
+>  	flow_offload_queue_work(offload);
+> +	return true;
+>  }
+>  
+>  void nf_flow_offload_del(struct nf_flowtable *flowtable,
+> -- 
+> 2.38.1
+> 
