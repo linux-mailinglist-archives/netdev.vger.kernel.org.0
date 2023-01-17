@@ -2,73 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F53B66E57F
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 19:00:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C7E066E5BF
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 19:15:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229730AbjAQSAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 13:00:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40328 "EHLO
+        id S230139AbjAQSOv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 13:14:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232233AbjAQR47 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 12:56:59 -0500
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622FD521CF;
-        Tue, 17 Jan 2023 09:47:57 -0800 (PST)
-Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-15eec491b40so11820455fac.12;
-        Tue, 17 Jan 2023 09:47:57 -0800 (PST)
+        with ESMTP id S232653AbjAQSM3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 13:12:29 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA706A4C;
+        Tue, 17 Jan 2023 09:54:07 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id 7-20020a17090a098700b002298931e366so4952361pjo.2;
+        Tue, 17 Jan 2023 09:54:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ni99ePUt0vzhCDQEc2vcK8aOMav7LfPyZHSW24Ez63s=;
-        b=L4CERME+NHxYyqNwqbFe6tRfSn/ojOSZ7sa0VZF0em849hDV4zqBO1vj0a+VOrMuCZ
-         G2bRnm1Kgi30nSHZL+LcuoB7/ViLbTxIOKHjKGa1BnbmDRALV2PUgNoXcbRLyfpNzWPW
-         tTi99Qe+LTNu/wnnke0MdAcxVhGQ2ZDTtzvUqKXWgV9FhPeif92xnP8OrJffjGaoqwXC
-         vli3OvFF79pmqP6eIj/YbHgoWUaNrMI98J6mjidTP/PAkaaJLv39OO7A34z/n8BDFWHf
-         eM6NWAJSktQKvV26CbGQkm6H24Dab15Ne7FYG9OQcTnsUFkhWk1klP9KGnSKlGWPbZGh
-         rm6w==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=G8hEvDwlMSf2tfj591ozB94dwg3JRKRm8dUmMHqYxK0=;
+        b=Nl/0cscOZqJTcM/thrcHXxKH8AZL5FFhvXmHpuqUMucIk3p3UcIc440BVuwhGgyfOT
+         ilhS7N/N02uTlSfnBbsRr+k+wN/aiVoQyHQPovxUD6VX/69rNTHRnho1ibWP1i5WwklC
+         hg6Bej8hrB0UYF6pfUjTGZo1jEN+Po/EaPnlPppxN7RGysPYhmm11vrT2O3ePryy2pDB
+         Gld8wPFNLAYkoI/rCHLV1apvk4tnCwdTJNJfTpClmA+pUGvAOOiyokBoHPlUFqAfxoML
+         YuFLYooqK0LlQY28YS7/Ggu1wckIzrqp0SxGtcxg8loVo+uzV8N9H1mzjk1mjBpas/7q
+         /spA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ni99ePUt0vzhCDQEc2vcK8aOMav7LfPyZHSW24Ez63s=;
-        b=V3/gWJTzGpqADqfPnQSbZGZO8CnUujViyqdpisx97FGjGe+TNJn2DTJPKMo0gyGeFs
-         ow/QAxCQ9fQg0tKZs+CXH/KBqdffLsZwapojVTI1m4VJQ6s95MGu/HdNjj//13t+7F/r
-         jtHfIwx2U0vGYEO3wIRSeem2sj+QNKyN+ov/htAK98e451gPM1O3oAVdzHUO0A+xA9s8
-         BkC2N2XiNvmlomkA2WtRf3AiCJBcb+PxakneEJaiZDHyw8+7yDitTlqI2jcEDNk/5xqw
-         dyl7+8GAtpgkDbr7KgvAHVoFUqUD1K8n2aH528O4/OpjR1blmSnF90UwqqCA6Tvss7YE
-         6wwQ==
-X-Gm-Message-State: AFqh2krpj95c2MryA4q9Wz5ucUInMWC/E+UoCy79CsY4wmO9to99ojfE
-        IDxoopGWHgAsayaEv8nmQno=
-X-Google-Smtp-Source: AMrXdXszJzyenKu3zOnAH9lqAnrj7r4bO5158pguBWScVUuv89j/yR+4vdbMb1crOtGqUUFNluO8OQ==
-X-Received: by 2002:a05:6870:8c2c:b0:15f:385c:a94e with SMTP id ec44-20020a0568708c2c00b0015f385ca94emr1868748oab.43.1673977676529;
-        Tue, 17 Jan 2023 09:47:56 -0800 (PST)
-Received: from t14s.localdomain ([177.220.174.155])
-        by smtp.gmail.com with ESMTPSA id q187-20020a4a4bc4000000b004a3c359fdaesm15282820ooa.30.2023.01.17.09.47.55
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=G8hEvDwlMSf2tfj591ozB94dwg3JRKRm8dUmMHqYxK0=;
+        b=wXddn6chPezn+z5C0LB5I69HCRo0XEWtyP4tp0Z0yrdZPbiN6alY3GlsZjo4SQGuq1
+         ZDg2n3HuYO8AzuKu4x3t4UwbCwnSwlue/MItU6mIhD5rLpdv/Tn6B2ca2Or+Xlsjh8BI
+         mzYzoJx6qIVQCcgnkAhiXMtY0Z7l5bS+fSUni7tI6X0N8bfjMgeaVpUbM7bJFgiCQkqn
+         F4XeGscFvvP4AaroAkieQLppqYvuHqDa6vFZdP/EwDV/q/oegRHXuldTYO4VfuFstmBd
+         Ggb+SBxuA9tRO37h8eX29iL1bEFCXMv1CJoyNF66mrEV+kmbyhSLJJu8f6LaY4isK0I1
+         kktg==
+X-Gm-Message-State: AFqh2ko5OZFTgyfecttfg7FrzkFa2ymPzwWisvjkouk1OAIbeBJJq1+V
+        0moROS8NNg/UQ/Kur3I6tQE=
+X-Google-Smtp-Source: AMrXdXsonDVhtVowwlGWbPKQPrwd3/OBWE4owFT4EVZnsBd1nRKKYJr++koerleABwUEjBrzPCfFrA==
+X-Received: by 2002:a17:903:2687:b0:192:8ec5:fd58 with SMTP id jf7-20020a170903268700b001928ec5fd58mr2738024plb.6.1673978047288;
+        Tue, 17 Jan 2023 09:54:07 -0800 (PST)
+Received: from KERNELXING-MB0.tencent.com ([114.253.32.172])
+        by smtp.gmail.com with ESMTPSA id o1-20020a170902d4c100b0019320b4f832sm10512521plg.178.2023.01.17.09.54.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Jan 2023 09:47:56 -0800 (PST)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-        id 2C4734AD246; Tue, 17 Jan 2023 14:47:54 -0300 (-03)
-Date:   Tue, 17 Jan 2023 14:47:54 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        pablo@netfilter.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, ozsh@nvidia.com,
-        simon.horman@corigine.com
-Subject: Re: [PATCH net-next v2 4/7] netfilter: flowtable: allow updating
- offloaded rules asynchronously
-Message-ID: <Y8bfSksS/29SgkPJ@t14s.localdomain>
-References: <20230113165548.2692720-1-vladbu@nvidia.com>
- <20230113165548.2692720-5-vladbu@nvidia.com>
- <Y8a+qBjcr7KuPf+e@t14s.localdomain>
- <875yd5cbcl.fsf@nvidia.com>
+        Tue, 17 Jan 2023 09:54:06 -0800 (PST)
+From:   Jason Xing <kerneljasonxing@gmail.com>
+To:     edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kerneljasonxing@gmail.com, Jason Xing <kernelxing@tencent.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>
+Subject: [PATCH v6 net] tcp: avoid the lookup process failing to get sk in ehash table
+Date:   Wed, 18 Jan 2023 01:53:40 +0800
+Message-Id: <20230117175340.91712-1-kerneljasonxing@gmail.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <875yd5cbcl.fsf@nvidia.com>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -79,166 +70,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 17, 2023 at 07:33:31PM +0200, Vlad Buslov wrote:
-> 
-> On Tue 17 Jan 2023 at 12:28, Marcelo Ricardo Leitner <marcelo.leitner@gmail.com> wrote:
-> > On Fri, Jan 13, 2023 at 05:55:45PM +0100, Vlad Buslov wrote:
-> >> Following patches in series need to update flowtable rule several times
-> >> during its lifetime in order to synchronize hardware offload with actual ct
-> >> status. However, reusing existing 'refresh' logic in act_ct would cause
-> >> data path to potentially schedule significant amount of spurious tasks in
-> >> 'add' workqueue since it is executed per-packet. Instead, introduce a new
-> >> flow 'update' flag and use it to schedule async flow refresh in flowtable
-> >> gc which will only be executed once per gc iteration.
-> >> 
-> >> Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
-> >> ---
-> >>  include/net/netfilter/nf_flow_table.h |  3 ++-
-> >>  net/netfilter/nf_flow_table_core.c    | 20 +++++++++++++++-----
-> >>  net/netfilter/nf_flow_table_offload.c |  5 +++--
-> >>  3 files changed, 20 insertions(+), 8 deletions(-)
-> >> 
-> >> diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
-> >> index 88ab98ab41d9..e396424e2e68 100644
-> >> --- a/include/net/netfilter/nf_flow_table.h
-> >> +++ b/include/net/netfilter/nf_flow_table.h
-> >> @@ -165,6 +165,7 @@ enum nf_flow_flags {
-> >>  	NF_FLOW_HW_DEAD,
-> >>  	NF_FLOW_HW_PENDING,
-> >>  	NF_FLOW_HW_BIDIRECTIONAL,
-> >> +	NF_FLOW_HW_UPDATE,
-> >>  };
-> >>  
-> >>  enum flow_offload_type {
-> >> @@ -300,7 +301,7 @@ unsigned int nf_flow_offload_ipv6_hook(void *priv, struct sk_buff *skb,
-> >>  #define MODULE_ALIAS_NF_FLOWTABLE(family)	\
-> >>  	MODULE_ALIAS("nf-flowtable-" __stringify(family))
-> >>  
-> >> -void nf_flow_offload_add(struct nf_flowtable *flowtable,
-> >> +bool nf_flow_offload_add(struct nf_flowtable *flowtable,
-> >>  			 struct flow_offload *flow);
-> >>  void nf_flow_offload_del(struct nf_flowtable *flowtable,
-> >>  			 struct flow_offload *flow);
-> >> diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-> >> index 04bd0ed4d2ae..5b495e768655 100644
-> >> --- a/net/netfilter/nf_flow_table_core.c
-> >> +++ b/net/netfilter/nf_flow_table_core.c
-> >> @@ -316,21 +316,28 @@ int flow_offload_add(struct nf_flowtable *flow_table, struct flow_offload *flow)
-> >>  }
-> >>  EXPORT_SYMBOL_GPL(flow_offload_add);
-> >>  
-> >> +static bool __flow_offload_refresh(struct nf_flowtable *flow_table,
-> >> +				   struct flow_offload *flow)
-> >> +{
-> >> +	if (likely(!nf_flowtable_hw_offload(flow_table)))
-> >> +		return true;
-> >> +
-> >> +	return nf_flow_offload_add(flow_table, flow);
-> >> +}
-> >> +
-> >>  void flow_offload_refresh(struct nf_flowtable *flow_table,
-> >>  			  struct flow_offload *flow)
-> >>  {
-> >>  	u32 timeout;
-> >>  
-> >>  	timeout = nf_flowtable_time_stamp + flow_offload_get_timeout(flow);
-> >> -	if (timeout - READ_ONCE(flow->timeout) > HZ)
-> >> +	if (timeout - READ_ONCE(flow->timeout) > HZ &&
-> >> +	    !test_bit(NF_FLOW_HW_UPDATE, &flow->flags))
-> >>  		WRITE_ONCE(flow->timeout, timeout);
-> >>  	else
-> >>  		return;
-> >>  
-> >> -	if (likely(!nf_flowtable_hw_offload(flow_table)))
-> >> -		return;
-> >> -
-> >> -	nf_flow_offload_add(flow_table, flow);
-> >> +	__flow_offload_refresh(flow_table, flow);
-> >>  }
-> >>  EXPORT_SYMBOL_GPL(flow_offload_refresh);
-> >>  
-> >> @@ -435,6 +442,9 @@ static void nf_flow_offload_gc_step(struct nf_flowtable *flow_table,
-> >>  		} else {
-> >>  			flow_offload_del(flow_table, flow);
-> >>  		}
-> >> +	} else if (test_and_clear_bit(NF_FLOW_HW_UPDATE, &flow->flags)) {
-> >> +		if (!__flow_offload_refresh(flow_table, flow))
-> >> +			set_bit(NF_FLOW_HW_UPDATE, &flow->flags);
-> >>  	} else if (test_bit(NF_FLOW_HW, &flow->flags)) {
-> >>  		nf_flow_offload_stats(flow_table, flow);
-> >
-> > AFAICT even after this patchset it is possible to have both flags set
-> > at the same time.
-> > With that, this would cause the stats to skip a beat.
-> > This would be better:
-> >
-> > - 	} else if (test_bit(NF_FLOW_HW, &flow->flags)) {
-> > - 		nf_flow_offload_stats(flow_table, flow);
-> > +	} else {
-> > +		if (test_and_clear_bit(NF_FLOW_HW_UPDATE, &flow->flags))
-> > +			if (!__flow_offload_refresh(flow_table, flow))
-> > +				set_bit(NF_FLOW_HW_UPDATE, &flow->flags);
-> > +	 	if (test_bit(NF_FLOW_HW, &flow->flags))
-> > + 			nf_flow_offload_stats(flow_table, flow);
-> >  	}
-> >
-> > But a flow cannot have 2 pending actions at a time.
-> 
-> Yes. And timeouts are quite generous so there is IMO no problem in
-> skipping one iteration. It is not like this wq is high priority and we
-> can guarantee any exact update interval here anyway.
+From: Jason Xing <kernelxing@tencent.com>
 
-I cannot disagree, lets say :-)
+While one cpu is working on looking up the right socket from ehash
+table, another cpu is done deleting the request socket and is about
+to add (or is adding) the big socket from the table. It means that
+we could miss both of them, even though it has little chance.
 
-Perhaps I'm just over worried because of recent issues with ovs and
-datapath flows, that it was evicting them because it saw no traffic in
-5s and so.
+Let me draw a call trace map of the server side.
+   CPU 0                           CPU 1
+   -----                           -----
+tcp_v4_rcv()                  syn_recv_sock()
+                            inet_ehash_insert()
+                            -> sk_nulls_del_node_init_rcu(osk)
+__inet_lookup_established()
+                            -> __sk_nulls_add_node_rcu(sk, list)
 
-For example,
-Subject: [ovs-dev] [PATCH v3] ofproto-dpif-upcall: Wait for valid hw flow stats before applying min-revalidate-pps
+Notice that the CPU 0 is receiving the data after the final ack
+during 3-way shakehands and CPU 1 is still handling the final ack.
 
-And we're still chasing a stall in ovs revalidator that leads to
-hicups in datapath stats periodicity.
+Why could this be a real problem?
+This case is happening only when the final ack and the first data
+receiving by different CPUs. Then the server receiving data with
+ACK flag tries to search one proper established socket from ehash
+table, but apparently it fails as my map shows above. After that,
+the server fetches a listener socket and then sends a RST because
+it finds a ACK flag in the skb (data), which obeys RST definition
+in RFC 793.
 
-Yet, I'm not aware of such checks on top of CT entries.
+Besides, Eric pointed out there's one more race condition where it
+handles tw socket hashdance. Only by adding to the tail of the list
+before deleting the old one can we avoid the race if the reader has
+already begun the bucket traversal and it would possibly miss the head.
 
-> 
-> > Then maybe an update to nf_flow_offload_tuple() to make it handle the
-> > stats implicitly?
-> 
-> I considered this, but didn't want to over-complicate this series which
-> is tricky enough as it is.
+Many thanks to Eric for great help from beginning to end.
 
-Makes sense.
+Fixes: 5e0724d027f0 ("tcp/dccp: fix hashdance race for passive sessions")
+Suggested-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Jason Xing <kernelxing@tencent.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Link: https://lore.kernel.org/lkml/20230112065336.41034-1-kerneljasonxing@gmail.com/
+---
+v3,4,5,6:
+1) nit: adjust the coding style.
 
-> 
-> >
-> >>  	}
-> >> diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
-> >> index 8b852f10fab4..103b2ca8d123 100644
-> >> --- a/net/netfilter/nf_flow_table_offload.c
-> >> +++ b/net/netfilter/nf_flow_table_offload.c
-> >> @@ -1036,16 +1036,17 @@ nf_flow_offload_work_alloc(struct nf_flowtable *flowtable,
-> >>  }
-> >>  
-> >>  
-> >> -void nf_flow_offload_add(struct nf_flowtable *flowtable,
-> >> +bool nf_flow_offload_add(struct nf_flowtable *flowtable,
-> >>  			 struct flow_offload *flow)
-> >>  {
-> >>  	struct flow_offload_work *offload;
-> >>  
-> >>  	offload = nf_flow_offload_work_alloc(flowtable, flow, FLOW_CLS_REPLACE);
-> >>  	if (!offload)
-> >> -		return;
-> >> +		return false;
-> >>  
-> >>  	flow_offload_queue_work(offload);
-> >> +	return true;
-> >>  }
-> >>  
-> >>  void nf_flow_offload_del(struct nf_flowtable *flowtable,
-> >> -- 
-> >> 2.38.1
-> >> 
-> 
+v2:
+1) add the sk node into the tail of list to prevent the race.
+2) fix the race condition when handling time-wait socket hashdance.
+---
+ net/ipv4/inet_hashtables.c    | 17 +++++++++++++++--
+ net/ipv4/inet_timewait_sock.c | 12 ++++++------
+ 2 files changed, 21 insertions(+), 8 deletions(-)
+
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 24a38b56fab9..f58d73888638 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -650,8 +650,20 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
+ 	spin_lock(lock);
+ 	if (osk) {
+ 		WARN_ON_ONCE(sk->sk_hash != osk->sk_hash);
+-		ret = sk_nulls_del_node_init_rcu(osk);
+-	} else if (found_dup_sk) {
++		ret = sk_hashed(osk);
++		if (ret) {
++			/* Before deleting the node, we insert a new one to make
++			 * sure that the look-up-sk process would not miss either
++			 * of them and that at least one node would exist in ehash
++			 * table all the time. Otherwise there's a tiny chance
++			 * that lookup process could find nothing in ehash table.
++			 */
++			__sk_nulls_add_node_tail_rcu(sk, list);
++			sk_nulls_del_node_init_rcu(osk);
++		}
++		goto unlock;
++	}
++	if (found_dup_sk) {
+ 		*found_dup_sk = inet_ehash_lookup_by_sk(sk, list);
+ 		if (*found_dup_sk)
+ 			ret = false;
+@@ -660,6 +672,7 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
+ 	if (ret)
+ 		__sk_nulls_add_node_rcu(sk, list);
+ 
++unlock:
+ 	spin_unlock(lock);
+ 
+ 	return ret;
+diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
+index 1d77d992e6e7..b66f2dea5a78 100644
+--- a/net/ipv4/inet_timewait_sock.c
++++ b/net/ipv4/inet_timewait_sock.c
+@@ -91,20 +91,20 @@ void inet_twsk_put(struct inet_timewait_sock *tw)
+ }
+ EXPORT_SYMBOL_GPL(inet_twsk_put);
+ 
+-static void inet_twsk_add_node_rcu(struct inet_timewait_sock *tw,
+-				   struct hlist_nulls_head *list)
++static void inet_twsk_add_node_tail_rcu(struct inet_timewait_sock *tw,
++					struct hlist_nulls_head *list)
+ {
+-	hlist_nulls_add_head_rcu(&tw->tw_node, list);
++	hlist_nulls_add_tail_rcu(&tw->tw_node, list);
+ }
+ 
+ static void inet_twsk_add_bind_node(struct inet_timewait_sock *tw,
+-				    struct hlist_head *list)
++					struct hlist_head *list)
+ {
+ 	hlist_add_head(&tw->tw_bind_node, list);
+ }
+ 
+ static void inet_twsk_add_bind2_node(struct inet_timewait_sock *tw,
+-				     struct hlist_head *list)
++					struct hlist_head *list)
+ {
+ 	hlist_add_head(&tw->tw_bind2_node, list);
+ }
+@@ -147,7 +147,7 @@ void inet_twsk_hashdance(struct inet_timewait_sock *tw, struct sock *sk,
+ 
+ 	spin_lock(lock);
+ 
+-	inet_twsk_add_node_rcu(tw, &ehead->chain);
++	inet_twsk_add_node_tail_rcu(tw, &ehead->chain);
+ 
+ 	/* Step 3: Remove SK from hash chain */
+ 	if (__sk_nulls_del_node_init_rcu(sk))
+-- 
+2.37.3
+
