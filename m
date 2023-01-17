@@ -2,53 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C15EA66DD02
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 12:58:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FD6C66DD09
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 12:59:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236963AbjAQL6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 06:58:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37666 "EHLO
+        id S236118AbjAQL7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 06:59:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235968AbjAQL6M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 06:58:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9384298F2;
-        Tue, 17 Jan 2023 03:58:01 -0800 (PST)
+        with ESMTP id S236908AbjAQL7g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 06:59:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281F636FDD;
+        Tue, 17 Jan 2023 03:59:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F9F4612F2;
-        Tue, 17 Jan 2023 11:58:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DB2DC433D2;
-        Tue, 17 Jan 2023 11:57:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BEF4612CE;
+        Tue, 17 Jan 2023 11:59:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 851B8C433EF;
+        Tue, 17 Jan 2023 11:59:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673956680;
-        bh=CfY0vKBLLa78iuxTi6W0/d/1e7iUQFA5mLDhSfHHTao=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=E0OO6GabjV2cNT1r2R4mEd2T0B+XUQGP4ZfCmveHjMaYwqEyiM2Adq/TurSWPz9Ob
-         lP8KJ+oUa7a7wx2WoS0G+qg1yWN6lpaj5tPLvBBPSYWiptz9WcGKn7y2WJNi9/jNyp
-         eFflKhpJr5/A52fXssPo1yFZfdjqDoKIN9f4CIQVVred1W851v/bYwH3S0vL8mpd3P
-         4FBnkCG4uIl+52O5r6teZQoIYzdps2GBEud+C5PJvKFD4VO1IRp6jStCvE8R2UFHE7
-         +Qsskn5aSOS0aYeH8ZXAVFIBttwGdim5Z6nIo5D3h868GQCat97JpV40j9JfmHfAO9
-         c54d/LXHzSSAg==
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1673956749;
+        bh=C4DWw1lnsfHjJvgG7EN7/MBLwzOtKiOqkpCYuIalGOc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CyEJUdpmNRp0vCg9aUxD6eG2NOon+Jg4hJ1Lxm49Daa37qaahNpu1+wK/c6EB1LZq
+         r7a6oulLUJ3AhNnHB4x1yQ6L0miJkjQ8W6kW7j2jE2H+gjJcugdZu8QcnzE/HbZ4v1
+         HACJ5TUyBlN/IAZ0qHng1uVw9vSqWCZxAZXcbgkhwAwBrQncAzymslz5BL8QvKbcVv
+         L+6DODA8TSGQnnK4oV9fioc7Ib8dAt6CfJYz5a1p7sT25RphdnZiB/jIT9wJIK8QMd
+         moqGrsy8AWobu8dPl20BmSVBSU0UicFXjLLq+ItmOdmoK05h4GUGy1RQTVkSvHltlg
+         s18hH9FMn0v8g==
+Date:   Tue, 17 Jan 2023 13:59:05 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Chaitanya Kulkarni <chaitanyak@nvidia.com>
+Cc:     Israel Rukshin <israelr@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Bryan Tan <bryantan@vmware.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Keith Busch <kbusch@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-trace-kernel@vger.kernel.org" 
+        <linux-trace-kernel@vger.kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vishnu Dasa <vdasa@vmware.com>,
+        Yishai Hadas <yishaih@nvidia.com>
+Subject: Re: [PATCH rdma-next 12/13] nvme: Add crypto profile at nvme
+ controller
+Message-ID: <Y8aNiUWu9AufXkou@unreal>
+References: <cover.1673873422.git.leon@kernel.org>
+ <efc8dc5952baa096a14db1761f84a5ab2e76654a.1673873422.git.leon@kernel.org>
+ <52fef455-fd7a-225f-c03f-b214907ce03b@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] wifi: ath10k: Remove the unused function
- ath10k_ce_shadow_src_ring_write_index_set()
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20221219132041.91418-1-jiapeng.chong@linux.alibaba.com>
-References: <20221219132041.91418-1-jiapeng.chong@linux.alibaba.com>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <167395667652.22891.15435711500083496948.kvalo@kernel.org>
-Date:   Tue, 17 Jan 2023 11:57:58 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <52fef455-fd7a-225f-c03f-b214907ce03b@nvidia.com>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,24 +75,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jiapeng Chong <jiapeng.chong@linux.alibaba.com> wrote:
-
-> The function ath10k_ce_shadow_src_ring_write_index_set is defined in the
-> ce.c file, but not called elsewhere, so remove this unused function.
+On Tue, Jan 17, 2023 at 12:31:22AM +0000, Chaitanya Kulkarni wrote:
+> > diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+> > index 51a9880db6ce..f09e4e0216b3 100644
+> > --- a/drivers/nvme/host/core.c
+> > +++ b/drivers/nvme/host/core.c
+> > @@ -1928,6 +1928,9 @@ static void nvme_update_disk_info(struct gendisk *disk,
+> >   			capacity = 0;
+> >   	}
+> >   
+> > +	if (ctrl->crypto_enable)
+> > +		blk_crypto_register(&ctrl->crypto_profile, disk->queue);
+> > +
+> >   	set_capacity_and_notify(disk, capacity);
+> >   
+> >   	nvme_config_discard(disk, ns);
+> > diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
+> > index 424c8a467a0c..591380f53744 100644
+> > --- a/drivers/nvme/host/nvme.h
+> > +++ b/drivers/nvme/host/nvme.h
+> > @@ -16,6 +16,7 @@
+> >   #include <linux/rcupdate.h>
+> >   #include <linux/wait.h>
+> >   #include <linux/t10-pi.h>
+> > +#include <linux/blk-crypto-profile.h>
+> >   
+> >   #include <trace/events/block.h>
+> >   
+> > @@ -374,6 +375,9 @@ struct nvme_ctrl {
+> >   
+> >   	enum nvme_ctrl_type cntrltype;
+> >   	enum nvme_dctype dctype;
+> > +
+> > +	bool crypto_enable;
 > 
-> drivers/net/wireless/ath/ath10k/ce.c:212:1: warning: unused function 'ath10k_ce_shadow_dest_ring_write_index_set'.
+> why not decalre crypto_profile a pointer, allocate that at init
+> controller and NULL check against that pointer instead of using
+> an extra variable crypto_enable ?
+
+The embedded struct allows us to rely on container_of() macro.
+
+   377 static int nvme_rdma_crypto_keyslot_program(struct blk_crypto_profile *profile,
+   378                                             const struct blk_crypto_key *key,
+   379                                             unsigned int slot)
+   380 {
+   381         struct nvme_ctrl *nctrl =
+   382                 container_of(profile, struct nvme_ctrl, crypto_profile);
+
 > 
-> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=3519
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+> e.g. :-
+> 
+> 	if (ctrl->crypto_profile)
+> 		blk_crypto_register(ctrl->crypto_profile, disk->queue);
+> 
+> > +	struct blk_crypto_profile crypto_profile;
+> 
+> you are increasing the size of struct nvme_ctrl unconditionally,
+> why not guard above with CONFIG_BLK_INLINE_ENCRYPTION ?
 
-Patch applied to ath-next branch of ath.git, thanks.
+We can do it.
 
-179340dd4b39 wifi: ath10k: Remove the unused function ath10k_ce_shadow_src_ring_write_index_set()
+Thanks
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20221219132041.91418-1-jiapeng.chong@linux.alibaba.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+> 
+> -ck
+> 
