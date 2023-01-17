@@ -2,106 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6826966DC3F
+	by mail.lfdr.de (Postfix) with ESMTP id B3C9866DC40
 	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 12:22:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236876AbjAQLWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 06:22:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41544 "EHLO
+        id S236879AbjAQLWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 06:22:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236863AbjAQLWG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 06:22:06 -0500
-Received: from air.basealt.ru (air.basealt.ru [194.107.17.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F3281ABE5;
-        Tue, 17 Jan 2023 03:21:45 -0800 (PST)
-Received: by air.basealt.ru (Postfix, from userid 490)
-        id 9AF362F2022C; Tue, 17 Jan 2023 11:21:43 +0000 (UTC)
+        with ESMTP id S236751AbjAQLWJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 06:22:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C674482
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 03:21:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4A0C2B81339
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 11:21:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58AADC433EF;
+        Tue, 17 Jan 2023 11:21:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673954510;
+        bh=ZWJi7ZCtRLFbsHm35s3Nc7NymR00gAJ3znD40Zkk6aw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ALYgchzM24NkjyTZERXmay5yWL3u85wJlyykexLoEyGhvBEZe6HqZpuRdpZXU2mVb
+         Qg0+XWWw/VvAKrr2NQosu+Bu0+U/WFwipOxeET2gi73/vU3mJHLw88lhmpzxwdsM+R
+         A4Ilr378msm+avxyIlHrxf+XNwnYr26tq6I47zN358N8dgz++32yJ5kL0iuarQWTxK
+         DkNIYZkbWqOirG0WC/3C9Em2T7D9z2wg9I2n9vwSNBg8PNqWpC2NKjhEDlji+PwPyd
+         u3gyhfAGuFHFwh/KUYiHl1Tx7hZGuvPAR7N/2/9TRuEGOAyXrL0YeZqs4/1ECtZ0iz
+         MAGqwgkU8PSYQ==
+Date:   Tue, 17 Jan 2023 13:21:46 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "wangjie (L)" <wangjie125@huawei.com>
+Cc:     Hao Lan <lanhao@huawei.com>, davem@davemloft.net, kuba@kernel.org,
+        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        edumazet@google.com, pabeni@redhat.com, richardcochran@gmail.com,
+        shenjian15@huawei.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/2] net: hns3: add vf fault process in hns3 ras
+Message-ID: <Y8aEymyUf+WB8T8g@unreal>
+References: <20230113020829.48451-1-lanhao@huawei.com>
+ <20230113020829.48451-3-lanhao@huawei.com>
+ <Y8D/dXTBxrLOwmgc@unreal>
+ <a5a603bb-ae04-f274-5d68-f8d63a4bf13b@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a5a603bb-ae04-f274-5d68-f8d63a4bf13b@huawei.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
-Received: from localhost (broadband-188-32-10-232.ip.moscow.rt.ru [188.32.10.232])
-        by air.basealt.ru (Postfix) with ESMTPSA id 1303E2F2022A;
-        Tue, 17 Jan 2023 11:21:42 +0000 (UTC)
-Date:   Tue, 17 Jan 2023 14:21:41 +0300
-From:   "Alexey V. Vissarionov" <gremlin@altlinux.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     "Alexey V. Vissarionov" <gremlin@altlinux.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Chi-hsien Lin <chi-hsien.lin@cypress.com>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Wataru Gohda <wataru.gohda@cypress.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        lvc-project@linuxtesting.org
-Subject: Re: [PATCH] wifi: brcmfmac: Fix allocation size
-Message-ID: <20230117112141.GB15213@altlinux.org>
-References: <20230117104508.GB12547@altlinux.org>
- <87o7qxxvyj.fsf@kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="yNb1oOkm5a9FJOVX"
-Content-Disposition: inline
-In-Reply-To: <87o7qxxvyj.fsf@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jan 17, 2023 at 03:04:15PM +0800, wangjie (L) wrote:
+> 
+> 
+> On 2023/1/13 14:51, Leon Romanovsky wrote:
+> > On Fri, Jan 13, 2023 at 10:08:29AM +0800, Hao Lan wrote:
+> > > From: Jie Wang <wangjie125@huawei.com>
+> > > 
+> > > Currently hns3 driver supports vf fault detect feature. Several ras caused
+> > > by VF resources don't need to do PF function reset for recovery. The driver
+> > > only needs to reset the specified VF.
+> > > 
+> > > So this patch adds process in ras module. New process will get detailed
+> > > information about ras and do the most correct measures based on these
+> > > accurate information.
+> > > 
+> > > Signed-off-by: Jie Wang <wangjie125@huawei.com>
+> > > Signed-off-by: Hao Lan <lanhao@huawei.com>
+> > > ---
+> > >  drivers/net/ethernet/hisilicon/hns3/hnae3.h   |   1 +
+> > >  .../hns3/hns3_common/hclge_comm_cmd.h         |   1 +
+> > >  .../hisilicon/hns3/hns3pf/hclge_err.c         | 113 +++++++++++++++++-
+> > >  .../hisilicon/hns3/hns3pf/hclge_err.h         |   2 +
+> > >  .../hisilicon/hns3/hns3pf/hclge_main.c        |   3 +-
+> > >  .../hisilicon/hns3/hns3pf/hclge_main.h        |   1 +
+> > >  6 files changed, 115 insertions(+), 6 deletions(-)
+> > 
+> > Why is it good idea to reset VF from PF?
+> > What will happen with driver bound to this VF?
+> > Shouldn't PCI recovery handle it?
+> > 
+> > Thanks
+> > .
+> PF doesn't reset VF directly. These VF faults are detected by hardware,
+> and only reported to PF. PF get the VF id from firmware, then notify the VF
+> that it needs reset. VF will do reset after receive the request.
 
---yNb1oOkm5a9FJOVX
-Content-Type: text/plain; charset=koi8-r
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This description isn't aligned with the code. You are issuing
+hclge_func_reset_cmd() command which will reset VF, while notification
+are handled by hclge_func_reset_notify_vf().
 
-On 2023-01-17 13:05:24 +0200, Kalle Valo wrote:
+It also doesn't make any sense to send notification event to VF through
+FW while the goal is to recover from stuck FW in that VF.
 
- >> - buf_size +=3D (max_idx + 1) * sizeof(pkt);
- >> + buf_size +=3D (max_idx + 1) * sizeof(struct sk_buff);
- > Wouldn't sizeof(*pkt) be better?
+> 
+> These hardware faults are not standard PCI ras event, so we prefer to use
+> MSIx path.
 
-Usually sizeof(type) produces less errors than sizeof(var)...
+What is different here?
 
- > Just like with sizeof(*rfi) few lines above.
-
-=2E.. but to keep consistency sizeof(*pkt) would also be ok.
-
-
---=20
-Alexey V. Vissarionov
-gremlin =F0=F2=E9 altlinux =F4=FE=EB org; +vii-cmiii-ccxxix-lxxix-xlii
-GPG: 0D92F19E1C0DC36E27F61A29CD17E2B43D879005 @ hkp://keys.gnupg.net
-
---yNb1oOkm5a9FJOVX
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCgAGBQJjxoTFAAoJEFv2F9znRj5KegUQAKzzGOsvMlqH7llqYiZ04Nir
-OYBXVb7BsV1LS1JIIQGAa/mYL9c204/7+y+aDTJ0JQbupNAzXSGPngTUTi7qXchM
-HvLke4lsI+c/PX+DrS+n5QGI3J4fOlvVDHN2v32S+TQPgd/azzJ19Gvh7Vp/Kjpo
-G2zEKkvr9iedtwG81TDC+9XI2fNuywcaOE8Lfwu/ihyqF6vR4P+BoT/yX2sZCsqm
-rhcbQ/BfJgYYxeFLHSCmNgjMVDx7N+faneKKL15dYWttBa6ihvvV0fP3z2zIlHN/
-w7w5A6CD3kMmHYSNfNWTXg7QSWi44jZE1C1cFELVx1EGkUBzBN1vdIYC5EV9nDEm
-66+2SBSi8IAmW7sTrRD/VuE1IAhzkCM4Hw9HCpY26SXXhzm/Z9gNeeE+jo4zKEwd
-ZIlZ3MfOZEpZxziXnRJpiG/P4SUiWft1o+GkoJIT0L+5N9FR6x0CBCMP+C4wcMoR
-eJR0OR/zhvimxAI8ms4ol6ofi44ShRYJT2G6X4lFcV2jOa8EYtVut0YT2BckTUVA
-AqGoR5sZ3Tj1kXApmNE1D1jCOCjLRmDoo4Edvy/BagG7Qlov6TegQ6DR9jfsboBX
-sP0N+/v1txi8HL+Mz+ZxFT5nPUY7C3HRLRKiwBBjU1SJbSjdR2rLxdgcusWwvrVt
-ds7cOX1SHN0OOzt67rZ6
-=vt5V
------END PGP SIGNATURE-----
-
---yNb1oOkm5a9FJOVX--
+> > 
