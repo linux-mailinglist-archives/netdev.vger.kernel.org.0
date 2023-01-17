@@ -2,113 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97EDB66D85C
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 09:37:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 449EF66D872
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 09:43:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236265AbjAQIhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 03:37:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45440 "EHLO
+        id S236083AbjAQInp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 03:43:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236220AbjAQIgO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 03:36:14 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C13C27488;
-        Tue, 17 Jan 2023 00:36:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673944567; x=1705480567;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=+/sep6cg202vL4sr/HrqlldWJYwNCPz0Civ/zJRrPiM=;
-  b=kC944rsttNMM+kTKzgf2E/C+rzjwxmZRrkJVXgzZ3EiDmtz6Rw40MWbC
-   5UEHD4aWdxRx1XjE2T0TxTgPNmZW4mgstfaKJ1TiE2tqdQoXQV/I1Vruw
-   OmJougsFpSQY1CGfNOek7e8WxJ/dko6ceEu1BDK7Sr1lJ94Ero8exXZ4i
-   N1kZQ9oiW6Svwt2hLBk7ruV4FdOWgbeMKQLoEKaP0XZbWofYBFkIQhD6i
-   ls74gTBUo3uw+C9XyVghHutEPDYX2MkNJnMtn5xg2bq+lUwBJruN2OwX7
-   FmOWdhSb7y5Mt/72NB/NfMjejUuvzSKs3mZKm7E6h1hTW2HRqvRsygxyo
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10592"; a="324696291"
-X-IronPort-AV: E=Sophos;i="5.97,222,1669104000"; 
-   d="scan'208";a="324696291"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2023 00:36:06 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10592"; a="783168240"
-X-IronPort-AV: E=Sophos;i="5.97,222,1669104000"; 
-   d="scan'208";a="783168240"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.187.178]) ([10.252.187.178])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2023 00:35:59 -0800
-Message-ID: <c742969d-d692-1580-d22c-0f8f3d897201@linux.intel.com>
-Date:   Tue, 17 Jan 2023 16:35:56 +0800
+        with ESMTP id S236201AbjAQIni (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 03:43:38 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1616E2CC61
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 00:43:37 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id d2so9656943wrp.8
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 00:43:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=WWm/D5U36CBBZnisDCQc8jy48M3+XXeWpLI/3U6tBZA=;
+        b=TupwNN700Dfm2HUutSMwjPlmPKv1qxM6rYQyMm0mpHkjqxUP6/0EINC3oD3RQ0ssr9
+         ZzPtSYa/mGq4cHtJcahITvOZmStCZdZWU1jfRSTQRltvQy18nreIqtAjQBDUJ5qUqWPj
+         Vmigbtmqu/qh3Crc2SEdV8EfGgnlOdVOyKxP8c2Fl4gjbBFiArELiXSHSbu9YA15LyiR
+         YFwyzD8iLVSiyiiQ62RpEg3nb5p1ifgQxrmUkaEAewQmadv8mXnL7W9/QY9FGQsohvEg
+         WVZAiCvLCyWsyG2KrU8FpyT04KS1EJ5k+p4CSGwyZJbNMrSOVPp4L6n3+x6r1ynkMaFR
+         vzfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=WWm/D5U36CBBZnisDCQc8jy48M3+XXeWpLI/3U6tBZA=;
+        b=kHcXkJf4zURDc8sNC4VWQwAjqerYY58X3E4uOcMkJuS31eg9+LmU48Q5/Jn83JYE89
+         Bk3+xIppLCDxk3rT3cjy1oM0wJ/2WsG1brBvyYpZ3H/VIEi2/4SVce/kX662HvdGT3xi
+         yBD51zlfNVN3XEtBqQzBQLOQqp5GcZY318NvTop3Vd1A3CI0nUDrs7TxFXzDwymOahg5
+         p630pwkaVhn3m6Td7vb8xS+QWUVVg+37lzxVFuyITxSi0dnKTxrJlbk/zLDsnJgm/atz
+         j9FpCsxWkin1gAWuBV4dsCwKlxRsXrSuKaPlQfTnqk2u7Hli0qd4zy4UKu+wiaWcpp6g
+         VLnw==
+X-Gm-Message-State: AFqh2kpKa68iBb7U95Rz4jbnNW5J+EQOlyON06vm8gdFZ4uQpdGZSaUn
+        A7IFfPHq9kFvgUQQ5JQwu1J8Sg==
+X-Google-Smtp-Source: AMrXdXtxE8deHQ9xEqdyikgOrukHsDlEQ6sxKfSMn8K6gVKnLxFmtiGijYttJ+TeIIPxhisAU9lAVw==
+X-Received: by 2002:adf:e195:0:b0:2bd:d26c:ccc4 with SMTP id az21-20020adfe195000000b002bdd26cccc4mr2366095wrb.42.1673945015641;
+        Tue, 17 Jan 2023 00:43:35 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id bu3-20020a056000078300b002bbe7efd88csm23519456wrb.41.2023.01.17.00.43.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 Jan 2023 00:43:35 -0800 (PST)
+Message-ID: <17f910a8-186f-48a3-8817-6a2fa4fe06ec@linaro.org>
+Date:   Tue, 17 Jan 2023 09:43:32 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Cc:     baolu.lu@linux.intel.com,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "ath10k@lists.infradead.org" <ath10k@lists.infradead.org>,
-        "ath11k@lists.infradead.org" <ath11k@lists.infradead.org>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nouveau@lists.freedesktop.org" <nouveau@lists.freedesktop.org>,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>
-Subject: Re: [PATCH 7/8] iommu/intel: Support the gfp argument to the
- map_pages op
+Subject: Re: [PATCH v3 2/7] dt-bindings: net: snps,dwmac: Update the maxitems
+ number of resets and reset-names
 Content-Language: en-US
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Robin Murphy <robin.murphy@arm.com>
-References: <0-v1-6e8b3997c46d+89e-iommu_map_gfp_jgg@nvidia.com>
- <7-v1-6e8b3997c46d+89e-iommu_map_gfp_jgg@nvidia.com>
- <BN9PR11MB52765EE38CA21BA27EEA06548CC69@BN9PR11MB5276.namprd11.prod.outlook.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52765EE38CA21BA27EEA06548CC69@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     yanhong wang <yanhong.wang@starfivetech.com>,
+        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>
+References: <20230106030001.1952-1-yanhong.wang@starfivetech.com>
+ <20230106030001.1952-3-yanhong.wang@starfivetech.com>
+ <2328562d-59a2-f60e-b17b-6cf16392e01f@linaro.org>
+ <84e783a6-0aea-a6ba-13a0-fb29c66cc81a@starfivetech.com>
+ <8ee5f6ef-80cb-2e0f-6681-598ccc697291@linaro.org>
+ <bb1f3c71-e1a7-cd2d-b728-6e9027dae150@starfivetech.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <bb1f3c71-e1a7-cd2d-b728-6e9027dae150@starfivetech.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/1/17 11:38, Tian, Kevin wrote:
->> From: Jason Gunthorpe<jgg@nvidia.com>
->> Sent: Saturday, January 7, 2023 12:43 AM
+On 17/01/2023 09:14, yanhong wang wrote:
+>>> Thanks, refer to the definition of clocks. If it is defined as follows, is it OK?
+>>>
+>>> properties:
+>>>   resets:
+>>>     minItems: 1
+>>>     maxItems: 3
+>>>     additionalItems: true
 >>
->> @@ -2368,7 +2372,7 @@ static int iommu_domain_identity_map(struct
->> dmar_domain *domain,
+>> Drop
 >>
->>   	return __domain_mapping(domain, first_vpfn,
->>   				first_vpfn, last_vpfn - first_vpfn + 1,
->> -				DMA_PTE_READ|DMA_PTE_WRITE);
->> +				DMA_PTE_READ|DMA_PTE_WRITE,
->> GFP_KERNEL);
->>   }
-> Baolu, can you help confirm whether switching from GFP_ATOMIC to
-> GFP_KERNEL is OK in this path? it looks fine to me in a quick glance
-> but want to be conservative here.
+>>>     items:
+>>>       - description: MAC Reset signal.
+>>
+>> Drop both
+>>
+>>>
+>>>   reset-names:
+>>>     minItems: 1
+>>>     maxItems: 3
+>>>     additionalItems: true
+>>
+>> Drop
+>>
+>>>     contains:
+>>>       enum:
+>>>         - stmmaceth
+>>
+>> Drop all
+>>
+>>>
+>>>
+>>> allOf:
+>>>   - if:
+>>>       properties:
+>>>         compatible:
+>>>           contains:
+>>>             const: starfive,jh7110-dwmac
+>>>     then:
+>>>       properties:
+>>>         resets:
+>>>           minItems: 2
+>>>           maxItems: 2
+>>>         reset-names:
+>>>           items:
+>>>             - const: stmmaceth
+>>>             - const: ahb
+>>>       required:
+>>>         - resets
+>>>         - reset-names  
+>>>     else:
+>>>       properties:
+>>>         resets:
+>>>           maxItems: 1
+>>>           description:
+>>>             MAC Reset signal.
+>>>
+>>>         reset-names:
+>>>           const: stmmaceth
+>>>
+>>> Do you have any other better suggestions?
+>>
+>> More or less like this but the allOf should not be in snps,dwmac schema
+>> but in individual schemas. The snps,dwmac is growing unmaintainable...
+>>
+> 
+> Thanks, it is defined as follows, is it right?
+> 
+> properties:
+>   resets:
+>     minItems: 1
+>     maxItems: 3
+>     additionalItems: true
+> 
 
-This is also good for me. The memory notifier callback runs in a process
-context and allowed to block.
+Read my comments above. Drop.
 
 Best regards,
-baolu
+Krzysztof
+
