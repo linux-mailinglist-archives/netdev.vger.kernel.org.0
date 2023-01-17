@@ -2,82 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C099C66DB4A
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 11:39:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBC0666DB53
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 11:40:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236594AbjAQKj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 05:39:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43470 "EHLO
+        id S236700AbjAQKkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 05:40:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236888AbjAQKix (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 05:38:53 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C371031E30
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 02:33:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673951623;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=h3KJE79yIHnB29huev91c70DW7KrTtxOmGhEtqUkXQA=;
-        b=ei33oRF4CMCWiRHbzQXF7deMpnI4DyESxF9NnXmKSk5Jo9freyHp6pXGV334PIJmNS6IIr
-        3TGRAzWdD2kADCWdjZPPqocOJ3HV/emPKUkDtPFo2r20blCiBtHNnl6DkYuPZqKrOxJ3fc
-        xZuAemdg9m4djP6ucfmg3nc3e2UHBsQ=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-126-VtCkPBTUOqq5B_lJAxnglw-1; Tue, 17 Jan 2023 05:33:42 -0500
-X-MC-Unique: VtCkPBTUOqq5B_lJAxnglw-1
-Received: by mail-ed1-f71.google.com with SMTP id t17-20020a056402525100b0049e0d2dd9b1so4101340edd.11
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 02:33:42 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=h3KJE79yIHnB29huev91c70DW7KrTtxOmGhEtqUkXQA=;
-        b=Hle8XmUU8JK2KKqE/o609yvLEvvz65j5gnQMX/f+Wil8PXn2zYONUrnK7TpQPM03Rb
-         RQgofdwJH0rRsbIXQl3oNJ0O+OhMYkES6ZC0SL9AAY3vtQe+cJNHezlkOolheg+XYAIH
-         Zonp8DD+Zdvj5c+CA1sqCOfMueUCrjioDbQxmBlOYPuPgtC7x4aPTNC91eY7C3w+Wr7Y
-         wgfcDsGLfoqOjMNdh64qA1cFL+bciYGde3e2FczO3+S9S19f2Ye2RjJ9Q7eAJm2TVHOq
-         FZ7+cJQxe+akf+L77EuRsUnETuKw6XWkXwUhrXlVeWB+bJIwkBVpO52GJdvzXgT16bkC
-         RwTw==
-X-Gm-Message-State: AFqh2kr0Efd7IitczMmOEDg1jmGa3cjJgp7BrwWVSQmG0euhnMqh/Tm9
-        b14lukAjWJQPl/KAcEHND+1WINq5jEld/IJfhASQlZC5XT2vsO9J9EW0W8i9kwUVWAa+SqneJ/p
-        +PkyQu8jLeHPGvnxr
-X-Received: by 2002:a17:907:6e2a:b0:871:e9a0:eba7 with SMTP id sd42-20020a1709076e2a00b00871e9a0eba7mr2969689ejc.57.1673951620794;
-        Tue, 17 Jan 2023 02:33:40 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXvxXlQdblReVhkBfD9P6awdd+C/UXYFiXv29qCEooauRA+hTsykeWRfwP7ivJWOaj0mQlejSw==
-X-Received: by 2002:a17:907:6e2a:b0:871:e9a0:eba7 with SMTP id sd42-20020a1709076e2a00b00871e9a0eba7mr2969651ejc.57.1673951620059;
-        Tue, 17 Jan 2023 02:33:40 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id sb25-20020a1709076d9900b007a4e02e32ffsm13046805ejc.60.2023.01.17.02.33.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Jan 2023 02:33:39 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 28D579010D2; Tue, 17 Jan 2023 11:33:35 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
-        magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com, maciej.fijalkowski@intel.com,
-        kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net,
-        brouer@redhat.com
-Cc:     bpf@vger.kernel.org
-Subject: Re: [PATCH net-next] xdp: document xdp_do_flush() before
- napi_complete_done()
-In-Reply-To: <20230117094305.6141-1-magnus.karlsson@gmail.com>
-References: <20230117094305.6141-1-magnus.karlsson@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 17 Jan 2023 11:33:35 +0100
-Message-ID: <87wn5lcuww.fsf@toke.dk>
+        with ESMTP id S236358AbjAQKjz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 05:39:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC1C252A8;
+        Tue, 17 Jan 2023 02:39:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2DE461261;
+        Tue, 17 Jan 2023 10:39:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B507C433D2;
+        Tue, 17 Jan 2023 10:39:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673951982;
+        bh=mdaYoCHieqlR/XZypf3TarTc+QlmTt1KMt/bm1NDAz4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=sif5820mhWBTYwW9xX+3U+VHdMetfAu71sahgUqIe0lCZw5Djjtlaw6H/hf3wy/7e
+         V2O07oyBdG+5eFeS+dorFRiD3/cXCT5J1MsSDfxXhcYji7YFZ3WYivq5CMFS20cxKD
+         vITeLJhacnHBKeEGiNAKTMnjq+avDGhtwVbMpaxXYzLQxF+lH8gzhdV7RusS8EadfK
+         2aUv7db2dM2RB0ZbsVUZ7A0kCihKoTTSV7vUap3ejqGExBJjx1IYAAj6g3XOUlflI6
+         b6HhcCrljZeGbqo2uhh0v9K3txufTYZBJ+z7KZUpGa2YPff+eQKPQ3V68MdfGqRKEv
+         NiJlAlqtrolJw==
+Message-ID: <a37c0632-08cf-7083-3776-84bdbb33ccd4@kernel.org>
+Date:   Tue, 17 Jan 2023 11:39:35 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH net-next 1/2] dt-bindings: net: add amlogic gxl mdio
+ multiplexer
+Content-Language: en-US
+To:     Jerome Brunet <jbrunet@baylibre.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     linux-amlogic@lists.infradead.org,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Da Xue <da@lessconfused.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230116091637.272923-1-jbrunet@baylibre.com>
+ <20230116091637.272923-2-jbrunet@baylibre.com>
+ <4be60ea2-cb67-7695-1144-bf39453e9e1f@kernel.org>
+ <1jzgah1puj.fsf@starbuckisacylon.baylibre.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <1jzgah1puj.fsf@starbuckisacylon.baylibre.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,20 +64,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Magnus Karlsson <magnus.karlsson@gmail.com> writes:
+On 17/01/2023 10:05, Jerome Brunet wrote:
+> 
+> On Tue 17 Jan 2023 at 09:31, Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> 
+>> On 16/01/2023 10:16, Jerome Brunet wrote:
+>>> Add documentation for the MDIO bus multiplexer found on the Amlogic GXL
+>>> SoC family
+>>
+>> Please use scripts/get_maintainers.pl to get a list of necessary people
+>> and lists to CC.  It might happen, that command when run on an older
+>> kernel, gives you outdated entries.  Therefore please be sure you base
+>> your patches on recent Linux kernel.
+>>
+> 
+> Hi Krzysztof,
+> 
+> I do use get_maintainers.pl but I also filter based on past experience
+> to avoid spamming to much. It seems I stayed on the pre-2015
+> requirement to send only to devicetree list (I was actually making an
+> exception specifically for DT) ... and there was no complain so far ;)
+> 
+> I've read documentation again and it is explicit. This will be fixed for
+> v2.
+> 
+> Thanks for pointing this out.
 
-> From: Magnus Karlsson <magnus.karlsson@intel.com>
->
-> Document in the XDP_REDIRECT manual section that drivers must call
-> xdp_do_flush() before napi_complete_done(). The two reasons behind
-> this can be found following the links below.
->
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> Link: https://lore.kernel.org/r/20221220185903.1105011-1-sbohrer@cloudfla=
-re.com
-> Link: https://lore.kernel.org/all/20210624160609.292325-1-toke@redhat.com/
+For regular patchsets not spanning over 10 different subsystems (so
+total number of CCs should be 5-10), please Cc all
+maintainers/reviewers/supporters/lists pointed by maintainers.pl. Skip
+git fallback. How your patch should appear in my mailbox if you skip me?
+Not everyone are using Patchwork.
 
-Thanks for fixing this!
-
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+Best regards,
+Krzysztof
 
