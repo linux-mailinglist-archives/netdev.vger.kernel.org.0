@@ -2,57 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DE2366E502
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 18:34:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8FBF66E50C
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 18:34:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235342AbjAQRdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 12:33:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54578 "EHLO
+        id S231531AbjAQRei (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 12:34:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235755AbjAQRap (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 12:30:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752C53B0E3;
-        Tue, 17 Jan 2023 09:28:35 -0800 (PST)
+        with ESMTP id S234871AbjAQRct (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 12:32:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EADC30E88
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 09:31:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3CA3B81974;
-        Tue, 17 Jan 2023 17:28:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96A2AC433EF;
-        Tue, 17 Jan 2023 17:28:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC75A614D3
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 17:31:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CEC1C433F0;
+        Tue, 17 Jan 2023 17:31:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673976512;
-        bh=2LdqyXJpT5P5ecE3clObEutt8QLKp6SjRR2Se4pAym4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=bVn6i/mGFHrv/l+OTMcsK66ZkPjtpUGd55ZD4ZBUs6MkBqwtM/zl1QrLEY5Koj4KV
-         nMXvTJkY7iPFNrf3GG4Gg6nUTM0Xf0cR4up9BDI7HlHs4lU69E5BSw8hMeN0s6FIBf
-         2MVkbu+xbPlNW6Y+up/Fg82RbNh3sPZckH21iZQtO7URw+IKSSTeaeqo9dl7S9mKXD
-         K3HaxC94lzO/EBMVB7iQ6Z9UBUO/7UHqKtdQUfS+Q9nnMTqqZw3bDZUmjtUqO5ZlML
-         NroP83zqVumB8zadW4CFJJ6aJSWYVWZrAR4KevqFjCHRyj7eanqpmhjUHY9C3XKUYo
-         J5xUTq1d4jK+w==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>, Lama Kayal <lkayal@nvidia.com>,
-        Moshe Tal <moshet@nvidia.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: [PATCH] mlx5: reduce stack usage in mlx5_setup_tc
-Date:   Tue, 17 Jan 2023 18:28:11 +0100
-Message-Id: <20230117172825.3170190-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.39.0
+        s=k20201202; t=1673976677;
+        bh=Rc/TOGl/Go9lfMBk/q0pIQpZ52X4rC9bYgTJSNfLZpY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=W55UkHJaEEj0MS2zbs9jNho4PqsIJNWLNj6WsRPjrXNCzP89Fo+Td0a3eNEm4V/mv
+         AMr5ZeRIQuPOw7954W9ZU+AEK6X90UWHL5N405ZW9n3OkUSbiWgLl/X1ApE5WohmMd
+         bPc+1W/LczFKLJTxIG+bZ3e2y4ZLq6DxSrKseokXfpSKCsQ67WXpjpitrgDPWvfi+c
+         MJALdY5APcxqfdGsmvcZahjG1UfSWekw59411Pe84wZbL6DVjfXE8GnDGPkgmChIHw
+         P2sXjDytGyGMz9+sLsMGitRmlr5U8bexNmcTN/Ln+avqc3qeKbNDnxe63sapWWHkU0
+         rHvBNRr5s2/oA==
+Date:   Tue, 17 Jan 2023 09:31:15 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Gal Pressman <gal@nvidia.com>
+Cc:     Shay Agroskin <shayagr@amazon.com>,
+        "Arinzon, David" <darinzon@amazon.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Itzko, Shahar" <itzko@amazon.com>,
+        "Abboud, Osama" <osamaabb@amazon.com>
+Subject: Re: [PATCH V1 net-next 0/5] Add devlink support to ena
+Message-ID: <20230117093115.03d3dc13@kernel.org>
+In-Reply-To: <157d3005-29a8-939e-f63a-784833dbf17b@nvidia.com>
+References: <20230108103533.10104-1-darinzon@amazon.com>
+        <20230109164500.7801c017@kernel.org>
+        <574f532839dd4e93834dbfc776059245@amazon.com>
+        <20230110124418.76f4b1f8@kernel.org>
+        <865255fd30cd4339966425ea1b1bd8f9@amazon.com>
+        <20230111110043.036409d0@kernel.org>
+        <29a2fdae8f344ff48aeb223d1c3c78ad@amazon.com>
+        <20230111120003.1a2e2357@kernel.org>
+        <f2fd4262-58b7-147d-2784-91f2431c53df@nvidia.com>
+        <pj41zltu0vn9o7.fsf@u570694869fb251.ant.amazon.com>
+        <20230112115613.0a33f6c4@kernel.org>
+        <157d3005-29a8-939e-f63a-784833dbf17b@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -62,127 +74,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Sun, 15 Jan 2023 12:05:33 +0200 Gal Pressman wrote:
+> > IDK, the semantics don't feel close enough.
+> > 
+> > As a user I'd set tx_copybreak only on systems which have IOMMU enabled 
+> > (or otherwise have high cost of DMA mapping), to save CPU cycles.
+> > 
+> > The ena feature does not seem to be about CPU cycle saving (likely 
+> > the opposite, in fact), and does not operate on full segments AFAIU.  
+> 
+> Segments?
 
-Clang warns about excessive stack usage on 32-bit targets:
+Complete DMA buffers. Basically whether the optimization
+only kicks in if skb->len < configured_len or 
+skb_headlen() < configured_len.
 
-drivers/net/ethernet/mellanox/mlx5/core/en_main.c:3597:12: error: stack frame size (1184) exceeds limit (1024) in 'mlx5e_setup_tc' [-Werror,-Wframe-larger-than]
-static int mlx5e_setup_tc(struct net_device *dev, enum tc_setup_type type,
+> > Hence my preference to expose it as a new tx_push_buf_len, combining
+> > the semantics of tx_push and rx_buf_len.  
+> 
+> Sounds like a good idea.
+> To clarify, buf_len here refers to the size of the inline'd part, not
+> the WQE itself, correct? The driver will use whatever WQE size it needs
+> in order to accommodate the requested inline size?
 
-It turns out that both the mlx5e_setup_tc_mqprio_dcb() function and
-the mlx5e_safe_switch_params() function it calls have a copy of
-'struct mlx5e_params' on the stack, and this structure is fairly
-large.
-
-Use dynamic allocation for both.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- .../net/ethernet/mellanox/mlx5/core/en_main.c | 36 ++++++++++++-------
- 1 file changed, 23 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 6bb0fdaa5efa..e5198c26e383 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -2993,37 +2993,42 @@ static int mlx5e_switch_priv_channels(struct mlx5e_priv *priv,
- 	return err;
- }
- 
--int mlx5e_safe_switch_params(struct mlx5e_priv *priv,
-+noinline_for_stack int mlx5e_safe_switch_params(struct mlx5e_priv *priv,
- 			     struct mlx5e_params *params,
- 			     mlx5e_fp_preactivate preactivate,
- 			     void *context, bool reset)
- {
--	struct mlx5e_channels new_chs = {};
-+	struct mlx5e_channels *new_chs;
- 	int err;
- 
- 	reset &= test_bit(MLX5E_STATE_OPENED, &priv->state);
- 	if (!reset)
- 		return mlx5e_switch_priv_params(priv, params, preactivate, context);
- 
--	new_chs.params = *params;
-+	new_chs = kzalloc(sizeof(*new_chs), GFP_KERNEL);
-+	if (!new_chs)
-+		return -ENOMEM;
-+	new_chs->params = *params;
- 
--	mlx5e_selq_prepare_params(&priv->selq, &new_chs.params);
-+	mlx5e_selq_prepare_params(&priv->selq, &new_chs->params);
- 
--	err = mlx5e_open_channels(priv, &new_chs);
-+	err = mlx5e_open_channels(priv, new_chs);
- 	if (err)
- 		goto err_cancel_selq;
- 
--	err = mlx5e_switch_priv_channels(priv, &new_chs, preactivate, context);
-+	err = mlx5e_switch_priv_channels(priv, new_chs, preactivate, context);
- 	if (err)
- 		goto err_close;
- 
-+	kfree(new_chs);
- 	return 0;
- 
- err_close:
--	mlx5e_close_channels(&new_chs);
-+	mlx5e_close_channels(new_chs);
- 
- err_cancel_selq:
- 	mlx5e_selq_cancel(&priv->selq);
-+	kfree(new_chs);
- 	return err;
- }
- 
-@@ -3419,10 +3424,10 @@ static void mlx5e_params_mqprio_reset(struct mlx5e_params *params)
- 	mlx5e_params_mqprio_dcb_set(params, 1);
- }
- 
--static int mlx5e_setup_tc_mqprio_dcb(struct mlx5e_priv *priv,
-+static noinline_for_stack int mlx5e_setup_tc_mqprio_dcb(struct mlx5e_priv *priv,
- 				     struct tc_mqprio_qopt *mqprio)
- {
--	struct mlx5e_params new_params;
-+	struct mlx5e_params *new_params;
- 	u8 tc = mqprio->num_tc;
- 	int err;
- 
-@@ -3431,10 +3436,13 @@ static int mlx5e_setup_tc_mqprio_dcb(struct mlx5e_priv *priv,
- 	if (tc && tc != MLX5E_MAX_NUM_TC)
- 		return -EINVAL;
- 
--	new_params = priv->channels.params;
--	mlx5e_params_mqprio_dcb_set(&new_params, tc ? tc : 1);
-+	new_params = kmemdup(&priv->channels.params,
-+			     sizeof(priv->channels.params), GFP_KERNEL);
-+	if (!new_params)
-+		return -ENOMEM;
-+	mlx5e_params_mqprio_dcb_set(new_params, tc ? tc : 1);
- 
--	err = mlx5e_safe_switch_params(priv, &new_params,
-+	err = mlx5e_safe_switch_params(priv, new_params,
- 				       mlx5e_num_channels_changed_ctx, NULL, true);
- 
- 	if (!err && priv->mqprio_rl) {
-@@ -3445,6 +3453,8 @@ static int mlx5e_setup_tc_mqprio_dcb(struct mlx5e_priv *priv,
- 
- 	priv->max_opened_tc = max_t(u8, priv->max_opened_tc,
- 				    mlx5e_get_dcb_num_tc(&priv->channels.params));
-+
-+	kfree(new_params);
- 	return err;
- }
- 
-@@ -3533,7 +3543,7 @@ static struct mlx5e_mqprio_rl *mlx5e_mqprio_rl_create(struct mlx5_core_dev *mdev
- 	return rl;
- }
- 
--static int mlx5e_setup_tc_mqprio_channel(struct mlx5e_priv *priv,
-+static noinline_for_stack int mlx5e_setup_tc_mqprio_channel(struct mlx5e_priv *priv,
- 					 struct tc_mqprio_qopt_offload *mqprio)
- {
- 	mlx5e_fp_preactivate preactivate;
--- 
-2.39.0
-
+We can decide either way, but I _think_ rx_buf_len refers to the size
+as allocated, not necessarily usable size (in case the first buffer has
+padding / headroom). But as long as we clearly document - either way is
+fine.
