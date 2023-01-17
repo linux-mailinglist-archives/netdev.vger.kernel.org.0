@@ -2,74 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AFB266E1D6
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 16:15:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECE8D66E1EB
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 16:18:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232662AbjAQPPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 10:15:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52086 "EHLO
+        id S233582AbjAQPSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 10:18:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231348AbjAQPPQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 10:15:16 -0500
-Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41207ABC;
-        Tue, 17 Jan 2023 07:15:14 -0800 (PST)
-Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-15b9c93848dso23988064fac.1;
-        Tue, 17 Jan 2023 07:15:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4ylWKwIJLJTbQVAo/fbc37J5qO2EJKxw6CVNTOjxtKk=;
-        b=YNIhcWjK8ToP8HY9NsSJbmnDHddNpXTr3TgateiuRdZIZO0YVDqrAnbCKKEY7uFacC
-         sdlXCHmtQryjfd8+8/irtUHDm5WlxPYLnX9jW+M4VNf+lJitmaqKqlDp+EZ+iSbtxuGg
-         GXc3YBgY6eoY2X+InZcXIcjfKc3g9bDTQkiFBSaXUyNmGjMJEk/IkWWx4BjjPzasfVn8
-         FeA+FeG/LB3H5/FyZqnTSe4whsMS18iAoMAtmwAW17s0t9ZHL12agONpA7GBEtu8M5/Q
-         L/nTX00VJOCf8oVqX6hllN5S8X8Xrv4WkM9rhcO68NK8ugjWpSwy35GU5Y2MSX9jcvba
-         X0dw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4ylWKwIJLJTbQVAo/fbc37J5qO2EJKxw6CVNTOjxtKk=;
-        b=kfL2PamfKywpX9pGz2D0J7P01tUF9E6sz0c3ZRlKDO9Hmx9raC0QjJ+0objRLS62/M
-         B0ijsI7KlPOfi7hxhu7Je8tqm4d6nsKxjpI9RvxDBalb5lNqnA1GSXiY1IdDZu8XgwO9
-         NuSIkEX4mH1lIC0LgqZvuu6QKpv3TrWkM1kz2+8uqaEc7SKsPQw06RRbmRjPX4kMsPaD
-         cEtRE7rO4Er+GvbesclnQJZQIMK8v8RwfuKKnoYh4tExrMIedQ1jQ0OcT2SiKsPk7dRO
-         3KUYfFUPJNlRGMP3yB6MO965XpWs7Ao2b/FzIAZvt6gXHVjOcUk8Wss0rWTOEJ6dAeDF
-         dbhQ==
-X-Gm-Message-State: AFqh2krwddbOUiP0NCoZdlFTX9/1f0EggnhiUetsBwpUWiT+u466JyJy
-        3O5jgODA71d+sZxzo+StbOA=
-X-Google-Smtp-Source: AMrXdXuG0IstA5kVlORkCqPzZtmvVlY0713eUbhfIZCyholb8mSv5OpNyrKrK77ocd6wxXR019QNsg==
-X-Received: by 2002:a05:6871:4693:b0:15f:4552:877d with SMTP id ni19-20020a056871469300b0015f4552877dmr1888303oab.48.1673968513862;
-        Tue, 17 Jan 2023 07:15:13 -0800 (PST)
-Received: from t14s.localdomain ([2001:1284:f013:7189:754f:dfa5:a770:f05f])
-        by smtp.gmail.com with ESMTPSA id p22-20020a056870831600b0014813cc4a51sm16460672oae.29.2023.01.17.07.15.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Jan 2023 07:15:13 -0800 (PST)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-        id DC0E64AD200; Tue, 17 Jan 2023 12:15:11 -0300 (-03)
-Date:   Tue, 17 Jan 2023 12:15:11 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        pablo@netfilter.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, ozsh@nvidia.com,
-        simon.horman@corigine.com
-Subject: Re: [PATCH net-next v2 3/7] netfilter: flowtable: allow
- unidirectional rules
-Message-ID: <Y8a7f2AXVMx8WWPc@t14s.localdomain>
-References: <20230113165548.2692720-1-vladbu@nvidia.com>
- <20230113165548.2692720-4-vladbu@nvidia.com>
+        with ESMTP id S233462AbjAQPRf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 10:17:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB9339BAF
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 07:16:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673968611;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=smNNRaeV0+/HRXen5xw9CFj2kNpy5x+VFPv/e/OcsJU=;
+        b=OuhR+DOnopXjqzZnmY+fCD2SppPf7mcv8LtkNHC1JFeHxOodbK0916mAS9xHO2yQQBzJDf
+        mqLcJOu61TeQHlDRhEM73L1aqW3lFjcJZElrufSWQn1GvLUcuj8o9O89lZOai051I65FZo
+        Xa3z668idU2cIVHmoN4xonUUlj0qhRM=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-494-5HCBiZ2QOC-SunYOPDLNSw-1; Tue, 17 Jan 2023 10:16:40 -0500
+X-MC-Unique: 5HCBiZ2QOC-SunYOPDLNSw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 297E82804158;
+        Tue, 17 Jan 2023 15:15:22 +0000 (UTC)
+Received: from qualcomm-amberwing-rep-06.khw4.lab.eng.bos.redhat.com (qualcomm-amberwing-rep-06.khw4.lab.eng.bos.redhat.com [10.19.240.11])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CCFA640C6EC4;
+        Tue, 17 Jan 2023 15:15:21 +0000 (UTC)
+From:   Eric Auger <eric.auger@redhat.com>
+To:     eric.auger.pro@gmail.com, eric.auger@redhat.com, mst@redhat.com,
+        jasowang@redhat.com, kvm@vger.kernel.org, netdev@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Cc:     peterx@redhat.com, lvivier@redhat.com
+Subject: [PATCH 0/2] vhost/net: Clear the pending messages when the backend is removed
+Date:   Tue, 17 Jan 2023 10:15:16 -0500
+Message-Id: <20230117151518.44725-1-eric.auger@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230113165548.2692720-4-vladbu@nvidia.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,16 +57,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 13, 2023 at 05:55:44PM +0100, Vlad Buslov wrote:
-> Modify flow table offload to support unidirectional connections by
-> extending enum nf_flow_flags with new "NF_FLOW_HW_BIDIRECTIONAL" flag. Only
-> offload reply direction when the flag is not set. This infrastructure
-                                           ^^^ s///, I believe? :-)
+When the vhost iotlb is used along with a guest virtual iommu
+and the guest gets rebooted, some MISS messages may have been
+recorded just before the reboot and spuriously executed by
+the virtual iommu after the reboot. This is due to the fact
+the pending messages are not cleared.
 
-...
-> -	ok_count += flow_offload_tuple_add(offload, flow_rule[1],
-> -					   FLOW_OFFLOAD_DIR_REPLY);
-> +	if (test_bit(NF_FLOW_HW_BIDIRECTIONAL, &offload->flow->flags))
-> +		ok_count += flow_offload_tuple_add(offload, flow_rule[1],
-> +						   FLOW_OFFLOAD_DIR_REPLY);
->  	if (ok_count == 0)
+As vhost does not have any explicit reset user API,
+VHOST_NET_SET_BACKEND looks a reasonable point where to clear
+the pending messages, in case the backend is removed (fd = -1).
+
+This version is a follow-up on the discussions held in [1].
+
+The first patch removes an unused 'enabled' parameter in
+vhost_init_device_iotlb().
+
+Best Regards
+
+Eric
+
+History:
+[1] RFC: [RFC] vhost: Clear the pending messages on vhost_init_device_iotlb()
+https://lore.kernel.org/all/20221107203431.368306-1-eric.auger@redhat.com/
+
+Eric Auger (2):
+  vhost: Remove the enabled parameter from vhost_init_device_iotlb
+  vhost/net: Clear the pending messages when the backend is removed
+
+ drivers/vhost/net.c   | 5 ++++-
+ drivers/vhost/vhost.c | 5 +++--
+ drivers/vhost/vhost.h | 3 ++-
+ 3 files changed, 9 insertions(+), 4 deletions(-)
+
+-- 
+2.31.1
+
