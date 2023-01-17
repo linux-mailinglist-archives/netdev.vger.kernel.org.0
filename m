@@ -2,77 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EFE366DA29
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 10:42:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3032066DA2F
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 10:42:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236690AbjAQJmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 04:42:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41126 "EHLO
+        id S236408AbjAQJmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 04:42:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236477AbjAQJlG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 04:41:06 -0500
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FC8233D9;
-        Tue, 17 Jan 2023 01:39:50 -0800 (PST)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 30H9dVR0074470;
-        Tue, 17 Jan 2023 03:39:31 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1673948371;
-        bh=hCiMEEOZ0FA8xfOwTl/n4EZiudIDwrwZeoE9cRopsZM=;
-        h=Date:CC:Subject:To:References:From:In-Reply-To;
-        b=cvWEJ4Gj9JaBKSK0BBWt5ooV2x9m9QfJfCM0v5TB7WWQZEPc8is83BIpbShZzcwqr
-         NFwqcfEFgR/ZljXrDeRfHsuTYJJEQ2+FQwBjQEvdipZL+Zrqes3rdkxngaq2b5uru+
-         xkVITYKTvik9s+e7s9uR76Jqs9IAF01MWxBuSi1o=
-Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 30H9dVWR108848
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 17 Jan 2023 03:39:31 -0600
-Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Tue, 17
- Jan 2023 03:39:31 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Tue, 17 Jan 2023 03:39:31 -0600
-Received: from [172.24.145.61] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 30H9dPuq018076;
-        Tue, 17 Jan 2023 03:39:26 -0600
-Message-ID: <3bd25e86-37c9-e2c5-d957-2ed111a3f4a7@ti.com>
-Date:   Tue, 17 Jan 2023 15:09:25 +0530
+        with ESMTP id S235285AbjAQJlJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 04:41:09 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E85A9524F;
+        Tue, 17 Jan 2023 01:40:07 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id k8so15436899wrc.9;
+        Tue, 17 Jan 2023 01:40:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=THhjTlzh4Q1QKe7vc6e+LLqrfDal4EePNtipGdR1YJc=;
+        b=iwPF0CMT/C5eoSllHfEljDINf5D6bMfvuN95gcRDFOcDD86ysmH5HD54XcBdbZs5iI
+         WbY5rkKqw3XsC9qR8QIqzQxfcGsNW61ORCoOkDhWV0xPn2UIrPCRvbfXiEp2vEBEMUV2
+         TllrUFElKXoWel8sre6WHs2AkkBeaIIWcyy6rE8vA+dsWF16HZ1r4H69KnLxvub6wZuo
+         lyDula8KxGvHm04z8x91vjCBu3MLSOY5KCzqC3eWHb6MiyaTLYbqQ7MvcYGc4g6P2E+n
+         /z6Dsn6vHNqEIRwgWGz1o6ile/h6J/2zY+Gn//+qkTO6jVpSGlL0nEt4OnPiAauPdVTM
+         AWDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=THhjTlzh4Q1QKe7vc6e+LLqrfDal4EePNtipGdR1YJc=;
+        b=24iVbn1tzLdZKvnsoavAKANyLpNL46iWYpJjjO8mWFJB1eIrSJxmHKBDKJx1ZyNnh4
+         KBOgN+/D9F2zEpqalYCOFhgUw9QORry0GCYELKRk/3w+gaNVvO7qRWJSWSAgNY7Gbs62
+         UR/ezorU5QqF5JaE8RA3kfoe7zRTRIDDMII2LbTmWf1jAsnTw/XwwnAp8lANoVcVwiV9
+         gm35Sfm82dA04/amSFOB56ZRSKCs4Ig94pSxcsy5wjtbv3sxQXiKIDZuB9UWZZUf+8F+
+         7Kng5dVm+iZFfnyTCbG+32Hy8zXIHkFF3+ow3MWmi6VS8mMk1EFhKANU0QaomX0j9ind
+         k/Tw==
+X-Gm-Message-State: AFqh2kqIq0TWdrKClZe/iNoqeMHHju/0juK1WWI9mkfj0LD3yvkPC8Ea
+        FTohhVaZWr0JMK/+XRImKhs=
+X-Google-Smtp-Source: AMrXdXuaVTlQRWuKLXI3mMTjwxspgpIFicHEHtoe1Jkq4/bPn5ZULiXU+wGqHS5xSjdLOJMZNFt3Lw==
+X-Received: by 2002:a5d:610a:0:b0:2bd:fd25:788c with SMTP id v10-20020a5d610a000000b002bdfd25788cmr2210383wrt.21.1673948406450;
+        Tue, 17 Jan 2023 01:40:06 -0800 (PST)
+Received: from krava (2001-1ae9-1c2-4c00-726e-c10f-8833-ff22.ip6.tmcz.cz. [2001:1ae9:1c2:4c00:726e:c10f:8833:ff22])
+        by smtp.gmail.com with ESMTPSA id i15-20020a05600011cf00b00294176c2c01sm28026169wrx.86.2023.01.17.01.40.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Jan 2023 01:40:06 -0800 (PST)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Tue, 17 Jan 2023 10:40:03 +0100
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Cong Wang <cong.wang@bytedance.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Paul Moore <paul@paul-moore.com>
+Subject: Re: [Patch bpf-next 2/2] bpf: remove a redundant parameter of
+ bpf_prog_free_id()
+Message-ID: <Y8Zs8yU7rg2FtCBQ@krava>
+References: <20230117060249.912679-1-xiyou.wangcong@gmail.com>
+ <20230117060249.912679-3-xiyou.wangcong@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski@linaro.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>, <kristo@kernel.org>,
-        <nsekhar@ti.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
-        <s-vadapalli@ti.com>
-Subject: Re: [PATCH net-next 5/5] arm64: dts: ti: k3-am625-sk: Add cpsw3g cpts
- PPS support
-Content-Language: en-US
-To:     Roger Quadros <rogerq@kernel.org>
-References: <20230111114429.1297557-1-s-vadapalli@ti.com>
- <20230111114429.1297557-6-s-vadapalli@ti.com>
- <6ae650c9-d68d-d2fc-8319-b7784cd2a749@kernel.org>
- <a889a47f-5f44-1ae6-1ab7-3b7e7011b4f7@ti.com>
- <2007adb5-0980-eee3-8d2f-e30183cf408e@kernel.org>
- <4d7ac24a-0a35-323c-045c-cc5b3d3c715a@ti.com>
- <566700c6-df9b-739b-81ff-8745eea10ff3@ti.com>
- <7bc26f28-2541-8cc4-3cde-abbe4bdf8911@kernel.org>
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-In-Reply-To: <7bc26f28-2541-8cc4-3cde-abbe4bdf8911@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230117060249.912679-3-xiyou.wangcong@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,76 +77,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Roger,
-
-On 17/01/23 15:00, Roger Quadros wrote:
-> On 17/01/2023 07:28, Siddharth Vadapalli wrote:
->> Vignesh,
->>
->> On 16/01/23 22:00, Vignesh Raghavendra wrote:
->>>
->>>
->>> On 16/01/23 9:35 pm, Roger Quadros wrote:
->>>>>>> diff --git a/arch/arm64/boot/dts/ti/k3-am625-sk.dts b/arch/arm64/boot/dts/ti/k3-am625-sk.dts
->>>>>>> index 4f179b146cab..962a922cc94b 100644
->>>>>>> --- a/arch/arm64/boot/dts/ti/k3-am625-sk.dts
->>>>>>> +++ b/arch/arm64/boot/dts/ti/k3-am625-sk.dts
->>>>>>> @@ -366,6 +366,10 @@ &cpsw3g {
->>>>>>>  	pinctrl-names = "default";
->>>>>>>  	pinctrl-0 = <&main_rgmii1_pins_default
->>>>>>>  		     &main_rgmii2_pins_default>;
->>>>>>> +
->>>>>>> +	cpts@3d000 {
->>>>>>> +		ti,pps = <2 1>;
->>>>>>> +	};
->>>>>>>  };
->>>>>>>  
->>>>>>>  &cpsw_port1 {
->>>>>>> @@ -464,3 +468,19 @@ partition@3fc0000 {
->>>>>>>  		};
->>>>>>>  	};
->>>>>>>  };
->>>>>>> +
->>>>>>> +#define TS_OFFSET(pa, val)	(0x4+(pa)*4) (0x10000 | val)
->>>>>> Should this go in ./include/dt-bindings/pinctrl/k3.h ?
->>>>>> That way every board DT file doesn't have to define it.
->>>>>>
->>>>>> The name should be made more platform specific.
->>>>>> e.g. K3_TS_OFFSET if it is the same for all K3 platforms.
->>>>>> If not then please add Platform name instead of K3.
->>>>> The offsets are board specific. If it is acceptable, I will add board specific
->>>>> macro for the TS_OFFSET definition in the ./include/dt-bindings/pinctrl/k3.h
->>>>> file. Please let me know.
->>>> If it is board specific then it should remain in the board file.
->>>
->>>
->>> The values you pass to macro maybe board specific. But the macro
->>> definition itself same for a given SoC right? Also, is its same across
->>> K3 family ?
->>>
+On Mon, Jan 16, 2023 at 10:02:49PM -0800, Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
 > 
-> I misunderstood then. I agree with Vignesh.
+> The second parameter of bpf_prog_free_id() is always true,
+> hence can be just eliminated.
+
+hi,
+Paul did this already:
+  https://lore.kernel.org/bpf/20230106154400.74211-2-paul@paul-moore.com/
+
+it's in bpf/master now
+
+bpf_map_free_id change lgtm, but might be better
+to sync with bpf/master first
+
+jirka
+
 > 
->>> Please use SoC specific prefix like AM62X_TS_OFFSET() or K3_TS_OFFSET()
->>> accordingly.
->>
->> For certain SoCs including AM62X, the macro is:
->> #define TS_OFFSET(pa, val)	(0x4+(pa)*4) (0x10000 | val)
->> while for other SoCs (refer [0]), the macro is:
->> #define TS_OFFSET(pa, val)	(0x4+(pa)*4) (0x80000000 | val)
->>
->> Therefore, I will use SoC specific prefix in the macro. Please let me know if
->> the SoC specific macro can be added to the ./include/dt-bindings/pinctrl/k3.h
->> file for each SoC. If not, I will add the SoC specific macro in the board file
->> itself.
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
+>  include/linux/bpf.h  |  2 +-
+>  kernel/bpf/offload.c |  2 +-
+>  kernel/bpf/syscall.c | 23 +++++------------------
+>  3 files changed, 7 insertions(+), 20 deletions(-)
 > 
-> Not in board file please. It should go in ./include/dt-bindings/pinctrl/k3.h
-
-Thank you for letting me know. I will do so in the device-tree series that I
-will post once the bindings and driver patches get merged.
-
-The v2 series for the bindings and driver patches that I am referring to is at:
-https://lore.kernel.org/r/20230116085534.440820-1-s-vadapalli@ti.com/
-
-Regards,
-Siddharth.
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 3558c192871c..2c0d2383cea0 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1832,7 +1832,7 @@ void bpf_prog_inc(struct bpf_prog *prog);
+>  struct bpf_prog * __must_check bpf_prog_inc_not_zero(struct bpf_prog *prog);
+>  void bpf_prog_put(struct bpf_prog *prog);
+>  
+> -void bpf_prog_free_id(struct bpf_prog *prog, bool do_idr_lock);
+> +void bpf_prog_free_id(struct bpf_prog *prog);
+>  void bpf_map_free_id(struct bpf_map *map);
+>  
+>  struct btf_field *btf_record_find(const struct btf_record *rec,
+> diff --git a/kernel/bpf/offload.c b/kernel/bpf/offload.c
+> index ae6d5a5c0798..658032e294ed 100644
+> --- a/kernel/bpf/offload.c
+> +++ b/kernel/bpf/offload.c
+> @@ -217,7 +217,7 @@ static void __bpf_prog_offload_destroy(struct bpf_prog *prog)
+>  		offload->offdev->ops->destroy(prog);
+>  
+>  	/* Make sure BPF_PROG_GET_NEXT_ID can't find this dead program */
+> -	bpf_prog_free_id(prog, true);
+> +	bpf_prog_free_id(prog);
+>  
+>  	list_del_init(&offload->offloads);
+>  	kfree(offload);
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index 1eaa1a18aef7..b56f65328d9c 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -1988,7 +1988,7 @@ static int bpf_prog_alloc_id(struct bpf_prog *prog)
+>  	return id > 0 ? 0 : id;
+>  }
+>  
+> -void bpf_prog_free_id(struct bpf_prog *prog, bool do_idr_lock)
+> +void bpf_prog_free_id(struct bpf_prog *prog)
+>  {
+>  	unsigned long flags;
+>  
+> @@ -2000,18 +2000,10 @@ void bpf_prog_free_id(struct bpf_prog *prog, bool do_idr_lock)
+>  	if (!prog->aux->id)
+>  		return;
+>  
+> -	if (do_idr_lock)
+> -		spin_lock_irqsave(&prog_idr_lock, flags);
+> -	else
+> -		__acquire(&prog_idr_lock);
+> -
+> +	spin_lock_irqsave(&prog_idr_lock, flags);
+>  	idr_remove(&prog_idr, prog->aux->id);
+>  	prog->aux->id = 0;
+> -
+> -	if (do_idr_lock)
+> -		spin_unlock_irqrestore(&prog_idr_lock, flags);
+> -	else
+> -		__release(&prog_idr_lock);
+> +	spin_unlock_irqrestore(&prog_idr_lock, flags);
+>  }
+>  
+>  static void __bpf_prog_put_rcu(struct rcu_head *rcu)
+> @@ -2057,13 +2049,13 @@ static void bpf_prog_put_deferred(struct work_struct *work)
+>  	__bpf_prog_put_noref(prog, true);
+>  }
+>  
+> -static void __bpf_prog_put(struct bpf_prog *prog, bool do_idr_lock)
+> +void bpf_prog_put(struct bpf_prog *prog)
+>  {
+>  	struct bpf_prog_aux *aux = prog->aux;
+>  
+>  	if (atomic64_dec_and_test(&aux->refcnt)) {
+>  		/* bpf_prog_free_id() must be called first */
+> -		bpf_prog_free_id(prog, do_idr_lock);
+> +		bpf_prog_free_id(prog);
+>  
+>  		if (in_irq() || irqs_disabled()) {
+>  			INIT_WORK(&aux->work, bpf_prog_put_deferred);
+> @@ -2073,11 +2065,6 @@ static void __bpf_prog_put(struct bpf_prog *prog, bool do_idr_lock)
+>  		}
+>  	}
+>  }
+> -
+> -void bpf_prog_put(struct bpf_prog *prog)
+> -{
+> -	__bpf_prog_put(prog, true);
+> -}
+>  EXPORT_SYMBOL_GPL(bpf_prog_put);
+>  
+>  static int bpf_prog_release(struct inode *inode, struct file *filp)
+> -- 
+> 2.34.1
+> 
