@@ -2,96 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E98266DCDA
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 12:52:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27F7366DCDF
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 12:54:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236416AbjAQLwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 06:52:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33350 "EHLO
+        id S236861AbjAQLx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 06:53:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236058AbjAQLwy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 06:52:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583DF233CF;
-        Tue, 17 Jan 2023 03:52:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 07FD5B815AA;
-        Tue, 17 Jan 2023 11:52:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F245EC433D2;
-        Tue, 17 Jan 2023 11:52:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673956370;
-        bh=+fBuNs29t8yNPv6q51lyGENRRsy/0iZMXu1O4lAOniQ=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=Dix/JRvzda3WspkxvRp3kxxnBmsIoxY2NgLSprROHZ0qlxGw7s/fUzJ6BB0AsmhAi
-         LDhkNPFamjnwUqZndKAWqtN+NWeazr3C0tgpwfbRycye0X+SSJYz6AW/LAxKMo9P0M
-         3ltjdPBkrnSa5/f86OYQX3l9mlyGeTD6RafI61+QmsapV2/OkPtGk1Y2U7/DbZdyr6
-         uUI8RyjQdgYqmYhh/1/Fi8KYz7RM4ZuKW61y/o9g+tRmVelUvaGL5wvt5PHC7GtrkM
-         c7hIaNX9RpQCTWhVO5ithzfwSbj9cap7IM24/IO/k9ynW6fyiiS5mboZFuGiJFeOVs
-         B+W8SirZu/7Gg==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S236901AbjAQLxX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 06:53:23 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB5B334C2A;
+        Tue, 17 Jan 2023 03:53:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1673956402; x=1705492402;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=EyCiChHftQ8iN2gWVAhtRIoldyffQXVLXSIIFcFPlts=;
+  b=CveQnbVUaufo5PQvmSC6013lZk59BmzC0bdlvauoaGpZpOX8dv+deQYn
+   Sh7T/XdbFL9Cmb45mhvhPTXdvGBK2YFFRtWSPyGioab38S5GyHBF7AyhY
+   nbKQiVoey3NMrU7oLZ0m+pyY3uTFda2aYIm1ryClp6l27+YtWRynadiej
+   dokaOM6mJX4Auro2dGyknHSJJMVgRoy5Y2aO80BLP1Mi/IlkwlfH8YMC4
+   QVbzJ8XVhZt9z+Wz+VS1FNgni9x6goz0itOZiM7+e0lKi6l41TD43Xb3t
+   Oy5fxdOcI+DAasd1Vyo6UeoGBrlCSrS2/v5mmi56vklVkt4jGBjYlBoD5
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.97,222,1669100400"; 
+   d="scan'208";a="192589119"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Jan 2023 04:53:20 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Tue, 17 Jan 2023 04:53:18 -0700
+Received: from HNO-LT-M43596A.mchp-main.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Tue, 17 Jan 2023 04:53:13 -0700
+Message-ID: <c45808c864e0aa60b34324c953d021ec10a0ee92.camel@microchip.com>
+Subject: Re: [PATCH net 2/5] lan966x: execute xdp_do_flush() before
+ napi_complete_done()
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        <magnus.karlsson@intel.com>, <bjorn@kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
+        <jonathan.lemon@gmail.com>, <maciej.fijalkowski@intel.com>,
+        <kuba@kernel.org>, <toke@redhat.com>, <pabeni@redhat.com>,
+        <davem@davemloft.net>, <aelior@marvell.com>, <manishc@marvell.com>,
+        <horatiu.vultur@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <mst@redhat.com>, <jasowang@redhat.com>, <ioana.ciornei@nxp.com>,
+        <madalin.bucur@nxp.com>
+CC:     <bpf@vger.kernel.org>
+Date:   Tue, 17 Jan 2023 12:53:13 +0100
+In-Reply-To: <20230117092533.5804-3-magnus.karlsson@gmail.com>
+References: <20230117092533.5804-1-magnus.karlsson@gmail.com>
+         <20230117092533.5804-3-magnus.karlsson@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4] wifi: ath9k: htc_hst: free skb in ath9k_htc_rx_msg()
- if
- there is no callback function
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20230104123546.51427-1-pchelkin@ispras.ru>
-References: <20230104123546.51427-1-pchelkin@ispras.ru>
-To:     Fedor Pchelkin <pchelkin@ispras.ru>
-Cc:     =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Fedor Pchelkin <pchelkin@ispras.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sujith <Sujith.Manoharan@atheros.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        Vasanthakumar Thiagarajan <vasanth@atheros.com>,
-        Senthil Balasubramanian <senthilkumar@atheros.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        lvc-project@linuxtesting.org,
-        syzbot+e008dccab31bd3647609@syzkaller.appspotmail.com,
-        syzbot+6692c72009680f7c4eb2@syzkaller.appspotmail.com
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <167395636331.22891.14427855957409091076.kvalo@kernel.org>
-Date:   Tue, 17 Jan 2023 11:52:46 +0000 (UTC)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fedor Pchelkin <pchelkin@ispras.ru> wrote:
+Hi Magnus,
 
-> It is stated that ath9k_htc_rx_msg() either frees the provided skb or
-> passes its management to another callback function. However, the skb is
-> not freed in case there is no another callback function, and Syzkaller was
-> able to cause a memory leak. Also minor comment fix.
+This looks good to me.
+
+Acked-by: Steen Hegelund <Steen.Hegelund@microchip.com>
+
+BR
+Steen
+
+On Tue, 2023-01-17 at 10:25 +0100, Magnus Karlsson wrote:
+> [Some people who received this message don't often get email from magnus.karlsson@gmail.com. Learn
+> why this is important at https://aka.ms/LearnAboutSenderIdentification ]
 > 
-> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 > 
-> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
-> Reported-by: syzbot+e008dccab31bd3647609@syzkaller.appspotmail.com
-> Reported-by: syzbot+6692c72009680f7c4eb2@syzkaller.appspotmail.com
-> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-> Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
+> 
+> Make sure that xdp_do_flush() is always executed before
+> napi_complete_done(). This is important for two reasons. First, a
+> redirect to an XSKMAP assumes that a call to xdp_do_redirect() from
+> napi context X on CPU Y will be follwed by a xdp_do_flush() from the
+> same napi context and CPU. This is not guaranteed if the
+> napi_complete_done() is executed before xdp_do_flush(), as it tells
+> the napi logic that it is fine to schedule napi context X on another
+> CPU. Details from a production system triggering this bug using the
+> veth driver can be found following the first link below.
+> 
+> The second reason is that the XDP_REDIRECT logic in itself relies on
+> being inside a single NAPI instance through to the xdp_do_flush() call
+> for RCU protection of all in-kernel data structures. Details can be
+> found in the second link below.
+> 
+> Fixes: a825b611c7c1 ("net: lan966x: Add support for XDP_REDIRECT")
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> Link: https://lore.kernel.org/r/20221220185903.1105011-1-sbohrer@cloudflare.com
+> Link: https://lore.kernel.org/all/20210624160609.292325-1-toke@redhat.com/
+> ---
+>  drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+> b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+> index 5314c064ceae..55b484b10562 100644
+> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+> @@ -608,12 +608,12 @@ static int lan966x_fdma_napi_poll(struct napi_struct *napi, int weight)
+>                 lan966x_fdma_rx_reload(rx);
+>         }
+> 
+> -       if (counter < weight && napi_complete_done(napi, counter))
+> -               lan_wr(0xff, lan966x, FDMA_INTR_DB_ENA);
+> -
+>         if (redirect)
+>                 xdp_do_flush();
+> 
+> +       if (counter < weight && napi_complete_done(napi, counter))
+> +               lan_wr(0xff, lan966x, FDMA_INTR_DB_ENA);
+> +
+>         return counter;
+>  }
+> 
+> --
+> 2.34.1
+> 
 
-Patch applied to ath-next branch of ath.git, thanks.
-
-9b25e3985477 wifi: ath9k: htc_hst: free skb in ath9k_htc_rx_msg() if there is no callback function
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20230104123546.51427-1-pchelkin@ispras.ru/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
