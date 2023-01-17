@@ -2,87 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E373366D9C9
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 10:24:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 182A566D9CA
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 10:24:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236214AbjAQJYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 04:24:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56260 "EHLO
+        id S236551AbjAQJY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 04:24:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236767AbjAQJYF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 04:24:05 -0500
-Received: from mxct.zte.com.cn (mxct.zte.com.cn [183.62.165.209])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F404830E81;
-        Tue, 17 Jan 2023 01:21:28 -0800 (PST)
-Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
+        with ESMTP id S235785AbjAQJYG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 04:24:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4082CFED;
+        Tue, 17 Jan 2023 01:21:40 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mxct.zte.com.cn (FangMail) with ESMTPS id 4Nx3Kz3cmRz501Sq;
-        Tue, 17 Jan 2023 17:21:27 +0800 (CST)
-Received: from xaxapp01.zte.com.cn ([10.88.99.176])
-        by mse-fl2.zte.com.cn with SMTP id 30H9L5EC054983;
-        Tue, 17 Jan 2023 17:21:05 +0800 (+08)
-        (envelope-from ye.xingchen@zte.com.cn)
-Received: from mapi (xaxapp01[null])
-        by mapi (Zmail) with MAPI id mid31;
-        Tue, 17 Jan 2023 17:21:07 +0800 (CST)
-Date:   Tue, 17 Jan 2023 17:21:07 +0800 (CST)
-X-Zmail-TransId: 2af963c668836dc062e9
-X-Mailer: Zmail v1.0
-Message-ID: <202301171721076625091@zte.com.cn>
-Mime-Version: 1.0
-From:   <ye.xingchen@zte.com.cn>
-To:     <3chas3@gmail.com>
-Cc:     <linux-atm-general@lists.sourceforge.net>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: =?UTF-8?B?W1BBVENIIGxpbnV4LW5leHRdIGF0bTogbGFuYWk6IFVzZSBkbWFfemFsbG9jX2NvaGVyZW50KCk=?=
-Content-Type: text/plain;
-        charset="UTF-8"
-X-MAIL: mse-fl2.zte.com.cn 30H9L5EC054983
-X-Fangmail-Gw-Spam-Type: 0
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 63C66897.000/4Nx3Kz3cmRz501Sq
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        T_SPF_PERMERROR,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
-        version=3.4.6
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78CDFB811F8;
+        Tue, 17 Jan 2023 09:21:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 852E3C433D2;
+        Tue, 17 Jan 2023 09:21:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673947298;
+        bh=xp+LF0wP9tlZDcaFx4O1myVai0CG+iwcsolU0+B9Zf0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=t2upRhvT8/4knHAjg6IPzW/oBkEr7IP3lzIM4Q2x6xay2PmdSU67v/ge3AlhPVPTQ
+         +VRwZMsxcIa1JsZ1dvvsOrX8PSWSxQ9oACW6HFpT4dFXPoFxbkLNbWgQS15WJjRFIx
+         tapVz0aV+X0/KqYEAJDfV2SuU4hG31+/Uzcvm+jBfZFJepNxc6C/FivAW33jk+Th6j
+         CtPFND25Jzos9IGPWq7J0SDidubZCNcujFvqKGedgM/N+fa67ajOeL7cgsZ9CiIX26
+         nzXkDUy4Kka+a9S0bW1+Gn35lO4eQkFCwiT/xQiZNulZxHhG1UDUlTO1DahheS/Run
+         yDQDHE32T2CTw==
+Date:   Tue, 17 Jan 2023 11:21:34 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Maksim Davydov <davydov-max@yandex-team.ru>
+Cc:     rajur@chelsio.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, anish@chelsio.com,
+        hariprasad@chelsio.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 1/2] net/ethernet/chelsio: fix cxgb4_getpgtccfg wrong
+ memory access
+Message-ID: <Y8ZonuQJn8gO9GX5@unreal>
+References: <20230116152100.30094-1-davydov-max@yandex-team.ru>
+ <20230116152100.30094-2-davydov-max@yandex-team.ru>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230116152100.30094-2-davydov-max@yandex-team.ru>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: ye xingchen <ye.xingchen@zte.com.cn>
+On Mon, Jan 16, 2023 at 06:20:59PM +0300, Maksim Davydov wrote:
+> *pgid can be in range 0 to 0xF (bitmask 0xF) but valid values for PGID
+> are between 0 and 7. Also the size of pgrate is 8. Thus, we are needed
+> additional check to make sure that this code doesn't have access to tsa.
+> 
+> Found by Linux Verification Center (linuxtesting.org) with the SVACE
+> static analysis tool.
+> 
+> Fixes: 76bcb31efc06 ("cxgb4 : Add DCBx support codebase and dcbnl_ops")
+> Signed-off-by: Maksim Davydov <davydov-max@yandex-team.ru>
+> ---
+>  drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c
+> index 7d5204834ee2..3aa65f0f335e 100644
+> --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c
+> +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c
+> @@ -471,7 +471,10 @@ static void cxgb4_getpgtccfg(struct net_device *dev, int tc,
+>  		return;
+>  	}
+>  
+> -	*bw_per = pcmd.u.dcb.pgrate.pgrate[*pgid];
+> +	/* Valid values are: 0-7 */
 
-Instead of using dma_alloc_coherent() and memset() directly use
-dma_zalloc_coherent().
+How do you see it?
 
-Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
----
- drivers/atm/lanai.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+There are lines below that assume something different.
+   477         /* prio_type is link strict */
+   478         if (*pgid != 0xF)
+   479                 *prio_type = 0x2;
 
-diff --git a/drivers/atm/lanai.c b/drivers/atm/lanai.c
-index 32d7aa141d96..b7e0199ce642 100644
---- a/drivers/atm/lanai.c
-+++ b/drivers/atm/lanai.c
-@@ -342,8 +342,8 @@ static void lanai_buf_allocate(struct lanai_buffer *buf,
- 		 * everything, but the way the lanai uses DMA memory would
- 		 * make that a terrific pain.  This is much simpler.
- 		 */
--		buf->start = dma_alloc_coherent(&pci->dev,
--						size, &buf->dmaaddr, GFP_KERNEL);
-+		buf->start = dma_zalloc_coherent(&pci->dev,
-+						 size, &buf->dmaaddr, GFP_KERNEL);
- 		if (buf->start != NULL) {	/* Success */
- 			/* Lanai requires 256-byte alignment of DMA bufs */
- 			APRINTK((buf->dmaaddr & ~0xFFFFFF00) == 0,
-@@ -352,7 +352,6 @@ static void lanai_buf_allocate(struct lanai_buffer *buf,
- 			buf->ptr = buf->start;
- 			buf->end = (u32 *)
- 			    (&((unsigned char *) buf->start)[size]);
--			memset(buf->start, 0, size);
- 			break;
- 		}
- 		size /= 2;
--- 
-2.25.1
+
+> +	if (*pgid <= 7)
+> +		*bw_per = pcmd.u.dcb.pgrate.pgrate[*pgid];
+
+Why do you think that it is valid simply do not set *bw_per?
+
+Thanks
