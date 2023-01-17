@@ -2,76 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FDB266DD94
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 13:29:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8D6C66DD9A
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 13:30:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235245AbjAQM24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 07:28:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53150 "EHLO
+        id S236272AbjAQMaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 07:30:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236272AbjAQM2y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 07:28:54 -0500
-Received: from aib29gb127.yyz1.oracleemaildelivery.com (aib29gb127.yyz1.oracleemaildelivery.com [192.29.72.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46758367F5
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 04:28:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; s=oci-2023;
- d=n8pjl.ca;
- h=Date:To:From:Subject:Message-Id:MIME-Version:Sender;
- bh=rSfuiJxxoteBB8nWQz9EHh3tEZgaUdP09an5J6pNf38=;
- b=Ca+6e6eX/idiXFhgWkZ7D0GoBiwBySUcpRLuBgaSSf7WCNoIf93HVFyXs2rXrg79akmrx5hPgob8
-   J4uo/G9z70lIKk5w03AJgW07l33g8cWFegZV45zqKh8AJA6vLeehyyAH0Uub3H+mqGAchJfrFORj
-   jvH6vwLB2iidIf4eX6Fm09DdmRio+ARWKJjgMLejuf64irGwF7DAK1FXf+VjRhBRtk04SRZMJFEV
-   3dj0hLWm5riaQfl1Uzor68T1zmDpeywDettrbkd4aoxw+b4zU3NkHmV2xgiBDIwYntL3urpFM8g3
-   qOxrqmdExFI7DxTLM7fgicBY0H24TUpXb2ZnvQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; s=prod-yyz-20200204;
- d=yyz1.rp.oracleemaildelivery.com;
- h=Date:To:From:Subject:Message-Id:MIME-Version:Sender;
- bh=rSfuiJxxoteBB8nWQz9EHh3tEZgaUdP09an5J6pNf38=;
- b=GZ7CnAVcXO/xzZb3LyWQTCFbbkqTNrLrZDZ/I3fePfWqk9SmeL67E2Wft45I8EiwQKT6Lm1Ff/ya
-   EEkL6sCWlADcqYXncfvwy+ZFFx4lGAt5Ev5JEek1D1HtwgIkLUD21Px2iE2YJpR/iZ5KhXEVdWnu
-   sjKbSgLAKQLebjvwg1e0LK/1PqsUgcVqYgfx8bK/7DEJ/d4nt+yifZ1RwhBLZWTr6FmeFJGPLSfW
-   KPiof34RG2EJDvf4LK8u6kNtUSbcxSiUGlqzwUJYyOR4xb6mL4JcZqhsG68Kwt6HwcUtJhr1Xmso
-   ksUe1XT6TXTMM+xG4C/M0m6YUza3a+JIRiPMRg==
-Received: by omta-ad1-fd3-102-ca-toronto-1.omtaad1.vcndpyyz.oraclevcn.com
- (Oracle Communications Messaging Server 8.1.0.1.20221212 64bit (built Dec 12
- 2022))
- with ESMTPS id <0ROM00M7IQO383B0@omta-ad1-fd3-102-ca-toronto-1.omtaad1.vcndpyyz.oraclevcn.com> for
- netdev@vger.kernel.org; Tue, 17 Jan 2023 12:28:51 +0000 (GMT)
-From:   Peter Lafreniere <peter@n8pjl.ca>
-To:     kvalo@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, Peter Lafreniere <peter@n8pjl.ca>
-Subject: Re: [PATCH] wifi: rsi: Avoid defines prefixed with CONFIG
-Date:   Tue, 17 Jan 2023 07:28:38 -0500
-Message-id: <20230117122838.5006-1-peter@n8pjl.ca>
-X-Mailer: git-send-email 2.39.0
-In-reply-to: <87mt6h8xu7.fsf@kernel.org>
-References: <87mt6h8xu7.fsf@kernel.org>
-MIME-version: 1.0
-Content-transfer-encoding: 8bit
-Reporting-Meta: AAFB26/OsDs3HpaqMgyiQ+gVr10Eu3gsJyXSTiaqp0dYs2WEvkjae9Bo+cOYXsN/
- U1yayjDbJGkvjRRxA5O6uC24CUPlfHp7L48sYH/IZOgQseb7LqqY3j5vCCEqtiTH
- okImZMPPIHod9KCZQZ76eSbKD1xYq0q+Gue4iUSNkfFnMJEg9g60W/fLqAgeO0rt
- 0gOk0wW+QSte9uO2SaCVwzXRkUGPBC1BdhFWlKr7PcTQxaxWYyrY7fpuZKrpYEQ1
- /hhM86jQUGZI2Q3Ev4nTp+QhLb+wIWkr4EBGJMdSDUOYOrmtYhNZ7TufDl6eUedn
- 13BBpZUqXHtfKbrtorxEpaxKtB/fzrjD7qGiJjAiGWztLIkaFLuWQsEMwFLV5PjX
- XoMUGIkfuKn2LbgTzJYWoHeZ/pAOFkSEHyaplJR8I+6w9qAqzTBTnAUOLw==
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+        with ESMTP id S235993AbjAQM36 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 07:29:58 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E738A35275
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 04:29:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673958554;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=crjrU81uLtw8WwH5QvegQxiaaSw28nWKODPrHB2mY3M=;
+        b=DqJDuPmP7alP36dVb6uCaHqRG76avBf9utMQBlN4qIC2+tnb7xWhNr3kRQd60+FZTpw4r0
+        l3G9PwCscf9/QUSf8cTcD+ZNfJtzOH+8MnhXyjoCRAP7U1Sr56v2nxr03hP02idbJ8+ltx
+        A/ibtgq80WkVnD1z7XkNfOf+Hpm8eb4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-523-dZA_k3azMQmuar0YZreNbw-1; Tue, 17 Jan 2023 07:29:09 -0500
+X-MC-Unique: dZA_k3azMQmuar0YZreNbw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9B1F218E0045;
+        Tue, 17 Jan 2023 12:29:08 +0000 (UTC)
+Received: from firesoul.localdomain (ovpn-208-34.brq.redhat.com [10.40.208.34])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5C4D84085720;
+        Tue, 17 Jan 2023 12:29:08 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 4B48730721A6C;
+        Tue, 17 Jan 2023 13:29:07 +0100 (CET)
+Subject: [PATCH net-next] net: avoid irqsave in skb_defer_free_flush
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        pabeni@redhat.com
+Date:   Tue, 17 Jan 2023 13:29:07 +0100
+Message-ID: <167395854720.539380.12918805302179692095.stgit@firesoul>
+User-Agent: StGit/1.4
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-That would work better, but to me it seems odd to have one define
-with a prefix and the others without. I could change them all, but
-that seems like excessive churn for the very minor 'issue' that
-it fixes.
+The spin_lock irqsave/restore API variant in skb_defer_free_flush can
+be replaced with the faster spin_lock irq variant, which doesn't need
+to read and restore the CPU flags.
 
-After rereadig rsi_load_9113_firmware(), it seems like just dropping
-the CONFIG_ would be a reasonable change that doesn't affect readability.
+Using the unconditional irq "disable/enable" API variant is safe,
+because the skb_defer_free_flush() function is only called during
+NAPI-RX processing in net_rx_action(), where it is known the IRQs
+are enabled.
 
-Cheers,
-Peter
+Expected gain is 14 cycles from avoiding reading and restoring CPU
+flags in a spin_lock_irqsave/restore operation, measured via a
+microbencmark kernel module[1] on CPU E5-1650 v4 @ 3.60GHz.
+
+Microbenchmark overhead of spin_lock+unlock:
+ - spin_lock_unlock_irq     cost: 34 cycles(tsc)  9.486 ns
+ - spin_lock_unlock_irqsave cost: 48 cycles(tsc) 13.567 ns
+
+We don't expect to see a measurable packet performance gain, as
+skb_defer_free_flush() is called infrequently once per NIC device NAPI
+bulk cycle and conditionally only if SKBs have been deferred by other
+CPUs via skb_attempt_defer_free().
+
+[1] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/time_bench_sample.c
+
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+---
+ net/core/dev.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index cf78f35bc0b9..9c60190fe352 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6616,17 +6616,16 @@ static int napi_threaded_poll(void *data)
+ static void skb_defer_free_flush(struct softnet_data *sd)
+ {
+ 	struct sk_buff *skb, *next;
+-	unsigned long flags;
+ 
+ 	/* Paired with WRITE_ONCE() in skb_attempt_defer_free() */
+ 	if (!READ_ONCE(sd->defer_list))
+ 		return;
+ 
+-	spin_lock_irqsave(&sd->defer_lock, flags);
++	spin_lock_irq(&sd->defer_lock);
+ 	skb = sd->defer_list;
+ 	sd->defer_list = NULL;
+ 	sd->defer_count = 0;
+-	spin_unlock_irqrestore(&sd->defer_lock, flags);
++	spin_unlock_irq(&sd->defer_lock);
+ 
+ 	while (skb != NULL) {
+ 		next = skb->next;
+
+
