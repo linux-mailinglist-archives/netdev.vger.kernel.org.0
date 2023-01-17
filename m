@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD62366D9E3
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 10:28:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D09AD66D9E7
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 10:28:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236602AbjAQJ2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 04:28:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60056 "EHLO
+        id S236068AbjAQJ2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 04:28:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236456AbjAQJ1j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 04:27:39 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFE4C20046;
-        Tue, 17 Jan 2023 01:26:03 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id c10-20020a05600c0a4a00b003db0636ff84so1048762wmq.0;
-        Tue, 17 Jan 2023 01:26:03 -0800 (PST)
+        with ESMTP id S236430AbjAQJ1p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 04:27:45 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07DDC265AC;
+        Tue, 17 Jan 2023 01:26:07 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id l41-20020a05600c1d2900b003daf986faaeso4029833wms.3;
+        Tue, 17 Jan 2023 01:26:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=DvSs2sfx/PVbNBqoq0YVCcet27URCbN7ELh13cYBY48=;
-        b=KvsjpNOJ6J5rx5VyuOe1FdOI3OYANDJfftWLYf8M8ij6cQh3xgZUbjijU3KQ242yAu
-         32EfjcrUGStzZ4zHm/heXh99z+ZM4XaFDvfYGL1sIWf4TQWLCjf5kOpWBQrxociDkgXv
-         5s+JMXkGat7ipO615mAZn9mJgBboFE3xRbn/rgRjoYuOpEQjIzq+4SEPfsCSrwtkifFc
-         7jdMMtxiI+xzyL3gJb8iTfbRDges2914KJD8SBpbhZHCBJcTMU3bnqlqtRk//6uc2q0f
-         g01S29xTwgcx+ySAGAxn41ymQeUViSLp95ptVnVsISMJRHoAa5oSoXHyO0Sz08RXWqQ5
-         NYMw==
+        bh=HLCA8Czl5WQ/VKvIIWxUV8C56Hw+2JQ+C9JrrfhSbGo=;
+        b=jTru5zR2JAPq4quFWC8I79DsdGsYxCoutSgm2m7XyTev2bPe3VOuXAt4cXu3wrcaSB
+         BKs+loD/1MuvBKN4SKpUg9c8HOHlQDOAdsbWYxovyxdTOGLDcfn9fxjJsyjxoIxPl7+v
+         Qmfu2H19gDKtKGlrKzEvm3JT1numjOmNllTy2d8g3d+Wq4OvsNcDC4j+sqh9yWoy+r5q
+         37SIfnpuwgXeQWM2nCNLPu+okXuxdHUJI1P7YMwNEdb8oAOOwPKicqjXN/k8cCKySGna
+         I0uDDSVYMK+EtqAg3BlyS7QKRq4XqnqNVIuKigq2nRt3kqmfqegsdyhBZvnVkD7w62/h
+         GkqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=DvSs2sfx/PVbNBqoq0YVCcet27URCbN7ELh13cYBY48=;
-        b=pnxk+fOKNcOYHrbURvFDeScv7p2TBqd7M2wEG5ABZrVeuv1lc9vyFRq4GjInlm5GdJ
-         Up8gf/7za16jdyVbQqnNl42C5zQya4zzX2hdfWPW2bV/Ttlt6Q3LGyh+qU2mLXrLVicE
-         0RIfCorngTBBarsS2Uxpl+aYFUQzQ7uDg7wZlAKT8oXlrGvVwV7FbAOAKDRVFR5pQiig
-         ioOAquNW0h1p9aph5nD1PvXIWgAPjINku2MC4osHaMdhvKoYde7QF3mjzb1x1C6jo5bx
-         Q38PDiOpmDIFqzIRfWys9ccCxyEMzq4VcOKSymNRjsceY1ZBSUmm+3EkfIfB19IT+m8t
-         0iRg==
-X-Gm-Message-State: AFqh2kqjM3n66C+rl8IGSelt78B6VLDc0xqK7a9hdKRsg5F6QpqnykVY
-        A5u20y7fsRNdzCzC2y/FR8I=
-X-Google-Smtp-Source: AMrXdXukdK76oaSHmCtQtqtznspBQIe1WjApGWOcMfh1xZAt3e/p8Q75Uq8IX42KBw5FS6j8pKkdSw==
-X-Received: by 2002:a05:600c:224a:b0:3da:fa15:8658 with SMTP id a10-20020a05600c224a00b003dafa158658mr6756704wmm.32.1673947563106;
-        Tue, 17 Jan 2023 01:26:03 -0800 (PST)
+        bh=HLCA8Czl5WQ/VKvIIWxUV8C56Hw+2JQ+C9JrrfhSbGo=;
+        b=Fb9prVRS67IHuGBcmktjq1B9ziUGQ2geMZRFzVZ3HFtzGhW4b78rLfHcb10/TH/NIV
+         Yd1Ad6iNvmVlxVp34b+DuNMHk2Po3BcZ/TecB1YLflQdBWUuKw3NQ/wRRBo6JhQnZjuw
+         vUkx9ePqyj+jW3KVCPOqruqsY0P3yw43v3XCbERQvzv5CXJoLKCxRWV7182cUslmUsrn
+         SWfIJMen3AgF0USR5Iqww26z6pjJ4KE6WxSS2PZuec9pBnlCZO2oxko6kSOrdO1y/dr+
+         FJkN/OTGH71bJ3Da3yc3vgYNiU2Hxhj5bO1oxozurbuEun5tYJH6NYQW91ztdZ2xXDFS
+         Dn/w==
+X-Gm-Message-State: AFqh2kpjTpn5H9EKzX6FJI92cFJqF9/sJ+j8peMl0lPoIK4MQ97mZmxC
+        18tlcEyJZ5nBZtlvcbYccvY=
+X-Google-Smtp-Source: AMrXdXvHuCNk1VtpA0OUrQyo1zFtGnK0IGNQIdV6FDXstsNqEBiwNf2yQsBIuxfMYjbnhS2So5UMHw==
+X-Received: by 2002:a05:600c:33a8:b0:3d9:ed3b:5b3e with SMTP id o40-20020a05600c33a800b003d9ed3b5b3emr2291508wmp.19.1673947565533;
+        Tue, 17 Jan 2023 01:26:05 -0800 (PST)
 Received: from localhost.localdomain (h-176-10-254-193.A165.priv.bahnhof.se. [176.10.254.193])
-        by smtp.gmail.com with ESMTPSA id u21-20020a7bc055000000b003d9aa76dc6asm48008881wmc.0.2023.01.17.01.26.00
+        by smtp.gmail.com with ESMTPSA id u21-20020a7bc055000000b003d9aa76dc6asm48008881wmc.0.2023.01.17.01.26.03
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 17 Jan 2023 01:26:02 -0800 (PST)
+        Tue, 17 Jan 2023 01:26:04 -0800 (PST)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
@@ -59,9 +59,9 @@ To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         mst@redhat.com, jasowang@redhat.com, ioana.ciornei@nxp.com,
         madalin.bucur@nxp.com
 Cc:     bpf@vger.kernel.org
-Subject: [PATCH net 3/5] virtio-net: execute xdp_do_flush() before napi_complete_done()
-Date:   Tue, 17 Jan 2023 10:25:31 +0100
-Message-Id: <20230117092533.5804-4-magnus.karlsson@gmail.com>
+Subject: [PATCH net 4/5] dpaa_eth: execute xdp_do_flush() before napi_complete_done()
+Date:   Tue, 17 Jan 2023 10:25:32 +0100
+Message-Id: <20230117092533.5804-5-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230117092533.5804-1-magnus.karlsson@gmail.com>
 References: <20230117092533.5804-1-magnus.karlsson@gmail.com>
@@ -94,35 +94,38 @@ being inside a single NAPI instance through to the xdp_do_flush() call
 for RCU protection of all in-kernel data structures. Details can be
 found in the second link below.
 
-Fixes: 186b3c998c50 ("virtio-net: support XDP_REDIRECT")
+Fixes: a1e031ffb422 ("dpaa_eth: add XDP_REDIRECT support")
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 Link: https://lore.kernel.org/r/20221220185903.1105011-1-sbohrer@cloudflare.com
 Link: https://lore.kernel.org/all/20210624160609.292325-1-toke@redhat.com/
 ---
- drivers/net/virtio_net.c | 6 +++---
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 7723b2a49d8e..bc4d79fe3c83 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -1677,13 +1677,13 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+index 3f8032947d86..027fff9f7db0 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+@@ -2410,6 +2410,9 @@ static int dpaa_eth_poll(struct napi_struct *napi, int budget)
  
- 	received = virtnet_receive(rq, budget, &xdp_xmit);
+ 	cleaned = qman_p_poll_dqrr(np->p, budget);
  
-+	if (xdp_xmit & VIRTIO_XDP_REDIR)
++	if (np->xdp_act & XDP_REDIRECT)
 +		xdp_do_flush();
 +
- 	/* Out of packets? */
- 	if (received < budget)
- 		virtqueue_napi_complete(napi, rq->vq, received);
+ 	if (cleaned < budget) {
+ 		napi_complete_done(napi, cleaned);
+ 		qman_p_irqsource_add(np->p, QM_PIRQ_DQRI);
+@@ -2417,9 +2420,6 @@ static int dpaa_eth_poll(struct napi_struct *napi, int budget)
+ 		qman_p_irqsource_add(np->p, QM_PIRQ_DQRI);
+ 	}
  
--	if (xdp_xmit & VIRTIO_XDP_REDIR)
+-	if (np->xdp_act & XDP_REDIRECT)
 -		xdp_do_flush();
 -
- 	if (xdp_xmit & VIRTIO_XDP_TX) {
- 		sq = virtnet_xdp_get_sq(vi);
- 		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq)) {
+ 	return cleaned;
+ }
+ 
 -- 
 2.34.1
 
