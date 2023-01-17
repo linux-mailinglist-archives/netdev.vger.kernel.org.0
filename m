@@ -2,96 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 182A566D9CA
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 10:24:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25D4666D9D7
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 10:27:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236551AbjAQJY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 04:24:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56502 "EHLO
+        id S236572AbjAQJ1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 04:27:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235785AbjAQJYG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 04:24:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4082CFED;
-        Tue, 17 Jan 2023 01:21:40 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78CDFB811F8;
-        Tue, 17 Jan 2023 09:21:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 852E3C433D2;
-        Tue, 17 Jan 2023 09:21:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673947298;
-        bh=xp+LF0wP9tlZDcaFx4O1myVai0CG+iwcsolU0+B9Zf0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=t2upRhvT8/4knHAjg6IPzW/oBkEr7IP3lzIM4Q2x6xay2PmdSU67v/ge3AlhPVPTQ
-         +VRwZMsxcIa1JsZ1dvvsOrX8PSWSxQ9oACW6HFpT4dFXPoFxbkLNbWgQS15WJjRFIx
-         tapVz0aV+X0/KqYEAJDfV2SuU4hG31+/Uzcvm+jBfZFJepNxc6C/FivAW33jk+Th6j
-         CtPFND25Jzos9IGPWq7J0SDidubZCNcujFvqKGedgM/N+fa67ajOeL7cgsZ9CiIX26
-         nzXkDUy4Kka+a9S0bW1+Gn35lO4eQkFCwiT/xQiZNulZxHhG1UDUlTO1DahheS/Run
-         yDQDHE32T2CTw==
-Date:   Tue, 17 Jan 2023 11:21:34 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Maksim Davydov <davydov-max@yandex-team.ru>
-Cc:     rajur@chelsio.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, anish@chelsio.com,
-        hariprasad@chelsio.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net 1/2] net/ethernet/chelsio: fix cxgb4_getpgtccfg wrong
- memory access
-Message-ID: <Y8ZonuQJn8gO9GX5@unreal>
-References: <20230116152100.30094-1-davydov-max@yandex-team.ru>
- <20230116152100.30094-2-davydov-max@yandex-team.ru>
+        with ESMTP id S236529AbjAQJ1K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 04:27:10 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D465D7AAF;
+        Tue, 17 Jan 2023 01:25:56 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id f25-20020a1c6a19000000b003da221fbf48so7615629wmc.1;
+        Tue, 17 Jan 2023 01:25:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=rDB8n1qE+b4M81Y/z+9pblqPEgccUtAWFw7jbD5qKT4=;
+        b=FdtsSICmAWjuKsyaqm+vk9udTwUrQ9fuGKnDyWAzLI+fhDuctGz4KFwfkoP+/VBBv2
+         76U2He3WALpG8yJWw53DmZVRnMPun0/AkzExP8s33eIZSKnpxGzS314py7Rtguriq6Bw
+         sfS/LfULQwM06DYjTh1iGxcx9NelXpCNHXo8SXg54jKSU1xnNNMOrj6LRoXh1RCt7CC2
+         NC8BrGNaX3XOSHj1aNTuO0yBP5qsCc47murIHD/8c+JGwQwWvpLYiwRV3HkluDZvibi7
+         qOJkHyuppYK3GzOMWuFum2AuJvSKeHRZJfDAYcmq+f5v6+jjj5/a30t8Zvll/LJYl/UN
+         n2Ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=rDB8n1qE+b4M81Y/z+9pblqPEgccUtAWFw7jbD5qKT4=;
+        b=lihrNIZaIzCxMvQ1LqHt73A3YXhO4xAzRuhvDthQuUMvyJDXv0bBYMCFwsVp/UrGCs
+         IKSTCG+RTFU8CWheV3SewLV4KGjIdJNv5j4VGgoWkDADA1yjGm989DI2xlr9Mwr/4zJv
+         t9/vtXY2r03qfMS6TO3DHH8JJRTGUhz9UgVrheSDC4E/HsOGAZNILSEj0dqtaL2Z9Zlo
+         pn3Lox22zgGGQbRlH9DjEzqmcONsNRbu1J4sbSehKH08d9ERBepwBKriVq3Wk+sacQ/b
+         qx9heKUePjRQuYW4lho8KPSb4qFu7qBccn35kAT4brwGRGx9HrFyxIC1hijunAZ6pz5Y
+         VSiQ==
+X-Gm-Message-State: AFqh2kpXRhHqVp9vQ0pvKdm9Pnpzr+APW+++IR5pIzbBSuL0ua7nY+zY
+        M/wF6A+CaSLceJ5mvGE4qxSKKHo5eenvVlAXW1Q=
+X-Google-Smtp-Source: AMrXdXu9ZP8i5erS9awbTLNEZSoQqd2j1tEzZDFkutdz6zD+PHCEsebchUHvo6GV41faYIVb/DAS8A==
+X-Received: by 2002:a05:600c:d3:b0:3da:23a4:627e with SMTP id u19-20020a05600c00d300b003da23a4627emr2318060wmm.6.1673947555256;
+        Tue, 17 Jan 2023 01:25:55 -0800 (PST)
+Received: from localhost.localdomain (h-176-10-254-193.A165.priv.bahnhof.se. [176.10.254.193])
+        by smtp.gmail.com with ESMTPSA id u21-20020a7bc055000000b003d9aa76dc6asm48008881wmc.0.2023.01.17.01.25.52
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 17 Jan 2023 01:25:54 -0800 (PST)
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com, maciej.fijalkowski@intel.com,
+        kuba@kernel.org, toke@redhat.com, pabeni@redhat.com,
+        davem@davemloft.net, aelior@marvell.com, manishc@marvell.com,
+        horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com,
+        mst@redhat.com, jasowang@redhat.com, ioana.ciornei@nxp.com,
+        madalin.bucur@nxp.com
+Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>, bpf@vger.kernel.org
+Subject: [PATCH net 0/5] net: xdp: execute xdp_do_flush() before napi_complete_done()
+Date:   Tue, 17 Jan 2023 10:25:28 +0100
+Message-Id: <20230117092533.5804-1-magnus.karlsson@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230116152100.30094-2-davydov-max@yandex-team.ru>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 16, 2023 at 06:20:59PM +0300, Maksim Davydov wrote:
-> *pgid can be in range 0 to 0xF (bitmask 0xF) but valid values for PGID
-> are between 0 and 7. Also the size of pgrate is 8. Thus, we are needed
-> additional check to make sure that this code doesn't have access to tsa.
-> 
-> Found by Linux Verification Center (linuxtesting.org) with the SVACE
-> static analysis tool.
-> 
-> Fixes: 76bcb31efc06 ("cxgb4 : Add DCBx support codebase and dcbnl_ops")
-> Signed-off-by: Maksim Davydov <davydov-max@yandex-team.ru>
-> ---
->  drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c
-> index 7d5204834ee2..3aa65f0f335e 100644
-> --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c
-> +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c
-> @@ -471,7 +471,10 @@ static void cxgb4_getpgtccfg(struct net_device *dev, int tc,
->  		return;
->  	}
->  
-> -	*bw_per = pcmd.u.dcb.pgrate.pgrate[*pgid];
-> +	/* Valid values are: 0-7 */
+Make sure that xdp_do_flush() is always executed before
+napi_complete_done(). This is important for two reasons. First, a
+redirect to an XSKMAP assumes that a call to xdp_do_redirect() from
+napi context X on CPU Y will be follwed by a xdp_do_flush() from the
+same napi context and CPU. This is not guaranteed if the
+napi_complete_done() is executed before xdp_do_flush(), as it tells
+the napi logic that it is fine to schedule napi context X on another
+CPU. Details from a production system triggering this bug using the
+veth driver can be found in [1].
 
-How do you see it?
+The second reason is that the XDP_REDIRECT logic in itself relies on
+being inside a single NAPI instance through to the xdp_do_flush() call
+for RCU protection of all in-kernel data structures. Details can be
+found in [2].
 
-There are lines below that assume something different.
-   477         /* prio_type is link strict */
-   478         if (*pgid != 0xF)
-   479                 *prio_type = 0x2;
+The drivers have only been compile-tested since I do not own any of
+the HW below. So if you are a manintainer, please make sure I did not
+mess something up. This is a lousy excuse for virtio-net though, but
+it should be much simpler for the vitio-net maintainers to test this,
+than me trying to find test cases, validation suites, instantiating a
+good setup, etc. Michael and Jason can likely do this in minutes.
+
+Note that these were the drivers I found that violated the ordering by
+running a simple script and manually checking the ones that came up as
+potential offenders. But the script was not perfect in any way. There
+might still be offenders out there, since the script can generate
+false negatives.
+
+[1] https://lore.kernel.org/r/20221220185903.1105011-1-sbohrer@cloudflare.com
+[2] https://lore.kernel.org/all/20210624160609.292325-1-toke@redhat.com/
+
+Thanks: Magnus
+
+Magnus Karlsson (5):
+  qede: execute xdp_do_flush() before napi_complete_done()
+  lan966x: execute xdp_do_flush() before napi_complete_done()
+  virtio-net: execute xdp_do_flush() before napi_complete_done()
+  dpaa_eth: execute xdp_do_flush() before napi_complete_done()
+  dpaa2-eth: execute xdp_do_flush() before napi_complete_done()
+
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c        | 6 +++---
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c      | 9 ++++++---
+ drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c | 6 +++---
+ drivers/net/ethernet/qlogic/qede/qede_fp.c            | 7 ++++---
+ drivers/net/virtio_net.c                              | 6 +++---
+ 5 files changed, 19 insertions(+), 15 deletions(-)
 
 
-> +	if (*pgid <= 7)
-> +		*bw_per = pcmd.u.dcb.pgrate.pgrate[*pgid];
-
-Why do you think that it is valid simply do not set *bw_per?
-
-Thanks
+base-commit: 87b93b678e95c7d93fe6a55b0e0fbda26d8c7760
+--
+2.34.1
