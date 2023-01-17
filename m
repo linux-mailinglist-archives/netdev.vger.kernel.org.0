@@ -2,208 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FC8C66D3EB
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 02:46:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4888F66D428
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 03:16:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234808AbjAQBqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Jan 2023 20:46:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46674 "EHLO
+        id S235286AbjAQCQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Jan 2023 21:16:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234512AbjAQBqW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 20:46:22 -0500
-Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-db5eur01on2079.outbound.protection.outlook.com [40.107.15.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A5EE1E5FD;
-        Mon, 16 Jan 2023 17:46:21 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dlMaqVSYLpReGCSYuXDHI25I3nq6SymFHVNe33LSQKv3rNMTev4Lmhu+RndyE0VNaQSKBUBQdA9sGfOJz0tSZC4KssavzghcrkvVxSGIr6+fLUURoBVy8+s/BhTzZeIDCCfBHXXcnGaFWKp5c8VtTNuTbSixLZkbiAJPBi1rs6WRtL92BK67PxBCP5zO5Fct/I45VP4bKDKTNpw4OXlxNavdGcgMkdcqr4/6J8tQ1ZZQrlzzWR5cqEu1DwhyfoTCBp4eNjJsDYLkCk3ivm3Cq9eXVawxTAL8Vj/SID5gmcyzxe/niWL+s9wDe5hxbq0XH4fHwDl9Np96+1kfsHhE2Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=di7vQrJbnMYg26LKt2XIkDL95oRq6ul2wzEnUcDnWmY=;
- b=hl+pWAcHV9FlXW2FrXrKhKiKN8khGNPGLCtGFMxXeNfoMes34ISY+gVYD5oi8ek922JKlQwHbWF7RUKFjn2VOna3y71J6A/kDbU4XTtx+6qnmO6wJBdPj6jBg/X8ejBK8pv9j0w/KgnKUlZBX3aGilAy54tLZjH7/g5cKDSnog4+a0wedL+HvTvXMkDfQR5Pshz1jwsuJG2OVA+/QvkBoB2gGrU31rv36wbdXUhOu4Er5KKuA0T0eT0p5aUgVJVY9lFp/d9S8I7+TXsUwVldH+AMup0sBFUYHejwGKzqTN9JmtPXol0LlIBOWIP7HtUR3moDSWqcq9+CeuhLhImOrQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=di7vQrJbnMYg26LKt2XIkDL95oRq6ul2wzEnUcDnWmY=;
- b=SR9d207BE++9NRXtpOHrr9a1sO3pRsPRbeBLYzj8EWH79sFMcE9A6J2p48hNRFjyuNQ3LGXdZRFqpnZpyKoTP/jezeqwj17aFxB7ljJLLpWlrjwdfR3lRZ2rVYkCNcBFk/Mgnv6RrY+Uj1m5axa4kUdWrKaeBgbdH7U5z785D2U=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by AM8PR04MB7411.eurprd04.prod.outlook.com (2603:10a6:20b:1d8::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.12; Tue, 17 Jan
- 2023 01:46:16 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::e203:47be:36e4:c0c3]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::e203:47be:36e4:c0c3%7]) with mapi id 15.20.6002.012; Tue, 17 Jan 2023
- 01:46:16 +0000
-Message-ID: <279205f3-0e89-a66b-7446-5acbfe18e8d6@oss.nxp.com>
-Date:   Tue, 17 Jan 2023 09:45:58 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0
-Subject: Re: [PATCH v1 05/20] ARM: dts: imx6qdl: use enet_clk_ref instead of
- enet_out for the FEC node
-Content-Language: en-US
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Abel Vesa <abelvesa@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Lee Jones <lee@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        kernel@pengutronix.de, Fabio Estevam <festevam@gmail.com>,
-        linux-clk@vger.kernel.org
-References: <20230113142718.3038265-1-o.rempel@pengutronix.de>
- <20230113142718.3038265-6-o.rempel@pengutronix.de>
- <76716956-3f15-edd0-e9e2-bdba78de54f9@oss.nxp.com>
- <20230116052622.GA980@pengutronix.de>
-From:   Peng Fan <peng.fan@oss.nxp.com>
-In-Reply-To: <20230116052622.GA980@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SGBP274CA0015.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::27)
- To DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+        with ESMTP id S235193AbjAQCQY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Jan 2023 21:16:24 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D2CE2331B;
+        Mon, 16 Jan 2023 18:16:23 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id y19so9512978edc.2;
+        Mon, 16 Jan 2023 18:16:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=SBHH5FzfccMmW32bjhWXzbJMdoz9l8k0pEXILz+K/G4=;
+        b=Xl1eixT2wQcyDnNB929ADbEnCtq/OPkfs3Df44lrgkdR7Dtcv8dcM4dSdRxmjcgHbi
+         4OjieMETZzrr4pcO/FPkmN0VdH028SxvqyLf9ubYIIb9vvBX/vt2t8I8CW2hT5mM+28f
+         Sag9uGq43lnbaj9ByMf0acjTwVd/q1i25P9Ovdr17wDY4kI4XyPbWHK9cDknocQPvknC
+         HXiZpzzkudGm+S1zufj9vqH335TYYEvFNy/QoHnyxdrV3XF3YnfUH2o198vsL17uwyrG
+         6f1F6sRAAuwyDKuIT9eKNIIhA6Zvlcs5ICxk2MkVpVkyVHWhEKMaUAzb5h1TaJEBcmvE
+         cMvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=SBHH5FzfccMmW32bjhWXzbJMdoz9l8k0pEXILz+K/G4=;
+        b=sJSGms8h9d1byspnBi3u/QGfmGfv2iDQn3C+sjQxzGhkOjn2grg6intdRl9ZKYu7pv
+         9C5j7UUir5LNgpr4LIxYVPZ3IDQgxHXqS7XQgHoGALeV2OI5v2J60mBX7Y4zh7p0PQal
+         RTeV/mEhUOz5lgHbSsujNRY7BeZjK8CFIa0tQtLL9PCCgSkNDeH+aWohp6eBKlgGDYTZ
+         2AcrINnOfR8eH8uTz0julgE7/2nBorAdjCO+uwLKk2MZqjfd5L90r3yLwwoLvqXGCibn
+         l2OnU3nkZn/TsPSykuBqj8ZNPVUumw/wGTR/oiR4t+XC/dPr4FKKsRHiziilS3Ni0z7A
+         vmkg==
+X-Gm-Message-State: AFqh2kri1c7yWguHCOyJuCnNvkrUit7g5XRoke2yqkp+Wz/Z67VD5KZt
+        JSy87oozy8BYeFSTCC48zJUVBgsBDkjMgvJKa9og42v4nf0=
+X-Google-Smtp-Source: AMrXdXs1BabaqynfU4EP/SWQXq0h7y29wxFIADNUYGGatv0TblCffUaiP5c83qyBcrFUvFnA+etya6Odiurz99leiJE=
+X-Received: by 2002:aa7:d1c3:0:b0:49a:b8ee:ef4b with SMTP id
+ g3-20020aa7d1c3000000b0049ab8eeef4bmr118623edp.143.1673921781795; Mon, 16 Jan
+ 2023 18:16:21 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DU0PR04MB9417:EE_|AM8PR04MB7411:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2e3cfe8f-254d-4967-9886-08daf82c9e69
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GXbpM6Vy1Hj2i2SThHIAEEiub/pOi4rpqRwmuQvqobvOR2C/9t2bUCKCleJ8e12JdFElYpe5/8GNE1mIpX2DbZNSWCXjf0jSbuAsFatraWqoKAvGVZ2BjWPRVpkYe5QjzlGt0Zx4ikAHkNiHCf5YfGJ06oTN8xk0eTzKao6Gfs7+OJ8voO5nVp7/voWeHGobPeq+dw+vPenwy1ImVxfNWpwHDB7ygHSnkJ1zEZA2npwpwynWq2wq2vjNIKSUOUrwo8oZkUiOqXZ2RJhi+TjjpItVlnuAH/PEg9JwRlvFZLrC7wV3Pc5+7OueHLjx8+EZWx0tk3V47ISlJkJ6uO4FHk/sNjh63uP4W2fgCxT8RF2nNqttBlcN0fjQengSbhjGcEROCE0uQMf7amdrLDMBm9s2NFrUNlCQY9Uekoc4Zx/+98eB2bQos7uf39JXIHzmjQ5wY9yJejE3/lmOz4TRvda7LuyFETfModRYTAY7AbnimwGU37MZUieNjzgyOfZJ4kCNzx10PxQ8sG4O9tw/xsptd/h9nNhkG5YxP/63b2xpa4woaAwnO2PFoG2wa77eOXugg4BAEpXEjiVu9czbt/jtvj8uC99TKYP9PDn67a1l4HeTLcxbGuQGf1Kl0aGX0nWShsnGHj9V39GZRs71WLowDu10cfMO14G9+35her8wFVoxTToEoV77EsiPKC++hzQ6tslm4Ww3gWAgwPGgK1h2bB+N44FGLuZZffkN1bm9pORY6bel606PvFMzIFWGYn6h+2UmL9sqmBZYIVghUVIS+oLHWYoXQVi/ohsvG98=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(376002)(136003)(39860400002)(366004)(451199015)(6486002)(478600001)(52116002)(38350700002)(2906002)(38100700002)(86362001)(6512007)(2616005)(83380400001)(31696002)(53546011)(6666004)(6506007)(26005)(186003)(66946007)(5660300002)(4326008)(66476007)(7416002)(31686004)(66556008)(41300700001)(8676002)(316002)(8936002)(6916009)(54906003)(44832011)(32563001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?b0RiTmRQdUpranI5Zms0UFBUMmdzYWdLZGV6RmkvQWdySVBTeGFSeE9UYzdG?=
- =?utf-8?B?Uk9TR3g4aXE1TlI4eVFLZWUvNGFVWVNhNmZQL1VGWjlRTGVIQm5rZjRONmw5?=
- =?utf-8?B?M2o5OFNPZHhJenF5UDZwd1M4TlBZMXBIRDJ2cHk2ZTBsWHFxSktFbzB2M1dG?=
- =?utf-8?B?MEJRVUpWb1dsL0RjTHdlTE9HbjNmSVM2SUxtSnJHbmorUkJxYnp3OExic1dE?=
- =?utf-8?B?VU9BRUlsZHBuQmhJRjZ4VE9INGdQNE1ZcU5NNmpRSzk2SDZrbEpHMXFtNmpX?=
- =?utf-8?B?QWpIa0QydmNZSEhMZUMvL3B1U1NIZXVmT2lNdmo2V0NySlIxQnZZVUtMZmNn?=
- =?utf-8?B?ZmgxcVRiMG5oc00xRHhQQjJoVmNMZEw3czhMVEp5dzNkbEEvdDVZbFpqYVoy?=
- =?utf-8?B?UFQwTlo3NlFTWWxhNWw0ZzYwTmh0dTRmMkpTeUJEMXNOVTRGZStCaXVybEdm?=
- =?utf-8?B?U2t6eGsvV1ZtbVpkd1pHQjlmUWJsOExtdTlTUk44RTBtUmNSVmZYS1R5M0cy?=
- =?utf-8?B?K1QwNkFHcWFzRWNFSHhBdE1oOU5ZQUVObWVxOWdyQ0NHcURtenVvMTNkSVBF?=
- =?utf-8?B?SmZ2Q3h3ZWZrTTlBalp2bWJ5UjBvYXdjTUhLTjhHb0JLWS9PdTk5VWo3KzlN?=
- =?utf-8?B?L1FkUlZXbmZSVjlyUnVhVzlQcnJwakJ5YnZKaUNtdjh1Sm1TN3hNeFdxTkJh?=
- =?utf-8?B?YmR0ejRGcjhXaVp4emRKR3YySlZ2UzZxUUV3OENNSGVSZHZkODVXdVlucUVl?=
- =?utf-8?B?TUYvNDcvNXdabkFmMWRidzM5WWt4VW16dnAzTmdSc3MzRTd5enRyVXZKWSs3?=
- =?utf-8?B?Z2NWbWpLOXA2S0h5djBHVTBUSGwxTzFNWWpWOHZ6cGdrOU1PbDdLZzFaSnFs?=
- =?utf-8?B?QXJoeDBvUml1VTdZNkh0ckg1NHJKS1huRVh5OVRxa2ZTRVE0anhQNTZRK0g0?=
- =?utf-8?B?blozYlNsRTY2V2YzanRXNHIxYzRRc21rYUJNb3pzMGN2QWtGZjZMWHJLTjg2?=
- =?utf-8?B?K3JTenJ6Z0cveThPRFpTaHpoVnpMNGN6UFIxUW9Rb2FNUXMwMFZaWXNnQjU2?=
- =?utf-8?B?NExCYzVrUTBrVWVvNUNmZXZNamQxRU92TnJhQ0FoMktlaVBWa1R5MlEvMHZu?=
- =?utf-8?B?NzRTUnJGTm5WUE1qMHpzUGtBMUxTaXh6azBnTHo0VFNpZjhjMWNvR1dESEtU?=
- =?utf-8?B?NWRyRkNvdHdSRzlpcXVaZGVyTjhBTW8rQkd2ZTZyQ0VlTFczMS9MTmhXTTJ3?=
- =?utf-8?B?cm9WbVFleVVpZU9WSDhNdCtGTFNad0xFWkppdHREUDdKZUMzT1BmaUJPSjc5?=
- =?utf-8?B?MUk2OWdJbWRFczk1NDgybkVYUDgwNlNiYmZneGVTOVBNZXc0SzVPTWVZRXdX?=
- =?utf-8?B?L3Y2WW5yUGZBTCtlS2R3NTJESWtGNXNUU0dTNG9FT3Vaa2RVbVp3RjVONEtv?=
- =?utf-8?B?Z3cyeTFFQks2bXZXNHJRZTJWVVp0WkJHZDRXZDVBREwzdFRQVW1zckk5VEdY?=
- =?utf-8?B?c2k1b2NSWFlrWEJFMFpmV0Q4K1NSLzF2Qkk0YVU4QTFYaWV2WTZMcUxSeUFE?=
- =?utf-8?B?Q3BHNUlVR1loa0QxOGVlQUROaFhmd3VkNTE1L0FnaGJ4SmVscTNLT29YTFNC?=
- =?utf-8?B?MWRFR2ZUNkZHc2VuQUNPbFJxeGJPTVVVeDF6blhnZFJINnA1NjU0a24wVGxN?=
- =?utf-8?B?QTY0ajFYS0ViSEdIbElzdGlENzVWTU02U0FieHRPcnhodHE2SnJPUUpOTTlq?=
- =?utf-8?B?Z05YR2RpWGpGUUVpd2VwMHVLakgzVHRIcTJUdnE4Mzk2c2o2cTZXZWNNcTc2?=
- =?utf-8?B?Z2pyd1V1Vk5RSjB3cEhHQUtxMndFT2FYMDJibkE3UXp2dGFDdHBZbGpGbm9m?=
- =?utf-8?B?S2twY1NTUlF4eEYzVC9JQ3Mrak1zdDFXMmtSa2E3TEtFaDY5VmY1WGhWcTRt?=
- =?utf-8?B?S25lKzE3RWpRSHg4WG9KZUlCMlhpSkFINkxWRmtmQlIvRStONWxxOEJacHBy?=
- =?utf-8?B?QTVPRlJ2SXI1NmRubVpVMVVPWHJmbXlXT2gzems5WkxscHBRRXV5UFRLNlQx?=
- =?utf-8?B?T0pHa2thVzRqWlJtRWtqVmh2eXB2VGRsUTdyWUdnSVYwblNHZE5rYjk0RU5S?=
- =?utf-8?Q?3mM77Ujef4Ko8JHTWKzL/AmfR?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2e3cfe8f-254d-4967-9886-08daf82c9e69
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jan 2023 01:46:16.7263
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Li7QN4M0Wvl2l/u6ujtcMYZOJi+rjCSkrUCVtOyVwhUy/J5EnXUbWmttWMDLv+GDtkArJZLhO8+QPA1VSrknMg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB7411
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230116103341.70956-1-kerneljasonxing@gmail.com> <20230116165344.30185-1-kuniyu@amazon.com>
+In-Reply-To: <20230116165344.30185-1-kuniyu@amazon.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Tue, 17 Jan 2023 10:15:45 +0800
+Message-ID: <CAL+tcoB1-MqMf3Yn_qBTbTC9UNBhVW+93j30KJ9zaangkfQHWA@mail.gmail.com>
+Subject: Re: [PATCH v5 net] tcp: avoid the lookup process failing to get sk in
+ ehash table
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
+        kernelxing@tencent.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jan 17, 2023 at 12:54 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+>
+> From:   Jason Xing <kerneljasonxing@gmail.com>
+> Date:   Mon, 16 Jan 2023 18:33:41 +0800
+> > From: Jason Xing <kernelxing@tencent.com>
+> >
+> > While one cpu is working on looking up the right socket from ehash
+> > table, another cpu is done deleting the request socket and is about
+> > to add (or is adding) the big socket from the table. It means that
+> > we could miss both of them, even though it has little chance.
+> >
+> > Let me draw a call trace map of the server side.
+> >    CPU 0                           CPU 1
+> >    -----                           -----
+> > tcp_v4_rcv()                  syn_recv_sock()
+> >                             inet_ehash_insert()
+> >                             -> sk_nulls_del_node_init_rcu(osk)
+> > __inet_lookup_established()
+> >                             -> __sk_nulls_add_node_rcu(sk, list)
+> >
+> > Notice that the CPU 0 is receiving the data after the final ack
+> > during 3-way shakehands and CPU 1 is still handling the final ack.
+> >
+> > Why could this be a real problem?
+> > This case is happening only when the final ack and the first data
+> > receiving by different CPUs. Then the server receiving data with
+> > ACK flag tries to search one proper established socket from ehash
+> > table, but apparently it fails as my map shows above. After that,
+> > the server fetches a listener socket and then sends a RST because
+> > it finds a ACK flag in the skb (data), which obeys RST definition
+> > in RFC 793.
+> >
+> > Besides, Eric pointed out there's one more race condition where it
+> > handles tw socket hashdance. Only by adding to the tail of the list
+> > before deleting the old one can we avoid the race if the reader has
+> > already begun the bucket traversal and it would possibly miss the head.
+> >
+> > Many thanks to Eric for great help from beginning to end.
+> >
+> > Fixes: 5e0724d027f0 ("tcp/dccp: fix hashdance race for passive sessions")
+> > Suggested-by: Eric Dumazet <edumazet@google.com>
+> > Signed-off-by: Jason Xing <kernelxing@tencent.com>
+> > Link: https://lore.kernel.org/lkml/20230112065336.41034-1-kerneljasonxing@gmail.com/
+>
+> I guess there could be regression if a workload has many long-lived
 
+Sorry, I don't understand. This patch does not add two kinds of
+sockets into the ehash table all the time, but reverses the order of
+deleting and adding sockets only. The final result is the same as the
+old time. I'm wondering why it could cause some regressions if there
+are loads of long-lived connections.
 
-On 1/16/2023 1:26 PM, Oleksij Rempel wrote:
-> On Mon, Jan 16, 2023 at 09:01:08AM +0800, Peng Fan wrote:
->> Hi Oleksij,
->>
->> On 1/13/2023 10:27 PM, Oleksij Rempel wrote:
->>> Old imx6q machine code makes RGMII/RMII clock direction decision based on
->>> configuration of "ptp" clock. "enet_out" is not used and make no real
->>> sense, since we can't configure it as output or use it as clock
->>> provider.
->>>
->>> Instead of "enet_out" use "enet_clk_ref" which is actual selector to
->>> choose between internal and external clock source:
->>>
->>> FEC MAC <---------- enet_clk_ref <--------- SoC PLL
->>>                            \
->>> 			  ^------<-> refclock PAD (bi directional)
->>>
->>> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
->>> ---
->>>    arch/arm/boot/dts/imx6qdl.dtsi | 4 ++--
->>>    1 file changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/arch/arm/boot/dts/imx6qdl.dtsi b/arch/arm/boot/dts/imx6qdl.dtsi
->>> index ff1e0173b39b..71522263031a 100644
->>> --- a/arch/arm/boot/dts/imx6qdl.dtsi
->>> +++ b/arch/arm/boot/dts/imx6qdl.dtsi
->>> @@ -1050,8 +1050,8 @@ fec: ethernet@2188000 {
->>>    				clocks = <&clks IMX6QDL_CLK_ENET>,
->>>    					 <&clks IMX6QDL_CLK_ENET>,
->>>    					 <&clks IMX6QDL_CLK_ENET_REF>,
->>> -					 <&clks IMX6QDL_CLK_ENET_REF>;
->>> -				clock-names = "ipg", "ahb", "ptp", "enet_out";
->>> +					 <&clks IMX6QDL_CLK_ENET_REF_SEL>;
->>> +				clock-names = "ipg", "ahb", "ptp", "enet_clk_ref";
->>
->>
->> Please also update fec binding, otherwise there will be dtbs check error.
-> 
-> Hm, there is no restriction on enet_clk_ref use or requirements to use
-> enet_out in Documentation/devicetree/bindings/net/fsl,fec.yaml
-> 
-> Do I missing something?
+> connections, but the change itself looks good.  I left a minor comment
+> below.
+>
+> Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+>
 
-After check, seems using enet_out would trigger dtbs_check error, using
-enet_clk_ref would not as what you did in this patch. So your patch is fine.
+Thanks for reviewing :)
 
-   clock-names:
-     minItems: 2
-     maxItems: 5
-     items:
-       enum:
-         - ipg
-         - ahb
-         - ptp
-         - enet_clk_ref
-         - enet_out
-         - enet_2x_txclk
+>
+> > ---
+> > v5:
+> > 1) adjust the style once more.
+> >
+> > v4:
+> > 1) adjust the code style and make it easier to read.
+> >
+> > v3:
+> > 1) get rid of else-if statement.
+> >
+> > v2:
+> > 1) adding the sk node into the tail of list to prevent the race.
+> > 2) fix the race condition when handling time-wait socket hashdance.
+> > ---
+> >  net/ipv4/inet_hashtables.c    | 17 +++++++++++++++--
+> >  net/ipv4/inet_timewait_sock.c |  6 +++---
+> >  2 files changed, 18 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> > index 24a38b56fab9..f58d73888638 100644
+> > --- a/net/ipv4/inet_hashtables.c
+> > +++ b/net/ipv4/inet_hashtables.c
+> > @@ -650,8 +650,20 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
+> >       spin_lock(lock);
+> >       if (osk) {
+> >               WARN_ON_ONCE(sk->sk_hash != osk->sk_hash);
+> > -             ret = sk_nulls_del_node_init_rcu(osk);
+> > -     } else if (found_dup_sk) {
+> > +             ret = sk_hashed(osk);
+> > +             if (ret) {
+> > +                     /* Before deleting the node, we insert a new one to make
+> > +                      * sure that the look-up-sk process would not miss either
+> > +                      * of them and that at least one node would exist in ehash
+> > +                      * table all the time. Otherwise there's a tiny chance
+> > +                      * that lookup process could find nothing in ehash table.
+> > +                      */
+> > +                     __sk_nulls_add_node_tail_rcu(sk, list);
+> > +                     sk_nulls_del_node_init_rcu(osk);
+> > +             }
+> > +             goto unlock;
+> > +     }
+> > +     if (found_dup_sk) {
+> >               *found_dup_sk = inet_ehash_lookup_by_sk(sk, list);
+> >               if (*found_dup_sk)
+> >                       ret = false;
+> > @@ -660,6 +672,7 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
+> >       if (ret)
+> >               __sk_nulls_add_node_rcu(sk, list);
+> >
+> > +unlock:
+> >       spin_unlock(lock);
+> >
+> >       return ret;
+> > diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
+> > index 1d77d992e6e7..6d681ef52bb2 100644
+> > --- a/net/ipv4/inet_timewait_sock.c
+> > +++ b/net/ipv4/inet_timewait_sock.c
+> > @@ -91,10 +91,10 @@ void inet_twsk_put(struct inet_timewait_sock *tw)
+> >  }
+> >  EXPORT_SYMBOL_GPL(inet_twsk_put);
+> >
+> > -static void inet_twsk_add_node_rcu(struct inet_timewait_sock *tw,
+> > +static void inet_twsk_add_node_tail_rcu(struct inet_timewait_sock *tw,
+> >                                  struct hlist_nulls_head *list)
+>
+> nit: Please indent here.
+>
 
-Regards,
-Peng.
+Before I submitted the patch, I did the check through
+./script/checkpatch.py and it outputted some information (no warning,
+no error) as you said.
+The reason I didn't change that is I would like to leave this part
+untouch as it used to be. I have no clue about whether I should send a
+v7 patch to adjust the format if necessary.
 
+Thanks,
+Jason
 
-> 
-> Regards,
-> Oleksij
+>
+> >  {
+> > -     hlist_nulls_add_head_rcu(&tw->tw_node, list);
+> > +     hlist_nulls_add_tail_rcu(&tw->tw_node, list);
+> >  }
+> >
+> >  static void inet_twsk_add_bind_node(struct inet_timewait_sock *tw,
+> > @@ -147,7 +147,7 @@ void inet_twsk_hashdance(struct inet_timewait_sock *tw, struct sock *sk,
+> >
+> >       spin_lock(lock);
+> >
+> > -     inet_twsk_add_node_rcu(tw, &ehead->chain);
+> > +     inet_twsk_add_node_tail_rcu(tw, &ehead->chain);
+> >
+> >       /* Step 3: Remove SK from hash chain */
+> >       if (__sk_nulls_del_node_init_rcu(sk))
+> > --
+> > 2.37.3
