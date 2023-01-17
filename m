@@ -2,85 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53EF366DC0F
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 12:15:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7581E66DC14
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 12:16:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236825AbjAQLPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 06:15:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36088 "EHLO
+        id S236814AbjAQLQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 06:16:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236824AbjAQLOY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 06:14:24 -0500
+        with ESMTP id S236852AbjAQLQR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 06:16:17 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B88A2BF09
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 03:13:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2912384E
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 03:14:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673954013;
+        s=mimecast20190719; t=1673954089;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=vVeaTGASPv1kGBiW2cadKKQWQOpTUI7wfN8iiDBz0BA=;
-        b=O+ck+DY3SXlWOlOX5mxlNHJ1E6ywHRGddpjfhInmC/vnDBVhQwtaD8Tq3I8BVsvd/rDg8n
-        zx/arQgkpsWUF220iog6FS5Pa8Xw49XzUl2xDYR1dPAdQmryiF9EUWc5Efn7gEINu7YYh6
-        0OVdy1V8rx9vx2SQIfYnkGddpMqcVZs=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=nZmHQlRdGLmMiq6W5if2O2O6948Uerv8yyVbiiAO0fg=;
+        b=GW96iWFoZRzfyE6MuIhEoqKhsjdGPlmbL2mOB6J5KTByb+Mr+GFNrDn/9fXTVtyU19Ile+
+        6lesXvX3tYYO/S/w5zYnMqSCms4khgKF3SJiARUJH6xWdej20Q/FkscZNHRT4q6VL1AgVH
+        yHVoTtZKksxuOsYkpXbAHKLsXZfvejw=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-437-cwwqgmozNQG8U1ChQEJ03A-1; Tue, 17 Jan 2023 06:13:32 -0500
-X-MC-Unique: cwwqgmozNQG8U1ChQEJ03A-1
-Received: by mail-ed1-f69.google.com with SMTP id r14-20020a05640251ce00b0047d67ab2019so20973757edd.12
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 03:13:32 -0800 (PST)
+ us-mta-655-89DRPlpcMOuNyw6trV-GwA-1; Tue, 17 Jan 2023 06:14:48 -0500
+X-MC-Unique: 89DRPlpcMOuNyw6trV-GwA-1
+Received: by mail-qk1-f200.google.com with SMTP id bi3-20020a05620a318300b00702545f73d5so22389837qkb.8
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 03:14:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=vVeaTGASPv1kGBiW2cadKKQWQOpTUI7wfN8iiDBz0BA=;
-        b=UlJp+dn4hI8q1p38nWrslHfZ1dkEFN5tpZ8tP1gXxw9/b4bJ3L+bHNzb0yK9JQQNho
-         ujFm69wq2mf+mKsvTVibtutODepsRvVr0laZ3sbeKhZJPMsxrVvuZeoVwI6elaqRztUx
-         Icu7gvwB7KsdTpS3QMlVQRqDwL+vDdyIgJ1bp6c3EC3QaVJfoYavmtcSQJWr6horTwpA
-         y57Y2yoo12htUoIBAOBKfmI8JoBcbojk0E+kORaFESacTQ+zIl/As2Jvs5+AuamDB3QN
-         qrbxL+VzIakkNbPizNWTuZtqN67AE31/0ayMYOz3qRbGvCEXqwOt5Nyojo8UgwsE5mx4
-         AN7g==
-X-Gm-Message-State: AFqh2krW3q2xW46BRRFdp0gfXcZGl1YHEuiggZF2uEx2z/nLkY29sZzc
-        FR+3lNws791V1amddshuSdcC38qBE1AiGrnHLNBqZ/p0FD7HjmJnQ00868vRuqNuVvC9b/Lfox3
-        WZTb3txl/+DJT1VF7
-X-Received: by 2002:a17:907:a710:b0:7c0:f71b:8b3 with SMTP id vw16-20020a170907a71000b007c0f71b08b3mr2466713ejc.57.1673954011075;
-        Tue, 17 Jan 2023 03:13:31 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXtPZDixG9TLpun/SMNQnX17ICdLTjoy+jxl4m2jO1TWNjWpvZPz4AV1mc28x6gsOj1074jdtg==
-X-Received: by 2002:a17:907:a710:b0:7c0:f71b:8b3 with SMTP id vw16-20020a170907a71000b007c0f71b08b3mr2466686ejc.57.1673954010746;
-        Tue, 17 Jan 2023 03:13:30 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id y19-20020a1709060a9300b0084debc351b3sm9763012ejf.20.2023.01.17.03.13.30
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=nZmHQlRdGLmMiq6W5if2O2O6948Uerv8yyVbiiAO0fg=;
+        b=IaCIjehjS+whiytZunOQLWQOhTZXPB4HBIy3lW2NVXYBcfgsAxC1oatlcvVGSR0jFC
+         HCERF0AJbnkKXoc5Cvlj6cf0k9FcpzHkkmDXLKalA7FaqKN7nPY55H7DmT6a44HeFddv
+         pFhx1WBjNyZvSPCYzydNlbrxnYFS+DoZ6dAaUHw15M7MyaBOmOPmBPP1ZFs6torzpLs6
+         IYgbTrztrjgHTiQFgODLlPr6A+O7K7a8O0YNRtWCJ5RB/Kkt3Aq9s6C8nw7iMlxcRCFR
+         2GD5NjiayhjYcIhDP4hNpCPYOSTRppxClaAcnhm4pdRi9NPGjlX62HdZSFYN1oIv3f/L
+         tVHA==
+X-Gm-Message-State: AFqh2kppBZGdSF+GuWA9JdZNH+dfGhLsfmJbBwDPMVsqorF5N+n7h95L
+        ZvQAo+/VmFO5XSAq6C2QNTTnstpUj5PeLagzMFXprcbJgtfcx2zc1hGrw/Gpg2E52rMx1/aoBtD
+        2zG7aDpMkAbBFoI7x
+X-Received: by 2002:a05:6214:5c84:b0:534:b2be:d226 with SMTP id lj4-20020a0562145c8400b00534b2bed226mr3816038qvb.20.1673954087647;
+        Tue, 17 Jan 2023 03:14:47 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXtpnh13zWO+ij6ysgGXoV6p3xCCsh/hZBvy1P0VcWQE+PWqNdDbJOZaHzodmB/0MLbuKC1ryA==
+X-Received: by 2002:a05:6214:5c84:b0:534:b2be:d226 with SMTP id lj4-20020a0562145c8400b00534b2bed226mr3816019qvb.20.1673954087351;
+        Tue, 17 Jan 2023 03:14:47 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-115-179.dyn.eolo.it. [146.241.115.179])
+        by smtp.gmail.com with ESMTPSA id c23-20020a05620a269700b006fb11eee465sm20294931qkp.64.2023.01.17.03.14.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Jan 2023 03:13:30 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id B26F39010E0; Tue, 17 Jan 2023 12:13:29 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
-        magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com, maciej.fijalkowski@intel.com,
-        kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net,
-        aelior@marvell.com, manishc@marvell.com,
-        horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com,
-        mst@redhat.com, jasowang@redhat.com, ioana.ciornei@nxp.com,
-        madalin.bucur@nxp.com
-Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>, bpf@vger.kernel.org
-Subject: Re: [PATCH net 0/5] net: xdp: execute xdp_do_flush() before
- napi_complete_done()
-In-Reply-To: <20230117092533.5804-1-magnus.karlsson@gmail.com>
-References: <20230117092533.5804-1-magnus.karlsson@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 17 Jan 2023 12:13:29 +0100
-Message-ID: <87lem1ct2e.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        Tue, 17 Jan 2023 03:14:46 -0800 (PST)
+Message-ID: <90a213180cdc9792dfaf5271ea4e61fc07573f0d.camel@redhat.com>
+Subject: Re: [PATCH net-next] ipv6: fix reachability confirmation with
+ proxy_ndp
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Gergely =?ISO-8859-1?Q?Risk=F3?= <gergely.risko@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     yoshfuji@linux-ipv6.org, edumazet@google.com, davem@davemloft.net,
+        dsahern@kernel.org, Jakub Kicinski <kuba@kernel.org>
+Date:   Tue, 17 Jan 2023 12:14:44 +0100
+In-Reply-To: <CAMhZOOx3fnS6VtU5iKcyN7jAULG5ghRmTJYu8FaOYfkjpo2-XQ@mail.gmail.com>
+References: <20230114185243.3265491-1-gergely.risko@gmail.com>
+         <20230116205320.155f58be@kernel.org>
+         <CAMhZOOx3fnS6VtU5iKcyN7jAULG5ghRmTJYu8FaOYfkjpo2-XQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+MIME-Version: 1.0
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -88,49 +82,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Magnus Karlsson <magnus.karlsson@gmail.com> writes:
+Hello,
 
-> Make sure that xdp_do_flush() is always executed before
-> napi_complete_done(). This is important for two reasons. First, a
-> redirect to an XSKMAP assumes that a call to xdp_do_redirect() from
-> napi context X on CPU Y will be follwed by a xdp_do_flush() from the
+On Tue, 2023-01-17 at 11:29 +0100, Gergely Risk=C3=B3 wrote:
+> (resent to the mailing list too without stupid default Gmail HTML, sorry)
+>=20
+> On Tue, Jan 17, 2023 at 5:53 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > Is this a regression? Did it use to work at any point in time?
+>=20
+> Yes, this is a regression.
+>=20
+> Here is the proof from 2020: https://github.com/lxc/lxd/issues/6668
+>=20
+> Here people discuss that the multicast part works after setting
+> /proc/sys/net/ipv6/conf/eth0/proxy_ndp, but the unicast part only
+> works if they set conf/all/proxy_ndp.
+>=20
+> So there was a point in time when the unicast worked. :)
+>=20
+> The inconsistency regarding all/eth0 with multicast/unicast, I plan to
+> address in a separate patch, but I still need to do my homework
+> regarding that (more code reading), to make sure that I'm
+> understanding the context and the original intention enough.
+>=20
+> The regression was introduced by Kangmin Park, as kindly pointed out
+> by David Ahern.  In my opinion they ran into this regression, because
+> they were just looking for places, where finalization statements were
+> not properly replicated in front of return statements.  At least there
+> is no proper explanation in the regression introducing code.
+>=20
+> That's why this time I added a big comment in the hopes of protecting
+> ourselves in the future.
+>=20
+> > We need to decide whether it needs to be sent for 6.1 and stable.
+> > If not we should soften the language (specifically remove the "fix"
+> > from the subject) otherwise the always-eager stable team will pull
+> > it into stable anyway :|
+>=20
+> I tried to read up on all the requirements as much as possible, but
+> yes, I'm a first time committer, and it shows :(
+>=20
+> I was thinking that this is non-urgent, as it's been like this since
+> 2021, and people although complain on the internet, but not enough to
+> actually do something about it, and it looked like that the logic is
+> "next is free", "6.1 needs to have reasons", so I decided to chicken
+> out and go for next.  If in the current form the patch can be sent for
+> 6.1 and stable, I would prefer that, as I currently have to compile my
+> own kernel with this patch in my production system and it is a
+> regression after all... :)
+>=20
+> > Also - you haven't CCed the mailing list, you need to do so for
+> > the patch to be applied.
+>=20
+> Yes, another noob mistake, the first point where as a new person I
+> found out about this, is when I sent to the mailing list ONLY, and in
+> the CI/CD I got the error message that I should CC the maintainers.
+> The proper list of email addresses to copy-paste to the git send-email
+> command is not published before you make a mistake.  At that point if
+> I send the mailing list again, then the patch duplicates in patchwork,
+> so I decided to just mail the maintainers separately, probably I
+> should have came up with a better way...
+>=20
+> My next patch will be all better.  Do you prefer to reject this and
+> then I can resend the whole thing the proper way (fixing typos/grammar
+> too in the comments and commit message)?
 
-Typo in 'followed' here (and in all the copy-pasted commit messages).
+Thank you for the detailed explanation.
 
-> same napi context and CPU. This is not guaranteed if the
-> napi_complete_done() is executed before xdp_do_flush(), as it tells
-> the napi logic that it is fine to schedule napi context X on another
-> CPU. Details from a production system triggering this bug using the
-> veth driver can be found in [1].
->
-> The second reason is that the XDP_REDIRECT logic in itself relies on
-> being inside a single NAPI instance through to the xdp_do_flush() call
-> for RCU protection of all in-kernel data structures. Details can be
-> found in [2].
->
-> The drivers have only been compile-tested since I do not own any of
-> the HW below. So if you are a manintainer, please make sure I did not
+I think it's better if you repost this (for net), so we keep the
+process clean. You can (and should) retain the reviewed-by tag by David
+A., including it into the SoB area.
 
-And another typo in 'maintainer' here.
+Cheers,
 
-> mess something up. This is a lousy excuse for virtio-net though, but
-> it should be much simpler for the vitio-net maintainers to test this,
-> than me trying to find test cases, validation suites, instantiating a
-> good setup, etc. Michael and Jason can likely do this in minutes.
->
-> Note that these were the drivers I found that violated the ordering by
-> running a simple script and manually checking the ones that came up as
-> potential offenders. But the script was not perfect in any way. There
-> might still be offenders out there, since the script can generate
-> false negatives.
->
-> [1] https://lore.kernel.org/r/20221220185903.1105011-1-sbohrer@cloudflare=
-.com
-> [2] https://lore.kernel.org/all/20210624160609.292325-1-toke@redhat.com/
-
-Otherwise LGTM!
-
-For the series:
-
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+Paolo
 
