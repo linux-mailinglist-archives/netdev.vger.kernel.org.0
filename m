@@ -2,132 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A439D66D65F
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 07:37:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 779F966D67B
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 07:44:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235559AbjAQGhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 01:37:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41946 "EHLO
+        id S235787AbjAQGoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 01:44:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235543AbjAQGhW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 01:37:22 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D9BE1E1FD
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 22:37:21 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id o13so27865672pjg.2
-        for <netdev@vger.kernel.org>; Mon, 16 Jan 2023 22:37:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=schmorgal.com; s=google;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=IswnaFn7cR4ZkSdf9jjOPE9ALLrECiM1CkBW098zMK4=;
-        b=Hwq3JCVqHbksgwzF1n2KC4NM9H8CbNGLrWlhZ/s2xbnBadSNKbr592/YLYqR51OdlS
-         nE9HZqlYdZ+yimozFk+f53Wat126xAqiz6FDZi1LwsFA/JlOv//LWpYzetyQnt8pTApL
-         vyhmEsuWP4YQCsTrdptHJ4t5cil1jTQJh2954=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=IswnaFn7cR4ZkSdf9jjOPE9ALLrECiM1CkBW098zMK4=;
-        b=cTutNxT9ito2UcXTUNf3s9qHwNoO5UslbC8UOnaTzpQ8Xe5ljH1wqRPoPmPw3BcX+9
-         KEIpeGhMZpkLZWuEV2TBhRfHH/R1qTsOgE6TJXPQ1VPtec2DlNJ/l+Cca5Ta26HNZLz0
-         BwsKNQWho14Om+0teeJvZFCNiNwWqz6agtXt8wf+MlBJwfRm05tRt892INNPME2qJlm/
-         CTraxueKvvo8smXcBH/utGfx4L3t09NOWfxK/JFsyk/LXEEYOwaZI3WLEqnFgX4z8Mkh
-         8qc7WUSyGmZfIpuIXjk6CuZ1WfpgZn9m8NQXgn163o0Q4rAto1XjUcNqTeUHPXJTQnwL
-         EaTA==
-X-Gm-Message-State: AFqh2kp8Qhsyknn1klTFULj7UgSlj81zbrWQVx9jz/MyfS0gUnu5/k/g
-        CffCV6dBSqvdWXfSuTuvaHAqKA==
-X-Google-Smtp-Source: AMrXdXu0ottuuiFGoJumE1YUuFKMjIxw/VEdlVjsUgyAMFsb3uU2qwF4vrTGQYZ6JAjJFK2A8+Zk5A==
-X-Received: by 2002:a05:6a21:2d88:b0:ad:79bb:a417 with SMTP id ty8-20020a056a212d8800b000ad79bba417mr2169798pzb.9.1673937440887;
-        Mon, 16 Jan 2023 22:37:20 -0800 (PST)
-Received: from [192.168.1.33] ([192.183.212.197])
-        by smtp.googlemail.com with ESMTPSA id h22-20020a17090acf1600b00228e0a8478csm10257616pju.41.2023.01.16.22.37.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Jan 2023 22:37:20 -0800 (PST)
-Message-ID: <dc527fe5-d182-37fa-2ee2-8ee5ac9f4882@schmorgal.com>
-Date:   Mon, 16 Jan 2023 22:37:18 -0800
+        with ESMTP id S235731AbjAQGoE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 01:44:04 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605942005F;
+        Mon, 16 Jan 2023 22:44:04 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F033260F75;
+        Tue, 17 Jan 2023 06:44:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77024C433D2;
+        Tue, 17 Jan 2023 06:44:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673937843;
+        bh=Udx4r/gXUNGK85PWEZcekLE/XqdTwwDIDXtajpnNYVI=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=buBlts+XQqKp13V+BFgCkpNF388yQyubFLcLITHOOXcUAPFff2l8KpxcsyLtTD/tq
+         tqhHAJM51MrZrEujZHxyFChV6stIEjmgGvKeh7RqOfaVfw/bhCaprzk3sDFhK+9hvH
+         Tx4ORdY2v8qOTuH/FViR7CBDUGHgpLtGrhJUtm9cvcF0laqaIy/NpaaPrFr35YND0c
+         EzNMVlxaS8s1tX6enWKJEMRaahRAv4laQR24fMBlzoLb2s4UvtQ3ohU5XTMUHXXLJQ
+         YAbcQpawWwH0P+DX7Ph3cxxiWO5C9HMaSbncin6p5d78c6oRqpl/dZ93JKbeItqUqi
+         sxDqgW/WC0Tiw==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Peter Lafreniere <peter@n8pjl.ca>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] wifi: rsi: Avoid defines prefixed with CONFIG
+References: <20230117032729.9578-1-peter@n8pjl.ca>
+Date:   Tue, 17 Jan 2023 08:44:00 +0200
+In-Reply-To: <20230117032729.9578-1-peter@n8pjl.ca> (Peter Lafreniere's
+        message of "Mon, 16 Jan 2023 22:27:29 -0500")
+Message-ID: <87mt6h8xu7.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Content-Language: en-US
-To:     Ping-Ke Shih <pkshih@realtek.com>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Dan Williams <dcbw@redhat.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        "libertas-dev@lists.infradead.org" <libertas-dev@lists.infradead.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20230116202126.50400-1-doug@schmorgal.com>
- <20230116202126.50400-2-doug@schmorgal.com>
- <651627a8399f4cb49feb336e6f5bd9dc@realtek.com>
-From:   Doug Brown <doug@schmorgal.com>
-Subject: Re: [PATCH v3 1/4] wifi: libertas: fix capitalization in mrvl_ie_data
- struct
-In-Reply-To: <651627a8399f4cb49feb336e6f5bd9dc@realtek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/16/2023 7:39 PM, Ping-Ke Shih wrote:
-> 
-> 
->> -----Original Message-----
->> From: Doug Brown <doug@schmorgal.com>
->> Sent: Tuesday, January 17, 2023 4:21 AM
->> To: Kalle Valo <kvalo@kernel.org>; David S. Miller <davem@davemloft.net>; Eric Dumazet
->> <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>
->> Cc: Dan Williams <dcbw@redhat.com>; Simon Horman <simon.horman@corigine.com>;
->> libertas-dev@lists.infradead.org; linux-wireless@vger.kernel.org; netdev@vger.kernel.org; Doug Brown
->> <doug@schmorgal.com>
->> Subject: [PATCH v3 1/4] wifi: libertas: fix capitalization in mrvl_ie_data struct
->>
->> This struct is currently unused, but it will be used in future patches.
->> Fix the code style to not use camel case.
->>
->> Signed-off-by: Doug Brown <doug@schmorgal.com>
->> ---
->>   drivers/net/wireless/marvell/libertas/types.h | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/wireless/marvell/libertas/types.h
->> b/drivers/net/wireless/marvell/libertas/types.h
->> index cd4ceb6f885d..398e3272e85f 100644
->> --- a/drivers/net/wireless/marvell/libertas/types.h
->> +++ b/drivers/net/wireless/marvell/libertas/types.h
->> @@ -105,7 +105,7 @@ struct mrvl_ie_header {
->>
->>   struct mrvl_ie_data {
->>   	struct mrvl_ie_header header;
->> -	u8 Data[1];
->> +	u8 data[1];
-> 
-> data[]. see [1]
-> 
-> [1] https://www.kernel.org/doc/html/latest/process/deprecated.html#zero-length-and-one-element-arrays
+Peter Lafreniere <peter@n8pjl.ca> writes:
 
-Hi Ping-Ke,
+> To avoid confusion, it is best to only define CONFIG_* macros in Kconfig
+> files. Here we change the name of one define, which causes no change to
+> functionality.
+>
+> Signed-off-by: Peter Lafreniere <peter@n8pjl.ca>
+> ---
 
-Thanks for the link. There are several other cases of this same syntax
-for flexible trailing arrays in this file, so I will update this patch
-in the next version of the series to fix them all.
+[...]
 
-> 
->>   } __packed;
->>
->>   struct mrvl_ie_rates_param_set {
->> --
->> 2.34.1
-> 
+> --- a/drivers/net/wireless/rsi/rsi_hal.h
+> +++ b/drivers/net/wireless/rsi/rsi_hal.h
+> @@ -69,7 +69,7 @@
+>  #define EOF_REACHED			'E'
+>  #define CHECK_CRC			'K'
+>  #define POLLING_MODE			'P'
+> -#define CONFIG_AUTO_READ_MODE		'R'
+> +#define CONFIGURE_AUTO_READ_MODE	'R'
+
+I would prefer to add a prefix instead, for example
+RSI_CONFIG_AUTO_READ_MODE or something like that.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
