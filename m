@@ -2,155 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF58566DB07
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 11:27:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D7A966DB0A
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 11:28:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236423AbjAQK1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 05:27:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36296 "EHLO
+        id S236715AbjAQK1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 05:27:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236374AbjAQK1e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 05:27:34 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F8A279A9;
-        Tue, 17 Jan 2023 02:27:34 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id y1so33075418plb.2;
-        Tue, 17 Jan 2023 02:27:34 -0800 (PST)
+        with ESMTP id S236504AbjAQK1b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 05:27:31 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF9E727988
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 02:27:30 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id o75so33438477yba.2
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 02:27:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=kmOnku77wCpJTbZOm6646yTM8PiOjj7loFTP8/nFzXY=;
-        b=JaR9n1yIXU8Xys+G0tkz6C7PSqR9i0vQP6wK/Qb4e6Bby8BKdUMQFaniTYM+6DXD+U
-         +meRrjihC59W7zV8CV2T60XZGmhVcOAIlX207PcQhlxwyLB71sqSqq7CoW1TfxQ+WklD
-         vpeSGibDIK4/k5TDmZI0uIYTOfuPWayTKOlWMTVSmngoQjlM3Bxl3VyQFCadUor8azxp
-         pR8R1EQFXa/ArWCTgLm1ONwDPwjRoksC1bUCQTYvKRyozLphC/P7n0fMbldW40qLqj1b
-         Ds5Dazv2fMlTFQ43RwOt06CBvQXRVFzItzBXT7rfmJIVN6MUHnJqY8vlL90U+dQgrybX
-         3qiA==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=gd57rGEcdWWuRwQ3UNFckqiK6zpPBQSmZrDNmjzfeP0=;
+        b=E9CH+PaXQAWy1e2XEFmqO4KgSBiAufMVvqRHual7m82yHlgT0ThZ4ZCwrXOE4X9PG5
+         Arx9a8j4E8YsWGWspx7PEIc2fOA97IbXW1DXkm6sWqdjVPD7DLc1RXhQklFz1TaKHXL8
+         2/gR1xMb9yN3kYg8S6mPxvHkgpoEUrgfufNAN7s+OGPCs4Ef4Bk+WWORj5tHoAuPKaqG
+         UCZ9/UFFHkG90j3YPFUhZD4ovZLvxL5nwIw7Q3fCPjUO4OmyOtfg7VUtrFNhDZHYDqRq
+         UH9IQryl2vXqEd+mCuN4GzCIuLxebmh7eni0srrkRy2YgEmZx+m+lV6+S5imDVLbcEyB
+         g/MA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=kmOnku77wCpJTbZOm6646yTM8PiOjj7loFTP8/nFzXY=;
-        b=SKyz9FJLTv4KKEoy3if6/1RIvR0FbtBbvn7xIg9kmgZXTyEcNntOK9TH7f+hfgmVrU
-         5w7DSWbV4K4oy4gsnmzRkRyEi8LmPlACcZOkB2oldqn76gwwj8r8hqROvh+uy9cso+3v
-         1kMZ4CpvNWqF/9OtMnX94J0yFzZwPya9rWQfLvT6KMYt88m9je/IdarG21eYR5mUVrb6
-         zwB+X2WsCmKL5d32RjiZ/Ccuw42lIab8l6CI55xVXfsPmWOy6MdikJT9sQlK6OZmrPm4
-         WfOx5fuAXInzXAs2rXSuiH0sQTvJdtqIQgvuPzzvWsyX30P/pAPVWMZYbwGaJfENg8td
-         8HLA==
-X-Gm-Message-State: AFqh2koASa66D+KJzFWZshvfn/k2R3VU9Khsm/jp4tRqAA4V2eRn+HMF
-        kGXbXfcpxKvuLqUDYdqBpkE=
-X-Google-Smtp-Source: AMrXdXvLAqhc4oGk1i82O5NAA03rkDUCOFcyZ1urDuBJ7SYLHLU0Pr+NOGlOoGVyVwxRluvgf7o48w==
-X-Received: by 2002:a17:902:7106:b0:194:66db:7789 with SMTP id a6-20020a170902710600b0019466db7789mr18287556pll.50.1673951253720;
-        Tue, 17 Jan 2023 02:27:33 -0800 (PST)
-Received: from li540-143.members.linode.com ([2600:3c01::f03c:92ff:fe6e:f0f6])
-        by smtp.gmail.com with ESMTPSA id q11-20020a170902eb8b00b00189c93ce5easm20796153plg.166.2023.01.17.02.27.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Jan 2023 02:27:33 -0800 (PST)
-From:   Jiajia Liu <liujia6264@gmail.com>
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiajia Liu <liujia6264@gmail.com>
-Subject: [PATCH] e1000e: Add ADP_I219_LM17 to ME S0ix blacklist
-Date:   Tue, 17 Jan 2023 10:26:46 +0000
-Message-Id: <20230117102645.24920-1-liujia6264@gmail.com>
-X-Mailer: git-send-email 2.21.3
+        bh=gd57rGEcdWWuRwQ3UNFckqiK6zpPBQSmZrDNmjzfeP0=;
+        b=WA5d5hsAj8rFJSzPK8o7PEOmHyWwH2BoF2eMUbYYD7lIvkBs6CkL69ZZEKcJeAcoTL
+         rrQyntiDz+SYbHuQBd3IhtmR/agui/L0y/GnZsehsKF0KuqB7Dq1szKvZeYTldCe56ca
+         QqfXS098Az1GlPixcQKr54mVFtK31NRtmHc0kBfDGJdEeQwnAeCIKLYnqzYI+pfu/kqu
+         1nH8H3vuzaONkd/J9jmx25fAcS6izW8TJ6nWxTnOGrRkekgVgsQ0bAtcrhvYOjZc3B6T
+         rjlA5ToJjbwweb/JwULCyrbKeQmJ0TtADBqbc6JQPHRX1VYCoiWOz1SA+xxg12/rN+q7
+         Aehw==
+X-Gm-Message-State: AFqh2kphtMIQPo1ePooCVdKjQOso197J+ZYbY0eScITeB4ey16jCsU3n
+        iqJG9VCBkTRShSr55dglCJoXGsZGKtMDH9ISzvCruA==
+X-Google-Smtp-Source: AMrXdXuYtT7gaArygUAJde2Wh4lhKMLjkMrIS6eVRynv7GFbOJ15EoODCuPsRKtOEk9pEw5EBBCciioZmXoi6L2wD8c=
+X-Received: by 2002:a25:c543:0:b0:7d5:dc31:81ed with SMTP id
+ v64-20020a25c543000000b007d5dc3181edmr401047ybe.407.1673951249934; Tue, 17
+ Jan 2023 02:27:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+References: <20230112-inet_hash_connect_bind_head-v3-1-b591fd212b93@diag.uniroma1.it>
+ <cf3c7895be29d46e814d356bb5afad1203815253.camel@redhat.com>
+In-Reply-To: <cf3c7895be29d46e814d356bb5afad1203815253.camel@redhat.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 17 Jan 2023 11:27:18 +0100
+Message-ID: <CANn89iK6Bq4SrGf0yKOXN3tffrX2gfoL=y+C91EuQGcT_2Ya2Q@mail.gmail.com>
+Subject: Re: [PATCH net-next v3] inet: fix fast path in __inet_hash_connect()
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Pietro Borrello <borrello@diag.uniroma1.it>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jkl820.git@gmail.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I219 on HP EliteOne 840 All in One cannot work after s2idle resume
-when the link speed is Gigabit, Wake-on-LAN is enabled and then set
-the link down before suspend. No issue found when requesting driver
-to configure S0ix. Add workround to let ADP_I219_LM17 use the dirver
-configured S0ix.
+On Tue, Jan 17, 2023 at 11:21 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> On Sat, 2023-01-14 at 13:11 +0000, Pietro Borrello wrote:
+> > __inet_hash_connect() has a fast path taken if sk_head(&tb->owners) is
+> > equal to the sk parameter.
+> > sk_head() returns the hlist_entry() with respect to the sk_node field.
+> > However entries in the tb->owners list are inserted with respect to the
+> > sk_bind_node field with sk_add_bind_node().
+> > Thus the check would never pass and the fast path never execute.
+> >
+> > This fast path has never been executed or tested as this bug seems
+> > to be present since commit 1da177e4c3f4 ("Linux-2.6.12-rc2"), thus
+> > remove it to reduce code complexity.
+> >
+> > Signed-off-by: Pietro Borrello <borrello@diag.uniroma1.it>
+> > ---
+> > Changes in v3:
+> > - remove the fast path to reduce code complexity
+> > - Link to v2: https://lore.kernel.org/r/20230112-inet_hash_connect_bind_head-v2-1-5ec926ddd985@diag.uniroma1.it
+> >
+> > Changes in v2:
+> > - nit: s/list_entry/hlist_entry/
+> > - Link to v1: https://lore.kernel.org/r/20230112-inet_hash_connect_bind_head-v1-1-7e3c770157c8@diag.uniroma1.it
+> > ---
+> >  net/ipv4/inet_hashtables.c | 12 +-----------
+> >  1 file changed, 1 insertion(+), 11 deletions(-)
+> >
+> > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> > index d039b4e732a3..b832e7a545d4 100644
+> > --- a/net/ipv4/inet_hashtables.c
+> > +++ b/net/ipv4/inet_hashtables.c
+> > @@ -994,17 +994,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+> >       u32 index;
+> >
+> >       if (port) {
+> > -             head = &hinfo->bhash[inet_bhashfn(net, port,
+> > -                                               hinfo->bhash_size)];
+> > -             tb = inet_csk(sk)->icsk_bind_hash;
+> > -             spin_lock_bh(&head->lock);
+> > -             if (sk_head(&tb->owners) == sk && !sk->sk_bind_node.next) {
+> > -                     inet_ehash_nolisten(sk, NULL, NULL);
+> > -                     spin_unlock_bh(&head->lock);
+> > -                     return 0;
+> > -             }
+> > -             spin_unlock(&head->lock);
+> > -             /* No definite answer... Walk to established hash table */
+> > +             local_bh_disable();
+> >               ret = check_established(death_row, sk, port, NULL);
+> >               local_bh_enable();
+> >               return ret;
+>
+> LGTM, thanks!
+>
+> Eric, do you have any additional comment?
 
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=216926
-Signed-off-by: Jiajia Liu <liujia6264@gmail.com>
----
+Oh right, I have missed this version.
 
-It's regarding the bug above, it looks it's causued by the ME S0ix.
-And is there a method to make the ME S0ix path work?
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
- drivers/net/ethernet/intel/e1000e/netdev.c | 25 ++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
-
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 04acd1a992fa..7ee759dbd09d 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -6330,6 +6330,23 @@ static void e1000e_flush_lpic(struct pci_dev *pdev)
- 	pm_runtime_put_sync(netdev->dev.parent);
- }
- 
-+static u16 me_s0ix_blacklist[] = {
-+	E1000_DEV_ID_PCH_ADP_I219_LM17,
-+	0
-+};
-+
-+static bool e1000e_check_me_s0ix_blacklist(const struct e1000_adapter *adapter)
-+{
-+	u16 *list;
-+
-+	for (list = me_s0ix_blacklist; *list; list++) {
-+		if (*list == adapter->pdev->device)
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
- /* S0ix implementation */
- static void e1000e_s0ix_entry_flow(struct e1000_adapter *adapter)
- {
-@@ -6337,6 +6354,9 @@ static void e1000e_s0ix_entry_flow(struct e1000_adapter *adapter)
- 	u32 mac_data;
- 	u16 phy_data;
- 
-+	if (e1000e_check_me_s0ix_blacklist(adapter))
-+		goto req_driver;
-+
- 	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
- 	    hw->mac.type >= e1000_pch_adp) {
- 		/* Request ME configure the device for S0ix */
-@@ -6346,6 +6366,7 @@ static void e1000e_s0ix_entry_flow(struct e1000_adapter *adapter)
- 		trace_e1000e_trace_mac_register(mac_data);
- 		ew32(H2ME, mac_data);
- 	} else {
-+req_driver:
- 		/* Request driver configure the device to S0ix */
- 		/* Disable the periodic inband message,
- 		 * don't request PCIe clock in K1 page770_17[10:9] = 10b
-@@ -6488,6 +6509,9 @@ static void e1000e_s0ix_exit_flow(struct e1000_adapter *adapter)
- 	u16 phy_data;
- 	u32 i = 0;
- 
-+	if (e1000e_check_me_s0ix_blacklist(adapter))
-+		goto req_driver;
-+
- 	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
- 	    hw->mac.type >= e1000_pch_adp) {
- 		/* Keep the GPT clock enabled for CSME */
-@@ -6523,6 +6547,7 @@ static void e1000e_s0ix_exit_flow(struct e1000_adapter *adapter)
- 		else
- 			e_dbg("DPG_EXIT_DONE cleared after %d msec\n", i * 10);
- 	} else {
-+req_driver:
- 		/* Request driver unconfigure the device from S0ix */
- 
- 		/* Disable the Dynamic Power Gating in the MAC */
--- 
-2.30.2
-
+Thanks !
