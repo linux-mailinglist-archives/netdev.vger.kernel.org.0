@@ -2,111 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DAF166E262
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 16:37:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29B4D66E265
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 16:38:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233746AbjAQPhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 10:37:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39804 "EHLO
+        id S231161AbjAQPiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 10:38:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233880AbjAQPgu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 10:36:50 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2077.outbound.protection.outlook.com [40.107.93.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED0241B71
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 07:36:37 -0800 (PST)
+        with ESMTP id S229876AbjAQPgw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 10:36:52 -0500
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2042.outbound.protection.outlook.com [40.107.237.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA03B42DCE
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 07:36:43 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QMy7cikenZzAErXJd8G5+IhugDYUHcplGObY5v6wHBqdcw3pFHIwNvqn3iJ5JprGMHjoDAWgtsh+2x7GqwYSYY/N+TpuCmKPdPDD0g4t6Sfh3eCED7Fx65+l9jV03SN+6P7ZORxFo0uU0/9u/B4LcgWw+JUBbsBptL6l9cyFUj5gjjYoKWXDZNnLwmEFm7L90hiRq7K4rXq4C21pjf25drNHodG6Y/nX03DQuFwfgIkv2YWY6Mj1Qg4anzC/jHqkQRoDx9qo4ilzUNuuT7v/BLa0kLKc+E8yD4zhYnjL8XqaUJC3rx3XGqr1dX+daBSaj5WE7vvk+GcAy/ZhNtUu8Q==
+ b=PjhbDOnDTLRSN7yu0rWzj4DJ+Y4nfAwwUsh5kUl+pUFKmxrQLCNxU6VdzDSnb0lephzc8t+rkIHB4CKSTiGrN0DPF4o+tsNfc6MuBUUPKW5cjzpiY96rH+mYkzVLfeSMh8uYxrI4eRQzb9w0Yh6OzPDpw5xBOReIwsU+2TRCIQFsdTkfH1KvwPmYI+1vkymeXo4zxvj1nR+UDrxiDnehqCqg0VB6nVSSAsJzIx+uTOyeyTRjBrwizMaQwypeHZlsoT5Pw+zSJrHzkS5pO41GZRqlGdTKfThCdTSUg5dCM2TEbVS7KXfKpz4SfiERc9CdfjSHKHdfGyrn/OyugAhA3w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=w0J4LimSn8ZUbTM5j1NedghnIFosV0mMEZMKi+xnnuo=;
- b=XBQYlPEwIJrnKCO8IpDXjVYNYB/fNfzxPgMrgHnNp85bqA+qb4VTUkT5Zv1KPPSIrvgAz02gqDrliO/lLnis/8GnErazEP4rOsTaO6IcJCPkVQIt78F1/yvNjoo1igCAyw9Lf15OqV67qXWvL3C909XUTjGVRX+JHx4iC2Nd+da5esOK2pgRJ3VnmMa9N3StfGatIAkdusC1R9z44Wkib/79K07KwrpO8UiVECf9oKRt/djlFUnL0aMoFE4kI1GiiEzgJzB3pF1YrQ8Gngf0WTYus4HtFuvQf9OSezmSGi4vKqRPrV+utzfgOJY6bpozEY6IH8UE52ab4Ews1AQIkg==
+ bh=TIQQDwfvTLbhjQ8M+d1TIOnF4KhjsVuH8GlTEeV6/Cs=;
+ b=KGqDhzUgdJVyASoA2Sf+blOeRG1HqMoVmkYNPEKyFBJPuNr/lzrhILb6WZ+rH+oBZZtirWpFuwjEx9bMpEbCjdhBzCn2/o+JtBkoOnZkvplQjGydlU9hMQp531WVZItLyUdK3jNqSq2Ab7EcV5ssZDgb23tQXTlWlgstE/ZhNVW1p3U+R67U67TlhNDiXs+6HJtZ2Ikq2QcZaTzkBM48M65Soj6dsf1DSNEnRpPcnl0O0781IvH9wueW58yjiA6NoBA7yt00WVtSl0QdnNSBPTnH8ergJvS2hO/OaFJAvA7rcMhNuhVk0UPgS4Tzak+prnxKG02Uflq9tWAn9SdYkg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w0J4LimSn8ZUbTM5j1NedghnIFosV0mMEZMKi+xnnuo=;
- b=f/WE+FDy3Z+8RbtvCb3fRStqZwMXTLKJs9oeWmnOnjLOeKgRAKBNOyXqKrOwaRyTFjPDmlMpBNKnWJ+NOfRVHT+q8J2Bcjm5fekZde4MNh3YIZc39f6HaRP5S13PWum6AV+UJrd20qCsD+myujmjPVZ7Kk0tu8vM7kOx4isKRWdmwQE1FkA2ZnV9QslYkzeUPuXXA9Kp7N460Ii9jKe7vqZBa1Q5ykFLf5AV9U2fBGS8oyv5MEAL47oBsiHlXwqhrokDA2KRhnDkAG74SnNRIi2iLAGo2Q4i1BbqAoXQ/HZzEHnuC3BCWzO5vgHxp696TKaY79W5w1AZ4fMK87oRNA==
+ bh=TIQQDwfvTLbhjQ8M+d1TIOnF4KhjsVuH8GlTEeV6/Cs=;
+ b=XWD9ohqJ4BhRpZ/8rGp2dMc9kb2IclvQZPUJJc2mRu4UsNv710jcozihhwm3nmdoozJA6RYXE2OXl/6AEljFgyFWjTpTOBjzA6wSw/y8sVyfyHkKJjrWus8tu8Rekgvq+XGWxaBwaWrzRazQNLhczRtXLG/Yvp+NlaXIf6mZ7g0+8ruZTu6tgdIEX6hqenwditpKdNttIgZ8HDEBYnfUyqveMriQSAOYR+0hmiV4bwBL0+5fo3Rbfo7Mlda8oPZxXA+rhUU7b01PS+uu6bPO0APbB0lGCL5g8KtzfQYXwrsIuFpSZSQVSaYMHcKw1djKEz6ORq1ypmcAcSOOsPJWDA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from SJ1PR12MB6075.namprd12.prod.outlook.com (2603:10b6:a03:45e::8)
  by PH8PR12MB6889.namprd12.prod.outlook.com (2603:10b6:510:1c9::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Tue, 17 Jan
- 2023 15:36:35 +0000
+ 2023 15:36:42 +0000
 Received: from SJ1PR12MB6075.namprd12.prod.outlook.com
  ([fe80::6d66:a4bb:4018:3c70]) by SJ1PR12MB6075.namprd12.prod.outlook.com
  ([fe80::6d66:a4bb:4018:3c70%8]) with mapi id 15.20.6002.013; Tue, 17 Jan 2023
- 15:36:35 +0000
+ 15:36:41 +0000
 From:   Aurelien Aptel <aaptel@nvidia.com>
 To:     linux-nvme@lists.infradead.org, netdev@vger.kernel.org,
         sagi@grimberg.me, hch@lst.de, kbusch@kernel.org, axboe@fb.com,
-        chaitanyak@nvidia.com, davem@davemloft.net, kuba@kernel.org,
-        Alexander Viro <viro@zeniv.linux.org.uk>
-Cc:     Ben Ben-Ishay <benishay@nvidia.com>,
-        Aurelien Aptel <aaptel@nvidia.com>, aurelien.aptel@gmail.com,
+        chaitanyak@nvidia.com, davem@davemloft.net, kuba@kernel.org
+Cc:     Aurelien Aptel <aaptel@nvidia.com>, aurelien.aptel@gmail.com,
         smalin@nvidia.com, malin1024@gmail.com, ogerlitz@nvidia.com,
         yorayz@nvidia.com, borisp@nvidia.com
-Subject: [PATCH v9 05/25] iov_iter: skip copy if src == dst for direct data placement
-Date:   Tue, 17 Jan 2023 17:35:15 +0200
-Message-Id: <20230117153535.1945554-6-aaptel@nvidia.com>
+Subject: [PATCH v9 06/25] net/tls,core: export get_netdev_for_sock
+Date:   Tue, 17 Jan 2023 17:35:16 +0200
+Message-Id: <20230117153535.1945554-7-aaptel@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20230117153535.1945554-1-aaptel@nvidia.com>
 References: <20230117153535.1945554-1-aaptel@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: LO2P265CA0202.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:9e::22) To SJ1PR12MB6075.namprd12.prod.outlook.com
+X-ClientProxiedBy: LO2P265CA0198.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:9e::18) To SJ1PR12MB6075.namprd12.prod.outlook.com
  (2603:10b6:a03:45e::8)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: SJ1PR12MB6075:EE_|PH8PR12MB6889:EE_
-X-MS-Office365-Filtering-Correlation-Id: e751f152-765c-4265-5c59-08daf8a09dfb
+X-MS-Office365-Filtering-Correlation-Id: 803e3a51-05e1-4d4e-9182-08daf8a0a1a3
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jd4LJireTVh7DrEZHIT0t+iTWF4cvFnQpUB0R+/IahxSFZTZH2UIloL5Ri4tQZpe94L+9bXx0whzmTvd6JHBZtXqk5RdwZ8PbmdnerTjcS6t9m00jRD0OneT57SpM8r9fZYcIRaVZwJL/SFP3JRHv1Jhh4igebJ/heE4/mWOkoHTkJSp9+vtQS78wjO3E3a7YR0Nn2o70QETd5kpODhPGtc3QKWlYre9Sldw5S4gngpnuOXnEuograTWiFXf1QGJY0kZ3NJIoDxv7VWZG+cR2U/+FDqr59QnvGRk3oW6cGj+iU4h1NGwo3TBQBUrHI9n6PKNxdXfQR9d+tUvCAx7IYsmYrO28VOAoEHNJsE2BbW3doKH2PecNZrmzPm5WMz2MV9iLRIyL+mcCFU4Q43E4JgpydlC1mxXers1iPrIMeY6sAXypE+o6aj8MF7repnG1PH0lIsaF6SLRTWo7BHtNtoiHvADJYNaYWK5M5iCAk0S+hQ1G+7zs919TjoV9maEN1YMXKuzWfQMUxdgFEuvuhmp+r/c8qq6VfiOS4fB+DuVBcqjsmWs/W574Fx9W9660nNeTUUGNlg9bX1vhcTWlHaNzY0yefhMoB/z+IwXyMlCBJ+EmkBfxecZIJNlhC5H4sO1ET+degNH2xBViXZ9KG2+rVjv+6hto40GZmEXTFVZXtc2z33iQ8zVB9ioI9Mm
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ1PR12MB6075.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(366004)(376002)(396003)(39860400002)(136003)(451199015)(2906002)(66946007)(26005)(4326008)(6916009)(36756003)(8676002)(66476007)(66556008)(41300700001)(186003)(6512007)(1076003)(6666004)(107886003)(6506007)(2616005)(83380400001)(86362001)(316002)(54906003)(38100700002)(6486002)(478600001)(921005)(8936002)(5660300002)(7416002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: qTwOr5gg9sXYE5wS93cx9oi8GeDBF4TacfYOnAZ9id3K2hQzt0o9DUdBD/9nhhjfQ/t5MITWdT+pelvd6mU7yTJgqsiZOSiZ4jV+/g7DyXPBA7edk+HxMoKkNcwVSnQpEdkB7YUbQ7zMtwWLt403Txrlj9FIkXCaaOHtdhdDzrL39ukIr+5gathBnocx/dqZ2DYeOfDbxFVGaJSPgRWr4Y2jiPpq5QpD/7tVo82AKlmvI8M5qMB+cDk5klhdSY+L+v03sTLyeyP2By//Iw8BPqmlZLKfh4hfcpLDHEX2SFFCU273btv4LrVDODq5gJWKWQyk2jQTeDSpxzRUqAQu8kg00VUV14qTz9Az6MO3xLQtjm0gn8rIddpXM046kOYwVxTwlqtXB3cNrsy2I5xBwzledMTpMIDfuZgASdnMD7xQR2PHBTeAgMqpTACsklWMkQL2i07GgeZL9tDKVp0ALpROW2a/4bFbA6Ki+HGsMxp6U80FVWC10EyspobOWnzyrseyxt4MgpxyKM6qXhzpHeJ3T7po5E3SIYTghQ5eFzIIk36ggM0gmr7gg22dQXXUpfEznjpcmUijQpchKWk3BybFxia5wutwSOh/6k3c/HBktTUdwuAWJU88awdWhT0tDSuuEkRIPp7f+OnBphfcPQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ1PR12MB6075.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(366004)(376002)(396003)(39860400002)(136003)(451199015)(2906002)(66946007)(26005)(4326008)(36756003)(8676002)(66476007)(66556008)(41300700001)(186003)(6512007)(1076003)(6666004)(107886003)(6506007)(2616005)(83380400001)(86362001)(316002)(38100700002)(6486002)(478600001)(8936002)(5660300002)(7416002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?A1ATf/lbur5IRu1Ld0jCfbVPuCeLo6UKZrPJyvsns3FUj51WjcEtubAMt2zP?=
- =?us-ascii?Q?EIKzDGKyEJ8Gxnr49IRialUi98oP0lpqYxh9r20grbQCVLT7kmQ4Pqq4soKN?=
- =?us-ascii?Q?2AE/kRs7+UdrLi6e3ims/bMYi/SgcbTx7ZpUYoMOE1zDoNwizclZf5nJW19g?=
- =?us-ascii?Q?S/KoCPT9D/FoqeJafT9Di7glrF5SwmarMS+wQflr3bjGjpY2bBRl91+IkQt8?=
- =?us-ascii?Q?KU7U2zv3nYsr6yIKXOkX1fIK3AXrneX8HLdhtGd2gIRj9mbXrmq/Y6tPQITr?=
- =?us-ascii?Q?f7CCgW1w+8tP6XRTNoE1uQeFMuXLPhPD8rMQlrhu/KMBJx2Kr4qh1OXuG52E?=
- =?us-ascii?Q?QvzMzxEypQZ9W+ufGx+lXKK94pxu3xO/y286dbTIUO1fiX8Mt3zhvh7U+BTl?=
- =?us-ascii?Q?UX9GUWAbQ2iB8A5MnCtLGUU7593MXazAfZ6m/sk8YrZSySn9z9ee0/abUqHc?=
- =?us-ascii?Q?NqiA2jiWkw3VfB7J8YKwSrRYnzxo4hWdSCfBwykddudDzpBANr7U9J8KCqD+?=
- =?us-ascii?Q?M/SgkjXZlhgWAickuzdcMIOcirSOYzgY4eCMUx2TV2AzItY8KKPeEopd9PM6?=
- =?us-ascii?Q?qFdA8UJpuymEWhVQnWFMsjUHjsbfv1o437aLFxrbIk9cvssGRZUxd2Tvlm6Z?=
- =?us-ascii?Q?++xCGl0HpdduKaEiNzjodbrngihTn4lFnh6U+5k6pHxkAW2eOtrkivNMOCW8?=
- =?us-ascii?Q?Jxr1JLSsL9+uSQXWVGUM700363chSp8gDuah9jvdXGR34h6VipozWeOurwzO?=
- =?us-ascii?Q?56Vwc/18erYV0EmpyxZqOzARpYxSQx55SLW1nl3ccJNu5HXxIqZ28HDD133G?=
- =?us-ascii?Q?aTOZfLIBQXYj5d0DoDRYJ44K32RLPfcNDtzZtQXnBpOx8vWaB6E4852XtkeV?=
- =?us-ascii?Q?DrghFeLCicvgB8miGrgHARoMM05TXwMWNpHaEDyg3DPLvu+NhIlLkAzfB8u/?=
- =?us-ascii?Q?i2aJKrM3UvSrutA1rmOijavTayHYRmevsBdNAYESmPg5iwHftv3rQY1ln4Km?=
- =?us-ascii?Q?TNK0344fWZO2x8nhZsaBuDWLAjhCWgFbkcPoJgGBj4ndrEOXDxanffGGk6oS?=
- =?us-ascii?Q?4zycQbO+ZKlQX5XP9dthdbpMSgG/8U9tOF+DyCvFlGcysQO0gkknalVZVR6e?=
- =?us-ascii?Q?uJ6iwX+Bz8Wpd48OT6lOSvDP93AdbY0GbKaEuj5Aqjsq0lXlNAhKa2N1s42a?=
- =?us-ascii?Q?B1is3Dfffwjb66roB3YByxnACI9MZPb9dn8zEQv4AIg6gKb/I5s/1mwUf0PE?=
- =?us-ascii?Q?uH5A0oODcuZE6SSsz3pthF3HScAh6gHyuO1DAqqxhZl+pba3k+7UeSTrgYhg?=
- =?us-ascii?Q?/RUoR5O38PDfyzt9c1FM+fVQVLxJINYxE2dYM6ydM6gBcylenm8lf7CARgEp?=
- =?us-ascii?Q?R7MCSKzUs0srxEJPOD7ikQy4TqRalC3VKv5dDL3uzjwdN3H3YT5pEBb30hMN?=
- =?us-ascii?Q?efXRypQxvLuHMnysRb/mYfqoLHRDkbLb9tdpkfrANjJNfkXQX4UDhQdoSkeg?=
- =?us-ascii?Q?mD0RthjcbDnwekpBXb0QfeVRP75/+51R0Fa7gOUEh/ciprsx86zC6Oj9Lmun?=
- =?us-ascii?Q?W2M5yQgHi+4RIYEjiEbxcvJCwe8GwSWRTo2YdIpN?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ihXsTunTP1jvaiQoKXoao76YSssYaoi+h1l9V11+pwoomS1OiZgGJYCwUeWs?=
+ =?us-ascii?Q?1z8JbZ6Zq8RxTs/l9G9zizbVR/gJ6TOoKfcs2+gKgbrlPYB1FVPjC/xxSFT/?=
+ =?us-ascii?Q?V/M19WCJuoUy4MH7SsPgtot6KkQd2zcBKN1b5xgyURh4I104pmk2gKyFfCU0?=
+ =?us-ascii?Q?iXEu09NX4BupFEd37kBx8YYr0/Ow2shoFZmww8nv9D8gDvq2xYpgHwWvoZB5?=
+ =?us-ascii?Q?aALa30kPLwfrLJZCHmlAvBDQNdmKDxo2EVuPaIuE7ywzyDlr7NRJw91XVP+U?=
+ =?us-ascii?Q?Q8H2tJ1LLE4cEaycsUNsET0igY6wqMqO6rm77nMdpUhfEPB740ZxL2tdS9CS?=
+ =?us-ascii?Q?ToJ3p9KuH2kZtPPR3XvLY5WC21wuasK0fM6DmkxW3Wgx6XMzpWwQpm2uOOhd?=
+ =?us-ascii?Q?oqOcKb6AeopTgEiA0MUa6Gq4yQJx1Nlpj8AzKZzE3v3eOIU7MJZ05kYRXNoB?=
+ =?us-ascii?Q?6cVYVYKTGtY/6cjhrNyBpt6aSowMMc7UPylMRLsnSlH+a/4oJG+x5TvLzXYZ?=
+ =?us-ascii?Q?AvLIY+2PhBVqFoQ+c3G9/RLIfXiSn2LR0HgBt0C7cYpHEwGAX2/TXkXNaabi?=
+ =?us-ascii?Q?gtM7LGdt4V47ZQaQXkjRNttBdMQ955dFPl3Bzsvl/SWLIxGL9z0vthwm5Ctl?=
+ =?us-ascii?Q?bsPjFdYsY7NJK/aiFs/grUHRL2IsUKICd1ofl2RfG2//koKpZ2SrnpET936a?=
+ =?us-ascii?Q?tbZ0QjHxZkEFU9zCncVu2CMqMe0o6BkgNMxoBpxUX9c5Euy66+qvOioMKbo/?=
+ =?us-ascii?Q?l8UeSW5FxCLCOJAUfk+GSzqNDJofO7Y7N3Q1jOzqo5BtfYG/bg/8R5x6TLd/?=
+ =?us-ascii?Q?us4DRNmQcTDRCzBZ6hHiBzjt6KSqc4b2MMp4lBiqU1J8NUOZ+vRtwQJR+X/I?=
+ =?us-ascii?Q?K2DcH9Ba0MfeQThfgZOgOpagfbMS7JBAMzla88SJTwcC55AicWVx6cdXDzOB?=
+ =?us-ascii?Q?l+bpi5MNkhSIU/oYPxniqVDB1cPSghbrwUZTNupVYl1f4VcbN6qjc2Tt0GBO?=
+ =?us-ascii?Q?OopUo33usuuR6KZvMmoySaJQDXCPfoY1IRxrrQ0cqc/DIRu3lEtxPnie7tUp?=
+ =?us-ascii?Q?6YGRpNPU6EJSgwuWH8bxdboemXMsk5sWjLV5nmEsMsunxa3BHFLNCAf/T+dd?=
+ =?us-ascii?Q?HLQefXumRYXvfKKzli2fpmO9IgimR1s+iKJSRJTRFj+LEZOOwgAbq25JKZ4b?=
+ =?us-ascii?Q?11iadBPq4j9X8IT4nKjcuGOlVd2LOQxlRJKWGubK+ucuXp6aSjcGBmikxida?=
+ =?us-ascii?Q?3n8S6++EopGPdyhAgU1MJfPMhMjZnAtdMPBp1qa+6qDp8bRPawNOsGv6BhV4?=
+ =?us-ascii?Q?SG2YjzIOXRcmll4Ruj4xwHuHPZT25VC3afpv7Q62kVN/g8XB8SA6vb61XTmb?=
+ =?us-ascii?Q?rmUpyx1pJioyN9w6cNCcxItl5mNmgXkUkotEpdye1s3KLd1RwajFgd7DOZ3v?=
+ =?us-ascii?Q?0p8tJBJEGVVy2qibhv/qEU+0GuiF1T8+YpWF9HcqfnTgvNCwLpbY8r0HEk7I?=
+ =?us-ascii?Q?GaDeCo6pnljonMKNSTO9+rtKUIxPi7ajJwrs98Ukm1pw+ZpgghKzj4yhWYL3?=
+ =?us-ascii?Q?VVSa8qXRwV90YRG+zFdssnV/szT8DxvJqAbAIfKh?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e751f152-765c-4265-5c59-08daf8a09dfb
+X-MS-Exchange-CrossTenant-Network-Message-Id: 803e3a51-05e1-4d4e-9182-08daf8a0a1a3
 X-MS-Exchange-CrossTenant-AuthSource: SJ1PR12MB6075.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jan 2023 15:36:35.6860
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jan 2023 15:36:41.8060
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fSXA/avr9ULv6yYTgTvp8GCV9NL4kBYM7CzBWg6Cg2ueChDo6l2XziwrKkb/NaU7McIUce/Msz0bXUZrcqCTiw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: XQXg+Qqmp1MgTl0plRFOehI5S1cW8yNt3/e0xcBym6IpwtvVa8QM+WTpd1dAiaV26SHTqfuTFLn3lbg/c7shjw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6889
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -118,46 +116,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ben Ben-Ishay <benishay@nvidia.com>
+* remove netdev_sk_get_lowest_dev() from net/core
+* move get_netdev_for_sock() from net/tls to net/core
 
-When using direct data placement (DDP) the NIC could write the payload
-directly into the destination buffer and constructs SKBs such that
-they point to this data. To skip copies when SKB data already resides
-in the destination buffer we check if (src == dst), and skip the copy
-when it's true.
+get_netdev_for_sock() is a utility that is used to obtain
+the net_device structure from a connected socket.
 
+Later patches will use this for nvme-tcp DDP and DDP DDGST offloads.
+
+Suggested-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Ben Ben-Ishay <benishay@nvidia.com>
-Signed-off-by: Boris Pismenny <borisp@nvidia.com>
-Signed-off-by: Or Gerlitz <ogerlitz@nvidia.com>
-Signed-off-by: Yoray Zack <yorayz@nvidia.com>
 Signed-off-by: Shai Malin <smalin@nvidia.com>
 Signed-off-by: Aurelien Aptel <aaptel@nvidia.com>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
 ---
- lib/iov_iter.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ include/linux/netdevice.h |  3 +--
+ net/core/dev.c            | 26 +++++++++++++-------------
+ net/tls/tls_device.c      | 16 ----------------
+ 3 files changed, 14 insertions(+), 31 deletions(-)
 
-diff --git a/lib/iov_iter.c b/lib/iov_iter.c
-index f9a3ff37ecd1..2df634bb6d27 100644
---- a/lib/iov_iter.c
-+++ b/lib/iov_iter.c
-@@ -526,9 +526,15 @@ size_t _copy_to_iter(const void *addr, size_t bytes, struct iov_iter *i)
- 		return copy_pipe_to_iter(addr, bytes, i);
- 	if (user_backed_iter(i))
- 		might_fault();
-+	/*
-+	 * When using direct data placement (DDP) the hardware writes
-+	 * data directly to the destination buffer, and constructs
-+	 * IOVs such that they point to this data.
-+	 * Thus, when the src == dst we skip the memcpy.
-+	 */
- 	iterate_and_advance(i, bytes, base, len, off,
- 		copyout(base, addr + off, len),
--		memcpy(base, addr + off, len)
-+		(base != addr + off) && memcpy(base, addr + off, len)
- 	)
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 289cfdade177..19aaf0531fc5 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3082,8 +3082,7 @@ int init_dummy_netdev(struct net_device *dev);
+ struct net_device *netdev_get_xmit_slave(struct net_device *dev,
+ 					 struct sk_buff *skb,
+ 					 bool all_slaves);
+-struct net_device *netdev_sk_get_lowest_dev(struct net_device *dev,
+-					    struct sock *sk);
++struct net_device *get_netdev_for_sock(struct sock *sk);
+ struct net_device *dev_get_by_index(struct net *net, int ifindex);
+ struct net_device *__dev_get_by_index(struct net *net, int ifindex);
+ struct net_device *dev_get_by_index_rcu(struct net *net, int ifindex);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index cf78f35bc0b9..bd29e056045c 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8152,27 +8152,27 @@ static struct net_device *netdev_sk_get_lower_dev(struct net_device *dev,
+ }
  
- 	return bytes;
+ /**
+- * netdev_sk_get_lowest_dev - Get the lowest device in chain given device and socket
+- * @dev: device
++ * get_netdev_for_sock - Get the lowest device in socket
+  * @sk: the socket
+  *
+- * %NULL is returned if no lower device is found.
++ * Assumes that the socket is already connected.
++ * Returns the lower device or %NULL if no lower device is found.
+  */
+-
+-struct net_device *netdev_sk_get_lowest_dev(struct net_device *dev,
+-					    struct sock *sk)
++struct net_device *get_netdev_for_sock(struct sock *sk)
+ {
+-	struct net_device *lower;
++	struct dst_entry *dst = sk_dst_get(sk);
++	struct net_device *dev, *lower;
+ 
+-	lower = netdev_sk_get_lower_dev(dev, sk);
+-	while (lower) {
++	if (unlikely(!dst))
++		return NULL;
++	dev = dst->dev;
++	while ((lower = netdev_sk_get_lower_dev(dev, sk)))
+ 		dev = lower;
+-		lower = netdev_sk_get_lower_dev(dev, sk);
+-	}
+-
++	dev_hold(dev);
++	dst_release(dst);
+ 	return dev;
+ }
+-EXPORT_SYMBOL(netdev_sk_get_lowest_dev);
++EXPORT_SYMBOL_GPL(get_netdev_for_sock);
+ 
+ static void netdev_adjacent_add_links(struct net_device *dev)
+ {
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index 6c593788dc25..3c298dfb77cb 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -120,22 +120,6 @@ static void tls_device_queue_ctx_destruction(struct tls_context *ctx)
+ 		tls_device_free_ctx(ctx);
+ }
+ 
+-/* We assume that the socket is already connected */
+-static struct net_device *get_netdev_for_sock(struct sock *sk)
+-{
+-	struct dst_entry *dst = sk_dst_get(sk);
+-	struct net_device *netdev = NULL;
+-
+-	if (likely(dst)) {
+-		netdev = netdev_sk_get_lowest_dev(dst->dev, sk);
+-		dev_hold(netdev);
+-	}
+-
+-	dst_release(dst);
+-
+-	return netdev;
+-}
+-
+ static void destroy_record(struct tls_record_info *record)
+ {
+ 	int i;
 -- 
 2.31.1
 
