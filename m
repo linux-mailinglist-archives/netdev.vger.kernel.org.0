@@ -2,85 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6863066D8AE
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 09:51:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7861766D8D7
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 09:56:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236312AbjAQIvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 03:51:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53628 "EHLO
+        id S235651AbjAQI4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 03:56:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236204AbjAQIuo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 03:50:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B652ED69
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 00:50:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D7D2361219
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 08:50:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3885BC433F0;
-        Tue, 17 Jan 2023 08:50:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673945416;
-        bh=p9/XchHLlDhDZ/kIv440MvqH6nGRtJsrFXFWn1BTQf0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=q974K9bPI/lrh99GtmTblN2zgJXdLTDWKicVHVbGLhuuDP1wyQgSsoe+Cx7LqYG3o
-         Opm1Y5awOs3+jGJl8hjL8irm2NR6jR37I/m9pFZgxv8RplBzJmSmrGDZmI7Ls0ZATS
-         EyUxkcQ5RYUS14z8tZGvm2ZfMKGAOTuBZ6BgNWTVN83v8lG1ZiD43MTelQPmp7QTbO
-         NilRWcmRfaQGV+gjJ4+4pWtBwAVCcywaWrOkafEzTGK8dVoutTZ5o33/20SzqduCb6
-         jy5qyzGQAr22b/V584SNhzaLVQwaxpLXgbDTOqHRl0P/xHg1DUxrR5Q7zNqpRhFmtq
-         ee0BdUlnIkUdg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 17DEAC41670;
-        Tue, 17 Jan 2023 08:50:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S235785AbjAQIz7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 03:55:59 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D154C2C;
+        Tue, 17 Jan 2023 00:55:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1673945754; x=1705481754;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=WROUCb8ntrKety6kZXKtQ1SdfnKnooXCndT+0soShOg=;
+  b=BLbubivxSeU5T2OtQL7Wgw+PjQVHnGmU0rfR7/utflobYgWaDTlTYjhR
+   fj5m697pjzY0868ADBKrQOYV7EjhUPmNj9ax1SIQX5MBXpn0qdsZgMh6y
+   WHpnr6tdZsTvRM8FDCrHsXBFKfsKM+/Ew70Utdz1aVsBqddhPy67UWjXL
+   ydQRY56UMzOk9mAIYT7xkbilqhRi3tRpYLhIbjhxZTOt0hrbTd1CwuBeY
+   Lk1PFTusAlT6a4AyHlWOfUrjjNgoTHMehbLz/k+hEt1SC6skszk7NiDj8
+   z9j+XraWqsBYnDmMIhlNbYJm5Hwfm/DI9mYalObljdIwU3Pl4IDswyG2/
+   g==;
+X-IronPort-AV: E=Sophos;i="5.97,222,1669100400"; 
+   d="scan'208";a="196960283"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Jan 2023 01:55:51 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Tue, 17 Jan 2023 01:55:51 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Tue, 17 Jan 2023 01:55:47 -0700
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Steen Hegelund <steen.hegelund@microchip.com>,
+        <UNGLinuxDriver@microchip.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "Casper Andersson" <casper.casan@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        "Nathan Huckleberry" <nhuck@google.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        "Steen Hegelund" <Steen.Hegelund@microchip.com>,
+        Daniel Machon <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Dan Carpenter <error27@gmail.com>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next 0/5] Improve locking in the VCAP API
+Date:   Tue, 17 Jan 2023 09:55:39 +0100
+Message-ID: <20230117085544.591523-1-steen.hegelund@microchip.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCHv4 net-next] sched: add new attr TCA_EXT_WARN_MSG to report tc
- extact message
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167394541609.24163.5061851067282569620.git-patchwork-notify@kernel.org>
-Date:   Tue, 17 Jan 2023 08:50:16 +0000
-References: <20230113034353.2766735-1-liuhangbin@gmail.com>
-In-Reply-To: <20230113034353.2766735-1-liuhangbin@gmail.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, dsahern@kernel.org,
-        marcelo.leitner@gmail.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This improves the VCAP cache and the VCAP rule list protection against
+access from different sources.
 
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+The VCAP Admin lock protects the list of rules for the VCAP instance as
+well as the cache used for encoding and decoding rules.
 
-On Fri, 13 Jan 2023 11:43:53 +0800 you wrote:
-> We will report extack message if there is an error via netlink_ack(). But
-> if the rule is not to be exclusively executed by the hardware, extack is not
-> passed along and offloading failures don't get logged.
-> 
-> In commit 81c7288b170a ("sched: cls: enable verbose logging") Marcelo
-> made cls could log verbose info for offloading failures, which helps
-> improving Open vSwitch debuggability when using flower offloading.
-> 
-> [...]
+This series provides dedicated functions for accessing rule statistics,
+decoding rule content, verifying if a rule exists and getting a rule with
+the lock held, as well as ensuring the use of the lock when the list of
+rules or the cache is accessed.
 
-Here is the summary with links:
-  - [PATCHv4,net-next] sched: add new attr TCA_EXT_WARN_MSG to report tc extact message
-    https://git.kernel.org/netdev/net-next/c/0349b8779cc9
+Steen Hegelund (5):
+  net: microchip: sparx5: Add support for rule count by cookie
+  net: microchip: sparx5: Add support to check for existing VCAP rule id
+  net: microchip: sparx5: Add VCAP admin locking in debugFS
+  net: microchip: sparx5: Improve VCAP admin locking in the VCAP API
+  net: microchip: sparx5: Add lock initialization to the KUNIT tests
 
-You are awesome, thank you!
+ .../microchip/sparx5/sparx5_tc_flower.c       |  34 +--
+ .../net/ethernet/microchip/vcap/vcap_api.c    | 234 ++++++++++++------
+ .../ethernet/microchip/vcap/vcap_api_client.h |   2 +
+ .../microchip/vcap/vcap_api_debugfs.c         |  14 +-
+ .../microchip/vcap/vcap_api_debugfs_kunit.c   |   1 +
+ .../ethernet/microchip/vcap/vcap_api_kunit.c  |   1 +
+ .../microchip/vcap/vcap_api_private.h         |   3 +
+ 7 files changed, 175 insertions(+), 114 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.39.0
 
