@@ -2,127 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 84BD966DDFB
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 13:46:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCD6366DE04
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 13:47:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232496AbjAQMp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 07:45:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34096 "EHLO
+        id S236741AbjAQMr5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 07:47:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236386AbjAQMpy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 07:45:54 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10DB3867F
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 04:45:53 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id c124so33782205ybb.13
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 04:45:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=vxknlLDnsxojLcmQ59vK0ZLgoKiVLvxFkDDOG8faM4Q=;
-        b=uqcNVH96+N3QhwEoMwCX0XF8bNjcpWqYdeKTdHchHyJ1W9LW/wuK5nUhmLsPUlqcjz
-         7kV/qMP8k1vWUT7gagwrWaw7KqPt9kl/O1+irrBaSgnivLTfRy1btFgNHs0Gl7SiH9ji
-         A532CpWpeNHRHouB4wkT/dQOWzRCmCVnPNfD0yz9tD2N5LAH6g28XDE2L5EmjbPp6huX
-         HmiS0kgY0TYGihNMa3JOOZNERhi1bTob47MaH4+Nrpum65ConMPIFPErUsUSkUeMwqmm
-         3hVtI2/l7sxxTNcHAoq5MxayhbFf0SXOt3b2IzUI8MGo0MOoUV//HbK6Oam84fX+IabD
-         kN8Q==
+        with ESMTP id S236980AbjAQMra (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 07:47:30 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A5B38B6A
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 04:46:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673959596;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gLjFI+cZ9jr5RlrvVD8oFfZXil5MeB4wNxOVoiVpd0I=;
+        b=bM8QuIktUt6QnAQDGkSrzaH1obGJqdp64vCiZyt95j4UnLBwOi3zI48BcMct162tT0tPdQ
+        dNq/KzYmRMFpAYTmEnY+W6DgmfahnJLH3krxSXaRCEu2HYv3/a+evYEzdG4UaghyFf9679
+        2hvUAFe7LBI9qd9B7lzIAdcWNAjjgfc=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-470-PxDZfqv8MHmv2StUaHfsYw-1; Tue, 17 Jan 2023 07:46:30 -0500
+X-MC-Unique: PxDZfqv8MHmv2StUaHfsYw-1
+Received: by mail-qk1-f200.google.com with SMTP id j10-20020a05620a288a00b0070630ecfd9bso7431895qkp.20
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 04:46:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vxknlLDnsxojLcmQ59vK0ZLgoKiVLvxFkDDOG8faM4Q=;
-        b=kJnnmuvA+0So6oz+C4KJQ+o6AxM33J0bAgJ08dVXdZb26PNQSlaTW2YdckGGgvgHtq
-         8rZHDcd/7tGFCsXYAvFuE+KEPmxY/P0Ge5vVCpPOgUDp7udw8KuJenYbm4kfuljbts/K
-         8ufLCXIs/DeVxeJk3Eg2M7GU0XYDwQQO8yIva64WitmfClNH7kzsp1LM3ovs4Fet9bfu
-         2qqSeIJ0ayBBZrB+9+pRlBmkfy7RA6FkYZv0UAcxNw+CgPZxW3JPkfbfLMROxTnvrmZ7
-         0ENqzDU3pcup9cFmqeVHzpSAgwdP1s3xiUnWyBN3NNkr5O4u7rFVgdmm2Y6QPDF4Ulgj
-         h3EA==
-X-Gm-Message-State: AFqh2kqSSalX52lAh6qBiYAv/SJsa5QyWge02A1AhvMZ5D2M7PcUcbj8
-        0Rw+5FKAYQ2ZMmacwgOdV4QQ+Wqpyg2oVx3f4BKtRg==
-X-Google-Smtp-Source: AMrXdXuPODb5km1vVWLEOajbQIs4XSX8t9jdXpVQTtsxlKrB6VmMItgiux+DXoc2jwTxQ8qklnWstNG6QM+ZlY6ut2o=
-X-Received: by 2002:a25:ca81:0:b0:7d2:891e:ee59 with SMTP id
- a123-20020a25ca81000000b007d2891eee59mr439542ybg.152.1673959553051; Tue, 17
- Jan 2023 04:45:53 -0800 (PST)
-MIME-Version: 1.0
-References: <20230109174511.1740856-1-brgl@bgdev.pl> <20230109174511.1740856-3-brgl@bgdev.pl>
- <bbd21894-234e-542e-80ec-8f2bb11e268e@linaro.org> <843eed4b-552a-a529-83ed-b813c1346c5f@linaro.org>
- <CAMRc=MfTynAACwy+hB+FxOQ=-gA+307viz7LCUk8zmn4H7BaOQ@mail.gmail.com>
-In-Reply-To: <CAMRc=MfTynAACwy+hB+FxOQ=-gA+307viz7LCUk8zmn4H7BaOQ@mail.gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Tue, 17 Jan 2023 14:45:42 +0200
-Message-ID: <CAA8EJpp=w=PurE8GYBOPWmz5GnuXPo8Wyd=Xho0M_yNRciG+0w@mail.gmail.com>
-Subject: Re: [PATCH 02/18] clk: qcom: add the GCC driver for sa8775p
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux.dev, linux-gpio@vger.kernel.org,
-        netdev@vger.kernel.org, Shazad Hussain <quic_shazhuss@quicinc.com>,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gLjFI+cZ9jr5RlrvVD8oFfZXil5MeB4wNxOVoiVpd0I=;
+        b=FXYhFgcI1jJYNr1bVV3pekgOmf6QSpFnzPGE9Fh04KSR0/0yoH4qtLOD5s9anb1aO9
+         IzlHbiJEggBjI8NjMpjVs0Mov6f5a9dNvYi59ilNGeMKuXF7ngZ3y2XYbn+WSjD9MnsE
+         6L7ldEc+nYE7NBjVkg57JH8/eI6mejAiIHHzlb3kp+KWlzGM+pP/yAnHA1QxU2KJkYlB
+         ERQ47/7qSPqhL/8p8ypFqkOHCFZwuSrxKfgRIS5+Hgyeqpp7MNJN4adRGN0h6zVgSexq
+         z2TQSb8wImIlEeN9H+S+qWhDnu5Ya+VTxBBsn6MtnEiJIX9IMbFhlNcy9TdNqsXBfkEd
+         NFzg==
+X-Gm-Message-State: AFqh2ko739S/UmkoSJPmXLoi6nn26RzWaOXtScA0K518zbgNY8En7x1H
+        FJ49GHSjn+yjSMmrJRSqUxblsZj7ncxIKHOCLWLjQKzaAjRpJsuT/noA8mQOuTXEptdc6aqGWPm
+        1rC7M/KNTXliyBZN+
+X-Received: by 2002:a05:6214:8e7:b0:4c6:a49e:c255 with SMTP id dr7-20020a05621408e700b004c6a49ec255mr4261661qvb.35.1673959589850;
+        Tue, 17 Jan 2023 04:46:29 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXs9ZcFSpsJizntwd36YUdsmoe+6H6JHkKu/4v9/6vvkt16O7VlDKMtvhTP5Ei2eVAm5IICYGg==
+X-Received: by 2002:a05:6214:8e7:b0:4c6:a49e:c255 with SMTP id dr7-20020a05621408e700b004c6a49ec255mr4261645qvb.35.1673959589600;
+        Tue, 17 Jan 2023 04:46:29 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-115-179.dyn.eolo.it. [146.241.115.179])
+        by smtp.gmail.com with ESMTPSA id bm37-20020a05620a19a500b00704d8ad2e11sm3122595qkb.42.2023.01.17.04.46.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Jan 2023 04:46:29 -0800 (PST)
+Message-ID: <cb6a141d35c5f349fe4b653abe78eb7cc3cd979f.camel@redhat.com>
+Subject: Re: [net-next] ipv6: Document that max_size sysctl is depreciated
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Jon Maxwell <jmaxwell37@gmail.com>, davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, martin.lau@kernel.org, joel@joelfernandes.org,
+        paulmck@kernel.org, eyal.birger@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, andrea.mayer@uniroma2.it
+Date:   Tue, 17 Jan 2023 13:46:25 +0100
+In-Reply-To: <20230116002157.513502-1-jmaxwell37@gmail.com>
+References: <20230116002157.513502-1-jmaxwell37@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+MIME-Version: 1.0
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 Jan 2023 at 14:44, Bartosz Golaszewski <brgl@bgdev.pl> wrote:
->
-> On Mon, Jan 9, 2023 at 10:06 PM Dmitry Baryshkov
-> <dmitry.baryshkov@linaro.org> wrote:
-> >
-> > On 09/01/2023 19:58, Konrad Dybcio wrote:
-> > >
-> > >
-> > > On 9.01.2023 18:44, Bartosz Golaszewski wrote:
-> > >> From: Shazad Hussain <quic_shazhuss@quicinc.com>
-> > >>
-> > >> Add support for the Global Clock Controller found in the QTI SA8775P
-> > >> platforms.
-> > >>
-> > >> Signed-off-by: Shazad Hussain <quic_shazhuss@quicinc.com>
-> > >> [Bartosz: made the driver ready for upstream]
-> > >> Co-developed-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> > >> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> > >> ---
-> > > [...]
-> > >
-> >
-> > As the driver didn't get to the list, I'll comment OOB.
-> >
-> > Please use clk_regmap_phy_mux_ops where applicable (PCIe PIPE clocks).
-> >
->
-> Looks like it's impossible for this platform as the PCIe PIPE clocks
-> have two parents.
+Hi,
 
-That's the point, please check the history of other platforms. XO
-becomes the 'off' state rather than being a separate parent.
+On Mon, 2023-01-16 at 11:21 +1100, Jon Maxwell wrote:
+> Document that max_size is depreciated due to:
+>=20
+> af6d10345ca7 ipv6: remove max_size check inline with ipv4
 
--- 
-With best wishes
-Dmitry
+I'm sorry for the nit picking, could you please use the standard commit
+reference? commit <hash> ("<title>")
+
+Thanks!
+
+Paolo
+
