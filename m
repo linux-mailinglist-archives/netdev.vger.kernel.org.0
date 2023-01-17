@@ -2,142 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B8E666DB56
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 11:42:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E34B66DB6B
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 11:45:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236316AbjAQKmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 05:42:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45028 "EHLO
+        id S236481AbjAQKpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 05:45:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236423AbjAQKlZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 05:41:25 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 421A131E30;
-        Tue, 17 Jan 2023 02:41:11 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id az20so55225443ejc.1;
-        Tue, 17 Jan 2023 02:41:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=0mclnxMCqmhJD9xt63v+etaE3UibmYTKCLrSfJ0XIlE=;
-        b=d0rE5iT+5rdIlMUX7YCuOF4E3RR3qNqdg5Pj3PvICL8asfBQEKVURDp2OL9e6ap0yf
-         EwJ+w9dk3NTTDOKX4+J3Mx/ceaYzWGfMrKlN/Uv4n8SexO5LWb3SRxle4YOQA3WEnUQA
-         Xu1zIG+TNFYSo+XutFIdDvZEgZ9A3p8TIm8pt9f1sbYrI5PrQL1du6uvy4XI3pp7zWxu
-         4pB1DyYJFkzrDGll8OTs23hAcT+6E/KGnmUuXT9Fop3x1b9L3rg5oXgEkJrIQe4dtAs+
-         T17mREvQP07nBNUPu3gvGGVKeE32eSJwSV2r52V5FWBiuu8aOHUAvOt67r7lf4LseZVJ
-         01/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=0mclnxMCqmhJD9xt63v+etaE3UibmYTKCLrSfJ0XIlE=;
-        b=Aq1pfseMkIhVnjTq0K5lsxBmzwHtR1kOsPG8gRSp7Ut+/7+Z24bSCteaC1ZAx3+Kvd
-         JKEwDiQ42oWra6sp8Tz+j+1PVn9GeVJORmoivK9j1KiaEIRx6NacA2eoJg+x7by7T/8T
-         jLoUizcSvatFYSUkw3d8tpYmTRWBdWtNqNf1H4v0SC3aNGgM5d1xzIA0m7x2TxHdR7R0
-         /FZ/bgWQV2idPaQnaA1jRTA+CYcRooowcD8aYPPeDXQ1IHgu3YwwueuSHqmY0R14vCSv
-         4HixoIpuzYRBAUZa/ahFd1fv8U5WR01ob4E8z5AJCNaNtsu0tlq3JvBcUxof8Rb9lFLv
-         IDcg==
-X-Gm-Message-State: AFqh2kohKHppnifg+YegrzBJ4s+/9FBxjm3XRUc97bzNvwsuBOc5hHMC
-        taIWj2adSQvPlsTu5Xc8xatLA1FDQeXKqvDDFgs=
-X-Google-Smtp-Source: AMrXdXvPTCOrOU3A5XHLAe5iH3sbcszDo0CvmptUYNUsVKJ6+qBAeGlVnymAIGkbBlt1g7/9xppbGlfbceotMsMSufI=
-X-Received: by 2002:a17:906:3ecd:b0:86c:a95e:4ef7 with SMTP id
- d13-20020a1709063ecd00b0086ca95e4ef7mr232065ejj.524.1673952069470; Tue, 17
- Jan 2023 02:41:09 -0800 (PST)
-MIME-Version: 1.0
-References: <20230117092533.5804-1-magnus.karlsson@gmail.com> <20230117050759-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230117050759-mutt-send-email-mst@kernel.org>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Tue, 17 Jan 2023 11:40:57 +0100
-Message-ID: <CAJ8uoz1SLe-AqW7Byd77g=_Z+oUy335+j18jRmZtdi+1FomCkw@mail.gmail.com>
-Subject: Re: [PATCH net 0/5] net: xdp: execute xdp_do_flush() before napi_complete_done()
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com, maciej.fijalkowski@intel.com,
-        kuba@kernel.org, toke@redhat.com, pabeni@redhat.com,
-        davem@davemloft.net, aelior@marvell.com, manishc@marvell.com,
-        horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com,
-        jasowang@redhat.com, ioana.ciornei@nxp.com, madalin.bucur@nxp.com,
-        bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S235963AbjAQKpN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 05:45:13 -0500
+Received: from air.basealt.ru (air.basealt.ru [194.107.17.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A217F72A4;
+        Tue, 17 Jan 2023 02:45:12 -0800 (PST)
+Received: by air.basealt.ru (Postfix, from userid 490)
+        id 408F52F20230; Tue, 17 Jan 2023 10:45:11 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
+Received: from localhost (broadband-188-32-10-232.ip.moscow.rt.ru [188.32.10.232])
+        by air.basealt.ru (Postfix) with ESMTPSA id 6A7CD2F2022A;
+        Tue, 17 Jan 2023 10:45:08 +0000 (UTC)
+Date:   Tue, 17 Jan 2023 13:45:08 +0300
+From:   "Alexey V. Vissarionov" <gremlin@altlinux.org>
+To:     Arend van Spriel <aspriel@gmail.com>
+Cc:     Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Chi-hsien Lin <chi-hsien.lin@cypress.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Wataru Gohda <wataru.gohda@cypress.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        lvc-project@linuxtesting.org,
+        "Alexey V. Vissarionov" <gremlin@altlinux.org>
+Subject: [PATCH] wifi: brcmfmac: Fix allocation size
+Message-ID: <20230117104508.GB12547@altlinux.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="UlVJffcvxoiEqYs2"
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 17, 2023 at 11:12 AM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Tue, Jan 17, 2023 at 10:25:28AM +0100, Magnus Karlsson wrote:
-> > Make sure that xdp_do_flush() is always executed before
-> > napi_complete_done(). This is important for two reasons. First, a
-> > redirect to an XSKMAP assumes that a call to xdp_do_redirect() from
-> > napi context X on CPU Y will be follwed by a xdp_do_flush() from the
-> > same napi context and CPU. This is not guaranteed if the
-> > napi_complete_done() is executed before xdp_do_flush(), as it tells
-> > the napi logic that it is fine to schedule napi context X on another
-> > CPU. Details from a production system triggering this bug using the
-> > veth driver can be found in [1].
-> >
-> > The second reason is that the XDP_REDIRECT logic in itself relies on
-> > being inside a single NAPI instance through to the xdp_do_flush() call
-> > for RCU protection of all in-kernel data structures. Details can be
-> > found in [2].
-> >
-> > The drivers have only been compile-tested since I do not own any of
-> > the HW below. So if you are a manintainer, please make sure I did not
-> > mess something up. This is a lousy excuse for virtio-net though, but
-> > it should be much simpler for the vitio-net maintainers to test this,
-> > than me trying to find test cases, validation suites, instantiating a
-> > good setup, etc. Michael and Jason can likely do this in minutes.
->
-> This kind of thing doesn't scale though. There are more contributors
-> than maintainers. Also, I am not 100% sure what kind of XDP workload
-> do I need to be a good test.
 
-True. Is there a smoke test that could be run to check that normal
-traffic is not affected? Just so we know that it works as expected.
-Then we could move on to try out XDP_REDIRECT for virtio. Anyone out
-there that knows of something existing that could be used for this?
-Just note that reproducing the issue seems to be challenging as 10
-systems running a production workload only experienced a single
-failure per night due to this [1]. So I suggest we just go with
-checking that existing functionality works as expected.
+--UlVJffcvxoiEqYs2
+Content-Type: text/plain; charset=koi8-r
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> >
-> > Note that these were the drivers I found that violated the ordering by
-> > running a simple script and manually checking the ones that came up as
-> > potential offenders. But the script was not perfect in any way. There
-> > might still be offenders out there, since the script can generate
-> > false negatives.
-> >
-> > [1] https://lore.kernel.org/r/20221220185903.1105011-1-sbohrer@cloudflare.com
-> > [2] https://lore.kernel.org/all/20210624160609.292325-1-toke@redhat.com/
-> >
-> > Thanks: Magnus
-> >
-> > Magnus Karlsson (5):
-> >   qede: execute xdp_do_flush() before napi_complete_done()
-> >   lan966x: execute xdp_do_flush() before napi_complete_done()
-> >   virtio-net: execute xdp_do_flush() before napi_complete_done()
-> >   dpaa_eth: execute xdp_do_flush() before napi_complete_done()
-> >   dpaa2-eth: execute xdp_do_flush() before napi_complete_done()
-> >
-> >  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c        | 6 +++---
-> >  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c      | 9 ++++++---
-> >  drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c | 6 +++---
-> >  drivers/net/ethernet/qlogic/qede/qede_fp.c            | 7 ++++---
-> >  drivers/net/virtio_net.c                              | 6 +++---
-> >  5 files changed, 19 insertions(+), 15 deletions(-)
-> >
-> >
-> > base-commit: 87b93b678e95c7d93fe6a55b0e0fbda26d8c7760
-> > --
-> > 2.34.1
->
+The "pkt" is a pointer to struct sk_buff, so it's just 4 or 8
+bytes, while the structure itself is much bigger.
+
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
+
+Fixes: bbd1f932e7c45ef1 ("brcmfmac: cleanup ampdu-rx host reorder code")
+Signed-off-by: Alexey V. Vissarionov <gremlin@altlinux.org>
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c b/=
+drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
+index 36af81975855c525..0d283456da331464 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
+@@ -1711,7 +1711,7 @@ void brcmf_fws_rxreorder(struct brcmf_if *ifp, struct=
+ sk_buff *pkt)
+ 		buf_size =3D sizeof(*rfi);
+ 		max_idx =3D reorder_data[BRCMF_RXREORDER_MAXIDX_OFFSET];
+=20
+-		buf_size +=3D (max_idx + 1) * sizeof(pkt);
++		buf_size +=3D (max_idx + 1) * sizeof(struct sk_buff);
+=20
+ 		/* allocate space for flow reorder info */
+ 		brcmf_dbg(INFO, "flow-%d: start, maxidx %d\n",
+
+
+
+--=20
+Alexey V. Vissarionov
+gremlin =F0=F2=E9 altlinux =F4=FE=EB org; +vii-cmiii-ccxxix-lxxix-xlii
+GPG: 0D92F19E1C0DC36E27F61A29CD17E2B43D879005 @ hkp://keys.gnupg.net
+
+--UlVJffcvxoiEqYs2
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIcBAEBCgAGBQJjxnw0AAoJEFv2F9znRj5KQvAP/0vVdNTgXeTXiNmYRz66mfge
+uzb0OEuTbO7b5fm+PszT9w+gArHzfoPuJIviWLJlC34vH/25WUTouZudPmF9QhG4
+WiixT07wc1Urd+1Oi62bEoSn41gs9UE431R1wRuUKENwRp5E8JVQ15xW5O9YrxLi
+oQ1KzOIHR84Z5Qi+3bQnp/8ZX5b3G+2Zs9h573szhsfGWQ7+ERBJ2MgJI76Mw5aZ
+IEy2Pmtxy4YE5pYqz7fNRSSBS8ogFSjY8AXqQkfGJcKyU5xsWEo9Pv6+QnouE55K
+jMQ8+04IxdS6sONhYh4AWawQRHsFzEwnCqLTagScUeahPgAXeHTmjWbw6n5rddF0
+hEgsby5bEgIQMoaRyAowUsnoUsBE+TXGywlVZwjHMmH6z1Gl2EElWm111wJjaNo4
+J54EFfodR8SDyHlLPj8KGq3NkBX0Ur2UTdGw69acRnoNqA4gCCBy7KobPoanRNFG
+831bqWdEdFymktaKgZlq136MC+WAAf3ZVpCM/RPY44E6iP1iZs8A0RcV2Q4nfuJE
+nLPih2ehsVYvcrOHB+Neyfxf/iNt4TUZVmYIpo8KAiIZDTm/9/RKqDZBm50vL9TI
+PPpExGb36sl83O/Pkna0PQ0v8gp37kpD453Tbhu0bcDsQaEm70Rfruexec0CNC6g
+twh9nUXNws+N5iuGCPQk
+=yQpN
+-----END PGP SIGNATURE-----
+
+--UlVJffcvxoiEqYs2--
