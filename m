@@ -2,95 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9B4F66DBC5
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 12:04:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62DF466DBC2
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 12:04:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236589AbjAQLEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 06:04:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57984 "EHLO
+        id S236545AbjAQLEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 06:04:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236546AbjAQLEW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 06:04:22 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D1A2A99B
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 03:04:22 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id e130so4010314yba.7
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 03:04:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=aAfo2Y319trh43eUAoJNNENY6gtEC5QJw8qHDn4W8rI=;
-        b=bFgI3I6LjMANGF/RslmXGUvjxm+swqvpJwh360h86k2DFwYqB9MNqMFXQ/yFCcH7BL
-         JoxxMblhZXc+LI5z7c5zB0naTBiKKgcyChqojkovV16OGecKIb8CcoaN9wA8J1HJiZD5
-         riiMjoeCPT+pukaWfFET+hM6GbjvAwQid23mBvdj/LB/wn+9eM4qilTZgArx2jTKB40U
-         66Ash+3kTxhNbbBgJfKLUH0x5i8oSebKko4zlLlCki3tgv0WquBxsSsHtRYsqAybbGpV
-         5iUgzMEmSTvIFaMSl+XmjddLDwMTr2cuAd6Y4cwUupViTNcwBB0EPk+G14gGcmIBI1mA
-         l+/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=aAfo2Y319trh43eUAoJNNENY6gtEC5QJw8qHDn4W8rI=;
-        b=ro9XKO7loT9ypYqw04M6fXkjoin9LpNj4xO1S3yyYhCjtqxO+URFwRhK1QE602ouYm
-         Gt8YgIZYrOd2AIoDGhi5eg9XFctOcj7dmAwGHX7ZkUe132BcP/hIn4DNzs1GhOKPC7Lg
-         lOaVm93UimbYLTg0oncQTcEz9gj/TIsv/UNweAbbDY0yDQDNkLO/67akggH1/RzY2izm
-         LQXXh8OPlF3WDqj/sQ4YcyvWy0szeUhIWlupe7GXbTdFjmdVd2h1Av3MINonP5ThHenv
-         db/wnh/9nPxaF15aDEyTAHeBt49RQosouxjxuhURJ//lkP2VlyuZqttY+zcqg8n48Ogx
-         z+xA==
-X-Gm-Message-State: AFqh2kqGzkm/AWCLmM7TTlvZJ/dBmbNGhMPcseHkKefC1r0iTkJGddtd
-        1bNB7VcrYGgXb2ur26phgNDnP8BwBevVMVBIc/+CKQ==
-X-Google-Smtp-Source: AMrXdXtxliEkOlWU6QEHyBIGrnT+GSa55LDeXA6zNSj1Rf6tjmCe6J2Guu4OkvKCIhR7ETkdOKWCdvd+Ux1Tl4Psq8E=
-X-Received: by 2002:a25:d117:0:b0:703:8a9c:fd with SMTP id i23-20020a25d117000000b007038a9c00fdmr406575ybg.231.1673953461262;
- Tue, 17 Jan 2023 03:04:21 -0800 (PST)
-MIME-Version: 1.0
-References: <000000000000fbb2d505f27398cb@google.com>
-In-Reply-To: <000000000000fbb2d505f27398cb@google.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 17 Jan 2023 12:04:10 +0100
-Message-ID: <CANn89iK46vtck1m2TvpT+gfDkAi=txd-8VD5qdBhoZqiL2-XEw@mail.gmail.com>
-Subject: Re: [syzbot] possible deadlock in release_sock
-To:     syzbot <syzbot+bbd35b345c7cab0d9a08@syzkaller.appspotmail.com>
-Cc:     cong.wang@bytedance.com, davem@davemloft.net, gnault@redhat.com,
-        jakub@cloudflare.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-15.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,
-        SPF_PASS,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=no
-        autolearn_force=no version=3.4.6
+        with ESMTP id S235897AbjAQLEU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 06:04:20 -0500
+Received: from air.basealt.ru (air.basealt.ru [194.107.17.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3CDA2A99B;
+        Tue, 17 Jan 2023 03:04:18 -0800 (PST)
+Received: by air.basealt.ru (Postfix, from userid 490)
+        id 7CAC82F2022C; Tue, 17 Jan 2023 11:04:17 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
+Received: from localhost (broadband-188-32-10-232.ip.moscow.rt.ru [188.32.10.232])
+        by air.basealt.ru (Postfix) with ESMTPSA id 6CF1B2F2022A;
+        Tue, 17 Jan 2023 11:04:14 +0000 (UTC)
+Date:   Tue, 17 Jan 2023 14:04:14 +0300
+From:   "Alexey V. Vissarionov" <gremlin@altlinux.org>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vasanthakumar Thiagarajan <vthiagar@qca.qualcomm.com>,
+        Raja Mani <rmani@qca.qualcomm.com>,
+        Suraj Sumangala <surajs@qca.qualcomm.com>,
+        Vivek Natarajan <nataraja@qca.qualcomm.com>,
+        Joe Perches <joe@perches.com>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, lvc-project@linuxtesting.org,
+        "Alexey V. Vissarionov" <gremlin@altlinux.org>
+Subject: [PATCH] ath6kl: minor fix for allocation size
+Message-ID: <20230117110414.GC12547@altlinux.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="KFztAG8eRSV9hGtP"
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 17, 2023 at 11:59 AM syzbot
-<syzbot+bbd35b345c7cab0d9a08@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    87b93b678e95 octeontx2-pf: Avoid use of GFP_KERNEL in atom..
-> git tree:       net
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1032dd91480000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=2b6ecad960fc703e
-> dashboard link: https://syzkaller.appspot.com/bug?extid=bbd35b345c7cab0d9a08
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1716b3a1480000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14e57a91480000
->
-> Downloadable assets:
-> disk image: https://storage.googleapis.com/syzbot-assets/191e8cc30fff/disk-87b93b67.raw.xz
-> vmlinux: https://storage.googleapis.com/syzbot-assets/d34dd6d2fffd/vmlinux-87b93b67.xz
-> kernel image: https://storage.googleapis.com/syzbot-assets/ad9344e76aaf/bzImage-87b93b67.xz
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+bbd35b345c7cab0d9a08@syzkaller.appspotmail.com
 
-Fix under review :
-https://patchwork.kernel.org/project/netdevbpf/patch/20230117110131.1362738-1-edumazet@google.com/
+--KFztAG8eRSV9hGtP
+Content-Type: text/plain; charset=koi8-r
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Although the "param" pointer occupies more or equal space compared
+to "*param", the allocation size should use the size of variable
+itself.
+
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
+
+Fixes: bdcd81707973cf8a ("Add ath6kl cleaned up driver")
+Signed-off-by: Alexey V. Vissarionov <gremlin@altlinux.org>
+
+diff --git a/drivers/net/wireless/ath/ath6kl/bmi.c b/drivers/net/wireless/a=
+th/ath6kl/bmi.c
+index bde5a10d470c8e74..af98e871199d317f 100644
+--- a/drivers/net/wireless/ath/ath6kl/bmi.c
++++ b/drivers/net/wireless/ath/ath6kl/bmi.c
+@@ -246,7 +246,7 @@ int ath6kl_bmi_execute(struct ath6kl *ar, u32 addr, u32=
+ *param)
+ 		return -EACCES;
+ 	}
+=20
+-	size =3D sizeof(cid) + sizeof(addr) + sizeof(param);
++	size =3D sizeof(cid) + sizeof(addr) + sizeof(*param);
+ 	if (size > ar->bmi.max_cmd_size) {
+ 		WARN_ON(1);
+ 		return -EINVAL;
+
+
+
+--=20
+Alexey V. Vissarionov
+gremlin =F0=F2=E9 altlinux =F4=FE=EB org; +vii-cmiii-ccxxix-lxxix-xlii
+GPG: 0D92F19E1C0DC36E27F61A29CD17E2B43D879005 @ hkp://keys.gnupg.net
+
+--KFztAG8eRSV9hGtP
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIcBAEBCgAGBQJjxoCuAAoJEFv2F9znRj5KRfIQAKOtCsMbHx5QVZZ5ciUVwZCP
+2xcj4qRP7/GVJ8w87ip8n8QzRcMVaYposz3eLLGrXqUtb5UzWLCCpknXydwyXcsG
+JMeR3l05cJzA7q2oyN3gtwwO37cA78U+vj5zCM1kooLuVdtlvZkBI6lIPIkUtgLz
+VXsthfQbf2GRAMMHuJdZz8trH3xo8/FDAeEZKi6/r9lOc3v+cLewnQ+cUO85HSB7
+lf4r0/cge8vFcDdMLq6WOO9X+zIeVvTYndo6ji1PUlf4mBOZbagWLsyIYjAxbvv/
+W9l8N4K5AFX2ns/7kw8/ubf3Zx1e9H7iEHquAuMLPIh9knBuzIhLOQlfFG6b7zgs
+6DF6I5HxX6ok20P62MoTbXNJF4I9JHWSEsg1Hr5D2Phvn3QRoGF5gu/L0IBxanRi
+BUHKZzq+L6R013Wx/T3O7ifU3gHO9BidBIWLhU8+uAZ3VBB0DPUxPpO+dnNWoVtM
+9ObMF5ecbwN9xsnIR+mNq4cK4pfd7YQeQ7PAN5fGK3Jq+fV8w79msRef4VQFOnmQ
+GcNInjCp91KOdRoZBujkvZJmMy3cWOAvOIninLO3wIwHDHOPCrDc/KeWUWYayj8i
+lzEE4GYNgdYb10l3GceadGV4m8EOguvF2Dnascwj+blBDNLFMxTzhpPOOxlSYJf/
+rFtQugNyq60h3LY1TtDi
+=V3e7
+-----END PGP SIGNATURE-----
+
+--KFztAG8eRSV9hGtP--
