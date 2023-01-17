@@ -2,80 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE19166E3A4
-	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 17:35:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EA5D66E3BA
+	for <lists+netdev@lfdr.de>; Tue, 17 Jan 2023 17:37:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230304AbjAQQfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 11:35:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44364 "EHLO
+        id S232984AbjAQQhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 11:37:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232120AbjAQQer (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 11:34:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BDE73CE2A
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 08:34:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673973242;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NVmDRrmwM6bLSGgu4CyMQGhit4EFONfy+cKRjvI8WwU=;
-        b=AUWCEtvMCZmaLnT3LtwPanakpe1ozSXrLkK8eC4dOTWRtg8NhPRcmBpZnaoDH8qrFlOto9
-        ccAXzD9GjvJJ8eTe4NCvJQdaejgV1Sf38HkXBBrQv74L6bAY/mKclFAlnWu+WJdfo2KIOi
-        iQd2D3OOGrlKFTYvv+2cVLgS8wXbF7A=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-552-Kjda2vdAP-CNlV9cajt_TA-1; Tue, 17 Jan 2023 11:34:00 -0500
-X-MC-Unique: Kjda2vdAP-CNlV9cajt_TA-1
-Received: by mail-qv1-f69.google.com with SMTP id mi16-20020a056214559000b005346c5c1f81so6774336qvb.15
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 08:33:59 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NVmDRrmwM6bLSGgu4CyMQGhit4EFONfy+cKRjvI8WwU=;
-        b=yQrBqSon4nAo7WI98B0lxU6cGeVKjbiUEGCU9CCb+lcLRsq3mlBspuhcZBUf0Fcjq7
-         ne5MfE6oFSElL5llm126nnYa/36j7p2D9hnxxwjRFDCJK6Jv7VPsBVEqXs+hu8rIDHEd
-         IOE++v/2pe7g6yYiPHSwKU/o4NVVwD9Mwj0u9ZL8JHFNgYMig4ybgCelAltY4Di1LzgA
-         AVIAPmD4XzNrcqdDAkZEH1kkNJvS8qTtc4ERL04pCBME9UUTWPDURZ1c1FTHy/aHGcL4
-         4NaDtw2H90Uv0FNrkF7ML3jgAGmW+Sj1JBpG2+pATXU3RU5Wbjj2oWuZK4WA6QfWp/v4
-         liuA==
-X-Gm-Message-State: AFqh2kqxwi6xQinvHk9vT5FjuuA1laiY4McgOd105fMNjRpuqvLTI2Kg
-        67C95H5vuxW8bV8sNKa2waQucg0NjhMPPmIYzN/r3O/FnPsErY+z0Amu2B29y2fNuEango267QO
-        v7r2guV48nhklfvdC
-X-Received: by 2002:ac8:58c3:0:b0:3b6:2e8b:3364 with SMTP id u3-20020ac858c3000000b003b62e8b3364mr5463070qta.38.1673973239508;
-        Tue, 17 Jan 2023 08:33:59 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXvCT6ihocQyYU3l2Kv6blvgT/IPPNSTOnvZX1MrQwg2vhNixBBk1UWBmfkHU0tBUVP1CLc5Ow==
-X-Received: by 2002:ac8:58c3:0:b0:3b6:2e8b:3364 with SMTP id u3-20020ac858c3000000b003b62e8b3364mr5463039qta.38.1673973239174;
-        Tue, 17 Jan 2023 08:33:59 -0800 (PST)
-Received: from [192.168.100.30] ([82.142.8.70])
-        by smtp.gmail.com with ESMTPSA id jr49-20020a05622a803100b003ad373d04b6sm13289356qtb.59.2023.01.17.08.33.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Jan 2023 08:33:58 -0800 (PST)
-Message-ID: <fefccbdb-9ccd-4057-743a-b23bad4e123d@redhat.com>
-Date:   Tue, 17 Jan 2023 17:33:55 +0100
+        with ESMTP id S232592AbjAQQgd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 11:36:33 -0500
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F8BE40BD9;
+        Tue, 17 Jan 2023 08:36:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1673973387; x=1705509387;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=nn2BkIRNIFmmDApFWjskyFFViHGsos8gqmoxmmwOQL8=;
+  b=ZGoyXkzgsYkOSZTqulzSvhNH/vbntzjEWf+GKWXsbIxWW7Ca9ItSK+0k
+   UIeU9itRooz6v//JqxYkn11cm7PDVzUwS/4lVYR/UE9YvGtV69I64c2gi
+   jRaq6M/79NhxWvTgzsLoCosuEn1swfjRnzp+o6jFVkEpefbQu6UWcWM/R
+   Y=;
+X-IronPort-AV: E=Sophos;i="5.97,224,1669075200"; 
+   d="scan'208";a="171991209"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-m6i4x-153b24bc.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2023 16:34:29 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1d-m6i4x-153b24bc.us-east-1.amazon.com (Postfix) with ESMTPS id 3BED5C1A38;
+        Tue, 17 Jan 2023 16:34:24 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.45; Tue, 17 Jan 2023 16:34:24 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.56) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.7;
+ Tue, 17 Jan 2023 16:34:21 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <kerneljasonxing@gmail.com>
+CC:     <davem@davemloft.net>, <dsahern@kernel.org>, <edumazet@google.com>,
+        <kernelxing@tencent.com>, <kuba@kernel.org>, <kuniyu@amazon.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>, <yoshfuji@linux-ipv6.org>
+Subject: Re: [PATCH v5 net] tcp: avoid the lookup process failing to get sk in ehash table
+Date:   Tue, 17 Jan 2023 08:34:13 -0800
+Message-ID: <20230117163413.6162-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CAL+tcoB1-MqMf3Yn_qBTbTC9UNBhVW+93j30KJ9zaangkfQHWA@mail.gmail.com>
+References: <CAL+tcoB1-MqMf3Yn_qBTbTC9UNBhVW+93j30KJ9zaangkfQHWA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH net V3] virtio-net: correctly enable callback during
- start_xmit
-Content-Language: en-US
-To:     Jason Wang <jasowang@redhat.com>, mst@redhat.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xuanzhuo@linux.alibaba.com, Stefano Brivio <sbrivio@redhat.com>
-References: <20230117034707.52356-1-jasowang@redhat.com>
-From:   Laurent Vivier <lvivier@redhat.com>
-In-Reply-To: <20230117034707.52356-1-jasowang@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.56]
+X-ClientProxiedBy: EX13D44UWB004.ant.amazon.com (10.43.161.205) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,63 +66,181 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/17/23 04:47, Jason Wang wrote:
-> Commit a7766ef18b33("virtio_net: disable cb aggressively") enables
-> virtqueue callback via the following statement:
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Tue, 17 Jan 2023 10:15:45 +0800
+> On Tue, Jan 17, 2023 at 12:54 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> >
+> > From:   Jason Xing <kerneljasonxing@gmail.com>
+> > Date:   Mon, 16 Jan 2023 18:33:41 +0800
+> > > From: Jason Xing <kernelxing@tencent.com>
+> > >
+> > > While one cpu is working on looking up the right socket from ehash
+> > > table, another cpu is done deleting the request socket and is about
+> > > to add (or is adding) the big socket from the table. It means that
+> > > we could miss both of them, even though it has little chance.
+> > >
+> > > Let me draw a call trace map of the server side.
+> > >    CPU 0                           CPU 1
+> > >    -----                           -----
+> > > tcp_v4_rcv()                  syn_recv_sock()
+> > >                             inet_ehash_insert()
+> > >                             -> sk_nulls_del_node_init_rcu(osk)
+> > > __inet_lookup_established()
+> > >                             -> __sk_nulls_add_node_rcu(sk, list)
+> > >
+> > > Notice that the CPU 0 is receiving the data after the final ack
+> > > during 3-way shakehands and CPU 1 is still handling the final ack.
+> > >
+> > > Why could this be a real problem?
+> > > This case is happening only when the final ack and the first data
+> > > receiving by different CPUs. Then the server receiving data with
+> > > ACK flag tries to search one proper established socket from ehash
+> > > table, but apparently it fails as my map shows above. After that,
+> > > the server fetches a listener socket and then sends a RST because
+> > > it finds a ACK flag in the skb (data), which obeys RST definition
+> > > in RFC 793.
+> > >
+> > > Besides, Eric pointed out there's one more race condition where it
+> > > handles tw socket hashdance. Only by adding to the tail of the list
+> > > before deleting the old one can we avoid the race if the reader has
+> > > already begun the bucket traversal and it would possibly miss the head.
+> > >
+> > > Many thanks to Eric for great help from beginning to end.
+> > >
+> > > Fixes: 5e0724d027f0 ("tcp/dccp: fix hashdance race for passive sessions")
+> > > Suggested-by: Eric Dumazet <edumazet@google.com>
+> > > Signed-off-by: Jason Xing <kernelxing@tencent.com>
+> > > Link: https://lore.kernel.org/lkml/20230112065336.41034-1-kerneljasonxing@gmail.com/
+> >
+> > I guess there could be regression if a workload has many long-lived
 > 
->          do {
-> 		if (use_napi)
-> 			virtqueue_disable_cb(sq->vq);
-> 
-> 		free_old_xmit_skbs(sq, false);
-> 
-> 	} while (use_napi && kick &&
->                 unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
-> 
-> When NAPI is used and kick is false, the callback won't be enabled
-> here. And when the virtqueue is about to be full, the tx will be
-> disabled, but we still don't enable tx interrupt which will cause a TX
-> hang. This could be observed when using pktgen with burst enabled.
-> 
-> TO be consistent with the logic that tries to disable cb only for
-> NAPI, fixing this by trying to enable delayed callback only when NAPI
-> is enabled when the queue is about to be full.
-> 
-> Fixes: a7766ef18b33 ("virtio_net: disable cb aggressively")
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
-> The patch is needed for -stable.
-> Changes since V2:
-> - try to enabled delayed callback and schedule NAPI instead of try to
->    poll as when TX NAPI is disabled
-> Changes since V1:
-> - enable tx interrupt after we disable TX
-> ---
->   drivers/net/virtio_net.c | 6 ++++--
->   1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 7723b2a49d8e..18b3de854aeb 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -1877,8 +1877,10 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
->   	 */
->   	if (sq->vq->num_free < 2+MAX_SKB_FRAGS) {
->   		netif_stop_subqueue(dev, qnum);
-> -		if (!use_napi &&
-> -		    unlikely(!virtqueue_enable_cb_delayed(sq->vq))) {
-> +		if (use_napi) {
-> +			if (unlikely(!virtqueue_enable_cb_delayed(sq->vq)))
-> +				virtqueue_napi_schedule(&sq->napi, sq->vq);
-> +		} else if (unlikely(!virtqueue_enable_cb_delayed(sq->vq))) {
->   			/* More just got used, free them then recheck. */
->   			free_old_xmit_skbs(sq, false);
->   			if (sq->vq->num_free >= 2+MAX_SKB_FRAGS) {
+> Sorry, I don't understand. This patch does not add two kinds of
+> sockets into the ehash table all the time, but reverses the order of
+> deleting and adding sockets only.
 
-This fix works fine with my test case (netdev stream + passt)
+Not really.  It also reverses the order of sockets in ehash.  We were
+able to find newer sockets faster than older ones.  If a workload has
+many long-lived sockets, they would add constant time on newer socket's
+lookup.
 
-Tested-by: Laurent Vivier <lvivier@redhat.com>
+
+> The final result is the same as the
+> old time. I'm wondering why it could cause some regressions if there
+> are loads of long-lived connections.
+> 
+> > connections, but the change itself looks good.  I left a minor comment
+> > below.
+> >
+> > Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> >
+> 
+> Thanks for reviewing :)
+> 
+> >
+> > > ---
+> > > v5:
+> > > 1) adjust the style once more.
+> > >
+> > > v4:
+> > > 1) adjust the code style and make it easier to read.
+> > >
+> > > v3:
+> > > 1) get rid of else-if statement.
+> > >
+> > > v2:
+> > > 1) adding the sk node into the tail of list to prevent the race.
+> > > 2) fix the race condition when handling time-wait socket hashdance.
+> > > ---
+> > >  net/ipv4/inet_hashtables.c    | 17 +++++++++++++++--
+> > >  net/ipv4/inet_timewait_sock.c |  6 +++---
+> > >  2 files changed, 18 insertions(+), 5 deletions(-)
+> > >
+> > > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> > > index 24a38b56fab9..f58d73888638 100644
+> > > --- a/net/ipv4/inet_hashtables.c
+> > > +++ b/net/ipv4/inet_hashtables.c
+> > > @@ -650,8 +650,20 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
+> > >       spin_lock(lock);
+> > >       if (osk) {
+> > >               WARN_ON_ONCE(sk->sk_hash != osk->sk_hash);
+> > > -             ret = sk_nulls_del_node_init_rcu(osk);
+> > > -     } else if (found_dup_sk) {
+> > > +             ret = sk_hashed(osk);
+> > > +             if (ret) {
+> > > +                     /* Before deleting the node, we insert a new one to make
+> > > +                      * sure that the look-up-sk process would not miss either
+> > > +                      * of them and that at least one node would exist in ehash
+> > > +                      * table all the time. Otherwise there's a tiny chance
+> > > +                      * that lookup process could find nothing in ehash table.
+> > > +                      */
+> > > +                     __sk_nulls_add_node_tail_rcu(sk, list);
+> > > +                     sk_nulls_del_node_init_rcu(osk);
+> > > +             }
+> > > +             goto unlock;
+> > > +     }
+> > > +     if (found_dup_sk) {
+> > >               *found_dup_sk = inet_ehash_lookup_by_sk(sk, list);
+> > >               if (*found_dup_sk)
+> > >                       ret = false;
+> > > @@ -660,6 +672,7 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
+> > >       if (ret)
+> > >               __sk_nulls_add_node_rcu(sk, list);
+> > >
+> > > +unlock:
+> > >       spin_unlock(lock);
+> > >
+> > >       return ret;
+> > > diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
+> > > index 1d77d992e6e7..6d681ef52bb2 100644
+> > > --- a/net/ipv4/inet_timewait_sock.c
+> > > +++ b/net/ipv4/inet_timewait_sock.c
+> > > @@ -91,10 +91,10 @@ void inet_twsk_put(struct inet_timewait_sock *tw)
+> > >  }
+> > >  EXPORT_SYMBOL_GPL(inet_twsk_put);
+> > >
+> > > -static void inet_twsk_add_node_rcu(struct inet_timewait_sock *tw,
+> > > +static void inet_twsk_add_node_tail_rcu(struct inet_timewait_sock *tw,
+> > >                                  struct hlist_nulls_head *list)
+> >
+> > nit: Please indent here.
+> >
+> 
+> Before I submitted the patch, I did the check through
+> ./script/checkpatch.py and it outputted some information (no warning,
+> no error) as you said.
+> The reason I didn't change that is I would like to leave this part
+> untouch as it used to be. I have no clue about whether I should send a
+> v7 patch to adjust the format if necessary.
+
+checkpatch.pl does not check everything.  You will find most functions
+under net/ipv4/*.c have same indentation in arguments.  I would recommend
+enforcing such styles on editor like
+
+  $ cat ~/.emacs.d/init.el
+  (setq-default c-default-style "linux")
 
 Thanks,
-Laurent
+Kuniyuki
 
+> 
+> Thanks,
+> Jason
+> 
+> >
+> > >  {
+> > > -     hlist_nulls_add_head_rcu(&tw->tw_node, list);
+> > > +     hlist_nulls_add_tail_rcu(&tw->tw_node, list);
+> > >  }
+> > >
+> > >  static void inet_twsk_add_bind_node(struct inet_timewait_sock *tw,
+> > > @@ -147,7 +147,7 @@ void inet_twsk_hashdance(struct inet_timewait_sock *tw, struct sock *sk,
+> > >
+> > >       spin_lock(lock);
+> > >
+> > > -     inet_twsk_add_node_rcu(tw, &ehead->chain);
+> > > +     inet_twsk_add_node_tail_rcu(tw, &ehead->chain);
+> > >
+> > >       /* Step 3: Remove SK from hash chain */
+> > >       if (__sk_nulls_del_node_init_rcu(sk))
+> > > --
+> > > 2.37.3
