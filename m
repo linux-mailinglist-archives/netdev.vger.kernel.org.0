@@ -2,147 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AABAD672AB6
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 22:41:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26976672ABE
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 22:42:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231232AbjARVlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 16:41:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38392 "EHLO
+        id S231296AbjARVmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 16:42:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230401AbjARVlt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 16:41:49 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6A33B65C
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 13:41:25 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id b7so15548wrt.3
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 13:41:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FMLRObJikupEwzTrRnh2PGmgjZ9Cqtc3WwiwTSH8KzM=;
-        b=eCtXeYsP+ADhvJqyR5obWxJN2h47MVmxSPM3WN/yFWVLL7Bofz6ALMqkQ5FmPFSW8x
-         UWaka0KuTIy7rIQGm6zFjHry+P1eL6Sk8lHn9fP+GlFKwmKfj/Q6EGvopu1kINYq/tef
-         zm8zNYOALlS2vhNm+EkXcXVPzdDc/TXwTPpHmjgDI6AlVHBF2UVGGn5IwZJjA1mkQrTd
-         W7/8pHqfbBiiPSMO3n8KjIvPtsQCwLJhGfGrg9lAgqPV+bv5lqOuwfh93c0xePh+Wkpp
-         2YLAsoMIKNpdfYZLV7cFr9MhZ4e3JlmJFQlcJhphihQuV+4yzmbAlgwjxUanzoyThCaw
-         x8Nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=FMLRObJikupEwzTrRnh2PGmgjZ9Cqtc3WwiwTSH8KzM=;
-        b=BGC1/a2grmVAXRZynlf8+1qIyrozYa6DT0CSGNWHbDQsSSWmHB9YszTk43RfW4c+3a
-         66VXyTEqB9Gq6RlOHoq3ZfzhIKObMeysObXMnA1pNMIDLsEoMJbbieHBtpls4i1qx11T
-         P7clO87O0GufzMB4qB3fkmQYORSkRxFQnmEFyTP66VkhG5SfNTzd4AiMVmaIejx6gB5Y
-         p+XUEgM+iROiin34DyJFdBTGpzfPwumWym6fGHgfXZtKx2x38fJEu6Bc0GCnaSUwju53
-         XpXoXUaK099SXuFahxNQ6vjdBHOQa0U1f59LQaJ6DPxCrxJYasktPYaD6lYJHgPkwRha
-         7XcQ==
-X-Gm-Message-State: AFqh2kqLJ+Yt4aV3k0maNyCiugfL5TQkhP8Jae/P2ThRQ5ablne5wjNR
-        1tznnyRdYsgO4Ryty3Ayq1mqVQ==
-X-Google-Smtp-Source: AMrXdXs9dt7f2UXQjFy9Tfqdc9IqVLQbqXGCkdLvQFCWCdoKDt4UIeux1A+ib39qTp53lS2eyE54aQ==
-X-Received: by 2002:a5d:5b0e:0:b0:250:22e4:b89e with SMTP id bx14-20020a5d5b0e000000b0025022e4b89emr8426197wrb.65.1674078084270;
-        Wed, 18 Jan 2023 13:41:24 -0800 (PST)
-Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id m5-20020a056000024500b00267bcb1bbe5sm33186349wrz.56.2023.01.18.13.41.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Jan 2023 13:41:23 -0800 (PST)
-From:   Dmitry Safonov <dima@arista.com>
-To:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        with ESMTP id S231295AbjARVmo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 16:42:44 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372941CACE
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 13:41:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674078107; x=1705614107;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=ml7P7wgDkeunhnfgN66rX20fFg6ve4UCGJAkEM+z1O8=;
+  b=ErEZA1Gz3cpb+n2b3UBar7Z4VKGghBdcWenUA9Dz5nH+03ujJpYkdUGD
+   lJD8LLHhOZDC1W4c5zHfDOExx2RGjplgK9Az97sLzIb/qv2+SfEgTJU0L
+   9LIC2qVbqdhEXqEn5z64CY3uKzyUtn2K6yHaJz1jtHor5AlWyNGwEOi5E
+   JEDj6ve0MJlfZqL1Qcd9TtMu3Zh2SMBeT10SHcBbGTM8t0xhFWQTniv3J
+   vtJ4ZG2R/k8vrGMO7voSazVZUXP7o/+w/RquKeANQGP4ASoXYcpTqmO7o
+   b/R+tsSUcaBVpHzXXE8y6MFXX9bW2tqDFIeGDqlJDHCM6LNP20g5+txQ1
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="389606094"
+X-IronPort-AV: E=Sophos;i="5.97,226,1669104000"; 
+   d="scan'208";a="389606094"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2023 13:41:46 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="767925435"
+X-IronPort-AV: E=Sophos;i="5.97,226,1669104000"; 
+   d="scan'208";a="767925435"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga002.fm.intel.com with ESMTP; 18 Jan 2023 13:41:46 -0800
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 18 Jan 2023 13:41:45 -0800
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 18 Jan 2023 13:41:45 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Wed, 18 Jan 2023 13:41:45 -0800
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.42) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Wed, 18 Jan 2023 13:41:45 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iN8YTSIkHRmhN6OdKkk15PrNLT0lyBYJZ+5mvx3WSa1E4t7QvRef3EmMA1xnpeAgOkniXmlWy1AJn9vuL/qS31ih8FA45JnDuV8+oH+EMRwV0Uc3n3lZWfwY5nhI5I9Er5S22NmCK8VRiuQ8xEW7pCBEE6fyA5QP3B3MLl2Hl+CVGY71vPpwT31wcOwKWFANDgGUTpR3NsAX4qGGStWAqzt38GQ7f9apz99dgwYA8gmdyERL9DoeSAX/xFSZ2N8bQsVjvvvFEqWlhuwmOi9AyarQXoShd0yVCYiddUb/grU5Shl9LDnK05yRdg2HUmuCEi+pz50SlD3lLth2tlJOsw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xgH1UtYs0ncnCkFKnFWpMScnsojHaW/twzQaq8wa9Bk=;
+ b=Wqe3ii4seXgq9vwI/3otLWgMqPi2J4UCXGH1XVKw5x7cl0P+PVOsmn5a710S2ItFIxYnMZP00he1G2W8Ea3J6xFZ8zCnLuLxuPkEvNTOi0GfVc3jjPujSDeErt3nkldwHmcRdplF2NZUOR18jFP8fuAGnhocmqBMb/qBtmURBKHk6P5wRmj4ooew5VvIPUZiX5GvXv/E2XgEKjAYV5ow7N8u6l/7AmVuueOV+fcc3zcQ+mYRQ2aruUN+3of1AQwsW5EgT8/tuW3d03j3J8z1xTZU3nibz/tBW4DIosyt7mgApABDP/RiFfB7zLpkUeKnzcyCuOvWwOtcCsKzKtbm/Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
+ by SN7PR11MB6995.namprd11.prod.outlook.com (2603:10b6:806:2ae::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.24; Wed, 18 Jan
+ 2023 21:41:43 +0000
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::5697:a11e:691e:6acf]) by CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::5697:a11e:691e:6acf%5]) with mapi id 15.20.6002.024; Wed, 18 Jan 2023
+ 21:41:43 +0000
+Message-ID: <0a8045be-ce02-6c3b-ed6f-7170f8b922b0@intel.com>
+Date:   Wed, 18 Jan 2023 13:41:40 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [net-next 06/15] net/mlx5e: Fail with messages when params are
+ not valid for XSK
+Content-Language: en-US
+To:     Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Dmitry Safonov <dima@arista.com>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Bob Gilligan <gilligan@arista.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Leonard Crestez <cdleonard@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        netdev@vger.kernel.org, linux-crypto@vger.kernel.org
-Subject: [PATCH v4 4/4] crypto/Documentation: Add crypto_pool kernel API
-Date:   Wed, 18 Jan 2023 21:41:11 +0000
-Message-Id: <20230118214111.394416-5-dima@arista.com>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230118214111.394416-1-dima@arista.com>
-References: <20230118214111.394416-1-dima@arista.com>
+        Eric Dumazet <edumazet@google.com>
+CC:     Saeed Mahameed <saeedm@nvidia.com>, <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Adham Faris <afaris@nvidia.com>
+References: <20230118183602.124323-1-saeed@kernel.org>
+ <20230118183602.124323-7-saeed@kernel.org>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+In-Reply-To: <20230118183602.124323-7-saeed@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR03CA0276.namprd03.prod.outlook.com
+ (2603:10b6:a03:39e::11) To CO1PR11MB5089.namprd11.prod.outlook.com
+ (2603:10b6:303:9b::16)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|SN7PR11MB6995:EE_
+X-MS-Office365-Filtering-Correlation-Id: 17c4b625-6372-4b39-b726-08daf99cca2a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5LTtslj5LaXf4p/gwUp/2/eRWfrEKsHOWeUHaPMJUgAS2KhXBL5tsh1624qCOwn3fyd9mNU2KAdZ0nISe/Nmujge+piukAR0n+K4uTAeO/phyKN2yWZY5W0rIrdziQAdXwH+92xhR16Naxq62SMd0IwfolIIINUaqecPDSACdETvFVayNcfvASJv6exdjrdfzAuyQ+0YqhmT/ra+yy7eTTaOqHxiuNhusMWIE/Z2AsBi5G08AA3XTfLFFgTlqhzcujFXIXrRJzVEz03OAkytGul/Yo0FAUVywaVmGdhr1IWzrDs56dhW296vV3Ihci6vrGYAle9EDhC26dx5IOycX0jbGzOp6ALaFRbXqmZ3t8mwBIu+15xVmBU231xs46VB5K6ck4CeCiJOv0AelOGANxcADwo1cK/3Yt3Jg3HrKlnSFnmrn3BNt82b6Pv35VjQttEHlMYw/3B4TTnTA+wHjzySy2iJlk27oiFvy7R3NkmOYQJyHaZVF0Vhd8nfXQjEt4WYHqalqHURB2fBHeGSHTO4kZLXPU3dO/yxBV9GCNbuAfIVWX0sJ3MJWMwNJQp5POsrzdzItYSq7jnGG8vnsRv5VJ4OKLw5Sxub8Ab5av3CFlH9Ff5naBIVQGFUxLZu2t7yCa2s1QM8tIcrkoaxdYzrO9kwmdM8LxwnKNXvSLf3QvO6OPJ2Ap/9fN6juk1K7fOtrnS13RnVYvlzNSaPVNYX5lHkM9w9f9ClIX9L1GA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(136003)(366004)(346002)(376002)(39860400002)(451199015)(86362001)(31686004)(66556008)(15650500001)(4744005)(66476007)(8936002)(5660300002)(2906002)(82960400001)(31696002)(66946007)(38100700002)(54906003)(53546011)(316002)(110136005)(6506007)(6486002)(36756003)(478600001)(41300700001)(8676002)(4326008)(186003)(83380400001)(26005)(6512007)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OXZ6dkVnUVNCMmtBMWtlQWxZSkVuNUtKK29MRzAveWI0YXNndGU5VTlwRjZj?=
+ =?utf-8?B?S2pSaG9ubFdiaHJjOVMzbkorK1pxQnNwWVpqNEhlOG9wamZVT0J5ejlLMndz?=
+ =?utf-8?B?SHJiK2dsMVVwL0lhck1PMVpGNkhMaDlndjB2UnRXNk1TN0FaQjRFaDYzTlpD?=
+ =?utf-8?B?VTFKNnprek5GRzhVWHRzV3F6d0NjMVdvTnRYTjJKMWhocXZrZ1YzTWo5MWFk?=
+ =?utf-8?B?cUlMNWpWOHBYcDFQcktOS0FDNXBSdkdoV3NVQ3phbUE5dzJRRUQxSmZRY2kz?=
+ =?utf-8?B?aFo4RnczVW1WMHZERTYxeTRiNHl3SFFGRDZqTWZCNEFBeWt3MmFtenFiRnhq?=
+ =?utf-8?B?V2VkYXptZS84NVJ6eUFFSFJuTXNYUjRhZk5NaFlOQmo3dXZ5eDFnbTVxc0tF?=
+ =?utf-8?B?VFNjQ0F0WVZxZmhBb3lRa2diUWNQU0RZaE5RMmM5Z2NhdEJibzhzeXhDb3NT?=
+ =?utf-8?B?NU5iY0MrbWx5NlhlMjI5MUp0M2dudE15OE1WK014T1RWSVBaVENYNFJpOFVE?=
+ =?utf-8?B?VXVMeFYvc0NnVEo3TE1VVXF4bzd2ZE5PQUF6b2d3NDVQd2ZlY0VkbjJ5K1RX?=
+ =?utf-8?B?Qk1rRjNpRUtkRWtuTFZSWEc0U2lYa3lMK1ZKK2V1Tmd0VVNFcjR2SHFldUQ0?=
+ =?utf-8?B?Y3B4Qk5GOSthYzhLVGtpVXI4cUlLc3NKR2pYY05NUjRDTjMzdzY1VmV4NCt3?=
+ =?utf-8?B?TlltNVV4Nk5CUHY0QVVrTXJnam1tK0crSEh4VTFkL2JxUWROVlJ1NlNpcWli?=
+ =?utf-8?B?TUUxTzdxZlVsWFcvWE5MZlhjNkR1OWMzYUw2M08vL0RUNlJjOWo2NXJuZThT?=
+ =?utf-8?B?NklTMHdtRXNKZ1IzT0ZhNlVDVnIybTByNUxtTDNuOTg1QnB3OXBscXp4Tjlx?=
+ =?utf-8?B?Q0d6eGRXdjFxU1hqSVdUcUxrYzFGbEx5VWZMVjgwUWpPYVh2Y1cvVWZYLzVX?=
+ =?utf-8?B?Y3RXa0RhR0FYdmdyMGZPRVlDSkZYVjF2Z3VqcVVZQ2NCSVQ1OXVONEFidDRF?=
+ =?utf-8?B?WG8zaGVKTTVkSURnRWFJSTN1cGJxLzkyODFyTndJdTBtYXJaNVFFVDNoUldB?=
+ =?utf-8?B?MTZLWmRMTTB0Zm4zM2prM2JPaVNxelVlVGR6czI5bWJ2VFozMFVXNytMaEdG?=
+ =?utf-8?B?SGdhOG13a005Z0pkbnRDR2RVbjVGdHgvcVA4Z0xuTmU4bElSR04wK3ppT21a?=
+ =?utf-8?B?aFhHZ1RTR3Rwc2pSYy96TG1keXRQSFgxd1o0QndnenNsNitGaWhBR2p1eHhO?=
+ =?utf-8?B?Wm9wOWZFekRVaDRxZ1ZXVWhXSWptQmEyLzMwMTJhSEI3TDRyMkxIeW5odVhV?=
+ =?utf-8?B?WGF0dXAvaFV3b1ZTd2MwVE5CNzI0bG9EK2RlMUZhQVNvVzViUEtjU3BoQkxZ?=
+ =?utf-8?B?dXhkNW53eEpXdEZ1UzJNd2RibThzYVc5dmZPNzBvbmkxL0xnK2d3QkpWVThH?=
+ =?utf-8?B?L2Q1NTVmY3Avem1VU1htazc3bU1aL1R3TnhKS3lhcXpqMVJ2MCsxR3hncURi?=
+ =?utf-8?B?NGRuYmc2RFVSNTcxcFNXa2VnMGVBQnpMVEZRV3BOUnlVQVZvSUtGNGl6cGJ5?=
+ =?utf-8?B?Z0ZRbXd3Ymx2amNEaE5PL0lWNGMvUkRMM3FaTFUxOGQrRFdKUVFVOS84UGdx?=
+ =?utf-8?B?YS9EeUFTdWZMeFdrTGxWUlhpRU5WeDlNcFFrTDRpV1VpT0ZpZXZYVnhMUDlR?=
+ =?utf-8?B?clg4ZU9uRUtaYmp6TzB0NXdNU1FOTWg2MGVheXZVcmxWNVBZTSt2V2hrL2Jj?=
+ =?utf-8?B?ZFRsQ3hkNjM5dEFHdUtzdUxESm00alIvYlZsT3FpQ0lMNzBTOGpzUmswbkNj?=
+ =?utf-8?B?MlFncWVrbEF3Z2RxaHl1MTJ1eVY3ajNJck1DdVJGWkpMYVpMaSttTWcrMTN4?=
+ =?utf-8?B?RFoyM2lBYUI3cFVrVHozSENuNHRGMlBQbFRtL1dEWUNxYzNjYVJkdHZ2ajMz?=
+ =?utf-8?B?eVJWQkd4WUpwR0Y0Tm1TYXZWbTQvZDh3aVJmRDQ0V3Jkb0lWN3ZwKyt5RUZM?=
+ =?utf-8?B?MXVGZWVwT1ZGYUNGdnR4RFhrYkZubk9CODJoVkF6Qk9WNll0YU5VSFVELzhJ?=
+ =?utf-8?B?aWg4RU1uQ3JqOHJ3a3ZJcFBMRm4ya29zQ3R2bDl3VUFpTkM1NlppNVllWkZZ?=
+ =?utf-8?B?cHR4SENtaEdtRFE2NkdzODBrWVE0dGxJTW54UUtQNDFsbU5zTUN1MFhPWTVV?=
+ =?utf-8?B?dkE9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 17c4b625-6372-4b39-b726-08daf99cca2a
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2023 21:41:43.0076
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: BAp0FuW3uWcPAlCn51a9bRJhzYCT/toUOI3rA5dcLK0pUrTg18RLoDLsT4WnYvMPoTnoo2kLi2xXa6uxaEfREBw3bWHuLZ4jIqFR6UXoXhw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB6995
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Dmitry Safonov <dima@arista.com>
----
- Documentation/crypto/crypto_pool.rst | 36 ++++++++++++++++++++++++++++
- Documentation/crypto/index.rst       |  1 +
- 2 files changed, 37 insertions(+)
- create mode 100644 Documentation/crypto/crypto_pool.rst
 
-diff --git a/Documentation/crypto/crypto_pool.rst b/Documentation/crypto/crypto_pool.rst
-new file mode 100644
-index 000000000000..84abd1f2ee80
---- /dev/null
-+++ b/Documentation/crypto/crypto_pool.rst
-@@ -0,0 +1,36 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+Per-CPU pool of crypto requests
-+===============================
-+
-+Overview
-+--------
-+The crypto pool API manages pre-allocated per-CPU pool of crypto requests,
-+providing ability to use crypto requests on fast paths, potentially in atomic
-+contexts. The allocation and initialization of the requests should be done
-+before their usage as it's slow-path and may sleep.
-+
-+Order of operations
-+-------------------
-+You are required to allocate a new pool prior using it and manage its lifetime.
-+You can allocate a per-CPU pool of ahash requests by crypto_pool_alloc_ahash().
-+It will give you a pool id that you can use further on fast-path for hashing.
-+You can increase the reference counter for an allocated pool via
-+crypto_pool_get(). Decrease the reference counter by crypto_pool_release().
-+When the refcounter hits zero, the pool is scheduled for destruction and you
-+can't use the corresponding crypto pool id anymore.
-+Note that crypto_pool_get() and crypto_pool_release() must be called
-+only for an already existing pool and can be called in atomic contexts.
-+
-+crypto_pool_start() disables bh and returns you back ``struct crypto_pool *``,
-+which is a generic type for different crypto requests and has ``scratch`` area
-+that can be used as a temporary buffer for your operation.
-+
-+crypto_pool_end() enables bh back once you've done with your crypto
-+operation.
-+
-+.. kernel-doc:: include/crypto/pool.h
-+   :identifiers:
-+
-+.. kernel-doc:: crypto/crypto_pool.c
-+   :identifiers:
-diff --git a/Documentation/crypto/index.rst b/Documentation/crypto/index.rst
-index 21338fa92642..3eaf4e964e5b 100644
---- a/Documentation/crypto/index.rst
-+++ b/Documentation/crypto/index.rst
-@@ -25,6 +25,7 @@ for cryptographic use cases, as well as programming examples.
-    devel-algos
-    userspace-if
-    crypto_engine
-+   crypto_pool
-    api
-    api-samples
-    descore-readme
--- 
-2.39.0
 
+On 1/18/2023 10:35 AM, Saeed Mahameed wrote:
+> From: Adham Faris <afaris@nvidia.com>
+> 
+> Current XSK prerequisites validation implementation
+> (setup.c/mlx5e_validate_xsk_param()) fails silently when xsk
+> prerequisites are not fulfilled.
+> Add error messages to the kernel log to help the user understand what
+> went wrong when params are not valid for XSK.
+> 
+> Signed-off-by: Adham Faris <afaris@nvidia.com>
+> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+
+Makes sense. I'm not familiar with the XSK configuration but I assume we
+don't have netlink_ext_ack or similar for error message reporting here.
+
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
