@@ -2,90 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BCD9670ED0
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 01:39:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 485BE670ED2
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 01:40:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229734AbjARAjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 19:39:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36928 "EHLO
+        id S229615AbjARAkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 19:40:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbjARAim (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 19:38:42 -0500
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD40741B5D;
-        Tue, 17 Jan 2023 16:10:29 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id e130so6705819yba.7;
-        Tue, 17 Jan 2023 16:10:29 -0800 (PST)
+        with ESMTP id S229641AbjARAjm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 19:39:42 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD2C367D9
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 16:11:36 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id c4-20020a1c3504000000b003d9e2f72093so346828wma.1
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 16:11:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mqoGaxCv32d9QDH8rbs+wNFx+mRHisbPyzqWglfmzdo=;
-        b=X8kEN2RCR0Z7j9dvYBPvrUngCUUeFWtb1S07rcVgUPJfjZWU74psq/1gmCn184hHsa
-         uAze+wMWm/HhTilA6p92QH5ri8+IauhT90wWGY1gF+L4D1hxqn6EEUAC2u4NEpV9Nmvn
-         x+3uw1f3Kj62qSMscS/TsPlYBzCYZoW6NNjmtZbAPUJ/5TKESadBgRtm8J1MdvDK06vz
-         WYfkJ4Sp7G5/xmXAjhT1J6VJC34p+oXr1s/hPXo04xworQlkKedZ7oKdZ+cdRdRuwnLj
-         FlNdnb/9pL7BHz0y6pWQYZ0EY4EDj4CwBCe3rsWwDGIkCSO63TNtAcqrhSR1ML+9G3SE
-         inSA==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=X/3iYZ9//Pg/OIASjdSN5Aoo4hzdrAQiyMUiOLCRDH8=;
+        b=InZeUiyBF8sKjg0AJPHJhYSg9K7NAXgH3GyN3fPBSNneKc2yK42BpVtRou7B/VWaEM
+         wn0wNHx4aAxrtvCXy2FDrTdonzB/llgNTU13mOTZvmuBnJxuaZv9ZCAvoYUFgVmyr/JF
+         jIcStpgpRfVDjZQ2PFZmcRuuAObn9e50RYjR1Pr8AHkKDTM1u4BAq8woOjY4XbrTVLc6
+         A8uSlCH7qBQS/FHmcbBKY7BZS0VVZpZdftxtREK7B5ToECmUTHHAthwYOCmV3/SNxuG0
+         NUUuMyESRCAidGtWN9Ipj1qBrZSOhnwoJDRSWHaq6ROqPG4SuVrqBTfKRdvn1LoygoI5
+         ikrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mqoGaxCv32d9QDH8rbs+wNFx+mRHisbPyzqWglfmzdo=;
-        b=CkWMK8SSgKtwWDurvooUxsnwFaOrfo0s/0lVapsSexK3ZlfjE/KFildOSMZhUbtipo
-         Y2jlcU+lqWuvupbRvx7dfpm3OZkKnLe71kqG+1qYYDDMjEWG1m0b8p0YFbxFJ4aTJ9HU
-         2UJ3+iqXiejc8axSpH5z2oAIG1eCujwx+zLVMSGTnWX8bETMTgZEeF8mA7Daah1gB4ng
-         nUYC+t4YLxnxv7nXDsKGtwS+U3lFgmFxNaVdas9S74m55hz+ANQxTARJaWqq5GZXrDbl
-         WxZYfqpOjSgiBEPZ7iTORwId6em8pNr2DPWKH3hRXqnB2vWzni3hZtk6jsZFhf3Sy5uM
-         SaIg==
-X-Gm-Message-State: AFqh2kph3v8kIbeohz3YGLHiCLvsDDqoxePReUF7rPv87rsowlfXUtnl
-        HnXseFG/4YK/Pi70588+Opk=
-X-Google-Smtp-Source: AMrXdXvLckhDa1bG5Pn2IzKkim7J+U5lK7NIKjwNimaDoNI+pnG9GJpZUGRqId1mcbsUGnMptZYX1A==
-X-Received: by 2002:a25:4084:0:b0:7d8:aaf9:bdd7 with SMTP id n126-20020a254084000000b007d8aaf9bdd7mr4610072yba.3.1674000628976;
-        Tue, 17 Jan 2023 16:10:28 -0800 (PST)
-Received: from [192.168.0.14] (cpe84948cc906a3-cm84948cc906a0.cpe.net.cable.rogers.com. [99.231.72.42])
-        by smtp.gmail.com with ESMTPSA id h18-20020a05620a401200b007064fa2c616sm6796318qko.66.2023.01.17.16.10.26
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 17 Jan 2023 16:10:28 -0800 (PST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.7\))
-Subject: Re: remove arch/sh
-From:   "D. Jeff Dionne" <djeffdionne@gmail.com>
-In-Reply-To: <c9ce648e-e63e-8a47-03c6-7c7e30d8dbc7@roeck-us.net>
-Date:   Tue, 17 Jan 2023 19:10:25 -0500
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Rob Landley <rob@landley.net>, Christoph Hellwig <hch@lst.de>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-sh@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <9FC76FF3-9DD4-48E2-BC39-479A50B40C1D@gmail.com>
-References: <20230113062339.1909087-1-hch@lst.de>
- <11e2e0a8-eabe-2d8c-d612-9cdd4bcc3648@physik.fu-berlin.de>
- <20230116071306.GA15848@lst.de>
- <9325a949-8d19-435a-50bd-9ebe0a432012@landley.net>
- <CAMuHMdUJm5QvzH8hvqwvn9O6qSbzNOapabjw5nh9DJd0F55Zdg@mail.gmail.com>
- <c9ce648e-e63e-8a47-03c6-7c7e30d8dbc7@roeck-us.net>
-To:     Guenter Roeck <linux@roeck-us.net>
-X-Mailer: Apple Mail (2.3608.120.23.2.7)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=X/3iYZ9//Pg/OIASjdSN5Aoo4hzdrAQiyMUiOLCRDH8=;
+        b=E85XMYq5000DRhHWBJlARk86rhuueUvWUlw0LeVRsUTtYIIiap76JAgmhfrAbhmMfP
+         7dec0PlYLkKnzjk1cYRa0SIMa6g3V3lA8uPz4aFA9Zwlk3nNo8vMUEFq6IqhI3blXFzD
+         +oU+yVhKM0TGX7oj9mVXUATDaVhaJibOXo92HH2o+Wb7xzkNI2flOpgz6LYgYBqq0H60
+         kHna6h8wf27HQpBC9L6rVR/b1X5AhxSbHEUWtroWxtYJRQrvmDo+uVS4mA4BUWpGOcmE
+         7hw1XUvVBoW+lLhAr7QIVq0qCRYPkG6l4/6NG/7PE7bs0/PZ1qbFpSetDUrvbB3vjt4X
+         Atbg==
+X-Gm-Message-State: AFqh2krOoIlL32iY6h865uGZqRCMjgqKv0+7GHKNclQ78kxDLNXgw7p6
+        gn5ojTDCBPRUorgEZduKajS/bNAyiA7q8Vk2zrw=
+X-Google-Smtp-Source: AMrXdXt/SGPrnC0DvfxoAo+dvtgA56I9Sc9B6ewR9Ao3FKykXMJCGGa/lYaACYPSxbI3fZ0grZyqa8g05RFv7auvr+0=
+X-Received: by 2002:a05:600c:348e:b0:3da:17fb:93f5 with SMTP id
+ a14-20020a05600c348e00b003da17fb93f5mr381960wmq.160.1674000695134; Tue, 17
+ Jan 2023 16:11:35 -0800 (PST)
+MIME-Version: 1.0
+References: <4538d7d2-0d43-16b7-9f80-77355f08cc61@huawei.com>
+ <CAM0EoM=rqF8K997AmC0VDncJ9LeA0PJku2BL96iiatAOiv1-vw@mail.gmail.com> <CAM0EoM=VwZWzz1n_y8bj3y44NKBmhnmn+HUHtHwBb5qcCqETfg@mail.gmail.com>
+In-Reply-To: <CAM0EoM=VwZWzz1n_y8bj3y44NKBmhnmn+HUHtHwBb5qcCqETfg@mail.gmail.com>
+From:   Kyle Zeng <zengyhkyle@gmail.com>
+Date:   Tue, 17 Jan 2023 17:10:58 -0700
+Message-ID: <CADW8OBvNcMCogJsMJkVXw70PL3oGU9s1a16DOK+xqdnCfgQzvg@mail.gmail.com>
+Subject: Re: Question: Patch:("net: sched: cbq: dont intepret cls results when
+ asked to drop") may be not bug for branch LTS 5.10
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     shaozhengchao <shaozhengchao@huawei.com>,
+        David Miller <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -96,34 +77,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Zhengchao,
 
-> Since there are people around with real hardware .... is sh in big =
-endian mode
-> (sheb) real ? Its qemu support is quite limited; most PCI devices =
-don't work
-> due to endianness issues. It would be interesting to know if this =
-works better
-> with real hardware.
+I'm the finder of the vulnerability. In my initial report, there was a
+more detailed explanation of why this bug happened. But it got left
+out in the commit message.
+So, I'll explain it here and see whether people want to patch the
+actual root cause of the crash.
 
-Hi Guenter,
+The underlying bug that this patch was trying to address is actually
+in `__tcf_classify`. Notice that `struct tcf_result` is actually a
+union type, so whenever the kernel sets res.goto_tp, it also sets
+res.class. And this can happen inside `tcf_action_goto_chain_exec`. In
+other words, `tcf_action_goto_chain_exec` will set res.class. Notice
+that goto_chain can point back to itself, which causes an infinite
+loop. To avoid the infinite loop situation, `__tcf_classify` checks
+how many times the loop has been executed
+(https://elixir.bootlin.com/linux/v6.1/source/net/sched/cls_api.c#L1586),
+if it is more than a specific number, it will mark the result as
+TC_ACT_SHOT and then return:
 
-SH big endian works very well, and is in use on J-Core J2 SMP (hardware =
-w/FPGA, simulation and ASIC this year) as well as some of the Hitachi / =
-Renesas IoT chips e.g. SH7619.
+if (unlikely(limit++ >= max_reclassify_loop)) {
+    ...
+    return TC_ACT_SHOT;
+}
 
-It=E2=80=99s the base of the real new line of development (as opposed to =
-backward looking support of older SH chips).  New chipsets will be based =
-on the same RTL.
+However, when it returns in the infinite loop handler, it forgets to
+clear whatever is in the `res` variable, which still holds pointers in
+`goto_tp`. As a result, cbq_classify will think it is a valid
+`res.class` and causes type confusion.
 
-But does it actually work?  Yes, we have (new) devices such as a USB =
-Wireguard based VPN hardware dongle, that are J2 (SH2 2 core SMP) that =
-are in use with Linux sheb, nommu and fdpic.  MMU chips will be little =
-endian.
+My initial proposed patch was to memset `res` before `return
+TC_ACT_SHOT` in `__tcf_classify`, but it didn't get merged. But I
+guess the merged patch is more generic.
 
-Cheers,
-J.
+BTW, I'm not sure whether it is a bug or it is intended in the merged
+patch for this bug: moving `return NULL` statement in `cbq_classify`
+results in a behavior change that is not documented anywhere:
+previously, packets that return TC_ACT_QUEUED, TC_ACT_STOLEN, and
+TC_ACT_TRAP will eventually return NULL, but now they will be passed
+into `cbq_reclassify`. Is this expected?
 
-> Thanks,
-> Guenter
->=20
+Best,
+Kyle Zeng
 
+On Tue, Jan 17, 2023 at 12:07 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>
+> +Cc netdev
+>
+> On Tue, Jan 17, 2023 at 10:06 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+> >
+> > Trimmed Cc (+Davide).
+> >
+> > I am not sure i followed what you are saying because i dont see the
+> > relationship between the
+> > two commits. Did that patch(9410c9409d3e) cause a problem?
+> > How do you reproduce the issue that is caused by this patch that you are seeing?
+> >
+> > One of the challenges we have built over time is consumers of classification and
+> > action execution may not be fully conserving the semantics of the return code.
+> > The return code is a "verdict" on what happened; a safer approach is to get the
+> > return code to be either an error/success code. But that seems to be a
+> > separate issue.
+> >
+> > cheers,
+> > jamal
+> >
+> > On Mon, Jan 16, 2023 at 3:28 AM shaozhengchao <shaozhengchao@huawei.com> wrote:
+> > >
+> > > When I analyzed the following LTS 5.10 patch, I had a small question:
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=linux-5.10.y&id=b2c917e510e5ddbc7896329c87d20036c8b82952
+> > >
+> > > As described in this patch, res is obtained through the tcf_classify()
+> > > interface. If result is TC_ACT_SHOT, res may be an abnormal value.
+> > > Accessing class in res will cause abnormal access.
+> > >
+> > > For LTS version 5.10, if tcf_classify() is to return a positive value,
+> > > the classify hook function to the filter must be called, and the hook
+> > > function returns a positive number. Observe the classify function of
+> > > each filter. Generally, res is initialized in four scenarios.
+> > > 1. res is assigned a value by res in the private member of each filter.
+> > > Generally, kzalloc is used to assign initial values to res of various
+> > > filters. Therefore, class in res is initialized to 0. Then use the
+> > > tcf_bind_filter() interface to assign values to members in res.
+> > > Therefore, value of class is assigned. For example, cls_basic.
+> > > 2. The classify function of the filter directly assigns a value to the
+> > > class of res, for example, cls_cgroup.
+> > > 3. The filter classify function references tp and assigns a value to
+> > > res, for example, cls_u32.
+> > > 4. The change function of the filter references fh and assigns a value
+> > > to class in res, for example, cls_rsvp.
+> > >
+> > > This Mainline problem is caused by commit:3aa260559455 (" net/sched:
+> > > store the last executed chain also for clsact egress") and
+> > > commit:9410c9409d3e ("net: sched: Introduce ingress classification
+> > > function"). I don't know if my analysis is correct, please help correct,
+> > > thank you very much.
+> > >
+> > > Zhengchao Shao
