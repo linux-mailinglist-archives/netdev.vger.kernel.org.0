@@ -2,135 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A12D2672B22
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 23:13:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD715672B25
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 23:14:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230048AbjARWM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 17:12:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
+        id S230024AbjARWOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 17:14:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230034AbjARWM5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 17:12:57 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F2DB654DA
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 14:12:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1674079927;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZMEMrcYWxCYgncCZ7gZI9FW1ZAN3xqpELmriu9FkXc0=;
-        b=R6g08xikj9V1xn3q0YSDj1HrbDbEI20Gwn31F5VWJumqtvo5dU07LYMkvBWUqGP2Ytb9f0
-        CYcSIdivNiuOjiGvxi9JdLodADvc7UCD+XgV/o2u0FMhyguOotAkXMHBWwY6bpJrgqS7Tj
-        IYpx7FAgNKOioI4HHSlAVxuATwLOJ+w=
-Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
- [209.85.210.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-619-Mqbjx38bNrGPWLTIO-xojQ-1; Wed, 18 Jan 2023 17:12:01 -0500
-X-MC-Unique: Mqbjx38bNrGPWLTIO-xojQ-1
-Received: by mail-pf1-f199.google.com with SMTP id p1-20020aa78601000000b0058bca6db4a0so7993pfn.20
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 14:12:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ZMEMrcYWxCYgncCZ7gZI9FW1ZAN3xqpELmriu9FkXc0=;
-        b=scMkiKVzXM5cI3SCsi4PNL+/UOIjW6ye5CO1KKov6ydJpWPEsp5bbXFJC6gLzEkq7H
-         Fs5r6sqQWBx1Ye6jCIhhHm2JywlJVH8dCcIR3NtAp5S/U98W2CqLhCx59PHbuzFny7IN
-         TZ9T53yF0IkvR08KzuvihYSQRr+KiLlJmEvyyu42LwxFZzCjsHJ327S7eKYoxyLLWlAM
-         qLpv4f1d5bWQt2GDD83DraAIPOt2CHZvtU2HiGJN9WDyPDDDGkxI6CeRgYZo39Yz8HWw
-         q0yShN4QsuXz17071LhIvRyZCjs+0WTJ+zmNFrpJ2gG+X0vgLcz230l/lhe05Dv5PdV6
-         bTgg==
-X-Gm-Message-State: AFqh2koUFitkdNYPj/E8CzsMIY55P88Q2K3mjj9nVWfCy+vYgrjAiiAS
-        BNdqYQ7Zehyq3kAlyXgiiFGO4f+cbsUH9NiZCLGDikgUzlgjZvbrKTvSdC8tJcHHxtp6zCdKgm0
-        0KAp8IkupapIGaGjLSZ8gMpNuYFijRJUA
-X-Received: by 2002:a17:90a:bd8b:b0:229:3b43:a31f with SMTP id z11-20020a17090abd8b00b002293b43a31fmr1010102pjr.81.1674079920357;
-        Wed, 18 Jan 2023 14:12:00 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXsEVBmBylWpQyn2dcYBw+l/HGBhJWmGomA3c22HZNKZfJ0OUa8lD0ANX47rTRzPNb7JB63lpkyMuZfIjLQXNyI=
-X-Received: by 2002:a17:90a:bd8b:b0:229:3b43:a31f with SMTP id
- z11-20020a17090abd8b00b002293b43a31fmr1010097pjr.81.1674079920131; Wed, 18
- Jan 2023 14:12:00 -0800 (PST)
+        with ESMTP id S229468AbjARWOF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 17:14:05 -0500
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2FD864682;
+        Wed, 18 Jan 2023 14:14:02 -0800 (PST)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id CB2F818837A5;
+        Wed, 18 Jan 2023 22:14:00 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id BAF2B25003AB;
+        Wed, 18 Jan 2023 22:14:00 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id A73C791201E4; Wed, 18 Jan 2023 22:14:00 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-References: <20230117181533.2350335-1-neelx@redhat.com> <2bdeb975-6d45-67bb-3017-f19df62fe7af@intel.com>
- <CACjP9X-hKf8g2UqitV8_G7WQW7u6Js5EsCNutsAMA4WD7YYSwA@mail.gmail.com> <42e74619-f2d0-1079-28b1-61e9e17ae953@intel.com>
-In-Reply-To: <42e74619-f2d0-1079-28b1-61e9e17ae953@intel.com>
-From:   Daniel Vacek <neelx@redhat.com>
-Date:   Wed, 18 Jan 2023 23:11:23 +0100
-Message-ID: <CACjP9X8SHZAd_+HSLJCxYxSRQuRmq3r48id13r17n2ehrec2YQ@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] [PATCH] ice/ptp: fix the PTP worker retrying
- indefinitely if the link went down
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+Date:   Wed, 18 Jan 2023 23:14:00 +0100
+From:   netdev@kapio-technology.com
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        "Kolacinski, Karol" <karol.kolacinski@intel.com>,
-        Siddaraju <siddaraju.dh@intel.com>,
-        "Michalik, Michal" <michal.michalik@intel.com>,
-        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
+        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        =?UTF-8?Q?Cl=C3=A9ment_L=C3=A9ger?= <clement.leger@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>
+Subject: Re: [RFC PATCH net-next 1/5] net: bridge: add dynamic flag to
+ switchdev notifier
+In-Reply-To: <20230117230806.ipwcbnq4jcc4qs7z@skbuf>
+References: <20230117185714.3058453-1-netdev@kapio-technology.com>
+ <20230117185714.3058453-2-netdev@kapio-technology.com>
+ <20230117230806.ipwcbnq4jcc4qs7z@skbuf>
+User-Agent: Gigahost Webmail
+Message-ID: <a3bba3eb856a00b5e5e0c1e2ffe8749a@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 18, 2023 at 9:59 PM Jacob Keller <jacob.e.keller@intel.com> wrote:
-> On 1/18/2023 7:14 AM, Daniel Vacek wrote:
-> > On Tue, Jan 17, 2023 at 7:47 PM Jacob Keller <jacob.e.keller@intel.com> wrote:
-> >>
-> >> At a minimum I think I would only set drop_ts but not not goto skip_ts_read.
-> >
-> > IIUC, that would still fail to clear the tx->in_use bit in case ice_read_phy_tstamp()
-> > returns with error. It would only work for the other case where no error is
-> > returned but rather the returned &raw_tstamp is invalid. I'll send a v2 of
-> > this fix trying to address the goto concern.
-> >
->
-> Please re-send the patch with the goto concern addressed. (only set
-> drop_ts, and still read the timestamp just in case and make sure that if
-> the read function fails while drop_ts is set we still drop the ts).
+On 2023-01-18 00:08, Vladimir Oltean wrote:
+> On Tue, Jan 17, 2023 at 07:57:10PM +0100, Hans J. Schultz wrote:
+>> To be able to add dynamic FDB entries to drivers from userspace, the
+>> dynamic flag must be added when sending RTM_NEWNEIGH events down.
+>> 
+>> Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
+>> ---
+>>  include/net/switchdev.h   | 1 +
+>>  net/bridge/br_switchdev.c | 1 +
+>>  2 files changed, 2 insertions(+)
+>> 
+>> diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+>> index ca0312b78294..aaf918d4ba67 100644
+>> --- a/include/net/switchdev.h
+>> +++ b/include/net/switchdev.h
+>> @@ -249,6 +249,7 @@ struct switchdev_notifier_fdb_info {
+>>  	u8 added_by_user:1,
+>>  	   is_local:1,
+>>  	   locked:1,
+>> +	   is_dyn:1,
+>>  	   offloaded:1;
+>>  };
+>> 
+>> diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
+>> index 7eb6fd5bb917..60c05a00a1df 100644
+>> --- a/net/bridge/br_switchdev.c
+>> +++ b/net/bridge/br_switchdev.c
+>> @@ -136,6 +136,7 @@ static void br_switchdev_fdb_populate(struct 
+>> net_bridge *br,
+>>  	item->added_by_user = test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags);
+>>  	item->offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags);
+>>  	item->is_local = test_bit(BR_FDB_LOCAL, &fdb->flags);
+>> +	item->is_dyn = !test_bit(BR_FDB_STATIC, &fdb->flags);
+> 
+> Why reverse logic? Why not just name this "is_static" and leave any
+> further interpretations up to the consumer?
+> 
 
-Just in case it got lost I did send the patch here:
+My reasoning for this is that the common case is to have static entries, 
+thus is_dyn=false, so whenever someone uses a 
+switchdev_notifier_fdb_info struct the common case does not need to be 
+entered.
+Otherwise it might also break something when someone uses this struct 
+and if it was 'is_static' and they forget to code is_static=true they 
+will get dynamic entries without wanting it and it can be hard to find 
+such an error.
 
-https://lore.kernel.org/intel-wired-lan/20230118161727.2485457-1-neelx@redhat.com/
-
-But unfortunately I misplaced the --in-reply-to header with --reply-to one :-(
-Hopefully it arrived to you safely.
-
-> I believe that alleviates my concerns regarding the potential link down
-> race with a completed timestamp above.
->
-> We also should already be preventing requesting new timestamps while
-> link is down so that should be sufficient to combine with this and cover
-> the three flows:
->
-> 1) request tx timestamp
-> 2) link down
-> 3) timestamp never occurs
->
-> 1) request tx timestamp
-> 2) timestamp occurs
-> 3) link goes down while processing
-
-I was thinking this is the case we got reported. But then again, I'm
-not really experienced in this field.
-
---nX
-
-> 1) link down
-> 2) request tx timestamp rejected
->
-> Thanks!
->
-> -Jake
-
+>>  	item->locked = false;
+>>  	item->info.dev = (!p || item->is_local) ? br->dev : p->dev;
+>>  	item->info.ctx = ctx;
+>> --
+>> 2.34.1
+>> 
