@@ -2,114 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 261C66719E7
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 12:03:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A183671A48
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 12:17:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229918AbjARLDe convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 18 Jan 2023 06:03:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55082 "EHLO
+        id S229786AbjARLQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 06:16:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230412AbjARLAq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 06:00:46 -0500
-Received: from us-smtp-delivery-44.mimecast.com (unknown [207.211.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87959689F1
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 02:08:13 -0800 (PST)
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-339-kS2CfjCFMp24Pkn6TIGQ7w-1; Wed, 18 Jan 2023 05:07:55 -0500
-X-MC-Unique: kS2CfjCFMp24Pkn6TIGQ7w-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B263F87B2A0;
-        Wed, 18 Jan 2023 10:07:54 +0000 (UTC)
-Received: from hog (unknown [10.39.192.162])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0E9C41121315;
-        Wed, 18 Jan 2023 10:07:53 +0000 (UTC)
-Date:   Wed, 18 Jan 2023 11:06:25 +0100
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Frantisek Krenzelok <fkrenzel@redhat.com>
-Subject: Re: [PATCH net-next 0/5] tls: implement key updates for TLS1.3
-Message-ID: <Y8fEodSWeJZyp+Sh@hog>
-References: <cover.1673952268.git.sd@queasysnail.net>
- <20230117180351.1cf46cb3@kernel.org>
+        with ESMTP id S229847AbjARLQN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 06:16:13 -0500
+X-Greylist: delayed 452 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 18 Jan 2023 02:29:31 PST
+Received: from riemann.telenet-ops.be (riemann.telenet-ops.be [IPv6:2a02:1800:110:4::f00:10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 640147F99C
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 02:29:31 -0800 (PST)
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by riemann.telenet-ops.be (Postfix) with ESMTPS id 4Nxhd70RLgz4xTY9
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 11:21:47 +0100 (CET)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed50:4745:2e6d:e3a6:3327])
+        by xavier.telenet-ops.be with bizsmtp
+        id AAFN290042zf9gW01AFNxL; Wed, 18 Jan 2023 11:15:42 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtp (Exim 4.95)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1pI5TQ-005aIN-M1;
+        Wed, 18 Jan 2023 11:15:22 +0100
+Received: from geert by rox.of.borg with local (Exim 4.95)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1pI5TV-001JVg-Uw;
+        Wed, 18 Jan 2023 11:15:21 +0100
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Siddharth Vadapalli <s-vadapalli@ti.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH treewide 0/7] phy: Add devm_of_phy_optional_get() helper
+Date:   Wed, 18 Jan 2023 11:15:13 +0100
+Message-Id: <cover.1674036164.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <20230117180351.1cf46cb3@kernel.org>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_VALIDITY_RPBL,RDNS_NONE,SPF_HELO_NONE,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2023-01-17, 18:03:51 -0800, Jakub Kicinski wrote:
-> Please CC all the maintainers.
+	Hi all,
 
-Sorry.
+While there exist several optional_get() PHY helper functions, there is
+no optional variant of devm_of_phy_get(), leading to several drivers
+implementing this theirselves, sometimes in buggy ways.
 
-> On Tue, 17 Jan 2023 14:45:26 +0100 Sabrina Dubroca wrote:
-> > This adds support for receiving KeyUpdate messages (RFC 8446, 4.6.3
-> > [1]). A sender transmits a KeyUpdate message and then changes its TX
-> > key. The receiver should react by updating its RX key before
-> > processing the next message.
-> > 
-> > This patchset implements key updates by:
-> >  1. pausing decryption when a KeyUpdate message is received, to avoid
-> >     attempting to use the old key to decrypt a record encrypted with
-> >     the new key
-> >  2. returning -EKEYEXPIRED to syscalls that cannot receive the
-> >     KeyUpdate message, until the rekey has been performed by userspace
-> 
-> Why? We return to user space after hitting a cmsg, don't we?
-> If the user space wants to keep reading with the old key - 🤷️
+Hence this series introduces a devm_of_phy_optional_get() helper(), and
+converts existing users of devm_of_phy_get() where appropriate.
 
-But they won't be able to read anything. Either we don't pause
-decryption, and the socket is just broken when we look at the next
-record, or we pause, and there's nothing to read until the rekey is
-done. I think that -EKEYEXPIRED is better than breaking the socket
-just because a read snuck in between getting the cmsg and setting the
-new key.
+This series been compile-tested only, but the new helper itself has been
+tested with a new user I am about to submit.
 
-> >  3. passing the KeyUpdate message to userspace as a control message
-> >  4. allowing updates of the crypto_info via the TLS_TX/TLS_RX
-> >     setsockopts
-> > 
-> > This API has been tested with gnutls to make sure that it allows
-> > userspace libraries to implement key updates [2]. Thanks to Frantisek
-> > Krenzelok <fkrenzel@redhat.com> for providing the implementation in
-> > gnutls and testing the kernel patches.
-> 
-> Please explain why - the kernel TLS is not faster than user space, 
-> the point of it is primarily to enable offload. And you don't add
-> offload support here.
+Thanks for your comments!
 
-Well, TLS1.3 support was added 4 years ago, and yet the offload still
-doesn't support 1.3 at all.
+Geert Uytterhoeven (7):
+  phy: Add devm_of_phy_optional_get() helper
+  net: fman: memac: Convert to devm_of_phy_optional_get()
+  net: lan966x: Convert to devm_of_phy_optional_get()
+  net: ethernet: ti: am65-cpsw: Convert to devm_of_phy_optional_get()
+  PCI: tegra: Convert to devm_of_phy_optional_get()
+  usb: host: ehci-exynos: Convert to devm_of_phy_optional_get()
+  usb: host: ohci-exynos: Convert to devm_of_phy_optional_get()
 
-IIRC support for KeyUpdates is mandatory in TLS1.3, so currently the
-kernel can't claim to support 1.3, independent of offloading.
-
-Some folks did tests with and without kTLS using nbdcopy and found a
-small but noticeable performance improvement (around 8-10%).
-
-> > Note: in a future series, I'll clean up tls_set_sw_offload and
-> > eliminate the per-cipher copy-paste using tls_cipher_size_desc.
-> 
-> Yeah, I think it's on Vadim's TODO list as well.
-
-I've already done most of the work as I was working on this, I'll
-submit it later.
+ .../net/ethernet/freescale/fman/fman_memac.c  |  8 +++---
+ .../ethernet/microchip/lan966x/lan966x_main.c |  5 ++--
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c      |  6 ++---
+ drivers/pci/controller/pci-tegra.c            |  5 +---
+ drivers/phy/phy-core.c                        | 26 +++++++++++++++++++
+ drivers/usb/host/ehci-exynos.c                | 24 +++++------------
+ drivers/usb/host/ohci-exynos.c                | 24 +++++------------
+ include/linux/phy/phy.h                       |  9 ++++++
+ 8 files changed, 59 insertions(+), 48 deletions(-)
 
 -- 
-Sabrina
+2.34.1
 
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
