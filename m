@@ -2,229 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39D4C6717B7
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 10:28:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60BEC671807
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 10:43:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229890AbjARJ2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 04:28:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45568 "EHLO
+        id S230216AbjARJni (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 04:43:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230309AbjARJZW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 04:25:22 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02C495B475;
-        Wed, 18 Jan 2023 00:51:11 -0800 (PST)
+        with ESMTP id S230364AbjARJlM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 04:41:12 -0500
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2057.outbound.protection.outlook.com [40.107.95.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6FBB656E1;
+        Wed, 18 Jan 2023 00:58:15 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ThbJw0NVN+gb74XrjIYjcamA/OGPRQTxbgLs39j/cmeKUTLF2iadzQNQqSjzSXQnXb2MUhmGjuOaFnxpQFbpitOgdrktfzNGO4n00T+Jo0kxIWkOaRDRlenuYzn5x0WbgNSMG+QZxlRghN/qwDpdKXK42CBPqK1p3HV8l/VW9D3Sm7PoNLzqAca4EAFN5tlo4+2bZHaQigvio6VnabN50OPOIvBs8hzBsJJQmcv7e4SCubw9Uvtqc84Y2V23zlrpQDQwCgmkYz3YeeHkJgflesUop8cfFMZOf+aP2LeA2U5c+/3hFeICqd/zrxNLM86o/E/U/W7czMHUNZVick9hTA==
+ b=jRc7yRlkyUUB+1d7HTLTPuKwmL+Esd+rhM+DM5qltUrIwUyH8r4bHYYOptoAwcpffV0D8Ccdml3ww8WEgK7bk1e3Cl/PwxUfAW82WqPqgag1ByGg7v3iCwMOzfFXh2Xk1cYj0uM3o7xYNNWrfEdRJKko4s+2Cq55NvG7aNAZ87G2s/x35M9dlWED3zGxfrQhgpMAdyV/v52LoTaz1lgJ0CH1FZYoXvVxRpaIR4F99+/BYgCcSrp5ienPurtAnebu1xgFGYVb84WGkBnJPoRxEavmwmtmB3bfETJe3WCpMgzhG6JQ7mJGJfv2e5qMorPH1lIVbsDrl1gg8Py6cDln5A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lNPNchCe3qPJwRBtuDTPPZ5vZFfOWodutanIKrZso2c=;
- b=BEEt4fthH8ZNg1QJV1wNoNtlgFpmyL6DUG3GnrvnWuzlAtLi2Cy+2xiagYSsbS+zFcmHMEOZQiMAI+SSJxH18mea3CWcSTZBtWhV7ByxOTxuuON8QiFHptmv2SAxjKP+qNOIR0jwiTO2vrM0xEsvMLuLwrttNwx/4zL2S425XgHPYXz+XjGt/ZjFq1cKc1dEAtklC1zLXVdhUWG0PnB110FatSBr5Rdp21i/oGZXViQ6P0I3Lb+wGqyNIgpVNBqj+uGjcdczEvEiJxWy5R/BqYtLxXaCm2WLC8dWjqyJFQWjJcSaDibi/yzHx552bRjal9B3Xm3D+tnDKNeY3m8xew==
+ bh=F2c32Ygh25XfwuNohv3aPEHfgzsmiE+Z/us/yUOHMxk=;
+ b=h0Els8seMxDIIKXYqPi0jGk+q7Vp5zIzJxMmHjDOCb6FobrYeQ4O7yDTd5KwmC+CmW1DRY0Jptgwy7I40WSKIqnFAwZWxOj4MWfa4V3g5q8eZAQlWHGm5sC47c5dcgkinvR9W9h6eloX7wifDwVef3Q/RWzPu8dfLLvG5zqXxK/CAxFTjbhP3hC794KbxzaxNdTLeFblkhfwO7ITVwCG6iy1Y5UO0ilJGkwj+fAF+/n0xicG3N2KqeQ76ZljUBSiUlkYNSW8rr1xvrvPtcwqWLutuH4D7Z/rP8whqm/6kEBOgo+xs8gvmUGqzgf778SyhfQnPJoMV8tshycup1XjWg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lNPNchCe3qPJwRBtuDTPPZ5vZFfOWodutanIKrZso2c=;
- b=vMYHQ7CiwOZbBvr0hw59pgRDQ8JiGtCL85+7NMqLoKPwkpGwx3BvAm30IYzxYXl80jzgZRy80N9v3ChKsNl2wlytgz6ioChVq4+xAUA3/Y7U60zpN+VZbSKwFATR0B9+dB3jrD9lJYEJxeQOjP11zHBLz5lXzAPPVipZxorPsoM=
+ bh=F2c32Ygh25XfwuNohv3aPEHfgzsmiE+Z/us/yUOHMxk=;
+ b=ZKE/KcigGt4hG5SdZeHwTiqK60bkQ8U2FmcmgIDuVRAW57NmDEBTSUpRoWXIL1iURA79//2PfOSBlv6Yh7Tk8VbPdUGQup2RyXw9JEVBqXj6WQE56sUa1IIWKNrrO83SbzXBNg4QQhp7/app1ZIlHsQ1AlKoh4OFRXSY2me4YaIPrg5VETc6UoIctuqR6gAXaYjUFpxaf/fSk2pq65ILr8mHzM4zsJ7eGk/D5jdd7jTDv4FoPPQrjQ5LRm3LT1fy4+BmObnTYCwqj83zvbU+teE1RE/8DpLa6C9IEbngnxMzuvOlhx593HwD3UlJx9slINayQ4CYnyIQ7d8SypMLVg==
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from SJ0PR13MB6037.namprd13.prod.outlook.com (2603:10b6:a03:3e2::9)
- by DM6PR13MB4049.namprd13.prod.outlook.com (2603:10b6:5:2a3::7) with
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MW3PR12MB4409.namprd12.prod.outlook.com (2603:10b6:303:2d::23)
+ by MW4PR12MB6874.namprd12.prod.outlook.com (2603:10b6:303:20b::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.13; Wed, 18 Jan
- 2023 08:51:09 +0000
-Received: from SJ0PR13MB6037.namprd13.prod.outlook.com
- ([fe80::a17f:495a:6870:18c0]) by SJ0PR13MB6037.namprd13.prod.outlook.com
- ([fe80::a17f:495a:6870:18c0%9]) with mapi id 15.20.6002.024; Wed, 18 Jan 2023
- 08:51:09 +0000
-Date:   Wed, 18 Jan 2023 09:50:53 +0100
-From:   Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@corigine.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, toke@redhat.com, memxor@gmail.com,
-        alardam@gmail.com, saeedm@nvidia.com, anthony.l.nguyen@intel.com,
-        gospo@broadcom.com, vladimir.oltean@nxp.com, nbd@nbd.name,
-        john@phrozen.org, leon@kernel.org, simon.horman@corigine.com,
-        aelior@marvell.com, christophe.jaillet@wanadoo.fr,
-        ecree.xilinx@gmail.com, mst@redhat.com, bjorn@kernel.org,
-        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        intel-wired-lan@lists.osuosl.org, lorenzo.bianconi@redhat.com
-Subject: Re: [RFC v2 bpf-next 2/7] drivers: net: turn on XDP features
-Message-ID: <Y8ey7Sg3BcPfsU9d@sleipner.dyn.berto.se>
-References: <cover.1673710866.git.lorenzo@kernel.org>
- <b606e729c9baf36a28be246bf0bfa4d21cc097fb.1673710867.git.lorenzo@kernel.org>
- <Y8cTKOmCBbMEZK8D@sleipner.dyn.berto.se>
- <Y8czKD8/yXywbl+f@lore-desk>
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Wed, 18 Jan
+ 2023 08:58:13 +0000
+Received: from MW3PR12MB4409.namprd12.prod.outlook.com
+ ([fe80::f803:f951:a68f:663a]) by MW3PR12MB4409.namprd12.prod.outlook.com
+ ([fe80::f803:f951:a68f:663a%5]) with mapi id 15.20.5986.023; Wed, 18 Jan 2023
+ 08:58:13 +0000
+Message-ID: <f6e661b2-f2f8-1747-2180-b7e6aa0b4bcd@nvidia.com>
+Date:   Wed, 18 Jan 2023 10:58:02 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH rdma-next 00/13] Add RDMA inline crypto support
+Content-Language: en-US
+To:     Eric Biggers <ebiggers@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>, Bryan Tan <bryantan@vmware.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Keith Busch <kbusch@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-nvme@lists.infradead.org, linux-rdma@vger.kernel.org,
+        linux-trace-kernel@vger.kernel.org,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vishnu Dasa <vdasa@vmware.com>,
+        Yishai Hadas <yishaih@nvidia.com>
+References: <cover.1673873422.git.leon@kernel.org>
+ <Y8eWEPZahIFAfnoI@sol.localdomain>
+From:   Israel Rukshin <israelr@nvidia.com>
+In-Reply-To: <Y8eWEPZahIFAfnoI@sol.localdomain>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <Y8czKD8/yXywbl+f@lore-desk>
-X-ClientProxiedBy: FR3P281CA0094.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a1::9) To SJ0PR13MB6037.namprd13.prod.outlook.com
- (2603:10b6:a03:3e2::9)
+X-ClientProxiedBy: FR0P281CA0120.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a8::10) To MW3PR12MB4409.namprd12.prod.outlook.com
+ (2603:10b6:303:2d::23)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ0PR13MB6037:EE_|DM6PR13MB4049:EE_
-X-MS-Office365-Filtering-Correlation-Id: f2bbde9f-a473-47b3-031b-08daf93124c9
+X-MS-TrafficTypeDiagnostic: MW3PR12MB4409:EE_|MW4PR12MB6874:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0e25eb8d-4f9b-435f-0dde-08daf9322188
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4XaM9lp+GFn7RTX2ceMQD9SXfg3S4CB9o2CFtk0lFBd0NBDoCS0sjQjR4nweEb1WFOQsSBIw56C/Ds0h7cyvynZQWVmmEXgKVo/Ks/83S4/WBZcrFu/jr3a3eV11bMQe4G96e1bsqMro4NkpgL2RBDNxcMpH1tnvANXnOgqaO2h4E6B9XnZ8SJgdz5ejpYQFxET9diCdDqw3/nfTf9AwbNqjG3Clh4um/3hcQRA3ib7VjdtAjsTBae2e+fAkiOrbcxsGM7P1oCsjKsyaZmF29YJI9fw9UjdXBmzY7n97ERowvLo1Hhkt6ntSP+N0RcfqwbKVS/HblBpUzA0ZvMLCEFo781HBDeji9s+683+3AOeST1Fww6Y3UmttFxDP5fug+N3db9GF+xl3t8fDsvCUxlhN2C+6RP4si/r1IMCb369HLpn+aJxIkCSkyNs/p8Bn/z0mGji1+XMERGVE8L0wG3phhfs4iXkMD2dEntdtCvX8BhFwRc12nNs69nViChx5pCgeCy/RVzfOH09FnJBks1rAYSqwHUYoW06UsZV8UAUrlOStJiQW0Jw7BtvbToyxtL99BxD7Z/H0ZwUsDx/3m678S890/pRt0rogZUmJEKDl5bEHHF5uEwnhV6ah7M76cKM89XvC8n+485r9n6lw371CkU7xhNCSpKuImVRfEPEg7jBdiOFTV0uNwxWDRdu2
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR13MB6037.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(136003)(346002)(39840400004)(376002)(396003)(451199015)(478600001)(52116002)(6486002)(6512007)(9686003)(6506007)(6666004)(2906002)(26005)(8936002)(53546011)(316002)(41300700001)(5660300002)(7416002)(66946007)(6916009)(7406005)(4326008)(66556008)(66476007)(8676002)(38100700002)(186003)(38350700002)(86362001)(66574015);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: ilNjqfXK6g+30eb2e5HWhGih2haJFT7Nr68dD4XjROTBrwnoRwNEvx96+8azEWxvgJCjIVNcxy10GsFj0zLPzaLFIRoI1zHfQomzzWEGQ5ybRAATwUD6sH62X7jBHAl+PkSmgd9yJDW89uuLEL7hJP+h+r5Oxy097ljg8M2fN0XZ6mNZ8ANj4gLz3/q2IEUYLCLI3x0l+thryBzJrGi96taTAjQIOSXcAXe0VZsadtdkkoN6MxL5YcKu8JQvBWs/4Tzt0pF8FB6D0k1ouUByDJW8E5uoE5pTQxFycCRq8vlIO/Umg/G5RXhPgJIyFkvZZ/tDeL29gWo7R4w3ddYat47WGimp8UXJaMLp0jebr8STGpPVw3xWQHnFSnKGDetsa4vSUruEMpEe8uUUDifktIz9Ef7Mf2MD6vBzlBXoEEZlzESYOiXdz9AzBT3lmYBt8+9X5jxmA6Pg3pHi/N5ySFZEjjYHqXdKjtVMLkms8TelxFvwT4/QuHiSPqZP6qLM5BZu+GyHcZwUhf5/qlGxQYbP5IObBmAuyvSka9DlavcjsyjQxFxgVxZnj8GFWThNIOG1k+Au7eqtXTf+An/+XtA16gybWnFuWaE2SVMLU/JtXBSB4AKPWBBsW6l+AmIm/hSN5mPuG1ntFmOqBC5LqWiugS/e+WPD4ogk0aw0drVaY3JhE2zV0lxjIM9AkQDtqXPyDKNgp6o83ThdNeiF+m3bTsaIYiqpKs5g0QXYRaY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR12MB4409.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(39860400002)(396003)(366004)(376002)(451199015)(66476007)(38100700002)(86362001)(8936002)(8676002)(2906002)(4326008)(7416002)(31696002)(5660300002)(107886003)(66556008)(478600001)(66946007)(41300700001)(6506007)(6512007)(26005)(186003)(2616005)(53546011)(110136005)(54906003)(6666004)(6486002)(316002)(31686004)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?+q3sNeG7ICGrdWyTiPIYw2pw5O6FxNOCfajs6uikLmH+OIR9K9K7bkvO1Z?=
- =?iso-8859-1?Q?JZegmjl54H//vV6qw3k54KwWsdoYOIlZM7zXABI2Xiksel2Miq4wDmleFn?=
- =?iso-8859-1?Q?N+c36ssboenBeexUnv9I4sJ9tkqoyAh4nVhqfnZqLQp41J2n37UBRS6vP2?=
- =?iso-8859-1?Q?Og0K/asxl5qPiSABgVVmj2bzrP+8c0ZPZXxj4pP39dRqvmYbSBk7N7oALw?=
- =?iso-8859-1?Q?GzFrx8wTaP/5O97y+SgSIBYSo4yu32DWZp6zpkXDYBGvkDfbAmKeRPTLWg?=
- =?iso-8859-1?Q?ZAlIg0fstzIoQRxofGAoRwa0ozP5by/f5/PmpCuDyomGDa0AnxPadnZ2VH?=
- =?iso-8859-1?Q?UBRDRF5FP5yizMJG54h5OQLUjXPzwJ8+ZW8zNxymncWFYWxgZUBVf76ElD?=
- =?iso-8859-1?Q?MdlwIwGOBRKSeTJW1J0YalfLUTtvIHA0Yk9iqsxiCG2AEq+gsI/MED1IgR?=
- =?iso-8859-1?Q?THLB+jgdsHdfGR8wZnIM9SZzfcaZ0hNbIPzYaqP+ZFzkbaYbLfCp38G0nV?=
- =?iso-8859-1?Q?xA5uH1Trha5iCvR5ymCf9fjMvlEccmEqaxqGEU0cf9KWWLq+dBXbC85aYw?=
- =?iso-8859-1?Q?2Tau5EOkZw+f1VvsntPZgwFLmWK5Rkvp2CLO/yv4nSCErDeH6xCFrKsBkX?=
- =?iso-8859-1?Q?juE9YoCHOTDjkFCSe4zlrzm4xUYIVbl9R4JS/1mT8DY0NHaXOGK8jVxNbW?=
- =?iso-8859-1?Q?v8vSE5qXcy2U+s5/XXZI2vxdHcPmG3EXOIpLtsnTQLQmuDxMLJnj2JdqvU?=
- =?iso-8859-1?Q?GyctlF/MO2zI61xMFuzH+XpsPHgiPcFiaIZw7wAsSaENl6G0tGCyQGmzU2?=
- =?iso-8859-1?Q?GK1iDY5w9tcLe4CfRsw/PQrx2cHw4PJMntGR/6FxGQ9XduudWybLe7QFPw?=
- =?iso-8859-1?Q?o2r4mhg9wF7/piGBGvKK+E7/pu76YZOI/h3XT5X3RMgNZBSFtdIl5/DeMP?=
- =?iso-8859-1?Q?XrI/hWiPmcsrCNnmUq/j/TA40VM9LwvDXLfLmfCdsmxAeEQMj4Bxlq5Jiq?=
- =?iso-8859-1?Q?GA1KQNXI5ZpVODD/ekWwI8GnRlFv/mApR6PSXZmD6Lw0Rew1Tvj6ZZz4q1?=
- =?iso-8859-1?Q?CXlg6U1Bt+Tm613NAvwcfRHB7T+mHFYEL4oruWaVOdhghkFewZ/+sjQnwr?=
- =?iso-8859-1?Q?47u9MoSGp4cBj5BZifHMVtH/Z35MwBDLsGuROMdH9cQU/AsNSVfatlj/lB?=
- =?iso-8859-1?Q?2ZJXbHJ29qMTxNTOADTuMFZmEaNHjm7mrx/UL6TMVy2QNoRUB0ZiLDTzgS?=
- =?iso-8859-1?Q?HEZ0ipwDUZ2pQuhoe161Buc1Vn91/PivX2XXIfqNuEiAND59gnbgZ2RcMF?=
- =?iso-8859-1?Q?GijGWH+Lc4RpAKdYODxek8Grd///iEjyeLn9UGUA+zZxhnyqNStkIT66qK?=
- =?iso-8859-1?Q?6nv6p2FNv72H5dj4mWiI14rhOsdgMy3vIUUQpMDma0DsvsfDkisPje+pM5?=
- =?iso-8859-1?Q?4qxbgP+ax8zd/b8ZTX8d+1CEZjvbHRzdubmEADtzcJz7pnTqWbBV0+Mvgd?=
- =?iso-8859-1?Q?Bhey2IcOz8ovV3GbgZocOcvXLnHZUy9Qr64yLm/hkHjdznQLo7BzMYZfQF?=
- =?iso-8859-1?Q?Q8O5Iju+sfYGauf5drI9bvHEY6O70sDOgCCYe5RRlpfsie0ke7vGFGRgBa?=
- =?iso-8859-1?Q?KEi/sMDGRVJL9y2A5VQWzOTVAIuRPbat02mhNApMCmkDiJic2xNR75+A?=
- =?iso-8859-1?Q?=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f2bbde9f-a473-47b3-031b-08daf93124c9
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR13MB6037.namprd13.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UHhSZkQzdlp4SFJ2YzhudTVYeVJRTlhZZW5weDExWXFmMUM3UDlVVFBGUEow?=
+ =?utf-8?B?TDNNK0Q4MWRuc3ZYNFNKZTEySjc4a2J1dlVsWnJYZEh6SVAzWi9jeHQ0SDYy?=
+ =?utf-8?B?QnlQTThvdUZIVU9yblNJclpFZnJmVlpRUEt1NTZGV29CYys0NVV4UmZqTlEz?=
+ =?utf-8?B?Tk5Fbi9KelZlZU5WNVRZNElmVzNESGRuVkY3Z3VOaWlHWkd2SmordFR4UU13?=
+ =?utf-8?B?dFA2b3FwNUdXWGNMVVVuVzV3blFjQWE2QmZqeS9aUVJ3ckl3L29ubjdKaGJF?=
+ =?utf-8?B?cDlnbmVWdnZ5eGlvemNNOWppUFhWUW1STVp6RnlDUkF4NHFuV1dNT3gvazl5?=
+ =?utf-8?B?SUpiWHBCK0QvdUFuNXdjV1BjWEdJZWZvM1Zvb2NWY3RCMkU4aUNUd2Z6MEdO?=
+ =?utf-8?B?dEJVa28vZXIzQVAvMlRHOXZ3TEkwcXVXNFdHYmhJdGpQcjdKTTBCWUhFbVRj?=
+ =?utf-8?B?dno0U0RrM3MvUytFYTljQ0J5YU5MT2kwQ3FXbi9lZUNlQjFSNEwwaTA4QWRX?=
+ =?utf-8?B?QTZtbE8wYTlQTEJhM09DZE5QQ0pHck9PcVI1QlQzbEpFODhxb1ArMndMMEQr?=
+ =?utf-8?B?czB0d3VYZVI4MWxmQ082eTdDY3kzNkgzeU94WEdieXVSRnh4VUtZODdvTXcx?=
+ =?utf-8?B?RjUrSStPSmRtaDJVTW9TbXh4R2RyUWliTDkzTUw0eGdianlJdWFOQlJWY2Mz?=
+ =?utf-8?B?OGgzQk44enpCK05FazZMdSt2dGtqd2ZGMWZWWmxMNUg4c29FbktUUlpLOVZS?=
+ =?utf-8?B?QkZRMGVpdUZ1cGJpeTVmOTVjNXgvOW95OGNUZ1JZTUxIWnJLbEZhNThoNXlO?=
+ =?utf-8?B?WGNNWUdjUWRoTWFLd08rWG1ySG8vWUlpSGRXcDgwZC91enRhZXAwaFVPbkwr?=
+ =?utf-8?B?cmdTU1FuZC9RMnpMeU1ma2YyK29xNTNCZWs5cXoyeStpL3VVaFZDbjF5clFQ?=
+ =?utf-8?B?WGRMYTdHc2F3L3ZvVmVieTJOVFQ2ZktpZTNVUjNkT1NUWEthQmVkbTRoNElj?=
+ =?utf-8?B?aHpHYlRCVHNoa2dVUFcvZXpoS2pZZXpvVXl3RW42YUNZcGNaNHpoNzd1SEJk?=
+ =?utf-8?B?SExWRUZPMWJxUERNR3huREFqeHN4Z2oyVWNIUzZzeE02a1RjNFVVL3F4dURC?=
+ =?utf-8?B?ZWd6OUJvdUpPNjNqOWZ0R1hrYk5ESm8vTHpORlZkOW1IS0lidGgrZlM1UVJX?=
+ =?utf-8?B?azJzTDZNZGdjMzEwbEFiS1dVNmhBUXd3T1phM0NOWVFQdlkrUm14S1FtcmN3?=
+ =?utf-8?B?VVAwT1plVHdWK3owYlZXTUVQeFh6RHlabUxpTjFpMko2M0pCdlJKa290YWw1?=
+ =?utf-8?B?NFZoaDJIL0pFSDc2Y0ZxYnNYdnkvWjJ3N0VMaVNEUTJHWWFmbTFKSXJsdjlm?=
+ =?utf-8?B?YWZCdE11ajhTd1RNRWtLSkkwSXlWZ3V3N1diNWRyNXVrWXhpZVNWT1JldThO?=
+ =?utf-8?B?SjRPVTBWZ2lOUzErZFYzdWFSc0V4QzZvdCtLazVDblFORkZFQWo2RHBrUk9t?=
+ =?utf-8?B?dlFKT1pibHU0b3VnOVVpNUlxQUpGWnJPMjQ4SzgySjV3QUNsQnlOMVVoWnpJ?=
+ =?utf-8?B?Q0g1M3lZdURHVk1kLy9FalBtMG5ZS0JpSGhRQnNIREZPeXpubDdpdFh1aEVB?=
+ =?utf-8?B?dDAwUnJtZ0cxSUpESk41OWxreldzRFZPWG1lY1FJQVV5QXhqYnR2VEdvNlJh?=
+ =?utf-8?B?RkdaeU03RXRrUmdzWWd4RUwzMWJaNDhaSm5YblFRcUtDRjBBcVNQZU1YQTJJ?=
+ =?utf-8?B?Wm9TQm5aelNzcGEvdDRiRlFVZHBUUi9lRkkxVmVRbHJFWmdxc05ONEdqTVBF?=
+ =?utf-8?B?WDRDdmdHNEJIeWFMK3BkbGJJMnlQeUJ5ZXdqcjk4eHNpSWNRbFNyZDNOSTlQ?=
+ =?utf-8?B?U3YzeHdEVHFSYVBubEpERUkyRmQyL0lEbE84QytqcUVtZW9HVkJGR1BRMU9w?=
+ =?utf-8?B?SlcyVjZCdUpSbW9NdjlDSmJBc3pJL2ZWdGxhMVFvbURBSk5sUUJlRzZIOUla?=
+ =?utf-8?B?bHF1amw3VzhVdm9pUEVCTUYyZ0VDMXdJdU5BaWlnSXRmRWFsb1dHdWY2UjdW?=
+ =?utf-8?B?bFkwaGpFKzNHeTd0Rm5LdjVUc3E4U3RjbHFhZ0pmSHBRdWovQUlrSW83NTBD?=
+ =?utf-8?Q?BLyX7UkB4XAGKSByryw3h0rki?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0e25eb8d-4f9b-435f-0dde-08daf9322188
+X-MS-Exchange-CrossTenant-AuthSource: MW3PR12MB4409.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2023 08:51:09.4556
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2023 08:58:13.6028
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: J8UVxIGA7uXee0xu4r9bCkl6/pNtPzstziV1/OtXoxoPM7UR8L+jTsTcQYcyohVo3VNnjFO3Uzyc+CRvGtRdVQZGvMlrosn4lh+pxiTeSCU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB4049
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: EMYwc1XkaAiHPcEZfSI4pEpYkL8EE/fB+DybznFbZ6R/5kSO0yzrKzqkFGGk0RG0I8+oAayALNm/jrzBJ3WC2w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6874
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Lorenzo,
+Hi Eric,
 
-On 2023-01-18 00:45:44 +0100, Lorenzo Bianconi wrote:
-> > Hi Lorenzo and Marek,
-> > 
-> > Thanks for your work.
-> > 
-> > On 2023-01-14 16:54:32 +0100, Lorenzo Bianconi wrote:
-> > 
-> > [...]
-> > 
-> > > 
-> > > Turn 'hw-offload' feature flag on for:
-> > >  - netronome (nfp)
-> > >  - netdevsim.
-> > 
-> > Is there a definition of the 'hw-offload' written down somewhere? From 
-> > reading this series I take it is the ability to offload a BPF program?  
-> 
-> correct
-> 
-> > It would also be interesting to read documentation for the other flags 
-> > added in this series.
-> 
-> maybe we can add definitions in Documentation/netlink/specs/netdev.yaml?
-> 
-> > 
-> > [...]
-> > 
-> > > diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c 
-> > > b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> > > index 18fc9971f1c8..5a8ddeaff74d 100644
-> > > --- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> > > +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> > > @@ -2529,10 +2529,14 @@ static void nfp_net_netdev_init(struct nfp_net *nn)
-> > >  	netdev->features &= ~NETIF_F_HW_VLAN_STAG_RX;
-> > >  	nn->dp.ctrl &= ~NFP_NET_CFG_CTRL_RXQINQ;
-> > >  
-> > > +	nn->dp.netdev->xdp_features = NETDEV_XDP_ACT_BASIC |
-> > > +				      NETDEV_XDP_ACT_HW_OFFLOAD;
-> > 
-> > If my assumption about the 'hw-offload' flag above is correct I think 
-> > NETDEV_XDP_ACT_HW_OFFLOAD should be conditioned on that the BPF firmware 
-> > flavor is in use.
-> > 
-> >     nn->dp.netdev->xdp_features = NETDEV_XDP_ACT_BASIC;
-> > 
-> >     if (nn->app->type->id == NFP_APP_BPF_NIC)
-> >         nn->dp.netdev->xdp_features |= NETDEV_XDP_ACT_HW_OFFLOAD;
-> 
-> ack, I will fix it.
-
-Thanks. I have just been informed from Yinjun Zhang that this check is 
-not enough as this function is reused for VF where nn->app is not set. I 
-think a better check would be
-
-    if (nn->app && nn->app->type->id == NFP_APP_BPF_NIC)
-
-Yinjun also informed me that you can make this code a bit neater by,
-
-    s/nn->dp.netdev->xdp_features/netdev->xdp_features/
-
-Thanks again for your work.
-
-> 
-> > 
-> > > +
-> > >  	/* Finalise the netdev setup */
-> > >  	switch (nn->dp.ops->version) {
-> > >  	case NFP_NFD_VER_NFD3:
-> > >  		netdev->netdev_ops = &nfp_nfd3_netdev_ops;
-> > > +		nn->dp.netdev->xdp_features |= NETDEV_XDP_ACT_XSK_ZEROCOPY;
-> > >  		break;
-> > >  	case NFP_NFD_VER_NFDK:
-> > >  		netdev->netdev_ops = &nfp_nfdk_netdev_ops;
-> > 
-> > This is also a wrinkle I would like to understand. Currently NFP support 
-> > zero-copy on NFD3, but not for offloaded BPF programs. But with the BPF 
-> > firmware flavor running the device can still support zero-copy for 
-> > non-offloaded programs.
-> > 
-> > Is it a problem that the driver advertises support for both 
-> > hardware-offload _and_ zero-copy at the same time, even if they can't be 
-> > used together but separately?
-> 
-> xdp_features should export NIC supported features in the current
-> configuration and it is expected they can be used concurrently.
-> 
-> Regards,
-> Lorenzo
-> 
-> > 
-> > -- 
-> > Kind Regards,
-> > Niklas S�derlund
-
-
-
--- 
-Kind Regards,
-Niklas S�derlund
+On 1/18/2023 8:47 AM, Eric Biggers wrote:
+> Hi Leon,
+>
+> On Mon, Jan 16, 2023 at 03:05:47PM +0200, Leon Romanovsky wrote:
+>> >From Israel,
+>>
+>> The purpose of this patchset is to add support for inline
+>> encryption/decryption of the data at storage protocols like nvmf over
+>> RDMA (at a similar way like integrity is used via unique mkey).
+>>
+>> This patchset adds support for plaintext keys. The patches were tested
+>> on BF-3 HW with fscrypt tool to test this feature, which showed reduce
+>> in CPU utilization when comparing at 64k or more IO size. The CPU utilization
+>> was improved by more than 50% comparing to the SW only solution at this case.
+>>
+>> How to configure fscrypt to enable plaintext keys:
+>>   # mkfs.ext4 -O encrypt /dev/nvme0n1
+>>   # mount /dev/nvme0n1 /mnt/crypto -o inlinecrypt
+>>   # head -c 64 /dev/urandom > /tmp/master_key
+>>   # fscryptctl add_key /mnt/crypto/ < /tmp/master_key
+>>   # mkdir /mnt/crypto/test1
+>>   # fscryptctl set_policy 152c41b2ea39fa3d90ea06448456e7fb /mnt/crypto/test1
+>>     ** “152c41b2ea39fa3d90ea06448456e7fb” is the output of the
+>>        “fscryptctl add_key” command.
+>>   # echo foo > /mnt/crypto/test1/foo
+>>
+>> Notes:
+>>   - At plaintext mode only, the user set a master key and the fscrypt
+>>     driver derived from it the DEK and the key identifier.
+>>   - 152c41b2ea39fa3d90ea06448456e7fb is the derived key identifier
+>>   - Only on the first IO, nvme-rdma gets a callback to load the derived DEK.
+>>
+>> There is no special configuration to support crypto at nvme modules.
+>>
+>> Thanks
+> Very interesting work!  Can you Cc me on future versions?
+>
+> I'm glad to see that this hardware allows all 16 IV bytes to be specified.
+>
+> Does it also handle programming and evicting keys efficiently?
+>
+> Also, just checking: have you tested that the ciphertext that this inline
+> encryption hardware produces is correct?  That's always super important to test.
+> There are xfstests that test for it, e.g. generic/582.  Another way to test it
+> is to just manually test whether encrypted files that were created when the
+> filesystem was mounted with '-o inlinecrypt' show the same contents when the
+> filesystem is *not* mounted with '-o inlinecrypt' (or vice versa).
+sure, I ran the manual test of comparing the encrypted files content 
+with and without the '-o inlinecrypt' at the mount command.
+>
+> - Eric
+  - Israel
