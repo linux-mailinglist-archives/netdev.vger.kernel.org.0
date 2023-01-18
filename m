@@ -2,65 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3D596722D7
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 17:20:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8845D6722DF
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 17:22:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229811AbjARQUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 11:20:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52958 "EHLO
+        id S230352AbjARQWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 11:22:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229801AbjARQUW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 11:20:22 -0500
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AD711E1F2
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 08:16:40 -0800 (PST)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-4d13cb4bbffso354552547b3.3
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 08:16:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=7BG3WpipDzeUpe2qY7UvUp347AVHDDvG/KdaPs3N/Kk=;
-        b=dHfXo/8dMfvOEV2nvFi8X/q0/RnTR+FCMijvNNhxnbQdy5Cdf0YEcRlonoRGno4JwD
-         WUlNVydmfRj3E8kFKTm4N0CwPJQflJM3b+ZfkFcDcbDol3SFicwcjxc2lWXNfkZ259Tp
-         8w9QoyiE471Jr3cfXcioCUBEP7YisSDH1ex/cwfd8Zp3e3a+WuANEr3ZiJmuz9D7ZMOe
-         Z3stdRMPREuwT6KGVLEb1RTBNxdlWSdsuYbzR5z4TfH+R0EvqupoNHIECooiHlULYu3K
-         CI1p8dIDK5iUo20P7nvHWL00E8bWbE9FQlpZc/CPBuYp3fGxiCGDqesN0A5XT3jwDFTQ
-         TEuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7BG3WpipDzeUpe2qY7UvUp347AVHDDvG/KdaPs3N/Kk=;
-        b=qWwnJNYN7e4U35tnU8d+J/QPaaemAiZE4sI6iZp2qkJB3ZwWlGD3118f2FRDUm2U85
-         RizuDQa59uW5W8wxIOmiaOMEqNVJVzLFEAh76/2S+75Rg1sq76RAB05MLifvrCDVgdWy
-         jpe4NFy4gSjycoqko6RztvBnj5XRPSx1Xi172b4/hywl/DzktTPPoO64r9o7MN87Fcd9
-         g1teGzJf7hy9vRb/KW2bBcRt9xEVIylC195m3Pio4+yCCX+n+c1EjM3eGMxAXKP+ke/C
-         04zGMUiefcVYLfQboeSU2kcV1VaJasq3bHJct6QnsBOQy0iFpif3j5rb+HcuS0NwQGD8
-         z3Pw==
-X-Gm-Message-State: AFqh2kpUSjisRWkd/dHzn7G3p80B3skebp4TTnlEKh4zkXfU+hRhXa2t
-        /RQ7iYH9nO060BfeW4yacOnAmQ1wtWzJIBvcOiQ=
-X-Google-Smtp-Source: AMrXdXtrg7o+19XdjbnPtmZQW1WbNAEDx7z2T5Enfk3MwPuEsUvVE7fNKvPjvXFr6vPL7BRmknmxuqYqNRdYHC9yexY=
-X-Received: by 2002:a81:c12:0:b0:4da:6eb4:cc5 with SMTP id 18-20020a810c12000000b004da6eb40cc5mr876765ywm.171.1674058599270;
- Wed, 18 Jan 2023 08:16:39 -0800 (PST)
+        with ESMTP id S229846AbjARQVq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 11:21:46 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DDE15927F
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 08:17:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1674058670;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=pU6AC9cRWg3g9Q98YLxAbBqb6BOxub7aw+UutKP+hlQ=;
+        b=gG+pQyrmCSfMJhA+AUtBa7AVJtOyzt8bKZce8QwzaEhrL+7Gc8fN8IuR01CCqI+DLuDK/w
+        v8bahqG7BmxCoND8lmTVbltGtJIxvyBgBOW/CXOtnDZg/hKiASDx7x/EAyEsMBd/poTKla
+        H+MoIz2dhMTbznhZj1+urnBs3V/gQ/s=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-435-ZFMX-FN7OVCPNumI5uwNgg-1; Wed, 18 Jan 2023 11:17:47 -0500
+X-MC-Unique: ZFMX-FN7OVCPNumI5uwNgg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AE2B91C05AB7;
+        Wed, 18 Jan 2023 16:17:46 +0000 (UTC)
+Received: from metal.redhat.com (ovpn-192-69.brq.redhat.com [10.40.192.69])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 531EE2026D4B;
+        Wed, 18 Jan 2023 16:17:44 +0000 (UTC)
+From:   Daniel Vacek <neelx@redhat.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Cc:     Daniel Vacek <neelx@redhat.com>, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] ice/ptp: fix the PTP worker retrying indefinitely if the link went down
+Date:   Wed, 18 Jan 2023 17:17:26 +0100
+Message-Id: <20230118161727.2485457-1-neelx@redhat.com>
+Reply-To: 20230117181533.2350335-1-neelx@redhat.com
 MIME-Version: 1.0
-References: <63e09531fc47963d2e4eff376653d3db21b97058.1673980932.git.lucien.xin@gmail.com>
- <09ce6f16-dc14-1936-ebeb-d3077c6c5b70@gmail.com>
-In-Reply-To: <09ce6f16-dc14-1936-ebeb-d3077c6c5b70@gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 18 Jan 2023 11:15:18 -0500
-Message-ID: <CADvbK_dU04m8VZDEAeCZx4xNTr3J8Jj=NXpcSvoMuOuefC6AoQ@mail.gmail.com>
-Subject: Re: [PATCH net] Revert "net: team: use IFF_NO_ADDRCONF flag to
- prevent ipv6 addrconf"
-To:     David Ahern <dsahern@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,69 +63,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 17, 2023 at 9:36 PM David Ahern <dsahern@gmail.com> wrote:
->
-> On 1/17/23 11:42 AM, Xin Long wrote:
-> > This reverts commit 0aa64df30b382fc71d4fb1827d528e0eb3eff854.
-> >
-> > Currently IFF_NO_ADDRCONF is used to prevent all ipv6 addrconf for the
-> > slave ports of team, bonding and failover devices and it means no ipv6
-> > packets can be sent out through these slave ports. However, for team
-> > device, "nsna_ping" link_watch requires ipv6 addrconf. Otherwise, the
-> > link will be marked failure. This patch removes the IFF_NO_ADDRCONF
-> > flag set for team port, and we will fix the original issue in another
-> > patch, as Jakub suggested.
-> >
-> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > ---
-> >  drivers/net/team/team.c | 2 --
-> >  1 file changed, 2 deletions(-)
-> >
-> > diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-> > index fcd43d62d86b..d10606f257c4 100644
-> > --- a/drivers/net/team/team.c
-> > +++ b/drivers/net/team/team.c
-> > @@ -1044,7 +1044,6 @@ static int team_port_enter(struct team *team, struct team_port *port)
-> >                       goto err_port_enter;
-> >               }
-> >       }
-> > -     port->dev->priv_flags |= IFF_NO_ADDRCONF;
-> >
-> >       return 0;
-> >
-> > @@ -1058,7 +1057,6 @@ static void team_port_leave(struct team *team, struct team_port *port)
-> >  {
-> >       if (team->ops.port_leave)
-> >               team->ops.port_leave(team, port);
-> > -     port->dev->priv_flags &= ~IFF_NO_ADDRCONF;
-> >       dev_put(team->dev);
-> >  }
-> >
->
-> What about the other patches in that set - failover device and bonding?
-This only exists in Team, as nsna_ping link watch in userspace libteam
-requires IPv6 addrconf to send NS packets, see rawv6_sendmsg():
+When the link goes down the ice_ptp_tx_tstamp() may loop re-trying to
+process the packets till the 2 seconds timeout finally drops them.
+In such a case it makes sense to just drop them right away.
 
-        dst = ip6_dst_lookup_flow(sock_net(sk), sk, &fl6, final_p);
-        if (IS_ERR(dst)) {
-                err = PTR_ERR(dst);
-                goto out;
-        }
+Signed-off-by: Daniel Vacek <neelx@redhat.com>
+---
+ drivers/net/ethernet/intel/ice/ice_ptp.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-It will break here.
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
+index d63161d73eb16..cb776a7199839 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+@@ -680,6 +680,7 @@ static bool ice_ptp_tx_tstamp(struct ice_ptp_tx *tx)
+ 	struct ice_pf *pf;
+ 	struct ice_hw *hw;
+ 	u64 tstamp_ready;
++	bool link_up;
+ 	int err;
+ 	u8 idx;
+ 
+@@ -695,11 +696,14 @@ static bool ice_ptp_tx_tstamp(struct ice_ptp_tx *tx)
+ 	if (err)
+ 		return false;
+ 
++	/* Drop packets if the link went down */
++	link_up = hw->port_info->phy.link_info.link_info & ICE_AQ_LINK_UP;
++
+ 	for_each_set_bit(idx, tx->in_use, tx->len) {
+ 		struct skb_shared_hwtstamps shhwtstamps = {};
+ 		u8 phy_idx = idx + tx->offset;
+ 		u64 raw_tstamp = 0, tstamp;
+-		bool drop_ts = false;
++		bool drop_ts = !link_up;
+ 		struct sk_buff *skb;
+ 
+ 		/* Drop packets which have waited for more than 2 seconds */
+@@ -728,7 +732,7 @@ static bool ice_ptp_tx_tstamp(struct ice_ptp_tx *tx)
+ 		ice_trace(tx_tstamp_fw_req, tx->tstamps[idx].skb, idx);
+ 
+ 		err = ice_read_phy_tstamp(hw, tx->block, phy_idx, &raw_tstamp);
+-		if (err)
++		if (err && !drop_ts)
+ 			continue;
+ 
+ 		ice_trace(tx_tstamp_fw_done, tx->tstamps[idx].skb, idx);
+-- 
+2.39.0
 
-For bonding, nothing actually was changed as before, it's just using
-a new flag IFF_NO_ADDRCONF instead of IFF_SLAVE. and the
-late added nsna_ping link watch (trying to sync with libteam) is in
-kernel space, and doesn't require dst on the slave dev, see:
-
-  bond_ns_send_all() -> bond_ns_send().
-
-For failover device, it checks the link when net_failover_start_xmit()
-directly by:
-
-    netif_running(dev) && netif_carrier_ok(dev)
-
-I don't think a "link watch" in userspace exists, not to mention a nsna_ping.
-
-Thanks.
