@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CCB2672129
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 16:24:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25522672128
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 16:24:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231365AbjARPYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 10:24:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58130 "EHLO
+        id S231332AbjARPYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 10:24:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230404AbjARPXw (ORCPT
+        with ESMTP id S231128AbjARPXw (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 10:23:52 -0500
 Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C354222E4
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 07:21:30 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id v6so41058652ejg.6
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 07:21:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3720E234C8
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 07:21:32 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id qx13so25687460ejb.13
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 07:21:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Z/WYyDhgWvrQAugwjSVOnozL10LttT+AspbQZ1z+SNw=;
-        b=I4oZ2WT7MZR9mI/2prX40NJUd3DB0x9PM6uoDOyUBCi0unToVaXxJRkLedpX51MRpd
-         KaVi657JOoi2TlZE36wz86z8wXPR/0iu0CGC3TWX+jMRQNLI5+b+1vssYsmrzsQ53AR0
-         oXeXcrP8Isz/YM1CboVjBzBCRk+imkRfvrp+X9VjoiWWT3Lon+Ix2UdKszyKX3zhgQ5O
-         U8mDZc0bwHj5UJtyOMJ0wjcGV4xlicSLQISNrRGaIySONouAiXyRd3MEsjgkV6UeghRr
-         zZHrspOAe1pAPSdqEVPwh04J0STSwiTEb71m9hp5v4NH00ftkOVOA430ldNxoDwcAKPM
-         e+Pg==
+        bh=7+v+ljnAZIqf6DLtGNKKMGQkrRt/mSk8P4aJZcppwUk=;
+        b=LEWVSnCOR/jup7H/fbvl3OWRmQMbNYP2JimhQELcE4UvD+nSYwAGno12PbzMmfmdCo
+         CG/3yAq2sDPbC/aCmFh9cZjB+EMzL/G8iroJ1DjnnHCr09uQVzbSjiAtpaY4nQ71C2KU
+         y6d/QBZQKrs2+fZJxbmJR/irW6saU/O5BYzDC/3swkiv8hFlrwP7eMqtQjeb/l3llfWp
+         m5iZgVm10KMg4v7Agoefri71WL5fzv6pLBApxCdpu+WBxt/Hd0qejPnQdQfYZyq0oIvR
+         UlDEOnNvi5SBWfUc4nHo3a3sNPoftrfyzPnu7k60i0+oBWCH1NxuHmPRjZ/qsaEuMxdl
+         jioQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Z/WYyDhgWvrQAugwjSVOnozL10LttT+AspbQZ1z+SNw=;
-        b=72Jvneu28YvJ5Rn7UvefRBohFIfyXKjNlkxU0Kj+OVRvILzfckRN15BIyVzqfH6Ye/
-         h8oFz4VpvrwLRtya46wINdPbg2ipFAgcixvSBoPUZ6eD8NSmTrTpVG9rK+juO5rt+un0
-         GMCibz1KTvxA2/K1Bs8CoqGwNrRHmczo4sMr3+yVqY7FgK6KHdisGzvdukMQamCpeUV6
-         V6pdyiNy3Pt6PBvGJQswNJv9JuRSNjki+EdChY3TGnu0JvxCMJRVBITUIstZMa2IZk3K
-         WK40XYUlJp2fcH7wOXCPwplBPjVm7DRnfuQP+wXVBP/hON1PhxqXoU7TYiLOvO9rQvDg
-         xnyw==
-X-Gm-Message-State: AFqh2kpj2kdyye1d72ioIkZDeVzabsMV2NBFWk6ZpQQeFdr/0eeZbAUY
-        WEoSEoo7K85T+nkxdEd6/1AoCufwsQdjfsv1yXIU/A==
-X-Google-Smtp-Source: AMrXdXtbbPG8vFhlnbzJIhpwMTT52/Rd5edMqFVZtTXn2B5Uxnc8FvWiw4heFxrUllmJO/d5nDPsxg==
-X-Received: by 2002:a17:907:cc8a:b0:7ad:d62d:9d31 with SMTP id up10-20020a170907cc8a00b007add62d9d31mr2835303ejc.67.1674055288989;
-        Wed, 18 Jan 2023 07:21:28 -0800 (PST)
+        bh=7+v+ljnAZIqf6DLtGNKKMGQkrRt/mSk8P4aJZcppwUk=;
+        b=IViXEdnJSMKwWQpaDLrV7MYUDRvvggXZI3/7tlLSPHsmIs8JV9WxrCD42viSrAgB5W
+         E/28m96CiXuOgtFcENK+pgZqwK198/Wpx4ecLxRz1xe4yMDBXqw5n6tLRFW6AX1qgRJo
+         0vV+Nm8MgaWpF/pNv2aBFOBFFU/iQOgLlHyQ4SbeDpQWfzGVxCYXF/lcIkDHL/7GBn0I
+         ilGUqLNadbNJC73j3eBJiQQGHaKFXrrl3YYKm16qR5Ex4Yam70QS8a5HcnFSFFgSfneh
+         ToZD+OKajjD9/OoHM1ng8xC3lGQkYViivEyfK3TXe830xdb3M8X8ubmnxM/ukOEaOLUl
+         vMXA==
+X-Gm-Message-State: AFqh2krJ2ESJ8CV5yo95lfbww/RJAaCPQSxxIJKJIK8cEy5d18xgNKJb
+        HpeR9LRDP4vrqG38iVoqPadkVastl16tCrxaEYscbA==
+X-Google-Smtp-Source: AMrXdXt1WycGvX3CU2HE01MeUyhyWYy6nP+LyiuMok9h8F6BV0Dzils7JtmcBUyHqok1un4pGYQVgw==
+X-Received: by 2002:a17:906:71a:b0:7c1:6344:84a with SMTP id y26-20020a170906071a00b007c16344084amr7440961ejb.5.1674055290796;
+        Wed, 18 Jan 2023 07:21:30 -0800 (PST)
 Received: from localhost ([217.111.27.204])
-        by smtp.gmail.com with ESMTPSA id cf23-20020a170906b2d700b007aef930360asm10395071ejb.59.2023.01.18.07.21.28
+        by smtp.gmail.com with ESMTPSA id ss5-20020a170907038500b00856ad9108e7sm10594967ejb.70.2023.01.18.07.21.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Jan 2023 07:21:28 -0800 (PST)
+        Wed, 18 Jan 2023 07:21:30 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
@@ -58,9 +58,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         tariqt@nvidia.com, saeedm@nvidia.com, leon@kernel.org,
         idosch@nvidia.com, petrm@nvidia.com, mailhol.vincent@wanadoo.fr,
         jacob.e.keller@intel.com, gal@nvidia.com
-Subject: [patch net-next v5 06/12] devlink: remove reporters_lock
-Date:   Wed, 18 Jan 2023 16:21:09 +0100
-Message-Id: <20230118152115.1113149-7-jiri@resnulli.us>
+Subject: [patch net-next v5 07/12] devlink: remove devl*_port_health_reporter_destroy()
+Date:   Wed, 18 Jan 2023 16:21:10 +0100
+Message-Id: <20230118152115.1113149-8-jiri@resnulli.us>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230118152115.1113149-1-jiri@resnulli.us>
 References: <20230118152115.1113149-1-jiri@resnulli.us>
@@ -77,263 +77,126 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Similar to other devlink objects, rely on devlink instance lock
-and remove object specific reporters_lock.
+Remove port-specific health reporter destroy function as it is
+currently the same as the instance one so no longer needed. Inline
+__devlink_health_reporter_destroy() as it is no longer called from
+multiple places.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
 v4->v5:
-- rebased on top of the mutex destroy fix
+- changed mlx5 bits a bit due to changed locking scheme
+- added removal of locked port reporter destroy function
 v2->v3:
 - split from v2 patch #4 - "devlink: remove reporters_lock", no change
 ---
- include/net/devlink.h       |  1 -
- net/devlink/core.c          |  2 --
- net/devlink/devl_internal.h |  1 -
- net/devlink/leftover.c      | 53 +++++++------------------------------
- 4 files changed, 9 insertions(+), 48 deletions(-)
+ .../mellanox/mlx5/core/en/reporter_rx.c       |  2 +-
+ .../mellanox/mlx5/core/en/reporter_tx.c       |  2 +-
+ include/net/devlink.h                         |  6 ----
+ net/devlink/leftover.c                        | 35 ++-----------------
+ 4 files changed, 4 insertions(+), 41 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
+index 1ae15b8536a8..95edab4a1732 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
+@@ -754,6 +754,6 @@ void mlx5e_reporter_rx_destroy(struct mlx5e_priv *priv)
+ 	if (!priv->rx_reporter)
+ 		return;
+ 
+-	devlink_port_health_reporter_destroy(priv->rx_reporter);
++	devlink_health_reporter_destroy(priv->rx_reporter);
+ 	priv->rx_reporter = NULL;
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
+index 60bc5b577ab9..b195dbbf6c90 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
+@@ -609,6 +609,6 @@ void mlx5e_reporter_tx_destroy(struct mlx5e_priv *priv)
+ 	if (!priv->tx_reporter)
+ 		return;
+ 
+-	devlink_port_health_reporter_destroy(priv->tx_reporter);
++	devlink_health_reporter_destroy(priv->tx_reporter);
+ 	priv->tx_reporter = NULL;
+ }
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 0d64feaef7cb..d9ea76bea36e 100644
+index d9ea76bea36e..608a0c198be8 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -146,7 +146,6 @@ struct devlink_port {
- 	   initialized:1;
- 	struct delayed_work type_warn_dw;
- 	struct list_head reporter_list;
--	struct mutex reporters_lock; /* Protects reporter_list */
+@@ -1889,12 +1889,6 @@ devl_health_reporter_destroy(struct devlink_health_reporter *reporter);
+ void
+ devlink_health_reporter_destroy(struct devlink_health_reporter *reporter);
  
- 	struct devlink_rate *devlink_rate;
- 	struct devlink_linecard *linecard;
-diff --git a/net/devlink/core.c b/net/devlink/core.c
-index dfc5b58c0464..6c0e2fc57e45 100644
---- a/net/devlink/core.c
-+++ b/net/devlink/core.c
-@@ -246,7 +246,6 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
- 	lockdep_register_key(&devlink->lock_key);
- 	mutex_init(&devlink->lock);
- 	lockdep_set_class(&devlink->lock, &devlink->lock_key);
--	mutex_init(&devlink->reporters_lock);
- 	refcount_set(&devlink->refcount, 1);
- 
- 	return devlink;
-@@ -268,7 +267,6 @@ void devlink_free(struct devlink *devlink)
- {
- 	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
- 
--	mutex_destroy(&devlink->reporters_lock);
- 	WARN_ON(!list_empty(&devlink->trap_policer_list));
- 	WARN_ON(!list_empty(&devlink->trap_group_list));
- 	WARN_ON(!list_empty(&devlink->trap_list));
-diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
-index dd4e2c37cf07..bdb83014b4b5 100644
---- a/net/devlink/devl_internal.h
-+++ b/net/devlink/devl_internal.h
-@@ -32,7 +32,6 @@ struct devlink {
- 	struct list_head param_list;
- 	struct list_head region_list;
- 	struct list_head reporter_list;
--	struct mutex reporters_lock; /* protects reporter_list */
- 	struct devlink_dpipe_headers *dpipe_headers;
- 	struct list_head trap_list;
- 	struct list_head trap_group_list;
+-void
+-devl_port_health_reporter_destroy(struct devlink_health_reporter *reporter);
+-
+-void
+-devlink_port_health_reporter_destroy(struct devlink_health_reporter *reporter);
+-
+ void *
+ devlink_health_reporter_priv(struct devlink_health_reporter *reporter);
+ int devlink_health_report(struct devlink_health_reporter *reporter,
 diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
-index 0fc374140e6a..29e2351ee752 100644
+index 29e2351ee752..a56dd70a10e0 100644
 --- a/net/devlink/leftover.c
 +++ b/net/devlink/leftover.c
-@@ -7281,12 +7281,10 @@ EXPORT_SYMBOL_GPL(devlink_health_reporter_priv);
- 
- static struct devlink_health_reporter *
- __devlink_health_reporter_find_by_name(struct list_head *reporter_list,
--				       struct mutex *list_lock,
- 				       const char *reporter_name)
- {
- 	struct devlink_health_reporter *reporter;
- 
--	lockdep_assert_held(list_lock);
- 	list_for_each_entry(reporter, reporter_list, list)
- 		if (!strcmp(reporter->ops->name, reporter_name))
- 			return reporter;
-@@ -7298,7 +7296,6 @@ devlink_health_reporter_find_by_name(struct devlink *devlink,
- 				     const char *reporter_name)
- {
- 	return __devlink_health_reporter_find_by_name(&devlink->reporter_list,
--						      &devlink->reporters_lock,
- 						      reporter_name);
+@@ -7442,13 +7442,6 @@ devlink_health_reporter_put(struct devlink_health_reporter *reporter)
+ 		devlink_health_reporter_free(reporter);
  }
  
-@@ -7307,7 +7304,6 @@ devlink_port_health_reporter_find_by_name(struct devlink_port *devlink_port,
- 					  const char *reporter_name)
- {
- 	return __devlink_health_reporter_find_by_name(&devlink_port->reporter_list,
--						      &devlink_port->reporters_lock,
- 						      reporter_name);
- }
- 
-@@ -7353,22 +7349,18 @@ devl_port_health_reporter_create(struct devlink_port *port,
- 	struct devlink_health_reporter *reporter;
- 
- 	devl_assert_locked(port->devlink);
--	mutex_lock(&port->reporters_lock);
-+
- 	if (__devlink_health_reporter_find_by_name(&port->reporter_list,
--						   &port->reporters_lock, ops->name)) {
--		reporter = ERR_PTR(-EEXIST);
--		goto unlock;
--	}
-+						   ops->name))
-+		return ERR_PTR(-EEXIST);
- 
- 	reporter = __devlink_health_reporter_create(port->devlink, ops,
- 						    graceful_period, priv);
- 	if (IS_ERR(reporter))
--		goto unlock;
-+		return reporter;
- 
- 	reporter->devlink_port = port;
- 	list_add_tail(&reporter->list, &port->reporter_list);
--unlock:
--	mutex_unlock(&port->reporters_lock);
- 	return reporter;
- }
- EXPORT_SYMBOL_GPL(devl_port_health_reporter_create);
-@@ -7405,20 +7397,16 @@ devl_health_reporter_create(struct devlink *devlink,
- 	struct devlink_health_reporter *reporter;
- 
- 	devl_assert_locked(devlink);
--	mutex_lock(&devlink->reporters_lock);
--	if (devlink_health_reporter_find_by_name(devlink, ops->name)) {
--		reporter = ERR_PTR(-EEXIST);
--		goto unlock;
--	}
-+
-+	if (devlink_health_reporter_find_by_name(devlink, ops->name))
-+		return ERR_PTR(-EEXIST);
- 
- 	reporter = __devlink_health_reporter_create(devlink, ops,
- 						    graceful_period, priv);
- 	if (IS_ERR(reporter))
--		goto unlock;
-+		return reporter;
- 
- 	list_add_tail(&reporter->list, &devlink->reporter_list);
--unlock:
--	mutex_unlock(&devlink->reporters_lock);
- 	return reporter;
- }
- EXPORT_SYMBOL_GPL(devl_health_reporter_create);
-@@ -7469,13 +7457,9 @@ __devlink_health_reporter_destroy(struct devlink_health_reporter *reporter)
- void
- devl_health_reporter_destroy(struct devlink_health_reporter *reporter)
- {
--	struct mutex *lock = &reporter->devlink->reporters_lock;
+-static void
+-__devlink_health_reporter_destroy(struct devlink_health_reporter *reporter)
+-{
+-	list_del(&reporter->list);
+-	devlink_health_reporter_put(reporter);
+-}
 -
+ /**
+  *	devl_health_reporter_destroy - destroy devlink health reporter
+  *
+@@ -7459,7 +7452,8 @@ devl_health_reporter_destroy(struct devlink_health_reporter *reporter)
+ {
  	devl_assert_locked(reporter->devlink);
  
--	mutex_lock(lock);
- 	__devlink_health_reporter_destroy(reporter);
--	mutex_unlock(lock);
+-	__devlink_health_reporter_destroy(reporter);
++	list_del(&reporter->list);
++	devlink_health_reporter_put(reporter);
  }
  EXPORT_SYMBOL_GPL(devl_health_reporter_destroy);
  
-@@ -7498,13 +7482,9 @@ EXPORT_SYMBOL_GPL(devlink_health_reporter_destroy);
- void
- devl_port_health_reporter_destroy(struct devlink_health_reporter *reporter)
- {
--	struct mutex *lock = &reporter->devlink_port->reporters_lock;
--
- 	devl_assert_locked(reporter->devlink);
- 
--	mutex_lock(lock);
- 	__devlink_health_reporter_destroy(reporter);
--	mutex_unlock(lock);
+@@ -7474,31 +7468,6 @@ devlink_health_reporter_destroy(struct devlink_health_reporter *reporter)
  }
- EXPORT_SYMBOL_GPL(devl_port_health_reporter_destroy);
+ EXPORT_SYMBOL_GPL(devlink_health_reporter_destroy);
  
-@@ -7758,17 +7738,13 @@ devlink_health_reporter_get_from_attrs(struct devlink *devlink,
- 	reporter_name = nla_data(attrs[DEVLINK_ATTR_HEALTH_REPORTER_NAME]);
- 	devlink_port = devlink_port_get_from_attrs(devlink, attrs);
- 	if (IS_ERR(devlink_port)) {
--		mutex_lock(&devlink->reporters_lock);
- 		reporter = devlink_health_reporter_find_by_name(devlink, reporter_name);
- 		if (reporter)
- 			refcount_inc(&reporter->refcount);
--		mutex_unlock(&devlink->reporters_lock);
- 	} else {
--		mutex_lock(&devlink_port->reporters_lock);
- 		reporter = devlink_port_health_reporter_find_by_name(devlink_port, reporter_name);
- 		if (reporter)
- 			refcount_inc(&reporter->refcount);
--		mutex_unlock(&devlink_port->reporters_lock);
- 	}
- 
- 	return reporter;
-@@ -7868,8 +7844,6 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
- 		if (!devl_is_registered(devlink))
- 			goto next_devlink;
- 
--		mutex_lock(&devlink->reporters_lock);
+-/**
+- *	devl_port_health_reporter_destroy - destroy devlink port health reporter
+- *
+- *	@reporter: devlink health reporter to destroy
+- */
+-void
+-devl_port_health_reporter_destroy(struct devlink_health_reporter *reporter)
+-{
+-	devl_assert_locked(reporter->devlink);
 -
- 		list_for_each_entry(reporter, &devlink->reporter_list,
- 				    list) {
- 			if (idx < state->idx) {
-@@ -7881,7 +7855,6 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
- 				NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
- 				NLM_F_MULTI);
- 			if (err) {
--				mutex_unlock(&devlink->reporters_lock);
- 				devl_unlock(devlink);
- 				devlink_put(devlink);
- 				state->idx = idx;
-@@ -7889,10 +7862,8 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
- 			}
- 			idx++;
- 		}
--		mutex_unlock(&devlink->reporters_lock);
- 
- 		xa_for_each(&devlink->ports, port_index, port) {
--			mutex_lock(&port->reporters_lock);
- 			list_for_each_entry(reporter, &port->reporter_list, list) {
- 				if (idx < state->idx) {
- 					idx++;
-@@ -7904,7 +7875,6 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
- 					NETLINK_CB(cb->skb).portid,
- 					cb->nlh->nlmsg_seq, NLM_F_MULTI);
- 				if (err) {
--					mutex_unlock(&port->reporters_lock);
- 					devl_unlock(devlink);
- 					devlink_put(devlink);
- 					state->idx = idx;
-@@ -7912,7 +7882,6 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
- 				}
- 				idx++;
- 			}
--			mutex_unlock(&port->reporters_lock);
- 		}
- next_devlink:
- 		devl_unlock(devlink);
-@@ -9633,12 +9602,9 @@ int devl_port_register(struct devlink *devlink,
- 	devlink_port->index = port_index;
- 	spin_lock_init(&devlink_port->type_lock);
- 	INIT_LIST_HEAD(&devlink_port->reporter_list);
--	mutex_init(&devlink_port->reporters_lock);
- 	err = xa_insert(&devlink->ports, port_index, devlink_port, GFP_KERNEL);
--	if (err) {
--		mutex_destroy(&devlink_port->reporters_lock);
-+	if (err)
- 		return err;
--	}
- 
- 	INIT_DELAYED_WORK(&devlink_port->type_warn_dw, &devlink_port_type_warn);
- 	devlink_port_type_warn_schedule(devlink_port);
-@@ -9689,7 +9655,6 @@ void devl_port_unregister(struct devlink_port *devlink_port)
- 	devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_DEL);
- 	xa_erase(&devlink_port->devlink->ports, devlink_port->index);
- 	WARN_ON(!list_empty(&devlink_port->reporter_list));
--	mutex_destroy(&devlink_port->reporters_lock);
- 	devlink_port->registered = false;
- }
- EXPORT_SYMBOL_GPL(devl_port_unregister);
+-	__devlink_health_reporter_destroy(reporter);
+-}
+-EXPORT_SYMBOL_GPL(devl_port_health_reporter_destroy);
+-
+-void
+-devlink_port_health_reporter_destroy(struct devlink_health_reporter *reporter)
+-{
+-	struct devlink *devlink = reporter->devlink;
+-
+-	devl_lock(devlink);
+-	devl_port_health_reporter_destroy(reporter);
+-	devl_unlock(devlink);
+-}
+-EXPORT_SYMBOL_GPL(devlink_port_health_reporter_destroy);
+-
+ static int
+ devlink_nl_health_reporter_fill(struct sk_buff *msg,
+ 				struct devlink_health_reporter *reporter,
 -- 
 2.39.0
 
