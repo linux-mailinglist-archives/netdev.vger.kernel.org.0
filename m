@@ -2,55 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6D0E67121D
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 04:49:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F601671222
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 04:51:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229457AbjARDtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 22:49:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60196 "EHLO
+        id S229604AbjARDvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 22:51:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbjARDtA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 22:49:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B25A15087D;
-        Tue, 17 Jan 2023 19:48:59 -0800 (PST)
+        with ESMTP id S229379AbjARDvO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 22:51:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3915E539A7
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 19:51:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CC4261615;
-        Wed, 18 Jan 2023 03:48:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05909C433D2;
-        Wed, 18 Jan 2023 03:48:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3BD7B81B05
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 03:51:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12548C433EF;
+        Wed, 18 Jan 2023 03:51:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674013738;
-        bh=3KxMIHARERjccjn87E5q/Isvv9axqXiuByE+8f1JDvM=;
+        s=k20201202; t=1674013870;
+        bh=pfgXM8I1ScoEeFiQjcDX2YcO+9fQ9tngQ0O7YQIKdl8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QFnlsWY7Pn/7SjXTN36JFKLLFLwc93CDI385dWSeQTNxGVD/QWThZB5BHAm+iuSo8
-         I497yK2GQfuoSyzwbp2de9sO9EE8nIEOh/o/NEDuw6H7rc7y0tFYde/kKyglZWbc2k
-         dl+23TPR8iO908F4rZMXxZ5+rGe9CTzjbuyKP/5+TY8FTrw01l/jDTdzJWR33AM3gP
-         LFlJ2HchCCKVqLlSCDzXDIiZkE/fa7Ss9g1Y72ZJGntmqDVnjr0Ho7u+htLEse/cHe
-         B2jkOE0BB1Xdiib/haXO5XAgcxnlQKx/XWNzNTF8gu7Od9+6t7CrAv2xdc1PAmnEne
-         daFORN5Pc1dWg==
-Date:   Tue, 17 Jan 2023 19:48:56 -0800
+        b=ZO3alKJCCqyBi34TD4TP05B6qoB8awlhk5GoB5M/eFxmvodM4wqnA+tOzUvB9NcwS
+         gruxEHIwEQIuo8Ov9CvOrRyY12Pey22E8f/sMkdpfhkkTMqoKHJx6WBRmZVZYNgVLI
+         ty5Cqj4i4wdiVK+jvjCRduE225eWcNA9jlIkZAsNC+LYTh1XOT0LlDpJAzwlwuLbzm
+         BxHuWvSJUtJVhDTawrVvd4EEHHDceANRxEyVNFJ1Qbs+6N01SuryjlxS2/dUG1YfJm
+         N/rahMkkNyd6DtTkV7Uj8GIRpc3fwUpu/tfbp9uyVk2IMZ+QdxXZjQ49dek5VY5N0u
+         AWqstmD5LVLsQ==
+Date:   Tue, 17 Jan 2023 19:51:09 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dmitry Safonov <dima@arista.com>
-Cc:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Bob Gilligan <gilligan@arista.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Leonard Crestez <cdleonard@gmail.com>,
+To:     Paul Blakey <paulb@nvidia.com>
+Cc:     <netdev@vger.kernel.org>, Saeed Mahameed <saeedm@nvidia.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        netdev@vger.kernel.org, linux-crypto@vger.kernel.org
-Subject: Re: [PATCH v3 3/4] crypto/net/ipv6: sr: Switch to using crypto_pool
-Message-ID: <20230117194856.55ec5458@kernel.org>
-In-Reply-To: <20230116201458.104260-4-dima@arista.com>
-References: <20230116201458.104260-1-dima@arista.com>
-        <20230116201458.104260-4-dima@arista.com>
+        Eric Dumazet <edumazet@google.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
+Subject: Re: [PATCH net-next v2 2/6] net/sched: flower: Move filter handle
+ initialization earlier
+Message-ID: <20230117195109.0b4a4135@kernel.org>
+In-Reply-To: <20230117083344.4056-3-paulb@nvidia.com>
+References: <20230117083344.4056-1-paulb@nvidia.com>
+        <20230117083344.4056-3-paulb@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -63,21 +60,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Jan 2023 20:14:57 +0000 Dmitry Safonov wrote:
-> The conversion to use crypto_pool has the following upsides:
-> - now SR uses asynchronous API which may potentially free CPU cycles and
->   improve performance for of CPU crypto algorithm providers;
-> - hash descriptors now don't have to be allocated on boot, but only at
->   the moment SR starts using HMAC and until the last HMAC secret is
->   deleted;
-> - potentially reuse ahash_request(s) for different users
-> - allocate only one per-CPU scratch buffer rather than a new one for
->   each user
-> - have a common API for net/ users that need ahash on RX/TX fast path
+On Tue, 17 Jan 2023 10:33:40 +0200 Paul Blakey wrote:
+> +	if (!fold) {
+> +		spin_lock(&tp->lock);
+> +		if (!handle) {
+> +			handle = 1;
+> +			err = idr_alloc_u32(&head->handle_idr, fnew, &handle,
+> +					    INT_MAX, GFP_ATOMIC);
+> +			if (err)
+> +				goto errout;
 
-breaks allmodconfig build:
+sparse says you should release the spin lock
 
-ERROR: modpost: "seg6_hmac_init" [net/ipv6/ipv6.ko] undefined!
-make[2]: *** [../scripts/Makefile.modpost:138: Module.symvers] Error 1
-make[1]: *** [/home/nipa/net-next/Makefile:1960: modpost] Error 2
-make: *** [Makefile:242: __sub-make] Error 2
+> +		} else {
+> +			err = idr_alloc_u32(&head->handle_idr, fnew, &handle,
+> +					    handle, GFP_ATOMIC);
+> +
+> +			/* Filter with specified handle was concurrently
+> +			 * inserted after initial check in cls_api. This is not
+> +			 * necessarily an error if NLM_F_EXCL is not set in
+> +			 * message flags. Returning EAGAIN will cause cls_api to
+> +			 * try to update concurrently inserted rule.
+> +			 */
+> +			if (err == -ENOSPC)
+> +				err = -EAGAIN;
+> +		}
+> +		spin_unlock(&tp->lock);
+> +
+> +		if (err)
+> +			goto errout;
+> +	}
+> +	fnew->handle = handle;
+> +
+> +	err = tcf_exts_init(&fnew->exts, net, TCA_FLOWER_ACT, 0);
+> +	if (err < 0)
+> +		goto errout_idr;
