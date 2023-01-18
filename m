@@ -2,127 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED7A4671AFF
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 12:44:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 914CB671B74
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 13:06:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230206AbjARLoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 06:44:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53614 "EHLO
+        id S230096AbjARMG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 07:06:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230014AbjARLnn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 06:43:43 -0500
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA224DE31
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 03:02:22 -0800 (PST)
-Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-15085b8a2f7so35097582fac.2
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 03:02:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=landley-net.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=KuI0iwHsMdHgi9UUhJbv/FF6Zx1hDWv0kF6EEdUlD2I=;
-        b=5PCGooyhPIEuUA8LfHpgz2E1NSo9q7mSLwwd+kP7a2WQx5oIObawC1SZ8b3GjlhI6w
-         k+aUwf08xYT06HES1GVAUttTfmtlU/+2mUQ+E6nwI3mvpykPVqpS3CT4T1OK8Y7wh8Lh
-         OxdivEq+CnvHPuPDLKxMirSIFn7kanNvD0azdCBrxVrZC626tljgU09Q5NwDlRdCl5Pm
-         h30BKW+O6Gpe2j8vZBVS7nQX0CZx9F+vnTsIKQmfF0oeOZkgBCg3IFGxtjTVee8Llq3v
-         VTgrTzM1eGIkuy0knsusfqmXW3O1e3iUrjIXv4sd1h2zvdReBrfi+vZn6Ejf/45OptwH
-         w5QQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=KuI0iwHsMdHgi9UUhJbv/FF6Zx1hDWv0kF6EEdUlD2I=;
-        b=GFBw94op9Ijjfx2eUGau9s5JXIT/9Du44O5ChT2oaK0OGxMbrxfrTmmf03h83+Y+VV
-         GjFyrC8L8vouQk3Nglw0Vt8mvUpo5Buv8Q075AX80tO3l9uECPXppgcnBd+/8SvWHHbm
-         tShsWle/hV59B1xAXsd6Qy2uqjuNNoLXq1ZFCaCAZuSR5UXu+RC+gwLf/1YGAp8NBd0U
-         zOIUzBmwUJaKXDp8sU4xJH2RB+Fit0EwgoY5/+dsO34hJMdNsCXMXn3ym3HZLrz0pdnu
-         e7M2g27HqcXGtCEMYTX1HjcubUvfDjII1Swh5+lx2pJ8tYl2ntBkB2Qi2ovoOCqyNGUy
-         f72w==
-X-Gm-Message-State: AFqh2kqiB+FgqnAJy1EuvYSgsvhO0h0yoi1K7W3lb3O++e4pFDLYfmo1
-        IIfll4UptHsT19vcIw8Znd4Obw==
-X-Google-Smtp-Source: AMrXdXvlrp1Ed3XBrrhA3zCnrQ6Rbb/wKmg6UrVk+wIslhGo+AMwXBPpNO4DwySZY2+3rtlEwlTN+A==
-X-Received: by 2002:a05:6870:c190:b0:15e:cc77:1e6d with SMTP id h16-20020a056870c19000b0015ecc771e6dmr4364085oad.13.1674039741194;
-        Wed, 18 Jan 2023 03:02:21 -0800 (PST)
-Received: from ?IPV6:2607:fb91:120e:1c84:8038:3fff:fe9f:cbb4? ([2607:fb91:120e:1c84:8038:3fff:fe9f:cbb4])
-        by smtp.gmail.com with ESMTPSA id e19-20020a056871045300b001442fada152sm18099522oag.46.2023.01.18.03.02.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Jan 2023 03:02:20 -0800 (PST)
-Message-ID: <efa6a8aa-466e-cfaa-0113-b85002af008e@landley.net>
-Date:   Wed, 18 Jan 2023 05:14:36 -0600
+        with ESMTP id S230377AbjARMF6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 07:05:58 -0500
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D24277E4B0;
+        Wed, 18 Jan 2023 03:22:07 -0800 (PST)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 30IBLfFA056612;
+        Wed, 18 Jan 2023 05:21:41 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1674040901;
+        bh=OAdIBFrrzccwy+esEDLCSN7tQoc5jz5kJ2Q3YeYHXm8=;
+        h=From:To:CC:Subject:Date;
+        b=Rxd3393nnE72F/PHxYTxWbygdyH8Ly8Up2QckHbJWSahTDO4kAkVowC7NyfMioFbB
+         0OFPUa3bpsg8euDS8Y+jWRQ+EL+f1xL2wGfx0oldUgL9jkJogNQvEdx6pXUUshLE7y
+         o4z2mVDM3S7PE68uacoQH0xi6NCiGTElPAKsZyow=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 30IBLf1e032518
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 18 Jan 2023 05:21:41 -0600
+Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Wed, 18
+ Jan 2023 05:21:41 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Wed, 18 Jan 2023 05:21:41 -0600
+Received: from uda0492258.dhcp.ti.com (ileaxei01-snat2.itg.ti.com [10.180.69.6])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 30IBLbt9032879;
+        Wed, 18 Jan 2023 05:21:38 -0600
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <linux@armlinux.org.uk>, <pabeni@redhat.com>, <rogerq@kernel.org>,
+        <geert@linux-m68k.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
+        <s-vadapalli@ti.com>
+Subject: [PATCH net-next] net: ethernet: ti: am65-cpsw: Handle -EPROBE_DEFER for Serdes PHY
+Date:   Wed, 18 Jan 2023 16:51:36 +0530
+Message-ID: <20230118112136.213061-1-s-vadapalli@ti.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: remove arch/sh
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-sh@vger.kernel.org
-References: <20230113062339.1909087-1-hch@lst.de>
- <11e2e0a8-eabe-2d8c-d612-9cdd4bcc3648@physik.fu-berlin.de>
- <20230116071306.GA15848@lst.de>
- <9325a949-8d19-435a-50bd-9ebe0a432012@landley.net>
- <CAMuHMdUJm5QvzH8hvqwvn9O6qSbzNOapabjw5nh9DJd0F55Zdg@mail.gmail.com>
- <7329212f-b1a0-41eb-99b3-a56eb1d23138@landley.net>
- <CAMuHMdXo3iR2C=CAaXO5tBRCncnQAAMR6BMPLOm_nBpFAeVhrA@mail.gmail.com>
-From:   Rob Landley <rob@landley.net>
-In-Reply-To: <CAMuHMdXo3iR2C=CAaXO5tBRCncnQAAMR6BMPLOm_nBpFAeVhrA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/18/23 01:46, Geert Uytterhoeven wrote:
-> Again, I think you're talking about something different.
-> Does kexec work for you?
+In the am65_cpsw_init_serdes_phy() function, the error handling for the
+call to the devm_of_phy_get() function misses the case where the return
+value of devm_of_phy_get() is ERR_PTR(-EPROBE_DEFER). Proceeding without
+handling this case will result in a crash when the "phy" pointer with
+this value is dereferenced by phy_init() in am65_cpsw_enable_phy().
 
-Sorry, got woken up several hours early by sirens and flashy lights this morning
-(duplex on the corner caught fire, Austin has a LOT of emergency vehicles), been
-a bit underclocked all day.
+Fix this by adding appropriate error handling code.
 
-No, I haven't tried kexec on sh4. I'll add it to the todo heap.
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Fixes: dab2b265dd23 ("net: ethernet: ti: am65-cpsw: Add support for SERDES configuration")
+Suggested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+---
+This issue has been reported at:
+Link: https://lore.kernel.org/r/CAMuHMdWiXu9OJxH4mRnneC3jhqTEcYXek3kbr7svhJ3cnPPwcw@mail.gmail.com/
 
->> > I tried working my way up from 2.6.22, but gave up around 2.6.29.
->> > Probably I should do this with r2d and qemu instead ;-)
->>
->> I have current running there. I've had current running there for years. Config
->> attached...
->>
->> > Both r2d and landisk are SH7751.
->>
->> Cool. Shouldn't be hard to get landisk running current then.
-> 
-> Current kernels work fine on landisk with an old Debian userspace
-> on CF.  The 8139cp driver is a bit flaky: last time I tried nfsroot,
-> that didn't work well.
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-I've never had luck with NFS, I was using NBD. Hadn't noticed the flake but
-haven't stress tested it too hard either?
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index 5cac98284184..c696da89962f 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -1463,6 +1463,8 @@ static int am65_cpsw_init_serdes_phy(struct device *dev, struct device_node *por
+ 	phy = devm_of_phy_get(dev, port_np, name);
+ 	if (PTR_ERR(phy) == -ENODEV)
+ 		return 0;
++	if (IS_ERR(phy))
++		return PTR_ERR(phy);
+ 
+ 	/* Serdes PHY exists. Store it. */
+ 	port->slave.serdes_phy = phy;
+-- 
+2.25.1
 
-Mostly new userspace is what I'm testing...
-
-Rob
