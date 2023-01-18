@@ -2,151 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BC9D6726E5
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 19:29:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9388167271A
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 19:36:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229865AbjARS3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 13:29:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49718 "EHLO
+        id S230249AbjARSgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 13:36:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229758AbjARS24 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 13:28:56 -0500
-Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77FA7113E3;
-        Wed, 18 Jan 2023 10:28:55 -0800 (PST)
-Received: by mail-qt1-f177.google.com with SMTP id jr10so23232933qtb.7;
-        Wed, 18 Jan 2023 10:28:55 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=m6+hopJKlcYVjWue00VkVDFjPrjXwNY80RsgV+H7s3k=;
-        b=3UCJo9oDRK+zvaNyNHHNbXjKGSAgrfcfUj/Uz4yPm56IaIlgxQv5el0QKqc4SGtvOv
-         zzFLhzYYI9sGROEKG40rOBDkF4MnisI1A2z1m+38/AaD9lJH7Ku2b1/zYCabCJUpnNNu
-         KuYIjCkU9+YqG6/k5a4+fT+DYd/JLD9YO3v+o5BE+RXtdViIR0o8SGzz7nLIeaXrjTWz
-         QXfyMea8bzTPQ6K+zrYNDNTTmWUx9AgVrpaGu0/prCtwkp8nFYJe6NOGSiXCr6DfGkjW
-         HYGd2YVo07u6dcqTTWIT9qHhIh3IAdFH7USLPwNrobdlv3PaVNFfoStoBFJiyFAkKLCr
-         OcsA==
-X-Gm-Message-State: AFqh2krIAzMz/4sIWdZPCboBDANEuWUVTgsNymi2JqAG8FKZzPfI6hAR
-        D9qLGTIpmff1ScqRZrxaA619TuZyj1WTKLUk
-X-Google-Smtp-Source: AMrXdXsTWIPihbbkeIVwRFkH1BG2PkiVfAKrtt5W2CMXq+ymezGSNRY6XyPDsA3E49/dpN5CuDoPbA==
-X-Received: by 2002:ac8:738a:0:b0:3b6:4615:6d0e with SMTP id t10-20020ac8738a000000b003b646156d0emr6622972qtp.3.1674066534312;
-        Wed, 18 Jan 2023 10:28:54 -0800 (PST)
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
-        by smtp.gmail.com with ESMTPSA id w25-20020ac86b19000000b003b63c08a888sm2977623qts.4.2023.01.18.10.28.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Jan 2023 10:28:53 -0800 (PST)
-Received: by mail-yb1-f179.google.com with SMTP id 20so20137890ybl.0;
-        Wed, 18 Jan 2023 10:28:53 -0800 (PST)
-X-Received: by 2002:a25:d88c:0:b0:77a:b5f3:d0ac with SMTP id
- p134-20020a25d88c000000b0077ab5f3d0acmr833623ybg.202.1674066532773; Wed, 18
- Jan 2023 10:28:52 -0800 (PST)
-MIME-Version: 1.0
-References: <cover.1674036164.git.geert+renesas@glider.be> <cd685d8e4d6754c384acfc1796065d539a2c3ea8.1674036164.git.geert+renesas@glider.be>
- <CAL_JsqJS2JTZ1BxMbG_2zgzu5xtxMFPqjxc_vUjuZp3k1xUmaQ@mail.gmail.com>
-In-Reply-To: <CAL_JsqJS2JTZ1BxMbG_2zgzu5xtxMFPqjxc_vUjuZp3k1xUmaQ@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 18 Jan 2023 19:28:40 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXGsmNjYy-ofmuHLkr8yaDEzy+SGnhtbmc_2ezbEKAMjw@mail.gmail.com>
-Message-ID: <CAMuHMdXGsmNjYy-ofmuHLkr8yaDEzy+SGnhtbmc_2ezbEKAMjw@mail.gmail.com>
-Subject: Re: [PATCH 7/7] usb: host: ohci-exynos: Convert to devm_of_phy_optional_get()
-To:     Rob Herring <robh@kernel.org>
-Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229850AbjARSgK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 13:36:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D572B0A7
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 10:36:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5DCDDB81E9B
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 18:36:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8B2EC433D2;
+        Wed, 18 Jan 2023 18:36:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674066967;
+        bh=7cwjsewON5B6dfHKrh9/MBG9s6Y8SmHn0+vIhBUJCPo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=j97uJXmfgcq8vOyov7C80YL3X/AQxhvZKVKISWSTPeEvZPebPMSyp8Ff08404z30A
+         F3VwpS3Mc6P6Xhy5EckKs3udJx4Hhn/GcDSU4aIJqYFvPEElNBA0c+KzSm54jym1wQ
+         RzQrB2yFRkO3H+PqmiJ2uZYUgaPuyc200FIYD6/Yj3FrlUsI5RB8auQvzCBZclv/V0
+         4X0MnMeUThy9ozXUY4DwM0kOH0uHukt/K1IezUxHw227cviAljNJX4+F4jCqHxkHaU
+         eFBfor1oYUqu+zQR3skA876QqvWGlg35iGPyRHOKCfKfnRtsPUieXjjtv2wb5RfbTg
+         kVjQ6RsneU8yQ==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Kishon Vijay Abraham I <kishon@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Siddharth Vadapalli <s-vadapalli@ti.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-phy@lists.infradead.org, linux-usb@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+        Eric Dumazet <edumazet@google.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [pull request][net-next 00/15] mlx5 updates 2023-01-18
+Date:   Wed, 18 Jan 2023 10:35:47 -0800
+Message-Id: <20230118183602.124323-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.39.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rob,
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-On Wed, Jan 18, 2023 at 6:30 PM Rob Herring <robh@kernel.org> wrote:
-> On Wed, Jan 18, 2023 at 4:15 AM Geert Uytterhoeven
-> <geert+renesas@glider.be> wrote:
-> > Use the new devm_of_phy_optional_get() helper instead of open-coding the
-> > same operation.
-> >
-> > This lets us drop several checks for IS_ERR(), as phy_power_{on,off}()
-> > handle NULL parameters fine.
-> >
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > ---
-> >  drivers/usb/host/ohci-exynos.c | 24 +++++++-----------------
-> >  1 file changed, 7 insertions(+), 17 deletions(-)
-> >
-> > diff --git a/drivers/usb/host/ohci-exynos.c b/drivers/usb/host/ohci-exynos.c
-> > index 8d7977fd5d3bd502..8dd9c3b2411c383f 100644
-> > --- a/drivers/usb/host/ohci-exynos.c
-> > +++ b/drivers/usb/host/ohci-exynos.c
-> > @@ -69,19 +69,12 @@ static int exynos_ohci_get_phy(struct device *dev,
-> >                         return -EINVAL;
-> >                 }
-> >
-> > -               phy = devm_of_phy_get(dev, child, NULL);
-> > +               phy = devm_of_phy_optional_get(dev, child, NULL);
-> >                 exynos_ohci->phy[phy_number] = phy;
-> >                 if (IS_ERR(phy)) {
-> > -                       ret = PTR_ERR(phy);
-> > -                       if (ret == -EPROBE_DEFER) {
-> > -                               of_node_put(child);
-> > -                               return ret;
-> > -                       } else if (ret != -ENOSYS && ret != -ENODEV) {
-> > -                               dev_err(dev,
-> > -                                       "Error retrieving usb2 phy: %d\n", ret);
-> > -                               of_node_put(child);
-> > -                               return ret;
-> > -                       }
-> > +                       of_node_put(child);
-> > +                       return dev_err_probe(dev, PTR_ERR(phy),
-> > +                                            "Error retrieving usb2 phy\n");
->
-> Optional is really the only reason for the caller to decide whether to
-> print an error message or not. If we have both flavors of 'get', then
-> really the 'get' functions should print an error message.
+This series provides misc updates to mxl5.
+For more information please see tag log below.
 
-In case of a real error, both should print an error message, right?
+Please pull and let me know if there is any problem.
 
-Anyway, I understand that's a three step operation:
-  1. Introduce and convert to the _optional variant,
-  2. Add error printing to callees.
-  3. Remove error printing from callers.
+Thanks,
+Saeed.
 
-Gr{oetje,eeting}s,
 
-                        Geert
+The following changes since commit 68e5b6aa2795fd05c6ff58616cb16f2f216e4123:
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+  xdp: document xdp_do_flush() before napi_complete_done() (2023-01-18 14:33:34 +0000)
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2023-01-18
+
+for you to fetch changes up to efb4879f76236f248bbe5b9e2bf408d9470d59f3:
+
+  net/mlx5e: Use read lock for eswitch get callbacks (2023-01-18 10:34:09 -0800)
+
+----------------------------------------------------------------
+mlx5-updates-2023-01-18
+
+1) From Rahul,
+  1.1) extended range for PTP adjtime and adjphase
+  1.2) adjphase function to support hardware-only offset control
+
+2) From Roi, code cleanup to the TC module.
+
+3) From Maor, TC support for Geneve and GRE with VF tunnel offload
+
+4) Cleanups and minor updates.
+
+----------------------------------------------------------------
+Adham Faris (2):
+      net/mlx5e: Fail with messages when params are not valid for XSK
+      net/mlx5e: Add warning when log WQE size is smaller than log stride size
+
+Leon Romanovsky (1):
+      net/mlx5e: Use read lock for eswitch get callbacks
+
+Maor Dickman (2):
+      net/mlx5e: Support Geneve and GRE with VF tunnel offload
+      net/mlx5e: Remove redundant allocation of spec in create indirect fwd group
+
+Rahul Rameshbabu (3):
+      net/mlx5e: Suppress Send WQEBB room warning for PAGE_SIZE >= 16KB
+      net/mlx5: Add adjphase function to support hardware-only offset control
+      net/mlx5: Add hardware extended range support for PTP adjtime and adjphase
+
+Roi Dayan (6):
+      net/mlx5: E-switch, Remove redundant comment about meta rules
+      net/mlx5e: TC, Pass flow attr to attach/detach mod hdr functions
+      net/mlx5e: TC, Add tc prefix to attach/detach hdr functions
+      net/mlx5e: TC, Use common function allocating flow mod hdr or encap mod hdr
+      net/mlx5e: Warn when destroying mod hdr hash table that is not empty
+      net/mlx5: E-Switch, Fix typo for egress
+
+Yishai Hadas (1):
+      net/mlx5: Suppress error logging on UCTX creation
+
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c      |   3 +-
+ .../net/ethernet/mellanox/mlx5/core/en/mod_hdr.c   |   1 +
+ .../net/ethernet/mellanox/mlx5/core/en/params.c    |  18 +-
+ .../net/ethernet/mellanox/mlx5/core/en/tc_priv.h   |   2 -
+ .../net/ethernet/mellanox/mlx5/core/en/tc_tun.c    |   2 -
+ .../ethernet/mellanox/mlx5/core/en/tc_tun_encap.c  |   5 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.c |  19 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 101 ++++------
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h    |  14 +-
+ .../ethernet/mellanox/mlx5/core/esw/indir_table.c  | 213 ++++-----------------
+ .../ethernet/mellanox/mlx5/core/esw/indir_table.h  |   4 -
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  |   6 +-
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  35 ++--
+ .../net/ethernet/mellanox/mlx5/core/lib/clock.c    |  41 +++-
+ include/linux/mlx5/mlx5_ifc.h                      |   4 +-
+ 16 files changed, 177 insertions(+), 293 deletions(-)
