@@ -2,33 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A183671A48
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 12:17:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBB5F671A0B
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 12:09:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229786AbjARLQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 06:16:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36698 "EHLO
+        id S229977AbjARLJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 06:09:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229847AbjARLQN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 06:16:13 -0500
-X-Greylist: delayed 452 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 18 Jan 2023 02:29:31 PST
-Received: from riemann.telenet-ops.be (riemann.telenet-ops.be [IPv6:2a02:1800:110:4::f00:10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 640147F99C
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 02:29:31 -0800 (PST)
-Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-        by riemann.telenet-ops.be (Postfix) with ESMTPS id 4Nxhd70RLgz4xTY9
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 11:21:47 +0100 (CET)
+        with ESMTP id S230215AbjARLIw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 06:08:52 -0500
+Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F749574D
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 02:15:48 -0800 (PST)
 Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed50:4745:2e6d:e3a6:3327])
-        by xavier.telenet-ops.be with bizsmtp
-        id AAFN290042zf9gW01AFNxL; Wed, 18 Jan 2023 11:15:42 +0100
+        by albert.telenet-ops.be with bizsmtp
+        id AAFN290022zf9gW06AFN2Z; Wed, 18 Jan 2023 11:15:46 +0100
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan.of.borg with esmtp (Exim 4.95)
         (envelope-from <geert@linux-m68k.org>)
-        id 1pI5TQ-005aIN-M1;
+        id 1pI5TQ-005aIM-Lz;
         Wed, 18 Jan 2023 11:15:22 +0100
 Received: from geert by rox.of.borg with local (Exim 4.95)
         (envelope-from <geert@linux-m68k.org>)
-        id 1pI5TV-001JVg-Uw;
+        id 1pI5TV-001JVj-W5;
         Wed, 18 Jan 2023 11:15:21 +0100
 From:   Geert Uytterhoeven <geert+renesas@glider.be>
 To:     Madalin Bucur <madalin.bucur@nxp.com>,
@@ -57,64 +53,96 @@ Cc:     netdev@vger.kernel.org, linux-tegra@vger.kernel.org,
         linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH treewide 0/7] phy: Add devm_of_phy_optional_get() helper
-Date:   Wed, 18 Jan 2023 11:15:13 +0100
-Message-Id: <cover.1674036164.git.geert+renesas@glider.be>
+Subject: [PATCH 1/7] phy: Add devm_of_phy_optional_get() helper
+Date:   Wed, 18 Jan 2023 11:15:14 +0100
+Message-Id: <f53a1bcca637ceeafb04ce3540a605532d3bc34a.1674036164.git.geert+renesas@glider.be>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1674036164.git.geert+renesas@glider.be>
+References: <cover.1674036164.git.geert+renesas@glider.be>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-	Hi all,
+Add an optional variant of devm_of_phy_get(), so drivers no longer have
+to open-code this operation.
 
-While there exist several optional_get() PHY helper functions, there is
-no optional variant of devm_of_phy_get(), leading to several drivers
-implementing this theirselves, sometimes in buggy ways.
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/phy/phy-core.c  | 26 ++++++++++++++++++++++++++
+ include/linux/phy/phy.h |  9 ++++++++
+ 2 files changed, 35 insertions(+)
 
-Hence this series introduces a devm_of_phy_optional_get() helper(), and
-converts existing users of devm_of_phy_get() where appropriate.
-
-This series been compile-tested only, but the new helper itself has been
-tested with a new user I am about to submit.
-
-Thanks for your comments!
-
-Geert Uytterhoeven (7):
-  phy: Add devm_of_phy_optional_get() helper
-  net: fman: memac: Convert to devm_of_phy_optional_get()
-  net: lan966x: Convert to devm_of_phy_optional_get()
-  net: ethernet: ti: am65-cpsw: Convert to devm_of_phy_optional_get()
-  PCI: tegra: Convert to devm_of_phy_optional_get()
-  usb: host: ehci-exynos: Convert to devm_of_phy_optional_get()
-  usb: host: ohci-exynos: Convert to devm_of_phy_optional_get()
-
- .../net/ethernet/freescale/fman/fman_memac.c  |  8 +++---
- .../ethernet/microchip/lan966x/lan966x_main.c |  5 ++--
- drivers/net/ethernet/ti/am65-cpsw-nuss.c      |  6 ++---
- drivers/pci/controller/pci-tegra.c            |  5 +---
- drivers/phy/phy-core.c                        | 26 +++++++++++++++++++
- drivers/usb/host/ehci-exynos.c                | 24 +++++------------
- drivers/usb/host/ohci-exynos.c                | 24 +++++------------
- include/linux/phy/phy.h                       |  9 ++++++
- 8 files changed, 59 insertions(+), 48 deletions(-)
-
+diff --git a/drivers/phy/phy-core.c b/drivers/phy/phy-core.c
+index d93ddf1262c5178b..ea009a611e19c705 100644
+--- a/drivers/phy/phy-core.c
++++ b/drivers/phy/phy-core.c
+@@ -879,6 +879,32 @@ struct phy *devm_of_phy_get(struct device *dev, struct device_node *np,
+ }
+ EXPORT_SYMBOL_GPL(devm_of_phy_get);
+ 
++/**
++ * devm_of_phy_optional_get() - lookup and obtain a reference to an optional
++ * phy.
++ * @dev: device that requests this phy
++ * @np: node containing the phy
++ * @con_id: name of the phy from device's point of view
++ *
++ * Gets the phy using of_phy_get(), and associates a device with it using
++ * devres. On driver detach, release function is invoked on the devres data,
++ * then, devres data is freed.  This differs to devm_of_phy_get() in
++ * that if the phy does not exist, it is not considered an error and
++ * -ENODEV will not be returned. Instead the NULL phy is returned,
++ * which can be passed to all other phy consumer calls.
++ */
++struct phy *devm_of_phy_optional_get(struct device *dev, struct device_node *np,
++				     const char *con_id)
++{
++	struct phy *phy = devm_of_phy_get(dev, np, con_id);
++
++	if (PTR_ERR(phy) == -ENODEV)
++		phy = NULL;
++
++	return phy;
++}
++EXPORT_SYMBOL_GPL(devm_of_phy_optional_get);
++
+ /**
+  * devm_of_phy_get_by_index() - lookup and obtain a reference to a phy by index.
+  * @dev: device that requests this phy
+diff --git a/include/linux/phy/phy.h b/include/linux/phy/phy.h
+index 559c3da515073697..5f6e669b616da0b0 100644
+--- a/include/linux/phy/phy.h
++++ b/include/linux/phy/phy.h
+@@ -255,6 +255,8 @@ struct phy *devm_phy_get(struct device *dev, const char *string);
+ struct phy *devm_phy_optional_get(struct device *dev, const char *string);
+ struct phy *devm_of_phy_get(struct device *dev, struct device_node *np,
+ 			    const char *con_id);
++struct phy *devm_of_phy_optional_get(struct device *dev, struct device_node *np,
++				     const char *con_id);
+ struct phy *devm_of_phy_get_by_index(struct device *dev, struct device_node *np,
+ 				     int index);
+ void of_phy_put(struct phy *phy);
+@@ -450,6 +452,13 @@ static inline struct phy *devm_of_phy_get(struct device *dev,
+ 	return ERR_PTR(-ENOSYS);
+ }
+ 
++static inline struct phy *devm_of_phy_optional_get(struct device *dev,
++						   struct device_node *np,
++						   const char *con_id)
++{
++	return NULL;
++}
++
+ static inline struct phy *devm_of_phy_get_by_index(struct device *dev,
+ 						   struct device_node *np,
+ 						   int index)
 -- 
 2.34.1
 
-Gr{oetje,eeting}s,
-
-						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-							    -- Linus Torvalds
