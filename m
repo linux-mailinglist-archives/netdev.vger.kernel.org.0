@@ -2,235 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E36316725A7
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 18:58:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15881672611
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 19:01:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229708AbjARR63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 12:58:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54068 "EHLO
+        id S229483AbjARSBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 13:01:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbjARR62 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 12:58:28 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0651B2CFEA;
-        Wed, 18 Jan 2023 09:58:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674064706; x=1705600706;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=wWX1bXgmVHVUmgFF6MyWfePRu8xV0PCeO7aBLXFNvmE=;
-  b=Xcozp3nuPdCHFcl3O8jC4dQCcfAlWagksNDMP1I1ngdJd1RifkeJPgH9
-   BlDC9L82qLaMi6qgQTib194B1xFD9MqSJ6qH6kxetQTGAWDp8eFtLFvLq
-   H3SIS0eMtjhhdm9tvCBRpBf0OzerP4Qe3hr+5e/72LrTxBtcram2HyEj2
-   5kSIMDPYkj+3DMne2fRLSWWA8p5EVIzTcWWd4PukkOBgpA4SPEUeEfOXg
-   3sVeLXeBOjIG/ThWNSfad7Go84CtVsD/J/bfiRcCvXV9tfCM5+xg4lR0p
-   bJ8FaH8q4126YL4gK548Pk4WT6uHTJIUDSa/AwJRYalyMvXLHo+tQjQJV
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="411291427"
-X-IronPort-AV: E=Sophos;i="5.97,226,1669104000"; 
-   d="scan'208";a="411291427"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2023 09:58:05 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="609741847"
-X-IronPort-AV: E=Sophos;i="5.97,226,1669104000"; 
-   d="scan'208";a="609741847"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga003.jf.intel.com with ESMTP; 18 Jan 2023 09:58:05 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Wed, 18 Jan 2023 09:58:05 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Wed, 18 Jan 2023 09:58:05 -0800
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Wed, 18 Jan 2023 09:58:04 -0800
+        with ESMTP id S230356AbjARSBA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 13:01:00 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2046.outbound.protection.outlook.com [40.107.243.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5161059B7D;
+        Wed, 18 Jan 2023 10:00:54 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OhWjS5A3Z7OSFYKqS7TxqX6lZYi94EIueE3sn78HuMa5ijTJ7fKe8nbv7Jtcz4aLzbr4ySbCoupdlBPgGa+yWOUG03/vl55bAukQeK9PQ+YNfUUqSISvi0yjzfDvpVNvAI5YpHre4BhQgmKICyETdrGtfO9RAtjcbP9Cxjv6G7aTlFoqBE6Jp61zCP7udkQ+eoGTNU0YqO0lhHTKwcLlZf84UcX/TCIz/rfHSpWvQM+vzF57C6XVNC3KdfOQFm+K8irVLLnS7rYcH/6jnCpvW84/VgLtLtoF0yabs1s+McCp1EXCKTX+Ty/0StDDhd5WeGuGgR5WeFD8GpPYIOjnTg==
+ b=b13MVDYY7bbGHTUlgwSYceJVDjyUJZupY3pgMiyFK1TKbeP97ncYvK4CjK17HFBsq4KaaVh62JifSV4251Pz7A1fLGGbNhI38KukZDARp/DDMhT77K70Pnlg2JKYNrqoX+rBoy0LF+b0Pt/VBwLhhkvf+BG6Vx8CjHe2o2JZe9Rhvm53Oe5rYq3Jd7uO8tDdC2efjDaK3p7lnwFE0qNx63RK+UcdnSKhakPHCeiiP7ny7yMx1M2Yh0pkZju8prBzLenXvowWnZwIBkMbA0VPQHZN3dw9XatzJGRHFflTsdduMS9O8XR9vj1At02tSvBBFt59+hNk+sLlB4Ol6bxo0w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QnQbgfvcw6BYJzERqp16h+EQyo+ddfdt7iaot0/sR3Y=;
- b=TH/XlsNX/fNwveBGkRO8ju2gEuqwTZBrzU7tt0Lnkbe/6Gj4fwYcGDpohiiXK1WYSuxbxUhvpCWRNu7hWWJ4joPt8OrLB21VD1DkXJmpghiqNJhjjFsU8izR/AvZU1h9rWlIsdtjCVmnZAt4dHA7FR6OAvqOQcqkt1c6mDJjwd/sihAzJkznDMyQDiN3Wa+l2HMw5NjN2QYfLzt1w+traklFL7l/F87a4roM2MSIvSyLsiRkSYsKEJy6v97mkK96xEWvdqkr4QvcJ+AF2QMP7RnHK56ynPwhqrrxR9RnKWkPn7z3rtIHmRFHedaDg5dxTgGz11KyFSmekPwxRkiQRA==
+ bh=OXY/qk74Ck4Y66fZQMt4tpXzsyUT4nAbalQAysEmLhI=;
+ b=XVW3okh659iMcvaJl7MDK/xeuemIwZYRHrKHnSvdRSwkGIwoxDc1WXt5wBjXxjs2I+6q5jS3IJMwKVERouraFf+bwXlRd3O/p+hXuZSWK8EnHyCGHOExF1tOi4Hih5Sp3Esd+fNgWJQvhk1UMlcroKct5vdjG7hk0gMyAiRQ1LykofOL//YCoQb8oe3j2xyzgnSXEnt40uRg0fKdFhEn983Ht7ZFUGSzpWdSHSuyQDO5Pt7fvScSDsWD3yPzO1qRk+Yib12j1wL/stt+jSDqCa38xot6M6Q4f73IKkFsLQ1HyxgQ2EfcZmjALJE4GYrhPM25eiYFee4M4Ik8RYfNtQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OXY/qk74Ck4Y66fZQMt4tpXzsyUT4nAbalQAysEmLhI=;
+ b=TUwlS+NBxcX+vCPVtzaYrc76yJkjqdBbQSY2sOB0iH4VncYJ3qbdw3nDXPjsTAP+hF8M0F2stGmSewFk7wvvbLnoyQ/bBe7mizH/RuIRWjMuzflT3uETdWHsQRDT3DMIETOxgdOl4ANZPhCNZ+2OgWRPed7nStgWCaUCq79fWqQQfQ1cHQZQZ7oajjCHdcmkdNGowVmby7/TZBnaEJK1FquDHTfb1obO4naPZ6L5+2LHtRfVuL2Go3H2wb4bs+iq5DEFi0AhfSvu7qbYuuF7ElqAuSWCh3fue1K7JLF1hUgfpT2+++Dk2RhbcKVcdV166GL8qvbDzC7qLimi1G1KGA==
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from SN6PR11MB3229.namprd11.prod.outlook.com (2603:10b6:805:ba::28)
- by CY8PR11MB7134.namprd11.prod.outlook.com (2603:10b6:930:62::17) with
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM4PR12MB5818.namprd12.prod.outlook.com (2603:10b6:8:62::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Wed, 18 Jan
- 2023 17:58:02 +0000
-Received: from SN6PR11MB3229.namprd11.prod.outlook.com
- ([fe80::933:90f8:7128:f1c5]) by SN6PR11MB3229.namprd11.prod.outlook.com
- ([fe80::933:90f8:7128:f1c5%5]) with mapi id 15.20.5986.023; Wed, 18 Jan 2023
- 17:58:01 +0000
-Message-ID: <a36a4ac1-5775-f66d-a453-04c7dc1293da@intel.com>
-Date:   Wed, 18 Jan 2023 09:57:58 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH] i40e: fix dma alloc/free prototypes
-To:     Arnd Bergmann <arnd@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Shannon Nelson <shannon.nelson@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-CC:     Arnd Bergmann <arnd@arndb.de>, <intel-wired-lan@lists.osuosl.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20230118090120.2081560-1-arnd@kernel.org>
-Content-Language: en-US
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-In-Reply-To: <20230118090120.2081560-1-arnd@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR07CA0045.namprd07.prod.outlook.com
- (2603:10b6:a03:60::22) To SN6PR11MB3229.namprd11.prod.outlook.com
- (2603:10b6:805:ba::28)
+ 2023 18:00:50 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a%9]) with mapi id 15.20.6002.013; Wed, 18 Jan 2023
+ 18:00:50 +0000
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Robin Murphy <robin.murphy@arm.com>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        ath10k@lists.infradead.org, ath11k@lists.infradead.org,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+        kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-tegra@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, nouveau@lists.freedesktop.org,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH v2 00/10] Let iommufd charge IOPTE allocations to the memory cgroup
+Date:   Wed, 18 Jan 2023 14:00:34 -0400
+Message-Id: <0-v2-ce66f632bd0d+484-iommu_map_gfp_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BLAPR05CA0020.namprd05.prod.outlook.com
+ (2603:10b6:208:36e::23) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN6PR11MB3229:EE_|CY8PR11MB7134:EE_
-X-MS-Office365-Filtering-Correlation-Id: 87c05192-2463-4fc1-02af-08daf97d8a4c
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB5818:EE_
+X-MS-Office365-Filtering-Correlation-Id: fcb5a4b7-172b-4677-f89a-08daf97decb8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: f1SeThmxHkyvHoZrmORmlCSWx3FbCzKrrA043Fj9jxh0crnuEc7OrJXn47DMi3w/bz52b+uPR/QcLrQA8kzOJg2Did12wVQaiDR8iPgdlxgOZGjUAUjOSath2EdukFYwDHN35lu6ch+MrTFjaRZXdye3GXkgYrZR6vISLOJc/ZSeAlEHCKrkVbhVFlBIXt1gqeoakkRhMnxYo9aDjz0mFhF3rGk3gyrTCw0neFyexnxDUwbnLzWfs+OLu34lojiv5DyLP2RqTMbgujLxJQjl/5oB3JTNKKIX0Pf98UUouXFkp/UZ+GmCnHqq1KsWAC4ilPR6abl6tvL7YfWilKNQEeuD/3FTTMkqc9FHuMntKcB7DYYhsm0r+SYY8PpEdRqXhNoYFIouzbR4LP3lGYESoTd1IAAGGLhkkFUBPq9zxsHKYuNNBgZZTurmtEriNd+CqbFiz/2TiQ0G88yu5Pus3XJ6gB7DyStJ1TQ22sUiYZHwYouSyv1OStQsj3EvDnco58PMkgUu8xZ6x/QgAZSNuQMpNRNP32LfKf7kbfn/yCk//2P4JAlD9eb1aKFRwPZObDbwu40dEdFkqgs4WzPYFwNDf2HwZkH2xB4qyj59TmdpMa0TAhCSLEcY3/j14vthIIUfnd3bB96oXX5F/kHgf5/n5hFZwwBwwDsFndWeLI24idWXpB/jqNp3C2ETq2E/NBba5Hg/G73Wk3q7eoDcmfW4O4yRriYAMbyur5aP7q7NHDv9cjT+3qGcTFKct+q8l8LZ0pDSJCKg9wRRPgvvcw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3229.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(346002)(396003)(39860400002)(376002)(366004)(136003)(451199015)(86362001)(31696002)(8936002)(36756003)(26005)(41300700001)(186003)(6512007)(53546011)(4326008)(8676002)(66556008)(66476007)(2616005)(66946007)(6666004)(6486002)(6506007)(316002)(478600001)(110136005)(6636002)(966005)(38100700002)(2906002)(82960400001)(83380400001)(5660300002)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: dhP7/JH5PJMpBi3jgPqbwyjejs4hvrmKK3Fk6bDqtC2i7rBV+4IQBRJx+2tGiPJEZUcTGIvh/bMCVkamjb5TS9IVBlzpLrzJ593r7yfa90hVEppx7DOER0DiIezgs4MmqJ6/GxrmxPRMSvMq1d4SumkMCK1Np58pIzthcP/NMBilOBde7K7Sfwvg1nA3+ijAB5p1rPoqnnsRfRmMmAylIEW5vDlMNnu4+rr2ZfrM6xI3RFGTvGb2ITuZBJQ4UyVOlcDCnU2fzKU+Pp7KJynLVEUPPM54k8TrUeiMmfoNnigk0KINY9N5qw97RxM0/2L7QHqkzPGt+UPt/aqa/ZMuQmH63F3z+e0CAc2qxSJEj5Tz5eaeNphusUpeVCmymolXnxpZ1A+zV8pvRPaVdfnS/hUC+rS1dk9U/Ifv4NdqDM4Cn0escktZRxgYe3FSw/St3BqYMhpag+ezcNs5ETtm4hHmGAIe8ZSSzXt2k4+W8/i8l09qvT+BKBEfamuQQRfZhUThBRVYFIl5XOPo0gKZm7TP47UqCjut5ON3TRM4EL7INixslVkOOH5K/WsmR0o8MldEvshCrn8tN3wxdILDYw8siHxfBhCtdwAvQUqNnzJk65LaSYYqwOikLkbr7kCWArLHlWt3AqJrvq0LHxqwo1CMZqNcZlC4lce4dmg5qldFxeANL/sQeLd+4UPbUeOs0ocEuQv7M9TKxO+Sl27+dP1pjtwAqiJKK7Ec0mLnMytJWoTDHpdWHFE0r2TDVL5/KbMjibdTrYvjMnE1drY0Kw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(376002)(396003)(346002)(366004)(451199015)(8676002)(36756003)(83380400001)(41300700001)(8936002)(2906002)(66476007)(2616005)(110136005)(54906003)(4326008)(316002)(5660300002)(38100700002)(86362001)(66556008)(7416002)(186003)(6486002)(966005)(6512007)(478600001)(26005)(66946007)(6666004)(6506007)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Tk05NXZnWVZobTRWVlN1QjJzajIyUC94Uy85VU5VQ3lnT3NBRDBWVGM0Qy82?=
- =?utf-8?B?N1AzWVd0UllYdHFRWHZwSEg0bm5RNDNYZ2p0SDh0R3VkQW5hbWd2UkZQTjhX?=
- =?utf-8?B?MjlmRncyT3ltQ24rRnA2RzRNdWZRU1ZOWU9TUjdkVVMzNEdycC9UMVFqcEh2?=
- =?utf-8?B?QlJtZGFocnE5SDl2TjNwcTlueEJsV0lrTTFGb09GbVd0UEc1T2JBalU4U1FZ?=
- =?utf-8?B?S3lTcWpwNkY2YTNickJSV01DWEFOczl4UFpDV00wSTFEeXk3SzVMZU9FL3c3?=
- =?utf-8?B?NTNjZ1lYMnAyU0QwdXF1UlpuZGVHUG5WcDFVaU80clNvdUFCZ1dQRlFScnp2?=
- =?utf-8?B?bi8rS0NNZmI3WUpYMmQ0QS9BMnd5ekgraXMremNPQVVjaU9vQWZocXF4enRm?=
- =?utf-8?B?dkpOS3o2SEs3QzBqb3FhQWtOYndrQmZnNTFqaUdHbWNRcXBpSHU3cW9zYk1D?=
- =?utf-8?B?ak5uRVVZc3d1UFA2RmtpZG9MTEE5OUFDeVZmRUF3K3Z5cUZ5eFlIZ3BVWVVL?=
- =?utf-8?B?TWRWdktaU2VTRzdGMjJQbmdTZTJEck0zK1VvQW8rNytXZnRHYWtURXkzWCtv?=
- =?utf-8?B?WTFQM1NRRVlVSGw2K0MxRFhiSmowb1liZk42bGNqUDQ0MkxST3V5WWl5NTV6?=
- =?utf-8?B?Z2xaaDRVL09pWjNWajd6M1BFNXZWZkFWcmxQWHQyODVpMmdDdERHL2JzZndr?=
- =?utf-8?B?TGxiSEw3VUg3cC9Wd0dscUx1Y014eEdya3hDNitEaWsrUTZaUWFyUEVYcEQv?=
- =?utf-8?B?Mk9iMjFnZ3ovM2tOOUJWM0VhOEliTEFoV21sd3NXT2hJU2U4MldwZC9RVzJQ?=
- =?utf-8?B?SFc2QXNsU3RSdHY1QVRrOUtaVDAzMGs2ZGRZY29ybmJoSkFnb0lEY3JjTlAw?=
- =?utf-8?B?YWJuOGw3Sk5GVEdSMmFkeFpURkY5N0QycXBlTnpKTG9xd051UHgrYmNZQnRX?=
- =?utf-8?B?VWRNV1l3alFjcHlNd3NiSjZHZzFCS2xyY3BLVE83azdYL1Fka3Aza1IrQ2tR?=
- =?utf-8?B?SnpEK3JyZkZGa3VoQlQ2UWlOMUpiWmIrdFBpR2ZFN25HbGNUQWNDTEJiaENJ?=
- =?utf-8?B?b252Tjl0YjFaNjJESnBkejZLbENJOFJaeUVyb0dQUmN6N2tpMmZGWG14YXpo?=
- =?utf-8?B?K3dUSGlXaHdXbzl3SmYzV2hMUzVPMWdhWUY2Q0hXSWMzeEp5QXh1eVJNMWx1?=
- =?utf-8?B?QWpwT0g5TGkwdVRTWjJWVlp5TGFaa1FoVURKOUFLK2FFcFA4YTVCSzJNcStp?=
- =?utf-8?B?OTV6SzZxMXd0STU5RFlYbW9keTBhWkRESVREMWt4MkhEUXViM0JLd1AvYVow?=
- =?utf-8?B?S2pmMGdGKytteCtvdFdpRDVnOUdBdFNaZTY5YTd2YUMrQmdhZ3p0Qjh4d3dE?=
- =?utf-8?B?eUEyWm1rN2czcDZoUTVzb0VhWUFxUVdWcFJPWlBzUjAxK2pkN1RUN3dTZGEz?=
- =?utf-8?B?T1hxSFBmVUozSWZVcmdtZklQZEVhRW9UZkduVndXcmJTTTgyeDhSQVhHK09M?=
- =?utf-8?B?RHRXdmIxRHUvc25TeTF1TlRIZzhxMUo2c1B1YjlrY21GMkNSVmdiQTRmajd4?=
- =?utf-8?B?WFJEMmpQdldZeXo3NHJKR25uL3lVenR4VkpjSmd2K0RlYnowZis1RDB0Yjc5?=
- =?utf-8?B?VXBEVTRiSkhZWFJnN0F0M3Z6dithU2ZGVDBPZkVBVE1PL3lsbE12a3BRa1dj?=
- =?utf-8?B?YXhsTEZpYjhMQVVsSVhWbWprZElCNkl4Ung0K2J4Wldqak9vcllZa0FSbWNM?=
- =?utf-8?B?eHl0QVpUV0wyK2VnS0FGQm5yUDZtVDFHeHJUTDlVeWdtRVdkSEo3eithbWxD?=
- =?utf-8?B?QXpzUTY0NzJLVzVQcHJYT3lVYzZPaGNLQmgwTlJsRC9JZlpUU016Lzl3ZXdQ?=
- =?utf-8?B?NmtUZTJIOGdRU1NUTUNJZjZUU0VTeXB4UHpxbkIzcElmYzM0eitYTTc4NFQw?=
- =?utf-8?B?Nkl5ZFprK283cWxNVElGMk1GZm9lWWtFTThzZ0R6T3dmRmtYZDFjTEpRNjlw?=
- =?utf-8?B?RHN5bENWdFg2UXZDZjd6eEkxb1FVd0lyazhYUUticWR2QUZKVjRHOVBNT3k2?=
- =?utf-8?B?R2V6UXZIbGlHZVZzeEt2a2o1dnZJV2ZuR1U1cndLQ0FMU1g0b2g5VHd5Wkds?=
- =?utf-8?B?Y25tQUlRaDJkZnh6c0k5dmZyVlRQeXhObVZtdlN6UjR0RzZlcGdJVkI1eWVl?=
- =?utf-8?B?ZkE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 87c05192-2463-4fc1-02af-08daf97d8a4c
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3229.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0+ipP0cNJR2O6QiA4qAaCOd1JJtpo+Q3j+cwqjBTF2x0XiedG6mwWY8m4syw?=
+ =?us-ascii?Q?VqaPUfT3771B6PHVF3pa4eUCY5aAISihxLoMpnwqIMgDZK6nZyBfv+QZNpIz?=
+ =?us-ascii?Q?jdNsMszjfxcyZgs4zplJWVfeQ/kXpRLKQagSE9WpfES6s1w2ucjznFkX6/Ph?=
+ =?us-ascii?Q?NGs/1ugsrZOon702kvPlS1jDKPzetVhrNFGvM3Mz5h+MT+ZJzceQAuPvDcys?=
+ =?us-ascii?Q?x3F//F8LMt59t4A3M81KNIjgMxzv4re1HxH9rfZI4KSFAH/NzmTflXiv1wYp?=
+ =?us-ascii?Q?2Ngl9cfzjveo5PSWh5A2PuXrceSar6J+Adl0qBitNs8IJPhx4iuVB4h7P6o8?=
+ =?us-ascii?Q?60xV2l2MvD0ysfhVSTJUtrvmw8QKEdFoM/YpscVsICLB1PytaLGuIIQrL8eu?=
+ =?us-ascii?Q?TfyBXcHEoFXN+aJYopewsFT43KXNYSamP2cjLT8Q7K9lPZO8+7EbYhX4AwK9?=
+ =?us-ascii?Q?PCmpxzKSOt0YQYAzQimzrDvpZzM+FlCdciwyQWPqhAOzrKuMW3cniTOfFTkk?=
+ =?us-ascii?Q?+fZt34Jac5t5ydnk9Zx8AsttfjQq6V/kv9OOTnSsP9PMQj7YzZe13mjbOS3V?=
+ =?us-ascii?Q?OoMw1RAFi9jq1KKDnAzjMk+ynL6L/OQdsV4ec0ZR70QpsF/PfW6EeY8SsiY+?=
+ =?us-ascii?Q?D4IGOG/XT4ssA6eq5cxiA4J3r5CHDAeISote6SbiSeykopbkfuN56ZiAORBn?=
+ =?us-ascii?Q?ZdztHdTZ00l3ilwF+4YZJFcA4hlIm/zlp0SN283dWAz4xtbcdGnK4mzXa/mm?=
+ =?us-ascii?Q?fcg1VDdUQ65TfqynvCXCBuK7QQfwss15ToKItTK+3PMIBA7hfc4rAdKcNbZJ?=
+ =?us-ascii?Q?RBa4h6kuEfePhIfC9TfOCkAUfU+b5bboiqLdk8yBsAB4hwLEE3EBO3OL5Hfu?=
+ =?us-ascii?Q?gjeIjgrqz8jn1yPCaLVUAi9ijzUy6KEWpxCakHhyZJB5OLeNQ5HhB0OY4Ny6?=
+ =?us-ascii?Q?201l7yta+8FvttgWSXSm2Ee/UsbIlM7Tbs1gn8WaNyA40GwkFO0A1zGUPMyN?=
+ =?us-ascii?Q?bErVz4KdK0ktRnEN/1S6E6XRRIk5bE/av/cvCawQjyRu7BvrLXGKFQcagWvL?=
+ =?us-ascii?Q?UJ60G3pebbKDX9g3Hu73QGD7EA17+A8tj0+XMH1mpijjGz+125mRn/iTEWnD?=
+ =?us-ascii?Q?sJkgCFlbFDOGtpPKXlsu0wW3kryKng9mafn2sLdpfD+vM9ihZfKyKS7brGqU?=
+ =?us-ascii?Q?rHT3yEfUauqdqtm7GB6rPBHhGZMvUhLznmjTIwXqNg590Imkr02G1GoVX+kN?=
+ =?us-ascii?Q?MRRY4HcY+3osmGhrgI2Y6c+eT3kB7sezMngl+STL9qAXw9ZhDiysUc2et5nW?=
+ =?us-ascii?Q?jVxlDPDUpc2yi74FuDwcXkWKb5/tc8p3mC1Rzmmbe0cb4ntUHf64R8lvp9TP?=
+ =?us-ascii?Q?KRwcKM1ZGLQevf+yO+1Y7uldA3INxd5+8hdRh3CEScfKvxkQneEd3MKWvptF?=
+ =?us-ascii?Q?y9h65bkhwPwE+KYNrV5qJZLgfuiGjRWN8lBQTdaLcuglmRlBsz7Bk/U/4hoB?=
+ =?us-ascii?Q?dgtdwmLKSTne1sT/4M21wMFV2Ylqq2p1xyXRgAui5DAbVY5cXbiK6BmtzjJO?=
+ =?us-ascii?Q?8OM+FY96VE55yFmFvVEUYUm6yt0RE1J2CDAFAjS7?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fcb5a4b7-172b-4677-f89a-08daf97decb8
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2023 17:58:01.8436
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2023 18:00:46.6307
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AdwL0r0rOsMXlK4iPVfxoRua5R+I9IWdOvUDS+a8nD0x+iVlgQzZfVho+Nng/bLrS32huoF/Hc/JF3og8dmEnsVw9j2R0ZwlGmZuGQiJtaI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7134
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: GOJpGrHkqt8CsdlS6nmGOEHGfnMgfuRRM0eCoTW337GkTTyDQ89VkV1f0l1EeTO2
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5818
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/18/2023 1:01 AM, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> gcc-13 notices a mismatch between the declaration and the definition
-> for a few functions that apparently used to return a i40e_status_code
-> instead of an int:
-> 
-> drivers/net/ethernet/intel/i40e/i40e_main.c:129:5: error: conflicting types for 'i40e_allocate_dma_mem_d' due to enum/integer mismatch; have 'int(struct i40e_hw *, struct i40e_dma_mem *, u64,  u32)' {aka 'int(struct i40e_hw *, struct i40e_dma_mem *, long long unsigned int,  unsigned int)'} [-Werror=enum-int-mismatch]
->    129 | int i40e_allocate_dma_mem_d(struct i40e_hw *hw, struct i40e_dma_mem *mem,
->        |     ^~~~~~~~~~~~~~~~~~~~~~~
-> In file included from drivers/net/ethernet/intel/i40e/i40e_type.h:8,
->                   from drivers/net/ethernet/intel/i40e/i40e.h:41,
->                   from drivers/net/ethernet/intel/i40e/i40e_main.c:12:
-> drivers/net/ethernet/intel/i40e/i40e_osdep.h:40:25: note: previous declaration of 'i40e_allocate_dma_mem_d' with type 'i40e_status(struct i40e_hw *, struct i40e_dma_mem *, u64,  u32)' {aka 'enum i40e_status_code(struct i40e_hw *, struct i40e_dma_mem *, long long unsigned int,  unsigned int)'}
->     40 |                         i40e_allocate_dma_mem_d(h, m, s, a)
->        |                         ^~~~~~~~~~~~~~~~~~~~~~~
-> drivers/net/ethernet/intel/i40e/i40e_alloc.h:23:13: note: in expansion of macro 'i40e_allocate_dma_mem'
->     23 | i40e_status i40e_allocate_dma_mem(struct i40e_hw *hw,
->        |             ^~~~~~~~~~~~~~~~~~~~~
-> 
-> Change the prototypes to match the definition.
+iommufd follows the same design as KVM and uses memory cgroups to limit
+the amount of kernel memory a iommufd file descriptor can pin down. The
+various internal data structures already use GFP_KERNEL_ACCOUNT to charge
+its own memory.
 
-Thanks for the patch Arnd, however, the problem with this is the call 
-chain of these functions are returning i40e_status which, with the 
-propagated values of these functions, will push the warnings up I 
-assume. We have a series coming to remove i40e_status altogether [1] 
-which should resolve this issue.
+However, one of the biggest consumers of kernel memory is the IOPTEs
+stored under the iommu_domain and these allocations are not tracked.
 
-Thanks,
-Tony
+This series is the first step in fixing it.
+
+The iommu driver contract already includes a 'gfp' argument to the
+map_pages op, allowing iommufd to specify GFP_KERNEL_ACCOUNT and then
+having the driver allocate the IOPTE tables with that flag will capture a
+significant amount of the allocations.
+
+Update the iommu_map() API to pass in the GFP argument, and fix all call
+sites. Replace iommu_map_atomic().
+
+Audit the "enterprise" iommu drivers to make sure they do the right thing.
+Intel and S390 ignore the GFP argument and always use GFP_ATOMIC. This is
+problematic for iommufd anyhow, so fix it. AMD and ARM SMMUv2/3 are
+already correct.
+
+A follow up series will be needed to capture the allocations made when the
+iommu_domain itself is allocated, which will complete the job.
+
+v2:
+ - Prohibit bad GFP flags in the iommu wrappers
+ - Split out the new GFP_KERNEL usages into dedicated patches so it is
+   easier to check. No code change after the full series
+v1: https://lore.kernel.org/r/0-v1-6e8b3997c46d+89e-iommu_map_gfp_jgg@nvidia.com
+
+Jason Gunthorpe (10):
+  iommu: Add a gfp parameter to iommu_map()
+  iommu: Remove iommu_map_atomic()
+  iommu: Add a gfp parameter to iommu_map_sg()
+  iommu/dma: Use the gfp parameter in __iommu_dma_alloc_noncontiguous()
+  iommufd: Use GFP_KERNEL_ACCOUNT for iommu_map()
+  iommu/intel: Add a gfp parameter to alloc_pgtable_page()
+  iommu/intel: Support the gfp argument to the map_pages op
+  iommu/intel: Use GFP_KERNEL in sleepable contexts
+  iommu/s390: Push the gfp parameter to the kmem_cache_alloc()'s
+  iommu/s390: Use GFP_KERNEL in sleepable contexts
+
+ arch/arm/mm/dma-mapping.c                     | 11 ++--
+ arch/s390/include/asm/pci_dma.h               |  5 +-
+ arch/s390/pci/pci_dma.c                       | 31 ++++++-----
+ .../drm/nouveau/nvkm/subdev/instmem/gk20a.c   |  3 +-
+ drivers/gpu/drm/tegra/drm.c                   |  2 +-
+ drivers/gpu/host1x/cdma.c                     |  2 +-
+ drivers/infiniband/hw/usnic/usnic_uiom.c      |  4 +-
+ drivers/iommu/dma-iommu.c                     | 11 ++--
+ drivers/iommu/intel/iommu.c                   | 36 +++++++------
+ drivers/iommu/intel/iommu.h                   |  2 +-
+ drivers/iommu/intel/pasid.c                   |  2 +-
+ drivers/iommu/iommu.c                         | 53 +++++++------------
+ drivers/iommu/iommufd/pages.c                 |  6 ++-
+ drivers/iommu/s390-iommu.c                    | 15 +++---
+ drivers/media/platform/qcom/venus/firmware.c  |  2 +-
+ drivers/net/ipa/ipa_mem.c                     |  6 ++-
+ drivers/net/wireless/ath/ath10k/snoc.c        |  2 +-
+ drivers/net/wireless/ath/ath11k/ahb.c         |  4 +-
+ drivers/remoteproc/remoteproc_core.c          |  5 +-
+ drivers/vfio/vfio_iommu_type1.c               |  9 ++--
+ drivers/vhost/vdpa.c                          |  2 +-
+ include/linux/iommu.h                         | 31 +++--------
+ 22 files changed, 119 insertions(+), 125 deletions(-)
 
 
-> Fixes: 56a62fc86895 ("i40e: init code and hardware support")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->   drivers/net/ethernet/intel/i40e/i40e_alloc.h | 20 +++++++++-----------
->   1 file changed, 9 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_alloc.h b/drivers/net/ethernet/intel/i40e/i40e_alloc.h
-> index cb8689222c8b..e9c4a8fda9de 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_alloc.h
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_alloc.h
-> @@ -20,16 +20,14 @@ enum i40e_memory_type {
->   };
->   
->   /* prototype for functions used for dynamic memory allocation */
-> -i40e_status i40e_allocate_dma_mem(struct i40e_hw *hw,
-> -					    struct i40e_dma_mem *mem,
-> -					    enum i40e_memory_type type,
-> -					    u64 size, u32 alignment);
-> -i40e_status i40e_free_dma_mem(struct i40e_hw *hw,
-> -					struct i40e_dma_mem *mem);
-> -i40e_status i40e_allocate_virt_mem(struct i40e_hw *hw,
-> -					     struct i40e_virt_mem *mem,
-> -					     u32 size);
-> -i40e_status i40e_free_virt_mem(struct i40e_hw *hw,
-> -					 struct i40e_virt_mem *mem);
-> +int i40e_allocate_dma_mem(struct i40e_hw *hw,
-> +			  struct i40e_dma_mem *mem,
-> +			  enum i40e_memory_type type,
-> +			  u64 size, u32 alignment);
-> +int i40e_free_dma_mem(struct i40e_hw *hw, struct i40e_dma_mem *mem);
-> +int i40e_allocate_virt_mem(struct i40e_hw *hw,
-> +			   struct i40e_virt_mem *mem,
-> +			   u32 size);
-> +int i40e_free_virt_mem(struct i40e_hw *hw, struct i40e_virt_mem *mem);
->   
->   #endif /* _I40E_ALLOC_H_ */
+base-commit: 5dc4c995db9eb45f6373a956eb1f69460e69e6d4
+-- 
+2.39.0
 
-[1] 
-https://lore.kernel.org/intel-wired-lan/20230109141120.3197817-1-jan.sokolowski@intel.com/
