@@ -2,80 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD44C671E44
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 14:43:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57B58671E5C
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 14:51:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230285AbjARNnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 08:43:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43050 "EHLO
+        id S230291AbjARNvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 08:51:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbjARNmY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 08:42:24 -0500
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1BEE66CE5
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 05:11:23 -0800 (PST)
-Received: by mail-io1-f72.google.com with SMTP id f12-20020a056602038c00b00704b6f4685dso5043416iov.9
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 05:11:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Gb9ye5L384z0sJ9lHOgovYJTtmnNnzRSfStsIP9mHp4=;
-        b=1JGxfigCHKV8kBLjMS+QEPPLAvS/8uKUmZLN8EMFlFnjiqSTod2Oij9iOueIoz74PX
-         0KRDwSGeI08B350ZeGwVLu45gliJZWOTopMXvtKVFqhRF8ugMGp16RB18Or04vvzLUt3
-         JpqBaoe8vCuMVEskZfU+4p34LPRJB5VkO/4+tgbIV4qdiQOS7L2cHH2IvYS/VPMwKLE7
-         y24cvvQM7nhIJYpav8J9Qu+FjIM+Ap7gYyvwMnuinyVUD+v9NcRzWyfuHq4tLyiwYrar
-         eB03/V5cHKBohFnox60CI3jTbWnjtiZr4lJNla94Yv8QQSKujh3R2NKr8t/7PZGuPju/
-         ql/w==
-X-Gm-Message-State: AFqh2koEX0N8nFB5nIjM1G1VYLyDKW38aVJOmRNOs3/jnOc/ZaaZEQiL
-        CcYjgEV7wjUkL+NDnfTMjYEhcaIS61dDqGAyg4TgW5OO4zNr
-X-Google-Smtp-Source: AMrXdXuzeXKW4OevNrY1rNZ/gojCg/BXjtv/ERGhG5fJgGg1aitQlfltHaryjNoMWEuTb+ALgiV6PMylnyGQSAMulP7Z+slvC5Qd
+        with ESMTP id S230304AbjARNuk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 08:50:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D124B4A3
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 05:20:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B70FB81D08
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 13:20:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BE5E9C433F1;
+        Wed, 18 Jan 2023 13:20:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674048018;
+        bh=qYEhTYz8A//0w3r9sfXJGK+P6wVL6jEN8oxCWRt852Y=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=jIucHDYVKpD+HL0KtUrKGWKy8tj5qlvW2dgUYDmY8bIGv/ETLQevZlrphqd6VnQU0
+         HK91HoYC49pxjO3t/q6XRDqvAdeLa+rMH3KvKmlDG/Z14GDvdzAMD+qjvmBiU+Hy1z
+         laqcBmTMVpUbAIbvN7RHLSUVBxJHLZOQTrYHsYksQt8Xo5c3dh9vS0KmhdJNhtDVES
+         00JIpDaNdnuwp85wTQOloZc2hFNJJT/x1Ixkor9hxIPuEgCdpq7wqWlWwIZ7TGbd8v
+         IwnRoWX4B6vnB1mlKSwftyzNeG7eXY2FDDn7JyqQBUVwcKTVQhLEyOxxybZtI1GyJw
+         0nZ/qv7jmz3aA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A5FDBC3959E;
+        Wed, 18 Jan 2023 13:20:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-Received: by 2002:a02:c643:0:b0:38a:c2a7:369d with SMTP id
- k3-20020a02c643000000b0038ac2a7369dmr633850jan.245.1674047483287; Wed, 18 Jan
- 2023 05:11:23 -0800 (PST)
-Date:   Wed, 18 Jan 2023 05:11:23 -0800
-In-Reply-To: <000000000000fbb2d505f27398cb@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000941ee205f2898d65@google.com>
-Subject: Re: [syzbot] possible deadlock in release_sock
-From:   syzbot <syzbot+bbd35b345c7cab0d9a08@syzkaller.appspotmail.com>
-To:     cong.wang@bytedance.com, davem@davemloft.net, edumazet@google.com,
-        eric.dumazet@gmail.com, gnault@redhat.com, jakub@cloudflare.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v5 0/9] tsnep: XDP support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167404801867.10842.12920748675264358351.git-patchwork-notify@kernel.org>
+Date:   Wed, 18 Jan 2023 13:20:18 +0000
+References: <20230116202458.56677-1-gerhard@engleder-embedded.com>
+In-Reply-To: <20230116202458.56677-1-gerhard@engleder-embedded.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     netdev@vger.kernel.org, alexander.duyck@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+Hello:
 
-commit 0b2c59720e65885a394a017d0cf9cab118914682
-Author: Cong Wang <cong.wang@bytedance.com>
-Date:   Sat Jan 14 03:01:37 2023 +0000
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-    l2tp: close all race conditions in l2tp_tunnel_register()
+On Mon, 16 Jan 2023 21:24:49 +0100 you wrote:
+> Implement XDP support for tsnep driver. I tried to follow existing
+> drivers like igb/igc as far as possible. Some prework was already done
+> in previous patch series, so in this series only actual XDP stuff is
+> included.
+> 
+> Thanks for the NetDev 0x14 slides "Add XDP support on a NIC driver".
+> 
+> [...]
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15331c61480000
-start commit:   87b93b678e95 octeontx2-pf: Avoid use of GFP_KERNEL in atom..
-git tree:       net
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=17331c61480000
-console output: https://syzkaller.appspot.com/x/log.txt?x=13331c61480000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2b6ecad960fc703e
-dashboard link: https://syzkaller.appspot.com/bug?extid=bbd35b345c7cab0d9a08
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1716b3a1480000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14e57a91480000
+Here is the summary with links:
+  - [net-next,v5,1/9] tsnep: Replace TX spin_lock with __netif_tx_lock
+    https://git.kernel.org/netdev/net-next/c/25faa6a4c5ca
+  - [net-next,v5,2/9] tsnep: Forward NAPI budget to napi_consume_skb()
+    https://git.kernel.org/netdev/net-next/c/0625dff38b17
+  - [net-next,v5,3/9] tsnep: Do not print DMA mapping error
+    https://git.kernel.org/netdev/net-next/c/95337b938476
+  - [net-next,v5,4/9] tsnep: Add XDP TX support
+    https://git.kernel.org/netdev/net-next/c/d24bc0bcbbff
+  - [net-next,v5,5/9] tsnep: Subtract TSNEP_RX_INLINE_METADATA_SIZE once
+    https://git.kernel.org/netdev/net-next/c/59d562aa1983
+  - [net-next,v5,6/9] tsnep: Prepare RX buffer for XDP support
+    https://git.kernel.org/netdev/net-next/c/cc3e254f9443
+  - [net-next,v5,7/9] tsnep: Add RX queue info for XDP support
+    https://git.kernel.org/netdev/net-next/c/e77832abd90a
+  - [net-next,v5,8/9] tsnep: Add XDP RX support
+    https://git.kernel.org/netdev/net-next/c/65b28c810035
+  - [net-next,v5,9/9] tsnep: Support XDP BPF program setup
+    https://git.kernel.org/netdev/net-next/c/f0f6460f9130
 
-Reported-by: syzbot+bbd35b345c7cab0d9a08@syzkaller.appspotmail.com
-Fixes: 0b2c59720e65 ("l2tp: close all race conditions in l2tp_tunnel_register()")
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+
