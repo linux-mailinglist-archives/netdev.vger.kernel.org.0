@@ -2,170 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBB9F67242D
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 17:52:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B24D67244F
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 17:58:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230051AbjARQw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 11:52:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58154 "EHLO
+        id S230340AbjARQ6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 11:58:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229706AbjARQw4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 11:52:56 -0500
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5F97A5D3
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 08:52:55 -0800 (PST)
-Received: by mail-il1-f197.google.com with SMTP id n18-20020a056e02101200b0030f2b79c2ffso2276309ilj.20
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 08:52:55 -0800 (PST)
+        with ESMTP id S230336AbjARQ55 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 11:57:57 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D5146D4D
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 08:57:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1674061027;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=kps1z9ixd0lDxco9/OkjAqqpIKVmg5Dst50L33D/YhY=;
+        b=N2J4xJOg3en3lhV1LPq5xo0ukY8/IItclwi2gQOYSE17P65U7T95OTb/ZvOQAMkxHJx+b2
+        F4Y3blHLaUMspHFKBOThMcDK1GDNZZNgJajKl033QhOeGDUssHV8Mf6sIz1aRqq7N45Ryz
+        Iwm29qBhV5omos+ldXzop0x1d2w7uwA=
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
+ [209.85.210.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-373-XaNrFmsCPN2KBnpN6fdJcQ-1; Wed, 18 Jan 2023 11:57:06 -0500
+X-MC-Unique: XaNrFmsCPN2KBnpN6fdJcQ-1
+Received: by mail-ot1-f69.google.com with SMTP id bu27-20020a0568300d1b00b006865fffa6d7so329769otb.14
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 08:57:05 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=CUF80VzlHqe0u3cUtU7I01bid/TGucfa6cXL81Xyavo=;
-        b=wCD/PP5PydMrKSEjQmSUpFDkatmpNp46fwRa7UeK07m0gpa+OKunVr6md51SeC+0fH
-         SVhq1u1ZOEQnHEE6b5RaCCLSvaYpd2Y3eXjoa9xp/mGjyPcqgESOmngiCTpqkYupMe8X
-         olLLAFTmrGSohtlFt93BwIEY2M/d33+3P/D4B0b59+6BD65gp62J5BzcPCgpJqljmJWE
-         Hn9EmJ+eKjDKHden6Ili8BmE1s3mjrsktGCjdIJ+SpS/qMeDmIBTl1MQ/+VTaP6fzsV/
-         bEmURlfnq0rBMlBj3KQUrFDDerbDJ/Isb1lA05MPsMj6T04kogGDuBz+hwG7JGUuhQlN
-         gG2g==
-X-Gm-Message-State: AFqh2kpSuKm8bcFBjeHirLye23STJRfOSyWBCcs6+yohrK8HuCwN0URK
-        oMx0FOOp7Ho8yc0slWN7zj5pL009XCt3FwVOJo2Q1CwQYRND
-X-Google-Smtp-Source: AMrXdXv08pIf4C9Y2+YsDPxfNJC1X8DT8RXxxyXWaYvzbCwU0ndKM7Z37YkBcjrAb/Dv/q51cGKWGjHyPdN1d5thBzAsBPbCEwwl
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=kps1z9ixd0lDxco9/OkjAqqpIKVmg5Dst50L33D/YhY=;
+        b=BuIVKFNeKQw+VPBXqD8purmVCNC1XnS7CuioiQYTf/fxddImr9PbL2UqwscArwNO6y
+         9jDrLcPrKhC6VG4n12WqIlu2NyZ2C32bma549ffr0oyj5IccKzoA0Vj2tIYBirNghNSM
+         ki1eiysoBHThMCvwr6gtHVoZ5kokx7rCBYRLteykXhIaJBN4im5J2CF/EbslR7c6RkBW
+         oCVZe/ydFpyk/28wyES04gNTYvtEd3U/UHhCqgGCFapUlMAKJGriG9ufYA6puEmRwCju
+         C9SqjsGubxg4jeL0CNu6SG4MuGAHBIlgxYMFgYThK+4k4F4WpxCHGcIC+TVXERunFUT5
+         UOsg==
+X-Gm-Message-State: AFqh2kqiS7GtwAdDsjoqKioL2/ttiI4Ji55MJeMJiYO8i7Fb5mLwnWWb
+        iE7wE7HveWloq3aJEIpmgbjkzygWwqxG50Z/6L6b0F9PoRJonmmfMa3bkJElhFfPdvkplcAhSE/
+        /j3pVzGHLSGLw1UF+
+X-Received: by 2002:a4a:1843:0:b0:4f2:8fa2:acda with SMTP id 64-20020a4a1843000000b004f28fa2acdamr3678868ooo.5.1674061023631;
+        Wed, 18 Jan 2023 08:57:03 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXupkdVG/yfD1cPihjSS9PG73ekCsefEWVRwlr9j6832liTFaRdIJ5Wb9zlCzZCcuDSscvm3Sw==
+X-Received: by 2002:a4a:1843:0:b0:4f2:8fa2:acda with SMTP id 64-20020a4a1843000000b004f28fa2acdamr3678860ooo.5.1674061023348;
+        Wed, 18 Jan 2023 08:57:03 -0800 (PST)
+Received: from halaney-x13s.attlocal.net ([2600:1700:1ff0:d0e0::21])
+        by smtp.gmail.com with ESMTPSA id i23-20020a4a8d97000000b004a0ad937ccdsm6365174ook.1.2023.01.18.08.57.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Jan 2023 08:57:02 -0800 (PST)
+From:   Andrew Halaney <ahalaney@redhat.com>
+To:     davem@davemloft.net
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mcoquelin.stm32@gmail.com,
+        richardcochran@gmail.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        vee.khee.wong@linux.intel.com, noor.azura.ahmad.tarmizi@intel.com,
+        vijayakannan.ayyathurai@intel.com, michael.wei.hong.sit@intel.com,
+        Andrew Halaney <ahalaney@redhat.com>,
+        Ning Cai <ncai@quicinc.com>
+Subject: [PATCH net RESEND] net: stmmac: enable all safety features by default
+Date:   Wed, 18 Jan 2023 10:56:38 -0600
+Message-Id: <20230118165638.1383764-1-ahalaney@redhat.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:4410:b0:3a5:e65b:5d57 with SMTP id
- bp16-20020a056638441000b003a5e65b5d57mr605002jab.305.1674060775129; Wed, 18
- Jan 2023 08:52:55 -0800 (PST)
-Date:   Wed, 18 Jan 2023 08:52:55 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d58eae05f28ca51f@google.com>
-Subject: [syzbot] kernel BUG in ip_frag_next
-From:   syzbot <syzbot+c8a2e66e37eee553c4fd@syzkaller.appspotmail.com>
-To:     bpf@vger.kernel.org, brouer@redhat.com, davem@davemloft.net,
-        dsahern@kernel.org, edumazet@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, saeed@kernel.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+In the original implementation of dwmac5
+commit 8bf993a5877e ("net: stmmac: Add support for DWMAC5 and implement Safety Features")
+all safety features were enabled by default.
 
-syzbot found the following issue on:
+Later it seems some implementations didn't have support for all the
+features, so in
+commit 5ac712dcdfef ("net: stmmac: enable platform specific safety features")
+the safety_feat_cfg structure was added to the callback and defined for
+some platforms to selectively enable these safety features.
 
-HEAD commit:    0c68c8e5ec68 net: mdio: cavium: Remove unneeded simicolons
-git tree:       net-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=147c7051480000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4695869845c5f393
-dashboard link: https://syzkaller.appspot.com/bug?extid=c8a2e66e37eee553c4fd
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=173fca39480000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=107ba0a9480000
+The problem is that only certain platforms were given that software
+support. If the automotive safety package bit is set in the hardware
+features register the safety feature callback is called for the platform,
+and for platforms that didn't get a safety_feat_cfg defined this results
+in the following NULL pointer dereference:
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/15c191498614/disk-0c68c8e5.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/7c4c9368d89c/vmlinux-0c68c8e5.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/083770efc7c4/bzImage-0c68c8e5.xz
+[    7.933303] Call trace:
+[    7.935812]  dwmac5_safety_feat_config+0x20/0x170 [stmmac]
+[    7.941455]  __stmmac_open+0x16c/0x474 [stmmac]
+[    7.946117]  stmmac_open+0x38/0x70 [stmmac]
+[    7.950414]  __dev_open+0x100/0x1dc
+[    7.954006]  __dev_change_flags+0x18c/0x204
+[    7.958297]  dev_change_flags+0x24/0x6c
+[    7.962237]  do_setlink+0x2b8/0xfa4
+[    7.965827]  __rtnl_newlink+0x4ec/0x840
+[    7.969766]  rtnl_newlink+0x50/0x80
+[    7.973353]  rtnetlink_rcv_msg+0x12c/0x374
+[    7.977557]  netlink_rcv_skb+0x5c/0x130
+[    7.981500]  rtnetlink_rcv+0x18/0x2c
+[    7.985172]  netlink_unicast+0x2e8/0x340
+[    7.989197]  netlink_sendmsg+0x1a8/0x420
+[    7.993222]  ____sys_sendmsg+0x218/0x280
+[    7.997249]  ___sys_sendmsg+0xac/0x100
+[    8.001103]  __sys_sendmsg+0x84/0xe0
+[    8.004776]  __arm64_sys_sendmsg+0x24/0x30
+[    8.008983]  invoke_syscall+0x48/0x114
+[    8.012840]  el0_svc_common.constprop.0+0xcc/0xec
+[    8.017665]  do_el0_svc+0x38/0xb0
+[    8.021071]  el0_svc+0x2c/0x84
+[    8.024212]  el0t_64_sync_handler+0xf4/0x120
+[    8.028598]  el0t_64_sync+0x190/0x194
 
-The issue was bisected to:
+Go back to the original behavior, if the automotive safety package
+is found to be supported in hardware enable all the features unless
+safety_feat_cfg is passed in saying this particular platform only
+supports a subset of the features.
 
-commit eedade12f4cb7284555c4c0314485e9575c70ab7
-Author: Jesper Dangaard Brouer <brouer@redhat.com>
-Date:   Fri Jan 13 13:52:04 2023 +0000
-
-    net: kfree_skb_list use kmem_cache_free_bulk
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1136ec41480000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=1336ec41480000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1536ec41480000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+c8a2e66e37eee553c4fd@syzkaller.appspotmail.com
-Fixes: eedade12f4cb ("net: kfree_skb_list use kmem_cache_free_bulk")
-
-raw_sendmsg: syz-executor409 forgot to set AF_INET. Fix it!
-------------[ cut here ]------------
-kernel BUG at net/ipv4/ip_output.c:724!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 5073 Comm: syz-executor409 Not tainted 6.2.0-rc3-syzkaller-00457-g0c68c8e5ec68 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/12/2023
-RIP: 0010:ip_frag_next+0xa03/0xa50 net/ipv4/ip_output.c:724
-Code: e8 82 b1 86 f9 e9 95 fa ff ff 48 8b 3c 24 e8 74 b1 86 f9 e9 5b f8 ff ff 4c 89 ff e8 67 b1 86 f9 e9 1f f8 ff ff e8 3d ad 38 f9 <0f> 0b 48 89 54 24 20 4c 89 44 24 18 e8 4c b1 86 f9 48 8b 54 24 20
-RSP: 0018:ffffc90003a6f6b8 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffffc90003a6f818 RCX: 0000000000000000
-RDX: ffff8880772c0000 RSI: ffffffff8848a583 RDI: 0000000000000005
-RBP: 00000000000005c8 R08: 0000000000000005 R09: 0000000000000000
-R10: 00000000fffffff2 R11: 0000000000000000 R12: ffff888026841dc0
-R13: ffffc90003a6f81c R14: 00000000fffffff2 R15: ffffc90003a6f830
-FS:  0000555555b08300(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00005622b70166a8 CR3: 000000007780f000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- ip_do_fragment+0x873/0x17d0 net/ipv4/ip_output.c:902
- ip_fragment.constprop.0+0x16b/0x240 net/ipv4/ip_output.c:581
- __ip_finish_output net/ipv4/ip_output.c:304 [inline]
- __ip_finish_output+0x2de/0x650 net/ipv4/ip_output.c:288
- ip_finish_output+0x31/0x280 net/ipv4/ip_output.c:316
- NF_HOOK_COND include/linux/netfilter.h:291 [inline]
- ip_mc_output+0x21f/0x710 net/ipv4/ip_output.c:415
- dst_output include/net/dst.h:444 [inline]
- ip_local_out net/ipv4/ip_output.c:126 [inline]
- ip_send_skb net/ipv4/ip_output.c:1586 [inline]
- ip_push_pending_frames+0x129/0x2b0 net/ipv4/ip_output.c:1606
- raw_sendmsg+0x1338/0x2df0 net/ipv4/raw.c:645
- inet_sendmsg+0x9d/0xe0 net/ipv4/af_inet.c:827
- sock_sendmsg_nosec net/socket.c:722 [inline]
- sock_sendmsg+0xde/0x190 net/socket.c:745
- __sys_sendto+0x23a/0x340 net/socket.c:2142
- __do_sys_sendto net/socket.c:2154 [inline]
- __se_sys_sendto net/socket.c:2150 [inline]
- __x64_sys_sendto+0xe1/0x1b0 net/socket.c:2150
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f8efa22c499
-Code: 28 c3 e8 4a 15 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffd43ed3198 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 00007ffd43ed31b8 RCX: 00007f8efa22c499
-RDX: 000000000000fcf2 RSI: 0000000020000380 RDI: 0000000000000003
-RBP: 0000000000000003 R08: 0000000020001380 R09: 000000000000006e
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffd43ed31c0
-R13: 00007ffd43ed31e0 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:ip_frag_next+0xa03/0xa50 net/ipv4/ip_output.c:724
-Code: e8 82 b1 86 f9 e9 95 fa ff ff 48 8b 3c 24 e8 74 b1 86 f9 e9 5b f8 ff ff 4c 89 ff e8 67 b1 86 f9 e9 1f f8 ff ff e8 3d ad 38 f9 <0f> 0b 48 89 54 24 20 4c 89 44 24 18 e8 4c b1 86 f9 48 8b 54 24 20
-RSP: 0018:ffffc90003a6f6b8 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffffc90003a6f818 RCX: 0000000000000000
-RDX: ffff8880772c0000 RSI: ffffffff8848a583 RDI: 0000000000000005
-RBP: 00000000000005c8 R08: 0000000000000005 R09: 0000000000000000
-R10: 00000000fffffff2 R11: 0000000000000000 R12: ffff888026841dc0
-R13: ffffc90003a6f81c R14: 00000000fffffff2 R15: ffffc90003a6f830
-FS:  0000555555b08300(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000557162e92068 CR3: 000000007780f000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
+Fixes: 5ac712dcdfef ("net: stmmac: enable platform specific safety features")
+Reported-by: Ning Cai <ncai@quicinc.com>
+Signed-off-by: Andrew Halaney <ahalaney@redhat.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+RESEND: with some Intel folks on Cc this time as requested by Jakub!
+
+I've been working on a newer Qualcomm platform (sa8540p-ride) which has
+a variant of dwmac5 in it. This patch is something Ning stumbled on when
+adding some support for it downstream, and has been in my queue as I try
+and get some support ready for review on list upstream.
+
+Since it isn't really related to the particular hardware I decided to
+pop it on list now. Please let me know if instead of enabling by default
+(which the original implementation did and is why I went that route) a
+message like "Safety features detected but not enabled in software" is
+preferred and platforms are skipped unless they opt-in for enablement.
+
+Thanks,
+Andrew
+
+ drivers/net/ethernet/stmicro/stmmac/dwmac5.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac5.c b/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
+index 9c2d40f853ed..413f66017219 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
+@@ -186,11 +186,25 @@ static void dwmac5_handle_dma_err(struct net_device *ndev,
+ int dwmac5_safety_feat_config(void __iomem *ioaddr, unsigned int asp,
+ 			      struct stmmac_safety_feature_cfg *safety_feat_cfg)
+ {
++	struct stmmac_safety_feature_cfg all_safety_feats = {
++		.tsoee = 1,
++		.mrxpee = 1,
++		.mestee = 1,
++		.mrxee = 1,
++		.mtxee = 1,
++		.epsi = 1,
++		.edpp = 1,
++		.prtyen = 1,
++		.tmouten = 1,
++	};
+ 	u32 value;
+ 
+ 	if (!asp)
+ 		return -EINVAL;
+ 
++	if (!safety_feat_cfg)
++		safety_feat_cfg = &all_safety_feats;
++
+ 	/* 1. Enable Safety Features */
+ 	value = readl(ioaddr + MTL_ECC_CONTROL);
+ 	value |= MEEAO; /* MTL ECC Error Addr Status Override */
+-- 
+2.39.0
+
