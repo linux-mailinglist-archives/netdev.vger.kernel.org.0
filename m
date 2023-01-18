@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88AD1671691
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 09:52:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC56867169B
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 09:53:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229669AbjARIwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 03:52:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54006 "EHLO
+        id S229589AbjARIxD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 03:53:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229864AbjARIwX (ORCPT
+        with ESMTP id S229898AbjARIwX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 03:52:23 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC94A9AA9E
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 00:04:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103809AAAB
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 00:04:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EBBD616FC
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 08:04:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B892FC43392;
-        Wed, 18 Jan 2023 08:04:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9357161512
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 08:04:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCA9BC433F0;
+        Wed, 18 Jan 2023 08:04:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674029071;
-        bh=FMqvL9QE9l7ezWvLJjyYowSptHhF9HlQ/SnoqbZbQQk=;
+        s=k20201202; t=1674029073;
+        bh=/wqtILl+wrprfO6Mm2YFZna2PhJDHNaUqaRKix0Fj5o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S57e3cooDec0esvmoUkyjK9fJfRX5qeQqVmr+AP900VEdjTr4h3YLFspW9O8Rse19
-         gq8HuAKV1/GtbxgorX2ki0ZMfIgNK9nU0wO3QWhxbAN4Ihbk/p9JmuvDw8uym8SSon
-         7CJEnKB3vsgSRnD+L9HLpyz8y6Ffr+72Z21toixN4LFadbFOj2nGq6H9pqM7ZP52o+
-         PcdKq7d04pstG+6KaIcavcOElu04jKJa3GKdDFw1VyNRRKO/zvkHgKBVEkzdw3UGcB
-         cCVooT6UIi9fNSkJwR1lthYLmmNcBeDEjzviAyyQkuYwDR6j5ZSsyhDsNsoPzrmUf7
-         X10uLwYs8+7Ag==
+        b=EngMJzn//JLKRSXvr66KWYlpS0KWn9n4JRXEKYlPJVZ1rbF1hs7MiHfjk93nDgefV
+         xWKcQAsR8JavVTYxwkbxWprMOBh55m9WM9Cw5OjTY4PVERTW68HsqXaawEXICMd3YW
+         pkQz0K4rWCtxcA/AXIGFe7hsw95bN8SlHmPSHGNCV/VPEZZwIwILfNhbxfv0ZFRCWO
+         E0me7M+8bxoRwo+Jw5j+qN0Yi9X8GVx6NiX42fbKAb94s9p3QILawtzRK15bJ7Lg+A
+         OjsbtrmIPQj18bxsYqYT3KksyasmVd0wNQn4jVaFkfwnfjhbbSsJYqeXvzFfet7hpk
+         uTwaB3cL8oJog==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,12 +38,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
-        Adham Faris <afaris@nvidia.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <error27@gmail.com>
-Subject: [net 03/10] net/mlx5e: Remove redundant xsk pointer check in mlx5e_mpwrq_validate_xsk
-Date:   Wed, 18 Jan 2023 00:04:07 -0800
-Message-Id: <20230118080414.77902-4-saeed@kernel.org>
+        Maor Dickman <maord@nvidia.com>, Eli Cohen <elic@nvidia.com>
+Subject: [net 04/10] net/mlx5: E-switch, Fix setting of reserved fields on MODIFY_SCHEDULING_ELEMENT
+Date:   Wed, 18 Jan 2023 00:04:08 -0800
+Message-Id: <20230118080414.77902-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230118080414.77902-1-saeed@kernel.org>
 References: <20230118080414.77902-1-saeed@kernel.org>
@@ -58,50 +56,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Adham Faris <afaris@nvidia.com>
+From: Maor Dickman <maord@nvidia.com>
 
-This validation function is relevant only for XSK cases, hence it
-assumes to be called only with xsk != NULL.
-Thus checking for invalid xsk pointer is redundant and misleads static
-code analyzers.
-This commit removes redundant xsk pointer check.
+According to HW spec element_type, element_attributes and parent_element_id fields
+should be reserved (0x0) when calling MODIFY_SCHEDULING_ELEMENT command.
 
-This solves the following smatch warning:
-drivers/net/ethernet/mellanox/mlx5/core/en/params.c:481
-mlx5e_mpwrq_validate_xsk() error: we previously assumed 'xsk' could be
-null (see line 478)
+This patch remove initialization of these fields when calling the command.
 
-Fixes: 6470d2e7e8ed ("net/mlx5e: xsk: Use KSM for unaligned XSK")
-Signed-off-by: Adham Faris <afaris@nvidia.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <error27@gmail.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Fixes: bd77bf1cb595 ("net/mlx5: Add SRIOV VF max rate configuration support")
+Signed-off-by: Maor Dickman <maord@nvidia.com>
+Reviewed-by: Eli Cohen <elic@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/esw/qos.c  | 18 +++---------------
+ 1 file changed, 3 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index 585bdc8383ee..4ad19c981294 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -578,7 +578,6 @@ int mlx5e_mpwrq_validate_xsk(struct mlx5_core_dev *mdev, struct mlx5e_params *pa
- {
- 	enum mlx5e_mpwrq_umr_mode umr_mode = mlx5e_mpwrq_umr_mode(mdev, xsk);
- 	u8 page_shift = mlx5e_mpwrq_page_shift(mdev, xsk);
--	bool unaligned = xsk ? xsk->unaligned : false;
- 	u16 max_mtu_pkts;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
+index 4f8a24d84a86..75015d370922 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
+@@ -22,15 +22,13 @@ struct mlx5_esw_rate_group {
+ };
  
- 	if (!mlx5e_check_fragmented_striding_rq_cap(mdev, page_shift, umr_mode))
-@@ -591,7 +590,7 @@ int mlx5e_mpwrq_validate_xsk(struct mlx5_core_dev *mdev, struct mlx5e_params *pa
- 	 * needed number of WQEs exceeds the maximum.
- 	 */
- 	max_mtu_pkts = min_t(u8, MLX5E_PARAMS_MAXIMUM_LOG_RQ_SIZE,
--			     mlx5e_mpwrq_max_log_rq_pkts(mdev, page_shift, unaligned));
-+			     mlx5e_mpwrq_max_log_rq_pkts(mdev, page_shift, xsk->unaligned));
- 	if (params->log_rq_mtu_frames > max_mtu_pkts) {
- 		mlx5_core_err(mdev, "Current RQ length %d is too big for XSK with given frame size %u\n",
- 			      1 << params->log_rq_mtu_frames, xsk->chunk_size);
+ static int esw_qos_tsar_config(struct mlx5_core_dev *dev, u32 *sched_ctx,
+-			       u32 parent_ix, u32 tsar_ix,
+-			       u32 max_rate, u32 bw_share)
++			       u32 tsar_ix, u32 max_rate, u32 bw_share)
+ {
+ 	u32 bitmask = 0;
+ 
+ 	if (!MLX5_CAP_GEN(dev, qos) || !MLX5_CAP_QOS(dev, esw_scheduling))
+ 		return -EOPNOTSUPP;
+ 
+-	MLX5_SET(scheduling_context, sched_ctx, parent_element_id, parent_ix);
+ 	MLX5_SET(scheduling_context, sched_ctx, max_average_bw, max_rate);
+ 	MLX5_SET(scheduling_context, sched_ctx, bw_share, bw_share);
+ 	bitmask |= MODIFY_SCHEDULING_ELEMENT_IN_MODIFY_BITMASK_MAX_AVERAGE_BW;
+@@ -51,7 +49,7 @@ static int esw_qos_group_config(struct mlx5_eswitch *esw, struct mlx5_esw_rate_g
+ 	int err;
+ 
+ 	err = esw_qos_tsar_config(dev, sched_ctx,
+-				  esw->qos.root_tsar_ix, group->tsar_ix,
++				  group->tsar_ix,
+ 				  max_rate, bw_share);
+ 	if (err)
+ 		NL_SET_ERR_MSG_MOD(extack, "E-Switch modify group TSAR element failed");
+@@ -67,23 +65,13 @@ static int esw_qos_vport_config(struct mlx5_eswitch *esw,
+ 				struct netlink_ext_ack *extack)
+ {
+ 	u32 sched_ctx[MLX5_ST_SZ_DW(scheduling_context)] = {};
+-	struct mlx5_esw_rate_group *group = vport->qos.group;
+ 	struct mlx5_core_dev *dev = esw->dev;
+-	u32 parent_tsar_ix;
+-	void *vport_elem;
+ 	int err;
+ 
+ 	if (!vport->qos.enabled)
+ 		return -EIO;
+ 
+-	parent_tsar_ix = group ? group->tsar_ix : esw->qos.root_tsar_ix;
+-	MLX5_SET(scheduling_context, sched_ctx, element_type,
+-		 SCHEDULING_CONTEXT_ELEMENT_TYPE_VPORT);
+-	vport_elem = MLX5_ADDR_OF(scheduling_context, sched_ctx,
+-				  element_attributes);
+-	MLX5_SET(vport_element, vport_elem, vport_number, vport->vport);
+-
+-	err = esw_qos_tsar_config(dev, sched_ctx, parent_tsar_ix, vport->qos.esw_tsar_ix,
++	err = esw_qos_tsar_config(dev, sched_ctx, vport->qos.esw_tsar_ix,
+ 				  max_rate, bw_share);
+ 	if (err) {
+ 		esw_warn(esw->dev,
 -- 
 2.39.0
 
