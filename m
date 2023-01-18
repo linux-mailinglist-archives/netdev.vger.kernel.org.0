@@ -2,103 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F33626719A4
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 11:51:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ABF76719BF
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 11:56:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229685AbjARKvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 05:51:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43520 "EHLO
+        id S229606AbjARK4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 05:56:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229883AbjARKsu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 05:48:50 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 511621CF74;
-        Wed, 18 Jan 2023 01:55:55 -0800 (PST)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30I9BYtA029046;
-        Wed, 18 Jan 2023 09:55:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=RwVgZ4gAgChB9dQuFg/BrH3z1bCoNoJ9VOyOuUBY96Y=;
- b=LprhYLJ+Am8oKeerrnGngONd4DmlFlTLoa54EYfTqDK64Gz1+VH5QOntmlO1Vb6YEVQu
- j+2EUq+QRPtnpszxA9mErSZyt68J8cUDCBJpua0Wj0O6Tgkomdj5Y85t8beHVX4nZvkb
- zQMoXPQEXr9UYqOWql7InuRgdu8CDoBxx9yomtrwMaMPVmw0bAhvBy//CRUGQRkrfWsG
- xPhpwZSNMNzwJO1UPqChMcNP/FubKhc0NfSkehMsVUvBY9a6CPWz7Vy/1ad6Kd6Q/+/a
- /RFH+pnfR1EiX5wn0BANMRzFVHLPxUiQh7FJqVbNB5n/u/JZNUf6cLJUrbJzc3GCUICA IQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3n6dwv8yhs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 Jan 2023 09:55:46 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 30I9ZwU2023772;
-        Wed, 18 Jan 2023 09:55:46 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3n6dwv8yh7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 Jan 2023 09:55:45 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 30I2iYqw030244;
-        Wed, 18 Jan 2023 09:55:43 GMT
-Received: from smtprelay07.fra02v.mail.ibm.com ([9.218.2.229])
-        by ppma02fra.de.ibm.com (PPS) with ESMTPS id 3n3m16kpgu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 Jan 2023 09:55:43 +0000
-Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
-        by smtprelay07.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 30I9tdTi50266434
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 18 Jan 2023 09:55:39 GMT
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CF01720040;
-        Wed, 18 Jan 2023 09:55:39 +0000 (GMT)
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C2D5A2004E;
-        Wed, 18 Jan 2023 09:55:38 +0000 (GMT)
-Received: from [9.179.3.165] (unknown [9.179.3.165])
-        by smtpav03.fra02v.mail.ibm.com (Postfix) with ESMTP;
-        Wed, 18 Jan 2023 09:55:38 +0000 (GMT)
-Message-ID: <d8d9be9e-079a-6c44-647e-cc2afe4578c8@linux.ibm.com>
-Date:   Wed, 18 Jan 2023 10:55:35 +0100
+        with ESMTP id S229993AbjARKxB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 05:53:01 -0500
+Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 498CF8100B;
+        Wed, 18 Jan 2023 02:01:46 -0800 (PST)
+Received: from mwalle01.sab.local (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.3ffe.de (Postfix) with ESMTPSA id A0F67125C;
+        Wed, 18 Jan 2023 11:01:43 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1674036104;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=mJlXAa/qkylSd69OPqPPuscGxs/BZYHJRgJ6yHTXKPg=;
+        b=VaR2ztJS25J2+GUfFLOhG2pduVTooXBz0fDVkqPYjDtmtBuK8u3CKFU+dCFUgrwrNcpZSS
+        xqxvsR7Bk6WX3t/v1YyPzUaJSNzLOehrazKHtwxm7ZTv7aDkl0d7N4xUWWFqUHqWRHM2oS
+        xMI1F4W0V9wL9zlAu21aClmH7pWuPublyh4GOjk2/y6nhEVHh87g7j83e6KZQVieB98SmY
+        SkKV4IIXSBo5J5r/tD0/deEP7t51oHQLSPm5AF3F5jiKOhyJ/xqaAEywzt0PNyp6kWDAOt
+        oc4njm15cQ4lf/w51vdgNUpIjVDItdFirWL0zQGTyS+rjWAhT+PJY6pew2RICQ==
+From:   Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next v2 0/6] net: phy: Remove probe_capabilities
+Date:   Wed, 18 Jan 2023 11:01:35 +0100
+Message-Id: <20230116-net-next-remove-probe-capabilities-v2-0-15513b05e1f4@walle.cc>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [net-next 8/8] net/smc: De-tangle ism and smc device
- initialization
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Thorsten Winkler <twinkler@linux.ibm.com>,
-        Stefan Raspl <raspl@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Nils Hoppmann <niho@linux.ibm.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Tony Lu <tonylu@linux.alibaba.com>,
-        Wen Gu <guwen@linux.alibaba.com>
-References: <20230116092712.10176-1-jaka@linux.ibm.com>
- <20230116092712.10176-9-jaka@linux.ibm.com>
- <20230117192821.6bab7f24@kernel.org>
-From:   Jan Karcher <jaka@linux.ibm.com>
-Organization: IBM - Network Linux on Z
-In-Reply-To: <20230117192821.6bab7f24@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: p1UwZRUjlgGJwcy-K2eKKmn5cFEEAyuL
-X-Proofpoint-GUID: MY8x5FtmeG7hijVJvw6Z1hfzTPZAppZm
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.923,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-01-18_04,2023-01-17_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- priorityscore=1501 spamscore=0 impostorscore=0 bulkscore=0 phishscore=0
- mlxlogscore=849 adultscore=0 clxscore=1015 lowpriorityscore=0 mlxscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301180082
+X-B4-Tracking: v=1; b=H4sIAH/Dx2MC/5WOQQ6CMBBFr0Jm7ZiWIoor72FYTMsgTaCQtkEM4
+ e4WEg/gYhY/L//NXyGwtxzgnq3gebbBji6F/JSB6ci9GG2TMuQiV0LKEh3HdEtEz8M4M05+1IyG
+ JtK2tzG5UKimELJQVWtKSCJNgVF7cqbbVQOFyH4Hk+fWLsf3J/zEUCfS2RBH/zlmzfLg/yyYJQq
+ 8EOXVVd0oFR9v6ns+GwP1tm1f2oxXifYAAAA=
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-aspeed@lists.ozlabs.org, Andrew Lunn <andrew@lunn.ch>,
+        Michael Walle <michael@walle.cc>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+X-Mailer: b4 0.11.1
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -106,19 +77,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+With all the drivers which used .probe_capabilities converted to the
+new c45 MDIO access methods, we can now decide based upon these whether
+a bus driver supports c45 and we can get rid of the not widely used
+probe_capabilites.
 
+Unfortunately, due to a now broader support of c45 scans, this will
+trigger a bug on some boards with a (c22-only) Micrel PHY. These PHYs
+don't ignore c45 accesses correctly, thinking they are addressed
+themselves and distrupt the MDIO access. To avoid this, a blacklist
+for c45 scans is introduced.
 
-On 18/01/2023 04:28, Jakub Kicinski wrote:
-> On Mon, 16 Jan 2023 10:27:12 +0100 Jan Karcher wrote:
->> From: Stefan Raspl <raspl@linux.ibm.com>
->>
->> The struct device for ISM devices was part of struct smcd_dev. Move to
->> struct ism_dev, provide a new API call in struct smcd_ops, and convert
->> existing SMCD code accordingly.
->> Furthermore, remove struct smcd_dev from struct ism_dev.
->> This is the final part of a bigger overhaul of the interfaces between SMC
->> and ISM.
-> 
-> breaks allmodconfig build for x86
+To: Heiner Kallweit <hkallweit1@gmail.com>
+To: Russell King <linux@armlinux.org.uk>
+To: "David S. Miller" <davem@davemloft.net>
+To: Eric Dumazet <edumazet@google.com>
+To: Jakub Kicinski <kuba@kernel.org>
+To: Paolo Abeni <pabeni@redhat.com>
+To: Felix Fietkau <nbd@nbd.name>
+To: John Crispin <john@phrozen.org>
+To: Sean Wang <sean.wang@mediatek.com>
+To: Mark Lee <Mark-MC.Lee@mediatek.com>
+To: Lorenzo Bianconi <lorenzo@kernel.org>
+To: Matthias Brugger <matthias.bgg@gmail.com>
+To: Bryan Whitehead <bryan.whitehead@microchip.com>
+To: UNGLinuxDriver@microchip.com
+To: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+To: Alexandre Torgue <alexandre.torgue@foss.st.com>
+To: Jose Abreu <joabreu@synopsys.com>
+To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+To: Joel Stanley <joel@jms.id.au>
+To: Andrew Jeffery <andrew@aj.id.au>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-mediatek@lists.infradead.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-aspeed@lists.ozlabs.org
+Cc: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Michael Walle <michael@walle.cc>
 
-Good catch. Found it and working on a fix. Going to send a new version.
+---
+- Link to v1: https://lore.kernel.org/r/20230116-net-next-remove-probe-capabilities-v1-0-5aa29738a023@walle.cc
+
+---
+Andrew Lunn (6):
+      net: mdio: Move mdiobus_scan() within file
+      net: mdio: Rework scanning of bus ready for quirks
+      net: mdio: Add workaround for Micrel PHYs which are not C45 compatible
+      net: mdio: scan bus based on bus capabilities for C22 and C45
+      net: phy: Decide on C45 capabilities based on presence of method
+      net: phy: Remove probe_capabilities
+
+ drivers/net/ethernet/adi/adin1110.c               |   1 -
+ drivers/net/ethernet/freescale/xgmac_mdio.c       |   1 -
+ drivers/net/ethernet/marvell/pxa168_eth.c         |   2 +-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c       |   1 -
+ drivers/net/ethernet/microchip/lan743x_main.c     |   2 -
+ drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c |   3 -
+ drivers/net/mdio/mdio-aspeed.c                    |   1 -
+ drivers/net/phy/mdio_bus.c                        | 197 +++++++++++++++-------
+ drivers/net/phy/phy_device.c                      |   2 +-
+ include/linux/micrel_phy.h                        |   2 +
+ include/linux/phy.h                               |  10 +-
+ 11 files changed, 140 insertions(+), 82 deletions(-)
+---
+base-commit: c12e2e5b76b2e739ccdf196bee960412b45d5f85
+change-id: 20230116-net-next-remove-probe-capabilities-03d401439fc6
+
+Best regards,
+-- 
+Michael Walle <michael@walle.cc>
