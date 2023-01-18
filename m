@@ -2,103 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9F6B671997
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 11:49:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFFA767199B
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 11:49:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229870AbjARKtb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 05:49:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43308 "EHLO
+        id S229925AbjARKth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 05:49:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230095AbjARKsa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 05:48:30 -0500
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 22D622ED63;
-        Wed, 18 Jan 2023 01:54:29 -0800 (PST)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net 1/1] netfilter: conntrack: handle tcp challenge acks during connection reuse
-Date:   Wed, 18 Jan 2023 10:54:24 +0100
-Message-Id: <20230118095424.885014-2-pablo@netfilter.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230118095424.885014-1-pablo@netfilter.org>
-References: <20230118095424.885014-1-pablo@netfilter.org>
+        with ESMTP id S230126AbjARKsc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 05:48:32 -0500
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DECDB30B06;
+        Wed, 18 Jan 2023 01:55:03 -0800 (PST)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 30I9siVc007299;
+        Wed, 18 Jan 2023 03:54:44 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1674035684;
+        bh=jD3wjH/fKK2EjFCvy9AQqLjvXfkPS+sIQoGZYKdZK18=;
+        h=From:To:CC:Subject:Date;
+        b=MYzqYayCRSaPCoct9pv1gBcdZJScwfiJGiYUN3D864OBmyCBEnV5CEyIMpMHDnUG1
+         Z2E5YsRisIRwGYVJSnNDO1yL1JSytIPdafR+t3vqMjjbd9HyNXGrjcTQmW+knih64W
+         QPBeZwSnW1ucION926ZQhouer038F7EF2B7jYrCs=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 30I9si9X036444
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 18 Jan 2023 03:54:44 -0600
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Wed, 18
+ Jan 2023 03:54:44 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Wed, 18 Jan 2023 03:54:44 -0600
+Received: from uda0492258.dhcp.ti.com (ileaxei01-snat.itg.ti.com [10.180.69.5])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 30I9se8f107670;
+        Wed, 18 Jan 2023 03:54:40 -0600
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <linux@armlinux.org.uk>, <pabeni@redhat.com>, <rogerq@kernel.org>,
+        <leon@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <vigneshr@ti.com>,
+        <srk@ti.com>, <s-vadapalli@ti.com>
+Subject: [PATCH net-next v3 0/2] Fix CPTS release action in am65-cpts driver
+Date:   Wed, 18 Jan 2023 15:24:37 +0530
+Message-ID: <20230118095439.114222-1-s-vadapalli@ti.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+Delete unreachable code in am65_cpsw_init_cpts() function, which was
+Reported-by: Leon Romanovsky <leon@kernel.org>
+at:
+https://lore.kernel.org/r/Y8aHwSnVK9+sAb24@unreal
 
-When a connection is re-used, following can happen:
-[ connection starts to close, fin sent in either direction ]
- > syn   # initator quickly reuses connection
- < ack   # peer sends a challenge ack
- > rst   # rst, sequence number == ack_seq of previous challenge ack
- > syn   # this syn is expected to pass
+Remove the devm action associated with am65_cpts_release() and invoke the
+function directly on the cleanup and exit paths.
 
-Problem is that the rst will fail window validation, so it gets
-tagged as invalid.
+Changes from v2:
+1. Drop Reviewed-by tag from Roger Quadros.
+2. Add cleanup patch for deleting unreachable error handling code in
+   am65_cpsw_init_cpts().
+3. Drop am65_cpsw_cpts_cleanup() function and directly invoke
+   am65_cpts_release().
 
-If ruleset drops such packets, we get repeated syn-retransmits until
-initator gives up or peer starts responding with syn/ack.
+Changes from v1:
+1. Fix the build issue when "CONFIG_TI_K3_AM65_CPTS" is not set. This
+   error was reported by kernel test robot <lkp@intel.com> at:
+   https://lore.kernel.org/r/202301142105.lt733Lt3-lkp@intel.com/
+2. Collect Reviewed-by tag from Roger Quadros.
 
-Before the commit indicated in the "Fixes" tag below this used to work:
+v2:
+https://lore.kernel.org/r/20230116044517.310461-1-s-vadapalli@ti.com/
+v1:
+https://lore.kernel.org/r/20230113104816.132815-1-s-vadapalli@ti.com/
 
-The challenge-ack made conntrack re-init state based on the challenge
-ack itself, so the following rst would pass window validation.
+Siddharth Vadapalli (2):
+  net: ethernet: ti: am65-cpsw: Delete unreachable error handling code
+  net: ethernet: ti: am65-cpsw/cpts: Fix CPTS release action
 
-Add challenge-ack support: If we get ack for syn, record the ack_seq,
-and then check if the rst sequence number matches the last ack number
-seen in reverse direction.
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c |  7 ++-----
+ drivers/net/ethernet/ti/am65-cpts.c      | 15 +++++----------
+ drivers/net/ethernet/ti/am65-cpts.h      |  5 +++++
+ 3 files changed, 12 insertions(+), 15 deletions(-)
 
-Fixes: c7aab4f17021 ("netfilter: nf_conntrack_tcp: re-init for syn packets only")
-Reported-by: Michal Tesar <mtesar@redhat.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nf_conntrack_proto_tcp.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
-
-diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
-index 656631083177..3ac1af6f59fc 100644
---- a/net/netfilter/nf_conntrack_proto_tcp.c
-+++ b/net/netfilter/nf_conntrack_proto_tcp.c
-@@ -1068,6 +1068,13 @@ int nf_conntrack_tcp_packet(struct nf_conn *ct,
- 				ct->proto.tcp.last_flags |=
- 					IP_CT_EXP_CHALLENGE_ACK;
- 		}
-+
-+		/* possible challenge ack reply to syn */
-+		if (old_state == TCP_CONNTRACK_SYN_SENT &&
-+		    index == TCP_ACK_SET &&
-+		    dir == IP_CT_DIR_REPLY)
-+			ct->proto.tcp.last_ack = ntohl(th->ack_seq);
-+
- 		spin_unlock_bh(&ct->lock);
- 		nf_ct_l4proto_log_invalid(skb, ct, state,
- 					  "packet (index %d) in dir %d ignored, state %s",
-@@ -1193,6 +1200,14 @@ int nf_conntrack_tcp_packet(struct nf_conn *ct,
- 			 * segments we ignored. */
- 			goto in_window;
- 		}
-+
-+		/* Reset in response to a challenge-ack we let through earlier */
-+		if (old_state == TCP_CONNTRACK_SYN_SENT &&
-+		    ct->proto.tcp.last_index == TCP_ACK_SET &&
-+		    ct->proto.tcp.last_dir == IP_CT_DIR_REPLY &&
-+		    ntohl(th->seq) == ct->proto.tcp.last_ack)
-+			goto in_window;
-+
- 		break;
- 	default:
- 		/* Keep compilers happy. */
 -- 
-2.30.2
+2.25.1
 
