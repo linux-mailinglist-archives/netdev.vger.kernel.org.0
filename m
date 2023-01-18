@@ -2,110 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7300D6718DF
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 11:24:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BA5A671903
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 11:36:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229842AbjARKYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 05:24:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53798 "EHLO
+        id S229518AbjARKf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 05:35:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbjARKYZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 05:24:25 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC642B2D04;
-        Wed, 18 Jan 2023 01:28:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674034132; x=1705570132;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=l27HwclIeNetABY6+nzs7YJaxeaFyHEyRmuPbaM03G8=;
-  b=HDxThLy8kTzCShiHxffNEa7AsAVQKfPHtGMWUGHBweT9NMM9VgMfp2G9
-   up/A/hcBowE2gC2VsEptY68HFtoXjtXWgOzIDnUswq4n6aIF2hEMwz/gJ
-   VIZNih0czKruV5J7OqhXFYI0zb4CpByS+XCWisEivEpG/tT8voZK6LJjZ
-   vL1AUIlQblc8D9LoUpEAkFSunX+AsOwguKMMOXM1ty/JMd5T/u9eaMxQ6
-   U6PrwnuqpFogrqmmt1rKobHp7/DVH7wQpkj23dexvwEiudcQoHjs5UJ0S
-   M3IlJ1F0+ipOAocp2zW53LAGu8f8uW/N7P9rSVYvbaQ+kbkZH6am79wdK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10593"; a="411179885"
-X-IronPort-AV: E=Sophos;i="5.97,224,1669104000"; 
-   d="scan'208";a="411179885"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2023 01:28:52 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10593"; a="723013897"
-X-IronPort-AV: E=Sophos;i="5.97,224,1669104000"; 
-   d="scan'208";a="723013897"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga008.fm.intel.com with ESMTP; 18 Jan 2023 01:28:50 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id D10A0368; Wed, 18 Jan 2023 11:29:24 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH v1 1/1] net: hns: Switch to use acpi_evaluate_dsm_typed()
-Date:   Wed, 18 Jan 2023 11:29:22 +0200
-Message-Id: <20230118092922.39426-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.39.0
+        with ESMTP id S229904AbjARKcv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 05:32:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D746BFF4C;
+        Wed, 18 Jan 2023 01:39:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 648296174A;
+        Wed, 18 Jan 2023 09:38:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A854C433F0;
+        Wed, 18 Jan 2023 09:38:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674034729;
+        bh=Wp7SIfyM1gO8OrC9XajKRdbO1OmnZftFUcrZn5tA//M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oyDTDalpqxaonpaJBV8oor4IuPzbrf2AdRuvJ1KPaGcugs0fU5jJJEV7/Hob5wec1
+         IOsWwltDfvPl4XGHckz02xs3iDFj0fr71qDZM8RixGS2IRZJUegZAPRBkygWX3+tBL
+         1+0BFNk931x0kUpjLWJ5VBFAW3Lf9yUhb8CL2g4GDD91FLuVvEpmmKDLbYHSXVEdiH
+         YHEY1Oem7zXy+sgKuiReFABUTZkIeZb7uvpYDXOYnl9JMQb+jHXrqzAlxVK575Qwc7
+         Gu9kNoQiCKb7Zzgvjs4QC9OgRnOdL/mkZca9nNsEHFbpjFWCyNZFEKix1FNrid0Kv5
+         eiTNeD5ssTYzQ==
+Date:   Wed, 18 Jan 2023 10:38:45 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Niklas =?iso-8859-1?Q?S=F6derlund?= 
+        <niklas.soderlund@corigine.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, toke@redhat.com, memxor@gmail.com,
+        alardam@gmail.com, saeedm@nvidia.com, anthony.l.nguyen@intel.com,
+        gospo@broadcom.com, vladimir.oltean@nxp.com, nbd@nbd.name,
+        john@phrozen.org, leon@kernel.org, simon.horman@corigine.com,
+        aelior@marvell.com, christophe.jaillet@wanadoo.fr,
+        ecree.xilinx@gmail.com, mst@redhat.com, bjorn@kernel.org,
+        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
+        intel-wired-lan@lists.osuosl.org, lorenzo.bianconi@redhat.com
+Subject: Re: [RFC v2 bpf-next 2/7] drivers: net: turn on XDP features
+Message-ID: <Y8e+JVtrEqtZemF3@lore-desk>
+References: <cover.1673710866.git.lorenzo@kernel.org>
+ <b606e729c9baf36a28be246bf0bfa4d21cc097fb.1673710867.git.lorenzo@kernel.org>
+ <Y8cTKOmCBbMEZK8D@sleipner.dyn.berto.se>
+ <Y8czKD8/yXywbl+f@lore-desk>
+ <Y8ey7Sg3BcPfsU9d@sleipner.dyn.berto.se>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="hD3us42baC0rGwVf"
+Content-Disposition: inline
+In-Reply-To: <Y8ey7Sg3BcPfsU9d@sleipner.dyn.berto.se>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The acpi_evaluate_dsm_typed() provides a way to check the type of the
-object evaluated by _DSM call. Use it instead of open coded variant.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- .../net/ethernet/hisilicon/hns/hns_dsaf_misc.c   | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+--hD3us42baC0rGwVf
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c
-index 740850b64aff..d8fb9ed96258 100644
---- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c
-+++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c
-@@ -554,11 +554,11 @@ static phy_interface_t hns_mac_get_phy_if_acpi(struct hns_mac_cb *mac_cb)
- 	argv4.package.count = 1;
- 	argv4.package.elements = &obj_args;
- 
--	obj = acpi_evaluate_dsm(ACPI_HANDLE(mac_cb->dev),
--				&hns_dsaf_acpi_dsm_guid, 0,
--				HNS_OP_GET_PORT_TYPE_FUNC, &argv4);
--
--	if (!obj || obj->type != ACPI_TYPE_INTEGER)
-+	obj = acpi_evaluate_dsm_typed(ACPI_HANDLE(mac_cb->dev),
-+				      &hns_dsaf_acpi_dsm_guid, 0,
-+				      HNS_OP_GET_PORT_TYPE_FUNC, &argv4,
-+				      ACPI_TYPE_INTEGER);
-+	if (!obj)
- 		return phy_if;
- 
- 	phy_if = obj->integer.value ?
-@@ -603,9 +603,9 @@ static int hns_mac_get_sfp_prsnt_acpi(struct hns_mac_cb *mac_cb, int *sfp_prsnt)
- 
- 	obj = acpi_evaluate_dsm(ACPI_HANDLE(mac_cb->dev),
- 				&hns_dsaf_acpi_dsm_guid, 0,
--				HNS_OP_GET_SFP_STAT_FUNC, &argv4);
--
--	if (!obj || obj->type != ACPI_TYPE_INTEGER)
-+				HNS_OP_GET_SFP_STAT_FUNC, &argv4,
-+				ACPI_TYPE_INTEGER);
-+	if (!obj)
- 		return -ENODEV;
- 
- 	*sfp_prsnt = obj->integer.value;
--- 
-2.39.0
+> Hi Lorenzo,
+>=20
+> On 2023-01-18 00:45:44 +0100, Lorenzo Bianconi wrote:
+> > > Hi Lorenzo and Marek,
+> > >=20
+> > > Thanks for your work.
+> > >=20
+> > > On 2023-01-14 16:54:32 +0100, Lorenzo Bianconi wrote:
+> > >=20
+> > > [...]
+> > >=20
+> > > >=20
+> > > > Turn 'hw-offload' feature flag on for:
+> > > >  - netronome (nfp)
+> > > >  - netdevsim.
+> > >=20
+> > > Is there a definition of the 'hw-offload' written down somewhere? Fro=
+m=20
+> > > reading this series I take it is the ability to offload a BPF program=
+? =20
+> >=20
+> > correct
+> >=20
+> > > It would also be interesting to read documentation for the other flag=
+s=20
+> > > added in this series.
+> >=20
+> > maybe we can add definitions in Documentation/netlink/specs/netdev.yaml?
+> >=20
+> > >=20
+> > > [...]
+> > >=20
+> > > > diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c=20
+> > > > b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+> > > > index 18fc9971f1c8..5a8ddeaff74d 100644
+> > > > --- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+> > > > +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+> > > > @@ -2529,10 +2529,14 @@ static void nfp_net_netdev_init(struct nfp_=
+net *nn)
+> > > >  	netdev->features &=3D ~NETIF_F_HW_VLAN_STAG_RX;
+> > > >  	nn->dp.ctrl &=3D ~NFP_NET_CFG_CTRL_RXQINQ;
+> > > > =20
+> > > > +	nn->dp.netdev->xdp_features =3D NETDEV_XDP_ACT_BASIC |
+> > > > +				      NETDEV_XDP_ACT_HW_OFFLOAD;
+> > >=20
+> > > If my assumption about the 'hw-offload' flag above is correct I think=
+=20
+> > > NETDEV_XDP_ACT_HW_OFFLOAD should be conditioned on that the BPF firmw=
+are=20
+> > > flavor is in use.
+> > >=20
+> > >     nn->dp.netdev->xdp_features =3D NETDEV_XDP_ACT_BASIC;
+> > >=20
+> > >     if (nn->app->type->id =3D=3D NFP_APP_BPF_NIC)
+> > >         nn->dp.netdev->xdp_features |=3D NETDEV_XDP_ACT_HW_OFFLOAD;
+> >=20
+> > ack, I will fix it.
+>=20
+> Thanks. I have just been informed from Yinjun Zhang that this check is=20
+> not enough as this function is reused for VF where nn->app is not set. I=
+=20
+> think a better check would be
+>=20
+>     if (nn->app && nn->app->type->id =3D=3D NFP_APP_BPF_NIC)
+>=20
+> Yinjun also informed me that you can make this code a bit neater by,
+>=20
+>     s/nn->dp.netdev->xdp_features/netdev->xdp_features/
+>=20
+> Thanks again for your work.
 
+ack thx Niklas, I will fix it.
+
+Regards,
+Lorenzo
+
+>=20
+> >=20
+> > >=20
+> > > > +
+> > > >  	/* Finalise the netdev setup */
+> > > >  	switch (nn->dp.ops->version) {
+> > > >  	case NFP_NFD_VER_NFD3:
+> > > >  		netdev->netdev_ops =3D &nfp_nfd3_netdev_ops;
+> > > > +		nn->dp.netdev->xdp_features |=3D NETDEV_XDP_ACT_XSK_ZEROCOPY;
+> > > >  		break;
+> > > >  	case NFP_NFD_VER_NFDK:
+> > > >  		netdev->netdev_ops =3D &nfp_nfdk_netdev_ops;
+> > >=20
+> > > This is also a wrinkle I would like to understand. Currently NFP supp=
+ort=20
+> > > zero-copy on NFD3, but not for offloaded BPF programs. But with the B=
+PF=20
+> > > firmware flavor running the device can still support zero-copy for=20
+> > > non-offloaded programs.
+> > >=20
+> > > Is it a problem that the driver advertises support for both=20
+> > > hardware-offload _and_ zero-copy at the same time, even if they can't=
+ be=20
+> > > used together but separately?
+> >=20
+> > xdp_features should export NIC supported features in the current
+> > configuration and it is expected they can be used concurrently.
+> >=20
+> > Regards,
+> > Lorenzo
+> >=20
+> > >=20
+> > > --=20
+> > > Kind Regards,
+> > > Niklas S=F6derlund
+>=20
+>=20
+>=20
+> --=20
+> Kind Regards,
+> Niklas S=F6derlund
+
+--hD3us42baC0rGwVf
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY8e+JQAKCRA6cBh0uS2t
+rNsWAP9IWlqhjMPf1TD9MZNwspDMNKBoSGgWXHpRq3zu+fJHDQD/aizWK7i8NwAJ
+0Mw7uKi5IULG/hLknsC/LDOiVgt1pAI=
+=/s9e
+-----END PGP SIGNATURE-----
+
+--hD3us42baC0rGwVf--
