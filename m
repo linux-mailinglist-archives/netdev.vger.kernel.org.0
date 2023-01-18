@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C84BA671697
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 09:52:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88AD1671691
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 09:52:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229564AbjARIwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 03:52:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53970 "EHLO
+        id S229669AbjARIwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 03:52:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229889AbjARIwX (ORCPT
+        with ESMTP id S229864AbjARIwX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 03:52:23 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B855DC05
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 00:04:31 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC94A9AA9E
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 00:04:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54514616F7
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 08:04:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92C74C433F1;
-        Wed, 18 Jan 2023 08:04:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EBBD616FC
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 08:04:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B892FC43392;
+        Wed, 18 Jan 2023 08:04:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674029070;
-        bh=iHMAW6UgwlUu0LG7nGJxah5CTe4nUMy2RqAnLfdsPjk=;
+        s=k20201202; t=1674029071;
+        bh=FMqvL9QE9l7ezWvLJjyYowSptHhF9HlQ/SnoqbZbQQk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uqOhP5jjmB5KsbvWSaTTudGWMpBewFzONT5QzTkfmK22cwuxeOx2djh4w+HXfCE9V
-         GbZyODPE8ICEeL7JMYnrNzXgWdVYSgf7fUPsLr67a6DVNNEeJuOHo9OMHF54eMoiRg
-         QZBqEJReqPmiy5eik6oga0DX64yR4jvQlCJT5htTacR98oK6bDMB5uCDHuv48HVpyw
-         0CCY5FuDt/KUuLFIBT+EsxeZ3hS7MUqByQZwuB9LiMaT107wbjKwSKyoPQ5OlonbO6
-         u0vaaQdEj7Ia09IObaJjALmgny4tvR46T67rqRzOlA3lpAvJwFX96oIIj+zfetBPyQ
-         TaD5QT9kSbTOw==
+        b=S57e3cooDec0esvmoUkyjK9fJfRX5qeQqVmr+AP900VEdjTr4h3YLFspW9O8Rse19
+         gq8HuAKV1/GtbxgorX2ki0ZMfIgNK9nU0wO3QWhxbAN4Ihbk/p9JmuvDw8uym8SSon
+         7CJEnKB3vsgSRnD+L9HLpyz8y6Ffr+72Z21toixN4LFadbFOj2nGq6H9pqM7ZP52o+
+         PcdKq7d04pstG+6KaIcavcOElu04jKJa3GKdDFw1VyNRRKO/zvkHgKBVEkzdw3UGcB
+         cCVooT6UIi9fNSkJwR1lthYLmmNcBeDEjzviAyyQkuYwDR6j5ZSsyhDsNsoPzrmUf7
+         X10uLwYs8+7Ag==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,11 +38,12 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>, Eli Cohen <elic@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>
-Subject: [net 02/10] net/mlx5e: Avoid false lock dependency warning on tc_ht even more
-Date:   Wed, 18 Jan 2023 00:04:06 -0800
-Message-Id: <20230118080414.77902-3-saeed@kernel.org>
+        Adham Faris <afaris@nvidia.com>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <error27@gmail.com>
+Subject: [net 03/10] net/mlx5e: Remove redundant xsk pointer check in mlx5e_mpwrq_validate_xsk
+Date:   Wed, 18 Jan 2023 00:04:07 -0800
+Message-Id: <20230118080414.77902-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230118080414.77902-1-saeed@kernel.org>
 References: <20230118080414.77902-1-saeed@kernel.org>
@@ -57,239 +58,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vlad Buslov <vladbu@nvidia.com>
+From: Adham Faris <afaris@nvidia.com>
 
-The cited commit changed class of tc_ht internal mutex in order to avoid
-false lock dependency with fs_core node and flow_table hash table
-structures. However, hash table implementation internally also includes a
-workqueue task with its own lockdep map which causes similar bogus lockdep
-splat[0]. Fix it by also adding dedicated class for hash table workqueue
-work structure of tc_ht.
+This validation function is relevant only for XSK cases, hence it
+assumes to be called only with xsk != NULL.
+Thus checking for invalid xsk pointer is redundant and misleads static
+code analyzers.
+This commit removes redundant xsk pointer check.
 
-[0]:
+This solves the following smatch warning:
+drivers/net/ethernet/mellanox/mlx5/core/en/params.c:481
+mlx5e_mpwrq_validate_xsk() error: we previously assumed 'xsk' could be
+null (see line 478)
 
-[ 1139.672465] ======================================================
-[ 1139.673552] WARNING: possible circular locking dependency detected
-[ 1139.674635] 6.1.0_for_upstream_debug_2022_12_12_17_02 #1 Not tainted
-[ 1139.675734] ------------------------------------------------------
-[ 1139.676801] modprobe/5998 is trying to acquire lock:
-[ 1139.677726] ffff88811e7b93b8 (&node->lock){++++}-{3:3}, at: down_write_ref_node+0x7c/0xe0 [mlx5_core]
-[ 1139.679662]
-               but task is already holding lock:
-[ 1139.680703] ffff88813c1f96a0 (&tc_ht_lock_key){+.+.}-{3:3}, at: rhashtable_free_and_destroy+0x38/0x6f0
-[ 1139.682223]
-               which lock already depends on the new lock.
-
-[ 1139.683640]
-               the existing dependency chain (in reverse order) is:
-[ 1139.684887]
-               -> #2 (&tc_ht_lock_key){+.+.}-{3:3}:
-[ 1139.685975]        __mutex_lock+0x12c/0x14b0
-[ 1139.686659]        rht_deferred_worker+0x35/0x1540
-[ 1139.687405]        process_one_work+0x7c2/0x1310
-[ 1139.688134]        worker_thread+0x59d/0xec0
-[ 1139.688820]        kthread+0x28f/0x330
-[ 1139.689444]        ret_from_fork+0x1f/0x30
-[ 1139.690106]
-               -> #1 ((work_completion)(&ht->run_work)){+.+.}-{0:0}:
-[ 1139.691250]        __flush_work+0xe8/0x900
-[ 1139.691915]        __cancel_work_timer+0x2ca/0x3f0
-[ 1139.692655]        rhashtable_free_and_destroy+0x22/0x6f0
-[ 1139.693472]        del_sw_flow_table+0x22/0xb0 [mlx5_core]
-[ 1139.694592]        tree_put_node+0x24c/0x450 [mlx5_core]
-[ 1139.695686]        tree_remove_node+0x6e/0x100 [mlx5_core]
-[ 1139.696803]        mlx5_destroy_flow_table+0x187/0x690 [mlx5_core]
-[ 1139.698017]        mlx5e_tc_nic_cleanup+0x2f8/0x400 [mlx5_core]
-[ 1139.699217]        mlx5e_cleanup_nic_rx+0x2b/0x210 [mlx5_core]
-[ 1139.700397]        mlx5e_detach_netdev+0x19d/0x2b0 [mlx5_core]
-[ 1139.701571]        mlx5e_suspend+0xdb/0x140 [mlx5_core]
-[ 1139.702665]        mlx5e_remove+0x89/0x190 [mlx5_core]
-[ 1139.703756]        auxiliary_bus_remove+0x52/0x70
-[ 1139.704492]        device_release_driver_internal+0x3c1/0x600
-[ 1139.705360]        bus_remove_device+0x2a5/0x560
-[ 1139.706080]        device_del+0x492/0xb80
-[ 1139.706724]        mlx5_rescan_drivers_locked+0x194/0x6a0 [mlx5_core]
-[ 1139.707961]        mlx5_unregister_device+0x7a/0xa0 [mlx5_core]
-[ 1139.709138]        mlx5_uninit_one+0x5f/0x160 [mlx5_core]
-[ 1139.710252]        remove_one+0xd1/0x160 [mlx5_core]
-[ 1139.711297]        pci_device_remove+0x96/0x1c0
-[ 1139.722721]        device_release_driver_internal+0x3c1/0x600
-[ 1139.723590]        unbind_store+0x1b1/0x200
-[ 1139.724259]        kernfs_fop_write_iter+0x348/0x520
-[ 1139.725019]        vfs_write+0x7b2/0xbf0
-[ 1139.725658]        ksys_write+0xf3/0x1d0
-[ 1139.726292]        do_syscall_64+0x3d/0x90
-[ 1139.726942]        entry_SYSCALL_64_after_hwframe+0x46/0xb0
-[ 1139.727769]
-               -> #0 (&node->lock){++++}-{3:3}:
-[ 1139.728698]        __lock_acquire+0x2cf5/0x62f0
-[ 1139.729415]        lock_acquire+0x1c1/0x540
-[ 1139.730076]        down_write+0x8e/0x1f0
-[ 1139.730709]        down_write_ref_node+0x7c/0xe0 [mlx5_core]
-[ 1139.731841]        mlx5_del_flow_rules+0x6f/0x610 [mlx5_core]
-[ 1139.732982]        __mlx5_eswitch_del_rule+0xdd/0x560 [mlx5_core]
-[ 1139.734207]        mlx5_eswitch_del_offloaded_rule+0x14/0x20 [mlx5_core]
-[ 1139.735491]        mlx5e_tc_rule_unoffload+0x104/0x2b0 [mlx5_core]
-[ 1139.736716]        mlx5e_tc_unoffload_fdb_rules+0x10c/0x1f0 [mlx5_core]
-[ 1139.738007]        mlx5e_tc_del_fdb_flow+0xc3c/0xfa0 [mlx5_core]
-[ 1139.739213]        mlx5e_tc_del_flow+0x146/0xa20 [mlx5_core]
-[ 1139.740377]        _mlx5e_tc_del_flow+0x38/0x60 [mlx5_core]
-[ 1139.741534]        rhashtable_free_and_destroy+0x3be/0x6f0
-[ 1139.742351]        mlx5e_tc_ht_cleanup+0x1b/0x30 [mlx5_core]
-[ 1139.743512]        mlx5e_cleanup_rep_tx+0x4a/0xe0 [mlx5_core]
-[ 1139.744683]        mlx5e_detach_netdev+0x1ca/0x2b0 [mlx5_core]
-[ 1139.745860]        mlx5e_netdev_change_profile+0xd9/0x1c0 [mlx5_core]
-[ 1139.747098]        mlx5e_netdev_attach_nic_profile+0x1b/0x30 [mlx5_core]
-[ 1139.748372]        mlx5e_vport_rep_unload+0x16a/0x1b0 [mlx5_core]
-[ 1139.749590]        __esw_offloads_unload_rep+0xb1/0xd0 [mlx5_core]
-[ 1139.750813]        mlx5_eswitch_unregister_vport_reps+0x409/0x5f0 [mlx5_core]
-[ 1139.752147]        mlx5e_rep_remove+0x62/0x80 [mlx5_core]
-[ 1139.753293]        auxiliary_bus_remove+0x52/0x70
-[ 1139.754028]        device_release_driver_internal+0x3c1/0x600
-[ 1139.754885]        driver_detach+0xc1/0x180
-[ 1139.755553]        bus_remove_driver+0xef/0x2e0
-[ 1139.756260]        auxiliary_driver_unregister+0x16/0x50
-[ 1139.757059]        mlx5e_rep_cleanup+0x19/0x30 [mlx5_core]
-[ 1139.758207]        mlx5e_cleanup+0x12/0x30 [mlx5_core]
-[ 1139.759295]        mlx5_cleanup+0xc/0x49 [mlx5_core]
-[ 1139.760384]        __x64_sys_delete_module+0x2b5/0x450
-[ 1139.761166]        do_syscall_64+0x3d/0x90
-[ 1139.761827]        entry_SYSCALL_64_after_hwframe+0x46/0xb0
-[ 1139.762663]
-               other info that might help us debug this:
-
-[ 1139.763925] Chain exists of:
-                 &node->lock --> (work_completion)(&ht->run_work) --> &tc_ht_lock_key
-
-[ 1139.765743]  Possible unsafe locking scenario:
-
-[ 1139.766688]        CPU0                    CPU1
-[ 1139.767399]        ----                    ----
-[ 1139.768111]   lock(&tc_ht_lock_key);
-[ 1139.768704]                                lock((work_completion)(&ht->run_work));
-[ 1139.769869]                                lock(&tc_ht_lock_key);
-[ 1139.770770]   lock(&node->lock);
-[ 1139.771326]
-                *** DEADLOCK ***
-
-[ 1139.772345] 2 locks held by modprobe/5998:
-[ 1139.772994]  #0: ffff88813c1ff0e8 (&dev->mutex){....}-{3:3}, at: device_release_driver_internal+0x8d/0x600
-[ 1139.774399]  #1: ffff88813c1f96a0 (&tc_ht_lock_key){+.+.}-{3:3}, at: rhashtable_free_and_destroy+0x38/0x6f0
-[ 1139.775822]
-               stack backtrace:
-[ 1139.776579] CPU: 3 PID: 5998 Comm: modprobe Not tainted 6.1.0_for_upstream_debug_2022_12_12_17_02 #1
-[ 1139.777935] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
-[ 1139.779529] Call Trace:
-[ 1139.779992]  <TASK>
-[ 1139.780409]  dump_stack_lvl+0x57/0x7d
-[ 1139.781015]  check_noncircular+0x278/0x300
-[ 1139.781687]  ? print_circular_bug+0x460/0x460
-[ 1139.782381]  ? rcu_read_lock_sched_held+0x3f/0x70
-[ 1139.783121]  ? lock_release+0x487/0x7c0
-[ 1139.783759]  ? orc_find.part.0+0x1f1/0x330
-[ 1139.784423]  ? mark_lock.part.0+0xef/0x2fc0
-[ 1139.785091]  __lock_acquire+0x2cf5/0x62f0
-[ 1139.785754]  ? register_lock_class+0x18e0/0x18e0
-[ 1139.786483]  lock_acquire+0x1c1/0x540
-[ 1139.787093]  ? down_write_ref_node+0x7c/0xe0 [mlx5_core]
-[ 1139.788195]  ? lockdep_hardirqs_on_prepare+0x3f0/0x3f0
-[ 1139.788978]  ? register_lock_class+0x18e0/0x18e0
-[ 1139.789715]  down_write+0x8e/0x1f0
-[ 1139.790292]  ? down_write_ref_node+0x7c/0xe0 [mlx5_core]
-[ 1139.791380]  ? down_write_killable+0x220/0x220
-[ 1139.792080]  ? find_held_lock+0x2d/0x110
-[ 1139.792713]  down_write_ref_node+0x7c/0xe0 [mlx5_core]
-[ 1139.793795]  mlx5_del_flow_rules+0x6f/0x610 [mlx5_core]
-[ 1139.794879]  __mlx5_eswitch_del_rule+0xdd/0x560 [mlx5_core]
-[ 1139.796032]  ? __esw_offloads_unload_rep+0xd0/0xd0 [mlx5_core]
-[ 1139.797227]  ? xa_load+0x11a/0x200
-[ 1139.797800]  ? __xa_clear_mark+0xf0/0xf0
-[ 1139.798438]  mlx5_eswitch_del_offloaded_rule+0x14/0x20 [mlx5_core]
-[ 1139.799660]  mlx5e_tc_rule_unoffload+0x104/0x2b0 [mlx5_core]
-[ 1139.800821]  mlx5e_tc_unoffload_fdb_rules+0x10c/0x1f0 [mlx5_core]
-[ 1139.802049]  ? mlx5_eswitch_get_uplink_priv+0x25/0x80 [mlx5_core]
-[ 1139.803260]  mlx5e_tc_del_fdb_flow+0xc3c/0xfa0 [mlx5_core]
-[ 1139.804398]  ? __cancel_work_timer+0x1c2/0x3f0
-[ 1139.805099]  ? mlx5e_tc_unoffload_from_slow_path+0x460/0x460 [mlx5_core]
-[ 1139.806387]  mlx5e_tc_del_flow+0x146/0xa20 [mlx5_core]
-[ 1139.807481]  _mlx5e_tc_del_flow+0x38/0x60 [mlx5_core]
-[ 1139.808564]  rhashtable_free_and_destroy+0x3be/0x6f0
-[ 1139.809336]  ? mlx5e_tc_del_flow+0xa20/0xa20 [mlx5_core]
-[ 1139.809336]  ? mlx5e_tc_del_flow+0xa20/0xa20 [mlx5_core]
-[ 1139.810455]  mlx5e_tc_ht_cleanup+0x1b/0x30 [mlx5_core]
-[ 1139.811552]  mlx5e_cleanup_rep_tx+0x4a/0xe0 [mlx5_core]
-[ 1139.812655]  mlx5e_detach_netdev+0x1ca/0x2b0 [mlx5_core]
-[ 1139.813768]  mlx5e_netdev_change_profile+0xd9/0x1c0 [mlx5_core]
-[ 1139.814952]  mlx5e_netdev_attach_nic_profile+0x1b/0x30 [mlx5_core]
-[ 1139.816166]  mlx5e_vport_rep_unload+0x16a/0x1b0 [mlx5_core]
-[ 1139.817336]  __esw_offloads_unload_rep+0xb1/0xd0 [mlx5_core]
-[ 1139.818507]  mlx5_eswitch_unregister_vport_reps+0x409/0x5f0 [mlx5_core]
-[ 1139.819788]  ? mlx5_eswitch_uplink_get_proto_dev+0x30/0x30 [mlx5_core]
-[ 1139.821051]  ? kernfs_find_ns+0x137/0x310
-[ 1139.821705]  mlx5e_rep_remove+0x62/0x80 [mlx5_core]
-[ 1139.822778]  auxiliary_bus_remove+0x52/0x70
-[ 1139.823449]  device_release_driver_internal+0x3c1/0x600
-[ 1139.824240]  driver_detach+0xc1/0x180
-[ 1139.824842]  bus_remove_driver+0xef/0x2e0
-[ 1139.825504]  auxiliary_driver_unregister+0x16/0x50
-[ 1139.826245]  mlx5e_rep_cleanup+0x19/0x30 [mlx5_core]
-[ 1139.827322]  mlx5e_cleanup+0x12/0x30 [mlx5_core]
-[ 1139.828345]  mlx5_cleanup+0xc/0x49 [mlx5_core]
-[ 1139.829382]  __x64_sys_delete_module+0x2b5/0x450
-[ 1139.830119]  ? module_flags+0x300/0x300
-[ 1139.830750]  ? task_work_func_match+0x50/0x50
-[ 1139.831440]  ? task_work_cancel+0x20/0x20
-[ 1139.832088]  ? lockdep_hardirqs_on_prepare+0x273/0x3f0
-[ 1139.832873]  ? syscall_enter_from_user_mode+0x1d/0x50
-[ 1139.833661]  ? trace_hardirqs_on+0x2d/0x100
-[ 1139.834328]  do_syscall_64+0x3d/0x90
-[ 1139.834922]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-[ 1139.835700] RIP: 0033:0x7f153e71288b
-[ 1139.836302] Code: 73 01 c3 48 8b 0d 9d 75 0e 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa b8 b0 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 6d 75 0e 00 f7 d8 64 89 01 48
-[ 1139.838866] RSP: 002b:00007ffe0a3ed938 EFLAGS: 00000206 ORIG_RAX: 00000000000000b0
-[ 1139.840020] RAX: ffffffffffffffda RBX: 0000564c2cbf8220 RCX: 00007f153e71288b
-[ 1139.841043] RDX: 0000000000000000 RSI: 0000000000000800 RDI: 0000564c2cbf8288
-[ 1139.842072] RBP: 0000564c2cbf8220 R08: 0000000000000000 R09: 0000000000000000
-[ 1139.843094] R10: 00007f153e7a3ac0 R11: 0000000000000206 R12: 0000564c2cbf8288
-[ 1139.844118] R13: 0000000000000000 R14: 0000564c2cbf7ae8 R15: 00007ffe0a3efcb8
-
-Fixes: 9ba33339c043 ("net/mlx5e: Avoid false lock depenency warning on tc_ht")
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
-Reviewed-by: Eli Cohen <elic@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
+Fixes: 6470d2e7e8ed ("net/mlx5e: xsk: Use KSM for unaligned XSK")
+Signed-off-by: Adham Faris <afaris@nvidia.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <error27@gmail.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index dbadaf166487..243d5d7750be 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -166,6 +166,7 @@ struct mlx5_fs_chains *mlx5e_nic_chains(struct mlx5e_tc_table *tc)
-  * it's different than the ht->mutex here.
-  */
- static struct lock_class_key tc_ht_lock_key;
-+static struct lock_class_key tc_ht_wq_key;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+index 585bdc8383ee..4ad19c981294 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+@@ -578,7 +578,6 @@ int mlx5e_mpwrq_validate_xsk(struct mlx5_core_dev *mdev, struct mlx5e_params *pa
+ {
+ 	enum mlx5e_mpwrq_umr_mode umr_mode = mlx5e_mpwrq_umr_mode(mdev, xsk);
+ 	u8 page_shift = mlx5e_mpwrq_page_shift(mdev, xsk);
+-	bool unaligned = xsk ? xsk->unaligned : false;
+ 	u16 max_mtu_pkts;
  
- static void mlx5e_put_flow_tunnel_id(struct mlx5e_tc_flow *flow);
- static void free_flow_post_acts(struct mlx5e_tc_flow *flow);
-@@ -5182,6 +5183,7 @@ int mlx5e_tc_nic_init(struct mlx5e_priv *priv)
- 		return err;
- 
- 	lockdep_set_class(&tc->ht.mutex, &tc_ht_lock_key);
-+	lockdep_init_map(&tc->ht.run_work.lockdep_map, "tc_ht_wq_key", &tc_ht_wq_key, 0);
- 
- 	mapping_id = mlx5_query_nic_system_image_guid(dev);
- 
-@@ -5288,6 +5290,7 @@ int mlx5e_tc_ht_init(struct rhashtable *tc_ht)
- 		return err;
- 
- 	lockdep_set_class(&tc_ht->mutex, &tc_ht_lock_key);
-+	lockdep_init_map(&tc_ht->run_work.lockdep_map, "tc_ht_wq_key", &tc_ht_wq_key, 0);
- 
- 	return 0;
- }
+ 	if (!mlx5e_check_fragmented_striding_rq_cap(mdev, page_shift, umr_mode))
+@@ -591,7 +590,7 @@ int mlx5e_mpwrq_validate_xsk(struct mlx5_core_dev *mdev, struct mlx5e_params *pa
+ 	 * needed number of WQEs exceeds the maximum.
+ 	 */
+ 	max_mtu_pkts = min_t(u8, MLX5E_PARAMS_MAXIMUM_LOG_RQ_SIZE,
+-			     mlx5e_mpwrq_max_log_rq_pkts(mdev, page_shift, unaligned));
++			     mlx5e_mpwrq_max_log_rq_pkts(mdev, page_shift, xsk->unaligned));
+ 	if (params->log_rq_mtu_frames > max_mtu_pkts) {
+ 		mlx5_core_err(mdev, "Current RQ length %d is too big for XSK with given frame size %u\n",
+ 			      1 << params->log_rq_mtu_frames, xsk->chunk_size);
 -- 
 2.39.0
 
