@@ -2,144 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6671D671150
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 03:47:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CD24671163
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 03:56:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229541AbjARCrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 21:47:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33030 "EHLO
+        id S229636AbjARC4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 21:56:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbjARCrT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 21:47:19 -0500
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 063E54FC23;
-        Tue, 17 Jan 2023 18:47:19 -0800 (PST)
-Received: by mail-il1-x12a.google.com with SMTP id d10so16418479ilc.12;
-        Tue, 17 Jan 2023 18:47:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=m1oh72pr5Je6LjMuI02aOI0LbZGIHuBgAU9KYLW46Nw=;
-        b=bXcCY8JtgtuPmI/CjQLiYnMu6hvGsdzsQIJKP68c6upgWfNvqSg59LAs5FEquglHoO
-         PziJBLLqH8N5RaLuz30l16KlYluTF7RtrhznQAh8ku3rhJIj9hUFodaRsJva+4FFzqMN
-         jPqGjGdgeAT6pFZ+C6T1YileP1EK8tfPEkPhPbKqPmtWpybTDhIoqfbMksT3p6WqVzDz
-         kpjYywiB0Qz4htxaSMECqgG3Vt+gGgO/tNRcAeCBttAzWXfRv5RtgPTXyU4qTwSzfNTk
-         Rp9S54ccJ3si5MMMPwiZe1hxKIVLSC1fkpPZja3jPPL62SCE+IYJvJCUqY00igSE8TpN
-         iQ7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=m1oh72pr5Je6LjMuI02aOI0LbZGIHuBgAU9KYLW46Nw=;
-        b=nR0WEe8PxuHZ6GYvlpBy4jrLBzy3R570Ad2yzcFIhCQLTLENkdSq09dSG26QND439t
-         GXFxICcoGCNWfjw3cHddWHxre247AVyz4UGACuU8W/ooH6tAamYW2O0Ih4mpEyCnfAIP
-         RhRmj0MwNZ8gPSHDcLcgkVraJIMdpBP5qjER/nvcf6/I67rIdNAyDNozA8/jxl5uxoPU
-         04jF0yHjRU8ii2YPGQyA+dU/LSKfDbpUhBIEuFqDL3XxAJO8yX0pkx4/SdhhRXFhPZjh
-         wYqoysQeJ28v5TX/RjE7MVK38pN4GWf8H3k2Fs/aDj3F1a9O9+fPlutwPVwnp/G6b0av
-         04Mw==
-X-Gm-Message-State: AFqh2kogqgHSY5iSQU/ZIJbYoDtZPWNT7r3mqpTwh37AeRxpHAEK8blY
-        fHoshzl6T/F+COzc+Mrml7Y=
-X-Google-Smtp-Source: AMrXdXucQ8f9FPR67c3mvitX7U1DEv5oVJw7/PdEtI05I8Lx1vZw17rtbCPCIs7NUIjNdrG4cfclUg==
-X-Received: by 2002:a92:cc52:0:b0:30c:1b36:73af with SMTP id t18-20020a92cc52000000b0030c1b3673afmr4432802ilq.25.1674010038384;
-        Tue, 17 Jan 2023 18:47:18 -0800 (PST)
-Received: from ?IPV6:2601:282:800:7ed0:3dc4:7b4f:e5b1:e4d8? ([2601:282:800:7ed0:3dc4:7b4f:e5b1:e4d8])
-        by smtp.googlemail.com with ESMTPSA id s8-20020a056e0210c800b0030eebef5d1dsm3511747ilj.12.2023.01.17.18.47.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Jan 2023 18:47:17 -0800 (PST)
-Message-ID: <54d89f4a-c7ca-2226-64dd-adc81ebbc314@gmail.com>
-Date:   Tue, 17 Jan 2023 19:47:15 -0700
+        with ESMTP id S229476AbjARC4p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 21:56:45 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F684FC30;
+        Tue, 17 Jan 2023 18:56:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=25llEiYeDS/QkPpInqQXQmxNNvjZJPqsVG0/iQjVy2c=; b=sFON5SBnkYjGqFHr3tGGBRHRrT
+        o7Q3m3i9vijRANE8wAKTsMZ5jBcGKPPhpBILFKq0tRkjK1pEfNd20NLBG79ARJztRjlV8Cfc6RAfv
+        YFm6zf6kZx0inmW2pb9Auwp28JuVG88YOrmGMDgJAICg7gWy/bdEPqBfPegqlYUYGJiI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pHycq-002ODH-Bb; Wed, 18 Jan 2023 03:56:32 +0100
+Date:   Wed, 18 Jan 2023 03:56:32 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     Jerome Brunet <jbrunet@baylibre.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-amlogic@lists.infradead.org,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Da Xue <da@lessconfused.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 2/2] net: mdio: add amlogic gxl mdio mux support
+Message-ID: <Y8df4LRfPN34lvP8@lunn.ch>
+References: <20230116091637.272923-1-jbrunet@baylibre.com>
+ <20230116091637.272923-3-jbrunet@baylibre.com>
+ <Y8U+1ta6bmt86htm@corigine.com>
+ <1jk01mhaeg.fsf@starbuckisacylon.baylibre.com>
+ <Y8VWWP53ZysENI7/@corigine.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [PATCH net-next 06/10] cipso_ipv4: use iph_set_totlen in
- skbuff_setattr
-Content-Language: en-US
-To:     Paul Moore <paul@paul-moore.com>, Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Aaron Conole <aconole@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-References: <cover.1673666803.git.lucien.xin@gmail.com>
- <d19e0bd55ea5477d94567c00735b78d8da6a38cb.1673666803.git.lucien.xin@gmail.com>
- <CAHC9VhRXd+RkHSRLUt=0HFm42xPKGsSdSkxA6EHwipDukZH_mA@mail.gmail.com>
- <CADvbK_e_V_scDpHiGw+Qqmarw8huYYES2j8Z36KYkgT2opED3w@mail.gmail.com>
- <CAHC9VhQeaOeX-5SENhpScKN9kF1rAKoZX23KOUqQ5=uz6v92iA@mail.gmail.com>
- <CADvbK_cR5paEunENmWd62XfXtMSf+MHhhc-S1z_gLWp_dUx=8w@mail.gmail.com>
- <CAHC9VhSk8pYtOJHCZ1uNvv1SJiazWkJVd1BCfyiLCXPMPKe_Pg@mail.gmail.com>
- <CADvbK_ds4ixHgPGA4iKb1kkFc=SF8SXPM-ZL-kb-ZA0B-70Xqg@mail.gmail.com>
- <CAHC9VhR4_ae=QzrUUM=1MZTWJ9MQom0fEAME3b+z+uBrA8PpcQ@mail.gmail.com>
- <CAHC9VhSRgQuyPgio7d9ZNbs53oCvpq3KQJ9gG5rKX67Wn+P6kw@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <CAHC9VhSRgQuyPgio7d9ZNbs53oCvpq3KQJ9gG5rKX67Wn+P6kw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y8VWWP53ZysENI7/@corigine.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/17/23 3:46 PM, Paul Moore wrote:
->>
->> In the BIG TCP case, when is the IPv4 header zero'd out?  Currently
->> cipso_v4_skbuff_setattr() is called in the NF_INET_LOCAL_OUT and
->> NF_INET_FORWARD chains, is there an easy way to distinguish between a
->> traditional segmentation offload mechanism, e.g. GSO, and BIG TCP?  If
->> BIG TCP allows for arbitrarily large packets we can just grow the
->> skb->len value as needed and leave the total length field in the IPv4
->> header untouched/zero, but we would need to be able to distinguish
->> between a segmentation offload and BIG TCP.
+> > >> +	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+> > >> +	if (!priv)
+> > >> +		return -ENOMEM;
+> > >
+> > > nit: may be it is nicer to use dev_err_probe() here for consistency.
+> > 
+> > That was on purpose. I only use the `dev_err_probe()` when the probe may
+> > defer, which I don't expect here.
+> > 
+> > I don't mind changing if you prefer it this way.
 > 
-> Keeping the above questions as they still apply, rather I could still
-> use some help understanding what a BIG TCP packet would look like
-> during LOCAL_OUT and FORWARD.
+> I have no strong opinion on this :)
 
-skb->len > 64kb. you don't typically look at the IP / IPv6 header and
-its total length field and I thought the first patch in the series added
-a handler for doing that.
+dev_err_probe() does not apply here, because devm_kzalloc does not
+return an error code. Hence it cannot be EPROBE_DEFFER, which is what
+dev_err_probe() is looking for.
 
-> 
->>>> In the GRO case, is it safe to grow the packet such that skb->len is
->>>> greater than 64k?  I presume that the device/driver is going to split
->>>> the packet anyway and populate the IPv4 total length fields in the
->>>> header anyway, right?  If we can't grow the packet beyond 64k, is
->>>> there some way to signal to the driver/device at runtime that the
->>>> largest packet we can process is 64k minus 40 bytes (for the IPv4
->>>> options)?
->>>
->>> at runtime, not as far as I know.
->>> It's a field of the network device that can be modified by:
->>> # ip link set dev eth0 gro_max_size $MAX_SIZE gso_max_size $MAX_SIZE
->>
->> I need to look at the OVS case above, but one possibility would be to
->> have the kernel adjust the GSO size down by 40 bytes when
->> CONFIG_NETLABEL is enabled, but that isn't a great option, and not
->> something I consider a first (or second) choice.
-> 
-> Looking more at the GSO related code, this isn't likely to work.
-> 
-
-icsk_ext_hdr_len is adjusted by cipso for its options. Does that not
-cover what is needed?
-
+       Andrew
