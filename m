@@ -2,167 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75C7B672601
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 19:01:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 158B4672653
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 19:08:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231218AbjARSBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 13:01:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54922 "EHLO
+        id S231301AbjARSIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 13:08:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230249AbjARSAx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 13:00:53 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2046.outbound.protection.outlook.com [40.107.243.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E8A56895;
-        Wed, 18 Jan 2023 10:00:52 -0800 (PST)
+        with ESMTP id S231228AbjARSIO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 13:08:14 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16DD510A99;
+        Wed, 18 Jan 2023 10:08:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674065285; x=1705601285;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=+2e0MyGhAyHtTLaqDb68zKg8COv5OPUj8KkHK1bIMyc=;
+  b=L2KCWYVLt6hRHK2MYW8d9lX+R85uwKaKFgIoGAh8wdOl8+lLiW/7y5U9
+   8bnXSojCQXqiOJOldVdgE+nE3M25v2A0jYh1izmZT0hPFaRNbNnpRVzCp
+   eqvMJ9PZiM+c6a2FNVg8SEGpmlJa4gutpkTSAwlmoWmU4Au2tAKWvxQTW
+   AZu+P2prUf+i5MXpU0vIybw/drYaw2bYKPcFLn8olfSQOPrR+KR3DgMw1
+   hrzDQaUMfZg+GT904tV9A097rIuEnOKTrhZQ057IePBLoOG65r0cnNniw
+   xAC8sRqNl5fCjl00JHxZwO1elaXYyYE43d8QU6A87A493zgP47jkCSmPO
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="312933198"
+X-IronPort-AV: E=Sophos;i="5.97,226,1669104000"; 
+   d="scan'208";a="312933198"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2023 10:07:58 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="723194267"
+X-IronPort-AV: E=Sophos;i="5.97,226,1669104000"; 
+   d="scan'208";a="723194267"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga008.fm.intel.com with ESMTP; 18 Jan 2023 10:07:56 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 18 Jan 2023 10:07:56 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 18 Jan 2023 10:07:56 -0800
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Wed, 18 Jan 2023 10:07:56 -0800
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.108)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Wed, 18 Jan 2023 10:07:55 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NsA9cv7REBe37zw/vOhFLLGs49vLLa6GxZ9aW2n+1YdbHbZ5912j/snkSjQqBkWUahO+t99LZzGLzaDd/QeW0WyB2FCi+I8u34ULF+SHAklY6qgCr7YE6udA8Da+dfJFv1OOcEmjkvLRWGJBNQWoR8GmKx/sgXC1hkavbG/kJu4tGsDFnnPdzqOoJQmumOYphWMRn44SBv3J2wTlOnpOLls5D9zJVnsWZhOqWYu3nYs4PB6XafOLu2+YEAg1Dau6wDwX7+jDQJ2KyViTtbK/Vr4a8DhijDJQYF8bIIznmU575dcXZhg+pPodA8LzDslg1/3fjClHjgBsJX9Vm5Akjw==
+ b=Nbgv8nkce53UEg+fsmS6Bk/0WzEcYKSIxZk7sdN+romt/ZUBfDyo8UuTwa/8Ofl1AGL8pucf4OuECvD1Sxh68uZurVq7It2AlLhyYkXKUT8f6mZGyJ/jP0hi89Omkj9e+lWE5GbE1liyt0c78rEEY5sHEiumZ5KnGoPvZsNA5CyMnBoMmFGxUmt5Wd4hivW5YWSpDYGfDhLwB1efvL5roEn3se5Jhx3zBF6k3zObOlUiawaK/dG2UChu6DJ6Mtk17KAPoRLYN9n4pPmcCkvABEtourkKdac/XJA9biwohsMwBVy+XnVp5xooQMMFm3btEn8REqsdksmxH93hKinNGw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vqPQQtTRQUpYSGOXmSqMnJWIpGPVCuIxL1bg187xZXs=;
- b=Jec7mNtiT7LwijgwO0G8/3sDu3mWO7u8/M/KcWNhYtyFFL2661UrrME42VBXYIGlcK+OlLkU+bE7U8aLlkCDC3g5tylwpRc4DInBU4S9TpG8EAx8lW/bSN4x4176+wAk2iKK0OEFR0aBG/Y7jx2gfc3LmPLx/spJ+J9h9/+1qDlZ1F2j2xUX0e5QDt0Yp8Awa5pW6h6PkycEB8r+wAvwPpYvZbfh1yv8GBczkpnhCNVFiIx6JB5iDDdlM3gXRgNtDknaMkc7d5rWjrrp34YP9Y6sDLErTfa6A9Rbyntqa0AzV8NoQ5Py1ssB83Ik5q39PKiK3bKdfjC4Ef+wugZSbQ==
+ bh=LcqhfKncMZ8u+OWYkDHKRmVXK/QTca5yZDmWqoFF8xE=;
+ b=GCmyHBDfvNF4CZ14UgLVONFztzTLGmUGuU3BMz4vAprzeaDfw4gWaPT06VF62lpTewzb+fYisU+TiPrGKACL/LBKF7zP36cwrfV9vKHufGZxcxkYH95GDdrz3zdd80U85jN+QEZTIh59esW4NDj3b4bKhzgZ9PCTL+P10CbGV6fB2YcDrsVx9wC22FgR9qABGeFJzwdEf3PZtWOBgREbIT6B4w8COo8ZX37Nkmi/SrVjRdHzeXhyRi1oM/DDdnAkkorc110p2BmU8JA95N3Ba+RtVHw1EhzHyDIENrXQFDKO5VxQjt6HX/cIO5PCdc6SndTgWqS8l0glhkmJvmz1iQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vqPQQtTRQUpYSGOXmSqMnJWIpGPVCuIxL1bg187xZXs=;
- b=bEG7OuyKGPl10p6JweU4jUhea7ZDK3C9Q8Vw91dSN86drPLLuZTET+z/W8uqZiz35M1vjOhtlH5G1r9FH79YQp/Tg8gvgy7pTd1WoQZM+DJsf4RkXzhWoPmSIDyhNvWQo1ViRtRRs/PAeHOrHC5v/8HjTJW/eLR84Bl1oWpw12hCtD+a1/G3tszY9HQsNVcOojL1CuUX6MoEw1HmvUcui4i2PR94r6hG8Hu6QV6+9zDymfGl2K1V+eFnDOiECrQPpQXZks9QcBvudNrUFy2fmts3RdVSlBIllluATuN5LFXM0fbktEMStQkroPhltqHf55Ez/r1sT93w0/RcKq7HKw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM4PR12MB5818.namprd12.prod.outlook.com (2603:10b6:8:62::15) with
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from DM6PR11MB4657.namprd11.prod.outlook.com (2603:10b6:5:2a6::7) by
+ IA1PR11MB7774.namprd11.prod.outlook.com (2603:10b6:208:3f2::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Wed, 18 Jan
- 2023 18:00:49 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a%9]) with mapi id 15.20.6002.013; Wed, 18 Jan 2023
- 18:00:49 +0000
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Robin Murphy <robin.murphy@arm.com>
-Cc:     Alex Williamson <alex.williamson@redhat.com>,
-        ath10k@lists.infradead.org, ath11k@lists.infradead.org,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
-        kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-tegra@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, nouveau@lists.freedesktop.org,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH v2 10/10] iommu/s390: Use GFP_KERNEL in sleepable contexts
-Date:   Wed, 18 Jan 2023 14:00:44 -0400
-Message-Id: <10-v2-ce66f632bd0d+484-iommu_map_gfp_jgg@nvidia.com>
-In-Reply-To: <0-v2-ce66f632bd0d+484-iommu_map_gfp_jgg@nvidia.com>
-References: 
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BLAPR03CA0085.namprd03.prod.outlook.com
- (2603:10b6:208:329::30) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+ 2023 18:07:54 +0000
+Received: from DM6PR11MB4657.namprd11.prod.outlook.com
+ ([fe80::5006:f262:3103:f080]) by DM6PR11MB4657.namprd11.prod.outlook.com
+ ([fe80::5006:f262:3103:f080%8]) with mapi id 15.20.6002.024; Wed, 18 Jan 2023
+ 18:07:54 +0000
+From:   "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
+To:     Vadim Fedorenko <vadfed@meta.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Jiri Pirko" <jiri@resnulli.us>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "Paolo Abeni" <pabeni@redhat.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Subject: RE: [RFC PATCH v5 0/4] Create common DPLL/clock configuration API
+Thread-Topic: [RFC PATCH v5 0/4] Create common DPLL/clock configuration API
+Thread-Index: AQHZKp4G2r/C0xvjvEaU4m2OVmfgX66kdoDg
+Date:   Wed, 18 Jan 2023 18:07:53 +0000
+Message-ID: <DM6PR11MB4657644893C565877A71E1F19BC79@DM6PR11MB4657.namprd11.prod.outlook.com>
+References: <20230117180051.2983639-1-vadfed@meta.com>
+In-Reply-To: <20230117180051.2983639-1-vadfed@meta.com>
+Accept-Language: pl-PL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM6PR11MB4657:EE_|IA1PR11MB7774:EE_
+x-ms-office365-filtering-correlation-id: 2719d96b-584b-49ea-4052-08daf97eeb86
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: BNhoA4VM+l7UIM3qbSFkC/mU0MRKketInNLRXA9hMMCCn9iMZTvGslKKm74SO/aUmlkgj3ijlL7p5vPFrJAJQDg6agZ2oP9n+5Nhbe9gy+0l7Tf7JvqOK4PgdwwQfb1e1TKVBFylE/zTiewE/tjZ7DSF14QHb3ketvLGBhoTHSNSyHrxCpbw5FRr8Mzwv/mLDCrEV7fZc0UDVgqusWsCPOLF9ybduDUHqrfz+03kpd8tiPnDdAGJOAYQMGc4Cz8R2D+Oa8RirwRg5wC4QYeX2rojCoV4WQ9uLlYNcnhBPTpf4v3T0jSJ5I3tgkrGywTZqP1+vxTZ11voxhP1sbICg/w7fYc5FGrGv84tcpskcoDyXD9ynLM0PfudJk6R4zVFpPRrR/HN+hZZFHcTVxsansnp/BMvFsDTbsG5IUGAJsmHZvaYcuDQv0MDoxJYs9IP0t2GrWEuo+FZB7SnWgaquviauqQbE1FCFz/B9aRRhO3BxBL4AwqxtfY28EHryQwwsh8EgWB5mkUwezUSTCZJ5CcpYiVIKhmyZeGu5HgrlalYg6fHvTbICqstIqLIsx0ZocoqYmcWNoWSE6rWwBOU2EQGGKNuZicyQUeNS3N+sdpPf37OJrI5XeBmE0pPfAJxxINeAb9zPhG6mH6tUWkWODRR7L+/5o4A+HufztKWv93s2zK76/pwSgASJWXHVJ65Z7Cc/ZX38ZIvZDMyX5A5kA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(346002)(366004)(396003)(376002)(39860400002)(136003)(451199015)(4326008)(66446008)(76116006)(55016003)(64756008)(186003)(8676002)(9686003)(86362001)(66556008)(26005)(41300700001)(66476007)(66946007)(33656002)(316002)(71200400001)(54906003)(7696005)(110136005)(6506007)(122000001)(38100700002)(2906002)(38070700005)(82960400001)(83380400001)(5660300002)(52536014)(478600001)(8936002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?z2B3eD9H86fgeaaOYM0oEW4x3be6haPgFQmXZkjzZnLx9cFM0Zs9o8aZor3A?=
+ =?us-ascii?Q?w9d2QuVOoD+J7Z0hewrB3Dzi8gylsFGH5GNxfN4yHD7oi2dcn2EmAnUInc5o?=
+ =?us-ascii?Q?wPkMI9YRzaB+3LRiHmH+HbT+ajXs67C++CJyKG4ERPTYD/5A9mJ7W6BxEnU0?=
+ =?us-ascii?Q?tJ/APOzjQIzrAD0MV0OFO6avEJVdOJPWfVNxMud0+Pk4UbHomTsmAS4Wv+gj?=
+ =?us-ascii?Q?a9pTtZmfAjHnudZd7+Is9OOq67CDDrHiRBCdRpt/L9J2trJUIFv+WWUsQKsB?=
+ =?us-ascii?Q?NDVfutTF6rEYTlSlrgkMGStIjWufniD9W2KjKFtAItlmZ6iKZGbx03NcLxn1?=
+ =?us-ascii?Q?7PJFWPKa2JnT6qFUxcxrblSPmCUuwRv6XG4pxB1aex6yBvAhkExQeWSgfR0G?=
+ =?us-ascii?Q?L5q8ojwPYHEnTucZzIi1VrarngGZyBDyfgp02Ud9LABo8UsxId8pGX0V+lQ1?=
+ =?us-ascii?Q?C+yxYL19Qso3/DvTAWXUpniLoXo7OVzlztzZq2VgfTyYX1HzRPOXWvd73dzN?=
+ =?us-ascii?Q?JvHfaBluzE+exqLGSCNAO1kFPFN3kjz1evPhil+tloU76lsLWILrKVTHiZj/?=
+ =?us-ascii?Q?v3a+hAnwI1EkRHfgJYE8SHarowQxYwRg1blBERi6XKRdY5Vh0X0KIN2yeAA6?=
+ =?us-ascii?Q?0DJZG/tqns1cuusQC/wGVduyiCvjI5j/t38JFI2ktmph9LEKQRM3MMruFjF4?=
+ =?us-ascii?Q?T/OnjjQ3Q5SdcM9w3gtWuNDUGIFKfX6ve9JaEI2ZCZ1KpBmIsFYy894sRt1l?=
+ =?us-ascii?Q?K6I3Z4w1AHysA1bMOxpQvTQ8yEM5//YoqToV5bKgnkRrA9mvvZVs1SLLca4s?=
+ =?us-ascii?Q?eepnPkAEBpSj0TSOjZUh+ElYpAuNE45O1UUcQMb2JNULNDGofebYoKywTrnK?=
+ =?us-ascii?Q?CRPTIpMJVAwOJ9+Dbz0EbfIuGTvk852ZOxZz0DRVBTAX2Zn+dBMGHob3UH0J?=
+ =?us-ascii?Q?sdTKfh5i4HBhje9gjFk9ktwUW7T7ao6tNhLbr+Tx/KfX22WJgqHb0Am+kjct?=
+ =?us-ascii?Q?+n7saO7ygg/xVQQWAgdac7Zc5We8EuA4vMXbNdv5GYL7VV7X2fCq2UEUqci4?=
+ =?us-ascii?Q?U0TCAwzm323e/c1qfyG/snlWW+JYZi88Q5Xv+LBRSE1WDHkT8cfPGvts6sM2?=
+ =?us-ascii?Q?E0k6l7kJuL7JtRurbHM1jCUMqgUzCouEA0yLv9O5/gtgWZzFZYC9tUP99rEO?=
+ =?us-ascii?Q?ERWrE5rOYRbsj54eJM+FAbE5ApLsgukJh7x32q/kWUEeLNZ3DndyUO/+X/8H?=
+ =?us-ascii?Q?4M7/8FYUd9MhifwYdYKdRUVafK9MM+AG+Z/uElA9fAS7Pd5XyyA0nhh9HkmG?=
+ =?us-ascii?Q?qVUvoMikTi1FB6na5/cCG8z0C5ggOFZ/2Lk1kiedGDio5EORCes8u3TL5tgU?=
+ =?us-ascii?Q?B7zeh8U3ogCjeMzlIgpU0I9LBtmzQrFwAo3+W8YoeZjDPlgFXET1jJDwVy7j?=
+ =?us-ascii?Q?0/ULdL8ENzNfFLWIhFyM5rsaHs2lnXl1QR6c6ukkeyHJ2jGArgDavQFrRLNE?=
+ =?us-ascii?Q?P+j5NfAXEkeOkxel6+tqPoZ6MFBvcVuG+TXIOh+8PKx/IosSUlvX+aqVdtV+?=
+ =?us-ascii?Q?SOUOExUsySrf9KNck6pVYEhTAyGXHZLpyE455b00pOaxIb7sJEINOUamxBWm?=
+ =?us-ascii?Q?AQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB5818:EE_
-X-MS-Office365-Filtering-Correlation-Id: c1721888-54a1-4925-7872-08daf97dec52
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EaU9ywwN6UQ6lqY9VmpkUIvlY4Azaf/JXeP0m37rNvOhCk1obBI5yEO2DbdCOn5hOUqKKp+g6+I8knVHS8WuwQkneJLcSsRH8EvQXA3uYk1VsXX0jCxW9xRIS6G0o17fQ1yoFnkeKPuqNFRiIOYKuqRgRZp3zEV6ZEQ9wsYRVPDBQ67oH4A7yU1s5oCBZVuukpTVZx+eO4Ab5tX87jRJJ3zBrELq3cswVHTsvCdOC/kXo+P4hg1wILAfXg2ytWip4CWFHFFkcbWSQeHoA3jyu2iO+EoTCefez440pPAFoRawGCZ7Kvbm9eb13QHbJ2gePeLN8g60wq1eigS/TxyCYVfhOcbmfwq1VdEMt8ciJHI3Av8E9/kW4c+XWJyQF0eZF4Uno3EHUMe6F8QyNHx2PFV8P0MKI/fhb+O1mNByHjTOWhwVzwq8d5AYM0KIBNBH3x1ub9h2omu3RvWj3KbFBSvqVxwQEre33r87EefeKbHxq05KKbC4lSRcvXE1rI5+XmyGm8WasoL8IpCC0xV9G269/6lDXfVgjdqoJkVrO4EtGDSsm+VssV38kjXQAZKTyrHzs3/Ilru+vBEAFrgaTL1/c9q8J2uTdugc4ezHojJ7kQPlsJE+frc4cOk6w1x8455A+jZojjtV3i+YGbwpxw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(376002)(396003)(346002)(366004)(451199015)(8676002)(36756003)(83380400001)(41300700001)(8936002)(2906002)(66476007)(2616005)(110136005)(54906003)(4326008)(316002)(5660300002)(38100700002)(86362001)(66556008)(7416002)(186003)(6486002)(6512007)(478600001)(26005)(66946007)(6666004)(6506007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6xefLf1A7b6onibFJL4xcR/mMuhUGDqMKS+h80M4YEmmEQm1qxrS5ZvNBA+u?=
- =?us-ascii?Q?rzXhGvukVau1KVHteD9OVIjy5Hpn4QVACXetjIBiM2pZwrwGpjcBF7byuFM4?=
- =?us-ascii?Q?CvnBEM6okyNEFDhCpP+D/SVeTTWHeZkQOJ0c0jcYEvQoFOrOKQEuOLsarNgj?=
- =?us-ascii?Q?oXiX7CBxHOjN9cdHEyJy9wMs/k76zLk3j7xTPDw8YujTFtPT2lTal+vHn1ml?=
- =?us-ascii?Q?WyY062z4c8SAP//YQmwYoWLZTLlVbl+9h8qTXZdADFoPwYwg7JhKSLv4oKpp?=
- =?us-ascii?Q?rliaTN2NCGdt2hwKWlW5yIChqE0jwXtOiBSIhaV4GMRKvFf0cS5MWOHEK7ZX?=
- =?us-ascii?Q?CGRKE6iq7RzkQRbcbl6lrYntMyyngL++HfcCicCSovmQsQ8PQ8iBDIGdVnaE?=
- =?us-ascii?Q?wkyHV5/GmYZTDrtvZDb2vrW5+4w0zyNnUeLctRcx4s8ZtkJZDkoz08MKWmTj?=
- =?us-ascii?Q?H89W3yZXPp/CtFhQuIjqxLvFjcpt9qqdYptmd4Yx5GbJL3dfnBoEjzyTugMe?=
- =?us-ascii?Q?FOAJob2OOiWNCOKhC6/JsNmPNnOcn7ffN0z6wj7yW66tJGmX9poL6ECKnST+?=
- =?us-ascii?Q?m3MKXONv+LVbDRkBP3bhavohehSpmRRyBc0BgzIMcy2Krv5zpgF/YBf4Jfrd?=
- =?us-ascii?Q?faW7+lk5qqFSB3ofVhvOv7JzVsbJyXpHVnAwoseO8KWtZdH9wKHuP5Jmu8Uf?=
- =?us-ascii?Q?MRpEpj57+sg6Cd4Gw6/WOH/vxp4iPNQqSX7MsH9FYeDUuJJNwYypKvRiJ8ul?=
- =?us-ascii?Q?EnakRKsNNi8fsdwi/npFS/udPzBqU6MNsZi2O/UHC1lSRJKmMfxWpgSLRG1g?=
- =?us-ascii?Q?cjxU0VQg3fyrpuV+KmWa0Uq38YNnHu5w/uN6OiDUX5ikEAPrkfVrKKy+VDeR?=
- =?us-ascii?Q?N0Ntx4i+JSWH0eJuisJWHIh2qXVVoTgq1Oqamdhe0P2kc4pRvza6l4+auAMi?=
- =?us-ascii?Q?MbBdnnus2k0uy4q9iQreHBry+Wa8GhRkkZP8qrsAiwvcAnQrQfK2gnnu2pzb?=
- =?us-ascii?Q?KUu361hZ7BELWtZxIvWRX0J3UiKoxeE47Z5Fmf8UHE/Sn7HqZfG6EMenWmid?=
- =?us-ascii?Q?vJoOODg2w1ax9440cMJZ/rJwXEx8jFTT4jFGaC0G5R7JTQgQM9B9RvE15H39?=
- =?us-ascii?Q?kEsoU0S3fAZbPodLJKvhIsViAFIXa3U2P3067/Q5uOaVZ6KoRWSRf5VARQgY?=
- =?us-ascii?Q?+HXqE37XEHznLELGAATEo0uY/6bZFh19zF2uV9CYJl53rDATZI/vOd3nh2+Y?=
- =?us-ascii?Q?ZFmsvD1ykzkwGIcoAgSgAMhIof/d/ggKuQGyMn/Sr3Ig616JewsFopajyKzf?=
- =?us-ascii?Q?LhzvqS4+YE4xj+iMgzrovgMtYc1SitPeFrkEOrUhMJzPqkdEMg61BeSDVRss?=
- =?us-ascii?Q?lRB192lauuwRwe26ZAUCEL/Rfuecgyz39/YuaRhjVF6/90bPfwvSNFtw5MsG?=
- =?us-ascii?Q?0aGxfDgXMXXRWV6BKMmQbl6Xv9e95uVNajmNROYyUpeQpdzKrKpDfl4P1RvP?=
- =?us-ascii?Q?GrgOeb+LoN10DKH/ZCBWdHbwxoHdCfDaSqrTxUoPisnvbGaqzldqvIMamV5C?=
- =?us-ascii?Q?FLPn+Cgug8S39DehW6LS1EXCoO3ttKP4ryLDCNcm?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c1721888-54a1-4925-7872-08daf97dec52
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2023 18:00:46.0214
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4657.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2719d96b-584b-49ea-4052-08daf97eeb86
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jan 2023 18:07:53.8673
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UZqc2vdieqmNxvGL7Dg7UiD0Zivm0glFD4RNBPiJvlFLC/n4oq87FtslIka/Q+t9
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5818
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: GV6Yo2MzCbfrHAASMaRp+emP9ryS5rOizwBLRX028810zzUWFQPSGfEPoc9xQT5skaKAzrd3qbl8Lu3pWxJaqA+TkgH8MkdF2Q+dth/6rIY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB7774
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These contexts are sleepable, so use the proper annotation. The GFP_ATOMIC
-was added mechanically in the prior patches.
+>-----Original Message-----
+>From: Vadim Fedorenko <vadfed@meta.com>
+>Sent: Tuesday, January 17, 2023 7:01 PM
+>
+>Implement common API for clock/DPLL configuration and status reporting.
+>The API utilises netlink interface as transport for commands and event
+>notifications. This API aim to extend current pin configuration and make i=
+t
+>flexible and easy to cover special configurations.
+>
+>v4 -> v5:
+> * fix code issues found during last reviews:
+>   - replace cookie with clock id
+>	 - follow one naming schema in dpll subsys
+>	 - move function comments to dpll_core.c, fix exports
+>	 - remove single-use helper functions
+>	 - merge device register with alloc
+>   - lock and unlock mutex on dpll device release
+>   - move dpll_type to uapi header
+>   - rename DPLLA_DUMP_FILTER to DPLLA_FILTER
+>   - rename dpll_pin_state to dpll_pin_mode
+>   - rename DPLL_MODE_FORCED to DPLL_MODE_MANUAL
+>   - remove DPLL_CHANGE_PIN_TYPE enum value
+> * rewrite framework once again (Arkadiusz)
+>   - add clock class:
+>     Provide userspace with clock class value of DPLL with dpll device dum=
+p
+>     netlink request. Clock class is assigned by driver allocating a dpll
+>     device. Clock class values are defined as specified in:
+>     ITU-T G.8273.2/Y.1368.2 recommendation.
+>   - dpll device naming schema use new pattern:
+>	   "dpll_%s_%d_%d", where:
+>       - %s - dev_name(parent) of parent device,
+>       - %d (1) - enum value of dpll type,
+>       - %d (2) - device index provided by parent device.
+>   - new muxed/shared pin registration:
+>	   Let the kernel module to register a shared or muxed pin without
+>finding
+>     it or its parent. Instead use a parent/shared pin description to find
+>     correct pin internally in dpll_core, simplifing a dpll API
+> * Implement complex DPLL design in ice driver (Arkadiusz)
+> * Remove ptp_ocp driver from the series for now
+>v3 -> v4:
+> * redesign framework to make pins dynamically allocated (Arkadiusz)
+> * implement shared pins (Arkadiusz)
+>v2 -> v3:
+> * implement source select mode (Arkadiusz)
+> * add documentation
+> * implementation improvements (Jakub)
+>v1 -> v2:
+> * implement returning supported input/output types
+> * ptp_ocp: follow suggestions from Jonathan
+> * add linux-clk mailing list
+>v0 -> v1:
+> * fix code style and errors
+> * add linux-arm mailing list
+>
+>Arkadiusz Kubalewski (2):
+>  ice: add admin commands to access cgu configuration
+>  ice: implement dpll interface to control cgu
+>
+>Vadim Fedorenko (2):
+>  dpll: documentation on DPLL subsystem interface
+>  dpll: Add DPLL framework base functions
+>
+> Documentation/networking/dpll.rst             |  280 +++
+> Documentation/networking/index.rst            |    1 +
+> MAINTAINERS                                   |    8 +
+> drivers/Kconfig                               |    2 +
+> drivers/Makefile                              |    1 +
+> drivers/dpll/Kconfig                          |    7 +
+> drivers/dpll/Makefile                         |    9 +
+> drivers/dpll/dpll_core.c                      | 1010 ++++++++
+> drivers/dpll/dpll_core.h                      |  105 +
+> drivers/dpll/dpll_netlink.c                   |  883 +++++++
+> drivers/dpll/dpll_netlink.h                   |   24 +
+> drivers/net/ethernet/intel/Kconfig            |    1 +
+> drivers/net/ethernet/intel/ice/Makefile       |    3 +-
+> drivers/net/ethernet/intel/ice/ice.h          |    5 +
+> .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  240 +-
+> drivers/net/ethernet/intel/ice/ice_common.c   |  467 ++++
+> drivers/net/ethernet/intel/ice/ice_common.h   |   43 +
+> drivers/net/ethernet/intel/ice/ice_dpll.c     | 2115 +++++++++++++++++
+> drivers/net/ethernet/intel/ice/ice_dpll.h     |   99 +
+> drivers/net/ethernet/intel/ice/ice_lib.c      |   17 +-
+> drivers/net/ethernet/intel/ice/ice_main.c     |   10 +
+> drivers/net/ethernet/intel/ice/ice_ptp_hw.c   |  408 ++++
+> drivers/net/ethernet/intel/ice/ice_ptp_hw.h   |  240 ++
+> drivers/net/ethernet/intel/ice/ice_type.h     |    1 +
+> include/linux/dpll.h                          |  282 +++
+> include/uapi/linux/dpll.h                     |  294 +++
+> 26 files changed, 6549 insertions(+), 6 deletions(-)  create mode 100644
+>Documentation/networking/dpll.rst  create mode 100644 drivers/dpll/Kconfig
+>create mode 100644 drivers/dpll/Makefile  create mode 100644
+>drivers/dpll/dpll_core.c  create mode 100644 drivers/dpll/dpll_core.h
+>create mode 100644 drivers/dpll/dpll_netlink.c  create mode 100644
+>drivers/dpll/dpll_netlink.h  create mode 100644
+>drivers/net/ethernet/intel/ice/ice_dpll.c
+> create mode 100644 drivers/net/ethernet/intel/ice/ice_dpll.h
+> create mode 100644 include/linux/dpll.h  create mode 100644
+>include/uapi/linux/dpll.h
+>
+>--
+>2.30.2
 
-Reviewed-by: Niklas Schnelle <schnelle@linux.ibm.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- arch/s390/pci/pci_dma.c    | 2 +-
- drivers/iommu/s390-iommu.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/s390/pci/pci_dma.c b/arch/s390/pci/pci_dma.c
-index 2f6d05d6da4f76..2d9b01d7ca4c5c 100644
---- a/arch/s390/pci/pci_dma.c
-+++ b/arch/s390/pci/pci_dma.c
-@@ -579,7 +579,7 @@ int zpci_dma_init_device(struct zpci_dev *zdev)
- 
- 	spin_lock_init(&zdev->iommu_bitmap_lock);
- 
--	zdev->dma_table = dma_alloc_cpu_table(GFP_ATOMIC);
-+	zdev->dma_table = dma_alloc_cpu_table(GFP_KERNEL);
- 	if (!zdev->dma_table) {
- 		rc = -ENOMEM;
- 		goto out;
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index 654ec4411fe36c..7dcfffed260e6b 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -52,7 +52,7 @@ static struct iommu_domain *s390_domain_alloc(unsigned domain_type)
- 	if (!s390_domain)
- 		return NULL;
- 
--	s390_domain->dma_table = dma_alloc_cpu_table(GFP_ATOMIC);
-+	s390_domain->dma_table = dma_alloc_cpu_table(GFP_KERNEL);
- 	if (!s390_domain->dma_table) {
- 		kfree(s390_domain);
- 		return NULL;
--- 
-2.39.0
+Based on today's sync meeting, changes we are going to introduce in next
+version:
+- reduce the muxed-pin number (artificial multiplication) on list of dpll's
+pins, have a single pin which can be connected with multiple parents,
+- introduce separated get command for the pin attributes,
+- allow infinite name length of dpll device,
+- remove a type embedded in dpll's name and introduce new attribute instead=
+,
+- remove clock class attribute as it is not known by the driver without
+compliance testing on given SW/HW configuration,
+- add dpll device "default" quality level attribute, as shall be known
+by driver for a given hardware.
 
+
+BR, Arkadiusz
