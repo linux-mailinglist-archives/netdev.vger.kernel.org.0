@@ -2,189 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9103D671C0F
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 13:30:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD4B3671BF3
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 13:23:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229581AbjARMaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 07:30:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32804 "EHLO
+        id S230073AbjARMXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 07:23:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229969AbjARM31 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 07:29:27 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FA537F06;
-        Wed, 18 Jan 2023 03:46:56 -0800 (PST)
-X-UUID: c54e4186972511ed945fc101203acc17-20230118
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=HWdLzUSugUMSgO/oMH5yCErnAFFDCPCQAIwaGw1DuZM=;
-        b=U7ZLHaVVeJzsTH+NNG5D7fFJu8Q8TyfPozLuTVnb0qC5KMoFhWGfrCUTro6OQohZp2/gd8tDfLwLPVBPRNMo7hVg9tacLT8iWmdnZwULsQJncGaBYUPLnaWO0FBcpUz2GnsAqMNHGo0EqZQLSZ0VfxNBAlab4sohR5R4ehnk/+A=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.18,REQID:7f6ecb4d-0ab7-45d2-a4f5-ba928b089559,IP:0,U
-        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-        release,TS:0
-X-CID-META: VersionHash:3ca2d6b,CLOUDID:0d8e2df6-ff42-4fb0-b929-626456a83c14,B
-        ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:11|1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0
-X-CID-BVR: 0,NGT
-X-UUID: c54e4186972511ed945fc101203acc17-20230118
-Received: from mtkmbs13n2.mediatek.inc [(172.21.101.108)] by mailgw02.mediatek.com
-        (envelope-from <yanchao.yang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1117001849; Wed, 18 Jan 2023 19:46:39 +0800
-Received: from mtkmbs13n1.mediatek.inc (172.21.101.193) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Wed, 18 Jan 2023 19:46:38 +0800
-Received: from mcddlt001.gcn.mediatek.inc (10.19.240.15) by
- mtkmbs13n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Wed, 18 Jan 2023 19:46:36 +0800
-From:   Yanchao Yang <yanchao.yang@mediatek.com>
-To:     Loic Poulain <loic.poulain@linaro.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev ML <netdev@vger.kernel.org>,
-        kernel ML <linux-kernel@vger.kernel.org>
-CC:     Intel experts <linuxwwan@intel.com>,
-        Chetan <m.chetan.kumar@intel.com>,
-        MTK ML <linux-mediatek@lists.infradead.org>,
-        Liang Lu <liang.lu@mediatek.com>,
-        Haijun Liu <haijun.liu@mediatek.com>,
-        Hua Yang <hua.yang@mediatek.com>,
-        Ting Wang <ting.wang@mediatek.com>,
-        Felix Chen <felix.chen@mediatek.com>,
-        Mingliang Xu <mingliang.xu@mediatek.com>,
-        Min Dong <min.dong@mediatek.com>,
-        Aiden Wang <aiden.wang@mediatek.com>,
-        Guohao Zhang <guohao.zhang@mediatek.com>,
-        Chris Feng <chris.feng@mediatek.com>,
-        Yanchao Yang <yanchao.yang@mediatek.com>,
-        Lambert Wang <lambert.wang@mediatek.com>,
-        Mingchuang Qiao <mingchuang.qiao@mediatek.com>,
-        Xiayu Zhang <xiayu.zhang@mediatek.com>,
-        Haozhe Chang <haozhe.chang@mediatek.com>
-Subject: [PATCH net-next v2 12/12] net: wwan: tmi: Add maintainers and documentation
-Date:   Wed, 18 Jan 2023 19:38:59 +0800
-Message-ID: <20230118113859.175836-13-yanchao.yang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20230118113859.175836-1-yanchao.yang@mediatek.com>
-References: <20230118113859.175836-1-yanchao.yang@mediatek.com>
+        with ESMTP id S230132AbjARMWb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 07:22:31 -0500
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB70D5A812
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 03:43:43 -0800 (PST)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-4c24993965eso456971127b3.12
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 03:43:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=HBeC917hyxhJkLItckuHGUlIZdx8buVEDMCa+icWbmA=;
+        b=KIKa1SEpLAKZ7QiWVDmJTOhIrXlZz4ZwklkIMEN9UrWNaHVU2PiyO3o7ZCwS0egUrq
+         06IwlcCawMG+Abc6umQVtWen6SDIawFqvYzK1bDRH3wN8mVu1B/RgkSe3aCf5Ms8eZrN
+         Tl4cN8hNRz/AGJG1dpo90qZBX5yWB3N+pA2pRpbBJybUBbb062mm6HXPNtrrtOXX+v+y
+         ftDmPjplCdOPTF0Zo6EkvhEbnU6AqIz22lww+EdvevTpH+SfI04RHtPELkC/Ws9EBqae
+         UNjMibNTciNdwBRVPa1csIfPW9bbZ4plCliCZ5pXQhFp/Esf//wKLq5Ng2NGmIdgFLpO
+         ypVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=HBeC917hyxhJkLItckuHGUlIZdx8buVEDMCa+icWbmA=;
+        b=qwslrkJMyUIiCxsGwUlJM9Kw4POYLUAt8J1lFRiXp/A/+keMBvAzYCAicWEzcUYYsp
+         yad/ED3+NV5dDz3UI3g2Yq8L95jpUvAnRL5y+Hu1bB2wZ+Z2cMlvQS4GdRcbH1i2Dpaq
+         IvoxXI4J3/QzM8f4zsDAORsAYlgik9vT4uVxhpnMCYwbfKJwCoG7acvnKdsNw7+LQz/2
+         wbq22cWtbOA4klAE1n4u1zNi/AKJCBHqgEX9OZHXNPNj0zeL/PYF75OcYQfHEJfgjoFj
+         hdJVdItiaNKk1AaajYAz78/zTrqpcF4NHNwd5/7YbcQcaSHpzBgoHTqOfi/IV7QiJusm
+         BzIQ==
+X-Gm-Message-State: AFqh2krbh1bpN4ggQiZEzV2GxZA9toO7myXSrYf1NzJ+uKJsrAnn8vR4
+        6Kdq04+9b76+LZziVkkc7UCFB/GWnm99//fEDEYURg==
+X-Google-Smtp-Source: AMrXdXs0X0KBiSICtMIafqp0H77dnNrOlyP3WQbqBuzsPIt7hG/bULORVutYHQh4l/2pfYJzmAxIfvi1sOVQXmtLjuM=
+X-Received: by 2002:a81:351:0:b0:36c:aaa6:e571 with SMTP id
+ 78-20020a810351000000b0036caaa6e571mr589296ywd.467.1674042222653; Wed, 18 Jan
+ 2023 03:43:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20230113164849.4004848-1-edumazet@google.com> <871qny9f4l.fsf@intel.com>
+In-Reply-To: <871qny9f4l.fsf@intel.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 18 Jan 2023 12:43:31 +0100
+Message-ID: <CANn89i+iHh3Bvnn100D4YUvRLFyq7SnsOHRJWtKVr8299QmREQ@mail.gmail.com>
+Subject: Re: [PATCH net] net/sched: sch_taprio: fix possible use-after-free
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        eric.dumazet@gmail.com, syzbot <syzkaller@googlegroups.com>,
+        Alexander Potapenko <glider@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds maintainers and documentation for MediaTek TMI 5G WWAN modem
-device driver.
+On Sat, Jan 14, 2023 at 12:41 AM Vinicius Costa Gomes
+<vinicius.gomes@intel.com> wrote:
+>
+> Hi,
+>
+>
+> From the commit message, I got the impression that only the one
+> qdisc_synchronize() in taprio_destroy() would be needed.
+>
 
-Signed-off-by: Yanchao Yang <yanchao.yang@mediatek.com>
-Signed-off-by: Felix Chen <felix.chen@mediatek.com>
----
- .../networking/device_drivers/wwan/index.rst  |  1 +
- .../networking/device_drivers/wwan/tmi.rst    | 48 +++++++++++++++++++
- MAINTAINERS                                   | 11 +++++
- 3 files changed, 60 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/wwan/tmi.rst
+Hmm, I think you are right, qdisc_reset() is probably called while
+qdisc lock is held,
+with BH disabled.
 
-diff --git a/Documentation/networking/device_drivers/wwan/index.rst b/Documentation/networking/device_drivers/wwan/index.rst
-index 370d8264d5dc..8298629b4d55 100644
---- a/Documentation/networking/device_drivers/wwan/index.rst
-+++ b/Documentation/networking/device_drivers/wwan/index.rst
-@@ -10,6 +10,7 @@ Contents:
- 
-    iosm
-    t7xx
-+   tmi
- 
- .. only::  subproject and html
- 
-diff --git a/Documentation/networking/device_drivers/wwan/tmi.rst b/Documentation/networking/device_drivers/wwan/tmi.rst
-new file mode 100644
-index 000000000000..3655779bf692
---- /dev/null
-+++ b/Documentation/networking/device_drivers/wwan/tmi.rst
-@@ -0,0 +1,48 @@
-+.. SPDX-License-Identifier: BSD-3-Clause-Clear
-+
-+.. Copyright (c) 2022, MediaTek Inc.
-+
-+.. _tmi_driver_doc:
-+
-+====================================================
-+TMI driver for MTK PCIe based T-series 5G Modem
-+====================================================
-+The TMI(T-series Modem Interface) driver is a WWAN PCIe host driver developed
-+for data exchange over PCIe interface between Host platform and MediaTek's
-+T-series 5G modem. The driver exposes control plane and data plane interfaces
-+to applications. The control plane provides device node interfaces for control
-+data transactions. The data plane provides network link interfaces for IP data
-+transactions.
-+
-+Control channel userspace ABI
-+=============================
-+/dev/wwan0at0 character device
-+------------------------------
-+The driver exposes an AT port by implementing AT WWAN Port.
-+The userspace end of the control channel pipe is a /dev/wwan0at0 character
-+device. Application shall use this interface to issue AT commands.
-+
-+/dev/wwan0mbim0 character device
-+--------------------------------
-+The driver exposes an MBIM interface to the MBIM function by implementing
-+MBIM WWAN Port. The userspace end of the control channel pipe is a
-+/dev/wwan0mbim0 character device. Applications shall use this interface
-+for MBIM protocol communication.
-+
-+Data channel userspace ABI
-+==========================
-+wwan0-X network device
-+----------------------
-+The TMI driver exposes IP link interfaces "wwan0-X" of type "wwan" for IP
-+traffic. Iproute network utility is used for creating "wwan0-X" network
-+interfaces and for associating it with the MBIM IP session.
-+
-+The userspace management application is responsible for creating a new IP link
-+prior to establishing an MBIM IP session where the SessionId is greater than 0.
-+
-+For example, creating a new IP link for an MBIM IP session with SessionId 1:
-+
-+  ip link add dev wwan0-1 parentdev wwan0 type wwan linkid 1
-+
-+The driver will automatically map the "wwan0-1" network device to MBIM IP
-+session 1.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7f0b7181e60a..30aa7d7c783e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13254,6 +13254,17 @@ L:	netdev@vger.kernel.org
- S:	Supported
- F:	drivers/net/wwan/t7xx/
- 
-+MEDIATEK TMI 5G WWAN MODEM DRIVER
-+M:	Yanchao Yang <yanchao.yang@mediatek.com>
-+M:	Min Dong <min.dong@mediatek.com>
-+M:	MediaTek Corporation <linuxwwan@mediatek.com>
-+R:	Liang Lu <liang.lu@mediatek.com>
-+R:	Haijun Liu <haijun.liu@mediatek.com>
-+R:	Lambert Wang <lambert.wang@mediatek.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+F:	drivers/net/wwan/tmi/
-+
- MEDIATEK USB3 DRD IP DRIVER
- M:	Chunfeng Yun <chunfeng.yun@mediatek.com>
- L:	linux-usb@vger.kernel.org
--- 
-2.32.0
+So calling msleep() from qdisc_reset() is a no go.
 
+I will send a patch removing the change in taprio_reset(), thanks.
