@@ -2,72 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ED2C672132
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 16:25:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2F2267213C
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 16:27:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231142AbjARPYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 10:24:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54226 "EHLO
+        id S229637AbjARP1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 10:27:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231259AbjARPXz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 10:23:55 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00D7D49958
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 07:21:41 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id vm8so84027146ejc.2
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 07:21:41 -0800 (PST)
+        with ESMTP id S231486AbjARP1R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 10:27:17 -0500
+Received: from mail-vs1-xe2d.google.com (mail-vs1-xe2d.google.com [IPv6:2607:f8b0:4864:20::e2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D297A13D78
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 07:26:48 -0800 (PST)
+Received: by mail-vs1-xe2d.google.com with SMTP id l125so16722205vsc.2
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 07:26:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=F3D2rOW0PtnstTqBQ9TFwrlqB8EOa2WTC5VIOo9/5xE=;
-        b=Wrv2nft2StJMF4BfDHMiuDIZ7YwztmYYPAglLab9B6+yfxUHaQpYbLo24Nk8+8Wud1
-         8H3CecBX2YMkFR/uGgX5bcIcrydhVnIrPfxDwa5VZHqpKxQakVpNgnhxJnnH+bTazDf+
-         tGAOq9HQXwO7NtBfwfmIgzxN4+wdXEM221els/SbfAiRHibWL3bYG4VilnHxfJq7mAZC
-         lgkCQFOOZq5y/K4m0HfSqNOkYxE+jOYeYP77govBR3wSWoeQO600qEMkdW7+MaJIk2bl
-         i5lY4hWD5MqTKCFbq7sM6dcBEOxu/Yb+JnDEVNHSrHO/o7YTA6T19hBSPHIBMO0kUdPp
-         jHZg==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=aemURlTvFjeUyU8geGIQuPpUh0VECn/jnSnmiMJQr9E=;
+        b=Rxp7qcrzhL75fKQ++siTYJI7CtkFrk6jL87ZrYXf1VhvPvGNGaDLqCDcjnZLYJMlgG
+         H29Cu0sX/+6lcpBMFvuduYHAO4FZa7BRDSCqTDrBv2djLQDbWCbsgKjoL1x1/0Bj03Z0
+         wZzEkjl4Apni9n/U7bDAoeM07WFT0OTCFuyTxLhq+X22LflhmYbdlZ2OWR+XLiQ0HuCI
+         8l6fni2XfDBqnAQZgaVHCECeckUJypxMCR2tBp1ZcduaIPQMM2QF86F6LqiMa3ZXx0ZA
+         QHzcIzCqbgj7YcWRX/Ob98D9ZJVbBGaQV+6dA7g785yTM6l4AT6MuJoDlclTvulv2L//
+         yv+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=F3D2rOW0PtnstTqBQ9TFwrlqB8EOa2WTC5VIOo9/5xE=;
-        b=DtJqX4G+xIV8DbsUgXY7xoTwqOiQjlTQ7HhCGQDjkBkytVjv3qWBgI3ijdfxc33vDj
-         UpLTSIZA3FiM3b+46PtnNxZZrWmxAIcm5KI5zGfsUFnV/yvqFpNw6/R4RzOwxrYwAKrO
-         qXCD/8w/RgeXFEAHUgLuaYDkepMmLt4zXTizwUl9RJxw3ww2yAz0smsLpYPZ25xda81Y
-         wFlMPlX67r7249aPOn2DeVR7+MaxiEtPvdM6DowMVWOHH52YWPZy2dUTvUoGi6QxnheZ
-         pyZwvBJBKQjE738Vn85+DPEU1Ek8z1jrM41oCmQENtpF3iV+d8YqqIcsdsON2o65mZrD
-         fUCw==
-X-Gm-Message-State: AFqh2kppoIX0QAZooh+gaFoDdWKkUlociSOUCPrYfJ4RUo+lJZMNxrFM
-        3n5HbntRKUfLFjWcvpbyNDgOInsR+eE7q9c8QugEwg==
-X-Google-Smtp-Source: AMrXdXsSKouW2ZisPh8+mtmTzxJ8CrdTdCJpKXYCgo8pYXjSWZzqH6eq3g5lAWeaI0o2VFuQV0uftA==
-X-Received: by 2002:a17:906:78b:b0:7c1:9b07:32cd with SMTP id l11-20020a170906078b00b007c19b0732cdmr7540415ejc.39.1674055300490;
-        Wed, 18 Jan 2023 07:21:40 -0800 (PST)
-Received: from localhost ([217.111.27.204])
-        by smtp.gmail.com with ESMTPSA id d9-20020a1709063ec900b0084c2065b388sm14690462ejj.128.2023.01.18.07.21.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Jan 2023 07:21:39 -0800 (PST)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, michael.chan@broadcom.com,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        tariqt@nvidia.com, saeedm@nvidia.com, leon@kernel.org,
-        idosch@nvidia.com, petrm@nvidia.com, mailhol.vincent@wanadoo.fr,
-        jacob.e.keller@intel.com, gal@nvidia.com
-Subject: [patch net-next v5 12/12] devlink: add instance lock assertion in devl_is_registered()
-Date:   Wed, 18 Jan 2023 16:21:15 +0100
-Message-Id: <20230118152115.1113149-13-jiri@resnulli.us>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230118152115.1113149-1-jiri@resnulli.us>
-References: <20230118152115.1113149-1-jiri@resnulli.us>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=aemURlTvFjeUyU8geGIQuPpUh0VECn/jnSnmiMJQr9E=;
+        b=a8z3Gc27v7g0wFj8m/t42N9R8LaG8Xj9GeJzjKMIpFHptiqtTTznyK+RewgS+logpV
+         wKnyVvZ47I/IQKtJtV5+4leUOJM9MehvsaasaKxV3VHaWbQD0ybT483vKQvMLqs6CeUo
+         1RqYKuvSgpKJz3iT6qnzoLYwEtDDuooa4vqgvF1uJhqZ4RqnxV3106pgMwMh6x1xs5iT
+         /nvuiKwlVyPnwT+uNPqVPMNyPd87NqHPG11FdrGwkSFMB1CqVAjMU0O77X8G2aqIUOul
+         fy4rRarJfA8SvB0FBXRp/dD2KmcgYCFOqNWqe/g8uc1a6uTxA6yX18YRsQxxzFZvKa2+
+         4SkA==
+X-Gm-Message-State: AFqh2kqGUdaQSXjtxT41FXf1ltbi9SYW/0X5YbKEXeUYQePQnkrNF4uE
+        0jnRk1jEQHeQjXG6/MOOd/4QLjmPv80ollPyQui1S69U
+X-Google-Smtp-Source: AMrXdXsgOCy1Mbg0u111SlZaOTaL8zho0NmGi2ujndkNmqqignsxkZMcvrZha02UhGATqpenFkReMujaTBZOcXTZ5xM=
+X-Received: by 2002:a05:6102:5587:b0:3d1:2167:11ad with SMTP id
+ dc7-20020a056102558700b003d1216711admr934622vsb.2.1674055607899; Wed, 18 Jan
+ 2023 07:26:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+References: <20230116174013.3272728-1-willemdebruijn.kernel@gmail.com>
+ <5f494ec3-9435-b9dc-6dd8-9e1b7354430d@intel.com> <CAF=yD-LMO5Y1Uith1jsbh1kOO3t4oagTnKSdKoM=gQkfd61oAA@mail.gmail.com>
+ <6573e9e23324291b83e81de9659a50c86b55502b.camel@perches.com>
+In-Reply-To: <6573e9e23324291b83e81de9659a50c86b55502b.camel@perches.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 18 Jan 2023 10:26:12 -0500
+Message-ID: <CAF=yD-JaJUYEEGp7H41FeEr8U-cLKx6Ki5-8VchHRVmj6av2QQ@mail.gmail.com>
+Subject: Re: [PATCH net] selftests/net: toeplitz: fix race on tpacket_v3 block close
+To:     Joe Perches <joe@perches.com>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, Willem de Bruijn <willemb@google.com>,
+        Andy Whitcroft <apw@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,32 +70,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+On Tue, Jan 17, 2023 at 7:54 PM Joe Perches <joe@perches.com> wrote:
+>
+> On Tue, 2023-01-17 at 14:15 -0500, Willem de Bruijn wrote:
+> > > On 1/16/2023 9:40 AM, Willem de Bruijn wrote:
+> > > > From: Willem de Bruijn <willemb@google.com>
+> > > >
+> > > > Avoid race between process wakeup and tpacket_v3 block timeout.
+> > > >
+> > > > The test waits for cfg_timeout_msec for packets to arrive. Packets
+> > > > arrive in tpacket_v3 rings, which pass packets ("frames") to the
+> > > > process in batches ("blocks"). The sk waits for
+> > > > req3.tp_retire_blk_tov
+> > > > msec to release a block.
+> > > >
+> > > > Set the block timeout lower than the process waiting time, else
+> > > > the process may find that no block has been released by the time
+> > > > it
+> > > > scans the socket list. Convert to a ring of more than one,
+> > > > smaller,
+> > > > blocks with shorter timeouts. Blocks must be page aligned, so >=
+> > > > 64KB.
+> > > >
+> > > > Somewhat awkward while () notation dictated by checkpatch: no
+> > > > empty
+> > > > braces allowed, nor statement on the same line as the condition.
+> > > >
+> > > > Fixes: 5ebfb4cc3048 ("selftests/net: toeplitz test")
+> > > > Signed-off-by: Willem de Bruijn <willemb@google.com>
+> > > > ---
+> > > >  tools/testing/selftests/net/toeplitz.c | 13 ++++++++-----
+> > > >  1 file changed, 8 insertions(+), 5 deletions(-)
+> > > >
+> > > > diff --git a/tools/testing/selftests/net/toeplitz.c
+> > > > b/tools/testing/selftests/net/toeplitz.c
+> > > > index 90026a27eac0c..66f7f6568643a 100644
+> > > > --- a/tools/testing/selftests/net/toeplitz.c
+> > > > +++ b/tools/testing/selftests/net/toeplitz.c
+> > > > @@ -215,7 +215,7 @@ static char *recv_frame(const struct
+> > > > ring_state *ring, char *frame)
+> > > >  }
+> > > >
+> > > >  /* A single TPACKET_V3 block can hold multiple frames */
+> > > > -static void recv_block(struct ring_state *ring)
+> > > > +static bool recv_block(struct ring_state *ring)
+> > > >  {
+> > > >       struct tpacket_block_desc *block;
+> > > >       char *frame;
+> > > > @@ -223,7 +223,7 @@ static void recv_block(struct ring_state
+> > > > *ring)
+> > > >
+> > > >       block = (void *)(ring->mmap + ring->idx * ring_block_sz);
+> > > >       if (!(block->hdr.bh1.block_status & TP_STATUS_USER))
+> > > > -             return;
+> > > > +             return false;
+> > > >
+> > > >       frame = (char *)block;
+> > > >       frame += block->hdr.bh1.offset_to_first_pkt;
+> > > > @@ -235,6 +235,8 @@ static void recv_block(struct ring_state
+> > > > *ring)
+> > > >
+> > > >       block->hdr.bh1.block_status = TP_STATUS_KERNEL;
+> > > >       ring->idx = (ring->idx + 1) % ring_block_nr;
+> > > > +
+> > > > +     return true;
+> > > >  }
+> > > >
+> > > >  /* simple test: sleep once unconditionally and then process all
+> > > > rings */
+> > > > @@ -245,7 +247,8 @@ static void process_rings(void)
+> > > >       usleep(1000 * cfg_timeout_msec);
+> > > >
+> > > >       for (i = 0; i < num_cpus; i++)
+> > > > -             recv_block(&rings[i]);
+> > > > +             while (recv_block(&rings[i]))
+> > > > +                     ;
+> > >
+> > > I'd rather have one of
+> > >
+> > >   while (recv_block(&rings[i]));
+> > >
+> > > or
+> > >
+> > >   while (recv_block(&rings[i])) {}
+> > >
+> > > or even (but less preferred:
+> > >
+> > >   do {} (while (recv_block(&rings[i]));
+> > >
+> > > instead of  this ; on its own line.
+> > >
+> > > Even if this violates checkpatch attempts to catch other bad style
+> > > this
+> > > is preferable to the lone ';' on its own line.
+> > >
+> > > If necessary we can/should change checkpatch to allow the idiomatic
+> > > approach.
+>
+> To me it's a 'Don't care'.
+>
+> There are many hundreds of these in the kernel and there is no
+> valid reason to require a particular style.
+>
+> $ git grep -P  '^\t+;\s*$' -- '*.c' | wc -l
+> 871
 
-After region and linecard lock removals, this helper is always supposed
-to be called with instance lock held. So put the assertion here and
-remove the comment which is no longer accurate.
+Interesting, thanks.
 
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
----
- net/devlink/devl_internal.h | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
-index 75752f8c4a26..1aa1a9549549 100644
---- a/net/devlink/devl_internal.h
-+++ b/net/devlink/devl_internal.h
-@@ -85,9 +85,7 @@ struct devlink *devlinks_xa_find_get(struct net *net, unsigned long *indexp);
- 
- static inline bool devl_is_registered(struct devlink *devlink)
- {
--	/* To prevent races the caller must hold the instance lock
--	 * or another lock taken during unregistration.
--	 */
-+	devl_assert_locked(devlink);
- 	return xa_get_mark(&devlinks, devlink->index, DEVLINK_REGISTERED);
- }
- 
--- 
-2.39.0
-
+I had to send a v2 by now anyway, so changed to a "do {} while" as
+evidently people found that more palatable.
