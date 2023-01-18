@@ -2,143 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9D6F67220B
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 16:50:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F152B672223
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 16:52:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230187AbjARPuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 10:50:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51202 "EHLO
+        id S230156AbjARPwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 10:52:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229618AbjARPtj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 10:49:39 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F0EB53E71;
-        Wed, 18 Jan 2023 07:47:31 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id z11so50199082ede.1;
-        Wed, 18 Jan 2023 07:47:31 -0800 (PST)
+        with ESMTP id S230388AbjARPvc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 10:51:32 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63473F299
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 07:49:36 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id o17-20020a05600c511100b003db021ef437so1839642wms.4
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 07:49:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=NwgV158VzLBEwnGM/l7d36JtM7My51+lT57j1JGtHIs=;
-        b=Pnsqx/b/Md5J6PPDJLVlGUEm4SDbiGA/5a+wIZ0BzNL9kaE71HxuKTBGLEhw2jqzBB
-         +FdflJ/gXAOD+DM6pctjHZAjGPJ47Ez/GFUzuQeN5oKlp61oPm5joWM+OmnXssPl7gzb
-         31VI8A3Vj1zws4kF05jGunyjE/GKn2Z5hinkrtIm5zijnr3p3aKukkDIRoHGtVJS4luL
-         79FPNmvVXFSX1k2/Yyc/z1ubdb2yzY+InxjRRfaFIPN9x6K3jSgR0+BQwt60WN5KTjlq
-         K+/0KxPIrzbr7YXVwXGlVylAkPREspEIxHShRN08w0s5B4en6iyrVNVds6guuzq9CJuu
-         TQ1A==
+        bh=zZKLrjDE6gNxqEyqtKQtAvgreZnol5CzLZ53Y6iptjQ=;
+        b=DlobVO+fkH8lmWsg1Xbf+Les5HoBiix+EaSOkIu5MwtszuT9dbvx5yOdyy679QZS7H
+         CgPzbDI2fqg6KzaW9TiPApqEfeZG3Stt6b1sMjK6A8u1y6ydyF+/E0c8h8xH6g/UN/WG
+         sTmOzb/K64HbvxlGd1RvxKQmH+BSoaJlt1k6dOirDf01+HFJdZPCdvv9YjuYqusHZUPv
+         gYo7DFQ19DZmUNThj8aJBEc2NsecSdoOrJdc5fjupVNSRfI+3b+8kB7LxraGqDeVZMR9
+         UHp7s/tTfKavPWZOipGA+yzU4HQGkBAuQi9JxOd9PxN3pU6hmk+64iKMMQcs4OVIzuAx
+         ZGHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NwgV158VzLBEwnGM/l7d36JtM7My51+lT57j1JGtHIs=;
-        b=iwZMQ8bxUZzcGQdXW62Y2DqPiTG+88skgqNdngpwAGdJEiPnfzB0vYRAYxseSsDJ2q
-         nYTTlF/GdFxQ34rsWEHc8Owo4KpJi71bAlhjjxDrOkmrrmethOVvagBzGBwhHjcyP137
-         F6zzRVAi6VtwLGlvVkQoEnBr0avkIxV7tXybMyJ0ecjiJ0ZZvttu1y95RmocAR/ZAl+f
-         yLuZrb1poLNJHmS/68j79BprkK8R3IpLwMBSKQQm0qBvvO9KbpqcE7znPLpvqBFXmUxf
-         E+9O+4TI+ed+tknL/XyyE6u59tD2KXgkK/YL5xiY/LuPxYkMaH4aP2ul306i5TV/vJHD
-         swgw==
-X-Gm-Message-State: AFqh2kpG/NSaO5x/0yVzUsSu64RNZsYtQBdMqheIFKw3QuTKuUEZ2xJD
-        GWWgLCYeoAMxLMRD7NmrXcg=
-X-Google-Smtp-Source: AMrXdXuydvQh3hAPzT1cMH4Ifuyjvtw1eBOZaBIdfL5iY7MyZIdfL69czWjCed/hDPV46V9cOshRKg==
-X-Received: by 2002:a05:6402:28ca:b0:49c:96f9:417e with SMTP id ef10-20020a05640228ca00b0049c96f9417emr7534101edb.2.1674056849884;
-        Wed, 18 Jan 2023 07:47:29 -0800 (PST)
-Received: from gvm01 (net-5-89-66-224.cust.vodafonedsl.it. [5.89.66.224])
-        by smtp.gmail.com with ESMTPSA id v18-20020aa7cd52000000b0047eeaae9558sm6358824edw.60.2023.01.18.07.47.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Jan 2023 07:47:29 -0800 (PST)
-Date:   Wed, 18 Jan 2023 16:47:31 +0100
-From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
+        bh=zZKLrjDE6gNxqEyqtKQtAvgreZnol5CzLZ53Y6iptjQ=;
+        b=OZmyeN3bTozQE+gLpY/cC9g/oyd2XlXZJ4++1uMxRaDjDzEkMGOQVSL2idHN9TkGTQ
+         aNhimpuyVmpYzhPSs9ZST7EGEZgsTyxl/g9CjLmmaIB/gDrAEjbW22RPi35MLYIFoZJa
+         e8Pifv96fiJEy7nEba+8cPAL/mqFRLeDP0llAuKi5u3yiMBK/DViTIbQQYWw649qpSoA
+         VVcLGrrqI95GWP1kTf2ZY5GkE8b/doFohTuYnqlWX7S9Dv2H1voy45Xq+eEez+lXshwo
+         lzz+LLmoxN1p/UraT7plRqI0gsCJp0nJCms4WpUyydTo441z0IT/mZay6yBxIJiPdnRn
+         +/WQ==
+X-Gm-Message-State: AFqh2kqdRjaDX1tQBN80GdoMQ0WixFKoNVLqgNAEmm8uXqZe/DnXpdh5
+        9mSm77yUFitesD5X/l67pJmCNg==
+X-Google-Smtp-Source: AMrXdXvUXPw/cK446ap5ID8iRUgB13K9qZXkhy+nek/O84uQWg7WqzMIXywLZvU1ZWBitD0vM9ljLA==
+X-Received: by 2002:a05:600c:511f:b0:3d0:bd9:edd4 with SMTP id o31-20020a05600c511f00b003d00bd9edd4mr7080861wms.0.1674056975399;
+        Wed, 18 Jan 2023 07:49:35 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id b11-20020a05600018ab00b002be2279f100sm5447471wri.96.2023.01.18.07.49.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 Jan 2023 07:49:35 -0800 (PST)
+Message-ID: <102db6ae-742b-ea20-076e-386a0284a185@linaro.org>
+Date:   Wed, 18 Jan 2023 16:49:33 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.0
+Subject: Re: [PATCH v4 4/7] dt-bindings: net: Add support StarFive dwmac
+Content-Language: en-US
+To:     Yanhong Wang <yanhong.wang@starfivetech.com>,
+        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        mailhol.vincent@wanadoo.fr, sudheer.mogilappagari@intel.com,
-        sbhatta@marvell.com, linux-doc@vger.kernel.org,
-        wangjie125@huawei.com, corbet@lwn.net, lkp@intel.com,
-        gal@nvidia.com, gustavoars@kernel.org, bagasdotme@gmail.com
-Subject: [PATCH v2 net-next 1/1] net: phy: fix use of uninit variable when
- setting PLCA config
-Message-ID: <f22f1864165a8dbac8b7a2277f341bc8e7a7b70d.1674056765.git.piergiorgio.beruto@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>
+References: <20230118061701.30047-1-yanhong.wang@starfivetech.com>
+ <20230118061701.30047-5-yanhong.wang@starfivetech.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230118061701.30047-5-yanhong.wang@starfivetech.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Coverity reported the following:
+On 18/01/2023 07:16, Yanhong Wang wrote:
+> Add documentation to describe StarFive dwmac driver(GMAC).
+> 
+> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
 
-*** CID 1530573:    (UNINIT)
-drivers/net/phy/phy-c45.c:1036 in genphy_c45_plca_set_cfg()
-1030     				return ret;
-1031
-1032     			val = ret;
-1033     		}
-1034
-1035     		if (plca_cfg->node_cnt >= 0)
-vvv     CID 1530573:    (UNINIT)
-vvv     Using uninitialized value "val".
-1036     			val = (val & ~MDIO_OATC14_PLCA_NCNT) |
-1037     			      (plca_cfg->node_cnt << 8);
-1038
-1039     		if (plca_cfg->node_id >= 0)
-1040     			val = (val & ~MDIO_OATC14_PLCA_ID) |
-1041     			      (plca_cfg->node_id);
-drivers/net/phy/phy-c45.c:1076 in genphy_c45_plca_set_cfg()
-1070     				return ret;
-1071
-1072     			val = ret;
-1073     		}
-1074
-1075     		if (plca_cfg->burst_cnt >= 0)
-vvv     CID 1530573:    (UNINIT)
-vvv     Using uninitialized value "val".
-1076     			val = (val & ~MDIO_OATC14_PLCA_MAXBC) |
-1077     			      (plca_cfg->burst_cnt << 8);
-1078
-1079     		if (plca_cfg->burst_tmr >= 0)
-1080     			val = (val & ~MDIO_OATC14_PLCA_BTMR) |
-1081     			      (plca_cfg->burst_tmr);
 
-This is not actually creating a real problem because the path leading to
-'val' being used uninitialized will eventually override the full content
-of that variable before actually using it for writing the register.
-However, the fix is simple and comes at basically no cost.
+Subject is poor. You miss device prefix and it's not correct sentence.
 
-Reported-by: coverity-bot <keescook+coverity-bot@chromium.org>
-Fixes: 493323416fed ("drivers/net/phy: add helpers to get/set PLCA configuration")
-Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
----
- drivers/net/phy/phy-c45.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+"Add support for XYZ"
+or better:
+"Add XYZ"
 
-diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-index cff83220595c..9f9565a4819d 100644
---- a/drivers/net/phy/phy-c45.c
-+++ b/drivers/net/phy/phy-c45.c
-@@ -999,8 +999,8 @@ EXPORT_SYMBOL_GPL(genphy_c45_plca_get_cfg);
- int genphy_c45_plca_set_cfg(struct phy_device *phydev,
- 			    const struct phy_plca_cfg *plca_cfg)
- {
-+	u16 val = 0;
- 	int ret;
--	u16 val;
- 
- 	// PLCA IDVER is read-only
- 	if (plca_cfg->version >= 0)
--- 
-2.37.4
+
+> ---
+>  .../devicetree/bindings/net/snps,dwmac.yaml   |   1 +
+>  .../bindings/net/starfive,jh7110-dwmac.yaml   | 113 ++++++++++++++++++
+>  MAINTAINERS                                   |   5 +
+>  3 files changed, 119 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> index baf2c5b9e92d..8b07bc9c8b00 100644
+> --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> @@ -91,6 +91,7 @@ properties:
+>          - snps,dwmac-5.20
+>          - snps,dwxgmac
+>          - snps,dwxgmac-2.10
+> +        - starfive,jh7110-dwmac
+>  
+>    reg:
+>      minItems: 1
+> diff --git a/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml b/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
+> new file mode 100644
+> index 000000000000..eb0767da834a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
+> @@ -0,0 +1,113 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +# Copyright (C) 2022 StarFive Technology Co., Ltd.
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/starfive,jh7110-dwmac.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: StarFive JH7110 DWMAC glue layer
+> +
+> +maintainers:
+> +  - Yanhong Wang <yanhong.wang@starfivetech.com>
+> +
+> +select:
+> +  properties:
+> +    compatible:
+> +      contains:
+> +        enum:
+> +          - starfive,jh7110-dwmac
+> +  required:
+> +    - compatible
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - enum:
+> +          - starfive,jh7110-dwmac
+> +      - const: snps,dwmac-5.20
+> +
+> +  clocks:
+> +    items:
+> +      - description: GMAC main clock
+> +      - description: GMAC AHB clock
+> +      - description: PTP clock
+> +      - description: TX clock
+> +      - description: GTXC clock
+> +      - description: GTX clock
+> +
+> +  clock-names:
+> +    items:
+> +      - const: stmmaceth
+> +      - const: pclk
+> +      - const: ptp_ref
+> +      - const: tx
+> +      - const: gtxc
+> +      - const: gtx
+> +
+> +  resets:
+> +    items:
+> +      - description: MAC Reset signal.
+
+Drop trailing dot
+
+> +      - description: AHB Reset signal.
+
+Ditto
+
+> +
+> +  reset-names:
+> +    items:
+> +      - const: stmmaceth
+> +      - const: ahb
+
+You have two resets. Why do you change them to three for all variants?
+It's not explained in commit 2/7, so this is confusing.
+
+> +
+> +allOf:
+> +  - $ref: snps,dwmac.yaml#
+> +
+> +unevaluatedProperties: true
+> +
+> +required:
+> +  - compatible
+> +  - clocks
+> +  - clock-names
+> +  - resets
+> +  - reset-names
+> +
+
+
+Best regards,
+Krzysztof
 
