@@ -2,203 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECD44671871
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 11:03:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5177671892
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 11:08:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230122AbjARKD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 05:03:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42242 "EHLO
+        id S230038AbjARKIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 05:08:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230468AbjARKBU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 05:01:20 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8066C951B7;
-        Wed, 18 Jan 2023 01:08:58 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id v30so48700077edb.9;
-        Wed, 18 Jan 2023 01:08:58 -0800 (PST)
+        with ESMTP id S229649AbjARKIc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 05:08:32 -0500
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2115.outbound.protection.outlook.com [40.107.96.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13576656FD;
+        Wed, 18 Jan 2023 01:14:23 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Af55KP02zbMt8XOXohuJIgkYXpj87Ga0TcoYNSHSLPUEjegc1nTf3SvARJide2IQow+ZEREJo7IooD8QTeFb+BgBrCU57dVlcTP107DptnopQlpafJx8SbqXE9pzc3gqObJ6bfkPRZHu/2Hqw/l/5qnSssUu+XL1DSuCaK0tTpuOIMnV58aFsM0HZ5ug8351/ioaitLuww0w6t6iTL8xEx2AvszI0iAPSLZnqfmmrcmGlRlkG20OSbO+HvidTfXYoVWmGayKbnpHOkeBxlCkHjSfp03bjq1QMRsCx02+GIryxYVtKejoPVYw4kaaPXow0sml1hpF4LX3G5s85UcTkQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ruvWeVjNDtmxA2IkxcOHD8Tt7BSEY5ZScBDbF5YJHQA=;
+ b=BbHTB8iWLOzOWHnJ+vWj5sSfEhMladhMivWi1PeW2M24jrQkV2K1aEkKPNxAVS7RUW4KwfgOUBxUcCAcEl7EHdljcJc+CK/8Gb/+6yCyi2sPpPjJZgeVkd5RhjuGZQkFUtwKkYFAUzC0WiCipbNNOIicMcqZASF2p55BPbuHMzBN9hq72Y+7xo+VXtj7ERnyidEcYlfnbYIbd2oYQQXj1/zpTyCNFlg9ukdXoKx8FZcmpBCLMJQQEl8kFIqzXbrPEHC2lZu+vDi3aAfnATpxD4SObklNH5ITvPDZjYOkELimWOZfywAPFHH3q0nhDb44HYFUyZSlHTwWNlEup/ujnA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=TK3qq2DIZCRKV3EaJMeG+kJeMf3Jk06Hg2r49DutS2I=;
-        b=beBW8UEmmiP/XEulFLyOZ8zULhs3O8kJR1mGKaz5IB7yWI5puDGvj/ibNDyYEz7wBM
-         nAZKmm9wcEV2x5zFbxRUnQ5pLAG+BTk2GpTGoL03kSsiKLO733Fk2VOr+DYVfL5LsLog
-         B6Xrth4yzvh6vHP9MtKHZ1Xxz9oO2sW+nEvw80LX8HDY9qXgnPNvSZOhz3Lg0nTGKJhX
-         j/E03chxWNiHVijx08eZk4b7lZ7ImA/7ZXTaW4U45g5hriSyJMk51unWYPrdC2mrmsoy
-         ynG+Xud40Jjv0Yq590LD2jlCo76XukSunhXttKqSb4Newy8URoxnuj0+glfLQC4GS9zk
-         MNaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=TK3qq2DIZCRKV3EaJMeG+kJeMf3Jk06Hg2r49DutS2I=;
-        b=1ZfeDly0oT4ePRMpDUKxYNtCkAIy4zNinGWb2h7yG2f+R3Rt+4lrmVaIAq7aJrq1J8
-         qznpWrvIFGEGHsRjNenmlwwDcF/XlgFMIl5L/qT2eBDLievS3Mn4qcPOOjP3CFYAyZbp
-         BjACz8tU9p+rvQYIE5XchUNOF/UiHwZqjxQgrHWVk1r+FAAQPqyTMs76knaCoDHSOABf
-         AP2IXZEXPT8ChxFfLg6rIKY7Vw9Z1ovaWC2DQtRiIcgGbU3RLN7RG+NmlmX5zV+E7FBV
-         mTisdaAXJfcp/dt7vIrbPwphk03eho3Urc6UrGU2/E4hnQ2SylznwLczWTq/igim4zYe
-         Cs2g==
-X-Gm-Message-State: AFqh2kp6563PLHHmJcRbs4WoGoEUBq9F81xEJPpDwDOapM3ZT64uWuf1
-        g49Kc5OHPQuOVOX/LPux24h6CmL/ERjUGDxpcL4=
-X-Google-Smtp-Source: AMrXdXt27Qm/P0OJ9NMULTf9tfxamPk7OkdvmaUnXQRQHp04wzC5i7h6K1ynpktCZZ9IKafJhd1jCUT26YRgag+pB0Y=
-X-Received: by 2002:a05:6402:643:b0:46f:77af:10ff with SMTP id
- u3-20020a056402064300b0046f77af10ffmr808049edx.178.1674032937213; Wed, 18 Jan
- 2023 01:08:57 -0800 (PST)
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ruvWeVjNDtmxA2IkxcOHD8Tt7BSEY5ZScBDbF5YJHQA=;
+ b=SkXMotBq/ADwYTncXZnuelXBYAYfNpLOL31eLnfd47PnWCBaAmGfSy9qOQRvxGQUSzAOks0opt3Gor4NitOGs5QKrJ1Szjd7ppriPtCvXUe56+Xq/K7dpAuqAV35JmgB8c4oLogG1fcEoGvp3IlmVOEmhET4jyy92o5dlHOPXRY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by BY3PR13MB5028.namprd13.prod.outlook.com (2603:10b6:a03:360::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.13; Wed, 18 Jan
+ 2023 09:14:19 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65%7]) with mapi id 15.20.6002.024; Wed, 18 Jan 2023
+ 09:14:19 +0000
+Date:   Wed, 18 Jan 2023 10:14:12 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Doug Brown <doug@schmorgal.com>
+Cc:     Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Dan Williams <dcbw@redhat.com>,
+        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 2/4] wifi: libertas: only add RSN/WPA IE in
+ lbs_add_wpa_tlv
+Message-ID: <Y8e4ZB0YzaF6sLuX@corigine.com>
+References: <20230116202126.50400-1-doug@schmorgal.com>
+ <20230116202126.50400-3-doug@schmorgal.com>
+ <Y8ZjeKeNx0eHxt7f@corigine.com>
+ <85128345-4924-c1c9-85f0-7aebc4e40f93@schmorgal.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <85128345-4924-c1c9-85f0-7aebc4e40f93@schmorgal.com>
+X-ClientProxiedBy: AM0PR06CA0096.eurprd06.prod.outlook.com
+ (2603:10a6:208:fa::37) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-References: <20230117102645.24920-1-liujia6264@gmail.com> <9f29ff29-62bb-c92b-6d69-ccc86938929e@intel.com>
- <5d96deeb-a59d-366d-dbb2-d88623cdfa2d@intel.com>
-In-Reply-To: <5d96deeb-a59d-366d-dbb2-d88623cdfa2d@intel.com>
-From:   Jia Liu <liujia6264@gmail.com>
-Date:   Wed, 18 Jan 2023 17:08:45 +0800
-Message-ID: <CA+eZsiZ81+AL1-mLb4mONZnMqO=uUPFcw=QWFhEY36_jg9MpiQ@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] [PATCH] e1000e: Add ADP_I219_LM17 to ME S0ix blacklist
-To:     "Neftin, Sasha" <sasha.neftin@intel.com>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org,
-        "Ruinskiy, Dima" <dima.ruinskiy@intel.com>,
-        "Lifshits, Vitaly" <vitaly.lifshits@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BY3PR13MB5028:EE_
+X-MS-Office365-Filtering-Correlation-Id: 67ad761e-c9b9-4b08-8a3e-08daf93460fa
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: isJpCpM1UjnGcyIvNy/ybtHadzZpKy+cH2j4SP7rSc5rmswYDhbhPw+uRMgs3XZnuDbtmt9574B+pdXNWZSz8wm963iBCN7kWwVr2Zg7n3UXeAm5dv/IsEbvLsiEJsbIe8npKzZ8mOrK6frYeus8vVeGTyA/Ln0lCxBd7y+i+k0+/YfxZlnLsabjEws+R0w5RKFDenXiIEKdZHdOW7ErhTt4ldIw8MpSHRo7S04yfGU3jQiVjzUUbVjJmr7oHNbMz6X/bXSVTayp3lTBnJJc41y6oxk4Dmd9AB5R+uaduVSC0gjJPQGtqQAKcFSFf/6rLBZ/OnGiLI2JnQUwhB6ef0mZFO7C4XVTaG+ew+kGNl2DrdfOOcHA6/0sDEXVigb8pwDPSsN5qHuU6dn/TIB/eCIHZeK+YHE2G2b2I8wh4oHXZu0ivHbOQzIMgKZ09AAsMU/xOdS8RWAFyWasBTMKafJjeGjrH2DaoDr7XiQw6y66wliqMVbq+Cs0Rui7OFdSM5vqnXSZy4ZCm+D4dpxjoRKZ48K5VbI6WwRVEiajvJRzOWMCoFOmcnTepr6DLcc3GIZamgK3sEUWM3OX3Fvz0BsTLJ9hKTRIWe7zxBEQnRiaSChjWXh8ZuZ9N6dY8fM72DUILUCrouhlmajHW7EDb894+ks5JRhjW45RQ49hsd3SEzy/j2LvI5pvjzVYgbPj
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(346002)(396003)(366004)(39840400004)(451199015)(86362001)(66476007)(2906002)(44832011)(7416002)(66556008)(66946007)(5660300002)(8936002)(38100700002)(316002)(54906003)(6666004)(53546011)(6486002)(6506007)(966005)(478600001)(36756003)(41300700001)(8676002)(4326008)(6916009)(186003)(83380400001)(6512007)(2616005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?clvl40sizuFEaQCVKO+1Eot5030XTWV4ptqQL0QJxP92AFhfN0Rxyh5+k4rO?=
+ =?us-ascii?Q?TUPwOiu/fjAb8sf/FVOOOC+yar4kuV/JGgFV1qlufGNKoMo1JE7Iz2Wz8MQM?=
+ =?us-ascii?Q?ONbQ0DFPqkRxzE4wiWtiUu3PenQLrxqnPaz7KbpfhT/RoDFx3ezv2HpCQd5l?=
+ =?us-ascii?Q?+RI+3MoDPp1NYI7WulZOkorEoSf9u2YMqJTISP9NvwUyRABSdetcp02sQwzd?=
+ =?us-ascii?Q?UnCkiHvxPFIO1KkxOeZIiAdiBn1XlvFKKAACCmNnp+oBe3e2u+yQ/4EpGZGk?=
+ =?us-ascii?Q?Pv0K7wSca2aAhfJ1gjsjc11dQ3hDSvPruDiuccMCGBRvNnLhgpsJsFosnoIW?=
+ =?us-ascii?Q?wFD+u9KqJ31X3L4RFpJlJkqob59iam8VNv7OowR4XsKe4pmnd7FY76YCMqjh?=
+ =?us-ascii?Q?bDblbeTY19f3m2bA0lfqX3Coifv3MdoKSD4LrW3A6uUcYRA9PB8yQR15aS/u?=
+ =?us-ascii?Q?0n9MwEPJoy+YPrOmwv65i3xdSurEV/whue19qn9cMjkNMPyalwRrwFeuEtJF?=
+ =?us-ascii?Q?dGZFHYftN4Pi/J3LU4U/hsNmMzuwkeWyp2cckWAkdaL/hX0Ukg5V8yW4D+fY?=
+ =?us-ascii?Q?cvChxtRiD+7iVk2aPWCNt5o23vlWeVNsTr1Gm00smbz26wHQkWozuAtPRZPb?=
+ =?us-ascii?Q?VGcnF256B+4ZgSfeq/1iC2V9Uqn2u9IgVB5lzTZ8W1v1Dh6jTuLTh3Vf+ONj?=
+ =?us-ascii?Q?XxkggatOs3nAutBE41QzRsWAmC+fToPN4yr5n+m4l/dp3PQ4Wb3F8JawrKuu?=
+ =?us-ascii?Q?r/wYZjJl71uii6e4DiBkshRO5YRIkOc76kT91nukPwO3PFXKa12ktYq6VIIg?=
+ =?us-ascii?Q?qvVaIXi2G4AnEuG4icDu+jl6JO/MXgb3mje6Eqp9uLnbI1X2XyPSPKcQKqBx?=
+ =?us-ascii?Q?SlUrnlyrw3yJKrOEbQfnoYco1Ez8QBfPdcuE72v8DKl9vs9sl3Vd/MLBZ40k?=
+ =?us-ascii?Q?15K1tUl68pIn2Itg3qq/jOWYYKhcIZCFM4M6ROj1fGu0OYlAO2A4/ZF+rih0?=
+ =?us-ascii?Q?Mhr5ebmRnMnJvWbvSigUwj+iq6lD8R1UmPKiWXawA38BicLAcbaztqESBuCK?=
+ =?us-ascii?Q?w9r4c78mGy9C4y+F8XbM3BYgUqIDasi/aIVCpf6oprh8md4bkFaVpc9p6fYd?=
+ =?us-ascii?Q?dpVegMnPCWgdJfNqW/D49XB6PUcuWbAr+ATnkQjhnPQH2FSuKcaQKON8pNXI?=
+ =?us-ascii?Q?NMYcWZAYGlRvDpIl4AGVlOhfVrqKUTYDoYgvT27TH2r/ziREo23mrLYEhprP?=
+ =?us-ascii?Q?QZSZS9AnozQYBrTztxbyLLceiTUrXg2/FFw10WT+nICe7K2irdDTH+fkSYZL?=
+ =?us-ascii?Q?gu/4gB0itsEvb69IhS5AZLrMxjUn9VgK3qKnW2DJJhwC+gKkCz26hljUPZ7/?=
+ =?us-ascii?Q?VOEpyNFeASznPNKM/SpqpKKJ/l5Nv4IEYtTHXBOn9jIw7TxJAkm8yvo4XFey?=
+ =?us-ascii?Q?u9MIOLAwJTc0TIk/9zsFlmU/liX0noh7W6Ly+j0l1mFjtA+OzAqsCZraxRNI?=
+ =?us-ascii?Q?YL26lMz8QUdsrfA0jKXWvczZld6vqHB2/qgX1zLewnEE0enzHmQdqum/eS3x?=
+ =?us-ascii?Q?rF1YjxbX0Ht/nHo2fucp5Ddxxh5/mY+gBVhmB/aH2pUUVoTGUsq1ORZHOXYB?=
+ =?us-ascii?Q?8fxO99ayHP9WZUPG5D5im1MlPkSF6Gzoym6XTCp6CZv7jDwDTCPVDBqHaCar?=
+ =?us-ascii?Q?JcKjBQ=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 67ad761e-c9b9-4b08-8a3e-08daf93460fa
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2023 09:14:18.8731
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: cLIzMOqD5e3RLBdR4b28ce7SSOrTrhfAXO9cf6hmXHYzmcP2ntYIkz9/kJ6Yo1V9htRYrfkEBLCozjhSPmZuLX2PN9EItXlpO4YVYuB1nJs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY3PR13MB5028
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 18, 2023 at 1:20 PM Neftin, Sasha <sasha.neftin@intel.com> wrote:
->
-> On 1/17/2023 21:34, Jacob Keller wrote:
-> >
-> >
-> > On 1/17/2023 2:26 AM, Jiajia Liu wrote:
-> >> I219 on HP EliteOne 840 All in One cannot work after s2idle resume
-> >> when the link speed is Gigabit, Wake-on-LAN is enabled and then set
-> >> the link down before suspend. No issue found when requesting driver
-> >> to configure S0ix. Add workround to let ADP_I219_LM17 use the dirver
-> >> configured S0ix.
-> >>
-> >> Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=216926
-> >> Signed-off-by: Jiajia Liu <liujia6264@gmail.com>
-> >> ---
-> >>
-> >> It's regarding the bug above, it looks it's causued by the ME S0ix.
-> >> And is there a method to make the ME S0ix path work?
-> No. This is a fragile approach. ME must get the message from us
-> (unconfigure the device from s0ix). Otherwise, ME will continue to
-> access LAN resources and the controller could get stuck.
-> I see two ways:
-> 1. you always can skip s0ix flow by priv_flag
-> 2. Especially in this case (HP platform) - please, contact HP (what is
-> the ME version on this system, and how was it released...). HP will open
-> a ticket with Intel. (then we can involve the ME team)
+On Tue, Jan 17, 2023 at 10:35:56PM -0800, Doug Brown wrote:
+> On 1/17/2023 12:59 AM, Simon Horman wrote:
+> > On Mon, Jan 16, 2023 at 12:21:24PM -0800, Doug Brown wrote:
+> > > [You don't often get email from doug@schmorgal.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+> > > 
+> > > The existing code only converts the first IE to a TLV, but it returns a
+> > > value that takes the length of all IEs into account. When there is more
+> > > than one IE (which happens with modern wpa_supplicant versions for
+> > > example), the returned length is too long and extra junk TLVs get sent
+> > > to the firmware, resulting in an association failure.
+> > > 
+> > > Fix this by finding the first RSN or WPA IE and only adding that. This
+> > > has the extra benefit of working properly if the RSN/WPA IE isn't the
+> > > first one in the IE buffer.
+> > > 
+> > > While we're at it, clean up the code to use the available structs like
+> > > the other lbs_add_* functions instead of directly manipulating the TLV
+> > > buffer.
+> > > 
+> > > Signed-off-by: Doug Brown <doug@schmorgal.com>
+> > > ---
+> > >   drivers/net/wireless/marvell/libertas/cfg.c | 28 +++++++++++++--------
+> > >   1 file changed, 18 insertions(+), 10 deletions(-)
+> > > 
+> > > diff --git a/drivers/net/wireless/marvell/libertas/cfg.c b/drivers/net/wireless/marvell/libertas/cfg.c
+> > > index 3e065cbb0af9..3f35dc7a1d7d 100644
+> > > --- a/drivers/net/wireless/marvell/libertas/cfg.c
+> > > +++ b/drivers/net/wireless/marvell/libertas/cfg.c
+> > 
+> > ...
+> > 
+> > > @@ -428,14 +438,12 @@ static int lbs_add_wpa_tlv(u8 *tlv, const u8 *ie, u8 ie_len)
+> > >           *   __le16  len
+> > >           *   u8[]    data
+> > >           */
+> > > -       *tlv++ = *ie++;
+> > > -       *tlv++ = 0;
+> > > -       tlv_len = *tlv++ = *ie++;
+> > > -       *tlv++ = 0;
+> > > -       while (tlv_len--)
+> > > -               *tlv++ = *ie++;
+> > > -       /* the TLV is two bytes larger than the IE */
+> > > -       return ie_len + 2;
+> > > +       wpatlv->header.type = cpu_to_le16(wpaie->id);
+> > > +       wpatlv->header.len = cpu_to_le16(wpaie->datalen);
+> > > +       memcpy(wpatlv->data, wpaie->data, wpaie->datalen);
+> > 
+> > Hi Doug,
+> > 
+> > Thanks for fixing the endiness issues with cpu_to_le16()
+> > This part looks good to me now. Likewise for patch 4/4.
+> > 
+> > One suggestion I have, which is probably taking things to far,
+> > is a helper for what seems to be repeated code-pattern.
+> > But I don't feel strongly about that.
+> 
+> Thanks Simon. Is this basically what you're suggesting for a helper?
+> 
+> static int lbs_add_ie_tlv(u8 *tlvbuf, const struct element *ie, u16 tlvtype)
+> {
+> 	struct mrvl_ie_data *tlv = (struct mrvl_ie_data *)tlvbuf;
+> 	tlv->header.type = cpu_to_le16(tlvtype);
+> 	tlv->header.len = cpu_to_le16(ie->datalen);
+> 	memcpy(tlv->data, ie->data, ie->datalen);
+> 	return sizeof(struct mrvl_ie_header) + ie->datalen;
+> }
+> 
+> And then in the two functions where I'm doing that, at the bottom:
+> 
+> return lbs_add_ie_tlv(tlv, wpaie, wpaie->id);
+> return lbs_add_ie_tlv(tlv, wpsie, TLV_TYPE_WPS_ENROLLEE);
+> 
+> I could definitely do that to avoid repeating the chunk of code that
+> fills out the struct in the two functions. A lot of the other
+> lbs_add_*_tlv functions follow a similar pattern of setting up a struct
+> pointer and filling out the header, so I don't think it's too crazy to
+> just repeat the code twice. On the other hand, the example above does
+> look pretty darn clean. I don't feel strongly either way myself.
 
-HP released BIOS including ME firmware on their website HP.com at
-https://support.hp.com/my-en/drivers/selfservice/hp-eliteone-840-23.8-inch-g9-all-in-one-desktop-pc/2101132389.
-There is upgrade interface on the BIOS setup menu which can connect
-HP.com and upgrade to newer BIOS.
+Hi Doug,
 
-The initial ME version was v16.0.15.1735 from BIOS 02.03.04.
-Then I upgraded to the latest one v16.1.25.1932v3 from BIOS 02.06.01
-released on Nov 28, 2022. Both of them can produce this issue.
+yes, I was thinking about something like that.
+And wondering if it might be reused elsewhere (in the same file).
 
-I have only one setup. Is it possible to try on your system which has the
-same I219-LM to see if it's platform specific or not?
-
-> >>
-> >
-> > No idea. It does seem better to disable S0ix if it doesn't work properly
-> > first though...
-> >
-> >>   drivers/net/ethernet/intel/e1000e/netdev.c | 25 ++++++++++++++++++++++
-> >>   1 file changed, 25 insertions(+)
-> >>
-> >> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-> >> index 04acd1a992fa..7ee759dbd09d 100644
-> >> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
-> >> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-> >> @@ -6330,6 +6330,23 @@ static void e1000e_flush_lpic(struct pci_dev *pdev)
-> >>      pm_runtime_put_sync(netdev->dev.parent);
-> >>   }
-> >>
-> >> +static u16 me_s0ix_blacklist[] = {
-> >> +    E1000_DEV_ID_PCH_ADP_I219_LM17,
-> >> +    0
-> >> +};
-> >> +
-> >> +static bool e1000e_check_me_s0ix_blacklist(const struct e1000_adapter *adapter)
-> >> +{
-> >> +    u16 *list;
-> >> +
-> >> +    for (list = me_s0ix_blacklist; *list; list++) {
-> >> +            if (*list == adapter->pdev->device)
-> >> +                    return true;
-> >> +    }
-> >> +
-> >> +    return false;
-> >> +}
-> >
-> > The name of this function seems odd..? "check_me"? It also seems like we
-> > could just do a simple switch/case on the device ID or similar.
-> >
-> > Maybe: "e1000e_device_supports_s0ix"?
-> >
-> >> +
-> >>   /* S0ix implementation */
-> >>   static void e1000e_s0ix_entry_flow(struct e1000_adapter *adapter)
-> >>   {
-> >> @@ -6337,6 +6354,9 @@ static void e1000e_s0ix_entry_flow(struct e1000_adapter *adapter)
-> >>      u32 mac_data;
-> >>      u16 phy_data;
-> >>
-> >> +    if (e1000e_check_me_s0ix_blacklist(adapter))
-> >> +            goto req_driver;
-> >> +
-> >>      if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
-> >>          hw->mac.type >= e1000_pch_adp) {
-> >>              /* Request ME configure the device for S0ix */
-> >
-> >
-> > The related code also seems to already perform some set of mac checks
-> > here...
-> >
-> >> @@ -6346,6 +6366,7 @@ static void e1000e_s0ix_entry_flow(struct e1000_adapter *adapter)
-> >>              trace_e1000e_trace_mac_register(mac_data);
-> >>              ew32(H2ME, mac_data);
-> >>      } else {
-> >> +req_driver:>                /* Request driver configure the device to S0ix */
-> >>              /* Disable the periodic inband message,
-> >>               * don't request PCIe clock in K1 page770_17[10:9] = 10b
-> >> @@ -6488,6 +6509,9 @@ static void e1000e_s0ix_exit_flow(struct e1000_adapter *adapter)
-> >>      u16 phy_data;
-> >>      u32 i = 0;
-> >>
-> >> +    if (e1000e_check_me_s0ix_blacklist(adapter))
-> >> +            goto req_driver;
-> >> +
-> >
-> > Why not just combine this check into the statement below rather than
-> > adding a goto?
-> >
-> >>      if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
-> >>          hw->mac.type >= e1000_pch_adp) {
-> >>              /* Keep the GPT clock enabled for CSME */
-> >> @@ -6523,6 +6547,7 @@ static void e1000e_s0ix_exit_flow(struct e1000_adapter *adapter)
-> >>              else
-> >>                      e_dbg("DPG_EXIT_DONE cleared after %d msec\n", i * 10);
-> >>      } else {
-> >> +req_driver:
-> >>              /* Request driver unconfigure the device from S0ix */
-> >>
-> >>              /* Disable the Dynamic Power Gating in the MAC */
-> > _______________________________________________
-> > Intel-wired-lan mailing list
-> > Intel-wired-lan@osuosl.org
-> > https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
->
+But again, I don't feel strongly about this.
+So perhaps it's something to consider in future.
