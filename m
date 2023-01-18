@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FB58671532
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 08:40:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 564F3671528
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 08:38:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229964AbjARHks (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 02:40:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40086 "EHLO
+        id S229518AbjARHik (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 02:38:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbjARHi1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 02:38:27 -0500
-Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DCAC5FD66
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 22:59:52 -0800 (PST)
-X-QQ-mid: bizesmtp80t1674025121tl615zaj
+        with ESMTP id S229590AbjARHiI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 02:38:08 -0500
+Received: from smtpbgau2.qq.com (smtpbgau2.qq.com [54.206.34.216])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D2E1E296
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 22:58:48 -0800 (PST)
+X-QQ-mid: bizesmtp80t1674025124toz9634s
 Received: from wxdbg.localdomain.com ( [183.129.236.74])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 18 Jan 2023 14:58:39 +0800 (CST)
+        id ; Wed, 18 Jan 2023 14:58:42 +0800 (CST)
 X-QQ-SSF: 01400000002000H0X000B00A0000000
-X-QQ-FEAT: 4g9JbZ7lBbGhFJcS4T+3df+0IuDFNFvuF3/fS1zBdSrYPSQE9iruHxFBWYrZL
-        5/7P7PKOfEqliFMnJQSJ7R6ZHnGGb2Ngy8t/jePYai9hqo3oVcGF07+9She8me5JfLKpI7z
-        V81eX70eKMszUZvZtd4Vs7KR181Q3MObUbWVqi3nBx3epVnCPO9ayAH4ylR4DdANRmXOI+0
-        Ayjk9w38X+jGfpMm27HSIE63l7+NiIdOWuM06haHXI4Bi+gHy+7b46JhGCNXN8HL4LMgrp0
-        /u0tCFQq+MbS40BOnPaZla1lyKK5I8B7nfkLG/fBAvRCFxjprJ6ynk8jlEcoRBaU/6hlD/Z
-        /wIdia7XWSO+ZyIPPwSFlfR7hGYCezR518ed51aTzzCQtSUl2+OtRqr15B9yW/35YP6UGOs
-        dzsWVP/I1YuPmww7zqHf/g==
+X-QQ-FEAT: uW0fSitQVIvBKglycdZ5P6ZmImjeU3gXJY2hVdekgL9KPh/NRqno9tk3sUWJ5
+        aJVJZZnJBbNfMzrJWZu7ODhLGM0lIrwu71RgFIhg4N7299JtrXvy3pr5T0+/wffbRlq59ue
+        VsFK45jtIBCCAqA8CtbAliGoVh6oRj3McLU5JDSAjK3ilMi+hg+2HJ2z4qwlxsHlzxSuZ7u
+        QCCYy5uMJ4aKFdtt1JkkoMBGHbkdlmKUFO036Q9gk70m/GQqgrN1ygaxThlAyRiRDVM+Pmn
+        hfAJCUz03LNI7At9R3lBOLUT8XKM9AHBeb7eluozQ2v4bj23VqXEovh4fF/Ss0EsafCBeK5
+        mJqnRse91ungptezwNA/DiBCuMvExW75Hn1CoEtXOs/mKX0vQfoketmj0TTRdKiASg1I5wF
+        jYKdiZqmUtxhqte3s3XYsujIiT341Jvq
 X-QQ-GoodBg: 2
 From:   Jiawen Wu <jiawenwu@trustnetic.com>
 To:     netdev@vger.kernel.org, mengyuanlou@net-swift.com
 Cc:     Jiawen Wu <jiawenwu@trustnetic.com>
-Subject: [PATCH net-next 04/10] net: libwx: Configure Rx and Tx unit on hardware
-Date:   Wed, 18 Jan 2023 14:54:58 +0800
-Message-Id: <20230118065504.3075474-5-jiawenwu@trustnetic.com>
+Subject: [PATCH net-next 05/10] net: libwx: Allocate Rx and Tx resources
+Date:   Wed, 18 Jan 2023 14:54:59 +0800
+Message-Id: <20230118065504.3075474-6-jiawenwu@trustnetic.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20230118065504.3075474-1-jiawenwu@trustnetic.com>
 References: <20230118065504.3075474-1-jiawenwu@trustnetic.com>
@@ -49,835 +49,501 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Configure hardware for preparing to process packets. Including configure
-receive and transmit unit of the MAC layer, and setup the specific rings.
+Setup Rx and Tx descriptors for specefic rings.
 
 Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
 ---
- drivers/net/ethernet/wangxun/libwx/wx_hw.c   | 597 +++++++++++++++++++
- drivers/net/ethernet/wangxun/libwx/wx_hw.h   |   2 +
- drivers/net/ethernet/wangxun/libwx/wx_type.h |  85 +++
- 3 files changed, 684 insertions(+)
+ drivers/net/ethernet/wangxun/Kconfig         |   1 +
+ drivers/net/ethernet/wangxun/libwx/wx_hw.c   |   8 +
+ drivers/net/ethernet/wangxun/libwx/wx_lib.c  | 299 +++++++++++++++++++
+ drivers/net/ethernet/wangxun/libwx/wx_lib.h  |   2 +
+ drivers/net/ethernet/wangxun/libwx/wx_type.h |  74 +++++
+ 5 files changed, 384 insertions(+)
 
+diff --git a/drivers/net/ethernet/wangxun/Kconfig b/drivers/net/ethernet/wangxun/Kconfig
+index 0922beac3ec0..c9d88673d306 100644
+--- a/drivers/net/ethernet/wangxun/Kconfig
++++ b/drivers/net/ethernet/wangxun/Kconfig
+@@ -18,6 +18,7 @@ if NET_VENDOR_WANGXUN
+ 
+ config LIBWX
+ 	tristate
++	select PAGE_POOL
+ 	help
+ 	Common library for Wangxun(R) Ethernet drivers.
+ 
 diff --git a/drivers/net/ethernet/wangxun/libwx/wx_hw.c b/drivers/net/ethernet/wangxun/libwx/wx_hw.c
-index 12718982620c..e969ae0d350e 100644
+index e969ae0d350e..b4e925ac629b 100644
 --- a/drivers/net/ethernet/wangxun/libwx/wx_hw.c
 +++ b/drivers/net/ethernet/wangxun/libwx/wx_hw.c
-@@ -804,6 +804,37 @@ void wx_flush_sw_mac_table(struct wx *wx)
- }
- EXPORT_SYMBOL(wx_flush_sw_mac_table);
+@@ -1335,12 +1335,16 @@ static void wx_configure_tx_ring(struct wx *wx,
+ {
+ 	u32 txdctl = WX_PX_TR_CFG_ENABLE;
+ 	u8 reg_idx = ring->reg_idx;
++	u64 tdba = ring->dma;
+ 	int ret;
  
-+static int wx_add_mac_filter(struct wx *wx, u8 *addr, u16 pool)
+ 	/* disable queue to avoid issues while updating state */
+ 	wr32(wx, WX_PX_TR_CFG(reg_idx), WX_PX_TR_CFG_SWFLSH);
+ 	WX_WRITE_FLUSH(wx);
+ 
++	wr32(wx, WX_PX_TR_BAL(reg_idx), tdba & DMA_BIT_MASK(32));
++	wr32(wx, WX_PX_TR_BAH(reg_idx), tdba >> 32);
++
+ 	/* reset head and tail pointers */
+ 	wr32(wx, WX_PX_TR_RP(reg_idx), 0);
+ 	wr32(wx, WX_PX_TR_WP(reg_idx), 0);
+@@ -1364,12 +1368,16 @@ static void wx_configure_rx_ring(struct wx *wx,
+ 				 struct wx_ring *ring)
+ {
+ 	u16 reg_idx = ring->reg_idx;
++	u64 rdba = ring->dma;
+ 	u32 rxdctl;
+ 
+ 	/* disable queue to avoid issues while updating state */
+ 	rxdctl = rd32(wx, WX_PX_RR_CFG(reg_idx));
+ 	wx_disable_rx_queue(wx, ring);
+ 
++	wr32(wx, WX_PX_RR_BAL(reg_idx), rdba & DMA_BIT_MASK(32));
++	wr32(wx, WX_PX_RR_BAH(reg_idx), rdba >> 32);
++
+ 	if (ring->count == WX_MAX_RXD)
+ 		rxdctl |= 0 << WX_PX_RR_CFG_RR_SIZE_SHIFT;
+ 	else
+diff --git a/drivers/net/ethernet/wangxun/libwx/wx_lib.c b/drivers/net/ethernet/wangxun/libwx/wx_lib.c
+index 0ba53ef97631..26e8391d3fe0 100644
+--- a/drivers/net/ethernet/wangxun/libwx/wx_lib.c
++++ b/drivers/net/ethernet/wangxun/libwx/wx_lib.c
+@@ -2,6 +2,7 @@
+ /* Copyright (c) 2019 - 2022 Beijing WangXun Technology Co., Ltd. */
+ 
+ #include <linux/etherdevice.h>
++#include <net/page_pool.h>
+ #include <linux/iopoll.h>
+ #include <linux/pci.h>
+ 
+@@ -183,6 +184,9 @@ static int wx_alloc_q_vector(struct wx *wx,
+ 	wx->q_vector[v_idx] = q_vector;
+ 	q_vector->wx = wx;
+ 	q_vector->v_idx = v_idx;
++	if (cpu_online(v_idx))
++		q_vector->numa_node = cpu_to_node(v_idx);
++
+ 
+ 	/* initialize work limits */
+ 	q_vector->tx.work_limit = wx->tx_work_limit;
+@@ -597,4 +601,299 @@ void wx_configure_vectors(struct wx *wx)
+ }
+ EXPORT_SYMBOL(wx_configure_vectors);
+ 
++/**
++ * wx_free_rx_resources - Free Rx Resources
++ * @rx_ring: ring to clean the resources from
++ *
++ * Free all receive software resources
++ **/
++static void wx_free_rx_resources(struct wx_ring *rx_ring)
 +{
-+	u32 i;
++	vfree(rx_ring->rx_buffer_info);
++	rx_ring->rx_buffer_info = NULL;
 +
-+	if (is_zero_ether_addr(addr))
-+		return -EINVAL;
++	/* if not set, then don't free */
++	if (!rx_ring->desc)
++		return;
 +
-+	for (i = 0; i < wx->mac.num_rar_entries; i++) {
-+		if (wx->mac_table[i].state & WX_MAC_STATE_IN_USE) {
-+			if (ether_addr_equal(addr, wx->mac_table[i].addr)) {
-+				if (wx->mac_table[i].pools != (1ULL << pool)) {
-+					memcpy(wx->mac_table[i].addr, addr, ETH_ALEN);
-+					wx->mac_table[i].pools |= (1ULL << pool);
-+					wx_sync_mac_table(wx);
-+					return i;
-+				}
-+			}
-+		}
++	dma_free_coherent(rx_ring->dev, rx_ring->size,
++			  rx_ring->desc, rx_ring->dma);
 +
-+		if (wx->mac_table[i].state & WX_MAC_STATE_IN_USE)
-+			continue;
-+		wx->mac_table[i].state |= (WX_MAC_STATE_MODIFIED |
-+					   WX_MAC_STATE_IN_USE);
-+		memcpy(wx->mac_table[i].addr, addr, ETH_ALEN);
-+		wx->mac_table[i].pools |= (1ULL << pool);
-+		wx_sync_mac_table(wx);
-+		return i;
++	rx_ring->desc = NULL;
++
++	if (rx_ring->page_pool) {
++		page_pool_destroy(rx_ring->page_pool);
++		rx_ring->page_pool = NULL;
 +	}
++}
++
++/**
++ * wx_free_all_rx_resources - Free Rx Resources for All Queues
++ * @wx: pointer to hardware structure
++ *
++ * Free all receive software resources
++ **/
++static void wx_free_all_rx_resources(struct wx *wx)
++{
++	int i;
++
++	for (i = 0; i < wx->num_rx_queues; i++)
++		wx_free_rx_resources(wx->rx_ring[i]);
++}
++
++/**
++ * wx_free_tx_resources - Free Tx Resources per Queue
++ * @tx_ring: Tx descriptor ring for a specific queue
++ *
++ * Free all transmit software resources
++ **/
++static void wx_free_tx_resources(struct wx_ring *tx_ring)
++{
++	vfree(tx_ring->tx_buffer_info);
++	tx_ring->tx_buffer_info = NULL;
++
++	/* if not set, then don't free */
++	if (!tx_ring->desc)
++		return;
++
++	dma_free_coherent(tx_ring->dev, tx_ring->size,
++			  tx_ring->desc, tx_ring->dma);
++	tx_ring->desc = NULL;
++}
++
++/**
++ * wx_free_all_tx_resources - Free Tx Resources for All Queues
++ * @wx: pointer to hardware structure
++ *
++ * Free all transmit software resources
++ **/
++static void wx_free_all_tx_resources(struct wx *wx)
++{
++	int i;
++
++	for (i = 0; i < wx->num_tx_queues; i++)
++		wx_free_tx_resources(wx->tx_ring[i]);
++}
++
++void wx_free_resources(struct wx *wx)
++{
++	wx_free_isb_resources(wx);
++	wx_free_all_rx_resources(wx);
++	wx_free_all_tx_resources(wx);
++}
++EXPORT_SYMBOL(wx_free_resources);
++
++static int wx_alloc_page_pool(struct wx_ring *rx_ring)
++{
++	int ret = 0;
++
++	struct page_pool_params pp_params = {
++		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
++		.order = 0,
++		.pool_size = rx_ring->size,
++		.nid = dev_to_node(rx_ring->dev),
++		.dev = rx_ring->dev,
++		.dma_dir = DMA_FROM_DEVICE,
++		.offset = 0,
++		.max_len = PAGE_SIZE,
++	};
++
++	rx_ring->page_pool = page_pool_create(&pp_params);
++	if (IS_ERR(rx_ring->page_pool)) {
++		rx_ring->page_pool = NULL;
++		ret = PTR_ERR(rx_ring->page_pool);
++	}
++
++	return ret;
++}
++
++/**
++ * wx_setup_rx_resources - allocate Rx resources (Descriptors)
++ * @rx_ring: rx descriptor ring (for a specific queue) to setup
++ *
++ * Returns 0 on success, negative on failure
++ **/
++static int wx_setup_rx_resources(struct wx_ring *rx_ring)
++{
++	struct device *dev = rx_ring->dev;
++	int orig_node = dev_to_node(dev);
++	int numa_node = -1;
++	int size, ret;
++
++	size = sizeof(struct wx_rx_buffer) * rx_ring->count;
++
++	if (rx_ring->q_vector)
++		numa_node = rx_ring->q_vector->numa_node;
++
++	rx_ring->rx_buffer_info = vmalloc_node(size, numa_node);
++	if (!rx_ring->rx_buffer_info)
++		rx_ring->rx_buffer_info = vmalloc(size);
++	if (!rx_ring->rx_buffer_info)
++		goto err;
++
++	/* Round up to nearest 4K */
++	rx_ring->size = rx_ring->count * sizeof(union wx_rx_desc);
++	rx_ring->size = ALIGN(rx_ring->size, 4096);
++
++	set_dev_node(dev, numa_node);
++	rx_ring->desc = dma_alloc_coherent(dev, rx_ring->size,
++					   &rx_ring->dma, GFP_KERNEL);
++	set_dev_node(dev, orig_node);
++	rx_ring->desc = dma_alloc_coherent(dev, rx_ring->size,
++					   &rx_ring->dma, GFP_KERNEL);
++	if (!rx_ring->desc)
++		goto err;
++
++	ret = wx_alloc_page_pool(rx_ring);
++	if (ret < 0) {
++		dev_err(rx_ring->dev, "Page pool creation failed: %d\n", ret);
++		goto err;
++	}
++
++	return 0;
++err:
++	vfree(rx_ring->rx_buffer_info);
++	rx_ring->rx_buffer_info = NULL;
++	dev_err(dev, "Unable to allocate memory for the Rx descriptor ring\n");
 +	return -ENOMEM;
 +}
 +
- static int wx_del_mac_filter(struct wx *wx, u8 *addr, u16 pool)
- {
- 	u32 i;
-@@ -828,6 +859,184 @@ static int wx_del_mac_filter(struct wx *wx, u8 *addr, u16 pool)
- 	return -ENOMEM;
- }
- 
-+static int wx_available_rars(struct wx *wx)
++/**
++ * wx_setup_all_rx_resources - allocate all queues Rx resources
++ * @wx: pointer to hardware structure
++ *
++ * If this function returns with an error, then it's possible one or
++ * more of the rings is populated (while the rest are not).  It is the
++ * callers duty to clean those orphaned rings.
++ *
++ * Return 0 on success, negative on failure
++ **/
++static int wx_setup_all_rx_resources(struct wx *wx)
 +{
-+	u32 i, count = 0;
++	int i, err = 0;
 +
-+	for (i = 0; i < wx->mac.num_rar_entries; i++) {
-+		if (wx->mac_table[i].state == 0)
-+			count++;
++	for (i = 0; i < wx->num_rx_queues; i++) {
++		err = wx_setup_rx_resources(wx->rx_ring[i]);
++		if (!err)
++			continue;
++
++		wx_err(wx, "Allocation for Rx Queue %u failed\n", i);
++		goto err_setup_rx;
 +	}
 +
-+	return count;
-+}
-+
-+/**
-+ * wx_write_uc_addr_list - write unicast addresses to RAR table
-+ * @netdev: network interface device structure
-+ * @pool: index for mac table
-+ *
-+ * Writes unicast address list to the RAR table.
-+ * Returns: -ENOMEM on failure/insufficient address space
-+ *                0 on no addresses written
-+ *                X on writing X addresses to the RAR table
-+ **/
-+static int wx_write_uc_addr_list(struct net_device *netdev, int pool)
-+{
-+	struct wx *wx = netdev_priv(netdev);
-+	int count = 0;
-+
-+	/* return ENOMEM indicating insufficient memory for addresses */
-+	if (netdev_uc_count(netdev) > wx_available_rars(wx))
-+		return -ENOMEM;
-+
-+	if (!netdev_uc_empty(netdev)) {
-+		struct netdev_hw_addr *ha;
-+
-+		netdev_for_each_uc_addr(ha, netdev) {
-+			wx_del_mac_filter(wx, ha->addr, pool);
-+			wx_add_mac_filter(wx, ha->addr, pool);
-+			count++;
-+		}
-+	}
-+	return count;
-+}
-+
-+/**
-+ *  wx_mta_vector - Determines bit-vector in multicast table to set
-+ *  @wx: pointer to private structure
-+ *  @mc_addr: the multicast address
-+ *
-+ *  Extracts the 12 bits, from a multicast address, to determine which
-+ *  bit-vector to set in the multicast table. The hardware uses 12 bits, from
-+ *  incoming rx multicast addresses, to determine the bit-vector to check in
-+ *  the MTA. Which of the 4 combination, of 12-bits, the hardware uses is set
-+ *  by the MO field of the MCSTCTRL. The MO field is set during initialization
-+ *  to mc_filter_type.
-+ **/
-+static u32 wx_mta_vector(struct wx *wx, u8 *mc_addr)
-+{
-+	u32 vector = 0;
-+
-+	switch (wx->mac.mc_filter_type) {
-+	case 0:   /* use bits [47:36] of the address */
-+		vector = ((mc_addr[4] >> 4) | (((u16)mc_addr[5]) << 4));
-+		break;
-+	case 1:   /* use bits [46:35] of the address */
-+		vector = ((mc_addr[4] >> 3) | (((u16)mc_addr[5]) << 5));
-+		break;
-+	case 2:   /* use bits [45:34] of the address */
-+		vector = ((mc_addr[4] >> 2) | (((u16)mc_addr[5]) << 6));
-+		break;
-+	case 3:   /* use bits [43:32] of the address */
-+		vector = ((mc_addr[4]) | (((u16)mc_addr[5]) << 8));
-+		break;
-+	default:  /* Invalid mc_filter_type */
-+		wx_err(wx, "MC filter type param set incorrectly\n");
-+		break;
-+	}
-+
-+	/* vector can only be 12-bits or boundary will be exceeded */
-+	vector &= 0xFFF;
-+	return vector;
-+}
-+
-+/**
-+ *  wx_set_mta - Set bit-vector in multicast table
-+ *  @wx: pointer to private structure
-+ *  @mc_addr: Multicast address
-+ *
-+ *  Sets the bit-vector in the multicast table.
-+ **/
-+static void wx_set_mta(struct wx *wx, u8 *mc_addr)
-+{
-+	u32 vector, vector_bit, vector_reg;
-+
-+	wx->addr_ctrl.mta_in_use++;
-+
-+	vector = wx_mta_vector(wx, mc_addr);
-+	wx_dbg(wx, " bit-vector = 0x%03X\n", vector);
-+
-+	/* The MTA is a register array of 128 32-bit registers. It is treated
-+	 * like an array of 4096 bits.  We want to set bit
-+	 * BitArray[vector_value]. So we figure out what register the bit is
-+	 * in, read it, OR in the new bit, then write back the new value.  The
-+	 * register is determined by the upper 7 bits of the vector value and
-+	 * the bit within that register are determined by the lower 5 bits of
-+	 * the value.
-+	 */
-+	vector_reg = (vector >> 5) & 0x7F;
-+	vector_bit = vector & 0x1F;
-+	wx->mac.mta_shadow[vector_reg] |= (1 << vector_bit);
-+}
-+
-+/**
-+ *  wx_update_mc_addr_list - Updates MAC list of multicast addresses
-+ *  @wx: pointer to private structure
-+ *  @netdev: pointer to net device structure
-+ *
-+ *  The given list replaces any existing list. Clears the MC addrs from receive
-+ *  address registers and the multicast table. Uses unused receive address
-+ *  registers for the first multicast addresses, and hashes the rest into the
-+ *  multicast table.
-+ **/
-+static void wx_update_mc_addr_list(struct wx *wx, struct net_device *netdev)
-+{
-+	struct netdev_hw_addr *ha;
-+	u32 i, psrctl;
-+
-+	/* Set the new number of MC addresses that we are being requested to
-+	 * use.
-+	 */
-+	wx->addr_ctrl.num_mc_addrs = netdev_mc_count(netdev);
-+	wx->addr_ctrl.mta_in_use = 0;
-+
-+	/* Clear mta_shadow */
-+	wx_dbg(wx, " Clearing MTA\n");
-+	memset(&wx->mac.mta_shadow, 0, sizeof(wx->mac.mta_shadow));
-+
-+	/* Update mta_shadow */
-+	netdev_for_each_mc_addr(ha, netdev) {
-+		wx_dbg(wx, " Adding the multicast addresses:\n");
-+		wx_set_mta(wx, ha->addr);
-+	}
-+
-+	/* Enable mta */
-+	for (i = 0; i < wx->mac.mcft_size; i++)
-+		wr32a(wx, WX_PSR_MC_TBL(0), i,
-+		      wx->mac.mta_shadow[i]);
-+
-+	if (wx->addr_ctrl.mta_in_use > 0) {
-+		psrctl = rd32(wx, WX_PSR_CTL);
-+		psrctl &= ~(WX_PSR_CTL_MO | WX_PSR_CTL_MFE);
-+		psrctl |= WX_PSR_CTL_MFE |
-+			  (wx->mac.mc_filter_type << WX_PSR_CTL_MO_SHIFT);
-+		wr32(wx, WX_PSR_CTL, psrctl);
-+	}
-+
-+	wx_dbg(wx, "Update mc addr list Complete\n");
-+}
-+
-+/**
-+ * wx_write_mc_addr_list - write multicast addresses to MTA
-+ * @netdev: network interface device structure
-+ *
-+ * Writes multicast address list to the MTA hash table.
-+ * Returns: 0 on no addresses written
-+ *          X on writing X addresses to MTA
-+ **/
-+static int wx_write_mc_addr_list(struct net_device *netdev)
-+{
-+	struct wx *wx = netdev_priv(netdev);
-+
-+	if (!netif_running(netdev))
 +		return 0;
-+
-+	wx_update_mc_addr_list(wx, netdev);
-+
-+	return netdev_mc_count(netdev);
++err_setup_rx:
++	/* rewind the index freeing the rings as we go */
++	while (i--)
++		wx_free_rx_resources(wx->rx_ring[i]);
++	return err;
 +}
 +
- /**
-  * wx_set_mac - Change the Ethernet Address of the NIC
-  * @netdev: network interface device structure
-@@ -883,6 +1092,385 @@ void wx_disable_rx(struct wx *wx)
- }
- EXPORT_SYMBOL(wx_disable_rx);
++/**
++ * wx_setup_tx_resources - allocate Tx resources (Descriptors)
++ * @tx_ring: tx descriptor ring (for a specific queue) to setup
++ *
++ * Return 0 on success, negative on failure
++ **/
++static int wx_setup_tx_resources(struct wx_ring *tx_ring)
++{
++	struct device *dev = tx_ring->dev;
++	int orig_node = dev_to_node(dev);
++	int numa_node = -1;
++	int size;
++
++	size = sizeof(struct wx_tx_buffer) * tx_ring->count;
++
++	if (tx_ring->q_vector)
++		numa_node = tx_ring->q_vector->numa_node;
++
++	tx_ring->tx_buffer_info = vmalloc_node(size, numa_node);
++	if (!tx_ring->tx_buffer_info)
++		tx_ring->tx_buffer_info = vmalloc(size);
++	if (!tx_ring->tx_buffer_info)
++		goto err;
++
++	/* round up to nearest 4K */
++	tx_ring->size = tx_ring->count * sizeof(union wx_tx_desc);
++	tx_ring->size = ALIGN(tx_ring->size, 4096);
++
++	set_dev_node(dev, numa_node);
++	tx_ring->desc = dma_alloc_coherent(dev, tx_ring->size,
++					   &tx_ring->dma, GFP_KERNEL);
++	set_dev_node(dev, orig_node);
++	if (!tx_ring->desc)
++		tx_ring->desc = dma_alloc_coherent(dev, tx_ring->size,
++						   &tx_ring->dma, GFP_KERNEL);
++	if (!tx_ring->desc)
++		goto err;
++
++	return 0;
++
++err:
++	vfree(tx_ring->tx_buffer_info);
++	tx_ring->tx_buffer_info = NULL;
++	dev_err(dev, "Unable to allocate memory for the Tx descriptor ring\n");
++	return -ENOMEM;
++}
++
++/**
++ * wx_setup_all_tx_resources - allocate all queues Tx resources
++ * @wx: pointer to private structure
++ *
++ * If this function returns with an error, then it's possible one or
++ * more of the rings is populated (while the rest are not).  It is the
++ * callers duty to clean those orphaned rings.
++ *
++ * Return 0 on success, negative on failure
++ **/
++static int wx_setup_all_tx_resources(struct wx *wx)
++{
++	int i, err = 0;
++
++	for (i = 0; i < wx->num_tx_queues; i++) {
++		err = wx_setup_tx_resources(wx->tx_ring[i]);
++		if (!err)
++			continue;
++
++		wx_err(wx, "Allocation for Tx Queue %u failed\n", i);
++		goto err_setup_tx;
++	}
++
++	return 0;
++err_setup_tx:
++	/* rewind the index freeing the rings as we go */
++	while (i--)
++		wx_free_tx_resources(wx->tx_ring[i]);
++	return err;
++}
++
++int wx_setup_resources(struct wx *wx)
++{
++	int err;
++
++	/* allocate transmit descriptors */
++	err = wx_setup_all_tx_resources(wx);
++	if (err)
++		return err;
++
++	/* allocate receive descriptors */
++	err = wx_setup_all_rx_resources(wx);
++	if (err)
++		goto err_free_tx;
++
++	err = wx_setup_isb_resources(wx);
++	if (err)
++		goto err_free_rx;
++
++	return 0;
++
++err_free_rx:
++	wx_free_all_rx_resources(wx);
++err_free_tx:
++	wx_free_all_tx_resources(wx);
++
++	return err;
++}
++EXPORT_SYMBOL(wx_setup_resources);
++
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/net/ethernet/wangxun/libwx/wx_lib.h b/drivers/net/ethernet/wangxun/libwx/wx_lib.h
+index 8ae657155f34..6fa95752fc42 100644
+--- a/drivers/net/ethernet/wangxun/libwx/wx_lib.h
++++ b/drivers/net/ethernet/wangxun/libwx/wx_lib.h
+@@ -16,5 +16,7 @@ int wx_setup_isb_resources(struct wx *wx);
+ void wx_free_isb_resources(struct wx *wx);
+ u32 wx_misc_isb(struct wx *wx, enum wx_isb_idx idx);
+ void wx_configure_vectors(struct wx *wx);
++void wx_free_resources(struct wx *wx);
++int wx_setup_resources(struct wx *wx);
  
-+static void wx_enable_rx(struct wx *wx)
-+{
-+	u32 psrctl;
-+
-+	/* enable mac receiver */
-+	wr32m(wx, WX_MAC_RX_CFG,
-+	      WX_MAC_RX_CFG_RE, WX_MAC_RX_CFG_RE);
-+
-+	wr32m(wx, WX_RDB_PB_CTL,
-+	      WX_RDB_PB_CTL_RXEN, WX_RDB_PB_CTL_RXEN);
-+
-+	if (wx->mac.set_lben) {
-+		psrctl = rd32(wx, WX_PSR_CTL);
-+		psrctl |= WX_PSR_CTL_SW_EN;
-+		wr32(wx, WX_PSR_CTL, psrctl);
-+		wx->mac.set_lben = false;
-+	}
-+}
-+
-+/**
-+ * wx_set_rxpba - Initialize Rx packet buffer
-+ * @wx: pointer to private structure
-+ **/
-+static void wx_set_rxpba(struct wx *wx)
-+{
-+	u32 rxpktsize, txpktsize, txpbthresh;
-+
-+	rxpktsize = wx->mac.rx_pb_size << WX_RDB_PB_SZ_SHIFT;
-+	wr32(wx, WX_RDB_PB_SZ(0), rxpktsize);
-+
-+	/* Only support an equally distributed Tx packet buffer strategy. */
-+	txpktsize = wx->mac.tx_pb_size;
-+	txpbthresh = (txpktsize / 1024) - WX_TXPKT_SIZE_MAX;
-+	wr32(wx, WX_TDB_PB_SZ(0), txpktsize);
-+	wr32(wx, WX_TDM_PB_THRE(0), txpbthresh);
-+}
-+
-+static void wx_configure_port(struct wx *wx)
-+{
-+	u32 value, i;
-+
-+	value = WX_CFG_PORT_CTL_D_VLAN | WX_CFG_PORT_CTL_QINQ;
-+	wr32m(wx, WX_CFG_PORT_CTL,
-+	      WX_CFG_PORT_CTL_D_VLAN |
-+	      WX_CFG_PORT_CTL_QINQ,
-+	      value);
-+
-+	wr32(wx, WX_CFG_TAG_TPID(0),
-+	     ETH_P_8021Q | ETH_P_8021AD << 16);
-+	wx->tpid[0] = ETH_P_8021Q;
-+	wx->tpid[1] = ETH_P_8021AD;
-+	for (i = 1; i < 4; i++)
-+		wr32(wx, WX_CFG_TAG_TPID(i),
-+		     ETH_P_8021Q | ETH_P_8021Q << 16);
-+	for (i = 2; i < 8; i++)
-+		wx->tpid[i] = ETH_P_8021Q;
-+}
-+
-+/**
-+ *  wx_disable_sec_rx_path - Stops the receive data path
-+ *  @wx: pointer to private structure
-+ *
-+ *  Stops the receive data path and waits for the HW to internally empty
-+ *  the Rx security block
-+ **/
-+static int wx_disable_sec_rx_path(struct wx *wx)
-+{
-+	u32 secrx;
-+
-+	wr32m(wx, WX_RSC_CTL,
-+	      WX_RSC_CTL_RX_DIS, WX_RSC_CTL_RX_DIS);
-+
-+	return read_poll_timeout(rd32, secrx, secrx & WX_RSC_ST_RSEC_RDY,
-+				 1000, 40000, false, wx, WX_RSC_ST);
-+}
-+
-+/**
-+ *  wx_enable_sec_rx_path - Enables the receive data path
-+ *  @wx: pointer to private structure
-+ *
-+ *  Enables the receive data path.
-+ **/
-+static void wx_enable_sec_rx_path(struct wx *wx)
-+{
-+	wr32m(wx, WX_RSC_CTL, WX_RSC_CTL_RX_DIS, 0);
-+	WX_WRITE_FLUSH(wx);
-+}
-+
-+void wx_set_rx_mode(struct net_device *netdev)
-+{
-+	struct wx *wx = netdev_priv(netdev);
-+	u32 fctrl, vmolr, vlnctrl;
-+	int count;
-+
-+	/* Check for Promiscuous and All Multicast modes */
-+	fctrl = rd32(wx, WX_PSR_CTL);
-+	fctrl &= ~(WX_PSR_CTL_UPE | WX_PSR_CTL_MPE);
-+	vmolr = rd32(wx, WX_PSR_VM_L2CTL(0));
-+	vmolr &= ~(WX_PSR_VM_L2CTL_UPE |
-+		   WX_PSR_VM_L2CTL_MPE |
-+		   WX_PSR_VM_L2CTL_ROPE |
-+		   WX_PSR_VM_L2CTL_ROMPE);
-+	vlnctrl = rd32(wx, WX_PSR_VLAN_CTL);
-+	vlnctrl &= ~(WX_PSR_VLAN_CTL_VFE | WX_PSR_VLAN_CTL_CFIEN);
-+
-+	/* set all bits that we expect to always be set */
-+	fctrl |= WX_PSR_CTL_BAM | WX_PSR_CTL_MFE;
-+	vmolr |= WX_PSR_VM_L2CTL_BAM |
-+		 WX_PSR_VM_L2CTL_AUPE |
-+		 WX_PSR_VM_L2CTL_VACC;
-+	vlnctrl |= WX_PSR_VLAN_CTL_VFE;
-+
-+	wx->addr_ctrl.user_set_promisc = false;
-+	if (netdev->flags & IFF_PROMISC) {
-+		wx->addr_ctrl.user_set_promisc = true;
-+		fctrl |= WX_PSR_CTL_UPE | WX_PSR_CTL_MPE;
-+		/* pf don't want packets routing to vf, so clear UPE */
-+		vmolr |= WX_PSR_VM_L2CTL_MPE;
-+		vlnctrl &= ~WX_PSR_VLAN_CTL_VFE;
-+	}
-+
-+	if (netdev->flags & IFF_ALLMULTI) {
-+		fctrl |= WX_PSR_CTL_MPE;
-+		vmolr |= WX_PSR_VM_L2CTL_MPE;
-+	}
-+
-+	if (netdev->features & NETIF_F_RXALL) {
-+		vmolr |= (WX_PSR_VM_L2CTL_UPE | WX_PSR_VM_L2CTL_MPE);
-+		vlnctrl &= ~WX_PSR_VLAN_CTL_VFE;
-+		/* receive bad packets */
-+		wr32m(wx, WX_RSC_CTL,
-+		      WX_RSC_CTL_SAVE_MAC_ERR,
-+		      WX_RSC_CTL_SAVE_MAC_ERR);
-+	} else {
-+		vmolr |= WX_PSR_VM_L2CTL_ROPE | WX_PSR_VM_L2CTL_ROMPE;
-+	}
-+
-+	/* Write addresses to available RAR registers, if there is not
-+	 * sufficient space to store all the addresses then enable
-+	 * unicast promiscuous mode
-+	 */
-+	count = wx_write_uc_addr_list(netdev, 0);
-+	if (count < 0) {
-+		vmolr &= ~WX_PSR_VM_L2CTL_ROPE;
-+		vmolr |= WX_PSR_VM_L2CTL_UPE;
-+	}
-+
-+	/* Write addresses to the MTA, if the attempt fails
-+	 * then we should just turn on promiscuous mode so
-+	 * that we can at least receive multicast traffic
-+	 */
-+	count = wx_write_mc_addr_list(netdev);
-+	if (count < 0) {
-+		vmolr &= ~WX_PSR_VM_L2CTL_ROMPE;
-+		vmolr |= WX_PSR_VM_L2CTL_MPE;
-+	}
-+
-+	wr32(wx, WX_PSR_VLAN_CTL, vlnctrl);
-+	wr32(wx, WX_PSR_CTL, fctrl);
-+	wr32(wx, WX_PSR_VM_L2CTL(0), vmolr);
-+}
-+EXPORT_SYMBOL(wx_set_rx_mode);
-+
-+static void wx_set_rx_buffer_len(struct wx *wx)
-+{
-+	struct net_device *netdev = wx->netdev;
-+	u32 mhadd, max_frame;
-+
-+	max_frame = netdev->mtu + ETH_HLEN + ETH_FCS_LEN;
-+	/* adjust max frame to be at least the size of a standard frame */
-+	if (max_frame < (ETH_FRAME_LEN + ETH_FCS_LEN))
-+		max_frame = (ETH_FRAME_LEN + ETH_FCS_LEN);
-+
-+	mhadd = rd32(wx, WX_PSR_MAX_SZ);
-+	if (max_frame != mhadd)
-+		wr32(wx, WX_PSR_MAX_SZ, max_frame);
-+}
-+
-+/* Disable the specified rx queue */
-+void wx_disable_rx_queue(struct wx *wx, struct wx_ring *ring)
-+{
-+	u8 reg_idx = ring->reg_idx;
-+	u32 rxdctl;
-+	int ret;
-+
-+	/* write value back with RRCFG.EN bit cleared */
-+	wr32m(wx, WX_PX_RR_CFG(reg_idx),
-+	      WX_PX_RR_CFG_RR_EN, 0);
-+
-+	/* the hardware may take up to 100us to really disable the rx queue */
-+	ret = read_poll_timeout(rd32, rxdctl, !(rxdctl & WX_PX_RR_CFG_RR_EN),
-+				10, 100, true, wx, WX_PX_RR_CFG(reg_idx));
-+
-+	if (ret == -ETIMEDOUT) {
-+		/* Just for information */
-+		wx_err(wx,
-+		       "RRCFG.EN on Rx queue %d not cleared within the polling period\n",
-+		       reg_idx);
-+	}
-+}
-+EXPORT_SYMBOL(wx_disable_rx_queue);
-+
-+static void wx_enable_rx_queue(struct wx *wx, struct wx_ring *ring)
-+{
-+	u8 reg_idx = ring->reg_idx;
-+	u32 rxdctl;
-+	int ret;
-+
-+	ret = read_poll_timeout(rd32, rxdctl, rxdctl & WX_PX_RR_CFG_RR_EN,
-+				1000, 10000, true, wx, WX_PX_RR_CFG(reg_idx));
-+
-+	if (ret == -ETIMEDOUT) {
-+		/* Just for information */
-+		wx_err(wx,
-+		       "RRCFG.EN on Rx queue %d not set within the polling period\n",
-+		       reg_idx);
-+	}
-+}
-+
-+static void wx_configure_srrctl(struct wx *wx,
-+				struct wx_ring *rx_ring)
-+{
-+	u16 reg_idx = rx_ring->reg_idx;
-+	u32 srrctl;
-+
-+	srrctl = rd32(wx, WX_PX_RR_CFG(reg_idx));
-+	srrctl &= ~(WX_PX_RR_CFG_RR_HDR_SZ |
-+		    WX_PX_RR_CFG_RR_BUF_SZ |
-+		    WX_PX_RR_CFG_SPLIT_MODE);
-+	/* configure header buffer length, needed for RSC */
-+	srrctl |= WX_RXBUFFER_256 << WX_PX_RR_CFG_BHDRSIZE_SHIFT;
-+
-+	/* configure the packet buffer length */
-+	srrctl |= WX_RX_BUFSZ >> WX_PX_RR_CFG_BSIZEPKT_SHIFT;
-+
-+	wr32(wx, WX_PX_RR_CFG(reg_idx), srrctl);
-+}
-+
-+static void wx_configure_tx_ring(struct wx *wx,
-+				 struct wx_ring *ring)
-+{
-+	u32 txdctl = WX_PX_TR_CFG_ENABLE;
-+	u8 reg_idx = ring->reg_idx;
-+	int ret;
-+
-+	/* disable queue to avoid issues while updating state */
-+	wr32(wx, WX_PX_TR_CFG(reg_idx), WX_PX_TR_CFG_SWFLSH);
-+	WX_WRITE_FLUSH(wx);
-+
-+	/* reset head and tail pointers */
-+	wr32(wx, WX_PX_TR_RP(reg_idx), 0);
-+	wr32(wx, WX_PX_TR_WP(reg_idx), 0);
-+	ring->tail = wx->hw_addr + WX_PX_TR_WP(reg_idx);
-+
-+	if (ring->count < WX_MAX_TXD)
-+		txdctl |= ring->count / 128 << WX_PX_TR_CFG_TR_SIZE_SHIFT;
-+	txdctl |= 0x20 << WX_PX_TR_CFG_WTHRESH_SHIFT;
-+
-+	/* enable queue */
-+	wr32(wx, WX_PX_TR_CFG(reg_idx), txdctl);
-+
-+	/* poll to verify queue is enabled */
-+	ret = read_poll_timeout(rd32, txdctl, txdctl & WX_PX_TR_CFG_ENABLE,
-+				1000, 10000, true, wx, WX_PX_TR_CFG(reg_idx));
-+	if (ret == -ETIMEDOUT)
-+		wx_err(wx, "Could not enable Tx Queue %d\n", reg_idx);
-+}
-+
-+static void wx_configure_rx_ring(struct wx *wx,
-+				 struct wx_ring *ring)
-+{
-+	u16 reg_idx = ring->reg_idx;
-+	u32 rxdctl;
-+
-+	/* disable queue to avoid issues while updating state */
-+	rxdctl = rd32(wx, WX_PX_RR_CFG(reg_idx));
-+	wx_disable_rx_queue(wx, ring);
-+
-+	if (ring->count == WX_MAX_RXD)
-+		rxdctl |= 0 << WX_PX_RR_CFG_RR_SIZE_SHIFT;
-+	else
-+		rxdctl |= (ring->count / 128) << WX_PX_RR_CFG_RR_SIZE_SHIFT;
-+
-+	rxdctl |= 0x1 << WX_PX_RR_CFG_RR_THER_SHIFT;
-+	wr32(wx, WX_PX_RR_CFG(reg_idx), rxdctl);
-+
-+	/* reset head and tail pointers */
-+	wr32(wx, WX_PX_RR_RP(reg_idx), 0);
-+	wr32(wx, WX_PX_RR_WP(reg_idx), 0);
-+	ring->tail = wx->hw_addr + WX_PX_RR_WP(reg_idx);
-+
-+	wx_configure_srrctl(wx, ring);
-+
-+	/* enable receive descriptor ring */
-+	wr32m(wx, WX_PX_RR_CFG(reg_idx),
-+	      WX_PX_RR_CFG_RR_EN, WX_PX_RR_CFG_RR_EN);
-+
-+	wx_enable_rx_queue(wx, ring);
-+}
-+
-+/**
-+ * wx_configure_tx - Configure Transmit Unit after Reset
-+ * @wx: pointer to private structure
-+ *
-+ * Configure the Tx unit of the MAC after a reset.
-+ **/
-+static void wx_configure_tx(struct wx *wx)
-+{
-+	u32 i;
-+
-+	/* TDM_CTL.TE must be before Tx queues are enabled */
-+	wr32m(wx, WX_TDM_CTL,
-+	      WX_TDM_CTL_TE, WX_TDM_CTL_TE);
-+
-+	/* Setup the HW Tx Head and Tail descriptor pointers */
-+	for (i = 0; i < wx->num_tx_queues; i++)
-+		wx_configure_tx_ring(wx, wx->tx_ring[i]);
-+
-+	wr32m(wx, WX_TSC_BUF_AE, WX_TSC_BUF_AE_THR, 0x10);
-+
-+	if (wx->mac.type == wx_mac_em)
-+		wr32m(wx, WX_TSC_CTL, WX_TSC_CTL_TX_DIS | WX_TSC_CTL_TSEC_DIS, 0x1);
-+
-+	/* enable mac transmitter */
-+	wr32m(wx, WX_MAC_TX_CFG,
-+	      WX_MAC_TX_CFG_TE, WX_MAC_TX_CFG_TE);
-+}
-+
-+/**
-+ * wx_configure_rx - Configure Receive Unit after Reset
-+ * @wx: pointer to private structure
-+ *
-+ * Configure the Rx unit of the MAC after a reset.
-+ **/
-+static void wx_configure_rx(struct wx *wx)
-+{
-+	u32 psrtype, i;
-+	int ret;
-+
-+	wx_disable_rx(wx);
-+
-+	psrtype = WX_RDB_PL_CFG_L4HDR |
-+		  WX_RDB_PL_CFG_L3HDR |
-+		  WX_RDB_PL_CFG_L2HDR |
-+		  WX_RDB_PL_CFG_TUN_TUNHDR |
-+		  WX_RDB_PL_CFG_TUN_TUNHDR;
-+	wr32(wx, WX_RDB_PL_CFG(0), psrtype);
-+
-+	/* enable hw crc stripping */
-+	wr32m(wx, WX_RSC_CTL, WX_RSC_CTL_CRC_STRIP, WX_RSC_CTL_CRC_STRIP);
-+
-+	if (wx->mac.type == wx_mac_sp) {
-+		u32 psrctl;
-+
-+		/* RSC Setup */
-+		psrctl = rd32(wx, WX_PSR_CTL);
-+		psrctl |= WX_PSR_CTL_RSC_ACK; /* Disable RSC for ACK packets */
-+		psrctl |= WX_PSR_CTL_RSC_DIS;
-+		wr32(wx, WX_PSR_CTL, psrctl);
-+	}
-+
-+	/* set_rx_buffer_len must be called before ring initialization */
-+	wx_set_rx_buffer_len(wx);
-+
-+	/* Setup the HW Rx Head and Tail Descriptor Pointers and
-+	 * the Base and Length of the Rx Descriptor Ring
-+	 */
-+	for (i = 0; i < wx->num_rx_queues; i++)
-+		wx_configure_rx_ring(wx, wx->rx_ring[i]);
-+
-+	/* Enable all receives, disable security engine prior to block traffic */
-+	ret = wx_disable_sec_rx_path(wx);
-+	if (ret < 0)
-+		wx_err(wx, "The register status is abnormal, please check device.");
-+
-+	wx_enable_rx(wx);
-+	wx_enable_sec_rx_path(wx);
-+}
-+
- static void wx_configure_isb(struct wx *wx)
- {
- 	/* set ISB Address */
-@@ -892,6 +1480,15 @@ static void wx_configure_isb(struct wx *wx)
- 
- void wx_configure(struct wx *wx)
- {
-+	wx_set_rxpba(wx);
-+	wx_configure_port(wx);
-+
-+	wx_set_rx_mode(wx->netdev);
-+
-+	wx_enable_sec_rx_path(wx);
-+
-+	wx_configure_tx(wx);
-+	wx_configure_rx(wx);
- 	wx_configure_isb(wx);
- }
- EXPORT_SYMBOL(wx_configure);
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_hw.h b/drivers/net/ethernet/wangxun/libwx/wx_hw.h
-index 60bda129cfa6..44dfd6ea442a 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_hw.h
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_hw.h
-@@ -22,6 +22,8 @@ void wx_mac_set_default_filter(struct wx *wx, u8 *addr);
- void wx_flush_sw_mac_table(struct wx *wx);
- int wx_set_mac(struct net_device *netdev, void *p);
- void wx_disable_rx(struct wx *wx);
-+void wx_set_rx_mode(struct net_device *netdev);
-+void wx_disable_rx_queue(struct wx *wx, struct wx_ring *ring);
- void wx_configure(struct wx *wx);
- int wx_disable_pcie_master(struct wx *wx);
- int wx_stop_adapter(struct wx *wx);
+ #endif /* _NGBE_LIB_H_ */
 diff --git a/drivers/net/ethernet/wangxun/libwx/wx_type.h b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-index 7368c681221f..988878ddba47 100644
+index 988878ddba47..1863c6cbc6c6 100644
 --- a/drivers/net/ethernet/wangxun/libwx/wx_type.h
 +++ b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-@@ -66,6 +66,9 @@
- /* port cfg Registers */
- #define WX_CFG_PORT_CTL              0x14400
- #define WX_CFG_PORT_CTL_DRV_LOAD     BIT(3)
-+#define WX_CFG_PORT_CTL_QINQ         BIT(2)
-+#define WX_CFG_PORT_CTL_D_VLAN       BIT(0) /* double vlan*/
-+#define WX_CFG_TAG_TPID(_i)          (0x14430 + ((_i) * 4))
+@@ -432,6 +432,71 @@ enum wx_reset_type {
+ 	WX_GLOBAL_RESET
+ };
  
- /* GPIO Registers */
- #define WX_GPIO_DR                   0x14800
-@@ -88,15 +91,25 @@
- #define WX_TDM_CTL                   0x18000
- /* TDM CTL BIT */
- #define WX_TDM_CTL_TE                BIT(0) /* Transmit Enable */
-+#define WX_TDM_PB_THRE(_i)           (0x18020 + ((_i) * 4))
- 
- /***************************** RDB registers *********************************/
- /* receive packet buffer */
- #define WX_RDB_PB_CTL                0x19000
- #define WX_RDB_PB_CTL_RXEN           BIT(31) /* Enable Receiver */
- #define WX_RDB_PB_CTL_DISABLED       BIT(0)
-+#define WX_RDB_PB_SZ(_i)             (0x19020 + ((_i) * 4))
-+#define WX_RDB_PB_SZ_SHIFT           10
- /* statistic */
- #define WX_RDB_PFCMACDAL             0x19210
- #define WX_RDB_PFCMACDAH             0x19214
-+/* ring assignment */
-+#define WX_RDB_PL_CFG(_i)            (0x19300 + ((_i) * 4))
-+#define WX_RDB_PL_CFG_L4HDR          BIT(1)
-+#define WX_RDB_PL_CFG_L3HDR          BIT(2)
-+#define WX_RDB_PL_CFG_L2HDR          BIT(3)
-+#define WX_RDB_PL_CFG_TUN_TUNHDR     BIT(4)
-+#define WX_RDB_PL_CFG_TUN_OUTL2HDR   BIT(5)
- 
- /******************************* PSR Registers *******************************/
- /* psr control */
-@@ -114,10 +127,24 @@
- #define WX_PSR_CTL_MO_SHIFT          5
- #define WX_PSR_CTL_MO                (0x3 << WX_PSR_CTL_MO_SHIFT)
- #define WX_PSR_CTL_TPE               BIT(4)
-+#define WX_PSR_MAX_SZ                0x15020
-+#define WX_PSR_VLAN_CTL              0x15088
-+#define WX_PSR_VLAN_CTL_CFIEN        BIT(29)  /* bit 29 */
-+#define WX_PSR_VLAN_CTL_VFE          BIT(30)  /* bit 30 */
- /* mcasst/ucast overflow tbl */
- #define WX_PSR_MC_TBL(_i)            (0x15200  + ((_i) * 4))
- #define WX_PSR_UC_TBL(_i)            (0x15400 + ((_i) * 4))
- 
-+/* VM L2 contorl */
-+#define WX_PSR_VM_L2CTL(_i)          (0x15600 + ((_i) * 4))
-+#define WX_PSR_VM_L2CTL_UPE          BIT(4) /* unicast promiscuous */
-+#define WX_PSR_VM_L2CTL_VACC         BIT(6) /* accept nomatched vlan */
-+#define WX_PSR_VM_L2CTL_AUPE         BIT(8) /* accept untagged packets */
-+#define WX_PSR_VM_L2CTL_ROMPE        BIT(9) /* accept packets in MTA tbl */
-+#define WX_PSR_VM_L2CTL_ROPE         BIT(10) /* accept packets in UC tbl */
-+#define WX_PSR_VM_L2CTL_BAM          BIT(11) /* accept broadcast packets */
-+#define WX_PSR_VM_L2CTL_MPE          BIT(12) /* multicast promiscuous */
++/* Transmit Descriptor */
++union wx_tx_desc {
++	struct {
++		__le64 buffer_addr; /* Address of descriptor's data buf */
++		__le32 cmd_type_len;
++		__le32 olinfo_status;
++	} read;
++	struct {
++		__le64 rsvd; /* Reserved */
++		__le32 nxtseq_seed;
++		__le32 status;
++	} wb;
++};
 +
- /* Management */
- #define WX_PSR_MNG_FLEX_SEL          0x1582C
- #define WX_PSR_MNG_FLEX_DW_L(_i)     (0x15A00 + ((_i) * 16))
-@@ -139,6 +166,27 @@
- #define WX_PSR_MAC_SWC_IDX           0x16210
- #define WX_CLEAR_VMDQ_ALL            0xFFFFFFFFU
- 
-+/********************************* RSEC **************************************/
-+/* general rsec */
-+#define WX_RSC_CTL                   0x17000
-+#define WX_RSC_CTL_SAVE_MAC_ERR      BIT(6)
-+#define WX_RSC_CTL_CRC_STRIP         BIT(2)
-+#define WX_RSC_CTL_RX_DIS            BIT(1)
-+#define WX_RSC_ST                    0x17004
-+#define WX_RSC_ST_RSEC_RDY           BIT(0)
++/* Receive Descriptor */
++union wx_rx_desc {
++	struct {
++		__le64 pkt_addr; /* Packet buffer address */
++		__le64 hdr_addr; /* Header buffer address */
++	} read;
++	struct {
++		struct {
++			union {
++				__le32 data;
++				struct {
++					__le16 pkt_info; /* RSS, Pkt type */
++					__le16 hdr_info; /* Splithdr, hdrlen */
++				} hs_rss;
++			} lo_dword;
++			union {
++				__le32 rss; /* RSS Hash */
++				struct {
++					__le16 ip_id; /* IP id */
++					__le16 csum; /* Packet Checksum */
++				} csum_ip;
++			} hi_dword;
++		} lower;
++		struct {
++			__le32 status_error; /* ext status/error */
++			__le16 length; /* Packet length */
++			__le16 vlan; /* VLAN tag */
++		} upper;
++	} wb;  /* writeback */
++};
 +
-+/****************************** TDB ******************************************/
-+#define WX_TDB_PB_SZ(_i)             (0x1CC00 + ((_i) * 4))
-+#define WX_TXPKT_SIZE_MAX            0xA /* Max Tx Packet size */
++/* wrapper around a pointer to a socket buffer,
++ * so a DMA handle can be stored along with the buffer
++ */
++struct wx_tx_buffer {
++	union wx_tx_desc *next_to_watch;
++	struct sk_buff *skb;
++	unsigned int bytecount;
++	unsigned short gso_segs;
++	DEFINE_DMA_UNMAP_ADDR(dma);
++	DEFINE_DMA_UNMAP_LEN(len);
++};
 +
-+/****************************** TSEC *****************************************/
-+/* Security Control Registers */
-+#define WX_TSC_CTL                   0x1D000
-+#define WX_TSC_CTL_TX_DIS            BIT(1)
-+#define WX_TSC_CTL_TSEC_DIS          BIT(0)
-+#define WX_TSC_BUF_AE                0x1D00C
-+#define WX_TSC_BUF_AE_THR            GENMASK(9, 0)
++struct wx_rx_buffer {
++	struct sk_buff *skb;
++	dma_addr_t dma;
++	dma_addr_t page_dma;
++	struct page *page;
++	unsigned int page_offset;
++};
 +
- /************************************** MNG ********************************/
- #define WX_MNG_SWFW_SYNC             0x1E008
- #define WX_MNG_SWFW_SYNC_SW_MB       BIT(2)
-@@ -192,6 +240,10 @@
- #define WX_EM_MAX_EITR               0x00007FFCU
- 
- /* transmit DMA Registers */
-+#define WX_PX_TR_BAL(_i)             (0x03000 + ((_i) * 0x40))
-+#define WX_PX_TR_BAH(_i)             (0x03004 + ((_i) * 0x40))
-+#define WX_PX_TR_WP(_i)              (0x03008 + ((_i) * 0x40))
-+#define WX_PX_TR_RP(_i)              (0x0300C + ((_i) * 0x40))
- #define WX_PX_TR_CFG(_i)             (0x03010 + ((_i) * 0x40))
- /* Transmit Config masks */
- #define WX_PX_TR_CFG_ENABLE          BIT(0) /* Ena specific Tx Queue */
-@@ -201,8 +253,22 @@
- #define WX_PX_TR_CFG_THRE_SHIFT      8
- 
- /* Receive DMA Registers */
-+#define WX_PX_RR_BAL(_i)             (0x01000 + ((_i) * 0x40))
-+#define WX_PX_RR_BAH(_i)             (0x01004 + ((_i) * 0x40))
-+#define WX_PX_RR_WP(_i)              (0x01008 + ((_i) * 0x40))
-+#define WX_PX_RR_RP(_i)              (0x0100C + ((_i) * 0x40))
- #define WX_PX_RR_CFG(_i)             (0x01010 + ((_i) * 0x40))
- /* PX_RR_CFG bit definitions */
-+#define WX_PX_RR_CFG_SPLIT_MODE      BIT(26)
-+#define WX_PX_RR_CFG_RR_THER_SHIFT   16
-+#define WX_PX_RR_CFG_RR_HDR_SZ       GENMASK(15, 12)
-+#define WX_PX_RR_CFG_RR_BUF_SZ       GENMASK(11, 8)
-+#define WX_PX_RR_CFG_BHDRSIZE_SHIFT  6 /* 64byte resolution (>> 6)
-+					* + at bit 8 offset (<< 12)
-+					*  = (<< 6)
-+					*/
-+#define WX_PX_RR_CFG_BSIZEPKT_SHIFT  2 /* so many KBs */
-+#define WX_PX_RR_CFG_RR_SIZE_SHIFT   1
- #define WX_PX_RR_CFG_RR_EN           BIT(0)
- 
- /* Number of 80 microseconds we wait for PCI Express master disable */
-@@ -230,6 +296,20 @@
- #define WX_MAC_STATE_MODIFIED        0x2
- #define WX_MAC_STATE_IN_USE          0x4
- 
-+#define WX_MAX_RXD                   8192
-+#define WX_MAX_TXD                   8192
-+
-+/* Supported Rx Buffer Sizes */
-+#define WX_RXBUFFER_256      256    /* Used for skb receive header */
-+#define WX_RXBUFFER_2K       2048
-+#define WX_MAX_RXBUFFER      16384  /* largest size for single descriptor */
-+
-+#if MAX_SKB_FRAGS < 8
-+#define WX_RX_BUFSZ      ALIGN(WX_MAX_RXBUFFER / MAX_SKB_FRAGS, 1024)
-+#else
-+#define WX_RX_BUFSZ      WX_RXBUFFER_2K
-+#endif
-+
- #define WX_CFG_PORT_ST               0x14404
- 
- /* Host Interface Command Structures */
-@@ -307,9 +387,12 @@ struct wx_mac_info {
- 	bool set_lben;
- 	u8 addr[ETH_ALEN];
- 	u8 perm_addr[ETH_ALEN];
-+	u32 mta_shadow[128];
- 	s32 mc_filter_type;
- 	u32 mcft_size;
- 	u32 num_rar_entries;
-+	u32 rx_pb_size;
-+	u32 tx_pb_size;
- 	u32 max_tx_queues;
- 	u32 max_rx_queues;
- 
-@@ -365,6 +448,7 @@ struct wx_ring {
+ /* iterator for handling rings in ring container */
+ #define wx_for_each_ring(posm, headm) \
+ 	for (posm = (headm).ring; posm; posm = posm->next)
+@@ -448,7 +513,15 @@ struct wx_ring {
  	struct wx_q_vector *q_vector;   /* backpointer to host q_vector */
  	struct net_device *netdev;      /* netdev ring belongs to */
  	struct device *dev;             /* device for DMA mapping */
-+	u8 __iomem *tail;
++	struct page_pool *page_pool;
++	void *desc;                     /* descriptor ring memory */
++	union {
++		struct wx_tx_buffer *tx_buffer_info;
++		struct wx_rx_buffer *rx_buffer_info;
++	};
+ 	u8 __iomem *tail;
++	dma_addr_t dma;                 /* phys. address of descriptor ring */
++	unsigned int size;              /* length in bytes */
  
  	u16 count;                      /* amount of descriptors */
  
-@@ -421,6 +505,7 @@ struct wx {
- 	u16 oem_svid;
- 	u16 msg_enable;
- 	bool adapter_stopped;
-+	u16 tpid[8];
- 	char eeprom_id[32];
- 	enum wx_reset_type reset_type;
- 
+@@ -463,6 +536,7 @@ struct wx_ring {
+ struct wx_q_vector {
+ 	struct wx *wx;
+ 	int cpu;        /* CPU for DCA */
++	int numa_node;
+ 	u16 v_idx;      /* index of q_vector within array, also used for
+ 			 * finding the bit in EICR and friends that
+ 			 * represents the vector for this ring
 -- 
 2.27.0
 
