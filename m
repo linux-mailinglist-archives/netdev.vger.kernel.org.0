@@ -2,119 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47CBE671B0B
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 12:45:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 375DA671B2D
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 12:47:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229837AbjARLpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 06:45:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53572 "EHLO
+        id S230111AbjARLrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 06:47:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230179AbjARLoI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 06:44:08 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on20702.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e89::702])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B4165EC0
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 03:05:00 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h15xZ75ucgqNkIrVFVuVVFNgBQNHQlcbXlPjzPhdXpPQaNybZOs/AaioFC2OKfbK81sggImZ4yV4GbohR/roixVb+oUsMWBUWAy2MgzzR/XOFp8JKn6E5aO+w/n2k3LW8pjI0/3tPtorr3QyXvyvm1lItbiSAwVZisv2K/Z4IywU45Mhf2d2ad5jfExlkWuIzPdtZqqycQjYHfuwHNYhJjZapqis/oU6qDGDps4MXzSwaJuGtrXsNFjN2GTyRWMZk0hkb1D7umAgM/Py6xRYz9wgEFYme3gIRtuk5E1CtD+mUrD0Q5rFUgHn9zSZOmQSy6/r5EikCyR9NPN7Ss+cdQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eqfhiwiWqmNEKFiv1Iw1KhnNrfjDbtixLYVkpFxnUqg=;
- b=Tm2aGDb+fdeOtOwF5YgyyVbKmqPWIGpVCJJlHccJsE6VGSiW+kHCzBIGtsvKvC9jxlJQp7dF3ffjTvUq2HkVuoOHOb1S2EHi59tarViLEofAaHg3PsMwmzRhj1aAsOXmQ6LipggpnN4AwHQO4JPCD51hgShov7bLYblpCxyxgJiR0sp7fb3CNbA/WH/e232Y2SvrlI4+zNUnmIMN/TaR7vctq80i+AV4qeCG3gQWFmEuMXx9Efwrig8PdYp/FA1QG8U7RtoqCAmQs8DafJUzWf02ZNkaMgJeFJ7Av7XriB4pdiOKhj6XPU9CgJYI3Ilgon+y7u3OwOzhuZo6H18+zA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eqfhiwiWqmNEKFiv1Iw1KhnNrfjDbtixLYVkpFxnUqg=;
- b=D96XkNvRzIiF1+uXXY2hBFNnZH7KKpSruPrQDd9rniBOaN8TmZllXwYOoKU4YXjdXqKntSKdKVJbiUyUNwhckgzudmThcBW9g1dylwoy7eotwDrPsAw1TnHuBO1qHqVulfEQoWt5FxJ3wjeUvcUcvRjGJp3jr5vzg8NBskCZKCc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by MN2PR13MB3790.namprd13.prod.outlook.com (2603:10b6:208:1f1::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.24; Wed, 18 Jan
- 2023 11:04:57 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65%7]) with mapi id 15.20.6002.024; Wed, 18 Jan 2023
- 11:04:57 +0000
-Date:   Wed, 18 Jan 2023 12:04:51 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Stefan Pietsch <stefan+linux@shellforce.org>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org
-Subject: Re: [RESEND PATCH iproute2] man: ip-link.8: Fix formatting
-Message-ID: <Y8fSU8IEPFp6+iu9@corigine.com>
-References: <e59c7cdf-9c54-00e3-bc9b-22fa471bd5ab@shellforce.org>
+        with ESMTP id S230076AbjARLpN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 06:45:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87D632E55
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 03:06:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1674039964;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=S5/6Xu0eIIBYkr1j8Gh2sqVw/hOh1Fh381LHNKs7kBE=;
+        b=FbSIsNOPD4fb6wGRE/UBbtUhhcRMnpkjRI++lvzpLiVXdHCnCVjtVtA1Wf+Xnd2qcK6Ayc
+        totUC2Jdg/b047lEOjBzgC3ckQYUw4eu5/8CiLMTKiD0VEHkmXwVCC7MmG1PRxRofNafUK
+        WZKHhJQipBoFyhcYqpw03CmOWxkWJ2k=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-35-EN7s5kL8MG-td_6rMzPILA-1; Wed, 18 Jan 2023 06:06:03 -0500
+X-MC-Unique: EN7s5kL8MG-td_6rMzPILA-1
+Received: by mail-ej1-f70.google.com with SMTP id xh12-20020a170906da8c00b007413144e87fso23722696ejb.14
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 03:06:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=S5/6Xu0eIIBYkr1j8Gh2sqVw/hOh1Fh381LHNKs7kBE=;
+        b=EHrw+NSDujKcqSjW4MY9frdUeXAyMq4SEpn3bdREzjrSSm5KxIwZjUH+fpzeYwEly5
+         cBKcC2u4LSdfCCkx3vUxGjcJQ4rFsX7PBHRNvR+EauVdlH8yCpCXzygQuD8xCanP8cw1
+         5TNARrC+EfrKWOIVUw11bjLPnQPU/6ezYViFFfmxe+JZImjZ4itNEYROk//QFrvaImjq
+         ipL6qQMC41AFOs9m6ixjD8romiLmpWN9MgXQL+n/u8co5muKQO0i1gza0v0OqD3LyD9a
+         MofMjtJa5JzsH19yNxAcxNmO9J3RKEfkWv0cHMQrn9PJu2Nj2gFxd3mBBAO9S4Bt28k5
+         Jl/Q==
+X-Gm-Message-State: AFqh2krJ3bM8w/tGzKxgBnORMHjnLC5TPQvd+10efTqbp2nJM9MKnD4G
+        emaSP8bWMU5cnoJ7/FjNYck72Mmwwvb+RZC6bhwfZm0oZFEHChRMhqfWRCJ+nN2QMOvmuKCwfV2
+        0fU/G3ji8DGv4aFcV
+X-Received: by 2002:a17:907:d38a:b0:86e:c9e2:6313 with SMTP id vh10-20020a170907d38a00b0086ec9e26313mr7126000ejc.32.1674039962504;
+        Wed, 18 Jan 2023 03:06:02 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXvEy+PvcDTnUWUIM1mRi0DywvS5oO3X8U3KlVPLdv8WhWr4z2y8n+9axR5+Rmd7Av1umWfsfg==
+X-Received: by 2002:a17:907:d38a:b0:86e:c9e2:6313 with SMTP id vh10-20020a170907d38a00b0086ec9e26313mr7125985ejc.32.1674039962271;
+        Wed, 18 Jan 2023 03:06:02 -0800 (PST)
+Received: from localhost (net-37-179-25-230.cust.vodafonedsl.it. [37.179.25.230])
+        by smtp.gmail.com with ESMTPSA id u1-20020a1709061da100b0086b7ffb3b92sm6198059ejh.205.2023.01.18.03.06.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Jan 2023 03:06:01 -0800 (PST)
+Date:   Wed, 18 Jan 2023 12:06:00 +0100
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Kyle Zeng <zengyhkyle@gmail.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        shaozhengchao <shaozhengchao@huawei.com>,
+        David Miller <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Subject: Re: Question: Patch:("net: sched: cbq: dont intepret cls results
+ when asked to drop") may be not bug for branch LTS 5.10
+Message-ID: <Y8fSmFD2dNtBpbwK@dcaratti.users.ipa.redhat.com>
+References: <4538d7d2-0d43-16b7-9f80-77355f08cc61@huawei.com>
+ <CAM0EoM=rqF8K997AmC0VDncJ9LeA0PJku2BL96iiatAOiv1-vw@mail.gmail.com>
+ <CAM0EoM=VwZWzz1n_y8bj3y44NKBmhnmn+HUHtHwBb5qcCqETfg@mail.gmail.com>
+ <CADW8OBvNcMCogJsMJkVXw70PL3oGU9s1a16DOK+xqdnCfgQzvg@mail.gmail.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e59c7cdf-9c54-00e3-bc9b-22fa471bd5ab@shellforce.org>
-X-ClientProxiedBy: AM0PR02CA0097.eurprd02.prod.outlook.com
- (2603:10a6:208:154::38) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MN2PR13MB3790:EE_
-X-MS-Office365-Filtering-Correlation-Id: d54637f6-4ea6-42b5-b464-08daf943d5b1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cHjgypOElk4DnHq4PMwZw74ixCu6uR73AOZGCH9P5RPeo6FnX18ZoDiiImVrTuNAlIyYhVAmG6Ve2gbqv3gRJ0D5NJ+x5fbJv8qBdEj/we7FHy4Wzen34CtmqLRlZ5ufHwX68/LUbX9aJt8sakIiuCD4S8ZPrqAk+EUBpNXb8sdxOAoROtGMcogCViZT5guyqi0yf4PYAK3xR8JZmponKiVTwnivQ219oe9CWTkjVK7oFToYS+CPUNUj0KKB5EZK1ymfkcogyR/i3GAZSYSBxY7q9d0MlelUtDz/NtoCMlMj+Ety628GoZVi1ZUqrilkA7XUSE9d1v/O9TDFn4kw2SVM+7PqiWk7hMSjhzTymGMCBEhHlGy7VbpZvnbX982FABDFgusq0nI8Nc3hBSjUlaUNK812gnD18i5IBNHKVl+7PTHo8HczUTh63oxLbIRYfbt4g82B2jCpasGVelaWWnTkgNfkXRzLmYl/q/8KjgvFnQd6WDKUlyNRGi2a3IbwBl2+etFAVW7fHITbo9PHIQNaRIwQnaVaJVvCFxaLDNW70AOnL3pff1wN6kifi58yB9HCeeiMtuEPKKWGImq98dkfpv0Op5GJwpaeBfLxMuItAp9B9MMCpnmMHWJUfJimrHgl18Y/tkkS+Wj4dDknuQzAMMIcuWobDQa2hUGJ0EBKhLHVjrJvXzDomS5PAwoZns5V0wWb4SSiZiTNILdaPhSDRVV8jj4wU2qHlYzrnKLHqmCER9O9mzWxuu1dwfDL
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39840400004)(366004)(396003)(136003)(346002)(376002)(451199015)(38100700002)(558084003)(8936002)(66476007)(5660300002)(2906002)(44832011)(66946007)(66556008)(8676002)(4326008)(41300700001)(2616005)(6512007)(186003)(6666004)(86362001)(6486002)(36756003)(478600001)(316002)(6506007)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mZgh2hdwy1MPAA9qYyPSibOeAkSuy2gLhYJvqDaNkVRUSQbKwsUlfnwZkWER?=
- =?us-ascii?Q?9ebJBo9+XRPJYZRpsdpJIjh4fXZWva3IVliiVvlcD8ZGbuKPdLRtQxg/Sp9G?=
- =?us-ascii?Q?kxxhwlDV+6zdNsI2K+ETAZqzGGm93DnGrVJG3R3lIMZBa2E/syCrVv53GiRs?=
- =?us-ascii?Q?eX8hH5zTwlG6Pki04jYSKrYUOq+ZPyL2Cs2f2Ta1QPSsPJlV50tjhUwMI/99?=
- =?us-ascii?Q?H19Hlw7L7WTGge7hMxBRSmsLXsMBQzgGsOyLSjM0x7gT7ZePaMSH6y0TJq6/?=
- =?us-ascii?Q?mPEDNK1f6OtYgKaG2spMHcz5MEhdJdFPN0df+XFMfvdYkNLjX6zszIo+WyjR?=
- =?us-ascii?Q?FeP/kCI0gsusZwAKXH81ohCQGl5rTvDMvoATAJq0aTF9HDXCWe+QaWU00BWQ?=
- =?us-ascii?Q?k0w3isbY2c0WX7RyluDu9KzdOi3LSH9gWj2U9KgzL+Yc85GPTgb6F7x5gh1f?=
- =?us-ascii?Q?LkFhFIFsnVXr9WB2XSYKIoMdOquSwpk+YBsD1P57PQwKa8S0adRWm/IUS1m0?=
- =?us-ascii?Q?w8HKzxrScUWSgV30M8CG9ZXhQowYFFJGKJHrBcp2nGB+/ve8A41IBEACu894?=
- =?us-ascii?Q?aoP9UqeOXSd2CFFCb/lsEcB+Gc6yZunE9VhOmqwGu9kWi6BvjZYPk3Rg8xQs?=
- =?us-ascii?Q?2MXF3mGUM3ZVx+IYUTLMuFU8nLeEUakaCJa0GXCAVfTxYaDGvCfdNmwyDVWO?=
- =?us-ascii?Q?EQiDVIkvKD41gV6x2PzTaLoxVkKrkuuotlsamyo5RlAMkGvLi1/Bvw/nlX/r?=
- =?us-ascii?Q?oCHaCS23rwO51t2U9AiLeXskcyAbZgUzVx81q3wAE1LGi4zNxLz2IDpvkJE+?=
- =?us-ascii?Q?KVjjvjKHvAULXAnjR1Ro+fn3t6OA305SeFbbFx71Uo7lrzAEi7r5NA/qYp9n?=
- =?us-ascii?Q?faUkR9pB5Be5SaQflj12UCx6fvUxTtpgcrhAmEVKjTn4kgxjh48nbwXr8TYb?=
- =?us-ascii?Q?OIZZ41mKOA+PWCITjlonD1L5LSF0h7mYFh5IF2g/L3QbdhHYPz2V7/dV/2OO?=
- =?us-ascii?Q?6d32NX6v8P4jnN9H5NcxNqlvv4YWDP2341ZlYOff7JvtqQGfPcdDw44oi9G8?=
- =?us-ascii?Q?jpzk7ftR4g+BLGW/AZjshquvwZI4X9bELJCNnKHmZAv1PJV4eHI7r7WPdtuj?=
- =?us-ascii?Q?LERjqyKRU/XtIdcVwPqStRNkiLqgk8bl/R6zm9wikIuTGZJKogdHK6N8CRjH?=
- =?us-ascii?Q?vXYOhzIUrHnVqQ6V8igyTJGZnaOz0TIWh7mLO1VLdLKPvPOgDnVB0MgytXFm?=
- =?us-ascii?Q?/bkZ1XZTBXAJMBTrdHbZBlTlAwgJMGZ7OOJUC81ioU3iTKFnWRNx7yRMfM+w?=
- =?us-ascii?Q?45JX6spC5XCRSdf81iTTLyO1fOZFVHpUpr2Zuf44ClMijfzESYLI/Sjt9UIE?=
- =?us-ascii?Q?8OOWb/HC38x39+Bw9JyeHSW4W9/gTrbYq0sJZIf0pwo1zvppMJPPq2pYNaMW?=
- =?us-ascii?Q?UWZ3j8gTOFelytQ9UysfXjZ+SRSXiQHKP8MxzSAZBxDk4I69VBsHe42xmOTk?=
- =?us-ascii?Q?wt1e0GKdIvDdMHKZcWMWKFq5qyW9FRzfTJv2ecx1ai13jbB4cSPgeF9Glkm3?=
- =?us-ascii?Q?Ikjp0GgB1t88l7orpgVBd4KguXr+RNaHeHkpFJpou1YHjIyWmyC08BkaxWV6?=
- =?us-ascii?Q?pYbd10kM4frcpP07212ZYNpd0yw8joT4d5CP372R+oAC4eLTT1yqWGu/W36b?=
- =?us-ascii?Q?xxkSIA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d54637f6-4ea6-42b5-b464-08daf943d5b1
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2023 11:04:57.2299
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 67oVNi9If3B1rB8R9jDRM8ksKfyV2KZQRMnj+DlecMjtJGTpkgsrcPeMjHAq7CEUM6jlvlcrJaUU/yOylh5T40rE92fDULlL+r8pQDBJu1Q=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB3790
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <CADW8OBvNcMCogJsMJkVXw70PL3oGU9s1a16DOK+xqdnCfgQzvg@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 16, 2023 at 08:41:42PM +0000, Stefan Pietsch wrote:
-> Signed-off-by: Stefan Pietsch <stefan+linux@shellforce.org>
+hello,
 
-Thanks, that does look a bit better.
+On Tue, Jan 17, 2023 at 05:10:58PM -0700, Kyle Zeng wrote:
+> Hi Zhengchao,
+> 
+> I'm the finder of the vulnerability. In my initial report, there was a
+> more detailed explanation of why this bug happened. But it got left
+> out in the commit message.
+> So, I'll explain it here and see whether people want to patch the
+> actual root cause of the crash.
+> 
+> The underlying bug that this patch was trying to address is actually
+> in `__tcf_classify`. Notice that `struct tcf_result` is actually a
+> union type, so whenever the kernel sets res.goto_tp, it also sets
+> res.class.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+From what I see/remember, 'res' (struct tcf_result) is unassigned
+unless the packet is matched by a classifier (i.e. it does not return
+TC_ACT_UNSPEC).
+
+When this match happens (__tcf_classify returns non-negative) and the
+control action says TC_ACT_GOTO_CHAIN, res->goto_tp is written.
+Like you say, 'res.class' is written as well because it's a union.
+
+> And this can happen inside `tcf_action_goto_chain_exec`. In
+> other words, `tcf_action_goto_chain_exec` will set res.class. Notice
+> that goto_chain can point back to itself, which causes an infinite
+> loop. To avoid the infinite loop situation, `__tcf_classify` checks
+> how many times the loop has been executed
+> (https://elixir.bootlin.com/linux/v6.1/source/net/sched/cls_api.c#L1586),
+> if it is more than a specific number, it will mark the result as
+> TC_ACT_SHOT and then return:
+> 
+> if (unlikely(limit++ >= max_reclassify_loop)) {
+>     ...
+>     return TC_ACT_SHOT;
+> }
+
+maybe there is an easier reproducer, something made of 2 TC actions.
+The first one goes to a valid chain, and then the second one (executed from
+within the chain) drops the packet. I think that unpatched CBQ scheduler 
+will find 'res.class' with a value also there.
+ 
+> However, when it returns in the infinite loop handler, it forgets to
+> clear whatever is in the `res` variable, which still holds pointers in
+> `goto_tp`. As a result, cbq_classify will think it is a valid
+> `res.class` and causes type confusion.
+> 
+> My initial proposed patch was to memset `res` before `return
+> TC_ACT_SHOT` in `__tcf_classify`, but it didn't get merged. But I
+> guess the merged patch is more generic.
+
+The merged patch looks good to me; however, I wonder if it's sufficient.
+If I well read the code, there is still the possibility of hitting the
+same problem on a patched kernel when TC_ACT_TRAP / TC_ACT_STOLEN is
+returned after a 'goto chain' when the qdisc is CBQ.
+
+I like Jamal's idea of sharing the reproducer :)
+
+thanks!
+-- 
+davide
+
+ 
+
