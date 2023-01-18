@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF945671D20
+	by mail.lfdr.de (Postfix) with ESMTP id 40D9E671D1E
 	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 14:09:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231169AbjARNJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 08:09:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
+        id S231149AbjARNJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 08:09:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230516AbjARNI6 (ORCPT
+        with ESMTP id S230472AbjARNI6 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 08:08:58 -0500
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486855998F;
-        Wed, 18 Jan 2023 04:32:40 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80A35A804;
+        Wed, 18 Jan 2023 04:32:41 -0800 (PST)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1pI7cE-000742-9i; Wed, 18 Jan 2023 13:32:30 +0100
+        id 1pI7cI-00074D-Dd; Wed, 18 Jan 2023 13:32:34 +0100
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -24,9 +24,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         <netfilter-devel@vger.kernel.org>, Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next 1/9] netfilter: conntrack: sctp: use nf log infrastructure for invalid packets
-Date:   Wed, 18 Jan 2023 13:32:00 +0100
-Message-Id: <20230118123208.17167-2-fw@strlen.de>
+Subject: [PATCH net-next 2/9] netfilter: conntrack: remove pr_debug calls
+Date:   Wed, 18 Jan 2023 13:32:01 +0100
+Message-Id: <20230118123208.17167-3-fw@strlen.de>
 X-Mailer: git-send-email 2.38.2
 In-Reply-To: <20230118123208.17167-1-fw@strlen.de>
 References: <20230118123208.17167-1-fw@strlen.de>
@@ -41,174 +41,216 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The conntrack logging facilities include useful info such as in/out
-interface names and packet headers.
+Those are all useless or dubious.
+getorigdst() is called via setsockopt, so return value/errno will
+already indicate an appropriate error.
 
-Use those in more places instead of pr_debug calls.
-Furthermore, several pr_debug calls can be removed, they are useless
-on production machines due to the sheer volume of log messages.
+For other pr_debug calls there are better replacements, such as
+slab/slub debugging or 'conntrack -E' (ctnetlink events).
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- net/netfilter/nf_conntrack_proto_sctp.c | 46 ++++++++-----------------
- 1 file changed, 15 insertions(+), 31 deletions(-)
+ net/netfilter/nf_conntrack_core.c      | 20 ++------------------
+ net/netfilter/nf_conntrack_proto.c     | 20 +++-----------------
+ net/netfilter/nf_conntrack_proto_tcp.c |  9 ---------
+ 3 files changed, 5 insertions(+), 44 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_proto_sctp.c b/net/netfilter/nf_conntrack_proto_sctp.c
-index d88b92a8ffca..dbdfcc6cd2aa 100644
---- a/net/netfilter/nf_conntrack_proto_sctp.c
-+++ b/net/netfilter/nf_conntrack_proto_sctp.c
-@@ -168,7 +168,8 @@ for ((offset) = (dataoff) + sizeof(struct sctphdr), (count) = 0;	\
- static int do_basic_checks(struct nf_conn *ct,
- 			   const struct sk_buff *skb,
- 			   unsigned int dataoff,
--			   unsigned long *map)
-+			   unsigned long *map,
-+			   const struct nf_hook_state *state)
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index 496c4920505b..81ece117033a 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -514,7 +514,6 @@ EXPORT_SYMBOL_GPL(nf_ct_get_id);
+ static void
+ clean_from_lists(struct nf_conn *ct)
  {
- 	u_int32_t offset, count;
- 	struct sctp_chunkhdr _sch, *sch;
-@@ -177,8 +178,6 @@ static int do_basic_checks(struct nf_conn *ct,
- 	flag = 0;
+-	pr_debug("clean_from_lists(%p)\n", ct);
+ 	hlist_nulls_del_rcu(&ct->tuplehash[IP_CT_DIR_ORIGINAL].hnnode);
+ 	hlist_nulls_del_rcu(&ct->tuplehash[IP_CT_DIR_REPLY].hnnode);
  
- 	for_each_sctp_chunk (skb, sch, _sch, offset, dataoff, count) {
--		pr_debug("Chunk Num: %d  Type: %d\n", count, sch->type);
--
- 		if (sch->type == SCTP_CID_INIT ||
- 		    sch->type == SCTP_CID_INIT_ACK ||
- 		    sch->type == SCTP_CID_SHUTDOWN_COMPLETE)
-@@ -193,7 +192,9 @@ static int do_basic_checks(struct nf_conn *ct,
- 		      sch->type == SCTP_CID_COOKIE_ECHO ||
- 		      flag) &&
- 		     count != 0) || !sch->length) {
--			pr_debug("Basic checks failed\n");
-+			nf_ct_l4proto_log_invalid(skb, ct, state,
-+						  "%s failed. chunk num %d, type %d, len %d flag %d\n",
-+						  __func__, count, sch->type, sch->length, flag);
- 			return 1;
- 		}
+@@ -582,7 +581,6 @@ void nf_ct_destroy(struct nf_conntrack *nfct)
+ {
+ 	struct nf_conn *ct = (struct nf_conn *)nfct;
  
-@@ -201,7 +202,6 @@ static int do_basic_checks(struct nf_conn *ct,
- 			set_bit(sch->type, map);
+-	pr_debug("%s(%p)\n", __func__, ct);
+ 	WARN_ON(refcount_read(&nfct->use) != 0);
+ 
+ 	if (unlikely(nf_ct_is_template(ct))) {
+@@ -603,7 +601,6 @@ void nf_ct_destroy(struct nf_conntrack *nfct)
+ 	if (ct->master)
+ 		nf_ct_put(ct->master);
+ 
+-	pr_debug("%s: returning ct=%p to slab\n", __func__, ct);
+ 	nf_conntrack_free(ct);
+ }
+ EXPORT_SYMBOL(nf_ct_destroy);
+@@ -1210,7 +1207,6 @@ __nf_conntrack_confirm(struct sk_buff *skb)
+ 		goto dying;
  	}
  
--	pr_debug("Basic checks passed\n");
- 	return count == 0;
+-	pr_debug("Confirming conntrack %p\n", ct);
+ 	/* We have to check the DYING flag after unlink to prevent
+ 	 * a race against nf_ct_get_next_corpse() possibly called from
+ 	 * user context, else we insert an already 'dead' hash, blocking
+@@ -1721,10 +1717,8 @@ init_conntrack(struct net *net, struct nf_conn *tmpl,
+ 	struct nf_conntrack_zone tmp;
+ 	struct nf_conntrack_net *cnet;
+ 
+-	if (!nf_ct_invert_tuple(&repl_tuple, tuple)) {
+-		pr_debug("Can't invert tuple.\n");
++	if (!nf_ct_invert_tuple(&repl_tuple, tuple))
+ 		return NULL;
+-	}
+ 
+ 	zone = nf_ct_zone_tmpl(tmpl, skb, &tmp);
+ 	ct = __nf_conntrack_alloc(net, zone, tuple, &repl_tuple, GFP_ATOMIC,
+@@ -1764,8 +1758,6 @@ init_conntrack(struct net *net, struct nf_conn *tmpl,
+ 		spin_lock_bh(&nf_conntrack_expect_lock);
+ 		exp = nf_ct_find_expectation(net, zone, tuple);
+ 		if (exp) {
+-			pr_debug("expectation arrives ct=%p exp=%p\n",
+-				 ct, exp);
+ 			/* Welcome, Mr. Bond.  We've been expecting you... */
+ 			__set_bit(IPS_EXPECTED_BIT, &ct->status);
+ 			/* exp->master safe, refcnt bumped in nf_ct_find_expectation */
+@@ -1829,10 +1821,8 @@ resolve_normal_ct(struct nf_conn *tmpl,
+ 
+ 	if (!nf_ct_get_tuple(skb, skb_network_offset(skb),
+ 			     dataoff, state->pf, protonum, state->net,
+-			     &tuple)) {
+-		pr_debug("Can't get tuple\n");
++			     &tuple))
+ 		return 0;
+-	}
+ 
+ 	/* look for tuple match */
+ 	zone = nf_ct_zone_tmpl(tmpl, skb, &tmp);
+@@ -1866,13 +1856,10 @@ resolve_normal_ct(struct nf_conn *tmpl,
+ 	} else {
+ 		/* Once we've had two way comms, always ESTABLISHED. */
+ 		if (test_bit(IPS_SEEN_REPLY_BIT, &ct->status)) {
+-			pr_debug("normal packet for %p\n", ct);
+ 			ctinfo = IP_CT_ESTABLISHED;
+ 		} else if (test_bit(IPS_EXPECTED_BIT, &ct->status)) {
+-			pr_debug("related packet for %p\n", ct);
+ 			ctinfo = IP_CT_RELATED;
+ 		} else {
+-			pr_debug("new packet for %p\n", ct);
+ 			ctinfo = IP_CT_NEW;
+ 		}
+ 	}
+@@ -1988,7 +1975,6 @@ nf_conntrack_in(struct sk_buff *skb, const struct nf_hook_state *state)
+ 	/* rcu_read_lock()ed by nf_hook_thresh */
+ 	dataoff = get_l4proto(skb, skb_network_offset(skb), state->pf, &protonum);
+ 	if (dataoff <= 0) {
+-		pr_debug("not prepared to track yet or error occurred\n");
+ 		NF_CT_STAT_INC_ATOMIC(state->net, invalid);
+ 		ret = NF_ACCEPT;
+ 		goto out;
+@@ -2027,7 +2013,6 @@ nf_conntrack_in(struct sk_buff *skb, const struct nf_hook_state *state)
+ 	if (ret <= 0) {
+ 		/* Invalid: inverse of the return code tells
+ 		 * the netfilter core what to do */
+-		pr_debug("nf_conntrack_in: Can't track with proto module\n");
+ 		nf_ct_put(ct);
+ 		skb->_nfct = 0;
+ 		/* Special case: TCP tracker reports an attempt to reopen a
+@@ -2066,7 +2051,6 @@ void nf_conntrack_alter_reply(struct nf_conn *ct,
+ 	/* Should be unconfirmed, so not in hash table yet */
+ 	WARN_ON(nf_ct_is_confirmed(ct));
+ 
+-	pr_debug("Altering reply tuple of %p to ", ct);
+ 	nf_ct_dump_tuple(newreply);
+ 
+ 	ct->tuplehash[IP_CT_DIR_REPLY].tuple = *newreply;
+diff --git a/net/netfilter/nf_conntrack_proto.c b/net/netfilter/nf_conntrack_proto.c
+index ccef340be575..c928ff63b10e 100644
+--- a/net/netfilter/nf_conntrack_proto.c
++++ b/net/netfilter/nf_conntrack_proto.c
+@@ -284,16 +284,11 @@ getorigdst(struct sock *sk, int optval, void __user *user, int *len)
+ 
+ 	/* We only do TCP and SCTP at the moment: is there a better way? */
+ 	if (tuple.dst.protonum != IPPROTO_TCP &&
+-	    tuple.dst.protonum != IPPROTO_SCTP) {
+-		pr_debug("SO_ORIGINAL_DST: Not a TCP/SCTP socket\n");
++	    tuple.dst.protonum != IPPROTO_SCTP)
+ 		return -ENOPROTOOPT;
+-	}
+ 
+-	if ((unsigned int)*len < sizeof(struct sockaddr_in)) {
+-		pr_debug("SO_ORIGINAL_DST: len %d not %zu\n",
+-			 *len, sizeof(struct sockaddr_in));
++	if ((unsigned int)*len < sizeof(struct sockaddr_in))
+ 		return -EINVAL;
+-	}
+ 
+ 	h = nf_conntrack_find_get(sock_net(sk), &nf_ct_zone_dflt, &tuple);
+ 	if (h) {
+@@ -307,17 +302,12 @@ getorigdst(struct sock *sk, int optval, void __user *user, int *len)
+ 			.tuple.dst.u3.ip;
+ 		memset(sin.sin_zero, 0, sizeof(sin.sin_zero));
+ 
+-		pr_debug("SO_ORIGINAL_DST: %pI4 %u\n",
+-			 &sin.sin_addr.s_addr, ntohs(sin.sin_port));
+ 		nf_ct_put(ct);
+ 		if (copy_to_user(user, &sin, sizeof(sin)) != 0)
+ 			return -EFAULT;
+ 		else
+ 			return 0;
+ 	}
+-	pr_debug("SO_ORIGINAL_DST: Can't find %pI4/%u-%pI4/%u.\n",
+-		 &tuple.src.u3.ip, ntohs(tuple.src.u.tcp.port),
+-		 &tuple.dst.u3.ip, ntohs(tuple.dst.u.tcp.port));
+ 	return -ENOENT;
  }
  
-@@ -211,69 +211,51 @@ static int sctp_new_state(enum ip_conntrack_dir dir,
+@@ -360,12 +350,8 @@ ipv6_getorigdst(struct sock *sk, int optval, void __user *user, int *len)
+ 		return -EINVAL;
+ 
+ 	h = nf_conntrack_find_get(sock_net(sk), &nf_ct_zone_dflt, &tuple);
+-	if (!h) {
+-		pr_debug("IP6T_SO_ORIGINAL_DST: Can't find %pI6c/%u-%pI6c/%u.\n",
+-			 &tuple.src.u3.ip6, ntohs(tuple.src.u.tcp.port),
+-			 &tuple.dst.u3.ip6, ntohs(tuple.dst.u.tcp.port));
++	if (!h)
+ 		return -ENOENT;
+-	}
+ 
+ 	ct = nf_ct_tuplehash_to_ctrack(h);
+ 
+diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
+index 656631083177..21a3741162ba 100644
+--- a/net/netfilter/nf_conntrack_proto_tcp.c
++++ b/net/netfilter/nf_conntrack_proto_tcp.c
+@@ -930,7 +930,6 @@ int nf_conntrack_tcp_packet(struct nf_conn *ct,
  {
- 	int i;
+ 	struct net *net = nf_ct_net(ct);
+ 	struct nf_tcp_net *tn = nf_tcp_pernet(net);
+-	struct nf_conntrack_tuple *tuple;
+ 	enum tcp_conntrack new_state, old_state;
+ 	unsigned int index, *timeouts;
+ 	enum nf_ct_tcp_action res;
+@@ -954,7 +953,6 @@ int nf_conntrack_tcp_packet(struct nf_conn *ct,
+ 	dir = CTINFO2DIR(ctinfo);
+ 	index = get_conntrack_index(th);
+ 	new_state = tcp_conntracks[dir][index][old_state];
+-	tuple = &ct->tuplehash[dir].tuple;
  
--	pr_debug("Chunk type: %d\n", chunk_type);
+ 	switch (new_state) {
+ 	case TCP_CONNTRACK_SYN_SENT:
+@@ -1217,13 +1215,6 @@ int nf_conntrack_tcp_packet(struct nf_conn *ct,
+ 	ct->proto.tcp.last_index = index;
+ 	ct->proto.tcp.last_dir = dir;
+ 
+-	pr_debug("tcp_conntracks: ");
+-	nf_ct_dump_tuple(tuple);
+-	pr_debug("syn=%i ack=%i fin=%i rst=%i old=%i new=%i\n",
+-		 (th->syn ? 1 : 0), (th->ack ? 1 : 0),
+-		 (th->fin ? 1 : 0), (th->rst ? 1 : 0),
+-		 old_state, new_state);
 -
- 	switch (chunk_type) {
- 	case SCTP_CID_INIT:
--		pr_debug("SCTP_CID_INIT\n");
- 		i = 0;
- 		break;
- 	case SCTP_CID_INIT_ACK:
--		pr_debug("SCTP_CID_INIT_ACK\n");
- 		i = 1;
- 		break;
- 	case SCTP_CID_ABORT:
--		pr_debug("SCTP_CID_ABORT\n");
- 		i = 2;
- 		break;
- 	case SCTP_CID_SHUTDOWN:
--		pr_debug("SCTP_CID_SHUTDOWN\n");
- 		i = 3;
- 		break;
- 	case SCTP_CID_SHUTDOWN_ACK:
--		pr_debug("SCTP_CID_SHUTDOWN_ACK\n");
- 		i = 4;
- 		break;
- 	case SCTP_CID_ERROR:
--		pr_debug("SCTP_CID_ERROR\n");
- 		i = 5;
- 		break;
- 	case SCTP_CID_COOKIE_ECHO:
--		pr_debug("SCTP_CID_COOKIE_ECHO\n");
- 		i = 6;
- 		break;
- 	case SCTP_CID_COOKIE_ACK:
--		pr_debug("SCTP_CID_COOKIE_ACK\n");
- 		i = 7;
- 		break;
- 	case SCTP_CID_SHUTDOWN_COMPLETE:
--		pr_debug("SCTP_CID_SHUTDOWN_COMPLETE\n");
- 		i = 8;
- 		break;
- 	case SCTP_CID_HEARTBEAT:
--		pr_debug("SCTP_CID_HEARTBEAT");
- 		i = 9;
- 		break;
- 	case SCTP_CID_HEARTBEAT_ACK:
--		pr_debug("SCTP_CID_HEARTBEAT_ACK");
- 		i = 10;
- 		break;
- 	case SCTP_CID_DATA:
- 	case SCTP_CID_SACK:
--		pr_debug("SCTP_CID_DATA/SACK");
- 		i = 11;
- 		break;
- 	default:
- 		/* Other chunks like DATA or SACK do not change the state */
--		pr_debug("Unknown chunk type, Will stay in %s\n",
--			 sctp_conntrack_names[cur_state]);
-+		pr_debug("Unknown chunk type %d, Will stay in %s\n",
-+			 chunk_type, sctp_conntrack_names[cur_state]);
- 		return cur_state;
- 	}
- 
--	pr_debug("dir: %d   cur_state: %s  chunk_type: %d  new_state: %s\n",
--		 dir, sctp_conntrack_names[cur_state], chunk_type,
--		 sctp_conntrack_names[sctp_conntracks[dir][i][cur_state]]);
--
- 	return sctp_conntracks[dir][i][cur_state];
- }
- 
-@@ -392,7 +374,7 @@ int nf_conntrack_sctp_packet(struct nf_conn *ct,
- 	if (sh == NULL)
- 		goto out;
- 
--	if (do_basic_checks(ct, skb, dataoff, map) != 0)
-+	if (do_basic_checks(ct, skb, dataoff, map, state) != 0)
- 		goto out;
- 
- 	if (!nf_ct_is_confirmed(ct)) {
-@@ -414,7 +396,9 @@ int nf_conntrack_sctp_packet(struct nf_conn *ct,
- 		    !test_bit(SCTP_CID_HEARTBEAT, map) &&
- 		    !test_bit(SCTP_CID_HEARTBEAT_ACK, map) &&
- 		    sh->vtag != ct->proto.sctp.vtag[dir]) {
--			pr_debug("Verification tag check failed\n");
-+			nf_ct_l4proto_log_invalid(skb, ct, state,
-+						  "verification tag check failed %x vs %x for dir %d",
-+						  sh->vtag, ct->proto.sctp.vtag[dir], dir);
- 			goto out;
- 		}
- 	}
-@@ -488,9 +472,10 @@ int nf_conntrack_sctp_packet(struct nf_conn *ct,
- 
- 		/* Invalid */
- 		if (new_state == SCTP_CONNTRACK_MAX) {
--			pr_debug("nf_conntrack_sctp: Invalid dir=%i ctype=%u "
--				 "conntrack=%u\n",
--				 dir, sch->type, old_state);
-+			nf_ct_l4proto_log_invalid(skb, ct, state,
-+						  "Invalid, old_state %d, dir %d, type %d",
-+						  old_state, dir, sch->type);
-+
- 			goto out_unlock;
- 		}
- 
-@@ -536,7 +521,6 @@ int nf_conntrack_sctp_packet(struct nf_conn *ct,
- 	if (old_state == SCTP_CONNTRACK_COOKIE_ECHOED &&
- 	    dir == IP_CT_DIR_REPLY &&
- 	    new_state == SCTP_CONNTRACK_ESTABLISHED) {
--		pr_debug("Setting assured bit\n");
- 		set_bit(IPS_ASSURED_BIT, &ct->status);
- 		nf_conntrack_event_cache(IPCT_ASSURED, ct);
- 	}
+ 	ct->proto.tcp.state = new_state;
+ 	if (old_state != new_state
+ 	    && new_state == TCP_CONNTRACK_FIN_WAIT)
 -- 
 2.38.2
 
