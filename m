@@ -2,51 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BD4167118B
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 04:10:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 818C9671191
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 04:12:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229551AbjARDKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 22:10:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40618 "EHLO
+        id S229551AbjARDMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 22:12:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229503AbjARDKS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 22:10:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7D54FCFD
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 19:10:17 -0800 (PST)
+        with ESMTP id S229557AbjARDMi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 22:12:38 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9ED54FADB;
+        Tue, 17 Jan 2023 19:12:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2899C615E3
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 03:10:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 882CFC433F1;
-        Wed, 18 Jan 2023 03:10:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99D96B81601;
+        Wed, 18 Jan 2023 03:12:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5F2FC433D2;
+        Wed, 18 Jan 2023 03:12:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674011416;
-        bh=6A88N+gyoa+hoTZehO6C5PanE0X2orFLN/I7W+1gHN4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tRenA1Ygpky8bfYpvTwXPSjbdncP/nQzh10BUcR5o9pwql1OudPn6HuiZDdpqLMEP
-         Zp1ifMfYDaEM0WVm2uGLxAdAkwp1xUVLTtu4tZe+OvM0B2dIw84HFcvt07x5OluiOk
-         1SYKsci1tYajNFaWuf8DNzFnxLZnGXkdCwsNZpCTuw3iCiMIO6T1bjDuFDgeviQj66
-         iBf+gXHfYl30m/jnZn2YWXY1EdwkRIQImINh2zMkQW5ZnQypr9ZzTr50JKGDpYuN7h
-         S9gqJYdLqzq10lPSDs2V9HlWzYYEpWVvNO/VKWd17BtsavfjiUnf/zU1l3QSRFdvFC
-         mQ+3AusIQtUQQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6C04DC41670;
-        Wed, 18 Jan 2023 03:10:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1674011555;
+        bh=qZKIw3YHSpLbGC0IBsO+16g8GkAkcZudfly6vo0JCm4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MrfkiqjFpIa4RzjEUYWAbVP0lein/lPR5F3tORe3N0Z3TAecMj7r+Lz7wEY8muZGJ
+         CxPk/BY2YXWzddJSTFaaVmlSUyAFlE6nwYnYVnnOLdW4k2EmV4Nu/mAFr5rBfFsAmm
+         ZWN+ko/7hS3J4Nk3JXkoQsbFluZr5WwFsibMZTxxt8GpmYC2+NwTb5jXBBhShqonF0
+         WZ6NWdjZm2wI3czovJRhsODenuOsx3BSkyDQzBGwxQ3M5QiG+britQkck+/ymVuckU
+         bej6DyWxBCxcHS/qMG6BjyiS5z08JvR03pBNBCBXEHiTUZH8HX/4y7cYfFxQ9ADw1H
+         V4l3+TLDdB/Vg==
+Date:   Tue, 17 Jan 2023 19:12:33 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Michael Walle <michael@walle.cc>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH net-next] regmap: Rework regmap_mdio_c45_{read|write}
+ for new C45 API.
+Message-ID: <20230117191233.1d8ac5a3@kernel.org>
+In-Reply-To: <Y8VjkgcWHjR9TzNw@sirena.org.uk>
+References: <20230116111509.4086236-1-michael@walle.cc>
+        <Y8VjkgcWHjR9TzNw@sirena.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] MAINTAINERS: Update AMD XGBE driver maintainers
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167401141643.5924.5111580455338897525.git-patchwork-notify@kernel.org>
-Date:   Wed, 18 Jan 2023 03:10:16 +0000
-References: <20230116085015.443127-1-Shyam-sundar.S-k@amd.com>
-In-Reply-To: <20230116085015.443127-1-Shyam-sundar.S-k@amd.com>
-To:     Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-Cc:     thomas.lendacky@amd.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, Raju.Rangoju@amd.com, edumazet@google.com,
-        pabeni@redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,30 +61,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon, 16 Jan 2023 14:20:15 +0530 you wrote:
-> Due to other additional responsibilities Tom would no longer
-> be able to support AMD XGBE driver.
+On Mon, 16 Jan 2023 14:47:46 +0000 Mark Brown wrote:
+> regmap: Rework regmap_mdio_c45_{read|write} for new C45 API.
 > 
-> Cc: Tom Lendacky <thomas.lendacky@amd.com>
-> Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-> ---
-> v1->v2
-> - Update the subject prefix with "net"
-> 
-> [...]
+> This reworks the regmap MDIO handling of C45 addresses in
+> preparation for some forthcoming updates to the networking code.
 
-Here is the summary with links:
-  - [net,v2] MAINTAINERS: Update AMD XGBE driver maintainers
-    https://git.kernel.org/netdev/net/c/441717b6fdf2
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Pulled, thanks!
