@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9675672127
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 16:24:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05B6E67212A
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 16:24:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231267AbjARPYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 10:24:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57848 "EHLO
+        id S230075AbjARPYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 10:24:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231365AbjARPXv (ORCPT
+        with ESMTP id S230305AbjARPXv (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 10:23:51 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 824301CAD7
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 07:21:26 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id kt14so25165751ejc.3
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 07:21:26 -0800 (PST)
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 827062C656
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 07:21:28 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id mp20so37469462ejc.7
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 07:21:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=06eQ4ecK7MZQkmWCPPXkPy1meyk03G3e4fyXRAsTdFs=;
-        b=lrL3RqtzHuANDGCVpcvUi99lxIAh36mLnJxKgLE45X5IxJoRoSOfJo1addphmeOGW6
-         8LjWpGJKWthMfobysVQDH5NP/rF2UdvNVhkX3Vvrnzr+yEca20W4U7rmc4uZi4wvgODb
-         88/FtmzEaQpi0L7nxcjxJX/NFNtJmcqoHdbGI7JNCjDrnhKjaI0unAx5+yaYlDbDVpvc
-         yRfOV055V2tG9mAreookG315Bc1p0NEseeucWH8C0YS9MMJDjXF77sSDO6IOYqz6r32A
-         Q27w5QaHLB249XIKF4JXnOJ43jTzZpwqB3cKFAmWrjIMq7tIgI/sJHfhg5DsPotyMHiC
-         /nBQ==
+        bh=fdu/LMMDVPw+M4xLbPQuOn5+SEPJaDu97WWN+/EPaeo=;
+        b=378BynuS84deh4NaaaV+A0BvTYwmhCtYLrOK1MYwM5SVH5qo/KtP2kYGB+YaBOipBZ
+         svWwu+TkIIoV49Yy78M7MTOH9AX+lgtt7rS+y6aI+j1uf7oX185HdgonIF3IzNt3UlJm
+         ha7SJPx5nye+urpuxhCDnBYRYLioqWGWBtjPk1PI+3irl+oOeHyYJ1PCG2zHSwHqDudi
+         3d9mkD1rvSnLxGn52PrMhsUSCLjeryjntiTuXjfQeQiEUWJr9B7nzR6MZGinpOvGddsB
+         m14kCYp8jNkRY/yB6XN7o8oQvi1FcNvnp1jmXnl2x8Ots9kNrMKSfdS6Jdj5+m2X/DQ+
+         eZWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=06eQ4ecK7MZQkmWCPPXkPy1meyk03G3e4fyXRAsTdFs=;
-        b=KiBG5WugC4w9o7GrnIWkvmIvOqkrWfVy7uip1lFI/6xNG1zoPIz1W2H4tVh9WhBm/R
-         ATXPsmQO4ZejvkIw+3FX+E0YY8HwHYzIi0s4ni2BAttxWe9b+SZqnYIWmpA6RHag6rcH
-         f6Fp17gfx0I3jIaNdFMgZnblJdza3WfscKKK594MXCIG022DYzLmmLTRIHHCnazDNQSo
-         25uFQ9iEOwklA9CaDJPpi7DMHDD6XTBm3Tw1WGKgJ6TDD6T/3Fqj+85TkbvW3GupTuL1
-         OAgTmCfD2uF5MkVPz7zExpDXswTAe8w0eeebZ+q8ANIe7iH2DTX8cDDTyFEP/7SyOxxv
-         EXkg==
-X-Gm-Message-State: AFqh2kpLkQS7tYvMJ6nyFUH42rIOzIMqwfE5JJq9dU2SIHk7QECHxxTR
-        7OCi883gFUoz0pea1USsndfKVJ26zEn4aTwHp3sdFg==
-X-Google-Smtp-Source: AMrXdXt7uWuL2vv0tf+13Fj9m1fRJEKmwjk5GnvecYAmaUJD8nG1bDZl7wXIdUWa+OKfb1ATdOkZlg==
-X-Received: by 2002:a17:906:81b:b0:869:a799:1f85 with SMTP id e27-20020a170906081b00b00869a7991f85mr20701560ejd.76.1674055285110;
-        Wed, 18 Jan 2023 07:21:25 -0800 (PST)
+        bh=fdu/LMMDVPw+M4xLbPQuOn5+SEPJaDu97WWN+/EPaeo=;
+        b=Yy7Ll7GcBvgEeRbfOaY8X1KGLO1ks+UUDij1WphiZNWlBXRb6NOYox4QzXhiV8GPpD
+         O/wiq6224ET41Sh4QDU6eMRe3d1hbXMd0cW7Pou68yluX5tCRw7IJbBBTNex2u7Z86TD
+         F4GFzKr8PEWJtNXAV2oriGZN3erOGi3AqlPX+4bd05v0kdXfV5HYTXZz5FrwjDoW2KSM
+         NfIopXRLoXK4kDmQXmCOlAD8F7ap30gn1Sztfs+QHMqbZziF3sEUoQ5SSF5Okgu34De6
+         vpepDGPh61R2qXWPbrQ0E+KOrBe4ltD3i6qr4M2pDsx8967yV0Wo38xgCDK7zIAAk4N1
+         /3aA==
+X-Gm-Message-State: AFqh2kpMtTOKqcNJCILeCFpKsVCTqUQZhPqzVL7n7+KRM4oletGMWUxa
+        umLDpOSV8dMwPKGnIVUvxrzMKsXzLUZQZVYVQo5O0Q==
+X-Google-Smtp-Source: AMrXdXuDSmm4mkJ3zMycxifqtRjAXe6iB3kf8ToLi3phEh6G/gFDLV4Nc7dvlAArwyMzyS84fx7Cpg==
+X-Received: by 2002:a17:906:1918:b0:7ad:ca80:5669 with SMTP id a24-20020a170906191800b007adca805669mr7695499eje.64.1674055287027;
+        Wed, 18 Jan 2023 07:21:27 -0800 (PST)
 Received: from localhost ([217.111.27.204])
-        by smtp.gmail.com with ESMTPSA id n12-20020a1709062bcc00b007ae38d837c5sm15152923ejg.174.2023.01.18.07.21.24
+        by smtp.gmail.com with ESMTPSA id i12-20020aa7dd0c000000b0047021294426sm14214462edv.90.2023.01.18.07.21.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Jan 2023 07:21:24 -0800 (PST)
+        Wed, 18 Jan 2023 07:21:26 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
@@ -58,9 +58,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         tariqt@nvidia.com, saeedm@nvidia.com, leon@kernel.org,
         idosch@nvidia.com, petrm@nvidia.com, mailhol.vincent@wanadoo.fr,
         jacob.e.keller@intel.com, gal@nvidia.com
-Subject: [patch net-next v5 04/12] net/mlx5: Remove MLX5E_LOCKED_FLOW flag
-Date:   Wed, 18 Jan 2023 16:21:07 +0100
-Message-Id: <20230118152115.1113149-5-jiri@resnulli.us>
+Subject: [patch net-next v5 05/12] devlink: protect health reporter operation with instance lock
+Date:   Wed, 18 Jan 2023 16:21:08 +0100
+Message-Id: <20230118152115.1113149-6-jiri@resnulli.us>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230118152115.1113149-1-jiri@resnulli.us>
 References: <20230118152115.1113149-1-jiri@resnulli.us>
@@ -77,94 +77,349 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-The MLX5E_LOCKED_FLOW flag is not checked anywhere now so remove it
-entirely.
+Similar to other devlink objects, protect the reporters list
+by devlink instance lock. Alongside add unlocked versions
+of health reporter create/destroy functions and use them in drivers
+on call paths where the instance lock is held.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
 v4->v5:
-- new patch
+- changed mlx5 bits due to changed locking scheme
+- added locked versions of port reporter create/destroy functions
+v2->v3:
+- split from v2 patch #4 - "devlink: remove reporters_lock", no change
 ---
- drivers/net/ethernet/mellanox/mlx5/core/dev.c | 14 ++------------
- include/linux/mlx5/driver.h                   |  4 ----
- 2 files changed, 2 insertions(+), 16 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/core.c |  8 +-
+ drivers/net/netdevsim/health.c             | 20 ++---
+ include/net/devlink.h                      | 22 ++++-
+ net/devlink/leftover.c                     | 99 +++++++++++++++++-----
+ 4 files changed, 110 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-index 5b6b0b126e52..2b444fb12388 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-@@ -349,7 +349,6 @@ int mlx5_attach_device(struct mlx5_core_dev *dev)
- 	devl_assert_locked(priv_to_devlink(dev));
- 	mutex_lock(&mlx5_intf_mutex);
- 	priv->flags &= ~MLX5_PRIV_FLAGS_DETACH;
--	priv->flags |= MLX5_PRIV_FLAGS_MLX5E_LOCKED_FLOW;
- 	for (i = 0; i < ARRAY_SIZE(mlx5_adev_devices); i++) {
- 		if (!priv->adev[i]) {
- 			bool is_supported = false;
-@@ -397,7 +396,6 @@ int mlx5_attach_device(struct mlx5_core_dev *dev)
- 			break;
- 		}
- 	}
--	priv->flags &= ~MLX5_PRIV_FLAGS_MLX5E_LOCKED_FLOW;
- 	mutex_unlock(&mlx5_intf_mutex);
- 	return ret;
- }
-@@ -412,7 +410,6 @@ void mlx5_detach_device(struct mlx5_core_dev *dev)
- 
- 	devl_assert_locked(priv_to_devlink(dev));
- 	mutex_lock(&mlx5_intf_mutex);
--	priv->flags |= MLX5_PRIV_FLAGS_MLX5E_LOCKED_FLOW;
- 	for (i = ARRAY_SIZE(mlx5_adev_devices) - 1; i >= 0; i--) {
- 		if (!priv->adev[i])
- 			continue;
-@@ -441,7 +438,6 @@ void mlx5_detach_device(struct mlx5_core_dev *dev)
- 		del_adev(&priv->adev[i]->adev);
- 		priv->adev[i] = NULL;
- 	}
--	priv->flags &= ~MLX5_PRIV_FLAGS_MLX5E_LOCKED_FLOW;
- 	priv->flags |= MLX5_PRIV_FLAGS_DETACH;
- 	mutex_unlock(&mlx5_intf_mutex);
- }
-@@ -540,22 +536,16 @@ static void delete_drivers(struct mlx5_core_dev *dev)
- int mlx5_rescan_drivers_locked(struct mlx5_core_dev *dev)
- {
- 	struct mlx5_priv *priv = &dev->priv;
--	int err = 0;
- 
- 	lockdep_assert_held(&mlx5_intf_mutex);
- 	if (priv->flags & MLX5_PRIV_FLAGS_DETACH)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+index a0a06e2eff82..33ef726e4d54 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+@@ -2051,8 +2051,8 @@ static int mlxsw_core_health_init(struct mlxsw_core *mlxsw_core)
+ 	if (!(mlxsw_core->bus->features & MLXSW_BUS_F_TXRX))
  		return 0;
  
--	priv->flags |= MLX5_PRIV_FLAGS_MLX5E_LOCKED_FLOW;
- 	delete_drivers(dev);
- 	if (priv->flags & MLX5_PRIV_FLAGS_DISABLE_ALL_ADEV)
--		goto out;
--
--	err = add_drivers(dev);
-+		return 0;
- 
--out:
--	priv->flags &= ~MLX5_PRIV_FLAGS_MLX5E_LOCKED_FLOW;
--	return err;
-+	return add_drivers(dev);
+-	fw_fatal = devlink_health_reporter_create(devlink, &mlxsw_core_health_fw_fatal_ops,
+-						  0, mlxsw_core);
++	fw_fatal = devl_health_reporter_create(devlink, &mlxsw_core_health_fw_fatal_ops,
++					       0, mlxsw_core);
+ 	if (IS_ERR(fw_fatal)) {
+ 		dev_err(mlxsw_core->bus_info->dev, "Failed to create fw fatal reporter");
+ 		return PTR_ERR(fw_fatal);
+@@ -2072,7 +2072,7 @@ static int mlxsw_core_health_init(struct mlxsw_core *mlxsw_core)
+ err_fw_fatal_config:
+ 	mlxsw_core_trap_unregister(mlxsw_core, &mlxsw_core_health_listener, mlxsw_core);
+ err_trap_register:
+-	devlink_health_reporter_destroy(mlxsw_core->health.fw_fatal);
++	devl_health_reporter_destroy(mlxsw_core->health.fw_fatal);
+ 	return err;
  }
  
- bool mlx5_same_hw_devs(struct mlx5_core_dev *dev, struct mlx5_core_dev *peer_dev)
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index b957b8f22a6b..44167760ff29 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -554,10 +554,6 @@ enum {
- 	 * creation/deletion on drivers rescan. Unset during device attach.
- 	 */
- 	MLX5_PRIV_FLAGS_DETACH = 1 << 2,
--	/* Distinguish between mlx5e_probe/remove called by module init/cleanup
--	 * and called by other flows which can already hold devlink lock
--	 */
--	MLX5_PRIV_FLAGS_MLX5E_LOCKED_FLOW = 1 << 3,
- };
+@@ -2085,7 +2085,7 @@ static void mlxsw_core_health_fini(struct mlxsw_core *mlxsw_core)
+ 	mlxsw_core_trap_unregister(mlxsw_core, &mlxsw_core_health_listener, mlxsw_core);
+ 	/* Make sure there is no more event work scheduled */
+ 	mlxsw_core_flush_owq();
+-	devlink_health_reporter_destroy(mlxsw_core->health.fw_fatal);
++	devl_health_reporter_destroy(mlxsw_core->health.fw_fatal);
+ }
  
- struct mlx5_adev {
+ static void mlxsw_core_irq_event_handler_init(struct mlxsw_core *mlxsw_core)
+diff --git a/drivers/net/netdevsim/health.c b/drivers/net/netdevsim/health.c
+index aa77af4a68df..eb04ed715d2d 100644
+--- a/drivers/net/netdevsim/health.c
++++ b/drivers/net/netdevsim/health.c
+@@ -233,16 +233,16 @@ int nsim_dev_health_init(struct nsim_dev *nsim_dev, struct devlink *devlink)
+ 	int err;
+ 
+ 	health->empty_reporter =
+-		devlink_health_reporter_create(devlink,
+-					       &nsim_dev_empty_reporter_ops,
+-					       0, health);
++		devl_health_reporter_create(devlink,
++					    &nsim_dev_empty_reporter_ops,
++					    0, health);
+ 	if (IS_ERR(health->empty_reporter))
+ 		return PTR_ERR(health->empty_reporter);
+ 
+ 	health->dummy_reporter =
+-		devlink_health_reporter_create(devlink,
+-					       &nsim_dev_dummy_reporter_ops,
+-					       0, health);
++		devl_health_reporter_create(devlink,
++					    &nsim_dev_dummy_reporter_ops,
++					    0, health);
+ 	if (IS_ERR(health->dummy_reporter)) {
+ 		err = PTR_ERR(health->dummy_reporter);
+ 		goto err_empty_reporter_destroy;
+@@ -266,9 +266,9 @@ int nsim_dev_health_init(struct nsim_dev *nsim_dev, struct devlink *devlink)
+ 	return 0;
+ 
+ err_dummy_reporter_destroy:
+-	devlink_health_reporter_destroy(health->dummy_reporter);
++	devl_health_reporter_destroy(health->dummy_reporter);
+ err_empty_reporter_destroy:
+-	devlink_health_reporter_destroy(health->empty_reporter);
++	devl_health_reporter_destroy(health->empty_reporter);
+ 	return err;
+ }
+ 
+@@ -278,6 +278,6 @@ void nsim_dev_health_exit(struct nsim_dev *nsim_dev)
+ 
+ 	debugfs_remove_recursive(health->ddir);
+ 	kfree(health->recovered_break_msg);
+-	devlink_health_reporter_destroy(health->dummy_reporter);
+-	devlink_health_reporter_destroy(health->empty_reporter);
++	devl_health_reporter_destroy(health->dummy_reporter);
++	devl_health_reporter_destroy(health->empty_reporter);
+ }
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index d7c9572e5bea..0d64feaef7cb 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -1865,18 +1865,34 @@ int devlink_fmsg_binary_pair_put(struct devlink_fmsg *fmsg, const char *name,
+ 				 const void *value, u32 value_len);
+ 
+ struct devlink_health_reporter *
+-devlink_health_reporter_create(struct devlink *devlink,
+-			       const struct devlink_health_reporter_ops *ops,
+-			       u64 graceful_period, void *priv);
++devl_port_health_reporter_create(struct devlink_port *port,
++				 const struct devlink_health_reporter_ops *ops,
++				 u64 graceful_period, void *priv);
+ 
+ struct devlink_health_reporter *
+ devlink_port_health_reporter_create(struct devlink_port *port,
+ 				    const struct devlink_health_reporter_ops *ops,
+ 				    u64 graceful_period, void *priv);
+ 
++struct devlink_health_reporter *
++devl_health_reporter_create(struct devlink *devlink,
++			    const struct devlink_health_reporter_ops *ops,
++			    u64 graceful_period, void *priv);
++
++struct devlink_health_reporter *
++devlink_health_reporter_create(struct devlink *devlink,
++			       const struct devlink_health_reporter_ops *ops,
++			       u64 graceful_period, void *priv);
++
++void
++devl_health_reporter_destroy(struct devlink_health_reporter *reporter);
++
+ void
+ devlink_health_reporter_destroy(struct devlink_health_reporter *reporter);
+ 
++void
++devl_port_health_reporter_destroy(struct devlink_health_reporter *reporter);
++
+ void
+ devlink_port_health_reporter_destroy(struct devlink_health_reporter *reporter);
+ 
+diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
+index c92bc04bc25c..0fc374140e6a 100644
+--- a/net/devlink/leftover.c
++++ b/net/devlink/leftover.c
+@@ -7337,8 +7337,8 @@ __devlink_health_reporter_create(struct devlink *devlink,
+ }
+ 
+ /**
+- *	devlink_port_health_reporter_create - create devlink health reporter for
+- *	                                      specified port instance
++ *	devl_port_health_reporter_create - create devlink health reporter for
++ *	                                   specified port instance
+  *
+  *	@port: devlink_port which should contain the new reporter
+  *	@ops: ops
+@@ -7346,12 +7346,13 @@ __devlink_health_reporter_create(struct devlink *devlink,
+  *	@priv: priv
+  */
+ struct devlink_health_reporter *
+-devlink_port_health_reporter_create(struct devlink_port *port,
+-				    const struct devlink_health_reporter_ops *ops,
+-				    u64 graceful_period, void *priv)
++devl_port_health_reporter_create(struct devlink_port *port,
++				 const struct devlink_health_reporter_ops *ops,
++				 u64 graceful_period, void *priv)
+ {
+ 	struct devlink_health_reporter *reporter;
+ 
++	devl_assert_locked(port->devlink);
+ 	mutex_lock(&port->reporters_lock);
+ 	if (__devlink_health_reporter_find_by_name(&port->reporter_list,
+ 						   &port->reporters_lock, ops->name)) {
+@@ -7370,10 +7371,26 @@ devlink_port_health_reporter_create(struct devlink_port *port,
+ 	mutex_unlock(&port->reporters_lock);
+ 	return reporter;
+ }
++EXPORT_SYMBOL_GPL(devl_port_health_reporter_create);
++
++struct devlink_health_reporter *
++devlink_port_health_reporter_create(struct devlink_port *port,
++				    const struct devlink_health_reporter_ops *ops,
++				    u64 graceful_period, void *priv)
++{
++	struct devlink_health_reporter *reporter;
++	struct devlink *devlink = port->devlink;
++
++	devl_lock(devlink);
++	reporter = devl_port_health_reporter_create(port, ops,
++						    graceful_period, priv);
++	devl_unlock(devlink);
++	return reporter;
++}
+ EXPORT_SYMBOL_GPL(devlink_port_health_reporter_create);
+ 
+ /**
+- *	devlink_health_reporter_create - create devlink health reporter
++ *	devl_health_reporter_create - create devlink health reporter
+  *
+  *	@devlink: devlink
+  *	@ops: ops
+@@ -7381,12 +7398,13 @@ EXPORT_SYMBOL_GPL(devlink_port_health_reporter_create);
+  *	@priv: priv
+  */
+ struct devlink_health_reporter *
+-devlink_health_reporter_create(struct devlink *devlink,
+-			       const struct devlink_health_reporter_ops *ops,
+-			       u64 graceful_period, void *priv)
++devl_health_reporter_create(struct devlink *devlink,
++			    const struct devlink_health_reporter_ops *ops,
++			    u64 graceful_period, void *priv)
+ {
+ 	struct devlink_health_reporter *reporter;
+ 
++	devl_assert_locked(devlink);
+ 	mutex_lock(&devlink->reporters_lock);
+ 	if (devlink_health_reporter_find_by_name(devlink, ops->name)) {
+ 		reporter = ERR_PTR(-EEXIST);
+@@ -7403,6 +7421,21 @@ devlink_health_reporter_create(struct devlink *devlink,
+ 	mutex_unlock(&devlink->reporters_lock);
+ 	return reporter;
+ }
++EXPORT_SYMBOL_GPL(devl_health_reporter_create);
++
++struct devlink_health_reporter *
++devlink_health_reporter_create(struct devlink *devlink,
++			       const struct devlink_health_reporter_ops *ops,
++			       u64 graceful_period, void *priv)
++{
++	struct devlink_health_reporter *reporter;
++
++	devl_lock(devlink);
++	reporter = devl_health_reporter_create(devlink, ops,
++					       graceful_period, priv);
++	devl_unlock(devlink);
++	return reporter;
++}
+ EXPORT_SYMBOL_GPL(devlink_health_reporter_create);
+ 
+ static void
+@@ -7429,35 +7462,61 @@ __devlink_health_reporter_destroy(struct devlink_health_reporter *reporter)
+ }
+ 
+ /**
+- *	devlink_health_reporter_destroy - destroy devlink health reporter
++ *	devl_health_reporter_destroy - destroy devlink health reporter
+  *
+  *	@reporter: devlink health reporter to destroy
+  */
+ void
+-devlink_health_reporter_destroy(struct devlink_health_reporter *reporter)
++devl_health_reporter_destroy(struct devlink_health_reporter *reporter)
+ {
+ 	struct mutex *lock = &reporter->devlink->reporters_lock;
+ 
++	devl_assert_locked(reporter->devlink);
++
+ 	mutex_lock(lock);
+ 	__devlink_health_reporter_destroy(reporter);
+ 	mutex_unlock(lock);
+ }
++EXPORT_SYMBOL_GPL(devl_health_reporter_destroy);
++
++void
++devlink_health_reporter_destroy(struct devlink_health_reporter *reporter)
++{
++	struct devlink *devlink = reporter->devlink;
++
++	devl_lock(devlink);
++	devl_health_reporter_destroy(reporter);
++	devl_unlock(devlink);
++}
+ EXPORT_SYMBOL_GPL(devlink_health_reporter_destroy);
+ 
+ /**
+- *	devlink_port_health_reporter_destroy - destroy devlink port health reporter
++ *	devl_port_health_reporter_destroy - destroy devlink port health reporter
+  *
+  *	@reporter: devlink health reporter to destroy
+  */
+ void
+-devlink_port_health_reporter_destroy(struct devlink_health_reporter *reporter)
++devl_port_health_reporter_destroy(struct devlink_health_reporter *reporter)
+ {
+ 	struct mutex *lock = &reporter->devlink_port->reporters_lock;
+ 
++	devl_assert_locked(reporter->devlink);
++
+ 	mutex_lock(lock);
+ 	__devlink_health_reporter_destroy(reporter);
+ 	mutex_unlock(lock);
+ }
++EXPORT_SYMBOL_GPL(devl_port_health_reporter_destroy);
++
++void
++devlink_port_health_reporter_destroy(struct devlink_health_reporter *reporter)
++{
++	struct devlink *devlink = reporter->devlink;
++
++	devl_lock(devlink);
++	devl_port_health_reporter_destroy(reporter);
++	devl_unlock(devlink);
++}
+ EXPORT_SYMBOL_GPL(devlink_port_health_reporter_destroy);
+ 
+ static int
+@@ -7805,12 +7864,11 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
+ 		unsigned long port_index;
+ 		int idx = 0;
+ 
++		devl_lock(devlink);
++		if (!devl_is_registered(devlink))
++			goto next_devlink;
++
+ 		mutex_lock(&devlink->reporters_lock);
+-		if (!devl_is_registered(devlink)) {
+-			mutex_unlock(&devlink->reporters_lock);
+-			devlink_put(devlink);
+-			continue;
+-		}
+ 
+ 		list_for_each_entry(reporter, &devlink->reporter_list,
+ 				    list) {
+@@ -7824,6 +7882,7 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
+ 				NLM_F_MULTI);
+ 			if (err) {
+ 				mutex_unlock(&devlink->reporters_lock);
++				devl_unlock(devlink);
+ 				devlink_put(devlink);
+ 				state->idx = idx;
+ 				goto out;
+@@ -7832,10 +7891,6 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
+ 		}
+ 		mutex_unlock(&devlink->reporters_lock);
+ 
+-		devl_lock(devlink);
+-		if (!devl_is_registered(devlink))
+-			goto next_devlink;
+-
+ 		xa_for_each(&devlink->ports, port_index, port) {
+ 			mutex_lock(&port->reporters_lock);
+ 			list_for_each_entry(reporter, &port->reporter_list, list) {
 -- 
 2.39.0
 
