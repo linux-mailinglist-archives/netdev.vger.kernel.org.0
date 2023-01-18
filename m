@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 61C66671BE2
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 13:20:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB984671BEB
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 13:21:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229800AbjARMUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 07:20:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49368 "EHLO
+        id S230138AbjARMVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 07:21:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229735AbjARMTA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 07:19:00 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 545294B4BC;
-        Wed, 18 Jan 2023 03:41:51 -0800 (PST)
-X-UUID: 16338152972511ed945fc101203acc17-20230118
+        with ESMTP id S230351AbjARMTH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 07:19:07 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE1EE589B0;
+        Wed, 18 Jan 2023 03:42:29 -0800 (PST)
+X-UUID: 2db111b4972511eda06fc9ecc4dadd91-20230118
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=eas6wIFBuQy7UzkrK500VJMgeato0L4fG/5Di/9irl4=;
-        b=jAId+x8lnJaBqDJpEHF7NqjJh2I293CXYUbeKxPi7B2d8vNbix9NR02SQLaJB3JAdvlj4S2N8+mo8ML0S1PCXrrWfT0A4EPrNPfx+v9whlmg1cq2k1urHZK8wB5gi/T/tf46i00WO4gLF+g6O5yZ737vT0vow4SgQE1nWZo/ARA=;
+        h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=m0dZfLTA07wCQqESkFSj429vV+JJyM1gTuKwvVz1fsE=;
+        b=OOHNUVoScYQ4Rslb4Q4w5cyHyYsdmIxgfF9ScsGnBoNRLdiUtYHV3O2qq+8SUyEgRNparnYVHsaLUoyGWGq5GWCQWv7yx5ve3DxIQFeipdyKYQk0+k+5+3rKKXdbNUf9HDxRMug8AoMW2pc+SVd7UCt/wdz9Ix8vafvjkMqItlo=;
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.18,REQID:074018e9-03d1-4c78-aa52-d563e27e4a08,IP:0,U
+X-CID-O-INFO: VERSION:1.1.18,REQID:25278640-260d-44b9-bf15-e28414c1bfe1,IP:0,U
         RL:0,TC:0,Content:-25,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Release_Ham,ACTI
         ON:release,TS:70
-X-CID-INFO: VERSION:1.1.18,REQID:074018e9-03d1-4c78-aa52-d563e27e4a08,IP:0,URL
+X-CID-INFO: VERSION:1.1.18,REQID:25278640-260d-44b9-bf15-e28414c1bfe1,IP:0,URL
         :0,TC:0,Content:-25,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS981B3D,ACTI
         ON:quarantine,TS:70
-X-CID-META: VersionHash:3ca2d6b,CLOUDID:26792df6-ff42-4fb0-b929-626456a83c14,B
-        ulkID:2301181941477PXH0II6,BulkQuantity:0,Recheck:0,SF:38|28|17|19|48,TC:n
-        il,Content:0,EDM:-3,IP:nil,URL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OS
-        I:0,OSA:0
+X-CID-META: VersionHash:3ca2d6b,CLOUDID:ae7b2df6-ff42-4fb0-b929-626456a83c14,B
+        ulkID:230118194226P1HDP9WR,BulkQuantity:0,Recheck:0,SF:38|28|17|19|48,TC:n
+        il,Content:0,EDM:-3,IP:nil,URL:11|1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+        ,OSI:0,OSA:0
 X-CID-BVR: 0,NGT
-X-UUID: 16338152972511ed945fc101203acc17-20230118
-Received: from mtkmbs13n1.mediatek.inc [(172.21.101.193)] by mailgw02.mediatek.com
+X-UUID: 2db111b4972511eda06fc9ecc4dadd91-20230118
+Received: from mtkmbs13n1.mediatek.inc [(172.21.101.193)] by mailgw01.mediatek.com
         (envelope-from <yanchao.yang@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1737762517; Wed, 18 Jan 2023 19:41:46 +0800
+        with ESMTP id 1221855249; Wed, 18 Jan 2023 19:42:25 +0800
 Received: from mtkmbs13n1.mediatek.inc (172.21.101.193) by
  mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Wed, 18 Jan 2023 19:41:44 +0800
+ Wed, 18 Jan 2023 19:42:23 +0800
 Received: from mcddlt001.gcn.mediatek.inc (10.19.240.15) by
  mtkmbs13n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Wed, 18 Jan 2023 19:41:42 +0800
+ 15.2.792.15 via Frontend Transport; Wed, 18 Jan 2023 19:42:21 +0800
 From:   Yanchao Yang <yanchao.yang@mediatek.com>
 To:     Loic Poulain <loic.poulain@linaro.org>,
         Sergey Ryazanov <ryazanov.s.a@gmail.com>,
@@ -70,9 +70,9 @@ CC:     Intel experts <linuxwwan@intel.com>,
         Mingchuang Qiao <mingchuang.qiao@mediatek.com>,
         Xiayu Zhang <xiayu.zhang@mediatek.com>,
         Haozhe Chang <haozhe.chang@mediatek.com>
-Subject: [PATCH net-next v2 03/12] net: wwan: tmi: Add control DMA interface
-Date:   Wed, 18 Jan 2023 19:38:50 +0800
-Message-ID: <20230118113859.175836-4-yanchao.yang@mediatek.com>
+Subject: [PATCH net-next v2 04/12] net: wwan: tmi: Add control port
+Date:   Wed, 18 Jan 2023 19:38:51 +0800
+Message-ID: <20230118113859.175836-5-yanchao.yang@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20230118113859.175836-1-yanchao.yang@mediatek.com>
 References: <20230118113859.175836-1-yanchao.yang@mediatek.com>
@@ -89,1524 +89,1891 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cross Layer Direct Memory Access(CLDMA) is the hardware interface used by the
-control plane and designated to translate data between the host and the device.
-It supports 8 hardware queues for the device AP and modem respectively.
+The control port consists of port I/O and port manager.
+Port I/O provides a common operation as defined by "struct port_ops",
+and the operation is managed by the "port manager". It provides
+interfaces to internal users, the implemented internal interfaces are
+open, close, write and recv_register.
 
-CLDMA driver uses General Purpose Descriptor (GPD) to describe transaction
-information that can be recognized by CLDMA hardware.
-Once CLDMA hardware transaction is started, it would fetch and parse GPD to
-transfer data correctly.
-To facilitate the CLDMA transaction, a GPD ring for each queue is used.
-Once the transaction is started, CLDMA hardware will traverse the GPD ring
-to transfer data between the host and the device until no GPD is available.
-
-CLDMA TX flow:
-Once a TX service receives the TX data from the port layer, it uses APIs
-exported by the CLDMA driver to configure GPD with the DMA address of TX data.
-After that, the service triggers CLDMA to fetch the first available GPD to
-transfer data.
-
-CLDMA RX flow:
-When there is RX data from the MD, CLDMA hardware asserts an interrupt to
-notify the host to fetch data and dispatch it to FSM (for handshake messages)
-or the port layer.
-After CLDMA opening is finished, All RX GPDs are fulfilled and ready to receive
-data from the device.
+The port manager defines and implements port management interfaces and
+structures. It is responsible for port creation, destroying, and managing
+port states. It sends data from port I/O to CLDMA via TRB ( Transaction
+Request Block ), and dispatches received data from CLDMA to port I/O.
+The using port will be held in the "stale list" when the driver destroys
+it, and after creating it again, the user can continue to use it.
 
 Signed-off-by: Yanchao Yang <yanchao.yang@mediatek.com>
-Signed-off-by: Min Dong <min.dong@mediatek.com>
+Signed-off-by: Felix Chen <felix.chen@mediatek.com>
 ---
- drivers/net/wwan/mediatek/Makefile            |   6 +-
- drivers/net/wwan/mediatek/mtk_cldma.c         | 260 +++++
- drivers/net/wwan/mediatek/mtk_cldma.h         | 158 +++
- drivers/net/wwan/mediatek/mtk_ctrl_plane.h    |  48 +
- .../wwan/mediatek/pcie/mtk_cldma_drv_t800.c   | 939 ++++++++++++++++++
- .../wwan/mediatek/pcie/mtk_cldma_drv_t800.h   |  20 +
- 6 files changed, 1429 insertions(+), 2 deletions(-)
- create mode 100644 drivers/net/wwan/mediatek/mtk_cldma.c
- create mode 100644 drivers/net/wwan/mediatek/mtk_cldma.h
- create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_cldma_drv_t800.c
- create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_cldma_drv_t800.h
+ drivers/net/wwan/mediatek/Makefile         |   4 +-
+ drivers/net/wwan/mediatek/mtk_ctrl_plane.c | 128 +++
+ drivers/net/wwan/mediatek/mtk_ctrl_plane.h |  28 +-
+ drivers/net/wwan/mediatek/mtk_port.c       | 987 +++++++++++++++++++++
+ drivers/net/wwan/mediatek/mtk_port.h       | 228 +++++
+ drivers/net/wwan/mediatek/mtk_port_io.c    | 306 +++++++
+ drivers/net/wwan/mediatek/mtk_port_io.h    |  34 +
+ drivers/net/wwan/mediatek/pcie/mtk_pci.c   |   2 +
+ 8 files changed, 1714 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/net/wwan/mediatek/mtk_port.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_port.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_port_io.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_port_io.h
 
 diff --git a/drivers/net/wwan/mediatek/Makefile b/drivers/net/wwan/mediatek/Makefile
-index 192f08e08a33..f607fb1dad6e 100644
+index f607fb1dad6e..1e83300eb6d7 100644
 --- a/drivers/net/wwan/mediatek/Makefile
 +++ b/drivers/net/wwan/mediatek/Makefile
-@@ -4,8 +4,10 @@ MODULE_NAME := mtk_tmi
- 
- mtk_tmi-y = \
- 	pcie/mtk_pci.o	\
--	mtk_dev.o	\
--	mtk_ctrl_plane.o
-+	mtk_dev.o \
-+	mtk_ctrl_plane.o \
-+	mtk_cldma.o \
-+	pcie/mtk_cldma_drv_t800.o
+@@ -7,7 +7,9 @@ mtk_tmi-y = \
+ 	mtk_dev.o \
+ 	mtk_ctrl_plane.o \
+ 	mtk_cldma.o \
+-	pcie/mtk_cldma_drv_t800.o
++	pcie/mtk_cldma_drv_t800.o \
++	mtk_port.o \
++	mtk_port_io.o
  
  ccflags-y += -I$(srctree)/$(src)/
  ccflags-y += -I$(srctree)/$(src)/pcie/
-diff --git a/drivers/net/wwan/mediatek/mtk_cldma.c b/drivers/net/wwan/mediatek/mtk_cldma.c
+diff --git a/drivers/net/wwan/mediatek/mtk_ctrl_plane.c b/drivers/net/wwan/mediatek/mtk_ctrl_plane.c
+index 2bd0b1c6027a..0a855f94bf3c 100644
+--- a/drivers/net/wwan/mediatek/mtk_ctrl_plane.c
++++ b/drivers/net/wwan/mediatek/mtk_ctrl_plane.c
+@@ -10,7 +10,124 @@
+ #include <linux/sched.h>
+ #include <linux/wait.h>
+ 
++#include "mtk_cldma.h"
+ #include "mtk_ctrl_plane.h"
++#include "mtk_port.h"
++
++static int mtk_ctrl_get_hif_id(unsigned char peer_id)
++{
++	if (peer_id == MTK_PEER_ID_SAP)
++		return CLDMA0;
++	else if (peer_id == MTK_PEER_ID_MD)
++		return CLDMA1;
++	else
++		return -EINVAL;
++}
++
++int mtk_ctrl_vq_search(struct mtk_ctrl_blk *ctrl_blk, unsigned char peer_id,
++		       unsigned char tx_hwq, unsigned char rx_hwq)
++{
++	struct mtk_port_mngr *port_mngr = ctrl_blk->port_mngr;
++	struct mtk_ctrl_trans *trans = ctrl_blk->trans;
++	int hif_id = mtk_ctrl_get_hif_id(peer_id);
++	struct virtq *vq;
++	int vq_num = 0;
++
++	if (hif_id < 0)
++		return -EINVAL;
++
++	do {
++		vq = trans->vq_tbl + vq_num;
++		if (port_mngr->vq_info[vq_num].color && vq->txqno == tx_hwq &&
++		    vq->rxqno == rx_hwq && vq->hif_id == hif_id)
++			return vq_num;
++
++		vq_num++;
++	} while (vq_num < VQ_NUM);
++
++	return -ENOENT;
++}
++
++int mtk_ctrl_vq_color_paint(struct mtk_ctrl_blk *ctrl_blk, unsigned char peer_id,
++			    unsigned char tx_hwq, unsigned char rx_hwq,
++			    unsigned int tx_mtu, unsigned int rx_mtu)
++{
++	struct mtk_port_mngr *port_mngr = ctrl_blk->port_mngr;
++	struct mtk_ctrl_trans *trans = ctrl_blk->trans;
++	int hif_id = mtk_ctrl_get_hif_id(peer_id);
++	struct virtq *vq;
++	int vq_num = 0;
++
++	if (hif_id < 0)
++		return -EINVAL;
++
++	do {
++		vq = trans->vq_tbl + vq_num;
++		if (vq->hif_id == hif_id && vq->txqno == tx_hwq && vq->rxqno == rx_hwq &&
++		    vq->tx_mtu <= tx_mtu && vq->rx_mtu >= rx_mtu)
++			port_mngr->vq_info[vq_num].color = true;
++
++		vq_num++;
++	} while (vq_num < VQ_NUM);
++
++	return 0;
++}
++
++int mtk_ctrl_vq_color_cleanup(struct mtk_ctrl_blk *ctrl_blk, unsigned char peer_id)
++{
++	struct mtk_port_mngr *port_mngr = ctrl_blk->port_mngr;
++	struct mtk_ctrl_trans *trans = ctrl_blk->trans;
++	int hif_id = mtk_ctrl_get_hif_id(peer_id);
++	struct virtq *vq;
++	int vq_num = 0;
++
++	if (hif_id < 0)
++		return -EINVAL;
++
++	do {
++		vq = trans->vq_tbl + vq_num;
++		if (vq->hif_id == hif_id)
++			port_mngr->vq_info[vq_num].color = false;
++
++		vq_num++;
++	} while (vq_num < VQ_NUM);
++
++	return 0;
++}
++
++/**
++ * mtk_ctrl_trb_submit() - Submit TRB event.
++ * @blk: pointer to mtk_ctrl_blk
++ * @skb: skb buff to submit
++ *
++ * Return:
++ * *  0       - OK
++ * *  -EINVAL - vqno is invalid
++ * *  -EIO    - trans feature is not ready
++ * *  -EAGAIN - vq list is full
++ */
++int mtk_ctrl_trb_submit(struct mtk_ctrl_blk *blk, struct sk_buff *skb)
++{
++	struct mtk_ctrl_trans *trans = blk->trans;
++	struct trb *trb;
++	int vqno;
++
++	trb = (struct trb *)skb->cb;
++	if (trb->vqno >= VQ_NUM)
++		return -EINVAL;
++
++	if (!atomic_read(&trans->available))
++		return -EIO;
++
++	vqno = trb->vqno;
++	if (VQ_LIST_FULL(trans, vqno) && trb->cmd != TRB_CMD_DISABLE)
++		return -EAGAIN;
++
++	/* This function will implement in next patch */
++	wake_up(&trans->trb_srv->trb_waitq);
++
++	return 0;
++}
+ 
+ /**
+  * mtk_ctrl_init() - allocate ctrl plane control block and initialize it
+@@ -21,6 +138,7 @@
+ int mtk_ctrl_init(struct mtk_md_dev *mdev)
+ {
+ 	struct mtk_ctrl_blk *ctrl_blk;
++	int err;
+ 
+ 	ctrl_blk = devm_kzalloc(mdev->dev, sizeof(*ctrl_blk), GFP_KERNEL);
+ 	if (!ctrl_blk)
+@@ -29,7 +147,16 @@ int mtk_ctrl_init(struct mtk_md_dev *mdev)
+ 	ctrl_blk->mdev = mdev;
+ 	mdev->ctrl_blk = ctrl_blk;
+ 
++	err = mtk_port_mngr_init(ctrl_blk);
++	if (err)
++		goto err_free_mem;
++
+ 	return 0;
++
++err_free_mem:
++	devm_kfree(mdev->dev, ctrl_blk);
++
++	return err;
+ }
+ 
+ /**
+@@ -42,6 +169,7 @@ int mtk_ctrl_exit(struct mtk_md_dev *mdev)
+ {
+ 	struct mtk_ctrl_blk *ctrl_blk = mdev->ctrl_blk;
+ 
++	mtk_port_mngr_exit(ctrl_blk);
+ 	devm_kfree(mdev->dev, ctrl_blk);
+ 
+ 	return 0;
+diff --git a/drivers/net/wwan/mediatek/mtk_ctrl_plane.h b/drivers/net/wwan/mediatek/mtk_ctrl_plane.h
+index 32cd8dc7bdb7..2e1f21d43644 100644
+--- a/drivers/net/wwan/mediatek/mtk_ctrl_plane.h
++++ b/drivers/net/wwan/mediatek/mtk_ctrl_plane.h
+@@ -11,13 +11,20 @@
+ 
+ #include "mtk_dev.h"
+ 
++#define VQ(N)				(N)
++#define VQ_NUM				(2)
++
+ #define VQ_MTU_3_5K			(0xE00)
+ #define VQ_MTU_63K			(0xFC00)
+ 
++#define SKB_LIST_MAX_LEN		(16)
++
+ #define HIF_CLASS_NUM			(1)
+ #define HIF_CLASS_SHIFT			(8)
+ #define HIF_ID_BITMASK			(0x01)
+ 
++#define VQ_LIST_FULL(trans, vqno)	((trans)->skb_list[vqno].qlen >= SKB_LIST_MAX_LEN)
++
+ enum mtk_trb_cmd_type {
+ 	TRB_CMD_ENABLE = 1,
+ 	TRB_CMD_TX,
+@@ -39,6 +46,14 @@ struct trb {
+ 	int (*trb_complete)(struct sk_buff *skb);
+ };
+ 
++struct trb_srv {
++	int vq_cnt;
++	int vq_start;
++	struct mtk_ctrl_trans *trans;
++	wait_queue_head_t trb_waitq;
++	struct task_struct *trb_thread;
++};
++
+ struct virtq {
+ 	int vqno;
+ 	int hif_id;
+@@ -50,8 +65,6 @@ struct virtq {
+ 	int rx_req_num;
+ };
+ 
+-struct mtk_ctrl_trans;
+-
+ struct hif_ops {
+ 	int (*init)(struct mtk_ctrl_trans *trans);
+ 	int (*exit)(struct mtk_ctrl_trans *trans);
+@@ -60,18 +73,29 @@ struct hif_ops {
+ };
+ 
+ struct mtk_ctrl_trans {
++	struct sk_buff_head skb_list[VQ_NUM];
++	struct trb_srv *trb_srv;
+ 	struct virtq *vq_tbl;
+ 	void *dev[HIF_CLASS_NUM];
+ 	struct hif_ops *ops[HIF_CLASS_NUM];
+ 	struct mtk_ctrl_blk *ctrl_blk;
+ 	struct mtk_md_dev *mdev;
++	atomic_t available;
+ };
+ 
+ struct mtk_ctrl_blk {
+ 	struct mtk_md_dev *mdev;
++	struct mtk_port_mngr *port_mngr;
+ 	struct mtk_ctrl_trans *trans;
+ };
+ 
++int mtk_ctrl_vq_search(struct mtk_ctrl_blk *ctrl_blk, unsigned char peer_id,
++		       unsigned char tx_hwq, unsigned char rx_hwq);
++int mtk_ctrl_vq_color_paint(struct mtk_ctrl_blk *ctrl_blk, unsigned char peer_id,
++			    unsigned char tx_hwq, unsigned char rx_hwq,
++			    unsigned int tx_mtu, unsigned int rx_mtu);
++int mtk_ctrl_vq_color_cleanup(struct mtk_ctrl_blk *ctrl_blk, unsigned char peer_id);
++int mtk_ctrl_trb_submit(struct mtk_ctrl_blk *blk, struct sk_buff *skb);
+ int mtk_ctrl_init(struct mtk_md_dev *mdev);
+ int mtk_ctrl_exit(struct mtk_md_dev *mdev);
+ 
+diff --git a/drivers/net/wwan/mediatek/mtk_port.c b/drivers/net/wwan/mediatek/mtk_port.c
 new file mode 100644
-index 000000000000..f9531f48f898
+index 000000000000..c86e4e836c0f
 --- /dev/null
-+++ b/drivers/net/wwan/mediatek/mtk_cldma.c
-@@ -0,0 +1,260 @@
++++ b/drivers/net/wwan/mediatek/mtk_port.c
+@@ -0,0 +1,987 @@
 +// SPDX-License-Identifier: BSD-3-Clause-Clear
 +/*
 + * Copyright (c) 2022, MediaTek Inc.
 + */
 +
++#include <linux/bitfield.h>
 +#include <linux/device.h>
-+#include <linux/mutex.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/skbuff.h>
++#include <linux/err.h>
++#include <linux/kernel.h>
++#include <linux/list.h>
++#include <linux/slab.h>
++#include <linux/wait.h>
 +
-+#include "mtk_cldma.h"
-+#include "mtk_cldma_drv_t800.h"
++#include "mtk_port.h"
++#include "mtk_port_io.h"
 +
-+/**
-+ * mtk_cldma_init() - Initialize CLDMA
-+ * @trans: pointer to transaction structure
-+ *
-+ * Return:
-+ * * 0 - OK
-+ * * -ENOMEM - out of memory
-+ */
-+static int mtk_cldma_init(struct mtk_ctrl_trans *trans)
++#define MTK_DFLT_TRB_TIMEOUT			(5 * HZ)
++#define MTK_DFLT_TRB_STATUS			(0x1)
++#define MTK_CHECK_RX_SEQ_MASK			(0x7fff)
++
++#define MTK_PORT_SEARCH_FROM_RADIX_TREE(p, s) ({\
++	struct mtk_port *_p;			\
++	_p = radix_tree_deref_slot(s);		\
++	if (!_p)				\
++		continue;			\
++	p = _p;					\
++})
++
++#define MTK_PORT_INTERNAL_NODE_CHECK(p, s, i) ({\
++	if (radix_tree_is_internal_node(p)) {	\
++		s = radix_tree_iter_retry(&(i));\
++		continue;			\
++	}					\
++})
++
++/* global group for stale ports */
++static LIST_HEAD(stale_list_grp);
++/* mutex lock for stale_list_group */
++DEFINE_MUTEX(port_mngr_grp_mtx);
++
++static DEFINE_IDA(ccci_dev_ids);
++
++static const struct mtk_port_cfg port_cfg[] = {
++	{CCCI_CONTROL_TX, CCCI_CONTROL_RX, VQ(1), PORT_TYPE_INTERNAL, "MDCTRL", PORT_F_ALLOW_DROP},
++	{CCCI_SAP_CONTROL_TX, CCCI_SAP_CONTROL_RX, VQ(0), PORT_TYPE_INTERNAL, "SAPCTRL",
++	 PORT_F_ALLOW_DROP},
++};
++
++/* This function working always under mutex lock port_mngr_grp_mtx */
++void mtk_port_release(struct kref *port_kref)
 +{
-+	struct cldma_dev *cd;
++	struct mtk_stale_list *s_list;
++	struct mtk_port *port;
 +
-+	cd = devm_kzalloc(trans->mdev->dev, sizeof(*cd), GFP_KERNEL);
-+	if (!cd)
-+		return -ENOMEM;
++	port = container_of(port_kref, struct mtk_port, kref);
++	/* The port on stale list also be deleted when release this port */
++	if (!test_bit(PORT_S_ON_STALE_LIST, &port->status))
++		goto port_exit;
 +
-+	cd->trans = trans;
-+	cd->hw_ops.init = mtk_cldma_hw_init_t800;
-+	cd->hw_ops.exit = mtk_cldma_hw_exit_t800;
-+	cd->hw_ops.txq_alloc = mtk_cldma_txq_alloc_t800;
-+	cd->hw_ops.rxq_alloc = mtk_cldma_rxq_alloc_t800;
-+	cd->hw_ops.txq_free = mtk_cldma_txq_free_t800;
-+	cd->hw_ops.rxq_free = mtk_cldma_rxq_free_t800;
-+	cd->hw_ops.start_xfer = mtk_cldma_start_xfer_t800;
++	list_del(&port->stale_entry);
++	list_for_each_entry(s_list, &stale_list_grp, entry) {
++		/* If this port is the last port of stale list, free the list and dev_id */
++		if (!strncmp(s_list->dev_str, port->dev_str, MTK_DEV_STR_LEN) &&
++		    list_empty(&s_list->ports) && s_list->dev_id >= 0) {
++			pr_info("Free dev id of stale list(%s)\n", s_list->dev_str);
++			ida_free(&ccci_dev_ids, s_list->dev_id);
++			s_list->dev_id = -1;
++			break;
++		}
++	}
 +
-+	trans->dev[CLDMA_CLASS_ID] = cd;
++port_exit:
++	ports_ops[port->info.type]->exit(port);
++	kfree(port);
++}
 +
++static int mtk_port_tbl_add(struct mtk_port_mngr *port_mngr, struct mtk_port *port)
++{
++	int ret;
++
++	ret = radix_tree_insert(&port_mngr->port_tbl[MTK_PORT_TBL_TYPE(port->info.rx_ch)],
++				port->info.rx_ch & 0xFFF, port);
++	if (ret)
++		dev_err(port_mngr->ctrl_blk->mdev->dev,
++			"port(%s) add to port_tbl failed, return %d\n",
++			port->info.name, ret);
++
++	return ret;
++}
++
++static void mtk_port_tbl_del(struct mtk_port_mngr *port_mngr, struct mtk_port *port)
++{
++	radix_tree_delete(&port_mngr->port_tbl[MTK_PORT_TBL_TYPE(port->info.rx_ch)],
++			  port->info.rx_ch & 0xFFF);
++}
++
++static struct mtk_port *mtk_port_get_from_stale_list(struct mtk_port_mngr *port_mngr,
++						     struct mtk_stale_list *s_list,
++						     int rx_ch)
++{
++	struct mtk_port *port, *next_port;
++	int ret;
++
++	mutex_lock(&port_mngr_grp_mtx);
++	list_for_each_entry_safe(port, next_port, &s_list->ports, stale_entry) {
++		if (port->info.rx_ch == rx_ch) {
++			kref_get(&port->kref);
++			list_del(&port->stale_entry);
++			ret = mtk_port_tbl_add(port_mngr, port);
++			if (ret) {
++				list_add_tail(&port->stale_entry, &s_list->ports);
++				kref_put(&port->kref, mtk_port_release);
++				mutex_unlock(&port_mngr_grp_mtx);
++				dev_err(port_mngr->ctrl_blk->mdev->dev,
++					"Failed when adding (%s) to port mngr\n",
++					port->info.name);
++				return ERR_PTR(ret);
++			}
++
++			port->port_mngr = port_mngr;
++			clear_bit(PORT_S_ON_STALE_LIST, &port->status);
++			mutex_unlock(&port_mngr_grp_mtx);
++			return port;
++		}
++	}
++	mutex_unlock(&port_mngr_grp_mtx);
++
++	return NULL;
++}
++
++static struct mtk_port *mtk_port_alloc_or_restore(struct mtk_port_mngr *port_mngr,
++						  struct mtk_port_cfg *dflt_info,
++						  struct mtk_stale_list *s_list)
++{
++	struct mtk_port *port;
++	int ret;
++
++	port = mtk_port_get_from_stale_list(port_mngr, s_list, dflt_info->rx_ch);
++	if (IS_ERR(port)) {
++		/* Failed when adding to port mngr */
++		return port;
++	}
++
++	if (port) {
++		ports_ops[port->info.type]->reset(port);
++		dev_info(port_mngr->ctrl_blk->mdev->dev,
++			 "Port(%s) move from stale list\n", port->info.name);
++		goto return_port;
++	}
++
++	/* This memory will be free in function "mtk_port_release", if
++	 * "mtk_port_release" called by mtk_port_stale_list_grp_cleanup,
++	 * we can't use "devm_free" due to no dev(struct device) entity.
++	 */
++	port = kzalloc(sizeof(*port), GFP_KERNEL);
++	if (!port) {
++		ret = -ENOMEM;
++		goto err_alloc_port;
++	}
++
++	memcpy(port, dflt_info, sizeof(*dflt_info));
++	ret = mtk_port_tbl_add(port_mngr, port);
++	if (ret < 0) {
++		dev_err(port_mngr->ctrl_blk->mdev->dev,
++			"Failed to add port(%s) to port tbl\n", dflt_info->name);
++		goto err_add_port;
++	}
++
++	port->port_mngr = port_mngr;
++	ports_ops[port->info.type]->init(port);
++	dev_info(port_mngr->ctrl_blk->mdev->dev,
++		 "Port(%s) alloc and init\n", port->info.name);
++
++return_port:
++	return port;
++err_add_port:
++	kfree(port);
++err_alloc_port:
++	return ERR_PTR(ret);
++}
++
++static void mtk_port_free_or_backup(struct mtk_port_mngr *port_mngr,
++				    struct mtk_port *port, struct mtk_stale_list *s_list)
++{
++	mutex_lock(&port_mngr_grp_mtx);
++	mtk_port_tbl_del(port_mngr, port);
++	if (port->info.type != PORT_TYPE_INTERNAL) {
++		if (test_bit(PORT_S_OPEN, &port->status)) {
++			/* backup: move using ports to stale list, for no need to
++			 * re-open ports after remove and plug-in device again
++			 */
++			list_add_tail(&port->stale_entry, &s_list->ports);
++			set_bit(PORT_S_ON_STALE_LIST, &port->status);
++			dev_info(port_mngr->ctrl_blk->mdev->dev,
++				 "Port(%s) move to stale list\n", port->info.name);
++			memcpy(port->dev_str, port_mngr->ctrl_blk->mdev->dev_str, MTK_DEV_STR_LEN);
++			port->port_mngr = NULL;
++		}
++		kref_put(&port->kref, mtk_port_release);
++	} else {
++		mtk_port_release(&port->kref);
++	}
++	mutex_unlock(&port_mngr_grp_mtx);
++}
++
++static struct mtk_port *mtk_port_search_by_id(struct mtk_port_mngr *port_mngr, int rx_ch)
++{
++	int tbl_type = MTK_PORT_TBL_TYPE(rx_ch);
++
++	if (tbl_type < PORT_TBL_SAP || tbl_type >= PORT_TBL_MAX)
++		return NULL;
++
++	return radix_tree_lookup(&port_mngr->port_tbl[tbl_type], MTK_CH_ID(rx_ch));
++}
++
++struct mtk_port *mtk_port_search_by_name(struct mtk_port_mngr *port_mngr, char *name)
++{
++	int tbl_type = PORT_TBL_SAP;
++	struct radix_tree_iter iter;
++	struct mtk_port *port;
++	void __rcu **slot;
++
++	do {
++		radix_tree_for_each_slot(slot, &port_mngr->port_tbl[tbl_type], &iter, 0) {
++			MTK_PORT_SEARCH_FROM_RADIX_TREE(port, slot);
++			MTK_PORT_INTERNAL_NODE_CHECK(port, slot, iter);
++			if (!strncmp(port->info.name, name, strlen(port->info.name)))
++				return port;
++		}
++		tbl_type++;
++	} while (tbl_type < PORT_TBL_MAX);
++	return NULL;
++}
++
++static int mtk_port_tbl_create(struct mtk_port_mngr *port_mngr, struct mtk_port_cfg *cfg,
++			       const int port_cnt, struct mtk_stale_list *s_list)
++{
++	struct mtk_port_cfg *dflt_port;
++	struct mtk_port *port;
++	int i, ret;
++
++	INIT_RADIX_TREE(&port_mngr->port_tbl[PORT_TBL_SAP], GFP_KERNEL);
++	INIT_RADIX_TREE(&port_mngr->port_tbl[PORT_TBL_MD], GFP_KERNEL);
++
++	/* copy ports from static port cfg table */
++	for (i = 0; i < port_cnt; i++) {
++		dflt_port = cfg + i;
++		port = mtk_port_alloc_or_restore(port_mngr, dflt_port, s_list);
++		if (IS_ERR(port)) {
++			ret = PTR_ERR(port);
++			goto err_alloc_port;
++		}
++	}
 +	return 0;
++
++err_alloc_port:
++	/* free the other ports in port table */
++	for (i--; i >= 0; i--) {
++		dflt_port = cfg + i;
++		port = mtk_port_search_by_id(port_mngr, dflt_port->rx_ch);
++		if (port)
++			mtk_port_free_or_backup(port_mngr, port, s_list);
++	}
++
++	return ret;
++}
++
++static void mtk_port_tbl_destroy(struct mtk_port_mngr *port_mngr, struct mtk_stale_list *s_list)
++{
++	struct radix_tree_iter iter;
++	struct mtk_port *port;
++	void __rcu **slot;
++	int tbl_type;
++
++	/* VQ may be shared by multiple ports, we have to free or move the ports
++	 * after all the ports on the VQ are closed.
++	 */
++	/* 1. All ports disable and send trb to close vq */
++	tbl_type = PORT_TBL_SAP;
++	do {
++		radix_tree_for_each_slot(slot, &port_mngr->port_tbl[tbl_type], &iter, 0) {
++			MTK_PORT_SEARCH_FROM_RADIX_TREE(port, slot);
++			MTK_PORT_INTERNAL_NODE_CHECK(port, slot, iter);
++			ports_ops[port->info.type]->disable(port);
++		}
++		tbl_type++;
++	} while (tbl_type < PORT_TBL_MAX);
++
++	/* 2. After all vq closed, free or backup the ports */
++	tbl_type = PORT_TBL_SAP;
++	do {
++		radix_tree_for_each_slot(slot, &port_mngr->port_tbl[tbl_type], &iter, 0) {
++			MTK_PORT_SEARCH_FROM_RADIX_TREE(port, slot);
++			MTK_PORT_INTERNAL_NODE_CHECK(port, slot, iter);
++			mtk_port_free_or_backup(port_mngr, port, s_list);
++		}
++		tbl_type++;
++	} while (tbl_type < PORT_TBL_MAX);
++}
++
++static struct mtk_stale_list *mtk_port_stale_list_create(struct mtk_port_mngr *port_mngr)
++{
++	struct mtk_stale_list *s_list;
++
++	/* cannot use devm_kzalloc here, because should pair with the free operation which
++	 * may be no dev pointer.
++	 */
++	s_list = kzalloc(sizeof(*s_list), GFP_KERNEL);
++	if (!s_list)
++		return NULL;
++
++	memcpy(s_list->dev_str, port_mngr->ctrl_blk->mdev->dev_str, MTK_DEV_STR_LEN);
++	s_list->dev_id = -1;
++	INIT_LIST_HEAD(&s_list->ports);
++
++	mutex_lock(&port_mngr_grp_mtx);
++	list_add_tail(&s_list->entry, &stale_list_grp);
++	mutex_unlock(&port_mngr_grp_mtx);
++
++	return s_list;
++}
++
++static void mtk_port_stale_list_destroy(struct mtk_stale_list *s_list)
++{
++	mutex_lock(&port_mngr_grp_mtx);
++	list_del(&s_list->entry);
++	mutex_unlock(&port_mngr_grp_mtx);
++	kfree(s_list);
++}
++
++static struct mtk_stale_list *mtk_port_stale_list_search(const char *dev_str)
++{
++	struct mtk_stale_list *tmp, *s_list = NULL;
++
++	mutex_lock(&port_mngr_grp_mtx);
++	list_for_each_entry(tmp, &stale_list_grp, entry) {
++		if (!strncmp(tmp->dev_str, dev_str, MTK_DEV_STR_LEN)) {
++			s_list = tmp;
++			break;
++		}
++	}
++	mutex_unlock(&port_mngr_grp_mtx);
++
++	return s_list;
 +}
 +
 +/**
-+ * mtk_cldma_exit() - De-Initialize CLDMA
-+ * @trans: pointer to transaction structure
++ * mtk_port_stale_list_grp_cleanup() - Free all stale lists and all ports on it.
 + *
-+ * Return:
-+ * * 0 - OK
++ * This function will be called when driver will be removed. It will search all
++ * the stale lists. For each stale list, it will free the stale ports.
 + */
-+static int mtk_cldma_exit(struct mtk_ctrl_trans *trans)
++void mtk_port_stale_list_grp_cleanup(void)
 +{
-+	struct cldma_dev *cd;
++	struct mtk_stale_list *s_list, *next_s_list;
++	struct mtk_port *port, *next_port;
 +
-+	cd = trans->dev[CLDMA_CLASS_ID];
-+	if (!cd)
-+		return 0;
++	mutex_lock(&port_mngr_grp_mtx);
++	list_for_each_entry_safe(s_list, next_s_list, &stale_list_grp, entry) {
++		list_del(&s_list->entry);
 +
-+	devm_kfree(trans->mdev->dev, cd);
++		list_for_each_entry_safe(port, next_port, &s_list->ports, stale_entry) {
++			list_del(&port->stale_entry);
++			mtk_port_release(&port->kref);
++		}
 +
-+	return 0;
++		/* can't use devm_kfree, because the port is free,
++		 * can't use port to get dev pointer
++		 */
++		kfree(s_list);
++	}
++	mutex_unlock(&port_mngr_grp_mtx);
 +}
 +
-+/**
-+ * mtk_cldma_open() - Initialize CLDMA hardware queue
-+ * @cd: pointer to CLDMA device
-+ * @skb: pointer to socket buffer
-+ *
-+ * Return:
-+ * * 0 - OK
-+ * * -EBUSY - hardware queue is busy
-+ * * -EIO - failed to initialize hardware queue
-+ * * -EINVAL - invalid input parameters
-+ */
-+static int mtk_cldma_open(struct cldma_dev *cd, struct sk_buff *skb)
++static struct mtk_stale_list *mtk_port_stale_list_init(struct mtk_port_mngr *port_mngr)
++{
++	struct mtk_stale_list *s_list;
++
++	s_list = mtk_port_stale_list_search(port_mngr->ctrl_blk->mdev->dev_str);
++	if (!s_list) {
++		dev_info(port_mngr->ctrl_blk->mdev->dev, "Create stale list\n");
++		s_list = mtk_port_stale_list_create(port_mngr);
++		if (unlikely(!s_list))
++			return NULL;
++	} else {
++		dev_info(port_mngr->ctrl_blk->mdev->dev, "Reuse old stale list\n");
++	}
++
++	mutex_lock(&port_mngr_grp_mtx);
++	if (s_list->dev_id < 0) {
++		port_mngr->dev_id = ida_alloc_range(&ccci_dev_ids, 0,
++						    MTK_DFLT_MAX_DEV_CNT - 1,
++						    GFP_KERNEL);
++	} else {
++		port_mngr->dev_id = s_list->dev_id;
++		s_list->dev_id = -1;
++	}
++	mutex_unlock(&port_mngr_grp_mtx);
++
++	return s_list;
++}
++
++static void mtk_port_stale_list_exit(struct mtk_port_mngr *port_mngr, struct mtk_stale_list *s_list)
++{
++	mutex_lock(&port_mngr_grp_mtx);
++	if (list_empty(&s_list->ports)) {
++		ida_free(&ccci_dev_ids, port_mngr->dev_id);
++		mutex_unlock(&port_mngr_grp_mtx);
++		mtk_port_stale_list_destroy(s_list);
++		dev_info(port_mngr->ctrl_blk->mdev->dev, "Destroy stale list\n");
++	} else {
++		s_list->dev_id = port_mngr->dev_id;
++		mutex_unlock(&port_mngr_grp_mtx);
++		dev_info(port_mngr->ctrl_blk->mdev->dev, "Reserve stale list\n");
++	}
++}
++
++static void mtk_port_trb_init(struct mtk_port *port, struct trb *trb, enum mtk_trb_cmd_type cmd,
++			      int (*trb_complete)(struct sk_buff *skb))
++{
++	kref_init(&trb->kref);
++	trb->vqno = port->info.vq_id;
++	trb->status = MTK_DFLT_TRB_STATUS;
++	trb->priv = port;
++	trb->cmd = cmd;
++	trb->trb_complete = trb_complete;
++}
++
++static void mtk_port_trb_free(struct kref *trb_kref)
++{
++	struct trb *trb = container_of(trb_kref, struct trb, kref);
++	struct sk_buff *skb;
++
++	skb = container_of((char *)trb, struct sk_buff, cb[0]);
++	dev_kfree_skb_any(skb);
++}
++
++static int mtk_port_open_trb_complete(struct sk_buff *skb)
 +{
 +	struct trb_open_priv *trb_open_priv = (struct trb_open_priv *)skb->data;
 +	struct trb *trb = (struct trb *)skb->cb;
-+	struct cldma_hw *hw;
-+	struct virtq *vq;
-+	struct txq *txq;
-+	struct rxq *rxq;
-+	int err = 0;
++	struct mtk_port *port = trb->priv;
++	struct mtk_port_mngr *port_mngr;
 +
-+	vq = cd->trans->vq_tbl + trb->vqno;
-+	hw = cd->cldma_hw[vq->hif_id & HIF_ID_BITMASK];
-+	trb_open_priv->tx_mtu = vq->tx_mtu;
-+	trb_open_priv->rx_mtu = vq->rx_mtu;
-+	if (unlikely(vq->rxqno < 0 || vq->rxqno >= HW_QUEUE_NUM) ||
-+	    unlikely(vq->txqno < 0 || vq->txqno >= HW_QUEUE_NUM)) {
-+		err = -EINVAL;
-+		goto exit;
++	port_mngr = port->port_mngr;
++
++	if (trb->status && trb->status != -EBUSY)
++		goto out;
++
++	if (!trb->status) {
++		/* The first port which opens the VQ should let port_mngr record the MTU */
++		port_mngr->vq_info[trb->vqno].tx_mtu = trb_open_priv->tx_mtu;
++		port_mngr->vq_info[trb->vqno].rx_mtu = trb_open_priv->rx_mtu;
 +	}
 +
-+	if (hw->txq[vq->txqno] || hw->rxq[vq->rxqno]) {
-+		err = -EBUSY;
-+		goto exit;
-+	}
++	port->tx_mtu = port_mngr->vq_info[trb->vqno].tx_mtu;
++	port->rx_mtu = port_mngr->vq_info[trb->vqno].rx_mtu;
 +
-+	txq = cd->hw_ops.txq_alloc(hw, skb);
-+	if (!txq) {
-+		err = -EIO;
-+		goto exit;
-+	}
++	/* Minus the len of the header */
++	port->tx_mtu -= MTK_CCCI_H_ELEN;
++	port->rx_mtu -= MTK_CCCI_H_ELEN;
 +
-+	rxq = cd->hw_ops.rxq_alloc(hw, skb);
-+	if (!rxq) {
-+		err = -EIO;
-+		cd->hw_ops.txq_free(hw, trb->vqno);
-+		goto exit;
-+	}
++out:
++	wake_up_interruptible_all(&port->trb_wq);
 +
-+exit:
-+	trb->status = err;
-+	trb->trb_complete(skb);
-+
-+	return err;
++	dev_info(port->port_mngr->ctrl_blk->mdev->dev,
++		 "Open VQ TRB:status:%d, vq:%d, port:%s, tx_mtu:%d. rx_mtu:%d\n",
++		 trb->status, trb->vqno, port->info.name, port->tx_mtu, port->rx_mtu);
++	kref_put(&trb->kref, mtk_port_trb_free);
++	return 0;
 +}
 +
-+/**
-+ * mtk_cldma_tx() - start CLDMA TX transaction
-+ * @cd: pointer to CLDMA device
-+ * @skb: pointer to socket buffer
-+ *
-+ * Return:
-+ * * 0 - OK
-+ * * -EPIPE - hardware queue is broken
-+ */
-+static int mtk_cldma_tx(struct cldma_dev *cd, struct sk_buff *skb)
++static int mtk_port_close_trb_complete(struct sk_buff *skb)
 +{
 +	struct trb *trb = (struct trb *)skb->cb;
-+	struct cldma_hw *hw;
-+	struct virtq *vq;
-+	struct txq *txq;
++	struct mtk_port *port = trb->priv;
 +
-+	vq = cd->trans->vq_tbl + trb->vqno;
-+	hw = cd->cldma_hw[vq->hif_id & HIF_ID_BITMASK];
-+	txq = hw->txq[vq->txqno];
-+	if (txq->is_stopping)
-+		return -EPIPE;
++	wake_up_interruptible_all(&port->trb_wq);
++	dev_info(port->port_mngr->ctrl_blk->mdev->dev,
++		 "Close VQ TRB: trb->status:%d, vq:%d, port:%s\n",
++		 trb->status, trb->vqno, port->info.name);
++	kref_put(&trb->kref, mtk_port_trb_free);
 +
-+	cd->hw_ops.start_xfer(hw, vq->txqno);
++	return 0;
++}
++
++static int mtk_port_tx_complete(struct sk_buff *skb)
++{
++	struct trb *trb = (struct trb *)skb->cb;
++	struct mtk_port *port = trb->priv;
++
++	if (trb->status < 0)
++		dev_warn(port->port_mngr->ctrl_blk->mdev->dev,
++			 "Failed to send data: trb->status:%d, vq:%d, port:%s\n",
++			 trb->status, trb->vqno, port->info.name);
++
++	if (port->info.flags & PORT_F_BLOCKING)
++		wake_up_interruptible_all(&port->trb_wq);
++
++	kref_put(&trb->kref, mtk_port_trb_free);
++
++	return 0;
++}
++
++static int mtk_port_status_check(struct mtk_port *port)
++{
++	/* If port is enable, it must on port_mngr's port_tbl, so the mdev must exist. */
++	if (!test_bit(PORT_S_ENABLE, &port->status)) {
++		pr_err("[TMI]Unable to use port: (%s) disabled. Caller: %ps\n",
++		       port->info.name, __builtin_return_address(0));
++		return -ENODEV;
++	}
++
++	if (!test_bit(PORT_S_OPEN, &port->status) || test_bit(PORT_S_FLUSH, &port->status) ||
++	    !test_bit(PORT_S_RDWR, &port->status)) {
++		dev_err(port->port_mngr->ctrl_blk->mdev->dev,
++			"Unable to use port: (%s), port status = 0x%lx. Caller: %ps\n",
++			port->info.name, port->status, __builtin_return_address(0));
++
++		return -EBADF;
++	}
 +
 +	return 0;
 +}
 +
 +/**
-+ * mtk_cldma_close() - De-Initialize CLDMA hardware queue
-+ * @cd: pointer to CLDMA device
-+ * @skb: pointer to socket buffer
++ * mtk_port_send_data() - send data to device through trans layer.
++ * @port: pointer to channel structure for sending data.
++ * @data: data to be sent.
++ *
++ * This function will be called by port io.
 + *
 + * Return:
-+ * * 0 - OK
++ * * actual sent data length if success.
++ * * error value if send failed.
 + */
-+static int mtk_cldma_close(struct cldma_dev *cd, struct sk_buff *skb)
++int mtk_port_send_data(struct mtk_port *port, void *data)
 +{
-+	struct trb *trb = (struct trb *)skb->cb;
-+	struct cldma_hw *hw;
-+	struct virtq *vq;
++	struct mtk_port_mngr *port_mngr;
++	struct mtk_ctrl_trans *trans;
++	struct sk_buff *skb = data;
++	struct trb *trb;
++	int ret, len;
 +
-+	vq = cd->trans->vq_tbl + trb->vqno;
-+	hw = cd->cldma_hw[vq->hif_id & HIF_ID_BITMASK];
++	port_mngr = port->port_mngr;
++	trans = port_mngr->ctrl_blk->trans;
 +
-+	cd->hw_ops.txq_free(hw, trb->vqno);
-+	cd->hw_ops.rxq_free(hw, trb->vqno);
++	trb = (struct trb *)skb->cb;
++	mtk_port_trb_init(port, trb, TRB_CMD_TX, mtk_port_tx_complete);
++	len = skb->len;
++	kref_get(&trb->kref); /* kref count 1->2 */
 +
-+	trb->status = 0;
-+	trb->trb_complete(skb);
++submit_trb:
++	mutex_lock(&port->write_lock);
++	ret = mtk_port_status_check(port);
++	if (!ret)
++		ret = mtk_ctrl_trb_submit(port_mngr->ctrl_blk, skb);
++	mutex_unlock(&port->write_lock);
++
++	if (ret == -EAGAIN && port->info.flags & PORT_F_BLOCKING) {
++		dev_warn(port_mngr->ctrl_blk->mdev->dev,
++			 "Failed to submit trb for port(%s), ret=%d\n", port->info.name, ret);
++		wait_event_interruptible(port->trb_wq, !VQ_LIST_FULL(trans, trb->vqno));
++		goto submit_trb;
++	} else if (ret < 0) {
++		dev_warn(port_mngr->ctrl_blk->mdev->dev,
++			 "Failed to submit trb for port(%s), ret=%d\n", port->info.name, ret);
++		kref_put(&trb->kref, mtk_port_trb_free); /* kref count 2->1 */
++		dev_kfree_skb_any(skb);
++		goto end;
++	}
++
++	if (!(port->info.flags & PORT_F_BLOCKING)) {
++		kref_put(&trb->kref, mtk_port_trb_free);
++		ret = len;
++		goto end;
++	}
++start_wait:
++	/* wait trb done, and no timeout in tx blocking mode */
++	ret = wait_event_interruptible_timeout(port->trb_wq,
++					       trb->status <= 0 ||
++					       test_bit(PORT_S_FLUSH, &port->status),
++					       MTK_DFLT_TRB_TIMEOUT);
++
++	if (ret == -ERESTARTSYS)
++		goto start_wait;
++	else if (test_bit(PORT_S_FLUSH, &port->status))
++		ret = -EBUSY;
++	else if (!ret)
++		ret = -ETIMEDOUT;
++	else
++		ret = (!trb->status) ? len : trb->status;
++
++	kref_put(&trb->kref, mtk_port_trb_free);
++
++end:
++	return ret;
++}
++
++static int mtk_port_check_rx_seq(struct mtk_port *port, struct mtk_ccci_header *ccci_h)
++{
++	u16 seq_num, assert_bit;
++
++	seq_num = FIELD_GET(MTK_HDR_FLD_SEQ, le32_to_cpu(ccci_h->status));
++	assert_bit = FIELD_GET(MTK_HDR_FLD_AST, le32_to_cpu(ccci_h->status));
++	if (assert_bit && port->rx_seq &&
++	    ((seq_num - port->rx_seq) & MTK_CHECK_RX_SEQ_MASK) != 1) {
++		dev_err(port->port_mngr->ctrl_blk->mdev->dev,
++			"<ch: %ld> seq num out-of-order %d->%d",
++			FIELD_GET(MTK_HDR_FLD_CHN, le32_to_cpu(ccci_h->status)),
++			seq_num, port->rx_seq);
++		return -EPROTO;
++	}
 +
 +	return 0;
 +}
 +
-+static int mtk_cldma_submit_tx(void *dev, struct sk_buff *skb)
++static int mtk_port_rx_dispatch(struct sk_buff *skb, int len, void *priv)
 +{
-+	struct trb *trb = (struct trb *)skb->cb;
-+	struct cldma_dev *cd = dev;
-+	dma_addr_t data_dma_addr;
-+	struct cldma_hw *hw;
-+	struct tx_req *req;
-+	struct virtq *vq;
-+	struct txq *txq;
-+	int err;
++	struct mtk_port_mngr *port_mngr;
++	struct mtk_ccci_header *ccci_h;
++	struct mtk_port *port = priv;
++	int ret = -EPROTO;
++	u16 channel;
 +
-+	vq = cd->trans->vq_tbl + trb->vqno;
-+	hw = cd->cldma_hw[vq->hif_id & HIF_ID_BITMASK];
-+	txq = hw->txq[vq->txqno];
-+
-+	if (!txq->req_budget)
-+		return -EAGAIN;
-+
-+	data_dma_addr = dma_map_single(hw->mdev->dev, skb->data, skb->len, DMA_TO_DEVICE);
-+	err = dma_mapping_error(hw->mdev->dev, data_dma_addr);
-+	if (unlikely(err)) {
-+		dev_err(hw->mdev->dev, "Failed to map dma!\n");
-+		return err;
++	if (!skb || !priv) {
++		pr_err("[TMI] Invalid input value in rx dispatch\n");
++		ret = -EINVAL;
++		goto err_done;
 +	}
 +
-+	mutex_lock(&txq->lock);
-+	txq->req_budget--;
-+	mutex_unlock(&txq->lock);
++	port_mngr = port->port_mngr;
 +
-+	req = txq->req_pool + txq->wr_idx;
-+	req->gpd->tx_gpd.debug_id = 0x01;
-+	req->gpd->tx_gpd.data_buff_ptr_h = cpu_to_le32((u64)(data_dma_addr) >> 32);
-+	req->gpd->tx_gpd.data_buff_ptr_l = cpu_to_le32(data_dma_addr);
-+	req->gpd->tx_gpd.data_buff_len = cpu_to_le16(skb->len);
-+	req->gpd->tx_gpd.gpd_flags = CLDMA_GPD_FLAG_IOC | CLDMA_GPD_FLAG_HWO;
++	/* CLDMA will not handle skb structure, so must handle here */
++	skb->len = 0;
++	skb_reset_tail_pointer(skb);
++	skb_put(skb, len);
 +
-+	req->data_vm_addr = skb->data;
-+	req->data_dma_addr = data_dma_addr;
-+	req->data_len = skb->len;
-+	req->skb = skb;
-+	txq->wr_idx = (txq->wr_idx + 1) % txq->req_pool_size;
++	ccci_h = mtk_port_strip_header(skb);
++	if (unlikely(!ccci_h)) {
++		dev_warn(port_mngr->ctrl_blk->mdev->dev,
++			 "Unsupported: skb length(%d) is less than ccci header\n",
++			 skb->len);
++		goto drop_data;
++	}
 +
-+	wmb(); /* ensure GPD setup done before HW start */
++	dev_dbg(port_mngr->ctrl_blk->mdev->dev,
++		"RX header:%08x %08x\n", ccci_h->packet_len, ccci_h->status);
 +
-+	return 0;
++	channel = FIELD_GET(MTK_HDR_FLD_CHN, le32_to_cpu(ccci_h->status));
++	port = mtk_port_search_by_id(port_mngr, channel);
++	if (unlikely(!port)) {
++		dev_warn(port_mngr->ctrl_blk->mdev->dev,
++			 "Failed to find port by channel:%d\n", channel);
++		goto drop_data;
++	}
++
++	/* The sequence number must be continuous */
++	ret = mtk_port_check_rx_seq(port, ccci_h);
++	if (unlikely(ret))
++		goto drop_data;
++
++	port->rx_seq = FIELD_GET(MTK_HDR_FLD_SEQ, le32_to_cpu(ccci_h->status));
++
++	ret = ports_ops[port->info.type]->recv(port, skb);
++
++	return ret;
++
++drop_data:
++	dev_kfree_skb_any(skb);
++err_done:
++	return ret;
 +}
 +
 +/**
-+ * mtk_cldma_trb_process() - Dispatch trb request to low-level CLDMA routine
-+ * @dev: pointer to CLDMA device
++ * mtk_port_add_header() - Add mtk_ccci_header to TX packet.
 + * @skb: pointer to socket buffer
 + *
++ * This function is called by trb sevice. And it will help to
++ * add mtk_ccci_header data to the head of skb->data.
++ *
 + * Return:
-+ * * 0 - OK
-+ * * -EBUSY - hardware queue is busy
-+ * * -EINVAL - invalid input
-+ * * -EIO - failed to initialize hardware queue
-+ * * -EPIPE - hardware queue is broken
++ * * 0:		success to add ccci header
++ * * -EINVAL:	input parameter or members in input is illegal
 + */
-+static int mtk_cldma_trb_process(void *dev, struct sk_buff *skb)
++int mtk_port_add_header(struct sk_buff *skb)
++{
++	struct mtk_ccci_header *ccci_h;
++	struct mtk_port *port;
++	struct trb *trb;
++	int ret = 0;
++
++	trb = (struct trb *)skb->cb;
++	if (trb->status == 0xADDED)
++		goto end;
++
++	port = trb->priv;
++	if (!port) {
++		ret = -EINVAL;
++		goto end;
++	}
++
++	/* Port layer have reserved data length of ccci_head at the skb head */
++	ccci_h = skb_push(skb, sizeof(*ccci_h));
++
++	ccci_h->packet_header = cpu_to_le32(0);
++	ccci_h->packet_len = cpu_to_le32(skb->len);
++	ccci_h->ex_msg = cpu_to_le32(0);
++	ccci_h->status = cpu_to_le32(FIELD_PREP(MTK_HDR_FLD_CHN, port->info.tx_ch) |
++				     FIELD_PREP(MTK_HDR_FLD_SEQ, port->tx_seq++) |
++				     FIELD_PREP(MTK_HDR_FLD_AST, 1));
++
++	trb->status = 0xADDED;
++end:
++	return ret;
++}
++
++/**
++ * mtk_port_strip_header() - remove mtk_ccci_header from RX packet.
++ * @skb: pointer to socket buffer.
++ *
++ * This function will help to remove mtk_ccci_header data from the head of skb->data.
++ * But it will not check if the data of skb head is mtk_ccci_header actually.
++ *
++ * Return:
++ * * ccci_h:	pointer to mtk_ccci_header stripped from socket buffer.
++ * * NULL:	data length is invalid.
++ */
++struct mtk_ccci_header *mtk_port_strip_header(struct sk_buff *skb)
++{
++	struct mtk_ccci_header *ccci_h;
++
++	if (skb->len < sizeof(*ccci_h)) {
++		pr_err("[TMI] Invalid input value\n");
++		return NULL;
++	}
++
++	ccci_h = (struct mtk_ccci_header *)skb->data;
++	skb_pull(skb, sizeof(*ccci_h));
++
++	return ccci_h;
++}
++
++/**
++ * mtk_port_mngr_vq_status_check() - Checking VQ status before enable or disable VQ.
++ * @skb: pointer to socket buffer
++ *
++ * This function called before enable or disable VQ, check the VQ status by calculate
++ * count of ports which have enabled the VQ.
++ *
++ * Return:
++ * * 0:		first user for enable or last user for disable
++ * * -EBUSY:	current VQ is occupied by other ports
++ * * -EINVAL:	error command
++ */
++int mtk_port_mngr_vq_status_check(struct sk_buff *skb)
 +{
 +	struct trb *trb = (struct trb *)skb->cb;
-+	struct cldma_dev *cd = dev;
-+	int err;
++	struct trb_open_priv *trb_open_priv;
++	struct mtk_port *port = trb->priv;
++	struct mtk_port_mngr *port_mngr;
++	int ret = 0;
 +
++	port_mngr = port->port_mngr;
 +	switch (trb->cmd) {
 +	case TRB_CMD_ENABLE:
-+		err = mtk_cldma_open(cd, skb);
-+		break;
-+	case TRB_CMD_TX:
-+		err = mtk_cldma_tx(cd, skb);
++		port_mngr->vq_info[trb->vqno].port_cnt++;
++		if (port_mngr->vq_info[trb->vqno].port_cnt == 1) {
++			trb_open_priv = (struct trb_open_priv *)skb->data;
++			trb_open_priv->rx_done = mtk_port_rx_dispatch;
++			break;
++		}
++
++		trb->status = -EBUSY;
++		trb->trb_complete(skb);
++		ret = -EBUSY;
 +		break;
 +	case TRB_CMD_DISABLE:
-+		err = mtk_cldma_close(cd, skb);
++		port_mngr->vq_info[trb->vqno].port_cnt--;
++		if (!port_mngr->vq_info[trb->vqno].port_cnt)
++			break;
++
++		dev_info(port_mngr->ctrl_blk->mdev->dev,
++			 "VQ(%d) still has %d port, skip to handle close skb\n",
++			 trb->vqno, port_mngr->vq_info[trb->vqno].port_cnt);
++		trb->status = -EBUSY;
++		trb->trb_complete(skb);
++		ret = -EBUSY;
 +		break;
 +	default:
-+		err = -EINVAL;
++		dev_err(port_mngr->ctrl_blk->mdev->dev, "Invalid trb command(%d)\n", trb->cmd);
++		ret = -EINVAL;
++		break;
 +	}
-+
-+	return err;
++	return ret;
 +}
 +
-+struct hif_ops cldma_ops = {
-+	.init = mtk_cldma_init,
-+	.exit = mtk_cldma_exit,
-+	.trb_process = mtk_cldma_trb_process,
-+	.submit_tx = mtk_cldma_submit_tx,
-+};
-diff --git a/drivers/net/wwan/mediatek/mtk_cldma.h b/drivers/net/wwan/mediatek/mtk_cldma.h
++/**
++ * mtk_port_vq_enable() - Function for enable virtual queue.
++ * @port: pointer to channel structure for sending data.
++ *
++ * This function will be called when enable/create port.
++ *
++ * Return:
++ * * trb->status if success.
++ * * error value if fail.
++ */
++int mtk_port_vq_enable(struct mtk_port *port)
++{
++	struct mtk_port_mngr *port_mngr = port->port_mngr;
++	struct sk_buff *skb;
++	int ret = -ENOMEM;
++	struct trb *trb;
++
++	skb = __dev_alloc_skb(port->tx_mtu, GFP_KERNEL);
++	if (!skb) {
++		dev_err(port->port_mngr->ctrl_blk->mdev->dev,
++			"Failed to alloc skb of port(%s)\n", port->info.name);
++		goto end;
++	}
++	skb_put(skb, sizeof(struct trb_open_priv));
++	trb = (struct trb *)skb->cb;
++	mtk_port_trb_init(port, trb, TRB_CMD_ENABLE, mtk_port_open_trb_complete);
++	kref_get(&trb->kref);
++
++	ret = mtk_ctrl_trb_submit(port_mngr->ctrl_blk, skb);
++	if (ret) {
++		dev_err(port_mngr->ctrl_blk->mdev->dev,
++			"Failed to submit trb for port(%s), ret=%d\n", port->info.name, ret);
++		kref_put(&trb->kref, mtk_port_trb_free);
++		mtk_port_trb_free(&trb->kref);
++		goto end;
++	}
++
++start_wait:
++	/* wait trb done */
++	ret = wait_event_interruptible_timeout(port->trb_wq, trb->status <= 0,
++					       MTK_DFLT_TRB_TIMEOUT);
++	if (ret == -ERESTARTSYS)
++		goto start_wait;
++	else if (!ret)
++		ret = -ETIMEDOUT;
++	else
++		ret = trb->status;
++
++	kref_put(&trb->kref, mtk_port_trb_free);
++
++end:
++	return ret;
++}
++
++/**
++ * mtk_port_vq_disable() - Function for disable virtual queue.
++ * @port: pointer to channel structure for sending data.
++ *
++ * This function will be called when disable/destroy port.
++ *
++ * Return:
++ * * trb->status if success.
++ * * error value if fail.
++ */
++int mtk_port_vq_disable(struct mtk_port *port)
++{
++	struct mtk_port_mngr *port_mngr = port->port_mngr;
++	struct sk_buff *skb;
++	int ret = -ENOMEM;
++	struct trb *trb;
++
++	skb = __dev_alloc_skb(port->tx_mtu, GFP_KERNEL);
++	if (!skb) {
++		dev_err(port->port_mngr->ctrl_blk->mdev->dev,
++			"Failed to alloc skb of port(%s)\n", port->info.name);
++		goto end;
++	}
++	skb_put(skb, sizeof(struct trb_open_priv));
++	trb = (struct trb *)skb->cb;
++	mtk_port_trb_init(port, trb, TRB_CMD_DISABLE, mtk_port_close_trb_complete);
++	kref_get(&trb->kref);
++
++	mutex_lock(&port->write_lock);
++	ret = mtk_ctrl_trb_submit(port_mngr->ctrl_blk, skb);
++	mutex_unlock(&port->write_lock);
++	if (ret) {
++		dev_warn(port_mngr->ctrl_blk->mdev->dev,
++			 "Failed to submit trb for port(%s), ret=%d\n", port->info.name, ret);
++		kref_put(&trb->kref, mtk_port_trb_free);
++		mtk_port_trb_free(&trb->kref);
++		goto end;
++	}
++
++start_wait:
++	/* wait trb done (must wait until close vq done) */
++	ret = wait_event_interruptible(port->trb_wq, trb->status <= 0);
++	if (ret == -ERESTARTSYS)
++		goto start_wait;
++
++	ret = trb->status;
++	kref_put(&trb->kref, mtk_port_trb_free);
++
++end:
++	return ret;
++}
++
++/**
++ * mtk_port_mngr_init() - Initialize mtk_port_mngr and mtk_stale_list.
++ * @ctrl_blk: pointer to mtk_ctrl_blk.
++ *
++ * This function called after trans layer complete initialization.
++ * Structure mtk_port_mngr is main body responsible for port management;
++ * and this function alloc memory for it.
++ * If port manager can't find stale list in stale list group by
++ * using dev_str, it will also alloc memory for structure mtk_stale_list.
++ * And then it will initialize port table.
++ *
++ * Return:
++ * * 0:			-success to initialize mtk_port_mngr
++ * * -ENOMEM:	-alloc memory for structure failed
++ */
++int mtk_port_mngr_init(struct mtk_ctrl_blk *ctrl_blk)
++{
++	struct mtk_port_mngr *port_mngr;
++	struct mtk_stale_list *s_list;
++	int ret = -ENOMEM;
++
++	port_mngr = devm_kzalloc(ctrl_blk->mdev->dev, sizeof(*port_mngr), GFP_KERNEL);
++	if (unlikely(!port_mngr)) {
++		dev_err(ctrl_blk->mdev->dev, "Failed to alloc memory for port_mngr\n");
++		goto err_done;
++	}
++
++	/* 1.Init port manager basic fields */
++	port_mngr->ctrl_blk = ctrl_blk;
++
++	/* 2.Init mtk_stale_list or re-use old one */
++	s_list = mtk_port_stale_list_init(port_mngr);
++	if (!s_list) {
++		dev_err(ctrl_blk->mdev->dev, "Failed to init mtk_stale_list\n");
++		goto err_init_stale_list;
++	}
++
++	/* 3.Put default ports and stale ports to port table */
++	ret = mtk_port_tbl_create(port_mngr, (struct mtk_port_cfg *)port_cfg,
++				  ARRAY_SIZE(port_cfg), s_list);
++	if (unlikely(ret)) {
++		dev_err(ctrl_blk->mdev->dev, "Failed to create port_tbl\n");
++		goto err_create_tbl;
++	}
++	ctrl_blk->port_mngr = port_mngr;
++	dev_info(ctrl_blk->mdev->dev, "Initialize port_mngr successfully\n");
++
++	return ret;
++
++err_create_tbl:
++	mtk_port_stale_list_exit(port_mngr, s_list);
++err_init_stale_list:
++	devm_kfree(ctrl_blk->mdev->dev, port_mngr);
++err_done:
++	return ret;
++}
++
++/**
++ * mtk_port_mngr_exit() - Free the structure mtk_port_mngr.
++ * @ctrl_blk: pointer to mtk_ctrl_blk.
++ *
++ * This function called before trans layer start to exit.
++ * It will destroy port table and stale list, free port manager entity.
++ * If there are ports that are opened, move these ports to stale list
++ * and free the rest ports; if there are ports that are all closed,
++ * then also free stale list.
++ *
++ * Return: No return value.
++ */
++void mtk_port_mngr_exit(struct mtk_ctrl_blk *ctrl_blk)
++{
++	struct mtk_port_mngr *port_mngr = ctrl_blk->port_mngr;
++	struct mtk_stale_list *s_list;
++
++	s_list = mtk_port_stale_list_search(port_mngr->ctrl_blk->mdev->dev_str);
++	/* 1.free or backup ports, then destroy port table */
++	mtk_port_tbl_destroy(port_mngr, s_list);
++	/* 2.destroy stale list or backup register info to it */
++	mtk_port_stale_list_exit(port_mngr, s_list);
++	/* 3.free port_mngr structure */
++	devm_kfree(ctrl_blk->mdev->dev, port_mngr);
++	ctrl_blk->port_mngr = NULL;
++	dev_info(ctrl_blk->mdev->dev, "Exit port_mngr successfully\n");
++}
+diff --git a/drivers/net/wwan/mediatek/mtk_port.h b/drivers/net/wwan/mediatek/mtk_port.h
 new file mode 100644
-index 000000000000..4fd5f826bcf6
+index 000000000000..6f591aadb06a
 --- /dev/null
-+++ b/drivers/net/wwan/mediatek/mtk_cldma.h
-@@ -0,0 +1,158 @@
++++ b/drivers/net/wwan/mediatek/mtk_port.h
+@@ -0,0 +1,228 @@
 +/* SPDX-License-Identifier: BSD-3-Clause-Clear
 + *
 + * Copyright (c) 2022, MediaTek Inc.
 + */
 +
-+#ifndef __MTK_CLDMA_H__
-+#define __MTK_CLDMA_H__
++#ifndef __MTK_PORT_H__
++#define __MTK_PORT_H__
 +
++#include <linux/bits.h>
++#include <linux/mutex.h>
++#include <linux/radix-tree.h>
++#include <linux/skbuff.h>
 +#include <linux/types.h>
 +
 +#include "mtk_ctrl_plane.h"
 +#include "mtk_dev.h"
 +
-+#define HW_QUEUE_NUM				8
-+#define ALLQ					(0XFF)
-+#define LINK_ERROR_VAL				(0XFFFFFFFF)
++#define MTK_PEER_ID_MASK	(0xF000)
++#define MTK_PEER_ID_SHIFT	(12)
++#define MTK_PEER_ID(ch)		(((ch) & MTK_PEER_ID_MASK) >> MTK_PEER_ID_SHIFT)
++#define MTK_PEER_ID_SAP		(0x1)
++#define MTK_PEER_ID_MD		(0x2)
++#define MTK_CH_ID_MASK		(0x0FFF)
++#define MTK_CH_ID(ch)		((ch) & MTK_CH_ID_MASK)
++#define MTK_DFLT_MAX_DEV_CNT	(10)
++#define MTK_DFLT_PORT_NAME_LEN	(20)
 +
-+#define CLDMA_CLASS_ID				0
++/* Mapping MTK_PEER_ID and mtk_port_tbl index */
++#define MTK_PORT_TBL_TYPE(ch)	(MTK_PEER_ID(ch) - 1)
 +
-+#define NR_CLDMA				2
-+#define CLDMA0					(((CLDMA_CLASS_ID) << HIF_CLASS_SHIFT) + 0)
-+#define CLDMA1					(((CLDMA_CLASS_ID) << HIF_CLASS_SHIFT) + 1)
++/* ccci header length + reserved space that is used in exception flow */
++#define MTK_CCCI_H_ELEN		(128)
 +
-+#define TXQ(N)					(N)
-+#define RXQ(N)					(N)
++#define MTK_HDR_FLD_AST		((u32)BIT(31))
++#define MTK_HDR_FLD_SEQ		GENMASK(30, 16)
++#define MTK_HDR_FLD_CHN		GENMASK(15, 0)
 +
-+#define CLDMA_GPD_FLAG_HWO			BIT(0)
-+#define CLDMA_GPD_FLAG_IOC			BIT(7)
++#define MTK_INFO_FLD_EN		((u16)BIT(15))
++#define MTK_INFO_FLD_CHID	GENMASK(14, 0)
 +
-+enum mtk_ip_busy_src {
-+	IP_BUSY_TXDONE = 0,
-+	IP_BUSY_RXDONE = 24,
++/**
++ * enum mtk_port_status - Descript port's some status.
++ * @PORT_S_DFLT: default value when port initialize.
++ * @PORT_S_ENABLE: port has been enabled.
++ * @PORT_S_OPEN: port has been opened.
++ * @PORT_S_RDWR: port R/W is allowed.
++ * @PORT_S_FLUSH: driver is flushing.
++ * @PORT_S_ON_STALE_LIST: port is on stale list.
++ */
++enum mtk_port_status {
++	PORT_S_DFLT = 0,
++	PORT_S_ENABLE,
++	PORT_S_OPEN,
++	PORT_S_RDWR,
++	PORT_S_FLUSH,
++	PORT_S_ON_STALE_LIST,
 +};
 +
-+enum mtk_intr_type {
-+	QUEUE_XFER_DONE = 0,
-+	QUEUE_ERROR = 16,
-+	INVALID_TYPE
++enum mtk_ccci_ch {
++	/* to sAP */
++	CCCI_SAP_CONTROL_RX = 0x1000,
++	CCCI_SAP_CONTROL_TX = 0x1001,
++	/* to MD */
++	CCCI_CONTROL_RX = 0x2000,
++	CCCI_CONTROL_TX = 0x2001,
 +};
 +
-+enum mtk_tx_rx {
-+	DIR_TX,
-+	DIR_RX,
-+	INVALID_DIR
++enum mtk_port_flag {
++	PORT_F_DFLT = 0,
++	PORT_F_BLOCKING = BIT(1),
++	PORT_F_ALLOW_DROP = BIT(2),
 +};
 +
-+union gpd {
-+	struct {
-+		u8 gpd_flags;
-+		u8 non_used1;
-+		__le16 data_allow_len;
-+		__le32 next_gpd_ptr_h;
-+		__le32 next_gpd_ptr_l;
-+		__le32 data_buff_ptr_h;
-+		__le32 data_buff_ptr_l;
-+		__le16 data_recv_len;
-+		u8 non_used2;
-+		u8 debug_id;
-+	} rx_gpd;
-+
-+	struct {
-+		u8 gpd_flags;
-+		u8 non_used1;
-+		u8 non_used2;
-+		u8 debug_id;
-+		__le32 next_gpd_ptr_h;
-+		__le32 next_gpd_ptr_l;
-+		__le32 data_buff_ptr_h;
-+		__le32 data_buff_ptr_l;
-+		__le16 data_buff_len;
-+		__le16 non_used3;
-+	} tx_gpd;
++enum mtk_port_tbl {
++	PORT_TBL_SAP,
++	PORT_TBL_MD,
++	PORT_TBL_MAX
 +};
 +
-+struct rx_req {
-+	union gpd *gpd;
-+	int mtu;
-+	struct sk_buff *skb;
-+	size_t data_len;
-+	dma_addr_t gpd_dma_addr;
-+	dma_addr_t data_dma_addr;
++enum mtk_port_type {
++	PORT_TYPE_INTERNAL,
++	PORT_TYPE_MAX
 +};
 +
-+struct rxq {
-+	struct cldma_hw *hw;
-+	int rxqno;
-+	int vqno;
-+	struct virtq *vq;
-+	struct work_struct rx_done_work;
-+	struct rx_req *req_pool;
-+	int req_pool_size;
-+	int free_idx;
-+	unsigned short rx_done_cnt;
++struct mtk_internal_port {
 +	void *arg;
-+	int (*rx_done)(struct sk_buff *skb, int len, void *priv);
++	int (*recv_cb)(void *arg, struct sk_buff *skb);
 +};
 +
-+struct tx_req {
-+	union gpd *gpd;
-+	int mtu;
-+	void *data_vm_addr;
-+	size_t data_len;
-+	dma_addr_t data_dma_addr;
-+	dma_addr_t gpd_dma_addr;
-+	struct sk_buff *skb;
-+	int (*trb_complete)(struct sk_buff *skb);
++/**
++ * union mtk_port_priv - Contains private data for different type of ports.
++ * @i_priv: private data for internal other user.
++ */
++union mtk_port_priv {
++	struct mtk_internal_port i_priv;
 +};
 +
-+struct txq {
-+	struct cldma_hw *hw;
-+	int txqno;
-+	int vqno;
-+	struct virtq *vq;
-+	struct mutex lock; /* protect structure fields */
-+	struct work_struct tx_done_work;
-+	struct tx_req *req_pool;
-+	int req_pool_size;
-+	int req_budget;
-+	int wr_idx;
-+	int free_idx;
-+	bool tx_started;
-+	bool is_stopping;
-+	unsigned short tx_done_cnt;
++/**
++ * struct mtk_port_cfg - Contains port's basic configuration.
++ * @tx_ch: TX channel id (peer id (bit 12~15)+ channel id(bit 0 ~11)).
++ * @rx_ch: RX channel id.
++ * @vq_id: virtual queue id.
++ * @type: port type.
++ * @name: port name.
++ * @flags: port flags.
++ */
++struct mtk_port_cfg {
++	enum mtk_ccci_ch tx_ch;
++	enum mtk_ccci_ch rx_ch;
++	unsigned char vq_id;
++	enum mtk_port_type type;
++	char name[MTK_DFLT_PORT_NAME_LEN];
++	unsigned char flags;
 +};
 +
-+struct cldma_dev;
-+struct cldma_hw;
-+
-+struct cldma_hw_ops {
-+	int (*init)(struct cldma_dev *cd, int hif_id);
-+	int (*exit)(struct cldma_dev *cd, int hif_id);
-+	struct txq* (*txq_alloc)(struct cldma_hw *hw, struct sk_buff *skb);
-+	struct rxq* (*rxq_alloc)(struct cldma_hw *hw, struct sk_buff *skb);
-+	int (*txq_free)(struct cldma_hw *hw, int vqno);
-+	int (*rxq_free)(struct cldma_hw *hw, int vqno);
-+	int (*start_xfer)(struct cldma_hw *hw, int qno);
-+};
-+
-+struct cldma_hw {
-+	int hif_id;
-+	int base_addr;
-+	int pci_ext_irq_id;
-+	struct mtk_md_dev *mdev;
-+	struct cldma_dev *cd;
-+	struct txq *txq[HW_QUEUE_NUM];
-+	struct rxq *rxq[HW_QUEUE_NUM];
-+	struct dma_pool *dma_pool;
-+	struct workqueue_struct *wq;
-+};
-+
-+struct cldma_dev {
-+	struct cldma_hw *cldma_hw[NR_CLDMA];
-+	struct mtk_ctrl_trans *trans;
-+	struct cldma_hw_ops hw_ops;
-+};
-+
-+extern struct hif_ops cldma_ops;
-+#endif
-diff --git a/drivers/net/wwan/mediatek/mtk_ctrl_plane.h b/drivers/net/wwan/mediatek/mtk_ctrl_plane.h
-index 77af4248cb74..32cd8dc7bdb7 100644
---- a/drivers/net/wwan/mediatek/mtk_ctrl_plane.h
-+++ b/drivers/net/wwan/mediatek/mtk_ctrl_plane.h
-@@ -14,7 +14,55 @@
- #define VQ_MTU_3_5K			(0xE00)
- #define VQ_MTU_63K			(0xFC00)
- 
-+#define HIF_CLASS_NUM			(1)
-+#define HIF_CLASS_SHIFT			(8)
-+#define HIF_ID_BITMASK			(0x01)
-+
-+enum mtk_trb_cmd_type {
-+	TRB_CMD_ENABLE = 1,
-+	TRB_CMD_TX,
-+	TRB_CMD_DISABLE,
-+};
-+
-+struct trb_open_priv {
-+	u16 tx_mtu;
-+	u16 rx_mtu;
-+	int (*rx_done)(struct sk_buff *skb, int len, void *priv);
-+};
-+
-+struct trb {
-+	u8 vqno;
-+	enum mtk_trb_cmd_type cmd;
-+	int status;
++/**
++ * struct mtk_port - Represents a port of the control plane.
++ * @info: port's basic configuration.
++ * @kref: reference count.
++ * @enable: enable msg from modem.
++ * @status: port's current state, like open, enable etc.
++ * @minor: device minor id offset.
++ * @tx_seq: TX sequence id for mtk_ccci_header.
++ * @rx_seq: RX sequence id for mtk_ccci_header.
++ * @tx_mtu: TX max trans unit (64k at most).
++ * @rx_mtu: RX max trans unit (64k at most).
++ * @rx_skb_list: RX skb buffer.
++ * @rx_data_len: data length in RX skb buffer.
++ * @rx_buf_size: max size of RX skb buffer.
++ * @trb_wq: wait queue for trb submit.
++ * @rx_wq: wait queue for reading.
++ * @write_lock: mutex lock used to write-protect of varibles
++ * @read_buf_lock: mutex lock used in user read function.
++ * @stale_entry: list head entry for stale list.
++ * @dev_str: string to identify the device which the port belongs.
++ * @port_mngr: point to mtk_port_mngr.
++ * @priv: private data for different type.
++ */
++struct mtk_port {
++	struct mtk_port_cfg info;
 +	struct kref kref;
-+	void *priv;
-+	int (*trb_complete)(struct sk_buff *skb);
++	bool enable;
++	unsigned long status;
++	unsigned int minor;
++	unsigned short tx_seq;
++	unsigned short rx_seq;
++	unsigned int tx_mtu;
++	unsigned int rx_mtu;
++	struct sk_buff_head rx_skb_list;
++	unsigned int rx_data_len;
++	unsigned int rx_buf_size;
++	wait_queue_head_t trb_wq;
++	wait_queue_head_t rx_wq;
++	/* Use write_lock to lock user's write and disable thread */
++	struct mutex write_lock;
++	/* Used to lock user's read thread */
++	struct mutex read_buf_lock;
++	struct list_head stale_entry;
++	char dev_str[MTK_DEV_STR_LEN];
++	struct mtk_port_mngr *port_mngr;
++	union mtk_port_priv priv;
 +};
 +
-+struct virtq {
-+	int vqno;
-+	int hif_id;
-+	int txqno;
-+	int rxqno;
++struct mtk_vq_info {
 +	int tx_mtu;
 +	int rx_mtu;
-+	int tx_req_num;
-+	int rx_req_num;
++	unsigned int port_cnt;
++	bool color;
 +};
 +
-+struct mtk_ctrl_trans;
-+
-+struct hif_ops {
-+	int (*init)(struct mtk_ctrl_trans *trans);
-+	int (*exit)(struct mtk_ctrl_trans *trans);
-+	int (*submit_tx)(void *dev, struct sk_buff *skb);
-+	int (*trb_process)(void *dev, struct sk_buff *skb);
++/**
++ * struct mtk_port_mngr - Include all the port information of a device.
++ * @ctrl_blk: pointer to mtk_ctrl_blk structure.
++ * @port_tbl: the table which manages sAP ports and md ports.
++ * @vq_info : manages the control port's virtual queue.
++ * @port_attr_kobj: pointer to attribute kobject structure.
++ * @dev_id: index to identify the device.
++ */
++struct mtk_port_mngr {
++	struct mtk_ctrl_blk *ctrl_blk;
++	struct radix_tree_root port_tbl[PORT_TBL_MAX];
++	struct mtk_vq_info vq_info[VQ_NUM];
++	struct kobject *port_attr_kobj;
++	int dev_id;
 +};
 +
- struct mtk_ctrl_trans {
-+	struct virtq *vq_tbl;
-+	void *dev[HIF_CLASS_NUM];
-+	struct hif_ops *ops[HIF_CLASS_NUM];
- 	struct mtk_ctrl_blk *ctrl_blk;
- 	struct mtk_md_dev *mdev;
- };
-diff --git a/drivers/net/wwan/mediatek/pcie/mtk_cldma_drv_t800.c b/drivers/net/wwan/mediatek/pcie/mtk_cldma_drv_t800.c
++struct mtk_stale_list {
++	struct list_head entry;
++	struct list_head ports;
++	char dev_str[MTK_DEV_STR_LEN];
++	int dev_id;
++};
++
++struct mtk_port_info {
++	__le16 channel;
++	__le16 reserved;
++} __packed;
++
++struct mtk_port_enum_msg {
++	__le32 head_pattern;
++	__le16 port_cnt;
++	__le16 version;
++	__le32 tail_pattern;
++	u8 data[];
++} __packed;
++
++struct mtk_ccci_header {
++	__le32 packet_header;
++	__le32 packet_len;
++	__le32 status;
++	__le32 ex_msg;
++};
++
++extern const struct port_ops *ports_ops[PORT_TYPE_MAX];
++
++void mtk_port_release(struct kref *port_kref);
++struct mtk_port *mtk_port_search_by_name(struct mtk_port_mngr *port_mngr, char *name);
++void mtk_port_stale_list_grp_cleanup(void);
++int mtk_port_add_header(struct sk_buff *skb);
++struct mtk_ccci_header *mtk_port_strip_header(struct sk_buff *skb);
++int mtk_port_send_data(struct mtk_port *port, void *data);
++int mtk_port_vq_enable(struct mtk_port *port);
++int mtk_port_vq_disable(struct mtk_port *port);
++int mtk_port_mngr_vq_status_check(struct sk_buff *skb);
++int mtk_port_mngr_init(struct mtk_ctrl_blk *ctrl_blk);
++void mtk_port_mngr_exit(struct mtk_ctrl_blk *ctrl_blk);
++
++#endif /* __MTK_PORT_H__ */
+diff --git a/drivers/net/wwan/mediatek/mtk_port_io.c b/drivers/net/wwan/mediatek/mtk_port_io.c
 new file mode 100644
-index 000000000000..bd9a7a7bf18f
+index 000000000000..2fd681eed9c8
 --- /dev/null
-+++ b/drivers/net/wwan/mediatek/pcie/mtk_cldma_drv_t800.c
-@@ -0,0 +1,939 @@
++++ b/drivers/net/wwan/mediatek/mtk_port_io.c
+@@ -0,0 +1,306 @@
 +// SPDX-License-Identifier: BSD-3-Clause-Clear
 +/*
 + * Copyright (c) 2022, MediaTek Inc.
 + */
 +
-+#include <linux/delay.h>
-+#include <linux/device.h>
-+#include <linux/interrupt.h>
-+#include <linux/kernel.h>
-+#include <linux/mutex.h>
-+#include <linux/netdevice.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/sched.h>
-+#include <linux/workqueue.h>
++#include "mtk_port_io.h"
 +
-+#include "mtk_cldma_drv_t800.h"
-+#include "mtk_ctrl_plane.h"
-+#include "mtk_dev.h"
-+#include "mtk_reg.h"
++#define MTK_DFLT_READ_TIMEOUT		(1 * HZ)
 +
-+#define DMA_POOL_NAME_LEN	64
-+
-+#define CLDMA_STOP_HW_WAIT_TIME_MS		(20)
-+#define CLDMA_STOP_HW_POLLING_MAX_CNT	(10)
-+
-+#define CLDMA0_BASE_ADDR				(0x1021C000)
-+#define CLDMA1_BASE_ADDR				(0x1021E000)
-+
-+/* CLDMA IN(Tx) */
-+#define REG_CLDMA_UL_START_ADDRL_0			(0x0004)
-+#define REG_CLDMA_UL_START_ADDRH_0			(0x0008)
-+#define REG_CLDMA_UL_STATUS				(0x0084)
-+#define REG_CLDMA_UL_START_CMD				(0x0088)
-+#define REG_CLDMA_UL_RESUME_CMD				(0x008C)
-+#define REG_CLDMA_UL_STOP_CMD				(0x0090)
-+#define REG_CLDMA_UL_ERROR				(0x0094)
-+#define REG_CLDMA_UL_CFG				(0x0098)
-+#define REG_CLDMA_UL_DUMMY_0				(0x009C)
-+
-+/* CLDMA OUT(Rx) */
-+#define REG_CLDMA_SO_START_CMD				(0x0400 + 0x01BC)
-+#define REG_CLDMA_SO_RESUME_CMD				(0x0400 + 0x01C0)
-+#define REG_CLDMA_SO_STOP_CMD				(0x0400 + 0x01C4)
-+#define REG_CLDMA_SO_DUMMY_0				(0x0400 + 0x0108)
-+#define REG_CLDMA_SO_CFG				(0x0400 + 0x0004)
-+#define REG_CLDMA_SO_START_ADDRL_0			(0x0400 + 0x0078)
-+#define REG_CLDMA_SO_START_ADDRH_0			(0x0400 + 0x007C)
-+#define REG_CLDMA_SO_CUR_ADDRL_0			(0x0400 + 0x00B8)
-+#define REG_CLDMA_SO_CUR_ADDRH_0			(0x0400 + 0x00BC)
-+#define REG_CLDMA_SO_STATUS				(0x0400 + 0x00F8)
-+
-+/* CLDMA MISC */
-+#define REG_CLDMA_L2TISAR0				(0x0800 + 0x0010)
-+#define REG_CLDMA_L2TISAR1				(0x0800 + 0x0014)
-+#define REG_CLDMA_L2TIMR0				(0x0800 + 0x0018)
-+#define REG_CLDMA_L2TIMR1				(0x0800 + 0x001C)
-+#define REG_CLDMA_L2TIMCR0				(0x0800 + 0x0020)
-+#define REG_CLDMA_L2TIMCR1				(0x0800 + 0x0024)
-+#define REG_CLDMA_L2TIMSR0				(0x0800 + 0x0028)
-+#define REG_CLDMA_L2TIMSR1				(0x0800 + 0x002C)
-+#define REG_CLDMA_L3TISAR0				(0x0800 + 0x0030)
-+#define REG_CLDMA_L3TISAR1				(0x0800 + 0x0034)
-+#define REG_CLDMA_L3TIMR0				(0x0800 + 0x0038)
-+#define REG_CLDMA_L3TIMR1				(0x0800 + 0x003C)
-+#define REG_CLDMA_L3TIMCR0				(0x0800 + 0x0040)
-+#define REG_CLDMA_L3TIMCR1				(0x0800 + 0x0044)
-+#define REG_CLDMA_L3TIMSR0				(0x0800 + 0x0048)
-+#define REG_CLDMA_L3TIMSR1				(0x0800 + 0x004C)
-+#define REG_CLDMA_L2RISAR0				(0x0800 + 0x0050)
-+#define REG_CLDMA_L2RISAR1				(0x0800 + 0x0054)
-+#define REG_CLDMA_L3RISAR0				(0x0800 + 0x0070)
-+#define REG_CLDMA_L3RISAR1				(0x0800 + 0x0074)
-+#define REG_CLDMA_L3RIMR0				(0x0800 + 0x0078)
-+#define REG_CLDMA_L3RIMR1				(0x0800 + 0x007C)
-+#define REG_CLDMA_L3RIMCR0				(0x0800 + 0x0080)
-+#define REG_CLDMA_L3RIMCR1				(0x0800 + 0x0084)
-+#define REG_CLDMA_L3RIMSR0				(0x0800 + 0x0088)
-+#define REG_CLDMA_L3RIMSR1				(0x0800 + 0x008C)
-+#define REG_CLDMA_IP_BUSY				(0x0800 + 0x00B4)
-+#define REG_CLDMA_L3TISAR2				(0x0800 + 0x00C0)
-+#define REG_CLDMA_L3TIMR2				(0x0800 + 0x00C4)
-+#define REG_CLDMA_L3TIMCR2				(0x0800 + 0x00C8)
-+#define REG_CLDMA_L3TIMSR2				(0x0800 + 0x00CC)
-+
-+#define REG_CLDMA_L2RIMR0				(0x0800 + 0x00E8)
-+#define REG_CLDMA_L2RIMR1				(0x0800 + 0x00EC)
-+#define REG_CLDMA_L2RIMCR0				(0x0800 + 0x00F0)
-+#define REG_CLDMA_L2RIMCR1				(0x0800 + 0x00F4)
-+#define REG_CLDMA_L2RIMSR0				(0x0800 + 0x00F8)
-+#define REG_CLDMA_L2RIMSR1				(0x0800 + 0x00FC)
-+
-+#define REG_CLDMA_INT_EAP_USIP_MASK			(0x0800 + 0x011C)
-+#define REG_CLDMA_RQ1_GPD_DONE_CNT			(0x0800 + 0x0174)
-+#define REG_CLDMA_TQ1_GPD_DONE_CNT			(0x0800 + 0x0184)
-+
-+#define REG_CLDMA_IP_BUSY_TO_PCIE_MASK			(0x0800 + 0x0194)
-+#define REG_CLDMA_IP_BUSY_TO_PCIE_MASK_SET		(0x0800 + 0x0198)
-+#define REG_CLDMA_IP_BUSY_TO_PCIE_MASK_CLR		(0x0800 + 0x019C)
-+
-+#define REG_CLDMA_IP_BUSY_TO_AP_MASK			(0x0800 + 0x0200)
-+#define REG_CLDMA_IP_BUSY_TO_AP_MASK_SET		(0x0800 + 0x0204)
-+#define REG_CLDMA_IP_BUSY_TO_AP_MASK_CLR		(0x0800 + 0x0208)
-+
-+/* CLDMA RESET */
-+#define REG_INFRA_RST0_SET				(0x120)
-+#define REG_INFRA_RST0_CLR				(0x124)
-+#define REG_CLDMA0_RST_SET_BIT				(8)
-+#define REG_CLDMA0_RST_CLR_BIT				(8)
-+
-+static void mtk_cldma_setup_start_addr(struct mtk_md_dev *mdev, int base,
-+				       enum mtk_tx_rx dir, int qno, dma_addr_t addr)
++static int mtk_port_get_locked(struct mtk_port *port)
 +{
-+	unsigned int addr_l;
-+	unsigned int addr_h;
++	int ret = 0;
 +
-+	if (dir == DIR_TX) {
-+		addr_l = base + REG_CLDMA_UL_START_ADDRL_0 + qno * HW_QUEUE_NUM;
-+		addr_h = base + REG_CLDMA_UL_START_ADDRH_0 + qno * HW_QUEUE_NUM;
-+	} else {
-+		addr_l = base + REG_CLDMA_SO_START_ADDRL_0 + qno * HW_QUEUE_NUM;
-+		addr_h = base + REG_CLDMA_SO_START_ADDRH_0 + qno * HW_QUEUE_NUM;
++	/* Protect the structure not released suddenly during the check */
++	mutex_lock(&port_mngr_grp_mtx);
++	if (!port) {
++		mutex_unlock(&port_mngr_grp_mtx);
++		pr_err("[TMI] Port does not exist\n");
++		return -ENODEV;
 +	}
++	kref_get(&port->kref);
++	mutex_unlock(&port_mngr_grp_mtx);
 +
-+	mtk_hw_write32(mdev, addr_l, (u32)addr);
-+	mtk_hw_write32(mdev, addr_h, (u32)((u64)addr >> 32));
++	return ret;
 +}
 +
-+static void mtk_cldma_mask_intr(struct mtk_md_dev *mdev, int base,
-+				enum mtk_tx_rx dir, int qno, enum mtk_intr_type type)
++/* After calling the mtk_port_put_locked(),
++ * do not use the port pointer because the port structure might be freed.
++ */
++static void mtk_port_put_locked(struct mtk_port *port)
 +{
-+	u32 addr;
-+	u32 val;
-+
-+	if (unlikely(qno < 0 || qno >= HW_QUEUE_NUM))
-+		return;
-+
-+	if (dir == DIR_TX)
-+		addr = base + REG_CLDMA_L2TIMSR0;
-+	else
-+		addr = base + REG_CLDMA_L2RIMSR0;
-+
-+	if (qno == ALLQ)
-+		val = qno << type;
-+	else
-+		val = BIT(qno) << type;
-+
-+	mtk_hw_write32(mdev, addr, val);
++	mutex_lock(&port_mngr_grp_mtx);
++	kref_put(&port->kref, mtk_port_release);
++	mutex_unlock(&port_mngr_grp_mtx);
 +}
 +
-+static void mtk_cldma_unmask_intr(struct mtk_md_dev *mdev, int base,
-+				  enum mtk_tx_rx dir, int qno, enum mtk_intr_type type)
++static void mtk_port_struct_init(struct mtk_port *port)
 +{
-+	u32 addr;
-+	u32 val;
-+
-+	if (unlikely(qno < 0 || qno >= HW_QUEUE_NUM))
-+		return;
-+
-+	if (dir == DIR_TX)
-+		addr = base + REG_CLDMA_L2TIMCR0;
-+	else
-+		addr = base + REG_CLDMA_L2RIMCR0;
-+
-+	if (qno == ALLQ)
-+		val = qno << type;
-+	else
-+		val = BIT(qno) << type;
-+
-+	mtk_hw_write32(mdev, addr, val);
++	port->tx_seq = 0;
++	port->rx_seq = -1;
++	clear_bit(PORT_S_ENABLE, &port->status);
++	kref_init(&port->kref);
++	skb_queue_head_init(&port->rx_skb_list);
++	port->rx_buf_size = MTK_RX_BUF_SIZE;
++	init_waitqueue_head(&port->trb_wq);
++	init_waitqueue_head(&port->rx_wq);
++	mutex_init(&port->read_buf_lock);
 +}
 +
-+static void mtk_cldma_clr_intr_status(struct mtk_md_dev *mdev, int base,
-+				      int dir, int qno, enum mtk_intr_type type)
++static int mtk_port_internal_init(struct mtk_port *port)
 +{
-+	u32 addr;
-+	u32 val;
++	mtk_port_struct_init(port);
++	port->enable = false;
 +
-+	if (unlikely(qno < 0 || qno >= HW_QUEUE_NUM))
-+		return;
-+
-+	if (type == QUEUE_ERROR) {
-+		if (dir == DIR_TX) {
-+			val = mtk_hw_read32(mdev, base + REG_CLDMA_L3TISAR0);
-+			mtk_hw_write32(mdev, base + REG_CLDMA_L3TISAR0, val);
-+			val = mtk_hw_read32(mdev, base + REG_CLDMA_L3TISAR1);
-+			mtk_hw_write32(mdev, base + REG_CLDMA_L3TISAR1, val);
-+		} else {
-+			val = mtk_hw_read32(mdev, base + REG_CLDMA_L3RISAR0);
-+			mtk_hw_write32(mdev, base + REG_CLDMA_L3RISAR0, val);
-+			val = mtk_hw_read32(mdev, base + REG_CLDMA_L3RISAR1);
-+			mtk_hw_write32(mdev, base + REG_CLDMA_L3RISAR1, val);
-+		}
-+	}
-+
-+	if (dir == DIR_TX)
-+		addr = base + REG_CLDMA_L2TISAR0;
-+	else
-+		addr = base + REG_CLDMA_L2RISAR0;
-+
-+	if (qno == ALLQ)
-+		val = qno << type;
-+	else
-+		val = BIT(qno) << type;
-+
-+	mtk_hw_write32(mdev, addr, val);
-+	val = mtk_hw_read32(mdev, addr);
++	return 0;
 +}
 +
-+static u32 mtk_cldma_check_intr_status(struct mtk_md_dev *mdev, int base,
-+				       int dir, int qno, enum mtk_intr_type type)
++static int mtk_port_internal_exit(struct mtk_port *port)
 +{
-+	u32 addr;
-+	u32 val;
-+	u32 sta;
++	if (test_bit(PORT_S_ENABLE, &port->status))
++		ports_ops[port->info.type]->disable(port);
 +
-+	if (dir == DIR_TX)
-+		addr = base + REG_CLDMA_L2TISAR0;
-+	else
-+		addr = base + REG_CLDMA_L2RISAR0;
-+
-+	val = mtk_hw_read32(mdev, addr);
-+	if (val == LINK_ERROR_VAL)
-+		sta = val;
-+	else if (qno == ALLQ)
-+		sta = (val >> type) & 0xFF;
-+	else
-+		sta = (val >> type) & BIT(qno);
-+	return sta;
++	return 0;
 +}
 +
-+static void mtk_cldma_start_queue(struct mtk_md_dev *mdev, int base, enum mtk_tx_rx dir, int qno)
++static int mtk_port_reset(struct mtk_port *port)
 +{
-+	u32 val = BIT(qno);
-+	u32 addr;
++	port->tx_seq = 0;
++	port->rx_seq = -1;
 +
-+	if (dir == DIR_TX)
-+		addr = base + REG_CLDMA_UL_START_CMD;
-+	else
-+		addr = base + REG_CLDMA_SO_START_CMD;
-+
-+	mtk_hw_write32(mdev, addr, val);
++	return 0;
 +}
 +
-+static void mtk_cldma_resume_queue(struct mtk_md_dev *mdev, int base, enum mtk_tx_rx dir, int qno)
++static int mtk_port_internal_enable(struct mtk_port *port)
 +{
-+	u32 val = BIT(qno);
-+	u32 addr;
++	int ret;
 +
-+	if (dir == DIR_TX)
-+		addr = base + REG_CLDMA_UL_RESUME_CMD;
-+	else
-+		addr = base + REG_CLDMA_SO_RESUME_CMD;
-+
-+	mtk_hw_write32(mdev, addr, val);
-+}
-+
-+static u32 mtk_cldma_queue_status(struct mtk_md_dev *mdev, int base, enum mtk_tx_rx dir, int qno)
-+{
-+	u32 addr;
-+	u32 val;
-+
-+	if (dir == DIR_TX)
-+		addr = base + REG_CLDMA_UL_STATUS;
-+	else
-+		addr = base + REG_CLDMA_SO_STATUS;
-+
-+	val = mtk_hw_read32(mdev, addr);
-+
-+	if (qno == ALLQ || val == LINK_ERROR_VAL)
-+		return val;
-+	else
-+		return val & BIT(qno);
-+}
-+
-+static void mtk_cldma_mask_ip_busy_to_pci(struct mtk_md_dev *mdev,
-+					  int base, int qno, enum mtk_ip_busy_src type)
-+{
-+	if (qno == ALLQ)
-+		mtk_hw_write32(mdev, base + REG_CLDMA_IP_BUSY_TO_PCIE_MASK_SET, qno << type);
-+	else
-+		mtk_hw_write32(mdev, base + REG_CLDMA_IP_BUSY_TO_PCIE_MASK_SET, BIT(qno) << type);
-+}
-+
-+static void mtk_cldma_unmask_ip_busy_to_pci(struct mtk_md_dev *mdev,
-+					    int base, int qno, enum mtk_ip_busy_src type)
-+{
-+	if (qno == ALLQ)
-+		mtk_hw_write32(mdev, base + REG_CLDMA_IP_BUSY_TO_PCIE_MASK_CLR, qno << type);
-+	else
-+		mtk_hw_write32(mdev, base + REG_CLDMA_IP_BUSY_TO_PCIE_MASK_CLR, BIT(qno) << type);
-+}
-+
-+static void mtk_cldma_stop_queue(struct mtk_md_dev *mdev, int base, enum mtk_tx_rx dir, int qno)
-+{
-+	u32 val = (qno == ALLQ) ? qno : BIT(qno);
-+	u32 addr;
-+
-+	if (dir == DIR_TX)
-+		addr = base + REG_CLDMA_UL_STOP_CMD;
-+	else
-+		addr = base + REG_CLDMA_SO_STOP_CMD;
-+
-+	mtk_hw_write32(mdev, addr, val);
-+}
-+
-+static void mtk_cldma_clear_ip_busy(struct mtk_md_dev *mdev, int base)
-+{
-+	mtk_hw_write32(mdev, base + REG_CLDMA_IP_BUSY, 0x01);
-+}
-+
-+static void mtk_cldma_hw_init(struct mtk_md_dev *mdev, int base)
-+{
-+	u32 val = mtk_hw_read32(mdev, base + REG_CLDMA_UL_CFG);
-+
-+	val = (val & (~(0x7 << 5))) | ((0x4) << 5);
-+	mtk_hw_write32(mdev, base + REG_CLDMA_UL_CFG, val);
-+
-+	val = mtk_hw_read32(mdev, base + REG_CLDMA_SO_CFG);
-+	val = (val & (~(0x7 << 10))) | ((0x4) << 10) | (1 << 2);
-+	mtk_hw_write32(mdev, base + REG_CLDMA_SO_CFG, val);
-+
-+	mtk_hw_write32(mdev, base + REG_CLDMA_IP_BUSY_TO_PCIE_MASK_CLR, 0);
-+	mtk_hw_write32(mdev, base + REG_CLDMA_IP_BUSY_TO_AP_MASK_CLR, 0);
-+
-+	/* enable interrupt to PCIe */
-+	mtk_hw_write32(mdev, base + REG_CLDMA_INT_EAP_USIP_MASK, 0);
-+
-+	/* disable illegal memory check */
-+	mtk_hw_write32(mdev, base + REG_CLDMA_UL_DUMMY_0, 1);
-+	mtk_hw_write32(mdev, base + REG_CLDMA_SO_DUMMY_0, 1);
-+}
-+
-+static void mtk_cldma_tx_done_work(struct work_struct *work)
-+{
-+	struct txq *txq = container_of(work, struct txq, tx_done_work);
-+	struct mtk_md_dev *mdev = txq->hw->mdev;
-+	struct tx_req *req;
-+	unsigned int state;
-+	struct trb *trb;
-+	int i;
-+
-+again:
-+	for (i = 0; i < txq->req_pool_size; i++) {
-+		req = txq->req_pool + txq->free_idx;
-+		if ((req->gpd->tx_gpd.gpd_flags & CLDMA_GPD_FLAG_HWO) || !req->data_vm_addr)
-+			break;
-+
-+		dma_unmap_single(mdev->dev, req->data_dma_addr, req->data_len, DMA_TO_DEVICE);
-+
-+		trb = (struct trb *)req->skb->cb;
-+		trb->status = 0;
-+		trb->trb_complete(req->skb);
-+
-+		req->data_vm_addr = NULL;
-+		req->data_dma_addr = 0;
-+		req->data_len = 0;
-+
-+		txq->free_idx = (txq->free_idx + 1) % txq->req_pool_size;
-+		mutex_lock(&txq->lock);
-+		txq->req_budget++;
-+		mutex_unlock(&txq->lock);
-+	}
-+	mtk_cldma_unmask_ip_busy_to_pci(mdev, txq->hw->base_addr, txq->txqno, IP_BUSY_TXDONE);
-+	state = mtk_cldma_check_intr_status(mdev, txq->hw->base_addr,
-+					    DIR_TX, txq->txqno, QUEUE_XFER_DONE);
-+	if (state) {
-+		if (unlikely(state == LINK_ERROR_VAL))
-+			return;
-+
-+		mtk_cldma_clr_intr_status(mdev, txq->hw->base_addr, DIR_TX,
-+					  txq->txqno, QUEUE_XFER_DONE);
-+
-+		if (need_resched()) {
-+			mtk_cldma_mask_ip_busy_to_pci(mdev, txq->hw->base_addr,
-+						      txq->txqno, IP_BUSY_TXDONE);
-+			cond_resched();
-+			mtk_cldma_unmask_ip_busy_to_pci(mdev, txq->hw->base_addr,
-+							txq->txqno, IP_BUSY_TXDONE);
-+		}
-+
-+		goto again;
-+	}
-+
-+	mtk_cldma_unmask_intr(mdev, txq->hw->base_addr, DIR_TX, txq->txqno, QUEUE_XFER_DONE);
-+	mtk_cldma_clear_ip_busy(mdev, txq->hw->base_addr);
-+}
-+
-+static void mtk_cldma_rx_done_work(struct work_struct *work)
-+{
-+	struct rxq *rxq = container_of(work, struct rxq, rx_done_work);
-+	struct cldma_hw *hw = rxq->hw;
-+	u32 curr_addr_h, curr_addr_l;
-+	struct mtk_md_dev *mdev;
-+	struct rx_req *req;
-+	u64 curr_addr;
-+	int i, err;
-+	u32 state;
-+	u64 addr;
-+
-+	mdev = hw->mdev;
-+
-+	do {
-+		for (i = 0; i < rxq->req_pool_size; i++) {
-+			req = rxq->req_pool + rxq->free_idx;
-+			if ((req->gpd->rx_gpd.gpd_flags & CLDMA_GPD_FLAG_HWO)) {
-+				addr = hw->base_addr + REG_CLDMA_SO_CUR_ADDRH_0 +
-+					(u64)rxq->rxqno * HW_QUEUE_NUM;
-+				curr_addr_h = mtk_hw_read32(mdev, addr);
-+				addr = hw->base_addr + REG_CLDMA_SO_CUR_ADDRL_0 +
-+					(u64)rxq->rxqno * HW_QUEUE_NUM;
-+				curr_addr_l = mtk_hw_read32(mdev, addr);
-+				curr_addr = ((u64)curr_addr_h << 32) | curr_addr_l;
-+
-+				if (req->gpd_dma_addr == curr_addr &&
-+				    (req->gpd->rx_gpd.gpd_flags & CLDMA_GPD_FLAG_HWO))
-+					break;
-+			}
-+
-+			dma_unmap_single(mdev->dev, req->data_dma_addr, req->mtu, DMA_FROM_DEVICE);
-+
-+			rxq->rx_done(req->skb, le16_to_cpu(req->gpd->rx_gpd.data_recv_len),
-+				     rxq->arg);
-+
-+			rxq->free_idx = (rxq->free_idx + 1) % rxq->req_pool_size;
-+			req->skb = __dev_alloc_skb(rxq->vq->rx_mtu, GFP_KERNEL);
-+			if (!req->skb)
-+				break;
-+
-+			req->data_dma_addr = dma_map_single(mdev->dev,
-+							    req->skb->data,
-+							    req->mtu,
-+							    DMA_FROM_DEVICE);
-+			err = dma_mapping_error(mdev->dev, req->data_dma_addr);
-+			if (unlikely(err)) {
-+				dev_err(mdev->dev, "Failed to map dma!\n");
-+				dev_kfree_skb_any(req->skb);
-+				break;
-+			}
-+
-+			req->gpd->rx_gpd.data_recv_len = 0;
-+			req->gpd->rx_gpd.data_buff_ptr_h =
-+				cpu_to_le32((u64)req->data_dma_addr >> 32);
-+			req->gpd->rx_gpd.data_buff_ptr_l = cpu_to_le32(req->data_dma_addr);
-+			req->gpd->rx_gpd.gpd_flags = CLDMA_GPD_FLAG_IOC | CLDMA_GPD_FLAG_HWO;
-+		}
-+
-+		mtk_cldma_resume_queue(mdev, rxq->hw->base_addr, DIR_RX, rxq->rxqno);
-+		state = mtk_cldma_check_intr_status(mdev, rxq->hw->base_addr,
-+						    DIR_RX, rxq->rxqno, QUEUE_XFER_DONE);
-+
-+		if (!state)
-+			break;
-+
-+		mtk_cldma_clr_intr_status(mdev, rxq->hw->base_addr, DIR_RX,
-+					  rxq->rxqno, QUEUE_XFER_DONE);
-+
-+		if (need_resched())
-+			cond_resched();
-+	} while (true);
-+
-+	mtk_cldma_unmask_intr(mdev, rxq->hw->base_addr, DIR_RX, rxq->rxqno, QUEUE_XFER_DONE);
-+	mtk_cldma_mask_ip_busy_to_pci(mdev, rxq->hw->base_addr, rxq->rxqno, IP_BUSY_RXDONE);
-+	mtk_cldma_clear_ip_busy(mdev, rxq->hw->base_addr);
-+}
-+
-+static int mtk_cldma_isr(int irq_id, void *param)
-+{
-+	u32 txq_xfer_done, rxq_xfer_done;
-+	struct cldma_hw *hw = param;
-+	u32 tx_mask, rx_mask;
-+	u32 txq_err, rxq_err;
-+	u32 tx_sta, rx_sta;
-+	struct txq *txq;
-+	struct rxq *rxq;
-+	int i;
-+
-+	tx_sta = mtk_hw_read32(hw->mdev, hw->base_addr + REG_CLDMA_L2TISAR0);
-+	tx_mask = mtk_hw_read32(hw->mdev, hw->base_addr + REG_CLDMA_L2TIMR0);
-+	rx_sta = mtk_hw_read32(hw->mdev, hw->base_addr + REG_CLDMA_L2RISAR0);
-+	rx_mask = mtk_hw_read32(hw->mdev, hw->base_addr + REG_CLDMA_L2RIMR0);
-+
-+	tx_sta = tx_sta & (~tx_mask);
-+	rx_sta = rx_sta & (~rx_mask);
-+
-+	if (tx_sta) {
-+		/* TX mask */
-+		mtk_hw_write32(hw->mdev, hw->base_addr + REG_CLDMA_L2TIMSR0, tx_sta);
-+
-+		txq_err = (tx_sta >> QUEUE_ERROR) & 0xFF;
-+		if (txq_err) {
-+			mtk_cldma_clr_intr_status(hw->mdev, hw->base_addr,
-+						  DIR_TX, ALLQ, QUEUE_ERROR);
-+			mtk_hw_write32(hw->mdev, hw->base_addr + REG_CLDMA_L2TIMCR0,
-+				       (txq_err << QUEUE_ERROR));
-+		}
-+
-+		/* TX clear */
-+		mtk_hw_write32(hw->mdev, hw->base_addr + REG_CLDMA_L2TISAR0, tx_sta);
-+
-+		txq_xfer_done = (tx_sta >> QUEUE_XFER_DONE) & 0xFF;
-+		if (txq_xfer_done) {
-+			for (i = 0; i < HW_QUEUE_NUM; i++) {
-+				if (txq_xfer_done & (1 << i)) {
-+					txq = hw->txq[i];
-+					queue_work(hw->wq, &txq->tx_done_work);
-+				}
-+			}
-+		}
-+	}
-+
-+	if (rx_sta) {
-+		/* RX mask */
-+		mtk_hw_write32(hw->mdev, hw->base_addr + REG_CLDMA_L2RIMSR0, rx_sta);
-+
-+		rxq_err = (rx_sta >> QUEUE_ERROR) & 0xFF;
-+		if (rxq_err) {
-+			mtk_cldma_clr_intr_status(hw->mdev, hw->base_addr,
-+						  DIR_RX, ALLQ, QUEUE_ERROR);
-+			mtk_hw_write32(hw->mdev, hw->base_addr + REG_CLDMA_L2RIMCR0,
-+				       (rxq_err << QUEUE_ERROR));
-+		}
-+
-+		/* RX clear */
-+		mtk_hw_write32(hw->mdev, hw->base_addr + REG_CLDMA_L2RISAR0, rx_sta);
-+
-+		rxq_xfer_done = (rx_sta >> QUEUE_XFER_DONE) & 0xFF;
-+		if (rxq_xfer_done) {
-+			for (i = 0; i < HW_QUEUE_NUM; i++) {
-+				if (rxq_xfer_done & (1 << i)) {
-+					rxq = hw->rxq[i];
-+					queue_work(hw->wq, &rxq->rx_done_work);
-+				}
-+			}
-+		}
-+	}
-+
-+	mtk_hw_clear_irq(hw->mdev, hw->pci_ext_irq_id);
-+	mtk_hw_unmask_irq(hw->mdev, hw->pci_ext_irq_id);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+int mtk_cldma_hw_init_t800(struct cldma_dev *cd, int hif_id)
-+{
-+	char pool_name[DMA_POOL_NAME_LEN];
-+	struct cldma_hw *hw;
-+	unsigned int flag;
-+
-+	if (cd->cldma_hw[hif_id])
++	if (test_bit(PORT_S_ENABLE, &port->status)) {
++		dev_info(port->port_mngr->ctrl_blk->mdev->dev,
++			 "Skip to enable port( %s )\n", port->info.name);
 +		return 0;
-+
-+	hw = devm_kzalloc(cd->trans->mdev->dev, sizeof(*hw), GFP_KERNEL);
-+	if (!hw)
-+		return -ENOMEM;
-+
-+	hw->cd = cd;
-+	hw->mdev = cd->trans->mdev;
-+	hw->hif_id = ((CLDMA_CLASS_ID) << 8) + hif_id;
-+	snprintf(pool_name, DMA_POOL_NAME_LEN, "cldma%d_pool_%s", hw->hif_id, hw->mdev->dev_str);
-+	hw->dma_pool = dma_pool_create(pool_name, hw->mdev->dev, sizeof(union gpd), 64, 0);
-+	if (!hw->dma_pool)
-+		goto err_exit;
-+
-+	switch (hif_id) {
-+	case CLDMA0:
-+		hw->pci_ext_irq_id = mtk_hw_get_irq_id(hw->mdev, MTK_IRQ_SRC_CLDMA0);
-+		hw->base_addr = CLDMA0_BASE_ADDR;
-+		break;
-+	case CLDMA1:
-+		hw->pci_ext_irq_id = mtk_hw_get_irq_id(hw->mdev, MTK_IRQ_SRC_CLDMA1);
-+		hw->base_addr = CLDMA1_BASE_ADDR;
-+		break;
-+	default:
-+		break;
 +	}
 +
-+	flag = WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_HIGHPRI;
-+	hw->wq = alloc_workqueue("cldma%d_workq_%s", flag, 0, hif_id, hw->mdev->dev_str);
++	ret = mtk_port_vq_enable(port);
++	if (ret && ret != -EBUSY)
++		return ret;
 +
-+	mtk_cldma_hw_init(hw->mdev, hw->base_addr);
++	set_bit(PORT_S_RDWR, &port->status);
++	set_bit(PORT_S_ENABLE, &port->status);
++	dev_info(port->port_mngr->ctrl_blk->mdev->dev,
++		 "Port(%s) enable is complete\n", port->info.name);
 +
-+	/* mask/clear PCI CLDMA L1 interrupt */
-+	mtk_hw_mask_irq(hw->mdev, hw->pci_ext_irq_id);
-+	mtk_hw_clear_irq(hw->mdev, hw->pci_ext_irq_id);
-+
-+	/* register CLDMA interrupt handler */
-+	mtk_hw_register_irq(hw->mdev, hw->pci_ext_irq_id, mtk_cldma_isr, hw);
-+
-+	/* unmask PCI CLDMA L1 interrupt */
-+	mtk_hw_unmask_irq(hw->mdev, hw->pci_ext_irq_id);
-+
-+	cd->cldma_hw[hif_id] = hw;
 +	return 0;
-+
-+err_exit:
-+	devm_kfree(hw->mdev->dev, hw);
-+
-+	return -EIO;
 +}
 +
-+int mtk_cldma_hw_exit_t800(struct cldma_dev *cd, int hif_id)
++static int mtk_port_internal_disable(struct mtk_port *port)
 +{
-+	struct mtk_md_dev *mdev;
-+	struct cldma_hw *hw;
-+	int i;
-+
-+	if (!cd->cldma_hw[hif_id])
++	if (!test_and_clear_bit(PORT_S_ENABLE, &port->status)) {
++		dev_info(port->port_mngr->ctrl_blk->mdev->dev,
++			 "Skip to disable port(%s)\n", port->info.name);
 +		return 0;
-+
-+	/* free cldma descriptor */
-+	hw = cd->cldma_hw[hif_id];
-+	mdev = cd->trans->mdev;
-+	mtk_hw_mask_irq(mdev, hw->pci_ext_irq_id);
-+	for (i = 0; i < HW_QUEUE_NUM; i++) {
-+		if (hw->txq[i])
-+			cd->hw_ops.txq_free(hw, hw->txq[i]->vqno);
-+		if (hw->rxq[i])
-+			cd->hw_ops.rxq_free(hw, hw->rxq[i]->vqno);
 +	}
 +
-+	flush_workqueue(hw->wq);
-+	destroy_workqueue(hw->wq);
-+	dma_pool_destroy(hw->dma_pool);
-+	mtk_hw_unregister_irq(mdev, hw->pci_ext_irq_id);
++	clear_bit(PORT_S_RDWR, &port->status);
++	mtk_port_vq_disable(port);
 +
-+	devm_kfree(mdev->dev, hw);
-+	cd->cldma_hw[hif_id] = NULL;
++	dev_info(port->port_mngr->ctrl_blk->mdev->dev,
++		 "Port(%s) disable is complete\n", port->info.name);
 +
 +	return 0;
 +}
 +
-+struct txq *mtk_cldma_txq_alloc_t800(struct cldma_hw *hw, struct sk_buff *skb)
++static int mtk_port_internal_recv(struct mtk_port *port, struct sk_buff *skb)
 +{
-+	struct trb *trb = (struct trb *)skb->cb;
-+	struct tx_req *next;
-+	struct tx_req *req;
-+	struct txq *txq;
-+	int i;
++	struct mtk_internal_port *priv;
++	int ret = -ENXIO;
 +
-+	txq = devm_kzalloc(hw->mdev->dev, sizeof(*txq), GFP_KERNEL);
-+	if (!txq)
-+		return NULL;
-+
-+	txq->hw = hw;
-+	txq->vqno = trb->vqno;
-+	txq->vq = hw->cd->trans->vq_tbl + trb->vqno;
-+	txq->txqno = txq->vq->txqno;
-+	txq->req_pool_size = txq->vq->tx_req_num;
-+	txq->req_budget = txq->vq->tx_req_num;
-+	txq->is_stopping = false;
-+	mutex_init(&txq->lock);
-+	if (unlikely(txq->txqno < 0 || txq->txqno >= HW_QUEUE_NUM))
-+		goto err_exit;
-+
-+	txq->req_pool = devm_kcalloc(hw->mdev->dev, txq->req_pool_size, sizeof(*req), GFP_KERNEL);
-+	if (!txq->req_pool)
-+		goto err_exit;
-+
-+	for (i = 0; i < txq->req_pool_size; i++) {
-+		req = txq->req_pool + i;
-+		req->mtu = txq->vq->tx_mtu;
-+		req->gpd = dma_pool_zalloc(hw->dma_pool, GFP_KERNEL, &req->gpd_dma_addr);
-+		if (!req->gpd)
-+			goto exit_free_req;
++	if (!test_bit(PORT_S_OPEN, &port->status)) {
++		/* If current port is not opened by any user, the received data will be dropped */
++		dev_warn_ratelimited(port->port_mngr->ctrl_blk->mdev->dev,
++				     "Unabled to recv: (%s) not opened\n", port->info.name);
++		goto drop_data;
 +	}
 +
-+	for (i = 0; i < txq->req_pool_size; i++) {
-+		req = txq->req_pool + i;
-+		next = txq->req_pool + ((i + 1) % txq->req_pool_size);
-+		req->gpd->tx_gpd.next_gpd_ptr_h = cpu_to_le32((u64)(next->gpd_dma_addr) >> 32);
-+		req->gpd->tx_gpd.next_gpd_ptr_l = cpu_to_le32(next->gpd_dma_addr);
++	priv = &port->priv.i_priv;
++	if (!priv->recv_cb || !priv->arg) {
++		dev_warn_ratelimited(port->port_mngr->ctrl_blk->mdev->dev,
++				     "Invalid (%s) recv_cb, drop packet\n", port->info.name);
++		goto drop_data;
 +	}
 +
-+	INIT_WORK(&txq->tx_done_work, mtk_cldma_tx_done_work);
++	ret = priv->recv_cb(priv->arg, skb);
++	return ret;
 +
-+	mtk_cldma_stop_queue(hw->mdev, hw->base_addr, DIR_TX, txq->txqno);
-+	txq->tx_started = false;
-+	mtk_cldma_setup_start_addr(hw->mdev, hw->base_addr, DIR_TX, txq->txqno,
-+				   txq->req_pool[0].gpd_dma_addr);
-+	mtk_cldma_unmask_intr(hw->mdev, hw->base_addr, DIR_TX, txq->txqno, QUEUE_ERROR);
-+	mtk_cldma_unmask_intr(hw->mdev, hw->base_addr, DIR_TX, txq->txqno, QUEUE_XFER_DONE);
-+
-+	hw->txq[txq->txqno] = txq;
-+	return txq;
-+
-+exit_free_req:
-+	for (i--; i >= 0; i--) {
-+		req = txq->req_pool + i;
-+		dma_pool_free(hw->dma_pool, req->gpd, req->gpd_dma_addr);
-+	}
-+
-+	devm_kfree(hw->mdev->dev, txq->req_pool);
-+err_exit:
-+	devm_kfree(hw->mdev->dev, txq);
-+	return NULL;
++drop_data:
++	dev_kfree_skb_any(skb);
++	return ret;
 +}
 +
-+int mtk_cldma_txq_free_t800(struct cldma_hw *hw, int vqno)
++static int mtk_port_common_open(struct mtk_port *port)
 +{
-+	struct virtq *vq = hw->cd->trans->vq_tbl + vqno;
-+	unsigned int active;
-+	struct tx_req *req;
-+	struct txq *txq;
-+	struct trb *trb;
-+	int cnt = 0;
-+	int irq_id;
-+	int txqno;
-+	int i;
++	int ret = 0;
 +
-+	txqno = vq->txqno;
-+	if (unlikely(txqno < 0 || txqno >= HW_QUEUE_NUM))
-+		return -EINVAL;
-+	txq = hw->txq[txqno];
-+	if (!txq)
-+		return -EINVAL;
-+
-+	/* stop HW tx transaction */
-+	mtk_cldma_stop_queue(hw->mdev, hw->base_addr, DIR_TX, txqno);
-+	txq->tx_started = false;
-+	do {
-+		active = mtk_cldma_queue_status(hw->mdev, hw->base_addr, DIR_TX, txqno);
-+		if (active == LINK_ERROR_VAL)
-+			break;
-+		msleep(CLDMA_STOP_HW_WAIT_TIME_MS); /* ensure HW tx transaction done */
-+		cnt++;
-+	} while (active && cnt < CLDMA_STOP_HW_POLLING_MAX_CNT);
-+
-+	irq_id = mtk_hw_get_virq_id(hw->mdev, hw->pci_ext_irq_id);
-+	synchronize_irq(irq_id);
-+
-+	flush_work(&txq->tx_done_work);
-+	mtk_cldma_mask_intr(hw->mdev, hw->base_addr, DIR_TX, txqno, QUEUE_XFER_DONE);
-+	mtk_cldma_mask_intr(hw->mdev, hw->base_addr, DIR_TX, txqno, QUEUE_ERROR);
-+
-+	/* free tx req resource */
-+	for (i = 0; i < txq->req_pool_size; i++) {
-+		req = txq->req_pool + i;
-+		if (req->data_dma_addr && req->data_len) {
-+			dma_unmap_single(hw->mdev->dev,
-+					 req->data_dma_addr,
-+					 req->data_len,
-+					 DMA_TO_DEVICE);
-+			trb = (struct trb *)req->skb->cb;
-+			trb->status = -EPIPE;
-+			trb->trb_complete(req->skb);
-+		}
-+		dma_pool_free(hw->dma_pool, req->gpd, req->gpd_dma_addr);
++	if (!test_bit(PORT_S_ENABLE, &port->status)) {
++		pr_err("[TMI] Failed to open: (%s) is disabled\n", port->info.name);
++		ret = -ENODEV;
++		goto err;
 +	}
 +
-+	devm_kfree(hw->mdev->dev, txq->req_pool);
-+	devm_kfree(hw->mdev->dev, txq);
-+	hw->txq[txqno] = NULL;
++	if (test_bit(PORT_S_OPEN, &port->status)) {
++		dev_warn(port->port_mngr->ctrl_blk->mdev->dev,
++			 "Unabled to open port(%s) twice\n", port->info.name);
++		ret = -EBUSY;
++		goto err;
++	}
 +
-+	return 0;
++	dev_info(port->port_mngr->ctrl_blk->mdev->dev, "Open port %s\n", port->info.name);
++	skb_queue_purge(&port->rx_skb_list);
++	set_bit(PORT_S_OPEN, &port->status);
++
++err:
++	return ret;
 +}
 +
-+struct rxq *mtk_cldma_rxq_alloc_t800(struct cldma_hw *hw, struct sk_buff *skb)
++static void mtk_port_common_close(struct mtk_port *port)
 +{
-+	struct trb_open_priv *trb_open_priv = (struct trb_open_priv *)skb->data;
-+	struct trb *trb = (struct trb *)skb->cb;
-+	struct rx_req *next;
-+	struct rx_req *req;
-+	struct rxq *rxq;
-+	int err;
-+	int i;
++	dev_info(port->port_mngr->ctrl_blk->mdev->dev, "Close port %s\n", port->info.name);
 +
-+	rxq = devm_kzalloc(hw->mdev->dev, sizeof(*rxq), GFP_KERNEL);
-+	if (!rxq)
-+		return NULL;
++	clear_bit(PORT_S_OPEN, &port->status);
 +
-+	rxq->hw = hw;
-+	rxq->vqno = trb->vqno;
-+	rxq->vq = hw->cd->trans->vq_tbl + trb->vqno;
-+	rxq->rxqno = rxq->vq->rxqno;
-+	rxq->req_pool_size = rxq->vq->rx_req_num;
-+	rxq->arg = trb->priv;
-+	rxq->rx_done = trb_open_priv->rx_done;
-+	if (unlikely(rxq->rxqno < 0 || rxq->rxqno >= HW_QUEUE_NUM))
-+		goto err_exit;
-+
-+	rxq->req_pool = devm_kcalloc(hw->mdev->dev, rxq->req_pool_size, sizeof(*req), GFP_KERNEL);
-+	if (!rxq->req_pool)
-+		goto err_exit;
-+
-+	/* setup rx request */
-+	for (i = 0; i < rxq->req_pool_size; i++) {
-+		req = rxq->req_pool + i;
-+		req->mtu = rxq->vq->rx_mtu;
-+		req->gpd = dma_pool_zalloc(hw->dma_pool, GFP_KERNEL, &req->gpd_dma_addr);
-+		if (!req->gpd)
-+			goto exit_free_req;
-+
-+		req->skb = __dev_alloc_skb(rxq->vq->rx_mtu, GFP_KERNEL);
-+		if (!req->skb) {
-+			dma_pool_free(hw->dma_pool, req->gpd, req->gpd_dma_addr);
-+			goto exit_free_req;
-+		}
-+
-+		req->data_dma_addr = dma_map_single(hw->mdev->dev,
-+						    req->skb->data,
-+						    req->mtu,
-+						    DMA_FROM_DEVICE);
-+		err = dma_mapping_error(hw->mdev->dev, req->data_dma_addr);
-+		if (unlikely(err)) {
-+			dev_err(hw->mdev->dev, "Failed to map dma!\n");
-+			i++;
-+			goto exit_free_req;
-+		}
-+	}
-+
-+	for (i = 0; i < rxq->req_pool_size; i++) {
-+		req = rxq->req_pool + i;
-+		next = rxq->req_pool + ((i + 1) % rxq->req_pool_size);
-+		req->gpd->rx_gpd.gpd_flags = CLDMA_GPD_FLAG_IOC | CLDMA_GPD_FLAG_HWO;
-+		req->gpd->rx_gpd.data_allow_len = cpu_to_le16(req->mtu);
-+		req->gpd->rx_gpd.next_gpd_ptr_h = cpu_to_le32((u64)(next->gpd_dma_addr) >> 32);
-+		req->gpd->rx_gpd.next_gpd_ptr_l = cpu_to_le32(next->gpd_dma_addr);
-+		req->gpd->rx_gpd.data_buff_ptr_h = cpu_to_le32((u64)(req->data_dma_addr) >> 32);
-+		req->gpd->rx_gpd.data_buff_ptr_l = cpu_to_le32(req->data_dma_addr);
-+	}
-+
-+	INIT_WORK(&rxq->rx_done_work, mtk_cldma_rx_done_work);
-+
-+	hw->rxq[rxq->rxqno] = rxq;
-+	mtk_cldma_stop_queue(hw->mdev, hw->base_addr, DIR_RX, rxq->rxqno);
-+	mtk_cldma_setup_start_addr(hw->mdev, hw->base_addr, DIR_RX,
-+				   rxq->rxqno, rxq->req_pool[0].gpd_dma_addr);
-+	mtk_cldma_start_queue(hw->mdev, hw->base_addr, DIR_RX, rxq->rxqno);
-+	mtk_cldma_unmask_intr(hw->mdev, hw->base_addr, DIR_RX, rxq->rxqno, QUEUE_ERROR);
-+	mtk_cldma_unmask_intr(hw->mdev, hw->base_addr, DIR_RX, rxq->rxqno, QUEUE_XFER_DONE);
-+
-+	return rxq;
-+
-+exit_free_req:
-+	for (i--; i >= 0; i--) {
-+		req = rxq->req_pool + i;
-+		dma_unmap_single(hw->mdev->dev, req->data_dma_addr, req->mtu, DMA_FROM_DEVICE);
-+		dma_pool_free(hw->dma_pool, req->gpd, req->gpd_dma_addr);
-+		if (req->skb)
-+			dev_kfree_skb_any(req->skb);
-+	}
-+
-+	devm_kfree(hw->mdev->dev, rxq->req_pool);
-+err_exit:
-+	devm_kfree(hw->mdev->dev, rxq);
-+	return NULL;
++	skb_queue_purge(&port->rx_skb_list);
 +}
 +
-+int mtk_cldma_rxq_free_t800(struct cldma_hw *hw, int vqno)
++/**
++ * mtk_port_internal_open() - Function for open internal port.
++ * @mdev: pointer to mtk_md_dev.
++ * @name: the name of port will be opened.
++ * @flag: optional operation type.
++ *
++ * This function called by FSM. Used to open interal port MDCTRL/SAPCTRL,
++ * when need to transer some control message.
++ *
++ * Return:
++ * * mtk_port structure if success.
++ * * error valude if fail.
++ */
++void *mtk_port_internal_open(struct mtk_md_dev *mdev, char *name, int flag)
 +{
-+	struct mtk_md_dev *mdev;
-+	unsigned int active;
-+	struct rx_req *req;
-+	struct virtq *vq;
-+	struct rxq *rxq;
-+	int cnt = 0;
-+	int irq_id;
-+	int rxqno;
-+	int i;
++	struct mtk_port_mngr *port_mngr;
++	struct mtk_ctrl_blk *ctrl_blk;
++	struct mtk_port *port;
++	int ret;
 +
-+	mdev = hw->mdev;
-+	vq = hw->cd->trans->vq_tbl + vqno;
-+	rxqno = vq->rxqno;
-+	if (unlikely(rxqno < 0 || rxqno >= HW_QUEUE_NUM))
-+		return -EINVAL;
-+	rxq = hw->rxq[rxqno];
-+	if (!rxq)
++	ctrl_blk = mdev->ctrl_blk;
++	port_mngr = ctrl_blk->port_mngr;
++
++	port = mtk_port_search_by_name(port_mngr, name);
++	ret = mtk_port_get_locked(port);
++	if (ret)
++		goto err;
++
++	ret = mtk_port_common_open(port);
++	if (ret) {
++		mtk_port_put_locked(port);
++		goto err;
++	}
++
++	if (flag & O_NONBLOCK)
++		port->info.flags &= ~PORT_F_BLOCKING;
++	else
++		port->info.flags |= PORT_F_BLOCKING;
++err:
++	return port;
++}
++
++/**
++ * mtk_port_internal_close() - Function for close internal port.
++ * @i_port: which port need close.
++ *
++ * This function called by FSM. Used to close interal port MDCTRL/SAPCTRL.
++ *
++ * Return:
++ * * 0:		success.
++ * * -EINVAL:	port is NULL.
++ * * -EBADF:	port is not opened.
++ */
++int mtk_port_internal_close(void *i_port)
++{
++	struct mtk_port *port = i_port;
++	int ret = 0;
++
++	if (!port) {
++		ret = -EINVAL;
++		goto err;
++	}
++
++	/* Avoid close port twice */
++	if (!test_bit(PORT_S_OPEN, &port->status)) {
++		pr_err("[TMI] Port(%s) has been closed\n", port->info.name);
++		ret = -EBADF;
++		goto err;
++	}
++
++	mtk_port_common_close(port);
++	mtk_port_put_locked(port);
++err:
++	return ret;
++}
++
++/**
++ * mtk_port_internal_write() - Function for writing interal data.
++ * @i_port: pointer to mtk_port, indicate channel for sending data.
++ * @skb:    inlude the data to be sent.
++ *
++ * This function called by FSM. Used to write control message through
++ * interal port MDCTRL/SAPCTRL, example of handshake message.
++ *
++ * Return:
++ * * actual sent data length if success.
++ * * error value if send failed.
++ */
++int mtk_port_internal_write(void *i_port, struct sk_buff *skb)
++{
++	struct mtk_port *port = i_port;
++
++	if (!port)
 +		return -EINVAL;
 +
-+	mtk_cldma_stop_queue(mdev, hw->base_addr, DIR_RX, rxqno);
-+	do {
-+		/* check CLDMA HW state register */
-+		active = mtk_cldma_queue_status(mdev, hw->base_addr, DIR_RX, rxqno);
-+		if (active == LINK_ERROR_VAL)
-+			break;
-+		msleep(CLDMA_STOP_HW_WAIT_TIME_MS); /* ensure HW rx transaction done */
-+		cnt++;
-+	} while (active && cnt < CLDMA_STOP_HW_POLLING_MAX_CNT);
-+
-+	irq_id = mtk_hw_get_virq_id(hw->mdev, hw->pci_ext_irq_id);
-+	synchronize_irq(irq_id);
-+
-+	flush_work(&rxq->rx_done_work);
-+	mtk_cldma_mask_intr(mdev, hw->base_addr, DIR_RX, rxqno, QUEUE_XFER_DONE);
-+	mtk_cldma_mask_intr(mdev, hw->base_addr, DIR_RX, rxqno, QUEUE_ERROR);
-+
-+	/* free rx req resource */
-+	for (i = 0; i < rxq->req_pool_size; i++) {
-+		req = rxq->req_pool + i;
-+		if (!(req->gpd->rx_gpd.gpd_flags & CLDMA_GPD_FLAG_HWO) &&
-+		    le16_to_cpu(req->gpd->rx_gpd.data_recv_len)) {
-+			dma_unmap_single(mdev->dev, req->data_dma_addr, req->mtu, DMA_FROM_DEVICE);
-+			rxq->rx_done(req->skb, le16_to_cpu(req->gpd->rx_gpd.data_recv_len),
-+				     rxq->arg);
-+			req->skb = NULL;
-+		}
-+
-+		dma_pool_free(hw->dma_pool, req->gpd, req->gpd_dma_addr);
-+		if (req->skb) {
-+			dev_kfree_skb_any(req->skb);
-+			dma_unmap_single(mdev->dev, req->data_dma_addr, req->mtu, DMA_FROM_DEVICE);
-+		}
-+	}
-+
-+	devm_kfree(mdev->dev, rxq->req_pool);
-+	devm_kfree(mdev->dev, rxq);
-+	hw->rxq[rxqno] = NULL;
-+
-+	return 0;
++	return mtk_port_send_data(port, skb);
 +}
 +
-+int mtk_cldma_start_xfer_t800(struct cldma_hw *hw, int qno)
++/**
++ * mtk_port_internal_recv_register() - Function for register receive callback.
++ * @i_port: pointer to mtk_port, indicate channel for receiving data.
++ * @cb:     callback for receiving data.
++ * @arg:    user data which will be transferred in callback function.
++ *
++ * This function called by FSM. Used to register callback for receiving data.
++ *
++ * Return: No return valude.
++ *
++ */
++void mtk_port_internal_recv_register(void *i_port,
++				     int (*cb)(void *priv, struct sk_buff *skb),
++				     void *arg)
 +{
-+	struct txq *txq;
-+	u32 addr, val;
-+	int idx;
++	struct mtk_port *port = i_port;
++	struct mtk_internal_port *priv;
 +
-+	txq = hw->txq[qno];
-+	addr = hw->base_addr + REG_CLDMA_UL_START_ADDRL_0 + qno * HW_QUEUE_NUM;
-+	val = mtk_hw_read32(hw->mdev, addr);
-+	if (unlikely(!val)) {
-+		mtk_cldma_hw_init(hw->mdev, hw->base_addr);
-+		txq = hw->txq[qno];
-+		idx = (txq->wr_idx + txq->req_pool_size - 1) % txq->req_pool_size;
-+		mtk_cldma_setup_start_addr(hw->mdev, hw->base_addr, DIR_TX, qno,
-+					   txq->req_pool[idx].gpd_dma_addr);
-+		mtk_cldma_start_queue(hw->mdev, hw->base_addr, DIR_TX, qno);
-+		txq->tx_started = true;
-+	} else {
-+		if (unlikely(!txq->tx_started)) {
-+			mtk_cldma_start_queue(hw->mdev, hw->base_addr, DIR_TX, qno);
-+			txq->tx_started = true;
-+		} else {
-+			mtk_cldma_resume_queue(hw->mdev, hw->base_addr, DIR_TX, qno);
-+		}
-+	}
-+
-+	return 0;
++	priv = &port->priv.i_priv;
++	priv->arg = arg;
++	priv->recv_cb = cb;
 +}
-diff --git a/drivers/net/wwan/mediatek/pcie/mtk_cldma_drv_t800.h b/drivers/net/wwan/mediatek/pcie/mtk_cldma_drv_t800.h
++
++static const struct port_ops port_internal_ops = {
++	.init = mtk_port_internal_init,
++	.exit = mtk_port_internal_exit,
++	.reset = mtk_port_reset,
++	.enable = mtk_port_internal_enable,
++	.disable = mtk_port_internal_disable,
++	.recv = mtk_port_internal_recv,
++};
++
++const struct port_ops *ports_ops[PORT_TYPE_MAX] = {
++	&port_internal_ops,
++};
+diff --git a/drivers/net/wwan/mediatek/mtk_port_io.h b/drivers/net/wwan/mediatek/mtk_port_io.h
 new file mode 100644
-index 000000000000..b89d45a81c4f
+index 000000000000..30e1d4149881
 --- /dev/null
-+++ b/drivers/net/wwan/mediatek/pcie/mtk_cldma_drv_t800.h
-@@ -0,0 +1,20 @@
++++ b/drivers/net/wwan/mediatek/mtk_port_io.h
+@@ -0,0 +1,34 @@
 +/* SPDX-License-Identifier: BSD-3-Clause-Clear
 + *
 + * Copyright (c) 2022, MediaTek Inc.
 + */
 +
-+#ifndef __MTK_CLDMA_DRV_T800_H__
-+#define __MTK_CLDMA_DRV_T800_H__
++#ifndef __MTK_PORT_IO_H__
++#define __MTK_PORT_IO_H__
 +
++#include <linux/netdevice.h>
 +#include <linux/skbuff.h>
 +
-+#include "mtk_cldma.h"
++#include "mtk_port.h"
 +
-+int mtk_cldma_hw_init_t800(struct cldma_dev *cd, int hif_id);
-+int mtk_cldma_hw_exit_t800(struct cldma_dev *cd, int hif_id);
-+struct txq *mtk_cldma_txq_alloc_t800(struct cldma_hw *hw, struct sk_buff *skb);
-+int mtk_cldma_txq_free_t800(struct cldma_hw *hw, int vqno);
-+struct rxq *mtk_cldma_rxq_alloc_t800(struct cldma_hw *hw, struct sk_buff *skb);
-+int mtk_cldma_rxq_free_t800(struct cldma_hw *hw, int vqno);
-+int mtk_cldma_start_xfer_t800(struct cldma_hw *hw, int qno);
-+#endif
++#define MTK_RX_BUF_SIZE			(1024 * 1024)
++
++extern struct mutex port_mngr_grp_mtx;
++
++struct port_ops {
++	int (*init)(struct mtk_port *port);
++	int (*exit)(struct mtk_port *port);
++	int (*reset)(struct mtk_port *port);
++	int (*enable)(struct mtk_port *port);
++	int (*disable)(struct mtk_port *port);
++	int (*recv)(struct mtk_port *port, struct sk_buff *skb);
++};
++
++void *mtk_port_internal_open(struct mtk_md_dev *mdev, char *name, int flag);
++int mtk_port_internal_close(void *i_port);
++int mtk_port_internal_write(void *i_port, struct sk_buff *skb);
++void mtk_port_internal_recv_register(void *i_port,
++				     int (*cb)(void *priv, struct sk_buff *skb),
++				     void *arg);
++
++#endif /* __MTK_PORT_IO_H__ */
+diff --git a/drivers/net/wwan/mediatek/pcie/mtk_pci.c b/drivers/net/wwan/mediatek/pcie/mtk_pci.c
+index 80432f0627e6..326b1e0b845c 100644
+--- a/drivers/net/wwan/mediatek/pcie/mtk_pci.c
++++ b/drivers/net/wwan/mediatek/pcie/mtk_pci.c
+@@ -13,6 +13,7 @@
+ #include <linux/module.h>
+ 
+ #include "mtk_pci.h"
++#include "mtk_port_io.h"
+ #include "mtk_reg.h"
+ 
+ #define MTK_PCI_TRANSPARENT_ATR_SIZE	(0x3F)
+@@ -1127,6 +1128,7 @@ module_init(mtk_drv_init);
+ static void __exit mtk_drv_exit(void)
+ {
+ 	pci_unregister_driver(&mtk_pci_drv);
++	mtk_port_stale_list_grp_cleanup();
+ }
+ module_exit(mtk_drv_exit);
+ 
 -- 
 2.32.0
 
