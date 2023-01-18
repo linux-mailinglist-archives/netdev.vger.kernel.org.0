@@ -2,134 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B3C1672A78
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 22:28:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29D0F672A84
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 22:31:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229651AbjARV17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 16:27:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56100 "EHLO
+        id S229838AbjARVbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 16:31:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231164AbjARV1m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 16:27:42 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2053.outbound.protection.outlook.com [40.107.223.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EE073D920
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 13:27:35 -0800 (PST)
+        with ESMTP id S229515AbjARVbL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 16:31:11 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A5618ABC
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 13:31:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674077470; x=1705613470;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=l+J4kK9w+XYdxtaJfKQGVpMulpaM5n9gwK4EfdUMc/4=;
+  b=mu7QUP83g0QRKfxXI48Jv8AfOVPBjyEyWi+DY3e96p9+xQ4afmx2JxfW
+   9VSx0V7NCBKFy9ZSb58QTmi4o3EZ8nyhGOQXxDxtMfO2dwFHTknybgINB
+   l+u1c40E+i4eDc+BJ7/9qk4cLdxrYe5T99L/SLPmfiONB0W1q1xrMCNds
+   bqQE3/4+klrk0iqO8Vb66OqZSbCy2+WgsVtqnwd5FcttENfx7P8AXMatP
+   lMztFe7OUuSJ7anFcAenWiMRuwFtfA17v5Wb5yWosjXD2cwO2gd5MAkQW
+   W6qxwuLPGYvRB8x8uBZL6qmdsSuWu4zEl52t+sZrfJzyFoMd6/hqcAj16
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="312982481"
+X-IronPort-AV: E=Sophos;i="5.97,226,1669104000"; 
+   d="scan'208";a="312982481"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2023 13:31:10 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="833751419"
+X-IronPort-AV: E=Sophos;i="5.97,226,1669104000"; 
+   d="scan'208";a="833751419"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orsmga005.jf.intel.com with ESMTP; 18 Jan 2023 13:31:10 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 18 Jan 2023 13:31:09 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 18 Jan 2023 13:31:09 -0800
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Wed, 18 Jan 2023 13:31:09 -0800
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.109)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Wed, 18 Jan 2023 13:31:08 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kYeVySH7aWHT7oyNuaqxN7sTWW/i6zaEGuZuPCdH7L9zB64ybg4hHYPfdhhck/9lHVFZkvM/gjnB4J0k2mocTEUFwyMzJFhUZ6NLKGTJQmQybqqL11JtwfnejvNwHF7azslMGY8Txl9RosJ5GrOmIaI4YasHBq9ipAQWKtvwJfIWiVwf/wS/a6TEySOgk1pchs3c4R8c9kgLM5aaRa6H2nPU45kVjJ9KkIGk1UFj3Qpnr1vQIElgSRIeCYYLafY1f9TRCW+YfbdMYAc7yD4QQc91RnvUoW6rK4NMbKKksdBE7d31IC42/DOg/f5oOQFoMYnkL6MB+7ltU1s4OoBUTA==
+ b=Dd7Zc/smyklZz4A9EUtwdXnlLydI9cDOjMdmZvNUvxcsVuq8wQopTWJPXQ+zLJJFR5ymY1qbpAXCEjExKEkTAI9LtPuHZXRsE/d8/5cghrfC0o+c6o5Uj8wFSLBRY64MybFT/emfIQMH+i2PeKrX0ats/LerqMuz1zN8OlDT3oRHiVOha9EdgDdOybrlpLICRnMzxMpZv6M18GfgWgkWIv7UqGXADXFgaWOXxaKtV+pn2AnOgXtZn6SdgGOe4YIpqIWobn+Tps11Jz0oK6wca35QmFoPJ58JwXHBx4jIdHNn0Bg9R/FW29bQPZ9BRe4IA4hs5Mbp9j3SZm/5YnOEgA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1pP/zIbMgJhCVscO6qJ8aaD1GFKLrb1CV25TfAYuQAU=;
- b=JmBIUURP00W1zj5w7LzpbKHCz0F5Q0hEcWFawu27WD3432ePStGWMHFZFGyqNhQVEUnF0uzEUlBsOC2lnBTCzG490xiyano64K+NrewOd9GiS1QcrMS9lYH+7vpz9KSPxWYbbi3JHIBEZDxKmSpXOUnUZ1Ke92P4k2snRC+OeaEClSCfHjqcDgP50NuDdymbqOjhzGvqeZ9Ev4bYMALJAGs64aUGbaGorUcymvGX1VNBG6qQ7igpddzp1bMpjOJCECBytY0rGODTTzX6qdug4DTxjD1FOW5Zndchuik2BI8/22Xqzj67+aoIy/gTR9ijrREZEySzbq7pUdt622uHbA==
+ bh=V7Kbni0kER7U9jlsUIeMRw+Kdp2d43+Aj69Ubzw4+g4=;
+ b=h1qPxDEOeEEl8O+c8UeCxySR8OYsYXSBT4gJv7KEGj2pDaEJ7gvYh/1bQo5dIDFctW4spSRDMDBvoLYG7GoTTt+mAKzLk/2u1i0+VE4XQq4vF4JQ+qHEm/0lHZOU9BozCbQPd4Ci2lrZc2J19SF6Li0IuMJi7svprg9JjrZ3v0YRDJrI8uUyldosmgxSoQeNciSnK0n0U4WXCw+SXWVwnTSTHZOrWvhqMJfafZMvG1hDc/04QvcKIdSC7U3ZVXAIcilqaVrDyK4wOtv/IeAEp0DTebtFzboY6sKV8cagt8HI99TYkiJkoTPS5ABhdW6owqxU/UygN+4eptbxYM4zcA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1pP/zIbMgJhCVscO6qJ8aaD1GFKLrb1CV25TfAYuQAU=;
- b=tMEIxu4Jmm2kXMJA9aghObv8hQGJrfZw7bA4vGzjrm3Gh6Mm+t0Z6dXXSrwWcGoTAQ3r+JjnONhSxhgJurlqKXCHVFMWKIoL60ma7gOVVVWm+X4KThcixTCsVK3mIEtGm/lWcT6XvbbvpaLpOvJHMzRdcELR4w1s8n1/ySVX0q5n5n5TeupiS6Jo2Gz9t3ElhUzUKOXFzFk6/ZfxGjxoIC0tWMGpnN6oNo3VaBtYKF6mJrKkYnkbc2rlll42JSTFSnjW5LykqDtjCv2UPw6W+K7Cg1OTkGn6kiwxfae0yoINKJROxl8WHv1DZuyDMdVE/GSHfn4DIGarA7euuh/yrA==
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from PH0PR12MB5629.namprd12.prod.outlook.com (2603:10b6:510:141::10)
- by DS7PR12MB5720.namprd12.prod.outlook.com (2603:10b6:8:73::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Wed, 18 Jan
- 2023 21:27:32 +0000
-Received: from PH0PR12MB5629.namprd12.prod.outlook.com
- ([fe80::5e6:6b81:fa63:c367]) by PH0PR12MB5629.namprd12.prod.outlook.com
- ([fe80::5e6:6b81:fa63:c367%9]) with mapi id 15.20.6002.013; Wed, 18 Jan 2023
- 21:27:32 +0000
-Message-ID: <d7404d79-1d3b-9392-7911-1851f1c37cbf@nvidia.com>
-Date:   Wed, 18 Jan 2023 23:27:21 +0200
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
+ by DS7PR11MB6061.namprd11.prod.outlook.com (2603:10b6:8:74::6) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5986.23; Wed, 18 Jan 2023 21:31:05 +0000
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::5697:a11e:691e:6acf]) by CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::5697:a11e:691e:6acf%5]) with mapi id 15.20.6002.024; Wed, 18 Jan 2023
+ 21:31:05 +0000
+Message-ID: <9ffa2a9b-ddd1-afa1-273d-6c303fcedcfb@intel.com>
+Date:   Wed, 18 Jan 2023 13:31:02 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Subject: Re: [PATCH net-next 0/4] net/sched: cls_api: Support hardware miss to
- tc action
+Subject: Re: [net-next 01/15] net/mlx5e: Suppress Send WQEBB room warning for
+ PAGE_SIZE >= 16KB
 Content-Language: en-US
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
+To:     Saeed Mahameed <saeed@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
-References: <20230112105905.1738-1-paulb@nvidia.com>
- <CAM0EoMm046Ur8o6g3FwMCKB-_p246rpqfDYgWnRsuXHBhruDpg@mail.gmail.com>
- <164ea640-d6d4-d8bd-c7d9-02350e382691@nvidia.com>
- <CAM0EoM=FaRBWqxPv=jZdV_SZxqw26_yhK__q=o-9vqypSdMV1w@mail.gmail.com>
- <8f9ca91e-1f3f-c3c1-cbab-4f9af3884b43@nvidia.com>
- <CAM0EoMm-YVTKWwTEEACjEuyh8C+tWiEWFurPB=F2JUT72nZp4A@mail.gmail.com>
-From:   Paul Blakey <paulb@nvidia.com>
-In-Reply-To: <CAM0EoMm-YVTKWwTEEACjEuyh8C+tWiEWFurPB=F2JUT72nZp4A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+CC:     Saeed Mahameed <saeedm@nvidia.com>, <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Rahul Rameshbabu <rrameshbabu@nvidia.com>,
+        "kernel test robot" <lkp@intel.com>
+References: <20230118183602.124323-1-saeed@kernel.org>
+ <20230118183602.124323-2-saeed@kernel.org>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+In-Reply-To: <20230118183602.124323-2-saeed@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR2P281CA0004.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a::14) To PH0PR12MB5629.namprd12.prod.outlook.com
- (2603:10b6:510:141::10)
+X-ClientProxiedBy: SJ0PR05CA0121.namprd05.prod.outlook.com
+ (2603:10b6:a03:33d::6) To CO1PR11MB5089.namprd11.prod.outlook.com
+ (2603:10b6:303:9b::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR12MB5629:EE_|DS7PR12MB5720:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1a52cdb7-0c13-49ba-2443-08daf99acf1e
+X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|DS7PR11MB6061:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0588908e-a914-4b00-8de4-08daf99b4dca
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: o2KWY1Nd6p+bMu6HGWvuYNwEVF17zMybgLEabIUo0Yijr1To8dUtUaH3JyCFMjvOEUNBes52OZbUMA61zqdcJWQR41uRMw2RZ4fen5zroSYIj1K0hskRqvvAu3K1zn9+nabLuaW6W6kvC2wG+DDxeVgYyTRKSi0lveuXEvcJzKtf1I/LKzC/V/OT0E9r9CO3MnsEU87S+T47jCtSbM9Lh5B+V1N9rQ5CFAVBacBmAIT2zf1Wb6bwlPQluA+f17ZOC0dC6OOQ4QvctOyOdgSqy5XsWpm9X+UaiLPeJ3utdNBYVLfvCixGRcR4HJ0G9wlD2e8lZKiP4K39afvpp21F+LbQeB84xkYKvg7rdtKi1FN7/RsXy/qoOjrTVUNDl35TNb4IO4Hf2edqnkV2rNZRb2/wvwI0YnCYfIP+mjYcfls+ng3yFFEnlV7viBvalxZZ+9++xjQx0wbqg1IGjnhw52TmQ6IeFe59e09KUa529iLy/ZxuhLJsAVs5SAkKjkLlSCqhEmc5HmbKTHbQ4MT6YXSEBF8hotCbnboY/j48w81mqXfQqgkczmfZssdCGs79X3GRtprPBUXlV14OQ09faT0rlKoalCzXmo5vZdafBsvEhKp37WHe9HltkL1lb+Qy9TwLaS29YO7OGxbo72w8/V7ro53pld3kzU3tCOCBIpQKBWTBj+XsQnBeS/qMggVjhL2hP/Xy4idocvhS9IHAFnMksXmOsGy/8bKdx0GHpvA=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5629.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(346002)(39860400002)(396003)(136003)(451199015)(86362001)(31696002)(8676002)(66476007)(5660300002)(53546011)(4326008)(26005)(66946007)(6916009)(6512007)(66556008)(186003)(2616005)(41300700001)(83380400001)(478600001)(38100700002)(2906002)(6666004)(6506007)(107886003)(54906003)(6486002)(316002)(8936002)(36756003)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: iylEEbb+rvrvYDY5mXIu0bQR7HF/ANpo+Vjzk87g2QMl3t2I5s6JGC2+FqLvhYjfni0/BoFocjPUpguNNpakaMiA2r/YtimZ0MheU78VWot+MMHPAmXIwHkJWcRHXnx5Mwi/U7h+HnOj9iC46b2oI1ijN/IWtOF+ZD6+7BdDiBleZIfuFMRMEvVdJMfuLZ7pIZEhdcwRa4zmrGGDdsTaEWJ5H47xh6LcOcnam5cIZ8nbyc+6owm6TbesCZUEkn7dI33UXHWqQF+YdQajFKJvHDrqZzIbLHrPy1nU+Xi8SFMvnSaYbwxJ7XzeaElTA/pAA5dCl1jP7pewnwXHJ62QZIYKx02YGlrdB4NiNc88RPbyrTlJO4dKgj1glDACMcczSlIIIYQcIGH2NuYNs1CdKOQ+toINNOhIa4rEtGfnXKfJD9RtUX6dDXIVXngVhSPkE4Qoc6VVHVH/rDVMyx/6BsHPKyFqEJD//woMoDKEThGB4zti1cPk8IsXxQqxBh0sbbYpcJVgU5YVKW/7f0NhZaanDbPvGBnSnGzRGbrtw1kpQEN6WYZexiQCxn9GaACzgVf0nDZ1v7YgSGfD6cJtG8+BN3XjkgL/ABZtruvOZjqAaHyvG/sVVJk//ikRpJBMqiEo+aUlKzkFnhQsvB/u2dPSb/+B01I4NtQSQkrLq3odQq0/Kii5araP0DPNCDZEpltqg6eFfMsQgUwTm/nCjXE0lZ99MZlE5NHU/2OJL50=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(376002)(366004)(346002)(39860400002)(136003)(451199015)(31686004)(36756003)(4326008)(2906002)(66556008)(66476007)(8676002)(66946007)(8936002)(5660300002)(38100700002)(82960400001)(83380400001)(31696002)(107886003)(6666004)(54906003)(110136005)(478600001)(86362001)(316002)(41300700001)(6512007)(53546011)(2616005)(6486002)(186003)(26005)(6506007)(43740500002)(45980500001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OVQ5V1VXdlpXN1FsZi82bGQ4blgyRWpNeFArcUFsUXdRVmdMN3I2aWpsTXlX?=
- =?utf-8?B?SFRuQjB5Qm5PU2VwSU1JUFZwc0JlMEtaRU5PNWxRcGoyRjRPaE5NcThHNTdu?=
- =?utf-8?B?emZ4VUI3b21JaWMrRHBIMDNqYlFkSEcvUXZ6WGxHWTFabEMzMmZKL0dseDFP?=
- =?utf-8?B?SVZuMysrTkpOMlBsTUIrcUo1cEcvRmFEckxpcmlNbmpNeUJaWXJyVFVqNjl5?=
- =?utf-8?B?VlQ0Zy91RGNWNEZjZ3NyNy9xUXFsT1Q1am4rOE1LbHNzdUUreHoxRVY3VXBP?=
- =?utf-8?B?dnRab1lBQnV6RHEySWlaaEdXN0ZtbFpMWVFqZVBISTNsVHdYTlhGaGxOelFy?=
- =?utf-8?B?ZzVSdTFqcmJINHl3TnpDcmZDdXhmUnFFRUpYTUhvZTR2ZENDZEZZK2M1VldP?=
- =?utf-8?B?Vm1WOXgrRFVab1ZQVkc5ZDdMeDVOWE9SUy9aOW8zMXRrOFNXY2pTL2JTc25i?=
- =?utf-8?B?RittWDBXdnc2QjFQV2IvSW5odFBFTEFoYmJ5WG5WVzZKVER6QUNUR0R3LzBM?=
- =?utf-8?B?UjBCWTBPT2dGL0x6QUNCb2h5eTdoL3dKL24rNmNlUEJ3cFZIbmN6QTJDZUMw?=
- =?utf-8?B?dUMydlVhTzE4SUxxQkFJNG40dlY2NGVTNXFRaVd1ZGxacElzcEl2VHlSOUsx?=
- =?utf-8?B?MGg2LzVzRktFb1ZrdldLWmNtV2d0RlVRNjUzUXo2UXdpU0tHMm95QkVUcnhY?=
- =?utf-8?B?NnJXR2JNazlvR2ppa2IvVFdEdTFJOFpZcGFXVGJNamRhYm9naGpMNGVNN0N4?=
- =?utf-8?B?Rk9Ga3JXN1pHZ3NhNWtBN1dSeVR2aFZlQ1pEN0k2ZFFqWUdwdXMzSWoxamxr?=
- =?utf-8?B?NzlpNTJhTC9QT29RUk5OOUpUNTlDbWYvaGlpd1dsRWRlaUtsWngxaEhBRDZh?=
- =?utf-8?B?S3FDVWxjTyttVFpUdzJ3b2tUaWFPdWh1UTh1QkNCazg2Z00ya2xDV1RFYWY2?=
- =?utf-8?B?bzR6eFg5ZklzTld4SExHcm5VMjg3RGZWazhGU3BLQmZ2Z1Z6ZjZLbGppZ0Vv?=
- =?utf-8?B?V3dFWUIvbW1jZm0vRTVKeis5TndmWWdqU0EyMmEyYTQ3ZFVKK3dnbHNmdDE1?=
- =?utf-8?B?NGg0U0ZmajFrMVNNNWZ4RlI4WHpCZmJSVTREREFiOXB1bVBLcVB1aXMxeWdN?=
- =?utf-8?B?UnpTOTVJWTUxM2hHaHA1ak1xR1JwTWNuKzBsM2RuNk9FMStEblNtc1FOS0tx?=
- =?utf-8?B?VnVXWW9nYzBNVHhwelpteVVreVcwdExvaTFrRldqLzJmajF6V3l4aTluTHIz?=
- =?utf-8?B?MW1qYXUxOHdZUWVPU0orSStFK3hmNktYbkVmWitEYW05OEpBbFBsVkZmTmlC?=
- =?utf-8?B?NitISXNVSDcyK01XdnBFMTY4SU9xajFrbEFBWkt2VHcwcFp1VVdxUXQwU2Er?=
- =?utf-8?B?b2MxaUNpa2J6Q3VKQkpNY2hHS3NTcyswaXFtdHNRbyt5N3VVUnZUSEJKKytM?=
- =?utf-8?B?cW1RaDZGbEp0TVJYUmpYc3NUYWNaSXhOUTNENDJ2VUNtWHV0RVc2dXVwNHNB?=
- =?utf-8?B?N2o3R3ZJQzYrRk81RVRFTTZPdXhyU0t6NWVNMENXNC9tV1d3VWUzUWJCNG1P?=
- =?utf-8?B?ZnlUVHFEenRkdDNIVmJMSllsSUtQSTlkKzZSTlhQVkw0WHNTc1ZjOHQ0SVRC?=
- =?utf-8?B?elBucXI3Z1l4NzVKVjJ5clNSQ2I5TDJRZkd4NGphZFdjU0JnUXpRd3hjS1Vu?=
- =?utf-8?B?RjdLZHB6VmpQaW12S2JuSVAvQmRWSElRVEdpUnVVNTVPTEpOWVhPbklnUFlw?=
- =?utf-8?B?YnF4YXR6QVZyZDNiQm1qK2tUMEhrMHdIOTBPdFUyaWtFSHl3VU5yU01Edktk?=
- =?utf-8?B?NzhCbDhhdlNLaWV5Y0kzQnVpT2Z0ZmJiSjZVbEZjMmZ6S0JmUGdnWmFRMitS?=
- =?utf-8?B?Tm5EQ0pCbm40QmUvMmlBQWMvdW1BTU9MUWNZY2E5TUYzZDdVdHBGYkdMYysw?=
- =?utf-8?B?bDFodW5LM3hCZjdWU2hDSVlnMEoydHNxMS9Ic29IazRKZGZVUEhCOEtoenVS?=
- =?utf-8?B?TVV3L280eXIzaExSMFdTQ2xmYlZXWjJYQ200YkZJSEdCVUdlWWNNQ1ZSSmRr?=
- =?utf-8?B?OXBEemxuNFhmRUM5QjVoSVRQbUs1YUZyb1hBYWNaYVRlYXoxVTRCY0VPUVRI?=
- =?utf-8?Q?sZfcfU5nIIXV7yjw2uftJrNNS?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1a52cdb7-0c13-49ba-2443-08daf99acf1e
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5629.namprd12.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SVh4VGV2aDErWVNHTVJCSkI3clk5bEF0WVNjMUJZc2F2eHJVMUFrUnlNNU1R?=
+ =?utf-8?B?QUYzS21nN1U4N3VDVXdCQVIwVE1Cd05jVkY4UUJ3VHhETWJIMmFQV3R1M0xk?=
+ =?utf-8?B?dGhCVXRSOWNaMlc0MGVEMWd5MGdzWWJ5R1RxL0xTYlB1NW1TM0I2TU5rTVVX?=
+ =?utf-8?B?Y2g0L0gzNjl6d09wVUgxWkRWSFdIRVo2NlJMR1FMeUdueHJVYVFqSnZrQUg4?=
+ =?utf-8?B?QWYyRUpGeXY3RzBtaVRkUWVrUmtPZGV3aUtRdDVKSys5eTV2Mk4rZ1dtL2dk?=
+ =?utf-8?B?RTd2bERsUmNTWHk3dC9yeUs1QWx1aXZvM1dZbHlndWFaa2xJb3pXbGNQN0l0?=
+ =?utf-8?B?a0gxNUQxa09ISnNBYmJRaThuVnZOR3lLbk9BK2xabXVuZGhXZGh1bC9tcHdl?=
+ =?utf-8?B?WDY5ZE5zakRXNDNuWFFLNzl1aUlaejRHaGYxVVI4WmJUK3ZCcXJja2ZRWDQz?=
+ =?utf-8?B?aXlXNTBUdUhPOGxsR1o2TTVGY0tDYkFrTnRMT29nR0dPK3QvalhIMld2SDV1?=
+ =?utf-8?B?SUFIWWxidXBlN1dOWmpGNE5FRHkyNkZqcHFzZUtLTHhJdTI5dXdIQlVGay9Q?=
+ =?utf-8?B?Vnk2WWk4Wm1ZRGZreUdFaU1uUkJsb0cxcDA2bWRac01tUXVTQlZKME1hRjk2?=
+ =?utf-8?B?KzMzdHhuYmpUSVRkdVltUmMvTFdwYXJ6cmdOcVhoY0Y3WFlxNzlWNHVGWUIx?=
+ =?utf-8?B?UUExOFBVbkM4NUhpWkpKbkkxOWFYdWNOY0U3Wkp1S3VnQVlReUpSR3JCSjZa?=
+ =?utf-8?B?T0x4dGl0MExkQVkwRVZFMUZ4Qk9iWFREVkd2ekM2QkZFeEdrL2VuL2Q1Z1pE?=
+ =?utf-8?B?NVNNRUxLcXpnMSttWFh2Zk1YdHZVa2JZaERiNjVhZUhPZ2gvUmFIMXJseWky?=
+ =?utf-8?B?emVmT0dQSDdJRFkyN3M2Njh3MFlqdXY5alhCendjeUxUdGd0T3J3ZHo0aE5z?=
+ =?utf-8?B?ckw1YUpLQnY1MG1mTkl6amtaY0JhSng5SDVyUFZGZEhhemoxWmFXcml3UWNV?=
+ =?utf-8?B?T1oxTjJEejEveC9XQ2RwR01lb1ZVZVBlYkJRSXQ0Zkp0eXV1ZGVSaGNzS0o4?=
+ =?utf-8?B?MHEzblFvb3Z0VHhxeFJacmpnN093dFZ5eDhzVCtkZ3RHSTdZRnJlRitock5q?=
+ =?utf-8?B?V0xPYitkbVhLcVQvOG1xeStyTVpKaGpsTnFVbWlPY3NaRUhsVXBvenE2ZFc5?=
+ =?utf-8?B?aXdzWVpCbnN6WnFPVkhqTHZpcU1QTnkxRENZUW9PYS9aQkdrYkZKL2xPTlpP?=
+ =?utf-8?B?Mzl3YUxUK0dieXgyZHFVRDg2QndMQnozL0RpSUk5dUtpa1pPMVVMUkU4RzBE?=
+ =?utf-8?B?TzJKNHBSN1NqMkhFWmpKZTFpUmlnT1BmaExsblVFVnV6YStodFBrZm0xQ1pl?=
+ =?utf-8?B?MngvSUZHbVBwNkxHbHo1UVJVSVBTT2pyWlpzTWVkTGp1TlhtNUtIMDhZczNk?=
+ =?utf-8?B?bCtBQ2E3WWgxdDgzMDFqNlM5Q3FZSkVsaVAwY1haZ3lSdUs2ZTNYRkpQR0ZJ?=
+ =?utf-8?B?d3U3MlVjK28waXNLS1RFT05xMFZIWHpmNVZ6K2x5by9rRitpWFFZMmkvSG82?=
+ =?utf-8?B?ZlJKbFN3VlIzNUNLWWl2MlBZL2lrUG1KcWpjNng1cW1UZmJ5dzZKSXJqL3p3?=
+ =?utf-8?B?UDJUSnVzdCt3c1YwdGlWbHhLU2EvMVB6Tkc2N2tpYm0vTUxWZjdhZEg0UGRZ?=
+ =?utf-8?B?ZHhYRCtCZFdqdXpKTGFRVnMzRE5VWEluZkQ3bWFlNEl6RzZIRUZpYnAyYkUy?=
+ =?utf-8?B?ZmE2cUhITTZVS005VUpDa3J1Zzd0NFhSVEFaeG9yU2dQOWUzUVp0NnNWYUJQ?=
+ =?utf-8?B?V2wxZDJvOEJOSGdEWHJWM21Tb3VHeUF6d3U1WTRSN0NoSW9NZkxWUldxdUVq?=
+ =?utf-8?B?Yy9WUHhGWnJSRDRJYklPNFJrclVpRGxMdUIxdXRqZzd5RHk4ejI3ZXVKTHZH?=
+ =?utf-8?B?SE1EN1loOTl3cEEyZVppdFhNK2Y2cWtteFc4V3IvOFZac0ZETDZQZWlLRTZz?=
+ =?utf-8?B?L2FadFlpTFI3dTY2MFJTdUhCM1lQNXBoMTB6M0crdEpxQ2VOS1B1c29NSjJN?=
+ =?utf-8?B?M1h0V25KZE9aK2ZBY0YwNzRQMlNkWVlNK20wU3BTdU11UCtjaWhKZVhVUTI0?=
+ =?utf-8?B?N1JNeGMvMmVvSDVTVjRRZkErL1pwbFJhRmZGY3JpT0pka0k5TE82QVVFK0tl?=
+ =?utf-8?B?c2c9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0588908e-a914-4b00-8de4-08daf99b4dca
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2023 21:27:32.4778
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2023 21:31:04.9525
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xBp40drOW4DTXXqzWc3dKEV391lR4KZaeVPKFRzNmknfyQEPYLGrsgAKmQvElTgMPeGinxkAXKq3fu7YvNpmRQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5720
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: I5x3YjIK0RK/tTqqeIhGQLRTSV+Lzk5OuYUH3WArCakNI/mhPrXoj26k0gE9sI5nOalFMvolwTkbkZo52sM0wFU0cZAxLZrHhCBzcPZ5yGE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR11MB6061
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -138,127 +170,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 18/01/2023 14:54, Jamal Hadi Salim wrote:
-> On Tue, Jan 17, 2023 at 9:48 AM Paul Blakey <paulb@nvidia.com> wrote:
->>
->> On 17/01/2023 15:40, Jamal Hadi Salim wrote:
+On 1/18/2023 10:35 AM, Saeed Mahameed wrote:
+> From: Rahul Rameshbabu <rrameshbabu@nvidia.com>
 > 
-> [..]
+> Send WQEBB size is 64 bytes and the max number of WQEBBs for an SQ is 255.
+> For 16KB pages and greater, there is always sufficient spaces for all
+> WQEBBs of an SQ. Cast mlx5e_get_max_sq_wqebbs(mdev) to u16. Prevents
+> -Wtautological-constant-out-of-range-compare warnings from occurring when
+> PAGE_SIZE >= 16KB.
 > 
->>> Question: How does someone adding these rules tell whether some of
->>> the actions are offloaded and some are not? If i am debugging this because
->>> something was wrong I would like to know.
->>
->> Currently by looking at the per action hw stats, and if they are
->> advancing. This is the same now with filters and the CT action for
->> new connections (driver reports offload, but it means that only for
->> established connections).
+> Signed-off-by: Rahul Rameshbabu <rrameshbabu@nvidia.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> I think that may be sufficient given we use the same technique for
-> filter offload.
-> Can you maybe post an example of such a working example in your commit message
-> with stats?
-> You showed a candidate scenario that could be sorted but not a running example.
-> 
-
-Sure Ill give it as full example in v3.
-
->>> It will be an action continue for a scenario where (on ingress) you have
->>> action A from A,B,C being offloaded and B,C is in s/w - the fw filter
->>> will have the
->>> B,C and flower can have A offloaded.
->>> Yes, someone/thing programming these will have to know that only A can
->>> be offloaded
->>> in that graph.
->>
->> I meant using continue to go to next tc priority "as in "action A action
->> continue" but I'm not sure about the actual details of fully supporting
->> this as its not the purpose of this patch, but maybe will lead there.
-> 
-> Yeah, that was initially confusing when i read the commit log. It sounded
-> like action continue == action pipe (because it continues to the next action
-> in the action graph).
-> Maybe fix the commit to be clearer.
-
-I don't think I mentioned it in the cover letter/commits, or did I miss 
-it ?
-
-> 
->>> Ok, so would this work for the scenario I described above? i.e A,B, C where
->>> A is offloaded but not B, C?
->>
->> You mean the reorder? we reorder the CT action first if all other
->> actions are supported, so we do all or nothing.
-> 
-> Let me give a longer explanation.
-> The key i believe is understanding the action dependency. In my mind
-> there are 3 levels of
-> complexity for assumed ordering of actions A, B, C:
-> 
-> 1) The simplest thing is to assume all-or-nothing (which is what we
-> have done so far in tc);
-> IOW if not all of A, B, C can be offloaded then we dont offload. >
-> 2) next level of complexity is assuming that A MUST occur before B
-> which MUST occur before C.
-> Therefore on ingress you can offload part of that graph depending on
-> your hardware capability.
-> Example: On ingress A, B offloaded and then "continue" to C in s/w if
-> your hardware supports
-> only offloading A and B but not C. You do the reverse of that graph
-> for egress offload.
-
-This is actually the case we want support in this patchset.
-Assuming a tc filter has action A , action CT, action B.
-If hardware finds that it can't do CT action in hardware (for example 
-for a new connection), but we already did action A, we want to continue
-executing to "action CT, action B" in sw.
-
-We can use it for partial offload of the action list, but for now it 
-will be used for supporting tuple rewrite action followed by action ct 
-such as in the example in the cover letter.
-
-> 
-> 3) And your case is even more complex because you have a lot more
-> knowledge that infact
-> there is no action dependency and you can offload something in the
-> middle like B.
-> So i believe you are solving a harder problem than #2 which is what
-> was referring to in
-> my earlier email.
-> 
-
-
-This is something we currently do but is "transparent" to the user.
-If we have action A, action CT, action B, where A/B != CT and A doesn't 
-affect CT result (no dependency), we reorder it internally as action CT, 
-action A, action B. Then if we can't do CT in hardware, we didn't do A, 
-and can continue in sw to re-execute the filter and actions.
-
-If there is no action dependency then let driver take care of the 
-details as we currently do we mlx5.
-
-
-> The way these things are typically solved is to have a "dependency"
-> graph that can be
-> programmed depending on h/w offload capability and then you can make a decision
-> whether (even in s/w) to allow A,B,C vs C,A,B for example.
-> 
-> Note: I am not asking for the change - but would be nice to have and I
-> think over time
-> generalize. I am not sure how other vendors would implement this today.
-> 
-> Note: if i have something smart in user space - which is what i was
-> referring to earlier
-> (with mention of skbmark) I can achieve these goals without any kernel
-> code changes
-> but like i said i understand the operational simplicity by putting
-> things in the kernel.
-
-Yeah that would work.
-
-
-Thanks for the comments,
-Paul.
-
->  > cheers,
-> jamal
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+> index 853f312cd757..5578f92f7e0f 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+> @@ -445,7 +445,7 @@ mlx5e_set_eseg_swp(struct sk_buff *skb, struct mlx5_wqe_eth_seg *eseg,
+>  
+>  static inline u16 mlx5e_stop_room_for_wqe(struct mlx5_core_dev *mdev, u16 wqe_size)
+>  {
+> -	WARN_ON_ONCE(PAGE_SIZE / MLX5_SEND_WQE_BB < mlx5e_get_max_sq_wqebbs(mdev));
+> +	WARN_ON_ONCE(PAGE_SIZE / MLX5_SEND_WQE_BB < (u16)mlx5e_get_max_sq_wqebbs(mdev));
+>  
+>  	/* A WQE must not cross the page boundary, hence two conditions:
+>  	 * 1. Its size must not exceed the page size.
