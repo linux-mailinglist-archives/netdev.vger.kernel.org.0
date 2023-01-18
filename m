@@ -2,44 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B57067167A
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 09:48:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E28067168F
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 09:52:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229735AbjARIr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 03:47:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53154 "EHLO
+        id S229993AbjARIwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 03:52:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229682AbjARIqw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 03:46:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADAA0917EC;
-        Wed, 18 Jan 2023 00:00:57 -0800 (PST)
+        with ESMTP id S229871AbjARIwX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 03:52:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693A853FBE
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 00:04:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62AAF616E0;
-        Wed, 18 Jan 2023 08:00:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B344C433EF;
-        Wed, 18 Jan 2023 08:00:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1674028810;
-        bh=MwEEXqoGk56u8LPTYHXLSnpeUnjs6RdCBwU7mIZeA4g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NasmP917JjdtrIualtLpqp4kX3x0RUg9A75XwdwVZEQL4WpHjPzuJ5sOsig1KOf5+
-         bsqffv8GUhra3EXe8qKxIcpllmpV8/H08f5wsVYr2n6GxbMKiP15W1iRj1IW1WuCBj
-         IXX3PEC1asZ/mS0U6dbV6n5UT8HhLm49hDnmr144=
-Date:   Wed, 18 Jan 2023 09:00:08 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jaewan Kim <jaewan@google.com>
-Cc:     johannes@sipsolutions.net, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@android.com, adelva@google.com
-Subject: Re: [RESEND v3 1/2] mac80211_hwsim: add PMSR capability support
-Message-ID: <Y8enCG2zk5b9TCiN@kroah.com>
-References: <20230112070947.1168555-1-jaewan@google.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 180B1B81B3E
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 08:04:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89FC5C433D2;
+        Wed, 18 Jan 2023 08:04:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674029063;
+        bh=uO4OgFD3i4GyqIg8AYi04qdkoc7n8UqLiTwISd3Ry0s=;
+        h=From:To:Cc:Subject:Date:From;
+        b=aTStC6ykJ9tiF0BmcnAqZvEAM36jE5UtACdVvv3BHYbl9tcUzkyOT0v+VEwx39fiM
+         hNuIu3tKFx2fG6OEK+DehS49/oZuMgcLK0xqVRDREh9y9FBIFocBDqIWZcZaqdCFhC
+         q4bUX2hdBMsS9jF7XF2J5M+JnIbjeuLOQSO1qOCe+X/8BEPeALbz+HWSfQuXhpqbr3
+         4bX4+0dZ3NC/dBxsXHzkjhUWHnOZgbeXQMEbOgp2xK3x/M8UQihZ6EOJWjbdHK4sQC
+         +vJmrPJDUBlG9qU4GOT4FqSmmOXl5qMDbf1wZk+NxVeK7Cy1Lb/XsoLcsa2P0ZbCcb
+         W1FpsL5qrlQCA==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [pull request][net 00/10] mlx5 fixes 2023-01-18
+Date:   Wed, 18 Jan 2023 00:04:04 -0800
+Message-Id: <20230118080414.77902-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230112070947.1168555-1-jaewan@google.com>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -49,277 +53,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 12, 2023 at 04:09:46PM +0900, Jaewan Kim wrote:
-> Add HWSIM_ATTR_PMSR_SUPPORT to configure PMSR support.
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-What does this mean?  This is a new feature with almost no information
-about what it is, how it can be used, or what it is for.
+This series provides bug fixes to mlx5 driver.
+Please pull and let me know if there is any problem.
 
-Would you accept a patch that was sent to you like this with no
-documentation at all?
-
-
-> 
-
-> Signed-off-by: Jaewan Kim <jaewan@google.com>
-> ---
->  drivers/net/wireless/mac80211_hwsim.c | 159 +++++++++++++++++++++++++-
->  drivers/net/wireless/mac80211_hwsim.h |   2 +
->  include/net/cfg80211.h                |  10 ++
->  net/wireless/nl80211.c                |  17 ++-
->  4 files changed, 182 insertions(+), 6 deletions(-)
-> 
-> diff --git drivers/net/wireless/mac80211_hwsim.c drivers/net/wireless/mac80211_hwsim.c
-> index c57c8903b7c0..0d5b7b5d3121 100644
-> --- drivers/net/wireless/mac80211_hwsim.c
-> +++ drivers/net/wireless/mac80211_hwsim.c
-> @@ -719,6 +719,9 @@ struct mac80211_hwsim_data {
->  	/* RSSI in rx status of the receiver */
->  	int rx_rssi;
->  
-> +	/* only used when pmsr capability is supplied */
-> +	struct cfg80211_pmsr_capabilities pmsr_capa;
-> +
->  	struct mac80211_hwsim_link_data link_data[IEEE80211_MLD_MAX_NUM_LINKS];
->  };
->  
-> @@ -760,6 +763,37 @@ static const struct genl_multicast_group hwsim_mcgrps[] = {
->  
->  /* MAC80211_HWSIM netlink policy */
->  
-> +static const struct nla_policy
-> +hwsim_ftm_capa_policy[NL80211_PMSR_FTM_CAPA_ATTR_MAX + 1] = {
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_ASAP] = { .type = NLA_FLAG },
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_NON_ASAP] = { .type = NLA_FLAG },
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_REQ_LCI] = { .type = NLA_FLAG },
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_REQ_CIVICLOC] = { .type = NLA_FLAG },
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_PREAMBLES] = { .type = NLA_U32 },
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_BANDWIDTHS] = { .type = NLA_U32 },
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_MAX_BURSTS_EXPONENT] =
-> +		NLA_POLICY_MAX(NLA_U8, 15),
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_MAX_FTMS_PER_BURST] =
-> +		NLA_POLICY_MAX(NLA_U8, 31),
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_TRIGGER_BASED] = { .type = NLA_FLAG },
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_NON_TRIGGER_BASED] = { .type = NLA_FLAG },
-> +};
-> +
-> +static const struct nla_policy
-> +hwsim_pmsr_type_policy[NL80211_PMSR_TYPE_MAX + 1] = {
-> +	[NL80211_PMSR_TYPE_FTM] = NLA_POLICY_NESTED(hwsim_ftm_capa_policy),
-> +};
-> +
-> +static const struct nla_policy
-> +hwsim_pmsr_capa_policy[NL80211_PMSR_ATTR_MAX + 1] = {
-> +	[NL80211_PMSR_ATTR_MAX_PEERS] = { .type = NLA_U32 },
-> +	[NL80211_PMSR_ATTR_REPORT_AP_TSF] = { .type = NLA_FLAG },
-> +	[NL80211_PMSR_ATTR_RANDOMIZE_MAC_ADDR] = { .type = NLA_FLAG },
-> +	[NL80211_PMSR_ATTR_TYPE_CAPA] =
-> +		NLA_POLICY_NESTED(hwsim_pmsr_type_policy),
-> +	[NL80211_PMSR_ATTR_PEERS] = { .type = NLA_REJECT }, // only for request.
-> +};
-> +
->  static const struct nla_policy hwsim_genl_policy[HWSIM_ATTR_MAX + 1] = {
->  	[HWSIM_ATTR_ADDR_RECEIVER] = NLA_POLICY_ETH_ADDR_COMPAT,
->  	[HWSIM_ATTR_ADDR_TRANSMITTER] = NLA_POLICY_ETH_ADDR_COMPAT,
-> @@ -788,6 +822,7 @@ static const struct nla_policy hwsim_genl_policy[HWSIM_ATTR_MAX + 1] = {
->  	[HWSIM_ATTR_IFTYPE_SUPPORT] = { .type = NLA_U32 },
->  	[HWSIM_ATTR_CIPHER_SUPPORT] = { .type = NLA_BINARY },
->  	[HWSIM_ATTR_MLO_SUPPORT] = { .type = NLA_FLAG },
-> +	[HWSIM_ATTR_PMSR_SUPPORT] = NLA_POLICY_NESTED(hwsim_pmsr_capa_policy),
->  };
->  
->  #if IS_REACHABLE(CONFIG_VIRTIO)
-> @@ -3107,6 +3142,18 @@ static int mac80211_hwsim_change_sta_links(struct ieee80211_hw *hw,
->  	return 0;
->  }
->  
-> +static int mac80211_hwsim_start_pmsr(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-> +				     struct cfg80211_pmsr_request *request)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
-> +
-> +static void mac80211_hwsim_abort_pmsr(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-> +				      struct cfg80211_pmsr_request *request)
-> +{
-> +	// Do nothing for now.
-> +}
-> +
->  #define HWSIM_COMMON_OPS					\
->  	.tx = mac80211_hwsim_tx,				\
->  	.wake_tx_queue = ieee80211_handle_wake_tx_queue,	\
-> @@ -3129,7 +3176,9 @@ static int mac80211_hwsim_change_sta_links(struct ieee80211_hw *hw,
->  	.flush = mac80211_hwsim_flush,				\
->  	.get_et_sset_count = mac80211_hwsim_get_et_sset_count,	\
->  	.get_et_stats = mac80211_hwsim_get_et_stats,		\
-> -	.get_et_strings = mac80211_hwsim_get_et_strings,
-> +	.get_et_strings = mac80211_hwsim_get_et_strings,	\
-> +	.start_pmsr = mac80211_hwsim_start_pmsr,		\
-> +	.abort_pmsr = mac80211_hwsim_abort_pmsr,
->  
->  #define HWSIM_NON_MLO_OPS					\
->  	.sta_add = mac80211_hwsim_sta_add,			\
-> @@ -3186,6 +3235,7 @@ struct hwsim_new_radio_params {
->  	u32 *ciphers;
->  	u8 n_ciphers;
->  	bool mlo;
-> +	const struct cfg80211_pmsr_capabilities *pmsr_capa;
->  };
->  
->  static void hwsim_mcast_config_msg(struct sk_buff *mcast_skb,
-> @@ -3260,6 +3310,13 @@ static int append_radio_msg(struct sk_buff *skb, int id,
->  			return ret;
->  	}
->  
-> +	if (param->pmsr_capa) {
-> +		ret = cfg80211_send_pmsr_capa(param->pmsr_capa, skb);
-> +
-> +		if (ret < 0)
-> +			return ret;
-
-No need for this, just "return ret" below.
-
-> +	}
-> +
->  	return 0;
-
-	return ret;
+Thanks,
+Saeed.
 
 
->  }
->  
-> @@ -4606,6 +4663,11 @@ static int mac80211_hwsim_new_radio(struct genl_info *info,
->  				    data->debugfs,
->  				    data, &hwsim_simulate_radar);
->  
-> +	if (param->pmsr_capa) {
-> +		data->pmsr_capa = *param->pmsr_capa;
-> +		hw->wiphy->pmsr_capa = &data->pmsr_capa;
-> +	}
-> +
->  	spin_lock_bh(&hwsim_radio_lock);
->  	err = rhashtable_insert_fast(&hwsim_radios_rht, &data->rht,
->  				     hwsim_rht_params);
-> @@ -4715,6 +4777,7 @@ static int mac80211_hwsim_get_radio(struct sk_buff *skb,
->  	param.regd = data->regd;
->  	param.channels = data->channels;
->  	param.hwname = wiphy_name(data->hw->wiphy);
-> +	param.pmsr_capa = &data->pmsr_capa;
->  
->  	res = append_radio_msg(skb, data->idx, &param);
->  	if (res < 0)
-> @@ -5053,6 +5116,83 @@ static bool hwsim_known_ciphers(const u32 *ciphers, int n_ciphers)
->  	return true;
->  }
->  
-> +static int parse_ftm_capa(const struct nlattr *ftm_capa,
-> +			  struct cfg80211_pmsr_capabilities *out)
-> +{
-> +	struct nlattr *tb[NL80211_PMSR_FTM_CAPA_ATTR_MAX + 1];
-> +	int ret = nla_parse_nested(tb, NL80211_PMSR_FTM_CAPA_ATTR_MAX,
-> +				   ftm_capa, hwsim_ftm_capa_policy, NULL);
-> +	if (ret) {
-> +		pr_err("mac80211_hwsim: malformed FTM capability");
-> +		return -EINVAL;
-> +	}
-> +
-> +	out->ftm.supported = 1;
-> +	if (tb[NL80211_PMSR_FTM_CAPA_ATTR_PREAMBLES])
-> +		out->ftm.preambles =
-> +			nla_get_u32(tb[NL80211_PMSR_FTM_CAPA_ATTR_PREAMBLES]);
-> +	if (tb[NL80211_PMSR_FTM_CAPA_ATTR_BANDWIDTHS])
-> +		out->ftm.bandwidths =
-> +			nla_get_u32(tb[NL80211_PMSR_FTM_CAPA_ATTR_BANDWIDTHS]);
-> +	if (tb[NL80211_PMSR_FTM_CAPA_ATTR_MAX_BURSTS_EXPONENT])
-> +		out->ftm.max_bursts_exponent =
-> +			nla_get_u8(tb[NL80211_PMSR_FTM_CAPA_ATTR_MAX_BURSTS_EXPONENT]);
-> +	if (tb[NL80211_PMSR_FTM_CAPA_ATTR_MAX_FTMS_PER_BURST])
-> +		out->ftm.max_ftms_per_burst =
-> +			nla_get_u8(tb[NL80211_PMSR_FTM_CAPA_ATTR_MAX_FTMS_PER_BURST]);
-> +	out->ftm.asap =
-> +		!!tb[NL80211_PMSR_FTM_CAPA_ATTR_ASAP];
-> +	out->ftm.non_asap =
-> +		!!tb[NL80211_PMSR_FTM_CAPA_ATTR_NON_ASAP];
-> +	out->ftm.request_lci =
-> +		!!tb[NL80211_PMSR_FTM_CAPA_ATTR_REQ_LCI];
-> +	out->ftm.request_civicloc =
-> +		!!tb[NL80211_PMSR_FTM_CAPA_ATTR_REQ_CIVICLOC];
-> +	out->ftm.trigger_based =
-> +		!!tb[NL80211_PMSR_FTM_CAPA_ATTR_TRIGGER_BASED];
-> +	out->ftm.non_trigger_based =
-> +		!!tb[NL80211_PMSR_FTM_CAPA_ATTR_NON_TRIGGER_BASED];
-> +
-> +	return 0;
-> +}
-> +
-> +static int parse_pmsr_capa(const struct nlattr *pmsr_capa,
-> +			   struct cfg80211_pmsr_capabilities *out)
-> +{
-> +	struct nlattr *tb[NL80211_PMSR_ATTR_MAX + 1];
-> +	struct nlattr *nla;
-> +	int size;
-> +	int ret = nla_parse_nested(tb, NL80211_PMSR_ATTR_MAX, pmsr_capa,
-> +				   hwsim_pmsr_capa_policy, NULL);
-> +	if (ret) {
-> +		pr_err("mac80211_hwsim: malformed PMSR capability");
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (tb[NL80211_PMSR_ATTR_MAX_PEERS])
-> +		out->max_peers =
-> +			nla_get_u32(tb[NL80211_PMSR_ATTR_MAX_PEERS]);
-> +	out->report_ap_tsf = !!tb[NL80211_PMSR_ATTR_REPORT_AP_TSF];
-> +	out->randomize_mac_addr =
-> +		!!tb[NL80211_PMSR_ATTR_RANDOMIZE_MAC_ADDR];
-> +
-> +	if (!tb[NL80211_PMSR_ATTR_TYPE_CAPA]) {
-> +		pr_err("mac80211_hwsim: malformed PMSR type");
-> +		return -EINVAL;
-> +	}
-> +
-> +	nla_for_each_nested(nla, tb[NL80211_PMSR_ATTR_TYPE_CAPA], size) {
-> +		switch (nla_type(nla)) {
-> +		case NL80211_PMSR_TYPE_FTM:
-> +			parse_ftm_capa(nla, out);
-> +			break;
-> +		default:
-> +			pr_warn("mac80211_hwsim: Unknown PMSR type\n");
-> +		}
-> +	}
-> +	return 0;
-> +}
-> +
->  static int hwsim_new_radio_nl(struct sk_buff *msg, struct genl_info *info)
->  {
->  	struct hwsim_new_radio_params param = { 0 };
-> @@ -5173,8 +5313,24 @@ static int hwsim_new_radio_nl(struct sk_buff *msg, struct genl_info *info)
->  		param.hwname = hwname;
->  	}
->  
-> +	if (info->attrs[HWSIM_ATTR_PMSR_SUPPORT]) {
-> +		struct cfg80211_pmsr_capabilities *pmsr_capa =
-> +			kmalloc(sizeof(struct cfg80211_pmsr_capabilities),
-> +				GFP_KERNEL);
-> +		if (!pmsr_capa)
-> +			return -ENOMEM;
+The following changes since commit 010a74f52203eae037dd6aa111ba371f6a2dedc5:
 
-Did you just leak memory?  What frees hwname now?
+  Merge tag 'for-net-2023-01-17' of git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth (2023-01-17 19:19:00 -0800)
 
-> +		ret = parse_pmsr_capa(info->attrs[HWSIM_ATTR_PMSR_SUPPORT],
-> +				      pmsr_capa);
-> +		if (ret)
-> +			goto out_free;
-> +		param.pmsr_capa = pmsr_capa;
-> +	}
-> +
->  	ret = mac80211_hwsim_new_radio(info, &param);
-> +
-> +out_free:
->  	kfree(hwname);
-> +	kfree(param.pmsr_capa);
+are available in the Git repository at:
 
-You just leaked memory (hint, check your error path logic above...)
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2023-01-18
 
-How did you test this?
+for you to fetch changes up to 2c1e1b949024989e20907b84e11a731a50778416:
 
-greg k-h
+  net: mlx5: eliminate anonymous module_init & module_exit (2023-01-18 00:01:39 -0800)
+
+----------------------------------------------------------------
+mlx5-fixes-2023-01-18
+
+----------------------------------------------------------------
+Adham Faris (1):
+      net/mlx5e: Remove redundant xsk pointer check in mlx5e_mpwrq_validate_xsk
+
+Chris Mi (2):
+      net/mlx5e: Set decap action based on attr for sample
+      net/mlx5: E-switch, Fix switchdev mode after devlink reload
+
+Leon Romanovsky (2):
+      net/mlx5e: Remove optimization which prevented update of ESN state
+      net/mlx5e: Protect global IPsec ASO
+
+Maor Dickman (2):
+      net/mlx5: E-switch, Fix setting of reserved fields on MODIFY_SCHEDULING_ELEMENT
+      net/mlx5e: QoS, Fix wrongfully setting parent_element_id on MODIFY_SCHEDULING_ELEMENT
+
+Randy Dunlap (1):
+      net: mlx5: eliminate anonymous module_init & module_exit
+
+Vlad Buslov (1):
+      net/mlx5e: Avoid false lock dependency warning on tc_ht even more
+
+Yang Yingliang (1):
+      net/mlx5: fix missing mutex_unlock in mlx5_fw_fatal_reporter_err_work()
+
+ drivers/net/ethernet/mellanox/mlx5/core/en/htb.c       |  4 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/en/params.c    |  3 +--
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c |  5 ++---
+ .../net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h   |  7 ++-----
+ .../mellanox/mlx5/core/en_accel/ipsec_offload.c        | 12 ++++++------
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c        |  3 +++
+ drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c      | 18 +++---------------
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c      |  1 +
+ drivers/net/ethernet/mellanox/mlx5/core/health.c       |  1 +
+ drivers/net/ethernet/mellanox/mlx5/core/main.c         |  8 ++++----
+ drivers/net/ethernet/mellanox/mlx5/core/qos.c          |  3 +--
+ drivers/net/ethernet/mellanox/mlx5/core/qos.h          |  2 +-
+ 12 files changed, 27 insertions(+), 40 deletions(-)
