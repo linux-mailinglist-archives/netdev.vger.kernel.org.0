@@ -2,49 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24C58670FF2
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 02:25:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80DB7671061
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 02:45:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229489AbjARBZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 20:25:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45866 "EHLO
+        id S229492AbjARBpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 20:45:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbjARBZr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 20:25:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5A9D10D7
-        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 17:25:46 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C4D6B8164A
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 01:25:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7722C433D2;
-        Wed, 18 Jan 2023 01:25:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674005143;
-        bh=iVB7UfksrOBUAKFafPB0kqhM4GlvklXG7Uk1Kva9XZo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jfpp17G27SI+qjqztEr6PhFgw43qJh+FPojU+zQTHvlHLbQ/75Pbu7498etB2HYRt
-         0huqVviZnjszhFUa+d6Bg3CEVZpFQ6k2Eg+dXlhCpI1rmh4XO26BEazcReHAI7V3Rj
-         JM8HE2rDIvED/dNoLgv3UZBk5oZjKZZxEeBp3eEOBChw4WnZLwzlR8plT6dO2Cl8dt
-         OSkFHv3lgssmnGFPt3pw0kEXb6NuedYDjPzaCqKrH7DcJQeV0Sm1dkhogq/3aiJfyq
-         Gf/l3yttOSisTJj4JB+nSI0uMkcjma0x64e24cnzBk7bpbd3LH3XPSdRldumTSaIPC
-         meFHfYgBltHhw==
-Date:   Tue, 17 Jan 2023 17:25:42 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Geoff Levand <geoff@infradead.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH v1 7/7] net/ps3_gelic: Fix DMA mapping problems
-Message-ID: <20230117172542.5a05e37d@kernel.org>
-In-Reply-To: <32670eab538e232957517b74f4a547b0315253f7.1673748018.git.geoff@infradead.org>
-References: <cover.1673748018.git.geoff@infradead.org>
-        <32670eab538e232957517b74f4a547b0315253f7.1673748018.git.geoff@infradead.org>
+        with ESMTP id S229454AbjARBpm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 20:45:42 -0500
+Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6237B86A5;
+        Tue, 17 Jan 2023 17:45:39 -0800 (PST)
+Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
+        by ex01.ufhost.com (Postfix) with ESMTP id 9124B24DFCE;
+        Wed, 18 Jan 2023 09:45:30 +0800 (CST)
+Received: from EXMBX073.cuchost.com (172.16.6.83) by EXMBX165.cuchost.com
+ (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Wed, 18 Jan
+ 2023 09:45:30 +0800
+Received: from [192.168.120.49] (171.223.208.138) by EXMBX073.cuchost.com
+ (172.16.6.83) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Wed, 18 Jan
+ 2023 09:45:29 +0800
+Message-ID: <9c59e7b4-ba5f-365c-7d71-1ff2953f6672@starfivetech.com>
+Date:   Wed, 18 Jan 2023 09:45:28 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v3 4/7] dt-bindings: net: Add support StarFive dwmac
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>
+References: <20230106030001.1952-1-yanhong.wang@starfivetech.com>
+ <20230106030001.1952-5-yanhong.wang@starfivetech.com>
+ <c114239e-2dae-3962-24f3-8277ff173582@linaro.org>
+From:   yanhong wang <yanhong.wang@starfivetech.com>
+In-Reply-To: <c114239e-2dae-3962-24f3-8277ff173582@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS061.cuchost.com (172.16.6.21) To EXMBX073.cuchost.com
+ (172.16.6.83)
+X-YovoleRuleAgent: yovoleflag
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,20 +65,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Jan 2023 21:05:57 +0000 Geoff Levand wrote:
-> Fixes several DMA mapping problems with the PS3's gelic network driver:
+
+
+On 2023/1/6 20:45, Krzysztof Kozlowski wrote:
+> On 06/01/2023 03:59, Yanhong Wang wrote:
+>> Add documentation to describe StarFive dwmac driver(GMAC).
+>> 
+>> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
+>> ---
+>>  .../devicetree/bindings/net/snps,dwmac.yaml   |   1 +
+>>  .../bindings/net/starfive,jh7110-dwmac.yaml   | 113 ++++++++++++++++++
+>>  MAINTAINERS                                   |   5 +
 > 
->  * Change from checking the return value of dma_map_single to using the
->    dma_mapping_error routine.
->  * Use the correct buffer length when mapping the RX skb.
+> Order the patches correctly. Why this binding patch is split from previous?
+> 
 
-These two should be separate patches in a series sent against the net
-tree (meaning [PATCH net] and a Fixes tag in the commit message).
+The previous binding patch was considered to be compatible with JH7100, but after discussion,
+it is not compatible with JH7100 for the time being, so the name of binding has been modified
+in this patch.
 
-Then a week later (once the fixes have propagated into the net-next
-tree) you can send the cleanups to net-next.
 
-https://www.kernel.org/doc/html/next/process/maintainer-netdev.html
-
-Before any of that tho - the emails must reach the mailing list.
-No idea why your posting did not show up there :(
+> Best regards,
+> Krzysztof
+> 
