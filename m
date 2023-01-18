@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 943C3672CE3
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 00:47:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5599A672CE9
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 00:48:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230125AbjARXra (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 18:47:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50392 "EHLO
+        id S230253AbjARXsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 18:48:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230119AbjARXrY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 18:47:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C005457EE;
-        Wed, 18 Jan 2023 15:47:05 -0800 (PST)
+        with ESMTP id S230209AbjARXrf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 18:47:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147254A209;
+        Wed, 18 Jan 2023 15:47:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38484B81F15;
-        Wed, 18 Jan 2023 23:47:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBA28C433EF;
-        Wed, 18 Jan 2023 23:46:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE56EB81F9C;
+        Wed, 18 Jan 2023 23:47:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36586C433F1;
+        Wed, 18 Jan 2023 23:47:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674085620;
-        bh=Gfwvn53sy7/1OA4WjgdfWmy9e90PwOSc2SBfrJghS2M=;
+        s=k20201202; t=1674085622;
+        bh=jU3LaV/UIN+dmBuggye012PcdlnkG7nIjHD98dbjUpk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DvjHgKGekNLdHpc8ojQEuGgV8t992eddxElqZ6jWyK8yPZuKe/IFbrugnJBS/rPNB
-         xTsHlc5CCJBNFxgVC3elNiAg1py5be+Sh+pmWBA/ExVfaqS+Xnd16tlP/mT8QwbOXc
-         8Yo6qSPa8aIIps+GK4d0IW7yIEMY/vzDPcRhCgnRXQYC8O5/MSvoUm9zQkVpVrr+u6
-         GVMjjC5Gd5mmKnUks9z0D7adsLqBDpeFwXZ2U7nd7XjRTE4sNRq9snguid573PVDEO
-         POhSJ7MP4/1voLyfWToyNTbT0I5EfJo/HR3xt669qJzzh31eomDqXdrOcYC7gE291w
-         Rxqbu4/5E5dMg==
+        b=i4ewNbWLwndEi0QGob/RnVhLVMjzuxxSDIsj4Wz1njkOXrN9upsBTs0ek+BPlL5as
+         abQIZHzIDFX9Jwrt81zSgXU7iG8Dbwt1h94kki3ko5cioXiZCIEOkfZy25ZCh1f3dr
+         cwwgILQ4BWtV58AG2KtydiFYCCAOURTCsyziY0YAzmDaWvSTIo8CbjQ0m+Kduuv8KF
+         a5m+O4VBqcZLRX63ASPiFiX6tv4WrapyoAdu8xmNdUJFKlAq3GU9Bbw/9tXyKRoDdh
+         ioomQ2xowXpviJFHoiZqGEtYa8ZQnlTel79kH9P1YvHZBQ3eW1ffOOj5raLHnFojuh
+         cQDucPtnpq7qQ==
 From:   Bjorn Helgaas <helgaas@kernel.org>
 To:     linux-pci@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH 7/9] igb: Remove redundant pci_enable_pcie_error_reporting()
-Date:   Wed, 18 Jan 2023 17:46:10 -0600
-Message-Id: <20230118234612.272916-8-helgaas@kernel.org>
+Subject: [PATCH 8/9] igc: Remove redundant pci_enable_pcie_error_reporting()
+Date:   Wed, 18 Jan 2023 17:46:11 -0600
+Message-Id: <20230118234612.272916-9-helgaas@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230118234612.272916-1-helgaas@kernel.org>
 References: <20230118234612.272916-1-helgaas@kernel.org>
@@ -74,23 +74,23 @@ Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
 Cc: intel-wired-lan@lists.osuosl.org
 Cc: netdev@vger.kernel.org
 ---
- drivers/net/ethernet/intel/igb/igb_main.c | 5 -----
+ drivers/net/ethernet/intel/igc/igc_main.c | 5 -----
  1 file changed, 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 3c0c35ecea10..c56b991fa610 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -3194,8 +3194,6 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 44b1740dc098..a4df4ef088a9 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -6430,8 +6430,6 @@ static int igc_probe(struct pci_dev *pdev,
  	if (err)
  		goto err_pci_reg;
  
 -	pci_enable_pcie_error_reporting(pdev);
 -
- 	pci_set_master(pdev);
- 	pci_save_state(pdev);
- 
-@@ -3626,7 +3624,6 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	err = pci_enable_ptm(pdev, NULL);
+ 	if (err < 0)
+ 		dev_info(&pdev->dev, "PCIe PTM not supported by PCIe bus/controller\n");
+@@ -6636,7 +6634,6 @@ static int igc_probe(struct pci_dev *pdev,
  err_ioremap:
  	free_netdev(netdev);
  err_alloc_etherdev:
@@ -98,8 +98,8 @@ index 3c0c35ecea10..c56b991fa610 100644
  	pci_release_mem_regions(pdev);
  err_pci_reg:
  err_dma:
-@@ -3837,8 +3834,6 @@ static void igb_remove(struct pci_dev *pdev)
- 	kfree(adapter->shadow_vfta);
+@@ -6684,8 +6681,6 @@ static void igc_remove(struct pci_dev *pdev)
+ 
  	free_netdev(netdev);
  
 -	pci_disable_pcie_error_reporting(pdev);
