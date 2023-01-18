@@ -2,53 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 087526711E6
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 04:26:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 769966711ED
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 04:28:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229655AbjARD0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 22:26:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49442 "EHLO
+        id S229695AbjARD20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 22:28:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbjARD0I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 22:26:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760254FCFD;
-        Tue, 17 Jan 2023 19:26:07 -0800 (PST)
+        with ESMTP id S229613AbjARD2Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 22:28:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3607811E81;
+        Tue, 17 Jan 2023 19:28:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04DEE61601;
-        Wed, 18 Jan 2023 03:26:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9896CC433D2;
-        Wed, 18 Jan 2023 03:26:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C46B761607;
+        Wed, 18 Jan 2023 03:28:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C4FEC433EF;
+        Wed, 18 Jan 2023 03:28:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674012366;
-        bh=2PjPN3LtRvrndMQORaS0fpW+/QZolRQR3rsF4H3EiN8=;
+        s=k20201202; t=1674012503;
+        bh=k96Ml/PDOJtVE05PoJWLCs7yRQ9tZ9Qg1uwWiBkA0tQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NaWie1TaQKSc3V5S8P/fdVLJlre+Oh4kUX0WxnRvRoTBBJl951Cp0UogKidPXNoG3
-         EatUia4U3W95xHdcY173+0tCR+hsP9tNTu7c7wzJ0FctumV+GqRiTvKPTWwUX5FuTy
-         UcoSQyabrgSGSixX/x2ur7c/OgjH/1Xuk3Z4KPZCZ5bUNnrvotMHT22PtTx+K91cFs
-         4Kd7JGeKc/QE0eSw6MQb9GmIV4uBhkl8ep0aC6hVXdNOpQNoJDUcShg5U6S7YdB8r+
-         jwAh0SGCSItrot17rx0VZ23HpeF/kAkOUrrSkaTDtdN2V428YEflPrk60Fn8LSU6QT
-         7PyavQ+spyLog==
-Date:   Tue, 17 Jan 2023 19:26:04 -0800
+        b=Ul6g4/P+OIiwUyH+c9MRWQdy+zm850GjjS+F4NVZ0yj3nQ8z2NJZGRldwuZt1KP9x
+         jLqoP+2boN7D5ryk+w7OctOKCWqIGc45j9bs91CI8P+RKVxyc8GDQdgDoyS+1jzwxV
+         VVYmADt9CyqxIaO6EsoD5SVWCWxb81NOLSFFmOSEEXt+8ui0tta+I2q3SOXCUIn6Fl
+         M23UFXz9b4RRrwWLc9Ur1MGQcxuQkIqMTZgrwfm6uYzRMgUnULIlbzQuD2sIjTypnD
+         i3sSp55VgLLEJtBpYSlZ4LmphYh5UvHmsV0TzR3qF1jKYu/USZtULuKwjKP7txnjrd
+         L07jsbDErmhGQ==
+Date:   Tue, 17 Jan 2023 19:28:21 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
+To:     Jan Karcher <jaka@linux.ibm.com>
+Cc:     David Miller <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
-        mailhol.vincent@wanadoo.fr, sudheer.mogilappagari@intel.com,
-        sbhatta@marvell.com, linux-doc@vger.kernel.org,
-        wangjie125@huawei.com, corbet@lwn.net, lkp@intel.com,
-        gal@nvidia.com, gustavoars@kernel.org, bagasdotme@gmail.com
-Subject: Re: [PATCH net-next 1/1] drivers/phylib: fix coverity issue
-Message-ID: <20230117192604.77a16822@kernel.org>
-In-Reply-To: <5061b6d09d0cd69c832c9c0f2f1a6848d3a5ab1c.1673991998.git.piergiorgio.beruto@gmail.com>
-References: <5061b6d09d0cd69c832c9c0f2f1a6848d3a5ab1c.1673991998.git.piergiorgio.beruto@gmail.com>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Thorsten Winkler <twinkler@linux.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Nils Hoppmann <niho@linux.ibm.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Tony Lu <tonylu@linux.alibaba.com>,
+        Wen Gu <guwen@linux.alibaba.com>
+Subject: Re: [net-next 8/8] net/smc: De-tangle ism and smc device
+ initialization
+Message-ID: <20230117192821.6bab7f24@kernel.org>
+In-Reply-To: <20230116092712.10176-9-jaka@linux.ibm.com>
+References: <20230116092712.10176-1-jaka@linux.ibm.com>
+        <20230116092712.10176-9-jaka@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -61,37 +65,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 Jan 2023 22:47:53 +0100 Piergiorgio Beruto wrote:
-> Subject: [PATCH net-next 1/1] drivers/phylib: fix coverity issue
-
-The title of the patch should refer to the bug rather than which tool
-found it.
-
-here, for eaxmple:
-
-  net: phy: fix use of uninit variable when setting PLCA config
-
-> Coverity reported the following:
+On Mon, 16 Jan 2023 10:27:12 +0100 Jan Karcher wrote:
+> From: Stefan Raspl <raspl@linux.ibm.com>
 > 
-> *** CID 1530573:    (UNINIT)
-> drivers/net/phy/phy-c45.c:1036 in genphy_c45_plca_set_cfg()
-> 1030     				return ret;
-> 1031
-> 1032     			val = ret;
-> 1033     		}
-> 1034
-> 1035     		if (plca_cfg->node_cnt >= 0)
-[snip]
-> Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-> Reported-by: coverity-bot <keescook+coverity-bot@chromium.org>
-> Addresses-Coverity-ID: 1530573 ("UNINIT")
-> Fixes: 493323416fed ("drivers/net/phy: add helpers to get/set PLCA configuration")
+> The struct device for ISM devices was part of struct smcd_dev. Move to
+> struct ism_dev, provide a new API call in struct smcd_ops, and convert
+> existing SMCD code accordingly.
+> Furthermore, remove struct smcd_dev from struct ism_dev.
+> This is the final part of a bigger overhaul of the interfaces between SMC
+> and ISM.
 
-nit: the tags are in somewhat unnatural order. Since you'll need to
-respin for the subject change, this would be better:
-
-Reported-by: coverity-bot <keescook+coverity-bot@chromium.org>
-Fixes: 493323416fed ("drivers/net/phy: add helpers to get/set PLCA configuration")
-Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-
-(Yes, the custom coverity tag can go meet its friends in the bin)
+breaks allmodconfig build for x86
