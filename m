@@ -2,59 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 678C6672C7F
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 00:22:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A7CD672CC9
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 00:46:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbjARXV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 18:21:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35966 "EHLO
+        id S230048AbjARXqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 18:46:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbjARXV7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 18:21:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED31D15563;
-        Wed, 18 Jan 2023 15:21:57 -0800 (PST)
+        with ESMTP id S230040AbjARXqv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 18:46:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6CB71E9F3;
+        Wed, 18 Jan 2023 15:46:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 548C261AA9;
-        Wed, 18 Jan 2023 23:21:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A85F1C433D2;
-        Wed, 18 Jan 2023 23:21:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 71D3661AC1;
+        Wed, 18 Jan 2023 23:46:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADA93C433EF;
+        Wed, 18 Jan 2023 23:46:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674084116;
-        bh=i9S00yMf8qyKo0oOTiPvurWtSMXbNJFJ77YkIhe5t5k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=j2upfGLoOgCF/BO7wNwbw0zmOs/IH5KaUcAgR+WtytEGd3TIOcjEaMg494JQ0vQg5
-         +xd6jbXucRrs2bbFavMHNvSfIQUSNxl7tsQPa0Mik175+pNhiO2if7w3doJCmO08+m
-         3zxlRgCanZ5MOLYRlQWb+semP4UzRWhPBacSSrtwiJcq4r44ym70MmGI95Hv1TyqQ8
-         iC6rA/UMCi76PbYqwV5Ed0laNIzujEkvZP23U4OoCdrF2fdNTETEtFMy6Pw3Kmv4hA
-         IumOC6XmGFP33tHbJNLDQ3Eg4rn48ni1Rvj79PlZ1G+s37IgMm+21rit1JIA93VQPB
-         kofi6m4FLuCng==
-Date:   Wed, 18 Jan 2023 23:21:51 +0000
-From:   Conor Dooley <conor@kernel.org>
-To:     Yanhong Wang <yanhong.wang@starfivetech.com>
-Cc:     linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>
-Subject: Re: [PATCH v4 0/7] Add Ethernet driver for StarFive JH7110 SoC
-Message-ID: <Y8h/D7I7/2KhgM00@spud>
-References: <20230118061701.30047-1-yanhong.wang@starfivetech.com>
+        s=k20201202; t=1674085608;
+        bh=r7IHUtrt4W5zrGZVocaSLlMLC6+XXKVft9gvWcA0qEA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KzKMYlw9fGv+/adsbwH38hW9O4JEc2u4m7eaj3mVOMxGw2ynCo0NzS+FIpcg6Olwq
+         MVryBQQATlqawf+Ipu1CdWji6gdhbjcy+foqJH0Yqc0MTRBA4mt1ouLN7KXdTfY6UX
+         jyYPgYyqwOaR3S8FBz7H2ll9keheO13FcF1xH0y0CvVlFAtYqoYpXtq5g0ikg3jiCz
+         FuDiFcJ4qwGqyhVR+NdW3f06CoZ7ZtG12J053lP66SC19UmnGX+FKDhUSGgooqncKU
+         sFjmQinwDFWsjtYWpezelfV1mSA2Z/7G+W4vRs6eO+8D6b0utvpOUy/QZ2p1Iwetoh
+         x98nk/s2AJ+Ow==
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     linux-pci@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH 2/9] e1000e: Remove redundant pci_enable_pcie_error_reporting()
+Date:   Wed, 18 Jan 2023 17:46:05 -0600
+Message-Id: <20230118234612.272916-3-helgaas@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230118234612.272916-1-helgaas@kernel.org>
+References: <20230118234612.272916-1-helgaas@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="CP+gNPEkC7FNanYh"
-Content-Disposition: inline
-In-Reply-To: <20230118061701.30047-1-yanhong.wang@starfivetech.com>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -64,58 +54,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Bjorn Helgaas <bhelgaas@google.com>
 
---CP+gNPEkC7FNanYh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+pci_enable_pcie_error_reporting() enables the device to send ERR_*
+Messages.  Since f26e58bf6f54 ("PCI/AER: Enable error reporting when AER is
+native"), the PCI core does this for all devices during enumeration.
 
-Hey Yanhong!
+Remove the redundant pci_enable_pcie_error_reporting() call from the
+driver.  Also remove the corresponding pci_disable_pcie_error_reporting()
+from the driver .remove() path.
 
-On Wed, Jan 18, 2023 at 02:16:54PM +0800, Yanhong Wang wrote:
-> This series adds ethernet support for the StarFive JH7110 RISC-V SoC. The=
- series
-> includes MAC driver. The MAC version is dwmac-5.20 (from Synopsys DesignW=
-are).
-> For more information and support, you can visit RVspace wiki[1].
-> =09
-> This patchset should be applied after the patchset [2], [3], [4].
-> [1] https://wiki.rvspace.org/
-> [2] https://lore.kernel.org/all/20221118010627.70576-1-hal.feng@starfivet=
-ech.com/
-> [3] https://lore.kernel.org/all/20221118011108.70715-1-hal.feng@starfivet=
-ech.com/
-> [4] https://lore.kernel.org/all/20221118011714.70877-1-hal.feng@starfivet=
-ech.com/
+Note that this doesn't control interrupt generation by the Root Port; that
+is controlled by the AER Root Error Command register, which is managed by
+the AER service driver.
 
-I've got those series applied, albeit locally, since they're not ready,
-but I cannot get the Ethernet to work properly on my board.
-I boot all of my dev boards w/ tftp, and the visionfive2 is no exception.
-The fact that I am getting to the kernel in the first place means the
-ethernet is working in the factory supplied U-Boot [1].
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc: intel-wired-lan@lists.osuosl.org
+Cc: netdev@vger.kernel.org
+---
+ drivers/net/ethernet/intel/e1000e/netdev.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
-However, in Linux this ethernet port does not appear to work at all.
-The other ethernet port is functional in Linux, but not in the factory
-supplied U-Boot.
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index 04acd1a992fa..e1eb1de88bf9 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -7418,9 +7418,6 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if (err)
+ 		goto err_pci_reg;
+ 
+-	/* AER (Advanced Error Reporting) hooks */
+-	pci_enable_pcie_error_reporting(pdev);
+-
+ 	pci_set_master(pdev);
+ 	/* PCI config space info */
+ 	err = pci_save_state(pdev);
+@@ -7708,7 +7705,6 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ err_ioremap:
+ 	free_netdev(netdev);
+ err_alloc_etherdev:
+-	pci_disable_pcie_error_reporting(pdev);
+ 	pci_release_mem_regions(pdev);
+ err_pci_reg:
+ err_dma:
+@@ -7775,9 +7771,6 @@ static void e1000_remove(struct pci_dev *pdev)
+ 
+ 	free_netdev(netdev);
+ 
+-	/* AER disable */
+-	pci_disable_pcie_error_reporting(pdev);
+-
+ 	pci_disable_device(pdev);
+ }
+ 
+-- 
+2.25.1
 
-Is this a known issue? If it's not, I'll post the logs somewhere for
-you. In case it is relevant, my board is a v1.2a.
-
-Thanks,
-Conor.
-
-1 - U-Boot 2021.10 (Oct 31 2022 - 12:11:37 +0800), Build: jenkins-VF2_515_B=
-ranch_SDK_Release-10
-
---CP+gNPEkC7FNanYh
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCY8h/DwAKCRB4tDGHoIJi
-0kw8AP9GfecCx2UsoFt4mQLdt1S4n6zge+JkYT0BSfNEGwD7rQEAqPYvoYDK4Awd
-bkmwzm7jj5RXNYNbs51sEKR/of7XXQ8=
-=g7DT
------END PGP SIGNATURE-----
-
---CP+gNPEkC7FNanYh--
