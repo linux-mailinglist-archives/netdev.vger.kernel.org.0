@@ -2,267 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C50C86710DD
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 03:09:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A7D46710F1
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 03:14:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229630AbjARCJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 21:09:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47024 "EHLO
+        id S229734AbjARCOH convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 17 Jan 2023 21:14:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbjARCJo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 21:09:44 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE383F288;
-        Tue, 17 Jan 2023 18:09:43 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id q64so34325117pjq.4;
-        Tue, 17 Jan 2023 18:09:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=wPYJLnafeMUBMWCiXTB87nmCTkMvaEYNhkFoA4YeeW4=;
-        b=AsaEKEmGLg1tBYd5uCB4RrPSP4L0WIb26K++Cym+7HyFq0yn+h3JDa42McVGVjcmVe
-         hZK6Azy/iirbo3JtXBB1XiqvfLmYG1XSlOkpoELq1IoP85h+DX4Zi/F7NgpkKWo2es9G
-         U8W/wdUZhGQ7wWw6NJ9oErh/kg+CJE9KCtFGdtNPWQk1LmFJUkvbP0f0OmY+FwQtCV12
-         K/FYucBNCYOo6AVhFdTqV1EeIh6tVvcKSgoPPJxZfsYBG1+A8k0l2hBSsRYal6Xb80dR
-         ZAWePPS9RwUZmoJgOi15HxfDKLpY7GjuAUAZnlxOdszErMn7Ubr83TDVIY9YBqQpHpXZ
-         81lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=wPYJLnafeMUBMWCiXTB87nmCTkMvaEYNhkFoA4YeeW4=;
-        b=v2QyI/Xpv5kEGuK2OecPC/VVYYP7SxCgXOjcyuFMX1EYjar3g2E8dVtef6NqMKXI4u
-         uM0coC25g1bajiTddMWjPSgjAgI2VLDR+CAVzTtP1IzgQF8Nw8jciI+PcwwS/MUmsKPe
-         Bpnxp/RQmUCUEHYgSsMZOJGZrl43Buo4Va5FVmH8M0srOi/Idwc087ug0EpmyySF+NtQ
-         UDa7vih9Oxs2Jgn2iyAI4WVcEZoOX/auFitsk9AqpaWx/Qkl5U+fpAerrZi90CGhc8fm
-         ckQroh8oayEwsHW/VaglgSdoxSoWy9nqI+/dNmAUKnR5HTZ8czhUmdKL+/eKefSHbv8G
-         xLDQ==
-X-Gm-Message-State: AFqh2kqU1tguqx/HTQ/vrF7wL/Laqo0gRTAYNQJGjpJyfQwJzLmk6ofG
-        5KoW8rtGxh4rs2tIwvcz3WPm/Wkc76GfGyTv
-X-Google-Smtp-Source: AMrXdXuasU9eyAE4MnVjoYg8LK2ZChsrUehEukf+bYbWBcezKn4QK4giisrLlV51i0SZMUEbw81cmg==
-X-Received: by 2002:a17:90a:dac5:b0:229:502f:3910 with SMTP id g5-20020a17090adac500b00229502f3910mr5331706pjx.11.1674007782189;
-        Tue, 17 Jan 2023 18:09:42 -0800 (PST)
-Received: from Laptop-X1.redhat.com ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id c2-20020a17090a558200b00229661c5650sm193586pji.37.2023.01.17.18.09.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Jan 2023 18:09:41 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Lina Wang <lina.wang@mediatek.com>,
-        Coleman Dietsch <dietschc@csp.edu>, bpf@vger.kernel.org,
-        Maciej enczykowski <maze@google.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@rivosinc.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>
-Subject: [PATCHv4 net-next] selftests/net: mv bpf/nat6to4.c to net folder
-Date:   Wed, 18 Jan 2023 10:09:27 +0800
-Message-Id: <20230118020927.3971864-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.38.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229525AbjARCOE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 21:14:04 -0500
+Received: from bg4.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D999D2C646;
+        Tue, 17 Jan 2023 18:14:02 -0800 (PST)
+X-QQ-mid: bizesmtp63t1674007995t7ilarhe
+Received: from smtpclient.apple ( [1.202.165.115])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 18 Jan 2023 10:13:12 +0800 (CST)
+X-QQ-SSF: 00000000000000809000000A0000000
+X-QQ-FEAT: znfcQSa1hKYt2IoUPBjev0xJiHXY9/1L91X5VNAqb/e5yZ9oi32VUsokqo2nJ
+        +wPh7qedOpf/tsd3HzSONUeqf1pOD8MPxuZr0e8HJYW8yc9nStr3qH/UMCs7uC97bBIoauC
+        46fR5fcZOGBhfbnbvnndoVjlwYD2qlmAiNd3g85zOD6ybo+JHkDJ3YFv8gZnfdK624jb5L0
+        3NpTCtRd7BPUQQ1oMUmzarTm8J9gSabU6CkDDw5Lbcuxyg02RDuJDKqY2Y632j6Vq7rTuFa
+        9P1D7m16VwFZTPebxFJpM0XMMvQf3jvYtbqAw/ST3zovg30ZxZruPNqLj1J99TB8FXiCDQs
+        VGQcZ15w70JL0IH4ZUAQo2ndqJtFyqEEz+MovJW
+X-QQ-GoodBg: 0
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.20.0.1.32\))
+Subject: Re: [bpf-next v2] bpf: drop deprecated bpf_jit_enable == 2
+From:   Tonghao Zhang <tong@infragraf.org>
+In-Reply-To: <d91bbb9e-484b-d43d-e62d-0474ff21cf91@iogearbox.net>
+Date:   Wed, 18 Jan 2023 10:13:11 +0800
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.or" 
+        <linux-arm-kernel@lists.infradead.or>,
+        "loongarch@lists.linux.dev" <loongarch@lists.linux.dev>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        Hao Luo <haoluo@google.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <song@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Jiri Olsa <jolsa@kernel.org>, Hou Tao <houtao1@huawei.com>,
+        KP Singh <kpsingh@kernel.org>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        "naveen.n.rao@linux.ibm.com" <naveen.n.rao@linux.ibm.com>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <7159E8F8-AE66-4563-8A29-D10D66EFAF3D@infragraf.org>
+References: <20230105030614.26842-1-tong@infragraf.org>
+ <ea7673e1-40ec-18be-af89-5f4fd0f71742@csgroup.eu>
+ <71c83f39-f85f-d990-95b7-ab6068839e6c@iogearbox.net>
+ <5836b464-290e-203f-00f2-fc6632c9f570@csgroup.eu>
+ <147A796D-12C0-482F-B48A-16E67120622B@infragraf.org>
+ <0b46b813-05f2-5083-9f2e-82d72970dae2@csgroup.eu>
+ <4380D454-3ED0-43F4-9A79-102BB0E3577A@infragraf.org>
+ <d91bbb9e-484b-d43d-e62d-0474ff21cf91@iogearbox.net>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>
+X-Mailer: Apple Mail (2.3693.20.0.1.32)
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:infragraf.org:qybglogicsvr:qybglogicsvr5
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are some issues with the bpf/nat6to4.c building.
 
-1. It use TEST_CUSTOM_PROGS, which will add the nat6to4.o to
-   kselftest-list file and run by common run_tests.
-2. When building the test via `make -C tools/testing/selftests/
-   TARGETS="net"`, the nat6to4.o will be build in selftests/net/bpf/
-   folder. But in test udpgro_frglist.sh it refers to ../bpf/nat6to4.o.
-   The correct path should be ./bpf/nat6to4.o.
-3. If building the test via `make -C tools/testing/selftests/ TARGETS="net"
-   install`. The nat6to4.o will be installed to kselftest_install/net/
-   folder. Then the udpgro_frglist.sh should refer to ./nat6to4.o.
 
-To fix the confusing test path, let's just move the nat6to4.c to net folder
-and build it as TEST_GEN_FILES.
+> On Jan 17, 2023, at 11:59 PM, Daniel Borkmann <daniel@iogearbox.net> wrote:
+> 
+> On 1/17/23 3:22 PM, Tonghao Zhang wrote:
+>>> On Jan 17, 2023, at 3:30 PM, Christophe Leroy <christophe.leroy@csgroup.eu> wrote:
+>>> 
+>>> 
+>>> 
+>>> Le 17/01/2023 à 06:30, Tonghao Zhang a écrit :
+>>>> 
+>>>> 
+>>>>> On Jan 9, 2023, at 4:15 PM, Christophe Leroy <christophe.leroy@csgroup.eu> wrote:
+>>>>> 
+>>>>> 
+>>>>> 
+>>>>> Le 06/01/2023 à 16:37, Daniel Borkmann a écrit :
+>>>>>> On 1/5/23 6:53 PM, Christophe Leroy wrote:
+>>>>>>> Le 05/01/2023 à 04:06, tong@infragraf.org a écrit :
+>>>>>>>> From: Tonghao Zhang <tong@infragraf.org>
+>>>>>>>> 
+>>>>>>>> The x86_64 can't dump the valid insn in this way. A test BPF prog
+>>>>>>>> which include subprog:
+>>>>>>>> 
+>>>>>>>> $ llvm-objdump -d subprog.o
+>>>>>>>> Disassembly of section .text:
+>>>>>>>> 0000000000000000 <subprog>:
+>>>>>>>>          0:       18 01 00 00 73 75 62 70 00 00 00 00 72 6f 67 00 r1
+>>>>>>>> = 29114459903653235 ll
+>>>>>>>>          2:       7b 1a f8 ff 00 00 00 00 *(u64 *)(r10 - 8) = r1
+>>>>>>>>          3:       bf a1 00 00 00 00 00 00 r1 = r10
+>>>>>>>>          4:       07 01 00 00 f8 ff ff ff r1 += -8
+>>>>>>>>          5:       b7 02 00 00 08 00 00 00 r2 = 8
+>>>>>>>>          6:       85 00 00 00 06 00 00 00 call 6
+>>>>>>>>          7:       95 00 00 00 00 00 00 00 exit
+>>>>>>>> Disassembly of section raw_tp/sys_enter:
+>>>>>>>> 0000000000000000 <entry>:
+>>>>>>>>          0:       85 10 00 00 ff ff ff ff call -1
+>>>>>>>>          1:       b7 00 00 00 00 00 00 00 r0 = 0
+>>>>>>>>          2:       95 00 00 00 00 00 00 00 exit
+>>>>>>>> 
+>>>>>>>> kernel print message:
+>>>>>>>> [  580.775387] flen=8 proglen=51 pass=3 image=ffffffffa000c20c
+>>>>>>>> from=kprobe-load pid=1643
+>>>>>>>> [  580.777236] JIT code: 00000000: cc cc cc cc cc cc cc cc cc cc cc
+>>>>>>>> cc cc cc cc cc
+>>>>>>>> [  580.779037] JIT code: 00000010: cc cc cc cc cc cc cc cc cc cc cc
+>>>>>>>> cc cc cc cc cc
+>>>>>>>> [  580.780767] JIT code: 00000020: cc cc cc cc cc cc cc cc cc cc cc
+>>>>>>>> cc cc cc cc cc
+>>>>>>>> [  580.782568] JIT code: 00000030: cc cc cc
+>>>>>>>> 
+>>>>>>>> $ bpf_jit_disasm
+>>>>>>>> 51 bytes emitted from JIT compiler (pass:3, flen:8)
+>>>>>>>> ffffffffa000c20c + <x>:
+>>>>>>>>      0:   int3
+>>>>>>>>      1:   int3
+>>>>>>>>      2:   int3
+>>>>>>>>      3:   int3
+>>>>>>>>      4:   int3
+>>>>>>>>      5:   int3
+>>>>>>>>      ...
+>>>>>>>> 
+>>>>>>>> Until bpf_jit_binary_pack_finalize is invoked, we copy rw_header to
+>>>>>>>> header
+>>>>>>>> and then image/insn is valid. BTW, we can use the "bpftool prog dump"
+>>>>>>>> JITed instructions.
+>>>>>>> 
+>>>>>>> NACK.
+>>>>>>> 
+>>>>>>> Because the feature is buggy on x86_64, you remove it for all
+>>>>>>> architectures ?
+>>>>>>> 
+>>>>>>> On powerpc bpf_jit_enable == 2 works and is very usefull.
+>>>>>>> 
+>>>>>>> Last time I tried to use bpftool on powerpc/32 it didn't work. I don't
+>>>>>>> remember the details, I think it was an issue with endianess. Maybe it
+>>>>>>> is fixed now, but it needs to be verified.
+>>>>>>> 
+>>>>>>> So please, before removing a working and usefull feature, make sure
+>>>>>>> there is an alternative available to it for all architectures in all
+>>>>>>> configurations.
+>>>>>>> 
+>>>>>>> Also, I don't think bpftool is usable to dump kernel BPF selftests.
+>>>>>>> That's vital when a selftest fails if you want to have a chance to
+>>>>>>> understand why it fails.
+>>>>>> 
+>>>>>> If this is actively used by JIT developers and considered useful, I'd be
+>>>>>> ok to leave it for the time being. Overall goal is to reach feature parity
+>>>>>> among (at least major arch) JITs and not just have most functionality only
+>>>>>> available on x86-64 JIT. Could you however check what is not working with
+>>>>>> bpftool on powerpc/32? Perhaps it's not too much effort to just fix it,
+>>>>>> but details would be useful otherwise 'it didn't work' is too fuzzy.
+>>>>> 
+>>>>> Sure I will try to test bpftool again in the coming days.
+>>>>> 
+>>>>> Previous discussion about that subject is here:
+>>>>> https://patchwork.kernel.org/project/linux-riscv/patch/20210415093250.3391257-1-Jianlin.Lv@arm.com/#24176847=
+>>>> Hi Christophe
+>>>> Any progress? We discuss to deprecate the bpf_jit_enable == 2 in 2021, but bpftool can not run on powerpc.
+>>>> Now can we fix this issue?
+>>> 
+>>> Hi Tong,
+>>> 
+>>> I have started to look at it but I don't have any fruitfull feedback yet.
+>>> 
+>>> In the meantime, were you able to confirm that bpftool can also be used
+>>> to dump jitted tests from test_bpf.ko module on x86_64 ? In that can you
+>>> tell me how to proceed ?
+>> Now I do not test, but we can dump the insn after bpf_prog_select_runtime in test_bpf.ko. bpf_map_get_info_by_fd can copy the insn to userspace, but we can
+>> dump them in test_bpf.ko in the same way.
+> 
+> Issue is that these progs are not consumable from userspace (and therefore not bpftool).
+> it's just simple bpf_prog_alloc + copy of test insns + bpf_prog_select_runtime() to test
+> JITs (see generate_filter()). Some of them could be converted over to test_verifier, but
+> not all might actually pass verifier, iirc. Don't think it's a good idea to allow exposing
+> them via fd tbh.
+Hi
+I mean that, can we invoke the bpf_jit_dump in test_bpf.ko directly ?. bpf_prog_get_info_by_fd copy the insn to userspace, but we only dump insn in test_bpf.ko
 
-Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-tests")
-Tested-by: Björn Töpel <bjorn@kernel.org>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
-v4: No update. Just rebase to latest net-next and re-post it.
-v3: Remove unneeded $(OUTPUT)/bpf dir.
-v2: Update the Makefile rules rely on commit 837a3d66d698 ("selftests:
-    net: Add cross-compilation support for BPF programs").
----
- tools/testing/selftests/net/Makefile          | 50 +++++++++++++++++-
- tools/testing/selftests/net/bpf/Makefile      | 51 -------------------
- .../testing/selftests/net/{bpf => }/nat6to4.c |  0
- tools/testing/selftests/net/udpgro_frglist.sh |  8 +--
- 4 files changed, 52 insertions(+), 57 deletions(-)
- delete mode 100644 tools/testing/selftests/net/bpf/Makefile
- rename tools/testing/selftests/net/{bpf => }/nat6to4.c (100%)
+                if (bpf_dump_raw_ok(file->f_cred)) {// code copied from bpf_prog_get_info_by_fd, not tested
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 3007e98a6d64..47314f0b3006 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -75,14 +75,60 @@ TEST_GEN_PROGS += so_incoming_cpu
- TEST_PROGS += sctp_vrf.sh
- TEST_GEN_FILES += sctp_hello
- TEST_GEN_FILES += csum
-+TEST_GEN_FILES += nat6to4.o
+                        /* for multi-function programs, copy the JITed
+                         * instructions for all the functions
+                         */
+                        if (prog->aux->func_cnt) {
+                                for (i = 0; i < prog->aux->func_cnt; i++) {
+                                        len = prog->aux->func[i]->jited_len;
+                                        img = (u8 *) prog->aux->func[i]->bpf_func;
+                                        bpf_jit_dump(1, len, 1, img);
+                                }
+                        } else {
+                                bpf_jit_dump(1, ulen, 1, prog->bpf_func);
+                        }
+                }
+
+
  
- TEST_FILES := settings
- 
- include ../lib.mk
- 
--include bpf/Makefile
--
- $(OUTPUT)/reuseport_bpf_numa: LDLIBS += -lnuma
- $(OUTPUT)/tcp_mmap: LDLIBS += -lpthread
- $(OUTPUT)/tcp_inq: LDLIBS += -lpthread
- $(OUTPUT)/bind_bhash: LDLIBS += -lpthread
-+
-+# Rules to generate bpf obj nat6to4.o
-+CLANG ?= clang
-+SCRATCH_DIR := $(OUTPUT)/tools
-+BUILD_DIR := $(SCRATCH_DIR)/build
-+BPFDIR := $(abspath ../../../lib/bpf)
-+APIDIR := $(abspath ../../../include/uapi)
-+
-+CCINCLUDE += -I../bpf
-+CCINCLUDE += -I../../../../usr/include/
-+CCINCLUDE += -I$(SCRATCH_DIR)/include
-+
-+BPFOBJ := $(BUILD_DIR)/libbpf/libbpf.a
-+
-+MAKE_DIRS := $(BUILD_DIR)/libbpf
-+$(MAKE_DIRS):
-+	mkdir -p $@
-+
-+# Get Clang's default includes on this system, as opposed to those seen by
-+# '-target bpf'. This fixes "missing" files on some architectures/distros,
-+# such as asm/byteorder.h, asm/socket.h, asm/sockios.h, sys/cdefs.h etc.
-+#
-+# Use '-idirafter': Don't interfere with include mechanics except where the
-+# build would have failed anyways.
-+define get_sys_includes
-+$(shell $(1) $(2) -v -E - </dev/null 2>&1 \
-+	| sed -n '/<...> search starts here:/,/End of search list./{ s| \(/.*\)|-idirafter \1|p }') \
-+$(shell $(1) $(2) -dM -E - </dev/null | grep '__riscv_xlen ' | awk '{printf("-D__riscv_xlen=%d -D__BITS_PER_LONG=%d", $$3, $$3)}')
-+endef
-+
-+ifneq ($(CROSS_COMPILE),)
-+CLANG_TARGET_ARCH = --target=$(notdir $(CROSS_COMPILE:%-=%))
-+endif
-+
-+CLANG_SYS_INCLUDES = $(call get_sys_includes,$(CLANG),$(CLANG_TARGET_ARCH))
-+
-+$(OUTPUT)/nat6to4.o: nat6to4.c $(BPFOBJ) | $(MAKE_DIRS)
-+	$(CLANG) -O2 -target bpf -c $< $(CCINCLUDE) $(CLANG_SYS_INCLUDES) -o $@
-+
-+$(BPFOBJ): $(wildcard $(BPFDIR)/*.[ch] $(BPFDIR)/Makefile)		       \
-+	   $(APIDIR)/linux/bpf.h					       \
-+	   | $(BUILD_DIR)/libbpf
-+	$(MAKE) $(submake_extras) -C $(BPFDIR) OUTPUT=$(BUILD_DIR)/libbpf/     \
-+		    EXTRA_CFLAGS='-g -O0'				       \
-+		    DESTDIR=$(SCRATCH_DIR) prefix= all install_headers
-+
-+EXTRA_CLEAN := $(SCRATCH_DIR)
-diff --git a/tools/testing/selftests/net/bpf/Makefile b/tools/testing/selftests/net/bpf/Makefile
-deleted file mode 100644
-index 4abaf16d2077..000000000000
---- a/tools/testing/selftests/net/bpf/Makefile
-+++ /dev/null
-@@ -1,51 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--
--CLANG ?= clang
--SCRATCH_DIR := $(OUTPUT)/tools
--BUILD_DIR := $(SCRATCH_DIR)/build
--BPFDIR := $(abspath ../../../lib/bpf)
--APIDIR := $(abspath ../../../include/uapi)
--
--CCINCLUDE += -I../../bpf
--CCINCLUDE += -I../../../../../usr/include/
--CCINCLUDE += -I$(SCRATCH_DIR)/include
--
--BPFOBJ := $(BUILD_DIR)/libbpf/libbpf.a
--
--MAKE_DIRS := $(BUILD_DIR)/libbpf $(OUTPUT)/bpf
--$(MAKE_DIRS):
--	mkdir -p $@
--
--TEST_CUSTOM_PROGS = $(OUTPUT)/bpf/nat6to4.o
--all: $(TEST_CUSTOM_PROGS)
--
--# Get Clang's default includes on this system, as opposed to those seen by
--# '-target bpf'. This fixes "missing" files on some architectures/distros,
--# such as asm/byteorder.h, asm/socket.h, asm/sockios.h, sys/cdefs.h etc.
--#
--# Use '-idirafter': Don't interfere with include mechanics except where the
--# build would have failed anyways.
--define get_sys_includes
--$(shell $(1) $(2) -v -E - </dev/null 2>&1 \
--	| sed -n '/<...> search starts here:/,/End of search list./{ s| \(/.*\)|-idirafter \1|p }') \
--$(shell $(1) $(2) -dM -E - </dev/null | grep '__riscv_xlen ' | awk '{printf("-D__riscv_xlen=%d -D__BITS_PER_LONG=%d", $$3, $$3)}')
--endef
--
--ifneq ($(CROSS_COMPILE),)
--CLANG_TARGET_ARCH = --target=$(notdir $(CROSS_COMPILE:%-=%))
--endif
--
--CLANG_SYS_INCLUDES = $(call get_sys_includes,$(CLANG),$(CLANG_TARGET_ARCH))
--
--$(TEST_CUSTOM_PROGS): $(OUTPUT)/%.o: %.c $(BPFOBJ) | $(MAKE_DIRS)
--	$(CLANG) -O2 -target bpf -c $< $(CCINCLUDE) $(CLANG_SYS_INCLUDES) -o $@
--
--$(BPFOBJ): $(wildcard $(BPFDIR)/*.[ch] $(BPFDIR)/Makefile)		       \
--	   $(APIDIR)/linux/bpf.h					       \
--	   | $(BUILD_DIR)/libbpf
--	$(MAKE) $(submake_extras) -C $(BPFDIR) OUTPUT=$(BUILD_DIR)/libbpf/     \
--		    EXTRA_CFLAGS='-g -O0'				       \
--		    DESTDIR=$(SCRATCH_DIR) prefix= all install_headers
--
--EXTRA_CLEAN := $(TEST_CUSTOM_PROGS) $(SCRATCH_DIR)
--
-diff --git a/tools/testing/selftests/net/bpf/nat6to4.c b/tools/testing/selftests/net/nat6to4.c
-similarity index 100%
-rename from tools/testing/selftests/net/bpf/nat6to4.c
-rename to tools/testing/selftests/net/nat6to4.c
-diff --git a/tools/testing/selftests/net/udpgro_frglist.sh b/tools/testing/selftests/net/udpgro_frglist.sh
-index c9c4b9d65839..0a6359bed0b9 100755
---- a/tools/testing/selftests/net/udpgro_frglist.sh
-+++ b/tools/testing/selftests/net/udpgro_frglist.sh
-@@ -40,8 +40,8 @@ run_one() {
- 
- 	ip -n "${PEER_NS}" link set veth1 xdp object ${BPF_FILE} section xdp
- 	tc -n "${PEER_NS}" qdisc add dev veth1 clsact
--	tc -n "${PEER_NS}" filter add dev veth1 ingress prio 4 protocol ipv6 bpf object-file ../bpf/nat6to4.o section schedcls/ingress6/nat_6  direct-action
--	tc -n "${PEER_NS}" filter add dev veth1 egress prio 4 protocol ip bpf object-file ../bpf/nat6to4.o section schedcls/egress4/snat4 direct-action
-+	tc -n "${PEER_NS}" filter add dev veth1 ingress prio 4 protocol ipv6 bpf object-file nat6to4.o section schedcls/ingress6/nat_6  direct-action
-+	tc -n "${PEER_NS}" filter add dev veth1 egress prio 4 protocol ip bpf object-file nat6to4.o section schedcls/egress4/snat4 direct-action
-         echo ${rx_args}
- 	ip netns exec "${PEER_NS}" ./udpgso_bench_rx ${rx_args} -r &
- 
-@@ -88,8 +88,8 @@ if [ ! -f ${BPF_FILE} ]; then
- 	exit -1
- fi
- 
--if [ ! -f bpf/nat6to4.o ]; then
--	echo "Missing nat6to4 helper. Build bpfnat6to4.o selftest first"
-+if [ ! -f nat6to4.o ]; then
-+	echo "Missing nat6to4 helper. Build bpf nat6to4.o selftest first"
- 	exit -1
- fi
- 
--- 
-2.38.1
 
