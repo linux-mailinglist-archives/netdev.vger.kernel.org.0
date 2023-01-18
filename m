@@ -2,123 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5138671EDB
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 15:05:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBEAB671EF8
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 15:09:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229882AbjAROFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 09:05:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60590 "EHLO
+        id S231259AbjAROJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 09:09:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230516AbjAROEk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 09:04:40 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D4757C879;
-        Wed, 18 Jan 2023 05:41:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=2QcbDYHnM4a3YLo7hIdVvZnhWZb4/tSVbe2++CBXB9g=; b=SJknLVJBnEys14G+7GP/TIHz5k
-        Y764E0y+eowQj/szyhxYjbR7Y9GV87ccwevhJUOpYwpGXwgg9v28drNZh1OYKrb5cUnNZo0N+sBFc
-        /JZpgphtcqK9xNu3yFA71hxAeGmYXjL12fD8Hc1krI9a4mwD52WTICKXxIGZ7HOpTL8M=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pI8gR-002RYT-0m; Wed, 18 Jan 2023 14:40:55 +0100
-Date:   Wed, 18 Jan 2023 14:40:55 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Frank.Sae" <Frank.Sae@motor-comm.com>
-Cc:     Peter Geis <pgwipeout@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        xiaogang.fan@motor-comm.com, fei.zhang@motor-comm.com,
-        hua.sun@motor-comm.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v1 1/3] dt-bindings: net: Add Motorcomm yt8xxx
- ethernet phy Driver bindings
-Message-ID: <Y8f254xNPdtR8gq1@lunn.ch>
-References: <20230105073024.8390-1-Frank.Sae@motor-comm.com>
- <20230105073024.8390-2-Frank.Sae@motor-comm.com>
- <Y7bN4vJXMi66FF6v@lunn.ch>
- <e762c7ac-63e7-a86e-3e3f-5c8a450b25b0@motor-comm.com>
- <Y7goXXiRBE6XHuCc@lunn.ch>
- <83fd7a69-7e6a-ab93-b05a-4eba8af4d245@motor-comm.com>
+        with ESMTP id S230305AbjAROIl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 09:08:41 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A8935528C;
+        Wed, 18 Jan 2023 05:48:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1674049680; x=1705585680;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=27gus0S9cCP5w0OnyKW7bH9Uqvl1YIQfh+Al2QipAdQ=;
+  b=BXKgz8QKT146FFhCFm6li3H0BtAEPxqFHmURAwm3Isd89H7AAQQ+9xlK
+   l+sVzyt4aJv4gTUrfq6Nkeler93O2DHEaKv5FvxnVZrX0wMb7FLqxwg+A
+   WgIDK1Oa1Y+kneqCalP08b+lHWEdDywinhVhrkzHJ+JwCChkDN/EyVH1c
+   EJeWiwM/cxM3zXpOSDirCKLTPbg7/nCWxJ3Eh4flETmSBZDz5+PnsFHRT
+   5L1lIVXyQTO7OWY6ZkfVYUOyZRbBg24LzR4r7hiHPY6crviSJjSPM27Ux
+   IllFGBPKlY27Kx29nlwvN8+VYBHLIXwK6YNI+DRz9fE5vB4Rs4ksX6qAW
+   A==;
+X-IronPort-AV: E=Sophos;i="5.97,226,1669100400"; 
+   d="scan'208";a="208305325"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Jan 2023 06:47:59 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 18 Jan 2023 06:47:59 -0700
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.16 via Frontend
+ Transport; Wed, 18 Jan 2023 06:47:59 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=izsk7nLBWQnLVATLeKFa5niZgZ0IKbpzkz4LFtKGsXAuyw2uTLrvxOe3ycNG5GnFGNQgqxOywCU4GqThvzhen7L5ef58ev9GEaWmEsZniSU5M9HKAB44o5WXtKbBwxAPWKdRCwi613J04ooJnV9jaFQVcDsfRRFtwhVH62+cPuMkkSPDHh/ovGGiyvNFyPvuN5tEjbXjqDFCN7YA0t/KRHHBkXUXkVv6c9vbpildDtUP+wFU3DK9lc3zUBV0dMDDQrJ40So4+H6bpr2b8bpEjg4WLtTPrTmEq8o3rYJh8mTn938dc9MmWtfz4sXunCMgAYwf60C+SGq6ojIRjwtdNQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GPT5koDcTM711GUw+xiUjyBTenIT26cZUTL+IhVrLtk=;
+ b=Ofd4Ssf8gUHsLsZQve0tqwAGzVxZP6wB7t0uWGwnNoXi2O8kg7EpVIbbxme3kNJPMJGM2reHqj2EIbKYyjVenO1qZWXaeMZtOxlNx8fBZAWtPNXMH31zdYACnsk/Q+x8sprWSpBotQtsvvOqofQqxveIURtHR//W/oeEIlI748IHkySK/Adm2nZshWrRwtHdlxrinGihxOEj3S9ASeTdPqJPjeO04LpynlJfX7WjaRBW6BavANPp4TXUQZ8TUnqULAo4p75aiK+Ti/tcTi6l+wY5vMHc7OxLbbQXzuNREQWzEnd+sw9KCc+WiS4PlQX6Eqy9LGHwsl9t1g/lhBW2EA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GPT5koDcTM711GUw+xiUjyBTenIT26cZUTL+IhVrLtk=;
+ b=t2vAfiC7sbOR5fha7/0DgQ8t1DozUqOpCVvC1hhrLtsU5lbDe8aIeleAhUgJNuWe4VM8sOtHeNCiv0tY/G4dwqDdNIlqKcgpcGZJa0vJf5Bqu0YTOgXQIeqM4gEa6BcYvjcw1/uLj/sxwsrRsSUSQ0944vJ2MXXRFv2HtEJAHDU=
+Received: from CO6PR11MB5569.namprd11.prod.outlook.com (2603:10b6:303:139::20)
+ by DM4PR11MB5552.namprd11.prod.outlook.com (2603:10b6:5:399::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.24; Wed, 18 Jan
+ 2023 13:47:57 +0000
+Received: from CO6PR11MB5569.namprd11.prod.outlook.com
+ ([fe80::8155:464d:11a2:a626]) by CO6PR11MB5569.namprd11.prod.outlook.com
+ ([fe80::8155:464d:11a2:a626%7]) with mapi id 15.20.6002.024; Wed, 18 Jan 2023
+ 13:47:57 +0000
+From:   <Daniel.Machon@microchip.com>
+To:     <petrm@nvidia.com>
+CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <Lars.Povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, <joe@perches.com>,
+        <error27@gmail.com>, <Horatiu.Vultur@microchip.com>,
+        <Julia.Lawall@inria.fr>, <vladimir.oltean@nxp.com>,
+        <maxime.chevallier@bootlin.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 3/6] net: dcb: add new rewrite table
+Thread-Topic: [PATCH net-next v2 3/6] net: dcb: add new rewrite table
+Thread-Index: AQHZKbm5BtwmhtpMEECQnUzYRY/XFK6kAv+AgAAwfIA=
+Date:   Wed, 18 Jan 2023 13:47:57 +0000
+Message-ID: <Y8f4i2ablWnNO9Op@DEN-LT-70577>
+References: <20230116144853.2446315-1-daniel.machon@microchip.com>
+ <20230116144853.2446315-4-daniel.machon@microchip.com>
+ <87lem0w1k3.fsf@nvidia.com>
+In-Reply-To: <87lem0w1k3.fsf@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CO6PR11MB5569:EE_|DM4PR11MB5552:EE_
+x-ms-office365-filtering-correlation-id: b025c496-875a-4107-1db4-08daf95a9b6a
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KoqeQlfCiOq4oyQGD6kapnGTro1b36RzoStHg0Yq7a2GAiwRVE4GBaoRa3Opr9nhpbAeOWZRhDSvDr89BKib6RXPkplXeceBvv/HD3KZdjE6mPXql+sj9/eQkf6V+caCSu73KtjFHRqd9YfbtrIHref1Pat6B0W2FiM415ySPG9/6AxzqtcG0coKobjroTNxKGmUl4dKG5tpPCYj2QkFWUM2eL2I2ttcOhWy5RU9aqnteyZxogPMiWqm0GSCqtepJKbxT18+6gbYV5P85r8p0OjQWUQQ5+/d9cseAusC3lEGb09NgvIiiVhwAgZFHdviN/ArQQtKnW9x8GvkVYMgD5A7XqjYGv7KrJ++c2a58CpMGtaOyWL6ppITaWbqIn7Nv2Kd2qN4FjHdahESjqGRl8Zrg4CXXQRgBpdUDGgBYyaUocS3DSg5dKPHBkJ6jpLnTeqEo+ZncVd6Iaogu5tHsckmq+/7f8oTiw5krTB+2ffunAk41v6LUYnLgDCxb8Sr3vWkDliUmOFca8divlqiV5mj6ojEvjfXyn1XbTMv+z9tMEblMky1aXkqTKn1uue9o3tzaS8LGGaD5AQE63o0XE02vRdGINU0YRSp/cS8oUI9Uiq6cH/Tk6HL4ZI/1QNT393xLu5ifGeuMzoe1Sph9sNU8b5J9j3QRpXBNKp1X1ZlUTrd+wDCHBPAtClAizxWYUlfdG1KtGLCLydYn7UiXg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR11MB5569.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(396003)(346002)(39860400002)(366004)(136003)(376002)(451199015)(38100700002)(76116006)(122000001)(66476007)(38070700005)(86362001)(5660300002)(8936002)(7416002)(2906002)(91956017)(66946007)(66556008)(66446008)(64756008)(4326008)(8676002)(6916009)(41300700001)(33716001)(26005)(186003)(6512007)(9686003)(83380400001)(71200400001)(316002)(54906003)(6506007)(6486002)(478600001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Hwv4GjxP2m9k1JjYIMmYBiHI6b4YydfCxH0ymboER8GYNEi5X6OeqrHEMCm1?=
+ =?us-ascii?Q?C75gllJARblz1HHjiNNRY1nkTLxBdLTD2dHqqIhy/tXg2UyXzCspDosle6+H?=
+ =?us-ascii?Q?GaYd+f8wUFaVKKhvlLIC3gLQA29gK7x8rh8TyG2Wwn9y25ZkwFqSPtOp61Rb?=
+ =?us-ascii?Q?ckmNf414JSh8Mu251cV3zq0kkIiRLQTis0TF1ax8Flt9T/y3py7qPKcK/ZwY?=
+ =?us-ascii?Q?1/iCbggeXrmsDFI3Src45NcmmyYM7POQ/TjCezV2k/KzreMMoifZpqluZO50?=
+ =?us-ascii?Q?5phGKYO3nCMfNjSHMkV1FxGJMmpBktu9VfChmT6budm+Fq2YVXnslZqmOCEG?=
+ =?us-ascii?Q?rCGPNcuCJgrdMl8yL5i42ghwDgzJKBVoh/TbZFB51UYwE6eBp85nYIhbpcwB?=
+ =?us-ascii?Q?TOlhDrfdofjJbzFAXrBjm73lUf1UhPDwsGRlOBwKTMSDs74iQMkV3UloodRY?=
+ =?us-ascii?Q?OaWQNOwb2wF5GIg/ITJmk66+NMPWlMZnc9UvajQdMYBBa3hj4ZSUR7k+FD49?=
+ =?us-ascii?Q?n9KH7NM3EFhaokYveKgjNvLuYmcglS9LLzdJeFTg6Kba0O9CmqEN+RWaACly?=
+ =?us-ascii?Q?0tXiU7/dMX6G8NXSRYHPGoK5frdzQCzXPXmvnc85rVoo5JEJOXhRv7kFLB+c?=
+ =?us-ascii?Q?GECfI6SuktNFsg48I2Ov3kMoh3S9wvUSPYLlRWTgjiMj13V/J69bMsI5YF6B?=
+ =?us-ascii?Q?dA7/Gr4SAvuxzlkYJ3NYpC+4ERwXZUblnEhUxVK9CroWCx1CWAn4S8n9+qa4?=
+ =?us-ascii?Q?C1ISO+GDddFYYd6EnM9MgicJplN6I0cQBhzXatnkTzOqA2nnnf5ooSj679Vg?=
+ =?us-ascii?Q?1uM0voqxeExI3GPT4L/gZwPCU9en/SOd3V8zJVo13+LFFBp0ob/hCEJoJJnw?=
+ =?us-ascii?Q?zsP1oJKnOo8wrfH1b/tBO32z7HxY+dGIjOXXyFhNwF936RFKks4dpeNUtTjt?=
+ =?us-ascii?Q?FcUr2hbD5bomq46tJ6OX+N2wti3f8KRjgtGbXsUzKSYK0QpO5RTeovd2wJGB?=
+ =?us-ascii?Q?TWlguhZCYJ21Wnf3yl21tFhGmX5PP4iKX8PsNUSbvXZPFUcSPadbgUx+Vl5o?=
+ =?us-ascii?Q?TGPIDnJSent4hSZ0bc/cXJRCjx2JDATs4Ah06IcGJP7badR+kwLvXEHYWkzO?=
+ =?us-ascii?Q?eq2l0Gfv7zaPempm1gYBrUrYkKKufqKr2j+65N2JYtqQXEoTe5juzLhCBzfa?=
+ =?us-ascii?Q?i1WpNi88V8s1+Bbd++L2sUZErM8Kk3XjTPaR4Yu95wTpERDOYCrEHnwBcL14?=
+ =?us-ascii?Q?9XQ6ShPmCKKlNbbF2iVjRpeUcpR5SCZ6tkoIkbVSxOro0rUIHcZOYXy8usOu?=
+ =?us-ascii?Q?iSaSSkc/YABo7iDLJKDAk964A3zAYxsCM9rF26g7N3oXKLpfHtp57rva0W/N?=
+ =?us-ascii?Q?s6HSmLvs/TKorws3EFGg3Qs/0rKtFz8k3qY984JxkSAVxBEM7RFVqiqEPASN?=
+ =?us-ascii?Q?0S5rTykTXRY+8iQQR828peMJtRsCekRKki/dB3tA+m7jLe28V7LWXrI2RwiA?=
+ =?us-ascii?Q?1dPa9PNCuSgJyhJFkXPGz3+ixMEmxQzbvS8+5b5xLeuS4+yLkRKT+2v3lU7Q?=
+ =?us-ascii?Q?pg3bqT5qdUoWeGYae17w02weyZ4F7SGld2tdeRSCpCTbs5XfywM1YroZAlAw?=
+ =?us-ascii?Q?1Br9MuMKvEJLEQLJOZ0nJpU=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <CAFD1C91A3E425458FEB53CCF15CE29E@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <83fd7a69-7e6a-ab93-b05a-4eba8af4d245@motor-comm.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR11MB5569.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b025c496-875a-4107-1db4-08daf95a9b6a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jan 2023 13:47:57.5517
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: JTSPfS/1zAAix1LnieDkXrethudKD/H1gy8mxmZPM4lKK415cYEnzcKCL4jpeY7MyNBAfbBh0vsxOggPw59+foOJGsXJEoylje5S06ODIeM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5552
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 11, 2023 at 05:20:18PM +0800, Frank.Sae wrote:
-> Hi Andrew,
-> 
-> On 2023/1/6 21:55, Andrew Lunn wrote:
-> >>> Why is this needed? When the MAC driver connects to the PHY, it passes
-> >>> phy-mode. For RGMII, this is one of:
-> >>
-> >>> linux/phy.h:	PHY_INTERFACE_MODE_RGMII,
-> >>> linux/phy.h:	PHY_INTERFACE_MODE_RGMII_ID,
-> >>> linux/phy.h:	PHY_INTERFACE_MODE_RGMII_RXID,
-> >>> linux/phy.h:	PHY_INTERFACE_MODE_RGMII_TXID,
-> >>>
-> >>> This tells you if you need to add a delay for the RX clock line, the
-> >>> TX clock line, or both. That is all you need to know for basic RGMII
-> >>> delays.
-> >>>
-> >>
-> >> This basic delay can be controlled by hardware or the phy-mode which
-> >> passes from MAC driver.
-> >> Default value depends on power on strapping, according to the voltage
-> >> of RXD0 pin (low = 0, turn off;   high = 1, turn on).
-> >>
-> >> Add this for the case that This basic delay is controlled by hardware,
-> >> and software don't change this.
-> > 
-> > You should always do what phy-mode contains. Always. We have had
-> > problems in the past where a PHY driver ignored the phy-mode, and left
-> > the PHY however it was strapped. Which worked. But developers put the
-> > wrong phy-mode value in DT. Then somebody had a board which actually
-> > required that the DT value really did work, because the strapping was
-> > wrong. So the driver was fixed to respect the PHY mode, made that
-> > board work, and broke all the other boards which had the wrong
-> > phy-mode in DT.
-> > 
-> > If the user want the driver to leave the mode alone, use the
-> > strapping, they should use PHY_INTERFACE_MODE_NA. It is not well
-> > documented, but it is used in a few places. However, i don't recommend
-> > it.
-> > 
-> 
-> RX delay = rx-delay-basic (0ns or 1.9ns) + x-delay-additional-ps
-> (N*150ps, N = 0 ~ 15)
->  If rx-delay-basic is removed and controlled by phy-mode.
->  when phy-mode is  rgmii-id or rgmii-rxid, RX delay is 1.9ns + N*150ps.
->  But sometimes 1.9ns is still too big, we just need  0ns + N*150ps.
-> 
-> For this case, can we do like following ?
-> rx-internal-delay-ps:
->     enum: [ 0, 150, 300, 450, 600, 750, 900, 1050, 1200, 1350, 1500,
-> 1650, 1800, 1900, 1950, 2050, 2100, 2200, 2250, 2350, 2500, 2650, 2800,
-> 2950, 3100, 3250, 3400, 3550, 3700, 3850, 4000, 4150 ]
->     default: 0
->  rx-internal-delay-ps is 0ns + N*150ps and  1.9ns + N*150ps.
->  And check whether need rx-delay-basic (1.9ns) by the val of
-> rx-internal-delay-ps?
+> > +     rewr =3D nla_nest_start_noflag(skb, DCB_ATTR_DCB_REWR_TABLE);
+> > +     if (!rewr)
+> > +             return -EMSGSIZE;
+>=20
+> This being new code, don't use _noflag please.
 
-Please take a look at phy_get_internal_delay() and the drivers which
-use it.
+Ack.
 
-    Andrew
+>=20
+> > +
+> > +     spin_lock_bh(&dcb_lock);
+> > +     list_for_each_entry(itr, &dcb_rewr_list, list) {
+> > +             if (itr->ifindex =3D=3D netdev->ifindex) {
+> > +                     enum ieee_attrs_app type =3D
+> > +                             dcbnl_app_attr_type_get(itr->app.selector=
+);
+> > +                     err =3D nla_put(skb, type, sizeof(itr->app), &itr=
+->app);
+> > +                     if (err) {
+> > +                             spin_unlock_bh(&dcb_lock);
+>=20
+> This should cancel the nest started above.
+
+Yes, it should.
+
+>=20
+> I wonder if it would be cleaner in a separate function, so that there
+> can be a dedicated clean-up block to goto.
+
+Well yes. That would make sense if the function were reused for both APP
+and rewr.
+
+Though in the APP equivalent code, nla_nest_start_noflag is used, and
+dcbnl_ops->getdcbx() is called. Is there any userspace side-effect of
+using nla_nest_start for APP too?
+
+dcbnl_ops->getdcbx() would then be left outside of the shared function.
+Does that call even have to hold the dcb_lock? Not as far as I can tell.
+
+something like:
+
+err =3D dcbnl_app_table_get(ndev, skb, &dcb_app_list,
+			  DCB_ATTR_IEEE_APP_TABLE);
+if (err)
+	return -EMSGSIZE;
+
+err =3D dcbnl_app_table_get(ndev, skb, &dcb_rewr_list,
+			  DCB_ATTR_DCB_REWR_TABLE);
+if (err)
+        return -EMSGSIZE;
+
+if (netdev->dcbnl_ops->getdcbx)
+	dcbx =3D netdev->dcbnl_ops->getdcbx(netdev); <-- without lock held
+else
+	dcbx =3D -EOPNOTSUPP;
+
+Let me hear your thoughts.
