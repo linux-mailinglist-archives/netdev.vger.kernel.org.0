@@ -2,103 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 267E56715D9
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 09:09:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B40C8671642
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 09:28:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229799AbjARIIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 03:08:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35892 "EHLO
+        id S229448AbjARI1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 03:27:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230133AbjARIFe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 03:05:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4658066FB8;
-        Tue, 17 Jan 2023 23:37:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D2520615A0;
-        Wed, 18 Jan 2023 07:37:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF061C433EF;
-        Wed, 18 Jan 2023 07:37:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674027470;
-        bh=eEmrvxlQgtLiubUTw9+wmx08XBSRjRrRjzVPtdHqXPw=;
-        h=From:Subject:To:Cc:Date:From;
-        b=HJ+KX68+hWwJ5HjzrmXhkFWBmyHiv6b+wNXTLtYFkkc3dShAjLce+CSNkFR8cuJHG
-         CLTTEg8uHeSeaSXq8kMIO+57vEiZaYgz5QJW5U3p48U/l/+agci49fC5x6mSvtCfQC
-         FydtRyfGPmGOe3A8pxx6xbm5JJR7lpFrKEFxD/onGQBNg+or5zE0i9cR5EOUQAbAOn
-         9hfMF86Wf9Kd4+XC3SRK8X2uwRNeGkjrtfE2oIxefXGs0XMTQaOZNNdlsb7plf/t1c
-         xi4cpfC3dI1vBfypfq2FGpYNBiOh2PwhMtHeF18LzBxodFaySlHm1KoYxoNMsCw+0W
-         oTL/bClna+uHA==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229650AbjARI0E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 03:26:04 -0500
+Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 990695B44F;
+        Tue, 17 Jan 2023 23:53:12 -0800 (PST)
+Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-15085b8a2f7so34666426fac.2;
+        Tue, 17 Jan 2023 23:53:12 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ckf5E8d0Cnw+micSJ5vxd9QO1KFnhxODfDAqVKF2Q0k=;
+        b=61XkuxeqbcHeN75KAIqN0uUIqXmdph5hqhUkIGSxuNJx5qSVY7Qe7agxlT1qiDrlxw
+         3kFFuSGU7Ttng175jPprkNzEj8Q31rAb/iKxlhsOuJm2rU94rdTGk7G9QabfsXqG/OmN
+         vdv/BnPWlZFAFFvbbuAcTnw3q6uwVKBQMkA8/tIS6GTpMvJ6Zui8/BjnIgOlOD1eAIUf
+         AnKxZF6pWIGReX8L5rf8vNToN1w0VnYFfBM8Ly+7EjvN3VgOJ6SzYiHtM3GhnsOu/4bA
+         1PB/3YuJ7+xQjZF5hpdLVaFg3aDYh1mVnzwq0DU4HqO02Xxb/ZIxlDIwGySTi7Sk8xnI
+         G+BQ==
+X-Gm-Message-State: AFqh2kpHI3jkAmTMFlBlHF71M7xU47YrSDzBu0sdApxrIOTb9DZDWDPb
+        vpcHzqLiV9kOxxWmg4iwt5u6+O+qXdkoYg==
+X-Google-Smtp-Source: AMrXdXv3HFvK0+bsQSmlhDxPYltMz33ZUPx1/VWAZsq50xvNYmaqoTLM2jLuhz36OLbrGzbjDA2hIQ==
+X-Received: by 2002:a05:6870:b4a5:b0:158:910:8956 with SMTP id y37-20020a056870b4a500b0015809108956mr3548325oap.54.1674028391734;
+        Tue, 17 Jan 2023 23:53:11 -0800 (PST)
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com. [209.85.210.48])
+        by smtp.gmail.com with ESMTPSA id v12-20020a056870b50c00b0014fc049fc0asm18147690oap.57.2023.01.17.23.53.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 Jan 2023 23:53:11 -0800 (PST)
+Received: by mail-ot1-f48.google.com with SMTP id k44-20020a9d19af000000b00683e176ab01so19217997otk.13;
+        Tue, 17 Jan 2023 23:53:11 -0800 (PST)
+X-Received: by 2002:a81:bd6:0:b0:48d:1334:6e38 with SMTP id
+ 205-20020a810bd6000000b0048d13346e38mr726842ywl.316.1674028030903; Tue, 17
+ Jan 2023 23:47:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-From:   Kalle Valo <kvalo@kernel.org>
-Subject: pull-request: wireless-2023-01-18
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Message-Id: <20230118073749.AF061C433EF@smtp.kernel.org>
-Date:   Wed, 18 Jan 2023 07:37:49 +0000 (UTC)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230113062339.1909087-1-hch@lst.de> <11e2e0a8-eabe-2d8c-d612-9cdd4bcc3648@physik.fu-berlin.de>
+ <20230116071306.GA15848@lst.de> <9325a949-8d19-435a-50bd-9ebe0a432012@landley.net>
+ <CAMuHMdUJm5QvzH8hvqwvn9O6qSbzNOapabjw5nh9DJd0F55Zdg@mail.gmail.com> <7329212f-b1a0-41eb-99b3-a56eb1d23138@landley.net>
+In-Reply-To: <7329212f-b1a0-41eb-99b3-a56eb1d23138@landley.net>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 18 Jan 2023 08:46:58 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXo3iR2C=CAaXO5tBRCncnQAAMR6BMPLOm_nBpFAeVhrA@mail.gmail.com>
+Message-ID: <CAMuHMdXo3iR2C=CAaXO5tBRCncnQAAMR6BMPLOm_nBpFAeVhrA@mail.gmail.com>
+Subject: Re: remove arch/sh
+To:     Rob Landley <rob@landley.net>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
+        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-sh@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi Rob,
 
-here's a pull request to net tree, more info below. Please let me know if there
-are any problems.
+On Wed, Jan 18, 2023 at 5:50 AM Rob Landley <rob@landley.net> wrote:
+> On 1/17/23 14:26, Geert Uytterhoeven wrote:
+> > On Tue, Jan 17, 2023 at 8:01 PM Rob Landley <rob@landley.net> wrote:
+> >> I'm lazy and mostly test each new sh4 build under qemu -M r2d because it's
+> >> really convenient: neither of my physical boards boot from SD card so replacing
+> >> the kernel requires reflashing soldered in flash. (They'll net mount userspace
+> >> but I haven't gotten either bootloader to net-boot a kernel.)
+> >
+> > On my landisk (with boots from CompactFLASH), I boot the original 2.6.22
+> > kernel, and use kexec to boot-test each and every renesas-drivers
+> > release.  Note that this requires both the original 2.6.22 kernel
+> > and matching kexec-tools.
+>
+> I make it a point to run _current_ kernels in all my mkroot systems, including
+> sh4. What I shipped was 6.1 is:
+>
+> # cat /proc/version
+> Linux version 6.1.0 (landley@driftwood) (sh4-linux-musl-cc (GCC) 9.4.0, GNU ld
+> (GNU Binutils) 2.33.1) #1 Tue Jan 10 16:32:07 CST 2023
 
-Kalle
+I think you misunderstood: renesas-drivers releases[1] are current
+kernels.
 
-The following changes since commit f216033d770f7ca0eda491fe01a9f02e7af59576:
+   Linux version 6.2.0-rc3-landisk-01864-g0c6453b3e5f6 (geert@rox)
+(sh4-linux-gnu-gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, GNU ld (GNU
+Binutils for Ubuntu) 2.38) #125 Tue Jan 10 14:29:01 CET 2023
 
-  wifi: mac80211: fix MLO + AP_VLAN check (2023-01-10 13:24:30 +0100)
+I use 2.6.22 and kexec as a boot loader for newer kernels, to avoid
+juggling CF cards.  I cannot install a newer base kernel on the CF,
+as kexec is broken upstream.
 
-are available in the Git repository at:
+> > Apparently both upstreamed kernel and
+> > kexec-tools support for SH are different, and incompatible with each
+> > other, so you cannot kexec from a contemporary kernel.
+>
+> Sure you can. Using toybox's insmod and modprobe, anyway. (That's the target I
+> tested those on... :)
+>
+> Haven't messed with signing or compression or anything yet, my insmod is just
+> doing syscall(SYS_finit_module) and then falling back to SYS_init_module if that
+> fails and either fd was 0 or errno was ENOSYS. (Don't ask me why
+> SYS_finit_module doesn't work on stdin...)
+>
+> https://github.com/landley/toybox/blob/master/toys/other/insmod.c#L31
+>
+> https://landley.net/toybox/downloads/binaries/0.8.9/toybox-sh4
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git tags/wireless-2023-01-18
+Again, I think you're talking about something different.
+Does kexec work for you?
 
-for you to fetch changes up to 80f8a66dede0a4b4e9e846765a97809c6fe49ce5:
+> > I tried working my way up from 2.6.22, but gave up around 2.6.29.
+> > Probably I should do this with r2d and qemu instead ;-)
+>
+> I have current running there. I've had current running there for years. Config
+> attached...
+>
+> > Both r2d and landisk are SH7751.
+>
+> Cool. Shouldn't be hard to get landisk running current then.
 
-  Revert "wifi: mac80211: fix memory leak in ieee80211_if_add()" (2023-01-16 17:28:52 +0200)
+Current kernels work fine on landisk with an old Debian userspace
+on CF.  The 8139cp driver is a bit flaky: last time I tried nfsroot,
+that didn't work well.
 
-----------------------------------------------------------------
-wireless fixes for v6.2
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/geert/renesas-drivers.git
 
-Third set of fixes for v6.2. This time most of them are for drivers,
-only one revert for mac80211. For an important mt76 fix we had to
-cherry pick two commits from wireless-next.
+Gr{oetje,eeting}s,
 
-----------------------------------------------------------------
-Arend van Spriel (3):
-      wifi: brcmfmac: avoid handling disabled channels for survey dump
-      wifi: brcmfmac: avoid NULL-deref in survey dump for 2G only device
-      wifi: brcmfmac: fix regression for Broadcom PCIe wifi devices
+                        Geert
 
-Eric Dumazet (1):
-      Revert "wifi: mac80211: fix memory leak in ieee80211_if_add()"
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Felix Fietkau (1):
-      wifi: mt76: dma: fix a regression in adding rx buffers
-
-Lorenzo Bianconi (2):
-      wifi: mt76: dma: do not increment queue head if mt76_dma_add_buf fails
-      wifi: mt76: handle possible mt76_rx_token_consume failures
-
-Szymon Heidrich (1):
-      wifi: rndis_wlan: Prevent buffer overflow in rndis_query_oid
-
- .../broadcom/brcm80211/brcmfmac/cfg80211.c         |  37 +++---
- .../wireless/broadcom/brcm80211/brcmfmac/pcie.c    |   2 +-
- drivers/net/wireless/mediatek/mt76/dma.c           | 131 +++++++++++++--------
- drivers/net/wireless/mediatek/mt76/mt7915/mmio.c   |   7 ++
- drivers/net/wireless/mediatek/mt76/tx.c            |   7 +-
- drivers/net/wireless/rndis_wlan.c                  |  19 +--
- net/mac80211/iface.c                               |   1 -
- 7 files changed, 117 insertions(+), 87 deletions(-)
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
