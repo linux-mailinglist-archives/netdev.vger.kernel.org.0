@@ -2,78 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBF8667117E
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 04:08:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42BC867118C
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 04:10:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229493AbjARDIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Jan 2023 22:08:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39356 "EHLO
+        id S229503AbjARDKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Jan 2023 22:10:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbjARDIP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 22:08:15 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 195274FCC4;
-        Tue, 17 Jan 2023 19:08:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=iHV7CytWlRD3302v/1nhCK0cn5pj1iojKylILrpkF5w=; b=SJahukxj2tI8oL1m0fY0hxQpVM
-        mi+h1t0LeaEEFYXe1wOVyClZxbfClPY4dRXyzJMpmNbJc7TW+pJdIEC3LXtoV3B/0Z9SXGivjqsxG
-        aLFlmT9X/yakTMbl71PJu7Os+8xMygLek9F+Iy1APbt93OK+e5KNzLyMIAjP9Kz7q7KA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pHyo4-002OGY-U5; Wed, 18 Jan 2023 04:08:08 +0100
-Date:   Wed, 18 Jan 2023 04:08:08 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jerome Brunet <jbrunet@baylibre.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        linux-amlogic@lists.infradead.org,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Da Xue <da@lessconfused.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 0/2] net: mdio: add amlogic gxl mdio mux support
-Message-ID: <Y8dimCI7ybeL09j0@lunn.ch>
-References: <20230116091637.272923-1-jbrunet@baylibre.com>
+        with ESMTP id S229567AbjARDKT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Jan 2023 22:10:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C2484FCFD
+        for <netdev@vger.kernel.org>; Tue, 17 Jan 2023 19:10:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8476B81AB0
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 03:10:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 96272C433F0;
+        Wed, 18 Jan 2023 03:10:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674011416;
+        bh=4sX6P3SdBBWcCcddwDecxkcZKfCy57G6Puodhgot/9E=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=HkQnN9e1qtwxBFK8KUp2c6mFG4XajBix/ROE7h0AXGNc/A4pBcarqBhTdGFnfq6uD
+         2TaA/esqWbAm8TkidLsoeOyVZsS6ItUmFDjdbwtXPFQQPugw8sJlJzROx0sVhJwaA/
+         qc3+rk49fBOvmjKYGIMgG8IX7wp0G35LSjnKc7G/4EDxB0jo1tOS+kyXhk7e3XIawZ
+         8oeQGB7MtPLOWNayMkRdXK97j78ranHTvo5BbslN1X4ISZ/h7kwgHrYzTgmcSZVsXp
+         00XuUBRpAXDkTCgGuhgS6Mxbaxhv1Y6c2/nNrMEDfEfF1Ofa8bbHhL0Y6REAHzdkPZ
+         NPbuVPfh9d0Aw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 74F9AC43147;
+        Wed, 18 Jan 2023 03:10:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230116091637.272923-1-jbrunet@baylibre.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: ipa: disable ipa interrupt during suspend
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167401141647.5924.3330867901216842513.git-patchwork-notify@kernel.org>
+Date:   Wed, 18 Jan 2023 03:10:16 +0000
+References: <20230115175925.465918-1-caleb.connolly@linaro.org>
+In-Reply-To: <20230115175925.465918-1-caleb.connolly@linaro.org>
+To:     Caleb Connolly <caleb.connolly@linaro.org>
+Cc:     elder@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, elder@linaro.org,
+        netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 16, 2023 at 10:16:34AM +0100, Jerome Brunet wrote:
-> Add support for the MDIO multiplexer found in the Amlogic GXL SoC family.
-> This multiplexer allows to choose between the external (SoC pins) MDIO bus,
-> or the internal one leading to the integrated 10/100M PHY.
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Sun, 15 Jan 2023 17:59:24 +0000 you wrote:
+> The IPA interrupt can fire when pm_runtime is disabled due to it racing
+> with the PM suspend/resume code. This causes a splat in the interrupt
+> handler when it tries to call pm_runtime_get().
 > 
-> This multiplexer has been handled with the mdio-mux-mmioreg generic driver
-> so far. When it was added, it was thought the logic was handled by a
-> single register.
+> Explicitly disable the interrupt in our ->suspend callback, and
+> re-enable it in ->resume to avoid this. If there is an interrupt pending
+> it will be handled after resuming. The interrupt is a wake_irq, as a
+> result even when disabled if it fires it will cause the system to wake
+> from suspend as well as cancel any suspend transition that may be in
+> progress. If there is an interrupt pending, the ipa_isr_thread handler
+> will be called after resuming.
 > 
-> It turns out more than a single register need to be properly set.
-> As long as the device is using the Amlogic vendor bootloader, or upstream
-> u-boot with net support, it is working fine since the kernel is inheriting
-> the bootloader settings. Without net support in the bootloader, this glue
-> comes unset in the kernel and only the external path may operate properly.
-> 
-> With this driver (and the associated DT update), the kernel no longer relies
-> on the bootloader to set things up, fixing the problem.
+> [...]
 
-Ideally, you should also post an actual user of this driver, i.e. the
-DT updates.
+Here is the summary with links:
+  - [net] net: ipa: disable ipa interrupt during suspend
+    https://git.kernel.org/netdev/net/c/9ec9b2a30853
 
-> This has been tested on the aml-s905x-cc (LePotato) for the internal path
-> and the aml-s912-pc (Tartiflette) for the external path.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-So these exist in mainline, which is enough for me.
 
-   Andrew
