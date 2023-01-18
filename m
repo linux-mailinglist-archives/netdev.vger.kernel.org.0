@@ -2,78 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9070E671FA6
-	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 15:33:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E366E671FCB
+	for <lists+netdev@lfdr.de>; Wed, 18 Jan 2023 15:38:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231307AbjAROdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 09:33:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60792 "EHLO
+        id S231447AbjAROi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 09:38:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229772AbjAROdQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 09:33:16 -0500
-Received: from mail-vk1-xa31.google.com (mail-vk1-xa31.google.com [IPv6:2607:f8b0:4864:20::a31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E21A189
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 06:21:40 -0800 (PST)
-Received: by mail-vk1-xa31.google.com with SMTP id b81so16456971vkf.1
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 06:21:40 -0800 (PST)
+        with ESMTP id S230292AbjAROhv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 09:37:51 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EFBB66FA9
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 06:28:00 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id bk15so26142041ejb.9
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 06:28:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=cb7/vy5IKXH5/vGfhVdmD/qbI5yvTfHIoJma5Ilxhqc=;
-        b=o3gHdhs4Ff3TPnQzd6fQiYudAFJAFruJM15PipU2SHi2JjUaWQMb5QePfYl8h1KIc1
-         Gad63L/2jHleTUGu2D+ot2L5JNKvCOnoMR0Xlf9ap85HwnTwWtZYpSaL4ls8oRUx45lf
-         nZ38O6eFQOO+SCqgtaDGk4ctuOBsVHGwlqSuKLdqaRahsDXwFWxmMvRhx6BaihrgMCzo
-         wbNVPD5ilaklEpTT+oxbVeOcNWRnQFrErUdbv/xMRbqaH9zDJ1AI6MV3Ehe/KfWTrDF4
-         FISBWzpwPZgxOJ7PEU6XmBuCGHbp3Lzg0Ae5MhY4AzTK97bhVtojFowsewKD6q7qnVYC
-         MxKQ==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tGsNaYd8lzrEJBZWh/jXK77/CF4jiaEZbxlPMQt1yUA=;
+        b=yGgv4bRS23TPtTiAaUpfhM7ARvm/Md/VxtiJeL6mzD/ShTWfpUCOmR2JYuBXb9nwV8
+         Hnjx4/fhXVb75lGNMSC6kR+eOmOGg/nsAmix226J9z1IltroWTgraHT67mb9C0NSlgdN
+         2FYm9ogR/3dvC6TGl4uV+C8JvUBo2QsX32nYkjO7uxAY88e5q0qLkoORP56kXrt7Jarm
+         ojfbGc/I9iN1zTbo6RyJVjKsvbObTFE+NL8H98j6OKruudOMBLu/d7fqP7bVkTcd9kAT
+         4q2GB6mH24pr3FviUt7tBrEoXfy18t2g/bPCy6tmkaGbCg1s9txiRVGS64UFnxK6Uhzz
+         YCoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=cb7/vy5IKXH5/vGfhVdmD/qbI5yvTfHIoJma5Ilxhqc=;
-        b=CFLwQOktwDYjnCgsUrv45m92UhRFiZ3Vuw58/782dsTJOO898JUQYltLNJJ1u2/j1/
-         D3/xXa2gVQJZEjcNqUryfqTGuXSKKzgO61k5/u7AeF405sYMHVqefJX4r3mqr6SqRzcd
-         EGZuSq9nGhTTcuQ/YB3B6pcphpubJXPKjit3cQdGeLSdAT+4jHjIbz0Z4tBRj1tOuizh
-         FBjPsMYIm16CSWEuE1pFR9wcWy3t27nUev8Qan5CZycaOm9lezTqZ3EQtRZ7HRE3Lfpb
-         DkbO3f92ExPCxgTpt+rk62iiaf2Q/IgYUk1Kpm3v2OyDCVHZjy67r6WQJ7x5+UizIrzP
-         4YFw==
-X-Gm-Message-State: AFqh2kpIqpiUbuPTxenF9Meeq9pAU8zBJmi4sUIDtJ781qt2TZywyRUo
-        lYCEVEUkJbCDoFzN3zur9XfyqMdoPoEnQdZCjFpZwQGS
-X-Google-Smtp-Source: AMrXdXuLYjOqyN/0yDLzsVJVRtR5sOrqzG9sONpRJyczPVcl8MyGQP1ht/0e6ZcajjRBKgpw00cbjdimQyhuzjhGv28=
-X-Received: by 2002:a1f:91d4:0:b0:3db:104:6d13 with SMTP id
- t203-20020a1f91d4000000b003db01046d13mr966226vkd.25.1674051698660; Wed, 18
- Jan 2023 06:21:38 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=tGsNaYd8lzrEJBZWh/jXK77/CF4jiaEZbxlPMQt1yUA=;
+        b=2fPAYVO6AIIFM5B4MJA7N43mJLPtVfej+VIi5b7YU3p4hNUQ/a5N3f7vFd9wBIwG90
+         QhQDEpFsZGSnmqm9PVdR5dkzYMCLOhZa9qerFfzmgPYtqc8mFBUuch2bYiDbHpeyplQa
+         k9IKzjVmT3ib4bIf4aDUACIxNbTb7RtkajXmMEpiCtznjk0gGxwNw0vblZQt8tUTvtxR
+         eUbrAC8eouYjRccr6X/fOUeA9I+PO1lJ1PlV68aexzme6J3TseS/wfnWJY6rX4Dwv+G7
+         2fhwrk5xz98Y4F3vjx3CH6wqrl5751mocv1j9tKsqAFNVHxnGPUodNAJGu2g9nhcILD2
+         tpjg==
+X-Gm-Message-State: AFqh2kqaOzxoc7vexTw1VREf4BIC0HgO0PYH49UZprn0T5m3egeNHL5f
+        UfGrNuSV0i6Vqd/kfQhg1Mf1rA==
+X-Google-Smtp-Source: AMrXdXtaZoCq1axVrnXR3NO7JWhyRBJo7prw3mrcpWnr7PBsifQfh/PbqAmQtCohleDsgwL+x5LqLQ==
+X-Received: by 2002:a17:906:5906:b0:870:2f70:c624 with SMTP id h6-20020a170906590600b008702f70c624mr7429241ejq.3.1674052078711;
+        Wed, 18 Jan 2023 06:27:58 -0800 (PST)
+Received: from [192.168.1.101] (abxh252.neoplus.adsl.tpnet.pl. [83.9.1.252])
+        by smtp.gmail.com with ESMTPSA id um41-20020a170907cb2900b0086c4fbb8507sm6114730ejc.225.2023.01.18.06.27.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 Jan 2023 06:27:58 -0800 (PST)
+Message-ID: <e47e3ec7-4c89-0472-cc87-9c9cc6db8519@linaro.org>
+Date:   Wed, 18 Jan 2023 15:27:55 +0100
 MIME-Version: 1.0
-From:   Ian Kumlien <ian.kumlien@gmail.com>
-Date:   Wed, 18 Jan 2023 15:21:26 +0100
-Message-ID: <CAA85sZtrSWcZkFf=0P2iQptre0j2c=OCXRHU8Tiqm_Lpb-ttNQ@mail.gmail.com>
-Subject: Expected performance w/ bonding
-To:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Cc:     andy@greyhouse.net, vfalico@gmail.com, j.vosburgh@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v2 2/2] clk: qcom: add the GCC driver for sa8775p
+Content-Language: en-US
+To:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Shazad Hussain <quic_shazhuss@quicinc.com>,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+References: <20230117180429.305266-1-brgl@bgdev.pl>
+ <20230117180429.305266-3-brgl@bgdev.pl>
+From:   Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <20230117180429.305266-3-brgl@bgdev.pl>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-I was doing some tests with some of the bigger AMD machines, both
-using PCIE-4 Mellanox connectx-5 nics
 
-They have 2x100gbit links to the same switches (running in VLT - ie as
-"one"), but iperf3 seems to hit a limit at 27gbit max...
-(with 10 threads in parallel) but generally somewhere at 25gbit - so
-my question is if there is a limit at ~25gbit for bonding
-using 802.3ad and layer2+3 hashing.
+On 17.01.2023 19:04, Bartosz Golaszewski wrote:
+> From: Shazad Hussain <quic_shazhuss@quicinc.com>
+> 
+> Add support for the Global Clock Controller found in the QTI SA8775P
+> platforms.
+> 
+> Signed-off-by: Shazad Hussain <quic_shazhuss@quicinc.com>
+> [Bartosz: made the driver ready for upstream]
+> Co-developed-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> ---
 
-It's a little bit difficult to do proper measurements since most
-systems are in production - but i'm kinda running out of clues =)
+[...]
 
-If anyone has any ideas, it would be very interesting to see if they would help.
+> +
+> +static int __init gcc_sa8775p_init(void)
+> +{
+> +	return platform_driver_register(&gcc_sa8775p_driver);
+> +}
+> +subsys_initcall(gcc_sa8775p_init);
+core_initcall, otherwise you'll be waiting for years :P
+
+Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+
+Konrad
+> +
+> +static void __exit gcc_sa8775p_exit(void)
+> +{
+> +	platform_driver_unregister(&gcc_sa8775p_driver);
+> +}
+> +module_exit(gcc_sa8775p_exit);
+> +
+> +MODULE_DESCRIPTION("Qualcomm SA8775P GCC driver");
+> +MODULE_LICENSE("GPL");
