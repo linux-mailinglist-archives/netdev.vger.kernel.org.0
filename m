@@ -2,88 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4777672F72
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 04:17:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBF2967303B
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 05:28:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229812AbjASDR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 22:17:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35140 "EHLO
+        id S229786AbjASE2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 23:28:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229827AbjASDPh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 22:15:37 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE3F5AB58
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 19:13:45 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id c124so890290ybb.13
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 19:13:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=MtnTz4MNDLfYsz3YERr3qYCTmCc7P3RtDIf35VFVErk=;
-        b=A4DCK9pzC32IZH4NtzpD9LiqwVfixfcWPAYaRAMcrU0pjkZTYidGRoRBb0awgPT2Kr
-         vHRQ5thxbJ9Ai9aozh95O2gMWmY+lWEOjGbZJ5g2AuO9Eeq3WRj8K4qe2qpZcM6AMwHz
-         02oUYg//1CEmmDp43X4cZiVESQv8foVvOwe7Y36P8aOAUty18aBSpmwOq1sycj4UwId6
-         ytVs14RjvtSmocvnXeYbWoNMCGOBAXvjA4fXCMTvH/33S4wBUhLkK+0dMXVwkBe6xz4c
-         xXqyUAhoWtU8xbZY292WMnCYcBAQJJmmLm4cfHM1LIGsPT/JZDtUyhd7ml0VelZvgZD9
-         YwuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=MtnTz4MNDLfYsz3YERr3qYCTmCc7P3RtDIf35VFVErk=;
-        b=y5hzcajAOrG376+BlaV4OpyCzBADNSTY0TeRx+GhP2L1i7LDiX+Bm+Bt3RGI/Hdj6V
-         ZK5Loz3o4HofykT7WJTqT/K9RnSyTQ7jFdm2Fav42aisxTLx62hii7r0i1YVajvPYjRL
-         q2vIra3ct9CmGjqULxTUb64LLZwdVEU+sXaChGKJypF2o4HIfY0/xNzR7bFPB9YhPKLN
-         UGqjek0tdmUqL5byhNP7HTa5dtpKDL8XlPQyUb9TXWvjUlqPaHC5N5Gpulhp9Zsn/QY2
-         +ueHyk9igHDHyVjq9zVQf73G8vQd3M92ZiYbwkrDgYYahyLYYT8wB37n4wxwBJCmf/xP
-         y2GQ==
-X-Gm-Message-State: AFqh2kp2UtokP6f+2W+7sTV3q8zToa6PjuQXIn48d6OwmdZrLADz109G
-        6hb4RViHkn2AmjZ7/RFNOmts+ZO0SEu0Ey8hCoEmRA==
-X-Google-Smtp-Source: AMrXdXvN66bjiWexiySIjzvm82kwrr0temoXZg7YCV2bqeNPbxOGKv3nwwytI/lNdbLrKQP4SVGl1CFJu1Pi6dCa2/s=
-X-Received: by 2002:a25:9012:0:b0:7b8:a0b8:f7ec with SMTP id
- s18-20020a259012000000b007b8a0b8f7ecmr1356508ybl.36.1674098024361; Wed, 18
- Jan 2023 19:13:44 -0800 (PST)
+        with ESMTP id S229746AbjASDoq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 22:44:46 -0500
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56FEB45BE5
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 19:42:02 -0800 (PST)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Ny7fZ6rjHz16N6D;
+        Thu, 19 Jan 2023 11:39:34 +0800 (CST)
+Received: from [10.174.178.66] (10.174.178.66) by
+ dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Thu, 19 Jan 2023 11:41:19 +0800
+Message-ID: <3f6722cf-8bc7-387f-d9eb-f6161a56b91c@huawei.com>
+Date:   Thu, 19 Jan 2023 11:41:18 +0800
 MIME-Version: 1.0
-References: <cover.1673666803.git.lucien.xin@gmail.com> <de91843a7f59feb065475ca82be22c275bede3df.1673666803.git.lucien.xin@gmail.com>
- <b0a1bebc-7d44-05bc-347c-94da4cf2ef27@gmail.com> <CADvbK_cxQa0=ximH1F2bA-r0Q2+nMGAsSKhbaKzFTHOrcCF11A@mail.gmail.com>
- <CANn89iK4oSgoxJVkXO5rZXLzG1xw-xP31QbGHGvjhXqR2SSsRQ@mail.gmail.com>
- <CADvbK_c+RAFyrwuL+dfU3hc5U+ytOHC=TQ_xrkvXb4bB7XKjEA@mail.gmail.com>
- <CANn89iLtF3dNcMkMGagCSfb+p5zA3Fa-DV9f9xMHHU_TX2CvSw@mail.gmail.com>
- <b73e2dd1-d7bc-e96b-8553-1536a1146f3c@gmail.com> <CANn89iKc9HiswDGVVUBGDUef3V74Cq0pWdAG-zMK79pC6oDyEA@mail.gmail.com>
- <CADvbK_coggEMCELtAejSFzHnqBQp=BERvMJ1uqkF-iy8-kdo7w@mail.gmail.com>
- <CANn89i+OeD6Tmj0eyn=NK8M6syxKEQYLQfv4KUMmMGBh98YKyw@mail.gmail.com>
- <CADvbK_emHO8NjNxJdBueED9pAkoTo1girB5myyt-c1SjYxEtrQ@mail.gmail.com> <CADvbK_dQUpDa5oCo-o5DkKNY498gWwsan+RTpb9yTrg7DNRc+g@mail.gmail.com>
-In-Reply-To: <CADvbK_dQUpDa5oCo-o5DkKNY498gWwsan+RTpb9yTrg7DNRc+g@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 19 Jan 2023 04:13:32 +0100
-Message-ID: <CANn89i++s3jhHqsyJT50FePT=icx3_FiYGqJNwQ73a1wt2+m+Q@mail.gmail.com>
-Subject: Re: [PATCH net-next 09/10] netfilter: get ipv6 pktlen properly in length_mt6
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     David Ahern <dsahern@gmail.com>,
-        network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: Question: Patch:("net: sched: cbq: dont intepret cls results when
+ asked to drop") may be not bug for branch LTS 5.10
+To:     Kyle Zeng <zengyhkyle@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
+CC:     David Miller <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Davide Caratti <dcaratti@redhat.com>,
         Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Aaron Conole <aconole@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Guillaume Nault <gnault@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <4538d7d2-0d43-16b7-9f80-77355f08cc61@huawei.com>
+ <CAM0EoM=rqF8K997AmC0VDncJ9LeA0PJku2BL96iiatAOiv1-vw@mail.gmail.com>
+ <CAM0EoM=VwZWzz1n_y8bj3y44NKBmhnmn+HUHtHwBb5qcCqETfg@mail.gmail.com>
+ <CADW8OBvNcMCogJsMJkVXw70PL3oGU9s1a16DOK+xqdnCfgQzvg@mail.gmail.com>
+From:   shaozhengchao <shaozhengchao@huawei.com>
+In-Reply-To: <CADW8OBvNcMCogJsMJkVXw70PL3oGU9s1a16DOK+xqdnCfgQzvg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.66]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -91,44 +61,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 19, 2023 at 2:19 AM Xin Long <lucien.xin@gmail.com> wrote:
 
-> I think that IPv6 BIG TCP has a similar problem, below is the tcpdump in
-> my env (RHEL-8), and it breaks too:
->
-> 19:43:59.964272 IP6 2001:db8:1::1 > 2001:db8:2::1: [|HBH]
-> 19:43:59.964282 IP6 2001:db8:1::1 > 2001:db8:2::1: [|HBH]
-> 19:43:59.964292 IP6 2001:db8:1::1 > 2001:db8:2::1: [|HBH]
-> 19:43:59.964300 IP6 2001:db8:1::1 > 2001:db8:2::1: [|HBH]
-> 19:43:59.964308 IP6 2001:db8:1::1 > 2001:db8:2::1: [|HBH]
->
+Thank you for your answer.
 
-Please make sure to use a not too old tcpdump.
+On 2023/1/18 8:10, Kyle Zeng wrote:
+> Hi Zhengchao,
+> 
+> I'm the finder of the vulnerability. In my initial report, there was a
+> more detailed explanation of why this bug happened. But it got left
+> out in the commit message.
+> So, I'll explain it here and see whether people want to patch the
+> actual root cause of the crash.
+> 
+> The underlying bug that this patch was trying to address is actually
+> in `__tcf_classify`. Notice that `struct tcf_result` is actually a
+> union type, so whenever the kernel sets res.goto_tp, it also sets
+> res.class. And this can happen inside `tcf_action_goto_chain_exec`. In
+> other words, `tcf_action_goto_chain_exec` will set res.class. Notice
+> that goto_chain can point back to itself, which causes an infinite
+> loop. To avoid the infinite loop situation, `__tcf_classify` checks
+> how many times the loop has been executed
+> (https://elixir.bootlin.com/linux/v6.1/source/net/sched/cls_api.c#L1586),
+> if it is more than a specific number, it will mark the result as
+> TC_ACT_SHOT and then return:
+> 
+> if (unlikely(limit++ >= max_reclassify_loop)) {
+>      ...
+>      return TC_ACT_SHOT;
+> }
+> 
+> However, when it returns in the infinite loop handler, it forgets to
+> clear whatever is in the `res` variable, which still holds pointers in
+> `goto_tp`. As a result, cbq_classify will think it is a valid
+> `res.class` and causes type confusion.
 
-> it doesn't show what we want from the TCP header either.
->
-> For the latest tcpdump on upstream, it can display headers well for
-> IPv6 BIG TCP. But we can't expect all systems to use the tcpdump
-> that supports HBH parsing.
-
-User error. If an admin wants to diagnose TCP potential issues, it should use
-a correct version.
-
->
-> For IPv4 BIG TCP, it's just a CFLAGS change to support it in "tcpdump,"
-> and 'tshark' even supports it by default.
-
-Not with privacy _requirements_, where only the headers are captured.
-
-I am keeping a NACK, until you make sure you do not break this
-important feature.
-
->
-> I think we should NOT go with "adjust tot_len" or "truncate packets" way,
-> and it makes more sense to make it supported in "tcpdump" by default,
-> just like in "tshark". I believe commit [1] was added for some problems
-> they've met, we should enable it for both.
->
-> [1] https://github.com/the-tcpdump-group/tcpdump/commit/c8623960f050cb81c12b31107070021f27f14b18
->
-> Thanks.
+It's very meaningful for me to understand that patch. I think I've
+missed the path where there's a problem when I analyze the patch.
+> 
+> My initial proposed patch was to memset `res` before `return
+> TC_ACT_SHOT` in `__tcf_classify`, but it didn't get merged. But I
+> guess the merged patch is more generic.
+> 
+> BTW, I'm not sure whether it is a bug or it is intended in the merged
+> patch for this bug: moving `return NULL` statement in `cbq_classify`
+> results in a behavior change that is not documented anywhere:
+> previously, packets that return TC_ACT_QUEUED, TC_ACT_STOLEN, and
+> TC_ACT_TRAP will eventually return NULL, but now they will be passed
+> into `cbq_reclassify`. Is this expected?
+> 
+> Best,
+> Kyle Zeng
+> 
+> On Tue, Jan 17, 2023 at 12:07 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>>
+>> +Cc netdev
+>>
+>> On Tue, Jan 17, 2023 at 10:06 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>>>
+>>> Trimmed Cc (+Davide).
+>>>
+>>> I am not sure i followed what you are saying because i dont see the
+>>> relationship between the
+>>> two commits. Did that patch(9410c9409d3e) cause a problem?
+>>> How do you reproduce the issue that is caused by this patch that you are seeing?
+>>>
+>>> One of the challenges we have built over time is consumers of classification and
+>>> action execution may not be fully conserving the semantics of the return code.
+>>> The return code is a "verdict" on what happened; a safer approach is to get the
+>>> return code to be either an error/success code. But that seems to be a
+>>> separate issue.
+>>>
+>>> cheers,
+>>> jamal
+>>>
+>>> On Mon, Jan 16, 2023 at 3:28 AM shaozhengchao <shaozhengchao@huawei.com> wrote:
+>>>>
+>>>> When I analyzed the following LTS 5.10 patch, I had a small question:
+>>>> https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=linux-5.10.y&id=b2c917e510e5ddbc7896329c87d20036c8b82952
+>>>>
+>>>> As described in this patch, res is obtained through the tcf_classify()
+>>>> interface. If result is TC_ACT_SHOT, res may be an abnormal value.
+>>>> Accessing class in res will cause abnormal access.
+>>>>
+>>>> For LTS version 5.10, if tcf_classify() is to return a positive value,
+>>>> the classify hook function to the filter must be called, and the hook
+>>>> function returns a positive number. Observe the classify function of
+>>>> each filter. Generally, res is initialized in four scenarios.
+>>>> 1. res is assigned a value by res in the private member of each filter.
+>>>> Generally, kzalloc is used to assign initial values to res of various
+>>>> filters. Therefore, class in res is initialized to 0. Then use the
+>>>> tcf_bind_filter() interface to assign values to members in res.
+>>>> Therefore, value of class is assigned. For example, cls_basic.
+>>>> 2. The classify function of the filter directly assigns a value to the
+>>>> class of res, for example, cls_cgroup.
+>>>> 3. The filter classify function references tp and assigns a value to
+>>>> res, for example, cls_u32.
+>>>> 4. The change function of the filter references fh and assigns a value
+>>>> to class in res, for example, cls_rsvp.
+>>>>
+>>>> This Mainline problem is caused by commit:3aa260559455 (" net/sched:
+>>>> store the last executed chain also for clsact egress") and
+>>>> commit:9410c9409d3e ("net: sched: Introduce ingress classification
+>>>> function"). I don't know if my analysis is correct, please help correct,
+>>>> thank you very much.
+>>>>
+>>>> Zhengchao Shao
