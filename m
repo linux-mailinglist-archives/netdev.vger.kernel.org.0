@@ -2,428 +2,325 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FFCD67414B
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 19:53:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D18C67415B
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 19:54:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229929AbjASSxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 13:53:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
+        id S229728AbjASSyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 13:54:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229798AbjASSxF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 13:53:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD20230E97;
-        Thu, 19 Jan 2023 10:53:02 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA30F60C57;
-        Thu, 19 Jan 2023 18:53:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11FECC433D2;
-        Thu, 19 Jan 2023 18:53:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674154381;
-        bh=IEM/NhpOS/BK6K/lF+qt2bY3THc98viDeEJqCDo/z7I=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ERURQNZ48Yg/1tB6hJ1TznD4tDfuRCeae+Cx33jzYVDP7f1WFbEk1XGFQN4L2rQ5t
-         k9xD90KtaFyVQUrrI52oABAt01NiQEPcRTmENatYc6vIZzz1qb6HS/+D0kSCAwBOuj
-         V9yarn3LAmz+OK42+G6iFI5k6u9607CJyW5zg37V2ncFgqHeCVEvSmmettDu0B3QUX
-         VGkowcfou1uB4axYFFnLZEF3/aP9OjCZ/LFy96E4jiTkYcBcOjDrciZHNZh/c8Nju+
-         HXoR73WDqlm7a5tqpQRiwiRpHhiAJCCxM80vexI6FU/vzQzoSUrqmdZJltrbBxGihL
-         kCgul+AtVtRnw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     torvalds@linux-foundation.org
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pabeni@redhat.com
-Subject: [PULL] Networking for v6.2-rc5
-Date:   Thu, 19 Jan 2023 10:53:00 -0800
-Message-Id: <20230119185300.517048-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S229811AbjASSyW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 13:54:22 -0500
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2078.outbound.protection.outlook.com [40.107.237.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0290694C8A;
+        Thu, 19 Jan 2023 10:54:18 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XI4A8Q8VbnUZx7yap4wx18lmLRCUOCTnWTI8omh0h1rPcSSGRfH2FXulNiADKtzbdMY3Bochpl+UyPCaMTyxaoO/qVVno93v3FkQYCfJYwbIkaD6R4O7PzmHjfT/PKMXURCV0KML9v6N8AL1TFo185fCGNo00rnZ2fiBNaUKbf9IhWrCysQVcc+R67X9SDXda6BKAmrRsQomCPaGkpIFV4LKebdB+ymoNB9TAroBhqL+vku10Z7b/USyO7gRojr2V/SfU3oMYy0eEfyy5jitokKY0Szs6+JjYwtzbi6PckaA1NW2Is/pV2G5LU2sik5nQ4gEpEacvAI3eN+QBDI2gw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1b8ygK4l4t9D1VUmNx5SCNMOort3UV1hUcI4VTpZAvs=;
+ b=SuLVdS0mgOeJGmpkaUxhUzd/jnjSvWA8OSMmzi9iizfIsPcjmuRXGsZY4DljIWpGn2oZZYzJ3C/pWhkSvIpq7FqyVuVU+goAwNhEL5FPRSPXgtehSNgQDO5VmVvH7tB3DXv+WeNQWgprcXJGhMF3Exq5jGdvDPlnuIu5NDMoyEwqoRrUrVxElDht/Zlm7faecFSCfSQfVMopTzzWJaJO0ZHu3iislJmw+laFaGWpgReBIf+EsNvqxEmDQuraN0hc+WUJzSVUGNU5X2iOufzCo3pBx3Mj+PT+VCDT7CmavQUA2aAyhygxnWcySot0L/sLPvZ7KcDWeQOs+iwFm5gO9g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1b8ygK4l4t9D1VUmNx5SCNMOort3UV1hUcI4VTpZAvs=;
+ b=f+GL3+VyYV9gl5oLGwNzGT3/GTaxesOefL1+VtGAPaop9d5JWPsmdQvXZtbPescvr8OIocxf9L7BbC51grVUmIVt4FBXlz/HdMl08tAB8/MQ4H+yQ/p5rT8U63WQ8O+XvLMXcGQfuCBi1uPkZOeMsdCo4MnQZSajHAEq3BO3oqg=
+Received: from SJ0PR13CA0113.namprd13.prod.outlook.com (2603:10b6:a03:2c5::28)
+ by IA1PR12MB6483.namprd12.prod.outlook.com (2603:10b6:208:3a8::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.25; Thu, 19 Jan
+ 2023 18:54:14 +0000
+Received: from CO1PEPF00001A5E.namprd05.prod.outlook.com
+ (2603:10b6:a03:2c5:cafe::16) by SJ0PR13CA0113.outlook.office365.com
+ (2603:10b6:a03:2c5::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6023.16 via Frontend
+ Transport; Thu, 19 Jan 2023 18:54:13 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ CO1PEPF00001A5E.mail.protection.outlook.com (10.167.241.5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6002.11 via Frontend Transport; Thu, 19 Jan 2023 18:54:12 +0000
+Received: from SATLEXMB08.amd.com (10.181.40.132) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 19 Jan
+ 2023 12:54:09 -0600
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB08.amd.com
+ (10.181.40.132) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 19 Jan
+ 2023 10:54:08 -0800
+Received: from xhdsneeli40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
+ Transport; Thu, 19 Jan 2023 12:53:43 -0600
+From:   Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
+To:     <broonie@kernel.org>, <miquel.raynal@bootlin.com>,
+        <richard@nod.at>, <vigneshr@ti.com>, <jic23@kernel.org>,
+        <tudor.ambarus@microchip.com>, <pratyush@kernel.org>,
+        <sanju.mehta@amd.com>, <chin-ting_kuo@aspeedtech.com>,
+        <clg@kaod.org>, <kdasu.kdev@gmail.com>, <f.fainelli@gmail.com>,
+        <rjui@broadcom.com>, <sbranden@broadcom.com>,
+        <eajames@linux.ibm.com>, <olteanv@gmail.com>, <han.xu@nxp.com>,
+        <john.garry@huawei.com>, <shawnguo@kernel.org>,
+        <s.hauer@pengutronix.de>, <narmstrong@baylibre.com>,
+        <khilman@baylibre.com>, <matthias.bgg@gmail.com>,
+        <haibo.chen@nxp.com>, <linus.walleij@linaro.org>,
+        <daniel@zonque.org>, <haojian.zhuang@gmail.com>,
+        <robert.jarzmik@free.fr>, <agross@kernel.org>,
+        <bjorn.andersson@linaro.org>, <heiko@sntech.de>,
+        <krzysztof.kozlowski@linaro.org>, <andi@etezian.org>,
+        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@foss.st.com>,
+        <wens@csie.org>, <jernej.skrabec@gmail.com>, <samuel@sholland.org>,
+        <masahisa.kojima@linaro.org>, <jaswinder.singh@linaro.org>,
+        <rostedt@goodmis.org>, <mingo@redhat.com>,
+        <l.stelmach@samsung.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <alex.aring@gmail.com>, <stefan@datenfreihafen.org>,
+        <kvalo@kernel.org>, <thierry.reding@gmail.com>,
+        <jonathanh@nvidia.com>, <skomatineni@nvidia.com>,
+        <sumit.semwal@linaro.org>, <christian.koenig@amd.com>,
+        <j.neuschaefer@gmx.net>, <vireshk@kernel.org>, <rmfrfs@gmail.com>,
+        <johan@kernel.org>, <elder@kernel.org>,
+        <gregkh@linuxfoundation.org>
+CC:     <git@amd.com>, <linux-spi@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <joel@jms.id.au>,
+        <andrew@aj.id.au>, <radu_nicolae.pirea@upb.ro>,
+        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <claudiu.beznea@microchip.com>,
+        <bcm-kernel-feedback-list@broadcom.com>, <fancer.lancer@gmail.com>,
+        <kernel@pengutronix.de>, <festevam@gmail.com>, <linux-imx@nxp.com>,
+        <jbrunet@baylibre.com>, <martin.blumenstingl@googlemail.com>,
+        <avifishman70@gmail.com>, <tmaimon77@gmail.com>,
+        <tali.perry1@gmail.com>, <venture@google.com>, <yuenn@google.com>,
+        <benjaminfair@google.com>, <yogeshgaur.83@gmail.com>,
+        <konrad.dybcio@somainline.org>, <alim.akhtar@samsung.com>,
+        <ldewangan@nvidia.com>, <michal.simek@amd.com>,
+        <linux-aspeed@lists.ozlabs.org>, <openbmc@lists.ozlabs.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-rpi-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-rockchip@lists.infradead.org>,
+        <linux-samsung-soc@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-sunxi@lists.linux.dev>, <linux-tegra@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-wpan@vger.kernel.org>,
+        <libertas-dev@lists.infradead.org>,
+        <linux-wireless@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
+        <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
+        <linux-iio@vger.kernel.org>, <michael@walle.cc>,
+        <palmer@dabbelt.com>, <linux-riscv@lists.infradead.org>,
+        <linux-media@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <greybus-dev@lists.linaro.org>, <linux-staging@lists.linux.dev>,
+        <amitrkcian2002@gmail.com>
+Subject: [PATCH v2 00/13] spi: Add support for stacked/parallel memories
+Date:   Fri, 20 Jan 2023 00:23:29 +0530
+Message-ID: <20230119185342.2093323-1-amit.kumar-mahapatra@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PEPF00001A5E:EE_|IA1PR12MB6483:EE_
+X-MS-Office365-Filtering-Correlation-Id: 77f1653e-d41a-46eb-9623-08dafa4e8e37
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ZDBpCSjbv/cRfsFYckWfcw1Z4CytZfw/jR+0nWB/4pW//twXGEJkmy8CRkAsXJi0lT/cYNYlWPxVYBKj0S2fIu1yVqJSYng2+66kg1E4wmEW1OrLGlIRtBlHPVdHBv6AXwpV+Br+K1Khlbi9z2VUEQfOOHAdTK27pvwNWwC7jkFMdrsq7nmYvAy9BtdCxPpLTwVPNB1Wq7rTatpfNOirKmYLhVo3hxQcxU5rBFf6fK1Ip9cXymRZJbfsALQ2Av8GONJNNbSsMPiaEWXa0jpTq2qy6wsdDeaZ+98CB1uzVI5++7K6QbwzabKCwRU6kab5c+zOEl2AbHdtkNACxeKlZMsAup9+2MTKbT7dwsSANlkge5BGPOJXCmo8b1GoZKsmrQLILWGxzjEdbhYo+QrIVDXH1upsQ74MljxaJ34OcHyXmUo6NVOjna1EjAW7To9QzyVgoClN6s9K0j0NjdnmZNlnPBfFcq+d7htFn8DuuwAdxXaBW++B/hh1qbQhVxsho8HxVf2BczpEDEm2Qy13GgQKzxgcnTu+ImZDRsygMsB/LXG3eH9LIX3pN0zPq/lIvg2bsa0mTOtXV3ZhXafaP5U4LZxyKf8F/oasjplokXxf5Rw4B+kDZM8iZKsmTn6kRQQ7yX6vOFNqvdvBDAfTQQS42+1f6ekK5+pArUvoo4hrrQOzM/cZCfGu64QdupIlTkg+UEvkfLInCcQBPYDwfpzyGy0D87tbtou4OaF7mlI8/rvwXnCAMuktFe9aIeikJST27/4UgxtB4ji6/qpdltnwiFkUbmrVriDZMsfrpDXxcc32yy8cF+RK1vDPwyTD5Pk277ckkva50D3r+sRuzZH6Jx1WSHNhWzdmsl0StoA=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(376002)(396003)(136003)(451199015)(36840700001)(46966006)(40470700004)(86362001)(40460700003)(36756003)(6666004)(478600001)(8936002)(316002)(5660300002)(40480700001)(82740400003)(7406005)(70586007)(70206006)(4326008)(7276002)(7336002)(7366002)(8676002)(7416002)(41300700001)(36860700001)(921005)(26005)(356005)(186003)(2616005)(82310400005)(1191002)(83380400001)(2906002)(81166007)(54906003)(110136005)(47076005)(426003)(336012)(1076003)(83996005)(84006005)(2101003)(41080700001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 18:54:12.3778
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 77f1653e-d41a-46eb-9623-08dafa4e8e37
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1PEPF00001A5E.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6483
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Linus!
+This patch is in the continuation to the discussions which happened on
+'commit f89504300e94 ("spi: Stacked/parallel memories bindings")' for
+adding dt-binding support for stacked/parallel memories.
+
+This patch series updated the spi-nor, spi core and the spi drivers
+to add stacked and parallel memories support.
+---
+BRANCH: mtd/next
+
+Changes in v2:
+- Rebased the patches on top of v6.2-rc1 
+- Created separate patch to add get & set APIs for spi->chip_select & 
+  spi->cs_gpiod, and replaced all spi->chip_select and spi->cs_gpiod 
+  references with the API calls.
+- Created separate patch to add get & set APIs for nor->params.
+---
+Amit Kumar Mahapatra (13):
+  spi: Add APIs in spi core to set/get spi->chip_select and
+    spi->cs_gpiod
+  spi: Replace all spi->chip_select and spi->cs_gpiod references with
+    function call
+  net: Replace all spi->chip_select and spi->cs_gpiod references with
+    function call
+  iio: imu: Replace all spi->chip_select and spi->cs_gpiod references
+    with function call
+  mtd: devices: Replace all spi->chip_select and spi->cs_gpiod
+    references with function call
+  staging: Replace all spi->chip_select and spi->cs_gpiod references
+    with function call
+  platform/x86: serial-multi-instantiate: Replace all spi->chip_select
+    and spi->cs_gpiod references with function call
+  spi: Add stacked and parallel memories support in SPI core
+  mtd: spi-nor: Add APIs to set/get nor->params
+  mtd: spi-nor: Add stacked memories support in spi-nor
+  spi: spi-zynqmp-gqspi: Add stacked memories support in GQSPI driver
+  mtd: spi-nor: Add parallel memories support in spi-nor
+  spi: spi-zynqmp-gqspi: Add parallel memories support in GQSPI driver
+
+ drivers/iio/imu/adis16400.c                   |   2 +-
+ drivers/mtd/devices/mtd_dataflash.c           |   2 +-
+ drivers/mtd/spi-nor/atmel.c                   |  17 +-
+ drivers/mtd/spi-nor/core.c                    | 665 +++++++++++++++---
+ drivers/mtd/spi-nor/core.h                    |   8 +
+ drivers/mtd/spi-nor/debugfs.c                 |   4 +-
+ drivers/mtd/spi-nor/gigadevice.c              |   4 +-
+ drivers/mtd/spi-nor/issi.c                    |  11 +-
+ drivers/mtd/spi-nor/macronix.c                |   6 +-
+ drivers/mtd/spi-nor/micron-st.c               |  39 +-
+ drivers/mtd/spi-nor/otp.c                     |  25 +-
+ drivers/mtd/spi-nor/sfdp.c                    |  29 +-
+ drivers/mtd/spi-nor/spansion.c                |  50 +-
+ drivers/mtd/spi-nor/sst.c                     |   7 +-
+ drivers/mtd/spi-nor/swp.c                     |  22 +-
+ drivers/mtd/spi-nor/winbond.c                 |  10 +-
+ drivers/mtd/spi-nor/xilinx.c                  |  18 +-
+ drivers/net/ethernet/adi/adin1110.c           |   2 +-
+ drivers/net/ethernet/asix/ax88796c_main.c     |   2 +-
+ drivers/net/ethernet/davicom/dm9051.c         |   2 +-
+ drivers/net/ethernet/qualcomm/qca_debug.c     |   2 +-
+ drivers/net/ieee802154/ca8210.c               |   2 +-
+ drivers/net/wan/slic_ds26522.c                |   2 +-
+ .../net/wireless/marvell/libertas/if_spi.c    |   2 +-
+ drivers/net/wireless/silabs/wfx/bus_spi.c     |   2 +-
+ drivers/net/wireless/st/cw1200/cw1200_spi.c   |   2 +-
+ .../platform/x86/serial-multi-instantiate.c   |   3 +-
+ drivers/spi/spi-altera-core.c                 |   2 +-
+ drivers/spi/spi-amd.c                         |   4 +-
+ drivers/spi/spi-ar934x.c                      |   2 +-
+ drivers/spi/spi-armada-3700.c                 |   4 +-
+ drivers/spi/spi-aspeed-smc.c                  |  13 +-
+ drivers/spi/spi-at91-usart.c                  |   2 +-
+ drivers/spi/spi-ath79.c                       |   4 +-
+ drivers/spi/spi-atmel.c                       |  26 +-
+ drivers/spi/spi-au1550.c                      |   4 +-
+ drivers/spi/spi-axi-spi-engine.c              |   2 +-
+ drivers/spi/spi-bcm-qspi.c                    |  10 +-
+ drivers/spi/spi-bcm2835.c                     |  19 +-
+ drivers/spi/spi-bcm2835aux.c                  |   4 +-
+ drivers/spi/spi-bcm63xx-hsspi.c               |  22 +-
+ drivers/spi/spi-bcm63xx.c                     |   2 +-
+ drivers/spi/spi-cadence-quadspi.c             |   5 +-
+ drivers/spi/spi-cadence-xspi.c                |   4 +-
+ drivers/spi/spi-cadence.c                     |   4 +-
+ drivers/spi/spi-cavium.c                      |   8 +-
+ drivers/spi/spi-coldfire-qspi.c               |   8 +-
+ drivers/spi/spi-davinci.c                     |  18 +-
+ drivers/spi/spi-dln2.c                        |   6 +-
+ drivers/spi/spi-dw-core.c                     |   2 +-
+ drivers/spi/spi-dw-mmio.c                     |   4 +-
+ drivers/spi/spi-falcon.c                      |   2 +-
+ drivers/spi/spi-fsi.c                         |   2 +-
+ drivers/spi/spi-fsl-dspi.c                    |  16 +-
+ drivers/spi/spi-fsl-espi.c                    |   6 +-
+ drivers/spi/spi-fsl-lpspi.c                   |   2 +-
+ drivers/spi/spi-fsl-qspi.c                    |   6 +-
+ drivers/spi/spi-fsl-spi.c                     |   2 +-
+ drivers/spi/spi-geni-qcom.c                   |   6 +-
+ drivers/spi/spi-gpio.c                        |   4 +-
+ drivers/spi/spi-gxp.c                         |   4 +-
+ drivers/spi/spi-hisi-sfc-v3xx.c               |   2 +-
+ drivers/spi/spi-img-spfi.c                    |  14 +-
+ drivers/spi/spi-imx.c                         |  30 +-
+ drivers/spi/spi-ingenic.c                     |   4 +-
+ drivers/spi/spi-intel.c                       |   2 +-
+ drivers/spi/spi-jcore.c                       |   4 +-
+ drivers/spi/spi-lantiq-ssc.c                  |   6 +-
+ drivers/spi/spi-mem.c                         |   4 +-
+ drivers/spi/spi-meson-spicc.c                 |   2 +-
+ drivers/spi/spi-microchip-core.c              |   6 +-
+ drivers/spi/spi-mpc512x-psc.c                 |   8 +-
+ drivers/spi/spi-mpc52xx.c                     |   2 +-
+ drivers/spi/spi-mt65xx.c                      |   6 +-
+ drivers/spi/spi-mt7621.c                      |   2 +-
+ drivers/spi/spi-mux.c                         |   8 +-
+ drivers/spi/spi-mxic.c                        |  10 +-
+ drivers/spi/spi-mxs.c                         |   2 +-
+ drivers/spi/spi-npcm-fiu.c                    |  20 +-
+ drivers/spi/spi-nxp-fspi.c                    |  10 +-
+ drivers/spi/spi-omap-100k.c                   |   2 +-
+ drivers/spi/spi-omap-uwire.c                  |   8 +-
+ drivers/spi/spi-omap2-mcspi.c                 |  24 +-
+ drivers/spi/spi-orion.c                       |   4 +-
+ drivers/spi/spi-pci1xxxx.c                    |   4 +-
+ drivers/spi/spi-pic32-sqi.c                   |   2 +-
+ drivers/spi/spi-pic32.c                       |   4 +-
+ drivers/spi/spi-pl022.c                       |   4 +-
+ drivers/spi/spi-pxa2xx.c                      |   6 +-
+ drivers/spi/spi-qcom-qspi.c                   |   2 +-
+ drivers/spi/spi-rb4xx.c                       |   2 +-
+ drivers/spi/spi-rockchip-sfc.c                |   2 +-
+ drivers/spi/spi-rockchip.c                    |  26 +-
+ drivers/spi/spi-rspi.c                        |  10 +-
+ drivers/spi/spi-s3c64xx.c                     |   2 +-
+ drivers/spi/spi-sc18is602.c                   |   4 +-
+ drivers/spi/spi-sh-msiof.c                    |   6 +-
+ drivers/spi/spi-sh-sci.c                      |   2 +-
+ drivers/spi/spi-sifive.c                      |   6 +-
+ drivers/spi/spi-sn-f-ospi.c                   |   2 +-
+ drivers/spi/spi-st-ssc4.c                     |   2 +-
+ drivers/spi/spi-stm32-qspi.c                  |  12 +-
+ drivers/spi/spi-sun4i.c                       |   2 +-
+ drivers/spi/spi-sun6i.c                       |   2 +-
+ drivers/spi/spi-synquacer.c                   |   6 +-
+ drivers/spi/spi-tegra114.c                    |  28 +-
+ drivers/spi/spi-tegra20-sflash.c              |   2 +-
+ drivers/spi/spi-tegra20-slink.c               |   6 +-
+ drivers/spi/spi-tegra210-quad.c               |   8 +-
+ drivers/spi/spi-ti-qspi.c                     |  16 +-
+ drivers/spi/spi-topcliff-pch.c                |   4 +-
+ drivers/spi/spi-wpcm-fiu.c                    |  12 +-
+ drivers/spi/spi-xcomm.c                       |   2 +-
+ drivers/spi/spi-xilinx.c                      |   6 +-
+ drivers/spi/spi-xlp.c                         |   4 +-
+ drivers/spi/spi-zynq-qspi.c                   |   2 +-
+ drivers/spi/spi-zynqmp-gqspi.c                |  58 +-
+ drivers/spi/spi.c                             | 224 ++++--
+ drivers/spi/spidev.c                          |   6 +-
+ drivers/staging/fbtft/fbtft-core.c            |   2 +-
+ drivers/staging/greybus/spilib.c              |   2 +-
+ include/linux/mtd/spi-nor.h                   |  18 +-
+ include/linux/spi/spi.h                       |  46 +-
+ include/trace/events/spi.h                    |  10 +-
+ 124 files changed, 1319 insertions(+), 594 deletions(-)
+
+-- 
+2.17.1
 
-The WiFi fixes here were likely the most eagerly awaited.
-
-The following changes since commit d9fc1511728c15df49ff18e49a494d00f78b7cd4:
-
-  Merge tag 'net-6.2-rc4' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2023-01-12 18:20:44 -0600)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.2-rc5
-
-for you to fetch changes up to 6c977c5c2e4c5d8ad1b604724cc344e38f96fe9b:
-
-  net: dsa: microchip: ksz9477: port map correction in ALU table entry register (2023-01-19 09:28:31 -0800)
-
-----------------------------------------------------------------
-Including fixes from wireless, bluetooth, bpf and netfilter.
-
-Current release - regressions:
-
- - Revert "net: team: use IFF_NO_ADDRCONF flag to prevent ipv6
-   addrconf", fix nsna_ping mode of team
-
- - wifi: mt76: fix bugs in Rx queue handling and DMA mapping
-
- - eth: mlx5:
-   - add missing mutex_unlock in error reporter
-   - protect global IPsec ASO with a lock
-
-Current release - new code bugs:
-
- - rxrpc: fix wrong error return in rxrpc_connect_call()
-
-Previous releases - regressions:
-
- - bluetooth: hci_sync: fix use of HCI_OP_LE_READ_BUFFER_SIZE_V2
-
- - wifi:
-   - mac80211: fix crashes on Rx due to incorrect initialization of
-     rx->link and rx->link_sta
-   - mac80211: fix bugs in iTXQ conversion - Tx stalls, incorrect
-     aggregation handling, crashes
-   - brcmfmac: fix regression for Broadcom PCIe wifi devices
-   - rndis_wlan: prevent buffer overflow in rndis_query_oid
-
- - netfilter: conntrack: handle tcp challenge acks during connection
-   reuse
-
- - sched: avoid grafting on htb_destroy_class_offload when destroying
-
- - virtio-net: correctly enable callback during start_xmit, fix stalls
-
- - tcp: avoid the lookup process failing to get sk in ehash table
-
- - ipa: disable ipa interrupt during suspend
-
-Previous releases - always broken:
-
- - bpf:
-   - fix pointer-leak due to insufficient speculative store bypass
-     mitigation (Spectre v4)
-   - skip task with pid=1 in send_signal_common() to avoid a splat
-   - fix BPF program ID information in BPF_AUDIT_UNLOAD as well as
-     PERF_BPF_EVENT_PROG_UNLOAD events
-   - fix potential deadlock in htab_lock_bucket from same bucket index
-     but different map_locked index
-
- - bluetooth:
-   - fix a buffer overflow in mgmt_mesh_add()
-   - hci_qca: fix driver shutdown on closed serdev
-   - ISO: fix possible circular locking dependency
-   - CIS: hci_event: fix invalid wait context
-
- - wifi: brcmfmac: fixes for survey dump handling
-
- - mptcp: explicitly specify sock family at subflow creation time
-
- - netfilter: nft_payload: incorrect arithmetics when fetching VLAN
-   header bits
-
- - l2tp: close all race conditions in l2tp_tunnel_register()
-
- - eth: mlx5: fixes for QoS config and eswitch configuration
-
- - eth: enetc: avoid deadlock in enetc_tx_onestep_tstamp()
-
- - eth: stmmac: fix invalid call to mdiobus_get_phy()
-
-Misc:
-
- - ethtool: add netlink attr in rss get reply only if the value is
-   not empty
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-----------------------------------------------------------------
-Adham Faris (1):
-      net/mlx5e: Remove redundant xsk pointer check in mlx5e_mpwrq_validate_xsk
-
-Alexander Wetzel (3):
-      wifi: mac80211: Proper mark iTXQs for resumption
-      wifi: mac80211: sdata can be NULL during AMPDU start
-      wifi: mac80211: Fix iTXQ AMPDU fragmentation handling
-
-Aloka Dixit (1):
-      wifi: mac80211: reset multiple BSSID options in stop_ap()
-
-Arend van Spriel (3):
-      wifi: brcmfmac: avoid handling disabled channels for survey dump
-      wifi: brcmfmac: avoid NULL-deref in survey dump for 2G only device
-      wifi: brcmfmac: fix regression for Broadcom PCIe wifi devices
-
-Caleb Connolly (1):
-      net: ipa: disable ipa interrupt during suspend
-
-Chris Mi (2):
-      net/mlx5e: Set decap action based on attr for sample
-      net/mlx5: E-switch, Fix switchdev mode after devlink reload
-
-Clément Léger (1):
-      net: lan966x: add missing fwnode_handle_put() for ports node
-
-Cong Wang (2):
-      l2tp: convert l2tp_tunnel_list to idr
-      l2tp: close all race conditions in l2tp_tunnel_register()
-
-David Howells (1):
-      rxrpc: Fix wrong error return in rxrpc_connect_call()
-
-David S. Miller (3):
-      Merge git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf
-      Merge branch 'l2tp-races'
-      Merge git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf
-
-Eric Dumazet (3):
-      net/sched: sch_taprio: fix possible use-after-free
-      Revert "wifi: mac80211: fix memory leak in ieee80211_if_add()"
-      l2tp: prevent lockdep issue in l2tp_tunnel_register()
-
-Esina Ekaterina (1):
-      net: wan: Add checks for NULL for utdm in undo_uhdlc_init and unmap_si_regs
-
-Felix Fietkau (3):
-      wifi: mac80211: fix initialization of rx->link and rx->link_sta
-      wifi: mac80211: fix MLO + AP_VLAN check
-      wifi: mt76: dma: fix a regression in adding rx buffers
-
-Florian Westphal (2):
-      selftests: netfilter: fix transaction test script timeout handling
-      netfilter: conntrack: handle tcp challenge acks during connection reuse
-
-Gavrilov Ilia (1):
-      netfilter: ipset: Fix overflow before widen in the bitmap_ip_create() function.
-
-Geetha sowjanya (1):
-      octeontx2-pf: Avoid use of GFP_KERNEL in atomic context
-
-Hao Sun (2):
-      bpf: Skip invalid kfunc call in backtrack_insn
-      bpf: Skip task with pid=1 in send_signal_common()
-
-Harshit Mogalapalli (1):
-      Bluetooth: Fix a buffer overflow in mgmt_mesh_add()
-
-Heiner Kallweit (2):
-      net: mdio: validate parameter addr in mdiobus_get_phy()
-      net: stmmac: fix invalid call to mdiobus_get_phy()
-
-Jakub Kicinski (8):
-      Merge tag 'wireless-2023-01-12' of git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless
-      Merge branch 'amd-xgbe-pfc-and-kr-training-fixes'
-      Merge branch 'mptcp-userspace-pm-create-sockets-for-the-right-family'
-      Merge tag 'for-netdev' of https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
-      Merge tag 'for-net-2023-01-17' of git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth
-      Merge tag 'wireless-2023-01-18' of git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless
-      net: sched: gred: prevent races when adding offloads to stats
-      MAINTAINERS: add networking entries for Willem
-
-Jason Wang (1):
-      virtio-net: correctly enable callback during start_xmit
-
-Jason Xing (1):
-      tcp: avoid the lookup process failing to get sk in ehash table
-
-Jisoo Jang (1):
-      net: nfc: Fix use-after-free in local_cleanup()
-
-Kevin Hao (1):
-      octeontx2-pf: Fix the use of GFP_KERNEL in atomic context on rt
-
-Krzysztof Kozlowski (1):
-      Bluetooth: hci_qca: Fix driver shutdown on closed serdev
-
-Kurt Kanzenbach (1):
-      net: stmmac: Fix queue statistics reading
-
-Leon Romanovsky (2):
-      net/mlx5e: Remove optimization which prevented update of ESN state
-      net/mlx5e: Protect global IPsec ASO
-
-Lorenzo Bianconi (2):
-      wifi: mt76: dma: do not increment queue head if mt76_dma_add_buf fails
-      wifi: mt76: handle possible mt76_rx_token_consume failures
-
-Luis Gerhorst (1):
-      bpf: Fix pointer-leak due to insufficient speculative store bypass mitigation
-
-Luiz Augusto von Dentz (4):
-      Bluetooth: hci_sync: Fix use HCI_OP_LE_READ_BUFFER_SIZE_V2
-      Bluetooth: ISO: Fix possible circular locking dependency
-      Bluetooth: hci_event: Fix Invalid wait context
-      Bluetooth: ISO: Fix possible circular locking dependency
-
-Maor Dickman (2):
-      net/mlx5: E-switch, Fix setting of reserved fields on MODIFY_SCHEDULING_ELEMENT
-      net/mlx5e: QoS, Fix wrongfully setting parent_element_id on MODIFY_SCHEDULING_ELEMENT
-
-Matthieu Baerts (2):
-      mptcp: netlink: respect v4/v6-only sockets
-      selftests: mptcp: userspace: validate v4-v6 subflows mix
-
-Pablo Neira Ayuso (1):
-      netfilter: nft_payload: incorrect arithmetics when fetching VLAN header bits
-
-Paolo Abeni (3):
-      mptcp: explicitly specify sock family at subflow creation time
-      Merge tag 'mlx5-fixes-2023-01-18' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux
-      net/ulp: use consistent error code when blocking ULP
-
-Paul Moore (2):
-      bpf: restore the ebpf program ID for BPF_AUDIT_UNLOAD and PERF_BPF_EVENT_PROG_UNLOAD
-      bpf: remove the do_idr_lock parameter from bpf_prog_free_id()
-
-Rahul Rameshbabu (1):
-      sch_htb: Avoid grafting on htb_destroy_class_offload when destroying htb
-
-Raju Rangoju (2):
-      amd-xgbe: TX Flow Ctrl Registers are h/w ver dependent
-      amd-xgbe: Delay AN timeout during KR training
-
-Rakesh Sankaranarayanan (1):
-      net: dsa: microchip: ksz9477: port map correction in ALU table entry register
-
-Randy Dunlap (1):
-      net: mlx5: eliminate anonymous module_init & module_exit
-
-Robert Hancock (1):
-      net: macb: fix PTP TX timestamp failure due to packet padding
-
-Shyam Sundar S K (1):
-      MAINTAINERS: Update AMD XGBE driver maintainers
-
-Sriram R (1):
-      mac80211: Fix MLO address translation for multiple bss case
-
-Sudheer Mogilappagari (1):
-      ethtool: add netlink attr in rss get reply only if value is not null
-
-Szymon Heidrich (2):
-      wifi: rndis_wlan: Prevent buffer overflow in rndis_query_oid
-      net: usb: sr9700: Handle negative len
-
-Tonghao Zhang (1):
-      bpf: hash map, avoid deadlock with suitable hash mask
-
-Vlad Buslov (1):
-      net/mlx5e: Avoid false lock dependency warning on tc_ht even more
-
-Vladimir Oltean (1):
-      net: enetc: avoid deadlock in enetc_tx_onestep_tstamp()
-
-Willem de Bruijn (1):
-      selftests/net: toeplitz: fix race on tpacket_v3 block close
-
-Xin Long (1):
-      Revert "net: team: use IFF_NO_ADDRCONF flag to prevent ipv6 addrconf"
-
-Yang Yingliang (1):
-      net/mlx5: fix missing mutex_unlock in mlx5_fw_fatal_reporter_err_work()
-
-Ying Hsu (1):
-      Bluetooth: Fix possible deadlock in rfcomm_sk_state_change
-
-Zhengchao Shao (2):
-      Bluetooth: hci_conn: Fix memory leaks
-      Bluetooth: hci_sync: fix memory leak in hci_update_adv_data()
-
- MAINTAINERS                                        |  21 +-
- drivers/bluetooth/hci_qca.c                        |   7 +
- drivers/net/dsa/microchip/ksz9477.c                |   4 +-
- drivers/net/ethernet/amd/xgbe/xgbe-dev.c           |  23 ++-
- drivers/net/ethernet/amd/xgbe/xgbe-mdio.c          |  24 +++
- drivers/net/ethernet/amd/xgbe/xgbe.h               |   2 +
- drivers/net/ethernet/cadence/macb_main.c           |   9 +-
- drivers/net/ethernet/freescale/enetc/enetc.c       |   4 +-
- .../ethernet/marvell/octeontx2/nic/otx2_common.c   |  11 +-
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   2 +
- drivers/net/ethernet/mellanox/mlx5/core/en/htb.c   |   4 +-
- .../net/ethernet/mellanox/mlx5/core/en/params.c    |   3 +-
- .../net/ethernet/mellanox/mlx5/core/en/tc/sample.c |   5 +-
- .../ethernet/mellanox/mlx5/core/en_accel/ipsec.h   |   7 +-
- .../mellanox/mlx5/core/en_accel/ipsec_offload.c    |  12 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |   3 +
- drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c  |  18 +-
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  |   1 +
- drivers/net/ethernet/mellanox/mlx5/core/health.c   |   1 +
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |   8 +-
- drivers/net/ethernet/mellanox/mlx5/core/qos.c      |   3 +-
- drivers/net/ethernet/mellanox/mlx5/core/qos.h      |   2 +-
- .../net/ethernet/microchip/lan966x/lan966x_main.c  |  13 +-
- .../net/ethernet/stmicro/stmmac/stmmac_ethtool.c   |   8 +-
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  |   5 +
- drivers/net/ipa/ipa_interrupt.c                    |  10 +
- drivers/net/ipa/ipa_interrupt.h                    |  16 ++
- drivers/net/ipa/ipa_power.c                        |  17 ++
- drivers/net/phy/mdio_bus.c                         |   7 +-
- drivers/net/team/team.c                            |   2 -
- drivers/net/usb/sr9700.c                           |   2 +-
- drivers/net/virtio_net.c                           |   6 +-
- drivers/net/wan/fsl_ucc_hdlc.c                     |   6 +-
- .../broadcom/brcm80211/brcmfmac/cfg80211.c         |  37 ++--
- .../wireless/broadcom/brcm80211/brcmfmac/pcie.c    |   2 +-
- drivers/net/wireless/mediatek/mt76/dma.c           | 131 +++++++-----
- drivers/net/wireless/mediatek/mt76/mt7915/mmio.c   |   7 +
- drivers/net/wireless/mediatek/mt76/tx.c            |   7 +-
- drivers/net/wireless/rndis_wlan.c                  |  19 +-
- include/linux/bpf.h                                |   2 +-
- include/net/mac80211.h                             |   4 -
- include/net/sch_generic.h                          |   7 +
- kernel/bpf/hashtab.c                               |   4 +-
- kernel/bpf/offload.c                               |   3 -
- kernel/bpf/syscall.c                               |  24 +--
- kernel/bpf/verifier.c                              |  10 +-
- kernel/trace/bpf_trace.c                           |   3 +
- net/bluetooth/hci_conn.c                           |  18 +-
- net/bluetooth/hci_event.c                          |   5 +-
- net/bluetooth/hci_sync.c                           |  19 +-
- net/bluetooth/iso.c                                |  64 +++---
- net/bluetooth/mgmt_util.h                          |   2 +-
- net/bluetooth/rfcomm/sock.c                        |   7 +-
- net/ethtool/rss.c                                  |  11 +-
- net/ipv4/inet_hashtables.c                         |  17 +-
- net/ipv4/inet_timewait_sock.c                      |   8 +-
- net/ipv4/tcp_ulp.c                                 |   2 +-
- net/l2tp/l2tp_core.c                               | 102 +++++-----
- net/mac80211/agg-tx.c                              |   8 +-
- net/mac80211/cfg.c                                 |   7 +
- net/mac80211/debugfs_sta.c                         |   5 +-
- net/mac80211/driver-ops.c                          |   3 +
- net/mac80211/driver-ops.h                          |   2 +-
- net/mac80211/ht.c                                  |  31 +++
- net/mac80211/ieee80211_i.h                         |   2 +-
- net/mac80211/iface.c                               |   5 +-
- net/mac80211/rx.c                                  | 225 ++++++++++-----------
- net/mac80211/tx.c                                  |  34 ++--
- net/mac80211/util.c                                |  42 +---
- net/mptcp/pm.c                                     |  25 +++
- net/mptcp/pm_userspace.c                           |   7 +
- net/mptcp/protocol.c                               |   2 +-
- net/mptcp/protocol.h                               |   6 +-
- net/mptcp/subflow.c                                |   9 +-
- net/netfilter/ipset/ip_set_bitmap_ip.c             |   4 +-
- net/netfilter/nf_conntrack_proto_tcp.c             |  15 ++
- net/netfilter/nft_payload.c                        |   2 +-
- net/nfc/llcp_core.c                                |   1 +
- net/rxrpc/call_object.c                            |   2 +-
- net/sched/sch_gred.c                               |   2 +
- net/sched/sch_htb.c                                |  27 ++-
- net/sched/sch_taprio.c                             |   3 +
- tools/testing/selftests/net/mptcp/userspace_pm.sh  |  47 +++++
- tools/testing/selftests/net/toeplitz.c             |  12 +-
- .../selftests/netfilter/nft_trans_stress.sh        |  16 +-
- tools/testing/selftests/netfilter/settings         |   1 +
- 86 files changed, 783 insertions(+), 543 deletions(-)
- create mode 100644 tools/testing/selftests/netfilter/settings
