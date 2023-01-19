@@ -2,178 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD0F167439A
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 21:41:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 380CF6743BA
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 21:54:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230234AbjASUlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 15:41:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44364 "EHLO
+        id S230110AbjASUyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 15:54:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230249AbjASUkz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 15:40:55 -0500
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC34190845;
-        Thu, 19 Jan 2023 12:40:38 -0800 (PST)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 6A365201829;
-        Thu, 19 Jan 2023 21:40:37 +0100 (CET)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 081172017ED;
-        Thu, 19 Jan 2023 21:40:37 +0100 (CET)
-Received: from lsv03267.swis.in-blr01.nxp.com (lsv03267.swis.in-blr01.nxp.com [92.120.147.107])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id EBCB6180327D;
-        Fri, 20 Jan 2023 04:40:35 +0800 (+08)
-From:   nikhil.gupta@nxp.com
-To:     linux-arm-kernel@lists.infradead.org,
-        Yangbo Lu <yangbo.lu@nxp.com>, vladimir.oltean@nxp.com,
-        richardcochran@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     vakul.garg@nxp.com, rajan.gupta@nxp.com,
-        Nikhil Gupta <nikhil.gupta@nxp.com>
-Subject: [PATCH v2] ptp_qoriq: fix latency in ptp_qoriq_adjtime() operation
-Date:   Fri, 20 Jan 2023 02:10:34 +0530
-Message-Id: <20230119204034.7969-1-nikhil.gupta@nxp.com>
-X-Mailer: git-send-email 2.17.1
-X-Virus-Scanned: ClamAV using ClamSMTP
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230147AbjASUwM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 15:52:12 -0500
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3526637F07
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 12:51:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1674161499; x=1705697499;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=zqsWlGx3ksBvyyfWfF+adPl/wffhYusrFX+C88BpY3w=;
+  b=MrTDlfe/OglE/KXr86uXaN/+hy9VmuFsw4sIkFdIpVUOLk+U20O4MCsH
+   8aZNxK6yGS/ISd8FMauj6Zq2JV2NdtVgsiI7RrFB40kD5ELjrTP9l6vRu
+   JDIZx2qLk1VlR3YHotf1WcJJYpmXIdAKtSdSuio8/dYrj8zNR5ReB7dHr
+   s=;
+X-IronPort-AV: E=Sophos;i="5.97,230,1669075200"; 
+   d="scan'208";a="290202103"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-93c3b254.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 20:51:38 +0000
+Received: from EX13MTAUWB002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1a-m6i4x-93c3b254.us-east-1.amazon.com (Postfix) with ESMTPS id 648B7E2EAF;
+        Thu, 19 Jan 2023 20:51:37 +0000 (UTC)
+Received: from EX19D030UWB003.ant.amazon.com (10.13.139.142) by
+ EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.45; Thu, 19 Jan 2023 20:51:35 +0000
+Received: from bcd0741e4041.ant.amazon.com (10.43.161.198) by
+ EX19D030UWB003.ant.amazon.com (10.13.139.142) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.1118.7; Thu, 19 Jan 2023 20:51:35 +0000
+From:   Apoorv Kothari <apoorvko@amazon.com>
+To:     <sd@queasysnail.net>
+CC:     <apoorvko@amazon.com>, <fkrenzel@redhat.com>, <gal@nvidia.com>,
+        <kuba@kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/5] tls: implement key updates for TLS1.3
+Date:   Thu, 19 Jan 2023 12:51:29 -0800
+Message-ID: <20230119205129.60194-1-apoorvko@amazon.com>
+X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
+In-Reply-To: <Y8lkd2Im7y8BXtDe@hog>
+References: <Y8lkd2Im7y8BXtDe@hog>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.43.161.198]
+X-ClientProxiedBy: EX13D30UWC003.ant.amazon.com (10.43.162.122) To
+ EX19D030UWB003.ant.amazon.com (10.13.139.142)
+X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikhil Gupta <nikhil.gupta@nxp.com>
+> 2023-01-18, 18:55:22 -0800, Jakub Kicinski wrote:
+> > On Wed, 18 Jan 2023 11:06:25 +0100 Sabrina Dubroca wrote:
+> > > 2023-01-17, 18:03:51 -0800, Jakub Kicinski wrote:
+> > > > On Tue, 17 Jan 2023 14:45:26 +0100 Sabrina Dubroca wrote:  
+> > > > > This adds support for receiving KeyUpdate messages (RFC 8446, 4.6.3
+> > > > > [1]). A sender transmits a KeyUpdate message and then changes its TX
+> > > > > key. The receiver should react by updating its RX key before
+> > > > > processing the next message.
+> > > > > 
+> > > > > This patchset implements key updates by:
+> > > > >  1. pausing decryption when a KeyUpdate message is received, to avoid
+> > > > >     attempting to use the old key to decrypt a record encrypted with
+> > > > >     the new key
+> > > > >  2. returning -EKEYEXPIRED to syscalls that cannot receive the
+> > > > >     KeyUpdate message, until the rekey has been performed by userspace  
+> > > > 
+> > > > Why? We return to user space after hitting a cmsg, don't we?
+> > > > If the user space wants to keep reading with the old key - 🤷️  
+> > > 
+> > > But they won't be able to read anything. Either we don't pause
+> > > decryption, and the socket is just broken when we look at the next
+> > > record, or we pause, and there's nothing to read until the rekey is
+> > > done. I think that -EKEYEXPIRED is better than breaking the socket
+> > > just because a read snuck in between getting the cmsg and setting the
+> > > new key.
+> > 
+> > IDK, we don't interpret any other content types/cmsgs, and for well
+> > behaved user space there should be no problem (right?).
+> > I'm weakly against, if nobody agrees with me you can keep as is.
+> 
+> I was concerned (I don't know if it's realistic) about a userspace
+> application with two threads:
+> 
+> 
+>   Thread A            Thread B
+>   --------            --------
+> 
+>   read cmsg
+> 
+>                       read some data (still on the old key)
+> 
+>   sets the new key
+> 
+> 
+> I guess one could claim that's a userspace bug.
+> 
+> František's implementation in gnutls doesn't seem to rely on this.
+> 
+> Apoorv, since you were also looking into key updates, do you have an
+> opinion on pausing decryption/reads until userspace has provides the
+> new key?
+> 
 
-1588 driver loses about 1us in adjtime operation at PTP slave
-This is because adjtime operation uses a slow non-atomic tmr_cnt_read()
-followed by tmr_cnt_write() operation.
+There are a few reason I can think of why we would want the pausing behavior.
 
-In the above sequence, since the timer counter operation keeps
-incrementing, it leads to latency. The tmr_offset register
-(which is added to TMR_CNT_H/L register giving the current time)
-must be programmed with the delta nanoseconds.
+0) If possible, we should enforce correctness and prevent the userspace from
+doing something bad.
 
-Signed-off-by: Nikhil Gupta <nikhil.gupta@nxp.com>
----
-v1->v2: prevent TMR_OFF adjustment in case of eTSEC
+1) Pausing better aligns with the RFC since all subsequent messages
+should be encrypted with the new key.
 
- drivers/ptp/ptp_qoriq.c       | 50 ++++++++++++++++++++++++++++++-----
- include/linux/fsl/ptp_qoriq.h |  1 +
- 2 files changed, 44 insertions(+), 7 deletions(-)
+From the RFC https://www.rfc-editor.org/rfc/rfc8446#section-4.6.3
+   After sending a KeyUpdate message, the sender SHALL send all
+   its traffic using the next generation of keys, computed as described
+   in Section 7.2.  Upon receiving a KeyUpdate, the receiver MUST update
+   its receiving keys.
 
-diff --git a/drivers/ptp/ptp_qoriq.c b/drivers/ptp/ptp_qoriq.c
-index 08f4cf0ad9e3..61530167efe4 100644
---- a/drivers/ptp/ptp_qoriq.c
-+++ b/drivers/ptp/ptp_qoriq.c
-@@ -48,6 +48,29 @@ static void tmr_cnt_write(struct ptp_qoriq *ptp_qoriq, u64 ns)
- 	ptp_qoriq->write(&regs->ctrl_regs->tmr_cnt_h, hi);
- }
- 
-+static u64 tmr_offset_read(struct ptp_qoriq *ptp_qoriq)
-+{
-+	struct ptp_qoriq_registers *regs = &ptp_qoriq->regs;
-+	u32 lo, hi;
-+	u64 ns;
-+
-+	lo = ptp_qoriq->read(&regs->ctrl_regs->tmroff_l);
-+	hi = ptp_qoriq->read(&regs->ctrl_regs->tmroff_h);
-+	ns = ((u64) hi) << 32;
-+	ns |= lo;
-+	return ns;
-+}
-+
-+static void tmr_offset_write(struct ptp_qoriq *ptp_qoriq, u64 delta_ns)
-+{
-+	struct ptp_qoriq_registers *regs = &ptp_qoriq->regs;
-+	u32 lo = delta_ns & 0xffffffff;
-+	u32 hi = delta_ns >> 32;
-+
-+	ptp_qoriq->write(&regs->ctrl_regs->tmroff_l, lo);
-+	ptp_qoriq->write(&regs->ctrl_regs->tmroff_h, hi);
-+}
-+
- /* Caller must hold ptp_qoriq->lock. */
- static void set_alarm(struct ptp_qoriq *ptp_qoriq)
- {
-@@ -55,7 +78,9 @@ static void set_alarm(struct ptp_qoriq *ptp_qoriq)
- 	u64 ns;
- 	u32 lo, hi;
- 
--	ns = tmr_cnt_read(ptp_qoriq) + 1500000000ULL;
-+	ns = tmr_cnt_read(ptp_qoriq) + tmr_offset_read(ptp_qoriq)
-+				     + 1500000000ULL;
-+
- 	ns = div_u64(ns, 1000000000UL) * 1000000000ULL;
- 	ns -= ptp_qoriq->tclk_period;
- 	hi = ns >> 32;
-@@ -207,15 +232,24 @@ EXPORT_SYMBOL_GPL(ptp_qoriq_adjfine);
- 
- int ptp_qoriq_adjtime(struct ptp_clock_info *ptp, s64 delta)
- {
--	s64 now;
--	unsigned long flags;
- 	struct ptp_qoriq *ptp_qoriq = container_of(ptp, struct ptp_qoriq, caps);
-+	s64 now, curr_delta;
-+	unsigned long flags;
- 
- 	spin_lock_irqsave(&ptp_qoriq->lock, flags);
- 
--	now = tmr_cnt_read(ptp_qoriq);
--	now += delta;
--	tmr_cnt_write(ptp_qoriq, now);
-+	/* On LS1021A, eTSEC2 and eTSEC3 do not take into account the TMR_OFF
-+	 * adjustment
-+	 */
-+	if (ptp_qoriq->etsec) {
-+		now = tmr_cnt_read(ptp_qoriq);
-+		now += delta;
-+		tmr_cnt_write(ptp_qoriq, now);
-+	} else {
-+		curr_delta = tmr_offset_read(ptp_qoriq);
-+		curr_delta += delta;
-+		tmr_offset_write(ptp_qoriq, curr_delta);
-+	}
- 	set_fipers(ptp_qoriq);
- 
- 	spin_unlock_irqrestore(&ptp_qoriq->lock, flags);
-@@ -232,7 +266,7 @@ int ptp_qoriq_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
- 
- 	spin_lock_irqsave(&ptp_qoriq->lock, flags);
- 
--	ns = tmr_cnt_read(ptp_qoriq);
-+	ns = tmr_cnt_read(ptp_qoriq) + tmr_offset_read(ptp_qoriq);
- 
- 	spin_unlock_irqrestore(&ptp_qoriq->lock, flags);
- 
-@@ -253,6 +287,7 @@ int ptp_qoriq_settime(struct ptp_clock_info *ptp,
- 
- 	spin_lock_irqsave(&ptp_qoriq->lock, flags);
- 
-+	tmr_offset_write(ptp_qoriq, 0);
- 	tmr_cnt_write(ptp_qoriq, ns);
- 	set_fipers(ptp_qoriq);
- 
-@@ -488,6 +523,7 @@ int ptp_qoriq_init(struct ptp_qoriq *ptp_qoriq, void __iomem *base,
- 
- 	/* The eTSEC uses differnt memory map with DPAA/ENETC */
- 	if (of_device_is_compatible(node, "fsl,etsec-ptp")) {
-+		ptp_qoriq->etsec = true;
- 		ptp_qoriq->regs.ctrl_regs = base + ETSEC_CTRL_REGS_OFFSET;
- 		ptp_qoriq->regs.alarm_regs = base + ETSEC_ALARM_REGS_OFFSET;
- 		ptp_qoriq->regs.fiper_regs = base + ETSEC_FIPER_REGS_OFFSET;
-diff --git a/include/linux/fsl/ptp_qoriq.h b/include/linux/fsl/ptp_qoriq.h
-index 01acebe37fab..b301bf7199d3 100644
---- a/include/linux/fsl/ptp_qoriq.h
-+++ b/include/linux/fsl/ptp_qoriq.h
-@@ -149,6 +149,7 @@ struct ptp_qoriq {
- 	struct device *dev;
- 	bool extts_fifo_support;
- 	bool fiper3_support;
-+	bool etsec;
- 	int irq;
- 	int phc_index;
- 	u32 tclk_period;  /* nanoseconds */
--- 
-2.17.1
+2) Its possible to receive multiple KeyUpdate messages. If we allow the
+userspace to read more records, they would read multiple KeyUpdate messages.
+However since we currently track `bool key_update_pending;` using a bool,
+we would only require a single rekey and end up in a bad state. Its possible
+to fix this by not using bool but then the logic get more complicate and not
+worth it IMO.
 
+> > > > >  3. passing the KeyUpdate message to userspace as a control message
+> > > > >  4. allowing updates of the crypto_info via the TLS_TX/TLS_RX
+> > > > >     setsockopts
+> > > > > 
+> > > > > This API has been tested with gnutls to make sure that it allows
+> > > > > userspace libraries to implement key updates [2]. Thanks to Frantisek
+> > > > > Krenzelok <fkrenzel@redhat.com> for providing the implementation in
+> > > > > gnutls and testing the kernel patches.  
+> > > > 
+> > > > Please explain why - the kernel TLS is not faster than user space, 
+> > > > the point of it is primarily to enable offload. And you don't add
+> > > > offload support here.  
+> > > 
+> > > Well, TLS1.3 support was added 4 years ago, and yet the offload still
+> > > doesn't support 1.3 at all.
+> > 
+> > I'm pretty sure some devices support it. None of the vendors could 
+> > be bothered to plumb in the kernel support, yet, tho.
+> > I don't know of anyone supporting rekeying.
+> >
+> > > IIRC support for KeyUpdates is mandatory in TLS1.3, so currently the
+> > > kernel can't claim to support 1.3, independent of offloading.
+> > 
+> > The problem is that we will not be able to rekey offloaded connections.
+> > For Tx it's a non-trivial problem given the current architecture.
+> > The offload is supposed to be transparent, we can't fail the rekey just
+> > because the TLS gotten offloaded.
+> 
+> What's their plan when the peer sends a KeyUpdate request then? Let
+> the connection break?
+> 
+> -- 
+> Sabrina
