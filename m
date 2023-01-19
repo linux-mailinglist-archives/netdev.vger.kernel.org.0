@@ -2,80 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 476A06734CD
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 10:51:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 321716734F6
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 11:01:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230215AbjASJvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 04:51:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60548 "EHLO
+        id S230296AbjASKA7 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Jan 2023 05:00:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230227AbjASJvf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 04:51:35 -0500
-Received: from formenos.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAC8676F2;
-        Thu, 19 Jan 2023 01:51:30 -0800 (PST)
-Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
-        by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1pIRZh-001hVL-5O; Thu, 19 Jan 2023 17:51:14 +0800
-Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Thu, 19 Jan 2023 17:51:13 +0800
-Date:   Thu, 19 Jan 2023 17:51:13 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Dmitry Safonov <dima@arista.com>
-Cc:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S230286AbjASKAY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 05:00:24 -0500
+Received: from us-smtp-delivery-44.mimecast.com (unknown [207.211.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A4F067796
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 02:00:21 -0800 (PST)
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-369-nW76kCZIPne7wc871JK6_w-1; Thu, 19 Jan 2023 05:00:04 -0500
+X-MC-Unique: nW76kCZIPne7wc871JK6_w-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A533A1818E58;
+        Thu, 19 Jan 2023 10:00:03 +0000 (UTC)
+Received: from hog (unknown [10.39.192.162])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id A87422026D68;
+        Thu, 19 Jan 2023 10:00:02 +0000 (UTC)
+Date:   Thu, 19 Jan 2023 10:58:32 +0100
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Bob Gilligan <gilligan@arista.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Leonard Crestez <cdleonard@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        netdev@vger.kernel.org, linux-crypto@vger.kernel.org
-Subject: Re: [PATCH v4 1/4] crypto: Introduce crypto_pool
-Message-ID: <Y8kSkW4X4vQdFyOl@gondor.apana.org.au>
-References: <20230118214111.394416-1-dima@arista.com>
- <20230118214111.394416-2-dima@arista.com>
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net] net/ulp: use consistent error code when blocking ULP
+Message-ID: <Y8kUSPZSEOE57reb@hog>
+References: <7bb199e7a93317fb6f8bf8b9b2dc71c18f337cde.1674042685.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <7bb199e7a93317fb6f8bf8b9b2dc71c18f337cde.1674042685.git.pabeni@redhat.com>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
 Content-Disposition: inline
-In-Reply-To: <20230118214111.394416-2-dima@arista.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_VALIDITY_RPBL,RDNS_NONE,SPF_HELO_NONE,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 18, 2023 at 09:41:08PM +0000, Dmitry Safonov wrote:
-> Introduce a per-CPU pool of async crypto requests that can be used
-> in bh-disabled contexts (designed with net RX/TX softirqs as users in
-> mind). Allocation can sleep and is a slow-path.
-> Initial implementation has only ahash as a backend and a fix-sized array
-> of possible algorithms used in parallel.
+2023-01-18, 13:24:12 +0100, Paolo Abeni wrote:
+> The referenced commit changed the error code returned by the kernel
+> when preventing a non-established socket from attaching the ktls
+> ULP. Before to such a commit, the user-space got ENOTCONN instead
+> of EINVAL.
 > 
-> Signed-off-by: Dmitry Safonov <dima@arista.com>
-> ---
->  crypto/Kconfig        |   3 +
->  crypto/Makefile       |   1 +
->  crypto/crypto_pool.c  | 333 ++++++++++++++++++++++++++++++++++++++++++
->  include/crypto/pool.h |  46 ++++++
->  4 files changed, 383 insertions(+)
->  create mode 100644 crypto/crypto_pool.c
->  create mode 100644 include/crypto/pool.h
+> The existing self-tests depend on such error code, and the change
+> caused a failure:
+> 
+>   RUN           global.non_established ...
+>  tls.c:1673:non_established:Expected errno (22) == ENOTCONN (107)
+>  non_established: Test failed at step #3
+>           FAIL  global.non_established
+> 
+> In the unlikely event existing applications do the same, address
+> the issue by restoring the prior error code in the above scenario.
+> 
+> Note that the only other ULP performing similar checks at init
+> time - smc_ulp_ops - also fails with ENOTCONN when trying to attach
+> the ULP to a non-established socket.
+> 
+> Reported-by: Sabrina Dubroca <sd@queasysnail.net>
+> Fixes: 2c02d41d71f9 ("net/ulp: prevent ULP without clone op from entering the LISTEN status")
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 
-I'm still nacking this.
+Reviewed-by: Sabrina Dubroca <sd@queasysnail.net>
 
-I'm currently working on per-request keys which should render
-this unnecessary.  With per-request keys you can simply do an
-atomic kmalloc when you compute the hash.
+Thanks Paolo.
 
-Modelling tcp_md5 is just propagating bad code.
-
-Thanks,
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Sabrina
+
