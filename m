@@ -2,208 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE866673201
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 08:00:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5527267328F
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 08:35:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229544AbjASHAp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 02:00:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32966 "EHLO
+        id S229907AbjASHfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 02:35:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjASHAl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 02:00:41 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ACF526A5
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 23:00:39 -0800 (PST)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NyD0s18VDzqVk4;
-        Thu, 19 Jan 2023 14:55:41 +0800 (CST)
-Received: from [10.174.178.66] (10.174.178.66) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Thu, 19 Jan 2023 15:00:35 +0800
-Message-ID: <24b9161d-6488-72f6-d392-751e2723d4ff@huawei.com>
-Date:   Thu, 19 Jan 2023 15:00:35 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: Question: Patch:("net: sched: cbq: dont intepret cls results when
- asked to drop") may be not bug for branch LTS 5.10
-From:   shaozhengchao <shaozhengchao@huawei.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Davide Caratti <dcaratti@redhat.com>
-CC:     Kyle Zeng <zengyhkyle@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S230034AbjASHer (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 02:34:47 -0500
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on20603.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe5b::603])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 614A863E24;
+        Wed, 18 Jan 2023 23:34:45 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hk9lt0fwZW1arj9X20aavrYcd9ERWa1m81Qg6nX1qKNp1XvPjToSEohnxehNslDwOunxjNzBbxthtyQCePEChblRS6zoM7aoWVDqljfm2sKXlYpK1hTO4W/ehliSOpsH8T/LWKxyahcUgFkLo4Fm4kXp1CTPS9Lqr+KDhrwJk4yqe4kmXIntkGJXhxKDe15wNtfv0lZBG0XSjqBFpdtwpOU9eNV0VWt/bg21bvRf7E9fb/K/lrwzWNsJTWp+RDp/g5FwGZEbvfQ3ogF1u5wrLirR6KncrsvZbEECvuKD3mzsMYdMjnDGAeL8yEQoA/Z6HTJJGZRbBugWbwJ7JIvVKQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pNR4lyNsNHC1jtWrmpPKZRp8BwTA/en7TBzuEJIRyHQ=;
+ b=CQcgmQia5sQuFmH0pnL+BoXdTPCmirrPAJvFaDOFPg0kcbOISen5WXt8McAUkCSY8a1ntnTARaNaKozVrko01qz/mUj5ApOXe5KWFIRSd9PwIfxBaUBz4rSpBdlF/2zmREVrHCKnW3a269tuQoTgh6yW/WC+5ODRKioD+qE+GeNiHA62k6DtP6ONwXHaEfn73XdlYfMkt+OqvBgrJKfrsWDgPsJN1DmM4+Ws8k0kKikTwPTYJV0pC38oHLsrXmj95yeqChyVrzRgnGEaIZQDvz/9gIyLU8O8hzIPxneJe45xTDSiMr0usSDcrfAhY6JQehChbeR/jkoBo6NY43A7sw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=netfilter.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pNR4lyNsNHC1jtWrmpPKZRp8BwTA/en7TBzuEJIRyHQ=;
+ b=MoIoOLWHBgZR9sNAAS3JGw5PInBMkqUGakTXvYNw2jd9wGg7EAYHzreEYiaEcBH16fZEl7acVCFV+HQzNLOUOfysYyD84XOaxEaEjEOQKLdjooFkH3aI7v4K+unqMixZmXMrgxAlq8MGfXB0+hwWRoKC/LFHijnFG9sun+LGSMhUTOrq4kjPrJfrDwvMHlrA26u0yJCqlZNA8p7RfwuHSu7Dy31jY/OGKAte2O1DOuvHuELd/li/em/c/Y6RiYFGTdXg35ONzo2fqYpaALbpDG9cSevn3+VnbSux6VnNZLKpD3qev2O/KrIYPpK2Mv+wldji3afgXdQ1Dfp7HVJ25w==
+Received: from DS7P222CA0026.NAMP222.PROD.OUTLOOK.COM (2603:10b6:8:2e::32) by
+ MN0PR12MB6002.namprd12.prod.outlook.com (2603:10b6:208:37e::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Thu, 19 Jan
+ 2023 07:34:41 +0000
+Received: from DM6NAM11FT093.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:8:2e:cafe::da) by DS7P222CA0026.outlook.office365.com
+ (2603:10b6:8:2e::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.26 via Frontend
+ Transport; Thu, 19 Jan 2023 07:34:41 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ DM6NAM11FT093.mail.protection.outlook.com (10.13.172.235) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6023.16 via Frontend Transport; Thu, 19 Jan 2023 07:34:40 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 18 Jan
+ 2023 23:34:34 -0800
+Received: from fedora.nvidia.com (10.126.231.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 18 Jan
+ 2023 23:34:31 -0800
+References: <20230118123208.17167-1-fw@strlen.de>
+ <20230118123208.17167-10-fw@strlen.de>
+User-agent: mu4e 1.6.6; emacs 28.1
+From:   Vlad Buslov <vladbu@nvidia.com>
+To:     Florian Westphal <fw@strlen.de>,
+        Fernando Fernandez Mancera <ffmancera@riseup.net>
+CC:     <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-References: <4538d7d2-0d43-16b7-9f80-77355f08cc61@huawei.com>
- <CAM0EoM=rqF8K997AmC0VDncJ9LeA0PJku2BL96iiatAOiv1-vw@mail.gmail.com>
- <CAM0EoM=VwZWzz1n_y8bj3y44NKBmhnmn+HUHtHwBb5qcCqETfg@mail.gmail.com>
- <CADW8OBvNcMCogJsMJkVXw70PL3oGU9s1a16DOK+xqdnCfgQzvg@mail.gmail.com>
- <Y8fSmFD2dNtBpbwK@dcaratti.users.ipa.redhat.com>
- <CAM0EoMmhHns_bY-JsXvrUkRhqu3xTDaRNk+cP-x=O_848R0W3Q@mail.gmail.com>
- <b44d1100-af59-8f8a-ed59-1375a40f0d44@huawei.com>
-In-Reply-To: <b44d1100-af59-8f8a-ed59-1375a40f0d44@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.66]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        "David S. Miller" <davem@davemloft.net>,
+        <netfilter-devel@vger.kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Maor Dickman <maord@nvidia.com>
+Subject: Re: [PATCH net-next 9/9] netfilter: nf_tables: add support to
+ destroy operation
+Date:   Thu, 19 Jan 2023 09:29:50 +0200
+In-Reply-To: <20230118123208.17167-10-fw@strlen.de>
+Message-ID: <87o7qvasfv.fsf@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.37]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT093:EE_|MN0PR12MB6002:EE_
+X-MS-Office365-Filtering-Correlation-Id: 72c2137f-608e-4ffd-0a09-08daf9efa05e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SYwz6Bk7RX+oi8qLRwt728hrRbll0NNIaqxeGxKOkBEWlRT5PRnQVL1wutCHjIpHhYnaOmgH0wwBtum59L/JDMxo6GnQCsZdYgVz/sW6Nqrxzinmh2zYtDz9vdLCfXBstcnn1NzFGxx3Mo63UIbALIsQjXOtspTD0a9PavbkSKgvQcwILx0zenXxsNtRtWYlLvIuSNCrgfmPBo8BTFfMIvqf064FN/Pt6OvpI/VJCJki545mmHQ3CrFjdLUqivxxflTXoL6gHnyhJNeKAi23dCwPdUM/xxpa3GWgNBODOEzLt1LtXblKM6aMasG1zNy+3yE9PwcdSh1HeoM6VWGt1RIkzfL9yjK4GOJAMn4wrBrwuvjzJR98kY2eCMZGPoxeSDQxmC7Yw9UUGNxJG1G3s0WcBO0qZCDb+h56meYZrAQbfwtsxQhzqg2z1OQwMp0d4ybYbJQxZc8I62QzzTZY4HUgif5+7W4mIg+LZsmZiciuwQ52/lZcHY83JzXXzFA8Q1Is8zoAfv44zX9OWc9nGXKqSkx3TzFgL9ZiZtNZhesmM7ysgCP9jCNEg4sV6P+fjd0IvwOJS3alThfBBMINBwqflpkH9o5wrOBpfsoIBlZwSKXn6qCPMoSin1cuBTf4+2pRDllp8Qy/nQ0jXJsJMFXFiAA18oHdD6ZZxo1hdoLVx6XxXBJfKVW9f5jDm0psm+UnGD5CicC4gPl7JPyY7g==
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(396003)(39860400002)(136003)(376002)(346002)(451199015)(46966006)(36840700001)(40470700004)(8936002)(8676002)(36756003)(16526019)(82310400005)(186003)(426003)(4326008)(70586007)(47076005)(41300700001)(70206006)(26005)(2616005)(86362001)(5660300002)(36860700001)(7696005)(336012)(478600001)(40480700001)(54906003)(82740400003)(107886003)(7636003)(316002)(83380400001)(356005)(110136005)(6666004)(40460700003)(2906002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 07:34:40.7801
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 72c2137f-608e-4ffd-0a09-08daf9efa05e
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT093.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6002
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed 18 Jan 2023 at 13:32, Florian Westphal <fw@strlen.de> wrote:
+> From: Fernando Fernandez Mancera <ffmancera@riseup.net>
+>
+> Introduce NFT_MSG_DESTROY* message type. The destroy operation performs a
+> delete operation but ignoring the ENOENT errors.
+>
+> This is useful for the transaction semantics, where failing to delete an
+> object which does not exist results in aborting the transaction.
+>
+> This new command allows the transaction to proceed in case the object
+> does not exist.
+>
+> Signed-off-by: Fernando Fernandez Mancera <ffmancera@riseup.net>
+> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> Signed-off-by: Florian Westphal <fw@strlen.de>
+> ---
+>  include/uapi/linux/netfilter/nf_tables.h |  14 +++
+>  net/netfilter/nf_tables_api.c            | 111 +++++++++++++++++++++--
+>  2 files changed, 117 insertions(+), 8 deletions(-)
+>
+> diff --git a/include/uapi/linux/netfilter/nf_tables.h b/include/uapi/linux/netfilter/nf_tables.h
+> index cfa844da1ce6..ff677f3a6cad 100644
+> --- a/include/uapi/linux/netfilter/nf_tables.h
+> +++ b/include/uapi/linux/netfilter/nf_tables.h
+> @@ -98,6 +98,13 @@ enum nft_verdicts {
+>   * @NFT_MSG_GETFLOWTABLE: get flow table (enum nft_flowtable_attributes)
+>   * @NFT_MSG_DELFLOWTABLE: delete flow table (enum nft_flowtable_attributes)
+>   * @NFT_MSG_GETRULE_RESET: get rules and reset stateful expressions (enum nft_obj_attributes)
+> + * @NFT_MSG_DESTROYTABLE: destroy a table (enum nft_table_attributes)
+> + * @NFT_MSG_DESTROYCHAIN: destroy a chain (enum nft_chain_attributes)
+> + * @NFT_MSG_DESTROYRULE: destroy a rule (enum nft_rule_attributes)
+> + * @NFT_MSG_DESTROYSET: destroy a set (enum nft_set_attributes)
+> + * @NFT_MSG_DESTROYSETELEM: destroy a set element (enum nft_set_elem_attributes)
+> + * @NFT_MSG_DESTROYOBJ: destroy a stateful object (enum nft_object_attributes)
+> + * @NFT_MSG_DESTROYFLOWTABLE: destroy flow table (enum nft_flowtable_attributes)
+>   */
+>  enum nf_tables_msg_types {
+>  	NFT_MSG_NEWTABLE,
+> @@ -126,6 +133,13 @@ enum nf_tables_msg_types {
+>  	NFT_MSG_GETFLOWTABLE,
+>  	NFT_MSG_DELFLOWTABLE,
+>  	NFT_MSG_GETRULE_RESET,
+> +	NFT_MSG_DESTROYTABLE,
+> +	NFT_MSG_DESTROYCHAIN,
+> +	NFT_MSG_DESTROYRULE,
+> +	NFT_MSG_DESTROYSET,
+> +	NFT_MSG_DESTROYSETELEM,
+> +	NFT_MSG_DESTROYOBJ,
+> +	NFT_MSG_DESTROYFLOWTABLE,
+>  	NFT_MSG_MAX,
+>  };
+>  
+> diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+> index 8c09e4d12ac1..974b95dece1d 100644
+> --- a/net/netfilter/nf_tables_api.c
+> +++ b/net/netfilter/nf_tables_api.c
+> @@ -1401,6 +1401,10 @@ static int nf_tables_deltable(struct sk_buff *skb, const struct nfnl_info *info,
+>  	}
+>  
+>  	if (IS_ERR(table)) {
+> +		if (PTR_ERR(table) == -ENOENT &&
+> +		    NFNL_MSG_TYPE(info->nlh->nlmsg_type) == NFT_MSG_DESTROYTABLE)
+> +			return 0;
+> +
+>  		NL_SET_BAD_ATTR(extack, attr);
+>  		return PTR_ERR(table);
+>  	}
+> @@ -2639,6 +2643,10 @@ static int nf_tables_delchain(struct sk_buff *skb, const struct nfnl_info *info,
+>  		chain = nft_chain_lookup(net, table, attr, genmask);
+>  	}
+>  	if (IS_ERR(chain)) {
+> +		if (PTR_ERR(chain) == -ENOENT &&
+> +		    NFNL_MSG_TYPE(info->nlh->nlmsg_type) == NFT_MSG_DESTROYCHAIN)
+> +			return 0;
+> +
+>  		NL_SET_BAD_ATTR(extack, attr);
+>  		return PTR_ERR(chain);
+>  	}
+> @@ -3716,6 +3724,10 @@ static int nf_tables_delrule(struct sk_buff *skb, const struct nfnl_info *info,
+>  		chain = nft_chain_lookup(net, table, nla[NFTA_RULE_CHAIN],
+>  					 genmask);
+>  		if (IS_ERR(chain)) {
+> +			if (PTR_ERR(rule) == -ENOENT &&
 
+Coverity complains that at this point rule is not initialized yet, which
+looks like to be the case to me.
 
-On 2023/1/19 14:33, shaozhengchao wrote:
-> Hi Jamal:
-> 
-> On 2023/1/18 21:06, Jamal Hadi Salim wrote:
->> The reproducer the Kyle included back then was not useful - it seemed
->> like a cutnpaste
->> from some syzkaller dashboard (and didnt compile); however, for this 
->> one issue,
->> you can reproduce the problem by creating the infinite loop setup that
->> Davide describes.
->>
->> The main issue is bigger than tcf_classify: It has to do with
->> interpretation of tcf_result
->> and the return codes.
->> I reviewed all consumers of tcf_results and only 3 (all happened to be 
->> qdiscs)
->> were fixed in that patch set. Note consumers include all objects in
->> the hierarchy
->> including classifiers and action.
->>
->> Typically, the LinuxWay(tm) of cutting and pasting what other people 
->> before you
->> did works - but sometimes people forget environmental rules even when 
->> they are
->> documented. The main environmental rule that was at stake here is the 
->> return
->> (verdict) code said to drop the packet. The validity of tcf_result in
->> such a case is
->> questionable and setting it to 0 was irrelevant. So that is all the
->> fix had to do for -net.
->>
->> The current return code is a "verdict" on what happened. Given that
->> there is potential
->> to misinterpret - as was seen here - a safer approach is to get the
->> return code to be either
->> an error/success code(eg ELOOP for the example being quoted) since
->> that is a more
->> common pattern and we store the "verdict code" in tcf_result 
->> (TC_ACT_SHOT).
->> I was planning to send an RFC patch for that.
->>
->> I am still not clear on the correlation that Zhengchao Shao was making 
->> between
->> Davide's patch and this issue...
->>
-> I'm just looking for the specific possible root cause of the issue.
-> Please help check whether the possible causes are as follows:
-> 1. __tcf_classify returns TC_ACT_UNSPEC,tc_skb_ext_alloc allocation 
-> failure, and the res may be abnormal. Maybe fix commit:9410c9409d3e
-> ("net: sched: Introduce ingress classification function")
-> 2.tcf_chain_lookup_rcu return NULL,and tcf_classify will return 
-> TC_ACT_SHOT. In this way, res is abnormal. Oh, I am sorry. In
-> cbq_classify, pass NULL as block. So tcf_chain_lookup_rcu will not be
-> called in tcf_classify. Ignore this.
-> 
-> Thank you again for your careful answer.
-> 
-> Zhengchao Shao
+[...]
 
-Last I just wonder whether the fix tag of that patch is corret?
-whether the issue could be triggered by other paths except Kyle
-describe.
-How do you know it's fixed Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2").
-
-Thank you.
-
->> cheers,
->> jamal
->>
->>
->> On Wed, Jan 18, 2023 at 6:06 AM Davide Caratti <dcaratti@redhat.com> 
->> wrote:
->>>
->>> hello,
->>>
->>> On Tue, Jan 17, 2023 at 05:10:58PM -0700, Kyle Zeng wrote:
->>>> Hi Zhengchao,
->>>>
->>>> I'm the finder of the vulnerability. In my initial report, there was a
->>>> more detailed explanation of why this bug happened. But it got left
->>>> out in the commit message.
->>>> So, I'll explain it here and see whether people want to patch the
->>>> actual root cause of the crash.
->>>>
->>>> The underlying bug that this patch was trying to address is actually
->>>> in `__tcf_classify`. Notice that `struct tcf_result` is actually a
->>>> union type, so whenever the kernel sets res.goto_tp, it also sets
->>>> res.class.
->>>
->>>  From what I see/remember, 'res' (struct tcf_result) is unassigned
->>> unless the packet is matched by a classifier (i.e. it does not return
->>> TC_ACT_UNSPEC).
->>>
->>> When this match happens (__tcf_classify returns non-negative) and the
->>> control action says TC_ACT_GOTO_CHAIN, res->goto_tp is written.
->>> Like you say, 'res.class' is written as well because it's a union.
->>>
->>>> And this can happen inside `tcf_action_goto_chain_exec`. In
->>>> other words, `tcf_action_goto_chain_exec` will set res.class. Notice
->>>> that goto_chain can point back to itself, which causes an infinite
->>>> loop. To avoid the infinite loop situation, `__tcf_classify` checks
->>>> how many times the loop has been executed
->>>> (https://elixir.bootlin.com/linux/v6.1/source/net/sched/cls_api.c#L1586),
->>>> if it is more than a specific number, it will mark the result as
->>>> TC_ACT_SHOT and then return:
->>>>
->>>> if (unlikely(limit++ >= max_reclassify_loop)) {
->>>>      ...
->>>>      return TC_ACT_SHOT;
->>>> }
->>>
->>> maybe there is an easier reproducer, something made of 2 TC actions.
->>> The first one goes to a valid chain, and then the second one 
->>> (executed from
->>> within the chain) drops the packet. I think that unpatched CBQ scheduler
->>> will find 'res.class' with a value also there.
->>>
->>>> However, when it returns in the infinite loop handler, it forgets to
->>>> clear whatever is in the `res` variable, which still holds pointers in
->>>> `goto_tp`. As a result, cbq_classify will think it is a valid
->>>> `res.class` and causes type confusion.
->>>>
->>>> My initial proposed patch was to memset `res` before `return
->>>> TC_ACT_SHOT` in `__tcf_classify`, but it didn't get merged. But I
->>>> guess the merged patch is more generic.
->>>
->>> The merged patch looks good to me; however, I wonder if it's sufficient.
->>> If I well read the code, there is still the possibility of hitting the
->>> same problem on a patched kernel when TC_ACT_TRAP / TC_ACT_STOLEN is
->>> returned after a 'goto chain' when the qdisc is CBQ.
->>>
->>> I like Jamal's idea of sharing the reproducer :)
->>
->>
->>> thanks!
->>> -- 
->>> davide
->>>
->>>
->>>
->>
