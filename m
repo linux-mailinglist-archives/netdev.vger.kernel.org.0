@@ -2,58 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4A9A67400A
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 18:35:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3032C674027
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 18:40:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230095AbjASRfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 12:35:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43206 "EHLO
+        id S230231AbjASRkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 12:40:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230061AbjASRfb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 12:35:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD87B74EAC;
-        Thu, 19 Jan 2023 09:35:28 -0800 (PST)
+        with ESMTP id S230215AbjASRkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 12:40:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D03A48EFFA;
+        Thu, 19 Jan 2023 09:40:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B23D61CEF;
-        Thu, 19 Jan 2023 17:35:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20D9CC433EF;
-        Thu, 19 Jan 2023 17:35:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C3AE61D03;
+        Thu, 19 Jan 2023 17:40:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BF09FC433EF;
+        Thu, 19 Jan 2023 17:40:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674149727;
-        bh=bQ1z3Gpo2rQL+7xAUVJanEXxq5N4GITE1gOr28Pvfic=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mHKiwqVkTfvMO+B+De2oHTX8RWgYskyVk3wMfD0b89A0/bBj3z4yNJ3sUSGhZaTi+
-         HNBzXPOqhX+uBLMKVp/skS/GQm6o4HLZ2Lw+AwqenA/YpAvPfJhQP9RdwBRXg7Rv/l
-         FVYWTtrdAzm0e9HVloQQiFxqlk8I8lkKSAHNq/8IUWDxfJ3DRgoXeTICsFKlwTTJRQ
-         SOtU2cXpwjb66MtqVvXfsMOIjlSfXZcEvJAgJCgYqAv9rvbj1ubiRARD97qC39/J75
-         InHXW2tS8kwg8ThwZPAHADYAqC5Zv/Qc5YtbG35I34/7YO8Gh7HUiN7wq6pFyHufSN
-         6vi/DlDatonrQ==
-Date:   Thu, 19 Jan 2023 09:35:26 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Rakesh.Sankaranarayanan@microchip.com, olteanv@gmail.com,
-        davem@davemloft.net, pabeni@redhat.com, hkallweit1@gmail.com,
-        Arun.Ramadoss@microchip.com, Woojung.Huh@microchip.com,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        f.fainelli@gmail.com, edumazet@google.com,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net 2/2] net: dsa: microchip: lan937x: run phy
- initialization during each link update
-Message-ID: <20230119093526.40dd03b0@kernel.org>
-In-Reply-To: <Y8l9mMpiFSHTt1iU@lunn.ch>
-References: <20230116100500.614444-1-rakesh.sankaranarayanan@microchip.com>
-        <20230116100500.614444-1-rakesh.sankaranarayanan@microchip.com>
-        <20230116100500.614444-3-rakesh.sankaranarayanan@microchip.com>
-        <20230116100500.614444-3-rakesh.sankaranarayanan@microchip.com>
-        <20230116222602.oswnt4ecoucpb2km@skbuf>
-        <7d72bc330d0ce9e57cc862bec39388b7def8782a.camel@microchip.com>
-        <Y8l9mMpiFSHTt1iU@lunn.ch>
+        s=k20201202; t=1674150016;
+        bh=RDy0BCu6KO5KA76KYd1NYpvtCLPTq7pk1ZJwS/KxH0o=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=kwN0JjYgNgvrjUFB6dgUC8WqoZr1auuCSR7qlf5qheaiYqaKtZMIQboJknqh+cK3S
+         2/sU+0Ta3PQt5GhPTlToYc/zKVnMeqrRQmQOqSO5UgzR377Mcs2DcYtVRzFtVvPd3/
+         xjV94N4pygOz1fJ91EuuYCxlJG7wtoepsbD4QSgtSQ5mKd43jrZoogsCIqB5U0zGbL
+         j8xE28l+8PlqnLwdC9+h8yP40pcQAZloqUtHkfboU1XNoYFR0cekP7/Emzgi4fYXl2
+         AnZj5NJBv2ML/jeC96p+gW25n/mI78PcptfL/ZISsnwP0vPVFrWitJqCBga7BUo9GK
+         qR91tz6yqPmew==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9E89DC39564;
+        Thu, 19 Jan 2023 17:40:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net] net: dsa: microchip: ksz9477: port map correction in
+ ALU table entry register
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167415001664.6484.3707763521396064033.git-patchwork-notify@kernel.org>
+Date:   Thu, 19 Jan 2023 17:40:16 +0000
+References: <20230118174735.702377-1-rakesh.sankaranarayanan@microchip.com>
+In-Reply-To: <20230118174735.702377-1-rakesh.sankaranarayanan@microchip.com>
+To:     Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -63,16 +59,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Jan 2023 18:27:52 +0100 Andrew Lunn wrote:
-> > Thanks for pointing this out. Do you think submitting this patch in
-> > net-next is the right way?  
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Wed, 18 Jan 2023 23:17:35 +0530 you wrote:
+> ALU table entry 2 register in KSZ9477 have bit positions reserved for
+> forwarding port map. This field is referred in ksz9477_fdb_del() for
+> clearing forward port map and alu table.
 > 
-> I would probably go for net-next. That will give it more soak time to
-> find the next way it is broken....
+> But current fdb_del refer ALU table entry 3 register for accessing forward
+> port map. Update ksz9477_fdb_del() to get forward port map from correct
+> alu table entry register.
+> 
+> [...]
 
-Either a fix or not a fix :( Meaning - if we opt for net-next
-please drop the Fixes tag.
+Here is the summary with links:
+  - [v2,net] net: dsa: microchip: ksz9477: port map correction in ALU table entry register
+    https://git.kernel.org/netdev/net/c/6c977c5c2e4c
 
-FWIW Greg promised that if we put some sort of a tag or information 
-to delay backporting to stable they will obey it. We should test that
-at some point.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
