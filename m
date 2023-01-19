@@ -2,165 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32A1567432A
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 20:52:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A02DF67434F
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 21:09:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230157AbjASTwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 14:52:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55318 "EHLO
+        id S229986AbjASUJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 15:09:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230261AbjASTwW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 14:52:22 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2051.outbound.protection.outlook.com [40.107.243.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A325F9DCA3;
-        Thu, 19 Jan 2023 11:52:10 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AD2cFSom8jiF1XLBYtxwqyAYknw/xq8ssvsWR2eD/FeKJJwYyTMOO5s1/DyQTJnIHfB68ub7vJOnScLdGZy+Ry972E8POKDoE8sLqL+jfyjPsDy7aUhhmAHGdVMl84vVRq0xHWMxYZsqUOw8NZKV6ZApphCKzDiSH9A9YoXgLzvrAS4TF52idULa9chf6fVwO7AKFpku2uQzezHsAnC+aV4ncytfRK4/p78vVjGY1v/n8LF3jNuYB9WtBrR4bt1Cn62GQV6FK3QiNZKfwYdQ00LwYbinKqs3MbPizrpdavchZ1HXqoy6DBS53soQyWgS5YZJi7NwBukFeYL93Zi+cQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JLcQDuTm7f0BQbsr+DZXqTDP8Fsw23ph80Ixl7U15/8=;
- b=ilmVo4QzqWfvAkuEUr758AGgJnIZPdF3FfkFyrC993SYmStv48LFdS69xW8k4q6ISdrkw48Mez9FvsGoImmHc3RnC2qXK3+BG9PzTi6v+YmY8hd3Ol2XsEc6GcGziNLo3ksrYct6g5fAal7ukcOWn7PNzHpO7ba7zjKzE5fZSJY0RS6xe7GO838Ba84p+yDW8SV5ZMjnWR2CDwjGqz9ROOwPtZneQedX8dMDU2UwWdqXuXAR2cbsE91PDQqE5JJUY/8Gckgbzb3s9pXX2fHYFPrVdNr5luuLguzDmAIK+cyOxeoD4IbJjGa03D+ni238w9y7oXrJw7UByR3OvyeoBQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JLcQDuTm7f0BQbsr+DZXqTDP8Fsw23ph80Ixl7U15/8=;
- b=WC9vUY1EWguxWjrZPpVa0VrlmxEPAjuuoGcwNkYigvkOG7dV9xxV2fftkAxzysGLYFebZ1+QovmLGpCES4ZOTMkWEAJAW/MQpzxDgFDHoNzHYicmbirsjyz4MOHRq5/qNIWE32/rt8xmCjM24TV+V5/tYTU+CHo9DQJ75y84jKq29w05KqYHxXk11lhZk4e0H0SCkvACvR43KDCtmSD/YiSIdu6uNv0Gt0vKB93XUAyoIm7Oqh6WUUncthncPzWoczoE2EZEvG8GGVSFq4OZdM+WScdTVGPDvigY7Cj9k9gh5dYsM3AixzMyLom7p1C8bzWQ7+U1qCz5EVhe5jH3GA==
-Received: from BN0PR04CA0084.namprd04.prod.outlook.com (2603:10b6:408:ea::29)
- by PH7PR12MB7305.namprd12.prod.outlook.com (2603:10b6:510:209::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Thu, 19 Jan
- 2023 19:52:07 +0000
-Received: from BN8NAM11FT013.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:ea:cafe::9d) by BN0PR04CA0084.outlook.office365.com
- (2603:10b6:408:ea::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.26 via Frontend
- Transport; Thu, 19 Jan 2023 19:52:06 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BN8NAM11FT013.mail.protection.outlook.com (10.13.176.182) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6002.24 via Frontend Transport; Thu, 19 Jan 2023 19:52:06 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 19 Jan
- 2023 11:51:49 -0800
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 19 Jan
- 2023 11:51:48 -0800
-Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.7)
- with Microsoft SMTP Server id 15.2.986.36 via Frontend Transport; Thu, 19 Jan
- 2023 11:51:45 -0800
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <pablo@netfilter.org>
-CC:     <netdev@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <ozsh@nvidia.com>, <marcelo.leitner@gmail.com>,
-        <simon.horman@corigine.com>, Vlad Buslov <vladbu@nvidia.com>
-Subject: [PATCH net-next v3 7/7] netfilter: nf_conntrack: allow early drop of offloaded UDP conns
-Date:   Thu, 19 Jan 2023 20:51:04 +0100
-Message-ID: <20230119195104.3371966-8-vladbu@nvidia.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20230119195104.3371966-1-vladbu@nvidia.com>
-References: <20230119195104.3371966-1-vladbu@nvidia.com>
+        with ESMTP id S229876AbjASUJ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 15:09:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19EF94C8C
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 12:08:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1674158920;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PggIzfygRD9QgTxjyyjnr/C8VTVpVGfqEDvg752Zp0M=;
+        b=eJSV+lBKb0BrTqp7ePQaetMiF4Hn8xErHrzIdDk3sA7jIoWYpPJRBpMBQn1qT+45VM1zhV
+        fykm9tjU83RAdp+DFW3fNRv6ALbcbN2FBoqCgDVgAQwX1p6GcVO8cbTrx8WpWrVxFvpAju
+        zqxB1w4/dfKEww8WHv4mgXBB1JVKrKc=
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
+ [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-482-rhuwW2_KPLyfpaT3FBICzA-1; Thu, 19 Jan 2023 15:08:39 -0500
+X-MC-Unique: rhuwW2_KPLyfpaT3FBICzA-1
+Received: by mail-pj1-f71.google.com with SMTP id on9-20020a17090b1d0900b0022955c2f0f4so39407pjb.1
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 12:08:39 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=PggIzfygRD9QgTxjyyjnr/C8VTVpVGfqEDvg752Zp0M=;
+        b=N0ciguVAqmqEwrHVsEPRWpreZTPD8hfOFtIB5wZAcGoj+pCau/H4ZpV2SQ4HtbUK8n
+         6d3FzzKS2ROC2Tg8Llz6EUyQZif8gC5cgUVPD3aK1v0kRmEQGxHye3nvyxUujwQHT6iq
+         rRcKMjbO0f7KFX6rsH8yrETCOoxeLAiRhDJ86pwckOE/c9gGJx5g0Y+WeQAXsPA6Lk6P
+         O4zLeoLZULe6ufahkpLd0OwdEAyislva4x1XAxKh/VInn6h/vt3kQNxAIN0kkqHrYnrX
+         0WKXlXjrgFw4Z1mKx3QIpSGEE8MTGEWXksWbz3egb09lwl9q73UpjpyIK/VsH02KpOfJ
+         Ke+g==
+X-Gm-Message-State: AFqh2kpsnNyHtU+O4yLPT4aIhO4QerfbJksrbT6x+cO57JKANxgPGNDf
+        0X25nc/nNQBaJ73cNuSVxXaZ3476DUN+ZqbS715s9Aofzy6zp7355b7FjG/hONETyxZ2Wq9iIa/
+        6OeM//RruF4ClwKhkpviNhMGprbdefgLH
+X-Received: by 2002:a17:90b:187:b0:226:f8dc:b230 with SMTP id t7-20020a17090b018700b00226f8dcb230mr1387623pjs.227.1674158917999;
+        Thu, 19 Jan 2023 12:08:37 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXtINLEsUn4AGw4oV584OPWe9mWjhWHelFifskuQ1poGCUHOYupjz59bzO972Ny1TiIOn7Hlp/JYMe1BV5mDjR0=
+X-Received: by 2002:a17:90b:187:b0:226:f8dc:b230 with SMTP id
+ t7-20020a17090b018700b00226f8dcb230mr1387616pjs.227.1674158917773; Thu, 19
+ Jan 2023 12:08:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT013:EE_|PH7PR12MB7305:EE_
-X-MS-Office365-Filtering-Correlation-Id: 65938be8-7ee6-43e9-9c17-08dafa56a4a1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: l6/OwtQf3fFzy8oJAcbvzhkiw1eLe7J/nwaYA0XBtm+aIh1Xwes3tcxOk7TamOs1pyLTW7V20tDQM6II4jHoNLRCXHM/C1YQzx/dqakVi30Xc3YdGxwpPZKy//1B6UQ5AYvvaWtjkwMN3isyiYardyf9CSxXN+kMZj3xr4GwaT4xf5ueYn+IJB2ctz4zpExJ0SWRBqPMhu/7xAK8yzoiNdX3RNTardb4Ofzpj4tzOxO7tv+fVxxWVblVd0/DppRba80xPs4ZUL5iqfsjCsGBw9fW6cB0e4v+gtj5G/Z374eMiKi4IACJlWtnqMygHYqxHs05ooukNa1NYZNfYs1nU67R1s+z4Nz2PGLHnR6DHA+ha4tyBtV1uvjD3rurUJv5G68wHRjW0XvdDEsw2CIHGx5kfHMqyNHbSUO3hGkFI/C9yXpZWFxrCDO3W3DeXKOVIWut1VpldonlE7RsiQHdZA3Q+uDS+JNPlYD+o0H3A/aTJ0Xdc5lEEFMf9PyzRx6cmDORQbiEWroNFDcXDxQc7YMVYbqVr2eH0OLZwRc2eg3bezS3vYDGfI5omVQwMgWvBtvQ24S9uzaJ5mM4Q6MhdtZre8KQyeiFuDSacHS6q9vmpffWbwcIo17xw8ku0QU54f5doum7YkcqtBPDCo+ABsb8HnCr1rZ7R1VlzWhyFFNokZD+4ZdPUe2bbLkmzMPVpVBuGfYl4YTpnFUEWKp7W2/tRAmV9TeXdI+l1Hc6zoM=
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(376002)(396003)(136003)(346002)(451199015)(46966006)(40470700004)(36840700001)(7696005)(70206006)(107886003)(41300700001)(426003)(47076005)(8936002)(36860700001)(2906002)(36756003)(8676002)(4326008)(70586007)(7416002)(186003)(316002)(26005)(6666004)(478600001)(1076003)(40460700003)(5660300002)(82310400005)(356005)(336012)(54906003)(7636003)(83380400001)(82740400003)(110136005)(2616005)(86362001)(40480700001)(2101003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 19:52:06.0501
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 65938be8-7ee6-43e9-9c17-08dafa56a4a1
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT013.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7305
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+References: <20230117181533.2350335-1-neelx@redhat.com> <2bdeb975-6d45-67bb-3017-f19df62fe7af@intel.com>
+ <CACjP9X-hKf8g2UqitV8_G7WQW7u6Js5EsCNutsAMA4WD7YYSwA@mail.gmail.com>
+ <42e74619-f2d0-1079-28b1-61e9e17ae953@intel.com> <CACjP9X8SHZAd_+HSLJCxYxSRQuRmq3r48id13r17n2ehrec2YQ@mail.gmail.com>
+ <820cf397-a99e-44d4-cf9e-3ad6876e4d06@intel.com> <CACjP9X_v9AFVNRgz2a-qJce+ZqR0TzRzyd4gPFufESoRXmCdJQ@mail.gmail.com>
+ <423a29e2-886d-2c41-16d4-a8fca5537c2e@intel.com>
+In-Reply-To: <423a29e2-886d-2c41-16d4-a8fca5537c2e@intel.com>
+From:   Daniel Vacek <neelx@redhat.com>
+Date:   Thu, 19 Jan 2023 21:08:01 +0100
+Message-ID: <CACjP9X-Ab76We7SVie7rpyykvKjiPuNktWeVa9y3Wb6i6oo4mg@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] [PATCH] ice/ptp: fix the PTP worker retrying
+ indefinitely if the link went down
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "Kolacinski, Karol" <karol.kolacinski@intel.com>,
+        Siddaraju <siddaraju.dh@intel.com>,
+        "Michalik, Michal" <michal.michalik@intel.com>,
+        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Both synchronous early drop algorithm and asynchronous gc worker completely
-ignore connections with IPS_OFFLOAD_BIT status bit set. With new
-functionality that enabled UDP NEW connection offload in action CT
-malicious user can flood the conntrack table with offloaded UDP connections
-by just sending a single packet per 5tuple because such connections can no
-longer be deleted by early drop algorithm.
+On Thu, Jan 19, 2023 at 8:25 PM Jacob Keller <jacob.e.keller@intel.com> wrote:
+> On 1/19/2023 1:38 AM, Daniel Vacek wrote:
+> > On Wed, Jan 18, 2023 at 11:22 PM Jacob Keller <jacob.e.keller@intel.com> wrote:
+> >> On 1/18/2023 2:11 PM, Daniel Vacek wrote:
+> >>> On Wed, Jan 18, 2023 at 9:59 PM Jacob Keller <jacob.e.keller@intel.com> wrote:
+> >>>> On 1/18/2023 7:14 AM, Daniel Vacek wrote:
+> >>>> 1) request tx timestamp
+> >>>> 2) timestamp occurs
+> >>>> 3) link goes down while processing
+> >>>
+> >>> I was thinking this is the case we got reported. But then again, I'm
+> >>> not really experienced in this field.
+> >>>
+> >>
+> >> I think it might be, or at least something similar to this.
+> >>
+> >> I think that can be fixed with the link check you added. I think we
+> >> actually have a copy of the current link status in the ice_ptp or
+> >> ice_ptp_tx structure which could be used instead of having to check back
+> >> to the other structure.
+> >
+> > If you're talking about ptp_port->link_up that one is always false no
+> > matter the actual NIC link status. First I wanted to use it but
+> > checking all the 8 devices available in the dump data it just does not
+> > match the net_dev->state or the port_info->phy.link_info.link_info
+> >
+> > crash> net_device.name,state 0xff48df6f0c553000
+> >   name = "ens1f1",
+> >   state = 0x7,    // DOWN
+> > crash> ice_port_info.phy.link_info.link_info 0xff48df6f05dca018
+> >   phy.link_info.link_info = 0xc0,    // DOWN
+> > crash> ice_ptp_port.port_num,link_up 0xff48df6f05dd44e0
+> >   port_num = 0x1
+> >   link_up = 0x0,    // False
+> >
+> > crash> net_device.name,state 0xff48df6f25e3f000
+> >   name = "ens1f0",
+> >   state = 0x3,    // UP
+> > crash> ice_port_info.phy.link_info.link_info 0xff48df6f070a3018
+> >   phy.link_info.link_info = 0xe1,    // UP
+> > crash> ice_ptp_port.port_num,link_up 0xff48df6f063184e0
+> >   port_num = 0x0
+> >   link_up = 0x0,    // False
+> >
+> > crash> ice_ptp_port.port_num,link_up 0xff48df6f25b844e0
+> >   port_num = 0x2
+> >   link_up = 0x0,    // False even this device is UP
+> > crash> ice_ptp_port.port_num,link_up 0xff48df6f140384e0
+> >   port_num = 0x3
+> >   link_up = 0x0,    // False even this device is UP
+> > crash> ice_ptp_port.port_num,link_up 0xff48df6f055044e0
+> >   port_num = 0x0
+> >   link_up = 0x0,    // False even this device is UP
+> > crash> ice_ptp_port.port_num,link_up 0xff48df6f251cc4e0
+> >   port_num = 0x1
+> >   link_up = 0x0,
+> > crash> ice_ptp_port.port_num,link_up 0xff48df6f33a9c4e0
+> >   port_num = 0x2
+> >   link_up = 0x0,
+> > crash> ice_ptp_port.port_num,link_up 0xff48df6f3bb7c4e0
+> >   port_num = 0x3
+> >   link_up = 0x0,
+> >
+> > In other words, the ice_ptp_port.link_up is always false and cannot be
+> > used. That's why I had to fall back to
+> > hw->port_info->phy.link_info.link_info
+> >
+>
+> Hmm. We call ice_ptp_link_change in ice_link_event which is called from
+> ice_handle_link_event...
+>
+> In ice_link_event, a local link_up field is set based on
+> phy_info->link_info.link_info & ICE_AQ_LINK_UP
+>
+> What kernel are you testing on? Does it include 6b1ff5d39228 ("ice:
+> always call ice_ptp_link_change and make it void")?
+>
+> Prior to this commit the field was only valid for E822 devices, but I
+> fixed that as it was used for other checks as well.
+>
+> I am guessing that the Red Hat kernel you are using lacks several of
+> these clean ups and fixes.
 
-To mitigate the issue allow both early drop and gc to consider offloaded
-UDP connections for deletion.
+Yeah, makes perfect sense. We don't have that commit in 8.4. All the data
+I have and present here are from 4.18.0-305.49.1.rt7.121.el8_4.x86_64
 
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
----
- net/netfilter/nf_conntrack_core.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+> For the current code in the net-next kernel I believe we can safely use
+> the ptp_port->link_up field.
 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 496c4920505b..52b824a60176 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -1374,9 +1374,6 @@ static unsigned int early_drop_list(struct net *net,
- 	hlist_nulls_for_each_entry_rcu(h, n, head, hnnode) {
- 		tmp = nf_ct_tuplehash_to_ctrack(h);
- 
--		if (test_bit(IPS_OFFLOAD_BIT, &tmp->status))
--			continue;
--
- 		if (nf_ct_is_expired(tmp)) {
- 			nf_ct_gc_expired(tmp);
- 			continue;
-@@ -1446,11 +1443,14 @@ static bool gc_worker_skip_ct(const struct nf_conn *ct)
- static bool gc_worker_can_early_drop(const struct nf_conn *ct)
- {
- 	const struct nf_conntrack_l4proto *l4proto;
-+	u8 protonum = nf_ct_protonum(ct);
- 
-+	if (test_bit(IPS_OFFLOAD_BIT, &ct->status) && protonum != IPPROTO_UDP)
-+		return false;
- 	if (!test_bit(IPS_ASSURED_BIT, &ct->status))
- 		return true;
- 
--	l4proto = nf_ct_l4proto_find(nf_ct_protonum(ct));
-+	l4proto = nf_ct_l4proto_find(protonum);
- 	if (l4proto->can_early_drop && l4proto->can_early_drop(ct))
- 		return true;
- 
-@@ -1507,7 +1507,8 @@ static void gc_worker(struct work_struct *work)
- 
- 			if (test_bit(IPS_OFFLOAD_BIT, &tmp->status)) {
- 				nf_ct_offload_timeout(tmp);
--				continue;
-+				if (!nf_conntrack_max95)
-+					continue;
- 			}
- 
- 			if (expired_count > GC_SCAN_EXPIRED_MAX) {
--- 
-2.38.1
+I'll fix that up and drop you a v3. Thank you for the review.
+
+--nX
+
+> Thanks,
+> Jake
 
