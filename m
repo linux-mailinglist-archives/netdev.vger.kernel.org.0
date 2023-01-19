@@ -2,50 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 869FE67451F
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 22:43:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BC3F674518
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 22:43:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231277AbjASVn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 16:43:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55950 "EHLO
+        id S230234AbjASVmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 16:42:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230043AbjASVjg (ORCPT
+        with ESMTP id S230136AbjASVjg (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 16:39:36 -0500
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A949B9373F
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 13:28:04 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B63C94CB9
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 13:28:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674163684; x=1705699684;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=07XoigMrHQIVuUlvwLEYDvScLBgfGkTcpXWHo4EoQvs=;
-  b=dIuQ4Xk1JC6L4vQJ1RxhXj7GTQGcU9ZD+WctBe/mB7bsISICBo90h9rb
-   DcJYnO3IDZw3QwRC9Ctm23PWwvQBrVG0l7Z3O5GCIibh2lEBvMtGh4DQA
-   sD32vSlOVHaSpAIxFuSstGr71tdG+wwrLFiA74s4dGZ7xyGUWo7lC9lO3
-   nwnsFQNoncMnIeWFJbsvsU6hritSAhYrTdRLYAlCFd1vgHxxewFHv3Gqx
-   e4AltO416zonwLbzMQUd5B4cZSeeYh3qpnpPIhsLZ+ZHk7qRXDChf8E98
-   dzFvxrK2YRghqcOarJ5h95Bl0CED8PQDGA3NOZKerfm4dnjN8xBP0zuEZ
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="323120588"
+  t=1674163685; x=1705699685;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=9mXmRVUlEsINCj/fG9YFAJ6CYe5wD+yst6c6HZfRNBA=;
+  b=MbFlsTOmnQwuRnXQWkLocbY8fI8z4NEyUqv7uosYl5ZGJZw9AkhaJKdG
+   3OZimDST1/NtoitEih1V8bzpqi/LVmJRTt8gNMa1knlPCvfkcroqGhkK7
+   5yt5h7HP/vyjlpCwMjeHTNBzkaOptz2VDJjJuNaUiMpA+KIFly5qqJwhs
+   YVnJXebX+458AZCXUxF6QSb66I6MhcPocsKw0FSViEFY2hv6ajBDPt4P2
+   x2rOVQFWmnsjSiFA2JdSF+zZ+gTp82Q9KSKJnzJfTnwryOuuTf0ABQWHm
+   Cr01x+n4qtXl6pfoVXpM04VwPolbH7o17FTg4JbE7A2SMQpHv79Usl4b4
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="323120594"
 X-IronPort-AV: E=Sophos;i="5.97,230,1669104000"; 
-   d="scan'208";a="323120588"
+   d="scan'208";a="323120594"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 13:27:27 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="692589863"
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="692589868"
 X-IronPort-AV: E=Sophos;i="5.97,230,1669104000"; 
-   d="scan'208";a="692589863"
+   d="scan'208";a="692589868"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
   by orsmga001.jf.intel.com with ESMTP; 19 Jan 2023 13:27:26 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
-Subject: [PATCH net-next 00/15][pull request] Intel Wired LAN Driver Updates 2023-01-19 (ice)
-Date:   Thu, 19 Jan 2023 13:27:27 -0800
-Message-Id: <20230119212742.2106833-1-anthony.l.nguyen@intel.com>
+Cc:     Tsotne Chakhvadze <tsotne.chakhvadze@intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        lukasz.plachno@intel.com, Karen Sornek <karen.sornek@intel.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
+        Arpana Arland <arpanax.arland@intel.com>
+Subject: [PATCH net-next 01/15] ice: Add 'Execute Pending LLDP MIB' Admin Queue command
+Date:   Thu, 19 Jan 2023 13:27:28 -0800
+Message-Id: <20230119212742.2106833-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20230119212742.2106833-1-anthony.l.nguyen@intel.com>
+References: <20230119212742.2106833-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -57,95 +64,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to ice driver only.
+From: Tsotne Chakhvadze <tsotne.chakhvadze@intel.com>
 
-Tsotne and Anatolii implement new handling, and AdminQ command, for
-firmware LLDP, adding a pending notification to allow for proper
-cleanup between TC changes.
+In DCB Willing Mode (FW managed LLDP), when the link partner changes
+configuration which requires fewer TCs, the TCs that are no longer
+needed are suspended by EMP FW, removed, and never resumed. This occurs
+before a MIB change event is indicated to SW. The permanent suspension and
+removal of these TC nodes in the scheduler prevents RDMA from being able
+to destroy QPs associated with this TC, requiring a CORE reset to recover.
 
-Amritha extends support for drop action outside of switchdev.
+A new DCBX configuration change flow is defined to allow SW driver and
+other SW components (RDMA) to properly adjust to the configuration
+changes before they are taking effect in HW. This flow includes a
+two-way handshake between EMP FW<->LAN SW<->RDMA SW.
 
-Siddaraju adjusts restriction for PTP HW clock adjustments.
+List of changes:
+- Add 'Execute Pending LLDP MIB' AQC.
+- Add 'Pending Event Enable' bit.
+- Add additional logic to ignore Pending Event Enable' request
+  while 'LLDP MIB Chnage' event is disabled.
+- Add 'Execute Pending LLDP MIB' AQC sending function to FW,
+  which is needed to take place MIB Event change.
 
-Ani removes an unneeded non-null check and improves reporting of some link
-modes to utilize more appropriate values.
+Signed-off-by: Tsotne Chakhvadze <tsotne.chakhvadze@intel.com>
+Co-developed-by: Karen Sornek <karen.sornek@intel.com>
+Signed-off-by: Karen Sornek <karen.sornek@intel.com>
+Co-developed-by: Dave Ertman <david.m.ertman@intel.com>
+Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
+Co-developed-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+Signed-off-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+Tested-by: Arpana Arland <arpanax.arland@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h    | 18 ++++++++++++++++--
+ drivers/net/ethernet/intel/ice/ice_common.c    | 13 +++++++++++++
+ drivers/net/ethernet/intel/ice/ice_common.h    |  1 +
+ drivers/net/ethernet/intel/ice/ice_dcb.c       |  3 +++
+ 4 files changed, 33 insertions(+), 2 deletions(-)
 
-Jesse adds checks to ensure PF VSI type.
-
-Przemek combines duplicate checks of the same condition into one check.
-
-Tony makes various cleanups to code: removes comments for cppcheck
-suppressions, reduces scope of some variables, changes some return
-statements to reflect an explicit 0 return, matches naming for function
-declaration and definition, adds local variable for readability, and
-fixes indenting.
-
-Sergey separates DDP (Dynamic Device Personalization) code into its own
-file.
-
-The following are changes since commit 3ef4a8c8963b29813170177899f84ffb93f1a8f1:
-  Merge branch 'net-phy-remove-probe_capabilities'
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
-
-Amritha Nambiar (1):
-  ice: Support drop action
-
-Anatolii Gerasymenko (1):
-  ice: Handle LLDP MIB Pending change
-
-Anirudh Venkataramanan (2):
-  ice: remove redundant non-null check in ice_setup_pf_sw()
-  ice: Add support for 100G KR2/CR2/SR2 link reporting
-
-Jesse Brandeburg (1):
-  ice: add missing checks for PF vsi type
-
-Przemek Kitszel (1):
-  ice: combine cases in ice_ksettings_find_adv_link_speed()
-
-Sergey Temerkhanov (1):
-  ice: Move support DDP code out of ice_flex_pipe.c
-
-Siddaraju DH (1):
-  ice: restrict PTP HW clock freq adjustments to 100, 000, 000 PPB
-
-Tony Nguyen (6):
-  ice: Remove cppcheck suppressions
-  ice: Reduce scope of variables
-  ice: Explicitly return 0
-  ice: Match parameter name for ice_cfg_phy_fc()
-  ice: Introduce local var for readability
-  ice: Remove excess space
-
-Tsotne Chakhvadze (1):
-  ice: Add 'Execute Pending LLDP MIB' Admin Queue command
-
- drivers/net/ethernet/intel/ice/Makefile       |    1 +
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   18 +-
- drivers/net/ethernet/intel/ice/ice_common.c   |   13 +
- drivers/net/ethernet/intel/ice/ice_common.h   |    3 +-
- drivers/net/ethernet/intel/ice/ice_dcb.c      |   39 +
- drivers/net/ethernet/intel/ice/ice_dcb.h      |    2 +
- drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |   70 +-
- drivers/net/ethernet/intel/ice/ice_ddp.c      | 1897 ++++++++++++++
- drivers/net/ethernet/intel/ice/ice_ddp.h      |  445 ++++
- drivers/net/ethernet/intel/ice/ice_ethtool.c  |   63 +-
- .../net/ethernet/intel/ice/ice_flex_pipe.c    | 2258 ++---------------
- .../net/ethernet/intel/ice/ice_flex_pipe.h    |   69 -
- .../net/ethernet/intel/ice/ice_flex_type.h    |  328 +--
- drivers/net/ethernet/intel/ice/ice_lib.c      |    2 +-
- drivers/net/ethernet/intel/ice/ice_main.c     |   38 +-
- drivers/net/ethernet/intel/ice/ice_nvm.c      |    1 -
- drivers/net/ethernet/intel/ice/ice_ptp.c      |    2 +-
- drivers/net/ethernet/intel/ice/ice_sched.c    |    7 +-
- drivers/net/ethernet/intel/ice/ice_tc_lib.c   |   50 +-
- drivers/net/ethernet/intel/ice/ice_tc_lib.h   |   10 +
- drivers/net/ethernet/intel/ice/ice_txrx.c     |    3 -
- 21 files changed, 2753 insertions(+), 2566 deletions(-)
- create mode 100644 drivers/net/ethernet/intel/ice/ice_ddp.c
- create mode 100644 drivers/net/ethernet/intel/ice/ice_ddp.h
-
+diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+index 958c1e435232..838d9b274d68 100644
+--- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
++++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+@@ -1659,14 +1659,24 @@ struct ice_aqc_lldp_get_mib {
+ #define ICE_AQ_LLDP_TX_ACTIVE			0
+ #define ICE_AQ_LLDP_TX_SUSPENDED		1
+ #define ICE_AQ_LLDP_TX_FLUSHED			3
++/* DCBX mode */
++#define ICE_AQ_LLDP_DCBX_M			GENMASK(7, 6)
++#define ICE_AQ_LLDP_DCBX_NA			0
++#define ICE_AQ_LLDP_DCBX_CEE			1
++#define ICE_AQ_LLDP_DCBX_IEEE			2
++
++	u8 state;
++#define ICE_AQ_LLDP_MIB_CHANGE_STATE_M		BIT(0)
++#define ICE_AQ_LLDP_MIB_CHANGE_EXECUTED		0
++#define ICE_AQ_LLDP_MIB_CHANGE_PENDING		1
++
+ /* The following bytes are reserved for the Get LLDP MIB command (0x0A00)
+  * and in the LLDP MIB Change Event (0x0A01). They are valid for the
+  * Get LLDP MIB (0x0A00) response only.
+  */
+-	u8 reserved1;
+ 	__le16 local_len;
+ 	__le16 remote_len;
+-	u8 reserved2[2];
++	u8 reserved[2];
+ 	__le32 addr_high;
+ 	__le32 addr_low;
+ };
+@@ -1677,6 +1687,9 @@ struct ice_aqc_lldp_set_mib_change {
+ 	u8 command;
+ #define ICE_AQ_LLDP_MIB_UPDATE_ENABLE		0x0
+ #define ICE_AQ_LLDP_MIB_UPDATE_DIS		0x1
++#define ICE_AQ_LLDP_MIB_PENDING_M		BIT(1)
++#define ICE_AQ_LLDP_MIB_PENDING_DISABLE		0
++#define ICE_AQ_LLDP_MIB_PENDING_ENABLE		1
+ 	u8 reserved[15];
+ };
+ 
+@@ -2329,6 +2342,7 @@ enum ice_adminq_opc {
+ 	ice_aqc_opc_lldp_set_local_mib			= 0x0A08,
+ 	ice_aqc_opc_lldp_stop_start_specific_agent	= 0x0A09,
+ 	ice_aqc_opc_lldp_filter_ctrl			= 0x0A0A,
++	ice_aqc_opc_lldp_execute_pending_mib		= 0x0A0B,
+ 
+ 	/* RSS commands */
+ 	ice_aqc_opc_set_rss_key				= 0x0B02,
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index d02b55b6aa9c..f5842ff42bc7 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -5503,6 +5503,19 @@ ice_lldp_fltr_add_remove(struct ice_hw *hw, u16 vsi_num, bool add)
+ 	return ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
+ }
+ 
++/**
++ * ice_lldp_execute_pending_mib - execute LLDP pending MIB request
++ * @hw: pointer to HW struct
++ */
++int ice_lldp_execute_pending_mib(struct ice_hw *hw)
++{
++	struct ice_aq_desc desc;
++
++	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_lldp_execute_pending_mib);
++
++	return ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
++}
++
+ /**
+  * ice_fw_supports_report_dflt_cfg
+  * @hw: pointer to the hardware structure
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
+index 4c6a0b5c9304..22839c4f7247 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.h
++++ b/drivers/net/ethernet/intel/ice/ice_common.h
+@@ -221,6 +221,7 @@ ice_aq_set_lldp_mib(struct ice_hw *hw, u8 mib_type, void *buf, u16 buf_size,
+ bool ice_fw_supports_lldp_fltr_ctrl(struct ice_hw *hw);
+ int
+ ice_lldp_fltr_add_remove(struct ice_hw *hw, u16 vsi_num, bool add);
++int ice_lldp_execute_pending_mib(struct ice_hw *hw);
+ int
+ ice_aq_read_i2c(struct ice_hw *hw, struct ice_aqc_link_topo_addr topo_addr,
+ 		u16 bus_addr, __le16 addr, u8 params, u8 *data,
+diff --git a/drivers/net/ethernet/intel/ice/ice_dcb.c b/drivers/net/ethernet/intel/ice/ice_dcb.c
+index 6be02f9b0b8c..22a94e05233a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_dcb.c
++++ b/drivers/net/ethernet/intel/ice/ice_dcb.c
+@@ -73,6 +73,9 @@ ice_aq_cfg_lldp_mib_change(struct ice_hw *hw, bool ena_update,
+ 
+ 	if (!ena_update)
+ 		cmd->command |= ICE_AQ_LLDP_MIB_UPDATE_DIS;
++	else
++		cmd->command |= FIELD_PREP(ICE_AQ_LLDP_MIB_PENDING_M,
++					   ICE_AQ_LLDP_MIB_PENDING_ENABLE);
+ 
+ 	return ice_aq_send_cmd(hw, &desc, NULL, 0, cd);
+ }
 -- 
 2.38.1
 
