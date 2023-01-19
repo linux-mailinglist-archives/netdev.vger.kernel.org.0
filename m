@@ -2,56 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB99D674661
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 23:53:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6ADC674678
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 23:57:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229487AbjASWxW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Jan 2023 17:53:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
+        id S230077AbjASW5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 17:57:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230295AbjASWwz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 17:52:55 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91376A95A2
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 14:35:18 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-150-wtFC9NvyNHatWG_8bqruuw-1; Thu, 19 Jan 2023 22:34:34 +0000
-X-MC-Unique: wtFC9NvyNHatWG_8bqruuw-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 19 Jan
- 2023 22:34:33 +0000
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.044; Thu, 19 Jan 2023 22:34:33 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Tony Nguyen' <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Gurucharan G <gurucharanx.g@intel.com>
-Subject: RE: [PATCH net-next 14/15] ice: Introduce local var for readability
-Thread-Topic: [PATCH net-next 14/15] ice: Introduce local var for readability
-Thread-Index: AQHZLE8S21tdpZCRDkevzrtyZTzfE66mUstA
-Date:   Thu, 19 Jan 2023 22:34:33 +0000
-Message-ID: <203fcd4954e14afbb9d21fcd27ac7458@AcuMS.aculab.com>
-References: <20230119212742.2106833-1-anthony.l.nguyen@intel.com>
- <20230119212742.2106833-15-anthony.l.nguyen@intel.com>
-In-Reply-To: <20230119212742.2106833-15-anthony.l.nguyen@intel.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S230093AbjASW4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 17:56:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52FB4173F;
+        Thu, 19 Jan 2023 14:39:37 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DEE6761D90;
+        Thu, 19 Jan 2023 22:39:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDDE3C433F0;
+        Thu, 19 Jan 2023 22:39:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674167976;
+        bh=NzKcg98ug8ID9hmODl/qVZyxg5QFwan7Bs9Ruvccb94=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dke9aIuAzfSxV8RiUl94zdppLCV+86mb+N1+2sWpP/lozDJP2GgYG+BoidFA8wCCf
+         SGMPqij1p07iwMKwnbfn0hP74Qm2bFh2cufc7wAe9kPYHwlnxpMdTwEYz7A4ArP9IG
+         4vX3tIw5/ZT9i3Ee2EaTOHd3TT8i9oTzZM67JnhxKAxzWCQy1U4DNqN0RVNeRk34dI
+         zD0wx3M3nOfJ29aCNn/0/VfolDHAYRUMp6GNPS3FUNsNrAz2HEVbm79Cspp5kj+gBQ
+         /kJi39los2sBbbqWl5s1kXKZRYFY679Kpvbd+XvxtKF6RMuuA/lk2fsAk2sVihXx2a
+         bvh6f0W2NBFgw==
+Date:   Thu, 19 Jan 2023 23:39:32 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
+        hawk@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        toke@redhat.com, memxor@gmail.com, alardam@gmail.com,
+        saeedm@nvidia.com, anthony.l.nguyen@intel.com, gospo@broadcom.com,
+        vladimir.oltean@nxp.com, nbd@nbd.name, john@phrozen.org,
+        leon@kernel.org, simon.horman@corigine.com, aelior@marvell.com,
+        christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
+        mst@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
+        maciej.fijalkowski@intel.com, intel-wired-lan@lists.osuosl.org,
+        lorenzo.bianconi@redhat.com
+Subject: Re: [RFC v2 bpf-next 5/7] libbpf: add API to get XDP/XSK supported
+ features
+Message-ID: <Y8nGpFYVbDsKiboP@lore-desk>
+References: <cover.1673710866.git.lorenzo@kernel.org>
+ <e58d34cd95e39caf0efb25951bc2da9948c6f486.1673710867.git.lorenzo@kernel.org>
+ <20230117165804.65118609@kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="HT+pcQxuV+Cc6rHk"
+Content-Disposition: inline
+In-Reply-To: <20230117165804.65118609@kernel.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,26 +65,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tony Nguyen
-> Sent: 19 January 2023 21:28
-> 
-> Based on previous feedback[1], introduce a local var to make things more
-> readable.
-> 
-> [1] https://lore.kernel.org/netdev/20220315203218.607f612b@kicinski-fedora-
-> pc1c0hjn.dhcp.thefacebook.com/
-...
-> -	mutex_destroy(&(&pf->hw)->fdir_fltr_lock);
-> +	mutex_destroy(&hw->fdir_fltr_lock);
 
-The 'uncrazy' version is:
-	mutex_destroy(&pf->hw.fdir_fltr_lock);
+--HT+pcQxuV+Cc6rHk
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-No need for a local.
+> On Sat, 14 Jan 2023 16:54:35 +0100 Lorenzo Bianconi wrote:
+> > +	struct nlattr *na =3D (struct nlattr *)(NLMSG_DATA(nh) + GENL_HDRLEN);
+> > +
+> > +	na =3D (struct nlattr *)((void *)na + NLA_ALIGN(na->nla_len));
+> > +	if (na->nla_type =3D=3D CTRL_ATTR_FAMILY_ID) {
+>=20
+> Assuming layout of attributes within a message is a hard no-no.
 
-	David
+ack, right. I will fix it.
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Regards,
+Lorenzo
 
+--HT+pcQxuV+Cc6rHk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY8nGpAAKCRA6cBh0uS2t
+rNbgAQDOtrvJXuU1X4UMSBzDVuHwhqklptzWOTG5H9GzaRPBUwEAvzDPuVMQqIIu
+kukZbbSG8QZez3de/yFhXQPj21YdPgc=
+=C2Hp
+-----END PGP SIGNATURE-----
+
+--HT+pcQxuV+Cc6rHk--
