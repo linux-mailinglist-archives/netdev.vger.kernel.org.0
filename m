@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66B39674511
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 22:42:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F03BE67450C
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 22:42:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231229AbjASVme (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 16:42:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55988 "EHLO
+        id S230503AbjASVmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 16:42:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230408AbjASVji (ORCPT
+        with ESMTP id S230166AbjASVji (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 16:39:38 -0500
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B84E9F3A4
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50F917573A
         for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 13:28:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1674163687; x=1705699687;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Xv0xf3LBw7YFLR1HyampHitjJj/K+BcM09TKB9BZOaY=;
-  b=TLQ8WBPbFejce+CEXyjCWrCPpexM2zxrrecKFqURglCHhKbReufgYd2h
-   2gTLFa8nBs4Pgs/621+aGy8C6gCigAxF/7aC2l6iHv4GXKk5Tyq94ee//
-   1P+L5Ptqq33gx7sci1C4gXJb8kGWwddSEz8i68RCp1nqNuvkcnu/R5xJm
-   /ENzbzmKUhJenRHq6sENUZAtu/jjMk20NwRO7xaFVRHRF48tRvV6JWeS5
-   6Z5MXGf+c1wK0g/GfteSv19im5LqTMP94FIZFwWR2dGzUzT2HVtSer6wE
-   OHj8j0zc5IDdkK7rOtV+h0JWfAnMiInXtr4wx/7gZhfhmx1Iwbt/grGHI
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="323120624"
+  bh=PNdEWtfV/IOIDN11xS4FhVxPE3EzXtB0AjI+ROBsuM4=;
+  b=FuMlh7JDpzEeoZx4WhfZDB7+4iT/hb8m6JwHHQ2Arayj920SfeAqo6I0
+   QU0Z+9nM5MTv2mVgGzbMF55dKS2gqdySkqL053/XI7jPmlX7umxgYvrXr
+   J4eUjP8ixlUPedTXp2Rq16GdN+NrT972us9FUPrQ9aaXppNYLSANZoTjg
+   XAgoTE4nnF43NBOIKlmzOI+lXM+ybyWUUGxneMfnL8Ns7Z+N8Ib9pUvDa
+   9zhTExrHBMAzqiWDOi8EG2vQr80a5z2PPxOyjyrybLA26ni+uYQbgKdwZ
+   FtCXKfXlzAi4LJ8dBpgIPOEzvpNhmeBT2fTDji2/MfcI78DGb+M4c6F1w
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="323120629"
 X-IronPort-AV: E=Sophos;i="5.97,230,1669104000"; 
-   d="scan'208";a="323120624"
+   d="scan'208";a="323120629"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 13:27:27 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="692589883"
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="692589886"
 X-IronPort-AV: E=Sophos;i="5.97,230,1669104000"; 
-   d="scan'208";a="692589883"
+   d="scan'208";a="692589886"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
   by orsmga001.jf.intel.com with ESMTP; 19 Jan 2023 13:27:27 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH net-next 06/15] ice: add missing checks for PF vsi type
-Date:   Thu, 19 Jan 2023 13:27:33 -0800
-Message-Id: <20230119212742.2106833-7-anthony.l.nguyen@intel.com>
+        Przemek Kitszel <przemyslaw.kitszel@intel.com>,
+        Sunitha Mekala <sunithax.d.mekala@intel.com>
+Subject: [PATCH net-next 07/15] ice: Add support for 100G KR2/CR2/SR2 link reporting
+Date:   Thu, 19 Jan 2023 13:27:34 -0800
+Message-Id: <20230119212742.2106833-8-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230119212742.2106833-1-anthony.l.nguyen@intel.com>
 References: <20230119212742.2106833-1-anthony.l.nguyen@intel.com>
@@ -61,67 +62,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 
-There were a few places we had missed checking the VSI type to make sure
-it was definitely a PF VSI, before calling setup functions intended only
-for the PF VSI.
+Commit 2736d94f351b ("ethtool: Added support for 50Gbps per lane link modes")
+in v5.1 added (among other things) support for 100G CR2/KR2/SR2 link modes.
+Advertise these link modes if the firmware reports the corresponding PHY types.
 
-This doesn't fix any explicit bugs but cleans up the code in a few
-places and removes one explicit != vsi->type check that can be
-superseded by this code (it's a super set)
-
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+Signed-off-by: Przemek Kitszel <przemyslaw.kitszel@intel.com>
+Tested-by: Sunitha Mekala <sunithax.d.mekala@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_ethtool.c | 41 +++++++++++++++-----
+ 1 file changed, 32 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index d3ebfaf5a04b..c6d57f316429 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -6144,15 +6144,12 @@ int ice_vsi_cfg(struct ice_vsi *vsi)
- {
- 	int err;
- 
--	if (vsi->netdev) {
-+	if (vsi->netdev && vsi->type == ICE_VSI_PF) {
- 		ice_set_rx_mode(vsi->netdev);
- 
--		if (vsi->type != ICE_VSI_LB) {
--			err = ice_vsi_vlan_setup(vsi);
--
--			if (err)
--				return err;
--		}
-+		err = ice_vsi_vlan_setup(vsi);
-+		if (err)
-+			return err;
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+index 4191994d8f3a..42ff621f9c68 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -1950,8 +1950,7 @@ ice_phy_type_to_ethtool(struct net_device *netdev,
+ 			   ICE_PHY_TYPE_LOW_100G_CAUI4 |
+ 			   ICE_PHY_TYPE_LOW_100G_AUI4_AOC_ACC |
+ 			   ICE_PHY_TYPE_LOW_100G_AUI4 |
+-			   ICE_PHY_TYPE_LOW_100GBASE_CR_PAM4 |
+-			   ICE_PHY_TYPE_LOW_100GBASE_CP2;
++			   ICE_PHY_TYPE_LOW_100GBASE_CR_PAM4;
+ 	phy_type_mask_hi = ICE_PHY_TYPE_HIGH_100G_CAUI2_AOC_ACC |
+ 			   ICE_PHY_TYPE_HIGH_100G_CAUI2 |
+ 			   ICE_PHY_TYPE_HIGH_100G_AUI2_AOC_ACC |
+@@ -1964,15 +1963,27 @@ ice_phy_type_to_ethtool(struct net_device *netdev,
+ 						100000baseCR4_Full);
  	}
- 	ice_vsi_cfg_dcb_rings(vsi);
  
-@@ -6333,7 +6330,7 @@ static int ice_up_complete(struct ice_vsi *vsi)
- 
- 	if (vsi->port_info &&
- 	    (vsi->port_info->phy.link_info.link_info & ICE_AQ_LINK_UP) &&
--	    vsi->netdev) {
-+	    vsi->netdev && vsi->type == ICE_VSI_PF) {
- 		ice_print_link_msg(vsi, true);
- 		netif_tx_start_all_queues(vsi->netdev);
- 		netif_carrier_on(vsi->netdev);
-@@ -6344,7 +6341,9 @@ static int ice_up_complete(struct ice_vsi *vsi)
- 	 * set the baseline so counters are ready when interface is up
- 	 */
- 	ice_update_eth_stats(vsi);
--	ice_service_task_schedule(pf);
+-	phy_type_mask_lo = ICE_PHY_TYPE_LOW_100GBASE_SR4 |
+-			   ICE_PHY_TYPE_LOW_100GBASE_SR2;
+-	if (phy_types_low & phy_type_mask_lo) {
++	if (phy_types_low & ICE_PHY_TYPE_LOW_100GBASE_CP2) {
++		ethtool_link_ksettings_add_link_mode(ks, supported,
++						     100000baseCR2_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_100GB,
++						100000baseCR2_Full);
++	}
 +
-+	if (vsi->type == ICE_VSI_PF)
-+		ice_service_task_schedule(pf);
++	if (phy_types_low & ICE_PHY_TYPE_LOW_100GBASE_SR4) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     100000baseSR4_Full);
+ 		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_100GB,
+ 						100000baseSR4_Full);
+ 	}
  
- 	return 0;
++	if (phy_types_low & ICE_PHY_TYPE_LOW_100GBASE_SR2) {
++		ethtool_link_ksettings_add_link_mode(ks, supported,
++						     100000baseSR2_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_100GB,
++						100000baseSR2_Full);
++	}
++
+ 	phy_type_mask_lo = ICE_PHY_TYPE_LOW_100GBASE_LR4 |
+ 			   ICE_PHY_TYPE_LOW_100GBASE_DR;
+ 	if (phy_types_low & phy_type_mask_lo) {
+@@ -1984,14 +1995,20 @@ ice_phy_type_to_ethtool(struct net_device *netdev,
+ 
+ 	phy_type_mask_lo = ICE_PHY_TYPE_LOW_100GBASE_KR4 |
+ 			   ICE_PHY_TYPE_LOW_100GBASE_KR_PAM4;
+-	phy_type_mask_hi = ICE_PHY_TYPE_HIGH_100GBASE_KR2_PAM4;
+-	if (phy_types_low & phy_type_mask_lo ||
+-	    phy_types_high & phy_type_mask_hi) {
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     100000baseKR4_Full);
+ 		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_100GB,
+ 						100000baseKR4_Full);
+ 	}
++
++	if (phy_types_high & ICE_PHY_TYPE_HIGH_100GBASE_KR2_PAM4) {
++		ethtool_link_ksettings_add_link_mode(ks, supported,
++						     100000baseKR2_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_100GB,
++						100000baseKR2_Full);
++	}
++
  }
+ 
+ #define TEST_SET_BITS_TIMEOUT	50
+@@ -2299,7 +2316,13 @@ ice_ksettings_find_adv_link_speed(const struct ethtool_link_ksettings *ks)
+ 	    ethtool_link_ksettings_test_link_mode(ks, advertising,
+ 						  100000baseLR4_ER4_Full) ||
+ 	    ethtool_link_ksettings_test_link_mode(ks, advertising,
+-						  100000baseKR4_Full))
++						  100000baseKR4_Full) ||
++	    ethtool_link_ksettings_test_link_mode(ks, advertising,
++						  100000baseCR2_Full) ||
++	    ethtool_link_ksettings_test_link_mode(ks, advertising,
++						  100000baseSR2_Full) ||
++	    ethtool_link_ksettings_test_link_mode(ks, advertising,
++						  100000baseKR2_Full))
+ 		adv_link_speed |= ICE_AQ_LINK_SPEED_100GB;
+ 
+ 	return adv_link_speed;
 -- 
 2.38.1
 
