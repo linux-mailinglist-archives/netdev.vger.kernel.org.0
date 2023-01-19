@@ -2,83 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC9BB67407A
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 19:03:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FBAD674080
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 19:05:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230320AbjASSDx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 13:03:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35908 "EHLO
+        id S230120AbjASSFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 13:05:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230251AbjASSDw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 13:03:52 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE89BB9F
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 10:03:49 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id m15so2189943wms.4
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 10:03:49 -0800 (PST)
+        with ESMTP id S230132AbjASSFL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 13:05:11 -0500
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8C14B740
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 10:05:09 -0800 (PST)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-4d13cb4bbffso38835857b3.3
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 10:05:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=4bF12/qep1PDbFnO6gUHntH+OCUapHjuYPjeXCbRLq0=;
-        b=Odx7DxEIHZg8hwb036lS+h52uP+N0Tzhudi68CBDrmtYNk4vhRChvSAU4G/Ef3QKpl
-         DDu4aZrVvOK4k461M5Uaz9yoV7yPZn1lsqiO1sYqS+WH3hmQxk6dPGS6FLJqVz6USbQa
-         IDja8SUPgnIMu53xDiEj/bdsop6E+QJjuAiHNKCmBVG9Vx+vJINg1qzFC/eFsixJrOaj
-         GonQkyr8FlkomBOO6y6mcn4xemD5LY+hDcbWo8KJnXlN/ypB1aqUr9hI4tqjmaybnppx
-         ynSjLVJRnrJNij25tUESpT0bEWbyeOBmtPwKlpx2ew5WD3q728fhYgYFc1pL69J8RdY/
-         y37w==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=FkhcYN+cYujTamYbctHJzJNaxSoTgqt3dXRr9PdBMIM=;
+        b=LgrlxD1RClP791LVKLLn3NdqR9h+IUIMzZYaQpJtbQwpwneuyrIZf4u1WH3F9jddD1
+         myBgY0Ft50PY6DPT92k4opWOi6/mxeOPxTdvBeKl5fqBrecNoJDQfpZrmQIa5s9T78eZ
+         cq7LUwCNoPmU7+NcQO4XoGPN5mt0pDo4J/59Bgib9PZuiEgwctOt1vhTPT0jDqDNF796
+         JoZttXPXFKop6a7NUesrl9BTcnmTySLyNW9V60QT/itePBixTnxQeuC6bjnf+XQCM402
+         3yRkPg1wHS8UE4KZVSQW9iW8VZTTtwECu1UqmTMQClukPuuO7uKJUUTXX7EVhtGa9cP4
+         RHRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4bF12/qep1PDbFnO6gUHntH+OCUapHjuYPjeXCbRLq0=;
-        b=stGF2U7WO347M3UbQnBzPBizcnaCIvieydEa125TpD9C/mOAlIFPby9A0UjfPmASMZ
-         fJDh7p6w2klsoPhT/vR2gm+giloShOyehymHhja0v3vKjCIGWNkpzh+9D1SvBcMfbcoZ
-         1nd5aQnw0BhyCNFIWbKh3jEX800wBoqAxeAKfEV3DsvtJ1o8qdvtwT4s52TNkiVWsXrS
-         6vg6CCSRpPbA5m5UcR2y/O3xtUPwhDydApyimNBj7rdTUxoVybKElkO04ZrO7wGMFFup
-         N/ewoLnaudUeXOnR8ygqJW9d0OJmignoKhD0VkCaQZbl0XIVeS00CYHRsgdkfjFBJ92h
-         6pgg==
-X-Gm-Message-State: AFqh2kqVoJ9LDDLhYc4LcSDJaDob9QPlFjeNoftR08BcTOwkt7vQeJmJ
-        YrwZh2Zd/bEdiSLCo9kCR20rQQ==
-X-Google-Smtp-Source: AMrXdXszga0ovrLNYBNRra1xJWbMqemjj5lTl/z+wA8QSmzAs91cZM/qUtPy8gH84Fx22A2yFJ+LzQ==
-X-Received: by 2002:a05:600c:1f0a:b0:3db:1200:996e with SMTP id bd10-20020a05600c1f0a00b003db1200996emr6839875wmb.16.1674151427540;
-        Thu, 19 Jan 2023 10:03:47 -0800 (PST)
-Received: from [10.83.37.24] ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id m9-20020a7bca49000000b003d98f92692fsm5382293wml.17.2023.01.19.10.03.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Jan 2023 10:03:47 -0800 (PST)
-Message-ID: <7c4138b4-e7dd-c9c5-11ac-68be90563cad@arista.com>
-Date:   Thu, 19 Jan 2023 18:03:40 +0000
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=FkhcYN+cYujTamYbctHJzJNaxSoTgqt3dXRr9PdBMIM=;
+        b=kFLsxg43KzoaDcFXHb4pvknhSNSbmfv7sZ6m/zXSVFfTZYBuPNGdrtsdFJzLcSqLcM
+         WET10DDpyMoXuDKsvrDWSA8YLhNwd+2zsEaS4X6tG2wGmaeFmxqWj3A738p4XhYzsAFq
+         oBtcxIA/hPcHwW5Ezwsl9szv8b3H1q2GOV1RYwX/MOakvf0bgrFVwZs/zvJSJK7ac0Pz
+         0JgyBDyQTH2m7gciDmGOxLv0T/FwIM+JX3HtG7C+jOKRjpLei3ox8EcTk2h+wQPha06W
+         6P2j1MLt2GDx61E9cYVoyZ7lEcm2FWNtQ71GJxcyOfO2aBon/LaUqOxNWoFY6yGRMPNo
+         FxWA==
+X-Gm-Message-State: AFqh2kppzKqEBNO60/+WbT05788Oz/KcgjIleWgjI7rN1gSGZvlHokBL
+        v8odfJOBlS1ueb/vOmQRdHu/l+khn3Pe7/Us3tmXeg==
+X-Google-Smtp-Source: AMrXdXt+fMGF7e+mL8GQPv0YAxxMqO6piOyQL+8wVfySWlaIXXQN+MMoFgke8fJhAhy6mI9CU2BltHBcrwcTpDm0UXY=
+X-Received: by 2002:a81:6e42:0:b0:3f2:e8b7:a6ec with SMTP id
+ j63-20020a816e42000000b003f2e8b7a6ecmr1450082ywc.332.1674151508516; Thu, 19
+ Jan 2023 10:05:08 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v4 1/4] crypto: Introduce crypto_pool
-Content-Language: en-US
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Bob Gilligan <gilligan@arista.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Leonard Crestez <cdleonard@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        netdev@vger.kernel.org, linux-crypto@vger.kernel.org
-References: <20230118214111.394416-1-dima@arista.com>
- <20230118214111.394416-2-dima@arista.com>
- <Y8kSkW4X4vQdFyOl@gondor.apana.org.au>
-From:   Dmitry Safonov <dima@arista.com>
-In-Reply-To: <Y8kSkW4X4vQdFyOl@gondor.apana.org.au>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+References: <167415060025.1124471.10712199130760214632.stgit@firesoul>
+In-Reply-To: <167415060025.1124471.10712199130760214632.stgit@firesoul>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 19 Jan 2023 19:04:57 +0100
+Message-ID: <CANn89iJ8Vd2V6jqVdMYLFcs0g_mu+bTJr3mKq__uXBFg1K0yhA@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: fix kfree_skb_list use of skb_mark_not_on_list
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, pabeni@redhat.com,
+        syzbot+c8a2e66e37eee553c4fd@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,98 +68,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Herbert,
+On Thu, Jan 19, 2023 at 6:50 PM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
+>
+> A bug was introduced by commit eedade12f4cb ("net: kfree_skb_list use
+> kmem_cache_free_bulk"). It unconditionally unlinked the SKB list via
+> invoking skb_mark_not_on_list().
+>
+> The skb_mark_not_on_list() should only be called if __kfree_skb_reason()
+> returns true, meaning the SKB is ready to be free'ed, as it calls/check
+> skb_unref().
+>
+> This is needed as kfree_skb_list() is also invoked on skb_shared_info
+> frag_list. A frag_list can have SKBs with elevated refcnt due to cloning
+> via skb_clone_fraglist(), which takes a reference on all SKBs in the
+> list. This implies the invariant that all SKBs in the list must have the
+> same refcnt, when using kfree_skb_list().
 
-On 1/19/23 09:51, Herbert Xu wrote:
-> On Wed, Jan 18, 2023 at 09:41:08PM +0000, Dmitry Safonov wrote:
->> Introduce a per-CPU pool of async crypto requests that can be used
->> in bh-disabled contexts (designed with net RX/TX softirqs as users in
->> mind). Allocation can sleep and is a slow-path.
->> Initial implementation has only ahash as a backend and a fix-sized array
->> of possible algorithms used in parallel.
->>
->> Signed-off-by: Dmitry Safonov <dima@arista.com>
->> ---
->>  crypto/Kconfig        |   3 +
->>  crypto/Makefile       |   1 +
->>  crypto/crypto_pool.c  | 333 ++++++++++++++++++++++++++++++++++++++++++
->>  include/crypto/pool.h |  46 ++++++
->>  4 files changed, 383 insertions(+)
->>  create mode 100644 crypto/crypto_pool.c
->>  create mode 100644 include/crypto/pool.h
-> 
-> I'm still nacking this.
-> 
-> I'm currently working on per-request keys which should render
-> this unnecessary.  With per-request keys you can simply do an
-> atomic kmalloc when you compute the hash.
+Yeah, or more precisely skb_drop_fraglist() calling kfree_skb_list()
 
-Adding per-request keys sounds like a real improvement to me.
-But that is not the same issue I'm addressing here. I'm maybe bad at
-describing or maybe I just don't see how per-request keys would help.
-Let me describe the problem I'm solving again and please feel free to
-correct inline or suggest alternatives.
+>
+> Reported-by: syzbot+c8a2e66e37eee553c4fd@syzkaller.appspotmail.com
+> Reported-and-tested-by: syzbot+c8a2e66e37eee553c4fd@syzkaller.appspotmail.com
+> Fixes: eedade12f4cb ("net: kfree_skb_list use kmem_cache_free_bulk")
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>  net/core/skbuff.c |    6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index 4e73ab3482b8..1bffbcbe6087 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -999,10 +999,10 @@ kfree_skb_list_reason(struct sk_buff *segs, enum skb_drop_reason reason)
+>         while (segs) {
+>                 struct sk_buff *next = segs->next;
+>
+> -               skb_mark_not_on_list(segs);
+> -
+> -               if (__kfree_skb_reason(segs, reason))
+> +               if (__kfree_skb_reason(segs, reason)) {
+> +                       skb_mark_not_on_list(segs);
 
-The initial need for crypto_pool comes from TCP-AO implementation that
-I'm pusing upstream, see RFC5925 that describes the option and the
-latest version of patch set is in [1]. In that patch set hashing is used
-in a similar way to TCP-MD5: crypto_alloc_ahash() is a slow-path in
-setsockopt() and the use of pre-allocated requests in fast path, TX/RX
-softirqs.
+Real question is : Why do we need to set/change/dirt skb->next ?
 
-For TCP-AO 2 algorithms are "must have" in any compliant implementation,
-according to RFC5926: HMAC-SHA-1-96 and AES-128-CMAC-96, other
-algorithms are optional. But having in mind that sha1, as you know, is
-not secure to collision attacks, some customers prefer to have/use
-stronger hashes. In other words, TCP-AO implementation needs 2+ hashing
-algorithms to be used in a similar manner as TCP-MD5 uses MD5 hashing.
+I would remove this completely, and save extra cache lines dirtying.
 
-And than, I look around and I see that the same pattern (slow allocation
-of crypto request and usage on a fast-path with bh disabled) is used in
-other places over kernel:
-- here I convert to crypto_pool seg6_hmac & tcp-md5
-- net/ipv4/ah4.c could benefit from it: currently it allocates
-crypto_alloc_ahash() per every connection, allocating user-specified
-hash algorithm with ahash = crypto_alloc_ahash(x->aalg->alg_name, 0, 0),
-which are not shared between each other and it doesn't provide
-pre-allocated temporary/scratch buffer to calculate hash, so it uses
-GFP_ATOMIC in ah_alloc_tmp()
-- net/ipv6/ah6.c is copy'n'paste of the above
-- net/ipv4/esp4.c and net/ipv6/esp6.c are more-or-less also copy'n'paste
-with crypto_alloc_aead() instead of crypto_alloc_ahash()
-- net/mac80211/ - another example of the same pattern, see even the
-comment in ieee80211_key_alloc() where the keys are allocated and the
-usage in net/mac80211/{rx,tx}.c with bh-disabled
-- net/xfrm/xfrm_ipcomp.c has its own manager for different compression
-algorithms that are used in quite the same fashion. The significant
-exception is scratch area: it's IPCOMP_SCRATCH_SIZE=65400. So, if it
-could be shared with other crypto users that do the same pattern
-(bh-disabled usage), it would save some memory.
+Before your patch, we were not calling skb_mark_not_on_list(segs),
+so why bother ?
 
-And those are just fast-grep examples from net/, looking closer it may
-be possible to find more potential users.
-So, in crypto_pool.c it's 333 lines where is a manager that let a user
-share pre-allocated ahash requests [comp, aead, may be added on top]
-inside bh-disabled section as well as share a temporary/scratch buffer.
-It will make it possible to remove some if not all custom managers of
-the very same code pattern, some of which don't even try to share
-pre-allocated tfms.
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 4e73ab3482b87d81371cff266627dab646d3e84c..180df58e85c72eaa16f5cb56b56d181a379b8921
+100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -999,8 +999,6 @@ kfree_skb_list_reason(struct sk_buff *segs, enum
+skb_drop_reason reason)
+        while (segs) {
+                struct sk_buff *next = segs->next;
 
-That's why I see some value in this crypto-pool thing.
-If you NACK it, the alternative for TCP-AO patches would be to add just
-another pool into net/ipv4/tcp.c that either copies TCP-MD5 code or
-re-uses it.
-
-I fail to see how your per-request keys patches would provide an API
-alternative to this patch set. Still, users will have to manage
-pre-allocated tfms and buffers.
-I can actually see how your per-request keys would benefit *from* this
-patch set: it will be much easier to wire per-req keys up to crypto_pool
-to avoid per-CPU tfm allocation for algorithms you'll add support for.
-In that case you won't have to patch crypto-pool users.
-
-[1]:
-https://lore.kernel.org/all/20221027204347.529913-1-dima@arista.com/T/#u
-
-Thanks, waiting for your input,
-          Dmitry
+-               skb_mark_not_on_list(segs);
+-
+                if (__kfree_skb_reason(segs, reason))
+                        kfree_skb_add_bulk(segs, &sa, reason);
