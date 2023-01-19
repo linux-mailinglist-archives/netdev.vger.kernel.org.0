@@ -2,55 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63ABE6749AA
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 04:00:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D1BA674B3E
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 05:50:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229863AbjATDAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 22:00:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54096 "EHLO
+        id S229980AbjATEuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 23:50:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbjATDAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 22:00:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099629F3A1;
-        Thu, 19 Jan 2023 19:00:20 -0800 (PST)
+        with ESMTP id S229771AbjATEto (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 23:49:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C942FCE22C;
+        Thu, 19 Jan 2023 20:43:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82B4D61DE4;
-        Fri, 20 Jan 2023 03:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DC71CC433F1;
-        Fri, 20 Jan 2023 03:00:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F88BB82021;
+        Thu, 19 Jan 2023 03:28:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76FB9C433EF;
+        Thu, 19 Jan 2023 03:28:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674183618;
-        bh=TUlF/UkyYMykIbN2dcybW735XtmZNjZttJvL4i2P4nM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=OuV3oWSWIEcM0DzZTPHNGaauZRSkoRQgixXE5LS6dxyzaBQkYnB4rIKgUOco/EAVT
-         jDFNle8WGxJQ+jQJOoOoyba0K6bQaVS7wA6bodQC8Jvi3QCO+fx25GW7gyxESw9uwe
-         01/TLzTS28fDD/+cm4+Q33p2nMieAN3rEKbbBpF6XpCjFYvT5KZlADBOZDCXo85vzB
-         0b28sctnPSjjDpYk9hKN74GofpfCmcPfXdqcVDzl/NDapUZUEacdHPd3yFA6lO8ph2
-         BPktCmdprfYC3FigV2YjLqq8x+lRXlRdWMHstO0I6qu9y8Z+AsFeETFfZ2ODa5WWFc
-         6Bk95kofxggFA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B8748E4D01B;
-        Fri, 20 Jan 2023 03:00:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1674098891;
+        bh=lMuzsyB7e8AniltYWOXFa5R+/TsIeKzMyHeHn3aCSvc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BnesivjNNEIR2PY0nE3+W390zdBF6/au9JB81quCZtyShxZsHAeBuBAu/ptA5hH6S
+         IUHJ+uLn8uawCyHagWpmdroT3ziU3cbw8YxPDBq2qDTqQihNAlWGSLNcELJPNXDFVk
+         xH09UGtb59Hr6Obuz162qaXttSXItvT0kkPhAFs42f9nTkarFf4IjITLMgDKrvXRd+
+         IQc3XrKY3B5ia7UB6SF3xnkhHZ7+RiWVMkr4X8Qbyzacyv3sXsev+Dmc3iVvq2otNA
+         HhwhflUmcYJdnPmyz/24HuA0hs6tDvpcDqIpV38bnsLcb0omLi/5ZajAwzkjUiA3OI
+         Nf9cu9ffhE1Hg==
+Date:   Wed, 18 Jan 2023 19:28:09 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?UTF-8?B?V2lsY3p5xYRza2k=?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Siddharth Vadapalli <s-vadapalli@ti.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-phy@lists.infradead.org, linux-usb@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Subject: Re: [PATCH 1/7] phy: Add devm_of_phy_optional_get() helper
+Message-ID: <20230118192809.2082b004@kernel.org>
+In-Reply-To: <f53a1bcca637ceeafb04ce3540a605532d3bc34a.1674036164.git.geert+renesas@glider.be>
+References: <cover.1674036164.git.geert+renesas@glider.be>
+        <f53a1bcca637ceeafb04ce3540a605532d3bc34a.1674036164.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: dsa: microchip: ptp: Fix error code in
- ksz_hwtstamp_set()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167418361874.28289.5370339181727219172.git-patchwork-notify@kernel.org>
-Date:   Fri, 20 Jan 2023 03:00:18 +0000
-References: <Y8fJxSvbl7UNVHh/@kili>
-In-Reply-To: <Y8fJxSvbl7UNVHh/@kili>
-To:     Dan Carpenter <error27@gmail.com>
-Cc:     woojung.huh@microchip.com, ceggers@arri.de,
-        UNGLinuxDriver@microchip.com, andrew@lunn.ch, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, richardcochran@gmail.com,
-        arun.ramadoss@microchip.com, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -60,28 +75,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, 18 Jan 2023 11:15:14 +0100 Geert Uytterhoeven wrote:
+> Add an optional variant of devm_of_phy_get(), so drivers no longer have
+> to open-code this operation.
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 18 Jan 2023 13:28:21 +0300 you wrote:
-> We want to return negative error codes here but the copy_to/from_user()
-> functions return the number of bytes remaining to be copied.
-> 
-> Fixes: c59e12a140fb ("net: dsa: microchip: ptp: Initial hardware time stamping support")
-> Signed-off-by: Dan Carpenter <error27@gmail.com>
-> ---
->  drivers/net/dsa/microchip/ksz_ptp.c | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
-
-Here is the summary with links:
-  - [net-next] net: dsa: microchip: ptp: Fix error code in ksz_hwtstamp_set()
-    https://git.kernel.org/netdev/net-next/c/a76e88c29425
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+For merging could you put this one on an immutable branch and then
+everyone can pull + apply patches for callers from their section?
