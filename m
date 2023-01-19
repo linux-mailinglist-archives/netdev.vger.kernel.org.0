@@ -2,126 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C59D96739C7
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 14:18:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2565E673A91
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 14:41:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231152AbjASNS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 08:18:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57972 "EHLO
+        id S229898AbjASNl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 08:41:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230503AbjASNSg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 08:18:36 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B7AA24E
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 05:18:35 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pIUoD-0005uJ-4J; Thu, 19 Jan 2023 14:18:25 +0100
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pIUoC-0079jT-G6; Thu, 19 Jan 2023 14:18:24 +0100
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pIUoB-00G51L-Bm; Thu, 19 Jan 2023 14:18:23 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Arun.Ramadoss@microchip.com
-Subject: [PATCH net-next v1 4/4] net: dsa: microchip: enable EEE support
-Date:   Thu, 19 Jan 2023 14:18:21 +0100
-Message-Id: <20230119131821.3832456-5-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230119131821.3832456-1-o.rempel@pengutronix.de>
-References: <20230119131821.3832456-1-o.rempel@pengutronix.de>
+        with ESMTP id S231378AbjASNk4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 08:40:56 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B987D7ED4F;
+        Thu, 19 Jan 2023 05:40:51 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id az20so5796755ejc.1;
+        Thu, 19 Jan 2023 05:40:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=CMUIb1i0SSdDUFm8HTvgf+j8Q/DCD4qb7qVJ4MpR8lA=;
+        b=ltXuOqJStljPEx7a0w7qyAjctJe7dK6RY9rL4/dpx3UYCCW/y+hXlnJ6JXBE1/6UMm
+         wNhYSlQT3psCg19LcU26IAbPv3U6PUpXAm0Yao3Gfb+DnWKgJ7iBTqDh7Zxd3WjdhLsy
+         WTsTU2xnEwf2x5fhIXnD9AJoaEOZih+T+kZ66KArBpEqwPi4+N+zf2C6k7OcCzYo3pd/
+         93zFhngN9bpX+6Nj1ajAB9G06ZBJI/JlcM6ALBLE/NMPE5KKJFmYUknXD9rvj3QV8qb0
+         L0wKPUrzmmMB+qE6/k2hZvRQSjLB8/W9bBErfoV5lCc3LdfGgxYZGgJsPiUjDqedf9h9
+         8AaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=CMUIb1i0SSdDUFm8HTvgf+j8Q/DCD4qb7qVJ4MpR8lA=;
+        b=meyEJ0wYG2mHf8eKB0K3bdXOj9a8MU0ji6EaFlAKNVENnbt6EXGYymtI+wFOJCh4fq
+         GK3IPdy1eGN+YTUFpBYSq5h7QkIH7cJT9Q7D4teE2CGC8oLnb9o4SZ3UmjZvUVUAh3cc
+         tZbMERtE/guI8NScHqMTDv7AjA6EGOCRpmAGD1CDRvTavf8k8qhNxGeT2yHR5zEzrPx6
+         lslbFcGNRHQ03k7VOODgXqvxpxeQELnQCCKMrHLn5oWYHcAcyoqheIh3zKJ1wdJxixNz
+         /4MdLN6zLHb9ogP4/OfT73CwiLEtrWiJbuOIfK06xP5uAYcjb8LKANX+P3I2ElXhUjsV
+         f7uA==
+X-Gm-Message-State: AFqh2kpgO6BYH/UrNApvGMg9gNdWbvM9KWt5NMve/VSEnDmptNPy0doS
+        KcqJIIvO6kp9wlfMvi5h5bGwUZEOVgwZBQ==
+X-Google-Smtp-Source: AMrXdXvoisaos0uvpIRTVO1Xu0IEbvRYgK0FMqujJlTGucYpw+e7l7NBIrphN11N0xxhCFy5OCgoaQ==
+X-Received: by 2002:a17:906:8995:b0:872:b18a:1ac8 with SMTP id gg21-20020a170906899500b00872b18a1ac8mr9553206ejc.4.1674135650187;
+        Thu, 19 Jan 2023 05:40:50 -0800 (PST)
+Received: from bulach.nilcons.com ([2001:1620:5344::4])
+        by smtp.gmail.com with ESMTPSA id kw17-20020a170907771100b0084c4b87aa18sm16394335ejc.37.2023.01.19.05.40.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Jan 2023 05:40:48 -0800 (PST)
+From:   Gergely Risko <gergely.risko@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        Gergely Risko <gergely.risko@gmail.com>, stable@vger.kernel.org
+Subject: [PATCH net] ipv6: fix reachability confirmation with proxy_ndp
+Date:   Thu, 19 Jan 2023 14:40:41 +0100
+Message-Id: <20230119134041.951006-1-gergely.risko@gmail.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some of KSZ9477 family switches provides EEE support. To enable it, we
-just need to register set_mac_eee/set_mac_eee handlers and validate
-supported chip version and port.
+When proxying IPv6 NDP requests, the adverts to the initial multicast
+solicits are correct and working.  On the other hand, when later a
+reachability confirmation is requested (on unicast), no reply is sent.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+This causes the neighbor entry expiring on the sending node, which is
+mostly a non-issue, as a new multicast request is sent.  There are
+routers, where the multicast requests are intentionally delayed, and in
+these environments the current implementation causes periodic packet
+loss for the proxied endpoints.
+
+The root cause is the erroneous decrease of the hop limit, as this
+is checked in ndisc.c and no answer is generated when it's 254 instead
+of the correct 255.
+
+Cc: stable@vger.kernel.org
+Fixes: 46c7655f0b56 ("ipv6: decrease hop limit counter in ip6_forward()")
+Signed-off-by: Gergely Risko <gergely.risko@gmail.com>
+Tested-by: Gergely Risko <gergely.risko@gmail.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
 ---
- drivers/net/dsa/microchip/ksz_common.c | 35 ++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+ net/ipv6/ip6_output.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 5e1e5bd555d2..2f1f71b3be86 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -2645,6 +2645,39 @@ static int ksz_max_mtu(struct dsa_switch *ds, int port)
- 	return -EOPNOTSUPP;
- }
- 
-+static int ksz_validate_eee(struct dsa_switch *ds, int port)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	if (!dev->info->internal_phy[port])
-+		return -EOPNOTSUPP;
-+
-+	switch (dev->chip_id) {
-+	case KSZ8563_CHIP_ID:
-+	case KSZ9477_CHIP_ID:
-+	case KSZ9563_CHIP_ID:
-+	case KSZ9567_CHIP_ID:
-+	case KSZ9893_CHIP_ID:
-+	case KSZ9896_CHIP_ID:
-+	case KSZ9897_CHIP_ID:
-+		return 0;
-+	}
-+
-+	return -EOPNOTSUPP;
-+}
-+
-+static int ksz_get_mac_eee(struct dsa_switch *ds, int port,
-+			   struct ethtool_eee *e)
-+{
-+	return ksz_validate_eee(ds, port);
-+}
-+
-+static int ksz_set_mac_eee(struct dsa_switch *ds, int port,
-+			   struct ethtool_eee *e)
-+{
-+	return ksz_validate_eee(ds, port);
-+}
-+
- static void ksz_set_xmii(struct ksz_device *dev, int port,
- 			 phy_interface_t interface)
- {
-@@ -3006,6 +3039,8 @@ static const struct dsa_switch_ops ksz_switch_ops = {
- 	.port_hwtstamp_set	= ksz_hwtstamp_set,
- 	.port_txtstamp		= ksz_port_txtstamp,
- 	.port_rxtstamp		= ksz_port_rxtstamp,
-+	.get_mac_eee		= ksz_get_mac_eee,
-+	.set_mac_eee		= ksz_set_mac_eee,
- };
- 
- struct ksz_device *ksz_switch_alloc(struct device *base, void *priv)
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 60fd91bb5171..c314fdde0097 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -547,7 +547,20 @@ int ip6_forward(struct sk_buff *skb)
+ 	    pneigh_lookup(&nd_tbl, net, &hdr->daddr, skb->dev, 0)) {
+ 		int proxied = ip6_forward_proxy_check(skb);
+ 		if (proxied > 0) {
+-			hdr->hop_limit--;
++			/* It's tempting to decrease the hop limit
++			 * here by 1, as we do at the end of the
++			 * function too.
++			 *
++			 * But that would be incorrect, as proxying is
++			 * not forwarding.  The ip6_input function
++			 * will handle this packet locally, and it
++			 * depends on the hop limit being unchanged.
++			 *
++			 * One example is the NDP hop limit, that
++			 * always has to stay 255, but other would be
++			 * similar checks around RA packets, where the
++			 * user can even change the desired limit.
++			 */
+ 			return ip6_input(skb);
+ 		} else if (proxied < 0) {
+ 			__IP6_INC_STATS(net, idev, IPSTATS_MIB_INDISCARDS);
 -- 
-2.30.2
+2.39.0
 
