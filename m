@@ -2,93 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3C4F673605
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 11:50:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33D54673617
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 11:53:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229776AbjASKuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 05:50:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41080 "EHLO
+        id S229862AbjASKxN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 05:53:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230401AbjASKt6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 05:49:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3F1D30EE
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 02:49:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1674125352;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Tgsg+jKubTh3yv7ZSKQzF4Qxnk67C2646FcSbn/LaRg=;
-        b=deqVDl3O5RY7y/7dCvc3fa2E684cOn/Nt87fSYJx/NekiQVWj+U4aLziAqFj1Z08EG5nVl
-        xOgS+9v72VGFL8Qnogzm4wmONep+Ki2+LjVO9NJXFP1fFdwXMr3+afVrNnZP8zCkmbYTmZ
-        XRrXhWF6EJYL1IzQaWqrv4asRytM9bY=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-441-sq6O127jOz6zvmQdoQk5Bg-1; Thu, 19 Jan 2023 05:49:11 -0500
-X-MC-Unique: sq6O127jOz6zvmQdoQk5Bg-1
-Received: by mail-qv1-f72.google.com with SMTP id nk14-20020a056214350e00b0053472f03fedso786394qvb.17
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 02:49:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Tgsg+jKubTh3yv7ZSKQzF4Qxnk67C2646FcSbn/LaRg=;
-        b=YvNP17W3wDbyKYoLpOdGlOpD9xx/6L6rWvb2BAC4XCRH1Vi3fEGTCz8ecXgepPHH25
-         ojwCwGimK0JRk/RL7Doza9xK6oMBqy9vRHl0RtqQHniq7VVYGqOUdHmaJPjlqqhgdiv9
-         7qKx+/1KOOBLPgw+AkBt9MVnc9z2kNhFVxNTQKjK1ylTe06saSVnIKtbofo4CE1QomPX
-         a1GEN4IGODAGXAAGlQ4M767aZ1JdNyAOSTZws2b8fjdHcSssQ04a8pGUgwj16jPaJsBz
-         ayydUem5IhKvv5KGUxxYZkU7Vd9Ilbty0EkaDSZCNQuCZC8kT7nzs8VJ2VShmI3kv+Qr
-         wqnA==
-X-Gm-Message-State: AFqh2kpV+FFdFtnYdcAZznl3iGr0JY/ySERT9BmuRrprGhJJZ9f0chIb
-        fxZDFAgv87W39yB7j1jwV71vg6DM3jgrGpP3QjZOqwz3PVQX2iHdKuQdWFKAgl9EQJ2hxCxec/Q
-        sz1/gEfHIsi7C/BGg
-X-Received: by 2002:a05:622a:1e09:b0:3a7:f424:3ef9 with SMTP id br9-20020a05622a1e0900b003a7f4243ef9mr15448767qtb.13.1674125350351;
-        Thu, 19 Jan 2023 02:49:10 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXsJI/f+MaH+UXrw024umAES6RkR56bZGB0+a4DzacCjXf+fQdTonSXjzep3SUU/ku7BhybcWw==
-X-Received: by 2002:a05:622a:1e09:b0:3a7:f424:3ef9 with SMTP id br9-20020a05622a1e0900b003a7f4243ef9mr15448743qtb.13.1674125350057;
-        Thu, 19 Jan 2023 02:49:10 -0800 (PST)
-Received: from sgarzare-redhat (host-82-57-51-245.retail.telecomitalia.it. [82.57.51.245])
-        by smtp.gmail.com with ESMTPSA id q3-20020ac87343000000b003b6464eda40sm2568175qtp.25.2023.01.19.02.49.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Jan 2023 02:49:09 -0800 (PST)
-Date:   Thu, 19 Jan 2023 11:49:02 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Bobby Eshleman <bobby.eshleman@bytedance.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Cong Wang <cong.wang@bytedance.com>
-Subject: Re: [PATCH RFC 0/3] vsock: add support for sockmap
-Message-ID: <20230119104902.jxst4eblcuyjvums@sgarzare-redhat>
-References: <20230118-support-vsock-sockmap-connectible-v1-0-d47e6294827b@bytedance.com>
+        with ESMTP id S229699AbjASKxL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 05:53:11 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2076.outbound.protection.outlook.com [40.107.92.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F17814A1C0;
+        Thu, 19 Jan 2023 02:53:06 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oHTBYQ+0gMHsNvpS8V0NvtN6wZOiKy0CU0E9NEcZQg/+/u4nw2BhHYEVWf3Zr+hP+vfr8cVi/rvDBYEtebiWJsZ+mdkWfAIrYAn990uBNTfFk2Gxd1Mln4sIM9wzEU5ukDW/UEKiya4UTwOjrD2gYAsty9wn0rjyfPbUUzgVWy0Sn4TXzplev+0nEyloGAQQR1SepNTzF4s/zYd0C2t5C6w4WnTaTSSqbV1xtU01W8kjIV88gqnV/ewdXkwTZMP0Kl3O/Su9Yop+qwLO5VEYutHwAS9UsJuBhew8TEmuMlxR2/wk8SjQTXPknFqPj4IcYF7rfPS0idfcL8yNSZpZHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=c7RJ5SHZPcfvWc0Nz3Hq4OoE4lP6w1uf+LGUmFUIkQE=;
+ b=TJQ1X7SjfUVYuBk+/GPYVbktmAWipPwXlU/KI1zHwKtFFkD+Koe5iDoJeuwZOj7Gk0xbqaXRfteelgADE19O2jaLiOf3KMvRGPmi2zjsGacxh8m5idJqJWrwNQWGf5NRzO/jN3vQhO0RUyc+iWIGn3ll3wd7XUGpYAJF+byQOjsk1OGQksv6wex2bhFAbL8p4b72V0b+B6BTG0uo/oZGnUB6LlidBjjXHCTJ1Wj2eTIE77z52Jkg0c4Cu6jS11vGRJlGaHQpF/xoYDCpkJejzb9p6ch7XfG2fP9c/PZtst4HP0AnmGMMsikylQ5G7gVBpEWlv+uANqc7/9svGGs4ag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=c7RJ5SHZPcfvWc0Nz3Hq4OoE4lP6w1uf+LGUmFUIkQE=;
+ b=HzK/MvVTC4qj/BInaFJTI7cQM5Fn3w3HNlt/JuZy+kqWzBAZswI/VFieI3ZWFJrLQ4dtdgUY9sjtXuo0OkAFQ9zsU3x1Py7+EglmpHxbCAgZBa9vtsKOUuhgrlghCHIIF7gJIHR5kYsHf4SqcAdClTWaQyQHdMK7ey0bCL8M/Hc=
+Received: from MW5PR12MB5598.namprd12.prod.outlook.com (2603:10b6:303:193::11)
+ by IA1PR12MB8080.namprd12.prod.outlook.com (2603:10b6:208:3fd::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Thu, 19 Jan
+ 2023 10:53:03 +0000
+Received: from MW5PR12MB5598.namprd12.prod.outlook.com
+ ([fe80::2341:7d31:d412:f31c]) by MW5PR12MB5598.namprd12.prod.outlook.com
+ ([fe80::2341:7d31:d412:f31c%4]) with mapi id 15.20.6002.024; Thu, 19 Jan 2023
+ 10:53:02 +0000
+From:   "Gaddam, Sarath Babu Naidu" <sarath.babu.naidu.gaddam@amd.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>
+CC:     "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
+        "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>,
+        "Sarangi, Anirudha" <anirudha.sarangi@amd.com>,
+        "Katakam, Harini" <harini.katakam@amd.com>,
+        "git (AMD-Xilinx)" <git@amd.com>
+Subject: RE: [PATCH net-next V2] dt-bindings: net: ethernet-controller: Add
+ ptp-hardware-clock
+Thread-Topic: [PATCH net-next V2] dt-bindings: net: ethernet-controller: Add
+ ptp-hardware-clock
+Thread-Index: AQHY5Q+/hQESpMCxEk+Zmtk3AXijhq4cIcUAgBvn0BCAAEdjAIBtyNdg
+Date:   Thu, 19 Jan 2023 10:53:02 +0000
+Message-ID: <MW5PR12MB55984C7FB2FAA7D22BC00BF787C49@MW5PR12MB5598.namprd12.prod.outlook.com>
+References: <20221021054111.25852-1-sarath.babu.naidu.gaddam@amd.com>
+ <cfbde0da-9939-e976-52c1-88577de7d4cb@linaro.org>
+ <MW5PR12MB559842AC3B0D4E539D653B3D87019@MW5PR12MB5598.namprd12.prod.outlook.com>
+ <f338976e-40eb-5171-c14d-952d07d67730@linaro.org>
+In-Reply-To: <f338976e-40eb-5171-c14d-952d07d67730@linaro.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: MW5PR12MB5598:EE_|IA1PR12MB8080:EE_
+x-ms-office365-filtering-correlation-id: e2d0f66f-85df-40c4-f821-08dafa0b566f
+x-ld-processed: 3dd8961f-e488-4e60-8e11-a82d994e183d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: h+i3uHJI56QLCUwHd73ZkyRB6fN0Yyq2jbNkk4lliJ+bQnkxqK/O1lqFKDlya8vbXN+xZDNMXOKSd87vgv37ugASpfWwUtBMuXQZuJn5Jp+04b88fw1lOglSljb4nT3skatg4T7fB0ka7I+dHVWhK+pcM87ffW/wsxHRJoiQdqtq4iACGqdyco8NDGdXGp43GbNxiUNQyr1nCSEXklLu5i6r+wWiZPazN8At+DM5NaPNs/OVuwjW0OVu3lixSTQKQoGpE7D6UWZifx75Ubj8TGXlek5b5xE1srWACwneXzQnHXFjwqt8hKHIyUx0VnGPL5mw/TEm+5vUIfURijdYEYCUzHMPql8G8ZQqFjVGJPCBmpAjXbSkkH3VvAsZuDOezc2hEKqcWw4ka/2ZXSFB+egxDbSUcdaLMS4HY/iXYg3hrLztG1a1RCWgaVxAS4CatPaAjMVvZ0O1BdxFvbqdUxIYuo54RGcS18qVT/iijhDrb8VUdqQF++2HTMUo1nNxssvFX9PZv2VVl+LuX1Gj5/xqCbeBJkWYvGi5OCjVTnXVwTWRfSXJUrF3TEHQphZ3yyGACwI5mc90+8PugwA3VYuJ6TJYNCMkMioGXP6bUaqnx9FjVxYMQ2/uJ4bWOHKYetL1UT9C8Gz/ADjtMTHPS04qkoriT1Z4QCBnTd+6PccI3WWzkTrLmdmkoBptAZ/Lw37Gx9yISX31HnngKaDXhg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW5PR12MB5598.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(376002)(366004)(39860400002)(396003)(451199015)(83380400001)(52536014)(33656002)(122000001)(38100700002)(4326008)(38070700005)(86362001)(5660300002)(2906002)(8676002)(7416002)(76116006)(8936002)(66556008)(66446008)(66476007)(55016003)(66946007)(64756008)(26005)(41300700001)(186003)(9686003)(53546011)(6506007)(71200400001)(110136005)(54906003)(7696005)(316002)(478600001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?czk5bEYvQVZnMkg2M29NVkJyWUVZSnQxSGpodHF0RWlIUUF1YXJwMytHM2hj?=
+ =?utf-8?B?VWhZTUxVM0hGY00vNDRhTmF1aWs1Z2p6VlY1aWtlSXhyN2xlcHVQTUIxL2g4?=
+ =?utf-8?B?eGg0QmVqMzFjWFRORS9DT1BOSTZ1RXV2QmcwK29BTHBwYlZ5ZW5rZHVHNmdv?=
+ =?utf-8?B?bFRkZ2VCT0dKRDhtM2pYZHc5RXF6dGh4SnhXOXpBYWxHSm95Qlp6VmNMaHIr?=
+ =?utf-8?B?ajhUR0tHa29BM0hHdXdxT09RUFMyT1IrZHdDa3RKZUFNVy9kWmRMR05HQ1VJ?=
+ =?utf-8?B?WXE1eTBHcDVCV1J1cUhJeEVxL0hxRUxNNmZGR3grL0RFM1NhZkxIQUVrRHlm?=
+ =?utf-8?B?YmxFY2xYQ2FLajkwaXBGeVRsM2lqaVErVFB0T1diRHBNbkJRZG0yUkliQ09O?=
+ =?utf-8?B?R3ZlalFhNXdRcnhsZnkvaWpqaVhzZDY2b3VRRDJjekJ5NEZKbko2c3BCYVVR?=
+ =?utf-8?B?TU5OMlFXL2JjbFBwUi9pUXBLNnJwT0ZhcFQ1WHhuNmowN09ZUUVPeFJNKzVO?=
+ =?utf-8?B?Y3NpY0czOXZVbWRSUXFZdy82RzJPU2Jzc1lOTHI3QkptTFlZc3NOeFU5ek5x?=
+ =?utf-8?B?Y3RZbzE2RzBNSjNGOXVBaTZ0WmdSV2E2OFY2aWxTRWNtYW5NaEtuM1FmcDlz?=
+ =?utf-8?B?ZTNqcGFXNTkwVVFiQ0hUSkIweVNETnRVOXE2TzRLQlZwMkdic3dqUitsZ2RG?=
+ =?utf-8?B?VHFxcDBkV1VrUlRqeElFL3dTTHkycE42L203UzhhaDhjOWx0UGgyRHFlSUtC?=
+ =?utf-8?B?OTVpM0Z4U01YcGc1VmxCNSsxSy9QTlkrcDlGcEpUSmFoUHlCVTZkeFBuNys1?=
+ =?utf-8?B?c0FSQ3V5Q3V3ejNhSi9kd2dVM2VWNW82ZzhVU21pem1KaENuUjRZMXZwVDBC?=
+ =?utf-8?B?bnQ4UUpWNXhSYW5HQnNvbFdOSzlpRWljQW5reUJ4cmt1T25zU29zOTFhNXJU?=
+ =?utf-8?B?c2xiRnREWTR1Qkg1K1Vyb3FRc1BJWUVNNlVJTzQvWG13NjVtSlR0anYwbnNn?=
+ =?utf-8?B?N1d6QVdZZkFlMUhjazdaTU5XM0g1bHBMeWhud2VwcXFUbXJ4V3B6TlRjQlYy?=
+ =?utf-8?B?N2gySzhINHBmS1FFWjVsMG5PWWw2aG80K3c5NmdBa3h3a3ROL1JxQkFQZ3NV?=
+ =?utf-8?B?dG9BT1lkQ0E0YzBFR1llYkxEUHBhR1AyQ3Evc0xWakxoWTBQUGFLRWZFU0V4?=
+ =?utf-8?B?VWcwR3hrV0Y1WnR3cU9MOE4rK041NVUzZG9nQU1pa3pXK3dOa0o4TWR1WnpM?=
+ =?utf-8?B?K3paZW9ETUVOck85bzYrTkxjZC9PM1RYRkdibXhLUW9JL2RXcnhyNEs4RmtT?=
+ =?utf-8?B?QVorSVRUb3ZkOCtEbVRzWHB3eXFXb1IrT2FSUFpRQXplTmVUaVlTSk0ydVlW?=
+ =?utf-8?B?NmxqUk00eU5wa0dqSzBMdS9FbmJLaWUzN1FmNEQ4R21OcnlvZFZaREFHSEE5?=
+ =?utf-8?B?aXBtRWtpL09xYVRCQ1lOemJkdUFTb1NlYSt4R3pUcHZLNjFidFlUNmZRN1lu?=
+ =?utf-8?B?a3UrRTVKcGY3N1pJRzlMOVZ2Q1Q4RCtldTVTZGVvMnF3eG54NGVVaVZGeVR6?=
+ =?utf-8?B?Yk56M0IvVXcydDdpUFk4cDVwV3N1ZUt5MGpnc2RCd3pCOVdwamFrSUF3cjZs?=
+ =?utf-8?B?c1p0SkExdm85VDhGWCt5TFU3c2hkVkxmMG9kOVhnYUVBZ3o4eFB4a2orZTQv?=
+ =?utf-8?B?RTE2dGhFS3dLL25VcXczTHAzeXNBVWQ2UDBlWUtZVmc4eGs3eTB5dFZGS25m?=
+ =?utf-8?B?dnZUOTY4RUxuSHhkYnkzeCtWMFN4dlZSMHRLandPR2FpYXNadnBiamNsVFJY?=
+ =?utf-8?B?OHROUnJYSm40T0JUOWU3SnF1QllmdHphckUxWjZPYnAvVDRzSmxEelNlYjNY?=
+ =?utf-8?B?MzlyN1l2N3g0U3o5Q2o3UkVtWVBvMy9NVk5pcnE0MmFiZ2xNZXQ0OG15STBF?=
+ =?utf-8?B?UTdLbEFiZDhNMnhKMGFSM1NqcVVURHg1OEN4VUp6a3RReFpITFVRTzRFWXI5?=
+ =?utf-8?B?VmdnTTVhYzNCZ0krNlB6SXhZaTFMTkY2R2lnT2lTNEZLWjZVbENseEt6SWMx?=
+ =?utf-8?B?cm5XN3VZOStOYW9yN1VkSHhzZ0lsdEtiWDdMdk5CV3ZoYjAwWEZnRGpZMjlV?=
+ =?utf-8?Q?fjME=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20230118-support-vsock-sockmap-connectible-v1-0-d47e6294827b@bytedance.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW5PR12MB5598.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e2d0f66f-85df-40c4-f821-08dafa0b566f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jan 2023 10:53:02.7796
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: LCrI3nhoWm+zMzGDvrVQzdVDfQ+kUKqKFbe/Fb3WnHW3eJTsqhPsuDSZdjzk3TXxxhpmENWFIf6qxLYY4tN/eA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8080
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -96,114 +143,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Bobby,
-
-On Wed, Jan 18, 2023 at 12:27:39PM -0800, Bobby Eshleman wrote:
->Add support for sockmap to vsock.
->
->We're testing usage of vsock as a way to redirect guest-local UDS requests to
->the host and this patch series greatly improves the performance of such a
->setup.
->
->Compared to copying packets via userspace, this improves throughput by 221% in
->basic testing.
-
-Cool, nice series!
-
->
->Tested as follows.
->
->Setup: guest unix dgram sender -> guest vsock redirector -> host vsock server
->Threads: 1
->Payload: 64k
->No sockmap:
->- 76.3 MB/s
->- The guest vsock redirector was
->  "socat VSOCK-CONNECT:2:1234 UNIX-RECV:/path/to/sock"
->Using sockmap (this patch):
->- 168.8 MB/s (+221%)
-
-Assuming the absolute value is correct, there is a typo here, it would 
-be +121% right?
-
->- The guest redirector was a simple sockmap echo server,
->  redirecting unix ingress to vsock 2:1234 egress.
->- Same sender and server programs
->
->Only the virtio transport has been tested.
-
-I think is fine for now.
-
->The loopback transport was used in
->writing bpf/selftests, but not thoroughly tested otherwise.
-
-I did a quick review mainly for vsock stuff.
-Hoping others can take a better look at net/vmw_vsock/vsock_bpf.c, since 
-I'm not very familiar with that subsystem.
-
-FYI I will be off the next two weeks (till Feb 7) with limited internet 
-access.
-
-Thanks,
-Stefano
-
->
->This series requires the skb patch.
->
->To: Stefan Hajnoczi <stefanha@redhat.com>
->To: Stefano Garzarella <sgarzare@redhat.com>
->To: "Michael S. Tsirkin" <mst@redhat.com>
->To: Jason Wang <jasowang@redhat.com>
->To: "David S. Miller" <davem@davemloft.net>
->To: Eric Dumazet <edumazet@google.com>
->To: Jakub Kicinski <kuba@kernel.org>
->To: Paolo Abeni <pabeni@redhat.com>
->To: Andrii Nakryiko <andrii@kernel.org>
->To: Mykola Lysenko <mykolal@fb.com>
->To: Alexei Starovoitov <ast@kernel.org>
->To: Daniel Borkmann <daniel@iogearbox.net>
->To: Martin KaFai Lau <martin.lau@linux.dev>
->To: Song Liu <song@kernel.org>
->To: Yonghong Song <yhs@fb.com>
->To: John Fastabend <john.fastabend@gmail.com>
->To: KP Singh <kpsingh@kernel.org>
->To: Stanislav Fomichev <sdf@google.com>
->To: Hao Luo <haoluo@google.com>
->To: Jiri Olsa <jolsa@kernel.org>
->To: Shuah Khan <shuah@kernel.org>
->Cc: linux-kernel@vger.kernel.org
->Cc: kvm@vger.kernel.org
->Cc: virtualization@lists.linux-foundation.org
->Cc: netdev@vger.kernel.org
->Cc: bpf@vger.kernel.org
->Cc: linux-kselftest@vger.kernel.org
->Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
->
->---
->Bobby Eshleman (3):
->      vsock: support sockmap
->      selftests/bpf: add vsock to vmtest.sh
->      selftests/bpf: Add a test case for vsock sockmap
->
-> drivers/vhost/vsock.c                              |   1 +
-> include/linux/virtio_vsock.h                       |   1 +
-> include/net/af_vsock.h                             |  17 ++
-> net/vmw_vsock/Makefile                             |   1 +
-> net/vmw_vsock/af_vsock.c                           |  59 ++++++-
-> net/vmw_vsock/virtio_transport.c                   |   2 +
-> net/vmw_vsock/virtio_transport_common.c            |  22 +++
-> net/vmw_vsock/vsock_bpf.c                          | 180 +++++++++++++++++++++
-> net/vmw_vsock/vsock_loopback.c                     |   2 +
-> tools/testing/selftests/bpf/config.x86_64          |   4 +
-> .../selftests/bpf/prog_tests/sockmap_listen.c      | 163 +++++++++++++++++++
-> tools/testing/selftests/bpf/vmtest.sh              |   1 +
-> 12 files changed, 447 insertions(+), 6 deletions(-)
->---
->base-commit: f12f4326c6a75a74e908714be6d2f0e2f0fd0d76
->change-id: 20230118-support-vsock-sockmap-connectible-2e1297d2111a
->
->Best regards,
->-- 
->Bobby Eshleman <bobby.eshleman@bytedance.com>
->
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogS3J6eXN6dG9mIEtvemxv
+d3NraSA8a3J6eXN6dG9mLmtvemxvd3NraUBsaW5hcm8ub3JnPg0KPiBTZW50OiBUaHVyc2RheSwg
+Tm92ZW1iZXIgMTAsIDIwMjIgNzozNiBQTQ0KPiBUbzogR2FkZGFtLCBTYXJhdGggQmFidSBOYWlk
+dQ0KPiA8c2FyYXRoLmJhYnUubmFpZHUuZ2FkZGFtQGFtZC5jb20+OyBkYXZlbUBkYXZlbWxvZnQu
+bmV0Ow0KPiBlZHVtYXpldEBnb29nbGUuY29tOyBrdWJhQGtlcm5lbC5vcmc7IHBhYmVuaUByZWRo
+YXQuY29tOw0KPiByb2JoK2R0QGtlcm5lbC5vcmc7IHJpY2hhcmRjb2NocmFuQGdtYWlsLmNvbQ0K
+PiBDYzoga3J6eXN6dG9mLmtvemxvd3NraStkdEBsaW5hcm8ub3JnOyBuZXRkZXZAdmdlci5rZXJu
+ZWwub3JnOw0KPiBkZXZpY2V0cmVlQHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIu
+a2VybmVsLm9yZzsNCj4geWFuZ2JvLmx1QG54cC5jb207IFBhbmRleSwgUmFkaGV5IFNoeWFtDQo+
+IDxyYWRoZXkuc2h5YW0ucGFuZGV5QGFtZC5jb20+OyBTYXJhbmdpLCBBbmlydWRoYQ0KPiA8YW5p
+cnVkaGEuc2FyYW5naUBhbWQuY29tPjsgS2F0YWthbSwgSGFyaW5pDQo+IDxoYXJpbmkua2F0YWth
+bUBhbWQuY29tPjsgZ2l0IChBTUQtWGlsaW54KSA8Z2l0QGFtZC5jb20+DQo+IFN1YmplY3Q6IFJl
+OiBbUEFUQ0ggbmV0LW5leHQgVjJdIGR0LWJpbmRpbmdzOiBuZXQ6IGV0aGVybmV0LWNvbnRyb2xs
+ZXI6DQo+IEFkZCBwdHAtaGFyZHdhcmUtY2xvY2sNCj4gDQo+IE9uIDEwLzExLzIwMjIgMTA6NTcs
+IEdhZGRhbSwgU2FyYXRoIEJhYnUgTmFpZHUgd3JvdGU6DQo+ID4+Pg0KPiA+Pj4gKyAgcHRwLWhh
+cmR3YXJlLWNsb2NrOg0KPiA+Pj4gKyAgICAkcmVmOiAvc2NoZW1hcy90eXBlcy55YW1sIy9kZWZp
+bml0aW9ucy9waGFuZGxlDQo+ID4+PiArICAgIGRlc2NyaXB0aW9uOg0KPiA+Pj4gKyAgICAgIFNw
+ZWNpZmllcyBhIHJlZmVyZW5jZSB0byBhIG5vZGUgcmVwcmVzZW50aW5nIGEgSUVFRTE1ODggdGlt
+ZXIuDQo+ID4+DQo+ID4+IERyb3AgIlNwZWNpZmllcyBhIHJlZmVyZW5jZSB0byIuIEl0J3Mgb2J2
+aW91cyBmcm9tIHRoZSBzY2hlbWEuDQo+ID4+DQo+ID4+IEFyZW4ndCB5b3UgZXhwZWN0aW5nIGhl
+cmUgc29tZSBzcGVjaWZpYyBEZXZpY2V0cmVlIG5vZGUgb2YgSUVFRTE1ODgNCj4gdGltZXI/DQo+
+ID4+IElPVywgeW91IGV4cGVjdCB0byBwb2ludCB0byB0aW1lciwgYnV0IHdoYXQgdGhpcyB0aW1l
+ciBtdXN0IHByb3ZpZGU/DQo+ID4+IEhvdyBpcyB0aGlzIGdlbmVyaWM/DQo+ID4NCj4gPiBUaGFu
+a3MgZm9yIHJldmlldyBjb21tZW50cy4NCj4gPiAgRm9ybWF0IGNhbiBiZSBhcyBkb2N1bWVudGVk
+IGJ5IHVzZXJzDQo+IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wdHAvIG1lbWJl
+cnMuIFRoZSBub2RlIHNob3VsZCBiZQ0KPiBhY2Nlc3NpYmxlIHRvIGRlcml2ZSB0aGUgaW5kZXgg
+YnV0IHRoZSBmb3JtYXQgb2YgdGhlIFBUUCBjbG9jayBub2RlIGlzDQo+IHVwdG8gdGhlIHZlbmRv
+ci4NCj4gDQo+IEkgYW0gbm90IHN1cmUgd2hhdCBkbyB5b3UgbWVhbiBoZXJlLiBBbnl3YXkgZGVz
+Y3JpcHRpb24gbWlnaHQgbmVlZA0KPiBzb21ldGhpbmcgbW9yZSBzcGVjaWZpYy4NCg0KQXBvbG9n
+aWVzIGZvciBwaWNraW5nIHVwIG9uIHRoaXMgdGhyZWFkIGFmdGVyIGEgbG9uZyB0aW1lLg0KUFRQ
+IGNsb2NrIG5vZGUodGltZXIpIGlzIHVwdG8gdGhlIHZlbmRvci4gRHJpdmVyIHdoaWNoIG5lZWRz
+IGEgcmVmZXJlbmNlDQp0byB0aGlzIG5vZGUgY2FuIGJlIGFjY2Vzc2VkIGJ5IHRoaXMgbmV3IHBy
+b3BlcnR5LiBJIHdpbGwgdXBkYXRlIHRoZQ0KZGVzY3JpcHRpb24uDQoNCj4gPg0KPiA+DQo+ID4+
+DQo+ID4+IEluIHlvdXIgY29tbWl0IG1zZyB5b3UgdXNlIG11bHRpcGxlIHRpbWVzICJkcml2ZXIi
+LCBzbyBhcmUgeW91DQo+IGFkZGluZw0KPiA+PiBpdCBvbmx5IHRvIHNhdGlzZnkgTGludXggZHJp
+dmVyIHJlcXVpcmVtZW50cz8gV2hhdCBhYm91dCBvdGhlcg0KPiA+PiBkcml2ZXJzLCBlLmcuIG9u
+IEJTRCBvciBVLUJvb3Q/DQo+ID4NCj4gPiBBRkFJSyB0aGlzIGlzIGZvciBMaW51eC4gSXQgaXMg
+bm90IHJlbGV2YW50IHRvIHVib290IGFzIHRoZXJlJ3Mgbm8gUFRQDQo+IHN1cHBvcnQgdGhlcmUu
+DQo+IA0KPiBBbmQgQlNEPyBCaW5kaW5ncyBhcmUgbm90IGZvciBMaW51eCBvbmx5LiBQbGVhc2Ug
+YWJzdHJhY3QgZnJvbSBhbnkgT1MNCj4gc3BlY2lmaWNzLg0KDQpUaGlzIG5ldyBiaW5kaW5nIGlz
+IGEgZ2VuZXJpYyBwcm9wZXJ0eS4gSXQgY2FuIGJlIHVzZWQgaW4gb3RoZXIgDQpkcml2ZXJzIGFs
+c28gaWYgdGhleSB3YW50IHRvIGFjY2VzcyB0aGUgUFRQIGRldmljZSBub2RlIGluIHRoZSANCmN1
+cnJlbnQgZHJpdmVyIGFuZCBJdCdzIGFuIG9wdGlvbmFsIHByb3BlcnR5Lg0KIA0KSSB3aWxsIGNo
+YW5nZSB0aGUgY29tbWl0IGRlc2NyaXB0aW9uIGFzIGJlbG93LiBJZiB0aGlzIGlzIGZpbmUsIEkg
+DQp3aWxsIHNlbmQgYW5vdGhlciB2ZXJzaW9uIHdpdGggdXBkYXRlZCBjb21taXQgZGVzY3JpcHRp
+b24uDQogDQoiVGhlcmUgaXMgY3VycmVudGx5IG5vIHN0YW5kYXJkIHByb3BlcnR5IHRvIHBhc3Mg
+UFRQIGRldmljZSBpbmRleCAgDQppbmZvcm1hdGlvbiB0byBldGhlcm5ldCBkcml2ZXIgd2hlbiB0
+aGV5IGFyZSBpbmRlcGVuZGVudC4NCiANCnB0cC1oYXJkd2FyZS1jbG9jayBwcm9wZXJ0eSB3aWxs
+IGNvbnRhaW4gcGhhbmRsZSB0byBQVFAgY2xvY2sgbm9kZS4NCg0KSXRzIGEgZ2VuZXJpYyAob3B0
+aW9uYWwpIHByb3BlcnR5IG5hbWUgdG8gbGluayB0byBQVFAgcGhhbmRsZSB0byAgDQpFdGhlcm5l
+dCBub2RlLiBBbnkgZnV0dXJlIG9yIGN1cnJlbnQgZXRoZXJuZXQgZHJpdmVycyB0aGF0IG5lZWQN
+CmEgcmVmZXJlbmNlIHRvIHRoZSBQSEMgdXNlZCBvbiB0aGVpciBzeXN0ZW0gY2FuIHNpbXBseSB1
+c2UgdGhpcyANCmdlbmVyaWMgcHJvcGVydHkgbmFtZSBpbnN0ZWFkIG9mIHVzaW5nIGN1c3RvbSBw
+cm9wZXJ0eSANCmltcGxlbWVudGF0aW9uIGluIHRoZWlyIGRldmljZSB0cmVlIG5vZGVzLiINCg0K
+VGhhbmtzLA0KU2FyYXRoDQoNCj4gQWxzbyB5b3VyIG1lc3NhZ2VzIG5lZWRzIHdyYXBwaW5nLiBV
+c2UgbWFpbGluZyBsaXN0IHJlcGx5IHN0eWxlLg0KPiANCj4gQmVzdCByZWdhcmRzLA0KPiBLcnp5
+c3p0b2YNCg0K
