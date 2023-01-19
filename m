@@ -2,147 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43F00674383
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 21:29:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD0F167439A
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 21:41:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbjASU3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 15:29:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40062 "EHLO
+        id S230234AbjASUlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 15:41:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229564AbjASU3e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 15:29:34 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D97789AAB0;
-        Thu, 19 Jan 2023 12:29:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=zIGQalFZHxek35/o2xpf8DzICLu+OhQoZFFooWkYImE=;
-        t=1674160173; x=1675369773; b=oEZsiWWasBkHxaFDXu2nwSNxCzCxy85k9XYa1p7XwcG0XHZ
-        I7RP5tSDByo/StYcrpRH7bmk96sRe4WlsVR/z93vSTDdxsPABeh9iN/dFuMGhv+kouqDJgam4Cffc
-        k8mBcUj0Pq36HBnvkFZYL4aHSu1+FhNJgfQR82nKNKX28NOxG1Khh0oU5V5RXXQVPel6o0/2e8ETU
-        fdXHC2wBf/k853ImaaSTX7c1+Mg0s7u4bp6LZ2xqwyVm7onm+o9xoqJlL20ywNybmNe+MhbP8dall
-        3zhGLAKWIP1tzzFmp4bexPQGo3T43fXv60UDHerGukl6P/TC/Ni1e+/VJezdz7wg==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1pIbXH-006eZ8-2m;
-        Thu, 19 Jan 2023 21:29:23 +0100
-Message-ID: <96618285a772b5ef9998f638ea17ff68c32dd710.camel@sipsolutions.net>
-Subject: Re: [PATCH net-next v3 1/8] docs: add more netlink docs (incl. spec
- docs)
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        robh@kernel.org, stephen@networkplumber.org,
-        ecree.xilinx@gmail.com, sdf@google.com, f.fainelli@gmail.com,
-        fw@strlen.de, linux-doc@vger.kernel.org, razor@blackwall.org,
-        nicolas.dichtel@6wind.com, Bagas Sanjaya <bagasdotme@gmail.com>
-Date:   Thu, 19 Jan 2023 21:29:22 +0100
-In-Reply-To: <20230119003613.111778-2-kuba@kernel.org>
-References: <20230119003613.111778-1-kuba@kernel.org>
-         <20230119003613.111778-2-kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
-MIME-Version: 1.0
-X-malware-bazaar: not-scanned
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230249AbjASUkz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 15:40:55 -0500
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC34190845;
+        Thu, 19 Jan 2023 12:40:38 -0800 (PST)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 6A365201829;
+        Thu, 19 Jan 2023 21:40:37 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 081172017ED;
+        Thu, 19 Jan 2023 21:40:37 +0100 (CET)
+Received: from lsv03267.swis.in-blr01.nxp.com (lsv03267.swis.in-blr01.nxp.com [92.120.147.107])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id EBCB6180327D;
+        Fri, 20 Jan 2023 04:40:35 +0800 (+08)
+From:   nikhil.gupta@nxp.com
+To:     linux-arm-kernel@lists.infradead.org,
+        Yangbo Lu <yangbo.lu@nxp.com>, vladimir.oltean@nxp.com,
+        richardcochran@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     vakul.garg@nxp.com, rajan.gupta@nxp.com,
+        Nikhil Gupta <nikhil.gupta@nxp.com>
+Subject: [PATCH v2] ptp_qoriq: fix latency in ptp_qoriq_adjtime() operation
+Date:   Fri, 20 Jan 2023 02:10:34 +0530
+Message-Id: <20230119204034.7969-1-nikhil.gupta@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2023-01-18 at 16:36 -0800, Jakub Kicinski wrote:
->=20
-> +Answer requests
-> +---------------
-> +
-> +Older families do not reply to all of the commands, especially NEW / ADD
-> +commands. User only gets information whether the operation succeeded or
-> +not via the ACK. Try to find useful data to return. Once the command is
-> +added whether it replies with a full message or only an ACK is uAPI and
-> +cannot be changed. It's better to err on the side of replying.
-> +
-> +Specifically NEW and ADD commands should reply with information identify=
-ing
-> +the created object such as the allocated object's ID (without having to
-> +resort to using ``NLM_F_ECHO``).
+From: Nikhil Gupta <nikhil.gupta@nxp.com>
 
-I'm a bit on the fence on this recommendation (as written).
+1588 driver loses about 1us in adjtime operation at PTP slave
+This is because adjtime operation uses a slow non-atomic tmr_cnt_read()
+followed by tmr_cnt_write() operation.
 
-Yeah, it's nice to reply to things ... but!
+In the above sequence, since the timer counter operation keeps
+incrementing, it leads to latency. The tmr_offset register
+(which is added to TMR_CNT_H/L register giving the current time)
+must be programmed with the delta nanoseconds.
 
-In userspace, you often request and wait for the ACK to see if the
-operation succeeded. This is basically necessary. But then it's
-complicated to wait for *another* message to see the ID.
+Signed-off-by: Nikhil Gupta <nikhil.gupta@nxp.com>
+---
+v1->v2: prevent TMR_OFF adjustment in case of eTSEC
 
-We've actually started using the "cookie" in the extack to report an ID
-of an object/... back, see uses of nl_set_extack_cookie_u64() in the
-tree.
+ drivers/ptp/ptp_qoriq.c       | 50 ++++++++++++++++++++++++++++++-----
+ include/linux/fsl/ptp_qoriq.h |  1 +
+ 2 files changed, 44 insertions(+), 7 deletions(-)
 
-So I'm not sure I wholeheartedly agree with the recommendation to send a
-separate answer. We've done that, but it's ugly on both sender side in
-the kernel (requiring an extra message allocation, ideally at the
-beginning of the operation so you can fail gracefully, etc.) and on the
-receiver (having to wait for another message if the operation was
-successful; possibly actually having to check for that message *before*
-the ACK arrives.)
+diff --git a/drivers/ptp/ptp_qoriq.c b/drivers/ptp/ptp_qoriq.c
+index 08f4cf0ad9e3..61530167efe4 100644
+--- a/drivers/ptp/ptp_qoriq.c
++++ b/drivers/ptp/ptp_qoriq.c
+@@ -48,6 +48,29 @@ static void tmr_cnt_write(struct ptp_qoriq *ptp_qoriq, u64 ns)
+ 	ptp_qoriq->write(&regs->ctrl_regs->tmr_cnt_h, hi);
+ }
+ 
++static u64 tmr_offset_read(struct ptp_qoriq *ptp_qoriq)
++{
++	struct ptp_qoriq_registers *regs = &ptp_qoriq->regs;
++	u32 lo, hi;
++	u64 ns;
++
++	lo = ptp_qoriq->read(&regs->ctrl_regs->tmroff_l);
++	hi = ptp_qoriq->read(&regs->ctrl_regs->tmroff_h);
++	ns = ((u64) hi) << 32;
++	ns |= lo;
++	return ns;
++}
++
++static void tmr_offset_write(struct ptp_qoriq *ptp_qoriq, u64 delta_ns)
++{
++	struct ptp_qoriq_registers *regs = &ptp_qoriq->regs;
++	u32 lo = delta_ns & 0xffffffff;
++	u32 hi = delta_ns >> 32;
++
++	ptp_qoriq->write(&regs->ctrl_regs->tmroff_l, lo);
++	ptp_qoriq->write(&regs->ctrl_regs->tmroff_h, hi);
++}
++
+ /* Caller must hold ptp_qoriq->lock. */
+ static void set_alarm(struct ptp_qoriq *ptp_qoriq)
+ {
+@@ -55,7 +78,9 @@ static void set_alarm(struct ptp_qoriq *ptp_qoriq)
+ 	u64 ns;
+ 	u32 lo, hi;
+ 
+-	ns = tmr_cnt_read(ptp_qoriq) + 1500000000ULL;
++	ns = tmr_cnt_read(ptp_qoriq) + tmr_offset_read(ptp_qoriq)
++				     + 1500000000ULL;
++
+ 	ns = div_u64(ns, 1000000000UL) * 1000000000ULL;
+ 	ns -= ptp_qoriq->tclk_period;
+ 	hi = ns >> 32;
+@@ -207,15 +232,24 @@ EXPORT_SYMBOL_GPL(ptp_qoriq_adjfine);
+ 
+ int ptp_qoriq_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ {
+-	s64 now;
+-	unsigned long flags;
+ 	struct ptp_qoriq *ptp_qoriq = container_of(ptp, struct ptp_qoriq, caps);
++	s64 now, curr_delta;
++	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&ptp_qoriq->lock, flags);
+ 
+-	now = tmr_cnt_read(ptp_qoriq);
+-	now += delta;
+-	tmr_cnt_write(ptp_qoriq, now);
++	/* On LS1021A, eTSEC2 and eTSEC3 do not take into account the TMR_OFF
++	 * adjustment
++	 */
++	if (ptp_qoriq->etsec) {
++		now = tmr_cnt_read(ptp_qoriq);
++		now += delta;
++		tmr_cnt_write(ptp_qoriq, now);
++	} else {
++		curr_delta = tmr_offset_read(ptp_qoriq);
++		curr_delta += delta;
++		tmr_offset_write(ptp_qoriq, curr_delta);
++	}
+ 	set_fipers(ptp_qoriq);
+ 
+ 	spin_unlock_irqrestore(&ptp_qoriq->lock, flags);
+@@ -232,7 +266,7 @@ int ptp_qoriq_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
+ 
+ 	spin_lock_irqsave(&ptp_qoriq->lock, flags);
+ 
+-	ns = tmr_cnt_read(ptp_qoriq);
++	ns = tmr_cnt_read(ptp_qoriq) + tmr_offset_read(ptp_qoriq);
+ 
+ 	spin_unlock_irqrestore(&ptp_qoriq->lock, flags);
+ 
+@@ -253,6 +287,7 @@ int ptp_qoriq_settime(struct ptp_clock_info *ptp,
+ 
+ 	spin_lock_irqsave(&ptp_qoriq->lock, flags);
+ 
++	tmr_offset_write(ptp_qoriq, 0);
+ 	tmr_cnt_write(ptp_qoriq, ns);
+ 	set_fipers(ptp_qoriq);
+ 
+@@ -488,6 +523,7 @@ int ptp_qoriq_init(struct ptp_qoriq *ptp_qoriq, void __iomem *base,
+ 
+ 	/* The eTSEC uses differnt memory map with DPAA/ENETC */
+ 	if (of_device_is_compatible(node, "fsl,etsec-ptp")) {
++		ptp_qoriq->etsec = true;
+ 		ptp_qoriq->regs.ctrl_regs = base + ETSEC_CTRL_REGS_OFFSET;
+ 		ptp_qoriq->regs.alarm_regs = base + ETSEC_ALARM_REGS_OFFSET;
+ 		ptp_qoriq->regs.fiper_regs = base + ETSEC_FIPER_REGS_OFFSET;
+diff --git a/include/linux/fsl/ptp_qoriq.h b/include/linux/fsl/ptp_qoriq.h
+index 01acebe37fab..b301bf7199d3 100644
+--- a/include/linux/fsl/ptp_qoriq.h
++++ b/include/linux/fsl/ptp_qoriq.h
+@@ -149,6 +149,7 @@ struct ptp_qoriq {
+ 	struct device *dev;
+ 	bool extts_fifo_support;
+ 	bool fiper3_support;
++	bool etsec;
+ 	int irq;
+ 	int phc_index;
+ 	u32 tclk_period;  /* nanoseconds */
+-- 
+2.17.1
 
-> +Support dump consistency
-> +------------------------
-> +
-> +If iterating over objects during dump may skip over objects or repeat
-> +them - make sure to report dump inconsistency with ``NLM_F_DUMP_INTR``.
-
-That could be a bit more fleshed out on _how_ to do that, if it's not
-somewhere else?
-
-> +kernel-policy
-> +~~~~~~~~~~~~~
-> +
-> +Defines if the kernel validation policy is per operation (``per-op``)
-> +or for the entire family (``global``). New families should use ``per-op`=
-`
-> +(default) to be able to narrow down the attributes accepted by a specifi=
-c
-> +command.
-
-Again I'm not sure I agree with that recommendation, but I know it's
-your preference :-)
-
-(IMHO some things become more complex, such as having a "ifindex" in
-each one of them)
-
-> +checks
-> +------
-> +
-> +Documentation for the ``checks`` sub-sections of attribute specs.
-> +
-> +unterminated-ok
-> +~~~~~~~~~~~~~~~
-> +
-> +Accept strings without the null-termination (for legacy families only).
-> +Switches from the ``NLA_NUL_STRING`` to ``NLA_STRING`` policy type.
-
-Should we even document all the legacy bits in such a prominent place?
-
-(or just move it after max-len/min-len?)
-
-> +Attribute type nests
-> +--------------------
-> +
-> +New Netlink families should use ``multi-attr`` to define arrays.
-
-Unrelated to this particular document, but ...
-
-I'm all for this, btw, but maybe we should have a way of representing in
-the policy that an attribute is used as multi-attr for an array, and a
-way of exposing that in the policy export? Hmm. Haven't thought about
-this for a while.
-
-johannes
