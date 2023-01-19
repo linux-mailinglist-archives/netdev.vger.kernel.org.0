@@ -2,245 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B009767316C
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 06:56:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 986B36731CA
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 07:34:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229854AbjASF4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 00:56:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41444 "EHLO
+        id S229618AbjASGd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 01:33:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbjASF4F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 00:56:05 -0500
-Received: from out28-194.mail.aliyun.com (out28-194.mail.aliyun.com [115.124.28.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6049F10B;
-        Wed, 18 Jan 2023 21:56:00 -0800 (PST)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.0744085|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0161519-0.00312963-0.980718;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047190;MF=frank.sae@motor-comm.com;NM=1;PH=DS;RN=16;RT=16;SR=0;TI=SMTPD_---.QwzW1nf_1674107754;
-Received: from 10.0.2.15(mailfrom:Frank.Sae@motor-comm.com fp:SMTPD_---.QwzW1nf_1674107754)
-          by smtp.aliyun-inc.com;
-          Thu, 19 Jan 2023 13:55:56 +0800
-Message-ID: <50e59ffd-aa52-4fde-c2b5-f5ce1dc64c95@motor-comm.com>
-Date:   Thu, 19 Jan 2023 13:56:44 +0800
+        with ESMTP id S229483AbjASGdy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 01:33:54 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E1BB12F
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 22:33:49 -0800 (PST)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NyCTs17j6zJs9f;
+        Thu, 19 Jan 2023 14:32:17 +0800 (CST)
+Received: from [10.174.178.66] (10.174.178.66) by
+ dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Thu, 19 Jan 2023 14:33:35 +0800
+Message-ID: <b44d1100-af59-8f8a-ed59-1375a40f0d44@huawei.com>
+Date:   Thu, 19 Jan 2023 14:33:35 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH net-next v1 1/3] dt-bindings: net: Add Motorcomm yt8xxx
- ethernet phy Driver bindings
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Peter Geis <pgwipeout@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: Question: Patch:("net: sched: cbq: dont intepret cls results when
+ asked to drop") may be not bug for branch LTS 5.10
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Davide Caratti <dcaratti@redhat.com>
+CC:     Kyle Zeng <zengyhkyle@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
         Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        xiaogang.fan@motor-comm.com, fei.zhang@motor-comm.com,
-        hua.sun@motor-comm.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-References: <20230105073024.8390-1-Frank.Sae@motor-comm.com>
- <20230105073024.8390-2-Frank.Sae@motor-comm.com> <Y7bN4vJXMi66FF6v@lunn.ch>
- <e762c7ac-63e7-a86e-3e3f-5c8a450b25b0@motor-comm.com>
- <Y7goXXiRBE6XHuCc@lunn.ch>
- <83fd7a69-7e6a-ab93-b05a-4eba8af4d245@motor-comm.com>
- <Y8f254xNPdtR8gq1@lunn.ch>
-Content-Language: en-US
-From:   "Frank.Sae" <Frank.Sae@motor-comm.com>
-In-Reply-To: <Y8f254xNPdtR8gq1@lunn.ch>
-Content-Type: text/plain; charset=UTF-8
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <4538d7d2-0d43-16b7-9f80-77355f08cc61@huawei.com>
+ <CAM0EoM=rqF8K997AmC0VDncJ9LeA0PJku2BL96iiatAOiv1-vw@mail.gmail.com>
+ <CAM0EoM=VwZWzz1n_y8bj3y44NKBmhnmn+HUHtHwBb5qcCqETfg@mail.gmail.com>
+ <CADW8OBvNcMCogJsMJkVXw70PL3oGU9s1a16DOK+xqdnCfgQzvg@mail.gmail.com>
+ <Y8fSmFD2dNtBpbwK@dcaratti.users.ipa.redhat.com>
+ <CAM0EoMmhHns_bY-JsXvrUkRhqu3xTDaRNk+cP-x=O_848R0W3Q@mail.gmail.com>
+From:   shaozhengchao <shaozhengchao@huawei.com>
+In-Reply-To: <CAM0EoMmhHns_bY-JsXvrUkRhqu3xTDaRNk+cP-x=O_848R0W3Q@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [10.174.178.66]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+Hi Jamal:
 
-On 2023/1/18 21:40, Andrew Lunn wrote:
-> On Wed, Jan 11, 2023 at 05:20:18PM +0800, Frank.Sae wrote:
->> Hi Andrew,
->>
->> On 2023/1/6 21:55, Andrew Lunn wrote:
->>>>> Why is this needed? When the MAC driver connects to the PHY, it passes
->>>>> phy-mode. For RGMII, this is one of:
->>>>
->>>>> linux/phy.h:	PHY_INTERFACE_MODE_RGMII,
->>>>> linux/phy.h:	PHY_INTERFACE_MODE_RGMII_ID,
->>>>> linux/phy.h:	PHY_INTERFACE_MODE_RGMII_RXID,
->>>>> linux/phy.h:	PHY_INTERFACE_MODE_RGMII_TXID,
->>>>>
->>>>> This tells you if you need to add a delay for the RX clock line, the
->>>>> TX clock line, or both. That is all you need to know for basic RGMII
->>>>> delays.
->>>>>
->>>>
->>>> This basic delay can be controlled by hardware or the phy-mode which
->>>> passes from MAC driver.
->>>> Default value depends on power on strapping, according to the voltage
->>>> of RXD0 pin (low = 0, turn off;   high = 1, turn on).
->>>>
->>>> Add this for the case that This basic delay is controlled by hardware,
->>>> and software don't change this.
->>>
->>> You should always do what phy-mode contains. Always. We have had
->>> problems in the past where a PHY driver ignored the phy-mode, and left
->>> the PHY however it was strapped. Which worked. But developers put the
->>> wrong phy-mode value in DT. Then somebody had a board which actually
->>> required that the DT value really did work, because the strapping was
->>> wrong. So the driver was fixed to respect the PHY mode, made that
->>> board work, and broke all the other boards which had the wrong
->>> phy-mode in DT.
->>>
->>> If the user want the driver to leave the mode alone, use the
->>> strapping, they should use PHY_INTERFACE_MODE_NA. It is not well
->>> documented, but it is used in a few places. However, i don't recommend
->>> it.
->>>
->>
->> RX delay = rx-delay-basic (0ns or 1.9ns) + x-delay-additional-ps
->> (N*150ps, N = 0 ~ 15)
->>  If rx-delay-basic is removed and controlled by phy-mode.
->>  when phy-mode is  rgmii-id or rgmii-rxid, RX delay is 1.9ns + N*150ps.
->>  But sometimes 1.9ns is still too big, we just need  0ns + N*150ps.
->>
->> For this case, can we do like following ?
->> rx-internal-delay-ps:
->>     enum: [ 0, 150, 300, 450, 600, 750, 900, 1050, 1200, 1350, 1500,
->> 1650, 1800, 1900, 1950, 2050, 2100, 2200, 2250, 2350, 2500, 2650, 2800,
->> 2950, 3100, 3250, 3400, 3550, 3700, 3850, 4000, 4150 ]
->>     default: 0
->>  rx-internal-delay-ps is 0ns + N*150ps and  1.9ns + N*150ps.
->>  And check whether need rx-delay-basic (1.9ns) by the val of
->> rx-internal-delay-ps?
+On 2023/1/18 21:06, Jamal Hadi Salim wrote:
+> The reproducer the Kyle included back then was not useful - it seemed
+> like a cutnpaste
+> from some syzkaller dashboard (and didnt compile); however, for this one issue,
+> you can reproduce the problem by creating the infinite loop setup that
+> Davide describes.
 > 
-> Please take a look at phy_get_internal_delay() and the drivers which
-> use it.
+> The main issue is bigger than tcf_classify: It has to do with
+> interpretation of tcf_result
+> and the return codes.
+> I reviewed all consumers of tcf_results and only 3 (all happened to be qdiscs)
+> were fixed in that patch set. Note consumers include all objects in
+> the hierarchy
+> including classifiers and action.
 > 
->     Andrew
+> Typically, the LinuxWay(tm) of cutting and pasting what other people before you
+> did works - but sometimes people forget environmental rules even when they are
+> documented. The main environmental rule that was at stake here is the return
+> (verdict) code said to drop the packet. The validity of tcf_result in
+> such a case is
+> questionable and setting it to 0 was irrelevant. So that is all the
+> fix had to do for -net.
+> 
+> The current return code is a "verdict" on what happened. Given that
+> there is potential
+> to misinterpret - as was seen here - a safer approach is to get the
+> return code to be either
+> an error/success code(eg ELOOP for the example being quoted) since
+> that is a more
+> common pattern and we store the "verdict code" in tcf_result (TC_ACT_SHOT).
+> I was planning to send an RFC patch for that.
+> 
+> I am still not clear on the correlation that Zhengchao Shao was making between
+> Davide's patch and this issue...
+> 
+I'm just looking for the specific possible root cause of the issue.
+Please help check whether the possible causes are as follows:
+1. __tcf_classify returns TC_ACT_UNSPEC,tc_skb_ext_alloc allocation 
+failure, and the res may be abnormal. Maybe fix commit:9410c9409d3e
+("net: sched: Introduce ingress classification function")
+2.tcf_chain_lookup_rcu return NULL,and tcf_classify will return 
+TC_ACT_SHOT. In this way, res is abnormal. Oh, I am sorry. In
+cbq_classify, pass NULL as block. So tcf_chain_lookup_rcu will not be
+called in tcf_classify. Ignore this.
 
- Thanks. But it may be not suitable.
+Thank you again for your careful answer.
 
-rx-internal-delay-ps has two part:
-0ns + N*150ps =
-0,150,300,450,600,750,900,1050,1200,1350,1500,1650,1800,1950,2100,2250
-
-1.9ns + N*150ps =
-1900,2050,2200,2350,2500,2650,2800,2950,3100,3250,3400,3550,3700,3850,4000,4150
-
-The problem is "1900,2050,2200" is less than "2250".
-
-If I take this two parts in one sorted table, there will be three
-tables, one for tx-internal-delay-ps, one for rx-internal-delay-ps and
-one for the rx index to reg(delay value and 1.9ns on or off) value.
-
-So we tend to use the following methods.
-
-#define YT8521_CCR_RXC_DLY_1_900_NS		1900
-
-#define YT8521_RC1R_RGMII_0_000_NS		0
-#define YT8521_RC1R_RGMII_0_150_NS		1
-...
-#define	YT8521_RC1R_RGMII_2_250_NS		15
-
-struct ytphy_cfg_reg_map {
-	u32 cfg;
-	u32 reg;
-};
-
-static const struct ytphy_cfg_reg_map ytphy_rgmii_delays[] = {
-	/* for tx delay / rx delay with YT8521_CCR_RXC_DLY_EN is not set. */
-	{ 0,	YT8521_RC1R_RGMII_0_000_NS },
-	{ 150,	YT8521_RC1R_RGMII_0_150_NS },
-	...
-	{ 2250,	YT8521_RC1R_RGMII_2_250_NS },
-
-	/* only for rx delay with YT8521_CCR_RXC_DLY_EN is set. */
-	{ 0    + YT8521_CCR_RXC_DLY_1_900_NS,YT8521_RC1R_RGMII_0_000_NS },
-	{ 150  + YT8521_CCR_RXC_DLY_1_900_NS,YT8521_RC1R_RGMII_0_150_NS },
-	...
-	{ 2250 + YT8521_CCR_RXC_DLY_1_900_NS,YT8521_RC1R_RGMII_2_250_NS }
-};
-
-
-static u32 ytphy_get_delay_reg_value(struct phy_device *phydev,
-				     const char *prop_name,
-				     const struct ytphy_cfg_reg_map *tbl,
-				     int tb_size,
-				     u16 *rxc_dly_en,
-				     u32 dflt)
-{
-	struct device_node *node = phydev->mdio.dev.of_node;
-	int tb_size_half = tb_size / 2;
-	u32 val;
-	int i;
-
-	if (of_property_read_u32(node, prop_name, &val))
-		return dflt;
-
-	/* when rxc_dly_en is NULL, it is get the delay for tx, only half of
-	 * tb_size is valid.
-	 */
-	if (!rxc_dly_en)
-		tb_size = tb_size_half;
-
-	for (i = 0; i < tb_size; i++) {
-		if (tbl[i].cfg == val) {
-			if (rxc_dly_en && i < tb_size_half)
-				*rxc_dly_en = 0;
-			return tbl[i].reg;
-		}
-	}
-
-	phydev_warn(phydev, "Unsupported value %d for %s using default (%u)\n",
-		    val, prop_name, dflt);
-	return dflt;
-}
-
-static int ytphy_rgmii_clk_delay_config(struct phy_device *phydev)
-{
-	int tb_size = ARRAY_SIZE(ytphy_rgmii_delays);
-	u16 rxc_dly_en = YT8521_CCR_RXC_DLY_EN;
-	u32 rx_reg, tx_reg;
-	u16 mask, val = 0;
-	int ret;
-
-	rx_reg = ytphy_get_delay_reg_value(phydev, "rx-internal-delay-ps",
-					   ytphy_rgmii_delays, tb_size,
-					   &rxc_dly_en,
-					   YT8521_RC1R_RGMII_0_000_NS);
-	tx_reg = ytphy_get_delay_reg_value(phydev, "tx-internal-delay-ps",
-					   ytphy_rgmii_delays, tb_size, NULL,
-					   YT8521_RC1R_RGMII_0_150_NS);
-
-	switch (phydev->interface) {
-	case PHY_INTERFACE_MODE_RGMII:
-		rxc_dly_en = 0;
-		break;
-	case PHY_INTERFACE_MODE_RGMII_RXID:
-		val |= FIELD_PREP(YT8521_RC1R_RX_DELAY_MASK, rx_reg);
-		break;
-	case PHY_INTERFACE_MODE_RGMII_TXID:
-		rxc_dly_en = 0;
-		val |= FIELD_PREP(YT8521_RC1R_GE_TX_DELAY_MASK, tx_reg);
-		break;
-	case PHY_INTERFACE_MODE_RGMII_ID:
-		val |= FIELD_PREP(YT8521_RC1R_RX_DELAY_MASK, rx_reg) |
-		       FIELD_PREP(YT8521_RC1R_GE_TX_DELAY_MASK, tx_reg);
-		break;
-	default: /* do not support other modes */
-		return -EOPNOTSUPP;
-	}
-
-	ret = ytphy_modify_ext(phydev, YT8521_CHIP_CONFIG_REG,
-			       YT8521_CCR_RXC_DLY_EN, rxc_dly_en);
-	if (ret < 0)
-		return ret;
-
-	/* Generally, it is not necessary to adjust YT8521_RC1R_FE_TX_DELAY */
-	mask = YT8521_RC1R_RX_DELAY_MASK | YT8521_RC1R_GE_TX_DELAY_MASK;
-	return ytphy_modify_ext(phydev, YT8521_RGMII_CONFIG1_REG, mask, val);
-}
+Zhengchao Shao
+> cheers,
+> jamal
+> 
+> 
+> On Wed, Jan 18, 2023 at 6:06 AM Davide Caratti <dcaratti@redhat.com> wrote:
+>>
+>> hello,
+>>
+>> On Tue, Jan 17, 2023 at 05:10:58PM -0700, Kyle Zeng wrote:
+>>> Hi Zhengchao,
+>>>
+>>> I'm the finder of the vulnerability. In my initial report, there was a
+>>> more detailed explanation of why this bug happened. But it got left
+>>> out in the commit message.
+>>> So, I'll explain it here and see whether people want to patch the
+>>> actual root cause of the crash.
+>>>
+>>> The underlying bug that this patch was trying to address is actually
+>>> in `__tcf_classify`. Notice that `struct tcf_result` is actually a
+>>> union type, so whenever the kernel sets res.goto_tp, it also sets
+>>> res.class.
+>>
+>>  From what I see/remember, 'res' (struct tcf_result) is unassigned
+>> unless the packet is matched by a classifier (i.e. it does not return
+>> TC_ACT_UNSPEC).
+>>
+>> When this match happens (__tcf_classify returns non-negative) and the
+>> control action says TC_ACT_GOTO_CHAIN, res->goto_tp is written.
+>> Like you say, 'res.class' is written as well because it's a union.
+>>
+>>> And this can happen inside `tcf_action_goto_chain_exec`. In
+>>> other words, `tcf_action_goto_chain_exec` will set res.class. Notice
+>>> that goto_chain can point back to itself, which causes an infinite
+>>> loop. To avoid the infinite loop situation, `__tcf_classify` checks
+>>> how many times the loop has been executed
+>>> (https://elixir.bootlin.com/linux/v6.1/source/net/sched/cls_api.c#L1586),
+>>> if it is more than a specific number, it will mark the result as
+>>> TC_ACT_SHOT and then return:
+>>>
+>>> if (unlikely(limit++ >= max_reclassify_loop)) {
+>>>      ...
+>>>      return TC_ACT_SHOT;
+>>> }
+>>
+>> maybe there is an easier reproducer, something made of 2 TC actions.
+>> The first one goes to a valid chain, and then the second one (executed from
+>> within the chain) drops the packet. I think that unpatched CBQ scheduler
+>> will find 'res.class' with a value also there.
+>>
+>>> However, when it returns in the infinite loop handler, it forgets to
+>>> clear whatever is in the `res` variable, which still holds pointers in
+>>> `goto_tp`. As a result, cbq_classify will think it is a valid
+>>> `res.class` and causes type confusion.
+>>>
+>>> My initial proposed patch was to memset `res` before `return
+>>> TC_ACT_SHOT` in `__tcf_classify`, but it didn't get merged. But I
+>>> guess the merged patch is more generic.
+>>
+>> The merged patch looks good to me; however, I wonder if it's sufficient.
+>> If I well read the code, there is still the possibility of hitting the
+>> same problem on a patched kernel when TC_ACT_TRAP / TC_ACT_STOLEN is
+>> returned after a 'goto chain' when the qdisc is CBQ.
+>>
+>> I like Jamal's idea of sharing the reproducer :)
+> 
+> 
+>> thanks!
+>> --
+>> davide
+>>
+>>
+>>
+> 
