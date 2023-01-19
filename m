@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D22CF673980
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 14:08:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ADA1673985
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 14:09:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231167AbjASNIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 08:08:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48630 "EHLO
+        id S230218AbjASNI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 08:08:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230391AbjASNIF (ORCPT
+        with ESMTP id S230463AbjASNIF (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 08:08:05 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910E95F3A5;
-        Thu, 19 Jan 2023 05:08:00 -0800 (PST)
+Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57AD2613C1;
+        Thu, 19 Jan 2023 05:08:01 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 4F8C518D8;
-        Thu, 19 Jan 2023 14:07:58 +0100 (CET)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 17FA41A00;
+        Thu, 19 Jan 2023 14:07:59 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1674133678;
+        t=1674133679;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=khuF9D5aRrU+RqS5yxEYYs8dKhh0RK9DJlZz4Fdm+kU=;
-        b=ELaQzDQS/Rb8IAB9R0Pt+rIRCMsEkAtSuwUypOhzEYItq8wf5369kWuR3b1vmg/r7hqSXq
-        jrzs/i2jaDREjQI+27CQpIrMmgERRMP8mPnjtB6gnkma/7Q8z3r586D0X0yj6MYPVI/guN
-        dFxfFIVmDq1JyKHS5rTkjoUM8S9Y02KS5A+K3BVFI4xYCNXoQc/wiaKvsrLJNM+HzmAbts
-        Mrtgx/u7YFnMyB42Y2ZmYxQGn02c8oJX8s5BSx+kCkmpVdWHA5Rxoi6xj8IiTwzWdUeb2Y
-        KjSAmnVlGA8Wtmk1B2LBtx1KeQ6RimYPHHgIUwGqCrBCT2PNkj+o9vj9RbjntQ==
+        bh=8ucNqQrBv58FmJgsbqN8x3M/G1cfrpq7tqtLwGp8Zts=;
+        b=BO/W7ryvR8JDotAf4gWdeS8Dhl59cGsFoi2/VnxatK00UV12d84+KVEVwGfDL8trZQBnc+
+        49hLDoUSNcQCQtN4ZVeOAI0dyEb+tNHVH1L8GNuYlK+07FEsRD3IRwEQZ5B/adTcnrzazY
+        HmDIqU/fUL97iMbwdSjzRRA0kOypKtd15rrc/7qZAdyJRUQumxYBxBGm6d53iZtp4z6V3n
+        HwP+BjH8gf176YsJHMPazgLiq1kx4TNoXJTop86c7QkTOAueyZsuTW7tzMcpeJRYRRXmkH
+        RV1t7L68Q23HalVppN3uKO0DLIapfih8QyyqhJ5svBPlhCLRnlxVS4vNivCqiQ==
 From:   Michael Walle <michael@walle.cc>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -61,9 +61,9 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-actions@lists.infradead.org,
         linux-mediatek@lists.infradead.org,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH RESEND net-next 1/4] net: phy: Remove fallback to old C45 method
-Date:   Thu, 19 Jan 2023 14:06:57 +0100
-Message-Id: <20230119130700.440601-2-michael@walle.cc>
+Subject: [PATCH RESEND net-next 2/4] net: ngbe: Drop mdiobus_c45_regad()
+Date:   Thu, 19 Jan 2023 14:06:58 +0100
+Message-Id: <20230119130700.440601-3-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230119130700.440601-1-michael@walle.cc>
 References: <20230119130700.440601-1-michael@walle.cc>
@@ -79,52 +79,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
+With the new C45 MDIO access API, there is no encoding of the register
+number anymore and thus the masking isn't necessary anymore. Remove it.
 
-Now that all MDIO bus drivers which support C45 implement the c45
-specific ops, remove the fallback to the old method.
-
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/net/phy/mdio_bus.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index 132dd1f905f4..f5e319549f67 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -844,11 +844,6 @@ int __mdiobus_modify_changed(struct mii_bus *bus, int addr, u32 regnum,
- }
- EXPORT_SYMBOL_GPL(__mdiobus_modify_changed);
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.c
+index ba33a57b42c2..c9ddbbc3fa4f 100644
+--- a/drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.c
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.c
+@@ -92,7 +92,7 @@ static int ngbe_phy_read_reg_mdi_c45(struct mii_bus *bus, int phy_addr, int devn
  
--static u32 mdiobus_c45_addr(int devad, u16 regnum)
--{
--	return MII_ADDR_C45 | devad << MII_DEVADDR_C45_SHIFT | regnum;
--}
--
- /**
-  * __mdiobus_c45_read - Unlocked version of the mdiobus_c45_read function
-  * @bus: the mii_bus struct
-@@ -869,7 +864,7 @@ int __mdiobus_c45_read(struct mii_bus *bus, int addr, int devad, u32 regnum)
- 	if (bus->read_c45)
- 		retval = bus->read_c45(bus, addr, devad, regnum);
- 	else
--		retval = bus->read(bus, addr, mdiobus_c45_addr(devad, regnum));
-+		retval = -EOPNOTSUPP;
+ 	wr32(wx, NGBE_MDIO_CLAUSE_SELECT, 0x0);
+ 	/* setup and write the address cycle command */
+-	command = NGBE_MSCA_RA(mdiobus_c45_regad(regnum)) |
++	command = NGBE_MSCA_RA(regnum) |
+ 		  NGBE_MSCA_PA(phy_addr) |
+ 		  NGBE_MSCA_DA(devnum);
+ 	wr32(wx, NGBE_MSCA, command);
+@@ -121,7 +121,7 @@ static int ngbe_phy_write_reg_mdi_c45(struct mii_bus *bus, int phy_addr,
  
- 	trace_mdio_access(bus, 1, addr, regnum, retval, retval);
- 	mdiobus_stats_acct(&bus->stats[addr], true, retval);
-@@ -900,8 +895,7 @@ int __mdiobus_c45_write(struct mii_bus *bus, int addr, int devad, u32 regnum,
- 	if (bus->write_c45)
- 		err = bus->write_c45(bus, addr, devad, regnum, val);
- 	else
--		err = bus->write(bus, addr, mdiobus_c45_addr(devad, regnum),
--				 val);
-+		err = -EOPNOTSUPP;
- 
- 	trace_mdio_access(bus, 0, addr, regnum, val, err);
- 	mdiobus_stats_acct(&bus->stats[addr], false, err);
+ 	wr32(wx, NGBE_MDIO_CLAUSE_SELECT, 0x0);
+ 	/* setup and write the address cycle command */
+-	command = NGBE_MSCA_RA(mdiobus_c45_regad(regnum)) |
++	command = NGBE_MSCA_RA(regnum) |
+ 		  NGBE_MSCA_PA(phy_addr) |
+ 		  NGBE_MSCA_DA(devnum);
+ 	wr32(wx, NGBE_MSCA, command);
 -- 
 2.30.2
 
