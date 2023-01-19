@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BFE2673874
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 13:29:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76E82673876
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 13:29:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230135AbjASM3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 07:29:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49078 "EHLO
+        id S230359AbjASM3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 07:29:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229758AbjASM17 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 07:27:59 -0500
+        with ESMTP id S230003AbjASM2A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 07:28:00 -0500
 Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-ve1eur01on2079.outbound.protection.outlook.com [40.107.14.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD474ED21;
-        Thu, 19 Jan 2023 04:27:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEAC561881;
+        Thu, 19 Jan 2023 04:27:59 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZEO5N33B3c+qDFk4RXQgbpqgr7cKlYqUyHtYoO3LzztgmUe2hPnz10kpFjPrI41Zv7sdjgjVqjJSSfD+HeDAK/EXRGS5VnRXuk8wjwnKKYbiWDUOaIj2xwOWcldaXhB4V8Vmov/eO7IFPUceXnf70AyGeYUdpi4tI92+MDYOnBHC9OEHfOASvVjywLpHra1qtFt86YVDmjkRKIs1qCmFBkXb2gyRyzvJUNUUP8dKe/Pl6v4qRBaJTpSCvUtKsp+eIfSn5WVAlHhwze3ivtb6NP3e7GCKj58ZDD7zfZCKctVtImt4arCGt/wXU9c5wkqZcGxNletKwEz9qrYTCzi+Bw==
+ b=nYXtayTZCzOdUK1jkN8UttvOTefqzqNmm5memK2j8JOVO+fJKbKgxQCi7JMl80QPoM34YuS+8MdMPIvLeFnTPP5PFb7WUTHahGMldqBARKnHYPZKDWFKaCXH7jBKbtkaOVTglF3cakxHisRx56zsbn6HFAsbpfGJQ+64AIf55HMcjiyo09Tjh08D+0NQP4QPoFCLrAUR6lvskMwkLIe0RCh2beKSI0AL1HWW3K1bC3qzQzLNonsjB7zNTHeXEUCJdPDZHNNRW8iLMkJA1B7lHTQp3MxnUNtfXLHFw7FYfPXKDPMZGl3jWwT0aziR3p2STV5pqORSDddAepk3vH3vSA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=z4W21MZjorFHix/oWTag/+RlbbnVBD8mhmhpca8aKQw=;
- b=b9XSca6NrMHrNShJjeGBaj7YMAw1vWoU2V218LGtskfVmBf/xS88lwuALNE3w1a/Q4q1xDLCJh6JeTICT/ItWRFWIH18PY1C6I6lz3Kr8YgWuJ45YNWsyqijkQBh6QpEErugqGQc7pxWvJd9hTz1VgUWRtqgpvqtxDkkMW2T92JE0Xo2GqruxhEIkk3kBzpByW+oBHUz6PfgsCRo6j6TjKKJdyptLTD2ZlXx4fAkpkEHhlGi8lP9mTM5x9ooKo7MA/f6FT3T73WczVC1RgXjWKnRDEg0SAVminZ70x9NkyJFUvvweZgxEBDNKIDrqrW1noRp/FJVpUoUcJlRf7KlQQ==
+ bh=sPIcQvi5NyHzktP2rGc9ZArsLGcxMx4VnLiCAyCPHG0=;
+ b=kC81kyEDbIhXN6zYcIho/NlGUwbC+S0hKTEgMcthsjj13huMfX3nM1j3ZA/QOeMzYPTB0zBEBeRqP+PC1dgTqo83wSqxxAOZBbMhX1LJA7Ej1UTCrRE/iNtQi5nYQepxNkPsNAgjDzQI/3hf6joCp3YIcyVuQMwGMuFIEckaqdxPH9fQSB5vaz2aWU6s/+YuDsyawszuXT07E8mBYFKZphmPQ1haZCnYeahHghKs/yFUYLnpmGOgFR4OTIeDWx+h0W324fstfnwR8Ayn7P2Vk4ZErEu64AaBRfbDRmDVC9W3Jb3GFPEJ0EeRHenT8QXRXV7nf3v7R2HK0hnREUPM9g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z4W21MZjorFHix/oWTag/+RlbbnVBD8mhmhpca8aKQw=;
- b=BUHmRYNt6J+R1468P3fSf3n5zbzMn1pPDZsia1tX6zLKWzT/+xyFep2l+p6nsPc6VbhjYFLYVS9bh+DcQynM7gr0Dr9yvoZvIYprOTwXfK258NhbV4wjbk+nalgbMNnT2j3NVuo43rOiQ7fM2+0C01DLs9FmmyE3DWOyOZRQCKQ=
+ bh=sPIcQvi5NyHzktP2rGc9ZArsLGcxMx4VnLiCAyCPHG0=;
+ b=rc9RlvrpD5PTkZDQUB/17bYyUWE5jYVevCPnl+g87SUp7IDC30Xps+2RNBHW0bp8zL7GLBaT9EjUkg1Ugj9YkYZVOzyrUz5jU3wgYxGRgtzx04vU7TAOiXcxUPer0sG/N/WMuG+5iey8w0ECOelRs3Fd6T/cBTUOFSdRZ1jqbG0=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by PAXPR04MB9376.eurprd04.prod.outlook.com (2603:10a6:102:2b2::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.24; Thu, 19 Jan
- 2023 12:27:53 +0000
+ 2023 12:27:55 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b%4]) with mapi id 15.20.6002.024; Thu, 19 Jan 2023
- 12:27:53 +0000
+ 12:27:55 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
@@ -60,9 +60,9 @@ Cc:     linux-kernel@vger.kernel.org,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH v4 net-next 07/12] net: ethtool: add helpers for MM fragment size translation
-Date:   Thu, 19 Jan 2023 14:26:59 +0200
-Message-Id: <20230119122705.73054-8-vladimir.oltean@nxp.com>
+Subject: [PATCH v4 net-next 08/12] net: dsa: add plumbing for changing and getting MAC merge layer state
+Date:   Thu, 19 Jan 2023 14:27:00 +0200
+Message-Id: <20230119122705.73054-9-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230119122705.73054-1-vladimir.oltean@nxp.com>
 References: <20230119122705.73054-1-vladimir.oltean@nxp.com>
@@ -74,51 +74,51 @@ X-ClientProxiedBy: AM8P189CA0020.EURP189.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PAXPR04MB9376:EE_
-X-MS-Office365-Filtering-Correlation-Id: 20c8a780-0550-4991-54ae-08dafa189644
+X-MS-Office365-Filtering-Correlation-Id: 8eee1fef-81da-4433-ca0b-08dafa189783
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rQrqQJNM+X27EfyJjqFQ0BMr1ngGRyxUXcmOtmGyaldMB0YQanrMadHjfbk7gWaI7jUdsCN1IYI9bTplchhd4ixURwsgWmcLIBXHTjISALeAtN9KDHsFrBm6kDOAscwSnbC9PJuthMcGU4+U9sjSuh3sO+FhIQYcN1+eIZoTEZUJ+U99QFkOLelHWqyqDagFktM+yQn5c/BQjdc+7ZBgZkkZ6w4kocd5KszmQGwQvfnQvcFwztxrPOZURf2TIVxteLTxv7eUxta9MMFa72uECyuUZP/uNT9HduxpeLqpPa+p2l9VpExjYZ+O4sF3lRAVpJDk+z2oASEy5YNIYlPgh83mTMyBEsYvOpN3QFuSmltU1cd9ZmKkz+ug3dA1udg83taUGcHE2Vr7S6d5q3TjWQJSSLiXbOozbu6fcqD4Sh++wKYymHjgmXx3TaTF0lwJ+wUjSCcjoLJG19jNyzkM7tGsqzL6mxG+NYNcR3xizsL8XaAltnZJT8Z+vfH0vdqvKnHpJJOW28CkiqfcRmFvizmrSye3VxvxKDbyN1rmnwI1sVPTiglcF0zpzT8cIjgcIuteb2dh0VIbjvGCbHMQt2uWEPLP6Hs4+TgMXFxaPSHGdZKhnEjp6iciRzEsCko1nabeBVcJK7QpHFk7SCXvX+U9AGyCGZUQzLXLrxp13OwGCwRAGT/HzAfk0CaRjwdO
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(39860400002)(376002)(136003)(346002)(366004)(451199015)(6506007)(66946007)(66476007)(44832011)(66556008)(7416002)(8936002)(5660300002)(2906002)(38350700002)(38100700002)(316002)(54906003)(52116002)(86362001)(36756003)(4326008)(6486002)(478600001)(6916009)(41300700001)(8676002)(26005)(1076003)(6512007)(186003)(83380400001)(2616005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: QjoeoFpcVaQTnu9DVHYqIhuj2bwzfzfUk0Z+2dsfWMyhnuZqr/ad2N7NuORauDq5b6mbGnGmvVZbK/wgdlg1Kzz0JRciIDjJSoT3jSXSqni6Du9hWBnb1sGgA1/1Z9hlQ36AXkPTEV7WvOPJXO/ikR01fAcTM1ibiqMJ/xKmPwHAWTr9xWeEfsUiPTlUAflyoTMg7oh/sHhlB47lVHT0yU6dRS2ry+zcST4afFZdiaOpkjEnczPQHh6ah7lRphb0wjhEXGm4cv6zXCUlSX6jtwBi8Q+66No2+9GSRxYUvRENWro+2As1AVf+05B046eyJ1BaLUmBtznEwh8B/TLK5xsDfXrSFe0YbhuzpVSLQAv9pBI8y97lTyKQ4++s5KjIvo/YuKRn4013lq9IKQD+DhkTSrIQQE543zzP72cpcEepPuvRbyaVBge/D9RxaXYLeNY5lDzn7M3ZxP/AvvesAP+7JI5Cnviq6d/GUdThfcpoqkGIz5fEARCu2Ru4IwromFFN0oMgKJQFEv3tuVEeZziqVAVfManmybm9pMTzp2oenHLhQUp89hYAq/Di21yrk3LvMbvw5Lz4e4NlgzciNVbNlkUc8o6r4iV0yZgcpXVhBs+iGhOiGmGZa8wFN8Ik1lRKcvQdnYL2yLMTZvGViay2miwwcEZ6Houecj3VSlMwTU99Y7LwY2P8wElTMXG+
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(39860400002)(376002)(136003)(346002)(366004)(451199015)(6506007)(66946007)(66476007)(44832011)(66556008)(7416002)(8936002)(5660300002)(2906002)(38350700002)(38100700002)(316002)(6666004)(54906003)(52116002)(86362001)(36756003)(4326008)(6486002)(478600001)(6916009)(41300700001)(8676002)(26005)(1076003)(6512007)(186003)(2616005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UrKRnffKYWbqdXyJZTSKzS2dNE5tZzkasIOdNr0Il3X/cmuGSOxVXt/rc1J0?=
- =?us-ascii?Q?Orzx/+bs71vSzSN4gvM+9eEGtZ5boc/Ojgl+LEoy1U48DArDFUdk9fMnjY71?=
- =?us-ascii?Q?MQy7bHq7wHuZbNDQ3oIqCVM0YRCC0DlkF4FfHYx/ubHYRn2JvcKg/LjNPDO/?=
- =?us-ascii?Q?7lyobvglkqIcfYAMp9S1u1ELDCcIYvZ7xC7+wCkcrWZxLp2jY98LEh41/bt+?=
- =?us-ascii?Q?ziRqsfoE8qMeEwg9FW0x0Lo7c8ZXRq8gUVhBwPN4i3W3g7uRCSRxuCNOq1mE?=
- =?us-ascii?Q?BmuJY4VOWyNq1cf+EctIn+ukuxr7FwymkfZ0Hg9Qj/hnkHrRBnYzjDgl3W7u?=
- =?us-ascii?Q?7tjC7zEk62srGffPvMBR2H/w2Ewc9AkI1CdfZZ7vVMZEZsoNtbjjXEaX7BSx?=
- =?us-ascii?Q?cUxJI8H8gJCdfcugGbMidHCsGS/6w2v/B4ALtYT4s21GIrw4jRsoQ8jrohwq?=
- =?us-ascii?Q?3w2jJDg+/vrTM6yvjalCdSUieX4rd2p9TZQ/fRE2/bCW7TWmtK2S1rHQvbld?=
- =?us-ascii?Q?PgtgCqfdkfaRJZe5adz57crleMXbqUGmyYa7W4diuNBKqFQOTxKwvHl89hOj?=
- =?us-ascii?Q?2dQ2ziesHEjy24//QI/wmP6cNjX5XMJx1Fl2jUUDex3KlZhgiUV+d3VuvgLR?=
- =?us-ascii?Q?JGWggmw9zASqA2gHVhtGDZSTzuii7t86ezkkuDdlG6dSNkLAlVOJVBm0Yey7?=
- =?us-ascii?Q?f0ZsycuS7ihi7bTxwt1asSbhMdTScR2yOiECbiIQjmwCCOSHXNQM2G2nQfLx?=
- =?us-ascii?Q?0BdGiI0uRHfyAizMlGvs4o+b+suRof31zacygPoanf8G+PgiVDSxQ66XiGBG?=
- =?us-ascii?Q?apbrqu1CigbiySYsRNjJdYCY/aqmQD/ggM3PEgSNgBCZXA0PxNIGWkpBOzQZ?=
- =?us-ascii?Q?EDvbXudVPvmx6+Tf00pff+RnjX+7OaUsG5vrGE5RBv/ZZOGuufakUS0iTHsp?=
- =?us-ascii?Q?cq0d38WvJheha6TQjOVezf93j1p3qji4k+NYUwGge09LQDZrEMaNubfGjmVK?=
- =?us-ascii?Q?ewzqeR/k89EZ5lwAHGtLtP0iLVOZqhjmI3ygit+Yw6cLdbfQzA8YyJvyGdXD?=
- =?us-ascii?Q?Dazic8BcxzC09P1x5wFzOXBAWjxCI9JeiBCuhbg5yRPOA2nR9zUXHqPtr4NO?=
- =?us-ascii?Q?t0ajodiLucLX6gUvpVHzqNKySKf/p9IcdF1D3uvwhbepNwf222cwdHGv/gTI?=
- =?us-ascii?Q?m5ELCfS2lERr5TFNRO0hvWGMiM0lyyOdX6r/Ds9bz6S9ruoKv868NE7ikfF1?=
- =?us-ascii?Q?ERUOyEI4Z8HQj1ob4sZmjBCaIc4fimAaQNGfpI30rXEllmOJN0qAl0ZLOBUB?=
- =?us-ascii?Q?0faNXMwEf/ZrMiBHEuKRZRu5gqJ7EG+eQww2aakxIBLaAd7RKASYPOAX3QOC?=
- =?us-ascii?Q?eBIDge69dE4ejY1+EmpENsQYv/477RbLXdXac3Jvj03T/JVgRITNoSU65ZKk?=
- =?us-ascii?Q?h6Sm/lLTRh7XlxI+DNTx80/OfMbd4kfkyWu2jay8YpPzdmBbcgvevZykYMDA?=
- =?us-ascii?Q?Yib0237h1ICRZedOHmIWSRbuZYd7h1sNe03khhSJSIEdNmQ23eLxsr2d1NYQ?=
- =?us-ascii?Q?iC3eK01koZrMSZK/nTtT9Wv5HVbxIOPssFA3c0gvRmKOZaSE2ycv3cvoicaQ?=
- =?us-ascii?Q?FA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ddfmVmLknLXrJO1IXHgLgCzh7G1sgmnz13VP0Y/AovAkpnJ7FO/NRucx7eX7?=
+ =?us-ascii?Q?tFh7zmVFyitgSLNGogll9NlPi0WdFpQkarM3hgsBjoblfOax6SVCy9t4cYv/?=
+ =?us-ascii?Q?6/3NRr2W64lkk9uckdGwH38bzlcEjwYhhLO9idMvFqSLN5An9+CpRGf5NkBg?=
+ =?us-ascii?Q?xddOM+rOK5G5NKu9Cvnl9vn7/vm7dKSu69xeNhgmxgtAqkPXgjGqhmBB+7Y4?=
+ =?us-ascii?Q?jHTn1nzcd/l+Z/vNN1er5GWStCeMaHHhY9EQq3HiwtI8NmUT901bEtsN3DCv?=
+ =?us-ascii?Q?xuLaP3AOupjF7KwGPrJIoBviHTzWYV82NZP2OQqvI8xFutuSl5UoXLmUDXP2?=
+ =?us-ascii?Q?Daca5ng5gN2qMawNZXHVtCI1U+cKkA0qQwi8+BZb/OOuoqYi6nswqdAU8/JU?=
+ =?us-ascii?Q?bGeEosxVgD3PR5v/6lO8TXF6YmY246WN6mp9N5CVeLY1WmsiPIbgnUpvtgC/?=
+ =?us-ascii?Q?7SAlYpytmEl4ikE4r6pDA1nSrXruZqu0UXRi7NMyZJW7wi+wPVaKe5997IOR?=
+ =?us-ascii?Q?lJxrkHo8CcnCsuKc8wHOhoHYyXIgKcyPuX/NWSdW+DqkE3OwAFGsw74EPXpC?=
+ =?us-ascii?Q?lTkwdiCSew87QIk441/ao9DTejZEyBpOO4eQ//Pxxl5gkVOCyVEUOhCaIWSx?=
+ =?us-ascii?Q?/e7vXRR6GTskak9GM8voe93BtRh8YMlTamimS/MkmkgtdJxx9TcZxKy2n1yj?=
+ =?us-ascii?Q?bUd6gy1YDHJOenbLNk9maL1iAPe0NcbXYm4FnY7gK8mMpZV2LUwommTraVnK?=
+ =?us-ascii?Q?4Zgwh25H2OlcJNkTZZZfnltxRc/+kRCEJeGxjxu0ogXmyrNqcsOQoIPe6YGW?=
+ =?us-ascii?Q?aIsMv/puesECtIFk0S8B8oE8b3C5XiYTaScBVG9q2ImFph9cIB4Aw9zBYp1v?=
+ =?us-ascii?Q?BkuIwWiZcokXR/EYeEk9u2RfqNQX7hPRbDxE4xQf633f6lZ+YzlEJXn5Sx+2?=
+ =?us-ascii?Q?GPjKyuFwm2IVHkBVJrQZcKrZ2jfkt/XhntXCzr19kqbtnAo4XNf0/dXZ7nPL?=
+ =?us-ascii?Q?W06JZX2Vuzix9NlwO8I+BJLdlzCWDMGijhgo9khK7OJ85C5kOopEQuaLMDhs?=
+ =?us-ascii?Q?7Xt71YUeRTT2L2q5hfxW78I8hbjjj4wrpyhjDN+uvgF2CrW5TDKiNm3/+Pz/?=
+ =?us-ascii?Q?f7GNKbNGtbaRXnZ7IYtL+9s+fRV/Z72SRXIUD3rsmOJuIi9qcKR0fz43Hm1m?=
+ =?us-ascii?Q?ssMO4mRHKiPgEhwzs4Cvdx4GqV+k8JuAft8TDMFlgXwKcX0bv5hKLyapaakM?=
+ =?us-ascii?Q?jmbyEbtlwqlmBVycPEdMZqTZwV4Vyj0jmSmWc2PEcNEQSkQYljq+DVbJlPrt?=
+ =?us-ascii?Q?czgOS1dBg4RMuBsdLgEQsljHzkrccILEy2slMb2KKBmG4VI+g4fV0IP38g5h?=
+ =?us-ascii?Q?mv1J6UROdPxhvoTMstTm4QquArU1d5GCcEEKbNnzyDI8FJjlDWHytQkXXP6m?=
+ =?us-ascii?Q?X4uf6kCIHua3jocKeCFLAvVWHV6EJwCQdTpvxHFI8Uh9pMCewrhzAxhmv2Vo?=
+ =?us-ascii?Q?Gj0W9dC8CeDxk6ouNfSjnlH2qeaW2UvZ7i1kv4+th3UnJ6NldbFxzms1v5/f?=
+ =?us-ascii?Q?lXpiVkdJyfAsQeL0J4ErWpqKKCUXrD4BisMkd67/w0ab18Z9d/Tg17UCIVQH?=
+ =?us-ascii?Q?nQ=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 20c8a780-0550-4991-54ae-08dafa189644
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8eee1fef-81da-4433-ca0b-08dafa189783
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 12:27:53.6847
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 12:27:55.7470
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OMM/F9L3+LsZ8FJz7OeNLwDkT0HqNcGIZ10NsRf+VWbP66vCc7eA1id4vVhQUBbdZL3ID0d0Z3R9X/poVSeSbw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: gcPdSK7vC7KHWqyFmcVdS2TcNBkUz6Hf//PeqiJhNYDfbiCxc7nbSP5remNXaYNiNpx1puc8l3jx+Y7wfFwbpw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB9376
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -130,88 +130,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We deliberately make the Linux UAPI pass the minimum fragment size in
-octets, even though IEEE 802.3 defines it as discrete values, and
-addFragSize is just the multiplier. This is because there is nothing
-impossible in operating with an in-between value for the fragment size
-of non-final preempted fragments, and there may even appear hardware
-which supports the in-between sizes.
-
-For the hardware which just understands the addFragSize multiplier,
-create two helpers which translate back and forth the values passed in
-octets.
+The DSA core is in charge of the ethtool_ops of the net devices
+associated with switch ports, so in case a hardware driver supports the
+MAC merge layer, DSA must pass the callbacks through to the driver.
+Add support for precisely that.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 v3->v4: none
-v2->v3:
-- adapt to renaming of "add_frag_size" to "min_frag_size"
-- use some macros instead of 4 and 64
+v2->v3: get_mm now returns int
 v1->v2: patch is new
 
- include/linux/ethtool.h | 42 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+ include/net/dsa.h | 11 +++++++++++
+ net/dsa/slave.c   | 37 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 48 insertions(+)
 
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index 6746dee5a3fd..6a8253d3fea8 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -15,6 +15,7 @@
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 96086289aa9b..a15f17a38eca 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -937,6 +937,17 @@ struct dsa_switch_ops {
+ 	int	(*get_ts_info)(struct dsa_switch *ds, int port,
+ 			       struct ethtool_ts_info *ts);
  
- #include <linux/bitmap.h>
- #include <linux/compat.h>
-+#include <linux/if_ether.h>
- #include <linux/netlink.h>
- #include <uapi/linux/ethtool.h>
++	/*
++	 * ethtool MAC merge layer
++	 */
++	int	(*get_mm)(struct dsa_switch *ds, int port,
++			  struct ethtool_mm_state *state);
++	int	(*set_mm)(struct dsa_switch *ds, int port,
++			  struct ethtool_mm_cfg *cfg,
++			  struct netlink_ext_ack *extack);
++	void	(*get_mm_stats)(struct dsa_switch *ds, int port,
++				struct ethtool_mm_stats *stats);
++
+ 	/*
+ 	 * DCB ops
+ 	 */
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index aab79c355224..6014ac3aad34 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -1117,6 +1117,40 @@ static void dsa_slave_net_selftest(struct net_device *ndev,
+ 	net_selftest(ndev, etest, buf);
+ }
  
-@@ -1001,6 +1002,47 @@ void ethtool_aggregate_pause_stats(struct net_device *dev,
- void ethtool_aggregate_rmon_stats(struct net_device *dev,
- 				  struct ethtool_rmon_stats *rmon_stats);
- 
-+/**
-+ * ethtool_mm_frag_size_add_to_min - Translate (standard) additional fragment
-+ *	size expressed as multiplier into (absolute) minimum fragment size
-+ *	value expressed in octets
-+ * @val_add: Value of addFragSize multiplier
-+ */
-+static inline u32 ethtool_mm_frag_size_add_to_min(u32 val_add)
++static int dsa_slave_get_mm(struct net_device *dev,
++			    struct ethtool_mm_state *state)
 +{
-+	return (ETH_ZLEN + ETH_FCS_LEN) * (1 + val_add) - ETH_FCS_LEN;
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct dsa_switch *ds = dp->ds;
++
++	if (!ds->ops->get_mm)
++		return -EOPNOTSUPP;
++
++	return ds->ops->get_mm(ds, dp->index, state);
 +}
 +
-+/**
-+ * ethtool_mm_frag_size_min_to_add - Translate (absolute) minimum fragment size
-+ *	expressed in octets into (standard) additional fragment size expressed
-+ *	as multiplier
-+ * @val_min: Value of addFragSize variable in octets
-+ * @val_add: Pointer where the standard addFragSize value is to be returned
-+ * @extack: Netlink extended ack
-+ *
-+ * Translate a value in octets to one of 0, 1, 2, 3 according to the reverse
-+ * application of the 802.3 formula 64 * (1 + addFragSize) - 4. To be called
-+ * by drivers which do not support programming the minimum fragment size to a
-+ * continuous range. Returns error on other fragment length values.
-+ */
-+static inline int ethtool_mm_frag_size_min_to_add(u32 val_min, u32 *val_add,
-+						  struct netlink_ext_ack *extack)
++static int dsa_slave_set_mm(struct net_device *dev, struct ethtool_mm_cfg *cfg,
++			    struct netlink_ext_ack *extack)
 +{
-+	u32 add_frag_size;
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct dsa_switch *ds = dp->ds;
 +
-+	for (add_frag_size = 0; add_frag_size < 4; add_frag_size++) {
-+		if (ethtool_mm_frag_size_add_to_min(add_frag_size) == val_min) {
-+			*val_add = add_frag_size;
-+			return 0;
-+		}
-+	}
++	if (!ds->ops->set_mm)
++		return -EOPNOTSUPP;
 +
-+	NL_SET_ERR_MSG_MOD(extack,
-+			   "minFragSize required to be one of 60, 124, 188 or 252");
-+	return -EINVAL;
++	return ds->ops->set_mm(ds, dp->index, cfg, extack);
 +}
 +
- /**
-  * ethtool_sprintf - Write formatted string to ethtool string data
-  * @data: Pointer to start of string to update
++static void dsa_slave_get_mm_stats(struct net_device *dev,
++				   struct ethtool_mm_stats *stats)
++{
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct dsa_switch *ds = dp->ds;
++
++	if (ds->ops->get_mm_stats)
++		ds->ops->get_mm_stats(ds, dp->index, stats);
++}
++
+ static void dsa_slave_get_wol(struct net_device *dev, struct ethtool_wolinfo *w)
+ {
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+@@ -2205,6 +2239,9 @@ static const struct ethtool_ops dsa_slave_ethtool_ops = {
+ 	.set_rxnfc		= dsa_slave_set_rxnfc,
+ 	.get_ts_info		= dsa_slave_get_ts_info,
+ 	.self_test		= dsa_slave_net_selftest,
++	.get_mm			= dsa_slave_get_mm,
++	.set_mm			= dsa_slave_set_mm,
++	.get_mm_stats		= dsa_slave_get_mm_stats,
+ };
+ 
+ static const struct dcbnl_rtnl_ops __maybe_unused dsa_slave_dcbnl_ops = {
 -- 
 2.34.1
 
