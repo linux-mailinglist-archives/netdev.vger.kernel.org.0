@@ -2,77 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 957E4673080
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 05:43:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD9956730BF
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 05:55:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230016AbjASEni (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 23:43:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58470 "EHLO
+        id S230127AbjASEzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 23:55:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230262AbjASEmb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 23:42:31 -0500
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC18193DE;
-        Wed, 18 Jan 2023 20:40:19 -0800 (PST)
-Received: by mail-qv1-xf2d.google.com with SMTP id m12so727210qvt.9;
-        Wed, 18 Jan 2023 20:40:19 -0800 (PST)
+        with ESMTP id S229615AbjASEyR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 23:54:17 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 598C971F07
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 20:46:17 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id 123so1105089ybv.6
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 20:46:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=FYHy7LFhouoyw1lMkkYCJ4FEetLKb0c3tZXxxcGO/JM=;
-        b=QsoYiT+zoPznSy5rXctnGY81xSrEEaj21VLFYej+yr0am6eR+rFtE+OffbgLM0WttQ
-         1nUZmM1A25SdED2ca8519mXVD17mFX1Jco9UEJXlLtUtbOZ0CEpiwwyCWCtWVGynEA1A
-         sAavVfWour0uL1+fgff2G3XC16R+L/XUsv7TrKXnNRRNk5loGiXvi3oJy+YfZ9dQRKW7
-         faSRNfz/FIki+Ub5RcLaj8aeJKAo8rmrirB0cVhWR7i+7toL9DcNps4UX98Pip15Mz/k
-         ASczeYXh+/ysLOEOHqykSYUe1omTUtqjP2Rz5WQ9J00kjrl60eT1lJJCI5m6BbFHdif2
-         Adjw==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=gYdaFetUPf0E0ye7Z3ZJlSmRWJOtaHOZWbhbExkiyx8=;
+        b=oD5uLA0y/00qtaZD98y+906UbmyKCQ91Umx0p1OmhRh1HjdSOThxXCzmSIAMlnkLsz
+         QmK4AMU5cifY6S/eqpC3BrBqPm8ZjbimNTFWEFOTw1h4KrXN+yCwGIG7ptzsQ4qBWA07
+         k44GyPHq9OxtUpubkZW3Pr+sVRph8cLT8kM+BybuBNZyINZ1qrnQHWW13+UflMUYSr0l
+         iMPa7DklAsIJ0k/92neTiXESaKe2EBJcShKGhVvQVKWVR/Jjhh5FPH6HjQYGVlgtG4m+
+         JQPMTAjNovYZQXsxSNppricUSA6IWDHK/5gTYgSqzOrlLUrGyn7EVPbPgR4jIlbj8GAP
+         8KQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FYHy7LFhouoyw1lMkkYCJ4FEetLKb0c3tZXxxcGO/JM=;
-        b=KCiB3r3BWd3XVEtl57UIDbsZUPScnZ6Q9LW6VqadkfE02SgE6ox1DcRCZ9uZ08oepB
-         Qg52R7iOsifQ03QYk7cBvpq3MIcH41WhiOKddWPGXEfIOrAaEqhrSTtamU8Je6IrL8qv
-         MipJDTm+6CAm0S2VxSM7P8BjL4OUK8CRoMvfqAIZWRDfOTXHSrNfiXbrqYixF9oH+d2p
-         uQedAuYeGEFwEBlydw8W7ZpC48qhh8QI7cpZAdBgY7WUKjtqWhZ8Y7xxVqcZeBZXy0zv
-         OfSWkIpc5XYNMYIaE9ZKky9ygMWak1vbcYkMCkVfm85sc0cWLCxsLOC6dVv6/gXMPRmE
-         CliA==
-X-Gm-Message-State: AFqh2kqjrFF0boD0mPcml8dCvr71JNumon+4tDdrCHvtlOFaFeKsnadP
-        r8kLxEMEZ+lEo63i9QlmqmBEplEae10+dA==
-X-Google-Smtp-Source: AMrXdXsIdeiOBG8dpuZ2noaoIgiFvg26E8dclP8RRZBu9WQpEk4FomK+RpCm2yy+4pqoUC5Me4bIaQ==
-X-Received: by 2002:a05:6808:2109:b0:35e:9270:7b0e with SMTP id r9-20020a056808210900b0035e92707b0emr5365345oiw.29.1674101760318;
-        Wed, 18 Jan 2023 20:16:00 -0800 (PST)
-Received: from t14s.localdomain ([2001:1284:f016:3243:26ee:68de:6577:af10])
-        by smtp.gmail.com with ESMTPSA id i10-20020a54408a000000b00364a415f0bbsm9339679oii.39.2023.01.18.20.15.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Jan 2023 20:15:59 -0800 (PST)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-        id DC4644ADF5A; Thu, 19 Jan 2023 01:15:57 -0300 (-03)
-Date:   Thu, 19 Jan 2023 01:15:57 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        pablo@netfilter.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, ozsh@nvidia.com,
-        simon.horman@corigine.com
-Subject: Re: [PATCH net-next v2 1/7] net: flow_offload: provision conntrack
- info in ct_metadata
-Message-ID: <Y8jD/R8RxgPiOgzs@t14s.localdomain>
-References: <20230113165548.2692720-1-vladbu@nvidia.com>
- <20230113165548.2692720-2-vladbu@nvidia.com>
- <Y8a5AOxlm5XsrYtT@t14s.localdomain>
- <Y8a6JCG6iUFTr1Q1@t14s.localdomain>
- <87edrtcbks.fsf@nvidia.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gYdaFetUPf0E0ye7Z3ZJlSmRWJOtaHOZWbhbExkiyx8=;
+        b=DX1J6I0klnmZ6sfJo7W4L/LwXA2c94hUcTVTfHfZLA0JkDwnvsCPt4cVCKGfrbC+In
+         paXMzy7qNVQOe5N3gbMk9/+oNAqWE2srZeCfyk2iJh0Nz8rlgPDweEFjPPd99D9c/lEI
+         bPKmoXB2u0w2as99XDA3oGYonssZCv1KIghdt5iya3GUOA4zTK9Y62bpvcTNTzOcASby
+         sRfYVFRU1WFj65zbodhxjWngOh2T+u38mtHLnRJkYwlDDWVWN04tIKXGwnEQt+6f7inO
+         /2PNWwQTxGf+Qbv9KshU+YsVbG1nh0x7e0oyt2gMMlQEQStnQfoaoI8pbVIsJWmIWOZh
+         M/4g==
+X-Gm-Message-State: AFqh2kqKkVRJnKPMVocCiYyb1uMzQNn4q5w7F9qQV+NXKt3jsq89IF/Z
+        /eqsghB/02GeIosnqKWdHj/ETUC3pku7tt/m43vvwe0P53xhw1Rz
+X-Google-Smtp-Source: AMrXdXvk62oDAXFWdiHI8MIYop20AX4xbZv0HPtfGaRjO2UGZYt6AErVloW1A0knHlP+SQOxc0zFNtzy8qq9s7CuD3A=
+X-Received: by 2002:a81:351:0:b0:36c:aaa6:e571 with SMTP id
+ 78-20020a810351000000b0036caaa6e571mr859614ywd.467.1674101784903; Wed, 18 Jan
+ 2023 20:16:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87edrtcbks.fsf@nvidia.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20230119013405.3870506-1-iam@sung-woo.kim>
+In-Reply-To: <20230119013405.3870506-1-iam@sung-woo.kim>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 19 Jan 2023 05:16:13 +0100
+Message-ID: <CANn89iK6DZodENC8pR-toW_n5-VFyQR8X1XOuG9Lx1-kr1tmqQ@mail.gmail.com>
+Subject: Re: [PATCH] L2CAP: Fix null-ptr-deref in l2cap_sock_set_shutdown_cb
+To:     Sungwoo Kim <iam@sung-woo.kim>
+Cc:     daveti@purdue.edu, wuruoyu@me.com, benquike@gmail.com,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "open list:BLUETOOTH SUBSYSTEM" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,60 +75,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 17, 2023 at 07:28:09PM +0200, Vlad Buslov wrote:
-> On Tue 17 Jan 2023 at 12:09, Marcelo Ricardo Leitner <marcelo.leitner@gmail.com> wrote:
-> > On Tue, Jan 17, 2023 at 12:04:32PM -0300, Marcelo Ricardo Leitner wrote:
-> >> On Fri, Jan 13, 2023 at 05:55:42PM +0100, Vlad Buslov wrote:
-> >> ...
-> >> >  struct flow_match {
-> >> > @@ -288,6 +289,7 @@ struct flow_action_entry {
-> >> >  		} ct;
-> >> >  		struct {
-> >> >  			unsigned long cookie;
-> >> > +			enum ip_conntrack_info ctinfo;
-> >> >  			u32 mark;
-> >> >  			u32 labels[4];
-> >> >  			bool orig_dir;
-> >> > diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-> >> > index 0ca2bb8ed026..515577f913a3 100644
-> >> > --- a/net/sched/act_ct.c
-> >> > +++ b/net/sched/act_ct.c
-> >> > @@ -187,6 +187,7 @@ static void tcf_ct_flow_table_add_action_meta(struct nf_conn *ct,
-> >> >  	/* aligns with the CT reference on the SKB nf_ct_set */
-> >> >  	entry->ct_metadata.cookie = (unsigned long)ct | ctinfo;
-> >>                                                    ^^^^^^^^^^^
-> >
-> > Hmm. Thought that just came up and still need to dig into, but wanted
-> > to share/ask already. Would it be a problem to update the cookie later
-> > on then, to reflect the new ctinfo?
-> 
-> Not sure I'm following, but every time the flow changes state it is
-> updated in the driver since new metadata is generated by calling
-> tcf_ct_flow_table_fill_actions() from nf_flow_offload_rule_alloc().
+On Thu, Jan 19, 2023 at 2:35 AM Sungwoo Kim <iam@sung-woo.kim> wrote:
+>
+> The L2CAP socket shutdown invokes l2cap_sock_destruct without a lock
+> on conn->chan_lock, assigning NULL to chan->data *just before*
+> the l2cap_disconnect_req thread that accesses to chan->data.
 
-Whoops.. missed to reply this one.
+This is racy then ?
 
-I worried that the cookie perhaps was used a hash index or so, and
-with such update on it, then maybe the key would be changing under the
-carpet. Checked now, I don't see such issue.
+> This patch prevent it by adding a null check for a workaround, instead
+> of fixing a lock.
 
-I guess that's it from my side then. :)
+This would at least require some barriers I think.
 
-> 
-> >
-> >> 
-> >> >  	entry->ct_metadata.orig_dir = dir == IP_CT_DIR_ORIGINAL;
-> >> > +	entry->ct_metadata.ctinfo = ctinfo;
-> >> 
-> >> tcf_ct_flow_table_restore_skb() is doing:
-> >>         enum ip_conntrack_info ctinfo = cookie & NFCT_INFOMASK;
-> >> 
-> >> Not sure if it really needs this duplication then.
-> >> 
-> >> >  
-> >> >  	act_ct_labels = entry->ct_metadata.labels;
-> >> >  	ct_labels = nf_ct_labels_find(ct);
-> >> > -- 
-> >> > 2.38.1
-> >> > 
-> 
+What about other _cb helpers also reading/using chan->data ?
+
+>
+> This bug is found by FuzzBT, a modified Syzkaller by Sungwoo Kim(me).
+> Ruoyu Wu(wuruoyu@me.com) and Hui Peng(benquike@gmail.com) has helped
+> the FuzzBT project.
+>
+> Signed-off-by: Sungwoo Kim <iam@sung-woo.kim>
+
+I would also add
+
+Fixes: 1bff51ea59a9 ("Bluetooth: fix use-after-free error in
+lock_sock_nested()")
+
+> ---
+>  net/bluetooth/l2cap_sock.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
+>
+> diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
+> index ca8f07f35..350c7afdf 100644
+> --- a/net/bluetooth/l2cap_sock.c
+> +++ b/net/bluetooth/l2cap_sock.c
+> @@ -1681,9 +1681,11 @@ static void l2cap_sock_set_shutdown_cb(struct l2cap_chan *chan)
+>  {
+>         struct sock *sk = chan->data;
+>
+
+Other similar fixes simply do:
+
+     if (!sk)
+          return;
+
+I would chose to use the same coding style in net/bluetooth/l2cap_sock.c
+
+> -       lock_sock(sk);
+> -       sk->sk_shutdown = SHUTDOWN_MASK;
+> -       release_sock(sk);
+> +       if (!sk) {
+> +               lock_sock(sk);
+> +               sk->sk_shutdown = SHUTDOWN_MASK;
+> +               release_sock(sk);
+> +       }
+>  }
+>
+>  static long l2cap_sock_get_sndtimeo_cb(struct l2cap_chan *chan)
+> --
+> 2.25.1
+>
