@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D18C67415B
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 19:54:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E152D674167
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 19:55:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229728AbjASSyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 13:54:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38312 "EHLO
+        id S230388AbjASSzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 13:55:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229811AbjASSyW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 13:54:22 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2078.outbound.protection.outlook.com [40.107.237.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0290694C8A;
-        Thu, 19 Jan 2023 10:54:18 -0800 (PST)
+        with ESMTP id S230070AbjASSy4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 13:54:56 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2087.outbound.protection.outlook.com [40.107.243.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A25795172;
+        Thu, 19 Jan 2023 10:54:43 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XI4A8Q8VbnUZx7yap4wx18lmLRCUOCTnWTI8omh0h1rPcSSGRfH2FXulNiADKtzbdMY3Bochpl+UyPCaMTyxaoO/qVVno93v3FkQYCfJYwbIkaD6R4O7PzmHjfT/PKMXURCV0KML9v6N8AL1TFo185fCGNo00rnZ2fiBNaUKbf9IhWrCysQVcc+R67X9SDXda6BKAmrRsQomCPaGkpIFV4LKebdB+ymoNB9TAroBhqL+vku10Z7b/USyO7gRojr2V/SfU3oMYy0eEfyy5jitokKY0Szs6+JjYwtzbi6PckaA1NW2Is/pV2G5LU2sik5nQ4gEpEacvAI3eN+QBDI2gw==
+ b=Gwg0QyHOzbekXGsK+ngFjfMaDaGjNEB8KQ1Pta+C39YAiUWYlq4fZOrD7OCipfkeA/o+HQFswYKaHuhrqI7r0Sy7vaknJByn1RWECWxRB6xqz4uVGhOz+lfq1hOKxAt0eR+BMkpieAv6Xeqn5YPkAl+Ww1wf1q3Q+gR+OHA9YEkG2GVqJ5kZOK4jBNOu7P0EoeDFuBiWLRZFbp9qtWgvELlF9v317b+4I9ZdIx4eBGEg0aqOfUqrU0wpgHHmLr+ok39GyGbPf9U3zRsnxDrSQetBDqbNKb8a/7HDIFijzaeACD03sbPG7/TAOtNS62QRx5Ti3mTHL7nKQSG1GNnayA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1b8ygK4l4t9D1VUmNx5SCNMOort3UV1hUcI4VTpZAvs=;
- b=SuLVdS0mgOeJGmpkaUxhUzd/jnjSvWA8OSMmzi9iizfIsPcjmuRXGsZY4DljIWpGn2oZZYzJ3C/pWhkSvIpq7FqyVuVU+goAwNhEL5FPRSPXgtehSNgQDO5VmVvH7tB3DXv+WeNQWgprcXJGhMF3Exq5jGdvDPlnuIu5NDMoyEwqoRrUrVxElDht/Zlm7faecFSCfSQfVMopTzzWJaJO0ZHu3iislJmw+laFaGWpgReBIf+EsNvqxEmDQuraN0hc+WUJzSVUGNU5X2iOufzCo3pBx3Mj+PT+VCDT7CmavQUA2aAyhygxnWcySot0L/sLPvZ7KcDWeQOs+iwFm5gO9g==
+ bh=P8O8xdl2eBOQ+XziSVLk4BszyM0SozzlHpkpul91Ha4=;
+ b=WZRv+bkAJ5M/yG+uI3FoPSC4CeV8qQBlr977gYy/M2l96HOj+G/1IvNix9OXJBd38psgeLnxzeBIh3kRJ0N7GyVKW0UilUZogauMJkqXjFpIPafOH61luS5LmoW6vQasi3khtgZy9MWlv/vEW3uWZo5L1ANtG0Nv5btW1Zg1eZ7COx35HCH9P8mbxNhr0wjkO2Oq9I+7O4oVPReCKFcjRo5aY8wneYtFBLqHmrFWQW+EVIZ7x2Pi5Y1dClK9HNFb2jh9tHW49LYVl0KPXzmDSxxiL7VMw53fGGRZJ7EUM2nZBB/hONqbiOzWQ7vSUnxxHmmKK9eF8xlKqQ5hhmsUUA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1b8ygK4l4t9D1VUmNx5SCNMOort3UV1hUcI4VTpZAvs=;
- b=f+GL3+VyYV9gl5oLGwNzGT3/GTaxesOefL1+VtGAPaop9d5JWPsmdQvXZtbPescvr8OIocxf9L7BbC51grVUmIVt4FBXlz/HdMl08tAB8/MQ4H+yQ/p5rT8U63WQ8O+XvLMXcGQfuCBi1uPkZOeMsdCo4MnQZSajHAEq3BO3oqg=
-Received: from SJ0PR13CA0113.namprd13.prod.outlook.com (2603:10b6:a03:2c5::28)
- by IA1PR12MB6483.namprd12.prod.outlook.com (2603:10b6:208:3a8::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.25; Thu, 19 Jan
- 2023 18:54:14 +0000
-Received: from CO1PEPF00001A5E.namprd05.prod.outlook.com
- (2603:10b6:a03:2c5:cafe::16) by SJ0PR13CA0113.outlook.office365.com
- (2603:10b6:a03:2c5::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6023.16 via Frontend
- Transport; Thu, 19 Jan 2023 18:54:13 +0000
+ bh=P8O8xdl2eBOQ+XziSVLk4BszyM0SozzlHpkpul91Ha4=;
+ b=vLPQP2cYAUAlFXsq4W/5gHnLE4v/UsPa2nfq3uYGriRC+z5oMDTIT1+jGn+uAPPamteE6ts+gJziFIBtDHO8MJIBI3Qvt8tZ/mxz0SlUN62XzGy1oRL2ZkeDHWRp9zcFw0F2vozS3v71IHhZFYXYNkIZh4kKlSmsGitnihjmzOg=
+Received: from MW2PR16CA0002.namprd16.prod.outlook.com (2603:10b6:907::15) by
+ DS0PR12MB6439.namprd12.prod.outlook.com (2603:10b6:8:c9::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6002.25; Thu, 19 Jan 2023 18:54:39 +0000
+Received: from CO1PEPF00001A64.namprd05.prod.outlook.com
+ (2603:10b6:907:0:cafe::22) by MW2PR16CA0002.outlook.office365.com
+ (2603:10b6:907::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.26 via Frontend
+ Transport; Thu, 19 Jan 2023 18:54:39 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -46,20 +45,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
 Received: from SATLEXMB03.amd.com (165.204.84.17) by
- CO1PEPF00001A5E.mail.protection.outlook.com (10.167.241.5) with Microsoft
+ CO1PEPF00001A64.mail.protection.outlook.com (10.167.241.11) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6002.11 via Frontend Transport; Thu, 19 Jan 2023 18:54:12 +0000
+ 15.20.6002.11 via Frontend Transport; Thu, 19 Jan 2023 18:54:39 +0000
 Received: from SATLEXMB08.amd.com (10.181.40.132) by SATLEXMB03.amd.com
  (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 19 Jan
- 2023 12:54:09 -0600
+ 2023 12:54:35 -0600
 Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB08.amd.com
  (10.181.40.132) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 19 Jan
- 2023 10:54:08 -0800
+ 2023 10:54:34 -0800
 Received: from xhdsneeli40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
- Transport; Thu, 19 Jan 2023 12:53:43 -0600
+ Transport; Thu, 19 Jan 2023 12:54:09 -0600
 From:   Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
 To:     <broonie@kernel.org>, <miquel.raynal@bootlin.com>,
         <richard@nod.at>, <vigneshr@ti.com>, <jic23@kernel.org>,
@@ -121,32 +120,34 @@ CC:     <git@amd.com>, <linux-spi@vger.kernel.org>,
         <linux-media@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
         <greybus-dev@lists.linaro.org>, <linux-staging@lists.linux.dev>,
         <amitrkcian2002@gmail.com>
-Subject: [PATCH v2 00/13] spi: Add support for stacked/parallel memories
-Date:   Fri, 20 Jan 2023 00:23:29 +0530
-Message-ID: <20230119185342.2093323-1-amit.kumar-mahapatra@amd.com>
+Subject: [PATCH v2 01/13] spi: Add APIs in spi core to set/get spi->chip_select and spi->cs_gpiod
+Date:   Fri, 20 Jan 2023 00:23:30 +0530
+Message-ID: <20230119185342.2093323-2-amit.kumar-mahapatra@amd.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230119185342.2093323-1-amit.kumar-mahapatra@amd.com>
+References: <20230119185342.2093323-1-amit.kumar-mahapatra@amd.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF00001A5E:EE_|IA1PR12MB6483:EE_
-X-MS-Office365-Filtering-Correlation-Id: 77f1653e-d41a-46eb-9623-08dafa4e8e37
+X-MS-TrafficTypeDiagnostic: CO1PEPF00001A64:EE_|DS0PR12MB6439:EE_
+X-MS-Office365-Filtering-Correlation-Id: b667f0dc-2f09-4427-8469-08dafa4e9e12
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZDBpCSjbv/cRfsFYckWfcw1Z4CytZfw/jR+0nWB/4pW//twXGEJkmy8CRkAsXJi0lT/cYNYlWPxVYBKj0S2fIu1yVqJSYng2+66kg1E4wmEW1OrLGlIRtBlHPVdHBv6AXwpV+Br+K1Khlbi9z2VUEQfOOHAdTK27pvwNWwC7jkFMdrsq7nmYvAy9BtdCxPpLTwVPNB1Wq7rTatpfNOirKmYLhVo3hxQcxU5rBFf6fK1Ip9cXymRZJbfsALQ2Av8GONJNNbSsMPiaEWXa0jpTq2qy6wsdDeaZ+98CB1uzVI5++7K6QbwzabKCwRU6kab5c+zOEl2AbHdtkNACxeKlZMsAup9+2MTKbT7dwsSANlkge5BGPOJXCmo8b1GoZKsmrQLILWGxzjEdbhYo+QrIVDXH1upsQ74MljxaJ34OcHyXmUo6NVOjna1EjAW7To9QzyVgoClN6s9K0j0NjdnmZNlnPBfFcq+d7htFn8DuuwAdxXaBW++B/hh1qbQhVxsho8HxVf2BczpEDEm2Qy13GgQKzxgcnTu+ImZDRsygMsB/LXG3eH9LIX3pN0zPq/lIvg2bsa0mTOtXV3ZhXafaP5U4LZxyKf8F/oasjplokXxf5Rw4B+kDZM8iZKsmTn6kRQQ7yX6vOFNqvdvBDAfTQQS42+1f6ekK5+pArUvoo4hrrQOzM/cZCfGu64QdupIlTkg+UEvkfLInCcQBPYDwfpzyGy0D87tbtou4OaF7mlI8/rvwXnCAMuktFe9aIeikJST27/4UgxtB4ji6/qpdltnwiFkUbmrVriDZMsfrpDXxcc32yy8cF+RK1vDPwyTD5Pk277ckkva50D3r+sRuzZH6Jx1WSHNhWzdmsl0StoA=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(376002)(396003)(136003)(451199015)(36840700001)(46966006)(40470700004)(86362001)(40460700003)(36756003)(6666004)(478600001)(8936002)(316002)(5660300002)(40480700001)(82740400003)(7406005)(70586007)(70206006)(4326008)(7276002)(7336002)(7366002)(8676002)(7416002)(41300700001)(36860700001)(921005)(26005)(356005)(186003)(2616005)(82310400005)(1191002)(83380400001)(2906002)(81166007)(54906003)(110136005)(47076005)(426003)(336012)(1076003)(83996005)(84006005)(2101003)(41080700001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: iSpdVEkFJct8iHK7TDDlDtdTyyB5TP3eb2C+hCxP0Y30z+eb+wnSYKsfGXDE21RIRP8g0lBu/vi+cImBz2LNrb5NUfdl5om2y1mxdPV9jrSW4bLh5M5XO0T1b05iWSp9m9zwkdsm4t+iH9HG4edkgpoQRfEWxXzqBdhNXkipMvUS8AGJuBhzsnb/6WgLoJ04C3BfaVeT0Ib8e+GsG7EaPndHJxwmtoJ3wsCr8kY97qQVWbhNkAq9F5dQCOpYE2TdxusWti2c+0XUIl3pkaR9pVsxNkWhZQW0MD2XfDZzcfdzVc8uXDtZZsANDya+gGRsVqtjl6jzusId1t91rQpnuLyECAKvHu7Rdw+Q8VdfNDjATmdc7nYXIGvWcT/CvIWfJd6xJTVI1XmLiad1V0u+gpY5ROIsgsJpzu2pXfYGAY5YLyrRkT2oU1nzkxboSpaZe/DgB+2UlK7xqc6x7VdRetNSYLSI+jKyiWn1FpJWOBnJuA5ABsXJ+91h4B2Y4NLL4nuqwKqSrREV+L0WrG4FbbRTqIWUravrs0tgMV2SLrw87JUOmplYkju26qKkE/07Yk7HLhHfsAFaSbd8ihs3UThOSaOOhsx3rNd9rT1NPsIZ34rN+eUINGMvRUpec0Q+buPj3jkD4fKOHrRf6gNrubupUiKw/kMq8+a3FpAyluAhZSYL8/x9zz93tYr0pc9sThKAMdpSsN6O8gGhfERshLOneT4dhcsiByLpGJC0kpwNSnMl9Ie2GeswQ/ZzFoxwMu+NQBUtB3fhaz91i8rNDKAzOgYfO16GIncCOILgRO8MjGny4xlBBQEkIFkHCsywwod73HsfvuFjZg8Jel9XFbpB3VrkQsCVnRNKHgOhySw=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(39860400002)(376002)(396003)(451199015)(40470700004)(36840700001)(46966006)(86362001)(81166007)(26005)(921005)(356005)(7366002)(41300700001)(7416002)(7336002)(1191002)(7406005)(5660300002)(7276002)(8936002)(40460700003)(82740400003)(36860700001)(36756003)(186003)(110136005)(54906003)(83380400001)(6666004)(478600001)(8676002)(4326008)(70206006)(316002)(70586007)(82310400005)(2906002)(336012)(1076003)(40480700001)(47076005)(426003)(2616005)(36900700001)(2101003)(83996005)(84006005)(41080700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 18:54:12.3778
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 18:54:39.0565
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77f1653e-d41a-46eb-9623-08dafa4e8e37
+X-MS-Exchange-CrossTenant-Network-Message-Id: b667f0dc-2f09-4427-8469-08dafa4e9e12
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1PEPF00001A5E.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: CO1PEPF00001A64.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6483
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6439
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
@@ -157,170 +158,223 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is in the continuation to the discussions which happened on
-'commit f89504300e94 ("spi: Stacked/parallel memories bindings")' for
-adding dt-binding support for stacked/parallel memories.
+Supporting multi-cs in spi core and spi controller drivers would require
+the chip_select & cs_gpiod members of struct spi_device to be an array.
+But changing the type of these members to array would break the spi driver
+functionality. To make the transition smoother introduced four new APIs to
+get/set the spi->chip_select & spi->cs_gpiod and replaced all
+spi->chip_select and spi->cs_gpiod references in spi core with the API
+calls.
+While adding multi-cs support in further patches the chip_select & cs_gpiod
+members of the spi_device structure would be converted to arrays & the
+"idx" parameter of the APIs would be used as array index i.e.,
+spi->chip_select[idx] & spi->cs_gpiod[idx] respectively.
 
-This patch series updated the spi-nor, spi core and the spi drivers
-to add stacked and parallel memories support.
+Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
 ---
-BRANCH: mtd/next
+ drivers/spi/spi.c       | 45 ++++++++++++++++++++---------------------
+ include/linux/spi/spi.h | 20 ++++++++++++++++++
+ 2 files changed, 42 insertions(+), 23 deletions(-)
 
-Changes in v2:
-- Rebased the patches on top of v6.2-rc1 
-- Created separate patch to add get & set APIs for spi->chip_select & 
-  spi->cs_gpiod, and replaced all spi->chip_select and spi->cs_gpiod 
-  references with the API calls.
-- Created separate patch to add get & set APIs for nor->params.
----
-Amit Kumar Mahapatra (13):
-  spi: Add APIs in spi core to set/get spi->chip_select and
-    spi->cs_gpiod
-  spi: Replace all spi->chip_select and spi->cs_gpiod references with
-    function call
-  net: Replace all spi->chip_select and spi->cs_gpiod references with
-    function call
-  iio: imu: Replace all spi->chip_select and spi->cs_gpiod references
-    with function call
-  mtd: devices: Replace all spi->chip_select and spi->cs_gpiod
-    references with function call
-  staging: Replace all spi->chip_select and spi->cs_gpiod references
-    with function call
-  platform/x86: serial-multi-instantiate: Replace all spi->chip_select
-    and spi->cs_gpiod references with function call
-  spi: Add stacked and parallel memories support in SPI core
-  mtd: spi-nor: Add APIs to set/get nor->params
-  mtd: spi-nor: Add stacked memories support in spi-nor
-  spi: spi-zynqmp-gqspi: Add stacked memories support in GQSPI driver
-  mtd: spi-nor: Add parallel memories support in spi-nor
-  spi: spi-zynqmp-gqspi: Add parallel memories support in GQSPI driver
-
- drivers/iio/imu/adis16400.c                   |   2 +-
- drivers/mtd/devices/mtd_dataflash.c           |   2 +-
- drivers/mtd/spi-nor/atmel.c                   |  17 +-
- drivers/mtd/spi-nor/core.c                    | 665 +++++++++++++++---
- drivers/mtd/spi-nor/core.h                    |   8 +
- drivers/mtd/spi-nor/debugfs.c                 |   4 +-
- drivers/mtd/spi-nor/gigadevice.c              |   4 +-
- drivers/mtd/spi-nor/issi.c                    |  11 +-
- drivers/mtd/spi-nor/macronix.c                |   6 +-
- drivers/mtd/spi-nor/micron-st.c               |  39 +-
- drivers/mtd/spi-nor/otp.c                     |  25 +-
- drivers/mtd/spi-nor/sfdp.c                    |  29 +-
- drivers/mtd/spi-nor/spansion.c                |  50 +-
- drivers/mtd/spi-nor/sst.c                     |   7 +-
- drivers/mtd/spi-nor/swp.c                     |  22 +-
- drivers/mtd/spi-nor/winbond.c                 |  10 +-
- drivers/mtd/spi-nor/xilinx.c                  |  18 +-
- drivers/net/ethernet/adi/adin1110.c           |   2 +-
- drivers/net/ethernet/asix/ax88796c_main.c     |   2 +-
- drivers/net/ethernet/davicom/dm9051.c         |   2 +-
- drivers/net/ethernet/qualcomm/qca_debug.c     |   2 +-
- drivers/net/ieee802154/ca8210.c               |   2 +-
- drivers/net/wan/slic_ds26522.c                |   2 +-
- .../net/wireless/marvell/libertas/if_spi.c    |   2 +-
- drivers/net/wireless/silabs/wfx/bus_spi.c     |   2 +-
- drivers/net/wireless/st/cw1200/cw1200_spi.c   |   2 +-
- .../platform/x86/serial-multi-instantiate.c   |   3 +-
- drivers/spi/spi-altera-core.c                 |   2 +-
- drivers/spi/spi-amd.c                         |   4 +-
- drivers/spi/spi-ar934x.c                      |   2 +-
- drivers/spi/spi-armada-3700.c                 |   4 +-
- drivers/spi/spi-aspeed-smc.c                  |  13 +-
- drivers/spi/spi-at91-usart.c                  |   2 +-
- drivers/spi/spi-ath79.c                       |   4 +-
- drivers/spi/spi-atmel.c                       |  26 +-
- drivers/spi/spi-au1550.c                      |   4 +-
- drivers/spi/spi-axi-spi-engine.c              |   2 +-
- drivers/spi/spi-bcm-qspi.c                    |  10 +-
- drivers/spi/spi-bcm2835.c                     |  19 +-
- drivers/spi/spi-bcm2835aux.c                  |   4 +-
- drivers/spi/spi-bcm63xx-hsspi.c               |  22 +-
- drivers/spi/spi-bcm63xx.c                     |   2 +-
- drivers/spi/spi-cadence-quadspi.c             |   5 +-
- drivers/spi/spi-cadence-xspi.c                |   4 +-
- drivers/spi/spi-cadence.c                     |   4 +-
- drivers/spi/spi-cavium.c                      |   8 +-
- drivers/spi/spi-coldfire-qspi.c               |   8 +-
- drivers/spi/spi-davinci.c                     |  18 +-
- drivers/spi/spi-dln2.c                        |   6 +-
- drivers/spi/spi-dw-core.c                     |   2 +-
- drivers/spi/spi-dw-mmio.c                     |   4 +-
- drivers/spi/spi-falcon.c                      |   2 +-
- drivers/spi/spi-fsi.c                         |   2 +-
- drivers/spi/spi-fsl-dspi.c                    |  16 +-
- drivers/spi/spi-fsl-espi.c                    |   6 +-
- drivers/spi/spi-fsl-lpspi.c                   |   2 +-
- drivers/spi/spi-fsl-qspi.c                    |   6 +-
- drivers/spi/spi-fsl-spi.c                     |   2 +-
- drivers/spi/spi-geni-qcom.c                   |   6 +-
- drivers/spi/spi-gpio.c                        |   4 +-
- drivers/spi/spi-gxp.c                         |   4 +-
- drivers/spi/spi-hisi-sfc-v3xx.c               |   2 +-
- drivers/spi/spi-img-spfi.c                    |  14 +-
- drivers/spi/spi-imx.c                         |  30 +-
- drivers/spi/spi-ingenic.c                     |   4 +-
- drivers/spi/spi-intel.c                       |   2 +-
- drivers/spi/spi-jcore.c                       |   4 +-
- drivers/spi/spi-lantiq-ssc.c                  |   6 +-
- drivers/spi/spi-mem.c                         |   4 +-
- drivers/spi/spi-meson-spicc.c                 |   2 +-
- drivers/spi/spi-microchip-core.c              |   6 +-
- drivers/spi/spi-mpc512x-psc.c                 |   8 +-
- drivers/spi/spi-mpc52xx.c                     |   2 +-
- drivers/spi/spi-mt65xx.c                      |   6 +-
- drivers/spi/spi-mt7621.c                      |   2 +-
- drivers/spi/spi-mux.c                         |   8 +-
- drivers/spi/spi-mxic.c                        |  10 +-
- drivers/spi/spi-mxs.c                         |   2 +-
- drivers/spi/spi-npcm-fiu.c                    |  20 +-
- drivers/spi/spi-nxp-fspi.c                    |  10 +-
- drivers/spi/spi-omap-100k.c                   |   2 +-
- drivers/spi/spi-omap-uwire.c                  |   8 +-
- drivers/spi/spi-omap2-mcspi.c                 |  24 +-
- drivers/spi/spi-orion.c                       |   4 +-
- drivers/spi/spi-pci1xxxx.c                    |   4 +-
- drivers/spi/spi-pic32-sqi.c                   |   2 +-
- drivers/spi/spi-pic32.c                       |   4 +-
- drivers/spi/spi-pl022.c                       |   4 +-
- drivers/spi/spi-pxa2xx.c                      |   6 +-
- drivers/spi/spi-qcom-qspi.c                   |   2 +-
- drivers/spi/spi-rb4xx.c                       |   2 +-
- drivers/spi/spi-rockchip-sfc.c                |   2 +-
- drivers/spi/spi-rockchip.c                    |  26 +-
- drivers/spi/spi-rspi.c                        |  10 +-
- drivers/spi/spi-s3c64xx.c                     |   2 +-
- drivers/spi/spi-sc18is602.c                   |   4 +-
- drivers/spi/spi-sh-msiof.c                    |   6 +-
- drivers/spi/spi-sh-sci.c                      |   2 +-
- drivers/spi/spi-sifive.c                      |   6 +-
- drivers/spi/spi-sn-f-ospi.c                   |   2 +-
- drivers/spi/spi-st-ssc4.c                     |   2 +-
- drivers/spi/spi-stm32-qspi.c                  |  12 +-
- drivers/spi/spi-sun4i.c                       |   2 +-
- drivers/spi/spi-sun6i.c                       |   2 +-
- drivers/spi/spi-synquacer.c                   |   6 +-
- drivers/spi/spi-tegra114.c                    |  28 +-
- drivers/spi/spi-tegra20-sflash.c              |   2 +-
- drivers/spi/spi-tegra20-slink.c               |   6 +-
- drivers/spi/spi-tegra210-quad.c               |   8 +-
- drivers/spi/spi-ti-qspi.c                     |  16 +-
- drivers/spi/spi-topcliff-pch.c                |   4 +-
- drivers/spi/spi-wpcm-fiu.c                    |  12 +-
- drivers/spi/spi-xcomm.c                       |   2 +-
- drivers/spi/spi-xilinx.c                      |   6 +-
- drivers/spi/spi-xlp.c                         |   4 +-
- drivers/spi/spi-zynq-qspi.c                   |   2 +-
- drivers/spi/spi-zynqmp-gqspi.c                |  58 +-
- drivers/spi/spi.c                             | 224 ++++--
- drivers/spi/spidev.c                          |   6 +-
- drivers/staging/fbtft/fbtft-core.c            |   2 +-
- drivers/staging/greybus/spilib.c              |   2 +-
- include/linux/mtd/spi-nor.h                   |  18 +-
- include/linux/spi/spi.h                       |  46 +-
- include/trace/events/spi.h                    |  10 +-
- 124 files changed, 1319 insertions(+), 594 deletions(-)
-
+diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+index 3cc7bb4d03de..38421e831a7d 100644
+--- a/drivers/spi/spi.c
++++ b/drivers/spi/spi.c
+@@ -604,7 +604,7 @@ static void spi_dev_set_name(struct spi_device *spi)
+ 	}
+ 
+ 	dev_set_name(&spi->dev, "%s.%u", dev_name(&spi->controller->dev),
+-		     spi->chip_select);
++		     spi_get_chipselect(spi, 0));
+ }
+ 
+ static int spi_dev_check(struct device *dev, void *data)
+@@ -613,7 +613,7 @@ static int spi_dev_check(struct device *dev, void *data)
+ 	struct spi_device *new_spi = data;
+ 
+ 	if (spi->controller == new_spi->controller &&
+-	    spi->chip_select == new_spi->chip_select)
++	    spi_get_chipselect(spi, 0) == spi_get_chipselect(new_spi, 0))
+ 		return -EBUSY;
+ 	return 0;
+ }
+@@ -638,7 +638,7 @@ static int __spi_add_device(struct spi_device *spi)
+ 	status = bus_for_each_dev(&spi_bus_type, NULL, spi, spi_dev_check);
+ 	if (status) {
+ 		dev_err(dev, "chipselect %d already in use\n",
+-				spi->chip_select);
++				spi_get_chipselect(spi, 0));
+ 		return status;
+ 	}
+ 
+@@ -649,7 +649,7 @@ static int __spi_add_device(struct spi_device *spi)
+ 	}
+ 
+ 	if (ctlr->cs_gpiods)
+-		spi->cs_gpiod = ctlr->cs_gpiods[spi->chip_select];
++		spi_set_csgpiod(spi, 0, ctlr->cs_gpiods[spi_get_chipselect(spi, 0)]);
+ 
+ 	/*
+ 	 * Drivers may modify this initial i/o setup, but will
+@@ -692,8 +692,8 @@ int spi_add_device(struct spi_device *spi)
+ 	int status;
+ 
+ 	/* Chipselects are numbered 0..max; validate. */
+-	if (spi->chip_select >= ctlr->num_chipselect) {
+-		dev_err(dev, "cs%d >= max %d\n", spi->chip_select,
++	if (spi_get_chipselect(spi, 0) >= ctlr->num_chipselect) {
++		dev_err(dev, "cs%d >= max %d\n", spi_get_chipselect(spi, 0),
+ 			ctlr->num_chipselect);
+ 		return -EINVAL;
+ 	}
+@@ -714,8 +714,8 @@ static int spi_add_device_locked(struct spi_device *spi)
+ 	struct device *dev = ctlr->dev.parent;
+ 
+ 	/* Chipselects are numbered 0..max; validate. */
+-	if (spi->chip_select >= ctlr->num_chipselect) {
+-		dev_err(dev, "cs%d >= max %d\n", spi->chip_select,
++	if (spi_get_chipselect(spi, 0) >= ctlr->num_chipselect) {
++		dev_err(dev, "cs%d >= max %d\n", spi_get_chipselect(spi, 0),
+ 			ctlr->num_chipselect);
+ 		return -EINVAL;
+ 	}
+@@ -761,7 +761,7 @@ struct spi_device *spi_new_device(struct spi_controller *ctlr,
+ 
+ 	WARN_ON(strlen(chip->modalias) >= sizeof(proxy->modalias));
+ 
+-	proxy->chip_select = chip->chip_select;
++	spi_set_chipselect(proxy, 0, chip->chip_select);
+ 	proxy->max_speed_hz = chip->max_speed_hz;
+ 	proxy->mode = chip->mode;
+ 	proxy->irq = chip->irq;
+@@ -970,24 +970,23 @@ static void spi_set_cs(struct spi_device *spi, bool enable, bool force)
+ 	 * Avoid calling into the driver (or doing delays) if the chip select
+ 	 * isn't actually changing from the last time this was called.
+ 	 */
+-	if (!force && ((enable && spi->controller->last_cs == spi->chip_select) ||
+-				(!enable && spi->controller->last_cs != spi->chip_select)) &&
++	if (!force && ((enable && spi->controller->last_cs == spi_get_chipselect(spi, 0)) ||
++		       (!enable && spi->controller->last_cs != spi_get_chipselect(spi, 0))) &&
+ 	    (spi->controller->last_cs_mode_high == (spi->mode & SPI_CS_HIGH)))
+ 		return;
+ 
+ 	trace_spi_set_cs(spi, activate);
+ 
+-	spi->controller->last_cs = enable ? spi->chip_select : -1;
++	spi->controller->last_cs = enable ? spi_get_chipselect(spi, 0) : -1;
+ 	spi->controller->last_cs_mode_high = spi->mode & SPI_CS_HIGH;
+ 
+-	if ((spi->cs_gpiod || !spi->controller->set_cs_timing) && !activate) {
++	if ((spi_get_csgpiod(spi, 0) || !spi->controller->set_cs_timing) && !activate)
+ 		spi_delay_exec(&spi->cs_hold, NULL);
+-	}
+ 
+ 	if (spi->mode & SPI_CS_HIGH)
+ 		enable = !enable;
+ 
+-	if (spi->cs_gpiod) {
++	if (spi_get_csgpiod(spi, 0)) {
+ 		if (!(spi->mode & SPI_NO_CS)) {
+ 			/*
+ 			 * Historically ACPI has no means of the GPIO polarity and
+@@ -1000,10 +999,10 @@ static void spi_set_cs(struct spi_device *spi, bool enable, bool force)
+ 			 * into account.
+ 			 */
+ 			if (has_acpi_companion(&spi->dev))
+-				gpiod_set_value_cansleep(spi->cs_gpiod, !enable);
++				gpiod_set_value_cansleep(spi_get_csgpiod(spi, 0), !enable);
+ 			else
+ 				/* Polarity handled by GPIO library */
+-				gpiod_set_value_cansleep(spi->cs_gpiod, activate);
++				gpiod_set_value_cansleep(spi_get_csgpiod(spi, 0), activate);
+ 		}
+ 		/* Some SPI masters need both GPIO CS & slave_select */
+ 		if ((spi->controller->flags & SPI_MASTER_GPIO_SS) &&
+@@ -1013,7 +1012,7 @@ static void spi_set_cs(struct spi_device *spi, bool enable, bool force)
+ 		spi->controller->set_cs(spi, !enable);
+ 	}
+ 
+-	if (spi->cs_gpiod || !spi->controller->set_cs_timing) {
++	if (spi_get_csgpiod(spi, 0) || !spi->controller->set_cs_timing) {
+ 		if (activate)
+ 			spi_delay_exec(&spi->cs_setup, NULL);
+ 		else
+@@ -2304,7 +2303,7 @@ static int of_spi_parse_dt(struct spi_controller *ctlr, struct spi_device *spi,
+ 			nc, rc);
+ 		return rc;
+ 	}
+-	spi->chip_select = value;
++	spi_set_chipselect(spi, 0, value);
+ 
+ 	/* Device speed */
+ 	if (!of_property_read_u32(nc, "spi-max-frequency", &value))
+@@ -2423,7 +2422,7 @@ struct spi_device *spi_new_ancillary_device(struct spi_device *spi,
+ 	strscpy(ancillary->modalias, "dummy", sizeof(ancillary->modalias));
+ 
+ 	/* Use provided chip-select for ancillary device */
+-	ancillary->chip_select = chip_select;
++	spi_set_chipselect(ancillary, 0, chip_select);
+ 
+ 	/* Take over SPI mode/speed from SPI main device */
+ 	ancillary->max_speed_hz = spi->max_speed_hz;
+@@ -2670,7 +2669,7 @@ struct spi_device *acpi_spi_device_alloc(struct spi_controller *ctlr,
+ 	spi->mode		|= lookup.mode;
+ 	spi->irq		= lookup.irq;
+ 	spi->bits_per_word	= lookup.bits_per_word;
+-	spi->chip_select	= lookup.chip_select;
++	spi_set_chipselect(spi, 0, lookup.chip_select);
+ 
+ 	return spi;
+ }
+@@ -3632,7 +3631,7 @@ static int spi_set_cs_timing(struct spi_device *spi)
+ 	struct device *parent = spi->controller->dev.parent;
+ 	int status = 0;
+ 
+-	if (spi->controller->set_cs_timing && !spi->cs_gpiod) {
++	if (spi->controller->set_cs_timing && !spi_get_csgpiod(spi, 0)) {
+ 		if (spi->controller->auto_runtime_pm) {
+ 			status = pm_runtime_get_sync(parent);
+ 			if (status < 0) {
+@@ -3837,7 +3836,7 @@ static int __spi_validate(struct spi_device *spi, struct spi_message *message)
+ 	 * cs_change is set for each transfer.
+ 	 */
+ 	if ((spi->mode & SPI_CS_WORD) && (!(ctlr->mode_bits & SPI_CS_WORD) ||
+-					  spi->cs_gpiod)) {
++					  spi_get_csgpiod(spi, 0))) {
+ 		size_t maxsize;
+ 		int ret;
+ 
+diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
+index 9a32495fbb1f..9b23a1d0dd0d 100644
+--- a/include/linux/spi/spi.h
++++ b/include/linux/spi/spi.h
+@@ -263,6 +263,26 @@ static inline void *spi_get_drvdata(struct spi_device *spi)
+ 	return dev_get_drvdata(&spi->dev);
+ }
+ 
++static inline u8 spi_get_chipselect(struct spi_device *spi, u8 idx)
++{
++	return spi->chip_select;
++}
++
++static inline void spi_set_chipselect(struct spi_device *spi, u8 idx, u8 chipselect)
++{
++	spi->chip_select = chipselect;
++}
++
++static inline struct gpio_desc *spi_get_csgpiod(struct spi_device *spi, u8 idx)
++{
++	return spi->cs_gpiod;
++}
++
++static inline void spi_set_csgpiod(struct spi_device *spi, u8 idx, struct gpio_desc *csgpiod)
++{
++	spi->cs_gpiod = csgpiod;
++}
++
+ struct spi_message;
+ 
+ /**
 -- 
 2.17.1
 
