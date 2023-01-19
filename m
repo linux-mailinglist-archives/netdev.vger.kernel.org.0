@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A454674C31
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 06:26:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86A43674BB8
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 06:07:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231310AbjATF0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 00:26:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
+        id S230498AbjATFHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 00:07:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230497AbjATF0C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 00:26:02 -0500
+        with ESMTP id S230290AbjATFGn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 00:06:43 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97907E6BD;
-        Thu, 19 Jan 2023 21:18:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0E2985350;
+        Thu, 19 Jan 2023 20:54:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2DB98B825D3;
-        Thu, 19 Jan 2023 18:40:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5CD0C433D2;
-        Thu, 19 Jan 2023 18:40:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5B87B826FD;
+        Thu, 19 Jan 2023 19:04:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35BDBC433EF;
+        Thu, 19 Jan 2023 19:04:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674153646;
-        bh=GheWbXSmySnzBphtK+e1BAQMhvFJrqswnLr0pq7sCks=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=tnKpcCZTqFBf8z9XQyNMTe6d/NvPOIR3jwBR9YtVK3zPAzFgJe52jb/gOmYWzRSt/
-         UN4WtvMYVHy1T7GpHbvTbZ+ACQAySX75cmiRbPii98b7s87tvDD/jypLJ4ikgW3WOf
-         l/fQX4Ma+jh7Jnn14+bncoW8SiERq4OTZZTr0NNueZRheAwFrGP+r5kPXuoKG/2KBW
-         dVipueMcE6lrix5cWeUzkadeIJRa7d2ZlU/8Rs1esGZBs3vHigUwnA9mT6ViKN7y2L
-         nD8Dmk4HbnugSeN3Na9sPucu3RgLtlV3mWFtcgRZip8db+cY0yfUqjgGU2qyxhT4l8
-         Lxbp9YWPrFRGQ==
-Date:   Thu, 19 Jan 2023 12:40:45 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
-        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-kernel@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Subject: Re: [Intel-wired-lan] [PATCH 2/9] e1000e: Remove redundant
- pci_enable_pcie_error_reporting()
-Message-ID: <20230119184045.GA482553@bhelgaas>
+        s=k20201202; t=1674155062;
+        bh=d2g00Jw6tz6BD9hWtgN3/3p+tv5fhKJDDTMQdPfD77w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XJK/TUlq4tP+RkiqqZMUb2dnclna7fks8twJ14kwfW9eTsO4vDwjRbtTryPOG8NG8
+         6BrTOMalyK+BKkySa3GoZHZIbrX3hy5hTYi5+Fb7knfdUsbdBcuQGxQIu0OIkgXMZS
+         wVRNy7K7N1sSZDuaq2Qtz6uqxPp5Zewc792MxH0ruNWxOjNrT4zD/RLdXGEgD79MuT
+         dNU7v5aJ3zc+SjEwPNoZMJhwejz7A9JwwoIB+gP2nH9IACxwdbd8Hde/YBGF0aqgdd
+         0puiEQF0ONcQkenMGqssL14EtRKODOdmAHV/oaw0BbF4nZ9PgpRvP0DBbhMVycxFZT
+         FMg5Evctwh7fw==
+Date:   Thu, 19 Jan 2023 11:04:21 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Breno Leitao <leitao@debian.org>
+Cc:     netdev@vger.kernel.org, leit@fb.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com,
+        sa+renesas@sang-engineering.com, linux-kernel@vger.kernel.org,
+        Michael van der Westhuizen <rmikey@meta.com>
+Subject: Re: [RFC PATCH v2] netpoll: Remove 4s sleep during carrier
+ detection
+Message-ID: <20230119110421.3efc0f6b@kernel.org>
+In-Reply-To: <20230119180008.2156048-1-leitao@debian.org>
+References: <20230119164448.1348272-1-leitao@debian.org>
+        <20230119180008.2156048-1-leitao@debian.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4274cde6-3a64-e549-a833-3930732c756d@intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,43 +56,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[+cc Sathy]
-
-On Thu, Jan 19, 2023 at 10:28:16AM -0800, Tony Nguyen wrote:
-> On 1/18/2023 3:46 PM, Bjorn Helgaas wrote:
-> > From: Bjorn Helgaas <bhelgaas@google.com>
-> > 
-> > pci_enable_pcie_error_reporting() enables the device to send ERR_*
-> > Messages.  Since f26e58bf6f54 ("PCI/AER: Enable error reporting when AER is
-> > native"), the PCI core does this for all devices during enumeration.
-> > 
-> > Remove the redundant pci_enable_pcie_error_reporting() call from the
-> > driver.  Also remove the corresponding pci_disable_pcie_error_reporting()
-> > from the driver .remove() path.
-> > 
-> > Note that this doesn't control interrupt generation by the Root Port; that
-> > is controlled by the AER Root Error Command register, which is managed by
-> > the AER service driver.
-> > 
-> > Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-> > Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> > Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
-> > Cc: intel-wired-lan@lists.osuosl.org
-> > Cc: netdev@vger.kernel.org
-> > ---
-> >   drivers/net/ethernet/intel/e1000e/netdev.c | 7 -------
-> >   1 file changed, 7 deletions(-)
+On Thu, 19 Jan 2023 10:00:08 -0800 Breno Leitao wrote:
+> This patch proposes to remove the msleep(4s) during netpoll_setup() if
+> the carrier appears instantly.
 > 
-> Reviewed-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> Modern NICs do not seem to have this bouncing problem anymore, and this
+> sleep slows down the machine boot unnecessarily
 
-Thanks a million for taking a look at these, Tony!
+We should mention in the message that the wait is counter-productive on
+servers which have BMC communicating over NC-SI via the same NIC as gets
+used for netconsole. BMC will keep the PHY up, hence the carrier
+appearing instantly.
 
-These driver patches are all independent and have no dependency on the
-1/9 PCI/AER patch.  What's your opinion on merging these?  Should they
-go via netdev?  Should they be squashed into a single patch that does
-all the Intel drivers at once?
+We could add a smaller delay, but really having instant carrier and
+then loosing it seems like a driver bug, so let's try to rip the band
+aid off and ask for forgiveness instead.
 
-I'm happy to squash them and/or merge them via the PCI tree, whatever
-is easiest.
 
-Bjorn
+Few extra process rules:
+ - don't repost another version within 24h,
+ - keep a changelog under --- 
+ - add tree name to the tag - [PATCH net-next]
+
+Also, I'd just go for PATCH, no need to RFC this.
+If someone wants to object they can object to a PATCH.
