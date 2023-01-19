@@ -2,109 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C934674554
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 22:58:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D6516745AA
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 23:14:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229880AbjASV6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 16:58:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40442 "EHLO
+        id S230092AbjASWOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 17:14:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230038AbjASV5S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 16:57:18 -0500
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D18BBCE07;
-        Thu, 19 Jan 2023 13:37:11 -0800 (PST)
-Received: by mail-ot1-x32b.google.com with SMTP id t7-20020a05683014c700b006864760b1caso2034167otq.0;
-        Thu, 19 Jan 2023 13:37:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=U2bzn3AUxAzO0uXr0zukcHj0RPa+4LfNgFTnObuXoT4=;
-        b=TGV2yJokhg7YLs+B3CxBassm2CVAVMXq/y2DruM7PGlXfpAHEsXn3mfHbwTR+kJj15
-         4A+uB3cVtB5/ugfWnE8XmLMqhIVmSE5ystOUvStb4LjULDKaftbRQLnp0IW3MBN3He9N
-         VtAWSzcIL+RQqEvC96wyi2eHgTQ8u7CrUgj/OZ0JrLtqwwMobPo5+AGBeI0MESE+YjYV
-         nYjLuA8O8scxEgqe5w8bkaQn9ZNi5avycfMGRu8iFj05dLogQJ/RevLlDsMqZkcUXdzL
-         XKLc2b/Y1rXok8AtHjSTxC+dgH5iKoW6iF1qRnWvHV+iJsVfYEIw6AbqLquODPFyWCZm
-         1xag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=U2bzn3AUxAzO0uXr0zukcHj0RPa+4LfNgFTnObuXoT4=;
-        b=ako5en0UH+HYiYKTNjDH75DG+gioi8YtRoxvD7feKKg8yft3JfYUskbVUy0hwKlR+h
-         Ac66dRVFkrMlruLsdxOr03q1No2+i5EGt1YhG1LxUqir/roaPKQZZ03l+viP/i4gBOX6
-         8aeFhZYr9bWCJ0yyT4kNT996K29ogXAxHl/VSuJBwrIsgS3AhqAxg0AJaIJsq0u8DPCM
-         9TRhV1+KZOYXmvZ/vcURR9nFyIooqS4oqmciETZTG5riBOQ9EsBF2yxW8aXV1pvTgpWq
-         WlSaKkXGjGyxg+5U1QyOT6O3gZHdBYEl+glz6z3aWDrSblfHGp2mQg9kdoqlnzMQQMG3
-         iKXg==
-X-Gm-Message-State: AFqh2ko+NtVEGbLTnCzxYmKTz72NDZeGdkkgrOAqcohlq8iQEXIIEkyk
-        PkfsOrgDN6Z0Rg0hjjQfK+Q=
-X-Google-Smtp-Source: AMrXdXu/Ny1nvTiZ9/kYYp6ZxmA4ED7gomTYnDiqas5KLfkxg3X97ElGDVxbhE2QZWILidNkzYwMuA==
-X-Received: by 2002:a05:6830:3375:b0:670:99fe:2dcc with SMTP id l53-20020a056830337500b0067099fe2dccmr6576506ott.18.1674164229668;
-        Thu, 19 Jan 2023 13:37:09 -0800 (PST)
-Received: from t14s.localdomain ([2001:1284:f016:3243:26ee:68de:6577:af10])
-        by smtp.gmail.com with ESMTPSA id i25-20020a9d6259000000b0068649039745sm4987880otk.6.2023.01.19.13.37.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Jan 2023 13:37:09 -0800 (PST)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-        id ABA774AE51A; Thu, 19 Jan 2023 18:37:07 -0300 (-03)
-Date:   Thu, 19 Jan 2023 18:37:07 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        pablo@netfilter.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, ozsh@nvidia.com,
-        simon.horman@corigine.com
-Subject: Re: [PATCH net-next v3 0/7] Allow offloading of UDP NEW connections
- via act_ct
-Message-ID: <Y8m4A7GchYdx21/h@t14s.localdomain>
-References: <20230119195104.3371966-1-vladbu@nvidia.com>
+        with ESMTP id S230050AbjASWOF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 17:14:05 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A3B8AA5E9
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 13:53:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=i7Jx2XN3V0mny/sQSkOYlYQgF5UVtXA02/XBPVqhKW0=; b=H/i/Ije9RI7I2TpKDlQFAdUnF0
+        pkBdTWCi1aU4M9stfNnsQmiDS0DRPKANYr45vXPTEx+/HO1wWXNMCSSOjtYJWqF+YtqQdK8ZqqTdT
+        c1uw0Nw+g9WlsnBg4y/HZUrU4Bxn5YsRgLJFLy7FSveKQ1GEOpq5QOwULfTpmE4QP7jJodFvkX9RE
+        F2xVGjum9qJcfB7Km7jrqMuak1R/jLyOg8Zlj/zdaT3Y8Wunjne8MaPEZO0IdTXptoRfNeVTBT8mB
+        ZySQK/U5p+teCLY8bYtNB4K9FAt1z3GUammpWiy+BWxLBhEHSBXSfOCtmlsbh3X0M85Q/FujnqwOB
+        YrDcjxeQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36220)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pIcqw-0005Dd-DI; Thu, 19 Jan 2023 21:53:46 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pIcqr-0000pf-0U; Thu, 19 Jan 2023 21:53:41 +0000
+Date:   Thu, 19 Jan 2023 21:53:40 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Cc:     netdev@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Alexander Couzens <lynxis@fe80.eu>
+Subject: Re: [PATCH net 2/3] net: mediatek: sgmii: autonegotiation is required
+Message-ID: <Y8m75N5//L+PHo8f@shell.armlinux.org.uk>
+References: <20230119171248.3882021-1-bjorn@mork.no>
+ <20230119171248.3882021-3-bjorn@mork.no>
+ <Y8l8NRmFfm/a8LFv@shell.armlinux.org.uk>
+ <87v8l2uxoi.fsf@miraculix.mork.no>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20230119195104.3371966-1-vladbu@nvidia.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87v8l2uxoi.fsf@miraculix.mork.no>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 19, 2023 at 08:50:57PM +0100, Vlad Buslov wrote:
-> Currently only bidirectional established connections can be offloaded
-> via act_ct. Such approach allows to hardcode a lot of assumptions into
-> act_ct, flow_table and flow_offload intermediate layer codes. In order
-> to enabled offloading of unidirectional UDP NEW connections start with
-> incrementally changing the following assumptions:
+On Thu, Jan 19, 2023 at 08:33:17PM +0100, Bjørn Mork wrote:
+> "Russell King (Oracle)" <linux@armlinux.org.uk> writes:
+> > On Thu, Jan 19, 2023 at 06:12:47PM +0100, Bjørn Mork wrote:
+> >> sgmii mode fails if autonegotiation is disabled.
+> >> 
+> >> Signed-off-by: Bjørn Mork <bjorn@mork.no>
+> >> ---
+> >>  drivers/net/ethernet/mediatek/mtk_sgmii.c | 11 +++--------
+> >>  1 file changed, 3 insertions(+), 8 deletions(-)
+> >> 
+> >> diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+> >> index 481f2f1e39f5..d1f2bcb21242 100644
+> >> --- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
+> >> +++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+> >> @@ -62,14 +62,9 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+> >>  	 * other words, 1000Mbps or 2500Mbps).
+> >>  	 */
+> >>  	if (interface == PHY_INTERFACE_MODE_SGMII) {
+> >> -		sgm_mode = SGMII_IF_MODE_SGMII;
+> >> -		if (phylink_autoneg_inband(mode)) {
+> >> -			sgm_mode |= SGMII_REMOTE_FAULT_DIS |
+> >> -				    SGMII_SPEED_DUPLEX_AN;
+> >> -			use_an = true;
+> >> -		} else {
+> >> -			use_an = false;
+> >> -		}
+> >> +		sgm_mode = SGMII_IF_MODE_SGMII | SGMII_REMOTE_FAULT_DIS |
+> >> +			   SGMII_SPEED_DUPLEX_AN;
+> >> +		use_an = true;
+> >
+> > I wasn't actually suggesting in our discussion that this is something
+> > which should be changed.
+> >
+> > The reference implementation for the expected behaviour is
+> > phylink_mii_c22_pcs_config(), and it only enables in-band if "mode"
+> > says so. If we have a PHY which has in-band disabled (yes, they do
+> > exist) then having SGMII in-band unconditionally enabled breaks them,
+> > and yes, those PHYs appear on SFP modules.
+> >
+> > The proper answer is to use 'managed = "in-band-status";' in your DT
+> > to have in-band used with SGMII.
 > 
-> - Drivers assume that only established connections are offloaded and
->   don't support updating existing connections. Extract ctinfo from meta
->   action cookie and refuse offloading of new connections in the drivers.
+> Well, yeah, I'd love to.  But then I'm back to the drawing board without
+> a link.  That just doesn't work for me.
 
-Hi Vlad,
+If you have 'managed = "in-band-status";' in your DT, that will set
+"mode" to be MLO_AN_INBAND, and phylink_autoneg_inband(mode) will be
+true - which should result in the link being programmed for in-band
+mode. You should also find that mtk_pcs_get_state() gets called.
 
-Regarding ct_seq_show(). When dumping the CT entries today, it will do
-things like:
+Hmm, it looks like setting ss->pcs[i].pcs.poll to true was missed
+when support for inband was properly added, so that might be the
+issue there - as the mtk ethernet driver doesn't make use of
+phylink_mac_change().
 
-        if (!test_bit(IPS_OFFLOAD_BIT, &ct->status))
-                seq_printf(s, "%ld ", nf_ct_expires(ct)  / HZ);
-
-omit the timeout, which is okay with this new patchset, but then:
-
-        if (test_bit(IPS_HW_OFFLOAD_BIT, &ct->status))
-                seq_puts(s, "[HW_OFFLOAD] ");
-        else if (test_bit(IPS_OFFLOAD_BIT, &ct->status))
-                seq_puts(s, "[OFFLOAD] ");
-        else if (test_bit(IPS_ASSURED_BIT, &ct->status))
-                seq_puts(s, "[ASSURED] ");
-
-Previously, in order to be offloaded, it had to be Assured. But not
-anymore after this patchset. Thoughts?
-
-  Marcelo
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
