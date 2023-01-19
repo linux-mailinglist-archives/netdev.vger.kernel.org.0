@@ -2,92 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76AEB672E99
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 03:05:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7446672EA4
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 03:11:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229685AbjASCFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 21:05:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33064 "EHLO
+        id S229616AbjASCLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 21:11:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229889AbjASCEm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 21:04:42 -0500
-Received: from mail-io1-f50.google.com (mail-io1-f50.google.com [209.85.166.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2655E29E3B;
-        Wed, 18 Jan 2023 18:04:36 -0800 (PST)
-Received: by mail-io1-f50.google.com with SMTP id i70so356328ioa.12;
-        Wed, 18 Jan 2023 18:04:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=MM+Dhy8E31duBDrBRfUCSOTn9Cy8FOge7XCfAeSm4uQ=;
-        b=ctsGKNNmPFc3fGuYsqN64vsOZeNb8Zq/DvK2XCcd8EXnH5WuhNOV0tRdId9newnG2T
-         T/ivxBo3H4NAvDzy7GMEZHRhVLqdMg4s+BxzaQpZF2DgzzfLQvN3+e4CzxVOeCuxByFR
-         rVW6avg4JOrdyqiXT5gbTzFPs/fLNSKhVhA931xy+jp1u0wAJkIGdchoUH+Ka/d1niUe
-         Q/D0PKImbZoFg3sOjHVEBDggGXn5UWAkkQ7Ib+A2PbSyGIxtx1NW1/AXYgFUPCAlDVGq
-         KGjIWx/T+Cyol+23Ej5IRf8U4EzSNzDszJMlQLTgTpCrwgrJRIeH7Zs0MxCJV+2fRL/c
-         FU1g==
-X-Gm-Message-State: AFqh2kppE/43pJP2InjRpZa90ne4dk92wbCK+6fWv2bx9wmDNBF26DRu
-        Yic6nfGQXz4apJGEF5Zut60=
-X-Google-Smtp-Source: AMrXdXsBfNz2Ma45dlU+sOA80H4I1bfauU80Tz34bDdys5gY4Zzh1WjTmTkmVsuUkAYHFrzRnx3gpg==
-X-Received: by 2002:a5d:9f0c:0:b0:6e2:d23a:6296 with SMTP id q12-20020a5d9f0c000000b006e2d23a6296mr6257857iot.20.1674093875324;
-        Wed, 18 Jan 2023 18:04:35 -0800 (PST)
-Received: from noodle.cs.purdue.edu (switch-lwsn2133-z1r11.cs.purdue.edu. [128.10.127.250])
-        by smtp.googlemail.com with ESMTPSA id e5-20020a056602158500b006ff6e8b3b8csm372247iow.41.2023.01.18.18.04.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Jan 2023 18:04:34 -0800 (PST)
-From:   Sungwoo Kim <iam@sung-woo.kim>
-To:     iam@sung-woo.kim
-Cc:     benquike@gmail.com, davem@davemloft.net, daveti@purdue.edu,
-        edumazet@google.com, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, wuruoyu@me.com
-Subject: [PATCH] L2CAP: Fix null-ptr-deref in l2cap_sock_set_shutdown_cb
-Date:   Wed, 18 Jan 2023 21:04:07 -0500
-Message-Id: <20230119020406.3900747-1-iam@sung-woo.kim>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230119014057.3879476-1-iam@sung-woo.kim>
-References: <20230119014057.3879476-1-iam@sung-woo.kim>
+        with ESMTP id S229496AbjASCLE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 21:11:04 -0500
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7929C67948
+        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 18:11:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1674094262; x=1705630262;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=CCwIB6GFIbFP8BInOQQTgOrTgqIhgR8Bw0fpiZiVFlQ=;
+  b=N6CfmZTP8smSgNlPWIlenKZpo/J2x4nR0GLrp+o34D5XQLiuY2R33nDa
+   xgDprdSD40zNFEmQSpMl2Wo9XZmsxSMxdUZQuRKUOqkpuyYi7hCfYW+gN
+   LWOtqxM+FlzTSoS5vZlIBm3hADJ0A5OouxMFZ3JIVLyjAOFWuo16lVi6D
+   w=;
+X-IronPort-AV: E=Sophos;i="5.97,226,1669075200"; 
+   d="scan'208";a="284226675"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-b1c0e1d0.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 02:11:01 +0000
+Received: from EX13MTAUWB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2c-m6i4x-b1c0e1d0.us-west-2.amazon.com (Postfix) with ESMTPS id AD8B780422;
+        Thu, 19 Jan 2023 02:11:00 +0000 (UTC)
+Received: from EX19D030UWB003.ant.amazon.com (10.13.139.142) by
+ EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.45; Thu, 19 Jan 2023 02:11:00 +0000
+Received: from bcd0741e4041.ant.amazon.com (10.43.161.198) by
+ EX19D030UWB003.ant.amazon.com (10.13.139.142) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.1118.7; Thu, 19 Jan 2023 02:10:59 +0000
+From:   Apoorv Kothari <apoorvko@amazon.com>
+To:     <sd@queasysnail.net>
+CC:     <fkrenzel@redhat.com>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/5] tls: implement key updates for TLS1.3
+Date:   Wed, 18 Jan 2023 18:10:53 -0800
+Message-ID: <20230119021053.39853-1-apoorvko@amazon.com>
+X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
+In-Reply-To: <c2f6961dd1d90d8fed0eb55fe3a1b9d98814ce60.1673952268.git.sd@queasysnail.net>
+References: <c2f6961dd1d90d8fed0eb55fe3a1b9d98814ce60.1673952268.git.sd@queasysnail.net>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+X-Originating-IP: [10.43.161.198]
+X-ClientProxiedBy: EX13D44UWC004.ant.amazon.com (10.43.162.209) To
+ EX19D030UWB003.ant.amazon.com (10.13.139.142)
+X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix a critical typo on the prev patch - Sorry!
+> 2023-01-17, 18:03:51 -0800, Jakub Kicinski wrote:
+> > Please CC all the maintainers.
+> 
+> Sorry.
+> 
+> > On Tue, 17 Jan 2023 14:45:26 +0100 Sabrina Dubroca wrote:
+> > > This adds support for receiving KeyUpdate messages (RFC 8446, 4.6.3
+> > > [1]). A sender transmits a KeyUpdate message and then changes its TX
+> > > key. The receiver should react by updating its RX key before
+> > > processing the next message.
+> > > 
+> > > This patchset implements key updates by:
+> > >  1. pausing decryption when a KeyUpdate message is received, to avoid
+> > >     attempting to use the old key to decrypt a record encrypted with
+> > >     the new key
+> > >  2. returning -EKEYEXPIRED to syscalls that cannot receive the
+> > >     KeyUpdate message, until the rekey has been performed by userspace
+> > 
+> > Why? We return to user space after hitting a cmsg, don't we?
+> > If the user space wants to keep reading with the old key - 🤷️
+> 
+> But they won't be able to read anything. Either we don't pause
+> decryption, and the socket is just broken when we look at the next
+> record, or we pause, and there's nothing to read until the rekey is
+> done. I think that -EKEYEXPIRED is better than breaking the socket
+> just because a read snuck in between getting the cmsg and setting the
+> new key.
 
-Signed-off-by: Sungwoo Kim <iam@sung-woo.kim>
----
- net/bluetooth/l2cap_sock.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+Pausing also better aligns with the RFC also since all subsequent messages
+should be encrypted with the new key.
 
-diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
-index ca8f07f35..b9381d45d 100644
---- a/net/bluetooth/l2cap_sock.c
-+++ b/net/bluetooth/l2cap_sock.c
-@@ -1681,9 +1681,11 @@ static void l2cap_sock_set_shutdown_cb(struct l2cap_chan *chan)
- {
- 	struct sock *sk = chan->data;
- 
--	lock_sock(sk);
--	sk->sk_shutdown = SHUTDOWN_MASK;
--	release_sock(sk);
-+	if (sk) {
-+		lock_sock(sk);
-+		sk->sk_shutdown = SHUTDOWN_MASK;
-+		release_sock(sk);
-+	}
- }
- 
- static long l2cap_sock_get_sndtimeo_cb(struct l2cap_chan *chan)
--- 
-2.25.1
+From the RFC https://www.rfc-editor.org/rfc/rfc8446#section-4.6.3
+   After sending a KeyUpdate message, the sender SHALL send all
+   its traffic using the next generation of keys, computed as described
+   in Section 7.2.  Upon receiving a KeyUpdate, the receiver MUST update
+   its receiving keys.
 
+> 
+> > >  3. passing the KeyUpdate message to userspace as a control message
+> > >  4. allowing updates of the crypto_info via the TLS_TX/TLS_RX
+> > >     setsockopts
+> > > 
+> > > This API has been tested with gnutls to make sure that it allows
+> > > userspace libraries to implement key updates [2]. Thanks to Frantisek
+> > > Krenzelok <fkrenzel@redhat.com> for providing the implementation in
+> > > gnutls and testing the kernel patches.
+> > 
+> > Please explain why - the kernel TLS is not faster than user space, 
+> > the point of it is primarily to enable offload. And you don't add
+> > offload support here.
+> 
+> Well, TLS1.3 support was added 4 years ago, and yet the offload still
+> doesn't support 1.3 at all.
+> 
+> IIRC support for KeyUpdates is mandatory in TLS1.3, so currently the
+> kernel can't claim to support 1.3, independent of offloading.
+> 
+> Some folks did tests with and without kTLS using nbdcopy and found a
+> small but noticeable performance improvement (around 8-10%).
+> 
+> > > Note: in a future series, I'll clean up tls_set_sw_offload and
+> > > eliminate the per-cipher copy-paste using tls_cipher_size_desc.
+> > 
+> > Yeah, I think it's on Vadim's TODO list as well.
+> 
+> I've already done most of the work as I was working on this, I'll
+> submit it later.
+> 
+> -- 
+> Sabrina
+
+--
+Apoorv
