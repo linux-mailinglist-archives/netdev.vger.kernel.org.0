@@ -2,113 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 130D2674B32
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 05:50:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60135674AC8
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 05:36:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230338AbjATEto (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 23:49:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40326 "EHLO
+        id S230142AbjATEgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 23:36:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230096AbjATEtQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 23:49:16 -0500
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E23BD166
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 20:43:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674189803; x=1705725803;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rns6xuEzx+n8TPeRDars1+BGnGhs0bzC9HTAwJsnDd8=;
-  b=YFGppXY3D3Uzodav0JoZAHkfoRLHCQ238z3xT6HRIdobXnsp/snDf2eY
-   4/AdX4TztkhTsBCM15H8s5P564VEyNnuS57QLQ4qzcMuKOnIE/JIR+wkD
-   IjQFMhkaoRFytMVHaCLrYlHzWJVhJKDCzyIfF9ofJe1tBLh+jQyvOoDs5
-   5Bz8JA8ctMDTwvmPvf+2dOqa2HYkXGXmC4Z+d1Mj893gSSLBPc7okQQHQ
-   9id5wfBbs9pt5giK4VrgCo1iPGH99cuOdGuxULhtEB/S98LNWClvP3mYo
-   qzu2XShavmmqNlxCD+Lgjw51Yjk91QT5tKK8zJ/HdU3eA6rMBI96ZZ9YA
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="387629879"
-X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
-   d="scan'208";a="387629879"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 05:38:01 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="610061797"
-X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
-   d="scan'208";a="610061797"
-Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 19 Jan 2023 05:37:58 -0800
-Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pIV72-0001Uc-1u;
-        Thu, 19 Jan 2023 13:37:52 +0000
-Date:   Thu, 19 Jan 2023 21:37:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     alejandro.lucero-palau@amd.com, netdev@vger.kernel.org,
-        linux-net-drivers@amd.com
-Cc:     oe-kbuild-all@lists.linux.dev, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        habetsm@gmail.com, ecree.xilinx@gmail.com,
-        Alejandro Lucero <alejandro.lucero-palau@amd.com>
-Subject: Re: [PATCH net-next 4/7] sfc: add devlink port support for ef100
-Message-ID: <202301192118.a5QmN0m8-lkp@intel.com>
-References: <20230119113140.20208-5-alejandro.lucero-palau@amd.com>
+        with ESMTP id S230167AbjATEfl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 23:35:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F5CAED9D;
+        Thu, 19 Jan 2023 20:33:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B80BB82491;
+        Thu, 19 Jan 2023 14:23:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91C19C433EF;
+        Thu, 19 Jan 2023 14:23:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674138215;
+        bh=jF//NUpq1HN0b0Ns8y/1mrIp01dJ2M8KP6bnPkFL0Pw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QP5CbJkXPMLvndjLQvNjPZre9nwiEdaj8L8gv34aK3Otf9uzVr3hRZ07gRufUbIEY
+         agchRoYYSlcIUq9G5scJxX0rzXcs/lFAWB3cp/Oj62rwhVMjo/HpOYmCEl2EwvUFB7
+         KKevnkP85UC19IYIzAsWLig0fWUz/ZTU4LW0ysYU28O0JTjUu9Lc0nezYpX3KAijfx
+         a8NA9sFCnvv4kaFoFAD8qhrlaGfx4tuBdLwZB6UzDu2FDYfm2E/EMO0MNPwyuyvYO4
+         WVUwASBd+0RyvrOBxsX5H56Lovom6n7fsFtYcUrrzqORTaNrvdzXwZJfkDVl+lvklp
+         7fOk1h5EobDWQ==
+Date:   Thu, 19 Jan 2023 15:23:31 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     sdf@google.com
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, toke@redhat.com, memxor@gmail.com,
+        alardam@gmail.com, saeedm@nvidia.com, anthony.l.nguyen@intel.com,
+        gospo@broadcom.com, vladimir.oltean@nxp.com, nbd@nbd.name,
+        john@phrozen.org, leon@kernel.org, simon.horman@corigine.com,
+        aelior@marvell.com, christophe.jaillet@wanadoo.fr,
+        ecree.xilinx@gmail.com, mst@redhat.com, bjorn@kernel.org,
+        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
+        intel-wired-lan@lists.osuosl.org, lorenzo.bianconi@redhat.com
+Subject: Re: [RFC v2 bpf-next 2/7] drivers: net: turn on XDP features
+Message-ID: <Y8lSY2rfx5woNJOu@lore-desk>
+References: <cover.1673710866.git.lorenzo@kernel.org>
+ <b606e729c9baf36a28be246bf0bfa4d21cc097fb.1673710867.git.lorenzo@kernel.org>
+ <Y8hW8IqJTa0zE2aS@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="DGAPQT9oFXfrtSAg"
 Content-Disposition: inline
-In-Reply-To: <20230119113140.20208-5-alejandro.lucero-palau@amd.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Y8hW8IqJTa0zE2aS@google.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-Thank you for the patch! Perhaps something to improve:
+--DGAPQT9oFXfrtSAg
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-[auto build test WARNING on net-next/master]
+> On 01/14, Lorenzo Bianconi wrote:
+> > From: Marek Majtyka <alardam@gmail.com>
+>=20
 
-url:    https://github.com/intel-lab-lkp/linux/commits/alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230119-193440
-patch link:    https://lore.kernel.org/r/20230119113140.20208-5-alejandro.lucero-palau%40amd.com
-patch subject: [PATCH net-next 4/7] sfc: add devlink port support for ef100
-config: ia64-allyesconfig (https://download.01.org/0day-ci/archive/20230119/202301192118.a5QmN0m8-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/5b06b1ae6605af55ed8127878054f8d69046b83c
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230119-193440
-        git checkout 5b06b1ae6605af55ed8127878054f8d69046b83c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/net/ethernet/sfc/
+[...]
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
+>=20
+> Maybe stupid question: why do we need WRITE_ONCE here?
+> And if we do need it, do we need READ_ONCE as well?
+>=20
+> WRITE_ONCE(*xdp_features, READ_ONCE(*xdp_features) | flags);
 
-All warnings (new ones prefixed by >>):
+This part is from the Marek's original series. I will let him to comment on=
+ it.
 
->> drivers/net/ethernet/sfc/ef100_rep.c:347:6: warning: no previous prototype for 'ef100_mport_is_pcie_vnic' [-Wmissing-prototypes]
-     347 | bool ef100_mport_is_pcie_vnic(struct mae_mport_desc *mport_desc)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~
+>=20
+> ?
+>=20
+> Also, would it make sense to drop this __xdp_features_set_redirect_target
+> and just define the following:
+>=20
+> static inline void
+> xdp_features_set_redirect_target(xdp_features_t *xdp_features, bool
+> support_sg)
+> {
+> 	xdp_features_t flags =3D NETDEV_XDP_ACT_NDO_XMIT;
+>=20
+> 	if (support_sg)
+> 		flags |=3D NETDEV_XDP_ACT_NDO_XMIT_SG;
+> 	*xdp_features |=3D flags; /* or WRITE_ONCE */
+> }
+>=20
+> This should avoid having two different sets of functions. Or does it
+> look worse because of that 'naked' true/false argument in the call
+> sites?
 
+I did this way because we will mainly run it with support_sg set to false,
+but I do not have a strong opinion on it, I am fine both ways. I will fix i=
+t.
 
-vim +/ef100_mport_is_pcie_vnic +347 drivers/net/ethernet/sfc/ef100_rep.c
+Regards,
+Lorenzo
 
-   346	
- > 347	bool ef100_mport_is_pcie_vnic(struct mae_mport_desc *mport_desc)
-   348	{
-   349		return mport_desc->mport_type == MAE_MPORT_DESC_MPORT_TYPE_VNIC &&
-   350		       mport_desc->vnic_client_type == MAE_MPORT_DESC_VNIC_CLIENT_TYPE_FUNCTION;
-   351	}
-   352	
+>=20
+>=20
+> > +}
+> > +
+> > +static inline void
+> > +xdp_features_clear_redirect_target(xdp_features_t *xdp_features)
+> > +{
+> > +	WRITE_ONCE(*xdp_features,
+> > +		   *xdp_features & ~(NETDEV_XDP_ACT_NDO_XMIT |
+> > +				     NETDEV_XDP_ACT_NDO_XMIT_SG));
+> > +}
+> > +
+> > +#else
+> > +
+> > +static inline void
+> > +__xdp_features_set_redirect_target(xdp_features_t *xdp_features, u32
+> > flags)
+> > +{
+> > +}
+> > +
+> > +static inline void
+> > +xdp_features_clear_redirect_target(xdp_features_t *xdp_features)
+> > +{
+> > +}
+> > +
+> > +#endif
+> > +
+> > +static inline void
+> > +xdp_features_set_redirect_target(xdp_features_t *xdp_features)
+> > +{
+> > +	__xdp_features_set_redirect_target(xdp_features,
+> > +					   NETDEV_XDP_ACT_NDO_XMIT |
+> > +					   NETDEV_XDP_ACT_NDO_XMIT_SG);
+> > +}
+> > +
+> >   #define DEV_MAP_BULK_SIZE XDP_BULK_QUEUE_SIZE
+>=20
+> >   #endif /* __LINUX_NET_XDP_H__ */
+> > --
+> > 2.39.0
+>=20
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+--DGAPQT9oFXfrtSAg
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY8lSYwAKCRA6cBh0uS2t
+rJtrAPwK/+nlrw98yKOdg+WYuzD06o+yaCcuTx3jjb6lFn3v+wEA6kHNa8gGGDXU
+RHgliiOFhY71LPPYr2/wItwtHw9/3Ak=
+=s5kN
+-----END PGP SIGNATURE-----
+
+--DGAPQT9oFXfrtSAg--
