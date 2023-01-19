@@ -2,127 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A981767374A
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 12:46:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8FBD67374F
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 12:47:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230476AbjASLqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 06:46:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49358 "EHLO
+        id S230424AbjASLrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 06:47:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230456AbjASLpz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 06:45:55 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98E6222F1
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 03:45:50 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id f25-20020a1c6a19000000b003da221fbf48so1058681wmc.1
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 03:45:50 -0800 (PST)
+        with ESMTP id S230516AbjASLqz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 06:46:55 -0500
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9BC93801C
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 03:46:38 -0800 (PST)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-4fc52a0f60cso6221257b3.11
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 03:46:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=EegNtTy/sMvWBoyNWhH9yCq0I9Ve3LXWODIPFxTqqBU=;
-        b=zclGPs8dfnB2v94HoRUfyCsXQnZE9vaqOARUnsItTYOj/BZ8EW/trKTeUrvR1DCYHJ
-         VzmyzZLQ+trGjlmZLVL2ooBYGvFTtps/DYb3Lq56srB+EZSPMcJLaHxAaJUbdhWoZDV5
-         aUvgzz5HEgMRxhNr45BF1iWmY5aIc3P5ibh5lKoO6QxPq02ERq4LCnCXJrRCi3AU515f
-         8Y9GQQOeBLdV4o0v/9lKzDfBA8klXxifAqJKn+rMdzgq3tkqFVVsOe67qfmPjNtupZog
-         i/s6VzEGYu+m/EQYJp8jmxQdgVCm3L2ubdG8NIWjrMv0kgoFUCHHHvBIi3peraRAJbK6
-         CovA==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=vDprj+8D5pGTX/+e8ZmPXb4rFhCE6TW6MBvJHNd1rAc=;
+        b=UiP2EbVUWxm6nEHse+++CJPdPY3iaz5KglQ5CI5YvYrX3h6it2XsCBOn7u60UGDw0J
+         owVqeXNLk+qlf/V2wvSiAFedwGQ+yyDjbNiN4BX2g/uwlibnog/m8YQkMUKKCVdAIvq7
+         rbfYEHJ6kM/UIfPTUK47YpcrZZZLpDaKirskF+GW1FUvgbf6YI1fnfot9G9hhThaEi0m
+         JmDh22yqAlnhXNX3yCzbzPLgr4APWsd2l1PO4Uw6vsQ4UBFpLGlQjFHuXvmcuPxqkg++
+         e1II9Gdv5udeQUsCcim58E2zayLOMI7djIpUxuUuklIaONq6c/Tnn1kb6U98NL/THAfx
+         D7qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=EegNtTy/sMvWBoyNWhH9yCq0I9Ve3LXWODIPFxTqqBU=;
-        b=1RWAIOBzijIeLpEaWogvHXEz2UPE3srpWmScuFzqRUAjzUBi0A3PKuXsXVAOFkJQvM
-         8k6qmu3JHDI+LQjNLc+zTuwhioyjq/PFr7hClOZ4Kz8Q40tqB4yiXrrmXVmDqkSTHtmA
-         5IGkNePRc9NTV89cpdDWmXW0/2/sAsdj3YoST8UzN+nWcHgf1degnAHTL0xAL0WfVu6w
-         olbVRg7kXR27cBStaV3JrdCmp0xzUZlRdOaxnM2G11NjaHBnq2i90DwuEjGlk0CStRBj
-         l1Mgn2K/xe56yzfSvBNo7xOr+8fjgsXAfwS+l5GgGkWyfdnRf0oD5QnTNgEK5A9bV3la
-         URXw==
-X-Gm-Message-State: AFqh2krdO6N2fcl4E5rkJa2GTgiYT7HWQ+tnfBtY/A1Iog5o+X/w3cOm
-        f6Zyxqku+eb9Jv1PD5ivOyn5Zg==
-X-Google-Smtp-Source: AMrXdXvvILwOluVAOsH2m1VZJBTVlAxx87YaERZAYpsns382Rz32yl41uxvU8muTuIj0ImWPTBVf/Q==
-X-Received: by 2002:a05:600c:1ca0:b0:3db:1ded:1769 with SMTP id k32-20020a05600c1ca000b003db1ded1769mr2214997wms.10.1674128749227;
-        Thu, 19 Jan 2023 03:45:49 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id r6-20020a1c2b06000000b003a6125562e1sm4489912wmr.46.2023.01.19.03.45.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Jan 2023 03:45:48 -0800 (PST)
-Message-ID: <77e5fbd2-636c-70a9-f4bf-3df631413a6d@linaro.org>
-Date:   Thu, 19 Jan 2023 12:45:46 +0100
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vDprj+8D5pGTX/+e8ZmPXb4rFhCE6TW6MBvJHNd1rAc=;
+        b=z/8C1Ut56vH4ss7yAz9tnp6Io62sl+xYEA5Xvh5S8rEm1Fx6oZdu7/US0eJBtJk+vn
+         eCfoF7OU16CttinRVpe91D7o51d9tPkTqlBQEHFPLiPFAOhMZtFx60tFrIH3hMydbUDu
+         X+vyKhhuRv/0LrZ1/gemAN2dJNinWO6vzfbi+0McuaJUZ2Uq0AfIv3ET39d3tYjUgu/a
+         ULYdHZUVdBvy8+jysIvwx+kifkEGl2dvTv5bCTxgnS3dnuAmSyTw6VEhbYTMcE2NP0gA
+         ptzOW1zeXitfTxEjfQoD5gY9Rt5oEG//LP7boUnQbx80E2yl4jT0cAP/9Ez7L86YcG3+
+         gEXg==
+X-Gm-Message-State: AFqh2kqf53nik04Z4a1VV35zTXvbjDAD5B/6spS70iBZbMkQaQQGRjW+
+        w7I+zzdo5fF4TWskIsK8ubMOfpkgaVj4SdTnZ50O9Q==
+X-Google-Smtp-Source: AMrXdXvSRy4ShXACtMf3ElBUFvyZPX5cz4gQiOz8rwalUeWmbvxmGWSkEjclcp0uQJiU9q0mXvhkl9PVL6z2URPpOU4=
+X-Received: by 2002:a05:690c:954:b0:4ef:2ac3:7ce0 with SMTP id
+ cc20-20020a05690c095400b004ef2ac37ce0mr1350464ywb.489.1674128797668; Thu, 19
+ Jan 2023 03:46:37 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.0
-Subject: Re: [PATCH v1 2/4] dt-bindings: bluetooth: marvell: add max-speed
- property
-Content-Language: en-US
-To:     Francesco Dolcini <francesco@dolcini.it>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     Stefan Eichenberger <stefan.eichenberger@toradex.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Francesco Dolcini <francesco.dolcini@toradex.com>
-References: <20230118122817.42466-1-francesco@dolcini.it>
- <20230118122817.42466-3-francesco@dolcini.it>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230118122817.42466-3-francesco@dolcini.it>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <167361788585.531803.686364041841425360.stgit@firesoul>
+ <167361792462.531803.224198635706602340.stgit@firesoul> <6f634864-2937-6e32-ba9d-7fa7f2b576cb@redhat.com>
+ <20230118182600.026c8421@kernel.org> <e564a0de-e149-34a0-c0ba-8f740df0ae70@redhat.com>
+ <CANn89iJPm30ur1_tE6TPU-QYDGqszavhtm0vLt2MyK90MYFA3A@mail.gmail.com> <d0ecbed5-0588-9624-7ecb-014a3bebf192@redhat.com>
+In-Reply-To: <d0ecbed5-0588-9624-7ecb-014a3bebf192@redhat.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 19 Jan 2023 12:46:26 +0100
+Message-ID: <CANn89iLymg62A8GNy4jJ3tsyitNZvDnhbA90t4ZJQ2dX=RG2qw@mail.gmail.com>
+Subject: Re: [PATCH net-next V2 2/2] net: kfree_skb_list use kmem_cache_free_bulk
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     brouer@redhat.com, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        pabeni@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/01/2023 13:28, Francesco Dolcini wrote:
-> From: Stefan Eichenberger <stefan.eichenberger@toradex.com>
-> 
-> The 88W8997 bluetooth module supports setting the max-speed property.
-> 
-> Signed-off-by: Stefan Eichenberger <stefan.eichenberger@toradex.com>
-> Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
-> ---
->  .../bindings/net/marvell-bluetooth.yaml          | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/marvell-bluetooth.yaml b/Documentation/devicetree/bindings/net/marvell-bluetooth.yaml
-> index 83b64ed730f5..2fccea30c58d 100644
-> --- a/Documentation/devicetree/bindings/net/marvell-bluetooth.yaml
-> +++ b/Documentation/devicetree/bindings/net/marvell-bluetooth.yaml
-> @@ -19,9 +19,25 @@ properties:
->        - mrvl,88w8897
->        - mrvl,88w8997
->  
-> +  max-speed:
-> +    description: see Documentation/devicetree/bindings/serial/serial.yaml
-> +
->  required:
->    - compatible
->  
-> +allOf:
-> +  - if:
-> +    properties:
+On Thu, Jan 19, 2023 at 12:22 PM Jesper Dangaard Brouer
+<jbrouer@redhat.com> wrote:
+>
+>
+>
+> On 19/01/2023 11.28, Eric Dumazet wrote:
+> > On Thu, Jan 19, 2023 at 11:18 AM Jesper Dangaard Brouer
+> > <jbrouer@redhat.com> wrote:
+> >>
+> >>
+> >>
+> >> On 19/01/2023 03.26, Jakub Kicinski wrote:
+> >>> On Wed, 18 Jan 2023 22:37:47 +0100 Jesper Dangaard Brouer wrote:
+> >>>>> +           skb_mark_not_on_list(segs);
+> >>>>
+> >>>> The syzbot[1] bug goes way if I remove this skb_mark_not_on_list().
+> >>>>
+> >>>> I don't understand why I cannot clear skb->next here?
+> >>>
+> >>> Some of the skbs on the list are not private?
+> >>> IOW we should only unlink them if skb_unref().
+> >>
+> >> Yes, you are right.
+> >>
+> >> The skb_mark_not_on_list() should only be called if __kfree_skb_reason()
+> >> returns true, meaning the SKB is ready to be free'ed (as it calls/check
+> >> skb_unref()).
+> >
+> >
+> > This was the case already before your changes.
+> >
+> > skb->next/prev can not be shared by multiple users.
+> >
+> > One skb can be put on a single list by definition.
+> >
+> > Whoever calls kfree_skb_list(list) owns all the skbs->next|prev found
+> > in the list
+> >
+> > So you can mangle skb->next as you like, even if the unref() is
+> > telling that someone
+> > else has a reference on skb.
+>
+> Then why does the bug go way if I remove the skb_mark_not_on_list() call
+> then?
+>
 
-Wrong indentation, missing two spaces.
+Some side effects.
 
-Does not look like you tested the bindings. Please run `make
-dt_binding_check` (see
-Documentation/devicetree/bindings/writing-schema.rst for instructions).
+This _particular_ repro uses a specific pattern that might be defeated
+by a small change.
+(just working around another bug)
 
-Best regards,
-Krzysztof
+Instead of setting skb->next to NULL, try to set it to
 
+skb->next = (struct sk_buff *)0x800;
+
+This might show a different pattern.
+
+> >>
+> >> I will send a proper fix patch shortly... after syzbot do a test on it.
+> >>
+>
+> I've send a patch for syzbot that only calls skb_mark_not_on_list() when
+> unref() and __kfree_skb_reason() "permits" this.
+> I tested it locally with reproducer and it also fixes/"removes" the bug.
+
+This does not mean we will accept a patch with no clear explanation
+other than "this removes a syzbot bug, so this must be good"
+
+Make sure to give precise details on _why_ this is needed or not.
+
+Again, the user of kfree_skb_list(list) _owns_ skb->next for sure.
+If you think this assertion is not true, we are in big trouble.
