@@ -2,54 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8B09672D47
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 01:15:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF9E6672D72
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 01:36:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229546AbjASAPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 19:15:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41588 "EHLO
+        id S229728AbjASAgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 19:36:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbjASAP3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 19:15:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A70530C8;
-        Wed, 18 Jan 2023 16:15:27 -0800 (PST)
+        with ESMTP id S229563AbjASAgW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 19:36:22 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE8A7589BA;
+        Wed, 18 Jan 2023 16:36:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8912C61AA0;
-        Thu, 19 Jan 2023 00:15:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0EE3C433D2;
-        Thu, 19 Jan 2023 00:15:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A56EB81F8F;
+        Thu, 19 Jan 2023 00:36:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8062AC433D2;
+        Thu, 19 Jan 2023 00:36:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674087327;
-        bh=35I7X2PSLZ3vBy6im40kDuz28tZPma63oL+FlhE9awo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qwOYDfBLhxU5ca3QZacF9ctrxuQkWDwYSARG8U20WL9A3JLcvjgMSKVvjfbL87MT4
-         KKVnuOqSxkpDrxOukiCCGP21R9+9CH/vDnq8krIVbSjc5x3hIE1HsoLql/B0hxap4t
-         nUrVMmTfyEfWo9BFp+p3yPiWeRjCKXHiue3Q4T3E4Nuc838YcWe+Vq4Qyfg2tmdw0o
-         UOjzctu6VYT7uvHmPGLo5nsFQoE1WpN6AhHKRmI+x6QfhTC46EGuemEow3r6WJGtGa
-         HlfTpfad6d0nKUolxfYhGf+/lB0UG7Sg4yVM6QRNYL6RfEc7qngSkBsUsW9uEdR5lU
-         QfkFEtCPOHqwQ==
-Date:   Wed, 18 Jan 2023 16:15:25 -0800
+        s=k20201202; t=1674088578;
+        bh=120/X2fXh8+yscE4P6H9VYzZecc9ndfRsf4eAAqIKy0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=AEH8npp9XuC2RJe5Shytn6S+XU/lRfyVRrRkfeL6sIBERwBFWg8osCUKnGO8lSgrM
+         SD0IPcjWYp/1QI1SzK6j63rSCsk0hInJasLY57OSOqhuisWe/xTXl5Vl0fTmHLgPk1
+         040w7ZmRrtIwSXST//FYEDryQnntUQ6nN0iJIw+MRo1aDUTZTsbKmtwe4gL7o063hP
+         8XYZEn5S/C2UsedX/XpggAtsdXcsNAOnXa5R8Qooqze5lg9z5RQ8F6e1xk9S0Grmmm
+         Yps+0X5P0Kj3yL/E71Mb13b18S5JxSN8h+zC/n5NEJj1AdpSg4UibavoZFZVgeFPIo
+         uSG0rjKxNMByg==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
-        Vadim Fedorenko <vadfed@meta.com>
-Cc:     "Jiri Pirko" <jiri@resnulli.us>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
-Subject: Re: [RFC PATCH v5 0/4] Create common DPLL/clock configuration API
-Message-ID: <20230118161525.01d6b94f@kernel.org>
-In-Reply-To: <DM6PR11MB4657644893C565877A71E1F19BC79@DM6PR11MB4657.namprd11.prod.outlook.com>
-References: <20230117180051.2983639-1-vadfed@meta.com>
-        <DM6PR11MB4657644893C565877A71E1F19BC79@DM6PR11MB4657.namprd11.prod.outlook.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        robh@kernel.org, johannes@sipsolutions.net,
+        stephen@networkplumber.org, ecree.xilinx@gmail.com, sdf@google.com,
+        f.fainelli@gmail.com, fw@strlen.de, linux-doc@vger.kernel.org,
+        razor@blackwall.org, nicolas.dichtel@6wind.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v3 0/8] Netlink protocol specs
+Date:   Wed, 18 Jan 2023 16:36:05 -0800
+Message-Id: <20230119003613.111778-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -59,70 +54,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Jan 2023 18:07:53 +0000 Kubalewski, Arkadiusz wrote:
-> Based on today's sync meeting, changes we are going to introduce in next
-> version:
-> - reduce the muxed-pin number (artificial multiplication) on list of dpll's
-> pins, have a single pin which can be connected with multiple parents,
-> - introduce separated get command for the pin attributes,
-> - allow infinite name length of dpll device,
-> - remove a type embedded in dpll's name and introduce new attribute instead,
-> - remove clock class attribute as it is not known by the driver without
-> compliance testing on given SW/HW configuration,
-> - add dpll device "default" quality level attribute, as shall be known
-> by driver for a given hardware.
+I think the Netlink proto specs are far along enough to merge.
+Filling in all attribute types and quirks will be an ongoing
+effort but we have enough to cover FOU so it's somewhat complete.
 
-I converted the patches to use the spec, and pushed them out here:
+I fully intend to continue polishing the code but at the same
+time I'd like to start helping others base their work on the
+specs (e.g. DPLL) and need to start working on some new families
+myself.
 
-https://github.com/kuba-moo/ynl/tree/dpll
+That's the progress / motivation for merging. The RFC [1] has more
+of a high level blurb, plus I created a lot of documentation, I'm
+not going to repeat it here. There was also the talk at LPC [2].
 
-I kept the conversion step-by-step to help the readers a bit but
-the conversion patches should all be squashed into the main DPLL patch.
+[1] https://lore.kernel.org/all/20220811022304.583300-1-kuba@kernel.org/
+[2] https://youtu.be/9QkXIQXkaQk?t=2562
+v2: https://lore.kernel.org/all/20220930023418.1346263-1-kuba@kernel.org/
 
-The patches are on top of my YNL branch ('main' in that repo). 
-I'll post the YNL patches later today, so hopefully very soon they will
-be upstream.
+Jakub Kicinski (8):
+  docs: add more netlink docs (incl. spec docs)
+  netlink: add schemas for YAML specs
+  net: add basic C code generators for Netlink
+  netlink: add a proto specification for FOU
+  net: fou: regenerate the uAPI from the spec
+  net: fou: rename the source for linking
+  net: fou: use policy and operation tables generated from the spec
+  tools: ynl: add a completely generic client
 
-Two major pieces of work which I didn't do for DPLL:
- - docs - I dropped most of the kdocs, the copy-n-pasting was too much;
-   if you want to keep the docs in the uAPI you need to add the
-   appropriate stuff in the spec (look at the definition of
-   pin-signal-type for an example of a fully documented enum)
- - the notifications are quite unorthodox in the current 
-   implementation, so I faked the enums :S
-   Usually the notification is the same as the response to a get.
-   IIRC 'notify' and 'event' operation types should be used in the spec.
+ Documentation/core-api/index.rst              |    1 +
+ Documentation/core-api/netlink.rst            |   99 +
+ Documentation/netlink/genetlink-c.yaml        |  318 +++
+ Documentation/netlink/genetlink-legacy.yaml   |  346 +++
+ Documentation/netlink/genetlink.yaml          |  284 ++
+ Documentation/netlink/specs/fou.yaml          |  128 +
+ .../userspace-api/netlink/c-code-gen.rst      |  107 +
+ .../netlink/genetlink-legacy.rst              |   96 +
+ Documentation/userspace-api/netlink/index.rst |    5 +
+ Documentation/userspace-api/netlink/specs.rst |  422 +++
+ MAINTAINERS                                   |    3 +
+ include/uapi/linux/fou.h                      |   54 +-
+ net/ipv4/Makefile                             |    1 +
+ net/ipv4/fou-nl.c                             |   48 +
+ net/ipv4/fou-nl.h                             |   25 +
+ net/ipv4/{fou.c => fou_core.c}                |   47 +-
+ tools/net/ynl/samples/cli.py                  |   47 +
+ tools/net/ynl/samples/ynl.py                  |  534 ++++
+ tools/net/ynl/ynl-gen-c.py                    | 2376 +++++++++++++++++
+ tools/net/ynl/ynl-regen.sh                    |   30 +
+ 20 files changed, 4903 insertions(+), 68 deletions(-)
+ create mode 100644 Documentation/core-api/netlink.rst
+ create mode 100644 Documentation/netlink/genetlink-c.yaml
+ create mode 100644 Documentation/netlink/genetlink-legacy.yaml
+ create mode 100644 Documentation/netlink/genetlink.yaml
+ create mode 100644 Documentation/netlink/specs/fou.yaml
+ create mode 100644 Documentation/userspace-api/netlink/c-code-gen.rst
+ create mode 100644 Documentation/userspace-api/netlink/genetlink-legacy.rst
+ create mode 100644 Documentation/userspace-api/netlink/specs.rst
+ create mode 100644 net/ipv4/fou-nl.c
+ create mode 100644 net/ipv4/fou-nl.h
+ rename net/ipv4/{fou.c => fou_core.c} (94%)
+ create mode 100755 tools/net/ynl/samples/cli.py
+ create mode 100644 tools/net/ynl/samples/ynl.py
+ create mode 100755 tools/net/ynl/ynl-gen-c.py
+ create mode 100755 tools/net/ynl/ynl-regen.sh
 
-There is documentation on the specs in
-Documentation/userspace-api/netlink/ which should give some idea of how
-things work. There is also another example of a spec here:
-https://github.com/kuba-moo/ynl/blob/psp/Documentation/netlink/specs/psp.yaml
+-- 
+2.39.0
 
-To regenerate the C code after changes to YAML:
-
-  ./tools/net/ynl/ynl-regen.sh
-
-if the Python script doing the generation dies and eats the files -
-bring them back with:
-
-  git checkout drivers/dpll/dpll_nl.c drivers/dpll/dpll_nl.h \
-               include/uapi/linux/dpll.h
-
-There is a "universal CLI" script in:
-
-  ./tools/net/ynl/samples/cli.py
-
-which should be able to take in JSON requests and output JSON responses.
-I'm improvising, because I don't have any implementation to try it 
-out, but something like:
-
-  ./tools/net/ynl/samples/cli.py \
-       --spec Documentation/netlink/specs/dpll.yaml \
-       --do device-get --json '{"id": 1}'
-
-should pretty print the info about device with id 1. Actually - it
-probably won't because I didn't fill in all the attrs in the pin nest.
-But with a bit more work on the spec it should work.
-
-Would you be able to finish this conversion. Just LMK if you have any
-problems, the edges are definitely very sharp at this point.
