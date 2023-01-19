@@ -2,88 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD777673DEE
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 16:49:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85568673DF4
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 16:51:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231425AbjASPtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 10:49:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45598 "EHLO
+        id S231326AbjASPvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 10:51:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231372AbjASPtU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 10:49:20 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121118766A;
-        Thu, 19 Jan 2023 07:48:22 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id v6so6766680ejg.6;
-        Thu, 19 Jan 2023 07:48:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+tTabZx+wRH0q9rQET/ShTDrcAyEnuICfb94pTN2GUM=;
-        b=iky8ya8NU/DHJz202+GYWQjeF1iemoJGbw32VHJJa8eQ+PwWvZ+OxDrLU96UIdlWet
-         LWrS0kWKZQFWzDQySFMdKqVoIj4KUGlecedMivjg0uDiZvcIauFkIINfpWVJ+rhpdmgM
-         yS9h7JH9N6bCiD2q+lIeKFwe5s2sOjKv4W0d1r5cnUsLn6/u+YL++G9C1XFOzR2T9E2w
-         DGrED2IWP6f5L2gMotbXo9D+I8EeTTlh6r+6iBuHmKdeWKLkMkjscmVd+l8MqW3iRbHy
-         SYQPUm0+BDJqrh7WRWhNYTRPzGFIiW5FkZASdt48fidfAGo9YyQUj6rFqYKkmfI+EoJ3
-         WJVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+tTabZx+wRH0q9rQET/ShTDrcAyEnuICfb94pTN2GUM=;
-        b=qzzK5E7e2qUTeMTCzj+2JPC19fVixmI5g2bJarGyxwo8CSKN11+ZNZn8XyTGozQUHH
-         jPNBG4q+ENgFbsQ+KvjCVVeiNJWwhIc67KX41BvxXFy29LUKRONeWAoKZ5vFmNyraImv
-         cx6RYvK+nJ6mZHT25/KTIGh2yVnm5vng9clSHhKq5sQHEyf67afEXlNH47t61AwLGTzK
-         Yx47+hFxkbd8d/97m036mXWKBiV4zQK4sOcuhW0L9osIYNNnZIBiHZ+Fv+FotH4MedTw
-         lW3Wrcy9NCtVq1D7NWz2pKE8svtaVFMRp2hB0106PyLWZlX2r0hWadck/ADk+I2xHovx
-         eFXA==
-X-Gm-Message-State: AFqh2kqMqDuB9Ms53Xr/eE0BUNv1YFJbmZsH4YTSl6vdPZ4sme74V7d+
-        yyGx+H7Nwpr9srtWE8BTL8pqhy3HuNWKbw==
-X-Google-Smtp-Source: AMrXdXv7yD7sMrLgeYfr0ZU6vU3gqZlBC/pFeriSs04hIkXVA9qMRXXvW36r+UKhqpeiryPG59u3ww==
-X-Received: by 2002:a17:906:38c3:b0:872:82d3:4162 with SMTP id r3-20020a17090638c300b0087282d34162mr11538199ejd.44.1674143300518;
-        Thu, 19 Jan 2023 07:48:20 -0800 (PST)
-Received: from skbuf ([188.27.185.85])
-        by smtp.gmail.com with ESMTPSA id kx4-20020a170907774400b007c10d47e748sm16418971ejc.36.2023.01.19.07.48.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Jan 2023 07:48:20 -0800 (PST)
-Date:   Thu, 19 Jan 2023 17:48:17 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, robh@kernel.org, johannes@sipsolutions.net,
-        stephen@networkplumber.org, ecree.xilinx@gmail.com, sdf@google.com,
-        f.fainelli@gmail.com, fw@strlen.de, linux-doc@vger.kernel.org,
-        razor@blackwall.org, nicolas.dichtel@6wind.com,
-        Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: Re: [PATCH net-next v3 1/8] docs: add more netlink docs (incl. spec
- docs)
-Message-ID: <20230119154817.cg6cgzmirc46xqyy@skbuf>
-References: <20230119003613.111778-1-kuba@kernel.org>
- <20230119003613.111778-2-kuba@kernel.org>
+        with ESMTP id S230070AbjASPvE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 10:51:04 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B6A829AC
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 07:51:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674143463; x=1705679463;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=aOUZMiKF3NX0nh5cZ7E09kHUs0CRUzV9PhmnGZt+OnA=;
+  b=CHzB7GSHM0hQ1J75T3YBCJT43sm3dKiftWmGzc+/HnCw/yGe5WItPXKA
+   YOBCEkZgz3F2J8esZ99lATXCnUQcVJs3nvPjHXIcqnmvzO45ZZbl9pnHB
+   ZoDpHfsffprb1Qy6jOhJ9XeG/yYny00lmDZjgjDCsKC9bvrw653K/0ubM
+   H84S/TZsnAHDHa/ilHLQX72qeGipKAtkcsgdE6cpBAoZ1+w1Y489upmAQ
+   kKqnAcopTIiNMG1xQq4QHjCj3delR2dbjR6OmY7M7CCdynZZYOyYJBlji
+   vrJ5YWzH52XtJAUwFqJ+GoDOMKPsYVsQrQCYphKXLrjEmy93RXAcKT9+Z
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="326601212"
+X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
+   d="scan'208";a="326601212"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 07:51:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="692463392"
+X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
+   d="scan'208";a="692463392"
+Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 19 Jan 2023 07:50:58 -0800
+Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pIXBp-0001ag-0c;
+        Thu, 19 Jan 2023 15:50:57 +0000
+Date:   Thu, 19 Jan 2023 23:50:46 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Paul Blakey <paulb@nvidia.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
+Subject: Re: [PATCH net-next v3 1/6] net/sched: cls_api: Support hardware
+ miss to tc action
+Message-ID: <202301192343.MPDnhYo1-lkp@intel.com>
+References: <20230119082357.21744-2-paulb@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230119003613.111778-2-kuba@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230119082357.21744-2-paulb@nvidia.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 18, 2023 at 04:36:06PM -0800, Jakub Kicinski wrote:
-> Add documentation about the upcoming Netlink protocol specs.
-> 
-> Reviewed-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-> Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> --
+Hi Paul,
 
-I considered this an useful read, thanks.
+Thank you for the patch! Perhaps something to improve:
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+[auto build test WARNING on net-next/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Paul-Blakey/net-sched-cls_api-Support-hardware-miss-to-tc-action/20230119-162743
+patch link:    https://lore.kernel.org/r/20230119082357.21744-2-paulb%40nvidia.com
+patch subject: [PATCH net-next v3 1/6] net/sched: cls_api: Support hardware miss to tc action
+config: x86_64-rhel-8.3-rust (https://download.01.org/0day-ci/archive/20230119/202301192343.MPDnhYo1-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/5c85cf394445e1140823351fdfdbf3e541b9abb9
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Paul-Blakey/net-sched-cls_api-Support-hardware-miss-to-tc-action/20230119-162743
+        git checkout 5c85cf394445e1140823351fdfdbf3e541b9abb9
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash net/sched/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> net/sched/cls_api.c:3224:6: warning: variable 'err' is uninitialized when used here [-Wuninitialized]
+           if (err)
+               ^~~
+   net/sched/cls_api.c:3200:9: note: initialize the variable 'err' to silence this warning
+           int err;
+                  ^
+                   = 0
+   1 warning generated.
+
+
+vim +/err +3224 net/sched/cls_api.c
+
+  3214	
+  3215		exts->action = action;
+  3216		exts->police = police;
+  3217	
+  3218		if (!use_action_miss)
+  3219			return 0;
+  3220	
+  3221	#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+  3222		err = tcf_exts_miss_cookie_base_alloc(exts, tp, handle);
+  3223	#endif
+> 3224		if (err)
+  3225			goto err_miss_alloc;
+  3226	
+  3227		return 0;
+  3228	
+  3229	err_miss_alloc:
+  3230		tcf_exts_destroy(exts);
+  3231		return err;
+  3232	}
+  3233	EXPORT_SYMBOL(tcf_exts_init_ex);
+  3234	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
