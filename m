@@ -2,71 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AADFE673623
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 11:55:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8FF36735F2
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 11:45:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230041AbjASKzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 05:55:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45058 "EHLO
+        id S230341AbjASKps (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 05:45:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230119AbjASKzL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 05:55:11 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E656FF9B
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 02:55:09 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id bk16so1431384wrb.11
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 02:55:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=W2iLqxzBf2lt/ncg4h7D713Xr/C62DP8hgV7AbUocoI=;
-        b=P5LppqRYfNZ6ipt7+ZeQwYBdFqfSnUFgGDqlQvZ4vusjXWwLO9BYeS5+93bNYfRRmh
-         qWajrm+xWAbEHdcQlzRE2FFz4nN4nVoMWfAYRfKyZWCOB7S7uTT3SsJKD/yS88bdZbom
-         kXVs014BApTave9Lv2C7QjqXXZoNVvbE5BRUf43hOizXTkAElkuep4PNbXZKv/Y6iCKt
-         wDb/QsJFjYQRj5xYFjIabG/FfeLBniAWjlxYCj3ASQVfoy4d31yHz4MPpWhiWqVaPS82
-         Y73Sq/Gf5Fbg7LC7AlenM9EXejEZpPWaaLpvwSWTl8Ie9KkIHrGGQ3DdRsjCnUWuJ1E2
-         38Bg==
+        with ESMTP id S230418AbjASKp1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 05:45:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C96A944BE9
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 02:44:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1674125071;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=A+rsSgztQ7EWmwAvYLqBC5Ld6bcZTyulRlKIF/tHgxw=;
+        b=iONea3ra+1SOW9lyOGG0JR++nubu13Z4Hy9AQmqSSCB5FsOMddbY7bYGyiVN8HZUharhSh
+        RPy8Z0dA/4SYv0iTC42QaXsGRuk/7VEfpkorjoBIzuwF2FMgxZT4hsQ3FkaoO/nHNcz7vH
+        tsNN4mjqGivrVQalReKnqU2JoZYdr+g=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-462-xPPH6acLP-yAS0M_sgHSew-1; Thu, 19 Jan 2023 05:44:29 -0500
+X-MC-Unique: xPPH6acLP-yAS0M_sgHSew-1
+Received: by mail-qk1-f197.google.com with SMTP id bk14-20020a05620a1a0e00b00706774f14cbso1131834qkb.4
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 02:44:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=W2iLqxzBf2lt/ncg4h7D713Xr/C62DP8hgV7AbUocoI=;
-        b=FqrIM977aI5EXKPTZL9BCgfvYO2jAgjpEPAfHORy2WCo1brPWOPfvAzdJttSK1UUj8
-         WUAWq+jI96a3368vgJLQPGuSdoZX/S+O4DZlhVNcGDN0adbHHxzcMhoNieCkB0XUD1hb
-         FE4qoE/xM2aERLDZXv1wbPsQVjultin5JeILqrREWlUvRXD3pF1CPD58cZnU0XVKuR2U
-         tY9q8+d7suuuIEN4blHh5l0gsbm5mU2RNCgpDRU/FVwHqQuDUEKgehkEi1BTfPdkG4l8
-         pdvMH39JDoH4fkJPGemZswaIt0XayYWWqYudc+uh0TZHYtvbBdeLOIdF7owq3Kmi3m/s
-         dN5Q==
-X-Gm-Message-State: AFqh2kpk6ct4SuHufrxjlidOQi83ZuWTYf6KQbUF5ATUQtRHuaNLTSGQ
-        IW08J6F6bchlLHMi7IKpR1c/Hg==
-X-Google-Smtp-Source: AMrXdXtKFaRuKk7aQfl2q8ApDCvIPRIpAPBN2Nc4ZtdNxVZ0nz3wqSUr8VfedhOedhFNga6qKAibsw==
-X-Received: by 2002:a5d:6545:0:b0:2bb:5d8c:9575 with SMTP id z5-20020a5d6545000000b002bb5d8c9575mr8403717wrv.12.1674125708342;
-        Thu, 19 Jan 2023 02:55:08 -0800 (PST)
-Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.gmail.com with ESMTPSA id b13-20020a05600003cd00b002be07cbefb2sm11691659wrg.18.2023.01.19.02.55.07
+        bh=A+rsSgztQ7EWmwAvYLqBC5Ld6bcZTyulRlKIF/tHgxw=;
+        b=SBAb5fkJZfJcjfoP/PmTulTzfeUtg2lyUnRB106j5QQdGtKsFZgRu7xm3XV/WnqW99
+         vko4e+rk3V/jEg+Qvww3q0VfxiqRfXM2fGtMElI7BOsjRVsCuFxKPLZxhTVG2As8Txa8
+         TR/PUvi6z3bNgVog+LzLNlRXzNXwRHZUGbWJmqGksyMolRQrbus8TEE7uDvomfmR80YD
+         1/nRCHxCPGNgWhbNNzvNsWjgItkW4ASb0aneC8BYpT6nBQ2C+hZF6ZfE3hPlCrxOUjgb
+         XjCZnjD33MR5y1olhN4UNc5WlxD71qLySQj2bW1276wRJgkUD0yNvwyjH//d49+ob6Su
+         nY+Q==
+X-Gm-Message-State: AFqh2kqdGHXYebuL/pSOQ2upQXLjcNE5KkFd6VMZgzCxJ6hcvc1y7Yfy
+        edLn+2MJqO9d1P4VIcywtOPtlXoYTWL3BrpRsDfIFutcmnJ5FnYOgeSNXveTRBzqZfoTaKBdSZQ
+        bK0l+0pOHd0kgyDPa
+X-Received: by 2002:ac8:7744:0:b0:3b6:8d60:5592 with SMTP id g4-20020ac87744000000b003b68d605592mr3210993qtu.31.1674125068980;
+        Thu, 19 Jan 2023 02:44:28 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXt56lwLvt+Kskuqb+X5HjTgsyzo+boetrR2WDxNvxNZ9GSgS9LJR4o6YNIEF845qyhok47Yug==
+X-Received: by 2002:ac8:7744:0:b0:3b6:8d60:5592 with SMTP id g4-20020ac87744000000b003b68d605592mr3210954qtu.31.1674125068722;
+        Thu, 19 Jan 2023 02:44:28 -0800 (PST)
+Received: from sgarzare-redhat (host-82-57-51-245.retail.telecomitalia.it. [82.57.51.245])
+        by smtp.gmail.com with ESMTPSA id u12-20020a05622a198c00b003ade7d4ad7asm15109712qtc.10.2023.01.19.02.44.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Jan 2023 02:55:07 -0800 (PST)
-References: <20230116091637.272923-1-jbrunet@baylibre.com>
- <Y8dimCI7ybeL09j0@lunn.ch>
-User-agent: mu4e 1.8.10; emacs 28.2
-From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        linux-amlogic@lists.infradead.org,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Da Xue <da@lessconfused.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 0/2] net: mdio: add amlogic gxl mdio mux support
-Date:   Thu, 19 Jan 2023 11:42:11 +0100
-In-reply-to: <Y8dimCI7ybeL09j0@lunn.ch>
-Message-ID: <1jr0vqyet1.fsf@starbuckisacylon.baylibre.com>
+        Thu, 19 Jan 2023 02:44:28 -0800 (PST)
+Date:   Thu, 19 Jan 2023 11:44:20 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Bobby Eshleman <bobby.eshleman@bytedance.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Mykola Lysenko <mykolal@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Cong Wang <cong.wang@bytedance.com>
+Subject: Re: [PATCH RFC 2/3] selftests/bpf: add vsock to vmtest.sh
+Message-ID: <20230119104420.jxooiua5fchw55qa@sgarzare-redhat>
+References: <20230118-support-vsock-sockmap-connectible-v1-0-d47e6294827b@bytedance.com>
+ <20230118-support-vsock-sockmap-connectible-v1-2-d47e6294827b@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20230118-support-vsock-sockmap-connectible-v1-2-d47e6294827b@bytedance.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,47 +97,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Wed 18 Jan 2023 at 04:08, Andrew Lunn <andrew@lunn.ch> wrote:
-
-> On Mon, Jan 16, 2023 at 10:16:34AM +0100, Jerome Brunet wrote:
->> Add support for the MDIO multiplexer found in the Amlogic GXL SoC family.
->> This multiplexer allows to choose between the external (SoC pins) MDIO bus,
->> or the internal one leading to the integrated 10/100M PHY.
->> 
->> This multiplexer has been handled with the mdio-mux-mmioreg generic driver
->> so far. When it was added, it was thought the logic was handled by a
->> single register.
->> 
->> It turns out more than a single register need to be properly set.
->> As long as the device is using the Amlogic vendor bootloader, or upstream
->> u-boot with net support, it is working fine since the kernel is inheriting
->> the bootloader settings. Without net support in the bootloader, this glue
->> comes unset in the kernel and only the external path may operate properly.
->> 
->> With this driver (and the associated DT update), the kernel no longer relies
->> on the bootloader to set things up, fixing the problem.
+On Wed, Jan 18, 2023 at 12:27:40PM -0800, Bobby Eshleman wrote:
+>Add the ability to use vsock in the vmtest.sh script and
+>the test kernel config.
 >
-> Ideally, you should also post an actual user of this driver, i.e. the
-> DT updates.
-
-I usually avoid doing this since the DT part is intended for another
-maintainer. The idea is make life easy for them and let them pick the
-entire series (or not). I don't mind sending the DT update along if it
-is the perferred way with netdev.
-
-FYI, the DT update would look like this :
-https://gitlab.com/jbrunet/linux/-/commit/1d38ccf1b9f264111b1c56f18cfb4804227d3894.patch
-
+>Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
+>---
+> tools/testing/selftests/bpf/config.x86_64 | 4 ++++
+> tools/testing/selftests/bpf/vmtest.sh     | 1 +
+> 2 files changed, 5 insertions(+)
 >
->> This has been tested on the aml-s905x-cc (LePotato) for the internal path
->> and the aml-s912-pc (Tartiflette) for the external path.
->
-> So these exist in mainline, which is enough for me.
+>diff --git a/tools/testing/selftests/bpf/config.x86_64 b/tools/testing/selftests/bpf/config.x86_64
+>index dd97d61d325ca..db5e6b9a91711 100644
+>--- a/tools/testing/selftests/bpf/config.x86_64
+>+++ b/tools/testing/selftests/bpf/config.x86_64
+>@@ -234,7 +234,11 @@ CONFIG_VIRTIO_BLK=y
+> CONFIG_VIRTIO_CONSOLE=y
+> CONFIG_VIRTIO_NET=y
+> CONFIG_VIRTIO_PCI=y
+>+CONFIG_VIRTIO_VSOCKETS=y
+>+CONFIG_VIRTIO_VSOCKETS_COMMON=y
+> CONFIG_VLAN_8021Q=y
+>+CONFIG_VSOCKETS=y
+>+CONFIG_VSOCKETS_LOOPBACK=y
+> CONFIG_X86_ACPI_CPUFREQ=y
+> CONFIG_X86_CPUID=y
+> CONFIG_X86_MSR=y
+>diff --git a/tools/testing/selftests/bpf/vmtest.sh b/tools/testing/selftests/bpf/vmtest.sh
+>index 316a56d680f25..aad27ffd4ec68 100755
+>--- a/tools/testing/selftests/bpf/vmtest.sh
+>+++ b/tools/testing/selftests/bpf/vmtest.sh
+>@@ -250,6 +250,7 @@ EOF
+> 		-enable-kvm \
+> 		-m 4G \
+> 		-drive file="${rootfs_img}",format=raw,index=1,media=disk,if=virtio,cache=none \
+>+		-device vhost-vsock-pci,guest-cid=1234 \
 
-Yes the boards exists in mainline, there are still using the mdio-mux-mmioreg driver
-ATM
+I'm not sure if this will work with qemu-system-s390x and 
+qemu-system-aarch64.
 
+Maybe the "virt" machine of qemu-system-aarch64 supports PCI, but IIRC 
+s390x doesn't support it and we should use the vhost-vsock-ccw device.
+
+In addition, we are changing only config.x86_64, so maybe we should add 
+the vhost-vsock-pci device only for x86_64 (maybe in the QEMU_FLAGS or a 
+new VSOCK_DEV variable), and run the tests only for that architecture.
+
+Thanks,
+Stefano
+
+> 		-kernel "${kernel_bzimage}" \
+> 		-append "root=/dev/vda rw console=${QEMU_CONSOLE}"
+> }
 >
->    Andrew
+>-- 
+>2.30.2
+>
 
