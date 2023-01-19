@@ -2,104 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C89FF673103
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 06:12:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B009767316C
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 06:56:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229620AbjASFMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 00:12:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49148 "EHLO
+        id S229854AbjASF4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 00:56:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbjASFMV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 00:12:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A48110A91
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 21:10:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34E1E61B22
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 05:10:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9423EC433F2;
-        Thu, 19 Jan 2023 05:10:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674105019;
-        bh=qHiRUKJlgp2mf6wHPfvx1O2W+L6sxETEI9H3+zs7wXM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TjjNaRoUKWgRi0bMo2L1U3K7l9N5M/eCZJ3M674GUEzkS0/sBcLwrdV+KLvRDe1RG
-         kXtqbSHJ65fvCU+XQEWlLriKzjtFvAYPPt2wgXYkSb2cTmF0jNwAqJi0mQbUYoSykn
-         AJu11p73ftAbGkEcs/tdJH7xUR8nWKtZsK/v12/Z1u6AVMZNe0sK26GEgrQyWWxaso
-         7GEzaNOPIc/UHSk+w1hr5ftmf4WCBoFvO768VOWx9tAWhjxLAn8xQvc1IDuRUmNWeE
-         BFZuqztpX49HgJSI3lLeM9hngRekDWOxHTiQOve1+WqS+ML2dHpJ2Fn5XCF7A+9hvA
-         +RKiwq98dM1Hw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 814FFC40C5E;
-        Thu, 19 Jan 2023 05:10:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229501AbjASF4F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 00:56:05 -0500
+Received: from out28-194.mail.aliyun.com (out28-194.mail.aliyun.com [115.124.28.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6049F10B;
+        Wed, 18 Jan 2023 21:56:00 -0800 (PST)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.0744085|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0161519-0.00312963-0.980718;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047190;MF=frank.sae@motor-comm.com;NM=1;PH=DS;RN=16;RT=16;SR=0;TI=SMTPD_---.QwzW1nf_1674107754;
+Received: from 10.0.2.15(mailfrom:Frank.Sae@motor-comm.com fp:SMTPD_---.QwzW1nf_1674107754)
+          by smtp.aliyun-inc.com;
+          Thu, 19 Jan 2023 13:55:56 +0800
+Message-ID: <50e59ffd-aa52-4fde-c2b5-f5ce1dc64c95@motor-comm.com>
+Date:   Thu, 19 Jan 2023 13:56:44 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/12] ENETC BD ring cleanup
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167410501952.20849.3176784852303427442.git-patchwork-notify@kernel.org>
-Date:   Thu, 19 Jan 2023 05:10:19 +0000
-References: <20230117230234.2950873-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20230117230234.2950873-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, claudiu.manoil@nxp.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next v1 1/3] dt-bindings: net: Add Motorcomm yt8xxx
+ ethernet phy Driver bindings
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Peter Geis <pgwipeout@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        xiaogang.fan@motor-comm.com, fei.zhang@motor-comm.com,
+        hua.sun@motor-comm.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20230105073024.8390-1-Frank.Sae@motor-comm.com>
+ <20230105073024.8390-2-Frank.Sae@motor-comm.com> <Y7bN4vJXMi66FF6v@lunn.ch>
+ <e762c7ac-63e7-a86e-3e3f-5c8a450b25b0@motor-comm.com>
+ <Y7goXXiRBE6XHuCc@lunn.ch>
+ <83fd7a69-7e6a-ab93-b05a-4eba8af4d245@motor-comm.com>
+ <Y8f254xNPdtR8gq1@lunn.ch>
+Content-Language: en-US
+From:   "Frank.Sae" <Frank.Sae@motor-comm.com>
+In-Reply-To: <Y8f254xNPdtR8gq1@lunn.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Andrew,
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 18 Jan 2023 01:02:22 +0200 you wrote:
-> The highlights of this patch set are:
+On 2023/1/18 21:40, Andrew Lunn wrote:
+> On Wed, Jan 11, 2023 at 05:20:18PM +0800, Frank.Sae wrote:
+>> Hi Andrew,
+>>
+>> On 2023/1/6 21:55, Andrew Lunn wrote:
+>>>>> Why is this needed? When the MAC driver connects to the PHY, it passes
+>>>>> phy-mode. For RGMII, this is one of:
+>>>>
+>>>>> linux/phy.h:	PHY_INTERFACE_MODE_RGMII,
+>>>>> linux/phy.h:	PHY_INTERFACE_MODE_RGMII_ID,
+>>>>> linux/phy.h:	PHY_INTERFACE_MODE_RGMII_RXID,
+>>>>> linux/phy.h:	PHY_INTERFACE_MODE_RGMII_TXID,
+>>>>>
+>>>>> This tells you if you need to add a delay for the RX clock line, the
+>>>>> TX clock line, or both. That is all you need to know for basic RGMII
+>>>>> delays.
+>>>>>
+>>>>
+>>>> This basic delay can be controlled by hardware or the phy-mode which
+>>>> passes from MAC driver.
+>>>> Default value depends on power on strapping, according to the voltage
+>>>> of RXD0 pin (low = 0, turn off;   high = 1, turn on).
+>>>>
+>>>> Add this for the case that This basic delay is controlled by hardware,
+>>>> and software don't change this.
+>>>
+>>> You should always do what phy-mode contains. Always. We have had
+>>> problems in the past where a PHY driver ignored the phy-mode, and left
+>>> the PHY however it was strapped. Which worked. But developers put the
+>>> wrong phy-mode value in DT. Then somebody had a board which actually
+>>> required that the DT value really did work, because the strapping was
+>>> wrong. So the driver was fixed to respect the PHY mode, made that
+>>> board work, and broke all the other boards which had the wrong
+>>> phy-mode in DT.
+>>>
+>>> If the user want the driver to leave the mode alone, use the
+>>> strapping, they should use PHY_INTERFACE_MODE_NA. It is not well
+>>> documented, but it is used in a few places. However, i don't recommend
+>>> it.
+>>>
+>>
+>> RX delay = rx-delay-basic (0ns or 1.9ns) + x-delay-additional-ps
+>> (N*150ps, N = 0 ~ 15)
+>>  If rx-delay-basic is removed and controlled by phy-mode.
+>>  when phy-mode is  rgmii-id or rgmii-rxid, RX delay is 1.9ns + N*150ps.
+>>  But sometimes 1.9ns is still too big, we just need  0ns + N*150ps.
+>>
+>> For this case, can we do like following ?
+>> rx-internal-delay-ps:
+>>     enum: [ 0, 150, 300, 450, 600, 750, 900, 1050, 1200, 1350, 1500,
+>> 1650, 1800, 1900, 1950, 2050, 2100, 2200, 2250, 2350, 2500, 2650, 2800,
+>> 2950, 3100, 3250, 3400, 3550, 3700, 3850, 4000, 4150 ]
+>>     default: 0
+>>  rx-internal-delay-ps is 0ns + N*150ps and  1.9ns + N*150ps.
+>>  And check whether need rx-delay-basic (1.9ns) by the val of
+>> rx-internal-delay-ps?
 > 
-> - Installing a BPF program and changing PTP RX timestamping settings are
->   currently implemented through a port reconfiguration procedure which
->   triggers an AN restart on the PHY, and these procedures are not
->   generally guaranteed to leave the port in a sane state. Patches 9/12
->   and 11/12 address that.
+> Please take a look at phy_get_internal_delay() and the drivers which
+> use it.
 > 
-> [...]
+>     Andrew
 
-Here is the summary with links:
-  - [net-next,01/12] net: enetc: set next_to_clean/next_to_use just from enetc_setup_txbdr()
-    https://git.kernel.org/netdev/net-next/c/1cbf19c575dd
-  - [net-next,02/12] net: enetc: set up RX ring indices from enetc_setup_rxbdr()
-    https://git.kernel.org/netdev/net-next/c/fbf1cff98c95
-  - [net-next,03/12] net: enetc: create enetc_dma_free_bdr()
-    https://git.kernel.org/netdev/net-next/c/0d6cfd0f5e4d
-  - [net-next,04/12] net: enetc: rx_swbd and tx_swbd are never NULL in enetc_free_rxtx_rings()
-    https://git.kernel.org/netdev/net-next/c/2c3387109d11
-  - [net-next,05/12] net: enetc: drop redundant enetc_free_tx_frame() call from enetc_free_txbdr()
-    https://git.kernel.org/netdev/net-next/c/bbd6043f74e1
-  - [net-next,06/12] net: enetc: bring "bool extended" to top-level in enetc_open()
-    https://git.kernel.org/netdev/net-next/c/d075db51e013
-  - [net-next,07/12] net: enetc: split ring resource allocation from assignment
-    https://git.kernel.org/netdev/net-next/c/f3ce29e169d0
-  - [net-next,08/12] net: enetc: move phylink_start/stop out of enetc_start/stop
-    https://git.kernel.org/netdev/net-next/c/598ca0d09056
-  - [net-next,09/12] net: enetc: implement ring reconfiguration procedure for PTP RX timestamping
-    https://git.kernel.org/netdev/net-next/c/5093406c784f
-  - [net-next,10/12] net: enetc: rename "xdp" and "dev" in enetc_setup_bpf()
-    https://git.kernel.org/netdev/net-next/c/766338c79b10
-  - [net-next,11/12] net: enetc: set up XDP program under enetc_reconfigure()
-    https://git.kernel.org/netdev/net-next/c/c33bfaf91c4c
-  - [net-next,12/12] net: enetc: prioritize ability to go down over packet processing
-    https://git.kernel.org/netdev/net-next/c/ff58fda09096
+ Thanks. But it may be not suitable.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+rx-internal-delay-ps has two part:
+0ns + N*150ps =
+0,150,300,450,600,750,900,1050,1200,1350,1500,1650,1800,1950,2100,2250
+
+1.9ns + N*150ps =
+1900,2050,2200,2350,2500,2650,2800,2950,3100,3250,3400,3550,3700,3850,4000,4150
+
+The problem is "1900,2050,2200" is less than "2250".
+
+If I take this two parts in one sorted table, there will be three
+tables, one for tx-internal-delay-ps, one for rx-internal-delay-ps and
+one for the rx index to reg(delay value and 1.9ns on or off) value.
+
+So we tend to use the following methods.
+
+#define YT8521_CCR_RXC_DLY_1_900_NS		1900
+
+#define YT8521_RC1R_RGMII_0_000_NS		0
+#define YT8521_RC1R_RGMII_0_150_NS		1
+...
+#define	YT8521_RC1R_RGMII_2_250_NS		15
+
+struct ytphy_cfg_reg_map {
+	u32 cfg;
+	u32 reg;
+};
+
+static const struct ytphy_cfg_reg_map ytphy_rgmii_delays[] = {
+	/* for tx delay / rx delay with YT8521_CCR_RXC_DLY_EN is not set. */
+	{ 0,	YT8521_RC1R_RGMII_0_000_NS },
+	{ 150,	YT8521_RC1R_RGMII_0_150_NS },
+	...
+	{ 2250,	YT8521_RC1R_RGMII_2_250_NS },
+
+	/* only for rx delay with YT8521_CCR_RXC_DLY_EN is set. */
+	{ 0    + YT8521_CCR_RXC_DLY_1_900_NS,YT8521_RC1R_RGMII_0_000_NS },
+	{ 150  + YT8521_CCR_RXC_DLY_1_900_NS,YT8521_RC1R_RGMII_0_150_NS },
+	...
+	{ 2250 + YT8521_CCR_RXC_DLY_1_900_NS,YT8521_RC1R_RGMII_2_250_NS }
+};
 
 
+static u32 ytphy_get_delay_reg_value(struct phy_device *phydev,
+				     const char *prop_name,
+				     const struct ytphy_cfg_reg_map *tbl,
+				     int tb_size,
+				     u16 *rxc_dly_en,
+				     u32 dflt)
+{
+	struct device_node *node = phydev->mdio.dev.of_node;
+	int tb_size_half = tb_size / 2;
+	u32 val;
+	int i;
+
+	if (of_property_read_u32(node, prop_name, &val))
+		return dflt;
+
+	/* when rxc_dly_en is NULL, it is get the delay for tx, only half of
+	 * tb_size is valid.
+	 */
+	if (!rxc_dly_en)
+		tb_size = tb_size_half;
+
+	for (i = 0; i < tb_size; i++) {
+		if (tbl[i].cfg == val) {
+			if (rxc_dly_en && i < tb_size_half)
+				*rxc_dly_en = 0;
+			return tbl[i].reg;
+		}
+	}
+
+	phydev_warn(phydev, "Unsupported value %d for %s using default (%u)\n",
+		    val, prop_name, dflt);
+	return dflt;
+}
+
+static int ytphy_rgmii_clk_delay_config(struct phy_device *phydev)
+{
+	int tb_size = ARRAY_SIZE(ytphy_rgmii_delays);
+	u16 rxc_dly_en = YT8521_CCR_RXC_DLY_EN;
+	u32 rx_reg, tx_reg;
+	u16 mask, val = 0;
+	int ret;
+
+	rx_reg = ytphy_get_delay_reg_value(phydev, "rx-internal-delay-ps",
+					   ytphy_rgmii_delays, tb_size,
+					   &rxc_dly_en,
+					   YT8521_RC1R_RGMII_0_000_NS);
+	tx_reg = ytphy_get_delay_reg_value(phydev, "tx-internal-delay-ps",
+					   ytphy_rgmii_delays, tb_size, NULL,
+					   YT8521_RC1R_RGMII_0_150_NS);
+
+	switch (phydev->interface) {
+	case PHY_INTERFACE_MODE_RGMII:
+		rxc_dly_en = 0;
+		break;
+	case PHY_INTERFACE_MODE_RGMII_RXID:
+		val |= FIELD_PREP(YT8521_RC1R_RX_DELAY_MASK, rx_reg);
+		break;
+	case PHY_INTERFACE_MODE_RGMII_TXID:
+		rxc_dly_en = 0;
+		val |= FIELD_PREP(YT8521_RC1R_GE_TX_DELAY_MASK, tx_reg);
+		break;
+	case PHY_INTERFACE_MODE_RGMII_ID:
+		val |= FIELD_PREP(YT8521_RC1R_RX_DELAY_MASK, rx_reg) |
+		       FIELD_PREP(YT8521_RC1R_GE_TX_DELAY_MASK, tx_reg);
+		break;
+	default: /* do not support other modes */
+		return -EOPNOTSUPP;
+	}
+
+	ret = ytphy_modify_ext(phydev, YT8521_CHIP_CONFIG_REG,
+			       YT8521_CCR_RXC_DLY_EN, rxc_dly_en);
+	if (ret < 0)
+		return ret;
+
+	/* Generally, it is not necessary to adjust YT8521_RC1R_FE_TX_DELAY */
+	mask = YT8521_RC1R_RX_DELAY_MASK | YT8521_RC1R_GE_TX_DELAY_MASK;
+	return ytphy_modify_ext(phydev, YT8521_RGMII_CONFIG1_REG, mask, val);
+}
