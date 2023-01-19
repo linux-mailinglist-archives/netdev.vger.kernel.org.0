@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3967867397E
+	by mail.lfdr.de (Postfix) with ESMTP id D22CF673980
 	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 14:08:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229788AbjASNIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 08:08:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47616 "EHLO
+        id S231167AbjASNIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 08:08:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230240AbjASNIF (ORCPT
+        with ESMTP id S230391AbjASNIF (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 08:08:05 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC9E611F2;
-        Thu, 19 Jan 2023 05:07:59 -0800 (PST)
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910E95F3A5;
+        Thu, 19 Jan 2023 05:08:00 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id D398E1693;
-        Thu, 19 Jan 2023 14:07:57 +0100 (CET)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 4F8C518D8;
+        Thu, 19 Jan 2023 14:07:58 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
         t=1674133678;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=3UHdwuLPhXMunD6/Q87hv9DQ5vVyKhuoTXpWSJ50hAQ=;
-        b=Yoyi9wo7/ZF287RuEL0Zgg/52fWFCovu59p10HaO7ExZWnSijGhagfN7KX0DoxF7oYxDSq
-        M+KCaMyotjb4vR1ipKfm0jZurv/qtSEeHn3k2MBmoup4fqN7hyPZF0NL3kH3ZXnukz1I8Z
-        zuOvBNd71Cwf9CpB0RuMm29LzZ9N4+CehbSluy0+PEndsy5dUvRG5kEczhVyBu+fC9Gcz6
-        2rq2ExxRuOwclB7aNgylEVQylsdVw/oTTHc93iE33XwEfPJNC6soVVFuSt32RV9PQnLZds
-        r5bbOdfF/JkFya9dsUK2HmYbukHd31JOGdpt8jrhfUYuhG8Thkf7gNUpgviUJQ==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=khuF9D5aRrU+RqS5yxEYYs8dKhh0RK9DJlZz4Fdm+kU=;
+        b=ELaQzDQS/Rb8IAB9R0Pt+rIRCMsEkAtSuwUypOhzEYItq8wf5369kWuR3b1vmg/r7hqSXq
+        jrzs/i2jaDREjQI+27CQpIrMmgERRMP8mPnjtB6gnkma/7Q8z3r586D0X0yj6MYPVI/guN
+        dFxfFIVmDq1JyKHS5rTkjoUM8S9Y02KS5A+K3BVFI4xYCNXoQc/wiaKvsrLJNM+HzmAbts
+        Mrtgx/u7YFnMyB42Y2ZmYxQGn02c8oJX8s5BSx+kCkmpVdWHA5Rxoi6xj8IiTwzWdUeb2Y
+        KjSAmnVlGA8Wtmk1B2LBtx1KeQ6RimYPHHgIUwGqCrBCT2PNkj+o9vj9RbjntQ==
 From:   Michael Walle <michael@walle.cc>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -60,10 +61,12 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-actions@lists.infradead.org,
         linux-mediatek@lists.infradead.org,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH RESEND net-next 0/4] net: mdio: Remove support for building C45 muxed addresses
-Date:   Thu, 19 Jan 2023 14:06:56 +0100
-Message-Id: <20230119130700.440601-1-michael@walle.cc>
+Subject: [PATCH RESEND net-next 1/4] net: phy: Remove fallback to old C45 method
+Date:   Thu, 19 Jan 2023 14:06:57 +0100
+Message-Id: <20230119130700.440601-2-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230119130700.440601-1-michael@walle.cc>
+References: <20230119130700.440601-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam: Yes
@@ -76,42 +79,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[Russell told me that his mailserver rejected my mail because of
-an ill-formated "To:" header. Resending now with plain git-send-email
-instead of b4 send.]
+From: Andrew Lunn <andrew@lunn.ch>
 
-I've picked this older series from Andrew up and rebased it onto
-the latest net-next.
+Now that all MDIO bus drivers which support C45 implement the c45
+specific ops, remove the fallback to the old method.
 
-With all drivers which support c45 now being converted to a seperate c22
-and c45 access op, we can now remove the old MII_ADDR_C45 flag.
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ drivers/net/phy/mdio_bus.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
-Andrew Lunn (3):
-  net: phy: Remove fallback to old C45 method
-  net: Remove C45 check in C22 only MDIO bus drivers
-  net: mdio: Remove support for building C45 muxed addresses
-
-Michael Walle (1):
-  net: ngbe: Drop mdiobus_c45_regad()
-
- drivers/net/dsa/microchip/ksz_common.c         |  6 ------
- drivers/net/dsa/rzn1_a5psw.c                   |  6 ------
- drivers/net/dsa/sja1105/sja1105_mdio.c         |  6 ------
- drivers/net/ethernet/actions/owl-emac.c        |  6 ------
- drivers/net/ethernet/engleder/tsnep_main.c     |  6 ------
- drivers/net/ethernet/marvell/mvmdio.c          |  6 ------
- drivers/net/ethernet/mediatek/mtk_star_emac.c  |  6 ------
- .../mellanox/mlxbf_gige/mlxbf_gige_mdio.c      |  6 ------
- drivers/net/ethernet/sunplus/spl2sw_mdio.c     |  6 ------
- drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.c  |  4 ++--
- drivers/net/mdio/mdio-i2c.c                    |  6 ------
- drivers/net/mdio/mdio-ipq8064.c                |  8 --------
- drivers/net/mdio/mdio-mscc-miim.c              |  6 ------
- drivers/net/mdio/mdio-mvusb.c                  |  6 ------
- drivers/net/phy/mdio_bus.c                     | 10 ++--------
- include/linux/mdio.h                           | 18 ------------------
- 16 files changed, 4 insertions(+), 108 deletions(-)
-
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 132dd1f905f4..f5e319549f67 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -844,11 +844,6 @@ int __mdiobus_modify_changed(struct mii_bus *bus, int addr, u32 regnum,
+ }
+ EXPORT_SYMBOL_GPL(__mdiobus_modify_changed);
+ 
+-static u32 mdiobus_c45_addr(int devad, u16 regnum)
+-{
+-	return MII_ADDR_C45 | devad << MII_DEVADDR_C45_SHIFT | regnum;
+-}
+-
+ /**
+  * __mdiobus_c45_read - Unlocked version of the mdiobus_c45_read function
+  * @bus: the mii_bus struct
+@@ -869,7 +864,7 @@ int __mdiobus_c45_read(struct mii_bus *bus, int addr, int devad, u32 regnum)
+ 	if (bus->read_c45)
+ 		retval = bus->read_c45(bus, addr, devad, regnum);
+ 	else
+-		retval = bus->read(bus, addr, mdiobus_c45_addr(devad, regnum));
++		retval = -EOPNOTSUPP;
+ 
+ 	trace_mdio_access(bus, 1, addr, regnum, retval, retval);
+ 	mdiobus_stats_acct(&bus->stats[addr], true, retval);
+@@ -900,8 +895,7 @@ int __mdiobus_c45_write(struct mii_bus *bus, int addr, int devad, u32 regnum,
+ 	if (bus->write_c45)
+ 		err = bus->write_c45(bus, addr, devad, regnum, val);
+ 	else
+-		err = bus->write(bus, addr, mdiobus_c45_addr(devad, regnum),
+-				 val);
++		err = -EOPNOTSUPP;
+ 
+ 	trace_mdio_access(bus, 0, addr, regnum, val, err);
+ 	mdiobus_stats_acct(&bus->stats[addr], false, err);
 -- 
 2.30.2
 
