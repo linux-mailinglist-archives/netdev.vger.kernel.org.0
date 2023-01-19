@@ -2,668 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2671C672D81
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 01:37:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 539D7672D90
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 01:41:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229818AbjASAhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 19:37:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47960 "EHLO
+        id S229522AbjASAle (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 19:41:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229804AbjASAgk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 19:36:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68AC266031;
-        Wed, 18 Jan 2023 16:36:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S229379AbjASAld (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 19:41:33 -0500
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C25A94C23;
+        Wed, 18 Jan 2023 16:41:31 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB2B4B81FBB;
-        Thu, 19 Jan 2023 00:36:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F34EEC433F2;
-        Thu, 19 Jan 2023 00:36:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674088584;
-        bh=Q5YR2kXZ3skRigJ18JjBkaBpLM5CaF4x9B77X1Dlm8o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eRALnCQw4vI3LiDGAty1+hl/UsvPZIB6OqvrBUsinSP5Dx0y9oTQDPSM6mPgSrpUJ
-         Hd6NpBzSk5S9pX+LDu3VyJjl5cDbjYa5VZ0F9EWxgFxiqTYsti7o+NwSIvNI18Aep9
-         dZbZquD8dom/7kqD9lsalET4pDss4pAUEfMroQ5NgL6xQ2CjywU0YuBcqfAGKH2NrW
-         f+sejIsxxhmSiTTIM7vGrZHBpLxLz4vKWjLV4lR9a5CG9vrE8U+5yRTk4O1+XxR2yf
-         CWjMT+WIbra3gu/O5qkB/wmNeBUiwAedv+NnIYo4ekrD8+iX4MYDp9VGDhKf3WLYxa
-         QWy9c/2x57yHA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        robh@kernel.org, johannes@sipsolutions.net,
-        stephen@networkplumber.org, ecree.xilinx@gmail.com, sdf@google.com,
-        f.fainelli@gmail.com, fw@strlen.de, linux-doc@vger.kernel.org,
-        razor@blackwall.org, nicolas.dichtel@6wind.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v3 8/8] tools: ynl: add a completely generic client
-Date:   Wed, 18 Jan 2023 16:36:13 -0800
-Message-Id: <20230119003613.111778-9-kuba@kernel.org>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230119003613.111778-1-kuba@kernel.org>
-References: <20230119003613.111778-1-kuba@kernel.org>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Ny3j26br3z4xyB;
+        Thu, 19 Jan 2023 11:41:26 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1674088887;
+        bh=ue7xvIZGo+iI9hupprXGDGTEJGMk5Uq7aKC+TyTDNHk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=nJ8FiNFiF8Lml5rqdCSaBhspeIsaI2RL4iaSmEUBsq6ZYtzP7L9kmoRlPUFFSMFyO
+         mCFk74myn2RwAHNe7DAltuoVOlhZy+RTsXuvHNQ8PbeEezhzA07HB1omhu+9CcUxCl
+         gysxDgSEuApK76BT8jExhVo/YWHHw05m0FWDEt4U71r3RsaIm0NDZVhB4h62OGzOfp
+         b2I385KfPqzyzPqvag2uqmlGMIc+BSTRtSJEpXQ7fYgIDp5bou6mIfdFaoBt++PhAz
+         JavmuUinPfnWPj5hYUY0kAEQbnKGZSC23PUgPjWy9brYRQFqMeQHiUlSIQZg4niFeu
+         XvmJokFiVU51g==
+Date:   Thu, 19 Jan 2023 11:41:25 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Alex Elder <elder@linaro.org>,
+        Caleb Connolly <caleb.connolly@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20230119114125.5182c7ab@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/.BcyQ//Iass4WY=tHW+8ZVp";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a CLI sample which can take in arbitrary request
-in JSON format, convert it to Netlink and do the inverse
-for output.
+--Sig_/.BcyQ//Iass4WY=tHW+8ZVp
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-It's meant as a development tool primarily and perhaps
-for selftests which need to tickle netlink in a special way.
+Hi all,
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- tools/net/ynl/samples/cli.py |  47 +++
- tools/net/ynl/samples/ynl.py | 534 +++++++++++++++++++++++++++++++++++
- 2 files changed, 581 insertions(+)
- create mode 100755 tools/net/ynl/samples/cli.py
- create mode 100644 tools/net/ynl/samples/ynl.py
+Today's linux-next merge of the net-next tree got conflicts in:
 
-diff --git a/tools/net/ynl/samples/cli.py b/tools/net/ynl/samples/cli.py
-new file mode 100755
-index 000000000000..b27159c70710
---- /dev/null
-+++ b/tools/net/ynl/samples/cli.py
-@@ -0,0 +1,47 @@
-+#!/usr/bin/env python
-+# SPDX-License-Identifier: BSD-3-Clause
-+
-+import argparse
-+import json
-+import pprint
-+import time
-+
-+from ynl import YnlFamily
-+
-+
-+def main():
-+    parser = argparse.ArgumentParser(description='YNL CLI sample')
-+    parser.add_argument('--spec', dest='spec', type=str, required=True)
-+    parser.add_argument('--schema', dest='schema', type=str)
-+    parser.add_argument('--json', dest='json_text', type=str)
-+    parser.add_argument('--do', dest='do', type=str)
-+    parser.add_argument('--dump', dest='dump', type=str)
-+    parser.add_argument('--sleep', dest='sleep', type=int)
-+    parser.add_argument('--subscribe', dest='ntf', type=str)
-+    args = parser.parse_args()
-+
-+    attrs = {}
-+    if args.json_text:
-+        attrs = json.loads(args.json_text)
-+
-+    ynl = YnlFamily(args.spec, args.schema)
-+
-+    if args.ntf:
-+        ynl.ntf_subscribe(args.ntf)
-+
-+    if args.sleep:
-+        time.sleep(args.sleep)
-+
-+    if args.do or args.dump:
-+        method = getattr(ynl, args.do if args.do else args.dump)
-+
-+        reply = method(attrs, dump=bool(args.dump))
-+        pprint.PrettyPrinter().pprint(reply)
-+
-+    if args.ntf:
-+        ynl.check_ntf()
-+        pprint.PrettyPrinter().pprint(ynl.async_msg_queue)
-+
-+
-+if __name__ == "__main__":
-+    main()
-diff --git a/tools/net/ynl/samples/ynl.py b/tools/net/ynl/samples/ynl.py
-new file mode 100644
-index 000000000000..b71523d71d46
---- /dev/null
-+++ b/tools/net/ynl/samples/ynl.py
-@@ -0,0 +1,534 @@
-+# SPDX-License-Identifier: BSD-3-Clause
-+
-+import functools
-+import jsonschema
-+import os
-+import random
-+import socket
-+import struct
-+import yaml
-+
-+#
-+# Generic Netlink code which should really be in some library, but I can't quickly find one.
-+#
-+
-+
-+class Netlink:
-+    # Netlink socket
-+    SOL_NETLINK = 270
-+
-+    NETLINK_ADD_MEMBERSHIP = 1
-+    NETLINK_CAP_ACK = 10
-+    NETLINK_EXT_ACK = 11
-+
-+    # Netlink message
-+    NLMSG_ERROR = 2
-+    NLMSG_DONE = 3
-+
-+    NLM_F_REQUEST = 1
-+    NLM_F_ACK = 4
-+    NLM_F_ROOT = 0x100
-+    NLM_F_MATCH = 0x200
-+    NLM_F_APPEND = 0x800
-+
-+    NLM_F_CAPPED = 0x100
-+    NLM_F_ACK_TLVS = 0x200
-+
-+    NLM_F_DUMP = NLM_F_ROOT | NLM_F_MATCH
-+
-+    NLA_F_NESTED = 0x8000
-+    NLA_F_NET_BYTEORDER = 0x4000
-+
-+    NLA_TYPE_MASK = NLA_F_NESTED | NLA_F_NET_BYTEORDER
-+
-+    # Genetlink defines
-+    NETLINK_GENERIC = 16
-+
-+    GENL_ID_CTRL = 0x10
-+
-+    # nlctrl
-+    CTRL_CMD_GETFAMILY = 3
-+
-+    CTRL_ATTR_FAMILY_ID = 1
-+    CTRL_ATTR_FAMILY_NAME = 2
-+    CTRL_ATTR_MAXATTR = 5
-+    CTRL_ATTR_MCAST_GROUPS = 7
-+
-+    CTRL_ATTR_MCAST_GRP_NAME = 1
-+    CTRL_ATTR_MCAST_GRP_ID = 2
-+
-+    # Extack types
-+    NLMSGERR_ATTR_MSG = 1
-+    NLMSGERR_ATTR_OFFS = 2
-+    NLMSGERR_ATTR_COOKIE = 3
-+    NLMSGERR_ATTR_POLICY = 4
-+    NLMSGERR_ATTR_MISS_TYPE = 5
-+    NLMSGERR_ATTR_MISS_NEST = 6
-+
-+
-+class NlAttr:
-+    def __init__(self, raw, offset):
-+        self._len, self._type = struct.unpack("HH", raw[offset:offset + 4])
-+        self.type = self._type & ~Netlink.NLA_TYPE_MASK
-+        self.payload_len = self._len
-+        self.full_len = (self.payload_len + 3) & ~3
-+        self.raw = raw[offset + 4:offset + self.payload_len]
-+
-+    def as_u16(self):
-+        return struct.unpack("H", self.raw)[0]
-+
-+    def as_u32(self):
-+        return struct.unpack("I", self.raw)[0]
-+
-+    def as_u64(self):
-+        return struct.unpack("Q", self.raw)[0]
-+
-+    def as_strz(self):
-+        return self.raw.decode('ascii')[:-1]
-+
-+    def as_bin(self):
-+        return self.raw
-+
-+    def __repr__(self):
-+        return f"[type:{self.type} len:{self._len}] {self.raw}"
-+
-+
-+class NlAttrs:
-+    def __init__(self, msg):
-+        self.attrs = []
-+
-+        offset = 0
-+        while offset < len(msg):
-+            attr = NlAttr(msg, offset)
-+            offset += attr.full_len
-+            self.attrs.append(attr)
-+
-+    def __iter__(self):
-+        yield from self.attrs
-+
-+    def __repr__(self):
-+        msg = ''
-+        for a in self.attrs:
-+            if msg:
-+                msg += '\n'
-+            msg += repr(a)
-+        return msg
-+
-+
-+class NlMsg:
-+    def __init__(self, msg, offset, attr_space=None):
-+        self.hdr = msg[offset:offset + 16]
-+
-+        self.nl_len, self.nl_type, self.nl_flags, self.nl_seq, self.nl_portid = \
-+            struct.unpack("IHHII", self.hdr)
-+
-+        self.raw = msg[offset + 16:offset + self.nl_len]
-+
-+        self.error = 0
-+        self.done = 0
-+
-+        extack_off = None
-+        if self.nl_type == Netlink.NLMSG_ERROR:
-+            self.error = struct.unpack("i", self.raw[0:4])[0]
-+            self.done = 1
-+            extack_off = 20
-+        elif self.nl_type == Netlink.NLMSG_DONE:
-+            self.done = 1
-+            extack_off = 4
-+
-+        self.extack = None
-+        if self.nl_flags & Netlink.NLM_F_ACK_TLVS and extack_off:
-+            self.extack = dict()
-+            extack_attrs = NlAttrs(self.raw[extack_off:])
-+            for extack in extack_attrs:
-+                if extack.type == Netlink.NLMSGERR_ATTR_MSG:
-+                    self.extack['msg'] = extack.as_strz()
-+                elif extack.type == Netlink.NLMSGERR_ATTR_MISS_TYPE:
-+                    self.extack['miss-type'] = extack.as_u32()
-+                elif extack.type == Netlink.NLMSGERR_ATTR_MISS_NEST:
-+                    self.extack['miss-nest'] = extack.as_u32()
-+                elif extack.type == Netlink.NLMSGERR_ATTR_OFFS:
-+                    self.extack['bad-attr-offs'] = extack.as_u32()
-+                else:
-+                    if 'unknown' not in self.extack:
-+                        self.extack['unknown'] = []
-+                    self.extack['unknown'].append(extack)
-+
-+            if attr_space:
-+                # We don't have the ability to parse nests yet, so only do global
-+                if 'miss-type' in self.extack and 'miss-nest' not in self.extack:
-+                    miss_type = self.extack['miss-type']
-+                    if len(attr_space.attr_list) > miss_type:
-+                        spec = attr_space.attr_list[miss_type]
-+                        desc = spec['name']
-+                        if 'doc' in spec:
-+                            desc += f" ({spec['doc']})"
-+                        self.extack['miss-type'] = desc
-+
-+    def __repr__(self):
-+        msg = f"nl_len = {self.nl_len} ({len(self.raw)}) nl_flags = 0x{self.nl_flags:x} nl_type = {self.nl_type}\n"
-+        if self.error:
-+            msg += '\terror: ' + str(self.error)
-+        if self.extack:
-+            msg += '\textack: ' + repr(self.extack)
-+        return msg
-+
-+
-+class NlMsgs:
-+    def __init__(self, data, attr_space=None):
-+        self.msgs = []
-+
-+        offset = 0
-+        while offset < len(data):
-+            msg = NlMsg(data, offset, attr_space=attr_space)
-+            offset += msg.nl_len
-+            self.msgs.append(msg)
-+
-+    def __iter__(self):
-+        yield from self.msgs
-+
-+
-+genl_family_name_to_id = None
-+
-+
-+def _genl_msg(nl_type, nl_flags, genl_cmd, genl_version, seq=None):
-+    # we prepend length in _genl_msg_finalize()
-+    if seq is None:
-+        seq = random.randint(1, 1024)
-+    nlmsg = struct.pack("HHII", nl_type, nl_flags, seq, 0)
-+    genlmsg = struct.pack("bbH", genl_cmd, genl_version, 0)
-+    return nlmsg + genlmsg
-+
-+
-+def _genl_msg_finalize(msg):
-+    return struct.pack("I", len(msg) + 4) + msg
-+
-+
-+def _genl_load_families():
-+    with socket.socket(socket.AF_NETLINK, socket.SOCK_RAW, Netlink.NETLINK_GENERIC) as sock:
-+        sock.setsockopt(Netlink.SOL_NETLINK, Netlink.NETLINK_CAP_ACK, 1)
-+
-+        msg = _genl_msg(Netlink.GENL_ID_CTRL,
-+                        Netlink.NLM_F_REQUEST | Netlink.NLM_F_ACK | Netlink.NLM_F_DUMP,
-+                        Netlink.CTRL_CMD_GETFAMILY, 1)
-+        msg = _genl_msg_finalize(msg)
-+
-+        sock.send(msg, 0)
-+
-+        global genl_family_name_to_id
-+        genl_family_name_to_id = dict()
-+
-+        while True:
-+            reply = sock.recv(128 * 1024)
-+            nms = NlMsgs(reply)
-+            for nl_msg in nms:
-+                if nl_msg.error:
-+                    print("Netlink error:", nl_msg.error)
-+                    return
-+                if nl_msg.done:
-+                    return
-+
-+                gm = GenlMsg(nl_msg)
-+                fam = dict()
-+                for attr in gm.raw_attrs:
-+                    if attr.type == Netlink.CTRL_ATTR_FAMILY_ID:
-+                        fam['id'] = attr.as_u16()
-+                    elif attr.type == Netlink.CTRL_ATTR_FAMILY_NAME:
-+                        fam['name'] = attr.as_strz()
-+                    elif attr.type == Netlink.CTRL_ATTR_MAXATTR:
-+                        fam['maxattr'] = attr.as_u32()
-+                    elif attr.type == Netlink.CTRL_ATTR_MCAST_GROUPS:
-+                        fam['mcast'] = dict()
-+                        for entry in NlAttrs(attr.raw):
-+                            mcast_name = None
-+                            mcast_id = None
-+                            for entry_attr in NlAttrs(entry.raw):
-+                                if entry_attr.type == Netlink.CTRL_ATTR_MCAST_GRP_NAME:
-+                                    mcast_name = entry_attr.as_strz()
-+                                elif entry_attr.type == Netlink.CTRL_ATTR_MCAST_GRP_ID:
-+                                    mcast_id = entry_attr.as_u32()
-+                            if mcast_name and mcast_id is not None:
-+                                fam['mcast'][mcast_name] = mcast_id
-+                if 'name' in fam and 'id' in fam:
-+                    genl_family_name_to_id[fam['name']] = fam
-+
-+
-+class GenlMsg:
-+    def __init__(self, nl_msg):
-+        self.nl = nl_msg
-+
-+        self.hdr = nl_msg.raw[0:4]
-+        self.raw = nl_msg.raw[4:]
-+
-+        self.genl_cmd, self.genl_version, _ = struct.unpack("bbH", self.hdr)
-+
-+        self.raw_attrs = NlAttrs(self.raw)
-+
-+    def __repr__(self):
-+        msg = repr(self.nl)
-+        msg += f"\tgenl_cmd = {self.genl_cmd} genl_ver = {self.genl_version}\n"
-+        for a in self.raw_attrs:
-+            msg += '\t\t' + repr(a) + '\n'
-+        return msg
-+
-+
-+class GenlFamily:
-+    def __init__(self, family_name):
-+        self.family_name = family_name
-+
-+        global genl_family_name_to_id
-+        if genl_family_name_to_id is None:
-+            _genl_load_families()
-+
-+        self.genl_family = genl_family_name_to_id[family_name]
-+        self.family_id = genl_family_name_to_id[family_name]['id']
-+
-+
-+#
-+# YNL implementation details.
-+#
-+
-+
-+class YnlAttrSpace:
-+    def __init__(self, family, yaml):
-+        self.yaml = yaml
-+
-+        self.attrs = dict()
-+        self.name = self.yaml['name']
-+        self.subspace_of = self.yaml['subset-of'] if 'subspace-of' in self.yaml else None
-+
-+        val = 0
-+        max_val = 0
-+        for elem in self.yaml['attributes']:
-+            if 'value' in elem:
-+                val = elem['value']
-+            else:
-+                elem['value'] = val
-+            if val > max_val:
-+                max_val = val
-+            val += 1
-+
-+            self.attrs[elem['name']] = elem
-+
-+        self.attr_list = [None] * (max_val + 1)
-+        for elem in self.yaml['attributes']:
-+            self.attr_list[elem['value']] = elem
-+
-+    def __getitem__(self, key):
-+        return self.attrs[key]
-+
-+    def __contains__(self, key):
-+        return key in self.yaml
-+
-+    def __iter__(self):
-+        yield from self.attrs
-+
-+    def items(self):
-+        return self.attrs.items()
-+
-+
-+class YnlFamily:
-+    def __init__(self, def_path, schema=None):
-+        self.include_raw = False
-+
-+        with open(def_path, "r") as stream:
-+            self.yaml = yaml.safe_load(stream)
-+
-+        if schema:
-+            with open(schema, "r") as stream:
-+                schema = yaml.safe_load(stream)
-+
-+            jsonschema.validate(self.yaml, schema)
-+
-+        self.sock = socket.socket(socket.AF_NETLINK, socket.SOCK_RAW, Netlink.NETLINK_GENERIC)
-+        self.sock.setsockopt(Netlink.SOL_NETLINK, Netlink.NETLINK_CAP_ACK, 1)
-+        self.sock.setsockopt(Netlink.SOL_NETLINK, Netlink.NETLINK_EXT_ACK, 1)
-+
-+        self._ops = dict()
-+        self._spaces = dict()
-+        self._types = dict()
-+
-+        for elem in self.yaml['attribute-sets']:
-+            self._spaces[elem['name']] = YnlAttrSpace(self, elem)
-+
-+        for elem in self.yaml['definitions']:
-+            self._types[elem['name']] = elem
-+
-+        async_separation = 'async-prefix' in self.yaml['operations']
-+        self.async_msg_ids = set()
-+        self.async_msg_queue = []
-+        val = 0
-+        max_val = 0
-+        for elem in self.yaml['operations']['list']:
-+            if not (async_separation and ('notify' in elem or 'event' in elem)):
-+                if 'value' in elem:
-+                    val = elem['value']
-+                else:
-+                    elem['value'] = val
-+                val += 1
-+                max_val = max(val, max_val)
-+
-+            if 'notify' in elem or 'event' in elem:
-+                self.async_msg_ids.add(elem['value'])
-+
-+            self._ops[elem['name']] = elem
-+
-+            op_name = elem['name'].replace('-', '_')
-+
-+            bound_f = functools.partial(self._op, elem['name'])
-+            setattr(self, op_name, bound_f)
-+
-+        self._op_array = [None] * max_val
-+        for _, op in self._ops.items():
-+            self._op_array[op['value']] = op
-+            if 'notify' in op:
-+                op['attribute-set'] = self._ops[op['notify']]['attribute-set']
-+
-+        self.family = GenlFamily(self.yaml['name'])
-+
-+    def ntf_subscribe(self, mcast_name):
-+        if mcast_name not in self.family.genl_family['mcast']:
-+            raise Exception(f'Multicast group "{mcast_name}" not present in the family')
-+
-+        self.sock.bind((0, 0))
-+        self.sock.setsockopt(Netlink.SOL_NETLINK, Netlink.NETLINK_ADD_MEMBERSHIP,
-+                             self.family.genl_family['mcast'][mcast_name])
-+
-+    def _add_attr(self, space, name, value):
-+        attr = self._spaces[space][name]
-+        nl_type = attr['value']
-+        if attr["type"] == 'nest':
-+            nl_type |= Netlink.NLA_F_NESTED
-+            attr_payload = b''
-+            for subname, subvalue in value.items():
-+                attr_payload += self._add_attr(attr['nested-attributes'], subname, subvalue)
-+        elif attr["type"] == 'u32':
-+            attr_payload = struct.pack("I", int(value))
-+        elif attr["type"] == 'string':
-+            attr_payload = str(value).encode('ascii') + b'\x00'
-+        elif attr["type"] == 'binary':
-+            attr_payload = value
-+        else:
-+            raise Exception(f'Unknown type at {space} {name} {value} {attr["type"]}')
-+
-+        pad = b'\x00' * ((4 - len(attr_payload) % 4) % 4)
-+        return struct.pack('HH', len(attr_payload) + 4, nl_type) + attr_payload + pad
-+
-+    def _decode_enum(self, rsp, attr_spec):
-+        raw = rsp[attr_spec['name']]
-+        enum = self._types[attr_spec['enum']]
-+        i = attr_spec.get('value-start', 0)
-+        if 'enum-as-flags' in attr_spec and attr_spec['enum-as-flags']:
-+            value = set()
-+            while raw:
-+                if raw & 1:
-+                    value.add(enum['entries'][i])
-+                raw >>= 1
-+                i += 1
-+        else:
-+            value = enum['entries'][raw - i]
-+        rsp[attr_spec['name']] = value
-+
-+    def _decode(self, attrs, space):
-+        attr_space = self._spaces[space]
-+        rsp = dict()
-+        for attr in attrs:
-+            attr_spec = attr_space.attr_list[attr.type]
-+            if attr_spec["type"] == 'nest':
-+                subdict = self._decode(NlAttrs(attr.raw), attr_spec['nested-attributes'])
-+                rsp[attr_spec['name']] = subdict
-+            elif attr_spec['type'] == 'u32':
-+                rsp[attr_spec['name']] = attr.as_u32()
-+            elif attr_spec['type'] == 'u64':
-+                rsp[attr_spec['name']] = attr.as_u64()
-+            elif attr_spec["type"] == 'string':
-+                rsp[attr_spec['name']] = attr.as_strz()
-+            elif attr_spec["type"] == 'binary':
-+                rsp[attr_spec['name']] = attr.as_bin()
-+            else:
-+                raise Exception(f'Unknown {attr.type} {attr_spec["name"]} {attr_spec["type"]}')
-+
-+            if 'enum' in attr_spec:
-+                self._decode_enum(rsp, attr_spec)
-+        return rsp
-+
-+    def handle_ntf(self, nl_msg, genl_msg):
-+        msg = dict()
-+        if self.include_raw:
-+            msg['nlmsg'] = nl_msg
-+            msg['genlmsg'] = genl_msg
-+        op = self._op_array[genl_msg.genl_cmd]
-+        msg['name'] = op['name']
-+        msg['msg'] = self._decode(genl_msg.raw_attrs, op['attribute-set'])
-+        self.async_msg_queue.append(msg)
-+
-+    def check_ntf(self):
-+        while True:
-+            try:
-+                reply = self.sock.recv(128 * 1024, socket.MSG_DONTWAIT)
-+            except BlockingIOError:
-+                return
-+
-+            nms = NlMsgs(reply)
-+            for nl_msg in nms:
-+                if nl_msg.error:
-+                    print("Netlink error in ntf!?", os.strerror(-nl_msg.error))
-+                    print(nl_msg)
-+                    continue
-+                if nl_msg.done:
-+                    print("Netlink done while checking for ntf!?")
-+                    continue
-+
-+                gm = GenlMsg(nl_msg)
-+                if gm.genl_cmd not in self.async_msg_ids:
-+                    print("Unexpected msg id done while checking for ntf", gm)
-+                    continue
-+
-+                self.handle_ntf(nl_msg, gm)
-+
-+    def _op(self, method, vals, dump=False):
-+        op = self._ops[method]
-+
-+        nl_flags = Netlink.NLM_F_REQUEST | Netlink.NLM_F_ACK
-+        if dump:
-+            nl_flags |= Netlink.NLM_F_DUMP
-+
-+        req_seq = random.randint(1024, 65535)
-+        msg = _genl_msg(self.family.family_id, nl_flags, op['value'], 1, req_seq)
-+        for name, value in vals.items():
-+            msg += self._add_attr(op['attribute-set'], name, value)
-+        msg = _genl_msg_finalize(msg)
-+
-+        self.sock.send(msg, 0)
-+
-+        done = False
-+        rsp = []
-+        while not done:
-+            reply = self.sock.recv(128 * 1024)
-+            nms = NlMsgs(reply, attr_space=self._spaces[op['attribute-set']])
-+            for nl_msg in nms:
-+                if nl_msg.error:
-+                    print("Netlink error:", os.strerror(-nl_msg.error))
-+                    print(nl_msg)
-+                    return
-+                if nl_msg.done:
-+                    done = True
-+                    break
-+
-+                gm = GenlMsg(nl_msg)
-+                # Check if this is a reply to our request
-+                if nl_msg.nl_seq != req_seq or gm.genl_cmd != op['value']:
-+                    if gm.genl_cmd in self.async_msg_ids:
-+                        self.handle_ntf(nl_msg, gm)
-+                        continue
-+                    else:
-+                        print('Unexpected message: ' + repr(gm))
-+                        continue
-+
-+                rsp.append(self._decode(gm.raw_attrs, op['attribute-set']))
-+
-+        if not rsp:
-+            return None
-+        if not dump and len(rsp) == 1:
-+            return rsp[0]
-+        return rsp
--- 
-2.39.0
+  drivers/net/ipa/ipa_interrupt.c
+  drivers/net/ipa/ipa_interrupt.h
 
+between commit:
+
+  9ec9b2a30853 ("net: ipa: disable ipa interrupt during suspend")
+
+from the net tree and commits:
+
+  8e461e1f092b ("net: ipa: introduce ipa_interrupt_enable()")
+  d50ed3558719 ("net: ipa: enable IPA interrupt handlers separate from regi=
+stration")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/net/ipa/ipa_interrupt.c
+index c1b3977e1ae4,fd982cec8068..000000000000
+--- a/drivers/net/ipa/ipa_interrupt.c
++++ b/drivers/net/ipa/ipa_interrupt.c
+@@@ -127,16 -129,29 +129,39 @@@ out_power_put
+  	return IRQ_HANDLED;
+  }
+ =20
+ +void ipa_interrupt_irq_disable(struct ipa *ipa)
+ +{
+ +	disable_irq(ipa->interrupt->irq);
+ +}
+ +
+ +void ipa_interrupt_irq_enable(struct ipa *ipa)
+ +{
+ +	enable_irq(ipa->interrupt->irq);
+ +}
+ +
++ static void ipa_interrupt_enabled_update(struct ipa *ipa)
++ {
++ 	const struct ipa_reg *reg =3D ipa_reg(ipa, IPA_IRQ_EN);
++=20
++ 	iowrite32(ipa->interrupt->enabled, ipa->reg_virt + ipa_reg_offset(reg));
++ }
++=20
++ /* Enable an IPA interrupt type */
++ void ipa_interrupt_enable(struct ipa *ipa, enum ipa_irq_id ipa_irq)
++ {
++ 	/* Update the IPA interrupt mask to enable it */
++ 	ipa->interrupt->enabled |=3D BIT(ipa_irq);
++ 	ipa_interrupt_enabled_update(ipa);
++ }
++=20
++ /* Disable an IPA interrupt type */
++ void ipa_interrupt_disable(struct ipa *ipa, enum ipa_irq_id ipa_irq)
++ {
++ 	/* Update the IPA interrupt mask to disable it */
++ 	ipa->interrupt->enabled &=3D ~BIT(ipa_irq);
++ 	ipa_interrupt_enabled_update(ipa);
++ }
++=20
+  /* Common function used to enable/disable TX_SUSPEND for an endpoint */
+  static void ipa_interrupt_suspend_control(struct ipa_interrupt *interrupt,
+  					  u32 endpoint_id, bool enable)
+diff --cc drivers/net/ipa/ipa_interrupt.h
+index 8a1bd5b89393,764a65e6b503..000000000000
+--- a/drivers/net/ipa/ipa_interrupt.h
++++ b/drivers/net/ipa/ipa_interrupt.h
+@@@ -85,22 -53,20 +53,36 @@@ void ipa_interrupt_suspend_clear_all(st
+   */
+  void ipa_interrupt_simulate_suspend(struct ipa_interrupt *interrupt);
+ =20
+ +/**
+ + * ipa_interrupt_irq_enable() - Enable IPA interrupts
+ + * @ipa:	IPA pointer
+ + *
+ + * This enables the IPA interrupt line
+ + */
+ +void ipa_interrupt_irq_enable(struct ipa *ipa);
+ +
+ +/**
+ + * ipa_interrupt_irq_disable() - Disable IPA interrupts
+ + * @ipa:	IPA pointer
+ + *
+ + * This disables the IPA interrupt line
+ + */
+ +void ipa_interrupt_irq_disable(struct ipa *ipa);
+ +
++ /**
++  * ipa_interrupt_enable() - Enable an IPA interrupt type
++  * @ipa:	IPA pointer
++  * @ipa_irq:	IPA interrupt ID
++  */
++ void ipa_interrupt_enable(struct ipa *ipa, enum ipa_irq_id ipa_irq);
++=20
++ /**
++  * ipa_interrupt_disable() - Disable an IPA interrupt type
++  * @ipa:	IPA pointer
++  * @ipa_irq:	IPA interrupt ID
++  */
++ void ipa_interrupt_disable(struct ipa *ipa, enum ipa_irq_id ipa_irq);
++=20
+  /**
+   * ipa_interrupt_config() - Configure the IPA interrupt framework
+   * @ipa:	IPA pointer
+
+--Sig_/.BcyQ//Iass4WY=tHW+8ZVp
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmPIkbUACgkQAVBC80lX
+0GzSXggAkSG81AWiNwJxh1GbXkQAu1I3st0cnn820naR9WlR/CfjCukmYYNiGArK
+BBL+GnKsHzzEnC9VYOKLGdc5qQOOZUG2kZ29HamydsdllzzHx5MitycMEude2Gpv
+AMfb/66M5sQ0gZjtoRmYcbAmCuubsJROenp8n8qUV6WOb9hwq5t1kt73RExx21l6
+K4hji8wOBwzYUxHLHvfVWd2GMIQVPYFWg2WVuwdav7epXGxs2VlmzSRD7/nQwTj1
+Dc6niBxseVwbeh3e6lWv1vqqpuMnFgfJZ3tZRRRpNjIHk91egWfebBOHRhHfjMod
+h0akpjziAQvta5cj3E1GQ3yejp/PkA==
+=KZx+
+-----END PGP SIGNATURE-----
+
+--Sig_/.BcyQ//Iass4WY=tHW+8ZVp--
