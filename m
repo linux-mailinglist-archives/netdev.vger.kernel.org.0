@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B278674510
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 22:42:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03181674509
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 22:42:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231209AbjASVm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 16:42:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55944 "EHLO
+        id S231159AbjASVmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 16:42:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbjASVjg (ORCPT
+        with ESMTP id S230057AbjASVjg (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 16:39:36 -0500
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149F795142
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D57A9B103
         for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 13:28:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1674163685; x=1705699685;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=euhB1ZxETxHwM1W2LGBNg6PSrl8MZjZSVSes3s6vxCE=;
-  b=GU064y7JroKY8KCFG7SqZFhnGeSaAo4k7X9zF2ScfTGc/cQyzquDPWNR
-   ijX70qQYPum1UCUGHw3rJ8FkN/jfzs8lN0WZWCbitqk6WSvV67LAX+BG/
-   KK8nksDRvjWzgLTmyk+9lwZf1o72q26RWBAEAtHpaQEQQYzIV2SCwcmWI
-   enu2g1TBY/1UrJ085BaCCqoXo8iN8Cg5GqiBlKB4EEPnTcuyqtrFfebTF
-   vWsCZynxX1xCH4WC7CxEo4i1ntpY4g0G/LQHjoIlxN1SSceBqgdnU3WJt
-   BllS0/zEzabUTHk7PwLiqrAnR2yRhNDN8Bl1qSOXlGPRju+YQSZG1kYON
+  bh=MGnRpjPHRRHPYY6gEK4adJUyzthIszEogei9Q0yYkGM=;
+  b=SnaF7KjRll5H1Ts9BMhxdrU4m0c1/tQf3mKNDK+6ytHmMGiD6SAHtYHp
+   eMeVEYIyvdLh0/P4VQN7Xbrw/3fE241SwW8oJMHlYqpFBnyw936C5b0JI
+   QnO7g4t1t1sIrZvuMdMqAX+q5pOPTGxlvNVwo72fVsUURqdX6UX+HMEFu
+   UIZB2OmbaVo5NqhL5zSQ7thTqWvAGfyl7+K+nLtMeeySeX3zHZNCumZMQ
+   1vtnfAXg+ICS7p/JdPvEU5OG9JC95a4jwfK96DGJyHfIbT4ZMxcNquL1Q
+   czcJvvlCbPy4lfCnS7+tQO0OhwS3ksrNEeOjE5QVKCmfWgU4EfvT4Eeoc
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="323120599"
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="323120604"
 X-IronPort-AV: E=Sophos;i="5.97,230,1669104000"; 
-   d="scan'208";a="323120599"
+   d="scan'208";a="323120604"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 13:27:27 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="692589871"
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="692589874"
 X-IronPort-AV: E=Sophos;i="5.97,230,1669104000"; 
-   d="scan'208";a="692589871"
+   d="scan'208";a="692589874"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
   by orsmga001.jf.intel.com with ESMTP; 19 Jan 2023 13:27:27 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
+Cc:     Amritha Nambiar <amritha.nambiar@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        lukasz.plachno@intel.com, Dave Ertman <david.m.ertman@intel.com>,
-        Arpana Arland <arpanax.arland@intel.com>
-Subject: [PATCH net-next 02/15] ice: Handle LLDP MIB Pending change
-Date:   Thu, 19 Jan 2023 13:27:29 -0800
-Message-Id: <20230119212742.2106833-3-anthony.l.nguyen@intel.com>
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        Bharathi Sreenivas <bharathi.sreenivas@intel.com>
+Subject: [PATCH net-next 03/15] ice: Support drop action
+Date:   Thu, 19 Jan 2023 13:27:30 -0800
+Message-Id: <20230119212742.2106833-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230119212742.2106833-1-anthony.l.nguyen@intel.com>
 References: <20230119212742.2106833-1-anthony.l.nguyen@intel.com>
@@ -62,228 +62,192 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+From: Amritha Nambiar <amritha.nambiar@intel.com>
 
-If the number of Traffic Classes (TC) is decreased, the FW will no
-longer remove TC nodes, but will send a pending change notification. This
-will allow RDMA to destroy corresponding Control QP markers. After RDMA
-finishes outstanding operations, the ice driver will send an execute MIB
-Pending change admin queue command to FW to finish DCB configuration
-change.
+Currently the drop action is supported only in switchdev mode.
+Add support for offloading receive filters with action drop
+in ADQ/non-ADQ modes. This is in addition to other actions
+such as forwarding to a VSI (ADQ) or a queue (ADQ/non-ADQ).
 
-The FW will buffer all incoming Pending changes, so there can be only
-one active Pending change.
+Also renamed 'ch_vsi' to 'dest_vsi' as it is valid for multiple
+actions such as forward to vsi/queue which may/may not create a
+channel vsi.
 
-RDMA driver guarantees to remove Control QP markers within 5000 ms.
-Hence, LLDP response timeout txTTL (default 30 sec) will be met.
-
-In the case of a Pending change, LLDP MIB Change Event (opcode 0x0A01) will
-contain the whole new MIB. But Get LLDP MIB (opcode 0x0A00) AQ call would
-still return an old MIB, as the Pending change hasn't been applied yet.
-Add ice_get_dcb_cfg_from_mib_change() function to retrieve DCBX config
-from LLDP MIB Change Event's buffer for Pending changes.
-
-Co-developed-by: Dave Ertman <david.m.ertman@intel.com>
-Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
-Signed-off-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
-Tested-by: Arpana Arland <arpanax.arland@intel.com> (A Contingent worker at Intel)
+Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+Signed-off-by: Amritha Nambiar <amritha.nambiar@intel.com>
+Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_dcb.c     | 36 +++++++++++
- drivers/net/ethernet/intel/ice/ice_dcb.h     |  2 +
- drivers/net/ethernet/intel/ice/ice_dcb_lib.c | 68 +++++++++++++++-----
- 3 files changed, 91 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c | 50 ++++++++++++---------
+ drivers/net/ethernet/intel/ice/ice_tc_lib.h | 10 +++++
+ 2 files changed, 40 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb.c b/drivers/net/ethernet/intel/ice/ice_dcb.c
-index 22a94e05233a..776c1ff6e265 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb.c
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb.c
-@@ -966,6 +966,42 @@ int ice_get_dcb_cfg(struct ice_port_info *pi)
- 	return ret;
- }
- 
-+/**
-+ * ice_get_dcb_cfg_from_mib_change
-+ * @pi: port information structure
-+ * @event: pointer to the admin queue receive event
-+ *
-+ * Set DCB configuration from received MIB Change event
-+ */
-+void ice_get_dcb_cfg_from_mib_change(struct ice_port_info *pi,
-+				     struct ice_rq_event_info *event)
-+{
-+	struct ice_dcbx_cfg *dcbx_cfg = &pi->qos_cfg.local_dcbx_cfg;
-+	struct ice_aqc_lldp_get_mib *mib;
-+	u8 change_type, dcbx_mode;
-+
-+	mib = (struct ice_aqc_lldp_get_mib *)&event->desc.params.raw;
-+
-+	change_type = FIELD_GET(ICE_AQ_LLDP_MIB_TYPE_M,  mib->type);
-+	if (change_type == ICE_AQ_LLDP_MIB_REMOTE)
-+		dcbx_cfg = &pi->qos_cfg.remote_dcbx_cfg;
-+
-+	dcbx_mode = FIELD_GET(ICE_AQ_LLDP_DCBX_M, mib->type);
-+
-+	switch (dcbx_mode) {
-+	case ICE_AQ_LLDP_DCBX_IEEE:
-+		dcbx_cfg->dcbx_mode = ICE_DCBX_MODE_IEEE;
-+		ice_lldp_to_dcb_cfg(event->msg_buf, dcbx_cfg);
-+		break;
-+
-+	case ICE_AQ_LLDP_DCBX_CEE:
-+		pi->qos_cfg.desired_dcbx_cfg = pi->qos_cfg.local_dcbx_cfg;
-+		ice_cee_to_dcb_cfg((struct ice_aqc_get_cee_dcb_cfg_resp *)
-+				   event->msg_buf, pi);
-+		break;
-+	}
-+}
-+
- /**
-  * ice_init_dcb
-  * @hw: pointer to the HW struct
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb.h b/drivers/net/ethernet/intel/ice/ice_dcb.h
-index 6abf28a14291..be34650a77d5 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb.h
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb.h
-@@ -144,6 +144,8 @@ ice_aq_get_dcb_cfg(struct ice_hw *hw, u8 mib_type, u8 bridgetype,
- 		   struct ice_dcbx_cfg *dcbcfg);
- int ice_get_dcb_cfg(struct ice_port_info *pi);
- int ice_set_dcb_cfg(struct ice_port_info *pi);
-+void ice_get_dcb_cfg_from_mib_change(struct ice_port_info *pi,
-+				     struct ice_rq_event_info *event);
- int ice_init_dcb(struct ice_hw *hw, bool enable_mib_change);
- int
- ice_query_port_ets(struct ice_port_info *pi,
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-index 4f24d441c35e..3a7e629145a5 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-@@ -943,6 +943,16 @@ ice_tx_prepare_vlan_flags_dcb(struct ice_tx_ring *tx_ring,
- 	}
- }
- 
-+/**
-+ * ice_dcb_is_mib_change_pending - Check if MIB change is pending
-+ * @state: MIB change state
-+ */
-+static bool ice_dcb_is_mib_change_pending(u8 state)
-+{
-+	return ICE_AQ_LLDP_MIB_CHANGE_PENDING ==
-+		FIELD_GET(ICE_AQ_LLDP_MIB_CHANGE_STATE_M, state);
-+}
-+
- /**
-  * ice_dcb_process_lldp_set_mib_change - Process MIB change
-  * @pf: ptr to ice_pf
-@@ -956,6 +966,7 @@ ice_dcb_process_lldp_set_mib_change(struct ice_pf *pf,
- 	struct device *dev = ice_pf_to_dev(pf);
- 	struct ice_aqc_lldp_get_mib *mib;
- 	struct ice_dcbx_cfg tmp_dcbx_cfg;
-+	bool pending_handled = true;
- 	bool need_reconfig = false;
- 	struct ice_port_info *pi;
- 	u8 mib_type;
-@@ -972,41 +983,58 @@ ice_dcb_process_lldp_set_mib_change(struct ice_pf *pf,
- 
- 	pi = pf->hw.port_info;
- 	mib = (struct ice_aqc_lldp_get_mib *)&event->desc.params.raw;
-+
- 	/* Ignore if event is not for Nearest Bridge */
--	mib_type = ((mib->type >> ICE_AQ_LLDP_BRID_TYPE_S) &
--		    ICE_AQ_LLDP_BRID_TYPE_M);
-+	mib_type = FIELD_GET(ICE_AQ_LLDP_BRID_TYPE_M, mib->type);
- 	dev_dbg(dev, "LLDP event MIB bridge type 0x%x\n", mib_type);
- 	if (mib_type != ICE_AQ_LLDP_BRID_TYPE_NEAREST_BRID)
- 		return;
- 
-+	/* A pending change event contains accurate config information, and
-+	 * the FW setting has not been updaed yet, so detect if change is
-+	 * pending to determine where to pull config information from
-+	 * (FW vs event)
-+	 */
-+	if (ice_dcb_is_mib_change_pending(mib->state))
-+		pending_handled = false;
-+
- 	/* Check MIB Type and return if event for Remote MIB update */
--	mib_type = mib->type & ICE_AQ_LLDP_MIB_TYPE_M;
-+	mib_type = FIELD_GET(ICE_AQ_LLDP_MIB_TYPE_M, mib->type);
- 	dev_dbg(dev, "LLDP event mib type %s\n", mib_type ? "remote" : "local");
- 	if (mib_type == ICE_AQ_LLDP_MIB_REMOTE) {
- 		/* Update the remote cached instance and return */
--		ret = ice_aq_get_dcb_cfg(pi->hw, ICE_AQ_LLDP_MIB_REMOTE,
--					 ICE_AQ_LLDP_BRID_TYPE_NEAREST_BRID,
--					 &pi->qos_cfg.remote_dcbx_cfg);
--		if (ret) {
--			dev_err(dev, "Failed to get remote DCB config\n");
--			return;
-+		if (!pending_handled) {
-+			ice_get_dcb_cfg_from_mib_change(pi, event);
-+		} else {
-+			ret =
-+			  ice_aq_get_dcb_cfg(pi->hw, ICE_AQ_LLDP_MIB_REMOTE,
-+					     ICE_AQ_LLDP_BRID_TYPE_NEAREST_BRID,
-+					     &pi->qos_cfg.remote_dcbx_cfg);
-+			if (ret)
-+				dev_dbg(dev, "Failed to get remote DCB config\n");
+diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+index faba0f857cd9..80706f7330f4 100644
+--- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+@@ -792,7 +792,7 @@ static struct ice_vsi *
+ ice_tc_forward_action(struct ice_vsi *vsi, struct ice_tc_flower_fltr *tc_fltr)
+ {
+ 	struct ice_rx_ring *ring = NULL;
+-	struct ice_vsi *ch_vsi = NULL;
++	struct ice_vsi *dest_vsi = NULL;
+ 	struct ice_pf *pf = vsi->back;
+ 	struct device *dev;
+ 	u32 tc_class;
+@@ -810,7 +810,7 @@ ice_tc_forward_action(struct ice_vsi *vsi, struct ice_tc_flower_fltr *tc_fltr)
+ 			return ERR_PTR(-EOPNOTSUPP);
  		}
-+		return;
+ 		/* Locate ADQ VSI depending on hw_tc number */
+-		ch_vsi = vsi->tc_map_vsi[tc_class];
++		dest_vsi = vsi->tc_map_vsi[tc_class];
+ 		break;
+ 	case ICE_FWD_TO_Q:
+ 		/* Locate the Rx queue */
+@@ -824,7 +824,7 @@ ice_tc_forward_action(struct ice_vsi *vsi, struct ice_tc_flower_fltr *tc_fltr)
+ 		/* Determine destination VSI even though the action is
+ 		 * FWD_TO_QUEUE, because QUEUE is associated with VSI
+ 		 */
+-		ch_vsi = tc_fltr->dest_vsi;
++		dest_vsi = tc_fltr->dest_vsi;
+ 		break;
+ 	default:
+ 		dev_err(dev,
+@@ -832,13 +832,13 @@ ice_tc_forward_action(struct ice_vsi *vsi, struct ice_tc_flower_fltr *tc_fltr)
+ 			tc_fltr->action.fltr_act);
+ 		return ERR_PTR(-EINVAL);
  	}
- 
-+	/* That a DCB change has happened is now determined */
- 	mutex_lock(&pf->tc_mutex);
- 
- 	/* store the old configuration */
--	tmp_dcbx_cfg = pf->hw.port_info->qos_cfg.local_dcbx_cfg;
-+	tmp_dcbx_cfg = pi->qos_cfg.local_dcbx_cfg;
- 
- 	/* Reset the old DCBX configuration data */
- 	memset(&pi->qos_cfg.local_dcbx_cfg, 0,
- 	       sizeof(pi->qos_cfg.local_dcbx_cfg));
- 
- 	/* Get updated DCBX data from firmware */
--	ret = ice_get_dcb_cfg(pf->hw.port_info);
--	if (ret) {
--		dev_err(dev, "Failed to get DCB config\n");
--		goto out;
-+	if (!pending_handled) {
-+		ice_get_dcb_cfg_from_mib_change(pi, event);
-+	} else {
-+		ret = ice_get_dcb_cfg(pi);
-+		if (ret) {
-+			dev_err(dev, "Failed to get DCB config\n");
-+			goto out;
-+		}
+-	/* Must have valid ch_vsi (it could be main VSI or ADQ VSI) */
+-	if (!ch_vsi) {
++	/* Must have valid dest_vsi (it could be main VSI or ADQ VSI) */
++	if (!dest_vsi) {
+ 		dev_err(dev,
+ 			"Unable to add filter because specified destination VSI doesn't exist\n");
+ 		return ERR_PTR(-EINVAL);
  	}
- 
- 	/* No change detected in DCBX configs */
-@@ -1033,11 +1061,17 @@ ice_dcb_process_lldp_set_mib_change(struct ice_pf *pf,
- 		clear_bit(ICE_FLAG_DCB_ENA, pf->flags);
- 	}
- 
-+	/* Send Execute Pending MIB Change event if it is a Pending event */
-+	if (!pending_handled) {
-+		ice_lldp_execute_pending_mib(&pf->hw);
-+		pending_handled = true;
-+	}
-+
- 	rtnl_lock();
- 	/* disable VSIs affected by DCB changes */
- 	ice_dcb_ena_dis_vsi(pf, false, true);
- 
--	ret = ice_query_port_ets(pf->hw.port_info, &buf, sizeof(buf), NULL);
-+	ret = ice_query_port_ets(pi, &buf, sizeof(buf), NULL);
- 	if (ret) {
- 		dev_err(dev, "Query Port ETS failed\n");
- 		goto unlock_rtnl;
-@@ -1052,4 +1086,8 @@ ice_dcb_process_lldp_set_mib_change(struct ice_pf *pf,
- 	rtnl_unlock();
- out:
- 	mutex_unlock(&pf->tc_mutex);
-+
-+	/* Send Execute Pending MIB Change event if it is a Pending event */
-+	if (!pending_handled)
-+		ice_lldp_execute_pending_mib(&pf->hw);
+-	return ch_vsi;
++	return dest_vsi;
  }
+ 
+ /**
+@@ -860,7 +860,7 @@ ice_add_tc_flower_adv_fltr(struct ice_vsi *vsi,
+ 	struct ice_pf *pf = vsi->back;
+ 	struct ice_hw *hw = &pf->hw;
+ 	u32 flags = tc_fltr->flags;
+-	struct ice_vsi *ch_vsi;
++	struct ice_vsi *dest_vsi;
+ 	struct device *dev;
+ 	u16 lkups_cnt = 0;
+ 	u16 l4_proto = 0;
+@@ -883,9 +883,11 @@ ice_add_tc_flower_adv_fltr(struct ice_vsi *vsi,
+ 	}
+ 
+ 	/* validate forwarding action VSI and queue */
+-	ch_vsi = ice_tc_forward_action(vsi, tc_fltr);
+-	if (IS_ERR(ch_vsi))
+-		return PTR_ERR(ch_vsi);
++	if (ice_is_forward_action(tc_fltr->action.fltr_act)) {
++		dest_vsi = ice_tc_forward_action(vsi, tc_fltr);
++		if (IS_ERR(dest_vsi))
++			return PTR_ERR(dest_vsi);
++	}
+ 
+ 	lkups_cnt = ice_tc_count_lkups(flags, headers, tc_fltr);
+ 	list = kcalloc(lkups_cnt, sizeof(*list), GFP_ATOMIC);
+@@ -904,7 +906,7 @@ ice_add_tc_flower_adv_fltr(struct ice_vsi *vsi,
+ 
+ 	switch (tc_fltr->action.fltr_act) {
+ 	case ICE_FWD_TO_VSI:
+-		rule_info.sw_act.vsi_handle = ch_vsi->idx;
++		rule_info.sw_act.vsi_handle = dest_vsi->idx;
+ 		rule_info.priority = ICE_SWITCH_FLTR_PRIO_VSI;
+ 		rule_info.sw_act.src = hw->pf_id;
+ 		rule_info.rx = true;
+@@ -915,7 +917,7 @@ ice_add_tc_flower_adv_fltr(struct ice_vsi *vsi,
+ 	case ICE_FWD_TO_Q:
+ 		/* HW queue number in global space */
+ 		rule_info.sw_act.fwd_id.q_id = tc_fltr->action.fwd.q.hw_queue;
+-		rule_info.sw_act.vsi_handle = ch_vsi->idx;
++		rule_info.sw_act.vsi_handle = dest_vsi->idx;
+ 		rule_info.priority = ICE_SWITCH_FLTR_PRIO_QUEUE;
+ 		rule_info.sw_act.src = hw->pf_id;
+ 		rule_info.rx = true;
+@@ -923,14 +925,15 @@ ice_add_tc_flower_adv_fltr(struct ice_vsi *vsi,
+ 			tc_fltr->action.fwd.q.queue,
+ 			tc_fltr->action.fwd.q.hw_queue, lkups_cnt);
+ 		break;
+-	default:
+-		rule_info.sw_act.flag |= ICE_FLTR_TX;
+-		/* In case of Tx (LOOKUP_TX), src needs to be src VSI */
+-		rule_info.sw_act.src = vsi->idx;
+-		/* 'Rx' is false, direction of rule(LOOKUPTRX) */
+-		rule_info.rx = false;
++	case ICE_DROP_PACKET:
++		rule_info.sw_act.flag |= ICE_FLTR_RX;
++		rule_info.sw_act.src = hw->pf_id;
++		rule_info.rx = true;
+ 		rule_info.priority = ICE_SWITCH_FLTR_PRIO_VSI;
+ 		break;
++	default:
++		ret = -EOPNOTSUPP;
++		goto exit;
+ 	}
+ 
+ 	ret = ice_add_adv_rule(hw, list, lkups_cnt, &rule_info, &rule_added);
+@@ -953,11 +956,11 @@ ice_add_tc_flower_adv_fltr(struct ice_vsi *vsi,
+ 	tc_fltr->dest_vsi_handle = rule_added.vsi_handle;
+ 	if (tc_fltr->action.fltr_act == ICE_FWD_TO_VSI ||
+ 	    tc_fltr->action.fltr_act == ICE_FWD_TO_Q) {
+-		tc_fltr->dest_vsi = ch_vsi;
++		tc_fltr->dest_vsi = dest_vsi;
+ 		/* keep track of advanced switch filter for
+ 		 * destination VSI
+ 		 */
+-		ch_vsi->num_chnl_fltr++;
++		dest_vsi->num_chnl_fltr++;
+ 
+ 		/* keeps track of channel filters for PF VSI */
+ 		if (vsi->type == ICE_VSI_PF &&
+@@ -978,6 +981,10 @@ ice_add_tc_flower_adv_fltr(struct ice_vsi *vsi,
+ 			tc_fltr->action.fwd.q.hw_queue, rule_added.rid,
+ 			rule_added.rule_id);
+ 		break;
++	case ICE_DROP_PACKET:
++		dev_dbg(dev, "added switch rule (lkups_cnt %u, flags 0x%x), action is drop, rid %u, rule_id %u\n",
++			lkups_cnt, flags, rule_added.rid, rule_added.rule_id);
++		break;
+ 	default:
+ 		break;
+ 	}
+@@ -1712,6 +1719,9 @@ ice_tc_parse_action(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr,
+ 	case FLOW_ACTION_RX_QUEUE_MAPPING:
+ 		/* forward to queue */
+ 		return ice_tc_forward_to_queue(vsi, fltr, act);
++	case FLOW_ACTION_DROP:
++		fltr->action.fltr_act = ICE_DROP_PACKET;
++		return 0;
+ 	default:
+ 		NL_SET_ERR_MSG_MOD(fltr->extack, "Unsupported TC action");
+ 		return -EOPNOTSUPP;
+diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.h b/drivers/net/ethernet/intel/ice/ice_tc_lib.h
+index d916d1e92aa3..8d5e22ac7023 100644
+--- a/drivers/net/ethernet/intel/ice/ice_tc_lib.h
++++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.h
+@@ -211,4 +211,14 @@ ice_del_cls_flower(struct ice_vsi *vsi, struct flow_cls_offload *cls_flower);
+ void ice_replay_tc_fltrs(struct ice_pf *pf);
+ bool ice_is_tunnel_supported(struct net_device *dev);
+ 
++static inline bool ice_is_forward_action(enum ice_sw_fwd_act_type fltr_act)
++{
++	switch (fltr_act) {
++	case ICE_FWD_TO_VSI:
++	case ICE_FWD_TO_Q:
++		return true;
++	default:
++		return false;
++	}
++}
+ #endif /* _ICE_TC_LIB_H_ */
 -- 
 2.38.1
 
