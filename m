@@ -2,100 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4871673FEA
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 18:28:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E571673FF9
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 18:30:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229609AbjASR2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 12:28:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37174 "EHLO
+        id S229614AbjASRaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 12:30:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229816AbjASR2F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 12:28:05 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 303157E49F;
-        Thu, 19 Jan 2023 09:28:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=/TC2gX/fzStJHSN7YiyNP/S4tX0zA7SmlVtg4UGYV9k=; b=ol
-        xEZzdbsGI6r7ncKjKjT/hJR5lAQz2z+pzFd0cwEAxGJzpepyIR5QoJ/lNLEz/js+Jd6S7gHBx8K0T
-        7/MJppdyj4KsZ5wUGU/g7py4M0ylnAq9WUynxYdSUqnSMCUQrkBoQW0jtQgxPt2nrGDF2blshTiCi
-        x6mqbdxaSphOEeQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pIYhc-002c87-Gc; Thu, 19 Jan 2023 18:27:52 +0100
-Date:   Thu, 19 Jan 2023 18:27:52 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Rakesh.Sankaranarayanan@microchip.com
-Cc:     olteanv@gmail.com, davem@davemloft.net, pabeni@redhat.com,
-        hkallweit1@gmail.com, Arun.Ramadoss@microchip.com,
-        Woojung.Huh@microchip.com, linux-kernel@vger.kernel.org,
-        linux@armlinux.org.uk, f.fainelli@gmail.com, kuba@kernel.org,
-        edumazet@google.com, UNGLinuxDriver@microchip.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net 2/2] net: dsa: microchip: lan937x: run phy
- initialization during each link update
-Message-ID: <Y8l9mMpiFSHTt1iU@lunn.ch>
-References: <20230116100500.614444-1-rakesh.sankaranarayanan@microchip.com>
- <20230116100500.614444-1-rakesh.sankaranarayanan@microchip.com>
- <20230116100500.614444-3-rakesh.sankaranarayanan@microchip.com>
- <20230116100500.614444-3-rakesh.sankaranarayanan@microchip.com>
- <20230116222602.oswnt4ecoucpb2km@skbuf>
- <7d72bc330d0ce9e57cc862bec39388b7def8782a.camel@microchip.com>
+        with ESMTP id S229446AbjASRaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 12:30:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B703B1BE9
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 09:30:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5150C61D0B
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 17:30:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A86E0C433F0;
+        Thu, 19 Jan 2023 17:30:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674149416;
+        bh=GuTRFKSplx5f7H2FTsPLNYo7dSMEkGF+phy7L6xH/JQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=u8M3UyeveybnceCbGGoiFDDxPowRXwe7v9LJ34wBS9t22S1xc8MlsnSoC0mZ/4ThG
+         hirDCESXrhKlzaqZnjvQJiZ7Vt9qHE4qv1neKM+wzpu6Snv3Kw4CIWE9wMKlu6f6HS
+         2aC07jI8OdZpVcK/cHFDx8Lcz9M3jKv4pacFZqo4O8tjSFc+dplD1QIbTW/plyUlGi
+         GU4g/0hV8app0iYL3E9qQQsc5gbnBLt4CcYU5biwIqw4cMxe9kXbhSTpMO2Ug5iwGn
+         rxN081swQHx4UJgcilWz1nq5lbHlU5XhNz2XYkOJg5Ftcg8PXojM6YQJJSbPf6A5vT
+         xyONibjI/LDNQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 87E49E54D27;
+        Thu, 19 Jan 2023 17:30:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <7d72bc330d0ce9e57cc862bec39388b7def8782a.camel@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net v2] selftests/net: toeplitz: fix race on tpacket_v3 block
+ close
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167414941654.32440.17800377620233873619.git-patchwork-notify@kernel.org>
+Date:   Thu, 19 Jan 2023 17:30:16 +0000
+References: <20230118151847.4124260-1-willemdebruijn.kernel@gmail.com>
+In-Reply-To: <20230118151847.4124260-1-willemdebruijn.kernel@gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, willemb@google.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 19, 2023 at 11:34:00AM +0000, Rakesh.Sankaranarayanan@microchip.com wrote:
-> Hi Vladimir,
-> Thanks for the comments.
-> 
-> > 1. Don't prefix a patch with "net: dsa: microchip: " unless it
-> > touches
-> >    the drivers/net/dsa/microchip/ folder.
-> > 
-> > 2. Don't make unrelated patches on different drivers part of the same
-> >    patch set.
-> > 
-> I will update the patch in next revision.
-> 
-> > 3. AFAIU, this is the second fixup of a feature which never worked
-> > well
-> >    (changing master/slave setting through ethtool). Not sure exactly
-> >    what are the rules, but at some point, maintainers might say
-> >    "hey, let go, this never worked, just send your fixes to net-
-> > next".
-> >    I mean: (1) fixes of fixes of smth that never worked can't be sent
-> > ad
-> >    infinitum, especially if not small and (2) there needs to be some
-> >    incentive to submit code that actually works and was tested,
-> > rather
-> >    than a placeholder which can be fixed up later, right? In this
-> > case,
-> >    I'm not sure, this seems borderline net-next. Let's see what the
-> > PHY
-> >    library maintainers think.
-> > 
-> 
-> Thanks for pointing this out. Do you think submitting this patch in
-> net-next is the right way?
+Hello:
 
-I would probably go for net-next. That will give it more soak time to
-find the next way it is broken....
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-You might find i gets back ported to stable anyway, due to the ML bot
-spotting it.
+On Wed, 18 Jan 2023 10:18:47 -0500 you wrote:
+> From: Willem de Bruijn <willemb@google.com>
+> 
+> Avoid race between process wakeup and tpacket_v3 block timeout.
+> 
+> The test waits for cfg_timeout_msec for packets to arrive. Packets
+> arrive in tpacket_v3 rings, which pass packets ("frames") to the
+> process in batches ("blocks"). The sk waits for req3.tp_retire_blk_tov
+> msec to release a block.
+> 
+> [...]
 
-	 Andrew
+Here is the summary with links:
+  - [net,v2] selftests/net: toeplitz: fix race on tpacket_v3 block close
+    https://git.kernel.org/netdev/net/c/903848249a78
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
