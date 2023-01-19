@@ -2,49 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33AD5673FCA
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 18:22:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E165673FCB
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 18:22:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230131AbjASRWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 12:22:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33678 "EHLO
+        id S230188AbjASRWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 12:22:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbjASRWE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 12:22:04 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9865593D9;
-        Thu, 19 Jan 2023 09:22:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=cqG1MRAXLPrHaT+eAcJye0uuBLqSJFewuZYbSXYEZvo=; b=Tz5pVxX1z7Y3PKklioNj4Bdv+a
-        lKq0NRHt9xkawqp2p35oH+WxcKLOX4kbAKNFCeCazSgl8RH4codmTFH5O50dWAtK6ml20dbiw7FDY
-        wNqYUBRBj2I0LBJt2Hb8WNMo4SRjg3C4K3y5QnAhPWuHlOfEWNX169BgrAghaR6dd8Ic=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pIYbs-002c3x-Pa; Thu, 19 Jan 2023 18:21:56 +0100
-Date:   Thu, 19 Jan 2023 18:21:56 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jerome Brunet <jbrunet@baylibre.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        linux-amlogic@lists.infradead.org,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Da Xue <da@lessconfused.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 0/2] net: mdio: add amlogic gxl mdio mux support
-Message-ID: <Y8l8NJdulOTX4GpI@lunn.ch>
-References: <20230116091637.272923-1-jbrunet@baylibre.com>
- <Y8dimCI7ybeL09j0@lunn.ch>
- <1jr0vqyet1.fsf@starbuckisacylon.baylibre.com>
+        with ESMTP id S229634AbjASRWF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 12:22:05 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D5393F4
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 09:22:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=gHTUhXp1oIOUR/fxnoi4uPGWxB/25tr2xPFfXTm8eeo=; b=U0o/AH9tgh1ezvkriq/AGZ8p5/
+        eBzNhngupxZ+3BvbRc7pu2yxXSPRYtRSsKED20CMM7k2RgBqFyb8idKHQcqywbUdkvc3H53BsovAA
+        qOxo7br07bif1q9Jl+kp1o8TaXbIpwN5Yf+vPH07R2BPRoDS45f3dNvlbgjyzUNU7ylNt8X0bwY/k
+        nhdJCEAdHDM/qxlCAR+ui2OxovCHkQyCvxiKRCSPq0bbHXdsC/kCcrCRuofeJjATkcM8pqT4RKuiS
+        MwXBAKtnQgMa5xeIDMFF78TKXth/wwUfE5BWm+1U146ysl0iBh7adSvQdNjR4rcwez5Agkl0Je7sw
+        dO+b+gLQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36212)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pIYbw-0004jx-9e; Thu, 19 Jan 2023 17:21:59 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pIYbt-0000eT-KS; Thu, 19 Jan 2023 17:21:57 +0000
+Date:   Thu, 19 Jan 2023 17:21:57 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Cc:     netdev@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Alexander Couzens <lynxis@fe80.eu>
+Subject: Re: [PATCH net 2/3] net: mediatek: sgmii: autonegotiation is required
+Message-ID: <Y8l8NRmFfm/a8LFv@shell.armlinux.org.uk>
+References: <20230119171248.3882021-1-bjorn@mork.no>
+ <20230119171248.3882021-3-bjorn@mork.no>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <1jr0vqyet1.fsf@starbuckisacylon.baylibre.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230119171248.3882021-3-bjorn@mork.no>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,26 +63,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I usually avoid doing this since the DT part is intended for another
-> maintainer. The idea is make life easy for them and let them pick the
-> entire series (or not). I don't mind sending the DT update along if it
-> is the perferred way with netdev.
+On Thu, Jan 19, 2023 at 06:12:47PM +0100, Bjørn Mork wrote:
+> sgmii mode fails if autonegotiation is disabled.
 > 
-> FYI, the DT update would look like this :
-> https://gitlab.com/jbrunet/linux/-/commit/1d38ccf1b9f264111b1c56f18cfb4804227d3894.patch
+> Signed-off-by: Bjørn Mork <bjorn@mork.no>
+> ---
+>  drivers/net/ethernet/mediatek/mtk_sgmii.c | 11 +++--------
+>  1 file changed, 3 insertions(+), 8 deletions(-)
 > 
-> >
-> >> This has been tested on the aml-s905x-cc (LePotato) for the internal path
-> >> and the aml-s912-pc (Tartiflette) for the external path.
-> >
-> > So these exist in mainline, which is enough for me.
-> 
-> Yes the boards exists in mainline, there are still using the mdio-mux-mmioreg driver
-> ATM
+> diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+> index 481f2f1e39f5..d1f2bcb21242 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
+> +++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+> @@ -62,14 +62,9 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+>  	 * other words, 1000Mbps or 2500Mbps).
+>  	 */
+>  	if (interface == PHY_INTERFACE_MODE_SGMII) {
+> -		sgm_mode = SGMII_IF_MODE_SGMII;
+> -		if (phylink_autoneg_inband(mode)) {
+> -			sgm_mode |= SGMII_REMOTE_FAULT_DIS |
+> -				    SGMII_SPEED_DUPLEX_AN;
+> -			use_an = true;
+> -		} else {
+> -			use_an = false;
+> -		}
+> +		sgm_mode = SGMII_IF_MODE_SGMII | SGMII_REMOTE_FAULT_DIS |
+> +			   SGMII_SPEED_DUPLEX_AN;
+> +		use_an = true;
 
-The point of posting the actual users is sometimes we get vendor crap
-with no actual in tree users. We want to avoid that. It can be enough
-to mention in the cover letter than a future patchset will change the
-DT files X, Y and Z, making it clear there are in tree users.
+I wasn't actually suggesting in our discussion that this is something
+which should be changed.
 
-   Andrew
+The reference implementation for the expected behaviour is
+phylink_mii_c22_pcs_config(), and it only enables in-band if "mode"
+says so. If we have a PHY which has in-band disabled (yes, they do
+exist) then having SGMII in-band unconditionally enabled breaks them,
+and yes, those PHYs appear on SFP modules.
+
+The proper answer is to use 'managed = "in-band-status";' in your DT
+to have in-band used with SGMII.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
