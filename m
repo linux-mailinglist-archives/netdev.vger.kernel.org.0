@@ -2,64 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3EBF673F5A
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 17:52:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48FD7673F82
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 18:06:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230414AbjASQwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 11:52:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44588 "EHLO
+        id S230171AbjASRGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 12:06:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230452AbjASQwj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 11:52:39 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D6E8BABE
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 08:52:25 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id s13-20020a17090a6e4d00b0022900843652so6440733pjm.1
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 08:52:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:subject:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=iJ0Dk3SwkoXVjWSvRClhCOZ4uG0qjTubdpBSn+5UIXE=;
-        b=P5DC+k9ELyBfH6Ya24zQ6KI/31S+W9fYpXrcFaAo3k/KFff9zoJ3HWwHFkEkcZSaqT
-         U2lrsEX5OKtYZnMNH6U8dHdVMIIEJH5yHLYnfZQB80uwzU2petk1bWQXUDpoDs8mLopB
-         0nn030xmdEyncIdKcTQ89slBewmT7igeoQEii3umQNDE8tvPc4ORDC/2hYr0CX26llcE
-         +++vrraps+G/XX9bMnRjTM8v27LIzONcaliZzw1vVuZC9pQckK2oiqGfiircp23uAC1u
-         o/3tB1jXe7UhABlEn2+pnoJDHDJHDC3O2QVwIHrDNolAEHQG3J83+mqvcAEJwVXPIpaw
-         k+cw==
+        with ESMTP id S230219AbjASRGt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 12:06:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B2849429
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 09:06:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1674147959;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SqDs16/I+LueVUy81wt70cDHrU7GR/mpu4CiRVI2Wok=;
+        b=OggJBjl20RG1qYZVaJLmNAVuHeZFAlXCCzK7LIs/TgCemA7AC9SNeetvALsf0/mp66J/Zp
+        zAk086rjJM6gYNuKm7ODTEvXH9KocDJF2p7rbgyvYLZI6BOBzeAcfICNZamIBO1v3CD549
+        P1j1woKSss1lKeB41NOlKQJ8vvdqW8o=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-582-lzZRTxWCPNuhoXenY6xTXw-1; Thu, 19 Jan 2023 12:05:58 -0500
+X-MC-Unique: lzZRTxWCPNuhoXenY6xTXw-1
+Received: by mail-wr1-f69.google.com with SMTP id s3-20020adf9783000000b002ab389f64c1so555166wrb.22
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 09:05:58 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:subject:to:from
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=iJ0Dk3SwkoXVjWSvRClhCOZ4uG0qjTubdpBSn+5UIXE=;
-        b=7VRUdXslRWXD3D6F7yYKua47s23w1NfcwxMNL12gUbIuGpJBavFyvTDO/GgBIohh6N
-         lvN4EiMIM4/QNI5y8YkdVuKPiq1G7YH3TMfZAT2tu9j3nVpASkZxQmlsKPlK0STwBlNY
-         b2n7xZ51aR0qLapJfcvKiZ5yqcJ+HpuXJKADHPmCRkJoFUWLKPni4r2zoO6JvLyWiE9B
-         Q++JC58Ir8zkeJK31PRUzO+mIVxPqxGQ2MN9VdkFPoRjb0SLurvaxGo44K/QOMEJ9mL8
-         re1uwgB8cymWP5l/PT+dnHa2YYNDZLqyVb/LGLWE7BELQDrQd8BRvU/9JPgqtMX5KuN0
-         ZBMg==
-X-Gm-Message-State: AFqh2kq00rkhutWRmgvjtHVzO/AqqKygCFAgJQ4SHaGNVEqjTYox+3cV
-        ztT7CLjWkEYoITxsbZUPUAvadlDZ9vzQfTow9U4=
-X-Google-Smtp-Source: AMrXdXuzmD1ujFHWYsAG6nR/UzrZJkppChL6GAIo7eqUy0FXK3I+VCEEijRlzAoeaS9BgpN7vCcqYQ==
-X-Received: by 2002:a05:6a21:6d92:b0:b0:3e0f:508d with SMTP id wl18-20020a056a216d9200b000b03e0f508dmr14990725pzb.55.1674147144895;
-        Thu, 19 Jan 2023 08:52:24 -0800 (PST)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id t21-20020a635355000000b0049f5da82b12sm20436331pgl.93.2023.01.19.08.52.24
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Jan 2023 08:52:24 -0800 (PST)
-Date:   Thu, 19 Jan 2023 08:52:23 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 216952] New: The most recent Raspberry Pi OS 64-bi 5.15.84
- Linux kernel seems not to forward any IPv4 packets even if
- net.ipv4.ip_forward=1 is set properly, NO ROUTER FUNCTIONALITY in kernel
-Message-ID: <20230119085223.7cf16c57@hermes.local>
+        h=content-transfer-encoding:in-reply-to:cc:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=SqDs16/I+LueVUy81wt70cDHrU7GR/mpu4CiRVI2Wok=;
+        b=36PtH/4+geSOgNXriZ04Em4toRqdnqnmOIC/g2YBocp4gMO0FpIPFDl94yXK6nN9gY
+         u/X54fpQy7ZanviW+2oOhup91CZFJ9isXCF9NyyJrVSbM/2uQQdVxeJ6Im0vt5VBV2et
+         c2olDzeA3a1srt1QoSK5egPCtvQyobScKDmRSb870cLNR3fm3Hl5K1q8QPXQyr5aVR1n
+         Zfsvvm4AQ6yBbINx2/0xeSNYHXKmVrY6b4oIux+qWNyIscPe5GVIQKfBTzStJw6am+kn
+         KsGjVGRBV0dhSxdf8kpi51nSxlWp5UuYuAZf1IP29DqnWmk/tLrgUVbU5y1ghgI3axh+
+         8IKQ==
+X-Gm-Message-State: AFqh2kpsgzObHK5LXU7351abqvyoBWtCRV6pck4au+6dscZ6ZheQTrSQ
+        iLztbfeqvWXsYPPxj3sabicOLf7yNka3iV6AI5Pszj0m41slP7WDfl84ynJ8ryVNChs44rSpoEC
+        FsU8Vc4g66K9aeWI=
+X-Received: by 2002:a5d:59c7:0:b0:293:1868:3a14 with SMTP id v7-20020a5d59c7000000b0029318683a14mr6993658wry.0.1674147956960;
+        Thu, 19 Jan 2023 09:05:56 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXsL9JI1n8lPEchD8izckO5AXv8TXa1kqriBMz4k0q/+x39QtDaWFErPmiIYNZj+l6l3/iGYmA==
+X-Received: by 2002:a5d:59c7:0:b0:293:1868:3a14 with SMTP id v7-20020a5d59c7000000b0029318683a14mr6993648wry.0.1674147956789;
+        Thu, 19 Jan 2023 09:05:56 -0800 (PST)
+Received: from [192.168.122.188] (hellmouth.gulag.org.uk. [85.158.153.62])
+        by smtp.gmail.com with ESMTPSA id g11-20020a5d488b000000b002bc7e5a1171sm27260735wrq.116.2023.01.19.09.05.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Jan 2023 09:05:56 -0800 (PST)
+From:   Jeremy Harris <jeharris@redhat.com>
+X-Google-Original-From: Jeremy Harris <jgh@redhat.com>
+Message-ID: <ee84e51b-e41d-9613-fac7-42fa58a1f7ac@redhat.com>
+Date:   Thu, 19 Jan 2023 17:05:55 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.1
+Subject: Re: [RFC PATCH net-next 0/7] NIC driver Rx ring ECN
+To:     Jakub Kicinski <kuba@kernel.org>
+References: <20230111143427.1127174-1-jgh@redhat.com>
+ <20230111104618.74022e83@kernel.org>
+ <2ff79a56-bf32-731b-a6ab-94654b8a3b31@redhat.com>
+ <20230112160900.5fdb5b20@kernel.org>
+Content-Language: en-GB
+Cc:     netdev@vger.kernel.org, jgh@redhat.com
+In-Reply-To: <20230112160900.5fdb5b20@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,91 +83,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Have my doubts that this is a kernel bug.
-
-Begin forwarded message:
-
-Date: Thu, 19 Jan 2023 14:17:16 +0000
-From: bugzilla-daemon@kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 216952] New: The most recent Raspberry Pi OS 64-bi 5.15.84 Linux kernel seems not to forward any IPv4 packets even if net.ipv4.ip_forward=1 is set properly, NO ROUTER FUNCTIONALITY in kernel
 
 
-https://bugzilla.kernel.org/show_bug.cgi?id=216952
+On 13/01/2023 00:09, Jakub Kicinski wrote:
+> It may be cool if we can retrofit some second-order signal into
+> the time-based machinery. The problem is that we don't actually
+> have any time-based machinery upstream, yet :(
+> And designing interfaces for a decade-old HW seems shortsighted.
+> 
+>>> Host level congestion is better detected using time / latency signals.
+>>> Timestamp the packet at the NIC and compare the Rx time to current time
+>>> when processing by the driver.
+>>>
+>>> Google search "Google Swift congestion control".
 
-            Bug ID: 216952
-           Summary: The most recent Raspberry Pi OS 64-bi 5.15.84 Linux
-                    kernel seems not to forward any IPv4 packets even if
-                    net.ipv4.ip_forward=1 is set properly, NO ROUTER
-                    FUNCTIONALITY in kernel
-           Product: Networking
-           Version: 2.5
-    Kernel Version: Linux 5.15.84-v8+ #1613 SMP PREEMPT Thu Jan 5 12:03:08
-                    GMT 2023 aarch64
-          Hardware: ARM
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: blocking
-          Priority: P1
-         Component: IPV4
-          Assignee: stephen@networkplumber.org
-          Reporter: tomkori@gmx.net
-        Regression: No
+> Grep for HWTSTAMP_FILTER_ALL, there's HW out there.
 
-I have produced some extensive documentation of my attempts of getting a
-Raspberry Pi 4 4GB running the most Raspberry Pi OS 64-bit (Debian bullseye
-arm64) and a WaveShare SIM8200EA M2 5G HAT modem working as a residential
-gateway combination. I got the modem working and able to connect to the
-internet on the Raspberry Pi 4 4 GB locally, but the packet forwarding seems to
-not work at all. When tracerouting the packets, their path always ends at my
-Raspberry Pi 4 4 GB supposed-to-be residential gateway without being forwarded
-to the ISP-provided dynamic IP address and tiny network. I have made a summary
-thread on the Raspberry Pi Forum containing firewall configuration,
-/etc/sysctl.conf settings, ISC DHCP server configuration and routing tables:
+OK.
 
-https://forums.raspberrypi.com/viewtopic.php?t=346017
+>> - does not address Rx drops due to Rx ring-buffer overflow
+> 
+> It's a stronger signal than "continuous run of packets".
+> You can have a standing queue of 2 packets, and keep processing
+> for ever. There's no congestion, or overload. You'd see that
+> timestamps are recent.
 
-I have the following network configuration:
+Agreed.  That's why marking at a proportion of ring-fill approaching
+100% was my "preferred" implementation.  But if the current situation
+with NIC API design makes that commonly impractical, I guess it's
+a dead duck.
 
-    1) a private network 192.168.1.0/24
+> I experimented last year with implementing CoDel on the input queues,
+> worked pretty well (scroll down ~half way):
+> 
+> https://developers.facebook.com/blog/post/2022/04/25/investigating-tcp-self-throttling-triggered-overload/
 
-    2) inside 192.168.1.0/24 an OpenWrt operated ethernet PoE+ DSA switch
-
-    3) inside 192.168.1.0/24 an OpenWrt operated Wifi router which is connected
-via its WAN interface to the ISP provided modem on 192.168.0.0/24 network. The
-ISP modem does not allow anything, it is basically an intransparent bridge. The
-Wifi router is running a DHCP server on its LAN interface containing the LAN
-ports and it has another DHCP server running for managing the Wifi connections.
-
-    4) my Raspberry Pi 4 4GB / WaveShare SIM8200EA-M2 5G HAT combination
-running with a temporary SIM card, till i can replace the ISP provided modem by
-it. The RPi/5G HAT has lo, eth0, wlan0, wwan0 (plus usb0 from thethering via
-dwc2 and g_ether) interfaces and could be used as DMZ as such. The RPi/5G HAT
-eth0 is connected to the Switch and has IP 192.168.1.1, which should be the
-residential router/gateway IP. wlan0 is connected to the Wifi router. I have
-configured a working nftables firewall filtering ICMP traffic for both IPv4 and
-IPv6 that works nicely when i use the internet access locally on my RPi / 5G
-HAT. wwan0 is the 5G HAT modem interface, which is configured via
-NetworkManager (is it possible also via /etc/network/interfaces?) and
-ModemManager and has a small private subnet assigned by DHCP from the ISP (my
-ISP also allows for public dynamic IPs which are routable in the internet). I
-have configured a static route from the RPI / 5G HAT to the Wifi router, such
-that it can have internet access via the ISP modem, even when the 5G HAT is
-turned off.
-
-Now how can i get my RPi / 5G HAT to become a residential gateway to serve
-internet access to the whole 192.168.1.0/24 home network including the Wifi
-devices? When i install an ISC DHCP server on my RPi / 5G HAT, it always messes
-up with the DHCP server of the Wifi router and the Wifi devices loose internet
-connectivity. As far as i have understood, routing functionality in internal
-networks is provided via DHCP and DNS server's as well as activation of ip
-forwarding.
-
-(Taken from https://forums.raspberrypi.com/viewtopic.php?t=346014)
-
+That looks nice.  Are there any plans to get that upstream?
 -- 
-You may reply to this email to add a comment.
+Cheers,
+   Jeremy
 
-You are receiving this mail because:
-You are the assignee for the bug.
