@@ -2,348 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C4D36742E7
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 20:34:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACEC367430E
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 20:48:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230154AbjASTeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 14:34:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47376 "EHLO
+        id S229915AbjASTsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 14:48:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230381AbjASTeP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 14:34:15 -0500
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F8358293
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 11:34:08 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 86EE0204B4;
-        Thu, 19 Jan 2023 20:34:07 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id X7gm5hUTqoe7; Thu, 19 Jan 2023 20:34:06 +0100 (CET)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id BD06F20460;
-        Thu, 19 Jan 2023 20:34:06 +0100 (CET)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id AE6AC80004A;
-        Thu, 19 Jan 2023 20:34:06 +0100 (CET)
-Received: from mbx-essen-02.secunet.de (10.53.40.198) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Thu, 19 Jan 2023 20:34:06 +0100
-Received: from moon.secunet.de (172.18.149.1) by mbx-essen-02.secunet.de
- (10.53.40.198) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 19 Jan
- 2023 20:34:06 +0100
-Date:   Thu, 19 Jan 2023 20:34:00 +0100
-From:   Antony Antony <antony.antony@secunet.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-CC:     <netdev@vger.kernel.org>
-Subject: [PATCH 3/3] xfrm: Support GRO for IPv6 ESP in UDP encapsulation.
-Message-ID: <3d9a846f9af55920490a28b569817aa5707bb07e.1674156645.git.antony.antony@secunet.com>
-Reply-To: <antony.antony@secunet.com>
-References: <6dfd03c5fa0afb99f255f4a35772df19e33880db.1674156645.git.antony.antony@secunet.com>
+        with ESMTP id S229752AbjASTsP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 14:48:15 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A7D7A53B
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 11:48:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674157693; x=1705693693;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=r3frNLJx/8tkQ3XOoDV2BjOvJvEf1oUMfhHDiNIrhmE=;
+  b=gsp01lWVisQsBy8pfit+5gp/BjQYYrPeOvp5Mg/0A4h5Xvn3ep3F24jU
+   uHtzstw0/IMJOvfxR4lafodG8jgf+udOX93uYhlCXwv9x2BfNPQCD03h8
+   ru3OfqqtSOvUbYgxyxgTOSR4FWzo9jE+55TgRQN7rU5ji80s6B9zMfmUn
+   ZewWtiExCLxQSkdCg3f0QEBRACKQ6EKypD/RxfVZivkcjFdpxywH+ezrm
+   BgfCGux71iQiqtyhPZb3XrmdYM4MRzJBKoRvRh6HtgeSfMlPEF3bnSPgl
+   OeLx5wMRtL24A+LioiKiEFyRzosHxf34BX/wX/BH/RvuKV2Tckc536MZc
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="324087778"
+X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
+   d="scan'208";a="324087778"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 11:48:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="989110098"
+X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
+   d="scan'208";a="989110098"
+Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 19 Jan 2023 11:48:10 -0800
+Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pIatN-0001ng-0v;
+        Thu, 19 Jan 2023 19:48:09 +0000
+Date:   Fri, 20 Jan 2023 03:47:22 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     alejandro.lucero-palau@amd.com, netdev@vger.kernel.org,
+        linux-net-drivers@amd.com
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, habetsm@gmail.com, ecree.xilinx@gmail.com,
+        Alejandro Lucero <alejandro.lucero-palau@amd.com>
+Subject: Re: [PATCH net-next 5/7] sfc: obtain device mac address based on
+ firmware handle for ef100
+Message-ID: <202301200333.BjjkOStI-lkp@intel.com>
+References: <20230119113140.20208-6-alejandro.lucero-palau@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6dfd03c5fa0afb99f255f4a35772df19e33880db.1674156645.git.antony.antony@secunet.com>
-Organization: secunet
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-02.secunet.de (10.53.40.198)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230119113140.20208-6-alejandro.lucero-palau@amd.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Steffen Klassert <steffen.klassert@secunet.com>
+Hi,
 
-This patch enables the GRO codepath for IPv6 ESP in UDP encapsulated
-packets. Decapsulation happens at L2 and saves a full round through
-the stack for each packet. This is also needed to support HW offload
-for ESP in UDP encapsulation.
+Thank you for the patch! Perhaps something to improve:
 
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Co-developed-by: Antony Antony <antony.antony@secunet.com>
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
----
- include/net/ipv6_stubs.h |  3 ++
- include/net/xfrm.h       |  4 +-
- net/ipv4/udp.c           |  4 +-
- net/ipv6/af_inet6.c      |  1 +
- net/ipv6/esp6_offload.c  | 15 +++++-
- net/ipv6/xfrm6_input.c   | 99 ++++++++++++++++++++++++++++++++--------
- 6 files changed, 103 insertions(+), 23 deletions(-)
+[auto build test WARNING on net-next/master]
 
-diff --git a/include/net/ipv6_stubs.h b/include/net/ipv6_stubs.h
-index c48186bf4737..887d35f716c7 100644
---- a/include/net/ipv6_stubs.h
-+++ b/include/net/ipv6_stubs.h
-@@ -60,6 +60,9 @@ struct ipv6_stub {
- #if IS_ENABLED(CONFIG_XFRM)
- 	void (*xfrm6_local_rxpmtu)(struct sk_buff *skb, u32 mtu);
- 	int (*xfrm6_udp_encap_rcv)(struct sock *sk, struct sk_buff *skb);
-+	struct sk_buff *(*xfrm6_gro_udp_encap_rcv)(struct sock *sk,
-+						   struct list_head *head,
-+						   struct sk_buff *skb);
- 	int (*xfrm6_rcv_encap)(struct sk_buff *skb, int nexthdr, __be32 spi,
- 			       int encap_type);
- #endif
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 74dba98fbf2c..5cc6d8432d2f 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1666,8 +1666,6 @@ void xfrm_local_error(struct sk_buff *skb, int mtu);
- int xfrm4_extract_input(struct xfrm_state *x, struct sk_buff *skb);
- int xfrm4_rcv_encap(struct sk_buff *skb, int nexthdr, __be32 spi,
- 		    int encap_type);
--struct sk_buff *xfrm4_gro_udp_encap_rcv(struct sock *sk, struct list_head *head,
--					struct sk_buff *skb);
- int xfrm4_transport_finish(struct sk_buff *skb, int async);
- int xfrm4_rcv(struct sk_buff *skb);
- 
-@@ -1710,6 +1708,8 @@ int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb);
- int xfrm6_udp_encap_rcv(struct sock *sk, struct sk_buff *skb);
- struct sk_buff *xfrm4_gro_udp_encap_rcv(struct sock *sk, struct list_head *head,
- 					struct sk_buff *skb);
-+struct sk_buff *xfrm6_gro_udp_encap_rcv(struct sock *sk, struct list_head *head,
-+					struct sk_buff *skb);
- int xfrm_user_policy(struct sock *sk, int optname, sockptr_t optval,
- 		     int optlen);
- #else
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 6a30d0210c4e..497ef68c80ea 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2727,8 +2727,10 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
- 		case UDP_ENCAP_ESPINUDP:
- 		case UDP_ENCAP_ESPINUDP_NON_IKE:
- #if IS_ENABLED(CONFIG_IPV6)
--			if (sk->sk_family == AF_INET6)
-+			if (sk->sk_family == AF_INET6) {
- 				up->encap_rcv = ipv6_stub->xfrm6_udp_encap_rcv;
-+				up->gro_receive = ipv6_stub->xfrm6_gro_udp_encap_rcv;
-+			}
- #endif
- 			if (sk->sk_family == AF_INET) {
- 				up->encap_rcv = xfrm4_udp_encap_rcv;
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index fee9163382c2..03c04a5a073d 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -1054,6 +1054,7 @@ static const struct ipv6_stub ipv6_stub_impl = {
- #if IS_ENABLED(CONFIG_XFRM)
- 	.xfrm6_local_rxpmtu = xfrm6_local_rxpmtu,
- 	.xfrm6_udp_encap_rcv = xfrm6_udp_encap_rcv,
-+	.xfrm6_gro_udp_encap_rcv = xfrm6_gro_udp_encap_rcv,
- 	.xfrm6_rcv_encap = xfrm6_rcv_encap,
- #endif
- 	.nd_tbl	= &nd_tbl,
-diff --git a/net/ipv6/esp6_offload.c b/net/ipv6/esp6_offload.c
-index ee5f5abdb503..395bfee94d84 100644
---- a/net/ipv6/esp6_offload.c
-+++ b/net/ipv6/esp6_offload.c
-@@ -33,7 +33,9 @@ static __u16 esp6_nexthdr_esp_offset(struct ipv6hdr *ipv6_hdr, int nhlen)
- 	int off = sizeof(struct ipv6hdr);
- 	struct ipv6_opt_hdr *exthdr;
- 
--	if (likely(ipv6_hdr->nexthdr == NEXTHDR_ESP))
-+	/* ESP or ESPINUDP */
-+	if (likely(ipv6_hdr->nexthdr == NEXTHDR_ESP ||
-+		   ipv6_hdr->nexthdr == NEXTHDR_UDP))
- 		return offsetof(struct ipv6hdr, nexthdr);
- 
- 	while (off < nhlen) {
-@@ -53,10 +55,19 @@ static struct sk_buff *esp6_gro_receive(struct list_head *head,
- 	int offset = skb_gro_offset(skb);
- 	struct xfrm_offload *xo;
- 	struct xfrm_state *x;
-+	int encap_type = 0;
- 	__be32 seq;
- 	__be32 spi;
- 	int nhoff;
- 
-+	if (NAPI_GRO_CB(skb)->proto == IPPROTO_UDP && skb->sk &&
-+	    (udp_sk(skb->sk)->encap_type == UDP_ENCAP_ESPINUDP ||
-+	     udp_sk(skb->sk)->encap_type == UDP_ENCAP_ESPINUDP_NON_IKE)) {
-+		encap_type = udp_sk(skb->sk)->encap_type;
-+		sock_put(skb->sk);
-+		skb->sk = NULL;
-+	}
-+
- 	if (!pskb_pull(skb, offset))
- 		return NULL;
- 
-@@ -103,7 +114,7 @@ static struct sk_buff *esp6_gro_receive(struct list_head *head,
- 
- 	/* We don't need to handle errors from xfrm_input, it does all
- 	 * the error handling and frees the resources on error. */
--	xfrm_input(skb, IPPROTO_ESP, spi, 0);
-+	xfrm_input(skb, IPPROTO_ESP, spi, encap_type);
- 
- 	return ERR_PTR(-EINPROGRESS);
- out_reset:
-diff --git a/net/ipv6/xfrm6_input.c b/net/ipv6/xfrm6_input.c
-index 04cbeefd8982..cd18ca75c9f6 100644
---- a/net/ipv6/xfrm6_input.c
-+++ b/net/ipv6/xfrm6_input.c
-@@ -16,6 +16,8 @@
- #include <linux/netfilter_ipv6.h>
- #include <net/ipv6.h>
- #include <net/xfrm.h>
-+#include <net/protocol.h>
-+#include <net/gro.h>
- 
- int xfrm6_rcv_spi(struct sk_buff *skb, int nexthdr, __be32 spi,
- 		  struct ip6_tnl *t)
-@@ -67,14 +69,7 @@ int xfrm6_transport_finish(struct sk_buff *skb, int async)
- 	return 0;
- }
- 
--/* If it's a keepalive packet, then just eat it.
-- * If it's an encapsulated packet, then pass it to the
-- * IPsec xfrm input.
-- * Returns 0 if skb passed to xfrm or was dropped.
-- * Returns >0 if skb should be passed to UDP.
-- * Returns <0 if skb should be resubmitted (-ret is protocol)
-- */
--int xfrm6_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
-+static int __xfrm6_udp_encap_rcv(struct sock *sk, struct sk_buff *skb, bool pull)
- {
- 	struct udp_sock *up = udp_sk(sk);
- 	struct udphdr *uh;
-@@ -106,7 +101,7 @@ int xfrm6_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
- 	case UDP_ENCAP_ESPINUDP:
- 		/* Check if this is a keepalive packet.  If so, eat it. */
- 		if (len == 1 && udpdata[0] == 0xff) {
--			goto drop;
-+			return -EINVAL;
- 		} else if (len > sizeof(struct ip_esp_hdr) && udpdata32[0] != 0) {
- 			/* ESP Packet without Non-ESP header */
- 			len = sizeof(struct udphdr);
-@@ -117,7 +112,7 @@ int xfrm6_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
- 	case UDP_ENCAP_ESPINUDP_NON_IKE:
- 		/* Check if this is a keepalive packet.  If so, eat it. */
- 		if (len == 1 && udpdata[0] == 0xff) {
--			goto drop;
-+			return -EINVAL;
- 		} else if (len > 2 * sizeof(u32) + sizeof(struct ip_esp_hdr) &&
- 			   udpdata32[0] == 0 && udpdata32[1] == 0) {
- 
-@@ -135,31 +130,99 @@ int xfrm6_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
- 	 * protocol to ESP, and then call into the transform receiver.
- 	 */
- 	if (skb_unclone(skb, GFP_ATOMIC))
--		goto drop;
-+		return -EINVAL;
- 
- 	/* Now we can update and verify the packet length... */
- 	ip6h = ipv6_hdr(skb);
- 	ip6h->payload_len = htons(ntohs(ip6h->payload_len) - len);
- 	if (skb->len < ip6hlen + len) {
- 		/* packet is too small!?! */
--		goto drop;
-+		return -EINVAL;
- 	}
- 
- 	/* pull the data buffer up to the ESP header and set the
- 	 * transport header to point to ESP.  Keep UDP on the stack
- 	 * for later.
- 	 */
--	__skb_pull(skb, len);
--	skb_reset_transport_header(skb);
-+	if (pull) {
-+		__skb_pull(skb, len);
-+		skb_reset_transport_header(skb);
-+	} else {
-+		skb_set_transport_header(skb, len);
-+	}
- 
- 	/* process ESP */
--	return xfrm6_rcv_encap(skb, IPPROTO_ESP, 0, encap_type);
--
--drop:
--	kfree_skb(skb);
- 	return 0;
- }
- 
-+/* If it's a keepalive packet, then just eat it.
-+ * If it's an encapsulated packet, then pass it to the
-+ * IPsec xfrm input.
-+ * Returns 0 if skb passed to xfrm or was dropped.
-+ * Returns >0 if skb should be passed to UDP.
-+ * Returns <0 if skb should be resubmitted (-ret is protocol)
-+ */
-+int xfrm6_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
-+{
-+	int ret;
-+
-+	ret = __xfrm6_udp_encap_rcv(sk, skb, true);
-+	if (!ret)
-+		return xfrm6_rcv_encap(skb, IPPROTO_ESP, 0,
-+				       udp_sk(sk)->encap_type);
-+
-+	if (ret < 0) {
-+		kfree_skb(skb);
-+		return 0;
-+	}
-+
-+	return ret;
-+}
-+
-+struct sk_buff *xfrm6_gro_udp_encap_rcv(struct sock *sk, struct list_head *head,
-+					struct sk_buff *skb)
-+{
-+	int offset = skb_gro_offset(skb);
-+	const struct net_offload *ops;
-+	struct sk_buff *pp = NULL;
-+	int ret;
-+
-+	offset = offset - sizeof(struct udphdr);
-+
-+	if (!pskb_pull(skb, offset))
-+		return NULL;
-+
-+	if (!refcount_inc_not_zero(&sk->sk_refcnt))
-+		return NULL;
-+
-+	rcu_read_lock();
-+	ops = rcu_dereference(inet6_offloads[IPPROTO_ESP]);
-+	if (!ops || !ops->callbacks.gro_receive)
-+		goto out;
-+
-+	ret = __xfrm6_udp_encap_rcv(sk, skb, false);
-+	if (ret)
-+		goto out;
-+
-+	skb->sk = sk;
-+	skb_push(skb, offset);
-+	NAPI_GRO_CB(skb)->proto = IPPROTO_UDP;
-+
-+	pp = call_gro_receive(ops->callbacks.gro_receive, head, skb);
-+	rcu_read_unlock();
-+
-+	return pp;
-+
-+out:
-+	rcu_read_unlock();
-+	sock_put(sk);
-+	skb_push(skb, offset);
-+	NAPI_GRO_CB(skb)->same_flow = 0;
-+	NAPI_GRO_CB(skb)->flush = 1;
-+
-+	return NULL;
-+}
-+
- int xfrm6_rcv_tnl(struct sk_buff *skb, struct ip6_tnl *t)
- {
- 	return xfrm6_rcv_spi(skb, skb_network_header(skb)[IP6CB(skb)->nhoff],
+url:    https://github.com/intel-lab-lkp/linux/commits/alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230119-193440
+patch link:    https://lore.kernel.org/r/20230119113140.20208-6-alejandro.lucero-palau%40amd.com
+patch subject: [PATCH net-next 5/7] sfc: obtain device mac address based on firmware handle for ef100
+config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20230120/202301200333.BjjkOStI-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/94535fc2c87743925490d5ce0573b8e9b4b2690c
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230119-193440
+        git checkout 94535fc2c87743925490d5ce0573b8e9b4b2690c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/ethernet/sfc/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/net/ethernet/sfc/ef100_nic.c:1127:21: warning: unused variable 'net_dev' [-Wunused-variable]
+           struct net_device *net_dev = efx->net_dev;
+                              ^
+>> drivers/net/ethernet/sfc/ef100_nic.c:1172:9: warning: variable 'rc' is uninitialized when used here [-Wuninitialized]
+           return rc;
+                  ^~
+   drivers/net/ethernet/sfc/ef100_nic.c:1128:8: note: initialize the variable 'rc' to silence this warning
+           int rc;
+                 ^
+                  = 0
+   2 warnings generated.
+
+
+vim +/net_dev +1127 drivers/net/ethernet/sfc/ef100_nic.c
+
+51b35a454efdcd Edward Cree      2020-07-27  1123  
+98ff4c7c8ac7f5 Jonathan Cooper  2022-06-28  1124  int ef100_probe_netdev_pf(struct efx_nic *efx)
+51b35a454efdcd Edward Cree      2020-07-27  1125  {
+98ff4c7c8ac7f5 Jonathan Cooper  2022-06-28  1126  	struct ef100_nic_data *nic_data = efx->nic_data;
+29ec1b27e73990 Edward Cree      2020-07-27 @1127  	struct net_device *net_dev = efx->net_dev;
+98ff4c7c8ac7f5 Jonathan Cooper  2022-06-28  1128  	int rc;
+29ec1b27e73990 Edward Cree      2020-07-27  1129  
+6f6838aabff5ea Edward Cree      2022-07-28  1130  	if (!nic_data->grp_mae)
+6f6838aabff5ea Edward Cree      2022-07-28  1131  		return 0;
+6f6838aabff5ea Edward Cree      2022-07-28  1132  
+6f6838aabff5ea Edward Cree      2022-07-28  1133  #ifdef CONFIG_SFC_SRIOV
+67ab160ed08f5b Edward Cree      2022-07-28  1134  	rc = efx_init_struct_tc(efx);
+67ab160ed08f5b Edward Cree      2022-07-28  1135  	if (rc)
+67ab160ed08f5b Edward Cree      2022-07-28  1136  		return rc;
+67ab160ed08f5b Edward Cree      2022-07-28  1137  
+6f6838aabff5ea Edward Cree      2022-07-28  1138  	rc = efx_ef100_get_base_mport(efx);
+6f6838aabff5ea Edward Cree      2022-07-28  1139  	if (rc) {
+6f6838aabff5ea Edward Cree      2022-07-28  1140  		netif_warn(efx, probe, net_dev,
+6f6838aabff5ea Edward Cree      2022-07-28  1141  			   "Failed to probe base mport rc %d; representors will not function\n",
+6f6838aabff5ea Edward Cree      2022-07-28  1142  			   rc);
+f393f2642abb0e Alejandro Lucero 2023-01-19  1143  	} else {
+f393f2642abb0e Alejandro Lucero 2023-01-19  1144  		if (efx_probe_devlink(efx))
+f393f2642abb0e Alejandro Lucero 2023-01-19  1145  			netif_warn(efx, probe, net_dev,
+f393f2642abb0e Alejandro Lucero 2023-01-19  1146  				   "Failed to register devlink\n");
+1542af777ce523 Alejandro Lucero 2023-01-19  1147  		rc = efx_init_mae(efx);
+1542af777ce523 Alejandro Lucero 2023-01-19  1148  		if (rc)
+1542af777ce523 Alejandro Lucero 2023-01-19  1149  			pci_warn(efx->pci_dev,
+1542af777ce523 Alejandro Lucero 2023-01-19  1150  				 "Failed to init MAE rc %d; representors will not function\n",
+1542af777ce523 Alejandro Lucero 2023-01-19  1151  				 rc);
+1542af777ce523 Alejandro Lucero 2023-01-19  1152  		else
+1542af777ce523 Alejandro Lucero 2023-01-19  1153  			efx_ef100_init_reps(efx);
+6f6838aabff5ea Edward Cree      2022-07-28  1154  	}
+67ab160ed08f5b Edward Cree      2022-07-28  1155  
+67ab160ed08f5b Edward Cree      2022-07-28  1156  	rc = efx_init_tc(efx);
+67ab160ed08f5b Edward Cree      2022-07-28  1157  	if (rc) {
+67ab160ed08f5b Edward Cree      2022-07-28  1158  		/* Either we don't have an MAE at all (i.e. legacy v-switching),
+67ab160ed08f5b Edward Cree      2022-07-28  1159  		 * or we do but we failed to probe it.  In the latter case, we
+67ab160ed08f5b Edward Cree      2022-07-28  1160  		 * may not have set up default rules, in which case we won't be
+67ab160ed08f5b Edward Cree      2022-07-28  1161  		 * able to pass any traffic.  However, we don't fail the probe,
+67ab160ed08f5b Edward Cree      2022-07-28  1162  		 * because the user might need to use the netdevice to apply
+67ab160ed08f5b Edward Cree      2022-07-28  1163  		 * configuration changes to fix whatever's wrong with the MAE.
+67ab160ed08f5b Edward Cree      2022-07-28  1164  		 */
+67ab160ed08f5b Edward Cree      2022-07-28  1165  		netif_warn(efx, probe, net_dev, "Failed to probe MAE rc %d\n",
+67ab160ed08f5b Edward Cree      2022-07-28  1166  			   rc);
+9dc0cad203ab57 Edward Cree      2022-09-26  1167  	} else {
+9dc0cad203ab57 Edward Cree      2022-09-26  1168  		net_dev->features |= NETIF_F_HW_TC;
+9dc0cad203ab57 Edward Cree      2022-09-26  1169  		efx->fixed_features |= NETIF_F_HW_TC;
+67ab160ed08f5b Edward Cree      2022-07-28  1170  	}
+6f6838aabff5ea Edward Cree      2022-07-28  1171  #endif
+29ec1b27e73990 Edward Cree      2020-07-27 @1172  	return rc;
+51b35a454efdcd Edward Cree      2020-07-27  1173  }
+51b35a454efdcd Edward Cree      2020-07-27  1174  
+
 -- 
-2.30.2
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
