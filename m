@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 896E967358D
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 11:33:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4282B673591
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 11:33:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230268AbjASKdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 05:33:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57950 "EHLO
+        id S230386AbjASKds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 05:33:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbjASKdS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 05:33:18 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2062.outbound.protection.outlook.com [40.107.93.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8968E8
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 02:33:17 -0800 (PST)
+        with ESMTP id S230303AbjASKdX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 05:33:23 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2078.outbound.protection.outlook.com [40.107.220.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 553C54FC1B
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 02:33:21 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GWTh08aMNbp8Ve3aMeSLlEBKzmonOxnyhOUjqwA6BxEnmnSSPg/7ulVlPawifYdMA1c20VRpAqfgHGp84pDSIj4W8ACRI976eSCmywyrtv22DyVA8qvc8HpYkfvJqLqEygUL4fU5THSjuRl/jf1QofSBnt5fXGNAColg5vMG85GQKGol8hjxz+NnHBuM/3gNYvE5oL23AKVc4sUDHBWBj+KkVz77Drv+BTkulR4z1CBPM/hVtrNCCJROx8TIM4y9+KBYfcPVompKKrKMdx7VnLmkm9pacDHAz6u37i3l4XP+oS6ftDbH61LmoARbUA99MhG5nhCfPaJPgsxtk85TRQ==
+ b=VB4ChLDV2GwIRTMHS3CbfBTGYWFpIOlVKDGbXEHRFYSK59g8owIoqqaHr5QuoRipTktcIQc/DnDGJxfthsTLbxr+Vrmu0UrWuXbWb1+a2IVRbZ4t9jwvNR+N7DKgS1ckIobVf4L8BVQTIQUHr/A+zWnigFQf1eczmXh2VXlpjlsCtfHabY8UxmQ0hyw4PW9rOIbrLngNYW9Rr1hte/Elhp8+yqc6UE+QpGHjjqo3LIVTFG+B6DR8PTtZh2CvzHbVvtd9DEg9Bu/DlWNt3+C3KuICisieeUvTIKlmrSleFOVlBHkIO7auWgxgRW7w++Q1OsGT5F6k0hDDO9ofIqeuTw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ccl6sTp4Ga/tQaLytKtRtgQkOnoNZ4gjQt+7kvUlemM=;
- b=W9a1aZoKAO+2HYs5XCkBXPHKtxU3VDp8leqk2y6APzwj6qCFeY+j02ZDTEya8fHHQ/+HSLdKNbBix/NBFAH/Dsq01RB6gZGSm8Msq/NhnA39l3LDBib9T2n2RG7Xi2bblqbwj2G67Fs5+QbavD7T83pcXAYuVkN5kMr4ykhWZ/FUxvX/v34A8huIq2dBu0qbLSJnco2NxLvaBPA8iPVmFO1YZorOjrxzWdN/wX1XzSWZ1mBzjrLSK3VHWGS3gH5sgEyZRA0ROaFjv0dMKbYhp+I6aigXlLu77WvYfs1JgDjnGTx2XuEb95HtHC0xyWXPAUFnlaWzx9mDxEc+u63z0A==
+ bh=Kx5CdkpauMYZ1Ii4r7UmgLNR4SOy2wZaDbQEd13iiMg=;
+ b=d82GsPt/hmBOttWLkg0rn6NUiixIL94RCc88zhGxyUw8vb0meMNxAoRN6rzDDLuCOF5Jg2vluYKgoeYJle/feUnEuZQlRFi43JALs0zWYz2J6rN/jSZ06fVTKM1cwYvsIKWL3kW6cIB0GQ8QTWfyPJhavyhBVE2AdftJjgVKveKCUejKr5SXjT4axPSQlRSIC6QUUkjkSGrbWyI8qrc5ssHZOeE6lz00oJekYXrZgxbrZg6KahOsjdOWuBtPNtue2vp3oTjeaxRYIvcJETopbeKgGlwhzV61bET4DrVOjMx8MT9eGjHejatYQn2ZZbcJI/xa2Q72ow90CU0fQvEhJQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.160) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -28,18 +28,17 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ccl6sTp4Ga/tQaLytKtRtgQkOnoNZ4gjQt+7kvUlemM=;
- b=dSr+rWhpEOlbBHX0RDraeQKhkRGAxcGRvGpnRD/I6noB9C3waF5F2WKO34ElBtdOMbSl2p9QErfKW9gLqbp72SHJmPmiRmX1aPQgKMMEr+KCbGIR6NNElRumXnh911AV/RcoTqy4HcudEXup+k9lbttgGRdkPepaAUQs5FcL2A0L94g5lmnd2i15PokMA9us8DQWfh3KeEqi+o7tE3oOUISBTL1hlH+uF5aGMSKTHrzwDWDCCcQKLHDUV75+jzBEidyDiC5ux2uWeV5V0FN8eaLD+Tcq3ZEDvfUsuoJIySLV8pGm+k7/36wqtCGoWOrOZ7+6TS1tw1dgRk+LspU2Lw==
-Received: from BN9P223CA0023.NAMP223.PROD.OUTLOOK.COM (2603:10b6:408:10b::28)
- by CH2PR12MB4310.namprd12.prod.outlook.com (2603:10b6:610:a9::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.26; Thu, 19 Jan
- 2023 10:33:15 +0000
-Received: from BN8NAM11FT111.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:10b:cafe::be) by BN9P223CA0023.outlook.office365.com
- (2603:10b6:408:10b::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.24 via Frontend
- Transport; Thu, 19 Jan 2023 10:33:15 +0000
+ bh=Kx5CdkpauMYZ1Ii4r7UmgLNR4SOy2wZaDbQEd13iiMg=;
+ b=REC/w0tCStvA0A0PhDCOZGyPQ7WJOKLqGaRrcLsC4aD4uj/6Blaj+wOxde7/3M7mr/knjMQ+6wmEUasD/FloAHiSB6sS8znleh5WCuBg29cvxY4FE3OpQprjEOUcPUQt0LWGkZo8W736xc1b+3t7eupIzHG1ZCjYyGIaDGdcmWk45ofGD2MOweMV6EI6jywE+VnyBoaum4gK6qhwH6iZOzvq7bx2U41J1sPbhpFRQZGsg1IVrWaqHVMvIcBH6ula7yRUN+3k1R0M5xzcZMvUamLz0599HIpFEXVO2YU97EEBQ1KTk3ce8zsQbcNp+6Mqj5VDnyEHbMFbUixZRxWQxA==
+Received: from BN9PR03CA0285.namprd03.prod.outlook.com (2603:10b6:408:f5::20)
+ by DM4PR12MB5724.namprd12.prod.outlook.com (2603:10b6:8:5f::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6002.25; Thu, 19 Jan 2023 10:33:18 +0000
+Received: from BN8NAM11FT033.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:f5:cafe::aa) by BN9PR03CA0285.outlook.office365.com
+ (2603:10b6:408:f5::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.25 via Frontend
+ Transport; Thu, 19 Jan 2023 10:33:18 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -47,17 +46,17 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.160 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.160) by
- BN8NAM11FT111.mail.protection.outlook.com (10.13.177.54) with Microsoft SMTP
+ BN8NAM11FT033.mail.protection.outlook.com (10.13.177.149) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6002.24 via Frontend Transport; Thu, 19 Jan 2023 10:33:15 +0000
+ 15.20.6023.16 via Frontend Transport; Thu, 19 Jan 2023 10:33:18 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
  (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 19 Jan
- 2023 02:33:01 -0800
+ 2023 02:33:04 -0800
 Received: from yaviefel.vdiclient.nvidia.com (10.126.230.37) by
  rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Thu, 19 Jan 2023 02:32:59 -0800
+ 15.2.986.36; Thu, 19 Jan 2023 02:33:02 -0800
 From:   Petr Machata <petrm@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -66,9 +65,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 CC:     Ido Schimmel <idosch@nvidia.com>, Petr Machata <petrm@nvidia.com>,
         "Amit Cohen" <amcohen@nvidia.com>,
         Danielle Ratson <danieller@nvidia.com>, <mlxsw@nvidia.com>
-Subject: [PATCH net-next 1/6] mlxsw: reg: Add TLV related fields to MGIR register
-Date:   Thu, 19 Jan 2023 11:32:27 +0100
-Message-ID: <aab90f12e610c1344a4e127193f8b47dd2c5bc89.1674123673.git.petrm@nvidia.com>
+Subject: [PATCH net-next 2/6] mlxsw: Enable string TLV usage according to MGIR output
+Date:   Thu, 19 Jan 2023 11:32:28 +0100
+Message-ID: <1958a5428ad581672f1231251a7b308325c8ebfd.1674123673.git.petrm@nvidia.com>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <cover.1674123673.git.petrm@nvidia.com>
 References: <cover.1674123673.git.petrm@nvidia.com>
@@ -80,23 +79,23 @@ X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT111:EE_|CH2PR12MB4310:EE_
-X-MS-Office365-Filtering-Correlation-Id: d9f32cbb-c115-41bf-e6ec-08dafa089298
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT033:EE_|DM4PR12MB5724:EE_
+X-MS-Office365-Filtering-Correlation-Id: e1529ac4-1f32-4e51-b804-08dafa08947d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CoP0EfJtu5OECJGOv9T34VBMe70xwpICKFfJKZL1m0PZ22lzzGb7wKIvp1KeVaT0ET/Ss4RCgKy9JQKHYPkJQNMaBuTVv74CQZEvAb0osUU9kr7qFOIGN7AxKvRJAyNcFEw6QZIQlqkAdY7++LDwLfmbtzGDcUkGlmW3abRyQUF4v24gUpXjtxOnyX5N41F0lSp+W9kKEnkuZ7tvhPwT2nhH7nGgfzKfS3iJwP6le+HDL1v0BDhlaTK5rLaJvTbmFEPjK93qAjWNbhxq93ISfCZzwHJYSu7FnPa/tKTGkNX9J8fPa+Vj+azlK7xjWpoe8bsLpJtE5o2Atf5dU8YOr8zjXFpYXl5yQhk0f5XHYy06DEI82XPBwvCfOQPywLYCa1weDP+rJ3QlMb+JgCFJbWe7OaO4qdfbyFQdyTCtFIaJ2e60/Ktwp0a2+Bn8bFl8CMcwUq+6IBFRFf0CWufIr/JbjwMQeSAoUdmx6vlinlepeVpgHcQvwAtc1sTR6aQ5hhd7fRfiM9EOTrxwPfrbzlwokACNL+CoAFjIfuZLW8BAFEFUKw6PFhMfUSA+mCJCUKMhLLo7UyPcLSqEIRR/pPS62zYgmVE2dSQ7unyvYAWngwa+1Ah3CxzlVN+sy8lfdEphO+knnoUdGlq1FASC6VFOEVYQ3CFGu0eWDIKfM8CMSzLLabBw4/8G6sRmBL8Rnmd1rVQJ8SFzj6YullSREA==
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(396003)(346002)(136003)(376002)(451199015)(36840700001)(46966006)(40470700004)(40460700003)(86362001)(107886003)(316002)(6666004)(478600001)(36756003)(7696005)(8936002)(5660300002)(40480700001)(82740400003)(70586007)(70206006)(4326008)(8676002)(41300700001)(36860700001)(26005)(186003)(356005)(16526019)(2616005)(82310400005)(2906002)(7636003)(83380400001)(110136005)(54906003)(426003)(47076005)(336012);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 1DbSeRm8OVD3nR54pcazPJM5BJIfBcFA8fq6xgwBhP1NEWmhQxZF2fII5kNrnOqR/2qnnl+lrtDl4XivT2HzCim5kaxWcQScili+hPznjHIeeoJx7BZCVB+zI2eMmyJd+2Dy8luYdB1l0q6Zq+DSHbJlxenlKG521cWRZNT274TqA/MhnPpGDpTQSBwwiBVw5+2Fz+rPgI2tCgQVOvHoKaYmGjTI3x6f6YGp5g3a7yun4Oh9+XqFYiCZ0suttSOOJImZPgITF2nS20mz/QZL2tb9FGw9vb+6NZ/G831NSrHpL5zPf8WStwdW/skLbFVacIVpHJftrtnhxDGVV3X7KgY4/sweKHvAa4vofhqfcPtbAzFd08Z5ed4Pe2pcEUAcUgwF8hCBecedYHEhxOeBPnBz/75/5rWjyqz54SiMKD+EhEDHl5c1xT/9Bf4WW3uuYENy/rMz2wM3IuaxkaCMfOSKJn2gp6meK8cpbA5ZUiZYl2+Lod+n3aa2v8Zcx75OgqENPiBWWM4KsNWcjTv8So43LAQLWW2mwH82dKWb0pD4GHa7iWwpAogVHEqqzvet4jsGovAzhWMNy8mrgvqEyw+aBvZUew5AIfAEn64W2Jrag2VUP6kHynRrwpg2uYYLpiGjGpw5v4DjfgpqGjreQm3t/pg2U47i99htPfWivKWpzbtJlD3OQF7owIfrc2C2R6nee7WNu1zau/ZVjaZ1mQ==
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(39860400002)(376002)(136003)(451199015)(36840700001)(40470700004)(46966006)(36860700001)(82740400003)(40460700003)(36756003)(356005)(86362001)(7636003)(8936002)(5660300002)(41300700001)(26005)(316002)(4326008)(70206006)(82310400005)(70586007)(8676002)(2906002)(426003)(336012)(40480700001)(47076005)(2616005)(83380400001)(478600001)(7696005)(110136005)(54906003)(186003)(16526019)(6666004)(107886003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 10:33:15.0491
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 10:33:18.2264
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d9f32cbb-c115-41bf-e6ec-08dafa089298
+X-MS-Exchange-CrossTenant-Network-Message-Id: e1529ac4-1f32-4e51-b804-08dafa08947d
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT111.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT033.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4310
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5724
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -109,47 +108,121 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amcohen@nvidia.com>
 
-MGIR (Management General Information Register) allows software to query the
-hardware and firmware general information. As part of firmware information,
-the driver can query if string TLV and latency TLV are supported. These
-TLVs are part of EMAD's header and are used to provide information per
-EMAD packet to software.
+String TLV is not supported by old firmware versions, therefore
+'struct mlxsw_core' stores the field 'emad.enable_string_tlv', which is
+set to true only after firmware version check.
 
-Currently, string TLV is already used by the driver, but it does not
-query if this TLV is supported from MGIR. The next patches will add support
-of latency TLV. Add the relevant fields to MGIR, so then the driver will
-query them to know if the TLVs are supported before using them.
+Instead of assuming that firmware version check is enough to enable
+string TLV, a better solution is to query if this TLV is supported from
+MGIR register. Add such query and initialize 'emad.enable_string_tlv'
+accordingly.
 
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/core.c    | 36 +++++++++++++++----
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |  2 --
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  1 -
+ 3 files changed, 30 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index f2d6f8654e04..8165bf31a99a 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -10009,6 +10009,18 @@ MLXSW_REG_DEFINE(mgir, MLXSW_REG_MGIR_ID, MLXSW_REG_MGIR_LEN);
-  */
- MLXSW_ITEM32(reg, mgir, hw_info_device_hw_revision, 0x0, 16, 16);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+index a0a06e2eff82..cb3715f1582b 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+@@ -794,6 +794,28 @@ static const struct mlxsw_listener mlxsw_emad_rx_listener =
+ 	MLXSW_RXL(mlxsw_emad_rx_listener_func, ETHEMAD, TRAP_TO_CPU, false,
+ 		  EMAD, DISCARD);
  
-+/* reg_mgir_fw_info_latency_tlv
-+ * When set, latency-TLV is supported.
-+ * Access: RO
-+ */
-+MLXSW_ITEM32(reg, mgir, fw_info_latency_tlv, 0x20, 29, 1);
++static int mlxsw_emad_tlv_enable(struct mlxsw_core *mlxsw_core)
++{
++	char mgir_pl[MLXSW_REG_MGIR_LEN];
++	bool string_tlv;
++	int err;
 +
-+/* reg_mgir_fw_info_string_tlv
-+ * When set, string-TLV is supported.
-+ * Access: RO
-+ */
-+MLXSW_ITEM32(reg, mgir, fw_info_string_tlv, 0x20, 28, 1);
++	mlxsw_reg_mgir_pack(mgir_pl);
++	err = mlxsw_reg_query(mlxsw_core, MLXSW_REG(mgir), mgir_pl);
++	if (err)
++		return err;
 +
- #define MLXSW_REG_MGIR_FW_INFO_PSID_SIZE 16
++	string_tlv = mlxsw_reg_mgir_fw_info_string_tlv_get(mgir_pl);
++	mlxsw_core->emad.enable_string_tlv = string_tlv;
++
++	return 0;
++}
++
++static void mlxsw_emad_tlv_disable(struct mlxsw_core *mlxsw_core)
++{
++	mlxsw_core->emad.enable_string_tlv = false;
++}
++
+ static int mlxsw_emad_init(struct mlxsw_core *mlxsw_core)
+ {
+ 	struct workqueue_struct *emad_wq;
+@@ -824,10 +846,17 @@ static int mlxsw_emad_init(struct mlxsw_core *mlxsw_core)
+ 	if (err)
+ 		goto err_trap_register;
  
- /* reg_mgir_fw_info_psid
++	err = mlxsw_emad_tlv_enable(mlxsw_core);
++	if (err)
++		goto err_emad_tlv_enable;
++
+ 	mlxsw_core->emad.use_emad = true;
+ 
+ 	return 0;
+ 
++err_emad_tlv_enable:
++	mlxsw_core_trap_unregister(mlxsw_core, &mlxsw_emad_rx_listener,
++				   mlxsw_core);
+ err_trap_register:
+ 	destroy_workqueue(mlxsw_core->emad_wq);
+ 	return err;
+@@ -840,6 +869,7 @@ static void mlxsw_emad_fini(struct mlxsw_core *mlxsw_core)
+ 		return;
+ 
+ 	mlxsw_core->emad.use_emad = false;
++	mlxsw_emad_tlv_disable(mlxsw_core);
+ 	mlxsw_core_trap_unregister(mlxsw_core, &mlxsw_emad_rx_listener,
+ 				   mlxsw_core);
+ 	destroy_workqueue(mlxsw_core->emad_wq);
+@@ -3377,12 +3407,6 @@ bool mlxsw_core_sdq_supports_cqe_v2(struct mlxsw_core *mlxsw_core)
+ }
+ EXPORT_SYMBOL(mlxsw_core_sdq_supports_cqe_v2);
+ 
+-void mlxsw_core_emad_string_tlv_enable(struct mlxsw_core *mlxsw_core)
+-{
+-	mlxsw_core->emad.enable_string_tlv = true;
+-}
+-EXPORT_SYMBOL(mlxsw_core_emad_string_tlv_enable);
+-
+ static int __init mlxsw_core_module_init(void)
+ {
+ 	int err;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
+index e0a6fcbbcb19..a77cb0be7108 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
+@@ -448,8 +448,6 @@ u32 mlxsw_core_read_utc_nsec(struct mlxsw_core *mlxsw_core);
+ 
+ bool mlxsw_core_sdq_supports_cqe_v2(struct mlxsw_core *mlxsw_core);
+ 
+-void mlxsw_core_emad_string_tlv_enable(struct mlxsw_core *mlxsw_core);
+-
+ bool mlxsw_core_res_valid(struct mlxsw_core *mlxsw_core,
+ 			  enum mlxsw_res_id res_id);
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index f5b2d965d476..3d15d3387aa2 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -3092,7 +3092,6 @@ static int mlxsw_sp_init(struct mlxsw_core *mlxsw_core,
+ 	mlxsw_sp->bus_info = mlxsw_bus_info;
+ 
+ 	mlxsw_sp_parsing_init(mlxsw_sp);
+-	mlxsw_core_emad_string_tlv_enable(mlxsw_core);
+ 
+ 	err = mlxsw_sp_base_mac_get(mlxsw_sp);
+ 	if (err) {
 -- 
 2.39.0
 
