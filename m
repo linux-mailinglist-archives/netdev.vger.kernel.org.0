@@ -2,107 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02CA9674054
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 18:51:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88F69674050
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 18:50:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230159AbjASRu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 12:50:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56882 "EHLO
+        id S230444AbjASRuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 12:50:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230287AbjASRus (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 12:50:48 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3078AF76B
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 09:50:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1674150605;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=PHBxulZsM33HQC4VRd0nBemxtBNmGGXakB15JT7+a7M=;
-        b=WmYEVInUVWxZQWOHG7zuUFEtNBGkR+D0GgGQiSx/P2Nxu/FEZo56WOe6CwpAzawbxVwOAz
-        tosGLsvc1tX9LhTZfQhwpIte/Zz63fqx9XfsHmBqXp2niLbKuFoofmDB85uEqOyZHBUffZ
-        cLCl5XSp3pRjM6haduX3lTPUCdAzz/4=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-655-Bi9CFGr8M1W9IEIuXwtsHQ-1; Thu, 19 Jan 2023 12:50:02 -0500
-X-MC-Unique: Bi9CFGr8M1W9IEIuXwtsHQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A66052A59575;
-        Thu, 19 Jan 2023 17:50:01 +0000 (UTC)
-Received: from firesoul.localdomain (ovpn-208-34.brq.redhat.com [10.40.208.34])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6114051EF;
-        Thu, 19 Jan 2023 17:50:01 +0000 (UTC)
-Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 5930730721A6C;
-        Thu, 19 Jan 2023 18:50:00 +0100 (CET)
-Subject: [PATCH net-next] net: fix kfree_skb_list use of skb_mark_not_on_list
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        with ESMTP id S230373AbjASRtx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 12:49:53 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B5C9085A;
+        Thu, 19 Jan 2023 09:49:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674150582; x=1705686582;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=17SBNARovi0mn+Dn5/PkCCYJAQkxV/ALHR2WMFSdnJQ=;
+  b=Z1Zolsp5OBef+MJYrsU49Q/VHaul0EKfn6j/F0O+coJZUdB5JagFu5+y
+   Jlew/yERVYVZbrSmCs3T034RYQv0gs1CeVgkK7ehWW5BQNjzLNQKzzPQO
+   NW9JBr2xCTlqt5DZsFAyLtL62oGZ36N/sWfV1HKzyDJAGeRODWOPxjb0B
+   GaCSHz1Dg1rbsiKgLuE9h1G4eCwnEupWGcheYOSoMIEL9ZaYg3k0JffzL
+   nCqPAIYdX0u8Few4bsXf78soQXGkQLTdCa0von4mWjnP6JZ0VvGs/55YH
+   vRNYnFnplJo9VLa7pO1waDmdQocEGB4Mv3ornUWOiKv08tfjBBD2Zsceg
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="313251616"
+X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
+   d="scan'208";a="313251616"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 09:49:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="905627080"
+X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
+   d="scan'208";a="905627080"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga006.fm.intel.com with ESMTP; 19 Jan 2023 09:49:38 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 8528E36D; Thu, 19 Jan 2023 19:50:13 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Oleksij Rempel <linux@rempel-privat.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        pabeni@redhat.com,
-        syzbot+c8a2e66e37eee553c4fd@syzkaller.appspotmail.com
-Date:   Thu, 19 Jan 2023 18:50:00 +0100
-Message-ID: <167415060025.1124471.10712199130760214632.stgit@firesoul>
-User-Agent: StGit/1.4
+        Paolo Abeni <pabeni@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH net-next v1 1/1] net: mdiobus: Convert to use fwnode_device_is_compatible()
+Date:   Thu, 19 Jan 2023 19:50:10 +0200
+Message-Id: <20230119175010.77035-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A bug was introduced by commit eedade12f4cb ("net: kfree_skb_list use
-kmem_cache_free_bulk"). It unconditionally unlinked the SKB list via
-invoking skb_mark_not_on_list().
+Replace open coded fwnode_device_is_compatible() in the driver.
 
-The skb_mark_not_on_list() should only be called if __kfree_skb_reason()
-returns true, meaning the SKB is ready to be free'ed, as it calls/check
-skb_unref().
-
-This is needed as kfree_skb_list() is also invoked on skb_shared_info
-frag_list. A frag_list can have SKBs with elevated refcnt due to cloning
-via skb_clone_fraglist(), which takes a reference on all SKBs in the
-list. This implies the invariant that all SKBs in the list must have the
-same refcnt, when using kfree_skb_list().
-
-Reported-by: syzbot+c8a2e66e37eee553c4fd@syzkaller.appspotmail.com
-Reported-and-tested-by: syzbot+c8a2e66e37eee553c4fd@syzkaller.appspotmail.com
-Fixes: eedade12f4cb ("net: kfree_skb_list use kmem_cache_free_bulk")
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- net/core/skbuff.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/mdio/fwnode_mdio.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 4e73ab3482b8..1bffbcbe6087 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -999,10 +999,10 @@ kfree_skb_list_reason(struct sk_buff *segs, enum skb_drop_reason reason)
- 	while (segs) {
- 		struct sk_buff *next = segs->next;
+diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
+index b782c35c4ac1..1183ef5e203e 100644
+--- a/drivers/net/mdio/fwnode_mdio.c
++++ b/drivers/net/mdio/fwnode_mdio.c
+@@ -115,7 +115,7 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ 	struct mii_timestamper *mii_ts = NULL;
+ 	struct pse_control *psec = NULL;
+ 	struct phy_device *phy;
+-	bool is_c45 = false;
++	bool is_c45;
+ 	u32 phy_id;
+ 	int rc;
  
--		skb_mark_not_on_list(segs);
--
--		if (__kfree_skb_reason(segs, reason))
-+		if (__kfree_skb_reason(segs, reason)) {
-+			skb_mark_not_on_list(segs);
- 			kfree_skb_add_bulk(segs, &sa, reason);
-+		}
- 
- 		segs = next;
+@@ -129,11 +129,7 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ 		goto clean_pse;
  	}
-
+ 
+-	rc = fwnode_property_match_string(child, "compatible",
+-					  "ethernet-phy-ieee802.3-c45");
+-	if (rc >= 0)
+-		is_c45 = true;
+-
++	is_c45 = fwnode_device_is_compatible(child, "ethernet-phy-ieee802.3-c45");
+ 	if (is_c45 || fwnode_get_phy_id(child, &phy_id))
+ 		phy = get_phy_device(bus, addr, is_c45);
+ 	else
+-- 
+2.39.0
 
