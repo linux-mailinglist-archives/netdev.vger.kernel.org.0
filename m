@@ -2,69 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 831AB673852
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 13:25:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA204673860
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 13:28:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbjASMZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 07:25:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47496 "EHLO
+        id S230285AbjASM2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 07:28:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229899AbjASMZp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 07:25:45 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7446B48580
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 04:25:42 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id b7so1700759wrt.3
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 04:25:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7067nMA769XB5xkdsKzcjGPQ5IiZL/LK/kJFjPBghNI=;
-        b=wjPh2uHlsH1t9b1SG98cy9ej7TThDBez8bEvnbti8YOIoYhBDd4cpm3yg1sCsSoDrL
-         5FJx0L5+Fm0LM7T7IGsJcFZgY0AAPyc9FSxpvrnrVir4IW6agN7u/pbBXy16Zdnsaz+O
-         k3gzSzQWb+kxtm33PxY0O/7F8x2a5DOY1hTRKxRnk808UACQA3slYN+qPbV1XUsreGv4
-         VLEvWWjAdfGQ1IA8RyhjuM0R+5LDXEMGJAjVmonnOwzSDWAd2sPEXyFrRxEtRHvhwa4N
-         WtUyo+phHZTyADFBun/ftvGInaYUJeFvkk7e8UIhqC43WhYaXwBLguva5xgHDscAE4Wq
-         BqOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7067nMA769XB5xkdsKzcjGPQ5IiZL/LK/kJFjPBghNI=;
-        b=u1imRGgWdn6IYhjKXTc+JNq5bdzifTokrlBizYSwlJ02Ndc5vIXMFXegUGK/qe8sLd
-         z9U+QtPRZUqdb77Llb5/0Qg2iNHmZik+kKKquyicQkoPkthGXmnO5zyy2XsDlyFxZhbG
-         24gUSkj2RE1U4JuOcOER4+Dp+VSmLiqH2y4Se7bz7QftT+9bXcRS1lQD8invL9kFF+P4
-         WUMUTG8gC/0ULpWS7YH7nGatHFVRtaj35CQAx90cdawL+KFwGB4BGSIsC+a7Zpga8g4f
-         PawJVCewplu0oyjVXNvP9dLf7EEMZvvq1nsgzEM29PCWJLBt2VoTyAgulnr/NIhJ1PUm
-         F7vg==
-X-Gm-Message-State: AFqh2ko8H5QeDo/WHSHR2YaG0XG7JdHA9fGCvv4oQ0PCYlicQduio898
-        m6WpjrN5A1N4useBrztr37Md/w==
-X-Google-Smtp-Source: AMrXdXt/7CjCCnN/8utV1+VjeZ5lNAd/PkzEVaVujcqLtRmDLSygp0PbVKOthybqufsbJVhUXNJeqQ==
-X-Received: by 2002:a5d:4912:0:b0:2bd:ce2b:5369 with SMTP id x18-20020a5d4912000000b002bdce2b5369mr8340858wrq.49.1674131140615;
-        Thu, 19 Jan 2023 04:25:40 -0800 (PST)
-Received: from localhost ([217.111.27.204])
-        by smtp.gmail.com with ESMTPSA id j15-20020a5d452f000000b0028f9132e9ddsm33602205wra.39.2023.01.19.04.25.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Jan 2023 04:25:39 -0800 (PST)
-Date:   Thu, 19 Jan 2023 13:25:38 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     alejandro.lucero-palau@amd.com
-Cc:     netdev@vger.kernel.org, linux-net-drivers@amd.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, habetsm@gmail.com, ecree.xilinx@gmail.com
-Subject: Re: [PATCH net-next 6/7] sfc: add support for
- port_function_hw_addr_get devlink in ef100
-Message-ID: <Y8k2wkaNX+BPqmq6@nanopsycho>
-References: <20230119113140.20208-1-alejandro.lucero-palau@amd.com>
- <20230119113140.20208-7-alejandro.lucero-palau@amd.com>
+        with ESMTP id S230120AbjASM14 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 07:27:56 -0500
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-ve1eur01on2079.outbound.protection.outlook.com [40.107.14.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 277EB5DC36;
+        Thu, 19 Jan 2023 04:27:40 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jzNTbLN7I0v8R8BgKiapIWP5gFOPeUzz9uqUnS/gg0I6xbf/YJQUizGVPxdAXcWNIQt+hstWTFBWLLAgc2Z2MmD89/OUklhOZabZ9h5z2FSOpJo46BgeRtgyYxP5SXC6sfv9B16hF8agl3nhRqBHs6Fa1Klg4XZ6LKVGaCuWEMcsBFf+3ewgsyFBCd9Hh8KxZv16AJEkejPA3/UeLROMUqjocoBgSKg1yv1bH9gPhbw667c4mARhRTrXv107+WmOBe7eVfiE/FhL1DcuE5puuIyp7u7ETL6ZCvPgPlip7iX34mE5aAroFAdPUblA6TjIIdHJWbnW9y5/K5WBEo9uSA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=v4vfXyYWWAzvcQpSHPAImCHirlMdAe1VKjFUABReYA8=;
+ b=HlH90VcxN2l+Ah3rGfLmOdaK92NqRHFmfCn8/VlNimUlZN2Z67C91JUrBUUqiJYSBlmbjlBPbPBDFn4TnarsixGJpEyEziaXaoGi/LStdRYoR1dxZbkf7zpAIsmULbT5JoD/wExjs9CocTFj9htMuSYW4+EsQ6l9ERGlC4mgHYm9iP2TpB2cK+Zdavm0dMQTlRpcNQp61JCBUkGDwmpmK+8jVjBNmD9nwq7GrfAi9Ee//HIUowl9J3A7lCUu5cvBh2OLH2UjFT5DuWnM7f0KZLArRqyOjqyp/RHtzUZPUGXd3ttqrJaU3DgjliJbo6iY4f9zmFge5gqEgw7d2GQAsw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=v4vfXyYWWAzvcQpSHPAImCHirlMdAe1VKjFUABReYA8=;
+ b=Hf7emIij+pwhsKx/2GaQl83VRs+nfyj6VIq2RLuKuvctpaLa8J++rWQ/C5DCuPBwc0cWSF9ZUFzsLEhZk/7304wy1arJMZZcVWRBDteAHgfz09qg/90DanSCMkH+WIZ8Su9pQeXxEwoJUpg05knyn1sfwpj+w6lqLk7Acdovoa8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by PAXPR04MB9376.eurprd04.prod.outlook.com (2603:10a6:102:2b2::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.24; Thu, 19 Jan
+ 2023 12:27:37 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b%4]) with mapi id 15.20.6002.024; Thu, 19 Jan 2023
+ 12:27:37 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Rui Sousa <rui.sousa@nxp.com>,
+        Ferenc Fejes <ferenc.fejes@ericsson.com>,
+        Pranavi Somisetty <pranavi.somisetty@amd.com>,
+        Harini Katakam <harini.katakam@amd.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH v4 net-next 00/12] ethtool support for IEEE 802.3 MAC Merge layer
+Date:   Thu, 19 Jan 2023 14:26:52 +0200
+Message-Id: <20230119122705.73054-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM8P189CA0020.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:20b:218::25) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230119113140.20208-7-alejandro.lucero-palau@amd.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PAXPR04MB9376:EE_
+X-MS-Office365-Filtering-Correlation-Id: b05ec950-6aff-4cb2-dd6b-08dafa188cbf
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: e8ZOROawRENVJpS8HGHAOU3VTVM0+neAjzIKJvI4Los7GTxRAw6FMnnrFR2NJ39rRu3uNLeQj0XZiVFbu0sESFAgc7WVMwcVBMD3dLlTIZy9ok9LhDva5ecHSRN9x/T1bciGrORifiiFvMg3OkaYvkPudbcVZkXajqU+nGX9FgrruP26AaQ0tZdfGAKKPSlbNOQRlKLliq8LTwxVdr92/fv+AV20SEVMP6Z6HNQLdO4322e3HbnLSaBmGd10EeZvdTfO1oQ0qvCol0D6ncT5obU8BSbS6yEN7cpbcnwYwi04FblHHMw5HAOycP5F/AvckAxDcmMy62F31D8gZwrG/0MrdAAO7GBnOyonA+R7/voCa/OamzgVJErDsOpyGTHsH1c6SdSPNk5/EeeXvBmE9m1bkz0apT5uERHGyiuIlFX7XeT5znfuI0nSHmStun0+QuoWugAoVBuYaWs7qTENDIS71Qqs3A9SItJFTniSniUExbvyCtX32hSLvNqdyPds47c8O/TC5wRdV9OiA3bGGwTnO7CbvUjyTYDg2QHYzJ7RjvsBB1KYXgZZzrt6Ni+f3FehrBCN/5u697Wx09sKgHqrylpzAtU3G/JuimV6Qhf/AIyNZQpElhqMCxid0aYTsHuao48bMkeRfHk54VXYHtS9BJLiKQtCahqTnuddm3SD3mOTE+fsC6u1NSzly140aAEuGiB5kZN/+Y5um2KDVlofGGY+omGo+GaelhnA9OWO7XrSY2Acmsb1fSQwoM791bPgVE0YRuQmbGS5Y9/w9g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(39860400002)(376002)(136003)(346002)(366004)(451199015)(6506007)(66946007)(66476007)(44832011)(66556008)(7416002)(8936002)(5660300002)(2906002)(38350700002)(38100700002)(316002)(6666004)(54906003)(52116002)(86362001)(36756003)(4326008)(6486002)(478600001)(966005)(6916009)(41300700001)(8676002)(26005)(1076003)(6512007)(186003)(83380400001)(2616005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?CHY6gnIx5bOZsdGtJ75589wLBgqBZqDAf4uXCQiRQcgAmoiT2F02tuE3CdLe?=
+ =?us-ascii?Q?IRYNPQBYUKkcFcK2nJNwLGxIJzxYna2KxXz6tpeEnDXyuJfu4ZTHKtMczDZl?=
+ =?us-ascii?Q?CnPW5wnLhE5ZTPSq922fsbKPLdTHYEIkfcFCLPLLyrP+DMZ7LTz4DDragl3V?=
+ =?us-ascii?Q?u8x2VTgJ6a4jjFRW84I0Y3b6cQtpYTgPTYefuvdVVVYZ7kptGQX3u+gqcOQY?=
+ =?us-ascii?Q?pqkF4k4j9cNn0sTC68NbPUAMPAS3kyFwfEOH9qZ3Do27+mhHmW7ZmtFe7xwi?=
+ =?us-ascii?Q?ji2yFzr+3jLFT2p6LNEhezT2C20D5BWfnzxVzRx1dzVCO120iBZOOgXcv+Se?=
+ =?us-ascii?Q?maaGHFGtUXd+2kEWIgfjWvptfI4tYc+XAjBmwr6e7i/sLdl5XkwojxkwQnV3?=
+ =?us-ascii?Q?r/fHqtHtEOki4cOIZ4SeeoV+h18atUZAam0JmcktUIIO+n8vGFqrAN+wTWje?=
+ =?us-ascii?Q?IpQgCdLyhG8L15I0vw3c9ajDvoFmtuH36CC4RXFdX5I1umjORXuLPnB9SjsA?=
+ =?us-ascii?Q?rvurT+XLOWmxu8oyIpiGaGy9HYe2cFhKRZ/hkukI3qFdPXyxc+nkcGyht/lD?=
+ =?us-ascii?Q?exH08G/O+hhBmx/f7MJCATo72eSQJrZNjpHJ4i8pSgEAMY0zDnMELFmFW6Oi?=
+ =?us-ascii?Q?W4H8r74eJO89SOBA9fVjRKFyoh3CF11hzEnWh0sZVTt0jLaFpMCIn0Vc898B?=
+ =?us-ascii?Q?ss6ovP3iZU6jjrvJ68iD2hvJW+VhnpEJK+rh3ZSi47I8jYFSsF5yXXLUCh0T?=
+ =?us-ascii?Q?1rSW87TGDFrNeD3z1/V0PRD6nOmSNEG7ToPNOQ2y6oWhCJaDBh80RMo0Afm5?=
+ =?us-ascii?Q?HHcokPq7uBoqOGcwOQ4exEoXF0BMdclnjoTrKO9SvfhnkukhPzWlOs21ny/a?=
+ =?us-ascii?Q?B+4qyh1lCaJZ3Ktnpq/UXVuTNy51nxt66js3nLzOKVUv9s3bMaJ06DjH5w1o?=
+ =?us-ascii?Q?AIYmVsX2StgCfwVutnjzSzLOcPU4kW2a9ukDFkc2r1ulf0hn6J8aRWEKTl9J?=
+ =?us-ascii?Q?FmjRu69vYhAJgURbmc738lPB5yk8ZMwhqkuLjkS3j3WS1xKqepBaws0u032N?=
+ =?us-ascii?Q?mWsMEJhI2sLWt0a9MH3LTwyXanWViwV96tGLC+eM1ANTO2kLLApwSi7D5Q/q?=
+ =?us-ascii?Q?ylmmIdL1vm3GOs4Mq0twYiGTS4JU8z+WnS2NbSD0aALPdK87RTq0xaV5k6zA?=
+ =?us-ascii?Q?GTREwkVcRvFWrg0awCTcgztPq/rdDyk5qIFKUSM0XZdoF+gMrwCTTPyo+a8b?=
+ =?us-ascii?Q?VsHBLSM0JNg4VeG3+3RSu8OjRJjdSI/ndXJuhZ99GwrCHIXcY9z38GQ1IKZs?=
+ =?us-ascii?Q?3r49OUzgWYg1+OTl/ngOYLG9yI9ymkfMEpaHgvqP4E93uPCbnmo8qScrKnnm?=
+ =?us-ascii?Q?I/WjJugHUfZCnEraasm0hVgxePQgScaXu7YvnkfqycM+KxJytM+ZisrJW3FD?=
+ =?us-ascii?Q?zBtHeFhdZ5fuCQAC1A0lvkLiAb0zKv/1ltypjMNAypi4PyISHjMxD+5qk75M?=
+ =?us-ascii?Q?giHBvD1I1fFZHA/JCeu3hLrInZ5tFFUWJQpdU1EmkkA9bxpQIH6LeDdeHS3w?=
+ =?us-ascii?Q?pkkKkiuIL2+fxnd54ajDoSDfI7etLt8udDg794FAqJDAqyzBCrhbH5lnqGLS?=
+ =?us-ascii?Q?TA=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b05ec950-6aff-4cb2-dd6b-08dafa188cbf
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 12:27:37.6702
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2Itixh3/eVeoPFPcS+dL3Xhfyg/1VGdbUM5ITMhBrZTS1Q+9Q8mQ8u8bpD2VjOtn6i1OExsaVYoNz604Yt/E6A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB9376
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,196 +128,152 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jan 19, 2023 at 12:31:39PM CET, alejandro.lucero-palau@amd.com wrote:
->From: Alejandro Lucero <alejandro.lucero-palau@amd.com>
->
->Using the builtin client handle id infrastructure, this patch adds
->support for obtaining the mac address linked to mports in ef100. This
->implies to execute an MCDI command for getting the data from the
->firmware for each devlink port.
->
->Signed-off-by: Alejandro Lucero <alejandro.lucero-palau@amd.com>
->---
-> drivers/net/ethernet/sfc/ef100_nic.c   | 27 ++++++++++++++++
-> drivers/net/ethernet/sfc/ef100_nic.h   |  1 +
-> drivers/net/ethernet/sfc/ef100_rep.c   |  8 +++++
-> drivers/net/ethernet/sfc/ef100_rep.h   |  1 +
-> drivers/net/ethernet/sfc/efx_devlink.c | 44 ++++++++++++++++++++++++++
-> 5 files changed, 81 insertions(+)
->
->diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
->index f4e913593f2b..4400ce622228 100644
->--- a/drivers/net/ethernet/sfc/ef100_nic.c
->+++ b/drivers/net/ethernet/sfc/ef100_nic.c
->@@ -1121,6 +1121,33 @@ static int ef100_probe_main(struct efx_nic *efx)
-> 	return rc;
-> }
-> 
->+/* MCDI commands are related to the same device issuing them. This function
->+ * allows to do an MCDI command on behalf of another device, mainly PFs setting
->+ * things for VFs.
->+ */
->+int efx_ef100_lookup_client_id(struct efx_nic *efx, efx_qword_t pciefn, u32 *id)
->+{
->+	MCDI_DECLARE_BUF(outbuf, MC_CMD_GET_CLIENT_HANDLE_OUT_LEN);
->+	MCDI_DECLARE_BUF(inbuf, MC_CMD_GET_CLIENT_HANDLE_IN_LEN);
->+	u64 pciefn_flat = le64_to_cpu(pciefn.u64[0]);
->+	size_t outlen;
->+	int rc;
->+
->+	MCDI_SET_DWORD(inbuf, GET_CLIENT_HANDLE_IN_TYPE,
->+		       MC_CMD_GET_CLIENT_HANDLE_IN_TYPE_FUNC);
->+	MCDI_SET_QWORD(inbuf, GET_CLIENT_HANDLE_IN_FUNC,
->+		       pciefn_flat);
->+
->+	rc = efx_mcdi_rpc(efx, MC_CMD_GET_CLIENT_HANDLE, inbuf, sizeof(inbuf),
->+			  outbuf, sizeof(outbuf), &outlen);
->+	if (rc)
->+		return rc;
->+	if (outlen < sizeof(outbuf))
->+		return -EIO;
->+	*id = MCDI_DWORD(outbuf, GET_CLIENT_HANDLE_OUT_HANDLE);
->+	return 0;
->+}
->+
-> int ef100_probe_netdev_pf(struct efx_nic *efx)
-> {
-> 	struct ef100_nic_data *nic_data = efx->nic_data;
->diff --git a/drivers/net/ethernet/sfc/ef100_nic.h b/drivers/net/ethernet/sfc/ef100_nic.h
->index e59044072333..f1ed481c1260 100644
->--- a/drivers/net/ethernet/sfc/ef100_nic.h
->+++ b/drivers/net/ethernet/sfc/ef100_nic.h
->@@ -94,4 +94,5 @@ int ef100_filter_table_probe(struct efx_nic *efx);
-> 
-> int ef100_get_mac_address(struct efx_nic *efx, u8 *mac_address,
-> 			  int client_handle, bool empty_ok);
->+int efx_ef100_lookup_client_id(struct efx_nic *efx, efx_qword_t pciefn, u32 *id);
-> #endif	/* EFX_EF100_NIC_H */
->diff --git a/drivers/net/ethernet/sfc/ef100_rep.c b/drivers/net/ethernet/sfc/ef100_rep.c
->index ff0c8da61919..974c9ff901a0 100644
->--- a/drivers/net/ethernet/sfc/ef100_rep.c
->+++ b/drivers/net/ethernet/sfc/ef100_rep.c
->@@ -362,6 +362,14 @@ bool ef100_mport_on_local_intf(struct efx_nic *efx,
-> 		     mport_desc->interface_idx == nic_data->local_mae_intf;
-> }
-> 
->+bool ef100_mport_is_vf(struct mae_mport_desc *mport_desc)
->+{
->+	bool pcie_func;
->+
->+	pcie_func = ef100_mport_is_pcie_vnic(mport_desc);
->+	return pcie_func && (mport_desc->vf_idx != MAE_MPORT_DESC_VF_IDX_NULL);
->+}
->+
-> void efx_ef100_init_reps(struct efx_nic *efx)
-> {
-> 	struct ef100_nic_data *nic_data = efx->nic_data;
->diff --git a/drivers/net/ethernet/sfc/ef100_rep.h b/drivers/net/ethernet/sfc/ef100_rep.h
->index 9cca41614982..74853ccbc937 100644
->--- a/drivers/net/ethernet/sfc/ef100_rep.h
->+++ b/drivers/net/ethernet/sfc/ef100_rep.h
->@@ -75,4 +75,5 @@ void efx_ef100_fini_reps(struct efx_nic *efx);
-> struct mae_mport_desc;
-> bool ef100_mport_on_local_intf(struct efx_nic *efx,
-> 			       struct mae_mport_desc *mport_desc);
->+bool ef100_mport_is_vf(struct mae_mport_desc *mport_desc);
-> #endif /* EF100_REP_H */
->diff --git a/drivers/net/ethernet/sfc/efx_devlink.c b/drivers/net/ethernet/sfc/efx_devlink.c
->index bb19d3ad7ffd..2a57c4f6d2b2 100644
->--- a/drivers/net/ethernet/sfc/efx_devlink.c
->+++ b/drivers/net/ethernet/sfc/efx_devlink.c
->@@ -429,6 +429,49 @@ static int efx_devlink_add_port(struct efx_nic *efx,
-> 	return err;
-> }
-> 
->+static int efx_devlink_port_addr_get(struct devlink_port *port, u8 *hw_addr,
->+				     int *hw_addr_len,
->+				     struct netlink_ext_ack *extack)
->+{
->+	struct efx_devlink *devlink = devlink_priv(port->devlink);
->+	struct mae_mport_desc *mport_desc;
->+	efx_qword_t pciefn;
->+	u32 client_id;
->+	int rc = 0;
->+
->+	mport_desc = efx_mae_get_mport(devlink->efx, port->index);
+Change log
+----------
 
-Dont use port->index, never. It's devlink internal. You have port
-pointer passed here. Usually, what drivers do is to embed
-the struct devlink_port in the driver port struct. Then you do just
-simple container of to get it here. Mlxsw example:
+v3->v4:
+- add missing opening bracket in ocelot_port_mm_irq()
+- moved cfg.verify_time range checking so that it actually takes place
+  for the updated rather than old value
+v3 at:
+https://patchwork.kernel.org/project/netdevbpf/cover/20230117085947.2176464-1-vladimir.oltean@nxp.com/
 
-static void *__dl_port(struct devlink_port *devlink_port)
-{
-        return container_of(devlink_port, struct mlxsw_core_port, devlink_port);
-}
+v2->v3:
+- made get_mm return int instead of void
+- deleted ETHTOOL_A_MM_SUPPORTED
+- renamed ETHTOOL_A_MM_ADD_FRAG_SIZE to ETHTOOL_A_MM_TX_MIN_FRAG_SIZE
+- introduced ETHTOOL_A_MM_RX_MIN_FRAG_SIZE
+- cleaned up documentation
+- rebased on top of PLCA changes
+- renamed ETHTOOL_STATS_SRC_* to ETHTOOL_MAC_STATS_SRC_*
+v2 at:
+https://patchwork.kernel.org/project/netdevbpf/cover/20230111161706.1465242-1-vladimir.oltean@nxp.com/
 
-static int mlxsw_devlink_port_split(struct devlink *devlink,
-                                    struct devlink_port *port,
-                                    unsigned int count,
-                                    struct netlink_ext_ack *extack)
-{
-        struct mlxsw_core_port *mlxsw_core_port = __dl_port(port);
-...
+v1->v2:
+I've decided to focus just on the MAC Merge layer for now, which is why
+I am able to submit this patch set as non-RFC.
+v1 (RFC) at:
+https://patchwork.kernel.org/project/netdevbpf/cover/20220816222920.1952936-1-vladimir.oltean@nxp.com/
 
+What is being introduced
+------------------------
 
+TL;DR: a MAC Merge layer as defined by IEEE 802.3-2018, clause 99
+(interspersing of express traffic). This is controlled through ethtool
+netlink (ETHTOOL_MSG_MM_GET, ETHTOOL_MSG_MM_SET). The raw ethtool
+commands are posted here:
+https://patchwork.kernel.org/project/netdevbpf/cover/20230111153638.1454687-1-vladimir.oltean@nxp.com/
 
->+	if (!mport_desc)
+The MAC Merge layer has its own statistics counters
+(ethtool --include-statistics --show-mm swp0) as well as two member
+MACs, the statistics of which can be queried individually, through a new
+ethtool netlink attribute, corresponding to:
 
-Tell the user what's wrong, extack is here for that.
+$ ethtool -I --show-pause eno2 --src aggregate
+$ ethtool -S eno2 --groups eth-mac eth-phy eth-ctrl rmon -- --src pmac
 
+The core properties of the MAC Merge layer are described in great detail
+in patches 02/12 and 03/12. They can be viewed in "make htmldocs" format.
 
+Devices for which the API is supported
+--------------------------------------
 
->+		return -EINVAL;
->+
->+	if (!ef100_mport_on_local_intf(devlink->efx, mport_desc))
->+		goto out;
->+
->+	if (ef100_mport_is_vf(mport_desc))
->+		EFX_POPULATE_QWORD_3(pciefn,
->+				     PCIE_FUNCTION_PF, PCIE_FUNCTION_PF_NULL,
->+				     PCIE_FUNCTION_VF, mport_desc->vf_idx,
->+				     PCIE_FUNCTION_INTF, PCIE_INTERFACE_CALLER);
->+	else
->+		EFX_POPULATE_QWORD_3(pciefn,
->+				     PCIE_FUNCTION_PF, mport_desc->pf_idx,
->+				     PCIE_FUNCTION_VF, PCIE_FUNCTION_VF_NULL,
->+				     PCIE_FUNCTION_INTF, PCIE_INTERFACE_CALLER);
->+
->+	rc = efx_ef100_lookup_client_id(devlink->efx, pciefn, &client_id);
->+	if (rc) {
->+		netif_err(devlink->efx, drv, devlink->efx->net_dev,
->+			  "Failed to get client ID for port index %u, rc %d\n",
->+			  port->index, rc);
+I decided to start with the Ethernet switch on NXP LS1028A (Felix)
+because of the smaller patch set. I also have support for the ENETC
+controller pending.
 
-Don't write to dmesg, use extack msg instead.
+I would like to get confirmation that the UAPI being proposed here will
+not restrict any use cases known by other hardware vendors.
 
+Why is support for preemptible traffic classes not here?
+--------------------------------------------------------
 
->+		return rc;
->+	}
->+
->+	rc = ef100_get_mac_address(devlink->efx, hw_addr, client_id, true);
+There is legitimate concern whether the 802.1Q portion of the standard
+(which traffic classes go to the eMAC and which to the pMAC) should be
+modeled in Linux using tc or using another UAPI. I think that is
+stalling the entire series, but should be discussed separately instead.
+Removing FP adminStatus support makes me confident enough to submit this
+patch set without an RFC tag (meaning: I wouldn't mind if it was merged
+as is).
 
-Again, extack would be nice here if (rc)
+What is submitted here is sufficient for an LLDP daemon to do its job.
+I've patched openlldp to advertise and configure frame preemption:
+https://github.com/vladimiroltean/openlldp/tree/frame-preemption-v3
 
+In case someone wants to try it out, here are some commands I've used.
 
->+out:
->+	*hw_addr_len = ETH_ALEN;
->+
->+	return rc;
->+}
->+
-> static int efx_devlink_info_get(struct devlink *devlink,
-> 				struct devlink_info_req *req,
-> 				struct netlink_ext_ack *extack)
->@@ -442,6 +485,7 @@ static int efx_devlink_info_get(struct devlink *devlink,
-> 
-> static const struct devlink_ops sfc_devlink_ops = {
-> 	.info_get			= efx_devlink_info_get,
->+	.port_function_hw_addr_get	= efx_devlink_port_addr_get,
-> };
-> 
-> static struct devlink_port *ef100_set_devlink_port(struct efx_nic *efx, u32 idx)
->-- 
->2.17.1
->
+ # Configure the interfaces to receive and transmit LLDP Data Units
+ lldptool -L -i eno0 adminStatus=rxtx
+ lldptool -L -i swp0 adminStatus=rxtx
+ # Enable the transmission of certain TLVs on switch's interface
+ lldptool -T -i eno0 -V addEthCap enableTx=yes
+ lldptool -T -i swp0 -V addEthCap enableTx=yes
+ # Query LLDP statistics on switch's interface
+ lldptool -S -i swp0
+ # Query the received neighbor TLVs
+ lldptool -i swp0 -t -n -V addEthCap
+ Additional Ethernet Capabilities TLV
+         Preemption capability supported
+         Preemption capability enabled
+         Preemption capability active
+         Additional fragment size: 60 octets
+
+So using this patch set, lldpad will be able to advertise and configure
+frame preemption, but still, no data packet will be sent as preemptible
+over the link, because there is no UAPI to control which traffic classes
+are sent as preemptible and which as express.
+
+Preemptable or preemptible?
+---------------------------
+
+IEEE 802.3 uses "preemptable" throughout. IEEE 802.1Q uses "preemptible"
+throughout. Because the definition of "preemptible" falls under 802.1Q's
+jurisdiction and 802.3 just references it, I went with the 802.1Q naming
+even where supporting an 802.3 feature. Also, checkpatch agrees with this.
+
+Vladimir Oltean (12):
+  net: ethtool: netlink: introduce ethnl_update_bool()
+  net: ethtool: add support for MAC Merge layer
+  docs: ethtool-netlink: document interface for MAC Merge layer
+  net: ethtool: netlink: retrieve stats from multiple sources (eMAC,
+    pMAC)
+  docs: ethtool: document ETHTOOL_A_STATS_SRC and
+    ETHTOOL_A_PAUSE_STATS_SRC
+  net: ethtool: add helpers for aggregate statistics
+  net: ethtool: add helpers for MM fragment size translation
+  net: dsa: add plumbing for changing and getting MAC merge layer state
+  net: mscc: ocelot: allow ocelot_stat_layout elements with no name
+  net: mscc: ocelot: hide access to ocelot_stats_layout behind a helper
+  net: mscc: ocelot: export ethtool MAC Merge stats for Felix VSC9959
+  net: mscc: ocelot: add MAC Merge layer support for VSC9959
+
+ Documentation/networking/ethtool-netlink.rst | 107 ++++++
+ Documentation/networking/statistics.rst      |   1 +
+ drivers/net/dsa/ocelot/felix.c               |  28 ++
+ drivers/net/dsa/ocelot/felix_vsc9959.c       |  57 +++-
+ drivers/net/ethernet/mscc/Makefile           |   1 +
+ drivers/net/ethernet/mscc/ocelot.c           |  18 +-
+ drivers/net/ethernet/mscc/ocelot.h           |   2 +
+ drivers/net/ethernet/mscc/ocelot_mm.c        | 214 ++++++++++++
+ drivers/net/ethernet/mscc/ocelot_stats.c     | 331 +++++++++++++++++--
+ include/linux/ethtool.h                      | 248 +++++++++++---
+ include/net/dsa.h                            |  11 +
+ include/soc/mscc/ocelot.h                    |  58 ++++
+ include/soc/mscc/ocelot_dev.h                |  23 ++
+ include/uapi/linux/ethtool.h                 |  43 +++
+ include/uapi/linux/ethtool_netlink.h         |  50 +++
+ net/dsa/slave.c                              |  37 +++
+ net/ethtool/Makefile                         |   4 +-
+ net/ethtool/common.h                         |   2 +
+ net/ethtool/mm.c                             | 271 +++++++++++++++
+ net/ethtool/netlink.c                        |  19 ++
+ net/ethtool/netlink.h                        |  34 +-
+ net/ethtool/pause.c                          |  48 +++
+ net/ethtool/stats.c                          | 159 ++++++++-
+ 23 files changed, 1688 insertions(+), 78 deletions(-)
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_mm.c
+ create mode 100644 net/ethtool/mm.c
+
+-- 
+2.34.1
+
