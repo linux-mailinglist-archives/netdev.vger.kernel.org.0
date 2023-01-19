@@ -2,172 +2,290 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25FDC673E2C
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 17:05:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79752673E4C
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 17:12:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230165AbjASQFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 11:05:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58656 "EHLO
+        id S229908AbjASQMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 11:12:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230215AbjASQEy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 11:04:54 -0500
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2053.outbound.protection.outlook.com [40.107.20.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1217082999
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 08:04:54 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l+6arlC8oGIWt0JuhV4P1gc/BW/vq/vwdc4xDaq7IxfAHh4hN01cMpKiRtLpSVteDjxgUtuzp467pBroPB7Zh83tdOX1fErDq6wvyY8VgZgu6WDfM8o9Y20g6q5odpYenZLhVOtCzLYvNnF5MxkNIP6IGLG7z0OZ4ffxWernEDFxTa2b5kVfrVArvB/rH499l0dVFQwXPhyRr5D9OyZrRnAJdNsPh7eJzfYvTaRRaON0YCGx/m/KItLUsVEXitapB/LIp2irKRjJkJ6l7J8nZl4Lzylvls7Rsd4WzFV8EkKtIqkEIiU/wdV/cVKeKsc17bdIqYl+GegH5ReuhBDM/A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KZLIGKOYpEmyeF2XYDXzVs9/L7VcqGk6/INFQ6FpyMQ=;
- b=kNulV1l2jsX5x46UgJhA3YBcRBxdnwJgP/EhXF3fC6lAs+Ii6S9eScTVRa/WhYEDKThTSKXDSSbr4iJbcDxWuz/yTKYhbAi72mQh7r6w0qPVi+OWY6dS8oAuHPf7YC99633fOeBIeUd6rR9M+HKGE2SJuA4QsmNmZVVSHjp8tVID762FjjpigGriajgOm7ASGRpqn2Iuv5GAu2Nl+FtsAOxOfQUOmQFeKYS/fqMk+1FTMlFmK644/5Xj9k9+6pcDUSvi0+W5+q5Av/te9jIAP3WQdTmdEiL86k8Tqqhe8Ne7m9lGzlMDo8GSqqrgMCZ2RoPTwaLNpd7k91MJQ1gc4w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KZLIGKOYpEmyeF2XYDXzVs9/L7VcqGk6/INFQ6FpyMQ=;
- b=Zp8n4NtSmJivmTqPjULDE/IXJyJp7fmmOxARvO8NNAAYXysHPnQQ5NHCiV4fQC8Zg5DsJ7xogjLbYvCddgJzUsoc15AL3Wi7rvcYfFYTo4uSB9BQuwSyUucbIVsNIW5byEkHBSh+DqdisXM4c9Kj7JbpdzcO9g2qMCzSClE3UKk=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM8PR04MB8036.eurprd04.prod.outlook.com (2603:10a6:20b:242::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.24; Thu, 19 Jan
- 2023 16:04:48 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3cfb:3ae7:1686:a68b%4]) with mapi id 15.20.6002.024; Thu, 19 Jan 2023
- 16:04:48 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S229906AbjASQMG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 11:12:06 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB3EB0
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 08:12:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674144723; x=1705680723;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=NsLpaKyJcTWOibQnC7VG8bOq2v1Vb5+vfiwmWU9lcG4=;
+  b=XTucF016I66WLQB1C0X+JnZw048SZUMwFjNHzvt2Vta6yQPRpP8LHiol
+   w4bP0R9H/9LwY/kF2+2GG+o3tz4U+cUSY2ACaJpV35u/C2TEZRTTWVqk6
+   0lP5i5/czTeVXPYjteOwrj2Qgnb3fSwKH+RG3e8AyyqEIfhDcNArMg8yb
+   bzUH8D7JSgObOjGl8lDjV2Hm8FrbGLbfR0BGqMBPIR+ruC1lioJwIF3T/
+   HePVDBxrlyaLv1bvtKst99boCw6/zoZmjzugxTb1Y/JeF6R4yDEvoIjOV
+   6dCgCCmdmCd5GOKQvH0mLqrfYWR5JYisCWLB0MlyHQGThcUgOs6H00NSf
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="305004863"
+X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
+   d="scan'208";a="305004863"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 08:12:03 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="905569787"
+X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
+   d="scan'208";a="905569787"
+Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 19 Jan 2023 08:11:59 -0800
+Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pIXWA-0001c6-1G;
+        Thu, 19 Jan 2023 16:11:58 +0000
+Date:   Fri, 20 Jan 2023 00:11:11 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Paul Blakey <paulb@nvidia.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-Subject: [PATCH net-next 6/6] net: enetc: stop auto-configuring the port pMAC
-Date:   Thu, 19 Jan 2023 18:04:31 +0200
-Message-Id: <20230119160431.295833-7-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230119160431.295833-1-vladimir.oltean@nxp.com>
-References: <20230119160431.295833-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR04CA0130.eurprd04.prod.outlook.com
- (2603:10a6:208:55::35) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
+Subject: Re: [PATCH net-next v3 1/6] net/sched: cls_api: Support hardware
+ miss to tc action
+Message-ID: <202301192318.qKmZxlm0-lkp@intel.com>
+References: <20230119082357.21744-2-paulb@nvidia.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM8PR04MB8036:EE_
-X-MS-Office365-Filtering-Correlation-Id: d5d3c90c-64bb-44d2-f79e-08dafa36e39f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BA9252Tplkovk6ZU8gHQnA2OXuZivpaP2iYKTQUYxKj2LTS25dZAAsJzWOJiRisB4tGnIWPgjw0MSV0RVQ7PaBQVvTTgDx9X2vYD8XzzR/OJcXDKgECvVs5IWFL3MbuEMsELPPSGIcVTG9aK0ZTOSP3iCosODR7cSDBYiJxv9xZpp2Ko6aFvR+wJU+LA2pDXXC++OWHChXj7xKWjIiX8WRg0m1OQN4N8gEbbz3Cgr4bQEkCscwoOtshEkqlbANAf8EkEzSjknL8saHuNAXscYbbHxsmuqlPA04nR+teIdsmkgHLpmQkks5YiDRAoCoeuN6xua7QKr63jlHlcxQebb2urYx6OAX26BJj+dTVEaxVVBo7ApxHoZyibYUsW+MdjVs/uPmXpUdXuvbd5gIvEnFABxjhCYTw1bi1+sburvLPkPSH9V9B3iDPmpZ4npNsva9hUISd1U62pvJnOnPzPSnXh7ObwnrBF9f/tzh8ZyQzCjEYP0QjO/qOLVKG/yZuSpMR4WFyfXOfb1GXiM5OF/tuh551MIg03aZY2woYC8gdZPXv7ENHkg/YyHWk0YIiXuwvMpbQVDPV+YQYBZcUri0D3M77rHrDtHdwtkEL5rF17wkthpEPdyyRCfnLYNT5c0IjV4i+uZ2EZ8Zh4gcXxlZfEBXeaCuxN+vosO4uiGpscUO6YvprlTqWoanIlOmx5nlXgom6Z+tXgLTaYdTVAyg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(366004)(376002)(39860400002)(136003)(396003)(451199015)(2906002)(41300700001)(83380400001)(6916009)(8676002)(66946007)(66476007)(66556008)(4326008)(36756003)(44832011)(2616005)(8936002)(316002)(5660300002)(54906003)(1076003)(6666004)(38100700002)(186003)(26005)(38350700002)(6506007)(52116002)(86362001)(478600001)(6512007)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4ehBpeJT3HAUMmjZA9El1UFd4r8uhcMQDnRl6sKuRLAVY/ovXVFdo2mspWe0?=
- =?us-ascii?Q?41RqfJvAuAbqtG766VgNzy8pbT1aofWbRxKq+9d6D7RPO60hfANC4y1RkjGh?=
- =?us-ascii?Q?jNO4Vvva0zivCBrP6KgBxCFsrKWN3mi8LM7ih1sXFHxqLYdnGqTTT+yn4Obm?=
- =?us-ascii?Q?zYNdo67dQy4Eg2n3xd5SGSwc1cfGhWfsJwch78G3ccm3sXlEm9cm6ASdn5Mx?=
- =?us-ascii?Q?wv5Ebu7QAvx1LTgkuD8LypGqnYo2RYpSSxioFfAA2AQNIMZTmsYsGoQRct/3?=
- =?us-ascii?Q?Mu8+5xtfKrpF5tLxdCI3uf2Y7xzeHzbNtYW8cppEPGkRH1ZeYb53a3364tO0?=
- =?us-ascii?Q?agnuXZqg2znRxauE/qEKsXZGMHIpvaAJf0OVXaWZruuOlVAvsl3/ywdABbVQ?=
- =?us-ascii?Q?B2qTGHVNmCPl51HsFpi8S1GPhP57FsggPlPpv6tsKB224pULPmwERqAsN7hD?=
- =?us-ascii?Q?GvCsVlKgkCWCW4yFN250T6KfVk30Fxn869L2IssJOI9u56XSF2BgvjU9Si3Z?=
- =?us-ascii?Q?XKTL3mTATB7JXjdM4ynXPndoGG5BnLg/vBNK3aFnu4taBx01gkaz9QJAVAlo?=
- =?us-ascii?Q?4Vjz1pgWkJL0OpUqpRbMwEmvGKCgDPAwUmwkylCFRkXcZ/9i6JhGw1yvDORq?=
- =?us-ascii?Q?KOnqvuW0oAPPlHDdX/wWkkpAPeha/7SnyyhpRB3V++hLbaSr5FWHmNEb4EYG?=
- =?us-ascii?Q?Qp+Gk8heHzNx8uLdBbV1vdpi8+JUV0aCM0OgxGrU7aQLzi+PBngTMfhkMBzJ?=
- =?us-ascii?Q?kzd77CJMFcm/NI4UgA/MYuZXGdEw2dmUzvXpBdZC2iEIvRMZ3ijbSsBh9NM1?=
- =?us-ascii?Q?rzApqFkZKvr/RyJ0iCJDtTRck8JXq2SRDn6G9NB7dOATLXC+wn11CJ7xcs6J?=
- =?us-ascii?Q?AVV+hnWLUltp2hxVPl8ppvrDvI6kBNZrLLtB6N/tdbwUhQTn/ElJ4UY1NzsM?=
- =?us-ascii?Q?XtHDFBLFBLCXdwu4ltv1vknsO0LhOFdDIXH+6TVHAA8fyxCki3RZkQfouu55?=
- =?us-ascii?Q?C6puqRSko6SWXARz8VlwWHJw91YJRZp+C8koxPNJ9wpG+zADaZpnAFnScT3d?=
- =?us-ascii?Q?Y/K3W3YaToS4WiwaJ1R76P2o9GHcxmTA2attinHjga7wH1q5pySoOU6dlkVk?=
- =?us-ascii?Q?ckv2XfPs/2P6tfr/d7clxqsWXge+NwgMbu08cNr2jVGlce9BSqEPCMlrlQui?=
- =?us-ascii?Q?bQw/dU5mOHMelVJlqg+wzmb9Dvn3J+f+fM7MsYporuwo7RWA1mId7Z5AJZkY?=
- =?us-ascii?Q?BK278uSgqSb11mURsA2h75CDLwhdIWneoOF0aFn0LEFtoBn9x8TxxCcVIPua?=
- =?us-ascii?Q?UMETxJ4TqNv7670Sa0fxs1erxcQUW8DC6T9/52wOG8wCYzB8RkYMLRGC3nOS?=
- =?us-ascii?Q?Cdojkn7l7atr9U74Ud0Ind6i1uYL69WNHd3eb+EMkRltiJNeH9PTa1uuLlRs?=
- =?us-ascii?Q?6eae7Zv0PlmfwvtjPwRyuQl517FvPSPL5x+1BJTonYq/eLLRcJAiDSjxK021?=
- =?us-ascii?Q?ft4SKRnaaxAEwz0TflFDLqanRXAHHwuJcuei2xWUN3ENyBGl5Jg7No5YIAbn?=
- =?us-ascii?Q?qGkJBw1KmHfF5d+sxNmg5l1p96lmI21A4fONLUTYfY3ogKmaaRb+F852/VtC?=
- =?us-ascii?Q?NQ=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d5d3c90c-64bb-44d2-f79e-08dafa36e39f
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 16:04:48.3092
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: emFW+udifje+VIMyTDx1idZEBXXQ0FY10di5QNKIQzNCPOdSWzQXnpuHHUugeX0Uf+7wZ/FxR/amnp2jtZeyZw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB8036
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230119082357.21744-2-paulb@nvidia.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pMAC (ENETC_PFPMR_PMACE) is probably unconditionally enabled in the
-enetc driver to allow RX of preemptible packets and not see them as
-error frames. I don't know why TX preemption (ENETC_MMCSR_ME) is enabled
-though. With no way to say which traffic classes are preemptible (all
-are express by default), no preemptible frames would be transmitted
-anyway.
+Hi Paul,
 
-Lastly, it may have been believed that the register write lock-step mode
-(now deleted) needed the pMAC to be enabled at all times. I don't know
-if that's true. However, I've checked that driver writes to PM1
-registers do propagate through to the ENETC IP even when the pMAC is
-disabled.
+Thank you for the patch! Perhaps something to improve:
 
-With such incomplete support for frame preemption, it's best to just
-remove whatever exists right now and come with something more coherent
-later.
+[auto build test WARNING on net-next/master]
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/ethernet/freescale/enetc/enetc_pf.c | 13 -------------
- 1 file changed, 13 deletions(-)
+url:    https://github.com/intel-lab-lkp/linux/commits/Paul-Blakey/net-sched-cls_api-Support-hardware-miss-to-tc-action/20230119-162743
+patch link:    https://lore.kernel.org/r/20230119082357.21744-2-paulb%40nvidia.com
+patch subject: [PATCH net-next v3 1/6] net/sched: cls_api: Support hardware miss to tc action
+config: hexagon-randconfig-r045-20230119 (https://download.01.org/0day-ci/archive/20230119/202301192318.qKmZxlm0-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 4196ca3278f78c6e19246e54ab0ecb364e37d66a)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/5c85cf394445e1140823351fdfdbf3e541b9abb9
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Paul-Blakey/net-sched-cls_api-Support-hardware-miss-to-tc-action/20230119-162743
+        git checkout 5c85cf394445e1140823351fdfdbf3e541b9abb9
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash net/sched/
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-index 70d6b13b3299..7facc7d5261e 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-@@ -583,24 +583,11 @@ static void enetc_mac_enable(struct enetc_si *si, bool en)
- 	enetc_port_mac_wr(si, ENETC_PM0_CMD_CFG, val);
- }
- 
--static void enetc_configure_port_pmac(struct enetc_hw *hw)
--{
--	u32 temp;
--
--	temp = enetc_port_rd(hw, ENETC_PFPMR);
--	enetc_port_wr(hw, ENETC_PFPMR, temp | ENETC_PFPMR_PMACE);
--
--	temp = enetc_port_rd(hw, ENETC_MMCSR);
--	enetc_port_wr(hw, ENETC_MMCSR, temp | ENETC_MMCSR_ME);
--}
--
- static void enetc_configure_port(struct enetc_pf *pf)
- {
- 	u8 hash_key[ENETC_RSSHASH_KEY_SIZE];
- 	struct enetc_hw *hw = &pf->si->hw;
- 
--	enetc_configure_port_pmac(hw);
--
- 	enetc_configure_port_mac(pf->si);
- 
- 	enetc_port_si_configure(pf->si);
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from net/sched/cls_api.c:18:
+   In file included from include/linux/skbuff.h:17:
+   In file included from include/linux/bvec.h:10:
+   In file included from include/linux/highmem.h:12:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:334:
+   include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
+                                                     ^
+   In file included from net/sched/cls_api.c:18:
+   In file included from include/linux/skbuff.h:17:
+   In file included from include/linux/bvec.h:10:
+   In file included from include/linux/highmem.h:12:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:334:
+   include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
+                                                     ^
+   In file included from net/sched/cls_api.c:18:
+   In file included from include/linux/skbuff.h:17:
+   In file included from include/linux/bvec.h:10:
+   In file included from include/linux/highmem.h:12:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:334:
+   include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+>> net/sched/cls_api.c:1676:4: warning: variable 'err' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+                           if (unlikely(!exts || n->exts != exts))
+                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler.h:56:28: note: expanded from macro 'if'
+   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler.h:58:30: note: expanded from macro '__trace_if_var'
+   #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   net/sched/cls_api.c:1703:7: note: uninitialized use occurs here
+                   if (err >= 0)
+                       ^~~
+   include/linux/compiler.h:56:47: note: expanded from macro 'if'
+   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+                                                 ^~~~
+   include/linux/compiler.h:58:52: note: expanded from macro '__trace_if_var'
+   #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+                                                      ^~~~
+   net/sched/cls_api.c:1676:4: note: remove the 'if' if its condition is always true
+                           if (unlikely(!exts || n->exts != exts))
+                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler.h:56:23: note: expanded from macro 'if'
+   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+                         ^
+   net/sched/cls_api.c:1658:10: note: initialize the variable 'err' to silence this warning
+                   int err;
+                          ^
+                           = 0
+   net/sched/cls_api.c:3231:9: warning: variable 'err' is uninitialized when used here [-Wuninitialized]
+           return err;
+                  ^~~
+   net/sched/cls_api.c:3200:9: note: initialize the variable 'err' to silence this warning
+           int err;
+                  ^
+                   = 0
+   8 warnings generated.
+
+
+vim +1676 net/sched/cls_api.c
+
+  1635	
+  1636	/* Main classifier routine: scans classifier chain attached
+  1637	 * to this qdisc, (optionally) tests for protocol and asks
+  1638	 * specific classifiers.
+  1639	 */
+  1640	static inline int __tcf_classify(struct sk_buff *skb,
+  1641					 const struct tcf_proto *tp,
+  1642					 const struct tcf_proto *orig_tp,
+  1643					 struct tcf_result *res,
+  1644					 bool compat_mode,
+  1645					 struct tcf_exts_miss_cookie_node *n,
+  1646					 int act_index,
+  1647					 u32 *last_executed_chain)
+  1648	{
+  1649	#ifdef CONFIG_NET_CLS_ACT
+  1650		const int max_reclassify_loop = 16;
+  1651		const struct tcf_proto *first_tp;
+  1652		int limit = 0;
+  1653	
+  1654	reclassify:
+  1655	#endif
+  1656		for (; tp; tp = rcu_dereference_bh(tp->next)) {
+  1657			__be16 protocol = skb_protocol(skb, false);
+  1658			int err;
+  1659	
+  1660			if (n) {
+  1661				struct tcf_exts *exts;
+  1662	
+  1663				if (n->tp_prio != tp->prio)
+  1664					continue;
+  1665	
+  1666				/* We re-lookup the tp and chain based on index instead
+  1667				 * of having hard refs and locks to them, so do a sanity
+  1668				 * check if any of tp,chain,exts was replaced by the
+  1669				 * time we got here with a cookie from hardware.
+  1670				 */
+  1671				if (unlikely(n->tp != tp || n->tp->chain != n->chain ||
+  1672					     !tp->ops->get_exts))
+  1673					return TC_ACT_SHOT;
+  1674	
+  1675				exts = tp->ops->get_exts(tp, n->handle);
+> 1676				if (unlikely(!exts || n->exts != exts))
+  1677					return TC_ACT_SHOT;
+  1678	
+  1679				n = NULL;
+  1680	#ifdef CONFIG_NET_CLS_ACT
+  1681				err = tcf_action_exec(skb, exts->actions + act_index,
+  1682						      exts->nr_actions - act_index,
+  1683						      res);
+  1684	#endif
+  1685			} else {
+  1686				if (tp->protocol != protocol &&
+  1687				    tp->protocol != htons(ETH_P_ALL))
+  1688					continue;
+  1689	
+  1690				err = tc_classify(skb, tp, res);
+  1691			}
+  1692	#ifdef CONFIG_NET_CLS_ACT
+  1693			if (unlikely(err == TC_ACT_RECLASSIFY && !compat_mode)) {
+  1694				first_tp = orig_tp;
+  1695				*last_executed_chain = first_tp->chain->index;
+  1696				goto reset;
+  1697			} else if (unlikely(TC_ACT_EXT_CMP(err, TC_ACT_GOTO_CHAIN))) {
+  1698				first_tp = res->goto_tp;
+  1699				*last_executed_chain = err & TC_ACT_EXT_VAL_MASK;
+  1700				goto reset;
+  1701			}
+  1702	#endif
+  1703			if (err >= 0)
+  1704				return err;
+  1705		}
+  1706	
+  1707		if (unlikely(n))
+  1708			return TC_ACT_SHOT;
+  1709	
+  1710		return TC_ACT_UNSPEC; /* signal: continue lookup */
+  1711	#ifdef CONFIG_NET_CLS_ACT
+  1712	reset:
+  1713		if (unlikely(limit++ >= max_reclassify_loop)) {
+  1714			net_notice_ratelimited("%u: reclassify loop, rule prio %u, protocol %02x\n",
+  1715					       tp->chain->block->index,
+  1716					       tp->prio & 0xffff,
+  1717					       ntohs(tp->protocol));
+  1718			return TC_ACT_SHOT;
+  1719		}
+  1720	
+  1721		tp = first_tp;
+  1722		goto reclassify;
+  1723	#endif
+  1724	}
+  1725	
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
