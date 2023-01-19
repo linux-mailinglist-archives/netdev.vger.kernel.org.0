@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 126B66739CD
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 14:19:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C59D96739C7
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 14:18:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231172AbjASNTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 08:19:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57964 "EHLO
+        id S231152AbjASNS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 08:18:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231127AbjASNSh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 08:18:37 -0500
+        with ESMTP id S230503AbjASNSg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 08:18:36 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF47113CA
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B7AA24E
         for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 05:18:35 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pIUoC-0005u5-Rn; Thu, 19 Jan 2023 14:18:24 +0100
+        id 1pIUoD-0005uJ-4J; Thu, 19 Jan 2023 14:18:25 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pIUoC-0079jN-5o; Thu, 19 Jan 2023 14:18:24 +0100
+        id 1pIUoC-0079jT-G6; Thu, 19 Jan 2023 14:18:24 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pIUoB-00G51C-B9; Thu, 19 Jan 2023 14:18:23 +0100
+        id 1pIUoB-00G51L-Bm; Thu, 19 Jan 2023 14:18:23 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH net-next v1 3/4] net: phy: micrel: disable 1000Mbit EEE support if 1000Mbit is not supported
-Date:   Thu, 19 Jan 2023 14:18:20 +0100
-Message-Id: <20230119131821.3832456-4-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v1 4/4] net: dsa: microchip: enable EEE support
+Date:   Thu, 19 Jan 2023 14:18:21 +0100
+Message-Id: <20230119131821.3832456-5-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230119131821.3832456-1-o.rempel@pengutronix.de>
 References: <20230119131821.3832456-1-o.rempel@pengutronix.de>
@@ -60,58 +60,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-KSZ8563 is announcing by default 1000Mbit EEE support, but at same time
-do not supporting 1000Mbit speed.
-
-This patch will disable 1000Mbit EEE advertisement if the PHY is not
-1000Mbit capable.
+Some of KSZ9477 family switches provides EEE support. To enable it, we
+just need to register set_mac_eee/set_mac_eee handlers and validate
+supported chip version and port.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/phy/micrel.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+ drivers/net/dsa/microchip/ksz_common.c | 35 ++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 099f1e83c08c..11bef217b45a 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -1460,6 +1460,27 @@ static int ksz9477_set_eee(struct phy_device *phydev, struct ethtool_eee *data)
- 	return 0;
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 5e1e5bd555d2..2f1f71b3be86 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -2645,6 +2645,39 @@ static int ksz_max_mtu(struct dsa_switch *ds, int port)
+ 	return -EOPNOTSUPP;
  }
  
-+static int ksz9477_config_init(struct phy_device *phydev)
++static int ksz_validate_eee(struct dsa_switch *ds, int port)
 +{
-+	int ret;
++	struct ksz_device *dev = ds->priv;
 +
-+	/* KSZ8563 is able to advertise not supported MDIO_EEE_1000T.
-+	 * We need to test if the PHY is 1Gbit capable.
-+	 */
-+	ret = phy_read(phydev, MII_BMSR);
-+	if (ret < 0)
-+		return ret;
++	if (!dev->info->internal_phy[port])
++		return -EOPNOTSUPP;
 +
-+	if (!(ret & BMSR_ERCAP)) {
-+		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV,
-+					 MDIO_EEE_1000T);
-+		if (ret)
-+			return ret;
++	switch (dev->chip_id) {
++	case KSZ8563_CHIP_ID:
++	case KSZ9477_CHIP_ID:
++	case KSZ9563_CHIP_ID:
++	case KSZ9567_CHIP_ID:
++	case KSZ9893_CHIP_ID:
++	case KSZ9896_CHIP_ID:
++	case KSZ9897_CHIP_ID:
++		return 0;
 +	}
 +
-+	return kszphy_config_init(phydev);
++	return -EOPNOTSUPP;
 +}
 +
- #define KSZ8873MLL_GLOBAL_CONTROL_4	0x06
- #define KSZ8873MLL_GLOBAL_CONTROL_4_DUPLEX	BIT(6)
- #define KSZ8873MLL_GLOBAL_CONTROL_4_SPEED	BIT(4)
-@@ -3507,7 +3528,7 @@ static struct phy_driver ksphy_driver[] = {
- 	.phy_id_mask	= MICREL_PHY_ID_MASK,
- 	.name		= "Microchip KSZ9477",
- 	/* PHY_GBIT_FEATURES */
--	.config_init	= kszphy_config_init,
-+	.config_init	= ksz9477_config_init,
- 	.config_intr	= kszphy_config_intr,
- 	.handle_interrupt = kszphy_handle_interrupt,
- 	.suspend	= genphy_suspend,
++static int ksz_get_mac_eee(struct dsa_switch *ds, int port,
++			   struct ethtool_eee *e)
++{
++	return ksz_validate_eee(ds, port);
++}
++
++static int ksz_set_mac_eee(struct dsa_switch *ds, int port,
++			   struct ethtool_eee *e)
++{
++	return ksz_validate_eee(ds, port);
++}
++
+ static void ksz_set_xmii(struct ksz_device *dev, int port,
+ 			 phy_interface_t interface)
+ {
+@@ -3006,6 +3039,8 @@ static const struct dsa_switch_ops ksz_switch_ops = {
+ 	.port_hwtstamp_set	= ksz_hwtstamp_set,
+ 	.port_txtstamp		= ksz_port_txtstamp,
+ 	.port_rxtstamp		= ksz_port_rxtstamp,
++	.get_mac_eee		= ksz_get_mac_eee,
++	.set_mac_eee		= ksz_set_mac_eee,
+ };
+ 
+ struct ksz_device *ksz_switch_alloc(struct device *base, void *priv)
 -- 
 2.30.2
 
