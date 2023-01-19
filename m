@@ -2,212 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C1AF672E23
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 02:31:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50EC7672E58
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 02:38:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229670AbjASBb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Jan 2023 20:31:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44580 "EHLO
+        id S229664AbjASBhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Jan 2023 20:37:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230242AbjASB3v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 20:29:51 -0500
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AC5D6920C
-        for <netdev@vger.kernel.org>; Wed, 18 Jan 2023 17:26:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1674091566; x=1705627566;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=EIqjMgYwaWL/GNM1+H2CtZlNL/Pb9zfWBhJ5lhVYzQw=;
-  b=Xv9Q9Z0D0hqERdtVODoxsDQBFKIcDfTe1WYb2SMbsjIeWhinGJiKU2vf
-   JZcOYP3wDSDCSnryZcnvsNPcpq8Dq/JSV2/ziLhWQC7KpZt2Ar35inpM6
-   7OuhS4dOSnXkSRWFRJ9JQVSKQyNAhigztB6aSmw6caGYw11QrJm3+Ym3a
-   o=;
-X-IronPort-AV: E=Sophos;i="5.97,226,1669075200"; 
-   d="scan'208";a="172586357"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-ed19f671.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 01:26:06 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2b-m6i4x-ed19f671.us-west-2.amazon.com (Postfix) with ESMTPS id 676CB8221E;
-        Thu, 19 Jan 2023 01:26:05 +0000 (UTC)
-Received: from EX19D030UWB003.ant.amazon.com (10.13.139.142) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.45; Thu, 19 Jan 2023 01:26:04 +0000
-Received: from bcd0741e4041.ant.amazon.com (10.43.160.120) by
- EX19D030UWB003.ant.amazon.com (10.13.139.142) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.1118.7; Thu, 19 Jan 2023 01:26:04 +0000
-From:   Apoorv Kothari <apoorvko@amazon.com>
-To:     <sd@queasysnail.net>
-CC:     <apoorvko@amazon.com>, <fkrenzel@redhat.com>, <kuniyu@amazon.com>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 3/5] tls: implement rekey for TLS1.3
-Date:   Wed, 18 Jan 2023 17:25:46 -0800
-Message-ID: <20230119012546.36951-1-apoorvko@amazon.com>
-X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
-In-Reply-To: <Y8fMLtYmlIw2wfMM@hog>
-References: <Y8fMLtYmlIw2wfMM@hog>
+        with ESMTP id S229899AbjASBfs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Jan 2023 20:35:48 -0500
+Received: from mail-il1-f179.google.com (mail-il1-f179.google.com [209.85.166.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D631665AC;
+        Wed, 18 Jan 2023 17:35:46 -0800 (PST)
+Received: by mail-il1-f179.google.com with SMTP id p12so487523ilq.10;
+        Wed, 18 Jan 2023 17:35:46 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=tcLHpnRNh3ty5rv7JErXW5X+LMKRtJ6Ae8+AonT+Wt4=;
+        b=0jLa0aGyVKMnt4/0y0IWTAk3bDxbSkFR0OThuSTTcKbqr3Vp/umF+56yBIgQT+wncE
+         9VcozD8zQMNki1kQCYc/uiQEVqjlzUiys0nVyCbaN+Wh02A2uUCcOmahXXdOz5N0Tkhl
+         boCWyHypS7aGaspb39mZmvhXYQSIgYqOdd2yqoSgXPCBbVr+g3Adu9xhM6foy7j0oqwT
+         gUeStPSpjBJxe31zJ5yMLtwuIjqfMCHYJ3j8Y6qxN+B0l62eZXkohMHOdpI+8sQCSE8D
+         WvVMbfiYl9/bMPZRk4LXmORvhUatK9i0Xtmn7h/8pDVf+7pjzLOPJfqfjOKmUOUO1REX
+         J/6Q==
+X-Gm-Message-State: AFqh2krR2gR//MhucOdkk6bRryC69FI7CZ3P4AvPK+0nkkA71TcYIPoM
+        K4eirovp6NRuwyCASLUHyxg=
+X-Google-Smtp-Source: AMrXdXvxlTgKBAhWQR4LZca7F3Mn+uGGZnTz9tjG2PdmlP9Pq5eRuymaOtgjrbYGoVOO6TucK1UGTg==
+X-Received: by 2002:a05:6e02:2191:b0:30f:12c9:f767 with SMTP id j17-20020a056e02219100b0030f12c9f767mr9659967ila.11.1674092145973;
+        Wed, 18 Jan 2023 17:35:45 -0800 (PST)
+Received: from noodle.cs.purdue.edu (switch-lwsn2133-z1r11.cs.purdue.edu. [128.10.127.250])
+        by smtp.googlemail.com with ESMTPSA id cs10-20020a056638470a00b0039d756fb908sm3547284jab.40.2023.01.18.17.35.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Jan 2023 17:35:44 -0800 (PST)
+From:   Sungwoo Kim <iam@sung-woo.kim>
+Cc:     daveti@purdue.edu, wuruoyu@me.com, benquike@gmail.com,
+        Sungwoo Kim <iam@sung-woo.kim>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-bluetooth@vger.kernel.org (open list:BLUETOOTH SUBSYSTEM),
+        netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] L2CAP: Fix null-ptr-deref in l2cap_sock_set_shutdown_cb
+Date:   Wed, 18 Jan 2023 20:34:05 -0500
+Message-Id: <20230119013405.3870506-1-iam@sung-woo.kim>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.120]
-X-ClientProxiedBy: EX13D44UWC004.ant.amazon.com (10.43.162.209) To
- EX19D030UWB003.ant.amazon.com (10.13.139.142)
-X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> 2023-01-17, 15:16:33 -0800, Kuniyuki Iwashima wrote:
-> > Hi,
-> > 
-> > Thanks for posting this series!
-> > We were working on the same feature.
-> > CC Apoorv from s2n team.
-> 
-> Ah, cool. Does the behavior in those patches match what your
-> implementation?
+The L2CAP socket shutdown invokes l2cap_sock_destruct without a lock
+on conn->chan_lock, assigning NULL to chan->data *just before*
+the l2cap_disconnect_req thread that accesses to chan->data.
+This patch prevent it by adding a null check for a workaround, instead
+of fixing a lock.
 
-Thanks for submitting this, it looks great! We are working on testing this now.
+This bug is found by FuzzBT, a modified Syzkaller by Sungwoo Kim(me).
+Ruoyu Wu(wuruoyu@me.com) and Hui Peng(benquike@gmail.com) has helped
+the FuzzBT project.
 
-> 
-> [...]
-> > > diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-> > > index fb1da1780f50..9be82aecd13e 100644
-> > > --- a/net/tls/tls_main.c
-> > > +++ b/net/tls/tls_main.c
-> > > @@ -669,9 +669,12 @@ static int tls_getsockopt(struct sock *sk, int level, int optname,
-> > >  static int do_tls_setsockopt_conf(struct sock *sk, sockptr_t optval,
-> > >  				  unsigned int optlen, int tx)
-> > >  {
-> > > +	union tls_crypto_context tmp = {};
-> > > +	struct tls_crypto_info *old_crypto_info = NULL;
-> > >  	struct tls_crypto_info *crypto_info;
-> > >  	struct tls_crypto_info *alt_crypto_info;
-> > >  	struct tls_context *ctx = tls_get_ctx(sk);
-> > > +	bool update = false;
-> > >  	size_t optsize;
-> > >  	int rc = 0;
-> > >  	int conf;
-> > > @@ -687,9 +690,17 @@ static int do_tls_setsockopt_conf(struct sock *sk, sockptr_t optval,
-> > >  		alt_crypto_info = &ctx->crypto_send.info;
-> > >  	}
-> > >  
-> > > -	/* Currently we don't support set crypto info more than one time */
-> > > -	if (TLS_CRYPTO_INFO_READY(crypto_info))
-> > > -		return -EBUSY;
-> > > +	if (TLS_CRYPTO_INFO_READY(crypto_info)) {
-> > > +		/* Currently we only support setting crypto info more
-> > > +		 * than one time for TLS 1.3
-> > > +		 */
-> > > +		if (crypto_info->version != TLS_1_3_VERSION)
-> > > +			return -EBUSY;
-> > > +
-> > 
-> > Should we check this ?
-> > 
-> >                 if (!tx && !key_update_pending)
-> >                         return -EBUSY;
-> > 
-> > Otherwise we can set a new RX key even if the other end has not sent
-> > KeyUpdateRequest.
-> 
-> Maybe. My thinking was "let userspace shoot itself in the foot if it
-> wants".
+Signed-off-by: Sungwoo Kim <iam@sung-woo.kim>
+---
+ net/bluetooth/l2cap_sock.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-I feel avoiding foot-guns is probably the correct thing to do. The RFC also has
-a requirement that re-key(process messages with new key) should only happen after
-a KeyUpdate is received so it would be nice if the kTLS implemention can help
-enforce this.
+diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
+index ca8f07f35..350c7afdf 100644
+--- a/net/bluetooth/l2cap_sock.c
++++ b/net/bluetooth/l2cap_sock.c
+@@ -1681,9 +1681,11 @@ static void l2cap_sock_set_shutdown_cb(struct l2cap_chan *chan)
+ {
+ 	struct sock *sk = chan->data;
+ 
+-	lock_sock(sk);
+-	sk->sk_shutdown = SHUTDOWN_MASK;
+-	release_sock(sk);
++	if (!sk) {
++		lock_sock(sk);
++		sk->sk_shutdown = SHUTDOWN_MASK;
++		release_sock(sk);
++	}
+ }
+ 
+ static long l2cap_sock_get_sndtimeo_cb(struct l2cap_chan *chan)
+-- 
+2.25.1
 
-Based on the RFC https://www.rfc-editor.org/rfc/rfc8446#section-4.6.3:
-   Additionally, both sides MUST enforce that a KeyUpdate
-   with the old key is received before accepting any messages encrypted
-   with the new key.  Failure to do so may allow message truncation
-   attacks.
-
-> 
-> > > +		update = true;
-> > > +		old_crypto_info = crypto_info;
-> > > +		crypto_info = &tmp.info;
-> > > +	}
-> > >  
-> > >  	rc = copy_from_sockptr(crypto_info, optval, sizeof(*crypto_info));
-> > >  	if (rc) {
-> > > @@ -704,6 +715,15 @@ static int do_tls_setsockopt_conf(struct sock *sk, sockptr_t optval,
-> > >  		goto err_crypto_info;
-> > >  	}
-> > >  
-> > > +	if (update) {
-> > > +		/* Ensure that TLS version and ciphers are not modified */
-> > > +		if (crypto_info->version != old_crypto_info->version ||
-> > > +		    crypto_info->cipher_type != old_crypto_info->cipher_type) {
-> > > +			rc = -EINVAL;
-> > > +			goto err_crypto_info;
-> > > +		}
-> > > +	}
-> > > +
-> > >  	/* Ensure that TLS version and ciphers are same in both directions */
-> > >  	if (TLS_CRYPTO_INFO_READY(alt_crypto_info)) {
-> > 
-> > We can change this to else-if.
-> 
-> Ok.
-> 
-> > >  		if (alt_crypto_info->version != crypto_info->version ||
-> [...]
-> > > @@ -2517,9 +2525,28 @@ int tls_set_sw_offload(struct sock *sk, int tx)
-> > >  	u16 nonce_size, tag_size, iv_size, rec_seq_size, salt_size;
-> > >  	struct crypto_tfm *tfm;
-> > >  	char *iv, *rec_seq, *key, *salt, *cipher_name;
-> > > -	size_t keysize;
-> > > +	size_t keysize, crypto_info_size;
-> > >  	int rc = 0;
-> > >  
-> > > +	if (new_crypto_info) {
-> > > +		/* non-NULL new_crypto_info means rekey */
-> > > +		src_crypto_info = new_crypto_info;
-> > > +		if (tx) {
-> > > +			sw_ctx_tx = ctx->priv_ctx_tx;
-> > > +			crypto_info = &ctx->crypto_send.info;
-> > > +			cctx = &ctx->tx;
-> > > +			aead = &sw_ctx_tx->aead_send;
-> > > +			sw_ctx_tx = NULL;
-> > 
-> > sw_ctx_tx is already initialised.
-> 
-> No, it was NULL at the beginning of the function, but then I used it
-> to set aead on the previous line, so I need to clear it again. I could
-> use a temp variable instead if you think it's better.
-> 
-> > > +		} else {
-> > > +			sw_ctx_rx = ctx->priv_ctx_rx;
-> > > +			crypto_info = &ctx->crypto_recv.info;
-> > > +			cctx = &ctx->rx;
-> > > +			aead = &sw_ctx_rx->aead_recv;
-> > > +			sw_ctx_rx = NULL;
-> > 
-> > Same here.
-> > 
-> > 
-> > > +		}
-> > > +		goto skip_init;
-> > > +	}
-> > > +
-> > >  	if (tx) {
-> > >  		if (!ctx->priv_ctx_tx) {
-> > >  			sw_ctx_tx = kzalloc(sizeof(*sw_ctx_tx), GFP_KERNEL);
-> 
-> Thanks for the comments.
-> 
-> -- 
-> Sabrina
-
---
-Apoorv
