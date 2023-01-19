@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C48766741A2
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 19:58:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8118F6741B1
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 19:58:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230457AbjASS6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 13:58:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39790 "EHLO
+        id S230241AbjASS6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 13:58:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229807AbjASS53 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 13:57:29 -0500
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2072.outbound.protection.outlook.com [40.107.101.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5850259E57;
-        Thu, 19 Jan 2023 10:56:49 -0800 (PST)
+        with ESMTP id S230472AbjASS6M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 13:58:12 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2053.outbound.protection.outlook.com [40.107.93.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B5495762;
+        Thu, 19 Jan 2023 10:57:14 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OhSLEZH1ceddKbKeb7a21dLX306uFsmtSa+JwqSrt3DvzD5asW8NfdnB1rqVt6mRMdfjHj/9L9X5YONPFTlBvmpxzjJsb8JrN43KONLqj8K3WxFxRFTsAc/fGe5wijVH0n/fjfYinB9CDfB9ylCljLEnmrtXQxSwuffuOmNUKVA6EJA9UxzdOfuGTkpOxEhnS1Vd5F8oPGDQ8JfWgMwHsyxri8rV2JRKXF6EZ3xR1eEVYdYOcxT2hEIYoqBRcL+a5XOysfLP185qLP4kTOqCNY8ilfvAVYSPBM9AE6me4VjBHZGXfOlUzQG48Ay1kSRrcuxWlPJXnpSMumDSw+0qcA==
+ b=l58SXE/KPwiJ/HSqGDRpfb5RELiMC9iD87HwUeDoTZR+VlH1r50RJckX+zvPjQhivUa2yCh4JC84Tbw7OIdyLOCxUc2PjVNmsNrC5WIBhurYmDcdJeHQ4zzNDzrNdPyTfF9lMm08FqMF9xPNYIFVjM2rFoY+KqMKtzBmRQr5H5X1d8DZMJBQRj7X6GoiUxEMuaDYmAyL85WP0/9daLrx17mmhbxy0x2LCqLbOZQmHquKceHyJ2HP74c0qojuU4TmLUWYGapmgGbLQPK6sZOdD8YUObIV1Y90FfeZqNbxegh2ZPVT7vO3xKuj1dhDoLvdR6Qlv47/NfIQsi5bKIybJQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DbpacNubrT0lasDs0WmKpnsl7zP4LIrl3AFONwBPP3E=;
- b=DZY33sOfe7on2f7rz8otoTRVVx1gpy7imVN5nqf++QIgE4yNvT0W7tEayU2IYYUKO0WXYnogrAtFn+oyh29tNy8L+q4o6mhbjo3iRy6vDJD8UJbNHAIFuili4bUqy76GkRhPZOxdu/zP8AkQUI9CAvQRkMBILpVbo+2c8AdlS+OGlgWuf6KME/dvKCPVHDX/rUEK8+XP4uJdnemxEcUe9vN8gwjx2vxwYUetuubNXTiqyrmjVVJ44zl2bsCs2NbPM+xYI6sa8eKU6gnHYrLuHN5rKw3/BgvdlhU3GIGOjwayTk/VieTSN0VJ0p0CF8urNHlKK0p/jteITTGbt3AXyw==
+ bh=x0gp53o/UXZRk9PtsGev6ezNMEiNcYW1yCaFPhMhETg=;
+ b=O6DK0FwyPNto757ud0rrAnVhPxLBmkwFoVNaqh7ukjPSweg/QTVI7MfWgZp6Dn2CYWuuVN1J251bSf7ogoZP4BYPJfqfu1t0RYmg8M0twyVQA9mC0GYgkACVfp7iDw3H5phhvBqwyoctTBDKgxTWUd3F2TSQ/ca+uYrPNzeMKK+m5sukKh8MNJdjkwDwX3wZdxtALx27hvkHJOeY8V7eRMC/gh9mu7dGUdQsX3tlXRozGMkNVdhRCW9Bdp4K1j0czoStp26KU+l5HPQ61ihE3VnpKK9M+GSX3KdiGTt0hMbmKqNFQTsQ3XoImm8INQp39HBcID3vJVePa+GgPltuDQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DbpacNubrT0lasDs0WmKpnsl7zP4LIrl3AFONwBPP3E=;
- b=ozrGxRxDg7dtcWJFyBo75toUGZfYx33jcW+ZB165ki2VSO3/I/G6SfTe3gdLE9sK91IZV1WCSO42FkZoz7lSjGrsTytLOyo2qaPNW1JPLziVebVqXVPUAbMqaZI2K1vtLW3/V4VaXt2YKFwCzI2MSQmHeZTl2sGQi9dz4l3oFrk=
-Received: from BN9P222CA0014.NAMP222.PROD.OUTLOOK.COM (2603:10b6:408:10c::19)
- by DM4PR12MB8497.namprd12.prod.outlook.com (2603:10b6:8:180::15) with
+ bh=x0gp53o/UXZRk9PtsGev6ezNMEiNcYW1yCaFPhMhETg=;
+ b=iFx4CNZu+D0Km/pirK1pgDWSzbjzF+HziJKfJRSR5vbj+WG2YthyRig6M57NMQV4dpP/nZGlFS60Vf9c8osnHK+7/6qBC/j1zEvmVNYJBwD2yk+fJ7z30eyApRaLii4M4d08dYQjDSg0+2zLfXSL1MrrAWJBa2x2LpMunkKKkwk=
+Received: from BN9PR03CA0451.namprd03.prod.outlook.com (2603:10b6:408:139::6)
+ by DS0PR12MB8197.namprd12.prod.outlook.com (2603:10b6:8:f1::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.19; Thu, 19 Jan
- 2023 18:56:45 +0000
-Received: from BN8NAM11FT103.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:10c:cafe::5) by BN9P222CA0014.outlook.office365.com
- (2603:10b6:408:10c::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.26 via Frontend
- Transport; Thu, 19 Jan 2023 18:56:45 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.26; Thu, 19 Jan
+ 2023 18:57:12 +0000
+Received: from BN8NAM11FT044.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:139:cafe::c) by BN9PR03CA0451.outlook.office365.com
+ (2603:10b6:408:139::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.24 via Frontend
+ Transport; Thu, 19 Jan 2023 18:57:11 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -46,20 +46,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT103.mail.protection.outlook.com (10.13.176.181) with Microsoft SMTP
+ BN8NAM11FT044.mail.protection.outlook.com (10.13.177.219) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6002.13 via Frontend Transport; Thu, 19 Jan 2023 18:56:45 +0000
+ 15.20.6023.16 via Frontend Transport; Thu, 19 Jan 2023 18:57:11 +0000
 Received: from SATLEXMB05.amd.com (10.181.40.146) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 19 Jan
- 2023 12:56:45 -0600
+ 2023 12:57:11 -0600
 Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB05.amd.com
  (10.181.40.146) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 19 Jan
- 2023 12:56:44 -0600
+ 2023 12:57:10 -0600
 Received: from xhdsneeli40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
- Transport; Thu, 19 Jan 2023 12:56:19 -0600
+ Transport; Thu, 19 Jan 2023 12:56:45 -0600
 From:   Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
 To:     <broonie@kernel.org>, <miquel.raynal@bootlin.com>,
         <richard@nod.at>, <vigneshr@ti.com>, <jic23@kernel.org>,
@@ -121,9 +121,9 @@ CC:     <git@amd.com>, <linux-spi@vger.kernel.org>,
         <linux-media@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
         <greybus-dev@lists.linaro.org>, <linux-staging@lists.linux.dev>,
         <amitrkcian2002@gmail.com>
-Subject: [PATCH v2 06/13] staging: Replace all spi->chip_select and spi->cs_gpiod references with function call
-Date:   Fri, 20 Jan 2023 00:23:35 +0530
-Message-ID: <20230119185342.2093323-7-amit.kumar-mahapatra@amd.com>
+Subject: [PATCH v2 07/13] platform/x86: serial-multi-instantiate: Replace all spi->chip_select and spi->cs_gpiod references with function call
+Date:   Fri, 20 Jan 2023 00:23:36 +0530
+Message-ID: <20230119185342.2093323-8-amit.kumar-mahapatra@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230119185342.2093323-1-amit.kumar-mahapatra@amd.com>
 References: <20230119185342.2093323-1-amit.kumar-mahapatra@amd.com>
@@ -132,23 +132,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT103:EE_|DM4PR12MB8497:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1820a53f-7933-4fbb-d1d0-08dafa4ee96f
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT044:EE_|DS0PR12MB8197:EE_
+X-MS-Office365-Filtering-Correlation-Id: 27c2ed3d-bdd6-4786-c2d9-08dafa4ef8eb
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4n93fzqKlKWi1mV2URGd/oKDNjIOB4j4umQ6bKgbhDXqjWd2ozku+b9c5/2KoV/onUaBYqMYa3RA+x+SB9cYdprcGTLO8Z2M0HsO+xnZ42oJhb9DPCQ4/LbCGTRYZuS+2RfGrI/AAhOPouivcGEwioRec8pr5sz5byT1pVYWdjV+2q9Xi4zf4+MhhUW1zyWFP9d+n2mS4Rj18DWhc332KdQvsMHRBp2gw4Vj73YIPe7jlQ16zneNcGIDYoFJOLvg86D021rw44TJkEHbzYJLs5xEPJvHcLkHr4hLPC1GmB8DITfB3u9hPY0Qlv3x0ivQbrh9z3CAPywFGQS07hgMSr8ES3RUcPtF4VOdUMWVTIjbI60MOeStttvaqMnAPffoTXBUWmjpNWMvp14lvP7uIEOIQw03wSMmlnrtwXT+Yd/NLklkaPUu+zm4xcr9bZVGpMLLOaBP8AOxYV+sO/mEtfX6BsoCeaNoe4V792glBdZac2XDpZGwUa4OLJI6SMCqHqPc+KZn9KH7JY+sf29AT/+/oh+gGz17YRiRf2Oc9jZZqATwQKuyLTgp5iNAkwSeVAXiJeJfM7DQCc7BHqiurcuKzCX1I+G3AWYJegaxUaJK7YTuhdWG0VCw8CfsRx3qlIiJT+LNLsw5sWFl8JtwJdCgf5Xus840x27er680AgHZllDsbbWGQOVOKPijZ0LUmHt+t4q6wSUQywEWlNnjd8+2rKWyvWl6h+OI2hb+6pEmo7hUE7BHnBtzLFKoa2427SSW5r+11rs/hDmlVHdFoJUS0Vx+0C/1HtwGIPwrdrd/h2T5QEJwSgJ9fnZIaOGikzGGRhIK5CLTQc4GujLVmMAHXAVUJJWfEa1BCV8EGxA=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(136003)(396003)(376002)(346002)(451199015)(46966006)(40470700004)(36840700001)(86362001)(70206006)(70586007)(40480700001)(478600001)(4326008)(7276002)(5660300002)(7366002)(2616005)(47076005)(8676002)(7416002)(7336002)(7406005)(41300700001)(54906003)(336012)(426003)(83380400001)(110136005)(40460700003)(36756003)(26005)(186003)(82310400005)(8936002)(6666004)(1076003)(356005)(921005)(316002)(81166007)(2906002)(82740400003)(1191002)(36860700001)(41080700001)(2101003)(84006005)(36900700001)(83996005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: G2+6xNZE4IVJS7/3W7eAJXk+XfRS8W9MI2g004JAQf2IL95K0LSudY0ftQCohChcnGAuGuQlnJ6OZySxU9sqtnQVJhi0nnn5WuTdXXLJZwFd9nBIMXfgLoqFPYNeq648wkOFd1vldAK1eU+s9c/c8HtgIBPPM12nINvPnNZVkPWocMgm4scaIKDNEcVBBGi31vA7oy9EziHJZIFzTZJqYiEZlKO8D8bWll2MfrY3u3OzK/JS3ko5MzT/9/OC4KWzWpkcGPglHrwyJZpqhMhNOKrAoT6XiSVklnI19nRFqraUkTSIJ93zaVshXrX0vO8WzG/ptS0MPIt96SV2/kEZxieF02RCGUMqtA55Zje/Uw1hAm60X2EdWUWGpcV8HKRWKAEHna0oozR7kFdtTs110DZuKGf+PPuKsOK2KXzm5d9z8s2sWA8ZVkjjnpR1+a5zFOVQsZ/s0X2zVlSBavtNtIOofsLZhG0QF+RHo0MqKlVGtF6zwv6HB1HS+5F2ApoHLguCb5jhOF2EG+iqNUNVTw6UQGI1walDWSsmCuk285z0dulcihIDk+CIMERbbzRttlQ/87tqOrnSwyFQv7mrH1CTmWpZycb8R2CTNlexiiwGD7ygxttHHgrLXXhUKvVgKr4Ek2TQ/SRI6SCBrv3JLjc5xDW+iHmGrGSDGYf9TekMxa6uorTA+XsIpQAk15rLY2z+KY2eODQR/3sEbk8PK1m5rkCX9B1XAPd42cnO9GdSN/9Pg89fTn90vUSE3GiSuG5ou8oq68YK1iTfHSqbGRRdZI2aDMiV+rK9NzFLMBg/qeRAsi3dTIvBzH3Tg1iXYr8oaezHD1Jawjvp2397SA8YeglygnUoxuljMkfuryI=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(346002)(396003)(136003)(39860400002)(376002)(451199015)(36840700001)(40470700004)(46966006)(356005)(921005)(82310400005)(40480700001)(6666004)(36860700001)(478600001)(336012)(86362001)(2906002)(54906003)(7336002)(7406005)(4326008)(7366002)(7416002)(1076003)(7276002)(5660300002)(2616005)(82740400003)(316002)(81166007)(70586007)(70206006)(8676002)(47076005)(83380400001)(110136005)(1191002)(40460700003)(41300700001)(426003)(8936002)(186003)(26005)(36756003)(83996005)(84006005)(2101003)(36900700001)(41080700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 18:56:45.5752
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 18:57:11.5533
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1820a53f-7933-4fbb-d1d0-08dafa4ee96f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 27c2ed3d-bdd6-4786-c2d9-08dafa4ef8eb
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT103.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT044.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB8497
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8197
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
@@ -172,36 +172,23 @@ spi->chip_select[idx] & spi->cs_gpiod[idx] respectively.
 
 Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
 ---
- drivers/staging/fbtft/fbtft-core.c | 2 +-
- drivers/staging/greybus/spilib.c   | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/platform/x86/serial-multi-instantiate.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/fbtft/fbtft-core.c b/drivers/staging/fbtft/fbtft-core.c
-index afaba94d1d1c..3a4abf3bae40 100644
---- a/drivers/staging/fbtft/fbtft-core.c
-+++ b/drivers/staging/fbtft/fbtft-core.c
-@@ -840,7 +840,7 @@ int fbtft_register_framebuffer(struct fb_info *fb_info)
- 		sprintf(text1, ", %zu KiB buffer memory", par->txbuf.len >> 10);
- 	if (spi)
- 		sprintf(text2, ", spi%d.%d at %d MHz", spi->master->bus_num,
--			spi->chip_select, spi->max_speed_hz / 1000000);
-+			spi_get_chipselect(spi, 0), spi->max_speed_hz / 1000000);
- 	dev_info(fb_info->dev,
- 		 "%s frame buffer, %dx%d, %d KiB video memory%s, fps=%lu%s\n",
- 		 fb_info->fix.id, fb_info->var.xres, fb_info->var.yres,
-diff --git a/drivers/staging/greybus/spilib.c b/drivers/staging/greybus/spilib.c
-index ad0700a0bb81..efb3bec58e15 100644
---- a/drivers/staging/greybus/spilib.c
-+++ b/drivers/staging/greybus/spilib.c
-@@ -237,7 +237,7 @@ static struct gb_operation *gb_spi_operation_create(struct gb_spilib *spi,
- 	request = operation->request->payload;
- 	request->count = cpu_to_le16(count);
- 	request->mode = dev->mode;
--	request->chip_select = dev->chip_select;
-+	request->chip_select = spi_get_chipselect(dev, 0);
+diff --git a/drivers/platform/x86/serial-multi-instantiate.c b/drivers/platform/x86/serial-multi-instantiate.c
+index 5362f1a7b77c..270a4700d25d 100644
+--- a/drivers/platform/x86/serial-multi-instantiate.c
++++ b/drivers/platform/x86/serial-multi-instantiate.c
+@@ -139,7 +139,8 @@ static int smi_spi_probe(struct platform_device *pdev, struct smi *smi,
+ 			goto error;
+ 		}
  
- 	gb_xfer = &request->transfers[0];
- 	tx_data = gb_xfer + count;	/* place tx data after last gb_xfer */
+-		dev_dbg(dev, "SPI device %s using chip select %u", name, spi_dev->chip_select);
++		dev_dbg(dev, "SPI device %s using chip select %u", name,
++			spi_get_chipselect(spi_dev, 0));
+ 
+ 		smi->spi_devs[i] = spi_dev;
+ 		smi->spi_num++;
 -- 
 2.17.1
 
