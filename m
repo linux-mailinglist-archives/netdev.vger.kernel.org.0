@@ -2,70 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91B2A67382C
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 13:17:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE2D467384D
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 13:25:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230080AbjASMRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 07:17:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43802 "EHLO
+        id S229606AbjASMZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 07:25:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231224AbjASMRj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 07:17:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E5B675A10;
-        Thu, 19 Jan 2023 04:17:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D3FE60BAD;
-        Thu, 19 Jan 2023 12:17:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84736C433F0;
-        Thu, 19 Jan 2023 12:17:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1674130639;
-        bh=eXnAnfAUFHlEjL8uPdD40P2OapTCQ/xIdBuBqDGaxJ4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=N3y+xYmdxWPyzTRr5EgvegVVKvaEEiFz9xtQ2SjdHaitSRqwc9lkB2dYdTLvFgRxP
-         WS2IsQhPHkr20MFa8a4vhtHE9FEbFO8gs7eQHB3azzZz4ygqjtf+heOwuN20H/rhSA
-         QANZpJZuD2OHH+j3xTGX6G8Z/6gTpI0JzPATTKvs=
-Date:   Thu, 19 Jan 2023 13:17:16 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Kishon Vijay Abraham I <kishon@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Siddharth Vadapalli <s-vadapalli@ti.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-phy@lists.infradead.org, linux-usb@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: Re: [PATCH 6/7] usb: host: ehci-exynos: Convert to
- devm_of_phy_optional_get()
-Message-ID: <Y8k0zOQan6SihtUU@kroah.com>
-References: <cover.1674036164.git.geert+renesas@glider.be>
- <96fce347ffa2d6efaa3fd24bf2d91e2a0a91c371.1674036164.git.geert+renesas@glider.be>
+        with ESMTP id S229488AbjASMZc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 07:25:32 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4138C1BE7;
+        Thu, 19 Jan 2023 04:25:29 -0800 (PST)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NyMHj1KtJzJrDy;
+        Thu, 19 Jan 2023 20:24:01 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 19 Jan
+ 2023 20:24:53 +0800
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Subject: Question about ordering between cq polling and notifying hw
+To:     <linux-rdma@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>, <xuhaoyue1@hisilicon.com>,
+        "liyangyang20@huawei.com" <liyangyang20@huawei.com>,
+        <will@kernel.org>, Peter Zijlstra <peterz@infradead.org>
+Message-ID: <0b411583-72f8-54c1-dc48-c270e1ed8ac7@huawei.com>
+Date:   Thu, 19 Jan 2023 20:24:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <96fce347ffa2d6efaa3fd24bf2d91e2a0a91c371.1674036164.git.geert+renesas@glider.be>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,17 +49,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 18, 2023 at 11:15:19AM +0100, Geert Uytterhoeven wrote:
-> Use the new devm_of_phy_optional_get() helper instead of open-coding the
-> same operation.
-> 
-> This lets us drop several checks for IS_ERR(), as phy_power_{on,off}()
-> handle NULL parameters fine.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  drivers/usb/host/ehci-exynos.c | 24 +++++++-----------------
->  1 file changed, 7 insertions(+), 17 deletions(-)
-> 
+Hi, ALL
+   After polling cq, usually the driver need to notify the hw with new ci.
+When I look through the drivers implementing the cq polling and using record
+db[1], there seems to be no memory barrier between parsing the valid cqe and
+notifying the hw with new ci:
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+For ib mlx5 driver, it always use the record db to notify the hw and there
+is no memory barrier parsing the valid cqe and notifying the hw with new ci:
+https://elixir.bootlin.com/linux/v6.2-rc4/source/drivers/infiniband/hw/mlx5/cq.c#L637
+
+For ib hns driver, it supports both record db and normal db, and there is
+memory barrier when using writeq to ring the normal db, but it does not
+have memory barrier for record db:
+https://elixir.bootlin.com/linux/v6.2-rc4/source/drivers/infiniband/hw/hns/hns_roce_hw_v2.c#L4136
+
+For ethernet mlx5 driver, for the tx cq polling, It does have a memory
+barrier, but it is placed after notifying the hw with new ci, not between
+parsing the valid cqe and notifying the hw with new ci:
+https://elixir.bootlin.com/linux/v6.2-rc4/source/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c#L872
+
+Do we need to ensure ordering betwwen parsing the valid cqe and notifying
+the hw with new ci? If there is no ordering, will the recodering cause the
+cpu to notify the hw with new ci before parsing the last valid cqe, casuing
+the hw writing the same cqe while the driver is parsing it?
+
+
+For ethernet mlx5 driver, even there is a comment above the wmb() barrier,
+I am not sure I understand what ordering does the memory barrier enforce
+and why that ordering is needed:
+
+bool mlx5e_poll_tx_cq(struct mlx5e_cq *cq, int napi_budget)
+{
+	......................
+        parsing the valid cqe
+	......................
+
+
+	mlx5_cqwq_update_db_record(&cq->wq);
+
+	/* ensure cq space is freed before enabling more cqes */
+	wmb();
+
+	sq->dma_fifo_cc = dma_fifo_cc;
+	sq->cc = sqcc;
+
+	netdev_tx_completed_queue(sq->txq, npkts, nbytes);
+
+	if (netif_tx_queue_stopped(sq->txq) &&
+	    mlx5e_wqc_has_room_for(&sq->wq, sq->cc, sq->pc, sq->stop_room) &&
+	    mlx5e_ptpsq_fifo_has_room(sq) &&
+	    !test_bit(MLX5E_SQ_STATE_RECOVERING, &sq->state)) {
+		netif_tx_wake_queue(sq->txq);
+		stats->wake++;
+	}
+
+	return (i == MLX5E_TX_CQ_POLL_BUDGET);
+}
+
+
+1. Doorbell records are located in physical memory. The address of DoorBell record
+   is passed to the HW at RQ/SQ creation. see:
+https://network.nvidia.com/files/doc-2020/ethernet-adapters-programming-manual.pdf
