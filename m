@@ -2,61 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A3C4673FB8
-	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 18:17:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07056673FBA
+	for <lists+netdev@lfdr.de>; Thu, 19 Jan 2023 18:18:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229798AbjASRRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 12:17:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59584 "EHLO
+        id S229592AbjASRSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 12:18:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229592AbjASRRw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 12:17:52 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4449E2887F
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 09:17:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=3xMlunkRCcJIS751bLdhsys16drmVg5YEN73wGDCqxg=; b=wEsW0+j8MBQKhcVhQgxiw9FYhj
-        Xa4aWl4aNJx2MYLVcOzLaF9vx2SwFZht0qonGgGvahLKdzY3OVY1jabWM1XlybXAdGc3t/zMsdbWe
-        /irTeZJ77jv8YUsR1pe9dV2Jx+iROOQ8H5k5y0h2Gc8C9Kyc6EnzY1CSngAvXGyupu4BvKrSXKsCa
-        GojjJaV0d3RhN879yYBhe8b0QjTfux/iHamEu2ynbZLMtZkPMEW3mTC2immtLII53hyMy54U2ci0n
-        H+N8QV8SJjkJtGMFoVK8FRdNi6KyEGZel1qQ7iVWto3wBkpODRbg9PfrxPq/HM9udGxuWuBvq41v6
-        tmqXwoyw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36210)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pIYXs-0004jM-G9; Thu, 19 Jan 2023 17:17:48 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pIYXr-0000eM-1L; Thu, 19 Jan 2023 17:17:47 +0000
-Date:   Thu, 19 Jan 2023 17:17:47 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
-Cc:     netdev@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Alexander Couzens <lynxis@fe80.eu>
-Subject: Re: [PATCH net 1/3] net: mediatek: sgmii: ensure the SGMII PHY is
- powered down on configuration
-Message-ID: <Y8l7Oz9gpslb3IwH@shell.armlinux.org.uk>
-References: <20230119171248.3882021-1-bjorn@mork.no>
- <20230119171248.3882021-2-bjorn@mork.no>
+        with ESMTP id S229924AbjASRSW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 12:18:22 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 324762A14C;
+        Thu, 19 Jan 2023 09:18:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=goNppuvMsvAqTs2f6LDSEjPwHmSsgV4gH7uC2Dwvo8A=; b=JlTJVlLtDX5VBm3jpr+T7LKb8s
+        R8oUOd9OnwmO+diUvmHieYRV+PDwhqRgzuzFstpbcFeYi6IBjBBcT/0z7umETLxwcSrd1ZllMScRL
+        NsSeERJrV65F4oxWbeUwsqe5ORDdSBFu8ohfpsHXGaIVxjEvl9TB+OAIFwvV+KUGKzmU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pIYY1-002c22-I1; Thu, 19 Jan 2023 18:17:57 +0100
+Date:   Thu, 19 Jan 2023 18:17:57 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jerome Brunet <jbrunet@baylibre.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        linux-amlogic@lists.infradead.org,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Da Xue <da@lessconfused.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 2/2] net: mdio: add amlogic gxl mdio mux support
+Message-ID: <Y8l7Rc9Vde9J45ij@lunn.ch>
+References: <20230116091637.272923-1-jbrunet@baylibre.com>
+ <20230116091637.272923-3-jbrunet@baylibre.com>
+ <Y8dhUwIMb4tTeqWN@lunn.ch>
+ <1jmt6eye1m.fsf@starbuckisacylon.baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230119171248.3882021-2-bjorn@mork.no>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <1jmt6eye1m.fsf@starbuckisacylon.baylibre.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,44 +53,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 19, 2023 at 06:12:46PM +0100, Bjørn Mork wrote:
-> From: Alexander Couzens <lynxis@fe80.eu>
+> >> +
+> >> +	/* Set the internal phy id */
+> >> +	writel_relaxed(FIELD_PREP(REG2_PHYID, 0x110181),
+> >> +		       priv->regs + ETH_REG2);
+> >
+> > So how does this play with what Heiner has been reporting recently?
 > 
-> The code expect the PHY to be in power down which is only true after reset.
-> Allow changes of the SGMII parameters more than once.
+> What Heiner reported recently is related to the g12 family, not the gxl
+> which this driver address.
 > 
-> There are cases when the SGMII_PHYA_PWD register contains 0x9 which
-> prevents SGMII from working. The SGMII still shows link but no traffic
-> can flow. Writing 0x0 to the PHYA_PWD register fix the issue. 0x0 was
-> taken from a good working state of the SGMII interface.
+> That being said, the g12 does things in a similar way - the glue
+> is just a bit different:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/mdio/mdio-mux-meson-g12a.c?h=v6.2-rc4#n165
 > 
-> Signed-off-by: Alexander Couzens <lynxis@fe80.eu>
-> [ bmork: rebased and squashed into one patch ]
-> Signed-off-by: Bjørn Mork <bjorn@mork.no>
-> ---
->  drivers/net/ethernet/mediatek/mtk_sgmii.c | 18 +++++++++++++++---
->  1 file changed, 15 insertions(+), 3 deletions(-)
+> > What is the reset default? Who determined this value?
 > 
-> diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-> index 5c286f2c9418..481f2f1e39f5 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-> @@ -88,6 +88,10 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
->  		bmcr = 0;
->  	}
->  
-> +	/* PHYA power down */
-> +	regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL,
-> +			   SGMII_PHYA_PWD, SGMII_PHYA_PWD);
-> +
+> It's the problem, the reset value is 0. That is why GXL does work with the
+> internal PHY if the bootloader has not initialized it before the kernel
+> comes up ... and there is no guarantee that it will.
+> 
+> The phy id value is arbitrary, same as the address. They match what AML
+> is using internally.
 
-Doing this unconditionally means that the link will drop - even when
-we aren't doing any reconfiguration (except changing the advertisement).
-That's why I made it conditional in the version of the patch I sent
-(which failed due to the unknown bits 3 and 0.)
+Please document where these values have come from. In the future we
+might need to point a finger when it all goes horribly wrong.
 
-We should always avoid bouncing the link when there's no reason to.
+> They have been kept to avoid making a mess if a vendor bootloader is
+> used with the mainline kernel, I guess.
+> 
+> I suppose any value could be used here, as long as it matches the value
+> in the PHY driver:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/phy/meson-gxl.c?h=v6.2-rc4#n253
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Some Marvell Ethernet switches with integrated PHYs have IDs with the
+vendor part set to Marvell, but the lower part is 0. The date sheet
+even says this is deliberate, you need to look at some other register
+in the switches address space to determine what the part is. That
+works O.K in the vendor crap monolithic driver, but not for Linux
+which separates the drivers up. So we have to intercept the reads and
+fill in the lower part. And we have no real knowledge if the PHYs are
+all the same, or there are differences. So we put in the switch ID,
+and the PHY driver then has an entry per switch. That gives us some
+future wiggle room if we find the PHYs are actually different.
+
+Is there any indication in the datasheets that the PHY is the exact
+same one as in the g12? Are we really safe to reuse this value between
+different SoCs?
+
+I actually find it an odd feature. Does the datasheet say anything
+about Why you can set the ID in software? The ID describes the
+hardware, and software configuration should not be able to change the
+hardware in any meaningful way.
+
+> >> +	/* Enable the internal phy */
+> >> +	val |= REG3_PHYEN;
+> >> +	writel_relaxed(val, priv->regs + ETH_REG3);
+> >> +	writel_relaxed(0, priv->regs + ETH_REG4);
+> >> +
+> >> +	/* The phy needs a bit of time to come up */
+> >> +	mdelay(10);
+> >
+> > What do you mean by 'come up'? Not link up i assume. But maybe it will
+> > not respond to MDIO requests?
+> 
+> Yes this MDIO multiplexer is also the glue that provides power and
+> clocks to the internal PHY. Once the internal PHY is selected, it needs
+> a bit a of time before it is usuable. 
+
+O.K, please reword it to indicate power up, not link up.
+
+     Andrew
