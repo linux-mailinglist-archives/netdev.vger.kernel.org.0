@@ -2,76 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89A976751B7
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 10:54:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA9096751E9
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 11:00:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230290AbjATJyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 04:54:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45120 "EHLO
+        id S230124AbjATKAB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 05:00:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229767AbjATJyb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 04:54:31 -0500
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06B8518F6;
-        Fri, 20 Jan 2023 01:54:24 -0800 (PST)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30K8fqbH023335;
-        Fri, 20 Jan 2023 04:54:16 -0500
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3n7qnw09j8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 Jan 2023 04:54:16 -0500
-Received: from m0167089.ppops.net (m0167089.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 30K9sGjb001974;
-        Fri, 20 Jan 2023 04:54:16 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3n7qnw09j5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 Jan 2023 04:54:15 -0500
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 30K9sECh036494
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 20 Jan 2023 04:54:14 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 20 Jan
- 2023 04:54:13 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 20 Jan 2023 04:54:13 -0500
-Received: from tachici-Precision-5530.ad.analog.com ([10.48.65.139])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 30K9rqU0021132;
-        Fri, 20 Jan 2023 04:54:09 -0500
-From:   Alexandru Tachici <alexandru.tachici@analog.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <richardcochran@gmail.com>, <yangyingliang@huawei.com>,
-        <weiyongjun1@huawei.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <devicetree@vger.kernel.org>,
-        <lennart@lfdomain.com>
-Subject: [net-next 3/3] dt-bindings: net: adin1110: Document ts-capt pin
-Date:   Fri, 20 Jan 2023 11:53:48 +0200
-Message-ID: <20230120095348.26715-4-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230120095348.26715-1-alexandru.tachici@analog.com>
-References: <20230120095348.26715-1-alexandru.tachici@analog.com>
+        with ESMTP id S230349AbjATJ7s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 04:59:48 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAEC072C11
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 01:59:41 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id j17so3608568wms.0
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 01:59:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
+        bh=CalUi7H0NnAhfJuzuJclWVRrTyNCQfv1cY6vQf3KRAE=;
+        b=TqLZRzqIKBjLYcJvM8Vh5p3p+sMzlxty5cDJSAJOcA0JBxFFchd2x/j0LqmISTC65m
+         kIaJv5v6DmaMfxZQMXFXjJu1cTsSPEFiYhCA7zJ+6T1n1BB9FBNZZxxQ+jJ1tSah5mpj
+         fh4iuIt3a9t8s2zzPEB3FqwcvUDn5CnGcxVBNSjVqhyytq2Ewnx78auvZQfFHZvtnIo6
+         whhfKQIDou/G0X3vUqHhvEWSSYoJukW7X3aWuI/K6b26Jh73QWFFXIElOTqVDotWQM3I
+         kDycQVn+L3K16iVtNyP4nk4X9mx1pFiYlQlsJXgUcinmuSQwK+2zU1IzST19gjNGNNhR
+         97pQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CalUi7H0NnAhfJuzuJclWVRrTyNCQfv1cY6vQf3KRAE=;
+        b=e/qpIAokjiDqAQwgPrApLE+0eKDuoljC/WyFrb7kflBsfcyuqz/MuQnn0tvgY8bt5a
+         1u5lEaGH9YCYRgpGiS9YCu2MTa5Ny8Q2+j5wIEC6R2R5XAt5NXiIyaMvbqDh4wjybVe5
+         89v4RYr+pWyuV5sBAK6dKCeQQrqw3J8ocLxZo0bfGzSz/FBRzTnjDqf3EUgXXvxdJnKK
+         vKWIn5lHXHx6K22K9/d/DMF2hBip1BZTBuR17RPwPR9H82oYXvG1N8u2VjwVZ3QoGF/W
+         F9wNgJRiRpNpD76EqrB6GySmLBcP6ST/47/PifBZ+XZyo8UOfVSrV22DplgJ+7xq7w2V
+         uXsg==
+X-Gm-Message-State: AFqh2krm16yUpYlN4WABf8cWsKxe7dVIIG2NXOL0At9z5giqvvRZZqYa
+        37+ir6lhTF23VRiwk86W2o4rWA==
+X-Google-Smtp-Source: AMrXdXu5d19sUSVtHg3LvUHdmh7YBTwLS0YM3EeMCGdrpU3aWKVP3DSZayV+RS09XeylMzkLYsl79Q==
+X-Received: by 2002:a05:600c:687:b0:3d9:73fb:8aaa with SMTP id a7-20020a05600c068700b003d973fb8aaamr13598753wmn.8.1674208780241;
+        Fri, 20 Jan 2023 01:59:40 -0800 (PST)
+Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.gmail.com with ESMTPSA id c2-20020a05600c0a4200b003daf6e3bc2fsm10482172wmq.1.2023.01.20.01.59.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Jan 2023 01:59:39 -0800 (PST)
+References: <d75ef7df-a645-7fdd-491a-f89f70dbea01@gmail.com>
+ <Y8Qwk5H8Yd7qiN0j@lunn.ch>
+ <03ea260e-f03c-d9d7-6f5f-ff72836f5739@gmail.com>
+ <51abd8ca-8172-edfa-1c18-b1e48231f316@linaro.org>
+ <6de25c61-c187-fb88-5bd7-477b1db1510e@gmail.com>
+ <699f6ee109b3a72b2b377f42a78705f47d4a77b9.camel@redhat.com>
+ <Y8ai6+oaaP0KwkAY@lunn.ch>
+ <1f841ad8-d2f9-cf39-da65-5c90fddb3cee@gmail.com>
+User-agent: mu4e 1.8.10; emacs 28.2
+From:   Jerome Brunet <jbrunet@baylibre.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
+Cc:     Neil Armstrong <neil.armstrong@linaro.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>
+Subject: Re: [PATCH net-next] net: phy: meson-gxl: support more
+ G12A-internal PHY versions
+Date:   Fri, 20 Jan 2023 10:55:29 +0100
+In-reply-to: <1f841ad8-d2f9-cf39-da65-5c90fddb3cee@gmail.com>
+Message-ID: <1jsfg5wmpi.fsf@starbuckisacylon.baylibre.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: YDNBpWrcHGfszGd-G8B6bCenBJZ8bm7d
-X-Proofpoint-ORIG-GUID: 4XgliSjMGY250yf6wsqSYqB3E4URa4XP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-01-20_06,2023-01-19_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- lowpriorityscore=0 adultscore=0 mlxscore=0 bulkscore=0 phishscore=0
- spamscore=0 priorityscore=1501 clxscore=1015 suspectscore=0 malwarescore=0
- mlxlogscore=888 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301200093
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,31 +87,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentation for the use of the timestamp capture pin.
 
-Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
----
- Documentation/devicetree/bindings/net/adi,adin1110.yaml | 7 +++++++
- 1 file changed, 7 insertions(+)
+On Tue 17 Jan 2023 at 15:51, Heiner Kallweit <hkallweit1@gmail.com> wrote:
 
-diff --git a/Documentation/devicetree/bindings/net/adi,adin1110.yaml b/Documentation/devicetree/bindings/net/adi,adin1110.yaml
-index 9de865295d7a..f2db919c166b 100644
---- a/Documentation/devicetree/bindings/net/adi,adin1110.yaml
-+++ b/Documentation/devicetree/bindings/net/adi,adin1110.yaml
-@@ -50,6 +50,13 @@ properties:
-     maxItems: 1
-     description: GPIO connected to active low reset
- 
-+  ts-capt-gpios:
-+    maxItems: 1
-+    description: |
-+      Optional active high GPIO. Connected to the TS_TIMER pin of ADIN1110.
-+      When pulled up device will save a timestamp containing both the
-+      seconds and nanoseconds part simultaneously.
-+
- required:
-   - compatible
-   - reg
--- 
-2.34.1
+> On 17.01.2023 14:30, Andrew Lunn wrote:
+>>>> The PHY compatible string in DT is the following in all cases:
+>>>> compatible = "ethernet-phy-id0180.3301"
+>> 
+>> This form of compatible has two purposes.
+>> 
+>> 1) You cannot read the PHY ID register during MDIO bus enumeration,
+>> generally because you need to turn on GPIOs, clocks, regulators etc,
+>> which the MDIO/PHY core does not know how to do.
+>> 
+>> 2) The PHY has bad values in its ID registers, typically because the
+>> manufactures messed up.
+>> 
+>> If you have a compatible like this, the ID registers are totally
+>> ignored by Linux, and the ID is used to find the driver and tell the
+>> driver exactly which of the multiple devices it supports it should
+>> assume the device is.
+>> 
+>> So you should use this from of compatible with care. You can easily
+>> end up thinking you have a different PHY to what you actually have,
+>> which could then result in wrong erratas being applied etc, or even
+>> the wrong driver being used.
+>> 
+>
+> Right. I checked and this compatible was added with
+> 280c17df8fbf ("arm64: dts: meson: g12a: add mdio multiplexer").
+>
+> compatible = "ethernet-phy-id0180.3301", "ethernet-phy-ieee802.3-c22";
+>
+> The commit message doesn't explain why overriding the PHY ID
+> is needed. Maybe Jerome as author can shed some light on it.
+
+Guilty ... I'm afraid git a far better memory than I do.
+
+There is no reason for this compatible. It works without it (as
+explained on other threads)
+
+It was a mistake to add it in the first place. Probably a stupid
+copy/paste. It can (and should) be removed.
+
+>
+> At least on my system it's not needed (after setting the PHY ID
+> in the PHY driver to the actual value).
+>
+> Would be interesting to know whether PHY is still detected
+> and driver loaded with this patch on g12 systems.
+> If the genphy driver should be used then the actual PHY ID
+> would be interesting (look for attribute phy_id in sysfs).
+>
+> diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+> index 585dd70f6..8af48aff0 100644
+> --- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+> +++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+> @@ -1695,8 +1695,7 @@ int_mdio: mdio@1 {
+>  					#size-cells = <0>;
+>  
+>  					internal_ephy: ethernet_phy@8 {
+> -						compatible = "ethernet-phy-id0180.3301",
+> -							     "ethernet-phy-ieee802.3-c22";
+> +						compatible = "ethernet-phy-ieee802.3-c22";
+>  						interrupts = <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>;
+>  						reg = <8>;
+>  						max-speed = <100>;
+> diff --git a/drivers/net/phy/meson-gxl.c b/drivers/net/phy/meson-gxl.c
+> index c49062ad7..0fd76d49a 100644
+> --- a/drivers/net/phy/meson-gxl.c
+> +++ b/drivers/net/phy/meson-gxl.c
+> @@ -262,7 +262,7 @@ static struct phy_driver meson_gxl_phy[] = {
+>  		.suspend        = genphy_suspend,
+>  		.resume         = genphy_resume,
+>  	}, {
+> -		PHY_ID_MATCH_EXACT(0x01803301),
+> +		PHY_ID_MATCH_EXACT(0x01803300),
+>  		.name		= "Meson G12A Internal PHY",
+>  		/* PHY_BASIC_FEATURES */
+>  		.flags		= PHY_IS_INTERNAL,
 
