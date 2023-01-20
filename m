@@ -2,50 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCF3F674CA8
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 06:39:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C5BD674CB4
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 06:45:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231565AbjATFi7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 00:38:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46824 "EHLO
+        id S229490AbjATFpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 00:45:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231566AbjATFip (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 00:38:45 -0500
+        with ESMTP id S230143AbjATFpU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 00:45:20 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3E65FC1;
-        Thu, 19 Jan 2023 21:35:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0DA9F8
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 21:45:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6481661E23;
-        Fri, 20 Jan 2023 05:35:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61686C433D2;
-        Fri, 20 Jan 2023 05:35:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E66161E1B
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 05:45:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74343C433EF;
+        Fri, 20 Jan 2023 05:45:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674192958;
-        bh=8fStNEoSsGqotQjU+mQkrtNKHP0mDcCwZkH9P+/tZzk=;
+        s=k20201202; t=1674193518;
+        bh=GTrI+ceeC+lwXuxpSEzroCr2PdqpazZnmz3TaFhMlms=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Nia8b2pq9XxzIMd3lyGpEAN0Pu2CG6R/GrdcTOZCV4rgawIEe5u3WFJu2zMwOjyZG
-         8eEBY+03XA+j95KK5CCOiiWA9sXNPWwz2vFhJzWV3mNQotav9sq+K0i/IZJ/Cr6itK
-         q1pRC7CcHDb23n3UfaPPtScqf9+o5Y9UBXKndLHQRiR7KKYi4BfKO6EIjltz9VBnHe
-         ORM8i89pvcJDHieagLHpp1wDMAZCl8BnxhP/qDOrPJfe+bxGoUK/FpTrjLrFUv5JmJ
-         qpfaAS6LoYjQeyVqWaQEbykyPEh8BPopyy8Jop/IBYEorFcFoXeAlfgN6kfHfE8lsX
-         n5v0uF+zOoXUQ==
-Date:   Thu, 19 Jan 2023 21:35:57 -0800
+        b=TdiMUgPhxNBpwAjmqCtJvb/qVxSYq20Ph1q4+jR6t5TgruzbtHzPQL/3Scmw37dQq
+         dHqF4HwJZiC54cGObXmjCzWvfK7HRluDr9PPjYRb51Akv9NWiFmVbi1SvQPtEJdS1l
+         dLGg1xFSAmi/X9M0+nKvkpP09hpdgp6zxt78ybESpBMCmayHSeHZ5qIZy7qXWsD6m1
+         /T/PL+NcvZMsNwj41/zAqmNr70wPMogIOOhdyIzVZr9HmFq2scaPAekuYQUvCbvPIx
+         EQ6seoGM29mP2D86pXGNFApv245P3hkR9Hgj00F4f4ON/+ke9zeErjc8XgStIopavN
+         bRpR1bQuwA6Rg==
+Date:   Thu, 19 Jan 2023 21:45:16 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>, <linux-pci@vger.kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, <netdev@vger.kernel.org>,
-        <intel-wired-lan@lists.osuosl.org>, <linux-kernel@vger.kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Subject: Re: [Intel-wired-lan] [PATCH 2/9] e1000e: Remove redundant
- pci_enable_pcie_error_reporting()
-Message-ID: <20230119213557.57598e8f@kernel.org>
-In-Reply-To: <2c722338-c113-14a1-040b-70326e2e2451@intel.com>
-References: <20230119184045.GA482553@bhelgaas>
-        <2c722338-c113-14a1-040b-70326e2e2451@intel.com>
+To:     Rahul Rameshbabu <rrameshbabu@nvidia.com>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vincent Cheng <vincent.cheng.xh@renesas.com>
+Subject: Re: [net-next 03/15] net/mlx5: Add adjphase function to support
+ hardware-only offset control
+Message-ID: <20230119214516.59adab05@kernel.org>
+In-Reply-To: <87k01hu6fb.fsf@nvidia.com>
+References: <20230118183602.124323-1-saeed@kernel.org>
+        <20230118183602.124323-4-saeed@kernel.org>
+        <739b308c-33ec-1886-5e9d-6c5059370d15@intel.com>
+        <20230119194631.1b9fef95@kernel.org>
+        <87tu0luadz.fsf@nvidia.com>
+        <20230119200343.2eb82899@kernel.org>
+        <87pmb9u90j.fsf@nvidia.com>
+        <20230119210842.5faf1e44@kernel.org>
+        <87k01hu6fb.fsf@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,22 +69,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Jan 2023 13:31:39 -0800 Tony Nguyen wrote:
-> > Thanks a million for taking a look at these, Tony!
-> > 
-> > These driver patches are all independent and have no dependency on the
-> > 1/9 PCI/AER patch.  What's your opinion on merging these?  Should they
-> > go via netdev?  Should they be squashed into a single patch that does
-> > all the Intel drivers at once?
-> > 
-> > I'm happy to squash them and/or merge them via the PCI tree, whatever
-> > is easiest.  
+On Thu, 19 Jan 2023 21:22:00 -0800 Rahul Rameshbabu wrote:
+> > Hm, so are you saying that:
+> >
+> > adjtime(delta):
+> > 	clock += delta
+> >
+> > but:
+> >
+> > adjfreq(delta):  
 > 
-> Since there's no dependency, IMO, it'd make sense to go through 
-> Intel-wired-lan/netdev. Keeping them per driver is fine.
+> Did you mean adjphase here?
 
-Ah, damn, I spammed Bjorn with the same question because email was
-pooped most of the day :/ Reportedly not vger, email in general but 
-fool me once...
+Yes, sorry
 
-Tony, if you could take these via your tree that'd be best.
+> > 	on clock tick & while delta > 0:
+> > 		clock += small_value
+> > 		delta -= small_value
+> >
+> > because from looking at mlx5 driver code its unclear whether the
+> > implementation does a precise but one shot adjustment or gradual
+> > adjustments.  
+> 
+> The pseudo code your drafted is accurate otherwise. The lack of clarity
+> in our driver comes from leaving the responsibility of that smooth
+> gradual transition (to keep in sync with the clock frequency while
+> running) up to the device.
+
+Ah, I see. That makes sense. This is how system clocks react too 
+or is it a local PTP invention? I think it may be worth documenting 
+in ptp_clock_kernel.h, most driver authors may not understand 
+the difference between adjtime and adjphase :(
