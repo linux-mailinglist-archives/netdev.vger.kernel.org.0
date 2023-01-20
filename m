@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9B1B6750BC
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 10:21:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FE036750BD
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 10:21:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230272AbjATJVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 04:21:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37456 "EHLO
+        id S230252AbjATJVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 04:21:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230293AbjATJVf (ORCPT
+        with ESMTP id S230290AbjATJVf (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 04:21:35 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F6E951B6
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9103E9EE0F
         for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 01:21:11 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pIna3-0002yG-E4; Fri, 20 Jan 2023 10:21:03 +0100
+        id 1pIna3-0002yO-EE; Fri, 20 Jan 2023 10:21:03 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pIna1-007L8x-Ld; Fri, 20 Jan 2023 10:21:01 +0100
+        id 1pIna2-007L99-GB; Fri, 20 Jan 2023 10:21:02 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pIna0-001STr-V6; Fri, 20 Jan 2023 10:21:00 +0100
+        id 1pIna0-001SU0-Vr; Fri, 20 Jan 2023 10:21:00 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH net-next v2 2/4] net: phy: micrel: add EEE configuration support for KSZ9477 variants of PHYs
-Date:   Fri, 20 Jan 2023 10:20:57 +0100
-Message-Id: <20230120092059.347734-3-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v2 3/4] net: phy: micrel: disable 1000Mbit EEE support if 1000Mbit is not supported
+Date:   Fri, 20 Jan 2023 10:20:58 +0100
+Message-Id: <20230120092059.347734-4-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230120092059.347734-1-o.rempel@pengutronix.de>
 References: <20230120092059.347734-1-o.rempel@pengutronix.de>
@@ -60,119 +60,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-KSZ9477 variants of PHYs are not completely compatible with generic
-phy_ethtool_get/set_eee() handlers. For example MDIO_PCS_EEE_ABLE acts
-like a mirror of MDIO_AN_EEE_ADV register. If MDIO_AN_EEE_ADV set to 0,
-MDIO_PCS_EEE_ABLE will be 0 too. It means, if we do
-"ethtool --set-eee lan2 eee off", we won't be able to enable it again.
+KSZ8563 is announcing by default 1000Mbit EEE support, but at same time
+do not supporting 1000Mbit speed.
 
-With this patch, instead of reading MDIO_PCS_EEE_ABLE register, the
-driver will provide proper abilities.
+This patch will disable 1000Mbit EEE advertisement if the PHY is not
+1000Mbit capable.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/phy/micrel.c | 81 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 81 insertions(+)
+ drivers/net/phy/micrel.c | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index d5b80c31ab91..dca61a73c144 100644
+index dca61a73c144..30fed309250e 100644
 --- a/drivers/net/phy/micrel.c
 +++ b/drivers/net/phy/micrel.c
-@@ -1370,6 +1370,85 @@ static int ksz9131_config_aneg(struct phy_device *phydev)
- 	return genphy_config_aneg(phydev);
+@@ -1449,6 +1449,25 @@ static int ksz9477_set_eee(struct phy_device *phydev, struct ethtool_eee *data)
+ 	return 0;
  }
  
-+static void ksz9477_get_eee_caps(struct phy_device *phydev,
-+				 struct ethtool_eee *data)
++static int ksz9477_config_init(struct phy_device *phydev)
 +{
-+	/* At least on KSZ8563 (which has same PHY_ID as KSZ9477), the
-+	 * MDIO_PCS_EEE_ABLE register is a mirror of MDIO_AN_EEE_ADV register.
-+	 * So, we need to provide this information by driver.
-+	 */
-+	data->supported = SUPPORTED_100baseT_Full;
++	int ret;
 +
 +	/* KSZ8563 is able to advertise not supported MDIO_EEE_1000T.
-+	 * We need to test if the PHY is 1Gbit capable.
++	 * We need to test if the PHY is 1Gbit capable and
++	 * clear MDIO_EEE_1000T if needed.
 +	 */
-+	if (linkmode_test_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
-+			      phydev->supported))
-+		data->supported |= SUPPORTED_1000baseT_Full;
-+}
-+
-+static int ksz9477_get_eee(struct phy_device *phydev, struct ethtool_eee *data)
-+{
-+	int val;
-+
-+	ksz9477_get_eee_caps(phydev, data);
-+
-+	/* Get advertisement EEE */
-+	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV);
-+	if (val < 0)
-+		return val;
-+	data->advertised = mmd_eee_adv_to_ethtool_adv_t(val);
-+	data->eee_enabled = !!data->advertised;
-+
-+	/* Get LP advertisement EEE */
-+	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_LPABLE);
-+	if (val < 0)
-+		return val;
-+	data->lp_advertised = mmd_eee_adv_to_ethtool_adv_t(val);
-+
-+	data->eee_active = !!(data->advertised & data->lp_advertised);
-+
-+	return 0;
-+}
-+
-+static int ksz9477_set_eee(struct phy_device *phydev, struct ethtool_eee *data)
-+{
-+	int old_adv, adv = 0, ret;
-+
-+	ksz9477_get_eee_caps(phydev, data);
-+
-+	old_adv = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV);
-+	if (old_adv < 0)
-+		return old_adv;
-+
-+	if (data->eee_enabled) {
-+		if (!data->advertised)
-+			adv = ethtool_adv_to_mmd_eee_adv_t(data->supported);
-+		else
-+			adv = ethtool_adv_to_mmd_eee_adv_t(data->advertised &
-+							   data->supported);
-+		/* Mask prohibited EEE modes */
-+		adv &= ~phydev->eee_broken_modes;
-+	}
-+
-+	if (old_adv != adv) {
-+		ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV, adv);
-+		if (ret < 0)
++	if (!linkmode_test_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
++			       phydev->supported)) {
++		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV,
++					 MDIO_EEE_1000T);
++		if (ret)
 +			return ret;
-+
-+		/* Restart autonegotiation so the new modes get sent to the
-+		 * link partner.
-+		 */
-+		if (phydev->autoneg == AUTONEG_ENABLE) {
-+			ret = phy_restart_aneg(phydev);
-+			if (ret < 0)
-+				return ret;
-+		}
 +	}
 +
-+	return 0;
++	return kszphy_config_init(phydev);
 +}
 +
  #define KSZ8873MLL_GLOBAL_CONTROL_4	0x06
  #define KSZ8873MLL_GLOBAL_CONTROL_4_DUPLEX	BIT(6)
  #define KSZ8873MLL_GLOBAL_CONTROL_4_SPEED	BIT(4)
-@@ -3422,6 +3501,8 @@ static struct phy_driver ksphy_driver[] = {
+@@ -3496,7 +3515,7 @@ static struct phy_driver ksphy_driver[] = {
+ 	.phy_id_mask	= MICREL_PHY_ID_MASK,
+ 	.name		= "Microchip KSZ9477",
+ 	/* PHY_GBIT_FEATURES */
+-	.config_init	= kszphy_config_init,
++	.config_init	= ksz9477_config_init,
+ 	.config_intr	= kszphy_config_intr,
  	.handle_interrupt = kszphy_handle_interrupt,
  	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
-+	.get_eee	= ksz9477_get_eee,
-+	.set_eee	= ksz9477_set_eee,
- } };
- 
- module_phy_driver(ksphy_driver);
 -- 
 2.30.2
 
