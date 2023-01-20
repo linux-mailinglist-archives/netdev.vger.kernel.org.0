@@ -2,85 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89FE6675DB3
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 20:11:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B5BA675DDE
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 20:21:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230210AbjATTLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 14:11:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47076 "EHLO
+        id S230262AbjATTVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 14:21:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbjATTLo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 14:11:44 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCC918F7C9
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 11:11:37 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id bk16so5678943wrb.11
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 11:11:37 -0800 (PST)
+        with ESMTP id S230264AbjATTVI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 14:21:08 -0500
+Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62AD128D26
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 11:21:07 -0800 (PST)
+Received: by mail-vs1-xe2b.google.com with SMTP id 3so6727168vsq.7
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 11:21:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=4Q+aLB5M5/TtTEFhcMDlKLReVmNxD7MHhEY2/008DlU=;
-        b=E7t1/+Gnjzurlpr/Yn6EkM1klgtAtjeaa9iuyyqal5uLsl85A71nsHcV5EA8YN/c4q
-         ct0GFvERpjIf6/1GmvemEYA2IhVLf2RKXGH+Yjlse7avRmqkJD7QTI5CtfaPPsv89hFD
-         vA9/8Q9vqMkQgmvhzWh4vc8uCppxObhEpllCqzrCMOl2z04M4K7K/fa09Ec97/lMaP24
-         By/BW1aS2Meunp9N9i/Yctxn4l3KehCL1zD5DBQ8Maz0Hf65N2p1UX0h+q+1N8LdAikL
-         i5HEU9sA9F2xfhaEObOuwpM7nCHcQo/OlFyWFs/9507UwOyn7Q9yV/aRkl4mGO5Kpb+u
-         XuyQ==
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=oKc6aNElBeAjI0A5h4AlsuIRL0OuAo/OC+4hdSyr7ko=;
+        b=cNyecBjx4GrRbbQB+eKy3OkwQjZ2Qa0TMinfaoUdN/IRX0MBlZa/RsYnhvR2kAZb6x
+         CtXGnDx05z8vkmXXN1skLmANGwZ7jJIKWbLP864IS6hmrqdNLYeQTmVwNqz+d3RGX7Y7
+         Y2j2qq4OX70FgEDGJmBIxLHz0/f14J8oiZ154=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4Q+aLB5M5/TtTEFhcMDlKLReVmNxD7MHhEY2/008DlU=;
-        b=Egu+yBFJarfmqljqHsHwnomZLe9RH4eOr4Qk1Fncct59vPW23Pj6vEKyF8o07BPyJo
-         gHfqwDSB6CDuIU+9XUaQmD0fwZE+OyM6UKRcK4OoTEiuAMeKtqutL74Yulhy0PmpuIru
-         S+VkXVdiglkzBSU4gtVAOco0JdOtKF3EWZlni66bB0q9aPBqN/b0ix6//KU45Cg5i+/K
-         VPh6JcEUTazAqFVFE22JTycGLuCivSnViw7hD3hPtORwutgF5QItJyRh1FFDml05Bi2N
-         PwYA8GK6SwAiteoc6U2MMWx3dyQow22ilzi7V1/+bPnWtWgCTD00A5kZbkF4UaPgBtgb
-         Tn3Q==
-X-Gm-Message-State: AFqh2kqQhWMyrFqQZ9Q4mQZbZvFl81bfiFRlzuR4UjTwyZ5gJ5/VRMmw
-        XFwq6ATkI7g1JIda7Np588zUlg==
-X-Google-Smtp-Source: AMrXdXviftZrowwMMsIKfyvYN8fMTCkcpKAv8IP621sNth/hnoNpSvxsyCaL1+KiOgAfApfFgJXebA==
-X-Received: by 2002:adf:eacd:0:b0:2bb:f4bf:e763 with SMTP id o13-20020adfeacd000000b002bbf4bfe763mr23954624wrn.51.1674241896145;
-        Fri, 20 Jan 2023 11:11:36 -0800 (PST)
-Received: from [10.83.37.24] ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id g2-20020a5d4882000000b00286ad197346sm36404269wrq.70.2023.01.20.11.11.34
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=oKc6aNElBeAjI0A5h4AlsuIRL0OuAo/OC+4hdSyr7ko=;
+        b=SuVGMHzmtAhRK5G+td6TgXuSUqGq3GliS3rGeonReVclsGo+xHFmQHgdd6HXE+7W/y
+         ep0EjBISOMOACCK+V/1uf7+YBg3yejlv9LiO2h7oxIVq2PaO2/u4YWWCKN1tLTa1Ig/0
+         DAehrPbLUU7+j8JrM+LCcs9C+sdkQrSQjcB4a9P+bbCILt1IoyhnHKSARTCxBQG0MtDf
+         TDNYy6qdRLjsuB+u0PRqANcWntj7PxH2QSI6LqFtZq5O/VV6WLZF38zicEUb6qZEY22p
+         8WLmCzbF94AHAKxqpMSFWl5ftbJ3nTKz499bE3u/sJN7xLSqxushd5myVrDLDWu/RXvi
+         jrpQ==
+X-Gm-Message-State: AFqh2kq+wVdT/GYf6W9JeCbMWT707/3HkKjdIAoVoCnGgPrptjMll5Th
+        hRTlKa59cuCWpshjPb0YkzYkV4nE8gwQHePq
+X-Google-Smtp-Source: AMrXdXuxpbXMIyRTOU2iS65OSj8uKbFncSyYdv45xc9kDOL+aXUPn9HyLObQvSbiZfKrWYIkGhYCKg==
+X-Received: by 2002:a05:6102:2135:b0:3c8:f1de:f5b6 with SMTP id f21-20020a056102213500b003c8f1def5b6mr10154870vsg.8.1674242466328;
+        Fri, 20 Jan 2023 11:21:06 -0800 (PST)
+Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com. [209.85.222.174])
+        by smtp.gmail.com with ESMTPSA id f9-20020a05620a280900b006fcaa1eab0esm27076762qkp.123.2023.01.20.11.21.05
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Jan 2023 11:11:35 -0800 (PST)
-Message-ID: <59125aa9-ad7c-93d7-1c48-63773fa5a82e@arista.com>
-Date:   Fri, 20 Jan 2023 19:11:29 +0000
+        Fri, 20 Jan 2023 11:21:05 -0800 (PST)
+Received: by mail-qk1-f174.google.com with SMTP id w21so3416411qkf.8
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 11:21:05 -0800 (PST)
+X-Received: by 2002:a05:620a:144a:b0:6ff:cbda:a128 with SMTP id
+ i10-20020a05620a144a00b006ffcbdaa128mr837664qkl.697.1674242465702; Fri, 20
+ Jan 2023 11:21:05 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v4 1/4] crypto: Introduce crypto_pool
-Content-Language: en-US
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Bob Gilligan <gilligan@arista.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Leonard Crestez <cdleonard@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        netdev@vger.kernel.org, linux-crypto@vger.kernel.org
-References: <20230118214111.394416-1-dima@arista.com>
- <20230118214111.394416-2-dima@arista.com>
- <Y8kSkW4X4vQdFyOl@gondor.apana.org.au>
- <7c4138b4-e7dd-c9c5-11ac-68be90563cad@arista.com>
- <Y8pVojWNpvdYpH03@gondor.apana.org.au>
-From:   Dmitry Safonov <dima@arista.com>
-In-Reply-To: <Y8pVojWNpvdYpH03@gondor.apana.org.au>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+References: <20230119185300.517048-1-kuba@kernel.org> <20230120085114.6c30d514@kernel.org>
+ <CAHk-=wgsKaO7qxOso_PrmsBEfpN-Wot=V0fUAy3oKOSFuAQxVw@mail.gmail.com>
+In-Reply-To: <CAHk-=wgsKaO7qxOso_PrmsBEfpN-Wot=V0fUAy3oKOSFuAQxVw@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 20 Jan 2023 11:20:49 -0800
+X-Gmail-Original-Message-ID: <CAHk-=whEAtZ+p0svZ1i1jg3=bh2MWPm_KQo9Mq3AiKwKWaNHxQ@mail.gmail.com>
+Message-ID: <CAHk-=whEAtZ+p0svZ1i1jg3=bh2MWPm_KQo9Mq3AiKwKWaNHxQ@mail.gmail.com>
+Subject: Re: [PULL] Networking for v6.2-rc5
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pabeni@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -88,37 +74,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/20/23 08:49, Herbert Xu wrote:
-> On Thu, Jan 19, 2023 at 06:03:40PM +0000, Dmitry Safonov wrote:
->>
->> - net/ipv4/ah4.c could benefit from it: currently it allocates
->> crypto_alloc_ahash() per every connection, allocating user-specified
->> hash algorithm with ahash = crypto_alloc_ahash(x->aalg->alg_name, 0, 0),
->> which are not shared between each other and it doesn't provide
->> pre-allocated temporary/scratch buffer to calculate hash, so it uses
->> GFP_ATOMIC in ah_alloc_tmp()
->> - net/ipv6/ah6.c is copy'n'paste of the above
->> - net/ipv4/esp4.c and net/ipv6/esp6.c are more-or-less also copy'n'paste
->> with crypto_alloc_aead() instead of crypto_alloc_ahash()
-> 
-> No they should definitely not switch over to the pool model.  In
-> fact, these provide the correct model that you should follow.
-> 
-> The correct model is to allocate the tfm on the control/slow path,
-> and allocate requests on the fast path (or reuse existing memory,
-> e.g., from the skb).
+On Fri, Jan 20, 2023 at 9:30 AM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> So I undid my pull and will do your v2,
 
-Ok, I see. Do you think, it's worth having a pool of tfms?
+Side note: that late merge, and its revert is pretty ugly.
 
-If not, I can proceed with TCP-AO patches set and implement pool of
-ahash tfms that will be used only for TCP-MD5 and TCP-AO, does that
-sound good to you?
+It seems to be a pattern that the networking tree has, which is not a
+great sign (merging much too eargerly into the wrong branches).
 
-I see that ahash tfm allocation doesn't eat a lot of memory, rather
-little more than 100 bytes, but even so, I don't see why not saving some
-memory "for free", especially if one can have thousands of keys over
-different sockets. Where there's not much complexity in sharing tfms &
-scratch buffers?
+Doing a
 
-Thanks,
-          Dmitry
+   git log --grep='Revert "Merge '
+
+does seem to show that this is a networking pattern. Nasty.
+
+But I hope it also means that you know how to deal with the fallout.
+
+In particular, reverting a merge means that re-doing that merge later
+will just be a no-op: the original commits are already merged. You'll
+need to revert the revert to get the changes back (or you just need to
+re-do the whole thing).
+
+            Linus
