@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4160674A02
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 04:20:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 051EE674A5B
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 04:46:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229641AbjATDUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 22:20:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37476 "EHLO
+        id S229495AbjATDqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 22:46:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbjATDUW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 22:20:22 -0500
+        with ESMTP id S229458AbjATDqe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 22:46:34 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD47C0;
-        Thu, 19 Jan 2023 19:20:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ABD7A2951
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 19:46:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7A5561DEF;
-        Fri, 20 Jan 2023 03:20:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1BEABC433F1;
-        Fri, 20 Jan 2023 03:20:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B9D7961DE1
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 03:46:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A73ACC433F0;
+        Fri, 20 Jan 2023 03:46:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674184821;
-        bh=jHP/KfWRf0rvAsjTo62SlFaUXRfLpQHjGLZgs37HA/Q=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RdAEBAJhYVgvVjAK+ZcD1cZy5KyT7Bo21zsQvlF2VTwAH21IpzJE+gNPQzyY+/DNp
-         /hKsrlOfsNa1O7GGQzMTxVd49D0KV8WTvqFSfVI6SNGaU5xwkeOpf1NXAOVNDXxTsb
-         XkunSeI4Sepf5E8+kqX9dbEdSLTqeCjREQBIADbSmcbo+hH2GOcCrIfssU66ceGXfi
-         Tt6Wby55uToUrWrXcC2GBuwjLXXo8z/iLw6DMs51QuO+zMpWNevRrSPM5IfaGQ64m8
-         ScMN6tADReoB5upTcQ+Qu/TCTnC8LoZUECyAzrf+w4AapzPanTuw2bu6RDPNun2v6Z
-         uvC9eTRpjpklw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F3107C43147;
-        Fri, 20 Jan 2023 03:20:20 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1674186393;
+        bh=+P96645N2McSKBydTPAISCtmeAHWXNMdGFUFfDwJoNk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MqBX8D1xNtNrFEZjnlZ1Hch4X7FyvxMczFiimT/NFhMmQRG7k+AJ9fvpxdOeDMdc4
+         Dejr1mbyd6lz3Bn4ZFCwrYfPza56j1cW1qw1za7MqG4AHa4aMcgilUlgJlmwnyB2G2
+         vlJwCNjQ6QwJJ9foZH7GmGHSPYKU+M2IsjpCUcH/Y0eFnqrAOm9jncD/PBBgk/zvbZ
+         2HlLfCo5/dfiXpDBQVLdGbwZdZfSArtEyQv1uLYP2Zn/2AIrOOTQAhTBRH5p4bd7EJ
+         Mf3KkRKHJXro0EDySUDFz7C/ai2Nr+Vxy8DUj8rzgJWfKqPv3YhsNuOsLblPk+wPS1
+         j27LYHH8Lj9jA==
+Date:   Thu, 19 Jan 2023 19:46:31 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Rahul Rameshbabu <rrameshbabu@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: Re: [net-next 03/15] net/mlx5: Add adjphase function to support
+ hardware-only offset control
+Message-ID: <20230119194631.1b9fef95@kernel.org>
+In-Reply-To: <739b308c-33ec-1886-5e9d-6c5059370d15@intel.com>
+References: <20230118183602.124323-1-saeed@kernel.org>
+        <20230118183602.124323-4-saeed@kernel.org>
+        <739b308c-33ec-1886-5e9d-6c5059370d15@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next 1/1] net: phy: fix use of uninit variable when
- setting PLCA config
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167418482098.4845.761688179914150843.git-patchwork-notify@kernel.org>
-Date:   Fri, 20 Jan 2023 03:20:20 +0000
-References: <f22f1864165a8dbac8b7a2277f341bc8e7a7b70d.1674056765.git.piergiorgio.beruto@gmail.com>
-In-Reply-To: <f22f1864165a8dbac8b7a2277f341bc8e7a7b70d.1674056765.git.piergiorgio.beruto@gmail.com>
-To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, o.rempel@pengutronix.de,
-        mailhol.vincent@wanadoo.fr, sudheer.mogilappagari@intel.com,
-        sbhatta@marvell.com, linux-doc@vger.kernel.org,
-        wangjie125@huawei.com, corbet@lwn.net, lkp@intel.com,
-        gal@nvidia.com, gustavoars@kernel.org, bagasdotme@gmail.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -62,55 +62,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 18 Jan 2023 16:47:31 +0100 you wrote:
-> Coverity reported the following:
+On Wed, 18 Jan 2023 13:33:56 -0800 Jacob Keller wrote:
+> > The adjtime function supports using hardware to set the clock offset when
+> > the delta was supported by the hardware. When the delta is not supported by
+> > the hardware, the driver handles adjusting the clock. The newly-introduced
+> > adjphase function is similar to the adjtime function, except it guarantees
+> > that a provided clock offset will be used directly by the hardware to
+> > adjust the PTP clock. When the range is not acceptable by the hardware, an
+> > error is returned.
 > 
-> *** CID 1530573:    (UNINIT)
-> drivers/net/phy/phy-c45.c:1036 in genphy_c45_plca_set_cfg()
-> 1030     				return ret;
-> 1031
-> 1032     			val = ret;
-> 1033     		}
-> 1034
-> 1035     		if (plca_cfg->node_cnt >= 0)
-> vvv     CID 1530573:    (UNINIT)
-> vvv     Using uninitialized value "val".
-> 1036     			val = (val & ~MDIO_OATC14_PLCA_NCNT) |
-> 1037     			      (plca_cfg->node_cnt << 8);
-> 1038
-> 1039     		if (plca_cfg->node_id >= 0)
-> 1040     			val = (val & ~MDIO_OATC14_PLCA_ID) |
-> 1041     			      (plca_cfg->node_id);
-> drivers/net/phy/phy-c45.c:1076 in genphy_c45_plca_set_cfg()
-> 1070     				return ret;
-> 1071
-> 1072     			val = ret;
-> 1073     		}
-> 1074
-> 1075     		if (plca_cfg->burst_cnt >= 0)
-> vvv     CID 1530573:    (UNINIT)
-> vvv     Using uninitialized value "val".
-> 1076     			val = (val & ~MDIO_OATC14_PLCA_MAXBC) |
-> 1077     			      (plca_cfg->burst_cnt << 8);
-> 1078
-> 1079     		if (plca_cfg->burst_tmr >= 0)
-> 1080     			val = (val & ~MDIO_OATC14_PLCA_BTMR) |
-> 1081     			      (plca_cfg->burst_tmr);
-> 
-> [...]
+> Makes sense. Once you've verified that the delta is within the accepted
+> range you can just re-use the existing adjtime function.
 
-Here is the summary with links:
-  - [v2,net-next,1/1] net: phy: fix use of uninit variable when setting PLCA config
-    https://git.kernel.org/netdev/net-next/c/1038bfb23649
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Seems like we should add a "max_time_adj" to struct ptp_clock_info
+and let the core call adjphase if the offset is small enough to fit.
+Instead of having all drivers redirect the calls internally.
