@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A57526756D8
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 15:19:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C85D96756D9
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 15:19:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230507AbjATOTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 09:19:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46956 "EHLO
+        id S231217AbjATOT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 09:19:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230475AbjATOTK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 09:19:10 -0500
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2068.outbound.protection.outlook.com [40.107.22.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B12034DCDE
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 06:18:16 -0800 (PST)
+        with ESMTP id S231143AbjATOTL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 09:19:11 -0500
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on20606.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e1b::606])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1883A743B5
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 06:18:29 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=exi34/EgR7+b5DleO7vru8J1LLSkIuyD+7223TBx9TrGniSwKrtFOrDiaXw/kwY5LJ/FQ1X860hgsjRiFq0IXUWEW9Un3YAre+2yl3Swe/11kfvpJkkYVuAN/nVvTcZjYislBMOWaAtGocvFuO2CUUJel55LsKZoPYxsFpF48UcaSzqBeyUKorXHPdmqVIIRm66ugMqVykCY8w5WXX4C9/MuR2JvQ3aCtTAHvNvo5YsuEmV7uDxrs8EW/mv188UNkPEJmG4O0HC8JerlF1Y2kYI8Q0dXWDph3jvJoa5pNfjOQ0AjaBmjG/IJ5Ivy/w3dGejkIBABVa2+00sa1j65+w==
+ b=oSIdcN4zmR39quRClKJgZ+kXAa7EBxPRiCtZO+qdLeUHGZbt5rIPcVaSE7Sg6LgS+lEfqxt5FnRYLhB1v7LDlXJNZpt0m2HF9nOb+Ivrx5el8la5Qkzfe7+da6dwkMPtXH/95dBA7Wkt3LPn5SlULDFxlgcziTk5p8gtlnQdCF9BBnH91BSBpb169rpWzA15Y8wK+ov2IvbmVLaffO7tTSOp/vIEQtW+hDq7pX2Q+QZA8Z0pKMpSGBKFw+H9dT68HVVAuJ/A1P+DB9wBH2P8ZVgOIJO+nQR2SRC+y99DefmMI95mYXJrBlKyvawHaD+a7PUW5n/azhk6/a+8v9+GoQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+qOc++S4sW1AY6NLAs4hYHFqrjw9gEbAvffLXzzzBK8=;
- b=oVW/5XRKa+Dfg2I+988mS1awDykAl9DVodKl/QKxDyuv+3cUB8xK4Erh9BfU5cs+csGjQHQWj+nxNULCFQi2VEc8rnWt7EpWva42MGx6pqZgsq4YaekviIg5XM4vs2IP6Ou5tQrPerUz059TvvHRv896vZQXYbUC6EtpUqR3uEo2trXnk9/wDYy9714sI4+pW58SZlwj4E6ENnNCr16ukURx9nTtuFSGb/g40VO5RG+0aVzGaSMnqWD5xkBVKnDAPtdgre4HUmUkjH9LZI38OnpdVAD3yrG3FNSwLA9JRC0wzToDEuQZBv1VivEJYf8cORRWWEE8LbuTjPXs7Iaodw==
+ bh=uuSN0E19WYhLk5bnVHQu2WkiY7ak4i/68A/o80YQcN0=;
+ b=gj0cpAU1hR6PwV9mgFZOYqJ8o+caB4rZ4v4sOxmsT3SrCyTJa33vKga0NhFutodovNWWBGDoNGyVkuX/dch+rEVljtRoxyuQG/fuFK2Rj3Rd+NGAYcRF/aVQju6Lcl/td0cB5nVJkaX7L040KyZO1MsPwkprl0nwG6m1D3AKDaO32iEZRhFXHPs0KV3PGzFD5sHk1/3f7klmP2TB/Gwv9f4y8i7D1TOGYL57NL/moZmKC0EtwWjYqWoDE4pRjSJzCfXmWpx5MgorBxSVOtXnA86nh6jxOSqPFMNgPfYWfHHb2+GVAcEbeZ8TyjDj++2JIwhCLRzHXrhnBd25yGKj9w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+qOc++S4sW1AY6NLAs4hYHFqrjw9gEbAvffLXzzzBK8=;
- b=E3v9JRL7pL71LMcmRtYBUzfPtt67RD3m+uHHEtE457AI3P1z7KPLOcxteNVHcG/wh6La5P+2QiaBqNS4FLPW8H9oljiOzaqiUgazFi3uFoqNlSVmdJ3ilfJtVo1tsa+NB946F1CmA8h+5RQJfvQXyq7gribrVrWZKKy0v8JDcak=
+ bh=uuSN0E19WYhLk5bnVHQu2WkiY7ak4i/68A/o80YQcN0=;
+ b=RlLzy8sIYC+O51itcJc+5QdoWApuK0QsdSxTI8Qk8WCv1dkLWRQtD6B9al+bDauVsHnAzYzM42RSe0aDMYgwbwof6eEieDW1PTP9If8MHGO2rxzSaBCo1CkCkiPwhjOvhxjavayhvP301d6YMY6ACT/ssrL372fvxtfbT6+/M6o=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by AS8PR04MB8085.eurprd04.prod.outlook.com (2603:10a6:20b:3f9::24) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.26; Fri, 20 Jan
- 2023 14:15:59 +0000
+ 2023 14:16:00 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b%4]) with mapi id 15.20.6002.024; Fri, 20 Jan 2023
- 14:15:59 +0000
+ 14:16:00 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, John Fastabend <john.fastabend@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -56,9 +56,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Jacob Keller <jacob.e.keller@intel.com>
-Subject: [RFC PATCH net-next 07/11] net: enetc: act upon the requested mqprio queue configuration
-Date:   Fri, 20 Jan 2023 16:15:33 +0200
-Message-Id: <20230120141537.1350744-8-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 08/11] net/sched: taprio: pass mqprio queue configuration to ndo_setup_tc()
+Date:   Fri, 20 Jan 2023 16:15:34 +0200
+Message-Id: <20230120141537.1350744-9-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230120141537.1350744-1-vladimir.oltean@nxp.com>
 References: <20230120141537.1350744-1-vladimir.oltean@nxp.com>
@@ -70,55 +70,55 @@ X-ClientProxiedBy: VI1PR0101CA0068.eurprd01.prod.exchangelabs.com
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB8085:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5463cefe-c426-4f96-5c98-08dafaf0da59
+X-MS-Office365-Filtering-Correlation-Id: a1ccd751-1844-4560-b4ff-08dafaf0daf6
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: KSqc1JqS6h8XS+DRi+RivvnQxvF9Bskypr4qSuT5l6vcQ7b49czzlZtMhYTKi2nmXQC7sAPuYF3fP5ne6zYO4k041d3/gz1QNZQzSqbYLYT8FQ9hZSL/MZtQld5bZ4LPQFEA1ScobXT3heRTe9fkmaq4zFErUKK4N3i8d0BVBenH3Z5gqYRgKk51HmOtqJPVDNrwhF5zcaFqXFg7tY+S0c7NQM6zFdSWZX6OfKoBUFt0PPD/Pp2oKKCJx/DBVYD6apjNhCexm+SLnukZjPD0X3c1cLRIUuxKnXbXWXTyJ02sEv8mUKD9YjaNfkqLijrFxwnfaewfeN93Ud8mz5fbPQDwhWihVyCAr4ImYuojW8yXDl14toyGqnjT1b3TWl3KT0WVP2Z5Q1h2VRSUTBMklKPOxawZCj1rPvNKuE91nWfHPd3Qeho0BHzW8paWVstTfBOGOLXphS05QSe4OgHz6QVzuqHUxvgfkiqgKg//0hBp4Kw5URkCzhTND5LugdODErO0zK0Q0Qw4G7WGAB6Sd9NygTzCYBru4cigY01VHsK5hO0hX8L2bhxFDg0/Ws93CmHqsQWyg9NPHC4zXtckL8biamA6DsSdngXNTN97VmzSBstEn3+Mwqs0+1aqAuN5LL54e1z9oF3YJD0UwZKfR1tzzPKsvWDHGdUCtHkSc5SmXlY9K+WeG2nQiwaAspz69TzQ82dmTUeY/G5za2jC1g==
+X-Microsoft-Antispam-Message-Info: SGrO2Ic6CEfH3A4hRPDd2Avb/N0AGS/by61oR3quTBFPwGyJRu279ldP8IFLch0q4BPYf9ZH4N9s8xRIo3Q3HYJp2lY+NzkF1ILnktvheR5ug5KdrhqUKC85vB98qg4RY3jY5wDP7TSwcNIUD5ZyPZK3vchgpyvl8lGR7qvAKMmGHCsgTkFi07Bh6TaIhsli2Sn+64fZ9M4FUWtYK0BXLmPutUfPASLGkf7Ey4JqHl/IRRfvp8DYcr4E3m0VPEoz+CITzGyB4p3FxjUoafn0hjVl9uAJeomnNwyvb68ULX/mxfQ5u60ssMUNmPZzgLSuY6of6uir53Og5NRETfZvCBPocwcGqUnIQlaO0/649wiVQwuSkSDthUuMsziHj7ENY0PplslZqQdCeGSLQS3gqZvnceGgUyfUwEhQrJfoUbLIwuQdJY6qL+n7GfXNRfF/cnGk87XXV7EXpsWBYOd5F8VHytKR0tEfLMnBaDteDeBEzwdinkn3sWXZMIVALCNSKqQaDsGhwSeb74BDLrJl1hwO2aVyOmtnCVWOhiaOx2AL0ToX/zipX1UtZWlWt295xCZ64qv0Ua3OremiJMSQU9WFD7qnEVzw8W3Mw9xeMtwOJojPxPBB5HjHwHUM7YWzYwKQwrfvqBBuzQKT0IcEqwXW6oO5QLyxphPphc7ErAu82gaEmchJ5zrZ9bSsYuR9LPn5tDUH5pxKeXFUUj5oGw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(39860400002)(346002)(396003)(136003)(451199015)(52116002)(6486002)(26005)(6506007)(478600001)(66946007)(6916009)(8676002)(66476007)(4326008)(66556008)(5660300002)(6666004)(54906003)(41300700001)(38100700002)(6512007)(8936002)(186003)(38350700002)(316002)(7416002)(86362001)(1076003)(2616005)(83380400001)(2906002)(44832011)(36756003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2Nt0t81yC/o5nKP8Z7oR5+r0EMut/t2Qb7eYid5wvL/BCea9lVVzDtBFQJSW?=
- =?us-ascii?Q?6KaTIAkWlPetE5c4H4jsZCwNOlsk+Lj8migGW53N54EPCcmunzW5iwfCpKEs?=
- =?us-ascii?Q?UZjccpd34Fj+M123g5bCPXbR7fptMxIbzS3gzImD8cOt2hjPMYkb4xGGHf7d?=
- =?us-ascii?Q?8SmnmGR0OM+xy6CBiGL1Kzl3g/iY/feBojExp9pZFjxLt6bBR2k9qJZIYqv/?=
- =?us-ascii?Q?jOnU8u78Q/y4gDhoqzcPchtdRxMtaFg34Qk57ormU9Rq9S2qnesLalHuoY/G?=
- =?us-ascii?Q?wnmXWKNbHCTeZ5gwaki7gmrjjnbHNgdYpZy21QNpwQbniSTtSLmWtOMYlP08?=
- =?us-ascii?Q?JeqLUYTpW/ygEoaWnySP+bkMvqBjIKKGwp4dAI8oJeiDvMhHkKIHkHuGKjyX?=
- =?us-ascii?Q?J9BG2PSi+GJT708ZgeBQV4rvaE5rqa+zpFCDemooTR71x2IjhZlEd2jflSxx?=
- =?us-ascii?Q?zIFYFvkeTIqbB0Qo6PuHsFT9GVfdUr1/7798LZV9VhWqC1JUKeHVswEYTXgH?=
- =?us-ascii?Q?BZ2n9vy8QVfjbYa8vL9t2ucJhoqbrMXMV4ZKzxyOpAWTaIAwL5a+oWc32U5E?=
- =?us-ascii?Q?ZWPRbtzDQhfIGQ0HUdrKfdB23n1SZ//Po4cMIw1Ad81aEZ9MBnjwCYEBAnqp?=
- =?us-ascii?Q?VEKqJNzDth1lkwAgy+7jBlRfiYA7qU/M5v/ZMyJ3oR7so+1Grw+x1m9FlQjX?=
- =?us-ascii?Q?RyzhW7Y2PktKhXJRokhZyVCloxI2JiLGRqKIFYXkcUvOatt/GN1BRE29Ttnp?=
- =?us-ascii?Q?qc8+ZlI31v44gA27rQVMmSP6pIghdgWL0vruRQEi73d67hnabrWMDb6KOYfz?=
- =?us-ascii?Q?/1R/uAs+AyMLw/JX7mEpOHjX3ox9XMdqKjAF+bHw9Ek+oiiRn9UsxS9/7Yo/?=
- =?us-ascii?Q?ihVwiaw7/4pmzvnGK9oq04mItLgszX8/q2mYCzUapQqLg2HSI5L3GkkokVae?=
- =?us-ascii?Q?xLSOPdyb1qDAiyAhru+2B1p6ufX/VlnKasSk37FRSDopKuQwnoF/6XDCzZPZ?=
- =?us-ascii?Q?70J+TCZAQcPLmCOCXX6wNgsWa0lpxLzPLp3/MrYO4oCcXQIFaGHj1W79SFkf?=
- =?us-ascii?Q?PlSw2eBInPaR5seoAmiLYLoJKQrydyJ9SZFD4Q9CXIWSQ9OpnDt3YSEAwTEC?=
- =?us-ascii?Q?PKveO89faiKydJLS4Am7kWc4i1thOQ9QVSaJRDG8yDi2U7AqGGc7SlaGDryy?=
- =?us-ascii?Q?u8bgrb7cMgAszIbrfS5bFKRHx2a/6iLbcMVH7gRUQESRlDcsmmMYUyH7i9H1?=
- =?us-ascii?Q?h/FejbYYuF/8tWgNg0zmKnsWwHXETsxvHIcTipAyOSjEFYLlMSzmpbFYvtNi?=
- =?us-ascii?Q?d4cbT5+xEc/b7DqnHiitLpE6rJ3rnuVyYvv940BtcPyh3hTPVHmPqLweYQkR?=
- =?us-ascii?Q?WeStaG0MkR/OUKwT3vOsEl9FDWlV/YE+Ydi6Y02I6b1BPBeAIf49nKH5/j7z?=
- =?us-ascii?Q?zCpYFxC76H03yNLV1vC0u6IU30y//xqPiC9oIpiTokU8Y9qF+1g+4NR0jIKK?=
- =?us-ascii?Q?kbxUHvUY0HQMXvr2t/k7EW6/BQBf8iWn2TjBUb+12+pswHWRCtzhlgzenjJo?=
- =?us-ascii?Q?7hxfbR9SmbS3DFaj27eUJk4mqVUa0V1/qekDZ8S4i+nFq2qku4QlAzRoWWa7?=
- =?us-ascii?Q?9g=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4MYC8Onij8PlGIVxVpYTDOTgptp9lN8AD8gfK5n4nyD0r0ZnMD5QG46RSClW?=
+ =?us-ascii?Q?9HvKgGvC6r8yZQjL4h1oONot5t0iIhpV6z2Cl8wA4b5TUTh0+im2sMe7cb9P?=
+ =?us-ascii?Q?HU/11NrlmSAW5nfLIGyeexQfL4ZckzJnH1hMyUAhtOpgLpjgHn/hz7RZ6U5N?=
+ =?us-ascii?Q?wzcTs4g7Sx1nlbIAKw1+sBQRE3csTPQBPqofTmvSmmttX0TxY1O1tVwun64A?=
+ =?us-ascii?Q?pDC8gk9Wz8RrZG9MfbMfzgVKxULDeoPbXrsJ0mVPQjrXgYn99xPfFpwLZGB5?=
+ =?us-ascii?Q?IhP4ybX+imhKC2qn6yBRspCDfwHR7673PV93zcKdykJ1nXc8Zbiaeaq42fn8?=
+ =?us-ascii?Q?s31W8sawx73Opo1zPsjLfB/XG33cukiGy78bdnjZ4h4bp2eJ5MsAar3Bj4xj?=
+ =?us-ascii?Q?S1FO2xGQWS908+n3Xf7GI7kJxEyDES7fz9UgRW6EHkagD0w1rz1Oyhp3HySr?=
+ =?us-ascii?Q?PHdPEhbXcOuXqsgtLWeTwZHqk26s/Y55pg4tK1aUDolcHuIeFED7EmDD7r7f?=
+ =?us-ascii?Q?QfW6z91lKiP7j0kVgl+6rluhv5VrQf5feZxsIdR3m/W0Kn865ov9zIp6foU/?=
+ =?us-ascii?Q?6FOMwFqGLe3YBlCiSdbF6xFMiSxaSEQ/RPQt/8AinLag+mOhxs+re9UwaQn/?=
+ =?us-ascii?Q?pzfH2PHZeoG4zeGurh6Z2hHFLFIn87BDmeim0LI+exClmEIaOBfETvmlMMeZ?=
+ =?us-ascii?Q?VMp9i5hMnZDvctkN5KcmrEQ6bsHoID5/emmGlksrJRzHa9a6bbfdQbR0hHp1?=
+ =?us-ascii?Q?C/uLcU52MP3DbLqQ9lrqUYdt/13lTZXc4wn+DyJr43hmKv5cv+BbPeEdIuRy?=
+ =?us-ascii?Q?tGIFDaHQatSN3D4qbd/e78FG9oNnFu8NzJsFNQE9755tzpvWCEF0aDlBnjbA?=
+ =?us-ascii?Q?jmnRFpt2yPlqmIaReUrzBaCCer2aDUdVWQ5uyjPNrWmuQcMXofM4SrCdst53?=
+ =?us-ascii?Q?OCLpnK1wGmeZ2VeHtZCTQ9d3k5hhLNoLOqaAC/JISgh5ZJ2NNVfSL4L1hpKd?=
+ =?us-ascii?Q?kTn0pxF9LU7Kd+ITS3Ha0MCXXvaUeHjxteWKbYuwtxgRVrU4+rgvBfMe924v?=
+ =?us-ascii?Q?B2XybpCFz/jfGMtWe861NcobeP7XipvWy5H9NZdxk5LBviTvOXL8LQyi2ckf?=
+ =?us-ascii?Q?eaJbfCOHeWe9BJrzoDsC5RDOPy1OLTtqns0aS70TTStkOYrHY+DixINmoPhv?=
+ =?us-ascii?Q?LA+YU+h0SVddEsbFneRi2jp36I/T3Nmqv400raYekSZFq8gHIC+jtNAAu9cx?=
+ =?us-ascii?Q?9i3M+X7uH+0oDsR/hwvE2XfF1ULXjbwA7TWQLPSumcHR7bWy9iMLAabNmmQw?=
+ =?us-ascii?Q?0FjAaTDl4iodrP4/19Qy7rPIiUwWwwO83HR8ehXOvD4SbKHwgQ5qsSfzNMSy?=
+ =?us-ascii?Q?3DzdaV12m5yCEv3kbEVO8xhLuc4Gi9YegJlLvjEX4bP88/fxUJzCGjKIix7M?=
+ =?us-ascii?Q?/taAmIHfIj3m1ruNVF60jB3rdPQoN1ZoEVgPHADM+HeGdLRhbDYNE0roY0ao?=
+ =?us-ascii?Q?EPvD4y/eYBsq6SyT/wrTx2cPq7lGkRJVtd9Vcr0GWQtLwwziP4O8ZnWk5K5M?=
+ =?us-ascii?Q?xs1xfr9J2p6EsXPK3PxfBeaRJn2nkb93zk4/fYL34aqcq1AmDMFeFdXHc/bn?=
+ =?us-ascii?Q?Uw=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5463cefe-c426-4f96-5c98-08dafaf0da59
+X-MS-Exchange-CrossTenant-Network-Message-Id: a1ccd751-1844-4560-b4ff-08dafaf0daf6
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jan 2023 14:15:59.0605
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jan 2023 14:16:00.1073
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1iMusI8TYYNCp995lHvIi2y07e+8eHe6+CN3tz2UbDREbQsx0qPAewoOt+z8821rXKTR3d8/ET8e4T0eiiyrQA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: pV5GRG2xmHJ03jzYH8pJqJg5aXHid2ZmIfN/Q/fodbgHTx9vuUlA1oE81aTHMzg2fuQj6srRZ2K7v44eWvYSNw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8085
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,T_SPF_PERMERROR autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -126,150 +126,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Regardless of the requested queue count per traffic class, the enetc
-driver allocates a number of TX rings equal to the number of TCs, and
-hardcodes a queue configuration of "1@0 1@1 ... 1@max-tc". Other
-configurations are silently ignored and treated the same.
-
-Improve that by allowing what the user requests to be actually
-fulfilled. This allows more than one TX ring per traffic class.
-For example:
-
-$ tc qdisc add dev eno0 root handle 1: mqprio num_tc 4 \
-	map 0 0 1 1 2 2 3 3 queues 2@0 2@2 2@4 2@6
-[  146.267648] fsl_enetc 0000:00:00.0 eno0: TX ring 0 prio 0
-[  146.273451] fsl_enetc 0000:00:00.0 eno0: TX ring 1 prio 0
-[  146.283280] fsl_enetc 0000:00:00.0 eno0: TX ring 2 prio 1
-[  146.293987] fsl_enetc 0000:00:00.0 eno0: TX ring 3 prio 1
-[  146.300467] fsl_enetc 0000:00:00.0 eno0: TX ring 4 prio 2
-[  146.306866] fsl_enetc 0000:00:00.0 eno0: TX ring 5 prio 2
-[  146.313261] fsl_enetc 0000:00:00.0 eno0: TX ring 6 prio 3
-[  146.319622] fsl_enetc 0000:00:00.0 eno0: TX ring 7 prio 3
-$ tc qdisc del dev eno0 root
-[  178.238418] fsl_enetc 0000:00:00.0 eno0: TX ring 0 prio 0
-[  178.244369] fsl_enetc 0000:00:00.0 eno0: TX ring 1 prio 0
-[  178.251486] fsl_enetc 0000:00:00.0 eno0: TX ring 2 prio 0
-[  178.258006] fsl_enetc 0000:00:00.0 eno0: TX ring 3 prio 0
-[  178.265038] fsl_enetc 0000:00:00.0 eno0: TX ring 4 prio 0
-[  178.271557] fsl_enetc 0000:00:00.0 eno0: TX ring 5 prio 0
-[  178.277910] fsl_enetc 0000:00:00.0 eno0: TX ring 6 prio 0
-[  178.284281] fsl_enetc 0000:00:00.0 eno0: TX ring 7 prio 0
-$ tc qdisc add dev eno0 root handle 1: mqprio num_tc 8 \
-	map 0 1 2 3 4 5 6 7 queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 hw 1
-[  186.113162] fsl_enetc 0000:00:00.0 eno0: TX ring 0 prio 0
-[  186.118764] fsl_enetc 0000:00:00.0 eno0: TX ring 1 prio 1
-[  186.124374] fsl_enetc 0000:00:00.0 eno0: TX ring 2 prio 2
-[  186.130765] fsl_enetc 0000:00:00.0 eno0: TX ring 3 prio 3
-[  186.136404] fsl_enetc 0000:00:00.0 eno0: TX ring 4 prio 4
-[  186.142049] fsl_enetc 0000:00:00.0 eno0: TX ring 5 prio 5
-[  186.147674] fsl_enetc 0000:00:00.0 eno0: TX ring 6 prio 6
-[  186.153305] fsl_enetc 0000:00:00.0 eno0: TX ring 7 prio 7
+For some reason I cannot understand, the taprio offload does not pass
+the mqprio queue configuration down to the offloading device driver.
+So the driver cannot act upon the TX queue counts and prio->tc map.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/freescale/enetc/enetc.c | 67 +++++++++++++-------
- 1 file changed, 45 insertions(+), 22 deletions(-)
+ include/net/pkt_sched.h | 1 +
+ net/sched/sch_taprio.c  | 5 ++++-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index ef21d6baed24..062a0ba6c959 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -2614,6 +2614,15 @@ static int enetc_reconfigure(struct enetc_ndev_priv *priv, bool extended,
- 	return err;
- }
+diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+index 02e3ccfbc7d1..ace8be520fb0 100644
+--- a/include/net/pkt_sched.h
++++ b/include/net/pkt_sched.h
+@@ -187,6 +187,7 @@ struct tc_taprio_sched_entry {
+ };
  
-+static void enetc_debug_tx_ring_prios(struct enetc_ndev_priv *priv)
-+{
-+	int i;
-+
-+	for (i = 0; i < priv->num_tx_rings; i++)
-+		netdev_dbg(priv->ndev, "TX ring %d prio %d\n", i,
-+			   priv->tx_ring[i]->prio);
-+}
-+
- int enetc_setup_tc_mqprio(struct net_device *ndev, void *type_data)
+ struct tc_taprio_qopt_offload {
++	struct tc_mqprio_qopt_offload mqprio;
+ 	u8 enable;
+ 	ktime_t base_time;
+ 	u64 cycle_time;
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 570389f6cdd7..8f832fa82745 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -1228,6 +1228,7 @@ static void taprio_sched_to_offload(struct net_device *dev,
+ static int taprio_enable_offload(struct net_device *dev,
+ 				 struct taprio_sched *q,
+ 				 struct sched_gate_list *sched,
++				 const struct tc_mqprio_qopt *mqprio,
+ 				 struct netlink_ext_ack *extack)
  {
- 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
-@@ -2621,8 +2630,10 @@ int enetc_setup_tc_mqprio(struct net_device *ndev, void *type_data)
- 	struct enetc_hw *hw = &priv->si->hw;
- 	struct enetc_bdr *tx_ring;
- 	int num_stack_tx_queues;
-+	int offset, count;
-+	int tc, i, q;
- 	u8 num_tc;
--	int i;
-+	int err;
+ 	const struct net_device_ops *ops = dev->netdev_ops;
+@@ -1261,6 +1262,8 @@ static int taprio_enable_offload(struct net_device *dev,
+ 		return -ENOMEM;
+ 	}
+ 	offload->enable = 1;
++	if (mqprio)
++		offload->mqprio.qopt = *mqprio;
+ 	taprio_sched_to_offload(dev, sched, offload);
  
- 	num_stack_tx_queues = enetc_num_stack_tx_queues(priv);
- 	mqprio->hw = TC_MQPRIO_HW_OFFLOAD_TCS;
-@@ -2639,34 +2650,46 @@ int enetc_setup_tc_mqprio(struct net_device *ndev, void *type_data)
- 			enetc_set_bdr_prio(hw, tx_ring->index, tx_ring->prio);
- 		}
- 
-+		enetc_debug_tx_ring_prios(priv);
-+
- 		return 0;
+ 	for (tc = 0; tc < TC_MAX_QUEUE; tc++)
+@@ -1617,7 +1620,7 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
  	}
  
--	/* Check if we have enough BD rings available to accommodate all TCs */
--	if (num_tc > num_stack_tx_queues) {
--		netdev_err(ndev, "Max %d traffic classes supported\n",
--			   priv->num_tx_rings);
--		return -EINVAL;
--	}
-+	err = netdev_set_num_tc(ndev, num_tc);
-+	if (err)
-+		return err;
- 
--	/* For the moment, we use only one BD ring per TC.
--	 *
--	 * Configure num_tc BD rings with increasing priorities.
--	 */
--	for (i = 0; i < num_tc; i++) {
--		tx_ring = priv->tx_ring[i];
--		tx_ring->prio = i;
--		enetc_set_bdr_prio(hw, tx_ring->index, tx_ring->prio);
--	}
-+	num_stack_tx_queues = 0;
-+
-+	for (tc = 0; tc < num_tc; tc++) {
-+		offset = mqprio->offset[tc];
-+		count = mqprio->count[tc];
- 
--	/* Reset the number of netdev queues based on the TC count */
--	netif_set_real_num_tx_queues(ndev, num_tc);
-+		err = netdev_set_tc_queue(ndev, tc, count, offset);
-+		if (err)
-+			return err;
-+
-+		for (q = offset; q < offset + count; q++) {
-+			tx_ring = priv->tx_ring[q];
-+			/* The prio_tc_map is skb_tx_hash()'s way of selecting
-+			 * between TX queues based on skb->priority. As such,
-+			 * there's nothing to offload based on it.
-+			 * Make the mqprio "traffic class" be the priority of
-+			 * this ring group, and leave the Tx IPV to traffic
-+			 * class mapping as its default mapping value of 1:1.
-+			 */
-+			tx_ring->prio = tc;
-+			enetc_set_bdr_prio(hw, tx_ring->index, tx_ring->prio);
- 
--	netdev_set_num_tc(ndev, num_tc);
-+			num_stack_tx_queues++;
-+		}
-+	}
-+
-+	err = netif_set_real_num_tx_queues(ndev, num_stack_tx_queues);
-+	if (err)
-+		return err;
- 
--	/* Each TC is associated with one netdev queue */
--	for (i = 0; i < num_tc; i++)
--		netdev_set_tc_queue(ndev, i, 1, i);
-+	enetc_debug_tx_ring_prios(priv);
- 
- 	return 0;
- }
+ 	if (FULL_OFFLOAD_IS_ENABLED(q->flags))
+-		err = taprio_enable_offload(dev, q, new_admin, extack);
++		err = taprio_enable_offload(dev, q, new_admin, mqprio, extack);
+ 	else
+ 		err = taprio_disable_offload(dev, q, extack);
+ 	if (err)
 -- 
 2.34.1
 
