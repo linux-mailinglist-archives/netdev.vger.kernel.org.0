@@ -2,81 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B224F675087
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 10:17:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96AF667509D
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 10:20:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230051AbjATJRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 04:17:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59872 "EHLO
+        id S230110AbjATJUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 04:20:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230053AbjATJRr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 04:17:47 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12B68F6F4;
-        Fri, 20 Jan 2023 01:17:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=K0kC5g0BC3EhF8JShryrGN36pACW/Rqty8M1nBrIchs=;
-        t=1674206248; x=1675415848; b=HNHOVIB+SNhK26y4hqZiCIqeL3sJBstX1Rr5kI83MHNu6mL
-        LvE3GpmapuwGDlNS+TDu1hL71dFlJJm+FEwYNKhQEF1i/G77U14zKZiUeX+cC3jBCC+uepiRU2neB
-        PBsXEH44hqwYtEtDNExyaxq8F/I6bbwH7Y0SeSvHfXExQLrRmKUDcKOShbfgThyOeNr8kgdBFDoII
-        nkZ7uot8XJrQ+bJC+gstLMgCNe+kPe0OwL+x8roTbNXqM6jCg8gt4b6cWARu09crH618kKjP3O6U8
-        60T8iabmsyHIUFLT3DrNDk5QANz1AcE+smJVPd9YJZnnCvNI1e20VL5BFKYc63yQ==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1pInWS-007Nb3-0Y;
-        Fri, 20 Jan 2023 10:17:20 +0100
-Message-ID: <210590039104c51e5b3ffbc3166807cc4617bb92.camel@sipsolutions.net>
-Subject: Re: [PATCH net-next v3 3/8] net: add basic C code generators for
- Netlink
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, robh@kernel.org, stephen@networkplumber.org,
-        ecree.xilinx@gmail.com, sdf@google.com, f.fainelli@gmail.com,
-        fw@strlen.de, linux-doc@vger.kernel.org, razor@blackwall.org,
-        nicolas.dichtel@6wind.com
-Date:   Fri, 20 Jan 2023 10:17:19 +0100
-In-Reply-To: <20230119175302.3a592798@kernel.org>
-References: <20230119003613.111778-1-kuba@kernel.org>
-         <20230119003613.111778-4-kuba@kernel.org>
-         <ddcea8b3cb8c2d218a2747a1e2f566dbaaee8f01.camel@sipsolutions.net>
-         <20230119175302.3a592798@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+        with ESMTP id S230112AbjATJUP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 04:20:15 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF31EDE;
+        Fri, 20 Jan 2023 01:20:13 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id b7so4267338wrt.3;
+        Fri, 20 Jan 2023 01:20:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=4H5o1b9Ms7Ozi0FsB6Noqhmr/uWFh8slPEVAaOnL02E=;
+        b=Isx5iwovEeR0Nvmzt3uXxV/DUX5lA0BNGOuM7jUtppRNJPSRz1t9VgCS92+FWEO74N
+         ZIECBlauyS5Z3C/A9cDIPFEEu1xmPpNju9S+sz0ijxdBAoLsAaKOHSLaD6q62y5cE9L4
+         HOPkn6VL+6+CBBVK1/Pw8edW4BDP7/5RLtLdOnsc/TkLLRSz4ZC3+vXKeV/jeSLmN8j/
+         3BzPtcXXF0Jno1dr+e0WQfvAIspajmbxfICQjLrl8deaWukDy2uHqSyAdW/1GGn2yXR6
+         vN0KsEspT6N5xejEQ6QEYVLsUaZl8AfGp5oPReTTm8Q5A6K8QZQdhJJGg/xtI1B96NMG
+         0eIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4H5o1b9Ms7Ozi0FsB6Noqhmr/uWFh8slPEVAaOnL02E=;
+        b=MSYiQrQygrdDOMiX/MV7ktUpUj40DSEEbtRq7+Ui/lTLpJbPteRsDtB9puANBzjGhq
+         ZT+k85ztcFHNtKKCpyVtqPc2gccsb1rOuMStzf1TT2ETEMH3/lSwR+WkIXM1ztrllyVi
+         HNvW+nBZthuDXhz3oHn5MgTTMaSnWoPd9dpqTLrgXBLDtJqn6pufd47grbM2b6sHSj0X
+         zMjJzYUjF3GzW8OK1vJNt0je53J2sO7FMHyfKcb6JKNewdk+gntrn3sahFVwZmf204bD
+         LLl0TCNZFBbP5x8wpaRUQl9kpMkRQp2e8mcG6sjhMS0DRVF5med9WyMmsd1yzdzQWJar
+         qTXg==
+X-Gm-Message-State: AFqh2kqCbwXK7cc5EqJKVaLBwWUh7PfCZWPP/YorbmEwTEQSCbNpTG4a
+        3uAWUaYWEc8QgUGkLg/I92w=
+X-Google-Smtp-Source: AMrXdXs7qSOqzyxI5jhiyJayhO2rG15Pz+Bh9icCsQvwnaJnxN2/k0f9XWsFeIOcQ28cZ4Yy5GSTRQ==
+X-Received: by 2002:adf:fbd1:0:b0:2bd:bae0:8de5 with SMTP id d17-20020adffbd1000000b002bdbae08de5mr11463507wrs.58.1674206412245;
+        Fri, 20 Jan 2023 01:20:12 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id h3-20020adfe983000000b002bdf5832843sm14728101wrm.66.2023.01.20.01.20.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Jan 2023 01:20:11 -0800 (PST)
+Date:   Fri, 20 Jan 2023 12:20:08 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Casper Andersson <casper.casan@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Nathan Huckleberry <nhuck@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Daniel Machon <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH net-next 7/8] net: microchip: sparx5: Add support for IS0
+ VCAP ethernet protocol types
+Message-ID: <Y8pcyOn2tgscwO/A@kadam>
+References: <20230120090831.20032-1-steen.hegelund@microchip.com>
+ <20230120090831.20032-8-steen.hegelund@microchip.com>
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230120090831.20032-8-steen.hegelund@microchip.com>
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2023-01-19 at 17:53 -0800, Jakub Kicinski wrote:
->=20
-> > Doesn't look that bad overall, IMHO. :)
->=20
-> I hope we can avoid over-focusing on the python tools :P
+On Fri, Jan 20, 2023 at 10:08:30AM +0100, Steen Hegelund wrote:
+> +bool sparx5_vcap_is_known_etype(struct vcap_admin *admin, u16 etype)
+> +{
+> +	const u16 *known_etypes;
+> +	int size, idx;
+> +
+> +	switch (admin->vtype) {
+> +	case VCAP_TYPE_IS0:
+> +		known_etypes = sparx5_vcap_is0_known_etypes;
+> +		size = ARRAY_SIZE(sparx5_vcap_is0_known_etypes);
+> +		break;
+> +	case VCAP_TYPE_IS2:
+> +		known_etypes = sparx5_vcap_is2_known_etypes;
+> +		size = ARRAY_SIZE(sparx5_vcap_is2_known_etypes);
+> +		break;
+> +	default:
+> +		break;
 
-Oh sure.
+return false; to avoid an uninitialized "size".
 
-> I'm no python expert and the code would use a lot of refactoring.
-> But there's only so many hours in the day and the alternative
-> seems that it will bit rot in my tree forever :(
->=20
-:)
+> +	}
+> +	for (idx = 0; idx < size; ++idx)
+> +		if (known_etypes[idx] == etype)
+> +			return true;
+> +	return false;
+> +}
 
-Yeah I don't mind. The quality of the implementation matters to a point,
-but honestly I was just reading through this to convince myself it
-wasn't just a totally stinking pile of hacks ;-) Which you/I have
-managed, so personally I'm happy with this.
-
-johannes
-
+regards,
+dan carpenter
