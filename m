@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CB03676043
+	by mail.lfdr.de (Postfix) with ESMTP id 719B6676044
 	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 23:40:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229682AbjATWkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 17:40:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47558 "EHLO
+        id S229711AbjATWk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 17:40:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbjATWkX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 17:40:23 -0500
+        with ESMTP id S229445AbjATWkY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 17:40:24 -0500
 Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9993080BA0;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC787C873;
         Fri, 20 Jan 2023 14:40:22 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 01322168F;
-        Fri, 20 Jan 2023 23:40:19 +0100 (CET)
+        by mail.3ffe.de (Postfix) with ESMTPSA id C6DFF1692;
+        Fri, 20 Jan 2023 23:40:20 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1674254420;
+        t=1674254421;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xk0c8KXT0x8OjHkq5e1tXzEKZP0LwHWjl4YMIq+eX4M=;
-        b=r1hdBTaIxDJbu5FJo/TGTrKSx6Ixn1HeMHxI6bmZxa1kMUyMpDoL37A9OPInreH/ITaS05
-        9sSoGcdYywRCTFne161/qsrmFCZ9AkPIyi8QDnkIUv/3VCc75LfKio8BDyr7DWeQEu8YxP
-        xvS3//4U9YuS3pMdurAAaPCJyFGfwDSrsU9zJRDJPpL9rZCEzfUpl0H7u9u87YGIP4QK8L
-        L1ewM3ad6IOLrFb2EqPNVKRuXPJwC6uheXJxH/eUOO/wg7+tIvV4ELjhlPshDszRWbQALz
-        9X2786k6ggAynG+VGKmXkaHfXYbt0+xcyyThCEnlLeFvRGmqWt6vH2TvuiKWsQ==
+        bh=BDVuKXh0Kd5QNrze0FujuDJa3AT6+b9OQz14bZfixL4=;
+        b=tgAxm0nUOZazHv5XPuvTMF39YrBySknoyWVd6o/fYI1adapxtfqWEeaySA5Z5vGPdvro4f
+        O1VL1SWycmgdTT8feGCYXPc5l8SMD+kBNb04YNSZFAbvjzdOgBmQ9DfnT8DweXA282C52J
+        IfJ37nPZENgCOrcDGNDgRIRxiSCwjnmbchADTc/T4pZJLOkmkpGEH1DQdNTX/ipfYoQFNs
+        WUkyaQVHfMjZl5Qmr+P4+CLCFsnk2rjS1KTXFLIS5ygpWA1tZh665g+IBq4WCtspBJqsP+
+        L93zd9bxDXLUb68CZuStHpwZGRV8fSXOfsO/TmJWYpR6uXYrTWdY4stHl571fw==
 From:   Michael Walle <michael@walle.cc>
 To:     Yisen Zhuang <yisen.zhuang@huawei.com>,
         Salil Mehta <salil.mehta@huawei.com>,
@@ -48,9 +48,9 @@ To:     Yisen Zhuang <yisen.zhuang@huawei.com>,
         Xu Liang <lxu@maxlinear.com>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next 1/5] net: phy: add error checks in mmd_phy_indirect() and export it
-Date:   Fri, 20 Jan 2023 23:40:07 +0100
-Message-Id: <20230120224011.796097-2-michael@walle.cc>
+Subject: [PATCH net-next 2/5] net: phy: support indirect c45 access in get_phy_c45_ids()
+Date:   Fri, 20 Jan 2023 23:40:08 +0100
+Message-Id: <20230120224011.796097-3-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230120224011.796097-1-michael@walle.cc>
 References: <20230120224011.796097-1-michael@walle.cc>
@@ -66,106 +66,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add missing error checks in mmd_phy_indirect(). The error checks need to
-be disabled to retain the current behavior in phy_read_mmd() and
-phy_write_mmd(). Therefore, add a new parameter to enable the error
-checks. Add a thin wrapper __phy_mmd_indirect() which is then exported.
+There are some PHYs, namely the Maxlinear GPY215, whose driver is
+explicitly supporting C45-over-C22 access. At least that was the
+intention. In practice, it cannot work because get_phy_c45_ids()
+will always issue c45 register accesses.
+
+There is another issue at hand: the Microchip LAN8814, which is
+a c22 only quad PHY, has issues with c45 accesses on the same bus
+and its address decoder will find a match in the middle of another
+c45 transaction. This will lead to spurious reads and writes. The
+reads will corrupt the c45 in flight. The write will lead to random
+writes to the LAN8814 registers. As a workaround for PHYs which
+support C45-over-C22 register accesses, we can make the MDIO bus
+c22-only.
+
+For both reasons, extend the register accesses in get_phy_c45_ids()
+to allow indirect C45 accesses over the C22 registers.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/net/phy/phy-core.c | 44 +++++++++++++++++++++++++++++++-------
- include/linux/phy.h        |  2 ++
- 2 files changed, 38 insertions(+), 8 deletions(-)
+ drivers/net/phy/phy_device.c | 32 +++++++++++++++++++++++++++-----
+ 1 file changed, 27 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index a64186dc53f8..c9c92b95ace2 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -524,19 +524,47 @@ int phy_speed_down_core(struct phy_device *phydev)
- 	return 0;
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 9ba8f973f26f..9777a7fd180a 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -698,6 +698,28 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
  }
+ EXPORT_SYMBOL(phy_device_create);
  
--static void mmd_phy_indirect(struct mii_bus *bus, int phy_addr, int devad,
--			     u16 regnum)
-+static int mmd_phy_indirect(struct mii_bus *bus, int phy_addr, int devad,
-+			    u16 regnum, bool check_rc)
- {
++static int mdiobus_probe_mmd_read(struct mii_bus *bus, int prtad, int devad,
++				  u16 regnum)
++{
 +	int ret;
 +
- 	/* Write the desired MMD Devad */
--	__mdiobus_write(bus, phy_addr, MII_MMD_CTRL, devad);
-+	ret = __mdiobus_write(bus, phy_addr, MII_MMD_CTRL, devad);
-+	if (check_rc && ret)
-+		return ret;
- 
- 	/* Write the desired MMD register address */
--	__mdiobus_write(bus, phy_addr, MII_MMD_DATA, regnum);
-+	ret = __mdiobus_write(bus, phy_addr, MII_MMD_DATA, regnum);
-+	if (check_rc && ret)
-+		return ret;
- 
- 	/* Select the Function : DATA with no post increment */
--	__mdiobus_write(bus, phy_addr, MII_MMD_CTRL,
--			devad | MII_MMD_CTRL_NOINCR);
-+	ret = __mdiobus_write(bus, phy_addr, MII_MMD_CTRL,
-+			      devad | MII_MMD_CTRL_NOINCR);
-+	if (check_rc && ret)
-+		return ret;
++	if (bus->read_c45)
++		return mdiobus_c45_read(bus, prtad, devad, regnum);
 +
-+	return 0;
++	mutex_lock(&bus->mdio_lock);
++
++	ret = __phy_mmd_indirect(bus, prtad, devad, regnum);
++	if (ret)
++		goto out;
++
++	ret = __mdiobus_read(bus, prtad, MII_MMD_DATA);
++
++out:
++	mutex_unlock(&bus->mdio_lock);
++
++	return ret;
 +}
 +
-+/**
-+ * __phy_mmd_indirect - prepare an indirect C45 register access
-+ *
-+ * @bus: the target MII bus
-+ * @phy_addr: PHY address on the MII bus
-+ * @devad: The target MMD (0..31)
-+ * @regnum: The target register on the MMD (0..65535)
-+ *
-+ * Prepare an indirect C45 read or write transfer using the MII_MMD_CTRL and
-+ * MII_MMD_DATA registers in C22 space.
-+ */
-+int __phy_mmd_indirect(struct mii_bus *bus, int phy_addr, int devad,
-+		       u16 regnum)
-+{
-+	return mmd_phy_indirect(bus, phy_addr, devad, regnum, true);
- }
-+EXPORT_SYMBOL(__phy_mmd_indirect);
+ /* phy_c45_probe_present - checks to see if a MMD is present in the package
+  * @bus: the target MII bus
+  * @prtad: PHY package address on the MII bus
+@@ -713,7 +735,7 @@ static int phy_c45_probe_present(struct mii_bus *bus, int prtad, int devad)
+ {
+ 	int stat2;
  
- /**
-  * __phy_read_mmd - Convenience function for reading a register
-@@ -563,7 +591,7 @@ int __phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum)
- 		struct mii_bus *bus = phydev->mdio.bus;
- 		int phy_addr = phydev->mdio.addr;
+-	stat2 = mdiobus_c45_read(bus, prtad, devad, MDIO_STAT2);
++	stat2 = mdiobus_probe_mmd_read(bus, prtad, devad, MDIO_STAT2);
+ 	if (stat2 < 0)
+ 		return stat2;
  
--		mmd_phy_indirect(bus, phy_addr, devad, regnum);
-+		mmd_phy_indirect(bus, phy_addr, devad, regnum, false);
+@@ -736,12 +758,12 @@ static int get_phy_c45_devs_in_pkg(struct mii_bus *bus, int addr, int dev_addr,
+ {
+ 	int phy_reg;
  
- 		/* Read the content of the MMD's selected register */
- 		val = __mdiobus_read(bus, phy_addr, MII_MMD_DATA);
-@@ -619,7 +647,7 @@ int __phy_write_mmd(struct phy_device *phydev, int devad, u32 regnum, u16 val)
- 		struct mii_bus *bus = phydev->mdio.bus;
- 		int phy_addr = phydev->mdio.addr;
+-	phy_reg = mdiobus_c45_read(bus, addr, dev_addr, MDIO_DEVS2);
++	phy_reg = mdiobus_probe_mmd_read(bus, addr, dev_addr, MDIO_DEVS2);
+ 	if (phy_reg < 0)
+ 		return -EIO;
+ 	*devices_in_package = phy_reg << 16;
  
--		mmd_phy_indirect(bus, phy_addr, devad, regnum);
-+		mmd_phy_indirect(bus, phy_addr, devad, regnum, false);
+-	phy_reg = mdiobus_c45_read(bus, addr, dev_addr, MDIO_DEVS1);
++	phy_reg = mdiobus_probe_mmd_read(bus, addr, dev_addr, MDIO_DEVS1);
+ 	if (phy_reg < 0)
+ 		return -EIO;
+ 	*devices_in_package |= phy_reg;
+@@ -825,12 +847,12 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr,
+ 				continue;
+ 		}
  
- 		/* Write the data into MMD's selected register */
- 		__mdiobus_write(bus, phy_addr, MII_MMD_DATA, val);
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index fbeba4fee8d4..f7a5e110f95c 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1228,6 +1228,8 @@ int phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum);
- 	__ret; \
- })
+-		phy_reg = mdiobus_c45_read(bus, addr, i, MII_PHYSID1);
++		phy_reg = mdiobus_probe_mmd_read(bus, addr, i, MII_PHYSID1);
+ 		if (phy_reg < 0)
+ 			return -EIO;
+ 		c45_ids->device_ids[i] = phy_reg << 16;
  
-+int __phy_mmd_indirect(struct mii_bus *bus, int phy_addr, int devad,
-+		       u16 regnum);
- /*
-  * __phy_read_mmd - Convenience function for reading a register
-  * from an MMD on a given PHY.
+-		phy_reg = mdiobus_c45_read(bus, addr, i, MII_PHYSID2);
++		phy_reg = mdiobus_probe_mmd_read(bus, addr, i, MII_PHYSID2);
+ 		if (phy_reg < 0)
+ 			return -EIO;
+ 		c45_ids->device_ids[i] |= phy_reg;
 -- 
 2.30.2
 
