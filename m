@@ -2,56 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03CFA674CB5
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 06:48:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98958674CC8
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 06:50:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230143AbjATFsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 00:48:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56056 "EHLO
+        id S230408AbjATFu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 00:50:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230303AbjATFsH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 00:48:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A43F17CF9;
-        Thu, 19 Jan 2023 21:48:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F71561DF2;
-        Fri, 20 Jan 2023 05:48:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33819C433D2;
-        Fri, 20 Jan 2023 05:48:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674193681;
-        bh=xsZyDNfp8xKqmDnOdFjDtZjXdI+0DJE9t61UePFMT00=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Oc+UkmGQaR+feradrF1FzV9Yfgo/6WuM9QeBWkHfXbnpVLcPV3VABvs4/dmsr0pF0
-         xWzul0tW6PPdi1FoiB4iK6iL2YS6vz/cj9Sk1HF01LwDtl6IMU4Yk5IxIV4+SU1zgq
-         cme/1Eng0CRjOAtZ+yvMp7IccGeu0D7xOjhCfBapZsGmmqAWtGy/Vpq/aajbjia9qu
-         IhZJ1btc4pmCgTVMy/HeUbOUNxLNpYesPlFxCL1pOkQS64kwbcUmTy6nImKYG+H/IO
-         SIeUnR+4tEH7N1ilEDkDb73fv5GYfja0+a9SbBL4ccxAMgcnQ1OmyjI8uTs4QIJfzx
-         UgHyHhiFzsrug==
-Date:   Thu, 19 Jan 2023 21:48:00 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>
-Cc:     <davem@davemloft.net>, <edumazet@google.com>,
-        <linux@armlinux.org.uk>, <pabeni@redhat.com>, <rogerq@kernel.org>,
-        <leon@kernel.org>, <leonro@nvidia.com>,
-        <anthony.l.nguyen@intel.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <vigneshr@ti.com>,
-        <srk@ti.com>
-Subject: Re: [PATCH net-next v4 2/2] net: ethernet: ti: am65-cpsw/cpts: Fix
- CPTS release action
-Message-ID: <20230119214800.63b8c63a@kernel.org>
-In-Reply-To: <20230120044201.357950-1-s-vadapalli@ti.com>
-References: <20230118095439.114222-3-s-vadapalli@ti.com>
-        <20230120044201.357950-1-s-vadapalli@ti.com>
+        with ESMTP id S231388AbjATFuq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 00:50:46 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11714193EA
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 21:50:45 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pIkIU-0007Ki-6a; Fri, 20 Jan 2023 06:50:42 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pIkIS-0000mw-1a; Fri, 20 Jan 2023 06:50:40 +0100
+Date:   Fri, 20 Jan 2023 06:50:40 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        Arun.Ramadoss@microchip.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        UNGLinuxDriver@microchip.com, Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next v1 2/4] net: phy: micrel: add EEE configuration
+ support for KSZ9477 variants of PHYs
+Message-ID: <20230120055040.GH6162@pengutronix.de>
+References: <20230119131821.3832456-1-o.rempel@pengutronix.de>
+ <20230119131821.3832456-3-o.rempel@pengutronix.de>
+ <Y8lO+2JojN8zOkkY@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Y8lO+2JojN8zOkkY@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,11 +62,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 20 Jan 2023 10:12:01 +0530 Siddharth Vadapalli wrote:
-> Changes from v3:
-> 1. Rebase patch on net-next commit: cff9b79e9ad5
-> 2. Collect Reviewed-by tags from Leon Romanovsky, Tony Nguyen and
->    Roger Quadros.
+On Thu, Jan 19, 2023 at 03:08:59PM +0100, Andrew Lunn wrote:
+> > +static int ksz9477_get_eee_caps(struct phy_device *phydev,
+> > +				struct ethtool_eee *data)
+> > +{
+> > +	int val;
+> > +
+> > +	/* At least on KSZ8563 (which has same PHY_ID as KSZ9477), the
+> > +	 * MDIO_PCS_EEE_ABLE register is a mirror of MDIO_AN_EEE_ADV register.
+> > +	 * So, we need to provide this information by driver.
+> > +	 */
+> > +	data->supported = SUPPORTED_100baseT_Full;
+> > +
+> > +	/* KSZ8563 is able to advertise not supported MDIO_EEE_1000T.
+> > +	 * We need to test if the PHY is 1Gbit capable.
+> > +	 */
+> > +	val = phy_read(phydev, MII_BMSR);
+> > +	if (val < 0)
+> > +		return val;
+> > +
+> > +	if (val & BMSR_ERCAP)
+> > +		data->supported |= SUPPORTED_1000baseT_Full;
+> 
+> This works, but you could also look at phydev->supported and see if
+> one of the 1G modes is listed. That should be faster, since there is
+> no MDIO transaction involved. Not that this is on any sort of hot
+> path.
 
-You need to repost the entire series, and please don't --in-reply-to,
-just CC the people who commented.
+ack. Sounds good.
+
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
