@@ -2,480 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD3CD674C44
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 06:28:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDD53674C46
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 06:28:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229724AbjATF16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 00:27:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56190 "EHLO
+        id S229615AbjATF2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 00:28:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbjATF1g (ORCPT
+        with ESMTP id S229713AbjATF1g (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 00:27:36 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AC51AD19;
-        Thu, 19 Jan 2023 21:22:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1674192139; x=1705728139;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=TfK4ca6B6xPl1GH63jV1rAXSQ5nbz5Ja/oJWlrUW5K0=;
-  b=VhK4Xxp8Qggt/vHNT9IYDf/zl8gbdSnZ6Nkfwy2UlavhhFZ071oyCP3r
-   T4tKi62mq7PiFYLkA7ysj5bf0Q76GX95Vx/NS4R9R66R6wd1WrxWeZ6yN
-   RGWtY1K0KvJcI0CXg95K2kzFs0Abldhd6i3OK1jur36rT8XRtJI2NAsjS
-   J3dJwcFMmAZmi565QkPBTP6CSVCzZXfOCvlifceKv0PJonY4Amp4bPPYk
-   i+Wgl09V4P7CphxmRfsR3KamWFxXRUkSoZfuprhykDexnc75YEbjTkScT
-   9UYMO29MFpQPQSLfLuqmM+HEWFPJ/fn1anyAuC/QT8ni7/r4Zea+Qm8n0
-   w==;
-X-IronPort-AV: E=Sophos;i="5.97,231,1669100400"; 
-   d="scan'208";a="196648435"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Jan 2023 22:22:18 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Thu, 19 Jan 2023 22:22:18 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Thu, 19 Jan 2023 22:22:12 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <olteanv@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>
-Subject: [Patch net-next v2 2/2] net: dsa: microchip: add support for credit based shaper
-Date:   Fri, 20 Jan 2023 10:51:35 +0530
-Message-ID: <20230120052135.32120-3-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20230120052135.32120-1-arun.ramadoss@microchip.com>
-References: <20230120052135.32120-1-arun.ramadoss@microchip.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2064.outbound.protection.outlook.com [40.107.244.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21E7AD18
+        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 21:22:18 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JXHWRknBAU8gZ7/wCDA4Q554rigRA8STdKnTGqGfOh0rJ5wtvPJQSLhjIImswvqp1iu0wYVIKAuNQlFa4WelUK5+13xc+qnfbHbTal8m2Ot4YHFxwwtjiPJoVm/xbNRiwPXYQAIq7hBs+j5pApSIlCSIweLCjr7D+/FupOmhllcOXCgL4l33GabWBRUpMFqS/x4XkmjrXkCnufusZ2aIcwMYKaoIjHCQf9w0vdByQtlDbwATt1nhGrbrY2U8A5O5GGwN4t7cJZR3sm1cks/sAQkGRNiVnaAhe6AUzkC7bgyjUCLobm7lldSH+JujXIdG8kx6zANGNANzT2Ch7N7prQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BEnd/i7wSJzIq5WylTkNnto4fLZy3tZYso7ANh0iGVE=;
+ b=VfZm0TAK8kbovlpmZ3E+W51INzEON/hdDjeuBZB+FFcSALCZ95/xDCIoxjhGaeh0+N0vKnh7raAr2TuMxHLLaQnYcAbJiL9zuRmu32/k6boT1qwOjvnv1UTy5Szr1hZKoCJzAP9lLbdJnrf3XA3fGiFOXaVbNiy1fI8O2Sls0lHE23SD7VUGdHLU2A+47lhXiqgaCY+Y58aOaFEgJrDQJK8wo2Nh4CEcx3YpLlAATMIQbtBlRjJ88sUX6Yyz8dUq+CABhRuvArG7e+xPRIuurl1oYYMrktHJzBC63GfCJFl7dg8vUmmGlgXPVAcVPnCWwVrd9VcRY9C3D10SeMr4Xw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BEnd/i7wSJzIq5WylTkNnto4fLZy3tZYso7ANh0iGVE=;
+ b=X27CxhT/soU8X+VIyFvNRjkzfqnfGC6if4TUWH47O1H77pAmnegIJQd2LdANsF2INgD7KR2Yvf8mxyA52O1utiH8I+rQp5RyZLwHj8z7vxqzf3IX52xuWRjZ4ZlB3wV62PU0hBve+waUzl35GyDV9xr9POxYAi4FpwuNCFuZLsRyofv1aMuJagUN52dQT8PmpvnFL9v05TWCugbZa0AiARSO0P4X5rJZw4F2lIlKTHsy34QhFzmwISVZV/3BPoyJ8h7KsV5882i/ng/kTQsVlpRX1fAXCF7UELQp26biO49HBtOs8tCHF0IgV6+OtkTz7aDJR2Oi1EQvYrKMJ6u04w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BYAPR12MB2743.namprd12.prod.outlook.com (2603:10b6:a03:61::28)
+ by BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.24; Fri, 20 Jan
+ 2023 05:22:17 +0000
+Received: from BYAPR12MB2743.namprd12.prod.outlook.com
+ ([fe80::8031:8093:2f25:f2ab]) by BYAPR12MB2743.namprd12.prod.outlook.com
+ ([fe80::8031:8093:2f25:f2ab%7]) with mapi id 15.20.5986.018; Fri, 20 Jan 2023
+ 05:22:17 +0000
+From:   Rahul Rameshbabu <rrameshbabu@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vincent Cheng <vincent.cheng.xh@renesas.com>
+Subject: Re: [net-next 03/15] net/mlx5: Add adjphase function to support
+ hardware-only offset control
+In-Reply-To: <20230119210842.5faf1e44@kernel.org> (Jakub Kicinski's message of
+        "Thu, 19 Jan 2023 21:08:42 -0800")
+References: <20230118183602.124323-1-saeed@kernel.org>
+        <20230118183602.124323-4-saeed@kernel.org>
+        <739b308c-33ec-1886-5e9d-6c5059370d15@intel.com>
+        <20230119194631.1b9fef95@kernel.org> <87tu0luadz.fsf@nvidia.com>
+        <20230119200343.2eb82899@kernel.org> <87pmb9u90j.fsf@nvidia.com>
+        <20230119210842.5faf1e44@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.1 (gnu/linux)
+Date:   Thu, 19 Jan 2023 21:22:00 -0800
+Message-ID: <87k01hu6fb.fsf@nvidia.com>
 Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-ClientProxiedBy: SJ0PR13CA0137.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c6::22) To BYAPR12MB2743.namprd12.prod.outlook.com
+ (2603:10b6:a03:61::28)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BYAPR12MB2743:EE_|BY5PR12MB4322:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7e2aba88-7b40-446a-02e8-08dafaa64bb2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: k2qFL+J2bF7LO4XKJUoq67XRsnb4u11ELjsYPwXeqeUWTBiGWqUmqzix8Po6KpK6NoVPf2oNH5h3zfsu990qijgO1co8xvcBnCOAZ4UQnIUwoTq3yKows2prnoPQIjSwvGB0gfI2KT9RtXMNfYCmEASTjuaDqZJdidP5brqLQnpHPMHVnFUzA/Vt2wooojreqEOuOGAl9I3nhoVmtOMRn6HScbEuwnVkFEv88OmyjIXI4M/YVC2LVZwewhuiJvmNOdIFDg1PXRCi+BM9lKNzbaqzGvAWHbXRYm12OzyRy9sVlmP6p+dLda+9SEpMy5TFNjfbJNhqRPUnudcuG/JxzbOWyTre+lUm7KDFmVAtxHqqWBp0azTdnFtMuSWZ4dQgBfI5HZFgGva6BoGNbv4fvdAQAIX28XQBWtSTn41tfJihleDs9l0hP0HQuCi3CU4Ajk8LRsJM2fxtGazLG5TPxIsHQ+uSte8fqFhcEhvY99/52oyVT4izvMS3zaDkjuw4OpllvGm1zgRLYWqANv3rQEob27zW+OqThILPTTvhtiNIHvYZzdmvroD56fNV/OLfAAxpK0e/r9E1HKW9l2GGdR1jPnMhL3j3K5Awrwd+KHbWbr13cQxrqZZWCU/MwljqZHnJvp2KGYkUk/L1Pxj93A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB2743.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(136003)(346002)(396003)(366004)(376002)(451199015)(5660300002)(316002)(54906003)(36756003)(2906002)(2616005)(38100700002)(83380400001)(86362001)(6486002)(186003)(6506007)(478600001)(6512007)(6666004)(66556008)(6916009)(8676002)(4326008)(41300700001)(66946007)(66476007)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?kM6jvT05dtDIztKNWVBHHE3SnJ9FJe2a6/mO3LTDBYsgsp3qVhuoi2Gjnew1?=
+ =?us-ascii?Q?r0dgqfmVyD6aRq/TFTF94tbdJgL/cYXq8J+dMZEACk8/rBOd/32dWYNB9Bxo?=
+ =?us-ascii?Q?LZftDXpLf2wMgSiK8e5KpedY0tHv2aFTbYN7J46UX7YfcvFJmsi/8W7ayQbg?=
+ =?us-ascii?Q?WIhGptn3rHuL8Ggx2JnjrfA75ggzGcc8ZGbQ4METKCR1wTKYz4FI7FGBLpx3?=
+ =?us-ascii?Q?CtcMaJ8LK4PkE3jsMY5bWCuaLOyS0zJFKE/P+0Evv8LCUajxZdpuFNcuBTDV?=
+ =?us-ascii?Q?XNQqfl5MYnZAHa22BVw3EtTv+DYXwdka6g4M0Y4nHPx+uf+E7DdZoyI3Hfe8?=
+ =?us-ascii?Q?SbK4KeQNib4hDHyq4R7RpekkZtqBFKWbKtgbmxXKIt0WI2Swvni2XbonMg+V?=
+ =?us-ascii?Q?UoEublWaDROFwpAB3sWMaauN8Fk9xlWplCcoi4EK947W3x2e6dLRP5IxEtOo?=
+ =?us-ascii?Q?KJ9Cs8Ol83YtxsM3EqeBBYeM/YgJzBgFdSuPCUda14qRnrA1H8pncPs5AL6Y?=
+ =?us-ascii?Q?QrQNin7BeJ7wg4e1ck0aRlseujWjG5BtKaqKW4NK76VYusGV+WwfuYQtOd2i?=
+ =?us-ascii?Q?SnHCeQvtn5szmvZ/lLhLVANUFuHxsGNJgrQ6OzZ0mNFbliI1z24yOcNlnEOq?=
+ =?us-ascii?Q?EMTAH3PyZk92KznoMm6lqLdLoqZrtC60PS943f7gnbM5f/7sFcFns72Hwx75?=
+ =?us-ascii?Q?xKeOuHtYCKh4z+Lx/5x+FyVbWPNAdc7jpaLvMFVG57JhTd9kSgTCX0YYaiOv?=
+ =?us-ascii?Q?AwpR68MaIgeyvHp3q0Q3Oosqe9TOtCpgRq7sSLeh2qBgvxMZ7egzVwFTdSeX?=
+ =?us-ascii?Q?ruj/j5bcZetzTT1rD5Fhy+VjwBbZ97B6stUdXCBKRwuuioc6zGrhIrTpC8bP?=
+ =?us-ascii?Q?UGP7Bf8ryXCdOJ8YpmCsBeRiZ+5MgGE0qfq57QCFXqfSGlbK5E5EtAiEBkOI?=
+ =?us-ascii?Q?6XqwXqzbkcgWxu2mOgxdwNYrCsPlil1B3reKgS7F/gq7jMB+9XU+avR+DCI6?=
+ =?us-ascii?Q?Zzrbcu8H4pFTu6YN9GGlZ74ffJOgTnfHnoUU1oDhtkcl3QlF9/CjYhLUOUAK?=
+ =?us-ascii?Q?dm+W01vnkFq5BPAKll9hnkj5il3VS6MGobfE0OJURNdrJ4SZl+z+00dehATd?=
+ =?us-ascii?Q?1AO6RfoMzyx7tBD/Bo4eFYLhZ+r6Vekn/uK4PWHNXZj2GrxrsVzqM5T84iTh?=
+ =?us-ascii?Q?HzZla6UUjorjX3NU/24Lf9mnvcBOus3o68qQ2uvu1RKRxW+Ra2CB1dDZLsDT?=
+ =?us-ascii?Q?J/EDscVRLjlw99OeT7qR73Qr04bWYnq9N7KLz9yEL5D3ma58TX+ptsbiu1Pr?=
+ =?us-ascii?Q?7RDbH9khsmQkUZWOC1s2FroZKLzSp8M2PpgfDKHRqYAwv7G+CO7ST8TXzrKK?=
+ =?us-ascii?Q?fEJmwegbDWhBD7p3GSacG8VWBxEOgDxTgDeib1N3eyUFF/MhsnqOKyuy9wXZ?=
+ =?us-ascii?Q?iAA1MSP6PIT22LtVGvzf3tUUVyHsUI3M+DFq5NMRKrcRSUtnMAt4fYN3G0aq?=
+ =?us-ascii?Q?TcE23U6h40fqLZ6JXgNqFU63NSHRvzTAK9KmnGhn1dXNoBdhMhsrQ9w1lOeO?=
+ =?us-ascii?Q?Hv9nq5g54gABeyVXTC1Hlo/SzCfzTCWd1oyTvJUPUwkpD0qI/G3Mm0CA6FHc?=
+ =?us-ascii?Q?fmq/RsruNHmjFAMbXNhQGJc1wUzAgeHXAr+ERybSLXxwmnyw8rXWg7jFUu9i?=
+ =?us-ascii?Q?tlZEhg=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7e2aba88-7b40-446a-02e8-08dafaa64bb2
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB2743.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jan 2023 05:22:16.9850
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qvfmjr9IdNpRUw51ciWMltFyAcCZqaYsh4hD1nvRLlPhi4QU8Y+BDtmUgPIdog/FzQip7PiIRJ6ryN0E4OUTaA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4322
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-KSZ9477, KSZ9567, KSZ9563, KSZ8563 and LAN937x supports Credit based
-shaper. To differentiate the chip supporting cbs, tc_cbs_supported
-flag is introduced in ksz_chip_data.
-And KSZ series has 16bit Credit increment registers whereas LAN937x has
-24bit register. The value to be programmed in the credit increment is
-determined using the successive multiplication method to convert decimal
-fraction to hexadecimal fraction.
-For example: if idleslope is 10000 and sendslope is -90000, then
-bandwidth is 10000 - (-90000) = 100000.
-The 10% bandwidth of 100Mbps means 10/100 = 0.1(decimal). This value has
-to be converted to hexa.
-1) 0.1 * 16 = 1.6  --> fraction 0.6 Carry = 1 (MSB)
-2) 0.6 * 16 = 9.6  --> fraction 0.6 Carry = 9
-3) 0.6 * 16 = 9.6  --> fraction 0.6 Carry = 9
-4) 0.6 * 16 = 9.6  --> fraction 0.6 Carry = 9
-5) 0.6 * 16 = 9.6  --> fraction 0.6 Carry = 9
-6) 0.6 * 16 = 9.6  --> fraction 0.6 Carry = 9 (LSB)
-Now 0.1(decimal) becomes 0.199999(Hex).
-If it is LAN937x, 24 bit value will be programmed to Credit Inc
-register, 0x199999. For others 16 bit value will be prgrammed, 0x1999.
+On Thu, 19 Jan, 2023 21:08:42 -0800 Jakub Kicinski <kuba@kernel.org> wrote:
+> On Thu, 19 Jan 2023 20:26:04 -0800 Rahul Rameshbabu wrote:
+>> One of my concerns with doing this is breaking userspace expectations.
+>> In linuxptp, there is a configuration setting "write_phase_mode" and an
+>> expectation that when adjphase is called, there will not be a fallback
+>> to adjtime. This because adjphase is used in situations where small fine
+>> tuning is explicitly needed, so the errors would indicate a logical or
+>> situational error.
+>
+> I don't mean fallback - just do what you do in mlx5 directly in 
+> the core. The driver already does:
+>
+> if delta < MAX
+> 	use precise method
+> else
+> 	use coarse method
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
-v1 -> v2
-- checking the divide by zero error in cinc_cal
----
- drivers/net/dsa/microchip/ksz9477.c      |   7 ++
- drivers/net/dsa/microchip/ksz9477.h      |   1 +
- drivers/net/dsa/microchip/ksz9477_reg.h  |  27 +-----
- drivers/net/dsa/microchip/ksz_common.c   | 112 +++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h   |  20 ++++
- drivers/net/dsa/microchip/lan937x.h      |   1 +
- drivers/net/dsa/microchip/lan937x_main.c |   5 +
- drivers/net/dsa/microchip/lan937x_reg.h  |   3 +
- 8 files changed, 151 insertions(+), 25 deletions(-)
+Oh, I see. I was thinking we were discussing ADJ_OFFSET in the
+ptp_clock_adjtime function in the ptp core stack. The suggestion you are
+proposing would be for the ADJ_SETOFFSET operation, and I agree with
+this. Thanks for the clarification.
 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 6526c3c204bb..fd93e4595c2c 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1184,6 +1184,13 @@ u32 ksz9477_get_port_addr(int port, int offset)
- 	return PORT_CTRL_ADDR(port, offset);
- }
- 
-+int ksz9477_tc_cbs_set_cinc(struct ksz_device *dev, int port, u32 val)
-+{
-+	val = val >> 8;
-+
-+	return ksz_pwrite16(dev, port, REG_PORT_MTI_CREDIT_INCREMENT, val);
-+}
-+
- int ksz9477_switch_init(struct ksz_device *dev)
- {
- 	u8 data8;
-diff --git a/drivers/net/dsa/microchip/ksz9477.h b/drivers/net/dsa/microchip/ksz9477.h
-index 2554cb63d326..b6f7e3c46e3f 100644
---- a/drivers/net/dsa/microchip/ksz9477.h
-+++ b/drivers/net/dsa/microchip/ksz9477.h
-@@ -51,6 +51,7 @@ int ksz9477_mdb_del(struct ksz_device *dev, int port,
- 		    const struct switchdev_obj_port_mdb *mdb, struct dsa_db db);
- int ksz9477_change_mtu(struct ksz_device *dev, int port, int mtu);
- void ksz9477_config_cpu_port(struct dsa_switch *ds);
-+int ksz9477_tc_cbs_set_cinc(struct ksz_device *dev, int port, u32 val);
- int ksz9477_enable_stp_addr(struct ksz_device *dev);
- int ksz9477_reset_switch(struct ksz_device *dev);
- int ksz9477_dsa_init(struct ksz_device *dev);
-diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
-index b433a529cfec..cba3dba58bc3 100644
---- a/drivers/net/dsa/microchip/ksz9477_reg.h
-+++ b/drivers/net/dsa/microchip/ksz9477_reg.h
-@@ -1484,33 +1484,10 @@
- 
- /* 9 - Shaping */
- 
--#define REG_PORT_MTI_QUEUE_INDEX__4	0x0900
-+#define REG_PORT_MTI_QUEUE_CTRL_0__4   0x0904
- 
--#define REG_PORT_MTI_QUEUE_CTRL_0__4	0x0904
-+#define MTI_PVID_REPLACE               BIT(0)
- 
--#define MTI_PVID_REPLACE		BIT(0)
--
--#define REG_PORT_MTI_QUEUE_CTRL_0	0x0914
--
--#define MTI_SCHEDULE_MODE_M		0x3
--#define MTI_SCHEDULE_MODE_S		6
--#define MTI_SCHEDULE_STRICT_PRIO	0
--#define MTI_SCHEDULE_WRR		2
--#define MTI_SHAPING_M			0x3
--#define MTI_SHAPING_S			4
--#define MTI_SHAPING_OFF			0
--#define MTI_SHAPING_SRP			1
--#define MTI_SHAPING_TIME_AWARE		2
--
--#define REG_PORT_MTI_QUEUE_CTRL_1	0x0915
--
--#define MTI_TX_RATIO_M			(BIT(7) - 1)
--
--#define REG_PORT_MTI_QUEUE_CTRL_2__2	0x0916
--#define REG_PORT_MTI_HI_WATER_MARK	0x0916
--#define REG_PORT_MTI_QUEUE_CTRL_3__2	0x0918
--#define REG_PORT_MTI_LO_WATER_MARK	0x0918
--#define REG_PORT_MTI_QUEUE_CTRL_4__2	0x091A
- #define REG_PORT_MTI_CREDIT_INCREMENT	0x091A
- 
- /* A - QM */
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index fbb107754057..b72a2c4c3e5c 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -23,6 +23,7 @@
- #include <linux/of_net.h>
- #include <linux/micrel_phy.h>
- #include <net/dsa.h>
-+#include <net/pkt_cls.h>
- #include <net/switchdev.h>
- 
- #include "ksz_common.h"
-@@ -31,6 +32,10 @@
- #include "ksz9477.h"
- #include "lan937x.h"
- 
-+#define KSZ_CBS_ENABLE ((MTI_SCHEDULE_STRICT_PRIO << MTI_SCHEDULE_MODE_S) | \
-+			(MTI_SHAPING_SRP << MTI_SHAPING_S))
-+#define KSZ_CBS_DISABLE ((MTI_SCHEDULE_WRR << MTI_SCHEDULE_MODE_S) |\
-+			 (MTI_SHAPING_OFF << MTI_SHAPING_S))
- #define MIB_COUNTER_NUM 0x20
- 
- struct ksz_stats_raw {
-@@ -250,6 +255,7 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.change_mtu = ksz9477_change_mtu,
- 	.phylink_mac_link_up = ksz9477_phylink_mac_link_up,
- 	.config_cpu_port = ksz9477_config_cpu_port,
-+	.tc_cbs_set_cinc = ksz9477_tc_cbs_set_cinc,
- 	.enable_stp_addr = ksz9477_enable_stp_addr,
- 	.reset = ksz9477_reset_switch,
- 	.init = ksz9477_switch_init,
-@@ -286,6 +292,7 @@ static const struct ksz_dev_ops lan937x_dev_ops = {
- 	.change_mtu = lan937x_change_mtu,
- 	.phylink_mac_link_up = ksz9477_phylink_mac_link_up,
- 	.config_cpu_port = lan937x_config_cpu_port,
-+	.tc_cbs_set_cinc = lan937x_tc_cbs_set_cinc,
- 	.enable_stp_addr = ksz9477_enable_stp_addr,
- 	.reset = lan937x_reset_switch,
- 	.init = lan937x_switch_init,
-@@ -1081,6 +1088,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.port_cnt = 3,		/* total port count */
- 		.port_nirqs = 3,
- 		.num_tx_queues = 4,
-+		.tc_cbs_supported = true,
- 		.ops = &ksz9477_dev_ops,
- 		.mib_names = ksz9477_mib_names,
- 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
-@@ -1219,6 +1227,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.port_cnt = 7,		/* total physical port count */
- 		.port_nirqs = 4,
- 		.num_tx_queues = 4,
-+		.tc_cbs_supported = true,
- 		.ops = &ksz9477_dev_ops,
- 		.phy_errata_9477 = true,
- 		.mib_names = ksz9477_mib_names,
-@@ -1342,6 +1351,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.port_cnt = 3,		/* total port count */
- 		.port_nirqs = 3,
- 		.num_tx_queues = 4,
-+		.tc_cbs_supported = true,
- 		.ops = &ksz9477_dev_ops,
- 		.mib_names = ksz9477_mib_names,
- 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
-@@ -1368,6 +1378,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.port_cnt = 7,		/* total physical port count */
- 		.port_nirqs = 3,
- 		.num_tx_queues = 4,
-+		.tc_cbs_supported = true,
- 		.ops = &ksz9477_dev_ops,
- 		.phy_errata_9477 = true,
- 		.mib_names = ksz9477_mib_names,
-@@ -1399,6 +1410,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.port_cnt = 5,		/* total physical port count */
- 		.port_nirqs = 6,
- 		.num_tx_queues = 8,
-+		.tc_cbs_supported = true,
- 		.ops = &lan937x_dev_ops,
- 		.mib_names = ksz9477_mib_names,
- 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
-@@ -1424,6 +1436,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.port_cnt = 6,		/* total physical port count */
- 		.port_nirqs = 6,
- 		.num_tx_queues = 8,
-+		.tc_cbs_supported = true,
- 		.ops = &lan937x_dev_ops,
- 		.mib_names = ksz9477_mib_names,
- 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
-@@ -1449,6 +1462,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.port_cnt = 8,		/* total physical port count */
- 		.port_nirqs = 6,
- 		.num_tx_queues = 8,
-+		.tc_cbs_supported = true,
- 		.ops = &lan937x_dev_ops,
- 		.mib_names = ksz9477_mib_names,
- 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
-@@ -1478,6 +1492,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.port_cnt = 5,		/* total physical port count */
- 		.port_nirqs = 6,
- 		.num_tx_queues = 8,
-+		.tc_cbs_supported = true,
- 		.ops = &lan937x_dev_ops,
- 		.mib_names = ksz9477_mib_names,
- 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
-@@ -1507,6 +1522,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.port_cnt = 8,		/* total physical port count */
- 		.port_nirqs = 6,
- 		.num_tx_queues = 8,
-+		.tc_cbs_supported = true,
- 		.ops = &lan937x_dev_ops,
- 		.mib_names = ksz9477_mib_names,
- 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
-@@ -2982,6 +2998,101 @@ static int ksz_switch_detect(struct ksz_device *dev)
- 	return 0;
- }
- 
-+/* Bandwidth is calculated by idle slope/transmission speed. Then the Bandwidth
-+ * is converted to Hex-decimal using the successive multiplication method. On
-+ * every step, integer part is taken and decimal part is carry forwarded.
-+ */
-+static int cinc_cal(s32 idle_slope, s32 send_slope, u32 *bw)
-+{
-+	u32 cinc = 0;
-+	u32 txrate;
-+	u32 rate;
-+	u8 temp;
-+	u8 i;
-+
-+	txrate = idle_slope - send_slope;
-+
-+	if (!txrate)
-+		return -EINVAL;
-+
-+	rate = idle_slope;
-+
-+	/* 24 bit register */
-+	for (i = 0; i < 6; i++) {
-+		rate = rate * 16;
-+
-+		temp = rate / txrate;
-+
-+		rate %= txrate;
-+
-+		cinc = ((cinc << 4) | temp);
-+	}
-+
-+	*bw = cinc;
-+
-+	return 0;
-+}
-+
-+static int ksz_setup_tc_cbs(struct dsa_switch *ds, int port,
-+			    struct tc_cbs_qopt_offload *qopt)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	int ret;
-+	u32 bw;
-+
-+	if (!dev->info->tc_cbs_supported)
-+		return -EOPNOTSUPP;
-+
-+	if (qopt->queue > dev->info->num_tx_queues)
-+		return -EINVAL;
-+
-+	/* Queue Selection */
-+	ret = ksz_pwrite32(dev, port, REG_PORT_MTI_QUEUE_INDEX__4, qopt->queue);
-+	if (ret)
-+		return ret;
-+
-+	if (!qopt->enable)
-+		return ksz_pwrite8(dev, port, REG_PORT_MTI_QUEUE_CTRL_0,
-+				   KSZ_CBS_DISABLE);
-+
-+	/* High Credit */
-+	ret = ksz_pwrite16(dev, port, REG_PORT_MTI_HI_WATER_MARK,
-+			   qopt->hicredit);
-+	if (ret)
-+		return ret;
-+
-+	/* Low Credit */
-+	ret = ksz_pwrite16(dev, port, REG_PORT_MTI_LO_WATER_MARK,
-+			   qopt->locredit);
-+	if (ret)
-+		return ret;
-+
-+	/* Credit Increment Register */
-+	ret = cinc_cal(qopt->idleslope, qopt->sendslope, &bw);
-+	if (ret)
-+		return ret;
-+
-+	if (dev->dev_ops->tc_cbs_set_cinc) {
-+		ret = dev->dev_ops->tc_cbs_set_cinc(dev, port, bw);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return ksz_pwrite8(dev, port, REG_PORT_MTI_QUEUE_CTRL_0,
-+			   KSZ_CBS_ENABLE);
-+}
-+
-+static int ksz_setup_tc(struct dsa_switch *ds, int port,
-+			enum tc_setup_type type, void *type_data)
-+{
-+	switch (type) {
-+	case TC_SETUP_QDISC_CBS:
-+		return ksz_setup_tc_cbs(ds, port, type_data);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
- static const struct dsa_switch_ops ksz_switch_ops = {
- 	.get_tag_protocol	= ksz_get_tag_protocol,
- 	.connect_tag_protocol   = ksz_connect_tag_protocol,
-@@ -3024,6 +3135,7 @@ static const struct dsa_switch_ops ksz_switch_ops = {
- 	.port_hwtstamp_set	= ksz_hwtstamp_set,
- 	.port_txtstamp		= ksz_port_txtstamp,
- 	.port_rxtstamp		= ksz_port_rxtstamp,
-+	.port_setup_tc		= ksz_setup_tc,
- };
- 
- struct ksz_device *ksz_switch_alloc(struct device *base, void *priv)
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 1a00143b0345..d2d5761d58e9 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -50,6 +50,7 @@ struct ksz_chip_data {
- 	int port_cnt;
- 	u8 port_nirqs;
- 	u8 num_tx_queues;
-+	bool tc_cbs_supported;
- 	const struct ksz_dev_ops *ops;
- 	bool phy_errata_9477;
- 	bool ksz87xx_eee_link_erratum;
-@@ -354,6 +355,7 @@ struct ksz_dev_ops {
- 				    struct phy_device *phydev, int speed,
- 				    int duplex, bool tx_pause, bool rx_pause);
- 	void (*setup_rgmii_delay)(struct ksz_device *dev, int port);
-+	int (*tc_cbs_set_cinc)(struct ksz_device *dev, int port, u32 val);
- 	void (*config_cpu_port)(struct dsa_switch *ds);
- 	int (*enable_stp_addr)(struct ksz_device *dev);
- 	int (*reset)(struct ksz_device *dev);
-@@ -647,6 +649,24 @@ static inline int is_lan937x(struct ksz_device *dev)
- #define KSZ8_LEGAL_PACKET_SIZE		1518
- #define KSZ9477_MAX_FRAME_SIZE		9000
- 
-+/* CBS related registers */
-+#define REG_PORT_MTI_QUEUE_INDEX__4	0x0900
-+
-+#define REG_PORT_MTI_QUEUE_CTRL_0	0x0914
-+
-+#define MTI_SCHEDULE_MODE_M		0x3
-+#define MTI_SCHEDULE_MODE_S		6
-+#define MTI_SCHEDULE_STRICT_PRIO	0
-+#define MTI_SCHEDULE_WRR		2
-+#define MTI_SHAPING_M			0x3
-+#define MTI_SHAPING_S			4
-+#define MTI_SHAPING_OFF			0
-+#define MTI_SHAPING_SRP			1
-+#define MTI_SHAPING_TIME_AWARE		2
-+
-+#define REG_PORT_MTI_HI_WATER_MARK	0x0916
-+#define REG_PORT_MTI_LO_WATER_MARK	0x0918
-+
- /* Regmap tables generation */
- #define KSZ_SPI_OP_RD		3
- #define KSZ_SPI_OP_WR		2
-diff --git a/drivers/net/dsa/microchip/lan937x.h b/drivers/net/dsa/microchip/lan937x.h
-index 8e9e66d6728d..3388d91dbc44 100644
---- a/drivers/net/dsa/microchip/lan937x.h
-+++ b/drivers/net/dsa/microchip/lan937x.h
-@@ -20,4 +20,5 @@ void lan937x_phylink_get_caps(struct ksz_device *dev, int port,
- 			      struct phylink_config *config);
- void lan937x_setup_rgmii_delay(struct ksz_device *dev, int port);
- int lan937x_set_ageing_time(struct ksz_device *dev, unsigned int msecs);
-+int lan937x_tc_cbs_set_cinc(struct ksz_device *dev, int port, u32 val);
- #endif
-diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index 923388f87996..399a3905e6ca 100644
---- a/drivers/net/dsa/microchip/lan937x_main.c
-+++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -340,6 +340,11 @@ void lan937x_setup_rgmii_delay(struct ksz_device *dev, int port)
- 	}
- }
- 
-+int lan937x_tc_cbs_set_cinc(struct ksz_device *dev, int port, u32 val)
-+{
-+	return ksz_pwrite32(dev, port, REG_PORT_MTI_CREDIT_INCREMENT, val);
-+}
-+
- int lan937x_switch_init(struct ksz_device *dev)
- {
- 	dev->port_mask = (1 << dev->info->port_cnt) - 1;
-diff --git a/drivers/net/dsa/microchip/lan937x_reg.h b/drivers/net/dsa/microchip/lan937x_reg.h
-index 5bc16a4c4441..45b606b6429f 100644
---- a/drivers/net/dsa/microchip/lan937x_reg.h
-+++ b/drivers/net/dsa/microchip/lan937x_reg.h
-@@ -185,6 +185,9 @@
- 
- #define P_PRIO_CTRL			REG_PORT_MRI_PRIO_CTRL
- 
-+/* 9 - Shaping */
-+#define REG_PORT_MTI_CREDIT_INCREMENT	0x091C
-+
- /* The port number as per the datasheet */
- #define RGMII_2_PORT_NUM		5
- #define RGMII_1_PORT_NUM		6
--- 
-2.36.1
+>
+>> Quoting Vincent Cheng, the author of the adjphase functionality in the
+>> ptp core stack.
+>> 
+>> -----BEGIN QUOTE-----
+>>   adjtime modifies HW counter with a value to move the 1 PPS abruptly to new location.
+>>   adjphase modifies the frequency to quickly nudge the 1 PPS to new location
+>> and also includes a HW filter to smooth out the adjustments and fine tune
+>> frequency.
+>> 
+>>   Continuous small offset adjustments using adjtime, likley see sudden shifts
+>> of the 1 PPS. The 1 PPS probably disappears and re-appears.
+>>   Continuous small offset adjustments using adjphase, should see continuous 1 PPS.
+>> 
+>>   adjtime is good for large offset corrections
+>>   adjphase is good for small offset corrections to allow HW filter to control
+>> the frequency instead of relying on SW filter.
+>
+> Hm, so are you saying that:
+>
+> adjtime(delta):
+> 	clock += delta
+>
+> but:
+>
+> adjfreq(delta):
 
+Did you mean adjphase here?
+
+> 	on clock tick & while delta > 0:
+> 		clock += small_value
+> 		delta -= small_value
+>
+> because from looking at mlx5 driver code its unclear whether the
+> implementation does a precise but one shot adjustment or gradual
+> adjustments.
+
+The pseudo code your drafted is accurate otherwise. The lack of clarity
+in our driver comes from leaving the responsibility of that smooth
+gradual transition (to keep in sync with the clock frequency while
+running) up to the device.
