@@ -2,245 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB0CC675AE1
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 18:14:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C90E675AF0
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 18:17:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229746AbjATROZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 12:14:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55714 "EHLO
+        id S229678AbjATRRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 12:17:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbjATROZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 12:14:25 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C766837B45;
-        Fri, 20 Jan 2023 09:14:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674234863; x=1705770863;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=BfH+DhemtVbRApOmVu9miMo8w9suHcbrBpKwXq6ubtM=;
-  b=DIa/M1FH0aUzcvsq7yQ1NsipPirrMRRCg8ov4Z6UR/eN/Oy/dJTVmGpK
-   IYX3kNRW6+WlS/VckYedouMAm9hiy0pR2ca0iOTpybjzBw78t6kTu8ew6
-   ZkqXcOO9ST6HJHwL/Jl7ZSIsK8Pb5SU8jmk43+Xv04NqRmXu2jUk4B54i
-   d1t8H8iFNcQ3jz7jM333t1YXv0KEhrYWtybtwofoUSpjWu1ZRAGQtllOI
-   PVoA9ucl94Ag51hc1dHf3tdtiZ8FeEveXKch/ll1+z77VE2QGoFzH2xHZ
-   Xebjm/AssutRgTaT3Hg1AuJyCbtGQXoNKPoPkpxIe7aEaFMaxoczQYjqf
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="326907271"
-X-IronPort-AV: E=Sophos;i="5.97,232,1669104000"; 
-   d="scan'208";a="326907271"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2023 09:14:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="803128754"
-X-IronPort-AV: E=Sophos;i="5.97,232,1669104000"; 
-   d="scan'208";a="803128754"
-Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 20 Jan 2023 09:14:20 -0800
-Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pIuxw-0002jq-0P;
-        Fri, 20 Jan 2023 17:14:12 +0000
-Date:   Sat, 21 Jan 2023 01:13:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     sound-open-firmware@alsa-project.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-mm@kvack.org,
-        linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [linux-next:master] BUILD REGRESSION
- d514392f17fd4d386cfadde7f849d97db4ca1fb0
-Message-ID: <63cacbd5.EvTYTGZtWc/zCwC9%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        with ESMTP id S229530AbjATRRQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 12:17:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0558C474CD;
+        Fri, 20 Jan 2023 09:17:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 935566201F;
+        Fri, 20 Jan 2023 17:17:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7285CC4339B;
+        Fri, 20 Jan 2023 17:17:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674235034;
+        bh=HddGKq7jpAFH3stbFop+NtpcRF44pZc1QHNJRcPQQGc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=H/Nn3P3CVFEy0mPqyB4akF+1CP2OXL209t+UsdvSToY8yTwL5+FtPqcCao0zzCEV0
+         NBiAZyE1XHW7l3zIASGLgnXZ0/WjrzdRUsBvgE9HhIoHjUf+CnJNTbCu1p/mmFle6z
+         /M8lAsfYj20EcygFOFvft7lzs24+lcTOEduaRHRf7U7ccxF/UCY5956LsS0kkonIbD
+         2uct8NSk+N/NsD06d++0hb8RrZTkvrttZcan0V7Kz1k8R9C6XA4bi86IBFCJwygQp+
+         Sy3dfg6ibkzEGe1TqLZ0y87NBC0ZHQrIUdiq5Y28E1HbbC3aA1vuXYrWBMNbqCQ0s0
+         EMe/Vf/OvNOqA==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        hawk@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        toke@redhat.com, memxor@gmail.com, alardam@gmail.com,
+        saeedm@nvidia.com, anthony.l.nguyen@intel.com, gospo@broadcom.com,
+        vladimir.oltean@nxp.com, nbd@nbd.name, john@phrozen.org,
+        leon@kernel.org, simon.horman@corigine.com, aelior@marvell.com,
+        christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
+        mst@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
+        maciej.fijalkowski@intel.com, intel-wired-lan@lists.osuosl.org,
+        lorenzo.bianconi@redhat.com, niklas.soderlund@corigine.com
+Subject: [PATCH bpf-next 0/7] xdp: introduce xdp-feature support
+Date:   Fri, 20 Jan 2023 18:16:49 +0100
+Message-Id: <cover.1674234430.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-branch HEAD: d514392f17fd4d386cfadde7f849d97db4ca1fb0  Add linux-next specific files for 20230120
+Introduce the capability to export the XDP features supported by the NIC.
+Introduce a XDP compliance test tool (xdp_features) to check the features
+exported by the NIC match the real features supported by the driver.
+Allow XDP_REDIRECT of non-linear XDP frames into a devmap.
+Export XDP features for each XDP capable driver.
+Extend libbpf netlink implementation in order to support netlink_generic
+protocol.
+Introduce a simple generic netlink family for netdev data.
 
-Error/Warning reports:
+Changes since RFCv2:
+- do not assume fixed layout for genl kernel messages
+- fix warnings in netdev_nl_dev_fill
+- fix capabilities for nfp driver
+- add supported_sg parameter to xdp_features_set_redirect_target and drop
+  __xdp_features_set_redirect_target routine
 
-https://lore.kernel.org/oe-kbuild-all/202301191616.R33Dvxk4-lkp@intel.com
-https://lore.kernel.org/oe-kbuild-all/202301192229.wL7iPJxS-lkp@intel.com
-https://lore.kernel.org/oe-kbuild-all/202301201120.aIaz7dT4-lkp@intel.com
-https://lore.kernel.org/oe-kbuild-all/202301202042.herfGxx6-lkp@intel.com
+Changes since RFCv1:
+- Introduce netdev-genl implementation and get rid of rtnl one.
+- Introduce netlink_generic support in libbpf netlink implementation
+- Rename XDP_FEATURE_* in NETDEV_XDP_ACT_*
+- Rename XDP_FEATURE_REDIRECT_TARGET in NETDEV_XDP_ACT_NDO_XMIT
+- Rename XDP_FEATURE_FRAG_RX in NETDEV_XDP_ACT_RX_SG
+- Rename XDP_FEATURE_FRAG_TARFET in NETDEV_XDP_ACT_NDO_XMIT
+- Get rid of XDP_LOCK feature.
+- Move xdp_feature field in a netdevice struct hole in the 4th cacheline.
 
-Error/Warning: (recently discovered and may have been fixed)
+Jakub Kicinski (1):
+  netdev-genl: create a simple family for netdev stuff
 
-Documentation/virt/kvm/api.rst:5070: WARNING: Unexpected indentation.
-drivers/gpu/drm/amd/amdgpu/../display/dc/link/link_dp_training.c:1585:38: warning: variable 'result' set but not used [-Wunused-but-set-variable]
-drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c:5253:24: sparse:    left side has type restricted __le16
-drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c:5253:24: sparse:    right side has type restricted __le32
-idma64.c:(.text+0x6a): undefined reference to `devm_platform_ioremap_resource'
+Lorenzo Bianconi (4):
+  libbpf: add the capability to specify netlink proto in
+    libbpf_netlink_send_recv
+  libbpf: add API to get XDP/XSK supported features
+  bpf: devmap: check XDP features in bpf_map_update_elem and
+    __xdp_enqueue
+  selftests/bpf: introduce XDP compliance test tool
 
-Unverified Error/Warning (likely false positive, please contact us if interested):
+Marek Majtyka (2):
+  drivers: net: turn on XDP features
+  xsk: add usage of XDP features flags
 
-drivers/net/dsa/microchip/ksz_ptp.c:217 ksz_ptp_clock_register() warn: passing zero to 'PTR_ERR'
-drivers/nvmem/imx-ocotp.c:599:21: sparse: sparse: symbol 'imx_ocotp_layout' was not declared. Should it be static?
-drivers/nvmem/layouts/sl28vpd.c:143:21: sparse: sparse: symbol 'sl28vpd_layout' was not declared. Should it be static?
-mm/hugetlb.c:3101 alloc_hugetlb_folio() error: uninitialized symbol 'h_cg'.
-mm/zsmalloc.c:900:20: warning: unused function 'obj_allocated' [-Wunused-function]
-sound/soc/sof/sof-audio.c:329 sof_prepare_widgets_in_path() error: we previously assumed 'swidget' could be null (see line 306)
-
-Error/Warning ids grouped by kconfigs:
-
-gcc_recent_errors
-|-- alpha-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- arc-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- arm-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- arm-randconfig-s032-20230119
-|   `-- drivers-nvmem-imx-ocotp.c:sparse:sparse:symbol-imx_ocotp_layout-was-not-declared.-Should-it-be-static
-|-- arm64-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- csky-randconfig-m041-20230119
-|   |-- drivers-net-dsa-microchip-ksz_ptp.c-ksz_ptp_clock_register()-warn:passing-zero-to-PTR_ERR
-|   `-- sound-soc-sof-sof-audio.c-sof_prepare_widgets_in_path()-error:we-previously-assumed-swidget-could-be-null-(see-line-)
-|-- csky-randconfig-r025-20230119
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- csky-randconfig-s043-20230119
-|   |-- drivers-net-wireless-realtek-rtl8xxxu-rtl8xxxu_core.c:sparse:left-side-has-type-restricted-__le16
-|   |-- drivers-net-wireless-realtek-rtl8xxxu-rtl8xxxu_core.c:sparse:right-side-has-type-restricted-__le32
-|   `-- drivers-net-wireless-realtek-rtl8xxxu-rtl8xxxu_core.c:sparse:sparse:invalid-assignment:
-|-- i386-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- ia64-allmodconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- ia64-randconfig-c033-20230119
-|   `-- drivers-net-ethernet-microchip-vcap-vcap_api.c:WARNING-opportunity-for-kmemdup
-|-- ia64-randconfig-s052-20230119
-|   `-- drivers-nvmem-imx-ocotp.c:sparse:sparse:symbol-imx_ocotp_layout-was-not-declared.-Should-it-be-static
-|-- loongarch-randconfig-r024-20230119
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- loongarch-randconfig-s042-20230119
-|   `-- drivers-nvmem-layouts-sl28vpd.c:sparse:sparse:symbol-sl28vpd_layout-was-not-declared.-Should-it-be-static
-|-- m68k-randconfig-c004-20230119
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- mips-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- openrisc-randconfig-s033-20230119
-|   `-- drivers-nvmem-imx-ocotp.c:sparse:sparse:symbol-imx_ocotp_layout-was-not-declared.-Should-it-be-static
-|-- powerpc-allmodconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- riscv-randconfig-s041-20230119
-|   `-- drivers-nvmem-imx-ocotp.c:sparse:sparse:symbol-imx_ocotp_layout-was-not-declared.-Should-it-be-static
-|-- s390-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- sparc-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- x86_64-allnoconfig
-|   `-- Documentation-virt-kvm-api.rst:WARNING:Unexpected-indentation.
-|-- x86_64-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-`-- x86_64-randconfig-m001
-clang_recent_errors
-|-- s390-randconfig-r044-20230119
-|   `-- idma64.c:(.text):undefined-reference-to-devm_platform_ioremap_resource
-`-- x86_64-randconfig-a012
-    `-- mm-zsmalloc.c:warning:unused-function-obj_allocated
-
-elapsed time: 882m
-
-configs tested: 79
-configs skipped: 3
-
-gcc tested configs:
-x86_64                            allnoconfig
-um                             i386_defconfig
-i386                                defconfig
-um                           x86_64_defconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-arc                                 defconfig
-alpha                               defconfig
-arm                                 defconfig
-i386                          randconfig-a001
-x86_64                          rhel-8.3-func
-m68k                             allyesconfig
-x86_64                           rhel-8.3-syz
-x86_64                    rhel-8.3-kselftests
-x86_64                           allyesconfig
-powerpc                           allnoconfig
-x86_64                         rhel-8.3-kunit
-ia64                             allmodconfig
-arm                  randconfig-r046-20230119
-x86_64                        randconfig-a002
-arm                              allyesconfig
-arc                  randconfig-r043-20230119
-m68k                             allmodconfig
-i386                          randconfig-a003
-arc                              allyesconfig
-arm64                            allyesconfig
-alpha                            allyesconfig
-x86_64                           rhel-8.3-kvm
-x86_64                        randconfig-a006
-i386                          randconfig-a005
-x86_64                           rhel-8.3-bpf
-x86_64                        randconfig-a004
-sparc64                          alldefconfig
-riscv                             allnoconfig
-sparc                       sparc32_defconfig
-m68k                          hp300_defconfig
-i386                             allyesconfig
-powerpc                 mpc85xx_cds_defconfig
-parisc                           alldefconfig
-riscv                    nommu_virt_defconfig
-mips                         bigsur_defconfig
-arm                        keystone_defconfig
-sh                   secureedge5410_defconfig
-i386                          randconfig-a014
-riscv                    nommu_k210_defconfig
-s390                                defconfig
-i386                          randconfig-a012
-x86_64                        randconfig-a013
-i386                          randconfig-a016
-riscv                          rv32_defconfig
-s390                             allmodconfig
-sh                               allmodconfig
-i386                   debian-10.3-kselftests
-x86_64                        randconfig-a011
-i386                              debian-10.3
-i386                          randconfig-c001
-mips                             allyesconfig
-x86_64                        randconfig-a015
-s390                             allyesconfig
-powerpc                          allmodconfig
-
-clang tested configs:
-x86_64                          rhel-8.3-rust
-x86_64                        randconfig-a005
-hexagon              randconfig-r045-20230119
-x86_64                        randconfig-a001
-i386                          randconfig-a002
-riscv                randconfig-r042-20230119
-x86_64                        randconfig-a003
-hexagon              randconfig-r041-20230119
-s390                 randconfig-r044-20230119
-i386                          randconfig-a006
-x86_64                        randconfig-k001
-i386                          randconfig-a004
-arm                           omap1_defconfig
-i386                          randconfig-a013
-i386                          randconfig-a011
-i386                          randconfig-a015
-x86_64                        randconfig-a016
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
+ Documentation/netlink/specs/netdev.yaml       |  72 ++
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  |   5 +
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   |   4 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   2 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |   2 +
+ .../net/ethernet/cavium/thunder/nicvf_main.c  |   2 +
+ .../net/ethernet/freescale/dpaa/dpaa_eth.c    |   2 +
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |   1 +
+ .../net/ethernet/freescale/enetc/enetc_pf.c   |   2 +
+ .../ethernet/fungible/funeth/funeth_main.c    |   6 +
+ drivers/net/ethernet/intel/i40e/i40e_main.c   |  10 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |   5 +
+ drivers/net/ethernet/intel/igb/igb_main.c     |  10 +-
+ drivers/net/ethernet/intel/igc/igc_main.c     |   2 +
+ drivers/net/ethernet/intel/igc/igc_xdp.c      |   5 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   5 +
+ .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |   1 +
+ drivers/net/ethernet/marvell/mvneta.c         |   2 +
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |   3 +
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |   8 +-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c   |   5 +
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    |   2 +
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  10 +
+ drivers/net/ethernet/microsoft/mana/mana_en.c |   1 +
+ .../ethernet/netronome/nfp/nfp_net_common.c   |   5 +
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |   2 +
+ drivers/net/ethernet/sfc/efx.c                |   3 +
+ drivers/net/ethernet/sfc/siena/efx.c          |   3 +
+ drivers/net/ethernet/socionext/netsec.c       |   2 +
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |   1 +
+ drivers/net/ethernet/ti/cpsw.c                |   2 +
+ drivers/net/ethernet/ti/cpsw_new.c            |   3 +
+ drivers/net/hyperv/netvsc_drv.c               |   2 +
+ drivers/net/netdevsim/netdev.c                |   1 +
+ drivers/net/tun.c                             |   4 +
+ drivers/net/veth.c                            |   3 +
+ drivers/net/virtio_net.c                      |   5 +
+ drivers/net/xen-netfront.c                    |   1 +
+ include/linux/netdevice.h                     |   2 +
+ include/net/xdp.h                             |  34 +
+ include/uapi/linux/netdev.h                   |  66 ++
+ kernel/bpf/devmap.c                           |  25 +-
+ net/core/Makefile                             |   3 +-
+ net/core/filter.c                             |  13 +-
+ net/core/netdev-genl-gen.c                    |  48 ++
+ net/core/netdev-genl-gen.h                    |  23 +
+ net/core/netdev-genl.c                        | 178 +++++
+ net/xdp/xsk_buff_pool.c                       |   3 +-
+ tools/include/uapi/linux/netdev.h             |  66 ++
+ tools/lib/bpf/libbpf.h                        |   3 +-
+ tools/lib/bpf/netlink.c                       | 121 ++-
+ tools/lib/bpf/nlattr.h                        |  12 +
+ tools/testing/selftests/bpf/Makefile          |   5 +-
+ .../selftests/bpf/progs/test_xdp_features.c   | 237 ++++++
+ .../selftests/bpf/test_xdp_features.sh        |  99 +++
+ tools/testing/selftests/bpf/xdp_features.c    | 743 ++++++++++++++++++
+ 56 files changed, 1852 insertions(+), 33 deletions(-)
+ create mode 100644 Documentation/netlink/specs/netdev.yaml
+ create mode 100644 include/uapi/linux/netdev.h
+ create mode 100644 net/core/netdev-genl-gen.c
+ create mode 100644 net/core/netdev-genl-gen.h
+ create mode 100644 net/core/netdev-genl.c
+ create mode 100644 tools/include/uapi/linux/netdev.h
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_features.c
+ create mode 100755 tools/testing/selftests/bpf/test_xdp_features.sh
+ create mode 100644 tools/testing/selftests/bpf/xdp_features.c
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.39.0
+
