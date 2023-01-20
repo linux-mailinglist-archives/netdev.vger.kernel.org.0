@@ -2,170 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 855F8675B10
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 18:21:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8C71675B11
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 18:21:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229680AbjATRVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 12:21:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33626 "EHLO
+        id S229788AbjATRVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 12:21:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbjATRVU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 12:21:20 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558BE10D8
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 09:21:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674235279; x=1705771279;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Z25azFAomVlffhnN4zG/lPpBcoEirakUdLep+SUFlWM=;
-  b=JP0Eo4D4ZQH0Trw/V2K/UJywZqj1b1EcRVngnGJIjcgZXvIc45tukwgJ
-   OtnmNxa9v2thUMwv/k8Vc1naHJkCXz443/xw84iYoAG45Sm2ReGDZ1Zz6
-   GI2eRn0/dAzO8DsJhZAe2ss3vXHYOdGK5cf621oh7xkKyjcjbmlj4ah+Q
-   SKbOS9E/n9MFeapzLNmxYBBkpynr/vAEfS6ei8lJpoDSFydiNnn2dslxX
-   q8tjyTxICmOiVh1HYzB3XhHRGXjyTxI8u0AkesjT4tc/1/RuK3hXzNr+Z
-   E3PQ+R8PKbhQiexAU5K4kWdlPAS+hN51BGYw377HMSHwqBW2K9UQU/l81
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="325673329"
-X-IronPort-AV: E=Sophos;i="5.97,232,1669104000"; 
-   d="scan'208";a="325673329"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2023 09:21:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="768747978"
-X-IronPort-AV: E=Sophos;i="5.97,232,1669104000"; 
-   d="scan'208";a="768747978"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmsmga002.fm.intel.com with ESMTP; 20 Jan 2023 09:21:18 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Fri, 20 Jan 2023 09:21:18 -0800
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Fri, 20 Jan 2023 09:21:17 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Fri, 20 Jan 2023 09:21:17 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.43) by
- edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Fri, 20 Jan 2023 09:21:14 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Hyr+o9pnjRqk9/p0sZC/WkFQBFUBOx2EOhXiR+IGtVmrn3KdaClkqshoiiAaXbSioYUv3633pwksrcGtYOaTpf/O8wOb7JxAGwLiWHdOlZC+g2/zNEwqGRm+D+/vUXvrsqEqndUkXNIOh/Rk78NSrtes4WxLJbu8X7ItFB1E+cMW2hq8q78M5gUBXHtGqPKkO+dZMOsPhgPA1CqkojGwPfgwZwpH1kcn8fieGM0NbYUoSmys/gbXfuH7d7y8TG+DvpwJ1pcFO4LYbZU2abYQ+G9FbjYZdiSmtRIIA4IcMkIIGCI7Thc5TqmhlEVnb+exswH/ZaH7jbyKRpt/bV34Sw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hbkSxa05XaWCATJ0e64q+fR3ZjRG4v/mHRzAQRm7WNw=;
- b=TE0xo2qia4pND/U1WJY+/Km2bchqPUvDD9qqh+Vm0SbeS5kuwlVeirNB9eHUXUoSpUDy0qOrGfEk1oU17446c4BEPvaAP1SE1PN8HvKYuslOQTqex4RBvzGSdb8Qtn6n3hLwtdopyomicmylo0klI5Kad0oUvap8pSDxfNhn00Pc4Hod/rVa5xF/78b+CLZtyyAvBiZfvyX8tVJ7hxfVLLkjbxEWlUaEbK6kRjTa2gat1SCoNiA66VpPlXJk3v6ibKDv8loH3iT0d/DSHnWZ9INRzsUC/n+kIVihlqBjd9RjZAjUhTpkGauygATwSqO0mHiZcI2nIv9OvFC2zU2dWA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
- by SA0PR11MB4766.namprd11.prod.outlook.com (2603:10b6:806:92::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.27; Fri, 20 Jan
- 2023 17:21:12 +0000
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::5697:a11e:691e:6acf]) by CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::5697:a11e:691e:6acf%5]) with mapi id 15.20.6002.024; Fri, 20 Jan 2023
- 17:21:12 +0000
-Message-ID: <8da8ed6a-af78-a797-135d-1da2d5a08ca1@intel.com>
-Date:   Fri, 20 Jan 2023 09:21:09 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [net-next 03/15] net/mlx5: Add adjphase function to support
- hardware-only offset control
-Content-Language: en-US
-To:     Rahul Rameshbabu <rrameshbabu@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Saeed Mahameed <saeed@kernel.org>,
+        with ESMTP id S229539AbjATRVi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 12:21:38 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354D510D8;
+        Fri, 20 Jan 2023 09:21:37 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id vw16so15620808ejc.12;
+        Fri, 20 Jan 2023 09:21:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=u40jSdsDUNf/iyjtahOuC7vMZ2vI8Jji9vcKYxRCKQw=;
+        b=TJP6csfD/IlV/97VdrGsA34Bt3VnCAfvIow5mu3sklPOQcnoDDGWLA0NS9gKnHlQiR
+         TM2MXJd6hyz7UOQR1eRhOczlAsff/oe57TUQTRrkpKOywqdkGbFNBNRFSm2uso4Bo0Io
+         wTErLamFFx3zv47JQuvRtW4ehKYx6L5NGMTJ9LdFLQPaGzLIGcMi3KPaE/bxV5j6AWUi
+         IVpD8ssE8ONwXa/p9pvDKazMfxw4Q01whJpD7bGNrbL28XmL5TqeFd2L13pHOHApNNL/
+         5iBeDs6RUWiuGhiJz3wDC+yH7QQgqJIrb69MAl/iV4g55nYvQ4cMKdchrKbjYnO848V/
+         DOnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=u40jSdsDUNf/iyjtahOuC7vMZ2vI8Jji9vcKYxRCKQw=;
+        b=ygygTLtQr7Y7vPnXe2bs9Z3ByUZq3jZM3xiaR436t/VxTxPa2ZSy4OolUQYkc1wu0/
+         GcNs9dqZEeJeP2QamyWzTUSt+6QCynrnSWFcBnl1atLTzadGfsxniJYN3LWFicT04WkA
+         bcAUtRwB//PtKhJMVBqYLWrwkmexUFIbohGffvNPQZXzrKEaa1kzHOTFlQKlFSCjIJS2
+         ztdRA9rCa8rKRAxoE1+XWmE7IDhInpablhbXR1cVUe/aihCmHU7gIs8Jj/KMUuCBbpgu
+         btREuhb4NC3j6OsutdWR/4AsZ3pn3fS0U6713E6+kjvEpZBclLA4s9adgvhCTlfflFXc
+         XHiw==
+X-Gm-Message-State: AFqh2krfG22C5eD07jWJIJLxnibBkjw1KOvOFtrRrJUtWPalcRPZ6u6f
+        PiKPHHIXljG0GYk/thY4Jqs=
+X-Google-Smtp-Source: AMrXdXvU6twa5cRzhDrJDUnpw1VVdfEuIefHjaypZ+5wnhWWNw1xPnbnE9UCtBkhdkr5gr+0fPtBuw==
+X-Received: by 2002:a17:906:d8ab:b0:86f:50ff:ef25 with SMTP id qc11-20020a170906d8ab00b0086f50ffef25mr16071208ejb.63.1674235295668;
+        Fri, 20 Jan 2023 09:21:35 -0800 (PST)
+Received: from skbuf ([188.27.185.42])
+        by smtp.gmail.com with ESMTPSA id e2-20020a170906314200b007c08439161dsm18082864eje.50.2023.01.20.09.21.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Jan 2023 09:21:35 -0800 (PST)
+Date:   Fri, 20 Jan 2023 19:21:32 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Frank Wunderlich <frank-w@public-files.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vincent Cheng <vincent.cheng.xh@renesas.com>
-References: <20230118183602.124323-1-saeed@kernel.org>
- <20230118183602.124323-4-saeed@kernel.org>
- <739b308c-33ec-1886-5e9d-6c5059370d15@intel.com>
- <20230119194631.1b9fef95@kernel.org> <87tu0luadz.fsf@nvidia.com>
- <20230119200343.2eb82899@kernel.org> <87pmb9u90j.fsf@nvidia.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-In-Reply-To: <87pmb9u90j.fsf@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR05CA0041.namprd05.prod.outlook.com
- (2603:10b6:a03:33f::16) To CO1PR11MB5089.namprd11.prod.outlook.com
- (2603:10b6:303:9b::16)
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Daniel Golle <daniel@makrotopia.org>
+Subject: Re: [BUG] vlan-aware bridge breaks vlan on another port on same gmac
+Message-ID: <20230120172132.rfo3kf4fmkxtw4cl@skbuf>
+References: <trinity-e6294d28-636c-4c40-bb8b-b523521b00be-1674233135062@3c-app-gmx-bs36>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|SA0PR11MB4766:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5b6672ba-53af-4c0a-28b8-08dafb0aba69
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Po6qBdDxlv1WIfoOGLe0lUzRXrW9rMIaiF6V1YijZiBKq9AP9/PaF7cvY9EzYaoEp7ADfDrdLgUCb3Qc4S2NUCY2hhYaAEuoZF3ZqXIix9RkZKd0Qi9BHfQde0yFBuxLBXYKL09rCwkje8MG2m408twYLkwJ2AOVOqREL68FORNUL4yqKbwc79rrA3vTHJLr4/FHeGeFWbg1wm+N4gFNOPyhJqYhtoGQ/KoP9EofqTAhAdjLTTsR6gHjw9qs9oRbQvtdL25Q6cVj4onT8LcGo13SUVO8+dhKRYgdEWvXZMfF0UDtpmGHP4AVy9zTfDClhlD6A083nJVc9g4k2Owdwj2Qluu7f68IDmmEZr/OOl44DUThmAaP4UUup8C9sfDflSrQyQjjmoXPGYuGDoxjVy03tnWhdMfBr7AVuLtX+fE63PBKqT0BdW0WOvNHFw48KeDFMWihCTjj3w0rGmqOQ99yqFMU63BdAtxbMhg62EFRfJy2OqGSpCaz50K+G8BVMQ67RIgEgdOgjCBYSb76hF52Dg2lTBuyMu7qX9vgD+ytG6uomG0HHVrde7ghdZ+28IgzCNfgnE1X/p6WHXKNphw0YwPz4Dz198y6PzAChkZnA6jwaR4a4SoRk2qlXHb20k0xyHaNWzxZVCnQ7WUYBw8nEtkYWN0HN9Xb/quDcJsrrPZUWUVbtkq4MORgbcoZbWaAv9vZ9F+3epQzZafRRlnHwBghZGI7hu+FsASK3R8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(39860400002)(346002)(366004)(136003)(376002)(451199015)(2906002)(186003)(26005)(6512007)(54906003)(110136005)(6506007)(2616005)(6486002)(316002)(36756003)(478600001)(31696002)(6666004)(53546011)(38100700002)(86362001)(82960400001)(83380400001)(41300700001)(7416002)(4326008)(5660300002)(31686004)(8936002)(8676002)(66946007)(66476007)(66556008)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dERBeVZZUzg2aldQSEFYWnBjUFkyeDIySTBLazEzQnp2OXk3QUEvQmZic3k0?=
- =?utf-8?B?UElwQ0xNZ0lGUEtjSTBvRHBZNXpDcjZ0OUZHSGM0aXV2aW9wYWJ1eThEUFFB?=
- =?utf-8?B?OUZhekFtKzVlVU41RjVUaFMwZ0VoN0JRQVYwRlNVNDZzZUFVZXc4Y2VuMlZH?=
- =?utf-8?B?RE1TVVZ4bDlvN0xrUmVMRXE2RW5YYmZMcURlYXFObHBnbDh0Y080SFUwYVY1?=
- =?utf-8?B?Z2pxWS9GZ2pEK29xemt0Wlh3UU9IemlzYUFLT2FzWXVzUkVYVjJhbE9KMERY?=
- =?utf-8?B?aHRVUE1rcjVPT1ZPY3U1clZPNy90VWdocnY2elBWK1NPcE5YUTM0VmZMSUtu?=
- =?utf-8?B?VDd0blZRYk4vcjJsZjJtNXZqQXU3cDlIbkdkckorQVZRZDRHY2dIZGZoQ3JB?=
- =?utf-8?B?R1c0dFByRlMrTTR2eW85U09nRkRxU1VOclBNaVk4UkpvRFJkazhyUWdYQ0Q1?=
- =?utf-8?B?eE9USmhBdjlFRUVxVURNSVllY0VuQmRQSGNYRGhLT0RKd2drQmlJcmRaMzho?=
- =?utf-8?B?Z0F2S2pXaEZIaVpua0lQZ3Z5TlNxVisxV1pFalZCYjBEb2o1Zk96UTErb3Bx?=
- =?utf-8?B?b1ZpRCtCWmRwSFlmWUxjZHkzbGVHdmRBRW5PUm9UaWpNczV3WUpQZm5WS3hR?=
- =?utf-8?B?dkRtMXJiNlUxTEJEZ3ZUZDZ4RE5rTkFOR1JpZUZ0b3FxYUFWS3lsaEs1SVM1?=
- =?utf-8?B?SDhQSXVHM3NaK05SRzhHTUZxaDU4SzRDM0ZzMG5uTldmY2RKU2E2T1pQQ3NK?=
- =?utf-8?B?bWoyNTl5c3ZRMU1xMFhJTERkSnBkZmJNWUMrQkJYck9ySExkeVRCT1B3bm1m?=
- =?utf-8?B?SllzQ0pKNHdoTExCMmw0eUV6aklKTW10b1ArbVUvWW1BbDZrT3R4ZTlKQS9Q?=
- =?utf-8?B?b2g5VWlFTUhZcGpUV1IrTmJhb0ZJcjgvZkZwYzZYdUtsMVRLaElqYWVxOGpp?=
- =?utf-8?B?YzE3VllOQThqQXdzZVh4T3BiYkpOZ3ZxbEhIOTJOSzFTTmFieUdFZURTWjAz?=
- =?utf-8?B?RzhtWjFPdjZmNE5MRWtESllRU3I3Tm9YM2Y3Q3lSMlBWekdPZHVTRTEwWTNE?=
- =?utf-8?B?ZENkRmUrSytBYm9RQ2hoRTEvTWM0L2VwclFEeHlNWGFnUzFGRHpVaG8zeFl4?=
- =?utf-8?B?b2J1ZFJCanh3ZFZxd044WFVweVYvSTkyZjhJSEU5ZGp3Ry9KN2RRbXUxWkZ4?=
- =?utf-8?B?eExxcWI0SFNFbXdYSEpLdERaWFk4RmtaK3p1ZTVqV0FsbDc5NzRFT2hUZDkv?=
- =?utf-8?B?YVpvakkzYnJsMjBDYnJqbDFRUmtoZUprL29Cdkw3dUNxSzFyRWVacFJISkZi?=
- =?utf-8?B?Rmg3dUtBTnB4SlJWSi9ra0ZTU0xEZE1uMzd5OURyOUlhS2k0dHY1aHlLNzJ5?=
- =?utf-8?B?ZmZ3QXBmWjVUS0FOck9VSG5BUFdCelZORmRmejI0QzhMa2R0THpNOGVLeXNx?=
- =?utf-8?B?QzRXRk5tRS9ka2RNYkkyc1FUZVAvVWxoRVVNbGNqN2ZQNk41ZklJZTR0VGhV?=
- =?utf-8?B?SWZZTmxuUGhCSWJnN2txY1dEQmsvd0pmR28vRDVCbDlhRHVIZGtWbVN3QWhv?=
- =?utf-8?B?cWFCcUdveDNBdHdVYmw4RDlYa1VFRzdmbFpLTUluempaUklyZjBXODh1TEhH?=
- =?utf-8?B?VkpJYW5kdVlxeTQ2NWZNS1JjbEg5aThhVVhhWTZQQmk2eG5QeUowMEJzakNs?=
- =?utf-8?B?UkhIR1FmRTdJRmppWjhkbmxHem56aDh0MGlzSlR2Z2g2dzVjcWtaU2h6OTcx?=
- =?utf-8?B?V0VwYVhNUXNGc1VuNnpuK2cwVVZwMTdEeHd6NDBZYkhqWjRXbnJ0b3RJL2Nm?=
- =?utf-8?B?VFA0RTFublBxN2wyZnNDWU1pVHZoQmk5YmhmU1lmTVBDWldhWnJ2eEdEdDBv?=
- =?utf-8?B?elJqNmY2dytMOUcvY0hSTGFLWS9HSDJSOVdncG1Iby90M1hIOVh1b0xiM3B4?=
- =?utf-8?B?Wk0xT2NZVWZSbDNHWjY0QVdjZHdZZmMyVDh1MklUSko5d21ncHVVRG15ZzY2?=
- =?utf-8?B?eWdrbCtqbTJTYXVmb3BrRVFtMlpzZFVsRHJhUmJVRUhZclp6VWNzZXF6Z3Bk?=
- =?utf-8?B?aVNxVXF1bGsvQ1pxaWtLV04rN0xmemJWR252M25VMEUyUlcycnh5WGNNQkxs?=
- =?utf-8?B?bmFOVytqckJMTnlnTFM2MTNpczZqakNKNVM4TXg2SGljRkhMREphVUE4aXZB?=
- =?utf-8?B?ZFE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b6672ba-53af-4c0a-28b8-08dafb0aba69
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jan 2023 17:21:12.3607
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4Ghb4mlzs0MLTCGGMSLwenSYRVEjyLaT/dU9lnGniHte/k3Y9BnH7ZHFLVYaGecHFRHWwS/h/pSyqj1/WR9LRDuzw50FYwUHqVg9aaSmxUw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4766
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <trinity-e6294d28-636c-4c40-bb8b-b523521b00be-1674233135062@3c-app-gmx-bs36>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -173,29 +80,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Frank,
 
-
-On 1/19/2023 8:26 PM, Rahul Rameshbabu wrote:
-> On Thu, 19 Jan, 2023 20:03:43 -0800 Jakub Kicinski <kuba@kernel.org> wrote:
->> The other question is about the exact semantics of ->adjphase
->> - do all timecounter based clock implementations support it
->> by definition?
+On Fri, Jan 20, 2023 at 05:45:35PM +0100, Frank Wunderlich wrote:
+> Hi,
 > 
-> My understanding is no (though anyone is free to jump in to correct me
-> on this). Only implementations with support for precisely handling small
-> PPS corrections can support adjphase (being able to adjust small offsets
-> without causing same or worse drift).
+> noticed a bug while testing systemd, but it is reproducable with iproute2
+> 
+> tested on bananapi-r2 with kernel 5.15.80 and bananapi-r3 with kernel 6.2-rc1,
+> both use mt7530 dsa driver but different configs (mt7530 vs. mt7531).
+> have no other devices to test.
+> 
+> first create vlan on wan-port (wan and lan0 are dsa-user-ports on same gmac)
+> 
+> netif=wan
+> ip link set $netif up
+> ip link add link $netif name vlan110 type vlan id 110
+> ip link set vlan110 up
+> ip addr add 192.168.110.1/24 dev vlan110
+> 
+> vlan works now, other side pingable, vlan-tagged packets visible in tcpdump on both sides
 
-I guess I'm missing something here? timecounters allow adjusting time in
-an atomic way. They don't lose any time when making an adjustment
-because its a change to the wrapping around a fixed cycle counter.
+VLAN 110 is a software VLAN, it is never committed to hardware in the
+switch.
 
-How does that not comply with adjphase? and if it doesn't, then whats
-the difference between adjphase and just correcting offset using adjfine
-for frequency adjustment?
+> now create the vlan-sware bridge (without vlan_filtering it works in my test)
+> 
+> BRIDGE=lanbr0
+> ip link add name ${BRIDGE} type bridge vlan_filtering 1 vlan_default_pvid 1
+> ip link set ${BRIDGE} up
+> ip link set lan0 master ${BRIDGE}
+> ip link set lan0 up
+> 
+> takes some time before it is applied and ping got lost
+> 
+> packets are received by other end but without vlan-tag
 
-I guess adjusting phase will do the small corrections in hardware
-(perhaps by temporarily adjusting the nominal frequency of the clock)
-but will then return to the normal frequency once complete?
+What happens in mt7530_port_vlan_filtering() is that the user port (lan0)
+*and* the CPU port become VLAN aware. I guess it is the change on the
+CPU port that affects the traffic to "wan". But I don't see yet why this
+affects the traffic in the way you mention (the CPU port strips the tag
+instead of dropping packets with VLAN 110).
 
-So adjphase is more than just being atomic...?
+I have 2 random things to suggest you try.
+
+First is this
+
+From 2991f704e6f341bd81296e91fbb4381f528f8c7f Mon Sep 17 00:00:00 2001
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Date: Fri, 20 Jan 2023 19:17:16 +0200
+Subject: [PATCH] mt7530 don't make the CPU port a VLAN user port
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/dsa/mt7530.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 616b21c90d05..7265c120c767 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -1524,7 +1524,7 @@ mt7530_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
+ 		 * for becoming a VLAN-aware port.
+ 		 */
+ 		mt7530_port_set_vlan_aware(ds, port);
+-		mt7530_port_set_vlan_aware(ds, cpu_dp->index);
++//		mt7530_port_set_vlan_aware(ds, cpu_dp->index);
+ 	} else {
+ 		mt7530_port_set_vlan_unaware(ds, port);
+ 	}
+
+If this works, I expect it will break VLAN tagged traffic over lan0 now :)
+So I would then like you to remove the first patch and try the next one
+
+From 1b6842c8fc57f6fda28db576170173f5c146e470 Mon Sep 17 00:00:00 2001
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Date: Fri, 20 Jan 2023 19:17:51 +0200
+Subject: [PATCH 2/2] tag_mtk only combine VLAN tag with MTK tag is user port
+ is VLAN aware
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ net/dsa/tag_mtk.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/net/dsa/tag_mtk.c b/net/dsa/tag_mtk.c
+index 40af80452747..ab027c233bee 100644
+--- a/net/dsa/tag_mtk.c
++++ b/net/dsa/tag_mtk.c
+@@ -35,14 +35,13 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
+ 	 * the both special and VLAN tag at the same time and then look up VLAN
+ 	 * table with VID.
+ 	 */
+-	switch (skb->protocol) {
+-	case htons(ETH_P_8021Q):
++	if (dsa_port_is_vlan_filtering(dp) &&
++	    skb->protocol == htons(ETH_P_8021Q)) {
+ 		xmit_tpid = MTK_HDR_XMIT_TAGGED_TPID_8100;
+-		break;
+-	case htons(ETH_P_8021AD):
++	} else if (dsa_port_is_vlan_filtering(dp) &&
++		   skb->protocol == htons(ETH_P_8021AD)) {
+ 		xmit_tpid = MTK_HDR_XMIT_TAGGED_TPID_88A8;
+-		break;
+-	default:
++	} else {
+ 		xmit_tpid = MTK_HDR_XMIT_UNTAGGED;
+ 		skb_push(skb, MTK_HDR_LEN);
+ 		dsa_alloc_etype_header(skb, MTK_HDR_LEN);
