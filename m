@@ -2,118 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1F49675063
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 10:13:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F4010675079
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 10:16:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229934AbjATJNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 04:13:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52960 "EHLO
+        id S229973AbjATJQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 04:16:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229949AbjATJNh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 04:13:37 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628ED93706;
-        Fri, 20 Jan 2023 01:13:10 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id bg13-20020a05600c3c8d00b003d9712b29d2so5375186wmb.2;
-        Fri, 20 Jan 2023 01:13:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ux8y6Cx3Fu1EDV86Is7psjeM9rNqa+KOawGSAK6XGIk=;
-        b=JUgOOzKNnW0nTnbNzRK1+tRYnthmcPUqJTN+A6ZkCo+/vW3HP/to4oXcN9oRUgUPuY
-         0aE27/2P042xOIud6eaSEm2xttT0WWA6ZGzhHP8fe/3ka3kGNjvFWwduztFn4bPog1VJ
-         MbJo00GcJ4R9qQbSXvZQoRyUPSfdAKla7HSCjTa7YNEF5FbsDGhC40jHcZ/Tt97Z4QFI
-         8Cb9lOI7oyDHhMa9Wi71iihLbRljnKGcTFP46jTJpYVW3NV+dr5t/pIJAb9vKBezfU4b
-         7jeQfJQ/1pbTsNH/WipPasrCfHSm+ivPa3lknfnKn/03vXV5MUQwm1w65+s4L9Eirfmx
-         LcAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ux8y6Cx3Fu1EDV86Is7psjeM9rNqa+KOawGSAK6XGIk=;
-        b=265E1Jt6AOBf3IGD5kUgdC2eBxRD0oXkbSbh+qoBqm6PuWQ+UQnsTJz7MvPEBiu4MP
-         9Vcdg4zVM6lLlvLRH0rGps2FsY6ddLUIVE8Ae3vrBwONgbwX4Ul5LdYgIx5Y40TsSZYM
-         UfUorksSYQj2NnPj+u/UlOMe0BG1r5VFX/zcGbwF7VATdI3BgyJnR9quSC5VnQIdfF0B
-         L/G2tb/ax8krRJLOAn4ebkstUF2VIrCVANPEwDNkKQy3VtYlrzYoKkzWaqIdwh7TDzCA
-         X89y+IMo/Nsotq1RLiJTDZAeDPHN5j0cr/+X6AMwE8i5zOUd/RBPew1J3ni61C6vb5k1
-         WQqA==
-X-Gm-Message-State: AFqh2kpavgz/7JfVx5L8N/bWF+nQJ3LAYPOindWfFzbdePGgwmzAlSUi
-        KleAeitM++6EF75qBdovico=
-X-Google-Smtp-Source: AMrXdXujUNuBhbykArz4bplt23suFeP7EOY/IXTXm6XfPcIkfmHck7sImTIaeoiTw84iE4TZKAXfMw==
-X-Received: by 2002:a05:600c:4256:b0:3da:2a78:d7a3 with SMTP id r22-20020a05600c425600b003da2a78d7a3mr12824255wmm.33.1674205985529;
-        Fri, 20 Jan 2023 01:13:05 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id m2-20020a05600c4f4200b003db0ad636d1sm1789231wmq.28.2023.01.20.01.13.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Jan 2023 01:13:05 -0800 (PST)
-Date:   Fri, 20 Jan 2023 12:13:02 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Casper Andersson <casper.casan@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        Nathan Huckleberry <nhuck@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Daniel Machon <daniel.machon@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH net-next 4/8] net: microchip: sparx5: Add TC support for
- IS0 VCAP
-Message-ID: <Y8pbHvJpvuIuCXws@kadam>
-References: <20230120090831.20032-1-steen.hegelund@microchip.com>
- <20230120090831.20032-5-steen.hegelund@microchip.com>
+        with ESMTP id S229925AbjATJQL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 04:16:11 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FEA88CE4B;
+        Fri, 20 Jan 2023 01:15:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=5A4I13EExxh922r+a7QpwP4F+bO//jNwM1OYaKuD8l8=;
+        t=1674206150; x=1675415750; b=I/rULaU742ak/BTzG95haSckL8bkiohdZ1GcEoiXVeXLjzv
+        2yGqxiDzCLr3FSh4SEzz6wITmY8DLF3idcB2w9H9Ucrm4EJYkfrmFhFjUJ/F1ro92I3p0aLpg6pZk
+        TkEFNiFfqVwTRolTym/Xu9TkonatJA596w/TQ41hBzb13oBf+3max90S8h2SyCbrFquLa0Edt9jDc
+        WVcmPmj4c/1hhNUIyCrIVku+wVUiqhznzsrBGabKYT39jbS6bw0wWi7/ZgucD2evaZA9TEiiDAwFl
+        6fzCeDip1jH9L0NzS2IlDpntHlqbdPDgUYfOZ0CleR1Avmxksg6qY/1EnKRurO6Q==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1pInUr-007NZG-0A;
+        Fri, 20 Jan 2023 10:15:41 +0100
+Message-ID: <2b7f7f76aac4fcf2a51eb5588e64316b62f27d65.camel@sipsolutions.net>
+Subject: Re: [PATCH net-next v3 1/8] docs: add more netlink docs (incl. spec
+ docs)
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, robh@kernel.org, stephen@networkplumber.org,
+        ecree.xilinx@gmail.com, sdf@google.com, f.fainelli@gmail.com,
+        fw@strlen.de, linux-doc@vger.kernel.org, razor@blackwall.org,
+        nicolas.dichtel@6wind.com, Bagas Sanjaya <bagasdotme@gmail.com>
+Date:   Fri, 20 Jan 2023 10:15:39 +0100
+In-Reply-To: <20230119181306.3b8491b1@kernel.org>
+References: <20230119003613.111778-1-kuba@kernel.org>
+         <20230119003613.111778-2-kuba@kernel.org>
+         <96618285a772b5ef9998f638ea17ff68c32dd710.camel@sipsolutions.net>
+         <20230119181306.3b8491b1@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230120090831.20032-5-steen.hegelund@microchip.com>
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 20, 2023 at 10:08:27AM +0100, Steen Hegelund wrote:
-> -/* Add a rule counter action - only IS2 is considered for now */
-> +/* Add a rule counter action */
->  static int sparx5_tc_add_rule_counter(struct vcap_admin *admin,
->  				      struct vcap_rule *vrule)
->  {
-> -	int err;
-> +	int err = 0;
+On Thu, 2023-01-19 at 18:13 -0800, Jakub Kicinski wrote:
+> On Thu, 19 Jan 2023 21:29:22 +0100 Johannes Berg wrote:
+> > On Wed, 2023-01-18 at 16:36 -0800, Jakub Kicinski wrote:
+> > >=20
+> > > +Answer requests
+> > > +---------------
+> > > +
+> > > +Older families do not reply to all of the commands, especially NEW /=
+ ADD
+> > > +commands. User only gets information whether the operation succeeded=
+ or
+> > > +not via the ACK. Try to find useful data to return. Once the command=
+ is
+> > > +added whether it replies with a full message or only an ACK is uAPI =
+and
+> > > +cannot be changed. It's better to err on the side of replying.
+> > > +
+> > > +Specifically NEW and ADD commands should reply with information iden=
+tifying
+> > > +the created object such as the allocated object's ID (without having=
+ to
+> > > +resort to using ``NLM_F_ECHO``). =20
+> >=20
+> > I'm a bit on the fence on this recommendation (as written).
+> >=20
+> > Yeah, it's nice to reply to things ... but!
+> >=20
+> > In userspace, you often request and wait for the ACK to see if the
+> > operation succeeded. This is basically necessary. But then it's
+> > complicated to wait for *another* message to see the ID.
+>=20
+> Maybe you're looking at this from the perspective of a person tired=20
+> of manually writing the user space code?
 
-Don't initialize.
+Heh, I guess :)
 
->  
-> -	err = vcap_rule_mod_action_u32(vrule, VCAP_AF_CNT_ID, vrule->id);
-> -	if (err)
-> -		return err;
-> +	if (admin->vtype == VCAP_TYPE_IS2) {
-> +		err = vcap_rule_mod_action_u32(vrule, VCAP_AF_CNT_ID,
-> +					       vrule->id);
-> +		if (err)
-> +			return err;
-> +		vcap_rule_set_counter_id(vrule, vrule->id);
-> +	}
->  
-> -	vcap_rule_set_counter_id(vrule, vrule->id);
->  	return err;
+> If the netlink message handling code is all auto-generated it makes=20
+> no difference to the user...
 
-return 0;
+True. And I guess we can hope that'll be the case for most users, though
+I doubt it :)
 
->  }
+> > We've actually started using the "cookie" in the extack to report an ID
+> > of an object/... back, see uses of nl_set_extack_cookie_u64() in the
+> > tree.
+>=20
+> ... and to the middle-layer / RPC / auto-generated library pulling
+> stuff out from protocol messages and interpreting them in a special=20
+> way is a typical netlink vortex of magic :(
 
-regards,
-dan carpenter
+:)
+
+> > So I'm not sure I wholeheartedly agree with the recommendation to send =
+a
+> > separate answer. We've done that, but it's ugly on both sender side in
+> > the kernel (requiring an extra message allocation, ideally at the
+> > beginning of the operation so you can fail gracefully, etc.) and on the
+> > receiver (having to wait for another message if the operation was
+> > successful; possibly actually having to check for that message *before*
+> > the ACK arrives.)
+>=20
+> Right, response is before ACK. It's not different to a GET command,
+> really.
+
+True.
+
+> > > +Support dump consistency
+> > > +------------------------
+> > > +
+> > > +If iterating over objects during dump may skip over objects or repea=
+t
+> > > +them - make sure to report dump inconsistency with ``NLM_F_DUMP_INTR=
+``. =20
+> >=20
+> > That could be a bit more fleshed out on _how_ to do that, if it's not
+> > somewhere else?
+>=20
+> I was thinking about adding a sentence like "To avoid consistency
+> issues store your objects in an Xarray and correctly use the ID during
+> iteration".. but it seems to hand-wavy. Really the coder needs to
+> understand dumps quite well to get what's going on, and then the
+> consistency is kinda obvious. IDK. Almost nobody gets this right :(
+
+Yeah agree, it's tricky one way or the other. To be honest I was
+thinking less of documenting the mechanics of the underlying code to
+ensure that, but rather of the mechanics of using the APIs to ensure
+that, i.e. how to use cb->seq and friends.
+
+> > Unrelated to this particular document, but ...
+> >=20
+> > I'm all for this, btw, but maybe we should have a way of representing i=
+n
+> > the policy that an attribute is used as multi-attr for an array, and a
+> > way of exposing that in the policy export? Hmm. Haven't thought about
+> > this for a while.
+>=20
+> Informational-only or enforced? Enforcing this now would be another
+> backward-compat nightmare :(
+
+More informational - for userspace to know from policy dump that certain
+attributes have that property. With nested it's easy to know (there's a
+special nested-array type), but multi-attr there's no way to distinguish
+"is this one" and "is this multiple".
+
+Now ... you might say you don't really care now since you want
+everything to be auto-generated and then you have it in the docs
+(actually, do you?), and that's a fair point.
+
+> FWIW I have a set parked on a branch to add "required" bit to policies,
+> so for per-op policies one can reject requests with missing attrs
+> during validation.
+
+Nice. That might yet convince me of per-op policies ;-)
+
+Though IMHO the namespace issue remains - I'd still not like to have 100
+definitions of NL80211_ATTR_IFINDEX or similar.
+
+johannes
