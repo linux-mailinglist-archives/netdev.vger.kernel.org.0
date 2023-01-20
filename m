@@ -2,61 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C5BD674CB4
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 06:45:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03CFA674CB5
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 06:48:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229490AbjATFpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 00:45:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
+        id S230143AbjATFsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 00:48:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230143AbjATFpU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 00:45:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0DA9F8
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 21:45:18 -0800 (PST)
+        with ESMTP id S230303AbjATFsH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 00:48:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A43F17CF9;
+        Thu, 19 Jan 2023 21:48:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E66161E1B
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 05:45:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74343C433EF;
-        Fri, 20 Jan 2023 05:45:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F71561DF2;
+        Fri, 20 Jan 2023 05:48:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33819C433D2;
+        Fri, 20 Jan 2023 05:48:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674193518;
-        bh=GTrI+ceeC+lwXuxpSEzroCr2PdqpazZnmz3TaFhMlms=;
+        s=k20201202; t=1674193681;
+        bh=xsZyDNfp8xKqmDnOdFjDtZjXdI+0DJE9t61UePFMT00=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TdiMUgPhxNBpwAjmqCtJvb/qVxSYq20Ph1q4+jR6t5TgruzbtHzPQL/3Scmw37dQq
-         dHqF4HwJZiC54cGObXmjCzWvfK7HRluDr9PPjYRb51Akv9NWiFmVbi1SvQPtEJdS1l
-         dLGg1xFSAmi/X9M0+nKvkpP09hpdgp6zxt78ybESpBMCmayHSeHZ5qIZy7qXWsD6m1
-         /T/PL+NcvZMsNwj41/zAqmNr70wPMogIOOhdyIzVZr9HmFq2scaPAekuYQUvCbvPIx
-         EQ6seoGM29mP2D86pXGNFApv245P3hkR9Hgj00F4f4ON/+ke9zeErjc8XgStIopavN
-         bRpR1bQuwA6Rg==
-Date:   Thu, 19 Jan 2023 21:45:16 -0800
+        b=Oc+UkmGQaR+feradrF1FzV9Yfgo/6WuM9QeBWkHfXbnpVLcPV3VABvs4/dmsr0pF0
+         xWzul0tW6PPdi1FoiB4iK6iL2YS6vz/cj9Sk1HF01LwDtl6IMU4Yk5IxIV4+SU1zgq
+         cme/1Eng0CRjOAtZ+yvMp7IccGeu0D7xOjhCfBapZsGmmqAWtGy/Vpq/aajbjia9qu
+         IhZJ1btc4pmCgTVMy/HeUbOUNxLNpYesPlFxCL1pOkQS64kwbcUmTy6nImKYG+H/IO
+         SIeUnR+4tEH7N1ilEDkDb73fv5GYfja0+a9SbBL4ccxAMgcnQ1OmyjI8uTs4QIJfzx
+         UgHyHhiFzsrug==
+Date:   Thu, 19 Jan 2023 21:48:00 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Rahul Rameshbabu <rrameshbabu@nvidia.com>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vincent Cheng <vincent.cheng.xh@renesas.com>
-Subject: Re: [net-next 03/15] net/mlx5: Add adjphase function to support
- hardware-only offset control
-Message-ID: <20230119214516.59adab05@kernel.org>
-In-Reply-To: <87k01hu6fb.fsf@nvidia.com>
-References: <20230118183602.124323-1-saeed@kernel.org>
-        <20230118183602.124323-4-saeed@kernel.org>
-        <739b308c-33ec-1886-5e9d-6c5059370d15@intel.com>
-        <20230119194631.1b9fef95@kernel.org>
-        <87tu0luadz.fsf@nvidia.com>
-        <20230119200343.2eb82899@kernel.org>
-        <87pmb9u90j.fsf@nvidia.com>
-        <20230119210842.5faf1e44@kernel.org>
-        <87k01hu6fb.fsf@nvidia.com>
+To:     Siddharth Vadapalli <s-vadapalli@ti.com>
+Cc:     <davem@davemloft.net>, <edumazet@google.com>,
+        <linux@armlinux.org.uk>, <pabeni@redhat.com>, <rogerq@kernel.org>,
+        <leon@kernel.org>, <leonro@nvidia.com>,
+        <anthony.l.nguyen@intel.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <vigneshr@ti.com>,
+        <srk@ti.com>
+Subject: Re: [PATCH net-next v4 2/2] net: ethernet: ti: am65-cpsw/cpts: Fix
+ CPTS release action
+Message-ID: <20230119214800.63b8c63a@kernel.org>
+In-Reply-To: <20230120044201.357950-1-s-vadapalli@ti.com>
+References: <20230118095439.114222-3-s-vadapalli@ti.com>
+        <20230120044201.357950-1-s-vadapalli@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -69,34 +59,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Jan 2023 21:22:00 -0800 Rahul Rameshbabu wrote:
-> > Hm, so are you saying that:
-> >
-> > adjtime(delta):
-> > 	clock += delta
-> >
-> > but:
-> >
-> > adjfreq(delta):  
-> 
-> Did you mean adjphase here?
+On Fri, 20 Jan 2023 10:12:01 +0530 Siddharth Vadapalli wrote:
+> Changes from v3:
+> 1. Rebase patch on net-next commit: cff9b79e9ad5
+> 2. Collect Reviewed-by tags from Leon Romanovsky, Tony Nguyen and
+>    Roger Quadros.
 
-Yes, sorry
-
-> > 	on clock tick & while delta > 0:
-> > 		clock += small_value
-> > 		delta -= small_value
-> >
-> > because from looking at mlx5 driver code its unclear whether the
-> > implementation does a precise but one shot adjustment or gradual
-> > adjustments.  
-> 
-> The pseudo code your drafted is accurate otherwise. The lack of clarity
-> in our driver comes from leaving the responsibility of that smooth
-> gradual transition (to keep in sync with the clock frequency while
-> running) up to the device.
-
-Ah, I see. That makes sense. This is how system clocks react too 
-or is it a local PTP invention? I think it may be worth documenting 
-in ptp_clock_kernel.h, most driver authors may not understand 
-the difference between adjtime and adjphase :(
+You need to repost the entire series, and please don't --in-reply-to,
+just CC the people who commented.
