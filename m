@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1014675CF6
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 19:47:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F358675CF8
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 19:47:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230163AbjATSq7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 13:46:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51094 "EHLO
+        id S230184AbjATSrA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 13:47:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230176AbjATSq6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 13:46:58 -0500
+        with ESMTP id S230396AbjATSq7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 13:46:59 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279615421A;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58EE2743A9;
         Fri, 20 Jan 2023 10:46:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9DAFB82952;
-        Fri, 20 Jan 2023 18:46:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7E61CC4339B;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01DEAB829C3;
+        Fri, 20 Jan 2023 18:46:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9CFDFC433D2;
         Fri, 20 Jan 2023 18:46:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1674240415;
-        bh=/2Z76LYFMgpKZbKnU3RK3NmFhoVE7DAmzKLt3L5AOns=;
+        bh=yLqUPDJuAMDYKm3TpsL2T+a4TFuITf8cC8pK6jZZ2i0=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=HQg88MrjRb3hsQ2X+ps0GldJf6HOTJTKTRnPu7TQB6WHYFzvQ6Q4osQVPh0idD0AG
-         JVSIx0DUFTgWVy3NnUWhB2zzxtvJBwYZ/i55434zjg4UwVHQk4HImxJodG/5BJdjXM
-         ueO75QxSIx9JqZpkt1qF8Ui39JGZWzedS+wqNpD6zgEog3MhML2bSdMIzDb9ZcAojc
-         pRqI0VM5pWBXc/Iy1BYDsOISKLLYn5DB0SNkwxeYzwAE7otnJRS/sEYl+4HnITQWWa
-         4nz8oB8MsFg7WYK/WVrmFm+MK+heskiuEuea4DYYeoCEX0a7y/k0QVBcfGnX3o2HJX
-         GP5NVDUOch1TQ==
+        b=s2Gmm3DsLIt7HjV+A/OTSKWwOIKcu7BtwZvikbZESyaRu3pDGt276cSaHYbWORI1M
+         zEDSy2Ncose9wbMVsTY6m6QHzlpQvwy2Tk7UzDnBDMEZx2rku+qG4iR35OWwgMawn2
+         lb5nOlyhrOQnCClKMRsW3MOzlBjr18iLzo9oDPVz83bdq4AzSRq+5FfwCiXpVdqhma
+         mYuoliRHza9e6zcnz4ojC7j1OQh6omlRzIX+cfxdFRwae66Iitdc78REeARPTuZqR7
+         nw1lMG228b/WOSboxmlUtsEztA8A0UlKz2rxNP6WolbR7Gl6RZRlhq/K8unOSXjF8T
+         NMgMUa12zD62A==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6E733E54D2B;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 82244C04E34;
         Fri, 20 Jan 2023 18:46:55 +0000 (UTC)
-Subject: Re: [PULL] Networking for v6.2-rc5
+Subject: Re: [PULL v2] Networking for v6.2-rc5
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20230119185300.517048-1-kuba@kernel.org>
-References: <20230119185300.517048-1-kuba@kernel.org>
+In-Reply-To: <20230120165004.1372146-1-kuba@kernel.org>
+References: <20230120165004.1372146-1-kuba@kernel.org>
 X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20230119185300.517048-1-kuba@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.2-rc5
-X-PR-Tracked-Commit-Id: 6c977c5c2e4c5d8ad1b604724cc344e38f96fe9b
+X-PR-Tracked-Message-Id: <20230120165004.1372146-1-kuba@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.2-rc5-2
+X-PR-Tracked-Commit-Id: 45a919bbb21c642e0c34dac483d1e003560159dc
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 07ea567d84cdf0add274d66db7c02b55b818d517
-Message-Id: <167424041544.21297.3731198681374042481.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 5deaa98587aca2f0e7605388e89cfa1df4bad5cb
+Message-Id: <167424041552.21297.10334830893531625071.pr-tracker-bot@kernel.org>
 Date:   Fri, 20 Jan 2023 18:46:55 +0000
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
@@ -60,12 +60,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Thu, 19 Jan 2023 10:53:00 -0800:
+The pull request you sent on Fri, 20 Jan 2023 08:50:04 -0800:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.2-rc5
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.2-rc5-2
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/07ea567d84cdf0add274d66db7c02b55b818d517
+https://git.kernel.org/torvalds/c/5deaa98587aca2f0e7605388e89cfa1df4bad5cb
 
 Thank you!
 
