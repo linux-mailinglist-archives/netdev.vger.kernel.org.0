@@ -2,111 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 557FD675F86
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 22:16:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1834675F94
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 22:21:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229780AbjATVQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 16:16:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37074 "EHLO
+        id S229701AbjATVVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 16:21:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229695AbjATVQK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 16:16:10 -0500
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E86101DB94;
-        Fri, 20 Jan 2023 13:16:05 -0800 (PST)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 4A5AF1883A74;
-        Fri, 20 Jan 2023 21:16:03 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 412112500327;
-        Fri, 20 Jan 2023 21:16:03 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 2D75D91201E4; Fri, 20 Jan 2023 21:16:03 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S229445AbjATVVb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 16:21:31 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86F32EC55
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 13:21:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674249690; x=1705785690;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+LPXapS4CaPeAk20B5zbKNGlz1ZD0Z9f9AOdtAx4To8=;
+  b=ZK331rZfmtip+Ug2SSkcGTUZcPXOcN+MX+Tt9nJEuJWI+zNofVF/R99M
+   EzWi8hbXq8ZLa/pYq0VqDUbs0j/H1OTIFGxIbwbqTopEmuGsmpnEkSNU8
+   WzTsqjLc+Vmsod3vODfG1OvF1G2+xpwh2WFU5SwLNOal43ojgWs9GcgqK
+   M/f/D7lySTpRci1WbcAuznloDCr5GUXUw6xGKQlQrMHXiZpu0JFLtgHjx
+   lfjnDb4PPJZ7AsRR5ur2R36xMPhjcepdAnJqdzKkUE7zcSXf9ZXJA238t
+   CbZkLMEuFIowsGY8BTiJTNXAAWvdzNri7ttfGdyyLU75vG+CGQPFKFOmS
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="305368006"
+X-IronPort-AV: E=Sophos;i="5.97,233,1669104000"; 
+   d="scan'208";a="305368006"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2023 13:21:29 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="989533300"
+X-IronPort-AV: E=Sophos;i="5.97,233,1669104000"; 
+   d="scan'208";a="989533300"
+Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 20 Jan 2023 13:21:27 -0800
+Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pIypC-0002yc-1G;
+        Fri, 20 Jan 2023 21:21:26 +0000
+Date:   Sat, 21 Jan 2023 05:21:09 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     alejandro.lucero-palau@amd.com, netdev@vger.kernel.org,
+        linux-net-drivers@amd.com
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, habetsm@gmail.com, ecree.xilinx@gmail.com,
+        Alejandro Lucero <alejandro.lucero-palau@amd.com>
+Subject: Re: [PATCH net-next 4/7] sfc: add devlink port support for ef100
+Message-ID: <202301210559.Gj6wK4CN-lkp@intel.com>
+References: <20230119113140.20208-5-alejandro.lucero-palau@amd.com>
 MIME-Version: 1.0
-Date:   Fri, 20 Jan 2023 22:16:03 +0100
-From:   netdev@kapio-technology.com
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
-        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?UTF-8?Q?Cl=C3=A9ment_L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>
-Subject: Re: [RFC PATCH net-next 1/5] net: bridge: add dynamic flag to
- switchdev notifier
-In-Reply-To: <20230119134045.fqdt6zrna5x3iavt@skbuf>
-References: <20230117185714.3058453-1-netdev@kapio-technology.com>
- <20230117185714.3058453-2-netdev@kapio-technology.com>
- <20230117230806.ipwcbnq4jcc4qs7z@skbuf>
- <a3bba3eb856a00b5e5e0c1e2ffe8749a@kapio-technology.com>
- <20230119093358.gbyka2x4qbxxr43b@skbuf>
- <20230119134045.fqdt6zrna5x3iavt@skbuf>
-User-Agent: Gigahost Webmail
-Message-ID: <29501147c96e7e2f06c999410d42e2bf@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230119113140.20208-5-alejandro.lucero-palau@amd.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023-01-19 14:40, Vladimir Oltean wrote:
-> On Thu, Jan 19, 2023 at 11:33:58AM +0200, Vladimir Oltean wrote:
->> On Wed, Jan 18, 2023 at 11:14:00PM +0100, netdev@kapio-technology.com 
->> wrote:
->> > > > +	item->is_dyn = !test_bit(BR_FDB_STATIC, &fdb->flags);
->> > >
->> > > Why reverse logic? Why not just name this "is_static" and leave any
->> > > further interpretations up to the consumer?
->> >
->> > My reasoning for this is that the common case is to have static entries,
->> > thus is_dyn=false, so whenever someone uses a switchdev_notifier_fdb_info
->> > struct the common case does not need to be entered.
->> > Otherwise it might also break something when someone uses this struct and if
->> > it was 'is_static' and they forget to code is_static=true they will get
->> > dynamic entries without wanting it and it can be hard to find such an error.
->> 
->> I'll leave it up to bridge maintainers if this is preferable to 
->> patching
->> all callers of SWITCHDEV_FDB_ADD_TO_BRIDGE such that they set 
->> is_static=true.
-> 
-> Actually, why would you assume that all users of 
-> SWITCHDEV_FDB_ADD_TO_BRIDGE
-> want to add static FDB entries? You can't avoid inspecting the code and
-> making sure that the is_dyn/is_static flag is set correctly either way.
+Hi,
 
-Well, up until this patch set there is no option, besides entries from 
-SWITCHDEV_FDB_ADD_TO_BRIDGE events will get the external learned flag 
-set, so they will not be aged by the bridge, and so dynamic entries that 
-way don't make much sense I think. Is that not right?
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on net-next/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230119-193440
+patch link:    https://lore.kernel.org/r/20230119113140.20208-5-alejandro.lucero-palau%40amd.com
+patch subject: [PATCH net-next 4/7] sfc: add devlink port support for ef100
+config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20230121/202301210559.Gj6wK4CN-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/5b06b1ae6605af55ed8127878054f8d69046b83c
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230119-193440
+        git checkout 5b06b1ae6605af55ed8127878054f8d69046b83c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+ERROR: modpost: "efx_ef100_fini_reps" [drivers/net/ethernet/sfc/sfc.ko] undefined!
+ERROR: modpost: "efx_fini_mae" [drivers/net/ethernet/sfc/sfc.ko] undefined!
+>> ERROR: modpost: "efx_mae_lookup_mport" [drivers/net/ethernet/sfc/sfc.ko] undefined!
+>> ERROR: modpost: "efx_mae_get_mport" [drivers/net/ethernet/sfc/sfc.ko] undefined!
+>> ERROR: modpost: "ef100_mport_on_local_intf" [drivers/net/ethernet/sfc/sfc.ko] undefined!
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
