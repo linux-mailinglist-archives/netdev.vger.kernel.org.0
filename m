@@ -2,102 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E66C867504A
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 10:10:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BB5367506F
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 10:15:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229762AbjATJKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 04:10:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48338 "EHLO
+        id S229982AbjATJPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 04:15:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229730AbjATJKA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 04:10:00 -0500
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E6990B2A;
-        Fri, 20 Jan 2023 01:09:17 -0800 (PST)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30K8fx3n023423;
-        Fri, 20 Jan 2023 04:09:04 -0500
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3n7qnw03rv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 Jan 2023 04:09:04 -0500
-Received: from m0167089.ppops.net (m0167089.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 30K95qrd013945;
-        Fri, 20 Jan 2023 04:09:04 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3n7qnw03rs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 Jan 2023 04:09:04 -0500
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 30K993iu034540
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 20 Jan 2023 04:09:03 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 20 Jan
- 2023 04:09:02 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 20 Jan 2023 04:09:02 -0500
-Received: from tachici-Precision-5530.ad.analog.com ([10.48.65.139])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 30K98oxo018971;
-        Fri, 20 Jan 2023 04:08:52 -0500
-From:   Alexandru Tachici <alexandru.tachici@analog.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <yangyingliang@huawei.com>
-Subject: [net] net: ethernet: adi: adin1110: Fix multicast offloading
-Date:   Fri, 20 Jan 2023 11:08:46 +0200
-Message-ID: <20230120090846.18172-1-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229972AbjATJPG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 04:15:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C6A8B77C
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 01:13:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1674205981;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZPeR4ezySQsDIGM6vL70GUntxVZdDTQ3/O5g5jnGLyE=;
+        b=iI8wldgBIsPVYH8QnoLEvkhqj4MrmkTGl4yySxVZHjeWCe3tjinmoHuSjzM2gq42eG3JxL
+        +iAaIZfzbBRiVqyccvZp8RtKcxUddq2P2KmNb9LScxIcfYxCCpCRSP+83IGlxnD8x6QDgc
+        4YbyuwswY7G1zKAnimk+rdmQRaQotl0=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-375-_OeKHXVAPv6t2lwbsh-ARw-1; Fri, 20 Jan 2023 04:09:44 -0500
+X-MC-Unique: _OeKHXVAPv6t2lwbsh-ARw-1
+Received: by mail-ej1-f69.google.com with SMTP id du14-20020a17090772ce00b0087108bbcfa6so3391499ejc.7
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 01:09:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZPeR4ezySQsDIGM6vL70GUntxVZdDTQ3/O5g5jnGLyE=;
+        b=TNXrKM3oVsJ1SQD1JToRWbfFlvL3vk+e7T6bNjfjqzPONEMT/mutHtsWkMxw0AN6AL
+         wshASsckQxqpCF/ZcEsE4rtX04h0vr9TKUd/APNeVVmoF7W6XbHQ80NqjS/0HPEVRJd6
+         KaDbQHjNjYx+99fLpldHoHNwYd/ojy1b9gKxHnrVf6Dy25bVjzsrPX1waG3d41IwhtgP
+         Ps2lIt2VYI261MpLV21ZTwb61Hw467lIw2iz9h7GwAMSjMmr3RxZganvvbTmYGKVyn7Q
+         p1BwVj+Zpu1XjnQv7VcNPNnvZNU007UJNluCESFamyiNLCu1iWV/sahPHaF8dBTJEiRw
+         nX2w==
+X-Gm-Message-State: AFqh2ko3txm0ph01+WfexFk/JqlfwioYeMPVXwT7Mdndc6b0e0Slf4OS
+        Afj/yaVkL6KY+gltNx9IGWj7swliTedwXzo7lKfoMGFHzx3V5kBQ2nVLAPLrK0oUNVcuj5np9eG
+        vWhy2cF6G/wWwxrE6
+X-Received: by 2002:a17:907:2982:b0:7c1:23f2:c052 with SMTP id eu2-20020a170907298200b007c123f2c052mr8244514ejc.45.1674205783797;
+        Fri, 20 Jan 2023 01:09:43 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXsQkUv9iZG2NFyXt3zMEzhO/30xUaSr/PocZ3T0Gedu/vtGto8J/OUS3WLYXJXduBV8NjQpYg==
+X-Received: by 2002:a17:907:2982:b0:7c1:23f2:c052 with SMTP id eu2-20020a170907298200b007c123f2c052mr8244500ejc.45.1674205783555;
+        Fri, 20 Jan 2023 01:09:43 -0800 (PST)
+Received: from [192.168.41.200] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
+        by smtp.gmail.com with ESMTPSA id kx1-20020a170907774100b0084d368b1628sm16387373ejc.40.2023.01.20.01.09.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 Jan 2023 01:09:42 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <d5c66d86-23e0-b786-5cba-ae9c18a97549@redhat.com>
+Date:   Fri, 20 Jan 2023 10:09:41 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: SXL9UAdmmlBKMA-1ukx0FdRF3AcEPssf
-X-Proofpoint-ORIG-GUID: zjoizI9yYtZ2PwtWG9UkspSRsRcjU1Ne
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-01-20_06,2023-01-19_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- lowpriorityscore=0 adultscore=0 mlxscore=0 bulkscore=0 phishscore=0
- spamscore=0 priorityscore=1501 clxscore=1011 suspectscore=0 malwarescore=0
- mlxlogscore=821 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301200086
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Cc:     brouer@redhat.com, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, pabeni@redhat.com,
+        syzbot+c8a2e66e37eee553c4fd@syzkaller.appspotmail.com
+Subject: Re: [PATCH net-next] net: fix kfree_skb_list use of
+ skb_mark_not_on_list
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>
+References: <167415060025.1124471.10712199130760214632.stgit@firesoul>
+ <CANn89iJ8Vd2V6jqVdMYLFcs0g_mu+bTJr3mKq__uXBFg1K0yhA@mail.gmail.com>
+In-Reply-To: <CANn89iJ8Vd2V6jqVdMYLFcs0g_mu+bTJr3mKq__uXBFg1K0yhA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Driver marked broadcast/multicast frames as offloaded incorrectly.
-Mark them as offloaded only when HW offloading has been enabled.
-This should happen only for ADIN2111 when both ports are bridged
-by the software.
 
-Fixes: bc93e19d088b ("net: ethernet: adi: Add ADIN1110 support")
-Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
----
- drivers/net/ethernet/adi/adin1110.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 19/01/2023 19.04, Eric Dumazet wrote:
+> On Thu, Jan 19, 2023 at 6:50 PM Jesper Dangaard Brouer
+> <brouer@redhat.com> wrote:
+>>
+>> A bug was introduced by commit eedade12f4cb ("net: kfree_skb_list use
+>> kmem_cache_free_bulk"). It unconditionally unlinked the SKB list via
+>> invoking skb_mark_not_on_list().
+>>
+>> The skb_mark_not_on_list() should only be called if __kfree_skb_reason()
+>> returns true, meaning the SKB is ready to be free'ed, as it calls/check
+>> skb_unref().
+>>
+>> This is needed as kfree_skb_list() is also invoked on skb_shared_info
+>> frag_list. A frag_list can have SKBs with elevated refcnt due to cloning
+>> via skb_clone_fraglist(), which takes a reference on all SKBs in the
+>> list. This implies the invariant that all SKBs in the list must have the
+>> same refcnt, when using kfree_skb_list().
+> 
+> Yeah, or more precisely skb_drop_fraglist() calling kfree_skb_list()
+> 
+>>
+>> Reported-by: syzbot+c8a2e66e37eee553c4fd@syzkaller.appspotmail.com
+>> Reported-and-tested-by: syzbot+c8a2e66e37eee553c4fd@syzkaller.appspotmail.com
+>> Fixes: eedade12f4cb ("net: kfree_skb_list use kmem_cache_free_bulk")
+>> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+>> ---
+>>   net/core/skbuff.c |    6 +++---
+>>   1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+>> index 4e73ab3482b8..1bffbcbe6087 100644
+>> --- a/net/core/skbuff.c
+>> +++ b/net/core/skbuff.c
+>> @@ -999,10 +999,10 @@ kfree_skb_list_reason(struct sk_buff *segs, enum skb_drop_reason reason)
+>>          while (segs) {
+>>                  struct sk_buff *next = segs->next;
+>>
+>> -               skb_mark_not_on_list(segs);
+>> -
+>> -               if (__kfree_skb_reason(segs, reason))
+>> +               if (__kfree_skb_reason(segs, reason)) {
+>> +                       skb_mark_not_on_list(segs);
+> 
+> Real question is : Why do we need to set/change/dirt skb->next ?
+> 
+> I would remove this completely, and save extra cache lines dirtying.
 
-diff --git a/drivers/net/ethernet/adi/adin1110.c b/drivers/net/ethernet/adi/adin1110.c
-index 0805f249fff2..c26b8597945b 100644
---- a/drivers/net/ethernet/adi/adin1110.c
-+++ b/drivers/net/ethernet/adi/adin1110.c
-@@ -356,7 +356,7 @@ static int adin1110_read_fifo(struct adin1110_port_priv *port_priv)
- 
- 	if ((port_priv->flags & IFF_ALLMULTI && rxb->pkt_type == PACKET_MULTICAST) ||
- 	    (port_priv->flags & IFF_BROADCAST && rxb->pkt_type == PACKET_BROADCAST))
--		rxb->offload_fwd_mark = 1;
-+		rxb->offload_fwd_mark = port_priv->priv->forwarding;
- 
- 	netif_rx(rxb);
- 
--- 
-2.34.1
+First of all, we just read this cacheline via reading segs->next.
+This cacheline must as minimum be in Shared (S) state.
+
+Secondly SLUB will write into this cacheline. Thus, we actually know 
+that this cacheline need to go into Modified (M) or Exclusive (E).
+Thus, writing into it here should be okay.  We could replace it with a 
+prefetchw() to help SLUB get Exclusive (E) cache coherency state.
+
+> Before your patch, we were not calling skb_mark_not_on_list(segs),
+> so why bother ?
+
+To catch potential bugs.
+
+
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index 4e73ab3482b87d81371cff266627dab646d3e84c..180df58e85c72eaa16f5cb56b56d181a379b8921
+> 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -999,8 +999,6 @@ kfree_skb_list_reason(struct sk_buff *segs, enum
+> skb_drop_reason reason)
+>          while (segs) {
+>                  struct sk_buff *next = segs->next;
+> 
+> -               skb_mark_not_on_list(segs);
+> -
+>                  if (__kfree_skb_reason(segs, reason))
+>                          kfree_skb_add_bulk(segs, &sa, reason);
+> 
 
