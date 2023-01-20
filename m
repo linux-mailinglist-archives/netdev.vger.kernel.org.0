@@ -2,198 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 245DC67518E
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 10:49:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A861F6751B5
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 10:54:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230215AbjATJtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 04:49:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40022 "EHLO
+        id S230018AbjATJyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 04:54:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbjATJtX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 04:49:23 -0500
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 415143CE39;
-        Fri, 20 Jan 2023 01:49:20 -0800 (PST)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1pInzo-0002mL-W5; Fri, 20 Jan 2023 10:47:41 +0100
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     broonie@kernel.org, miquel.raynal@bootlin.com, richard@nod.at,
-        vigneshr@ti.com, jic23@kernel.org, tudor.ambarus@microchip.com,
-        pratyush@kernel.org, sanju.mehta@amd.com,
-        chin-ting_kuo@aspeedtech.com, clg@kaod.org, kdasu.kdev@gmail.com,
-        f.fainelli@gmail.com, rjui@broadcom.com, sbranden@broadcom.com,
-        eajames@linux.ibm.com, olteanv@gmail.com, han.xu@nxp.com,
-        john.garry@huawei.com, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        narmstrong@baylibre.com, khilman@baylibre.com,
-        matthias.bgg@gmail.com, haibo.chen@nxp.com,
-        linus.walleij@linaro.org, daniel@zonque.org,
-        haojian.zhuang@gmail.com, robert.jarzmik@free.fr,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        krzysztof.kozlowski@linaro.org, andi@etezian.org,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
-        wens@csie.org, jernej.skrabec@gmail.com, samuel@sholland.org,
-        masahisa.kojima@linaro.org, jaswinder.singh@linaro.org,
-        rostedt@goodmis.org, mingo@redhat.com, l.stelmach@samsung.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, alex.aring@gmail.com, stefan@datenfreihafen.org,
-        kvalo@kernel.org, thierry.reding@gmail.com, jonathanh@nvidia.com,
-        skomatineni@nvidia.com, sumit.semwal@linaro.org,
-        christian.koenig@amd.com, j.neuschaefer@gmx.net,
-        vireshk@kernel.org, rmfrfs@gmail.com, johan@kernel.org,
-        elder@kernel.org, gregkh@linuxfoundation.org,
-        Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
-Cc:     git@amd.com, linux-spi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, joel@jms.id.au, andrew@aj.id.au,
-        radu_nicolae.pirea@upb.ro, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
-        bcm-kernel-feedback-list@broadcom.com, fancer.lancer@gmail.com,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        jbrunet@baylibre.com, martin.blumenstingl@googlemail.com,
-        avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        yogeshgaur.83@gmail.com, konrad.dybcio@somainline.org,
-        alim.akhtar@samsung.com, ldewangan@nvidia.com,
-        michal.simek@amd.com, linux-aspeed@lists.ozlabs.org,
-        openbmc@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
-        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
-        linux-mtd@lists.infradead.org, lars@metafoo.de,
-        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
-        michael@walle.cc, palmer@dabbelt.com,
-        linux-riscv@lists.infradead.org, linux-media@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, greybus-dev@lists.linaro.org,
-        linux-staging@lists.linux.dev, amitrkcian2002@gmail.com
-Subject: Re: [PATCH v2 02/13] spi: Replace all spi->chip_select and spi->cs_gpiod
- references with function call
-Date:   Fri, 20 Jan 2023 10:47:37 +0100
-Message-ID: <3658396.MHq7AAxBmi@diego>
-In-Reply-To: <20230119185342.2093323-3-amit.kumar-mahapatra@amd.com>
-References: <20230119185342.2093323-1-amit.kumar-mahapatra@amd.com>
- <20230119185342.2093323-3-amit.kumar-mahapatra@amd.com>
+        with ESMTP id S229785AbjATJya (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 04:54:30 -0500
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B43C73EE3;
+        Fri, 20 Jan 2023 01:54:22 -0800 (PST)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30K8g3ci023460;
+        Fri, 20 Jan 2023 04:54:10 -0500
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3n7qnw09hk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 20 Jan 2023 04:54:10 -0500
+Received: from m0167089.ppops.net (m0167089.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 30K9oVqq026484;
+        Fri, 20 Jan 2023 04:54:09 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3n7qnw09hf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 20 Jan 2023 04:54:09 -0500
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 30K9s8We036473
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 20 Jan 2023 04:54:08 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 20 Jan
+ 2023 04:54:07 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Fri, 20 Jan 2023 04:54:07 -0500
+Received: from tachici-Precision-5530.ad.analog.com ([10.48.65.139])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 30K9rqTv021132;
+        Fri, 20 Jan 2023 04:53:54 -0500
+From:   Alexandru Tachici <alexandru.tachici@analog.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <richardcochran@gmail.com>, <yangyingliang@huawei.com>,
+        <weiyongjun1@huawei.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <devicetree@vger.kernel.org>,
+        <lennart@lfdomain.com>
+Subject: [net-next 0/3] net: ethernet: adi: adin1110: add PTP support
+Date:   Fri, 20 Jan 2023 11:53:45 +0200
+Message-ID: <20230120095348.26715-1-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_PASS,
-        T_SPF_HELO_TEMPERROR autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: owdE7b4BtcC6l1n-GXg-_AUVyRcv3JEX
+X-Proofpoint-ORIG-GUID: 1I1KDlhbmhCwgZ576S4G8biYI3O2dqwG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-01-20_06,2023-01-19_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ lowpriorityscore=0 adultscore=0 mlxscore=0 bulkscore=0 phishscore=0
+ spamscore=0 priorityscore=1501 clxscore=1011 suspectscore=0 malwarescore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2301200093
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Donnerstag, 19. Januar 2023, 19:53:31 CET schrieb Amit Kumar Mahapatra:
-> Supporting multi-cs in spi drivers would require the chip_select & cs_gpiod
-> members of struct spi_device to be an array. But changing the type of these
-> members to array would break the spi driver functionality. To make the
-> transition smoother introduced four new APIs to get/set the
-> spi->chip_select & spi->cs_gpiod and replaced all spi->chip_select and
-> spi->cs_gpiod references with get or set API calls.
-> While adding multi-cs support in further patches the chip_select & cs_gpiod
-> members of the spi_device structure would be converted to arrays & the
-> "idx" parameter of the APIs would be used as array index i.e.,
-> spi->chip_select[idx] & spi->cs_gpiod[idx] respectively.
-> 
-> Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
-> ---
+Add control for the PHC inside the ADIN1110/2111.
+Device contains a syntonized counter driven by a 120 MHz
+clock  with 8 ns resolution.
 
-> diff --git a/drivers/spi/spi-rockchip-sfc.c b/drivers/spi/spi-rockchip-sfc.c
-> index bd87d3c92dd3..246e81453ec3 100644
-> --- a/drivers/spi/spi-rockchip-sfc.c
-> +++ b/drivers/spi/spi-rockchip-sfc.c
-> @@ -346,7 +346,7 @@ static int rockchip_sfc_xfer_setup(struct rockchip_sfc *sfc,
->  
->  	/* set the Controller */
->  	ctrl |= SFC_CTRL_PHASE_SEL_NEGETIVE;
-> -	cmd |= mem->spi->chip_select << SFC_CMD_CS_SHIFT;
-> +	cmd |= spi_get_chipselect(mem->spi, 0) << SFC_CMD_CS_SHIFT;
->  
->  	dev_dbg(sfc->dev, "sfc addr.nbytes=%x(x%d) dummy.nbytes=%x(x%d)\n",
->  		op->addr.nbytes, op->addr.buswidth,
-> diff --git a/drivers/spi/spi-rockchip.c b/drivers/spi/spi-rockchip.c
-> index 79242dc5272d..adc5638eff4b 100644
-> --- a/drivers/spi/spi-rockchip.c
-> +++ b/drivers/spi/spi-rockchip.c
-> @@ -246,28 +246,30 @@ static void rockchip_spi_set_cs(struct spi_device *spi, bool enable)
->  	bool cs_asserted = spi->mode & SPI_CS_HIGH ? enable : !enable;
->  
->  	/* Return immediately for no-op */
-> -	if (cs_asserted == rs->cs_asserted[spi->chip_select])
-> +	if (cs_asserted == rs->cs_asserted[spi_get_chipselect(spi, 0)])
->  		return;
->  
->  	if (cs_asserted) {
->  		/* Keep things powered as long as CS is asserted */
->  		pm_runtime_get_sync(rs->dev);
->  
-> -		if (spi->cs_gpiod)
-> +		if (spi_get_csgpiod(spi, 0))
->  			ROCKCHIP_SPI_SET_BITS(rs->regs + ROCKCHIP_SPI_SER, 1);
->  		else
-> -			ROCKCHIP_SPI_SET_BITS(rs->regs + ROCKCHIP_SPI_SER, BIT(spi->chip_select));
-> +			ROCKCHIP_SPI_SET_BITS(rs->regs + ROCKCHIP_SPI_SER,
-> +					      BIT(spi_get_chipselect(spi, 0)));
->  	} else {
-> -		if (spi->cs_gpiod)
-> +		if (spi_get_csgpiod(spi, 0))
->  			ROCKCHIP_SPI_CLR_BITS(rs->regs + ROCKCHIP_SPI_SER, 1);
->  		else
-> -			ROCKCHIP_SPI_CLR_BITS(rs->regs + ROCKCHIP_SPI_SER, BIT(spi->chip_select));
-> +			ROCKCHIP_SPI_CLR_BITS(rs->regs + ROCKCHIP_SPI_SER,
-> +					      BIT(spi_get_chipselect(spi, 0)));
->  
->  		/* Drop reference from when we first asserted CS */
->  		pm_runtime_put(rs->dev);
->  	}
->  
-> -	rs->cs_asserted[spi->chip_select] = cs_asserted;
-> +	rs->cs_asserted[spi_get_chipselect(spi, 0)] = cs_asserted;
->  }
->  
->  static void rockchip_spi_handle_err(struct spi_controller *ctlr,
-> @@ -541,7 +543,7 @@ static int rockchip_spi_config(struct rockchip_spi *rs,
->  	if (spi->mode & SPI_LSB_FIRST)
->  		cr0 |= CR0_FBM_LSB << CR0_FBM_OFFSET;
->  	if (spi->mode & SPI_CS_HIGH)
-> -		cr0 |= BIT(spi->chip_select) << CR0_SOI_OFFSET;
-> +		cr0 |= BIT(spi_get_chipselect(spi, 0)) << CR0_SOI_OFFSET;
->  
->  	if (xfer->rx_buf && xfer->tx_buf)
->  		cr0 |= CR0_XFM_TR << CR0_XFM_OFFSET;
-> @@ -724,7 +726,7 @@ static int rockchip_spi_setup(struct spi_device *spi)
->  	struct rockchip_spi *rs = spi_controller_get_devdata(spi->controller);
->  	u32 cr0;
->  
-> -	if (!spi->cs_gpiod && (spi->mode & SPI_CS_HIGH) && !rs->cs_high_supported) {
-> +	if (!spi_get_csgpiod(spi, 0) && (spi->mode & SPI_CS_HIGH) && !rs->cs_high_supported) {
->  		dev_warn(&spi->dev, "setup: non GPIO CS can't be active-high\n");
->  		return -EINVAL;
->  	}
-> @@ -735,10 +737,10 @@ static int rockchip_spi_setup(struct spi_device *spi)
->  
->  	cr0 &= ~(0x3 << CR0_SCPH_OFFSET);
->  	cr0 |= ((spi->mode & 0x3) << CR0_SCPH_OFFSET);
-> -	if (spi->mode & SPI_CS_HIGH && spi->chip_select <= 1)
-> -		cr0 |= BIT(spi->chip_select) << CR0_SOI_OFFSET;
-> -	else if (spi->chip_select <= 1)
-> -		cr0 &= ~(BIT(spi->chip_select) << CR0_SOI_OFFSET);
-> +	if (spi->mode & SPI_CS_HIGH && spi_get_chipselect(spi, 0) <= 1)
-> +		cr0 |= BIT(spi_get_chipselect(spi, 0)) << CR0_SOI_OFFSET;
-> +	else if (spi_get_chipselect(spi, 0) <= 1)
-> +		cr0 &= ~(BIT(spi_get_chipselect(spi, 0)) << CR0_SOI_OFFSET);
->  
->  	writel_relaxed(cr0, rs->regs + ROCKCHIP_SPI_CTRLR0);
+Time is stored in two registers: a 32bit seconds register and
+a 32bit nanoseconds register.
 
-for the two Rockchip drivers
-Acked-by: Heiko Stuebner <heiko@sntech.de>
+For adjusting the clock timing, device uses an addend register.
+Can generate an output signal on the TS_TIMER pin.
+For reading the timestamp the current tiem is saved by setting the
+TS_CAPT pin via gpio in order to snapshot both seconds and nanoseconds
+in different registers that the live ones.
 
+Allow use of hardware RX/TX timestamping.
+
+RX frames are automatically timestamped by the device at hardware
+level when the feature is enabled. Time of day is the one used by the
+MAC device.
+
+When sending a TX frame to the MAC device, driver needs to send
+a custom header ahead of the ethernet one where it specifies where
+the MAC device should store the timestamp after the frame has
+successfully been sent on the MII line. It has 3 timestamp slots that can
+be read afterwards. Host will be notified by the TX_RDY IRQ.
+
+root@analog:~# ethtool -T eth1
+Time stamping parameters for eth1:
+Capabilities:
+	hardware-transmit
+	software-transmit
+	hardware-receive
+	software-receive
+	software-system-clock
+	hardware-raw-clock
+PTP Hardware Clock: 0
+Hardware Transmit Timestamp Modes:
+	off
+	on
+Hardware Receive Filter Modes:
+	none
+	all
+
+root@analog:~# sudo phc2sys -s eth1 -c CLOCK_REALTIME -O 0 -m
+phc2sys[4897.317]: CLOCK_REALTIME phc offset   -511696 s0 freq  -19464 delay      0
+phc2sys[4898.317]: CLOCK_REALTIME phc offset  -1023142 s1 freq -530689 delay      0
+phc2sys[4899.318]: CLOCK_REALTIME phc offset      -663 s2 freq -531352 delay      0
+phc2sys[4900.318]: CLOCK_REALTIME phc offset      -327 s2 freq -531215 delay      0
+phc2sys[4901.318]: CLOCK_REALTIME phc offset      -603 s2 freq -531589 delay      0
+phc2sys[4902.318]: CLOCK_REALTIME phc offset       288 s2 freq -530879 delay      0
+
+root@analog:~# ptp4l -m -f /etc/ptp_slave.conf
+ptp4l[1188.692]: port 1: new foreign master 00800f.fffe.950400-1
+ptp4l[1192.329]: selected best master clock 00800f.fffe.950400
+ptp4l[1192.329]: foreign master not using PTP timescale
+ptp4l[1192.329]: port 1: LISTENING to UNCALIBRATED on RS_SLAVE
+ptp4l[1194.129]: master offset   29379149 s0 freq -297035 path delay   -810558
+ptp4l[1195.929]: master offset   32040450 s1 freq +512000 path delay   -810558
+ptp4l[1198.058]: master offset    1608389 s2 freq +512000 path delay   -810558
+ptp4l[1198.058]: port 1: UNCALIBRATED to SLAVE on MASTER_CLOCK_SELECTED
+ptp4l[1199.529]: clockcheck: clock jumped forward or running faster than expected!
+ptp4l[1199.529]: master offset    2419241 s0 freq +512000 path delay   -810558
+ptp4l[1199.529]: port 1: SLAVE to UNCALIBRATED on SYNCHRONIZATION_FAULT
+ptp4l[1201.329]: master offset    2004645 s0 freq +512000 path delay   -810558
+ptp4l[1203.130]: master offset    1618970 s1 freq +319234 path delay   -810558
+ptp4l[1204.930]: master offset   -1098742 s2 freq -230137 path delay   -810558
+ptp4l[1204.930]: port 1: UNCALIBRATED to SLAVE on MASTER_CLOCK_SELECTED
+ptp4l[1206.730]: master offset   -1689657 s2 freq -512000 path delay   -810558
+ptp4l[1208.530]: master offset   -1692389 s2 freq -512000 path delay   -345770
+ptp4l[1210.330]: master offset    -404021 s2 freq  -47588 path delay   -166813
+ptp4l[1212.130]: master offset    1098174 s2 freq +512000 path delay   -104916
+ptp4l[1214.061]: master offset    1579741 s2 freq +512000 path delay    -60321
+ptp4l[1215.730]: master offset    1180121 s2 freq +512000 path delay    -60321
+ptp4l[1217.531]: master offset    -345392 s2 freq  -78876 path delay    -43020
+
+Above ptp4l run was not the best as I do not have access (to my knowledge)
+to an accurate PTP grandmaster. Foreign master here is just my laptop
+(with only SW timestamping capabilities) with the
+ptp4l service runnning and NTP disabled.
+
+Alexandru Tachici (3):
+  net: ethernet: adi: adin1110: add PTP clock support
+  net: ethernet: adi: adin1110: add timestamping support
+  dt-bindings: net: adin1110: Document ts-capt pin
+
+ .../devicetree/bindings/net/adi,adin1110.yaml |   7 +
+ drivers/net/ethernet/adi/adin1110.c           | 811 +++++++++++++++++-
+ 2 files changed, 808 insertions(+), 10 deletions(-)
+
+-- 
+2.34.1
 
