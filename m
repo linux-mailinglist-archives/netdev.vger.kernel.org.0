@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97E216752FB
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 12:06:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D946C67530E
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 12:08:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229471AbjATLF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 06:05:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34154 "EHLO
+        id S229633AbjATLIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 06:08:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230107AbjATLF5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 06:05:57 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F2C9B27B9
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 03:05:56 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id b4so6390870edf.0
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 03:05:56 -0800 (PST)
+        with ESMTP id S229613AbjATLIR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 06:08:17 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0402B4E28
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 03:08:13 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id az20so13076450ejc.1
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 03:08:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=k8rhYIFp5k3jfcxxoRDM+Fh/fp6UIIdbOl02xwUWFno=;
-        b=LnQ/tLbH+WiKejCdOi52LZldU5znntWZuBFjb9WGPdDlHwNyOxpX7lGhKi4xO+wYB4
-         n87D0Hw8ZeQnnv+RrQUQ888tauVECSJSDChkNOJ+7PoqUTLbQinf7Wuj0zPgVbUsSJnv
-         6Z6snB6EVey5B7gjbiZiZdfbVtxyn7sXyZN71k3ttU4R+OiCFEXTzPP3EpK0un12pvIp
-         yxaof8zxfEVW7k7WELakQSkyKspED0YMfkynSqbAhBFNWPksALRix3g1hdyV8q9UAxry
-         07UJ7qF8dTXpq+ma+JbyTt0mYJtMwJx79XiTm7UpH8dStqJOrmEg8w8tC6s2WxkaKwfU
-         XOqg==
+        bh=zuyDK3DN9YOP3n8tKmVQ9Bh9B+9zVIuZ/eHK2X/y2Eo=;
+        b=O0XuaoZYSva+MfXs5JleUEt6nr4T2xi0XuAP5K3pcSexncB5ssBmmUcI/79gVyEDVs
+         0qJj/j7RvSYOK/9K7e5rtifYOQEADj5jWFEtWuXZVJBFli1/q8DZp7SiDdNelq05fgO8
+         U4qR7sNilbl0tnHa4DNN52JqbFbmwZjH4rYIeWuC+BK7tWOk4PwXiMnFAjhqVjBMt/VJ
+         lGXn6+b8I2CSp4cEAXNFzbBklfg3Po5+J7V3aGs6sHPeQYpwSmQFGLKk5ZEDkOILKcAr
+         j/aEeartx7j0ZIc9FDwKo9F7hohj1X4zfKnrrvSxYCCsV4bWEOeX1IEutvOarNaW0rjb
+         tEqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=k8rhYIFp5k3jfcxxoRDM+Fh/fp6UIIdbOl02xwUWFno=;
-        b=xX8qti9wQ3eoIObOPm8gZH0eFB9RKdE+fcr/+sfRdYB7l6a8EBf9sEOaesiuAsKYii
-         JvmymLNYkOl3hYIzgoIQEWLQSpAoEME2pfgBgQJoWQsfF7uo27F55xtk6G9CSUq7P1sb
-         ylZN9PlHoIw2OkUOOpWnqE7cnINjsmmWJolZ9d/0b5EmiFB+Q9FOzg+AjdxpRdwzwzLP
-         B+2+u5pUF2qw9ND3yyf6EjfNuzscS+qs4x1MtiDzXODtnGWK0fVWnZwjeInSt14XOJO2
-         BCD2qVZOHLRA2f+uQgpkpcVAEVMhQs2XsZAd9k347kaANewb0WsBNoxbDzMDRqcqBqzn
-         CyuA==
-X-Gm-Message-State: AFqh2krGW6MTzEs2gyTEb+CCFHZ27jc/Q6k31CmR/lQf+rWOBabTY3mt
-        8HCfEJr7semQsVb/euLjWx/TEw==
-X-Google-Smtp-Source: AMrXdXtFgBikpJLVn4utF3/gBHjbc+u8wuQICCLs7JDK1CDObs7BOBMz0Cj7QucBtydaZaX3vPrBIw==
-X-Received: by 2002:a05:6402:44:b0:497:233d:3ef6 with SMTP id f4-20020a056402004400b00497233d3ef6mr14333536edu.17.1674212754589;
-        Fri, 20 Jan 2023 03:05:54 -0800 (PST)
+        bh=zuyDK3DN9YOP3n8tKmVQ9Bh9B+9zVIuZ/eHK2X/y2Eo=;
+        b=w2VyvxmLACPWsU9IA6qcaJ1WK117rcO1hmeBi/a7cxYFMXE2pKP6GB+QfgD4AIgDo7
+         8nyPlYqyljhYqJpcgk8cnsAW+M97A6F0vCbXGUufVRlcDbKlZpEKRhHkkb+adThCHil9
+         L+UqzOUfXsuZabyDDO+ySh1Nlz9eQAlBJ0W40dmUn9h3PEaAImDK2otdKvlA/yHAFUlu
+         +xvkah39KjIp2a0Kdx6EIxTlwjS2wHzUfS/fp3BG1po/PA7sxRzdFSB0A8cc96GN7BBZ
+         GpxB2nHVCuD/Altzi4fe5Gg8QNVCRpxkEUGHKPiU56oHfavbsaM3a0+DZRtnZa4y+cVH
+         0zFQ==
+X-Gm-Message-State: AFqh2koDwYTllhH1aavCeerynE/LZLGFqq4/n3AfPlMIsrULoy+4ZWEO
+        skZSL6VN0HUHoKyTrUdCmw4K3w==
+X-Google-Smtp-Source: AMrXdXsrR9Yvmtb1n4a4gvUEO+jeO7t1FArnoXMjlXNOMnd1W1TzBOLRHJzIc1ktGEi4qG9cwQ6P3g==
+X-Received: by 2002:a17:907:d606:b0:86f:b541:cd02 with SMTP id wd6-20020a170907d60600b0086fb541cd02mr16967698ejc.28.1674212892493;
+        Fri, 20 Jan 2023 03:08:12 -0800 (PST)
 Received: from localhost ([217.111.27.204])
-        by smtp.gmail.com with ESMTPSA id q5-20020aa7d445000000b00482b3d0e1absm17084364edr.87.2023.01.20.03.05.53
+        by smtp.gmail.com with ESMTPSA id p4-20020a170906614400b008512e1379dbsm14467999ejl.171.2023.01.20.03.08.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Jan 2023 03:05:54 -0800 (PST)
-Date:   Fri, 20 Jan 2023 12:05:52 +0100
+        Fri, 20 Jan 2023 03:08:11 -0800 (PST)
+Date:   Fri, 20 Jan 2023 12:08:10 +0100
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -61,15 +61,15 @@ Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>
 Subject: Re: [PATCH net-next 6/7] sfc: add support for
  port_function_hw_addr_get devlink in ef100
-Message-ID: <Y8p1kNvS4ofl1g2h@nanopsycho>
+Message-ID: <Y8p2GjwVz1FAJ2eH@nanopsycho>
 References: <20230119113140.20208-1-alejandro.lucero-palau@amd.com>
  <20230119113140.20208-7-alejandro.lucero-palau@amd.com>
- <Y8k2wkaNX+BPqmq6@nanopsycho>
- <5db90827-a93b-d876-a312-420278c8caa5@amd.com>
+ <Y8k5glNLX1eE2iKE@nanopsycho>
+ <433222dd-cea8-fa93-d0f8-1f4f4272ae91@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5db90827-a93b-d876-a312-420278c8caa5@amd.com>
+In-Reply-To: <433222dd-cea8-fa93-d0f8-1f4f4272ae91@amd.com>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
@@ -79,9 +79,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jan 19, 2023 at 03:59:40PM CET, alejandro.lucero-palau@amd.com wrote:
+Thu, Jan 19, 2023 at 04:09:27PM CET, alejandro.lucero-palau@amd.com wrote:
 >
->On 1/19/23 12:25, Jiri Pirko wrote:
+>On 1/19/23 12:37, Jiri Pirko wrote:
 >> Thu, Jan 19, 2023 at 12:31:39PM CET, alejandro.lucero-palau@amd.com wrote:
 >>> From: Alejandro Lucero <alejandro.lucero-palau@amd.com>
 >>>
@@ -195,42 +195,53 @@ Thu, Jan 19, 2023 at 03:59:40PM CET, alejandro.lucero-palau@amd.com wrote:
 >>> +	int rc = 0;
 >>> +
 >>> +	mport_desc = efx_mae_get_mport(devlink->efx, port->index);
->> Dont use port->index, never. It's devlink internal. You have port
->> pointer passed here. Usually, what drivers do is to embed
->> the struct devlink_port in the driver port struct. Then you do just
->> simple container of to get it here. Mlxsw example:
->
->I do not understand this. Port index is set by the driver not by the 
->devlink interface implementation.
->
->Why can I not use it?
-
-Well you can, but things could be done much nicer, when you use
-devlink_port pointer. Also, better not to access devlink_port struct
-internals, driver should never need it.
-
-
->
->> static void *__dl_port(struct devlink_port *devlink_port)
->> {
->>          return container_of(devlink_port, struct mlxsw_core_port, devlink_port);
->> }
+>> I may be missing something, where do you fail with -EOPNOTSUPP
+>> in case this is called for PHYSICAL port ?
 >>
->> static int mlxsw_devlink_port_split(struct devlink *devlink,
->>                                      struct devlink_port *port,
->>                                      unsigned int count,
->>                                      struct netlink_ext_ack *extack)
->> {
->>          struct mlxsw_core_port *mlxsw_core_port = __dl_port(port);
->> ...
->>
->>
+>
+>We do not create a devlink port for the physical port.
+
+Well, you do:
+
++       switch (mport->mport_type) {
++       case MAE_MPORT_DESC_MPORT_TYPE_NET_PORT:
++               attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
+
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
++               attrs.phys.port_number = mport->port_idx;
++               devlink_port_attrs_set(dl_port, &attrs);
++               break;
++       case MAE_MPORT_DESC_MPORT_TYPE_VNIC:
++               if (mport->vf_idx != MAE_MPORT_DESC_VF_IDX_NULL) {
++                       devlink_port_attrs_pci_vf_set(dl_port, 0, mport->pf_idx,
++                                                     mport->vf_idx,
++                                                     external);
++               } else {
++                       devlink_port_attrs_pci_pf_set(dl_port, 0, mport->pf_idx,
++                                                     external);
++               }
++               break;
+
+
+
+
+>
+>I'm aware this is not "fully compliant" with devlink design idea, just 
+>trying to use it for our current urgent necessities by now.
+>
+>Do you think this could be a problem?
+
+If you create port flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL and it is not
+uplink, it is a problem :)
+
+
+
+>
+>
 >>
 >>> +	if (!mport_desc)
->> Tell the user what's wrong, extack is here for that.
->>
->I'll do.
->>
 >>> +		return -EINVAL;
 >>> +
 >>> +	if (!ef100_mport_on_local_intf(devlink->efx, mport_desc))
@@ -252,21 +263,10 @@ internals, driver should never need it.
 >>> +		netif_err(devlink->efx, drv, devlink->efx->net_dev,
 >>> +			  "Failed to get client ID for port index %u, rc %d\n",
 >>> +			  port->index, rc);
->> Don't write to dmesg, use extack msg instead.
->
->
->I'll do.
->
->Thanks
->
->>
 >>> +		return rc;
 >>> +	}
 >>> +
 >>> +	rc = ef100_get_mac_address(devlink->efx, hw_addr, client_id, true);
->> Again, extack would be nice here if (rc)
->>
->Again, I'll do.
 >>> +out:
 >>> +	*hw_addr_len = ETH_ALEN;
 >>> +
