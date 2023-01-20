@@ -2,104 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1834675F94
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 22:21:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AAA8675FEC
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 23:10:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229701AbjATVVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 16:21:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40702 "EHLO
+        id S229942AbjATWKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 17:10:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbjATVVb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 16:21:31 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86F32EC55
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 13:21:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674249690; x=1705785690;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+LPXapS4CaPeAk20B5zbKNGlz1ZD0Z9f9AOdtAx4To8=;
-  b=ZK331rZfmtip+Ug2SSkcGTUZcPXOcN+MX+Tt9nJEuJWI+zNofVF/R99M
-   EzWi8hbXq8ZLa/pYq0VqDUbs0j/H1OTIFGxIbwbqTopEmuGsmpnEkSNU8
-   WzTsqjLc+Vmsod3vODfG1OvF1G2+xpwh2WFU5SwLNOal43ojgWs9GcgqK
-   M/f/D7lySTpRci1WbcAuznloDCr5GUXUw6xGKQlQrMHXiZpu0JFLtgHjx
-   lfjnDb4PPJZ7AsRR5ur2R36xMPhjcepdAnJqdzKkUE7zcSXf9ZXJA238t
-   CbZkLMEuFIowsGY8BTiJTNXAAWvdzNri7ttfGdyyLU75vG+CGQPFKFOmS
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="305368006"
-X-IronPort-AV: E=Sophos;i="5.97,233,1669104000"; 
-   d="scan'208";a="305368006"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2023 13:21:29 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="989533300"
-X-IronPort-AV: E=Sophos;i="5.97,233,1669104000"; 
-   d="scan'208";a="989533300"
-Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 20 Jan 2023 13:21:27 -0800
-Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pIypC-0002yc-1G;
-        Fri, 20 Jan 2023 21:21:26 +0000
-Date:   Sat, 21 Jan 2023 05:21:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     alejandro.lucero-palau@amd.com, netdev@vger.kernel.org,
-        linux-net-drivers@amd.com
-Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, habetsm@gmail.com, ecree.xilinx@gmail.com,
-        Alejandro Lucero <alejandro.lucero-palau@amd.com>
-Subject: Re: [PATCH net-next 4/7] sfc: add devlink port support for ef100
-Message-ID: <202301210559.Gj6wK4CN-lkp@intel.com>
-References: <20230119113140.20208-5-alejandro.lucero-palau@amd.com>
+        with ESMTP id S229937AbjATWKA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 17:10:00 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20FE5D0D81;
+        Fri, 20 Jan 2023 14:09:42 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id e16so6980107ljn.3;
+        Fri, 20 Jan 2023 14:09:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=r7JMo/8jUy1YwCi30xnqBLGfAJQOml4Ba08RGnQLTpM=;
+        b=e7Ogm9vHshuNm0fmYMOOMTQBjRIfYf9q3y75nC7pXX7JxBiHeQvNy0yUopH4PTKgTi
+         50x8UUqqL1VWG9FvuLxk6sFpG8ZFqbicSXVw3esTESwyyOeHMB5LVYrdfOoVXc+ojukx
+         hqMgQebY4dpx2rIBVv51iL4Ju8wPN7nQTs3StE90386JTPOVsFrTWS1XCRe5ZaQJj/Ad
+         lCO1IXlbx4BKasOOlvYmIxmssHrPtHgh99AEsesKcgPF5RVCE65rG6Z3VglyILtfRQqt
+         /1eqjUpQsUNAAHhztiznsJLgP14Mke7zUndI9VvhLYH3YYYx5EM1k8QCMladyU+dVVPq
+         8C1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=r7JMo/8jUy1YwCi30xnqBLGfAJQOml4Ba08RGnQLTpM=;
+        b=HlduWYqOa5yfoka6O4SYgJrn6J8dUEOj6JFm+A22b+AGXb5o1aqvZIxqWGvXgdogVF
+         Szx8zg5nZwfinAfCm5mlCjz+MHNj0E/oXR5MwZPklLOMqxHkWKq+rbsvHRAXEdWcCp42
+         6u86H8Cfc4Ns7EKpp4Y29cGXS4BNxWyKjKeKIxPMgisGAD1sTe2Tlos6NTTX76jE5DM8
+         GrE/Q9DcSNdRexG83kZUIJXwTTGdibYTSngXuHEmAHWW5jabgxFQV2Y+scLJsDORzje1
+         B85JhgWfo0w7gJQ/yeNHxi3jxP7tnW0Y9QwkIVjKi5OTEY9l/6n7qJLs86HT2JwpYacX
+         /aHg==
+X-Gm-Message-State: AFqh2kq63EF3Je0+8Jq0E0RtNIENrY2LjX4mEkDDVoeR7v7sOhIkElta
+        xJDKi4n9f2OJYJ6Uoo18E+hZWJu6pUjCPAdEjwPPP/dai6Q=
+X-Google-Smtp-Source: AMrXdXsT+fIOKoxg6t5uKBfK4/Jl0IjZ54vG6SSY0YhbeY6uks905xPeZy4szEEgG7OW68et2YzM91+A9/dDv/ehjK8=
+X-Received: by 2002:a2e:b94f:0:b0:28b:88b3:2ead with SMTP id
+ 15-20020a2eb94f000000b0028b88b32eadmr1397218ljs.293.1674252580252; Fri, 20
+ Jan 2023 14:09:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230119113140.20208-5-alejandro.lucero-palau@amd.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20230119013405.3870506-1-iam@sung-woo.kim> <CANn89iK6DZodENC8pR-toW_n5-VFyQR8X1XOuG9Lx1-kr1tmqQ@mail.gmail.com>
+In-Reply-To: <CANn89iK6DZodENC8pR-toW_n5-VFyQR8X1XOuG9Lx1-kr1tmqQ@mail.gmail.com>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Fri, 20 Jan 2023 14:09:28 -0800
+Message-ID: <CABBYNZLifwiJdeKmH4Abpe_uU_1BaCCPhuaUH=DtGLqGNFHHpQ@mail.gmail.com>
+Subject: Re: [PATCH] L2CAP: Fix null-ptr-deref in l2cap_sock_set_shutdown_cb
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Sungwoo Kim <iam@sung-woo.kim>, daveti@purdue.edu, wuruoyu@me.com,
+        benquike@gmail.com, Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "open list:BLUETOOTH SUBSYSTEM" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLY,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi Kim, Eric,
 
-Thank you for the patch! Yet something to improve:
+On Wed, Jan 18, 2023 at 8:16 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Thu, Jan 19, 2023 at 2:35 AM Sungwoo Kim <iam@sung-woo.kim> wrote:
+> >
+> > The L2CAP socket shutdown invokes l2cap_sock_destruct without a lock
+> > on conn->chan_lock, assigning NULL to chan->data *just before*
+> > the l2cap_disconnect_req thread that accesses to chan->data.
+>
+> This is racy then ?
+>
+> > This patch prevent it by adding a null check for a workaround, instead
+> > of fixing a lock.
+>
+> This would at least require some barriers I think.
+>
+> What about other _cb helpers also reading/using chan->data ?
 
-[auto build test ERROR on net-next/master]
+Perhaps it would be a good idea to include the stack backtrace so we
+can better understand it, at some point we might need to refactor or
+locks to avoid circular dependencies.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230119-193440
-patch link:    https://lore.kernel.org/r/20230119113140.20208-5-alejandro.lucero-palau%40amd.com
-patch subject: [PATCH net-next 4/7] sfc: add devlink port support for ef100
-config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20230121/202301210559.Gj6wK4CN-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/5b06b1ae6605af55ed8127878054f8d69046b83c
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230119-193440
-        git checkout 5b06b1ae6605af55ed8127878054f8d69046b83c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+> >
+> > This bug is found by FuzzBT, a modified Syzkaller by Sungwoo Kim(me).
+> > Ruoyu Wu(wuruoyu@me.com) and Hui Peng(benquike@gmail.com) has helped
+> > the FuzzBT project.
+> >
+> > Signed-off-by: Sungwoo Kim <iam@sung-woo.kim>
+>
+> I would also add
+>
+> Fixes: 1bff51ea59a9 ("Bluetooth: fix use-after-free error in
+> lock_sock_nested()")
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
++1
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+> > ---
+> >  net/bluetooth/l2cap_sock.c | 8 +++++---
+> >  1 file changed, 5 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
+> > index ca8f07f35..350c7afdf 100644
+> > --- a/net/bluetooth/l2cap_sock.c
+> > +++ b/net/bluetooth/l2cap_sock.c
+> > @@ -1681,9 +1681,11 @@ static void l2cap_sock_set_shutdown_cb(struct l2cap_chan *chan)
+> >  {
+> >         struct sock *sk = chan->data;
+> >
+>
+> Other similar fixes simply do:
+>
+>      if (!sk)
+>           return;
+>
+> I would chose to use the same coding style in net/bluetooth/l2cap_sock.c
 
-ERROR: modpost: "efx_ef100_fini_reps" [drivers/net/ethernet/sfc/sfc.ko] undefined!
-ERROR: modpost: "efx_fini_mae" [drivers/net/ethernet/sfc/sfc.ko] undefined!
->> ERROR: modpost: "efx_mae_lookup_mport" [drivers/net/ethernet/sfc/sfc.ko] undefined!
->> ERROR: modpost: "efx_mae_get_mport" [drivers/net/ethernet/sfc/sfc.ko] undefined!
->> ERROR: modpost: "ef100_mport_on_local_intf" [drivers/net/ethernet/sfc/sfc.ko] undefined!
+Yep, at least l2cap_sock_close_cb and l2cap_sock_shutdown do that already.
+
+>
+> > -       lock_sock(sk);
+> > -       sk->sk_shutdown = SHUTDOWN_MASK;
+> > -       release_sock(sk);
+> > +       if (!sk) {
+> > +               lock_sock(sk);
+> > +               sk->sk_shutdown = SHUTDOWN_MASK;
+> > +               release_sock(sk);
+> > +       }
+> >  }
+> >
+> >  static long l2cap_sock_get_sndtimeo_cb(struct l2cap_chan *chan)
+> > --
+> > 2.25.1
+> >
+
+
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+Luiz Augusto von Dentz
