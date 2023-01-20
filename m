@@ -2,133 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 527A36754F9
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 13:49:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0F2F675513
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 13:56:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230344AbjATMtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 07:49:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46730 "EHLO
+        id S230420AbjATM4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 07:56:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230356AbjATMtH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 07:49:07 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2049.outbound.protection.outlook.com [40.107.223.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C897A50A
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 04:48:55 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JUbOF/0scHY5GN0c9OWIXkJJlNWlCPor5OMU4Dc5A/z5D+wNxwWndGJCfiY7fY1I2rEV8BprgrXaHpe/v3kEHZ/JSTpWknH6QCy/mXkF1ZkYmKp60dYrwfwk9WpI46LqMHB6nGk/pnGYwT1wD7TStdhyO8E3ztdMyXJcYqd4odkGpLUu7YK8pvqALIhbARLbhIozok5GDi2QRyfjG11jo683VMNgTPa+pHd0IXBS9TDLYlff6Ld3/BQ9KnZhYE4prFQUL3e6lFDBiBqZdNIgfmntCQeKKSmBbYCrVZbHhnpFDLhUya0FfeJ/rLUIz20rCwBfAi8uBr82P2sFhGGkXw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=irQNdHauwY98NjZRo9lqJIqhVpzPvKG9RfZDmRcW7cw=;
- b=KZ9wLAtgV/oyQIYcBVVYnh9drvDbcSSA20zcfDbKpCoB4REdTd8ISbP5Ugkpvhl3sby7oKTNJzhphUbOKEpo2Twbw64qittMmsf72B76KvQgXtFBKn0cwFXgPQlY0/f9EKb3s7I79nqczcWhcA300HKgxk18verwuZ5aJ0vScalcIWLeFDhhrBWt4+KGYZSwyhr8+M3oEp6Wkpm25IV9yoMqZ/KFe0uGfxRMRCO90PvJP9NMfS4JG3q48nYpCJDfzecx7D27qa3nSXOGr7ZLAk/2XxwnDoNNRBAROrlhFFJhH/O/6scmuQXZdGdHRzZS82deG77UoxCLJ+4668XVDg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=irQNdHauwY98NjZRo9lqJIqhVpzPvKG9RfZDmRcW7cw=;
- b=wNsXAaxsG3fag7brHBEAd4VZGdVrT3yRQ6EOyioAg+mGj11syiW37qbxsFUEs4z1SOR8S8V9d9SJRnqlLiiuHAxGbGSFRHRnxYVsy4SWqxkXgZYjmswuWcsQ3xgPBe7qb1SwtGOEpSia/GzGy2D+n2EQzSkd7luHreSPlDQaUvY=
-Received: from DM6PR12MB4202.namprd12.prod.outlook.com (2603:10b6:5:219::22)
- by SJ0PR12MB5469.namprd12.prod.outlook.com (2603:10b6:a03:37f::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.27; Fri, 20 Jan
- 2023 12:48:53 +0000
-Received: from DM6PR12MB4202.namprd12.prod.outlook.com
- ([fe80::33a7:54d4:2de0:3939]) by DM6PR12MB4202.namprd12.prod.outlook.com
- ([fe80::33a7:54d4:2de0:3939%7]) with mapi id 15.20.6002.026; Fri, 20 Jan 2023
- 12:48:53 +0000
-From:   "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>
-To:     Jiri Pirko <jiri@resnulli.us>,
-        "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-net-drivers (AMD-Xilinx)" <linux-net-drivers@amd.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "habetsm@gmail.com" <habetsm@gmail.com>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>
-Subject: Re: [PATCH net-next 6/7] sfc: add support for
- port_function_hw_addr_get devlink in ef100
-Thread-Topic: [PATCH net-next 6/7] sfc: add support for
- port_function_hw_addr_get devlink in ef100
-Thread-Index: AQHZK/nEMuz6Wh6wlUm2jwuAZPXg2K6lrZkAgAAqcoCAAU73AIAAG/uA
-Date:   Fri, 20 Jan 2023 12:48:53 +0000
-Message-ID: <ff613fdb-a812-ec30-c00e-82b510fa1df0@amd.com>
-References: <20230119113140.20208-1-alejandro.lucero-palau@amd.com>
- <20230119113140.20208-7-alejandro.lucero-palau@amd.com>
- <Y8k5glNLX1eE2iKE@nanopsycho> <433222dd-cea8-fa93-d0f8-1f4f4272ae91@amd.com>
- <Y8p2GjwVz1FAJ2eH@nanopsycho>
-Accept-Language: en-US
-Content-Language: en-GB
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Microsoft-MacOutlook/16.53.21091200
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DM6PR12MB4202:EE_|SJ0PR12MB5469:EE_
-x-ms-office365-filtering-correlation-id: c840cc55-f89b-41fe-5092-08dafae4af8c
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: UqTqcOVEZ8GB1yY+xHaLPcjPfE7M48bjSLUox/qT/DbI/teZuuocsMSl3VVShYZ6xvMpRtTMPss30pF92H6H8Fbf9yeWXKz28LXh3KretTZpQqFsNSt01wFf5sm4Unh4Eu+xeCTk0njVQj+bALa6lMvjtD4bparWq6fU0b3MSUOxAvwDjQFDvxG+7YKNpthvDyTlB3JznvgEo1ABL68aofLnlqlWr2gGc9DVWCORVJfh+siuTxb1W333Ifqn0ZoloGbLzGWhTRSLcPf++FB4OOfbV/WHrjj0/Bi+gKtGB919GG8z8BxpzdkZcQ3QQDUEkbBeRFPQ+jWE6zZgPgax1TxpARpR8gtzTxvd2IDAwhB676XTZ8msXvQXMuYVHwVWDlyLaZ2I2vPIZHMOayNrL3GylWmPxtKFazlaZA3rcEphYSI+k5tj7kKwBJp1LkboHymBv3DgAfrq/AB/tFPOeBdeHj/a+pQTUFFlwv0RzakLm0j9swdLXnBcBnh5xHo3VV01JJbfbJs6xYt6Q6s/8f8quXjY7svQxhJOD0cXCGFRKHR8oU+VKvey18yDylWm6yhLaHWoj+jdG938ZcBPwpGhazw2l/IUnOyMIXwZaDCh0CjBpBgKS8ng2uvoIBPRyAVgkDLfA0bzozfF0WOuCmtDsMHl2i0KnsbPlHwG9IrDwnVT5Tpa/LvV0gsLsCFFphe1KrbpnOizmjhRpnHnYcnruIQGk6tY5PJe/ZyldvY=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4202.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(376002)(396003)(136003)(346002)(39860400002)(451199015)(5660300002)(4326008)(8676002)(64756008)(66556008)(66446008)(316002)(66476007)(53546011)(36756003)(2616005)(6506007)(71200400001)(122000001)(38070700005)(41300700001)(8936002)(110136005)(54906003)(83380400001)(478600001)(86362001)(2906002)(38100700002)(26005)(31686004)(6512007)(186003)(31696002)(66946007)(6486002)(91956017)(76116006)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?amFyK2xnZnAzVkJmS016RnF5WjdDSzZGSlRjeklPNnJkMGprbWdqM3hOblNp?=
- =?utf-8?B?MzNpM3FEVzA5OFd2YW9yYXNIMmt0dTJiRy9jSHdRNTBUbDV5QmtGNHo4eDFJ?=
- =?utf-8?B?NzRwMjRyTUl4dE1DRGRQaGU0RlN2TlFLeXpSYVE4WWtYZm05cUpIdGtFbU54?=
- =?utf-8?B?WXhWZURtc2oyZjEycll0dTM5bytJNkloSFlSTWJnZ0tZUHVZVWlENWF1VVFv?=
- =?utf-8?B?aWd0TGk4WW9sOUFWRlZLNmNXcGNBbHU5R1JWRnhOTjFQTlZja1haVnp4MWtn?=
- =?utf-8?B?eXR0UU40UkIwc2hSTnpiRFZpQXRhdEhFL3ZaL1lZdytOeDN0OEhucDVWbzh6?=
- =?utf-8?B?bXRlUHpiRkZSRit4TUF2UmQ3em9Ubkd3RUNkVzJiVmpFNFlqK09PUWQ1Z2pO?=
- =?utf-8?B?YzJBbUNzUkgvdVA0SjFMemExOUlSZTlUNFNzYXdKVTd0NVBIQVlVUUxyRXNN?=
- =?utf-8?B?TTBmRWJycWhMZTJpcFhPWm1wRXVpUWtoRExRbHZ3YXBNdk9QQ1oveXVvS0xO?=
- =?utf-8?B?SzhnMk5nZ2dSR1Bjd2RYZzdCY0R4WGxIU3BQeEpJcWJsWkhVWVFOZmtKMWlj?=
- =?utf-8?B?aThGTVk5a04zOWpQY1d1dlhvRnp0RmkweU5jc0V1UWdmdFlNdHpvd3krdFQ5?=
- =?utf-8?B?cGxLNG8vTkl5TWJmTCs0b3k5M1RScTZ4Lzd6c1k2dzRNdTRsY1JqUXpNM3Ew?=
- =?utf-8?B?NUZuNzVNSGtQRWtpemJXWExhRTB3SGREMG0wMmp6YnpFNWFKVU1sUzdaYmZY?=
- =?utf-8?B?TGxneUg1T1BlcmlzYllRelYvdlFodFhkUk83dkY4VnhERG4vV2puSXp3WnBq?=
- =?utf-8?B?K1dWWWdnWFgySG9iVFdDdlpnR1RRd0xKVEpSUktpT3gwZzV5U2lKeW1xZGhD?=
- =?utf-8?B?QXIxcHpiOHoyTmdndTJlZ0YxejViakdOZTRKU3MraVV5VXdFTWRhUDFYTGJw?=
- =?utf-8?B?RnJOQ21xc3p1ZUtycHdRbXR6djRlQjUwU0h3SnpsclNTcTJ3RGlocXZ3WVR4?=
- =?utf-8?B?VTBDQk0xRC9EUXNMaU5zTlRDd2Q0RVluU2liTGd0VmpkMjVNM3AvV3VxZVdO?=
- =?utf-8?B?UFpYNmNseE0zc0R3dDZNY3BSQm5SVkliaXdLVDBYQU1kbkZLbGRMa2hnRFIx?=
- =?utf-8?B?em9xM29YQ0YvY0tmRmpYM2tucGt4Z1FtTkFWdmJCQm4xQWI2WGZGdW5ycXZV?=
- =?utf-8?B?VUZ3SXFJemphOFBYSUFCQVQ0TGM5ZG8vN09ubCtVQUF2YThKSEpkNVVvQmUw?=
- =?utf-8?B?Y0tlc0lvYlFMWUxMY3RJWlQ5NEFRRTIzOE53bnlZNkh0TFZsTnNFM0J1dE1p?=
- =?utf-8?B?emdQTmozdmZuckpEbHZmOWFxa2ZUT3NiRFRpZXdoMW5xOTUvSm5TL1hGWVVm?=
- =?utf-8?B?NE1XSWZwNWhFYVNWbXIzeG8yYkQyQUpUaG9weVpOTmFMTWhMdmJQclNIeEVh?=
- =?utf-8?B?ZjNWa0VXWkxHY3RYQTZkVnY4bW5kS1lwUlhnODBNTnNXdlBCM2w2UWIxNmNv?=
- =?utf-8?B?MnkzZi9mdjNuV3h2Y2k2eit4Skc3TnQrdnlJRG9JZkIrc0VyYTA0aEtNUVF2?=
- =?utf-8?B?YUhQb1QxZlBkcDcrK1BYVnh2Sk9iV1hCZTVCZnJJTzhXam1VVDk2YzJsMk5G?=
- =?utf-8?B?RFEwZG9VdkttcWZQUlF6QXFnVE4yUFVXVHd0NGowTVFPOGZ3TEk2M1BZeUNK?=
- =?utf-8?B?eHN1S1ZvK3RyZ00raGFrSGJFNGFaTElveWRHNzF3RTF1WDVKbHFFWkc0TDFG?=
- =?utf-8?B?Q2owQjR1SVBJZlRIRnZ0czlnd2t2cXVadDliUUJudUdQb0Irc0xXa2dzSmRO?=
- =?utf-8?B?QlUzRVFBT1FQaktUa1FmV25aZnRSTHpMWmdOdWRyaDFjZ3grcEpTWkppbzdu?=
- =?utf-8?B?VC9NTk5tMmlhZ05tVkdGVXVaRnRJQU9mRisrWkR1OW5QYVNiTGlZcjRvTWJY?=
- =?utf-8?B?OXNGQ1lSYnlPSnFoYmNvckpydnU3THhIYkJhazI0S3JZcGV2NTM3dmJMNDJP?=
- =?utf-8?B?U3NoWGVOVitsSVJOTDlMTVdCTy9NNnRMWElHZXZycjlnang0aFZYbEMvWERG?=
- =?utf-8?B?REpxSmNmWDhzckNvbFZhWTh6alFuQzF3RVdnUlZnVU90ZjN1U0dzbWtSV2Ey?=
- =?utf-8?Q?uhgTAy5x0ZsyZTEsPbbWM/MMa?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F04424C8DEEDA94E9BA0A5B3163CED79@namprd12.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        with ESMTP id S229450AbjATM4k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 07:56:40 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 473505FFF
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 04:56:38 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id g11so1160528eda.12
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 04:56:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=YA0Lc/7gd6GGdSfySVcU6D0QEZc1V1Kdc4VBtpNZfBc=;
+        b=a7UxM5tyUCGQSknnpU1I+L9xi4PrVNann5F0QWQziRZHPzz3ltSdgNV5tg8kxElga6
+         zMrhKfnN9oXjo84jTY8Kxr7KPtmb4TejhIaupZBIki/2fUhKqdvkNoMe/6hkdrW6/uA1
+         ejpvhotEcwL20BOSOL6Osrb/MrgWUuT3AF4c+kl2HNS8SqzaDinqAwoBb1ZjJReDIFJ6
+         JOLlHBx+MyS0oNrWMaSnaRU/i4R5wTs77qeTzwodugV8HjxacGDQw6UdcIH3mmmViIVd
+         I+DUTcCg6q61Xvk2WuQxB4k/WxqN2im517eBnBLYGm/2TcquEAVCk8bFO+3a2vbShCFw
+         kecg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YA0Lc/7gd6GGdSfySVcU6D0QEZc1V1Kdc4VBtpNZfBc=;
+        b=UNRf3ezFbmiTo9kw7yUuZ80a4k9nUkMxo5acGOmiULXLD5W+Vo5qf078TlzYdMwzeb
+         INnNHDF5qf84rR/BkRl7rI8HPVIKOrEOPpgfkJhs77Jcmcb84oEAks9f3O3i4N05JoI8
+         StICtrE3vxoDORHWn6wweOHpIA6iNdZmeGHn/9ayzvXizXB6CmQN8qOjjgb5tVZbyMfy
+         NDmNAzBs8X94/zzQxk+h1nULz9B47GWpJvqUmavlkgKam4nL9wJ4NNV2DYNt+bZ8qxJ/
+         8e/+0QUdBW+DVxahoQQN+2UXkYi5IbXokh2XmcQk/3exR0y/oeM+s9uJZ+G7bGrHQ+JS
+         U3Kw==
+X-Gm-Message-State: AFqh2koZ8XitmH8EKbaQoxkZHcBYPzvWsgNxidbfPJuNs4v0RJQIczCt
+        jD1G7gw1zsYipITrWmWqSBQMlQ==
+X-Google-Smtp-Source: AMrXdXuaj4zDXYxtP+fZPrrgfOW1exYB7z7ZTASR8cFVBTBvtbduPl3R+x8dgVlWXIAS2+C+uv77ww==
+X-Received: by 2002:a05:6402:5d3:b0:49b:58ca:ebbc with SMTP id n19-20020a05640205d300b0049b58caebbcmr17881279edx.32.1674219396721;
+        Fri, 20 Jan 2023 04:56:36 -0800 (PST)
+Received: from localhost ([217.111.27.204])
+        by smtp.gmail.com with ESMTPSA id x14-20020a056402414e00b0045b4b67156fsm17277051eda.45.2023.01.20.04.56.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Jan 2023 04:56:35 -0800 (PST)
+Date:   Fri, 20 Jan 2023 13:56:34 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vadim Fedorenko <vadfed@meta.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
+        Milena Olech <milena.olech@intel.com>,
+        Michal Michalik <michal.michalik@intel.com>
+Subject: Re: [RFC PATCH v5 1/4] dpll: Add DPLL framework base functions
+Message-ID: <Y8qPgj9BFsbFKhwx@nanopsycho>
+References: <20230117180051.2983639-1-vadfed@meta.com>
+ <20230117180051.2983639-2-vadfed@meta.com>
+ <Y8l63RF8DQz3i0LY@nanopsycho>
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4202.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c840cc55-f89b-41fe-5092-08dafae4af8c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jan 2023 12:48:53.0417
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: I1uufbYtukWPM+CF9Xfs97IYtvwQawhXTAYZrFSRv2J+ZTNvMjvdcM+9yJICdQtVKb8WxGjbNsJvrnXkgnZZfw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5469
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y8l63RF8DQz3i0LY@nanopsycho>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -136,152 +76,166 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiAxLzIwLzIzIDExOjA4LCBKaXJpIFBpcmtvIHdyb3RlOg0KPiBUaHUsIEphbiAxOSwgMjAy
-MyBhdCAwNDowOToyN1BNIENFVCwgYWxlamFuZHJvLmx1Y2Vyby1wYWxhdUBhbWQuY29tIHdyb3Rl
-Og0KPj4gT24gMS8xOS8yMyAxMjozNywgSmlyaSBQaXJrbyB3cm90ZToNCj4+PiBUaHUsIEphbiAx
-OSwgMjAyMyBhdCAxMjozMTozOVBNIENFVCwgYWxlamFuZHJvLmx1Y2Vyby1wYWxhdUBhbWQuY29t
-IHdyb3RlOg0KPj4+PiBGcm9tOiBBbGVqYW5kcm8gTHVjZXJvIDxhbGVqYW5kcm8ubHVjZXJvLXBh
-bGF1QGFtZC5jb20+DQo+Pj4+DQo+Pj4+IFVzaW5nIHRoZSBidWlsdGluIGNsaWVudCBoYW5kbGUg
-aWQgaW5mcmFzdHJ1Y3R1cmUsIHRoaXMgcGF0Y2ggYWRkcw0KPj4+PiBzdXBwb3J0IGZvciBvYnRh
-aW5pbmcgdGhlIG1hYyBhZGRyZXNzIGxpbmtlZCB0byBtcG9ydHMgaW4gZWYxMDAuIFRoaXMNCj4+
-Pj4gaW1wbGllcyB0byBleGVjdXRlIGFuIE1DREkgY29tbWFuZCBmb3IgZ2V0dGluZyB0aGUgZGF0
-YSBmcm9tIHRoZQ0KPj4+PiBmaXJtd2FyZSBmb3IgZWFjaCBkZXZsaW5rIHBvcnQuDQo+Pj4+DQo+
-Pj4+IFNpZ25lZC1vZmYtYnk6IEFsZWphbmRybyBMdWNlcm8gPGFsZWphbmRyby5sdWNlcm8tcGFs
-YXVAYW1kLmNvbT4NCj4+Pj4gLS0tDQo+Pj4+IGRyaXZlcnMvbmV0L2V0aGVybmV0L3NmYy9lZjEw
-MF9uaWMuYyAgIHwgMjcgKysrKysrKysrKysrKysrKw0KPj4+PiBkcml2ZXJzL25ldC9ldGhlcm5l
-dC9zZmMvZWYxMDBfbmljLmggICB8ICAxICsNCj4+Pj4gZHJpdmVycy9uZXQvZXRoZXJuZXQvc2Zj
-L2VmMTAwX3JlcC5jICAgfCAgOCArKysrKw0KPj4+PiBkcml2ZXJzL25ldC9ldGhlcm5ldC9zZmMv
-ZWYxMDBfcmVwLmggICB8ICAxICsNCj4+Pj4gZHJpdmVycy9uZXQvZXRoZXJuZXQvc2ZjL2VmeF9k
-ZXZsaW5rLmMgfCA0NCArKysrKysrKysrKysrKysrKysrKysrKysrKw0KPj4+PiA1IGZpbGVzIGNo
-YW5nZWQsIDgxIGluc2VydGlvbnMoKykNCj4+Pj4NCj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-bmV0L2V0aGVybmV0L3NmYy9lZjEwMF9uaWMuYyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L3NmYy9l
-ZjEwMF9uaWMuYw0KPj4+PiBpbmRleCBmNGU5MTM1OTNmMmIuLjQ0MDBjZTYyMjIyOCAxMDA2NDQN
-Cj4+Pj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvc2ZjL2VmMTAwX25pYy5jDQo+Pj4+ICsr
-KyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L3NmYy9lZjEwMF9uaWMuYw0KPj4+PiBAQCAtMTEyMSw2
-ICsxMTIxLDMzIEBAIHN0YXRpYyBpbnQgZWYxMDBfcHJvYmVfbWFpbihzdHJ1Y3QgZWZ4X25pYyAq
-ZWZ4KQ0KPj4+PiAJcmV0dXJuIHJjOw0KPj4+PiB9DQo+Pj4+DQo+Pj4+ICsvKiBNQ0RJIGNvbW1h
-bmRzIGFyZSByZWxhdGVkIHRvIHRoZSBzYW1lIGRldmljZSBpc3N1aW5nIHRoZW0uIFRoaXMgZnVu
-Y3Rpb24NCj4+Pj4gKyAqIGFsbG93cyB0byBkbyBhbiBNQ0RJIGNvbW1hbmQgb24gYmVoYWxmIG9m
-IGFub3RoZXIgZGV2aWNlLCBtYWlubHkgUEZzIHNldHRpbmcNCj4+Pj4gKyAqIHRoaW5ncyBmb3Ig
-VkZzLg0KPj4+PiArICovDQo+Pj4+ICtpbnQgZWZ4X2VmMTAwX2xvb2t1cF9jbGllbnRfaWQoc3Ry
-dWN0IGVmeF9uaWMgKmVmeCwgZWZ4X3F3b3JkX3QgcGNpZWZuLCB1MzIgKmlkKQ0KPj4+PiArew0K
-Pj4+PiArCU1DRElfREVDTEFSRV9CVUYob3V0YnVmLCBNQ19DTURfR0VUX0NMSUVOVF9IQU5ETEVf
-T1VUX0xFTik7DQo+Pj4+ICsJTUNESV9ERUNMQVJFX0JVRihpbmJ1ZiwgTUNfQ01EX0dFVF9DTElF
-TlRfSEFORExFX0lOX0xFTik7DQo+Pj4+ICsJdTY0IHBjaWVmbl9mbGF0ID0gbGU2NF90b19jcHUo
-cGNpZWZuLnU2NFswXSk7DQo+Pj4+ICsJc2l6ZV90IG91dGxlbjsNCj4+Pj4gKwlpbnQgcmM7DQo+
-Pj4+ICsNCj4+Pj4gKwlNQ0RJX1NFVF9EV09SRChpbmJ1ZiwgR0VUX0NMSUVOVF9IQU5ETEVfSU5f
-VFlQRSwNCj4+Pj4gKwkJICAgICAgIE1DX0NNRF9HRVRfQ0xJRU5UX0hBTkRMRV9JTl9UWVBFX0ZV
-TkMpOw0KPj4+PiArCU1DRElfU0VUX1FXT1JEKGluYnVmLCBHRVRfQ0xJRU5UX0hBTkRMRV9JTl9G
-VU5DLA0KPj4+PiArCQkgICAgICAgcGNpZWZuX2ZsYXQpOw0KPj4+PiArDQo+Pj4+ICsJcmMgPSBl
-ZnhfbWNkaV9ycGMoZWZ4LCBNQ19DTURfR0VUX0NMSUVOVF9IQU5ETEUsIGluYnVmLCBzaXplb2Yo
-aW5idWYpLA0KPj4+PiArCQkJICBvdXRidWYsIHNpemVvZihvdXRidWYpLCAmb3V0bGVuKTsNCj4+
-Pj4gKwlpZiAocmMpDQo+Pj4+ICsJCXJldHVybiByYzsNCj4+Pj4gKwlpZiAob3V0bGVuIDwgc2l6
-ZW9mKG91dGJ1ZikpDQo+Pj4+ICsJCXJldHVybiAtRUlPOw0KPj4+PiArCSppZCA9IE1DRElfRFdP
-UkQob3V0YnVmLCBHRVRfQ0xJRU5UX0hBTkRMRV9PVVRfSEFORExFKTsNCj4+Pj4gKwlyZXR1cm4g
-MDsNCj4+Pj4gK30NCj4+Pj4gKw0KPj4+PiBpbnQgZWYxMDBfcHJvYmVfbmV0ZGV2X3BmKHN0cnVj
-dCBlZnhfbmljICplZngpDQo+Pj4+IHsNCj4+Pj4gCXN0cnVjdCBlZjEwMF9uaWNfZGF0YSAqbmlj
-X2RhdGEgPSBlZngtPm5pY19kYXRhOw0KPj4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRo
-ZXJuZXQvc2ZjL2VmMTAwX25pYy5oIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvc2ZjL2VmMTAwX25p
-Yy5oDQo+Pj4+IGluZGV4IGU1OTA0NDA3MjMzMy4uZjFlZDQ4MWMxMjYwIDEwMDY0NA0KPj4+PiAt
-LS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9zZmMvZWYxMDBfbmljLmgNCj4+Pj4gKysrIGIvZHJp
-dmVycy9uZXQvZXRoZXJuZXQvc2ZjL2VmMTAwX25pYy5oDQo+Pj4+IEBAIC05NCw0ICs5NCw1IEBA
-IGludCBlZjEwMF9maWx0ZXJfdGFibGVfcHJvYmUoc3RydWN0IGVmeF9uaWMgKmVmeCk7DQo+Pj4+
-DQo+Pj4+IGludCBlZjEwMF9nZXRfbWFjX2FkZHJlc3Moc3RydWN0IGVmeF9uaWMgKmVmeCwgdTgg
-Km1hY19hZGRyZXNzLA0KPj4+PiAJCQkgIGludCBjbGllbnRfaGFuZGxlLCBib29sIGVtcHR5X29r
-KTsNCj4+Pj4gK2ludCBlZnhfZWYxMDBfbG9va3VwX2NsaWVudF9pZChzdHJ1Y3QgZWZ4X25pYyAq
-ZWZ4LCBlZnhfcXdvcmRfdCBwY2llZm4sIHUzMiAqaWQpOw0KPj4+PiAjZW5kaWYJLyogRUZYX0VG
-MTAwX05JQ19IICovDQo+Pj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9zZmMv
-ZWYxMDBfcmVwLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9zZmMvZWYxMDBfcmVwLmMNCj4+Pj4g
-aW5kZXggZmYwYzhkYTYxOTE5Li45NzRjOWZmOTAxYTAgMTAwNjQ0DQo+Pj4+IC0tLSBhL2RyaXZl
-cnMvbmV0L2V0aGVybmV0L3NmYy9lZjEwMF9yZXAuYw0KPj4+PiArKysgYi9kcml2ZXJzL25ldC9l
-dGhlcm5ldC9zZmMvZWYxMDBfcmVwLmMNCj4+Pj4gQEAgLTM2Miw2ICszNjIsMTQgQEAgYm9vbCBl
-ZjEwMF9tcG9ydF9vbl9sb2NhbF9pbnRmKHN0cnVjdCBlZnhfbmljICplZngsDQo+Pj4+IAkJICAg
-ICBtcG9ydF9kZXNjLT5pbnRlcmZhY2VfaWR4ID09IG5pY19kYXRhLT5sb2NhbF9tYWVfaW50ZjsN
-Cj4+Pj4gfQ0KPj4+Pg0KPj4+PiArYm9vbCBlZjEwMF9tcG9ydF9pc192ZihzdHJ1Y3QgbWFlX21w
-b3J0X2Rlc2MgKm1wb3J0X2Rlc2MpDQo+Pj4+ICt7DQo+Pj4+ICsJYm9vbCBwY2llX2Z1bmM7DQo+
-Pj4+ICsNCj4+Pj4gKwlwY2llX2Z1bmMgPSBlZjEwMF9tcG9ydF9pc19wY2llX3ZuaWMobXBvcnRf
-ZGVzYyk7DQo+Pj4+ICsJcmV0dXJuIHBjaWVfZnVuYyAmJiAobXBvcnRfZGVzYy0+dmZfaWR4ICE9
-IE1BRV9NUE9SVF9ERVNDX1ZGX0lEWF9OVUxMKTsNCj4+Pj4gK30NCj4+Pj4gKw0KPj4+PiB2b2lk
-IGVmeF9lZjEwMF9pbml0X3JlcHMoc3RydWN0IGVmeF9uaWMgKmVmeCkNCj4+Pj4gew0KPj4+PiAJ
-c3RydWN0IGVmMTAwX25pY19kYXRhICpuaWNfZGF0YSA9IGVmeC0+bmljX2RhdGE7DQo+Pj4+IGRp
-ZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9zZmMvZWYxMDBfcmVwLmggYi9kcml2ZXJz
-L25ldC9ldGhlcm5ldC9zZmMvZWYxMDBfcmVwLmgNCj4+Pj4gaW5kZXggOWNjYTQxNjE0OTgyLi43
-NDg1M2NjYmM5MzcgMTAwNjQ0DQo+Pj4+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L3NmYy9l
-ZjEwMF9yZXAuaA0KPj4+PiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9zZmMvZWYxMDBfcmVw
-LmgNCj4+Pj4gQEAgLTc1LDQgKzc1LDUgQEAgdm9pZCBlZnhfZWYxMDBfZmluaV9yZXBzKHN0cnVj
-dCBlZnhfbmljICplZngpOw0KPj4+PiBzdHJ1Y3QgbWFlX21wb3J0X2Rlc2M7DQo+Pj4+IGJvb2wg
-ZWYxMDBfbXBvcnRfb25fbG9jYWxfaW50ZihzdHJ1Y3QgZWZ4X25pYyAqZWZ4LA0KPj4+PiAJCQkg
-ICAgICAgc3RydWN0IG1hZV9tcG9ydF9kZXNjICptcG9ydF9kZXNjKTsNCj4+Pj4gK2Jvb2wgZWYx
-MDBfbXBvcnRfaXNfdmYoc3RydWN0IG1hZV9tcG9ydF9kZXNjICptcG9ydF9kZXNjKTsNCj4+Pj4g
-I2VuZGlmIC8qIEVGMTAwX1JFUF9IICovDQo+Pj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9l
-dGhlcm5ldC9zZmMvZWZ4X2RldmxpbmsuYyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L3NmYy9lZnhf
-ZGV2bGluay5jDQo+Pj4+IGluZGV4IGJiMTlkM2FkN2ZmZC4uMmE1N2M0ZjZkMmIyIDEwMDY0NA0K
-Pj4+PiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9zZmMvZWZ4X2RldmxpbmsuYw0KPj4+PiAr
-KysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9zZmMvZWZ4X2RldmxpbmsuYw0KPj4+PiBAQCAtNDI5
-LDYgKzQyOSw0OSBAQCBzdGF0aWMgaW50IGVmeF9kZXZsaW5rX2FkZF9wb3J0KHN0cnVjdCBlZnhf
-bmljICplZngsDQo+Pj4+IAlyZXR1cm4gZXJyOw0KPj4+PiB9DQo+Pj4+DQo+Pj4+ICtzdGF0aWMg
-aW50IGVmeF9kZXZsaW5rX3BvcnRfYWRkcl9nZXQoc3RydWN0IGRldmxpbmtfcG9ydCAqcG9ydCwg
-dTggKmh3X2FkZHIsDQo+Pj4+ICsJCQkJICAgICBpbnQgKmh3X2FkZHJfbGVuLA0KPj4+PiArCQkJ
-CSAgICAgc3RydWN0IG5ldGxpbmtfZXh0X2FjayAqZXh0YWNrKQ0KPj4+PiArew0KPj4+PiArCXN0
-cnVjdCBlZnhfZGV2bGluayAqZGV2bGluayA9IGRldmxpbmtfcHJpdihwb3J0LT5kZXZsaW5rKTsN
-Cj4+Pj4gKwlzdHJ1Y3QgbWFlX21wb3J0X2Rlc2MgKm1wb3J0X2Rlc2M7DQo+Pj4+ICsJZWZ4X3F3
-b3JkX3QgcGNpZWZuOw0KPj4+PiArCXUzMiBjbGllbnRfaWQ7DQo+Pj4+ICsJaW50IHJjID0gMDsN
-Cj4+Pj4gKw0KPj4+PiArCW1wb3J0X2Rlc2MgPSBlZnhfbWFlX2dldF9tcG9ydChkZXZsaW5rLT5l
-ZngsIHBvcnQtPmluZGV4KTsNCj4+PiBJIG1heSBiZSBtaXNzaW5nIHNvbWV0aGluZywgd2hlcmUg
-ZG8geW91IGZhaWwgd2l0aCAtRU9QTk9UU1VQUA0KPj4+IGluIGNhc2UgdGhpcyBpcyBjYWxsZWQg
-Zm9yIFBIWVNJQ0FMIHBvcnQgPw0KPj4+DQo+PiBXZSBkbyBub3QgY3JlYXRlIGEgZGV2bGluayBw
-b3J0IGZvciB0aGUgcGh5c2ljYWwgcG9ydC4NCj4gV2VsbCwgeW91IGRvOg0KPg0KPiArICAgICAg
-IHN3aXRjaCAobXBvcnQtPm1wb3J0X3R5cGUpIHsNCj4gKyAgICAgICBjYXNlIE1BRV9NUE9SVF9E
-RVNDX01QT1JUX1RZUEVfTkVUX1BPUlQ6DQo+ICsgICAgICAgICAgICAgICBhdHRycy5mbGF2b3Vy
-ID0gREVWTElOS19QT1JUX0ZMQVZPVVJfUEhZU0lDQUw7DQo+DQo+ICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgIF5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eDQoNClJpZ2h0Lg0K
-DQpJIHdhcyByZWx5aW5nIG9uIGRldmxpbmstcG9ydCBvdXRwdXQgd2hpY2ggZG9lcyBub3Qgc2hv
-dyB0aGUgcGh5c2ljYWwgDQpwb3J0IGluIG15IG1hY2hpbmUgYW5kIGNvbXBsZXRlbHkgZm9yZ290
-IGFib3V0IGl0Lg0KDQpJJ20gYSBiaXQgY29uZnVzZWQgYXQgdGhpcyBwb2ludC4gTGV0IG1lIGxv
-b2sgYXQgdGhpcyBmdXJ0aGVyLg0KDQoNCj4NCj4gKyAgICAgICAgICAgICAgIGF0dHJzLnBoeXMu
-cG9ydF9udW1iZXIgPSBtcG9ydC0+cG9ydF9pZHg7DQo+ICsgICAgICAgICAgICAgICBkZXZsaW5r
-X3BvcnRfYXR0cnNfc2V0KGRsX3BvcnQsICZhdHRycyk7DQo+ICsgICAgICAgICAgICAgICBicmVh
-azsNCj4gKyAgICAgICBjYXNlIE1BRV9NUE9SVF9ERVNDX01QT1JUX1RZUEVfVk5JQzoNCj4gKyAg
-ICAgICAgICAgICAgIGlmIChtcG9ydC0+dmZfaWR4ICE9IE1BRV9NUE9SVF9ERVNDX1ZGX0lEWF9O
-VUxMKSB7DQo+ICsgICAgICAgICAgICAgICAgICAgICAgIGRldmxpbmtfcG9ydF9hdHRyc19wY2lf
-dmZfc2V0KGRsX3BvcnQsIDAsIG1wb3J0LT5wZl9pZHgsDQo+ICsgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG1wb3J0LT52Zl9pZHgsDQo+ICsgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGV4dGVybmFs
-KTsNCj4gKyAgICAgICAgICAgICAgIH0gZWxzZSB7DQo+ICsgICAgICAgICAgICAgICAgICAgICAg
-IGRldmxpbmtfcG9ydF9hdHRyc19wY2lfcGZfc2V0KGRsX3BvcnQsIDAsIG1wb3J0LT5wZl9pZHgs
-DQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IGV4dGVybmFsKTsNCj4gKyAgICAgICAgICAgICAgIH0NCj4gKyAgICAgICAgICAgICAgIGJyZWFr
-Ow0KPg0KPg0KPg0KPg0KPj4gSSdtIGF3YXJlIHRoaXMgaXMgbm90ICJmdWxseSBjb21wbGlhbnQi
-IHdpdGggZGV2bGluayBkZXNpZ24gaWRlYSwganVzdA0KPj4gdHJ5aW5nIHRvIHVzZSBpdCBmb3Ig
-b3VyIGN1cnJlbnQgdXJnZW50IG5lY2Vzc2l0aWVzIGJ5IG5vdy4NCj4+DQo+PiBEbyB5b3UgdGhp
-bmsgdGhpcyBjb3VsZCBiZSBhIHByb2JsZW0/DQo+IElmIHlvdSBjcmVhdGUgcG9ydCBmbGF2b3Vy
-ID0gREVWTElOS19QT1JUX0ZMQVZPVVJfUEhZU0lDQUwgYW5kIGl0IGlzIG5vdA0KPiB1cGxpbmss
-IGl0IGlzIGEgcHJvYmxlbSA6KQ0KPg0KPg0KPg0KPj4NCj4+Pj4gKwlpZiAoIW1wb3J0X2Rlc2Mp
-DQo+Pj4+ICsJCXJldHVybiAtRUlOVkFMOw0KPj4+PiArDQo+Pj4+ICsJaWYgKCFlZjEwMF9tcG9y
-dF9vbl9sb2NhbF9pbnRmKGRldmxpbmstPmVmeCwgbXBvcnRfZGVzYykpDQo+Pj4+ICsJCWdvdG8g
-b3V0Ow0KPj4+PiArDQo+Pj4+ICsJaWYgKGVmMTAwX21wb3J0X2lzX3ZmKG1wb3J0X2Rlc2MpKQ0K
-Pj4+PiArCQlFRlhfUE9QVUxBVEVfUVdPUkRfMyhwY2llZm4sDQo+Pj4+ICsJCQkJICAgICBQQ0lF
-X0ZVTkNUSU9OX1BGLCBQQ0lFX0ZVTkNUSU9OX1BGX05VTEwsDQo+Pj4+ICsJCQkJICAgICBQQ0lF
-X0ZVTkNUSU9OX1ZGLCBtcG9ydF9kZXNjLT52Zl9pZHgsDQo+Pj4+ICsJCQkJICAgICBQQ0lFX0ZV
-TkNUSU9OX0lOVEYsIFBDSUVfSU5URVJGQUNFX0NBTExFUik7DQo+Pj4+ICsJZWxzZQ0KPj4+PiAr
-CQlFRlhfUE9QVUxBVEVfUVdPUkRfMyhwY2llZm4sDQo+Pj4+ICsJCQkJICAgICBQQ0lFX0ZVTkNU
-SU9OX1BGLCBtcG9ydF9kZXNjLT5wZl9pZHgsDQo+Pj4+ICsJCQkJICAgICBQQ0lFX0ZVTkNUSU9O
-X1ZGLCBQQ0lFX0ZVTkNUSU9OX1ZGX05VTEwsDQo+Pj4+ICsJCQkJICAgICBQQ0lFX0ZVTkNUSU9O
-X0lOVEYsIFBDSUVfSU5URVJGQUNFX0NBTExFUik7DQo+Pj4+ICsNCj4+Pj4gKwlyYyA9IGVmeF9l
-ZjEwMF9sb29rdXBfY2xpZW50X2lkKGRldmxpbmstPmVmeCwgcGNpZWZuLCAmY2xpZW50X2lkKTsN
-Cj4+Pj4gKwlpZiAocmMpIHsNCj4+Pj4gKwkJbmV0aWZfZXJyKGRldmxpbmstPmVmeCwgZHJ2LCBk
-ZXZsaW5rLT5lZngtPm5ldF9kZXYsDQo+Pj4+ICsJCQkgICJGYWlsZWQgdG8gZ2V0IGNsaWVudCBJ
-RCBmb3IgcG9ydCBpbmRleCAldSwgcmMgJWRcbiIsDQo+Pj4+ICsJCQkgIHBvcnQtPmluZGV4LCBy
-Yyk7DQo+Pj4+ICsJCXJldHVybiByYzsNCj4+Pj4gKwl9DQo+Pj4+ICsNCj4+Pj4gKwlyYyA9IGVm
-MTAwX2dldF9tYWNfYWRkcmVzcyhkZXZsaW5rLT5lZngsIGh3X2FkZHIsIGNsaWVudF9pZCwgdHJ1
-ZSk7DQo+Pj4+ICtvdXQ6DQo+Pj4+ICsJKmh3X2FkZHJfbGVuID0gRVRIX0FMRU47DQo+Pj4+ICsN
-Cj4+Pj4gKwlyZXR1cm4gcmM7DQo+Pj4+ICt9DQo+Pj4+ICsNCj4+Pj4gc3RhdGljIGludCBlZnhf
-ZGV2bGlua19pbmZvX2dldChzdHJ1Y3QgZGV2bGluayAqZGV2bGluaywNCj4+Pj4gCQkJCXN0cnVj
-dCBkZXZsaW5rX2luZm9fcmVxICpyZXEsDQo+Pj4+IAkJCQlzdHJ1Y3QgbmV0bGlua19leHRfYWNr
-ICpleHRhY2spDQo+Pj4+IEBAIC00NDIsNiArNDg1LDcgQEAgc3RhdGljIGludCBlZnhfZGV2bGlu
-a19pbmZvX2dldChzdHJ1Y3QgZGV2bGluayAqZGV2bGluaywNCj4+Pj4NCj4+Pj4gc3RhdGljIGNv
-bnN0IHN0cnVjdCBkZXZsaW5rX29wcyBzZmNfZGV2bGlua19vcHMgPSB7DQo+Pj4+IAkuaW5mb19n
-ZXQJCQk9IGVmeF9kZXZsaW5rX2luZm9fZ2V0LA0KPj4+PiArCS5wb3J0X2Z1bmN0aW9uX2h3X2Fk
-ZHJfZ2V0CT0gZWZ4X2RldmxpbmtfcG9ydF9hZGRyX2dldCwNCj4+Pj4gfTsNCj4+Pj4NCj4+Pj4g
-c3RhdGljIHN0cnVjdCBkZXZsaW5rX3BvcnQgKmVmMTAwX3NldF9kZXZsaW5rX3BvcnQoc3RydWN0
-IGVmeF9uaWMgKmVmeCwgdTMyIGlkeCkNCj4+Pj4gLS0gDQo+Pj4+IDIuMTcuMQ0KPj4+Pg0KDQo=
+Thu, Jan 19, 2023 at 06:16:13PM CET, jiri@resnulli.us wrote:
+>Tue, Jan 17, 2023 at 07:00:48PM CET, vadfed@meta.com wrote:
+
+[...]
+
+
+>>+/**
+>>+ * dpll_cmd - Commands supported by the dpll generic netlink family
+>>+ *
+>>+ * @DPLL_CMD_UNSPEC - invalid message type
+>>+ * @DPLL_CMD_DEVICE_GET - Get list of dpll devices (dump) or attributes of
+>>+ *	single dpll device and it's pins
+>>+ * @DPLL_CMD_DEVICE_SET - Set attributes for a dpll
+>>+ * @DPLL_CMD_PIN_SET - Set attributes for a pin
+>>+ **/
+>>+enum dpll_cmd {
+>>+	DPLL_CMD_UNSPEC,
+>>+	DPLL_CMD_DEVICE_GET,
+>>+	DPLL_CMD_DEVICE_SET,
+>>+	DPLL_CMD_PIN_SET,
+>
+>Have pin get to get list of pins, then you can have 1:1 mapping to
+>events and loose the enum dpll_event_change. This is the usual way to do
+>stuff. Events have the same cmd and message format as get.
+
+I was thinking about that a bit more.
+1) There is 1:n relationship between PIN and DPLL(s).
+2) The pin configuration is independent on DPLL, with an
+   exeption of PRIO.
+
+Therefore as I suggested in the reply to this patch, the pin should be
+separate entity, allocated and having ops unrelated to DPLL. It is just
+registered to the DPLLs that are using the pin.
+
+The pin ops should not have dpll pointer as arg, again with exception of
+PRIO.
+
+DPLL_CMD_DEVICE_GET should not contain pins at all.
+
+There should be DPLL_CMD_PIN_GET added which can dump and will be used
+to get the list of pins in the system.
+- if DPLL handle is passed to DPLL_CMD_PIN_GET, it will dump only pins
+  related to the specified DPLL.
+
+DPLL_CMD_PIN_GET message will contain pin-specific attrs and will have a
+list of connected DPLLs:
+       DPLLA_PIN_IDX
+       DPLLA_PIN_DESCRIPTION
+       DPLLA_PIN_TYPE
+       DPLLA_PIN_SIGNAL_TYPE
+       DPLLA_PIN_SIGNAL_TYPE_SUPPORTED
+       DPLLA_PIN_CUSTOM_FREQ
+       DPLLA_PIN_MODE
+       DPLLA_PIN_MODE_SUPPORTED
+       DPLLA_PIN_PARENT_IDX
+       DPLLA_PIN_DPLL    (nested)
+          DPLLA_DPLL_HANDLE   "dpll_0"
+          DPLLA_PIN_PRIO    1
+       DPLLA_PIN_DPLL    (nested)
+          DPLLA_DPLL_HANDLE   "dpll_1"
+          DPLLA_PIN_PRIO    2
+
+Please take the names lightly. My point is to show 2 nests for 2
+DPLLS connected, on each the pin has different prio.
+
+Does this make sense?
+
+One issue to be solved is the pin indexing. As pin would be separate
+entity, the indexing would be global and therefore not predictable. We
+would have to figure it out differntly. Pehaps something like this:
+
+$ dpll dev show
+pci/0000:08:00.0: dpll 1             first dpll on 0000:08:00.0
+pci/0000:08:00.0: dpll 2             second dpll on the same pci device
+pci/0000:09:00.0: dpll 1             first dpll on 0000:09:00.0
+pci/0000:09:00.0: dpll 2             second dpll on the same pci device
+
+$ dpll pin show
+pci/0000:08:00.0: pin 1 desc SOMELABEL_A
+  dpll 1:                          This refers to DPLL 1 on the same pci device
+    prio 80
+  dpll 2:                          This refers to DPLL 2 on the same pci device
+    prio 100
+pci/0000:08:00.0: pin 2 desc SOMELABEL_B
+  dpll 1:
+    prio 80
+  dpll 2:
+    prio 100
+pci/0000:08:00.0: pin 3 desc SOMELABEL_C
+  dpll 1:
+    prio 80
+  dpll 2:
+    prio 100
+pci/0000:08:00.0: pin 4 desc SOMELABEL_D
+  dpll 1:
+    prio 80
+  dpll 2:
+    prio 100
+pci/0000:09:00.0: pin 1 desc SOMEOTHERLABEL_A
+  dpll 1:
+    prio 80
+  dpll 2:
+    prio 100
+pci/0000:09:00.0: pin 2 desc SOMEOTHERLABEL_B
+  dpll 1:
+    prio 80
+  dpll 2:
+    prio 100
+pci/0000:09:00.0: pin 3 desc SOMEOTHERLABEL_C
+  dpll 1:
+    prio 80
+  dpll 2:
+    prio 100
+pci/0000:09:00.0: pin 4 desc SOMEOTHERLABEL_C
+  dpll 1:
+    prio 80
+  dpll 2:
+    prio 100
+
+Note there are 2 groups of pins, one for each pci device.
+
+Setting some attribute command would looks like:
+To set DPLL mode:
+$ dpll dev set pci/0000:08:00.0 dpll 1 mode freerun
+   netlink:
+   DPLL_CMD_DEVICE_SET
+      DPLLA_BUS_NAME "pci"
+      DPLLA_DEV_NAME "0000:08:00.0"
+      DPLLA_DPLL_INDEX 1
+      DPLLA_DPLL_MODE 3
+
+$ dpll dev set pci/0000:08:00.0 dpll 2 mode automatic
+
+
+To set signal frequency in HZ:
+$ dpll pin set pci/0000:08:00.0 pin 3 frequency 10000000
+   netlink:
+   DPLL_CMD_PIN_SET
+      DPLLA_BUS_NAME "pci"
+      DPLLA_DEV_NAME "0000:08:00.0"
+      DPLLA_PIN_INDEX 3
+      DPLLA_PIN_FREQUENCY 10000000
+
+$ dpll pin set pci/0000:08:00.0 pin 1 frequency 1
+
+
+To set individual of one pin for 2 DPLLs:
+$ dpll pin set pci/0000:08:00.0 pin 1 dpll 1 prio 40
+   netlink:
+   DPLL_CMD_PIN_SET
+      DPLLA_BUS_NAME "pci"
+      DPLLA_DEV_NAME "0000:08:00.0"
+      DPLLA_PIN_INDEX 1
+      DPLLA_DPLL_INDEX 1
+      DPLLA_PIN_PRIO 40
+
+$ dpll pin set pci/0000:08:00.0 pin 1 dpll 2 prio 80
+
+
+Isn't this neat?
+
+
+[...]
