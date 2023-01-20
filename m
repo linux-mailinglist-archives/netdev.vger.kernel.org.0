@@ -2,99 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C65A675F70
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 22:10:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAAE0675F78
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 22:12:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229799AbjATVKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 16:10:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33114 "EHLO
+        id S229761AbjATVMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 16:12:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229797AbjATVKe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 16:10:34 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50BDA94C87
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 13:10:30 -0800 (PST)
+        with ESMTP id S229672AbjATVMO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 16:12:14 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4906E8BA8F
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 13:12:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674249030; x=1705785030;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=5T93XlWuzQLInar9ZeCl9dXb190ioylChRSQzBTo3cc=;
-  b=LGAvNRjRl+3yNsGO9KB4Oxhw5KhmNcEQknJxXleCdBXSLkTs7QGrmqrO
-   W8sHWcBLAO5AT093pn8zqTx5P+P98yAw8cT9zfCedgNy6iQvGxQD1fEPJ
-   rmqnAJ8chClVsudlQr0YuN4CFOUtqJpPHL3Od65FeyPhyNJB6+2BKh2Ek
-   i+kSbrlytrU7TnNvqJiLRnCOEMCicdL8hwy1D5SnRXetvOP+MvBWC4HNT
-   EgJ5fp984dVLnryTcCw3PAthAwm5XiSpRSfgWxjyXDVNANamUbu0kZxdK
-   f5ynI0tBn+kAowPeoqrGh1mZI8mIdX6ds6Dwa9grWobP1eDMKUe3JQg4j
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="352949186"
+  t=1674249133; x=1705785133;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=J39nKyU/sRPVo96hC+fLxaR4Y50xRwudsHlP4oLOqHI=;
+  b=LqPnkeTNvesscEBZy+5vOOWpaIeNEn64Qnk6od3v5Fz21+4MuZQpb4GG
+   TlG8adgULbTrFKYRJ+uu+umJHJFLViXUJnx9t+tHwM2e6Gd+n639Kak0a
+   XYw07Bl8Xm8oUEgJjIxFqV4ftxQK7dw6NeAK51P/eiGv89YHgwvIPfXaH
+   nGLDmjL2lU7KU3+JbohCDuHxeFXOIA/FPIGreyF/P3PRUPMbbOk+YycFK
+   RYZRLYJPsdfT5Yq93yHfbRAgLRESiaom1S9JMi95Uk3X/MbIdr1j/WB0r
+   wWo1ifzeugYBAWsQ4vlA5iU650YwP/WIMj718MQX8z75bAfgzapEqSqko
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="324383370"
 X-IronPort-AV: E=Sophos;i="5.97,233,1669104000"; 
-   d="scan'208";a="352949186"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2023 13:10:27 -0800
+   d="scan'208";a="324383370"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2023 13:12:12 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="784667631"
+X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="653921168"
 X-IronPort-AV: E=Sophos;i="5.97,233,1669104000"; 
-   d="scan'208";a="784667631"
+   d="scan'208";a="653921168"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by orsmga004.jf.intel.com with ESMTP; 20 Jan 2023 13:10:26 -0800
+  by orsmga007.jf.intel.com with ESMTP; 20 Jan 2023 13:12:12 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Stefan Assmann <sassmann@kpanic.de>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, Michal Schmidt <mschmidt@redhat.com>,
-        Rafal Romanowski <rafal.romanowski@intel.com>
-Subject: [PATCH net 3/3] iavf: schedule watchdog immediately when changing primary MAC
-Date:   Fri, 20 Jan 2023 13:10:36 -0800
-Message-Id: <20230120211036.430946-4-anthony.l.nguyen@intel.com>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
+Subject: [PATCH net v3 0/2][pull request] Intel Wired LAN Driver Updates 2023-01-20 (ice)
+Date:   Fri, 20 Jan 2023 13:12:29 -0800
+Message-Id: <20230120211231.431147-1-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20230120211036.430946-1-anthony.l.nguyen@intel.com>
-References: <20230120211036.430946-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Assmann <sassmann@kpanic.de>
+This series contains updates to ice driver only.
 
-iavf_replace_primary_mac() utilizes queue_work() to schedule the
-watchdog task but that only ensures that the watchdog task is queued
-to run. To make sure the watchdog is executed asap use
-mod_delayed_work().
+Dave prevents modifying channels when RDMA is active as this will break
+RDMA traffic.
 
-Without this patch it may take up to 2s until the watchdog task gets
-executed, which may cause long delays when setting the MAC address.
-
-Fixes: a3e839d539e0 ("iavf: Add usage of new virtchnl format to set default MAC")
-Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
-Reviewed-by: Michal Schmidt <mschmidt@redhat.com>
-Tested-by: Michal Schmidt <mschmidt@redhat.com>
-Tested-by: Rafal Romanowski <rafal.romanowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Michal fixes a broken URL.
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v3:
+- Reduced scope of lock in patch 1 to avoid double lock
+- Dropped, previous, patch 2
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index de7112ae8416..4b09785d2147 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -1033,7 +1033,7 @@ int iavf_replace_primary_mac(struct iavf_adapter *adapter,
- 
- 	/* schedule the watchdog task to immediately process the request */
- 	if (f) {
--		queue_work(adapter->wq, &adapter->watchdog_task.work);
-+		mod_delayed_work(adapter->wq, &adapter->watchdog_task, 0);
- 		return 0;
- 	}
- 	return -ENOMEM;
+v2: https://lore.kernel.org/netdev/20230103230738.1102585-1-anthony.l.nguyen@intel.com/
+- Dropped, previous, patch 1.
+- Replace RDMA patch to disallow change instead of replugging aux device
+
+v1: https://lore.kernel.org/netdev/20221207211040.1099708-1-anthony.l.nguyen@intel.com/
+
+The following are changes since commit 45a919bbb21c642e0c34dac483d1e003560159dc:
+  Revert "Merge branch 'octeontx2-af-CPT'"
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 100GbE
+
+Dave Ertman (1):
+  ice: Prevent set_channel from changing queues while RDMA active
+
+Michal Wilczynski (1):
+  ice: Fix broken link in ice NAPI doc
+
+ .../networking/device_drivers/ethernet/intel/ice.rst      | 2 +-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c              | 8 ++++++++
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+
 -- 
 2.38.1
 
