@@ -2,52 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 093FA6749A8
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 04:00:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63ABE6749AA
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 04:00:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229799AbjATDAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Jan 2023 22:00:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54094 "EHLO
+        id S229863AbjATDAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Jan 2023 22:00:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbjATDAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 22:00:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CF59EE3F
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 19:00:19 -0800 (PST)
+        with ESMTP id S229771AbjATDAV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Jan 2023 22:00:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099629F3A1;
+        Thu, 19 Jan 2023 19:00:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 691B061DF2
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 03:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C1A90C433F0;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 82B4D61DE4;
+        Fri, 20 Jan 2023 03:00:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DC71CC433F1;
         Fri, 20 Jan 2023 03:00:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1674183618;
-        bh=P3XR91MbG9XJCJSi6ppTdS9Zw6HM89e783DELJ99GCE=;
+        bh=TUlF/UkyYMykIbN2dcybW735XtmZNjZttJvL4i2P4nM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dDtNAvMYG036U2iCRtPDTqRoyt23eYlSoY4XVuCH1N2eiEq2N0n0MAgcJqCSYncKu
-         /oAcIt/tn/UvnZHPFk2zlCXvIvex/UP/FtliVehrLTtHzPVPIln5Oua+3SGumzZCBf
-         1X7UsR2oqWFIIIAN8S8Zo3lGzeI+o7P+TxyPw5sXctF7SmO+32BnmVg0ip4VGajVOg
-         d74K5HirEiXYxsMyz6IV3VsHJDWXk/6RHhf6s0xmqk3ECGuZ8nMv76a6bgDdTBx8fX
-         5/4Ef9SV2pkZ/6kJ5UmTtnHieVkU8nYZX80Tm+lj33PXp6rbz5NLDLpzKB4uOFNHJk
-         9hSZ23n34pDIg==
+        b=OuV3oWSWIEcM0DzZTPHNGaauZRSkoRQgixXE5LS6dxyzaBQkYnB4rIKgUOco/EAVT
+         jDFNle8WGxJQ+jQJOoOoyba0K6bQaVS7wA6bodQC8Jvi3QCO+fx25GW7gyxESw9uwe
+         01/TLzTS28fDD/+cm4+Q33p2nMieAN3rEKbbBpF6XpCjFYvT5KZlADBOZDCXo85vzB
+         0b28sctnPSjjDpYk9hKN74GofpfCmcPfXdqcVDzl/NDapUZUEacdHPd3yFA6lO8ph2
+         BPktCmdprfYC3FigV2YjLqq8x+lRXlRdWMHstO0I6qu9y8Z+AsFeETFfZ2ODa5WWFc
+         6Bk95kofxggFA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A23ABC4167B;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B8748E4D01B;
         Fri, 20 Jan 2023 03:00:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5] net: sfp: cleanup i2c / dt / acpi / fwnode /
- includes
+Subject: Re: [PATCH net-next] net: dsa: microchip: ptp: Fix error code in
+ ksz_hwtstamp_set()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167418361865.28289.5707285801925994167.git-patchwork-notify@kernel.org>
+Message-Id: <167418361874.28289.5370339181727219172.git-patchwork-notify@kernel.org>
 Date:   Fri, 20 Jan 2023 03:00:18 +0000
-References: <Y8fH+Vqx6huYQFDU@shell.armlinux.org.uk>
-In-Reply-To: <Y8fH+Vqx6huYQFDU@shell.armlinux.org.uk>
-To:     Russell King (Oracle) <linux@armlinux.org.uk>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com
+References: <Y8fJxSvbl7UNVHh/@kili>
+In-Reply-To: <Y8fJxSvbl7UNVHh/@kili>
+To:     Dan Carpenter <error27@gmail.com>
+Cc:     woojung.huh@microchip.com, ceggers@arri.de,
+        UNGLinuxDriver@microchip.com, andrew@lunn.ch, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, richardcochran@gmail.com,
+        arun.ramadoss@microchip.com, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -59,30 +62,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed, 18 Jan 2023 10:20:41 +0000 you wrote:
-> Hi,
+On Wed, 18 Jan 2023 13:28:21 +0300 you wrote:
+> We want to return negative error codes here but the copy_to/from_user()
+> functions return the number of bytes remaining to be copied.
 > 
-> This series cleans up the DT/fwnode/ACPI code in the SFP cage driver:
-> 
-> 1. Use the newly introduced i2c_get_adapter_by_fwnode(), which removes
-> the need to know about ACPI handles to find the I2C device.
-> 
-> [...]
+> Fixes: c59e12a140fb ("net: dsa: microchip: ptp: Initial hardware time stamping support")
+> Signed-off-by: Dan Carpenter <error27@gmail.com>
+> ---
+>  drivers/net/dsa/microchip/ksz_ptp.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
 
 Here is the summary with links:
-  - [net-next,1/5] net: sfp: use i2c_get_adapter_by_fwnode()
-    https://git.kernel.org/netdev/net-next/c/ff31a0c496b8
-  - [net-next,2/5] net: sfp: use device_get_match_data()
-    https://git.kernel.org/netdev/net-next/c/b71dda81123f
-  - [net-next,3/5] net: sfp: rename gpio_of_names[]
-    https://git.kernel.org/netdev/net-next/c/f35cb547865c
-  - [net-next,4/5] net: sfp: remove acpi.h include
-    https://git.kernel.org/netdev/net-next/c/1154261ef0fb
-  - [net-next,5/5] net: sfp: remove unused ctype.h include
-    https://git.kernel.org/netdev/net-next/c/f8f24a524114
+  - [net-next] net: dsa: microchip: ptp: Fix error code in ksz_hwtstamp_set()
+    https://git.kernel.org/netdev/net-next/c/a76e88c29425
 
 You are awesome, thank you!
 -- 
