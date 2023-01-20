@@ -2,178 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A4C3674EEA
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 09:04:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8307674EF3
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 09:06:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229985AbjATIE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 03:04:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35296 "EHLO
+        id S230273AbjATIGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 03:06:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229668AbjATIEz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 03:04:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B8773EE7;
-        Fri, 20 Jan 2023 00:04:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04536B82070;
-        Fri, 20 Jan 2023 08:04:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C962BC433D2;
-        Fri, 20 Jan 2023 08:04:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674201881;
-        bh=ddZ781LlQNDNgJDsumMrpxwZeLDaEtSDv9QvaApUzp8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jLY4RLPayUpA4+ykcD7mNqlzP1BnH2Dy/DJzQYURwXEBfqT6VzyheJu10hr1IVYIb
-         85TbtBgYf8GQ+K2dTeYmBMMQwsoa4RyH5Pj6s1qVUciSJue9ZmBXKgO8mv0E6tU9aN
-         WHrXJ7f1nOgrHtdizE3/rFnB3OPpJWobuTf/C9h146PD4XWNxfWsL7jzAo4t9DE50L
-         0QXq1QRq9LZWGwwDYDi3I+OLy/m54tZnF8C7zxqUVRcsOW3bDQA/Za8OmLXpbdUGKC
-         suCEVZKbikzCrl8ap+D/iMhvQSnOj2cIsHcfcFkzvDw5OE3pDgndn3muXhxYXe2/+j
-         PG+c6DZUmzx4w==
-Date:   Fri, 20 Jan 2023 13:34:37 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Rob Herring <robh@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Kishon Vijay Abraham I <kishon@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Siddharth Vadapalli <s-vadapalli@ti.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-phy@lists.infradead.org, linux-usb@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: Re: [PATCH 7/7] usb: host: ohci-exynos: Convert to
- devm_of_phy_optional_get()
-Message-ID: <Y8pLFZ/K3pNPx5hL@matsya>
-References: <cover.1674036164.git.geert+renesas@glider.be>
- <cd685d8e4d6754c384acfc1796065d539a2c3ea8.1674036164.git.geert+renesas@glider.be>
- <CAL_JsqJS2JTZ1BxMbG_2zgzu5xtxMFPqjxc_vUjuZp3k1xUmaQ@mail.gmail.com>
- <CAMuHMdXGsmNjYy-ofmuHLkr8yaDEzy+SGnhtbmc_2ezbEKAMjw@mail.gmail.com>
- <CAL_JsqJWEzb_hxi0_sSj-5F0q4A9UcJEhwcSArWT6eAffpeqHA@mail.gmail.com>
- <CAMuHMdXFjJJq=XqBZmL+EC9x5DMmucyncKE5ExS89bb00sir1g@mail.gmail.com>
+        with ESMTP id S229445AbjATIGE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 03:06:04 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463BE881E7
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 00:06:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1674201963; x=1705737963;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=YOBnruVYRIOtz6XH1vFVjpHV/2T+v1ipdX5egBe0aoE=;
+  b=15fn8AtYPxl/GPtxXE5HdLNIcvQtDDrJ7cBfg3R0uvsdQRq0lStSt1aq
+   HIoJc60lql7ajiACsSX1XaaQ4yYrv+L4OmHGHMhHy6D9QrFP4CQAbILDi
+   /aKusuMW34hI8IcW5j2dHmIDpgS0Zis1gi9mKG59XURB7rhB5E6M85jlV
+   z3gFZoRzCTwnCSbr7X6mNvn0Epvc5q+rav3OZz/RtPWZcMB2ZC7z1EG64
+   0/kW1/ZLpYZ3SqT+6LS4VfgPzcqo2ly2LCw08sKcDxtvFZ2YK3AfSvg2C
+   I/FeI9ipvCIeb3d4VPhEHuoCKCSS3M4YY9JUKJKFj9FwrXoGXlsfjIrIT
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.97,231,1669100400"; 
+   d="scan'208";a="197592612"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Jan 2023 01:06:03 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Fri, 20 Jan 2023 01:06:01 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Fri, 20 Jan 2023 01:05:59 -0700
+Message-ID: <fa74af113933cea071c1639a28ffefa7572f05a2.camel@microchip.com>
+Subject: Re: [PATCH net-next] net: microchip: vcap: use kmemdup() to
+ allocate memory
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>, <netdev@vger.kernel.org>
+CC:     <lars.povlsen@microchip.com>, <daniel.machon@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
+Date:   Fri, 20 Jan 2023 09:05:59 +0100
+In-Reply-To: <20230119092210.3607634-1-yangyingliang@huawei.com>
+References: <20230119092210.3607634-1-yangyingliang@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+User-Agent: Evolution 3.46.3 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdXFjJJq=XqBZmL+EC9x5DMmucyncKE5ExS89bb00sir1g@mail.gmail.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20-01-23, 08:56, Geert Uytterhoeven wrote:
-> Hi Rob,
-> 
-> On Wed, Jan 18, 2023 at 8:49 PM Rob Herring <robh@kernel.org> wrote:
-> > On Wed, Jan 18, 2023 at 12:28 PM Geert Uytterhoeven
-> > <geert@linux-m68k.org> wrote:
-> > > On Wed, Jan 18, 2023 at 6:30 PM Rob Herring <robh@kernel.org> wrote:
-> > > > On Wed, Jan 18, 2023 at 4:15 AM Geert Uytterhoeven
-> > > > <geert+renesas@glider.be> wrote:
-> > > > > Use the new devm_of_phy_optional_get() helper instead of open-coding the
-> > > > > same operation.
-> > > > >
-> > > > > This lets us drop several checks for IS_ERR(), as phy_power_{on,off}()
-> > > > > handle NULL parameters fine.
-> > > > >
-> > > > > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > > > > ---
-> > > > >  drivers/usb/host/ohci-exynos.c | 24 +++++++-----------------
-> > > > >  1 file changed, 7 insertions(+), 17 deletions(-)
-> > > > >
-> > > > > diff --git a/drivers/usb/host/ohci-exynos.c b/drivers/usb/host/ohci-exynos.c
-> > > > > index 8d7977fd5d3bd502..8dd9c3b2411c383f 100644
-> > > > > --- a/drivers/usb/host/ohci-exynos.c
-> > > > > +++ b/drivers/usb/host/ohci-exynos.c
-> > > > > @@ -69,19 +69,12 @@ static int exynos_ohci_get_phy(struct device *dev,
-> > > > >                         return -EINVAL;
-> > > > >                 }
-> > > > >
-> > > > > -               phy = devm_of_phy_get(dev, child, NULL);
-> > > > > +               phy = devm_of_phy_optional_get(dev, child, NULL);
-> > > > >                 exynos_ohci->phy[phy_number] = phy;
-> > > > >                 if (IS_ERR(phy)) {
-> > > > > -                       ret = PTR_ERR(phy);
-> > > > > -                       if (ret == -EPROBE_DEFER) {
-> > > > > -                               of_node_put(child);
-> > > > > -                               return ret;
-> > > > > -                       } else if (ret != -ENOSYS && ret != -ENODEV) {
-> > > > > -                               dev_err(dev,
-> > > > > -                                       "Error retrieving usb2 phy: %d\n", ret);
-> > > > > -                               of_node_put(child);
-> > > > > -                               return ret;
-> > > > > -                       }
-> > > > > +                       of_node_put(child);
-> > > > > +                       return dev_err_probe(dev, PTR_ERR(phy),
-> > > > > +                                            "Error retrieving usb2 phy\n");
-> > > >
-> > > > Optional is really the only reason for the caller to decide whether to
-> > > > print an error message or not. If we have both flavors of 'get', then
-> > > > really the 'get' functions should print an error message.
-> > >
-> > > In case of a real error, both should print an error message, right?
-> > >
-> > > Anyway, I understand that's a three step operation:
-> > >   1. Introduce and convert to the _optional variant,
-> > >   2. Add error printing to callees.
-> > >   3. Remove error printing from callers.
-> >
-> > I think you only need 2 out of 3 steps depending on the situation. In
-> > this case, you can add error printing in the _optional variant when
-> > you introduce it and then convert callers to it.
-> >
-> > Where we already have an optional variant, then you need steps 2 and 3.
-> 
-> Right, so the error printing can be done now, while introducing
-> devm_of_phy_optional_get().
-> 
-> Vinod: Do you agree?
+SGkgWWFuZywKClRoYW5rcyBmb3IgdGhlIGNvcnJlY3Rpb24uCgpSZXZpZXdlZC1ieTogU3RlZW4g
+SGVnZWx1bmQgPFN0ZWVuLkhlZ2VsdW5kQG1pY3JvY2hpcC5jb20+CgpCUgpTdGVlbgoKT24gVGh1
+LCAyMDIzLTAxLTE5IGF0IDE3OjIyICswODAwLCBZYW5nIFlpbmdsaWFuZyB3cm90ZToKPiBFWFRF
+Uk5BTCBFTUFJTDogRG8gbm90IGNsaWNrIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNz
+IHlvdSBrbm93IHRoZQo+IGNvbnRlbnQgaXMgc2FmZQo+IAo+IFVzZSBrbWVtZHVwKCkgaGVscGVy
+IGluc3RlYWQgb2Ygb3Blbi1jb2RpbmcgdG8gc2ltcGxpZnkKPiB0aGUgY29kZSB3aGVuIGFsbG9j
+YXRpbmcgbmV3Y2tmIGFuZCBuZXdjYWYuCj4gCj4gR2VuZXJhdGVkIGJ5OiBzY3JpcHRzL2NvY2Np
+bmVsbGUvYXBpL21lbWR1cC5jb2NjaQo+IAo+IFNpZ25lZC1vZmYtYnk6IFlhbmcgWWluZ2xpYW5n
+IDx5YW5neWluZ2xpYW5nQGh1YXdlaS5jb20+Cj4gLS0tCj4gwqBkcml2ZXJzL25ldC9ldGhlcm5l
+dC9taWNyb2NoaXAvdmNhcC92Y2FwX2FwaS5jIHwgNiArKy0tLS0KPiDCoDEgZmlsZSBjaGFuZ2Vk
+LCAyIGluc2VydGlvbnMoKyksIDQgZGVsZXRpb25zKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZl
+cnMvbmV0L2V0aGVybmV0L21pY3JvY2hpcC92Y2FwL3ZjYXBfYXBpLmMKPiBiL2RyaXZlcnMvbmV0
+L2V0aGVybmV0L21pY3JvY2hpcC92Y2FwL3ZjYXBfYXBpLmMKPiBpbmRleCA3MWY3ODdhNzgyOTUu
+LmQ5Y2YyY2QxOTI1YSAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9taWNyb2No
+aXAvdmNhcC92Y2FwX2FwaS5jCj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWljcm9jaGlw
+L3ZjYXAvdmNhcF9hcGkuYwo+IEBAIC0xMDAwLDE4ICsxMDAwLDE2IEBAIHN0YXRpYyBzdHJ1Y3Qg
+dmNhcF9ydWxlX2ludGVybmFsICp2Y2FwX2R1cF9ydWxlKHN0cnVjdAo+IHZjYXBfcnVsZV9pbnRl
+cm5hbCAqcmksCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJldHVybiBkdXBydWxl
+Owo+IAo+IMKgwqDCoMKgwqDCoMKgIGxpc3RfZm9yX2VhY2hfZW50cnkoY2tmLCAmcmktPmRhdGEu
+a2V5ZmllbGRzLCBjdHJsLmxpc3QpIHsKPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBu
+ZXdja2YgPSBremFsbG9jKHNpemVvZigqbmV3Y2tmKSwgR0ZQX0tFUk5FTCk7Cj4gK8KgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgbmV3Y2tmID0ga21lbWR1cChja2YsIHNpemVvZigqbmV3Y2tm
+KSwgR0ZQX0tFUk5FTCk7Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlmICghbmV3
+Y2tmKQo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0
+dXJuIEVSUl9QVFIoLUVOT01FTSk7Cj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgbWVt
+Y3B5KG5ld2NrZiwgY2tmLCBzaXplb2YoKm5ld2NrZikpOwo+IMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoCBsaXN0X2FkZF90YWlsKCZuZXdja2YtPmN0cmwubGlzdCwgJmR1cHJ1bGUtPmRh
+dGEua2V5ZmllbGRzKTsKPiDCoMKgwqDCoMKgwqDCoCB9Cj4gCj4gwqDCoMKgwqDCoMKgwqAgbGlz
+dF9mb3JfZWFjaF9lbnRyeShjYWYsICZyaS0+ZGF0YS5hY3Rpb25maWVsZHMsIGN0cmwubGlzdCkg
+ewo+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG5ld2NhZiA9IGt6YWxsb2Moc2l6ZW9m
+KCpuZXdjYWYpLCBHRlBfS0VSTkVMKTsKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBu
+ZXdjYWYgPSBrbWVtZHVwKGNhZiwgc2l6ZW9mKCpuZXdjYWYpLCBHRlBfS0VSTkVMKTsKPiDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaWYgKCFuZXdjYWYpCj4gwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gRVJSX1BUUigtRU5PTUVNKTsK
+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBtZW1jcHkobmV3Y2FmLCBjYWYsIHNpemVv
+ZigqbmV3Y2FmKSk7Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGxpc3RfYWRkX3Rh
+aWwoJm5ld2NhZi0+Y3RybC5saXN0LCAmZHVwcnVsZS0KPiA+ZGF0YS5hY3Rpb25maWVsZHMpOwo+
+IMKgwqDCoMKgwqDCoMKgIH0KPiAKPiAtLQo+IDIuMjUuMQo+IAoK
 
-Ack.. IMO makes it better that way
-
-> If yes, I can respin with that change.
-
-ok
-
-> If not, I'll have to respin anyway, as the bug in
-> am65_cpsw_init_serdes_phy() has been fixed in the meantime.
-> 
-> Thanks!
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-> 
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
-> 
-> -- 
-> linux-phy mailing list
-> linux-phy@lists.infradead.org
-> https://lists.infradead.org/mailman/listinfo/linux-phy
-
--- 
-~Vinod
