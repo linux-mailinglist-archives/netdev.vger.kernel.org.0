@@ -2,73 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0F2F675513
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 13:56:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E225867551B
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 13:58:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230420AbjATM4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 07:56:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51318 "EHLO
+        id S230400AbjATM6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 07:58:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbjATM4k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 07:56:40 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 473505FFF
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 04:56:38 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id g11so1160528eda.12
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 04:56:38 -0800 (PST)
+        with ESMTP id S229962AbjATM6p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 07:58:45 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DCFE9AA94
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 04:58:44 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id hw16so13672381ejc.10
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 04:58:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=YA0Lc/7gd6GGdSfySVcU6D0QEZc1V1Kdc4VBtpNZfBc=;
-        b=a7UxM5tyUCGQSknnpU1I+L9xi4PrVNann5F0QWQziRZHPzz3ltSdgNV5tg8kxElga6
-         zMrhKfnN9oXjo84jTY8Kxr7KPtmb4TejhIaupZBIki/2fUhKqdvkNoMe/6hkdrW6/uA1
-         ejpvhotEcwL20BOSOL6Osrb/MrgWUuT3AF4c+kl2HNS8SqzaDinqAwoBb1ZjJReDIFJ6
-         JOLlHBx+MyS0oNrWMaSnaRU/i4R5wTs77qeTzwodugV8HjxacGDQw6UdcIH3mmmViIVd
-         I+DUTcCg6q61Xvk2WuQxB4k/WxqN2im517eBnBLYGm/2TcquEAVCk8bFO+3a2vbShCFw
-         kecg==
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:date:cc:to:from
+         :subject:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=I8NC3SrgZiT2vGN3GY8ZK4iQBPsnz0nVvIMmtrsawlE=;
+        b=Eifg83ck8No3DsFi++vFdIevQRy2cUHcP3q423dLeTt+mOF/AQiQZ2MyUrt58g/YFf
+         P0FZPIyrUCD8kqBKGB/d9eFDN+2gUGR1Z+aXYhgUgszBfjcwXJwiDM3WkShp6WIsSpTq
+         Hygp1m4sg1tRIEpjYNDo9DfMi5WQaV7e8LnkTNNoKOCXT+jsBszSGHGM08x+I7rsaZJj
+         WdSJ345NVN+Xaznx+XSxDfVqcigseg1XuhIYD5GawIhTawy9vgdUTe8vXekA44tq+tB+
+         NxwynnFcVUgWeplWcpfvBejOTNVembxbfwJOXznEeNkWwktiluwFJRAfu3crh4klnIFi
+         yT8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        h=mime-version:user-agent:content-transfer-encoding:date:cc:to:from
+         :subject:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YA0Lc/7gd6GGdSfySVcU6D0QEZc1V1Kdc4VBtpNZfBc=;
-        b=UNRf3ezFbmiTo9kw7yUuZ80a4k9nUkMxo5acGOmiULXLD5W+Vo5qf078TlzYdMwzeb
-         INnNHDF5qf84rR/BkRl7rI8HPVIKOrEOPpgfkJhs77Jcmcb84oEAks9f3O3i4N05JoI8
-         StICtrE3vxoDORHWn6wweOHpIA6iNdZmeGHn/9ayzvXizXB6CmQN8qOjjgb5tVZbyMfy
-         NDmNAzBs8X94/zzQxk+h1nULz9B47GWpJvqUmavlkgKam4nL9wJ4NNV2DYNt+bZ8qxJ/
-         8e/+0QUdBW+DVxahoQQN+2UXkYi5IbXokh2XmcQk/3exR0y/oeM+s9uJZ+G7bGrHQ+JS
-         U3Kw==
-X-Gm-Message-State: AFqh2koZ8XitmH8EKbaQoxkZHcBYPzvWsgNxidbfPJuNs4v0RJQIczCt
-        jD1G7gw1zsYipITrWmWqSBQMlQ==
-X-Google-Smtp-Source: AMrXdXuaj4zDXYxtP+fZPrrgfOW1exYB7z7ZTASR8cFVBTBvtbduPl3R+x8dgVlWXIAS2+C+uv77ww==
-X-Received: by 2002:a05:6402:5d3:b0:49b:58ca:ebbc with SMTP id n19-20020a05640205d300b0049b58caebbcmr17881279edx.32.1674219396721;
-        Fri, 20 Jan 2023 04:56:36 -0800 (PST)
-Received: from localhost ([217.111.27.204])
-        by smtp.gmail.com with ESMTPSA id x14-20020a056402414e00b0045b4b67156fsm17277051eda.45.2023.01.20.04.56.35
+        bh=I8NC3SrgZiT2vGN3GY8ZK4iQBPsnz0nVvIMmtrsawlE=;
+        b=OhrYAA9cit4bebSn2leDNaeMXi5y1rHyxBDp0u6yp6ZWVn0vntLcV5xRfiINv5qIt8
+         9wIOu6X5zDAcBlQHE03WfeNcDwCbtYeuomwfgpLIKoPBI6JkRB2Gtf01BBdPe61W/NQB
+         RWNRflNua8TDrLDJyPiU5hBtu9AFhULgUwBaciGhh5eRylC8LiVtfIBVrRSq3iMCACk7
+         yMr+6aqSfQzPyNqPNYgs0KTeShg+wbaaL/yAuogYdVXFtDdNJ5P8J4kz14HYPna3dF/B
+         RsCwHjj3nFlLvkUgcHZkJZsZMJ+3MG2VZS6cM7zG/tfZiaCS4lq5hRXiA++Z9e2hWn9F
+         Gm3Q==
+X-Gm-Message-State: AFqh2kq5qaP+MW4i/GoQMeI80Yd6Zl8yEkkAvQiyO7ksteiZAsQM0hRs
+        gTMkeU2d1zSva1eBJ+h5R99d4TYxusA=
+X-Google-Smtp-Source: AMrXdXsmzBMSZPch7UiwYabwQzLapo/soRnALbb1S0J1r7eZWYbNAQgWAatUD9A5tFs5gFZHWqpuPQ==
+X-Received: by 2002:a17:906:9c8b:b0:84d:ed5:a406 with SMTP id fj11-20020a1709069c8b00b0084d0ed5a406mr29561495ejc.14.1674219522758;
+        Fri, 20 Jan 2023 04:58:42 -0800 (PST)
+Received: from [192.168.0.175] ([37.220.41.3])
+        by smtp.gmail.com with ESMTPSA id lb24-20020a170907785800b008448d273670sm17670873ejc.49.2023.01.20.04.58.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Jan 2023 04:56:35 -0800 (PST)
-Date:   Fri, 20 Jan 2023 13:56:34 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vadim Fedorenko <vadfed@meta.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        Milena Olech <milena.olech@intel.com>,
-        Michal Michalik <michal.michalik@intel.com>
-Subject: Re: [RFC PATCH v5 1/4] dpll: Add DPLL framework base functions
-Message-ID: <Y8qPgj9BFsbFKhwx@nanopsycho>
-References: <20230117180051.2983639-1-vadfed@meta.com>
- <20230117180051.2983639-2-vadfed@meta.com>
- <Y8l63RF8DQz3i0LY@nanopsycho>
+        Fri, 20 Jan 2023 04:58:42 -0800 (PST)
+Message-ID: <46a87c152b967d42ba4af33b2d11791781e9df7f.camel@gmail.com>
+Subject: issue with ethernet gigabit ethernet card both on stable and rc
+ kernels
+From:   vmxevilstar@gmail.com
+To:     nic_swsd@realtek.com, netdev@vger.kernel.org
+Cc:     hkallweit1@gmail.com
+Date:   Fri, 20 Jan 2023 13:58:41 +0100
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y8l63RF8DQz3i0LY@nanopsycho>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,166 +69,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jan 19, 2023 at 06:16:13PM CET, jiri@resnulli.us wrote:
->Tue, Jan 17, 2023 at 07:00:48PM CET, vadfed@meta.com wrote:
+Dear Mantainers,
 
-[...]
+I am having an issue with my ethernet card.
+It works when the system boots but after around a couple of hours it
+disconnects.
+I tried different ways to get it working without having to reboot but
+nothing else seemed to work.
+Even rebooting doesn't solve the problem since again, after a couple of
+hours, it stops working again.
+I have googled around and found that some people had this same problem
+on older kernels but no solution seemed to apply to this rc nor latest
+stable kernel versions.
+I am probably missing something here.
+The issue happened also with recent stable 6.1.7 and rc kernel
+versions.
+I am actually testing the latest 6.2-rc4 version.
 
+Following are some data I think might be useful but if you feel I
+neglected to give enough informations and you need more please just ask
+me.
 
->>+/**
->>+ * dpll_cmd - Commands supported by the dpll generic netlink family
->>+ *
->>+ * @DPLL_CMD_UNSPEC - invalid message type
->>+ * @DPLL_CMD_DEVICE_GET - Get list of dpll devices (dump) or attributes of
->>+ *	single dpll device and it's pins
->>+ * @DPLL_CMD_DEVICE_SET - Set attributes for a dpll
->>+ * @DPLL_CMD_PIN_SET - Set attributes for a pin
->>+ **/
->>+enum dpll_cmd {
->>+	DPLL_CMD_UNSPEC,
->>+	DPLL_CMD_DEVICE_GET,
->>+	DPLL_CMD_DEVICE_SET,
->>+	DPLL_CMD_PIN_SET,
->
->Have pin get to get list of pins, then you can have 1:1 mapping to
->events and loose the enum dpll_event_change. This is the usual way to do
->stuff. Events have the same cmd and message format as get.
+Here some informations about my system :
+uname -a
+Linux ghost 6.2.0-rc4 #2 SMP PREEMPT_DYNAMIC Tue Jan 17 13:35:46 CET
+2023 x86_64 GNU/Linux
 
-I was thinking about that a bit more.
-1) There is 1:n relationship between PIN and DPLL(s).
-2) The pin configuration is independent on DPLL, with an
-   exeption of PRIO.
-
-Therefore as I suggested in the reply to this patch, the pin should be
-separate entity, allocated and having ops unrelated to DPLL. It is just
-registered to the DPLLs that are using the pin.
-
-The pin ops should not have dpll pointer as arg, again with exception of
-PRIO.
-
-DPLL_CMD_DEVICE_GET should not contain pins at all.
-
-There should be DPLL_CMD_PIN_GET added which can dump and will be used
-to get the list of pins in the system.
-- if DPLL handle is passed to DPLL_CMD_PIN_GET, it will dump only pins
-  related to the specified DPLL.
-
-DPLL_CMD_PIN_GET message will contain pin-specific attrs and will have a
-list of connected DPLLs:
-       DPLLA_PIN_IDX
-       DPLLA_PIN_DESCRIPTION
-       DPLLA_PIN_TYPE
-       DPLLA_PIN_SIGNAL_TYPE
-       DPLLA_PIN_SIGNAL_TYPE_SUPPORTED
-       DPLLA_PIN_CUSTOM_FREQ
-       DPLLA_PIN_MODE
-       DPLLA_PIN_MODE_SUPPORTED
-       DPLLA_PIN_PARENT_IDX
-       DPLLA_PIN_DPLL    (nested)
-          DPLLA_DPLL_HANDLE   "dpll_0"
-          DPLLA_PIN_PRIO    1
-       DPLLA_PIN_DPLL    (nested)
-          DPLLA_DPLL_HANDLE   "dpll_1"
-          DPLLA_PIN_PRIO    2
-
-Please take the names lightly. My point is to show 2 nests for 2
-DPLLS connected, on each the pin has different prio.
-
-Does this make sense?
-
-One issue to be solved is the pin indexing. As pin would be separate
-entity, the indexing would be global and therefore not predictable. We
-would have to figure it out differntly. Pehaps something like this:
-
-$ dpll dev show
-pci/0000:08:00.0: dpll 1             first dpll on 0000:08:00.0
-pci/0000:08:00.0: dpll 2             second dpll on the same pci device
-pci/0000:09:00.0: dpll 1             first dpll on 0000:09:00.0
-pci/0000:09:00.0: dpll 2             second dpll on the same pci device
-
-$ dpll pin show
-pci/0000:08:00.0: pin 1 desc SOMELABEL_A
-  dpll 1:                          This refers to DPLL 1 on the same pci device
-    prio 80
-  dpll 2:                          This refers to DPLL 2 on the same pci device
-    prio 100
-pci/0000:08:00.0: pin 2 desc SOMELABEL_B
-  dpll 1:
-    prio 80
-  dpll 2:
-    prio 100
-pci/0000:08:00.0: pin 3 desc SOMELABEL_C
-  dpll 1:
-    prio 80
-  dpll 2:
-    prio 100
-pci/0000:08:00.0: pin 4 desc SOMELABEL_D
-  dpll 1:
-    prio 80
-  dpll 2:
-    prio 100
-pci/0000:09:00.0: pin 1 desc SOMEOTHERLABEL_A
-  dpll 1:
-    prio 80
-  dpll 2:
-    prio 100
-pci/0000:09:00.0: pin 2 desc SOMEOTHERLABEL_B
-  dpll 1:
-    prio 80
-  dpll 2:
-    prio 100
-pci/0000:09:00.0: pin 3 desc SOMEOTHERLABEL_C
-  dpll 1:
-    prio 80
-  dpll 2:
-    prio 100
-pci/0000:09:00.0: pin 4 desc SOMEOTHERLABEL_C
-  dpll 1:
-    prio 80
-  dpll 2:
-    prio 100
-
-Note there are 2 groups of pins, one for each pci device.
-
-Setting some attribute command would looks like:
-To set DPLL mode:
-$ dpll dev set pci/0000:08:00.0 dpll 1 mode freerun
-   netlink:
-   DPLL_CMD_DEVICE_SET
-      DPLLA_BUS_NAME "pci"
-      DPLLA_DEV_NAME "0000:08:00.0"
-      DPLLA_DPLL_INDEX 1
-      DPLLA_DPLL_MODE 3
-
-$ dpll dev set pci/0000:08:00.0 dpll 2 mode automatic
+gcc --version
+gcc (Debian 12.2.0-14) 12.2.0
+Copyright (C) 2022 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is
+NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 
-To set signal frequency in HZ:
-$ dpll pin set pci/0000:08:00.0 pin 3 frequency 10000000
-   netlink:
-   DPLL_CMD_PIN_SET
-      DPLLA_BUS_NAME "pci"
-      DPLLA_DEV_NAME "0000:08:00.0"
-      DPLLA_PIN_INDEX 3
-      DPLLA_PIN_FREQUENCY 10000000
+/usr/src# lspci|grep -i net
+02:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8125
+2.5GbE Controller (rev 05)
 
-$ dpll pin set pci/0000:08:00.0 pin 1 frequency 1
-
-
-To set individual of one pin for 2 DPLLs:
-$ dpll pin set pci/0000:08:00.0 pin 1 dpll 1 prio 40
-   netlink:
-   DPLL_CMD_PIN_SET
-      DPLLA_BUS_NAME "pci"
-      DPLLA_DEV_NAME "0000:08:00.0"
-      DPLLA_PIN_INDEX 1
-      DPLLA_DPLL_INDEX 1
-      DPLLA_PIN_PRIO 40
-
-$ dpll pin set pci/0000:08:00.0 pin 1 dpll 2 prio 80
-
-
-Isn't this neat?
+description: Ethernet interface
+product: RTL8125 2.5GbE Controller
+vendor: Realtek Semiconductor Co., Ltd.
+physical id: 0
+bus info: pci@0000:02:00.0
+logical name: enp2s0
+version: ff
+serial: b0:25:aa:49:a5:3a
+size: 1Gbit/s
+capacity: 1Gbit/s
+width: 32 bits
+clock: 66MHz
+capabilities: bus_master vga_palette cap_list ethernet physical tp mii
+10bt 10bt-fd 100bt 100bt-fd 1000bt-fd autonegotiation
+configuration: autonegotiation=3Don broadcast=3Dyes driver=3Dr8169
+driverversion=3D6.2.0-rc4 duplex=3Dfull firmware=3Drtl8125b-2_0.0.2 07/13/2=
+0
+latency=3D255 link=3Dyes maxlatency=3D255 mingnt=3D255 multicast=3Dyes
+port=3Dtwisted pair speed=3D1Gbit/s
 
 
-[...]
+
+lsmod|grep r8169
+r8169                 110592  0
+mdio_devres            16384  1 r8169
+libphy                200704  3 r8169,mdio_devres,realtek
+
+the firmware version I am using is linux-firmware-20221214.tar.gz
+
+
+Here you can find what happens (dmesg -wT)
+[Fri Jan 20 11:04:32 2023] userif-3: sent link up event.
+
+[Fri Jan 20 13:19:41 2023] r8169 0000:02:00.0 enp2s0: rtl_chipcmd_cond
+=3D=3D 1 (loop: 100, delay: 100).
+[Fri Jan 20 13:19:41 2023] r8169 0000:02:00.0 enp2s0: rtl_ephyar_cond
+=3D=3D 1 (loop: 100, delay: 10).
+[Fri Jan 20 13:19:41 2023] r8169 0000:02:00.0 enp2s0: rtl_ephyar_cond
+=3D=3D 1 (loop: 100, delay: 10).
+[Fri Jan 20 13:19:41 2023] r8169 0000:02:00.0 enp2s0: rtl_ephyar_cond
+=3D=3D 1 (loop: 100, delay: 10).
+[Fri Jan 20 13:19:41 2023] r8169 0000:02:00.0 enp2s0: rtl_ephyar_cond
+=3D=3D 1 (loop: 100, delay: 10).
+[Fri Jan 20 13:19:41 2023] r8169 0000:02:00.0 enp2s0: rtl_ephyar_cond
+=3D=3D 1 (loop: 100, delay: 10).
+[Fri Jan 20 13:19:41 2023] r8169 0000:02:00.0 enp2s0: rtl_ephyar_cond
+=3D=3D 1 (loop: 100, delay: 10).
+[Fri Jan 20 13:19:41 2023] r8169 0000:02:00.0 enp2s0:
+rtl_mac_ocp_e00e_cond =3D=3D 1 (loop: 10, delay: 1000).
+[Fri Jan 20 13:20:17 2023] r8169 0000:02:00.0 enp2s0: rtl_chipcmd_cond
+=3D=3D 1 (loop: 100, delay: 100).
+[Fri Jan 20 13:20:17 2023] r8169 0000:02:00.0 enp2s0: rtl_ephyar_cond
+=3D=3D 1 (loop: 100, delay: 10).
+[Fri Jan 20 13:20:17 2023] r8169 0000:02:00.0 enp2s0: rtl_ephyar_cond
+=3D=3D 1 (loop: 100, delay: 10).
+[Fri Jan 20 13:20:17 2023] r8169 0000:02:00.0 enp2s0: rtl_ephyar_cond
+=3D=3D 1 (loop: 100, delay: 10).
+[Fri Jan 20 13:20:17 2023] r8169 0000:02:00.0 enp2s0: rtl_ephyar_cond
+=3D=3D 1 (loop: 100, delay: 10).
+[Fri Jan 20 13:20:17 2023] r8169 0000:02:00.0 enp2s0: rtl_ephyar_cond
+=3D=3D 1 (loop: 100, delay: 10).
+[Fri Jan 20 13:20:17 2023] r8169 0000:02:00.0 enp2s0: rtl_ephyar_cond
+=3D=3D 1 (loop: 100, delay: 10).
+[Fri Jan 20 13:20:18 2023] r8169 0000:02:00.0 enp2s0:
+rtl_mac_ocp_e00e_cond =3D=3D 1 (loop: 10, delay: 1000).
+
+I would love to provide a patch of any kind but I am afraid I don't
+have enough programming skills.
+
+Thanks in advance for your time.
