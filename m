@@ -2,76 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FF7C6752F0
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 12:02:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00AEE6752F2
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 12:04:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230055AbjATLCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 06:02:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33016 "EHLO
+        id S230017AbjATLE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 06:04:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229947AbjATLCj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 06:02:39 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F25CA2D4C
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 03:02:35 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id g11so800134eda.12
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 03:02:35 -0800 (PST)
+        with ESMTP id S229616AbjATLE2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 06:04:28 -0500
+Received: from mail-vk1-xa33.google.com (mail-vk1-xa33.google.com [IPv6:2607:f8b0:4864:20::a33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF951711
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 03:04:26 -0800 (PST)
+Received: by mail-vk1-xa33.google.com with SMTP id 22so1595405vkn.2
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 03:04:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=w3BQGuS5wR8NiA6sT4SKojEob1eFqC1AJe9Sq0A+Q5o=;
-        b=kkEB009RJIiBrnEhLTuanYu7zoM9xYU5bFgJ32BNK/2ozzOuakzW5U1EyMIeDR9kFo
-         N/ozXdBAPRN6FHS/2AFLzlbS8Iw+WTj0Cqrph7VPxNPtPJeaZ3hvOzzTvDdDX3ZjqNsz
-         MnRyPtxpDbE9QPPgEgLoEzArOqOqlsxiD6wqWYgu/NgKjUY6/0TKmpos7VZnhSEFUDN3
-         5ceTnfHKXkkkUGFIA35P289YX6Wic6E2+FtNbncn3DAxoRTV6imXOqCC9PKCqB4Fd//1
-         7uetnQJpVvjoTmY/nErWdNXh3gCp+f0R59lHdW/ZmX0KM40Ee2reRX6lr29bLmN1ZZMt
-         0Mcw==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=V102slvOdbse8iGapjkIw4pRPbPleD4DJH8xoa95u40=;
+        b=JLCdlMYFxFQRybMSIng0Mk8RA6qSiYWWIUhkexDQL894Qp4aCUrFzp0CUEjiWagpYr
+         mTe+Oz05H4wz/uhV43YDM6aQEZUeuihzOoZJIoXh83u6Wg74iv8fZnOQsAHLZiPYBBt9
+         EJTyg2oDLnNQLI6IKYfLelTrBhAJhpyTXJrqvX1zuUQ2OC96Zomurhpz1O37ufcDYSzX
+         zgV423+peEswrkt085LAGRm7G7wWIaQLb5w3b2U5TGRPN/VNx6rAjB+VtxOocKSNYrvj
+         j6Wux7fVdjt4NlAU720gKLNnyjIgyOhqIKqqFb/dCWRoR/y5S8hhiU4VLj+DBzHCOpQj
+         9ALg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=w3BQGuS5wR8NiA6sT4SKojEob1eFqC1AJe9Sq0A+Q5o=;
-        b=nUZ5T5ozuHYFFCulVyd+MMX0182BBaF+Wm8iwY2PAOqy84W1/aHsIs2nALklX8AqcR
-         Md8/C5HAkEMn3ahbl9LzVgkQAREBkoM/TuwzZVobXE6erGmKvR39D4IaiAS7pKrL+knN
-         2+h/xeuUSPRZY/+PNaDYCmWGpELL9fqcQo8rS/AvLzrzHswzeOYEJ5q0achjvulvxxpU
-         fXpUHmqFL5mfmzrndTDdTSJbQaiAWLy9zn1u17fgzsYCvBmWc/9iDXKpvi3ssxW7wnRK
-         xdsrOe0bXvM+XSuFRoiIBLkwCRnzECvulDbm2JCSU+afBP4pSGRvfXQEH6leKAOgk7s6
-         nJqQ==
-X-Gm-Message-State: AFqh2ko8XHRjhawm6K239Mi62txezJg6mCQDnay2yTPYG94lBIsmGMyJ
-        o4bi9C3BN2gur0Sc1deMdDJzCg==
-X-Google-Smtp-Source: AMrXdXtAddiSr7xyX1k9NCPPD2YzCCeRnl28gXzO0ov+spVfP4XAOvGkzClMYN5e4tt6yEOea5GLrw==
-X-Received: by 2002:a05:6402:524f:b0:49e:910:5706 with SMTP id t15-20020a056402524f00b0049e09105706mr20591317edd.2.1674212554321;
-        Fri, 20 Jan 2023 03:02:34 -0800 (PST)
-Received: from localhost ([217.111.27.204])
-        by smtp.gmail.com with ESMTPSA id v15-20020a056402184f00b0046c5baa1f58sm16980263edy.97.2023.01.20.03.02.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Jan 2023 03:02:33 -0800 (PST)
-Date:   Fri, 20 Jan 2023 12:02:32 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-net-drivers (AMD-Xilinx)" <linux-net-drivers@amd.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "habetsm@gmail.com" <habetsm@gmail.com>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>
-Subject: Re: [PATCH net-next 1/7] sfc: add devlink support for ef100
-Message-ID: <Y8p0yMfI/9eYuS5W@nanopsycho>
-References: <20230119113140.20208-1-alejandro.lucero-palau@amd.com>
- <20230119113140.20208-2-alejandro.lucero-palau@amd.com>
- <Y8k0FsF/3vFKKEU8@nanopsycho>
- <11c59e1f-0465-09c1-638b-d79447752735@amd.com>
- <29526f6b-5c63-be03-69c6-11b6ed3158aa@amd.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=V102slvOdbse8iGapjkIw4pRPbPleD4DJH8xoa95u40=;
+        b=qTqhy+ZaQ+IHRF2WLVzp/Ymju7wxa1pbYuiWeSV8rQvyLE7WD+FOJSakyneW2RlO0Q
+         DgALXuy/DFR8Lq/5pVDMJ7soyjlTt4IKMIhTGM3lL1ELdFOfi8bmD/p/lm4Bj0Vf7Cbm
+         LsmWyMKE8PkuU+KUmmcFYRWs711Nts4G8cl4JraRM1R1jy1J8q2SkTw/5oqdcaUfh8Hk
+         qa3xzJG+83wyMfn91S40qg7LUgEzsmKjSNPna9g1cTIdEDk2R/RlisiU5D+J8+ICU+Ht
+         P3jqZTxl3fiLc9X0OGZXV43jwRI7XeaDxUc7KhRiNYs/iqZGAyufKKBkL8be8Ya9F6d3
+         kj4g==
+X-Gm-Message-State: AFqh2koVjmjH2Ku7VPaLZCJTAGJurH4BsWKDMOsh/0ARtRputftR8PAQ
+        1V/S6NUUk1KPUnZT02tYgSE5xdHeykghJm04SOk=
+X-Google-Smtp-Source: AMrXdXsulo7vWOSXMRMVoOjK42MCVaAH97g2ALebO7e3lJUXlMP9mvXv4B/q19Hcq+LtwdUjCi+EIp8Vtb8Pi4sGjus=
+X-Received: by 2002:a1f:5284:0:b0:3e1:5d4d:54f2 with SMTP id
+ g126-20020a1f5284000000b003e15d4d54f2mr2071290vkb.26.1674212665574; Fri, 20
+ Jan 2023 03:04:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <29526f6b-5c63-be03-69c6-11b6ed3158aa@amd.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+References: <6dfd03c5fa0afb99f255f4a35772df19e33880db.1674156645.git.antony.antony@secunet.com>
+ <2527cc66bfbcf70bcfd64efdf8ff79d60199827e.1674156645.git.antony.antony@secunet.com>
+In-Reply-To: <2527cc66bfbcf70bcfd64efdf8ff79d60199827e.1674156645.git.antony.antony@secunet.com>
+From:   Eyal Birger <eyal.birger@gmail.com>
+Date:   Fri, 20 Jan 2023 13:04:13 +0200
+Message-ID: <CAHsH6GuS+QCnk9L1qO9qyBZ05SCgQnvQp8Djf1UR09EpH9tYWQ@mail.gmail.com>
+Subject: Re: [PATCH 2/3] xfrm: Support GRO for IPv4 ESP in UDP encapsulation.
+To:     antony.antony@secunet.com
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,726 +68,282 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jan 19, 2023 at 05:29:37PM CET, alejandro.lucero-palau@amd.com wrote:
->
->On 1/19/23 14:51, Lucero Palau, Alejandro wrote:
->> On 1/19/23 12:14, Jiri Pirko wrote:
->>> Thu, Jan 19, 2023 at 12:31:34PM CET, alejandro.lucero-palau@amd.com wrote:
->>>> From: Alejandro Lucero <alejandro.lucero-palau@amd.com>
->>>>
->>>> Basic support for devlink info command.
->>>>
->>>> Signed-off-by: Alejandro Lucero <alejandro.lucero-palau@amd.com>
->>>> ---
->>>> drivers/net/ethernet/sfc/Kconfig       |   1 +
->>>> drivers/net/ethernet/sfc/Makefile      |   3 +-
->>>> drivers/net/ethernet/sfc/ef100_nic.c   |   6 +
->>>> drivers/net/ethernet/sfc/efx_devlink.c | 427 +++++++++++++++++++++++++
->>>> drivers/net/ethernet/sfc/efx_devlink.h |  20 ++
->>>> drivers/net/ethernet/sfc/mcdi.c        |  72 +++++
->>>> drivers/net/ethernet/sfc/mcdi.h        |   3 +
->>>> drivers/net/ethernet/sfc/net_driver.h  |   2 +
->>>> 8 files changed, 533 insertions(+), 1 deletion(-)
->>>> create mode 100644 drivers/net/ethernet/sfc/efx_devlink.c
->>>> create mode 100644 drivers/net/ethernet/sfc/efx_devlink.h
->>> Could you please split?
->>>
->>> At least the devlink introduction part and info implementation.
->>>
->> Sure.
->
->Just for being sure, would it be fine to have a simple info 
->implementation first along with the devlink infrastructure then a second 
->patch adding the more complex devlink info support? I guess I need at 
->least one operation supported initially.
+Hi,
 
-No, it does not need to support any op.
+On Thu, Jan 19, 2023 at 10:00 PM Antony Antony
+<antony.antony@secunet.com> wrote:
+>
+> From: Steffen Klassert <steffen.klassert@secunet.com>
+>
+> This patch enables the GRO codepath for IPv4 ESP in UDP encapsulated
+> packets. Decapsulation happens at L2 and saves a full round through
+> the stack for each packet. This is also needed to support HW offload
+> for ESP in UDP encapsulation.
+>
+> Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+> Co-developed-by: Antony Antony <antony.antony@secunet.com>
+> Signed-off-by: Antony Antony <antony.antony@secunet.com>
+> ---
+>  include/net/gro.h       |  2 +-
+>  include/net/xfrm.h      |  4 ++
+>  net/ipv4/esp4_offload.c | 11 ++++-
+>  net/ipv4/udp.c          |  4 +-
+>  net/ipv4/xfrm4_input.c  | 99 +++++++++++++++++++++++++++++++++--------
+>  5 files changed, 99 insertions(+), 21 deletions(-)
+>
+> diff --git a/include/net/gro.h b/include/net/gro.h
+> index a4fab706240d..41c12c5d1ea1 100644
+> --- a/include/net/gro.h
+> +++ b/include/net/gro.h
+> @@ -29,7 +29,7 @@ struct napi_gro_cb {
+>         /* Number of segments aggregated. */
+>         u16     count;
+>
+> -       /* Used in ipv6_gro_receive() and foo-over-udp */
+> +       /* Used in ipv6_gro_receive() and foo-over-udp and esp-in-udp */
+>         u16     proto;
+>
+>         /* jiffies when first packet was created/queued */
+> diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+> index 3e1f70e8e424..74dba98fbf2c 100644
+> --- a/include/net/xfrm.h
+> +++ b/include/net/xfrm.h
+> @@ -1666,6 +1666,8 @@ void xfrm_local_error(struct sk_buff *skb, int mtu);
+>  int xfrm4_extract_input(struct xfrm_state *x, struct sk_buff *skb);
+>  int xfrm4_rcv_encap(struct sk_buff *skb, int nexthdr, __be32 spi,
+>                     int encap_type);
+> +struct sk_buff *xfrm4_gro_udp_encap_rcv(struct sock *sk, struct list_head *head,
+> +                                       struct sk_buff *skb);
+>  int xfrm4_transport_finish(struct sk_buff *skb, int async);
+>  int xfrm4_rcv(struct sk_buff *skb);
+>
+> @@ -1706,6 +1708,8 @@ int xfrm6_output(struct net *net, struct sock *sk, struct sk_buff *skb);
+>  void xfrm6_local_rxpmtu(struct sk_buff *skb, u32 mtu);
+>  int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb);
+>  int xfrm6_udp_encap_rcv(struct sock *sk, struct sk_buff *skb);
+> +struct sk_buff *xfrm4_gro_udp_encap_rcv(struct sock *sk, struct list_head *head,
+> +                                       struct sk_buff *skb);
+>  int xfrm_user_policy(struct sock *sk, int optname, sockptr_t optval,
+>                      int optlen);
+>  #else
+> diff --git a/net/ipv4/esp4_offload.c b/net/ipv4/esp4_offload.c
+> index 77bb01032667..8769bb669fdd 100644
+> --- a/net/ipv4/esp4_offload.c
+> +++ b/net/ipv4/esp4_offload.c
+> @@ -32,6 +32,7 @@ static struct sk_buff *esp4_gro_receive(struct list_head *head,
+>         int offset = skb_gro_offset(skb);
+>         struct xfrm_offload *xo;
+>         struct xfrm_state *x;
+> +       int encap_type = 0;
+>         __be32 seq;
+>         __be32 spi;
+>
+> @@ -69,6 +70,14 @@ static struct sk_buff *esp4_gro_receive(struct list_head *head,
+>
+>         xo->flags |= XFRM_GRO;
+>
+> +       if (NAPI_GRO_CB(skb)->proto == IPPROTO_UDP && skb->sk &&
+> +           (udp_sk(skb->sk)->encap_type == UDP_ENCAP_ESPINUDP ||
+> +            udp_sk(skb->sk)->encap_type == UDP_ENCAP_ESPINUDP_NON_IKE)) {
+> +               encap_type = udp_sk(skb->sk)->encap_type;
+> +               sock_put(skb->sk);
+> +               skb->sk = NULL;
+> +       }
+> +
+>         XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip4 = NULL;
+>         XFRM_SPI_SKB_CB(skb)->family = AF_INET;
+>         XFRM_SPI_SKB_CB(skb)->daddroff = offsetof(struct iphdr, daddr);
+> @@ -76,7 +85,7 @@ static struct sk_buff *esp4_gro_receive(struct list_head *head,
+>
+>         /* We don't need to handle errors from xfrm_input, it does all
+>          * the error handling and frees the resources on error. */
+> -       xfrm_input(skb, IPPROTO_ESP, spi, 0);
+> +       xfrm_input(skb, IPPROTO_ESP, spi, encap_type);
+>
+>         return ERR_PTR(-EINPROGRESS);
+>  out_reset:
+> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> index 9592fe3e444a..6a30d0210c4e 100644
+> --- a/net/ipv4/udp.c
+> +++ b/net/ipv4/udp.c
+> @@ -2729,9 +2729,11 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
+>  #if IS_ENABLED(CONFIG_IPV6)
+>                         if (sk->sk_family == AF_INET6)
+>                                 up->encap_rcv = ipv6_stub->xfrm6_udp_encap_rcv;
+> -                       else
+>  #endif
+> +                       if (sk->sk_family == AF_INET) {
+>                                 up->encap_rcv = xfrm4_udp_encap_rcv;
+> +                               up->gro_receive = xfrm4_gro_udp_encap_rcv;
+> +                       }
+>  #endif
+>                         fallthrough;
+>                 case UDP_ENCAP_L2TPINUDP:
+> diff --git a/net/ipv4/xfrm4_input.c b/net/ipv4/xfrm4_input.c
+> index ad2afeef4f10..768d12491a48 100644
+> --- a/net/ipv4/xfrm4_input.c
+> +++ b/net/ipv4/xfrm4_input.c
+> @@ -17,6 +17,8 @@
+>  #include <linux/netfilter_ipv4.h>
+>  #include <net/ip.h>
+>  #include <net/xfrm.h>
+> +#include <net/protocol.h>
+> +#include <net/gro.h>
+>
+>  static int xfrm4_rcv_encap_finish2(struct net *net, struct sock *sk,
+>                                    struct sk_buff *skb)
+> @@ -72,14 +74,7 @@ int xfrm4_transport_finish(struct sk_buff *skb, int async)
+>         return 0;
+>  }
+>
+> -/* If it's a keepalive packet, then just eat it.
+> - * If it's an encapsulated packet, then pass it to the
+> - * IPsec xfrm input.
+> - * Returns 0 if skb passed to xfrm or was dropped.
+> - * Returns >0 if skb should be passed to UDP.
+> - * Returns <0 if skb should be resubmitted (-ret is protocol)
+> - */
+> -int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
+> +static int __xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb, bool pull)
+>  {
+>         struct udp_sock *up = udp_sk(sk);
+>         struct udphdr *uh;
+> @@ -110,7 +105,7 @@ int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
+>         case UDP_ENCAP_ESPINUDP:
+>                 /* Check if this is a keepalive packet.  If so, eat it. */
+>                 if (len == 1 && udpdata[0] == 0xff) {
+> -                       goto drop;
+> +                       return -EINVAL;
+>                 } else if (len > sizeof(struct ip_esp_hdr) && udpdata32[0] != 0) {
+>                         /* ESP Packet without Non-ESP header */
+>                         len = sizeof(struct udphdr);
+> @@ -121,7 +116,7 @@ int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
+>         case UDP_ENCAP_ESPINUDP_NON_IKE:
+>                 /* Check if this is a keepalive packet.  If so, eat it. */
+>                 if (len == 1 && udpdata[0] == 0xff) {
+> -                       goto drop;
+> +                       return -EINVAL;
+>                 } else if (len > 2 * sizeof(u32) + sizeof(struct ip_esp_hdr) &&
+>                            udpdata32[0] == 0 && udpdata32[1] == 0) {
+>
+> @@ -139,7 +134,7 @@ int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
+>          * protocol to ESP, and then call into the transform receiver.
+>          */
+>         if (skb_unclone(skb, GFP_ATOMIC))
+> -               goto drop;
+> +               return -EINVAL;
+>
+>         /* Now we can update and verify the packet length... */
+>         iph = ip_hdr(skb);
+> @@ -147,24 +142,92 @@ int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
+>         iph->tot_len = htons(ntohs(iph->tot_len) - len);
+>         if (skb->len < iphlen + len) {
+>                 /* packet is too small!?! */
+> -               goto drop;
+> +               return -EINVAL;
+>         }
+>
+>         /* pull the data buffer up to the ESP header and set the
+>          * transport header to point to ESP.  Keep UDP on the stack
+>          * for later.
+>          */
+> -       __skb_pull(skb, len);
+> -       skb_reset_transport_header(skb);
+> +       if (pull) {
+> +               __skb_pull(skb, len);
+> +               skb_reset_transport_header(skb);
+> +       } else {
+> +               skb_set_transport_header(skb, len);
+> +       }
+>
+>         /* process ESP */
+> -       return xfrm4_rcv_encap(skb, IPPROTO_ESP, 0, encap_type);
+> -
+> -drop:
+> -       kfree_skb(skb);
+>         return 0;
+>  }
+>
+> +/* If it's a keepalive packet, then just eat it.
+> + * If it's an encapsulated packet, then pass it to the
+> + * IPsec xfrm input.
+> + * Returns 0 if skb passed to xfrm or was dropped.
+> + * Returns >0 if skb should be passed to UDP.
+> + * Returns <0 if skb should be resubmitted (-ret is protocol)
+> + */
+> +int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
+> +{
+> +       int ret;
+> +
+> +       ret = __xfrm4_udp_encap_rcv(sk, skb, true);
+> +       if (!ret)
+> +               return xfrm4_rcv_encap(skb, IPPROTO_ESP, 0,
+> +                                      udp_sk(sk)->encap_type);
+> +
+> +       if (ret < 0) {
+> +               kfree_skb(skb);
+> +               return 0;
+> +       }
+> +
+> +       return ret;
+> +}
+> +
+> +struct sk_buff *xfrm4_gro_udp_encap_rcv(struct sock *sk, struct list_head *head,
+> +                                       struct sk_buff *skb)
+> +{
+> +       int offset = skb_gro_offset(skb);
+> +       const struct net_offload *ops;
+> +       struct sk_buff *pp = NULL;
+> +       int ret;
+> +
+> +       offset = offset - sizeof(struct udphdr);
+> +
+> +       if (!pskb_pull(skb, offset))
+> +               return NULL;
+> +
+> +       if (!refcount_inc_not_zero(&sk->sk_refcnt))
+> +               return NULL;
+> +
 
+Isn't a push needed in case of failure above?
 
->
->>>> diff --git a/drivers/net/ethernet/sfc/Kconfig b/drivers/net/ethernet/sfc/Kconfig
->>>> index 0950e6b0508f..4af36ba8906b 100644
->>>> --- a/drivers/net/ethernet/sfc/Kconfig
->>>> +++ b/drivers/net/ethernet/sfc/Kconfig
->>>> @@ -22,6 +22,7 @@ config SFC
->>>> 	depends on PTP_1588_CLOCK_OPTIONAL
->>>> 	select MDIO
->>>> 	select CRC32
->>>> +	select NET_DEVLINK
->>>> 	help
->>>> 	  This driver supports 10/40-gigabit Ethernet cards based on
->>>> 	  the Solarflare SFC9100-family controllers.
->>>> diff --git a/drivers/net/ethernet/sfc/Makefile b/drivers/net/ethernet/sfc/Makefile
->>>> index 712a48d00069..55b9c73cd8ef 100644
->>>> --- a/drivers/net/ethernet/sfc/Makefile
->>>> +++ b/drivers/net/ethernet/sfc/Makefile
->>>> @@ -6,7 +6,8 @@ sfc-y			+= efx.o efx_common.o efx_channels.o nic.o \
->>>> 			   mcdi.o mcdi_port.o mcdi_port_common.o \
->>>> 			   mcdi_functions.o mcdi_filters.o mcdi_mon.o \
->>>> 			   ef100.o ef100_nic.o ef100_netdev.o \
->>>> -			   ef100_ethtool.o ef100_rx.o ef100_tx.o
->>>> +			   ef100_ethtool.o ef100_rx.o ef100_tx.o \
->>>> +			   efx_devlink.o
->>>> sfc-$(CONFIG_SFC_MTD)	+= mtd.o
->>>> sfc-$(CONFIG_SFC_SRIOV)	+= sriov.o ef10_sriov.o ef100_sriov.o ef100_rep.o \
->>>>                              mae.o tc.o tc_bindings.o tc_counters.o
->>>> diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
->>>> index ad686c671ab8..14af8f314b83 100644
->>>> --- a/drivers/net/ethernet/sfc/ef100_nic.c
->>>> +++ b/drivers/net/ethernet/sfc/ef100_nic.c
->>>> @@ -27,6 +27,7 @@
->>>> #include "tc.h"
->>>> #include "mae.h"
->>>> #include "rx_common.h"
->>>> +#include "efx_devlink.h"
->>>>
->>>> #define EF100_MAX_VIS 4096
->>>> #define EF100_NUM_MCDI_BUFFERS	1
->>>> @@ -1124,6 +1125,10 @@ int ef100_probe_netdev_pf(struct efx_nic *efx)
->>>> 		netif_warn(efx, probe, net_dev,
->>>> 			   "Failed to probe base mport rc %d; representors will not function\n",
->>>> 			   rc);
->>>> +	} else {
->>>> +		if (efx_probe_devlink(efx))
->>> I don't understand why the devlink register call is here.
->>> 1) You can registers it for PF and VF. I don't follow why you do it only
->>>      for PF.
->> We discuss the possibility of creating the devlink interface for VFs,
->> but we decided not to. Arguably, this should not be available for VFs
->> owned by VMs/containers, or at least in our case, since the interface is
->> being used for getting information about the whole device or for
->> getting/setting the MAC address. We plan to support more devlink
->> functionalities in the near future, so maybe we add such support then if
->> we consider it is needed.
->>
->>> 2) It should be done as the first thing in the probe flow. Then devlink
->>>      port register, only after that netdev. It makes sense from the
->>>      perspective of object hierarchy.
->> I can not see a problem here. It is not the first thing done in the
->> probe function, but I can not see any dependency for being so. And it is
->> done before the devlink port registration and before the netdev
->> registration what seems to be what other drivers do. What am I missing
->> here?
->>
->>>      It is also usual to have the devlink priv as the "main" driver
->>>      structure storage, see how that is done in mlx5 of mlxsw for example.
->> I will check the way others drivers use the devlink priv.
->
->
->Interestingly, there are 26 calls to devlink_alloc with half of them 
->using the main driver structure and the other half using a specific 
->devlink private struct. This is a huge responsibility now for me!
->
->I'm afraid, for the shake of having this merged as soon as possible, 
->I'll keep the current allocation. I did not suffer any problem with this 
->approach while implementing the current support. If, for the further 
->devlink support we plan to add, it turns out to be an issue, we will to 
->the changes then. I would say it is a main change now or then, and 
->current work does not justify it now.
+> +       rcu_read_lock();
+> +       ops = rcu_dereference(inet_offloads[IPPROTO_ESP]);
+> +       if (!ops || !ops->callbacks.gro_receive)
+> +               goto out;
+> +
+> +       ret = __xfrm4_udp_encap_rcv(sk, skb, false);
+> +       if (ret)
+> +               goto out;
+> +
+> +       skb->sk = sk;
 
-Up to you, it will eventualy bite you in the *** when you implement
-devlink reload for example.
+Don't you need something like skb_set_owner_sk_safe() so the
+destructor is also set?
 
+> +       skb_push(skb, offset);
+> +       NAPI_GRO_CB(skb)->proto = IPPROTO_UDP;
+> +
+> +       pp = call_gro_receive(ops->callbacks.gro_receive, head, skb);
+> +       rcu_read_unlock();
+> +
+> +       return pp;
+> +
+> +out:
+> +       rcu_read_unlock();
+> +       sock_put(sk);
+> +       skb_push(skb, offset);
+> +       NAPI_GRO_CB(skb)->same_flow = 0;
+> +       NAPI_GRO_CB(skb)->flush = 1;
+> +
+> +       return NULL;
+> +}
+> +
+>  int xfrm4_rcv(struct sk_buff *skb)
+>  {
+>         return xfrm4_rcv_spi(skb, ip_hdr(skb)->protocol, 0);
+> --
+> 2.30.2
 >
->
->>>
->>>> +			netif_warn(efx, probe, net_dev,
->>>> +				   "Failed to register devlink\n");
->>>> 	}
->>>>
->>>> 	rc = efx_init_tc(efx);
->>>> @@ -1157,6 +1162,7 @@ void ef100_remove(struct efx_nic *efx)
->>>> {
->>>> 	struct ef100_nic_data *nic_data = efx->nic_data;
->>>>
->>>> +	efx_fini_devlink(efx);
->>>> 	efx_mcdi_detach(efx);
->>>> 	efx_mcdi_fini(efx);
->>>> 	if (nic_data)
->>>> diff --git a/drivers/net/ethernet/sfc/efx_devlink.c b/drivers/net/ethernet/sfc/efx_devlink.c
->>>> new file mode 100644
->>>> index 000000000000..c506f8f35d25
->>>> --- /dev/null
->>>> +++ b/drivers/net/ethernet/sfc/efx_devlink.c
->>>> @@ -0,0 +1,427 @@
->>>> +// SPDX-License-Identifier: GPL-2.0-only
->>>> +/****************************************************************************
->>>> + * Driver for AMD network controllers and boards
->>>> + * Copyright (C) 2023, Advanced Micro Devices, Inc.
->>>> + *
->>>> + * This program is free software; you can redistribute it and/or modify it
->>>> + * under the terms of the GNU General Public License version 2 as published
->>>> + * by the Free Software Foundation, incorporated herein by reference.
->>>> + */
->>>> +
->>>> +#include <linux/rtc.h>
->>>> +#include "net_driver.h"
->>>> +#include "ef100_nic.h"
->>>> +#include "efx_devlink.h"
->>>> +#include "nic.h"
->>>> +#include "mcdi.h"
->>>> +#include "mcdi_functions.h"
->>>> +#include "mcdi_pcol.h"
->>>> +
->>>> +/* Custom devlink-info version object names for details that do not map to the
->>>> + * generic standardized names.
->>>> + */
->>>> +#define EFX_DEVLINK_INFO_VERSION_FW_MGMT_SUC	"fw.mgmt.suc"
->>>> +#define EFX_DEVLINK_INFO_VERSION_FW_MGMT_CMC	"fw.mgmt.cmc"
->>>> +#define EFX_DEVLINK_INFO_VERSION_FPGA_REV	"fpga.rev"
->>>> +#define EFX_DEVLINK_INFO_VERSION_DATAPATH_HW	"fpga.app"
->>>> +#define EFX_DEVLINK_INFO_VERSION_DATAPATH_FW	DEVLINK_INFO_VERSION_GENERIC_FW_APP
->>>> +#define EFX_DEVLINK_INFO_VERSION_SOC_BOOT	"coproc.boot"
->>>> +#define EFX_DEVLINK_INFO_VERSION_SOC_UBOOT	"coproc.uboot"
->>>> +#define EFX_DEVLINK_INFO_VERSION_SOC_MAIN	"coproc.main"
->>>> +#define EFX_DEVLINK_INFO_VERSION_SOC_RECOVERY	"coproc.recovery"
->>>> +#define EFX_DEVLINK_INFO_VERSION_FW_EXPROM	"fw.exprom"
->>>> +#define EFX_DEVLINK_INFO_VERSION_FW_UEFI	"fw.uefi"
->>>> +
->>>> +#define EFX_MAX_VERSION_INFO_LEN	64
->>>> +
->>>> +static int efx_devlink_info_nvram_partition(struct efx_nic *efx,
->>>> +					    struct devlink_info_req *req,
->>>> +					    unsigned int partition_type,
->>>> +					    const char *version_name)
->>>> +{
->>>> +	char buf[EFX_MAX_VERSION_INFO_LEN];
->>>> +	u16 version[4];
->>>> +	int rc;
->>>> +
->>>> +	rc = efx_mcdi_nvram_metadata(efx, partition_type, NULL, version, NULL,
->>>> +				     0);
->>>> +	if (rc)
->>>> +		return rc;
->>>> +
->>>> +	snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u.%u.%u.%u", version[0],
->>>> +		 version[1], version[2], version[3]);
->>>> +	devlink_info_version_stored_put(req, version_name, buf);
->>>> +
->>>> +	return 0;
->>>> +}
->>>> +
->>>> +static void efx_devlink_info_stored_versions(struct efx_nic *efx,
->>>> +					     struct devlink_info_req *req)
->>>> +{
->>>> +	efx_devlink_info_nvram_partition(efx, req, NVRAM_PARTITION_TYPE_BUNDLE,
->>>> +					 DEVLINK_INFO_VERSION_GENERIC_FW_BUNDLE_ID);
->>>> +	efx_devlink_info_nvram_partition(efx, req,
->>>> +					 NVRAM_PARTITION_TYPE_MC_FIRMWARE,
->>>> +					 DEVLINK_INFO_VERSION_GENERIC_FW_MGMT);
->>>> +	efx_devlink_info_nvram_partition(efx, req,
->>>> +					 NVRAM_PARTITION_TYPE_SUC_FIRMWARE,
->>>> +					 EFX_DEVLINK_INFO_VERSION_FW_MGMT_SUC);
->>>> +	efx_devlink_info_nvram_partition(efx, req,
->>>> +					 NVRAM_PARTITION_TYPE_EXPANSION_ROM,
->>>> +					 EFX_DEVLINK_INFO_VERSION_FW_EXPROM);
->>>> +	efx_devlink_info_nvram_partition(efx, req,
->>>> +					 NVRAM_PARTITION_TYPE_EXPANSION_UEFI,
->>>> +					 EFX_DEVLINK_INFO_VERSION_FW_UEFI);
->>>> +}
->>>> +
->>>> +#define EFX_MAX_SERIALNUM_LEN	(ETH_ALEN * 2 + 1)
->>>> +
->>>> +static void efx_devlink_info_board_cfg(struct efx_nic *efx,
->>>> +				       struct devlink_info_req *req)
->>>> +{
->>>> +	char sn[EFX_MAX_SERIALNUM_LEN];
->>>> +	u8 mac_address[ETH_ALEN];
->>>> +	int rc;
->>>> +
->>>> +	rc = efx_mcdi_get_board_cfg(efx, (u8 *)mac_address, NULL, NULL);
->>>> +	if (!rc) {
->>>> +		snprintf(sn, EFX_MAX_SERIALNUM_LEN, "%pm", mac_address);
->>>> +		devlink_info_serial_number_put(req, sn);
->>>> +	}
->>>> +}
->>>> +
->>>> +#define EFX_VER_FLAG(_f)	\
->>>> +	(MC_CMD_GET_VERSION_V5_OUT_ ## _f ## _PRESENT_LBN)
->>>> +
->>>> +static void efx_devlink_info_running_versions(struct efx_nic *efx,
->>>> +					      struct devlink_info_req *req)
->>>> +{
->>>> +	MCDI_DECLARE_BUF(outbuf, MC_CMD_GET_VERSION_V5_OUT_LEN);
->>>> +	MCDI_DECLARE_BUF(inbuf, MC_CMD_GET_VERSION_EXT_IN_LEN);
->>>> +	char buf[EFX_MAX_VERSION_INFO_LEN];
->>>> +	unsigned int flags, build_id;
->>>> +	union {
->>>> +		const __le32 *dwords;
->>>> +		const __le16 *words;
->>>> +		const char *str;
->>>> +	} ver;
->>>> +	struct rtc_time build_date;
->>>> +	size_t outlength, offset;
->>>> +	u64 tstamp;
->>>> +	int rc;
->>>> +
->>>> +	rc = efx_mcdi_rpc(efx, MC_CMD_GET_VERSION, inbuf, sizeof(inbuf),
->>>> +			  outbuf, sizeof(outbuf), &outlength);
->>>> +	if (rc || outlength < MC_CMD_GET_VERSION_OUT_LEN)
->>>> +		return;
->>>> +
->>>> +	/* Handle previous output */
->>>> +	if (outlength < MC_CMD_GET_VERSION_V2_OUT_LEN) {
->>>> +		ver.words = (__le16 *)MCDI_PTR(outbuf,
->>>> +					       GET_VERSION_EXT_OUT_VERSION);
->>>> +		offset = snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u.%u.%u.%u",
->>>> +				  le16_to_cpu(ver.words[0]),
->>>> +				  le16_to_cpu(ver.words[1]),
->>>> +				  le16_to_cpu(ver.words[2]),
->>>> +				  le16_to_cpu(ver.words[3]));
->>>> +
->>>> +		devlink_info_version_running_put(req,
->>>> +						 DEVLINK_INFO_VERSION_GENERIC_FW_MGMT,
->>>> +						 buf);
->>>> +		return;
->>>> +	}
->>>> +
->>>> +	/* Handle V2 additions */
->>>> +	flags = MCDI_DWORD(outbuf, GET_VERSION_V2_OUT_FLAGS);
->>>> +	if (flags & BIT(EFX_VER_FLAG(BOARD_EXT_INFO))) {
->>>> +		snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%s",
->>>> +			 MCDI_PTR(outbuf, GET_VERSION_V2_OUT_BOARD_NAME));
->>>> +		devlink_info_version_fixed_put(req,
->>>> +					       DEVLINK_INFO_VERSION_GENERIC_BOARD_ID,
->>>> +					       buf);
->>>> +
->>>> +		/* Favour full board version if present (in V5 or later) */
->>>> +		if (~flags & BIT(EFX_VER_FLAG(BOARD_VERSION))) {
->>>> +			snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u",
->>>> +				 MCDI_DWORD(outbuf,
->>>> +					    GET_VERSION_V2_OUT_BOARD_REVISION));
->>>> +			devlink_info_version_fixed_put(req,
->>>> +						       DEVLINK_INFO_VERSION_GENERIC_BOARD_REV,
->>>> +						       buf);
->>>> +		}
->>>> +
->>>> +		ver.str = MCDI_PTR(outbuf, GET_VERSION_V2_OUT_BOARD_SERIAL);
->>>> +		if (ver.str[0])
->>>> +			devlink_info_board_serial_number_put(req, ver.str);
->>>> +	}
->>>> +
->>>> +	if (flags & BIT(EFX_VER_FLAG(FPGA_EXT_INFO))) {
->>>> +		ver.dwords = (__le32 *)MCDI_PTR(outbuf,
->>>> +						GET_VERSION_V2_OUT_FPGA_VERSION);
->>>> +		offset = snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u_%c%u",
->>>> +				  le32_to_cpu(ver.dwords[0]),
->>>> +				  'A' + le32_to_cpu(ver.dwords[1]),
->>>> +				  le32_to_cpu(ver.dwords[2]));
->>>> +
->>>> +		ver.str = MCDI_PTR(outbuf, GET_VERSION_V2_OUT_FPGA_EXTRA);
->>>> +		if (ver.str[0])
->>>> +			snprintf(&buf[offset], EFX_MAX_VERSION_INFO_LEN - offset,
->>>> +				 " (%s)", ver.str);
->>>> +
->>>> +		devlink_info_version_running_put(req,
->>>> +						 EFX_DEVLINK_INFO_VERSION_FPGA_REV,
->>>> +						 buf);
->>>> +	}
->>>> +
->>>> +	if (flags & BIT(EFX_VER_FLAG(CMC_EXT_INFO))) {
->>>> +		ver.dwords = (__le32 *)MCDI_PTR(outbuf,
->>>> +						GET_VERSION_V2_OUT_CMCFW_VERSION);
->>>> +		offset = snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u.%u.%u.%u",
->>>> +				  le32_to_cpu(ver.dwords[0]),
->>>> +				  le32_to_cpu(ver.dwords[1]),
->>>> +				  le32_to_cpu(ver.dwords[2]),
->>>> +				  le32_to_cpu(ver.dwords[3]));
->>>> +
->>>> +		tstamp = MCDI_QWORD(outbuf,
->>>> +				    GET_VERSION_V2_OUT_CMCFW_BUILD_DATE);
->>>> +		if (tstamp) {
->>>> +			rtc_time64_to_tm(tstamp, &build_date);
->>>> +			snprintf(&buf[offset], EFX_MAX_VERSION_INFO_LEN - offset,
->>>> +				 " (%ptRd)", &build_date);
->>>> +		}
->>>> +
->>>> +		devlink_info_version_running_put(req,
->>>> +						 EFX_DEVLINK_INFO_VERSION_FW_MGMT_CMC,
->>>> +						 buf);
->>>> +	}
->>>> +
->>>> +	ver.words = (__le16 *)MCDI_PTR(outbuf, GET_VERSION_V2_OUT_VERSION);
->>>> +	offset = snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u.%u.%u.%u",
->>>> +			  le16_to_cpu(ver.words[0]), le16_to_cpu(ver.words[1]),
->>>> +			  le16_to_cpu(ver.words[2]), le16_to_cpu(ver.words[3]));
->>>> +	if (flags & BIT(EFX_VER_FLAG(MCFW_EXT_INFO))) {
->>>> +		build_id = MCDI_DWORD(outbuf, GET_VERSION_V2_OUT_MCFW_BUILD_ID);
->>>> +		snprintf(&buf[offset], EFX_MAX_VERSION_INFO_LEN - offset,
->>>> +			 " (%x) %s", build_id,
->>>> +			 MCDI_PTR(outbuf, GET_VERSION_V2_OUT_MCFW_BUILD_NAME));
->>>> +	}
->>>> +	devlink_info_version_running_put(req,
->>>> +					 DEVLINK_INFO_VERSION_GENERIC_FW_MGMT,
->>>> +					 buf);
->>>> +
->>>> +	if (flags & BIT(EFX_VER_FLAG(SUCFW_EXT_INFO))) {
->>>> +		ver.dwords = (__le32 *)MCDI_PTR(outbuf,
->>>> +						GET_VERSION_V2_OUT_SUCFW_VERSION);
->>>> +		tstamp = MCDI_QWORD(outbuf,
->>>> +				    GET_VERSION_V2_OUT_SUCFW_BUILD_DATE);
->>>> +		rtc_time64_to_tm(tstamp, &build_date);
->>>> +		build_id = MCDI_DWORD(outbuf, GET_VERSION_V2_OUT_SUCFW_CHIP_ID);
->>>> +
->>>> +		snprintf(buf, EFX_MAX_VERSION_INFO_LEN,
->>>> +			 "%u.%u.%u.%u type %x (%ptRd)",
->>>> +			 le32_to_cpu(ver.dwords[0]), le32_to_cpu(ver.dwords[1]),
->>>> +			 le32_to_cpu(ver.dwords[2]), le32_to_cpu(ver.dwords[3]),
->>>> +			 build_id, &build_date);
->>>> +
->>>> +		devlink_info_version_running_put(req,
->>>> +						 EFX_DEVLINK_INFO_VERSION_FW_MGMT_SUC,
->>>> +						 buf);
->>>> +	}
->>>> +
->>>> +	if (outlength < MC_CMD_GET_VERSION_V3_OUT_LEN)
->>>> +		return;
->>>> +
->>>> +	/* Handle V3 additions */
->>>> +	if (flags & BIT(EFX_VER_FLAG(DATAPATH_HW_VERSION))) {
->>>> +		ver.dwords = (__le32 *)MCDI_PTR(outbuf,
->>>> +						GET_VERSION_V3_OUT_DATAPATH_HW_VERSION);
->>>> +
->>>> +		snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u.%u.%u",
->>>> +			 le32_to_cpu(ver.dwords[0]), le32_to_cpu(ver.dwords[1]),
->>>> +			 le32_to_cpu(ver.dwords[2]));
->>>> +
->>>> +		devlink_info_version_running_put(req,
->>>> +						 EFX_DEVLINK_INFO_VERSION_DATAPATH_HW,
->>>> +						 buf);
->>>> +	}
->>>> +
->>>> +	if (flags & BIT(EFX_VER_FLAG(DATAPATH_FW_VERSION))) {
->>>> +		ver.dwords = (__le32 *)MCDI_PTR(outbuf,
->>>> +						GET_VERSION_V3_OUT_DATAPATH_FW_VERSION);
->>>> +
->>>> +		snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u.%u.%u",
->>>> +			 le32_to_cpu(ver.dwords[0]), le32_to_cpu(ver.dwords[1]),
->>>> +			 le32_to_cpu(ver.dwords[2]));
->>>> +
->>>> +		devlink_info_version_running_put(req,
->>>> +						 EFX_DEVLINK_INFO_VERSION_DATAPATH_FW,
->>>> +						 buf);
->>>> +	}
->>>> +
->>>> +	if (outlength < MC_CMD_GET_VERSION_V4_OUT_LEN)
->>>> +		return;
->>>> +
->>>> +	/* Handle V4 additions */
->>>> +	if (flags & BIT(EFX_VER_FLAG(SOC_BOOT_VERSION))) {
->>>> +		ver.dwords = (__le32 *)MCDI_PTR(outbuf,
->>>> +						GET_VERSION_V4_OUT_SOC_BOOT_VERSION);
->>>> +
->>>> +		snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u.%u.%u.%u",
->>>> +			 le32_to_cpu(ver.dwords[0]), le32_to_cpu(ver.dwords[1]),
->>>> +			 le32_to_cpu(ver.dwords[2]),
->>>> +			 le32_to_cpu(ver.dwords[3]));
->>>> +
->>>> +		devlink_info_version_running_put(req,
->>>> +						 EFX_DEVLINK_INFO_VERSION_SOC_BOOT,
->>>> +						 buf);
->>>> +	}
->>>> +
->>>> +	if (flags & BIT(EFX_VER_FLAG(SOC_UBOOT_VERSION))) {
->>>> +		ver.dwords = (__le32 *)MCDI_PTR(outbuf,
->>>> +						GET_VERSION_V4_OUT_SOC_UBOOT_VERSION);
->>>> +
->>>> +		snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u.%u.%u.%u",
->>>> +			 le32_to_cpu(ver.dwords[0]), le32_to_cpu(ver.dwords[1]),
->>>> +			 le32_to_cpu(ver.dwords[2]),
->>>> +			 le32_to_cpu(ver.dwords[3]));
->>>> +
->>>> +		devlink_info_version_running_put(req,
->>>> +						 EFX_DEVLINK_INFO_VERSION_SOC_UBOOT,
->>>> +						 buf);
->>>> +	}
->>>> +
->>>> +	if (flags & BIT(EFX_VER_FLAG(SOC_MAIN_ROOTFS_VERSION))) {
->>>> +		ver.dwords = (__le32 *)MCDI_PTR(outbuf,
->>>> +						GET_VERSION_V4_OUT_SOC_MAIN_ROOTFS_VERSION);
->>>> +
->>>> +		snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u.%u.%u.%u",
->>>> +			 le32_to_cpu(ver.dwords[0]), le32_to_cpu(ver.dwords[1]),
->>>> +			 le32_to_cpu(ver.dwords[2]),
->>>> +			 le32_to_cpu(ver.dwords[3]));
->>>> +
->>>> +		devlink_info_version_running_put(req,
->>>> +						 EFX_DEVLINK_INFO_VERSION_SOC_MAIN,
->>>> +						 buf);
->>>> +	}
->>>> +
->>>> +	if (flags & BIT(EFX_VER_FLAG(SOC_RECOVERY_BUILDROOT_VERSION))) {
->>>> +		ver.dwords = (__le32 *)MCDI_PTR(outbuf,
->>>> +						GET_VERSION_V4_OUT_SOC_RECOVERY_BUILDROOT_VERSION);
->>>> +
->>>> +		snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u.%u.%u.%u",
->>>> +			 le32_to_cpu(ver.dwords[0]), le32_to_cpu(ver.dwords[1]),
->>>> +			 le32_to_cpu(ver.dwords[2]),
->>>> +			 le32_to_cpu(ver.dwords[3]));
->>>> +
->>>> +		devlink_info_version_running_put(req,
->>>> +						 EFX_DEVLINK_INFO_VERSION_SOC_RECOVERY,
->>>> +						 buf);
->>>> +	}
->>>> +
->>>> +	if (flags & BIT(EFX_VER_FLAG(SUCFW_VERSION)) &&
->>>> +	    ~flags & BIT(EFX_VER_FLAG(SUCFW_EXT_INFO))) {
->>>> +		ver.dwords = (__le32 *)MCDI_PTR(outbuf,
->>>> +						GET_VERSION_V4_OUT_SUCFW_VERSION);
->>>> +
->>>> +		snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u.%u.%u.%u",
->>>> +			 le32_to_cpu(ver.dwords[0]), le32_to_cpu(ver.dwords[1]),
->>>> +			 le32_to_cpu(ver.dwords[2]),
->>>> +			 le32_to_cpu(ver.dwords[3]));
->>>> +
->>>> +		devlink_info_version_running_put(req,
->>>> +						 EFX_DEVLINK_INFO_VERSION_FW_MGMT_SUC,
->>>> +						 buf);
->>>> +	}
->>>> +
->>>> +	if (outlength < MC_CMD_GET_VERSION_V5_OUT_LEN)
->>>> +		return;
->>>> +
->>>> +	/* Handle V5 additions */
->>>> +
->>>> +	if (flags & BIT(EFX_VER_FLAG(BOARD_VERSION))) {
->>>> +		ver.dwords = (__le32 *)MCDI_PTR(outbuf,
->>>> +						GET_VERSION_V5_OUT_BOARD_VERSION);
->>>> +
->>>> +		snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u.%u.%u.%u",
->>>> +			 le32_to_cpu(ver.dwords[0]), le32_to_cpu(ver.dwords[1]),
->>>> +			 le32_to_cpu(ver.dwords[2]),
->>>> +			 le32_to_cpu(ver.dwords[3]));
->>>> +
->>>> +		devlink_info_version_running_put(req,
->>>> +						 DEVLINK_INFO_VERSION_GENERIC_BOARD_REV,
->>>> +						 buf);
->>>> +	}
->>>> +
->>>> +	if (flags & BIT(EFX_VER_FLAG(BUNDLE_VERSION))) {
->>>> +		ver.dwords = (__le32 *)MCDI_PTR(outbuf,
->>>> +						GET_VERSION_V5_OUT_BUNDLE_VERSION);
->>>> +
->>>> +		snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u.%u.%u.%u",
->>>> +			 le32_to_cpu(ver.dwords[0]), le32_to_cpu(ver.dwords[1]),
->>>> +			 le32_to_cpu(ver.dwords[2]),
->>>> +			 le32_to_cpu(ver.dwords[3]));
->>>> +
->>>> +		devlink_info_version_running_put(req,
->>>> +						 DEVLINK_INFO_VERSION_GENERIC_FW_BUNDLE_ID,
->>>> +						 buf);
->>>> +	}
->>>> +}
->>>> +
->>>> +#undef EFX_VER_FLAG
->>>> +
->>>> +static void efx_devlink_info_query_all(struct efx_nic *efx,
->>>> +				       struct devlink_info_req *req)
->>>> +{
->>>> +	efx_devlink_info_board_cfg(efx, req);
->>>> +	efx_devlink_info_stored_versions(efx, req);
->>>> +	efx_devlink_info_running_versions(efx, req);
->>>> +}
->>>> +
->>>> +struct efx_devlink {
->>>> +	struct efx_nic *efx;
->>>> +};
->>>> +
->>>> +static int efx_devlink_info_get(struct devlink *devlink,
->>>> +				struct devlink_info_req *req,
->>>> +				struct netlink_ext_ack *extack)
->>>> +{
->>>> +	struct efx_devlink *devlink_private = devlink_priv(devlink);
->>>> +	struct efx_nic *efx = devlink_private->efx;
->>>> +
->>>> +	efx_devlink_info_query_all(efx, req);
->>> I don't understand the reason for having efx_devlink_info_query_all() as
->>> a separate function in compare to inline its code here.
->>>
->> Yes, it could be do as you say. I'll do.
->>
->> Thanks
->>
->>>> +	return 0;
->>>> +}
->>>> +
->>>> +static const struct devlink_ops sfc_devlink_ops = {
->>>> +	.info_get			= efx_devlink_info_get,
->>>> +};
->>>> +
->>>> +void efx_fini_devlink(struct efx_nic *efx)
->>>> +{
->>>> +	if (efx->devlink) {
->>>> +		struct efx_devlink *devlink_private;
->>>> +
->>>> +		devlink_private = devlink_priv(efx->devlink);
->>>> +
->>>> +		devlink_unregister(efx->devlink);
->>>> +		devlink_free(efx->devlink);
->>>> +		efx->devlink = NULL;
->>>> +	}
->>>> +}
->>>> +
->>>> +int efx_probe_devlink(struct efx_nic *efx)
->>>> +{
->>>> +	struct efx_devlink *devlink_private;
->>>> +
->>>> +	efx->devlink = devlink_alloc(&sfc_devlink_ops,
->>>> +				     sizeof(struct efx_devlink),
->>>> +				     &efx->pci_dev->dev);
->>>> +	if (!efx->devlink)
->>>> +		return -ENOMEM;
->>>> +	devlink_private = devlink_priv(efx->devlink);
->>>> +	devlink_private->efx = efx;
->>>> +
->>>> +	devlink_register(efx->devlink);
->>>> +
->>>> +	return 0;
->>>> +}
->>>> diff --git a/drivers/net/ethernet/sfc/efx_devlink.h b/drivers/net/ethernet/sfc/efx_devlink.h
->>>> new file mode 100644
->>>> index 000000000000..997f878aea93
->>>> --- /dev/null
->>>> +++ b/drivers/net/ethernet/sfc/efx_devlink.h
->>>> @@ -0,0 +1,20 @@
->>>> +/* SPDX-License-Identifier: GPL-2.0-only */
->>>> +/****************************************************************************
->>>> + * Driver for AMD network controllers and boards
->>>> + * Copyright (C) 2023, Advanced Micro Devices, Inc.
->>>> + *
->>>> + * This program is free software; you can redistribute it and/or modify it
->>>> + * under the terms of the GNU General Public License version 2 as published
->>>> + * by the Free Software Foundation, incorporated herein by reference.
->>>> + */
->>>> +
->>>> +#ifndef _EFX_DEVLINK_H
->>>> +#define _EFX_DEVLINK_H
->>>> +
->>>> +#include "net_driver.h"
->>>> +#include <net/devlink.h>
->>>> +
->>>> +int efx_probe_devlink(struct efx_nic *efx);
->>>> +void efx_fini_devlink(struct efx_nic *efx);
->>>> +
->>>> +#endif	/* _EFX_DEVLINK_H */
->>>> diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/mcdi.c
->>>> index af338208eae9..328cae82a7d8 100644
->>>> --- a/drivers/net/ethernet/sfc/mcdi.c
->>>> +++ b/drivers/net/ethernet/sfc/mcdi.c
->>>> @@ -2308,6 +2308,78 @@ static int efx_mcdi_nvram_update_finish(struct efx_nic *efx, unsigned int type)
->>>> 	return rc;
->>>> }
->>>>
->>>> +int efx_mcdi_nvram_metadata(struct efx_nic *efx, unsigned int type,
->>>> +			    u32 *subtype, u16 version[4], char *desc,
->>>> +			    size_t descsize)
->>>> +{
->>>> +	MCDI_DECLARE_BUF(inbuf, MC_CMD_NVRAM_METADATA_IN_LEN);
->>>> +	efx_dword_t *outbuf;
->>>> +	size_t outlen;
->>>> +	u32 flags;
->>>> +	int rc;
->>>> +
->>>> +	outbuf = kzalloc(MC_CMD_NVRAM_METADATA_OUT_LENMAX_MCDI2, GFP_KERNEL);
->>>> +	if (!outbuf)
->>>> +		return -ENOMEM;
->>>> +
->>>> +	MCDI_SET_DWORD(inbuf, NVRAM_METADATA_IN_TYPE, type);
->>>> +
->>>> +	rc = efx_mcdi_rpc_quiet(efx, MC_CMD_NVRAM_METADATA, inbuf,
->>>> +				sizeof(inbuf), outbuf,
->>>> +				MC_CMD_NVRAM_METADATA_OUT_LENMAX_MCDI2,
->>>> +				&outlen);
->>>> +	if (rc)
->>>> +		goto out_free;
->>>> +	if (outlen < MC_CMD_NVRAM_METADATA_OUT_LENMIN) {
->>>> +		rc = -EIO;
->>>> +		goto out_free;
->>>> +	}
->>>> +
->>>> +	flags = MCDI_DWORD(outbuf, NVRAM_METADATA_OUT_FLAGS);
->>>> +
->>>> +	if (desc && descsize > 0) {
->>>> +		if (flags & BIT(MC_CMD_NVRAM_METADATA_OUT_DESCRIPTION_VALID_LBN)) {
->>>> +			if (descsize <=
->>>> +			    MC_CMD_NVRAM_METADATA_OUT_DESCRIPTION_NUM(outlen)) {
->>>> +				rc = -E2BIG;
->>>> +				goto out_free;
->>>> +			}
->>>> +
->>>> +			strncpy(desc,
->>>> +				MCDI_PTR(outbuf, NVRAM_METADATA_OUT_DESCRIPTION),
->>>> +				MC_CMD_NVRAM_METADATA_OUT_DESCRIPTION_NUM(outlen));
->>>> +			desc[MC_CMD_NVRAM_METADATA_OUT_DESCRIPTION_NUM(outlen)] = '\0';
->>>> +		} else {
->>>> +			desc[0] = '\0';
->>>> +		}
->>>> +	}
->>>> +
->>>> +	if (subtype) {
->>>> +		if (flags & BIT(MC_CMD_NVRAM_METADATA_OUT_SUBTYPE_VALID_LBN))
->>>> +			*subtype = MCDI_DWORD(outbuf, NVRAM_METADATA_OUT_SUBTYPE);
->>>> +		else
->>>> +			*subtype = 0;
->>>> +	}
->>>> +
->>>> +	if (version) {
->>>> +		if (flags & BIT(MC_CMD_NVRAM_METADATA_OUT_VERSION_VALID_LBN)) {
->>>> +			version[0] = MCDI_WORD(outbuf, NVRAM_METADATA_OUT_VERSION_W);
->>>> +			version[1] = MCDI_WORD(outbuf, NVRAM_METADATA_OUT_VERSION_X);
->>>> +			version[2] = MCDI_WORD(outbuf, NVRAM_METADATA_OUT_VERSION_Y);
->>>> +			version[3] = MCDI_WORD(outbuf, NVRAM_METADATA_OUT_VERSION_Z);
->>>> +		} else {
->>>> +			version[0] = 0;
->>>> +			version[1] = 0;
->>>> +			version[2] = 0;
->>>> +			version[3] = 0;
->>>> +		}
->>>> +	}
->>>> +
->>>> +out_free:
->>>> +	kfree(outbuf);
->>>> +	return rc;
->>>> +}
->>>> +
->>>> int efx_mcdi_mtd_read(struct mtd_info *mtd, loff_t start,
->>>> 		      size_t len, size_t *retlen, u8 *buffer)
->>>> {
->>>> diff --git a/drivers/net/ethernet/sfc/mcdi.h b/drivers/net/ethernet/sfc/mcdi.h
->>>> index 7e35fec9da35..63b090587f7a 100644
->>>> --- a/drivers/net/ethernet/sfc/mcdi.h
->>>> +++ b/drivers/net/ethernet/sfc/mcdi.h
->>>> @@ -379,6 +379,9 @@ int efx_mcdi_nvram_info(struct efx_nic *efx, unsigned int type,
->>>> 			bool *protected_out);
->>>> int efx_new_mcdi_nvram_test_all(struct efx_nic *efx);
->>>> int efx_mcdi_nvram_test_all(struct efx_nic *efx);
->>>> +int efx_mcdi_nvram_metadata(struct efx_nic *efx, unsigned int type,
->>>> +			    u32 *subtype, u16 version[4], char *desc,
->>>> +			    size_t descsize);
->>>> int efx_mcdi_handle_assertion(struct efx_nic *efx);
->>>> int efx_mcdi_set_id_led(struct efx_nic *efx, enum efx_led_mode mode);
->>>> int efx_mcdi_wol_filter_set_magic(struct efx_nic *efx, const u8 *mac,
->>>> diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
->>>> index 3b49e216768b..d036641dc043 100644
->>>> --- a/drivers/net/ethernet/sfc/net_driver.h
->>>> +++ b/drivers/net/ethernet/sfc/net_driver.h
->>>> @@ -994,6 +994,7 @@ enum efx_xdp_tx_queues_mode {
->>>>    *      xdp_rxq_info structures?
->>>>    * @netdev_notifier: Netdevice notifier.
->>>>    * @tc: state for TC offload (EF100).
->>>> + * @devlink: reference to devlink structure owned by this device
->>>>    * @mem_bar: The BAR that is mapped into membase.
->>>>    * @reg_base: Offset from the start of the bar to the function control window.
->>>>    * @monitor_work: Hardware monitor workitem
->>>> @@ -1179,6 +1180,7 @@ struct efx_nic {
->>>> 	struct notifier_block netdev_notifier;
->>>> 	struct efx_tc_state *tc;
->>>>
->>>> +	struct devlink *devlink;
->>>> 	unsigned int mem_bar;
->>>> 	u32 reg_base;
->>>>
->>>> -- 
->>>> 2.17.1
->>>>
->
+
+Eyal.
