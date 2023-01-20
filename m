@@ -2,112 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0CFB674C04
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 06:20:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 841BD674C3E
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 06:27:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231195AbjATFT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 00:19:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52522 "EHLO
+        id S231360AbjATF1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 00:27:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231161AbjATFTj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 00:19:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 902D47DFAE
-        for <netdev@vger.kernel.org>; Thu, 19 Jan 2023 21:09:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 02D5561DEF
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 05:08:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D27A7C433EF;
-        Fri, 20 Jan 2023 05:08:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674191324;
-        bh=smw6bvnN4L3m5B8KrSxBWIVZBzpkAFwXLeYLet0J0+s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HoX0Qto2k4+noLSTAe5OXKwLm/+PN8Oc53A3+Kg0NwOpQEob2klaPlvt3j+linBrO
-         ZQyzWI1jtYd0AbQ/AClWLYTuTXPJetz3Yzwhn6Xlc11+JdAXAf5/uxMTXhcKe+O5SY
-         M/QyjllG62nDrzxr7Q9uYPIUhfqbnHrF8VeJmcUPK3gtMNoZDB30iNTdwrabfiGfWc
-         CJ/wZVCtsrIxApU2HDpx0safC6upeZ4Trs/YLrvA7FbvxClsMpFf1U83gPS7+rHG4E
-         PACgdyBOFVSQq0PUKiZV890ZGW6/Suq2akvSiG8s2Amm8aHuUcVHGDHis2aqi0e5ND
-         ICcnjOTalT44w==
-Date:   Thu, 19 Jan 2023 21:08:42 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Rahul Rameshbabu <rrameshbabu@nvidia.com>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vincent Cheng <vincent.cheng.xh@renesas.com>
-Subject: Re: [net-next 03/15] net/mlx5: Add adjphase function to support
- hardware-only offset control
-Message-ID: <20230119210842.5faf1e44@kernel.org>
-In-Reply-To: <87pmb9u90j.fsf@nvidia.com>
-References: <20230118183602.124323-1-saeed@kernel.org>
-        <20230118183602.124323-4-saeed@kernel.org>
-        <739b308c-33ec-1886-5e9d-6c5059370d15@intel.com>
-        <20230119194631.1b9fef95@kernel.org>
-        <87tu0luadz.fsf@nvidia.com>
-        <20230119200343.2eb82899@kernel.org>
-        <87pmb9u90j.fsf@nvidia.com>
+        with ESMTP id S231277AbjATF1b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 00:27:31 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8EA27EF5;
+        Thu, 19 Jan 2023 21:21:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1674192109; x=1705728109;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=KXgeu6rhqlqZNEm6RGXYsNzvZPVxHe8VOsfAgVGBMwE=;
+  b=cI0XUyUp5j5MKDoOJo+Nr7L7ptUqbZaXA7a2O7W0NpsZ8AJsA9VCb8ug
+   II8vRcgFl7G4Ggz6AK8uN30UrpkA8dHw0qV6LbVezvxS5c4zbkHRDCD+l
+   p47P6p+3PCX+Id86/1TVWwy+70FxhjsRDwrzAl59QSmdueuLPqd1zjy9i
+   OAcH8UeTKQMOBvIKK8WGdlczqDbFNtxyA2iQLSI/LkZK7We39FDFOlQiO
+   i+rPdsDCujVD7oRGhRV3Q4pCUQvODhXH8FrVt00cP8JK7ezF46MlYrUao
+   osHGBO87Gql+d+sFFmSDmkVF5QkLZzTusWi/Xf5okszsrwWHCfFHAtH+4
+   A==;
+X-IronPort-AV: E=Sophos;i="5.97,231,1669100400"; 
+   d="scan'208";a="197578551"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Jan 2023 22:21:49 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Thu, 19 Jan 2023 22:21:48 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Thu, 19 Jan 2023 22:21:43 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <olteanv@gmail.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>
+Subject: [Patch net-next v2 0/2] net: dsa: microchip: add support for credit based shaper
+Date:   Fri, 20 Jan 2023 10:51:33 +0530
+Message-ID: <20230120052135.32120-1-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Jan 2023 20:26:04 -0800 Rahul Rameshbabu wrote:
-> One of my concerns with doing this is breaking userspace expectations.
-> In linuxptp, there is a configuration setting "write_phase_mode" and an
-> expectation that when adjphase is called, there will not be a fallback
-> to adjtime. This because adjphase is used in situations where small fine
-> tuning is explicitly needed, so the errors would indicate a logical or
-> situational error.
+LAN937x switch family, KSZ9477, KSZ9567, KSZ9563 and KSZ8563 supports
+the credit based shaper. But there were few difference between LAN937x and KSZ
+switch like
+- number of queues for LAN937x is 8 and for others it is 4.
+- size of credit increment register for LAN937x is 24 and for other is 16-bit.
+This patch series add the credit based shaper with common implementation for
+LAN937x and KSZ swithes.
 
-I don't mean fallback - just do what you do in mlx5 directly in 
-the core. The driver already does:
+v1 -> v2
+- Added the check for divide by zero in cinc_cal()
+- Port queue is splitted based on dev->info->tc_num_queues
 
-if delta < MAX
-	use precise method
-else
-	use coarse method
+RFC -> Patch v1
+- Rebased to latest net-next
 
-> Quoting Vincent Cheng, the author of the adjphase functionality in the
-> ptp core stack.
-> 
-> -----BEGIN QUOTE-----
->   adjtime modifies HW counter with a value to move the 1 PPS abruptly to new location.
->   adjphase modifies the frequency to quickly nudge the 1 PPS to new location and also includes a HW filter to smooth out the adjustments and fine tune frequency.
-> 
->   Continuous small offset adjustments using adjtime, likley see sudden shifts of the 1 PPS.  The 1 PPS probably disappears and re-appears.
->   Continuous small offset adjustments using adjphase, should see continuous 1 PPS.
-> 
->   adjtime is good for large offset corrections
->   adjphase is good for small offset corrections to allow HW filter to control the frequency instead of relying on SW filter.
+Arun Ramadoss (2):
+  net: dsa: microchip: enable port queues for tc mqprio
+  net: dsa: microchip: add support for credit based shaper
 
-Hm, so are you saying that:
+ drivers/net/dsa/microchip/ksz9477.c      |  25 +++++
+ drivers/net/dsa/microchip/ksz9477.h      |   2 +
+ drivers/net/dsa/microchip/ksz9477_reg.h  |  33 ++----
+ drivers/net/dsa/microchip/ksz_common.c   | 130 +++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_common.h   |  21 ++++
+ drivers/net/dsa/microchip/lan937x.h      |   1 +
+ drivers/net/dsa/microchip/lan937x_main.c |   9 ++
+ drivers/net/dsa/microchip/lan937x_reg.h  |   3 +
+ net/dsa/tag_ksz.c                        |  15 +++
+ 9 files changed, 213 insertions(+), 26 deletions(-)
 
-adjtime(delta):
-	clock += delta
 
-but:
+base-commit: 1038bfb23649faf47fc0714dea42f472cdcf1784
+-- 
+2.36.1
 
-adjfreq(delta):
-	on clock tick & while delta > 0:
-		clock += small_value
-		delta -= small_value
-
-because from looking at mlx5 driver code its unclear whether the
-implementation does a precise but one shot adjustment or gradual
-adjustments.
