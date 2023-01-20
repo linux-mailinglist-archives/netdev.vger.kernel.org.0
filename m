@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93C586750BB
+	by mail.lfdr.de (Postfix) with ESMTP id E9B1B6750BC
 	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 10:21:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230283AbjATJVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 04:21:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36910 "EHLO
+        id S230272AbjATJVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 04:21:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230292AbjATJVf (ORCPT
+        with ESMTP id S230293AbjATJVf (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 04:21:35 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A979D2B5
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F6E951B6
         for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 01:21:11 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pIna3-0002yL-Dz; Fri, 20 Jan 2023 10:21:03 +0100
+        id 1pIna3-0002yG-E4; Fri, 20 Jan 2023 10:21:03 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pIna2-007L93-3U; Fri, 20 Jan 2023 10:21:02 +0100
+        id 1pIna1-007L8x-Ld; Fri, 20 Jan 2023 10:21:01 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pIna0-001STi-UG; Fri, 20 Jan 2023 10:21:00 +0100
+        id 1pIna0-001STr-V6; Fri, 20 Jan 2023 10:21:00 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH net-next v2 1/4] net: phy: add driver specific get/set_eee support
-Date:   Fri, 20 Jan 2023 10:20:56 +0100
-Message-Id: <20230120092059.347734-2-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v2 2/4] net: phy: micrel: add EEE configuration support for KSZ9477 variants of PHYs
+Date:   Fri, 20 Jan 2023 10:20:57 +0100
+Message-Id: <20230120092059.347734-3-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230120092059.347734-1-o.rempel@pengutronix.de>
 References: <20230120092059.347734-1-o.rempel@pengutronix.de>
@@ -60,55 +60,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Not all PHYs can be handled by generic phy_ethtool_get/set_eee()
-functions. So, add driver specific get/set_eee support.
+KSZ9477 variants of PHYs are not completely compatible with generic
+phy_ethtool_get/set_eee() handlers. For example MDIO_PCS_EEE_ABLE acts
+like a mirror of MDIO_AN_EEE_ADV register. If MDIO_AN_EEE_ADV set to 0,
+MDIO_PCS_EEE_ABLE will be 0 too. It means, if we do
+"ethtool --set-eee lan2 eee off", we won't be able to enable it again.
+
+With this patch, instead of reading MDIO_PCS_EEE_ABLE register, the
+driver will provide proper abilities.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/phy/phy.c | 6 ++++++
- include/linux/phy.h   | 5 +++++
- 2 files changed, 11 insertions(+)
+ drivers/net/phy/micrel.c | 81 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 81 insertions(+)
 
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index 3378ca4f49b6..57e125a99414 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -1583,6 +1583,9 @@ int phy_ethtool_get_eee(struct phy_device *phydev, struct ethtool_eee *data)
- 	if (!phydev->drv)
- 		return -EIO;
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index d5b80c31ab91..dca61a73c144 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -1370,6 +1370,85 @@ static int ksz9131_config_aneg(struct phy_device *phydev)
+ 	return genphy_config_aneg(phydev);
+ }
  
-+	if (phydev->drv->get_eee)
-+		return phydev->drv->get_eee(phydev, data);
++static void ksz9477_get_eee_caps(struct phy_device *phydev,
++				 struct ethtool_eee *data)
++{
++	/* At least on KSZ8563 (which has same PHY_ID as KSZ9477), the
++	 * MDIO_PCS_EEE_ABLE register is a mirror of MDIO_AN_EEE_ADV register.
++	 * So, we need to provide this information by driver.
++	 */
++	data->supported = SUPPORTED_100baseT_Full;
 +
- 	/* Get Supported EEE */
- 	val = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_EEE_ABLE);
- 	if (val < 0)
-@@ -1622,6 +1625,9 @@ int phy_ethtool_set_eee(struct phy_device *phydev, struct ethtool_eee *data)
- 	if (!phydev->drv)
- 		return -EIO;
++	/* KSZ8563 is able to advertise not supported MDIO_EEE_1000T.
++	 * We need to test if the PHY is 1Gbit capable.
++	 */
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
++			      phydev->supported))
++		data->supported |= SUPPORTED_1000baseT_Full;
++}
++
++static int ksz9477_get_eee(struct phy_device *phydev, struct ethtool_eee *data)
++{
++	int val;
++
++	ksz9477_get_eee_caps(phydev, data);
++
++	/* Get advertisement EEE */
++	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV);
++	if (val < 0)
++		return val;
++	data->advertised = mmd_eee_adv_to_ethtool_adv_t(val);
++	data->eee_enabled = !!data->advertised;
++
++	/* Get LP advertisement EEE */
++	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_LPABLE);
++	if (val < 0)
++		return val;
++	data->lp_advertised = mmd_eee_adv_to_ethtool_adv_t(val);
++
++	data->eee_active = !!(data->advertised & data->lp_advertised);
++
++	return 0;
++}
++
++static int ksz9477_set_eee(struct phy_device *phydev, struct ethtool_eee *data)
++{
++	int old_adv, adv = 0, ret;
++
++	ksz9477_get_eee_caps(phydev, data);
++
++	old_adv = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV);
++	if (old_adv < 0)
++		return old_adv;
++
++	if (data->eee_enabled) {
++		if (!data->advertised)
++			adv = ethtool_adv_to_mmd_eee_adv_t(data->supported);
++		else
++			adv = ethtool_adv_to_mmd_eee_adv_t(data->advertised &
++							   data->supported);
++		/* Mask prohibited EEE modes */
++		adv &= ~phydev->eee_broken_modes;
++	}
++
++	if (old_adv != adv) {
++		ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV, adv);
++		if (ret < 0)
++			return ret;
++
++		/* Restart autonegotiation so the new modes get sent to the
++		 * link partner.
++		 */
++		if (phydev->autoneg == AUTONEG_ENABLE) {
++			ret = phy_restart_aneg(phydev);
++			if (ret < 0)
++				return ret;
++		}
++	}
++
++	return 0;
++}
++
+ #define KSZ8873MLL_GLOBAL_CONTROL_4	0x06
+ #define KSZ8873MLL_GLOBAL_CONTROL_4_DUPLEX	BIT(6)
+ #define KSZ8873MLL_GLOBAL_CONTROL_4_SPEED	BIT(4)
+@@ -3422,6 +3501,8 @@ static struct phy_driver ksphy_driver[] = {
+ 	.handle_interrupt = kszphy_handle_interrupt,
+ 	.suspend	= genphy_suspend,
+ 	.resume		= genphy_resume,
++	.get_eee	= ksz9477_get_eee,
++	.set_eee	= ksz9477_set_eee,
+ } };
  
-+	if (phydev->drv->set_eee)
-+		return phydev->drv->set_eee(phydev, data);
-+
- 	/* Get Supported EEE */
- 	cap = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_EEE_ABLE);
- 	if (cap < 0)
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index b3cf1e08e880..9ad6c3f5c865 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1055,6 +1055,11 @@ struct phy_driver {
- 	/** @get_plca_status: Return the current PLCA status info */
- 	int (*get_plca_status)(struct phy_device *dev,
- 			       struct phy_plca_status *plca_st);
-+
-+	/** @get_eee: Return the current EEE configuration */
-+	int (*get_eee)(struct phy_device *phydev, struct ethtool_eee *e);
-+	/** @set_eee: Set the EEE configuration */
-+	int (*set_eee)(struct phy_device *phydev, struct ethtool_eee *e);
- };
- #define to_phy_driver(d) container_of(to_mdio_common_driver(d),		\
- 				      struct phy_driver, mdiodrv)
+ module_phy_driver(ksphy_driver);
 -- 
 2.30.2
 
