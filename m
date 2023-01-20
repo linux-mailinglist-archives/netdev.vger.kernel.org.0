@@ -2,133 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9941F6753C8
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 12:49:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33B4E6753D8
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 12:53:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230166AbjATLtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 06:49:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55890 "EHLO
+        id S229684AbjATLxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 06:53:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230035AbjATLsK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 06:48:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89F2BCE1B
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 03:46:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1674215207;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=/QFp3bmbYaYKk0E1nw7rLzrqQfs4EA+a58KvmrEwURo=;
-        b=Jd76svPsdi/tGd1xt6hWZDH8yI7yzSLBZO+ElK54AEweWkzdKGzmIeyERycGD3sFEj2QDs
-        TsUtgkXIbP5Y0NqwbUKIA8BeILev9sD6QjerQNuFUI0eQgHm2dMEXoZ1e4l8Wpo/ycUQFP
-        ihgVI4bFFA4wG3sbuP2Bema8rpw2NnQ=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-58-eLk-0T6iNDiWrZ702ifmjA-1; Fri, 20 Jan 2023 06:46:41 -0500
-X-MC-Unique: eLk-0T6iNDiWrZ702ifmjA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7A4383806070;
-        Fri, 20 Jan 2023 11:46:41 +0000 (UTC)
-Received: from firesoul.localdomain (ovpn-208-34.brq.redhat.com [10.40.208.34])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3597C40C2064;
-        Fri, 20 Jan 2023 11:46:41 +0000 (UTC)
-Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id ECBE0300003EC;
-        Fri, 20 Jan 2023 12:46:39 +0100 (CET)
-Subject: [PATCH net-next RFC] net: introduce skb_poison_list and use in
- kfree_skb_list
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
+        with ESMTP id S229608AbjATLxZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 06:53:25 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8504860E
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 03:53:22 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id az20so13363932ejc.1
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 03:53:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=rpWakQkNl2X83ZDSFDtOePv8LZ3+OGN0sQNegwXf+fw=;
+        b=O/htdtOuuHtCan/kVw5B4t38wB+NaHeP/kd5FAvTjpXYFx6Qlw2RTCkBLsX4c/cY8B
+         CkL0HVf5qUQIO+z9Y6b9D3iHOO7wRV9Z1DdkMLpUgVPOcdk16i8DrwFUhb6NGzN6HimI
+         2mTECbkjbWA1/hncHiKvqr9+FrqbyGjwPjg1c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=rpWakQkNl2X83ZDSFDtOePv8LZ3+OGN0sQNegwXf+fw=;
+        b=S09JcXnm1gxLOpc24FnwtxrgvemE0OULGdIej4yeVcW6k3yy9CsVJJKv7BxOU2Pdp6
+         4vIZ82nYg2KIPmffq55TSRH2W5gUiPqDYqVjU15XcsP9ZYk6hd+rObfBry3Y2cisbk7p
+         VjxPamZztDfIlG7CV12r7wbaX/KRMjtYuNgoYxlkTak1fpHeN98bWGDQx65R4bt0S/Yn
+         LMkRPxWvyghzCnzLJxIqnYqEsUwaIZPKdotJJqMNdXPYVKRGxvQmzm+6iFB9tFRg3O1t
+         5rGZ4shdWrSUoBQ9E/zK2s7JmU2/04BQiNR4/7F7AvNRXQljSfhOBYLnwAWvQI0v1O/2
+         1cVg==
+X-Gm-Message-State: AFqh2koh+uBHWVDJtNvK9014p24haXUA95dksv19O1wUbu5hCZM68cew
+        3Bred5gvcuIp+aQQ0IPIBAnDzRgwe2eUOcoM
+X-Google-Smtp-Source: AMrXdXv+LEseIiGX+tf3vc8xwcOSx017Ruz9WQ6H3vgtG5F7dVMXdp7YQpzckS60cBXWOejsrSlesA==
+X-Received: by 2002:a17:906:7e58:b0:84d:45d9:6bcf with SMTP id z24-20020a1709067e5800b0084d45d96bcfmr14912685ejr.42.1674215600589;
+        Fri, 20 Jan 2023 03:53:20 -0800 (PST)
+Received: from cloudflare.com (79.191.179.97.ipv4.supernova.orange.pl. [79.191.179.97])
+        by smtp.gmail.com with ESMTPSA id m15-20020aa7c48f000000b0049dc0123f29sm8408427edq.61.2023.01.20.03.53.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Jan 2023 03:53:20 -0800 (PST)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
 To:     netdev@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        pabeni@redhat.com
-Date:   Fri, 20 Jan 2023 12:46:39 +0100
-Message-ID: <167421519986.1321434.5887198904455029318.stgit@firesoul>
-User-Agent: StGit/1.4
+        Paolo Abeni <pabeni@redhat.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>, selinux@vger.kernel.org,
+        Paul Moore <paul@paul-moore.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>, kernel-team@cloudflare.com
+Subject: [PATCH net-next v3 0/2] Add IP_LOCAL_PORT_RANGE socket option
+Date:   Fri, 20 Jan 2023 12:53:17 +0100
+Message-Id: <20221221-sockopt-port-range-v3-0-36fa5f5996f4@cloudflare.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-First user of skb_poison_list is in kfree_skb_list_reason, to catch bugs
-earlier like introduced in commit eedade12f4cb ("net: kfree_skb_list use
-kmem_cache_free_bulk").
+This patch set is a follow up to the "How to share IPv4 addresses by
+partitioning the port space" talk given at LPC 2022 [1].
 
-In case of a bug like mentioned commit we would have seen OOPS with:
- general protection fault, probably for non-canonical address 0xdead0000000000b1
-And content of one the registers e.g. R13: dead000000000041
+Please see patch #1 for the motivation & the use case description.
+Patch #2 adds tests exercising the new option in various scenarios.
 
-In this case skb->len is at offset 112 bytes (0x70) why fault happens at
- 0x41+0x70 = 0xB1
+Documentation
+-------------
 
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Proposed update to the ip(7) man-page:
+
+       IP_LOCAL_PORT_RANGE (since Linux X.Y)
+              Set or get the per-socket default local port range. This
+              option  can  be used to clamp down the global local port
+              range, defined by the ip_local_port_range  /proc  inter‐
+              face described below, for a given socket.
+
+              The option takes an uint32_t value with the high 16 bits
+              set to the upper range bound, and the low 16 bits set to
+              the lower range bound. Range bounds are inclusive.
+
+              The lower bound has to be less than the upper bound when
+              both bounds are not zero. Otherwise, setting the  option
+              fails with EINVAL.
+
+              If  either  bound  is  outside  of the global local port
+              range, or is zero, then that bound has no effect.
+
+              To reset the setting, pass zero as both  the  upper  and
+              the lower bound.
+
+Interaction with SELinux bind() hook
+------------------------------------
+
+SELinux bind() hook - selinux_socket_bind() - performs a permission check
+if the requested local port number lies outside of the netns ephemeral port
+range.
+
+The proposed socket option cannot be used change the ephemeral port range
+to extend beyond the per-netns port range, as set by
+net.ipv4.ip_local_port_range.
+
+Hence, there is no interaction with SELinux, AFAICT.
+	      
+Changelog:
+---------
+
+v2 -> v3:
+v2: https://lore.kernel.org/r/20221221-sockopt-port-range-v2-0-1d5f114bf627@cloudflare.com
+
+ * Describe interaction considerations with SELinux.
+ * Code changes called out in individual patches.
+
+v1 -> v2:
+v1: https://lore.kernel.org/netdev/20221221-sockopt-port-range-v1-0-e2b094b60ffd@cloudflare.com/
+
+ * Fix the corner case when the per-socket range doesn't overlap with the
+   per-netns range. Fallback correctly to the per-netns range. (Kuniyuki)
+
+ * selftests: Instead of iterating over socket families (ip4, ip6) and types
+   (tcp, udp), generate tests for each combo from a template. This keeps the
+   code indentation level down and makes tests more granular.
+
+ * Rewrite man-page prose:
+   - explain how to unset the option,
+   - document when EINVAL is returned.
+
+RFC -> v1
+RFC: https://lore.kernel.org/netdev/20220912225308.93659-1-jakub@cloudflare.com/
+
+ * Allow either the high bound or the low bound, or both, to be zero
+ * Add getsockopt support
+ * Add selftests
+
+Links:
+------
+
+[1]: https://lpc.events/event/16/contributions/1349/
+
+To: netdev@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc: selinux@vger.kernel.org
+Cc: Paul Moore <paul@paul-moore.com>
+Cc: Stephen Smalley <stephen.smalley.work@gmail.com>
+Cc: Eric Paris <eparis@parisplace.org>
+Cc: kernel-team@cloudflare.com
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+
 ---
- include/linux/poison.h |    3 +++
- include/linux/skbuff.h |    7 +++++++
- net/core/skbuff.c      |    4 +++-
- 3 files changed, 13 insertions(+), 1 deletion(-)
+Jakub Sitnicki (2):
+      inet: Add IP_LOCAL_PORT_RANGE socket option
+      selftests/net: Cover the IP_LOCAL_PORT_RANGE socket option
 
-diff --git a/include/linux/poison.h b/include/linux/poison.h
-index 2d3249eb0e62..f44da61bb88f 100644
---- a/include/linux/poison.h
-+++ b/include/linux/poison.h
-@@ -81,6 +81,9 @@
- /********** net/core/page_pool.c **********/
- #define PP_SIGNATURE		(0x40 + POISON_POINTER_DELTA)
- 
-+/********** net/core/skbuff.c **********/
-+#define SKB_LIST_POISON_NEXT	((void *)(0x41 + POISON_POINTER_DELTA))
-+
- /********** kernel/bpf/ **********/
- #define BPF_PTR_POISON ((void *)(0xeB9FUL + POISON_POINTER_DELTA))
- 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 4c8492401a10..3b411a40a149 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1743,6 +1743,13 @@ static inline void skb_mark_not_on_list(struct sk_buff *skb)
- 	skb->next = NULL;
- }
- 
-+static inline void skb_poison_list(struct sk_buff *skb)
-+{
-+#ifdef CONFIG_DEBUG_NET
-+	skb->next = SKB_LIST_POISON_NEXT;
-+#endif
-+}
-+
- /* Iterate through singly-linked GSO fragments of an skb. */
- #define skb_list_walk_safe(first, skb, next_skb)                               \
- 	for ((skb) = (first), (next_skb) = (skb) ? (skb)->next : NULL; (skb);  \
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 180df58e85c7..02a1761ed0f9 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -999,8 +999,10 @@ kfree_skb_list_reason(struct sk_buff *segs, enum skb_drop_reason reason)
- 	while (segs) {
- 		struct sk_buff *next = segs->next;
- 
--		if (__kfree_skb_reason(segs, reason))
-+		if (__kfree_skb_reason(segs, reason)) {
-+			skb_poison_list(segs);
- 			kfree_skb_add_bulk(segs, &sa, reason);
-+		}
- 
- 		segs = next;
- 	}
+ include/net/inet_sock.h                            |   4 +
+ include/net/ip.h                                   |   3 +-
+ include/uapi/linux/in.h                            |   1 +
+ net/ipv4/inet_connection_sock.c                    |  25 +-
+ net/ipv4/inet_hashtables.c                         |   2 +-
+ net/ipv4/ip_sockglue.c                             |  18 +
+ net/ipv4/udp.c                                     |   2 +-
+ net/sctp/socket.c                                  |   2 +-
+ tools/testing/selftests/net/Makefile               |   2 +
+ tools/testing/selftests/net/ip_local_port_range.c  | 447 +++++++++++++++++++++
+ tools/testing/selftests/net/ip_local_port_range.sh |   5 +
+ 11 files changed, 505 insertions(+), 6 deletions(-)
+---
+base-commit: 147c50ac3a4ea4f5ddbcf064e1adcf3aa7e6aa11
+change-id: 20221221-sockopt-port-range-e142de700f4d
 
-
+Best regards,
+-- 
+Jakub Sitnicki <jakub@cloudflare.com>
