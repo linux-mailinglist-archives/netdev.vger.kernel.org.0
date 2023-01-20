@@ -2,105 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7667367529D
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 11:35:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A78A67529F
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 11:36:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230043AbjATKfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 05:35:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47496 "EHLO
+        id S229986AbjATKgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 05:36:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229494AbjATKfs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 05:35:48 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0B83561BC
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 02:34:58 -0800 (PST)
+        with ESMTP id S230042AbjATKgp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 05:36:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01E458B761
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 02:35:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1674210898;
+        s=mimecast20190719; t=1674210956;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=a1oLV1CGniA/YYPQkFcz+2dVcvAyRiZqseuy6OqvH9k=;
-        b=MYlZ6R9CgmVXvh93lZcx0YImv/1GwgcqyuSxCX25NrQNA4lNa21NkFhyw8Soo+EC1bZcOj
-        eo2wye5FsqzxaDN+X6hnCMiMb1Hl6id2l72YoMezWI0ruE4oWbWdXaH9X97fMDI/aJ5mvp
-        NB3apbA9FUmmp7h5ML0PJJYuBreE4Yw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-31-yAvjEi2UOMmkd-Tk0Agxvw-1; Fri, 20 Jan 2023 05:34:46 -0500
-X-MC-Unique: yAvjEi2UOMmkd-Tk0Agxvw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C2C5B183B3C1;
-        Fri, 20 Jan 2023 10:34:45 +0000 (UTC)
-Received: from firesoul.localdomain (ovpn-208-34.brq.redhat.com [10.40.208.34])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7B9E939D93;
-        Fri, 20 Jan 2023 10:34:45 +0000 (UTC)
-Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 4473E300003EB;
-        Fri, 20 Jan 2023 11:34:44 +0100 (CET)
-Subject: [PATCH net-next V2] net: fix kfree_skb_list use of
- skb_mark_not_on_list
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        pabeni@redhat.com,
-        syzbot+c8a2e66e37eee553c4fd@syzkaller.appspotmail.com
-Date:   Fri, 20 Jan 2023 11:34:44 +0100
-Message-ID: <167421088417.1125894.9761158218878962159.stgit@firesoul>
-User-Agent: StGit/1.4
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=m5QZUmlRo+qr823XJoN7vqZbee518R/29hFLXb2A6I8=;
+        b=ZGka1KrHo5344fP1BT+GBKtSA/JSK0sJyqUto30wO4n4qwzltfvaGD3bNkHw3ruFOfNpP0
+        SBYfP/U312P5ml5w99SCh/O1/ywX50KNy4H7uQhnoGOXLIbjgY6Ogq1PRWcKkB7NJr37PT
+        hfgBnyGW4lwE/qBIn0AnRw5JvKRO9G4=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-54-XyGA4uC4OAy_-p3QxKev8A-1; Fri, 20 Jan 2023 05:35:54 -0500
+X-MC-Unique: XyGA4uC4OAy_-p3QxKev8A-1
+Received: by mail-ed1-f72.google.com with SMTP id h18-20020a05640250d200b0049e0e9382c2so3624465edb.13
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 02:35:54 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=m5QZUmlRo+qr823XJoN7vqZbee518R/29hFLXb2A6I8=;
+        b=xNaWbKrlUzXrl9ELWRMM3Tc01iIj6DnoptlaSUYqcUyBZfBXRm8euk+lwhY6pB+b7d
+         HBtSj8v5juvlkELkUK4TRHOQWRxgFNwHVvm/XPYt9skwVEmLy/2roFd3+wdOTKnX+hwa
+         KHlZpaVndT3au8XCxZWatwlwptrkXbxk8eO2uCR9Csaa2DwaQ3SkNiraDBGlfFVL65Qz
+         U2XeRFKa68lqcF5Aa8Z7zkPsZODCl8TjFk0ivWWFhswWkyVXMTHPmRZwy3o12FV9sFpG
+         360Im6GGkMS+UFIyjJevpgfziX55zDBIwdv6sLBQDSkC4qt4NTbrSz5rfTnk4Askofwo
+         Atxw==
+X-Gm-Message-State: AFqh2kpwCwwOPQ1p57UyHheailArr6AgWiG1Vnq75ESa+PZihTmJEPrV
+        wN86UtPTkY/H3lJHX93QE0rl1va8Q2T6bEMgHMfSw2ZOk1BWpFc1/cidb4OFRhu4ygmgEV5uFCO
+        KhCCNV6okjsLNSohh
+X-Received: by 2002:a17:907:2c66:b0:7c4:f752:e959 with SMTP id ib6-20020a1709072c6600b007c4f752e959mr17469573ejc.33.1674210953255;
+        Fri, 20 Jan 2023 02:35:53 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXtcR3LluTm2DShuWhmDO8avOE+tgHAh5/WGjTifQu+fdXaQgPhvzUPP4UeQh0Lk6BqENUKbkw==
+X-Received: by 2002:a17:907:2c66:b0:7c4:f752:e959 with SMTP id ib6-20020a1709072c6600b007c4f752e959mr17469556ejc.33.1674210953050;
+        Fri, 20 Jan 2023 02:35:53 -0800 (PST)
+Received: from [192.168.41.200] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
+        by smtp.gmail.com with ESMTPSA id ab15-20020a170907340f00b0087329ff591esm5051139ejc.132.2023.01.20.02.35.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 Jan 2023 02:35:52 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <ea149da7-79fa-6d9d-831a-924e312b96a0@redhat.com>
+Date:   Fri, 20 Jan 2023 11:35:51 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Cc:     brouer@redhat.com, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, pabeni@redhat.com,
+        syzbot+c8a2e66e37eee553c4fd@syzkaller.appspotmail.com
+Subject: Re: [PATCH net-next] net: fix kfree_skb_list use of
+ skb_mark_not_on_list
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+References: <167415060025.1124471.10712199130760214632.stgit@firesoul>
+ <CANn89iJ8Vd2V6jqVdMYLFcs0g_mu+bTJr3mKq__uXBFg1K0yhA@mail.gmail.com>
+ <d5c66d86-23e0-b786-5cba-ae9c18a97549@redhat.com>
+ <cc7f2ca7-8d6e-cfcb-98f8-3e3d7152fced@redhat.com>
+ <CANn89i+wzgAz8Y9Ce4rw6DkcExUW37-UKKn4eL4-umWsAJ_BKQ@mail.gmail.com>
+In-Reply-To: <CANn89i+wzgAz8Y9Ce4rw6DkcExUW37-UKKn4eL4-umWsAJ_BKQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A bug was introduced by commit eedade12f4cb ("net: kfree_skb_list use
-kmem_cache_free_bulk"). It unconditionally unlinked the SKB list via
-invoking skb_mark_not_on_list().
 
-In this patch we choose to remove the skb_mark_not_on_list() call as it
-isn't necessary. It would be possible and correct to call
-skb_mark_not_on_list() only when __kfree_skb_reason() returns true,
-meaning the SKB is ready to be free'ed, as it calls/check skb_unref().
+On 20/01/2023 10.46, Eric Dumazet wrote:
+> On Fri, Jan 20, 2023 at 10:30 AM Jesper Dangaard Brouer
+>>
+[...]
+>> Let me know if you prefer that we simply remove skb_mark_not_on_list() ?
+> Yes. Setting NULL here might hide another bug somewhere.
 
-This fix is needed as kfree_skb_list() is also invoked on skb_shared_info
-frag_list (skb_drop_fraglist() calling kfree_skb_list()). A frag_list can
-have SKBs with elevated refcnt due to cloning via skb_clone_fraglist(),
-which takes a reference on all SKBs in the list. This implies the
-invariant that all SKBs in the list must have the same refcnt, when using
-kfree_skb_list().
-
-Reported-by: syzbot+c8a2e66e37eee553c4fd@syzkaller.appspotmail.com
-Reported-and-tested-by: syzbot+c8a2e66e37eee553c4fd@syzkaller.appspotmail.com
-Fixes: eedade12f4cb ("net: kfree_skb_list use kmem_cache_free_bulk")
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- net/core/skbuff.c |    2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 4e73ab3482b8..180df58e85c7 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -999,8 +999,6 @@ kfree_skb_list_reason(struct sk_buff *segs, enum skb_drop_reason reason)
- 	while (segs) {
- 		struct sk_buff *next = segs->next;
- 
--		skb_mark_not_on_list(segs);
--
- 		if (__kfree_skb_reason(segs, reason))
- 			kfree_skb_add_bulk(segs, &sa, reason);
- 
-
+Ok, sent V2
 
