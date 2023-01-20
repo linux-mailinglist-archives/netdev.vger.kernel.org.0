@@ -2,189 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8C71675B11
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 18:21:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4638675B2D
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 18:23:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229788AbjATRVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 12:21:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33788 "EHLO
+        id S229728AbjATRXt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 12:23:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbjATRVi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 12:21:38 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354D510D8;
-        Fri, 20 Jan 2023 09:21:37 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id vw16so15620808ejc.12;
-        Fri, 20 Jan 2023 09:21:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=u40jSdsDUNf/iyjtahOuC7vMZ2vI8Jji9vcKYxRCKQw=;
-        b=TJP6csfD/IlV/97VdrGsA34Bt3VnCAfvIow5mu3sklPOQcnoDDGWLA0NS9gKnHlQiR
-         TM2MXJd6hyz7UOQR1eRhOczlAsff/oe57TUQTRrkpKOywqdkGbFNBNRFSm2uso4Bo0Io
-         wTErLamFFx3zv47JQuvRtW4ehKYx6L5NGMTJ9LdFLQPaGzLIGcMi3KPaE/bxV5j6AWUi
-         IVpD8ssE8ONwXa/p9pvDKazMfxw4Q01whJpD7bGNrbL28XmL5TqeFd2L13pHOHApNNL/
-         5iBeDs6RUWiuGhiJz3wDC+yH7QQgqJIrb69MAl/iV4g55nYvQ4cMKdchrKbjYnO848V/
-         DOnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=u40jSdsDUNf/iyjtahOuC7vMZ2vI8Jji9vcKYxRCKQw=;
-        b=ygygTLtQr7Y7vPnXe2bs9Z3ByUZq3jZM3xiaR436t/VxTxPa2ZSy4OolUQYkc1wu0/
-         GcNs9dqZEeJeP2QamyWzTUSt+6QCynrnSWFcBnl1atLTzadGfsxniJYN3LWFicT04WkA
-         bcAUtRwB//PtKhJMVBqYLWrwkmexUFIbohGffvNPQZXzrKEaa1kzHOTFlQKlFSCjIJS2
-         ztdRA9rCa8rKRAxoE1+XWmE7IDhInpablhbXR1cVUe/aihCmHU7gIs8Jj/KMUuCBbpgu
-         btREuhb4NC3j6OsutdWR/4AsZ3pn3fS0U6713E6+kjvEpZBclLA4s9adgvhCTlfflFXc
-         XHiw==
-X-Gm-Message-State: AFqh2krfG22C5eD07jWJIJLxnibBkjw1KOvOFtrRrJUtWPalcRPZ6u6f
-        PiKPHHIXljG0GYk/thY4Jqs=
-X-Google-Smtp-Source: AMrXdXvU6twa5cRzhDrJDUnpw1VVdfEuIefHjaypZ+5wnhWWNw1xPnbnE9UCtBkhdkr5gr+0fPtBuw==
-X-Received: by 2002:a17:906:d8ab:b0:86f:50ff:ef25 with SMTP id qc11-20020a170906d8ab00b0086f50ffef25mr16071208ejb.63.1674235295668;
-        Fri, 20 Jan 2023 09:21:35 -0800 (PST)
-Received: from skbuf ([188.27.185.42])
-        by smtp.gmail.com with ESMTPSA id e2-20020a170906314200b007c08439161dsm18082864eje.50.2023.01.20.09.21.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Jan 2023 09:21:35 -0800 (PST)
-Date:   Fri, 20 Jan 2023 19:21:32 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Daniel Golle <daniel@makrotopia.org>
-Subject: Re: [BUG] vlan-aware bridge breaks vlan on another port on same gmac
-Message-ID: <20230120172132.rfo3kf4fmkxtw4cl@skbuf>
-References: <trinity-e6294d28-636c-4c40-bb8b-b523521b00be-1674233135062@3c-app-gmx-bs36>
+        with ESMTP id S229596AbjATRXs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 12:23:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F0883879;
+        Fri, 20 Jan 2023 09:23:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7EDC3B82941;
+        Fri, 20 Jan 2023 17:23:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93A67C433D2;
+        Fri, 20 Jan 2023 17:23:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674235405;
+        bh=ZoJTq9hlxE+EeSPEihPl6kgJ4aNV/ot2y2HKzEndKfI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=twuzMgUIVujvvvqUl+Jq3VnFeviR345kCrBQLb/875O9vasUiNHmY2HO9017OcsJH
+         L7QRMuOJjwsNVrsOjC3/9Y0RFiWA6apQ6xWkehnxvrlCeQluypOgvcga+7+0ywyybv
+         bnQ66JPSX84uMJpeouBzHtuSWaJfg4qEpJkurCilgchWeM2pL0folT4cmU5P3bFt0u
+         Lfx4yBwY56NBBuDzj2GNkjsRv7F7H5vREMMR6MHOBCb0ggacQBFdR8ccOj7aa2OEwx
+         FvODJvK7vhPqToT6S8hBKrv0tAtdaQJoqDppMWP8XasczWd640HEj1mn7PqpZ8nBjG
+         Q2bRc/GefaQww==
+Date:   Fri, 20 Jan 2023 09:23:23 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, robh@kernel.org, stephen@networkplumber.org,
+        ecree.xilinx@gmail.com, sdf@google.com, f.fainelli@gmail.com,
+        fw@strlen.de, linux-doc@vger.kernel.org, razor@blackwall.org,
+        nicolas.dichtel@6wind.com, Bagas Sanjaya <bagasdotme@gmail.com>
+Subject: Re: [PATCH net-next v3 1/8] docs: add more netlink docs (incl. spec
+ docs)
+Message-ID: <20230120092323.39d3787e@kernel.org>
+In-Reply-To: <2b7f7f76aac4fcf2a51eb5588e64316b62f27d65.camel@sipsolutions.net>
+References: <20230119003613.111778-1-kuba@kernel.org>
+        <20230119003613.111778-2-kuba@kernel.org>
+        <96618285a772b5ef9998f638ea17ff68c32dd710.camel@sipsolutions.net>
+        <20230119181306.3b8491b1@kernel.org>
+        <2b7f7f76aac4fcf2a51eb5588e64316b62f27d65.camel@sipsolutions.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <trinity-e6294d28-636c-4c40-bb8b-b523521b00be-1674233135062@3c-app-gmx-bs36>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Frank,
-
-On Fri, Jan 20, 2023 at 05:45:35PM +0100, Frank Wunderlich wrote:
-> Hi,
+On Fri, 20 Jan 2023 10:15:39 +0100 Johannes Berg wrote:
+> > > > +Support dump consistency
+> > > > +------------------------
+> > > > +
+> > > > +If iterating over objects during dump may skip over objects or repeat
+> > > > +them - make sure to report dump inconsistency with ``NLM_F_DUMP_INTR``.    
+> > > 
+> > > That could be a bit more fleshed out on _how_ to do that, if it's not
+> > > somewhere else?  
+> > 
+> > I was thinking about adding a sentence like "To avoid consistency
+> > issues store your objects in an Xarray and correctly use the ID during
+> > iteration".. but it seems to hand-wavy. Really the coder needs to
+> > understand dumps quite well to get what's going on, and then the
+> > consistency is kinda obvious. IDK. Almost nobody gets this right :(  
 > 
-> noticed a bug while testing systemd, but it is reproducable with iproute2
+> Yeah agree, it's tricky one way or the other. To be honest I was
+> thinking less of documenting the mechanics of the underlying code to
+> ensure that, but rather of the mechanics of using the APIs to ensure
+> that, i.e. how to use cb->seq and friends.
+
+I see. Let me add that.
+My hope was to steer people towards data structures with stable
+indexes, so the problem doesn't occur. But I'll add a mention of 
+the helpers.
+
+> > > Unrelated to this particular document, but ...
+> > > 
+> > > I'm all for this, btw, but maybe we should have a way of representing in
+> > > the policy that an attribute is used as multi-attr for an array, and a
+> > > way of exposing that in the policy export? Hmm. Haven't thought about
+> > > this for a while.  
+> > 
+> > Informational-only or enforced? Enforcing this now would be another
+> > backward-compat nightmare :(  
 > 
-> tested on bananapi-r2 with kernel 5.15.80 and bananapi-r3 with kernel 6.2-rc1,
-> both use mt7530 dsa driver but different configs (mt7530 vs. mt7531).
-> have no other devices to test.
+> More informational - for userspace to know from policy dump that certain
+> attributes have that property. With nested it's easy to know (there's a
+> special nested-array type), but multi-attr there's no way to distinguish
+> "is this one" and "is this multiple".
+
+Makes sense.
+
+> Now ... you might say you don't really care now since you want
+> everything to be auto-generated and then you have it in the docs
+> (actually, do you?), and that's a fair point.
+
+Have in the docs that we want everything to be auto-generated?
+
+> > FWIW I have a set parked on a branch to add "required" bit to policies,
+> > so for per-op policies one can reject requests with missing attrs
+> > during validation.  
 > 
-> first create vlan on wan-port (wan and lan0 are dsa-user-ports on same gmac)
+> Nice. That might yet convince me of per-op policies ;-)
 > 
-> netif=wan
-> ip link set $netif up
-> ip link add link $netif name vlan110 type vlan id 110
-> ip link set vlan110 up
-> ip addr add 192.168.110.1/24 dev vlan110
-> 
-> vlan works now, other side pingable, vlan-tagged packets visible in tcpdump on both sides
+> Though IMHO the namespace issue remains - I'd still not like to have 100
+> definitions of NL80211_ATTR_IFINDEX or similar.
 
-VLAN 110 is a software VLAN, it is never committed to hardware in the
-switch.
-
-> now create the vlan-sware bridge (without vlan_filtering it works in my test)
-> 
-> BRIDGE=lanbr0
-> ip link add name ${BRIDGE} type bridge vlan_filtering 1 vlan_default_pvid 1
-> ip link set ${BRIDGE} up
-> ip link set lan0 master ${BRIDGE}
-> ip link set lan0 up
-> 
-> takes some time before it is applied and ping got lost
-> 
-> packets are received by other end but without vlan-tag
-
-What happens in mt7530_port_vlan_filtering() is that the user port (lan0)
-*and* the CPU port become VLAN aware. I guess it is the change on the
-CPU port that affects the traffic to "wan". But I don't see yet why this
-affects the traffic in the way you mention (the CPU port strips the tag
-instead of dropping packets with VLAN 110).
-
-I have 2 random things to suggest you try.
-
-First is this
-
-From 2991f704e6f341bd81296e91fbb4381f528f8c7f Mon Sep 17 00:00:00 2001
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
-Date: Fri, 20 Jan 2023 19:17:16 +0200
-Subject: [PATCH] mt7530 don't make the CPU port a VLAN user port
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/mt7530.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 616b21c90d05..7265c120c767 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -1524,7 +1524,7 @@ mt7530_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
- 		 * for becoming a VLAN-aware port.
- 		 */
- 		mt7530_port_set_vlan_aware(ds, port);
--		mt7530_port_set_vlan_aware(ds, cpu_dp->index);
-+//		mt7530_port_set_vlan_aware(ds, cpu_dp->index);
- 	} else {
- 		mt7530_port_set_vlan_unaware(ds, port);
- 	}
-
-If this works, I expect it will break VLAN tagged traffic over lan0 now :)
-So I would then like you to remove the first patch and try the next one
-
-From 1b6842c8fc57f6fda28db576170173f5c146e470 Mon Sep 17 00:00:00 2001
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
-Date: Fri, 20 Jan 2023 19:17:51 +0200
-Subject: [PATCH 2/2] tag_mtk only combine VLAN tag with MTK tag is user port
- is VLAN aware
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/dsa/tag_mtk.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
-
-diff --git a/net/dsa/tag_mtk.c b/net/dsa/tag_mtk.c
-index 40af80452747..ab027c233bee 100644
---- a/net/dsa/tag_mtk.c
-+++ b/net/dsa/tag_mtk.c
-@@ -35,14 +35,13 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
- 	 * the both special and VLAN tag at the same time and then look up VLAN
- 	 * table with VID.
- 	 */
--	switch (skb->protocol) {
--	case htons(ETH_P_8021Q):
-+	if (dsa_port_is_vlan_filtering(dp) &&
-+	    skb->protocol == htons(ETH_P_8021Q)) {
- 		xmit_tpid = MTK_HDR_XMIT_TAGGED_TPID_8100;
--		break;
--	case htons(ETH_P_8021AD):
-+	} else if (dsa_port_is_vlan_filtering(dp) &&
-+		   skb->protocol == htons(ETH_P_8021AD)) {
- 		xmit_tpid = MTK_HDR_XMIT_TAGGED_TPID_88A8;
--		break;
--	default:
-+	} else {
- 		xmit_tpid = MTK_HDR_XMIT_UNTAGGED;
- 		skb_push(skb, MTK_HDR_LEN);
- 		dsa_alloc_etype_header(skb, MTK_HDR_LEN);
+Yeah, there's different ways of dealing with it. The ethtool way is
+pretty neat - have a nest in each command for "common attrs" with
+ifindex and stuff in it.
