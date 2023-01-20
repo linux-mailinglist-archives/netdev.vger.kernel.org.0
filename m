@@ -2,148 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12E7C6756BE
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 15:16:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFF7E6756C7
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 15:17:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230076AbjATOQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 09:16:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42974 "EHLO
+        id S230356AbjATORk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 09:17:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230208AbjATOQA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 09:16:00 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on20609.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eab::609])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C2698B77C
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 06:15:28 -0800 (PST)
+        with ESMTP id S230342AbjATORi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 09:17:38 -0500
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2068.outbound.protection.outlook.com [40.107.22.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749B5CC5D0
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 06:16:57 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gKyj0lgf6PKDmOYW57z+p4edU/ynVeHnrkcBMj4OOCOHxo24/Gw7pBS0zcsRBo1HPk+JAVA0Srn1D3sMAqGjgjbhplEaTxjMj3m4S4g8cSIcm3mL2NGNF0EEiFqXU5tWZB6SqMEdlSILeyWBRMRTjqlRemaY+LqvkwvnIvB2N9Z4CmGirkgt7mRs4AXk8JWgsfs64NSCbX7zAd2u85X2iPclZpU/7hpUU8ovg2vdTv+YyMfM55jtXJkKBcJroSQ1kaN9XB4neXyVYHvWHyUxxPdHl94U0oUD5B7nqHL+4pYKS0V6AV5kMbSex2tMjM2d7snIpxRiv0pEteCaGWKFxQ==
+ b=U9f3Abb9rvL+c4vb5IzbZMbMgs6UypS1gGVSUonehAw3+dn9Zy8iRWDtaErsU3FcHl7UKgHKJ+BSKAZWKCfAh5IGH1Fuvjdyf9TD/tyUE3f1O7U1l9El8ZuwigBEPc3h8DcDjiKwKvB5lPqt+TzeWh+tr518PIYLwQhAkYH4zyddPYBZ1B1ZtD9EQW0dMlKrWjfqO3rRihNj60xfVjhh7cpSx+vAelaqcDfeWkTbIYSkWUdbQqXI6+aYVA6vMbsMQh/dGQzepu/WJth71jvYTcRcEc5q8gdvgmE0RWUYLZzjc7A5hqUdv0lguJftgTGH+BuwrlG/7f5bSN2rVYC3Sg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Vn3g7fFVtLzqUcF0R77P/qNE0u9Dz+AWF5Kvad9o2Lg=;
- b=ezxUtNMIHXxYgQpXQJHnNFSeozN0TYb1dAwrT+uYBfQJLuqTxcR8D42im9dTJ5jkkIZIpTJf8nNz0FHVU4/f12egDVrmj20xDJb6hk3ELsqgrNJQh351O254vzN0LakhmOHfTGQN50VOgk0IEbjRSWFYZpUEkQfPmX+ELtVUU2b3ZpEr/L+bJdREua2w73PWyhavXHMQwKciM5yaW9ATSyyh44xWFkVaKQeMhy06kUUdNovnMAMDiqL6plpWbFA03x9I93jk6u6E4AZOPFv58Qlz8MbTDKvLI26CmFriuGoGXLoQ53TPGvht8ZMXd5476AO9banyDZyugtspbCV1dQ==
+ bh=ml3L/0UXeTIbs16XuZq6MfY8U8OjXJH56iMEWC1UtKI=;
+ b=k3fI+InvfkNoAP2L63GCaaINfM/qpd943DL+Zm5AdE27i+PnNI17+psIUEHFGIMgKmC8jIEGN8xOOAbOFs7pY89HRF6GpdiMJfpn3QZjp0tkawFT3R+9iMttr9rf2ms5OdchGo1h05g5/ohKo/CLoX35zsC2O5hjOcc23QUEAbYcn6GBwwKTBszVOXhav1cCW1u37IsVWC08g2OZBYtVc6YMDEQ/adv4ejaFEnrW1nkSPrC1krpWiasjnyV7fzaVIkr45XcXWeMhHmJYtm/XWPNO++wsQiquK0LujqcnH69yGoK/eT3DSPj+RmVSx/JpCXd+qG9u4xsZ9sfcXh4ELQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vn3g7fFVtLzqUcF0R77P/qNE0u9Dz+AWF5Kvad9o2Lg=;
- b=gAt3bwLBj7ScKwicBThc04lYxWB2kXrC3phcCCYhbbROOvXDRA71GluRXTCWH2YqygnzEsM19ezBRdTh7Gm/kRUfEVm+duCDDw+tl2ssuDRuUsrltBNX7rT76uyelqBCkcBrbhKup/yRbpUPyvkDV+JuBy8WWEYiGyQQCjetm3A=
-Received: from DM6PR12MB4202.namprd12.prod.outlook.com (2603:10b6:5:219::22)
- by DS0PR12MB7900.namprd12.prod.outlook.com (2603:10b6:8:14e::10) with
+ bh=ml3L/0UXeTIbs16XuZq6MfY8U8OjXJH56iMEWC1UtKI=;
+ b=nACs6m4T1ECWOMTxqGh5ojgk1r8qSOtsLXBxGtaLAb1ONmRvce1Y04v5i/ZLLgZ7bYh9tVAmVkNDtNpjFFJUYa0yYXZwhgOZxIOJTjimDmkDQKdXVND4pGF/V/OD5zP/qjHy6q+PUyop/C9yWrev5he9AOiKFvdhhHngZSRxQgI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AS8PR04MB8085.eurprd04.prod.outlook.com (2603:10a6:20b:3f9::24) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.27; Fri, 20 Jan
- 2023 14:13:53 +0000
-Received: from DM6PR12MB4202.namprd12.prod.outlook.com
- ([fe80::33a7:54d4:2de0:3939]) by DM6PR12MB4202.namprd12.prod.outlook.com
- ([fe80::33a7:54d4:2de0:3939%7]) with mapi id 15.20.6002.026; Fri, 20 Jan 2023
- 14:13:53 +0000
-From:   "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>
-To:     Jacob Keller <jacob.e.keller@intel.com>,
-        "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-net-drivers (AMD-Xilinx)" <linux-net-drivers@amd.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>
-Subject: Re: [PATCH net-next 2/7] sfc: enumerate mports in ef100
-Thread-Topic: [PATCH net-next 2/7] sfc: enumerate mports in ef100
-Thread-Index: AQHZK/m9AFDv8Y870UCltlQ1GqM4AK6maSeAgADxqgA=
-Date:   Fri, 20 Jan 2023 14:13:53 +0000
-Message-ID: <00dbd8c6-bcc4-87a7-bbfe-82613b4491e5@amd.com>
-References: <20230119113140.20208-1-alejandro.lucero-palau@amd.com>
- <20230119113140.20208-3-alejandro.lucero-palau@amd.com>
- <f6f38dc9-cea4-d328-3657-c48ce7feabb1@intel.com>
-Accept-Language: en-US
-Content-Language: en-GB
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Microsoft-MacOutlook/16.53.21091200
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DM6PR12MB4202:EE_|DS0PR12MB7900:EE_
-x-ms-office365-filtering-correlation-id: 5886bb20-b1ef-420e-1a5d-08dafaf08f77
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: iLiFP0Ci4xtx9MwfxfG3Xe0kqjRk6j9hT71IeDiNVdAGquBE3/cwU+oT4DtSKPRIELiiK7IFSIug+4jDLMVUVyjl1G41JZsB71QQhqPAYq0L1DxCXGXhiAg36VKvh3cglUs9AOo324gUQR1nCXsQE869QxGrbwgs3Qz8WOZRxbKzlT3mWqFpsyVAJE2irRQWh498WEDdDUXp/tCq/tUVG1by7KGQT4eLW/rNrFNVxAwvEZsPALb3fuQgoYQmckK4CsWUufZhtuVuJsnK4CVIHbtqNdn0Du441GDLCWoGBV8DCPKG5OOG+DOb9WfjSJJkpG3E9KZNCcdoMXyhn+7dh9PsrYMoDpJatFO64Of2N/DcLr7LDL8Q7dd3AvFw6DLR5OJ9tO7XTkLZ1ViiYBsuGfOP2AnxqWkg2iVmVw09feuLJh6ar31Yz0+DvsLNBNtOzg65VVFiQ9O12ZFVveRk2Suqt0DWE2T4bDSVyZFNXIvbU+VjdUitilkOVc8UXB9d0WsYxd2e0DnZP5SmhEM+gZw2gk+//MTqxBuzoFhWFO4V4Upo1xD2NgEC8zach8SDXVL5piKunRtY2bieYYKoisdVkFN0veGKGW6Z1VTfLNfY7F38Czu0cR0P1B3iudALObuRm8Biz76DtrDA07usYlNJrnqvBe26eor8IxwX/2kHdNOxEul5gQ91evuqU01ABp8Lr9/9RiHn0v1kxZ772+zHcv88Bw3NugnVUoo6Kb0=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4202.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(366004)(39860400002)(396003)(346002)(451199015)(4744005)(5660300002)(31686004)(8936002)(4326008)(66476007)(66556008)(66446008)(64756008)(8676002)(66946007)(91956017)(76116006)(71200400001)(38100700002)(31696002)(122000001)(6636002)(110136005)(26005)(186003)(2906002)(6506007)(6512007)(54906003)(6486002)(36756003)(478600001)(316002)(2616005)(53546011)(83380400001)(41300700001)(38070700005)(86362001)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?WFkxem1COFlmbzdaSU4xbEJLMW1nOE01dVVWdEk5MFh5bEpyVkhUNjcvb0pF?=
- =?utf-8?B?MHAzMnljbmh3QTdYKzNCUkVONnAxTDV4akdSZkdLZWNZY1RLV0pFNXkvSUJk?=
- =?utf-8?B?Z0pwWTVpNTZFVWR1T3B2bk5QVVRxM0l0K0YrSVdyNWFWemttYXRIWGNhTHRu?=
- =?utf-8?B?aHY5K0hZYm1zb0pRRU1vbnlPL1RPYklwcWtqZWRsMnF4VkcwQ0FucmN3MTRB?=
- =?utf-8?B?OHZlUlBpVyt5ZlZTejQ5RE1IeG92VFQyK2ZHU2UvZEhwZ0t3YThsaVp1czZY?=
- =?utf-8?B?TkJsd3U4L0wrSU42MUd6TXZMd2lNYmpOUUt6YVhDSklNNHpiWDhPZkhEWFYr?=
- =?utf-8?B?SnBST05XZGp4cmxDUDNhSGRveVpWd1BldUdrNi9NUDdKT01ySkRmSHBWSjg2?=
- =?utf-8?B?eUc1ZXp3M0kvUFk3Q0JLNHhaYXRsdFMyQ3h2WGI2WG93RWVWMWMyL1FJMko3?=
- =?utf-8?B?VXhZQ2o2VURxVkNEaUpJZU80Z3M2TFNSODE4emRGcExiSDZ1M2IyWnJWaUY0?=
- =?utf-8?B?aGp1cWFLMk9sbGwrdGFpZnN3Q1F4am5tSnZWdWYxMXI4cjlxbTlScTAzdXgw?=
- =?utf-8?B?ZU9zT3h2cGFrSW8yb0RqYzBIOGRTa3lsajVKS0hVaFZWVDBaeTJpbHhueitz?=
- =?utf-8?B?U2R0REwzTTRjN29id0ZLa05xeFNTL3hDaHlPY2ZYTkp4TmxJMXdQaGJPUzlo?=
- =?utf-8?B?bVJYcDBjWGZ4SHFvVzk5TXlIemZXWXZxV1hmSzJJVlcvZys4NXpJWmFHVTZw?=
- =?utf-8?B?YUFtd0dLenlLai80QXR2b1lLY3NCK3ZseXYvekJuSzNELzI2RWRwZXVXei9H?=
- =?utf-8?B?YWVvdEl2Nk92TnBrQnRTOWhPUGF2SVlUeVVmMnF1bjUzUTY5MkdxNVMvUDNi?=
- =?utf-8?B?eCtrSEdyTGhuZTdNcHRPMmJ2clR1VU5Qd01leWVuSG83bDN4VjBDOVk5K1Zz?=
- =?utf-8?B?YzhvdGYxa3dXdFI0T1RRTkVtNi9aQ1E5S2ZHdnkzdlViYWkzMmE0eFRZU3lS?=
- =?utf-8?B?UUUrb3Bxc2FLMkdWQVFHTXdvdVhqMm1PU25QUUNNeUpvNEJUTlhYSzJkNzUv?=
- =?utf-8?B?ZEU5S25CMGMrK0VvaTRVckNDL0o2dGNtWmNKU291b0FEckpOZlZzZHNWYUtO?=
- =?utf-8?B?NjB0aTBPb2xCVzlJSFBLOFh1Nk5lOERPTEYrVE5sZkJLVjBYUGRJdFVNcnlY?=
- =?utf-8?B?dE1pZy8xdER1WmUwc1JaQ0cyN01ZUzBxdkFOMUtoT0JtbXdjSWtqYUtjU2xn?=
- =?utf-8?B?dmZ4VmdrYjE0dFYrazBJWkx6cStna2JRbWRTdHZVWm9YV1RqcG4yMkxXQ2ZI?=
- =?utf-8?B?RVdRUEw3VDFYSHZMbjZMQzhNZHUxb0JXdFJERXRoSTk3SGRtK2tQMVFWSXVv?=
- =?utf-8?B?UGIzMzRDZUpYN3dSdjE0eERiVUpSZDVjY1drcjBDcG9taFNlTW9OZ2tFWDVE?=
- =?utf-8?B?ZnRnT1Y4V01EcG9yL0o4UE9VdENVYW0rRTJMb3VTOTlDYzBCRlVuZ1V1VDZB?=
- =?utf-8?B?MktRcEZGQksvVnloZWhsUi9vaWpMeDh1M0JmbzdPbGlHTytYcU5MUzRIdldl?=
- =?utf-8?B?ZVdRQ0QxTVZCQzNmdTlnZTJtN1VTbkRZRU5yNGF2QlgreC9qUEU5VkUzTHA0?=
- =?utf-8?B?RjgzUkszSnNDb2diOVBiRWtxUlRuTStzNGxhUVYyQmU4TUsxZ1JiL0Y5RGs3?=
- =?utf-8?B?QkR4VWZvN0dHZTRYM0NoWWhOUzZzd0hYd1FZeWFGMXMwY3BHbDBMamlvQVMr?=
- =?utf-8?B?ZjUzbVhrSThjLzFsY1RyRm1IZnNZdlF1OE1tckNhSDVuQjVuMTJab0dHU2th?=
- =?utf-8?B?emIzUCtjRkEyTmFwMFpKWk9wOW0vVlg0NUcwNHhPNFM0a1FrZHc1aGJLTkRQ?=
- =?utf-8?B?MmVzME5VeUQ5bmZsQTdrMytkR01QUVk2QU53cytXdTgxWUgwVDBNcE9JMEdG?=
- =?utf-8?B?bTFiZ21rVERFTU1SbEQ3Q1JzZllyYy9hOEtyb0RZd3E2MlVIeTNEdzliamEv?=
- =?utf-8?B?SHl5VFlwUkI5Qy9FVE0yalIrcVl4RWsvQnE5UmZTMHVhRGw2M1NXN2lQZ1R4?=
- =?utf-8?B?SE5OSlgvWllwY0lFTDJCNjdhZWRsTC9CUkcxbEJzVHliRzlOWlFxTC9hNXRu?=
- =?utf-8?Q?4dVtbFkYFvVQruT9VBrulv71p?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E4D91092FFC4354AB2E49FDA6E5668B0@namprd12.prod.outlook.com>
-Content-Transfer-Encoding: base64
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.26; Fri, 20 Jan
+ 2023 14:15:50 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b%4]) with mapi id 15.20.6002.024; Fri, 20 Jan 2023
+ 14:15:50 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org, John Fastabend <john.fastabend@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Camelia Groza <camelia.groza@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Ferenc Fejes <ferenc.fejes@ericsson.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jacob Keller <jacob.e.keller@intel.com>
+Subject: [RFC PATCH net-next 00/11] ENETC mqprio/taprio cleanup
+Date:   Fri, 20 Jan 2023 16:15:26 +0200
+Message-Id: <20230120141537.1350744-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: VI1PR0101CA0068.eurprd01.prod.exchangelabs.com
+ (2603:10a6:800:1f::36) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB8085:EE_
+X-MS-Office365-Filtering-Correlation-Id: 69172148-9473-448a-d71f-08dafaf0d54a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ziCdJ/7Bnxj6NaZFOiI3K9viPahfIvd4Ppku8os5EZHoxUhOOl4bY1UybZufiK4fpa9fZR7zlohHK/Ri/fEDnE0OTWtTMT1Wv2AY616U0tmVeAl70urojd/LtTkfIt5PMNW/Ns/tbvGipEddH+7DdSYvPTW0Owrt+tOq7SloYefWGk5tYVTDXYo3Dz46VHLnwMW5DhanO1kciMChSOffR0RzsECfW3eYRXBoGJTI+CIWTEjzdqvrXpezLZembdWEincceIsYQrQAfmdeogmwBqCkReqol4qPgGrnhrqiptppbIlCWJQD/+u94VbhWBPQLWCr1iMmzOx41akY10D8Q5P2OXf6qvbpwJxWMio213pY7DgoULQbihy7U8sAkOSKzAPjmrtgmWZe9vqTasufg0esrbD9aMNczDRu47GDiJvb7MxTXi4zVWY/daY3BK5NU7YFBwlyoQGiCAJfYDmeUHpUOzp4oTfAiarMqf7TNwp3+I9pnekU0bWSmADj4dUYVCe+NHaxwz2jgFBuByoavG0gHPzz/0bSVsXVvqNUC73F8FT1cNH/f2vGN3RSCpDH/2RvxjHUkRXD5SvNEDg1AVSuas+5B2+XYrhNdHkBgTDLPg+lEd1gvGcKelBjwOw5aibQemPzSAUqHLqj523R7GpLjH/6r+v+cCneP0wjmohjrYJVwF2GmiUlr9oPwTukeGPwYFAPCsB1y0VME4q75s/Hi8TkQvpxpEtXyDiXX0s=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(39860400002)(346002)(396003)(136003)(451199015)(52116002)(6486002)(966005)(26005)(6506007)(478600001)(66946007)(6916009)(8676002)(66476007)(4326008)(66556008)(5660300002)(6666004)(54906003)(41300700001)(38100700002)(6512007)(8936002)(186003)(38350700002)(316002)(7416002)(86362001)(1076003)(2616005)(83380400001)(2906002)(44832011)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qsuCRwHauUq8l9klxKtDwtKtDzaksuDaUTXJ9OcwW3vqMP7zvNLwI4K4IOhf?=
+ =?us-ascii?Q?bZ5DpvL1K46NWQeV+RrYppDpd9ArbW+VlRK1wgg+uJVy82Mw5XX3KUY+aO0B?=
+ =?us-ascii?Q?7AuqAbo0rYP2vNEngL4c4XZEw6ns2VF4663FJvwDN2KiZd2RK+O1zGbZkMNh?=
+ =?us-ascii?Q?IQN03LL0x+AqY5SzJbes5u4jFUK3Md5JBkBRNr8vpcFfl6oYT/rVbOEcCc6g?=
+ =?us-ascii?Q?PidPXHnIMi3WzsfwIBCqjDPmakR9xU2/9oeT08xwhplF0Iuq4veAX/3yu/zR?=
+ =?us-ascii?Q?dItEkW2rhgahhGYGA0uWRnc4qXM/BHyJtLAJmVBcwtn47LD44nv3AnDCNjdj?=
+ =?us-ascii?Q?VKGdP1eJXvir6npKj+ahrFYl/idBu9cgk6c5k0/iDgAfoh0PrEgaQewUp+Hc?=
+ =?us-ascii?Q?amOh83YWoiLOsl0gD644EXaxSkKoLuw485xHdn7idqqBLZydBJd3KWLP4Xre?=
+ =?us-ascii?Q?K7NPfBWhHhBLFz3za26xCnShFN2jkTBnCPquzV0hv3X9i1Kbhr8/jIYX3F+q?=
+ =?us-ascii?Q?mHHe6cDvYtD9yzYswdrh7Ud7AcNRRaG4rExOmwjQ4K0HSOpYlwYvwEhvRPoE?=
+ =?us-ascii?Q?mu4zO/sbaUVjZ1PXZODHnmMfLaCD158dwiixMyL1UXNNx68ET9RRr4fdmWTK?=
+ =?us-ascii?Q?GJXn0n+6YqlCtWiqKGQcu5PLRaPr7k8hSISpCXAV/tPLwLBOoq7iEnvCxuSz?=
+ =?us-ascii?Q?TrmSPwtp80Kagkk/rVF+9TicTg7Q4lJyx3BhRrf7auAsTMPewZH1RFXy5fpm?=
+ =?us-ascii?Q?ySHbf+8XTtDQG4CzpX/4J6PR6BMnAMPg3mMjmiA038R8ctVRdl6ZnkEbJmeR?=
+ =?us-ascii?Q?lhOwBTobjPFFlleg/UeWzUJ7U+K8B2xrYe6khSqECiZdRHXnEmQHbJ7cDUnZ?=
+ =?us-ascii?Q?kyZevBbdzK4dZB4LpnyOqy6zQqcIESK2kJTUReBbpUwSFZ7kzKXqzX38perJ?=
+ =?us-ascii?Q?uUjsmlSEnazFVzBObJ+Ud+tiSGkkBINweQ5Tv5eYa4vF/Ln1sa/M82dxmWOc?=
+ =?us-ascii?Q?xAfgvY8xh6tqRtnzmyvb2FEuWmQeKGtbL+Sz7GPs6ZksiYh4hCLtLGEGEEUy?=
+ =?us-ascii?Q?Xo8oa+hq21k0q6wBQO5Nkdk+TNPVhzUQXufNKEJocIdfIMH2N248xQjsGLAA?=
+ =?us-ascii?Q?SYXw8++7pGOZwJgNTFRSyAjeqj3CUfZxAVT92hLz/5NH/9lwxFI6OJH7Sj6M?=
+ =?us-ascii?Q?cvCKEdARx7cqqJRLsDSomWmM3SemBuS6A9Z+nJstztkwL8D/VPQ8VXuS8U89?=
+ =?us-ascii?Q?uw0Iv3cuvxNuSl1VQlA4BKmhp1rLi8xWYRKD23JrzTmNFpn0WxcpjwhbzdNv?=
+ =?us-ascii?Q?Jdaas+HTqTety+P8RiueWvpZcF2QqUKR+b21BjSCFnbiBKaWIOkqzeiOfd+P?=
+ =?us-ascii?Q?fcJfiSsjG2zJRQ/41GT8xCzRiOiRKDBadUDDf/GEKN2Wr2v2sf8VoAVWyW8x?=
+ =?us-ascii?Q?Aos6uIcjMYmkPcamW+7QhLC4dm4ifSv3yWONwj89cSxHjBYL8TrFI97evLP9?=
+ =?us-ascii?Q?jaOEgyJ9cOi0O7xAo3L+BgIYdA1+lDc30HlCmZXG6fjWMGrcHyzrUkQSkKe3?=
+ =?us-ascii?Q?9jnSVo8qoYhMsHb3TV4AhXSXiPP6TmMKos+7pF/jYKpAyqPLtF3L8N2qr/E2?=
+ =?us-ascii?Q?fg=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 69172148-9473-448a-d71f-08dafaf0d54a
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4202.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5886bb20-b1ef-420e-1a5d-08dafaf08f77
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jan 2023 14:13:53.1920
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jan 2023 14:15:50.5768
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kdzlsan27eSMOuXp6kTCVomAofc76TwwERR/mMkxYs0k4fWWenTix+qojT2XoRC3gC5tW7c4TVdtGlZhqGEBVA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7900
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Rd9xIRBOIYeYxzfYSbIi4LtNMYU6lUkNpt56gBx5QVaVoAZ0cubvPwdzn4iENfWK/xXSUYnmR+127ABWTCggww==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8085
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiAxLzE5LzIzIDIzOjQ4LCBKYWNvYiBLZWxsZXIgd3JvdGU6DQo+DQo+IE9uIDEvMTkvMjAy
-MyAzOjMxIEFNLCBhbGVqYW5kcm8ubHVjZXJvLXBhbGF1QGFtZC5jb20gd3JvdGU6DQo+PiArDQo+
-PiAraW50IGVmeF9tYWVfZW51bWVyYXRlX21wb3J0cyhzdHJ1Y3QgZWZ4X25pYyAqZWZ4KQ0KPj4g
-K3sNCj4+ICsjZGVmaW5lIE1DRElfTVBPUlRfSk9VUk5BTF9MRU4gXA0KPj4gKwlzaXplb2YoZWZ4
-X2R3b3JkX3RbRElWX1JPVU5EX1VQKE1DX0NNRF9NQUVfTVBPUlRfUkVBRF9KT1VSTkFMX09VVF9M
-RU5NQVhfTUNESTIsIDQpXSkNCj4gUGxlYXNlIGtlZXAgI2RlZmluZSBsaWtlIHRoaXMgb3V0c2lk
-ZSB0aGUgZnVuY3Rpb24gYmxvY2suIFRoaXMgaXMgcmVhbGx5DQo+IGhhcmQgdG8gcmVhZC4gSXQn
-cyBhbHNvIG5vdCBjbGVhciB0byBtZSB3aGF0IGV4YWN0bHkgdGhpcyBkZWZpbmUgaXMNCj4gZG9p
-bmcuLiB5b3UncmUgYWNjZXNzaW5nIGFuIGFycmF5IGFuZCB1c2luZyBhIERJVl9ST1VORF9VUC4u
-Lg0KDQoNClRoYW5rIHlvdSBmb3IgcG9pbnRpbmcgdGhpcyBvdXQuIEl0IGRvZXMgbm90IG1ha2Ug
-c2Vuc2UgYXQgYWxsLg0KDQpJJ2xsIGZpeCB0aGlzIGluIHRoZSBuZXh0IHZlcnNpb24uDQoNCg0K
-Pj4gKwllZnhfZHdvcmRfdCAqb3V0YnVmID0ga3phbGxvYyhNQ0RJX01QT1JUX0pPVVJOQUxfTEVO
-LCBHRlBfS0VSTkVMKTsNCj4+ICsJTUNESV9ERUNMQVJFX0JVRihpbmJ1ZiwgTUNfQ01EX01BRV9N
-UE9SVF9SRUFEX0pPVVJOQUxfSU5fTEVOKTsNCj4+ICsJTUNESV9ERUNMQVJFX1NUUlVDVF9QVFIo
-ZGVzYyk7DQo+PiArCXNpemVfdCBvdXRsZW4sIHN0cmlkZSwgY291bnQ7DQo+PiArCWludCByYyA9
-IDAsIGk7DQoNCg==
+I realize that this patch set will start a flame war, but there are
+things about the mqprio qdisc that I simply don't understand, so in an
+attempt to explain how I see things should be done, I've made some
+patches to the code. I hope the reviewers will be patient enough with me :)
+
+I need to touch mqprio because I'm preparing a patch set for Frame
+Preemption (an IEEE 802.1Q feature). A disagreement started with
+Vinicius here:
+https://patchwork.kernel.org/project/netdevbpf/patch/20220816222920.1952936-3-vladimir.oltean@nxp.com/#24976672
+
+regarding how TX packet prioritization should be handled. Vinicius said
+that for some Intel NICs, prioritization at the egress scheduler stage
+is fundamentally attached to TX queues rather than traffic classes.
+
+In other words, in the "popular" mqprio configuration documented by him:
+
+$ tc qdisc replace dev $IFACE parent root handle 100 mqprio \
+      num_tc 3 \
+      map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
+      queues 1@0 1@1 2@2 \
+      hw 0
+
+there are 3 Linux traffic classes and 4 TX queues. The TX queues are
+organized in strict priority fashion, like this: TXQ 0 has highest prio
+(hardware dequeue precedence for TX scheduler), TXQ 3 has lowest prio.
+Packets classified by Linux to TC 2 are hashed between TXQ 2 and TXQ 3,
+but the hardware has higher precedence for TXQ2 over TXQ 3, and Linux
+doesn't know that.
+
+I am surprised by this fact, and this isn't how ENETC works at all.
+For ENETC, we try to prioritize on TCs rather than TXQs, and TC 7 has
+higher priority than TC 7. For us, groups of TXQs that map to the same
+TC have the same egress scheduling priority. It is possible (and maybe
+useful) to have 2 TXQs per TC - one TXQ per CPU). Patch 07/11 tries to
+make that more clear.
+
+Furthermore (and this is really the biggest point of contention), myself
+and Vinicius have the fundamental disagreement whether the 802.1Qbv
+(taprio) gate mask should be passed to the device driver per TXQ or per
+TC. This is what patch 11/11 is about.
+
+Again, I'm not *certain* that my opinion on this topic is correct
+(and it sure is confusing to see such a different approach for Intel).
+But I would appreciate any feedback.
+
+Vladimir Oltean (11):
+  net/sched: mqprio: refactor nlattr parsing to a separate function
+  net/sched: mqprio: refactor offloading and unoffloading to dedicated
+    functions
+  net/sched: move struct tc_mqprio_qopt_offload from pkt_cls.h to
+    pkt_sched.h
+  net/sched: mqprio: allow offloading drivers to request queue count
+    validation
+  net/sched: mqprio: add extack messages for queue count validation
+  net: enetc: request mqprio to validate the queue counts
+  net: enetc: act upon the requested mqprio queue configuration
+  net/sched: taprio: pass mqprio queue configuration to ndo_setup_tc()
+  net: enetc: act upon mqprio queue config in taprio offload
+  net/sched: taprio: validate that gate mask does not exceed number of
+    TCs
+  net/sched: taprio: only calculate gate mask per TXQ for igc
+
+ drivers/net/ethernet/freescale/enetc/enetc.c  |  67 ++--
+ .../net/ethernet/freescale/enetc/enetc_qos.c  |  27 +-
+ drivers/net/ethernet/intel/igc/igc_main.c     |  17 +
+ include/net/pkt_cls.h                         |  10 -
+ include/net/pkt_sched.h                       |  16 +
+ net/sched/sch_mqprio.c                        | 298 +++++++++++-------
+ net/sched/sch_taprio.c                        |  57 ++--
+ 7 files changed, 310 insertions(+), 182 deletions(-)
+
+-- 
+2.34.1
+
