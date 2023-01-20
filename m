@@ -2,111 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22662675E11
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 20:29:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18BE3675E4C
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 20:47:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229937AbjATT3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 14:29:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34420 "EHLO
+        id S229489AbjATTrh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 14:47:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229877AbjATT3M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 14:29:12 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C3AE0D0DA2;
-        Fri, 20 Jan 2023 11:28:48 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CB11511FB;
-        Fri, 20 Jan 2023 11:29:08 -0800 (PST)
-Received: from [10.57.89.132] (unknown [10.57.89.132])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A6FF03F445;
-        Fri, 20 Jan 2023 11:28:23 -0800 (PST)
-Message-ID: <f24fcba7-2fcb-ed43-05da-60763dbb07bf@arm.com>
-Date:   Fri, 20 Jan 2023 19:28:19 +0000
+        with ESMTP id S229379AbjATTrg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 14:47:36 -0500
+Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72E62B2B8;
+        Fri, 20 Jan 2023 11:47:33 -0800 (PST)
+Received: from [192.168.1.103] (31.173.83.188) by msexch01.omp.ru
+ (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Fri, 20 Jan
+ 2023 22:47:23 +0300
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Subject: Re: [PATCH net 1/2] net: ravb: Fix lack of register setting after
+ system resumed for Gen3
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>
+References: <20230119043920.875280-1-yoshihiro.shimoda.uh@renesas.com>
+ <20230119043920.875280-2-yoshihiro.shimoda.uh@renesas.com>
+Organization: Open Mobile Platform
+Message-ID: <5b467103-6afc-171d-1293-cedebf64d878@omp.ru>
+Date:   Fri, 20 Jan 2023 22:47:23 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v2 04/10] iommu/dma: Use the gfp parameter in
- __iommu_dma_alloc_noncontiguous()
-Content-Language: en-GB
-To:     Jason Gunthorpe <jgg@nvidia.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>
-Cc:     Alex Williamson <alex.williamson@redhat.com>,
-        ath10k@lists.infradead.org, ath11k@lists.infradead.org,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
-        kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-tegra@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, nouveau@lists.freedesktop.org,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        virtualization@lists.linux-foundation.org
-References: <4-v2-ce66f632bd0d+484-iommu_map_gfp_jgg@nvidia.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <4-v2-ce66f632bd0d+484-iommu_map_gfp_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <20230119043920.875280-2-yoshihiro.shimoda.uh@renesas.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Originating-IP: [31.173.83.188]
+X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
+ (10.188.4.12)
+X-KSE-ServerInfo: msexch01.omp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.59, Database issued on: 01/20/2023 19:30:15
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 59
+X-KSE-AntiSpam-Info: Lua profiles 174906 [Jan 20 2023]
+X-KSE-AntiSpam-Info: Version: 5.9.59.0
+X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
+X-KSE-AntiSpam-Info: LuaCore: 502 502 69dee8ef46717dd3cb3eeb129cb7cc8dab9e30f6
+X-KSE-AntiSpam-Info: {rep_avail}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: {relay has no DNS name}
+X-KSE-AntiSpam-Info: {SMTP from is not routable}
+X-KSE-AntiSpam-Info: {Found in DNSBL: 31.173.83.188 in (user)
+ b.barracudacentral.org}
+X-KSE-AntiSpam-Info: {Found in DNSBL: 31.173.83.188 in (user)
+ dbl.spamhaus.org}
+X-KSE-AntiSpam-Info: omp.ru:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: ApMailHostAddress: 31.173.83.188
+X-KSE-AntiSpam-Info: {DNS response errors}
+X-KSE-AntiSpam-Info: Rate: 59
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
+ smtp.mailfrom=omp.ru;dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 01/20/2023 19:32:00
+X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 1/20/2023 4:31:00 PM
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023-01-18 18:00, Jason Gunthorpe wrote:
-> Change the sg_alloc_table_from_pages() allocation that was hardwired to
-> GFP_KERNEL to use the gfp parameter like the other allocations in this
-> function.
+On 1/19/23 7:39 AM, Yoshihiro Shimoda wrote:
+
+> After system entered Suspend to RAM, registers setting of this
+> hardware is resetted because the SoC will be turned off. On R-Car Gen3
+
+   s/resetted/reset/.
+
+> (info->ccc_gac), ravb_ptp_init() is called in ravb_probe() only. So,
+> after system resumed, it lacks of the initial settings for ptp. So,
+> add ravb_ptp_{init,stop}() into ravb_{resume,suspend}().
 > 
-> Auditing says this is never called from an atomic context, so it is safe
-> as is, but reads wrong.
+> Fixes: f5d7837f96e5 ("ravb: ptp: Add CONFIG mode support")
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-I think the point may have been that the sgtable metadata is a 
-logically-distinct allocation from the buffer pages themselves. Much 
-like the allocation of the pages array itself further down in 
-__iommu_dma_alloc_pages(). I see these days it wouldn't be catastrophic 
-to pass GFP_HIGHMEM into __get_free_page() via sg_kmalloc(), but still, 
-allocating implementation-internal metadata with all the same 
-constraints as a DMA buffer has just as much smell of wrong about it IMO.
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-I'd say the more confusing thing about this particular context is why 
-we're using iommu_map_sg_atomic() further down - that seems to have been 
-an oversight in 781ca2de89ba, since this particular path has never 
-supported being called in atomic context.
+[...]
 
-Overall I'm starting to wonder if it might not be better to stick a "use 
-GFP_KERNEL_ACCOUNT if you allocate" flag in the domain for any level of 
-the API internals to pick up as appropriate, rather than propagate 
-per-call gfp flags everywhere. As it stands we're still missing 
-potential pagetable and other domain-related allocations by drivers in 
-.attach_dev and even (in probably-shouldn't-really-happen cases) 
-.unmap_pages...
-
-Thanks,
-Robin.
-
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   drivers/iommu/dma-iommu.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 8c2788633c1766..e4bf1bb159f7c7 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -822,7 +822,7 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
->   	if (!iova)
->   		goto out_free_pages;
->   
-> -	if (sg_alloc_table_from_pages(sgt, pages, count, 0, size, GFP_KERNEL))
-> +	if (sg_alloc_table_from_pages(sgt, pages, count, 0, size, gfp))
->   		goto out_free_iova;
->   
->   	if (!(ioprot & IOMMU_CACHE)) {
+MBR, Sergey
