@@ -2,154 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02B8C6755F8
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 14:38:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB63067561C
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 14:47:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbjATNiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 08:38:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48484 "EHLO
+        id S229853AbjATNrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 08:47:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbjATNiJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 08:38:09 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9A0249037;
-        Fri, 20 Jan 2023 05:38:05 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id kt14so14059008ejc.3;
-        Fri, 20 Jan 2023 05:38:05 -0800 (PST)
+        with ESMTP id S229459AbjATNrS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 08:47:18 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248FE7AF26;
+        Fri, 20 Jan 2023 05:47:17 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id iv8-20020a05600c548800b003db04a0a46bso1196221wmb.0;
+        Fri, 20 Jan 2023 05:47:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=BncwWmxqW+84mqxgyYf9Sxyq1qQG5dqQ2KZ6PEmYiwo=;
-        b=fMThkOaZ7BNLx9zzo/D1ogmbTSqYuSXmB0UIR7KBxsWrdbZNkesrbC0YeSlkBHC9LE
-         AqOKS/0IBT0VPcO2bzEyaP96+DSWp5BCIvUPSif72smrKa5tl7jRLg3Opl+9lPtYhr27
-         3ircReqRQnJRH5pJIGjnqaxcT/AWXJ/fJhbxUvoltzt6W8YaYEx9z1XOnYshrds3XZ7p
-         2zUC2zjsndN0kLVt37ZQipxmzbIGZy87hG8/w7DZLITQreC1u1bJyB+zYadBDhWlxhHJ
-         G1vSq1rCJVnCHyJ2Lk+owq6QkifIcayXjWbzMUI3irD+6kTKIhBS+C3KI1yRQ7Sy1MRX
-         LGeg==
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=w9/uce4vDjbb3QGdKWqJHgUH8EpUbOmRoMPIxVcjyEk=;
+        b=F1cw6HkK22FZIgIulG7FR3kwDvhir1/ES2huF4wXgX9kPaEIJEZDTZuGJA+ZE2Dsrk
+         Jde74aPy0r2B03HZWs153PDUibsWnAvU6VGS1ZdAPRhkkGtoEDR5QGtjfe0EvR+fDQzZ
+         NM2W2GQfDKmqeXXaUGBXZk6zmEWle41N6QFWs1nmhqM84syrty2TAgSiEePS79x+z9v8
+         gKRhLcZ2nZUOMor5B+b86+fWPwGQ5aY1CydKvsUJgDlpt2ZdlbmGJDorgt6RTsCCKQy7
+         xX0b3/cvngIZlKFXNr82fXbOz9UARIqaPZLg7yvRWXyL4ipVVPXd22lUy1RVU+ihHI9o
+         SsNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BncwWmxqW+84mqxgyYf9Sxyq1qQG5dqQ2KZ6PEmYiwo=;
-        b=cpC1iOD5kkTOPmt4AoIWU5I9ej2KEoHlWCiRLUIWvAAxz2KqhCOeosLNJZWyVecYHI
-         xk8U8/Lou1DnswzUuPKUxpEo6MiHGj1tPrDB1cgO//Byd5Em7Wo4pIKC4VVxNfmgdbGL
-         22oLg704FGtM99pe3xGAVZI7btaJgfjUwnNdNqCzI457Vr1TnTzRh3YFZtLtH2wA8SJ0
-         4Ho5VmLmazcagVy0kX6fnF0Ve8J6HZS3exIKm/gcyW2aIamqve9w9gO7P6Nd6SCjbK5L
-         yoWP51T0/+XaZFGbMSUo9Fhl6MKUlr2KgU7g7FFnNZruJcap7PVncAsAv1mhSfmcEqPz
-         nfLQ==
-X-Gm-Message-State: AFqh2kr+4wgGzXMQPJ+Np8W6w38P5WPbAtSjpLr0vUVfWgGF1gTLzHkU
-        ejdr1uiml3nM2LlMn+zlUZ8=
-X-Google-Smtp-Source: AMrXdXvTVZ/k33W79E84WnQBi+PCetHQA1n9Hu9bUQwW9inGYovef+t+N1t7rg6haeK8hxb2gjyc5g==
-X-Received: by 2002:a17:907:6294:b0:86a:1afa:6dd8 with SMTP id nd20-20020a170907629400b0086a1afa6dd8mr41487837ejc.69.1674221884302;
-        Fri, 20 Jan 2023 05:38:04 -0800 (PST)
-Received: from localhost (tor-exit-16.zbau.f3netze.de. [185.220.100.243])
-        by smtp.gmail.com with ESMTPSA id l2-20020a1709063d2200b0087276f66c6asm5779377ejf.115.2023.01.20.05.38.02
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=w9/uce4vDjbb3QGdKWqJHgUH8EpUbOmRoMPIxVcjyEk=;
+        b=uHf9Wl67G05CeG12pNAmia2Yq+R8vrSZR+FcqpWp5fKbAefbQY1gNFEACJEYbatrkM
+         6LwWgSpzx/uFYU88nvUsfs4/I0mRzpDdn97Q8LwztAfnkSgciKhTKPQIT7/tVnhI7NYe
+         HHQhFTL9/oza1WgdgdI+6VTO8cF94Pq6GkZzXDnEs1QNKvY1loYtVi3tXEN00/5V6qc9
+         0ZBmCUfDOvcbcapCdpicFKOWr5jm1Csusi/A1pFjnVnDTf4gMzkKIKJmM8Ln16fj0RCP
+         Mh8kWKcFEAzWMgmGmUMwVLemPjy+oKQUkl/DhH4PcryEKdsFbZA+Nn+0QOWrObfGcHmy
+         yp5Q==
+X-Gm-Message-State: AFqh2kpMjWpSkxWZViUUbcAC287rqAEi/z9Y/qJDwofYpC4sHtzGGEiT
+        ech6NJ8cj+vKJQRPHsfrC9s=
+X-Google-Smtp-Source: AMrXdXsE68bpRq7dVCqvYLy/GPhr0XSB5q5U6Cl9xtARg9zUuh9kf4MTdyH0D0TwKk1rFnSyWusENA==
+X-Received: by 2002:a1c:7312:0:b0:3d2:3eda:dd1 with SMTP id d18-20020a1c7312000000b003d23eda0dd1mr13650562wmb.17.1674222435595;
+        Fri, 20 Jan 2023 05:47:15 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id p21-20020a05600c359500b003c70191f267sm2696503wmq.39.2023.01.20.05.47.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Jan 2023 05:38:03 -0800 (PST)
-Date:   Fri, 20 Jan 2023 15:37:58 +0200
-From:   Maxim Mikityanskiy <maxtram95@gmail.com>
-To:     Hariprasad Kelam <hkelam@marvell.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geethasowjanya Akula <gakula@marvell.com>,
-        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
-        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "saeedm@nvidia.com" <saeedm@nvidia.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "tariqt@nvidia.com" <tariqt@nvidia.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "hariprasad.netdev@gmail.com" <hariprasad.netdev@gmail.com>
-Subject: Re: [net-next Patch v2 4/5] octeontx2-pf: Add devlink support to
- configure TL1 RR_PRIO
-Message-ID: <Y8qZNhUgsdOMavC4@mail.gmail.com>
-References: <20230118105107.9516-1-hkelam@marvell.com>
- <20230118105107.9516-5-hkelam@marvell.com>
- <Y8hYlYk/7FfGdfy8@mail.gmail.com>
- <PH0PR18MB4474FCEAC4FA5907CAC17011DEC59@PH0PR18MB4474.namprd18.prod.outlook.com>
+        Fri, 20 Jan 2023 05:47:15 -0800 (PST)
+Date:   Fri, 20 Jan 2023 16:47:12 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>
+Cc:     Daniel Machon <daniel.machon@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] net: microchip: sparx5: Fix uninitialized variable
+ in vcap_path_exist()
+Message-ID: <Y8qbYAb+YSXo1DgR@kili>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <PH0PR18MB4474FCEAC4FA5907CAC17011DEC59@PH0PR18MB4474.namprd18.prod.outlook.com>
-X-Spam-Status: No, score=1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 20, 2023 at 08:50:16AM +0000, Hariprasad Kelam wrote:
-> 
-> On Wed, Jan 18, 2023 at 04:21:06PM +0530, Hariprasad Kelam wrote:
-> > All VFs and PF netdev shares same TL1 schedular, each interface PF or 
-> > VF will have different TL2 schedulars having same parent TL1. The TL1 
-> > RR_PRIO value is static and PF/VFs use the same value to configure its 
-> > TL2 node priority in case of DWRR children.
-> > 
-> > This patch adds support to configure TL1 RR_PRIO value using devlink.
-> > The TL1 RR_PRIO can be configured for each PF. The VFs are not allowed 
-> > to configure TL1 RR_PRIO value. The VFs can get the RR_PRIO value from 
-> > the mailbox NIX_TXSCH_ALLOC response parameter aggr_lvl_rr_prio.
-> 
-> I asked this question under v1, but didn't get an answer, could you shed some light?
-> 
-> "Could you please elaborate how these priorities of Transmit Levels are related to HTB priorities? I don't seem to understand why something has to be configured with devlink in addition to HTB.
-> 
-> SMQ (send meta-descriptor queue) and MDQ (meta-descriptor queue) are the first transmit levels.
-> Each send queue is mapped with SMQ.
->  
-> As mentioned in cover letter, each egress packet needs to traverse all transmit levels starting from TL5 to TL1.
+The "eport" variable needs to be initialized to NULL for this code to
+work.
 
-Yeah, I saw that, just some details about your hardware which might be
-obvious to you aren't so clear to me...
+Fixes: 814e7693207f ("net: microchip: vcap api: Add a storage state to a VCAP rule")
+Signed-off-by: Dan Carpenter <error27@gmail.com>
+---
+Probably you had CONFIG_INIT_STACK_ALL=y in your .config for this to
+pass testing.
 
-Do these transmit levels map to "layers" of HTB hierarchy? Does it look
-like this, or is my understanding completely wrong?
+ drivers/net/ethernet/microchip/vcap/vcap_api.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-TL1                 [HTB root node]
-                   /               \
-TL2          [HTB node]         [HTB node]
-            /          \             |
-TL3    [HTB node]  [HTB node]   [HTB node]
-...                       ...
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+index 71f787a78295..69c026778b42 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+@@ -2012,7 +2012,8 @@ static int vcap_get_next_chain(struct vcap_control *vctrl,
+ static bool vcap_path_exist(struct vcap_control *vctrl, struct net_device *ndev,
+ 			    int dst_cid)
+ {
+-	struct vcap_enabled_port *eport, *elem;
++	struct vcap_enabled_port *eport = NULL;
++	struct vcap_enabled_port *elem;
+ 	struct vcap_admin *admin;
+ 	int tmp;
+ 
+-- 
+2.35.1
 
-
-> This applies to non-QOS Send queues as well.
->  
->                        SMQ/MDQ --> TL4 -->TL3 -->TL2 -->TL1
-> 
-> By default non QOS queues use a default hierarchy  with round robin priority. 
-> To avoid conflict with QOS tree priorities, with devlink user can choose round-robin priority before Qos tree formation.
-
-So, this priority that you set with devlink is basically a weight of
-unclassified (default) traffic for round robin between unclassified and
-classified traffic, right? I.e. you have two hierarchies (one for HTB,
-another for non-QoS queue), and you do DWRR between them, according to
-this priority?
-
-> BTW, why did you remove the paragraphs with an example and a limitation?
-> I think they are pretty useful.
-> 
-> Ok , removed them accidentally will correct in the next version.
-> 
-> Another question unanswered under v1 was:
-> 
-> "Is there any technical difficulty or hardware limitation preventing from implementing modifications?" (TC_HTB_NODE_MODIFY)
-> 
-> There is no hardware limitation, we are currently implementing it.  once it's implemented we will submit for review.
-
-Great, that's nice to hear, looking forward to it.
