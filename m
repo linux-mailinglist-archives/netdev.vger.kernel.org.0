@@ -2,109 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FE02675EC1
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 21:13:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B16DD675EC9
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 21:15:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230167AbjATUNK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 15:13:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59488 "EHLO
+        id S230173AbjATUPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 15:15:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230121AbjATUNJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 15:13:09 -0500
-Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C7D2694;
-        Fri, 20 Jan 2023 12:12:45 -0800 (PST)
-Received: from [192.168.1.103] (31.173.83.188) by msexch01.omp.ru
- (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Fri, 20 Jan
- 2023 23:12:28 +0300
-Subject: Re: [PATCH net 2/2] net: ravb: Fix possible hang if RIS2_QFF1 happen
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>
-References: <20230119043920.875280-1-yoshihiro.shimoda.uh@renesas.com>
- <20230119043920.875280-3-yoshihiro.shimoda.uh@renesas.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <e315c6d6-c088-2cb4-5c8d-f7578bc8404e@omp.ru>
-Date:   Fri, 20 Jan 2023 23:12:28 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        with ESMTP id S230021AbjATUPS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 15:15:18 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7167CAED83;
+        Fri, 20 Jan 2023 12:15:17 -0800 (PST)
+Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id E66031EC068B;
+        Fri, 20 Jan 2023 21:15:15 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1674245716;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=URGCdxWMZB194yM7DqWI/LMbwc4I1xa66tqKx+JFPCM=;
+        b=miS51UW/cZawfDQzsiX5CMN7crQiXDw1rMl2UJLaGR2uSVeW8sv9hplnApztEqWEwfO7Jh
+        PtnaNoT5kqitY/1kkbgEHXWHMNKdN3tDeYyS7c9LYJ+wUXg1qeeL0xx0KfbOxWcG52mFQq
+        4cXVDL/7CFzDHD6zREWhJAQhmU/gqZk=
+Date:   Fri, 20 Jan 2023 21:15:10 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Michael Kelley <mikelley@microsoft.com>
+Cc:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, luto@kernel.org,
+        peterz@infradead.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, lpieralisi@kernel.org,
+        robh@kernel.org, kw@linux.com, bhelgaas@google.com, arnd@arndb.de,
+        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
+        mingo@redhat.com, dave.hansen@linux.intel.com,
+        Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
+        isaku.yamahata@intel.com, dan.j.williams@intel.com,
+        jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+        iommu@lists.linux.dev
+Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
+ to map as encrypted
+Message-ID: <Y8r2TjW/R3jymmqT@zn.tnic>
+References: <1673559753-94403-1-git-send-email-mikelley@microsoft.com>
+ <1673559753-94403-7-git-send-email-mikelley@microsoft.com>
 MIME-Version: 1.0
-In-Reply-To: <20230119043920.875280-3-yoshihiro.shimoda.uh@renesas.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [31.173.83.188]
-X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
- (10.188.4.12)
-X-KSE-ServerInfo: msexch01.omp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.59, Database issued on: 01/20/2023 19:56:23
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 59
-X-KSE-AntiSpam-Info: Lua profiles 174906 [Jan 20 2023]
-X-KSE-AntiSpam-Info: Version: 5.9.59.0
-X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
-X-KSE-AntiSpam-Info: LuaCore: 502 502 69dee8ef46717dd3cb3eeb129cb7cc8dab9e30f6
-X-KSE-AntiSpam-Info: {rep_avail}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: {relay has no DNS name}
-X-KSE-AntiSpam-Info: {SMTP from is not routable}
-X-KSE-AntiSpam-Info: {Found in DNSBL: 31.173.83.188 in (user)
- b.barracudacentral.org}
-X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;omp.ru:7.1.1
-X-KSE-AntiSpam-Info: ApMailHostAddress: 31.173.83.188
-X-KSE-AntiSpam-Info: {DNS response errors}
-X-KSE-AntiSpam-Info: Rate: 59
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
- smtp.mailfrom=omp.ru;dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 01/20/2023 19:59:00
-X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 1/20/2023 5:21:00 PM
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1673559753-94403-7-git-send-email-mikelley@microsoft.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/19/23 7:39 AM, Yoshihiro Shimoda wrote:
-
-> Since this driver enables the interrupt by RIC2_QFE1, this driver
-> should clear the interrupt flag if it happens. Otherwise, the interrupt
-> causes to hang the system.
+On Thu, Jan 12, 2023 at 01:42:25PM -0800, Michael Kelley wrote:
+> In a AMD SEV-SNP VM using vTOM, devices in MMIO space may be provided by
+> the paravisor and need to be mapped as encrypted.  Provide a function
+> for the hypervisor to specify the address range for such devices.
+> In __ioremap_caller(), map addresses in this range as encrypted.
 > 
-> Fixes: a0d2f20650e8 ("Renesas Ethernet AVB PTP clock driver")
+> Only a single range is supported. If multiple devices need to be
+> mapped encrypted, the paravisor must place them within the single
+> contiguous range.
 
-   No, it's actually c156633f1353 ("Renesas Ethernet AVB driver proper|)!
+This already is starting to sound insufficient and hacky. And it also makes
+CC_ATTR_ACCESS_IOAPIC_ENCRYPTED insufficient either.
 
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-[...]
+So, the situation we have is, we're a SEV-SNP VM using vTOM. Which means,
+MSR_AMD64_SEV[3] = 1. Or SEV_FEATURES[1], alternatively - same thing.
 
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index 3f61100c02f4..bcbb62f90fb7 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-> @@ -1101,7 +1101,7 @@ static void ravb_error_interrupt(struct net_device *ndev)
->  	ravb_write(ndev, ~(EIS_QFS | EIS_RESERVED), EIS);
->  	if (eis & EIS_QFS) {
->  		ris2 = ravb_read(ndev, RIS2);
-> -		ravb_write(ndev, ~(RIS2_QFF0 | RIS2_RFFF | RIS2_RESERVED),
-> +		ravb_write(ndev, ~(RIS2_QFF0 | RIS2_QFF1 | RIS2_RFFF | RIS2_RESERVED),
+That MSR cannot be intercepted by the HV and we use it extensively in Linux when
+it runs as a SEV-* guest. And I had asked this before, during review, but why
+aren't you checking this bit above when you wanna do vTOM-specific work?
 
-   Might as well fix the QFF1 comment indentation below...
+Because then you can do that check and
 
-[...]
+1. map the IO-APIC encrypted
+2. map MMIO space of devices from the driver encrypted too
+3. ...
 
-MBR, Sergey
+and so on.
+
+And you won't need those other, not as nice things...
+
+Hmmm.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
