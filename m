@@ -2,81 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 658B867554A
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 14:14:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AEE367558A
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 14:19:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230486AbjATNO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 08:14:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35238 "EHLO
+        id S230523AbjATNTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 08:19:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230483AbjATNO2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 08:14:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E507BD157;
-        Fri, 20 Jan 2023 05:14:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CEF4EB8280B;
-        Fri, 20 Jan 2023 13:14:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56D73C433EF;
-        Fri, 20 Jan 2023 13:14:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674220461;
-        bh=y2nkbcWRr5qEayC6d21noEl5u93nkRPbcNffzPJrZBk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=jjERjDD1RN3nq7qoHcU1vnBiVA/xlhinOqGkNB7IoWM/sMqZ6s85DrxZdNuIlvXaE
-         N46d2uGkWvk9OldOpX2tbdZfv3Ujc0dkA1YLZ3BAWy/EzM3Z1RfU4FEPwYYmF2sDey
-         Z24irxIinp8683wMjX0y9GNkQn9perV1SikxAdrTvO/FLZu7WdTADNlDf2GjWpJtUM
-         sqsYXKy9mVOlss0WOwVvpWtV0+OG7VUkGHoMEq38rUl6wOVi0uGCEkPAO2/u0eatve
-         ARLZrIoIur/x5zrFvCzJFbUNqblfBzQlG4pzs8G5jTHuQ9Aq5IGEs1nXSgGZ76k6nR
-         6cRzghdjaIkRg==
-Date:   Fri, 20 Jan 2023 07:14:19 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: Re: [Intel-wired-lan] [PATCH 2/9] e1000e: Remove redundant
- pci_enable_pcie_error_reporting()
-Message-ID: <20230120131419.GA622602@bhelgaas>
+        with ESMTP id S231160AbjATNSh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 08:18:37 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F74BC41FE
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 05:15:37 -0800 (PST)
+Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <a.fatoum@pengutronix.de>)
+        id 1pIrEo-0003Ao-A6; Fri, 20 Jan 2023 14:15:22 +0100
+Message-ID: <f3f3c6da-bc14-01c8-0964-52eab322f7b4@pengutronix.de>
+Date:   Fri, 20 Jan 2023 14:15:18 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230119191735.4bc11fd2@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH net] net: dsa: microchip: fix probe of I2C-connected
+ KSZ8563
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Arun.Ramadoss@microchip.com, olteanv@gmail.com,
+        UNGLinuxDriver@microchip.com, f.fainelli@gmail.com,
+        kuba@kernel.org, Woojung.Huh@microchip.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, pabeni@redhat.com, ore@pengutronix.de,
+        edumazet@google.com
+References: <20230119131014.1228773-1-a.fatoum@pengutronix.de>
+ <64af7536214a55f3edb30d5f7ec54184cac1048c.camel@microchip.com>
+ <a2d900dd-7a03-1185-75be-a4ac54ccf6e8@pengutronix.de>
+ <Y8qSQDU36opcXuBE@lunn.ch>
+From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
+In-Reply-To: <Y8qSQDU36opcXuBE@lunn.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
+X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 19, 2023 at 07:17:35PM -0800, Jakub Kicinski wrote:
-> On Wed, 18 Jan 2023 17:46:05 -0600 Bjorn Helgaas wrote:
-> > From: Bjorn Helgaas <bhelgaas@google.com>
-> > 
-> > pci_enable_pcie_error_reporting() enables the device to send ERR_*
-> > Messages.  Since f26e58bf6f54 ("PCI/AER: Enable error reporting when AER is
-> > native"), the PCI core does this for all devices during enumeration.
-> > 
-> > Remove the redundant pci_enable_pcie_error_reporting() call from the
-> > driver.  Also remove the corresponding pci_disable_pcie_error_reporting()
-> > from the driver .remove() path.
-> > 
-> > Note that this doesn't control interrupt generation by the Root Port; that
-> > is controlled by the AER Root Error Command register, which is managed by
-> > the AER service driver.
-> > 
-> > Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Hello Andrew,
+
+On 20.01.23 14:08, Andrew Lunn wrote:
+> On Fri, Jan 20, 2023 at 08:57:03AM +0100, Ahmad Fatoum wrote:
+>> Hello Arun,
+>>
+>> On 20.01.23 08:01, Arun.Ramadoss@microchip.com wrote:
+>>> Hi Ahmad,
+>>> On Thu, 2023-01-19 at 14:10 +0100, Ahmad Fatoum wrote:
+>>>> [You don't often get email from a.fatoum@pengutronix.de. Learn why
+>>>> this is important at https://aka.ms/LearnAboutSenderIdentification ]
+>>>>
+>>>> EXTERNAL EMAIL: Do not click links or open attachments unless you
+>>>> know the content is safe
+>>>>
+>>>> Starting with commit eee16b147121 ("net: dsa: microchip: perform the
+>>>> compatibility check for dev probed"), the KSZ switch driver now bails
+>>>> out if it thinks the DT compatible doesn't match the actual chip:
+>>>>
+>>>>   ksz9477-switch 1-005f: Device tree specifies chip KSZ9893 but found
+>>>>   KSZ8563, please fix it!
+>>>>
+>>>> Problem is that the "microchip,ksz8563" compatible is associated
+>>>> with ksz_switch_chips[KSZ9893]. Same issue also affected the SPI
+>>>> driver
+>>>> for the same switch chip and was fixed in commit b44908095612
+>>>> ("net: dsa: microchip: add separate struct ksz_chip_data for KSZ8563
+>>>> chip").
+>>>>
+>>>> Reuse ksz_switch_chips[KSZ8563] introduced in aforementioned commit
+>>>> to get I2C-connected KSZ8563 probing again.
+>>>>
+>>>> Fixes: eee16b147121 ("net: dsa: microchip: perform the compatibility
+>>>> check for dev probed")
+>>>
+>>> In this commit, there is no KSZ8563 member in struct ksz_switch_chips.
+>>> Whether the fixes should be to this commit "net: dsa: microchip: add
+>>> separate struct ksz_chip_data for KSZ8563" where the member is
+>>> introduced.
+>>
+>> I disagree. eee16b147121 introduced the check that made my device
+>> not probe anymore, so that's what's referenced in Fixes:. Commit
+>> b44908095612 should have had a Fixes: pointing at eee16b147121
+>> as well, so users don't miss it. But if they miss it, they
+>> will notice this at build-time anyway.
 > 
-> How would you like to route these? Looks like there's no dependency 
-> so we can pick them up?
+> So it sounds like two different fixes are needed? For recent kernels
+> this fix alone is sufficient. But for older kernels additional changes
+> are needed. Is it sufficient to backport existing patches, or are new
+> patches needed?
+> 
+> Please start fixing the current kernel. Once that is merged you can
+> post a fix for older kernels, referencing the merged fix.
 
-Right, no dependencies, so you can pick them up.  Sounds like you and
-Tony have it worked out.  Thanks!
+I misunderstood the issue. It's indeed a single commit that broke
+it. I just sent a v2 with a revised commit message and the correct
+Fixes:. The fix can be cherry-picked on its own to any kernel
+that contains the offending commit without any prerequisite
+patches.
 
-Bjorn
+Cheers,
+Ahmad
+
+> 
+>      Andrew
+> 
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
