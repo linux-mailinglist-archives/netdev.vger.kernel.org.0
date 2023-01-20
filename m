@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00AEE6752F2
-	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 12:04:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01BF56752F6
+	for <lists+netdev@lfdr.de>; Fri, 20 Jan 2023 12:05:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230017AbjATLE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 06:04:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33314 "EHLO
+        id S229687AbjATLFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 06:05:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbjATLE2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 06:04:28 -0500
-Received: from mail-vk1-xa33.google.com (mail-vk1-xa33.google.com [IPv6:2607:f8b0:4864:20::a33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF951711
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 03:04:26 -0800 (PST)
-Received: by mail-vk1-xa33.google.com with SMTP id 22so1595405vkn.2
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 03:04:26 -0800 (PST)
+        with ESMTP id S229616AbjATLFS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 06:05:18 -0500
+Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C5EB23C79
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 03:05:17 -0800 (PST)
+Received: by mail-ua1-x92f.google.com with SMTP id j1so1265233uan.1
+        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 03:05:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=V102slvOdbse8iGapjkIw4pRPbPleD4DJH8xoa95u40=;
-        b=JLCdlMYFxFQRybMSIng0Mk8RA6qSiYWWIUhkexDQL894Qp4aCUrFzp0CUEjiWagpYr
-         mTe+Oz05H4wz/uhV43YDM6aQEZUeuihzOoZJIoXh83u6Wg74iv8fZnOQsAHLZiPYBBt9
-         EJTyg2oDLnNQLI6IKYfLelTrBhAJhpyTXJrqvX1zuUQ2OC96Zomurhpz1O37ufcDYSzX
-         zgV423+peEswrkt085LAGRm7G7wWIaQLb5w3b2U5TGRPN/VNx6rAjB+VtxOocKSNYrvj
-         j6Wux7fVdjt4NlAU720gKLNnyjIgyOhqIKqqFb/dCWRoR/y5S8hhiU4VLj+DBzHCOpQj
-         9ALg==
+        bh=1jYIJWLs9QCq84CWLVp1YUpueMsxtYqSBrgVdPAML2s=;
+        b=iHlPNW+HuprcT0GEJ9m5jhoIpBkuPWrzXjQm/vv+tO+KV0hPZBCvH1PGlHCzU9ZcxX
+         hPChPbzkosdQXdv2uykLGbrFZf86dT9KBP6tGfZSdjKLUCRKCugOkM/9uIpJwRTuM9Vy
+         xNLBm3qf616DDJZpfDfPd56Nx835Ewip1+pDAK8n/zfPXFsKm2gohG9Fwr00tvo5bo2y
+         e2o3crQOWKqxKlkZGVuaLgs8zEXw8m3Ol3rbI9mxpiT24FV5a+XErWfRW1erFIAI6B6H
+         rWDm/u4YgFgZdSZN+aJDaZYpO9xMMCtcFu6hH2elc3Qrrpqe6+PDEMZaElLOpsu0fjul
+         9/Zg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=V102slvOdbse8iGapjkIw4pRPbPleD4DJH8xoa95u40=;
-        b=qTqhy+ZaQ+IHRF2WLVzp/Ymju7wxa1pbYuiWeSV8rQvyLE7WD+FOJSakyneW2RlO0Q
-         DgALXuy/DFR8Lq/5pVDMJ7soyjlTt4IKMIhTGM3lL1ELdFOfi8bmD/p/lm4Bj0Vf7Cbm
-         LsmWyMKE8PkuU+KUmmcFYRWs711Nts4G8cl4JraRM1R1jy1J8q2SkTw/5oqdcaUfh8Hk
-         qa3xzJG+83wyMfn91S40qg7LUgEzsmKjSNPna9g1cTIdEDk2R/RlisiU5D+J8+ICU+Ht
-         P3jqZTxl3fiLc9X0OGZXV43jwRI7XeaDxUc7KhRiNYs/iqZGAyufKKBkL8be8Ya9F6d3
-         kj4g==
-X-Gm-Message-State: AFqh2koVjmjH2Ku7VPaLZCJTAGJurH4BsWKDMOsh/0ARtRputftR8PAQ
-        1V/S6NUUk1KPUnZT02tYgSE5xdHeykghJm04SOk=
-X-Google-Smtp-Source: AMrXdXsulo7vWOSXMRMVoOjK42MCVaAH97g2ALebO7e3lJUXlMP9mvXv4B/q19Hcq+LtwdUjCi+EIp8Vtb8Pi4sGjus=
-X-Received: by 2002:a1f:5284:0:b0:3e1:5d4d:54f2 with SMTP id
- g126-20020a1f5284000000b003e15d4d54f2mr2071290vkb.26.1674212665574; Fri, 20
- Jan 2023 03:04:25 -0800 (PST)
+        bh=1jYIJWLs9QCq84CWLVp1YUpueMsxtYqSBrgVdPAML2s=;
+        b=zW/MKM0Mt/VD8IicDBlcGZbJOJJmDVbThIFWkGPC0A60MVI8I8/ZNYr8dgHObVDmsQ
+         Y+1/4D9fYaVt+w/u0chQ86kjQ+wB6CMR/at4JGkWks8x6TfHIP43i191S1TKZxLO/UvO
+         xvCKQM1IwYTUS/8XfgkwKrWzfZVeU+IikbKxtQvLIEuqP9ftCJH0OC5Z8pviY4qpUjQL
+         x5bFTRSxpv6jr63IvIomRuI4VyCKIhJkaRfbnDzn3B0Pz4DwqpzkFdPTZHcSSpRmsdVR
+         nGjndnhfI5xAAXaOYdVIXkZ+ilDotHhaJgX7aHCk0qCZSxHiyDyeQ+SIRu+hI2Bqd7Ix
+         FpGQ==
+X-Gm-Message-State: AFqh2ko8NoVWMsFb+sMfemTdYZN6bnzm9lTZRET7LM02r7KQQ3yKkwdm
+        SXVCGSw145JdwaEAuSFgQLmL5OzRpKy4dhz/Sss=
+X-Google-Smtp-Source: AMrXdXu6M+emxxdmQfV2TAMJ6IJhTpPod0VZ48VxhbBCvCxy+byI+COoi/ZuFgqL4FIGWhl8322Eel2rmkmwtMxzxNU=
+X-Received: by 2002:ab0:14f0:0:b0:5e6:9cc2:a7b1 with SMTP id
+ f45-20020ab014f0000000b005e69cc2a7b1mr1721751uae.3.1674212716302; Fri, 20 Jan
+ 2023 03:05:16 -0800 (PST)
 MIME-Version: 1.0
 References: <6dfd03c5fa0afb99f255f4a35772df19e33880db.1674156645.git.antony.antony@secunet.com>
- <2527cc66bfbcf70bcfd64efdf8ff79d60199827e.1674156645.git.antony.antony@secunet.com>
-In-Reply-To: <2527cc66bfbcf70bcfd64efdf8ff79d60199827e.1674156645.git.antony.antony@secunet.com>
+In-Reply-To: <6dfd03c5fa0afb99f255f4a35772df19e33880db.1674156645.git.antony.antony@secunet.com>
 From:   Eyal Birger <eyal.birger@gmail.com>
-Date:   Fri, 20 Jan 2023 13:04:13 +0200
-Message-ID: <CAHsH6GuS+QCnk9L1qO9qyBZ05SCgQnvQp8Djf1UR09EpH9tYWQ@mail.gmail.com>
-Subject: Re: [PATCH 2/3] xfrm: Support GRO for IPv4 ESP in UDP encapsulation.
+Date:   Fri, 20 Jan 2023 13:05:04 +0200
+Message-ID: <CAHsH6GtgcffudgDzyTv8f8CZC13ZKMeU886DLHuuj0Tu73Ppfg@mail.gmail.com>
+Subject: Re: [PATCH 1/3] xfrm: Use the XFRM_GRO to indicate a GRO call on input.
 To:     antony.antony@secunet.com
 Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
@@ -70,280 +69,107 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-On Thu, Jan 19, 2023 at 10:00 PM Antony Antony
-<antony.antony@secunet.com> wrote:
+On Thu, Jan 19, 2023 at 9:59 PM Antony Antony <antony.antony@secunet.com> wrote:
 >
 > From: Steffen Klassert <steffen.klassert@secunet.com>
 >
-> This patch enables the GRO codepath for IPv4 ESP in UDP encapsulated
-> packets. Decapsulation happens at L2 and saves a full round through
-> the stack for each packet. This is also needed to support HW offload
-> for ESP in UDP encapsulation.
+> This is needed to support GRO for ESP in UDP encapsulation.
 >
 > Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-> Co-developed-by: Antony Antony <antony.antony@secunet.com>
 > Signed-off-by: Antony Antony <antony.antony@secunet.com>
 > ---
->  include/net/gro.h       |  2 +-
->  include/net/xfrm.h      |  4 ++
->  net/ipv4/esp4_offload.c | 11 ++++-
->  net/ipv4/udp.c          |  4 +-
->  net/ipv4/xfrm4_input.c  | 99 +++++++++++++++++++++++++++++++++--------
->  5 files changed, 99 insertions(+), 21 deletions(-)
+>  net/ipv4/esp4_offload.c |  2 +-
+>  net/ipv6/esp6_offload.c |  2 +-
+>  net/xfrm/xfrm_input.c   | 75 +++++++++++++++++++++++------------------
+>  3 files changed, 44 insertions(+), 35 deletions(-)
 >
-> diff --git a/include/net/gro.h b/include/net/gro.h
-> index a4fab706240d..41c12c5d1ea1 100644
-> --- a/include/net/gro.h
-> +++ b/include/net/gro.h
-> @@ -29,7 +29,7 @@ struct napi_gro_cb {
->         /* Number of segments aggregated. */
->         u16     count;
->
-> -       /* Used in ipv6_gro_receive() and foo-over-udp */
-> +       /* Used in ipv6_gro_receive() and foo-over-udp and esp-in-udp */
->         u16     proto;
->
->         /* jiffies when first packet was created/queued */
-> diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-> index 3e1f70e8e424..74dba98fbf2c 100644
-> --- a/include/net/xfrm.h
-> +++ b/include/net/xfrm.h
-> @@ -1666,6 +1666,8 @@ void xfrm_local_error(struct sk_buff *skb, int mtu);
->  int xfrm4_extract_input(struct xfrm_state *x, struct sk_buff *skb);
->  int xfrm4_rcv_encap(struct sk_buff *skb, int nexthdr, __be32 spi,
->                     int encap_type);
-> +struct sk_buff *xfrm4_gro_udp_encap_rcv(struct sock *sk, struct list_head *head,
-> +                                       struct sk_buff *skb);
->  int xfrm4_transport_finish(struct sk_buff *skb, int async);
->  int xfrm4_rcv(struct sk_buff *skb);
->
-> @@ -1706,6 +1708,8 @@ int xfrm6_output(struct net *net, struct sock *sk, struct sk_buff *skb);
->  void xfrm6_local_rxpmtu(struct sk_buff *skb, u32 mtu);
->  int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb);
->  int xfrm6_udp_encap_rcv(struct sock *sk, struct sk_buff *skb);
-> +struct sk_buff *xfrm4_gro_udp_encap_rcv(struct sock *sk, struct list_head *head,
-> +                                       struct sk_buff *skb);
->  int xfrm_user_policy(struct sock *sk, int optname, sockptr_t optval,
->                      int optlen);
->  #else
 > diff --git a/net/ipv4/esp4_offload.c b/net/ipv4/esp4_offload.c
-> index 77bb01032667..8769bb669fdd 100644
+> index 3969fa805679..77bb01032667 100644
 > --- a/net/ipv4/esp4_offload.c
 > +++ b/net/ipv4/esp4_offload.c
-> @@ -32,6 +32,7 @@ static struct sk_buff *esp4_gro_receive(struct list_head *head,
->         int offset = skb_gro_offset(skb);
->         struct xfrm_offload *xo;
->         struct xfrm_state *x;
-> +       int encap_type = 0;
->         __be32 seq;
->         __be32 spi;
->
-> @@ -69,6 +70,14 @@ static struct sk_buff *esp4_gro_receive(struct list_head *head,
->
->         xo->flags |= XFRM_GRO;
->
-> +       if (NAPI_GRO_CB(skb)->proto == IPPROTO_UDP && skb->sk &&
-> +           (udp_sk(skb->sk)->encap_type == UDP_ENCAP_ESPINUDP ||
-> +            udp_sk(skb->sk)->encap_type == UDP_ENCAP_ESPINUDP_NON_IKE)) {
-> +               encap_type = udp_sk(skb->sk)->encap_type;
-> +               sock_put(skb->sk);
-> +               skb->sk = NULL;
-> +       }
-> +
->         XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip4 = NULL;
->         XFRM_SPI_SKB_CB(skb)->family = AF_INET;
->         XFRM_SPI_SKB_CB(skb)->daddroff = offsetof(struct iphdr, daddr);
-> @@ -76,7 +85,7 @@ static struct sk_buff *esp4_gro_receive(struct list_head *head,
+> @@ -76,7 +76,7 @@ static struct sk_buff *esp4_gro_receive(struct list_head *head,
 >
 >         /* We don't need to handle errors from xfrm_input, it does all
 >          * the error handling and frees the resources on error. */
-> -       xfrm_input(skb, IPPROTO_ESP, spi, 0);
-> +       xfrm_input(skb, IPPROTO_ESP, spi, encap_type);
+> -       xfrm_input(skb, IPPROTO_ESP, spi, -2);
+> +       xfrm_input(skb, IPPROTO_ESP, spi, 0);
 >
 >         return ERR_PTR(-EINPROGRESS);
 >  out_reset:
-> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> index 9592fe3e444a..6a30d0210c4e 100644
-> --- a/net/ipv4/udp.c
-> +++ b/net/ipv4/udp.c
-> @@ -2729,9 +2729,11 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
->  #if IS_ENABLED(CONFIG_IPV6)
->                         if (sk->sk_family == AF_INET6)
->                                 up->encap_rcv = ipv6_stub->xfrm6_udp_encap_rcv;
-> -                       else
->  #endif
-> +                       if (sk->sk_family == AF_INET) {
->                                 up->encap_rcv = xfrm4_udp_encap_rcv;
-> +                               up->gro_receive = xfrm4_gro_udp_encap_rcv;
-> +                       }
->  #endif
->                         fallthrough;
->                 case UDP_ENCAP_L2TPINUDP:
-> diff --git a/net/ipv4/xfrm4_input.c b/net/ipv4/xfrm4_input.c
-> index ad2afeef4f10..768d12491a48 100644
-> --- a/net/ipv4/xfrm4_input.c
-> +++ b/net/ipv4/xfrm4_input.c
-> @@ -17,6 +17,8 @@
->  #include <linux/netfilter_ipv4.h>
->  #include <net/ip.h>
->  #include <net/xfrm.h>
-> +#include <net/protocol.h>
-> +#include <net/gro.h>
+> diff --git a/net/ipv6/esp6_offload.c b/net/ipv6/esp6_offload.c
+> index 75c02992c520..ee5f5abdb503 100644
+> --- a/net/ipv6/esp6_offload.c
+> +++ b/net/ipv6/esp6_offload.c
+> @@ -103,7 +103,7 @@ static struct sk_buff *esp6_gro_receive(struct list_head *head,
 >
->  static int xfrm4_rcv_encap_finish2(struct net *net, struct sock *sk,
->                                    struct sk_buff *skb)
-> @@ -72,14 +74,7 @@ int xfrm4_transport_finish(struct sk_buff *skb, int async)
->         return 0;
+>         /* We don't need to handle errors from xfrm_input, it does all
+>          * the error handling and frees the resources on error. */
+> -       xfrm_input(skb, IPPROTO_ESP, spi, -2);
+> +       xfrm_input(skb, IPPROTO_ESP, spi, 0);
+>
+>         return ERR_PTR(-EINPROGRESS);
+>  out_reset:
+> diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+> index c06e54a10540..ffd62ad58207 100644
+> --- a/net/xfrm/xfrm_input.c
+> +++ b/net/xfrm/xfrm_input.c
+> @@ -458,6 +458,35 @@ static int xfrm_inner_mode_input(struct xfrm_state *x,
+>         return -EOPNOTSUPP;
 >  }
 >
-> -/* If it's a keepalive packet, then just eat it.
-> - * If it's an encapsulated packet, then pass it to the
-> - * IPsec xfrm input.
-> - * Returns 0 if skb passed to xfrm or was dropped.
-> - * Returns >0 if skb should be passed to UDP.
-> - * Returns <0 if skb should be resubmitted (-ret is protocol)
-> - */
-> -int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
-> +static int __xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb, bool pull)
->  {
->         struct udp_sock *up = udp_sk(sk);
->         struct udphdr *uh;
-> @@ -110,7 +105,7 @@ int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
->         case UDP_ENCAP_ESPINUDP:
->                 /* Check if this is a keepalive packet.  If so, eat it. */
->                 if (len == 1 && udpdata[0] == 0xff) {
-> -                       goto drop;
-> +                       return -EINVAL;
->                 } else if (len > sizeof(struct ip_esp_hdr) && udpdata32[0] != 0) {
->                         /* ESP Packet without Non-ESP header */
->                         len = sizeof(struct udphdr);
-> @@ -121,7 +116,7 @@ int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
->         case UDP_ENCAP_ESPINUDP_NON_IKE:
->                 /* Check if this is a keepalive packet.  If so, eat it. */
->                 if (len == 1 && udpdata[0] == 0xff) {
-> -                       goto drop;
-> +                       return -EINVAL;
->                 } else if (len > 2 * sizeof(u32) + sizeof(struct ip_esp_hdr) &&
->                            udpdata32[0] == 0 && udpdata32[1] == 0) {
->
-> @@ -139,7 +134,7 @@ int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
->          * protocol to ESP, and then call into the transform receiver.
->          */
->         if (skb_unclone(skb, GFP_ATOMIC))
-> -               goto drop;
-> +               return -EINVAL;
->
->         /* Now we can update and verify the packet length... */
->         iph = ip_hdr(skb);
-> @@ -147,24 +142,92 @@ int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
->         iph->tot_len = htons(ntohs(iph->tot_len) - len);
->         if (skb->len < iphlen + len) {
->                 /* packet is too small!?! */
-> -               goto drop;
-> +               return -EINVAL;
->         }
->
->         /* pull the data buffer up to the ESP header and set the
->          * transport header to point to ESP.  Keep UDP on the stack
->          * for later.
->          */
-> -       __skb_pull(skb, len);
-> -       skb_reset_transport_header(skb);
-> +       if (pull) {
-> +               __skb_pull(skb, len);
-> +               skb_reset_transport_header(skb);
-> +       } else {
-> +               skb_set_transport_header(skb, len);
-> +       }
->
->         /* process ESP */
-> -       return xfrm4_rcv_encap(skb, IPPROTO_ESP, 0, encap_type);
-> -
-> -drop:
-> -       kfree_skb(skb);
->         return 0;
->  }
->
-> +/* If it's a keepalive packet, then just eat it.
-> + * If it's an encapsulated packet, then pass it to the
-> + * IPsec xfrm input.
-> + * Returns 0 if skb passed to xfrm or was dropped.
-> + * Returns >0 if skb should be passed to UDP.
-> + * Returns <0 if skb should be resubmitted (-ret is protocol)
-> + */
-> +int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
+> +static int xfrm_input_check_offload(struct net *net, struct sk_buff *skb,
+> +                                   struct xfrm_state *x,
+> +                                   struct xfrm_offload *xo)
 > +{
-> +       int ret;
+> +       if (!(xo->status & CRYPTO_SUCCESS)) {
+> +               if (xo->status &
+> +                   (CRYPTO_TRANSPORT_AH_AUTH_FAILED |
+> +                    CRYPTO_TRANSPORT_ESP_AUTH_FAILED |
+> +                    CRYPTO_TUNNEL_AH_AUTH_FAILED |
+> +                    CRYPTO_TUNNEL_ESP_AUTH_FAILED)) {
+> +                       xfrm_audit_state_icvfail(x, skb,
+> +                                                x->type->proto);
+> +                       x->stats.integrity_failed++;
+> +                       XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEPROTOERROR);
+> +                       return -EINVAL;
+> +               }
 > +
-> +       ret = __xfrm4_udp_encap_rcv(sk, skb, true);
-> +       if (!ret)
-> +               return xfrm4_rcv_encap(skb, IPPROTO_ESP, 0,
-> +                                      udp_sk(sk)->encap_type);
+> +               if (xo->status & CRYPTO_INVALID_PROTOCOL) {
+> +                       XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEPROTOERROR);
+> +                       return -EINVAL;
+> +               }
 > +
-> +       if (ret < 0) {
-> +               kfree_skb(skb);
-> +               return 0;
+> +               XFRM_INC_STATS(net, LINUX_MIB_XFRMINBUFFERERROR);
+> +               return -EINVAL;
 > +       }
 > +
-> +       return ret;
+> +       return 0;
 > +}
 > +
-> +struct sk_buff *xfrm4_gro_udp_encap_rcv(struct sock *sk, struct list_head *head,
-> +                                       struct sk_buff *skb)
-> +{
-> +       int offset = skb_gro_offset(skb);
-> +       const struct net_offload *ops;
-> +       struct sk_buff *pp = NULL;
-> +       int ret;
-> +
-> +       offset = offset - sizeof(struct udphdr);
-> +
-> +       if (!pskb_pull(skb, offset))
-> +               return NULL;
-> +
-> +       if (!refcount_inc_not_zero(&sk->sk_refcnt))
-> +               return NULL;
-> +
-
-Isn't a push needed in case of failure above?
-
-> +       rcu_read_lock();
-> +       ops = rcu_dereference(inet_offloads[IPPROTO_ESP]);
-> +       if (!ops || !ops->callbacks.gro_receive)
-> +               goto out;
-> +
-> +       ret = __xfrm4_udp_encap_rcv(sk, skb, false);
-> +       if (ret)
-> +               goto out;
-> +
-> +       skb->sk = sk;
-
-Don't you need something like skb_set_owner_sk_safe() so the
-destructor is also set?
-
-> +       skb_push(skb, offset);
-> +       NAPI_GRO_CB(skb)->proto = IPPROTO_UDP;
-> +
-> +       pp = call_gro_receive(ops->callbacks.gro_receive, head, skb);
-> +       rcu_read_unlock();
-> +
-> +       return pp;
-> +
-> +out:
-> +       rcu_read_unlock();
-> +       sock_put(sk);
-> +       skb_push(skb, offset);
-> +       NAPI_GRO_CB(skb)->same_flow = 0;
-> +       NAPI_GRO_CB(skb)->flush = 1;
-> +
-> +       return NULL;
-> +}
-> +
->  int xfrm4_rcv(struct sk_buff *skb)
+>  int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
 >  {
->         return xfrm4_rcv_spi(skb, ip_hdr(skb)->protocol, 0);
-> --
-> 2.30.2
+>         const struct xfrm_state_afinfo *afinfo;
+> @@ -477,7 +506,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+>         struct xfrm_offload *xo = xfrm_offload(skb);
+>         struct sec_path *sp;
 >
+> -       if (encap_type < 0) {
+> +       if (encap_type < 0 || (xo && xo->flags & XFRM_GRO)) {
+>                 x = xfrm_input_state(skb);
+>
+>                 if (unlikely(x->km.state != XFRM_STATE_VALID)) {
+> @@ -495,46 +524,26 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+>                 family = x->outer_mode.family;
+>
+>                 /* An encap_type of -1 indicates async resumption. */
+> -               if (encap_type == -1) {
+> +               if (encap_type  < 0) {
+
+Why is this specific line change needed? I see that now -2 is not sent
+anymore, so how is this related?
+If it is needed, maybe the comment above also needs updating?
+
+nit, a cover letter would've been handy so that the series could be
+fetched as a whole.
 
 Eyal.
