@@ -2,119 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8988F676437
-	for <lists+netdev@lfdr.de>; Sat, 21 Jan 2023 07:41:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE6AC6764EA
+	for <lists+netdev@lfdr.de>; Sat, 21 Jan 2023 08:22:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229810AbjAUGlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Jan 2023 01:41:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36932 "EHLO
+        id S229656AbjAUHW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Jan 2023 02:22:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbjAUGlg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Jan 2023 01:41:36 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF0E13AB1;
-        Fri, 20 Jan 2023 22:41:35 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id lp10so4081638pjb.4;
-        Fri, 20 Jan 2023 22:41:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=5lJdT3XmVD9a30DczQsD+DGtS0S+cFChQv3H+jSyRBQ=;
-        b=V5ZJzsOLaF5tZnLuyhpBjy0Ow/UxrssmrfVxJoVZw6KxUujCWXgu2VdzcEl4WmJtG+
-         bQpV5Ex2kG/2qQrDs3xRWXzBWWh2dioeQyEfaXcgQbeEQu7F7gMAVS6aU5k7qJ1wSIpn
-         XjMdbzRhmRCCzDrWZQoYqExI451TeDdlBLZPT1CaUAJT2sWcyiTOjJxcIjytdnkCG0tZ
-         qNabAGgjvAtlgDOazwA9MMdqBmO+oWIM+cK1q0ld1A09/OTQ7VFads/U2NL5QcCDQPB+
-         EMmetei6SbWCjB4St4Wcjf9Jh1R0AJzaTPA1HjONGbxq1R44qWjy8H3IQOC9PeM1PQvr
-         oQSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=5lJdT3XmVD9a30DczQsD+DGtS0S+cFChQv3H+jSyRBQ=;
-        b=hMm/QBER6bVQukPkX2W6KAoqK+LzVPrfadliHwJ+euNIKY3wicGpOq9hlIShtZAQZm
-         zXxc2Tj0kKWHW43QlTWMWUB/SXLT82ZDyGYr5g08N5zsxExzRj9Do3wcGoXo2qWDItvg
-         k1dYoyt5vAJVrIWGD2oTMIbNgslvyIGLQBW3v6/Rrt0nqS3cbWfgC1p7/NYaH1jeZks8
-         LYsb3a0bAANqBMcuBZfoem/0QFthaxN7kfQ9Imq2znb1BxEkcxAUjnUc1q3f40kN1nsx
-         5OaZcnKc5TkMiUgqFjdVkEzl8N1Z7qAUlnsJ/da5VLh98vojC1FfJSLUbpuVHw/ka8W1
-         qvKA==
-X-Gm-Message-State: AFqh2koVnpYN3WJNX6sAn6qsQxBCLiW4jBL5MmuGxsPQDfVGKttS//Uf
-        sGe9i7rA69qUVPoPp4IxXNW9HQhRVZZ7
-X-Google-Smtp-Source: AMrXdXt+zxIeLRtBASO7UiMkws7DJxIpHI5LZ6lSjnc5zm7osqhRM80gZ+qbaDNBdNHu0TktBr4MaA==
-X-Received: by 2002:a05:6a20:6d19:b0:b8:4978:cde8 with SMTP id fv25-20020a056a206d1900b000b84978cde8mr17618855pzb.18.1674283295064;
-        Fri, 20 Jan 2023 22:41:35 -0800 (PST)
-Received: from WDIR.. ([182.209.58.25])
-        by smtp.gmail.com with ESMTPSA id a3-20020a170902710300b0019269969d14sm13203689pll.282.2023.01.20.22.41.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Jan 2023 22:41:34 -0800 (PST)
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
-        Yosry Ahmed <yosryahmed@google.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH] selftests/bpf: fix vmtest static compilation error
-Date:   Sat, 21 Jan 2023 15:41:28 +0900
-Message-Id: <20230121064128.67914-1-danieltimlee@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229544AbjAUHWZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Jan 2023 02:22:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB646E40C;
+        Fri, 20 Jan 2023 23:22:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC56AB82A2B;
+        Sat, 21 Jan 2023 07:22:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBC40C433D2;
+        Sat, 21 Jan 2023 07:22:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1674285741;
+        bh=Q46aDo5XwLJPjm2uOBtn3vHeb9D259JKNiPEH8WSJ0U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mGqiy+3l5XFHVHcy03XzYZmNJgN2Sqo8dJMeSOH9gSASyqOGFvTuENZmO75QFEO4c
+         IBKklzYa4BKgjtrIK3fMmiwiYdv3XVcTQXSfY5ShdhPPqF7+/7DniYzC6jYFyhVeqh
+         adjtF3+W/uYJ9nzjXzyUDImIA+1wqMlrySn5tKgY=
+Date:   Sat, 21 Jan 2023 08:22:18 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jaewan Kim <jaewan@google.com>
+Cc:     johannes@sipsolutions.net, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-team@android.com, adelva@google.com
+Subject: Re: [PATCH v4 0/2] mac80211_hwsim: Add PMSR support
+Message-ID: <Y8uSqgjXH1WcZKBC@kroah.com>
+References: <20230120174934.3528469-1-jaewan@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230120174934.3528469-1-jaewan@google.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As stated in README.rst, in order to resolve errors with linker errors,
-'LDLIBS=-static' should be used. Most problems will be solved by this
-option, but in the case of urandom_read, this won't fix the problem. So
-the Makefile is currently implemented to strip the 'static' option when
-compiling the urandom_read. However, stripping this static option isn't
-configured properly on $(LDLIBS) correctly, which is now causing errors
-on static compilation.
+On Fri, Jan 20, 2023 at 05:49:32PM +0000, Jaewan Kim wrote:
+> Dear Kernel maintainers,
+> 
+> I'm proposing series of CLs for adding PMSR support in the mac80211_hwsim.
+> 
+> PMSR (peer measurement) is generalized measurement between STAs,
+> and currently FTM (fine time measurement or flight time measurement)
+> is the one and only measurement.
+> 
+> FTM measures the RTT (round trip time) and FTM can be used to measure
+> distances between two STAs. RTT is often referred as 'measuring distance'
+> as well.
+> 
+> 
+> Kernel had already defined protocols for PMSR in the
+> include/uapi/linux/nl80211.h and relevant parsing/sending code are in the
+> net/wireless/pmsr.c, but they are only used in intel's iwlwifi driver.
+> 
+> This series of CLs are the first attempt to utilize PMSR in the mac80211_hwsim.
+> 
+> CLs are tested with iw tool on Virtual Android device (a.k.a. Cuttlefish).
+> Hope this explains my CLs.
+> 
+> Many Thanks,
+> 
+> 
+> Jaewan Kim (2):
+>   mac80211_hwsim: add PMSR capability support
+>   mac80211_hwsim: handle FTM requests with virtio
+> 
+>  drivers/net/wireless/mac80211_hwsim.c | 827 +++++++++++++++++++++++++-
+>  drivers/net/wireless/mac80211_hwsim.h |  56 +-
+>  include/net/cfg80211.h                |  20 +
+>  net/wireless/nl80211.c                |  28 +-
+>  4 files changed, 913 insertions(+), 18 deletions(-)
+> 
+> -- 
+> 2.39.0.246.g2a6d74b583-goog
+> 
 
-    # LDLIBS=-static ./vmtest.sh
-    ld.lld: error: attempted static link of dynamic object liburandom_read.so
-    clang: error: linker command failed with exit code 1 (use -v to see invocation)
-    make: *** [Makefile:190: /linux/tools/testing/selftests/bpf/urandom_read] Error 1
-    make: *** Waiting for unfinished jobs....
+Hi,
 
-This commit fixes this problem by configuring the strip with $(LDLIBS).
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-Fixes: 68084a136420 ("selftests/bpf: Fix building bpf selftests statically")
-Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
----
- tools/testing/selftests/bpf/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+You are receiving this message because of the following common error(s)
+as indicated below:
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 22533a18705e..7bd1ce9c8d87 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -188,7 +188,7 @@ $(OUTPUT)/liburandom_read.so: urandom_read_lib1.c urandom_read_lib2.c
- $(OUTPUT)/urandom_read: urandom_read.c urandom_read_aux.c $(OUTPUT)/liburandom_read.so
- 	$(call msg,BINARY,,$@)
- 	$(Q)$(CLANG) $(filter-out -static,$(CFLAGS) $(LDFLAGS)) $(filter %.c,$^) \
--		     liburandom_read.so $(LDLIBS)			       \
-+		     liburandom_read.so $(filter-out -static,$(LDLIBS))	     \
- 		     -fuse-ld=$(LLD) -Wl,-znoseparate-code -Wl,--build-id=sha1 \
- 		     -Wl,-rpath=. -o $@
- 
--- 
-2.34.1
+- This looks like a new version of a previously submitted patch, but you
+  did not list below the --- line any changes from the previous version.
+  Please read the section entitled "The canonical patch format" in the
+  kernel file, Documentation/process/submitting-patches.rst for what
+  needs to be done here to properly describe this.
 
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
