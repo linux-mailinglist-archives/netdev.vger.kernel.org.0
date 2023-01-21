@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6672C676346
-	for <lists+netdev@lfdr.de>; Sat, 21 Jan 2023 04:12:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4362676353
+	for <lists+netdev@lfdr.de>; Sat, 21 Jan 2023 04:21:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229587AbjAUDMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 22:12:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41174 "EHLO
+        id S229706AbjAUDVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 22:21:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229699AbjAUDL7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 22:11:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C1E13C1F;
-        Fri, 20 Jan 2023 19:11:57 -0800 (PST)
+        with ESMTP id S229450AbjAUDVF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 22:21:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 717386E0DE;
+        Fri, 20 Jan 2023 19:21:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B91FB82B8A;
-        Sat, 21 Jan 2023 03:11:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E036C433D2;
-        Sat, 21 Jan 2023 03:11:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24075B82B8A;
+        Sat, 21 Jan 2023 03:21:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80ED8C433D2;
+        Sat, 21 Jan 2023 03:21:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674270714;
-        bh=+ECSThDtgHq6VGg+SpyqaVTiA6kkOP5Gz3WruwdxuCs=;
+        s=k20201202; t=1674271261;
+        bh=u03+9YLGMyAzqxcb5WaZli1ywOy/8WEW6RNhJoamwIo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Q7fCzHWAYbDwT4PYu3HePieOlwppJsOEOFtdfUuolfJPWgFq0jBNXAdrvnAOgquy8
-         O1XVFROVjdXeWMYkxtLP1j+W4W2I78YxWIkhGt3aKVVJdE5ryRxRXvQR4hNIseKnmy
-         paFDe+9oEu9pVRQgkWYhkeTw4M8zsMmwf0x4eDo8qXG2JOfmYZ/Kuh8PxFkYaX9c+R
-         w9UyryL+dHSOi3qRsGfVWZLeyhpsKJ1i1yczFjpFeL8w7oKhVCBzk51CR/FzJ2UXWd
-         6SIwaIz7a8BrPWmEE3ICu9TKPSQvrod+3UPzt9Lj5yB5x0ygjpkNavxF01pdY+ihlf
-         f63olYqn4KsrQ==
-Date:   Fri, 20 Jan 2023 19:11:52 -0800
+        b=vR4XX4lUj0i+3xjnU1BnPKvauCzYT21UFbkmulmoN9Xgq6ejTNw4ngaONIdMErLoa
+         i9C4R1RWMe2cSIjHTY1Zq4OtKBeG+PkJKC9EIUZFnpHsLPrrV5WoreK3FB6206v9/z
+         uL/XWRNpynCvvxTgXf0q+xsgx+Z58t44S59N0A2uVEY1wLW3tGIqsR1WmpXBjmMRIf
+         /hO5eetXGlwhAOd9Pv51ZSH2BRva+8cD2LVwhXrBOMIwiRkUuTkW42qtzawX3G0Wbe
+         6tga7Kcv8FiEmrFhpMV2a0RAEkCatwYYiL2NVXfdISQ4IwCuaA6ls9D4hQfwFDiFDl
+         +UqR+c3mQ6lOQ==
+Date:   Fri, 20 Jan 2023 19:20:59 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Lorenzo Bianconi <lorenzo@kernel.org>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
@@ -45,11 +45,12 @@ Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
         mst@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
         maciej.fijalkowski@intel.com, intel-wired-lan@lists.osuosl.org,
         lorenzo.bianconi@redhat.com, niklas.soderlund@corigine.com
-Subject: Re: [PATCH bpf-next 2/7] drivers: net: turn on XDP features
-Message-ID: <20230120191152.44d29bb1@kernel.org>
-In-Reply-To: <861224c406f78694530fde0d52c49d92e1e990a2.1674234430.git.lorenzo@kernel.org>
+Subject: Re: [PATCH bpf-next 5/7] libbpf: add API to get XDP/XSK supported
+ features
+Message-ID: <20230120192059.66d058bf@kernel.org>
+In-Reply-To: <31e46f564a30e0d3d1e06edb27045be9f318ff0b.1674234430.git.lorenzo@kernel.org>
 References: <cover.1674234430.git.lorenzo@kernel.org>
-        <861224c406f78694530fde0d52c49d92e1e990a2.1674234430.git.lorenzo@kernel.org>
+        <31e46f564a30e0d3d1e06edb27045be9f318ff0b.1674234430.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -62,21 +63,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 20 Jan 2023 18:16:51 +0100 Lorenzo Bianconi wrote:
-> +static inline void
-> +xdp_features_set_redirect_target(xdp_features_t *xdp_features, bool support_sg)
+On Fri, 20 Jan 2023 18:16:54 +0100 Lorenzo Bianconi wrote:
+> +static int libbpf_netlink_resolve_genl_family_id(const char *name,
+> +						 __u16 len, __u16 *id)
 > +{
-> +	*xdp_features |= NETDEV_XDP_ACT_NDO_XMIT;
-> +	if (support_sg)
-> +		*xdp_features |= NETDEV_XDP_ACT_NDO_XMIT_SG;
-> +}
-> +
-> +static inline void
-> +xdp_features_clear_redirect_target(xdp_features_t *xdp_features)
-> +{
-> +	*xdp_features &= ~(NETDEV_XDP_ACT_NDO_XMIT |
-> +			   NETDEV_XDP_ACT_NDO_XMIT_SG);
-> +}
-> +
+> +	struct libbpf_nla_req req = {
+> +		.nh.nlmsg_len	= NLMSG_LENGTH(GENL_HDRLEN),
+> +		.nh.nlmsg_type	= GENL_ID_CTRL,
+> +		.nh.nlmsg_flags	= NLM_F_REQUEST,
+> +		.gnl.cmd	= CTRL_CMD_GETFAMILY,
+> +		.gnl.version	= 1,
 
-Shouldn't these generate netlink notifications?
+nlctrl is version 2, shouldn't matter in practice
