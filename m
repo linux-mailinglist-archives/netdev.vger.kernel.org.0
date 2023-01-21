@@ -2,167 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C85A8676700
-	for <lists+netdev@lfdr.de>; Sat, 21 Jan 2023 16:03:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92E6C676704
+	for <lists+netdev@lfdr.de>; Sat, 21 Jan 2023 16:10:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229811AbjAUPDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Jan 2023 10:03:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43448 "EHLO
+        id S229790AbjAUPJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Jan 2023 10:09:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbjAUPDQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Jan 2023 10:03:16 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2052.outbound.protection.outlook.com [40.107.244.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C54C1E2BF;
-        Sat, 21 Jan 2023 07:03:15 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=da1GLpMN+46623RGkXrjz+yydCdg6wQYCSYysaqdxIXihRB69lZ0Lk1uO2+E/zqcSAhmVsFTZGegx3PWyP4OoTNVLLOm72qvWtOIirKnWecIZ71QK2uO2w2GOH9lLGkyPEzhg1tSPsoduaRKgWd+MDd2lhOftGH95AttK4fkCimS+1Dp7uRbtU62/czuVQxXxXuNNChFz7BAaD1viKTKBoIF/3fTyXzBeEMgJegYme9ENwimwpIp3Svk3sQaZK9MmlYAHq+Y0ZlqeC7w2ADZO192A14jMAy4m5e8G+RoNGFBQTq1VmQUWYHKDuLeZAwG9dXqvfo8zbpQ+kgshRp/5w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=y5bkh5dkw3jlgawWlJroImGy5kmIR021Jist+9JrbGo=;
- b=ivFIrrVt6dbyrxwO/YG3jPrxWRrbG5p128Ft+aVBofK2X/z1/y7S2kCauDMog3DAGvJoIkwudJmrWlR7cIGrgd3sTw7ID8EZYj/3IBJduidc73TwOL3XHnVZxJSEKD2Vtn1S3/5AtBFsQIg9WN0jD3CQXxCCDJmwtYkURdpxPT0G9tbUkbDrxLiKNmH23pC4dVHphJnW3ol2HalDWH8p+ugAr5Is1I5DBUjlpms0KLwQiZqPot57kyff6McRjGCFMNGSmeVb2r1TuIVRGkDHJrt/kNej12VIffv/fOhXfsC1cdhmbmpAmewLbzvQxXYoa3TQ//QTmOTV/8H1hDQJfA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y5bkh5dkw3jlgawWlJroImGy5kmIR021Jist+9JrbGo=;
- b=WlWaU14NPkou5u/h/G8mNCzCiNN23WWd0/cQxRfqIwGTK81QH635qtVBhSThWThhf/VZbxqgksIGLuzSBHIX7B8XTuoe2zvrarYi6FsklHtm/jW9fbSPyYZmloYnlW0q4gG/1DSKS78Q2uSgYFEkxDgAmuxmZSg8JIQHVLFOyXfW+xc2qSfa6fYgjvBB7lMGhY540XscJfnFN+x/UF3y8Ui5UuugNoOw0CHfmWIEnqYBpYL1xY0+edmlBxCwRKgxzhArCqS+kIUrfW12VaMX7rjmThoKlip+TLjgz1/JT06qlp2oZS6l1a1BwjIOaHDyMdgdLyj3sD7dni9VYRXF4w==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by MW4PR12MB7167.namprd12.prod.outlook.com (2603:10b6:303:225::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.27; Sat, 21 Jan
- 2023 15:03:13 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a%9]) with mapi id 15.20.6002.013; Sat, 21 Jan 2023
- 15:03:06 +0000
-Date:   Sat, 21 Jan 2023 11:03:05 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     lsf-pc@lists.linuxfoundation.org, linux-mm@kvack.org,
-        iommu@lists.linux.dev, linux-rdma@vger.kernel.org
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Joao Martins <joao.m.martins@oracle.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Ming Lei <ming.lei@redhat.com>, linux-block@vger.kernel.org,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        linux-rdma@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        nvdimm@lists.linux.dev
-Subject: [LSF/MM/BPF proposal]: Physr discussion
-Message-ID: <Y8v+qVZ8OmodOCQ9@nvidia.com>
+        with ESMTP id S229636AbjAUPJH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Jan 2023 10:09:07 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4C03233FC
+        for <netdev@vger.kernel.org>; Sat, 21 Jan 2023 07:09:05 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id i65so6016694pfc.0
+        for <netdev@vger.kernel.org>; Sat, 21 Jan 2023 07:09:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=theori.io; s=google;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ua+WYyImyb84I3AfuYAXKTbSGe0WmHnzQY8n4YkMLZc=;
+        b=W2qvOd+wCOWXoqtgzqvTlird3EUOe95OfpIbK6PcCwtv+b5Wt4AdI2cgkGBPSFnhtq
+         TvnbqrzY3bzCt+2fTLp9C4nHA/Y/WT7JSOhPrw156sTKxaqo+f314iTt5KsYeylx9VM7
+         uH7g23Xel3WJxiVrcVt5sEQ/ukFuXIaqX+fp4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ua+WYyImyb84I3AfuYAXKTbSGe0WmHnzQY8n4YkMLZc=;
+        b=rK42qZy+AxHwdeiqE/YQxVLoYuhBwW6Qdex+Bq6VsQ9KWwI1VUVNkMOwEcWXFG6VcI
+         4Vfny19p6XcMlVKlIoWLi17Lg5CrGmxE83f6bwtkP6KGOEozeO6SJnuLgh84YnC+/x5H
+         Qw16p1LyQDOaHmI49F9WCCfOoKbNL+1Kq8Xc2WEFlhyFj/MlC709kzebmfS+qsoLrGbw
+         Y84ZxCxZmpI8GAYCTMNpQpiPJD5DWBCzHlf30BYR7YCADj2q0tCjcVbnabhRFpLNXCqm
+         lursB4RSf+yvSSjFPxRKHCAcXAE5hgXsbaEMDGcD5tI4L7S8h/U12nIrucjH7tjl50mi
+         rotA==
+X-Gm-Message-State: AFqh2kpumLn6RvfyjFUbs/jrwUbT2Ly+1koKzSMwKNrZBf++q0wVJqMz
+        sikHPxTtHKWS8JWwTp3sKuoxVw==
+X-Google-Smtp-Source: AMrXdXvUFygrv+Ms+mnpUuDtmWeMXzaQGKSUVwVTZZN1j9opOHwvDLR4f9t8XF5XZfi5u6KJxVvI7g==
+X-Received: by 2002:a62:86c8:0:b0:581:b3f4:21f8 with SMTP id x191-20020a6286c8000000b00581b3f421f8mr11100212pfd.31.1674313745234;
+        Sat, 21 Jan 2023 07:09:05 -0800 (PST)
+Received: from ubuntu ([39.115.108.115])
+        by smtp.gmail.com with ESMTPSA id z30-20020aa79e5e000000b0058d97abdefesm12306197pfq.208.2023.01.21.07.09.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Jan 2023 07:09:04 -0800 (PST)
+Date:   Sat, 21 Jan 2023 07:08:59 -0800
+From:   Hyunwoo Kim <v4bel@theori.io>
+To:     ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     v4bel@theori.io, imv4bel@gmail.com, linux-hams@vger.kernel.org,
+        netdev@vger.kernel.org,
+        syzbot+caa188bdfc1eeafeb418@syzkaller.appspotmail.com
+Subject: [PATCH] netrom: Fix use-after-free caused by accept on already
+ connected socket
+Message-ID: <20230121150859.GA9817@ubuntu>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-ClientProxiedBy: MN2PR02CA0027.namprd02.prod.outlook.com
- (2603:10b6:208:fc::40) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MW4PR12MB7167:EE_
-X-MS-Office365-Filtering-Correlation-Id: d602da7c-5402-4b94-bfa4-08dafbc09a19
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CRMnbebuCwY2XUAUG4zSwIe1enDOU/bfPiLcADCdQWxpsMCkdoJxHYf+cjIoUZr0NB9zAFxBWbxtCvRqATlQWLYjPoQbGR8HtbMM3sCogJQZGMHYmL6H8sT8yeRg/U4YDYLGC43S75B5xNvJvace83NECE8PxAVPWQTh66/lCHMId+12NsKq6ajdT6rZVUPnh0dAhynnwoyHpI8WlD9qNjK9z9vDSJz2t1cLg4zeTdAFmzzEhw3GjPPvBY9/hZThbMe//HOTRrpyBpJnewnFpcN1/4iwos+01yYdpe348F/aDtA0x1xNlUAtoR5LJt1/9xgC3tYUH+HK3ll9/BCI8b4KbG47SVArAXz4bQrj9/hMW4weqCmZMxoz6FtIFXtY9VOqoFiEU4/4zN1zLyo7WYCWr+dyduK4bW3EK8a2dR5SXWckscDqA1/r83Zb5RlY2yfUDTmzsPNYjFTeqABjjZqqUKeAWHgHpbWdBhO9u+1u/DpF26/zzKGpzUOQbT42SNynbGmzgp10wEvDuoOex5gc6+4ZBx7k5zASKCgX05U5vmq1huJm22wAMdZwJ5Dm2eSegKXO7P/ishk6d2LScQLI0X8jSEiV57uO2KqFRYECJcOj20aKI3PptY2nldJYVyh/pHQFWjeVm8f2C98qx3GyHxMlkKjiD0TOmEejlk6f/U12cIzVM1mo7u4AWftwlhdEaPVG+jHkNTqsSc2CeT69J1112T4exZLRVgIfpYMxlAwJEQKbbJTEmq/V7MnJZ3jvlTEfGNnscM9llCIzm5dWWJjLx0L9dLXkAN5TTKUw2hcPyVvJrhyire921RQO
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(366004)(376002)(136003)(396003)(346002)(451199015)(2616005)(36756003)(6512007)(6486002)(966005)(478600001)(26005)(186003)(5660300002)(7416002)(66476007)(6506007)(41300700001)(2906002)(8936002)(54906003)(4326008)(316002)(66946007)(8676002)(66556008)(86362001)(38100700002)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?F3BtidbfOpqNrP0AWXf8iW9XqvsJOhqseIZ2Oll+rGUOB/hTWmy3UCsqFod7?=
- =?us-ascii?Q?EHZJ48jGqvFDAuVpNk3DepjhbbhpO1E0BMOBmAfJ4rKCqKGwS2KpsrM9LWFR?=
- =?us-ascii?Q?7eJxJthEf/0oBMBDcvB3Jt8cnGJ7A586GXqzmVnJNd6DzfGCgB1d79l6RcS8?=
- =?us-ascii?Q?hCRwH6IaEUT2KnG8Ds7MBt0UEpJ2jYR7MtjV33rMMXx2AmfyYIvKsWDfzRUe?=
- =?us-ascii?Q?ZpHG62etWXCkt+DvDL7X4tDN/YG9gxM/xej6jWOQeXAX78AfXpKo0tSw9i1V?=
- =?us-ascii?Q?bflChshYSj51Y69JQBNf2y2XYY+VSBRPSrQFfwgWBPi2St2owQOjbTDYVfFv?=
- =?us-ascii?Q?Z8RH+DpQoG9IpJ7RQ0Ra1Xs2NWuODxG0RknEASsZahiaRgzmLJVqIBVRNBOg?=
- =?us-ascii?Q?eYULA7UsBkIaZiM/L7HahjyEL5fTXiRkqbA5y+dWwnFW/YvIauyIBc0pZqU4?=
- =?us-ascii?Q?5LoKOMezuI6aVGejSzTfIN/vZG4lg4w082yiC53xU4Jq5XG0ka9OkpE94Uc2?=
- =?us-ascii?Q?e9Dcte51ghX0eXrxLMrlcyOX/SkFHxAaxIV8srbzj56mA8tM0zCACEBFoy2G?=
- =?us-ascii?Q?LSWLWCPj4B+KdOquV84fsUN3l9UpNXFAjuqApmyTofj1d6PTLqia+phcgrOx?=
- =?us-ascii?Q?2DyS8lXJEoykDS4JCNH42JwSfCnOOALsNjcFOk1PY6J8nPnLzH7Ct13SDcI3?=
- =?us-ascii?Q?/j5DvU+OlUxeZYitNQN9HH9TWwzDKx0HFfIykfSAw25WAq/PnnF3sqJDJnaz?=
- =?us-ascii?Q?osvsWOEJ2zQcS6bb4dDIsNPBRnENan6Zp/XwTNOH0mnPC6GiWlMatL8TtmBZ?=
- =?us-ascii?Q?qVw3R+jjsbumSmMWEzkT0q1fKGwaV+5GQbVLF/yCQHhFAU3m/wKRwwk3cWtp?=
- =?us-ascii?Q?CQ1QmGSKvKwkYF0ANWtCGKsU1xr3TuAyQFpHPBBrJwVMsTD+CXmyXZFBIRUN?=
- =?us-ascii?Q?gc36PyLroat6wu2kmYVAvkRu484uJOXLT5uGjWXaNmNfFia1RSzHcyD0oXKT?=
- =?us-ascii?Q?FzzS0D0bMDG4Zo/DaWXDx1tixhc2iz53HaKOVZuRh+BE82yGW05HhJ2BGONG?=
- =?us-ascii?Q?6VEQKTSz6akReE6feMADA0IxXewPkJZncMebPBJWvQpnMpgzdaYnZHeNyxPQ?=
- =?us-ascii?Q?gjDqWDs1xtnqJW6m8IXXQOizVpC6e1EthJul59fkqSAfP3pb5nrIpGjAMqkk?=
- =?us-ascii?Q?9G3rw7HbWISHlhPUVGFWBY9EskHVQdlQavSiyhtU2IBTaU+AcRU3QALi6x9H?=
- =?us-ascii?Q?RgCwVdgoqmKN1w4Y3VoRSp8wWoutCeskSGpDtrLPA/fJhR46wJRYgB6zpriX?=
- =?us-ascii?Q?ue5d/zzAGN4yGE3RaztmUfL8jYn8niqrz/EbYRz/fF6pGHr/OpQkQ6VrjYz5?=
- =?us-ascii?Q?q2j506TjFvq0PWNP4GhYaBTcqxIu1EIc48oKTruujAlv2nEzEtyYvhchKkmt?=
- =?us-ascii?Q?RV1IC9yWhf6cThBjmr+gQLmSj25bh9yXPeOLST+fvT7lYe4lW3xsrZn/Sn1S?=
- =?us-ascii?Q?UU8FwZw8HaCkkoKaXuZ3BM8/Da4FHDmanqT2JIxQWrbewVODe1pj5aV6pYfJ?=
- =?us-ascii?Q?jsHWLEC2J8rISIaIWyRmJPK3PbxUJC1AIS4lXOBs?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d602da7c-5402-4b94-bfa4-08dafbc09a19
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jan 2023 15:03:06.5736
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7FLLeQpTT5r0fWJNmbBRqDe+jOyxVxW50i+u69QNjWEcPeRiCqI2DsfTswcC9pgN
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7167
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I would like to have a session at LSF to talk about Matthew's
-physr discussion starter:
+If listen() and accept() are called on an AF_NETROM socket that
+has already been connect()ed, accept() succeeds in connecting.
+This is because nr_accept() dequeues the skb queued in
+`sk->sk_receive_queue` in nr_connect().
 
- https://lore.kernel.org/linux-mm/YdyKWeU0HTv8m7wD@casper.infradead.org/
+This causes nr_accept() to allocate and return a sock with the
+sk of the parent AF_NETROM socket. And here's where use-after-free
+can happen through complex race conditions:
+```
+                  cpu0                                                     cpu1
+                                                               1. socket_2 = socket(AF_NETROM)
+                                                                  listen(socket_2)
+                                                                  accepted_socket = accept(socket_2)    // loopback connection with socket_1
+       2. socket_1 = socket(AF_NETROM)
+            nr_create()    // sk refcount : 1
+          connect(socket_1)    // loopback connection with socket_2
+            nr_connect()
+            nr_establish_data_link()
+            nr_write_internal()
+            nr_transmit_buffer()
+            nr_route_frame()
+            nr_loopback_queue()
+            nr_loopback_timer()
+            nr_rx_frame()
+            nr_process_rx_frame()
+            nr_state3_machine()
+            nr_queue_rx_frame()
+            sock_queue_rcv_skb()
+            sock_queue_rcv_skb_reason()
+            __sock_queue_rcv_skb()
+            __skb_queue_tail(list, skb);    // list : sk->sk_receive_queue
 
-I have become interested in this with some immediacy because of
-IOMMUFD and this other discussion with Christoph:
+       3. listen(socket_1)
+            nr_listen()
+          uaf_socket = accept(socket_1)
+            nr_accept()
+            skb_dequeue(&sk->sk_receive_queue);
+                                                               4. close(accepted_socket)
+                                                                    nr_release()
+                                                                    nr_write_internal(sk, NR_DISCREQ)
+                                                                    nr_transmit_buffer()    // NR_DISCREQ
+                                                                    nr_route_frame()
+                                                                    nr_loopback_queue()
+                                                                    nr_loopback_timer()
+                                                                    nr_rx_frame()    // sk : socket_1's sk
+                                                                    nr_process_rx_frame()  // NR_STATE_3
+                                                                    nr_state3_machine()    // NR_DISCREQ
+                                                                    nr_disconnect()
+                                                                    nr_sk(sk)->state = NR_STATE_0;
+       5. close(socket_1)    // sk refcount : 3
+            nr_release()    // NR_STATE_0
+            sock_put(sk);    // sk refcount : 0
+            sk_free(sk);
+          close(uaf_socket)
+            nr_release()
+            sock_hold(sk);    // UAF
+```
 
- https://lore.kernel.org/kvm/4-v2-472615b3877e+28f7-vfio_dma_buf_jgg@nvidia.com/
-    
-Which results in, more or less, we have no way to do P2P DMA
-operations without struct page - and from the RDMA side solving this
-well at the DMA API means advancing at least some part of the physr
-idea.
+KASAN report by syzbot:
+```
+BUG: KASAN: use-after-free in nr_release+0x66/0x460 net/netrom/af_netrom.c:520
+Write of size 4 at addr ffff8880235d8080 by task syz-executor564/5128
 
-So - my objective is to enable to DMA API to "DMA map" something that
-is not a scatterlist, may or may not contain struct pages, but can
-still contain P2P DMA data. From there I would move RDMA MR's to use
-this new API, modify DMABUF to export it, complete the above VFIO
-series, and finally, use all of this to add back P2P support to VFIO
-when working with IOMMUFD by allowing IOMMUFD to obtain a safe
-reference to the VFIO memory using DMABUF. From there we'd want to see
-pin_user_pages optimized, and that also will need some discussion how
-best to structure it.
+CPU: 0 PID: 5128 Comm: syz-executor564 Not tainted 6.2.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:306 [inline]
+ print_report+0x15e/0x461 mm/kasan/report.c:417
+ kasan_report+0xbf/0x1f0 mm/kasan/report.c:517
+ check_region_inline mm/kasan/generic.c:183 [inline]
+ kasan_check_range+0x141/0x190 mm/kasan/generic.c:189
+ instrument_atomic_read_write include/linux/instrumented.h:102 [inline]
+ atomic_fetch_add_relaxed include/linux/atomic/atomic-instrumented.h:116 [inline]
+ __refcount_add include/linux/refcount.h:193 [inline]
+ __refcount_inc include/linux/refcount.h:250 [inline]
+ refcount_inc include/linux/refcount.h:267 [inline]
+ sock_hold include/net/sock.h:775 [inline]
+ nr_release+0x66/0x460 net/netrom/af_netrom.c:520
+ __sock_release+0xcd/0x280 net/socket.c:650
+ sock_close+0x1c/0x20 net/socket.c:1365
+ __fput+0x27c/0xa90 fs/file_table.c:320
+ task_work_run+0x16f/0x270 kernel/task_work.c:179
+ exit_task_work include/linux/task_work.h:38 [inline]
+ do_exit+0xaa8/0x2950 kernel/exit.c:867
+ do_group_exit+0xd4/0x2a0 kernel/exit.c:1012
+ get_signal+0x21c3/0x2450 kernel/signal.c:2859
+ arch_do_signal_or_restart+0x79/0x5c0 arch/x86/kernel/signal.c:306
+ exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
+ exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:203
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
+ syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
+ do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f6c19e3c9b9
+Code: Unable to access opcode bytes at 0x7f6c19e3c98f.
+RSP: 002b:00007fffd4ba2ce8 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
+RAX: 0000000000000116 RBX: 0000000000000003 RCX: 00007f6c19e3c9b9
+RDX: 0000000000000318 RSI: 00000000200bd000 RDI: 0000000000000006
+RBP: 0000000000000003 R08: 000000000000000d R09: 000000000000000d
+R10: 0000000000000000 R11: 0000000000000246 R12: 000055555566a2c0
+R13: 0000000000000011 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
 
-I also have several ideas on how something like physr can optimize the
-iommu driver ops when working with dma-iommu.c and IOMMUFD.
+Allocated by task 5128:
+ kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+ kasan_set_track+0x25/0x30 mm/kasan/common.c:52
+ ____kasan_kmalloc mm/kasan/common.c:371 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:330 [inline]
+ __kasan_kmalloc+0xa3/0xb0 mm/kasan/common.c:380
+ kasan_kmalloc include/linux/kasan.h:211 [inline]
+ __do_kmalloc_node mm/slab_common.c:968 [inline]
+ __kmalloc+0x5a/0xd0 mm/slab_common.c:981
+ kmalloc include/linux/slab.h:584 [inline]
+ sk_prot_alloc+0x140/0x290 net/core/sock.c:2038
+ sk_alloc+0x3a/0x7a0 net/core/sock.c:2091
+ nr_create+0xb6/0x5f0 net/netrom/af_netrom.c:433
+ __sock_create+0x359/0x790 net/socket.c:1515
+ sock_create net/socket.c:1566 [inline]
+ __sys_socket_create net/socket.c:1603 [inline]
+ __sys_socket_create net/socket.c:1588 [inline]
+ __sys_socket+0x133/0x250 net/socket.c:1636
+ __do_sys_socket net/socket.c:1649 [inline]
+ __se_sys_socket net/socket.c:1647 [inline]
+ __x64_sys_socket+0x73/0xb0 net/socket.c:1647
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-I've been working on an implementation and hope to have something
-draft to show on the lists in a few weeks. It is pretty clear there
-are several interesting decisions to make that I think will benefit
-from a live discussion.
+Freed by task 5128:
+ kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+ kasan_set_track+0x25/0x30 mm/kasan/common.c:52
+ kasan_save_free_info+0x2b/0x40 mm/kasan/generic.c:518
+ ____kasan_slab_free mm/kasan/common.c:236 [inline]
+ ____kasan_slab_free+0x13b/0x1a0 mm/kasan/common.c:200
+ kasan_slab_free include/linux/kasan.h:177 [inline]
+ __cache_free mm/slab.c:3394 [inline]
+ __do_kmem_cache_free mm/slab.c:3580 [inline]
+ __kmem_cache_free+0xcd/0x3b0 mm/slab.c:3587
+ sk_prot_free net/core/sock.c:2074 [inline]
+ __sk_destruct+0x5df/0x750 net/core/sock.c:2166
+ sk_destruct net/core/sock.c:2181 [inline]
+ __sk_free+0x175/0x460 net/core/sock.c:2192
+ sk_free+0x7c/0xa0 net/core/sock.c:2203
+ sock_put include/net/sock.h:1991 [inline]
+ nr_release+0x39e/0x460 net/netrom/af_netrom.c:554
+ __sock_release+0xcd/0x280 net/socket.c:650
+ sock_close+0x1c/0x20 net/socket.c:1365
+ __fput+0x27c/0xa90 fs/file_table.c:320
+ task_work_run+0x16f/0x270 kernel/task_work.c:179
+ exit_task_work include/linux/task_work.h:38 [inline]
+ do_exit+0xaa8/0x2950 kernel/exit.c:867
+ do_group_exit+0xd4/0x2a0 kernel/exit.c:1012
+ get_signal+0x21c3/0x2450 kernel/signal.c:2859
+ arch_do_signal_or_restart+0x79/0x5c0 arch/x86/kernel/signal.c:306
+ exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
+ exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:203
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
+ syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
+ do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+```
 
-Providing a kernel-wide alternative to scatterlist is something that
-has general interest across all the driver subsystems. I've started to
-view the general problem rather like xarray where the main focus is to
-create the appropriate abstraction and then go about transforming
-users to take advatange of the cleaner abstraction. scatterlist
-suffers here because it has an incredibly leaky API, a huge number of
-(often sketchy driver) users, and has historically been very difficult
-to improve.
+To fix this problem, nr_listen() returns -EINVAL for sockets that
+successfully nr_connect().
 
-The session would quickly go over the current state of whatever the
-mailing list discussion evolves into and an open discussion around the
-different ideas.
+Reported-by: syzbot+caa188bdfc1eeafeb418@syzkaller.appspotmail.com
+Signed-off-by: Hyunwoo Kim <v4bel@theori.io>
+---
+ net/netrom/af_netrom.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Thanks,
-Jason
+diff --git a/net/netrom/af_netrom.c b/net/netrom/af_netrom.c
+index 6f7f4392cffb..dcfa606684d7 100644
+--- a/net/netrom/af_netrom.c
++++ b/net/netrom/af_netrom.c
+@@ -400,6 +400,11 @@ static int nr_listen(struct socket *sock, int backlog)
+ 	struct sock *sk = sock->sk;
+ 
+ 	lock_sock(sk);
++	if (sock->state == SS_CONNECTED) {
++		release_sock(sk);
++		return -EINVAL;
++	}
++
+ 	if (sk->sk_state != TCP_LISTEN) {
+ 		memset(&nr_sk(sk)->user_addr, 0, AX25_ADDR_LEN);
+ 		sk->sk_max_ack_backlog = backlog;
+-- 
+2.25.1
+
