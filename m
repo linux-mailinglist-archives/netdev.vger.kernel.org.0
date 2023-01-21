@@ -2,136 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CE4E67642D
-	for <lists+netdev@lfdr.de>; Sat, 21 Jan 2023 07:35:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8988F676437
+	for <lists+netdev@lfdr.de>; Sat, 21 Jan 2023 07:41:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229764AbjAUGfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Jan 2023 01:35:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35142 "EHLO
+        id S229810AbjAUGlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Jan 2023 01:41:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbjAUGfA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Jan 2023 01:35:00 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D0686E407
-        for <netdev@vger.kernel.org>; Fri, 20 Jan 2023 22:34:59 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pJ7Sh-0006Rv-9B; Sat, 21 Jan 2023 07:34:47 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pJ7Sf-00028R-FI; Sat, 21 Jan 2023 07:34:45 +0100
-Date:   Sat, 21 Jan 2023 07:34:45 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Arun.Ramadoss@microchip.com
-Subject: Re: [PATCH net-next v1 2/4] net: phy: micrel: add EEE configuration
- support for KSZ9477 variants of PHYs
-Message-ID: <20230121063445.GK6162@pengutronix.de>
-References: <20230119131821.3832456-1-o.rempel@pengutronix.de>
- <20230119131821.3832456-3-o.rempel@pengutronix.de>
- <6a02c93f-e854-bb8e-2172-2c2537f9d800@gmail.com>
- <20230120055514.GI6162@pengutronix.de>
- <c45aa954-0931-1829-459f-8771faf05173@gmail.com>
+        with ESMTP id S229450AbjAUGlg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Jan 2023 01:41:36 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF0E13AB1;
+        Fri, 20 Jan 2023 22:41:35 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id lp10so4081638pjb.4;
+        Fri, 20 Jan 2023 22:41:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=5lJdT3XmVD9a30DczQsD+DGtS0S+cFChQv3H+jSyRBQ=;
+        b=V5ZJzsOLaF5tZnLuyhpBjy0Ow/UxrssmrfVxJoVZw6KxUujCWXgu2VdzcEl4WmJtG+
+         bQpV5Ex2kG/2qQrDs3xRWXzBWWh2dioeQyEfaXcgQbeEQu7F7gMAVS6aU5k7qJ1wSIpn
+         XjMdbzRhmRCCzDrWZQoYqExI451TeDdlBLZPT1CaUAJT2sWcyiTOjJxcIjytdnkCG0tZ
+         qNabAGgjvAtlgDOazwA9MMdqBmO+oWIM+cK1q0ld1A09/OTQ7VFads/U2NL5QcCDQPB+
+         EMmetei6SbWCjB4St4Wcjf9Jh1R0AJzaTPA1HjONGbxq1R44qWjy8H3IQOC9PeM1PQvr
+         oQSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=5lJdT3XmVD9a30DczQsD+DGtS0S+cFChQv3H+jSyRBQ=;
+        b=hMm/QBER6bVQukPkX2W6KAoqK+LzVPrfadliHwJ+euNIKY3wicGpOq9hlIShtZAQZm
+         zXxc2Tj0kKWHW43QlTWMWUB/SXLT82ZDyGYr5g08N5zsxExzRj9Do3wcGoXo2qWDItvg
+         k1dYoyt5vAJVrIWGD2oTMIbNgslvyIGLQBW3v6/Rrt0nqS3cbWfgC1p7/NYaH1jeZks8
+         LYsb3a0bAANqBMcuBZfoem/0QFthaxN7kfQ9Imq2znb1BxEkcxAUjnUc1q3f40kN1nsx
+         5OaZcnKc5TkMiUgqFjdVkEzl8N1Z7qAUlnsJ/da5VLh98vojC1FfJSLUbpuVHw/ka8W1
+         qvKA==
+X-Gm-Message-State: AFqh2koVnpYN3WJNX6sAn6qsQxBCLiW4jBL5MmuGxsPQDfVGKttS//Uf
+        sGe9i7rA69qUVPoPp4IxXNW9HQhRVZZ7
+X-Google-Smtp-Source: AMrXdXt+zxIeLRtBASO7UiMkws7DJxIpHI5LZ6lSjnc5zm7osqhRM80gZ+qbaDNBdNHu0TktBr4MaA==
+X-Received: by 2002:a05:6a20:6d19:b0:b8:4978:cde8 with SMTP id fv25-20020a056a206d1900b000b84978cde8mr17618855pzb.18.1674283295064;
+        Fri, 20 Jan 2023 22:41:35 -0800 (PST)
+Received: from WDIR.. ([182.209.58.25])
+        by smtp.gmail.com with ESMTPSA id a3-20020a170902710300b0019269969d14sm13203689pll.282.2023.01.20.22.41.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Jan 2023 22:41:34 -0800 (PST)
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
+        Yosry Ahmed <yosryahmed@google.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH] selftests/bpf: fix vmtest static compilation error
+Date:   Sat, 21 Jan 2023 15:41:28 +0900
+Message-Id: <20230121064128.67914-1-danieltimlee@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <c45aa954-0931-1829-459f-8771faf05173@gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 20, 2023 at 09:58:05AM -0800, Florian Fainelli wrote:
-> 
-> 
-> On 1/19/2023 9:55 PM, Oleksij Rempel wrote:
-> > On Thu, Jan 19, 2023 at 11:25:42AM -0800, Florian Fainelli wrote:
-> > > On 1/19/23 05:18, Oleksij Rempel wrote:
-> > > > KSZ9477 variants of PHYs are not completely compatible with generic
-> > > > phy_ethtool_get/set_eee() handlers. For example MDIO_PCS_EEE_ABLE acts
-> > > > like a mirror of MDIO_AN_EEE_ADV register. If MDIO_AN_EEE_ADV set to 0,
-> > > > MDIO_PCS_EEE_ABLE will be 0 too. It means, if we do
-> > > > "ethtool --set-eee lan2 eee off", we won't be able to enable it again.
-> > > > 
-> > > > With this patch, instead of reading MDIO_PCS_EEE_ABLE register, the
-> > > > driver will provide proper abilities.
-> > > 
-> > > We have hooks in place already for PHY drivers with the form of the read_mmd
-> > > and write_mmd callbacks, did this somehow not work for you?
-> > > 
-> > > Below is an example:
-> > > 
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d88fd1b546ff19c8040cfaea76bf16aed1c5a0bb
-> > > 
-> > > (here the register location is non-standard but the bit definitions within
-> > > that register are following the standard).
-> > 
-> > It will work for this PHY, but not allow to complete support for AR8035.
-> > AR8035 provides support for "SmartEEE" where  tx_lpi_enabled and
-> > tx_lpi_timer are optionally handled by the PHY, not by MAC.
-> 
-> Not sure I understand your reply here, this would appear to be a limitation
-> that exists regardless of the current API defined, does that mean that you
-> can make use of the phy_driver::{read,write}_mmd function calls and you will
-> make a v2 that uses them, or something else entirely?
+As stated in README.rst, in order to resolve errors with linker errors,
+'LDLIBS=-static' should be used. Most problems will be solved by this
+option, but in the case of urandom_read, this won't fix the problem. So
+the Makefile is currently implemented to strip the 'static' option when
+compiling the urandom_read. However, stripping this static option isn't
+configured properly on $(LDLIBS) correctly, which is now causing errors
+on static compilation.
 
-There are two ways to solve this problem:
-- indirect way. Add read/write_mdd filter to catch requests and patch
-  them as needed.
-- direct way. Introduce PHY specific EEE API and allow drivers to use
-  it.
+    # LDLIBS=-static ./vmtest.sh
+    ld.lld: error: attempted static link of dynamic object liburandom_read.so
+    clang: error: linker command failed with exit code 1 (use -v to see invocation)
+    make: *** [Makefile:190: /linux/tools/testing/selftests/bpf/urandom_read] Error 1
+    make: *** Waiting for unfinished jobs....
 
-What's with indirect way?
-1. Hard to find common pattern within other drivers.
-2. It is not obvious for some one, what is going on, without deep diving
-   in to documentation.
-3. We provide different levels of abstractions not really compatible with
-   each other. One part of code thinks we are doing right thing other
-   part is trying to fake the answers. It looks and feels wrong.
-4. I already tried to mainline driver with for a HW not 100% compatible
-   with 802.3 specification, which was faking read/write_mdd answers to
-   not supported or broken registers. It was not accepted and it was
-   good decision to not doing this.
+This commit fixes this problem by configuring the strip with $(LDLIBS).
 
-Direct way:
-- clean understandable API.
-- It is possible to find common patterns.
-- It is possible to support more exotic variants not reflected in the
-  802.3 spec.
+Fixes: 68084a136420 ("selftests/bpf: Fix building bpf selftests statically")
+Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+---
+ tools/testing/selftests/bpf/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Now we have a direct way. Yes, it is possible to implement in exact this
-driver a read/write_mdd filter, but it is also possible to implement
-get/set_eee as well. Why should I implement in this driver the filter
-if I already know that next driver will need get/set_eee any way?
-
-Regards,
-Oleksij
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 22533a18705e..7bd1ce9c8d87 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -188,7 +188,7 @@ $(OUTPUT)/liburandom_read.so: urandom_read_lib1.c urandom_read_lib2.c
+ $(OUTPUT)/urandom_read: urandom_read.c urandom_read_aux.c $(OUTPUT)/liburandom_read.so
+ 	$(call msg,BINARY,,$@)
+ 	$(Q)$(CLANG) $(filter-out -static,$(CFLAGS) $(LDFLAGS)) $(filter %.c,$^) \
+-		     liburandom_read.so $(LDLIBS)			       \
++		     liburandom_read.so $(filter-out -static,$(LDLIBS))	     \
+ 		     -fuse-ld=$(LLD) -Wl,-znoseparate-code -Wl,--build-id=sha1 \
+ 		     -Wl,-rpath=. -o $@
+ 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.34.1
+
