@@ -2,153 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E43D6763C4
-	for <lists+netdev@lfdr.de>; Sat, 21 Jan 2023 05:25:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EDEB6763DA
+	for <lists+netdev@lfdr.de>; Sat, 21 Jan 2023 05:43:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229672AbjAUEZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 23:25:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36480 "EHLO
+        id S229725AbjAUEnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 23:43:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229568AbjAUEZJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 23:25:09 -0500
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70723530EC;
-        Fri, 20 Jan 2023 20:24:53 -0800 (PST)
-Received: by mail-qt1-x829.google.com with SMTP id g16so3765838qtu.2;
-        Fri, 20 Jan 2023 20:24:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qwRl6AriAxtLsQshG0WLT8xXpSJi+NGIVxpWZYX/6II=;
-        b=oYxzuFmr5pVt01gJibPdD5ns77LWVJeQmmVcsoPATQ4AhkNE8Da5wsu9Mc1wJLeNaB
-         tehkdeWQw8aXAeGragVTrfuwq647RKKSq23gNAuq9fjHG5+mwpwbdicJcnlrSaljEfQr
-         Eb4bFX6NvVp0r5sOxhE2t/7kgma9WzMeWKopGbGj4cFeEf3SghA9EFKoNP2F8ewXDmpg
-         1GJMDoD0tN/M476NAiSuwmkMZjRnvs29wvpAoqtHYdA4dhfCJDtFiNT4jD3KDxwhJWJy
-         7aVDQmCmdhwT0P+5kyStCHbeHIKIm0dZSkrbfczaE/6i5VUbDGixfB8lbev7Cga34Dh4
-         WNOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=qwRl6AriAxtLsQshG0WLT8xXpSJi+NGIVxpWZYX/6II=;
-        b=wVG6Gd/rAGHQc2rlv9wYu0+LBdmUgtcntNe1rssNUWfZw5j2OSNzHu/4eEiqJ2uNWE
-         6RIGnjH147H+VLLT2/YiWJTrT8+wWgGb2Ki+n8IvUpIPxZdDGaou6jyOpuoDK5X2cDhk
-         zfJYB53CgMlRqEAp1ggjbDvtI3HvJDCX9vegzal9dTvROZAPt+82jS9AFHZ4bX8grCH9
-         jLliBqUQT/UpADEPHWtxJBfiBZ3OaRhrTlgPPN4CP08xqKzjtJOD9LEdo5At0Ap1jkVd
-         W+CZLY3VXAG9EY6IQtNaCEPXpVPajuiLcYgDyWZCNMBczHXd+m9+Q1kHsCZ3B4Ib2I8f
-         E3Rg==
-X-Gm-Message-State: AFqh2kolEj+i1bDZ8BECtUVoBZpNOYxNwwyWHOGyDjE2h+Xl4U2XD8M+
-        Z/btl2BBENcohzdoB5giy0VUGH9b2tE=
-X-Google-Smtp-Source: AMrXdXuIb83rZuSdHzA4rxpr75oAXNzqP23zVDgdCNSGS7ZxV26QSDHnFK2M21j5vg9ZIdQWGnLVzw==
-X-Received: by 2002:ac8:6a0e:0:b0:3ab:7928:526c with SMTP id t14-20020ac86a0e000000b003ab7928526cmr23006426qtr.17.1674275092061;
-        Fri, 20 Jan 2023 20:24:52 -0800 (PST)
-Received: from localhost (50-242-44-45-static.hfc.comcastbusiness.net. [50.242.44.45])
-        by smtp.gmail.com with ESMTPSA id ga15-20020a05622a590f00b003b6325dfc4esm8255304qtb.67.2023.01.20.20.24.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Jan 2023 20:24:51 -0800 (PST)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Barry Song <baohua@kernel.org>,
-        Ben Segall <bsegall@google.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Haniel Bristot de Oliveira <bristot@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Peter Lafreniere <peter@n8pjl.ca>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Tariq Toukan <ttoukan.linux@gmail.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Cc:     Yury Norov <yury.norov@gmail.com>, linux-crypto@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH 9/9] lib/cpumask: update comment for cpumask_local_spread()
-Date:   Fri, 20 Jan 2023 20:24:36 -0800
-Message-Id: <20230121042436.2661843-10-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230121042436.2661843-1-yury.norov@gmail.com>
-References: <20230121042436.2661843-1-yury.norov@gmail.com>
+        with ESMTP id S229683AbjAUEnA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 23:43:00 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2C7F50853;
+        Fri, 20 Jan 2023 20:42:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674276179; x=1705812179;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=arVUT2kp7AxZby4p5kBezOJfzOwcbkW2d3m7DdS4uug=;
+  b=L4rWMAt1uSiG6IqYfegoq4KCgY72loitXXNDDLo+UcwzGoVIA80W+Op8
+   B0JtGyldF4c+9GvaQVBT6I3H0PMbpTJtCcTMLfZdgsaOyj5i3Z2HiraXV
+   TnTNmazcoDkJZ5ZnqDgpE+yAl6N356aRj6ZHcurMTU81SS1ZWLotFt459
+   Cn5skRaRA/94uJuY+Tei54+jvpli2KmXxL/rrosf3W499K51UV9mPSJL1
+   ddpz/hiT71AucGvF2olGzPZhkAxtNjEyKBUH09JWcRZgbIpl39RnrTi4A
+   3dmItE7lV4VROjrfUgZ1opLj44eGFlfXyRnWgX7u409yzKY2WzNpW9Bqc
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="306117886"
+X-IronPort-AV: E=Sophos;i="5.97,234,1669104000"; 
+   d="scan'208";a="306117886"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2023 20:42:59 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="662767035"
+X-IronPort-AV: E=Sophos;i="5.97,234,1669104000"; 
+   d="scan'208";a="662767035"
+Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 20 Jan 2023 20:42:52 -0800
+Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pJ5iN-0003Uc-0g;
+        Sat, 21 Jan 2023 04:42:51 +0000
+Date:   Sat, 21 Jan 2023 12:42:35 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org
+Cc:     oe-kbuild-all@lists.linux.dev, netdev@vger.kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, toke@redhat.com,
+        memxor@gmail.com, alardam@gmail.com, saeedm@nvidia.com,
+        anthony.l.nguyen@intel.com, gospo@broadcom.com,
+        vladimir.oltean@nxp.com, nbd@nbd.name, john@phrozen.org,
+        leon@kernel.org, simon.horman@corigine.com, aelior@marvell.com,
+        christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
+        mst@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
+        maciej.fijalkowski@intel.com, intel-wired-lan@lists.osuosl.org,
+        lorenzo.bianconi@redhat.com
+Subject: Re: [PATCH bpf-next 1/7] netdev-genl: create a simple family for
+ netdev stuff
+Message-ID: <202301211259.eI8T3TMB-lkp@intel.com>
+References: <272fa19f57de2d14e9666b4cd9b1ae8a61a94807.1674234430.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <272fa19f57de2d14e9666b4cd9b1ae8a61a94807.1674234430.git.lorenzo@kernel.org>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we have an iterator-based alternative for a very common case
-of using cpumask_local_spread for all cpus in a row, it's worth to
-mention that in comment to cpumask_local_spread().
+Hi Lorenzo,
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
-Reviewed-by: Valentin Schneider <vschneid@redhat.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
----
- lib/cpumask.c | 26 ++++++++++++++++++++++----
- 1 file changed, 22 insertions(+), 4 deletions(-)
+I love your patch! Perhaps something to improve:
 
-diff --git a/lib/cpumask.c b/lib/cpumask.c
-index 10aa15715c0d..98291b07c756 100644
---- a/lib/cpumask.c
-+++ b/lib/cpumask.c
-@@ -114,11 +114,29 @@ void __init free_bootmem_cpumask_var(cpumask_var_t mask)
-  * @i: index number
-  * @node: local numa_node
-  *
-- * This function selects an online CPU according to a numa aware policy;
-- * local cpus are returned first, followed by non-local ones, then it
-- * wraps around.
-+ * Returns online CPU according to a numa aware policy; local cpus are returned
-+ * first, followed by non-local ones, then it wraps around.
-  *
-- * It's not very efficient, but useful for setup.
-+ * For those who wants to enumerate all CPUs based on their NUMA distances,
-+ * i.e. call this function in a loop, like:
-+ *
-+ * for (i = 0; i < num_online_cpus(); i++) {
-+ *	cpu = cpumask_local_spread(i, node);
-+ *	do_something(cpu);
-+ * }
-+ *
-+ * There's a better alternative based on for_each()-like iterators:
-+ *
-+ *	for_each_numa_hop_mask(mask, node) {
-+ *		for_each_cpu_andnot(cpu, mask, prev)
-+ *			do_something(cpu);
-+ *		prev = mask;
-+ *	}
-+ *
-+ * It's simpler and more verbose than above. Complexity of iterator-based
-+ * enumeration is O(sched_domains_numa_levels * nr_cpu_ids), while
-+ * cpumask_local_spread() when called for each cpu is
-+ * O(sched_domains_numa_levels * nr_cpu_ids * log(nr_cpu_ids)).
-  */
- unsigned int cpumask_local_spread(unsigned int i, int node)
- {
+[auto build test WARNING on bpf-next/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Lorenzo-Bianconi/netdev-genl-create-a-simple-family-for-netdev-stuff/20230121-011957
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+patch link:    https://lore.kernel.org/r/272fa19f57de2d14e9666b4cd9b1ae8a61a94807.1674234430.git.lorenzo%40kernel.org
+patch subject: [PATCH bpf-next 1/7] netdev-genl: create a simple family for netdev stuff
+config: x86_64-rhel-8.3-syz (https://download.01.org/0day-ci/archive/20230121/202301211259.eI8T3TMB-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-8) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/bab8ed890888146e07283e2ae27174b3562b6931
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Lorenzo-Bianconi/netdev-genl-create-a-simple-family-for-netdev-stuff/20230121-011957
+        git checkout bab8ed890888146e07283e2ae27174b3562b6931
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 olddefconfig
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash net/core/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   net/core/netdev-genl.c: In function 'netdev_nl_dev_fill':
+>> net/core/netdev-genl.c:16:13: warning: unused variable 'err' [-Wunused-variable]
+      16 |         int err;
+         |             ^~~
+
+
+vim +/err +16 net/core/netdev-genl.c
+
+    10	
+    11	static int
+    12	netdev_nl_dev_fill(struct net_device *netdev, struct sk_buff *rsp,
+    13			   u32 portid, u32 seq, int flags, u32 cmd)
+    14	{
+    15		void *hdr;
+  > 16		int err;
+    17	
+    18		hdr = genlmsg_put(rsp, portid, seq, &netdev_nl_family, flags, cmd);
+    19		if (!hdr)
+    20			return -EMSGSIZE;
+    21	
+    22		if (nla_put_u32(rsp, NETDEV_A_DEV_IFINDEX, netdev->ifindex) ||
+    23		    nla_put_u64_64bit(rsp, NETDEV_A_DEV_XDP_FEATURES,
+    24				      netdev->xdp_features, NETDEV_A_DEV_PAD)) {
+    25			genlmsg_cancel(rsp, hdr);
+    26			return -EINVAL;
+    27		}
+    28	
+    29		genlmsg_end(rsp, hdr);
+    30	
+    31		return 0;
+    32	}
+    33	
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
