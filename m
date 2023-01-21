@@ -2,337 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7F9067668C
-	for <lists+netdev@lfdr.de>; Sat, 21 Jan 2023 14:34:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AE9967668D
+	for <lists+netdev@lfdr.de>; Sat, 21 Jan 2023 14:35:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229895AbjAUNej (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Jan 2023 08:34:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49250 "EHLO
+        id S229904AbjAUNf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Jan 2023 08:35:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229699AbjAUNei (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Jan 2023 08:34:38 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60DBA49430;
-        Sat, 21 Jan 2023 05:34:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674308076; x=1705844076;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YTo9XdCPLUIuEozMh2J4WJXDRm/6gdlVCFZsPnk++0U=;
-  b=ULVZYjQnRyqUJzwujlblb1rwj34L29fslh4eRkGXxzbxT38P8gavAuH6
-   11Rq8nH+qcbemMLkapn7IYiMr/X57iyAzqszj+njY2V59fVTPzJPsOjVH
-   Oebr4Wfmhm0SFcbspg55dvsJ22jPIGMGZuAzh1kGBJH6KjzUZ80o5UPss
-   XweFEQton8eR/eWrDtA2Axnik/iUPSI/i2hSh+xAsxH6LCXEcySK2SXTs
-   mdYuCj5n880azfTtM28BEPKPUG5Evfp+BtL6gXeEFR2WhIIqMACvsbnPs
-   8BMmNVdyRYisj+lBsKu5/y+Cxqacnvw9HZ5NDTDbRo9HDK4JuGvz+1Q8g
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="323474410"
-X-IronPort-AV: E=Sophos;i="5.97,235,1669104000"; 
-   d="scan'208";a="323474410"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2023 05:34:36 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="662844793"
-X-IronPort-AV: E=Sophos;i="5.97,235,1669104000"; 
-   d="scan'208";a="662844793"
-Received: from bswcg005.iind.intel.com ([10.224.174.136])
-  by fmsmga007.fm.intel.com with ESMTP; 21 Jan 2023 05:34:30 -0800
-From:   m.chetan.kumar@linux.intel.com
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        ilpo.jarvinen@linux.intel.com, ricardo.martinez@linux.intel.com,
-        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
-        edumazet@google.com, pabeni@redhat.com,
-        chandrashekar.devegowda@intel.com, m.chetan.kumar@linux.intel.com,
-        linuxwwan@intel.com, linuxwwan_5g@intel.com, corbet@lwn.net,
-        linux-doc@vger.kernel.org, jiri@nvidia.com
-Subject: [PATCH v5 net-next 5/5] net: wwan: t7xx: Devlink documentation
-Date:   Sat, 21 Jan 2023 19:03:58 +0530
-Message-Id: <f902d4a0cb807a205687f7e693079fba72ca7341.1674307425.git.m.chetan.kumar@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1674307425.git.m.chetan.kumar@linux.intel.com>
-References: <cover.1674307425.git.m.chetan.kumar@linux.intel.com>
+        with ESMTP id S229699AbjAUNfz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Jan 2023 08:35:55 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AC2349426;
+        Sat, 21 Jan 2023 05:35:54 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id az20so20426528ejc.1;
+        Sat, 21 Jan 2023 05:35:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Z4YcSrMX/G5vP45y4HfVQg5h76ReOicUsuhYXyLi4UM=;
+        b=jloDOGfndeuHEZxorJIwmvQ6L+AiemwBGczaRnr41DRAjQG2j38Fi10rAMziWmYTqd
+         xbY4/wAkeP4stBfqV2UO1T/d7BDq9oZXl2qLUrZ9DcW1xiagrLbdOzolPWWDNlQJ9OLX
+         kuKQKXm0I4QTxokTyShw6/S3aDPyqM2QJj8ROqCTEqL7NuE52SNbZyuOd/Qv34vbDH4h
+         NoSIWlB3tJ+wL2Ss9NMpCwukvdEfj2HaMrPRP2UcIjstSD0CFOYV9V7zazSE/BvIHTE4
+         R/u/eD93slmsPVS0SaNgRmsKsbM8RyFn7+4BVV7YYPDLA4OcJz7DYhv6UW9POvaZdM1W
+         w5UA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Z4YcSrMX/G5vP45y4HfVQg5h76ReOicUsuhYXyLi4UM=;
+        b=CQu8RUTEzpSb4zu2dH9OAeDevSGRMfnq3dfCE51EkjrPcF6Kg4JUJntGeazasOEwkr
+         CDbbZAGiazoNo//DgQ9z7Z9Xq4obtBi2XH7SBc++nYplqMLZOzkAmcWJ2zdM41vnYOvk
+         s0NvbQYuHooL+1/ecLF7lm3zXyUU9TiOFRa8HWvKcEcyvXUEyo2xEw8f7fxZw1QO+3G6
+         kiMx//w1THWf5c9JmSfsmPV5eAe6itWfkiDnPly5jqD1SQsLtjzcR3LXzRujbMCvndqd
+         cg48musnsSMg6d/nNr9bGMZERdUacRXqiYO8eKtDzEJHSgaw88oiuyolfDkE7KkTHWM8
+         tC2w==
+X-Gm-Message-State: AFqh2kqMVJOvjDQ1HbzoHqdDvjf6P4y5Kc3szO8LOMea+hZCfI8GXUjF
+        uhwy5rEBzkMWs8zM4Nk5uoQ=
+X-Google-Smtp-Source: AMrXdXsPpai+v7vXEdVZk4hFPRkJ6JsEZRPcBoIrNVqKXxgikg3WGoLXEh7W648s8JrWjE/pxGYQvQ==
+X-Received: by 2002:a17:906:8e0a:b0:7c1:1444:da41 with SMTP id rx10-20020a1709068e0a00b007c11444da41mr34521652ejc.40.1674308152684;
+        Sat, 21 Jan 2023 05:35:52 -0800 (PST)
+Received: from skbuf ([188.27.185.42])
+        by smtp.gmail.com with ESMTPSA id et21-20020a170907295500b00871f66bf354sm7695559ejc.204.2023.01.21.05.35.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Jan 2023 05:35:52 -0800 (PST)
+Date:   Sat, 21 Jan 2023 15:35:49 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Frank Wunderlich <frank-w@public-files.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Daniel Golle <daniel@makrotopia.org>
+Subject: Re: [BUG] vlan-aware bridge breaks vlan on another port on same gmac
+Message-ID: <20230121133549.vibz2infg5jwupdc@skbuf>
+References: <trinity-e6294d28-636c-4c40-bb8b-b523521b00be-1674233135062@3c-app-gmx-bs36>
+ <20230120172132.rfo3kf4fmkxtw4cl@skbuf>
+ <trinity-b0df6ff8-cceb-4aa5-a26f-41bc04dc289c-1674303103108@3c-app-gmx-bap60>
+ <20230121122223.3kfcwxqtqm3b6po5@skbuf>
+ <trinity-7c2af652-d3f8-4086-ba12-85cd18cd6a1a-1674304362789@3c-app-gmx-bap60>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <trinity-7c2af652-d3f8-4086-ba12-85cd18cd6a1a-1674304362789@3c-app-gmx-bap60>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+On Sat, Jan 21, 2023 at 01:32:42PM +0100, Frank Wunderlich wrote:
+> so first patch fixes the behaviour on bpi-r3 (mt7531)...but maybe mt7530 need the tagging on cpu-port
+> 
+> > Can you try the second patch instead of the first one? Without digging
+> > deeply into mt7530 hardware docs, that's the best chance of making
+> > things work without changing how the hardware operates.
+> 
+> second patch works for wan, but vlan on bridge is broken, no packets receiving my laptop (also no untagged ones).
 
-Document the t7xx devlink commands usage for firmware flashing &
-coredump collection.
+It's hard for me to understand how applying only patch "tag_mtk only
+combine VLAN tag with MTK tag is user port is VLAN aware" can produce
+the results you describe... For packets sent to port lan0, nothing
+should have been changed by that patch, because dsa_port_is_vlan_filtering(dp)
+should return true.
 
-Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-Signed-off-by: Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>
---
-v5:
- * No Change.
-v4:
- * Spell out fw as firmware.
- * Drop "Refer to t7xx.rst file for details" in commit message.
- * Move explanation below commands under flash update.
- * Move firmware image type list under flash commands.
- * Keyword formatting.
- * Trim the unneeded trailing colon.
- * Describe region commands.
-v3:
- * No change.
-v2:
- * Documentation correction.
- * Add param details.
----
- Documentation/networking/devlink/index.rst |   1 +
- Documentation/networking/devlink/t7xx.rst  | 224 +++++++++++++++++++++
- 2 files changed, 225 insertions(+)
- create mode 100644 Documentation/networking/devlink/t7xx.rst
-
-diff --git a/Documentation/networking/devlink/index.rst b/Documentation/networking/devlink/index.rst
-index fee4d3968309..0c4f5961e78f 100644
---- a/Documentation/networking/devlink/index.rst
-+++ b/Documentation/networking/devlink/index.rst
-@@ -66,3 +66,4 @@ parameters, info versions, and other features it supports.
-    prestera
-    iosm
-    octeontx2
-+   t7xx
-diff --git a/Documentation/networking/devlink/t7xx.rst b/Documentation/networking/devlink/t7xx.rst
-new file mode 100644
-index 000000000000..dc795c8cc851
---- /dev/null
-+++ b/Documentation/networking/devlink/t7xx.rst
-@@ -0,0 +1,224 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+====================
-+t7xx devlink support
-+====================
-+
-+This document describes the devlink features implemented by the ``t7xx``
-+device driver.
-+
-+Parameters
-+==========
-+The ``t7xx_driver`` driver implements the following driver-specific parameters.
-+
-+.. list-table:: Driver-specific parameters
-+   :widths: 5 5 5 85
-+
-+   * - Name
-+     - Type
-+     - Mode
-+     - Description
-+   * - ``fastboot``
-+     - boolean
-+     - driverinit
-+     - Set this param to enter fastboot mode.
-+
-+Flash Update
-+============
-+
-+The ``t7xx`` driver implements the flash update using the ``devlink-flash``
-+interface.
-+
-+The driver uses ``DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT`` to identify the type of
-+firmware image that need to be programmed upon the request by user space application.
-+
-+``t7xx`` driver uses fastboot protocol for firmware flashing. In the firmware
-+flashing procedure, fastboot command & response are exchanged between driver
-+and wwan device.
-+
-+::
-+
-+  $ devlink dev reload pci/0000:$bdf action driver_reinit
-+
-+The wwan device is put into fastboot mode via devlink reload command, by
-+passing ``driver_reinit`` action.
-+
-+::
-+
-+  $ devlink dev reload pci/0000:$bdf action fw_activate
-+
-+Upon completion of firmware flashing or coredump collection the wwan device is
-+reset to normal mode using devlink reload command, by passing ``fw_activate``
-+action.
-+
-+Flash Commands
-+--------------
-+
-+::
-+
-+  $ devlink dev flash pci/0000:$bdf file preloader_k6880v1_mdot2_datacard.bin component "preloader"
-+
-+::
-+
-+  $ devlink dev flash pci/0000:$bdf file loader_ext-verified.img component "loader_ext1"
-+
-+::
-+
-+  $ devlink dev flash pci/0000:$bdf file tee-verified.img component "tee1"
-+
-+::
-+
-+  $ devlink dev flash pci/0000:$bdf file lk-verified.img component "lk"
-+
-+::
-+
-+  $ devlink dev flash pci/0000:$bdf file spmfw-verified.img component "spmfw"
-+
-+::
-+
-+  $ devlink dev flash pci/0000:$bdf file sspm-verified.img component "sspm_1"
-+
-+::
-+
-+  $ devlink dev flash pci/0000:$bdf file mcupm-verified.img component "mcupm_1"
-+
-+::
-+
-+  $ devlink dev flash pci/0000:$bdf file dpm-verified.img component "dpm_1"
-+
-+::
-+
-+  $ devlink dev flash pci/0000:$bdf file boot-verified.img component "boot"
-+
-+::
-+
-+  $ devlink dev flash pci/0000:$bdf file root.squashfs component "rootfs"
-+
-+::
-+
-+  $ devlink dev flash pci/0000:$bdf file modem-verified.img component "md1img"
-+
-+::
-+
-+  $ devlink dev flash pci/0000:$bdf file dsp-verified.bin component "md1dsp"
-+
-+::
-+
-+  $ devlink dev flash pci/0000:$bdf file OP_OTA.img component "mcf1"
-+
-+::
-+
-+  $ devlink dev flash pci/0000:$bdf file OEM_OTA.img component "mcf2"
-+
-+::
-+
-+  $ devlink dev flash pci/0000:$bdf file DEV_OTA.img component "mcf3"
-+
-+Note: Component selects the partition type to be programmed.
-+
-+
-+The supported list of firmware image types is described below.
-+
-+.. list-table:: Firmware Image types
-+    :widths: 15 85
-+
-+    * - Name
-+      - Description
-+    * - ``preloader``
-+      - The first-stage bootloader image
-+    * - ``loader_ext1``
-+      - Preloader extension image
-+    * - ``tee1``
-+      - ARM trusted firmware and TEE (Trusted Execution Environment) image
-+    * - ``lk``
-+      - The second-stage bootloader image
-+    * - ``spmfw``
-+      - MediaTek in-house ASIC for power management image
-+    * - ``sspm_1``
-+      - MediaTek in-house ASIC for power management under secure world image
-+    * - ``mcupm_1``
-+      - MediaTek in-house ASIC for cpu power management image
-+    * - ``dpm_1``
-+      - MediaTek in-house ASIC for dram power management image
-+    * - ``boot``
-+      - The kernel and dtb image
-+    * - ``rootfs``
-+      - Root filesystem image
-+    * - ``md1img``
-+      - Modem image
-+    * - ``md1dsp``
-+      - Modem DSP image
-+    * - ``mcf1``
-+      - Modem OTA image (Modem Configuration Framework) for operators
-+    * - ``mcf2``
-+      - Modem OTA image (Modem Configuration Framework) for OEM vendors
-+    * - ``mcf3``
-+      - Modem OTA image (other usage) for OEM configurations
-+
-+
-+Regions
-+=======
-+
-+The ``t7xx`` driver supports core dump collection in exception state and second
-+stage bootloader log collection in fastboot mode. The log snapshot is taken by
-+the driver using fastboot commands.
-+
-+Region commands
-+---------------
-+
-+::
-+
-+  $ devlink region show
-+
-+This command list the regions implemented by driver. These regions are accessed
-+for device internal data. Below table describes the regions.
-+
-+.. list-table:: Regions
-+    :widths: 15 85
-+
-+    * - Name
-+      - Description
-+    * - ``mr_dump``
-+      - The detailed modem component logs are captured in this region
-+    * - ``lk_dump``
-+      - This region dumps the current snapshot of lk
-+
-+Coredump Collection
-+~~~~~~~~~~~~~~~~~~~
-+
-+::
-+
-+  $ devlink region new mr_dump
-+
-+::
-+
-+  $ devlink region read mr_dump snapshot 0 address 0 length $len
-+
-+::
-+
-+  $ devlink region del mr_dump snapshot 0
-+
-+Note: $len is actual len to be dumped.
-+
-+The userspace application uses these commands for obtaining the modem component
-+logs when device encounters an exception.
-+
-+Second Stage Bootloader dump
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+
-+::
-+
-+  $ devlink region new lk_dump
-+
-+::
-+
-+  $ devlink region read lk_dump snapshot 0 address 0 length $len
-+
-+::
-+
-+  $ devlink region del lk_dump snapshot 0
-+
-+Note: $len is actual len to be dumped.
-+
-+In fastboot mode the userspace application uses these commands for obtaining the
-+current snapshot of second stage bootloader.
--- 
-2.34.1
-
+If you can confirm there isn't any mistake in the testing procedure,
+I'll take a look later today at the hardware documentation and try to
+figure out why the CPU port is configured the way it is.
