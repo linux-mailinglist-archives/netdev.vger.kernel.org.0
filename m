@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CA2A6763BF
-	for <lists+netdev@lfdr.de>; Sat, 21 Jan 2023 05:25:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E1016763C3
+	for <lists+netdev@lfdr.de>; Sat, 21 Jan 2023 05:25:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229954AbjAUEZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Jan 2023 23:25:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35744 "EHLO
+        id S229553AbjAUEZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Jan 2023 23:25:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229853AbjAUEYr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 23:24:47 -0500
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665E64FCFF;
-        Fri, 20 Jan 2023 20:24:46 -0800 (PST)
-Received: by mail-qv1-xf2a.google.com with SMTP id i12so5213778qvs.2;
-        Fri, 20 Jan 2023 20:24:46 -0800 (PST)
+        with ESMTP id S229867AbjAUEYs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Jan 2023 23:24:48 -0500
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E1CB518D6;
+        Fri, 20 Jan 2023 20:24:47 -0800 (PST)
+Received: by mail-qt1-x82b.google.com with SMTP id o5so5796684qtr.11;
+        Fri, 20 Jan 2023 20:24:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=PJerbQOhdlxy484c709V9ypFLveYN3mWM3Ilqj2sA+c=;
-        b=h1Zx6Bhj5dIG43PbAkkOc/sx/Fw4MABjfDO4NdVNETxZjrABFVi6CcIhSBHShTZ1ey
-         7xxCZ7kV52SFvmCDe24u2JxXV88gSDlATevMNCebe9/fGgVnlqVu2wvZxvcf6pkIxFCP
-         Yg07TUTUpDY70BypZSjPbfsQfvOYVWOipY5iIChJ9za68UvhDPPrlG5eYi0Czepch6JV
-         uAl7svrTw2xooaVcTHmVUrgnseoJyn7NbHCekN0aw0H0QteMyTj2fyS/fVVo1U2ce1iC
-         QTrinnJz35pOkMDhXv0YTmwS41BJGrL2TTpQo1T/++7hFZhbVhNO7VYLsxMXjNx2aNYL
-         Ilbg==
+        bh=GwdL6i5RDIaOTjKHDRQpPnyPsA8RatFMsU5WrNy3SA0=;
+        b=lOKIeoFZ2XmWttrm+5mhAr+EoKXQrXKDkyPM0i9zjpJ7oEZ7xf20CcBTFzpC7sbxpP
+         HYGr+UfCS7Y6l0DcfL0vfyfshN+LQYevRg6KS5hazTyVvRIfZ1zOP8onArDxsjjx8szU
+         1Hi8MUAbBTPnxKBkZ/ri41lTBruU6fn35huesBk939D+g/+bJxbXsov3j2O3od+KvYPW
+         qkJjJmYKbWoMLYP/WnEu3Yl+5uWM/ixSGDHJ28Wj9E/laWGUAySoIIq+Ug+0ONRY4Dlq
+         Gdi129W9RHo8gvEFNm3Bye67FtlnI1xoGS9Zd2kKnJsTpOEJG17fDNPvCNJSSRlyiOW1
+         BqeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=PJerbQOhdlxy484c709V9ypFLveYN3mWM3Ilqj2sA+c=;
-        b=WHMjiHKMjkx0Dm+w1AdWr7egZKmQCDcoehK/7bhrxDyHI5LmE+sJn0LEJRhO0TUB2c
-         Em+aBH0BazK9hilETidP4QthwMok+9HY8cmdzyTSD20R1zA/9eiTn0KjWy+ggDf23FtH
-         0oEMmgOWPgVyAlR6GUfkcD7uJErrL+fj0sJGxhPDZbDIrTLREx8BNNZVMOu1mUoe4+ki
-         oI6Wq1WQ+zj+BSk+4c2gqNCrT5WVT/3E99ea0AfJZbO9BSpyJbdBySIMmTzrfunqfLxr
-         2s/KwbNT9nz0qc+u/E5f8I76Wlmy88xBft31AqzTtY6/1tZrk38gsbypq4pv+zzlV9Cr
-         oYjg==
-X-Gm-Message-State: AFqh2kq+ceSsP7Bb6N/kSkOL0GD9h0bzajoZqH3km7r3xZyZE+oid70x
-        ORm+ouQ4exC5jCwV9shaLtbplSNPaSc=
-X-Google-Smtp-Source: AMrXdXvUjjeX22hwx3Dzwkhvkh95BY6VIKvZMy3wWle7vZKGbhEUq/FJQy8JV4EwESVM+4/WQA8UXA==
-X-Received: by 2002:a05:6214:57d1:b0:532:1f17:2ce7 with SMTP id lw17-20020a05621457d100b005321f172ce7mr26333198qvb.16.1674275085080;
-        Fri, 20 Jan 2023 20:24:45 -0800 (PST)
+        bh=GwdL6i5RDIaOTjKHDRQpPnyPsA8RatFMsU5WrNy3SA0=;
+        b=si/SsffpTv9+J57PbXFX82yptkZ0wmcSpiS2O8SaBzyqNbV7UiCgb1tlDjVZxrfuM7
+         ossxus4MNqDWDAceX5hitbZuvVg+bG/g7N4fgIloYGJ+dl4CA3LTZGUxiWgRZ5uVLpWV
+         AAeliZ504Cf9Q6LMwxjFB0F1bGFMvk24I2F8TLEi5KjyN5hfVajWn9za5TIj57DAXGP7
+         AcjEQPhRAJRRFiYIc25W+03SkQNIjVXuj+eh4bp8fx0yRChxZkhWxrp+Fwm19qFmh3hN
+         RYlJVqd2xlKhswzrJ4fgnktchm02IPzq19ER4pcxDjGJGj8CDM/ABNfgHJZ7XgMlu6sW
+         MD6A==
+X-Gm-Message-State: AFqh2krMWxWG+SnLiNOyeinOB9KeHNpVM9EVUtk10oQNNe8XbTK/LqXw
+        woK4YwCL1NW68e4XUXIiV2gOaovAgOs=
+X-Google-Smtp-Source: AMrXdXuYwxMNLnOQv9EHAW1DEMQekgeg5cpr/1IW0U76wYcvE4khZw2ZPqraMAe5yRGaUjwiDDnhzw==
+X-Received: by 2002:ac8:604d:0:b0:39c:da20:f7ac with SMTP id k13-20020ac8604d000000b0039cda20f7acmr23825028qtm.9.1674275086283;
+        Fri, 20 Jan 2023 20:24:46 -0800 (PST)
 Received: from localhost (50-242-44-45-static.hfc.comcastbusiness.net. [50.242.44.45])
-        by smtp.gmail.com with ESMTPSA id h10-20020a05620a284a00b006feea093006sm27597979qkp.124.2023.01.20.20.24.44
+        by smtp.gmail.com with ESMTPSA id jt14-20020a05622aa00e00b003adc7f652a0sm17772522qtb.66.2023.01.20.20.24.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Jan 2023 20:24:44 -0800 (PST)
+        Fri, 20 Jan 2023 20:24:45 -0800 (PST)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
@@ -82,9 +82,9 @@ To:     linux-kernel@vger.kernel.org,
         Vincent Guittot <vincent.guittot@linaro.org>
 Cc:     Yury Norov <yury.norov@gmail.com>, linux-crypto@vger.kernel.org,
         netdev@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH 4/9] cpumask: improve on cpumask_local_spread() locality
-Date:   Fri, 20 Jan 2023 20:24:31 -0800
-Message-Id: <20230121042436.2661843-5-yury.norov@gmail.com>
+Subject: [PATCH 5/9] lib/cpumask: reorganize cpumask_local_spread() logic
+Date:   Fri, 20 Jan 2023 20:24:32 -0800
+Message-Id: <20230121042436.2661843-6-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230121042436.2661843-1-yury.norov@gmail.com>
 References: <20230121042436.2661843-1-yury.norov@gmail.com>
@@ -100,77 +100,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Switch cpumask_local_spread() to use newly added sched_numa_find_nth_cpu(),
-which takes into account distances to each node in the system.
+Now after moving all NUMA logic into sched_numa_find_nth_cpu(),
+else-branch of cpumask_local_spread() is just a function call, and
+we can simplify logic by using ternary operator.
 
-For the following NUMA configuration:
-
-root@debian:~# numactl -H
-available: 4 nodes (0-3)
-node 0 cpus: 0 1 2 3
-node 0 size: 3869 MB
-node 0 free: 3740 MB
-node 1 cpus: 4 5
-node 1 size: 1969 MB
-node 1 free: 1937 MB
-node 2 cpus: 6 7
-node 2 size: 1967 MB
-node 2 free: 1873 MB
-node 3 cpus: 8 9 10 11 12 13 14 15
-node 3 size: 7842 MB
-node 3 free: 7723 MB
-node distances:
-node   0   1   2   3
-  0:  10  50  30  70
-  1:  50  10  70  30
-  2:  30  70  10  50
-  3:  70  30  50  10
-
-The new cpumask_local_spread() traverses cpus for each node like this:
-
-node 0:   0   1   2   3   6   7   4   5   8   9  10  11  12  13  14  15
-node 1:   4   5   8   9  10  11  12  13  14  15   0   1   2   3   6   7
-node 2:   6   7   0   1   2   3   8   9  10  11  12  13  14  15   4   5
-node 3:   8   9  10  11  12  13  14  15   4   5   6   7   0   1   2   3
+While here, replace BUG() with WARN_ON().
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 Acked-by: Tariq Toukan <tariqt@nvidia.com>
 Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
 Reviewed-by: Peter Lafreniere <peter@n8pjl.ca>
 ---
- lib/cpumask.c | 12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
+ lib/cpumask.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
 diff --git a/lib/cpumask.c b/lib/cpumask.c
-index c7c392514fd3..255974cd6734 100644
+index 255974cd6734..10aa15715c0d 100644
 --- a/lib/cpumask.c
 +++ b/lib/cpumask.c
-@@ -110,7 +110,7 @@ void __init free_bootmem_cpumask_var(cpumask_var_t mask)
- #endif
+@@ -127,16 +127,12 @@ unsigned int cpumask_local_spread(unsigned int i, int node)
+ 	/* Wrap: we always want a cpu. */
+ 	i %= num_online_cpus();
  
- /**
-- * cpumask_local_spread - select the i'th cpu with local numa cpu's first
-+ * cpumask_local_spread - select the i'th cpu based on NUMA distances
-  * @i: index number
-  * @node: local numa_node
-  *
-@@ -132,15 +132,7 @@ unsigned int cpumask_local_spread(unsigned int i, int node)
- 		if (cpu < nr_cpu_ids)
- 			return cpu;
- 	} else {
--		/* NUMA first. */
--		cpu = cpumask_nth_and(i, cpu_online_mask, cpumask_of_node(node));
+-	if (node == NUMA_NO_NODE) {
+-		cpu = cpumask_nth(i, cpu_online_mask);
 -		if (cpu < nr_cpu_ids)
 -			return cpu;
--
--		i -= cpumask_weight_and(cpu_online_mask, cpumask_of_node(node));
--
--		/* Skip NUMA nodes, done above. */
--		cpu = cpumask_nth_andnot(i, cpu_online_mask, cpumask_of_node(node));
-+		cpu = sched_numa_find_nth_cpu(cpu_online_mask, i, node);
- 		if (cpu < nr_cpu_ids)
- 			return cpu;
- 	}
+-	} else {
+-		cpu = sched_numa_find_nth_cpu(cpu_online_mask, i, node);
+-		if (cpu < nr_cpu_ids)
+-			return cpu;
+-	}
+-	BUG();
++	cpu = (node == NUMA_NO_NODE) ?
++		cpumask_nth(i, cpu_online_mask) :
++		sched_numa_find_nth_cpu(cpu_online_mask, i, node);
++
++	WARN_ON(cpu >= nr_cpu_ids);
++	return cpu;
+ }
+ EXPORT_SYMBOL(cpumask_local_spread);
+ 
 -- 
 2.34.1
 
