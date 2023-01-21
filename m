@@ -2,67 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81D60676643
-	for <lists+netdev@lfdr.de>; Sat, 21 Jan 2023 13:42:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5C9267664A
+	for <lists+netdev@lfdr.de>; Sat, 21 Jan 2023 14:00:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229661AbjAUMmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Jan 2023 07:42:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35216 "EHLO
+        id S229553AbjAUM4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Jan 2023 07:56:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229751AbjAUMmT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Jan 2023 07:42:19 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC5531E11
-        for <netdev@vger.kernel.org>; Sat, 21 Jan 2023 04:42:13 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id w14so9657185edi.5
-        for <netdev@vger.kernel.org>; Sat, 21 Jan 2023 04:42:13 -0800 (PST)
+        with ESMTP id S229523AbjAUM4c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Jan 2023 07:56:32 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398A1457CF
+        for <netdev@vger.kernel.org>; Sat, 21 Jan 2023 04:56:29 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id tz11so20345704ejc.0
+        for <netdev@vger.kernel.org>; Sat, 21 Jan 2023 04:56:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=LjX4FJ8gRkEtjzAf9WCo0Kq35+A6/erPh54GkDAerRk=;
-        b=GCwPUECMnDFqKMhJOpLV9kvA4uDr9sjHrlCQIN6QEJzxwu9lYnJMuvD04RathL2YRK
-         yZAssOYSRJk6DrOAQwglUClqNJcQDvu7wEHiE2h+dETBqxcvM29qQnXNQdrndi6IwBae
-         3SoYlIlBvS388NIbtbRcJ7VP6RkfEzUwh3U50=
+        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
+         :subject:cc:to:from:user-agent:references:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qcrJHPq8Fr7xe+X0sQknOBce+H/yIgTRQbEQbaP8djE=;
+        b=jKeKuTEGstIFEr3+jslekqxPT3roeijgWGhHd9qI5PmPtjNM37YTFtzE3EOefKacXA
+         C0/lGfcT+nEY9T7zKTFtD6CoVd3hGoLYP7VnIfjOeCSgfz3c2bb1v1Ha15VlqO9BlPPU
+         D4mbSHWC6sALMwSWyFDrHY0kc/njSD8lvBNYw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=LjX4FJ8gRkEtjzAf9WCo0Kq35+A6/erPh54GkDAerRk=;
-        b=EWCLc7BZjuRlJiPBJIlRpVxJPBfzc/erJH6TteSohikC7WWfmWQm/KLKenBoXnEZsO
-         9nB6R3n2UHNtZWCZAkNQ1hqj7cVyzer6pDOtVyVyXIbfbQetyZj/D/BJW6cihfJCF4Fr
-         SvyQ2iC/QLFhr4hQ44NQTfIDe5Hr7/mcXz/ALTmgEyCBpJVdQg5NmtGIMuSiFCgbnEhG
-         ZUBD7wTx9H0LbgjTQKKqrkBeIXl50OZwXXz59Xusz8WTXcS+BHDVrJG+B5/Id449XlvE
-         IgxrMlAqKh8PkHEJl4c10tk22Qnrp0hAcHOjHKQ189/Jv6bmr3vUju6emlf5NKukmG05
-         7o+Q==
-X-Gm-Message-State: AFqh2kq027fxnx+4eg25owWEmugIesC0lPVe5nwMcwLUbKP/QnLRcxPF
-        S5rcv1AysWj1mRgHvB8DvsP0ag==
-X-Google-Smtp-Source: AMrXdXui1DV/13uq+rKAGkbW48xZirbek85clMWFGgnI3sZI1LxBY8gKr2F0+ZaOrxcL8Pd3w8em9Q==
-X-Received: by 2002:a05:6402:528b:b0:49e:28c1:9375 with SMTP id en11-20020a056402528b00b0049e28c19375mr19104122edb.10.1674304932041;
-        Sat, 21 Jan 2023 04:42:12 -0800 (PST)
+        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
+         :subject:cc:to:from:user-agent:references:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=qcrJHPq8Fr7xe+X0sQknOBce+H/yIgTRQbEQbaP8djE=;
+        b=0ejqchdt93U24bZUJCvIvNMeOoamndH4Zn9Dz8CKVA5P56M2WeQl9+OTrinULUbUI/
+         k0NZTeOitSgMsxyRJjXOqKIq9hfr6BZWvNrfyOVii1D8q0XpecG6euF7R58NU2GORlWI
+         hPCESFBhZKPGm3gmBNmL2BWj24obo0rNoRNr20axYOYilSzd3iVP8YE1Xf62Ltpup1DB
+         7LprzVrRHRITFTsvqxOZZBJULQzMOuf2R+Pxqcwj/uxBho+fjGl/Nm1F9IzNXu5gqdaX
+         ZmElsWpxB4nK8ToQK1Tvpe3BY9o9VrRw28U7D3lk76RjM2RHb+G6tl5hQCnBundmJVlg
+         IeTQ==
+X-Gm-Message-State: AFqh2kp9kyWXSoQRx8KjrCqODGJeO8IFTo2bm7fSmH2Efs9v+PEcTmi4
+        XjP8VwNcrpEwDqKrhPUuGnVlvg==
+X-Google-Smtp-Source: AMrXdXsXYvoiRKbFdN/0FLq6IhvlueW1WgnJYNxbn7JDvxi8XtX9NBCU+IQ2wGaeTI8vw2eWg6P0rg==
+X-Received: by 2002:a17:906:95d2:b0:7c0:a6a9:64e9 with SMTP id n18-20020a17090695d200b007c0a6a964e9mr19535393ejy.36.1674305787802;
+        Sat, 21 Jan 2023 04:56:27 -0800 (PST)
 Received: from cloudflare.com (79.191.179.97.ipv4.supernova.orange.pl. [79.191.179.97])
-        by smtp.gmail.com with ESMTPSA id f9-20020a056402068900b0048999d127e0sm18559536edy.86.2023.01.21.04.42.11
+        by smtp.gmail.com with ESMTPSA id kz22-20020a17090777d600b007c1633cea13sm19666901ejc.12.2023.01.21.04.56.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Jan 2023 04:42:11 -0800 (PST)
+        Sat, 21 Jan 2023 04:56:27 -0800 (PST)
+References: <20221221-sockopt-port-range-v3-0-36fa5f5996f4@cloudflare.com>
+ <CADVnQy=GCiBHDu0PYETh2nbaAeMtCwGgSG00wyJ8ezRgRBbABQ@mail.gmail.com>
+User-agent: mu4e 1.6.10; emacs 28.2
 From:   Jakub Sitnicki <jakub@cloudflare.com>
-Date:   Sat, 21 Jan 2023 13:41:46 +0100
-Subject: [PATCH bpf v2 4/4] selftests/bpf: Cover listener cloning with
- progs attached to sockmap
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230113-sockmap-fix-v2-4-1e0ee7ac2f90@cloudflare.com>
-References: <20230113-sockmap-fix-v2-0-1e0ee7ac2f90@cloudflare.com>
-In-Reply-To: <20230113-sockmap-fix-v2-0-1e0ee7ac2f90@cloudflare.com>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, John Fastabend <john.fastabend@gmail.com>,
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, kernel-team@cloudflare.com
-X-Mailer: b4 0.12.0
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>, selinux@vger.kernel.org,
+        Paul Moore <paul@paul-moore.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>, kernel-team@cloudflare.com
+Subject: Re: [PATCH net-next v3 0/2] Add IP_LOCAL_PORT_RANGE socket option
+Date:   Sat, 21 Jan 2023 13:45:50 +0100
+In-reply-to: <CADVnQy=GCiBHDu0PYETh2nbaAeMtCwGgSG00wyJ8ezRgRBbABQ@mail.gmail.com>
+Message-ID: <87cz78xczp.fsf@cloudflare.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
@@ -73,68 +76,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Today we test if a child socket is cloned properly from a listening socket
-inside a sockmap only when there are no BPF programs attached to the map.
+On Fri, Jan 20, 2023 at 11:44 AM -05, Neal Cardwell wrote:
+> )On Fri, Jan 20, 2023 at 6:53 AM Jakub Sitnicki <jakub@cloudflare.com> wr=
+ote:
+>>
+>> This patch set is a follow up to the "How to share IPv4 addresses by
+>> partitioning the port space" talk given at LPC 2022 [1].
+>>
+>> Please see patch #1 for the motivation & the use case description.
+>> Patch #2 adds tests exercising the new option in various scenarios.
+>>
+>> Documentation
+>> -------------
+>>
+>> Proposed update to the ip(7) man-page:
+>>
+>>        IP_LOCAL_PORT_RANGE (since Linux X.Y)
+>>               Set or get the per-socket default local port range. This
+>>               option  can  be used to clamp down the global local port
+>>               range, defined by the ip_local_port_range  /proc  inter=E2=
+=80=90
+>>               face described below, for a given socket.
+>>
+>>               The option takes an uint32_t value with the high 16 bits
+>>               set to the upper range bound, and the low 16 bits set to
+>>               the lower range bound. Range bounds are inclusive.
+>
+> IMHO it would be nice for this text to document whether the port
+> numbers are in host order or network order, and perhaps whether "high"
+> and "low" here refer to host or network order. Key parts of the
+> sockets API express port numbers in network order, but this new API
+> seems to express port numbers in host order, so it seem worth (a)
+> deciding carefully, and (b) documenting explicitly in the man page
+> text (here in the cover letter) and commit message for the patch
+> (patch #1).
 
-A bug has been reported [1] for the case when sockmap has a verdict program
-attached. So cover this case as well to prevent regressions.
+Good point. Thanks for feedback.
 
-[1]: https://lore.kernel.org/r/00000000000073b14905ef2e7401@google.com
+I will expand the description for the man page and the patch #1.
 
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
----
- .../selftests/bpf/prog_tests/sockmap_listen.c      | 30 ++++++++++++++++++++--
- 1 file changed, 28 insertions(+), 2 deletions(-)
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-index 499fba8f55b9..567e07c19ecc 100644
---- a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-@@ -563,8 +563,7 @@ static void test_update_existing(struct test_sockmap_listen *skel __always_unuse
- /* Exercise the code path where we destroy child sockets that never
-  * got accept()'ed, aka orphans, when parent socket gets closed.
-  */
--static void test_destroy_orphan_child(struct test_sockmap_listen *skel __always_unused,
--				      int family, int sotype, int mapfd)
-+static void do_destroy_orphan_child(int family, int sotype, int mapfd)
- {
- 	struct sockaddr_storage addr;
- 	socklen_t len;
-@@ -595,6 +594,33 @@ static void test_destroy_orphan_child(struct test_sockmap_listen *skel __always_
- 	xclose(s);
- }
- 
-+static void test_destroy_orphan_child(struct test_sockmap_listen *skel,
-+				      int family, int sotype, int mapfd)
-+{
-+	int msg_verdict = bpf_program__fd(skel->progs.prog_msg_verdict);
-+	int skb_verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
-+	const struct test {
-+		int progfd;
-+		enum bpf_attach_type atype;
-+	} tests[] = {
-+		{ -1, -1 },
-+		{ msg_verdict, BPF_SK_MSG_VERDICT },
-+		{ skb_verdict, BPF_SK_SKB_VERDICT },
-+	};
-+	const struct test *t;
-+
-+	for (t = tests; t < tests + ARRAY_SIZE(tests); t++) {
-+		if (t->progfd != -1 &&
-+		    xbpf_prog_attach(t->progfd, mapfd, t->atype, 0) != 0)
-+			return;
-+
-+		do_destroy_orphan_child(family, sotype, mapfd);
-+
-+		if (t->progfd != -1)
-+			xbpf_prog_detach2(t->progfd, mapfd, t->atype);
-+	}
-+}
-+
- /* Perform a passive open after removing listening socket from SOCKMAP
-  * to ensure that callbacks get restored properly.
-  */
-
--- 
-2.39.0
-
+Personally I don't see any upside to using the network byte order here.
+With host byte order, users don't need to do anything else but pack the
+two u16 values.
