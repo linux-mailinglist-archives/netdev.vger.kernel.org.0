@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29CD3676CAB
-	for <lists+netdev@lfdr.de>; Sun, 22 Jan 2023 13:09:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4B0D676CB1
+	for <lists+netdev@lfdr.de>; Sun, 22 Jan 2023 13:13:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229954AbjAVMJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Jan 2023 07:09:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54384 "EHLO
+        id S229984AbjAVMNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Jan 2023 07:13:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbjAVMJo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Jan 2023 07:09:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8AAE18176;
-        Sun, 22 Jan 2023 04:09:43 -0800 (PST)
+        with ESMTP id S229841AbjAVMNs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Jan 2023 07:13:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D834A1ABCA;
+        Sun, 22 Jan 2023 04:13:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F70460BB8;
-        Sun, 22 Jan 2023 12:09:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B0EBC433EF;
-        Sun, 22 Jan 2023 12:09:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 897B1B80AAD;
+        Sun, 22 Jan 2023 12:13:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD95AC433D2;
+        Sun, 22 Jan 2023 12:13:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674389382;
-        bh=T0RMawtfeLWYRS29q6KiwNJBY0Mqii5zhUzrcZ1hlOU=;
+        s=k20201202; t=1674389625;
+        bh=nejjdNUwfU0DIrqoZxOV5br+QIBkmnp0CISUYJT/5Qw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=idc1lXaUwHxDTM8i2sAyiYggmThJuVvFcd0+c2Wn2eeRAMCexSlzIZ9VT9Ob7NzwC
-         RIPcjCvsaa+9tFOY5SbfvcUdXGyNxMca9zNvHphm8DwZEFinxaiUN31bcDbTLB2ndz
-         uF/sK/TBJxGaIrUKXrZekCxwrl2zWJWsYhCucC79x0QoS7RryYL0o/2iXwADXGFsbu
-         iJYjB+44HX42srxP41X0EKZ3wB9jcq/jg+HQOWCxWChui47HlV1Vbct05yKOkRPEAU
-         q39st4NHWaFI3/CaBQTgcoSUXpP6EAsM4TkffO82pO5tCZi2PW9PFhtVQMAKtOGZXr
-         qQYBZo0lHJ5cw==
-Date:   Sun, 22 Jan 2023 13:09:38 +0100
+        b=ITtVZ7Ndr10M6em5OTP/bLAVZ3qKxXv/6Qb84zRWZogu72llAjYmYIiVUthsCa/Gz
+         vbT3xv2JIhXdeV/dCCd77gywboNBPKxn57/flP3wPdlVUtIr9sN+RgBWS0gGeCh3aw
+         oycDNN4zwS1vmuO7ArZva8dSREyQecLdZ+BM247/FzhRtxAatSmUR42UoOBVJzK6pt
+         9tP5eu30tP59hx0+fjSpud8upT79ln7bYT25yiJsTWL2LLy8nduLrrlJuyy7Oq5r+U
+         DsJHwePEncpclqNX2F1E1/mrJhUox0j7i6eP/uuIFX4lC0cQXd8p+XTUzbYkOa9oLZ
+         ApOa7PrGVz/9g==
+Date:   Sun, 22 Jan 2023 13:13:41 +0100
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
         hawk@kernel.org, pabeni@redhat.com, edumazet@google.com,
         toke@redhat.com, memxor@gmail.com, alardam@gmail.com,
         saeedm@nvidia.com, anthony.l.nguyen@intel.com, gospo@broadcom.com,
@@ -44,18 +44,19 @@ Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
         christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
         mst@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
         maciej.fijalkowski@intel.com, intel-wired-lan@lists.osuosl.org,
-        lorenzo.bianconi@redhat.com, niklas.soderlund@corigine.com
-Subject: Re: [PATCH bpf-next 5/7] libbpf: add API to get XDP/XSK supported
- features
-Message-ID: <Y80ngqGcHIp3b8Rz@lore-desk>
+        lorenzo.bianconi@redhat.com, niklas.soderlund@corigine.com,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next 6/7] bpf: devmap: check XDP features in
+ bpf_map_update_elem and __xdp_enqueue
+Message-ID: <Y80odbX/CVjlYalh@lore-desk>
 References: <cover.1674234430.git.lorenzo@kernel.org>
- <31e46f564a30e0d3d1e06edb27045be9f318ff0b.1674234430.git.lorenzo@kernel.org>
- <20230120192059.66d058bf@kernel.org>
+ <acc9460e6e29dfe02cf474735277e196b500d2ef.1674234430.git.lorenzo@kernel.org>
+ <d0232e99-862b-3255-aeac-7c04486cb773@linux.dev>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="0tACK8m4bRM0/8/P"
+        protocol="application/pgp-signature"; boundary="xWUqnwFWf7284WXp"
 Content-Disposition: inline
-In-Reply-To: <20230120192059.66d058bf@kernel.org>
+In-Reply-To: <d0232e99-862b-3255-aeac-7c04486cb773@linux.dev>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -66,38 +67,50 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---0tACK8m4bRM0/8/P
+--xWUqnwFWf7284WXp
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-> On Fri, 20 Jan 2023 18:16:54 +0100 Lorenzo Bianconi wrote:
-> > +static int libbpf_netlink_resolve_genl_family_id(const char *name,
-> > +						 __u16 len, __u16 *id)
-> > +{
-> > +	struct libbpf_nla_req req =3D {
-> > +		.nh.nlmsg_len	=3D NLMSG_LENGTH(GENL_HDRLEN),
-> > +		.nh.nlmsg_type	=3D GENL_ID_CTRL,
-> > +		.nh.nlmsg_flags	=3D NLM_F_REQUEST,
-> > +		.gnl.cmd	=3D CTRL_CMD_GETFAMILY,
-> > +		.gnl.version	=3D 1,
+> On 1/20/23 9:16 AM, Lorenzo Bianconi wrote:
+> > ---
+> >   kernel/bpf/devmap.c | 25 +++++++++++++++++++++----
+> >   net/core/filter.c   | 13 +++++--------
+> >   2 files changed, 26 insertions(+), 12 deletions(-)
+> >=20
+> > diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+> > index d01e4c55b376..69ceecc792df 100644
+> > --- a/kernel/bpf/devmap.c
+> > +++ b/kernel/bpf/devmap.c
+> > @@ -474,7 +474,11 @@ static inline int __xdp_enqueue(struct net_device =
+*dev, struct xdp_frame *xdpf,
+> >   {
+> >   	int err;
+> > -	if (!dev->netdev_ops->ndo_xdp_xmit)
+> > +	if (!(dev->xdp_features & NETDEV_XDP_ACT_NDO_XMIT))
 >=20
-> nlctrl is version 2, shouldn't matter in practice
+> The current "dev->netdev_ops->ndo_xdp_xmit" check is self explaining.
+> Any plan to put some document for the NETDEV_XDP_ACT_* values?
+>=20
 
-ack, I will fix it.
+I am not a yaml description expert but I guess we can xdp features descript=
+ion
+in Documentation/netlink/specs/netdev.yaml.
+
+@Jakub: what do you think?
 
 Regards,
 Lorenzo
 
---0tACK8m4bRM0/8/P
+--xWUqnwFWf7284WXp
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY80nggAKCRA6cBh0uS2t
-rPC7AQDu6l1kKMwrf9Bhnb/F1h4rjFppYj8nmw/lsCuNWc4JSwD+OxLIp1k3DkBy
-Ts1xkVfkP6+VjvYnGb9NCb5k9adttwU=
-=1C3N
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY80odQAKCRA6cBh0uS2t
+rOZZAP4xiweG52WS6f8PS7IkQtzz2xIQ3sDMfAU6uQvmNajMXwEA2UFIc2hPjg7J
+X/vug32zo0B7cWy9Cy2A9j+RGGE+rAk=
+=csRR
 -----END PGP SIGNATURE-----
 
---0tACK8m4bRM0/8/P--
+--xWUqnwFWf7284WXp--
