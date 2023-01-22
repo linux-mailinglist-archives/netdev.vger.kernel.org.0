@@ -2,100 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85AC1676C39
-	for <lists+netdev@lfdr.de>; Sun, 22 Jan 2023 12:08:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC28E676C73
+	for <lists+netdev@lfdr.de>; Sun, 22 Jan 2023 12:49:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229831AbjAVLIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Jan 2023 06:08:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33592 "EHLO
+        id S229831AbjAVLt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Jan 2023 06:49:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbjAVLIs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Jan 2023 06:08:48 -0500
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B0E166E2;
-        Sun, 22 Jan 2023 03:08:45 -0800 (PST)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 5FB2618839B5;
-        Sun, 22 Jan 2023 11:08:43 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 44DED2500261;
-        Sun, 22 Jan 2023 11:08:43 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 3727B9EC000B; Sun, 22 Jan 2023 11:08:43 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S229566AbjAVLt0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Jan 2023 06:49:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6993F35BD;
+        Sun, 22 Jan 2023 03:49:25 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DFF8660BC1;
+        Sun, 22 Jan 2023 11:49:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAE01C433D2;
+        Sun, 22 Jan 2023 11:49:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674388164;
+        bh=Vx8kZgpecl8j894UuS9Gy9fQuZxp9dtbzjLs5dhZuiU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=M13eMLVacR/YRSqNczt3ZXzVnr7q5dfyicuZPEXGiMjZ63P+TpCeUD1qRt3g6PRiQ
+         83MIGHNJm3ZZULp3JZbGVXlQRIXP41xEuheEDPP7DJpbp1mMU4WZggOo/dO0Yj0x8q
+         rKfMMa1pkQGKAJBo42r+KnSy+tvUnlcz3Vy57ohLw+jrGdhJuKMTWxe9zbUMLQR8Jb
+         OAtsVvntsNbS4wS7DT6NVqzhVkq0YtmO35XgwOEPxKJHPrhXih7QG/CB2sUuON38br
+         meH6mkihj2+3/thSEC9o6A9vTAuUbjgmOrhCc2CLRuyO7DqLpfc0TGqrtJ7Poa7LdI
+         R/6uawCbo0NUg==
+Date:   Sun, 22 Jan 2023 12:49:20 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
+        hawk@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        toke@redhat.com, memxor@gmail.com, alardam@gmail.com,
+        saeedm@nvidia.com, anthony.l.nguyen@intel.com, gospo@broadcom.com,
+        vladimir.oltean@nxp.com, nbd@nbd.name, john@phrozen.org,
+        leon@kernel.org, simon.horman@corigine.com, aelior@marvell.com,
+        christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
+        mst@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
+        maciej.fijalkowski@intel.com, intel-wired-lan@lists.osuosl.org,
+        lorenzo.bianconi@redhat.com, niklas.soderlund@corigine.com
+Subject: Re: [PATCH bpf-next 2/7] drivers: net: turn on XDP features
+Message-ID: <Y80iwBNd3tPvEbMd@lore-desk>
+References: <cover.1674234430.git.lorenzo@kernel.org>
+ <861224c406f78694530fde0d52c49d92e1e990a2.1674234430.git.lorenzo@kernel.org>
+ <20230120191152.44d29bb1@kernel.org>
 MIME-Version: 1.0
-Date:   Sun, 22 Jan 2023 12:08:42 +0100
-From:   netdev@kapio-technology.com
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
-        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?UTF-8?Q?Cl=C3=A9ment_L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>
-Subject: Re: [RFC PATCH net-next 2/5] net: dsa: propagate flags down towards
- drivers
-In-Reply-To: <20230118230135.szu6a7kvt2mjb3i5@skbuf>
-References: <20230117185714.3058453-1-netdev@kapio-technology.com>
- <20230117185714.3058453-3-netdev@kapio-technology.com>
- <20230117231750.r5jr4hwvpadgopmf@skbuf>
- <e4acb7edb300d41a9459890133b928b4@kapio-technology.com>
- <20230118230135.szu6a7kvt2mjb3i5@skbuf>
-User-Agent: Gigahost Webmail
-Message-ID: <746b27d5f83b95f17eca18e22843951a@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="w+GUdlDdqYVq1hNu"
+Content-Disposition: inline
+In-Reply-To: <20230120191152.44d29bb1@kernel.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023-01-19 00:01, Vladimir Oltean wrote:
-> On Wed, Jan 18, 2023 at 11:35:08PM +0100, netdev@kapio-technology.com 
-> wrote:
 
->> When the new dynamic flag is true, all drivers will ignore it in patch 
->> #3,
->> so basically nothing will change by that.
-> 
-> This is not true, because it assumes that DSA never called 
-> port_fdb_add()
-> up until now for bridge FDB entries with the BR_FDB_STATIC flag unset,
-> which is incorrect (it did).
-> 
-> So what will change is that drivers which used to react to those bridge
-> FDB entries will stop doing so.
-> 
+--w+GUdlDdqYVq1hNu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-So the solution to this problem could be to only set the is_dyn flag in 
-combination with the added_by_user flag. So an 'and' operation with the 
-two in br_switchdev_fdb_populate()?
+> On Fri, 20 Jan 2023 18:16:51 +0100 Lorenzo Bianconi wrote:
+> > +static inline void
+> > +xdp_features_set_redirect_target(xdp_features_t *xdp_features, bool su=
+pport_sg)
+> > +{
+> > +	*xdp_features |=3D NETDEV_XDP_ACT_NDO_XMIT;
+> > +	if (support_sg)
+> > +		*xdp_features |=3D NETDEV_XDP_ACT_NDO_XMIT_SG;
+> > +}
+> > +
+> > +static inline void
+> > +xdp_features_clear_redirect_target(xdp_features_t *xdp_features)
+> > +{
+> > +	*xdp_features &=3D ~(NETDEV_XDP_ACT_NDO_XMIT |
+> > +			   NETDEV_XDP_ACT_NDO_XMIT_SG);
+> > +}
+> > +
+>=20
+> Shouldn't these generate netlink notifications?
+
+ack, I would say we need to add NETDEV_XDP_FEAT_CHANGE case in
+netdev_genl_netdevice_event routine and maybe add a new
+NETDEV_XDP_FEAT_CHANGE flag in netdev_cmd. What do you think?
+
+Regards,
+Lorenzo
+
+--w+GUdlDdqYVq1hNu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY80iwAAKCRA6cBh0uS2t
+rAxtAP9ZfJkB37hk72ekJNDpeCVLGZ9NJ+YCmn3/JWHaNxQTzQEAycDTiwQ0yNkk
+GG1x89Gce/hWDOmYnA2ThF+j/KgquQo=
+=vN6K
+-----END PGP SIGNATURE-----
+
+--w+GUdlDdqYVq1hNu--
