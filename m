@@ -2,186 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBBEA676D35
-	for <lists+netdev@lfdr.de>; Sun, 22 Jan 2023 14:47:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DDE7676D97
+	for <lists+netdev@lfdr.de>; Sun, 22 Jan 2023 15:19:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229875AbjAVNrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Jan 2023 08:47:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54552 "EHLO
+        id S229875AbjAVOTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Jan 2023 09:19:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229863AbjAVNrU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Jan 2023 08:47:20 -0500
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2053.outbound.protection.outlook.com [40.107.212.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9140117CF9;
-        Sun, 22 Jan 2023 05:47:19 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XvYvUvsAZjIclEM4ENyLnGNOjfLhOXVbq28xWdRUA93mbvIQ9jt7w5o8vKkkUOMph3sKHqwXSAxwgO4pqXQywxj4GCkl4GGQ29QbDZiLGWb5TyGTyHsLsw1Fv4EvHYYI390y1pYj19LeyhGzx+K4bHX2viP0Mj1Wh48tffH4FlvhwYkefucpQNqlqqmzhIJbz3fv6JCogjiUsGM/8okbQz3tK05xSiVpVyzYvqYlFSYUPA7fgR8XDA+Dk2ap4egrVqZT2Jjg4QYJs8C4kbJjyl2ShWkcwxyxXKa7DTmKuWK1cxIRSt2WCbGpIbwhFnktq1I5bxcOx/wtAR+sYJClzQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=29LxjuquIV7ZozcSDc6273XVmi4AEucr8B9ECnBAWXM=;
- b=XpK1GB1Pj0UExdorxtbvEYEOfoIOTrJgut6ExEC+illbu824K7mrBf35JgR0OIJHugpTfxN1uD+XdzBPPCjkwCeW6u0mElEBB1EVndV017rh8m2hO05aeTb1pkFtIbl2Al7NwauSRaNwkNnWNdYqgUZI2pe9B9UO5YKt0JY5uGv27CntYtIECd29qn8uJ7kFAWYmMRZ+2w/8qfQHVox8YT+hdBEpVc2nTraT8O7TzY++XCYciRYFPBDXMZhb5f5Lw58VGWNEw6sgd/J6rzb6cdVdOcGLu8ZcTFaHpL9gAZeiCePJstMZa78TcKFE6c/RnH/6LazFx4aDDmHeKgZncw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=29LxjuquIV7ZozcSDc6273XVmi4AEucr8B9ECnBAWXM=;
- b=tOgZL0lfl0eNVgOiUo2wdQTrioXOdeFtTzDC2En/WstS1+/GtEkqdOGErPeD8YDGbyNACYW/HQys72oYJ51wZrHkP/o3NjjMXtvpfFB15Np1grLnUW1MMqoQsZ+8FPeOO6V6T4ycexccaFKY4Yv/J2WkLfFxSngQQozO7BWaJnujDO1AajoixmfaYC5D9GSCbczkZyFlEqhpqdy6OKHxMpHxOGh3lwhSAbiZWeA8dZKCw3G6lMbThh25epRShTE8FTUZ0sNNPudKw1wSU+lLDIjTyth7bZcbWPOVEX6/rDpxMQA0at7JrZmsgA4hBMrce9deZXmCQ/Cw/X4YX0ysHQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM8PR12MB5400.namprd12.prod.outlook.com (2603:10b6:8:3b::12) by
- CY5PR12MB6274.namprd12.prod.outlook.com (2603:10b6:930:21::14) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6002.27; Sun, 22 Jan 2023 13:47:17 +0000
-Received: from DM8PR12MB5400.namprd12.prod.outlook.com
- ([fe80::70c6:a62a:4199:b8ed]) by DM8PR12MB5400.namprd12.prod.outlook.com
- ([fe80::70c6:a62a:4199:b8ed%4]) with mapi id 15.20.6002.028; Sun, 22 Jan 2023
- 13:47:17 +0000
-Message-ID: <07a24753-767b-4e1e-2bcf-21ec04bc044a@nvidia.com>
-Date:   Sun, 22 Jan 2023 15:47:08 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH 1/4] virtio_net: notify MAC address change on device
- initialization
-Content-Language: en-US
-To:     Laurent Vivier <lvivier@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        Gautam Dawar <gautam.dawar@xilinx.com>,
-        Cindy Lu <lulu@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>
-References: <20230122100526.2302556-1-lvivier@redhat.com>
- <20230122100526.2302556-2-lvivier@redhat.com>
-From:   Eli Cohen <elic@nvidia.com>
-In-Reply-To: <20230122100526.2302556-2-lvivier@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0083.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:1f::21) To DM8PR12MB5400.namprd12.prod.outlook.com
- (2603:10b6:8:3b::12)
+        with ESMTP id S229766AbjAVOTb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Jan 2023 09:19:31 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04145144BA
+        for <netdev@vger.kernel.org>; Sun, 22 Jan 2023 06:19:30 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id e3so8609578wru.13
+        for <netdev@vger.kernel.org>; Sun, 22 Jan 2023 06:19:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=6nP80yt4P2LkjTrQbSApnHJJEUxI5A3MtVuRUI18a3s=;
+        b=dBCPnllzquDDUk+9Jg18anFzUDeoLloz26xrT7TaqiuwpuAwleMkzOfivLBXckeIrO
+         k0bNfIggIMbd+JwuPaStVNt1bsNmGmvwxM3EAc4japN0UPT0gSC5gHyQRzqOJ91ODpAz
+         eyafeA/P2Zymmyht7nTqT+PTmjnpZiD27bR3d9I/1RxPirk1Ax+NWKEJG9f2uP56FUfH
+         svloR0GbSWGvZqO75pztznAjiKUj//p1a3q7O1LKJBGQmooStGU53RaRbGvSl6Pfb0WN
+         riXvYdvdnlyA6jmMXZfiZr8y5vqWNWgHuNWdBoYOdTiI95sBuM1dfT5H95FPSCIX4Hig
+         d3gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=6nP80yt4P2LkjTrQbSApnHJJEUxI5A3MtVuRUI18a3s=;
+        b=a1oqZpDa8lXre90SYyA6WDpkintK5yUxZLsNmuE7uMqy/fkfERYwj+1XRllAzts1WW
+         PQFid6erk3deS9BSUeal0DfDTtMpkj+vKbD0to0xj1pbuiIh3LrN4IS8H3moHPsT+S26
+         0UdWybE+t1Lu3SgaoVgF55c/cnpZus54FzfN/z+jJkkcN3i3CgcnLkX7xx2xlUOGBWU8
+         xXs3xy2cEUpeZur/OpJ3i3Phmu6VUgdlgx2N4bOfUb3qHGQo18zs/sQXuJe/RWY3XPMy
+         dVljBacJKwWMxY4OEXZz8vc79fH/Jk5Oaqstl9mxWocY+PQaEnbLrFt4KyYX1sgE+4JA
+         Bxww==
+X-Gm-Message-State: AFqh2krqR0ekEP8ENFRLg4JyR9UYIc0I6qANoJn3KCw2PJlI80UEgWZG
+        CN9uzdRHFBkR2Bq6WZFLs6Zv3w==
+X-Google-Smtp-Source: AMrXdXt35b+CmPQpFZihlqLeEU0wTQBsOlVJzU5chJmIhwORGBT/y9cFtSOaeQfQF/WddOUFzrntrA==
+X-Received: by 2002:adf:f705:0:b0:2bd:d34e:534c with SMTP id r5-20020adff705000000b002bdd34e534cmr17454975wrp.36.1674397168563;
+        Sun, 22 Jan 2023 06:19:28 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id n9-20020adf8b09000000b00241d21d4652sm2286368wra.21.2023.01.22.06.19.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 22 Jan 2023 06:19:28 -0800 (PST)
+Message-ID: <435018a3-80a1-2113-23bf-8645e8f6e4e4@linaro.org>
+Date:   Sun, 22 Jan 2023 15:19:24 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5400:EE_|CY5PR12MB6274:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8e460f7b-f3be-4080-921a-08dafc7f2d11
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Okn3Kr/A5N0cYMCBV9yKttEE9fI+v7VxSB/6yyWa8cwPeCnU+1GDWvxXknzVAsje+GA53n2JROP8FKjwmQK6ELUvRlDetEahSFnZwoqBEdL5tkkNzNfpkzjJZ710xDv5jEZM/p93M21kUO6VNRscnvtxQpN8j0FlknFnIDOfnAla2YMg/Z9jp6IvHP7zvBP5iCc2Okap3vbYGShn45p8V7Ahw8BWzDvaeucRX1BYm7pT1+WDuEEdyhPgLez9T1bBZbuwNOaadwhliED5H48ZC2VBJUcX7Wi6m3QAIANQiiPyCUMrfAmJ4BwlTLv0TrGdeYVsGzTMQG4xB6zm0rX8sQHRPwbtpbVaFZXQpqmdd+A3BE6qv2I2fkIkwUdsp0LyGeS1sZD4jqxcIzxyKRB0quxDdjo3SnsO0zWztg4rtOexTWEV9tZRBieVX7Jac6OcWFj1VdL0bo17FaD5fAkGW7IZ5Un0ZQ+ePmgdbNI23fM3ipcYn+iYRL+Nm+I1S/8m2hi2xSsI4Gjohos4g6PgmtWGSdHtwNI9wiaE48R00KkUr9Xs9TNF1LdPQCkrfBcff8gHte4QweXrvlKIOi66tyTBgC32bc02+bS24skmlLvmbPpSDtaYRi6Vdf9Sb7XtFUC4TODjmiRcBCJl1zqmgZAXca7RuVd4CeNbqDxXOL1jXbcs3alZh0a9hNAoMGjdak5AVrO+P2DNAbAuaTeAxa8TGNfnxbvWbw+5vQJC6ZM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5400.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(346002)(39860400002)(376002)(136003)(396003)(451199015)(31686004)(83380400001)(6486002)(478600001)(31696002)(36756003)(6512007)(2616005)(86362001)(38100700002)(6506007)(41300700001)(2906002)(7416002)(6666004)(53546011)(186003)(26005)(66476007)(5660300002)(66556008)(4326008)(316002)(8676002)(8936002)(66946007)(54906003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MWdZaGdZVEsydUprODRTWDEzb25IZWgrMkhOMmYvcFVVM1puZDdvWllIQ3pa?=
- =?utf-8?B?V1VBeTVGOGsrbVlsbkpkVm9CNkR4VDVGNEZSRHBmcGswMXlySjF0TkNxSE9p?=
- =?utf-8?B?NFhZY1llVUduT2ErWU9SQU12Q3BVdWUvN0ZtUWVCRjdBNm1TczVnZHVoWHBM?=
- =?utf-8?B?RnVIb0dMU2N1SFp2ekNudFVZZ25RZUdxSEdOb09mQ3NJZTMyTlFNemtpVnE5?=
- =?utf-8?B?T2dST2M5U3hXUkFlbW9tbTRpQnA0L0JCRlpuU21RVis1cXJLQ2FkU1V0NGJh?=
- =?utf-8?B?Q2c2bTVQb3dMcEFuTkoyVlFUeENuK3pVaXhRVVNtSGJyQmRBVGJMazdSYmts?=
- =?utf-8?B?V1c4NVp0Q3p3ZkxWWk5wUDAzUk13UmY4TTVQd29BaE4zajVaN2o0VEFyZlpT?=
- =?utf-8?B?L25RM2pnZWg1VUgvZFNxeUhGNWZhcXpQQzk1VUpLM1JkaThqRFROVXR5UXNT?=
- =?utf-8?B?bWk0dktvSFVZOFp4cFBPVGZlcWxtcFkycXNqWnhpa3g1cjZ0bGNTMnFXUlAv?=
- =?utf-8?B?RTl2NldPRFBiaVN0RmVtbTZxTnhHY012RlAvbUdlYzY4SlJCZThMSU8xd1hE?=
- =?utf-8?B?UGZ6R2lCYzVTQ1lSdExPTk9uUlloM3JrQ29YZ3VnZ1lORGEwcWNDM1VIZXZj?=
- =?utf-8?B?bkZ2R2JTNFNlaW1WUGdSUjZiejBqRW1maEcyYnZQMlZEemQxOU5UdSszV214?=
- =?utf-8?B?bW5pS052MElYTFBMUTR1QS9Zb0Q2Wm5EMi9OSk1VckdrUW9VOHFwOXdqSWZ3?=
- =?utf-8?B?dmZscTFUV1pKTURyWndDYkJOUDNITXNja1M4ay8wL2taRkpyaE9KSVhPcHVq?=
- =?utf-8?B?ejJ5NlUvOTRDTXJ4STZ3M2dNa3dxaTJ3SnVvWERJTjI0dmVXK1BvZkkxdGFM?=
- =?utf-8?B?UWZUVkdVNnozWjBCVzlvUlo3MjcwTUtvMURDeUJ3aEN4WG5CMk9US1dqWnZP?=
- =?utf-8?B?Y0cwQWV3eGQrMVk3aXBaemY4UjExUGZyL2Izd3hhTG5BUmowM21VU1JmVVFD?=
- =?utf-8?B?UWZEUU5uRU4vVlo0MHgvanBZZS83QTE1MGcyUnllUzBleWxuS1kvMjlySGVV?=
- =?utf-8?B?RkRhZE40VUpFd2wrYlNRRmRmNDUvdmZSRGsraXhqeXRRQnc5Zk9lNW5wUWp3?=
- =?utf-8?B?SktzWnhJV0JBSVIxdFNjTVphUG5VTFRzSlluNFFnOWw4ZzhIUFVGY01rdTZu?=
- =?utf-8?B?QkVtRy9MWFRHUlcwUE16L2p4ZVdwcnFBc2JUNndLOU1jYTRhNGthbDJBaXFh?=
- =?utf-8?B?MWtZN3NHSkduWHVzL1U2VlQ5cEk1aW9ZTDMvdEVxVFB1aEd1M1R0UmlCcUl6?=
- =?utf-8?B?R3dkc0pQN2IwY0kvYUcva0ZJalprb0QwY2J0dGRRNEM5bFhNaUQrcEhxWHhj?=
- =?utf-8?B?ZVhaTENEQXd6MXRPVDZmaG5hdVNtQVdmYVpaY1dOdC92clhUWWdPYVF6ejN0?=
- =?utf-8?B?VitYcjZEdzFuK0Q0UDJZVU9oc0JmMW5LSjRsd2lpWXlIcVZjR0JxTW9yc3Jp?=
- =?utf-8?B?UzNjTjJNRUlueVpUVGdZaVVST3JsRjlBR1VSNnVIWUgvaHFMMU1XeWpSVlh2?=
- =?utf-8?B?OCtqODJxYzJPLzlPc01kdCs0U3JCYnNjYUlDQ3pRMUNjRDBScEhacHJmcEdo?=
- =?utf-8?B?ZDI5RTdQQmhsdkc5OWppRkhwZ25HTTV1eTY4M1FUSnFidW1QUUhPd1pVMlk2?=
- =?utf-8?B?QXZiNWZDd21iMUg3cHdqRjF3ZmxRSy9yYmlBNThEemlNNVlKMnN3VGRuRTNZ?=
- =?utf-8?B?R01OaldRUmFrWWZyTkRVYnM2QVA0Y1d6aVl0ZjlNQWptdGNIdlVhVml3NWxV?=
- =?utf-8?B?V3ZUMnc3Z1pTbmUrbXRmS2F0aE1HSWFUK1FxbWc3MklhbUc0T0FBNnJFM1ov?=
- =?utf-8?B?QmJGUTZpazBJS0tKOElJT2dzYmFyWWU1UTQ1ZnFFb0hSeUVlajczY1V4WE9k?=
- =?utf-8?B?bWs1ckdqZDczNEpGM3dxNGlWaktuS3c0UXhuR3FML3BtY2ZHWm1GSlJXNDdX?=
- =?utf-8?B?a21qNEJhZ21XSzBPNlczaGpyelVkT0ZmTWxMT2R0SGlMUXJzcmp0eTZxLzdN?=
- =?utf-8?B?S2NJNXdlN2c5VWxvU3doamZCRjYvUkhqMkVleHFocXU5Uk5BbW1vRE1DRHg4?=
- =?utf-8?Q?3TmjvqBBVEclyOe+mIUfQd9ow?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8e460f7b-f3be-4080-921a-08dafc7f2d11
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5400.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2023 13:47:17.6487
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cs4KAtReTbgR+o5iZKOHXLphsvxbHhp5B7ADcsNTmKa5F9mKYqvxNnfXyR+Hk2Vb
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6274
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.0
+Subject: Re: [PATCH net-next 4/6] dt-bindings: net: renesas,rzn1-gmac:
+ Document RZ/N1 GMAC support
+Content-Language: en-US
+To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Wong Vee Khee <veekhee@apple.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Revanth Kumar Uppala <ruppala@nvidia.com>,
+        Tan Tee Min <tee.min.tan@linux.intel.com>
+Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?Q?Miqu=c3=a8l_Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
+        Jon Hunter <jonathanh@nvidia.com>, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+References: <20230116103926.276869-1-clement.leger@bootlin.com>
+ <20230116103926.276869-5-clement.leger@bootlin.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230116103926.276869-5-clement.leger@bootlin.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 22/01/2023 12:05, Laurent Vivier wrote:
-> In virtnet_probe(), if the device doesn't provide a MAC address the
-> driver assigns a random one.
-> As we modify the MAC address we need to notify the device to allow it
-> to update all the related information.
->
-> The problem can be seen with vDPA and mlx5_vdpa driver as it doesn't
-> assign a MAC address by default. The virtio_net device uses a random
-> MAC address (we can see it with "ip link"), but we can't ping a net
-> namespace from another one using the virtio-vdpa device because the
-> new MAC address has not been provided to the hardware.
->
-> Signed-off-by: Laurent Vivier <lvivier@redhat.com>
+On 16/01/2023 11:39, Clément Léger wrote:
+> Add "renesas,rzn1-gmac" binding documention which is compatible which
+> "snps,dwmac" compatible driver but uses a custom PCS to communicate
+> with the phy.
+> 
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 > ---
->   drivers/net/virtio_net.c | 14 ++++++++++++++
->   1 file changed, 14 insertions(+)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 7723b2a49d8e..25511a86590e 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -3800,6 +3800,8 @@ static int virtnet_probe(struct virtio_device *vdev)
->   		eth_hw_addr_set(dev, addr);
->   	} else {
->   		eth_hw_addr_random(dev);
-> +		dev_info(&vdev->dev, "Assigned random MAC address %pM\n",
-> +			 dev->dev_addr);
->   	}
->   
->   	/* Set up our device-specific information */
-> @@ -3956,6 +3958,18 @@ static int virtnet_probe(struct virtio_device *vdev)
->   	pr_debug("virtnet: registered device %s with %d RX and TX vq's\n",
->   		 dev->name, max_queue_pairs);
->   
-> +	/* a random MAC address has been assigned, notify the device */
-> +	if (dev->addr_assign_type == NET_ADDR_RANDOM &&
-Maybe it's better to not count on addr_assign_type and use a local 
-variable to indicate that virtnet_probe assigned random MAC. The reason 
-is that the hardware driver might have done that as well and does not 
-need notification.
-> +	    virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_MAC_ADDR)) {
-> +		struct scatterlist sg;
+>  .../bindings/net/renesas,rzn1-gmac.yaml       | 71 +++++++++++++++++++
+>  1 file changed, 71 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/renesas,rzn1-gmac.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/renesas,rzn1-gmac.yaml b/Documentation/devicetree/bindings/net/renesas,rzn1-gmac.yaml
+> new file mode 100644
+> index 000000000000..effb9a312832
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/renesas,rzn1-gmac.yaml
+> @@ -0,0 +1,71 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/renesas,rzn1-gmac.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +		sg_init_one(&sg, dev->dev_addr, dev->addr_len);
-> +		if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_MAC,
-> +					  VIRTIO_NET_CTRL_MAC_ADDR_SET, &sg)) {
-> +			dev_warn(&vdev->dev, "Failed to update MAC address.\n");
-> +		}
-> +	}
+> +title: Renesas GMAC1 Device Tree Bindings
+
+Drop Device Tree Bindings.
+
 > +
->   	return 0;
->   
->   free_unregister_netdev:
+> +maintainers:
+> +  - Clément Léger <clement.leger@bootlin.com>
+> +
+> +select:
+> +  properties:
+> +    compatible:
+> +      contains:
+> +        enum:
+> +          - renesas,r9a06g032-gmac
+> +          - renesas,rzn1-gmac
+> +  required:
+> +    - compatible
+> +
+> +allOf:
+> +  - $ref: "snps,dwmac.yaml#"
+
+Drop quotes.
+
+> +
+> +properties:
+> +  compatible:
+> +    additionalItems: true
+
+No. Drop.
+
+> +    maxItems: 3
+
+No.
+
+> +    items:
+> +      - enum:
+> +          - renesas,r9a06g032-gmac
+> +          - renesas,rzn1-gmac
+> +    contains:
+> +      enum:
+> +        - snps,dwmac
+
+No, please list possibilities
+
+> +
+> +  pcs-handle:
+> +    description:
+> +      phandle pointing to a PCS sub-node compatible with
+> +      renesas,rzn1-miic.yaml#
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +
+> +required:
+> +  - compatible
+> +
+> +unevaluatedProperties: false
+> +
+
+Best regards,
+Krzysztof
+
