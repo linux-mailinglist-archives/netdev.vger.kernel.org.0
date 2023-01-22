@@ -2,72 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADBBC67705C
-	for <lists+netdev@lfdr.de>; Sun, 22 Jan 2023 16:59:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD95A677072
+	for <lists+netdev@lfdr.de>; Sun, 22 Jan 2023 17:22:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231352AbjAVP7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Jan 2023 10:59:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39712 "EHLO
+        id S230114AbjAVQWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Jan 2023 11:22:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229799AbjAVP7X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Jan 2023 10:59:23 -0500
-Received: from exchange.fintech.ru (e10edge.fintech.ru [195.54.195.159])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FED21A4BF;
-        Sun, 22 Jan 2023 07:59:21 -0800 (PST)
-Received: from Ex16-01.fintech.ru (10.0.10.18) by exchange.fintech.ru
- (195.54.195.169) with Microsoft SMTP Server (TLS) id 14.3.498.0; Sun, 22 Jan
- 2023 18:59:17 +0300
-Received: from localhost (10.0.253.157) by Ex16-01.fintech.ru (10.0.10.18)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4; Sun, 22 Jan
- 2023 18:59:17 +0300
-From:   Nikita Zhandarovich <n.zhandarovich@fintech.ru>
-To:     <stable@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Nikita Zhandarovich <n.zhandarovich@fintech.ru>,
-        Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Alexey Khoroshilov" <khoroshilov@ispras.ru>,
-        <lvc-project@linuxtesting.org>
-Subject: [PATCH 5.10 0/1] mt76: move mt76_init_tx_queue in common code
-Date:   Sun, 22 Jan 2023 07:59:10 -0800
-Message-ID: <20230122155910.32635-1-n.zhandarovich@fintech.ru>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230112115850.9208-2-n.zhandarovich@fintech.ru>
-References: 
+        with ESMTP id S229766AbjAVQWH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Jan 2023 11:22:07 -0500
+X-Greylist: delayed 567 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 22 Jan 2023 08:22:06 PST
+Received: from zeeaster.vergenet.net (zeeaster.vergenet.net [206.189.110.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0004D1E28E;
+        Sun, 22 Jan 2023 08:22:06 -0800 (PST)
+Received: from madeliefje.horms.nl (86-88-72-229.fixed.kpn.net [86.88.72.229])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by zeeaster.vergenet.net (Postfix) with ESMTPSA id 811E720095;
+        Sun, 22 Jan 2023 16:12:07 +0000 (UTC)
+Received: by madeliefje.horms.nl (Postfix, from userid 7100)
+        id 121EB4899; Sun, 22 Jan 2023 17:12:07 +0100 (CET)
+Date:   Sun, 22 Jan 2023 17:12:07 +0100
+From:   Simon Horman <horms@kernel.org>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, pablo@netfilter.org, kadlec@netfilter.org,
+        fw@strlen.de, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, ffmancera@riseup.net
+Subject: Re: [PATCH net-next] netfilter: nf_tables: fix wrong pointer passed
+ to PTR_ERR()
+Message-ID: <Y81gVzRgIHTc6erY@vergenet.net>
+References: <20230119075125.3598627-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.0.253.157]
-X-ClientProxiedBy: Ex16-01.fintech.ru (10.0.10.18) To Ex16-01.fintech.ru
- (10.0.10.18)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230119075125.3598627-1-yangyingliang@huawei.com>
+Organisation: Horms Solutions BV
+X-Virus-Scanned: clamav-milter 0.103.7 at zeeaster
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My apologies, I should've have explained my reasoning for the patch better (and sooner).
+On Thu, Jan 19, 2023 at 03:51:25PM +0800, Yang Yingliang wrote:
+> It should be 'chain' passed to PTR_ERR() in the error path
+> after calling nft_chain_lookup() in nf_tables_delrule().
+> 
+> Fixes: f80a612dd77c ("netfilter: nf_tables: add support to destroy operation")
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 
-1. My issue with 5.10 version of mt7615_init_tx_queues() in drivers/net/wireless/mediatek/mt76/mt7615/dma.c is that return value of final call to mt7615_init_tx_queue() is not taken into account
-when returning result of mt7615_init_tx_queues(). So, if last mt7615_init_tx_queue() fails (due to memory issues, for instance), parent function will still erroneously return 0.
-
-2. To correct the issue, I turned to Lorenzo's patch in b671da33d1c5973f90f098ff66a91953691df582 which solves my petit problem as well as rewrites a single mt76_init_tx_queue() function to be used
-across all mt76 drivers.
-
-3. I was torn between writing my own little patch to fix a single mistake or use an existing one that increases code readability and uniformity. I settled on latter.
-
-4. As for this patch exclusivity to 5.10.y branch, I have an incentive to prioritize 5.10 of all others. Wasn't sure I should be the one to suggest the patch for other branches but it does make sense.
-
-Keep having issues with quoting emails properly, hope this one worked fine.
-
-Thanks,
-
-Nikita
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
