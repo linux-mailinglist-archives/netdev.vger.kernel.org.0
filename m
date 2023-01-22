@@ -2,57 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D52CE676C07
-	for <lists+netdev@lfdr.de>; Sun, 22 Jan 2023 11:12:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7632A676C17
+	for <lists+netdev@lfdr.de>; Sun, 22 Jan 2023 11:24:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229983AbjAVKL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Jan 2023 05:11:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49768 "EHLO
+        id S229675AbjAVKYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Jan 2023 05:24:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229966AbjAVKLw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Jan 2023 05:11:52 -0500
-X-Greylist: delayed 318 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 22 Jan 2023 02:11:03 PST
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C109C1D90F;
-        Sun, 22 Jan 2023 02:11:03 -0800 (PST)
-Received: from lenovo-t14s.redhat.com ([82.142.8.70]) by
- mrelayeu.kundenserver.de (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis)
- id 1MqINP-1oy0341K9z-00nPdI; Sun, 22 Jan 2023 11:05:33 +0100
-From:   Laurent Vivier <lvivier@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
+        with ESMTP id S229480AbjAVKYj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Jan 2023 05:24:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C671DB83
+        for <netdev@vger.kernel.org>; Sun, 22 Jan 2023 02:23:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1674383032;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Vp4nDruEit5hTFxTjTpKC1ydXnGDFdRa2R0+xR8TkNY=;
+        b=d+RxrJaGACwDWxQevYeg72s5qe1a2KytczAM+FccY1OvjRLtRK640e1w3MpMnHgPgWOEBa
+        sQhDh5OEzBtT/6ZXhdpfehvMtS3gCQaV20n21qL9RbwvA1XBn6MrkMEi5T/0jra4Sw5hPO
+        YLKK9Bs9bUbJuUrXx1daG4WU8Gal54Y=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-251-iERXAxyuNeauP3jGBDClSg-1; Sun, 22 Jan 2023 05:23:50 -0500
+X-MC-Unique: iERXAxyuNeauP3jGBDClSg-1
+Received: by mail-ej1-f69.google.com with SMTP id sa32-20020a1709076d2000b0084d4593797eso6099884ejc.16
+        for <netdev@vger.kernel.org>; Sun, 22 Jan 2023 02:23:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Vp4nDruEit5hTFxTjTpKC1ydXnGDFdRa2R0+xR8TkNY=;
+        b=W0Uu0EuNY6XCq9w1DTlDskrsLJqUj+CUNQlNwXGj52ixepAnRACQuYBxuWvyg3h5AX
+         wcaY1zQtD2gjUAjNcBB6NEURhWKeyo+AZYHQncgjXjfHqOxPg4YGu4Gprye9ZHcuqTcH
+         fsXPvmAB34kAES6h2YIaaaeifENRjvVc+M40NYDL3AMUqpNi9Xg/xG7Tfg0v2xskWCZA
+         iOFllczd84yS4/98+HyeMhz00qWf7PEc+ufwc+pFF8cODW2orLsBoqydod1QkugWdDBB
+         QYRa6XA1FUk99Qa4FJUBUecHSdQ3D+4/AbIto2ExPxMd+TX7HqFbqBKJb81tRhaKHMPt
+         F1EQ==
+X-Gm-Message-State: AFqh2kqAFkvTgr9E8R1ReLx99g89/WHSvgeDyr2WEVRzfH+1B9pBTOg5
+        1Hh/2ljAYY3wT+QqtInZ5UWyyN/pizHEg6cHCT4uaDy7e5Xs4YyMJxurN+BUNTN6s0iLd/Kv4JC
+        3Ufqz/Q9UMpN601wr
+X-Received: by 2002:a17:906:71a:b0:7c1:6344:84a with SMTP id y26-20020a170906071a00b007c16344084amr22442681ejb.5.1674383029675;
+        Sun, 22 Jan 2023 02:23:49 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXsJYsSlxdKNdkV3k0zZFAQEWMBIP57WsNsog63A1Utnn4PhgD2R94CsSnVpUciaRFnFvrZD5Q==
+X-Received: by 2002:a17:906:71a:b0:7c1:6344:84a with SMTP id y26-20020a170906071a00b007c16344084amr22442658ejb.5.1674383029366;
+        Sun, 22 Jan 2023 02:23:49 -0800 (PST)
+Received: from redhat.com ([2.52.149.29])
+        by smtp.gmail.com with ESMTPSA id y19-20020a1709060a9300b0084debc351b3sm17314670ejf.20.2023.01.22.02.23.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 Jan 2023 02:23:48 -0800 (PST)
+Date:   Sun, 22 Jan 2023 05:23:44 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Laurent Vivier <lvivier@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Parav Pandit <parav@nvidia.com>,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         Eli Cohen <elic@nvidia.com>, Jason Wang <jasowang@redhat.com>,
         Gautam Dawar <gautam.dawar@xilinx.com>,
         Cindy Lu <lulu@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
-Subject: [PATCH 4/4] virtio_net: fix virtnet_send_command() with vdpa_sim_net
-Date:   Sun, 22 Jan 2023 11:05:26 +0100
-Message-Id: <20230122100526.2302556-5-lvivier@redhat.com>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230122100526.2302556-1-lvivier@redhat.com>
+        Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>
+Subject: Re: [PATCH 0/4] virtio_net: vdpa: update MAC address when it is
+ generated by virtio-net
+Message-ID: <20230122052211-mutt-send-email-mst@kernel.org>
 References: <20230122100526.2302556-1-lvivier@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:YTjFLU1lj+k8vApmSwkjqxN3EBr0drRgQSUre+RfcDGSw4uTA+0
- fpObHvWK8k3li6YWyS80RiUZHOX8MywdgaDytn/6t8T+DiaynYAOSnUv/FWk1HaQEOmrj5S
- KrovGMPtwrXHOQlFb5ZB7KBF2sy6BQdtTORgHlq35jPyVn4D7dbru2lBJVeYHfpcThtGErb
- +Fr/sA0/vvb/ZKDcaf4ag==
-UI-OutboundReport: notjunk:1;M01:P0:W/8CbaMJfHI=;CztS2YeNk03sPaZQmk0pcBJ6L43
- XcTq3jVYTR1mPvip15m9kRcm4gx/fCYvZXXAiserRgQ9GFMVi/1LZ0b4jQkbYecKpXXQ+1YOU
- rBpVaXPROlsifSO1bNiEiHYAbudG2KcSeHDa4oueEPlBlJpIcVfy5U+3ZlKYLxT5ZRzdg50Qs
- g/IdVtnBO6yU19WOFGc0dYdOtjbIpFy66HsEykChNF0WWHZQhrOOJ2WhiAuzsvuBRJTgO05cc
- GLWOboaYKXGeWF74daHubX+BlE1K7ZZS9qZ6sIRQ2qMZO+rA8owLFae2Y/cg3W80pIRcNgW47
- jkd67qMPk0vZjxCO9UrPIK3Tls1BKbZ2u91VxEMWay+YYAE1RqV/NhWBUjZ85vf/Jua4dzf9u
- UzzD3cflGJ9vqwlR003dHr1chEHCC6R+ff7po0WY+C8azbOlMMlJlx4lV5ntjVsWQkQgVzihl
- cgg+JKelqfGLSQlRJBSx6aNgedhV/zvuqXKnNPGdNSttYep61gKReoyF4gEDLnVmvpkLkjVzM
- nlV+b2ig0YvJfYiuFp4QMmD4FiCpy5+9MDcBhXTpaiIDFvMhaMsPdgwPCARDGRKYR8/7oPQku
- F5Nzmv3rfaax47qfuviRX2Dq8X+FsMmh0fbGYELuiT9zFEea8uCwaEwaW4BsNrsCbbzen8UtB
- xzMSe0bE+Kdl8LxR2gO5YF/TUzIUv4hfj3/YxuuEzA==
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230122100526.2302556-1-lvivier@redhat.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,36 +82,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-virtnet_send_command() sends a command to the control virtqueue
-by adding the command to the virtqueue, kicking the queue and waiting
-in a loop.
+On Sun, Jan 22, 2023 at 11:05:22AM +0100, Laurent Vivier wrote:
+> When the MAC address is not provided by the vdpa device virtio_net
+> driver assigns a random one without notifying the device.
+> The consequence, in the case of mlx5_vdpa, is the internal routing
+> tables of the device are not updated and this can block the
+> communication between two namespaces.
+> 
+> To fix this problem, use virtnet_send_command(VIRTIO_NET_CTRL_MAC)
+> to set the address from virtnet_probe() when the MAC address is
+> randomly assigned from virtio_net.
+> 
+> While I was testing this change I found 3 other bugs in vdpa_sim_net:
+> 
+> - vdpa_sim_net sets the VIRTIO_NET_F_MAC even if no MAC address is
+>   provided. So virtio_net doesn't generate a random MAC address and
+>   the MAC address appears to be 00:00:00:00:00:00
+> 
+> - vdpa_sim_net never processes the command and virtnet_send_command()
+>   hangs in an infinite loop. To avoid a kernel crash add a timeout
+>   in the loop.
+> 
+> - To allow vdpa_sim_net to process the command, replace the cpu_relax()
+>   in the loop by a schedule(). vdpa_sim_net uses a workqueue to process
+>   the queue, and if we don't allow the kernel to schedule, the queue
+>   is not processed and the loop is infinite.
 
-The vdpa simulator simulates the control virqueue using a work queue:
-the virqueue_kick() calls schedule_work() to start the queue processing.
-But as virtnet_send_command() uses a loop, the scheduler cannot schedule
-the workqueue and the virtqueue is never processed (and the command
-never executed).
+I'd split these things out as opposed to a series unless there's
+a dependency I missed.
 
-To fix that, replace in the loop the cpu_relax() by a schedule().
+All this reminds me of
+https://lore.kernel.org/r/20221226074908.8154-5-jasowang%40redhat.com
 
-Signed-off-by: Laurent Vivier <lvivier@redhat.com>
----
- drivers/net/virtio_net.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+how is this patch different/better?
+Pls also CC people involved in that original discussion.
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 29b3cc72082d..546c0b2baaca 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2011,7 +2011,7 @@ static bool virtnet_send_command(struct virtnet_info *vi, u8 class, u8 cmd,
- 	while (!virtqueue_get_buf(vi->cvq, &tmp) &&
- 	       !virtqueue_is_broken(vi->cvq) &&
- 	       !time_after(jiffies, timeout))
--		cpu_relax();
-+		schedule();
- 
- 	return vi->ctrl->status == VIRTIO_NET_OK;
- }
--- 
-2.39.0
+Thanks!
+
+> Laurent Vivier (4):
+>   virtio_net: notify MAC address change on device initialization
+>   virtio_net: add a timeout in virtnet_send_command()
+>   vdpa_sim_net: don't always set VIRTIO_NET_F_MAC
+>   virtio_net: fix virtnet_send_command() with vdpa_sim_net
+> 
+>  drivers/net/virtio_net.c             | 21 +++++++++++++++++++--
+>  drivers/vdpa/vdpa_sim/vdpa_sim_net.c |  6 ++++++
+>  2 files changed, 25 insertions(+), 2 deletions(-)
+> 
+> -- 
+> 2.39.0
+> 
 
