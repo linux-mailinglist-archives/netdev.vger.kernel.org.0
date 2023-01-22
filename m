@@ -2,300 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E67D676BD7
-	for <lists+netdev@lfdr.de>; Sun, 22 Jan 2023 10:31:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1909C676BDF
+	for <lists+netdev@lfdr.de>; Sun, 22 Jan 2023 10:33:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229687AbjAVJbA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Jan 2023 04:31:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39586 "EHLO
+        id S229877AbjAVJdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Jan 2023 04:33:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbjAVJa7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Jan 2023 04:30:59 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3855E559E;
-        Sun, 22 Jan 2023 01:30:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674379858; x=1705915858;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Dhuhx+pGfk3oECPc2+hLhYJ99R1XUMBLbuUQEwulNZE=;
-  b=Dodxecsz3baVRLFDEU+i45NEhw9aOuTE4SjAN78TZYPTkFddzyjbEXbL
-   1Dc8vDOZmDfHvXVdqlMBIQAjbJ37hNZz4SAgNyQGC3dScRSotfQdrIBgj
-   HiJHry22G6ujiNV4ei8GFNnTA5EPDVVu4B4vm0qKqfDYAPxjDoa/hy4yD
-   8pYT9tEqSOzOKYqO74g8rGfZbY28nJ4HGqHJdFCT2X4qEpfyDHf9gibCO
-   nlNvKOQl3lSVP/EM6TEC8oTm4kxYtAK36ZDBzJLziG6Kfnhu6f9RvZCYb
-   z17imioR0aR/8GYD8pA9xS6o4gxgAp1oPf5sE/OHHoepgrMsdc4fBhZy5
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10597"; a="306237942"
-X-IronPort-AV: E=Sophos;i="5.97,237,1669104000"; 
-   d="scan'208";a="306237942"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2023 01:30:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10597"; a="803567999"
-X-IronPort-AV: E=Sophos;i="5.97,235,1669104000"; 
-   d="scan'208";a="803567999"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga001.fm.intel.com with ESMTP; 22 Jan 2023 01:30:56 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Sun, 22 Jan 2023 01:30:55 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Sun, 22 Jan 2023 01:30:55 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.176)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Sun, 22 Jan 2023 01:30:55 -0800
+        with ESMTP id S229875AbjAVJdv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Jan 2023 04:33:51 -0500
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2046.outbound.protection.outlook.com [40.107.102.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D47F14E9A
+        for <netdev@vger.kernel.org>; Sun, 22 Jan 2023 01:33:47 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=G8xzaHg/mY43Tm2yrh+9u8rFC9q45R75eiAMW6kPyERlzydacy9VABmiyKUhKpGCEqcItBOrUEmPtlfmKeLt5K1oSh9TkwWia7aU6kSpm7L2KvcTczE0z7KuTUwFrvr/44z515gScwTdYkLWNzjbtD7Tf0HKycTMVIojlOLpM/jeLEGUPM4nv0jaJfewk0hRayky1rfvy9TmigUGmO7C74K1I81hWgEB1r9k5tYe4yd04KOz9VEFArmujg4L0DLUrWbotTWDUoA87DdCI3fQZ6AJhdFtuGk7ucRo2mlKUr710W7HJOVOuze5zGBPqQd3Pr1IFsdKrrptP5bjk4EkBg==
+ b=eWavVECcWcbpyFiqGkEwqFBub6erLu0TxT2PxV6yqAD1bnZreLEvKtJvzTYN1xxJhNcpn77T22dxI3t/zWdP3Jtadvhrm+5iMxelpi1kx/TFve+jFor1314Yv66FON2OkvAP6x/qWrZNSseG6UTXNQyWiGx6Iln0j0ypIXf/WAa+aZdxsIVZV2rBQVtZOQOdDWl+V6OJw7SlpycL0FyWuFTurV6wXxZlQuBANMU1JjEIkSgZp+F8SW53eGq5uWB+Sr4VhD40+a2BD5OdyjMKOgctlXMAK1CnqWIzbjP0nYMmveHeYwMu01hPw0fscs0M/UY0sthGsKZ7vLvl2sRZXA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XyFFn3NHP86x6exyl3AX2ntxvgKgtkmRYlN7nLJJop8=;
- b=FJGUIY3kZ8Tu5wk0i/Zmw7IwnSYQ5rL8A6Ero9klN2a5PX0UPNBJ/Lin+65+IWCPiIrz8K3YqORox1hrJK/2MbKpTg+HoHq1rRVxHRG3dac7nUXJmn3uoxAaEDV8Yi7GR1gG/T2Lb+iqU+HEAch/8k8u2Jx03TRBx2XBvjstwGguuQ7eh/EWMO7JV+FT38atX3BtutLSMXJGrkYLt2de6mTi80lV6A3YAZVX8rqQn9E0c7vvlEBRyv5DzidayhbE/8P4LpliqDsG+otn+kR+VkKaNWeLsVAvVBTVLNc595H/IgWqX2GoW6aDWBD56LwpOgA9j4Z+FeIRfd+lAyOnEQ==
+ bh=z+IX1fl2olB36V5yVoXoOxDGvR0K4KDrsASYazTaOVI=;
+ b=S95S9CLnNb6C301MDrU3QQkQe6fJC6rvlo1k9t/nRwc2CXP3amXQTzRQW/zAQQJFIYC4/4urJy5vQZnPKc/MsWteD/xANt5Kh5CXCPfbGOUd+ae3pv4ZCSq0qf5aLDuB5Ce20uqrI8z26jPHqvEUfruKz8TfX3gMzQUPR5WitQLefb8zEvXFPy4i5FX3m7AqyAhHKmqJD3J9/NXAU0DPVOMCCLQZNujgoE9syeAwZvIOPpPb3Iky3Cafz9iBWPsDtGK0fzFvR63CuOPICsjsriMDbYNoayf+Tx1qbwXRO1tewG6lg9sElmIHsVJf9RWpwu5mTmameRF9SDOGAr6gIw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z+IX1fl2olB36V5yVoXoOxDGvR0K4KDrsASYazTaOVI=;
+ b=SOZRBzRWhWcso/XuthWy316aIKK4I7+UFxMvQuodWgvBWAdjeWDm5n5J2uIzps84zm10SkgPpAgCEha4TL9qJUsftwNaSP9GOcWQbu+CKA0wyTJDHPuCbUpV1OrSp/JLlYkmH/cKMBIW0ok4AWa5fvfta+Pnn/9ipj1OhxoZuHI9xseO0lBiuHHHsZjYZLHDglEiPYKT3v8hLzrxQncrC6xB2+g01CoC2rx4paTStMVWzSANnh7SH+9hv3LnvnXBOmkOJ25aVyTJaN+n8vlHCKOL3RjS19+bexuHhsaGKsNiRSKgzp0AhTukExshOqRl3S950fwmEEXHMmxOplbOcw==
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MW4PR11MB6738.namprd11.prod.outlook.com (2603:10b6:303:20c::13)
- by PH7PR11MB5793.namprd11.prod.outlook.com (2603:10b6:510:13a::11) with
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from PH0PR12MB5629.namprd12.prod.outlook.com (2603:10b6:510:141::10)
+ by MW6PR12MB7070.namprd12.prod.outlook.com (2603:10b6:303:238::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.27; Sun, 22 Jan
- 2023 09:30:53 +0000
-Received: from MW4PR11MB6738.namprd11.prod.outlook.com
- ([fe80::7c7c:f50a:e5bc:2bfb]) by MW4PR11MB6738.namprd11.prod.outlook.com
- ([fe80::7c7c:f50a:e5bc:2bfb%3]) with mapi id 15.20.6002.013; Sun, 22 Jan 2023
- 09:30:53 +0000
-Message-ID: <3d63835d-cc1f-a6f3-6407-8b7c155a6d65@intel.com>
-Date:   Sun, 22 Jan 2023 11:30:44 +0200
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Sun, 22 Jan
+ 2023 09:33:45 +0000
+Received: from PH0PR12MB5629.namprd12.prod.outlook.com
+ ([fe80::5e6:6b81:fa63:c367]) by PH0PR12MB5629.namprd12.prod.outlook.com
+ ([fe80::5e6:6b81:fa63:c367%9]) with mapi id 15.20.6002.028; Sun, 22 Jan 2023
+ 09:33:45 +0000
+Message-ID: <c11cf7d6-4ebc-2d90-0bad-503ac092d821@nvidia.com>
+Date:   Sun, 22 Jan 2023 11:33:35 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.6.1
-Subject: Re: [Intel-wired-lan] [PATCH] e1000e: Add ADP_I219_LM17 to ME S0ix
- blacklist
-To:     Jia Liu <liujia6264@gmail.com>
-CC:     Jacob Keller <jacob.e.keller@intel.com>,
-        <jesse.brandeburg@intel.com>, <anthony.l.nguyen@intel.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <intel-wired-lan@lists.osuosl.org>, <linux-kernel@vger.kernel.org>,
-        "Ruinskiy, Dima" <dima.ruinskiy@intel.com>,
-        "Lifshits, Vitaly" <vitaly.lifshits@intel.com>,
-        "Neftin, Sasha" <sasha.neftin@intel.com>
-References: <20230117102645.24920-1-liujia6264@gmail.com>
- <9f29ff29-62bb-c92b-6d69-ccc86938929e@intel.com>
- <5d96deeb-a59d-366d-dbb2-d88623cdfa2d@intel.com>
- <CA+eZsiZ81+AL1-mLb4mONZnMqO=uUPFcw=QWFhEY36_jg9MpiQ@mail.gmail.com>
+ Thunderbird/102.6.1
+Subject: Re: [PATCH net-next 0/4] net/sched: cls_api: Support hardware miss to
+ tc action
 Content-Language: en-US
-From:   "Neftin, Sasha" <sasha.neftin@intel.com>
-In-Reply-To: <CA+eZsiZ81+AL1-mLb4mONZnMqO=uUPFcw=QWFhEY36_jg9MpiQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Edward Cree <ecree.xilinx@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
+References: <20230112105905.1738-1-paulb@nvidia.com>
+ <CAM0EoMm046Ur8o6g3FwMCKB-_p246rpqfDYgWnRsuXHBhruDpg@mail.gmail.com>
+ <164ea640-d6d4-d8bd-c7d9-02350e382691@nvidia.com>
+ <CAM0EoM=FaRBWqxPv=jZdV_SZxqw26_yhK__q=o-9vqypSdMV1w@mail.gmail.com>
+ <912be77b-3723-33a7-8fee-05262b94efa1@gmail.com>
+From:   Paul Blakey <paulb@nvidia.com>
+In-Reply-To: <912be77b-3723-33a7-8fee-05262b94efa1@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: ZR0P278CA0024.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:1c::11) To MW4PR11MB6738.namprd11.prod.outlook.com
- (2603:10b6:303:20c::13)
+X-ClientProxiedBy: LO4P123CA0260.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:194::13) To PH0PR12MB5629.namprd12.prod.outlook.com
+ (2603:10b6:510:141::10)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MW4PR11MB6738:EE_|PH7PR11MB5793:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5c2398e9-eb26-460e-8c63-08dafc5b5b4e
+X-MS-TrafficTypeDiagnostic: PH0PR12MB5629:EE_|MW6PR12MB7070:EE_
+X-MS-Office365-Filtering-Correlation-Id: 39ed3f84-b20d-4a48-af80-08dafc5bc18c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: SvjO9EjsfAKiKnTJcLJAyY/V9BVVyP70RCS89rWkJjXni6Elr7b+MXvClU82lsw9Nev2mRZO68+92Z6go7o3VaIattYxS+fdYmMyS1V5fIJTF578ZQqBaIpWfBNmWmBzgBQiJ0rtCcHhzDwMJc04zSwpOcwoA21NHjbNBQr3ffU/ksh6KeNpDddUf4ZkNvtgvkXdMihrf0pKdFwsmZz5dVC+3qbbUfyBtN8wyAsLIpUtlBU8QOtaMgozFafKWOJdD3NBGZetO1R9EE9KugtSAOaW72OuSVGhkdQr5jKbUZrTOQGJvnin6UZj6N4vaSaxbSNq+KVn/xXpHa+qZleDkCOKGY74xN3mIXCDE6VxoO4Teg7MosJ4s1oPFTWtcjew2NqnFAXNeHdiwDsbxosuQ2NmUUstHusvQPDCDY2Ql4Ac9SN+byNTGGIyWwLilaqr41B6l1WOyEeMVTL5UQZJ2EQIEI+PIrDHqPZxs4WSh/Qd7iOpOIV+317FldJCCLRQv+79Oa4OzkXtKk8oX64EW8x6o7kLLysiCKVJSo6MuMOjT+BwPJUipRCOmR5G5uyZ0RU/0PbOga8RkT2HgQeEzd/CIcWgMxp2o9okeYDwh53mIWuW5hOPxuDtZdBj4bCAqjudx0Jqc07YIQ71uNVz317M22DZDwsbOGXvJBLIWbPVQ8JhIyL/NHJGtJlvWK2o/QiHTMiu16D4Qe6SsY/B6Ao+oW9HBmBLuuDSclzs7+zH21aqMdHQorgfaZIigSWpubo+eJX7Rg7Gg3WoEqCr2zUT2jGlNyKZa9gsgEjx9xG5gXA8E17OfXju5eypPQG1omEFhmHFkdbZcx7Ul5fxeQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR11MB6738.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(39860400002)(136003)(346002)(366004)(396003)(451199015)(31686004)(6512007)(186003)(26005)(2906002)(478600001)(86362001)(83380400001)(66946007)(31696002)(966005)(6486002)(316002)(66556008)(53546011)(5660300002)(66476007)(4326008)(8676002)(82960400001)(6916009)(54906003)(41300700001)(8936002)(38100700002)(2616005)(36756003)(6506007)(107886003)(6666004)(32563001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: COymYdo3SPASN5zwN3IYPhVTKVxB1nAMs+c49Grq2qqXAfYOTda4VddR25X0kPoGBx/uBBIwptvYn63K09sj7m/QUuMLQHXW+cQ3Il13fHGUQWcWV8F0XREn3sqA6btDvuXjzkHpvMr+3k4eYfoo7yPjDUDZS7MuWTgomgxaRS9Yq5BqT/fKNXRoLgEIc8qnPrKLzPAh2b2Pr8rHUss/7VU8i3GEiN34gz6auEdYA8MKsb1eHFpJ1vJvcH5N11ap1xB2RqLp/9iK1vTIYekHwIjPCnlqEjYp3jRthI/AUTcvd4eehMTbax/CVkKXh4ZaibuJ55lBWhvqJRT7ljosy0UJsPlMfojOUNxUq3hg+GgkSlvKkhRaBNrkChYbs0C63j1eAUU3X5Um2dd975MFSrCAyIP8gJEAyIbwdexLhV937ir1PtOOX1KpS5/vLPtec+3Qmbjy6CKbqYI5u48HsQoVexcrWmmOxNGiCrsMeEVljaTW4J5xll6X0h4YTGpPdP2x8LaI+XXx8blO242MAcD+r7VXWIYmJmzqSTY9Li3b8gmnFNlAiXkdoePpBZBSQ5dj2bqB0GjFsTQ3K+5HgmMcdzYnucjVrOYNr/1wCo6zEXpnbR/I3rc5p+XUvagVRc2wh9r8Iyd/cOBsn6i/zOEnGejbq/dmDQvE6EvtVZoAjnvIRaxffuv1izC3380GZdTkJJ1Hx3haGyKgmBSRPS8nQ5wSPuzWLVzzlyCqRC0=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5629.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(396003)(136003)(366004)(376002)(451199015)(2906002)(54906003)(31696002)(110136005)(316002)(31686004)(86362001)(107886003)(6666004)(186003)(26005)(53546011)(6506007)(5660300002)(6512007)(2616005)(8936002)(66946007)(6486002)(8676002)(4326008)(66556008)(66476007)(478600001)(38100700002)(36756003)(41300700001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NFhkTWlZNU01M3VhelAxQmZRZk1aZDlTbGtPWllxR1NJUDdLUGE2b1R1VjZ1?=
- =?utf-8?B?Q3piZnF6ZG9YcUo4TVVDNXlqa1hHanJrQkFxNzZ2VjZCeEQxaVB5ZWZVL08w?=
- =?utf-8?B?R0s3K1VVdjhrbHMvTTVVZmFkTVlPTnZYZWFLbjk2amRuVTdqNmh4T3JWQWcy?=
- =?utf-8?B?VDNJZjJCYnlqT2R3d3Y5djE5UmF1eGpsY1EzNVIyeDdNUHRZcW83bndmZ3hD?=
- =?utf-8?B?NnAwbjN0c0FMazh1d3A5dFhtMUU3RW5QMEhKdHpLMXdsWTlyaVJ0RitkdFJz?=
- =?utf-8?B?Vjk2VGZXT2ZBUFQ1Q1dkeFdaRytTa0dPOGRFSXA5OTMxdWZQb0lHem54WXRO?=
- =?utf-8?B?SnFEZXJVcGFVTWlDOEVKaE44bUw2Q01zS0VSZ3UwbDFMUVdEL2FwVUJlN2pz?=
- =?utf-8?B?M3Erc3FURHMzS0ZrRGtRL3RzNkN1SWJNekZZVHRETjdjZ3Azam96c1FSV3RX?=
- =?utf-8?B?N3Y2cEdYMjduQVRnV3ZKSldHcE9POHlMK1VtTGt4ZTZnVm5uV1NaekU5ZFNi?=
- =?utf-8?B?WmtVVEVZbW1EZFBrdzBxa3UxT0x4UWhCTkRndG92M0ZKeXdpRkFjdGwxM1E2?=
- =?utf-8?B?MzhWZlp2TVA1WmNLdmM3d0cwcjBZQUluTFJGVnJzUGNQNUdRZ04xZ3pYWnkx?=
- =?utf-8?B?MTNRNCtSWHUxSkFNbk8wOHU2QmkwR1BrQVhjTmZhcll6andQU0pqeVlqcGlC?=
- =?utf-8?B?bHdhWUI2L2dTaUR6TlltVGJnQnVldTVmQmtadlBTblI2OHJ6QkI3ZlZVYUg1?=
- =?utf-8?B?QWFybW9SQ3hVdWJ5YmUycmlqMC8rOEw2QmpKbjdjSmdlTFY5TE9Vb1BVMWZp?=
- =?utf-8?B?U3JPOHU2Y3RJNDdlYUlCcG51QXFHdXBBYVFDSHgyZmhPVE0vZEY5NHc2cUFn?=
- =?utf-8?B?WEFkaDVlejlnQUJIRHMrYzBFWXJ4TnVuNUdqazM5U2xqRnZXUW5aWTlTbkZx?=
- =?utf-8?B?Q0lMdExnTXN5dzhwTVhOR2pOa1BDVHhjdFhwU2FyQzhZZm1oME8xSjlJS3ln?=
- =?utf-8?B?MitWZCtPMTVvMStMQ0tSVXlJclB0RFhNSWVCdzhLdGpUNCtKZGFOb25YQTl5?=
- =?utf-8?B?VExjY3hHNVFBZE9GMzFicHVTaG9kZTNMZXFkdk1ydjdacFJ5bmxBNG5LYStj?=
- =?utf-8?B?YWw5cVlRK2svR2hyQzBwOHdDK00wb1FLSjBUYWllNzlBODNLWEtEcmVkQ0l1?=
- =?utf-8?B?SExzbEUwRFJvZ2hNUXVoeGEvT014d2xsU3MrSFJ4TzVhNDc1VUVzWE9CYS9m?=
- =?utf-8?B?SHl0OGVpaHUyZmJNcW9LSDlQcmpJdllNTmd1b3MzS25oa2I0c0QxSGxwaGtv?=
- =?utf-8?B?a0ZPd3krUURQSEdhZU8yQ0VZcDkvWS8rYWkrU2hONWV5NG1qYXp3TTVEY1E2?=
- =?utf-8?B?cm05eTVPQ3JxdjB1Vyt0cXRES3JsVEdhWllBdkJGcjEyMjNNT1RNOEFmVjlM?=
- =?utf-8?B?Ty9tNFZ1NEluekhaMWFqeGZoZk82NldhVklCR084N21jMm5BYzlwSXFCNE1F?=
- =?utf-8?B?ZnBQZ1hHbFZRMnBKb2EwUFl5M0dGTkdlL3hDZ0NWVDhxYVlOQVJ3dmxCSkgz?=
- =?utf-8?B?am93UFgzV2YzZVlSUUwyaXB2Uk43dUNTUmYwZDVtKzZsenpod3A1V29SeUlM?=
- =?utf-8?B?ZEtRUUZndER2SzNadjVpb29HZzdxZDE0cFN4NXc1S1Z3NjNSaXl1NGsyalRl?=
- =?utf-8?B?cWVpdkV0VCtNRlpnaTJYVU01cU5xREVHaC9DTGEwbENhNEdQbWExMDBJUy8w?=
- =?utf-8?B?UitqcTNPbVVUT1JZWTZpZ0F1QnRxM0NtbGlxRGgySkJMVDJtNHVPNzR4MjFj?=
- =?utf-8?B?WmVhV01IbjBwSkdTUWdZeUdxcHZLMlpLOGhGc1JUYk5nSHYyOFRyRHp6c1U2?=
- =?utf-8?B?Z2xmaGt6YmFrVnVuN0ZIcDYwV01wNGMwcFJHdm04SUg3UU5BVFFSQ0pGbXN4?=
- =?utf-8?B?VkM2WUJpMy95L1cwU3VHMDFoVk9FR1gvdjVSN2JzS3g4RFRlNHBEbkFFV1d2?=
- =?utf-8?B?ZTNXc2diRzhlSDBHMlo1T0RwRjRTR0RmLzFzemJLRGcyeXJIK0l2SnpWcTI2?=
- =?utf-8?B?TU1ZTENVRFNvZG15cmcveGl1U24yTUJUMWZoeG9KcmhGV1hBYUtZUXRPRUQy?=
- =?utf-8?B?OHR3Vlhjcjl2bUp5ZlRpTzZTZ2lQZjFHMjdqNk9uWnpTN2FWV2dUdEsyUWdW?=
- =?utf-8?B?OGc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c2398e9-eb26-460e-8c63-08dafc5b5b4e
-X-MS-Exchange-CrossTenant-AuthSource: MW4PR11MB6738.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bTlSNkVUL2lqT1doSHhobWxTeUFOc2JHTEphWStTT0dqbmwvZVZkaDluUkpH?=
+ =?utf-8?B?aDgxdTJMb203TStjYzMzTTRpeE1IM1l0WmNZTlh3NDg3OXRubWxmMFk1MTly?=
+ =?utf-8?B?Qkpka01IR3l3cHExWHM4cS9GVTdTMHllTHVFcFp2clhwTkZmVDk2NDhLaWhj?=
+ =?utf-8?B?NnlmaTlXT2czUXpjVEx1M0JuakUwdlRTZXdtVE1QUTNRMXR4Y25yRUdKb3Jn?=
+ =?utf-8?B?ZW5ienZodE1wYjRIUlpxbW9ZNXNvLzdCeEtqaExjME5MMGFjUEtnQ1JFZUdn?=
+ =?utf-8?B?RkY3bzRRWjU1RlM0bHdjTkZ2RDEzbGt0cTJwQ2JwR21sMHRVVTcvRG91SzRM?=
+ =?utf-8?B?bW1aVkUvbnJmTlN5YmZPQXVnSnVrakpLdlJlRzhOTDkzU1hnenNTaHdXZEVp?=
+ =?utf-8?B?eEFUQ2IvWGx3UnZNNDcvdnNkajdFeEJRcUdMcFBkQzRwWVdsNHg4eVFoVFFY?=
+ =?utf-8?B?cFluUE5JQXVPWFprczMwUkQ3NGVEb3ZvcHIyVk4xU2hjZWRBRHhwVmpIYkJY?=
+ =?utf-8?B?UkdJMmF2WUMwSVNWczZmMThqUFAwS2NDVExJK1g3T3k2dzNjWWlaeDlZY2cy?=
+ =?utf-8?B?ZytyZDN3WkZJb1VucEMvWE1FVHJZNEMrVlhJbnFUOTZSUXRhY0tVa2FML05T?=
+ =?utf-8?B?UTk1Y3YvZ0h5NXNqbEVQQVpwUGx4bUtNV3BKQ1RIR2E5VGNZWFlkWEd1TnQ2?=
+ =?utf-8?B?YkpuM281cUFkWmVtdUFveEh3YjExei9ZVitQTWVsV1Z3cWZDeGFoWjJQWDdi?=
+ =?utf-8?B?RWtvNjA1bnVHN2lxT1FzNzFsNzFleERveTJWd3NRc2ZxTGNCMmFrd2pPYjB0?=
+ =?utf-8?B?YjZXYTZiU2NzbW8xazllOGlZM0FZR3pKaU96dXVkSjlwZ21wNUxsamI4dXE2?=
+ =?utf-8?B?TlEvRWtpUTFBNUlWZ05nMWdCUStnUUhrNzdjaHR0OWFONFpkWDNHb3I4czBr?=
+ =?utf-8?B?Zkl1dFV2QWpVNmd5Y3V3bDNBdTdvYkxBcm1KL0JHSDVaVzRRdGVTS0QyMkxj?=
+ =?utf-8?B?SG5vYTR3NnNDaGVOak9DTGtYTy8rU3JlOVNscExqaXUyRXplNDFSUUZIUXF5?=
+ =?utf-8?B?bW5ybkQyL0JoL1lPYnhRTkl3VExIcjU0eG9Obi9pNWcwem02TmZBZVUvaUJz?=
+ =?utf-8?B?NTRJbGFEMVFQbzNWb3VQK3oybmVKQXNsZE1FNFUwZCtLY0owU0J1RnNOcUpG?=
+ =?utf-8?B?djJDVkN1L0tSaTZhTlY2bDh6UEZhbFF2UFNYL1hMcjdseUdJOEpvREpQeFJ4?=
+ =?utf-8?B?MEd4V0IzRDJqbFZWZjNqc0krV0FFZmtHTU8wU3N1YU11S1N2MittSEs4bGNy?=
+ =?utf-8?B?SnV2MGQ3Tm1uZ1JqMEI2cFVHdmJQTXZTZkEzRDlDMVJKc0VYZDhUS3h6Ukcz?=
+ =?utf-8?B?MWpGcHRFRDJBcm1XcytGUXhrandSeFhPM2JIY1d0RGtoRVhoTjZUZ21NS1M1?=
+ =?utf-8?B?S0hob2ZyNjE0YjZnaXU4eGhTb0FPRGtlaEVncUdWNmJUTWpWYmh3bDdQcWZa?=
+ =?utf-8?B?Z3U1NUVCN0szVUl6aHBoN3RGK0ZUc0VyTzcyS3Q3QWhNTFRDSnV6dzFvTDNs?=
+ =?utf-8?B?L3pEZC85K1I5eG10Z2pyVTZXSjZjeEZ6RjRhRFV5cGxCTVZZKzdmT2grdXZG?=
+ =?utf-8?B?eG5KRUlHQXkvWVViSXl5eVRScTdDaXA4UjJxWjU5dm0yUmZKTi8vQ3lYb1lm?=
+ =?utf-8?B?TzBPNWFoNVBldUhJWUpkMWJKekZLYitDVk1xS1N2bUhYaDd4TFFHNHB2WHVx?=
+ =?utf-8?B?bzc0bjJTcFY1MXhnSy9hYjNROFdnOHZvQWlScmd0bkJrTWdzVnlJNXB4dGpv?=
+ =?utf-8?B?dHdFMVAyT0ViMlVYSUlGOTdENzMzcmlYbDBCcExpN1hVV3QvWjgwY1AvTGpi?=
+ =?utf-8?B?d2NwOHA2d3BGVVViTVFRbFRZY3VBR3QzUnBnOVZ3T0x5bjJpczl2elBmWFVH?=
+ =?utf-8?B?RGNrYmxwZ1dkdkxLTFE5MThlQmVpWlZYRXNaWEpIZVI1YmpPbEFCeU92OUNh?=
+ =?utf-8?B?Q2xWS0c3QlZyamdwRXA4YnE2UXhkWWVHczFCU2tNNk1hdUp6Um5CZXlIckNu?=
+ =?utf-8?B?NHBBTG1pb0IwUmJBbTI1a1ZnVUxlUG9jMHJvc3JoZHE5WFNoQXBIbmljekxs?=
+ =?utf-8?Q?aHyGXBkrIXGCcqMgYzZXXYUiv?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 39ed3f84-b20d-4a48-af80-08dafc5bc18c
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5629.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2023 09:30:53.4818
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2023 09:33:44.8447
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bJMJQKFX4xaR4cJZ6ayT82b7Tadv33KagRRPlNkIqC1TDR0m8+cGdpsIr81o0PmHHd/LZNKgxYT/DglORpxCeA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB5793
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: wp/Z6bAjcer2SFFqAlIHI2vaNYi3j70bZ0Q2r4qw0sv8eKswhhRIQH2Q8OzTPuoBNRBt5aBpVHUPOJ1IbvA/Ew==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB7070
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/18/2023 11:08, Jia Liu wrote:
-> On Wed, Jan 18, 2023 at 1:20 PM Neftin, Sasha <sasha.neftin@intel.com> wrote:
->>
->> On 1/17/2023 21:34, Jacob Keller wrote:
->>>
->>>
->>> On 1/17/2023 2:26 AM, Jiajia Liu wrote:
->>>> I219 on HP EliteOne 840 All in One cannot work after s2idle resume
->>>> when the link speed is Gigabit, Wake-on-LAN is enabled and then set
->>>> the link down before suspend. No issue found when requesting driver
->>>> to configure S0ix. Add workround to let ADP_I219_LM17 use the dirver
->>>> configured S0ix.
->>>>
->>>> Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=216926
->>>> Signed-off-by: Jiajia Liu <liujia6264@gmail.com>
->>>> ---
->>>>
->>>> It's regarding the bug above, it looks it's causued by the ME S0ix.
->>>> And is there a method to make the ME S0ix path work?
->> No. This is a fragile approach. ME must get the message from us
->> (unconfigure the device from s0ix). Otherwise, ME will continue to
->> access LAN resources and the controller could get stuck.
->> I see two ways:
->> 1. you always can skip s0ix flow by priv_flag
->> 2. Especially in this case (HP platform) - please, contact HP (what is
->> the ME version on this system, and how was it released...). HP will open
->> a ticket with Intel. (then we can involve the ME team)
-> 
-> HP released BIOS including ME firmware on their website HP.com at
-> https://support.hp.com/my-en/drivers/selfservice/hp-eliteone-840-23.8-inch-g9-all-in-one-desktop-pc/2101132389.
-> There is upgrade interface on the BIOS setup menu which can connect
-> HP.com and upgrade to newer BIOS.
-> 
-> The initial ME version was v16.0.15.1735 from BIOS 02.03.04.
-> Then I upgraded to the latest one v16.1.25.1932v3 from BIOS 02.06.01
-> released on Nov 28, 2022. Both of them can produce this issue.
-> 
-> I have only one setup. Is it possible to try on your system which has the
-> same I219-LM to see if it's platform specific or not?
-Yes, s0ix flows works on our platforms.
-> 
->>>>
->>>
->>> No idea. It does seem better to disable S0ix if it doesn't work properly
->>> first though...
->>>
->>>>    drivers/net/ethernet/intel/e1000e/netdev.c | 25 ++++++++++++++++++++++
->>>>    1 file changed, 25 insertions(+)
->>>>
->>>> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
->>>> index 04acd1a992fa..7ee759dbd09d 100644
->>>> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
->>>> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
->>>> @@ -6330,6 +6330,23 @@ static void e1000e_flush_lpic(struct pci_dev *pdev)
->>>>       pm_runtime_put_sync(netdev->dev.parent);
->>>>    }
->>>>
->>>> +static u16 me_s0ix_blacklist[] = {
->>>> +    E1000_DEV_ID_PCH_ADP_I219_LM17,
->>>> +    0
->>>> +};
->>>> +
->>>> +static bool e1000e_check_me_s0ix_blacklist(const struct e1000_adapter *adapter)
->>>> +{
->>>> +    u16 *list;
->>>> +
->>>> +    for (list = me_s0ix_blacklist; *list; list++) {
->>>> +            if (*list == adapter->pdev->device)
->>>> +                    return true;
->>>> +    }
->>>> +
->>>> +    return false;
->>>> +}
->>>
->>> The name of this function seems odd..? "check_me"? It also seems like we
->>> could just do a simple switch/case on the device ID or similar.
->>>
->>> Maybe: "e1000e_device_supports_s0ix"?
->>>
->>>> +
->>>>    /* S0ix implementation */
->>>>    static void e1000e_s0ix_entry_flow(struct e1000_adapter *adapter)
->>>>    {
->>>> @@ -6337,6 +6354,9 @@ static void e1000e_s0ix_entry_flow(struct e1000_adapter *adapter)
->>>>       u32 mac_data;
->>>>       u16 phy_data;
->>>>
->>>> +    if (e1000e_check_me_s0ix_blacklist(adapter))
->>>> +            goto req_driver;
->>>> +
->>>>       if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
->>>>           hw->mac.type >= e1000_pch_adp) {
->>>>               /* Request ME configure the device for S0ix */
->>>
->>>
->>> The related code also seems to already perform some set of mac checks
->>> here...
->>>
->>>> @@ -6346,6 +6366,7 @@ static void e1000e_s0ix_entry_flow(struct e1000_adapter *adapter)
->>>>               trace_e1000e_trace_mac_register(mac_data);
->>>>               ew32(H2ME, mac_data);
->>>>       } else {
->>>> +req_driver:>                /* Request driver configure the device to S0ix */
->>>>               /* Disable the periodic inband message,
->>>>                * don't request PCIe clock in K1 page770_17[10:9] = 10b
->>>> @@ -6488,6 +6509,9 @@ static void e1000e_s0ix_exit_flow(struct e1000_adapter *adapter)
->>>>       u16 phy_data;
->>>>       u32 i = 0;
->>>>
->>>> +    if (e1000e_check_me_s0ix_blacklist(adapter))
->>>> +            goto req_driver;
->>>> +
->>>
->>> Why not just combine this check into the statement below rather than
->>> adding a goto?
->>>
->>>>       if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
->>>>           hw->mac.type >= e1000_pch_adp) {
->>>>               /* Keep the GPT clock enabled for CSME */
->>>> @@ -6523,6 +6547,7 @@ static void e1000e_s0ix_exit_flow(struct e1000_adapter *adapter)
->>>>               else
->>>>                       e_dbg("DPG_EXIT_DONE cleared after %d msec\n", i * 10);
->>>>       } else {
->>>> +req_driver:
->>>>               /* Request driver unconfigure the device from S0ix */
->>>>
->>>>               /* Disable the Dynamic Power Gating in the MAC */
->>> _______________________________________________
->>> Intel-wired-lan mailing list
->>> Intel-wired-lan@osuosl.org
->>> https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
->>
 
+
+On 20/01/2023 13:54, Edward Cree wrote:
+> On 17/01/2023 13:40, Jamal Hadi Salim wrote:
+>> I agree that with your patch it will be operationally simpler. I hope other
+>> vendors will be able to use this feature (and the only reason i am saying
+>> this is because you are making core tc changes).
+> FTR at AMD/sfc we wouldn't use this as our HW has all action execution after
+>   all match stages in the pipeline (excepting actions that only control match
+>   behaviour, i.e. ct lookup), so users on ef100 HW (and I'd imagine probably
+>   some other vendors' products too) would still need to rewrite their rules
+>   with skbmark.
+> I mention this because this feature / patch series disconcerts me.  I wasn't
+>   even really happy about the 'miss to chain' feature, but even more so 'miss
+>   to action' feels like it makes the TC-driver offload interface more complex
+>   than it really ought to be.
+> Especially because the behaviour in some cases is already weird even with a
+>   fully offloadable rule; consider a match-all filter with 'action vlan push'
+>   and no further actions (specifically no redirect).  AIUI the HW will push
+>   the vlan, then deliver to the default destination (e.g. repr if the packet
+>   came from a VF), at which point TC SW will apply the same rule and perform
+>   the vlan push again, leading (incorrectly) to a double-tagged packet.
+
+
+
+If I understand correctly, a "action vlan push" which in SW would return 
+OK to end classification or CONTINUE to continue to next prio (not sure 
+what the default for this action is), then we don't offload such rules, 
+as we require a endpoint (goto/drop/mirred), but if we did, I guess we 
+would have used this series to point to end of the last run action list 
+continuing as software would (returning OK or CONTINUE in the right 
+context) or not do the vlan push and jump right before it saving having 
+to match again. This might need a small change to allow jumping to the 
+end of the action list.
+
+> So it's not really about 'miss', there's a more fundamental issue with how
+>   HW offload and the SW path interact.  And I don't think it's possible to
+>   guaranteed-remove that issue without a performance cost (skb ext is
+>   expensive and we don't want it on *every* RX packet), so users will always
+>   need to consider this sort of thing when writing their TC rules.
+
+We have the skb ext only when hardware already did some stuff (offloaded 
+something), so what ever it did hopefully pays for using the skb ext, 
+and I think this is the case. And of course we strive for full offload 
+so this case would be an exception.
+
+> 
+> TBH doing an IP address pedit before a CT lookup seems like a fairly
+>   contrived use case to me.  Is there a pressing real-world need for it, or
+>   are mlx just adding this support because they can?
+>  > -ed
+
+Of course, we see when users want to set up stateless NAT outside of 
+action CT.
+
+Paul.
