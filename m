@@ -2,90 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64F846772A2
-	for <lists+netdev@lfdr.de>; Sun, 22 Jan 2023 22:23:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7C0F6772FD
+	for <lists+netdev@lfdr.de>; Sun, 22 Jan 2023 23:23:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230038AbjAVVXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Jan 2023 16:23:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55528 "EHLO
+        id S230007AbjAVWXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Jan 2023 17:23:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230024AbjAVVXB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Jan 2023 16:23:01 -0500
-Received: from dilbert.mork.no (dilbert.mork.no [IPv6:2a01:4f9:c010:a439::d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80C31350B
-        for <netdev@vger.kernel.org>; Sun, 22 Jan 2023 13:22:58 -0800 (PST)
-Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9a:3200:0:0:0:1])
-        (authenticated bits=0)
-        by dilbert.mork.no (8.15.2/8.15.2) with ESMTPSA id 30MLM3Bp2545324
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Sun, 22 Jan 2023 21:22:05 GMT
-Received: from canardo.dyn.mork.no (ip6-localhost [IPv6:0:0:0:0:0:0:0:1])
-        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPS id 30MLLwSc295469
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Sun, 22 Jan 2023 22:21:58 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1674422518; bh=pEbD6rdrmrX5MNjXH05Pz0DxOFMtWaS9oD3WsLKiUQI=;
-        h=From:To:Cc:Subject:Date:Message-Id:References:From;
-        b=enVONNA5B6wH4kCe/IZQhDja9OTl2wqWrj4LbbWvjLNy8D7gIipg+yiBMC6yX1c6o
-         z1jyAdD1zmJXWQn64ha6JL0JCgT2v/hxWQOG+luTY9D6XyPjiOPxx++ngaBN99029l
-         pzyp12SQwAZo+XgMeDR+KMI8NzgXH2VSr7bYtT6g=
-Received: (from bjorn@localhost)
-        by canardo.dyn.mork.no (8.15.2/8.15.2/Submit) id 30MLLwnx295463;
-        Sun, 22 Jan 2023 22:21:58 +0100
-From:   =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
-To:     netdev@vger.kernel.org
-Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Alexander Couzens <lynxis@fe80.eu>,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
-Subject: [PATCH v3 net 3/3] mtk_sgmii: enable PCS polling to allow SFP work
-Date:   Sun, 22 Jan 2023 22:21:53 +0100
-Message-Id: <20230122212153.295387-4-bjorn@mork.no>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230122212153.295387-1-bjorn@mork.no>
-References: <20230122212153.295387-1-bjorn@mork.no>
+        with ESMTP id S230074AbjAVWXT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Jan 2023 17:23:19 -0500
+Received: from forward102p.mail.yandex.net (forward102p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b7:102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227158A66
+        for <netdev@vger.kernel.org>; Sun, 22 Jan 2023 14:23:15 -0800 (PST)
+Received: from iva1-adaa4d2a0364.qloud-c.yandex.net (iva1-adaa4d2a0364.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:a0e:0:640:adaa:4d2a])
+        by forward102p.mail.yandex.net (Yandex) with ESMTP id BA310393F692;
+        Mon, 23 Jan 2023 01:21:21 +0300 (MSK)
+Received: by iva1-adaa4d2a0364.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id KL0bdDxfDOs1-Nwpt7mds;
+        Mon, 23 Jan 2023 01:21:20 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ya.ru; s=mail; t=1674426080;
+        bh=Zn8ML+Gw7jK1fICbr+boa77UmdIPMkYhzoG/WxZxszs=;
+        h=Cc:To:Subject:From:Date:Message-ID;
+        b=LY9Cn4UdAkkmiumykszkdH5GAA0e6cwn49d50DWsV6yBRvJwvnW8cAx0lfBzWc4rQ
+         bcZTu0p9t3KsW/OT8pA2R/2KMTwWfyGHwylEB3qcZrTAWh6DLs/G38mlFY2LdTEysg
+         04FlzebSdrrQ8XOORY8W+lexeLkG3zhTocEj8Bug=
+Authentication-Results: iva1-adaa4d2a0364.qloud-c.yandex.net; dkim=pass header.i=@ya.ru
+Message-ID: <72ae40ef-2d68-2e89-46d3-fc8f820db42a@ya.ru>
+Date:   Mon, 23 Jan 2023 01:21:20 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+From:   Kirill Tkhai <tkhai@ya.ru>
+Subject: [PATCH net-next] unix: Guarantee sk_state relevance in case of it was
+ assigned by a task on other cpu
+To:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Language: en-US
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, kuniyu@amazon.com, gorcunov@gmail.com,
+        tkhai@ya.ru
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,SPF_HELO_NONE,
+        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Virus-Scanned: clamav-milter 0.103.7 at canardo
-X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Couzens <lynxis@fe80.eu>
+Some functions use unlocked check for sock::sk_state. This does not guarantee
+a new value assigned to sk_state on some CPU is already visible on this CPU.
 
-Currently there is no IRQ handling (even the SGMII supports it).
-Enable polling to support SFP ports.
+Example:
 
-Signed-off-by: Alexander Couzens <lynxis@fe80.eu>
-[ bmork: changed "1" => "true" ]
-Signed-off-by: Bjørn Mork <bjorn@mork.no>
+[CPU0:Task0]                    [CPU1:Task1]
+unix_listen()
+  unix_state_lock(sk);
+  sk->sk_state = TCP_LISTEN;
+  unix_state_unlock(sk);
+                                unix_accept()
+                                  if (sk->sk_state != TCP_LISTEN) /* not visible */
+                                     goto out;                    /* return error */
+
+Task1 may miss new sk->sk_state value, and then unix_accept() returns error.
+Since in this situation unix_accept() is called chronologically later, such
+behavior is not obvious and it is wrong.
+
+This patch aims to fix the problem. A new function unix_sock_state() is
+introduced, and it makes sure a user never misses a new state assigned just
+before the function is called. We will use it in the places, where unlocked
+sk_state dereferencing was used before.
+
+Note, that there remain some more places with sk_state unfixed. Also, the same
+problem is with unix_peer(). This will be a subject for future patches.
+
+Signed-off-by: Kirill Tkhai <tkhai@ya.ru>
 ---
- drivers/net/ethernet/mediatek/mtk_sgmii.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/unix/af_unix.c |   43 +++++++++++++++++++++++++++++++------------
+ 1 file changed, 31 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-index c4261069b521..bb00de1003ac 100644
---- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
-+++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-@@ -187,6 +187,7 @@ int mtk_sgmii_init(struct mtk_sgmii *ss, struct device_node *r, u32 ana_rgc3)
- 			return PTR_ERR(ss->pcs[i].regmap);
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 009616fa0256..f53e09a0753b 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -247,6 +247,28 @@ struct sock *unix_peer_get(struct sock *s)
+ }
+ EXPORT_SYMBOL_GPL(unix_peer_get);
  
- 		ss->pcs[i].pcs.ops = &mtk_pcs_ops;
-+		ss->pcs[i].pcs.poll = true;
- 		ss->pcs[i].interface = PHY_INTERFACE_MODE_NA;
++/* This function returns current sk->sk_state guaranteeing
++ * its relevance in case of assignment was made on other CPU.
++ */
++static unsigned char unix_sock_state(struct sock *sk)
++{
++	unsigned char s_state = READ_ONCE(sk->sk_state);
++
++	/* SOCK_STREAM and SOCK_SEQPACKET sockets never change their
++	 * sk_state after switching to TCP_ESTABLISHED or TCP_LISTEN.
++	 * We may avoid taking the lock in case of those states are
++	 * already visible.
++	 */
++	if ((s_state == TCP_ESTABLISHED || s_state == TCP_LISTEN)
++	    && sk->sk_type != SOCK_DGRAM)
++		return s_state;
++
++	unix_state_lock(sk);
++	s_state = sk->sk_state;
++	unix_state_unlock(sk);
++	return s_state;
++}
++
+ static struct unix_address *unix_create_addr(struct sockaddr_un *sunaddr,
+ 					     int addr_len)
+ {
+@@ -812,13 +834,9 @@ static void unix_show_fdinfo(struct seq_file *m, struct socket *sock)
+ 	int nr_fds = 0;
+ 
+ 	if (sk) {
+-		s_state = READ_ONCE(sk->sk_state);
++		s_state = unix_sock_state(sk);
+ 		u = unix_sk(sk);
+ 
+-		/* SOCK_STREAM and SOCK_SEQPACKET sockets never change their
+-		 * sk_state after switching to TCP_ESTABLISHED or TCP_LISTEN.
+-		 * SOCK_DGRAM is ordinary. So, no lock is needed.
+-		 */
+ 		if (sock->type == SOCK_DGRAM || s_state == TCP_ESTABLISHED)
+ 			nr_fds = atomic_read(&u->scm_stat.nr_fds);
+ 		else if (s_state == TCP_LISTEN)
+@@ -1686,7 +1704,7 @@ static int unix_accept(struct socket *sock, struct socket *newsock, int flags,
+ 		goto out;
+ 
+ 	err = -EINVAL;
+-	if (sk->sk_state != TCP_LISTEN)
++	if (unix_sock_state(sk) != TCP_LISTEN)
+ 		goto out;
+ 
+ 	/* If socket state is TCP_LISTEN it cannot change (for now...),
+@@ -2178,7 +2196,8 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
  	}
  
--- 
-2.30.2
+ 	if (msg->msg_namelen) {
+-		err = sk->sk_state == TCP_ESTABLISHED ? -EISCONN : -EOPNOTSUPP;
++		unsigned char s_state = unix_sock_state(sk);
++		err = s_state == TCP_ESTABLISHED ? -EISCONN : -EOPNOTSUPP;
+ 		goto out_err;
+ 	} else {
+ 		err = -ENOTCONN;
+@@ -2279,7 +2298,7 @@ static ssize_t unix_stream_sendpage(struct socket *socket, struct page *page,
+ 		return -EOPNOTSUPP;
+ 
+ 	other = unix_peer(sk);
+-	if (!other || sk->sk_state != TCP_ESTABLISHED)
++	if (!other || unix_sock_state(sk) != TCP_ESTABLISHED)
+ 		return -ENOTCONN;
+ 
+ 	if (false) {
+@@ -2391,7 +2410,7 @@ static int unix_seqpacket_sendmsg(struct socket *sock, struct msghdr *msg,
+ 	if (err)
+ 		return err;
+ 
+-	if (sk->sk_state != TCP_ESTABLISHED)
++	if (unix_sock_state(sk) != TCP_ESTABLISHED)
+ 		return -ENOTCONN;
+ 
+ 	if (msg->msg_namelen)
+@@ -2405,7 +2424,7 @@ static int unix_seqpacket_recvmsg(struct socket *sock, struct msghdr *msg,
+ {
+ 	struct sock *sk = sock->sk;
+ 
+-	if (sk->sk_state != TCP_ESTABLISHED)
++	if (unix_sock_state(sk) != TCP_ESTABLISHED)
+ 		return -ENOTCONN;
+ 
+ 	return unix_dgram_recvmsg(sock, msg, size, flags);
+@@ -2689,7 +2708,7 @@ static struct sk_buff *manage_oob(struct sk_buff *skb, struct sock *sk,
+ 
+ static int unix_stream_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+ {
+-	if (unlikely(sk->sk_state != TCP_ESTABLISHED))
++	if (unlikely(unix_sock_state(sk) != TCP_ESTABLISHED))
+ 		return -ENOTCONN;
+ 
+ 	return unix_read_skb(sk, recv_actor);
+@@ -2713,7 +2732,7 @@ static int unix_stream_read_generic(struct unix_stream_read_state *state,
+ 	size_t size = state->size;
+ 	unsigned int last_len;
+ 
+-	if (unlikely(sk->sk_state != TCP_ESTABLISHED)) {
++	if (unlikely(unix_sock_state(sk) != TCP_ESTABLISHED)) {
+ 		err = -EINVAL;
+ 		goto out;
+ 	}
+
 
