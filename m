@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 515F867845B
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 19:18:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62B9267845E
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 19:19:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233030AbjAWSS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 13:18:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57416 "EHLO
+        id S233235AbjAWSTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 13:19:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232889AbjAWSSn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 13:18:43 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41108BBA8;
-        Mon, 23 Jan 2023 10:18:41 -0800 (PST)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30NHDSiD016587;
-        Mon, 23 Jan 2023 18:18:36 GMT
+        with ESMTP id S232838AbjAWSS4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 13:18:56 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA90A26872;
+        Mon, 23 Jan 2023 10:18:42 -0800 (PST)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30NI1hSn032256;
+        Mon, 23 Jan 2023 18:18:38 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=8DxjOs/T/afHHKRRsxcHS1Go6CPMdf853KaaTUeGxEQ=;
- b=Fhq2gNEbysPJLXxgNxBz+OwR05vSIb+gtUwKUjURbpWkTmxaufYq98YBd3c8eDGTJkWY
- 4FUJE9klL2s7TpJPe61KgQBBOXbSxeow4Q4D5yNxLpZAevvnJDWAFkANDCP7bSTfECtm
- Ly6o8kc6DhgxDqU4IPDmmWyV55P8kpAf/omRXYymkXNy5WEXFPeU40rSLaJL3lrDl727
- Zwqhm3L194f7s6i0mRLTXWrH2I1BfqMlrEzQ16zlKYIZFM+Vmlfpdv/w6ekN7kuGVP0n
- gobVR07/1anW3RXDndAtu+1xktCEbSXrcrtMPaFDi1e02eW6oliok7+B7KPD+mVlCiUQ BQ== 
+ bh=2g03c31fR08YkbdvVn96Z+UxWxrF3EPBE3ZVgwIPmb4=;
+ b=gS6esP70DwSBfHRI2qn6Yuvk8QMXmkKX/gzSgBgKf3CRnxc2zzcaRCbIk/8EG4ZLjDfG
+ PvTpevg/S/LPnjYrT36l9rI0Iy+ito4IbcFgoHIfR+7wlbpjuXEPZdRA8fQTan8vae7L
+ i1S9NH8Cc+JmiFPqUd5H26RRy3lVfJ21ykALDjOAv1QtrzBriEgZZHqnPMFY6tF8Vuqk
+ YNcAN/eKjmnebqMxtUuO+AG7AjyTS+d55hNV2jr1SI0044womAyqIJKwzKrNQbX4rOSb
+ tzvd3DJTQOgSQ6CFC3hCvNv5NJjJaTf6GZV5eEvSkZfezj4x7frw5ynREGseBwTvvMF1 cA== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3n9xeu1n0j-1
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3n9y5frdek-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 Jan 2023 18:18:36 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 30NHU9Ds009351;
-        Mon, 23 Jan 2023 18:18:35 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3n9xeu1myt-1
+        Mon, 23 Jan 2023 18:18:37 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 30NI2GuY001425;
+        Mon, 23 Jan 2023 18:18:37 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3n9y5frddc-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 Jan 2023 18:18:35 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 30NF0Ywd003914;
-        Mon, 23 Jan 2023 18:18:33 GMT
-Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
-        by ppma05fra.de.ibm.com (PPS) with ESMTPS id 3n87p61y7v-1
+        Mon, 23 Jan 2023 18:18:37 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 30NH9Juu010329;
+        Mon, 23 Jan 2023 18:18:34 GMT
+Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
+        by ppma03ams.nl.ibm.com (PPS) with ESMTPS id 3n87p6jqbk-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 Jan 2023 18:18:33 +0000
+        Mon, 23 Jan 2023 18:18:34 +0000
 Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
-        by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 30NIITJT51053036
+        by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 30NIIV6c42271128
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 23 Jan 2023 18:18:30 GMT
+        Mon, 23 Jan 2023 18:18:31 GMT
 Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D2AD720040;
+        by IMSVA (Postfix) with ESMTP id F2FF62004D;
+        Mon, 23 Jan 2023 18:18:30 +0000 (GMT)
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EC7572004B;
         Mon, 23 Jan 2023 18:18:29 +0000 (GMT)
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D15B72004B;
-        Mon, 23 Jan 2023 18:18:28 +0000 (GMT)
 Received: from LAPTOP-8S6R7U4L.localdomain (unknown [9.171.0.149])
         by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
-        Mon, 23 Jan 2023 18:18:28 +0000 (GMT)
+        Mon, 23 Jan 2023 18:18:29 +0000 (GMT)
 From:   Jan Karcher <jaka@linux.ibm.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -74,28 +74,28 @@ Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
         Halil Pasic <pasic@linux.ibm.com>,
         Tony Lu <tonylu@linux.alibaba.com>,
         Wen Gu <guwen@linux.alibaba.com>
-Subject: [net-next v2 5/8] net/smc: Register SMC-D as ISM client
-Date:   Mon, 23 Jan 2023 19:17:49 +0100
-Message-Id: <20230123181752.1068-6-jaka@linux.ibm.com>
+Subject: [net-next v2 6/8] net/smc: Separate SMC-D and ISM APIs
+Date:   Mon, 23 Jan 2023 19:17:50 +0100
+Message-Id: <20230123181752.1068-7-jaka@linux.ibm.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230123181752.1068-1-jaka@linux.ibm.com>
 References: <20230123181752.1068-1-jaka@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: iPZc3-yeXzZCG6GhZgh4Whrsn66I94K4
-X-Proofpoint-GUID: TZtcRz7c9hMqnihQHhCaylWqUrAmVBLm
+X-Proofpoint-GUID: emyIEd5poos_y6uQrfYXxSttmXdYUolD
+X-Proofpoint-ORIG-GUID: bQZVXfmCPu0mvEaqgDBHRboEHxv3hHvg
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
  definitions=2023-01-23_12,2023-01-23_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 bulkscore=0
- mlxscore=0 spamscore=0 lowpriorityscore=0 malwarescore=0 clxscore=1015
- adultscore=0 impostorscore=0 priorityscore=1501 mlxlogscore=999
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301230173
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=999
+ impostorscore=0 priorityscore=1501 clxscore=1015 spamscore=0 adultscore=0
+ phishscore=0 suspectscore=0 malwarescore=0 mlxscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
+ definitions=main-2301230173
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -104,287 +104,394 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stefan Raspl <raspl@linux.ibm.com>
 
-Register the smc module with the new ism device driver API.
-This is the second part of a bigger overhaul of the interfaces between SMC
+We separate the code implementing the struct smcd_ops API in the ISM
+device driver from the functions that may be used by other exploiters of
+ISM devices.
+Note: We start out small, and don't offer the whole breadth of the ISM
+device for public use, as many functions are specific to or likely only
+ever used in the context of SMC-D.
+This is the third part of a bigger overhaul of the interfaces between SMC
 and ISM.
 
 Signed-off-by: Stefan Raspl <raspl@linux.ibm.com>
 Signed-off-by: Jan Karcher <jaka@linux.ibm.com>
 Signed-off-by: Wenjia Zhang <wenjia@linux.ibm.com>
 ---
- drivers/s390/net/ism_drv.c |  5 ---
- include/net/smc.h          |  5 +--
- net/smc/af_smc.c           |  8 +++-
- net/smc/smc_core.c         |  1 +
- net/smc/smc_ism.c          | 82 +++++++++++++++++++++++++++-----------
- net/smc/smc_ism.h          |  3 +-
- 6 files changed, 69 insertions(+), 35 deletions(-)
+ drivers/s390/net/ism_drv.c | 92 ++++++++++++++++++++++++++------------
+ include/linux/ism.h        |  7 +++
+ include/net/smc.h          |  3 +-
+ net/smc/smc_clc.c          | 11 +++--
+ net/smc/smc_core.c         |  6 ++-
+ net/smc/smc_diag.c         |  3 +-
+ 6 files changed, 86 insertions(+), 36 deletions(-)
 
 diff --git a/drivers/s390/net/ism_drv.c b/drivers/s390/net/ism_drv.c
-index 24983224f47e..f35c6077db04 100644
+index f35c6077db04..e6c810a96b24 100644
 --- a/drivers/s390/net/ism_drv.c
 +++ b/drivers/s390/net/ism_drv.c
-@@ -642,10 +642,6 @@ static int ism_dev_init(struct ism_dev *ism)
- 	list_add(&ism->list, &ism_dev_list.list);
- 	mutex_unlock(&ism_dev_list.mutex);
+@@ -273,10 +273,9 @@ static int ism_read_local_gid(struct ism_dev *ism)
+ 	return ret;
+ }
  
--	ret = smcd_register_dev(ism->smcd);
--	if (ret)
--		goto unreg_ieq;
--
- 	query_info(ism);
- 	return 0;
+-static int ism_query_rgid(struct smcd_dev *smcd, u64 rgid, u32 vid_valid,
++static int ism_query_rgid(struct ism_dev *ism, u64 rgid, u32 vid_valid,
+ 			  u32 vid)
+ {
+-	struct ism_dev *ism = smcd->priv;
+ 	union ism_query_rgid cmd;
  
-@@ -748,7 +744,6 @@ static void ism_dev_exit(struct ism_dev *ism)
+ 	memset(&cmd, 0, sizeof(cmd));
+@@ -290,6 +289,11 @@ static int ism_query_rgid(struct smcd_dev *smcd, u64 rgid, u32 vid_valid,
+ 	return ism_cmd(ism, &cmd);
+ }
  
- 	wait_event(ism->waitq, !atomic_read(&ism->free_clients_cnt));
++static int smcd_query_rgid(struct smcd_dev *smcd, u64 rgid, u32 vid_valid, u32 vid)
++{
++	return ism_query_rgid(smcd->priv, rgid, vid_valid, vid);
++}
++
+ static void ism_free_dmb(struct ism_dev *ism, struct ism_dmb *dmb)
+ {
+ 	clear_bit(dmb->sba_idx, ism->sba_bitmap);
+@@ -326,9 +330,9 @@ static int ism_alloc_dmb(struct ism_dev *ism, struct ism_dmb *dmb)
+ 	return dmb->cpu_addr ? 0 : -ENOMEM;
+ }
  
--	smcd_unregister_dev(ism->smcd);
+-static int ism_register_dmb(struct smcd_dev *smcd, struct ism_dmb *dmb)
++int ism_register_dmb(struct ism_dev *ism, struct ism_dmb *dmb,
++		     struct ism_client *client)
+ {
+-	struct ism_dev *ism = smcd->priv;
+ 	union ism_reg_dmb cmd;
+ 	int ret;
+ 
+@@ -353,18 +357,19 @@ static int ism_register_dmb(struct smcd_dev *smcd, struct ism_dmb *dmb)
+ 		goto out;
+ 	}
+ 	dmb->dmb_tok = cmd.response.dmb_tok;
++	ism->sba_client_arr[dmb->sba_idx - ISM_DMB_BIT_OFFSET] = client->id;
+ out:
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(ism_register_dmb);
+ 
+ static int smcd_register_dmb(struct smcd_dev *smcd, struct smcd_dmb *dmb)
+ {
+-	return ism_register_dmb(smcd, (struct ism_dmb *)dmb);
++	return ism_register_dmb(smcd->priv, (struct ism_dmb *)dmb, NULL);
+ }
+ 
+-static int ism_unregister_dmb(struct smcd_dev *smcd, struct ism_dmb *dmb)
++int ism_unregister_dmb(struct ism_dev *ism, struct ism_dmb *dmb)
+ {
+-	struct ism_dev *ism = smcd->priv;
+ 	union ism_unreg_dmb cmd;
+ 	int ret;
+ 
+@@ -374,6 +379,8 @@ static int ism_unregister_dmb(struct smcd_dev *smcd, struct ism_dmb *dmb)
+ 
+ 	cmd.request.dmb_tok = dmb->dmb_tok;
+ 
++	ism->sba_client_arr[dmb->sba_idx - ISM_DMB_BIT_OFFSET] = NO_CLIENT;
++
+ 	ret = ism_cmd(ism, &cmd);
+ 	if (ret && ret != ISM_ERROR)
+ 		goto out;
+@@ -382,15 +389,15 @@ static int ism_unregister_dmb(struct smcd_dev *smcd, struct ism_dmb *dmb)
+ out:
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(ism_unregister_dmb);
+ 
+ static int smcd_unregister_dmb(struct smcd_dev *smcd, struct smcd_dmb *dmb)
+ {
+-	return ism_unregister_dmb(smcd, (struct ism_dmb *)dmb);
++	return ism_unregister_dmb(smcd->priv, (struct ism_dmb *)dmb);
+ }
+ 
+-static int ism_add_vlan_id(struct smcd_dev *smcd, u64 vlan_id)
++static int ism_add_vlan_id(struct ism_dev *ism, u64 vlan_id)
+ {
+-	struct ism_dev *ism = smcd->priv;
+ 	union ism_set_vlan_id cmd;
+ 
+ 	memset(&cmd, 0, sizeof(cmd));
+@@ -402,9 +409,13 @@ static int ism_add_vlan_id(struct smcd_dev *smcd, u64 vlan_id)
+ 	return ism_cmd(ism, &cmd);
+ }
+ 
+-static int ism_del_vlan_id(struct smcd_dev *smcd, u64 vlan_id)
++static int smcd_add_vlan_id(struct smcd_dev *smcd, u64 vlan_id)
++{
++	return ism_add_vlan_id(smcd->priv, vlan_id);
++}
++
++static int ism_del_vlan_id(struct ism_dev *ism, u64 vlan_id)
+ {
+-	struct ism_dev *ism = smcd->priv;
+ 	union ism_set_vlan_id cmd;
+ 
+ 	memset(&cmd, 0, sizeof(cmd));
+@@ -416,6 +427,11 @@ static int ism_del_vlan_id(struct smcd_dev *smcd, u64 vlan_id)
+ 	return ism_cmd(ism, &cmd);
+ }
+ 
++static int smcd_del_vlan_id(struct smcd_dev *smcd, u64 vlan_id)
++{
++	return ism_del_vlan_id(smcd->priv, vlan_id);
++}
++
+ static int ism_set_vlan_required(struct smcd_dev *smcd)
+ {
+ 	return ism_cmd_simple(smcd->priv, ISM_SET_VLAN);
+@@ -426,8 +442,8 @@ static int ism_reset_vlan_required(struct smcd_dev *smcd)
+ 	return ism_cmd_simple(smcd->priv, ISM_RESET_VLAN);
+ }
+ 
+-static int ism_signal_ieq(struct smcd_dev *smcd, u64 rgid, u32 trigger_irq,
+-			  u32 event_code, u64 info)
++static int smcd_signal_ieq(struct smcd_dev *smcd, u64 rgid, u32 trigger_irq,
++			   u32 event_code, u64 info)
+ {
+ 	struct ism_dev *ism = smcd->priv;
+ 	union ism_sig_ieq cmd;
+@@ -450,8 +466,9 @@ static unsigned int max_bytes(unsigned int start, unsigned int len,
+ 	return min(boundary - (start & (boundary - 1)), len);
+ }
+ 
+-static int ism_move(struct smcd_dev *smcd, u64 dmb_tok, unsigned int idx,
+-		    bool sf, unsigned int offset, void *data, unsigned int size)
++static int smcd_move(struct smcd_dev *smcd, u64 dmb_tok, unsigned int idx,
++		     bool sf, unsigned int offset, void *data,
++		     unsigned int size)
+ {
+ 	struct ism_dev *ism = smcd->priv;
+ 	unsigned int bytes;
+@@ -495,14 +512,15 @@ static void ism_create_system_eid(void)
+ 	memcpy(&SYSTEM_EID.type, tmp, 4);
+ }
+ 
+-static u8 *ism_get_system_eid(void)
++u8 *ism_get_seid(void)
+ {
+ 	return SYSTEM_EID.seid_string;
+ }
++EXPORT_SYMBOL_GPL(ism_get_seid);
+ 
+-static u16 ism_get_chid(struct smcd_dev *smcd)
++static u16 smcd_get_chid(struct smcd_dev *smcd)
+ {
+-	struct ism_dev *ism = (struct ism_dev *)smcd->priv;
++	struct ism_dev *ism = smcd->priv;
+ 
+ 	if (!ism || !ism->pdev)
+ 		return 0;
+@@ -565,18 +583,26 @@ static irqreturn_t ism_handle_irq(int irq, void *data)
+ 	return IRQ_HANDLED;
+ }
+ 
++static u64 smcd_get_local_gid(struct smcd_dev *smcd)
++{
++	struct ism_dev *ism = smcd->priv;
++
++	return ism->local_gid;
++}
++
+ static const struct smcd_ops ism_ops = {
+-	.query_remote_gid = ism_query_rgid,
++	.query_remote_gid = smcd_query_rgid,
+ 	.register_dmb = smcd_register_dmb,
+ 	.unregister_dmb = smcd_unregister_dmb,
+-	.add_vlan_id = ism_add_vlan_id,
+-	.del_vlan_id = ism_del_vlan_id,
++	.add_vlan_id = smcd_add_vlan_id,
++	.del_vlan_id = smcd_del_vlan_id,
+ 	.set_vlan_required = ism_set_vlan_required,
+ 	.reset_vlan_required = ism_reset_vlan_required,
+-	.signal_event = ism_signal_ieq,
+-	.move_data = ism_move,
+-	.get_system_eid = ism_get_system_eid,
+-	.get_chid = ism_get_chid,
++	.signal_event = smcd_signal_ieq,
++	.move_data = smcd_move,
++	.get_system_eid = ism_get_seid,
++	.get_local_gid = smcd_get_local_gid,
++	.get_chid = smcd_get_chid,
+ };
+ 
+ static void ism_dev_add_work_func(struct work_struct *work)
+@@ -599,10 +625,15 @@ static int ism_dev_init(struct ism_dev *ism)
+ 	if (ret <= 0)
+ 		goto out;
+ 
++	ism->sba_client_arr = kzalloc(ISM_NR_DMBS, GFP_KERNEL);
++	if (!ism->sba_client_arr)
++		goto free_vectors;
++	memset(ism->sba_client_arr, NO_CLIENT, ISM_NR_DMBS);
++
+ 	ret = request_irq(pci_irq_vector(pdev, 0), ism_handle_irq, 0,
+ 			  pci_name(pdev), ism);
+ 	if (ret)
+-		goto free_vectors;
++		goto free_client_arr;
+ 
+ 	ret = register_sba(ism);
+ 	if (ret)
+@@ -616,7 +647,7 @@ static int ism_dev_init(struct ism_dev *ism)
+ 	if (ret)
+ 		goto unreg_ieq;
+ 
+-	if (!ism_add_vlan_id(ism->smcd, ISM_RESERVED_VLANID))
++	if (!ism_add_vlan_id(ism, ISM_RESERVED_VLANID))
+ 		/* hardware is V2 capable */
+ 		ism_create_system_eid();
+ 
+@@ -651,6 +682,8 @@ static int ism_dev_init(struct ism_dev *ism)
+ 	unregister_sba(ism);
+ free_irq:
+ 	free_irq(pci_irq_vector(pdev, 0), ism);
++free_client_arr:
++	kfree(ism->sba_client_arr);
+ free_vectors:
+ 	pci_free_irq_vectors(pdev);
+ out:
+@@ -746,10 +779,11 @@ static void ism_dev_exit(struct ism_dev *ism)
+ 
  	if (SYSTEM_EID.serial_number[0] != '0' ||
  	    SYSTEM_EID.type[0] != '0')
- 		ism_del_vlan_id(ism->smcd, ISM_RESERVED_VLANID);
+-		ism_del_vlan_id(ism->smcd, ISM_RESERVED_VLANID);
++		ism_del_vlan_id(ism, ISM_RESERVED_VLANID);
+ 	unregister_ieq(ism);
+ 	unregister_sba(ism);
+ 	free_irq(pci_irq_vector(pdev, 0), ism);
++	kfree(ism->sba_client_arr);
+ 	pci_free_irq_vectors(pdev);
+ 	list_del_init(&ism->list);
+ }
+diff --git a/include/linux/ism.h b/include/linux/ism.h
+index 55c8ad306928..bdd29e08d4fe 100644
+--- a/include/linux/ism.h
++++ b/include/linux/ism.h
+@@ -87,4 +87,11 @@ static inline void ism_set_priv(struct ism_dev *dev, struct ism_client *client,
+ 	dev->priv[client->id] = priv;
+ }
+ 
++int  ism_register_dmb(struct ism_dev *dev, struct ism_dmb *dmb,
++		      struct ism_client *client);
++int  ism_unregister_dmb(struct ism_dev *dev, struct ism_dmb *dmb);
++int  ism_move(struct ism_dev *dev, u64 dmb_tok, unsigned int idx, bool sf,
++	      unsigned int offset, void *data, unsigned int size);
++u8  *ism_get_seid(void);
++
+ #endif	/* _ISM_H */
 diff --git a/include/net/smc.h b/include/net/smc.h
-index 98689b16b841..151aa54d9ad2 100644
+index 151aa54d9ad2..d5f8f18169d7 100644
 --- a/include/net/smc.h
 +++ b/include/net/smc.h
-@@ -90,9 +90,6 @@ struct smcd_dev {
+@@ -66,14 +66,15 @@ struct smcd_ops {
+ 			 bool sf, unsigned int offset, void *data,
+ 			 unsigned int size);
+ 	u8* (*get_system_eid)(void);
++	u64 (*get_local_gid)(struct smcd_dev *dev);
+ 	u16 (*get_chid)(struct smcd_dev *dev);
+ };
  
- struct smcd_dev *smcd_alloc_dev(struct device *parent, const char *name,
- 				const struct smcd_ops *ops, int max_dmbs);
--int smcd_register_dev(struct smcd_dev *smcd);
--void smcd_unregister_dev(struct smcd_dev *smcd);
- void smcd_free_dev(struct smcd_dev *smcd);
--void smcd_handle_event(struct smcd_dev *dev, struct ism_event *event);
--void smcd_handle_irq(struct smcd_dev *dev, unsigned int bit, u16 dmbemask);
-+
- #endif	/* _SMC_H */
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index e12d4fa5aece..5d037714ab78 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -3382,12 +3382,14 @@ static int __init smc_init(void)
- 	if (rc)
- 		goto out_pernet_subsys;
- 
--	smc_ism_init();
-+	rc = smc_ism_init();
-+	if (rc)
-+		goto out_pernet_subsys_stat;
- 	smc_clc_init();
- 
- 	rc = smc_nl_init();
- 	if (rc)
--		goto out_pernet_subsys_stat;
-+		goto out_ism;
- 
- 	rc = smc_pnet_init();
- 	if (rc)
-@@ -3480,6 +3482,8 @@ static int __init smc_init(void)
- 	smc_pnet_exit();
- out_nl:
- 	smc_nl_exit();
-+out_ism:
-+	smc_ism_exit();
- out_pernet_subsys_stat:
- 	unregister_pernet_subsys(&smc_net_stat_ops);
- out_pernet_subsys:
+ struct smcd_dev {
+ 	const struct smcd_ops *ops;
+ 	struct device dev;
++	struct ism_dev *ism;
+ 	void *priv;
+-	u64 local_gid;
+ 	struct list_head list;
+ 	spinlock_t lock;
+ 	struct smc_connection **conn;
+diff --git a/net/smc/smc_clc.c b/net/smc/smc_clc.c
+index dfb9797f7bc6..b9b8b07aa702 100644
+--- a/net/smc/smc_clc.c
++++ b/net/smc/smc_clc.c
+@@ -813,6 +813,7 @@ int smc_clc_send_proposal(struct smc_sock *smc, struct smc_init_info *ini)
+ 	struct smc_clc_v2_extension *v2_ext;
+ 	struct smc_clc_msg_smcd *pclc_smcd;
+ 	struct smc_clc_msg_trail *trl;
++	struct smcd_dev *smcd;
+ 	int len, i, plen, rc;
+ 	int reason_code = 0;
+ 	struct kvec vec[8];
+@@ -868,7 +869,9 @@ int smc_clc_send_proposal(struct smc_sock *smc, struct smc_init_info *ini)
+ 	if (smcd_indicated(ini->smc_type_v1)) {
+ 		/* add SMC-D specifics */
+ 		if (ini->ism_dev[0]) {
+-			pclc_smcd->ism.gid = htonll(ini->ism_dev[0]->local_gid);
++			smcd = ini->ism_dev[0];
++			pclc_smcd->ism.gid =
++				htonll(smcd->ops->get_local_gid(smcd));
+ 			pclc_smcd->ism.chid =
+ 				htons(smc_ism_get_chid(ini->ism_dev[0]));
+ 		}
+@@ -914,8 +917,9 @@ int smc_clc_send_proposal(struct smc_sock *smc, struct smc_init_info *ini)
+ 		plen += sizeof(*smcd_v2_ext);
+ 		if (ini->ism_offered_cnt) {
+ 			for (i = 1; i <= ini->ism_offered_cnt; i++) {
++				smcd = ini->ism_dev[i];
+ 				gidchids[i - 1].gid =
+-					htonll(ini->ism_dev[i]->local_gid);
++					htonll(smcd->ops->get_local_gid(smcd));
+ 				gidchids[i - 1].chid =
+ 					htons(smc_ism_get_chid(ini->ism_dev[i]));
+ 			}
+@@ -1000,7 +1004,8 @@ static int smc_clc_send_confirm_accept(struct smc_sock *smc,
+ 		memcpy(clc->hdr.eyecatcher, SMCD_EYECATCHER,
+ 		       sizeof(SMCD_EYECATCHER));
+ 		clc->hdr.typev1 = SMC_TYPE_D;
+-		clc->d0.gid = conn->lgr->smcd->local_gid;
++		clc->d0.gid =
++			conn->lgr->smcd->ops->get_local_gid(conn->lgr->smcd);
+ 		clc->d0.token = conn->rmb_desc->token;
+ 		clc->d0.dmbe_size = conn->rmbe_size_short;
+ 		clc->d0.dmbe_idx = 0;
 diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index c305d8dd23f8..e15ee084cc5a 100644
+index e15ee084cc5a..ec04966e9bf9 100644
 --- a/net/smc/smc_core.c
 +++ b/net/smc/smc_core.c
-@@ -2595,6 +2595,7 @@ static int smc_core_reboot_event(struct notifier_block *this,
+@@ -500,6 +500,7 @@ static int smc_nl_fill_smcd_lgr(struct smc_link_group *lgr,
+ 				struct netlink_callback *cb)
  {
- 	smc_lgrs_shutdown();
- 	smc_ib_unregister_client();
-+	smc_ism_exit();
- 	return 0;
- }
+ 	char smc_pnet[SMC_MAX_PNETID_LEN + 1];
++	struct smcd_dev *smcd = lgr->smcd;
+ 	struct nlattr *attrs;
+ 	void *nlh;
  
-diff --git a/net/smc/smc_ism.c b/net/smc/smc_ism.c
-index 215409889872..6d31e9bbc5f9 100644
---- a/net/smc/smc_ism.c
-+++ b/net/smc/smc_ism.c
-@@ -17,6 +17,7 @@
- #include "smc_ism.h"
- #include "smc_pnet.h"
- #include "smc_netlink.h"
-+#include "linux/ism.h"
+@@ -515,8 +516,9 @@ static int smc_nl_fill_smcd_lgr(struct smc_link_group *lgr,
  
- struct smcd_dev_list smcd_dev_list = {
- 	.list = LIST_HEAD_INIT(smcd_dev_list.list),
-@@ -26,6 +27,20 @@ struct smcd_dev_list smcd_dev_list = {
- static bool smc_ism_v2_capable;
- static u8 smc_ism_v2_system_eid[SMC_MAX_EID_LEN];
+ 	if (nla_put_u32(skb, SMC_NLA_LGR_D_ID, *((u32 *)&lgr->id)))
+ 		goto errattr;
+-	if (nla_put_u64_64bit(skb, SMC_NLA_LGR_D_GID, lgr->smcd->local_gid,
+-			      SMC_NLA_LGR_D_PAD))
++	if (nla_put_u64_64bit(skb, SMC_NLA_LGR_D_GID,
++			      smcd->ops->get_local_gid(smcd),
++				  SMC_NLA_LGR_D_PAD))
+ 		goto errattr;
+ 	if (nla_put_u64_64bit(skb, SMC_NLA_LGR_D_PEER_GID, lgr->peer_gid,
+ 			      SMC_NLA_LGR_D_PAD))
+diff --git a/net/smc/smc_diag.c b/net/smc/smc_diag.c
+index 80ea7d954ece..7ff2152971a5 100644
+--- a/net/smc/smc_diag.c
++++ b/net/smc/smc_diag.c
+@@ -167,12 +167,13 @@ static int __smc_diag_dump(struct sock *sk, struct sk_buff *skb,
+ 	    !list_empty(&smc->conn.lgr->list)) {
+ 		struct smc_connection *conn = &smc->conn;
+ 		struct smcd_diag_dmbinfo dinfo;
++		struct smcd_dev *smcd = conn->lgr->smcd;
  
-+static void smcd_register_dev(struct ism_dev *ism);
-+static void smcd_unregister_dev(struct ism_dev *ism);
-+static void smcd_handle_event(struct ism_dev *ism, struct ism_event *event);
-+static void smcd_handle_irq(struct ism_dev *ism, unsigned int dmbno,
-+			    u16 dmbemask);
-+
-+static struct ism_client smc_ism_client = {
-+	.name = "SMC-D",
-+	.add = smcd_register_dev,
-+	.remove = smcd_unregister_dev,
-+	.handle_event = smcd_handle_event,
-+	.handle_irq = smcd_handle_irq,
-+};
-+
- /* Test if an ISM communication is possible - same CPC */
- int smc_ism_cantalk(u64 peer_gid, unsigned short vlan_id, struct smcd_dev *smcd)
- {
-@@ -409,8 +424,6 @@ struct smcd_dev *smcd_alloc_dev(struct device *parent, const char *name,
- 	device_initialize(&smcd->dev);
- 	dev_set_name(&smcd->dev, name);
- 	smcd->ops = ops;
--	if (smc_pnetid_by_dev_port(parent, 0, smcd->pnetid))
--		smc_pnetid_by_table_smcd(smcd);
+ 		memset(&dinfo, 0, sizeof(dinfo));
  
- 	spin_lock_init(&smcd->lock);
- 	spin_lock_init(&smcd->lgr_lock);
-@@ -421,9 +434,25 @@ struct smcd_dev *smcd_alloc_dev(struct device *parent, const char *name,
- }
- EXPORT_SYMBOL_GPL(smcd_alloc_dev);
+ 		dinfo.linkid = *((u32 *)conn->lgr->id);
+ 		dinfo.peer_gid = conn->lgr->peer_gid;
+-		dinfo.my_gid = conn->lgr->smcd->local_gid;
++		dinfo.my_gid = smcd->ops->get_local_gid(smcd);
+ 		dinfo.token = conn->rmb_desc->token;
+ 		dinfo.peer_token = conn->peer_token;
  
--int smcd_register_dev(struct smcd_dev *smcd)
-+void smcd_free_dev(struct smcd_dev *smcd)
- {
--	int rc;
-+	put_device(&smcd->dev);
-+}
-+EXPORT_SYMBOL_GPL(smcd_free_dev);
-+
-+static void smcd_register_dev(struct ism_dev *ism)
-+{
-+	const struct smcd_ops *ops = NULL;
-+	struct smcd_dev *smcd;
-+
-+	smcd = smcd_alloc_dev(&ism->pdev->dev, dev_name(&ism->pdev->dev), ops,
-+			      ISM_NR_DMBS);
-+	if (!smcd)
-+		return;
-+	smcd->priv = ism;
-+	ism_set_priv(ism, &smc_ism_client, smcd);
-+	if (smc_pnetid_by_dev_port(&ism->pdev->dev, 0, smcd->pnetid))
-+		smc_pnetid_by_table_smcd(smcd);
- 
- 	mutex_lock(&smcd_dev_list.mutex);
- 	if (list_empty(&smcd_dev_list.list)) {
-@@ -447,19 +476,20 @@ int smcd_register_dev(struct smcd_dev *smcd)
- 			    dev_name(&smcd->dev), smcd->pnetid,
- 			    smcd->pnetid_by_user ? " (user defined)" : "");
- 
--	rc = device_add(&smcd->dev);
--	if (rc) {
-+	if (device_add(&smcd->dev)) {
- 		mutex_lock(&smcd_dev_list.mutex);
- 		list_del(&smcd->list);
- 		mutex_unlock(&smcd_dev_list.mutex);
-+		smcd_free_dev(smcd);
- 	}
- 
--	return rc;
-+	return;
- }
--EXPORT_SYMBOL_GPL(smcd_register_dev);
- 
--void smcd_unregister_dev(struct smcd_dev *smcd)
-+static void smcd_unregister_dev(struct ism_dev *ism)
- {
-+	struct smcd_dev *smcd = ism_get_priv(ism, &smc_ism_client);
-+
- 	pr_warn_ratelimited("smc: removing smcd device %s\n",
- 			    dev_name(&smcd->dev));
- 	smcd->going_away = 1;
-@@ -471,16 +501,9 @@ void smcd_unregister_dev(struct smcd_dev *smcd)
- 
- 	device_del(&smcd->dev);
- }
--EXPORT_SYMBOL_GPL(smcd_unregister_dev);
--
--void smcd_free_dev(struct smcd_dev *smcd)
--{
--	put_device(&smcd->dev);
--}
--EXPORT_SYMBOL_GPL(smcd_free_dev);
- 
- /* SMCD Device event handler. Called from ISM device interrupt handler.
-- * Parameters are smcd device pointer,
-+ * Parameters are ism device pointer,
-  * - event->type (0 --> DMB, 1 --> GID),
-  * - event->code (event code),
-  * - event->tok (either DMB token when event type 0, or GID when event type 1)
-@@ -490,8 +513,9 @@ EXPORT_SYMBOL_GPL(smcd_free_dev);
-  * Context:
-  * - Function called in IRQ context from ISM device driver event handler.
-  */
--void smcd_handle_event(struct smcd_dev *smcd, struct ism_event *event)
-+static void smcd_handle_event(struct ism_dev *ism, struct ism_event *event)
- {
-+	struct smcd_dev *smcd = ism_get_priv(ism, &smc_ism_client);
- 	struct smc_ism_event_work *wrk;
- 
- 	if (smcd->going_away)
-@@ -505,17 +529,18 @@ void smcd_handle_event(struct smcd_dev *smcd, struct ism_event *event)
- 	wrk->event = *event;
- 	queue_work(smcd->event_wq, &wrk->work);
- }
--EXPORT_SYMBOL_GPL(smcd_handle_event);
- 
- /* SMCD Device interrupt handler. Called from ISM device interrupt handler.
-- * Parameters are smcd device pointer, DMB number, and the DMBE bitmask.
-+ * Parameters are the ism device pointer, DMB number, and the DMBE bitmask.
-  * Find the connection and schedule the tasklet for this connection.
-  *
-  * Context:
-  * - Function called in IRQ context from ISM device driver IRQ handler.
-  */
--void smcd_handle_irq(struct smcd_dev *smcd, unsigned int dmbno, u16 dmbemask)
-+static void smcd_handle_irq(struct ism_dev *ism, unsigned int dmbno,
-+			    u16 dmbemask)
- {
-+	struct smcd_dev *smcd = ism_get_priv(ism, &smc_ism_client);
- 	struct smc_connection *conn = NULL;
- 	unsigned long flags;
- 
-@@ -525,10 +550,21 @@ void smcd_handle_irq(struct smcd_dev *smcd, unsigned int dmbno, u16 dmbemask)
- 		tasklet_schedule(&conn->rx_tsklet);
- 	spin_unlock_irqrestore(&smcd->lock, flags);
- }
--EXPORT_SYMBOL_GPL(smcd_handle_irq);
- 
--void __init smc_ism_init(void)
-+int smc_ism_init(void)
- {
- 	smc_ism_v2_capable = false;
- 	memset(smc_ism_v2_system_eid, 0, SMC_MAX_EID_LEN);
-+#if IS_ENABLED(CONFIG_ISM)
-+	return ism_register_client(&smc_ism_client);
-+#else
-+	return 0;
-+#endif
-+}
-+
-+void smc_ism_exit(void)
-+{
-+#if IS_ENABLED(CONFIG_ISM)
-+	ism_unregister_client(&smc_ism_client);
-+#endif
- }
-diff --git a/net/smc/smc_ism.h b/net/smc/smc_ism.h
-index d6b2db604fe8..832b2f42d79f 100644
---- a/net/smc/smc_ism.h
-+++ b/net/smc/smc_ism.h
-@@ -42,7 +42,8 @@ int smc_ism_signal_shutdown(struct smc_link_group *lgr);
- void smc_ism_get_system_eid(u8 **eid);
- u16 smc_ism_get_chid(struct smcd_dev *dev);
- bool smc_ism_is_v2_capable(void);
--void smc_ism_init(void);
-+int smc_ism_init(void);
-+void smc_ism_exit(void);
- int smcd_nl_get_device(struct sk_buff *skb, struct netlink_callback *cb);
- 
- static inline int smc_ism_write(struct smcd_dev *smcd, u64 dmb_tok,
 -- 
 2.25.1
 
