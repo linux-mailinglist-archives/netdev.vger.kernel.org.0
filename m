@@ -2,67 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 040516783AE
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 18:53:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 407DD6783B5
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 18:55:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232745AbjAWRxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 12:53:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33320 "EHLO
+        id S232755AbjAWRz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 12:55:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232721AbjAWRxy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 12:53:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F52A2CFC6;
-        Mon, 23 Jan 2023 09:53:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8C8C60FCF;
-        Mon, 23 Jan 2023 17:53:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 642A8C433EF;
-        Mon, 23 Jan 2023 17:53:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674496432;
-        bh=+Er0pkWUK8+OPtfJQdHL7PumlS0/GZAMi+V9Rn2lbxk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Qb0FVSoLxsClY8f8bzTqqA5IKD/pOdB6PUMtkhyUrsLqJp2cMsUxO/MTvQwgIdBjV
-         C4P83phtUcRb0w8Os1wkfSunF2hX2qxLxxT7uNTnF9Dc2AoC0y1c8Fb7A6Z6i8SJEF
-         uFyvc9S9DSxVLoEzHHvJqhYbRr+d13EHdh+4J4+zntk6lZdlo35EIZTYgSxv4/nfbC
-         d+K2WTgG6VeFwif2gh6Ozg/U8WBbL1nvT/USuBZjUSmXZmFT/3JotO9GnNiSVM33ia
-         CdC8HSMBNQe6j0ler+iY671g2lT10+nRAntBdwVY/0t8/GY9W7roXeUB0aKYOu9YvZ
-         qF8Q/VF8UN60Q==
-Date:   Mon, 23 Jan 2023 19:47:50 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Neal Cardwell <ncardwell@google.com>, selinux@vger.kernel.org,
-        Paul Moore <paul@paul-moore.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>, kernel-team@cloudflare.com,
-        Marek Majkowski <marek@cloudflare.com>
-Subject: Re: [PATCH net-next v4 1/2] inet: Add IP_LOCAL_PORT_RANGE socket
- option
-Message-ID: <Y87IRq1ITGcWIh3F@unreal>
-References: <20221221-sockopt-port-range-v4-0-d7d2f2561238@cloudflare.com>
- <20221221-sockopt-port-range-v4-1-d7d2f2561238@cloudflare.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        with ESMTP id S231994AbjAWRz4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 12:55:56 -0500
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02CE32B63F;
+        Mon, 23 Jan 2023 09:55:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1674496555; x=1706032555;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=56UTVEP0QV4P8QYHkevt71ugXG0v9vqVo2DtFZm/7PE=;
+  b=IMgRtaOsX2Mh9AVVgDDGsjXSSa2aToHuTqWeqw4M7pqBarcRyi0vm+4p
+   ODj8TcUaVoy0Mro3lNzVXN1nAEabcfUwbD4Docb36AnzLxfrscP4spLhj
+   xXptKhopX4uwyOUn525AjEur77d9o6K4HHK31gbskGbYWmzCUZY0N34W7
+   c=;
+X-IronPort-AV: E=Sophos;i="5.97,240,1669075200"; 
+   d="scan'208";a="285625668"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-3554bfcf.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2023 17:55:52 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1e-m6i4x-3554bfcf.us-east-1.amazon.com (Postfix) with ESMTPS id 7297282675;
+        Mon, 23 Jan 2023 17:55:47 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.45; Mon, 23 Jan 2023 17:55:46 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.43.161.198) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.7;
+ Mon, 23 Jan 2023 17:55:43 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <jakub@cloudflare.com>
+CC:     <davem@davemloft.net>, <edumazet@google.com>,
+        <eparis@parisplace.org>, <kernel-team@cloudflare.com>,
+        <kuba@kernel.org>, <kuniyu@amazon.com>, <marek@cloudflare.com>,
+        <ncardwell@google.com>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>, <paul@paul-moore.com>,
+        <selinux@vger.kernel.org>, <stephen.smalley.work@gmail.com>
+Subject: Re: [PATCH net-next v4 1/2] inet: Add IP_LOCAL_PORT_RANGE socket option
+Date:   Mon, 23 Jan 2023 09:55:26 -0800
+Message-ID: <20230123175526.59356-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221221-sockopt-port-range-v4-1-d7d2f2561238@cloudflare.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221221-sockopt-port-range-v4-1-d7d2f2561238@cloudflare.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.198]
+X-ClientProxiedBy: EX13D37UWC004.ant.amazon.com (10.43.162.212) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 23, 2023 at 03:44:39PM +0100, Jakub Sitnicki wrote:
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+Date:   Mon, 23 Jan 2023 15:44:39 +0100
 > Users who want to share a single public IP address for outgoing connections
 > between several hosts traditionally reach for SNAT. However, SNAT requires
 > state keeping on the node(s) performing the NAT.
@@ -180,8 +187,202 @@ On Mon, Jan 23, 2023 at 03:44:39PM +0100, Jakub Sitnicki wrote:
 > v1 -> v2:
 >  * Fix the corner case when the per-socket range doesn't overlap with the
 >    per-netns range. Fallback correctly to the per-netns range. (Kuniyuki)
+> 
+> Reviewed-by: Marek Majkowski <marek@cloudflare.com>
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 
-Please put changelog after "---" trailer, so it will be stripped while
-applying patch.
+Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-Thanks
+In case you might forgot this comment, but the patch looks good to me.
+https://lore.kernel.org/netdev/20230111005923.47037-1-kuniyu@amazon.com/
+
+Thanks!
+
+
+> ---
+>  include/net/inet_sock.h         |  4 ++++
+>  include/net/ip.h                |  3 ++-
+>  include/uapi/linux/in.h         |  1 +
+>  net/ipv4/inet_connection_sock.c | 25 +++++++++++++++++++++++--
+>  net/ipv4/inet_hashtables.c      |  2 +-
+>  net/ipv4/ip_sockglue.c          | 18 ++++++++++++++++++
+>  net/ipv4/udp.c                  |  2 +-
+>  net/sctp/socket.c               |  2 +-
+>  8 files changed, 51 insertions(+), 6 deletions(-)
+> 
+> diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+> index bf5654ce711e..51857117ac09 100644
+> --- a/include/net/inet_sock.h
+> +++ b/include/net/inet_sock.h
+> @@ -249,6 +249,10 @@ struct inet_sock {
+>  	__be32			mc_addr;
+>  	struct ip_mc_socklist __rcu	*mc_list;
+>  	struct inet_cork_full	cork;
+> +	struct {
+> +		__u16 lo;
+> +		__u16 hi;
+> +	}			local_port_range;
+>  };
+>  
+>  #define IPCORK_OPT	1	/* ip-options has been held in ipcork.opt */
+> diff --git a/include/net/ip.h b/include/net/ip.h
+> index 144bdfbb25af..c3fffaa92d6e 100644
+> --- a/include/net/ip.h
+> +++ b/include/net/ip.h
+> @@ -340,7 +340,8 @@ static inline u64 snmp_fold_field64(void __percpu *mib, int offt, size_t syncp_o
+>  	} \
+>  }
+>  
+> -void inet_get_local_port_range(struct net *net, int *low, int *high);
+> +void inet_get_local_port_range(const struct net *net, int *low, int *high);
+> +void inet_sk_get_local_port_range(const struct sock *sk, int *low, int *high);
+>  
+>  #ifdef CONFIG_SYSCTL
+>  static inline bool inet_is_local_reserved_port(struct net *net, unsigned short port)
+> diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
+> index 07a4cb149305..4b7f2df66b99 100644
+> --- a/include/uapi/linux/in.h
+> +++ b/include/uapi/linux/in.h
+> @@ -162,6 +162,7 @@ struct in_addr {
+>  #define MCAST_MSFILTER			48
+>  #define IP_MULTICAST_ALL		49
+>  #define IP_UNICAST_IF			50
+> +#define IP_LOCAL_PORT_RANGE		51
+>  
+>  #define MCAST_EXCLUDE	0
+>  #define MCAST_INCLUDE	1
+> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+> index d1f837579398..1049a9b8d152 100644
+> --- a/net/ipv4/inet_connection_sock.c
+> +++ b/net/ipv4/inet_connection_sock.c
+> @@ -117,7 +117,7 @@ bool inet_rcv_saddr_any(const struct sock *sk)
+>  	return !sk->sk_rcv_saddr;
+>  }
+>  
+> -void inet_get_local_port_range(struct net *net, int *low, int *high)
+> +void inet_get_local_port_range(const struct net *net, int *low, int *high)
+>  {
+>  	unsigned int seq;
+>  
+> @@ -130,6 +130,27 @@ void inet_get_local_port_range(struct net *net, int *low, int *high)
+>  }
+>  EXPORT_SYMBOL(inet_get_local_port_range);
+>  
+> +void inet_sk_get_local_port_range(const struct sock *sk, int *low, int *high)
+> +{
+> +	const struct inet_sock *inet = inet_sk(sk);
+> +	const struct net *net = sock_net(sk);
+> +	int lo, hi, sk_lo, sk_hi;
+> +
+> +	inet_get_local_port_range(net, &lo, &hi);
+> +
+> +	sk_lo = inet->local_port_range.lo;
+> +	sk_hi = inet->local_port_range.hi;
+> +
+> +	if (unlikely(sk_lo && sk_lo <= hi))
+> +		lo = max(lo, sk_lo);
+> +	if (unlikely(sk_hi && sk_hi >= lo))
+> +		hi = min(hi, sk_hi);
+> +
+> +	*low = lo;
+> +	*high = hi;
+> +}
+> +EXPORT_SYMBOL(inet_sk_get_local_port_range);
+> +
+>  static bool inet_use_bhash2_on_bind(const struct sock *sk)
+>  {
+>  #if IS_ENABLED(CONFIG_IPV6)
+> @@ -316,7 +337,7 @@ inet_csk_find_open_port(const struct sock *sk, struct inet_bind_bucket **tb_ret,
+>  ports_exhausted:
+>  	attempt_half = (sk->sk_reuse == SK_CAN_REUSE) ? 1 : 0;
+>  other_half_scan:
+> -	inet_get_local_port_range(net, &low, &high);
+> +	inet_sk_get_local_port_range(sk, &low, &high);
+>  	high++; /* [32768, 60999] -> [32768, 61000[ */
+>  	if (high - low < 4)
+>  		attempt_half = 0;
+> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> index 7a13dd7f546b..e41fdc38ce19 100644
+> --- a/net/ipv4/inet_hashtables.c
+> +++ b/net/ipv4/inet_hashtables.c
+> @@ -1016,7 +1016,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+>  
+>  	l3mdev = inet_sk_bound_l3mdev(sk);
+>  
+> -	inet_get_local_port_range(net, &low, &high);
+> +	inet_sk_get_local_port_range(sk, &low, &high);
+>  	high++; /* [32768, 60999] -> [32768, 61000[ */
+>  	remaining = high - low;
+>  	if (likely(remaining > 1))
+> diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
+> index 9f92ae35bb01..b511ff0adc0a 100644
+> --- a/net/ipv4/ip_sockglue.c
+> +++ b/net/ipv4/ip_sockglue.c
+> @@ -923,6 +923,7 @@ int do_ip_setsockopt(struct sock *sk, int level, int optname,
+>  	case IP_CHECKSUM:
+>  	case IP_RECVFRAGSIZE:
+>  	case IP_RECVERR_RFC4884:
+> +	case IP_LOCAL_PORT_RANGE:
+>  		if (optlen >= sizeof(int)) {
+>  			if (copy_from_sockptr(&val, optval, sizeof(val)))
+>  				return -EFAULT;
+> @@ -1365,6 +1366,20 @@ int do_ip_setsockopt(struct sock *sk, int level, int optname,
+>  		WRITE_ONCE(inet->min_ttl, val);
+>  		break;
+>  
+> +	case IP_LOCAL_PORT_RANGE:
+> +	{
+> +		const __u16 lo = val;
+> +		const __u16 hi = val >> 16;
+> +
+> +		if (optlen != sizeof(__u32))
+> +			goto e_inval;
+> +		if (lo != 0 && hi != 0 && lo > hi)
+> +			goto e_inval;
+> +
+> +		inet->local_port_range.lo = lo;
+> +		inet->local_port_range.hi = hi;
+> +		break;
+> +	}
+>  	default:
+>  		err = -ENOPROTOOPT;
+>  		break;
+> @@ -1743,6 +1758,9 @@ int do_ip_getsockopt(struct sock *sk, int level, int optname,
+>  	case IP_MINTTL:
+>  		val = inet->min_ttl;
+>  		break;
+> +	case IP_LOCAL_PORT_RANGE:
+> +		val = inet->local_port_range.hi << 16 | inet->local_port_range.lo;
+> +		break;
+>  	default:
+>  		sockopt_release_sock(sk);
+>  		return -ENOPROTOOPT;
+> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> index 9592fe3e444a..c605d171eb2d 100644
+> --- a/net/ipv4/udp.c
+> +++ b/net/ipv4/udp.c
+> @@ -248,7 +248,7 @@ int udp_lib_get_port(struct sock *sk, unsigned short snum,
+>  		int low, high, remaining;
+>  		unsigned int rand;
+>  
+> -		inet_get_local_port_range(net, &low, &high);
+> +		inet_sk_get_local_port_range(sk, &low, &high);
+>  		remaining = (high - low) + 1;
+>  
+>  		rand = get_random_u32();
+> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> index a98511b676cd..b91616f819de 100644
+> --- a/net/sctp/socket.c
+> +++ b/net/sctp/socket.c
+> @@ -8322,7 +8322,7 @@ static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
+>  		int low, high, remaining, index;
+>  		unsigned int rover;
+>  
+> -		inet_get_local_port_range(net, &low, &high);
+> +		inet_sk_get_local_port_range(sk, &low, &high);
+>  		remaining = (high - low) + 1;
+>  		rover = get_random_u32_below(remaining) + low;
+>  
+> 
+> -- 
+> 2.39.0
