@@ -2,358 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C234167782F
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 11:05:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EB96677830
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 11:05:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230360AbjAWKFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 05:05:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33720 "EHLO
+        id S231130AbjAWKFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 05:05:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229839AbjAWKFE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 05:05:04 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2118.outbound.protection.outlook.com [40.107.243.118])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D1410D
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 02:05:03 -0800 (PST)
+        with ESMTP id S231269AbjAWKFV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 05:05:21 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2062.outbound.protection.outlook.com [40.107.223.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5F244B7;
+        Mon, 23 Jan 2023 02:05:19 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RHQ0tzYY7d6ZkFunlex3fv2k5svjkMpW3Q1dYcguryINrj3yasZhDQPuh8l15X4dP6nmQH4lSDQ3uJqT6t81LTTddniBCByqVApCYchMrZGAdQBWfV1cRzpZ5HZl8umvxZsbryiU3DXowexMkPSeQ3dKpCW26ttMLQHAQ6qO/2C7XNash2U8R+H89pjD6mvZTDQAfrvYmk/R+E8ti2Cb/yRkRDz3i3pjjtvJ8qLriZ3461XF0qnf+LGvX2Qy43N1E41mqSG5Co1xq5qh3AT0HqIEszfe9k2Q1rRpYLUp9P/8H1QCI8G9DyCrwqsN5VRRIE1HNxnepqqAkb6zkIWeew==
+ b=k1yuWHqo+2dtvjD53dHnVndWDkFLV0sPfMI94KxJqTGAvxYw8ALeHXhXtg1B2uLRFNldn/aDoI9U+t9vcTVUF71T0oyDwMKwGAZo1R5+spakIPqwKJSyzl/wqrZ2xn/yBoZBYbUQR0UZtqgL/xMHt++w+A8PpduMHb3YwPs2vF8GV+XnIRgjkBOYRGsPqwXTqN+QMzv5OTyJp2YcoaaeQRu7YBv7MiYC+bLENw83fzm789h8YZ+FeKCpQNc1yXldcYB5WB1VFR5Fz4pDuNK7KmHGoqUZ8/+GHWjMbXQ5gN6pOl4iwM8Tq3IFuqvvU+0vFcZ+YoPNIQ0mtP7xEzcMmA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/dALkBEklrHco+AJBP33UnfPk9QDD1lSqxyduHEyxaA=;
- b=OxrNmCnGmo1Qhn3WILtQhK8ged94mmX4V0phh5SfbOZrxuS7LHV43B8RS/xLZVBBoACVT4MF9+Xcrk1Hjx71FXQQ1AI3kwKE/+LiwJV9QIKkGV/2Vq6VSr+4xVZydxXkPgmEyZypKLmuAlb25HYcNYro2St6YHLUQ6dErX5Z5uQ7I96oYF4Ijg3BoLQ9T3rxpHTogDIK9rDZnGMioNHs7Be/EbvhXqY0gTtmjqiC0hi/jBT3sX5/K6ZfPcShzv/MXO9Tg+l+bST9MewrKNY70qPX0Cu6QCisdsS/CESLMtnp1F2hTll6O7aFA2UdvTpRVedb0+3C+Y+J6hTgEkA33Q==
+ bh=x0nkmUR4VXQrIGJAIf1zm+5jc/pUynbPplvtuaZZ4bY=;
+ b=UHMXompsYVAuJa1pFtBtUYqmAT819h9/+tVGK3lMD7LKAeyxROUsUooq5P0MaTA5FGik2I0CBZ4o/AlWGNnP9BKLJMGBNnq1ix39R8xe5coM1ijpu9g3WnIlyCM34xQsvKkVXjzm2mGZi6QECA5J6ggkKmuMiMKSAydoEpc8/Pj03HtTQz2tjv89pOs93auts+30vwzPAv2vICrXcVGUaw7Oo6gQmgeODeeRm9FiAUsHvABXXc3KQWwV6+sTtnV9V2MxHiUvRrL7QKrf71x4HlqH9WAFwpJpAeoC6nU+2GVxoNnn3YGbFt/Gf7CbIqZlgbQkVoJeaEIA6ach1eUPUA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/dALkBEklrHco+AJBP33UnfPk9QDD1lSqxyduHEyxaA=;
- b=Eo/zGiONIoa/LOIhZ3wrWpaa9IVk64BtzTgpai2hQr3T3Cx0usWbA2JuKl760PmS657+raO0ism9q6z1rVz52k5SY0wHiiAxoHsNKugUL/m2YXyzc5ARlCeQ+fdGalKCdLdL/vxKyGP38f0GUMjSdEEROHN3TCDtcjfcQLzA2Xs=
+ bh=x0nkmUR4VXQrIGJAIf1zm+5jc/pUynbPplvtuaZZ4bY=;
+ b=aRwOSw4XAE60mhmzDMZ2JDoqBvxnwO8gPWAz1fm+NsX42Gk8OkhxFYMn7Lb9H7ZRl4u3rbN2r2XGxYpHCX8iArX9mNCFJNoUfUN9CM14NR8sMSaIU6D3p0fOd36RtlHhHjGJgBNVBMIAvtMse3h6UoIiBKaQP4Cfba+regjNeHxMDSoQoAE+IX65dJWMuVd7bIY8wP3/+oqSvx9lTSqxBFxNhixSxW4lZZVMYtYZhcUxazXAWrfnaPgCMgP5yEKp+AV+bbMimnyfZzJOKozTnEmmU1OdGqlQb/7zMBJd8ohCYoKsz8+KlHT6yPokkokvEIATV+LNctPG89iVai+kRQ==
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by MW5PR13MB5415.namprd13.prod.outlook.com (2603:10b6:303:196::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Mon, 23 Jan
- 2023 10:05:00 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65%5]) with mapi id 15.20.6002.033; Mon, 23 Jan 2023
- 10:05:00 +0000
-Date:   Mon, 23 Jan 2023 11:04:52 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Paul Blakey <paulb@nvidia.com>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM8PR12MB5400.namprd12.prod.outlook.com (2603:10b6:8:3b::12) by
+ IA1PR12MB8079.namprd12.prod.outlook.com (2603:10b6:208:3fb::5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6002.33; Mon, 23 Jan 2023 10:05:16 +0000
+Received: from DM8PR12MB5400.namprd12.prod.outlook.com
+ ([fe80::70c6:a62a:4199:b8ed]) by DM8PR12MB5400.namprd12.prod.outlook.com
+ ([fe80::70c6:a62a:4199:b8ed%5]) with mapi id 15.20.6002.033; Mon, 23 Jan 2023
+ 10:05:16 +0000
+Message-ID: <920a779b-88f5-617f-792d-a174311b5b36@nvidia.com>
+Date:   Mon, 23 Jan 2023 12:05:05 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH 1/4] virtio_net: notify MAC address change on device
+ initialization
+To:     Laurent Vivier <lvivier@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        Gautam Dawar <gautam.dawar@xilinx.com>,
+        Cindy Lu <lulu@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
-Subject: Re: [PATCH net-next v4 1/6] net/sched: cls_api: Support hardware
- miss to tc action
-Message-ID: <Y85bxLzv9wgwh+h5@corigine.com>
-References: <20230122145512.8920-1-paulb@nvidia.com>
- <20230122145512.8920-2-paulb@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230122145512.8920-2-paulb@nvidia.com>
-X-ClientProxiedBy: AS4P191CA0002.EURP191.PROD.OUTLOOK.COM
- (2603:10a6:20b:5d5::6) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>
+References: <20230122100526.2302556-1-lvivier@redhat.com>
+ <20230122100526.2302556-2-lvivier@redhat.com>
+ <07a24753-767b-4e1e-2bcf-21ec04bc044a@nvidia.com>
+ <8b80ac91-cf60-f5ff-a5dd-c5247c9c8f64@redhat.com>
+Content-Language: en-US
+From:   Eli Cohen <elic@nvidia.com>
+In-Reply-To: <8b80ac91-cf60-f5ff-a5dd-c5247c9c8f64@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: VI1PR08CA0146.eurprd08.prod.outlook.com
+ (2603:10a6:800:d5::24) To DM8PR12MB5400.namprd12.prod.outlook.com
+ (2603:10b6:8:3b::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MW5PR13MB5415:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4f5ce151-c22f-494f-919e-08dafd2949ef
+X-MS-TrafficTypeDiagnostic: DM8PR12MB5400:EE_|IA1PR12MB8079:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2bb4165d-b122-4dfd-05d5-08dafd295375
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lKU/9Rs9nwvw6Ix24F1e8CEQ7e/dL+0lPR3KzH6dOBrxfkJBByqq/C/dYo+cDUTXUVan8rtBKstx4g+bs/9+Mbr/fG1+A//XaklOw1zol8BX24U0fH1h9RL+soYO7MJ3RzwGve15bFCRiD9UIiXQECl/LxgBoByOqHZZrAcTVfgZzJssdhylMus6ooDODVsxSbkAp1rxOIfwLxPWn3A5oB2wSulQ4E4dTd/+IwiKMi6Hcpf4pwiOGe6oXoUHiswTJqAVHwTQp2Ludb8QBDJ9nb1Vhhko8weQCOoEXfAv20jl0IDuolndAe9xqCj2VzIxrTLF2BlFBOf/l2dRP4gSa/nBgAHW0bgrIGfcZtQ6FmmX/pLm5sJX3UX4d9GiM3GJ2Y1fTzItE4Zh8JGeNGgA34IKX2gKHDotptlEt1x57BdBO8gnjvI6Vn80v1ulFG+esuZsJdVgIqFE3uVf4hU6FuYPlauhWuCsZtDzyb5oPlWN18r0ghGrfdO7s9KlGBWvaKG/uA2vHpgqO/Safovx0ljV107WffG1ezEekgPuprqVu4GZSb79mOQeitrvzUniqrnOen/EEkwsqU0gz8W0BGgY2NcmPChchHY39oqh8MjeSxxslnnGXyk4UDe9SaDCRWaTC7Xb+vg+7I13AJv8ihsnINR4SNA4cMcLxIrWBnLMzHs9nmNcLjOl+5FmOCPP
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39830400003)(366004)(376002)(396003)(136003)(346002)(451199015)(6916009)(66946007)(4326008)(66476007)(66556008)(8676002)(2616005)(6486002)(6512007)(6666004)(83380400001)(186003)(44832011)(8936002)(5660300002)(7416002)(41300700001)(2906002)(6506007)(38100700002)(54906003)(316002)(478600001)(86362001)(36756003)(67856001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: ibq9pAq29XOA8m2BQJvlav3VX47usQXcZS2EBtcajYAYycB5nCKn6HQ4CoSK4i7+1awBRoUCWguig5Ub0HSIE0Bdlvi7RoAa0rKoqTyqAoPt6hZP/VkERdcYUzvtfDyxzo5+BBmvofG/9fSuTN/eCU41XEoQ9gp41BA0gJw/1uVYWdl5AzfK7k7pn5RNEMvSuCzklX/Bf5wmcw38chZxCKRYTxk2mXcugoGOGzAlaZsYKZTvrk3Ukc/8Ta8MdeJ6gTELLbt/bybgUgaS2xe4C6kjTu+YiPSqgZ4jPiP79p5sH4o3nagg30gA41EWxpzIP9hdvegqVjcawd3xnd2DeuwDvjU7AvNeHtdlnj1zCNUR78dO/LZJce45Ur/2+obNswOPzFJCV12UzqPeGd7zMklbkfNcuvzYOAaePCdF6+jqQdRSJV8O0ls2mkRoKHWwV2jFG5KDGWTl2MygHywCQZneHTDB5d/cFv27QdUxIyuM3o+pXskQnOSzB+tn5JRz3Ta/MKm6TVGB5W/t2S43QJfT11U+OHLHzUqqiyWQMIn35VIv7SB6E0nTFHnn1+hjJszquM3n7jQNAfINOK9dpiK02zjeKto9j+yInR5eJaaKBzukH3GTp+gfrI2gLlp4i8boHOQmIhjIGzluafo8BZhgStDne2JcOnslJvPOaYTRQJ2QDgZdQFwyP7ivjwKPqc7xmgX50f9/CKMR3PfSTOlyNkWXSpe/baQcKoYxk0o=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5400.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(366004)(39860400002)(136003)(396003)(451199015)(36756003)(86362001)(2906002)(38100700002)(8936002)(7416002)(4326008)(41300700001)(5660300002)(83380400001)(31696002)(478600001)(6486002)(31686004)(186003)(8676002)(6506007)(26005)(53546011)(6512007)(66946007)(66556008)(66476007)(54906003)(2616005)(316002)(6666004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yMKzGHIReQi60soxym+8nuHLpo5ODU3sdOOSVqr45ttdHohkfPT2TNpSXcCF?=
- =?us-ascii?Q?nwZphqhbWEEynX9qPqJRkWA+DNp26HDQkRNqGA8FqIvlXeWhzrYViaX1SxbT?=
- =?us-ascii?Q?y7asSAl10/WlAUKwUrNDeh0O1pL6l1gEeFGPBSAqbjNaXHRQm8ddvQCN3C8j?=
- =?us-ascii?Q?VLESv0gJHHwNUZhl6N1c3LZczwtJfYU/GQlmIDjaoVccWtV8A+sy7EVhkljQ?=
- =?us-ascii?Q?WaSNEL0wJvt7IOuJ/NvE/pVwcRQGvYSNQDcHdw1rKw8x185bOUhCrCOmD36N?=
- =?us-ascii?Q?TAR4QGGKyP+ML+HAJv2ZRiVt0YI0Zqwg1IKbhJfNnnQ18BU0Nan+D74GPZaJ?=
- =?us-ascii?Q?HSGp4aZMJMb/3Nj1MB/rbF77EzjPvQyniTiDdV+LV4sfFwm4c+vnriLg0GYn?=
- =?us-ascii?Q?w2LnBZs1dv1AnaTka4YreurieR2SGNpdffg5zMApSPQmzaTiKIv4uZFDdaWc?=
- =?us-ascii?Q?c1O1XspMDKXoFdk+3/tIB/Dkz846Cjw3N5uwyJK6hYUrkQokltG+Nky6NM7g?=
- =?us-ascii?Q?ORxnVafimk5qj5mjhwV864EwdPD/DMSjMy2+t3nzPW3vwlvKow+/mtWUivrE?=
- =?us-ascii?Q?4lLDydvab3cfGQSl/LSRyEKazP5fszfLu5OnJFgk47fxACywa/KXMN+dmMy/?=
- =?us-ascii?Q?AhIU5rr3vLWYZOG1mQOJ3bQwIV8zOMWP5UEuNi0FfzoZmUH7aHn9tyrt7/Oc?=
- =?us-ascii?Q?+PVq4btBuCh4qiZ35yMV+9CY6VbJLNsd9zNTTt9FqN6EW3g2/O6dL5NxdeUU?=
- =?us-ascii?Q?V9ZVPN03f+BprYIa5jEV3xVYjuF436qFq1JKuo5+b1TGjlEXDL7HdXb1Ttsr?=
- =?us-ascii?Q?P8c/UTaLQjVN5RxlXWjdSkdfpSDgcXgwiJOS1w9dX5IA7i9ndIsa2DAuzU5U?=
- =?us-ascii?Q?5kXyW+zaHmUaLprDTF7h/Y5E4viNoaEyw8CdpnzwFLP2ZPg6rwujw6BZgivB?=
- =?us-ascii?Q?QSW9f8oh9eLYm5vuGPm9+nmSYaYV8ijlezz4SogJEBRXj86jRBy/LukLSLK6?=
- =?us-ascii?Q?rtgpzhY4EoShrqndKM/kqCl2uBK5/tJGcTj6Pr5s3AmL+GODAOrYdnydN6se?=
- =?us-ascii?Q?OoRyxIlgpFYZJf4VNewhMlIwQh0RmMvv6Kson52YMy7zZ5UYuGYkuiAYBiCQ?=
- =?us-ascii?Q?si2IlIPFNiWuLjxdyZvlwYJwLbYyM6nTR3YUAsAWtKBh+WSAo+8owBOIsE7c?=
- =?us-ascii?Q?spDcjxMeuMOO4dHaT246hKDDwPnq+FaNE8EBOiNw1rCcKa+bBGAPcGakL+cT?=
- =?us-ascii?Q?aym2rpLg9RrKZD0/ZFwBcGRZCIN1V/OnST+PKiR/9eMytjy0VDhS3FwcypPN?=
- =?us-ascii?Q?Za6FhBUKdZAhYAFDEIIDy6plVjIKqJLve8CuQl0WiVZmC+8faxHEr7S+QBMa?=
- =?us-ascii?Q?jSNx6EIE2R3QC+rRvlB9C/7cYIXtEq2TG237TMKgKkzElhc7N5h561tVxtS4?=
- =?us-ascii?Q?m++fi+42veixgJ60zEgcPePYYV0Pm+y43jxT22//PdLoOxy7hZGb7Rj9ajwd?=
- =?us-ascii?Q?0VkMu9Fg7QsOcli3/7vby3Cyd1lvNndJ60uzqXMEFASu+N0ska2ZR/Y55lPH?=
- =?us-ascii?Q?x1JHE3CXpdPR72toNhpxa00I5i192fKLU9brBoLh6YjBC3a57s9EgUQircyW?=
- =?us-ascii?Q?oL7IaAaNtt4LTDdG+hq6Hlwz1hXBEIwqVqarKeAR7BobbMlSL7qHA0w6So9Q?=
- =?us-ascii?Q?TGLxNw=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4f5ce151-c22f-494f-919e-08dafd2949ef
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TjdKUlF3ZTl3QVA3emNHOGNua0FRdXpIRUVzTnJOSWljN3JRQUppUmNoU3Fu?=
+ =?utf-8?B?Mkk4L0N3QUZwbzJSb1QrbXo0aXJTWUwrenZscWNPalRUVENLTi9mVVJud2pX?=
+ =?utf-8?B?aEJaNXAxekFqSk14SndsUy96SGtvSzVtRU5oSFo1dHhidnZCanlhK3VXb3Q3?=
+ =?utf-8?B?UUJPQlJuLzhnTDBONDZDckFMeUlJTmpxaUlUSGtGcVljT3llV3NBNUN1Kysw?=
+ =?utf-8?B?TlhKVUs0V1BkV3RQWFAweHRQWGFlTHJnTlVyM1Yxc3JUYWdueXc3TTIrN1Fy?=
+ =?utf-8?B?Z3BEUEFTT3oxeDU2WnRkTW9PYUkyVzN4RXFmRDNFN1lubzczaFdBNlkyd1Yx?=
+ =?utf-8?B?cFBJQVJscVIyaE1hYjlheVRESSt3cXZUNUJZT25DbExwYVNLeEdVbUpkY0dP?=
+ =?utf-8?B?aFZ6U1J3MnhNWjVQZlJpZ0tsLzh3T0JHUzhKUGhONTMvR25USitSQXZubGhX?=
+ =?utf-8?B?TWQ5bzZLNnY2clMwRm1ud0NyMWpZM21xZWxwUkJKbHkrSGlhclViNXB0ZTRx?=
+ =?utf-8?B?bk5xRUNoYndadjZ1bGxEemFKblBzSnlwKzBTajJiblYxcUdKOUw0SzdnNjlG?=
+ =?utf-8?B?bW5KdFNDQjk5T2pwYXFDSXRwbHhHODM3dWNCL3pLWjBhTDJBR3hwS21RUmtn?=
+ =?utf-8?B?cHA0Sk9ZVkwyakNjMDhFVjEyd21LSkpkVkF6UENPUnVZQ2NkSDRWVWJjUFlm?=
+ =?utf-8?B?L1lLVU5MT2tKMWpRUFl5bFhoOUduMDVsdTNwenRveSs1K0d4V0hDV3Q0c1R1?=
+ =?utf-8?B?bVRVVzhZNXR4VGZSa0NPRlZCRktQZmZReGMxNHV4MDM2WUxZNm9wUVZ0Lzk5?=
+ =?utf-8?B?ODVUdmZnWHBLMHZac2FxK0M0aVRBVEl0clN1NnBEMkpqemFqRkh2alhQalVu?=
+ =?utf-8?B?WmM4MUMwMVdpb3F5d2dDSndJakNVdWMrN2t0QTNhZ0NPdXBLR0IwaEdYQTUx?=
+ =?utf-8?B?eStMb0JvZ2FJQnBpNlhhY2w1RHVvMTB5ZEZ3cVJOMncyVmFQVDVpK3NWUzNJ?=
+ =?utf-8?B?MU55YzVjeWVDV3ZEcHNuV0pmMmRHK0p6WjBOYWErYjNiQzVERllyOU1pTjN1?=
+ =?utf-8?B?NjdNcjIwWGtJbW85NlF6MEdUM25xTjB1MHlSZjFicHVUR01sNFZuUS9namMv?=
+ =?utf-8?B?WTgrTU0yRkluVFV4QzU2TEhFaGd1M1E1VHl1OWJxblpkVXQ5TCtTdTdYQmUr?=
+ =?utf-8?B?K0E0SFZka25FNEsvenFneXpBVFg1a0t4UXZncmlOWVZOMSs5cjFOWlNybWpV?=
+ =?utf-8?B?Y1NtMmQ0KzFES2NENGliR1JBSzI4S1ZDcWpyYi9JRTExeDhCU2l6SU9tM0sz?=
+ =?utf-8?B?YTFzYjUvWVFQdnBUK3JZQnJ3TmtIVENDblRkK0MwMHVwdVlFYmJSOU1SNnYr?=
+ =?utf-8?B?OURkT2hBNWNpejRhTXh4clZ5a3VWVGdSMStSRUVIZUF5Z1F4YTRHM0h4Z0hy?=
+ =?utf-8?B?OEorNVdvWG9PMkFHeUJFOTd6TjdleTZFNDdrMmE0dkxkbnhYYzgxRUxMSkJM?=
+ =?utf-8?B?bGVIdUJHT2k1cWpyMUxTNVVQN3lzY0F1WDU2eU9ndlN4bkdsWFpjVmp6dnpL?=
+ =?utf-8?B?WTdNQXcvNEl1L0c4R2tVYTd2Rm1TUmgwa3Z3Mmo5YWw0Zk92bzdLU0RVa3pC?=
+ =?utf-8?B?WG1FZ2tzZ2srTXBXOWlZTGY2ZWZudDZuSVMvSG9kZ3ZqYStpMkZRVGN5NDlE?=
+ =?utf-8?B?R0RickJiVGR0M3hRaGtCREpsNDFSREpIV3lVZVVURkE0UnBFSS8xU2lkT1ow?=
+ =?utf-8?B?NXBzMWhUdDE0RlBnSkFOdnMzdDVHc05TV2RXZ1luci93azZFVmpmclB1NnV1?=
+ =?utf-8?B?YitBdHFHeE5vVUk3cWhDclgrNFhINC9SejhUTlN0U09hNVZma04yT09ERlhs?=
+ =?utf-8?B?YThvaWJaSitqQ0FHOUx0blh5VlJXcGhuRmxPb29qcjdmWFpqbXMxVU4wRmdJ?=
+ =?utf-8?B?WFpyTDdRMVkvY2ZieWFnNG1jZFlubjhJelZRUzhuUDRCTkZVWUxJV2Ftdkhh?=
+ =?utf-8?B?VVFTVVkzY0FmdVNDZVdqaEtJYzVXbFpqZHRiNHlzbm9nQkpBV0RWaHA1L0l6?=
+ =?utf-8?B?T0NzaGxTZDFDc2NsY0g5Qm5xQTBpeVIrTWYxemJ6NEpQeWM2MDFPTjRBbVlx?=
+ =?utf-8?Q?zDNugiu1/RGQ9JAwbE35jhbfO?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2bb4165d-b122-4dfd-05d5-08dafd295375
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5400.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jan 2023 10:05:00.4145
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jan 2023 10:05:16.4678
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZqKas9rlUTlVDot5uSYytGmQQt509zyN8tcI3NshIeGanEwxOTBIsVCUiuDna5hhiHyyAGSgyn9nBLgLgfDhS27Ec+ep8SFs6OJy8XFfE6k=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR13MB5415
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: Haq/HI493T+/qPtPBWkAOudRpJJN8eadkaUmB/B3bLMurELIJ8j/DJ2M17ASyYTv
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8079
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 22, 2023 at 04:55:07PM +0200, Paul Blakey wrote:
-> For drivers to support partial offload of a filter's action list,
-> add support for action miss to specify an action instance to
-> continue from in sw.
-> 
-> CT action in particular can't be fully offloaded, as new connections
-> need to be handled in software. This imposes other limitations on
-> the actions that can be offloaded together with the CT action, such
-> as packet modifications.
-> 
-> Assign each action on a filter's action list a unique miss_cookie
-> which drivers can then use to fill action_miss part of the tc skb
-> extension. On getting back this miss_cookie, find the action
-> instance with relevant cookie and continue classifying from there.
-> 
-> Signed-off-by: Paul Blakey <paulb@nvidia.com>
-> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 
-...
+On 23/01/2023 11:52, Laurent Vivier wrote:
+> On 1/22/23 14:47, Eli Cohen wrote:
+>>
+>> On 22/01/2023 12:05, Laurent Vivier wrote:
+>>> In virtnet_probe(), if the device doesn't provide a MAC address the
+>>> driver assigns a random one.
+>>> As we modify the MAC address we need to notify the device to allow it
+>>> to update all the related information.
+>>>
+>>> The problem can be seen with vDPA and mlx5_vdpa driver as it doesn't
+>>> assign a MAC address by default. The virtio_net device uses a random
+>>> MAC address (we can see it with "ip link"), but we can't ping a net
+>>> namespace from another one using the virtio-vdpa device because the
+>>> new MAC address has not been provided to the hardware.
+>>>
+>>> Signed-off-by: Laurent Vivier <lvivier@redhat.com>
+>>> ---
+>>>   drivers/net/virtio_net.c | 14 ++++++++++++++
+>>>   1 file changed, 14 insertions(+)
+>>>
+>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>>> index 7723b2a49d8e..25511a86590e 100644
+>>> --- a/drivers/net/virtio_net.c
+>>> +++ b/drivers/net/virtio_net.c
+>>> @@ -3800,6 +3800,8 @@ static int virtnet_probe(struct virtio_device 
+>>> *vdev)
+>>>           eth_hw_addr_set(dev, addr);
+>>>       } else {
+>>>           eth_hw_addr_random(dev);
+>>> +        dev_info(&vdev->dev, "Assigned random MAC address %pM\n",
+>>> +             dev->dev_addr);
+>>>       }
+>>>       /* Set up our device-specific information */
+>>> @@ -3956,6 +3958,18 @@ static int virtnet_probe(struct virtio_device 
+>>> *vdev)
+>>>       pr_debug("virtnet: registered device %s with %d RX and TX 
+>>> vq's\n",
+>>>            dev->name, max_queue_pairs);
+>>> +    /* a random MAC address has been assigned, notify the device */
+>>> +    if (dev->addr_assign_type == NET_ADDR_RANDOM &&
+>> Maybe it's better to not count on addr_assign_type and use a local 
+>> variable to indicate that virtnet_probe assigned random MAC. The 
+>> reason is that the hardware driver might have done that as well and 
+>> does not need notification.
+>
+> eth_hw_addr_random() sets explicitly NET_ADDR_RANDOM, while 
+> eth_hw_addr_set() doesn't change addr_assign_type so it doesn't seem 
+> this value is set by the hardware driver.
+>
+> So I guess it's the default value (NET_ADDR_PERM) in this case (even 
+> if it's a random address from the point of view of the hardware).
+>
+> If you prefer I can replace it by "!virtio_has_feature(vdev, 
+> VIRTIO_NET_F_MAC)"?
+>
+My point is this. What if the hardware driver decides to choose a random 
+address by calling eth_hw_addr_random(). In this case 
+dev->addr_assign_type = NET_ADDR_RANDOM is executed unconditionally. But 
+now you will needlessly execute the control command because the hardware 
+address already knows about this address.
 
-> diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-> index 4cabb32a2ad94..9ef85cf9b5328 100644
-> --- a/include/net/pkt_cls.h
-> +++ b/include/net/pkt_cls.h
 
-...
-
-> @@ -240,21 +243,11 @@ struct tcf_exts {
->  static inline int tcf_exts_init(struct tcf_exts *exts, struct net *net,
->  				int action, int police)
->  {
-> -#ifdef CONFIG_NET_CLS_ACT
-> -	exts->type = 0;
-> -	exts->nr_actions = 0;
-> -	/* Note: we do not own yet a reference on net.
-> -	 * This reference might be taken later from tcf_exts_get_net().
-> -	 */
-> -	exts->net = net;
-> -	exts->actions = kcalloc(TCA_ACT_MAX_PRIO, sizeof(struct tc_action *),
-> -				GFP_KERNEL);
-> -	if (!exts->actions)
-> -		return -ENOMEM;
-> +#ifdef CONFIG_NET_CLS
-> +	return tcf_exts_init_ex(exts, net, action, police, NULL, 0, false);
-> +#else
-> +	return -EOPNOTSUPP;
->  #endif
-
-nit: I think it would be nicer if there was a dummy implementation
-of tcf_exts_init_ex for the !CONFIG_NET_CLS case and #ifdefs
-could disappear from tcf_exts_init() entirely.
-
-Likewise, elsewhere in this patch there seems to be new #if/#ifdefs
-Which may be in keeping with the style of this file. But I also
-think it's a style we ought to be moving away from.
-
-> -	exts->action = action;
-> -	exts->police = police;
-> -	return 0;
->  }
->  
->  /* Return false if the netns is being destroyed in cleanup_net(). Callers
-
-...
-
-> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-> index 5b4a95e8a1ee0..46524ae353c5a 100644
-> --- a/net/sched/cls_api.c
-> +++ b/net/sched/cls_api.c
-
-...
-
-> +static struct tcf_exts_miss_cookie_node *
-> +tcf_exts_miss_cookie_lookup(u64 miss_cookie, int *act_index)
-> +{
-> +	union tcf_exts_miss_cookie mc = { .miss_cookie = miss_cookie, };
-> +
-> +	*act_index = mc.act_index;
-> +	return xa_load(&tcf_exts_miss_cookies_xa, mc.miss_cookie_base);
-> +}
-> +#endif /* IS_ENABLED(CONFIG_NET_TC_SKB_EXT) */
-> +
-> +static u64 tcf_exts_miss_cookie_get(u32 miss_cookie_base, int act_index)
-> +{
-> +	union tcf_exts_miss_cookie mc = { .act_index = act_index, };
-> +
-> +	if (!miss_cookie_base)
-> +		return 0;
-
-nit: perhaps the compiler optimises this out, or it is otherwise
-unimportant,
-but doesn't the assignment
-of mc zero it's fields, other than .act_index only for:
-
-1. Any assignment of mc to be unused in the !miss_cookie_base case
-2. mc.miss_cookie_base to be reassigned, otherwise
-
-FWIIW, I might have gone for something more like this (*untested*).
-
-	union tcf_exts_miss_cookie mc;
-
-	if (!miss_cookie_base)
-		return 0;
-
-	mc.act_index = act_index;
-	mc.miss_cookie_base = miss_cookie_base;
-
-	return mc.miss_cookie;
-
-> +
-> +	mc.miss_cookie_base = miss_cookie_base;
-> +	return mc.miss_cookie;
-> +}
-> +
->  #ifdef CONFIG_NET_CLS_ACT
->  DEFINE_STATIC_KEY_FALSE(tc_skb_ext_tc);
->  EXPORT_SYMBOL(tc_skb_ext_tc);
-> @@ -1549,6 +1642,8 @@ static inline int __tcf_classify(struct sk_buff *skb,
->  				 const struct tcf_proto *orig_tp,
->  				 struct tcf_result *res,
->  				 bool compat_mode,
-> +				 struct tcf_exts_miss_cookie_node *n,
-> +				 int act_index,
->  				 u32 *last_executed_chain)
->  {
->  #ifdef CONFIG_NET_CLS_ACT
-> @@ -1560,13 +1655,40 @@ static inline int __tcf_classify(struct sk_buff *skb,
->  #endif
->  	for (; tp; tp = rcu_dereference_bh(tp->next)) {
->  		__be16 protocol = skb_protocol(skb, false);
-> -		int err;
-> +		int err = 0;
->  
-> -		if (tp->protocol != protocol &&
-> -		    tp->protocol != htons(ETH_P_ALL))
-> -			continue;
-> +		if (n) {
-> +			struct tcf_exts *exts;
->  
-> -		err = tc_classify(skb, tp, res);
-> +			if (n->tp_prio != tp->prio)
-> +				continue;
-> +
-> +			/* We re-lookup the tp and chain based on index instead
-> +			 * of having hard refs and locks to them, so do a sanity
-> +			 * check if any of tp,chain,exts was replaced by the
-> +			 * time we got here with a cookie from hardware.
-> +			 */
-> +			if (unlikely(n->tp != tp || n->tp->chain != n->chain ||
-> +				     !tp->ops->get_exts))
-> +				return TC_ACT_SHOT;
-> +
-> +			exts = tp->ops->get_exts(tp, n->handle);
-
-I see that this is probably safe, but it's not entirely obvious
-that tp->ops->get_exts will never by NULL here.
-
-1) It is invariant on n, which is set in a different function and is in turn
-2) invariant on ext->act_miss being set, several patches away, in the driver.
-3) Which is lastly invariant on being a code path relating to for
-   hardware offload of a classifier where tp->ops->get_exts is defined.
-
-Or perhaps I mixed it up somehow. But I do think at a minimum this
-ought to be documented.
-
-Which brings me to a more central concern with this series: it's very
-invasive and sets up a complex relationship between the core and the
-driver. Is this the right abstraction for the problem at hand?
-
-> +			if (unlikely(!exts || n->exts != exts))
-> +				return TC_ACT_SHOT;
-> +
-> +			n = NULL;
-> +#ifdef CONFIG_NET_CLS_ACT
-> +			err = tcf_action_exec(skb, exts->actions + act_index,
-> +					      exts->nr_actions - act_index,
-> +					      res);
-> +#endif
-> +		} else {
-> +			if (tp->protocol != protocol &&
-> +			    tp->protocol != htons(ETH_P_ALL))
-> +				continue;
-> +
-> +			err = tc_classify(skb, tp, res);
-> +		}
->  #ifdef CONFIG_NET_CLS_ACT
->  		if (unlikely(err == TC_ACT_RECLASSIFY && !compat_mode)) {
->  			first_tp = orig_tp;
-
-...
-
-> @@ -1606,21 +1731,33 @@ int tcf_classify(struct sk_buff *skb,
->  #if !IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
->  	u32 last_executed_chain = 0;
->  
-> -	return __tcf_classify(skb, tp, tp, res, compat_mode,
-> +	return __tcf_classify(skb, tp, tp, res, compat_mode, NULL, 0,
->  			      &last_executed_chain);
->  #else
->  	u32 last_executed_chain = tp ? tp->chain->index : 0;
-> +	struct tcf_exts_miss_cookie_node *n = NULL;
->  	const struct tcf_proto *orig_tp = tp;
->  	struct tc_skb_ext *ext;
-> +	int act_index = 0;
->  	int ret;
->  
->  	if (block) {
->  		ext = skb_ext_find(skb, TC_SKB_EXT);
->  
-> -		if (ext && ext->chain) {
-> +		if (ext && (ext->chain || ext->act_miss)) {
->  			struct tcf_chain *fchain;
-> +			u32 chain = ext->chain;
-
-nit: ext->chain seems to only be used once, as it was before this patch.
-Perhaps the chain local variable is an artifact of development
-and is best not added?
-
-> +
-> +			if (ext->act_miss) {
-> +				n = tcf_exts_miss_cookie_lookup(ext->act_miss_cookie,
-> +								&act_index);
-> +				if (!n)
-> +					return TC_ACT_SHOT;
->  
-> -			fchain = tcf_chain_lookup_rcu(block, ext->chain);
-> +				chain = n->chain_index;
-> +			}
-> +
-> +			fchain = tcf_chain_lookup_rcu(block, chain);
->  			if (!fchain)
->  				return TC_ACT_SHOT;
->  
-
-...
+> Thanks,
+> Laurent
+>
