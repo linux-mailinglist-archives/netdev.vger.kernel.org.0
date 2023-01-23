@@ -2,72 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5676678596
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 19:58:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4ECE67859E
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 19:59:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231618AbjAWS5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 13:57:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37262 "EHLO
+        id S231681AbjAWS7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 13:59:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233191AbjAWS5X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 13:57:23 -0500
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B177915CA6
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 10:57:22 -0800 (PST)
-Received: by mail-qv1-xf2f.google.com with SMTP id t7so9756616qvv.3
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 10:57:22 -0800 (PST)
+        with ESMTP id S232957AbjAWS7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 13:59:04 -0500
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1845534C3A
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 10:58:32 -0800 (PST)
+Received: by mail-qt1-x82b.google.com with SMTP id d16so10522142qtw.8
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 10:58:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=tbpbjohEtLJYWU/WkU+8Siyo5LQUGOcQvkISNCRttHE=;
-        b=K4zoSl8Ei+oH3pgbt5U2yZs9KlGMtSyjYz5VcsHlb19luXZ+YHQDyz3qFVOUlUpc1a
-         LbmqqMqn3UWCBeHxymjNXw6WXCiwz68OwhcAeqgLlSWkBig3NKWMdtAzA7wSGB+qGKRH
-         4+G+Uzr2UOzlanxJ3ercLt1O2LIjn51fyxgP0fqPBgcOLONJEznkvcksOBTNnu3Saf5C
-         3yABkD56fT3nwRJ7aWUB8vU9QDeEKW/f5pCGZBoSRmOT+ry4HZymgyWzb0GEVHhKsT/o
-         WWL4nl7KIigmPW8lv/KCLTGp3d5S4uq7vOOpPHCfhd25GY1TWcRfq34KML8C1TI5iscC
-         xXyg==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=UpYH1WO6hCVqsfBRvgjmR9Gy5XQT/XcOlzdUlx0tWWo=;
+        b=EanuKx2CcayUmyTTluIQpmcLJy2WjSh2bTn5I7osmFnK7utMh8+gvhcqnx2rJuukVo
+         w2euQ08Lg+QUgSAbWiLGUe0W000Qkqtfct8a1zKw3tgj9c0OMdRz3QKGeg3iDmf9OdxG
+         A+qqaYyBSqwnva44XcFppZmkhk/wDNSIdnXlezG9iL3754N05DiIQwOrayiahxR25PdL
+         rgjV9g1lWyR55HqUMOGMx36Hb5F9Ay50je4PZD4YuUNw2f5/V7EIzu805/1saBarpvqU
+         A8jZ3cR+kdCozittzyK8qtxrTbK31EdjbT5pOC1oT3tGXAE/Xkz0lAFI6pW2u0PQtoQ6
+         RuDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=tbpbjohEtLJYWU/WkU+8Siyo5LQUGOcQvkISNCRttHE=;
-        b=J/6SGLphc33d46NG9Alae5VBpTCZJZTLsiV69wQWPrPBAwmRC7nxmQtt2JcZmSAiV3
-         ZC0dOx6VMVs+PgD7dVle5NpZo8uT05iWxDDMUSobzk/N0E+uQjODqOIp9p1FD1ovsI7a
-         c2bZuddfbr16pi0/geaZcfszJjvYNKcR5779li59ZKpOJOwnWBx9FOCY4IsegtmCjn4z
-         K2eOqH/GofMTRWvdSPojEjIt/T1STvcMqwFQ+pQGslq0OCrFeX/0gAGmUUZuF7G6f6t0
-         NvYek1K8VifF6Xg33cV+eH2QaJ/yGvKnsFQlnKFVha1W8lX5m7PTrQxG0aIAWh1GCpGg
-         BD1w==
-X-Gm-Message-State: AFqh2kpRko0fGq7G9BmGfjjt9go7yJeHjV0fnaSUcKmW24yCbRq8kGQN
-        om1omFZwZC91VEwAt5MVxdA=
-X-Google-Smtp-Source: AMrXdXuNOrvU6cffmha7KmsYJ4JhoVW5T1F41ErjsVL2kixm6gVEh8dlZCsK2VeEk/bw0d9Bmb/5hQ==
-X-Received: by 2002:ad4:5893:0:b0:535:59ca:6c6b with SMTP id dz19-20020ad45893000000b0053559ca6c6bmr22764201qvb.19.1674500241735;
-        Mon, 23 Jan 2023 10:57:21 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id q44-20020a05620a2a6c00b006fc9fe67e34sm18154927qkp.81.2023.01.23.10.57.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Jan 2023 10:57:21 -0800 (PST)
-Message-ID: <6b63fe0f-a435-1fdf-bc56-10622b832419@gmail.com>
-Date:   Mon, 23 Jan 2023 10:57:10 -0800
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=UpYH1WO6hCVqsfBRvgjmR9Gy5XQT/XcOlzdUlx0tWWo=;
+        b=DHB/i5b3gRw/40VBytTPWvks9pBSylRXeUvrh2igfAGCcIvduU5DMF1/7b7ZyvH18P
+         axyBLBIurHLIzE4IplE6XNBWA0bKtSaCIbCrotgAJVh4EGEDBicis1DO7Ldh7enNwNXw
+         RQKq5GgTVqkTtFYcKkx3GbgF8ekll8r750eLFFovVnrtZUSF0gL/quzll/Czh7Wx4qb5
+         H7Tghx794QxaPkA/AjT8yZwLTj6Nts35KzqPnqlBB3NcWSXg1tMNRhjHPmoQpn1O9Ymw
+         Q++vnt9SFVpIdTjWkjhYcRSsOXYWPIxnwOnhPFnc/kKLJeizQ6iMLY+jiTAqZ8cvSa+n
+         XEew==
+X-Gm-Message-State: AFqh2kr253g568xas/fH8SEH5eh7JAhZ5lMBZ42Bws0vNmcSLtGMFGwN
+        WZcJ75Y59LjZpV14KPovXCA=
+X-Google-Smtp-Source: AMrXdXv8xWZGi+iq51s4VtCSMj11i0QgUPBIysAdOMAAVR4MpZb5sP7/jAukx3QCrV8pCAdjh5M0xw==
+X-Received: by 2002:ac8:6618:0:b0:3b6:45b7:c7ac with SMTP id c24-20020ac86618000000b003b645b7c7acmr34453369qtp.19.1674500310985;
+        Mon, 23 Jan 2023 10:58:30 -0800 (PST)
+Received: from r.. ([2601:18f:700:287c::1006])
+        by smtp.gmail.com with ESMTPSA id x24-20020ac87ed8000000b003b323387c1asm15203272qtj.18.2023.01.23.10.58.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Jan 2023 10:58:30 -0800 (PST)
+From:   Brian Haley <haleyb.dev@gmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next] neighbor: fix proxy_delay usage when it is zero
+Date:   Mon, 23 Jan 2023 13:58:29 -0500
+Message-Id: <20230123185829.238909-1-haleyb.dev@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: dsa: phy started on dsa_register_switch()
-Content-Language: en-US
-To:     "Sverdlin, Alexander" <alexander.sverdlin@siemens.com>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Cc:     "Freihofer, Adrian" <adrian.freihofer@siemens.com>
-References: <f95cdab0940043167ddf69a4b21292ee63fc9054.camel@siemens.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <f95cdab0940043167ddf69a4b21292ee63fc9054.camel@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -76,78 +68,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/23/23 10:35, Sverdlin, Alexander wrote:
-> Dear DSA maintainers,
-> 
-> I've been puzzled by the fact ports of the DSA switches are enabled on
-> bootup by default (PHYs configured, LEDs ON, etc) in contrast to the
-> normal Ethernet ports.
-> 
-> Some people tend to think this is a security issue that port is "open"
-> even though no configuration has been performed on the port, so I
-> looked into the differences between Ethernet drivers and DSA
-> infrastructure.
+When set to zero, the neighbor sysctl proxy_delay value
+does not cause an immediate reply for ARP/ND requests
+as expected, it instead causes a random delay between
+[0, U32_MAX]. Looking at this comment from
+__get_random_u32_below() explains the reason:
 
-If you are concerned about security with a switch, then clearly the 
-switch should have an EEPROM which configures it to isolate all of the 
-ports from one another, and possibly do additional configuration to 
-prevent any packets from leaking. The PHY and Ethernet link being active 
-would not be a reliable way to ensure you start up in a secure state, it 
-may participate into it, but it is not the only thing you can rely upon.
+/*
+ * This function is technically undefined for ceil == 0, and in fact
+ * for the non-underscored constant version in the header, we build bug
+ * on that. But for the non-constant case, it's convenient to have that
+ * evaluate to being a straight call to get_random_u32(), so that
+ * get_random_u32_inclusive() can work over its whole range without
+ * undefined behavior.
+ */
 
-> 
-> Traditionally phylink_of_phy_connect() and phylink_connect_phy() are
-> being called from _open() callbacks of the Ethernet drivers so
-> as long as the Ethernet ports are !IFF_UP PHYs are not running,
-> LEDs are OFF, etc.
+Added helper function that does not call get_random_u32_below()
+if proxy_delay is zero and just uses the current value of
+jiffies instead, causing pneigh_enqueue() to respond
+immediately.
 
-This is what is advised for Ethernet controller drivers to do, but is 
-not strictly enforced or true throughout the entire tree, that is, it 
-depends largely upon whether people writing/maintaining those drivers 
-are sensitive to that behavior.
+Also added definition of proxy_delay to ip-sysctl.txt since
+it was missing.
 
-> 
-> Now with DSA phylink_of_phy_connect() is being called by
-> dsa_slave_phy_setup() which in turn is being called already in
-> dsa_slave_create(), at the time a switch is being DT-parsed and
-> created.
-> 
-> This confuses users a bit because neither CPU nor user ports have
-> been setup yet from userspace via netlink, yet the LEDs are ON.
+Signed-off-by: Brian Haley <haleyb.dev@gmail.com>
+---
+ Documentation/networking/ip-sysctl.rst |  6 ++++++
+ net/core/neighbour.c                   | 15 +++++++++++++--
+ 2 files changed, 19 insertions(+), 2 deletions(-)
 
-You seem to be assuming a certain user visible behavior that actually 
-relies on both hardware and software to be configured properly. Having 
-LEDs remain OFF from the time you apply power to the system, till you 
-actually have your operating system and its switch driver running and 
-issue "ip link set dev sw0p0 up" requires a lot more coordination.
-
-I am sensitive to the power management aspect that getting the PHY and 
-Ethernet link negotiated and then (re)negotiated several times through a 
-products' boot cycle is a waste of energy and too many times do we break 
-and make the link. The security aspect, I am less sensitive since the 
-PHY is not how it should be enforced.
-
-> 
-> The things get worse when a user performs
-> "ip link set dev lan1 up; ip link set dev lan1 down", because now
-> the LEDs go OFF.
-
-That seems to be exactly the behavior you want based upon the previous 
-paragraph as it indicates that the PHY has been powered down.
-
-> 
-> Is this behaviour intended? Shall I try to develop patches moving
-> phylink_.*phy_connect to dsa_slave_open() and something similar
-> for CPU port?
-
-Yes this was intentional since the beginning to speed up 
-auto-negotiation, and it dates back to when DSA was brought into the 
-kernel circa 2008.
-
-We are almost guaranteed to be breaking someone's behavior if we 
-postpone the connection to the PHY, however we could introduce a flag 
-and make the deferring of connecting to the PHY to ndo_open() a driver 
-by driver decision when proven this has no ill effect.
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index 7fbd060d6047..34183fb38b20 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -1589,6 +1589,12 @@ proxy_arp_pvlan - BOOLEAN
+ 	  Hewlett-Packard call it Source-Port filtering or port-isolation.
+ 	  Ericsson call it MAC-Forced Forwarding (RFC Draft).
+ 
++proxy_delay - INTEGER
++	Delay proxy response.
++
++	The maximum number of jiffies to delay a response to a neighbor
++	solicitation when proxy_arp or proxy_ndp is enabled. Defaults to 80.
++
+ shared_media - BOOLEAN
+ 	Send(router) or accept(host) RFC1620 shared media redirects.
+ 	Overrides secure_redirects.
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index f00a79fc301b..8bd8aaae6d5e 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -1662,11 +1662,22 @@ static void neigh_proxy_process(struct timer_list *t)
+ 	spin_unlock(&tbl->proxy_queue.lock);
+ }
+ 
++static __inline__ unsigned long neigh_proxy_delay(struct neigh_parms *p)
++{
++	/*
++	 * If proxy_delay is zero, do not call get_random_u32_below()
++	 * as it is undefined behavior.
++	 */
++	unsigned long proxy_delay = NEIGH_VAR(p, PROXY_DELAY);
++	return proxy_delay ?
++	       jiffies + get_random_u32_below(NEIGH_VAR(p, PROXY_DELAY)) :
++	       jiffies;
++}
++
+ void pneigh_enqueue(struct neigh_table *tbl, struct neigh_parms *p,
+ 		    struct sk_buff *skb)
+ {
+-	unsigned long sched_next = jiffies +
+-			get_random_u32_below(NEIGH_VAR(p, PROXY_DELAY));
++	unsigned long sched_next = neigh_proxy_delay(p);
+ 
+ 	if (p->qlen > NEIGH_VAR(p, PROXY_QLEN)) {
+ 		kfree_skb(skb);
 -- 
-Florian
+2.34.1
 
