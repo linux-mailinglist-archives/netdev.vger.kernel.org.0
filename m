@@ -2,161 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33CF1678C1B
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 00:38:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4A8E678C3B
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 00:47:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232470AbjAWXii (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 18:38:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55294 "EHLO
+        id S232116AbjAWXrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 18:47:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232156AbjAWXig (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 18:38:36 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23311E2AC;
-        Mon, 23 Jan 2023 15:38:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674517111; x=1706053111;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=o7TzXEnFFmyZw/tGiAmP08geD+UsWfsqawGFdCPzVsI=;
-  b=Wy3Cxh3yAyGqtAtzKG/6VeU1KbSPhqkrc4AMVagboEMo8UNQvRG3O4Y5
-   tZkxG+JDAhRBWL4eN0MWiiPVkbB8ggnpAovcx4J2unwOfPhtVSLOwMujo
-   6AeiQo+hKW8mGB+U9L46Hz8jL287AECKEPpphdr6BA5eXS11adQlCNP/W
-   vwsG0aW2TeMDXDcSpUyaThorrtodHu64MsZ1pHV8AMiEVHNIxdo3z2AQ0
-   AEuF3c9XIxsiJTDLoYy1YVUhVw0gJGMdmxSsQTA3gA+37u59JO/Pmd7wF
-   A2EasyJ9GLGTHalLmFoJp1XPmDjZ6QO7xT9TwvWVrsRWCBlQ4OqHS9h9z
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10599"; a="323881133"
-X-IronPort-AV: E=Sophos;i="5.97,240,1669104000"; 
-   d="scan'208";a="323881133"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2023 15:38:31 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10599"; a="639380551"
-X-IronPort-AV: E=Sophos;i="5.97,240,1669104000"; 
-   d="scan'208";a="639380551"
-Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 23 Jan 2023 15:38:27 -0800
-Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pK6OQ-0005x9-1G;
-        Mon, 23 Jan 2023 23:38:26 +0000
-Date:   Tue, 24 Jan 2023 07:38:11 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     John Keeping <john@metanate.com>, netdev@vger.kernel.org
-Cc:     oe-kbuild-all@lists.linux.dev, John Keeping <john@metanate.com>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] brcmfmac: support CQM RSSI notification with older
- firmware
-Message-ID: <202301240736.ApaNwujP-lkp@intel.com>
-References: <20230123113924.2472721-1-john@metanate.com>
+        with ESMTP id S232073AbjAWXrq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 18:47:46 -0500
+Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2121.outbound.protection.outlook.com [40.107.114.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CAC930F1;
+        Mon, 23 Jan 2023 15:47:44 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RjIH8A/FTVPpl/ZV2SVZwmtK1rRcI9bYEQuCucLLMYwM7pbXL5WzVBb1T+uRiu9LizaOkhkpF74+7wTdfmvydDALl+ESRpCmAYNGTqwCsSCwUvr7mgr8Y4rFIdMQ9bQpugJ7BtXRXDuW5Z0RrMyKkIhkzDmTdldD59y4LQFQ62Smbyv0tafhlqSKKwCtSLfi2wpg3EsLltLpF7C9Mg8V1FapBz/yZs3+dT9gbK6HLQTuK8KFoFGyzpGlo9d3kx09XWycSluLtXXRYvR/8pd3qKbuxwTuXM2dOfNugUsMfoYubQWvZCwQdoesSdBiaa5VMDQQOl70JEqlosnkZiRNCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lOyF/YJpV6KTBNHcooFEsIec1pDHxlFdKcIdpgK/HRE=;
+ b=c9Kmbscr+DBZe4sKZwkSONCbAcKtOwGj6B2vmxIayiTdhj2GtstHNQ+/wQTCV94rggK3i4/gWLx4T+Et9cI+aBqvgDP+8tOs2AaO8PKnzNQUwrZ3XnD8+ILF/ypVhCxEjMfcqFz0KKWAJmWnz7kmXrfHPv3wl8Lo+BiyIGfOKYZ3N4WjRoHl49fLnfGx4wVwV01ynoKnq76tj5EQbSsxrbc+ywJRhfMYsp+BBUA3lz75IjKkMBbQROuey6hA1UkjZbt8uO76/+xVAwuY4NFSj0rnTKk3QJEyw+yveslgx23smMqHBWr/BnanpJwWUcK3pYVyXVS3uErcYDgin6tjpg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lOyF/YJpV6KTBNHcooFEsIec1pDHxlFdKcIdpgK/HRE=;
+ b=RTxM9FkXzk5QisrN+8igOK1n3qGbfa6mJ7XSZniVqdrVzDlUG0oukv+GCQMqXaQqsr4/aZJrrwH1VszVpou0GxiQ563+Ar6bGec/JCpnpO854js+Jwv21te23PNsI1nJbSY0Q0n9JQEsioIw8aE2SP8XwqgADc8nzeRDxsKVVsM=
+Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
+ (2603:1096:404:8028::13) by TYWPR01MB9954.jpnprd01.prod.outlook.com
+ (2603:1096:400:1e2::5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Mon, 23 Jan
+ 2023 23:47:39 +0000
+Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
+ ([fe80::3e61:3792:227e:5f18]) by TYBPR01MB5341.jpnprd01.prod.outlook.com
+ ([fe80::3e61:3792:227e:5f18%8]) with mapi id 15.20.6002.033; Mon, 23 Jan 2023
+ 23:47:39 +0000
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH net v2 2/2] net: ravb: Fix possible hang if RIS2_QFF1
+ happen
+Thread-Topic: [PATCH net v2 2/2] net: ravb: Fix possible hang if RIS2_QFF1
+ happen
+Thread-Index: AQHZLyyHDwo2FUcU8UWgcUQfyoXHva6sZuqAgABEjGA=
+Date:   Mon, 23 Jan 2023 23:47:39 +0000
+Message-ID: <TYBPR01MB5341253256C610D4902F02C9D8C89@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+References: <20230123131331.1425648-1-yoshihiro.shimoda.uh@renesas.com>
+ <20230123131331.1425648-3-yoshihiro.shimoda.uh@renesas.com>
+ <912f5eb3-2905-c394-3239-506f8bc9f764@omp.ru>
+In-Reply-To: <912f5eb3-2905-c394-3239-506f8bc9f764@omp.ru>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: TYBPR01MB5341:EE_|TYWPR01MB9954:EE_
+x-ms-office365-filtering-correlation-id: 8e955123-0018-4c5b-cd80-08dafd9c369b
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: GS97n4FrQtyrKAiCROqfAT7T2MaQwsFyA26Vsggf51KjiEKJOu4EYM8ecs+Zy3jakrnJwgeXqHMoEPcVkOe7e7pDCPT71vqVYYVVvo1IJ/BQKrpkmWUy+afoKvSqcBvLRe+QHvlNKib+FqNXIErCdFRDEnNyjTV0+8ZLbr4KMbjOTS70ulF9i0nyXiH6UeoCOFn7in4hCF7KX1iU3KQpTIzdTqhlcHb73qp1eAXskr0Ws0SfB0zwjT+8bQ3FwQfRzTx0JiMALWUY8Dspw2GxhkP0SbuHBGRKE+nSJYt0pEgD7NgLeRq1jlC73UVWNGb1fRNJj8MLgo9hqk/xvMSHrYyPyaM37M8JHkF0o4wKvNM0yltOAQxYfKfAJcSOvjbkMqsqSVvZskHfIQpArja6dtxUNSD1brCIbaCn2mF/ejFDepLoeUdZcuiflwTNZ8oRzeUbO1/ndxy3ma0LX3mtFr9J+XXJPLA2n+RXvz5pYINFPIP1uUPgCRcDAe1lWC2R9dUPiAYf0X+7qAXmcAmKulBUdVLVDT1+o6YchwMOLJMQk1seJkKzEgdbySSAdolloPAXjBceZPf4cMzUqoDM2PM6ZsI2wgamnmKznHTlREzlfLyE4E27a8WOpu8wZj0jYcG5PnpbtHXqr+XyyMKGsHxhJLeK7sinSeXLXVCkj9yWTbFAUWBvx659ZY3/h9BrFBZ9BLWqrKykz4vkutr8MA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYBPR01MB5341.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(346002)(376002)(366004)(39860400002)(451199015)(122000001)(33656002)(41300700001)(38100700002)(2906002)(86362001)(38070700005)(5660300002)(8936002)(4326008)(52536014)(66446008)(186003)(53546011)(8676002)(6506007)(55016003)(9686003)(64756008)(76116006)(66946007)(316002)(54906003)(66556008)(71200400001)(110136005)(478600001)(66476007)(7696005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RXlaTmE1K3RVNlR6d1JRV29LQzNjQU5UZUFOMEM2WWErSjVuVUZZZDdIaHdj?=
+ =?utf-8?B?WnlrNzFSQ2xacm8wZjNVbWNHeGFkVlFlNVNJUWo2dElnSVJhUzNhVXgveDNl?=
+ =?utf-8?B?Y3I1bnJaTWFXeUYyb1R5OVJSRHZKNENTUjdXRG5tYjBHZlpjaXRtRTB6Lzl6?=
+ =?utf-8?B?MXc5djFSVnNvaVJrdXNtTUQvQVoxTzlaWG5HQXJvdk1pbDFCem5qNmxKaGZz?=
+ =?utf-8?B?cFlQN0h4TC8wYmxKYmZNVDlrb2RzZVBsSXdMSUpHNXovbFk1MkxFK2hkbTN4?=
+ =?utf-8?B?UjVGWmhRUGYrN2pLU2Y2REJKaTJXMTZ4WHZaWFYreWRrVXgxWGlQZXY3RHNk?=
+ =?utf-8?B?L01sOEp6aEZybmh2WTVoOENuWlRsMzVCTUUzMkxrNzdrYVVuQzBHTG4xYTBC?=
+ =?utf-8?B?UGNkbG12MnlkVGVwR3VuNWx3MnVpNytXMGZSSW40eVgrK3JJdjVqNGt3NVBt?=
+ =?utf-8?B?UTJnWUR3RGEvNC9WWU5ZTldybmtvekRiRlRaMk1MMWJxWlFqMUJoZTY5VG5u?=
+ =?utf-8?B?cGM3SGxaSmMvbExIS2ZJU0NDeVZJZUZaVVl1cE5mbjRxZFBRaWJuN0dsNFp4?=
+ =?utf-8?B?K1NNdzhDalg3dFRaWUNtakFpSy9keWZ6Q2J2cXE0ak9lZk1QZEtaNEtCYm5Z?=
+ =?utf-8?B?MXpxem5pcm8yTVYzQmNVSjE5ZTlkbmVWdGNvU3hocnRUOHppeGtsanFFSVJP?=
+ =?utf-8?B?S0F0SExaTlpqUHoyS0gxODl5T01RUk95OEh6RG83STBWcVNQOEpLajEzdXF5?=
+ =?utf-8?B?SkFLcGNCUXdWMWVWNExMRWhCZTA2N05Ka2k4L1I0TTExTnNpSW5HSk9aa09m?=
+ =?utf-8?B?SUxBWkx0SEpJQnpUeXdYVWx6YjdJaVFwVW04WC85L3FVdkt5elNsWXV1N0dR?=
+ =?utf-8?B?NTN0MnllM0t5ZXk4cWFtUmFndU5nZDNhMllOL0lmYWRJeGxubU81WjRGYmxU?=
+ =?utf-8?B?TjYvU3U3ei95U1RPL21EdThUQjh3aXk4eDR2TEhvc3JET2NlYnJiY1hRR2lt?=
+ =?utf-8?B?dXAwWHhXOFBFejBlUEZtZXlWOGFTZ24yQ1MxM1huck1CbWQzUzBZSVIvZlVz?=
+ =?utf-8?B?ZFRxdm1OR1AzZzFobDRWK1RMS014YVgvV1RFNjFoS2krY2xhNlVLTXJEMUo1?=
+ =?utf-8?B?QnR3bDBlRVhGMzliV29CTUZhUkJrTC9kNlh4MkwyeXh4THh2Z0tMaXFNV0dJ?=
+ =?utf-8?B?dHNmKzUrQ2daS1ZmU3huTW02L1JrdlZjRC9PK2ZScWdSNFBGTUpWemtuME9J?=
+ =?utf-8?B?clJ1MmZnNCtEWnJ2L0tWUmtMYi9Ucm9tMXlBL0FCL0EyWkEyaHprdHRDSUlS?=
+ =?utf-8?B?WHVsUndOWTBCTEpLTjhqaDAvUmZpNkthWGRTVDlQMm5wV1BmTHlWZ0doZ3ph?=
+ =?utf-8?B?R1NqVGV2UHI2bE4wTVdoa0Q0SEdEeHBIR3dhYkQxamtKZkQwL1hwWmtOOFp2?=
+ =?utf-8?B?MW9NMFFXZ1ZoSktCOFRNMWhUdzNDV3FOVzdlK1JWVGpOeFl3RUpocmVIenpR?=
+ =?utf-8?B?T2s0M3IyTytOU3NSNFJpRzFtWlNqOENIZFhtemQ3dkxiWnZPZi94Q0FYREt5?=
+ =?utf-8?B?UE5YT2NvNFlHS1VFM1pJZitaNE5Nd0JwMEVQOExQQVp4VDFEYXhvaVJ6SmpW?=
+ =?utf-8?B?YnJUdWhkQXk3M1lNWTJ4OW5oeWphb01XWFJEbmdrZ3A4TEFZSnZiUVEyYWhu?=
+ =?utf-8?B?LzRQNmZMYmZaWUN2WmEza1E1U2RqN0NGSVZFYmVVQ2JBMHUwK2V6c3RPOUZp?=
+ =?utf-8?B?QVo5UmhqeFdabU9BdDkzYVBLa3U0UnF2UEJxSlBBOWRFbElkYWtOeXNuelZB?=
+ =?utf-8?B?YmVLelFOVkZkclNjWEdveDNqNnVNTXUwZk5NWmw2c05RblQ0M2Z3L1VkUHN4?=
+ =?utf-8?B?Zjl2TGd3bUhEWlZaNktMRFlVbDV0VmxxU0MyNFhYYitaVzYzVnY1OG9UOFhn?=
+ =?utf-8?B?Vno5YlBlRzErQ2crQUVSN1lPRTgwQlNWYS9vZkxkMVFjYUJtQTVkVzRSZHpN?=
+ =?utf-8?B?eEMyMHBZYVpPRlpzRzk3RkJKQlpMZlhVenFmY1F5S3A2WS9xaE4xQUNXdGd0?=
+ =?utf-8?B?a3dJVDFUN2V6VTl6SXZ5aWRHZEtsUGNXbWlDbUEwYytKNmxydlFUTmR4YUxi?=
+ =?utf-8?B?OWdKU2RXSHJTTmxHbjhIZjZVaVdmTVJxclAvVFdBNEFuVUdVN3FsZCtWL2Q3?=
+ =?utf-8?B?U053bU80YkZYUktjRE96Lzd1Y3A0Y0xVcnlDYngxYkFsd0hBMFBXOXYwdnc0?=
+ =?utf-8?B?OXp5TnIvdXRnUS8rNWo2TERsY3F3PT0=?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230123113924.2472721-1-john@metanate.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYBPR01MB5341.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8e955123-0018-4c5b-cd80-08dafd9c369b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jan 2023 23:47:39.8627
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 1UkFspFDX8J3hykVZwj2XSMPb4Loz004xEYQJ2RzEK6hlq7MzG3fYFnyD8cAV1Dn7JNAXcumDu+a6bU1gGhQiQo8KkxOnxXHqU6i2I3WxeCw/DPc0V1tvVJmA62W3Y3k
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYWPR01MB9954
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi John,
-
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on wireless-next/main]
-[also build test WARNING on wireless/main horms-ipvs/master linus/master v6.2-rc5 next-20230123]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/John-Keeping/brcmfmac-support-CQM-RSSI-notification-with-older-firmware/20230123-194055
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git main
-patch link:    https://lore.kernel.org/r/20230123113924.2472721-1-john%40metanate.com
-patch subject: [PATCH] brcmfmac: support CQM RSSI notification with older firmware
-config: sparc-randconfig-s051-20230123 (https://download.01.org/0day-ci/archive/20230124/202301240736.ApaNwujP-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/9e64c42d8517fca7356a698629cec1cdb79ce104
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review John-Keeping/brcmfmac-support-CQM-RSSI-notification-with-older-firmware/20230123-194055
-        git checkout 9e64c42d8517fca7356a698629cec1cdb79ce104
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=sparc olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=sparc SHELL=/bin/bash drivers/net/wireless/broadcom/brcm80211/brcmfmac/
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-
-sparse warnings: (new ones prefixed by >>)
->> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:6500:24: sparse: sparse: cast to restricted __be32
-
-vim +6500 drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-
-  6486	
-  6487	static s32 brcmf_notify_rssi(struct brcmf_if *ifp,
-  6488				     const struct brcmf_event_msg *e, void *data)
-  6489	{
-  6490		struct brcmf_cfg80211_vif *vif = ifp->vif;
-  6491		struct brcmf_rssi_be *info = data;
-  6492		s32 rssi, snr = 0, noise = 0;
-  6493		s32 low, high, last;
-  6494	
-  6495		if (e->datalen >= sizeof(*info)) {
-  6496			rssi = be32_to_cpu(info->rssi);
-  6497			snr = be32_to_cpu(info->snr);
-  6498			noise = be32_to_cpu(info->noise);
-  6499		} else if (e->datalen >= sizeof(rssi)) {
-> 6500			rssi = be32_to_cpu(*(s32 *)data);
-  6501		} else {
-  6502			brcmf_err("insufficient RSSI event data\n");
-  6503			return 0;
-  6504		}
-  6505	
-  6506		low = vif->cqm_rssi_low;
-  6507		high = vif->cqm_rssi_high;
-  6508		last = vif->cqm_rssi_last;
-  6509	
-  6510		brcmf_dbg(TRACE, "rssi=%d snr=%d noise=%d low=%d high=%d last=%d\n",
-  6511			  rssi, snr, noise, low, high, last);
-  6512	
-  6513		vif->cqm_rssi_last = rssi;
-  6514	
-  6515		if (rssi <= low || rssi == 0) {
-  6516			brcmf_dbg(INFO, "LOW rssi=%d\n", rssi);
-  6517			cfg80211_cqm_rssi_notify(ifp->ndev,
-  6518						 NL80211_CQM_RSSI_THRESHOLD_EVENT_LOW,
-  6519						 rssi, GFP_KERNEL);
-  6520		} else if (rssi > high) {
-  6521			brcmf_dbg(INFO, "HIGH rssi=%d\n", rssi);
-  6522			cfg80211_cqm_rssi_notify(ifp->ndev,
-  6523						 NL80211_CQM_RSSI_THRESHOLD_EVENT_HIGH,
-  6524						 rssi, GFP_KERNEL);
-  6525		}
-  6526	
-  6527		return 0;
-  6528	}
-  6529	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+SGVsbG8hDQoNCj4gRnJvbTogU2VyZ2V5IFNodHlseW92LCBTZW50OiBUdWVzZGF5LCBKYW51YXJ5
+IDI0LCAyMDIzIDQ6NDEgQU0NCj4gDQo+IE9uIDEvMjMvMjMgNDoxMyBQTSwgWW9zaGloaXJvIFNo
+aW1vZGEgd3JvdGU6DQo+IA0KPiA+IFNpbmNlIHRoaXMgZHJpdmVyIGVuYWJsZXMgdGhlIGludGVy
+cnVwdCBieSBSSUMyX1FGRTEsIHRoaXMgZHJpdmVyDQo+ID4gc2hvdWxkIGNsZWFyIHRoZSBpbnRl
+cnJ1cHQgZmxhZyBpZiBpdCBoYXBwZW5zLiBPdGhlcndpc2UsIHRoZSBpbnRlcnJ1cHQNCj4gPiBj
+YXVzZXMgdG8gaGFuZyB0aGUgc3lzdGVtLg0KPiA+DQo+ID4gRml4ZXM6IGMxNTY2MzNmMTM1MyAo
+IlJlbmVzYXMgRXRoZXJuZXQgQVZCIGRyaXZlciBwcm9wZXIiKQ0KPiA+IFNpZ25lZC1vZmYtYnk6
+IFlvc2hpaGlybyBTaGltb2RhIDx5b3NoaWhpcm8uc2hpbW9kYS51aEByZW5lc2FzLmNvbT4NCj4g
+DQo+IFJldmlld2VkLWJ5OiBTZXJnZXkgU2h0eWx5b3YgPHMuc2h0eWx5b3ZAb21wLnJ1Pg0KDQpU
+aGFuayB5b3UgZm9yIHlvdXIgcmV2aWV3IQ0KDQo+IFsuLi5dDQo+ID4gZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvbmV0L2V0aGVybmV0L3JlbmVzYXMvcmF2Yl9tYWluLmMgYi9kcml2ZXJzL25ldC9ldGhl
+cm5ldC9yZW5lc2FzL3JhdmJfbWFpbi5jDQo+ID4gaW5kZXggM2Y2MTEwMGMwMmY0Li4wZjU0ODQ5
+YTM4MjMgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvcmVuZXNhcy9yYXZi
+X21haW4uYw0KPiA+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L3JlbmVzYXMvcmF2Yl9tYWlu
+LmMNCj4gPiBAQCAtMTEwMSwxNCArMTEwMSwxNCBAQCBzdGF0aWMgdm9pZCByYXZiX2Vycm9yX2lu
+dGVycnVwdChzdHJ1Y3QgbmV0X2RldmljZSAqbmRldikNCj4gPiAgCXJhdmJfd3JpdGUobmRldiwg
+fihFSVNfUUZTIHwgRUlTX1JFU0VSVkVEKSwgRUlTKTsNCj4gPiAgCWlmIChlaXMgJiBFSVNfUUZT
+KSB7DQo+ID4gIAkJcmlzMiA9IHJhdmJfcmVhZChuZGV2LCBSSVMyKTsNCj4gPiAtCQlyYXZiX3dy
+aXRlKG5kZXYsIH4oUklTMl9RRkYwIHwgUklTMl9SRkZGIHwgUklTMl9SRVNFUlZFRCksDQo+ID4g
+KwkJcmF2Yl93cml0ZShuZGV2LCB+KFJJUzJfUUZGMCB8IFJJUzJfUUZGMSB8IFJJUzJfUkZGRiB8
+IFJJUzJfUkVTRVJWRUQpLA0KPiA+ICAJCQkgICBSSVMyKTsNCj4gPg0KPiA+ICAJCS8qIFJlY2Vp
+dmUgRGVzY3JpcHRvciBFbXB0eSBpbnQgKi8NCj4gPiAgCQlpZiAocmlzMiAmIFJJUzJfUUZGMCkN
+Cj4gPiAgCQkJcHJpdi0+c3RhdHNbUkFWQl9CRV0ucnhfb3Zlcl9lcnJvcnMrKzsNCj4gPg0KPiA+
+IC0JCSAgICAvKiBSZWNlaXZlIERlc2NyaXB0b3IgRW1wdHkgaW50ICovDQo+ID4gKwkJLyogUmVj
+ZWl2ZSBEZXNjcmlwdG9yIEVtcHR5IGludCAqLw0KPiANCj4gICAgV2VsbCwgdGhhdCBzaG91bGQn
+dmUgYmVlbiBub3RlZCBpbiB0aGUgY29tbWl0IGxvZy4uLg0KDQpPb3BzLiBJIHRoaW5rIHNvLiBT
+bywgSSdsbCBzZW5kIHYzIHBhdGNoLg0KDQpCZXN0IHJlZ2FyZHMsDQpZb3NoaWhpcm8gU2hpbW9k
+YQ0KDQo=
