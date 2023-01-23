@@ -2,79 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5417F677661
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 09:38:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 413DE67769F
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 09:45:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231132AbjAWIiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 03:38:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59016 "EHLO
+        id S231468AbjAWIp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 03:45:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230360AbjAWIiu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 03:38:50 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A1DD16ADE
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 00:38:47 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id tz11so28554413ejc.0
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 00:38:47 -0800 (PST)
+        with ESMTP id S230122AbjAWIp4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 03:45:56 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BF0918B1C
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 00:45:55 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id i17-20020a25bc11000000b007b59a5b74aaso12348169ybh.7
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 00:45:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=gSZzWjs5SAvlBl6Tdc6SnI83bcgAWG76DbcxrJ2xN2g=;
-        b=IKgugexzd8+wslpWmVuz2UN8FcjFufdEk2m8xiIPTNKd/uWgVEcBEPvwcCD+OnuCNr
-         jKTequpUuF9fG9tnMmN2+O856yQHR5g0ouImALAst/4+MyDAKUc2c8PX9THAVk1IngFE
-         wluDvJEJvtqa8/8jhBrVemN6xUdYFUiFrmQ7VdBPAndOpD1W3frC5cNlLG2knrGwd9g5
-         01S9r4QICWkM3lBvjmoN2CIECTzqge3SqFZkEMeDot/i4+Tk5oyIjebncpSgC6T95QMj
-         SdAaYWZeserrFD5A6xeO4XcRqEty4463py2N06TtNHAYP5gxqkw0+72myMdaIIy26+RC
-         bM3w==
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=kCkgFj+VElXHDgk0rRx+Ql9Kk0tr7AfiZ963MOsBK/w=;
+        b=W70D79llVg9x1Hu7G1hmU1VxpRiJWenw9kV4nX6fP/gDwWovx+Dm98W3YzCsfifvyM
+         yB7ugve5gezmp/bIZrGc+vqZzXLpzhA4CVezqF7XIoXzjn89b8e6PQ6TBJOWvranSmNg
+         9ZXy5ZBCjbgTcpic8TSHiDb/OboykIKlkanwmMNOwh/8qGiXZO81PQex+PSuUvWDEQLR
+         NuSmk1ztu4q8lHevxDUjwg73M8pYJdOmKz8R31fo1Kw2BVCgX2+ev8+rtAX+69vRkltK
+         4R3iOLVjN9+9Y6w8vZNMDfq/B411xfHapF6CB0UHgtC8Ojyw48El5uXeXRVCjFrRblxD
+         2Z+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gSZzWjs5SAvlBl6Tdc6SnI83bcgAWG76DbcxrJ2xN2g=;
-        b=jsm7QlSBZg/OteIR8nQ6Y7p8Xy2dRgtzfCYaFUdXXJ/RTJyXnB18MA4GCD9+zbMCcV
-         tPock7eAbInqdjNw0yLpzvynOsf8GWY5QG98U7LJnVA9viEcUXUuRdWnw0t8E3ehii/q
-         QlV5arvo33BiTa/6Z8tnOed5bIpHW6YUGi7RSzctE4xPyRYJvhYBwShZzbtgmw17sTRc
-         K0DC2g5jorQ4KVJLTk1WSZrWrwDa6NPWo7MBPBrKN+P3vYB/HOeQPhhK/CQaKXthncdG
-         xahnC156vcwfHYIi/yUmc86awbOTK0dAfF8kN892bXO+EUGx2dvWGU+Gx/mcyRe1XVx4
-         Lo1w==
-X-Gm-Message-State: AFqh2kobfbfhRUAAu7eHs18eVmc6k2gDEIc4uPxVaFzf91+OFwsqVi0A
-        R8R8MUzJfW9ds9oheNX/v3hbVw==
-X-Google-Smtp-Source: AMrXdXtKib1NiWiIickNgTI0cNL3G0eX3rOgyDW7kb4KTy8DweercNU3uWJBz6VIf/549aH3n4MNVQ==
-X-Received: by 2002:a17:907:c388:b0:86e:65c8:6fe3 with SMTP id tm8-20020a170907c38800b0086e65c86fe3mr26774212ejc.7.1674463125679;
-        Mon, 23 Jan 2023 00:38:45 -0800 (PST)
-Received: from localhost ([217.111.27.204])
-        by smtp.gmail.com with ESMTPSA id kv23-20020a17090778d700b008699bacc03csm14485150ejc.14.2023.01.23.00.38.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Jan 2023 00:38:44 -0800 (PST)
-Date:   Mon, 23 Jan 2023 09:38:43 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-net-drivers (AMD-Xilinx)" <linux-net-drivers@amd.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "habetsm@gmail.com" <habetsm@gmail.com>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>
-Subject: Re: [PATCH net-next 6/7] sfc: add support for
- port_function_hw_addr_get devlink in ef100
-Message-ID: <Y85Hkxb0hIgGevXu@nanopsycho>
-References: <20230119113140.20208-1-alejandro.lucero-palau@amd.com>
- <20230119113140.20208-7-alejandro.lucero-palau@amd.com>
- <Y8k5glNLX1eE2iKE@nanopsycho>
- <433222dd-cea8-fa93-d0f8-1f4f4272ae91@amd.com>
- <Y8p2GjwVz1FAJ2eH@nanopsycho>
- <ff613fdb-a812-ec30-c00e-82b510fa1df0@amd.com>
- <349dbd31-204c-b68e-9ce5-6c578bdcc4a1@amd.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <349dbd31-204c-b68e-9ce5-6c578bdcc4a1@amd.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=kCkgFj+VElXHDgk0rRx+Ql9Kk0tr7AfiZ963MOsBK/w=;
+        b=io40kKxnXlI74tG68KK7i9ysDL/XNrrXRnUznoT2fwTJ9Y80PaufTFOQ1pfGxtp7vF
+         yrzqpD/xKDLuYWva10Cr3gdVT87cx7+vBRHyGdM4ai8L6oaKO0pE71RKlLUc83ClBQID
+         zpvnm5SH8q41sYJpHs2uRBIIUD9/2l5Z7Xfu1j/pqaRbUZ5ptlbST4uh3f1EnG59hq9D
+         MJIvWsCtZKffTtD1MchxKlwYU82E9PZRXIFrL+9Q7NJpTTTsYnavBGeKwo+p5yz3uv0P
+         OEwwwc5xEfxftEFzt3X1sAe8YGMYb5ck5dDOoaQbI7bYkH8fNc7hipVNrSzuvKn/dVyQ
+         5n0g==
+X-Gm-Message-State: AFqh2krzUbzgshK6+Tu4POej1aA6LddKV6kV6PzLzgfv/CjeIO1uAb5V
+        TRL8IYGqGC96Y3DicQhx1+Ave9jVnCDsrA==
+X-Google-Smtp-Source: AMrXdXt4rRSaPaCZpbmsHdHaCVNotXm5JSY8hpzu8vbJFE5bzGJdfsToHgwyGo+gT109o8a9+teMdq7YjEDOTA==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a81:5c02:0:b0:4e2:db5a:2c2c with SMTP id
+ q2-20020a815c02000000b004e2db5a2c2cmr3106465ywb.202.1674463554326; Mon, 23
+ Jan 2023 00:45:54 -0800 (PST)
+Date:   Mon, 23 Jan 2023 08:45:52 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.39.1.405.gd4c25cc71f-goog
+Message-ID: <20230123084552.574396-1-edumazet@google.com>
+Subject: [PATCH net] net/sched: sch_taprio: do not schedule in taprio_reset()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,241 +69,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Jan 22, 2023 at 05:36:14PM CET, alejandro.lucero-palau@amd.com wrote:
->
->On 1/20/23 12:48, Lucero Palau, Alejandro wrote:
->> On 1/20/23 11:08, Jiri Pirko wrote:
->>> Thu, Jan 19, 2023 at 04:09:27PM CET, alejandro.lucero-palau@amd.com wrote:
->>>> On 1/19/23 12:37, Jiri Pirko wrote:
->>>>> Thu, Jan 19, 2023 at 12:31:39PM CET, alejandro.lucero-palau@amd.com wrote:
->>>>>> From: Alejandro Lucero <alejandro.lucero-palau@amd.com>
->>>>>>
->>>>>> Using the builtin client handle id infrastructure, this patch adds
->>>>>> support for obtaining the mac address linked to mports in ef100. This
->>>>>> implies to execute an MCDI command for getting the data from the
->>>>>> firmware for each devlink port.
->>>>>>
->>>>>> Signed-off-by: Alejandro Lucero <alejandro.lucero-palau@amd.com>
->>>>>> ---
->>>>>> drivers/net/ethernet/sfc/ef100_nic.c   | 27 ++++++++++++++++
->>>>>> drivers/net/ethernet/sfc/ef100_nic.h   |  1 +
->>>>>> drivers/net/ethernet/sfc/ef100_rep.c   |  8 +++++
->>>>>> drivers/net/ethernet/sfc/ef100_rep.h   |  1 +
->>>>>> drivers/net/ethernet/sfc/efx_devlink.c | 44 ++++++++++++++++++++++++++
->>>>>> 5 files changed, 81 insertions(+)
->>>>>>
->>>>>> diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
->>>>>> index f4e913593f2b..4400ce622228 100644
->>>>>> --- a/drivers/net/ethernet/sfc/ef100_nic.c
->>>>>> +++ b/drivers/net/ethernet/sfc/ef100_nic.c
->>>>>> @@ -1121,6 +1121,33 @@ static int ef100_probe_main(struct efx_nic *efx)
->>>>>> 	return rc;
->>>>>> }
->>>>>>
->>>>>> +/* MCDI commands are related to the same device issuing them. This function
->>>>>> + * allows to do an MCDI command on behalf of another device, mainly PFs setting
->>>>>> + * things for VFs.
->>>>>> + */
->>>>>> +int efx_ef100_lookup_client_id(struct efx_nic *efx, efx_qword_t pciefn, u32 *id)
->>>>>> +{
->>>>>> +	MCDI_DECLARE_BUF(outbuf, MC_CMD_GET_CLIENT_HANDLE_OUT_LEN);
->>>>>> +	MCDI_DECLARE_BUF(inbuf, MC_CMD_GET_CLIENT_HANDLE_IN_LEN);
->>>>>> +	u64 pciefn_flat = le64_to_cpu(pciefn.u64[0]);
->>>>>> +	size_t outlen;
->>>>>> +	int rc;
->>>>>> +
->>>>>> +	MCDI_SET_DWORD(inbuf, GET_CLIENT_HANDLE_IN_TYPE,
->>>>>> +		       MC_CMD_GET_CLIENT_HANDLE_IN_TYPE_FUNC);
->>>>>> +	MCDI_SET_QWORD(inbuf, GET_CLIENT_HANDLE_IN_FUNC,
->>>>>> +		       pciefn_flat);
->>>>>> +
->>>>>> +	rc = efx_mcdi_rpc(efx, MC_CMD_GET_CLIENT_HANDLE, inbuf, sizeof(inbuf),
->>>>>> +			  outbuf, sizeof(outbuf), &outlen);
->>>>>> +	if (rc)
->>>>>> +		return rc;
->>>>>> +	if (outlen < sizeof(outbuf))
->>>>>> +		return -EIO;
->>>>>> +	*id = MCDI_DWORD(outbuf, GET_CLIENT_HANDLE_OUT_HANDLE);
->>>>>> +	return 0;
->>>>>> +}
->>>>>> +
->>>>>> int ef100_probe_netdev_pf(struct efx_nic *efx)
->>>>>> {
->>>>>> 	struct ef100_nic_data *nic_data = efx->nic_data;
->>>>>> diff --git a/drivers/net/ethernet/sfc/ef100_nic.h b/drivers/net/ethernet/sfc/ef100_nic.h
->>>>>> index e59044072333..f1ed481c1260 100644
->>>>>> --- a/drivers/net/ethernet/sfc/ef100_nic.h
->>>>>> +++ b/drivers/net/ethernet/sfc/ef100_nic.h
->>>>>> @@ -94,4 +94,5 @@ int ef100_filter_table_probe(struct efx_nic *efx);
->>>>>>
->>>>>> int ef100_get_mac_address(struct efx_nic *efx, u8 *mac_address,
->>>>>> 			  int client_handle, bool empty_ok);
->>>>>> +int efx_ef100_lookup_client_id(struct efx_nic *efx, efx_qword_t pciefn, u32 *id);
->>>>>> #endif	/* EFX_EF100_NIC_H */
->>>>>> diff --git a/drivers/net/ethernet/sfc/ef100_rep.c b/drivers/net/ethernet/sfc/ef100_rep.c
->>>>>> index ff0c8da61919..974c9ff901a0 100644
->>>>>> --- a/drivers/net/ethernet/sfc/ef100_rep.c
->>>>>> +++ b/drivers/net/ethernet/sfc/ef100_rep.c
->>>>>> @@ -362,6 +362,14 @@ bool ef100_mport_on_local_intf(struct efx_nic *efx,
->>>>>> 		     mport_desc->interface_idx == nic_data->local_mae_intf;
->>>>>> }
->>>>>>
->>>>>> +bool ef100_mport_is_vf(struct mae_mport_desc *mport_desc)
->>>>>> +{
->>>>>> +	bool pcie_func;
->>>>>> +
->>>>>> +	pcie_func = ef100_mport_is_pcie_vnic(mport_desc);
->>>>>> +	return pcie_func && (mport_desc->vf_idx != MAE_MPORT_DESC_VF_IDX_NULL);
->>>>>> +}
->>>>>> +
->>>>>> void efx_ef100_init_reps(struct efx_nic *efx)
->>>>>> {
->>>>>> 	struct ef100_nic_data *nic_data = efx->nic_data;
->>>>>> diff --git a/drivers/net/ethernet/sfc/ef100_rep.h b/drivers/net/ethernet/sfc/ef100_rep.h
->>>>>> index 9cca41614982..74853ccbc937 100644
->>>>>> --- a/drivers/net/ethernet/sfc/ef100_rep.h
->>>>>> +++ b/drivers/net/ethernet/sfc/ef100_rep.h
->>>>>> @@ -75,4 +75,5 @@ void efx_ef100_fini_reps(struct efx_nic *efx);
->>>>>> struct mae_mport_desc;
->>>>>> bool ef100_mport_on_local_intf(struct efx_nic *efx,
->>>>>> 			       struct mae_mport_desc *mport_desc);
->>>>>> +bool ef100_mport_is_vf(struct mae_mport_desc *mport_desc);
->>>>>> #endif /* EF100_REP_H */
->>>>>> diff --git a/drivers/net/ethernet/sfc/efx_devlink.c b/drivers/net/ethernet/sfc/efx_devlink.c
->>>>>> index bb19d3ad7ffd..2a57c4f6d2b2 100644
->>>>>> --- a/drivers/net/ethernet/sfc/efx_devlink.c
->>>>>> +++ b/drivers/net/ethernet/sfc/efx_devlink.c
->>>>>> @@ -429,6 +429,49 @@ static int efx_devlink_add_port(struct efx_nic *efx,
->>>>>> 	return err;
->>>>>> }
->>>>>>
->>>>>> +static int efx_devlink_port_addr_get(struct devlink_port *port, u8 *hw_addr,
->>>>>> +				     int *hw_addr_len,
->>>>>> +				     struct netlink_ext_ack *extack)
->>>>>> +{
->>>>>> +	struct efx_devlink *devlink = devlink_priv(port->devlink);
->>>>>> +	struct mae_mport_desc *mport_desc;
->>>>>> +	efx_qword_t pciefn;
->>>>>> +	u32 client_id;
->>>>>> +	int rc = 0;
->>>>>> +
->>>>>> +	mport_desc = efx_mae_get_mport(devlink->efx, port->index);
->>>>> I may be missing something, where do you fail with -EOPNOTSUPP
->>>>> in case this is called for PHYSICAL port ?
->>>>>
->>>> We do not create a devlink port for the physical port.
->>> Well, you do:
->>>
->>> +       switch (mport->mport_type) {
->>> +       case MAE_MPORT_DESC_MPORT_TYPE_NET_PORT:
->>> +               attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
->>>
->>>                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
->> Right.
->>
->> I was relying on devlink-port output which does not show the physical
->> port in my machine and completely forgot about it.
->>
->> I'm a bit confused at this point. Let me look at this further.
->>
->The reason devlink show/info does not report the PHYSICAL port is 
->simple: current code does not create a devlink port for such mport.
->
->I say current code because in my first implementation (not upstreamed) I 
->just created devlink ports when the mports where enumerated, what turned 
->out to be a bit complicated for dealing with VFs creation/destruction, 
->and after looking at how other drivers do this, just before the related 
->netdev is registered, I went for that same approach. That leaves no 
->option for the physical mport registered.
->
->I could add that creation at PF devlink port creation, if we consider 
->this a necessity. I know the ideal devlink support in our driver should 
->likely be more devlink design compliant, but it is also true drivers 
->should make use of it as decided for fulfilling their necessities as 
->long as it does not create confusion to users. Our current devlink 
->necessity is for dealing with setting VFs mac address as required during 
->previous representors patchset review:
->
->https://lore.kernel.org/netdev/20220728092008.2117846e@kernel.org/
->
->Do you see a problem not creating such a devlink port by now?
+As reported by syzbot and hinted by Vinicius, I should not have added
+a qdisc_synchronize() call in taprio_reset()
 
-You don't have to create it. But loose the code setting PHYSICAL
-flavour.
+taprio_reset() can be called with qdisc spinlock held (and BH disabled)
+as shown in included syzbot report [1].
 
+Only taprio_destroy() needed this synchronization, as explained
+in the blamed commit changelog.
 
+[1]
 
->
->>> +               attrs.phys.port_number = mport->port_idx;
->>> +               devlink_port_attrs_set(dl_port, &attrs);
->>> +               break;
->>> +       case MAE_MPORT_DESC_MPORT_TYPE_VNIC:
->>> +               if (mport->vf_idx != MAE_MPORT_DESC_VF_IDX_NULL) {
->>> +                       devlink_port_attrs_pci_vf_set(dl_port, 0, mport->pf_idx,
->>> +                                                     mport->vf_idx,
->>> +                                                     external);
->>> +               } else {
->>> +                       devlink_port_attrs_pci_pf_set(dl_port, 0, mport->pf_idx,
->>> +                                                     external);
->>> +               }
->>> +               break;
->>>
->>>
->>>
->>>
->>>> I'm aware this is not "fully compliant" with devlink design idea, just
->>>> trying to use it for our current urgent necessities by now.
->>>>
->>>> Do you think this could be a problem?
->>> If you create port flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL and it is not
->>> uplink, it is a problem :)
->>>
->>>
->>>
->>>>>> +	if (!mport_desc)
->>>>>> +		return -EINVAL;
->>>>>> +
->>>>>> +	if (!ef100_mport_on_local_intf(devlink->efx, mport_desc))
->>>>>> +		goto out;
->>>>>> +
->>>>>> +	if (ef100_mport_is_vf(mport_desc))
->>>>>> +		EFX_POPULATE_QWORD_3(pciefn,
->>>>>> +				     PCIE_FUNCTION_PF, PCIE_FUNCTION_PF_NULL,
->>>>>> +				     PCIE_FUNCTION_VF, mport_desc->vf_idx,
->>>>>> +				     PCIE_FUNCTION_INTF, PCIE_INTERFACE_CALLER);
->>>>>> +	else
->>>>>> +		EFX_POPULATE_QWORD_3(pciefn,
->>>>>> +				     PCIE_FUNCTION_PF, mport_desc->pf_idx,
->>>>>> +				     PCIE_FUNCTION_VF, PCIE_FUNCTION_VF_NULL,
->>>>>> +				     PCIE_FUNCTION_INTF, PCIE_INTERFACE_CALLER);
->>>>>> +
->>>>>> +	rc = efx_ef100_lookup_client_id(devlink->efx, pciefn, &client_id);
->>>>>> +	if (rc) {
->>>>>> +		netif_err(devlink->efx, drv, devlink->efx->net_dev,
->>>>>> +			  "Failed to get client ID for port index %u, rc %d\n",
->>>>>> +			  port->index, rc);
->>>>>> +		return rc;
->>>>>> +	}
->>>>>> +
->>>>>> +	rc = ef100_get_mac_address(devlink->efx, hw_addr, client_id, true);
->>>>>> +out:
->>>>>> +	*hw_addr_len = ETH_ALEN;
->>>>>> +
->>>>>> +	return rc;
->>>>>> +}
->>>>>> +
->>>>>> static int efx_devlink_info_get(struct devlink *devlink,
->>>>>> 				struct devlink_info_req *req,
->>>>>> 				struct netlink_ext_ack *extack)
->>>>>> @@ -442,6 +485,7 @@ static int efx_devlink_info_get(struct devlink *devlink,
->>>>>>
->>>>>> static const struct devlink_ops sfc_devlink_ops = {
->>>>>> 	.info_get			= efx_devlink_info_get,
->>>>>> +	.port_function_hw_addr_get	= efx_devlink_port_addr_get,
->>>>>> };
->>>>>>
->>>>>> static struct devlink_port *ef100_set_devlink_port(struct efx_nic *efx, u32 idx)
->>>>>> -- 
->>>>>> 2.17.1
->>>>>>
->
+BUG: scheduling while atomic: syz-executor150/5091/0x00000202
+2 locks held by syz-executor150/5091:
+Modules linked in:
+Preemption disabled at:
+[<0000000000000000>] 0x0
+Kernel panic - not syncing: scheduling while atomic: panic_on_warn set ...
+CPU: 1 PID: 5091 Comm: syz-executor150 Not tainted 6.2.0-rc3-syzkaller-00219-g010a74f52203 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/12/2023
+Call Trace:
+<TASK>
+__dump_stack lib/dump_stack.c:88 [inline]
+dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
+panic+0x2cc/0x626 kernel/panic.c:318
+check_panic_on_warn.cold+0x19/0x35 kernel/panic.c:238
+__schedule_bug.cold+0xd5/0xfe kernel/sched/core.c:5836
+schedule_debug kernel/sched/core.c:5865 [inline]
+__schedule+0x34e4/0x5450 kernel/sched/core.c:6500
+schedule+0xde/0x1b0 kernel/sched/core.c:6682
+schedule_timeout+0x14e/0x2a0 kernel/time/timer.c:2167
+schedule_timeout_uninterruptible kernel/time/timer.c:2201 [inline]
+msleep+0xb6/0x100 kernel/time/timer.c:2322
+qdisc_synchronize include/net/sch_generic.h:1295 [inline]
+taprio_reset+0x93/0x270 net/sched/sch_taprio.c:1703
+qdisc_reset+0x10c/0x770 net/sched/sch_generic.c:1022
+dev_reset_queue+0x92/0x130 net/sched/sch_generic.c:1285
+netdev_for_each_tx_queue include/linux/netdevice.h:2464 [inline]
+dev_deactivate_many+0x36d/0x9f0 net/sched/sch_generic.c:1351
+dev_deactivate+0xed/0x1b0 net/sched/sch_generic.c:1374
+qdisc_graft+0xe4a/0x1380 net/sched/sch_api.c:1080
+tc_modify_qdisc+0xb6b/0x19a0 net/sched/sch_api.c:1689
+rtnetlink_rcv_msg+0x43e/0xca0 net/core/rtnetlink.c:6141
+netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2564
+netlink_unicast_kernel net/netlink/af_netlink.c:1330 [inline]
+netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1356
+netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1932
+sock_sendmsg_nosec net/socket.c:714 [inline]
+sock_sendmsg+0xd3/0x120 net/socket.c:734
+____sys_sendmsg+0x712/0x8c0 net/socket.c:2476
+___sys_sendmsg+0x110/0x1b0 net/socket.c:2530
+__sys_sendmsg+0xf7/0x1c0 net/socket.c:2559
+do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+
+Fixes: 3a415d59c1db ("net/sched: sch_taprio: fix possible use-after-free")
+Link: https://lore.kernel.org/netdev/167387581653.2747.13878941339893288655.git-patchwork-notify@kernel.org/T/
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+---
+ net/sched/sch_taprio.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 9a11a499ea2df8d18c9c062496fdcbcf5a861391..c322a61eaeeac4b3744ec7b347d1256a19dfb244 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -1700,7 +1700,6 @@ static void taprio_reset(struct Qdisc *sch)
+ 	int i;
+ 
+ 	hrtimer_cancel(&q->advance_timer);
+-	qdisc_synchronize(sch);
+ 
+ 	if (q->qdiscs) {
+ 		for (i = 0; i < dev->num_tx_queues; i++)
+-- 
+2.39.1.405.gd4c25cc71f-goog
+
