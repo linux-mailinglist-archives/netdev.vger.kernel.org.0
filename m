@@ -2,249 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 708356782E3
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 18:20:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12D296782F4
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 18:22:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233559AbjAWRT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 12:19:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56806 "EHLO
+        id S233638AbjAWRWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 12:22:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233537AbjAWRT5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 12:19:57 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B374B2DE72;
-        Mon, 23 Jan 2023 09:19:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674494378; x=1706030378;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=QxKTXC1q61zdzF23NI5tLZ2E5StXSr3Z/SKaZ/ipFdc=;
-  b=eEzDJYxWSNbemcP1tmc1MsXoOOcUGR6myaHsq33is7dHHqmC8WklnZsB
-   Xg6916BYcGb0WJDkOvzUw1qKy/RWPLylV1v0Z+w/8wHPezy9U9SovyyBw
-   CW7zRPx1W+oob0L5AE1fbD0WmTev+IUbwg1lkDf4zdC7GS9svM8iGj/AO
-   kCRiB1yiPqGR2aVh6y9xvfpt0Jj0ltUQjij7zPVTEaZ0fIsuY39FCeLzz
-   V7TPfaRbNvE0W2PW/UBowA1LDuvl0dhP++Za/wBiFy3eQ0v7/0NvDNaPw
-   HotHh0eemFIwinxPh7xPlrOH+gvxrY28uTLtUGN9xnELw9aZl+Pa5QdNI
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10599"; a="306451041"
-X-IronPort-AV: E=Sophos;i="5.97,240,1669104000"; 
-   d="scan'208";a="306451041"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2023 09:19:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10599"; a="661791647"
-X-IronPort-AV: E=Sophos;i="5.97,240,1669104000"; 
-   d="scan'208";a="661791647"
-Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 23 Jan 2023 09:19:15 -0800
-Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pK0TS-0005mq-0v;
-        Mon, 23 Jan 2023 17:19:14 +0000
-Date:   Tue, 24 Jan 2023 01:18:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, linux-media@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        amd-gfx@lists.freedesktop.org, alsa-devel@alsa-project.org,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [linux-next:master] BUILD REGRESSION
- 691781f561e9868a94c3ed7daf4adad7f8af5d16
-Message-ID: <63cec15f.4eitr3XQwks0MqhA%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        with ESMTP id S231787AbjAWRWg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 12:22:36 -0500
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB82103
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 09:22:36 -0800 (PST)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-15f64f2791dso14728589fac.7
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 09:22:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Xfef6yeMmVbsO0sRP+igVc97TuRhY45c/xuGGBv4xGE=;
+        b=n9HnoX1eXquZOcMTa2HI4iqEaJ1eIpDozsp3QIv0DZx635PVI84mfpbcRWmez4gXRy
+         aQrFBdNSaIppa2GOmDCf9TaifFWxvyRSR48m8ZQePt0BGF4S5nhdbdTRAiBY7U3AxbXd
+         DekJMNmnOVl3aB/ODMtxYvn2Aw8yRK5jb/65XK0kDtVJeO0JtKuFt51KEWQ/Ml5VkgCz
+         jDk3JI0csSVfraSFZYBJjle/HESlriG1r5zAZwUZKtzmqPO7qtO8TT0eEyACMaGY2DsP
+         O8bUS5AP+OV/sypKot6IJzQeL99GFBSJfazAD0sk4SPsFll2Vyj7cWyEZhFiousgwAaz
+         gXTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Xfef6yeMmVbsO0sRP+igVc97TuRhY45c/xuGGBv4xGE=;
+        b=Qra3uMYJO4/rjAGIPhvZy+d+UKcwFlqfaP7crqFnMQfnq7syXEqXV60gpFNtKJ81IO
+         ykYMIaNgo7oTbjsCbwLQZexpGxRN4Qj1buBUbHZhxy/MsUG0geo+7GKYKD9cIs87S8KD
+         roExDt3JwZQioGWNaLl9RCl2xqTfdddoB46g2/IOYhrsK4EKUeHSZAvxGSOl9dehntOr
+         led8Ec9QUQJDMtnByfOXcRfgYfD1B5whtZzOzdoA7NmoKaD6XrmoOS/5f1TLIUdP57M4
+         4lM9sS96vpnqvY1frh+RzpsMk44dws2S+ouyM+B0ASJR1dxtVaIB0FFQY4Wt5yVhwmPm
+         MTeg==
+X-Gm-Message-State: AFqh2krGkN3q+D9ru/zZu8yenEFCQwU/qNVUTatcebpuBk6vWUiXAD0X
+        6Epf+b1geVSsFr7s9eal9R5Y3U4vGA8=
+X-Google-Smtp-Source: AMrXdXu9FE6COV6HzvXT5Spkh3fzSQu/jTMXW3QgTVhOdD86fwz4P0SGAzH7zn/4rmyNcQ45RKjXEA==
+X-Received: by 2002:a05:6870:32ce:b0:15b:9460:f1eb with SMTP id r14-20020a05687032ce00b0015b9460f1ebmr26042165oac.37.1674494555353;
+        Mon, 23 Jan 2023 09:22:35 -0800 (PST)
+Received: from t14s.localdomain ([2001:1284:f013:d30f:6272:a08b:2b30:ac0e])
+        by smtp.gmail.com with ESMTPSA id ek40-20020a056870f62800b0015f4d1b195bsm11912293oab.36.2023.01.23.09.22.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Jan 2023 09:22:34 -0800 (PST)
+Received: by t14s.localdomain (Postfix, from userid 1000)
+        id 253634AEC87; Mon, 23 Jan 2023 14:22:32 -0300 (-03)
+Date:   Mon, 23 Jan 2023 14:22:32 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     jhs@mojatatu.com, jiri@resnulli.us, lucien.xin@gmail.com,
+        netdev@vger.kernel.org, pabeni@redhat.com, wizhao@redhat.com,
+        xiyou.wangcong@gmail.com
+Subject: Re: [PATCH net-next 1/2] net/sched: act_mirred: better wording on
+ protection against excessive stack growth
+Message-ID: <Y87CWGgHk8f0EWfA@t14s.localdomain>
+References: <cover.1674233458.git.dcaratti@redhat.com>
+ <a59d4d9295e40fe6cfaa0803c5a7cc6e80e7b1a2.1674233458.git.dcaratti@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Disposition: inline
+In-Reply-To: <a59d4d9295e40fe6cfaa0803c5a7cc6e80e7b1a2.1674233458.git.dcaratti@redhat.com>
+X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-branch HEAD: 691781f561e9868a94c3ed7daf4adad7f8af5d16  Add linux-next specific files for 20230123
+On Fri, Jan 20, 2023 at 06:01:39PM +0100, Davide Caratti wrote:
+> with commit e2ca070f89ec ("net: sched: protect against stack overflow in
+> TC act_mirred"), act_mirred protected itself against excessive stack growth
+> using per_cpu counter of nested calls to tcf_mirred_act(), and capping it
+> to MIRRED_RECURSION_LIMIT. However, such protection does not detect
+> recursion/loops in case the packet is enqueued to the backlog (for example,
+> when the mirred target device has RPS or skb timestamping enabled). Change
+> the wording from "recursion" to "nesting" to make it more clear to readers.
+> 
+> CC: Jamal Hadi Salim <jhs@mojatatu.com>
+> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 
-Error/Warning: (recently discovered and may have been fixed)
-
-ERROR: modpost: "devm_platform_ioremap_resource" [drivers/dma/fsl-edma.ko] undefined!
-ERROR: modpost: "devm_platform_ioremap_resource" [drivers/dma/idma64.ko] undefined!
-drivers/gpio/gpio-zevio.c:174:40: error: invalid use of undefined type 'struct platform_device'
-drivers/gpio/gpio-zevio.c:178:9: error: implicit declaration of function 'platform_set_drvdata' [-Werror=implicit-function-declaration]
-drivers/gpio/gpio-zevio.c:184:28: error: implicit declaration of function 'devm_platform_ioremap_resource'; did you mean 'devm_ioremap_resource'? [-Werror=implicit-function-declaration]
-drivers/gpio/gpio-zevio.c:211:15: error: variable 'zevio_gpio_driver' has initializer but incomplete type
-drivers/gpio/gpio-zevio.c:211:31: error: storage size of 'zevio_gpio_driver' isn't known
-drivers/gpio/gpio-zevio.c:212:10: error: 'struct platform_driver' has no member named 'driver'
-drivers/gpio/gpio-zevio.c:212:27: error: extra brace group at end of initializer
-drivers/gpio/gpio-zevio.c:217:10: error: 'struct platform_driver' has no member named 'probe'
-drivers/gpio/gpio-zevio.c:219:1: error: type defaults to 'int' in declaration of 'builtin_platform_driver' [-Werror=implicit-int]
-drivers/gpu/drm/amd/amdgpu/../display/dc/link/link_dp_training.c:1585:38: warning: variable 'result' set but not used [-Wunused-but-set-variable]
-
-Unverified Error/Warning (likely false positive, please contact us if interested):
-
-drivers/block/virtio_blk.c:721:9: sparse:    bad type *
-drivers/block/virtio_blk.c:721:9: sparse:    unsigned int *
-drivers/block/virtio_blk.c:721:9: sparse: sparse: incompatible types in comparison expression (different base types):
-drivers/block/virtio_blk.c:721:9: sparse: sparse: no generic selection for 'restricted __le32 [addressable] virtio_cread_v'
-drivers/block/virtio_blk.c:721:9: sparse: sparse: no generic selection for 'restricted __le32 virtio_cread_v'
-drivers/media/i2c/max9286.c:771 max9286_s_stream() error: buffer overflow 'priv->fmt' 4 <= 32
-drivers/nvmem/imx-ocotp.c:599:21: sparse: sparse: symbol 'imx_ocotp_layout' was not declared. Should it be static?
-mm/hugetlb.c:3100 alloc_hugetlb_folio() error: uninitialized symbol 'h_cg'.
-net/devlink/leftover.c:7160 devlink_fmsg_prepare_skb() error: uninitialized symbol 'err'.
-sound/ac97/bus.c:465:1: sparse: sparse: symbol 'dev_attr_vendor_id' was not declared. Should it be static?
-
-Error/Warning ids grouped by kconfigs:
-
-gcc_recent_errors
-|-- alpha-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- arc-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- arc-randconfig-m031-20230123
-|   `-- drivers-media-i2c-max9286.c-max9286_s_stream()-error:buffer-overflow-priv-fmt
-|-- arm-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- arm-buildonly-randconfig-r005-20230123
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- arm-randconfig-r023-20230123
-|   |-- drivers-gpio-gpio-zevio.c:error:extra-brace-group-at-end-of-initializer
-|   |-- drivers-gpio-gpio-zevio.c:error:implicit-declaration-of-function-devm_platform_ioremap_resource
-|   |-- drivers-gpio-gpio-zevio.c:error:implicit-declaration-of-function-platform_set_drvdata
-|   |-- drivers-gpio-gpio-zevio.c:error:invalid-use-of-undefined-type-struct-platform_device
-|   |-- drivers-gpio-gpio-zevio.c:error:storage-size-of-zevio_gpio_driver-isn-t-known
-|   |-- drivers-gpio-gpio-zevio.c:error:struct-platform_driver-has-no-member-named-driver
-|   |-- drivers-gpio-gpio-zevio.c:error:struct-platform_driver-has-no-member-named-probe
-|   |-- drivers-gpio-gpio-zevio.c:error:type-defaults-to-int-in-declaration-of-builtin_platform_driver
-|   `-- drivers-gpio-gpio-zevio.c:error:variable-zevio_gpio_driver-has-initializer-but-incomplete-type
-|-- arm64-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- csky-randconfig-s033-20230123
-|   |-- drivers-nvmem-imx-ocotp.c:sparse:sparse:symbol-imx_ocotp_layout-was-not-declared.-Should-it-be-static
-|   `-- sound-ac97-bus.c:sparse:sparse:symbol-dev_attr_vendor_id-was-not-declared.-Should-it-be-static
-|-- i386-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- ia64-allmodconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- ia64-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- mips-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- parisc-allmodconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- powerpc-allmodconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- riscv-randconfig-s053-20230123
-|   |-- drivers-block-virtio_blk.c:sparse:bad-type
-|   |-- drivers-block-virtio_blk.c:sparse:sparse:incompatible-types-in-comparison-expression-(different-base-types):
-|   |-- drivers-block-virtio_blk.c:sparse:sparse:no-generic-selection-for-restricted-__le32-addressable-virtio_cread_v
-|   |-- drivers-block-virtio_blk.c:sparse:sparse:no-generic-selection-for-restricted-__le32-virtio_cread_v
-|   `-- drivers-block-virtio_blk.c:sparse:unsigned-int
-|-- s390-allmodconfig
-|   |-- ERROR:devm_platform_ioremap_resource-drivers-dma-fsl-edma.ko-undefined
-|   `-- ERROR:devm_platform_ioremap_resource-drivers-dma-idma64.ko-undefined
-|-- s390-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- x86_64-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
-
-elapsed time: 721m
-
-configs tested: 85
-configs skipped: 4
-
-gcc tested configs:
-x86_64                            allnoconfig
-um                             i386_defconfig
-um                           x86_64_defconfig
-i386                                defconfig
-x86_64                          rhel-8.3-func
-x86_64                    rhel-8.3-kselftests
-x86_64                              defconfig
-sh                        edosk7705_defconfig
-ia64                             allmodconfig
-x86_64                               rhel-8.3
-i386                 randconfig-a004-20230123
-arm                         axm55xx_defconfig
-i386                 randconfig-a003-20230123
-x86_64                           allyesconfig
-sh                           se7722_defconfig
-sh                                  defconfig
-arm                        spear6xx_defconfig
-i386                 randconfig-a002-20230123
-m68k                             allmodconfig
-arm                           u8500_defconfig
-i386                 randconfig-a001-20230123
-x86_64               randconfig-a002-20230123
-arc                        nsimosci_defconfig
-arc                  randconfig-r043-20230123
-powerpc                           allnoconfig
-sh                            hp6xx_defconfig
-arc                              allyesconfig
-x86_64               randconfig-a004-20230123
-mips                             allyesconfig
-alpha                            allyesconfig
-x86_64               randconfig-a003-20230123
-i386                 randconfig-a005-20230123
-mips                     loongson1b_defconfig
-x86_64               randconfig-a005-20230123
-arm                                 defconfig
-x86_64                           rhel-8.3-syz
-i386                             allyesconfig
-i386                 randconfig-a006-20230123
-x86_64                         rhel-8.3-kunit
-m68k                             allyesconfig
-powerpc                          allmodconfig
-x86_64                           rhel-8.3-kvm
-x86_64                           rhel-8.3-bpf
-arm                  randconfig-r046-20230123
-sh                               allmodconfig
-x86_64               randconfig-a001-20230123
-mips                  decstation_64_defconfig
-sh                          rsk7203_defconfig
-xtensa                  nommu_kc705_defconfig
-arm                           imxrt_defconfig
-arm                              allyesconfig
-arm64                            allyesconfig
-powerpc                     rainier_defconfig
-ia64                             allyesconfig
-powerpc              randconfig-c003-20230123
-i386                 randconfig-c001-20230123
-arc                                 defconfig
-s390                             allmodconfig
-alpha                               defconfig
-s390                                defconfig
-s390                             allyesconfig
-
-clang tested configs:
-x86_64                          rhel-8.3-rust
-hexagon              randconfig-r041-20230123
-hexagon              randconfig-r045-20230123
-powerpc                   microwatt_defconfig
-s390                 randconfig-r044-20230123
-x86_64               randconfig-a015-20230123
-mips                     cu1000-neo_defconfig
-mips                           ip22_defconfig
-x86_64               randconfig-a011-20230123
-i386                 randconfig-a014-20230123
-mips                          ath79_defconfig
-x86_64               randconfig-a013-20230123
-arm                   milbeaut_m10v_defconfig
-riscv                randconfig-r042-20230123
-x86_64               randconfig-a012-20230123
-mips                        maltaup_defconfig
-i386                 randconfig-a012-20230123
-x86_64               randconfig-a014-20230123
-i386                 randconfig-a013-20230123
-i386                 randconfig-a011-20230123
-i386                 randconfig-a015-20230123
-arm                       aspeed_g4_defconfig
-mips                          ath25_defconfig
-arm                         socfpga_defconfig
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
