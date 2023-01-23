@@ -2,210 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 770796782CC
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 18:17:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 708356782E3
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 18:20:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232547AbjAWRRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 12:17:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53922 "EHLO
+        id S233559AbjAWRT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 12:19:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233558AbjAWRRq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 12:17:46 -0500
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CBB930182;
-        Mon, 23 Jan 2023 09:17:14 -0800 (PST)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30NEJN7P009518;
-        Mon, 23 Jan 2023 18:16:41 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=R1aMUGjTbxhxY6hkyKRGBk4zxbzWjzxiNcedON6udFo=;
- b=Zm5ggXoNZruq7Bb3b8N1qmVGlQxdkRIHa80INaPpZBBpXyjLW8eCZLOi26l5A6+RB5/w
- Z+PZ3/cL4Va46yqtmJi5PORwYTY46FioxWKylbeuPxm436newkRnSC7hmZnYsKWHL2Kb
- E8O4kMxS5/CdwDsQ4mM0v4xIMFleF1b25tB/cNt2YL3f/fwzgGAIWdrLxxMD8SuKdWQu
- cPFgMv67SOjqXrPKNSoqvl1+YjTlQbFYmJvNya7GzzdG/j6Oyh9icv6JPWXR/j9Hrm2V
- cNegJauCMm20Z1Gl+nUL+NtrY2i2G1zVxWNtOmY+nTZipz1phWQlTPi0LXd8tXF5+ztP QA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3n89epk4d1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 Jan 2023 18:16:41 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 995FC100038;
-        Mon, 23 Jan 2023 18:16:37 +0100 (CET)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 89E49228A2B;
-        Mon, 23 Jan 2023 18:16:37 +0100 (CET)
-Received: from [10.201.21.26] (10.201.21.26) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.13; Mon, 23 Jan
- 2023 18:16:34 +0100
-Message-ID: <e068c541-b492-a513-6212-fd698e4fc9c4@foss.st.com>
-Date:   Mon, 23 Jan 2023 18:16:33 +0100
+        with ESMTP id S233537AbjAWRT5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 12:19:57 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B374B2DE72;
+        Mon, 23 Jan 2023 09:19:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674494378; x=1706030378;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=QxKTXC1q61zdzF23NI5tLZ2E5StXSr3Z/SKaZ/ipFdc=;
+  b=eEzDJYxWSNbemcP1tmc1MsXoOOcUGR6myaHsq33is7dHHqmC8WklnZsB
+   Xg6916BYcGb0WJDkOvzUw1qKy/RWPLylV1v0Z+w/8wHPezy9U9SovyyBw
+   CW7zRPx1W+oob0L5AE1fbD0WmTev+IUbwg1lkDf4zdC7GS9svM8iGj/AO
+   kCRiB1yiPqGR2aVh6y9xvfpt0Jj0ltUQjij7zPVTEaZ0fIsuY39FCeLzz
+   V7TPfaRbNvE0W2PW/UBowA1LDuvl0dhP++Za/wBiFy3eQ0v7/0NvDNaPw
+   HotHh0eemFIwinxPh7xPlrOH+gvxrY28uTLtUGN9xnELw9aZl+Pa5QdNI
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10599"; a="306451041"
+X-IronPort-AV: E=Sophos;i="5.97,240,1669104000"; 
+   d="scan'208";a="306451041"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2023 09:19:18 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10599"; a="661791647"
+X-IronPort-AV: E=Sophos;i="5.97,240,1669104000"; 
+   d="scan'208";a="661791647"
+Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 23 Jan 2023 09:19:15 -0800
+Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pK0TS-0005mq-0v;
+        Mon, 23 Jan 2023 17:19:14 +0000
+Date:   Tue, 24 Jan 2023 01:18:23 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, linux-media@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        amd-gfx@lists.freedesktop.org, alsa-devel@alsa-project.org,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: [linux-next:master] BUILD REGRESSION
+ 691781f561e9868a94c3ed7daf4adad7f8af5d16
+Message-ID: <63cec15f.4eitr3XQwks0MqhA%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v2 02/13] spi: Replace all spi->chip_select and
- spi->cs_gpiod references with function call
-To:     Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>,
-        <broonie@kernel.org>, <miquel.raynal@bootlin.com>,
-        <richard@nod.at>, <vigneshr@ti.com>, <jic23@kernel.org>,
-        <tudor.ambarus@microchip.com>, <pratyush@kernel.org>,
-        <sanju.mehta@amd.com>, <chin-ting_kuo@aspeedtech.com>,
-        <clg@kaod.org>, <kdasu.kdev@gmail.com>, <f.fainelli@gmail.com>,
-        <rjui@broadcom.com>, <sbranden@broadcom.com>,
-        <eajames@linux.ibm.com>, <olteanv@gmail.com>, <han.xu@nxp.com>,
-        <john.garry@huawei.com>, <shawnguo@kernel.org>,
-        <s.hauer@pengutronix.de>, <narmstrong@baylibre.com>,
-        <khilman@baylibre.com>, <matthias.bgg@gmail.com>,
-        <haibo.chen@nxp.com>, <linus.walleij@linaro.org>,
-        <daniel@zonque.org>, <haojian.zhuang@gmail.com>,
-        <robert.jarzmik@free.fr>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <heiko@sntech.de>,
-        <krzysztof.kozlowski@linaro.org>, <andi@etezian.org>,
-        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@foss.st.com>,
-        <wens@csie.org>, <jernej.skrabec@gmail.com>, <samuel@sholland.org>,
-        <masahisa.kojima@linaro.org>, <jaswinder.singh@linaro.org>,
-        <rostedt@goodmis.org>, <mingo@redhat.com>,
-        <l.stelmach@samsung.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <alex.aring@gmail.com>, <stefan@datenfreihafen.org>,
-        <kvalo@kernel.org>, <thierry.reding@gmail.com>,
-        <jonathanh@nvidia.com>, <skomatineni@nvidia.com>,
-        <sumit.semwal@linaro.org>, <christian.koenig@amd.com>,
-        <j.neuschaefer@gmx.net>, <vireshk@kernel.org>, <rmfrfs@gmail.com>,
-        <johan@kernel.org>, <elder@kernel.org>,
-        <gregkh@linuxfoundation.org>
-CC:     <git@amd.com>, <linux-spi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <joel@jms.id.au>,
-        <andrew@aj.id.au>, <radu_nicolae.pirea@upb.ro>,
-        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <claudiu.beznea@microchip.com>,
-        <bcm-kernel-feedback-list@broadcom.com>, <fancer.lancer@gmail.com>,
-        <kernel@pengutronix.de>, <festevam@gmail.com>, <linux-imx@nxp.com>,
-        <jbrunet@baylibre.com>, <martin.blumenstingl@googlemail.com>,
-        <avifishman70@gmail.com>, <tmaimon77@gmail.com>,
-        <tali.perry1@gmail.com>, <venture@google.com>, <yuenn@google.com>,
-        <benjaminfair@google.com>, <yogeshgaur.83@gmail.com>,
-        <konrad.dybcio@somainline.org>, <alim.akhtar@samsung.com>,
-        <ldewangan@nvidia.com>, <michal.simek@amd.com>,
-        <linux-aspeed@lists.ozlabs.org>, <openbmc@lists.ozlabs.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-rpi-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-msm@vger.kernel.org>,
-        <linux-rockchip@lists.infradead.org>,
-        <linux-samsung-soc@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-sunxi@lists.linux.dev>, <linux-tegra@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-wpan@vger.kernel.org>,
-        <libertas-dev@lists.infradead.org>,
-        <linux-wireless@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
-        <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
-        <linux-iio@vger.kernel.org>, <michael@walle.cc>,
-        <palmer@dabbelt.com>, <linux-riscv@lists.infradead.org>,
-        <linux-media@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <greybus-dev@lists.linaro.org>, <linux-staging@lists.linux.dev>,
-        <amitrkcian2002@gmail.com>
-References: <20230119185342.2093323-1-amit.kumar-mahapatra@amd.com>
- <20230119185342.2093323-3-amit.kumar-mahapatra@amd.com>
-Content-Language: en-US
-From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
-In-Reply-To: <20230119185342.2093323-3-amit.kumar-mahapatra@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.201.21.26]
-X-ClientProxiedBy: EQNCAS1NODE4.st.com (10.75.129.82) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-01-23_12,2023-01-23_01,2022-06-22_01
-X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Amit
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+branch HEAD: 691781f561e9868a94c3ed7daf4adad7f8af5d16  Add linux-next specific files for 20230123
 
-On 1/19/23 19:53, Amit Kumar Mahapatra wrote:
-> Supporting multi-cs in spi drivers would require the chip_select & cs_gpiod
-> members of struct spi_device to be an array. But changing the type of these
-> members to array would break the spi driver functionality. To make the
-> transition smoother introduced four new APIs to get/set the
-> spi->chip_select & spi->cs_gpiod and replaced all spi->chip_select and
-> spi->cs_gpiod references with get or set API calls.
-> While adding multi-cs support in further patches the chip_select & cs_gpiod
-> members of the spi_device structure would be converted to arrays & the
-> "idx" parameter of the APIs would be used as array index i.e.,
-> spi->chip_select[idx] & spi->cs_gpiod[idx] respectively.
-> 
-> Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
-> ---
+Error/Warning: (recently discovered and may have been fixed)
 
-[...]
+ERROR: modpost: "devm_platform_ioremap_resource" [drivers/dma/fsl-edma.ko] undefined!
+ERROR: modpost: "devm_platform_ioremap_resource" [drivers/dma/idma64.ko] undefined!
+drivers/gpio/gpio-zevio.c:174:40: error: invalid use of undefined type 'struct platform_device'
+drivers/gpio/gpio-zevio.c:178:9: error: implicit declaration of function 'platform_set_drvdata' [-Werror=implicit-function-declaration]
+drivers/gpio/gpio-zevio.c:184:28: error: implicit declaration of function 'devm_platform_ioremap_resource'; did you mean 'devm_ioremap_resource'? [-Werror=implicit-function-declaration]
+drivers/gpio/gpio-zevio.c:211:15: error: variable 'zevio_gpio_driver' has initializer but incomplete type
+drivers/gpio/gpio-zevio.c:211:31: error: storage size of 'zevio_gpio_driver' isn't known
+drivers/gpio/gpio-zevio.c:212:10: error: 'struct platform_driver' has no member named 'driver'
+drivers/gpio/gpio-zevio.c:212:27: error: extra brace group at end of initializer
+drivers/gpio/gpio-zevio.c:217:10: error: 'struct platform_driver' has no member named 'probe'
+drivers/gpio/gpio-zevio.c:219:1: error: type defaults to 'int' in declaration of 'builtin_platform_driver' [-Werror=implicit-int]
+drivers/gpu/drm/amd/amdgpu/../display/dc/link/link_dp_training.c:1585:38: warning: variable 'result' set but not used [-Wunused-but-set-variable]
 
->  drivers/spi/spi-stm32-qspi.c      | 12 ++++++------
+Unverified Error/Warning (likely false positive, please contact us if interested):
 
-[...]
+drivers/block/virtio_blk.c:721:9: sparse:    bad type *
+drivers/block/virtio_blk.c:721:9: sparse:    unsigned int *
+drivers/block/virtio_blk.c:721:9: sparse: sparse: incompatible types in comparison expression (different base types):
+drivers/block/virtio_blk.c:721:9: sparse: sparse: no generic selection for 'restricted __le32 [addressable] virtio_cread_v'
+drivers/block/virtio_blk.c:721:9: sparse: sparse: no generic selection for 'restricted __le32 virtio_cread_v'
+drivers/media/i2c/max9286.c:771 max9286_s_stream() error: buffer overflow 'priv->fmt' 4 <= 32
+drivers/nvmem/imx-ocotp.c:599:21: sparse: sparse: symbol 'imx_ocotp_layout' was not declared. Should it be static?
+mm/hugetlb.c:3100 alloc_hugetlb_folio() error: uninitialized symbol 'h_cg'.
+net/devlink/leftover.c:7160 devlink_fmsg_prepare_skb() error: uninitialized symbol 'err'.
+sound/ac97/bus.c:465:1: sparse: sparse: symbol 'dev_attr_vendor_id' was not declared. Should it be static?
 
-> diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
-> index 9131660c1afb..b9e61372dcfb 100644
-> --- a/drivers/spi/spi-stm32-qspi.c
-> +++ b/drivers/spi/spi-stm32-qspi.c
-> @@ -359,7 +359,7 @@ static int stm32_qspi_get_mode(u8 buswidth)
->  static int stm32_qspi_send(struct spi_device *spi, const struct spi_mem_op *op)
->  {
->  	struct stm32_qspi *qspi = spi_controller_get_devdata(spi->master);
-> -	struct stm32_qspi_flash *flash = &qspi->flash[spi->chip_select];
-> +	struct stm32_qspi_flash *flash = &qspi->flash[spi_get_chipselect(spi, 0)];
->  	u32 ccr, cr;
->  	int timeout, err = 0, err_poll_status = 0;
->  
-> @@ -564,7 +564,7 @@ static int stm32_qspi_transfer_one_message(struct spi_controller *ctrl,
->  	struct spi_mem_op op;
->  	int ret = 0;
->  
-> -	if (!spi->cs_gpiod)
-> +	if (!spi_get_csgpiod(spi, 0))
->  		return -EOPNOTSUPP;
->  
->  	ret = pm_runtime_resume_and_get(qspi->dev);
-> @@ -573,7 +573,7 @@ static int stm32_qspi_transfer_one_message(struct spi_controller *ctrl,
->  
->  	mutex_lock(&qspi->lock);
->  
-> -	gpiod_set_value_cansleep(spi->cs_gpiod, true);
-> +	gpiod_set_value_cansleep(spi_get_csgpiod(spi, 0), true);
->  
->  	list_for_each_entry(transfer, &msg->transfers, transfer_list) {
->  		u8 dummy_bytes = 0;
-> @@ -626,7 +626,7 @@ static int stm32_qspi_transfer_one_message(struct spi_controller *ctrl,
->  	}
->  
->  end_of_transfer:
-> -	gpiod_set_value_cansleep(spi->cs_gpiod, false);
-> +	gpiod_set_value_cansleep(spi_get_csgpiod(spi, 0), false);
->  
->  	mutex_unlock(&qspi->lock);
->  
-> @@ -669,8 +669,8 @@ static int stm32_qspi_setup(struct spi_device *spi)
->  
->  	presc = DIV_ROUND_UP(qspi->clk_rate, spi->max_speed_hz) - 1;
->  
-> -	flash = &qspi->flash[spi->chip_select];
-> -	flash->cs = spi->chip_select;
-> +	flash = &qspi->flash[spi_get_chipselect(spi, 0)];
-> +	flash->cs = spi_get_chipselect(spi, 0);
->  	flash->presc = presc;
->  
->  	mutex_lock(&qspi->lock);
+Error/Warning ids grouped by kconfigs:
 
-Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
+gcc_recent_errors
+|-- alpha-allyesconfig
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- arc-allyesconfig
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- arc-randconfig-m031-20230123
+|   `-- drivers-media-i2c-max9286.c-max9286_s_stream()-error:buffer-overflow-priv-fmt
+|-- arm-allyesconfig
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- arm-buildonly-randconfig-r005-20230123
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- arm-randconfig-r023-20230123
+|   |-- drivers-gpio-gpio-zevio.c:error:extra-brace-group-at-end-of-initializer
+|   |-- drivers-gpio-gpio-zevio.c:error:implicit-declaration-of-function-devm_platform_ioremap_resource
+|   |-- drivers-gpio-gpio-zevio.c:error:implicit-declaration-of-function-platform_set_drvdata
+|   |-- drivers-gpio-gpio-zevio.c:error:invalid-use-of-undefined-type-struct-platform_device
+|   |-- drivers-gpio-gpio-zevio.c:error:storage-size-of-zevio_gpio_driver-isn-t-known
+|   |-- drivers-gpio-gpio-zevio.c:error:struct-platform_driver-has-no-member-named-driver
+|   |-- drivers-gpio-gpio-zevio.c:error:struct-platform_driver-has-no-member-named-probe
+|   |-- drivers-gpio-gpio-zevio.c:error:type-defaults-to-int-in-declaration-of-builtin_platform_driver
+|   `-- drivers-gpio-gpio-zevio.c:error:variable-zevio_gpio_driver-has-initializer-but-incomplete-type
+|-- arm64-allyesconfig
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- csky-randconfig-s033-20230123
+|   |-- drivers-nvmem-imx-ocotp.c:sparse:sparse:symbol-imx_ocotp_layout-was-not-declared.-Should-it-be-static
+|   `-- sound-ac97-bus.c:sparse:sparse:symbol-dev_attr_vendor_id-was-not-declared.-Should-it-be-static
+|-- i386-allyesconfig
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- ia64-allmodconfig
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- ia64-allyesconfig
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- mips-allyesconfig
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- parisc-allmodconfig
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- powerpc-allmodconfig
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- riscv-randconfig-s053-20230123
+|   |-- drivers-block-virtio_blk.c:sparse:bad-type
+|   |-- drivers-block-virtio_blk.c:sparse:sparse:incompatible-types-in-comparison-expression-(different-base-types):
+|   |-- drivers-block-virtio_blk.c:sparse:sparse:no-generic-selection-for-restricted-__le32-addressable-virtio_cread_v
+|   |-- drivers-block-virtio_blk.c:sparse:sparse:no-generic-selection-for-restricted-__le32-virtio_cread_v
+|   `-- drivers-block-virtio_blk.c:sparse:unsigned-int
+|-- s390-allmodconfig
+|   |-- ERROR:devm_platform_ioremap_resource-drivers-dma-fsl-edma.ko-undefined
+|   `-- ERROR:devm_platform_ioremap_resource-drivers-dma-idma64.ko-undefined
+|-- s390-allyesconfig
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- x86_64-allyesconfig
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_dp_training.c:warning:variable-result-set-but-not-used
 
-Thanks
-Patrice
+elapsed time: 721m
+
+configs tested: 85
+configs skipped: 4
+
+gcc tested configs:
+x86_64                            allnoconfig
+um                             i386_defconfig
+um                           x86_64_defconfig
+i386                                defconfig
+x86_64                          rhel-8.3-func
+x86_64                    rhel-8.3-kselftests
+x86_64                              defconfig
+sh                        edosk7705_defconfig
+ia64                             allmodconfig
+x86_64                               rhel-8.3
+i386                 randconfig-a004-20230123
+arm                         axm55xx_defconfig
+i386                 randconfig-a003-20230123
+x86_64                           allyesconfig
+sh                           se7722_defconfig
+sh                                  defconfig
+arm                        spear6xx_defconfig
+i386                 randconfig-a002-20230123
+m68k                             allmodconfig
+arm                           u8500_defconfig
+i386                 randconfig-a001-20230123
+x86_64               randconfig-a002-20230123
+arc                        nsimosci_defconfig
+arc                  randconfig-r043-20230123
+powerpc                           allnoconfig
+sh                            hp6xx_defconfig
+arc                              allyesconfig
+x86_64               randconfig-a004-20230123
+mips                             allyesconfig
+alpha                            allyesconfig
+x86_64               randconfig-a003-20230123
+i386                 randconfig-a005-20230123
+mips                     loongson1b_defconfig
+x86_64               randconfig-a005-20230123
+arm                                 defconfig
+x86_64                           rhel-8.3-syz
+i386                             allyesconfig
+i386                 randconfig-a006-20230123
+x86_64                         rhel-8.3-kunit
+m68k                             allyesconfig
+powerpc                          allmodconfig
+x86_64                           rhel-8.3-kvm
+x86_64                           rhel-8.3-bpf
+arm                  randconfig-r046-20230123
+sh                               allmodconfig
+x86_64               randconfig-a001-20230123
+mips                  decstation_64_defconfig
+sh                          rsk7203_defconfig
+xtensa                  nommu_kc705_defconfig
+arm                           imxrt_defconfig
+arm                              allyesconfig
+arm64                            allyesconfig
+powerpc                     rainier_defconfig
+ia64                             allyesconfig
+powerpc              randconfig-c003-20230123
+i386                 randconfig-c001-20230123
+arc                                 defconfig
+s390                             allmodconfig
+alpha                               defconfig
+s390                                defconfig
+s390                             allyesconfig
+
+clang tested configs:
+x86_64                          rhel-8.3-rust
+hexagon              randconfig-r041-20230123
+hexagon              randconfig-r045-20230123
+powerpc                   microwatt_defconfig
+s390                 randconfig-r044-20230123
+x86_64               randconfig-a015-20230123
+mips                     cu1000-neo_defconfig
+mips                           ip22_defconfig
+x86_64               randconfig-a011-20230123
+i386                 randconfig-a014-20230123
+mips                          ath79_defconfig
+x86_64               randconfig-a013-20230123
+arm                   milbeaut_m10v_defconfig
+riscv                randconfig-r042-20230123
+x86_64               randconfig-a012-20230123
+mips                        maltaup_defconfig
+i386                 randconfig-a012-20230123
+x86_64               randconfig-a014-20230123
+i386                 randconfig-a013-20230123
+i386                 randconfig-a011-20230123
+i386                 randconfig-a015-20230123
+arm                       aspeed_g4_defconfig
+mips                          ath25_defconfig
+arm                         socfpga_defconfig
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
