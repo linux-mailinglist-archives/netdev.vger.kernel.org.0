@@ -2,155 +2,394 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2FA9677B52
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 13:44:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31D8D677B64
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 13:45:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231511AbjAWMoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 07:44:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46432 "EHLO
+        id S231131AbjAWMpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 07:45:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229835AbjAWMoS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 07:44:18 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2138.outbound.protection.outlook.com [40.107.92.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCC816AD0
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 04:44:17 -0800 (PST)
+        with ESMTP id S231701AbjAWMpl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 07:45:41 -0500
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2088.outbound.protection.outlook.com [40.107.237.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2F122A1C;
+        Mon, 23 Jan 2023 04:45:36 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cU4uL1sr/jIkgeiuT2LFpr+xArBPWI3HZZaOetk/4JA9O2coVPXwNSjRpTnWcdBps4BTrv1CWsoiNGPUkhKTuBKsEt5hAAatZws+iHYNZry0Zw5Upt2mC9teqhoEjAAxqHBl7Ec63bEO8lRZZgyiBMMRUBH1fYxm/CrhWUfI8Wg8kEg14gpKq+q8dEl7egHekK/TDNSB1BijHL8jzqNaKUlcAy/0vrx5THLQcvjPjZsUVMrkTtzSIBquspd4BudUNG3T08+xt8WnIgBfwf2xwW5lPJntjgkp6b5LkOAhI3kZ0lr9cUhPUVs058WpteCrbwBNNYnUidPRPygeEspSnA==
+ b=ZZG87YLgNA4pwdSpxwkrlXaqYXfNCloNdreUbxTcuJZia7kf6nytNOzXLqaQ97UYSy732Fz2+8YNrN0EUkjzpqfxTcHiVLT0Y4tkRPgB1Bb3J/utaabeTdzBuQdgnLf74aCFa+q/Cc4dOHE9r/EiHqcIlrWhSgeScLMk1Wp2yFV83LW5ftRfskX3B8REQPiU5gvegGT4U8RYeCfxR7LN6jLIrModk+tNq+88zg74aexrQ5H+x73k7UcmFRIhb/mgKo7526bJwBDcW6Uqs0aC8gnZ30MlO8p44f1Kt7LbV5EuSJ7vR7O8S2TwLKDSY+gXD1mOAxtmKyVx+e5k70Xuhw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0Wyh7HCksb47S4Adujk7IaHAWq0PnjuP/5XlpwOX/j4=;
- b=LIzpZ2DzHJRY4dO6mCKjU8AoAsW3PKbaG7i9+IHXZ2EgAHviWNK9Nqz1W+Ka3MYfGmtltw9MbpglJSC5gAYH2KNHw6jX3Y6HALS0wuiTs0UlkirPg9GV4h0DLoAY9L3xU28pYw+IWrUIPKAllEa4JrzT3rhBjtlkruXOy7iN7eSP5GYtfpISHCCPUohfWN8WH6q+kVBTali6NHoQnaRaovB/D/hV0fhdFHzuF9bcLlDBVJGLE/2gegMuoTMM15M1P1Py+7fCyxfYKkl4F3A5JeZty+Tep9/kpfEcnxvVkEWcP8Ja64O1iQldy04wQ9Bs8v4hyEyT7apaqlpoomLVVQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ bh=1Hc9W9e5hNCieEam24ig/h7vGFU0DMJc1GDd0LkOrj8=;
+ b=lseX9ZjVMcXx6AQLM3asUsFshtvahYoFtNhMR3jzMlTV9B4fMGWLY30J8uJB8x6c3QtUQlwvHMJjjEAlYe7svdqqp8mfX8lcAoH3olBuHA0B4IyDrjgupCy9CoigVHKtvuEOfch0oPitzwqvdK5EPQnPXfiTc/HfIaf1/zI+JX0iGGZVE6piG7Krv8oRDP2cMFsga2dMsUWgo/bTA2o30O0AgfVT5OVbMoafJA9HkvbyS9LKuZWjQuJ7XLf8XNd5JIjmGyxOoxe+7XI6qn/MaPvMbprusIHplLVmNWc/1c3x5oALd3EC/+HCkyiJeMezpkY0j6IaSkk3wktGQz5xtw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0Wyh7HCksb47S4Adujk7IaHAWq0PnjuP/5XlpwOX/j4=;
- b=UN79BIz+axUJzWJ3VYCkYnmorZhIM5HPvsV9bz6jCCJ0NjzNY4b70v2cNQ3z5oMhCw+RmxwEe0/Dpl/Ghbg0263bCQr2OgDavmy4r7swluk94Xrj1mQr4/0DoMh8l4wB3kumruJ7TMFXTD032IcmxeVys/th7xXC6DIwWDdj5UI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM6PR13MB4129.namprd13.prod.outlook.com (2603:10b6:5:2a4::23) with
+ bh=1Hc9W9e5hNCieEam24ig/h7vGFU0DMJc1GDd0LkOrj8=;
+ b=FMq1wZGZ00dVgdYfCxjl5S1a0crN842ZUbW83qGi/HUjpEMKIwxEcIHXV6cc6o2Whof+zfrfnx8qPnL1qPty4CqcVEmh1yELx9OtEqPGIzeg6fRkRQsLCjLri5g5aUaNyljEH/Heiw+Iw7XgrcIdy7SeE8xbN8fihuShq30KDwY=
+Received: from BN1PR13CA0020.namprd13.prod.outlook.com (2603:10b6:408:e2::25)
+ by MW4PR12MB7309.namprd12.prod.outlook.com (2603:10b6:303:22f::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Mon, 23 Jan
- 2023 12:44:13 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65%5]) with mapi id 15.20.6002.033; Mon, 23 Jan 2023
- 12:44:13 +0000
-Date:   Mon, 23 Jan 2023 13:44:07 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-Subject: Re: [PATCH net-next 3/6] net: enetc: add definition for offset
- between eMAC and pMAC regs
-Message-ID: <Y86BFyhhh1SA97dw@corigine.com>
-References: <20230119160431.295833-1-vladimir.oltean@nxp.com>
- <20230119160431.295833-4-vladimir.oltean@nxp.com>
- <Y81kbbO+X21uVFMb@corigine.com>
- <20230123112411.ofw6cx3qv6uh4txi@skbuf>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230123112411.ofw6cx3qv6uh4txi@skbuf>
-X-ClientProxiedBy: AS4P250CA0019.EURP250.PROD.OUTLOOK.COM
- (2603:10a6:20b:5e3::10) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+ 2023 12:45:30 +0000
+Received: from BN8NAM11FT016.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:e2:cafe::bc) by BN1PR13CA0020.outlook.office365.com
+ (2603:10b6:408:e2::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.16 via Frontend
+ Transport; Mon, 23 Jan 2023 12:45:30 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT016.mail.protection.outlook.com (10.13.176.97) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6023.16 via Frontend Transport; Mon, 23 Jan 2023 12:45:29 +0000
+Received: from [10.254.241.50] (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 23 Jan
+ 2023 06:44:58 -0600
+Message-ID: <2f4171f8-badb-a33a-7ae6-c375d9d725c3@amd.com>
+Date:   Mon, 23 Jan 2023 13:44:56 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v2 01/13] spi: Add APIs in spi core to set/get
+ spi->chip_select and spi->cs_gpiod
+Content-Language: en-US
+To:     Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>,
+        <broonie@kernel.org>, <miquel.raynal@bootlin.com>,
+        <richard@nod.at>, <vigneshr@ti.com>, <jic23@kernel.org>,
+        <tudor.ambarus@microchip.com>, <pratyush@kernel.org>,
+        <sanju.mehta@amd.com>, <chin-ting_kuo@aspeedtech.com>,
+        <clg@kaod.org>, <kdasu.kdev@gmail.com>, <f.fainelli@gmail.com>,
+        <rjui@broadcom.com>, <sbranden@broadcom.com>,
+        <eajames@linux.ibm.com>, <olteanv@gmail.com>, <han.xu@nxp.com>,
+        <john.garry@huawei.com>, <shawnguo@kernel.org>,
+        <s.hauer@pengutronix.de>, <narmstrong@baylibre.com>,
+        <khilman@baylibre.com>, <matthias.bgg@gmail.com>,
+        <haibo.chen@nxp.com>, <linus.walleij@linaro.org>,
+        <daniel@zonque.org>, <haojian.zhuang@gmail.com>,
+        <robert.jarzmik@free.fr>, <agross@kernel.org>,
+        <bjorn.andersson@linaro.org>, <heiko@sntech.de>,
+        <krzysztof.kozlowski@linaro.org>, <andi@etezian.org>,
+        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@foss.st.com>,
+        <wens@csie.org>, <jernej.skrabec@gmail.com>, <samuel@sholland.org>,
+        <masahisa.kojima@linaro.org>, <jaswinder.singh@linaro.org>,
+        <rostedt@goodmis.org>, <mingo@redhat.com>,
+        <l.stelmach@samsung.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <alex.aring@gmail.com>, <stefan@datenfreihafen.org>,
+        <kvalo@kernel.org>, <thierry.reding@gmail.com>,
+        <jonathanh@nvidia.com>, <skomatineni@nvidia.com>,
+        <sumit.semwal@linaro.org>, <christian.koenig@amd.com>,
+        <j.neuschaefer@gmx.net>, <vireshk@kernel.org>, <rmfrfs@gmail.com>,
+        <johan@kernel.org>, <elder@kernel.org>,
+        <gregkh@linuxfoundation.org>
+CC:     <git@amd.com>, <linux-spi@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <joel@jms.id.au>,
+        <andrew@aj.id.au>, <radu_nicolae.pirea@upb.ro>,
+        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <claudiu.beznea@microchip.com>,
+        <bcm-kernel-feedback-list@broadcom.com>, <fancer.lancer@gmail.com>,
+        <kernel@pengutronix.de>, <festevam@gmail.com>, <linux-imx@nxp.com>,
+        <jbrunet@baylibre.com>, <martin.blumenstingl@googlemail.com>,
+        <avifishman70@gmail.com>, <tmaimon77@gmail.com>,
+        <tali.perry1@gmail.com>, <venture@google.com>, <yuenn@google.com>,
+        <benjaminfair@google.com>, <yogeshgaur.83@gmail.com>,
+        <konrad.dybcio@somainline.org>, <alim.akhtar@samsung.com>,
+        <ldewangan@nvidia.com>, <linux-aspeed@lists.ozlabs.org>,
+        <openbmc@lists.ozlabs.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-rpi-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-rockchip@lists.infradead.org>,
+        <linux-samsung-soc@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-sunxi@lists.linux.dev>, <linux-tegra@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-wpan@vger.kernel.org>,
+        <libertas-dev@lists.infradead.org>,
+        <linux-wireless@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
+        <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
+        <linux-iio@vger.kernel.org>, <michael@walle.cc>,
+        <palmer@dabbelt.com>, <linux-riscv@lists.infradead.org>,
+        <linux-media@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <greybus-dev@lists.linaro.org>, <linux-staging@lists.linux.dev>,
+        <amitrkcian2002@gmail.com>
+References: <20230119185342.2093323-1-amit.kumar-mahapatra@amd.com>
+ <20230119185342.2093323-2-amit.kumar-mahapatra@amd.com>
+From:   Michal Simek <michal.simek@amd.com>
+In-Reply-To: <20230119185342.2093323-2-amit.kumar-mahapatra@amd.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM6PR13MB4129:EE_
-X-MS-Office365-Filtering-Correlation-Id: 86ebe6fc-1594-42b1-fbba-08dafd3f8804
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT016:EE_|MW4PR12MB7309:EE_
+X-MS-Office365-Filtering-Correlation-Id: e0a4abaa-71e3-4b9c-4356-08dafd3fb58e
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: M6IlxBoqz/tQeHDin7ESEEvCGoDWe1NnFVvqlngGdTTwkjffFuWy95DcJo06WjkEDEVUi6Q6c3P8tfXRIChlgu71f2TkwU6CPAtcNuCrvhqI3NUAsOP1vPBHf1cpuJULjM+MZ0grY0FaOD1P8OeKdmsar1QWSc07E1lctfCjiKOM68dsyNpOBJkFUg6Pmh2QMH/7gsRT+0ICoI5g7xmZ7lgT2uH+jyUz+2AeD7uNB1P3le8Pv814PiDeA10V3AT8htZtdXfkDpE5ewqZSz6Dmwb5O5C/7RmnFn8HXpUciBBouWMKz7tzKxY1EsbDe+jYhWVV0rD7GHU7vB7k6o37X+/yrL4VmsG/x0KAMC/Bpvv9cNf6G0tMHd+27hs5QRixPaoZIFxizYz4pJdyyOTg0yQJw9q16rz3reDWru9i3CC8uDUEhfzACLyvk8vI6JTsLdY5iZmxS1owOR9855IlBP/JfelHO7LYxFKPDBuIC7vQ1B78HDl9u0fgiNvQwGjAOq3G4TPxaadh3RNMmhZxCtfuPHML4i8jvIWvLxF/cdBqRKEWu21ihxD3QT6S3jdiboNwa8Mrerd/NHU0v3z6rDXRFBOwjJKxXRtNLrR2cf2nYkJ+LhpImHyGSSLqzd42Us4XurIKd8WuRZH66qD/nw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(376002)(346002)(366004)(39830400003)(396003)(451199015)(36756003)(41300700001)(86362001)(5660300002)(8936002)(4326008)(2906002)(44832011)(38100700002)(6486002)(478600001)(6916009)(8676002)(186003)(6512007)(6506007)(316002)(66556008)(66946007)(2616005)(54906003)(6666004)(66476007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ua4h6AN5PFb1YlXKCluJKW9icJoW7nvrzqe0mxEOVAit9KRmNWxJkAKd3gXi?=
- =?us-ascii?Q?DqGT4ulKFUE3xWRHF6nBvRZjSH7vXHXEmtmK7p4At7NVbjFIxXC/ZHmxd4NL?=
- =?us-ascii?Q?XwKODs60kv5fhwJzDLTwqw8nKt550gJfF+yznllDdPo7jYbd5pjCj3YGcg0T?=
- =?us-ascii?Q?bQJPQd8Q1fXxs4z8ym5cWcOtd+eBek5ELq5TtIUBEr2AIDjAvn6ITW3vICpK?=
- =?us-ascii?Q?CpFdWqEESBEYI0qlA0azG6wld02SzRmIXwZOEbfVWcQ/c+MlEcxX0ESUyNut?=
- =?us-ascii?Q?zvHb6ytnpkwt/bWoA/kkTYRTKk6H55kNy9e6CqRMnXdo9qVovoZgHYogXwoZ?=
- =?us-ascii?Q?j9+Fhuu1+RVSzcEotAiS+0dnEGL3As9wLYMcklHQU0oJzi2ch6pbskYwZgpP?=
- =?us-ascii?Q?/xJGKPmiOaVY+A2oqinWOwElE/Zl+fYrhzM2HWwbmRhs5g7YPy6Kw6hbmFQ6?=
- =?us-ascii?Q?zEbJWJ5/Fl6NLJhBu2AsW1O+9JaY9vP+AwAtXW03VpRujQnwT82JQdOG+sDz?=
- =?us-ascii?Q?jrHCnm+19GoWg17BTJJx0NIDa01YY+z/iiXUW64JqFZ/gqDXvomVo0EKrFdR?=
- =?us-ascii?Q?ipAWZ0Z43TZun9EoFrErFNqFXKSKq5A+bZPSi1aybfw3qRlyRjTmW2TH48M3?=
- =?us-ascii?Q?zGYua1hUKmAjvXV+rvPWzCsCi3aGVURRw5tfkbAFdEqH75PgG+N5FHzAcWH0?=
- =?us-ascii?Q?IaprNBs1+wOw4dSYZGn+0Uygnusxqa3ig5fVu6GWZT+TVHCtAnHaiMZ84Xgu?=
- =?us-ascii?Q?xr+yNoX81+8Ws7WHIWOkz9GRsO9Pm7omEl4Zfae/M5kNziRiVW+9eb0HHc8I?=
- =?us-ascii?Q?2OoasEp8ZW5GfdmSo2N1wz7VwjjfGhZm+ObgCkRkOuRQuYhe/5K/aw2I2Zxb?=
- =?us-ascii?Q?nS4HVNBxPflIXoCMeegdArPEnyWabDOvK7lf4OIteSzJvY8ymTjWMEKXbqHs?=
- =?us-ascii?Q?3AzuQkzn/KcmoHIgSYJmb5T82CBku9e6Y34Kq/v3fhB8w68ZPTuXU31HGBDf?=
- =?us-ascii?Q?sKflO+ld193FOkhXdm1eMSyzF5CUx+2amUCXq2xgSMEgfgPB/U3ezsVXtLE/?=
- =?us-ascii?Q?G+t2HDk1+OBcWL8RG7ErV9Vr6GZ9hEioNyms6xm9iF1OAg96JlgUdsKwv5Ce?=
- =?us-ascii?Q?DTXgg2eV1F+1eIY0i8htPUFy/R5FRRP8/JYNGOerkkqZfmlt9anasRjVKJiM?=
- =?us-ascii?Q?ROcdgx0qD6vmkuFwnb/NeO5G7NRVA9f2sjJI5YOn0Cr+iegYJAN1SuVvYl1g?=
- =?us-ascii?Q?cYBLKVditvEoqR9WNd1nSXYn9FyV0+rLILR2IfNsWLifFHsQuxnze0bHCamB?=
- =?us-ascii?Q?B73UrD9fKS9stZykKsnN97rq3nh3Jk+wVsGi3Uduu5uybYTUx3sSNFK961UZ?=
- =?us-ascii?Q?f2bKeltfKVP/W5tEF8JalDUNB+wn5cwtYktm+u92P5T4kzFbIM+Odg5hmOlJ?=
- =?us-ascii?Q?HQAYlCyaBgmS3R4SqIYrDvHmrcvCa0BI+5yH/m3lKrNDDjv4Lm+PfMnkOteZ?=
- =?us-ascii?Q?Y3Dw73fBL+3XLbJDmGvdAw/brgCIqw91XA9WB8KCaV4WL7Ha8ucBwqjzo4il?=
- =?us-ascii?Q?EI4emU+eh0LE8/dcJJhWVlxqQMFF4NWABFLu5P70ajT9RfMQutqZptlSpaaJ?=
- =?us-ascii?Q?7BjFA0v6484JeYOb+pDBNYMBgDMj0ZDhMPomi3bUSKZwDn5rsWiDZH7QLt0i?=
- =?us-ascii?Q?nm0wgQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86ebe6fc-1594-42b1-fbba-08dafd3f8804
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jan 2023 12:44:13.5171
+X-Microsoft-Antispam-Message-Info: LdL7ODwPjNwLqL4zlXwEXOJTNmT13yPiJlDUkVlxEhCsLNzPduJOrmGw5A7a23LQZozesJcqSzVlJ/Grd2JKOOSvVjwL4lN6X+14Irt5QsUEsgJXI7U/si9FfrKC5YVU7QwL7cAaSnjXo6xHPRyLS8QxNN8gp/V54D1aRhJpGxXjQk0GR8qgraYFsbYP8VqIVLlXDn6OcoU3T6i65a4q0EKBDFRPYD33UO1Prg25z/yogONRvtS2gzWkWQdJxvSABX6WsOckNLFiPWSkAH+Vdnl9Y1awbyZfc3OXub2GSJ5DgswIzcms7JBHwCbtYuO6FdmnlZNqY2ltJhNheRGia5g89VJAYnObK6GIsytWpnQ89oFNkeVUQaKnU07ZdyjC7FYYesPDoy+o7EtHZlwCBhYDhUpAxjdKKQ8YyZwdQYeK69smSWB/9JslS/9TIE8vQygv4aCrrJZcliNYMVwQeCYteAc6PwxNp2pOqxZafGGfA4ID67g0v27HdO2MjRuFJOt1ZVDhXdOb68ZbvS6noVnpOoyNbE1fc4DUTzFM5RctmTGON2egUiQUo6KA8PFGtIFOOLmTutSQl+snumGnVksRqZtLCl5q0JICnxG+Z6UNaAH2TpjUglQI44iL7AeSx8RHx27rL7pMBzIhRjilktkfZ4rZ9MOHYiEiqp7svAOcarWViVfv1iEHMu1mto8kkG5F7HOE+XLKafB92/UIm914Vywt+NrtIDEu0WTVw0IYWtyseYlUW6oF5Pk7LluVZ0BrPTcZXQOIlI1HaAn/Yn0dfzhVl7VEDIcVNSej3pqcO3npANbPo7jdHRYUh6Px0f5aoFkI40Byc8ywS7oNM3wKmt3zSizWcksXSJuHNHsvQT7a79TeJ7CcMiW8TYRU54MAYUid1qiwzji8DM6fimK4pqjMt8zaHM+ZtF7ipTE=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(396003)(376002)(346002)(451199015)(36840700001)(46966006)(40470700004)(2906002)(86362001)(40460700003)(36756003)(31696002)(82310400005)(426003)(47076005)(316002)(16576012)(54906003)(336012)(110136005)(81166007)(83380400001)(478600001)(966005)(1191002)(16526019)(186003)(53546011)(26005)(2616005)(7366002)(7406005)(7416002)(8936002)(7336002)(7276002)(5660300002)(921005)(356005)(40480700001)(44832011)(70206006)(4326008)(8676002)(36860700001)(70586007)(82740400003)(41300700001)(31686004)(43740500002)(36900700001)(41080700001)(2101003)(84006005)(83996005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jan 2023 12:45:29.5706
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PPtWODE3kHeoT/b2//jEZBqfEcEZXbZcNKMGCwzzfnUuEFnSFPz9Bw9JBsHrf5LKvsQ8eS32t4nW/IbjhTyS9mV9SUGHK0woMq59vxx4FiU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB4129
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-Network-Message-Id: e0a4abaa-71e3-4b9c-4356-08dafd3fb58e
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT016.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7309
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 23, 2023 at 01:24:11PM +0200, Vladimir Oltean wrote:
-> On Sun, Jan 22, 2023 at 05:29:33PM +0100, Simon Horman wrote:
-> > > +#define ENETC_PMAC_OFFSET	0x1000
-> > > +
-> > >  #define ENETC_PM0_CMD_CFG	0x8008
-> > >  #define ENETC_PM1_CMD_CFG	0x9008
-> > >  #define ENETC_PM0_TX_EN		BIT(0)
-> > > @@ -280,57 +282,57 @@ enum enetc_bdr_type {TX, RX};
-> > >  /* Port MAC counters: Port MAC 0 corresponds to the eMAC and
-> > >   * Port MAC 1 to the pMAC.
-> > >   */
-> > > -#define ENETC_PM_REOCT(mac)	(0x8100 + 0x1000 * (mac))
-> > > -#define ENETC_PM_RALN(mac)	(0x8110 + 0x1000 * (mac))
-> > 
-> > ...
-> > 
-> > > +#define ENETC_PM_REOCT(mac)	(0x8100 + ENETC_PMAC_OFFSET * (mac))
-> > > +#define ENETC_PM_RALN(mac)	(0x8110 + ENETC_PMAC_OFFSET * (mac))
-> > 
-> > I'm not sure if it is an improvement, but did you consider something
-> > like this? *completely untested*
-> > 
-> > #define ENETC_PM(mac, reg)	((reg) + ENETC_PMAC_OFFSET * (mac))
-> > #define ENETC_PM_REOCT(mac)	ENETC_PM(mac, 0x8100)
-> > #define ENETC_PM_RALN(mac)	ENETC_PM(mac, 0x8110)
-> 
-> Hmm, I appreciate you looking at the patch, but in the end, I just
-> consider your proposed alternative to be a variation on the same theme,
-> and not necessarily a better way of expressing the definitions.
-> This means I wouldn't consider resending the patch set just to make this
-> change.
 
-Thanks for considering my idea. I've no objections to you not acting on it.
+
+On 1/19/23 19:53, Amit Kumar Mahapatra wrote:
+> Supporting multi-cs in spi core and spi controller drivers would require
+> the chip_select & cs_gpiod members of struct spi_device to be an array.
+> But changing the type of these members to array would break the spi driver
+> functionality. To make the transition smoother introduced four new APIs to
+> get/set the spi->chip_select & spi->cs_gpiod and replaced all
+> spi->chip_select and spi->cs_gpiod references in spi core with the API
+> calls.
+> While adding multi-cs support in further patches the chip_select & cs_gpiod
+> members of the spi_device structure would be converted to arrays & the
+> "idx" parameter of the APIs would be used as array index i.e.,
+> spi->chip_select[idx] & spi->cs_gpiod[idx] respectively.
+> 
+> Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
+> ---
+>   drivers/spi/spi.c       | 45 ++++++++++++++++++++---------------------
+>   include/linux/spi/spi.h | 20 ++++++++++++++++++
+>   2 files changed, 42 insertions(+), 23 deletions(-)
+> 
+> diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+> index 3cc7bb4d03de..38421e831a7d 100644
+> --- a/drivers/spi/spi.c
+> +++ b/drivers/spi/spi.c
+> @@ -604,7 +604,7 @@ static void spi_dev_set_name(struct spi_device *spi)
+>   	}
+>   
+>   	dev_set_name(&spi->dev, "%s.%u", dev_name(&spi->controller->dev),
+> -		     spi->chip_select);
+> +		     spi_get_chipselect(spi, 0));
+>   }
+>   
+>   static int spi_dev_check(struct device *dev, void *data)
+> @@ -613,7 +613,7 @@ static int spi_dev_check(struct device *dev, void *data)
+>   	struct spi_device *new_spi = data;
+>   
+>   	if (spi->controller == new_spi->controller &&
+> -	    spi->chip_select == new_spi->chip_select)
+> +	    spi_get_chipselect(spi, 0) == spi_get_chipselect(new_spi, 0))
+>   		return -EBUSY;
+>   	return 0;
+>   }
+> @@ -638,7 +638,7 @@ static int __spi_add_device(struct spi_device *spi)
+>   	status = bus_for_each_dev(&spi_bus_type, NULL, spi, spi_dev_check);
+>   	if (status) {
+>   		dev_err(dev, "chipselect %d already in use\n",
+> -				spi->chip_select);
+> +				spi_get_chipselect(spi, 0));
+>   		return status;
+>   	}
+>   
+> @@ -649,7 +649,7 @@ static int __spi_add_device(struct spi_device *spi)
+>   	}
+>   
+>   	if (ctlr->cs_gpiods)
+> -		spi->cs_gpiod = ctlr->cs_gpiods[spi->chip_select];
+> +		spi_set_csgpiod(spi, 0, ctlr->cs_gpiods[spi_get_chipselect(spi, 0)]);
+>   
+>   	/*
+>   	 * Drivers may modify this initial i/o setup, but will
+> @@ -692,8 +692,8 @@ int spi_add_device(struct spi_device *spi)
+>   	int status;
+>   
+>   	/* Chipselects are numbered 0..max; validate. */
+> -	if (spi->chip_select >= ctlr->num_chipselect) {
+> -		dev_err(dev, "cs%d >= max %d\n", spi->chip_select,
+> +	if (spi_get_chipselect(spi, 0) >= ctlr->num_chipselect) {
+> +		dev_err(dev, "cs%d >= max %d\n", spi_get_chipselect(spi, 0),
+>   			ctlr->num_chipselect);
+>   		return -EINVAL;
+>   	}
+> @@ -714,8 +714,8 @@ static int spi_add_device_locked(struct spi_device *spi)
+>   	struct device *dev = ctlr->dev.parent;
+>   
+>   	/* Chipselects are numbered 0..max; validate. */
+> -	if (spi->chip_select >= ctlr->num_chipselect) {
+> -		dev_err(dev, "cs%d >= max %d\n", spi->chip_select,
+> +	if (spi_get_chipselect(spi, 0) >= ctlr->num_chipselect) {
+> +		dev_err(dev, "cs%d >= max %d\n", spi_get_chipselect(spi, 0),
+>   			ctlr->num_chipselect);
+>   		return -EINVAL;
+>   	}
+> @@ -761,7 +761,7 @@ struct spi_device *spi_new_device(struct spi_controller *ctlr,
+>   
+>   	WARN_ON(strlen(chip->modalias) >= sizeof(proxy->modalias));
+>   
+> -	proxy->chip_select = chip->chip_select;
+> +	spi_set_chipselect(proxy, 0, chip->chip_select);
+>   	proxy->max_speed_hz = chip->max_speed_hz;
+>   	proxy->mode = chip->mode;
+>   	proxy->irq = chip->irq;
+> @@ -970,24 +970,23 @@ static void spi_set_cs(struct spi_device *spi, bool enable, bool force)
+>   	 * Avoid calling into the driver (or doing delays) if the chip select
+>   	 * isn't actually changing from the last time this was called.
+>   	 */
+> -	if (!force && ((enable && spi->controller->last_cs == spi->chip_select) ||
+> -				(!enable && spi->controller->last_cs != spi->chip_select)) &&
+> +	if (!force && ((enable && spi->controller->last_cs == spi_get_chipselect(spi, 0)) ||
+> +		       (!enable && spi->controller->last_cs != spi_get_chipselect(spi, 0))) &&
+>   	    (spi->controller->last_cs_mode_high == (spi->mode & SPI_CS_HIGH)))
+>   		return;
+>   
+>   	trace_spi_set_cs(spi, activate);
+>   
+> -	spi->controller->last_cs = enable ? spi->chip_select : -1;
+> +	spi->controller->last_cs = enable ? spi_get_chipselect(spi, 0) : -1;
+>   	spi->controller->last_cs_mode_high = spi->mode & SPI_CS_HIGH;
+>   
+> -	if ((spi->cs_gpiod || !spi->controller->set_cs_timing) && !activate) {
+> +	if ((spi_get_csgpiod(spi, 0) || !spi->controller->set_cs_timing) && !activate)
+>   		spi_delay_exec(&spi->cs_hold, NULL);
+> -	}
+>   
+>   	if (spi->mode & SPI_CS_HIGH)
+>   		enable = !enable;
+>   
+> -	if (spi->cs_gpiod) {
+> +	if (spi_get_csgpiod(spi, 0)) {
+>   		if (!(spi->mode & SPI_NO_CS)) {
+>   			/*
+>   			 * Historically ACPI has no means of the GPIO polarity and
+> @@ -1000,10 +999,10 @@ static void spi_set_cs(struct spi_device *spi, bool enable, bool force)
+>   			 * into account.
+>   			 */
+>   			if (has_acpi_companion(&spi->dev))
+> -				gpiod_set_value_cansleep(spi->cs_gpiod, !enable);
+> +				gpiod_set_value_cansleep(spi_get_csgpiod(spi, 0), !enable);
+>   			else
+>   				/* Polarity handled by GPIO library */
+> -				gpiod_set_value_cansleep(spi->cs_gpiod, activate);
+> +				gpiod_set_value_cansleep(spi_get_csgpiod(spi, 0), activate);
+>   		}
+>   		/* Some SPI masters need both GPIO CS & slave_select */
+>   		if ((spi->controller->flags & SPI_MASTER_GPIO_SS) &&
+> @@ -1013,7 +1012,7 @@ static void spi_set_cs(struct spi_device *spi, bool enable, bool force)
+>   		spi->controller->set_cs(spi, !enable);
+>   	}
+>   
+> -	if (spi->cs_gpiod || !spi->controller->set_cs_timing) {
+> +	if (spi_get_csgpiod(spi, 0) || !spi->controller->set_cs_timing) {
+>   		if (activate)
+>   			spi_delay_exec(&spi->cs_setup, NULL);
+>   		else
+> @@ -2304,7 +2303,7 @@ static int of_spi_parse_dt(struct spi_controller *ctlr, struct spi_device *spi,
+>   			nc, rc);
+>   		return rc;
+>   	}
+> -	spi->chip_select = value;
+> +	spi_set_chipselect(spi, 0, value);
+>   
+>   	/* Device speed */
+>   	if (!of_property_read_u32(nc, "spi-max-frequency", &value))
+> @@ -2423,7 +2422,7 @@ struct spi_device *spi_new_ancillary_device(struct spi_device *spi,
+>   	strscpy(ancillary->modalias, "dummy", sizeof(ancillary->modalias));
+>   
+>   	/* Use provided chip-select for ancillary device */
+> -	ancillary->chip_select = chip_select;
+> +	spi_set_chipselect(ancillary, 0, chip_select);
+>   
+>   	/* Take over SPI mode/speed from SPI main device */
+>   	ancillary->max_speed_hz = spi->max_speed_hz;
+> @@ -2670,7 +2669,7 @@ struct spi_device *acpi_spi_device_alloc(struct spi_controller *ctlr,
+>   	spi->mode		|= lookup.mode;
+>   	spi->irq		= lookup.irq;
+>   	spi->bits_per_word	= lookup.bits_per_word;
+> -	spi->chip_select	= lookup.chip_select;
+> +	spi_set_chipselect(spi, 0, lookup.chip_select);
+>   
+>   	return spi;
+>   }
+> @@ -3632,7 +3631,7 @@ static int spi_set_cs_timing(struct spi_device *spi)
+>   	struct device *parent = spi->controller->dev.parent;
+>   	int status = 0;
+>   
+> -	if (spi->controller->set_cs_timing && !spi->cs_gpiod) {
+> +	if (spi->controller->set_cs_timing && !spi_get_csgpiod(spi, 0)) {
+>   		if (spi->controller->auto_runtime_pm) {
+>   			status = pm_runtime_get_sync(parent);
+>   			if (status < 0) {
+> @@ -3837,7 +3836,7 @@ static int __spi_validate(struct spi_device *spi, struct spi_message *message)
+>   	 * cs_change is set for each transfer.
+>   	 */
+>   	if ((spi->mode & SPI_CS_WORD) && (!(ctlr->mode_bits & SPI_CS_WORD) ||
+> -					  spi->cs_gpiod)) {
+> +					  spi_get_csgpiod(spi, 0))) {
+>   		size_t maxsize;
+>   		int ret;
+>   
+> diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
+> index 9a32495fbb1f..9b23a1d0dd0d 100644
+> --- a/include/linux/spi/spi.h
+> +++ b/include/linux/spi/spi.h
+> @@ -263,6 +263,26 @@ static inline void *spi_get_drvdata(struct spi_device *spi)
+>   	return dev_get_drvdata(&spi->dev);
+>   }
+>   
+> +static inline u8 spi_get_chipselect(struct spi_device *spi, u8 idx)
+> +{
+> +	return spi->chip_select;
+> +}
+> +
+> +static inline void spi_set_chipselect(struct spi_device *spi, u8 idx, u8 chipselect)
+> +{
+> +	spi->chip_select = chipselect;
+> +}
+> +
+> +static inline struct gpio_desc *spi_get_csgpiod(struct spi_device *spi, u8 idx)
+> +{
+> +	return spi->cs_gpiod;
+> +}
+> +
+> +static inline void spi_set_csgpiod(struct spi_device *spi, u8 idx, struct gpio_desc *csgpiod)
+> +{
+> +	spi->cs_gpiod = csgpiod;
+> +}
+> +
+>   struct spi_message;
+>   
+>   /**
+
+Lars suggested this style in v1 version of this patch here.
+https://lore.kernel.org/all/12fe1b84-1981-bf56-9323-b7f5b698c196@metafoo.de/
+
+That's why let me also add his
+Suggested-by: Lars-Peter Clausen <lars@metafoo.de>
+
+And
+Reviewed-by: Michal Simek <michal.simek@amd.com>
+
+Thanks,
+Michal
+
+
