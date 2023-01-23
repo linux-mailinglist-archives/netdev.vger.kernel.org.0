@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EC37677E4E
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 15:44:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBF34677E51
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 15:45:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231274AbjAWOoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 09:44:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51682 "EHLO
+        id S231863AbjAWOpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 09:45:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231826AbjAWOox (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 09:44:53 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8CA49029
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 06:44:50 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id v10so14805811edi.8
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 06:44:50 -0800 (PST)
+        with ESMTP id S231816AbjAWOo4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 09:44:56 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 255DC93F9
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 06:44:54 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id ss4so31000140ejb.11
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 06:44:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=hTniH4Dvk0yVMZYSwbLw+aiFQNH9bAZOy/N7aUDmDrI=;
-        b=srnqwoMw/gTja6VsjZXrkUpFWP/J6qmlkRJ9+3BnyA0DluOJL8ioAL8ceE5AeX6rJL
-         nJKEV1lFJ+Afjx0SxX+Tv/aSiL1bfuuvtVmxsZrBk1WUKlVrRTrDf+nsqWHVETU/QPbA
-         JfhN2HoOpLC9wtP+Fz0XuzFgT9VIZ17d3Rz4c=
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=E7G3N+uMtGvyFTbtxrhqEceApmtVDlYbr95RIWENdiI=;
+        b=cA3XbO5zeYtiJsP/ivLaFf6TrO5lTAR+nIL50uRatNcv/L6kWgJl4z+pcAgKOEUE8l
+         lqY7N0o/AEC8qA4pXKDlvEw1NWZIRCq9eIbAmCgAJGtmrMlEMn6vbV/kFvWzu/kCSAiK
+         3HQZmBZbMHGE+yeBm/ycTBX97O9H9M72IAOZA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=hTniH4Dvk0yVMZYSwbLw+aiFQNH9bAZOy/N7aUDmDrI=;
-        b=1GoU5V1q1YjJeN+A56cOkARlJSwJMDFxMd3ZvIjNn/QXHTvk9xDt/xzY/n0A4/1bCy
-         vt7u6Lp8BfGwcRUKhP0Bq/f6NUlyYZKnu7PeVu34tNaMn3u3WbSoqnwryUEiYSPp7ghY
-         w9wgWMznfk+e2frVFdpvSv9soChT+suiTDEmoMJ3Empix7MJBLCzNuN5YudHcTc8VeEh
-         X3YSbfKEPnR4eVvknr44KAvmYpRaO3l5SLsqfM5SdW5KOJdiZT09tbMn/MT3P8x70faB
-         MCsdJ3lIpu3585l7GJhhJx19bAwhLF16ONiTQzCz6Tcew395CsE35acWt69KPZZdlKS1
-         BiIg==
-X-Gm-Message-State: AFqh2krP1O44yetjGaKIR04fu20an6c7l0b/H1c+UDmwcQrXAgozgTp3
-        aRRqyk7X9XlB7I1gTltq7Yz5HA==
-X-Google-Smtp-Source: AMrXdXviXFtFKl75x9pXMhixMadL8IgtaFtRCPVA9sq4aW+R0iYMh1gc87zQgViPz/Qvb8uOpnSW4g==
-X-Received: by 2002:a05:6402:35c1:b0:46f:f36b:a471 with SMTP id z1-20020a05640235c100b0046ff36ba471mr35568295edc.22.1674485089264;
-        Mon, 23 Jan 2023 06:44:49 -0800 (PST)
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=E7G3N+uMtGvyFTbtxrhqEceApmtVDlYbr95RIWENdiI=;
+        b=i/7V1F1vVoPmsTUcRIb5AK8G4RqpYHg4MsV6FUpdY6x2kjuvVruB3f/b/HfZGLHmRV
+         pRrIQBj3+r8c8p/sAW0k7esfZcCcO7yWkxKnFY8tztxfbI8gn3b+5MxPVqs4AHxjsqMZ
+         WpsR/MeVaU129k/DmqtzzVePQpPl+/rpsLbBCX+GkGXTy28cvfJ7Dd1wdxEz4vV0HOV+
+         YHgjI6tQVpjqZhcBgZzt/YRs/tY4HOFLnMI7QXBXK6iU5SnevRggwDYfUuHY1Lw99GKC
+         SFGAp0WKVZWfbGtrTMZNNiGDnuRBQYkP7ouWyY0B9RlhwJZmmaGfDkVj58iIvvtCNLz5
+         gjFQ==
+X-Gm-Message-State: AFqh2kpn0W+FSoLaeEK1xU+YqwYfHZAydviYAxp4pDfa/uWJqXa4ewZc
+        6IQwMULSy3/8yzj+pme4X9hSAQ==
+X-Google-Smtp-Source: AMrXdXsOouDRINlw7YNuxXYTTpbv7NjqiB9UFRtCCkFrATezrDFhWPdzTn0Ym18hFWInUMkiRsmv2A==
+X-Received: by 2002:a17:906:9405:b0:859:1a3c:8b5c with SMTP id q5-20020a170906940500b008591a3c8b5cmr25698381ejx.53.1674485092652;
+        Mon, 23 Jan 2023 06:44:52 -0800 (PST)
 Received: from cloudflare.com (79.191.179.97.ipv4.supernova.orange.pl. [79.191.179.97])
-        by smtp.gmail.com with ESMTPSA id i12-20020aa7dd0c000000b0047021294426sm21467952edv.90.2023.01.23.06.44.48
+        by smtp.gmail.com with ESMTPSA id bs3-20020a170906d1c300b008490dcae01asm22243061ejb.214.2023.01.23.06.44.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Jan 2023 06:44:48 -0800 (PST)
+        Mon, 23 Jan 2023 06:44:52 -0800 (PST)
 From:   Jakub Sitnicki <jakub@cloudflare.com>
-Subject: [PATCH net-next v4 0/2] Add IP_LOCAL_PORT_RANGE socket option
-Date:   Mon, 23 Jan 2023 15:44:39 +0100
-Message-Id: <20221221-sockopt-port-range-v4-0-d7d2f2561238@cloudflare.com>
+Date:   Mon, 23 Jan 2023 15:44:40 +0100
+Subject: [PATCH net-next v4 2/2] selftests/net: Cover the IP_LOCAL_PORT_RANGE
+ socket option
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAFedzmMC/4WOwQ7CIBBEf8VwFgOU1tST/2E8FNi1xAoNYKMx/
- Xc3XDWa7GV2dt7si2VIHjI7bF4sweKzj4GE3m6YHYdwAe4daaaEUpKG52ivcS58jqnwVC9AauVg
- LwRqxyhohgzckGdHiob7NNFyToD+UZtOLEDhAR6FnckZfS4xPesLi6z+r7ZFcsFBGdFr0wlEd7R
- TvDuchgQ7G2+Vuaj/HEUc6VqUUhvs1P4rp/nPaYjTdDi02PZ9h/qDs67rG9pqm5RoAQAA
+Message-Id: <20221221-sockopt-port-range-v4-2-d7d2f2561238@cloudflare.com>
+References: <20221221-sockopt-port-range-v4-0-d7d2f2561238@cloudflare.com>
+In-Reply-To: <20221221-sockopt-port-range-v4-0-d7d2f2561238@cloudflare.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -77,119 +77,515 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set is a follow up to the "How to share IPv4 addresses by
-partitioning the port space" talk given at LPC 2022 [1].
+Exercise IP_LOCAL_PORT_RANGE socket option in various scenarios:
 
-Please see patch #1 for the motivation & the use case description.
-Patch #2 adds tests exercising the new option in various scenarios.
-
-Documentation
--------------
-
-Proposed update to the ip(7) man-page:
-
-       IP_LOCAL_PORT_RANGE (since Linux X.Y)
-              Set or get the per-socket default local  port  range.  This
-              option  can  be  used  to  clamp down the global local port
-              range, defined by the ip_local_port_range  /proc  interface
-              described below, for a given socket.
-
-              The  option  takes  an uint32_t value with the high 16 bits
-              set to the upper range bound, and the low 16  bits  set  to
-              the  lower  range  bound.  Range  bounds are inclusive. The
-              16-bit values should be in host byte order.
-
-              The lower bound has to be less than the  upper  bound  when
-              both  bounds  are  not  zero. Otherwise, setting the option
-              fails with EINVAL.
-
-              If either bound is outside of the global local port  range,
-              or is zero, then that bound has no effect.
-
-              To  reset  the setting, pass zero as both the upper and the
-              lower bound.
-
-Interaction with SELinux bind() hook
-------------------------------------
-
-SELinux bind() hook - selinux_socket_bind() - performs a permission check
-if the requested local port number lies outside of the netns ephemeral port
-range.
-
-The proposed socket option cannot be used change the ephemeral port range
-to extend beyond the per-netns port range, as set by
-net.ipv4.ip_local_port_range.
-
-Hence, there is no interaction with SELinux, AFAICT.
-	      
-Changelog:
----------
-
-v3 -> v4:
-v3: https://lore.kernel.org/r/20221221-sockopt-port-range-v3-0-36fa5f5996f4@cloudflare.com
-
- * Highlight that port bounds should be in host byte order. (Neal)
+1. pass invalid values to setsockopt
+2. pass a range outside of the per-netns port range
+3. configure a single-port range
+4. exhaust a configured multi-port range
+5. check interaction with late-bind (IP_BIND_ADDRESS_NO_PORT)
+6. set then get the per-socket port range
 
 v2 -> v3:
-v2: https://lore.kernel.org/r/20221221-sockopt-port-range-v2-0-1d5f114bf627@cloudflare.com
-
- * Describe interaction considerations with SELinux.
- * Code changes called out in individual patches.
+ * Switch from CPP-based templates to FIXTURE_VARIANT. (Kuniyuki)
+ * Cover SOCK_STREAM/IPPROTO_SCTP where possible.
 
 v1 -> v2:
-v1: https://lore.kernel.org/netdev/20221221-sockopt-port-range-v1-0-e2b094b60ffd@cloudflare.com/
-
- * Fix the corner case when the per-socket range doesn't overlap with the
-   per-netns range. Fallback correctly to the per-netns range. (Kuniyuki)
-
  * selftests: Instead of iterating over socket families (ip4, ip6) and types
    (tcp, udp), generate tests for each combo from a template. This keeps the
    code indentation level down and makes tests more granular.
 
- * Rewrite man-page prose:
-   - explain how to unset the option,
-   - document when EINVAL is returned.
-
-RFC -> v1
-RFC: https://lore.kernel.org/netdev/20220912225308.93659-1-jakub@cloudflare.com/
-
- * Allow either the high bound or the low bound, or both, to be zero
- * Add getsockopt support
- * Add selftests
-
-Links:
-------
-
-[1]: https://lpc.events/event/16/contributions/1349/
-
-To: netdev@vger.kernel.org
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc: Neal Cardwell <ncardwell@google.com>
-Cc: selinux@vger.kernel.org
-Cc: Paul Moore <paul@paul-moore.com>
-Cc: Stephen Smalley <stephen.smalley.work@gmail.com>
-Cc: Eric Paris <eparis@parisplace.org>
-Cc: kernel-team@cloudflare.com
 Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-
 ---
-Jakub Sitnicki (2):
-      inet: Add IP_LOCAL_PORT_RANGE socket option
-      selftests/net: Cover the IP_LOCAL_PORT_RANGE socket option
-
- include/net/inet_sock.h                            |   4 +
- include/net/ip.h                                   |   3 +-
- include/uapi/linux/in.h                            |   1 +
- net/ipv4/inet_connection_sock.c                    |  25 +-
- net/ipv4/inet_hashtables.c                         |   2 +-
- net/ipv4/ip_sockglue.c                             |  18 +
- net/ipv4/udp.c                                     |   2 +-
- net/sctp/socket.c                                  |   2 +-
  tools/testing/selftests/net/Makefile               |   2 +
  tools/testing/selftests/net/ip_local_port_range.c  | 447 +++++++++++++++++++++
  tools/testing/selftests/net/ip_local_port_range.sh |   5 +
- 11 files changed, 505 insertions(+), 6 deletions(-)
+ 3 files changed, 454 insertions(+)
+
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index 47314f0b3006..951bd5342bc6 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -45,6 +45,7 @@ TEST_PROGS += arp_ndisc_untracked_subnets.sh
+ TEST_PROGS += stress_reuseport_listen.sh
+ TEST_PROGS += l2_tos_ttl_inherit.sh
+ TEST_PROGS += bind_bhash.sh
++TEST_PROGS += ip_local_port_range.sh
+ TEST_PROGS_EXTENDED := in_netns.sh setup_loopback.sh setup_veth.sh
+ TEST_PROGS_EXTENDED += toeplitz_client.sh toeplitz.sh
+ TEST_GEN_FILES =  socket nettest
+@@ -76,6 +77,7 @@ TEST_PROGS += sctp_vrf.sh
+ TEST_GEN_FILES += sctp_hello
+ TEST_GEN_FILES += csum
+ TEST_GEN_FILES += nat6to4.o
++TEST_GEN_FILES += ip_local_port_range
+ 
+ TEST_FILES := settings
+ 
+diff --git a/tools/testing/selftests/net/ip_local_port_range.c b/tools/testing/selftests/net/ip_local_port_range.c
+new file mode 100644
+index 000000000000..75e3fdacdf73
+--- /dev/null
++++ b/tools/testing/selftests/net/ip_local_port_range.c
+@@ -0,0 +1,447 @@
++// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
++// Copyright (c) 2023 Cloudflare
++
++/* Test IP_LOCAL_PORT_RANGE socket option: IPv4 + IPv6, TCP + UDP.
++ *
++ * Tests assume that net.ipv4.ip_local_port_range is [40000, 49999].
++ * Don't run these directly but with ip_local_port_range.sh script.
++ */
++
++#include <fcntl.h>
++#include <netinet/ip.h>
++
++#include "../kselftest_harness.h"
++
++#ifndef IP_LOCAL_PORT_RANGE
++#define IP_LOCAL_PORT_RANGE 51
++#endif
++
++static __u32 pack_port_range(__u16 lo, __u16 hi)
++{
++	return (hi << 16) | (lo << 0);
++}
++
++static void unpack_port_range(__u32 range, __u16 *lo, __u16 *hi)
++{
++	*lo = range & 0xffff;
++	*hi = range >> 16;
++}
++
++static int get_so_domain(int fd)
++{
++	int domain, err;
++	socklen_t len;
++
++	len = sizeof(domain);
++	err = getsockopt(fd, SOL_SOCKET, SO_DOMAIN, &domain, &len);
++	if (err)
++		return -1;
++
++	return domain;
++}
++
++static int bind_to_loopback_any_port(int fd)
++{
++	union {
++		struct sockaddr sa;
++		struct sockaddr_in v4;
++		struct sockaddr_in6 v6;
++	} addr;
++	socklen_t addr_len;
++
++	memset(&addr, 0, sizeof(addr));
++	switch (get_so_domain(fd)) {
++	case AF_INET:
++		addr.v4.sin_family = AF_INET;
++		addr.v4.sin_port = htons(0);
++		addr.v4.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
++		addr_len = sizeof(addr.v4);
++		break;
++	case AF_INET6:
++		addr.v6.sin6_family = AF_INET6;
++		addr.v6.sin6_port = htons(0);
++		addr.v6.sin6_addr = in6addr_loopback;
++		addr_len = sizeof(addr.v6);
++		break;
++	default:
++		return -1;
++	}
++
++	return bind(fd, &addr.sa, addr_len);
++}
++
++static int get_sock_port(int fd)
++{
++	union {
++		struct sockaddr sa;
++		struct sockaddr_in v4;
++		struct sockaddr_in6 v6;
++	} addr;
++	socklen_t addr_len;
++	int err;
++
++	addr_len = sizeof(addr);
++	memset(&addr, 0, sizeof(addr));
++	err = getsockname(fd, &addr.sa, &addr_len);
++	if (err)
++		return -1;
++
++	switch (addr.sa.sa_family) {
++	case AF_INET:
++		return ntohs(addr.v4.sin_port);
++	case AF_INET6:
++		return ntohs(addr.v6.sin6_port);
++	default:
++		errno = EAFNOSUPPORT;
++		return -1;
++	}
++}
++
++static int get_ip_local_port_range(int fd, __u32 *range)
++{
++	socklen_t len;
++	__u32 val;
++	int err;
++
++	len = sizeof(val);
++	err = getsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &val, &len);
++	if (err)
++		return -1;
++
++	*range = val;
++	return 0;
++}
++
++FIXTURE(ip_local_port_range) {};
++
++FIXTURE_SETUP(ip_local_port_range)
++{
++}
++
++FIXTURE_TEARDOWN(ip_local_port_range)
++{
++}
++
++FIXTURE_VARIANT(ip_local_port_range) {
++	int so_domain;
++	int so_type;
++	int so_protocol;
++};
++
++FIXTURE_VARIANT_ADD(ip_local_port_range, ip4_tcp) {
++	.so_domain	= AF_INET,
++	.so_type	= SOCK_STREAM,
++	.so_protocol	= 0,
++};
++
++FIXTURE_VARIANT_ADD(ip_local_port_range, ip4_udp) {
++	.so_domain	= AF_INET,
++	.so_type	= SOCK_DGRAM,
++	.so_protocol	= 0,
++};
++
++FIXTURE_VARIANT_ADD(ip_local_port_range, ip4_stcp) {
++	.so_domain	= AF_INET,
++	.so_type	= SOCK_STREAM,
++	.so_protocol	= IPPROTO_SCTP,
++};
++
++FIXTURE_VARIANT_ADD(ip_local_port_range, ip6_tcp) {
++	.so_domain	= AF_INET6,
++	.so_type	= SOCK_STREAM,
++	.so_protocol	= 0,
++};
++
++FIXTURE_VARIANT_ADD(ip_local_port_range, ip6_udp) {
++	.so_domain	= AF_INET6,
++	.so_type	= SOCK_DGRAM,
++	.so_protocol	= 0,
++};
++
++FIXTURE_VARIANT_ADD(ip_local_port_range, ip6_stcp) {
++	.so_domain	= AF_INET6,
++	.so_type	= SOCK_STREAM,
++	.so_protocol	= IPPROTO_SCTP,
++};
++
++TEST_F(ip_local_port_range, invalid_option_value)
++{
++	__u16 val16;
++	__u32 val32;
++	__u64 val64;
++	int fd, err;
++
++	fd = socket(variant->so_domain, variant->so_type, variant->so_protocol);
++	ASSERT_GE(fd, 0) TH_LOG("socket failed");
++
++	/* Too few bytes */
++	val16 = 40000;
++	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &val16, sizeof(val16));
++	EXPECT_TRUE(err) TH_LOG("expected setsockopt(IP_LOCAL_PORT_RANGE) to fail");
++	EXPECT_EQ(errno, EINVAL);
++
++	/* Empty range: low port > high port */
++	val32 = pack_port_range(40222, 40111);
++	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &val32, sizeof(val32));
++	EXPECT_TRUE(err) TH_LOG("expected setsockopt(IP_LOCAL_PORT_RANGE) to fail");
++	EXPECT_EQ(errno, EINVAL);
++
++	/* Too many bytes */
++	val64 = pack_port_range(40333, 40444);
++	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &val64, sizeof(val64));
++	EXPECT_TRUE(err) TH_LOG("expected setsockopt(IP_LOCAL_PORT_RANGE) to fail");
++	EXPECT_EQ(errno, EINVAL);
++
++	err = close(fd);
++	ASSERT_TRUE(!err) TH_LOG("close failed");
++}
++
++TEST_F(ip_local_port_range, port_range_out_of_netns_range)
++{
++	const struct test {
++		__u16 range_lo;
++		__u16 range_hi;
++	} tests[] = {
++		{ 30000, 39999 }, /* socket range below netns range */
++		{ 50000, 59999 }, /* socket range above netns range */
++	};
++	const struct test *t;
++
++	for (t = tests; t < tests + ARRAY_SIZE(tests); t++) {
++		/* Bind a couple of sockets, not just one, to check
++		 * that the range wasn't clamped to a single port from
++		 * the netns range. That is [40000, 40000] or [49999,
++		 * 49999], respectively for each test case.
++		 */
++		int fds[2], i;
++
++		TH_LOG("lo %5hu, hi %5hu", t->range_lo, t->range_hi);
++
++		for (i = 0; i < ARRAY_SIZE(fds); i++) {
++			int fd, err, port;
++			__u32 range;
++
++			fd = socket(variant->so_domain, variant->so_type, variant->so_protocol);
++			ASSERT_GE(fd, 0) TH_LOG("#%d: socket failed", i);
++
++			range = pack_port_range(t->range_lo, t->range_hi);
++			err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &range, sizeof(range));
++			ASSERT_TRUE(!err) TH_LOG("#%d: setsockopt(IP_LOCAL_PORT_RANGE) failed", i);
++
++			err = bind_to_loopback_any_port(fd);
++			ASSERT_TRUE(!err) TH_LOG("#%d: bind failed", i);
++
++			/* Check that socket port range outside of ephemeral range is ignored */
++			port = get_sock_port(fd);
++			ASSERT_GE(port, 40000) TH_LOG("#%d: expected port within netns range", i);
++			ASSERT_LE(port, 49999) TH_LOG("#%d: expected port within netns range", i);
++
++			fds[i] = fd;
++		}
++
++		for (i = 0; i < ARRAY_SIZE(fds); i++)
++			ASSERT_TRUE(close(fds[i]) == 0) TH_LOG("#%d: close failed", i);
++	}
++}
++
++TEST_F(ip_local_port_range, single_port_range)
++{
++	const struct test {
++		__u16 range_lo;
++		__u16 range_hi;
++		__u16 expected;
++	} tests[] = {
++		/* single port range within ephemeral range */
++		{ 45000, 45000, 45000 },
++		/* first port in the ephemeral range (clamp from above) */
++		{ 0, 40000, 40000 },
++		/* last port in the ephemeral range (clamp from below)  */
++		{ 49999, 0, 49999 },
++	};
++	const struct test *t;
++
++	for (t = tests; t < tests + ARRAY_SIZE(tests); t++) {
++		int fd, err, port;
++		__u32 range;
++
++		TH_LOG("lo %5hu, hi %5hu, expected %5hu",
++		       t->range_lo, t->range_hi, t->expected);
++
++		fd = socket(variant->so_domain, variant->so_type, variant->so_protocol);
++		ASSERT_GE(fd, 0) TH_LOG("socket failed");
++
++		range = pack_port_range(t->range_lo, t->range_hi);
++		err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &range, sizeof(range));
++		ASSERT_TRUE(!err) TH_LOG("setsockopt(IP_LOCAL_PORT_RANGE) failed");
++
++		err = bind_to_loopback_any_port(fd);
++		ASSERT_TRUE(!err) TH_LOG("bind failed");
++
++		port = get_sock_port(fd);
++		ASSERT_EQ(port, t->expected) TH_LOG("unexpected local port");
++
++		err = close(fd);
++		ASSERT_TRUE(!err) TH_LOG("close failed");
++	}
++}
++
++TEST_F(ip_local_port_range, exhaust_8_port_range)
++{
++	__u8 port_set = 0;
++	int i, fd, err;
++	__u32 range;
++	__u16 port;
++	int fds[8];
++
++	for (i = 0; i < ARRAY_SIZE(fds); i++) {
++		fd = socket(variant->so_domain, variant->so_type, variant->so_protocol);
++		ASSERT_GE(fd, 0) TH_LOG("socket failed");
++
++		range = pack_port_range(40000, 40007);
++		err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &range, sizeof(range));
++		ASSERT_TRUE(!err) TH_LOG("setsockopt(IP_LOCAL_PORT_RANGE) failed");
++
++		err = bind_to_loopback_any_port(fd);
++		ASSERT_TRUE(!err) TH_LOG("bind failed");
++
++		port = get_sock_port(fd);
++		ASSERT_GE(port, 40000) TH_LOG("expected port within sockopt range");
++		ASSERT_LE(port, 40007) TH_LOG("expected port within sockopt range");
++
++		port_set |= 1 << (port - 40000);
++		fds[i] = fd;
++	}
++
++	/* Check that all every port from the test range is in use */
++	ASSERT_EQ(port_set, 0xff) TH_LOG("expected all ports to be busy");
++
++	/* Check that bind() fails because the whole range is busy */
++	fd = socket(variant->so_domain, variant->so_type, variant->so_protocol);
++	ASSERT_GE(fd, 0) TH_LOG("socket failed");
++
++	range = pack_port_range(40000, 40007);
++	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &range, sizeof(range));
++	ASSERT_TRUE(!err) TH_LOG("setsockopt(IP_LOCAL_PORT_RANGE) failed");
++
++	err = bind_to_loopback_any_port(fd);
++	ASSERT_TRUE(err) TH_LOG("expected bind to fail");
++	ASSERT_EQ(errno, EADDRINUSE);
++
++	err = close(fd);
++	ASSERT_TRUE(!err) TH_LOG("close failed");
++
++	for (i = 0; i < ARRAY_SIZE(fds); i++) {
++		err = close(fds[i]);
++		ASSERT_TRUE(!err) TH_LOG("close failed");
++	}
++}
++
++TEST_F(ip_local_port_range, late_bind)
++{
++	union {
++		struct sockaddr sa;
++		struct sockaddr_in v4;
++		struct sockaddr_in6 v6;
++	} addr;
++	socklen_t addr_len;
++	const int one = 1;
++	int fd, err;
++	__u32 range;
++	__u16 port;
++
++	if (variant->so_protocol == IPPROTO_SCTP)
++		SKIP(return, "SCTP doesn't support IP_BIND_ADDRESS_NO_PORT");
++
++	fd = socket(variant->so_domain, variant->so_type, 0);
++	ASSERT_GE(fd, 0) TH_LOG("socket failed");
++
++	range = pack_port_range(40100, 40199);
++	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &range, sizeof(range));
++	ASSERT_TRUE(!err) TH_LOG("setsockopt(IP_LOCAL_PORT_RANGE) failed");
++
++	err = setsockopt(fd, SOL_IP, IP_BIND_ADDRESS_NO_PORT, &one, sizeof(one));
++	ASSERT_TRUE(!err) TH_LOG("setsockopt(IP_BIND_ADDRESS_NO_PORT) failed");
++
++	err = bind_to_loopback_any_port(fd);
++	ASSERT_TRUE(!err) TH_LOG("bind failed");
++
++	port = get_sock_port(fd);
++	ASSERT_EQ(port, 0) TH_LOG("getsockname failed");
++
++	/* Invalid destination */
++	memset(&addr, 0, sizeof(addr));
++	switch (variant->so_domain) {
++	case AF_INET:
++		addr.v4.sin_family = AF_INET;
++		addr.v4.sin_port = htons(0);
++		addr.v4.sin_addr.s_addr = htonl(INADDR_ANY);
++		addr_len = sizeof(addr.v4);
++		break;
++	case AF_INET6:
++		addr.v6.sin6_family = AF_INET6;
++		addr.v6.sin6_port = htons(0);
++		addr.v6.sin6_addr = in6addr_any;
++		addr_len = sizeof(addr.v6);
++		break;
++	default:
++		ASSERT_TRUE(false) TH_LOG("unsupported socket domain");
++	}
++
++	/* connect() doesn't need to succeed for late bind to happen */
++	connect(fd, &addr.sa, addr_len);
++
++	port = get_sock_port(fd);
++	ASSERT_GE(port, 40100);
++	ASSERT_LE(port, 40199);
++
++	err = close(fd);
++	ASSERT_TRUE(!err) TH_LOG("close failed");
++}
++
++TEST_F(ip_local_port_range, get_port_range)
++{
++	__u16 lo, hi;
++	__u32 range;
++	int fd, err;
++
++	fd = socket(variant->so_domain, variant->so_type, variant->so_protocol);
++	ASSERT_GE(fd, 0) TH_LOG("socket failed");
++
++	/* Get range before it will be set */
++	err = get_ip_local_port_range(fd, &range);
++	ASSERT_TRUE(!err) TH_LOG("getsockopt(IP_LOCAL_PORT_RANGE) failed");
++
++	unpack_port_range(range, &lo, &hi);
++	ASSERT_EQ(lo, 0) TH_LOG("unexpected low port");
++	ASSERT_EQ(hi, 0) TH_LOG("unexpected high port");
++
++	range = pack_port_range(12345, 54321);
++	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &range, sizeof(range));
++	ASSERT_TRUE(!err) TH_LOG("setsockopt(IP_LOCAL_PORT_RANGE) failed");
++
++	/* Get range after it has been set */
++	err = get_ip_local_port_range(fd, &range);
++	ASSERT_TRUE(!err) TH_LOG("getsockopt(IP_LOCAL_PORT_RANGE) failed");
++
++	unpack_port_range(range, &lo, &hi);
++	ASSERT_EQ(lo, 12345) TH_LOG("unexpected low port");
++	ASSERT_EQ(hi, 54321) TH_LOG("unexpected high port");
++
++	/* Unset the port range  */
++	range = pack_port_range(0, 0);
++	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &range, sizeof(range));
++	ASSERT_TRUE(!err) TH_LOG("setsockopt(IP_LOCAL_PORT_RANGE) failed");
++
++	/* Get range after it has been unset */
++	err = get_ip_local_port_range(fd, &range);
++	ASSERT_TRUE(!err) TH_LOG("getsockopt(IP_LOCAL_PORT_RANGE) failed");
++
++	unpack_port_range(range, &lo, &hi);
++	ASSERT_EQ(lo, 0) TH_LOG("unexpected low port");
++	ASSERT_EQ(hi, 0) TH_LOG("unexpected high port");
++
++	err = close(fd);
++	ASSERT_TRUE(!err) TH_LOG("close failed");
++}
++
++TEST_HARNESS_MAIN
+diff --git a/tools/testing/selftests/net/ip_local_port_range.sh b/tools/testing/selftests/net/ip_local_port_range.sh
+new file mode 100755
+index 000000000000..6c6ad346eaa0
+--- /dev/null
++++ b/tools/testing/selftests/net/ip_local_port_range.sh
+@@ -0,0 +1,5 @@
++#!/bin/sh
++# SPDX-License-Identifier: GPL-2.0
++
++./in_netns.sh \
++  sh -c 'sysctl -q -w net.ipv4.ip_local_port_range="40000 49999" && ./ip_local_port_range'
+
+-- 
+2.39.0
