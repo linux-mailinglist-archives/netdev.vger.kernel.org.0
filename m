@@ -2,107 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C45CC678AAA
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 23:20:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4854678AB0
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 23:22:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233090AbjAWWUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 17:20:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38072 "EHLO
+        id S233128AbjAWWWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 17:22:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231501AbjAWWUd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 17:20:33 -0500
-Received: from mx11lb.world4you.com (mx11lb.world4you.com [81.19.149.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173D713DD0
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 14:20:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=/WFLWBP+4tZFE2Gi38AS4tQrm+5RzANnXTm34Kd5ZGQ=; b=gRiZ9zIdXo83RnJ7H9iktcQU0u
-        sLpJnD4F/JCJAr4LXt+UaPeqkeYRXnLdXrasE/1YV6CiUA0IanmADV3I9JLU0oNyjro1y2n5IJSLA
-        6I5gNVSXg17VqNjPT24asRb0DsWPoI3tjv5NHw8UBXMNTmUHBA04l+jtel03U5nLNpG8=;
-Received: from [88.117.49.184] (helo=[10.0.0.160])
-        by mx11lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1pK5Ay-0007oa-Qv; Mon, 23 Jan 2023 23:20:28 +0100
-Message-ID: <2d932e4d-6f4b-c6f6-3e14-d7d98d4f5b71@engleder-embedded.com>
-Date:   Mon, 23 Jan 2023 23:20:28 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [RFC PATCH net-next 00/11] ENETC mqprio/taprio cleanup
-Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, John Fastabend <john.fastabend@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S233126AbjAWWWa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 17:22:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD6A2F7AA;
+        Mon, 23 Jan 2023 14:22:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C16FB80E84;
+        Mon, 23 Jan 2023 22:22:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B679C433EF;
+        Mon, 23 Jan 2023 22:22:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674512547;
+        bh=J3FWQf8v2Xtdi31/P+roQNgwrUj1NLx5u7NBqDB/yxM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cs6ZsXyIM4b9APD+8r4cDZFexVMVyRyjIv87RiM/66l8MixvTermp9+ChIyT76pt/
+         /HkhhL3gd9wUGb+M4nE5AlDoZLk2n/fzv1nCkVlIeR4zWsjlOzhNvb4OeyrkBcSSiW
+         NBKoncXLPZH0v3dxB3CR0UEh1svOJQohYw5/TH/gvwSl9MEISLWhRQhR1njrGHISSL
+         DNbexCxK4oom5jAbRXPpLLb5Opg4ILrxlhCCJdn502TfP2FTG3W8nwQGuuHg1+PgdJ
+         p9Q8qLj5V2ZGRC+tWBZ+cm9vKob9D4QEzpw/oA2oLBdVKGsro9tUYej/rV+3aNBWNc
+         uS6VpikQteIsw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Camelia Groza <camelia.groza@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Ferenc Fejes <ferenc.fejes@ericsson.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>
-References: <20230120141537.1350744-1-vladimir.oltean@nxp.com>
- <3e324602-a33a-b243-80db-6f6077ca5029@engleder-embedded.com>
- <20230123213144.jixdztjnut4tnf6r@skbuf>
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-In-Reply-To: <20230123213144.jixdztjnut4tnf6r@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AV-Do-Run: Yes
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Ido Schimmel <idosch@idosch.org>, jiri@nvidia.com,
+        pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        johannes@sipsolutions.net, ecree.xilinx@gmail.com,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
+Subject: [PATCH net-next] netlink: fix spelling mistake in dump size assert
+Date:   Mon, 23 Jan 2023 14:22:24 -0800
+Message-Id: <20230123222224.732338-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.39.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23.01.23 22:31, Vladimir Oltean wrote:
-> On Mon, Jan 23, 2023 at 10:21:33PM +0100, Gerhard Engleder wrote:
->> For my tsnep IP core it is similar, but with reverse priority. TXQ 0 has
->> the lowest priority (to be used for none real-time traffic). TXQ 1 has
->> priority over TXQ 0, TXQ 2 has priority over TXQ 1, ... . The number of
->> TX queues is flexible and depends on the requirements of the real-time
->> application and the available resources within the FPGA. The priority is
->> hard coded to save FPGA resources.
-> 
-> But if there's no round robin between queues of equal priority, it means
-> you can never have more than 1 TXQ per traffic class with this design,
-> or i.o.w., your best-effort traffic will always be single queue, right?
+Commit 2c7bc10d0f7b ("netlink: add macro for checking dump ctx size")
+misspelled the name of the assert as asset, missing an R.
 
-Yes, with the current design only 1 TXQ per traffic class is the goal.
+Reported-by: Ido Schimmel <idosch@idosch.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+CC: jiri@nvidia.com
+CC: pablo@netfilter.org
+CC: kadlec@netfilter.org
+CC: fw@strlen.de
+CC: johannes@sipsolutions.net
+CC: ecree.xilinx@gmail.com
+CC: netfilter-devel@vger.kernel.org
+CC: coreteam@netfilter.org
+---
+ include/linux/netlink.h              | 2 +-
+ net/devlink/devl_internal.h          | 2 +-
+ net/netfilter/nf_conntrack_netlink.c | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
->>> Furthermore (and this is really the biggest point of contention), myself
->>> and Vinicius have the fundamental disagreement whether the 802.1Qbv
->>> (taprio) gate mask should be passed to the device driver per TXQ or per
->>> TC. This is what patch 11/11 is about.
->>
->> tsnep also expects gate mask per TXQ. This simplifies the hardware
->> implementation. But it would be no problem if the gate mask would be
->> passed per TC and the driver is able to transform it to per TXQ.
-> 
-> If tsnep can only have at most 1 TXQ per TC, then what's the difference
-> between gate mask per TXQ and gate mask per TC?
+diff --git a/include/linux/netlink.h b/include/linux/netlink.h
+index 38f6334f408c..fa4d86da0ec7 100644
+--- a/include/linux/netlink.h
++++ b/include/linux/netlink.h
+@@ -263,7 +263,7 @@ struct netlink_callback {
+ 	};
+ };
+ 
+-#define NL_ASSET_DUMP_CTX_FITS(type_name)				\
++#define NL_ASSERT_DUMP_CTX_FITS(type_name)				\
+ 	BUILD_BUG_ON(sizeof(type_name) >				\
+ 		     sizeof_field(struct netlink_callback, ctx))
+ 
+diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
+index 1aa1a9549549..d0d889038138 100644
+--- a/net/devlink/devl_internal.h
++++ b/net/devlink/devl_internal.h
+@@ -135,7 +135,7 @@ int devlink_nl_instance_iter_dump(struct sk_buff *msg,
+ static inline struct devlink_nl_dump_state *
+ devlink_dump_state(struct netlink_callback *cb)
+ {
+-	NL_ASSET_DUMP_CTX_FITS(struct devlink_nl_dump_state);
++	NL_ASSERT_DUMP_CTX_FITS(struct devlink_nl_dump_state);
+ 
+ 	return (struct devlink_nl_dump_state *)cb->ctx;
+ }
+diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
+index 90672e293e57..308fc0023c7e 100644
+--- a/net/netfilter/nf_conntrack_netlink.c
++++ b/net/netfilter/nf_conntrack_netlink.c
+@@ -3866,7 +3866,7 @@ static int __init ctnetlink_init(void)
+ {
+ 	int ret;
+ 
+-	NL_ASSET_DUMP_CTX_FITS(struct ctnetlink_list_dump_ctx);
++	NL_ASSERT_DUMP_CTX_FITS(struct ctnetlink_list_dump_ctx);
+ 
+ 	ret = nfnetlink_subsys_register(&ctnl_subsys);
+ 	if (ret < 0) {
+-- 
+2.39.1
 
-There can be less TCs than TXQs. If only the second TXQ would be used,
-then gate mask per TC would be 0x1 and gate mask per TXQ would be 0x2.
-
-If number of TCs and TXQs would be identical, then there would be no
-difference. The overlap check enforces that TXQs are assigned to TCs in
-strict order. So TXQs cannot be assigned to TCs in arbitrary order. At
-least that was the result of a quick test. But I don't know what's the
-reason of this behavior.
-
-Gerhard
