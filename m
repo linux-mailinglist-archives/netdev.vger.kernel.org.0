@@ -2,84 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3833B67775E
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 10:26:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B70F0677784
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 10:38:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231656AbjAWJ0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 04:26:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60668 "EHLO
+        id S231653AbjAWJiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 04:38:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231583AbjAWJ0g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 04:26:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF3615547
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 01:25:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1674465950;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZMTy6Tq8SNpkRFs2YVhPz9j6sx3/BmqHI5EE4rEjczI=;
-        b=WYlase41I5o1Ru2ApBik6cacV4ezdB9dYjl0tmRyfZFXczKrx2rYcQFv90DJNDnldOISSg
-        bQdBis8Z9edK2gQHXotxnsP8p0/iGPZKoDkhngFy+oxzdkgFkRmFZBscUYx3QBxJmFnl1N
-        tlfGMMvFW/WRuZcwIBgI/54Y+YTZGks=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-582-xHRWH-a5NLGMepNYOaE0iQ-1; Mon, 23 Jan 2023 04:25:49 -0500
-X-MC-Unique: xHRWH-a5NLGMepNYOaE0iQ-1
-Received: by mail-qv1-f72.google.com with SMTP id jh2-20020a0562141fc200b004c74bbb0affso5726552qvb.21
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 01:25:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZMTy6Tq8SNpkRFs2YVhPz9j6sx3/BmqHI5EE4rEjczI=;
-        b=gufjoQlRZUX8+sw4m43SqCWbp/ynzmWpKud2ejnCb2qfBWDmIpoFsRl0kd27qkxJum
-         LlI4IwRAvxAYEPW2tIq20a5gt54xheyjx+5uI/eAtwaqPMNqJH/vgAOtbYhXvPM59Gzu
-         VWmN+lLELX0Q1DOrpQdHR1sslITFJmysk3YaVfzlNG4vnqT37YYlIc4+3wSJPkZq4Stv
-         Lxpz3CBJN92OobAUE6WcGJ1DQVIZGXrebJVEz3OqW7wH/fR5xWPRHb0KVuHXPqZVDp+L
-         L6CzUCfAa+/G4itVmqgWlIwbqTX8HuydN8U82C8tv0jfN0OrLoyYYyiXrL31CRHJStl7
-         OlUQ==
-X-Gm-Message-State: AFqh2kopv3T+BYZo3g6OgLb4rHWQxVtAGSZwrAJDONPY89Inu//PgTDh
-        +J2fYlRL2lHYcGmdJEP3KOoVF0osx3YZCbyZCJj6CTWCP+yP+nnSPxXxo3b1QxqR09VXx97X0Be
-        oTAO/aamesv/mohmr
-X-Received: by 2002:ad4:5301:0:b0:535:5ff1:ccb2 with SMTP id y1-20020ad45301000000b005355ff1ccb2mr16731353qvr.4.1674465948714;
-        Mon, 23 Jan 2023 01:25:48 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXtM8WdUzTuf3AICpDNA4CQh1qPmCAD0+RWVCzbet2oH+5JRFCvNifkrbn4tS6j0Ar1yAi0SvQ==
-X-Received: by 2002:ad4:5301:0:b0:535:5ff1:ccb2 with SMTP id y1-20020ad45301000000b005355ff1ccb2mr16731343qvr.4.1674465948492;
-        Mon, 23 Jan 2023 01:25:48 -0800 (PST)
-Received: from [192.168.100.30] ([82.142.8.70])
-        by smtp.gmail.com with ESMTPSA id s10-20020a05620a16aa00b006cfc9846594sm21718471qkj.93.2023.01.23.01.25.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Jan 2023 01:25:47 -0800 (PST)
-Message-ID: <aa07f74e-ad9e-bc94-9ace-257db0aa5b4d@redhat.com>
-Date:   Mon, 23 Jan 2023 10:25:44 +0100
+        with ESMTP id S231147AbjAWJiW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 04:38:22 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C3D16306;
+        Mon, 23 Jan 2023 01:38:19 -0800 (PST)
+Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4P0lKz18Lmz6J7DH;
+        Mon, 23 Jan 2023 17:34:15 +0800 (CST)
+Received: from [10.123.123.126] (10.123.123.126) by
+ lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Mon, 23 Jan 2023 09:38:16 +0000
+Message-ID: <eb33371b-551e-ae6c-d7e3-a3101644b7ec@huawei.com>
+Date:   Mon, 23 Jan 2023 12:38:16 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH 0/4] virtio_net: vdpa: update MAC address when it is
- generated by virtio-net
-Content-Language: en-US
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Parav Pandit <parav@nvidia.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Eli Cohen <elic@nvidia.com>, Jason Wang <jasowang@redhat.com>,
-        Gautam Dawar <gautam.dawar@xilinx.com>,
-        Cindy Lu <lulu@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>
-References: <20230122100526.2302556-1-lvivier@redhat.com>
- <20230122052211-mutt-send-email-mst@kernel.org>
-From:   Laurent Vivier <lvivier@redhat.com>
-In-Reply-To: <20230122052211-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v9 12/12] landlock: Document Landlock's network support
+Content-Language: ru
+To:     =?UTF-8?Q?G=c3=bcnther_Noack?= <gnoack3000@gmail.com>
+CC:     <mic@digikod.net>, <willemdebruijn.kernel@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>
+References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
+ <20230116085818.165539-13-konstantin.meskhidze@huawei.com>
+ <Y8xwLvDbhKPG8JqY@galopp>
+From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <Y8xwLvDbhKPG8JqY@galopp>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.123.123.126]
+X-ClientProxiedBy: lhrpeml500006.china.huawei.com (7.191.161.198) To
+ lhrpeml500004.china.huawei.com (7.191.163.9)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -87,54 +53,250 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/22/23 11:23, Michael S. Tsirkin wrote:
-> On Sun, Jan 22, 2023 at 11:05:22AM +0100, Laurent Vivier wrote:
->> When the MAC address is not provided by the vdpa device virtio_net
->> driver assigns a random one without notifying the device.
->> The consequence, in the case of mlx5_vdpa, is the internal routing
->> tables of the device are not updated and this can block the
->> communication between two namespaces.
->>
->> To fix this problem, use virtnet_send_command(VIRTIO_NET_CTRL_MAC)
->> to set the address from virtnet_probe() when the MAC address is
->> randomly assigned from virtio_net.
->>
->> While I was testing this change I found 3 other bugs in vdpa_sim_net:
->>
->> - vdpa_sim_net sets the VIRTIO_NET_F_MAC even if no MAC address is
->>    provided. So virtio_net doesn't generate a random MAC address and
->>    the MAC address appears to be 00:00:00:00:00:00
->>
->> - vdpa_sim_net never processes the command and virtnet_send_command()
->>    hangs in an infinite loop. To avoid a kernel crash add a timeout
->>    in the loop.
->>
->> - To allow vdpa_sim_net to process the command, replace the cpu_relax()
->>    in the loop by a schedule(). vdpa_sim_net uses a workqueue to process
->>    the queue, and if we don't allow the kernel to schedule, the queue
->>    is not processed and the loop is infinite.
+
+
+1/22/2023 2:07 AM, Günther Noack пишет:
+> Hello!
 > 
-> I'd split these things out as opposed to a series unless there's
-> a dependency I missed.
-
-We needed to fix virtio_net before fixing vdpa_sim_net otherwise the 
-virtnet_send_command() hangs when we define the vdpa device with "vdpa dev" but without a 
-MAC address.
-
-> All this reminds me of
-> https://lore.kernel.org/r/20221226074908.8154-5-jasowang%40redhat.com
+> Thank you for sending these patches! I'll start poking a bit at the
+> Go-Landlock library to see how we can support it there when this lands.
 > 
-> how is this patch different/better?
-> Pls also CC people involved in that original discussion.
+> On Mon, Jan 16, 2023 at 04:58:18PM +0800, Konstantin Meskhidze wrote:
+>> Describe network access rules for TCP sockets. Add network access
+>> example in the tutorial. Add kernel configuration support for network.
+>> 
+>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>> ---
+>> 
+>> Changes since v8:
+>> * Minor refactoring.
+>> 
+>> Changes since v7:
+>> * Fixes documentaion logic errors and typos as Mickaёl suggested:
+>> https://lore.kernel.org/netdev/9f354862-2bc3-39ea-92fd-53803d9bbc21@digikod.net/
+>> 
+>> Changes since v6:
+>> * Adds network support documentaion.
+>> 
+>> ---
+>>  Documentation/userspace-api/landlock.rst | 72 ++++++++++++++++++------
+>>  1 file changed, 56 insertions(+), 16 deletions(-)
+>> 
+>> diff --git a/Documentation/userspace-api/landlock.rst b/Documentation/userspace-api/landlock.rst
+>> index d8cd8cd9ce25..980558b879d6 100644
+>> --- a/Documentation/userspace-api/landlock.rst
+>> +++ b/Documentation/userspace-api/landlock.rst
+>> @@ -11,10 +11,10 @@ Landlock: unprivileged access control
+>>  :Date: October 2022
+>>  
+>>  The goal of Landlock is to enable to restrict ambient rights (e.g. global
+>> -filesystem access) for a set of processes.  Because Landlock is a stackable
+>> -LSM, it makes possible to create safe security sandboxes as new security layers
+>> -in addition to the existing system-wide access-controls. This kind of sandbox
+>> -is expected to help mitigate the security impact of bugs or
+>> +filesystem or network access) for a set of processes.  Because Landlock
+>> +is a stackable LSM, it makes possible to create safe security sandboxes as new
+>> +security layers in addition to the existing system-wide access-controls. This
+>> +kind of sandbox is expected to help mitigate the security impact of bugs or
+>>  unexpected/malicious behaviors in user space applications.  Landlock empowers
+>>  any process, including unprivileged ones, to securely restrict themselves.
+>>  
+>> @@ -30,18 +30,20 @@ Landlock rules
+>>  
+>>  A Landlock rule describes an action on an object.  An object is currently a
+>>  file hierarchy, and the related filesystem actions are defined with `access
+>> -rights`_.  A set of rules is aggregated in a ruleset, which can then restrict
+>> -the thread enforcing it, and its future children.
+>> +rights`_.  Since ABI version 4 a port data appears with related network actions
+>> +for TCP socket families.  A set of rules is aggregated in a ruleset, which
+>> +can then restrict the thread enforcing it, and its future children.
+>>  
+>>  Defining and enforcing a security policy
+>>  ----------------------------------------
+>>  
+>>  We first need to define the ruleset that will contain our rules.  For this
+>>  example, the ruleset will contain rules that only allow read actions, but write
+>> -actions will be denied.  The ruleset then needs to handle both of these kind of
+>> +actions will be denied. The ruleset then needs to handle both of these kind of
+> 
+> (This one looks like an unintentional whitespace change; the
+> double-space ending is used in this file, so we should probably stay
+> consistent.)
 
-I was not aware of the Jason's series.
+   Got it. Thanks.
+> 
+>>  actions.  This is required for backward and forward compatibility (i.e. the
+>>  kernel and user space may not know each other's supported restrictions), hence
+>> -the need to be explicit about the denied-by-default access rights.
+>> +the need to be explicit about the denied-by-default access rights.  Also ruleset
+> 
+> Wording nit: "Also, the ruleset"...?
 
-It seems to address better the problem, except it triggers the ASSERT_RTNL() in 
-virtnet_send_command() when it is called from virtnet_probe().
+   Right. Thanks for the nit.
+> 
+>> +will have network rules for specific ports, so it should handle network actions.
+>>  
+>>  .. code-block:: c
+>>  
+>> @@ -62,6 +64,9 @@ the need to be explicit about the denied-by-default access rights.
+>>              LANDLOCK_ACCESS_FS_MAKE_SYM |
+>>              LANDLOCK_ACCESS_FS_REFER |
+>>              LANDLOCK_ACCESS_FS_TRUNCATE,
+>> +        .handled_access_net =
+>> +            LANDLOCK_ACCESS_NET_BIND_TCP |
+>> +            LANDLOCK_ACCESS_NET_CONNECT_TCP,
+>>      };
+>>  
+>>  Because we may not know on which kernel version an application will be
+>> @@ -70,14 +75,18 @@ should try to protect users as much as possible whatever the kernel they are
+>>  using.  To avoid binary enforcement (i.e. either all security features or
+>>  none), we can leverage a dedicated Landlock command to get the current version
+>>  of the Landlock ABI and adapt the handled accesses.  Let's check if we should
+>> -remove the ``LANDLOCK_ACCESS_FS_REFER`` or ``LANDLOCK_ACCESS_FS_TRUNCATE``
+>> -access rights, which are only supported starting with the second and third
+>> -version of the ABI.
+>> +remove the ``LANDLOCK_ACCESS_FS_REFER`` or ``LANDLOCK_ACCESS_FS_TRUNCATE`` or
+>> +network access rights, which are only supported starting with the second,
+>> +third and fourth version of the ABI.
+>>  
+>>  .. code-block:: c
+>>  
+>>      int abi;
+>>  
+>> +    #define ACCESS_NET_BIND_CONNECT ( \
+>> +        LANDLOCK_ACCESS_NET_BIND_TCP | \
+>> +        LANDLOCK_ACCESS_NET_CONNECT_TCP)
+>> +
+>>      abi = landlock_create_ruleset(NULL, 0, LANDLOCK_CREATE_RULESET_VERSION);
+>>      if (abi < 0) {
+>>          /* Degrades gracefully if Landlock is not handled. */
+>> @@ -92,6 +101,11 @@ version of the ABI.
+>>      case 2:
+>>          /* Removes LANDLOCK_ACCESS_FS_TRUNCATE for ABI < 3 */
+>>          ruleset_attr.handled_access_fs &= ~LANDLOCK_ACCESS_FS_TRUNCATE;
+>> +    case 3:
+>> +        /* Removes network support for ABI < 4 */
+>> +		ruleset_attr.handled_access_net &=
+>             ^^^^^
+>             Nit: Indentation differs from "case 2"
 
-I will remove patches 2 and 4 from my series.
-PATCH 3 can be sent on independently too.
+   Got it. Will be fixed. Thanks.
+>             
+>> +			~(LANDLOCK_ACCESS_NET_BIND_TCP |
+>> +			  LANDLOCK_ACCESS_NET_CONNECT_TCP);
+>>      }
+>>  
+>>  This enables to create an inclusive ruleset that will contain our rules.
+>> @@ -143,10 +157,24 @@ for the ruleset creation, by filtering access rights according to the Landlock
+>>  ABI version.  In this example, this is not required because all of the requested
+>>  ``allowed_access`` rights are already available in ABI 1.
+>>  
+>> -We now have a ruleset with one rule allowing read access to ``/usr`` while
+>> -denying all other handled accesses for the filesystem.  The next step is to
+>> -restrict the current thread from gaining more privileges (e.g. thanks to a SUID
+>> -binary).
+>> +For network access-control, we can add a set of rules that allow to use a port
+>> +number for a specific action. All ports values must be defined in network byte
+>> +order.
+> 
+> What is the point of asking user space to convert this to network byte
+> order? It seems to me that the kernel would be able to convert it to
+> network byte order very easily internally and in a single place -- why
+> ask all of the users to deal with that complexity? Am I overlooking
+> something?
 
-Thanks,
-Laurent
+  I had a discussion about this issue with Mickaёl.
+  Please check these threads:
+  1. 
+https://lore.kernel.org/netdev/49391484-7401-e7c7-d909-3bd6bd024731@digikod.net/
+  2. 
+https://lore.kernel.org/netdev/1ed20e34-c252-b849-ab92-78c82901c979@huawei.com/
+> 
+>> +
+>> +.. code-block:: c
+>> +
+>> +    struct landlock_net_service_attr net_service = {
+>> +        .allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
+>> +        .port = htons(8080),
+>> +    };
+> 
+> This is a more high-level comment:
+> 
+> The notion of a 16-bit "port" seems to be specific to TCP and UDP --
+> how do you envision this struct to evolve if other protocols need to
+> be supported in the future?
 
+   When TCP restrictions land into Linux, we need to think about UDP 
+support. Then other protocols will be on the road. Anyway you are right 
+this struct will be evolving in long term, but I don't have a particular 
+envision now. Thanks for the question - we need to think about it.
+> 
+> Should this struct and the associated constants have "TCP" in its
+> name, and other protocols use a separate struct in the future?
+> 
+>> +
+>> +    err = landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
+>> +                            &net_service, 0);
+>> +
+>> +The next step is to restrict the current thread from gaining more privileges
+>> +(e.g. thanks to a SUID binary). We now have a ruleset with the first rule allowing
+>           ^^^^^^
+>           "through" a SUID binary? "thanks to" sounds like it's desired
+>           to do that, while we're actually trying to prevent it here?
+
+   This is Mickaёl's part. Let's ask his opinion here.
+
+   Mickaёl, any thoughts?
+
+> 
+>> +read access to ``/usr`` while denying all other handled accesses for the filesystem,
+>> +and a second rule allowing TCP binding on port 8080.
+>>  
+>>  .. code-block:: c
+>>  
+>> @@ -355,7 +383,7 @@ Access rights
+>>  -------------
+>>  
+>>  .. kernel-doc:: include/uapi/linux/landlock.h
+>> -    :identifiers: fs_access
+>> +    :identifiers: fs_access net_access
+>>  
+>>  Creating a new ruleset
+>>  ----------------------
+>> @@ -374,6 +402,7 @@ Extending a ruleset
+>>  
+>>  .. kernel-doc:: include/uapi/linux/landlock.h
+>>      :identifiers: landlock_rule_type landlock_path_beneath_attr
+>> +                  landlock_net_service_attr
+>>  
+>>  Enforcing a ruleset
+>>  -------------------
+>> @@ -451,6 +480,12 @@ always allowed when using a kernel that only supports the first or second ABI.
+>>  Starting with the Landlock ABI version 3, it is now possible to securely control
+>>  truncation thanks to the new ``LANDLOCK_ACCESS_FS_TRUNCATE`` access right.
+>>  
+>> +Network support (ABI < 4)
+>> +-------------------------
+>> +
+>> +Starting with the Landlock ABI version 4, it is now possible to restrict TCP
+>> +bind and connect actions to only a set of allowed ports.
+>> +
+>>  .. _kernel_support:
+>>  
+>>  Kernel support
+>> @@ -469,6 +504,11 @@ still enable it by adding ``lsm=landlock,[...]`` to
+>>  Documentation/admin-guide/kernel-parameters.rst thanks to the bootloader
+>>  configuration.
+>>  
+>> +To be able to explicitly allow TCP operations (e.g., adding a network rule with
+>> +``LANDLOCK_ACCESS_NET_TCP_BIND``), the kernel must support TCP (``CONFIG_INET=y``).
+>> +Otherwise, sys_landlock_add_rule() returns an ``EAFNOSUPPORT`` error, which can
+>> +safely be ignored because this kind of TCP operation is already not possible.
+>> +
+>>  Questions and answers
+>>  =====================
+>>  
+>> -- 
+>> 2.25.1
+>> 
+> .
