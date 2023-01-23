@@ -2,133 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAE5C677D83
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 15:04:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 690E5677D95
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 15:06:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231485AbjAWOEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 09:04:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52782 "EHLO
+        id S232157AbjAWOGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 09:06:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231567AbjAWOEJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 09:04:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A138279A0
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 06:03:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1674482588;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hi9QfKF/pkHE0TQcTI+lnboZZ4KZTrK1Z51mByX9dZQ=;
-        b=LU+EUsNrMsIFAlfo019g4KaaI21OH8JrQDS+VvxXEM1isabPJBHTfOVEpZQDh6Xh/a9Sqb
-        FKuPm44exYmJnJVqlc81dFD2VZN4qFqER1Zhqd0Rt4hduXK9DGaxa9MAjkVRTtJEzBhVW8
-        BRfpq9EnlT2RXLgBDaEf6itVZqJmH34=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-556-y5u04gjhNHigfqdLTwlcyQ-1; Mon, 23 Jan 2023 09:03:04 -0500
-X-MC-Unique: y5u04gjhNHigfqdLTwlcyQ-1
-Received: by mail-ej1-f69.google.com with SMTP id nc27-20020a1709071c1b00b0086dae705676so7787449ejc.12
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 06:03:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=hi9QfKF/pkHE0TQcTI+lnboZZ4KZTrK1Z51mByX9dZQ=;
-        b=LO1yhvZezb/w3cMRVi40RSHdIimdnbVO3ZQDzoASqhrELPLsK2VUn7/XJHSs38DReL
-         MQ43gZGiXNMzSvavbsRDJYdZ0s4E5TmQR2d9iuFVX6bhUBB6+HZsvT7E1ctstB3KQpCS
-         CP9iHoTXbS8ztFftdlmQ04IalMRj+a9Sn9Mwr1s16151HvwPneSzs24oAhaDpoS9SvZx
-         28BtnxiRSNQigsz/y4Oy9d9fWLHRZ8r6AopSrJIEYkfV/gIBjDQTPSy33xEsAcnuroF1
-         CkFZB5XXPuKiVFYMkSEzmJoJ66WH8kCh1LM/rTmBCw8KL7J48fwXZ9Yn3qAQok/PKA6P
-         7Anw==
-X-Gm-Message-State: AFqh2kodEPpqwrd5YSshyRTIw5mCm5TbeTfCKRhvXhMxZiMEx4fa5+P5
-        fr5NZnEPNOb8RM+jlyZWZpbiXzq9vTnhkuFpcy0V2279YKAFLfSv2IrF53CPwQ3mOM7/RMAMjWt
-        ayikb4Bfbl1k/J8KfxXBZmcNC9VUIf5Vx
-X-Received: by 2002:a05:6402:12d2:b0:498:7546:c610 with SMTP id k18-20020a05640212d200b004987546c610mr2711933edx.85.1674482579785;
-        Mon, 23 Jan 2023 06:02:59 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXs4nTsYKdAqMdsWtKyThyGsu3vyT19czqfeMDwfaltdaoV7HzI8Aj2H0Rc4Py+yofhBCZCL3FMzwPq0fTICDqo=
-X-Received: by 2002:a05:6402:12d2:b0:498:7546:c610 with SMTP id
- k18-20020a05640212d200b004987546c610mr2711926edx.85.1674482579477; Mon, 23
- Jan 2023 06:02:59 -0800 (PST)
-MIME-Version: 1.0
-References: <20230106113129.694750-1-miquel.raynal@bootlin.com>
- <CAK-6q+jNmvtBKKxSp1WepVXbaQ65CghZv3bS2ptjB9jyzOSGTA@mail.gmail.com>
- <20230118102058.3b1f275b@xps-13> <CAK-6q+gwP8P--5e9HKt2iPhjeefMXrXUVy-G+szGdFXZvgYKvg@mail.gmail.com>
-In-Reply-To: <CAK-6q+gwP8P--5e9HKt2iPhjeefMXrXUVy-G+szGdFXZvgYKvg@mail.gmail.com>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Mon, 23 Jan 2023 09:02:48 -0500
-Message-ID: <CAK-6q+gn7W9x2+ihSC41RzkhmBn1E44pKtJFHgqRdd8aBpLrVQ@mail.gmail.com>
-Subject: Re: [PATCH wpan-next 0/2] ieee802154: Beaconing support
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
+        with ESMTP id S232119AbjAWOGn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 09:06:43 -0500
+Received: from mx0.infotecs.ru (mx0.infotecs.ru [91.244.183.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54B44C21;
+        Mon, 23 Jan 2023 06:06:41 -0800 (PST)
+Received: from mx0.infotecs-nt (localhost [127.0.0.1])
+        by mx0.infotecs.ru (Postfix) with ESMTP id E083810389FB;
+        Mon, 23 Jan 2023 17:06:39 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mx0.infotecs.ru E083810389FB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=infotecs.ru; s=mx;
+        t=1674482800; bh=n7RVdhcVkO+AmN0igLFV5fU8una/MboowXmwC5E43tw=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=T/cLtE14hhKne49SgCQ+nrXiUH5xP7ae0yQ/z+Jb5skLPsd2GRrOGAUiNKVYVpHEH
+         ZVMJQ95Ln4puZWWLpeGtsqO6FWG1tZUiR0Gp+QfDocqeugjoSn16GncDenxNpvmp3o
+         X7Yi9VxQ0jStEUMxwZuDfBxpC1Bjt/ekeI0eCi8E=
+Received: from msk-exch-02.infotecs-nt (msk-exch-02.infotecs-nt [10.0.7.192])
+        by mx0.infotecs-nt (Postfix) with ESMTP id DD3B730E0CA4;
+        Mon, 23 Jan 2023 17:06:39 +0300 (MSK)
+From:   Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Guilhem Imberton <guilhem.imberton@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, Joe Perches <joe@perches.com>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "lvc-project@linuxtesting.org" <lvc-project@linuxtesting.org>
+Subject: Re: [PATCH] netfilter: conntrack: remote a return value of the
+ 'seq_print_acct' function.
+Thread-Topic: [PATCH] netfilter: conntrack: remote a return value of the
+ 'seq_print_acct' function.
+Thread-Index: AQHZLy6nPel+9vJLcUy5hm2kN75FKq6r1zSA
+Date:   Mon, 23 Jan 2023 14:06:39 +0000
+Message-ID: <fbc11588-ac61-4fcb-a8fa-c03dba098fba@infotecs.ru>
+References: <20230123081957.1380790-1-Ilia.Gavrilov@infotecs.ru>
+ <Y86Lji5prQEAxKLi@unreal>
+In-Reply-To: <Y86Lji5prQEAxKLi@unreal>
+Accept-Language: ru-RU, en-US
+Content-Language: ru-RU
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.17.0.10]
+x-exclaimer-md-config: 208ac3cd-1ed4-4982-a353-bdefac89ac0a
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <AC82A1241E7BBF4BB27587A873327034@infotecs.ru>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-KLMS-Rule-ID: 1
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Lua-Profiles: 174927 [Jan 23 2023]
+X-KLMS-AntiSpam-Version: 5.9.59.0
+X-KLMS-AntiSpam-Envelope-From: Ilia.Gavrilov@infotecs.ru
+X-KLMS-AntiSpam-Rate: 0
+X-KLMS-AntiSpam-Status: not_detected
+X-KLMS-AntiSpam-Method: none
+X-KLMS-AntiSpam-Auth: dkim=none
+X-KLMS-AntiSpam-Info: LuaCore: 502 502 69dee8ef46717dd3cb3eeb129cb7cc8dab9e30f6, {Tracking_msgid_8}, {Tracking_uf_ne_domains}, {Tracking_from_domain_doesnt_match_to}, infotecs.ru:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2
+X-MS-Exchange-Organization-SCL: -1
+X-KLMS-AntiSpam-Interceptor-Info: scan successful
+X-KLMS-AntiPhishing: Clean, bases: 2023/01/23 12:45:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2023/01/23 00:37:00 #20794104
+X-KLMS-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Mon, Jan 23, 2023 at 9:01 AM Alexander Aring <aahringo@redhat.com> wrote:
->
-> Hi,
->
-> On Wed, Jan 18, 2023 at 4:21 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> >
-> > Hi Alexander,
-> >
-> > aahringo@redhat.com wrote on Sun, 15 Jan 2023 20:54:02 -0500:
-> >
-> > > Hi,
-> > >
-> > > On Fri, Jan 6, 2023 at 6:33 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> > > >
-> > > > Scanning being now supported, we can eg. play with hwsim to verify
-> > > > everything works as soon as this series including beaconing support gets
-> > > > merged.
-> > > >
-> > >
-> > > I am not sure if a beacon send should be handled by an mlme helper
-> > > handling as this is a different use-case and the user does not trigger
-> > > an mac command and is waiting for some reply and a more complex
-> > > handling could be involved. There is also no need for hotpath xmit
-> > > handling is disabled during this time. It is just an async messaging
-> > > in some interval and just "try" to send it and don't care if it fails,
-> > > or? For mac802154 therefore I think we should use the dev_queue_xmit()
-> > > function to queue it up to send it through the hotpath?
-> > >
-> > > I can ack those patches, it will work as well. But I think we should
-> > > switch at some point to dev_queue_xmit(). It should be simple to
-> > > switch it. Just want to mention there is a difference which will be
-> > > there in mac-cmds like association.
-> >
-> > I see what you mean. That's indeed true, we might just switch to
-> > a less constrained transmit path.
-> >
->
-> I would define the difference in bypass qdisc or not. Whereas the
-> qdisc can drop or delay transmitting... For me, the qdisc is currently
-> in a "works for now" state.
-
-probably also bypass other hooks like tc, etc. :-/ Not sure if we want that.
-
-- Alex
-
+DQoNCg0K0KEg0YPQstCw0LbQtdC90LjQtdC8LA0K0JjQu9GM0Y8g0JPQsNCy0YDQuNC70L7Qsg0K
+0JLQtdC00YPRidC40Lkg0L/RgNC+0LPRgNCw0LzQvNC40YHRgg0K0J7RgtC00LXQuyDRgNCw0LfR
+gNCw0LHQvtGC0LrQuA0K0JDQniAi0JjQvdGE0L7QotC10JrQoSIg0LIg0LMuINCh0LDQvdC60YIt
+0J/QtdGC0LXRgNCx0YPRgNCzDQoxMjcyODcsINCzLiDQnNC+0YHQutCy0LAsINCh0YLQsNGA0YvQ
+uSDQn9C10YLRgNC+0LLRgdC60L4t0KDQsNC30YPQvNC+0LLRgdC60LjQuSDQv9GA0L7QtdC30LQs
+INC00L7QvCAxLzIzLCDRgdGC0YAuIDENClQ6ICs3IDQ5NSA3MzctNjEtOTIgKCDQtNC+0LEuIDQ5
+MjEpDQrQpDogKzcgNDk1IDczNy03Mi03OA0KDQoNCklsaWEuR2F2cmlsb3ZAaW5mb3RlY3MucnUN
+Cnd3dy5pbmZvdGVjcy5ydQ0KDQoNCk9uIDEvMjMvMjMgMTY6MjgsIExlb24gUm9tYW5vdnNreSB3
+cm90ZToNCj4gT24gTW9uLCBKYW4gMjMsIDIwMjMgYXQgMDg6MTk6NTBBTSArMDAwMCwgR2F2cmls
+b3YgSWxpYSB3cm90ZToNCj4+IFRoZSBzdGF0aWMgJ3NlcV9wcmludF9hY2N0JyBmdW5jdGlvbiBh
+bHdheXMgcmV0dXJucyAwLg0KPj4NCj4+IENoYW5nZSB0aGUgcmV0dXJuIHZhbHVlIHRvICd2b2lk
+JyBhbmQgcmVtb3ZlIHVubmVjZXNzYXJ5IGNoZWNrcy4NCj4+DQo+PiBGb3VuZCBieSBJbmZvVGVD
+UyBvbiBiZWhhbGYgb2YgTGludXggVmVyaWZpY2F0aW9uIENlbnRlcg0KPj4gKGxpbnV4dGVzdGlu
+Zy5vcmcpIHdpdGggU1ZBQ0UuDQo+Pg0KPj4gRml4ZXM6IDFjYTllNDE3NzBjYiAoIm5ldGZpbHRl
+cjogUmVtb3ZlIHVzZXMgb2Ygc2VxXzxmb28+IHJldHVybiB2YWx1ZXMiKQ0KPj4gU2lnbmVkLW9m
+Zi1ieTogSWxpYS5HYXZyaWxvdiA8SWxpYS5HYXZyaWxvdkBpbmZvdGVjcy5ydT4NCj4+IC0tLQ0K
+Pj4gICBuZXQvbmV0ZmlsdGVyL25mX2Nvbm50cmFja19zdGFuZGFsb25lLmMgfCAyNiArKysrKysr
+KysrLS0tLS0tLS0tLS0tLS0tDQo+PiAgIDEgZmlsZSBjaGFuZ2VkLCAxMCBpbnNlcnRpb25zKCsp
+LCAxNiBkZWxldGlvbnMoLSkNCj4+DQo+PiBkaWZmIC0tZ2l0IGEvbmV0L25ldGZpbHRlci9uZl9j
+b25udHJhY2tfc3RhbmRhbG9uZS5jIGIvbmV0L25ldGZpbHRlci9uZl9jb25udHJhY2tfc3RhbmRh
+bG9uZS5jDQo+PiBpbmRleCAwMjUwNzI1ZTM4YTQuLmJlZTk5ZDRiY2YzNiAxMDA2NDQNCj4+IC0t
+LSBhL25ldC9uZXRmaWx0ZXIvbmZfY29ubnRyYWNrX3N0YW5kYWxvbmUuYw0KPj4gKysrIGIvbmV0
+L25ldGZpbHRlci9uZl9jb25udHJhY2tfc3RhbmRhbG9uZS5jDQo+PiBAQCAtMjc1LDIyICsyNzUs
+MTggQEAgc3RhdGljIGNvbnN0IGNoYXIqIGw0cHJvdG9fbmFtZSh1MTYgcHJvdG8pDQo+PiAgIHJl
+dHVybiAidW5rbm93biI7DQo+PiAgIH0NCj4+DQo+PiAtc3RhdGljIHVuc2lnbmVkIGludA0KPj4g
+K3N0YXRpYyB2b2lkDQo+PiAgIHNlcV9wcmludF9hY2N0KHN0cnVjdCBzZXFfZmlsZSAqcywgY29u
+c3Qgc3RydWN0IG5mX2Nvbm4gKmN0LCBpbnQgZGlyKQ0KPj4gICB7DQo+PiAtc3RydWN0IG5mX2Nv
+bm5fYWNjdCAqYWNjdDsNCj4+IC1zdHJ1Y3QgbmZfY29ubl9jb3VudGVyICpjb3VudGVyOw0KPj4g
+K3N0cnVjdCBuZl9jb25uX2FjY3QgKmFjY3QgPSBuZl9jb25uX2FjY3RfZmluZChjdCk7DQo+Pg0K
+Pj4gLWFjY3QgPSBuZl9jb25uX2FjY3RfZmluZChjdCk7DQo+PiAtaWYgKCFhY2N0KQ0KPj4gLXJl
+dHVybiAwOw0KPj4gLQ0KPj4gLWNvdW50ZXIgPSBhY2N0LT5jb3VudGVyOw0KPj4gLXNlcV9wcmlu
+dGYocywgInBhY2tldHM9JWxsdSBieXRlcz0lbGx1ICIsDQo+PiAtICAgKHVuc2lnbmVkIGxvbmcg
+bG9uZylhdG9taWM2NF9yZWFkKCZjb3VudGVyW2Rpcl0ucGFja2V0cyksDQo+PiAtICAgKHVuc2ln
+bmVkIGxvbmcgbG9uZylhdG9taWM2NF9yZWFkKCZjb3VudGVyW2Rpcl0uYnl0ZXMpKTsNCj4+ICtp
+ZiAoYWNjdCkgew0KPj4gK3N0cnVjdCBuZl9jb25uX2NvdW50ZXIgKmNvdW50ZXIgPSBhY2N0LT5j
+b3VudGVyOw0KPj4NCj4+IC1yZXR1cm4gMDsNCj4+ICtzZXFfcHJpbnRmKHMsICJwYWNrZXRzPSVs
+bHUgYnl0ZXM9JWxsdSAiLA0KPj4gKyAgICh1bnNpZ25lZCBsb25nIGxvbmcpYXRvbWljNjRfcmVh
+ZCgmY291bnRlcltkaXJdLnBhY2tldHMpLA0KPj4gKyAgICh1bnNpZ25lZCBsb25nIGxvbmcpYXRv
+bWljNjRfcmVhZCgmY291bnRlcltkaXJdLmJ5dGVzKSk7DQo+PiArfQ0KPg0KPiBUaGUgcHJlZmVy
+cmVkIGxpbnV4IGtlcm5lbCBzdHlsZSBpcyB0byBwZXJmb3JtIGlmIChjaGVja19lcnJvcikgcmV0
+dXJuOw0KPiBJbiB0aGlzIGNhc2UsIHRoaXMgcGF0dGVybiBzaG91bGQgc3RheS4NCj4NCj4gYWNj
+dCA9IG5mX2Nvbm5fYWNjdF9maW5kKGN0KTsNCj4gaWYgKCFhY2N0KQ0KPiAgICAgcmV0dXJuOw0K
+Pg0KPiBUaGFua3MNCg0KVGhhbmsgeW91IGZvciByZXZpZXcuIEknbGwgZml4IGl0IGluIHYyLg0K
