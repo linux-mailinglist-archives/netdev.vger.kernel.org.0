@@ -2,107 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D148F678694
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 20:41:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EA01678696
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 20:41:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232680AbjAWTlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S232686AbjAWTlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 23 Jan 2023 14:41:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47440 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232582AbjAWTlR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 14:41:17 -0500
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1920822DD9
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 11:41:16 -0800 (PST)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-4c131bede4bso187279147b3.5
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 11:41:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=l4HNc2f2/MMS1lVgaLJfy0lWDOuaeooy9YHRuCd1zTU=;
-        b=2dmzyEQiF3GjTSUPJ8hCXNYl1O32197q0MJjkDgMHCNwdJcSOMGezq8jomcrENLQf5
-         sWsc/6k0lgx1M49R9Lr0NC1nS6nMV3liLo0Lsag1WplrtAycrk8XvWVKaI6NTR3ZgjLx
-         tXZU0LF2e4MemfEE+kFzK9Nr8A80Ku1rrHllLV0m1RE3fzRx+xct3gML0fPi6ZM/T28e
-         dgCbHOEBUyV9gNzMCiHOr6KDUT/pq4gCavnKKGm6I6JGiqpWn8KJoXl4sg4Y5n0guWBE
-         nd0Siq5584Sge28P7R09RSf6vyVrImtAeuxcFS4NL+HmP6TJeLhU+EngDFGJYtBeG5A/
-         0X3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=l4HNc2f2/MMS1lVgaLJfy0lWDOuaeooy9YHRuCd1zTU=;
-        b=fh7WlCe4YD0q3V84xzKCVEwnEmwklpQqRVDy09DvTD44Mx2+VcZ3c7WDsV4vlmqfoz
-         pVSMlMrnNxuIbADyNwlbvCKdQ/tX+Mg2bpPjs5sjpatvgWVuO27bSFWtsKkEIuQCL5ed
-         x3MO6SU5pX31cSESWO6P7vs4N4GI0H09mzHl9KuUqbNT8Bxo5B1cMCDmGRTvme9cdrmu
-         OTgDFRYXs7SYDG7ivQ3WQfiM/wM3e3vHKOa4JRyRrBHIsniU+ajcfu0SQbWvoAhhSOVF
-         dkHARjRszd0WFp4eK4IB90zR2D01UjuvbCqwF0Hxv2k44FcaYInKu5zzAKqAKj4/dNBh
-         IudA==
-X-Gm-Message-State: AFqh2kqJLs+PQwJE78CajPNk/PUJCDH2fReJ5HtWKjK3P7ICksziCM8L
-        5ZTKAWjwPl6GSj5f5i7PmJbQXR+yEYW7LS50AkPeZw==
-X-Google-Smtp-Source: AMrXdXt24Wo2WUvyxzQWxKOmWuqhOTR/4F7hZ1hGb7srKLM6rBPUuFvOGBT8WdWmp/SSdueXbZvE6ilGmzUBbgHXxlk=
-X-Received: by 2002:a81:7c88:0:b0:4eb:2b95:a29e with SMTP id
- x130-20020a817c88000000b004eb2b95a29emr3088202ywc.241.1674502875335; Mon, 23
- Jan 2023 11:41:15 -0800 (PST)
+        with ESMTP id S231867AbjAWTlS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 14:41:18 -0500
+Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CFB91040E;
+        Mon, 23 Jan 2023 11:41:15 -0800 (PST)
+Received: from [192.168.1.103] (178.176.74.166) by msexch01.omp.ru
+ (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Mon, 23 Jan
+ 2023 22:41:05 +0300
+Subject: Re: [PATCH net v2 2/2] net: ravb: Fix possible hang if RIS2_QFF1
+ happen
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>
+References: <20230123131331.1425648-1-yoshihiro.shimoda.uh@renesas.com>
+ <20230123131331.1425648-3-yoshihiro.shimoda.uh@renesas.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <912f5eb3-2905-c394-3239-506f8bc9f764@omp.ru>
+Date:   Mon, 23 Jan 2023 22:41:05 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-References: <cover.1674233458.git.dcaratti@redhat.com> <5fdd584d53f0807f743c07b1c0381cf5649495cd.1674233458.git.dcaratti@redhat.com>
- <Y87CY5aQwZAcVU1A@t14s.localdomain>
-In-Reply-To: <Y87CY5aQwZAcVU1A@t14s.localdomain>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Mon, 23 Jan 2023 14:41:04 -0500
-Message-ID: <CAM0EoMm-noMkXrbrP+ioDxd6HRMZNgLTqs7EV=CH104=d1WLpg@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2] act_mirred: use the backlog for nested calls
- to mirred ingress
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     Davide Caratti <dcaratti@redhat.com>, jiri@resnulli.us,
-        lucien.xin@gmail.com, netdev@vger.kernel.org, pabeni@redhat.com,
-        wizhao@redhat.com, xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230123131331.1425648-3-yoshihiro.shimoda.uh@renesas.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [178.176.74.166]
+X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
+ (10.188.4.12)
+X-KSE-ServerInfo: msexch01.omp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.59, Database issued on: 01/23/2023 19:28:14
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 59
+X-KSE-AntiSpam-Info: Lua profiles 174940 [Jan 23 2023]
+X-KSE-AntiSpam-Info: Version: 5.9.59.0
+X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
+X-KSE-AntiSpam-Info: LuaCore: 502 502 69dee8ef46717dd3cb3eeb129cb7cc8dab9e30f6
+X-KSE-AntiSpam-Info: {rep_avail}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: {relay has no DNS name}
+X-KSE-AntiSpam-Info: {SMTP from is not routable}
+X-KSE-AntiSpam-Info: {Found in DNSBL: 178.176.74.166 in (user)
+ b.barracudacentral.org}
+X-KSE-AntiSpam-Info: omp.ru:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2
+X-KSE-AntiSpam-Info: ApMailHostAddress: 178.176.74.166
+X-KSE-AntiSpam-Info: {DNS response errors}
+X-KSE-AntiSpam-Info: Rate: 59
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
+ smtp.mailfrom=omp.ru;dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 01/23/2023 19:30:00
+X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 1/23/2023 3:07:00 PM
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 23, 2023 at 12:22 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Fri, Jan 20, 2023 at 06:01:40PM +0100, Davide Caratti wrote:
-> > William reports kernel soft-lockups on some OVS topologies when TC mirred
-> > egress->ingress action is hit by local TCP traffic [1].
-> > The same can also be reproduced with SCTP (thanks Xin for verifying), when
-> > client and server reach themselves through mirred egress to ingress, and
-> > one of the two peers sends a "heartbeat" packet (from within a timer).
-> >
-> > Enqueueing to backlog proved to fix this soft lockup; however, as Cong
-> > noticed [2], we should preserve - when possible - the current mirred
-> > behavior that counts as "overlimits" any eventual packet drop subsequent to
-> > the mirred forwarding action [3]. A compromise solution might use the
-> > backlog only when tcf_mirred_act() has a nest level greater than one:
-> > change tcf_mirred_forward() accordingly.
-> >
-> > Also, add a kselftest that can reproduce the lockup and verifies TC mirred
-> > ability to account for further packet drops after TC mirred egress->ingress
-> > (when the nest level is 1).
-> >
-> >  [1] https://lore.kernel.org/netdev/33dc43f587ec1388ba456b4915c75f02a8aae226.1663945716.git.dcaratti@redhat.com/
-> >  [2] https://lore.kernel.org/netdev/Y0w%2FWWY60gqrtGLp@pop-os.localdomain/
-> >  [3] such behavior is not guaranteed: for example, if RPS or skb RX
-> >      timestamping is enabled on the mirred target device, the kernel
-> >      can defer receiving the skb and return NET_RX_SUCCESS inside
-> >      tcf_mirred_forward().
-> >
-> > Reported-by: William Zhao <wizhao@redhat.com>
-> > CC: Xin Long <lucien.xin@gmail.com>
-> > Signed-off-by: Davide Caratti <dcaratti@redhat.com>
->
-> Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Hello!
 
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+On 1/23/23 4:13 PM, Yoshihiro Shimoda wrote:
 
-cheers,
-jamal
+> Since this driver enables the interrupt by RIC2_QFE1, this driver
+> should clear the interrupt flag if it happens. Otherwise, the interrupt
+> causes to hang the system.
+> 
+> Fixes: c156633f1353 ("Renesas Ethernet AVB driver proper")
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+
+[...]
+> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+> index 3f61100c02f4..0f54849a3823 100644
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> @@ -1101,14 +1101,14 @@ static void ravb_error_interrupt(struct net_device *ndev)
+>  	ravb_write(ndev, ~(EIS_QFS | EIS_RESERVED), EIS);
+>  	if (eis & EIS_QFS) {
+>  		ris2 = ravb_read(ndev, RIS2);
+> -		ravb_write(ndev, ~(RIS2_QFF0 | RIS2_RFFF | RIS2_RESERVED),
+> +		ravb_write(ndev, ~(RIS2_QFF0 | RIS2_QFF1 | RIS2_RFFF | RIS2_RESERVED),
+>  			   RIS2);
+>  
+>  		/* Receive Descriptor Empty int */
+>  		if (ris2 & RIS2_QFF0)
+>  			priv->stats[RAVB_BE].rx_over_errors++;
+>  
+> -		    /* Receive Descriptor Empty int */
+> +		/* Receive Descriptor Empty int */
+
+   Well, that should've been noted in the commit log...
+
+[...]
+
+MBR, Sergey
