@@ -2,175 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B432677D7F
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 15:02:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 288D9677D81
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 15:03:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232131AbjAWOC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 09:02:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51724 "EHLO
+        id S232076AbjAWODP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 09:03:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231718AbjAWOC2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 09:02:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7F162684B;
-        Mon, 23 Jan 2023 06:02:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7701E60F23;
-        Mon, 23 Jan 2023 14:02:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1610C4339B;
-        Mon, 23 Jan 2023 14:02:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674482524;
-        bh=2koP5//xkTzgsmmy1BbG7loZjicRFY5VECy1fq44Znk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sdg/4hdLhpt0u5h21aNc22vUYBxPWpOwMUqjEfjhM+OnOVc+soJhjuZT3kKxtTmay
-         jHfCgDhM5NNam5YWMdhNF4DSzS091ErMxhpw8yENde+tLMp+OXcAUPxQmn7+aCFOij
-         VBfUVPlKzadzzN5crJoCEpead39kBfHQ8dXoGQAiozWuR7RZfLbDsYgiPudru+9fqD
-         OCXuRM/JZHDEK1Kyn0damGAfhpdqbBT8KfNHIrP9TbWbwis4EkLGTYxz/1tkmkLjAI
-         9FZ9X7rGtHrPLu5MWvtdunG5xEAfVmQczv1h/HlFU9rYmTkCuSDTOmC3pWc4kF8Zvn
-         iLli68aWkXFTQ==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        intel-wired-lan@lists.osuosl.org,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Paolo Abeni <pabeni@redhat.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Veaceslav Falico <vfalico@gmail.com>
-Subject: [PATCH net-next 10/10] cxgb4: fill IPsec state validation failure reason
-Date:   Mon, 23 Jan 2023 16:00:23 +0200
-Message-Id: <9b45993fb96b6faa2b65f3dd78e677a54eeeec31.1674481435.git.leon@kernel.org>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <cover.1674481435.git.leon@kernel.org>
-References: <cover.1674481435.git.leon@kernel.org>
+        with ESMTP id S229514AbjAWODO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 09:03:14 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81F53265BE
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 06:02:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1674482522;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7ob/X2Lk8QlnO3+PobfsCOweUDDV5F6OFU41UzjSYi4=;
+        b=icfRrtQWUDtF4Jx2T4wKbLIw5qcat3/Ls7zNh4U/GNtaJBmnV77t0+dmeqOJVVwGL3R36W
+        UdzHVjod7rMJxijpLHSSGz5AVAqjUJy8w76Ljod3Yz7c/lhuLSudftn4q9/P+YD3+i5ys3
+        IKDrN/+IUoQFBiiYHCo1XKYBR6s9R3A=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-441-dLx0TzZMOsaaTvJWLN9vSw-1; Mon, 23 Jan 2023 09:01:55 -0500
+X-MC-Unique: dLx0TzZMOsaaTvJWLN9vSw-1
+Received: by mail-ej1-f70.google.com with SMTP id hr22-20020a1709073f9600b0086ffb73ac1cso7834028ejc.23
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 06:01:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=7ob/X2Lk8QlnO3+PobfsCOweUDDV5F6OFU41UzjSYi4=;
+        b=g285B5Rn1aB6tZ7yXmCOzBhamWXueV1gMhzTXl1eiapXWDh7rh3xU9Y4idbjE8plsk
+         l55Ucxr8OJe1XibfX1FQMOx37phvP5iAV2Q/rbNS53e8vIyHEXaUlBBbmppXrAOTCN97
+         WXJE1OPxUe1cKyLrxBZ3uHRL2zU7KpSQLD89x8JYJSwZn2yhIKRtx9DNz/yQQ2rn25Hp
+         60q12sZ9aCS9LYE98IbNW8F3sP/6zjAfu6T/wDyrGXQUL5imuHkZ95qdxiRkULEZHVNm
+         aGGZLNM0Td6WLmllS3Il8pTs4rlGbxvrHdaYInnajw0po9T5QO59pNg1fs1oWDvCh4sW
+         MR/A==
+X-Gm-Message-State: AFqh2krbH74ZXlb1RjKV9n6QYjkXYjHAq/s4GsVmnlySSjfw0Wva5eJi
+        TSUpvuTgSbhK6rBxdPwg6HxpuNhgIA0yAgsSdAZ/B6zmvAzvxKcvxvsRuINmFAPl7fQVbvkpRpL
+        XfS6HDODelZ4A6JEyTVpr+TFXLtUsAng5
+X-Received: by 2002:a17:906:454b:b0:847:dc26:fb5a with SMTP id s11-20020a170906454b00b00847dc26fb5amr1938774ejq.329.1674482512636;
+        Mon, 23 Jan 2023 06:01:52 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXvVCH5JHXLuFNDsR5AtDhOX7OfEDcPt+3kSysnQxHfxvn2bJlBnMQS9g0s2pVHVPkizkgBZSRJzioQ/QC9zCdw=
+X-Received: by 2002:a17:906:454b:b0:847:dc26:fb5a with SMTP id
+ s11-20020a170906454b00b00847dc26fb5amr1938761ejq.329.1674482512302; Mon, 23
+ Jan 2023 06:01:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230106113129.694750-1-miquel.raynal@bootlin.com>
+ <CAK-6q+jNmvtBKKxSp1WepVXbaQ65CghZv3bS2ptjB9jyzOSGTA@mail.gmail.com> <20230118102058.3b1f275b@xps-13>
+In-Reply-To: <20230118102058.3b1f275b@xps-13>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Mon, 23 Jan 2023 09:01:41 -0500
+Message-ID: <CAK-6q+gwP8P--5e9HKt2iPhjeefMXrXUVy-G+szGdFXZvgYKvg@mail.gmail.com>
+Subject: Re: [PATCH wpan-next 0/2] ieee802154: Beaconing support
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+Hi,
 
-Rely on extack to return failure reason.
+On Wed, Jan 18, 2023 at 4:21 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>
+> Hi Alexander,
+>
+> aahringo@redhat.com wrote on Sun, 15 Jan 2023 20:54:02 -0500:
+>
+> > Hi,
+> >
+> > On Fri, Jan 6, 2023 at 6:33 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > >
+> > > Scanning being now supported, we can eg. play with hwsim to verify
+> > > everything works as soon as this series including beaconing support gets
+> > > merged.
+> > >
+> >
+> > I am not sure if a beacon send should be handled by an mlme helper
+> > handling as this is a different use-case and the user does not trigger
+> > an mac command and is waiting for some reply and a more complex
+> > handling could be involved. There is also no need for hotpath xmit
+> > handling is disabled during this time. It is just an async messaging
+> > in some interval and just "try" to send it and don't care if it fails,
+> > or? For mac802154 therefore I think we should use the dev_queue_xmit()
+> > function to queue it up to send it through the hotpath?
+> >
+> > I can ack those patches, it will work as well. But I think we should
+> > switch at some point to dev_queue_xmit(). It should be simple to
+> > switch it. Just want to mention there is a difference which will be
+> > there in mac-cmds like association.
+>
+> I see what you mean. That's indeed true, we might just switch to
+> a less constrained transmit path.
+>
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Leon Romanovsky <leon@kernel.org>
----
- .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |  3 +-
- .../inline_crypto/ch_ipsec/chcr_ipsec.c       | 28 +++++++++----------
- 2 files changed, 15 insertions(+), 16 deletions(-)
+I would define the difference in bypass qdisc or not. Whereas the
+qdisc can drop or delay transmitting... For me, the qdisc is currently
+in a "works for now" state.
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index 6c0a41f3ae44..7db2403c4c9c 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -6497,8 +6497,7 @@ static int cxgb4_xfrm_add_state(struct xfrm_state *x,
- 	int ret;
- 
- 	if (!mutex_trylock(&uld_mutex)) {
--		dev_dbg(adap->pdev_dev,
--			"crypto uld critical resource is under use\n");
-+		NL_SET_ERR_MSG_MOD(extack, "crypto uld critical resource is under use");
- 		return -EBUSY;
- 	}
- 	ret = chcr_offload_state(adap, CXGB4_XFRMDEV_OPS);
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c b/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c
-index ac2ea6206af1..98222b67d036 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c
-@@ -234,59 +234,59 @@ static int ch_ipsec_xfrm_add_state(struct xfrm_state *x,
- 	int res = 0;
- 
- 	if (x->props.aalgo != SADB_AALG_NONE) {
--		pr_debug("Cannot offload authenticated xfrm states\n");
-+		NL_SET_ERR_MSG_MOD(extack, "Cannot offload authenticated xfrm states");
- 		return -EINVAL;
- 	}
- 	if (x->props.calgo != SADB_X_CALG_NONE) {
--		pr_debug("Cannot offload compressed xfrm states\n");
-+		NL_SET_ERR_MSG_MOD(extack, "Cannot offload compressed xfrm states");
- 		return -EINVAL;
- 	}
- 	if (x->props.family != AF_INET &&
- 	    x->props.family != AF_INET6) {
--		pr_debug("Only IPv4/6 xfrm state offloaded\n");
-+		NL_SET_ERR_MSG_MOD(extack, "Only IPv4/6 xfrm state offloaded");
- 		return -EINVAL;
- 	}
- 	if (x->props.mode != XFRM_MODE_TRANSPORT &&
- 	    x->props.mode != XFRM_MODE_TUNNEL) {
--		pr_debug("Only transport and tunnel xfrm offload\n");
-+		NL_SET_ERR_MSG_MOD(extack, "Only transport and tunnel xfrm offload");
- 		return -EINVAL;
- 	}
- 	if (x->id.proto != IPPROTO_ESP) {
--		pr_debug("Only ESP xfrm state offloaded\n");
-+		NL_SET_ERR_MSG_MOD(extack, "Only ESP xfrm state offloaded");
- 		return -EINVAL;
- 	}
- 	if (x->encap) {
--		pr_debug("Encapsulated xfrm state not offloaded\n");
-+		NL_SET_ERR_MSG_MOD(extack, "Encapsulated xfrm state not offloaded");
- 		return -EINVAL;
- 	}
- 	if (!x->aead) {
--		pr_debug("Cannot offload xfrm states without aead\n");
-+		NL_SET_ERR_MSG_MOD("Cannot offload xfrm states without aead");
- 		return -EINVAL;
- 	}
- 	if (x->aead->alg_icv_len != 128 &&
- 	    x->aead->alg_icv_len != 96) {
--		pr_debug("Cannot offload xfrm states with AEAD ICV length other than 96b & 128b\n");
--	return -EINVAL;
-+		NL_SET_ERR_MSG_MOD(extack, "Cannot offload xfrm states with AEAD ICV length other than 96b & 128b");
-+		return -EINVAL;
- 	}
- 	if ((x->aead->alg_key_len != 128 + 32) &&
- 	    (x->aead->alg_key_len != 256 + 32)) {
--		pr_debug("cannot offload xfrm states with AEAD key length other than 128/256 bit\n");
-+		NL_SET_ERR_MSG_MOD(extack, "cannot offload xfrm states with AEAD key length other than 128/256 bit");
- 		return -EINVAL;
- 	}
- 	if (x->tfcpad) {
--		pr_debug("Cannot offload xfrm states with tfc padding\n");
-+		NL_SET_ERR_MSG_MOD(extack, "Cannot offload xfrm states with tfc padding");
- 		return -EINVAL;
- 	}
- 	if (!x->geniv) {
--		pr_debug("Cannot offload xfrm states without geniv\n");
-+		NL_SET_ERR_MSG_MOD(extack, "Cannot offload xfrm states without geniv");
- 		return -EINVAL;
- 	}
- 	if (strcmp(x->geniv, "seqiv")) {
--		pr_debug("Cannot offload xfrm states with geniv other than seqiv\n");
-+		NL_SET_ERR_MSG_MOD(extack, "Cannot offload xfrm states with geniv other than seqiv");
- 		return -EINVAL;
- 	}
- 	if (x->xso.type != XFRM_DEV_OFFLOAD_CRYPTO) {
--		pr_debug("Unsupported xfrm offload\n");
-+		NL_SET_ERR_MSG_MOD(extack, "Unsupported xfrm offload");
- 		return -EINVAL;
- 	}
- 
--- 
-2.39.1
+> In practice, what is deliberately "not enough" here is the precision
+> when sending the beacons, eg. for ranging purposes (UWB) we will need
+> to send the beacons at a strict pace. But there are two ways for doing
+> that :
+> - use a dedicated scheduler (not supported yet)
+> - move this logic into a firmware, within an embedded controller on the
+>   PHY
+>
+
+then bypassing qdisc would be better.
+
+> But that is something that we will have to sort out later on. For now,
+> let's KISS.
+>
+> > btw: what is about security handling... however I would declare this
+> > feature as experimental anyway.
+>
+> I haven't tested the security layer at all yet, would you have a few
+> commands to start with, which I could try using eg. hwsim?
+
+hwsim should work. But again don't trust the transmit side, there are
+currently problems. Wireshark has also a feature to give the key and
+encrypt on the fly for 802.15.4.
+
+- Alex
 
