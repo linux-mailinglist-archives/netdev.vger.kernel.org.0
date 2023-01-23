@@ -2,114 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D90FE678691
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 20:40:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2F56678692
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 20:40:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232577AbjAWTka (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 14:40:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46804 "EHLO
+        id S232616AbjAWTkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 14:40:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232526AbjAWTk2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 14:40:28 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B475510276
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 11:40:26 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id d9so12476208pll.9
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 11:40:26 -0800 (PST)
+        with ESMTP id S232582AbjAWTkn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 14:40:43 -0500
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76AFAEFAD
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 11:40:41 -0800 (PST)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-4ff07dae50dso142111667b3.2
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 11:40:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=theori.io; s=google;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=G2ns64YdTQGyB93XCyw4IBhbiRpiReSdyKsHHqkh3Rc=;
-        b=V1xiKjP/ewAPV6EOQxN2iCEk97jKjHvTsLYGRvPPg0he1XbCRVj3DrtEX9mdepX7OQ
-         xu04xxcNb3JUxUrix5mzpDFjdiITerJkhTMacTENBS31h3o2nJVWwlkZHUDCmMxEhZSZ
-         AlzNRZjbjJ2pUlm1ITZGoTDmrJYBbcvrdGaYc=
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=34a4TCQC+hucVvU0QHhlwqtMefBbiCmDkLlzLb7LNI4=;
+        b=hiz/TnB1Bso3VTInqNpPxmOtmBjC9PSp1MjZX0GdtS7bXbYKQ9cjdZudp/bhWqGx9C
+         ZrStzcrHsctSD+uxI1Ss2mKlnTyZZMU4Bwxgzs1A9Am3TR5wzPQkzvhPnpuPxKMIM+gM
+         +ranmIPBsyywzkyVewvgl5+Zc9w/OSmE6krYDWIOgEMlW8KBtAXKLuuTsWL2RJvLzaw0
+         owcw2/VyD3POARDzwbr3cZ1t/2TA9J3ujfvYjeOG5Jt/A8wT/yVrGwzeVWYR0qGIDD89
+         pLd7wySIS1zb3VfFexzoR5Y2zCNeN0gm3CGG1EeXV5h/7EKEu3Ak3DWx0PTfg0hQzqlA
+         wQiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=G2ns64YdTQGyB93XCyw4IBhbiRpiReSdyKsHHqkh3Rc=;
-        b=m0uhteZnwy0jP+6B+gpYexvLajY7dDt4Ia7DYxSBpmj5WWarDcOyN9y1m9Tic+wQWC
-         7JhAAXph0PuJiCPUqpdRGsRrdSdjS18ei1LPHudGEEMgMu6s7WiFoqNij61HNex+pF3b
-         vsJ8ievcJymlv5ip2xL49fdpvua2/0zdOnrXGM23vO/yrR6BhzV68V5IF+t5Xhlp0vkr
-         UnGDyKhnlhk+Cl2fD1nBf2lcRpFztKw/1LsYYwQYDKkPp6dCKCSP1u1iKwY1LrSRFn9/
-         Kcx71XGszUcnGltV7psruu7MWdNUPEi7deNZoqSMq2efRoi2BGpJvM38qnWqynRkJTB6
-         B5Kw==
-X-Gm-Message-State: AFqh2kokeUr7E+GsXCD+CGLbxcOcm3LPlclZdk4rglWxOOFuOZyxybJs
-        hYmNgj/pY7cUZuoKtPSTidooLw==
-X-Google-Smtp-Source: AMrXdXtHOooAn8GWRAtP/F1TqIqStt+zSNAFUUVGI1BsH+8m5rZthiUozHxDtrcYkvb23gtsKYWfFA==
-X-Received: by 2002:a17:903:26c9:b0:194:9b68:aba4 with SMTP id jg9-20020a17090326c900b001949b68aba4mr23857302plb.69.1674502826146;
-        Mon, 23 Jan 2023 11:40:26 -0800 (PST)
-Received: from ubuntu ([39.115.108.115])
-        by smtp.gmail.com with ESMTPSA id c11-20020a170902aa4b00b001948107490csm95583plr.19.2023.01.23.11.40.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Jan 2023 11:40:25 -0800 (PST)
-Date:   Mon, 23 Jan 2023 11:40:20 -0800
-From:   Hyunwoo Kim <v4bel@theori.io>
-To:     ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     v4bel@theori.io, imv4bel@gmail.com, linux-hams@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v2] net/rose: Fix to not accept on connected socket
-Message-ID: <20230123194020.GA115501@ubuntu>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=34a4TCQC+hucVvU0QHhlwqtMefBbiCmDkLlzLb7LNI4=;
+        b=wxZsi8SeBn67ebFFFzhZ5Sm6NgSXDxJm8xLahuoYAGm7e7a4AfL4MOIo6jFxlJC6+e
+         Xz8FII+VpAZyvRI2YYpgDk3enfDP2KG1k3KqaTxZCfRvxmCVtlEYYpZ3MHvAsjVByoR3
+         RtqIwm+aGnxaVSwmaATsnNQLm3Zx4TnF03tvyPdZU3XW/a56z/h5n53ldImQX56PH7zC
+         ErFVSAu+NdqeCm/qJd/6W8RTLhfFzay6+Imn9zPH9hjkYIFauVaMIDjj1ctn1wyEgMMq
+         SnK9dfiV4SN1VfArBjSEUlDmICwWXp1wVt0PAIuDxOCB5WhrEg3UjTV8au7LlplDVoIF
+         N1zw==
+X-Gm-Message-State: AO0yUKVP4RN6E6fPDNpjNIiXLU/Vsy0/HgAKrD4vM/WR9XSXbVKzAwkL
+        AIiDreQSkQ5Mhfjw6nEfGGpb8Km8OJ8Lcj3Y8M545A==
+X-Google-Smtp-Source: AK7set+uvEqJfy2cOtLp601m32aJLDkgUaRLR8tk6fz0hEmzS29CIPXj6+lzN6Dfoqye0sR/UF7k3/ssjnzrLI9t4a8=
+X-Received: by 2002:a81:ab53:0:b0:506:3a16:693d with SMTP id
+ d19-20020a81ab53000000b005063a16693dmr12711ywk.360.1674502840761; Mon, 23 Jan
+ 2023 11:40:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <cover.1674233458.git.dcaratti@redhat.com> <a59d4d9295e40fe6cfaa0803c5a7cc6e80e7b1a2.1674233458.git.dcaratti@redhat.com>
+ <Y87CWGgHk8f0EWfA@t14s.localdomain>
+In-Reply-To: <Y87CWGgHk8f0EWfA@t14s.localdomain>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Mon, 23 Jan 2023 14:40:29 -0500
+Message-ID: <CAM0EoM=gzQ7w_22mVaG=GN4Sy-CHWROzA_4ahezvtckkutQVJA@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] net/sched: act_mirred: better wording on
+ protection against excessive stack growth
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     Davide Caratti <dcaratti@redhat.com>, jiri@resnulli.us,
+        lucien.xin@gmail.com, netdev@vger.kernel.org, pabeni@redhat.com,
+        wizhao@redhat.com, xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If listen() and accept() are called on a rose socket
-that connect() is successful, accept() succeeds immediately.
-This is because rose_connect() queues the skb to
-sk->sk_receive_queue, and rose_accept() dequeues it.
+On Mon, Jan 23, 2023 at 12:22 PM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
+>
+> On Fri, Jan 20, 2023 at 06:01:39PM +0100, Davide Caratti wrote:
+> > with commit e2ca070f89ec ("net: sched: protect against stack overflow in
+> > TC act_mirred"), act_mirred protected itself against excessive stack growth
+> > using per_cpu counter of nested calls to tcf_mirred_act(), and capping it
+> > to MIRRED_RECURSION_LIMIT. However, such protection does not detect
+> > recursion/loops in case the packet is enqueued to the backlog (for example,
+> > when the mirred target device has RPS or skb timestamping enabled). Change
+> > the wording from "recursion" to "nesting" to make it more clear to readers.
+> >
+> > CC: Jamal Hadi Salim <jhs@mojatatu.com>
+> > Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+>
+> Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 
-This creates a child socket with the sk of the parent
-rose socket, which can cause confusion.
-
-Fix rose_listen() to return -EINVAL if the socket has
-already been successfully connected, and add lock_sock
-to prevent this issue.
-
-Signed-off-by: Hyunwoo Kim <v4bel@theori.io>
----
- net/rose/af_rose.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
-index 36fefc3957d7..ca2b17f32670 100644
---- a/net/rose/af_rose.c
-+++ b/net/rose/af_rose.c
-@@ -488,6 +488,12 @@ static int rose_listen(struct socket *sock, int backlog)
- {
- 	struct sock *sk = sock->sk;
- 
-+	lock_sock(sk);
-+	if (sock->state != SS_UNCONNECTED) {
-+		release_sock(sk);
-+		return -EINVAL;
-+	}
-+
- 	if (sk->sk_state != TCP_LISTEN) {
- 		struct rose_sock *rose = rose_sk(sk);
- 
-@@ -497,8 +503,10 @@ static int rose_listen(struct socket *sock, int backlog)
- 		memset(rose->dest_digis, 0, AX25_ADDR_LEN * ROSE_MAX_DIGIS);
- 		sk->sk_max_ack_backlog = backlog;
- 		sk->sk_state           = TCP_LISTEN;
-+		release_sock(sk);
- 		return 0;
- 	}
-+	release_sock(sk);
- 
- 	return -EOPNOTSUPP;
- }
--- 
-2.25.1
-
+cheers,
+jamal
