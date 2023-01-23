@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5399B677D74
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 15:01:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04B70677D7A
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 15:02:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232101AbjAWOBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 09:01:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50920 "EHLO
+        id S232129AbjAWOCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 09:02:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232097AbjAWOBx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 09:01:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3802A2412A;
-        Mon, 23 Jan 2023 06:01:30 -0800 (PST)
+        with ESMTP id S232120AbjAWOCL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 09:02:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5179274A8;
+        Mon, 23 Jan 2023 06:01:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C16D260F2F;
-        Mon, 23 Jan 2023 14:01:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F83AC433D2;
-        Mon, 23 Jan 2023 14:01:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 282B9B80DC5;
+        Mon, 23 Jan 2023 14:01:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02352C4339C;
+        Mon, 23 Jan 2023 14:01:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674482489;
-        bh=GleyYOFN9Inb6Jktq6moCT30z9tyU4vJ+NL054LW1jU=;
+        s=k20201202; t=1674482506;
+        bh=MdgE76ZIYPnwnpIjo3cBmycH+MxEMGlO/hmvEyoi2dI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hLzwgeiqh9Ldxq4BxKziSWVt6KJ8tY1sgy/nUMu4M3KU2+4JMgghLjmEnXPeNN5l/
-         SeIUj/93r6bwrnvbNeO1R/kCVqAdVxbExJkj60CRALCW2TTOrTlqFHzN9GYiDGUyVb
-         av1spA4CmkOpmwgCTfWAPGBOrA+HHMzJKZ+ddNtJGYBSzwdB5Zn4G2Ojff1hhtzp4Q
-         Lh/Lynu78AuHrYa1Z4/LTbyH6NMr3IA5qHIV/G54QuqTG7nUs2GduohbmkA5womajB
-         65t15xOk7RbsmFIevn7PXQBqbgRfLAMCZPBN/Mmv5Jn3h+9yXKnb07HAWvyB/8455a
-         +zaSVoXMQ332A==
+        b=tM/3twtKfrge9uvR1dy955kGQxion90wQEAMzHF6sGxK1tX13VUvDHXB3f5IlEeJA
+         iCDhitkHJq22Oj1KMmXHvvFICMOo3L66SwmSOAgIb57qT5KJOG/upioQnzKa0Nmbee
+         HnmU+HiXz8tm62j/88t27PaYY0tA32T3xaRTdvXdA3353+m6FcZmia4FJ3qySFBfow
+         OxIFkGUr8I0CjJZGVyN2bdei0u4WuVj/uslOozZNmlSXdDWcZO/1Wl4Vc73kMVTrIt
+         +erqFLC/5oDmjdr5H/oG90yem+Gayp9m5lq5CSBWThkn2H3mxTZt9cC0IQxUqf68mI
+         zuiT+US7/Puhg==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -51,9 +51,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Simon Horman <simon.horman@corigine.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Veaceslav Falico <vfalico@gmail.com>
-Subject: [PATCH net-next 07/10] ixgbevf: fill IPsec state validation failure reason
-Date:   Mon, 23 Jan 2023 16:00:20 +0200
-Message-Id: <7266423af6d87245a9c6b6b6e5e4383738546d35.1674481435.git.leon@kernel.org>
+Subject: [PATCH net-next 08/10] ixgbe: fill IPsec state validation failure reason
+Date:   Mon, 23 Jan 2023 16:00:21 +0200
+Message-Id: <09357c6f977e38179a717c5957004ecc4ded2713.1674481435.git.leon@kernel.org>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <cover.1674481435.git.leon@kernel.org>
 References: <cover.1674481435.git.leon@kernel.org>
@@ -75,20 +75,20 @@ Rely on extack to return failure reason.
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 Signed-off-by: Leon Romanovsky <leon@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbevf/ipsec.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ .../net/ethernet/intel/ixgbe/ixgbe_ipsec.c    | 21 +++++++++----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbevf/ipsec.c b/drivers/net/ethernet/intel/ixgbevf/ipsec.c
-index 752b9df4fb51..66cf17f19408 100644
---- a/drivers/net/ethernet/intel/ixgbevf/ipsec.c
-+++ b/drivers/net/ethernet/intel/ixgbevf/ipsec.c
-@@ -272,18 +272,17 @@ static int ixgbevf_ipsec_add_sa(struct xfrm_state *xs,
- 	ipsec = adapter->ipsec;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+index 07c37dc619e8..13a6fca31004 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+@@ -572,23 +572,22 @@ static int ixgbe_ipsec_add_sa(struct xfrm_state *xs,
+ 	int i;
  
  	if (xs->id.proto != IPPROTO_ESP && xs->id.proto != IPPROTO_AH) {
--		netdev_err(dev, "Unsupported protocol 0x%04x for IPsec offload\n",
+-		netdev_err(dev, "Unsupported protocol 0x%04x for ipsec offload\n",
 -			   xs->id.proto);
-+		NL_SET_ERR_MSG_MOD(extack, "Unsupported protocol for IPsec offload");
++		NL_SET_ERR_MSG_MOD(extack, "Unsupported protocol for ipsec offload");
  		return -EINVAL;
  	}
  
@@ -98,13 +98,19 @@ index 752b9df4fb51..66cf17f19408 100644
  		return -EINVAL;
  	}
  
+ 	if (ixgbe_ipsec_check_mgmt_ip(xs)) {
+-		netdev_err(dev, "IPsec IP addr clash with mgmt filters\n");
++		NL_SET_ERR_MSG_MOD(extack, "IPsec IP addr clash with mgmt filters");
+ 		return -EINVAL;
+ 	}
+ 
  	if (xs->xso.type != XFRM_DEV_OFFLOAD_CRYPTO) {
 -		netdev_err(dev, "Unsupported ipsec offload type\n");
 +		NL_SET_ERR_MSG_MOD(extack, "Unsupported ipsec offload type");
  		return -EINVAL;
  	}
  
-@@ -291,14 +290,14 @@ static int ixgbevf_ipsec_add_sa(struct xfrm_state *xs,
+@@ -596,14 +595,14 @@ static int ixgbe_ipsec_add_sa(struct xfrm_state *xs,
  		struct rx_sa rsa;
  
  		if (xs->calg) {
@@ -114,34 +120,43 @@ index 752b9df4fb51..66cf17f19408 100644
  		}
  
  		/* find the first unused index */
- 		ret = ixgbevf_ipsec_find_empty_idx(ipsec, true);
+ 		ret = ixgbe_ipsec_find_empty_idx(ipsec, true);
  		if (ret < 0) {
 -			netdev_err(dev, "No space for SA in Rx table!\n");
 +			NL_SET_ERR_MSG_MOD(extack, "No space for SA in Rx table!");
  			return ret;
  		}
  		sa_idx = (u16)ret;
-@@ -313,7 +312,7 @@ static int ixgbevf_ipsec_add_sa(struct xfrm_state *xs,
+@@ -618,7 +617,7 @@ static int ixgbe_ipsec_add_sa(struct xfrm_state *xs,
  		/* get the key and salt */
- 		ret = ixgbevf_ipsec_parse_proto_keys(xs, rsa.key, &rsa.salt);
+ 		ret = ixgbe_ipsec_parse_proto_keys(xs, rsa.key, &rsa.salt);
  		if (ret) {
 -			netdev_err(dev, "Failed to get key data for Rx SA table\n");
 +			NL_SET_ERR_MSG_MOD(extack, "Failed to get key data for Rx SA table");
  			return ret;
  		}
  
-@@ -352,7 +351,7 @@ static int ixgbevf_ipsec_add_sa(struct xfrm_state *xs,
+@@ -678,7 +677,7 @@ static int ixgbe_ipsec_add_sa(struct xfrm_state *xs,
+ 
+ 		} else {
+ 			/* no match and no empty slot */
+-			netdev_err(dev, "No space for SA in Rx IP SA table\n");
++			NL_SET_ERR_MSG_MOD(extack, "No space for SA in Rx IP SA table");
+ 			memset(&rsa, 0, sizeof(rsa));
+ 			return -ENOSPC;
+ 		}
+@@ -713,7 +712,7 @@ static int ixgbe_ipsec_add_sa(struct xfrm_state *xs,
  		/* find the first unused index */
- 		ret = ixgbevf_ipsec_find_empty_idx(ipsec, false);
+ 		ret = ixgbe_ipsec_find_empty_idx(ipsec, false);
  		if (ret < 0) {
 -			netdev_err(dev, "No space for SA in Tx table\n");
 +			NL_SET_ERR_MSG_MOD(extack, "No space for SA in Tx table");
  			return ret;
  		}
  		sa_idx = (u16)ret;
-@@ -366,7 +365,7 @@ static int ixgbevf_ipsec_add_sa(struct xfrm_state *xs,
+@@ -727,7 +726,7 @@ static int ixgbe_ipsec_add_sa(struct xfrm_state *xs,
  
- 		ret = ixgbevf_ipsec_parse_proto_keys(xs, tsa.key, &tsa.salt);
+ 		ret = ixgbe_ipsec_parse_proto_keys(xs, tsa.key, &tsa.salt);
  		if (ret) {
 -			netdev_err(dev, "Failed to get key data for Tx SA table\n");
 +			NL_SET_ERR_MSG_MOD(extack, "Failed to get key data for Tx SA table");
