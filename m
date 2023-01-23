@@ -2,350 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D16A67827E
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 18:03:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4763F6782CE
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 18:18:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232547AbjAWRD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 12:03:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39776 "EHLO
+        id S233512AbjAWRR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 12:17:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232517AbjAWRDS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 12:03:18 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D86B7EE6;
-        Mon, 23 Jan 2023 09:03:17 -0800 (PST)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30NEEhBD026059;
-        Mon, 23 Jan 2023 09:03:05 -0800
-Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2168.outbound.protection.outlook.com [104.47.59.168])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3n8e9swkbs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 Jan 2023 09:03:04 -0800
+        with ESMTP id S233539AbjAWRRx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 12:17:53 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2067.outbound.protection.outlook.com [40.107.223.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB573019A;
+        Mon, 23 Jan 2023 09:17:18 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SOqMGJgMk/n/EpTtZ9P0KIshgsEsZhQO3Kk3t7Nx83TvE30iIStjAWrdYrsf+DIS1DeiX07WS3T1Qs53J7473uOOgKciEKiw37ANEuAYu9Y3wp1MSqCeIVnFMd0Z9SZ+yxwk2tz2oDxJC89re3xXOiRdwdkoMkBX4+D3w6vlXMNDH1SNzIuSMxDt8XJ1s7GzCj+8/brV3i2nYINX6DQ1275tQ1Lisv3VVKsqTKNbQ4hqP3LFSCpdrtO5PEAY4A21AhMchl87i+Vq4XkH0aECEjbHbUfx4aFrXYaGHoWXef6YglvVlisydUcScneGDppkgc83qZSmS/sPrZ++I45iFg==
+ b=Ohc/WzmTvVpKgvMtxsZg7/rzZstAmPmFH2TFiHdXWQ0H9eSjF9pGJJM1b5oCK8AgthizE1aSOWdQVP9UUHAr+8ErcUCFMEL0UNxwGOCrIm5FeYbU8gpZq+sDxcjtIQlF3nHBcfVB0fMJfSDk73TUcBkmVAT5QHjVKo6sz+jDEj/7K8LqfJAB8y7XDsd7L6tZhsSpmUkmmydWu58KP48riC9WxdDWHztgIgPEoeskpkvLa6h1Bv8jkJm6p++QBHd7CtlE7zQBLKz+Nchg0RcS29Poc61/ZAc8fZW9bZL1n5aCfcsIeczbvJDpKn5ybsaUDG2FtZwW1Z1BoTcttW4NXw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0JlsK9hPWfHIm686g8gk+RNNx205vOFK2/oBNhzGyjA=;
- b=iTMoKXbMjpsdbQlnvg9B4bkwIcpNYXkKXb3ErKmHVBIGllqphW9+7jylmI+QARQh3GIPwo3GJjryAjYOMcXy7jE9Ynd9ecDlP/OpkKCabvF13n9iGhx39F7odXArGmJPuURi8mbctN56xCC/y9X5r1I//Fg0L3i2R/z5VthsH1BaFD/bwIzm8MLnl7A2QlPoaLEzJxZ3tiP9cRtD9c3bA+MTHKzONUYPs2uvkOq7inEK271eZF8Yimtn2UuRzgJdP5pYl8fd/D4fcd4Rxdavtlci4ZsobeqIxe26XdHsC8AvUy5u+hr8c0StY3X4qFnYrz+nX+KG6RKUs08zhN8JzQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ bh=+bsDCTSJLhWpGcU4weNHKRMu4zIlnyVExb7OV0ulAl0=;
+ b=dHaX1ErMYuOfB5dKJICsVtMZ8RfCCdJjxUyp+vOQ1csEknQPD9m1ERdmeVb/AZXYr4cRNhRNDxBTeiIWZDLHJDBfKu/qqFXiHFXpbRtcBIiVJqxuMXIZp/5d1bpKOrbgzh621JI+lhHk50nitQeq0FtBILkoKDCji3mvEbeVy0TPxRMVoLYUgzY+GUcLSrH017wWgRgjVKgWFDeYS0pk+Q84Z9LhsoqCFRg/cnHgO0U2T+Z43/Evgl2qgr15U/gTLsoRp+0Q6d5LNR3L99Ld6xB1nSZC4EPFecv4grdy2n7Wf20LF5dFAtr/kYlSSMPxGYKme6rFGcccFEYIFlJKxQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0JlsK9hPWfHIm686g8gk+RNNx205vOFK2/oBNhzGyjA=;
- b=MT0qXVYCJqT9UIsxsbwqJuiwX5AA4AqDdzlfHnInRdRFc5fnXIJvy64VF9nukBQg/utjuSPXO2E/b+JodztX6vVbY51l454jVrYMSFZxIi//S/vkQxMeTDd8g2Bf9TKEV1MQPaNMPExg0qXm/rwe9lv9U4LgmnpJghBFZd+MLfQ=
-Received: from PH0PR18MB4474.namprd18.prod.outlook.com (2603:10b6:510:ea::22)
- by BN9PR18MB4362.namprd18.prod.outlook.com (2603:10b6:408:100::21) with
+ bh=+bsDCTSJLhWpGcU4weNHKRMu4zIlnyVExb7OV0ulAl0=;
+ b=s0YpYjrMvfiiEb2DAfAyLDTzeRbN0eA011GZwK8yRFS6WJsFFqsdQVLpi/cSw2aa82agRFAQjD9w72TZxp96wJwwFwWfUU/QdofXcXsNL7w+vB9dP9XKddO+O0Z7VpEQsxru9+W7KTlu/U5XdvvfhXvBYi4qqwrvkrYSSjL4DBejas6xoH9GPmzmZbfL5BbFCCH3wOjBMRYUZhLs+aUTvvHfDlHdepEWtfAnUTdHMlZw8uJ14QHTsTPjzdVSduK31FjuxapmUxuUk9Z2GnJxL7+lonWZ1BgnY5RizzyvufyWox7GOaQ59o/0hAWfTLNDe7ZDTXF+LuFrkIsdisVqvQ==
+Received: from DM6PR02CA0117.namprd02.prod.outlook.com (2603:10b6:5:1b4::19)
+ by IA1PR12MB8587.namprd12.prod.outlook.com (2603:10b6:208:450::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Mon, 23 Jan
- 2023 17:03:02 +0000
-Received: from PH0PR18MB4474.namprd18.prod.outlook.com
- ([fe80::e6ca:f949:a109:b83e]) by PH0PR18MB4474.namprd18.prod.outlook.com
- ([fe80::e6ca:f949:a109:b83e%2]) with mapi id 15.20.6002.033; Mon, 23 Jan 2023
- 17:03:02 +0000
-From:   Hariprasad Kelam <hkelam@marvell.com>
-To:     Maxim Mikityanskiy <maxtram95@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geethasowjanya Akula <gakula@marvell.com>,
-        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
-        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "saeedm@nvidia.com" <saeedm@nvidia.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "tariqt@nvidia.com" <tariqt@nvidia.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "hariprasad.netdev@gmail.com" <hariprasad.netdev@gmail.com>,
-        Naveen Mamindlapalli <naveenm@marvell.com>
-Subject: Re: [net-next Patch v2 4/5] octeontx2-pf: Add devlink support to
- configure TL1 RR_PRIO
-Thread-Topic: [net-next Patch v2 4/5] octeontx2-pf: Add devlink support to
- configure TL1 RR_PRIO
-Thread-Index: AQHZL0yNZq/codrNv0Szoe9H0a3AXA==
-Date:   Mon, 23 Jan 2023 17:03:01 +0000
-Message-ID: <PH0PR18MB44741D5EBBD7B4010C78C7DFDEC89@PH0PR18MB4474.namprd18.prod.outlook.com>
-References: <20230118105107.9516-1-hkelam@marvell.com>
- <20230118105107.9516-5-hkelam@marvell.com> <Y8hYlYk/7FfGdfy8@mail.gmail.com>
- <PH0PR18MB4474FCEAC4FA5907CAC17011DEC59@PH0PR18MB4474.namprd18.prod.outlook.com>
- <Y8qZNhUgsdOMavC4@mail.gmail.com>
- <PH0PR18MB4474DBEF155EFA4DA6BA5B10DEC59@PH0PR18MB4474.namprd18.prod.outlook.com>
- <Y803rePcLc97CGik@mail.gmail.com>
-In-Reply-To: <Y803rePcLc97CGik@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-dg-rorf: true
-x-dg-ref: =?us-ascii?Q?PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcaGtlbGFtXGFw?=
- =?us-ascii?Q?cGRhdGFccm9hbWluZ1wwOWQ4NDliNi0zMmQzLTRhNDAtODVlZS02Yjg0YmEy?=
- =?us-ascii?Q?OWUzNWJcbXNnc1xtc2ctYzgwYWI2N2QtOWIzZi0xMWVkLWI2ZDMtZDQzYjA0?=
- =?us-ascii?Q?N2UyYjlkXGFtZS10ZXN0XGM4MGFiNjdmLTliM2YtMTFlZC1iNmQzLWQ0M2Iw?=
- =?us-ascii?Q?NDdlMmI5ZGJvZHkudHh0IiBzej0iNjQyMCIgdD0iMTMzMTg5NjY5NzY5ODk5?=
- =?us-ascii?Q?ODQ3IiBoPSJsZlEyTzhsL243bG5xaUFMaDc2bFlwUHVLaWM9IiBpZD0iIiBi?=
- =?us-ascii?Q?bD0iMCIgYm89IjEiIGNpPSJjQUFBQUVSSFUxUlNSVUZOQ2dVQUFOZ0hBQUJI?=
- =?us-ascii?Q?NzJLS1RDL1pBUzVJZ1dPUUswYUVMa2lCWTVBclJvUU1BQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBSEFBQUFCb0J3QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?RUFBUUFCQUFBQTNUekZBQUFBQUFBQUFBQUFBQUFBQUo0QUFBQmhBR1FBWkFC?=
- =?us-ascii?Q?eUFHVUFjd0J6QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFF?=
- =?us-ascii?Q?QUFBQUFBQUFBQWdBQUFBQUFuZ0FBQUdNQWRRQnpBSFFBYndCdEFGOEFjQUJs?=
- =?us-ascii?Q?QUhJQWN3QnZBRzRBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBUUFBQUFBQUFBQUNBQUFB?=
- =?us-ascii?Q?QUFDZUFBQUFZd0IxQUhNQWRBQnZBRzBBWHdCd0FHZ0Fid0J1QUdVQWJnQjFB?=
- =?us-ascii?Q?RzBBWWdCbEFISUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQkFBQUFBQUFBQUFJQUFBQUFBSjRBQUFCakFIVUFj?=
- =?us-ascii?Q?d0IwQUc4QWJRQmZBSE1BY3dCdUFGOEFaQUJoQUhNQWFBQmZBSFlBTUFBeUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
-x-dg-refone: =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUVBQUFBQUFBQUFBZ0FBQUFBQW5nQUFBR01B?=
- =?us-ascii?Q?ZFFCekFIUUFid0J0QUY4QWN3QnpBRzRBWHdCckFHVUFlUUIzQUc4QWNnQmtB?=
- =?us-ascii?Q?SE1BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFRQUFBQUFBQUFBQ0FBQUFBQUNlQUFBQVl3QjFBSE1BZEFCdkFHMEFY?=
- =?us-ascii?Q?d0J6QUhNQWJnQmZBRzRBYndCa0FHVUFiQUJwQUcwQWFRQjBBR1VBY2dCZkFI?=
- =?us-ascii?Q?WUFNQUF5QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFCQUFBQUFBQUFB?=
- =?us-ascii?Q?QUlBQUFBQUFKNEFBQUJqQUhVQWN3QjBBRzhBYlFCZkFITUFjd0J1QUY4QWN3?=
- =?us-ascii?Q?QndBR0VBWXdCbEFGOEFkZ0F3QURJQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBRUFBQUFBQUFBQUFnQUFBQUFBbmdBQUFH?=
- =?us-ascii?Q?UUFiQUJ3QUY4QWN3QnJBSGtBY0FCbEFGOEFZd0JvQUdFQWRBQmZBRzBBWlFC?=
- =?us-ascii?Q?ekFITUFZUUJuQUdVQVh3QjJBREFBTWdBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQVFBQUFBQUFBQUFDQUFBQUFBQ2VBQUFBWkFCc0FIQUFYd0J6QUd3?=
- =?us-ascii?Q?QVlRQmpBR3NBWHdCakFHZ0FZUUIwQUY4QWJRQmxBSE1BY3dCaEFHY0FaUUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
-x-dg-reftwo: QUFBQUFBQUFBQUJBQUFBQUFBQUFBSUFBQUFBQUo0QUFBQmtBR3dBY0FCZkFIUUFaUUJoQUcwQWN3QmZBRzhBYmdCbEFHUUFjZ0JwQUhZQVpRQmZBR1lBYVFCc0FHVUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFFQUFBQUFBQUFBQWdBQUFBQUFuZ0FBQUdVQWJRQmhBR2tBYkFCZkFHRUFaQUJrQUhJQVpRQnpBSE1BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBUUFBQUFBQUFBQUNBQUFBQUFDZUFBQUFiUUJoQUhJQWRnQmxBR3dBYkFCZkFIUUFaUUJ5QUcwQWFRQnVBSFVBY3dBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQkFBQUFBQUFBQUFJQUFBQUFBQT09Ii8+PC9tZXRhPg==
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR18MB4474:EE_|BN9PR18MB4362:EE_
-x-ms-office365-filtering-correlation-id: 633b58f6-b5f9-476d-b806-08dafd63afcc
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: bQavtia1qyvLOTgSlqQX93GXuMavWVrAaXqlnuGfsOzuQ1peQvQmXs5M4SNIIxpRMCUt8Fniwk/yZfdGxnmVGndlN5ZpSQmeRu5T/kBQCM+WKjrEE8vDf08+opWqbNMfvXsUH3bT3kbXo+k8bfYd4OYQvjZebKKItzVmwYSSzhjE9rCFcW3Oa3Tej5FCPtz9tGs0RZZjJ1zSZnOXlZevmSRByX6ucwnEhwo94hK0vXB9AMGzB7JnDBDURGOpD1gRcKmG8VJRLGMsxZ/OUzkne1KrNzIITDkXt2Ve9fm2A0YmssXs3IjFdxFTtCmWTCtCqshP21r+BfjlfzY56DlZxXntqtXtbqxwI9gOyVQXt1MjGPwg88gsd86BK2/7UbHttg7XIU2Cdgj1boYpfur9xyLTVm+QGbnFd3b8Xc3RDJy4SeV8xmXyTUKFIInFdnOZlhUM6bcCf6aEH0E3FC3OHL1SFvawtBUwy8IT1KecesClp1zXzAzHxiG7fSF5ZexDe287Mn6wntuseWkqTGoVzAQTWf9vNmUX2Q19tEzSVkP3Tm2frP8fqsTm1zd118KM2KBmhYE2Am1SMEaiZ9PZ2GcDqMPNT8xiUfa0tif4BMrldGn+TEl8q083SMcCkjvibBp5IDsmwkfzjTOqPBRr6XrLBw32diT23ImK1CLVG4KTGKGpMI3AvIr1iF9lX+FGawSK0E/dkbdV79a6IQ3CUw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR18MB4474.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(39860400002)(136003)(366004)(346002)(376002)(451199015)(86362001)(2906002)(38070700005)(76116006)(33656002)(316002)(54906003)(64756008)(83380400001)(107886003)(6506007)(7696005)(478600001)(71200400001)(9686003)(186003)(26005)(7416002)(52536014)(8936002)(38100700002)(5660300002)(66946007)(55016003)(122000001)(4326008)(8676002)(66476007)(66446008)(66556008)(6916009)(41300700001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?iPuddEUtd2hO73Vdph73dI85fpim1S0IS+ilzVs5SMOkPSyUFSSHu2FlMhHx?=
- =?us-ascii?Q?bBTf20XUmJM8zGT84+hmieu/2bjkJD38nTpO2PjSZGpK+vXvEJV0TgN8x8c4?=
- =?us-ascii?Q?y/sWNsxtbtpc/YosbACXg1kt19wQ3j+5f7eVBaCBzUY493C83LYhLVL5OVx1?=
- =?us-ascii?Q?62z4CDzbYcCOBMf6NgIFGOiF69X3Z8xe52cPENZ4BycJZDQjTmdPJ04scSEo?=
- =?us-ascii?Q?4u/77NCOyXFNE5185x0VsV65iSZDrEMybMIhiO0b/HxiUiy0Muuix9K6E7SN?=
- =?us-ascii?Q?KrKTWZUMGnebr494YN1uhWMDGdZc1MoSl45y1pAra0RUmtDTiLeP6RwrXr6M?=
- =?us-ascii?Q?Q3UFQBjizseDIIEd1W2sA/lqhfrGmyDw4AppcRMWQXwHtU8KetrcjXnfzKTO?=
- =?us-ascii?Q?Wz090wdLeO03DvWnB73mbdcn8N1Oe/JYjXsja/+LAgZw/Wj+Zi7ruEbgBSW9?=
- =?us-ascii?Q?YkGhWSY8luqZoV0XyV4b+SFn/hSrexAFml4nfgAUm42huVZJDTKeEVbxhbpr?=
- =?us-ascii?Q?92bNNzYlZaI0PFmVyRdq/h2dNgGBm6yGy+Ku0ipL8DZFm3QrJcit7WweGFXb?=
- =?us-ascii?Q?OeuwCDf9Q+DN2x3lPbNUzQAPllYlCRAf35kdjMyDrbpY7rr9SoG0Uc8voGwC?=
- =?us-ascii?Q?bK9oWjfHNE20Q0WM5PlWp0pk3cTGCPbtXk5uSOGvNB6+flFtmVe6TDOpYKJS?=
- =?us-ascii?Q?Rjv/G1Up/sTciBpiFToC2BvYaB5aG8SjCAmmJOYiaueaaL8W1l9mfHjJTRBQ?=
- =?us-ascii?Q?ny9OLrLpVBunpytyE15gYP//oMqF163sdJDaZgWlA6NhipvQ+naHeGeIBRJ8?=
- =?us-ascii?Q?/CNO4tINv803s70/7MT4YFH4jUU7RvLxW1nxBoA+2+tOaW3dbutfGsJTcrbZ?=
- =?us-ascii?Q?AcdcE/x392ja32KiF5bb827iwdKYL5Lt9F54Mwai7F3NzvvhgfMqnPSRRjw7?=
- =?us-ascii?Q?AXJC15ntAaWofdQHpXsZ5Dw/WaI5dsv8n3I8ryuWQit0/dm+bBfu7vBCvP4c?=
- =?us-ascii?Q?MEAjtMLKVFDsTYD1AeJkY/Z/fX6qWw/MwTuF/daKT8GSyGSAGqS+32vcah9F?=
- =?us-ascii?Q?WCuKHyQMlGkPZyurWQmgr10vCNxI7ys065ySNNJMO1fpduc8t6O5cRmLgU2u?=
- =?us-ascii?Q?sW+srOYH5V41NbGIQn6IxUzTCpsAUs71pfHqbAP6ID14XUWLsFj5Nan08bxw?=
- =?us-ascii?Q?5vT2WxGZ5/A+JGw/KSK1O7sze9+vvcRvnHGz8QjIKA9mbSW9I3Zl6LFz/LLC?=
- =?us-ascii?Q?EB1TWsX+RBRyAKQ0ZwimiJoKVi6+PBpRhcs5nqjkVsnsXLH7SWBnQxmP4wmv?=
- =?us-ascii?Q?OoqxMcRAxbcWRkgkLEJmzhjOnWnlgiigxVElYl2hL5C4prEDe0LcAw/LaQSf?=
- =?us-ascii?Q?X9rdYCda9neE95hCRX8vhU0VYMRR2WOxQahGdQSGBBH0xL85gU2g8u6d1+vK?=
- =?us-ascii?Q?6khEWZGExl106ldgjRsylbUpeZRvph2tpGPUxINLGWZxuk9i90QoAuIizHwG?=
- =?us-ascii?Q?yHaCDFbh9pYNtJw7F0GL3EJpiGSR0yiWdEIY2d69bycQCBSi8X6HiE7UGslC?=
- =?us-ascii?Q?bCjezUQ6/JO59tVr+o4JYUFLZ95snjjukz79WqA8?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ 2023 17:17:08 +0000
+Received: from DS1PEPF0000E64E.namprd02.prod.outlook.com
+ (2603:10b6:5:1b4:cafe::db) by DM6PR02CA0117.outlook.office365.com
+ (2603:10b6:5:1b4::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33 via Frontend
+ Transport; Mon, 23 Jan 2023 17:17:08 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ DS1PEPF0000E64E.mail.protection.outlook.com (10.167.18.4) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6043.10 via Frontend Transport; Mon, 23 Jan 2023 17:17:07 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Mon, 23 Jan
+ 2023 09:17:00 -0800
+Received: from localhost (10.126.231.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Mon, 23 Jan
+ 2023 09:16:59 -0800
+Date:   Mon, 23 Jan 2023 19:12:36 +0200
+From:   Leon Romanovsky <leonro@nvidia.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+CC:     Andy Gospodarek <andy@greyhouse.net>,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        <intel-wired-lan@lists.osuosl.org>,
+        "Jay Vosburgh" <j.vosburgh@gmail.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>, <linux-doc@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <oss-drivers@corigine.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Veaceslav Falico <vfalico@gmail.com>
+Subject: Re: [PATCH net-next 04/10] net/mlx5e: Fill IPsec state validation
+ failure reason
+Message-ID: <Y87ABF5mjBJXaDZF@unreal>
+References: <cover.1674481435.git.leon@kernel.org>
+ <a5426033528ccef6e0e71fe06b55ae56c5596e85.1674481435.git.leon@kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: marvell.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR18MB4474.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 633b58f6-b5f9-476d-b806-08dafd63afcc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jan 2023 17:03:01.8740
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <a5426033528ccef6e0e71fe06b55ae56c5596e85.1674481435.git.leon@kernel.org>
+X-Originating-IP: [10.126.231.37]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS1PEPF0000E64E:EE_|IA1PR12MB8587:EE_
+X-MS-Office365-Filtering-Correlation-Id: f8a850ec-7620-4cc9-9cb5-08dafd65a815
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: jQA8qIzYtz0KPdceBoDix6VLJ5hvfsj/u32wCY03aVQa7QjQxmLlhAy25NOogmBwJYhqJOXHFi6b4FcQRWIRd3YGIqVQtwU3gRofRuFETfqLu3hpHpK0Ik3jK2UdRdy8Gl+JPPQ48ZH1UlRBBdsaeiV54wgYrirulMVdwahBLNq2nb99BqUtKUW7ADarGgkK5DzSwhBceJET/pazGj8nxVuRs9WKsxc18GaXNxECH19MTksnu1FmnGROGqZzGGE0KVJolOGxH+d8dXn9Ev/24aD4O6B/739AX0DA72dHNwtMEyAQiLcOoIjaGSMJ5i1L3Xbx4eUEiCq3TP/EuGtdY5tFw1sbUvhqHQcV5l5aUePjWmcl9WZz2xoO0HavKceMzUZ2a0q+zUkT+6Xjwr4l8ALPcA01K9K0Ff1ku/y4DPDdn+TRoDcpd2Byx6nF4hpXVP4ojbRY9yTOPaCINFC/ubo4ortMxBhTRlk138ua04wuR/QjcJZmkmzBS4QuN2tWR/OfV/ZBGt0tXWUOqqq5Sj/yEC6m6zSX7jX96/1OxUjjVhEcVH32bJoQa7DUwze835WyoyOSuMv/hhRgw2+M7JOIwvjdWdDO091NqwM0HGQuVw8Dx/sfsJxhB7qzOpSB12bo6GUbEDTorAOkhmI4FR960LkF7u2+5CQY5kGNeGSmyJ7Na+QeJHvhgbPwBZ7kiJJ/YMRQijonUFVXLBSn/A==
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(7916004)(4636009)(376002)(39860400002)(136003)(396003)(346002)(451199015)(36840700001)(40470700004)(46966006)(478600001)(336012)(33716001)(7636003)(82740400003)(2906002)(426003)(41300700001)(82310400005)(5660300002)(4744005)(40460700003)(7416002)(8936002)(47076005)(4326008)(86362001)(8676002)(70206006)(70586007)(54906003)(9686003)(186003)(26005)(16526019)(110136005)(36860700001)(316002)(356005)(83380400001)(40480700001)(6666004);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jan 2023 17:17:07.8453
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Jj8yhDBDUxVF1Wt0IUfIPtHIWixF4avrSCRqUEG2u+63Il3IkDRV42GgSNymX+rX0PERU2tqe5m/g8duUXw//Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR18MB4362
-X-Proofpoint-ORIG-GUID: KHzH7Zuax8HqnrUrFN7nehzTg7fNPU8H
-X-Proofpoint-GUID: KHzH7Zuax8HqnrUrFN7nehzTg7fNPU8H
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-01-23_12,2023-01-23_01,2022-06-22_01
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-Network-Message-Id: f8a850ec-7620-4cc9-9cb5-08dafd65a815
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000E64E.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8587
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jan 23, 2023 at 04:00:17PM +0200, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> Rely on extack to return failure reason.
+> 
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leon@kernel.org>
+
+Ohh, I need to fix my scripts.
 
 
->=20
-> On Fri, Jan 20, 2023 at 08:50:16AM +0000, Hariprasad Kelam wrote:
-> >=20
-> > On Wed, Jan 18, 2023 at 04:21:06PM +0530, Hariprasad Kelam wrote:
-> > > All VFs and PF netdev shares same TL1 schedular, each interface PF=20
-> > > or VF will have different TL2 schedulars having same parent TL1.=20
-> > > The
-> > > TL1 RR_PRIO value is static and PF/VFs use the same value to=20
-> > > configure its
-> > > TL2 node priority in case of DWRR children.
-> > >=20
-> > > This patch adds support to configure TL1 RR_PRIO value using devlink.
-> > > The TL1 RR_PRIO can be configured for each PF. The VFs are not=20
-> > > allowed to configure TL1 RR_PRIO value. The VFs can get the=20
-> > > RR_PRIO value from the mailbox NIX_TXSCH_ALLOC response parameter agg=
-r_lvl_rr_prio.
-> >=20
-> > I asked this question under v1, but didn't get an answer, could you she=
-d some light?
-> >=20
-> > "Could you please elaborate how these priorities of Transmit Levels are=
- related to HTB priorities? I don't seem to understand why something has to=
- be configured with devlink in addition to HTB.
-> >=20
-> > SMQ (send meta-descriptor queue) and MDQ (meta-descriptor queue) are th=
-e first transmit levels.
-> > Each send queue is mapped with SMQ.
-> > =20
-> > As mentioned in cover letter, each egress packet needs to traverse all =
-transmit levels starting from TL5 to TL1.
->=20
-> Yeah, I saw that, just some details about your hardware which might be ob=
-vious to you aren't so clear to me...
->=20
-> Do these transmit levels map to "layers" of HTB hierarchy? Does it look l=
-ike this, or is my understanding completely wrong?
->=20
-> TL1                 [HTB root node]
->                    /               \
-> TL2          [HTB node]         [HTB node]
->             /          \             |
-> TL3    [HTB node]  [HTB node]   [HTB node]
-> ...                       ...
->=20
-> Transmit levels to HTB mapping is correct.
->=20
->=20
->=20
-> > This applies to non-QOS Send queues as well.
-> > =20
-> >                        SMQ/MDQ --> TL4 -->TL3 -->TL2 -->TL1
-> >=20
-> > By default non QOS queues use a default hierarchy  with round robin pri=
-ority.=20
-> > To avoid conflict with QOS tree priorities, with devlink user can choos=
-e round-robin priority before Qos tree formation.
->=20
-> So, this priority that you set with devlink is basically a weight of uncl=
-assified (default) traffic for round robin between unclassified and classif=
-ied traffic, right? I.e. you have two hierarchies (one for HTB, another for=
- non-QoS queue), and you do DWRR between them, according to this priority?
->=20
->=20
->  Not exactly, In the given scenario where  multiple vfs are attached to P=
-F netdev.
->  each VF unclassified traffic forms a hierarchy and PF also forms a hiera=
-rchy for unclassified traffic.
-> =20
-> Now traffic from these all tress(multiple vfs and PFs) are aggregated at =
-TL1. HW performs DWRR among them since these TL2 queues (belonging to each =
-pf and vf netdevs) will be configured with the same priority by the driver.
->=20
-> Currently, this priority is hard coded. Now we are providing this as a co=
-nfigurable value to the user.
->=20
-> Now if a user adds a HTB node, this will have strict priority at TL2 leve=
-l since DWRR priority is different this traffic won't be affected by DWRR u=
-nclassified traffic.
+<...>
 
-So, did I get it right now?
+>  		break;
+>  	default:
+> -		netdev_info(netdev, "Unsupported xfrm offload type %d\n",
+> -			    x->xso.type);
+> +		NL_SET_ERR_MSG_MOD(extackx, "Unsupported xfrm offload type");
 
-                                     [strict priority**]
-                           /---------/                 \-----\
-                           |                                 |
-                        [DWRR*]                              |
-        /---------------/  |   \---------------\             |
-        |                  |                   |             |
-[ Hierarchy for ]  [ Hierarchy for  ]  [ Hierarchy for  ]    |
-[ unclassified  ]  [  unclassified  ]  [  unclassified  ]    |
-[traffic from PF]  [traffic from VF1]  [traffic from VF2]    |
-[      ***      ]  [      ***       ]  [      ***       ]    |
-                                                             |
-                                                [HTB hierarchy using]
-                                                [  strict priority  ]
-                                                [   between nodes   ]
+It is rebase error, will resend.
 
-
-
-        Adjusted picture
-
-                        /--------------------------------------------------=
-------------------------------/       Transmit level 1
-                            |                                              =
-                                        |=20
-                        [DWRR*] [ priority 6 ]                             =
-         [strict priority** ]      [ priority 0 ]  Transmit level 2
-        /---------------/  |   \-----------------------------------\       =
-                    |
-             |                   |                                   |     =
-                                      |
-[ Hierarchy for ]  [ Hierarchy for  ]  [ Hierarchy for  ]                 [=
- Hierarchy for  ]=20
-[ unclassified  ]  [  unclassified  ]  [  unclassified  ]                  =
-    [ strict priority  ]
-[traffic from PF]  [traffic from VF1]  [traffic from VF2]  =20
-[      ***      ]  [      ***       ]  [      ***       ]   =20
-                                               =20
-
-
-As far as I understand, you set priorities at ***, which affect DWRR balanc=
-ing at *, but it's not clear to me how the selection at ** works.
-Does the HTB hierarchy have some fixed priority,  ?
-
-Hardware supports priorities from 0 to 7. lower value has high priority.
-nodes having the same priority are treated as DWRR childs.
-
-i.e. the user can set priority for unclassified traffic to be higher or low=
-er than HTB traffic?
-
-Yes its user configurable, unclassified traffic priority can be higher or l=
-ower than HTB traffic if a user wishes to configure it.
-
-Please also point me at any inaccuracies in my picture, I really want to un=
-derstand the algorithm here, because configuring additional priorities outs=
-ide of HTB looks unusual to me.
-
-  Please check the adjusted picture. Let us assume a user has set the prior=
-ity as 6 for DWRR (unclassified traffic)  and  HTB strict priority as 0.
-Once all traffic reaches  TL2,  Now hardware algorithm first pics HTB stric=
-t priority and processes DWRR later according to their priorities.
-
->=20
-> Thanks,
-> Hariprasad k
+Thanks
