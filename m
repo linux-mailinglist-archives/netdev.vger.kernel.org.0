@@ -2,175 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83A1B6774F5
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 06:32:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56DB1677503
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 06:49:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231274AbjAWFcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 00:32:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57880 "EHLO
+        id S230073AbjAWFtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 00:49:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230287AbjAWFb7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 00:31:59 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F7A193F0
-        for <netdev@vger.kernel.org>; Sun, 22 Jan 2023 21:31:58 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id x24-20020a17090ab01800b00229f43b506fso9253955pjq.5
-        for <netdev@vger.kernel.org>; Sun, 22 Jan 2023 21:31:58 -0800 (PST)
+        with ESMTP id S229441AbjAWFtb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 00:49:31 -0500
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9367A1421D;
+        Sun, 22 Jan 2023 21:49:28 -0800 (PST)
+Received: by mail-oi1-x229.google.com with SMTP id r9so9450831oig.12;
+        Sun, 22 Jan 2023 21:49:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=schmorgal.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=K8+DZHs7W1LerSJJiFLS+9N/xwxbQMvpL/BRfvv3cOc=;
-        b=P/l7eWG3BmqnQO4wqUvbJtHpHjt/A8z6m/zZ+3DWEF2oldbRXyY/fN8bll+3Y2Md3G
-         2xypAVdGzbhDgS1LvLFDv6rPdRMPTVznctC39cBKHZfBi6FOzt9iw0EeRKneCVVizPRd
-         QRL+kI5Yc0Vv66O2EcAhHkPztNE5Quw0Nhu4k=
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=xyJo8C/2H0gDpF4Y+52CY8J6fFUdtwXdZo9IpnszVOg=;
+        b=cqPNfNPWPggJujEivra4tfr/ZQ/4CDx9rTbVPJjzi5BzFMc2Wrxe2vClEJesHxlkcl
+         cQejl0JiOJ70XFBIdWjhZdGkYv1y7oeAESFMqJJ4eXfOZDOUYPJiTAEsWc5mGK2R7sbM
+         BRzLPfxmzAAgZ9bXnPg1COBQdFAOjCUpmonXTnH4syHOMvI8Na1zrO14ctgviyW4OZUI
+         vWAefpcRthtot7LWUnHElvyXXtGfRK7SzAtLplAcypGj5DBenv2D0e24pHPpjK1j8m+t
+         wNcUv94BMQohWQpLk+zr6NNMUsO8IjKPsztCHzrOXJV/CPIaZXqVdItGjby1eiX/SNDb
+         FcBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=K8+DZHs7W1LerSJJiFLS+9N/xwxbQMvpL/BRfvv3cOc=;
-        b=kFt0HRiTfKED44YEvfeQBUBC7wdDZH4TIKfcpYBZwailjxwoIK9KE4FZSLYNamz+D7
-         hDXm75/dRD6Q6/Ta5zgn5cUy0LvRp70BllfvTDG20IqfrIm8xQBpTSalh5RNuAZvUKqd
-         qqvOy0qA2Aqklbww2lidiwSq8EO2LztRX6h6dbSu9nQV+/0u/Ze5r96L43lMymJenXso
-         58hAWNqXAsNDO7ctmnQvKDrsL5ZaK+ykXqeB/fM0D8tHsER61rZrui80cHD2XpbgUbuN
-         037LoAgl/JCIcUC6CmqkPCOEzvPFaYrfgK3bMaXeooE5OGpcepTatydKbUIstgtjK+cu
-         wWWg==
-X-Gm-Message-State: AFqh2kpj6J6qhSHoGVTEaRaST6jnJUiJbDrBhcjyP+F3nxLmKgiIAQBx
-        mWqRmkvrUnqM0TB7WF4Nb2zZ8g==
-X-Google-Smtp-Source: AMrXdXvXg/t7MBwXdFbXlfQPyMVlnSAe6u2W38kuh1OetTjVTzqJUwCLvhTi5g5T7ot4DWW8VzbYSg==
-X-Received: by 2002:a17:902:6bc6:b0:194:9c69:290c with SMTP id m6-20020a1709026bc600b001949c69290cmr21761765plt.67.1674451917791;
-        Sun, 22 Jan 2023 21:31:57 -0800 (PST)
-Received: from doug-ryzen-5700G.. ([192.183.212.197])
-        by smtp.gmail.com with ESMTPSA id m3-20020a170902db0300b0018963b8e131sm9125244plx.290.2023.01.22.21.31.57
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xyJo8C/2H0gDpF4Y+52CY8J6fFUdtwXdZo9IpnszVOg=;
+        b=6+E0rOGC0p0z6XOrfLwAY90wFCG2ZMbJlChW6LLfNktUhMhJRBWS4fvWH+sGVoWc3J
+         eJpE81diCCMuxPa8iVI237e62gqRkrs1FBmIbe42DfxUszhY7mhGvdl8UgHbNdxDuS1U
+         0NdFERYj8b2LYpI7GhqqG2khg89RbZfns57/s5Rau8FosmErU4opSFKONcxcbF9lzw/D
+         FYbKiYuRmEji4Z1HJIUNBDVY3ktl5yB4LaJROlRNBordKO7I6Z2Wuu3pEc2STXG3rLaT
+         8Ylg4DMuhe9D7ngSZ1dnRhtbWo6y0wR84KslxoXfjwUAJD3r1EoHqGx1sPGLeCBpcELF
+         b+fg==
+X-Gm-Message-State: AFqh2kqiEL97bObzJvCK+Kfp8VAlnCs31mQKBVDFNGraJP5QUk2qXUCL
+        b7Ghr4eoQ7xuEWaJnNSGLx4=
+X-Google-Smtp-Source: AMrXdXuiWXYBYH920EFgsK0kjVtHpjlLtOe0O2Ntr/K3wFwYYMuueU6SjyG1flMlDHFvZQjHArI2hQ==
+X-Received: by 2002:a05:6808:1b27:b0:36b:1834:4073 with SMTP id bx39-20020a0568081b2700b0036b18344073mr11085443oib.29.1674452967859;
+        Sun, 22 Jan 2023 21:49:27 -0800 (PST)
+Received: from localhost ([2600:1700:65a0:ab60:2b7f:8e37:c086:d585])
+        by smtp.gmail.com with ESMTPSA id k10-20020a9d198a000000b006864b5f4650sm9416657otk.46.2023.01.22.21.49.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Jan 2023 21:31:57 -0800 (PST)
-From:   Doug Brown <doug@schmorgal.com>
-To:     Kalle Valo <kvalo@kernel.org>,
+        Sun, 22 Jan 2023 21:49:26 -0800 (PST)
+Date:   Sun, 22 Jan 2023 21:49:25 -0800
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     Peilin Ye <yepeilin.cs@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Dan Williams <dcbw@redhat.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Doug Brown <doug@schmorgal.com>
-Subject: [PATCH v4 4/4] wifi: libertas: add support for WPS enrollee IE in probe requests
-Date:   Sun, 22 Jan 2023 21:31:32 -0800
-Message-Id: <20230123053132.30710-5-doug@schmorgal.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230123053132.30710-1-doug@schmorgal.com>
-References: <20230123053132.30710-1-doug@schmorgal.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v7] net/sock: Introduce trace_sk_data_ready()
+Message-ID: <Y84f5U2iz0M9J3w8@pop-os.localdomain>
+References: <20221110023458.2726-1-yepeilin.cs@gmail.com>
+ <20230120004516.3944-1-yepeilin.cs@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230120004516.3944-1-yepeilin.cs@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add compatibility with WPS by passing on WPS enrollee information in
-probe requests. Ignore other IEs supplied in the scan request. This also
-has the added benefit of restoring compatibility with newer
-wpa_supplicant versions that always add scan IEs. Previously, with
-max_scan_ie_len set to 0, scans would always fail.
+On Thu, Jan 19, 2023 at 04:45:16PM -0800, Peilin Ye wrote:
+> From: Peilin Ye <peilin.ye@bytedance.com>
+> 
+> As suggested by Cong, introduce a tracepoint for all ->sk_data_ready()
+> callback implementations.  For example:
+> 
+> <...>
+>   iperf-609  [002] .....  70.660425: sk_data_ready: family=2 protocol=6 func=sock_def_readable
+>   iperf-609  [002] .....  70.660436: sk_data_ready: family=2 protocol=6 func=sock_def_readable
+> <...>
+> 
+> Suggested-by: Cong Wang <cong.wang@bytedance.com>
+> Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
 
-Suggested-by: Dan Williams <dcbw@redhat.com>
-Signed-off-by: Doug Brown <doug@schmorgal.com>
-Reviewed-by: Dan Williams <dcbw@redhat.com>
----
- drivers/net/wireless/marvell/libertas/cfg.c | 48 +++++++++++++++++++--
- 1 file changed, 45 insertions(+), 3 deletions(-)
+Looks good to me.
 
-diff --git a/drivers/net/wireless/marvell/libertas/cfg.c b/drivers/net/wireless/marvell/libertas/cfg.c
-index 3f35dc7a1d7d..b700c213d10c 100644
---- a/drivers/net/wireless/marvell/libertas/cfg.c
-+++ b/drivers/net/wireless/marvell/libertas/cfg.c
-@@ -446,6 +446,41 @@ static int lbs_add_wpa_tlv(u8 *tlv, const u8 *ie, u8 ie_len)
- 	return sizeof(struct mrvl_ie_header) + wpaie->datalen;
- }
- 
-+/* Add WPS enrollee TLV
-+ */
-+#define LBS_MAX_WPS_ENROLLEE_TLV_SIZE		\
-+	(sizeof(struct mrvl_ie_header)		\
-+	 + 256)
-+
-+static int lbs_add_wps_enrollee_tlv(u8 *tlv, const u8 *ie, size_t ie_len)
-+{
-+	struct mrvl_ie_data *wpstlv = (struct mrvl_ie_data *)tlv;
-+	const struct element *wpsie;
-+
-+	/* Look for a WPS IE and add it to the probe request */
-+	wpsie = cfg80211_find_vendor_elem(WLAN_OUI_MICROSOFT,
-+					  WLAN_OUI_TYPE_MICROSOFT_WPS,
-+					  ie, ie_len);
-+	if (!wpsie)
-+		return 0;
-+
-+	/* Convert the WPS IE to a TLV. The IE looks like this:
-+	 *   u8      type (WLAN_EID_VENDOR_SPECIFIC)
-+	 *   u8      len
-+	 *   u8[]    data
-+	 * but the TLV will look like this instead:
-+	 *   __le16  type (TLV_TYPE_WPS_ENROLLEE)
-+	 *   __le16  len
-+	 *   u8[]    data
-+	 */
-+	wpstlv->header.type = cpu_to_le16(TLV_TYPE_WPS_ENROLLEE);
-+	wpstlv->header.len = cpu_to_le16(wpsie->datalen);
-+	memcpy(wpstlv->data, wpsie->data, wpsie->datalen);
-+
-+	/* Return the total number of bytes added to the TLV buffer */
-+	return sizeof(struct mrvl_ie_header) + wpsie->datalen;
-+}
-+
- /*
-  * Set Channel
-  */
-@@ -672,14 +707,15 @@ static int lbs_ret_scan(struct lbs_private *priv, unsigned long dummy,
- 
- 
- /*
-- * Our scan command contains a TLV, consting of a SSID TLV, a channel list
-- * TLV and a rates TLV. Determine the maximum size of them:
-+ * Our scan command contains a TLV, consisting of a SSID TLV, a channel list
-+ * TLV, a rates TLV, and an optional WPS IE. Determine the maximum size of them:
-  */
- #define LBS_SCAN_MAX_CMD_SIZE			\
- 	(sizeof(struct cmd_ds_802_11_scan)	\
- 	 + LBS_MAX_SSID_TLV_SIZE		\
- 	 + LBS_MAX_CHANNEL_LIST_TLV_SIZE	\
--	 + LBS_MAX_RATES_TLV_SIZE)
-+	 + LBS_MAX_RATES_TLV_SIZE		\
-+	 + LBS_MAX_WPS_ENROLLEE_TLV_SIZE)
- 
- /*
-  * Assumes priv->scan_req is initialized and valid
-@@ -728,6 +764,11 @@ static void lbs_scan_worker(struct work_struct *work)
- 	/* add rates TLV */
- 	tlv += lbs_add_supported_rates_tlv(tlv);
- 
-+	/* add optional WPS enrollee TLV */
-+	if (priv->scan_req->ie && priv->scan_req->ie_len)
-+		tlv += lbs_add_wps_enrollee_tlv(tlv, priv->scan_req->ie,
-+						priv->scan_req->ie_len);
-+
- 	if (priv->scan_channel < priv->scan_req->n_channels) {
- 		cancel_delayed_work(&priv->scan_work);
- 		if (netif_running(priv->dev))
-@@ -2114,6 +2155,7 @@ int lbs_cfg_register(struct lbs_private *priv)
- 	int ret;
- 
- 	wdev->wiphy->max_scan_ssids = 1;
-+	wdev->wiphy->max_scan_ie_len = 256;
- 	wdev->wiphy->signal_type = CFG80211_SIGNAL_TYPE_MBM;
- 
- 	wdev->wiphy->interface_modes =
--- 
-2.34.1
-
+Thanks!
