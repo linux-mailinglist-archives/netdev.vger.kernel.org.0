@@ -2,334 +2,350 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B5C567825D
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 17:57:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D16A67827E
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 18:03:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229956AbjAWQ5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 11:57:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35346 "EHLO
+        id S232547AbjAWRD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 12:03:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232151AbjAWQ5S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 11:57:18 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53EE22CC42
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 08:57:12 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id v6-20020a17090ad58600b00229eec90a7fso7060011pju.0
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 08:57:12 -0800 (PST)
+        with ESMTP id S232517AbjAWRDS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 12:03:18 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D86B7EE6;
+        Mon, 23 Jan 2023 09:03:17 -0800 (PST)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30NEEhBD026059;
+        Mon, 23 Jan 2023 09:03:05 -0800
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2168.outbound.protection.outlook.com [104.47.59.168])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3n8e9swkbs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 23 Jan 2023 09:03:04 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SOqMGJgMk/n/EpTtZ9P0KIshgsEsZhQO3Kk3t7Nx83TvE30iIStjAWrdYrsf+DIS1DeiX07WS3T1Qs53J7473uOOgKciEKiw37ANEuAYu9Y3wp1MSqCeIVnFMd0Z9SZ+yxwk2tz2oDxJC89re3xXOiRdwdkoMkBX4+D3w6vlXMNDH1SNzIuSMxDt8XJ1s7GzCj+8/brV3i2nYINX6DQ1275tQ1Lisv3VVKsqTKNbQ4hqP3LFSCpdrtO5PEAY4A21AhMchl87i+Vq4XkH0aECEjbHbUfx4aFrXYaGHoWXef6YglvVlisydUcScneGDppkgc83qZSmS/sPrZ++I45iFg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0JlsK9hPWfHIm686g8gk+RNNx205vOFK2/oBNhzGyjA=;
+ b=iTMoKXbMjpsdbQlnvg9B4bkwIcpNYXkKXb3ErKmHVBIGllqphW9+7jylmI+QARQh3GIPwo3GJjryAjYOMcXy7jE9Ynd9ecDlP/OpkKCabvF13n9iGhx39F7odXArGmJPuURi8mbctN56xCC/y9X5r1I//Fg0L3i2R/z5VthsH1BaFD/bwIzm8MLnl7A2QlPoaLEzJxZ3tiP9cRtD9c3bA+MTHKzONUYPs2uvkOq7inEK271eZF8Yimtn2UuRzgJdP5pYl8fd/D4fcd4Rxdavtlci4ZsobeqIxe26XdHsC8AvUy5u+hr8c0StY3X4qFnYrz+nX+KG6RKUs08zhN8JzQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=theori.io; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rajOEOTTwZ2aL3jhTNkTccqN9DwtpEDo/MHItw9zgno=;
-        b=hKW1zICDl1kPUrS7mPd1ovaUAzoL6qI2XTOooBscC6etLCPRSJRC/k+N6cKhUo1cvD
-         DOd18wCYs7VLx5IaBsgweTSNyrS1hP/AGXBCsw9BC3cmirIlRHsSApe4/zbPmYlNJJMM
-         idWJMKFe2uktiLeT+Rl4ZHoHODm3Glr0ZlWWc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rajOEOTTwZ2aL3jhTNkTccqN9DwtpEDo/MHItw9zgno=;
-        b=2RXr/LvLgOBi2nSEE5gEA3aO/TxJnJOw2rPyU2i92fCAXJvWPBgEUVpddrYFG2k4mB
-         ka43nbrxt+OivvzLFJ6PAh7Vo+sxebMywe73SaBMiJjehLKcmxP4lUmyZZHqAiuWh8Sf
-         7eFcB4chtq3ZHUGJiORWekQQBjsR+M3uInNGupmGFAW5hZQ9D6osadxASzrmrg8wtC6b
-         I//OlH7gCjNoCbQCz0IWEuG8pXoil4RPXFgbINqYGSih7ul2dxmaBi5Zbn7k94cId7FJ
-         rbR3pAcUwokI4TCWMF8mqO64Ps4mTLC5YhxRdZKceolusFsLgyivXy6R0LBy5FDa9k5K
-         pOsg==
-X-Gm-Message-State: AFqh2kqUDdeoyBVYetlPIYUpjSGczP0I8ri60SlFmqqXT92bO/X5+d+8
-        nkB+7AuNOU3hO5H5hhx1wN2Ulg==
-X-Google-Smtp-Source: AMrXdXt3L3J9zxqL8e7azZ/AVN7sVEX8Z88uYINXvtjZPsgpdHMiQgrW6jBJrC8QUHqSb7SFVk9Spw==
-X-Received: by 2002:a17:902:b48f:b0:192:8502:77f9 with SMTP id y15-20020a170902b48f00b00192850277f9mr47460992plr.27.1674493031763;
-        Mon, 23 Jan 2023 08:57:11 -0800 (PST)
-Received: from ubuntu ([39.115.108.115])
-        by smtp.gmail.com with ESMTPSA id u9-20020a170902bf4900b0019601baba92sm3159828pls.244.2023.01.23.08.57.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Jan 2023 08:57:11 -0800 (PST)
-Date:   Mon, 23 Jan 2023 08:57:06 -0800
-From:   Hyunwoo Kim <v4bel@theori.io>
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     davem@davemloft.net, edumazet@google.com, v4bel@theori.io,
-        imv4bel@gmail.com, kuba@kernel.org, linux-hams@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, ralf@linux-mips.org,
-        syzbot+caa188bdfc1eeafeb418@syzkaller.appspotmail.com
-Subject: Re: [PATCH] netrom: Fix use-after-free caused by accept on already
- connected socket
-Message-ID: <20230123165706.GA108558@ubuntu>
-References: <20230121150859.GA9817@ubuntu>
- <20230123162200.54281-1-kuniyu@amazon.com>
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0JlsK9hPWfHIm686g8gk+RNNx205vOFK2/oBNhzGyjA=;
+ b=MT0qXVYCJqT9UIsxsbwqJuiwX5AA4AqDdzlfHnInRdRFc5fnXIJvy64VF9nukBQg/utjuSPXO2E/b+JodztX6vVbY51l454jVrYMSFZxIi//S/vkQxMeTDd8g2Bf9TKEV1MQPaNMPExg0qXm/rwe9lv9U4LgmnpJghBFZd+MLfQ=
+Received: from PH0PR18MB4474.namprd18.prod.outlook.com (2603:10b6:510:ea::22)
+ by BN9PR18MB4362.namprd18.prod.outlook.com (2603:10b6:408:100::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Mon, 23 Jan
+ 2023 17:03:02 +0000
+Received: from PH0PR18MB4474.namprd18.prod.outlook.com
+ ([fe80::e6ca:f949:a109:b83e]) by PH0PR18MB4474.namprd18.prod.outlook.com
+ ([fe80::e6ca:f949:a109:b83e%2]) with mapi id 15.20.6002.033; Mon, 23 Jan 2023
+ 17:03:02 +0000
+From:   Hariprasad Kelam <hkelam@marvell.com>
+To:     Maxim Mikityanskiy <maxtram95@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geethasowjanya Akula <gakula@marvell.com>,
+        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "saeedm@nvidia.com" <saeedm@nvidia.com>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "tariqt@nvidia.com" <tariqt@nvidia.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "hariprasad.netdev@gmail.com" <hariprasad.netdev@gmail.com>,
+        Naveen Mamindlapalli <naveenm@marvell.com>
+Subject: Re: [net-next Patch v2 4/5] octeontx2-pf: Add devlink support to
+ configure TL1 RR_PRIO
+Thread-Topic: [net-next Patch v2 4/5] octeontx2-pf: Add devlink support to
+ configure TL1 RR_PRIO
+Thread-Index: AQHZL0yNZq/codrNv0Szoe9H0a3AXA==
+Date:   Mon, 23 Jan 2023 17:03:01 +0000
+Message-ID: <PH0PR18MB44741D5EBBD7B4010C78C7DFDEC89@PH0PR18MB4474.namprd18.prod.outlook.com>
+References: <20230118105107.9516-1-hkelam@marvell.com>
+ <20230118105107.9516-5-hkelam@marvell.com> <Y8hYlYk/7FfGdfy8@mail.gmail.com>
+ <PH0PR18MB4474FCEAC4FA5907CAC17011DEC59@PH0PR18MB4474.namprd18.prod.outlook.com>
+ <Y8qZNhUgsdOMavC4@mail.gmail.com>
+ <PH0PR18MB4474DBEF155EFA4DA6BA5B10DEC59@PH0PR18MB4474.namprd18.prod.outlook.com>
+ <Y803rePcLc97CGik@mail.gmail.com>
+In-Reply-To: <Y803rePcLc97CGik@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-dg-rorf: true
+x-dg-ref: =?us-ascii?Q?PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcaGtlbGFtXGFw?=
+ =?us-ascii?Q?cGRhdGFccm9hbWluZ1wwOWQ4NDliNi0zMmQzLTRhNDAtODVlZS02Yjg0YmEy?=
+ =?us-ascii?Q?OWUzNWJcbXNnc1xtc2ctYzgwYWI2N2QtOWIzZi0xMWVkLWI2ZDMtZDQzYjA0?=
+ =?us-ascii?Q?N2UyYjlkXGFtZS10ZXN0XGM4MGFiNjdmLTliM2YtMTFlZC1iNmQzLWQ0M2Iw?=
+ =?us-ascii?Q?NDdlMmI5ZGJvZHkudHh0IiBzej0iNjQyMCIgdD0iMTMzMTg5NjY5NzY5ODk5?=
+ =?us-ascii?Q?ODQ3IiBoPSJsZlEyTzhsL243bG5xaUFMaDc2bFlwUHVLaWM9IiBpZD0iIiBi?=
+ =?us-ascii?Q?bD0iMCIgYm89IjEiIGNpPSJjQUFBQUVSSFUxUlNSVUZOQ2dVQUFOZ0hBQUJI?=
+ =?us-ascii?Q?NzJLS1RDL1pBUzVJZ1dPUUswYUVMa2lCWTVBclJvUU1BQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBSEFBQUFCb0J3QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?RUFBUUFCQUFBQTNUekZBQUFBQUFBQUFBQUFBQUFBQUo0QUFBQmhBR1FBWkFC?=
+ =?us-ascii?Q?eUFHVUFjd0J6QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFF?=
+ =?us-ascii?Q?QUFBQUFBQUFBQWdBQUFBQUFuZ0FBQUdNQWRRQnpBSFFBYndCdEFGOEFjQUJs?=
+ =?us-ascii?Q?QUhJQWN3QnZBRzRBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBUUFBQUFBQUFBQUNBQUFB?=
+ =?us-ascii?Q?QUFDZUFBQUFZd0IxQUhNQWRBQnZBRzBBWHdCd0FHZ0Fid0J1QUdVQWJnQjFB?=
+ =?us-ascii?Q?RzBBWWdCbEFISUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQkFBQUFBQUFBQUFJQUFBQUFBSjRBQUFCakFIVUFj?=
+ =?us-ascii?Q?d0IwQUc4QWJRQmZBSE1BY3dCdUFGOEFaQUJoQUhNQWFBQmZBSFlBTUFBeUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+x-dg-refone: =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUVBQUFBQUFBQUFBZ0FBQUFBQW5nQUFBR01B?=
+ =?us-ascii?Q?ZFFCekFIUUFid0J0QUY4QWN3QnpBRzRBWHdCckFHVUFlUUIzQUc4QWNnQmtB?=
+ =?us-ascii?Q?SE1BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFRQUFBQUFBQUFBQ0FBQUFBQUNlQUFBQVl3QjFBSE1BZEFCdkFHMEFY?=
+ =?us-ascii?Q?d0J6QUhNQWJnQmZBRzRBYndCa0FHVUFiQUJwQUcwQWFRQjBBR1VBY2dCZkFI?=
+ =?us-ascii?Q?WUFNQUF5QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFCQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUlBQUFBQUFKNEFBQUJqQUhVQWN3QjBBRzhBYlFCZkFITUFjd0J1QUY4QWN3?=
+ =?us-ascii?Q?QndBR0VBWXdCbEFGOEFkZ0F3QURJQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBRUFBQUFBQUFBQUFnQUFBQUFBbmdBQUFH?=
+ =?us-ascii?Q?UUFiQUJ3QUY4QWN3QnJBSGtBY0FCbEFGOEFZd0JvQUdFQWRBQmZBRzBBWlFC?=
+ =?us-ascii?Q?ekFITUFZUUJuQUdVQVh3QjJBREFBTWdBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQVFBQUFBQUFBQUFDQUFBQUFBQ2VBQUFBWkFCc0FIQUFYd0J6QUd3?=
+ =?us-ascii?Q?QVlRQmpBR3NBWHdCakFHZ0FZUUIwQUY4QWJRQmxBSE1BY3dCaEFHY0FaUUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+x-dg-reftwo: QUFBQUFBQUFBQUJBQUFBQUFBQUFBSUFBQUFBQUo0QUFBQmtBR3dBY0FCZkFIUUFaUUJoQUcwQWN3QmZBRzhBYmdCbEFHUUFjZ0JwQUhZQVpRQmZBR1lBYVFCc0FHVUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFFQUFBQUFBQUFBQWdBQUFBQUFuZ0FBQUdVQWJRQmhBR2tBYkFCZkFHRUFaQUJrQUhJQVpRQnpBSE1BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBUUFBQUFBQUFBQUNBQUFBQUFDZUFBQUFiUUJoQUhJQWRnQmxBR3dBYkFCZkFIUUFaUUJ5QUcwQWFRQnVBSFVBY3dBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQkFBQUFBQUFBQUFJQUFBQUFBQT09Ii8+PC9tZXRhPg==
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR18MB4474:EE_|BN9PR18MB4362:EE_
+x-ms-office365-filtering-correlation-id: 633b58f6-b5f9-476d-b806-08dafd63afcc
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: bQavtia1qyvLOTgSlqQX93GXuMavWVrAaXqlnuGfsOzuQ1peQvQmXs5M4SNIIxpRMCUt8Fniwk/yZfdGxnmVGndlN5ZpSQmeRu5T/kBQCM+WKjrEE8vDf08+opWqbNMfvXsUH3bT3kbXo+k8bfYd4OYQvjZebKKItzVmwYSSzhjE9rCFcW3Oa3Tej5FCPtz9tGs0RZZjJ1zSZnOXlZevmSRByX6ucwnEhwo94hK0vXB9AMGzB7JnDBDURGOpD1gRcKmG8VJRLGMsxZ/OUzkne1KrNzIITDkXt2Ve9fm2A0YmssXs3IjFdxFTtCmWTCtCqshP21r+BfjlfzY56DlZxXntqtXtbqxwI9gOyVQXt1MjGPwg88gsd86BK2/7UbHttg7XIU2Cdgj1boYpfur9xyLTVm+QGbnFd3b8Xc3RDJy4SeV8xmXyTUKFIInFdnOZlhUM6bcCf6aEH0E3FC3OHL1SFvawtBUwy8IT1KecesClp1zXzAzHxiG7fSF5ZexDe287Mn6wntuseWkqTGoVzAQTWf9vNmUX2Q19tEzSVkP3Tm2frP8fqsTm1zd118KM2KBmhYE2Am1SMEaiZ9PZ2GcDqMPNT8xiUfa0tif4BMrldGn+TEl8q083SMcCkjvibBp5IDsmwkfzjTOqPBRr6XrLBw32diT23ImK1CLVG4KTGKGpMI3AvIr1iF9lX+FGawSK0E/dkbdV79a6IQ3CUw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR18MB4474.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(39860400002)(136003)(366004)(346002)(376002)(451199015)(86362001)(2906002)(38070700005)(76116006)(33656002)(316002)(54906003)(64756008)(83380400001)(107886003)(6506007)(7696005)(478600001)(71200400001)(9686003)(186003)(26005)(7416002)(52536014)(8936002)(38100700002)(5660300002)(66946007)(55016003)(122000001)(4326008)(8676002)(66476007)(66446008)(66556008)(6916009)(41300700001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?iPuddEUtd2hO73Vdph73dI85fpim1S0IS+ilzVs5SMOkPSyUFSSHu2FlMhHx?=
+ =?us-ascii?Q?bBTf20XUmJM8zGT84+hmieu/2bjkJD38nTpO2PjSZGpK+vXvEJV0TgN8x8c4?=
+ =?us-ascii?Q?y/sWNsxtbtpc/YosbACXg1kt19wQ3j+5f7eVBaCBzUY493C83LYhLVL5OVx1?=
+ =?us-ascii?Q?62z4CDzbYcCOBMf6NgIFGOiF69X3Z8xe52cPENZ4BycJZDQjTmdPJ04scSEo?=
+ =?us-ascii?Q?4u/77NCOyXFNE5185x0VsV65iSZDrEMybMIhiO0b/HxiUiy0Muuix9K6E7SN?=
+ =?us-ascii?Q?KrKTWZUMGnebr494YN1uhWMDGdZc1MoSl45y1pAra0RUmtDTiLeP6RwrXr6M?=
+ =?us-ascii?Q?Q3UFQBjizseDIIEd1W2sA/lqhfrGmyDw4AppcRMWQXwHtU8KetrcjXnfzKTO?=
+ =?us-ascii?Q?Wz090wdLeO03DvWnB73mbdcn8N1Oe/JYjXsja/+LAgZw/Wj+Zi7ruEbgBSW9?=
+ =?us-ascii?Q?YkGhWSY8luqZoV0XyV4b+SFn/hSrexAFml4nfgAUm42huVZJDTKeEVbxhbpr?=
+ =?us-ascii?Q?92bNNzYlZaI0PFmVyRdq/h2dNgGBm6yGy+Ku0ipL8DZFm3QrJcit7WweGFXb?=
+ =?us-ascii?Q?OeuwCDf9Q+DN2x3lPbNUzQAPllYlCRAf35kdjMyDrbpY7rr9SoG0Uc8voGwC?=
+ =?us-ascii?Q?bK9oWjfHNE20Q0WM5PlWp0pk3cTGCPbtXk5uSOGvNB6+flFtmVe6TDOpYKJS?=
+ =?us-ascii?Q?Rjv/G1Up/sTciBpiFToC2BvYaB5aG8SjCAmmJOYiaueaaL8W1l9mfHjJTRBQ?=
+ =?us-ascii?Q?ny9OLrLpVBunpytyE15gYP//oMqF163sdJDaZgWlA6NhipvQ+naHeGeIBRJ8?=
+ =?us-ascii?Q?/CNO4tINv803s70/7MT4YFH4jUU7RvLxW1nxBoA+2+tOaW3dbutfGsJTcrbZ?=
+ =?us-ascii?Q?AcdcE/x392ja32KiF5bb827iwdKYL5Lt9F54Mwai7F3NzvvhgfMqnPSRRjw7?=
+ =?us-ascii?Q?AXJC15ntAaWofdQHpXsZ5Dw/WaI5dsv8n3I8ryuWQit0/dm+bBfu7vBCvP4c?=
+ =?us-ascii?Q?MEAjtMLKVFDsTYD1AeJkY/Z/fX6qWw/MwTuF/daKT8GSyGSAGqS+32vcah9F?=
+ =?us-ascii?Q?WCuKHyQMlGkPZyurWQmgr10vCNxI7ys065ySNNJMO1fpduc8t6O5cRmLgU2u?=
+ =?us-ascii?Q?sW+srOYH5V41NbGIQn6IxUzTCpsAUs71pfHqbAP6ID14XUWLsFj5Nan08bxw?=
+ =?us-ascii?Q?5vT2WxGZ5/A+JGw/KSK1O7sze9+vvcRvnHGz8QjIKA9mbSW9I3Zl6LFz/LLC?=
+ =?us-ascii?Q?EB1TWsX+RBRyAKQ0ZwimiJoKVi6+PBpRhcs5nqjkVsnsXLH7SWBnQxmP4wmv?=
+ =?us-ascii?Q?OoqxMcRAxbcWRkgkLEJmzhjOnWnlgiigxVElYl2hL5C4prEDe0LcAw/LaQSf?=
+ =?us-ascii?Q?X9rdYCda9neE95hCRX8vhU0VYMRR2WOxQahGdQSGBBH0xL85gU2g8u6d1+vK?=
+ =?us-ascii?Q?6khEWZGExl106ldgjRsylbUpeZRvph2tpGPUxINLGWZxuk9i90QoAuIizHwG?=
+ =?us-ascii?Q?yHaCDFbh9pYNtJw7F0GL3EJpiGSR0yiWdEIY2d69bycQCBSi8X6HiE7UGslC?=
+ =?us-ascii?Q?bCjezUQ6/JO59tVr+o4JYUFLZ95snjjukz79WqA8?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230123162200.54281-1-kuniyu@amazon.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR18MB4474.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 633b58f6-b5f9-476d-b806-08dafd63afcc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jan 2023 17:03:01.8740
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Jj8yhDBDUxVF1Wt0IUfIPtHIWixF4avrSCRqUEG2u+63Il3IkDRV42GgSNymX+rX0PERU2tqe5m/g8duUXw//Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR18MB4362
+X-Proofpoint-ORIG-GUID: KHzH7Zuax8HqnrUrFN7nehzTg7fNPU8H
+X-Proofpoint-GUID: KHzH7Zuax8HqnrUrFN7nehzTg7fNPU8H
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-01-23_12,2023-01-23_01,2022-06-22_01
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-Thank you for your review.
 
 
-On Mon, Jan 23, 2023 at 08:22:00AM -0800, Kuniyuki Iwashima wrote:
-> Hi,
-> 
-> Thanks for the patch!
-> 
-> From:   Hyunwoo Kim <v4bel@theori.io>
-> Date:   Sat, 21 Jan 2023 07:08:59 -0800
-> > If listen() and accept() are called on an AF_NETROM socket that
-> > has already been connect()ed, accept() succeeds in connecting.
-> > This is because nr_accept() dequeues the skb queued in
-> > `sk->sk_receive_queue` in nr_connect().
-> > 
-> > This causes nr_accept() to allocate and return a sock with the
-> > sk of the parent AF_NETROM socket. And here's where use-after-free
-> > can happen through complex race conditions:
-> > ```
-> >                   cpu0                                                     cpu1
-> >                                                                1. socket_2 = socket(AF_NETROM)
-> >                                                                   listen(socket_2)
-> >                                                                   accepted_socket = accept(socket_2)    // loopback connection with socket_1
-> >        2. socket_1 = socket(AF_NETROM)
-> >             nr_create()    // sk refcount : 1
-> >           connect(socket_1)    // loopback connection with socket_2
-> >             nr_connect()
-> >             nr_establish_data_link()
-> >             nr_write_internal()
-> >             nr_transmit_buffer()
-> >             nr_route_frame()
-> >             nr_loopback_queue()
-> >             nr_loopback_timer()
-> >             nr_rx_frame()
-> >             nr_process_rx_frame()
-> >             nr_state3_machine()
-> >             nr_queue_rx_frame()
-> >             sock_queue_rcv_skb()
-> >             sock_queue_rcv_skb_reason()
-> >             __sock_queue_rcv_skb()
-> >             __skb_queue_tail(list, skb);    // list : sk->sk_receive_queue
-> > 
-> >        3. listen(socket_1)
-> >             nr_listen()
-> >           uaf_socket = accept(socket_1)
-> >             nr_accept()
-> >             skb_dequeue(&sk->sk_receive_queue);
-> 
-> Sorry, I didn't understand how this is populated by close(accepted_socket),
-> especially how skb->sk is set as socket_1's sk.
+>=20
+> On Fri, Jan 20, 2023 at 08:50:16AM +0000, Hariprasad Kelam wrote:
+> >=20
+> > On Wed, Jan 18, 2023 at 04:21:06PM +0530, Hariprasad Kelam wrote:
+> > > All VFs and PF netdev shares same TL1 schedular, each interface PF=20
+> > > or VF will have different TL2 schedulars having same parent TL1.=20
+> > > The
+> > > TL1 RR_PRIO value is static and PF/VFs use the same value to=20
+> > > configure its
+> > > TL2 node priority in case of DWRR children.
+> > >=20
+> > > This patch adds support to configure TL1 RR_PRIO value using devlink.
+> > > The TL1 RR_PRIO can be configured for each PF. The VFs are not=20
+> > > allowed to configure TL1 RR_PRIO value. The VFs can get the=20
+> > > RR_PRIO value from the mailbox NIX_TXSCH_ALLOC response parameter agg=
+r_lvl_rr_prio.
+> >=20
+> > I asked this question under v1, but didn't get an answer, could you she=
+d some light?
+> >=20
+> > "Could you please elaborate how these priorities of Transmit Levels are=
+ related to HTB priorities? I don't seem to understand why something has to=
+ be configured with devlink in addition to HTB.
+> >=20
+> > SMQ (send meta-descriptor queue) and MDQ (meta-descriptor queue) are th=
+e first transmit levels.
+> > Each send queue is mapped with SMQ.
+> > =20
+> > As mentioned in cover letter, each egress packet needs to traverse all =
+transmit levels starting from TL5 to TL1.
+>=20
+> Yeah, I saw that, just some details about your hardware which might be ob=
+vious to you aren't so clear to me...
+>=20
+> Do these transmit levels map to "layers" of HTB hierarchy? Does it look l=
+ike this, or is my understanding completely wrong?
+>=20
+> TL1                 [HTB root node]
+>                    /               \
+> TL2          [HTB node]         [HTB node]
+>             /          \             |
+> TL3    [HTB node]  [HTB node]   [HTB node]
+> ...                       ...
+>=20
+> Transmit levels to HTB mapping is correct.
+>=20
+>=20
+>=20
+> > This applies to non-QOS Send queues as well.
+> > =20
+> >                        SMQ/MDQ --> TL4 -->TL3 -->TL2 -->TL1
+> >=20
+> > By default non QOS queues use a default hierarchy  with round robin pri=
+ority.=20
+> > To avoid conflict with QOS tree priorities, with devlink user can choos=
+e round-robin priority before Qos tree formation.
+>=20
+> So, this priority that you set with devlink is basically a weight of uncl=
+assified (default) traffic for round robin between unclassified and classif=
+ied traffic, right? I.e. you have two hierarchies (one for HTB, another for=
+ non-QoS queue), and you do DWRR between them, according to this priority?
+>=20
+>=20
+>  Not exactly, In the given scenario where  multiple vfs are attached to P=
+F netdev.
+>  each VF unclassified traffic forms a hierarchy and PF also forms a hiera=
+rchy for unclassified traffic.
+> =20
+> Now traffic from these all tress(multiple vfs and PFs) are aggregated at =
+TL1. HW performs DWRR among them since these TL2 queues (belonging to each =
+pf and vf netdevs) will be configured with the same priority by the driver.
+>=20
+> Currently, this priority is hard coded. Now we are providing this as a co=
+nfigurable value to the user.
+>=20
+> Now if a user adds a HTB node, this will have strict priority at TL2 leve=
+l since DWRR priority is different this traffic won't be affected by DWRR u=
+nclassified traffic.
 
-When calling close(accepted_socket), accepted_socket is currently in NR_STATE_3 state, 
-so nr_release() calls `nr_write_internal(sk, NR_DISCREQ)`.
-In a later flow, nr_rx_frame() is called, where nr_find_socket() is used to get socket_1's sk 
-from the global list `nr_list` (Because `circuit_index` and `circuit_id` used for search were index/id of socket_1's sk):
-```
-        sk = NULL;
+So, did I get it right now?
 
-        if (circuit_index == 0 && circuit_id == 0) {
-                if (frametype == NR_CONNACK && flags == NR_CHOKE_FLAG)
-                        sk = nr_find_peer(peer_circuit_index, peer_circuit_id, src);
-        } else {
-                if (frametype == NR_CONNREQ)
-                        sk = nr_find_peer(circuit_index, circuit_id, src);
-                else
-                        sk = nr_find_socket(circuit_index, circuit_id);    // here
-        }
-```
+                                     [strict priority**]
+                           /---------/                 \-----\
+                           |                                 |
+                        [DWRR*]                              |
+        /---------------/  |   \---------------\             |
+        |                  |                   |             |
+[ Hierarchy for ]  [ Hierarchy for  ]  [ Hierarchy for  ]    |
+[ unclassified  ]  [  unclassified  ]  [  unclassified  ]    |
+[traffic from PF]  [traffic from VF1]  [traffic from VF2]    |
+[      ***      ]  [      ***       ]  [      ***       ]    |
+                                                             |
+                                                [HTB hierarchy using]
+                                                [  strict priority  ]
+                                                [   between nodes   ]
 
-And nr_process_rx_frame(), nr_state3_machine(), nr_disconnect() are executed sequentially, 
-and `nr_sk(sk)->state = NR_STATE_0;` is executed, so the state of socket_1 sk becomes NR_STATE_0.
 
-As a result, `5. In close(socket_1)`, the code of `case NR_STATE_0:` of nr_release() is executed 
-to free the sk, and finally, by calling `close(uaf_socket)`, UAF occurs by referring to the freed sk.
 
-> 
-> 
-> >                                                                4. close(accepted_socket)
-> >                                                                     nr_release()
-> >                                                                     nr_write_internal(sk, NR_DISCREQ)
-> >                                                                     nr_transmit_buffer()    // NR_DISCREQ
-> >                                                                     nr_route_frame()
-> >                                                                     nr_loopback_queue()
-> >                                                                     nr_loopback_timer()
-> >                                                                     nr_rx_frame()    // sk : socket_1's sk
-> >                                                                     nr_process_rx_frame()  // NR_STATE_3
-> >                                                                     nr_state3_machine()    // NR_DISCREQ
-> >                                                                     nr_disconnect()
-> >                                                                     nr_sk(sk)->state = NR_STATE_0;
-> >        5. close(socket_1)    // sk refcount : 3
-> >             nr_release()    // NR_STATE_0
-> >             sock_put(sk);    // sk refcount : 0
-> >             sk_free(sk);
-> >           close(uaf_socket)
-> >             nr_release()
-> >             sock_hold(sk);    // UAF
-> > ```
-> > 
-> > KASAN report by syzbot:
-> > ```
-> > BUG: KASAN: use-after-free in nr_release+0x66/0x460 net/netrom/af_netrom.c:520
-> > Write of size 4 at addr ffff8880235d8080 by task syz-executor564/5128
-> > 
-> > CPU: 0 PID: 5128 Comm: syz-executor564 Not tainted 6.2.0-rc1-syzkaller #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-> > Call Trace:
-> >  <TASK>
-> >  __dump_stack lib/dump_stack.c:88 [inline]
-> >  dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
-> >  print_address_description mm/kasan/report.c:306 [inline]
-> >  print_report+0x15e/0x461 mm/kasan/report.c:417
-> >  kasan_report+0xbf/0x1f0 mm/kasan/report.c:517
-> >  check_region_inline mm/kasan/generic.c:183 [inline]
-> >  kasan_check_range+0x141/0x190 mm/kasan/generic.c:189
-> >  instrument_atomic_read_write include/linux/instrumented.h:102 [inline]
-> >  atomic_fetch_add_relaxed include/linux/atomic/atomic-instrumented.h:116 [inline]
-> >  __refcount_add include/linux/refcount.h:193 [inline]
-> >  __refcount_inc include/linux/refcount.h:250 [inline]
-> >  refcount_inc include/linux/refcount.h:267 [inline]
-> >  sock_hold include/net/sock.h:775 [inline]
-> >  nr_release+0x66/0x460 net/netrom/af_netrom.c:520
-> >  __sock_release+0xcd/0x280 net/socket.c:650
-> >  sock_close+0x1c/0x20 net/socket.c:1365
-> >  __fput+0x27c/0xa90 fs/file_table.c:320
-> >  task_work_run+0x16f/0x270 kernel/task_work.c:179
-> >  exit_task_work include/linux/task_work.h:38 [inline]
-> >  do_exit+0xaa8/0x2950 kernel/exit.c:867
-> >  do_group_exit+0xd4/0x2a0 kernel/exit.c:1012
-> >  get_signal+0x21c3/0x2450 kernel/signal.c:2859
-> >  arch_do_signal_or_restart+0x79/0x5c0 arch/x86/kernel/signal.c:306
-> >  exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
-> >  exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:203
-> >  __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
-> >  syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
-> >  do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
-> >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > RIP: 0033:0x7f6c19e3c9b9
-> > Code: Unable to access opcode bytes at 0x7f6c19e3c98f.
-> > RSP: 002b:00007fffd4ba2ce8 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
-> > RAX: 0000000000000116 RBX: 0000000000000003 RCX: 00007f6c19e3c9b9
-> > RDX: 0000000000000318 RSI: 00000000200bd000 RDI: 0000000000000006
-> > RBP: 0000000000000003 R08: 000000000000000d R09: 000000000000000d
-> > R10: 0000000000000000 R11: 0000000000000246 R12: 000055555566a2c0
-> > R13: 0000000000000011 R14: 0000000000000000 R15: 0000000000000000
-> >  </TASK>
-> > 
-> > Allocated by task 5128:
-> >  kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
-> >  kasan_set_track+0x25/0x30 mm/kasan/common.c:52
-> >  ____kasan_kmalloc mm/kasan/common.c:371 [inline]
-> >  ____kasan_kmalloc mm/kasan/common.c:330 [inline]
-> >  __kasan_kmalloc+0xa3/0xb0 mm/kasan/common.c:380
-> >  kasan_kmalloc include/linux/kasan.h:211 [inline]
-> >  __do_kmalloc_node mm/slab_common.c:968 [inline]
-> >  __kmalloc+0x5a/0xd0 mm/slab_common.c:981
-> >  kmalloc include/linux/slab.h:584 [inline]
-> >  sk_prot_alloc+0x140/0x290 net/core/sock.c:2038
-> >  sk_alloc+0x3a/0x7a0 net/core/sock.c:2091
-> >  nr_create+0xb6/0x5f0 net/netrom/af_netrom.c:433
-> >  __sock_create+0x359/0x790 net/socket.c:1515
-> >  sock_create net/socket.c:1566 [inline]
-> >  __sys_socket_create net/socket.c:1603 [inline]
-> >  __sys_socket_create net/socket.c:1588 [inline]
-> >  __sys_socket+0x133/0x250 net/socket.c:1636
-> >  __do_sys_socket net/socket.c:1649 [inline]
-> >  __se_sys_socket net/socket.c:1647 [inline]
-> >  __x64_sys_socket+0x73/0xb0 net/socket.c:1647
-> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> >  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
-> >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > 
-> > Freed by task 5128:
-> >  kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
-> >  kasan_set_track+0x25/0x30 mm/kasan/common.c:52
-> >  kasan_save_free_info+0x2b/0x40 mm/kasan/generic.c:518
-> >  ____kasan_slab_free mm/kasan/common.c:236 [inline]
-> >  ____kasan_slab_free+0x13b/0x1a0 mm/kasan/common.c:200
-> >  kasan_slab_free include/linux/kasan.h:177 [inline]
-> >  __cache_free mm/slab.c:3394 [inline]
-> >  __do_kmem_cache_free mm/slab.c:3580 [inline]
-> >  __kmem_cache_free+0xcd/0x3b0 mm/slab.c:3587
-> >  sk_prot_free net/core/sock.c:2074 [inline]
-> >  __sk_destruct+0x5df/0x750 net/core/sock.c:2166
-> >  sk_destruct net/core/sock.c:2181 [inline]
-> >  __sk_free+0x175/0x460 net/core/sock.c:2192
-> >  sk_free+0x7c/0xa0 net/core/sock.c:2203
-> >  sock_put include/net/sock.h:1991 [inline]
-> >  nr_release+0x39e/0x460 net/netrom/af_netrom.c:554
-> >  __sock_release+0xcd/0x280 net/socket.c:650
-> >  sock_close+0x1c/0x20 net/socket.c:1365
-> >  __fput+0x27c/0xa90 fs/file_table.c:320
-> >  task_work_run+0x16f/0x270 kernel/task_work.c:179
-> >  exit_task_work include/linux/task_work.h:38 [inline]
-> >  do_exit+0xaa8/0x2950 kernel/exit.c:867
-> >  do_group_exit+0xd4/0x2a0 kernel/exit.c:1012
-> >  get_signal+0x21c3/0x2450 kernel/signal.c:2859
-> >  arch_do_signal_or_restart+0x79/0x5c0 arch/x86/kernel/signal.c:306
-> >  exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
-> >  exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:203
-> >  __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
-> >  syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
-> >  do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
-> >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > ```
-> > 
-> > To fix this problem, nr_listen() returns -EINVAL for sockets that
-> > successfully nr_connect().
-> >
-> 
-> I'd add
-> 
->   Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> 
-> > Reported-by: syzbot+caa188bdfc1eeafeb418@syzkaller.appspotmail.com
-> > Signed-off-by: Hyunwoo Kim <v4bel@theori.io>
-> > ---
-> >  net/netrom/af_netrom.c | 5 +++++
-> >  1 file changed, 5 insertions(+)
-> > 
-> > diff --git a/net/netrom/af_netrom.c b/net/netrom/af_netrom.c
-> > index 6f7f4392cffb..dcfa606684d7 100644
-> > --- a/net/netrom/af_netrom.c
-> > +++ b/net/netrom/af_netrom.c
-> > @@ -400,6 +400,11 @@ static int nr_listen(struct socket *sock, int backlog)
-> >  	struct sock *sk = sock->sk;
-> >  
-> >  	lock_sock(sk);
-> > +	if (sock->state == SS_CONNECTED) {
-> 
-> I guess the same issue happens for SS_CONNECTING (non-blocking connect()),
-> so this should be
-> 
->         if (sock->state != SS_UNCONNECTED) {
-> 
-> ?
-> 
-> Same for the rose and x25 patches.
-> https://lore.kernel.org/netdev/20230122173957.GA99728@ubuntu/
-> https://lore.kernel.org/netdev/20230122170925.GA98061@ubuntu/
+        Adjusted picture
 
-you're right.
-I will submit the fixed v2 patches.
+                        /--------------------------------------------------=
+------------------------------/       Transmit level 1
+                            |                                              =
+                                        |=20
+                        [DWRR*] [ priority 6 ]                             =
+         [strict priority** ]      [ priority 0 ]  Transmit level 2
+        /---------------/  |   \-----------------------------------\       =
+                    |
+             |                   |                                   |     =
+                                      |
+[ Hierarchy for ]  [ Hierarchy for  ]  [ Hierarchy for  ]                 [=
+ Hierarchy for  ]=20
+[ unclassified  ]  [  unclassified  ]  [  unclassified  ]                  =
+    [ strict priority  ]
+[traffic from PF]  [traffic from VF1]  [traffic from VF2]  =20
+[      ***      ]  [      ***       ]  [      ***       ]   =20
+                                               =20
 
-Regards,
-Hyunwoo Kim
 
-> 
-> 
+As far as I understand, you set priorities at ***, which affect DWRR balanc=
+ing at *, but it's not clear to me how the selection at ** works.
+Does the HTB hierarchy have some fixed priority,  ?
+
+Hardware supports priorities from 0 to 7. lower value has high priority.
+nodes having the same priority are treated as DWRR childs.
+
+i.e. the user can set priority for unclassified traffic to be higher or low=
+er than HTB traffic?
+
+Yes its user configurable, unclassified traffic priority can be higher or l=
+ower than HTB traffic if a user wishes to configure it.
+
+Please also point me at any inaccuracies in my picture, I really want to un=
+derstand the algorithm here, because configuring additional priorities outs=
+ide of HTB looks unusual to me.
+
+  Please check the adjusted picture. Let us assume a user has set the prior=
+ity as 6 for DWRR (unclassified traffic)  and  HTB strict priority as 0.
+Once all traffic reaches  TL2,  Now hardware algorithm first pics HTB stric=
+t priority and processes DWRR later according to their priorities.
+
+>=20
 > Thanks,
-> Kuniyuki
-> 
-> > +		release_sock(sk);
-> > +		return -EINVAL;
-> > +	}
-> > +
-> >  	if (sk->sk_state != TCP_LISTEN) {
-> >  		memset(&nr_sk(sk)->user_addr, 0, AX25_ADDR_LEN);
-> >  		sk->sk_max_ack_backlog = backlog;
-> > -- 
-> > 2.25.1
+> Hariprasad k
