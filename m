@@ -2,76 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0491D67871D
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 21:04:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 314DD67872A
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 21:05:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232245AbjAWUER (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 15:04:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37394 "EHLO
+        id S232190AbjAWUFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 15:05:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231867AbjAWUEQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 15:04:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D7C30297;
-        Mon, 23 Jan 2023 12:03:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B9A5D6101E;
-        Mon, 23 Jan 2023 20:03:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E91EDC4339B;
-        Mon, 23 Jan 2023 20:03:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674504201;
-        bh=ZHGRoFsn+EUQs1iGPUoTvzLYTnpaq6FISKkR45iFTro=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qM6i+IIDqjcH4mojlWNvMQdFGCyzWZIhEo9WKN0AIWy6r1P2EzK6hmhI6K7e05/u+
-         yuAlLEc1mXRUW3OD9VXgQFvd4UMYSVNaNeKBL5caMIs4NmZN1xhi1z4BEzf/Uf1akh
-         U9iHLMURGhZBiFJ16l/rEiwQBx5/6PHFqZ1QrM76gWz99gXClgUt6pTraqfaKIH+ed
-         1m5G4I0oj39ZAhs7MilDbE2YVziYHW01OnWMKI8Atjv2qoKla8pJ2OyjfVPqucNJcV
-         I1bfIYUL9PJbPHao3HYvbFrsnC7Ee5/xWNiaHH0uamhQim2dA/dPNe70zuwN0fRol4
-         KLd28kbao71Zg==
-Date:   Mon, 23 Jan 2023 12:03:18 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        hawk@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        toke@redhat.com, memxor@gmail.com, alardam@gmail.com,
-        saeedm@nvidia.com, anthony.l.nguyen@intel.com, gospo@broadcom.com,
-        vladimir.oltean@nxp.com, nbd@nbd.name, john@phrozen.org,
-        leon@kernel.org, simon.horman@corigine.com, aelior@marvell.com,
-        christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
-        mst@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
-        maciej.fijalkowski@intel.com, intel-wired-lan@lists.osuosl.org,
-        lorenzo.bianconi@redhat.com, niklas.soderlund@corigine.com
-Subject: Re: [PATCH bpf-next 2/7] drivers: net: turn on XDP features
-Message-ID: <20230123120318.358ef9a8@kernel.org>
-In-Reply-To: <Y80iwBNd3tPvEbMd@lore-desk>
-References: <cover.1674234430.git.lorenzo@kernel.org>
-        <861224c406f78694530fde0d52c49d92e1e990a2.1674234430.git.lorenzo@kernel.org>
-        <20230120191152.44d29bb1@kernel.org>
-        <Y80iwBNd3tPvEbMd@lore-desk>
+        with ESMTP id S232161AbjAWUFq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 15:05:46 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47AC3A3;
+        Mon, 23 Jan 2023 12:05:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=eSXzCNP2m7XO3Q0w7LbwozM/JBHPoSDhldEqmNy7mfU=; b=E0JYPM2fQ6rNWoUtAtkJC3kua3
+        6CqKEyQMh4x1iyTEtZCgqInf0YAv8fSwBdpT3+/6HPyy6oI4KILB5y/LI3cil6amR5r/D8gWPgeoG
+        lzJTzZxclfZ/iJx+1rM1tLifDotLWdGeri/O9W9i+8rpBKAHqsYMorHIV2V20c0P2KrE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pK34F-002wlY-Th; Mon, 23 Jan 2023 21:05:23 +0100
+Date:   Mon, 23 Jan 2023 21:05:23 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Michael Walle <michael@walle.cc>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Xu Liang <lxu@maxlinear.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 0/5] net: phy: C45-over-C22 access
+Message-ID: <Y87og1SIe1OsoLfU@lunn.ch>
+References: <20230120224011.796097-1-michael@walle.cc>
+ <Y87L5r8uzINALLw4@lunn.ch>
+ <Y87WR/T395hKmgKm@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y87WR/T395hKmgKm@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 22 Jan 2023 12:49:20 +0100 Lorenzo Bianconi wrote:
-> > Shouldn't these generate netlink notifications?  
-> 
-> ack, I would say we need to add NETDEV_XDP_FEAT_CHANGE case in
-> netdev_genl_netdevice_event routine and maybe add a new
-> NETDEV_XDP_FEAT_CHANGE flag in netdev_cmd. What do you think?
+> C45-over-C22 is a PHY thing, it isn't generic. We shouldn't go poking
+> at the PHY C45-over-C22 registers unless we know for certain that the
+> C22 device we are accessing is a PHY, otherwise we could be writing
+> into e.g. a switch register or something else.
 
-No strong preference between a full event or just a direct call until
-we have another in-kernel user interested in the notification.
-The changes are wrapped nicely in helpers, so we can change it later
-easily.
+Humm, yes. Good point.
+
+> The problem comes with PHYs that maybe don't expose C22 ID registers
+> but do have C45-over-C22.
+> 
+> Given that, it seems that such a case could not be automatically
+> probed, and thus must be described in firmware.
+
+We already have the compatible:
+
+      - const: ethernet-phy-ieee802.3-c45
+        description: PHYs that implement IEEE802.3 clause 45
+
+But it is not clear what that actually means. Does it mean it has c45
+registers, or does it mean it supports C45 bus transactions?
+
+If we have that compatible, we could probe first using C45 and if that
+fails, or is not supported by the bus master, probe using C45 over
+C22. That seems safe. For Michael use case, the results of
+mdiobus_prevent_c45_scan(bus) needs keeping as a property of bus, so
+we know not to perform the C45 scan, and go direct to C45 over C22.
+
+   Andrew
