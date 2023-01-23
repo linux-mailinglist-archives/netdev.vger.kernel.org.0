@@ -2,141 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EEE1678B9C
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 00:02:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A02FF678B9F
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 00:02:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231703AbjAWXCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 18:02:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35374 "EHLO
+        id S231932AbjAWXCe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 18:02:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231638AbjAWXCI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 18:02:08 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C86F5242;
-        Mon, 23 Jan 2023 15:01:35 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id y11so16376150edd.6;
-        Mon, 23 Jan 2023 15:01:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=mzfL1sys7tR/U9dWeCKh9/M6xQgFrn17BxPfMKcz5Z4=;
-        b=FLcyJAD7atSBhN4+y4EoSFcDRHJb9hRgu3setrWHeR0oAllKDsfhe/KnrqHiEZNu2o
-         6KL7AZdcnPFUnQCPiTmt7lwYr+GCmS0K2jNrwSIc3Z51u9QAI0MOApx2MjQNURuX4InA
-         XdCNqZeaOznz25BHrP58xgmJ0z5jaGbrqfXsbV4vBIARe7m7cHyOccLm+lhBLNSlKQkG
-         wIi1PqIGheNvSZNO/wV5Bw+4BQ2orn+MhSf96y2UhQP1aCX/xm9IpJc794aLzRLr5+Sc
-         D2kKuurIjLDEFs3+2rRjDDHzO2uROgD/WVghMy+iTLTaLzWiIaqKtrM6cv0WZEN/kll4
-         qKhA==
+        with ESMTP id S231867AbjAWXCd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 18:02:33 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F9883928D
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 15:02:10 -0800 (PST)
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id A448544216
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 23:01:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1674514895;
+        bh=ws4I49gzal9OMpseAqlgTMxeS+K4PzsbLrV3ypXSgOQ=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=Q4xmO8ukmC8AAHgsAhD41RKYP7PgXeJ+aiJuFbPIMm+MEnPQZ4f6L5yASzXLqb83s
+         0ooo2kDgxaW6bBu/Z+CNDgrRn2XUSkkttxnszZ2QwyVmit0p/uy0Ob9cMO+LfzrySC
+         S3OuA90sf3KuDkYXh5gAX3l+D/AQuVBn9oMGTH/o3o3jTZj9RwaI9qMlQl/qJvwh67
+         Jogc0xw1WDjjk041PGNb/XEBEpcGqpihPSnhpVwHlNBtbQnaBf6DxfLH8CSr+ayyoc
+         vWOVOu/CB0vc5dxAC6z9XxmjCamicYwOr2O2h0eAGw+LsHMgatzSJgqJXG3olYd8tH
+         Ij4qQSALrMO7Q==
+Received: by mail-pl1-f199.google.com with SMTP id s5-20020a170903214500b00195e3b26848so5825114ple.7
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 15:01:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mzfL1sys7tR/U9dWeCKh9/M6xQgFrn17BxPfMKcz5Z4=;
-        b=x/52zTILIk1nImyozBuatMCoH6kBpqdEjux2jP859c/8cKAnc4sAqd1L5VPUf0PnpY
-         CevuD9T1YPa95pG7LQYBLczaFNzjeYjr0HXGN8A7wr/H/joFBQVwUpubJnz+fBEGv0jo
-         rjNd50xlaG6anhfQ6Yk1iJ4LjVmwjO6OUOA0RtYo7YJ7a0+Aplg70kHZfOjnVS0q5B+D
-         xC5FoJ4glYEjyQrt7ttFs+MZ6cjyf9DKHVqP+Yl9kJAaiwzNhlON99grWDxHW7jVE7h0
-         XivGrCVYG8SMMpzb7zNi+lKDRDQQn3nSnIZA19hGBoa4pk/jNWRPkR3O7eivP38X9l5t
-         9ocw==
-X-Gm-Message-State: AFqh2kpwzWsdh8Jq/ogv30bueW/03j1IN5PaVnAKaXFN1K+vDf5iebPg
-        bLfza4ZkevH2dlNAJHsU9Ofb52FJ3WskvIqcyrE=
-X-Google-Smtp-Source: AMrXdXsoiStQlHWPiJm8U5NmtegkmsJd4KpVQAT1RSJpSLSejq7iEx8OwoQYks9IEA1z/jidLjp+5Q==
-X-Received: by 2002:aa7:d392:0:b0:484:7560:1a77 with SMTP id x18-20020aa7d392000000b0048475601a77mr27603201edq.16.1674514884250;
-        Mon, 23 Jan 2023 15:01:24 -0800 (PST)
-Received: from localhost ([103.251.167.10])
-        by smtp.gmail.com with ESMTPSA id v16-20020aa7dbd0000000b00458b41d9460sm280372edt.92.2023.01.23.15.01.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Jan 2023 15:01:23 -0800 (PST)
-Date:   Tue, 24 Jan 2023 01:01:21 +0200
-From:   Maxim Mikityanskiy <maxtram95@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Hariprasad Kelam <hkelam@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geethasowjanya Akula <gakula@marvell.com>,
-        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
-        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "saeedm@nvidia.com" <saeedm@nvidia.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "tariqt@nvidia.com" <tariqt@nvidia.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "hariprasad.netdev@gmail.com" <hariprasad.netdev@gmail.com>,
-        Naveen Mamindlapalli <naveenm@marvell.com>
-Subject: Re: [net-next Patch v2 4/5] octeontx2-pf: Add devlink support to
- configure TL1 RR_PRIO
-Message-ID: <Y88Rug7iaC0nOGvu@mail.gmail.com>
-References: <20230118105107.9516-1-hkelam@marvell.com>
- <20230118105107.9516-5-hkelam@marvell.com>
- <Y8hYlYk/7FfGdfy8@mail.gmail.com>
- <PH0PR18MB4474FCEAC4FA5907CAC17011DEC59@PH0PR18MB4474.namprd18.prod.outlook.com>
- <Y8qZNhUgsdOMavC4@mail.gmail.com>
- <PH0PR18MB4474DBEF155EFA4DA6BA5B10DEC59@PH0PR18MB4474.namprd18.prod.outlook.com>
- <Y803rePcLc97CGik@mail.gmail.com>
- <PH0PR18MB44741D5EBBD7B4010C78C7DFDEC89@PH0PR18MB4474.namprd18.prod.outlook.com>
- <Y87onaDuo8NkFNqC@mail.gmail.com>
- <20230123144548.4a2c06ae@kernel.org>
+        h=message-id:date:content-transfer-encoding:content-id:mime-version
+         :comments:references:in-reply-to:subject:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ws4I49gzal9OMpseAqlgTMxeS+K4PzsbLrV3ypXSgOQ=;
+        b=s4BksTAmUl4HFUpWBleoYC64CWfrQw9shmCdGFEvk8lvExsj+UTFyH3rUbM2iq9dAR
+         LIkzPZHMoNBU8Ly+PxTdXbQGsOmPLmDZKq4xbI4pRZjZeu+1HfLJyw6dvbfQ7A4bGwAK
+         vTZ8uKkoSam/YzDx6Ob5nFFWroB7Cw2nxg75VIPkYVBui0Vn/Qlr7Y1YcpR/IHB4N4q6
+         83wxyLH6Lam+fqBe9JGqydEO9vVhUeIsJ3pvhQgXIiPgQzu8lwl2O2ac7qQwpZ5cVvyq
+         Exbmn2zbMlW5knf4OkJZ3Jjssg8gA1MWq6kaMebrJer1v3+cFbyZeajYuXuDRtYICvLe
+         ccxw==
+X-Gm-Message-State: AFqh2kreO7KIjb88lUMaLQiujuC/oAq7Zlvo/SB3CboDDfuSqQMhRoHT
+        qWjHgfTDbv98H2hhNzcyUrODdZLXlKzn9hgEl55ZXxDvcvg2PMsIjLiAlGosPHJL3DPt7i4NoXW
+        VMGIgnq4TR5ioc5BjaZf2y+nlYdw9f7rj/w==
+X-Received: by 2002:a62:ab02:0:b0:58d:982a:f1ed with SMTP id p2-20020a62ab02000000b0058d982af1edmr24276302pff.27.1674514894087;
+        Mon, 23 Jan 2023 15:01:34 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXv06FZ22qYDSbiHlRRzdN+ym7mY/jj4yLHKaDeEBtmszT7tu35ck+5fnK0SVdJqtyl59pVEFw==
+X-Received: by 2002:a62:ab02:0:b0:58d:982a:f1ed with SMTP id p2-20020a62ab02000000b0058d982af1edmr24276280pff.27.1674514893770;
+        Mon, 23 Jan 2023 15:01:33 -0800 (PST)
+Received: from famine.localdomain ([50.125.80.253])
+        by smtp.gmail.com with ESMTPSA id w1-20020aa79541000000b00580fb018e4bsm96558pfq.211.2023.01.23.15.01.33
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 23 Jan 2023 15:01:33 -0800 (PST)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id D1F24604E3; Mon, 23 Jan 2023 15:01:32 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id C37019FB5C;
+        Mon, 23 Jan 2023 15:01:32 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Leon Romanovsky <leon@kernel.org>
+cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jonathan Corbet <corbet@lwn.net>, oss-drivers@corigine.com,
+        linux-doc@vger.kernel.org, Raju Rangoju <rajur@chelsio.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Andy Gospodarek <andy@greyhouse.net>
+Subject: Re: [Intel-wired-lan] [PATCH net-next 09/10] bonding: fill IPsec state validation failure reason
+In-reply-to: <d563de401d6fdc1c52959300eebb2bbb27c6c181.1674481435.git.leon@kernel.org>
+References: <cover.1674481435.git.leon@kernel.org> <d563de401d6fdc1c52959300eebb2bbb27c6c181.1674481435.git.leon@kernel.org>
+Comments: In-reply-to Leon Romanovsky <leon@kernel.org>
+   message dated "Mon, 23 Jan 2023 16:00:22 +0200."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230123144548.4a2c06ae@kernel.org>
-X-Spam-Status: No, score=1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <5063.1674514892.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Mon, 23 Jan 2023 15:01:32 -0800
+Message-ID: <5064.1674514892@famine>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 23, 2023 at 02:45:48PM -0800, Jakub Kicinski wrote:
-> On Mon, 23 Jan 2023 22:05:58 +0200 Maxim Mikityanskiy wrote:
-> > OK, I seem to get it now, thanks for the explanation!
-> > 
-> > How do you set the priority for HTB, though? You mentioned this command
-> > to set priority of unclassified traffic:
-> > 
-> > devlink -p dev param set pci/0002:04:00.0 name tl1_rr_prio value 6 \
-> > cmode runtime
-> > 
-> > But what is the command to change priority for HTB?
-> > 
-> > What bothers me about using devlink to configure HTB priority is:
-> > 
-> > 1. Software HTB implementation doesn't have this functionality, and it
-> > always prioritizes unclassified traffic. As far as I understand, the
-> > rule for tc stuff is that all features must have a reference
-> > implementation in software.
-> > 
-> > 2. Adding a flag (prefer unclassified vs prefer classified) to HTB
-> > itself may be not straightforward, because your devlink command has a
-> > second purpose of setting priorities between PFs/VFs, and it may
-> > conflict with the HTB flag.
-> 
-> If there is a two-stage hierarchy the lower level should be controlled
-> by devlink-rate, no?
+Leon Romanovsky <leon@kernel.org> wrote:
 
-From the last picture by Hariprasad, I understood that the user sets all
-priorities (for unclassified traffic per PF and VF, and for HTB traffic)
-on the same TL2 level, i.e. it's not two-stage. (Maybe I got it all
-wrong again?)
+>From: Leon Romanovsky <leonro@nvidia.com>
+>
+>Rely on extack to return failure reason.
+>
+>Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+>Signed-off-by: Leon Romanovsky <leon@kernel.org>
+>---
+> drivers/net/bonding/bond_main.c | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
+>
+>diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
+ain.c
+>index 686b2a6fd674..00646aa315c3 100644
+>--- a/drivers/net/bonding/bond_main.c
+>+++ b/drivers/net/bonding/bond_main.c
+>@@ -444,7 +444,7 @@ static int bond_ipsec_add_sa(struct xfrm_state *xs,
+> 	if (!slave->dev->xfrmdev_ops ||
+> 	    !slave->dev->xfrmdev_ops->xdo_dev_state_add ||
+> 	    netif_is_bond_master(slave->dev)) {
+>-		slave_warn(bond_dev, slave->dev, "Slave does not support ipsec offload=
+\n");
+>+		NL_SET_ERR_MSG_MOD(extack, "Slave does not support ipsec offload");
+> 		rcu_read_unlock();
+> 		return -EINVAL;
+> 	}
 
-I asked about the command to change the HTB priority, cause the
-parameters aren't easily guessed, but I assume it's also devlink (i.e.
-driver-specific).
+	Why only this one, and not include the other similar
+slave_warn() calls in the bond_ipsec_* functions?  That would seem to
+make some failures show up in dmesg, and others returned to the caller
+via extack.
 
-If there were two levels (the upper level chooses who goes first: HTB or
-unclassified, and the lower level sets priorities per PF and VF for
-unclassified traffic), that would be more straightforward to solve: the
-upper level should be controlled by a new HTB parameter, and the lower
-level is device-specific, thus it goes to devlink.
+	-J
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
