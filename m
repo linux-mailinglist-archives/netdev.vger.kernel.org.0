@@ -2,58 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A4F59677C70
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 14:28:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DCCD677C97
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 14:36:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231978AbjAWN2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 08:28:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51770 "EHLO
+        id S231759AbjAWNgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 08:36:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229989AbjAWN2y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 08:28:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B633B1BAD8;
-        Mon, 23 Jan 2023 05:28:53 -0800 (PST)
+        with ESMTP id S231707AbjAWNgl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 08:36:41 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 826E1F4
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 05:36:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7855EB80DA1;
-        Mon, 23 Jan 2023 13:28:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63C60C433D2;
-        Mon, 23 Jan 2023 13:28:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E0BE60EBA
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 13:36:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11E64C433EF;
+        Mon, 23 Jan 2023 13:36:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674480531;
-        bh=PjQuKVkt8sNW6/8m5TYyVHX44lfq9Wq/dMIGWb7XXys=;
+        s=k20201202; t=1674480999;
+        bh=buMVqHo4qYu2ZpUoF0r58dCqgL/SRQZbRahfxZPKYtM=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jutvxuDZb3rKOTqEiSsnZctYwyQfVrr1fX1KfkPBczrWaI3YCc0QOqc6GXu1Rwu6f
-         p54yz3f8grJtbhtXeWofDZrDWGs0KAyHeJv7UzQX7rW9kEkQs7ddBeszq8Msbp0tZt
-         i42Fvoba4J38d9NNgePAUuMfOliu52GtpSYGOTqujLZ/7j6Xs6GyAAVQcMXfT4Q7iv
-         2PzknCDgl/tP6lAnSCSoJySC6QgCeZrnZdqS66YG+r5BbfLFFen6O6uTgpuvj442Fd
-         5wkzRPUBlphKX1g0jJj92rHwxdGKWSCSsScEceTOj58OjkdR7O9GlTfpwAO9Xjzwan
-         CUtMaYCOc6Qfg==
-Date:   Mon, 23 Jan 2023 15:28:46 +0200
+        b=lG8ipc0kTjfSXBSuyFfo7HC0188tBChdCnZsy0oGACQ/S4o2SncDCDcOatMT/gCl9
+         oJSG/UYfd4/uquKu0EhWJVVD8gwWDvUoV+41/Ch6BGDT859AcRsT5Cn/Ak8+nGBrxg
+         JbQ+Nzsvfpjm+4WnQ5ZxwNjFBPFhRGDDXntwQh+OUy9XrlDh2xWyUVfHo4kFnfZYEo
+         UnPOAONDeVFRYXQA+/hj/Q+0CfGVDRUrwXfyeleBL0NuI/jJe/Ui1VJ34CyHc/Lerz
+         BV7RshPp4oFZQgj8ivk+wJjYrOTN3H1ONTxniLGqSLBd/R1GyMstVOJ+NmP4JbMwPO
+         xgRyJNo0c5+Yg==
+Date:   Mon, 23 Jan 2023 15:36:35 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Joe Perches <joe@perches.com>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
-        "coreteam@netfilter.org" <coreteam@netfilter.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "lvc-project@linuxtesting.org" <lvc-project@linuxtesting.org>
-Subject: Re: [PATCH] netfilter: conntrack: remote a return value of the
- 'seq_print_acct' function.
-Message-ID: <Y86Lji5prQEAxKLi@unreal>
-References: <20230123081957.1380790-1-Ilia.Gavrilov@infotecs.ru>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com,
+        Huanhuan Wang <huanhuan.wang@corigine.com>
+Subject: Re: [PATCH net-next] nfp: support IPsec offloading for NFP3800
+Message-ID: <Y86NY9MVcfgO1PPs@unreal>
+References: <20230119113842.146884-1-simon.horman@corigine.com>
+ <Y8z40Dt0ZiETMurg@unreal>
+ <Y86IgKLKITyw0K9E@corigine.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230123081957.1380790-1-Ilia.Gavrilov@infotecs.ru>
+In-Reply-To: <Y86IgKLKITyw0K9E@corigine.com>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -63,58 +57,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 23, 2023 at 08:19:50AM +0000, Gavrilov Ilia wrote:
-> The static 'seq_print_acct' function always returns 0.
+On Mon, Jan 23, 2023 at 02:15:44PM +0100, Simon Horman wrote:
+> On Sun, Jan 22, 2023 at 10:50:24AM +0200, Leon Romanovsky wrote:
+> > On Thu, Jan 19, 2023 at 12:38:42PM +0100, Simon Horman wrote:
+> > > From: Huanhuan Wang <huanhuan.wang@corigine.com>
+> > > 
+> > > Add IPsec offloading support for NFP3800.
+> > > Including data plane and control plane.
+> > > 
+> > > Data plane: add IPsec packet process flow in NFP3800 datapath (NFDK).
+> > > 
+> > > Control plane: add a algorithm support distinction of flow
+> > > in xfrm hook function xdo_dev_state_add as NFP3800
+> > > supports a different set of IPsec algorithms.
+> > > 
+> > > This matches existing support for the NFP6000/NFP4000 and
+> > > their NFD3 datapath.
+> > > 
+> > > Signed-off-by: Huanhuan Wang <huanhuan.wang@corigine.com>
+> > > Signed-off-by: Simon Horman <simon.horman@corigine.com>
+> > > ---
+> > >  drivers/net/ethernet/netronome/nfp/Makefile   |  2 +-
+> > >  .../net/ethernet/netronome/nfp/crypto/ipsec.c |  9 ++++
+> > >  drivers/net/ethernet/netronome/nfp/nfd3/dp.c  |  5 +-
+> > >  drivers/net/ethernet/netronome/nfp/nfdk/dp.c  | 47 +++++++++++++++++--
+> > >  .../net/ethernet/netronome/nfp/nfdk/ipsec.c   | 17 +++++++
+> > >  .../net/ethernet/netronome/nfp/nfdk/nfdk.h    |  8 ++++
+> > >  6 files changed, 79 insertions(+), 9 deletions(-)
+> > >  create mode 100644 drivers/net/ethernet/netronome/nfp/nfdk/ipsec.c
+> > 
+> > <...>
+> > 
+> > >  	md_bytes = sizeof(meta_id) +
+> > >  		   !!md_dst * NFP_NET_META_PORTID_SIZE +
+> > > -		   vlan_insert * NFP_NET_META_VLAN_SIZE;
+> > > +		   vlan_insert * NFP_NET_META_VLAN_SIZE +
+> > > +		   *ipsec * NFP_NET_META_IPSEC_FIELD_SIZE;
+> > 
+> > *ipsec is boolean variable, so you are assuming that true is always 1.
+> > I'm not sure that it is always correct.
 > 
-> Change the return value to 'void' and remove unnecessary checks.
+> Thanks, I do see what you are saying.
 > 
-> Found by InfoTeCS on behalf of Linux Verification Center
-> (linuxtesting.org) with SVACE.
-> 
-> Fixes: 1ca9e41770cb ("netfilter: Remove uses of seq_<foo> return values")
-> Signed-off-by: Ilia.Gavrilov <Ilia.Gavrilov@infotecs.ru>
-> ---
->  net/netfilter/nf_conntrack_standalone.c | 26 ++++++++++---------------
->  1 file changed, 10 insertions(+), 16 deletions(-)
-> 
-> diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
-> index 0250725e38a4..bee99d4bcf36 100644
-> --- a/net/netfilter/nf_conntrack_standalone.c
-> +++ b/net/netfilter/nf_conntrack_standalone.c
-> @@ -275,22 +275,18 @@ static const char* l4proto_name(u16 proto)
->  	return "unknown";
->  }
->  
-> -static unsigned int
-> +static void
->  seq_print_acct(struct seq_file *s, const struct nf_conn *ct, int dir)
->  {
-> -	struct nf_conn_acct *acct;
-> -	struct nf_conn_counter *counter;
-> +	struct nf_conn_acct *acct = nf_conn_acct_find(ct);
->  
-> -	acct = nf_conn_acct_find(ct);
-> -	if (!acct)
-> -		return 0;
-> -
-> -	counter = acct->counter;
-> -	seq_printf(s, "packets=%llu bytes=%llu ",
-> -		   (unsigned long long)atomic64_read(&counter[dir].packets),
-> -		   (unsigned long long)atomic64_read(&counter[dir].bytes));
-> +	if (acct) {
-> +		struct nf_conn_counter *counter = acct->counter;
->  
-> -	return 0;
-> +		seq_printf(s, "packets=%llu bytes=%llu ",
-> +			   (unsigned long long)atomic64_read(&counter[dir].packets),
-> +			   (unsigned long long)atomic64_read(&counter[dir].bytes));
-> +	}
+> But I think what is there is consistent with the existing
+> use if md_dst and vlan_insert.
 
-The preferred linux kernel style is to perform if (check_error) return;
-In this case, this pattern should stay.
-
-acct = nf_conn_acct_find(ct);
-if (!acct)
-   return;
+It doesn't make it correct.
 
 Thanks
