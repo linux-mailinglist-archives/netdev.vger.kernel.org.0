@@ -2,59 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 145D6678158
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 17:27:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6C61678185
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 17:33:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231859AbjAWQ1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 11:27:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58124 "EHLO
+        id S233171AbjAWQdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 11:33:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231855AbjAWQ1h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 11:27:37 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A40DEFA7
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 08:27:36 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id ss4so31875430ejb.11
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 08:27:36 -0800 (PST)
+        with ESMTP id S233166AbjAWQdX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 11:33:23 -0500
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B40B12B612
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 08:33:20 -0800 (PST)
+Received: by mail-pg1-x529.google.com with SMTP id s67so9389158pgs.3
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 08:33:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=7/Fg9OBLLcUfHIvx8bfRqsMpoNqUVWT55gvxJlrEUWo=;
-        b=Nyj3oN95/oMFZIBnvXC054yxw6PJxdsIekG8VBBE2PLPm5i4a62r4VdgsbimvRfTzh
-         PfPV3PdQicEPP0EkAHJLBXTy01b7o/BS7RmKnmgvXsela8tx4ahOCiYbkElFmZ4/K0dH
-         7OZmPlbTgv0IEZ+5HHIbUeKhxZlkZiBwJMiDX1jTdAigPPriCBl1HaLsXbrBg+mGyaP9
-         eVkyWHqaO3ciZc5xQzP6WjWDOuOUJWflGRJ8mYhoWn0T2PxKYtgxs9IXEUAJR1UY/uQt
-         AXihX8X1+seryl4ckBW2BLMtc4rxp6Ta1Ux5JkFqE+eAN/r8g8AZwTCadra2gJIkL35F
-         xl+Q==
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=eIyeR/Jqsucv7tljbxuF2NsWpN9ZLMM10wqA6VnPC/k=;
+        b=jGHpPFVzXFGljnC8Apl/jSseC1f8cklRPfLICkpodYvupcBlt77FgWUl3spJZZUze4
+         +b9rx38evVW2I0y1k/lrDIpl3C9YIM8RvLBYGlfg7dssVdpmVtCaSJ7G37UpZ2bJze4T
+         hL77JihMgJoXPyfczrdFIvqtYP1c82nfCKvtXAVybx6bGSLM6YvcRVRGYcYsHcVS1qbr
+         G13RLmTnHuQ3LSG+O9GikF8H/h6ZGqlzdPD4ahDuDy+XBcQD4+eCzyCvhFao3LkaZJVN
+         a9C3zxEFSJZWEfp1k7elfyIdF36i6x4PzKAASCaSAp+gUBgCdBZIJHQTqeucRMF3AuGJ
+         qHWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=7/Fg9OBLLcUfHIvx8bfRqsMpoNqUVWT55gvxJlrEUWo=;
-        b=w8AmRtyfkc5JjYZNL+Q7nqi9apDl0iGExFtjQ9y5Dl5tJm3VmBTBet7UdMgQW/bfoa
-         GTE3i2z37hmcvZgm4buCUA/YJm6xUqStY6Y1cw2IllMzTbI456VJpG01aaU7x8KL9dm9
-         6ypbTb7x9Ki5/2gFo3/mk5aDwxC4As/u9AFErFxMIbvzorO69qPnUWtpl78G8hOuXZ9z
-         5aIlDax3z95Dx2/QxYvniuyeRZC+deG+go8mXXmWjPpws87pDzbsrFANnZbo75+B2Gul
-         HYhja1n7vPVczGPk8RMtCVyjsB7FgHZozX1db5NT7ENKBZ2FU1BxiVifWQYJo9rqOIR5
-         /OXQ==
-X-Gm-Message-State: AFqh2krGEEhEol8qFXDMhVXQejaTKGML1s6UqLxtlo0xZiuX5BHE1npD
-        jJr7QMMGdbkiY37l8bq8DZbo6P5HUGAUxbpYNVKs1q4o
-X-Google-Smtp-Source: AMrXdXvFhUzJqJBjahxPw8mn77k82hvR+mZBJjRBSMWDK1uar4FQ72PA8EgRx2GriDUkoxB2eE22+Izo/AIhEFy2cIk=
-X-Received: by 2002:a17:906:3283:b0:84d:4b8e:efc with SMTP id
- 3-20020a170906328300b0084d4b8e0efcmr2024651ejw.390.1674491255103; Mon, 23 Jan
- 2023 08:27:35 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=eIyeR/Jqsucv7tljbxuF2NsWpN9ZLMM10wqA6VnPC/k=;
+        b=FKbTqbYDqs/P5YXNHF8gqY/mPAinuJnlwubrcmNNOrCwX51VM3loK6BKApM3PsfN7D
+         j+pGP/3XCfdSvNV4yshgrurF50/YI7g+6aicqZjZ3fgryVyIFq7ezYRLVucGggOAN+OJ
+         syssu7I4LjHGDJJKVbcPl+J2LG+rA/aQ3tuQ3i2HgQiHAV1pK2dvbETDCTFg09dMS9Ca
+         HkEPKMX87RMFkNQyQ01ZrQhuRLs1emSooOMj1ecDijLoxCI3dGDhuj8Bu6q1DCINheGw
+         BB2N488TAnqsSOsJNGSt5SSHjvXT+FEFmdXZqG8v3A+8IoQVdMujhhWO6wDxaXHqDRcM
+         ewug==
+X-Gm-Message-State: AFqh2krzPhuZtAamo8Vqux+KEZO94icPDau37FgpP1kCxStyMddh0lNP
+        QAUkV8dAk9lMwn7Id9uv+6Z0xQ==
+X-Google-Smtp-Source: AMrXdXuxO1M0Nsnycvf1Nd2W6A8QDJdennBlONfGpdsASbMgLGlXVKLrav0lqYLhaPC0pCpNCN6ofw==
+X-Received: by 2002:a62:38d8:0:b0:582:ca4d:f6a7 with SMTP id f207-20020a6238d8000000b00582ca4df6a7mr49986563pfa.4.1674491600080;
+        Mon, 23 Jan 2023 08:33:20 -0800 (PST)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id k6-20020aa79d06000000b00576259507c0sm16830068pfp.100.2023.01.23.08.33.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Jan 2023 08:33:19 -0800 (PST)
+Date:   Mon, 23 Jan 2023 08:33:17 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Diederik de Haas <didi.debian@cknow.org>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "open list:BONDING DRIVER" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net/bonding: Fix full name of the GPL
+Message-ID: <20230123083317.252f0313@hermes.local>
+In-Reply-To: <6d9053c6-b56e-51f4-db47-79264f1f5672@wanadoo.fr>
+References: <20230122182048.54710-1-didi.debian@cknow.org>
+        <6d9053c6-b56e-51f4-db47-79264f1f5672@wanadoo.fr>
 MIME-Version: 1.0
-From:   =?UTF-8?Q?Gergely_Risk=C3=B3?= <gergely.risko@gmail.com>
-Date:   Mon, 23 Jan 2023 17:27:22 +0100
-Message-ID: <CAMhZOOyb6XkPcnRgd2V9onQiib4CygkLkps=aPwwgQKJh_ptWg@mail.gmail.com>
-Subject: Proposed local docker solution for nipa
-To:     netdev@vger.kernel.org
-Cc:     gergely.risko@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,31 +79,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey all,
+On Sun, 22 Jan 2023 20:52:33 +0100
+Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
 
-While working on my first proxy_ndp patch, I noticed that the checks
-on patchworks are very useful (as I managed to get a lot of things
-wrong), and for my second patch I wanted to run them locally first.
+> Le 22/01/2023 =C3=A0 19:20, Diederik de Haas a =C3=A9crit=C2=A0:
+> > Signed-off-by: Diederik de Haas <didi.debian@cknow.org>
+> > ---
+> >   drivers/net/bonding/bonding_priv.h | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> >=20
+> > diff --git a/drivers/net/bonding/bonding_priv.h b/drivers/net/bonding/b=
+onding_priv.h
+> > index 48cdf3a49a7d..353972436e5b 100644
+> > --- a/drivers/net/bonding/bonding_priv.h
+> > +++ b/drivers/net/bonding/bonding_priv.h
+> > @@ -8,7 +8,7 @@
+> >    * (c) Copyright 1999, Thomas Davis, tadavis@lbl.gov
+> >    *
+> >    *	This software may be used and distributed according to the terms
+> > - *	of the GNU Public License, incorporated herein by reference.
+> > + *	of the GNU General Public License, incorporated herein by reference.
+> >    *
+> >    */
+> >    =20
+>=20
+> Hi,
+>=20
+> maybe a SPDX-License-Identifier: could be added and these few lines=20
+> removed instead?
 
-Then I saw the horror, that is the state of nipa's local capabilities,
-with notes like this in the README: " `ingest_mdir.py` has not been
-tested in a while so it's probably broken."
-
-On the other hand, the wiki says, that you have to run the checks
-locally, and you shouldn't waste machine time (and cause mailing list
-spam) by running your checks on patchworks, so the situation is a bit
-contradictory and not ideal.
-
-I implemented a docker solution to run nipa locally, you can find my
-branch at: https://github.com/nilcons-contrib/nipa/
-
-And the main README file here:
-https://github.com/nilcons-contrib/nipa/blame/docker/docker/README.rst
-
-I'm sure, I will get a review from Kuba, but in the mean time, I also
-wanted to ask the community to test this.  I'm interested in any
-feedback, especially if the README was easy to understand, or if more
-instructions are necessary.
-
-Thanks,
-Gergely
+Yes, that is the correct fix. Please don't update the boilerplate.
