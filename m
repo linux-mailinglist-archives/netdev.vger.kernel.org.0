@@ -2,176 +2,334 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF5D2678245
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 17:53:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B5C567825D
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 17:57:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233471AbjAWQxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 11:53:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60152 "EHLO
+        id S229956AbjAWQ5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 11:57:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232404AbjAWQxF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 11:53:05 -0500
-Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922942DE43
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 08:52:49 -0800 (PST)
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.17.1.19/8.17.1.19) with ESMTP id 30NFxNpw003306
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 08:52:34 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=s2048-2021-q4;
- bh=PzkzurL01SCYJSYJaNO5uFZFisHlyStAsGwSN6Q6gF0=;
- b=T32puHii5//d0e8t0PyG2H0BZ7Sh+Ei9OgX4u9tzhxvP3nbObuwOR0t2W8DgelHT6PoR
- RLkXceSJaPipXoRYJmGE90GbMUKDg+Y3mcIcUkUEBxSJG2PC/1KAo2JTmOeuH2cpYYjs
- u9dlP3ZHDq9zgagUmqB3/Q0dqBkVQlkVGwvHEV8gYW4WaAPv6MAcHHaaCgB0Nl9BoSyx
- J5wH9M4M1j0SM8nBCE+bbz3SpD9r7pXt3MXL9fLijvBir8NSUhJlcj/kHumjDKXXuNmY
- fh7t8ZUtO3ozOWSxgodGqasNKRTqVe1sELJZ1dczz/bG6ot9uxnKR/QBlYjcgSWALC3Y xg== 
-Received: from nam02-bn1-obe.outbound.protection.outlook.com (mail-bn1nam02lp2045.outbound.protection.outlook.com [104.47.51.45])
-        by m0001303.ppops.net (PPS) with ESMTPS id 3n8cm1k1jh-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 08:52:33 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RbXW5PfDL0UCXK4Ah72et7Zv5ltwxXJM0sngS5PHgrpJmJ2YWok5rZpVfcNwuW5GPEB/UTPqHT+C142fMeY4u38zD6ghBdy3SF4f0hF2wtesx3tSp+P9YhLmXpMqg9M6BnJOEyr2RNbyz5TfZZV4SZ0ooZknRioQaPVeD+VcrpPbhBKbYcO/TfR9+o4k/KUe2x8IHXZmwIggL22ecSrF3rifLekb80sbwgXA+tdBZ3OexysJrmDka7Gax04EYOIKAc56AsxCMn8aiDIK1hGoYr5rgy+dGrom28ftfgNSVbH+/u6WV4Sv/3+znCX26mvfdphjja4jKMaXO13MrWPh6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PzkzurL01SCYJSYJaNO5uFZFisHlyStAsGwSN6Q6gF0=;
- b=axe6BE3kVPGVvz6Tj6EeiE3qGTLl/I9DmZEMZCRx3aRJ8ib+cQJPHyv1B38ncYwomZZzMhuOWHWXjtmzmfK45Mkf1z48J4u+fQLeSKdyDoPOWPHKhFSGbQGjNnNjerygy3m4wTXTnkid9lB8rhIGMZYWtUfgyLoOg9BlFo+dYA/W8uEGjFYF8yzje6zEjrQoJT9KIsOS5ZhKsd4APaPTs/K56oU5Cg9GIkiNTZJn5ZwrIFgUpWCOPtshrvijOR6PThoM1APgACqeMPERUy+0ODEUXPBFXykWMidh8CO/bsQDjoi6M5enyh0422J7Z7Ptw+BmxzMCkxCyaFKjTOJ4DQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=meta.com; dmarc=pass action=none header.from=meta.com;
- dkim=pass header.d=meta.com; arc=none
-Received: from BLAPR15MB3874.namprd15.prod.outlook.com (2603:10b6:208:272::10)
- by IA0PR15MB5790.namprd15.prod.outlook.com (2603:10b6:208:409::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Mon, 23 Jan
- 2023 16:52:31 +0000
-Received: from BLAPR15MB3874.namprd15.prod.outlook.com
- ([fe80::207b:48b8:3fbf:1fa]) by BLAPR15MB3874.namprd15.prod.outlook.com
- ([fe80::207b:48b8:3fbf:1fa%8]) with mapi id 15.20.6002.033; Mon, 23 Jan 2023
- 16:52:30 +0000
-From:   Vadim Fedorenko <vadfed@meta.com>
-To:     Gal Pressman <gal@nvidia.com>, Aya Levin <ayal@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net 2/2] mlx5: fix skb leak while fifo resync
-Thread-Topic: [PATCH net 2/2] mlx5: fix skb leak while fifo resync
-Thread-Index: AQHZLnzb9qm5OuogFUegSwQlchNEZq6r8j6AgABG8QA=
-Date:   Mon, 23 Jan 2023 16:52:30 +0000
-Message-ID: <c0872e41-a765-5d5f-77ae-49c15977114e@meta.com>
-References: <20230122161602.1958577-1-vadfed@meta.com>
- <20230122161602.1958577-3-vadfed@meta.com>
- <8537aa82-8ac9-3f76-c8ae-395a60ccddf8@nvidia.com>
-In-Reply-To: <8537aa82-8ac9-3f76-c8ae-395a60ccddf8@nvidia.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-GB
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BLAPR15MB3874:EE_|IA0PR15MB5790:EE_
-x-ms-office365-filtering-correlation-id: a039bb8d-b6a3-43a8-6fa4-08dafd6237ab
-x-fb-source: Internal
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 5Aej9QQ5uOmGtT3jQrtdfETXZ2jq5ORYmg/aLdZuHlxXFHKRGQ8HwHFx02mEb0dnelJ0M8HFzpxpp5LUqI13DukaLemkZnj0I2j+tycWBFM8G2UgTO8iP3ZRJnK83tYEcw7oNgYeAYDXzA4dpDiPZ4khdqayW/kbOGuzbIqPtZKp8YcK8irAwTIsXpT2X/jwf4fRyfG354YOxAcMQUpsqLFfKUht3tFDU8JhWzY0hCPuHofus7Zh0U87ctcvaBcQPvKSkYgIyCGWT8H2vGZqIdOmJwwIMNusBYsct34DK3VTVLLzvZqOKbJ6ASuFkFM82XiKbsiG+gsNmoYcavu1MpLdDnTzRNiwKwQMhWKiblahFFRzdPPEhEBQdJv+M4+UXqqaeA9vWY1L97Pbc6MMcjsKjpQw8XjkSZY0lqqCGO9B+U1y/zGhY/Kv/sjl+G64XPbbnTgW749fPTcEJWztk3gn53/KQeg0DGq7PEBnzqT9ZZcYe456mh++bFsEQo+xUGMtlEOpYErsX1Qkpbp/rkV37NNGodRlmsFBdqrGePAkYLlOTFLzJwtslrE/ZKOnR6VWo/nFAaIMnBdR6ZoaZfIn+ovzUrMlhRzq6Wf29vGlLvvyjoYWxyPuLxbrNGlHzItRSGSBglNdxxzVjsxcQgOIF5JKX2EYn+HxVncOfMytpay/cbZAuOtgBwwdqRREgur3BgHepyNCHHMzbty3SphuGkmExkQ5vOAfMJMonck=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR15MB3874.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(366004)(376002)(396003)(136003)(346002)(451199015)(66476007)(91956017)(66946007)(86362001)(64756008)(66446008)(66556008)(76116006)(4326008)(8676002)(53546011)(36756003)(316002)(6506007)(186003)(6512007)(71200400001)(6486002)(110136005)(478600001)(2616005)(31686004)(38070700005)(8936002)(122000001)(5660300002)(31696002)(41300700001)(2906002)(38100700002)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?QzZGTDlNNFVWeEYrbVpEMGtWQ05qZXE1b3k2dzYrSGtxVGxiVjVOa1luR1lD?=
- =?utf-8?B?VlVSQTlPL2M2d0VwQTJPV0trVUNRdUdqeThNYWExRm9ZZUYzMWtCRW4yQ2o1?=
- =?utf-8?B?WTlRUUQ5R1ZLbDlIK3hmTTRIV1JTLzhSN095cEZNUkhaZTBBQnl1ck9KV2Z4?=
- =?utf-8?B?bVUrRVYwVEUyOFFRMTVoOXdCZmhqTkVqcmNyUTdsU2pSSTZSOC82ZHJ6WVo1?=
- =?utf-8?B?cGlzVTk3MzhYTnVldExBaEsvL2VFN1c0cnRGMlJkd21LajRoSGp5VnBjTWRa?=
- =?utf-8?B?azFmVGI2elJSYzk2cW92L29VOFZjdnp2eUF4TG5KYXZFdlJUNFhrdFIweVBR?=
- =?utf-8?B?WEhET29WRXNsQzlEbzRYQVpOSFFsN3V4elFVRGtRdCtyZEpVeG8wdldSQ1M0?=
- =?utf-8?B?Z1RWa3NJTHBxcmJWZUJHMC9sN0hJei83NldDWWR6UnBuUnlleU1VVkM1VUxk?=
- =?utf-8?B?bzN1Vm9UaCtvMHo5MTZpZmUxU2lnc3VIWnRsR1pkRjZIQWIzT2JON1c2aVkx?=
- =?utf-8?B?V2trVTl6dXN3MS9RSzBHSnZCSXFrWFE5S1hVQUw2ZU85WVpkbFE2OGRyaGxv?=
- =?utf-8?B?ZldQS1VHaW1RWTBCem1NamcrQmVFL3BtL1lVbzB5dElvYXE1dWhBc0JXYkJC?=
- =?utf-8?B?RERKSnk1U0RSRTRNWElyVTZDd1dyVUlpTDlMVFg5dnJEWjBtelFNc2NaRnVz?=
- =?utf-8?B?SU1ZMSsyaWJRcHYwM3BWdlJRK1NWcC90U0haRVlsUU83elZPZWNTVzJrdEha?=
- =?utf-8?B?YXQ1TmNWMEszS2lSekU0YU5KNmJBaVdQSU43dlg4N24rYVE5aGtTN085OG1v?=
- =?utf-8?B?c1hkMWhwRTZFS21Ic2RQQXIyNkZQNXliQjBaYmRNdVQyanorVDlxL2gyTnNN?=
- =?utf-8?B?WUp3YWgzWDN2U0Zhb3pLR2dETkFLbTR1SXBESkdSTTZMVUM4dXVONGJrWmFn?=
- =?utf-8?B?ZEJnUFpQdjVZanhjZTZqNHRUb2E5SVpaNUEyZ29NZlBHYjFXT3hsR1E0cXMv?=
- =?utf-8?B?YmRCejBIM2pnRlVrQjNKd04xVThGcE1vemtJSURSRVJKUlNxdzhVU3hrSFN3?=
- =?utf-8?B?VVh1cTNQd3NOZG9HSFRGWWpsTlljVC9FTlhOZVpFbFlvM0pEeDExeS93c3N3?=
- =?utf-8?B?SGhSOENNdm5xblNoVEhBZ3MrRkVCakRqS3NBUXdrb2hXS09qUzdsSzlRdTh4?=
- =?utf-8?B?TmpDeFBwUFc4czNoKzRBRnN3a2gxWFN1ZzAwc0FJY1hyaFhzbmRMeHZBMmNK?=
- =?utf-8?B?Qmh1T01JWkhraHowVXg5aGkrbzczRU15bmxrU2c1ZW5IVHBwQ0haSFhQVUdE?=
- =?utf-8?B?bmwwZG93RVZ1RlY5QzNmYnBVb1BLZ05XR0dwOEZWN1JCclRTMWpxZEgyTENm?=
- =?utf-8?B?RFdKZDU5NzNRSnhhc1NPK3NoZTcrVDVQOEtiN0xTSmpNeXhYSnhKVU83dUZG?=
- =?utf-8?B?MHQwMHBueTU0bGRYVEdVazg5dnhWY01LbGVJYXVOVUl6NVhBZGQ1dHJaRFRL?=
- =?utf-8?B?TzhlWlJRUFVqWjIyV1MyOG9vQ2NZa1YrL09PTEVYQ0ppYUkycDlNaks5QThF?=
- =?utf-8?B?UnpMc2x3N1hRVTdGQnRrUU5YSkZhYlF1TGpTc1FsalJJcUlkVDBIU2tXRTJj?=
- =?utf-8?B?MURpQ29zbXg5VlIwRytRYlc4TUJwM0VPUHpSaWNQTGFHa0RmMnZVYzkvZlhi?=
- =?utf-8?B?YXhWUGt0cEFuNlBsbVVCVVcvSlBWVVdoRmRhR3FaRjRiNXJxWVI0OHdJd0hB?=
- =?utf-8?B?cENHQ0NmUUtlSkFBc1hPR2hrMVhBSEw5dWZkSUkwSzFEMHVpQlRwQktwZzl6?=
- =?utf-8?B?dzZsQmIyd3Bxd3BPNlRnWDM2MkdoMDVxOU9nc1Y2Tk1RaURNa3ZvUzBGOVFG?=
- =?utf-8?B?d0RrK1NIaDlrWG93V0JWMUVQWUV1ZzRWRTRpV0pEZjd6T1kycTBMWDlVWlRK?=
- =?utf-8?B?M0ZKdkduQjkwYXRmWHJGU0QzQTU3bzFtcUdXMjJSTWJXY0pGcWZ3eUZxSTk1?=
- =?utf-8?B?d0pYRmVEYnB3UDY4RmlVVnoxMk44b000cU40Ulc0aTF3dURpQnV5aEZDT3NG?=
- =?utf-8?B?TjFPMlR0OUJsMld1UElpSHQ4NXdlS0cxdVRHVnRLaXhGeHdRS3JVbTZrQ2dT?=
- =?utf-8?B?b0pnYW5wLzM0MDEybDUzRXZLanA1bEQvQVRzQWFqL1UwS1UxeHJxTHZUazdH?=
- =?utf-8?B?cEE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <444B7581D8D76A458C07CFBF3D97E7AB@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        with ESMTP id S232151AbjAWQ5S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 11:57:18 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53EE22CC42
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 08:57:12 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id v6-20020a17090ad58600b00229eec90a7fso7060011pju.0
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 08:57:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=theori.io; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=rajOEOTTwZ2aL3jhTNkTccqN9DwtpEDo/MHItw9zgno=;
+        b=hKW1zICDl1kPUrS7mPd1ovaUAzoL6qI2XTOooBscC6etLCPRSJRC/k+N6cKhUo1cvD
+         DOd18wCYs7VLx5IaBsgweTSNyrS1hP/AGXBCsw9BC3cmirIlRHsSApe4/zbPmYlNJJMM
+         idWJMKFe2uktiLeT+Rl4ZHoHODm3Glr0ZlWWc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rajOEOTTwZ2aL3jhTNkTccqN9DwtpEDo/MHItw9zgno=;
+        b=2RXr/LvLgOBi2nSEE5gEA3aO/TxJnJOw2rPyU2i92fCAXJvWPBgEUVpddrYFG2k4mB
+         ka43nbrxt+OivvzLFJ6PAh7Vo+sxebMywe73SaBMiJjehLKcmxP4lUmyZZHqAiuWh8Sf
+         7eFcB4chtq3ZHUGJiORWekQQBjsR+M3uInNGupmGFAW5hZQ9D6osadxASzrmrg8wtC6b
+         I//OlH7gCjNoCbQCz0IWEuG8pXoil4RPXFgbINqYGSih7ul2dxmaBi5Zbn7k94cId7FJ
+         rbR3pAcUwokI4TCWMF8mqO64Ps4mTLC5YhxRdZKceolusFsLgyivXy6R0LBy5FDa9k5K
+         pOsg==
+X-Gm-Message-State: AFqh2kqUDdeoyBVYetlPIYUpjSGczP0I8ri60SlFmqqXT92bO/X5+d+8
+        nkB+7AuNOU3hO5H5hhx1wN2Ulg==
+X-Google-Smtp-Source: AMrXdXt3L3J9zxqL8e7azZ/AVN7sVEX8Z88uYINXvtjZPsgpdHMiQgrW6jBJrC8QUHqSb7SFVk9Spw==
+X-Received: by 2002:a17:902:b48f:b0:192:8502:77f9 with SMTP id y15-20020a170902b48f00b00192850277f9mr47460992plr.27.1674493031763;
+        Mon, 23 Jan 2023 08:57:11 -0800 (PST)
+Received: from ubuntu ([39.115.108.115])
+        by smtp.gmail.com with ESMTPSA id u9-20020a170902bf4900b0019601baba92sm3159828pls.244.2023.01.23.08.57.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Jan 2023 08:57:11 -0800 (PST)
+Date:   Mon, 23 Jan 2023 08:57:06 -0800
+From:   Hyunwoo Kim <v4bel@theori.io>
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     davem@davemloft.net, edumazet@google.com, v4bel@theori.io,
+        imv4bel@gmail.com, kuba@kernel.org, linux-hams@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, ralf@linux-mips.org,
+        syzbot+caa188bdfc1eeafeb418@syzkaller.appspotmail.com
+Subject: Re: [PATCH] netrom: Fix use-after-free caused by accept on already
+ connected socket
+Message-ID: <20230123165706.GA108558@ubuntu>
+References: <20230121150859.GA9817@ubuntu>
+ <20230123162200.54281-1-kuniyu@amazon.com>
 MIME-Version: 1.0
-X-OriginatorOrg: meta.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BLAPR15MB3874.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a039bb8d-b6a3-43a8-6fa4-08dafd6237ab
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jan 2023 16:52:30.8482
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mmFHeKLiBfqGUFdFszELHzGmvncY6jsrC3i84OLZOqfCznj9q8pFESYsH534l4ML
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR15MB5790
-X-Proofpoint-GUID: DTbljivlTeJook9SsBteaYqB8ZbmuJ7i
-X-Proofpoint-ORIG-GUID: DTbljivlTeJook9SsBteaYqB8ZbmuJ7i
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-01-23_12,2023-01-23_01,2022-06-22_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230123162200.54281-1-kuniyu@amazon.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMjMvMDEvMjAyMyAxMjozOCwgR2FsIFByZXNzbWFuIHdyb3RlOg0KPiBPbiAyMi8wMS8yMDIz
-IDE4OjE2LCBWYWRpbSBGZWRvcmVua28gd3JvdGU6DQo+PiBEdXJpbmcgcHRwIHJlc3luYyBvcGVy
-YXRpb24gU0tCcyB3ZXJlIHBvcGVkIGZyb20gdGhlIGZpZm8gYnV0IHdlcmUgbmV2ZXINCj4+IGZy
-ZWVkIG5laXRoZXIgYnkgbmFwaV9jb25zdW1lIG5vciBieSBkZXZfa2ZyZWVfc2tiX2FueS4gQWRk
-IGNhbGwgdG8NCj4+IG5hcGlfY29uc3VtZV9za2IgdG8gcHJvcGVybHkgZnJlZSBTS0JzLg0KPj4N
-Cj4+IEZpeGVzOiAxOWI0M2E0MzJlM2UgKCJuZXQvbWx4NWU6IEV4dGVuZCBTS0Igcm9vbSBjaGVj
-ayB0byBpbmNsdWRlIFBUUC1TUSIpDQo+IA0KPiBTYW1lIGNvbW1lbnQgYXMgcHJldmlvdXMgcGF0
-Y2g/DQoNClllYWgsIGFuZCBpdCdzIGNvcnJlY3QgZm9yIHRoaXMgcGF0Y2ggdG9vLiBDb21taXQg
-bWVudGlvbmVkIGluIEZpeGVzIA0KaW50cm9kdWNlZCBzZXZlcmFsIGJ1Z3MgYXBhcnQgZnJvbSBh
-cmNoaXRlY3R1cmFsIHByb2JsZW0uIFRoZSBmaXJzdCBidWcgDQpvZiB3cm9uZyBjaGVja3MgYW5k
-IHBvc3NpYmxlIG92ZXJmbG93L3VuZGVyZmxvdyBvZiBGSUZPIGlzIGZpeGVkIGJ5IA0KcHJldmlv
-dXMgcGF0Y2guIFRoaXMgcGF0Y2ggZml4ZXMgYW5vdGhlciBpc3N1ZSBvZiBsZWFraW5nIFNLQnMg
-ZnJvbSBGSUZPIA0KZHVyaW5nIHN5bmNocm9uaXNhdGlvbiBwcm9jZXNzLg0KDQo+IA0KPj4gU2ln
-bmVkLW9mZi1ieTogVmFkaW0gRmVkb3JlbmtvIDx2YWRmZWRAbWV0YS5jb20+DQo+PiAtLS0NCj4+
-ICAgZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuL3B0cC5jIHwgMSAr
-DQo+PiAgIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKQ0KPj4NCj4+IGRpZmYgLS1naXQg
-YS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW4vcHRwLmMgYi9kcml2
-ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW4vcHRwLmMNCj4+IGluZGV4IDEx
-YTk5ZTBmMDBjNi4uZDYwYmI5OTdjNTNiIDEwMDY0NA0KPj4gLS0tIGEvZHJpdmVycy9uZXQvZXRo
-ZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuL3B0cC5jDQo+PiArKysgYi9kcml2ZXJzL25ldC9l
-dGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW4vcHRwLmMNCj4+IEBAIC0xMDIsNiArMTAyLDcg
-QEAgc3RhdGljIGJvb2wgbWx4NWVfcHRwX3NrYl9maWZvX3RzX2NxZV9yZXN5bmMoc3RydWN0IG1s
-eDVlX3B0cHNxICpwdHBzcSwgdTE2IHNrYl8NCj4+ICAgCQlod3RzLmh3dHN0YW1wID0gbWx4NWVf
-c2tiX2NiX2dldF9od3RzKHNrYiktPmNxZV9od3RzdGFtcDsNCj4+ICAgCQlza2JfdHN0YW1wX3R4
-KHNrYiwgJmh3dHMpOw0KPj4gICAJCXB0cHNxLT5jcV9zdGF0cy0+cmVzeW5jX2NxZSsrOw0KPj4g
-KwkJbmFwaV9jb25zdW1lX3NrYihza2IsIDEpOw0KPiANCj4gV2FzIHdvbmRlcmluZyB3aGV0aGVy
-IHdlIHNob3VsZCBwYXNzIHRoZSBhY3R1YWwgYnVkZ2V0IGhlcmUgaW5zdGVhZCBvZg0KPiAxLCBi
-dXQgbG9va2luZyBhdCBuYXBpX2NvbnN1bWVfc2tiKCkgaXQgZG9lc24ndCByZWFsbHkgbWF0dGVy
-Li4NCj4gDQo+IEFueXdheToNCj4gUmV2aWV3ZWQtYnk6IEdhbCBQcmVzc21hbiA8Z2FsQG52aWRp
-YS5jb20+DQo+IA0KPj4gICAJCXNrYl9jYyA9IFBUUF9XUUVfQ1RSMklEWChwdHBzcS0+c2tiX2Zp
-Zm9fY2MpOw0KPj4gICAJfQ0KPj4gICANCg0K
+Hi,
+
+Thank you for your review.
+
+
+On Mon, Jan 23, 2023 at 08:22:00AM -0800, Kuniyuki Iwashima wrote:
+> Hi,
+> 
+> Thanks for the patch!
+> 
+> From:   Hyunwoo Kim <v4bel@theori.io>
+> Date:   Sat, 21 Jan 2023 07:08:59 -0800
+> > If listen() and accept() are called on an AF_NETROM socket that
+> > has already been connect()ed, accept() succeeds in connecting.
+> > This is because nr_accept() dequeues the skb queued in
+> > `sk->sk_receive_queue` in nr_connect().
+> > 
+> > This causes nr_accept() to allocate and return a sock with the
+> > sk of the parent AF_NETROM socket. And here's where use-after-free
+> > can happen through complex race conditions:
+> > ```
+> >                   cpu0                                                     cpu1
+> >                                                                1. socket_2 = socket(AF_NETROM)
+> >                                                                   listen(socket_2)
+> >                                                                   accepted_socket = accept(socket_2)    // loopback connection with socket_1
+> >        2. socket_1 = socket(AF_NETROM)
+> >             nr_create()    // sk refcount : 1
+> >           connect(socket_1)    // loopback connection with socket_2
+> >             nr_connect()
+> >             nr_establish_data_link()
+> >             nr_write_internal()
+> >             nr_transmit_buffer()
+> >             nr_route_frame()
+> >             nr_loopback_queue()
+> >             nr_loopback_timer()
+> >             nr_rx_frame()
+> >             nr_process_rx_frame()
+> >             nr_state3_machine()
+> >             nr_queue_rx_frame()
+> >             sock_queue_rcv_skb()
+> >             sock_queue_rcv_skb_reason()
+> >             __sock_queue_rcv_skb()
+> >             __skb_queue_tail(list, skb);    // list : sk->sk_receive_queue
+> > 
+> >        3. listen(socket_1)
+> >             nr_listen()
+> >           uaf_socket = accept(socket_1)
+> >             nr_accept()
+> >             skb_dequeue(&sk->sk_receive_queue);
+> 
+> Sorry, I didn't understand how this is populated by close(accepted_socket),
+> especially how skb->sk is set as socket_1's sk.
+
+When calling close(accepted_socket), accepted_socket is currently in NR_STATE_3 state, 
+so nr_release() calls `nr_write_internal(sk, NR_DISCREQ)`.
+In a later flow, nr_rx_frame() is called, where nr_find_socket() is used to get socket_1's sk 
+from the global list `nr_list` (Because `circuit_index` and `circuit_id` used for search were index/id of socket_1's sk):
+```
+        sk = NULL;
+
+        if (circuit_index == 0 && circuit_id == 0) {
+                if (frametype == NR_CONNACK && flags == NR_CHOKE_FLAG)
+                        sk = nr_find_peer(peer_circuit_index, peer_circuit_id, src);
+        } else {
+                if (frametype == NR_CONNREQ)
+                        sk = nr_find_peer(circuit_index, circuit_id, src);
+                else
+                        sk = nr_find_socket(circuit_index, circuit_id);    // here
+        }
+```
+
+And nr_process_rx_frame(), nr_state3_machine(), nr_disconnect() are executed sequentially, 
+and `nr_sk(sk)->state = NR_STATE_0;` is executed, so the state of socket_1 sk becomes NR_STATE_0.
+
+As a result, `5. In close(socket_1)`, the code of `case NR_STATE_0:` of nr_release() is executed 
+to free the sk, and finally, by calling `close(uaf_socket)`, UAF occurs by referring to the freed sk.
+
+> 
+> 
+> >                                                                4. close(accepted_socket)
+> >                                                                     nr_release()
+> >                                                                     nr_write_internal(sk, NR_DISCREQ)
+> >                                                                     nr_transmit_buffer()    // NR_DISCREQ
+> >                                                                     nr_route_frame()
+> >                                                                     nr_loopback_queue()
+> >                                                                     nr_loopback_timer()
+> >                                                                     nr_rx_frame()    // sk : socket_1's sk
+> >                                                                     nr_process_rx_frame()  // NR_STATE_3
+> >                                                                     nr_state3_machine()    // NR_DISCREQ
+> >                                                                     nr_disconnect()
+> >                                                                     nr_sk(sk)->state = NR_STATE_0;
+> >        5. close(socket_1)    // sk refcount : 3
+> >             nr_release()    // NR_STATE_0
+> >             sock_put(sk);    // sk refcount : 0
+> >             sk_free(sk);
+> >           close(uaf_socket)
+> >             nr_release()
+> >             sock_hold(sk);    // UAF
+> > ```
+> > 
+> > KASAN report by syzbot:
+> > ```
+> > BUG: KASAN: use-after-free in nr_release+0x66/0x460 net/netrom/af_netrom.c:520
+> > Write of size 4 at addr ffff8880235d8080 by task syz-executor564/5128
+> > 
+> > CPU: 0 PID: 5128 Comm: syz-executor564 Not tainted 6.2.0-rc1-syzkaller #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+> > Call Trace:
+> >  <TASK>
+> >  __dump_stack lib/dump_stack.c:88 [inline]
+> >  dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
+> >  print_address_description mm/kasan/report.c:306 [inline]
+> >  print_report+0x15e/0x461 mm/kasan/report.c:417
+> >  kasan_report+0xbf/0x1f0 mm/kasan/report.c:517
+> >  check_region_inline mm/kasan/generic.c:183 [inline]
+> >  kasan_check_range+0x141/0x190 mm/kasan/generic.c:189
+> >  instrument_atomic_read_write include/linux/instrumented.h:102 [inline]
+> >  atomic_fetch_add_relaxed include/linux/atomic/atomic-instrumented.h:116 [inline]
+> >  __refcount_add include/linux/refcount.h:193 [inline]
+> >  __refcount_inc include/linux/refcount.h:250 [inline]
+> >  refcount_inc include/linux/refcount.h:267 [inline]
+> >  sock_hold include/net/sock.h:775 [inline]
+> >  nr_release+0x66/0x460 net/netrom/af_netrom.c:520
+> >  __sock_release+0xcd/0x280 net/socket.c:650
+> >  sock_close+0x1c/0x20 net/socket.c:1365
+> >  __fput+0x27c/0xa90 fs/file_table.c:320
+> >  task_work_run+0x16f/0x270 kernel/task_work.c:179
+> >  exit_task_work include/linux/task_work.h:38 [inline]
+> >  do_exit+0xaa8/0x2950 kernel/exit.c:867
+> >  do_group_exit+0xd4/0x2a0 kernel/exit.c:1012
+> >  get_signal+0x21c3/0x2450 kernel/signal.c:2859
+> >  arch_do_signal_or_restart+0x79/0x5c0 arch/x86/kernel/signal.c:306
+> >  exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
+> >  exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:203
+> >  __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
+> >  syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
+> >  do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
+> >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > RIP: 0033:0x7f6c19e3c9b9
+> > Code: Unable to access opcode bytes at 0x7f6c19e3c98f.
+> > RSP: 002b:00007fffd4ba2ce8 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
+> > RAX: 0000000000000116 RBX: 0000000000000003 RCX: 00007f6c19e3c9b9
+> > RDX: 0000000000000318 RSI: 00000000200bd000 RDI: 0000000000000006
+> > RBP: 0000000000000003 R08: 000000000000000d R09: 000000000000000d
+> > R10: 0000000000000000 R11: 0000000000000246 R12: 000055555566a2c0
+> > R13: 0000000000000011 R14: 0000000000000000 R15: 0000000000000000
+> >  </TASK>
+> > 
+> > Allocated by task 5128:
+> >  kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+> >  kasan_set_track+0x25/0x30 mm/kasan/common.c:52
+> >  ____kasan_kmalloc mm/kasan/common.c:371 [inline]
+> >  ____kasan_kmalloc mm/kasan/common.c:330 [inline]
+> >  __kasan_kmalloc+0xa3/0xb0 mm/kasan/common.c:380
+> >  kasan_kmalloc include/linux/kasan.h:211 [inline]
+> >  __do_kmalloc_node mm/slab_common.c:968 [inline]
+> >  __kmalloc+0x5a/0xd0 mm/slab_common.c:981
+> >  kmalloc include/linux/slab.h:584 [inline]
+> >  sk_prot_alloc+0x140/0x290 net/core/sock.c:2038
+> >  sk_alloc+0x3a/0x7a0 net/core/sock.c:2091
+> >  nr_create+0xb6/0x5f0 net/netrom/af_netrom.c:433
+> >  __sock_create+0x359/0x790 net/socket.c:1515
+> >  sock_create net/socket.c:1566 [inline]
+> >  __sys_socket_create net/socket.c:1603 [inline]
+> >  __sys_socket_create net/socket.c:1588 [inline]
+> >  __sys_socket+0x133/0x250 net/socket.c:1636
+> >  __do_sys_socket net/socket.c:1649 [inline]
+> >  __se_sys_socket net/socket.c:1647 [inline]
+> >  __x64_sys_socket+0x73/0xb0 net/socket.c:1647
+> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+> >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > 
+> > Freed by task 5128:
+> >  kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+> >  kasan_set_track+0x25/0x30 mm/kasan/common.c:52
+> >  kasan_save_free_info+0x2b/0x40 mm/kasan/generic.c:518
+> >  ____kasan_slab_free mm/kasan/common.c:236 [inline]
+> >  ____kasan_slab_free+0x13b/0x1a0 mm/kasan/common.c:200
+> >  kasan_slab_free include/linux/kasan.h:177 [inline]
+> >  __cache_free mm/slab.c:3394 [inline]
+> >  __do_kmem_cache_free mm/slab.c:3580 [inline]
+> >  __kmem_cache_free+0xcd/0x3b0 mm/slab.c:3587
+> >  sk_prot_free net/core/sock.c:2074 [inline]
+> >  __sk_destruct+0x5df/0x750 net/core/sock.c:2166
+> >  sk_destruct net/core/sock.c:2181 [inline]
+> >  __sk_free+0x175/0x460 net/core/sock.c:2192
+> >  sk_free+0x7c/0xa0 net/core/sock.c:2203
+> >  sock_put include/net/sock.h:1991 [inline]
+> >  nr_release+0x39e/0x460 net/netrom/af_netrom.c:554
+> >  __sock_release+0xcd/0x280 net/socket.c:650
+> >  sock_close+0x1c/0x20 net/socket.c:1365
+> >  __fput+0x27c/0xa90 fs/file_table.c:320
+> >  task_work_run+0x16f/0x270 kernel/task_work.c:179
+> >  exit_task_work include/linux/task_work.h:38 [inline]
+> >  do_exit+0xaa8/0x2950 kernel/exit.c:867
+> >  do_group_exit+0xd4/0x2a0 kernel/exit.c:1012
+> >  get_signal+0x21c3/0x2450 kernel/signal.c:2859
+> >  arch_do_signal_or_restart+0x79/0x5c0 arch/x86/kernel/signal.c:306
+> >  exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
+> >  exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:203
+> >  __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
+> >  syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
+> >  do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
+> >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > ```
+> > 
+> > To fix this problem, nr_listen() returns -EINVAL for sockets that
+> > successfully nr_connect().
+> >
+> 
+> I'd add
+> 
+>   Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> 
+> > Reported-by: syzbot+caa188bdfc1eeafeb418@syzkaller.appspotmail.com
+> > Signed-off-by: Hyunwoo Kim <v4bel@theori.io>
+> > ---
+> >  net/netrom/af_netrom.c | 5 +++++
+> >  1 file changed, 5 insertions(+)
+> > 
+> > diff --git a/net/netrom/af_netrom.c b/net/netrom/af_netrom.c
+> > index 6f7f4392cffb..dcfa606684d7 100644
+> > --- a/net/netrom/af_netrom.c
+> > +++ b/net/netrom/af_netrom.c
+> > @@ -400,6 +400,11 @@ static int nr_listen(struct socket *sock, int backlog)
+> >  	struct sock *sk = sock->sk;
+> >  
+> >  	lock_sock(sk);
+> > +	if (sock->state == SS_CONNECTED) {
+> 
+> I guess the same issue happens for SS_CONNECTING (non-blocking connect()),
+> so this should be
+> 
+>         if (sock->state != SS_UNCONNECTED) {
+> 
+> ?
+> 
+> Same for the rose and x25 patches.
+> https://lore.kernel.org/netdev/20230122173957.GA99728@ubuntu/
+> https://lore.kernel.org/netdev/20230122170925.GA98061@ubuntu/
+
+you're right.
+I will submit the fixed v2 patches.
+
+Regards,
+Hyunwoo Kim
+
+> 
+> 
+> Thanks,
+> Kuniyuki
+> 
+> > +		release_sock(sk);
+> > +		return -EINVAL;
+> > +	}
+> > +
+> >  	if (sk->sk_state != TCP_LISTEN) {
+> >  		memset(&nr_sk(sk)->user_addr, 0, AX25_ADDR_LEN);
+> >  		sk->sk_max_ack_backlog = backlog;
+> > -- 
+> > 2.25.1
