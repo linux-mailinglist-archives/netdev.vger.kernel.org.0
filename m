@@ -2,492 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F00C678460
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 19:19:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED999678485
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 19:22:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233053AbjAWSTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 13:19:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57796 "EHLO
+        id S233294AbjAWSWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 13:22:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232967AbjAWSS4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 13:18:56 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA99D27D79;
-        Mon, 23 Jan 2023 10:18:42 -0800 (PST)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30NGNaYG019023;
-        Mon, 23 Jan 2023 18:18:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=klxqCdWg93ZR98mmFYb2qy0PEvvCLsRg/iY/Pcb2plg=;
- b=gpIHf+y+TCL1LExvj0wJGc2VOudubISGiqoYlT/iycUyMNQsJmLeU6DJBNHm9ag2hGjB
- /P+imX+9VAIVJDUqZgdUykXutGZjTlZtG7Tk1yowSjI1VxhsJZ+DoWVnWoazE6qDLqLP
- rnLHcIuIweNxMK3WbNpe7wn5av2vCvo6YkniLYkGR3l7CEQzIbBcsWpeh6UPTt6l0RYF
- koUAtM4iyP1H6b7IQdissO3Tt8r5UG/IEVuACwf1Ortb//X2UuPTMF0zi4yrdHqoYkZb
- SGaTgn5XMzRiccV4w+PyjRQhu7iWQ6abW/6GFljLt6UOcL7tlYVLLvBV64lm1WOgbSPA 2Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3n9wqeu6ut-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 Jan 2023 18:18:40 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 30NGQ0cg029818;
-        Mon, 23 Jan 2023 18:18:39 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3n9wqeu6u0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 Jan 2023 18:18:39 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 30N003nw026587;
-        Mon, 23 Jan 2023 18:18:37 GMT
-Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
-        by ppma01fra.de.ibm.com (PPS) with ESMTPS id 3n87p69yw5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 Jan 2023 18:18:36 +0000
-Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
-        by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 30NIIXij46334354
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 23 Jan 2023 18:18:33 GMT
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2DEB02004D;
-        Mon, 23 Jan 2023 18:18:33 +0000 (GMT)
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2EC5F2004B;
-        Mon, 23 Jan 2023 18:18:32 +0000 (GMT)
-Received: from LAPTOP-8S6R7U4L.localdomain (unknown [9.171.0.149])
-        by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
-        Mon, 23 Jan 2023 18:18:32 +0000 (GMT)
-From:   Jan Karcher <jaka@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S233338AbjAWSWm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 13:22:42 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D24AE30E93
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 10:22:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674498140; x=1706034140;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=/hDpR/4VL5NO/BGEDc1EOfvcMi9OrF368QnG7/oyR3U=;
+  b=IZvosAr/DRXQ80hgC0R5vYnd6gi4c9JsAOFGQVOu2UZxRu0palRb51Hp
+   AghqFYNjwCy2aqHiN+sRdUUtPP/zucpmxyzkEimF+3HIDEiKAOmSkZuxK
+   6en0VKb4/2lei4/40QyIHXnY17qD4+o2BnvZHYvwt+y+jbqcH4vI2cTLL
+   0yGaBSshGMjIhHyN/UFmz/kJWBAT3dWfmdprjFNE7My0+/+ILlrGP7plh
+   wr/yuGvhTmyuj7jpvH91D6YGn64r9crpVai+BiVH8L7Vn54txcbMtOs3L
+   dZRJD1YU/ZA0ZOfGvctlIugnrFNuZgQAb7XGyKvDb4d5HwIPkAcE+qUba
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10599"; a="309688569"
+X-IronPort-AV: E=Sophos;i="5.97,240,1669104000"; 
+   d="scan'208";a="309688569"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2023 10:22:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10599"; a="639297224"
+X-IronPort-AV: E=Sophos;i="5.97,240,1669104000"; 
+   d="scan'208";a="639297224"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga006.jf.intel.com with ESMTP; 23 Jan 2023 10:22:19 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 23 Jan 2023 10:22:19 -0800
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Mon, 23 Jan 2023 10:22:19 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.171)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Mon, 23 Jan 2023 10:22:17 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AMVdad+yYBze3gITMOywzYJpLvBG8oNy+JfhOhx9rKO5Lue75gBoLo0DsgNGXhkQ4RM7eiN+NTHpgP/KnGq4oZe8ZJKWBtANMBR/YiST9eqgtMi3XzIMZ8S9SGkwxlMnAwGBLJy5J8vIarmmRJGyMhtKTir9khSp9JcVzI2BAhayKN9YRKDE3kK0aleCrv8uP8xBvk7swjpDq+X5a752UU3VbRgE8z8N+7/DqtjKbELStWkIbqpJG11/U6VK7AbZEybJJCVZAwWqVMNntm0Tlbs0JixRKoSOX+SgNJUptIUUZB07iHGFXCVbDeDXWsbIbP/J4//jAvvQxLcWz/0MfA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+auyaQWrwGLDUKUnUz3pEn1omW3/L0q6LxUH5DQ04yg=;
+ b=FZsqY0jWhENY8XgghaQmknHxae80QLZbKbqyarn5v/6eB15NpNNIGv+2wKrnJyysSvn/Gpr4D//xA8zFKwqTZbD1kRFSnIt9Xyows04vbXZ4Yg7yFVgJxqHH9Qu8eyE/UiTH1aZXD++bv2SPWdIGaf8VY3AtpSp8B/sKGiYLq8qkBL/jsUOVol2YjB9X+mLdtnyX6x10Y3UnNizLcAB4wVlA4jtasEXFxJPWoo2kiqHUE25dW5sPB4UTrmsY+k06qBDGfevZtv5rJAxyAwIwx/oSSOHHjpvaFElj/SMdAa7C4R5HOgwtdizl/pe/PyTb7m7QXuIbYNxj8vStj1IeNw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
+ by SA3PR11MB7556.namprd11.prod.outlook.com (2603:10b6:806:31f::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.31; Mon, 23 Jan
+ 2023 18:22:10 +0000
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::5697:a11e:691e:6acf]) by CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::5697:a11e:691e:6acf%5]) with mapi id 15.20.6002.033; Mon, 23 Jan 2023
+ 18:22:10 +0000
+Message-ID: <3c8934fc-c783-11b7-a2a3-3e29b544d5ff@intel.com>
+Date:   Mon, 23 Jan 2023 10:22:08 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [RFC PATCH net-next 00/11] ENETC mqprio/taprio cleanup
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        <netdev@vger.kernel.org>,
+        "John Fastabend" <john.fastabend@gmail.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Thorsten Winkler <twinkler@linux.ibm.com>,
-        Stefan Raspl <raspl@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Jan Karcher <jaka@linux.ibm.com>,
-        Nils Hoppmann <niho@linux.ibm.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Tony Lu <tonylu@linux.alibaba.com>,
-        Wen Gu <guwen@linux.alibaba.com>
-Subject: [net-next v2 8/8] net/smc: De-tangle ism and smc device initialization
-Date:   Mon, 23 Jan 2023 19:17:52 +0100
-Message-Id: <20230123181752.1068-9-jaka@linux.ibm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230123181752.1068-1-jaka@linux.ibm.com>
-References: <20230123181752.1068-1-jaka@linux.ibm.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Camelia Groza <camelia.groza@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "Gerhard Engleder" <gerhard@engleder-embedded.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        "Kurt Kanzenbach" <kurt@linutronix.de>,
+        Ferenc Fejes <ferenc.fejes@ericsson.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+References: <20230120141537.1350744-1-vladimir.oltean@nxp.com>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+In-Reply-To: <20230120141537.1350744-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR05CA0203.namprd05.prod.outlook.com
+ (2603:10b6:a03:330::28) To CO1PR11MB5089.namprd11.prod.outlook.com
+ (2603:10b6:303:9b::16)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: gklNnH2cQLNuUj_H6DF44ApPTsCY71tf
-X-Proofpoint-ORIG-GUID: SjtS5H5rkZ7rlAYiJoXDJFxy29oi2lSi
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-01-23_12,2023-01-23_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
- priorityscore=1501 suspectscore=0 lowpriorityscore=0 clxscore=1015
- spamscore=0 mlxscore=0 mlxlogscore=999 impostorscore=0 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301230173
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|SA3PR11MB7556:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5fd04559-512d-4e62-22af-08dafd6ebe2a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /8SbIyv+n9VgE8mtnA7dxInttjDKdSx7qFZPZ9i7GaY4YXy3ZbEzIvoaxqNb9OubCFeFXY4512k8qpnrBKLI46D+kJYhbyHu2ubpyDPgcpxP1lDRkQ9AJQUPR6yntJN9y8ChaIzJrjHD8VpHetAThAfO1GZT6n/AI9I3ETlXp8VbUQrrltw8wt8KCTO178Z/TFrGQn/B1b9jRHNQEPU5aT+0cBCQYsWv9kVQ8cOQkcwgjQ1evy8aSqkNgXedFUgi+O1PhNzFuRMLKRCeG/hZxev3qbYDDIhbzSz6OuYqGivkVR4b15S55Ley6dC/1RAVlVcN5yDY07fBmxFWI3FfUxY49wRg0JiIEGxQ0G1xMzgUVdD0Wyac9Jv/ch1MzgBr/EY4QgyXH1DYFo4GibislF/AaBcrDhfcgbjQST7A4VnjdbAqdiAM8clWGucddeTATrQW5PCwKhFtr3ywVkRc2gNq+DjgJnzet2d8sK6d2wWpkWg5YvODWm2HhQSw/xZpGHEHEeGrfFQsIt39fZWBzD3d2usI4XYyyR7HNSBpdsYhD1Nrqww8kI89feC2nXfwFbYGvnS9L+pLfQQqveqrid2YGn/yrduPzCo7G++iTkt30IV0xyQBTjMpf5IFMJfo5R4gxpe17tXwhRhbopP30Fyk4v7yEvXa6jU2uvsV/mEInZ87fRwfAkvuIbJUZiO/snrgIASbB6y/GvGrvgHpmWHciSAfy9iXYdyq6kEeFF2gS7e1Dz9zR27duJUxTnNCED4DgMJc6Y5Xnu5m1sDxvw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(346002)(376002)(39860400002)(396003)(366004)(451199015)(38100700002)(82960400001)(36756003)(31696002)(86362001)(478600001)(316002)(110136005)(54906003)(966005)(66946007)(6486002)(8676002)(66556008)(4326008)(66476007)(2616005)(2906002)(31686004)(6506007)(53546011)(83380400001)(26005)(5660300002)(6512007)(41300700001)(107886003)(186003)(7416002)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RXM4ZjdsMTVSTWRZWGU0d09RUXAvMGRXWVFPLytES3F6c3R4clg1MkVFd3FO?=
+ =?utf-8?B?bUZaeFFJakxBS0RUVzhCS3ZUV3RSUDBqTXJWTFVsSzZYMHQvRXNzOXJnSXR3?=
+ =?utf-8?B?bFpnaEtmSS9zU2w4cmt0dDVDeDhPb2R6b1daWUdmTjhiWE5kbDFVS1drSXVq?=
+ =?utf-8?B?TlRjaGxvZFpXcVlzR2VjYmhLbFY0bm5TblFUbXlMTldEUkp1WFR4ZHFqWEZu?=
+ =?utf-8?B?U1hDL3BoZTlLVlZWaDAvWlhPMnhsNUdZMTgwL3Q3QlppZm5DbmJMZ0xyVFdX?=
+ =?utf-8?B?eWo2RFQwd3U3aDB1NHp5Y1ovS0c0S1k2endUa3J2RDlnSWdyek1pd1lpcUhX?=
+ =?utf-8?B?dUJtOEhqVGVPMnVWcW00bVhsTXI1WmxBKzZ4M3NsQmY3SWkxNVV6VzJJbVRH?=
+ =?utf-8?B?YmRLT3g3eFhmTGtCbmNBR2loSjkwRTFlTGs4TllwcUY4WVpWTUVlTFk4Z095?=
+ =?utf-8?B?bnFUWWEzVlNOV3ZCc1ppazg2aVJvOGVBNWhveVJJZkszNjJxUmZWcWNUOW50?=
+ =?utf-8?B?OWsva0pXa1U0Q01DcElKUHZhMlZLZkJ4WEJsS0pKV1pxdnRvaDNubWt6WVZF?=
+ =?utf-8?B?N2p5TnpkM1FBRzMrMGFQWU90QTJrNThDUzgrVEh4SmJNWGRCZzltZzRRaUsz?=
+ =?utf-8?B?VDJkTzdERmhYTFRySURRZ2tTZHpXaWN6RUY5Wk00S0Z5V0ZPZ1hSTW96RFlv?=
+ =?utf-8?B?ZXRacTg2WFMxdVlwNFI0OWViOW01NmV2UUxIVTJ2TVVQc1gxelBQQlhKaWpQ?=
+ =?utf-8?B?T1JUekxXTTRjcHUrK2NrWVorWmR5dGU3cllnTGlGYWdUd2ZpOStJNDFWZXVx?=
+ =?utf-8?B?ODkxV1RpYzR3dEtyeDFTVE9QdlNoM1owSUxsakFYeXNwZVZnRnFwL1ZGSjRY?=
+ =?utf-8?B?eEdTellFc3ZSU2pMbXo5NE1wbVVTT3A5djJWSlNlL0pBRnhncmM3TUF5M2NT?=
+ =?utf-8?B?QTFHMTZqcjI2NEFQWm1xdW00aXhER2tTWnlkRENjQ2E5UktQaWZlLzZRR240?=
+ =?utf-8?B?WXZsZGpUSEhTb0NtSDdnbjBidXdDdWlRVHNSVG1PUm5RZlcyWXdVaXMzQStY?=
+ =?utf-8?B?TFVIQkZxNUhTSWxyNFk2MmJ3Zks1MXBDeTNSeGZUKzVoNFRLQzV4NmlnTzZC?=
+ =?utf-8?B?bERiRnNvSVZ6bnlYaE5vRUFMNDBUak1kUUdDYTBHcmRkcXJPWUo0d3hBcFp6?=
+ =?utf-8?B?amJNbGU2aEgyTGZhU2p2R3ZNcnFCeldyVy9kRTNreERsWVhkemZkT0VVMk5R?=
+ =?utf-8?B?aTMrMmFOalRQRmdFb2MvUDdMZVpXaDljVUpaT0RhbjU2WmRnWm5JVGpiUzlt?=
+ =?utf-8?B?OUtYVmllT2pUMmx5NVlBenp2K0VubFd3WSsra254eWtpMGZOQnZBSlR2TG05?=
+ =?utf-8?B?RFdoUTNic2hIL2hDTll1YldvTHhUcnUxOCtnWnp0bVd6NVZpRDVzQjhvNXc1?=
+ =?utf-8?B?TDZONk0wbTMzSURpMEJnWkZhaXkwQ2VDSzN0ZkVtZGhmbllBUmRTYjArNmlr?=
+ =?utf-8?B?RnZUUE5HaE1oUmhFVDYwemhvWTFRcFYxVmI5MmpUZDlsbkpCNEc0QXJYZW5k?=
+ =?utf-8?B?SHZ5V0ZjWFdyL0doc3JpczlQcFV1OVlMTmhvc2hoeGxEa1BZcDd1bUgrblh2?=
+ =?utf-8?B?aFJvdGJaTnVwK2JQQWQyMWV0U1hYM2FqZnZsOTFlRGpnUHR0YjJZWTlnRXhu?=
+ =?utf-8?B?S3JTa1h5Mjc0Z2RSYW9kdGl5UTZ2TU1DRytVZ3dmNUMwZFp2RGhiMWduOTds?=
+ =?utf-8?B?eEw2UDBReUFsRjREZkpOdFVPOVhBWnNGRTh6MVE3MnZydHZGODF2NDdQS1pG?=
+ =?utf-8?B?enFWbmo4YkQ5TnZUSXZpbWNNcUVoSnNFaXN3anpTRlREMVAwN01XSUZ5bkRP?=
+ =?utf-8?B?WitjaXNXMDhlcUNqQjk4SzhIaVp0aUE1RFJHWk5BbnZ1QkhQbThvSHZYcjNy?=
+ =?utf-8?B?eTlSUnY4elNNdEg2aS91THA4K3AxMEVzbURxMDZhZjBkWHRyOGRMZHl2c2ZU?=
+ =?utf-8?B?ay9OZ2srdjdaQWgxckZhWlFRZHUrOGlKeGMyV2prMmx1SnhmSG5aaFR6TDFx?=
+ =?utf-8?B?c3c3aEV5RCsvS1gzTDh4NGgvN2MyTDVDVmwvckV1MjRQNGZFZzRBNWd0Um5M?=
+ =?utf-8?B?dEpHanBWTGN4dnQwTXFaYXFnMWt2UGtGY3lCcEdaRlhpNys2K1VzeWZaYmNi?=
+ =?utf-8?B?bFE9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5fd04559-512d-4e62-22af-08dafd6ebe2a
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jan 2023 18:22:10.6571
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: X0b8NHsTZ6WUUAjT3cm+icZprrhyd6DgvRkVE2fSn7gpuo8usP9WIWtpj2LsL9EDId/mCHFlzBbtF2uAuOoIq1NEDTepgx8BXpV07QehV6s=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR11MB7556
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Raspl <raspl@linux.ibm.com>
 
-The struct device for ISM devices was part of struct smcd_dev. Move to
-struct ism_dev, provide a new API call in struct smcd_ops, and convert
-existing SMCD code accordingly.
-Furthermore, remove struct smcd_dev from struct ism_dev.
-This is the final part of a bigger overhaul of the interfaces between SMC
-and ISM.
 
-Signed-off-by: Stefan Raspl <raspl@linux.ibm.com>
-Signed-off-by: Jan Karcher <jaka@linux.ibm.com>
-Signed-off-by: Wenjia Zhang <wenjia@linux.ibm.com>
----
- drivers/s390/net/ism_drv.c | 25 +++++++++--------
- include/linux/ism.h        |  1 -
- include/net/smc.h          |  6 +----
- net/smc/af_smc.c           |  1 +
- net/smc/smc_core.c         |  6 +++--
- net/smc/smc_ism.c          | 55 +++++++++-----------------------------
- net/smc/smc_pnet.c         | 40 ++++++++++++++-------------
- 7 files changed, 52 insertions(+), 82 deletions(-)
+On 1/20/2023 6:15 AM, Vladimir Oltean wrote:
+> I realize that this patch set will start a flame war, but there are
+> things about the mqprio qdisc that I simply don't understand, so in an
+> attempt to explain how I see things should be done, I've made some
+> patches to the code. I hope the reviewers will be patient enough with me :)
+> 
+> I need to touch mqprio because I'm preparing a patch set for Frame
+> Preemption (an IEEE 802.1Q feature). A disagreement started with
+> Vinicius here:
+> https://patchwork.kernel.org/project/netdevbpf/patch/20220816222920.1952936-3-vladimir.oltean@nxp.com/#24976672
+> 
+> regarding how TX packet prioritization should be handled. Vinicius said
+> that for some Intel NICs, prioritization at the egress scheduler stage
+> is fundamentally attached to TX queues rather than traffic classes.
+> 
+> In other words, in the "popular" mqprio configuration documented by him:
+> 
+> $ tc qdisc replace dev $IFACE parent root handle 100 mqprio \
+>       num_tc 3 \
+>       map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
+>       queues 1@0 1@1 2@2 \
+>       hw 0
+> 
+> there are 3 Linux traffic classes and 4 TX queues. The TX queues are
+> organized in strict priority fashion, like this: TXQ 0 has highest prio
+> (hardware dequeue precedence for TX scheduler), TXQ 3 has lowest prio.
+> Packets classified by Linux to TC 2 are hashed between TXQ 2 and TXQ 3,
+> but the hardware has higher precedence for TXQ2 over TXQ 3, and Linux
+> doesn't know that.
+> 
+> I am surprised by this fact, and this isn't how ENETC works at all.
+> For ENETC, we try to prioritize on TCs rather than TXQs, and TC 7 has
+> higher priority than TC 7. For us, groups of TXQs that map to the same
+> TC have the same egress scheduling priority. It is possible (and maybe
+> useful) to have 2 TXQs per TC - one TXQ per CPU). Patch 07/11 tries to
+> make that more clear.
+> 
+> Furthermore (and this is really the biggest point of contention), myself
+> and Vinicius have the fundamental disagreement whether the 802.1Qbv
+> (taprio) gate mask should be passed to the device driver per TXQ or per
+> TC. This is what patch 11/11 is about.
+> 
+> Again, I'm not *certain* that my opinion on this topic is correct
+> (and it sure is confusing to see such a different approach for Intel).
+> But I would appreciate any feedback.
+> 
+> Vladimir Oltean (11):
+>   net/sched: mqprio: refactor nlattr parsing to a separate function
+>   net/sched: mqprio: refactor offloading and unoffloading to dedicated
+>     functions
+>   net/sched: move struct tc_mqprio_qopt_offload from pkt_cls.h to
+>     pkt_sched.h
+>   net/sched: mqprio: allow offloading drivers to request queue count
+>     validation
+>   net/sched: mqprio: add extack messages for queue count validation
+>   net: enetc: request mqprio to validate the queue counts
+>   net: enetc: act upon the requested mqprio queue configuration
+>   net/sched: taprio: pass mqprio queue configuration to ndo_setup_tc()
+>   net: enetc: act upon mqprio queue config in taprio offload
+>   net/sched: taprio: validate that gate mask does not exceed number of
+>     TCs
+>   net/sched: taprio: only calculate gate mask per TXQ for igc
+> 
 
-diff --git a/drivers/s390/net/ism_drv.c b/drivers/s390/net/ism_drv.c
-index 73c8f42a22a7..eb7e13486087 100644
---- a/drivers/s390/net/ism_drv.c
-+++ b/drivers/s390/net/ism_drv.c
-@@ -646,6 +646,12 @@ static int ism_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	spin_lock_init(&ism->lock);
- 	dev_set_drvdata(&pdev->dev, ism);
- 	ism->pdev = pdev;
-+	ism->dev.parent = &pdev->dev;
-+	device_initialize(&ism->dev);
-+	dev_set_name(&ism->dev, dev_name(&pdev->dev));
-+	ret = device_add(&ism->dev);
-+	if (ret)
-+		goto err_dev;
- 
- 	ret = pci_enable_device_mem(pdev);
- 	if (ret)
-@@ -663,30 +669,23 @@ static int ism_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	dma_set_max_seg_size(&pdev->dev, SZ_1M);
- 	pci_set_master(pdev);
- 
--	ism->smcd = smcd_alloc_dev(&pdev->dev, dev_name(&pdev->dev), &ism_ops,
--				   ISM_NR_DMBS);
--	if (!ism->smcd) {
--		ret = -ENOMEM;
--		goto err_resource;
--	}
--
--	ism->smcd->priv = ism;
- 	ret = ism_dev_init(ism);
- 	if (ret)
--		goto err_free;
-+		goto err_resource;
- 
- 	return 0;
- 
--err_free:
--	smcd_free_dev(ism->smcd);
- err_resource:
- 	pci_clear_master(pdev);
- 	pci_release_mem_regions(pdev);
- err_disable:
- 	pci_disable_device(pdev);
- err:
--	kfree(ism);
-+	device_del(&ism->dev);
-+err_dev:
- 	dev_set_drvdata(&pdev->dev, NULL);
-+	kfree(ism);
-+
- 	return ret;
- }
- 
-@@ -740,7 +739,6 @@ static void ism_remove(struct pci_dev *pdev)
- 	ism_dev_exit(ism);
- 	mutex_unlock(&ism_dev_list.mutex);
- 
--	smcd_free_dev(ism->smcd);
- 	pci_clear_master(pdev);
- 	pci_release_mem_regions(pdev);
- 	pci_disable_device(pdev);
-@@ -874,6 +872,7 @@ static const struct smcd_ops ism_ops = {
- 	.get_system_eid = ism_get_seid,
- 	.get_local_gid = smcd_get_local_gid,
- 	.get_chid = smcd_get_chid,
-+	.get_dev = smcd_get_dev,
- };
- 
- const struct smcd_ops *ism_get_smcd_ops(void)
-diff --git a/include/linux/ism.h b/include/linux/ism.h
-index 104ce2fd503a..ea2bcdae7401 100644
---- a/include/linux/ism.h
-+++ b/include/linux/ism.h
-@@ -30,7 +30,6 @@ struct ism_dev {
- 	spinlock_t lock; /* protects the ism device */
- 	struct list_head list;
- 	struct pci_dev *pdev;
--	struct smcd_dev *smcd;
- 
- 	struct ism_sba *sba;
- 	dma_addr_t sba_dma_addr;
-diff --git a/include/net/smc.h b/include/net/smc.h
-index 556b96c12279..597cb9381182 100644
---- a/include/net/smc.h
-+++ b/include/net/smc.h
-@@ -70,11 +70,11 @@ struct smcd_ops {
- 	u8* (*get_system_eid)(void);
- 	u64 (*get_local_gid)(struct smcd_dev *dev);
- 	u16 (*get_chid)(struct smcd_dev *dev);
-+	struct device* (*get_dev)(struct smcd_dev *dev);
- };
- 
- struct smcd_dev {
- 	const struct smcd_ops *ops;
--	struct device dev;
- 	void *priv;
- 	struct list_head list;
- 	spinlock_t lock;
-@@ -90,8 +90,4 @@ struct smcd_dev {
- 	u8 going_away : 1;
- };
- 
--struct smcd_dev *smcd_alloc_dev(struct device *parent, const char *name,
--				const struct smcd_ops *ops, int max_dmbs);
--void smcd_free_dev(struct smcd_dev *smcd);
--
- #endif	/* _SMC_H */
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 5d037714ab78..036532cf39aa 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -3499,6 +3499,7 @@ static void __exit smc_exit(void)
- 	sock_unregister(PF_SMC);
- 	smc_core_exit();
- 	smc_ib_unregister_client();
-+	smc_ism_exit();
- 	destroy_workqueue(smc_close_wq);
- 	destroy_workqueue(smc_tcp_ls_wq);
- 	destroy_workqueue(smc_hs_wq);
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index ec04966e9bf9..7642b16c41d1 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -822,6 +822,7 @@ static int smc_lgr_create(struct smc_sock *smc, struct smc_init_info *ini)
- {
- 	struct smc_link_group *lgr;
- 	struct list_head *lgr_list;
-+	struct smcd_dev *smcd;
- 	struct smc_link *lnk;
- 	spinlock_t *lgr_lock;
- 	u8 link_idx;
-@@ -868,7 +869,8 @@ static int smc_lgr_create(struct smc_sock *smc, struct smc_init_info *ini)
- 	lgr->conns_all = RB_ROOT;
- 	if (ini->is_smcd) {
- 		/* SMC-D specific settings */
--		get_device(&ini->ism_dev[ini->ism_selected]->dev);
-+		smcd = ini->ism_dev[ini->ism_selected];
-+		get_device(smcd->ops->get_dev(smcd));
- 		lgr->peer_gid = ini->ism_peer_gid[ini->ism_selected];
- 		lgr->smcd = ini->ism_dev[ini->ism_selected];
- 		lgr_list = &ini->ism_dev[ini->ism_selected]->lgr_list;
-@@ -1387,7 +1389,7 @@ static void smc_lgr_free(struct smc_link_group *lgr)
- 	destroy_workqueue(lgr->tx_wq);
- 	if (lgr->is_smcd) {
- 		smc_ism_put_vlan(lgr->smcd, lgr->vlan_id);
--		put_device(&lgr->smcd->dev);
-+		put_device(lgr->smcd->ops->get_dev(lgr->smcd));
- 	}
- 	smc_lgr_put(lgr); /* theoretically last lgr_put */
- }
-diff --git a/net/smc/smc_ism.c b/net/smc/smc_ism.c
-index 6196b305df44..3b0b7710c6b0 100644
---- a/net/smc/smc_ism.c
-+++ b/net/smc/smc_ism.c
-@@ -231,9 +231,11 @@ static int smc_nl_handle_smcd_dev(struct smcd_dev *smcd,
- 	struct smc_pci_dev smc_pci_dev;
- 	struct nlattr *port_attrs;
- 	struct nlattr *attrs;
-+	struct ism_dev *ism;
- 	int use_cnt = 0;
- 	void *nlh;
- 
-+	ism = smcd->priv;
- 	nlh = genlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
- 			  &smc_gen_nl_family, NLM_F_MULTI,
- 			  SMC_NETLINK_GET_DEV_SMCD);
-@@ -248,7 +250,7 @@ static int smc_nl_handle_smcd_dev(struct smcd_dev *smcd,
- 	if (nla_put_u8(skb, SMC_NLA_DEV_IS_CRIT, use_cnt > 0))
- 		goto errattr;
- 	memset(&smc_pci_dev, 0, sizeof(smc_pci_dev));
--	smc_set_pci_values(to_pci_dev(smcd->dev.parent), &smc_pci_dev);
-+	smc_set_pci_values(to_pci_dev(ism->dev.parent), &smc_pci_dev);
- 	if (nla_put_u32(skb, SMC_NLA_DEV_PCI_FID, smc_pci_dev.pci_fid))
- 		goto errattr;
- 	if (nla_put_u16(skb, SMC_NLA_DEV_PCI_CHID, smc_pci_dev.pci_pchid))
-@@ -377,41 +379,24 @@ static void smc_ism_event_work(struct work_struct *work)
- 	kfree(wrk);
- }
- 
--static void smcd_release(struct device *dev)
--{
--	struct smcd_dev *smcd = container_of(dev, struct smcd_dev, dev);
--
--	kfree(smcd->conn);
--	kfree(smcd);
--}
--
--struct smcd_dev *smcd_alloc_dev(struct device *parent, const char *name,
--				const struct smcd_ops *ops, int max_dmbs)
-+static struct smcd_dev *smcd_alloc_dev(struct device *parent, const char *name,
-+				       const struct smcd_ops *ops, int max_dmbs)
- {
- 	struct smcd_dev *smcd;
- 
--	smcd = kzalloc(sizeof(*smcd), GFP_KERNEL);
-+	smcd = devm_kzalloc(parent, sizeof(*smcd), GFP_KERNEL);
- 	if (!smcd)
- 		return NULL;
--	smcd->conn = kcalloc(max_dmbs, sizeof(struct smc_connection *),
--			     GFP_KERNEL);
--	if (!smcd->conn) {
--		kfree(smcd);
-+	smcd->conn = devm_kcalloc(parent, max_dmbs,
-+				  sizeof(struct smc_connection *), GFP_KERNEL);
-+	if (!smcd->conn)
- 		return NULL;
--	}
- 
- 	smcd->event_wq = alloc_ordered_workqueue("ism_evt_wq-%s)",
- 						 WQ_MEM_RECLAIM, name);
--	if (!smcd->event_wq) {
--		kfree(smcd->conn);
--		kfree(smcd);
-+	if (!smcd->event_wq)
- 		return NULL;
--	}
- 
--	smcd->dev.parent = parent;
--	smcd->dev.release = smcd_release;
--	device_initialize(&smcd->dev);
--	dev_set_name(&smcd->dev, name);
- 	smcd->ops = ops;
- 
- 	spin_lock_init(&smcd->lock);
-@@ -421,13 +406,6 @@ struct smcd_dev *smcd_alloc_dev(struct device *parent, const char *name,
- 	init_waitqueue_head(&smcd->lgrs_deleted);
- 	return smcd;
- }
--EXPORT_SYMBOL_GPL(smcd_alloc_dev);
--
--void smcd_free_dev(struct smcd_dev *smcd)
--{
--	put_device(&smcd->dev);
--}
--EXPORT_SYMBOL_GPL(smcd_free_dev);
- 
- static void smcd_register_dev(struct ism_dev *ism)
- {
-@@ -465,16 +443,9 @@ static void smcd_register_dev(struct ism_dev *ism)
- 	mutex_unlock(&smcd_dev_list.mutex);
- 
- 	pr_warn_ratelimited("smc: adding smcd device %s with pnetid %.16s%s\n",
--			    dev_name(&smcd->dev), smcd->pnetid,
-+			    dev_name(&ism->dev), smcd->pnetid,
- 			    smcd->pnetid_by_user ? " (user defined)" : "");
- 
--	if (device_add(&smcd->dev)) {
--		mutex_lock(&smcd_dev_list.mutex);
--		list_del(&smcd->list);
--		mutex_unlock(&smcd_dev_list.mutex);
--		smcd_free_dev(smcd);
--	}
--
- 	return;
- }
- 
-@@ -483,15 +454,13 @@ static void smcd_unregister_dev(struct ism_dev *ism)
- 	struct smcd_dev *smcd = ism_get_priv(ism, &smc_ism_client);
- 
- 	pr_warn_ratelimited("smc: removing smcd device %s\n",
--			    dev_name(&smcd->dev));
-+			    dev_name(&ism->dev));
- 	smcd->going_away = 1;
- 	smc_smcd_terminate_all(smcd);
- 	mutex_lock(&smcd_dev_list.mutex);
- 	list_del_init(&smcd->list);
- 	mutex_unlock(&smcd_dev_list.mutex);
- 	destroy_workqueue(smcd->event_wq);
--
--	device_del(&smcd->dev);
- }
- 
- /* SMCD Device event handler. Called from ISM device interrupt handler.
-diff --git a/net/smc/smc_pnet.c b/net/smc/smc_pnet.c
-index 25fb2fd186e2..11775401df68 100644
---- a/net/smc/smc_pnet.c
-+++ b/net/smc/smc_pnet.c
-@@ -103,7 +103,7 @@ static int smc_pnet_remove_by_pnetid(struct net *net, char *pnet_name)
- 	struct smc_pnetentry *pnetelem, *tmp_pe;
- 	struct smc_pnettable *pnettable;
- 	struct smc_ib_device *ibdev;
--	struct smcd_dev *smcd_dev;
-+	struct smcd_dev *smcd;
- 	struct smc_net *sn;
- 	int rc = -ENOENT;
- 	int ibport;
-@@ -162,16 +162,17 @@ static int smc_pnet_remove_by_pnetid(struct net *net, char *pnet_name)
- 	mutex_unlock(&smc_ib_devices.mutex);
- 	/* remove smcd devices */
- 	mutex_lock(&smcd_dev_list.mutex);
--	list_for_each_entry(smcd_dev, &smcd_dev_list.list, list) {
--		if (smcd_dev->pnetid_by_user &&
-+	list_for_each_entry(smcd, &smcd_dev_list.list, list) {
-+		if (smcd->pnetid_by_user &&
- 		    (!pnet_name ||
--		     smc_pnet_match(pnet_name, smcd_dev->pnetid))) {
-+		     smc_pnet_match(pnet_name, smcd->pnetid))) {
- 			pr_warn_ratelimited("smc: smcd device %s "
- 					    "erased user defined pnetid "
--					    "%.16s\n", dev_name(&smcd_dev->dev),
--					    smcd_dev->pnetid);
--			memset(smcd_dev->pnetid, 0, SMC_MAX_PNETID_LEN);
--			smcd_dev->pnetid_by_user = false;
-+					    "%.16s\n",
-+					    dev_name(smcd->ops->get_dev(smcd)),
-+					    smcd->pnetid);
-+			memset(smcd->pnetid, 0, SMC_MAX_PNETID_LEN);
-+			smcd->pnetid_by_user = false;
- 			rc = 0;
- 		}
- 	}
-@@ -331,8 +332,8 @@ static struct smcd_dev *smc_pnet_find_smcd(char *smcd_name)
- 
- 	mutex_lock(&smcd_dev_list.mutex);
- 	list_for_each_entry(smcd_dev, &smcd_dev_list.list, list) {
--		if (!strncmp(dev_name(&smcd_dev->dev), smcd_name,
--			     IB_DEVICE_NAME_MAX - 1))
-+		if (!strncmp(dev_name(smcd_dev->ops->get_dev(smcd_dev)),
-+			     smcd_name, IB_DEVICE_NAME_MAX - 1))
- 			goto out;
- 	}
- 	smcd_dev = NULL;
-@@ -411,7 +412,8 @@ static int smc_pnet_add_ib(struct smc_pnettable *pnettable, char *ib_name,
- 	struct smc_ib_device *ib_dev;
- 	bool smcddev_applied = true;
- 	bool ibdev_applied = true;
--	struct smcd_dev *smcd_dev;
-+	struct smcd_dev *smcd;
-+	struct device *dev;
- 	bool new_ibdev;
- 
- 	/* try to apply the pnetid to active devices */
-@@ -425,14 +427,16 @@ static int smc_pnet_add_ib(struct smc_pnettable *pnettable, char *ib_name,
- 					    ib_port,
- 					    ib_dev->pnetid[ib_port - 1]);
- 	}
--	smcd_dev = smc_pnet_find_smcd(ib_name);
--	if (smcd_dev) {
--		smcddev_applied = smc_pnet_apply_smcd(smcd_dev, pnet_name);
--		if (smcddev_applied)
-+	smcd = smc_pnet_find_smcd(ib_name);
-+	if (smcd) {
-+		smcddev_applied = smc_pnet_apply_smcd(smcd, pnet_name);
-+		if (smcddev_applied) {
-+			dev = smcd->ops->get_dev(smcd);
- 			pr_warn_ratelimited("smc: smcd device %s "
- 					    "applied user defined pnetid "
--					    "%.16s\n", dev_name(&smcd_dev->dev),
--					    smcd_dev->pnetid);
-+					    "%.16s\n", dev_name(dev),
-+					    smcd->pnetid);
-+		}
- 	}
- 	/* Apply fails when a device has a hardware-defined pnetid set, do not
- 	 * add a pnet table entry in that case.
-@@ -1181,7 +1185,7 @@ int smc_pnetid_by_table_ib(struct smc_ib_device *smcibdev, u8 ib_port)
-  */
- int smc_pnetid_by_table_smcd(struct smcd_dev *smcddev)
- {
--	const char *ib_name = dev_name(&smcddev->dev);
-+	const char *ib_name = dev_name(smcddev->ops->get_dev(smcddev));
- 	struct smc_pnettable *pnettable;
- 	struct smc_pnetentry *tmp_pe;
- 	struct smc_net *sn;
--- 
-2.25.1
+I don't work on igc or the i225/i226 devices, so I can't speak for
+those, but this series looks ok to me.
 
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+
+>  drivers/net/ethernet/freescale/enetc/enetc.c  |  67 ++--
+>  .../net/ethernet/freescale/enetc/enetc_qos.c  |  27 +-
+>  drivers/net/ethernet/intel/igc/igc_main.c     |  17 +
+>  include/net/pkt_cls.h                         |  10 -
+>  include/net/pkt_sched.h                       |  16 +
+>  net/sched/sch_mqprio.c                        | 298 +++++++++++-------
+>  net/sched/sch_taprio.c                        |  57 ++--
+>  7 files changed, 310 insertions(+), 182 deletions(-)
+> 
