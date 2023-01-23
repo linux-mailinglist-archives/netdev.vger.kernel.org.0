@@ -2,118 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98AE767844B
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 19:17:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBCEE678456
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 19:18:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231994AbjAWSRc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 13:17:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56154 "EHLO
+        id S232964AbjAWSSs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 13:18:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbjAWSRb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 13:17:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F32459FA;
-        Mon, 23 Jan 2023 10:17:30 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA556B80E5C;
-        Mon, 23 Jan 2023 18:17:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A3E0C433D2;
-        Mon, 23 Jan 2023 18:17:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674497847;
-        bh=BZEO8SDQ8/Vkc7GQ657ERlWHgTSZADVcbO3BThEGNLM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=bvnB7JP4zU9lnf+VoRMzrNsdyd7+16HsB1fwP94Of3IPA0jZcb66ZfnY98IGJdI6J
-         KKIlByypjx8FdDgaSTMhSn3JyYOnmMMxdNQMxi8GIYtKijz0tqySBDGiO4acc8q/gb
-         1CNcSAUlamyofG8sGplSaaWK1MsMjbiNxJv9h/8fToxFisaH5hAfSUsxNwADRP5qpN
-         K5DG+eh7fTsr/nTX8rYTCqoo3MV7HY2sUrXEqRNQhdJZz73Hx/JpcSwuxd1go59U4Y
-         ve1gvHhBJoow4ZaZWGdSzIX5geABezwJGfTNv/N76WtY8e4HB03rKNSAJfT2a8CIZI
-         e7sXmSECDgWEw==
-Date:   Mon, 23 Jan 2023 12:17:25 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229607AbjAWSSm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 13:18:42 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E35CECA28;
+        Mon, 23 Jan 2023 10:18:40 -0800 (PST)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30NGUXJ8013549;
+        Mon, 23 Jan 2023 18:18:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=eijx75EMWzOEnkolUuY7smuZ9FzwWk2aw0VoVKGflFU=;
+ b=mCALP/4xP7A+LqAOXfa75x8zEB7Fj7+yLECpbv8rIDf4PPNc41Vw5RrpVcRGaT1iRjaa
+ MYwDobiW7ETB1lxvmXoV6kNf5fNaWm3w3nLa8p0VdMm/0KuiP5rHZaiXubfFfPeKwEPC
+ 9AIvl+yzU+ybpbBoWHNRRSTcH599OxFOLaDx9yL9j3znlvYx6KU/AkcW2yh+lPjHfGKN
+ h+lNlVAZlg0KeBVdp8NjXtUNrOYaijBCE4H1SoRZcjEu8KFCWl3zhrfkL4tYnLPyb7Ha
+ 4mU5RlVHL7FFj3+dsGY2d+eCWQmV9LXPYsAsvGr7km3pvNZI0OXTtHFxEck8enNKfWA6 /A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3n9wtsjy1v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 23 Jan 2023 18:18:31 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 30NGgUuA002329;
+        Mon, 23 Jan 2023 18:18:30 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3n9wtsjy0s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 23 Jan 2023 18:18:30 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 30N668XG019104;
+        Mon, 23 Jan 2023 18:18:28 GMT
+Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
+        by ppma03ams.nl.ibm.com (PPS) with ESMTPS id 3n87p6jqbj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 23 Jan 2023 18:18:27 +0000
+Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
+        by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 30NIIOp442008872
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 23 Jan 2023 18:18:24 GMT
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2261B2004B;
+        Mon, 23 Jan 2023 18:18:24 +0000 (GMT)
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0E0B220040;
+        Mon, 23 Jan 2023 18:18:23 +0000 (GMT)
+Received: from LAPTOP-8S6R7U4L.localdomain (unknown [9.171.0.149])
+        by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
+        Mon, 23 Jan 2023 18:18:22 +0000 (GMT)
+From:   Jan Karcher <jaka@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Kishon Vijay Abraham I <kishon@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Siddharth Vadapalli <s-vadapalli@ti.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-phy@lists.infradead.org, linux-usb@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: Re: [PATCH 5/7] PCI: tegra: Convert to devm_of_phy_optional_get()
-Message-ID: <20230123181725.GA903141@bhelgaas>
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Thorsten Winkler <twinkler@linux.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Jan Karcher <jaka@linux.ibm.com>,
+        Nils Hoppmann <niho@linux.ibm.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Tony Lu <tonylu@linux.alibaba.com>,
+        Wen Gu <guwen@linux.alibaba.com>
+Subject: [net-next v2 0/8] drivers/s390/net/ism: Add generalized interface
+Date:   Mon, 23 Jan 2023 19:17:44 +0100
+Message-Id: <20230123181752.1068-1-jaka@linux.ibm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e9e0aa207d531ccea00e8947678a4f6ce1c625ac.1674036164.git.geert+renesas@glider.be>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: H6Nc3H5l29aSNreBYH78V5mAGi6nWRzH
+X-Proofpoint-GUID: vSF9-UVb_0uOuoTlRaYC44vOekYOq9jU
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-01-23_12,2023-01-23_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 impostorscore=0
+ suspectscore=0 mlxlogscore=708 bulkscore=0 phishscore=0 lowpriorityscore=0
+ malwarescore=0 mlxscore=0 priorityscore=1501 adultscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
+ definitions=main-2301230173
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 18, 2023 at 11:15:18AM +0100, Geert Uytterhoeven wrote:
-> Use the new devm_of_phy_optional_get() helper instead of open-coding the
-> same operation.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Previously, there was no clean separation between SMC-D code and the ISM
+device driver.This patch series addresses the situation to make ISM available
+for uses outside of SMC-D.
+In detail: SMC-D offers an interface via struct smcd_ops, which only the
+ISM module implements so far. However, there is no real separation between
+the smcd and ism modules, which starts right with the ISM device
+initialization, which calls directly into the SMC-D code.
+This patch series introduces a new API in the ISM module, which allows
+registration of arbitrary clients via include/linux/ism.h: struct ism_client.
+Furthermore, it introduces a "pure" struct ism_dev (i.e. getting rid of
+dependencies on SMC-D in the device structure), and adds a number of API
+calls for data transfers via ISM (see ism_register_dmb() & friends).
+Still, the ISM module implements the SMC-D API, and therefore has a number
+of internal helper functions for that matter.
+Note that the ISM API is consciously kept thin for now (as compared to the
+SMC-D API calls), as a number of API calls are only used with SMC-D and
+hardly have any meaningful usage beyond SMC-D, e.g. the VLAN-related calls.
 
-Thanks!
+v1 -> v2:
+  Removed s390x dependency which broke config for other archs.
 
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+Stefan Raspl (8):
+  net/smc: Terminate connections prior to device removal
+  net/ism: Add missing calls to disable bus-mastering
+  s390/ism: Introduce struct ism_dmb
+  net/ism: Add new API for client registration
+  net/smc: Register SMC-D as ISM client
+  net/smc: Separate SMC-D and ISM APIs
+  s390/ism: Consolidate SMC-D-related code
+  net/smc: De-tangle ism and smc device initialization
 
-Let me know if you want me to apply; otherwise I'll assume you will
-merge along with the [1/7] patch.
+ drivers/s390/net/ism.h     |  19 +-
+ drivers/s390/net/ism_drv.c | 376 ++++++++++++++++++++++++++++++-------
+ include/linux/ism.h        |  98 ++++++++++
+ include/net/smc.h          |  24 +--
+ net/smc/af_smc.c           |   9 +-
+ net/smc/smc_clc.c          |  11 +-
+ net/smc/smc_core.c         |  13 +-
+ net/smc/smc_diag.c         |   3 +-
+ net/smc/smc_ism.c          | 180 ++++++++++--------
+ net/smc/smc_ism.h          |   3 +-
+ net/smc/smc_pnet.c         |  40 ++--
+ 11 files changed, 560 insertions(+), 216 deletions(-)
+ create mode 100644 include/linux/ism.h
 
-> ---
->  drivers/pci/controller/pci-tegra.c | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
-> 
-> diff --git a/drivers/pci/controller/pci-tegra.c b/drivers/pci/controller/pci-tegra.c
-> index 929f9363e94bec71..5b8907c663e516ad 100644
-> --- a/drivers/pci/controller/pci-tegra.c
-> +++ b/drivers/pci/controller/pci-tegra.c
-> @@ -1330,12 +1330,9 @@ static struct phy *devm_of_phy_optional_get_index(struct device *dev,
->  	if (!name)
->  		return ERR_PTR(-ENOMEM);
->  
-> -	phy = devm_of_phy_get(dev, np, name);
-> +	phy = devm_of_phy_optional_get(dev, np, name);
->  	kfree(name);
->  
-> -	if (PTR_ERR(phy) == -ENODEV)
-> -		phy = NULL;
-> -
->  	return phy;
->  }
->  
-> -- 
-> 2.34.1
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+-- 
+2.25.1
+
