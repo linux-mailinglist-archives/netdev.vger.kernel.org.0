@@ -2,161 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C9066777A1
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 10:46:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7C766777DF
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 10:54:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231730AbjAWJqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 04:46:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42404 "EHLO
+        id S231922AbjAWJyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 04:54:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231660AbjAWJqU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 04:46:20 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A598621946
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 01:46:18 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id q5so5534650wrv.0
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 01:46:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:organization:references:cc:to
-         :content-language:subject:reply-to:from:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=60INGmxwRr+8yD/I9JtxQHZJy+MthHAPjebxgVXSq4A=;
-        b=F1RmlI6Jr+ymKyy8lqwEzZBkmqqB13nNXYBYvHtOeWRGeqsuz7xzXBmaWhSw3I8Ebm
-         TcBhF+tktlNXSXYa7GGd+4cSp7Mx1MA292zlI/YBhsesf8m2OPtOBU4CzkRYYDY+VJKD
-         rZKktCGYO6MieFBnhFrnXP96yNjjCazN4NtubEGY3US83//z/ammPRj/L4Pxrc2Z6tmr
-         QKPZ+KdqFIhF4uxc434VoygrrqrdBU0wTWSgMlQyI+fyCqgR08BCpwX5nBT4NXsRkGFu
-         8nu27yExklJVwN9h22VU1oVuSZqcQ+pTlG/IoT6VZa6i92mv0KfUGLb3dqJ4/aHoExHh
-         cArg==
+        with ESMTP id S231920AbjAWJyI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 04:54:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8105E22781
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 01:53:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1674467582;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XGBr/F0XFzE0vVYozw1/BKRP3jPgyxC9gUjhQB9Xc7E=;
+        b=c7U7OZ+jrczNzreyjnvOkM8sMgpFeX6jNteXxCfp7KlwTy1izzKtSQPunhtGn4NS5fWLKj
+        3van3cy18e686LiQMDttW5LgkCEFXL+Dsq0DEgWC9VcYRu+933qe4p3CJ4q4nF4bYRbJfa
+        e5+WfW32OIN2I/6h4t2gd5wfzXkxJog=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-638-86tx_IzbOTWqpahf6-9brQ-1; Mon, 23 Jan 2023 04:53:01 -0500
+X-MC-Unique: 86tx_IzbOTWqpahf6-9brQ-1
+Received: by mail-qt1-f200.google.com with SMTP id z25-20020ac84559000000b003b69eb9e75bso2163517qtn.17
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 01:53:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:references:cc:to
-         :content-language:subject:reply-to:from:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=60INGmxwRr+8yD/I9JtxQHZJy+MthHAPjebxgVXSq4A=;
-        b=hwkgT8qmfuihVQF9vq0xfPNsE4YTKRLxUAG+UzclTxYQ+F9yLYcNiU1DCCAVp/TKZ6
-         1QZuuqurlFiuBckrcYm7YjGnts56GEerqSlhPy2ZHo+0kTFdZj6AZN/m3g7H8HwcSA1f
-         Un3ohk+9TNTBXUiEK6ANS7pbvQN7dVEiiJDqWhsIFFGQgnpQ2ojV7QzDKuXxvgHt1pMJ
-         v6KkyC9Lcx58QBFGflGNlWMgq+OngdW/8gnD6CPpwC0xInpijm7VcqoDwgrg9OA7zu+U
-         N6SbvtyJlgThQOoa1RF48aaGzSDC6rVMIhkuvJsUALVCvH/zDE1cVfNtMluABfmTCmSA
-         /zkg==
-X-Gm-Message-State: AFqh2kqyV/Moz8j3HAemQGpWGX7zto3+M9pSodHror8dDrgbdv/JJTRx
-        ZWALdEtqV+dJ7WLPj2QKJIGBxw==
-X-Google-Smtp-Source: AMrXdXuHEVHo54bmjGJT3gC7SenPuHW6sVZSyn52AJ8UqKixwTSKOJoGk+qB0zPe/lhc1Ohi58pW5Q==
-X-Received: by 2002:a05:6000:98d:b0:2bd:c6ce:7bfb with SMTP id by13-20020a056000098d00b002bdc6ce7bfbmr23917833wrb.28.1674467177213;
-        Mon, 23 Jan 2023 01:46:17 -0800 (PST)
-Received: from [192.168.7.111] (679773502.box.freepro.com. [212.114.21.58])
-        by smtp.gmail.com with ESMTPSA id q12-20020adff50c000000b002bc83b85180sm7139415wro.114.2023.01.23.01.46.15
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XGBr/F0XFzE0vVYozw1/BKRP3jPgyxC9gUjhQB9Xc7E=;
+        b=BMReC08Ss2CZ3PhrNhJ0kzHqfLPBrpiw09aV5stEwz2jK58gB2mvGqt9HPXCTMV0Id
+         5vaqkq7pyJlMmIAMahmqoo5C9S+hsHSG1puV6m3rCg8899zq4fPEbb6IcTpXzzWpx/nk
+         O8JlSy61SOpcEDY1wIpjTDq6Mg+OP5PcZwAgOhNnhhv5Bfcez5qDDLCtdlaeQDR2/J3x
+         B1JlYQV3oNMB+dEqVU6pIxUMAFJ65lGoMGlZFXtVtWGIeI9P2C7enBPxX//8oHNxxTcS
+         e5X8sl30d8TyLAFakwmoN6U98lEB+wSht8jOmJXX2m+w8j4gf2PHZicNbRhzqEg7uvZF
+         uZpg==
+X-Gm-Message-State: AFqh2koawppSxtolixKpKDdUoAXotQFAwcN/9WwAtoIkHZ9OK8jezp50
+        PabN9jp4aqWubPnolHvFsO1bEy6pQDyXhYEJTrpwH3cgQsKew9PNb/Z50XAPY8hZb80PZ+/9nSG
+        Eof/nBeJG57hvnRqk
+X-Received: by 2002:a05:6214:37c6:b0:532:35a1:af91 with SMTP id nj6-20020a05621437c600b0053235a1af91mr36780673qvb.27.1674467580910;
+        Mon, 23 Jan 2023 01:53:00 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXtGVUKKbQfXcHL30rqUuIDlvGIgB5ckTck/POv0Vt/uPjVDeonGJ8IteOq2bZBAnoCEGaxYYg==
+X-Received: by 2002:a05:6214:37c6:b0:532:35a1:af91 with SMTP id nj6-20020a05621437c600b0053235a1af91mr36780656qvb.27.1674467580648;
+        Mon, 23 Jan 2023 01:53:00 -0800 (PST)
+Received: from [192.168.100.30] ([82.142.8.70])
+        by smtp.gmail.com with ESMTPSA id g8-20020ae9e108000000b006b5cc25535fsm5651738qkm.99.2023.01.23.01.52.58
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Jan 2023 01:46:16 -0800 (PST)
-Message-ID: <c590a842-0074-8f19-6bc7-5de101a88661@linaro.org>
-Date:   Mon, 23 Jan 2023 10:46:15 +0100
+        Mon, 23 Jan 2023 01:53:00 -0800 (PST)
+Message-ID: <8b80ac91-cf60-f5ff-a5dd-c5247c9c8f64@redhat.com>
+Date:   Mon, 23 Jan 2023 10:52:57 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.0
-From:   Neil Armstrong <neil.armstrong@linaro.org>
-Reply-To: neil.armstrong@linaro.org
-Subject: Re: [PATCH v2 10/11] dt-bindings: PCI: convert amlogic,meson-pcie.txt
- to dt-schema
+Subject: Re: [PATCH 1/4] virtio_net: notify MAC address change on device
+ initialization
 Content-Language: en-US
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vinod Koul <vkoul@kernel.org>,
-        Kishon Vijay Abraham I <kishon@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
+To:     Eli Cohen <elic@nvidia.com>, linux-kernel@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        Gautam Dawar <gautam.dawar@xilinx.com>,
+        Cindy Lu <lulu@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-mmc@vger.kernel.org, linux-pci@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-References: <20230110150328.GA1502381@bhelgaas>
-Organization: Linaro Developer Services
-In-Reply-To: <20230110150328.GA1502381@bhelgaas>
+        =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>
+References: <20230122100526.2302556-1-lvivier@redhat.com>
+ <20230122100526.2302556-2-lvivier@redhat.com>
+ <07a24753-767b-4e1e-2bcf-21ec04bc044a@nvidia.com>
+From:   Laurent Vivier <lvivier@redhat.com>
+In-Reply-To: <07a24753-767b-4e1e-2bcf-21ec04bc044a@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/01/2023 16:03, Bjorn Helgaas wrote:
-> Is this the same sort of conversion done by one of these?
+On 1/22/23 14:47, Eli Cohen wrote:
 > 
->    e4dffb674cfd ("dt-bindings: PCI: tegra194: Convert to json-schema")
->    075a9d55932e ("dt-bindings: PCI: qcom: Convert to YAML")
-> 
-> It's helpful to non-experts like me if the subject lines use similar
-> style (capitalized) and similar terminology ("dt-schema" vs
-> "json-schema" vs "YAML").
-
-Yes and honestly, I don't know what's the right name to use.
-
-I use dt-schema since it's the "official" name of the tool
-used to validate those.
-
-> 
-> On Mon, Jan 09, 2023 at 01:53:34PM +0100, Neil Armstrong wrote:
->> Convert the Amlogic Meson AXG DWC PCIE SoC controller bindings to
->> dt-schema.
-> 
-> Some references here and below are "PCIE" (inherited from the
-> original) and others are "PCIe".  Could be made consistent here.
-
-Ack
-
-> 
->> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
->> ---
->>   .../devicetree/bindings/pci/amlogic,axg-pcie.yaml  | 134 +++++++++++++++++++++
->>   .../devicetree/bindings/pci/amlogic,meson-pcie.txt |  70 -----------
->>   2 files changed, 134 insertions(+), 70 deletions(-)
+> On 22/01/2023 12:05, Laurent Vivier wrote:
+>> In virtnet_probe(), if the device doesn't provide a MAC address the
+>> driver assigns a random one.
+>> As we modify the MAC address we need to notify the device to allow it
+>> to update all the related information.
 >>
->> diff --git a/Documentation/devicetree/bindings/pci/amlogic,axg-pcie.yaml b/Documentation/devicetree/bindings/pci/amlogic,axg-pcie.yaml
->> new file mode 100644
->> index 000000000000..a08f15fe9a9a
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/pci/amlogic,axg-pcie.yaml
->> @@ -0,0 +1,134 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/pci/amlogic,axg-pcie.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Amlogic Meson AXG DWC PCIE SoC controller
->> +
->> +maintainers:
->> +  - Neil Armstrong <neil.armstrong@linaro.org>
->> +
->> +description:
->> +  Amlogic Meson PCIe host controller is based on the Synopsys DesignWare PCI core.
->> ...
+>> The problem can be seen with vDPA and mlx5_vdpa driver as it doesn't
+>> assign a MAC address by default. The virtio_net device uses a random
+>> MAC address (we can see it with "ip link"), but we can't ping a net
+>> namespace from another one using the virtio-vdpa device because the
+>> new MAC address has not been provided to the hardware.
+>>
+>> Signed-off-by: Laurent Vivier <lvivier@redhat.com>
+>> ---
+>>   drivers/net/virtio_net.c | 14 ++++++++++++++
+>>   1 file changed, 14 insertions(+)
+>>
+>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>> index 7723b2a49d8e..25511a86590e 100644
+>> --- a/drivers/net/virtio_net.c
+>> +++ b/drivers/net/virtio_net.c
+>> @@ -3800,6 +3800,8 @@ static int virtnet_probe(struct virtio_device *vdev)
+>>           eth_hw_addr_set(dev, addr);
+>>       } else {
+>>           eth_hw_addr_random(dev);
+>> +        dev_info(&vdev->dev, "Assigned random MAC address %pM\n",
+>> +             dev->dev_addr);
+>>       }
+>>       /* Set up our device-specific information */
+>> @@ -3956,6 +3958,18 @@ static int virtnet_probe(struct virtio_device *vdev)
+>>       pr_debug("virtnet: registered device %s with %d RX and TX vq's\n",
+>>            dev->name, max_queue_pairs);
+>> +    /* a random MAC address has been assigned, notify the device */
+>> +    if (dev->addr_assign_type == NET_ADDR_RANDOM &&
+> Maybe it's better to not count on addr_assign_type and use a local variable to indicate 
+> that virtnet_probe assigned random MAC. The reason is that the hardware driver might have 
+> done that as well and does not need notification.
+
+eth_hw_addr_random() sets explicitly NET_ADDR_RANDOM, while eth_hw_addr_set() doesn't 
+change addr_assign_type so it doesn't seem this value is set by the hardware driver.
+
+So I guess it's the default value (NET_ADDR_PERM) in this case (even if it's a random 
+address from the point of view of the hardware).
+
+If you prefer I can replace it by "!virtio_has_feature(vdev, VIRTIO_NET_F_MAC)"?
+
+Thanks,
+Laurent
 
