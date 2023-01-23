@@ -2,97 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56DB1677503
-	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 06:49:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9ECB67757F
+	for <lists+netdev@lfdr.de>; Mon, 23 Jan 2023 08:20:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230073AbjAWFtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 00:49:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32998 "EHLO
+        id S230106AbjAWHUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 02:20:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbjAWFtb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 00:49:31 -0500
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9367A1421D;
-        Sun, 22 Jan 2023 21:49:28 -0800 (PST)
-Received: by mail-oi1-x229.google.com with SMTP id r9so9450831oig.12;
-        Sun, 22 Jan 2023 21:49:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=xyJo8C/2H0gDpF4Y+52CY8J6fFUdtwXdZo9IpnszVOg=;
-        b=cqPNfNPWPggJujEivra4tfr/ZQ/4CDx9rTbVPJjzi5BzFMc2Wrxe2vClEJesHxlkcl
-         cQejl0JiOJ70XFBIdWjhZdGkYv1y7oeAESFMqJJ4eXfOZDOUYPJiTAEsWc5mGK2R7sbM
-         BRzLPfxmzAAgZ9bXnPg1COBQdFAOjCUpmonXTnH4syHOMvI8Na1zrO14ctgviyW4OZUI
-         vWAefpcRthtot7LWUnHElvyXXtGfRK7SzAtLplAcypGj5DBenv2D0e24pHPpjK1j8m+t
-         wNcUv94BMQohWQpLk+zr6NNMUsO8IjKPsztCHzrOXJV/CPIaZXqVdItGjby1eiX/SNDb
-         FcBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xyJo8C/2H0gDpF4Y+52CY8J6fFUdtwXdZo9IpnszVOg=;
-        b=6+E0rOGC0p0z6XOrfLwAY90wFCG2ZMbJlChW6LLfNktUhMhJRBWS4fvWH+sGVoWc3J
-         eJpE81diCCMuxPa8iVI237e62gqRkrs1FBmIbe42DfxUszhY7mhGvdl8UgHbNdxDuS1U
-         0NdFERYj8b2LYpI7GhqqG2khg89RbZfns57/s5Rau8FosmErU4opSFKONcxcbF9lzw/D
-         FYbKiYuRmEji4Z1HJIUNBDVY3ktl5yB4LaJROlRNBordKO7I6Z2Wuu3pEc2STXG3rLaT
-         8Ylg4DMuhe9D7ngSZ1dnRhtbWo6y0wR84KslxoXfjwUAJD3r1EoHqGx1sPGLeCBpcELF
-         b+fg==
-X-Gm-Message-State: AFqh2kqiEL97bObzJvCK+Kfp8VAlnCs31mQKBVDFNGraJP5QUk2qXUCL
-        b7Ghr4eoQ7xuEWaJnNSGLx4=
-X-Google-Smtp-Source: AMrXdXuiWXYBYH920EFgsK0kjVtHpjlLtOe0O2Ntr/K3wFwYYMuueU6SjyG1flMlDHFvZQjHArI2hQ==
-X-Received: by 2002:a05:6808:1b27:b0:36b:1834:4073 with SMTP id bx39-20020a0568081b2700b0036b18344073mr11085443oib.29.1674452967859;
-        Sun, 22 Jan 2023 21:49:27 -0800 (PST)
-Received: from localhost ([2600:1700:65a0:ab60:2b7f:8e37:c086:d585])
-        by smtp.gmail.com with ESMTPSA id k10-20020a9d198a000000b006864b5f4650sm9416657otk.46.2023.01.22.21.49.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Jan 2023 21:49:26 -0800 (PST)
-Date:   Sun, 22 Jan 2023 21:49:25 -0800
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     Peilin Ye <yepeilin.cs@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v7] net/sock: Introduce trace_sk_data_ready()
-Message-ID: <Y84f5U2iz0M9J3w8@pop-os.localdomain>
-References: <20221110023458.2726-1-yepeilin.cs@gmail.com>
- <20230120004516.3944-1-yepeilin.cs@gmail.com>
+        with ESMTP id S229549AbjAWHUf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 02:20:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0896383EF
+        for <netdev@vger.kernel.org>; Sun, 22 Jan 2023 23:20:33 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8954260DBE
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 07:20:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CD65C433D2;
+        Mon, 23 Jan 2023 07:20:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674458432;
+        bh=50uwuJt3dOekdXeoCWQ+GuTXd5+iOQQLaunfkFobjwM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fsAnUXxzw3biW+tWzgTttwU70czrHy6VsFWmyXLnsryjKuylnWM2pFtQeDmFj9gGI
+         h9Pl2DClTgXTyg1PmZgukRxte81zlB6ISNzBTtN+dhnmGMNz/ydXAkQL9trltTrrFD
+         KpltO+wLNTTc6vasqWp2QYw4GXF5efkCwjDGuX9wQ3WsP8JYN9g13FQnsWlDxgCnxj
+         bxEfI6g4037fS5gwX0h8tr51zcKIXUFmgZfD0vaylaCOI/5kgokgdpZ7bZOv7m7zA7
+         ly7zLunR32MqDYfl/+cjHhxu2eoN1YZjZ8dmOoc5gmHiTfYUwMPYBNQyavChl1zLJo
+         NJT6dojpo91Nw==
+Date:   Mon, 23 Jan 2023 09:20:28 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Vadim Fedorenko <vadfed@meta.com>
+Cc:     Aya Levin <ayal@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH net 1/2] mlx5: fix possible ptp queue fifo overflow
+Message-ID: <Y841PJnZiF0WfoBn@unreal>
+References: <20230122161602.1958577-1-vadfed@meta.com>
+ <20230122161602.1958577-2-vadfed@meta.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230120004516.3944-1-yepeilin.cs@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230122161602.1958577-2-vadfed@meta.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 19, 2023 at 04:45:16PM -0800, Peilin Ye wrote:
-> From: Peilin Ye <peilin.ye@bytedance.com>
+On Sun, Jan 22, 2023 at 08:16:01AM -0800, Vadim Fedorenko wrote:
+> Fifo pointers are not checked for overflow and this could potentially
+> lead to overflow and double free under heavy PTP traffic.
 > 
-> As suggested by Cong, introduce a tracepoint for all ->sk_data_ready()
-> callback implementations.  For example:
+> Also there were accidental OOO cqe which lead to absolutely broken fifo.
+> Add checks to workaround OOO cqe and add counters to show the amount of
+> such events.
 > 
-> <...>
->   iperf-609  [002] .....  70.660425: sk_data_ready: family=2 protocol=6 func=sock_def_readable
->   iperf-609  [002] .....  70.660436: sk_data_ready: family=2 protocol=6 func=sock_def_readable
-> <...>
-> 
-> Suggested-by: Cong Wang <cong.wang@bytedance.com>
-> Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+> Fixes: 19b43a432e3e ("net/mlx5e: Extend SKB room check to include PTP-SQ")
+> Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
+> ---
+>  .../net/ethernet/mellanox/mlx5/core/en/ptp.c  | 28 ++++++++++++++-----
+>  .../net/ethernet/mellanox/mlx5/core/en/txrx.h |  6 +++-
+>  .../ethernet/mellanox/mlx5/core/en_stats.c    |  2 ++
+>  .../ethernet/mellanox/mlx5/core/en_stats.h    |  2 ++
+>  4 files changed, 30 insertions(+), 8 deletions(-)
 
-Looks good to me.
+<...>
 
-Thanks!
+> @@ -291,12 +291,16 @@ void mlx5e_skb_fifo_push(struct mlx5e_skb_fifo *fifo, struct sk_buff *skb)
+>  {
+>  	struct sk_buff **skb_item = mlx5e_skb_fifo_get(fifo, (*fifo->pc)++);
+>  
+> +	WARN_ONCE((u16)(*fifo->pc - *fifo->cc) > fifo->mask, "%s overflow", __func__);
+
+nit, ""%s overflow", __func__" is not needed as call trace already includes function name.
+
+Thanks
