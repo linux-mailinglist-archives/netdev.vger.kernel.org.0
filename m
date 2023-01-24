@@ -2,87 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74F7E679571
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 11:39:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E7D2679576
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 11:40:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233411AbjAXKj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 05:39:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43264 "EHLO
+        id S231772AbjAXKkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 05:40:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233658AbjAXKjI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 05:39:08 -0500
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B05F42BF7
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 02:39:01 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id E5FDD20299;
-        Tue, 24 Jan 2023 11:38:58 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id QKonxQuP3zMu; Tue, 24 Jan 2023 11:38:58 +0100 (CET)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        with ESMTP id S229933AbjAXKkV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 05:40:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E6A2D45;
+        Tue, 24 Jan 2023 02:40:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 74345201D3;
-        Tue, 24 Jan 2023 11:38:58 +0100 (CET)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id 65CA380004A;
-        Tue, 24 Jan 2023 11:38:58 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Tue, 24 Jan 2023 11:38:58 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 24 Jan
- 2023 11:38:57 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id A7AF63182BAE; Tue, 24 Jan 2023 11:38:57 +0100 (CET)
-Date:   Tue, 24 Jan 2023 11:38:57 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Eric Dumazet <edumazet@google.com>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <eric.dumazet@gmail.com>, Dmitry Safonov <dima@arista.com>
-Subject: Re: [PATCH net] xfrm/compat: prevent potential spectre v1 gadget in
- xfrm_xlate32_attr()
-Message-ID: <20230124103857.GW665047@gauss3.secunet.de>
-References: <20230120130249.3507411-1-edumazet@google.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DCEE60E86;
+        Tue, 24 Jan 2023 10:40:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 99C50C433EF;
+        Tue, 24 Jan 2023 10:40:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674556818;
+        bh=l4Tu+EbMZL36A9gZdOLyolqouv6pJfcDpasghfLPFEs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=j4OmV8gx5NyhGAIT8ZU2jRBXWr/X0w3ku6wGI9KzMGrKQgxTX8P+QAHR9yXxLyeLE
+         QnGxcNGiYugA1wlOQl3RCBSiQD3liLSFxPfq9Nl+eG1CVyCwbmw8I0TvS1Ha3rdR5F
+         +bicpxiry7eVSEwYVqYXFKJImqaVFkF/mdmj+A7zpFnUu1usanLCG9C/zBGCVIivQx
+         nrHKrASvDQKTnPsLJefD8oOKnqi3AyQMWo9t5DlbwlDaduHv2bMw24q8UpOvtB0SZS
+         mVv2B/4a7OfwXftqOabd8cZUR14mEp6zvI3bvIOTjEJlH033j0FdCS5jyfQepRPAyW
+         s9Vvr1TL4OhLg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 82598E52508;
+        Tue, 24 Jan 2023 10:40:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230120130249.3507411-1-edumazet@google.com>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v4 0/8] Netlink protocol specs
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167455681853.26386.14381375194899546381.git-patchwork-notify@kernel.org>
+Date:   Tue, 24 Jan 2023 10:40:18 +0000
+References: <20230120175041.342573-1-kuba@kernel.org>
+In-Reply-To: <20230120175041.342573-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, robh@kernel.org, johannes@sipsolutions.net,
+        stephen@networkplumber.org, ecree.xilinx@gmail.com, sdf@google.com,
+        f.fainelli@gmail.com, fw@strlen.de, linux-doc@vger.kernel.org,
+        razor@blackwall.org, nicolas.dichtel@6wind.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 20, 2023 at 01:02:49PM +0000, Eric Dumazet wrote:
->   int type = nla_type(nla);
-> 
->   if (type > XFRMA_MAX) {
->             return -EOPNOTSUPP;
->   }
-> 
-> @type is then used as an array index and can be used
-> as a Spectre v1 gadget.
-> 
->   if (nla_len(nla) < compat_policy[type].len) {
-> 
-> array_index_nospec() can be used to prevent leaking
-> content of kernel memory to malicious users.
-> 
-> Fixes: 5106f4a8acff ("xfrm/compat: Add 32=>64-bit messages translator")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Dmitry Safonov <dima@arista.com>
-> Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Hello:
 
-Applied to the ipsec tree, thanks a lot Eric!
+This series was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Fri, 20 Jan 2023 09:50:33 -0800 you wrote:
+> I think the Netlink proto specs are far along enough to merge.
+> Filling in all attribute types and quirks will be an ongoing
+> effort but we have enough to cover FOU so it's somewhat complete.
+> 
+> I fully intend to continue polishing the code but at the same
+> time I'd like to start helping others base their work on the
+> specs (e.g. DPLL) and need to start working on some new families
+> myself.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v4,1/8] docs: add more netlink docs (incl. spec docs)
+    https://git.kernel.org/netdev/net-next/c/9d6a65079c98
+  - [net-next,v4,2/8] netlink: add schemas for YAML specs
+    https://git.kernel.org/netdev/net-next/c/e616c07ca518
+  - [net-next,v4,3/8] net: add basic C code generators for Netlink
+    https://git.kernel.org/netdev/net-next/c/be5bea1cc0bf
+  - [net-next,v4,4/8] netlink: add a proto specification for FOU
+    https://git.kernel.org/netdev/net-next/c/4eb77b4ecd3c
+  - [net-next,v4,5/8] net: fou: regenerate the uAPI from the spec
+    https://git.kernel.org/netdev/net-next/c/3a330496baa8
+  - [net-next,v4,6/8] net: fou: rename the source for linking
+    https://git.kernel.org/netdev/net-next/c/08d323234d10
+  - [net-next,v4,7/8] net: fou: use policy and operation tables generated from the spec
+    https://git.kernel.org/netdev/net-next/c/1d562c32e439
+  - [net-next,v4,8/8] tools: ynl: add a completely generic client
+    https://git.kernel.org/netdev/net-next/c/e4b48ed460d3
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
