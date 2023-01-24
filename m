@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 77801679077
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 06:51:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 270B667907E
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 06:53:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232302AbjAXFvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 00:51:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47868 "EHLO
+        id S232375AbjAXFxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 00:53:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233214AbjAXFvD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 00:51:03 -0500
+        with ESMTP id S232183AbjAXFxL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 00:53:11 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFFF23A9D
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 21:50:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 295C23CE3E
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 21:52:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5C759B81077
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 05:50:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0825FC4339E;
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA44BB81084
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 05:50:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3EA45C433AF;
         Tue, 24 Jan 2023 05:50:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1674539418;
-        bh=xZjfbEP6UoY4X+czZeyDSjHs3Y/vP9XJwFY8vcN2kH4=;
+        bh=Wq3UP2ojC0GcVaVt3+nomR7kTJuomYcGwkgun97IfEg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=KO0/iLg+QOunXO1SPmwoHL6dXYfMEKJz9dFqkbGRVX/S30vl9NRNQGiEKoNIZbTmm
-         0/FZhbSSkC+XgQOPOBfRFDJ5wjdHT682PEM2On1fSCWFWqm8dmAgvhuF+mqS94bxx6
-         XWGbAo06mTXvTxDSpKrnyhhUsY60yVvcwrbqkOkFBspSP4vx7+H+l7QbC0Q9j2y7IW
-         VSbn64dXDND93RE6Gh4gHZ6j9YY7Li60eLjdOt5LN1CLf7PPdg6B15vFWPm3ZmkqfQ
-         MX8+9ev0dFEgSxMDo3DOgAEgsYhHgQP8cfUuTwuN1/6iA+3tjV3MyyRSxa9yMkhNnG
-         Rw/GA8fBC4Ceg==
+        b=eUpeSBFwq5jYf+xMeX6Yg63a8Apgw5RPwqvluCtM4HftJx7kGV2ZstMc/pNIZ0Vi6
+         /H+5bLpPL6g5Md4oUZVLlO5t7dWN3sohLG5qvogP0O2NpvbXm9+kkXusaGT+vGrMEa
+         unZTy4SfUXTqcJzuC/MYb9K7qAuOAaA2/JGO3kN3YDUcx99fAXEugXpBYTryFeHaYi
+         frB0XQv/LeVderngKlPql83t+mz0Xlk/wP/68Et22E1YTvqz7urn67ISJPkCZ010vB
+         wfy1h70Sq4bpqxLeUJ2yQLucTN43BjctDSlh12Gl+6EVl1rspKDhYQwvJFAPckehED
+         Dc+sqfSA7Ip9g==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DF18DE52508;
-        Tue, 24 Jan 2023 05:50:17 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 29DA5C04E33;
+        Tue, 24 Jan 2023 05:50:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] ipv4: prevent potential spectre v1 gadget in
- ip_metrics_convert()
+Subject: Re: [PATCH net-next V2] net: fix kfree_skb_list use of
+ skb_mark_not_on_list
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167453941791.4419.3874462938838006078.git-patchwork-notify@kernel.org>
-Date:   Tue, 24 Jan 2023 05:50:17 +0000
-References: <20230120133040.3623463-1-edumazet@google.com>
-In-Reply-To: <20230120133040.3623463-1-edumazet@google.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, eric.dumazet@gmail.com
+Message-Id: <167453941816.4419.3173739226608329808.git-patchwork-notify@kernel.org>
+Date:   Tue, 24 Jan 2023 05:50:18 +0000
+References: <167421088417.1125894.9761158218878962159.stgit@firesoul>
+In-Reply-To: <167421088417.1125894.9761158218878962159.stgit@firesoul>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com,
+        syzbot+c8a2e66e37eee553c4fd@syzkaller.appspotmail.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,22 +59,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Fri, 20 Jan 2023 13:30:40 +0000 you wrote:
-> if (!type)
-> 		continue;
-> 	if (type > RTAX_MAX)
-> 		return -EINVAL;
-> 	...
-> 	metrics[type - 1] = val;
+On Fri, 20 Jan 2023 11:34:44 +0100 you wrote:
+> A bug was introduced by commit eedade12f4cb ("net: kfree_skb_list use
+> kmem_cache_free_bulk"). It unconditionally unlinked the SKB list via
+> invoking skb_mark_not_on_list().
+> 
+> In this patch we choose to remove the skb_mark_not_on_list() call as it
+> isn't necessary. It would be possible and correct to call
+> skb_mark_not_on_list() only when __kfree_skb_reason() returns true,
+> meaning the SKB is ready to be free'ed, as it calls/check skb_unref().
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] ipv4: prevent potential spectre v1 gadget in ip_metrics_convert()
-    https://git.kernel.org/netdev/net/c/1d1d63b61280
+  - [net-next,V2] net: fix kfree_skb_list use of skb_mark_not_on_list
+    https://git.kernel.org/netdev/net-next/c/f72ff8b81ebc
 
 You are awesome, thank you!
 -- 
