@@ -2,84 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C817267969F
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 12:30:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 286B16796B9
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 12:33:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234012AbjAXLaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 06:30:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55170 "EHLO
+        id S234135AbjAXLdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 06:33:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234009AbjAXLaV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 06:30:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B670914488;
-        Tue, 24 Jan 2023 03:30:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 669D8B8117A;
-        Tue, 24 Jan 2023 11:30:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1C1FFC433EF;
-        Tue, 24 Jan 2023 11:30:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674559817;
-        bh=aqhPfNSJCvE036s6Wn2GGUEN9lsdj/GZC1YsIBumS5I=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=L1idvWTcUBmh23SXhVrnoiet6k2ooLpcjlrhNPTkw0Ae1Q4+7IZTS0x9hhFeNeGre
-         doqfT2Zp4WazZNhLZJkMm89vOkVzza8z9Xu1SzeeBLwgoxcveeGcAegFQJIbpm+cds
-         yK5fFekSRShMgowtuOi2XgCtR8WbFr2KrSBrA4pxwK3NCTpbCLOldWFGeUbZlTReee
-         ulkWMJ6ejsWk7hakN6DnnKfBsszrQZcr/FhQ/GdE7NIyJk158yn6Kni2MXDnJyT9rv
-         Nem1S/q5nX8s1ulL3NxFK9XH1S64QTk1pUy5bjtGhCJClxv0RrD05qRKcWCF7JrRVa
-         izvn5QcIu1A2g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EF917E52508;
-        Tue, 24 Jan 2023 11:30:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S234128AbjAXLdv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 06:33:51 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597DA29412;
+        Tue, 24 Jan 2023 03:33:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674560023; x=1706096023;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=tTmTjWwJXmzO49OJW8xcC/9yV2HJVoUxBo+EOvwGkKk=;
+  b=QxjbXdaPurtmLBjytmYtkXymycO8yJiEr1ikUxenwmEEMCIdeP4EgW36
+   OtlaPgL/vulq2TuWaIkPemAIGygE73THeT852qNyiaokf5SnGDOINQ2qD
+   l8AYzTMBFVR0BqsdFS9PF74Y0h8J93r5KY781XJb4oUN7flVjLdHOGpQ2
+   N184dbLPxZZbuNdT2SJVrEXgEAJa8cd/7o6oUYbbaDfGCx1nhJCLDzhEw
+   ByQXorytV5hkVKqdJMcX2ty2vqVaPFxdDah3Z5KgYmAfibztfXKgy0UAK
+   2ib4Q+YjxpYI6c+cULQwDyZsAXkud1ANhrYD4ARDDtNE5a/2ZJs7XucDr
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10599"; a="328364803"
+X-IronPort-AV: E=Sophos;i="5.97,242,1669104000"; 
+   d="scan'208";a="328364803"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2023 03:33:41 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10599"; a="639554572"
+X-IronPort-AV: E=Sophos;i="5.97,242,1669104000"; 
+   d="scan'208";a="639554572"
+Received: from naamamex-mobl.ger.corp.intel.com (HELO [10.13.12.3]) ([10.13.12.3])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2023 03:33:39 -0800
+Message-ID: <7a387e20-68e0-4c08-7ef4-11cb41f79e51@linux.intel.com>
+Date:   Tue, 24 Jan 2023 13:33:37 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v1 net] netrom: Fix use-after-free of a listening socket.
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167455981697.20043.16136032100144497483.git-patchwork-notify@kernel.org>
-Date:   Tue, 24 Jan 2023 11:30:16 +0000
-References: <20230120231927.51711-1-kuniyu@amazon.com>
-In-Reply-To: <20230120231927.51711-1-kuniyu@amazon.com>
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, phind.uet@gmail.com,
-        kuni1840@gmail.com, netdev@vger.kernel.org,
-        linux-hams@vger.kernel.org,
-        syzbot+5fafd5cfe1fc91f6b352@syzkaller.appspotmail.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [Intel-wired-lan] [PATCH 8/9] igc: Remove redundant
+ pci_enable_pcie_error_reporting()
+Content-Language: en-US
+To:     Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+References: <20230118234612.272916-1-helgaas@kernel.org>
+ <20230118234612.272916-9-helgaas@kernel.org>
+From:   "naamax.meir" <naamax.meir@linux.intel.com>
+In-Reply-To: <20230118234612.272916-9-helgaas@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Fri, 20 Jan 2023 15:19:27 -0800 you wrote:
-> syzbot reported a use-after-free in do_accept(), precisely nr_accept()
-> as sk_prot_alloc() allocated the memory and sock_put() frees it. [0]
+On 1/19/2023 01:46, Bjorn Helgaas wrote:
+> From: Bjorn Helgaas <bhelgaas@google.com>
 > 
-> The issue could happen if the heartbeat timer is fired and
-> nr_heartbeat_expiry() calls nr_destroy_socket(), where a socket
-> has SOCK_DESTROY or a listening socket has SOCK_DEAD.
+> pci_enable_pcie_error_reporting() enables the device to send ERR_*
+> Messages.  Since f26e58bf6f54 ("PCI/AER: Enable error reporting when AER is
+> native"), the PCI core does this for all devices during enumeration.
 > 
-> [...]
-
-Here is the summary with links:
-  - [v1,net] netrom: Fix use-after-free of a listening socket.
-    https://git.kernel.org/netdev/net/c/409db27e3a2e
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> Remove the redundant pci_enable_pcie_error_reporting() call from the
+> driver.  Also remove the corresponding pci_disable_pcie_error_reporting()
+> from the driver .remove() path.
+> 
+> Note that this doesn't control interrupt generation by the Root Port; that
+> is controlled by the AER Root Error Command register, which is managed by
+> the AER service driver.
+> 
+> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
+> Cc: intel-wired-lan@lists.osuosl.org
+> Cc: netdev@vger.kernel.org
+> ---
+>   drivers/net/ethernet/intel/igc/igc_main.c | 5 -----
+>   1 file changed, 5 deletions(-)
+Tested-by: Naama Meir <naamax.meir@linux.intel.com>
