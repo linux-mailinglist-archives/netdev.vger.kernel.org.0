@@ -2,104 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D268679192
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 08:07:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C209679E57
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 17:14:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233412AbjAXHHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 02:07:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42642 "EHLO
+        id S232827AbjAXQOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 11:14:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233009AbjAXHHC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 02:07:02 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE74D3BD92
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 23:07:01 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id jm10so13822325plb.13
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 23:07:01 -0800 (PST)
+        with ESMTP id S229946AbjAXQOb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 11:14:31 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6234745893
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 08:14:30 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id 188so19445808ybi.9
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 08:14:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tu8uF0sIvdJH1X4pmLZGQdlr7nT0GaxQgUrNBqH+YlI=;
-        b=m8uSZj4Z6qfEwNKT93uNAsFUeTrPrrtwXWYCnJhN4xTSL1/ZYPQ7XXJ0Fz07wFHFWe
-         v58q9BSMYaHR5VmqmRfBLRWYMPknkpwDPceZGbKzcn6vXAr2lb2Qwy2gHxOpDzhtid9n
-         Mjvoyu6PyOPp0U65w2lZ5lPz3dwxitcQ57PX6WSqCZa6Z42HT3kArq45zpLFP8pD3hna
-         3WrgN5oXuMCCZ2z76hqhrqQiRa1NkPXvyBAE7QozNaRGna4k6VrPZgUJbYRROF+Zuhyy
-         MzyFfvdY2yFtl5x06NGBZNpYbwFzGhfKVaZRgDZgOJyvChAYQGj5ckD1saRtRa+sqFeL
-         iuJQ==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=jgVXq8PSTlTtBOCQ8INpzeYA/px5mpH31Ld+KapWcr0=;
+        b=UWgLoE/O4yjgLKj9JK5mJuoacpu7804khse7zBbA7r2BCSjZPVkaIKFYhBRcDnT8xI
+         vz29aykz8t0y8sgsFfIzL6SwNR0VVGrMw/wQ2grdJ6pJmZNla4b0C3mJUk4+6uQUQGKo
+         lQ9KYZt0FwJ1JX0rO73EXfgBVuGMLfQDMyrdx7Lsyov5gRdwIe35K/d09yNI7exKNNQR
+         ecY6x6rUbaEdqdTJxpeH1Lwk39A0ZCjA2jqf2QVlGQMvgeWjB4+IW3t4bCPRTFl0YX2v
+         YCVxybbg70Oyq25IALmlkxTMwZjhFLm3NQl8Q5U5rzAywOQF3Heq/zKJ836EBxovXQc9
+         ZpNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tu8uF0sIvdJH1X4pmLZGQdlr7nT0GaxQgUrNBqH+YlI=;
-        b=YEHKTqIVXHDX33DxV8JBUkUs7QQIaNEmexszJAHkJAcqRVFWTpe8F2GWBs2DTcWk1X
-         /x/Y1hk9ZG5qbT30vNg2Goyw5Vncmbg7XvVWhcKlNNRlb2gbSZ/zBWwQWhnX+BmoRziW
-         DIU2bwBLPh3IMvhhT5oWT61ZfD2NR+lwR0A0hLfa945GqIN4GJvry1JEwQn3QsvnKvyG
-         /2h5urKnNgyN0+c6qtif36oGhNbmkilzyQRbmiEk4xYTqBCULIME9WQVUOsbjL+VjL/T
-         bXUSj43LYAe4CAIqvV7L0raqbPCJafFuMS6FI3Gg1boioF2ZlNkU28kKb9BVNXqb4OqM
-         f8uQ==
-X-Gm-Message-State: AFqh2kqcYubBrFhebJGCE53FGl7CU6OEu50gh835fzgHG9fJqldRext5
-        L/zofoOscIjhmCvwQbPPzu+PvPE2AwtRew==
-X-Google-Smtp-Source: AMrXdXuEnsI1kKsqdbIIs99GgMTyTbgnlqHBOUA03awggSDmwRrwnwQlwOXlC1nw6JLjLi5h/GWheA==
-X-Received: by 2002:a17:903:40ce:b0:194:d09b:7986 with SMTP id t14-20020a17090340ce00b00194d09b7986mr18863227pld.23.1674544021181;
-        Mon, 23 Jan 2023 23:07:01 -0800 (PST)
-Received: from hyeyoo ([114.29.91.56])
-        by smtp.gmail.com with ESMTPSA id a26-20020aa794ba000000b00580cc63dce8sm776835pfl.77.2023.01.23.23.06.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Jan 2023 23:07:00 -0800 (PST)
-Date:   Wed, 25 Jan 2023 01:06:45 +0900
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Christoph Lameter <cl@gentwo.de>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>, penberg@kernel.org,
-        vbabka@suse.cz, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        pabeni@redhat.com
-Subject: Re: [PATCH RFC] mm+net: allow to set kmem_cache create flag for
- SLAB_NEVER_MERGE
-Message-ID: <Y9ACFZzn2Pse0rKG@hyeyoo>
-References: <167396280045.539803.7540459812377220500.stgit@firesoul>
- <36f5761f-d4d9-4ec9-a64-7a6c6c8b956f@gentwo.de>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jgVXq8PSTlTtBOCQ8INpzeYA/px5mpH31Ld+KapWcr0=;
+        b=AGDnB4wFVfia+BP18mvLtI2vDIzbTJ50FenFNvIUHhPASWtlFugwjzWRzHD5gmovWd
+         jXqVDmoBDuJ0S/wdez1edvVcCLdIPVbLwbGuqK4OMF0uRaYdYOth1ljLZCxw+awRWroY
+         ENYfjdn5FE4+QfThFT0LiLafn9j/sBsKSCSJs0kKAFd7tz7kiPqhjDAG7kPbSBoQXC4V
+         j15y1R4IbQ82qUjVz5mrP9v+PFClPjRJuvfGec/UQOLIoqY06MlNdTQaDvCD5S/vBBqg
+         tLFkZxuRdWsnMoxjMiN6OtqbKeZ1Xx+Yz+XrV2pR4FwOC0F4qYD6M3c9dwIP9OJAjiHU
+         XILA==
+X-Gm-Message-State: AFqh2krSYjxJICsOZoWZQhmZ17SjMLmqQIEE254vZKwl6zaernUfCoZS
+        nRFqdnvWBROYYBoPNC611R85ScYFEA9TYXfMkNmuPg==
+X-Google-Smtp-Source: AMrXdXtJhOaI8qesEHVg8kOnYiY9/0ZVlNvuvf2rCpkqOiFJ2U/HBEJ74HPKrs+vaY0KCW1l07at1glZkXSOv8rM6w8=
+X-Received: by 2002:a25:fd4:0:b0:803:fbad:94a4 with SMTP id
+ 203-20020a250fd4000000b00803fbad94a4mr1504887ybp.407.1674576869163; Tue, 24
+ Jan 2023 08:14:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <36f5761f-d4d9-4ec9-a64-7a6c6c8b956f@gentwo.de>
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,DATE_IN_FUTURE_06_12,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        HK_RANDOM_ENVFROM,HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+References: <f171a249-1529-4095-c631-f9f54d996b90@gmail.com>
+ <CANn89iK1aPiystTAk2qTnzsN-LFskJ4BxL=XgTk2aLpExrWFEw@mail.gmail.com>
+ <eaab7495-53d5-0026-842c-acb420408cd0@gmail.com> <CANn89iLQeHsf9=ZqUvU0Y_CVsHbzvd07sdFfOH-poFmGqtn0cA@mail.gmail.com>
+ <168aa9cf-d80a-9c1b-887f-97015a0473dc@gmail.com> <CANn89iK7nn6tdQg9QZO_Gudx1BvLxhoLaNYmnOLb6ccYQnLGwg@mail.gmail.com>
+ <b2ecff1c-91ad-4217-7fd5-d7bbd5704abe@gmail.com> <CANn89iLV3NDiEA4tPWUxjqoHNx1pv=SEpXd1b38NXU=TK13=tg@mail.gmail.com>
+ <CANn89iLKQB=9rYyKXVH=hd2aBUjzhhjXA0FOdSvN3reH+k9cMQ@mail.gmail.com> <71a0050a-2656-1d5b-0302-65000cf854cb@gmail.com>
+In-Reply-To: <71a0050a-2656-1d5b-0302-65000cf854cb@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 24 Jan 2023 17:14:17 +0100
+Message-ID: <CANn89iKxoJEGf+renKFXO+vajyJTKvBu1zaTiuFhKhDwcMny-g@mail.gmail.com>
+Subject: Re: traceroute failure in kernel 6.1 and 6.2
+To:     Pavel Begunkov <asml.silence@gmail.com>
+Cc:     =?UTF-8?Q?Mantas_Mikul=C4=97nas?= <grawity@gmail.com>,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 17, 2023 at 03:54:34PM +0100, Christoph Lameter wrote:
-> On Tue, 17 Jan 2023, Jesper Dangaard Brouer wrote:
-> 
-> > When running different network performance microbenchmarks, I started
-> > to notice that performance was reduced (slightly) when machines had
-> > longer uptimes. I believe the cause was 'skbuff_head_cache' got
-> > aliased/merged into the general slub for 256 bytes sized objects (with
-> > my kernel config, without CONFIG_HARDENED_USERCOPY).
-> 
-> Well that is a common effect that we see in multiple subsystems. This is
-> due to general memory fragmentation. Depending on the prior load the
-> performance could actually be better after some runtime if the caches are
-> populated avoiding the page allocator etc.
-> 
-> The merging could actually be beneficial since there may be more partial
-> slabs to allocate from and thus avoiding expensive calls to the page
-> allocator.
-> 
-> I wish we had some effective way of memory defragmentation.
+On Tue, Jan 24, 2023 at 4:28 PM Pavel Begunkov <asml.silence@gmail.com> wrote:
+>
+> On 1/24/23 08:57, Eric Dumazet wrote:
+> > On Tue, Jan 24, 2023 at 7:03 AM Eric Dumazet <edumazet@google.com> wrote:
+> [...]
+> >>> It doesn't solve the issue; I tried bumping it from the default of
+> >>> 212992 to 4096-times-that, with exactly the same results.
+> >>>
+> >>> The amount of packets it's able to send is variable, For example, right
+> >>> now, on my regular VM (which is smaller than the PC that yesterday's
+> >>> trace was done on), the program very consistently fails on the *second*
+> >>> sendto() call -- I don't think two packets is an unreasonable amount.
+> >>>
+> >>> The program has -q and -N options to reduce the number of simultaneous
+> >>> probes, but the only effect it has is if I reduce the packets all the
+> >>> way down to just one at a time.
+> >>
+> >> Problem is : if we revert the patch, unpriv users can trivially crash a host.
+> >>
+> >> Also, sent ICMP packets  look just fine to me, and the patch is
+> >> changing tx path.
+> >>
+> >> The reported issue seems more like rx path related to me.
+> >> Like IP_RECVERR being not handled correctly.
+> >>
+> >> I think more investigations are needed. Maybe contact Pavel Begunkov
+> >> <asml.silence@gmail.com>
+> >> because the initial crash issue came with
+> >> 47cf88993c91 ("net: unify alloclen calculation for paged requests")
+> >
+> > I am reasonably confident this is a bug in this traceroute binary.
+> >
+> > It sets
+> >   setsockopt(3, SOL_IP, IP_RECVERR, [1], 4) = 0
+> >
+> > So a sendto() can absolutely return the error set by last received
+> > ICMP (cf ping_err()) on the socket,
+> > as per RFC1122 4.1.3.3
+> >
+> >   4.1.3.3  ICMP Messages
+> >
+> >              UDP MUST pass to the application layer all ICMP error
+> >              messages that it receives from the IP layer.  Conceptually
+> >              at least, this may be accomplished with an upcall to the
+> >              ERROR_REPORT routine (see Section 4.2.4.1).
+> >
+> >              DISCUSSION:
+> >                   Note that ICMP error messages resulting from sending a
+> >                   UDP datagram are received asynchronously.  A UDP-based
+> >                   application that wants to receive ICMP error messages
+> >                   is responsible for maintaining the state necessary to
+> >                   demultiplex these messages when they arrive; for
+> >                   example, the application may keep a pending receive
+> >                   operation for this purpose.  The application is also
+> >                   responsible to avoid confusion from a delayed ICMP
+> >                   error message resulting from an earlier use of the same
+> >
+> >
+> > Fix would be
+> >
+> > diff traceroute/traceroute.c.orig traceroute/traceroute.c
+> > 1657c1657
+> > <     if (errno == EMSGSIZE)
+> > ---
+> >>      if (errno == EMSGSIZE || errno == EHOSTUNREACH)
+> >
+> > or to collect a pending socket error (but that would be racy), using
+> > SO_ERROR getsockopt()
+>
+> If it doesn't help I'll take a look, perfectly reproducible for me.
+>
 
-If general memory fragmentation is actual cause of this problem, 
-it may be worsening by [1] due to assumption that all allocations
-are done in the same order as s->oo, when accounting and limiting the number
-of percpu slabs.
+My fix has the following consequence:
 
-[1] https://lore.kernel.org/linux-mm/76c63237-c489-b942-bdd9-5720042f52a9@suse.cz
+Instead of pretending ICMP packet has no 'transhdrlen',
+it now calls sock_alloc_send_skb() (instead of alloc_skb()),
+and thus is able to sleep/schedule (unless application
+provides MSG_DONTWAIT), and is also
+sensible to a prior setting of sk->sk_err (from ping_err())
+
+This was probably not an intended behavior of initial
+ping implementation (which was ignoring sk->sk_err until a recvmsg() or poll())
+
+__ip_append_data()
+
+if (transhdrlen) {
+    skb = sock_alloc_send_skb(sk, alloclen,
+                       (flags & MSG_DONTWAIT), &err);
+} else {
+     skb = NULL;
+     if (refcount_read(&sk->sk_wmem_alloc) + wmem_alloc_delta <=
+                      2 * sk->sk_sndbuf)
+                 skb = alloc_skb(alloclen,
+                                          sk->sk_allocation);
+                   if (unlikely(!skb))
+                       err = -ENOBUFS;
+}
+if (!skb)
+           goto error;
+
+The intent for this code is to sleep/schedule only for the first skb,
+and uses alloc_skb() for the following skbs, to increase chance
+of not breaking the generation of the datagram in the middle.
+
+Downside is that ICMP now reacts like UDP, thus the application
+must correctly handle the sendmsg() returning the stored sk->sk_err.
+
+Note 1: ipv6 ping implementation forces a MSG_DONTWAIT
+while calling ip6_append_data(), for no apparent reason.
+
+Note 2:
+ It seems strange that both udp_err() and ping_err()
+ call ip_icmp_error() when a matching socket is found (and used IP_RECVERR)
+ _and_ also set sk->sk_err
+
+ Perhaps ip_icmp_error() should return a bool and
+ we should not set sk->sk_err if a proper error skb has been
+ queued to sk->sk_error_queue
