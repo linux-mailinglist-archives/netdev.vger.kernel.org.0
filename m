@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDDB8678DD5
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 03:01:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A82E678DD3
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 03:01:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230181AbjAXCBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 21:01:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37070 "EHLO
+        id S231618AbjAXCBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 21:01:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231511AbjAXCBd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 21:01:33 -0500
+        with ESMTP id S231228AbjAXCBb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 21:01:31 -0500
 Received: from codeconstruct.com.au (pi.codeconstruct.com.au [203.29.241.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 726CC11161
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 725BB10AA0
         for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 18:01:29 -0800 (PST)
 Received: by codeconstruct.com.au (Postfix, from userid 10000)
-        id 68D5C2036E; Tue, 24 Jan 2023 10:01:25 +0800 (AWST)
+        id BFBA521688; Tue, 24 Jan 2023 10:01:25 +0800 (AWST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=codeconstruct.com.au; s=2022a; t=1674525685;
-        bh=AyLhRsZxXzbiDViZIVo9hcCIXcOxqV0TYtP/V49oCPM=;
+        bh=DCmSZpGbUwHzMdBsEUb1P7R+nEn7Pf7UaTqxtDsphAw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=CtN7QNx86XJNkQOLVTbALOUMx8U6GSpQY4ohi/1ApUmiMkPAopeUDQTREgGbgsAsM
-         5ID383t49TEyNYcvh1X4QWJ2sNImWyuQsW6rr8TA+q6oC4Abd4nWPwE6XA0Ysi7qDb
-         fRMFFJpNNY0Pplf8jrGtpn/lfn8eLcW+ylh+R4wfXaJxecJnyjEVHxAoNqVz7TwqRE
-         PfESLSD+1jMHX7jsCzcIkRZ9THJSU3SYUBfJNNNURjy9qYOh9cy7WLnTnNr2kQr4Aj
-         ZsyWUlx5taIHW9QbIP9inUBSTG2tSsjQ3TxbQU1FdF3VsYx43R+8WUdgoUgporbmLx
-         oJxuhlo7ntBNw==
+        b=Tf7tU13tcgWNKLjjStI+PiFiAfGd+mI/1oHXDyw6ruQlinuCZA7nP3/5qmAAqpv+k
+         LMOHdx3w3Sm+9vTFwWkNzGf7vKeLVOtgDrE10lrzaEcWNYgMOBlIFZE29eBDkPAguo
+         J2K8d1AL4Fu/q8fpIji4M6tG6PQeyR11imhQ88TKU/gt1U0ZCvHdMrxsRMFB3VuNpd
+         sM5nVkbKmwhWczFiZRSBnnm74R8Lyzsecd4KIZhxo15iusB0qdqBtS9QG7KeF/g2vG
+         fKBL6pMCZOl7v5daf76FALrTqfBUQ/KOA4+2NxKtvliu1eTQgUoWMKCo4HTwuHJ/hu
+         IP/n4Oss4042A==
 From:   Jeremy Kerr <jk@codeconstruct.com.au>
 To:     netdev@vger.kernel.org
 Cc:     Matt Johnston <matt@codeconstruct.com.au>,
@@ -34,9 +34,9 @@ Cc:     Matt Johnston <matt@codeconstruct.com.au>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Noam Rathaus <noamr@ssd-disclosure.com>
-Subject: [PATCH net 3/4] net: mctp: hold key reference when looking up a general key
-Date:   Tue, 24 Jan 2023 10:01:05 +0800
-Message-Id: <20230124020106.743966-4-jk@codeconstruct.com.au>
+Subject: [PATCH net 4/4] net: mctp: mark socks as dead on unhash, prevent re-add
+Date:   Tue, 24 Jan 2023 10:01:06 +0800
+Message-Id: <20230124020106.743966-5-jk@codeconstruct.com.au>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20230124020106.743966-1-jk@codeconstruct.com.au>
 References: <20230124020106.743966-1-jk@codeconstruct.com.au>
@@ -51,66 +51,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+Once a socket has been unhashed, we want to prevent it from being
+re-used in a sk_key entry as part of a routing operation.
 
-Currently, we have a race where we look up a sock through a "general"
-(ie, not directly associated with the (src,dest,tag) tuple) key, then
-drop the key reference while still holding the key's sock.
+This change marks the sk as SOCK_DEAD on unhash, which prevents addition
+into the net's key list.
 
-This change expands the key reference until we've finished using the
-sock, and hence the sock reference too.
+We need to do this during the key add path, rather than key lookup, as
+we release the net keys_lock between those operations.
 
-Commit message changes from Jeremy Kerr <jk@codeconstruct.com.au>.
-
-Reported-by: Noam Rathaus <noamr@ssd-disclosure.com>
-Fixes: 73c618456dc5 ("mctp: locking, lifetime and validity changes for sk_keys")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 4a992bbd3650 ("mctp: Implement message fragmentation & reassembly")
 Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
 ---
- net/mctp/route.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ net/mctp/af_mctp.c | 1 +
+ net/mctp/route.c   | 6 ++++++
+ 2 files changed, 7 insertions(+)
 
+diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
+index fb6ae3110528..45bbe3e54cc2 100644
+--- a/net/mctp/af_mctp.c
++++ b/net/mctp/af_mctp.c
+@@ -577,6 +577,7 @@ static void mctp_sk_unhash(struct sock *sk)
+ 		spin_lock_irqsave(&key->lock, fl2);
+ 		__mctp_key_remove(key, net, fl2, MCTP_TRACE_KEY_CLOSED);
+ 	}
++	sock_set_flag(sk, SOCK_DEAD);
+ 	spin_unlock_irqrestore(&net->mctp.keys_lock, flags);
+ 
+ 	/* Since there are no more tag allocations (we have removed all of the
 diff --git a/net/mctp/route.c b/net/mctp/route.c
-index ce10ba7ae839..06c0de21984d 100644
+index 06c0de21984d..f51a05ec7162 100644
 --- a/net/mctp/route.c
 +++ b/net/mctp/route.c
-@@ -317,8 +317,8 @@ static int mctp_frag_queue(struct mctp_sk_key *key, struct sk_buff *skb)
+@@ -179,6 +179,11 @@ static int mctp_key_add(struct mctp_sk_key *key, struct mctp_sock *msk)
  
- static int mctp_route_input(struct mctp_route *route, struct sk_buff *skb)
- {
-+	struct mctp_sk_key *key, *any_key = NULL;
- 	struct net *net = dev_net(skb->dev);
--	struct mctp_sk_key *key;
- 	struct mctp_sock *msk;
- 	struct mctp_hdr *mh;
- 	unsigned long f;
-@@ -363,13 +363,11 @@ static int mctp_route_input(struct mctp_route *route, struct sk_buff *skb)
- 			 * key for reassembly - we'll create a more specific
- 			 * one for future packets if required (ie, !EOM).
- 			 */
--			key = mctp_lookup_key(net, skb, MCTP_ADDR_ANY, &f);
--			if (key) {
--				msk = container_of(key->sk,
-+			any_key = mctp_lookup_key(net, skb, MCTP_ADDR_ANY, &f);
-+			if (any_key) {
-+				msk = container_of(any_key->sk,
- 						   struct mctp_sock, sk);
--				spin_unlock_irqrestore(&key->lock, f);
--				mctp_key_unref(key);
--				key = NULL;
-+				spin_unlock_irqrestore(&any_key->lock, f);
- 			}
- 		}
+ 	spin_lock_irqsave(&net->mctp.keys_lock, flags);
  
-@@ -475,6 +473,8 @@ static int mctp_route_input(struct mctp_route *route, struct sk_buff *skb)
- 		spin_unlock_irqrestore(&key->lock, f);
- 		mctp_key_unref(key);
++	if (sock_flag(&msk->sk, SOCK_DEAD)) {
++		rc = -EINVAL;
++		goto out_unlock;
++	}
++
+ 	hlist_for_each_entry(tmp, &net->mctp.keys, hlist) {
+ 		if (mctp_key_match(tmp, key->local_addr, key->peer_addr,
+ 				   key->tag)) {
+@@ -200,6 +205,7 @@ static int mctp_key_add(struct mctp_sk_key *key, struct mctp_sock *msk)
+ 		hlist_add_head(&key->sklist, &msk->keys);
  	}
-+	if (any_key)
-+		mctp_key_unref(any_key);
- out:
- 	if (rc)
- 		kfree_skb(skb);
+ 
++out_unlock:
+ 	spin_unlock_irqrestore(&net->mctp.keys_lock, flags);
+ 
+ 	return rc;
 -- 
 2.35.1
 
