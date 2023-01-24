@@ -2,168 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3435167918B
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 08:04:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFA04679199
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 08:08:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233190AbjAXHEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 02:04:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41534 "EHLO
+        id S232605AbjAXHIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 02:08:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbjAXHEq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 02:04:46 -0500
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0306931E17
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 23:04:45 -0800 (PST)
-Received: by mail-io1-f69.google.com with SMTP id b26-20020a056602331a00b00704cb50e151so8339680ioz.13
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 23:04:44 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=w359Bk5Qc6S1lLYcFhyWYpYNUfGCjsG+FkZ7cwDG8P0=;
-        b=HV8BlyLDFakoH3Ssy74UoKuAmjuy+2UyHzLtNNk8YP/Aj8IGpajXqgcC7ZXexH8i81
-         DcitPdAJZ/2j3ezudeagO/Ihf7NzkT6s6qdiqWbxVxStZ1i23RNMuq4wOy40rO2sK854
-         g812e+EEBg8vBfalDr/v8eGtIFGmVldQXmfgxx06YUV0z5Yr2mjYjxWS6zc7T41XSnQ7
-         UTO8OsQ780a1hGQKICozZq9aHCcpUVQ8wYfMZMJSlN68d2RkjVfwmcHKG5xQhlm+slKg
-         uilL27H1wNVWpkPsPxr/YFHzoCV3Gf5WxLRYPEUaW08D/qbHKET+QzcMVEBv1iEfgO98
-         dSPg==
-X-Gm-Message-State: AFqh2koJWHqmTewUz5334UHA8r7/L+Zl1tu20fRRfWNRwyMs1vgjO5og
-        SARy8gieGAmFEeKlULg2abqGxvogqU8nmPtFX7QR+it2X1Hg
-X-Google-Smtp-Source: AMrXdXu3d+Kab/Lb4J9jFVAjcfPiapaM1Y8TBIKzl3HqlErsps2WJ5c+qDPfAvSqV0vk/TZ9gbwR2gRbbDtOxl9IZ57KGdN1LHGJ
+        with ESMTP id S232538AbjAXHIO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 02:08:14 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2084.outbound.protection.outlook.com [40.107.243.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830486194;
+        Mon, 23 Jan 2023 23:08:13 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IYTspU9a2xtuS6eWRqrVosE9V6VJgLHDDvj9f4aXzLLB3eD2iO4F9UD8oqVaapmr64to+SgdDtELrbrlpVnsk18b5+WBgbuFz+rz17uEh7+WsHaln3wWw9yOrkg5GtGzDzKEjw9O8aTDgbQ6Rx3kZbgJNgPRc5na8K2AA/gCL152HuwbdThjVh+4A6LdWOWQXbwjJELobgBb+zj5CTfS4s+HevJ6BsQEZ/GX+B2RE8dvpHQmg0TnKFdrCErzQB1KGEcO67WkQDgFOL/JUUcXzxUfswug53DJ7E3TJYMOXNeIfSQBjgvq6I5xmC5FyFsvdgtsutukJzc733S4OeWZgQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dHbvwMABGCasvTkmorglDgz0+wQrMEKAm9S5Sr+JZr4=;
+ b=jUUgl2VFQqxBIdF5rJCKcPFxM6QsvrEN3JDpmOw1oz+M9KHb9nXM9KpEZE/hXqeFBIobOUSsu3EDlIf6qAFvMDAksRDWlFHhOxThcraTZpDyScgxiE/mY5yUv/YPmAiP1DNFXgnLWUbH1CXjfb+3G1JCGZ8vF/EA6bkaCby9v1YAGsQiQ32iT1el112xlajQqwePwgt4tEEdWyTF2dE3ODlAQUgSb+ShTVHBd7IlAiwPgyytio8CO9dA+YrqKsv+3yyX2f5aIbizqvx7K/9NdUadJWagnhHZcUVfw8A9q/3MSobsLQPeNTXVEO5AlY4X1kEMdkqIoN4LGD3zbnv4DA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=corigine.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dHbvwMABGCasvTkmorglDgz0+wQrMEKAm9S5Sr+JZr4=;
+ b=X4W7d30mEr959XH0u5XSofkgE03QajTFjl/14Xa4ry2hNu0Z8HNiZYqk9QGnjyia+8Xx1Zesj0be7b35NWQ1TXB5PKzZBMRaogy9kE/fysG2XBx5jz2xjNuJ9qAhmLs02Tq5znFccD2My7nv6Rg9T6CA6MLnfSGhNOrwAZ4D3zxB3fQy9M44nJYqh2G45fcWnNLVEMLTWWbg1xun8alaFtGBizgtYAlh6h0YzNE7mvwOsnnVQCcYHnsQwjYiMLyBNlAKAgHU41QXJI9RYr0ys2e8+N27gScaM9RhtkiofxcCEs3lOkSFnPA+gNTpxXKbKGzJBBqYKc+hmMHGn/SH3A==
+Received: from DM5PR07CA0058.namprd07.prod.outlook.com (2603:10b6:4:ad::23) by
+ PH7PR12MB7939.namprd12.prod.outlook.com (2603:10b6:510:278::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Tue, 24 Jan
+ 2023 07:08:12 +0000
+Received: from DM6NAM11FT089.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:4:ad:cafe::c4) by DM5PR07CA0058.outlook.office365.com
+ (2603:10b6:4:ad::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33 via Frontend
+ Transport; Tue, 24 Jan 2023 07:08:11 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ DM6NAM11FT089.mail.protection.outlook.com (10.13.173.82) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6023.16 via Frontend Transport; Tue, 24 Jan 2023 07:08:10 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Mon, 23 Jan
+ 2023 23:07:55 -0800
+Received: from fedora.nvidia.com (10.126.230.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Mon, 23 Jan
+ 2023 23:07:52 -0800
+References: <20230119195104.3371966-1-vladbu@nvidia.com>
+ <20230119195104.3371966-5-vladbu@nvidia.com> <Y8p96knLDtxnRtjz@salvia>
+User-agent: mu4e 1.6.6; emacs 28.1
+From:   Vlad Buslov <vladbu@nvidia.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
+        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <ozsh@nvidia.com>, <marcelo.leitner@gmail.com>,
+        <simon.horman@corigine.com>
+Subject: Re: [PATCH net-next v3 4/7] netfilter: flowtable: allow updating
+ offloaded rules asynchronously
+Date:   Tue, 24 Jan 2023 09:06:13 +0200
+In-Reply-To: <Y8p96knLDtxnRtjz@salvia>
+Message-ID: <871qnke7ga.fsf@nvidia.com>
 MIME-Version: 1.0
-X-Received: by 2002:a02:c984:0:b0:3a0:7a0b:fcc with SMTP id
- b4-20020a02c984000000b003a07a0b0fccmr2089956jap.106.1674543884275; Mon, 23
- Jan 2023 23:04:44 -0800 (PST)
-Date:   Mon, 23 Jan 2023 23:04:44 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000062150b05f2fd210c@google.com>
-Subject: [syzbot] general protection fault in pause_prepare_data
-From:   syzbot <syzbot+9d44aae2720fc40b8474@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
-        vladimir.oltean@nxp.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.37]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT089:EE_|PH7PR12MB7939:EE_
+X-MS-Office365-Filtering-Correlation-Id: 30a3cb7f-13c2-4026-5686-08dafdd9c09e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bZLFVRkjpBQvhGTHwQEHE1GW8xgsnnEdgiyfM281hxXwEIRvPiKYVxdGGtIYKdcSHenr7AsdQHwnppZCjh9ZglR+L/CrSgIivo/1OPkB6d1hOJ0eUbzY+s+aSTD2yizJ8bgLW8S1NlLcnbjBmTXss0m6QJ4iVd2bRZlI5YrIWmgrqctm06HtKfzAETPEyPGcODNCyYMYEtqsHCtmgAbM3HlnIMaXm2O+xFPcrPbBNYlfqfbQFJCM+QYENHHxexIQ/uLXt+mh0786+8/QWoAycEtPCIQUBjtpK+n+IKEluzi5W3SpZc6qBlPaNURuNePRtVUepgLK/DExXPrzOh2OBZbBq7PCalV+YeMTk4NYIav3C/BFz3RIHTaClI+r51S32gk2a0S9BEn2wW/GerHuZpXDXsE94OQQ1SQ/uD7SEzgMjuPoBr7nn2kYlh5q6weKGCWM9A/CtmHokljsHdQWGBGbkCu7+tBzSv4cFnVbPAnZA+IYlldXeuKKr0vlObagVhHsFxRs9k/BkuHgEPdmCmGmUUpsaCJp8I7ZIx3E9QSXE7QGfHWDSK+cLveHz3g/Ida+JO9gcGNIUaaxAh6bCuaIY/oBuhgmCVK/SJWBvzDRs5Ox2KhQNmdbWLJ4SwCRaFbhDUT9a8aMv4ZXjqc0XLJ7vec+vV4XR/00kCyDJ13ZuRL/R8+H8IdwFl3qsLRAX+ww7X4fT8jDUkkoafOuTg==
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(39860400002)(376002)(346002)(451199015)(46966006)(36840700001)(40470700004)(426003)(47076005)(36860700001)(83380400001)(2616005)(186003)(478600001)(8676002)(26005)(6666004)(336012)(82740400003)(16526019)(356005)(86362001)(7636003)(8936002)(40480700001)(5660300002)(2906002)(7416002)(82310400005)(70586007)(316002)(4326008)(41300700001)(70206006)(6916009)(7696005)(40460700003)(54906003)(36756003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jan 2023 07:08:10.5492
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 30a3cb7f-13c2-4026-5686-08dafdd9c09e
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT089.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7939
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-syzbot found the following issue on:
+On Fri 20 Jan 2023 at 12:41, Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> Hi Vlad,
+>
+> On Thu, Jan 19, 2023 at 08:51:01PM +0100, Vlad Buslov wrote:
+>> Following patches in series need to update flowtable rule several times
+>> during its lifetime in order to synchronize hardware offload with actual ct
+>> status. However, reusing existing 'refresh' logic in act_ct would cause
+>> data path to potentially schedule significant amount of spurious tasks in
+>> 'add' workqueue since it is executed per-packet. Instead, introduce a new
+>> flow 'update' flag and use it to schedule async flow refresh in flowtable
+>> gc which will only be executed once per gc iteration.
+>
+> So the idea is to use a NF_FLOW_HW_UPDATE which triggers the update
+> from the garbage collector. I understand the motivation here is to
+> avoid adding more work to the workqueue, by simply letting the gc
+> thread pick up for the update.
+>
+> I already proposed in the last year alternative approaches to improve
+> the workqueue logic, including cancelation of useless work. For
+> example, cancel a flying "add" work if "delete" just arrive and the
+> work is still sitting in the queue. Same approach could be use for
+> this update logic, ie. cancel an add UDP unidirectional or upgrade it
+> to bidirectional if, by the time we see traffic in both directions,
+> then work is still sitting in the queue.
 
-HEAD commit:    32e54254bab8 net: mdio: mux-meson-g12a: use devm_clk_get_e..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=15cf1441480000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=21d2a04ab2961430
-dashboard link: https://syzkaller.appspot.com/bug?extid=9d44aae2720fc40b8474
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+Thanks for the suggestion. I'll try to make this work over regular
+workqueues without further extending the flow flags and/or putting more
+stuff into gc.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+>
+> I am sorry to say but it seems to me this approach based on flags is
+> pushing the existing design to the limit. The flag semantics is
+> already overloaded that this just makes the state machine behind the
+> flag logic more complicated. I really think we should explore for
+> better strategies for the offload work to be processed.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/b82896cd05c2/disk-32e54254.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/77935ce88c7c/vmlinux-32e54254.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/d3ebfede7cbd/bzImage-32e54254.xz
+Got it.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+9d44aae2720fc40b8474@syzkaller.appspotmail.com
-
-general protection fault, probably for non-canonical address 0xdffffc0000000008: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000040-0x0000000000000047]
-CPU: 1 PID: 6011 Comm: syz-executor.3 Not tainted 6.2.0-rc4-syzkaller-00687-g32e54254bab8 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/12/2023
-RIP: 0010:pause_prepare_data+0x60/0x400 net/ethtool/pause.c:59
-Code: 0f b6 04 02 84 c0 74 08 3c 03 0f 8e 02 03 00 00 48 8d 7d 40 45 8b 6c 24 18 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 14 03 00 00 48 8b 45 40 48 89 da 48 c1 ea 03 48
-RSP: 0018:ffffc9000387f270 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffff88802b825400 RCX: ffffc9000c7d0000
-RDX: 0000000000000008 RSI: ffffffff880744d0 RDI: 0000000000000040
-RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff8e7326d7
-R10: fffffbfff1ce64da R11: 0000000000000000 R12: ffff8880770ef4c0
-R13: 0000000000000000 R14: ffff888021d0c598 R15: ffffffff880744b0
-FS:  00007fb307530700(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b32722000 CR3: 000000007764a000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- ethnl_default_dump_one net/ethtool/netlink.c:446 [inline]
- ethnl_default_dumpit+0x4a8/0xe80 net/ethtool/netlink.c:498
- netlink_dump+0x570/0xc50 net/netlink/af_netlink.c:2286
- __netlink_dump_start+0x64b/0x910 net/netlink/af_netlink.c:2391
- genl_family_rcv_msg_dumpit+0x2be/0x310 net/netlink/genetlink.c:929
- genl_family_rcv_msg net/netlink/genetlink.c:1045 [inline]
- genl_rcv_msg+0x419/0x7e0 net/netlink/genetlink.c:1065
- netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2564
- genl_rcv+0x28/0x40 net/netlink/genetlink.c:1076
- netlink_unicast_kernel net/netlink/af_netlink.c:1330 [inline]
- netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1356
- netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1932
- sock_sendmsg_nosec net/socket.c:722 [inline]
- sock_sendmsg+0xde/0x190 net/socket.c:745
- ____sys_sendmsg+0x71c/0x900 net/socket.c:2501
- ___sys_sendmsg+0x110/0x1b0 net/socket.c:2555
- __sys_sendmsg+0xf7/0x1c0 net/socket.c:2584
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fb30688c0c9
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fb307530168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007fb3069abf80 RCX: 00007fb30688c0c9
-RDX: 0000000000000000 RSI: 0000000020000540 RDI: 0000000000000003
-RBP: 00007fb3068e7ae9 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffe3ab6ab9f R14: 00007fb307530300 R15: 0000000000022000
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:pause_prepare_data+0x60/0x400 net/ethtool/pause.c:59
-Code: 0f b6 04 02 84 c0 74 08 3c 03 0f 8e 02 03 00 00 48 8d 7d 40 45 8b 6c 24 18 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 14 03 00 00 48 8b 45 40 48 89 da 48 c1 ea 03 48
-RSP: 0018:ffffc9000387f270 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffff88802b825400 RCX: ffffc9000c7d0000
-RDX: 0000000000000008 RSI: ffffffff880744d0 RDI: 0000000000000040
-RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff8e7326d7
-R10: fffffbfff1ce64da R11: 0000000000000000 R12: ffff8880770ef4c0
-R13: 0000000000000000 R14: ffff888021d0c598 R15: ffffffff880744b0
-FS:  00007fb307530700(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b32723000 CR3: 000000007764a000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	0f b6 04 02          	movzbl (%rdx,%rax,1),%eax
-   4:	84 c0                	test   %al,%al
-   6:	74 08                	je     0x10
-   8:	3c 03                	cmp    $0x3,%al
-   a:	0f 8e 02 03 00 00    	jle    0x312
-  10:	48 8d 7d 40          	lea    0x40(%rbp),%rdi
-  14:	45 8b 6c 24 18       	mov    0x18(%r12),%r13d
-  19:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  20:	fc ff df
-  23:	48 89 fa             	mov    %rdi,%rdx
-  26:	48 c1 ea 03          	shr    $0x3,%rdx
-* 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
-  2e:	0f 85 14 03 00 00    	jne    0x348
-  34:	48 8b 45 40          	mov    0x40(%rbp),%rax
-  38:	48 89 da             	mov    %rbx,%rdx
-  3b:	48 c1 ea 03          	shr    $0x3,%rdx
-  3f:	48                   	rex.W
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
