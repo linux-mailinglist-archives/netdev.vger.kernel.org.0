@@ -2,65 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD068679CA7
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 15:54:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A2FA679CBD
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 15:57:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235174AbjAXOy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 09:54:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41124 "EHLO
+        id S235213AbjAXO5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 09:57:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235151AbjAXOys (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 09:54:48 -0500
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DFC14A217
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 06:54:44 -0800 (PST)
-Received: by mail-pg1-x54a.google.com with SMTP id 84-20020a630257000000b00477f88d334eso6939464pgc.11
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 06:54:44 -0800 (PST)
+        with ESMTP id S235199AbjAXO5p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 09:57:45 -0500
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7342D70;
+        Tue, 24 Jan 2023 06:57:43 -0800 (PST)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30OEmg7h027740;
+        Tue, 24 Jan 2023 14:57:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : content-type : content-id :
+ content-transfer-encoding : mime-version; s=corp-2022-7-12;
+ bh=cPbhMtLO09aDva9Kpd+DuOJNNt9+LJzSojM7+V8CFSg=;
+ b=1SPhOZdw4dJ0RKKRMTdL+KYwKbRMuFXynS51supteAeeWmqaAeZyTutgNboEA4eNP0h1
+ U67iaA/mpPcgskay1Lh3jDZ2UxReUgeBeGD9inWtEwv4iiimel7LylOs0BzxB7fKBDiX
+ QM2sbhMpWT1rHh+jkjzX9vNDTdAGnDjYzUTmQwpCBdpuwMe5zsakfl9ZUR8W2nbIMsXm
+ 6auuCIx6Nqwd2KDisy3gta4h9JuUc6DiIKUFqqMwa9sjrSKKs8SaItICUYRLKEr8MGZr
+ bhqM2o5ZmW3j1t9ihCL9TSA7KEXhtgdGYP9KiQqjATIYwf5YX1JjQImpAPJ/L6jK3X1/ dQ== 
+Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3n86u2wjpk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 24 Jan 2023 14:57:38 +0000
+Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 30OE74xx005932;
+        Tue, 24 Jan 2023 14:57:38 GMT
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2102.outbound.protection.outlook.com [104.47.58.102])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3n86g50jau-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 24 Jan 2023 14:57:37 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=U9YlcpsIraSLYfDP0NIn2nwQonqGmPLcUmzpQV3ynQ8nXU8AWLGZxdbuDLh4eA7KK//lHYFgoZV/mly2ixMrpQoq+0nZn50kWzzeLX2Eht/jcfByKFOf3ajidxMAdcWfGl/gDzAhr8x58gvKMfG2vfzypJ/dOO6PN9xT0bEXcIQfr6nSrV0CPrl3mc5m1sKh16GK4T/kDuziOBIGGTXYLbrN+0PL+2nqbsGMFNsn02jVsySuNrS4gQ3jUdHVjtGQrt+AfBkhdAy+x3CqGUiPzpg0sPLGjJc3cgv+B9vEx4OsnTTPeUlS5rUS/MxODvopo9BT+TTEB8NtJqk5N0pyeg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cPbhMtLO09aDva9Kpd+DuOJNNt9+LJzSojM7+V8CFSg=;
+ b=b8iN6WQdI2ieR5yzQ46pU83XrqDHrauSIqrzdtOVBGoHCmg8+6I7K3qlyyc45rPk5BzhFCaRCDSTfC/a+9z+Vy3ruszmpQdaCNkv58tLI9+OU/mfXEiHFDD5CwSWKsjCy1JRpwDI9Au8iYeO07a6M09uIl71Qg4wyCTxMhXBvrNlJZCgNyCystP9d6IjBHY3xtG21e7cuhPFWR0aWBnBEKrMzf+UZ52XDWOTz/BWmznPQko5YaOtLjDrU8DIb4FYBwiZfS+KTvOjM0BQ8qX6XNfD/sq7ysYV7xYBnAqPq/SiXF2nv6Gjua5tTIV8BL76+W771Gbe2WnoSOaYg6T7fg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=2krChY9vsG3Hq+inYYW/Cs57KJ7dseJQIHFXki9a5gQ=;
-        b=VhL7D9FtNCRzhf92TYYWaANfxuzjB3EPDMR2aTxy2H6+gCxjwKDrevvHndZHpnscvy
-         wHWIbsUDGSutH7fnfM2f+CFf0OTqBoGe33bO9jc29msBQVZ+CvanGB9xc9l32DVuJlh6
-         Auedpth3crf9laoJDQFeIDoOIkC74gnChOGCIVtZWO/MgXWhqPe5fkz4n0XUCRieqIii
-         /n6MHkDty5/RBAmsezu+tWVhA4y8N4XkryyVU3TKtX5DW2KOIV4NBbWoL+pBD4CXAXr+
-         fu7vRAB6AzUbuamXZylN7mkzw8JrsfwDjLFugmkgc/RjpkfGMHvaMIrDLaga2rlvlXI9
-         EOxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2krChY9vsG3Hq+inYYW/Cs57KJ7dseJQIHFXki9a5gQ=;
-        b=UhB7A97KVm5m/TUV+m8+zASjO1Awf1OD5GGCof2BjgQc2t+sMTOLV9nIHnZmo01/w+
-         OpiLxWb5CZt6wUrgRIyu/MyarPWB0n3UjP2X7tekT4STMrYFKOvC6hgsnTZyLEmt8mtb
-         uviCuELVVcjh0ZzKTd5fFydCw5y3N5cd84/+CokBdcFxY6+Q9t+FgKlBaHkbTfVSAPhA
-         Hf1WcAMoPs7CW4cSBw8r2cq6dKOefAthcb5RZZtlw0PuXnycyACIJG0mXSH9DysoMIDI
-         BeyYO8cRbypU1pzI773jkdVHy4LutvqYDYKlStElmOXd7lTXXXbqWbbhrqRsXurdrtAN
-         7gSQ==
-X-Gm-Message-State: AFqh2kqrWgbYJNP/1lq4h0nNI4cTzi5qjyloZa5vZU6vt3BJb8mLmUxT
-        +Qfwhb9nYetsE2NBeOOImWGxgxcXZtM=
-X-Google-Smtp-Source: AMrXdXsiipNeUDmo4IKmdEDv3tlfSXifR4Ve5HiHQ61gKyAeItisFCoTFRyO1fjEt/CnWE5xHYB3N/aqWYI=
-X-Received: from jaewan1.c.googlers.com ([fda3:e722:ac3:cc00:3:22c1:c0a8:e59])
- (user=jaewan job=sendgmr) by 2002:a63:c03:0:b0:4c6:b2b2:a335 with SMTP id
- b3-20020a630c03000000b004c6b2b2a335mr2605606pgl.15.1674572083810; Tue, 24 Jan
- 2023 06:54:43 -0800 (PST)
-Date:   Tue, 24 Jan 2023 14:54:30 +0000
-In-Reply-To: <20230124145430.365495-1-jaewan@google.com>
-Mime-Version: 1.0
-References: <20230124145430.365495-1-jaewan@google.com>
-X-Mailer: git-send-email 2.39.0.246.g2a6d74b583-goog
-Message-ID: <20230124145430.365495-3-jaewan@google.com>
-Subject: [PATCH v6 2/2] mac80211_hwsim: handle FTM requests with virtio
-From:   Jaewan Kim <jaewan@google.com>
-To:     gregkh@linuxfoundation.org, johannes@sipsolutions.net,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-team@android.com, adelva@google.com,
-        Jaewan Kim <jaewan@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cPbhMtLO09aDva9Kpd+DuOJNNt9+LJzSojM7+V8CFSg=;
+ b=kpGAStj78Qdfr8UqJgF5YN2YzPYM/kjjH3QuTJkpzzlMpLc0WI25KY2ZdxfgZTZ5g7rD3Kiy2I4f/v9xc0LLoEc1K6CoMtW1Ht6HYSqAp752dHD6G67+8mPTKY8e4cvp0BDPUY8y0dtRqjzR1RS9OOdfjQ4+F1kovQ1zB17yMiI=
+Received: from BN0PR10MB5128.namprd10.prod.outlook.com (2603:10b6:408:117::24)
+ by SA1PR10MB6365.namprd10.prod.outlook.com (2603:10b6:806:255::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.17; Tue, 24 Jan
+ 2023 14:57:35 +0000
+Received: from BN0PR10MB5128.namprd10.prod.outlook.com
+ ([fe80::96a2:2d53:eb8c:b5ed]) by BN0PR10MB5128.namprd10.prod.outlook.com
+ ([fe80::96a2:2d53:eb8c:b5ed%4]) with mapi id 15.20.6043.017; Tue, 24 Jan 2023
+ 14:57:35 +0000
+From:   Chuck Lever III <chuck.lever@oracle.com>
+To:     Thomas Graf <tgraf@suug.ch>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+CC:     netdev <netdev@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>
+Subject: Fwd: [PATCH RFC] NFSD: Convert filecache to rhltable
+Thread-Topic: [PATCH RFC] NFSD: Convert filecache to rhltable
+Thread-Index: AQHZIRZdLVddJev/70WpowDSuI8Nng==
+Date:   Tue, 24 Jan 2023 14:57:35 +0000
+Message-ID: <7456FF95-0C16-45C7-8CD9-B4436BE80B71@oracle.com>
+References: <15afb0215ec76ffb54854eda8916efa4b5b3f6c3.camel@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3696.120.41.1.1)
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN0PR10MB5128:EE_|SA1PR10MB6365:EE_
+x-ms-office365-filtering-correlation-id: c1af514d-6e18-477e-b5ab-08dafe1b5404
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: oXrsniZ75cMpqHU7wWF1ayvMpsNRklDCwplg6o43qdkl7Bhnrm/AwLgwYsPOPhgCFv8kjX+pUWVX+pTS7NXSmZ4veb1SLJTg7FjtvsRXCWx8KoZyyPNyurg22xJFOxL9okyBvhHM93AALQ8SZ5+aLhJv6q4HzPJE7/leUBN9vQku6uXHsawOoCpqhCOZtMpDLn4wVSJo+plnKLHXHdT6GC+9O7k4t+JJdvwyDKyAQzxI6h+NA7Le1SG8ghq++vVQm2lB9aJEAoTOlRqJFDmFXMFwIMvJ808eRO1ia+gvzvkBPtVmKj30y3oDWJW6MXP1QwrmMrem/7xnLPQXbaLWkVk9VHzNcyaRiJ/OhIuF1xhaVE4vdJwOgJ8vOkKekZ1cXzt9+w402Q3C8nvLv59mn1Ynh6DVIGqQg8eLZTBG/S6qzpMSWnh+Fedjq9yvVZFbiPUYdepP/4GSffQivL+rmO8lZwt0Z24BqpxX3tTi+VahI2J05+xT+ah3bEGmYiC6j5U5I9NA4ZQupfSxZfezwP8LBOMfHCKe9aXEcKnLGcI+QILIS3FEUvsBlHKgYB7aivSPN5VpPLwfu0PUUgqh80hcGMxW4QfNYo49pAcdXc7HRUqQdKTuJdyRokJlW9vgUKDEpWFZtPcHZ7pjiG06lskGHy9G+dWkKZLc9u6C9AwQJYVmW9dDP0pgM0apxeAkeVvTAtLiT4cvkznadu3kSwmuGISrrBGZ1R6MukVrNfc=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR10MB5128.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(366004)(396003)(39860400002)(346002)(376002)(136003)(451199015)(86362001)(6486002)(38070700005)(6512007)(186003)(26005)(36756003)(6506007)(53546011)(478600001)(33656002)(4326008)(91956017)(76116006)(66556008)(66446008)(64756008)(66946007)(66476007)(5660300002)(8676002)(8936002)(30864003)(41300700001)(83380400001)(110136005)(54906003)(2616005)(316002)(38100700002)(122000001)(71200400001)(2906002)(45980500001)(579004);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?6QQwELnlulFObuFeyF+A6ZlP+LppWEhYGujk3b5cW5Y/aFXJdqaWoLr0Xw8A?=
+ =?us-ascii?Q?fh6xfgHh33PGH4YgKbQXxCC4x2HXbtDbeTkIPGa1A7Twne8PMPprRsyt8j1j?=
+ =?us-ascii?Q?F+0FloF1TBahmS68frPKuCDrdarw7rAmr/2SRJGqSHL2PQQCjt8Fzv6Pptvz?=
+ =?us-ascii?Q?wnmwujqagoAoytZECJfA7DNJR7GnzeeLoz766e88VLIcukZAI/oL0rD39ctt?=
+ =?us-ascii?Q?ZtQXzv8i4UqQpjDMunp1R+1+lYFsPY8bcVBoh3g1NjzgfxUHGRocv4xqh3BS?=
+ =?us-ascii?Q?WrAz7WrRkxzMF515jYVjhDg/xs2IZ2NiSts0PiVIAO8+E6Qcl85fGnNh+gY/?=
+ =?us-ascii?Q?oub/uSYVgqtsWgWacgPWlsiAGe7OuZMSTUDaNeZXraSww/ib/5p2SHeGoxWf?=
+ =?us-ascii?Q?rPQmZ7mQ317Yz+46yZvA8MhvsEj6esN5zTFbRu5/dtcD0P9Oa9ABb3yH8/92?=
+ =?us-ascii?Q?+mVE8ESXY06TFhaEvQxtGyZtYHAulDFJ5nsi7m2KTvJiFg+DQEBqy1ERvrxG?=
+ =?us-ascii?Q?8d68k7uR0bq3p8f/urQgXM8aq7MBi84IBfkSm/SUok+Z9jcn01bbGwGTPC/p?=
+ =?us-ascii?Q?rfH/OOxpbejuGQx5Ef3iTtuf+HjhowfMKRELP9HMN9mGx1E6uuNs6cgn89dC?=
+ =?us-ascii?Q?0JyW4Pn6ml84VAtnfIkfffXYxoSU2uKhT4hs4WUZ7/knReLqbWCQxcqn3n94?=
+ =?us-ascii?Q?YLt8JCONwZYevHBUWhOAAV1Xu/l8v4UcHzceCbletzVo6X81ppzHk+C+vWN5?=
+ =?us-ascii?Q?6fuK0xheTIo2BapzIgRUFhMwVTjHDEdtfi0R+4Asnepa0BZwRIIDOTOYZQqb?=
+ =?us-ascii?Q?ZrzylOMGYyrn6CDAWEPmhK+d+z6fxeViiJlhxDHusqdh7PjRxhEyIlnLwe5U?=
+ =?us-ascii?Q?tqdKaBvnLAEOGwN6zeS3G14RWAps6vrNR0ZUTbfCj7+5bKheFy32XR3Kf5OP?=
+ =?us-ascii?Q?XM7D07CKwQ74V+1Ny6Q6lw/wFdrGgLrH/mgJHhh6skoN+Y1q18uzdnsup/H4?=
+ =?us-ascii?Q?X9yzkCOr9xBmKxPkOSqmoYTW4/vO1AOZaWBWqvrCdBk8NLyrMsJJZf00A5E9?=
+ =?us-ascii?Q?51hUikUchvtynK/VJQsejH078BtCbIlQmGawMIqmefTYTkCaDNHbWQWZ/eYY?=
+ =?us-ascii?Q?r+nSYV7wOu8BArAu8g2gHmcEH4uQrS+FhTtrmjrykatjrBlnS3XGLHzsxGiz?=
+ =?us-ascii?Q?3bMFLqYIFH0Su31p+Tx9MuXO568frq+yUwTQ+uc+xj3B7xemHGA61jeQ8zcb?=
+ =?us-ascii?Q?ILO07HuYI/rIteQPw+CxP6Ny3KkneClPBaQ2QcU3d3ueaz2mK2KbQNnFeeiF?=
+ =?us-ascii?Q?w9DytW1pRuLjxt76m0TVUlmFWNRqQlJV1Glmt8UbZf52OEAW4KSMNB8c2mGb?=
+ =?us-ascii?Q?SasZ/XlcYm7mtD6Rtu1O8PtdoBwnffWv8GBSRp1KIQlKTMzm11ISkLnzOUHE?=
+ =?us-ascii?Q?ojyjCXXMtCx56t2qn8l0mWBnjD9DfEobC73awpkWT22OLrkmNXZGgurVjIBY?=
+ =?us-ascii?Q?Jxyk8OogHDtfjsPBJAoSIP3fz3ZhZhkzWuxC6KLQxwF1i/O6bHFlMgsqOcrN?=
+ =?us-ascii?Q?hCILDwNNntowlfzNBlFFPrsjbnTefmXkxVUbSEmcrRPwnUrS1cs/fc8kkl02?=
+ =?us-ascii?Q?Tg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3CFE40D1D4D6664591FC83F2F04603FB@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: YvZC77cSN70uc9ullhJmYxkpfU274rfj2/5Hj3aABSbgwvjDj2i+agY5diReraYzL0LqNhAcGInhhmjftbkV8CF7oTgcw3btYAU2bcwG4PEWsYPmfCCOC6C5BjDKmK8OZjmCZDrL7zGhmmA1Gu2NnGUf0UpBgEv/3LWcf7dG0q6iary37AoC8F02berkxyZlawbvOLClAUgPsNFXowcH8FlIzlJgqwXadWNFmnzS9QuSbxohrilDZkxXoLNmuBAgdtcJAatR7Hn8ybaag3r0+7lhgV3RODN/+Y2Opr1SNz8gc8yH2asDdQc6kp9MkLkf7vwsODjT2P/XgjlnhzNJgxbmRC0WKIp9BRB1rBbHpzfXb5cYgD7nm4DQr2UIJSfbBl/9reA1dFlYfSBJ9XBEmDL6u4S3MDbgub9I4yMgtrf+6r2d+kGCuQKXb37qpjjDoSCctZOXt3EqZ75eOvMRXxOeywjgMNxgZLwAYhQBof3c/1wcup/o/t5khVvc4fLGgZZvPkUnZoi/vMeSn5pg0JxxpfN1PjA4eRHXJ6lo14DkPquQOEY0Med7KrSfmor9HplKofRNfrooUzPUs6BfOpmDrzCCBskOEsLowGAzc1QF3g/PzBlEWxfI/bwdvMyMASf8l5qGOcAoScOT6VlsiaQnyl2DpwZ0Pvm+roWwx9w8RiBTif4cYvxHBRAqkI819uiGXUlXGZBGWjsEsso/dsk1lZvV8+MqX5lCxsBkbW7gIHOu2KGKB4zDlGZzrv0FqXKMffpGmXsuRstnAV9GnZmHcn+42xBIOsDEE5d1uXdPpyJ4NDC9d/N8MUj7fnm/IhBYvV87wXGfSWzk6uPtIA==
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN0PR10MB5128.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c1af514d-6e18-477e-b5ab-08dafe1b5404
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jan 2023 14:57:35.3200
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Kqf4rSrUOKhq0hXVOyexwUeDQoLBK5JWm40Hwy5fva9jnN3tW2oh35jDzcLd9V4YJdpnmJhwAocq0cV2ha1mFg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR10MB6365
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-01-23_12,2023-01-24_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ bulkscore=0 mlxscore=0 mlxlogscore=999 adultscore=0 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2301240135
+X-Proofpoint-GUID: r4bzgufZ_PdOZaYmDuXR5je8FxmWfrfi
+X-Proofpoint-ORIG-GUID: r4bzgufZ_PdOZaYmDuXR5je8FxmWfrfi
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,960 +150,617 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This CL allows mac80211_hwsim to receive FTM request and send FTM response.
-It passthrough request to wmediumd and gets response with virtio
-to get the FTM information with another STA.
 
-This CL adds following commands
- - HWSIM_CMD_START_PMSR: To send request to wmediumd
- - HWSIM_CMD_ABORT_PMSR: To send abort to wmediumd
- - HWSIM_CMD_REPORT_PMSR: To receive response from wmediumd
 
-Request and response are formatted the same way as pmsr.c.
-One exception is for sending rate_info -- hwsim_rate_info_attributes is
-added to send rate_info as is.
+> Begin forwarded message:
+>=20
+> From: Jeff Layton <jlayton@redhat.com>
+> Subject: Re: [PATCH RFC] NFSD: Convert filecache to rhltable
+> Date: January 23, 2023 at 4:38:50 PM EST
+> To: Chuck Lever III <chuck.lever@oracle.com>
+> Cc: Chuck Lever <cel@kernel.org>, Neil Brown <neilb@suse.de>, Linux NFS M=
+ailing List <linux-nfs@vger.kernel.org>
+>=20
+> On Mon, 2023-01-23 at 20:34 +0000, Chuck Lever III wrote:
+>>=20
+>>> On Jan 23, 2023, at 3:15 PM, Jeff Layton <jlayton@redhat.com> wrote:
+>>>=20
+>>> On Thu, 2023-01-05 at 09:58 -0500, Chuck Lever wrote:
+>>>> From: Chuck Lever <chuck.lever@oracle.com>
+>>>>=20
+>>>> While we were converting the nfs4_file hashtable to use the kernel's
+>>>> resizable hashtable data structure, Neil Brown observed that the
+>>>> list variant (rhltable) would be better for managing nfsd_file items
+>>>> as well. The nfsd_file hash table will contain multiple entries for
+>>>> the same inode -- these should be kept together on a list. And, it
+>>>> could be possible for exotic or malicious client behavior to cause
+>>>> the hash table to resize itself on every insertion.
+>>>>=20
+>>>> A nice simplification is that rhltable_lookup() can return a list
+>>>> that contains only nfsd_file items that match a given inode, which
+>>>> enables us to eliminate specialized hash table helper functions and
+>>>> use the default functions provided by the rhashtable implementation).
+>>>>=20
+>>>> Since we are now storing nfsd_file items for the same inode on a
+>>>> single list, that effectively reduces the number of hash entries
+>>>> that have to be tracked in the hash table. The mininum bucket count
+>>>> is therefore lowered.
+>>>>=20
+>>>> Suggested-by: Neil Brown <neilb@suse.de>
+>>>> Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+>>>> ---
+>>>> fs/nfsd/filecache.c |  289 +++++++++++++++++++------------------------=
+--------
+>>>> fs/nfsd/filecache.h |    9 +-
+>>>> 2 files changed, 115 insertions(+), 183 deletions(-)
+>>>>=20
+>>>> Just to note that this work is still in the wings. It would need to
+>>>> be rebased on Jeff's recent fixes and clean-ups. I'm reluctant to
+>>>> apply this until there is more evidence that the instability in v6.0
+>>>> has been duly addressed.
+>>>>=20
+>>>>=20
+>>>> diff --git a/fs/nfsd/filecache.c b/fs/nfsd/filecache.c
+>>>> index 45b2c9e3f636..f04e722bb6bc 100644
+>>>> --- a/fs/nfsd/filecache.c
+>>>> +++ b/fs/nfsd/filecache.c
+>>>> @@ -74,70 +74,9 @@ static struct list_lru			nfsd_file_lru;
+>>>> static unsigned long			nfsd_file_flags;
+>>>> static struct fsnotify_group		*nfsd_file_fsnotify_group;
+>>>> static struct delayed_work		nfsd_filecache_laundrette;
+>>>> -static struct rhashtable		nfsd_file_rhash_tbl
+>>>> +static struct rhltable			nfsd_file_rhltable
+>>>> 						____cacheline_aligned_in_smp;
+>>>>=20
+>>>> -enum nfsd_file_lookup_type {
+>>>> -	NFSD_FILE_KEY_INODE,
+>>>> -	NFSD_FILE_KEY_FULL,
+>>>> -};
+>>>> -
+>>>> -struct nfsd_file_lookup_key {
+>>>> -	struct inode			*inode;
+>>>> -	struct net			*net;
+>>>> -	const struct cred		*cred;
+>>>> -	unsigned char			need;
+>>>> -	bool				gc;
+>>>> -	enum nfsd_file_lookup_type	type;
+>>>> -};
+>>>> -
+>>>> -/*
+>>>> - * The returned hash value is based solely on the address of an in-co=
+de
+>>>> - * inode, a pointer to a slab-allocated object. The entropy in such a
+>>>> - * pointer is concentrated in its middle bits.
+>>>> - */
+>>>> -static u32 nfsd_file_inode_hash(const struct inode *inode, u32 seed)
+>>>> -{
+>>>> -	unsigned long ptr =3D (unsigned long)inode;
+>>>> -	u32 k;
+>>>> -
+>>>> -	k =3D ptr >> L1_CACHE_SHIFT;
+>>>> -	k &=3D 0x00ffffff;
+>>>> -	return jhash2(&k, 1, seed);
+>>>> -}
+>>>> -
+>>>> -/**
+>>>> - * nfsd_file_key_hashfn - Compute the hash value of a lookup key
+>>>> - * @data: key on which to compute the hash value
+>>>> - * @len: rhash table's key_len parameter (unused)
+>>>> - * @seed: rhash table's random seed of the day
+>>>> - *
+>>>> - * Return value:
+>>>> - *   Computed 32-bit hash value
+>>>> - */
+>>>> -static u32 nfsd_file_key_hashfn(const void *data, u32 len, u32 seed)
+>>>> -{
+>>>> -	const struct nfsd_file_lookup_key *key =3D data;
+>>>> -
+>>>> -	return nfsd_file_inode_hash(key->inode, seed);
+>>>> -}
+>>>> -
+>>>> -/**
+>>>> - * nfsd_file_obj_hashfn - Compute the hash value of an nfsd_file
+>>>> - * @data: object on which to compute the hash value
+>>>> - * @len: rhash table's key_len parameter (unused)
+>>>> - * @seed: rhash table's random seed of the day
+>>>> - *
+>>>> - * Return value:
+>>>> - *   Computed 32-bit hash value
+>>>> - */
+>>>> -static u32 nfsd_file_obj_hashfn(const void *data, u32 len, u32 seed)
+>>>> -{
+>>>> -	const struct nfsd_file *nf =3D data;
+>>>> -
+>>>> -	return nfsd_file_inode_hash(nf->nf_inode, seed);
+>>>> -}
+>>>> -
+>>>> static bool
+>>>> nfsd_match_cred(const struct cred *c1, const struct cred *c2)
+>>>> {
+>>>> @@ -158,53 +97,16 @@ nfsd_match_cred(const struct cred *c1, const stru=
+ct cred *c2)
+>>>> 	return true;
+>>>> }
+>>>>=20
+>>>> -/**
+>>>> - * nfsd_file_obj_cmpfn - Match a cache item against search criteria
+>>>> - * @arg: search criteria
+>>>> - * @ptr: cache item to check
+>>>> - *
+>>>> - * Return values:
+>>>> - *   %0 - Item matches search criteria
+>>>> - *   %1 - Item does not match search criteria
+>>>> - */
+>>>> -static int nfsd_file_obj_cmpfn(struct rhashtable_compare_arg *arg,
+>>>> -			       const void *ptr)
+>>>> -{
+>>>> -	const struct nfsd_file_lookup_key *key =3D arg->key;
+>>>> -	const struct nfsd_file *nf =3D ptr;
+>>>> -
+>>>> -	switch (key->type) {
+>>>> -	case NFSD_FILE_KEY_INODE:
+>>>> -		if (nf->nf_inode !=3D key->inode)
+>>>> -			return 1;
+>>>> -		break;
+>>>> -	case NFSD_FILE_KEY_FULL:
+>>>> -		if (nf->nf_inode !=3D key->inode)
+>>>> -			return 1;
+>>>> -		if (nf->nf_may !=3D key->need)
+>>>> -			return 1;
+>>>> -		if (nf->nf_net !=3D key->net)
+>>>> -			return 1;
+>>>> -		if (!nfsd_match_cred(nf->nf_cred, key->cred))
+>>>> -			return 1;
+>>>> -		if (!!test_bit(NFSD_FILE_GC, &nf->nf_flags) !=3D key->gc)
+>>>> -			return 1;
+>>>> -		if (test_bit(NFSD_FILE_HASHED, &nf->nf_flags) =3D=3D 0)
+>>>> -			return 1;
+>>>> -		break;
+>>>> -	}
+>>>> -	return 0;
+>>>> -}
+>>>> -
+>>>> static const struct rhashtable_params nfsd_file_rhash_params =3D {
+>>>> 	.key_len		=3D sizeof_field(struct nfsd_file, nf_inode),
+>>>> 	.key_offset		=3D offsetof(struct nfsd_file, nf_inode),
+>>>> -	.head_offset		=3D offsetof(struct nfsd_file, nf_rhash),
+>>>> -	.hashfn			=3D nfsd_file_key_hashfn,
+>>>> -	.obj_hashfn		=3D nfsd_file_obj_hashfn,
+>>>> -	.obj_cmpfn		=3D nfsd_file_obj_cmpfn,
+>>>> -	/* Reduce resizing churn on light workloads */
+>>>> -	.min_size		=3D 512,		/* buckets */
+>>>> +	.head_offset		=3D offsetof(struct nfsd_file, nf_rlist),
+>>>> +
+>>>> +	/*
+>>>> +	 * Start with a single page hash table to reduce resizing churn
+>>>> +	 * on light workloads.
+>>>> +	 */
+>>>> +	.min_size		=3D 256,
+>>>> 	.automatic_shrinking	=3D true,
+>>>> };
+>>>>=20
+>>>> @@ -307,27 +209,27 @@ nfsd_file_mark_find_or_create(struct nfsd_file *=
+nf, struct inode *inode)
+>>>> }
+>>>>=20
+>>>> static struct nfsd_file *
+>>>> -nfsd_file_alloc(struct nfsd_file_lookup_key *key, unsigned int may)
+>>>> +nfsd_file_alloc(struct net *net, struct inode *inode, unsigned char n=
+eed,
+>>>> +		bool want_gc)
+>>>> {
+>>>> 	struct nfsd_file *nf;
+>>>>=20
+>>>> 	nf =3D kmem_cache_alloc(nfsd_file_slab, GFP_KERNEL);
+>>>> -	if (nf) {
+>>>> -		INIT_LIST_HEAD(&nf->nf_lru);
+>>>> -		nf->nf_birthtime =3D ktime_get();
+>>>> -		nf->nf_file =3D NULL;
+>>>> -		nf->nf_cred =3D get_current_cred();
+>>>> -		nf->nf_net =3D key->net;
+>>>> -		nf->nf_flags =3D 0;
+>>>> -		__set_bit(NFSD_FILE_HASHED, &nf->nf_flags);
+>>>> -		__set_bit(NFSD_FILE_PENDING, &nf->nf_flags);
+>>>> -		if (key->gc)
+>>>> -			__set_bit(NFSD_FILE_GC, &nf->nf_flags);
+>>>> -		nf->nf_inode =3D key->inode;
+>>>> -		refcount_set(&nf->nf_ref, 1);
+>>>> -		nf->nf_may =3D key->need;
+>>>> -		nf->nf_mark =3D NULL;
+>>>> -	}
+>>>> +	if (unlikely(!nf))
+>>>> +		return NULL;
+>>>> +
+>>>> +	INIT_LIST_HEAD(&nf->nf_lru);
+>>>> +	nf->nf_birthtime =3D ktime_get();
+>>>> +	nf->nf_file =3D NULL;
+>>>> +	nf->nf_cred =3D get_current_cred();
+>>>> +	nf->nf_net =3D net;
+>>>> +	nf->nf_flags =3D want_gc ?
+>>>> +		BIT(NFSD_FILE_HASHED) | BIT(NFSD_FILE_PENDING) | BIT(NFSD_FILE_GC) =
+:
+>>>> +		BIT(NFSD_FILE_HASHED) | BIT(NFSD_FILE_PENDING);
+>>>> +	nf->nf_inode =3D inode;
+>>>> +	refcount_set(&nf->nf_ref, 1);
+>>>> +	nf->nf_may =3D need;
+>>>> +	nf->nf_mark =3D NULL;
+>>>> 	return nf;
+>>>> }
+>>>>=20
+>>>> @@ -362,8 +264,8 @@ nfsd_file_hash_remove(struct nfsd_file *nf)
+>>>>=20
+>>>> 	if (nfsd_file_check_write_error(nf))
+>>>> 		nfsd_reset_write_verifier(net_generic(nf->nf_net, nfsd_net_id));
+>>>> -	rhashtable_remove_fast(&nfsd_file_rhash_tbl, &nf->nf_rhash,
+>>>> -			       nfsd_file_rhash_params);
+>>>> +	rhltable_remove(&nfsd_file_rhltable, &nf->nf_rlist,
+>>>> +			nfsd_file_rhash_params);
+>>>> }
+>>>>=20
+>>>> static bool
+>>>> @@ -680,21 +582,19 @@ static struct shrinker	nfsd_file_shrinker =3D {
+>>>> static void
+>>>> nfsd_file_queue_for_close(struct inode *inode, struct list_head *dispo=
+se)
+>>>> {
+>>>> -	struct nfsd_file_lookup_key key =3D {
+>>>> -		.type	=3D NFSD_FILE_KEY_INODE,
+>>>> -		.inode	=3D inode,
+>>>> -	};
+>>>> -	struct nfsd_file *nf;
+>>>> -
+>>>> 	rcu_read_lock();
+>>>> 	do {
+>>>> +		struct rhlist_head *list;
+>>>> +		struct nfsd_file *nf;
+>>>> 		int decrement =3D 1;
+>>>>=20
+>>>> -		nf =3D rhashtable_lookup(&nfsd_file_rhash_tbl, &key,
+>>>> +		list =3D rhltable_lookup(&nfsd_file_rhltable, &inode,
+>>>> 				       nfsd_file_rhash_params);
+>>>> -		if (!nf)
+>>>> +		if (!list)
+>>>> 			break;
+>>>>=20
+>>>=20
+>>> Rather than redriving the lookup multiple times in the loop, would it b=
+e
+>>> better to just search once and then walk the resulting list with
+>>> rhl_for_each_entry_rcu, all while holding the rcu_read_lock?
+>>=20
+>> That would be nice, but as you and I have discussed before:
+>>=20
+>> On every iteration, we're possibly calling nfsd_file_unhash(), which
+>> changes the list. So we have to invoke rhltable_lookup() again to get
+>> the updated version of that list.
+>>=20
+>> As far as I can see there's no "_safe" version of rhl_for_each_entry.
+>>=20
+>> I think the best we can do is not redrive the lookup if we didn't
+>> unhash anything. I'm not sure that will fit easily with the
+>> nfsd_file_cond_queue thingie you just added in nfsd-fixes.
+>>=20
+>> Perhaps it should also drop the RCU read lock on each iteration in
+>> case it finds a lot of inodes that match the lookup criteria.
+>>=20
+>=20
+> I could be wrong, but it looks like you're safe to traverse the list
+> even in the case of removals, assuming the objects themselves are
+> rcu-freed. AFAICT, the object's ->next pointer is not changed when it's
+> removed from the table. After all, we're not holding a "real" lock here
+> so the object could be removed by another task at any time.
+>=20
+> It would be nice if this were documented though.
 
-Signed-off-by: Jaewan Kim <jaewan@google.com>
----
-V5 -> V6: Added per change patch history.
-V4 -> V5: N/A.
-V3 -> V4: Added more comments about new commands in mac80211_hwsim.
-V1 -> V3: Initial commit (includes resends).
----
- drivers/net/wireless/mac80211_hwsim.c | 679 +++++++++++++++++++++++-
- drivers/net/wireless/mac80211_hwsim.h |  54 +-
- include/net/cfg80211.h                |  10 +
- net/wireless/nl80211.c                |  11 +-
- 4 files changed, 737 insertions(+), 17 deletions(-)
+Hi Thomas, Herbert -
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index 84c9db9178c3..4191037f73b6 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -721,6 +721,8 @@ struct mac80211_hwsim_data {
- 
- 	/* only used when pmsr capability is supplied */
- 	struct cfg80211_pmsr_capabilities pmsr_capa;
-+	struct cfg80211_pmsr_request *pmsr_request;
-+	struct wireless_dev *pmsr_request_wdev;
- 
- 	struct mac80211_hwsim_link_data link_data[IEEE80211_MLD_MAX_NUM_LINKS];
- };
-@@ -750,6 +752,13 @@ struct hwsim_radiotap_ack_hdr {
- 	__le16 rt_chbitmask;
- } __packed;
- 
-+static struct mac80211_hwsim_data *get_hwsim_data_ref_from_addr(const u8 *addr)
-+{
-+	return rhashtable_lookup_fast(&hwsim_radios_rht,
-+				      addr,
-+				      hwsim_rht_params);
-+}
-+
- /* MAC80211_HWSIM netlink family */
- static struct genl_family hwsim_genl_family;
- 
-@@ -763,6 +772,81 @@ static const struct genl_multicast_group hwsim_mcgrps[] = {
- 
- /* MAC80211_HWSIM netlink policy */
- 
-+static const struct nla_policy
-+hwsim_rate_info_policy[HWSIM_RATE_INFO_ATTR_MAX + 1] = {
-+	[HWSIM_RATE_INFO_ATTR_FLAGS] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_MCS] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_LEGACY] = { .type = NLA_U16 },
-+	[HWSIM_RATE_INFO_ATTR_NSS] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_BW] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_HE_GI] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_HE_DCM] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_EHT_GI] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC] = { .type = NLA_U8 },
-+};
-+
-+static const struct nla_policy
-+hwsim_ftm_result_policy[NL80211_PMSR_FTM_RESP_ATTR_MAX + 1] = {
-+	[NL80211_PMSR_FTM_RESP_ATTR_FAIL_REASON] = { .type = NLA_U32 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_BURST_INDEX] = { .type = NLA_U16 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_ATTEMPTS] = { .type = NLA_U32 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_SUCCESSES] = { .type = NLA_U32 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_BUSY_RETRY_TIME] = { .type = NLA_U8 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_NUM_BURSTS_EXP] = { .type = NLA_U8 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_BURST_DURATION] = { .type = NLA_U8 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_FTMS_PER_BURST] = { .type = NLA_U8 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_RSSI_AVG] = { .type = NLA_U32 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_RSSI_SPREAD] = { .type = NLA_U32 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_TX_RATE] =
-+		NLA_POLICY_NESTED(hwsim_rate_info_policy),
-+	[NL80211_PMSR_FTM_RESP_ATTR_RX_RATE] =
-+		NLA_POLICY_NESTED(hwsim_rate_info_policy),
-+	[NL80211_PMSR_FTM_RESP_ATTR_RTT_AVG] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_RTT_VARIANCE] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_RTT_SPREAD] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_DIST_AVG] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_DIST_VARIANCE] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_DIST_SPREAD] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_LCI] = { .type = NLA_STRING },
-+	[NL80211_PMSR_FTM_RESP_ATTR_CIVICLOC] = { .type = NLA_STRING },
-+};
-+
-+static const struct nla_policy
-+hwsim_pmsr_resp_type_policy[NL80211_PMSR_TYPE_MAX + 1] = {
-+	[NL80211_PMSR_TYPE_FTM] = NLA_POLICY_NESTED(hwsim_ftm_result_policy),
-+};
-+
-+static const struct nla_policy
-+hwsim_pmsr_resp_policy[NL80211_PMSR_RESP_ATTR_MAX + 1] = {
-+	[NL80211_PMSR_RESP_ATTR_STATUS] = { .type = NLA_U32 },
-+	[NL80211_PMSR_RESP_ATTR_HOST_TIME] = { .type = NLA_U64 },
-+	[NL80211_PMSR_RESP_ATTR_AP_TSF] = { .type = NLA_U64 },
-+	[NL80211_PMSR_RESP_ATTR_FINAL] = { .type = NLA_FLAG },
-+	[NL80211_PMSR_RESP_ATTR_DATA] =
-+		NLA_POLICY_NESTED(hwsim_pmsr_resp_type_policy),
-+};
-+
-+static const struct nla_policy
-+hwsim_pmsr_peer_result_policy[NL80211_PMSR_PEER_ATTR_MAX + 1] = {
-+	[NL80211_PMSR_PEER_ATTR_ADDR] = NLA_POLICY_ETH_ADDR_COMPAT,
-+	[NL80211_PMSR_PEER_ATTR_CHAN] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_PEER_ATTR_REQ] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_PEER_ATTR_RESP] =
-+		NLA_POLICY_NESTED(hwsim_pmsr_resp_policy),
-+};
-+
-+static const struct nla_policy
-+hwsim_pmsr_peers_result_policy[NL80211_PMSR_ATTR_MAX + 1] = {
-+	[NL80211_PMSR_ATTR_MAX_PEERS] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_ATTR_REPORT_AP_TSF] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_ATTR_RANDOMIZE_MAC_ADDR] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_ATTR_TYPE_CAPA] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_ATTR_PEERS] =
-+		NLA_POLICY_NESTED_ARRAY(hwsim_pmsr_peer_result_policy),
-+};
-+
- static const struct nla_policy
- hwsim_ftm_capa_policy[NL80211_PMSR_FTM_CAPA_ATTR_MAX + 1] = {
- 	[NL80211_PMSR_FTM_CAPA_ATTR_ASAP] = { .type = NLA_FLAG },
-@@ -780,7 +864,7 @@ hwsim_ftm_capa_policy[NL80211_PMSR_FTM_CAPA_ATTR_MAX + 1] = {
- };
- 
- static const struct nla_policy
--hwsim_pmsr_type_policy[NL80211_PMSR_TYPE_MAX + 1] = {
-+hwsim_pmsr_capa_type_policy[NL80211_PMSR_TYPE_MAX + 1] = {
- 	[NL80211_PMSR_TYPE_FTM] = NLA_POLICY_NESTED(hwsim_ftm_capa_policy),
- };
- 
-@@ -790,7 +874,7 @@ hwsim_pmsr_capa_policy[NL80211_PMSR_ATTR_MAX + 1] = {
- 	[NL80211_PMSR_ATTR_REPORT_AP_TSF] = { .type = NLA_FLAG },
- 	[NL80211_PMSR_ATTR_RANDOMIZE_MAC_ADDR] = { .type = NLA_FLAG },
- 	[NL80211_PMSR_ATTR_TYPE_CAPA] =
--		NLA_POLICY_NESTED(hwsim_pmsr_type_policy),
-+		NLA_POLICY_NESTED(hwsim_pmsr_capa_type_policy),
- 	[NL80211_PMSR_ATTR_PEERS] = { .type = NLA_REJECT }, // only for request.
- };
- 
-@@ -823,6 +907,7 @@ static const struct nla_policy hwsim_genl_policy[HWSIM_ATTR_MAX + 1] = {
- 	[HWSIM_ATTR_CIPHER_SUPPORT] = { .type = NLA_BINARY },
- 	[HWSIM_ATTR_MLO_SUPPORT] = { .type = NLA_FLAG },
- 	[HWSIM_ATTR_PMSR_SUPPORT] = NLA_POLICY_NESTED(hwsim_pmsr_capa_policy),
-+	[HWSIM_ATTR_PMSR_RESULT] = NLA_POLICY_NESTED(hwsim_pmsr_peers_result_policy),
- };
- 
- #if IS_REACHABLE(CONFIG_VIRTIO)
-@@ -3142,16 +3227,578 @@ static int mac80211_hwsim_change_sta_links(struct ieee80211_hw *hw,
- 	return 0;
- }
- 
--static int mac80211_hwsim_start_pmsr(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-+static int mac80211_hwsim_send_pmsr_ftm_request_peer(struct sk_buff *msg,
-+						     struct cfg80211_pmsr_ftm_request_peer *request)
-+{
-+	void *ftm;
-+
-+	if (!request || !request->requested)
-+		return -EINVAL;
-+
-+	ftm = nla_nest_start(msg, NL80211_PMSR_TYPE_FTM);
-+	if (!ftm)
-+		return -ENOBUFS;
-+
-+	if (nla_put_u32(msg, NL80211_PMSR_FTM_REQ_ATTR_PREAMBLE,
-+			request->preamble))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u16(msg, NL80211_PMSR_FTM_REQ_ATTR_BURST_PERIOD,
-+			request->burst_period))
-+		return -ENOBUFS;
-+
-+	if (request->asap &&
-+	    nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_ASAP))
-+		return -ENOBUFS;
-+
-+	if (request->request_lci &&
-+	    nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_REQUEST_LCI))
-+		return -ENOBUFS;
-+
-+	if (request->request_civicloc &&
-+	    nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_REQUEST_CIVICLOC))
-+		return -ENOBUFS;
-+
-+	if (request->trigger_based &&
-+	    nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_TRIGGER_BASED))
-+		return -ENOBUFS;
-+
-+	if (request->non_trigger_based &&
-+	    nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_NON_TRIGGER_BASED))
-+		return -ENOBUFS;
-+
-+	if (request->lmr_feedback &&
-+	    nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_LMR_FEEDBACK))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_NUM_BURSTS_EXP,
-+		       request->num_bursts_exp))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_BURST_DURATION,
-+		       request->burst_duration))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_FTMS_PER_BURST,
-+		       request->ftms_per_burst))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_NUM_FTMR_RETRIES,
-+		       request->ftmr_retries))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_BSS_COLOR,
-+		       request->bss_color))
-+		return -ENOBUFS;
-+
-+	nla_nest_end(msg, ftm);
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_send_pmsr_request_peer(struct sk_buff *msg,
-+						 struct cfg80211_pmsr_request_peer *request)
-+{
-+	void *peer, *chandef, *req, *data;
-+	int err;
-+
-+	peer = nla_nest_start(msg, NL80211_PMSR_ATTR_PEERS);
-+	if (!peer)
-+		return -ENOBUFS;
-+
-+	if (nla_put(msg, NL80211_PMSR_PEER_ATTR_ADDR, ETH_ALEN,
-+		    request->addr))
-+		return -ENOBUFS;
-+
-+	chandef = nla_nest_start(msg, NL80211_PMSR_PEER_ATTR_CHAN);
-+	if (!chandef)
-+		return -ENOBUFS;
-+
-+	err = cfg80211_send_chandef(msg, &request->chandef);
-+	if (err)
-+		return err;
-+
-+	nla_nest_end(msg, chandef);
-+
-+	req = nla_nest_start(msg, NL80211_PMSR_PEER_ATTR_REQ);
-+	if (request->report_ap_tsf &&
-+	    nla_put_flag(msg, NL80211_PMSR_REQ_ATTR_GET_AP_TSF))
-+		return -ENOBUFS;
-+
-+	data = nla_nest_start(msg, NL80211_PMSR_REQ_ATTR_DATA);
-+	if (!data)
-+		return -ENOBUFS;
-+
-+	mac80211_hwsim_send_pmsr_ftm_request_peer(msg, &request->ftm);
-+	nla_nest_end(msg, data);
-+	nla_nest_end(msg, req);
-+	nla_nest_end(msg, peer);
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_send_pmsr_request(struct sk_buff *msg,
-+					    struct cfg80211_pmsr_request *request)
-+{
-+	int err;
-+	void *pmsr;
-+
-+	pmsr = nla_nest_start(msg, NL80211_ATTR_PEER_MEASUREMENTS);
-+	if (!pmsr)
-+		return -ENOBUFS;
-+
-+	if (nla_put_u32(msg, NL80211_ATTR_TIMEOUT, request->timeout))
-+		return -ENOBUFS;
-+
-+	if (!is_zero_ether_addr(request->mac_addr)) {
-+		if (nla_put(msg, NL80211_ATTR_MAC, ETH_ALEN, request->mac_addr))
-+			return -ENOBUFS;
-+		if (nla_put(msg, NL80211_ATTR_MAC_MASK, ETH_ALEN,
-+			    request->mac_addr_mask))
-+			return -ENOBUFS;
-+	}
-+
-+	for (int i = 0; i < request->n_peers; i++) {
-+		err = mac80211_hwsim_send_pmsr_request_peer(msg,
-+							    &request->peers[i]);
-+		if (err)
-+			return err;
-+	}
-+
-+	nla_nest_end(msg, pmsr);
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_start_pmsr(struct ieee80211_hw *hw,
-+				     struct ieee80211_vif *vif,
- 				     struct cfg80211_pmsr_request *request)
- {
--	return -EOPNOTSUPP;
-+	struct mac80211_hwsim_data *data = hw->priv;
-+	u32 _portid = READ_ONCE(data->wmediumd);
-+	int err = 0;
-+	struct sk_buff *skb = NULL;
-+	void *msg_head;
-+	void *pmsr;
-+
-+	if (!_portid && !hwsim_virtio_enabled)
-+		return -EOPNOTSUPP;
-+
-+	mutex_lock(&data->mutex);
-+
-+	if (data->pmsr_request) {
-+		err = -EBUSY;
-+		goto out_err;
-+	}
-+
-+	skb = genlmsg_new(GENLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+
-+	if (!skb) {
-+		err = -ENOMEM;
-+		goto out_err;
-+	}
-+
-+	msg_head = genlmsg_put(skb, 0, 0, &hwsim_genl_family, 0,
-+			       HWSIM_CMD_START_PMSR);
-+
-+	if (nla_put(skb, HWSIM_ATTR_ADDR_TRANSMITTER,
-+		    ETH_ALEN, data->addresses[1].addr)) {
-+		err = -ENOMEM;
-+		goto out_err;
-+	}
-+
-+	pmsr = nla_nest_start(skb, HWSIM_ATTR_PMSR_REQUEST);
-+	if (!pmsr) {
-+		err = -ENOMEM;
-+		goto out_err;
-+	}
-+
-+	err = mac80211_hwsim_send_pmsr_request(skb, request);
-+	if (err)
-+		goto out_err;
-+
-+	nla_nest_end(skb, pmsr);
-+
-+	genlmsg_end(skb, msg_head);
-+	if (hwsim_virtio_enabled)
-+		hwsim_tx_virtio(data, skb);
-+	else
-+		hwsim_unicast_netgroup(data, skb, _portid);
-+
-+out_err:
-+	if (err && skb)
-+		nlmsg_free(skb);
-+
-+	if (!err) {
-+		data->pmsr_request = request;
-+		data->pmsr_request_wdev = ieee80211_vif_to_wdev(vif);
-+	}
-+
-+	mutex_unlock(&data->mutex);
-+	return err;
- }
- 
--static void mac80211_hwsim_abort_pmsr(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-+static void mac80211_hwsim_abort_pmsr(struct ieee80211_hw *hw,
-+				      struct ieee80211_vif *vif,
- 				      struct cfg80211_pmsr_request *request)
- {
--	// Do nothing for now.
-+	struct mac80211_hwsim_data *data = hw->priv;
-+	u32 _portid = READ_ONCE(data->wmediumd);
-+	struct sk_buff *skb = NULL;
-+	int err = 0;
-+	void *msg_head;
-+	void *pmsr;
-+
-+	if (!_portid && !hwsim_virtio_enabled)
-+		return;
-+
-+	mutex_lock(&data->mutex);
-+
-+	if (data->pmsr_request != request) {
-+		err = -EINVAL;
-+		goto out_err;
-+	}
-+
-+	if (err)
-+		goto out_err;
-+
-+	skb = genlmsg_new(GENLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!skb) {
-+		err = -EINVAL;
-+		goto out_err;
-+	}
-+
-+	msg_head = genlmsg_put(skb, 0, 0, &hwsim_genl_family, 0,
-+			       HWSIM_CMD_ABORT_PMSR);
-+
-+	if (nla_put(skb, HWSIM_ATTR_ADDR_TRANSMITTER,
-+		    ETH_ALEN, data->addresses[1].addr)) {
-+		err = -EINVAL;
-+		goto out_err;
-+	}
-+
-+	pmsr = nla_nest_start(skb, HWSIM_ATTR_PMSR_REQUEST);
-+	if (!pmsr) {
-+		err = -ENOMEM;
-+		goto out_err;
-+	}
-+
-+	err = mac80211_hwsim_send_pmsr_request(skb, request);
-+	if (err)
-+		goto out_err;
-+
-+	err = nla_nest_end(skb, pmsr);
-+	if (err)
-+		goto out_err;
-+
-+	genlmsg_end(skb, msg_head);
-+	if (hwsim_virtio_enabled)
-+		hwsim_tx_virtio(data, skb);
-+	else
-+		hwsim_unicast_netgroup(data, skb, _portid);
-+
-+out_err:
-+	if (err && skb)
-+		nlmsg_free(skb);
-+
-+	mutex_unlock(&data->mutex);
-+}
-+
-+static int mac80211_hwsim_parse_rate_info(struct nlattr *rateattr,
-+					  struct rate_info *rate_info,
-+					  struct genl_info *info)
-+{
-+	struct nlattr *tb[HWSIM_RATE_INFO_ATTR_MAX + 1];
-+	int ret;
-+
-+	ret = nla_parse_nested(tb, HWSIM_RATE_INFO_ATTR_MAX,
-+			       rateattr, hwsim_rate_info_policy, info->extack);
-+	if (ret)
-+		return ret;
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_FLAGS])
-+		rate_info->flags = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_FLAGS]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_MCS])
-+		rate_info->mcs = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_MCS]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_LEGACY])
-+		rate_info->legacy = nla_get_u16(tb[HWSIM_RATE_INFO_ATTR_LEGACY]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_NSS])
-+		rate_info->nss = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_NSS]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_BW])
-+		rate_info->bw = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_BW]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_HE_GI])
-+		rate_info->he_gi = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_HE_GI]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_HE_DCM])
-+		rate_info->he_dcm = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_HE_DCM]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC])
-+		rate_info->he_ru_alloc =
-+			nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH])
-+		rate_info->n_bonded_ch =
-+			nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_EHT_GI])
-+		rate_info->eht_gi = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_EHT_GI]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC])
-+		rate_info->eht_ru_alloc =
-+			nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC]);
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_parse_ftm_result(struct nlattr *ftm,
-+					   struct cfg80211_pmsr_ftm_result *result,
-+					   struct genl_info *info)
-+{
-+	struct nlattr *tb[NL80211_PMSR_FTM_RESP_ATTR_MAX + 1];
-+	int ret;
-+
-+	ret = nla_parse_nested(tb, NL80211_PMSR_FTM_RESP_ATTR_MAX,
-+			       ftm, hwsim_ftm_result_policy, info->extack);
-+	if (ret)
-+		return ret;
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_FAIL_REASON])
-+		result->failure_reason =
-+			nla_get_u32(tb[NL80211_PMSR_FTM_RESP_ATTR_FAIL_REASON]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_BURST_INDEX])
-+		result->burst_index =
-+			nla_get_u16(tb[NL80211_PMSR_FTM_RESP_ATTR_BURST_INDEX]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_ATTEMPTS]) {
-+		result->num_ftmr_attempts_valid = 1;
-+		result->num_ftmr_attempts =
-+			nla_get_u32(tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_ATTEMPTS]);
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_SUCCESSES]) {
-+		result->num_ftmr_successes_valid = 1;
-+		result->num_ftmr_successes =
-+			nla_get_u32(tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_SUCCESSES]);
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_BUSY_RETRY_TIME])
-+		result->busy_retry_time =
-+			nla_get_u8(tb[NL80211_PMSR_FTM_RESP_ATTR_BUSY_RETRY_TIME]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_BURSTS_EXP])
-+		result->num_bursts_exp =
-+			nla_get_u8(tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_BURSTS_EXP]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_BURST_DURATION])
-+		result->burst_duration =
-+			nla_get_u8(tb[NL80211_PMSR_FTM_RESP_ATTR_BURST_DURATION]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_FTMS_PER_BURST])
-+		result->ftms_per_burst =
-+			nla_get_u8(tb[NL80211_PMSR_FTM_RESP_ATTR_FTMS_PER_BURST]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RSSI_AVG]) {
-+		result->rssi_avg_valid = 1;
-+		result->rssi_avg =
-+			nla_get_s32(tb[NL80211_PMSR_FTM_RESP_ATTR_RSSI_AVG]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RSSI_SPREAD]) {
-+		result->rssi_spread_valid = 1;
-+		result->rssi_spread =
-+			nla_get_s32(tb[NL80211_PMSR_FTM_RESP_ATTR_RSSI_SPREAD]);
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_TX_RATE]) {
-+		result->tx_rate_valid = 1;
-+		ret = mac80211_hwsim_parse_rate_info(tb[NL80211_PMSR_FTM_RESP_ATTR_TX_RATE],
-+						     &result->tx_rate, info);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RX_RATE]) {
-+		result->rx_rate_valid = 1;
-+		ret = mac80211_hwsim_parse_rate_info(tb[NL80211_PMSR_FTM_RESP_ATTR_RX_RATE],
-+						     &result->rx_rate, info);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_AVG]) {
-+		result->rtt_avg_valid = 1;
-+		result->rtt_avg =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_AVG]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_VARIANCE]) {
-+		result->rtt_variance_valid = 1;
-+		result->rtt_variance =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_VARIANCE]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_SPREAD]) {
-+		result->rtt_spread_valid = 1;
-+		result->rtt_spread =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_SPREAD]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_AVG]) {
-+		result->dist_avg_valid = 1;
-+		result->dist_avg =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_AVG]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_VARIANCE]) {
-+		result->dist_variance_valid = 1;
-+		result->dist_variance =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_VARIANCE]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_SPREAD]) {
-+		result->dist_spread_valid = 1;
-+		result->dist_spread =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_SPREAD]);
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_LCI]) {
-+		result->lci = nla_data(tb[NL80211_PMSR_FTM_RESP_ATTR_LCI]);
-+		result->lci_len = nla_len(tb[NL80211_PMSR_FTM_RESP_ATTR_LCI]);
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_CIVICLOC]) {
-+		result->civicloc = nla_data(tb[NL80211_PMSR_FTM_RESP_ATTR_CIVICLOC]);
-+		result->civicloc_len = nla_len(tb[NL80211_PMSR_FTM_RESP_ATTR_CIVICLOC]);
-+	}
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_parse_pmsr_resp(struct nlattr *resp,
-+					  struct cfg80211_pmsr_result *result,
-+					  struct genl_info *info)
-+{
-+	struct nlattr *tb[NL80211_PMSR_RESP_ATTR_MAX + 1];
-+	struct nlattr *pmsr;
-+	int rem;
-+	int ret;
-+
-+	ret = nla_parse_nested(tb, NL80211_PMSR_RESP_ATTR_MAX, resp,
-+			       hwsim_pmsr_resp_policy, info->extack);
-+
-+	if (tb[NL80211_PMSR_RESP_ATTR_STATUS])
-+		result->status = nla_get_u32(tb[NL80211_PMSR_RESP_ATTR_STATUS]);
-+
-+	if (tb[NL80211_PMSR_RESP_ATTR_HOST_TIME])
-+		result->host_time = nla_get_u64(tb[NL80211_PMSR_RESP_ATTR_HOST_TIME]);
-+
-+	if (tb[NL80211_PMSR_RESP_ATTR_AP_TSF]) {
-+		result->ap_tsf_valid = 1;
-+		result->ap_tsf = nla_get_u64(tb[NL80211_PMSR_RESP_ATTR_AP_TSF]);
-+	}
-+
-+	result->final = !!tb[NL80211_PMSR_RESP_ATTR_FINAL];
-+
-+	if (tb[NL80211_PMSR_RESP_ATTR_DATA]) {
-+		nla_for_each_nested(pmsr, tb[NL80211_PMSR_RESP_ATTR_DATA], rem) {
-+			switch (nla_type(pmsr)) {
-+			case NL80211_PMSR_TYPE_FTM:
-+				result->type = NL80211_PMSR_TYPE_FTM;
-+				ret = mac80211_hwsim_parse_ftm_result(pmsr, &result->ftm, info);
-+				if (ret)
-+					return ret;
-+				break;
-+			default:
-+				NL_SET_ERR_MSG_ATTR(info->extack,
-+						    pmsr, "Unknown pmsr resp type");
-+				return -EINVAL;
-+			}
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_parse_pmsr_result(struct nlattr *peer,
-+					    struct cfg80211_pmsr_result *result,
-+					    struct genl_info *info)
-+{
-+	struct nlattr *tb[NL80211_PMSR_PEER_ATTR_MAX + 1];
-+	int ret;
-+
-+	if (!peer)
-+		return -EINVAL;
-+
-+	ret = nla_parse_nested(tb, NL80211_PMSR_PEER_ATTR_MAX, peer,
-+			       hwsim_pmsr_peer_result_policy, info->extack);
-+	if (ret)
-+		return ret;
-+
-+	if (tb[NL80211_PMSR_PEER_ATTR_ADDR])
-+		memcpy(result->addr, nla_data(tb[NL80211_PMSR_PEER_ATTR_ADDR]),
-+		       ETH_ALEN);
-+
-+	if (tb[NL80211_PMSR_PEER_ATTR_RESP]) {
-+		ret = mac80211_hwsim_parse_pmsr_resp(tb[NL80211_PMSR_PEER_ATTR_RESP], result, info);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+};
-+
-+static int hwsim_pmsr_report_nl(struct sk_buff *msg, struct genl_info *info)
-+{
-+	struct nlattr *reqattr;
-+	const u8 *src;
-+	int err = 0;
-+	int rem;
-+	struct nlattr *peers, *peer;
-+	struct mac80211_hwsim_data *data;
-+
-+	src = nla_data(info->attrs[HWSIM_ATTR_ADDR_TRANSMITTER]);
-+	data = get_hwsim_data_ref_from_addr(src);
-+	if (!data)
-+		return -EINVAL;
-+
-+	mutex_lock(&data->mutex);
-+	if (!data->pmsr_request) {
-+		err = -EINVAL;
-+		goto out_err;
-+	}
-+
-+	reqattr = info->attrs[HWSIM_ATTR_PMSR_RESULT];
-+	if (!reqattr) {
-+		err = -EINVAL;
-+		goto out_err;
-+	}
-+
-+	peers = nla_find_nested(reqattr, NL80211_PMSR_ATTR_PEERS);
-+	if (!peers) {
-+		err = -EINVAL;
-+		goto out_err;
-+	}
-+
-+	nla_for_each_nested(peer, peers, rem) {
-+		struct cfg80211_pmsr_result result;
-+
-+		err = mac80211_hwsim_parse_pmsr_result(peer, &result, info);
-+		if (err)
-+			goto out_err;
-+
-+		cfg80211_pmsr_report(data->pmsr_request_wdev,
-+				     data->pmsr_request, &result, GFP_KERNEL);
-+	}
-+
-+	cfg80211_pmsr_complete(data->pmsr_request_wdev, data->pmsr_request,
-+			       GFP_KERNEL);
-+
-+out_err:
-+	data->pmsr_request = NULL;
-+	data->pmsr_request_wdev = NULL;
-+
-+	mutex_unlock(&data->mutex);
-+	return err;
- }
- 
- #define HWSIM_COMMON_OPS					\
-@@ -4825,13 +5472,6 @@ static void hwsim_mon_setup(struct net_device *dev)
- 	eth_hw_addr_set(dev, addr);
- }
- 
--static struct mac80211_hwsim_data *get_hwsim_data_ref_from_addr(const u8 *addr)
--{
--	return rhashtable_lookup_fast(&hwsim_radios_rht,
--				      addr,
--				      hwsim_rht_params);
--}
--
- static void hwsim_register_wmediumd(struct net *net, u32 portid)
- {
- 	struct mac80211_hwsim_data *data;
-@@ -5507,6 +6147,11 @@ static const struct genl_small_ops hwsim_ops[] = {
- 		.doit = hwsim_get_radio_nl,
- 		.dumpit = hwsim_dump_radio_nl,
- 	},
-+	{
-+		.cmd = HWSIM_CMD_REPORT_PMSR,
-+		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.doit = hwsim_pmsr_report_nl,
-+	}
- };
- 
- static struct genl_family hwsim_genl_family __ro_after_init = {
-@@ -5518,7 +6163,7 @@ static struct genl_family hwsim_genl_family __ro_after_init = {
- 	.module = THIS_MODULE,
- 	.small_ops = hwsim_ops,
- 	.n_small_ops = ARRAY_SIZE(hwsim_ops),
--	.resv_start_op = HWSIM_CMD_DEL_MAC_ADDR + 1,
-+	.resv_start_op = __HWSIM_CMD_MAX,
- 	.mcgrps = hwsim_mcgrps,
- 	.n_mcgrps = ARRAY_SIZE(hwsim_mcgrps),
- };
-@@ -5662,6 +6307,7 @@ static int hwsim_virtio_handle_cmd(struct sk_buff *skb)
- 	struct genlmsghdr *gnlh;
- 	struct nlattr *tb[HWSIM_ATTR_MAX + 1];
- 	struct genl_info info = {};
-+	struct netlink_ext_ack extack;
- 	int err;
- 
- 	nlh = nlmsg_hdr(skb);
-@@ -5678,6 +6324,7 @@ static int hwsim_virtio_handle_cmd(struct sk_buff *skb)
- 	}
- 
- 	info.attrs = tb;
-+	info.extack = &extack;
- 
- 	switch (gnlh->cmd) {
- 	case HWSIM_CMD_FRAME:
-@@ -5686,10 +6333,14 @@ static int hwsim_virtio_handle_cmd(struct sk_buff *skb)
- 	case HWSIM_CMD_TX_INFO_FRAME:
- 		hwsim_tx_info_frame_received_nl(skb, &info);
- 		break;
-+	case HWSIM_CMD_REPORT_PMSR:
-+		hwsim_pmsr_report_nl(skb, &info);
-+		break;
- 	default:
- 		pr_err_ratelimited("hwsim: invalid cmd: %d\n", gnlh->cmd);
- 		return -EPROTO;
- 	}
-+
- 	return 0;
- }
- 
-diff --git a/drivers/net/wireless/mac80211_hwsim.h b/drivers/net/wireless/mac80211_hwsim.h
-index 81cd02d2555c..1d54fe4c402f 100644
---- a/drivers/net/wireless/mac80211_hwsim.h
-+++ b/drivers/net/wireless/mac80211_hwsim.h
-@@ -81,6 +81,9 @@ enum hwsim_tx_control_flags {
-  *	to this receiver address for a given station.
-  * @HWSIM_CMD_DEL_MAC_ADDR: remove the MAC address again, the attributes
-  *	are the same as to @HWSIM_CMD_ADD_MAC_ADDR.
-+ * @HWSIM_CMD_START_PMSR: start PMSR
-+ * @HWSIM_CMD_ABORT_PMSR: abort PMSR
-+ * @HWSIM_CMD_REPORT_PMSR: report PMSR results
-  * @__HWSIM_CMD_MAX: enum limit
-  */
- enum {
-@@ -93,6 +96,9 @@ enum {
- 	HWSIM_CMD_GET_RADIO,
- 	HWSIM_CMD_ADD_MAC_ADDR,
- 	HWSIM_CMD_DEL_MAC_ADDR,
-+	HWSIM_CMD_START_PMSR,
-+	HWSIM_CMD_ABORT_PMSR,
-+	HWSIM_CMD_REPORT_PMSR,
- 	__HWSIM_CMD_MAX,
- };
- #define HWSIM_CMD_MAX (_HWSIM_CMD_MAX - 1)
-@@ -143,10 +149,11 @@ enum {
-  * @HWSIM_ATTR_MLO_SUPPORT: claim MLO support (exact parameters TBD) for
-  *	the new radio
-  * @HWSIM_ATTR_PMSR_SUPPORT: claim peer measurement support
-+ * @HWSIM_ATTR_PMSR_REQUEST: peer measurement request
-+ * @HWSIM_ATTR_PMSR_RESULT: peer measurement result
-  * @__HWSIM_ATTR_MAX: enum limit
-  */
- 
--
- enum {
- 	HWSIM_ATTR_UNSPEC,
- 	HWSIM_ATTR_ADDR_RECEIVER,
-@@ -175,6 +182,8 @@ enum {
- 	HWSIM_ATTR_CIPHER_SUPPORT,
- 	HWSIM_ATTR_MLO_SUPPORT,
- 	HWSIM_ATTR_PMSR_SUPPORT,
-+	HWSIM_ATTR_PMSR_REQUEST,
-+	HWSIM_ATTR_PMSR_RESULT,
- 	__HWSIM_ATTR_MAX,
- };
- #define HWSIM_ATTR_MAX (__HWSIM_ATTR_MAX - 1)
-@@ -279,4 +288,47 @@ enum {
- 	HWSIM_VQ_RX,
- 	HWSIM_NUM_VQS,
- };
-+
-+/**
-+ * enum hwsim_rate_info -- bitrate information.
-+ *
-+ * Information about a receiving or transmitting bitrate
-+ * that can be mapped to struct rate_info
-+ *
-+ * @HWSIM_RATE_INFO_ATTR_FLAGS: bitflag of flags from &enum rate_info_flags
-+ * @HWSIM_RATE_INFO_ATTR_MCS: mcs index if struct describes an HT/VHT/HE rate
-+ * @HWSIM_RATE_INFO_ATTR_LEGACY: bitrate in 100kbit/s for 802.11abg
-+ * @HWSIM_RATE_INFO_ATTR_NSS: number of streams (VHT & HE only)
-+ * @HWSIM_RATE_INFO_ATTR_BW: bandwidth (from &enum rate_info_bw)
-+ * @HWSIM_RATE_INFO_ATTR_HE_GI: HE guard interval (from &enum nl80211_he_gi)
-+ * @HWSIM_RATE_INFO_ATTR_HE_DCM: HE DCM value
-+ * @HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC:  HE RU allocation (from &enum nl80211_he_ru_alloc,
-+ *	only valid if bw is %RATE_INFO_BW_HE_RU)
-+ * @HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH: In case of EDMG the number of bonded channels (1-4)
-+ * @HWSIM_RATE_INFO_ATTR_EHT_GI: EHT guard interval (from &enum nl80211_eht_gi)
-+ * @HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC: EHT RU allocation (from &enum nl80211_eht_ru_alloc,
-+ *	only valid if bw is %RATE_INFO_BW_EHT_RU)
-+ * @NUM_HWSIM_RATE_INFO_ATTRS: internal
-+ * @HWSIM_RATE_INFO_ATTR_MAX: highest attribute number
-+ */
-+enum hwsim_rate_info_attributes {
-+	__HWSIM_RATE_INFO_ATTR_INVALID,
-+
-+	HWSIM_RATE_INFO_ATTR_FLAGS,
-+	HWSIM_RATE_INFO_ATTR_MCS,
-+	HWSIM_RATE_INFO_ATTR_LEGACY,
-+	HWSIM_RATE_INFO_ATTR_NSS,
-+	HWSIM_RATE_INFO_ATTR_BW,
-+	HWSIM_RATE_INFO_ATTR_HE_GI,
-+	HWSIM_RATE_INFO_ATTR_HE_DCM,
-+	HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC,
-+	HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH,
-+	HWSIM_RATE_INFO_ATTR_EHT_GI,
-+	HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC,
-+
-+	/* keep last */
-+	NUM_HWSIM_RATE_INFO_ATTRS,
-+	HWSIM_RATE_INFO_ATTR_MAX = NUM_HWSIM_RATE_INFO_ATTRS - 1
-+};
-+
- #endif /* __MAC80211_HWSIM_H */
-diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
-index 33f775b0f0b0..4223e81e0d26 100644
---- a/include/net/cfg80211.h
-+++ b/include/net/cfg80211.h
-@@ -938,6 +938,16 @@ int cfg80211_chandef_dfs_required(struct wiphy *wiphy,
- 				  const struct cfg80211_chan_def *chandef,
- 				  enum nl80211_iftype iftype);
- 
-+/**
-+ * cfg80211_send_chandef - sends the channel definition.
-+ * @msg: the msg to send channel definition
-+ * @chandef: the channel definition to check
-+ *
-+ * Returns: 0 if sent the channel definition to msg, < 0 on error
-+ **/
-+int cfg80211_send_chandef(struct sk_buff *msg,
-+			  const struct cfg80211_chan_def *chandef);
-+
- /**
-  * ieee80211_chanwidth_rate_flags - return rate flags for channel width
-  * @width: the channel width of the channel
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index b972a2135654..f9dda1801f50 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -3742,8 +3742,8 @@ static int nl80211_set_wiphy(struct sk_buff *skb, struct genl_info *info)
- 	return result;
- }
- 
--static int nl80211_send_chandef(struct sk_buff *msg,
--				const struct cfg80211_chan_def *chandef)
-+int cfg80211_send_chandef(struct sk_buff *msg,
-+			  const struct cfg80211_chan_def *chandef)
- {
- 	if (WARN_ON(!cfg80211_chandef_valid(chandef)))
- 		return -EINVAL;
-@@ -3774,6 +3774,13 @@ static int nl80211_send_chandef(struct sk_buff *msg,
- 		return -ENOBUFS;
- 	return 0;
- }
-+EXPORT_SYMBOL(cfg80211_send_chandef);
-+
-+static int nl80211_send_chandef(struct sk_buff *msg,
-+				const struct cfg80211_chan_def *chandef)
-+{
-+	return cfg80211_send_chandef(msg, chandef);
-+}
- 
- static int nl80211_send_iface(struct sk_buff *msg, u32 portid, u32 seq, int flags,
- 			      struct cfg80211_registered_device *rdev,
--- 
-2.39.0.246.g2a6d74b583-goog
+We'd like to convert fs/nfsd/filecache.c from rhashtable to rhltable.
+There's one function that wants to remove all the items on one of the
+lists: nfsd_file_queue_for_close().
+
+Is there a preferred approach for this with rhltable? Can we just
+hold rcu_read_lock and call rhltable_remove repeatedly without getting
+a fresh copy of the list these items reside on?
+
+
+>>>> +		nf =3D container_of(list, struct nfsd_file, nf_rlist);
+>>>> +
+>>>> 		/* If we raced with someone else unhashing, ignore it */
+>>>> 		if (!nfsd_file_unhash(nf))
+>>>> 			continue;
+>>>> @@ -836,7 +736,7 @@ nfsd_file_cache_init(void)
+>>>> 	if (test_and_set_bit(NFSD_FILE_CACHE_UP, &nfsd_file_flags) =3D=3D 1)
+>>>> 		return 0;
+>>>>=20
+>>>> -	ret =3D rhashtable_init(&nfsd_file_rhash_tbl, &nfsd_file_rhash_param=
+s);
+>>>> +	ret =3D rhltable_init(&nfsd_file_rhltable, &nfsd_file_rhash_params);
+>>>> 	if (ret)
+>>>> 		return ret;
+>>>>=20
+>>>> @@ -904,7 +804,7 @@ nfsd_file_cache_init(void)
+>>>> 	nfsd_file_mark_slab =3D NULL;
+>>>> 	destroy_workqueue(nfsd_filecache_wq);
+>>>> 	nfsd_filecache_wq =3D NULL;
+>>>> -	rhashtable_destroy(&nfsd_file_rhash_tbl);
+>>>> +	rhltable_destroy(&nfsd_file_rhltable);
+>>>> 	goto out;
+>>>> }
+>>>>=20
+>>>> @@ -922,7 +822,7 @@ __nfsd_file_cache_purge(struct net *net)
+>>>> 	struct nfsd_file *nf;
+>>>> 	LIST_HEAD(dispose);
+>>>>=20
+>>>> -	rhashtable_walk_enter(&nfsd_file_rhash_tbl, &iter);
+>>>> +	rhltable_walk_enter(&nfsd_file_rhltable, &iter);
+>>>> 	do {
+>>>> 		rhashtable_walk_start(&iter);
+>>>>=20
+>>>> @@ -1031,7 +931,7 @@ nfsd_file_cache_shutdown(void)
+>>>> 	nfsd_file_mark_slab =3D NULL;
+>>>> 	destroy_workqueue(nfsd_filecache_wq);
+>>>> 	nfsd_filecache_wq =3D NULL;
+>>>> -	rhashtable_destroy(&nfsd_file_rhash_tbl);
+>>>> +	rhltable_destroy(&nfsd_file_rhltable);
+>>>>=20
+>>>> 	for_each_possible_cpu(i) {
+>>>> 		per_cpu(nfsd_file_cache_hits, i) =3D 0;
+>>>> @@ -1042,6 +942,36 @@ nfsd_file_cache_shutdown(void)
+>>>> 	}
+>>>> }
+>>>>=20
+>>>> +static struct nfsd_file *
+>>>> +nfsd_file_lookup_locked(const struct net *net, const struct cred *cre=
+d,
+>>>> +			struct inode *inode, unsigned char need,
+>>>> +			bool want_gc)
+>>>> +{
+>>>> +	struct rhlist_head *tmp, *list;
+>>>> +	struct nfsd_file *nf;
+>>>> +
+>>>> +	list =3D rhltable_lookup(&nfsd_file_rhltable, &inode,
+>>>> +			       nfsd_file_rhash_params);
+>>>> +	rhl_for_each_entry_rcu(nf, tmp, list, nf_rlist) {
+>>>> +		if (nf->nf_may !=3D need)
+>>>> +			continue;
+>>>> +		if (nf->nf_net !=3D net)
+>>>> +			continue;
+>>>> +		if (!nfsd_match_cred(nf->nf_cred, cred))
+>>>> +			continue;
+>>>> +		if (!!test_bit(NFSD_FILE_GC, &nf->nf_flags) !=3D want_gc)
+>>>> +			continue;
+>>>> +		if (test_bit(NFSD_FILE_HASHED, &nf->nf_flags) =3D=3D 0)
+>>>> +			continue;
+>>>> +
+>>>> +		/* If it was on the LRU, reuse that reference. */
+>>>> +		if (nfsd_file_lru_remove(nf))
+>>>> +			WARN_ON_ONCE(refcount_dec_and_test(&nf->nf_ref));
+>>>> +		return nf;
+>>>> +	}
+>>>> +	return NULL;
+>>>> +}
+>>>> +
+>>>> /**
+>>>> * nfsd_file_is_cached - are there any cached open files for this inode=
+?
+>>>> * @inode: inode to check
+>>>> @@ -1056,15 +986,12 @@ nfsd_file_cache_shutdown(void)
+>>>> bool
+>>>> nfsd_file_is_cached(struct inode *inode)
+>>>> {
+>>>> -	struct nfsd_file_lookup_key key =3D {
+>>>> -		.type	=3D NFSD_FILE_KEY_INODE,
+>>>> -		.inode	=3D inode,
+>>>> -	};
+>>>> -	bool ret =3D false;
+>>>> -
+>>>> -	if (rhashtable_lookup_fast(&nfsd_file_rhash_tbl, &key,
+>>>> -				   nfsd_file_rhash_params) !=3D NULL)
+>>>> -		ret =3D true;
+>>>> +	bool ret;
+>>>> +
+>>>> +	rcu_read_lock();
+>>>> +	ret =3D (rhltable_lookup(&nfsd_file_rhltable, &inode,
+>>>> +			       nfsd_file_rhash_params) !=3D NULL);
+>>>> +	rcu_read_unlock();
+>>>> 	trace_nfsd_file_is_cached(inode, (int)ret);
+>>>> 	return ret;
+>>>> }
+>>>> @@ -1074,14 +1001,12 @@ nfsd_file_do_acquire(struct svc_rqst *rqstp, s=
+truct svc_fh *fhp,
+>>>> 		     unsigned int may_flags, struct nfsd_file **pnf,
+>>>> 		     bool open, bool want_gc)
+>>>> {
+>>>> -	struct nfsd_file_lookup_key key =3D {
+>>>> -		.type	=3D NFSD_FILE_KEY_FULL,
+>>>> -		.need	=3D may_flags & NFSD_FILE_MAY_MASK,
+>>>> -		.net	=3D SVC_NET(rqstp),
+>>>> -		.gc	=3D want_gc,
+>>>> -	};
+>>>> +	unsigned char need =3D may_flags & NFSD_FILE_MAY_MASK;
+>>>> +	struct net *net =3D SVC_NET(rqstp);
+>>>> +	struct nfsd_file *new, *nf;
+>>>> +	const struct cred *cred;
+>>>> 	bool open_retry =3D true;
+>>>> -	struct nfsd_file *nf;
+>>>> +	struct inode *inode;
+>>>> 	__be32 status;
+>>>> 	int ret;
+>>>>=20
+>>>> @@ -1089,32 +1014,38 @@ nfsd_file_do_acquire(struct svc_rqst *rqstp, s=
+truct svc_fh *fhp,
+>>>> 				may_flags|NFSD_MAY_OWNER_OVERRIDE);
+>>>> 	if (status !=3D nfs_ok)
+>>>> 		return status;
+>>>> -	key.inode =3D d_inode(fhp->fh_dentry);
+>>>> -	key.cred =3D get_current_cred();
+>>>> +	inode =3D d_inode(fhp->fh_dentry);
+>>>> +	cred =3D get_current_cred();
+>>>>=20
+>>>> retry:
+>>>> -	rcu_read_lock();
+>>>> -	nf =3D rhashtable_lookup(&nfsd_file_rhash_tbl, &key,
+>>>> -			       nfsd_file_rhash_params);
+>>>> -	if (nf)
+>>>> -		nf =3D nfsd_file_get(nf);
+>>>> -	rcu_read_unlock();
+>>>> -
+>>>> -	if (nf) {
+>>>> -		if (nfsd_file_lru_remove(nf))
+>>>> -			WARN_ON_ONCE(refcount_dec_and_test(&nf->nf_ref));
+>>>> -		goto wait_for_construction;
+>>>> +	if (open) {
+>>>> +		rcu_read_lock();
+>>>> +		nf =3D nfsd_file_lookup_locked(net, cred, inode, need, want_gc);
+>>>> +		rcu_read_unlock();
+>>>> +		if (nf)
+>>>> +			goto wait_for_construction;
+>>>> 	}
+>>>>=20
+>>>> -	nf =3D nfsd_file_alloc(&key, may_flags);
+>>>> -	if (!nf) {
+>>>> +	new =3D nfsd_file_alloc(net, inode, need, want_gc);
+>>>> +	if (!new) {
+>>>> 		status =3D nfserr_jukebox;
+>>>> 		goto out_status;
+>>>> 	}
+>>>> +	rcu_read_lock();
+>>>> +	spin_lock(&inode->i_lock);
+>>>> +	nf =3D nfsd_file_lookup_locked(net, cred, inode, need, want_gc);
+>>>> +	if (unlikely(nf)) {
+>>>> +		spin_unlock(&inode->i_lock);
+>>>> +		rcu_read_unlock();
+>>>> +		nfsd_file_slab_free(&new->nf_rcu);
+>>>> +		goto wait_for_construction;
+>>>> +	}
+>>>> +	nf =3D new;
+>>>> +	ret =3D rhltable_insert(&nfsd_file_rhltable, &nf->nf_rlist,
+>>>> +			      nfsd_file_rhash_params);
+>>>> +	spin_unlock(&inode->i_lock);
+>>>> +	rcu_read_unlock();
+>>>>=20
+>>>> -	ret =3D rhashtable_lookup_insert_key(&nfsd_file_rhash_tbl,
+>>>> -					   &key, &nf->nf_rhash,
+>>>> -					   nfsd_file_rhash_params);
+>>>> 	if (likely(ret =3D=3D 0))
+>>>> 		goto open_file;
+>>>>=20
+>>>> @@ -1122,7 +1053,7 @@ nfsd_file_do_acquire(struct svc_rqst *rqstp, str=
+uct svc_fh *fhp,
+>>>> 	nf =3D NULL;
+>>>> 	if (ret =3D=3D -EEXIST)
+>>>> 		goto retry;
+>>>> -	trace_nfsd_file_insert_err(rqstp, key.inode, may_flags, ret);
+>>>> +	trace_nfsd_file_insert_err(rqstp, inode, may_flags, ret);
+>>>> 	status =3D nfserr_jukebox;
+>>>> 	goto out_status;
+>>>>=20
+>>>> @@ -1131,7 +1062,7 @@ nfsd_file_do_acquire(struct svc_rqst *rqstp, str=
+uct svc_fh *fhp,
+>>>>=20
+>>>> 	/* Did construction of this file fail? */
+>>>> 	if (!test_bit(NFSD_FILE_HASHED, &nf->nf_flags)) {
+>>>> -		trace_nfsd_file_cons_err(rqstp, key.inode, may_flags, nf);
+>>>> +		trace_nfsd_file_cons_err(rqstp, inode, may_flags, nf);
+>>>> 		if (!open_retry) {
+>>>> 			status =3D nfserr_jukebox;
+>>>> 			goto out;
+>>>> @@ -1157,14 +1088,14 @@ nfsd_file_do_acquire(struct svc_rqst *rqstp, s=
+truct svc_fh *fhp,
+>>>> 	}
+>>>>=20
+>>>> out_status:
+>>>> -	put_cred(key.cred);
+>>>> +	put_cred(cred);
+>>>> 	if (open)
+>>>> -		trace_nfsd_file_acquire(rqstp, key.inode, may_flags, nf, status);
+>>>> +		trace_nfsd_file_acquire(rqstp, inode, may_flags, nf, status);
+>>>> 	return status;
+>>>>=20
+>>>> open_file:
+>>>> 	trace_nfsd_file_alloc(nf);
+>>>> -	nf->nf_mark =3D nfsd_file_mark_find_or_create(nf, key.inode);
+>>>> +	nf->nf_mark =3D nfsd_file_mark_find_or_create(nf, inode);
+>>>> 	if (nf->nf_mark) {
+>>>> 		if (open) {
+>>>> 			status =3D nfsd_open_verified(rqstp, fhp, may_flags,
+>>>> @@ -1178,7 +1109,7 @@ nfsd_file_do_acquire(struct svc_rqst *rqstp, str=
+uct svc_fh *fhp,
+>>>> 	 * If construction failed, or we raced with a call to unlink()
+>>>> 	 * then unhash.
+>>>> 	 */
+>>>> -	if (status =3D=3D nfs_ok && key.inode->i_nlink =3D=3D 0)
+>>>> +	if (status !=3D nfs_ok || inode->i_nlink =3D=3D 0)
+>>>> 		status =3D nfserr_jukebox;
+>>>> 	if (status !=3D nfs_ok)
+>>>> 		nfsd_file_unhash(nf);
+>>>> @@ -1273,7 +1204,7 @@ int nfsd_file_cache_stats_show(struct seq_file *=
+m, void *v)
+>>>> 		lru =3D list_lru_count(&nfsd_file_lru);
+>>>>=20
+>>>> 		rcu_read_lock();
+>>>> -		ht =3D &nfsd_file_rhash_tbl;
+>>>> +		ht =3D &nfsd_file_rhltable.ht;
+>>>> 		count =3D atomic_read(&ht->nelems);
+>>>> 		tbl =3D rht_dereference_rcu(ht->tbl, ht);
+>>>> 		buckets =3D tbl->size;
+>>>> @@ -1289,7 +1220,7 @@ int nfsd_file_cache_stats_show(struct seq_file *=
+m, void *v)
+>>>> 		evictions +=3D per_cpu(nfsd_file_evictions, i);
+>>>> 	}
+>>>>=20
+>>>> -	seq_printf(m, "total entries: %u\n", count);
+>>>> +	seq_printf(m, "total inodes: %u\n", count);
+>>>> 	seq_printf(m, "hash buckets:  %u\n", buckets);
+>>>> 	seq_printf(m, "lru entries:   %lu\n", lru);
+>>>> 	seq_printf(m, "cache hits:    %lu\n", hits);
+>>>> diff --git a/fs/nfsd/filecache.h b/fs/nfsd/filecache.h
+>>>> index b7efb2c3ddb1..7d3b35771565 100644
+>>>> --- a/fs/nfsd/filecache.h
+>>>> +++ b/fs/nfsd/filecache.h
+>>>> @@ -29,9 +29,8 @@ struct nfsd_file_mark {
+>>>> * never be dereferenced, only used for comparison.
+>>>> */
+>>>> struct nfsd_file {
+>>>> -	struct rhash_head	nf_rhash;
+>>>> -	struct list_head	nf_lru;
+>>>> -	struct rcu_head		nf_rcu;
+>>>> +	struct rhlist_head	nf_rlist;
+>>>> +	void			*nf_inode;
+>>>> 	struct file		*nf_file;
+>>>> 	const struct cred	*nf_cred;
+>>>> 	struct net		*nf_net;
+>>>> @@ -40,10 +39,12 @@ struct nfsd_file {
+>>>> #define NFSD_FILE_REFERENCED	(2)
+>>>> #define NFSD_FILE_GC		(3)
+>>>> 	unsigned long		nf_flags;
+>>>> -	struct inode		*nf_inode;	/* don't deref */
+>>>> 	refcount_t		nf_ref;
+>>>> 	unsigned char		nf_may;
+>>>> +
+>>>> 	struct nfsd_file_mark	*nf_mark;
+>>>> +	struct list_head	nf_lru;
+>>>> +	struct rcu_head		nf_rcu;
+>>>> 	ktime_t			nf_birthtime;
+>>>> };
+>>>>=20
+>>>>=20
+>>>>=20
+>>>=20
+>>> --=20
+>>> Jeff Layton <jlayton@redhat.com>
+>>=20
+>> --
+>> Chuck Lever
+>>=20
+>>=20
+>>=20
+>=20
+> --=20
+> Jeff Layton <jlayton@redhat.com>
+
+--
+Chuck Lever
+
+
 
