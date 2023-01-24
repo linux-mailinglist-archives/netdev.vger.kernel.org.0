@@ -2,100 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E7D2679576
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 11:40:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFCCF679586
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 11:43:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231772AbjAXKkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 05:40:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45872 "EHLO
+        id S233386AbjAXKnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 05:43:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229933AbjAXKkV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 05:40:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E6A2D45;
-        Tue, 24 Jan 2023 02:40:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DCEE60E86;
-        Tue, 24 Jan 2023 10:40:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 99C50C433EF;
-        Tue, 24 Jan 2023 10:40:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674556818;
-        bh=l4Tu+EbMZL36A9gZdOLyolqouv6pJfcDpasghfLPFEs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=j4OmV8gx5NyhGAIT8ZU2jRBXWr/X0w3ku6wGI9KzMGrKQgxTX8P+QAHR9yXxLyeLE
-         QnGxcNGiYugA1wlOQl3RCBSiQD3liLSFxPfq9Nl+eG1CVyCwbmw8I0TvS1Ha3rdR5F
-         +bicpxiry7eVSEwYVqYXFKJImqaVFkF/mdmj+A7zpFnUu1usanLCG9C/zBGCVIivQx
-         nrHKrASvDQKTnPsLJefD8oOKnqi3AyQMWo9t5DlbwlDaduHv2bMw24q8UpOvtB0SZS
-         mVv2B/4a7OfwXftqOabd8cZUR14mEp6zvI3bvIOTjEJlH033j0FdCS5jyfQepRPAyW
-         s9Vvr1TL4OhLg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 82598E52508;
-        Tue, 24 Jan 2023 10:40:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232664AbjAXKnA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 05:43:00 -0500
+Received: from metanate.com (unknown [IPv6:2001:8b0:1628:5005::111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C3CEF82;
+        Tue, 24 Jan 2023 02:42:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=metanate.com; s=stronger; h=Content-Transfer-Encoding:Message-Id:Date:
+        Subject:Cc:To:From:Content-Type:Reply-To:Content-ID:Content-Description:
+        In-Reply-To:References; bh=+94z0GDF0YwFoOENdLk8LueRV02gPpcPCokC9qXRlYg=; b=Xj
+        I+/zScQTaOW1cJeIgcHY/CCrH9KKVg6mvlJpEDP0rxHzGTvFbWTw5Y2ZM1+Iq+Xy6Zh4UG7EmG27w
+        cpbYZXECiVdWynbzF815ZKgnHXEETp1FMyaeha8LYmPBKaaYIdVM/YyXRrt3B7K7ZCxmCCihA0APV
+        jK/n8mUQRh0qZuG/ApKp8K4cRIkuGEZB6zQEF+y/BLyQt8eVas716louM66kUTkUAZDCvMKmXHQS3
+        GD9FFykFFd6H/CrbFqYuqae/pm8TWHaXNmqPOeJYqCJjGnLeuUVQ1oOIbOiE0zMbpSMTRB+aJBgZg
+        qeXqRUSRq6wfpJ2GKP7mHcRJD9vfPiJA==;
+Received: from [81.174.171.191] (helo=donbot.metanate.com)
+        by email.metanate.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <john@metanate.com>)
+        id 1pKGlS-0008HV-J2;
+        Tue, 24 Jan 2023 10:42:54 +0000
+From:   John Keeping <john@metanate.com>
+To:     netdev@vger.kernel.org
+Cc:     John Keeping <john@metanate.com>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] brcmfmac: support CQM RSSI notification with older firmware
+Date:   Tue, 24 Jan 2023 10:42:48 +0000
+Message-Id: <20230124104248.2917465-1-john@metanate.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v4 0/8] Netlink protocol specs
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167455681853.26386.14381375194899546381.git-patchwork-notify@kernel.org>
-Date:   Tue, 24 Jan 2023 10:40:18 +0000
-References: <20230120175041.342573-1-kuba@kernel.org>
-In-Reply-To: <20230120175041.342573-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, robh@kernel.org, johannes@sipsolutions.net,
-        stephen@networkplumber.org, ecree.xilinx@gmail.com, sdf@google.com,
-        f.fainelli@gmail.com, fw@strlen.de, linux-doc@vger.kernel.org,
-        razor@blackwall.org, nicolas.dichtel@6wind.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Authenticated: YES
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RDNS_NONE,SPF_HELO_PASS,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Using the BCM4339 firmware from linux-firmware (version "BCM4339/2 wl0:
+Sep  5 2019 11:05:52 version 6.37.39.113 (r722271 CY)" from
+cypress/cyfmac4339-sdio.bin) the RSSI respose is only 4 bytes, which
+results in an error being logged.
 
-This series was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+It seems that older devices send only the RSSI field and neither SNR nor
+noise is included.  Handle this by accepting a 4 byte message and
+reading only the RSSI from it.
 
-On Fri, 20 Jan 2023 09:50:33 -0800 you wrote:
-> I think the Netlink proto specs are far along enough to merge.
-> Filling in all attribute types and quirks will be an ongoing
-> effort but we have enough to cover FOU so it's somewhat complete.
-> 
-> I fully intend to continue polishing the code but at the same
-> time I'd like to start helping others base their work on the
-> specs (e.g. DPLL) and need to start working on some new families
-> myself.
-> 
-> [...]
+Fixes: 7dd56ea45a66 ("brcmfmac: add support for CQM RSSI notifications")
+Signed-off-by: John Keeping <john@metanate.com>
+---
+v2:
+- Cast to __be32* to fix a Sparse warning (kernel test robot)
 
-Here is the summary with links:
-  - [net-next,v4,1/8] docs: add more netlink docs (incl. spec docs)
-    https://git.kernel.org/netdev/net-next/c/9d6a65079c98
-  - [net-next,v4,2/8] netlink: add schemas for YAML specs
-    https://git.kernel.org/netdev/net-next/c/e616c07ca518
-  - [net-next,v4,3/8] net: add basic C code generators for Netlink
-    https://git.kernel.org/netdev/net-next/c/be5bea1cc0bf
-  - [net-next,v4,4/8] netlink: add a proto specification for FOU
-    https://git.kernel.org/netdev/net-next/c/4eb77b4ecd3c
-  - [net-next,v4,5/8] net: fou: regenerate the uAPI from the spec
-    https://git.kernel.org/netdev/net-next/c/3a330496baa8
-  - [net-next,v4,6/8] net: fou: rename the source for linking
-    https://git.kernel.org/netdev/net-next/c/08d323234d10
-  - [net-next,v4,7/8] net: fou: use policy and operation tables generated from the spec
-    https://git.kernel.org/netdev/net-next/c/1d562c32e439
-  - [net-next,v4,8/8] tools: ynl: add a completely generic client
-    https://git.kernel.org/netdev/net-next/c/e4b48ed460d3
+ .../broadcom/brcm80211/brcmfmac/cfg80211.c         | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-You are awesome, thank you!
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+index b115902eb475..43dc0faee92d 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+@@ -6489,18 +6489,20 @@ static s32 brcmf_notify_rssi(struct brcmf_if *ifp,
+ {
+ 	struct brcmf_cfg80211_vif *vif = ifp->vif;
+ 	struct brcmf_rssi_be *info = data;
+-	s32 rssi, snr, noise;
++	s32 rssi, snr = 0, noise = 0;
+ 	s32 low, high, last;
+ 
+-	if (e->datalen < sizeof(*info)) {
++	if (e->datalen >= sizeof(*info)) {
++		rssi = be32_to_cpu(info->rssi);
++		snr = be32_to_cpu(info->snr);
++		noise = be32_to_cpu(info->noise);
++	} else if (e->datalen >= sizeof(rssi)) {
++		rssi = be32_to_cpu(*(__be32 *)data);
++	} else {
+ 		brcmf_err("insufficient RSSI event data\n");
+ 		return 0;
+ 	}
+ 
+-	rssi = be32_to_cpu(info->rssi);
+-	snr = be32_to_cpu(info->snr);
+-	noise = be32_to_cpu(info->noise);
+-
+ 	low = vif->cqm_rssi_low;
+ 	high = vif->cqm_rssi_high;
+ 	last = vif->cqm_rssi_last;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.39.1
 
