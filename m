@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2504C67A148
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 19:38:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33C9867A167
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 19:38:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233840AbjAXSiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 13:38:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42072 "EHLO
+        id S233643AbjAXSiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 13:38:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233616AbjAXSiG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 13:38:06 -0500
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBD5366B3
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 10:37:58 -0800 (PST)
+        with ESMTP id S233638AbjAXSiJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 13:38:09 -0500
+Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F39F460AD
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 10:37:59 -0800 (PST)
 Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed50:2f4a:8573:c294:b2ce])
-        by albert.telenet-ops.be with bizsmtp
-        id CidZ2900356uRqi06idZVY; Tue, 24 Jan 2023 19:37:55 +0100
+        by michel.telenet-ops.be with bizsmtp
+        id CidZ2900456uRqi06idZy8; Tue, 24 Jan 2023 19:37:57 +0100
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan.of.borg with esmtp (Exim 4.95)
         (envelope-from <geert@linux-m68k.org>)
-        id 1pKOAe-007HCO-Ho;
+        id 1pKOAe-007HCT-Ig;
         Tue, 24 Jan 2023 19:37:33 +0100
 Received: from geert by rox.of.borg with local (Exim 4.95)
         (envelope-from <geert@linux-m68k.org>)
-        id 1pKOAn-002n0c-1h;
+        id 1pKOAn-002n0h-2v;
         Tue, 24 Jan 2023 19:37:33 +0100
 From:   Geert Uytterhoeven <geert+renesas@glider.be>
 To:     Vinod Koul <vkoul@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
@@ -54,9 +54,9 @@ Cc:     linux-phy@lists.infradead.org, linux-doc@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2 2/9] doc: phy: Document devm_of_phy_get()
-Date:   Tue, 24 Jan 2023 19:37:21 +0100
-Message-Id: <768d5845668f081620098a0b4479d1481e212bac.1674584626.git.geert+renesas@glider.be>
+Subject: [PATCH v2 3/9] phy: Add devm_of_phy_optional_get() helper
+Date:   Tue, 24 Jan 2023 19:37:22 +0100
+Message-Id: <4cd0069bcff424ffc5c3a102397c02370b91985b.1674584626.git.geert+renesas@glider.be>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1674584626.git.geert+renesas@glider.be>
 References: <cover.1674584626.git.geert+renesas@glider.be>
@@ -71,45 +71,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the missing documentation for devm_of_phy_get(), which was forgotten
-when the function was introduced.
+Add an optional variant of devm_of_phy_get() that also takes care of
+printing real errors, so drivers no longer have to open-code this
+operation.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
 v2:
-  - New.
+  - Print an error message in case of failure, as requested by RobH,
+  - Update Documentation.
 ---
- Documentation/driver-api/phy/phy.rst | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ Documentation/driver-api/phy/phy.rst |  7 +++++--
+ drivers/phy/phy-core.c               | 30 ++++++++++++++++++++++++++++
+ include/linux/phy/phy.h              |  9 +++++++++
+ 3 files changed, 44 insertions(+), 2 deletions(-)
 
 diff --git a/Documentation/driver-api/phy/phy.rst b/Documentation/driver-api/phy/phy.rst
-index 26467dd4f291505e..6cadc58f4ce07ce4 100644
+index 6cadc58f4ce07ce4..81785c084f3ec2dd 100644
 --- a/Documentation/driver-api/phy/phy.rst
 +++ b/Documentation/driver-api/phy/phy.rst
-@@ -106,6 +106,8 @@ it. This framework provides the following APIs to get a reference to the PHY.
- 	struct phy *devm_phy_get(struct device *dev, const char *string);
- 	struct phy *devm_phy_optional_get(struct device *dev,
+@@ -108,6 +108,9 @@ it. This framework provides the following APIs to get a reference to the PHY.
  					  const char *string);
-+	struct phy *devm_of_phy_get(struct device *dev, struct device_node *np,
-+				    const char *con_id);
+ 	struct phy *devm_of_phy_get(struct device *dev, struct device_node *np,
+ 				    const char *con_id);
++	struct phy *devm_of_phy_optional_get(struct device *dev,
++					     struct device_node *np,
++					     const char *con_id);
  	struct phy *devm_of_phy_get_by_index(struct device *dev,
  					     struct device_node *np,
  					     int index);
-@@ -119,10 +121,10 @@ successful PHY get. On driver detach, release function is invoked on
+@@ -119,8 +122,8 @@ non-dt boot, it should contain the label of the PHY.  The two
+ devm_phy_get associates the device with the PHY using devres on
+ successful PHY get. On driver detach, release function is invoked on
  the devres data and devres data is freed.
- devm_phy_optional_get should be used when the phy is optional. This
- function will never return -ENODEV, but instead returns NULL when
--the phy cannot be found.Some generic drivers, such as ehci, may use multiple
--phys and for such drivers referencing phy(s) by name(s) does not make sense. In
--this case, devm_of_phy_get_by_index can be used to get a phy reference based on
--the index.
-+the phy cannot be found.
-+Some generic drivers, such as ehci, may use multiple phys. In this case,
-+devm_of_phy_get or devm_of_phy_get_by_index can be used to get a phy
-+reference based on name or index.
+-devm_phy_optional_get should be used when the phy is optional. This
+-function will never return -ENODEV, but instead returns NULL when
++The _optional_get variants should be used when the phy is optional. These
++functions will never return -ENODEV, but instead return NULL when
+ the phy cannot be found.
+ Some generic drivers, such as ehci, may use multiple phys. In this case,
+ devm_of_phy_get or devm_of_phy_get_by_index can be used to get a phy
+diff --git a/drivers/phy/phy-core.c b/drivers/phy/phy-core.c
+index 672f5c86588609f3..9951efc03eaaf842 100644
+--- a/drivers/phy/phy-core.c
++++ b/drivers/phy/phy-core.c
+@@ -858,6 +858,36 @@ struct phy *devm_of_phy_get(struct device *dev, struct device_node *np,
+ }
+ EXPORT_SYMBOL_GPL(devm_of_phy_get);
  
- It should be noted that NULL is a valid phy reference. All phy
- consumer calls on the NULL phy become NOPs. That is the release calls,
++/**
++ * devm_of_phy_optional_get() - lookup and obtain a reference to an optional
++ * phy.
++ * @dev: device that requests this phy
++ * @np: node containing the phy
++ * @con_id: name of the phy from device's point of view
++ *
++ * Gets the phy using of_phy_get(), and associates a device with it using
++ * devres. On driver detach, release function is invoked on the devres data,
++ * then, devres data is freed.  This differs to devm_of_phy_get() in
++ * that if the phy does not exist, it is not considered an error and
++ * -ENODEV will not be returned. Instead the NULL phy is returned,
++ * which can be passed to all other phy consumer calls.
++ */
++struct phy *devm_of_phy_optional_get(struct device *dev, struct device_node *np,
++				     const char *con_id)
++{
++	struct phy *phy = devm_of_phy_get(dev, np, con_id);
++
++	if (PTR_ERR(phy) == -ENODEV)
++		phy = NULL;
++
++	if (IS_ERR(phy))
++		dev_err_probe(dev, PTR_ERR(phy), "failed to get PHY %pOF:%s",
++			      np, con_id);
++
++	return phy;
++}
++EXPORT_SYMBOL_GPL(devm_of_phy_optional_get);
++
+ /**
+  * devm_of_phy_get_by_index() - lookup and obtain a reference to a phy by index.
+  * @dev: device that requests this phy
+diff --git a/include/linux/phy/phy.h b/include/linux/phy/phy.h
+index 1b4f9be21e01f4c7..3a570bc59fc7f4a1 100644
+--- a/include/linux/phy/phy.h
++++ b/include/linux/phy/phy.h
+@@ -254,6 +254,8 @@ struct phy *devm_phy_get(struct device *dev, const char *string);
+ struct phy *devm_phy_optional_get(struct device *dev, const char *string);
+ struct phy *devm_of_phy_get(struct device *dev, struct device_node *np,
+ 			    const char *con_id);
++struct phy *devm_of_phy_optional_get(struct device *dev, struct device_node *np,
++				     const char *con_id);
+ struct phy *devm_of_phy_get_by_index(struct device *dev, struct device_node *np,
+ 				     int index);
+ void of_phy_put(struct phy *phy);
+@@ -443,6 +445,13 @@ static inline struct phy *devm_of_phy_get(struct device *dev,
+ 	return ERR_PTR(-ENOSYS);
+ }
+ 
++static inline struct phy *devm_of_phy_optional_get(struct device *dev,
++						   struct device_node *np,
++						   const char *con_id)
++{
++	return NULL;
++}
++
+ static inline struct phy *devm_of_phy_get_by_index(struct device *dev,
+ 						   struct device_node *np,
+ 						   int index)
 -- 
 2.34.1
 
