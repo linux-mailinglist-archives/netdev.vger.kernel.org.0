@@ -2,274 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2CAA67A490
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 22:05:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF87867A498
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 22:10:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231517AbjAXVF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 16:05:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37518 "EHLO
+        id S234547AbjAXVK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 16:10:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbjAXVF5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 16:05:57 -0500
-Received: from forward500b.mail.yandex.net (forward500b.mail.yandex.net [178.154.239.144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CD29E05D
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 13:05:54 -0800 (PST)
-Received: from sas8-92ddc00f49ef.qloud-c.yandex.net (sas8-92ddc00f49ef.qloud-c.yandex.net [IPv6:2a02:6b8:c1b:2988:0:640:92dd:c00f])
-        by forward500b.mail.yandex.net (Yandex) with ESMTP id EA1355EF6B;
-        Wed, 25 Jan 2023 00:05:43 +0300 (MSK)
-Received: by sas8-92ddc00f49ef.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id f5Wnv93YDiE1-9G1XHwIL;
-        Wed, 25 Jan 2023 00:05:43 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ya.ru; s=mail; t=1674594343;
-        bh=OBDdjRcjw6LpfMzA76rXxFKk9M/9wv53LkE16JaD5/k=;
-        h=From:In-Reply-To:Cc:Date:References:To:Subject:Message-ID;
-        b=j4hBthzeC14euo68JJoN9oidVJWRY+fYNJVmcTT5OOEi+E4WI2GnkgEpectYrdo36
-         sejiPG8fGmgbGT02kzDkjzaIZnB2hsb6O1ngm1zhSfPnAr8Ynot2MvrtEfRMgzAuvL
-         Efvzq15u/6vxlBnTFBreNDaswX6l8NebCp24z234=
-Authentication-Results: sas8-92ddc00f49ef.qloud-c.yandex.net; dkim=pass header.i=@ya.ru
-Message-ID: <a145e41c-a997-cbcc-a456-d9efdf06e3fa@ya.ru>
-Date:   Wed, 25 Jan 2023 00:05:41 +0300
+        with ESMTP id S229452AbjAXVK2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 16:10:28 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65DBB2A17F;
+        Tue, 24 Jan 2023 13:10:27 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id jl3so15992802plb.8;
+        Tue, 24 Jan 2023 13:10:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=1D8ZEDoIZB8YyudSb7sCblWlbH8KH7zzZSAuZ0TbhG4=;
+        b=BpONE3z8mbmm1aQQvEtExx1FMMReeNk6YUzVIylNelNMi86MtTU9lCO7tC0gaPRGdr
+         BIuLzlZWCuZU+7htTW0xk7UGuzfRY+uMD0Iw5N0KLrUHekTEZyAwAuedJs4YO5GxLvr/
+         9ELIYqPFdCYsTnsrs1U7bK6+FVVvvfYwLvU/vKlWKkn4UPAxqmEJiqqMSZ20Dkahraxc
+         nOhctSmzuRF8xxgzuRk8UiMZmoZLBJO08lNX9tlSgqizsBAt+L6+GsBypBnKmFrY5C6W
+         7aEZT7MEScaxN3DoYtBAoZYhccJQRGNnI3gfE0HiCJidnGLkqOhrFTVfCpMsHtsMX9uK
+         a6ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1D8ZEDoIZB8YyudSb7sCblWlbH8KH7zzZSAuZ0TbhG4=;
+        b=cBGuFt/kTZTVtZlCGilYgr9dwBWQPFnFtkWKW1nk4mhpwxyITIi5DR1SY3VH3yUHJL
+         0kzNJaJSihlg9RZkbvYB99BH3PZBIOXrUuvDEt74+HJ/KaHnp+Z3NjURXapyIfD9bhre
+         czrms2eFzO5aICU7QTTzgHGv3jiBY8HgHjPt8jwkeGfBAaANyvB5IZWAsgHVmS3Qz8j9
+         55UZpH3uZNy2mn3QVL0pw7X7N+kqqIgXqglK9SG8Ou4fwwodDb9mIxSF/AeTOlxgL5pK
+         D8pc2zXzIhgsZJtaKT1AASDLULQTIPea6trMyqBudMqyCVePgZ4+5SuVd64LDfU0Hljd
+         qKVQ==
+X-Gm-Message-State: AO0yUKUQFulKXNVzOM1PLwoqahkbmy37Xsp5ccldR/6A7lJkwiazMisb
+        X0LEDzfNL1PSJ+PfiWbuSKg=
+X-Google-Smtp-Source: AK7set+RLKhhwMxUNZ0I/NY+kzk+/Gc6YxaBajQ0l0Qc6GeBVNhthZ39fHMTWZakwqmFnAWzNw4n6Q==
+X-Received: by 2002:a17:903:1245:b0:196:f00:c8f9 with SMTP id u5-20020a170903124500b001960f00c8f9mr5993858plh.10.1674594626486;
+        Tue, 24 Jan 2023 13:10:26 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.116.5])
+        by smtp.googlemail.com with ESMTPSA id m4-20020a170902768400b00194ab9a4fecsm2112330pll.138.2023.01.24.13.10.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Jan 2023 13:10:25 -0800 (PST)
+Message-ID: <cd35316065cfe8d706ca2730babe3e6519df6034.camel@gmail.com>
+Subject: Re: [PATCH] net: page_pool: fix refcounting issues with fragmented
+ allocation
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Felix Fietkau <nbd@nbd.name>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     netdev@vger.kernel.org, Jesper Dangaard Brouer <hawk@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        linux-kernel@vger.kernel.org, Yunsheng Lin <linyunsheng@huawei.com>
+Date:   Tue, 24 Jan 2023 13:10:24 -0800
+In-Reply-To: <19121deb-368f-9786-8700-f1c45d227a4c@nbd.name>
+References: <20230124124300.94886-1-nbd@nbd.name>
+         <CAC_iWjKAEgUB8Z3WNNVgUK8omXD+nwt_VPSVyFn1i4EQzJadog@mail.gmail.com>
+         <19121deb-368f-9786-8700-f1c45d227a4c@nbd.name>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH net-next] unix: Guarantee sk_state relevance in case of it
- was assigned by a task on other cpu
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     davem@davemloft.net, edumazet@google.com, gorcunov@gmail.com,
-        kuba@kernel.org, netdev@vger.kernel.org, pabeni@redhat.com
-References: <72ae40ef-2d68-2e89-46d3-fc8f820db42a@ya.ru>
- <20230124175712.38112-1-kuniyu@amazon.com>
-Content-Language: en-US
-From:   Kirill Tkhai <tkhai@ya.ru>
-In-Reply-To: <20230124175712.38112-1-kuniyu@amazon.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kuniyuki,
+On Tue, 2023-01-24 at 18:22 +0100, Felix Fietkau wrote:
+> On 24.01.23 15:11, Ilias Apalodimas wrote:
+> > Hi Felix,
+> >=20
+> > ++cc Alexander and Yunsheng.
+> >=20
+> > Thanks for the report
+> >=20
+> > On Tue, 24 Jan 2023 at 14:43, Felix Fietkau <nbd@nbd.name> wrote:
+> > >=20
+> > > While testing fragmented page_pool allocation in the mt76 driver, I w=
+as able
+> > > to reliably trigger page refcount underflow issues, which did not occ=
+ur with
+> > > full-page page_pool allocation.
+> > > It appears to me, that handling refcounting in two separate counters
+> > > (page->pp_frag_count and page refcount) is racy when page refcount ge=
+ts
+> > > incremented by code dealing with skb fragments directly, and
+> > > page_pool_return_skb_page is called multiple times for the same fragm=
+ent.
+> > >=20
+> > > Dropping page->pp_frag_count and relying entirely on the page refcoun=
+t makes
+> > > these underflow issues and crashes go away.
+> > >=20
+> >=20
+> > This has been discussed here [1].  TL;DR changing this to page
+> > refcount might blow up in other colorful ways.  Can we look closer and
+> > figure out why the underflow happens?
+> I don't see how the approch taken in my patch would blow up. From what I=
+=20
+> can tell, it should be fairly close to how refcount is handled in=20
+> page_frag_alloc. The main improvement it adds is to prevent it from=20
+> blowing up if pool-allocated fragments get shared across multiple skbs=
+=20
+> with corresponding get_page and page_pool_return_skb_page calls.
+>=20
+> - Felix
+>=20
 
-On 24.01.2023 20:57, Kuniyuki Iwashima wrote:
-> From:   Kirill Tkhai <tkhai@ya.ru>
-> Date:   Mon, 23 Jan 2023 01:21:20 +0300
->> Some functions use unlocked check for sock::sk_state. This does not guarantee
->> a new value assigned to sk_state on some CPU is already visible on this CPU.
->>
->> Example:
->>
->> [CPU0:Task0]                    [CPU1:Task1]
->> unix_listen()
->>   unix_state_lock(sk);
->>   sk->sk_state = TCP_LISTEN;
->>   unix_state_unlock(sk);
->>                                 unix_accept()
->>                                   if (sk->sk_state != TCP_LISTEN) /* not visible */
->>                                      goto out;                    /* return error */
->>
->> Task1 may miss new sk->sk_state value, and then unix_accept() returns error.
->> Since in this situation unix_accept() is called chronologically later, such
->> behavior is not obvious and it is wrong.
-> 
-> Have you seen this on a real workload ?
+Do you have the patch available to review as an RFC? From what I am
+seeing it looks like you are underrunning on the pp_frag_count itself.
+I would suspect the issue to be something like starting with a bad
+count in terms of the total number of references, or deducing the wrong
+amount when you finally free the page assuming you are tracking your
+frag count using a non-atomic value in the driver.
 
-No, I haven't seen. This is my observation on current code, which I made during work
-on recent scm_fds patch.
+Thanks,
 
-> It sounds like a userspace bug that accept() is called on a different
-> CPU before listen() returns.  At least, accept() is fetching sk at the
-> same time, then I think there should be no guarantee that sk_state is
-> TCP_LISTEN.
->
-> Same for other TCP_ESTABLISHED tests, it seems a program is calling
-> sendmsg()/recvmsg() when sk is still TCP_CLOSE and betting concurrent
-> connect() will finish earlier.
-
-Not exactly. This is not about the case of "accept() is called before listen() returns".
-This is about "accept is called after listen returns".
-
- unix_listen()
-   unix_state_lock(sk);
-   sk->sk_state = TCP_LISTEN;
-   unix_state_unlock(sk);
-
- <<returned from syscall>>
-                                 unix_accept()
-                                   if (sk->sk_state != TCP_LISTEN) /* not visible */
-                                      goto out;                    /* return error */
-
-A syscall enter and exit do not imply any memory barriers. New sk_state in unix_accept()
-may be not visible.
-
-Speaking about other cases. Even changes made by three sequential syscalls connect(),
-accept() and sendmsg() may be not visible on other CPU:
-
-CPU0                                   CPU1                 CPU2
-connect(sk)
-  sk2->sk_state = TCP_ESTABLISHED                     
-sendmsg(sk)
-                                       sk2 = accept()
-                                                            read("fdinfo of sk2")
-                                                              sk2->sk_state is not visible
-
-There are a lot of possibilities of smp reordering in recvmsg().
-
-
-CPU0                                  CPU1                 CPU2
-connect(sk)
-  sk2->sk_state = TCP_ESTABLISHED                     
-sendmsg(sk)
-                                      sk2 = accept()
-                                   
-                                                           sk2 = pidfd_getfd("fd of sk2)
-                                                           ioctl(sk2, SIOCATMARK, &answ) -> answ=1
-                                                           if (answ)
-                                                             recvmsg(sk2) --> TCP_ESTABLISHED is not visible
-
-^^^ in this example there is also smp reordering between answ and sk_state
-
-There are a lot of cases. We should not wait for real appearance, because this may appear on !x86 cpus,
-and this may result in long and difficult debug for users. We should provide stable interfaces for them.
-
-The big advantage is this should not affect performance, since generic case still goes thru unlocked
-fastpath case.
-
-Kirill
- 
->>
->> This patch aims to fix the problem. A new function unix_sock_state() is
->> introduced, and it makes sure a user never misses a new state assigned just
->> before the function is called. We will use it in the places, where unlocked
->> sk_state dereferencing was used before.
->>
->> Note, that there remain some more places with sk_state unfixed. Also, the same
->> problem is with unix_peer(). This will be a subject for future patches.
->>
->> Signed-off-by: Kirill Tkhai <tkhai@ya.ru>
->> ---
->>  net/unix/af_unix.c |   43 +++++++++++++++++++++++++++++++------------
->>  1 file changed, 31 insertions(+), 12 deletions(-)
->>
->> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
->> index 009616fa0256..f53e09a0753b 100644
->> --- a/net/unix/af_unix.c
->> +++ b/net/unix/af_unix.c
->> @@ -247,6 +247,28 @@ struct sock *unix_peer_get(struct sock *s)
->>  }
->>  EXPORT_SYMBOL_GPL(unix_peer_get);
->>  
->> +/* This function returns current sk->sk_state guaranteeing
->> + * its relevance in case of assignment was made on other CPU.
->> + */
->> +static unsigned char unix_sock_state(struct sock *sk)
->> +{
->> +	unsigned char s_state = READ_ONCE(sk->sk_state);
->> +
->> +	/* SOCK_STREAM and SOCK_SEQPACKET sockets never change their
->> +	 * sk_state after switching to TCP_ESTABLISHED or TCP_LISTEN.
->> +	 * We may avoid taking the lock in case of those states are
->> +	 * already visible.
->> +	 */
->> +	if ((s_state == TCP_ESTABLISHED || s_state == TCP_LISTEN)
->> +	    && sk->sk_type != SOCK_DGRAM)
->> +		return s_state;
->> +
->> +	unix_state_lock(sk);
->> +	s_state = sk->sk_state;
->> +	unix_state_unlock(sk);
->> +	return s_state;
->> +}
->> +
->>  static struct unix_address *unix_create_addr(struct sockaddr_un *sunaddr,
->>  					     int addr_len)
->>  {
->> @@ -812,13 +834,9 @@ static void unix_show_fdinfo(struct seq_file *m, struct socket *sock)
->>  	int nr_fds = 0;
->>  
->>  	if (sk) {
->> -		s_state = READ_ONCE(sk->sk_state);
->> +		s_state = unix_sock_state(sk);
->>  		u = unix_sk(sk);
->>  
->> -		/* SOCK_STREAM and SOCK_SEQPACKET sockets never change their
->> -		 * sk_state after switching to TCP_ESTABLISHED or TCP_LISTEN.
->> -		 * SOCK_DGRAM is ordinary. So, no lock is needed.
->> -		 */
->>  		if (sock->type == SOCK_DGRAM || s_state == TCP_ESTABLISHED)
->>  			nr_fds = atomic_read(&u->scm_stat.nr_fds);
->>  		else if (s_state == TCP_LISTEN)
->> @@ -1686,7 +1704,7 @@ static int unix_accept(struct socket *sock, struct socket *newsock, int flags,
->>  		goto out;
->>  
->>  	err = -EINVAL;
->> -	if (sk->sk_state != TCP_LISTEN)
->> +	if (unix_sock_state(sk) != TCP_LISTEN)
->>  		goto out;
->>  
->>  	/* If socket state is TCP_LISTEN it cannot change (for now...),
->> @@ -2178,7 +2196,8 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
->>  	}
->>  
->>  	if (msg->msg_namelen) {
->> -		err = sk->sk_state == TCP_ESTABLISHED ? -EISCONN : -EOPNOTSUPP;
->> +		unsigned char s_state = unix_sock_state(sk);
->> +		err = s_state == TCP_ESTABLISHED ? -EISCONN : -EOPNOTSUPP;
-> 
-> No need to define s_state here, or a blank line is needed after
-> the definition.
-> https://patchwork.kernel.org/project/netdevbpf/patch/72ae40ef-2d68-2e89-46d3-fc8f820db42a@ya.ru/
-> 
->>  		goto out_err;
->>  	} else {
->>  		err = -ENOTCONN;
->> @@ -2279,7 +2298,7 @@ static ssize_t unix_stream_sendpage(struct socket *socket, struct page *page,
->>  		return -EOPNOTSUPP;
->>  
->>  	other = unix_peer(sk);
->> -	if (!other || sk->sk_state != TCP_ESTABLISHED)
->> +	if (!other || unix_sock_state(sk) != TCP_ESTABLISHED)
->>  		return -ENOTCONN;
->>  
->>  	if (false) {
->> @@ -2391,7 +2410,7 @@ static int unix_seqpacket_sendmsg(struct socket *sock, struct msghdr *msg,
->>  	if (err)
->>  		return err;
->>  
->> -	if (sk->sk_state != TCP_ESTABLISHED)
->> +	if (unix_sock_state(sk) != TCP_ESTABLISHED)
->>  		return -ENOTCONN;
->>  
->>  	if (msg->msg_namelen)
->> @@ -2405,7 +2424,7 @@ static int unix_seqpacket_recvmsg(struct socket *sock, struct msghdr *msg,
->>  {
->>  	struct sock *sk = sock->sk;
->>  
->> -	if (sk->sk_state != TCP_ESTABLISHED)
->> +	if (unix_sock_state(sk) != TCP_ESTABLISHED)
->>  		return -ENOTCONN;
->>  
->>  	return unix_dgram_recvmsg(sock, msg, size, flags);
->> @@ -2689,7 +2708,7 @@ static struct sk_buff *manage_oob(struct sk_buff *skb, struct sock *sk,
->>  
->>  static int unix_stream_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
->>  {
->> -	if (unlikely(sk->sk_state != TCP_ESTABLISHED))
->> +	if (unlikely(unix_sock_state(sk) != TCP_ESTABLISHED))
->>  		return -ENOTCONN;
->>  
->>  	return unix_read_skb(sk, recv_actor);
->> @@ -2713,7 +2732,7 @@ static int unix_stream_read_generic(struct unix_stream_read_state *state,
->>  	size_t size = state->size;
->>  	unsigned int last_len;
->>  
->> -	if (unlikely(sk->sk_state != TCP_ESTABLISHED)) {
->> +	if (unlikely(unix_sock_state(sk) != TCP_ESTABLISHED)) {
->>  		err = -EINVAL;
->>  		goto out;
->>  	}
-
+- Alex
