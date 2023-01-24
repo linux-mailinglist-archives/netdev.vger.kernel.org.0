@@ -2,100 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E0AC6790C5
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 07:20:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A4FC6790CC
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 07:27:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233241AbjAXGUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 01:20:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39960 "EHLO
+        id S233252AbjAXG1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 01:27:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233239AbjAXGUg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 01:20:36 -0500
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDDC83CE03
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 22:20:32 -0800 (PST)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-50642ea22adso7686607b3.4
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 22:20:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=dyXFn2lup2sLjbD/KpbuX1CCPdcq3g2m2cieMlwaGx8=;
-        b=dRGgaBE05wZKoyL6PoURa8kyaU0QE4JoRH+/PrGTgBN+7o02KYKA8AEGY4JbFuQi3W
-         ysgjKlaBLsGOf3ixLDGZDE5TgKPszGZmyXMhx9S2usD4SDjnzOGBKXEIfpZOOEWxY4Tf
-         d7qUCDjs+If7k+yg1zW58iaoJX17+YlkX5GrhA4fBjuh2FMNxKxmumklwY345oy6FOGh
-         Jx1ZACuiHso9surRyTdhrNqFjWt7Brel0z4VK0LSmV1SjkN8XBePXOHMm/jmncozW+aJ
-         07ufrYX9ZKBfR1Vd0XbIPLedajv3eaUDv4UGm1C1SGeKKh/2lW7XT5FYToHiuYY0ik9a
-         6dyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=dyXFn2lup2sLjbD/KpbuX1CCPdcq3g2m2cieMlwaGx8=;
-        b=2CY88CUEK0kcFqax24mGe0CNbhHqJbvkhBER7AeXat4RFlhSmptXmJZg5RoSajLMLV
-         YrS/uNk7L9BB+zpVSJ9R/zNPcxkCup4awZWvxbUAVYEsSqZaGtKGL6tzTgmJDzyFRzVv
-         mYeF3QJ1Gt+BqC0deAuVi45nN4d1Kdg3W8FEOE2SCxamoJnsehSR4S7fKmA5k75v90PL
-         XJazlawjbwVzMMJlvN4HVoTkBMzFiAVqi+bqHQTKQbLD0246zN44QS+0gr3hAxrDLeWv
-         zNYqPt4okEjjPDgTKPBSkXx0O1S7Xkz7qecEel/iGa88TGpKUXjrPcV91aV+qsSs0TCP
-         HjHA==
-X-Gm-Message-State: AFqh2kqzZRQjdLJX/sbErfVWinNL4W504EzZYirWDmvytkphtXGzeTgS
-        vrNsb2W15+xxd6YXBhaPCvZFZffRscQ3gXUsmiYQMw==
-X-Google-Smtp-Source: AMrXdXvGtDAQmrtie+iMu2/Hn6KcrJFz14ydW887zzDi0fPPgxvoTr6yfqaCAuiC9XOCVbWlCvMM0j/FL50aLD4Ks2U=
-X-Received: by 2002:a81:351:0:b0:36c:aaa6:e571 with SMTP id
- 78-20020a810351000000b0036caaa6e571mr2408773ywd.467.1674541231962; Mon, 23
- Jan 2023 22:20:31 -0800 (PST)
-MIME-Version: 1.0
-References: <20230119122705.73054-1-vladimir.oltean@nxp.com> <20230119122705.73054-5-vladimir.oltean@nxp.com>
-In-Reply-To: <20230119122705.73054-5-vladimir.oltean@nxp.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 24 Jan 2023 07:20:20 +0100
-Message-ID: <CANn89i+-Vp3Za=T8kgU6o_RuQHoT7sC=-i_EZCHcsUoJKqeG9g@mail.gmail.com>
-Subject: Re: [PATCH v4 net-next 04/12] net: ethtool: netlink: retrieve stats
- from multiple sources (eMAC, pMAC)
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231544AbjAXG1B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 01:27:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE8530B17;
+        Mon, 23 Jan 2023 22:27:00 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C9135611E8;
+        Tue, 24 Jan 2023 06:26:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B04B8C433EF;
+        Tue, 24 Jan 2023 06:26:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674541619;
+        bh=0E4Oc7/Z2stBA8qPrvNH0kEWWPBwgaEO48l8pr7o85U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Y0C8LuIeZXm8qzNM/0x9oaruuBIALECSGYaMY6JmMXHEt/4OO6fq6+06qZLWrY6i8
+         /YYXqNse4w2KUvniABDf9pA3W11MlsCChz5gJvaziaPWU5exQ10jdXHnq18ftwwENJ
+         WFWPLGpiW20wYNKbJJEXOqd9nDmLzA81okfyPzqIWTVrb6JlllE262R87ggNDsSftd
+         ILWr1fy2sGPKt1lW5713650iPtEhl5Bemos7Ul6Kw5aghe/uDMFQCr1TmgUCJPph8Z
+         Xu57x2nxiwSFl/idayA3VSw1jJzKxozO5QYBFU7NORPZvlvN0aI9/owULgjlII7j/5
+         tcOXg3V17Py7Q==
+Date:   Tue, 24 Jan 2023 08:22:33 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jonathan Corbet <corbet@lwn.net>, oss-drivers@corigine.com,
+        linux-doc@vger.kernel.org, Raju Rangoju <rajur@chelsio.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Rui Sousa <rui.sousa@nxp.com>,
-        Ferenc Fejes <ferenc.fejes@ericsson.com>,
-        Pranavi Somisetty <pranavi.somisetty@amd.com>,
-        Harini Katakam <harini.katakam@amd.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Andy Gospodarek <andy@greyhouse.net>
+Subject: Re: [Intel-wired-lan] [PATCH net-next 09/10] bonding: fill IPsec
+ state validation failure reason
+Message-ID: <Y895KXqtQgXOytj1@unreal>
+References: <cover.1674481435.git.leon@kernel.org>
+ <d563de401d6fdc1c52959300eebb2bbb27c6c181.1674481435.git.leon@kernel.org>
+ <5064.1674514892@famine>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5064.1674514892@famine>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 19, 2023 at 1:27 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
->
+On Mon, Jan 23, 2023 at 03:01:32PM -0800, Jay Vosburgh wrote:
+> Leon Romanovsky <leon@kernel.org> wrote:
+> 
+> >From: Leon Romanovsky <leonro@nvidia.com>
+> >
+> >Rely on extack to return failure reason.
+> >
+> >Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> >Signed-off-by: Leon Romanovsky <leon@kernel.org>
+> >---
+> > drivers/net/bonding/bond_main.c | 2 +-
+> > 1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> >diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+> >index 686b2a6fd674..00646aa315c3 100644
+> >--- a/drivers/net/bonding/bond_main.c
+> >+++ b/drivers/net/bonding/bond_main.c
+> >@@ -444,7 +444,7 @@ static int bond_ipsec_add_sa(struct xfrm_state *xs,
+> > 	if (!slave->dev->xfrmdev_ops ||
+> > 	    !slave->dev->xfrmdev_ops->xdo_dev_state_add ||
+> > 	    netif_is_bond_master(slave->dev)) {
+> >-		slave_warn(bond_dev, slave->dev, "Slave does not support ipsec offload\n");
+> >+		NL_SET_ERR_MSG_MOD(extack, "Slave does not support ipsec offload");
+> > 		rcu_read_unlock();
+> > 		return -EINVAL;
+> > 	}
+> 
+> 	Why only this one, and not include the other similar
+> slave_warn() calls in the bond_ipsec_* functions?  
 
-...
+Which functions did you have in mind?
 
->  static int pause_prepare_data(const struct ethnl_req_info *req_base,
->                               struct ethnl_reply_data *reply_base,
->                               struct genl_info *info)
->  {
-> +       const struct pause_req_info *req_info = PAUSE_REQINFO(req_base);
->         struct pause_reply_data *data = PAUSE_REPDATA(reply_base);
-> +       enum ethtool_mac_stats_src src = req_info->src;
-> +       struct netlink_ext_ack *extack = info->extack;
+The extack was added to XFRM .xdo_dev_state_add() call, which is
+translated to bond_ipsec_add_sa() with only one slave_warn() print.
 
-info can be NULL when called from ethnl_default_dump_one()
+If you are talking about bond_ipsec_add_sa_all(), that function isn't
+directly connected to netlink and doesn't have extack pointer to fill.
+
+If you are talking about bond_ipsec_del_sai*() and slave_warn() there, it
+will be better to be deleted/changed to make sure what ipsec_list have
+only valid devices.
+
+Thanks
+
+
+> That would seem to make some failures show up in dmesg,
+> and others returned to the caller via extack.
+> 
+> 	-J
+> 
+> ---
+> 	-Jay Vosburgh, jay.vosburgh@canonical.com
