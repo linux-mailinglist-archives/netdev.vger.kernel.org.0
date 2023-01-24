@@ -2,113 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 114076791CA
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 08:20:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E297D6791D4
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 08:21:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233479AbjAXHUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 02:20:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50034 "EHLO
+        id S233507AbjAXHVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 02:21:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230191AbjAXHUU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 02:20:20 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D8B07ED6
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 23:19:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1674544777;
+        with ESMTP id S232292AbjAXHVg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 02:21:36 -0500
+Received: from mail.kernel-space.org (unknown [IPv6:2a01:4f8:c2c:5a84::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79FEF7ED6
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 23:21:34 -0800 (PST)
+Received: from ziongate (localhost [127.0.0.1])
+        by ziongate (OpenSMTPD) with ESMTP id 7d2c4a42;
+        Tue, 24 Jan 2023 07:21:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=simple; d=kernel-space.org; h=date
+        :from:to:cc:subject:in-reply-to:message-id:references
+        :mime-version:content-type; s=default; bh=n1mrFF5boJa9LXclESa3yU
+        lDISU=; b=b3JkWw9KAI/GYeZWtcqOXeGazi9nO/C6jXQiPNwX9E7tpPm8iePO/Q
+        8V1hiPuJ+ctwyZ55LWulxFnhy6Lk30MC/W397dECS7X8I4JmnYR2MU0kwjFZGDap
+        pQL1hnjDuBLXdpc4kqkCkxHw3TQVWwE5tsx+GEw5y0VqVmeoFR4Bs=
+DomainKey-Signature: a=rsa-sha1; c=simple; d=kernel-space.org; h=date
+        :from:to:cc:subject:in-reply-to:message-id:references
+        :mime-version:content-type; q=dns; s=default; b=jFeAVcL2pbqSHR/u
+        135PxSt1ymoeMVMSrfDyDVjpTLflc0G/Fdumk/q2imCwH/m7EoG3WNQYXS5F/3X7
+        Kp7c+xNlh0HEZqAMahzT0egsJsIIrRImPTWTNfW8+jdOxJcdRnFbnRAjHMnmDWbp
+        CRgbf3m0gi56hqxcWnNOqGhPgFU=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel-space.org;
+        s=20190913; t=1674544892;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=7q3iqRUHEdMbAtpmNI/eVbLbK/lHpmY+A3ZIsty8k9o=;
-        b=IeGUQm6ApaP21BeqK3XsK4h4ml4Ubyb8ENeB0JOcc6sg3/vJI8P56jTyQAlYV6hgQt4FvN
-        Sysnkv12CPNohbYriTFawXfU9z5bB3cQJu5ZvhKJ5FQWq7JJFPQzMTVeMsKnHO9H8kRhml
-        Czmw4WVCpUZatRACKDY5n2+aCWTq6Ms=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-619-8a_JGcr8PP6oL_5BRpQ_2A-1; Tue, 24 Jan 2023 02:19:36 -0500
-X-MC-Unique: 8a_JGcr8PP6oL_5BRpQ_2A-1
-Received: by mail-qv1-f69.google.com with SMTP id ff3-20020a0562140bc300b00534ec186e17so7218387qvb.14
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 23:19:35 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7q3iqRUHEdMbAtpmNI/eVbLbK/lHpmY+A3ZIsty8k9o=;
-        b=BWTo4IIlX6jNPFxoqbvHqu+0FCfudgzKQ7Tdl1OnnK9dP+nR7WUqxAuJtlEW10l1Xk
-         6b2jQIz6EXAIRMwMpkZE1Ff26v+HJYZAx7QJkEqet4lyJ63RG2yEgDUbLoFaNZQPe/if
-         3bEy+FUbFWbAy9z0cRH2ODWIbPIZP2kTrqZA7PDr4i/MKs+r+tNE8MIqg/xcZcItGNxw
-         NjpjLoXV67emCyo6bZXLUOc8NtFUlDyJmqfr9R5MXlCWZYK7QGLn1nwlpZQYaPjAJgVk
-         x6tFMaG4CXx09umkcHquSiTutd1veSWYQYM1gqfQqIaEbyFGmgwj8T31PmO7lZ8ST2J+
-         qsbw==
-X-Gm-Message-State: AFqh2kr4c2ANM7ATM6Qbxl3e+YvPVxT6a2JdBewaCI4IB5I30V3QmjoE
-        v/YKoFwaHpnkAl3wfcQaVST5Lf9X4x0u8QMidYjWOxTm9zQU0FcPnkUIY2uVxneYUiPSgsJ3jxH
-        9HaBZZ6XUXTamggo8
-X-Received: by 2002:a05:622a:4897:b0:3ab:a3d9:c5c8 with SMTP id fc23-20020a05622a489700b003aba3d9c5c8mr45612921qtb.3.1674544775623;
-        Mon, 23 Jan 2023 23:19:35 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXuN2ZdpfTVek/pkskSHS//zZArD9nCjkHIXPrwJoZbwBa9jqTPDSAuz+JqMDr1JkvokbWw8uA==
-X-Received: by 2002:a05:622a:4897:b0:3ab:a3d9:c5c8 with SMTP id fc23-20020a05622a489700b003aba3d9c5c8mr45612897qtb.3.1674544775412;
-        Mon, 23 Jan 2023 23:19:35 -0800 (PST)
-Received: from [192.168.100.30] ([82.142.8.70])
-        by smtp.gmail.com with ESMTPSA id 72-20020a37074b000000b00706c1fc62desm909030qkh.112.2023.01.23.23.19.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Jan 2023 23:19:34 -0800 (PST)
-Message-ID: <3ff50750-de59-dc2b-01a9-1a453e49e26e@redhat.com>
-Date:   Tue, 24 Jan 2023 08:19:31 +0100
+        bh=136kEHAgDtAFAV0yMJTc9edJCMLD/L+54SBBKW+AW20=;
+        b=VCBUVnEko5PZ2BXMdt1D4tHfmbAPkrA68EVhfZrMEJiayJZJYoGi/uoT7kpBy5uGjCKijC
+        umBGQw+8yzPPUK2TSZ0bLQx+nsO7EoKOy4uziO3GMu6scZ2njQfYrR2VoFbzrAAp7BxMKw
+        NB2qBGPF6ZHUQVX/nQBiUjdQG+Lbj2o=
+Received: from dfj (<unknown> [95.236.233.95])
+        by ziongate (OpenSMTPD) with ESMTPSA id 4d5d8a25 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Tue, 24 Jan 2023 07:21:31 +0000 (UTC)
+Date:   Tue, 24 Jan 2023 08:21:35 +0100 (CET)
+From:   Angelo Dureghello <angelo@kernel-space.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+cc:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
+Subject: Re: mv88e6321, dual cpu port
+In-Reply-To: <Y87pLbMC4GRng6fa@lunn.ch>
+Message-ID: <7dd335e4-55ec-9276-37c2-0ecebba986b9@kernel-space.org>
+References: <5a746f99-8ded-5ef1-6b82-91cd662f986a@kernel-space.org> <Y7yIK4a8mfAUpQ2g@lunn.ch> <ed027411-c1ec-631a-7560-7344c738754e@kernel-space.org> <20230110222246.iy7m7f36iqrmiyqw@skbuf> <Y73ub0xgNmY5/4Qr@lunn.ch> <8d0fce6c-6138-4594-0d75-9a030d969f99@kernel-space.org>
+ <20230123112828.yusuihorsl2tyjl3@skbuf> <7e29d955-2673-ea54-facb-3f96ce027e96@kernel-space.org> <20230123191844.ltcm7ez5yxhismos@skbuf> <Y87pLbMC4GRng6fa@lunn.ch>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH 1/4] virtio_net: notify MAC address change on device
- initialization
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, Eli Cohen <elic@nvidia.com>
-Cc:     linux-kernel@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        Gautam Dawar <gautam.dawar@xilinx.com>,
-        Cindy Lu <lulu@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>
-References: <20230122100526.2302556-1-lvivier@redhat.com>
- <20230122100526.2302556-2-lvivier@redhat.com>
- <07a24753-767b-4e1e-2bcf-21ec04bc044a@nvidia.com>
- <20230123193114.56aaec3a@kernel.org>
-From:   Laurent Vivier <lvivier@redhat.com>
-In-Reply-To: <20230123193114.56aaec3a@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RDNS_NONE,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/24/23 04:31, Jakub Kicinski wrote:
-> On Sun, 22 Jan 2023 15:47:08 +0200 Eli Cohen wrote:
->>> @@ -3956,6 +3958,18 @@ static int virtnet_probe(struct virtio_device *vdev)
->>>    	pr_debug("virtnet: registered device %s with %d RX and TX vq's\n",
->>>    		 dev->name, max_queue_pairs);
->>>    
->>> +	/* a random MAC address has been assigned, notify the device */
->>> +	if (dev->addr_assign_type == NET_ADDR_RANDOM &&
->> Maybe it's better to not count on addr_assign_type and use a local
->> variable to indicate that virtnet_probe assigned random MAC.
-> 
-> +1, FWIW
-> 
-v2 sent, but I rely on virtio_has_feature(vdev, VIRTIO_NET_F_MAC) to know if the MAC 
-address is provided by the device or not:
 
-https://lore.kernel.org/lkml/20230123120022.2364889-2-lvivier@redhat.com/T/#me9211516e12771001e0346818255c9fb48a2bf4a
+Hi Andrew and Vladimir,
+
+On Mon, 23 Jan 2023, Andrew Lunn wrote:
+
+>> I don't know what this means:
+>>
+>> | I am now trying this way on mv88e6321,
+>> | - one vlan using dsa kernel driver,
+>> | - other vlan using dsdt userspace driver.
+>>
+>> specifically what is "dsdt userspace driver".
+>
+> I think DSDT is Marvells vendor crap code.
+>
+Yes, i have seen someone succeeding using it, why do you think it's 
+crap ?
+
+> Having two drivers for the same hardware is a recipe for disaster.
+>
+>  Andrew
+>
+
+What i need is something as
+
+         eth0 ->  vlan1 -> port5(rmii)  ->  port 0,1,2
+         eth1 ->  vlan2 -> port6(rgmii) ->  port 3,4
+
+The custom board i have here is already designed in this way
+(2 fixed-link mac-to-mac connecitons) and trying my best to have
+the above layout working.
+
+If you have any suggestion on how to proceed, really appreciated.
 
 Thanks,
-Laurent
-
+angelo
