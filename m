@@ -2,77 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D2AB67A044
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 18:36:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D12167A058
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 18:43:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233961AbjAXRf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 12:35:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37720 "EHLO
+        id S234343AbjAXRnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 12:43:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232166AbjAXRf5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 12:35:57 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F20110AB0
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 09:35:56 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id c6so15450573pls.4
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 09:35:56 -0800 (PST)
+        with ESMTP id S232855AbjAXRnH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 12:43:07 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98BF746725
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 09:43:06 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id k18so15454156pll.5
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 09:43:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3Xdvi7fIlYYO+f7EySJG/JTcc0Pmw2obhupOEULGvoM=;
-        b=FWddA1QM2tSZl3bk6p8veEjjy+nIv282XwDrC4a72f1F1DbSvsofCGGY+Q9+ZIbcAo
-         QzXs/ug7zKW5kEDStV6Hy2EfXks+nwn/a5t2lHc1Ds06qzXIrmAb1yYa/Pzlj7y3cZk/
-         J521plLn8oh6VREwqCOHqX9q92I4LA7kTMJUgnwHGsJS2MLGVC8vWy57X2f6tINr+N+E
-         tG3WNTmrXx3WDDptWXxAtbnIF4Pkt6ZITJ65E/cCXY620PwSyejDwHZSo63dKtwpnUDj
-         E/VDG4s56h9BDSwQKdzPaUdNoxWLYP49ryGmd1r2eaVXfi5yvcSJMo33tZnLkLqqN7nz
-         eshw==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=kVpn5SMLD9pIiP0+8Xm3dHvf5ZmENfuH2Pxsjs07rZM=;
+        b=Ri/8pJDvge0Awmaf5DNXwCqG+o70l5xFTNqs4AFQo1KC32MlZFz/pV8vYHoM6uKR+j
+         qhBXLXJwffqEN/YZedW4481g+haZdvtdVYHEZnNHvgPoM8qITPUdlHTy1segQg5UnlnV
+         dJUm2cHCSEZ54SGGPcVHPjbQwli1dtjJlXpYNykQ2G9mUivTaKUWZ4q33Wn1DxmyCMch
+         DPrJGTZaA0oEtRgVzdkiBus2MrIPe0VwH0GFu/MSVyADY8Ggd6FM/8DC22itey77m0O5
+         1/Dy6oE3d4IX8cvnMKArYgb+/8Ap27LdjqyLa0oejvqFffoAVKkdaPXOuuFqV1y3wzl6
+         4E9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=3Xdvi7fIlYYO+f7EySJG/JTcc0Pmw2obhupOEULGvoM=;
-        b=k3wVRtk2DfM6fI/cGLkphjA+396+KDTm55j0qzV3IYHWITRIP8CG6V5oVSPBJUmBlA
-         6ROzW2+ovSBgpV1eh4447ctlixC8K+YWHFX6wFrawbdXoOzanYqjsxgkFBvIwyFrAwvt
-         f9ScBq9MMqO8dPOvlDFupN7GwaoixrOwa/p734asQnUquJ6ffzra48GTIe1SPTUIeIuT
-         W4xdolEs6bGpVC4Af4gymI9njsBib22nFutJClbHyysSDS2WfQrzaO8cHJWIibBn/3la
-         wOJ2f0Rgy+ei2D7vc8T2ikit1eB6Fkq5KfqZfXikKznv5cmaHaId+SyceyLVTKXqIF7G
-         CkMw==
-X-Gm-Message-State: AFqh2kqyBad3JomYSTQe9Tcaq+QeFycm5NM65o8oVAQNHkUNtx4owSkp
-        3bvps9ar+INabqs8WQnTVo1oUFXXgg5BuMyNkdmViA==
-X-Google-Smtp-Source: AMrXdXsevx4h6ZcmBSNEUhpYybXYrpwt4VnRJPSPjl6wWgpUFF5obP1UAhJ0j2Qd5E0Ab3ihQWJJqoZ8/uJYeLh0WmU=
-X-Received: by 2002:a17:90b:3741:b0:219:fbc:a088 with SMTP id
- ne1-20020a17090b374100b002190fbca088mr4176615pjb.162.1674581755350; Tue, 24
- Jan 2023 09:35:55 -0800 (PST)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=kVpn5SMLD9pIiP0+8Xm3dHvf5ZmENfuH2Pxsjs07rZM=;
+        b=bp011XFkR//9UqrZLILk+b63m+YAt04N2ux1WVHpnf2A0YBv3P0OotX4NvFIpOGrBm
+         YHfZwGiMuB95WFG+vAxad3xff9Q+jqxZrPUCh0a7FkWjpIIafgXysfpQRUtpk+S2CH7i
+         MgmGjMkuU74L4oaADinfAQh+LaGrzppfZ/LxfcscRmyJTEc/lVkue6/5MaP66LvsR6fI
+         wukhnkf0Gp68c9pYdtcCeVPJYsBo6l7Ty1QHocM7Qf9bCw9J9xVfSzlDH4frQWvKVD2W
+         j2aqKWE3nFLCae0KY0yYRGOkTRDXxNk+csM538mbW+UvdEUFtig8jll+Vg1BfBSW9xs3
+         SwMA==
+X-Gm-Message-State: AFqh2korRNBLy8ubTt+9/uzDE/DEORDEQyXXOtj9jM5WICZjsTNEwDB3
+        6XN2JNiHZZZwQ81A1RvWdHF8S8Wsk9dXYzsnlgjiYg==
+X-Google-Smtp-Source: AMrXdXu84A7RJILwgoKpk8B12punuj2R/JnqdpZOPgedaESUceXYwyUtZtIMeIQMeIEsAhgseHygWwjNvsCc5jsCxno=
+X-Received: by 2002:a17:90a:2c4d:b0:229:2410:ef30 with SMTP id
+ p13-20020a17090a2c4d00b002292410ef30mr3250936pjm.66.1674582185932; Tue, 24
+ Jan 2023 09:43:05 -0800 (PST)
 MIME-Version: 1.0
-References: <20230119221536.3349901-1-sdf@google.com> <901e1a7a-bb86-8d62-4bd7-512a1257d3b0@linux.dev>
- <CAKH8qBs=1NgpJBNwJg7dZQnSAAGpH4vJj0+=LNWuQamGFerfZw@mail.gmail.com>
- <5b757a2a-86a7-346c-4493-9ab903de19e4@intel.com> <87lelsp2yl.fsf@toke.dk> <da633a14-0d0e-0be3-6291-92313ab1550d@redhat.com>
-In-Reply-To: <da633a14-0d0e-0be3-6291-92313ab1550d@redhat.com>
+References: <20230119221536.3349901-1-sdf@google.com> <20230119221536.3349901-18-sdf@google.com>
+ <71be95ee-b522-b3db-105a-0f25d8dc52cb@redhat.com>
+In-Reply-To: <71be95ee-b522-b3db-105a-0f25d8dc52cb@redhat.com>
 From:   Stanislav Fomichev <sdf@google.com>
-Date:   Tue, 24 Jan 2023 09:35:42 -0800
-Message-ID: <CAKH8qBtOM6v0N6iRq+1EPPw2ow9kBD0FXCQJRxuc+02wa+mpkA@mail.gmail.com>
-Subject: Re: [xdp-hints] Re: [PATCH bpf-next v8 00/17] xdp: hints via kfuncs
+Date:   Tue, 24 Jan 2023 09:42:53 -0800
+Message-ID: <CAKH8qBvK-tJxQwBsUvQZ39KyhyAbd76H1xhdzmzeKbbN5Hzq7Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v8 17/17] selftests/bpf: Simple program to dump
+ XDP RX metadata
 To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        brouer@redhat.com, Martin KaFai Lau <martin.lau@linux.dev>,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+Cc:     bpf@vger.kernel.org, brouer@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
         song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
         kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
         David Ahern <dsahern@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Willem de Bruijn <willemb@google.com>,
         Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
         Magnus Karlsson <magnus.karlsson@gmail.com>,
         Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
+        netdev@vger.kernel.org,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
@@ -84,71 +80,121 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 24, 2023 at 4:23 AM Jesper Dangaard Brouer
+On Tue, Jan 24, 2023 at 7:26 AM Jesper Dangaard Brouer
 <jbrouer@redhat.com> wrote:
 >
 >
-> On 24/01/2023 12.49, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> > Alexander Lobakin <alexandr.lobakin@intel.com> writes:
-> >
-> >> From: Stanislav Fomichev <sdf@google.com>
-> >> Date: Mon, 23 Jan 2023 10:55:52 -0800
-> >>
-> >>> On Mon, Jan 23, 2023 at 10:53 AM Martin KaFai Lau <martin.lau@linux.d=
-ev> wrote:
-> >>>>
-> >>>> On 1/19/23 2:15 PM, Stanislav Fomichev wrote:
-> >>>>> Please see the first patch in the series for the overall
-> >>>>> design and use-cases.
-> >>>>>
-> >>>>> See the following email from Toke for the per-packet metadata overh=
-ead:
-> >>>>> https://lore.kernel.org/bpf/20221206024554.3826186-1-sdf@google.com=
-/T/#m49d48ea08d525ec88360c7d14c4d34fb0e45e798
-> >>>>>
-> >>>>> Recent changes:
-> >>>>> - Keep new functions in en/xdp.c, do 'extern mlx5_xdp_metadata_ops'=
- (Tariq)
-> >>>>>
-> >>>>> - Remove mxbuf pointer and use xsk_buff_to_mxbuf (Tariq)
-> >>>>>
-> >>>>> - Clarify xdp_buff vs 'XDP frame' (Jesper)
-> >>>>>
-> >>>>> - Explicitly mention that AF_XDP RX descriptor lacks metadata size =
-(Jesper)
-> >>>>>
-> >>>>> - Drop libbpf_flags/xdp_flags from selftests and use ifindex instea=
-d
-> >>>>>     of ifname (due to recent xsk.h refactoring)
-> >>>>
-> >>>> Applied with the minor changes in the selftests discussed in patch 1=
-1 and 17.
-> >>>> Thanks!
-> >>>
-> >>> Awesome, thanks! I was gonna resend around Wed, but thank you for
-> >>> taking care of that!
-> >> Great stuff, congrats! :)
-> >
-> > Yeah! Thanks for carrying this forward, Stanislav! :)
+> Testing this on mlx5 and I'm not getting the RX-timestamp.
+> See command details below.
 
-Thank you all as well for the valuable feedback and reviews!
+CC'ed Toke since I've never tested mlx5 myself.
+I was pretty close to getting the setup late last week, let me try to
+see whether it's ready or not.
 
-> +1000 -- great work everybody! :-)
+> On 19/01/2023 23.15, Stanislav Fomichev wrote:
+> > To be used for verification of driver implementations. Note that
+> > the skb path is gone from the series, but I'm still keeping the
+> > implementation for any possible future work.
+> >
+> > $ xdp_hw_metadata <ifname>
 >
-> To Alexander (Cc Jesse and Tony), do you think someone from Intel could
-> look at extending drivers:
+> sudo ./xdp_hw_metadata mlx5p1
 >
->   drivers/net/ethernet/intel/igb/ - chip i210
->   drivers/net/ethernet/intel/igc/ - chip i225
->   drivers/net/ethernet/stmicro/stmmac - for CPU integrated LAN ports
+> Output:
+> [...cut ...]
+> open bpf program...
+> load bpf program...
+> prepare skb endpoint...
+> XXX timestamping_enable(): setsockopt(SO_TIMESTAMPING) ret:0
+> prepare xsk map...
+> map[0] = 3
+> map[1] = 4
+> map[2] = 5
+> map[3] = 6
+> map[4] = 7
+> map[5] = 8
+> attach bpf program...
+> poll: 0 (0)
+> poll: 0 (0)
+> poll: 0 (0)
+> poll: 1 (0)
+> xsk_ring_cons__peek: 1
+> 0x1821788: rx_desc[0]->addr=100000000008000 addr=8100 comp_addr=8000
+> rx_timestamp: 0
+> rx_hash: 2773355807
+> 0x1821788: complete idx=8 addr=8000
+> poll: 0 (0)
 >
-> We have a customer that have been eager to get hardware RX-timestamping
-> for their AF_XDP use-case (PoC code[1] use software timestamping via
-> bpf_ktime_get_ns() today).  Getting driver support will qualify this
-> hardware as part of their HW solution.
+> The trace_pipe:
+>
+> $ sudo cat /sys/kernel/debug/tracing/trace_pipe
+>            <idle>-0       [005] ..s2.  2722.884762: bpf_trace_printk:
+> forwarding UDP:9091 to AF_XDP
+>            <idle>-0       [005] ..s2.  2722.884771: bpf_trace_printk:
+> populated rx_hash with 2773355807
+>
+>
+> > On the other machine:
+> >
+> > $ echo -n xdp | nc -u -q1 <target> 9091 # for AF_XDP
+>
+> Fixing the source-port to see if RX-hash remains the same.
+>
+>   $ echo xdp | nc --source-port=2000 --udp 198.18.1.1 9091
+>
+> > $ echo -n skb | nc -u -q1 <target> 9092 # for skb
+> >
+> > Sample output:
+> >
+> >    # xdp
+> >    xsk_ring_cons__peek: 1
+> >    0x19f9090: rx_desc[0]->addr=100000000008000 addr=8100 comp_addr=8000
+> >    rx_timestamp_supported: 1
+> >    rx_timestamp: 1667850075063948829
+> >    0x19f9090: complete idx=8 addr=8000
+>
+> xsk_ring_cons__peek: 1
+> 0x1821788: rx_desc[0]->addr=100000000008000 addr=8100 comp_addr=8000
+> rx_timestamp: 0
+> rx_hash: 2773355807
+> 0x1821788: complete idx=8 addr=8000
+>
+> It doesn't look like hardware RX-timestamps are getting enabled.
+>
+> [... cut to relevant code ...]
+>
+> > diff --git a/tools/testing/selftests/bpf/xdp_hw_metadata.c b/tools/testing/selftests/bpf/xdp_hw_metadata.c
+> > new file mode 100644
+> > index 000000000000..0008f0f239e8
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/xdp_hw_metadata.c
+> > @@ -0,0 +1,403 @@
+> [...]
+>
+> > +static void timestamping_enable(int fd, int val)
+> > +{
+> > +     int ret;
+> > +
+> > +     ret = setsockopt(fd, SOL_SOCKET, SO_TIMESTAMPING, &val, sizeof(val));
+> > +     if (ret < 0)
+> > +             error(-1, errno, "setsockopt(SO_TIMESTAMPING)");
+> > +}
+> > +
+> > +int main(int argc, char *argv[])
+> > +{
+> [...]
+>
+> > +     printf("prepare skb endpoint...\n");
+> > +     server_fd = start_server(AF_INET6, SOCK_DGRAM, NULL, 9092, 1000);
+> > +     if (server_fd < 0)
+> > +             error(-1, errno, "start_server");
+> > +     timestamping_enable(server_fd,
+> > +                         SOF_TIMESTAMPING_SOFTWARE |
+> > +                         SOF_TIMESTAMPING_RAW_HARDWARE);
+> > +
+>
+> I don't think this timestamping_enable() with these flags are enough to
+> enable hardware timestamping.
 >
 > --Jesper
-> [1]
-> https://github.com/xdp-project/bpf-examples/blob/master/AF_XDP-interactio=
-n/af_xdp_kern.c#L77
 >
