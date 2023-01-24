@@ -2,238 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 005AF67964C
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 12:12:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0B85679657
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 12:13:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233555AbjAXLMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 06:12:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43038 "EHLO
+        id S233796AbjAXLNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 06:13:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232664AbjAXLMr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 06:12:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913818685;
-        Tue, 24 Jan 2023 03:12:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4190B81151;
-        Tue, 24 Jan 2023 11:12:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06111C433EF;
-        Tue, 24 Jan 2023 11:12:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674558762;
-        bh=VX5KSFREMNYBtwN2SJjrbqgA/NIUxSyDN0ffRjhvy/8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sTx1wSkdnUU3zgLnYUtoQWaVrs8CKpC4v5JmhB5o2krnIrHnfEl9iFNXeO0K/WeuD
-         OS66bkjvMJOqF+/Qm8ZdhD8gIScOdB7q7kY45aLzng5BUyZwIQyjmk8gvULyVy2r9i
-         uS+QQa6HOtYTxK46tSTZMzxQCogH3kfNALaM/KTW3o83EHR+7oBXncQR8wNWQSNhJu
-         +dX52tF65nEDGtE56V9mYXUodhpNdcbfe8jHglTmpCtDrN8uWP6J9MT6teJ2VKo3Hc
-         zjlNOmGdRFul0jy432GnDCosPDcFRuvmm1NS+YFk2dk+2SjTYkLlHDvB8nuJY9FXf3
-         WEcci+DhkYF2Q==
-Date:   Tue, 24 Jan 2023 12:12:38 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        hawk@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        toke@redhat.com, memxor@gmail.com, alardam@gmail.com,
-        saeedm@nvidia.com, anthony.l.nguyen@intel.com, gospo@broadcom.com,
-        vladimir.oltean@nxp.com, nbd@nbd.name, john@phrozen.org,
-        leon@kernel.org, simon.horman@corigine.com, aelior@marvell.com,
-        christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
-        mst@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
-        maciej.fijalkowski@intel.com, intel-wired-lan@lists.osuosl.org,
-        lorenzo.bianconi@redhat.com, niklas.soderlund@corigine.com,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next 7/7] selftests/bpf: introduce XDP compliance
- test tool
-Message-ID: <Y8+9Jmhr9OSty63Y@lore-desk>
-References: <cover.1674234430.git.lorenzo@kernel.org>
- <986321f8621e9367653e21b35566e7cda976b886.1674234430.git.lorenzo@kernel.org>
- <d2606312-1e04-55ff-e01e-daf83ed99836@linux.dev>
+        with ESMTP id S233859AbjAXLNr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 06:13:47 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2057.outbound.protection.outlook.com [40.107.7.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551C42B60F
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 03:13:44 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KVD/07ijAQW3FBQx8Qml9v2fg+sF+odyXzqIBvn8DMFwCcMwbaNy8qt64gcaT3q1UULcGitO5Mol2ZRwLdfbOuIbqOvfEx96f6vT/3bSnS70ddt2HFrMFPKU6WQ8v0bALOYxKM9uOCTz847JZUSO75QoJAiNaKMnW5LQ6QhXOxx4JGfALFR0EXXGNqW3TI7IDQt51M2SgqbqnCn6yHmC0XHxnFUMzXn1m7Y092qVkPexqn5qjF9FhyXQaDueZRDdxl7FPEvEsdLrIEWKaOkj/CWXm7odCwCEElZEDE1lCQIRdSNfV9nWyABR6LzVDWeK+yjJXIlW/OjGw0V8BNlyEQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+sVzgk5r9iLk4C6tUUrjoQKdcHm35ATC+XQmiPD+3vM=;
+ b=GstqrPIsz03RsphSnTiC3JloEiV6gW9LVdK6Rvux+gMQQsOwl+OEX7rXUWinNiYBmwbsajwXQjir98Vqi3bY609+PuHC7VRdRpzmr5jYtWpiiGDjN097ObtEi9nHHIT1vQdyclFjorsvJJorDKPm0fWOA4s0StfnUSYeGA6k/lp2JT3TOjSfqe+W9ejlgY98Z3UhbHIPsEUGaEXoeyeQg2wJj9uNxyyd1Vlzhsu/sXPzp97zPAUGjBcWKEDHyzN+JAOfj/DkmHGWXDcyiJVlycZAoic7xh5mJ4vWy97jlunyFrpK4odSW3FYEZd2hSQvuMaW/5uDymBO98Vi7u0Drw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+sVzgk5r9iLk4C6tUUrjoQKdcHm35ATC+XQmiPD+3vM=;
+ b=GqP5BorJNIBNOQo30MECqqjeXoUF+bJfUkGs57oVFYrL0g2Dm6mLx+v8TyPLLepNk1O2aQqtjydHFXqxj+rvUfyTqHwQiGmaCRtb43/J4v1IRRi7gc6dyfWfAzzKKZV9+H4cd5aoHWtK0keAmXtt5mpm4PLpAM3A1jYHDy/7hW0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM9PR04MB8746.eurprd04.prod.outlook.com (2603:10a6:20b:43f::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Tue, 24 Jan
+ 2023 11:13:41 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b%7]) with mapi id 15.20.6002.033; Tue, 24 Jan 2023
+ 11:13:41 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michal Kubecek <mkubecek@suse.cz>
+Subject: [PATCH net-next] net: ethtool: fix NULL pointer dereference in pause_prepare_data()
+Date:   Tue, 24 Jan 2023 13:13:28 +0200
+Message-Id: <20230124111328.3630437-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BE1P281CA0185.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:8d::8) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="vXwS72sJheo8aQyw"
-Content-Disposition: inline
-In-Reply-To: <d2606312-1e04-55ff-e01e-daf83ed99836@linux.dev>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM9PR04MB8746:EE_
+X-MS-Office365-Filtering-Correlation-Id: a003a3a7-c37f-41ee-33da-08dafdfc0c83
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: zHU97SmuxtcOlIZBfV0vZS1zPZ2oHVCvDWlNFny0xWxvXCBRIfgM1t/BKq8eXD3/MXRS9RHZRia6+/90AiBTB1At9aKAmLduul35EAenciL541cObwDjYCLaGdeRlIEnbe6u+XB5I4CXEo4WdF5sWgAQdWs/K92hHF7LVRayZlkjNFsvPDWicDiiMt83M9iv1G5WXP8UCZpZYNN0fvCG5ja54cWDv1LsOx0fG/cBR6CwVh72GyEBpHJkdoXnnhDjjCsWw95/6tcGFev2YiJS/dUKS3na0lXMDcFa+cyIlthYKesQLCILVhyvtNzAHtuc8fn4MIGGCZhBLsFKQDFivxYFV0Ze/39NLOMMxNASFAUtlS5avPP2A4PqVHU3NgBEM1xMIb+D+pVrwhVLcrUMg7zVoWyP1teyWLDqtFtsjbDJeX6N1emOgbemauicjCBeMkORpg/8jDIb3cptzWpyok89NOuvgoyczqMPsa3zqWeCIXzL4/5bCZll/x/oAXVtnLhXFrhRU27CpH7/DgcQBj1fyfsbZIU5JDzvyA5ZzJ3IZP+B5hcM4ABlWhDoIYNeUxKsUvd6blxFBemvC6u8angcGW1H4C0lTlWDwm/Ns75zxwRYBqrJRPTRS9g7RlFQF6a5mU0qUHZ06BgNXBu4ukyevuP7OzxiBMIBovEYFaZX5HphT9UM2YZArQ96BFeKPk6zNsl3YAooN5oWlMJMLQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(396003)(39860400002)(366004)(346002)(376002)(451199015)(83380400001)(38350700002)(38100700002)(2906002)(86362001)(44832011)(5660300002)(8936002)(41300700001)(4326008)(186003)(6916009)(8676002)(6512007)(6506007)(26005)(316002)(6666004)(66556008)(2616005)(66476007)(54906003)(66946007)(1076003)(478600001)(6486002)(52116002)(66899015)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/q+PLA6JCg71hi147vE4eUMLQI7ca6D4A85X4PTV9J0VSckRNc4pzKG2GGMy?=
+ =?us-ascii?Q?V3AG3I97pwnEbyNE20mx2lnLnsSjFQTCl4ux+7vgtLMDTPWggSYKGZyatC2t?=
+ =?us-ascii?Q?Rs/lYPNMq4DoU7nfmEyD+PeQu6OlXHAX/9O+DspJn2kKsTq3NOwttW0eMq43?=
+ =?us-ascii?Q?qvrKOsGSkkLPCFI8SA5dVvR4l4sA7EkTcInAUEGWMOS7VhnlgM1kYXODtXfc?=
+ =?us-ascii?Q?cy8OUYanGzYl4+hLAxfFr/WnEjU4nFTbG0gsM+osB27HqmtgXHE4AbN/P1aj?=
+ =?us-ascii?Q?Bb6SB5MzxHfoK2ycmcMBlA9PMt4ShAJyi7Xu3JUJkYsTyrT/CxSTlpB42GWQ?=
+ =?us-ascii?Q?cX+7wIp5hGAvIsyS8tI157paDRValhQ3NODutvz/u7zH7x+qgUDb6/vZKJuE?=
+ =?us-ascii?Q?wOl1I+fW0FriccCIaet2LpLDKkpUrLP5PL+zdCpUzyhf8xo4X+CWkEdi2kF7?=
+ =?us-ascii?Q?qLWBGfAi962oVMD/vrePo8P5vjdyTwrZ0qmSYcPJDLH0D7q1hhXJLJUhQ1ye?=
+ =?us-ascii?Q?mmKaqFVmU8nm0PEBSHnbN/M7g1KvukQchQlBXYvnYuZKungcqaCKKF2vy9+s?=
+ =?us-ascii?Q?o5wt9dTkKzmiFNufc7e6G1oZuBxmFCwqk+17miLRo7Kg+ez+J63aq0tzENtq?=
+ =?us-ascii?Q?ENqy5AQ2Q8aH5u6/sMv+2DUI9/LVQqB+EYTTdezwVqHp/YaDpc1pazT/T7l/?=
+ =?us-ascii?Q?HmOaTbX9z9xA9yos4GZji1+P4ipDbJRryl6S3JdvMtCU+yIsFdH+fQxQ0os1?=
+ =?us-ascii?Q?hctDAWtY+yi+ilfU5TrTD9G0dOEMHTQ5TWiJ4tEACjNhmTfxyMk+WwDDnhYl?=
+ =?us-ascii?Q?ZUvvnXX8H1VwgeJnYLA7D+/qTH1peMJe2L+dNIMvm8e33iZCvNLE4mEpGo3C?=
+ =?us-ascii?Q?IbfRdd2dpUJjTBzHc4vPh6NMBUhmXKbmeDO2D9DP6erUmcu2Iamt+4XjTcIP?=
+ =?us-ascii?Q?6WVaAZ9A5w8eBhk3SRKeppCFVabLJZNDokGwaysTZJXDIR3eSZ+sCsRVA+Ik?=
+ =?us-ascii?Q?Q+sNwkmICVnd+FjsTVLWVlt1UxviP9ZHtZFcNl6ZFqCO6fDZOc4IMsZ40SNc?=
+ =?us-ascii?Q?BxUIP76mkKycBNH5Ha4hx3C3qzapaQD+y6I0Mz7JWf+3zl31zmqHeKfDFWX0?=
+ =?us-ascii?Q?KSnl6rA8RRl5mgAi2oZnnhzPhDkW0VEg30ukrVk4c/zd1QZ0COBl+ctn1md0?=
+ =?us-ascii?Q?pHEhdb7zcK76qbpNDuX3NHrYvAPHuTPKBhYuzLt3iLKtL1DU9dOX9nA6xSpe?=
+ =?us-ascii?Q?pcFaRrLTHgZ3mYbNf+13wi/+lVDdqqsG6AhHGKT7Te/glRYB4ZTeZDW0IHX7?=
+ =?us-ascii?Q?trQM43pZINNZzR8SmoHlDZV0uZAayhjq34aoCQm8pS8CaCH6/ppIx8qGlz1r?=
+ =?us-ascii?Q?4qS1d62nMVcQGNjz8TDXq+fCfKsYo0eC6Q5ID4ek7phHA3lNzedG7+ijYayN?=
+ =?us-ascii?Q?t83gMGE6AyW7AOVtHxUMoEajjzqIIFzgfnhw73yIPdhTZqb2UkZ/R4rv76Qh?=
+ =?us-ascii?Q?9lPgRApb7gb4mjr8v8K0KBPdR6glIDVxsHaO/nWv0ifb0usyqDHzcvBN++lX?=
+ =?us-ascii?Q?nMjoV9ESLfItiobtplLrD492Pa+HPpJChaEfpC6jAUuwVIB4PUH0DbmynaPq?=
+ =?us-ascii?Q?sg=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a003a3a7-c37f-41ee-33da-08dafdfc0c83
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jan 2023 11:13:41.1419
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: xVwDrQcVzfiPsIxm7MIBCnSdmwgbK7lAKmuOiTmqcPQNwpFrCFglWSAmWSCgCGTlpmTug/v3z0HGa+ACRJLD+g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8746
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In the following call path:
 
---vXwS72sJheo8aQyw
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+ethnl_default_dumpit
+-> ethnl_default_dump_one
+   -> ctx->ops->prepare_data
+      -> pause_prepare_data
 
-> On 1/20/23 9:16 AM, Lorenzo Bianconi wrote:
-> > +static __always_inline int xdp_process_echo_packet(struct xdp_md *xdp,=
- bool dut)
-> > +{
-> > +	void *data_end =3D (void *)(long)xdp->data_end;
-> > +	__be32 saddr =3D dut ? tester_ip : dut_ip;
-> > +	__be32 daddr =3D dut ? dut_ip : tester_ip;
-> > +	void *data =3D (void *)(long)xdp->data;
-> > +	struct ethhdr *eh =3D data;
-> > +	struct tlv_hdr *tlv;
-> > +	struct udphdr *uh;
-> > +	struct iphdr *ih;
-> > +	__be16 port;
-> > +	__u8 *cmd;
-> > +
-> > +	if (eh + 1 > (struct ethhdr *)data_end)
-> > +		return -EINVAL;
-> > +
-> > +	if (eh->h_proto !=3D bpf_htons(ETH_P_IP))
-> > +		return -EINVAL;
->=20
-> Both v6 and v4 support are needed as a tool.
+struct genl_info *info will be passed as NULL, and pause_prepare_data()
+dereferences it while getting the extended ack pointer.
 
-ack, I will fix it.
+To avoid that, just set the extack to NULL if "info" is NULL, since the
+netlink extack handling messages know how to deal with that.
 
->=20
-> [ ... ]
->=20
-> > diff --git a/tools/testing/selftests/bpf/test_xdp_features.sh b/tools/t=
-esting/selftests/bpf/test_xdp_features.sh
-> > new file mode 100755
-> > index 000000000000..98b8fd2b6c16
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/test_xdp_features.sh
-> > @@ -0,0 +1,99 @@
-> > +#!/bin/bash
-> > +# SPDX-License-Identifier: GPL-2.0
-> > +
-> > +# Create 2 namespaces with two veth peers, and
-> > +# check reported and detected XDP capabilities
-> > +#
-> > +#   NS0(v00)              NS1(v11)
-> > +#       |                     |
-> > +#       |                     |
-> > +# (v01, id:111)  ------  (v10,id:222)
-> > +
-> > +readonly NS0=3D"ns1-$(mktemp -u XXXXXX)"
-> > +readonly NS1=3D"ns2-$(mktemp -u XXXXXX)"
-> > +ret=3D1
-> > +
-> > +setup() {
-> > +	{
-> > +		ip netns add ${NS0}
-> > +		ip netns add ${NS1}
-> > +
-> > +		ip link add v01 index 111 type veth peer name v00 netns ${NS0}
-> > +		ip link add v10 index 222 type veth peer name v11 netns ${NS1}
-> > +
-> > +		ip link set v01 up
-> > +		ip addr add 10.10.0.1/24 dev v01
-> > +		ip link set v01 address 00:11:22:33:44:55
-> > +		ip -n ${NS0} link set dev v00 up
-> > +		ip -n ${NS0} addr add 10.10.0.11/24 dev v00
-> > +		ip -n ${NS0} route add default via 10.10.0.1
-> > +		ip -n ${NS0} link set v00 address 00:12:22:33:44:55
-> > +
-> > +		ip link set v10 up
-> > +		ip addr add 10.10.1.1/24 dev v10
-> > +		ip link set v10 address 00:13:22:33:44:55
-> > +		ip -n ${NS1} link set dev v11 up
-> > +		ip -n ${NS1} addr add 10.10.1.11/24 dev v11
-> > +		ip -n ${NS1} route add default via 10.10.1.1
-> > +		ip -n ${NS1} link set v11 address 00:14:22:33:44:55
-> > +
-> > +		sysctl -w net.ipv4.ip_forward=3D1
-> > +		# Enable XDP mode
-> > +		ethtool -K v01 gro on
-> > +		ethtool -K v01 tx-checksumming off
-> > +		ip netns exec ${NS0} ethtool -K v00 gro on
-> > +		ip netns exec ${NS0} ethtool -K v00 tx-checksumming off
-> > +		ethtool -K v10 gro on
-> > +		ethtool -K v10 tx-checksumming off
-> > +		ip netns exec ${NS1} ethtool -K v11 gro on
-> > +		ip netns exec ${NS1} ethtool -K v11 tx-checksumming off
-> > +	} > /dev/null 2>&1
-> > +}
-> > +
-> > +cleanup() {
-> > +	ip link del v01 2> /dev/null
-> > +	ip link del v10 2> /dev/null
-> > +	ip netns del ${NS0} 2> /dev/null
-> > +	ip netns del ${NS1} 2> /dev/null
-> > +	[ "$(pidof xdp_features)" =3D "" ] || kill $(pidof xdp_features) 2> /=
-dev/null
-> > +}
-> > +
-> > +test_xdp_features() {
-> > +	setup
-> > +
-> > +	## XDP_PASS
-> > +	ip netns exec ${NS1} ./xdp_features -f XDP_PASS -D 10.10.1.11 -T 10.1=
-0.0.11 v11 &
-> > +	ip netns exec ${NS0} ./xdp_features -t -f XDP_PASS -D 10.10.1.11 -C 1=
-0.10.1.11 -T 10.10.0.11 v00
-> > +
-> > +	[ $? -ne 0 ] && exit
-> > +
-> > +	# XDP_DROP
-> > +	ip netns exec ${NS1} ./xdp_features -f XDP_DROP -D 10.10.1.11 -T 10.1=
-0.0.11 v11 &
-> > +	ip netns exec ${NS0} ./xdp_features -t -f XDP_DROP -D 10.10.1.11 -C 1=
-0.10.1.11 -T 10.10.0.11 v00
-> > +
-> > +	[ $? -ne 0 ] && exit
-> > +
-> > +	## XDP_TX
-> > +	./xdp_features -f XDP_TX -D 10.10.0.1 -T 10.10.0.11 v01 &
-> > +	ip netns exec ${NS0} ./xdp_features -t -f XDP_TX -D 10.10.0.1 -C 10.1=
-0.0.1 -T 10.10.0.11 v00
-> > +
-> > +	## XDP_REDIRECT
-> > +	ip netns exec ${NS1} ./xdp_features -f XDP_REDIRECT -D 10.10.1.11 -T =
-10.10.0.11 v11 &
-> > +	ip netns exec ${NS0} ./xdp_features -t -f XDP_REDIRECT -D 10.10.1.11 =
--C 10.10.1.11 -T 10.10.0.11 v00
-> > +
-> > +	[ $? -ne 0 ] && exit
-> > +
-> > +	## XDP_NDO_XMIT
-> > +	./xdp_features -f XDP_NDO_XMIT -D 10.10.0.1 -T 10.10.0.11 v01 &
-> > +	ip netns exec ${NS0} ./xdp_features -t -f XDP_NDO_XMIT -D 10.10.0.1 -=
-C 10.10.0.1 -T 10.10.0.11 v00
-> > +
-> > +	ret=3D$?
-> > +	cleanup
-> > +}
-> > +
-> > +set -e
-> > +trap cleanup 2 3 6 9
-> > +
-> > +test_xdp_features
->=20
-> This won't be run by bpf CI.
->=20
-> A selftest in test_progs is needed to test the libbpf changes in patch 6.
+The pattern "info ? info->extack : NULL" is present in quite a few other
+"prepare_data" implementations, so it's clear that it's a more general
+problem to be dealt with at a higher level, but the code should have at
+least adhered to the current conventions to avoid the NULL dereference.
 
-ack, I will add it.
+Fixes: 04692c9020b7 ("net: ethtool: netlink: retrieve stats from multiple sources (eMAC, pMAC)")
+Reported-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ net/ethtool/pause.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Regards,
-Lorenzo
+diff --git a/net/ethtool/pause.c b/net/ethtool/pause.c
+index e2be9e89c9d9..dcd34b9a849f 100644
+--- a/net/ethtool/pause.c
++++ b/net/ethtool/pause.c
+@@ -54,9 +54,9 @@ static int pause_prepare_data(const struct ethnl_req_info *req_base,
+ 			      struct genl_info *info)
+ {
+ 	const struct pause_req_info *req_info = PAUSE_REQINFO(req_base);
++	struct netlink_ext_ack *extack = info ? info->extack : NULL;
+ 	struct pause_reply_data *data = PAUSE_REPDATA(reply_base);
+ 	enum ethtool_mac_stats_src src = req_info->src;
+-	struct netlink_ext_ack *extack = info->extack;
+ 	struct net_device *dev = reply_base->dev;
+ 	int ret;
+ 
+-- 
+2.34.1
 
->=20
-
---vXwS72sJheo8aQyw
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY8+9JgAKCRA6cBh0uS2t
-rAVxAQDuQpyo+82ZkOU6gyjeqezwLl9WA56TqSgJaO06eFYHVwEA6xd8k4wgRKir
-+9gai1xpvVfvpukC3pmQrphAjU7O6Aw=
-=frY2
------END PGP SIGNATURE-----
-
---vXwS72sJheo8aQyw--
