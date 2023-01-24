@@ -2,216 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 143606793B9
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 10:12:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D7B667940F
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 10:23:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232655AbjAXJMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 04:12:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46072 "EHLO
+        id S232892AbjAXJXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 04:23:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbjAXJMs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 04:12:48 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9450D12045
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 01:12:47 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id p24so14087691plw.11
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 01:12:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=QLQL4gCpHC0kKzNvMRs2N/41FUqryRLn4qN2pklf5uo=;
-        b=gILk6HXVDEewx1xK2rEVicnQG7bwswvwUDGXY2dyumtELfZWIjyCF+LBauPdJNL8Lk
-         GZ5u8TTxMQpub5EX7epPzS4I4kKDro+MNEih2vpFc2QxSzQ6M+uCAKoHSAaoWxBHiEN7
-         Mdl0rLs23As6VtodBnXuuobIfQiQqQnCNfZfE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QLQL4gCpHC0kKzNvMRs2N/41FUqryRLn4qN2pklf5uo=;
-        b=tKY013AOuvs51XAe32nFROuqjkKJlHAN5X0RBTPcsTOitkxjMqheeWusWALfLL+wn0
-         orTWzem9OUk8opwZ8ZSSiAxKS0V6Q5ZpPUg6JkwUe8ggP+bM4zF1SkJKY1oRvFYI30dH
-         bA8R08NAaB3Hdt4ZmVB6LNwkPD1tAO1QrDs4ahrST+hr+YG1FIBcPe5+FJBnYB2R5WLh
-         XhdEWRdFWx0BjE0rpLXXk1SrMRIoR5r6h+s94Hf/FEuBYSBoVlQMhujWX+xwVgG40BGQ
-         LTMso8OQDfDjebIDrdyVlDw4lob5SXRvsQ9Hs6OYE1J5KVEGNtSQISCJiFq5sZP6k5bn
-         BbAQ==
-X-Gm-Message-State: AFqh2krRzP1tkLgV4cCFVceH9bJ6JKFCvSkafmqkW5UVhxLLQzAhLyJp
-        CuxahuxM/3A9qGflOxDj7tfPFm0MMlxm8at4c9jMzg==
-X-Google-Smtp-Source: AMrXdXsaZt0e5hCLZrMI6mxbVZHj976M9pNkVRTqW2GtwT4ZLzwUelgDZrpGFC8u2zkQhm1Fk/0wb/5HZS0d3BIftaY=
-X-Received: by 2002:a17:90a:5b0c:b0:223:fa07:7bfb with SMTP id
- o12-20020a17090a5b0c00b00223fa077bfbmr3106823pji.38.1674551567001; Tue, 24
- Jan 2023 01:12:47 -0800 (PST)
+        with ESMTP id S229889AbjAXJXL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 04:23:11 -0500
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2046.outbound.protection.outlook.com [40.107.95.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E77844AF;
+        Tue, 24 Jan 2023 01:22:45 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UdGwtVHSPKVvi2Ntg88yGV+CHINk/VN3/Jb6pEZ35+GMVz/enSNy/zZkqM4T/Ox8kSqouzfDL8TPIq0Hlzb78HpT/tLJV/1erd+zy8pbTr3aZUlYjaNEwr4vlL+wtXX5Z+beR9wzKd5B5c3tj3iLlXHbsd1vCWZnW5Pm5omPlDHiEUUULFfa8Ktywd4ca77NgaJt8MYL9WACqrDevUeu2d/ZPEv2XiFsFmVNnvP62K2eEbAc2Eil9+vntendgkhkCnxEzp8EuuB9nLbRg+in9t5ze+TPaV55o3K3jW6qdinMAU64LG/XSbr2AIvzLrsyJuHglUoQybWrm0YTpSpOaQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IpUslIl3J660NWV2GFfdLpOcEEl0xOVjiLdet37EvBs=;
+ b=QgFNqGyHhHSwhvld6FIttC0OrNpbu3wFRaoFw/BLbZIxGfXOD9joOFPpjW3PP5n1Hay5augT8RV9//hk4DEv6TlM7TN0mZIl9LKil4+g8JICWFvcQyLGJPCHl4+s0eYa9yuKSND4OQDSyR8MaU2TPh/L3SJSSlerJCfm3Ns8vYZ+7EAeOuf67hODXdwp4QNiQEM86lUY37N3jp33HkJzlEhM4K9+kpBFZYdEjJ8RKIWeR9ZXyriIaPYjvIsNIQFPXViBH+xH87LQxSrcZfUa7ufdK6xYyXFFRpllSTDIUAkBNvlk5V5Wzp2Sfbw/Vo74i5Tfu4x7NQ3Qrf7EsA04ig==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=corigine.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IpUslIl3J660NWV2GFfdLpOcEEl0xOVjiLdet37EvBs=;
+ b=J6c8MgR6QYDa+FqsYaxeoWgh3GCYzxZImzkI3ENBweyixJllkrHvC9/u2d79SVSegPvMD6DPSuMSbi7GwlhJRziAR9tVejOZ1pUDhRC5kaKxZH44H+WzQAGjYyD4EUldM/G1jW/9RrBa72Cdv4LHObm8EuFtGJME1mSNCw4LTtuiKHURLT1bo52uUhOfUEmMTLoBWkN2iXQuJK2+cz9qCUu3Fglb1V/+OMffagkOklIQ/QZo+41em6IB5DVNU1A6akBeoK1VspwLxYYopTzqTZcRD7sRWzu9yeK8gx0xM1WEEarWy3YYm/w9Ov12A8jHPtvCSZv7/G/blYC/Jf/J1A==
+Received: from BN9PR03CA0447.namprd03.prod.outlook.com (2603:10b6:408:113::32)
+ by MN2PR12MB4359.namprd12.prod.outlook.com (2603:10b6:208:265::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Tue, 24 Jan
+ 2023 09:22:34 +0000
+Received: from BN8NAM11FT090.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:113:cafe::7b) by BN9PR03CA0447.outlook.office365.com
+ (2603:10b6:408:113::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33 via Frontend
+ Transport; Tue, 24 Jan 2023 09:22:34 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN8NAM11FT090.mail.protection.outlook.com (10.13.177.105) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6023.16 via Frontend Transport; Tue, 24 Jan 2023 09:22:33 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Tue, 24 Jan
+ 2023 01:22:16 -0800
+Received: from fedora.nvidia.com (10.126.230.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Tue, 24 Jan
+ 2023 01:22:13 -0800
+References: <20230119195104.3371966-1-vladbu@nvidia.com>
+ <20230119195104.3371966-5-vladbu@nvidia.com> <Y8p96knLDtxnRtjz@salvia>
+ <871qnke7ga.fsf@nvidia.com> <Y8+Zny8S9BQm7asq@salvia>
+User-agent: mu4e 1.6.6; emacs 28.1
+From:   Vlad Buslov <vladbu@nvidia.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
+        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <ozsh@nvidia.com>, <marcelo.leitner@gmail.com>,
+        <simon.horman@corigine.com>
+Subject: Re: [PATCH net-next v3 4/7] netfilter: flowtable: allow updating
+ offloaded rules asynchronously
+Date:   Tue, 24 Jan 2023 11:19:31 +0200
+In-Reply-To: <Y8+Zny8S9BQm7asq@salvia>
+Message-ID: <87sfg0cmnw.fsf@nvidia.com>
 MIME-Version: 1.0
-References: <20230124003107.214307-1-drc@linux.vnet.ibm.com>
- <CALs4sv1OYthkDYBbj9i-jytWo7VZ2rL9VcHiWP55svVX8R20RQ@mail.gmail.com> <CACKFLikyHar-H46VvN1cgTubdw88nQyh7pJ=zUq0V=kWx8CoVg@mail.gmail.com>
-In-Reply-To: <CACKFLikyHar-H46VvN1cgTubdw88nQyh7pJ=zUq0V=kWx8CoVg@mail.gmail.com>
-From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
-Date:   Tue, 24 Jan 2023 14:42:35 +0530
-Message-ID: <CALs4sv3kA96-bfgR5VW967cKsW6z2Q1Y=ZMMomQDNT5_7jSWeg@mail.gmail.com>
-Subject: Re: [PATCH] net/tg3: resolve deadlock in tg3_reset_task() during EEH
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     David Christensen <drc@linux.vnet.ibm.com>, netdev@vger.kernel.org,
-        Siva Reddy Kallam <siva.kallam@broadcom.com>,
-        Prashant Sreedharan <prashant@broadcom.com>,
-        Michael Chan <mchan@broadcom.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000054bfbe05f2feeb0f"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.37]
+X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT090:EE_|MN2PR12MB4359:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8b920856-0f02-46c8-5adb-08dafdec86a0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: cx5/OX78RuAZQTUNlPm7cQNcLp8YPAjy9aDhTHnmKfbu0uiNr6UAK30Gn2jcZJGJl4k/PCHgqo9zDxnD9BNqTytoodwXmoR2QkgFseYVUgNW0usB+hiks5NfSrO0ZXCpc6eV4I+ELmvoMTbdDnTjxHWN/HrhMhhyvZpiHDCOn02KNbIeCCfc4kkdSa1MnnkNcqNaKkhByx71GFZVR4jIkyYqEPzFZ6YNcUNp2NYvd9RGKTTGW4t6kB+9ISm3DsRBQxNadZNxOe7eU5EEyFhaHg6HVsJw3lWhW8YQrOsI1cw3/+EBMcRXvpoQF9mWKRv7AoQn+1+S8kq4sM28Wth8zXQF5zdRgM5RbimnMTDHPnCsRDFJkfVXxWtlTn8anbWDFDSV+brBes9yZ8+s/vyIYW+0AE33aQs43jgVDw7DecH7hV2+aMm8ExDaGncGchYoMZjddQqd7v1JF/yeXDMkDn1RtCkXA7KXiSOdkSNBHtJN/sbklinPSxqrMA5wAAqgGs2Fg5jVh9IYqDO7yXfVQq6sz8pwpw4FONxRveyW2rztBpKVM2pXhIXxjNkilgj6GhosPP13OxUHAi0ToMA24Uk7ZMwlLkLPG934fIhcGznmGxPq1chegKg7SqVwhATgUh+WHsjljAicZuOch0Apf16xEfNvUpNleQDNrWn9N4ZWKjau5jQqMkFj+WvipV0VKXu7ebP51r54k3K8rvSAwA==
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(396003)(136003)(346002)(376002)(451199015)(36840700001)(40470700004)(46966006)(36860700001)(83380400001)(82740400003)(86362001)(356005)(7636003)(2906002)(5660300002)(8936002)(41300700001)(4326008)(7416002)(82310400005)(186003)(40460700003)(40480700001)(16526019)(6916009)(8676002)(26005)(316002)(47076005)(336012)(6666004)(426003)(70586007)(70206006)(2616005)(54906003)(478600001)(7696005)(36756003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jan 2023 09:22:33.7080
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8b920856-0f02-46c8-5adb-08dafdec86a0
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT090.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4359
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000054bfbe05f2feeb0f
-Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Jan 24, 2023 at 2:13 PM Michael Chan <michael.chan@broadcom.com> wrote:
+On Tue 24 Jan 2023 at 09:41, Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> Hi Vlad,
 >
-> On Mon, Jan 23, 2023 at 11:25 PM Pavan Chebbi <pavan.chebbi@broadcom.com> wrote:
-> >
-> > On Tue, Jan 24, 2023 at 6:01 AM David Christensen
-> > <drc@linux.vnet.ibm.com> wrote:
-> > >
-> > >
-> > > diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
-> > > index 59debdc344a5..ee4604e6900e 100644
-> > > --- a/drivers/net/ethernet/broadcom/tg3.c
-> > > +++ b/drivers/net/ethernet/broadcom/tg3.c
-> > > @@ -11166,7 +11166,8 @@ static void tg3_reset_task(struct work_struct *work)
-> > >         rtnl_lock();
-> > >         tg3_full_lock(tp, 0);
-> > >
-> > > -       if (!netif_running(tp->dev)) {
-> > > +       // Skip reset task if no netdev or already in PCI recovery
-> > > +       if (!tp->dev || tp->pcierr_recovery || !netif_running(tp->dev)) {
-> >
-> > Thanks for the patch. Can we not use netif_device_present() here?
+> On Tue, Jan 24, 2023 at 09:06:13AM +0200, Vlad Buslov wrote:
+>> 
+>> On Fri 20 Jan 2023 at 12:41, Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+>> > Hi Vlad,
+>> >
+>> > On Thu, Jan 19, 2023 at 08:51:01PM +0100, Vlad Buslov wrote:
+>> >> Following patches in series need to update flowtable rule several times
+>> >> during its lifetime in order to synchronize hardware offload with actual ct
+>> >> status. However, reusing existing 'refresh' logic in act_ct would cause
+>> >> data path to potentially schedule significant amount of spurious tasks in
+>> >> 'add' workqueue since it is executed per-packet. Instead, introduce a new
+>> >> flow 'update' flag and use it to schedule async flow refresh in flowtable
+>> >> gc which will only be executed once per gc iteration.
+>> >
+>> > So the idea is to use a NF_FLOW_HW_UPDATE which triggers the update
+>> > from the garbage collector. I understand the motivation here is to
+>> > avoid adding more work to the workqueue, by simply letting the gc
+>> > thread pick up for the update.
+>> >
+>> > I already proposed in the last year alternative approaches to improve
+>> > the workqueue logic, including cancelation of useless work. For
+>> > example, cancel a flying "add" work if "delete" just arrive and the
+>> > work is still sitting in the queue. Same approach could be use for
+>> > this update logic, ie. cancel an add UDP unidirectional or upgrade it
+>> > to bidirectional if, by the time we see traffic in both directions,
+>> > then work is still sitting in the queue.
+>> 
+>> Thanks for the suggestion. I'll try to make this work over regular
+>> workqueues without further extending the flow flags and/or putting more
+>> stuff into gc.
 >
-> Take a look at the beginning of tg3_io_error_detected().  I think he
-> is trying to follow the same recipe there.  Basically, if a PCIe AER
-> has already been detected, then let it finish and do nothing here.
+> Let me make a second pass to sort out thoughts on this.
 >
-
-Agree. Just that tg3_io_error_detected() will have done a
-netif_device_detach() earlier, I thought it may be a simpler check.
-Fine with this as well. The submitter may choose to re-spin to remove
-the tp->dev check otherwise looks good to me.
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-
-> I don't think the tp->dev check is needed though.  We always call
-> tg3_reset_task_cancel() before we call unregister_netdev() and
-> free_netdev().
+> Either we use regular workqueues (without new flags) or we explore
+> fully consolidating this hardware offload workqueue infrastructure
+> around flags, ie. use flags not only for update events, but also for
+> new and delete.
 >
-> >
-> > >                 tg3_flag_clear(tp, RESET_TASK_PENDING);
-> > >                 tg3_full_unlock(tp);
-> > >                 rtnl_unlock();
-> > > @@ -18101,6 +18102,9 @@ static pci_ers_result_t tg3_io_error_detected(struct pci_dev *pdev,
-> > >
-> > >         netdev_info(netdev, "PCI I/O error detected\n");
-> > >
-> > > +       /* Want to make sure that the reset task doesn't run */
-> > > +       tg3_reset_task_cancel(tp);
-> > > +
-> > >         rtnl_lock();
-> > >
-> > >         /* Could be second call or maybe we don't have netdev yet */
-> > > @@ -18117,9 +18121,6 @@ static pci_ers_result_t tg3_io_error_detected(struct pci_dev *pdev,
-> > >
-> > >         tg3_timer_stop(tp);
-> > >
-> > > -       /* Want to make sure that the reset task doesn't run */
-> > > -       tg3_reset_task_cancel(tp);
-> > > -
-> > >         netif_device_detach(netdev);
-> > >
-> > >         /* Clean up software state, even if MMIO is blocked */
-> > > --
-> > > 2.31.1
-> > >
+> This would go more in the direction of your _UPDATE flag idea:
+>
+> - Update the hardware offload workqueue to iterate over the
+>   flowtable. The hardware offload workqueue would be "scanning" for
+>   entries in the flowtable that require some sort of update in the
+>   hardware. The flags would tell what kind of action is needed.
+>
+> - Add these flags:
+>
+> NF_FLOW_HW_NEW
+> NF_FLOW_HW_UPDATE
+> NF_FLOW_HW_DELETE
+>
+> and remove the work object (flow_offload_work) and the existing list.
+> If the workqueue finds an entry with:
+>
+> NEW|DELETE, this means this is short lived flow, not worth to waste
+> cycles to offload it.
+> NEW|UPDATE, this means this is an UDP flow that is bidirectional.
+>
+> Then, there will be no more work allocation + "flying" work objects to
+> the hardware offload workqueue. Instead, the hardware offload
+> workqueue will be iterating.
+>
+> This approach would need _DONE flags to annotate if the offload
+> updates have been applied to hardware already (similar to the
+> conntrack _DONE flags).
+>
+> (Oh well, this proposal is adding even more flags. But I think flags
+> are not the issue, but the mixture of the existing flow_offload_work
+> approach with this new _UPDATE flag and the gc changes).
+>
+> If flow_offload_work is removed, we would also need to add a:
+>
+>  struct nf_flowtable *flowtable;
+>
+> field to the flow_offload entry, which is an entry field that is
+> passed via flow_offload_work. So it is one extra field for the each
+> flow_offload entry.
+>
+> The other alternative is to use the existing nf_flow_offload_add_wq
+> with UPDATE command, which might result in more flying objects in
+> turn. I think this is what you are trying to avoid with the _UPDATE
+> flag approach.
 
---00000000000054bfbe05f2feeb0f
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+This looks interesting, but is very ambitious and will probably be a
+bigger change than this whole series. I have an idea how we can leverage
+existing 'refresh' mechanism for updating flow state that doesn't
+involve large-scale refactoring of existing offload infrastructure,
+which I would prefer to try first. WDYT?
 
-MIIQbQYJKoZIhvcNAQcCoIIQXjCCEFoCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-gg3EMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
-VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
-AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
-AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
-MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
-vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
-rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
-aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
-e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
-cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
-MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
-KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
-/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
-TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
-YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
-b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
-c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
-CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
-BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
-jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
-9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
-/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
-jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
-AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
-dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
-MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
-IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
-SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
-XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
-J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
-nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
-riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
-QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
-UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
-M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
-Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
-14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
-a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBUwwggQ0oAMCAQICDBX9eQgKNWxyfhI1kzANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
-RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAwODE3NDZaFw0yNTA5MTAwODE3NDZaMIGO
-MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xFTATBgNVBAMTDFBhdmFuIENoZWJiaTEoMCYGCSqGSIb3DQEJ
-ARYZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
-ggEBAK3X+BRR67FR5+Spki/E25HnHoYhm/cC6VA6qHwC3QqBNhCT13zsi1FLLERdKXPRrtVBM6d0
-mfg/0rQJJ8Ez4C3CcKiO1XHcmESeW6lBKxOo83ZwWhVhyhNbGSwcrytDCKUVYBwwxR3PAyXtIlWn
-kDqifgqn3R9r2vJM7ckge8dtVPS0j9t3CNfDBjGw1DhK91fnoH1s7tLdj3vx9ZnKTmSl7F1psK2P
-OltyqaGBuzv+bJTUL+bmV7E4QBLIqGt4jVr1R9hJdH6KxXwJdyfHZ9C6qXmoe2NQhiFUyBOJ0wgk
-dB9Z1IU7nCwvNKYg2JMoJs93tIgbhPJg/D7pqW8gabkCAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUEV6y/89alKPoFbKUaJXsvWu5
-fdowDQYJKoZIhvcNAQELBQADggEBAEHSIB6g652wVb+r2YCmfHW47Jo+5TuCBD99Hla8PYhaWGkd
-9HIyD3NPhb6Vb6vtMWJW4MFGQF42xYRrAS4LZj072DuMotr79rI09pbOiWg0FlRRFt6R9vgUgebu
-pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
-25Azqtwvjt5nbrEd81iBmboNTEnLaKuxbbCtLaMEP8xKeDjAKnNOqHUMps0AsQT8c0EGq39YHpjp
-Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBennNHoK/nNNmF0n3ieEI9daWu7IQ91
-fr5bqr6eNijxMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDEy
-NDA5MTI0N1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBc5n2LGQ4jK8awCBf0lgq9u0ACKNdYPLGAOkKUlGZBIEFsvTSy
-Be9J2ON+GNMwyHxdwrRkOBN7aqrNkED4ajRse1HrRh7+Wl3TZHM4qIuI7rjY79wrdW94icKOM/Ba
-izQ1fj+vJwVVveefyTGpiODkEXzHTHn3x9FEr7GEmo9uajX3mGksrmMoJRM+Fwyb8kS3/13ojplx
-jxO6gfUzHBAlJ56pzr4cnRge9NMJKLcRBI02vyvFHOmgV123llT+pAqFAPpVx8H4q9J4B8tA3RUP
-T2LKEWcik7qu0Z5anUPdPCM4NMzoG5BsbVANRwSr2tt49JAhnrUBjpP3EW6BLTe5
---00000000000054bfbe05f2feeb0f--
