@@ -2,59 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ACE75679E77
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 17:21:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A316679ECC
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 17:35:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234063AbjAXQVe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 11:21:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53122 "EHLO
+        id S234377AbjAXQfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 11:35:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234032AbjAXQVc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 11:21:32 -0500
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32064ABEA;
-        Tue, 24 Jan 2023 08:21:28 -0800 (PST)
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1pKM2x-0007MD-Fm; Tue, 24 Jan 2023 17:21:19 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1pKM2w-000AGl-Ro; Tue, 24 Jan 2023 17:21:18 +0100
-Subject: Re: [PATCH] selftests/bpf: fix vmtest static compilation error
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
-        Yosry Ahmed <yosryahmed@google.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-References: <20230121064128.67914-1-danieltimlee@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <32195f48-8b45-1a78-1964-dfe7b5a4933f@iogearbox.net>
-Date:   Tue, 24 Jan 2023 17:21:18 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S234442AbjAXQfh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 11:35:37 -0500
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B4D4C0E2
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 08:35:11 -0800 (PST)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-4c131bede4bso226106777b3.5
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 08:35:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=+WIWpY0ndV9Ms9b5rY9QpfI7AS9Brky1owH34Ob3frQ=;
+        b=BSH791OccSrkrSkxh2t31vogbBCFy77ql/urCa/j37KGe2/5Hb9cvZDk3YShhAkx+6
+         8fnF+6c7pe9/FqXrtyCH85a/6/faFhiYTJpMfV2HJYbH/simV7CqcED4rPCC+LUNmvVz
+         oekCebGoh39m2VoHjxVLvrffyl4C5lKn9ZzQ/b4GCl9W++gB/Y9/8Ed3LSwXf7woaWVf
+         Djs/y8TiFZ/TzjFnJC79jx5Jh6eWMuYv9RZ8bKw5el+0MP1rLnsBHVDrMhXAj5XVLRGf
+         GaiSQTDKyBHDbRTh+AJX4DqqJjStFs+hiNt0u92Ks7p1Zcf3QWS+fVVbaXhsQ6oK7KbY
+         KMLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+WIWpY0ndV9Ms9b5rY9QpfI7AS9Brky1owH34Ob3frQ=;
+        b=TnNC0dAYxDDrXH8b9QwtyMbCvEpGZOWOFCP4FY4gFUYECZ35MXm6WkOE0nPgwr2oL1
+         T0QtuOldW4bioj9YtswuDv3BhjFrJZxavjaDfIJK6bLFwwVCwGqyCizqcWyZ65wx1lSF
+         X9kJBYATq8NHfyBzi40IEf4x5CHR44n7t0P9WGt6VDXGdohsJmSC8W/5/gjOqGU6CKa4
+         6rSaR8qH7Xk6pyOVt9tZXx9msqaRGqZdGNerqJ66dkUiTc/m9j545BN3xhOWMtNZb+wp
+         ziu8/xYOA0IM7NjWb8svP+E7pjqbPVs/bPEks3hS3CERYzq9kVsOPVffnorRdic8J8u1
+         R7nA==
+X-Gm-Message-State: AO0yUKVQz9UpU0Ata79+oswnsHDwPET3fbQncJ2/gjR+XPjUyHvvo9h1
+        +h6phjUaXh0wCGt4IptM0QhEODvSvOIxH63nB8RK5g==
+X-Google-Smtp-Source: AK7set++Gso9IzSBLtLzVMjAwmCr7SZAAFLEvs/oCmY6sg7al29hiweRIC5X7fpVCZ+jVAdgZdHzm30S2UtU+Lrm4mc=
+X-Received: by 2002:a0d:ea43:0:b0:506:38f1:918b with SMTP id
+ t64-20020a0dea43000000b0050638f1918bmr496611ywe.255.1674578108308; Tue, 24
+ Jan 2023 08:35:08 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20230121064128.67914-1-danieltimlee@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.7/26791/Tue Jan 24 09:27:43 2023)
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <cover.1674526718.git.lucien.xin@gmail.com> <CANn89iKZKgzOZRj+yp-OBG=y6Lq4VZhU+c9vno=1VXixaijMWw@mail.gmail.com>
+ <CADvbK_d750m=r5LDyBXHPsceo2hEtQ0y=P17DWVWfQqOm=0zSA@mail.gmail.com>
+In-Reply-To: <CADvbK_d750m=r5LDyBXHPsceo2hEtQ0y=P17DWVWfQqOm=0zSA@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 24 Jan 2023 17:34:56 +0100
+Message-ID: <CANn89iKX6yTPmK6ahxHa6duO1PMn=fFhAXWdYuxNsDkvh8QvLA@mail.gmail.com>
+Subject: Re: [PATCHv2 net-next 00/10] net: support ipv4 big tcp
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Aaron Conole <aconole@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Guillaume Nault <gnault@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,44 +84,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/21/23 7:41 AM, Daniel T. Lee wrote:
-> As stated in README.rst, in order to resolve errors with linker errors,
-> 'LDLIBS=-static' should be used. Most problems will be solved by this
-> option, but in the case of urandom_read, this won't fix the problem. So
-> the Makefile is currently implemented to strip the 'static' option when
-> compiling the urandom_read. However, stripping this static option isn't
-> configured properly on $(LDLIBS) correctly, which is now causing errors
-> on static compilation.
-> 
->      # LDLIBS=-static ./vmtest.sh
->      ld.lld: error: attempted static link of dynamic object liburandom_read.so
->      clang: error: linker command failed with exit code 1 (use -v to see invocation)
->      make: *** [Makefile:190: /linux/tools/testing/selftests/bpf/urandom_read] Error 1
->      make: *** Waiting for unfinished jobs....
-> 
-> This commit fixes this problem by configuring the strip with $(LDLIBS).
-> 
-> Fixes: 68084a136420 ("selftests/bpf: Fix building bpf selftests statically")
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> ---
->   tools/testing/selftests/bpf/Makefile | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index 22533a18705e..7bd1ce9c8d87 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -188,7 +188,7 @@ $(OUTPUT)/liburandom_read.so: urandom_read_lib1.c urandom_read_lib2.c
->   $(OUTPUT)/urandom_read: urandom_read.c urandom_read_aux.c $(OUTPUT)/liburandom_read.so
->   	$(call msg,BINARY,,$@)
->   	$(Q)$(CLANG) $(filter-out -static,$(CFLAGS) $(LDFLAGS)) $(filter %.c,$^) \
-> -		     liburandom_read.so $(LDLIBS)			       \
-> +		     liburandom_read.so $(filter-out -static,$(LDLIBS))	     \
+On Tue, Jan 24, 2023 at 4:51 PM Xin Long <lucien.xin@gmail.com> wrote:
+>
+> On Tue, Jan 24, 2023 at 3:27 AM Eric Dumazet <edumazet@google.com> wrote:
+> >
+> > On Tue, Jan 24, 2023 at 3:20 AM Xin Long <lucien.xin@gmail.com> wrote:
+> > >
+> > > This is similar to the BIG TCP patchset added by Eric for IPv6:
+> > >
+> > >   https://lwn.net/Articles/895398/
+> > >
+> > > Different from IPv6, IPv4 tot_len is 16-bit long only, and IPv4 header
+> > > doesn't have exthdrs(options) for the BIG TCP packets' length. To make
+> > > it simple, as David and Paolo suggested, we set IPv4 tot_len to 0 to
+> > > indicate this might be a BIG TCP packet and use skb->len as the real
+> > > IPv4 total length.
+> > >
+> > > This will work safely, as all BIG TCP packets are GSO/GRO packets and
+> > > processed on the same host as they were created; There is no padding
+> > > in GSO/GRO packets, and skb->len - network_offset is exactly the IPv4
+> > > packet total length; Also, before implementing the feature, all those
+> > > places that may get iph tot_len from BIG TCP packets are taken care
+> > > with some new APIs:
+> > >
+> > > Patch 1 adds some APIs for iph tot_len setting and getting, which are
+> > > used in all these places where IPv4 BIG TCP packets may reach in Patch
+> > > 2-8, and Patch 9 implements this feature and Patch 10 adds a selftest
+> > > for it.
+> > >
+> > > Note that the similar change as in Patch 2-6 are also needed for IPv6
+> > > BIG TCP packets, and will be addressed in another patchset.
+> > >
+> > > The similar performance test is done for IPv4 BIG TCP with 25Gbit NIC
+> > > and 1.5K MTU:
+> > >
+> > > No BIG TCP:
+> > > for i in {1..10}; do netperf -t TCP_RR -H 192.168.100.1 -- -r80000,80000 -O MIN_LATENCY,P90_LATENCY,P99_LATENCY,THROUGHPUT|tail -1; done
+> > > 168          322          337          3776.49
+> > > 143          236          277          4654.67
+> > > 128          258          288          4772.83
+> > > 171          229          278          4645.77
+> > > 175          228          243          4678.93
+> > > 149          239          279          4599.86
+> > > 164          234          268          4606.94
+> > > 155          276          289          4235.82
+> > > 180          255          268          4418.95
+> > > 168          241          249          4417.82
+> > >
+> >
+> > NACK again
+> >
+> > You have not addressed my feedback.
+> >
+> > Given the experimental nature of BIG TCP, we need separate netlink attributes,
+> > so that we can selectively enable BIG TCP for IPV6, and not for IPV4.
+> >
+> That will be some change, and I will try to work on it.
+>
+> While at it, just try to be clearer, about the fixes for IPv6 BIG TCP
+> I mentioned in this patchset. Since skb->len is trustable for GSO TCP
+> packets. Are you still not okay with checking the skb_ipv6_pktlen()
+> API added to fix them in netfilter/tc/bridge/openvswitch?
+>
 
-Do we need the same also for liburandom_read.so target's $(LDLIBS) further above?
+Are you speaking of length_mt6() ?
 
->   		     -fuse-ld=$(LLD) -Wl,-znoseparate-code -Wl,--build-id=sha1 \
->   		     -Wl,-rpath=. -o $@
->   
-> 
+Quite frankly I do not think its implementation should care of GSO or anything.
 
+Considering the definition of this thing clearly never thought of
+having big packets,
+and an overflow was already possible, I do not see how you can fix it
+without some hack...
+
+struct xt_length_info {
+    __u16 min, max;
+    __u8 invert;
+};
+
+Something like:
+
+diff --git a/net/netfilter/xt_length.c b/net/netfilter/xt_length.c
+index 1873da3a945abbc6e8849e4555b42acdd34cff2d..90eba619cbe1d11f0fdd394f6dfda2b03fa573cd
+100644
+--- a/net/netfilter/xt_length.c
++++ b/net/netfilter/xt_length.c
+@@ -30,8 +30,7 @@ static bool
+ length_mt6(const struct sk_buff *skb, struct xt_action_param *par)
+ {
+        const struct xt_length_info *info = par->matchinfo;
+-       const u_int16_t pktlen = ntohs(ipv6_hdr(skb)->payload_len) +
+-                                sizeof(struct ipv6hdr);
++       u32 pktlen = min_t(u32, skb->len, 65535);
+
+        return (pktlen >= info->min && pktlen <= info->max) ^ info->invert;
+ }
