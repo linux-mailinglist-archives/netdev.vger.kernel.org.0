@@ -2,58 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CA1A679C96
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 15:52:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68C8E679CA2
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 15:54:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235080AbjAXOww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 09:52:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37478 "EHLO
+        id S235137AbjAXOyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 09:54:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235029AbjAXOwu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 09:52:50 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86CA94ABF7
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 06:51:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1674571895;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=zItE6ZaXDxNGCcmbJiQNR0G3jwGnmRx9/O3O4PSlyO4=;
-        b=XuD7yGCOS7h7TLO/83Y4TEGhj/PpV7pr1zS5IzdlEfnv0WK4GM++qzAavs2Q+kgOfZ6hoJ
-        ySZs74D9Qfd6JQ6kxOx9QDo9jx+g3HdmsgEBHi4vS6crSEMMuWRpUMcj+Z4P1YaZVjVh2s
-        NgkMK971hhFM/qopdloCxPXiIKC0/kY=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-439-MOn-FsRJNjCy3jQKWUazfw-1; Tue, 24 Jan 2023 09:51:32 -0500
-X-MC-Unique: MOn-FsRJNjCy3jQKWUazfw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DC3AF1C0040C;
-        Tue, 24 Jan 2023 14:51:31 +0000 (UTC)
-Received: from p1.luc.com (ovpn-194-196.brq.redhat.com [10.40.194.196])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E907FC15BA0;
-        Tue, 24 Jan 2023 14:51:29 +0000 (UTC)
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
-        linux-doc@vger.kernel.org (open list:DOCUMENTATION)
-Subject: [PATCH net-next] docs: networking: Fix bridge documentation URL
-Date:   Tue, 24 Jan 2023 15:51:26 +0100
-Message-Id: <20230124145127.189221-1-ivecera@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        with ESMTP id S235126AbjAXOyg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 09:54:36 -0500
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF0F86BB
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 06:54:36 -0800 (PST)
+Received: by mail-pg1-x54a.google.com with SMTP id 193-20020a6305ca000000b004cece0d0d64so7018439pgf.13
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 06:54:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=D+RETE+69kvrgycMfRIlSWQ8SLcXQgvebrqZZkcm/1I=;
+        b=dcOa8mBrB2R3fBeIf6EfIgUc/9jOM9PcYvS5oPT4bvUf85CAE+DAqMyMfWkPbwRyvB
+         4bE87wnIjd5s+1aavNWMoS7ya9kgdpQWY1kOfrReamVa7r7CvqFi1koO4FkT9J50cPUW
+         L+n7olUVcNUc48mHWXAI0uPS2ICdDgkj1CWoqaOZSwUab5LXcVe8QKfDE7Y532Ss/lLj
+         ZSgyY22LvRYQf/GrYPZ1e4icOF63lPeW+nCqDqM47zBbnKJG4ZElzAjc0xfGLx0rtUut
+         zUmvii5hQ6ZoRPLwVf81KYka1DMtP/WW807VD0WFadgB+/GOeeFa//o/YhZ20v2VqM+H
+         Ri8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=D+RETE+69kvrgycMfRIlSWQ8SLcXQgvebrqZZkcm/1I=;
+        b=QKrhyNc7g+ypjyc61OHnt49tvkLcsv1z7e5Z0zLlHVy8S/pCzc2wIfrN1j9I/G6Yx6
+         NCeA5hnfVU2y0qW1AaoGwccyVhst1CrybvSBdZu1IX4S1x2SW6/2nHUNqyuE9KHMucYF
+         ie+EOGWYPzUID52dXHnphjpWYalVu9dXHdAAvtwX0Z+uEdmQiFrKXmFBDATwcEJ8eYKd
+         FI3waA6PFGKXrI7PtsqT0mGfy+b6bW6kwL8HO8fG6Cj3rzn91Yv9j7rYIS0huR8y/k7d
+         jEtSAIxXfj5thUA5jql0rKPQdpabHHn06eWiRWGk7hxJfXV2b2RxFgVjDULA5QkdbnhL
+         fBOQ==
+X-Gm-Message-State: AO0yUKV++K0dp6MUm0jx916bG1sWKyr+YO4LTcvFc5RG6/x9RAfOtN4O
+        jFqV+rSDihcpzCDSjHSni59t+ZmgtgA=
+X-Google-Smtp-Source: AK7set+yUN/11i5xH7MygJRSyExHDAD18x9cvVt4hkR9XZaD35jB5irY5QYZ5IcXeALmfVx7NlGKu6o7LNs=
+X-Received: from jaewan1.c.googlers.com ([fda3:e722:ac3:cc00:3:22c1:c0a8:e59])
+ (user=jaewan job=sendgmr) by 2002:a17:90a:a205:b0:229:f43c:4049 with SMTP id
+ u5-20020a17090aa20500b00229f43c4049mr37838pjp.0.1674572075382; Tue, 24 Jan
+ 2023 06:54:35 -0800 (PST)
+Date:   Tue, 24 Jan 2023 14:54:28 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.39.0.246.g2a6d74b583-goog
+Message-ID: <20230124145430.365495-1-jaewan@google.com>
+Subject: [PATCH v6 0/2] mac80211_hwsim: Add PMSR support
+From:   Jaewan Kim <jaewan@google.com>
+To:     gregkh@linuxfoundation.org, johannes@sipsolutions.net,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-team@android.com, adelva@google.com,
+        Jaewan Kim <jaewan@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,28 +66,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Current documentation URL [1] is no longer valid.
+Dear Kernel maintainers,
 
-[1] https://www.linuxfoundation.org/collaborate/workgroups/networking/bridge
+First of all, thank you for spending your precious time for reviewing
+my changes, and also sorry for my mistakes in previous patchsets.
 
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
----
- Documentation/networking/bridge.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Let me propose series of CLs for adding PMSR support in the mac80211_hwsim.
 
-diff --git a/Documentation/networking/bridge.rst b/Documentation/networking/bridge.rst
-index 4aef9cddde2f..c859f3c1636e 100644
---- a/Documentation/networking/bridge.rst
-+++ b/Documentation/networking/bridge.rst
-@@ -8,7 +8,7 @@ In order to use the Ethernet bridging functionality, you'll need the
- userspace tools.
- 
- Documentation for Linux bridging is on:
--   http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge
-+   https://wiki.linuxfoundation.org/networking/bridge
- 
- The bridge-utilities are maintained at:
-    git://git.kernel.org/pub/scm/linux/kernel/git/shemminger/bridge-utils.git
+PMSR (peer measurement) is generalized measurement between STAs,
+and currently FTM (fine time measurement or flight time measurement)
+is the one and only measurement.
+
+FTM measures the RTT (round trip time) and FTM can be used to measure
+distances between two STAs. RTT is often referred as 'measuring distance'
+as well.
+
+Kernel had already defined protocols for PMSR in the
+include/uapi/linux/nl80211.h and relevant parsing/sending code are in the
+net/wireless/pmsr.c, but they are only used in intel's iwlwifi driver.
+
+CLs are tested with iw tool on Virtual Android device (a.k.a. Cuttlefish).
+Hope this explains my CLs.
+
+Many Thanks,
+
 -- 
-2.38.2
+2.39.0.246.g2a6d74b583-goog
+
+V5 -> V6: Added per CL change history.
+V4 -> V5: Fixed style
+V3 -> V4: Added detailed explanation to cover letter and per CL commit
+          messages, includes explanation of PMSR and FTM.
+          Also fixed memory leak.
+V1 -> V3: Initial commits (include resends)
+
+Jaewan Kim (2):
+  mac80211_hwsim: add PMSR capability support
+  mac80211_hwsim: handle FTM requests with virtio
+
+ drivers/net/wireless/mac80211_hwsim.c | 826 +++++++++++++++++++++++-
+ drivers/net/wireless/mac80211_hwsim.h |  56 +-
+ include/net/cfg80211.h                |  20 +
+ net/wireless/nl80211.c                |  28 +-
+ 4 files changed, 912 insertions(+), 18 deletions(-)
 
