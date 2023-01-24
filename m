@@ -2,357 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7017679E09
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 16:55:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FC4D679E16
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 16:58:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233988AbjAXPzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 10:55:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33510 "EHLO
+        id S234472AbjAXP6G convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 24 Jan 2023 10:58:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233425AbjAXPzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 10:55:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6A849550;
-        Tue, 24 Jan 2023 07:55:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S234330AbjAXP6E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 10:58:04 -0500
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A16BE448A
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 07:58:00 -0800 (PST)
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-502-a8fTusk4Pvm1gLpPlMB6Tg-1; Tue, 24 Jan 2023 10:57:58 -0500
+X-MC-Unique: a8fTusk4Pvm1gLpPlMB6Tg-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA3F1612CB;
-        Tue, 24 Jan 2023 15:55:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC21DC433D2;
-        Tue, 24 Jan 2023 15:55:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1674575720;
-        bh=bcDdKSa20k3TxSNVSCYBMSTb7TsQMPs08/XNIkuibhU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xpJNnPQQ2x0JisktQuBSZLV47Ysl4GFnxtaKKpu/tdPa+LG4FpguyWCfxZm8svVKq
-         L7nshlYz14ECIGLNy7q7cnB+thHGzf+EHn6zIEXtpkzpDkMzDv5VFYhrh4Yj/mK2p/
-         npyEda7MHmyqrEfCwjrMRXZ3pFH0OioDxgrSdR3A=
-Date:   Tue, 24 Jan 2023 16:55:17 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jaewan Kim <jaewan@google.com>
-Cc:     johannes@sipsolutions.net, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@android.com, adelva@google.com
-Subject: Re: [PATCH v6 1/2] mac80211_hwsim: add PMSR capability support
-Message-ID: <Y8//ZflAidKNJAVQ@kroah.com>
-References: <20230124145430.365495-1-jaewan@google.com>
- <20230124145430.365495-2-jaewan@google.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8ED1E38149A3;
+        Tue, 24 Jan 2023 15:57:57 +0000 (UTC)
+Received: from hog (unknown [10.39.192.162])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id CD820492C14;
+        Tue, 24 Jan 2023 15:57:55 +0000 (UTC)
+Date:   Tue, 24 Jan 2023 16:56:23 +0100
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Boris Pismenny <borisp@nvidia.com>, Simo Sorce <simo@redhat.com>,
+        Daiki Ueno <dueno@redhat.com>
+Cc:     Gal Pressman <gal@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Frantisek Krenzelok <fkrenzel@redhat.com>
+Subject: Re: [PATCH net-next 0/5] tls: implement key updates for TLS1.3
+Message-ID: <Y8//pypyM3HAu+cf@hog>
+References: <cover.1673952268.git.sd@queasysnail.net>
+ <20230117180351.1cf46cb3@kernel.org>
+ <Y8fEodSWeJZyp+Sh@hog>
+ <20230118185522.44c75f73@kernel.org>
+ <516756d7-0a99-da18-2818-9bef6c3b6c24@nvidia.com>
+ <bb406004-f344-4783-b1f0-883d254f2146@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <bb406004-f344-4783-b1f0-883d254f2146@nvidia.com>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
 Content-Disposition: inline
-In-Reply-To: <20230124145430.365495-2-jaewan@google.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 24, 2023 at 02:54:29PM +0000, Jaewan Kim wrote:
-> This CL allows mac80211_hwsim to be configured with PMSR capability.
+(adding Simo and Daiki for the OpenSSL/GnuTLS sides)
 
-What is a "CL"?
-
-What is "PMSR"?
-
-> The capability is mandatory because nl80211_pmsr_start() ignores
-> incoming PMSR request if PMSR capability isn't set in the wiphy.
-
-Mandatory for what?
-
+2023-01-23, 10:13:58 +0000, Boris Pismenny wrote:
+> On 19/01/2023 10:27, Gal Pressman wrote:
+> > On 19/01/2023 4:55, Jakub Kicinski wrote:
+> >> On Wed, 18 Jan 2023 11:06:25 +0100 Sabrina Dubroca wrote:
+> >>> 2023-01-17, 18:03:51 -0800, Jakub Kicinski wrote:
+> >>>> On Tue, 17 Jan 2023 14:45:26 +0100 Sabrina Dubroca wrote:  
+> >>>>> This adds support for receiving KeyUpdate messages (RFC 8446, 4.6.3
+> >>>>> [1]). A sender transmits a KeyUpdate message and then changes its TX
+> >>>>> key. The receiver should react by updating its RX key before
+> >>>>> processing the next message.
+> >>>>>
+> >>>>> This patchset implements key updates by:
+> >>>>>  1. pausing decryption when a KeyUpdate message is received, to avoid
+> >>>>>     attempting to use the old key to decrypt a record encrypted with
+> >>>>>     the new key
+> >>>>>  2. returning -EKEYEXPIRED to syscalls that cannot receive the
+> >>>>>     KeyUpdate message, until the rekey has been performed by userspace  
+> >>>>
+> >>>> Why? We return to user space after hitting a cmsg, don't we?
+> >>>> If the user space wants to keep reading with the old key - 🤷️  
+> >>>
+> >>> But they won't be able to read anything. Either we don't pause
+> >>> decryption, and the socket is just broken when we look at the next
+> >>> record, or we pause, and there's nothing to read until the rekey is
+> >>> done. I think that -EKEYEXPIRED is better than breaking the socket
+> >>> just because a read snuck in between getting the cmsg and setting the
+> >>> new key.
+> >>
+> >> IDK, we don't interpret any other content types/cmsgs, and for well
+> >> behaved user space there should be no problem (right?).
+> >> I'm weakly against, if nobody agrees with me you can keep as is.
+> >>
+> >>>>>  3. passing the KeyUpdate message to userspace as a control message
+> >>>>>  4. allowing updates of the crypto_info via the TLS_TX/TLS_RX
+> >>>>>     setsockopts
+> >>>>>
+> >>>>> This API has been tested with gnutls to make sure that it allows
+> >>>>> userspace libraries to implement key updates [2]. Thanks to Frantisek
+> >>>>> Krenzelok <fkrenzel@redhat.com> for providing the implementation in
+> >>>>> gnutls and testing the kernel patches.  
+> >>>>
+> >>>> Please explain why - the kernel TLS is not faster than user space, 
+> >>>> the point of it is primarily to enable offload. And you don't add
+> >>>> offload support here.  
+> >>>
+> >>> Well, TLS1.3 support was added 4 years ago, and yet the offload still
+> >>> doesn't support 1.3 at all.
+> >>
+> >> I'm pretty sure some devices support it. None of the vendors could 
+> >> be bothered to plumb in the kernel support, yet, tho.
+> > 
+> > Our device supports TLS 1.3, it's in our plans to add driver/kernel support.
+> > 
+> >> I don't know of anyone supporting rekeying.
+> > 
+> > Boris, Tariq, do you know?
 > 
-> This CL adds HWSIM_ATTR_PMSR_SUPPORT.
+> Rekeying is not trivial to get right with offload. There are at least
+> two problems to solve:
+> 1. On transmit, we need to handle both the new and the old key for new
+> and old (retransmitted) data, respectively. Our device will be able to
+> hold both keys in parallel and to choose the right one at the cost of an
+> if statement in the data-path. Alternatively, we can just fallback to
+> software for the old key and focus on the new key.
 
-"CL"?
+We'll need to keep the old key around until we know all the records
+using it have been fully received, right?  And that could be multiple
+old keys, in case of a quick series of key updates.
 
-> It can be used to set PMSR capability when creating a new radio.
-> To send extra details, HWSIM_ATTR_PMSR_SUPPORT can have nested
-> PMSR capability attributes defined in the nl80211.h.
-> Data format is the same as cfg80211_pmsr_capabilities.
+> 2. On Rx, packets with the new key may arrive before the key is
+> installed unless we design a mechanism for preemptively setting the next
+> key in HW. As a result, we may get a resync on every rekey.
 > 
-> If HWSIM_ATTR_PMSR_SUPPORT is specified, mac80211_hwsim builds
-> cfg80211_pmsr_capabilities and sets wiphy.pmsr_capa.
-> 
-> Signed-off-by: Jaewan Kim <jaewan@google.com>
-> ---
-> V5 -> V6: Added per change patch history.
-> V4 -> V5: Fixed style for commit messages.
-> V3 -> V4: Added change details for new attribute, and fixed memory leak.
-> V1 -> V3: Initial commit (includes resends).
-> ---
->  drivers/net/wireless/mac80211_hwsim.c | 159 +++++++++++++++++++++++-
->  drivers/net/wireless/mac80211_hwsim.h |   2 +
->  include/net/cfg80211.h                |  10 ++
->  net/wireless/nl80211.c                |  17 ++-
->  4 files changed, 181 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-> index c57c8903b7c0..84c9db9178c3 100644
-> --- a/drivers/net/wireless/mac80211_hwsim.c
-> +++ b/drivers/net/wireless/mac80211_hwsim.c
-> @@ -719,6 +719,9 @@ struct mac80211_hwsim_data {
->  	/* RSSI in rx status of the receiver */
->  	int rx_rssi;
->  
-> +	/* only used when pmsr capability is supplied */
-> +	struct cfg80211_pmsr_capabilities pmsr_capa;
-> +
->  	struct mac80211_hwsim_link_data link_data[IEEE80211_MLD_MAX_NUM_LINKS];
->  };
->  
-> @@ -760,6 +763,37 @@ static const struct genl_multicast_group hwsim_mcgrps[] = {
->  
->  /* MAC80211_HWSIM netlink policy */
->  
-> +static const struct nla_policy
-> +hwsim_ftm_capa_policy[NL80211_PMSR_FTM_CAPA_ATTR_MAX + 1] = {
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_ASAP] = { .type = NLA_FLAG },
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_NON_ASAP] = { .type = NLA_FLAG },
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_REQ_LCI] = { .type = NLA_FLAG },
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_REQ_CIVICLOC] = { .type = NLA_FLAG },
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_PREAMBLES] = { .type = NLA_U32 },
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_BANDWIDTHS] = { .type = NLA_U32 },
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_MAX_BURSTS_EXPONENT] =
-> +		NLA_POLICY_MAX(NLA_U8, 15),
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_MAX_FTMS_PER_BURST] =
-> +		NLA_POLICY_MAX(NLA_U8, 31),
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_TRIGGER_BASED] = { .type = NLA_FLAG },
-> +	[NL80211_PMSR_FTM_CAPA_ATTR_NON_TRIGGER_BASED] = { .type = NLA_FLAG },
-> +};
-> +
-> +static const struct nla_policy
-> +hwsim_pmsr_type_policy[NL80211_PMSR_TYPE_MAX + 1] = {
-> +	[NL80211_PMSR_TYPE_FTM] = NLA_POLICY_NESTED(hwsim_ftm_capa_policy),
-> +};
-> +
-> +static const struct nla_policy
-> +hwsim_pmsr_capa_policy[NL80211_PMSR_ATTR_MAX + 1] = {
-> +	[NL80211_PMSR_ATTR_MAX_PEERS] = { .type = NLA_U32 },
-> +	[NL80211_PMSR_ATTR_REPORT_AP_TSF] = { .type = NLA_FLAG },
-> +	[NL80211_PMSR_ATTR_RANDOMIZE_MAC_ADDR] = { .type = NLA_FLAG },
-> +	[NL80211_PMSR_ATTR_TYPE_CAPA] =
-> +		NLA_POLICY_NESTED(hwsim_pmsr_type_policy),
-> +	[NL80211_PMSR_ATTR_PEERS] = { .type = NLA_REJECT }, // only for request.
-> +};
-> +
->  static const struct nla_policy hwsim_genl_policy[HWSIM_ATTR_MAX + 1] = {
->  	[HWSIM_ATTR_ADDR_RECEIVER] = NLA_POLICY_ETH_ADDR_COMPAT,
->  	[HWSIM_ATTR_ADDR_TRANSMITTER] = NLA_POLICY_ETH_ADDR_COMPAT,
-> @@ -788,6 +822,7 @@ static const struct nla_policy hwsim_genl_policy[HWSIM_ATTR_MAX + 1] = {
->  	[HWSIM_ATTR_IFTYPE_SUPPORT] = { .type = NLA_U32 },
->  	[HWSIM_ATTR_CIPHER_SUPPORT] = { .type = NLA_BINARY },
->  	[HWSIM_ATTR_MLO_SUPPORT] = { .type = NLA_FLAG },
-> +	[HWSIM_ATTR_PMSR_SUPPORT] = NLA_POLICY_NESTED(hwsim_pmsr_capa_policy),
->  };
->  
->  #if IS_REACHABLE(CONFIG_VIRTIO)
-> @@ -3107,6 +3142,18 @@ static int mac80211_hwsim_change_sta_links(struct ieee80211_hw *hw,
->  	return 0;
->  }
->  
-> +static int mac80211_hwsim_start_pmsr(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-> +				     struct cfg80211_pmsr_request *request)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
-> +
-> +static void mac80211_hwsim_abort_pmsr(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-> +				      struct cfg80211_pmsr_request *request)
-> +{
-> +	// Do nothing for now.
-> +}
-> +
->  #define HWSIM_COMMON_OPS					\
->  	.tx = mac80211_hwsim_tx,				\
->  	.wake_tx_queue = ieee80211_handle_wake_tx_queue,	\
-> @@ -3129,7 +3176,9 @@ static int mac80211_hwsim_change_sta_links(struct ieee80211_hw *hw,
->  	.flush = mac80211_hwsim_flush,				\
->  	.get_et_sset_count = mac80211_hwsim_get_et_sset_count,	\
->  	.get_et_stats = mac80211_hwsim_get_et_stats,		\
-> -	.get_et_strings = mac80211_hwsim_get_et_strings,
-> +	.get_et_strings = mac80211_hwsim_get_et_strings,	\
-> +	.start_pmsr = mac80211_hwsim_start_pmsr,		\
-> +	.abort_pmsr = mac80211_hwsim_abort_pmsr,
->  
->  #define HWSIM_NON_MLO_OPS					\
->  	.sta_add = mac80211_hwsim_sta_add,			\
-> @@ -3186,6 +3235,7 @@ struct hwsim_new_radio_params {
->  	u32 *ciphers;
->  	u8 n_ciphers;
->  	bool mlo;
-> +	const struct cfg80211_pmsr_capabilities *pmsr_capa;
->  };
->  
->  static void hwsim_mcast_config_msg(struct sk_buff *mcast_skb,
-> @@ -3260,7 +3310,10 @@ static int append_radio_msg(struct sk_buff *skb, int id,
->  			return ret;
->  	}
->  
-> -	return 0;
-> +	if (param->pmsr_capa)
-> +		ret = cfg80211_send_pmsr_capa(param->pmsr_capa, skb);
-> +
-> +	return ret;
->  }
->  
->  static void hwsim_mcast_new_radio(int id, struct genl_info *info,
-> @@ -4606,6 +4659,11 @@ static int mac80211_hwsim_new_radio(struct genl_info *info,
->  				    data->debugfs,
->  				    data, &hwsim_simulate_radar);
->  
-> +	if (param->pmsr_capa) {
-> +		data->pmsr_capa = *param->pmsr_capa;
-> +		hw->wiphy->pmsr_capa = &data->pmsr_capa;
-> +	}
-> +
->  	spin_lock_bh(&hwsim_radio_lock);
->  	err = rhashtable_insert_fast(&hwsim_radios_rht, &data->rht,
->  				     hwsim_rht_params);
-> @@ -4715,6 +4773,7 @@ static int mac80211_hwsim_get_radio(struct sk_buff *skb,
->  	param.regd = data->regd;
->  	param.channels = data->channels;
->  	param.hwname = wiphy_name(data->hw->wiphy);
-> +	param.pmsr_capa = &data->pmsr_capa;
->  
->  	res = append_radio_msg(skb, data->idx, &param);
->  	if (res < 0)
-> @@ -5053,6 +5112,83 @@ static bool hwsim_known_ciphers(const u32 *ciphers, int n_ciphers)
->  	return true;
->  }
->  
-> +static int parse_ftm_capa(const struct nlattr *ftm_capa,
-> +			  struct cfg80211_pmsr_capabilities *out)
-> +{
-> +	struct nlattr *tb[NL80211_PMSR_FTM_CAPA_ATTR_MAX + 1];
-> +	int ret = nla_parse_nested(tb, NL80211_PMSR_FTM_CAPA_ATTR_MAX,
-> +				   ftm_capa, hwsim_ftm_capa_policy, NULL);
-> +	if (ret) {
-> +		pr_err("mac80211_hwsim: malformed FTM capability");
+> Have you considered an API to preemptively set the next key in the
+> kernel such that there is never a need to stop the datapath? I think
+> that the change in SSL libraries is minor and it can really help KTLS.
 
-dev_err()?
+I don't like the idea of having some unused key stored in the kernel
+for long durations too much.
 
-And can userspace trigger this?  If so, should it be rate limited?
+You can't be sure that there will be only one rekey in the next short
+interval, so you'll need to be able to handle those resyncs anyway, in
+case userspace is too slow providing the 3rd key (for the 2nd
+rekey). For example, the RFC mentions:
 
-And you need a blank line before this one, didn't checkpatch complain
-about that?
+   If implementations independently send their own KeyUpdates with
+   request_update set to "update_requested" and they cross in flight,
+   then each side will also send a response, with the result that each
+   side increments by two generations.
 
-> +		return -EINVAL;
-> +	}
-> +
-> +	out->ftm.supported = 1;
-> +	if (tb[NL80211_PMSR_FTM_CAPA_ATTR_PREAMBLES])
-> +		out->ftm.preambles =
-> +			nla_get_u32(tb[NL80211_PMSR_FTM_CAPA_ATTR_PREAMBLES]);
-> +	if (tb[NL80211_PMSR_FTM_CAPA_ATTR_BANDWIDTHS])
-> +		out->ftm.bandwidths =
-> +			nla_get_u32(tb[NL80211_PMSR_FTM_CAPA_ATTR_BANDWIDTHS]);
-> +	if (tb[NL80211_PMSR_FTM_CAPA_ATTR_MAX_BURSTS_EXPONENT])
-> +		out->ftm.max_bursts_exponent =
-> +			nla_get_u8(tb[NL80211_PMSR_FTM_CAPA_ATTR_MAX_BURSTS_EXPONENT]);
-> +	if (tb[NL80211_PMSR_FTM_CAPA_ATTR_MAX_FTMS_PER_BURST])
-> +		out->ftm.max_ftms_per_burst =
-> +			nla_get_u8(tb[NL80211_PMSR_FTM_CAPA_ATTR_MAX_FTMS_PER_BURST]);
-> +	out->ftm.asap =
-> +		!!tb[NL80211_PMSR_FTM_CAPA_ATTR_ASAP];
-> +	out->ftm.non_asap =
-> +		!!tb[NL80211_PMSR_FTM_CAPA_ATTR_NON_ASAP];
-> +	out->ftm.request_lci =
-> +		!!tb[NL80211_PMSR_FTM_CAPA_ATTR_REQ_LCI];
-> +	out->ftm.request_civicloc =
-> +		!!tb[NL80211_PMSR_FTM_CAPA_ATTR_REQ_CIVICLOC];
-> +	out->ftm.trigger_based =
-> +		!!tb[NL80211_PMSR_FTM_CAPA_ATTR_TRIGGER_BASED];
-> +	out->ftm.non_trigger_based =
-> +		!!tb[NL80211_PMSR_FTM_CAPA_ATTR_NON_TRIGGER_BASED];
-> +
-> +	return 0;
-> +}
-> +
-> +static int parse_pmsr_capa(const struct nlattr *pmsr_capa,
-> +			   struct cfg80211_pmsr_capabilities *out)
-> +{
-> +	struct nlattr *tb[NL80211_PMSR_ATTR_MAX + 1];
-> +	struct nlattr *nla;
-> +	int size;
-> +	int ret = nla_parse_nested(tb, NL80211_PMSR_ATTR_MAX, pmsr_capa,
-> +				   hwsim_pmsr_capa_policy, NULL);
-> +	if (ret) {
-> +		pr_err("mac80211_hwsim: malformed PMSR capability");
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (tb[NL80211_PMSR_ATTR_MAX_PEERS])
-> +		out->max_peers =
-> +			nla_get_u32(tb[NL80211_PMSR_ATTR_MAX_PEERS]);
-> +	out->report_ap_tsf = !!tb[NL80211_PMSR_ATTR_REPORT_AP_TSF];
-> +	out->randomize_mac_addr =
-> +		!!tb[NL80211_PMSR_ATTR_RANDOMIZE_MAC_ADDR];
-> +
-> +	if (!tb[NL80211_PMSR_ATTR_TYPE_CAPA]) {
-> +		pr_err("mac80211_hwsim: malformed PMSR type");
-> +		return -EINVAL;
-> +	}
-> +
-> +	nla_for_each_nested(nla, tb[NL80211_PMSR_ATTR_TYPE_CAPA], size) {
-> +		switch (nla_type(nla)) {
-> +		case NL80211_PMSR_TYPE_FTM:
-> +			parse_ftm_capa(nla, out);
-> +			break;
-> +		default:
-> +			pr_warn("mac80211_hwsim: Unknown PMSR type\n");
-> +		}
-> +	}
-> +	return 0;
-> +}
-> +
->  static int hwsim_new_radio_nl(struct sk_buff *msg, struct genl_info *info)
->  {
->  	struct hwsim_new_radio_params param = { 0 };
-> @@ -5173,8 +5309,26 @@ static int hwsim_new_radio_nl(struct sk_buff *msg, struct genl_info *info)
->  		param.hwname = hwname;
->  	}
->  
-> +	if (info->attrs[HWSIM_ATTR_PMSR_SUPPORT]) {
-> +		struct cfg80211_pmsr_capabilities *pmsr_capa =
-> +			kmalloc(sizeof(struct cfg80211_pmsr_capabilities),
-> +				GFP_KERNEL);
-> +		if (!pmsr_capa) {
-> +			ret = -ENOMEM;
-> +			goto out_free;
-> +		}
-> +		ret = parse_pmsr_capa(info->attrs[HWSIM_ATTR_PMSR_SUPPORT],
-> +				      pmsr_capa);
-> +		if (ret)
-> +			goto out_free;
-> +		param.pmsr_capa = pmsr_capa;
-> +	}
-> +
->  	ret = mac80211_hwsim_new_radio(info, &param);
-> +
-> +out_free:
->  	kfree(hwname);
-> +	kfree(param.pmsr_capa);
->  	return ret;
->  }
->  
-> @@ -5419,7 +5573,6 @@ static struct notifier_block hwsim_netlink_notifier = {
->  static int __init hwsim_init_netlink(void)
->  {
->  	int rc;
-> -
->  	printk(KERN_INFO "mac80211_hwsim: initializing netlink\n");
->  
->  	rc = genl_register_family(&hwsim_genl_family);
+   https://www.rfc-editor.org/rfc/rfc8446#section-4.6.3
 
-Why did you delete this line for no reason?
+So I think what you're suggesting can only be an optimization,
+not a full solution.
 
-You might want to take some time and get an internal-Google review
-before submitting this again to save the community some time and effort
-in reviewing these.  I'm sure there are developers there you can find to
-help you out.
+I hope I'm not getting too confused by all this.
 
-thanks,
+-- 
+Sabrina
 
-greg k-h
