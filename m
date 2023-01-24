@@ -2,128 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC02A67A007
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 18:21:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A610E67A00B
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 18:23:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234247AbjAXRVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 12:21:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
+        id S233663AbjAXRXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 12:23:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233704AbjAXRVo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 12:21:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667134A20D;
-        Tue, 24 Jan 2023 09:21:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 164B3B81603;
-        Tue, 24 Jan 2023 17:21:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CD47C433D2;
-        Tue, 24 Jan 2023 17:21:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674580900;
-        bh=5u0HAqsMO32meB1+2hDlQk/3mQeAC0aecbaZTWGuo+U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QjXkTZ0idK5z1Ix6m1yf2oBxsdcJq94aU7EsrAkDisp/SxGulfBdNMOHDckBQCvRz
-         W6llnTDs0JyFfXUOfVaSTrQzHB06mjALwb4j+Phm8EDITPUQVpWD5IHsXkZkuoBPtv
-         RURIQy6zUHAvCnxo+xVec0gIbsGD27+BhiB5s6a+NXA37TUYzDYw69k0Ue/1GNZ5pA
-         e7XeoQuYn4y8JHNQWOTkXCt0qA/tsceHAidqLU0n+M/uxducs+tOJXNBbPy0iCuj6y
-         N0r2//PY2LaeDxixTQGxip8Sr7ZhPU0erQFPtHhNXN68HP/JMuxcj/3DvEDYW4dGN9
-         YTPE1btkwci6w==
-Date:   Tue, 24 Jan 2023 11:21:39 -0600
-From:   Seth Forshee <sforshee@kernel.org>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] vhost: check for pending livepatches from vhost
- worker kthreads
-Message-ID: <Y9ATo5FukOhphwqT@do-x1extreme>
-References: <20230120-vhost-klp-switching-v1-0-7c2b65519c43@kernel.org>
- <20230120-vhost-klp-switching-v1-2-7c2b65519c43@kernel.org>
- <Y8/ohzRGcOiqsh69@alley>
+        with ESMTP id S229681AbjAXRXC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 12:23:02 -0500
+Received: from nbd.name (nbd.name [46.4.11.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263BD2FCF2;
+        Tue, 24 Jan 2023 09:23:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:From
+        :References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=MYj9nCLj90PGC2wxkcR/ViTrY81E8h0VHrdqaID0ilg=; b=DbE783Hozxw6INRZSNBO4FkVll
+        Kcbif1n/507Jg75eUs60XwFIbcUAag7NXUeWWYhzY7QghhRhHQOnCmmq6FBo+/sRZFZvX6HPFZTb1
+        Dj2FFB8+jGVcoHaNm74sLlFi6jKgkAJ+NhDdK9zl5KSb0eUVXoWWlHQpkJI71j0xEYxo=;
+Received: from [2a01:598:b1ac:c6:f0db:950f:e1fc:548d] (helo=nf.local)
+        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <nbd@nbd.name>)
+        id 1pKN0Z-0026A3-3K; Tue, 24 Jan 2023 18:22:55 +0100
+Message-ID: <19121deb-368f-9786-8700-f1c45d227a4c@nbd.name>
+Date:   Tue, 24 Jan 2023 18:22:54 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y8/ohzRGcOiqsh69@alley>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.6.1
+Content-Language: en-US
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     netdev@vger.kernel.org, Jesper Dangaard Brouer <hawk@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>
+References: <20230124124300.94886-1-nbd@nbd.name>
+ <CAC_iWjKAEgUB8Z3WNNVgUK8omXD+nwt_VPSVyFn1i4EQzJadog@mail.gmail.com>
+From:   Felix Fietkau <nbd@nbd.name>
+Subject: Re: [PATCH] net: page_pool: fix refcounting issues with fragmented
+ allocation
+In-Reply-To: <CAC_iWjKAEgUB8Z3WNNVgUK8omXD+nwt_VPSVyFn1i4EQzJadog@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 24, 2023 at 03:17:43PM +0100, Petr Mladek wrote:
-> On Fri 2023-01-20 16:12:22, Seth Forshee (DigitalOcean) wrote:
-> > Livepatch relies on stack checking of sleeping tasks to switch kthreads,
-> > so a busy kthread can block a livepatch transition indefinitely. We've
-> > seen this happen fairly often with busy vhost kthreads.
+On 24.01.23 15:11, Ilias Apalodimas wrote:
+> Hi Felix,
 > 
-> To be precise, it would be "indefinitely" only when the kthread never
-> sleeps.
+> ++cc Alexander and Yunsheng.
 > 
-> But yes. I believe that the problem is real. It might be almost
-> impossible to livepatch some busy kthreads, especially when they
-> have a dedicated CPU.
+> Thanks for the report
 > 
+> On Tue, 24 Jan 2023 at 14:43, Felix Fietkau <nbd@nbd.name> wrote:
+>>
+>> While testing fragmented page_pool allocation in the mt76 driver, I was able
+>> to reliably trigger page refcount underflow issues, which did not occur with
+>> full-page page_pool allocation.
+>> It appears to me, that handling refcounting in two separate counters
+>> (page->pp_frag_count and page refcount) is racy when page refcount gets
+>> incremented by code dealing with skb fragments directly, and
+>> page_pool_return_skb_page is called multiple times for the same fragment.
+>>
+>> Dropping page->pp_frag_count and relying entirely on the page refcount makes
+>> these underflow issues and crashes go away.
+>>
 > 
-> > Add a check to call klp_switch_current() from vhost_worker() when a
-> > livepatch is pending. In testing this allowed vhost kthreads to switch
-> > immediately when they had previously blocked livepatch transitions for
-> > long periods of time.
-> > 
-> > Signed-off-by: Seth Forshee (DigitalOcean) <sforshee@kernel.org>
-> > ---
-> >  drivers/vhost/vhost.c | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> > 
-> > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> > index cbe72bfd2f1f..d8624f1f2d64 100644
-> > --- a/drivers/vhost/vhost.c
-> > +++ b/drivers/vhost/vhost.c
-> > @@ -366,6 +367,9 @@ static int vhost_worker(void *data)
-> >  			if (need_resched())
-> >  				schedule();
-> >  		}
-> > +
-> > +		if (unlikely(klp_patch_pending(current)))
-> > +			klp_switch_current();
-> 
-> I suggest to use the following intead:
-> 
-> 		if (unlikely(klp_patch_pending(current)))
-> 			klp_update_patch_state(current);
-> 
-> We already use this in do_idle(). The reason is basically the same.
-> It is almost impossible to livepatch the idle task when a CPU is
-> very idle.
-> 
-> klp_update_patch_state(current) does not check the stack.
-> It switches the task immediately.
-> 
-> It should be safe because the kthread never leaves vhost_worker().
-> It means that the same kthread could never re-enter this function
-> and use the new code.
+> This has been discussed here [1].  TL;DR changing this to page
+> refcount might blow up in other colorful ways.  Can we look closer and
+> figure out why the underflow happens?
+I don't see how the approch taken in my patch would blow up. From what I 
+can tell, it should be fairly close to how refcount is handled in 
+page_frag_alloc. The main improvement it adds is to prevent it from 
+blowing up if pool-allocated fragments get shared across multiple skbs 
+with corresponding get_page and page_pool_return_skb_page calls.
 
-My knowledge of livepatching internals is fairly limited, so I'll accept
-it if you say that it's safe to do it this way. But let me ask about one
-scenario.
+- Felix
 
-Let's say that a livepatch is loaded which replaces vhost_worker(). New
-vhost worker threads are started which use the replacement function. Now
-if the patch is disabled, these new worker threads would be switched
-despite still running the code from the patch module, correct? Could the
-module then be unloaded, freeing the memory containing the code these
-kthreads are executing?
-
-Thanks,
-Seth
