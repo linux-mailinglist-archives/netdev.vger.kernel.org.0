@@ -2,192 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8A2E678D0E
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 01:57:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBE8F678D1A
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 02:04:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232512AbjAXA5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 19:57:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37516 "EHLO
+        id S232512AbjAXBEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 20:04:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231559AbjAXA5L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 19:57:11 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA6929428
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 16:57:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674521830; x=1706057830;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=db4z7XTwWmGOFESkGMLxt6MgKyU8MP1EQfLQRLsltQY=;
-  b=S93LGFYZ27k/b3WV4Sv1eE/aCfPs5z43WglPDispzfxhLsNfcobgXHqg
-   jU2ScU4j0Ze4RNSqYqBq5/wDH7gKid74lJqIRvtio5GI7tRoi/sl2yoiX
-   OIHeow6WWt2COQLJPzEC0EYYK7ll5wCjTh+YNonL/tnqsNvP48E6u3FwX
-   Oo9KwFVc9HNsxraujSEk6dkpSlvbnS55GAhHuSvXdgGQyjw5Lr1j3S7iL
-   W9aDOdkdQ8MmAHRwmK47n19n4SiHTZGQTSTq+gx+bd8nPUDl1zZPKCcNC
-   m8MWOm/CEFoYEtT2Abx9vpuzWgvKY6g/w/jjT8CHjWJa3myqsTbZiaMoQ
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10599"; a="309780335"
-X-IronPort-AV: E=Sophos;i="5.97,240,1669104000"; 
-   d="scan'208";a="309780335"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2023 16:57:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10599"; a="804395114"
-X-IronPort-AV: E=Sophos;i="5.97,240,1669104000"; 
-   d="scan'208";a="804395114"
-Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by fmsmga001.fm.intel.com with ESMTP; 23 Jan 2023 16:57:09 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        jiri@nvidia.com, Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH net 1/1] ice: move devlink port creation/deletion
-Date:   Mon, 23 Jan 2023 16:57:14 -0800
-Message-Id: <20230124005714.3996270-1-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S229930AbjAXBEh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 20:04:37 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F481303C8;
+        Mon, 23 Jan 2023 17:04:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=YLRZgPgm6zFTbHxaOInUyu4eJC7xlh91Tt1JwAy9PRk=; b=nlVxWqq0PB30WEGxiirjxXsV1T
+        m+t9c5zpijwC9nE8FbSu1H2x/XYasgNgzfYSy6u/XoOgXVkf6S531YbAwX5b6WmljqvcV1E7QLsfj
+        6yiozCFkBHz9xgrmg/T+Vzhq2w50IKLG/ZifSu4dQ4nvHOUQ6DsLvDmNkiB7wihOdO3o=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pK7jZ-002xyX-QM; Tue, 24 Jan 2023 02:04:21 +0100
+Date:   Tue, 24 Jan 2023 02:04:21 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Andrey Konovalov <andrey.konovalov@linaro.org>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, alexandre.torgue@foss.st.com,
+        peppe.cavallaro@st.com, joabreu@synopsys.com,
+        mcoquelin.stm32@gmail.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/2] net: stmmac: add DT parameter to keep RX_CLK running
+ in LPI state
+Message-ID: <Y88uleBK5zROcpgc@lunn.ch>
+References: <20230123133747.18896-1-andrey.konovalov@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230123133747.18896-1-andrey.konovalov@linaro.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
+On Mon, Jan 23, 2023 at 04:37:45PM +0300, Andrey Konovalov wrote:
+> On my qcs404 based board the ethernet MAC has issues with handling
+> Rx LPI exit / Rx LPI entry interrupts.
+> 
+> When in LPI mode the "refresh transmission" is received, the driver may
+> see both "Rx LPI exit", and "Rx LPI entry" bits set in the single read from
+> GMAC4_LPI_CTRL_STATUS register (vs "Rx LPI exit" first, and "Rx LPI entry"
+> then). In this case an interrupt storm happens: the LPI interrupt is
+> triggered every few microseconds - with all the status bits in the
+> GMAC4_LPI_CTRL_STATUS register being read as zeros. This interrupt storm
+> continues until a normal non-zero status is read from GMAC4_LPI_CTRL_STATUS
+> register (single "Rx LPI exit", or "Tx LPI exit").
+> 
+> The reason seems to be in the hardware not being able to properly clear
+> the "Rx LPI exit" interrupt if GMAC4_LPI_CTRL_STATUS register is read
+> after Rx LPI mode is entered again.
+> 
+> The current driver unconditionally sets the "Clock-stop enable" bit
+> (bit 10 in PHY's PCS Control 1 register) when calling phy_init_eee().
+> Not setting this bit - so that the PHY continues to provide RX_CLK
+> to the ethernet controller during Rx LPI state - prevents the LPI
+> interrupt storm.
+> 
+> This patch set adds a new parameter to the stmmac DT:
+> snps,rx-clk-runs-in-lpi.
+> If this parameter is present in the device tree, the driver configures
+> the PHY not to stop RX_CLK after entering Rx LPI state.
 
-Commit a286ba738714 ("ice: reorder PF/representor devlink
-port register/unregister flows") moved the code to create
-and destroy the devlink PF port. This was fine, but created
-a corner case issue in the case of ice_register_netdev()
-failing. In that case, the driver would end up calling
-ice_devlink_destroy_pf_port() twice.
+Do we really need yet another device tree parameter? Could
+dwmac-qcom-ethqos.c just do this unconditionally? Is the interrupt
+controller part of the licensed IP, or is it from QCOM? If it is part
+of the licensed IP, it is probably broken for other devices as well,
+so maybe it should be a quirk for all devices of a particular version
+of the IP?
 
-Additionally, it makes no sense to tie creation of the devlink
-PF port to the creation of the netdev so separate out the
-code to create/destroy the devlink PF port from the netdev
-code. This makes it a cleaner interface.
-
-Fixes: a286ba738714 ("ice: reorder PF/representor devlink port register/unregister flows")
-Signed-off-by: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
-There will be a merge conflict when rebasing with next-next.
-
-Resolution:
-static void ice_remove(struct pci_dev *
-  		ice_remove_arfs(pf);
-  	ice_setup_mc_magic_wake(pf);
-  	ice_vsi_release_all(pf);
- -	mutex_destroy(&(&pf->hw)->fdir_fltr_lock);
- +	mutex_destroy(&hw->fdir_fltr_lock);
-+ 	ice_devlink_destroy_pf_port(pf);
-  	ice_set_wake(pf);
-  	ice_free_irq_msix_misc(pf);
-  	ice_for_each_vsi(pf, i) {
-
- drivers/net/ethernet/intel/ice/ice_lib.c  |  3 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 25 +++++++++++++++--------
- 2 files changed, 17 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 94aa834cd9a6..a596e07b3ce9 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -3235,9 +3235,6 @@ int ice_vsi_release(struct ice_vsi *vsi)
- 		}
- 	}
- 
--	if (vsi->type == ICE_VSI_PF)
--		ice_devlink_destroy_pf_port(pf);
--
- 	if (vsi->type == ICE_VSI_VF &&
- 	    vsi->agg_node && vsi->agg_node->valid)
- 		vsi->agg_node->num_vsis--;
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index a9a7f8b52140..237ede2cffb0 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -4590,7 +4590,7 @@ static void ice_print_wake_reason(struct ice_pf *pf)
- }
- 
- /**
-- * ice_register_netdev - register netdev and devlink port
-+ * ice_register_netdev - register netdev
-  * @pf: pointer to the PF struct
-  */
- static int ice_register_netdev(struct ice_pf *pf)
-@@ -4602,11 +4602,6 @@ static int ice_register_netdev(struct ice_pf *pf)
- 	if (!vsi || !vsi->netdev)
- 		return -EIO;
- 
--	err = ice_devlink_create_pf_port(pf);
--	if (err)
--		goto err_devlink_create;
--
--	SET_NETDEV_DEVLINK_PORT(vsi->netdev, &pf->devlink_port);
- 	err = register_netdev(vsi->netdev);
- 	if (err)
- 		goto err_register_netdev;
-@@ -4617,8 +4612,6 @@ static int ice_register_netdev(struct ice_pf *pf)
- 
- 	return 0;
- err_register_netdev:
--	ice_devlink_destroy_pf_port(pf);
--err_devlink_create:
- 	free_netdev(vsi->netdev);
- 	vsi->netdev = NULL;
- 	clear_bit(ICE_VSI_NETDEV_ALLOCD, vsi->state);
-@@ -4636,6 +4629,7 @@ static int
- ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- {
- 	struct device *dev = &pdev->dev;
-+	struct ice_vsi *vsi;
- 	struct ice_pf *pf;
- 	struct ice_hw *hw;
- 	int i, err;
-@@ -4918,6 +4912,18 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 	pcie_print_link_status(pf->pdev);
- 
- probe_done:
-+	err = ice_devlink_create_pf_port(pf);
-+	if (err)
-+		goto err_create_pf_port;
-+
-+	vsi = ice_get_main_vsi(pf);
-+	if (!vsi || !vsi->netdev) {
-+		err = -EINVAL;
-+		goto err_netdev_reg;
-+	}
-+
-+	SET_NETDEV_DEVLINK_PORT(vsi->netdev, &pf->devlink_port);
-+
- 	err = ice_register_netdev(pf);
- 	if (err)
- 		goto err_netdev_reg;
-@@ -4955,6 +4961,8 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- err_devlink_reg_param:
- 	ice_devlink_unregister_params(pf);
- err_netdev_reg:
-+	ice_devlink_destroy_pf_port(pf);
-+err_create_pf_port:
- err_send_version_unroll:
- 	ice_vsi_release_all(pf);
- err_alloc_sw_unroll:
-@@ -5083,6 +5091,7 @@ static void ice_remove(struct pci_dev *pdev)
- 	ice_setup_mc_magic_wake(pf);
- 	ice_vsi_release_all(pf);
- 	mutex_destroy(&(&pf->hw)->fdir_fltr_lock);
-+	ice_devlink_destroy_pf_port(pf);
- 	ice_set_wake(pf);
- 	ice_free_irq_msix_misc(pf);
- 	ice_for_each_vsi(pf, i) {
--- 
-2.38.1
-
+   Andrew
