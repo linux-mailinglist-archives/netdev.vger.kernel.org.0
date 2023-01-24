@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5049C678E30
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 03:20:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B417E678E31
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 03:20:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232235AbjAXCUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 21:20:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46696 "EHLO
+        id S231970AbjAXCUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 21:20:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232302AbjAXCUW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 21:20:22 -0500
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11C5D29162
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 18:20:18 -0800 (PST)
-Received: by mail-qt1-x832.google.com with SMTP id m26so2345787qtp.9
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 18:20:18 -0800 (PST)
+        with ESMTP id S232062AbjAXCUX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 21:20:23 -0500
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 259C03A86C
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 18:20:19 -0800 (PST)
+Received: by mail-qt1-x82d.google.com with SMTP id a25so12023105qto.10
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 18:20:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=2C8tCkjwUseX03Eq/3m1E4h4dlTxQAC8ymgLg1MBMXk=;
-        b=D6jIJiAOz+uJJL8tzRUjt3iWsJXgEH9ZUsYlKP9f8XpBFnLJ36gGxa9Tx0tq7+NAOB
-         fvFPTEgcNdoBGKx71PDXUgXENU51qKBg2fHOVJG5Gt3Bn3BrhvWJJlIoHulWH76f5uEF
-         fp76oRZeRomM1K85awrNnNMB1Icux2Y/qGueeufk4vxOoP29HKwyWoG88hXUCE516g4i
-         pTvxvlwup0Pr/CiSIaiU/TwPX/R9vPl1MX/ndby9XJIJ7Mdfavw9S/DMjWlFO+opGrDR
-         xHrVXngdOKjnpaZsqGRDlYRpa7UqdBcAJBOeGQvILG5qOJ9dPExq04GZxl50PLG/2DK3
-         gEcA==
+        bh=WzGZVmjJFztVwIL/kmRyh2xhmuCyvIR0WPg0O8eXD2w=;
+        b=pFTvrrArnZcSQ6dAthmWCgYA1PN8Dukud1Or51xTM/7dqeuo4UW5cvLuypUkCEdPCG
+         lYZn0cMfSY6jxtno5eLDALCUK6GNUtqPkFDRxc3PWdHp39NQmkw4CofvbpCIl5B7M8+o
+         ISohoG5Htm856YD8uLG3A0GeqQZJ77yto8iWh+dHimH4M7+phZjW7xDE207JLWCKTNyj
+         kmYjc5Uu3+aK684DeDSJr93zn2m12zxZVBaLUXtZ9SiQ15vwevEWIcart04rbZx+goCD
+         v5QtDaoE2Po7ddxvUNanQY04XHpdl4YQsma6Nys8IUCZRIIGFmIKev5mI9oOkJWUGITF
+         GTiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=2C8tCkjwUseX03Eq/3m1E4h4dlTxQAC8ymgLg1MBMXk=;
-        b=gvZkwg/rNe/vXC1xBLaVAN11OeCXuVZdWvV+HfdxjS473vJo4Flp+KjhE2szW7JbK4
-         w5zpb0OEYWo1Yr1/pTRtQfqstDHo/9f3ML5hSV9fmSI51WAV1wwNpWF5ZhDntlFuc6qy
-         uBdeo7j9mYYUJ2Cb4XGTbe33XReEj+0oRowX/aB2O5ueS0KFy/9rj7j3IysEd8snp1uK
-         ABB0G1QGGyuHmaSDlglnEpZSRgAIJCSvggcIqN8qJztV4NyGcgRzzU8Uu4w1dHcyl2iF
-         +EDBspvpjJqaD7qg0Y7uDGGu1OA9bGUJ+ulPg+9dEEs3v4reyMR7bnDfZmk7sYWv2o70
-         pKbQ==
-X-Gm-Message-State: AFqh2kpSbYwjE6t4yusOUqcYKwyPRio6Tu4DrOK7nMfmaVFxSthUEbs3
-        PrwYO6l5+KyZ5l4JkI5WgtzWRzdUe2QckA==
-X-Google-Smtp-Source: AMrXdXsPaZVIN7mrDW5cQTZIdqQKB7ucTnUavH2bWXRJ3UxNAE8bVihyQqvHJDxTX5+BU4FhszkNjw==
-X-Received: by 2002:a05:622a:4315:b0:3a9:8b48:f8f with SMTP id el21-20020a05622a431500b003a98b480f8fmr31558352qtb.67.1674526817572;
-        Mon, 23 Jan 2023 18:20:17 -0800 (PST)
+        bh=WzGZVmjJFztVwIL/kmRyh2xhmuCyvIR0WPg0O8eXD2w=;
+        b=7m7nhq2F8mYThG1/QP7qolb61VRBPwszG7oFMvmvIuo85SRZJloLLYJR9O6J5OBTkn
+         DsiTJqJAgdYblc7N128WZUxsOlFbEPOePlmk3OQwFX5AufwaMErArS8rdy+t6JbIKzu+
+         W1s4wLFLkzRyXRYmRoZil6h7yicq00eo0YiJ31HjIQFV9umzuiY8dRTukhuOzoT6J1sS
+         0AqO0inKj1DEA512NdWmXzN/r/e3jc0ZKp+0pPNYUEHOq3dvleoppNzFKCOWPNGzB4xX
+         trZAb95NOZ88IQHQY7SKsU9jRqWI53djq40tFUPEk8afGd44Xbgg2vcd/FeuIltUFMU9
+         g22g==
+X-Gm-Message-State: AFqh2kqf02me+EklL6ZkU2BhfCoLfWa9/0z1Kq8Enb/lTtZ6it2AOg0/
+        xfbcCtO3AUXc/4Rcq9S8ZlBXY978ibzvoA==
+X-Google-Smtp-Source: AMrXdXvoCsrc/37iK2ulJNqG0waiIoLcMzHOyGcX3VyeyeN3eizXg3ozXqF0HhdncalpIEBlSriLZQ==
+X-Received: by 2002:a05:622a:5d9a:b0:3b6:3494:175 with SMTP id fu26-20020a05622a5d9a00b003b634940175mr39901988qtb.66.1674526818882;
+        Mon, 23 Jan 2023 18:20:18 -0800 (PST)
 Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id f1-20020ac840c1000000b003a981f7315bsm410558qtm.44.2023.01.23.18.20.16
+        by smtp.gmail.com with ESMTPSA id f1-20020ac840c1000000b003a981f7315bsm410558qtm.44.2023.01.23.18.20.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Jan 2023 18:20:17 -0800 (PST)
+        Mon, 23 Jan 2023 18:20:18 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -70,9 +70,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         Mahesh Bandewar <maheshb@google.com>,
         Paul Moore <paul@paul-moore.com>,
         Guillaume Nault <gnault@redhat.com>
-Subject: [PATCHv2 net-next 09/10] net: add support for ipv4 big tcp
-Date:   Mon, 23 Jan 2023 21:20:03 -0500
-Message-Id: <b4e320e98dd3452e961e826f1a7b94a60d0198ad.1674526718.git.lucien.xin@gmail.com>
+Subject: [PATCHv2 net-next 10/10] selftests: add a selftest for ipv4 big tcp
+Date:   Mon, 23 Jan 2023 21:20:04 -0500
+Message-Id: <8b15078200bc9e39a9be924ea3e05ddb5449064a.1674526718.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1674526718.git.lucien.xin@gmail.com>
 References: <cover.1674526718.git.lucien.xin@gmail.com>
@@ -88,138 +88,177 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to Eric's IPv6 BIG TCP, this patch is to enable IPv4 BIG TCP.
-
-Firstly, allow sk->sk_gso_max_size to be set to a value greater than
-GSO_LEGACY_MAX_SIZE by not trimming gso_max_size in sk_trim_gso_size()
-for IPv4 TCP sockets.
-
-Then on TX path, set IP header tot_len to 0 when skb->len > IP_MAX_MTU
-in __ip_local_out() to allow to send BIG TCP packets, and this implies
-that skb->len is the length of a IPv4 packet; On RX path, use skb->len
-as the length of the IPv4 packet when the IP header tot_len is 0 and
-skb->len > IP_MAX_MTU in ip_rcv_core(). As the API iph_set_totlen() and
-skb_ip_totlen() are used in __ip_local_out() and ip_rcv_core(), we only
-need to update these APIs.
-
-Also in GRO receive, add the check for ETH_P_IP/IPPROTO_TCP, and allows
-the merged packet size >= GRO_LEGACY_MAX_SIZE in skb_gro_receive(). In
-GRO complete, set IP header tot_len to 0 when the merged packet size
-greater than IP_MAX_MTU in iph_set_totlen() so that it can be processed
-on RX path.
-
-Note that by checking skb_is_gso_tcp() in API iph_totlen(), it makes
-this implementation safe to use iph->len == 0 indicates IPv4 BIG TCP
-packets.
+This test runs on the client-router-server topo, and monitors the traffic
+on the RX devices of router and server while sending BIG TCP packets with
+netperf from client to server. Meanwhile, it changes 'tso' on the TX devs
+and 'gro' on the RX devs. Then it checks if any BIG TCP packets appears
+on the RX devs with 'iptables -m length ! --length 0:65535' for each case.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- net/core/gro.c       |  6 +++---
- net/core/sock.c      | 11 ++---------
- net/ipv4/af_inet.c   |  7 ++++---
- net/ipv4/ip_input.c  |  2 +-
- net/ipv4/ip_output.c |  2 +-
- 5 files changed, 11 insertions(+), 17 deletions(-)
+ tools/testing/selftests/net/Makefile   |   1 +
+ tools/testing/selftests/net/big_tcp.sh | 140 +++++++++++++++++++++++++
+ 2 files changed, 141 insertions(+)
+ create mode 100644 tools/testing/selftests/net/big_tcp.sh
 
-diff --git a/net/core/gro.c b/net/core/gro.c
-index 506f83d715f8..82656dc787f2 100644
---- a/net/core/gro.c
-+++ b/net/core/gro.c
-@@ -169,9 +169,9 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
- 		return -E2BIG;
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index 47314f0b3006..2b26b1c20198 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -76,6 +76,7 @@ TEST_PROGS += sctp_vrf.sh
+ TEST_GEN_FILES += sctp_hello
+ TEST_GEN_FILES += csum
+ TEST_GEN_FILES += nat6to4.o
++TEST_PROGS += big_tcp.sh
  
- 	if (unlikely(p->len + len >= GRO_LEGACY_MAX_SIZE)) {
--		if (p->protocol != htons(ETH_P_IPV6) ||
--		    skb_headroom(p) < sizeof(struct hop_jumbo_hdr) ||
--		    ipv6_hdr(p)->nexthdr != IPPROTO_TCP ||
-+		if (NAPI_GRO_CB(skb)->proto != IPPROTO_TCP ||
-+		    (p->protocol == htons(ETH_P_IPV6) &&
-+		     skb_headroom(p) < sizeof(struct hop_jumbo_hdr)) ||
- 		    p->encapsulation)
- 			return -E2BIG;
- 	}
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 7ba4891460ad..602c3d68ce19 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -2375,15 +2375,8 @@ EXPORT_SYMBOL_GPL(sk_free_unlock_clone);
+ TEST_FILES := settings
  
- static void sk_trim_gso_size(struct sock *sk)
- {
--	if (sk->sk_gso_max_size <= GSO_LEGACY_MAX_SIZE)
--		return;
--#if IS_ENABLED(CONFIG_IPV6)
--	if (sk->sk_family == AF_INET6 &&
--	    sk_is_tcp(sk) &&
--	    !ipv6_addr_v4mapped(&sk->sk_v6_rcv_saddr))
--		return;
--#endif
--	sk->sk_gso_max_size = GSO_LEGACY_MAX_SIZE;
-+	if (sk->sk_gso_max_size > GSO_LEGACY_MAX_SIZE && !sk_is_tcp(sk))
-+		sk->sk_gso_max_size = GSO_LEGACY_MAX_SIZE;
- }
- 
- void sk_setup_caps(struct sock *sk, struct dst_entry *dst)
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 6c0ec2789943..2f992a323b95 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1485,6 +1485,7 @@ struct sk_buff *inet_gro_receive(struct list_head *head, struct sk_buff *skb)
- 	if (unlikely(ip_fast_csum((u8 *)iph, 5)))
- 		goto out;
- 
-+	NAPI_GRO_CB(skb)->proto = proto;
- 	id = ntohl(*(__be32 *)&iph->id);
- 	flush = (u16)((ntohl(*(__be32 *)iph) ^ skb_gro_len(skb)) | (id & ~IP_DF));
- 	id >>= 16;
-@@ -1618,9 +1619,9 @@ int inet_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len)
- 
- int inet_gro_complete(struct sk_buff *skb, int nhoff)
- {
--	__be16 newlen = htons(skb->len - nhoff);
- 	struct iphdr *iph = (struct iphdr *)(skb->data + nhoff);
- 	const struct net_offload *ops;
-+	__be16 totlen = iph->tot_len;
- 	int proto = iph->protocol;
- 	int err = -ENOSYS;
- 
-@@ -1629,8 +1630,8 @@ int inet_gro_complete(struct sk_buff *skb, int nhoff)
- 		skb_set_inner_network_header(skb, nhoff);
- 	}
- 
--	csum_replace2(&iph->check, iph->tot_len, newlen);
--	iph->tot_len = newlen;
-+	iph_set_totlen(iph, skb->len - nhoff);
-+	csum_replace2(&iph->check, totlen, iph->tot_len);
- 
- 	ops = rcu_dereference(inet_offloads[proto]);
- 	if (WARN_ON(!ops || !ops->callbacks.gro_complete))
-diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-index e880ce77322a..0aa8c49b4e1b 100644
---- a/net/ipv4/ip_input.c
-+++ b/net/ipv4/ip_input.c
-@@ -511,7 +511,7 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
- 	if (unlikely(ip_fast_csum((u8 *)iph, iph->ihl)))
- 		goto csum_error;
- 
--	len = ntohs(iph->tot_len);
-+	len = skb_ip_totlen(skb);
- 	if (skb->len < len) {
- 		drop_reason = SKB_DROP_REASON_PKT_TOO_SMALL;
- 		__IP_INC_STATS(net, IPSTATS_MIB_INTRUNCATEDPKTS);
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 922c87ef1ab5..4e4e308c3230 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -100,7 +100,7 @@ int __ip_local_out(struct net *net, struct sock *sk, struct sk_buff *skb)
- {
- 	struct iphdr *iph = ip_hdr(skb);
- 
--	iph->tot_len = htons(skb->len);
-+	iph_set_totlen(iph, skb->len);
- 	ip_send_check(iph);
- 
- 	/* if egress device is enslaved to an L3 master device pass the
+diff --git a/tools/testing/selftests/net/big_tcp.sh b/tools/testing/selftests/net/big_tcp.sh
+new file mode 100644
+index 000000000000..af1fd60de71d
+--- /dev/null
++++ b/tools/testing/selftests/net/big_tcp.sh
+@@ -0,0 +1,140 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# Testing For BIG TCP.
++# TOPO: CLIENT_NS (link0)<--->(link1) ROUTER_NS (link2)<--->(link3) SERVER_NS
++
++CLIENT_NS=$(mktemp -u client-XXXXXXXX)
++CLIENT_IP4="198.51.100.1"
++
++SERVER_NS=$(mktemp -u server-XXXXXXXX)
++SERVER_IP4="203.0.113.1"
++
++ROUTER_NS=$(mktemp -u router-XXXXXXXX)
++SERVER_GW4="203.0.113.2"
++CLIENT_GW4="198.51.100.2"
++
++MAX_SIZE=128000
++CHK_SIZE=65535
++
++# Kselftest framework requirement - SKIP code is 4.
++ksft_skip=4
++
++setup() {
++	ip netns add $CLIENT_NS
++	ip netns add $SERVER_NS
++	ip netns add $ROUTER_NS
++	ip -net $ROUTER_NS link add link1 type veth peer name link0 netns $CLIENT_NS
++	ip -net $ROUTER_NS link add link2 type veth peer name link3 netns $SERVER_NS
++
++	ip -net $CLIENT_NS link set link0 up
++	ip -net $CLIENT_NS addr add $CLIENT_IP4/24 dev link0
++	ip -net $CLIENT_NS route add $SERVER_IP4 dev link0 via $CLIENT_GW4
++	ip -net $CLIENT_NS link set dev link0 gro_max_size $MAX_SIZE gso_max_size $MAX_SIZE
++	ip net exec $CLIENT_NS sysctl -wq net.ipv4.tcp_window_scaling=10
++
++	ip -net $ROUTER_NS link set link1 up
++	ip -net $ROUTER_NS link set link2 up
++	ip -net $ROUTER_NS addr add $CLIENT_GW4/24 dev link1
++	ip -net $ROUTER_NS addr add $SERVER_GW4/24 dev link2
++	ip -net $ROUTER_NS link set dev link1 gro_max_size $MAX_SIZE gso_max_size $MAX_SIZE
++	ip -net $ROUTER_NS link set dev link2 gro_max_size $MAX_SIZE gso_max_size $MAX_SIZE
++	ip net exec $ROUTER_NS sysctl -wq net.ipv4.ip_forward=1
++
++	ip -net $SERVER_NS link set link3 up
++	ip -net $SERVER_NS addr add $SERVER_IP4/24 dev link3
++	ip -net $SERVER_NS route add $CLIENT_IP4 dev link3 via $SERVER_GW4
++	ip -net $SERVER_NS link set dev link3 gro_max_size $MAX_SIZE gso_max_size $MAX_SIZE
++	ip net exec $SERVER_NS sysctl -wq net.ipv4.tcp_window_scaling=10
++	ip net exec $SERVER_NS netserver 2>&1 >/dev/null
++}
++
++cleanup() {
++	ip net exec $SERVER_NS pkill netserver
++	ip -net $ROUTER_NS link del link1
++	ip -net $ROUTER_NS link del link2
++	ip netns del "$CLIENT_NS"
++	ip netns del "$SERVER_NS"
++	ip netns del "$ROUTER_NS"
++}
++
++start_counter() {
++	local ipt="iptables"
++	local iface=$1
++	local netns=$2
++
++	ip net exec $netns $ipt -t raw -A PREROUTING -i $iface \
++		-m length ! --length 0:$CHK_SIZE -j ACCEPT
++}
++
++check_counter() {
++	local ipt="iptables"
++	local iface=$1
++	local netns=$2
++
++	test `ip net exec $netns $ipt -t raw -L -v |grep $iface | awk '{print $1}'` != "0"
++}
++
++stop_counter() {
++	local ipt="iptables"
++	local iface=$1
++	local netns=$2
++
++	ip net exec $netns $ipt -t raw -D PREROUTING -i $iface \
++		-m length ! --length 0:$CHK_SIZE -j ACCEPT
++}
++
++do_netperf() {
++	local serip=$SERVER_IP4
++	local netns=$1
++
++	ip net exec $netns netperf -$NF -t TCP_STREAM -H $serip 2>&1 >/dev/null
++}
++
++do_test() {
++	local cli_tso=$1
++	local gw_gro=$2
++	local gw_tso=$3
++	local ser_gro=$4
++	local ret="PASS"
++
++	ip net exec $CLIENT_NS ethtool -K link0 tso $cli_tso
++	ip net exec $ROUTER_NS ethtool -K link1 gro $gw_gro
++	ip net exec $ROUTER_NS ethtool -K link2 tso $gw_tso
++	ip net exec $SERVER_NS ethtool -K link3 gro $ser_gro
++
++	start_counter link1 $ROUTER_NS
++	start_counter link3 $SERVER_NS
++	do_netperf $CLIENT_NS
++
++	if check_counter link1 $ROUTER_NS; then
++		check_counter link3 $SERVER_NS || ret="FAIL_on_link3"
++	else
++		ret="FAIL_on_link1"
++	fi
++
++	stop_counter link1 $ROUTER_NS
++	stop_counter link3 $SERVER_NS
++	printf "%-9s %-8s %-8s %-8s: [%s]\n" \
++		$cli_tso $gw_gro $gw_tso $ser_gro $ret
++	test $ret = "PASS"
++}
++
++testup() {
++	echo "CLI GSO | GW GRO | GW GSO | SER GRO" && \
++	do_test "on"  "on"  "on"  "on"  && \
++	do_test "on"  "off" "on"  "off" && \
++	do_test "off" "on"  "on"  "on"  && \
++	do_test "on"  "on"  "off" "on"  && \
++	do_test "off" "on"  "off" "on"
++}
++
++if ! netperf -V &> /dev/null; then
++	echo "SKIP: Could not run test without netperf tool"
++	exit $ksft_skip
++fi
++
++trap cleanup EXIT
++setup && echo "Testing for BIG TCP:" && \
++NF=4 testup && echo "***v4 Tests Done***"
++exit $?
 -- 
 2.31.1
 
