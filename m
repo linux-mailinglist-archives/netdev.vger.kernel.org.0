@@ -2,78 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 598D567A01B
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 18:26:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D2AB67A044
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 18:36:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233302AbjAXR0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 12:26:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58670 "EHLO
+        id S233961AbjAXRf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 12:35:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233149AbjAXR0D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 12:26:03 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D589249011
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 09:26:02 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id a9so19784000ybb.3
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 09:26:02 -0800 (PST)
+        with ESMTP id S232166AbjAXRf5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 12:35:57 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F20110AB0
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 09:35:56 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id c6so15450573pls.4
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 09:35:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=hRaqCqR7RIwDhw+WiyMJ4YfG2UJESa35+M5vhF1uVlM=;
-        b=OmDH5KaDdrJ5gSmaKv5d2S1Bgkdqm9/aRf/+g/8YbsNBSX5Nv4whPqhtPtMztxgEl+
-         6yhh2oOvfRt1OzHgUu4OxUxurj4lmsMv8I/nyCpukzwvitNLkTHv54ncQKr/Ce+bD2IK
-         aOYNBO7LH5nzG5HeoqKK2hKl8BBbrfsbpDY/R7UHdZ88YYQL8QunqacdqzlPG3t6hS8B
-         NMeFUVKWwU4CBSOEwyVnvHYAf2vzb0fasTsoSjXgnBBTNbG0kVNxLv0qXpI15OGVun8l
-         YdkvU7LJrOQbO4fZbRqB/z5fwtDPo1zN4fv0hrbfc6U3kgMbZwKXnxVmh0CX7Tvge741
-         /Kxg==
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3Xdvi7fIlYYO+f7EySJG/JTcc0Pmw2obhupOEULGvoM=;
+        b=FWddA1QM2tSZl3bk6p8veEjjy+nIv282XwDrC4a72f1F1DbSvsofCGGY+Q9+ZIbcAo
+         QzXs/ug7zKW5kEDStV6Hy2EfXks+nwn/a5t2lHc1Ds06qzXIrmAb1yYa/Pzlj7y3cZk/
+         J521plLn8oh6VREwqCOHqX9q92I4LA7kTMJUgnwHGsJS2MLGVC8vWy57X2f6tINr+N+E
+         tG3WNTmrXx3WDDptWXxAtbnIF4Pkt6ZITJ65E/cCXY620PwSyejDwHZSo63dKtwpnUDj
+         E/VDG4s56h9BDSwQKdzPaUdNoxWLYP49ryGmd1r2eaVXfi5yvcSJMo33tZnLkLqqN7nz
+         eshw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=hRaqCqR7RIwDhw+WiyMJ4YfG2UJESa35+M5vhF1uVlM=;
-        b=eIfufjrUnlEGfgr9hUeE6VBs9NbEqfjq+djQhzsJoIjOSdZr5sr5n558vvxS54BvrC
-         K6DZFarxf6y2DfaEJeVkP3ntoMDXonCnCM0N7rO/LAI9ei2WMlmGUtCIFPEPxN4dNlDi
-         fTcpuZ3hTBuJ6EW8WEJUFqPug7sgvqaM+2cmyA5Wt7UgURIl+zBILjPPIPTojrtQa0Ws
-         7XtXMaz70HrU0D+ZSIb7W9f7N/pTLQr0PdXdl64WI66/2gMXzM0yUkF5lqTWeN9BBNTP
-         Jf5AjM15lDrlSwn833nwYqAFpWdrCSKBvOlAQ+7x5fbnwh1LNSVi3piUJRPamJFykWLv
-         WRmQ==
-X-Gm-Message-State: AFqh2kpml1HsaMg01hepnV0M87rBP3MKqFAB1/dkL0TgYDhJ6dhCFo8N
-        9Pg5FYItH1UtBGt77IsjJ3g/TZCBWCIYOfRJtY65tTyLfpKCLlMeApY=
-X-Google-Smtp-Source: AMrXdXsnIPbQa+KdwfIMOG3WanLzr6bfbKlJsNa94zAaCu30oPnleIv+s0KHpd2eVtIJEg5Q/9FCNgFVDTSRaMb+DBU=
-X-Received: by 2002:a25:fd4:0:b0:803:fbad:94a4 with SMTP id
- 203-20020a250fd4000000b00803fbad94a4mr1532785ybp.407.1674581161703; Tue, 24
- Jan 2023 09:26:01 -0800 (PST)
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3Xdvi7fIlYYO+f7EySJG/JTcc0Pmw2obhupOEULGvoM=;
+        b=k3wVRtk2DfM6fI/cGLkphjA+396+KDTm55j0qzV3IYHWITRIP8CG6V5oVSPBJUmBlA
+         6ROzW2+ovSBgpV1eh4447ctlixC8K+YWHFX6wFrawbdXoOzanYqjsxgkFBvIwyFrAwvt
+         f9ScBq9MMqO8dPOvlDFupN7GwaoixrOwa/p734asQnUquJ6ffzra48GTIe1SPTUIeIuT
+         W4xdolEs6bGpVC4Af4gymI9njsBib22nFutJClbHyysSDS2WfQrzaO8cHJWIibBn/3la
+         wOJ2f0Rgy+ei2D7vc8T2ikit1eB6Fkq5KfqZfXikKznv5cmaHaId+SyceyLVTKXqIF7G
+         CkMw==
+X-Gm-Message-State: AFqh2kqyBad3JomYSTQe9Tcaq+QeFycm5NM65o8oVAQNHkUNtx4owSkp
+        3bvps9ar+INabqs8WQnTVo1oUFXXgg5BuMyNkdmViA==
+X-Google-Smtp-Source: AMrXdXsevx4h6ZcmBSNEUhpYybXYrpwt4VnRJPSPjl6wWgpUFF5obP1UAhJ0j2Qd5E0Ab3ihQWJJqoZ8/uJYeLh0WmU=
+X-Received: by 2002:a17:90b:3741:b0:219:fbc:a088 with SMTP id
+ ne1-20020a17090b374100b002190fbca088mr4176615pjb.162.1674581755350; Tue, 24
+ Jan 2023 09:35:55 -0800 (PST)
 MIME-Version: 1.0
-References: <cover.1674526718.git.lucien.xin@gmail.com> <CANn89iKZKgzOZRj+yp-OBG=y6Lq4VZhU+c9vno=1VXixaijMWw@mail.gmail.com>
- <CADvbK_d750m=r5LDyBXHPsceo2hEtQ0y=P17DWVWfQqOm=0zSA@mail.gmail.com>
- <CANn89iKX6yTPmK6ahxHa6duO1PMn=fFhAXWdYuxNsDkvh8QvLA@mail.gmail.com> <CADvbK_ePmmWt-QfCaAC2S5B03V+CTK1c=Ewya+O+ry5yjz13yw@mail.gmail.com>
-In-Reply-To: <CADvbK_ePmmWt-QfCaAC2S5B03V+CTK1c=Ewya+O+ry5yjz13yw@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 24 Jan 2023 18:25:50 +0100
-Message-ID: <CANn89iJbL2wyZTiS3Sz9AkS47C+euKdef8BBK0gPUR+9RAp8RQ@mail.gmail.com>
-Subject: Re: [PATCHv2 net-next 00/10] net: support ipv4 big tcp
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, Paolo Abeni <pabeni@redhat.com>,
+References: <20230119221536.3349901-1-sdf@google.com> <901e1a7a-bb86-8d62-4bd7-512a1257d3b0@linux.dev>
+ <CAKH8qBs=1NgpJBNwJg7dZQnSAAGpH4vJj0+=LNWuQamGFerfZw@mail.gmail.com>
+ <5b757a2a-86a7-346c-4493-9ab903de19e4@intel.com> <87lelsp2yl.fsf@toke.dk> <da633a14-0d0e-0be3-6291-92313ab1550d@redhat.com>
+In-Reply-To: <da633a14-0d0e-0be3-6291-92313ab1550d@redhat.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Tue, 24 Jan 2023 09:35:42 -0800
+Message-ID: <CAKH8qBtOM6v0N6iRq+1EPPw2ow9kBD0FXCQJRxuc+02wa+mpkA@mail.gmail.com>
+Subject: Re: [xdp-hints] Re: [PATCH bpf-next v8 00/17] xdp: hints via kfuncs
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        brouer@redhat.com, Martin KaFai Lau <martin.lau@linux.dev>,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
         David Ahern <dsahern@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Aaron Conole <aconole@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Guillaume Nault <gnault@redhat.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
@@ -85,88 +84,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 24, 2023 at 6:14 PM Xin Long <lucien.xin@gmail.com> wrote:
+On Tue, Jan 24, 2023 at 4:23 AM Jesper Dangaard Brouer
+<jbrouer@redhat.com> wrote:
 >
-> On Tue, Jan 24, 2023 at 11:35 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On 24/01/2023 12.49, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> > Alexander Lobakin <alexandr.lobakin@intel.com> writes:
 > >
-> > On Tue, Jan 24, 2023 at 4:51 PM Xin Long <lucien.xin@gmail.com> wrote:
-> > >
-> > > On Tue, Jan 24, 2023 at 3:27 AM Eric Dumazet <edumazet@google.com> wrote:
-> > > >
-> > > > On Tue, Jan 24, 2023 at 3:20 AM Xin Long <lucien.xin@gmail.com> wrote:
-> > > > >
-> > > > > This is similar to the BIG TCP patchset added by Eric for IPv6:
-> > > > >
-> > > > >   https://lwn.net/Articles/895398/
-> > > > >
-> > > > > Different from IPv6, IPv4 tot_len is 16-bit long only, and IPv4 header
-> > > > > doesn't have exthdrs(options) for the BIG TCP packets' length. To make
-> > > > > it simple, as David and Paolo suggested, we set IPv4 tot_len to 0 to
-> > > > > indicate this might be a BIG TCP packet and use skb->len as the real
-> > > > > IPv4 total length.
-> > > > >
-> > > > > This will work safely, as all BIG TCP packets are GSO/GRO packets and
-> > > > > processed on the same host as they were created; There is no padding
-> > > > > in GSO/GRO packets, and skb->len - network_offset is exactly the IPv4
-> > > > > packet total length; Also, before implementing the feature, all those
-> > > > > places that may get iph tot_len from BIG TCP packets are taken care
-> > > > > with some new APIs:
-> > > > >
-> > > > > Patch 1 adds some APIs for iph tot_len setting and getting, which are
-> > > > > used in all these places where IPv4 BIG TCP packets may reach in Patch
-> > > > > 2-8, and Patch 9 implements this feature and Patch 10 adds a selftest
-> > > > > for it.
-> > > > >
-> > > > > Note that the similar change as in Patch 2-6 are also needed for IPv6
-> > > > > BIG TCP packets, and will be addressed in another patchset.
-> > > > >
-> > > > > The similar performance test is done for IPv4 BIG TCP with 25Gbit NIC
-> > > > > and 1.5K MTU:
-> > > > >
-> > > > > No BIG TCP:
-> > > > > for i in {1..10}; do netperf -t TCP_RR -H 192.168.100.1 -- -r80000,80000 -O MIN_LATENCY,P90_LATENCY,P99_LATENCY,THROUGHPUT|tail -1; done
-> > > > > 168          322          337          3776.49
-> > > > > 143          236          277          4654.67
-> > > > > 128          258          288          4772.83
-> > > > > 171          229          278          4645.77
-> > > > > 175          228          243          4678.93
-> > > > > 149          239          279          4599.86
-> > > > > 164          234          268          4606.94
-> > > > > 155          276          289          4235.82
-> > > > > 180          255          268          4418.95
-> > > > > 168          241          249          4417.82
-> > > > >
-> > > >
-> > > > NACK again
-> > > >
-> > > > You have not addressed my feedback.
-> > > >
-> > > > Given the experimental nature of BIG TCP, we need separate netlink attributes,
-> > > > so that we can selectively enable BIG TCP for IPV6, and not for IPV4.
-> > > >
-> > > That will be some change, and I will try to work on it.
-> > >
-> > > While at it, just try to be clearer, about the fixes for IPv6 BIG TCP
-> > > I mentioned in this patchset. Since skb->len is trustable for GSO TCP
-> > > packets. Are you still not okay with checking the skb_ipv6_pktlen()
-> > > API added to fix them in netfilter/tc/bridge/openvswitch?
-> > >
+> >> From: Stanislav Fomichev <sdf@google.com>
+> >> Date: Mon, 23 Jan 2023 10:55:52 -0800
+> >>
+> >>> On Mon, Jan 23, 2023 at 10:53 AM Martin KaFai Lau <martin.lau@linux.d=
+ev> wrote:
+> >>>>
+> >>>> On 1/19/23 2:15 PM, Stanislav Fomichev wrote:
+> >>>>> Please see the first patch in the series for the overall
+> >>>>> design and use-cases.
+> >>>>>
+> >>>>> See the following email from Toke for the per-packet metadata overh=
+ead:
+> >>>>> https://lore.kernel.org/bpf/20221206024554.3826186-1-sdf@google.com=
+/T/#m49d48ea08d525ec88360c7d14c4d34fb0e45e798
+> >>>>>
+> >>>>> Recent changes:
+> >>>>> - Keep new functions in en/xdp.c, do 'extern mlx5_xdp_metadata_ops'=
+ (Tariq)
+> >>>>>
+> >>>>> - Remove mxbuf pointer and use xsk_buff_to_mxbuf (Tariq)
+> >>>>>
+> >>>>> - Clarify xdp_buff vs 'XDP frame' (Jesper)
+> >>>>>
+> >>>>> - Explicitly mention that AF_XDP RX descriptor lacks metadata size =
+(Jesper)
+> >>>>>
+> >>>>> - Drop libbpf_flags/xdp_flags from selftests and use ifindex instea=
+d
+> >>>>>     of ifname (due to recent xsk.h refactoring)
+> >>>>
+> >>>> Applied with the minor changes in the selftests discussed in patch 1=
+1 and 17.
+> >>>> Thanks!
+> >>>
+> >>> Awesome, thanks! I was gonna resend around Wed, but thank you for
+> >>> taking care of that!
+> >> Great stuff, congrats! :)
 > >
-> > Are you speaking of length_mt6() ?
-> Yes, but not only there, see also:
+> > Yeah! Thanks for carrying this forward, Stanislav! :)
+
+Thank you all as well for the valuable feedback and reviews!
+
+> +1000 -- great work everybody! :-)
 >
-> [1]:
-> dump_ipv6_packet()
-> nf_ct_bridge_pre()
-> ovs_skb_network_trim()/tcf_ct_skb_network_trim()
-> cake_ack_filter()
+> To Alexander (Cc Jesse and Tony), do you think someone from Intel could
+> look at extending drivers:
 >
-> These places get pktlen directly from ipv6_hdr(skb)->payload_len.
-
-dump_ipv6_packet() is right if its intent is to 'dump header values'
-If jumbo is not yet parsed, this should be added.
-
-cake_ack_filter() depends on receiving non malicious packets, which is
-not guaranteed.
-
-Special casing GSO seems the wrong way to fix buggy spots like these.
+>   drivers/net/ethernet/intel/igb/ - chip i210
+>   drivers/net/ethernet/intel/igc/ - chip i225
+>   drivers/net/ethernet/stmicro/stmmac - for CPU integrated LAN ports
+>
+> We have a customer that have been eager to get hardware RX-timestamping
+> for their AF_XDP use-case (PoC code[1] use software timestamping via
+> bpf_ktime_get_ns() today).  Getting driver support will qualify this
+> hardware as part of their HW solution.
+>
+> --Jesper
+> [1]
+> https://github.com/xdp-project/bpf-examples/blob/master/AF_XDP-interactio=
+n/af_xdp_kern.c#L77
+>
