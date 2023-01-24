@@ -2,235 +2,389 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9077D67949E
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 10:58:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C51B66794B8
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 11:05:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233151AbjAXJ6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 04:58:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43768 "EHLO
+        id S233343AbjAXKFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 05:05:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232654AbjAXJ6E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 04:58:04 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A5F437F38
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 01:58:02 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id d2so13292431wrp.8
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 01:58:01 -0800 (PST)
+        with ESMTP id S233302AbjAXKFq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 05:05:46 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 620941A49C
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 02:05:44 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id tz11so37662135ejc.0
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 02:05:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google;
-        h=in-reply-to:from:references:cc:to:content-language:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BnD7x+LquuXd9eqgq6vzDPsb/grBFPcAf8olwrc15Fk=;
-        b=kx18Z2si5/UyMoX4+arN/hKvj/uxrtaCSFRIKmb2zi7KdQVCkncoaryIuErzarYKNW
-         3Qn7yOJuJJCCBWFYBPjgJAx79MnPNe6fwSZYuGEaXJlA5abvVkSshR+LhyDaYsMC5tGe
-         9Md8SvGG+p8aR1OULHFAJwgMxn2qro+oJlaa33N/eAasJff6D6qilQMVzkNoMtI31CZu
-         Z2YKNQs3Ki+bbGKFTDzSOIA0SzHbbZsoNOjzqijiNr3Td6ZDz2k2pUV8cfSL/FvqK3c+
-         wUSWNI17iy2U/jh6Bu8KPkADC5zuvoaB0ZNjaIG35dtnw7WQ7gF2Szgatu63ftybVaqg
-         NM1Q==
+        d=cloudflare.com; s=google;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1Spp9us1WT7AFknUZ6tTNJ4WsOp2ZLtp7UgfGleWuPQ=;
+        b=e/uXhIbDyOV3ZTcpXiLXeGmgiCnxSzyyggRU1G8VvdY+c4tvoPkBrfoa/3JJD3+wqB
+         AUz8O+QFGnbYHg44yl4o/HOhAVc44i4+j2WExZWiJeGvhx2rbkRAKONwDJ6KZxMPseZz
+         +xJD1wwqjJOxnXgMBUX3qQnG3f3/hr8PqSfT4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:from:references:cc:to:content-language:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=BnD7x+LquuXd9eqgq6vzDPsb/grBFPcAf8olwrc15Fk=;
-        b=ot+Z2hiGdS3I2XaAIWduYzpkaVqRWiB5+azMEf1pmr/OMw4EULGyfav+bDoZ7k1tuD
-         pMUbEBdsJByDKpUSK6yy6eUsMUv5HvsSiEOw4u8miEPCV0AB4NmNvRn7tGlITZwg38Ur
-         n/QHJnieVkcyGPZUWxoQqCJb/RX/BaPtDyiS3ymV/szIlQmdzOKJShCCFhGZHfN75nGP
-         Vt9RzoQOt1qWqjlrfDyZSp5qw3VlauYRlW3b801bDHDFpoM6YqX3UdT6/gevMIczBYKN
-         IyFCbt7cJ3dxapwTh6R0ceI7Nng7SeZV6J2uOQsP1HeB/VAShIRXGFLTg9hxSTL4hygU
-         fXgg==
-X-Gm-Message-State: AFqh2kooU2zJ7EnsGGZvICIAJp/nLQrU4V9TSlycViY1RnI8raoxsvCt
-        kKRBckFgQ8FCMKg4ZuBteA2XPQ==
-X-Google-Smtp-Source: AMrXdXtRxsPJpsCWbfTy9Reijg6XDK1VCY9JcQZ5d9XcuFAlBQYQhTPhnXMyd6uSAZl7OVklWuFv9w==
-X-Received: by 2002:adf:dcc8:0:b0:2bf:950f:d4bc with SMTP id x8-20020adfdcc8000000b002bf950fd4bcmr9549767wrm.11.1674554280356;
-        Tue, 24 Jan 2023 01:58:00 -0800 (PST)
-Received: from ?IPV6:2a02:578:8593:1200:aa20:891c:fc72:f8f? ([2a02:578:8593:1200:aa20:891c:fc72:f8f])
-        by smtp.gmail.com with ESMTPSA id f5-20020a5d50c5000000b00241bd7a7165sm1445981wrt.82.2023.01.24.01.57.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 Jan 2023 01:57:59 -0800 (PST)
-Content-Type: multipart/mixed; boundary="------------huW3oKL2vytUMj2evfQ8dg0J"
-Message-ID: <14d5e179-807c-cd9d-d156-ca90c2a03ed6@tessares.net>
-Date:   Tue, 24 Jan 2023 10:57:58 +0100
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1Spp9us1WT7AFknUZ6tTNJ4WsOp2ZLtp7UgfGleWuPQ=;
+        b=w/9RuzwsqpgMGOErAcX0WtfamE/CiJvrA+m/1RbFSN88yaA1eNiKP05WLq5Ubw5DoG
+         ifH5ng3zpbjsGd3KucgW0fHdy1I/RMVthb3PKpm39B/8N8/l2CaMvuGXCF/t+G+mJP5U
+         KQuonyma1FG2j+yRXftH6PK4z7nMVYOXK4UrTRLvwlNmS+/DluZqqJjRL5q6nmCFOXq3
+         gs+/8tE2vMDRlU8NlsEKBjHsmGZatHap5bVyaVLf+qBFHESm0mkgO5ZCGvyuuxlb76TL
+         EdHPrDgly4kMxxON+beCmRaTxkeQv114n0wNq93YMr25saN69klKqA2OKp0MbVNcWNKO
+         sswA==
+X-Gm-Message-State: AFqh2kpbu1t8rLpPmLf3TNPu5ZXPJETHNx6OtR3EWKOwsLzJvy/uWKuy
+        mZrvETJ0ZR2O3wESXFXuhk3YuQ==
+X-Google-Smtp-Source: AMrXdXtXZqDMKJq4r3rqDNd6U2hbG5CLc5Y4rxGK1CCSWKQ8KfB9WNcC6z2ekQfbGs3Qr9WFOiJ3mg==
+X-Received: by 2002:a17:907:9252:b0:86e:d832:2f60 with SMTP id kb18-20020a170907925200b0086ed8322f60mr24761995ejb.48.1674554742820;
+        Tue, 24 Jan 2023 02:05:42 -0800 (PST)
+Received: from cloudflare.com (79.184.123.123.ipv4.supernova.orange.pl. [79.184.123.123])
+        by smtp.gmail.com with ESMTPSA id fx35-20020a1709069ea300b0085d6bfc6201sm673020ejc.86.2023.01.24.02.05.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Jan 2023 02:05:42 -0800 (PST)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+Date:   Tue, 24 Jan 2023 11:05:26 +0100
+Subject: [PATCH net-next v5 1/2] inet: Add IP_LOCAL_PORT_RANGE socket option
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: linux-next: build failure after merge of the net-next tree
-Content-Language: en-GB
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20221221-sockopt-port-range-v5-1-9fb2c00ad293@cloudflare.com>
+References: <20221221-sockopt-port-range-v5-0-9fb2c00ad293@cloudflare.com>
+In-Reply-To: <20221221-sockopt-port-range-v5-0-9fb2c00ad293@cloudflare.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <20230124100249.5ec4512c@canb.auug.org.au>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <20230124100249.5ec4512c@canb.auug.org.au>
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Leon Romanovsky <leon@kernel.org>, selinux@vger.kernel.org,
+        Paul Moore <paul@paul-moore.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>, kernel-team@cloudflare.com,
+        Marek Majkowski <marek@cloudflare.com>
+X-Mailer: b4 0.11.0
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------huW3oKL2vytUMj2evfQ8dg0J
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Users who want to share a single public IP address for outgoing connections
+between several hosts traditionally reach for SNAT. However, SNAT requires
+state keeping on the node(s) performing the NAT.
 
-Hi Stephen,
+A stateless alternative exists, where a single IP address used for egress
+can be shared between several hosts by partitioning the available ephemeral
+port range. In such a setup:
 
-On 24/01/2023 00:02, Stephen Rothwell wrote:
-> Hi all,
-> 
-> After merging the net-next tree, today's linux-next build (powerpc
-> ppc64_defconfig) failed like this:
-> 
-> In file included from net/ethtool/netlink.c:6:
-> net/ethtool/netlink.h:177:20: error: redefinition of 'ethnl_update_bool'
->   177 | static inline void ethnl_update_bool(bool *dst, const struct nlattr *attr,
->       |                    ^~~~~~~~~~~~~~~~~
-> net/ethtool/netlink.h:125:20: note: previous definition of 'ethnl_update_bool' with type 'void(bool *, const struct nlattr *, bool *)' {aka 'void(_Bool *, const struct nlattr *, _Bool *)'}
->   125 | static inline void ethnl_update_bool(bool *dst, const struct nlattr *attr,
->       |                    ^~~~~~~~~~~~~~~~~
+1. Each host gets assigned a disjoint range of ephemeral ports.
+2. Applications open connections from the host-assigned port range.
+3. Return traffic gets routed to the host based on both, the destination IP
+   and the destination port.
 
-Thank you for the patch, we had the same issue in MPTCP tree when
-merging net and net-next.
+An application which wants to open an outgoing connection (connect) from a
+given port range today can choose between two solutions:
 
-> Caused by commit
-> 
->   dc0b98a1758f ("ethtool: Add and use ethnl_update_bool.")
-> 
-> merging badly with commit
-> 
->   7c494a7749a7 ("net: ethtool: netlink: introduce ethnl_update_bool()")
-> 
-> from the net tree.
-> 
-> I applied the following merge fix up.
-> 
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Tue, 24 Jan 2023 09:58:16 +1100
-> Subject: [PATCH] fix up for "ethtool: Add and use ethnl_update_bool."
-> 
-> interacting with "net: ethtool: netlink: introduce ethnl_update_bool()"
-> 
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> ---
->  net/ethtool/netlink.h | 26 --------------------------
->  1 file changed, 26 deletions(-)
-> 
-> diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
-> index 4992fab0d06b..b01f7cd542c4 100644
-> --- a/net/ethtool/netlink.h
-> +++ b/net/ethtool/netlink.h
-> @@ -111,32 +111,6 @@ static inline void ethnl_update_u8(u8 *dst, const struct nlattr *attr,
->  	*mod = true;
->  }
->  
-> -/**
-> - * ethnl_update_bool() - update bool from NLA_U8 attribute
-> - * @dst:  value to update
-> - * @attr: netlink attribute with new value or null
-> - * @mod:  pointer to bool for modification tracking
-> - *
-> - * Use the u8 value from NLA_U8 netlink attribute @attr to set bool variable
-> - * pointed to by @dst to false (if zero) or 1 (if not); do nothing if @attr is
-> - * null. Bool pointed to by @mod is set to true if this function changed the
-> - * logical value of *dst, otherwise it is left as is.
-> - */
-> -static inline void ethnl_update_bool(bool *dst, const struct nlattr *attr,
-> -				     bool *mod)
-> -{
-> -	u8 val;
-> -
-> -	if (!attr)
-> -		return;
-> -	val = !!nla_get_u8(attr);
-> -	if (*dst == val)
-> -		return;
-> -
-> -	*dst = val;
-> -	*mod = true;
-> -}
+1. Manually pick the source port by bind()'ing to it before connect()'ing
+   the socket.
 
-Small detail: should we not remove the other one -- introduced by commit
-dc0b98a1758f ("ethtool: Add and use ethnl_update_bool.") -- instead? The
-other one has some typos in the description and is using "!!*dst" while
-it is not needed if I'm not mistaken.
+   This approach has a couple of downsides:
 
-In MPTCP tree for the moment, I removed the other one but I will follow
-up on which one I need to discard :)
-Just in case, I attached the patch I used. I can send it properly if needed.
+   a) Search for a free port has to be implemented in the user-space. If
+      the chosen 4-tuple happens to be busy, the application needs to retry
+      from a different local port number.
 
-Cheers,
-Matt
+      Detecting if 4-tuple is busy can be either easy (TCP) or hard
+      (UDP). In TCP case, the application simply has to check if connect()
+      returned an error (EADDRNOTAVAIL). That is assuming that the local
+      port sharing was enabled (REUSEADDR) by all the sockets.
+
+        # Assume desired local port range is 60_000-60_511
+        s = socket(AF_INET, SOCK_STREAM)
+        s.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+        s.bind(("192.0.2.1", 60_000))
+        s.connect(("1.1.1.1", 53))
+        # Fails only if 192.0.2.1:60000 -> 1.1.1.1:53 is busy
+        # Application must retry with another local port
+
+      In case of UDP, the network stack allows binding more than one socket
+      to the same 4-tuple, when local port sharing is enabled
+      (REUSEADDR). Hence detecting the conflict is much harder and involves
+      querying sock_diag and toggling the REUSEADDR flag [1].
+
+   b) For TCP, bind()-ing to a port within the ephemeral port range means
+      that no connecting sockets, that is those which leave it to the
+      network stack to find a free local port at connect() time, can use
+      the this port.
+
+      IOW, the bind hash bucket tb->fastreuse will be 0 or 1, and the port
+      will be skipped during the free port search at connect() time.
+
+2. Isolate the app in a dedicated netns and use the use the per-netns
+   ip_local_port_range sysctl to adjust the ephemeral port range bounds.
+
+   The per-netns setting affects all sockets, so this approach can be used
+   only if:
+
+   - there is just one egress IP address, or
+   - the desired egress port range is the same for all egress IP addresses
+     used by the application.
+
+   For TCP, this approach avoids the downsides of (1). Free port search and
+   4-tuple conflict detection is done by the network stack:
+
+     system("sysctl -w net.ipv4.ip_local_port_range='60000 60511'")
+
+     s = socket(AF_INET, SOCK_STREAM)
+     s.setsockopt(SOL_IP, IP_BIND_ADDRESS_NO_PORT, 1)
+     s.bind(("192.0.2.1", 0))
+     s.connect(("1.1.1.1", 53))
+     # Fails if all 4-tuples 192.0.2.1:60000-60511 -> 1.1.1.1:53 are busy
+
+  For UDP this approach has limited applicability. Setting the
+  IP_BIND_ADDRESS_NO_PORT socket option does not result in local source
+  port being shared with other connected UDP sockets.
+
+  Hence relying on the network stack to find a free source port, limits the
+  number of outgoing UDP flows from a single IP address down to the number
+  of available ephemeral ports.
+
+To put it another way, partitioning the ephemeral port range between hosts
+using the existing Linux networking API is cumbersome.
+
+To address this use case, add a new socket option at the SOL_IP level,
+named IP_LOCAL_PORT_RANGE. The new option can be used to clamp down the
+ephemeral port range for each socket individually.
+
+The option can be used only to narrow down the per-netns local port
+range. If the per-socket range lies outside of the per-netns range, the
+latter takes precedence.
+
+UAPI-wise, the low and high range bounds are passed to the kernel as a pair
+of u16 values in host byte order packed into a u32. This avoids pointer
+passing.
+
+  PORT_LO = 40_000
+  PORT_HI = 40_511
+
+  s = socket(AF_INET, SOCK_STREAM)
+  v = struct.pack("I", PORT_HI << 16 | PORT_LO)
+  s.setsockopt(SOL_IP, IP_LOCAL_PORT_RANGE, v)
+  s.bind(("127.0.0.1", 0))
+  s.getsockname()
+  # Local address between ("127.0.0.1", 40_000) and ("127.0.0.1", 40_511),
+  # if there is a free port. EADDRINUSE otherwise.
+
+[1] https://github.com/cloudflare/cloudflare-blog/blob/232b432c1d57/2022-02-connectx/connectx.py#L116
+
+v4 -> v5:
+ * Use the fact that netns port range starts at 1 when clamping. (Kuniyuki)
+
+v3 -> v4:
+ * Clarify that u16 values are in host byte order (Neal)
+
+v2 -> v3:
+ * Make SCTP bind()/bind_add() respect IP_LOCAL_PORT_RANGE option (Eric)
+
+v1 -> v2:
+ * Fix the corner case when the per-socket range doesn't overlap with the
+   per-netns range. Fallback correctly to the per-netns range. (Kuniyuki)
+
+Reviewed-by: Marek Majkowski <marek@cloudflare.com>
+Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+---
+ include/net/inet_sock.h         |  4 ++++
+ include/net/ip.h                |  3 ++-
+ include/uapi/linux/in.h         |  1 +
+ net/ipv4/inet_connection_sock.c | 25 +++++++++++++++++++++++--
+ net/ipv4/inet_hashtables.c      |  2 +-
+ net/ipv4/ip_sockglue.c          | 18 ++++++++++++++++++
+ net/ipv4/udp.c                  |  2 +-
+ net/sctp/socket.c               |  2 +-
+ 8 files changed, 51 insertions(+), 6 deletions(-)
+
+diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+index bf5654ce711e..51857117ac09 100644
+--- a/include/net/inet_sock.h
++++ b/include/net/inet_sock.h
+@@ -249,6 +249,10 @@ struct inet_sock {
+ 	__be32			mc_addr;
+ 	struct ip_mc_socklist __rcu	*mc_list;
+ 	struct inet_cork_full	cork;
++	struct {
++		__u16 lo;
++		__u16 hi;
++	}			local_port_range;
+ };
+ 
+ #define IPCORK_OPT	1	/* ip-options has been held in ipcork.opt */
+diff --git a/include/net/ip.h b/include/net/ip.h
+index 144bdfbb25af..c3fffaa92d6e 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -340,7 +340,8 @@ static inline u64 snmp_fold_field64(void __percpu *mib, int offt, size_t syncp_o
+ 	} \
+ }
+ 
+-void inet_get_local_port_range(struct net *net, int *low, int *high);
++void inet_get_local_port_range(const struct net *net, int *low, int *high);
++void inet_sk_get_local_port_range(const struct sock *sk, int *low, int *high);
+ 
+ #ifdef CONFIG_SYSCTL
+ static inline bool inet_is_local_reserved_port(struct net *net, unsigned short port)
+diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
+index 07a4cb149305..4b7f2df66b99 100644
+--- a/include/uapi/linux/in.h
++++ b/include/uapi/linux/in.h
+@@ -162,6 +162,7 @@ struct in_addr {
+ #define MCAST_MSFILTER			48
+ #define IP_MULTICAST_ALL		49
+ #define IP_UNICAST_IF			50
++#define IP_LOCAL_PORT_RANGE		51
+ 
+ #define MCAST_EXCLUDE	0
+ #define MCAST_INCLUDE	1
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index d1f837579398..6ed7e65de494 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -117,7 +117,7 @@ bool inet_rcv_saddr_any(const struct sock *sk)
+ 	return !sk->sk_rcv_saddr;
+ }
+ 
+-void inet_get_local_port_range(struct net *net, int *low, int *high)
++void inet_get_local_port_range(const struct net *net, int *low, int *high)
+ {
+ 	unsigned int seq;
+ 
+@@ -130,6 +130,27 @@ void inet_get_local_port_range(struct net *net, int *low, int *high)
+ }
+ EXPORT_SYMBOL(inet_get_local_port_range);
+ 
++void inet_sk_get_local_port_range(const struct sock *sk, int *low, int *high)
++{
++	const struct inet_sock *inet = inet_sk(sk);
++	const struct net *net = sock_net(sk);
++	int lo, hi, sk_lo, sk_hi;
++
++	inet_get_local_port_range(net, &lo, &hi);
++
++	sk_lo = inet->local_port_range.lo;
++	sk_hi = inet->local_port_range.hi;
++
++	if (unlikely(lo <= sk_lo && sk_lo <= hi))
++		lo = sk_lo;
++	if (unlikely(lo <= sk_hi && sk_hi <= hi))
++		hi = sk_hi;
++
++	*low = lo;
++	*high = hi;
++}
++EXPORT_SYMBOL(inet_sk_get_local_port_range);
++
+ static bool inet_use_bhash2_on_bind(const struct sock *sk)
+ {
+ #if IS_ENABLED(CONFIG_IPV6)
+@@ -316,7 +337,7 @@ inet_csk_find_open_port(const struct sock *sk, struct inet_bind_bucket **tb_ret,
+ ports_exhausted:
+ 	attempt_half = (sk->sk_reuse == SK_CAN_REUSE) ? 1 : 0;
+ other_half_scan:
+-	inet_get_local_port_range(net, &low, &high);
++	inet_sk_get_local_port_range(sk, &low, &high);
+ 	high++; /* [32768, 60999] -> [32768, 61000[ */
+ 	if (high - low < 4)
+ 		attempt_half = 0;
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 7a13dd7f546b..e41fdc38ce19 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -1016,7 +1016,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 
+ 	l3mdev = inet_sk_bound_l3mdev(sk);
+ 
+-	inet_get_local_port_range(net, &low, &high);
++	inet_sk_get_local_port_range(sk, &low, &high);
+ 	high++; /* [32768, 60999] -> [32768, 61000[ */
+ 	remaining = high - low;
+ 	if (likely(remaining > 1))
+diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
+index 9f92ae35bb01..b511ff0adc0a 100644
+--- a/net/ipv4/ip_sockglue.c
++++ b/net/ipv4/ip_sockglue.c
+@@ -923,6 +923,7 @@ int do_ip_setsockopt(struct sock *sk, int level, int optname,
+ 	case IP_CHECKSUM:
+ 	case IP_RECVFRAGSIZE:
+ 	case IP_RECVERR_RFC4884:
++	case IP_LOCAL_PORT_RANGE:
+ 		if (optlen >= sizeof(int)) {
+ 			if (copy_from_sockptr(&val, optval, sizeof(val)))
+ 				return -EFAULT;
+@@ -1365,6 +1366,20 @@ int do_ip_setsockopt(struct sock *sk, int level, int optname,
+ 		WRITE_ONCE(inet->min_ttl, val);
+ 		break;
+ 
++	case IP_LOCAL_PORT_RANGE:
++	{
++		const __u16 lo = val;
++		const __u16 hi = val >> 16;
++
++		if (optlen != sizeof(__u32))
++			goto e_inval;
++		if (lo != 0 && hi != 0 && lo > hi)
++			goto e_inval;
++
++		inet->local_port_range.lo = lo;
++		inet->local_port_range.hi = hi;
++		break;
++	}
+ 	default:
+ 		err = -ENOPROTOOPT;
+ 		break;
+@@ -1743,6 +1758,9 @@ int do_ip_getsockopt(struct sock *sk, int level, int optname,
+ 	case IP_MINTTL:
+ 		val = inet->min_ttl;
+ 		break;
++	case IP_LOCAL_PORT_RANGE:
++		val = inet->local_port_range.hi << 16 | inet->local_port_range.lo;
++		break;
+ 	default:
+ 		sockopt_release_sock(sk);
+ 		return -ENOPROTOOPT;
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 9592fe3e444a..c605d171eb2d 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -248,7 +248,7 @@ int udp_lib_get_port(struct sock *sk, unsigned short snum,
+ 		int low, high, remaining;
+ 		unsigned int rand;
+ 
+-		inet_get_local_port_range(net, &low, &high);
++		inet_sk_get_local_port_range(sk, &low, &high);
+ 		remaining = (high - low) + 1;
+ 
+ 		rand = get_random_u32();
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index a98511b676cd..b91616f819de 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -8322,7 +8322,7 @@ static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
+ 		int low, high, remaining, index;
+ 		unsigned int rover;
+ 
+-		inet_get_local_port_range(net, &low, &high);
++		inet_sk_get_local_port_range(sk, &low, &high);
+ 		remaining = (high - low) + 1;
+ 		rover = get_random_u32_below(remaining) + low;
+ 
+
 -- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
---------------huW3oKL2vytUMj2evfQ8dg0J
-Content-Type: text/x-patch; charset=UTF-8;
- name="0001-net-ethtool-fix-up-for-ethtool-Add-and-use-ethnl_upd.patch"
-Content-Disposition: attachment;
- filename*0="0001-net-ethtool-fix-up-for-ethtool-Add-and-use-ethnl_upd.pa";
- filename*1="tch"
-Content-Transfer-Encoding: base64
-
-RnJvbSBkY2EzZGJmOTBhNGZkZjQxOTExMjJhZGRlMjI3ZmMzMTgwNzI2NGViIE1vbiBTZXAg
-MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBTdGVwaGVuIFJvdGh3ZWxsIDxzZnJAY2FuYi5hdXVn
-Lm9yZy5hdT4KRGF0ZTogVHVlLCAyNCBKYW4gMjAyMyAxMDowMjo0OSArMTEwMApTdWJqZWN0
-OiBbUEFUQ0ggbmV0LW5leHRdIG5ldDogZXRodG9vbDogZml4IHVwIGZvciAiZXRodG9vbDog
-QWRkIGFuZCB1c2UKIGV0aG5sX3VwZGF0ZV9ib29sLiIKCkFmdGVyIG1lcmdpbmcgdGhlIG5l
-dC1uZXh0IHRyZWUsIHRvZGF5J3MgbGludXgtbmV4dCBidWlsZCAocG93ZXJwYwpwcGM2NF9k
-ZWZjb25maWcpIGZhaWxlZCBsaWtlIHRoaXM6CgogIEluIGZpbGUgaW5jbHVkZWQgZnJvbSBu
-ZXQvZXRodG9vbC9uZXRsaW5rLmM6NjoKICBuZXQvZXRodG9vbC9uZXRsaW5rLmg6MTc3OjIw
-OiBlcnJvcjogcmVkZWZpbml0aW9uIG9mICdldGhubF91cGRhdGVfYm9vbCcKICAgIDE3NyB8
-IHN0YXRpYyBpbmxpbmUgdm9pZCBldGhubF91cGRhdGVfYm9vbChib29sICpkc3QsIGNvbnN0
-IHN0cnVjdCBubGF0dHIgKmF0dHIsCiAgICAgICAgfCAgICAgICAgICAgICAgICAgICAgXn5+
-fn5+fn5+fn5+fn5+fn4KICBuZXQvZXRodG9vbC9uZXRsaW5rLmg6MTI1OjIwOiBub3RlOiBw
-cmV2aW91cyBkZWZpbml0aW9uIG9mICdldGhubF91cGRhdGVfYm9vbCcgd2l0aCB0eXBlICd2
-b2lkKGJvb2wgKiwgY29uc3Qgc3RydWN0IG5sYXR0ciAqLCBib29sICopJyB7YWthICd2b2lk
-KF9Cb29sICosIGNvbnN0IHN0cnVjdCBubGF0dHIgKiwgX0Jvb2wgKiknfQogICAgMTI1IHwg
-c3RhdGljIGlubGluZSB2b2lkIGV0aG5sX3VwZGF0ZV9ib29sKGJvb2wgKmRzdCwgY29uc3Qg
-c3RydWN0IG5sYXR0ciAqYXR0ciwKICAgICAgICB8ICAgICAgICAgICAgICAgICAgICBefn5+
-fn5+fn5+fn5+fn5+fgoKQ2F1c2VkIGJ5OgoKICBjb21taXQgZGMwYjk4YTE3NThmICgiZXRo
-dG9vbDogQWRkIGFuZCB1c2UgZXRobmxfdXBkYXRlX2Jvb2wuIikKCm1lcmdpbmcgYmFkbHkg
-d2l0aDoKCiAgY29tbWl0IDdjNDk0YTc3NDlhNyAoIm5ldDogZXRodG9vbDogbmV0bGluazog
-aW50cm9kdWNlIGV0aG5sX3VwZGF0ZV9ib29sKCkiKQoKZnJvbSB0aGUgbmV0IHRyZWUuCgpU
-aGUgdmVyc2lvbiBmcm9tIG5ldC1uZXh0IC0tIGNvbW1pdCA3YzQ5NGE3NzQ5YTcgKCJuZXQ6
-IGV0aHRvb2w6Cm5ldGxpbms6IGludHJvZHVjZSBldGhubF91cGRhdGVfYm9vbCgpIikgLS0g
-aGFzIGJlZW4gdGFrZW4sIGtlZXBpbmcgdGhlCm9uZSBmcm9tIG5ldC4KCkZpeGVzOiBkYzBi
-OThhMTc1OGYgKCJldGh0b29sOiBBZGQgYW5kIHVzZSBldGhubF91cGRhdGVfYm9vbC4iKQpD
-by1kZXZlbG9wZWQtYnk6IE1hdHRoaWV1IEJhZXJ0cyA8bWF0dGhpZXUuYmFlcnRzQHRlc3Nh
-cmVzLm5ldD4KU2lnbmVkLW9mZi1ieTogTWF0dGhpZXUgQmFlcnRzIDxtYXR0aGlldS5iYWVy
-dHNAdGVzc2FyZXMubmV0PgpTaWduZWQtb2ZmLWJ5OiBTdGVwaGVuIFJvdGh3ZWxsIDxzZnJA
-Y2FuYi5hdXVnLm9yZy5hdT4KLS0tCiBuZXQvZXRodG9vbC9uZXRsaW5rLmggfCAyNiAtLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDI2IGRlbGV0aW9ucygt
-KQoKZGlmZiAtLWdpdCBhL25ldC9ldGh0b29sL25ldGxpbmsuaCBiL25ldC9ldGh0b29sL25l
-dGxpbmsuaAppbmRleCA0OTkyZmFiMGQwNmIuLjI5YWVmMzk0NzZlYiAxMDA2NDQKLS0tIGEv
-bmV0L2V0aHRvb2wvbmV0bGluay5oCisrKyBiL25ldC9ldGh0b29sL25ldGxpbmsuaApAQCAt
-MTYzLDMyICsxNjMsNiBAQCBzdGF0aWMgaW5saW5lIHZvaWQgZXRobmxfdXBkYXRlX2Jvb2wz
-Mih1MzIgKmRzdCwgY29uc3Qgc3RydWN0IG5sYXR0ciAqYXR0ciwKIAkqbW9kID0gdHJ1ZTsK
-IH0KIAotLyoqCi0gKiBldGhubF91cGRhdGVfYm9vbCgpIC0gdXBkYXRlYiBib29sIHVzZWQg
-YXMgYm9vbCBmcm9tIE5MQV9VOCBhdHRyaWJ1dGUKLSAqIEBkc3Q6ICB2YWx1ZSB0byB1cGRh
-dGUKLSAqIEBhdHRyOiBuZXRsaW5rIGF0dHJpYnV0ZSB3aXRoIG5ldyB2YWx1ZSBvciBudWxs
-Ci0gKiBAbW9kOiAgcG9pbnRlciB0byBib29sIGZvciBtb2RpZmljYXRpb24gdHJhY2tpbmcK
-LSAqCi0gKiBVc2UgdGhlIGJvb2wgdmFsdWUgZnJvbSBOTEFfVTggbmV0bGluayBhdHRyaWJ1
-dGUgQGF0dHIgdG8gc2V0IGJvb2wgdmFyaWFibGUKLSAqIHBvaW50ZWQgdG8gYnkgQGRzdCB0
-byAwIChpZiB6ZXJvKSBvciAxIChpZiBub3QpOyBkbyBub3RoaW5nIGlmIEBhdHRyIGlzCi0g
-KiBudWxsLiBCb29sIHBvaW50ZWQgdG8gYnkgQG1vZCBpcyBzZXQgdG8gdHJ1ZSBpZiB0aGlz
-IGZ1bmN0aW9uIGNoYW5nZWQgdGhlCi0gKiBsb2dpY2FsIHZhbHVlIG9mICpkc3QsIG90aGVy
-d2lzZSBpdCBpcyBsZWZ0IGFzIGlzLgotICovCi1zdGF0aWMgaW5saW5lIHZvaWQgZXRobmxf
-dXBkYXRlX2Jvb2woYm9vbCAqZHN0LCBjb25zdCBzdHJ1Y3QgbmxhdHRyICphdHRyLAotCQkJ
-CSAgICAgYm9vbCAqbW9kKQotewotCXU4IHZhbDsKLQotCWlmICghYXR0cikKLQkJcmV0dXJu
-OwotCXZhbCA9ICEhbmxhX2dldF91OChhdHRyKTsKLQlpZiAoISEqZHN0ID09IHZhbCkKLQkJ
-cmV0dXJuOwotCi0JKmRzdCA9IHZhbDsKLQkqbW9kID0gdHJ1ZTsKLX0KLQogLyoqCiAgKiBl
-dGhubF91cGRhdGVfYmluYXJ5KCkgLSB1cGRhdGUgYmluYXJ5IGRhdGEgZnJvbSBOTEFfQklO
-QVJZIGF0dHJpYnV0ZQogICogQGRzdDogIHZhbHVlIHRvIHVwZGF0ZQotLSAKMi4zOC4xCgo=
-
-
---------------huW3oKL2vytUMj2evfQ8dg0J--
+2.39.0
