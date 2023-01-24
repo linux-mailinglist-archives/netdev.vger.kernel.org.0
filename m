@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D9CA679FB8
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 18:06:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B0E4679FBB
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 18:07:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234810AbjAXRG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 12:06:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41322 "EHLO
+        id S234717AbjAXRG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 12:06:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234711AbjAXRGY (ORCPT
+        with ESMTP id S234712AbjAXRGY (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 12:06:24 -0500
-Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ABCF5B9B
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D544042DE0
         for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 09:05:38 -0800 (PST)
-Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-15fe106c7c7so12263504fac.8
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-50112511ba7so168311237b3.3
         for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 09:05:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=2mAFJytTgXdPJgctF9DqIjL9Xn6Lv07Xe/o918GKGuQ=;
-        b=xt1U/fjiYmYVQ71FSxDQ4Rho7W+B3ilSzuXMR32+pcd4MFJu3A9Dkhmta1Yow1q6vz
-         6SGinJWYD7w9JAXspI4hMIGQe6cSj6WngjcJypD1Zv2reMIeNVSH0zsOk+NgbfloPlzZ
-         ulfad8ZjC8CqWXtMzR5svxrLiV67UkOJRfykcrp42+xTS4FBhJuasnyQsuHwPfUjl1fz
-         LOhmqz/G2K3Ry4AMuNbDOeqo11edO1g3GsDTjb2AhU6JNuZlo8+V2YbhlAXnCRdMP8eH
-         5wSju4H3UXBrgm2tDncBxiMUewomgwsj7ingJiQGhXSlJ0JQEXjQJl9PX6FxO803Y0Fr
-         28Jw==
+        bh=kwDAKy8ZNBn+MyM8TOUjSuS2/bb2tj8qS1YauFIL6hY=;
+        b=CHCQUAKhsMIyyDvXtVpBejWQQYq8PNudeXgwzhujNJDZ8yrFqFXBZuk7da0SiDTr+g
+         3dfQGRhFdLRonSNsdqi7hH4SWLDSPPCHkaCsj4Ld+C89ZFEUgwqdkvmyesi7GQtfDdYg
+         qh3AHVOzyzIQS/RWsx02vext128xdJA5VikiP97kAtWGNt7Af5odLbF2onhGtSbd6r5R
+         sZSQwjpKaRZ2/KKMJHW+pSRH47HNgG/eecWODTOJcOjbsZb85QqI5nplBVxRPirW1NCW
+         dGGkkX/H6dJ5Sl0BS5nj4AcTly4wpSvEinj/XyrviepvFIx7bm5/4VY3ugeOC14pz3L7
+         sd6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=2mAFJytTgXdPJgctF9DqIjL9Xn6Lv07Xe/o918GKGuQ=;
-        b=urSQTfuzP3JtZP1cMEHS7MA5leBWHVcHRCd24ETnvvxhMrtay93Wf0hTDB5bF+CdNm
-         reGX1IOMRlH/Y7RxGgkwsSWQe1nrxlaBH9JassqvSvZdPn/EO1/vcwLTa0mJcTh+6JZo
-         DJQevIeWdlqMT6/MXfh7a0aV+KOsvi0xbxuyyJft116q5+z3HyNHlPdZJpQU28GYAats
-         3TvDEk9fvad2cESXBTE/omZQj0o67qXo4xQ1xt2H9o1ryve3REW/YDQ1dS7WjqfTZPBI
-         Z1ppu1QlkJvtvgkRoHODw0E9PiZvob9zxaEEIEx7lzUiUcXPIbhHIfmAg09ucDMShbTJ
-         yghQ==
-X-Gm-Message-State: AFqh2krQ0VwdFOjDtqn5phEmTLeaUwiZmGbX6p9czirtXzJoGQp06RLA
-        RanfAXsH1l+eM197OXIIn6GH7w2VV0EU6vtn
-X-Google-Smtp-Source: AMrXdXsZ516bzkaFfIheoL5PeN+NDk+8xd+hGP/DhQn3lSZbyrLQkg1hSvbxwkp3KZFaxVn1MRtKKw==
-X-Received: by 2002:a05:6359:2e9a:b0:e5:45bd:7f0 with SMTP id rp26-20020a0563592e9a00b000e545bd07f0mr565354rwb.14.1674579931401;
-        Tue, 24 Jan 2023 09:05:31 -0800 (PST)
+        bh=kwDAKy8ZNBn+MyM8TOUjSuS2/bb2tj8qS1YauFIL6hY=;
+        b=8FlzDcw9EtAwlTvH3kfj9JHH5vsLwHx0V9ZsC0BSHkPH3MyvsUQcXlw8lYQ28uWpOE
+         g7tXdFW2w2DYJytbmK0doec4Q0xjB2JhZjCEMy2uy6iqiCDiUg13fBXp12bITOXKBZ/e
+         5UFg4OM015dHTVfSvu13KcaPyUu+Bp98xFhYAaRpAc6K8pjxbcgfz1C8MyN8YHfX3Pmv
+         MIule8UQCZZbt5Zf24aqFWwhFVxu2uiOpeNbRcgM6X0bSoIROaErhLoMR3P8Lh7bvwm+
+         kBMhozjvRTFpjcwu1qrllok7FHb2MDqGr1QbTIyY4HiaBnT/UKZx05iWpxcUTcz+9qKm
+         ATWA==
+X-Gm-Message-State: AFqh2kpln7RDDTp4Yr9n+itChcrXZ7pmq3XQ0NJDwD16ihwzYxogZxK5
+        oDo0R7kklP/lgE8Yb7xpT+jQEct5T3uapmB3
+X-Google-Smtp-Source: AMrXdXuDTqwye8u0lWyBb0ZFFNE4AkUUlAEt9AO8/IHLEYB9eGxghQUk2hMF7FZD9lwd5/WmRuYRdA==
+X-Received: by 2002:a05:7500:3608:b0:f1:f5dd:9430 with SMTP id fo8-20020a057500360800b000f1f5dd9430mr1990416gab.65.1674579932558;
+        Tue, 24 Jan 2023 09:05:32 -0800 (PST)
 Received: from localhost.localdomain (bras-base-kntaon1618w-grc-10-184-145-9-64.dsl.bell.ca. [184.145.9.64])
-        by smtp.gmail.com with ESMTPSA id t5-20020a05620a0b0500b007063036cb03sm1700208qkg.126.2023.01.24.09.05.30
+        by smtp.gmail.com with ESMTPSA id t5-20020a05620a0b0500b007063036cb03sm1700208qkg.126.2023.01.24.09.05.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Jan 2023 09:05:30 -0800 (PST)
+        Tue, 24 Jan 2023 09:05:32 -0800 (PST)
 From:   Jamal Hadi Salim <jhs@mojatatu.com>
 To:     netdev@vger.kernel.org
 Cc:     kernel@mojatatu.com, deb.chatterjee@intel.com,
@@ -57,9 +57,9 @@ Cc:     kernel@mojatatu.com, deb.chatterjee@intel.com,
         jiri@resnulli.us, xiyou.wangcong@gmail.com, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         vladbu@nvidia.com, simon.horman@corigine.com
-Subject: [PATCH net-next RFC 15/20] p4tc: add action template create, update, delete, get, flush and dump
-Date:   Tue, 24 Jan 2023 12:05:05 -0500
-Message-Id: <20230124170510.316970-15-jhs@mojatatu.com>
+Subject: [PATCH net-next RFC 16/20] p4tc: add table create, update, delete, get, flush and dump
+Date:   Tue, 24 Jan 2023 12:05:06 -0500
+Message-Id: <20230124170510.316970-16-jhs@mojatatu.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230124170510.316970-1-jhs@mojatatu.com>
 References: <20230124170510.316970-1-jhs@mojatatu.com>
@@ -74,642 +74,591 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit allows users to create, update, delete, get, flush and dump
-dynamic actions based on P4 action definition.
+This commit introduces code to create and maintain P4 tables within a P4
+program from user space and the next patch will have the code for
+maintaining entries in the table.
 
-At the moment dynamic actions are tied to P4 programs only and cannot be
-used outside of a P4 program definition.
+As with all other P4TC objects, tables conform to CRUD operations and
+it's important to note that write operations, such as create, update and
+delete, can only be made if the pipeline is not sealed.
 
-Visualize the following action in a P4 program:
+Per the P4 specification, tables prefix their name with the control block
+(although this could be overridden by P4 annotations).
 
-action ipv4_forward(bit<48> dstAddr, bit<8> port)
-{
-     standard_metadata.egress_spec = port;
-     hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
-     hdr.ethernet.dstAddr = dstAddr;
-     hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
-}
+As an example, if one were to create a table named table1 in a
+pipeline named myprog1, on control block "mycontrol", one would use
+the following command:
 
-which is invoked on a P4 table match as such:
+tc p4template create table/myprog1/mycontrol/table1 tblid 1 \
+   keysz 32 nummasks 8 tentries 8192
 
-table mytable {
-        key = {
-            hdr.ipv4.dstAddr: lpm;
-        }
+Above says that we are creating a table attached to pipeline myprog1 on
+control block mycontrol which is called table1. Its key size is 32 bits and
+it can have up to 8 masks and 8192. The table id for table1 is 1. The table
+id is typically provided by the compiler.
 
-        actions = {
-            ipv4_forward;
-            drop;
-            NoAction;
-        }
+Parameters such as nummasks (number of masks this table may have) and
+tentries (maximum number of entries this table may have) may also be
+ommited in which case 8 masks and 256 entries will be assumed.
 
-        size = 1024;
-}
+If one were to template get named table1 (before or after the pipeline is
+sealed) one would use the following command:
 
-We don't have an equivalent built in "ipv4_forward" action in TC. So we
-create this action dynamically.
+tc p4template get table/myprog1/mycontrol/table1
 
-The mechanics of dynamic actions follow the CRUD semantics.
+If one were to dump all the tables from a pipeline named myprog1, one would
+use the following command:
 
-___DYNAMIC CREATION___
+tc p4template get table/myprog1
 
-In this stage we issue the creation command for the dynamic action which
-specifies the action  name, its ID, parameters and the parameter types.
-So for the ipv4_forward action, the creation would look something like this:
+If one were to update table1 (before the pipeline is sealed) one would use
+the following command:
 
-tc p4template create action/aP4proggie/ipv4_forward \
-  param dstAddr type macddr id 1 param port type dev id 2
+tc p4template update table/myprog1/mycontrol/table1 ....
 
-Note1: Although the P4 program defined dstAddr as type bit48 we use our
-type called macaddr (likewise for port) - see commit on p4 types for
-details.
+If one were to delete table1 (before the pipeline is sealed) one would use
+the following command:
 
-Note that in the template creation op we usually just specify the action
-name, the parameters and their respective types. Also see that we specify
-a pipeline name during the template creation command. As an example, the
-above command creates an action template that is bounded to
-pipeline/program named aP4proggie. Also, below is an example of how one
-would specify an ID to the action template created in the above command.
-When the create doesn't specify the action template ID, the kernel
-assigns a new one for us. Also, if the action template ID specified in
-the command is already in use, the kernel will reject the command.
+tc p4template del table/myprog1/mycontrol/table1
 
-tc p4template create action/aP4proggie/ipv4_forward actid 1 \
-  param dstAddr type macddr id 1 param port type dev id 2
+If one were to flush all the tables from a pipeline named myprog1, control
+block "mycontrol" one would use the following command:
 
-Typically the compiler (for example P4C) will always define the actid.
+tc p4template del table/myprog1/mycontrol/
 
-Per the P4 specification, actions might be contained in a control block.
+___Table Permissions___
 
-___OPS_DESCRIPTION___
+Tables can have permissions which apply to all the entries in the specified
+table. Permissions are defined for both what the control plane (user space)
+is allowed to do as well as datapath.
 
-In the next stage (ops description), we need to specify which operations
-this action uses. As example, if we were to specify the operations for
-the ipv4_forward action, we'd update the created action and issue the
-following command:
+The permissions field is a 16bit value which will hold CRUDX (create,
+read, update, delete and execute) permissions for control and data path.
+Bits 9-5 will have the CRUDX values for control and bits 4-0 will have
+CRUDX values for data path. By default each table has the following
+permissions:
 
-tc p4template update action/aP4proggie/ipv4_forward \
-     cmd set metadata.aP4proggie.temp hdrfield.aP4proggie.parser1.ethernet.dstAddr   \
-     cmd set hdrfield.P4proggie.parser1.ethernet.dstAddr hdrfield.P4proggie.parser1.ethernet.srcAddr \
-     cmd set hdrfield.P4proggie.parser1.ethernet.srcAddr  metadata.aP4proggie.temp \
-     cmd set metadata.calc.egress_spec param.port \
-     cmd decr hdrfield.P4proggie.parser1.ipv4.ttl
+CRUD--R--X
 
-As you can see, we refer to the argument values in the ipv4_forward action
-using "param" prefix. So, for example, when referring to the argument port
-in a ipv4_forward, we use "param.port".
+Which means the control plane can perform CRUD operations whereas the data
+path can only Read and execute on the entries.
+The user can override these permissions when creating the table or when
+updating.
 
-Of course the two steps could be combined as so when creating the action:
+For example, the following command will create a table which will not allow
+the datapath to create, update or delete entries but give full CRUD
+permissions for the control plane.
 
-tc p4template create action/aP4proggie/ipv4_forward actid 1 \
-  param dstAddr type macddr id 1 param port type dev id 2 \
-  cmd set metadata.aP4proggie.temp hdrfield.aP4proggie.parser1.ethernet.dstAddr   \
-  cmd set hdrfield.P4proggie.parser1.ethernet.dstAddr hdrfield.P4proggie.parser1.ethernet.srcAddr \
-  cmd set hdrfield.P4proggie.parser1.ethernet.srcAddr  metadata.aP4proggie.temp \
-  cmd set metadata.calc.egress_spec param.port \
-  cmd decr hdrfield.P4proggie.parser1.ipv4.ttl
+$TC p4template create table/aP4proggie/cb/tname tblid 1 keysz 64
+permissions 0x349 ...
 
-___ACTION_ACTIVATION___
+Recall that these permissions come in the form of CRUDXCRUDX, where the
+first CRUDX block is for control and the last is for data path.
 
-Once we provided all the necessary information for the new dynamic action,
-we can go to the final stage, which is action activation. In this stage,
-we activate the dynamic action and make it available for instantiation.
-To activate the action template, we issue the following command:
+So 0x349 is equivalent to CR-D--R--X
 
-tc p4template update action aP4proggie/ipv4_forward state active
+If we were to do a get with the following command:
 
-After the above the command, the action is ready to be instantiated.
+$TC p4template get table/aP4proggie/cb/tname
 
-___RUNTIME___
+The output would be the following:
 
-This next section deals with the runtime part of action templates, which
-handle action template instantiation and binding.
+pipeline name aP4proggie pipeline id 22
+    table id 1
+    table name cb/tname
+    key_sz 64
+    max entries 256
+    masks 8
+    table entries 0
+    permissions CR-D--R--X
 
-To instantiate a new action from a template, we use the following command:
+Note, the permissions concept is more powerful than classical const
+definition currently taken by P4 which makes everything in a table
+read-only.
 
-tc actions add action aP4proggie/ipv4_forward \
-param dstAddr AA:BB:CC:DD:EE:FF param port eth0 index 1
+___Initial Table Entries___
 
-Observe these are the same semantics as what tc today already provides
-with a caveat that we have a keyword "param" to precede the appropriate
-parameters - as such specifying the index is optional (kernel provides
-one when unspecified).
+Templating can create initial table entries. For example:
 
-As previously stated, we refer to the action by it's "full name"
-(pipeline_name/action_name). Here we are creating an instance of the
-ipv4_forward action specifying as parameter values AA:BB:CC:DD:EE:FF for
-dstAddr and eth0 for port. We can create as many instances for action
-templates as we wish.
+tc p4template update table/myprog/cb/tname \
+  entry srcAddr 10.10.10.10/24 dstAddr 1.1.1.0/24 prio 17
 
-To bind the instantiated action to a table entry, you can do use the same
-approach used to bind ordinary actions to filter, for example:
+In this command we are "updating" table cb/tname with a new entry. This
+entry has as its keys srcAddr and dstAddr (both IPv4 addresses) and prio
+17.
 
-tc p4runtime create aP4proggie/table/mycontrol/mytable srcAddr 10.10.10.0/24 \
-action ipv4_forward index 1
+If one was to read back the entry they would get:
 
-The above command will bind our newly instantiated action to a table
-entry which is executed if there's a match.
+pipeline id 22
+    table id 1
+    table name cb/tname
+    key_sz 64
+    max entries 256
+    masks 8
+    default key 1
+    table entries 1
+    permissions CRUD--R--X
+    entry:
+        table id 1
+        entry priority 17
+        key blob    101010a0a0a0a
+        mask blob   ffffff00ffffff
+        create whodunnit tc
+        permissions -RUD--R--X
 
-Of course one could have created the table entry as:
+___Table Actions List___
 
-tc p4runtime create aP4proggie/table/mycontrol/mytable srcAddr 10.10.10.0/24 \
-action ipv4_forward param dstAddr AA:BB:CC:DD:EE:FF param port eth0
+P4 tables allow certain actions but not other to be part of match entry on
+a table or as default actions when there is a miss.
 
-Actions from other control blocks might be referenced as the action
-index is a global ID.
+We also allow flags for each of the actions in this list that specify if
+the action can be added only as a table entry (tableonly), or only as a
+default action (defaultonly). If no flags are specified, it is assumed
+that the action can be used in both contexts.
 
-___OTHER_CONTROL_COMMANDS___
+In P4TC we extend the concept of default action - which in P4 is mapped to
+"a default miss action". Our extension is to add a "hit action" which is
+executed everytime there is a hit.
 
-The lifetime of the dynamic action is tied to its pipeline.
-As with all pipeline components, write operations to action templates, such
-as create, update and delete, can only be executed if the pipeline is not
-sealed. Read/get can be issued even after the pipeline is sealed.
+The default miss action will be executed whenever a table lookup doesn't
+match any of the entries.
 
-If, after we are done with our action template we want to delete it, we
-should issue the following command:
+Both default hit and default miss are optional.
 
-tc p4template del action/aP4proggie/ipv4_forward
+An example of specifying a default miss action is as follows:
 
-Note that we could also not specify the action name and use the ID instead,
-which would transform the above command into the following:
+tc p4template update table/myprog/cb/mytable \
+    default_miss_action permissions 0x109 action drop
 
-tc p4template del action/aP4proggie actid 1
+The above will drop packets if the entry is not found in mytable.
+Note the above makes the default action a const. Meaning the control
+plane can neither replace it nor delete it.
 
-If we had created more action templates and wanted to flush all of the
-action templates from pipeline aP4proggie, one would use the following
-command:
+tc p4template update table/myprog/mytable \
+  default_hit_action permissions 0x30F action ok
 
-tc p4template del action/aP4proggie/
+Whereas the above allows a default hit action to accept the packet.
+The permission 0x30F in binary is (1100001111), which means we have only
+Create and Read permissions in the control plane and Read, Update, Delete
+and eXecute permissions in the data plane. This means, for example, that
+now we can only delete the default hit action from the data plane.
 
-After creating or updating a dynamic actions, if one wishes to verify that
-the dynamic action was created correctly, one would use the following
-command:
+__Packet Flow___
 
-tc p4template get action/aP4proggie/ipv4_forward
+As with the pipeline, we also have preactions and postactions for tables
+which can be programmed to teach the kernel how to process the packet.
+Both are optional.
+When a table apply() cmd is invoked on a table:
 
-As with the del operation, when can also specify the action id instead of
-the action name:
+ 1) The table preaction if present is invoked
+ 2) A "key action" is invoked to construct the table key
+ 3) A table lookup is done
+ 4a) If there is a hit
+ - the match entry action will be executed
+ - if there was a match and the entry has no action and a default hit
+   action has been specified then the default hit action will be executed.
+ 4b) If there was a miss
+ - if there was a default miss action it will be executed then
 
-tc p4template get action/aP4proggie actid 1
+ 5) if there is table post action then that is invoked next
 
-The above command will display the relevant data for the action,
-such as parameter names, types, etc.
+Example of how one would create a key action for a table:
+tc p4template create action/myprog/mytable/tkey \
+   cmd set key.myprog.cb/mytable \
+      hdrfield.myprog.parser1.ipv4.dstAddr
 
-If one wanted to check which action templates were associated to a specific
-pipeline, one could use the following command:
+and now bind the key action to the table "mytable"
+$TC p4template update table/myprog/cb/mytable \
+        key action myprog/mytable/tkey
 
-tc p4template get action/aP4proggie/
+Example of how one would create a table post action is:
+tc p4template create action/myprog/mytable/T_mytable_POA \
+ cmd print prefix T_mytable_POA_res results.hit \
+ cmd print prefix T_mytable_POA hdrfield.myprog.parser1.ipv4.dstAddr
 
-Note that this command will only display the name of these action
-templates. To verify their specific details, one should use the get
-command, which was previously described.
+Activate it..
+tc p4template update action/myprog/mytable/T_mytable_POA state active
 
-Tested-by: "Khan, Mohd Arif" <mohd.arif.khan@intel.com>
-Tested-by: "Pottimurthy, Sathya Narayana" <sathya.narayana.pottimurthy@intel.com>
+bind it..
+$TC p4template update table/myprog/cb/mytable postactions \
+    action myprog/mytable/T_mytable_POA
+
 Co-developed-by: Victor Nogueira <victor@mojatatu.com>
 Signed-off-by: Victor Nogueira <victor@mojatatu.com>
 Co-developed-by: Pedro Tammela <pctammela@mojatatu.com>
 Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
 ---
- include/net/act_api.h          |    1 +
- include/net/p4tc.h             |  190 ++++
- include/net/sch_generic.h      |    5 +
- include/net/tc_act/p4tc.h      |   25 +
- include/uapi/linux/p4tc.h      |   46 +
+ include/net/p4tc.h             |   88 ++
+ include/net/p4tc_types.h       |    2 +-
+ include/uapi/linux/p4tc.h      |  103 +++
  net/sched/p4tc/Makefile        |    2 +-
- net/sched/p4tc/p4tc_action.c   | 1824 ++++++++++++++++++++++++++++++++
- net/sched/p4tc/p4tc_pipeline.c |  274 ++++-
+ net/sched/p4tc/p4tc_pipeline.c |   15 +-
+ net/sched/p4tc/p4tc_table.c    | 1591 ++++++++++++++++++++++++++++++++
  net/sched/p4tc/p4tc_tmpl_api.c |    2 +
- 9 files changed, 2343 insertions(+), 26 deletions(-)
- create mode 100644 include/net/tc_act/p4tc.h
- create mode 100644 net/sched/p4tc/p4tc_action.c
+ 7 files changed, 1800 insertions(+), 3 deletions(-)
+ create mode 100644 net/sched/p4tc/p4tc_table.c
 
-diff --git a/include/net/act_api.h b/include/net/act_api.h
-index fd012270d..e4a6d7da6 100644
---- a/include/net/act_api.h
-+++ b/include/net/act_api.h
-@@ -68,6 +68,7 @@ struct tc_action {
- #define TCA_ACT_FLAGS_REPLACE	(1U << (TCA_ACT_FLAGS_USER_BITS + 2))
- #define TCA_ACT_FLAGS_NO_RTNL	(1U << (TCA_ACT_FLAGS_USER_BITS + 3))
- #define TCA_ACT_FLAGS_AT_INGRESS	(1U << (TCA_ACT_FLAGS_USER_BITS + 4))
-+#define TCA_ACT_FLAGS_FROM_P4TC	(1U << (TCA_ACT_FLAGS_USER_BITS + 5))
- 
- /* Update lastuse only if needed, to avoid dirtying a cache line.
-  * We use a temp variable to avoid fetching jiffies twice.
 diff --git a/include/net/p4tc.h b/include/net/p4tc.h
-index 13cf4162e..09d4d85cf 100644
+index 09d4d85cf..58be4f96f 100644
 --- a/include/net/p4tc.h
 +++ b/include/net/p4tc.h
-@@ -9,6 +9,8 @@
- #include <linux/refcount.h>
- #include <linux/rhashtable.h>
- #include <linux/rhashtable-types.h>
-+#include <net/tc_act/p4tc.h>
-+#include <net/p4tc_types.h>
- 
- #define P4TC_DEFAULT_NUM_TABLES P4TC_MINTABLES_COUNT
+@@ -16,11 +16,18 @@
  #define P4TC_DEFAULT_MAX_RULES 1
-@@ -19,6 +21,7 @@
+ #define P4TC_MAXMETA_OFFSET 512
+ #define P4TC_PATH_MAX 3
++#define P4TC_MAX_TENTRIES (2 << 23)
++#define P4TC_DEFAULT_TENTRIES 256
++#define P4TC_MAX_TMASKS 128
++#define P4TC_DEFAULT_TMASKS 8
++
++#define P4TC_MAX_PERMISSION (GENMASK(P4TC_PERM_MAX_BIT, 0))
+ 
+ #define P4TC_KERNEL_PIPEID 0
  
  #define P4TC_PID_IDX 0
  #define P4TC_MID_IDX 1
-+#define P4TC_AID_IDX 1
++#define P4TC_TBLID_IDX 1
+ #define P4TC_AID_IDX 1
  #define P4TC_PARSEID_IDX 1
  #define P4TC_HDRFIELDID_IDX 2
- 
-@@ -26,6 +29,7 @@
- 
- struct p4tc_dump_ctx {
- 	u32 ids[P4TC_PATH_MAX];
-+	struct rhashtable_iter *iter;
- };
- 
- struct p4tc_template_common;
-@@ -82,9 +86,21 @@ struct p4tc_template_common {
- 
- extern const struct p4tc_template_ops p4tc_pipeline_ops;
- 
-+struct p4tc_act_dep_edge_node {
-+	struct list_head head;
-+	u32 act_id;
-+};
-+
-+struct p4tc_act_dep_node {
-+	struct list_head incoming_egde_list;
-+	struct list_head head;
-+	u32 act_id;
-+};
-+
- struct p4tc_pipeline {
+@@ -101,6 +108,7 @@ struct p4tc_pipeline {
  	struct p4tc_template_common common;
  	struct idr                  p_meta_idr;
-+	struct idr                  p_act_idr;
+ 	struct idr                  p_act_idr;
++	struct idr                  p_tbl_idr;
  	struct rcu_head             rcu;
  	struct net                  *net;
  	struct p4tc_parser          *parser;
-@@ -92,13 +108,17 @@ struct p4tc_pipeline {
- 	int                         num_preacts;
- 	struct tc_action            **postacts;
- 	int                         num_postacts;
-+	struct list_head            act_dep_graph;
-+	struct list_head            act_topological_order;
- 	u32                         max_rules;
- 	u32                         p_meta_offset;
-+	u32                         num_created_acts;
- 	refcount_t                  p_ref;
- 	refcount_t                  p_ctrl_ref;
- 	u16                         num_tables;
- 	u16                         curr_tables;
- 	u8                          p_state;
-+	refcount_t                  p_hdrs_used;
- };
- 
- struct p4tc_pipeline_net {
-@@ -139,6 +159,18 @@ static inline bool pipeline_sealed(struct p4tc_pipeline *pipeline)
- {
- 	return pipeline->p_state == P4TC_STATE_READY;
- }
-+void tcf_pipeline_add_dep_edge(struct p4tc_pipeline *pipeline,
-+			       struct p4tc_act_dep_edge_node *edge_node,
-+			       u32 vertex_id);
-+bool tcf_pipeline_check_act_backedge(struct p4tc_pipeline *pipeline,
-+				     struct p4tc_act_dep_edge_node *edge_node,
-+				     u32 vertex_id);
-+int determine_act_topological_order(struct p4tc_pipeline *pipeline,
-+				    bool copy_dep_graph);
-+
-+struct p4tc_act;
-+void tcf_pipeline_delete_from_dep_graph(struct p4tc_pipeline *pipeline,
-+					struct p4tc_act *act);
- 
- struct p4tc_metadata {
- 	struct p4tc_template_common common;
-@@ -155,6 +187,66 @@ struct p4tc_metadata {
+@@ -187,6 +195,66 @@ struct p4tc_metadata {
  
  extern const struct p4tc_template_ops p4tc_meta_ops;
  
-+struct p4tc_ipv4_param_value {
-+	u32 value;
-+	u32 mask;
++struct p4tc_table_key {
++	struct tc_action **key_acts;
++	int              key_num_acts;
 +};
 +
-+#define P4TC_ACT_PARAM_FLAGS_ISDYN BIT(0)
++#define P4TC_CONTROL_PERMISSIONS (GENMASK(9, 5))
++#define P4TC_DATA_PERMISSIONS (GENMASK(4, 0))
 +
-+struct p4tc_act_param {
-+	char            name[ACTPARAMNAMSIZ];
-+	struct list_head head;
-+	struct rcu_head	rcu;
-+	void            *value;
-+	void            *mask;
-+	u32             type;
-+	u32             id;
-+	u8              flags;
++#define P4TC_TABLE_PERMISSIONS                                   \
++	((GENMASK(P4TC_CTRL_PERM_C_BIT, P4TC_CTRL_PERM_D_BIT)) | \
++	 P4TC_DATA_PERM_R | P4TC_DATA_PERM_X)
++
++#define P4TC_PERMISSIONS_UNINIT (1 << P4TC_PERM_MAX_BIT)
++
++struct p4tc_table_defact {
++	struct tc_action **default_acts;
++	/* Will have 2 5 bits blocks containing CRUDX (Create, read, update,
++	 * delete, execute) permissions for control plane and data plane.
++	 * The first 5 bits are for control and the next five are for data plane.
++	 * |crudxcrudx| if we were to denote it as UNIX permission flags.
++	 */
++	__u16 permissions;
++	struct rcu_head  rcu;
 +};
 +
-+struct p4tc_act_param_ops {
-+	int (*init_value)(struct net *net, struct p4tc_act_param_ops *op,
-+			  struct p4tc_act_param *nparam, struct nlattr **tb,
-+			  struct netlink_ext_ack *extack);
-+	int (*dump_value)(struct sk_buff *skb, struct p4tc_act_param_ops *op,
-+			  struct p4tc_act_param *param);
-+	void (*free)(struct p4tc_act_param *param);
-+	u32 len;
-+	u32 alloc_len;
-+};
-+
-+struct p4tc_label_key {
-+	char *label;
-+	u32 labelsz;
-+};
-+
-+struct p4tc_label_node {
-+	struct rhash_head ht_node;
-+	struct p4tc_label_key key;
-+	int cmd_offset;
-+};
-+
-+struct p4tc_act {
-+	struct p4tc_template_common common;
-+	struct tc_action_ops        ops;
-+	struct rhashtable           *labels;
-+	struct list_head            cmd_operations;
-+	struct tc_action_net        *tn;
-+	struct p4tc_pipeline        *pipeline;
-+	struct idr                  params_idr;
-+	struct tcf_exts             exts;
-+	struct list_head            head;
-+	u32                         a_id;
-+	bool                        active;
-+	refcount_t                  a_ref;
-+};
-+
-+extern const struct p4tc_template_ops p4tc_act_ops;
-+extern const struct rhashtable_params p4tc_label_ht_params;
-+extern const struct rhashtable_params acts_params;
-+void p4tc_label_ht_destroy(void *ptr, void *arg);
-+
- struct p4tc_parser {
- 	char parser_name[PARSERNAMSIZ];
- 	struct idr hdr_fields_idr;
-@@ -187,6 +279,84 @@ struct p4tc_metadata *tcf_meta_get(struct p4tc_pipeline *pipeline,
- 				   const char *mname, const u32 m_id,
- 				   struct netlink_ext_ack *extack);
- void tcf_meta_put_ref(struct p4tc_metadata *meta);
-+void *tcf_meta_fetch(struct sk_buff *skb, struct p4tc_metadata *meta);
-+
-+static inline int p4tc_action_init(struct net *net, struct nlattr *nla,
-+				   struct tc_action *acts[], u32 pipeid,
-+				   u32 flags, struct netlink_ext_ack *extack)
-+{
-+	int init_res[TCA_ACT_MAX_PRIO];
-+	size_t attrs_size;
-+	int ret;
-+	int i;
-+
-+	/* If action was already created, just bind to existing one*/
-+	flags |= TCA_ACT_FLAGS_BIND;
-+	flags |= TCA_ACT_FLAGS_FROM_P4TC;
-+	ret = tcf_action_init(net, NULL, nla, NULL, acts, init_res, &attrs_size,
-+			      flags, 0, extack);
-+
-+	/* Check if we are trying to bind to dynamic action from different pipe */
-+	for (i = 0; i < TCA_ACT_MAX_PRIO && acts[i]; i++) {
-+		struct tc_action *a = acts[i];
-+		struct tcf_p4act *p;
-+
-+		if (a->ops->id < TCA_ID_DYN)
-+			continue;
-+
-+		p = to_p4act(a);
-+		if (p->p_id != pipeid) {
-+			NL_SET_ERR_MSG(extack,
-+				       "Unable to bind to dynact from different pipeline");
-+			ret = -EPERM;
-+			goto destroy_acts;
-+		}
-+	}
-+
-+	return ret;
-+
-+destroy_acts:
-+	tcf_action_destroy(acts, TCA_ACT_FLAGS_BIND);
-+	return ret;
-+}
-+
-+static inline struct p4tc_skb_ext *p4tc_skb_ext_alloc(struct sk_buff *skb)
-+{
-+	struct p4tc_skb_ext *p4tc_skb_ext = skb_ext_add(skb, P4TC_SKB_EXT);
-+
-+	if (!p4tc_skb_ext)
-+		return NULL;
-+
-+	p4tc_skb_ext->p4tc_ext =
-+		kzalloc(sizeof(struct __p4tc_skb_ext), GFP_ATOMIC);
-+	if (!p4tc_skb_ext->p4tc_ext)
-+		return NULL;
-+
-+	return p4tc_skb_ext;
-+}
-+
-+struct p4tc_act *tcf_action_find_byid(struct p4tc_pipeline *pipeline,
-+				      const u32 a_id);
-+struct p4tc_act *tcf_action_find_byname(const char *act_name,
-+					struct p4tc_pipeline *pipeline);
-+struct p4tc_act *tcf_action_find_byany(struct p4tc_pipeline *pipeline,
-+				       const char *act_name, const u32 a_id,
-+				       struct netlink_ext_ack *extack);
-+struct p4tc_act *tcf_action_get(struct p4tc_pipeline *pipeline,
-+				const char *act_name, const u32 a_id,
-+				struct netlink_ext_ack *extack);
-+void tcf_action_put(struct p4tc_act *act);
-+int tcf_p4_dyna_template_init(struct net *net, struct tc_action **a,
-+			      struct p4tc_act *act,
-+			      struct list_head *params_list,
-+			      struct tc_act_dyna *parm, u32 flags,
-+			      struct netlink_ext_ack *extack);
-+struct p4tc_act_param *tcf_param_find_byid(struct idr *params_idr,
-+					   const u32 param_id);
-+struct p4tc_act_param *tcf_param_find_byany(struct p4tc_act *act,
-+					    const char *param_name,
-+					    const u32 param_id,
-+					    struct netlink_ext_ack *extack);
- 
- struct p4tc_parser *tcf_parser_create(struct p4tc_pipeline *pipeline,
- 				      const char *parser_name,
-@@ -220,8 +390,28 @@ struct p4tc_hdrfield *tcf_hdrfield_get(struct p4tc_parser *parser,
- 				       struct netlink_ext_ack *extack);
- void tcf_hdrfield_put_ref(struct p4tc_hdrfield *hdrfield);
- 
-+int p4tc_init_net_ops(struct net *net, unsigned int id);
-+void p4tc_exit_net_ops(struct list_head *net_list, unsigned int id);
-+int tcf_p4_act_init_params(struct net *net, struct tcf_p4act_params *params,
-+			   struct p4tc_act *act, struct nlattr *nla,
-+			   struct netlink_ext_ack *extack);
-+void tcf_p4_act_params_destroy(struct tcf_p4act_params *params);
-+int p4_act_init(struct p4tc_act *act, struct nlattr *nla,
-+		struct p4tc_act_param *params[],
-+		struct netlink_ext_ack *extack);
-+void p4_put_many_params(struct idr *params_idr, struct p4tc_act_param *params[],
-+			int params_count);
-+void tcf_p4_act_params_destroy_rcu(struct rcu_head *head);
-+int p4_act_init_params(struct p4tc_act *act, struct nlattr *nla,
-+		       struct p4tc_act_param *params[], bool update,
-+		       struct netlink_ext_ack *extack);
-+extern const struct p4tc_act_param_ops param_ops[P4T_MAX + 1];
-+int generic_dump_param_value(struct sk_buff *skb, struct p4tc_type *type,
-+			     struct p4tc_act_param *param);
-+
- #define to_pipeline(t) ((struct p4tc_pipeline *)t)
- #define to_meta(t) ((struct p4tc_metadata *)t)
- #define to_hdrfield(t) ((struct p4tc_hdrfield *)t)
-+#define to_act(t) ((struct p4tc_act *)t)
- 
- #endif
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index af4aa66aa..9f7d3c3ea 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -326,6 +326,11 @@ struct tcf_result {
- 		};
- 		const struct tcf_proto *goto_tp;
- 
-+		struct {
-+			bool hit;
-+			bool miss;
-+			int action_run_id;
-+		};
- 	};
- };
- 
-diff --git a/include/net/tc_act/p4tc.h b/include/net/tc_act/p4tc.h
-new file mode 100644
-index 000000000..5a15d3da1
---- /dev/null
-+++ b/include/net/tc_act/p4tc.h
-@@ -0,0 +1,25 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __NET_TC_ACT_P4_H
-+#define __NET_TC_ACT_P4_H
-+
-+#include <net/pkt_cls.h>
-+#include <net/act_api.h>
-+
-+struct tcf_p4act_params {
-+	struct tcf_exts exts;
-+	struct idr params_idr;
++struct p4tc_table_perm {
++	__u16           permissions;
 +	struct rcu_head rcu;
 +};
 +
-+struct tcf_p4act {
-+	struct tc_action common;
-+	/* list of operations */
-+	struct list_head cmd_operations;
-+	/* Params IDR reference passed during runtime */
-+	struct tcf_p4act_params __rcu *params;
-+	u32 p_id;
-+	u32 act_id;
++struct p4tc_table {
++	struct p4tc_template_common         common;
++	struct list_head                    tbl_acts_list;
++	struct p4tc_table_key               *tbl_key;
++	struct idr                          tbl_masks_idr;
++	struct idr                          tbl_prio_idr;
++	struct rhltable                     tbl_entries;
++	struct tc_action                    **tbl_preacts;
++	struct tc_action                    **tbl_postacts;
++	struct p4tc_table_defact __rcu      *tbl_default_hitact;
++	struct p4tc_table_defact __rcu      *tbl_default_missact;
++	struct p4tc_table_perm __rcu        *tbl_permissions;
++	spinlock_t                          tbl_masks_idr_lock;
++	spinlock_t                          tbl_prio_idr_lock;
++	int                                 tbl_num_postacts;
++	int                                 tbl_num_preacts;
++	u32                                 tbl_count;
++	u32                                 tbl_curr_count;
++	u32                                 tbl_keysz;
++	u32                                 tbl_id;
++	u32                                 tbl_max_entries;
++	u32                                 tbl_max_masks;
++	u32                                 tbl_curr_used_entries;
++	refcount_t                          tbl_ctrl_ref;
++	refcount_t                          tbl_ref;
++	refcount_t                          tbl_entries_ref;
 +};
-+#define to_p4act(a) ((struct tcf_p4act *)a)
 +
-+#endif /* __NET_TC_ACT_P4_H */
++extern const struct p4tc_template_ops p4tc_table_ops;
++
+ struct p4tc_ipv4_param_value {
+ 	u32 value;
+ 	u32 mask;
+@@ -242,6 +310,12 @@ struct p4tc_act {
+ 	refcount_t                  a_ref;
+ };
+ 
++struct p4tc_table_act {
++	struct list_head node;
++	struct tc_action_ops *ops;
++	u8     flags;
++};
++
+ extern const struct p4tc_template_ops p4tc_act_ops;
+ extern const struct rhashtable_params p4tc_label_ht_params;
+ extern const struct rhashtable_params acts_params;
+@@ -358,6 +432,19 @@ struct p4tc_act_param *tcf_param_find_byany(struct p4tc_act *act,
+ 					    const u32 param_id,
+ 					    struct netlink_ext_ack *extack);
+ 
++struct p4tc_table *tcf_table_find_byany(struct p4tc_pipeline *pipeline,
++					const char *tblname, const u32 tbl_id,
++					struct netlink_ext_ack *extack);
++struct p4tc_table *tcf_table_find_byid(struct p4tc_pipeline *pipeline,
++				       const u32 tbl_id);
++void *tcf_table_fetch(struct sk_buff *skb, void *tbl_value_ops);
++int tcf_table_try_set_state_ready(struct p4tc_pipeline *pipeline,
++				  struct netlink_ext_ack *extack);
++struct p4tc_table *tcf_table_get(struct p4tc_pipeline *pipeline,
++				 const char *tblname, const u32 tbl_id,
++				 struct netlink_ext_ack *extack);
++void tcf_table_put_ref(struct p4tc_table *table);
++
+ struct p4tc_parser *tcf_parser_create(struct p4tc_pipeline *pipeline,
+ 				      const char *parser_name,
+ 				      u32 parser_inst_id,
+@@ -413,5 +500,6 @@ int generic_dump_param_value(struct sk_buff *skb, struct p4tc_type *type,
+ #define to_meta(t) ((struct p4tc_metadata *)t)
+ #define to_hdrfield(t) ((struct p4tc_hdrfield *)t)
+ #define to_act(t) ((struct p4tc_act *)t)
++#define to_table(t) ((struct p4tc_table *)t)
+ 
+ #endif
+diff --git a/include/net/p4tc_types.h b/include/net/p4tc_types.h
+index 038ad89e3..275e74f93 100644
+--- a/include/net/p4tc_types.h
++++ b/include/net/p4tc_types.h
+@@ -8,7 +8,7 @@
+ 
+ #include <uapi/linux/p4tc.h>
+ 
+-#define P4T_MAX_BITSZ 128
++#define P4T_MAX_BITSZ P4TC_MAX_KEYSZ
+ 
+ struct p4tc_type_mask_shift {
+ 	void *mask;
 diff --git a/include/uapi/linux/p4tc.h b/include/uapi/linux/p4tc.h
-index 72714df9e..15876c471 100644
+index 15876c471..678ee20cd 100644
 --- a/include/uapi/linux/p4tc.h
 +++ b/include/uapi/linux/p4tc.h
-@@ -4,6 +4,7 @@
- 
- #include <linux/types.h>
- #include <linux/pkt_sched.h>
-+#include <linux/pkt_cls.h>
- 
- /* pipeline header */
- struct p4tcmsg {
-@@ -29,6 +30,9 @@ struct p4tcmsg {
- #define METANAMSIZ TEMPLATENAMSZ
+@@ -31,6 +31,61 @@ struct p4tcmsg {
  #define PARSERNAMSIZ TEMPLATENAMSZ
  #define HDRFIELDNAMSIZ TEMPLATENAMSZ
-+#define ACTPARAMNAMSIZ TEMPLATENAMSZ
+ #define ACTPARAMNAMSIZ TEMPLATENAMSZ
++#define TABLENAMSIZ TEMPLATENAMSZ
 +
-+#define LABELNAMSIZ 32
++#define P4TC_TABLE_FLAGS_KEYSZ 0x01
++#define P4TC_TABLE_FLAGS_MAX_ENTRIES 0x02
++#define P4TC_TABLE_FLAGS_MAX_MASKS 0x04
++#define P4TC_TABLE_FLAGS_DEFAULT_KEY 0x08
++#define P4TC_TABLE_FLAGS_PERMISSIONS 0x10
++
++#define P4TC_CTRL_PERM_C_BIT 9
++#define P4TC_CTRL_PERM_R_BIT 8
++#define P4TC_CTRL_PERM_U_BIT 7
++#define P4TC_CTRL_PERM_D_BIT 6
++#define P4TC_CTRL_PERM_X_BIT 5
++
++#define P4TC_DATA_PERM_C_BIT 4
++#define P4TC_DATA_PERM_R_BIT 3
++#define P4TC_DATA_PERM_U_BIT 2
++#define P4TC_DATA_PERM_D_BIT 1
++#define P4TC_DATA_PERM_X_BIT 0
++
++#define P4TC_PERM_MAX_BIT P4TC_CTRL_PERM_C_BIT
++
++#define P4TC_CTRL_PERM_C (1 << P4TC_CTRL_PERM_C_BIT)
++#define P4TC_CTRL_PERM_R (1 << P4TC_CTRL_PERM_R_BIT)
++#define P4TC_CTRL_PERM_U (1 << P4TC_CTRL_PERM_U_BIT)
++#define P4TC_CTRL_PERM_D (1 << P4TC_CTRL_PERM_D_BIT)
++#define P4TC_CTRL_PERM_X (1 << P4TC_CTRL_PERM_X_BIT)
++
++#define P4TC_DATA_PERM_C (1 << P4TC_DATA_PERM_C_BIT)
++#define P4TC_DATA_PERM_R (1 << P4TC_DATA_PERM_R_BIT)
++#define P4TC_DATA_PERM_U (1 << P4TC_DATA_PERM_U_BIT)
++#define P4TC_DATA_PERM_D (1 << P4TC_DATA_PERM_D_BIT)
++#define P4TC_DATA_PERM_X (1 << P4TC_DATA_PERM_X_BIT)
++
++#define p4tc_ctrl_create_ok(perm)   (perm & P4TC_CTRL_PERM_C)
++#define p4tc_ctrl_read_ok(perm)     (perm & P4TC_CTRL_PERM_R)
++#define p4tc_ctrl_update_ok(perm)   (perm & P4TC_CTRL_PERM_U)
++#define p4tc_ctrl_delete_ok(perm)   (perm & P4TC_CTRL_PERM_D)
++#define p4tc_ctrl_exec_ok(perm)     (perm & P4TC_CTRL_PERM_X)
++
++#define p4tc_data_create_ok(perm)   (perm & P4TC_DATA_PERM_C)
++#define p4tc_data_read_ok(perm)     (perm & P4TC_DATA_PERM_R)
++#define p4tc_data_update_ok(perm)   (perm & P4TC_DATA_PERM_U)
++#define p4tc_data_delete_ok(perm)   (perm & P4TC_DATA_PERM_D)
++#define p4tc_data_exec_ok(perm)     (perm & P4TC_DATA_PERM_X)
++
++struct p4tc_table_parm {
++	__u32 tbl_keysz;
++	__u32 tbl_max_entries;
++	__u32 tbl_max_masks;
++	__u32 tbl_flags;
++	__u32 tbl_num_entries;
++	__u16 tbl_permissions;
++	__u16 PAD0;
++};
  
- /* Root attributes */
- enum {
-@@ -58,6 +62,7 @@ enum {
- 	P4TC_OBJ_PIPELINE,
+ #define LABELNAMSIZ 32
+ 
+@@ -63,6 +118,7 @@ enum {
  	P4TC_OBJ_META,
  	P4TC_OBJ_HDR_FIELD,
-+	P4TC_OBJ_ACT,
+ 	P4TC_OBJ_ACT,
++	P4TC_OBJ_TABLE,
  	__P4TC_OBJ_MAX,
  };
  #define P4TC_OBJ_MAX __P4TC_OBJ_MAX
-@@ -172,6 +177,47 @@ enum {
+@@ -161,6 +217,53 @@ enum {
  };
- #define P4TC_HDRFIELD_MAX (__P4TC_HDRFIELD_MAX - 1)
+ #define P4TC_KERNEL_META_MAX (__P4TC_KERNEL_META_MAX - 1)
  
-+/* Action attributes */
++/* Table key attributes */
 +enum {
-+	P4TC_ACT_UNSPEC,
-+	P4TC_ACT_NAME, /* string */
-+	P4TC_ACT_PARMS, /* nested params */
-+	P4TC_ACT_OPT, /* action opt */
-+	P4TC_ACT_TM, /* action tm */
-+	P4TC_ACT_CMDS_LIST, /* command list */
-+	P4TC_ACT_ACTIVE, /* u8 */
-+	P4TC_ACT_PAD,
-+	__P4TC_ACT_MAX
++	P4TC_KEY_UNSPEC,
++	P4TC_KEY_ACT, /* nested key actions */
++	__P4TC_TKEY_MAX
 +};
-+#define P4TC_ACT_MAX __P4TC_ACT_MAX
++#define P4TC_TKEY_MAX __P4TC_TKEY_MAX
 +
-+#define P4TC_CMDS_LIST_MAX 32
-+
-+/* Action params attributes */
 +enum {
-+	P4TC_ACT_PARAMS_VALUE_UNSPEC,
-+	P4TC_ACT_PARAMS_VALUE_RAW, /* binary */
-+	P4TC_ACT_PARAMS_VALUE_OPND, /* struct p4tc_u_operand */
-+	__P4TC_ACT_PARAMS_VALUE_MAX
++	P4TC_TABLE_DEFAULT_UNSPEC,
++	P4TC_TABLE_DEFAULT_ACTION,
++	P4TC_TABLE_DEFAULT_PERMISSIONS,
++	__P4TC_TABLE_DEFAULT_MAX
 +};
-+#define P4TC_ACT_VALUE_PARAMS_MAX __P4TC_ACT_PARAMS_VALUE_MAX
++#define P4TC_TABLE_DEFAULT_MAX (__P4TC_TABLE_DEFAULT_MAX - 1)
 +
-+/* Action params attributes */
 +enum {
-+	P4TC_ACT_PARAMS_UNSPEC,
-+	P4TC_ACT_PARAMS_NAME, /* string */
-+	P4TC_ACT_PARAMS_ID, /* u32 */
-+	P4TC_ACT_PARAMS_VALUE, /* bytes */
-+	P4TC_ACT_PARAMS_MASK, /* bytes */
-+	P4TC_ACT_PARAMS_TYPE, /* u32 */
-+	__P4TC_ACT_PARAMS_MAX
++	P4TC_TABLE_ACTS_DEFAULT_ONLY,
++	P4TC_TABLE_ACTS_TABLE_ONLY,
++	__P4TC_TABLE_ACTS_FLAGS_MAX,
 +};
-+#define P4TC_ACT_PARAMS_MAX __P4TC_ACT_PARAMS_MAX
++#define P4TC_TABLE_ACTS_FLAGS_MAX (__P4TC_TABLE_ACTS_FLAGS_MAX - 1)
 +
-+struct tc_act_dyna {
-+	tc_gen;
++enum {
++	P4TC_TABLE_ACT_UNSPEC,
++	P4TC_TABLE_ACT_FLAGS, /* u8 */
++	P4TC_TABLE_ACT_NAME, /* string */
++	__P4TC_TABLE_ACT_MAX
 +};
++#define P4TC_TABLE_ACT_MAX (__P4TC_TABLE_ACT_MAX - 1)
 +
- #define P4TC_RTA(r) \
- 	((struct rtattr *)(((char *)(r)) + NLMSG_ALIGN(sizeof(struct p4tcmsg))))
- 
++/* Table type attributes */
++enum {
++	P4TC_TABLE_UNSPEC,
++	P4TC_TABLE_NAME, /* string */
++	P4TC_TABLE_INFO, /* struct tc_p4_table_type_parm */
++	P4TC_TABLE_PREACTIONS, /* nested table preactions */
++	P4TC_TABLE_KEY, /* nested table key */
++	P4TC_TABLE_POSTACTIONS, /* nested table postactions */
++	P4TC_TABLE_DEFAULT_HIT, /* nested default hit action attributes */
++	P4TC_TABLE_DEFAULT_MISS, /* nested default miss action attributes */
++	P4TC_TABLE_OPT_ENTRY, /* nested const table entry*/
++	P4TC_TABLE_ACTS_LIST, /* nested table actions list */
++	__P4TC_TABLE_MAX
++};
++#define P4TC_TABLE_MAX __P4TC_TABLE_MAX
++
+ struct p4tc_hdrfield_ty {
+ 	__u16 startbit;
+ 	__u16 endbit;
 diff --git a/net/sched/p4tc/Makefile b/net/sched/p4tc/Makefile
-index add22c909..3f7267366 100644
+index 3f7267366..de3a7b833 100644
 --- a/net/sched/p4tc/Makefile
 +++ b/net/sched/p4tc/Makefile
 @@ -1,4 +1,4 @@
  # SPDX-License-Identifier: GPL-2.0
  
  obj-y := p4tc_types.o p4tc_pipeline.o p4tc_tmpl_api.o p4tc_meta.o \
--	p4tc_parser_api.o p4tc_hdrfield.o
-+	p4tc_parser_api.o p4tc_hdrfield.o p4tc_action.o
-diff --git a/net/sched/p4tc/p4tc_action.c b/net/sched/p4tc/p4tc_action.c
+-	p4tc_parser_api.o p4tc_hdrfield.o p4tc_action.o
++	p4tc_parser_api.o p4tc_hdrfield.o p4tc_action.o p4tc_table.o
+diff --git a/net/sched/p4tc/p4tc_pipeline.c b/net/sched/p4tc/p4tc_pipeline.c
+index e43e120a3..854fc5b57 100644
+--- a/net/sched/p4tc/p4tc_pipeline.c
++++ b/net/sched/p4tc/p4tc_pipeline.c
+@@ -297,6 +297,7 @@ static void tcf_pipeline_destroy(struct p4tc_pipeline *pipeline,
+ {
+ 	idr_destroy(&pipeline->p_meta_idr);
+ 	idr_destroy(&pipeline->p_act_idr);
++	idr_destroy(&pipeline->p_tbl_idr);
+ 
+ 	if (free_pipeline)
+ 		kfree(pipeline);
+@@ -323,8 +324,9 @@ static int tcf_pipeline_put(struct net *net,
+ 	struct p4tc_pipeline *pipeline = to_pipeline(template);
+ 	struct net *pipeline_net = maybe_get_net(net);
+ 	struct p4tc_act_dep_node *act_node, *node_tmp;
+-	unsigned long m_id, tmp;
++	unsigned long tbl_id, m_id, tmp;
+ 	struct p4tc_metadata *meta;
++	struct p4tc_table *table;
+ 
+ 	if (pipeline_net && !refcount_dec_if_one(&pipeline->p_ref)) {
+ 		NL_SET_ERR_MSG(extack, "Can't delete referenced pipeline");
+@@ -339,6 +341,9 @@ static int tcf_pipeline_put(struct net *net,
+ 	p4tc_action_destroy(pipeline->preacts);
+ 	p4tc_action_destroy(pipeline->postacts);
+ 
++	idr_for_each_entry_ul(&pipeline->p_tbl_idr, table, tmp, tbl_id)
++		table->common.ops->put(net, &table->common, true, extack);
++
+ 	act_dep_graph_free(&pipeline->act_dep_graph);
+ 
+ 	list_for_each_entry_safe(act_node, node_tmp,
+@@ -371,6 +376,8 @@ static int tcf_pipeline_put(struct net *net,
+ static inline int pipeline_try_set_state_ready(struct p4tc_pipeline *pipeline,
+ 					       struct netlink_ext_ack *extack)
+ {
++	int ret;
++
+ 	if (pipeline->curr_tables != pipeline->num_tables) {
+ 		NL_SET_ERR_MSG(extack,
+ 			       "Must have all table defined to update state to ready");
+@@ -388,6 +395,9 @@ static inline int pipeline_try_set_state_ready(struct p4tc_pipeline *pipeline,
+ 			       "Must specify pipeline postactions before sealing");
+ 		return -EINVAL;
+ 	}
++	ret = tcf_table_try_set_state_ready(pipeline, extack);
++	if (ret < 0)
++		return ret;
+ 
+ 	/* Will never fail in this case */
+ 	determine_act_topological_order(pipeline, false);
+@@ -542,6 +552,9 @@ static struct p4tc_pipeline *tcf_pipeline_create(struct net *net,
+ 
+ 	idr_init(&pipeline->p_act_idr);
+ 
++	idr_init(&pipeline->p_tbl_idr);
++	pipeline->curr_tables = 0;
++
+ 	idr_init(&pipeline->p_meta_idr);
+ 	pipeline->p_meta_offset = 0;
+ 
+diff --git a/net/sched/p4tc/p4tc_table.c b/net/sched/p4tc/p4tc_table.c
 new file mode 100644
-index 000000000..f47b42bbe
+index 000000000..f793c70bc
 --- /dev/null
-+++ b/net/sched/p4tc/p4tc_action.c
-@@ -0,0 +1,1824 @@
++++ b/net/sched/p4tc/p4tc_table.c
+@@ -0,0 +1,1591 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
-+ * net/sched/p4tc_action.c	P4 TC ACTION TEMPLATES
++ * net/sched/p4tc_table.c	P4 TC TABLE
 + *
 + * Copyright (c) 2022, Mojatatu Networks
 + * Copyright (c) 2022, Intel Corporation.
@@ -718,1351 +667,233 @@ index 000000000..f47b42bbe
 + *              Pedro Tammela <pctammela@mojatatu.com>
 + */
 +
-+#include <linux/err.h>
-+#include <linux/errno.h>
-+#include <linux/init.h>
-+#include <linux/kernel.h>
-+#include <linux/kmod.h>
-+#include <linux/list.h>
-+#include <linux/module.h>
-+#include <linux/netdevice.h>
-+#include <linux/skbuff.h>
-+#include <linux/slab.h>
-+#include <linux/string.h>
 +#include <linux/types.h>
-+#include <net/flow_offload.h>
++#include <linux/kernel.h>
++#include <linux/string.h>
++#include <linux/errno.h>
++#include <linux/slab.h>
++#include <linux/skbuff.h>
++#include <linux/init.h>
++#include <linux/kmod.h>
++#include <linux/err.h>
++#include <linux/module.h>
 +#include <net/net_namespace.h>
-+#include <net/netlink.h>
++#include <net/sock.h>
++#include <net/sch_generic.h>
 +#include <net/pkt_cls.h>
 +#include <net/p4tc.h>
-+#include <net/sch_generic.h>
-+#include <net/sock.h>
-+#include <net/tc_act/p4tc.h>
++#include <net/netlink.h>
++#include <net/flow_offload.h>
 +
-+static LIST_HEAD(dynact_list);
++#define P4TC_P_UNSPEC 0
++#define P4TC_P_CREATED 1
 +
-+#define SEPARATOR "/"
-+
-+static u32 label_hash_fn(const void *data, u32 len, u32 seed)
-+{
-+	const struct p4tc_label_key *key = data;
-+
-+	return jhash(key->label, key->labelsz, seed);
-+}
-+
-+static int label_hash_cmp(struct rhashtable_compare_arg *arg, const void *ptr)
-+{
-+	const struct p4tc_label_key *label_arg = arg->key;
-+	const struct p4tc_label_node *node = ptr;
-+
-+	return strncmp(label_arg->label, node->key.label, node->key.labelsz);
-+}
-+
-+static u32 label_obj_hash_fn(const void *data, u32 len, u32 seed)
-+{
-+	const struct p4tc_label_node *node = data;
-+
-+	return label_hash_fn(&node->key, 0, seed);
-+}
-+
-+void p4tc_label_ht_destroy(void *ptr, void *arg)
-+{
-+	struct p4tc_label_node *node = ptr;
-+
-+	kfree(node->key.label);
-+	kfree(node);
-+}
-+
-+const struct rhashtable_params p4tc_label_ht_params = {
-+	.obj_cmpfn = label_hash_cmp,
-+	.obj_hashfn = label_obj_hash_fn,
-+	.hashfn = label_hash_fn,
-+	.head_offset = offsetof(struct p4tc_label_node, ht_node),
-+	.key_offset = offsetof(struct p4tc_label_node, key),
-+	.automatic_shrinking = true,
-+};
-+
-+static int __tcf_p4_dyna_init(struct net *net, struct nlattr *est,
-+			      struct p4tc_act *act, struct tc_act_dyna *parm,
-+			      struct tc_action **a, struct tcf_proto *tp,
-+			      struct tc_action_ops *a_o,
-+			      struct tcf_chain **goto_ch, u32 flags,
-+			      struct netlink_ext_ack *extack)
-+{
-+	bool bind = flags & TCA_ACT_FLAGS_BIND;
-+	bool exists = false;
-+	int ret = 0;
-+	struct p4tc_pipeline *pipeline;
-+	u32 index;
-+	int err;
-+
-+	index = parm->index;
-+
-+	err = tcf_idr_check_alloc(act->tn, &index, a, bind);
-+	if (err < 0)
-+		return err;
-+
-+	exists = err;
-+	if (!exists) {
-+		struct tcf_p4act *p;
-+
-+		ret = tcf_idr_create(act->tn, index, est, a, a_o, bind, false,
-+				     flags);
-+		if (ret) {
-+			tcf_idr_cleanup(act->tn, index);
-+			return ret;
-+		}
-+
-+		/* dyn_ref here should never be 0, because if we are here, it
-+		 * means that a template action of this kind was created. Thus
-+		 * dyn_ref should be at least 1. Also since this operation and
-+		 * others that add or delete action templates run with
-+		 * rtnl_lock held, we cannot do this op and a deletion op in
-+		 * parallel.
-+		 */
-+		WARN_ON(!refcount_inc_not_zero(&a_o->dyn_ref));
-+
-+		pipeline = act->pipeline;
-+
-+		p = to_p4act(*a);
-+		p->p_id = pipeline->common.p_id;
-+		p->act_id = act->a_id;
-+		INIT_LIST_HEAD(&p->cmd_operations);
-+
-+		ret = ACT_P_CREATED;
-+	} else {
-+		if (bind) /* dont override defaults */
-+			return 0;
-+		if (!(flags & TCA_ACT_FLAGS_REPLACE)) {
-+			tcf_idr_cleanup(act->tn, index);
-+			return -EEXIST;
-+		}
-+	}
-+
-+	err = tcf_action_check_ctrlact(parm->action, tp, goto_ch, extack);
-+	if (err < 0) {
-+		tcf_idr_release(*a, bind);
-+		return err;
-+	}
-+
-+	return ret;
-+}
-+
-+static int __tcf_p4_dyna_init_set(struct p4tc_act *act, struct tc_action **a,
-+				  struct tcf_p4act_params *params,
-+				  struct tcf_chain *goto_ch,
-+				  struct tc_act_dyna *parm, bool exists,
-+				  struct netlink_ext_ack *extack)
-+{
-+	struct tcf_p4act_params *params_old;
-+	struct tcf_p4act *p;
-+	int err = 0;
-+
-+	p = to_p4act(*a);
-+
-+	if (exists)
-+		spin_lock_bh(&p->tcf_lock);
-+
-+	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
-+
-+	params_old = rcu_replace_pointer(p->params, params, 1);
-+	if (exists)
-+		spin_unlock_bh(&p->tcf_lock);
-+
-+	if (goto_ch)
-+		tcf_chain_put_by_act(goto_ch);
-+
-+	if (params_old)
-+		call_rcu(&params_old->rcu, tcf_p4_act_params_destroy_rcu);
-+
-+	return err;
-+}
-+
-+static struct p4tc_act *tcf_p4_find_act(struct net *net,
-+					const struct tc_action_ops *a_o)
-+{
-+	char *act_name_clone, *act_name, *p_name;
-+	struct p4tc_pipeline *pipeline;
-+	struct p4tc_act *act;
-+	int err;
-+
-+	act_name_clone = act_name = kstrdup(a_o->kind, GFP_KERNEL);
-+	if (!act_name)
-+		return ERR_PTR(-ENOMEM);
-+
-+	p_name = strsep(&act_name, SEPARATOR);
-+	pipeline = tcf_pipeline_find_byany(net, p_name, 0, NULL);
-+	if (IS_ERR(pipeline)) {
-+		err = -ENOENT;
-+		goto free_act_name;
-+	}
-+
-+	act = tcf_action_find_byname(act_name, pipeline);
-+	if (!act) {
-+		err = -ENOENT;
-+		goto free_act_name;
-+	}
-+	kfree(act_name_clone);
-+
-+	return act;
-+
-+free_act_name:
-+	kfree(act_name_clone);
-+	return ERR_PTR(err);
-+}
-+
-+static int tcf_p4_dyna_init(struct net *net, struct nlattr *nla,
-+			    struct nlattr *est, struct tc_action **a,
-+			    struct tcf_proto *tp, struct tc_action_ops *a_o,
-+			    u32 flags, struct netlink_ext_ack *extack)
-+{
-+	bool bind = flags & TCA_ACT_FLAGS_BIND;
-+	struct tcf_chain *goto_ch = NULL;
-+	bool exists = false;
-+	int ret = 0;
-+	struct nlattr *tb[P4TC_ACT_MAX + 1];
-+	struct tcf_p4act_params *params;
-+	struct tc_act_dyna *parm;
-+	struct p4tc_act *act;
-+	int err;
-+
-+	if (flags & TCA_ACT_FLAGS_BIND &&
-+	    !(flags & TCA_ACT_FLAGS_FROM_P4TC)) {
-+		NL_SET_ERR_MSG(extack,
-+			       "Can only bind to dynamic action from P4TC objects");
-+		return -EPERM;
-+	}
-+
-+	if (!nla) {
-+		NL_SET_ERR_MSG(extack,
-+			       "Must specify action netlink attributes");
-+		return -EINVAL;
-+	}
-+
-+	err = nla_parse_nested(tb, P4TC_ACT_MAX, nla, NULL, extack);
-+	if (err < 0)
-+		return err;
-+
-+	if (!tb[P4TC_ACT_OPT]) {
-+		NL_SET_ERR_MSG(extack,
-+			       "Must specify option netlink attributes");
-+		return -EINVAL;
-+	}
-+
-+	act = tcf_p4_find_act(net, a_o);
-+	if (IS_ERR(act))
-+		return PTR_ERR(act);
-+
-+	if (!act->active) {
-+		NL_SET_ERR_MSG(extack,
-+			       "Dynamic action must be active to create instance");
-+		return -EINVAL;
-+	}
-+
-+	parm = nla_data(tb[P4TC_ACT_OPT]);
-+
-+	ret = __tcf_p4_dyna_init(net, est, act, parm, a, tp, a_o, &goto_ch,
-+				 flags, extack);
-+	if (ret < 0)
-+		return ret;
-+	if (bind && !ret)
-+		return 0;
-+
-+	err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch, extack);
-+	if (err < 0)
-+		goto release_idr;
-+
-+	params = kzalloc(sizeof(*params), GFP_KERNEL);
-+	if (!params) {
-+		err = -ENOMEM;
-+		goto release_idr;
-+	}
-+
-+	idr_init(&params->params_idr);
-+	if (tb[P4TC_ACT_PARMS]) {
-+		err = tcf_p4_act_init_params(net, params, act,
-+					     tb[P4TC_ACT_PARMS], extack);
-+		if (err < 0)
-+			goto release_params;
-+	} else {
-+		if (!idr_is_empty(&act->params_idr)) {
-+			NL_SET_ERR_MSG(extack,
-+				       "Must specify action parameters");
-+			err = -EINVAL;
-+			goto release_params;
-+		}
-+	}
-+
-+	exists = ret != ACT_P_CREATED;
-+	err = __tcf_p4_dyna_init_set(act, a, params, goto_ch, parm, exists,
-+				     extack);
-+	if (err < 0)
-+		goto release_params;
-+
-+	return ret;
-+
-+release_params:
-+	tcf_p4_act_params_destroy(params);
-+
-+release_idr:
-+	tcf_idr_release(*a, bind);
-+	return err;
-+}
-+
-+static const struct nla_policy p4tc_act_params_value_policy[P4TC_ACT_VALUE_PARAMS_MAX + 1] = {
-+	[P4TC_ACT_PARAMS_VALUE_RAW] = { .type = NLA_BINARY },
-+	[P4TC_ACT_PARAMS_VALUE_OPND] = { .type = NLA_NESTED },
-+};
-+
-+static int dev_init_param_value(struct net *net, struct p4tc_act_param_ops *op,
-+				struct p4tc_act_param *nparam,
-+				struct nlattr **tb,
-+				struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb_value[P4TC_ACT_VALUE_PARAMS_MAX + 1];
-+	u32 value_len;
-+	u32 *ifindex;
-+	int err;
-+
-+	if (!tb[P4TC_ACT_PARAMS_VALUE]) {
-+		NL_SET_ERR_MSG(extack, "Must specify param value");
-+		return -EINVAL;
-+	}
-+	err = nla_parse_nested(tb_value, P4TC_ACT_VALUE_PARAMS_MAX,
-+			       tb[P4TC_ACT_PARAMS_VALUE],
-+			       p4tc_act_params_value_policy, extack);
-+	if (err < 0)
-+		return err;
-+
-+	value_len = nla_len(tb_value[P4TC_ACT_PARAMS_VALUE_RAW]);
-+	if (value_len != sizeof(u32)) {
-+		NL_SET_ERR_MSG(extack, "Value length differs from template's");
-+		return -EINVAL;
-+	}
-+
-+	ifindex = nla_data(tb_value[P4TC_ACT_PARAMS_VALUE_RAW]);
-+	rcu_read_lock();
-+	if (!dev_get_by_index_rcu(net, *ifindex)) {
-+		NL_SET_ERR_MSG(extack, "Invalid ifindex");
-+		rcu_read_unlock();
-+		return -EINVAL;
-+	}
-+	rcu_read_unlock();
-+
-+	nparam->value = kzalloc(sizeof(*ifindex), GFP_KERNEL);
-+	if (!nparam->value)
-+		return -EINVAL;
-+
-+	memcpy(nparam->value, ifindex, sizeof(*ifindex));
-+
-+	return 0;
-+}
-+
-+static int dev_dump_param_value(struct sk_buff *skb,
-+				struct p4tc_act_param_ops *op,
-+				struct p4tc_act_param *param)
-+{
-+	struct nlattr *nest;
-+	int ret;
-+
-+	nest = nla_nest_start(skb, P4TC_ACT_PARAMS_VALUE);
-+	if (param->flags & P4TC_ACT_PARAM_FLAGS_ISDYN) {
-+		struct nlattr *nla_opnd;
-+
-+		nla_opnd = nla_nest_start(skb, P4TC_ACT_PARAMS_VALUE_OPND);
-+		nla_nest_end(skb, nla_opnd);
-+	} else {
-+		const u32 *ifindex = param->value;
-+
-+		if (nla_put_u32(skb, P4TC_ACT_PARAMS_VALUE_RAW, *ifindex)) {
-+			ret = -EINVAL;
-+			goto out_nla_cancel;
-+		}
-+	}
-+	nla_nest_end(skb, nest);
-+
-+	return 0;
-+
-+out_nla_cancel:
-+	nla_nest_cancel(skb, nest);
-+	return ret;
-+}
-+
-+static void dev_free_param_value(struct p4tc_act_param *param)
-+{
-+	if (!(param->flags & P4TC_ACT_PARAM_FLAGS_ISDYN))
-+		kfree(param->value);
-+}
-+
-+static int generic_init_param_value(struct p4tc_act_param *nparam,
-+				    struct p4tc_type *type, struct nlattr **tb,
-+				    struct netlink_ext_ack *extack)
-+{
-+	const u32 alloc_len = BITS_TO_BYTES(type->container_bitsz);
-+	const u32 len = BITS_TO_BYTES(type->bitsz);
-+	struct nlattr *tb_value[P4TC_ACT_VALUE_PARAMS_MAX + 1];
-+	void *value;
-+	int err;
-+
-+	if (!tb[P4TC_ACT_PARAMS_VALUE]) {
-+		NL_SET_ERR_MSG(extack, "Must specify param value");
-+		return -EINVAL;
-+	}
-+
-+	err = nla_parse_nested(tb_value, P4TC_ACT_VALUE_PARAMS_MAX,
-+			       tb[P4TC_ACT_PARAMS_VALUE],
-+			       p4tc_act_params_value_policy, extack);
-+	if (err < 0)
-+		return err;
-+
-+	value = nla_data(tb_value[P4TC_ACT_PARAMS_VALUE_RAW]);
-+	if (type->ops->validate_p4t) {
-+		err = type->ops->validate_p4t(type, value, 0, type->bitsz - 1,
-+					      extack);
-+		if (err < 0)
-+			return err;
-+	}
-+
-+	if (nla_len(tb_value[P4TC_ACT_PARAMS_VALUE_RAW]) != len)
-+		return -EINVAL;
-+
-+	nparam->value = kzalloc(alloc_len, GFP_KERNEL);
-+	if (!nparam->value)
-+		return -ENOMEM;
-+
-+	memcpy(nparam->value, value, len);
-+
-+	if (tb[P4TC_ACT_PARAMS_MASK]) {
-+		const void *mask = nla_data(tb[P4TC_ACT_PARAMS_MASK]);
-+
-+		if (nla_len(tb[P4TC_ACT_PARAMS_MASK]) != len) {
-+			NL_SET_ERR_MSG(extack,
-+				       "Mask length differs from template's");
-+			err = -EINVAL;
-+			goto free_value;
-+		}
-+
-+		nparam->mask = kzalloc(alloc_len, GFP_KERNEL);
-+		if (!nparam->mask) {
-+			err = -ENOMEM;
-+			goto free_value;
-+		}
-+
-+		memcpy(nparam->mask, mask, len);
-+	}
-+
-+	return 0;
-+
-+free_value:
-+	kfree(nparam->value);
-+	return err;
-+}
-+
-+const struct p4tc_act_param_ops param_ops[P4T_MAX + 1] = {
-+	[P4T_DEV] = {
-+		.init_value = dev_init_param_value,
-+		.dump_value = dev_dump_param_value,
-+		.free = dev_free_param_value,
-+	},
-+};
-+
-+static void generic_free_param_value(struct p4tc_act_param *param)
-+{
-+	if (!(param->flags & P4TC_ACT_PARAM_FLAGS_ISDYN)) {
-+		kfree(param->value);
-+		kfree(param->mask);
-+	}
-+}
-+
-+int tcf_p4_act_init_params_list(struct tcf_p4act_params *params,
-+				struct list_head *params_list)
-+{
-+	struct p4tc_act_param *nparam, *tmp;
-+	int err;
-+
-+	list_for_each_entry_safe(nparam, tmp, params_list, head) {
-+		err = idr_alloc_u32(&params->params_idr, nparam, &nparam->id,
-+				    nparam->id, GFP_KERNEL);
-+		if (err < 0)
-+			return err;
-+		list_del(&nparam->head);
-+	}
-+
-+	return 0;
-+}
-+
-+/* This is the action instantiation that is invoked from the template code,
-+ * specifically when there is a command act with runtime parameters.
-+ * It is assumed that the action kind that is being instantiated here was
-+ * already created. This functions is analogous to tcf_p4_dyna_init.
-+ */
-+int tcf_p4_dyna_template_init(struct net *net, struct tc_action **a,
-+			      struct p4tc_act *act,
-+			      struct list_head *params_list,
-+			      struct tc_act_dyna *parm, u32 flags,
-+			      struct netlink_ext_ack *extack)
-+{
-+	bool bind = flags & TCA_ACT_FLAGS_BIND;
-+	struct tc_action_ops *a_o = &act->ops;
-+	struct tcf_chain *goto_ch = NULL;
-+	bool exists = false;
-+	struct tcf_p4act_params *params;
-+	int ret;
-+	int err;
-+
-+	if (!act->active) {
-+		NL_SET_ERR_MSG(extack,
-+			       "Dynamic action must be active to create instance");
-+		return -EINVAL;
-+	}
-+
-+	ret = __tcf_p4_dyna_init(net, NULL, act, parm, a, NULL, a_o, &goto_ch,
-+				 flags, extack);
-+	if (ret < 0)
-+		return ret;
-+
-+	err = tcf_action_check_ctrlact(parm->action, NULL, &goto_ch, extack);
-+	if (err < 0)
-+		goto release_idr;
-+
-+	params = kzalloc(sizeof(*params), GFP_KERNEL);
-+	if (!params) {
-+		err = -ENOMEM;
-+		goto release_idr;
-+	}
-+
-+	idr_init(&params->params_idr);
-+	if (params_list) {
-+		err = tcf_p4_act_init_params_list(params, params_list);
-+		if (err < 0)
-+			goto release_params;
-+	} else {
-+		if (!idr_is_empty(&act->params_idr)) {
-+			NL_SET_ERR_MSG(extack,
-+				       "Must specify action parameters");
-+			err = -EINVAL;
-+			goto release_params;
-+		}
-+	}
-+
-+	exists = ret != ACT_P_CREATED;
-+	err = __tcf_p4_dyna_init_set(act, a, params, goto_ch, parm, exists,
-+				     extack);
-+	if (err < 0)
-+		goto release_params;
-+
-+	return err;
-+
-+release_params:
-+	tcf_p4_act_params_destroy(params);
-+
-+release_idr:
-+	tcf_idr_release(*a, bind);
-+	return err;
-+}
-+
-+static int tcf_p4_dyna_act(struct sk_buff *skb, const struct tc_action *a,
-+			   struct tcf_result *res)
-+{
-+	struct tcf_p4act *dynact = to_p4act(a);
-+	int ret = 0;
-+
-+	tcf_lastuse_update(&dynact->tcf_tm);
-+	tcf_action_update_bstats(&dynact->common, skb);
-+
-+	return ret;
-+}
-+
-+static int tcf_p4_dyna_dump(struct sk_buff *skb, struct tc_action *a, int bind,
-+			    int ref)
-+{
-+	unsigned char *b = nlmsg_get_pos(skb);
-+	struct tcf_p4act *dynact = to_p4act(a);
-+	struct tc_act_dyna opt = {
-+		.index = dynact->tcf_index,
-+		.refcnt = refcount_read(&dynact->tcf_refcnt) - ref,
-+		.bindcnt = atomic_read(&dynact->tcf_bindcnt) - bind,
-+	};
-+	int i = 1;
-+	struct tcf_p4act_params *params;
-+	struct p4tc_act_param *parm;
-+	struct nlattr *nest_parms;
-+	struct nlattr *nest;
-+	struct tcf_t t;
-+	int id;
-+
-+	spin_lock_bh(&dynact->tcf_lock);
-+
-+	opt.action = dynact->tcf_action;
-+	if (nla_put(skb, P4TC_ACT_OPT, sizeof(opt), &opt))
-+		goto nla_put_failure;
-+
-+	nest = nla_nest_start(skb, P4TC_ACT_CMDS_LIST);
-+	nla_nest_end(skb, nest);
-+
-+	if (nla_put_string(skb, P4TC_ACT_NAME, a->ops->kind))
-+		goto nla_put_failure;
-+
-+	tcf_tm_dump(&t, &dynact->tcf_tm);
-+	if (nla_put_64bit(skb, P4TC_ACT_TM, sizeof(t), &t, P4TC_ACT_PAD))
-+		goto nla_put_failure;
-+
-+	nest_parms = nla_nest_start(skb, P4TC_ACT_PARMS);
-+	if (!nest_parms)
-+		goto nla_put_failure;
-+
-+	params = rcu_dereference_protected(dynact->params, 1);
-+	if (params) {
-+		idr_for_each_entry(&params->params_idr, parm, id) {
-+			struct p4tc_act_param_ops *op;
-+			struct nlattr *nest_count;
-+
-+			nest_count = nla_nest_start(skb, i);
-+			if (!nest_count)
-+				goto nla_put_failure;
-+
-+			if (nla_put_string(skb, P4TC_ACT_PARAMS_NAME,
-+					   parm->name))
-+				goto nla_put_failure;
-+
-+			if (nla_put_u32(skb, P4TC_ACT_PARAMS_ID, parm->id))
-+				goto nla_put_failure;
-+
-+			op = (struct p4tc_act_param_ops *)&param_ops[parm->type];
-+			if (op->dump_value) {
-+				if (op->dump_value(skb, op, parm) < 0)
-+					goto nla_put_failure;
-+			} else {
-+				struct p4tc_type *type;
-+
-+				type = p4type_find_byid(parm->type);
-+				if (generic_dump_param_value(skb, type, parm))
-+					goto nla_put_failure;
-+			}
-+
-+			if (nla_put_u32(skb, P4TC_ACT_PARAMS_TYPE, parm->type))
-+				goto nla_put_failure;
-+
-+			nla_nest_end(skb, nest_count);
-+			i++;
-+		}
-+	}
-+	nla_nest_end(skb, nest_parms);
-+
-+	spin_unlock_bh(&dynact->tcf_lock);
-+
-+	return skb->len;
-+
-+nla_put_failure:
-+	spin_unlock_bh(&dynact->tcf_lock);
-+	nlmsg_trim(skb, b);
-+	return -1;
-+}
-+
-+static int tcf_p4_dyna_lookup(struct net *net, const struct tc_action_ops *ops,
-+			      struct tc_action **a, u32 index)
-+{
-+	struct p4tc_act *act;
-+
-+	act = tcf_p4_find_act(net, ops);
-+	if (IS_ERR(act))
-+		return PTR_ERR(act);
-+
-+	return tcf_idr_search(act->tn, a, index);
-+}
-+
-+static int tcf_p4_dyna_walker(struct net *net, struct sk_buff *skb,
-+			      struct netlink_callback *cb, int type,
-+			      const struct tc_action_ops *ops,
-+			      struct netlink_ext_ack *extack)
-+{
-+	struct p4tc_act *act;
-+
-+	act = tcf_p4_find_act(net, ops);
-+	if (IS_ERR(act))
-+		return PTR_ERR(act);
-+
-+	return tcf_generic_walker(act->tn, skb, cb, type, ops, extack);
-+}
-+
-+static void tcf_p4_dyna_cleanup(struct tc_action *a)
-+{
-+	struct tc_action_ops *ops = (struct tc_action_ops *)a->ops;
-+	struct tcf_p4act *m = to_p4act(a);
-+	struct tcf_p4act_params *params;
-+
-+	params = rcu_dereference_protected(m->params, 1);
-+
-+	if (refcount_read(&ops->dyn_ref) > 1)
-+		refcount_dec(&ops->dyn_ref);
-+
-+	spin_lock_bh(&m->tcf_lock);
-+	if (params)
-+		call_rcu(&params->rcu, tcf_p4_act_params_destroy_rcu);
-+	spin_unlock_bh(&m->tcf_lock);
-+}
-+
-+int generic_dump_param_value(struct sk_buff *skb, struct p4tc_type *type,
-+			     struct p4tc_act_param *param)
-+{
-+	const u32 bytesz = BITS_TO_BYTES(type->container_bitsz);
-+	unsigned char *b = nlmsg_get_pos(skb);
-+	struct nlattr *nla_value;
-+
-+	nla_value = nla_nest_start(skb, P4TC_ACT_PARAMS_VALUE);
-+	if (param->flags & P4TC_ACT_PARAM_FLAGS_ISDYN) {
-+		struct nlattr *nla_opnd;
-+
-+		nla_opnd = nla_nest_start(skb, P4TC_ACT_PARAMS_VALUE_OPND);
-+		nla_nest_end(skb, nla_opnd);
-+	} else {
-+		if (nla_put(skb, P4TC_ACT_PARAMS_VALUE_RAW, bytesz,
-+			    param->value))
-+			goto out_nlmsg_trim;
-+	}
-+	nla_nest_end(skb, nla_value);
-+
-+	if (param->mask &&
-+	    nla_put(skb, P4TC_ACT_PARAMS_MASK, bytesz, param->mask))
-+		goto out_nlmsg_trim;
-+
-+	return 0;
-+
-+out_nlmsg_trim:
-+	nlmsg_trim(skb, b);
-+	return -1;
-+}
-+
-+void tcf_p4_act_params_destroy(struct tcf_p4act_params *params)
-+{
-+	struct p4tc_act_param *param;
-+	unsigned long param_id, tmp;
-+
-+	idr_for_each_entry_ul(&params->params_idr, param, tmp, param_id) {
-+		struct p4tc_act_param_ops *op;
-+
-+		idr_remove(&params->params_idr, param_id);
-+		op = (struct p4tc_act_param_ops *)&param_ops[param->type];
-+		if (op->free)
-+			op->free(param);
-+		else
-+			generic_free_param_value(param);
-+		kfree(param);
-+	}
-+
-+	idr_destroy(&params->params_idr);
-+
-+	kfree(params);
-+}
-+
-+void tcf_p4_act_params_destroy_rcu(struct rcu_head *head)
-+{
-+	struct tcf_p4act_params *params;
-+
-+	params = container_of(head, struct tcf_p4act_params, rcu);
-+	tcf_p4_act_params_destroy(params);
-+}
-+
-+static const struct nla_policy p4tc_act_params_policy[P4TC_ACT_PARAMS_MAX + 1] = {
-+	[P4TC_ACT_PARAMS_NAME] = { .type = NLA_STRING, .len = ACTPARAMNAMSIZ },
-+	[P4TC_ACT_PARAMS_ID] = { .type = NLA_U32 },
-+	[P4TC_ACT_PARAMS_VALUE] = { .type = NLA_NESTED },
-+	[P4TC_ACT_PARAMS_MASK] = { .type = NLA_BINARY },
-+	[P4TC_ACT_PARAMS_TYPE] = { .type = NLA_U32 },
-+};
-+
-+static struct p4tc_act_param *param_find_byname(struct idr *params_idr,
-+						const char *param_name)
-+{
-+	struct p4tc_act_param *param;
-+	unsigned long tmp, id;
-+
-+	idr_for_each_entry_ul(params_idr, param, tmp, id) {
-+		if (param == ERR_PTR(-EBUSY))
-+			continue;
-+		if (strncmp(param->name, param_name, ACTPARAMNAMSIZ) == 0)
-+			return param;
-+	}
-+
-+	return NULL;
-+}
-+
-+struct p4tc_act_param *tcf_param_find_byid(struct idr *params_idr,
-+					   const u32 param_id)
-+{
-+	return idr_find(params_idr, param_id);
-+}
-+
-+struct p4tc_act_param *tcf_param_find_byany(struct p4tc_act *act,
-+					    const char *param_name,
-+					    const u32 param_id,
-+					    struct netlink_ext_ack *extack)
-+{
-+	struct p4tc_act_param *param;
-+	int err;
-+
-+	if (param_id) {
-+		param = tcf_param_find_byid(&act->params_idr, param_id);
-+		if (!param) {
-+			NL_SET_ERR_MSG(extack, "Unable to find param by id");
-+			err = -EINVAL;
-+			goto out;
-+		}
-+	} else {
-+		if (param_name) {
-+			param = param_find_byname(&act->params_idr, param_name);
-+			if (!param) {
-+				NL_SET_ERR_MSG(extack, "Param name not found");
-+				err = -EINVAL;
-+				goto out;
-+			}
-+		} else {
-+			NL_SET_ERR_MSG(extack, "Must specify param name or id");
-+			err = -EINVAL;
-+			goto out;
-+		}
-+	}
-+
-+	return param;
-+
-+out:
-+	return ERR_PTR(err);
-+}
-+
-+static struct p4tc_act_param *
-+tcf_param_find_byanyattr(struct p4tc_act *act, struct nlattr *name_attr,
-+			 const u32 param_id, struct netlink_ext_ack *extack)
-+{
-+	char *param_name = NULL;
-+
-+	if (name_attr)
-+		param_name = nla_data(name_attr);
-+
-+	return tcf_param_find_byany(act, param_name, param_id, extack);
-+}
-+
-+static int tcf_p4_act_init_param(struct net *net,
-+				 struct tcf_p4act_params *params,
-+				 struct p4tc_act *act, struct nlattr *nla,
-+				 struct netlink_ext_ack *extack)
-+{
-+	u32 param_id = 0;
-+	struct nlattr *tb[P4TC_ACT_PARAMS_MAX + 1];
-+	struct p4tc_act_param *param, *nparam;
-+	struct p4tc_act_param_ops *op;
-+	struct p4tc_type *type;
-+	int err;
-+
-+	err = nla_parse_nested(tb, P4TC_ACT_PARAMS_MAX, nla,
-+			       p4tc_act_params_policy, extack);
-+	if (err < 0)
-+		return err;
-+
-+	if (tb[P4TC_ACT_PARAMS_ID])
-+		param_id = *((u32 *)nla_data(tb[P4TC_ACT_PARAMS_ID]));
-+
-+	param = tcf_param_find_byanyattr(act, tb[P4TC_ACT_PARAMS_NAME],
-+					 param_id, extack);
-+	if (IS_ERR(param))
-+		return PTR_ERR(param);
-+
-+	if (tb[P4TC_ACT_PARAMS_TYPE]) {
-+		u32 *type = nla_data(tb[P4TC_ACT_PARAMS_TYPE]);
-+
-+		if (param->type != *type) {
-+			NL_SET_ERR_MSG(extack,
-+				       "Param type differs from template");
-+			return -EINVAL;
-+		}
-+	} else {
-+		NL_SET_ERR_MSG(extack, "Must specify param type");
-+		return -EINVAL;
-+	}
-+
-+	nparam = kzalloc(sizeof(*nparam), GFP_KERNEL);
-+	if (!nparam)
-+		return -ENOMEM;
-+
-+	strscpy(nparam->name, param->name, ACTPARAMNAMSIZ);
-+	nparam->type = param->type;
-+
-+	type = p4type_find_byid(param->type);
-+	if (!type) {
-+		NL_SET_ERR_MSG(extack, "Invalid param type");
-+		err = -EINVAL;
-+		goto free;
-+	}
-+
-+	op = (struct p4tc_act_param_ops *)&param_ops[param->type];
-+	if (op->init_value)
-+		err = op->init_value(net, op, nparam, tb, extack);
-+	else
-+		err = generic_init_param_value(nparam, type, tb, extack);
-+
-+	if (err < 0)
-+		goto free;
-+
-+	nparam->id = param->id;
-+
-+	err = idr_alloc_u32(&params->params_idr, nparam, &nparam->id,
-+			    nparam->id, GFP_KERNEL);
-+	if (err < 0)
-+		goto free_val;
-+
-+	return 0;
-+
-+free_val:
-+	if (op->free)
-+		op->free(nparam);
-+	else
-+		generic_free_param_value(nparam);
-+
-+free:
-+	kfree(nparam);
-+	return err;
-+}
-+
-+int tcf_p4_act_init_params(struct net *net, struct tcf_p4act_params *params,
-+			   struct p4tc_act *act, struct nlattr *nla,
-+			   struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[P4TC_MSGBATCH_SIZE + 1];
-+	int err;
-+	int i;
-+
-+	err = nla_parse_nested(tb, P4TC_MSGBATCH_SIZE, nla, NULL, NULL);
-+	if (err < 0)
-+		return err;
-+
-+	for (i = 1; i < P4TC_MSGBATCH_SIZE + 1 && tb[i]; i++) {
-+		err = tcf_p4_act_init_param(net, params, act, tb[i], extack);
-+		if (err < 0)
-+			return err;
-+	}
-+
-+	return 0;
-+}
-+
-+struct p4tc_act *tcf_action_find_byname(const char *act_name,
-+					struct p4tc_pipeline *pipeline)
-+{
-+	char full_act_name[ACTPARAMNAMSIZ];
-+	struct p4tc_act *act;
-+	unsigned long tmp, id;
-+
-+	snprintf(full_act_name, ACTNAMSIZ, "%s/%s", pipeline->common.name,
-+		 act_name);
-+	idr_for_each_entry_ul(&pipeline->p_act_idr, act, tmp, id)
-+		if (strncmp(act->common.name, full_act_name, ACTNAMSIZ) == 0)
-+			return act;
-+
-+	return NULL;
-+}
-+
-+struct p4tc_act *tcf_action_find_byid(struct p4tc_pipeline *pipeline,
-+				      const u32 a_id)
-+{
-+	return idr_find(&pipeline->p_act_idr, a_id);
-+}
-+
-+struct p4tc_act *tcf_action_find_byany(struct p4tc_pipeline *pipeline,
-+				       const char *act_name, const u32 a_id,
++static int tcf_key_try_set_state_ready(struct p4tc_table_key *key,
 +				       struct netlink_ext_ack *extack)
 +{
-+	struct p4tc_act *act;
-+	int err;
-+
-+	if (a_id) {
-+		act = tcf_action_find_byid(pipeline, a_id);
-+		if (!act) {
-+			NL_SET_ERR_MSG(extack, "Unable to find action by id");
-+			err = -ENOENT;
-+			goto out;
-+		}
-+	} else {
-+		if (act_name) {
-+			act = tcf_action_find_byname(act_name, pipeline);
-+			if (!act) {
-+				NL_SET_ERR_MSG(extack, "Action name not found");
-+				err = -ENOENT;
-+				goto out;
-+			}
-+		} else {
-+			NL_SET_ERR_MSG(extack,
-+				       "Must specify action name or id");
-+			err = -EINVAL;
-+			goto out;
-+		}
-+	}
-+
-+	return act;
-+
-+out:
-+	return ERR_PTR(err);
-+}
-+
-+struct p4tc_act *tcf_action_get(struct p4tc_pipeline *pipeline,
-+				const char *act_name, const u32 a_id,
-+				struct netlink_ext_ack *extack)
-+{
-+	struct p4tc_act *act;
-+
-+	act = tcf_action_find_byany(pipeline, act_name, a_id, extack);
-+	if (IS_ERR(act))
-+		return act;
-+
-+	WARN_ON(!refcount_inc_not_zero(&act->a_ref));
-+	return act;
-+}
-+
-+void tcf_action_put(struct p4tc_act *act)
-+{
-+	WARN_ON(!refcount_dec_not_one(&act->a_ref));
-+}
-+
-+static struct p4tc_act *
-+tcf_action_find_byanyattr(struct nlattr *act_name_attr, const u32 a_id,
-+			  struct p4tc_pipeline *pipeline,
-+			  struct netlink_ext_ack *extack)
-+{
-+	char *act_name = NULL;
-+
-+	if (act_name_attr)
-+		act_name = nla_data(act_name_attr);
-+
-+	return tcf_action_find_byany(pipeline, act_name, a_id, extack);
-+}
-+
-+static void p4_put_param(struct idr *params_idr, struct p4tc_act_param *param)
-+{
-+	kfree(param);
-+}
-+
-+void p4_put_many_params(struct idr *params_idr, struct p4tc_act_param *params[],
-+			int params_count)
-+{
-+	int i;
-+
-+	for (i = 0; i < params_count; i++)
-+		p4_put_param(params_idr, params[i]);
-+}
-+
-+static struct p4tc_act_param *p4_create_param(struct p4tc_act *act,
-+					      struct nlattr **tb, u32 param_id,
-+					      struct netlink_ext_ack *extack)
-+{
-+	struct p4tc_act_param *param;
-+	char *name;
-+	int ret;
-+
-+	if (tb[P4TC_ACT_PARAMS_NAME]) {
-+		name = nla_data(tb[P4TC_ACT_PARAMS_NAME]);
-+	} else {
-+		NL_SET_ERR_MSG(extack, "Must specify param name");
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	param = kmalloc(sizeof(*param), GFP_KERNEL);
-+	if (!param) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
-+
-+	if (tcf_param_find_byid(&act->params_idr, param_id) ||
-+	    param_find_byname(&act->params_idr, name)) {
-+		NL_SET_ERR_MSG(extack, "Param already exists");
-+		ret = -EEXIST;
-+		goto free;
-+	}
-+
-+	if (tb[P4TC_ACT_PARAMS_TYPE]) {
-+		struct p4tc_type *type;
-+
-+		param->type = *((u32 *)nla_data(tb[P4TC_ACT_PARAMS_TYPE]));
-+		type = p4type_find_byid(param->type);
-+		if (!type) {
-+			NL_SET_ERR_MSG(extack, "Param type is invalid");
-+			ret = -EINVAL;
-+			goto free;
-+		}
-+	} else {
-+		NL_SET_ERR_MSG(extack, "Must specify param type");
-+		ret = -EINVAL;
-+		goto free;
-+	}
-+
-+	if (param_id) {
-+		ret = idr_alloc_u32(&act->params_idr, param, &param_id,
-+				    param_id, GFP_KERNEL);
-+		if (ret < 0) {
-+			NL_SET_ERR_MSG(extack, "Unable to allocate param id");
-+			goto free;
-+		}
-+		param->id = param_id;
-+	} else {
-+		param->id = 1;
-+
-+		ret = idr_alloc_u32(&act->params_idr, param, &param->id,
-+				    UINT_MAX, GFP_KERNEL);
-+		if (ret < 0) {
-+			NL_SET_ERR_MSG(extack, "Unable to allocate param id");
-+			goto free;
-+		}
-+	}
-+
-+	strscpy(param->name, name, ACTPARAMNAMSIZ);
-+
-+	return param;
-+
-+free:
-+	kfree(param);
-+
-+out:
-+	return ERR_PTR(ret);
-+}
-+
-+static struct p4tc_act_param *p4_update_param(struct p4tc_act *act,
-+					      struct nlattr **tb,
-+					      const u32 param_id,
-+					      struct netlink_ext_ack *extack)
-+{
-+	struct p4tc_act_param *param_old, *param;
-+	int ret;
-+
-+	param_old = tcf_param_find_byanyattr(act, tb[P4TC_ACT_PARAMS_NAME],
-+					     param_id, extack);
-+	if (IS_ERR(param_old))
-+		return param_old;
-+
-+	param = kmalloc(sizeof(*param), GFP_KERNEL);
-+	if (!param) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
-+
-+	strscpy(param->name, param_old->name, ACTPARAMNAMSIZ);
-+	param->id = param_old->id;
-+
-+	if (tb[P4TC_ACT_PARAMS_TYPE]) {
-+		struct p4tc_type *type;
-+
-+		param->type = *((u32 *)nla_data(tb[P4TC_ACT_PARAMS_TYPE]));
-+		type = p4type_find_byid(param->type);
-+		if (!type) {
-+			NL_SET_ERR_MSG(extack, "Param type is invalid");
-+			ret = -EINVAL;
-+			goto out;
-+		}
-+	} else {
-+		NL_SET_ERR_MSG(extack, "Must specify param type");
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	return param;
-+
-+out:
-+	return ERR_PTR(ret);
-+}
-+
-+static struct p4tc_act_param *p4_act_init_param(struct p4tc_act *act,
-+						struct nlattr *nla, bool update,
-+						struct netlink_ext_ack *extack)
-+{
-+	u32 param_id = 0;
-+	struct nlattr *tb[P4TC_ACT_PARAMS_MAX + 1];
-+	int ret;
-+
-+	ret = nla_parse_nested(tb, P4TC_ACT_PARAMS_MAX, nla, NULL, extack);
-+	if (ret < 0) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	if (tb[P4TC_ACT_PARAMS_ID])
-+		param_id = *((u32 *)nla_data(tb[P4TC_ACT_PARAMS_ID]));
-+
-+	if (update)
-+		return p4_update_param(act, tb, param_id, extack);
-+	else
-+		return p4_create_param(act, tb, param_id, extack);
-+
-+out:
-+	return ERR_PTR(ret);
-+}
-+
-+int p4_act_init_params(struct p4tc_act *act, struct nlattr *nla,
-+		       struct p4tc_act_param *params[], bool update,
-+		       struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[P4TC_MSGBATCH_SIZE + 1];
-+	int ret;
-+	int i;
-+
-+	ret = nla_parse_nested(tb, P4TC_MSGBATCH_SIZE, nla, NULL, extack);
-+	if (ret < 0)
++	if (!key->key_acts) {
++		NL_SET_ERR_MSG(extack,
++			       "Table key must have actions before sealing pipelline");
 +		return -EINVAL;
-+
-+	for (i = 1; i < P4TC_MSGBATCH_SIZE + 1 && tb[i]; i++) {
-+		struct p4tc_act_param *param;
-+
-+		param = p4_act_init_param(act, tb[i], update, extack);
-+		if (IS_ERR(param)) {
-+			ret = PTR_ERR(param);
-+			goto params_del;
-+		}
-+		params[i - 1] = param;
 +	}
-+
-+	return i - 1;
-+
-+params_del:
-+	p4_put_many_params(&act->params_idr, params, i - 1);
-+	return ret;
-+}
-+
-+int p4_act_init(struct p4tc_act *act, struct nlattr *nla,
-+		struct p4tc_act_param *params[], struct netlink_ext_ack *extack)
-+{
-+	int num_params = 0;
-+	int ret;
-+
-+	idr_init(&act->params_idr);
-+
-+	if (nla) {
-+		num_params =
-+			p4_act_init_params(act, nla, params, false, extack);
-+		if (num_params < 0) {
-+			ret = num_params;
-+			goto idr_destroy;
-+		}
-+	}
-+
-+	return num_params;
-+
-+idr_destroy:
-+	p4_put_many_params(&act->params_idr, params, num_params);
-+	idr_destroy(&act->params_idr);
-+	return ret;
-+}
-+
-+static const struct nla_policy p4tc_act_policy[P4TC_ACT_MAX + 1] = {
-+	[P4TC_ACT_NAME] = { .type = NLA_STRING, .len = ACTNAMSIZ },
-+	[P4TC_ACT_PARMS] = { .type = NLA_NESTED },
-+	[P4TC_ACT_OPT] = { .type = NLA_BINARY,
-+			   .len = sizeof(struct tc_act_dyna) },
-+	[P4TC_ACT_CMDS_LIST] = { .type = NLA_NESTED },
-+	[P4TC_ACT_ACTIVE] = { .type = NLA_U8 },
-+};
-+
-+static inline void p4tc_action_net_exit(struct tc_action_net *tn)
-+{
-+	tcf_idrinfo_destroy(tn->ops, tn->idrinfo);
-+	kfree(tn->idrinfo);
-+	kfree(tn);
-+}
-+
-+static int __tcf_act_put(struct net *net, struct p4tc_pipeline *pipeline,
-+			 struct p4tc_act *act, bool unconditional_purge,
-+			 struct netlink_ext_ack *extack)
-+{
-+	struct p4tc_act_param *act_param;
-+	unsigned long param_id, tmp;
-+	struct tc_action_net *tn;
-+	struct idr *idr;
-+	int ret;
-+
-+	if (!unconditional_purge && (refcount_read(&act->ops.dyn_ref) > 1 ||
-+				     refcount_read(&act->a_ref) > 1)) {
-+		NL_SET_ERR_MSG(extack,
-+			       "Unable to delete referenced action template");
-+		return -EBUSY;
-+	}
-+
-+	tn = net_generic(net, act->ops.net_id);
-+	idr = &tn->idrinfo->action_idr;
-+
-+	idr_for_each_entry_ul(&act->params_idr, act_param, tmp, param_id) {
-+		idr_remove(&act->params_idr, param_id);
-+		kfree(act_param);
-+	}
-+
-+	ret = __tcf_unregister_action(&act->ops);
-+	if (ret < 0) {
-+		NL_SET_ERR_MSG(extack,
-+			       "Unable to unregister new action template");
-+		return ret;
-+	}
-+	p4tc_action_net_exit(act->tn);
-+
-+	if (act->labels) {
-+		rhashtable_free_and_destroy(act->labels, p4tc_label_ht_destroy,
-+					    NULL);
-+		kfree(act->labels);
-+	}
-+
-+	idr_remove(&pipeline->p_act_idr, act->a_id);
-+
-+	if (!unconditional_purge)
-+		tcf_pipeline_delete_from_dep_graph(pipeline, act);
-+
-+	list_del(&act->head);
-+
-+	kfree(act);
-+
-+	pipeline->num_created_acts--;
 +
 +	return 0;
 +}
 +
-+static int _tcf_act_fill_nlmsg(struct net *net, struct sk_buff *skb,
-+			       struct p4tc_act *act)
++static int __tcf_table_try_set_state_ready(struct p4tc_table *table,
++					   struct netlink_ext_ack *extack)
++{
++	if (!table->tbl_postacts) {
++		NL_SET_ERR_MSG(extack,
++			       "All tables must have postactions before sealing pipelline");
++		return -EINVAL;
++	}
++
++	if (!table->tbl_key) {
++		NL_SET_ERR_MSG(extack,
++			       "Table must have key before sealing pipeline");
++		return -EINVAL;
++	}
++
++	return tcf_key_try_set_state_ready(table->tbl_key, extack);
++}
++
++int tcf_table_try_set_state_ready(struct p4tc_pipeline *pipeline,
++				  struct netlink_ext_ack *extack)
++{
++	struct p4tc_table *table;
++	unsigned long tmp, id;
++	int ret;
++
++	idr_for_each_entry_ul(&pipeline->p_tbl_idr, table, tmp, id) {
++		ret = __tcf_table_try_set_state_ready(table, extack);
++		if (ret < 0)
++			return ret;
++	}
++
++	return 0;
++}
++
++static const struct nla_policy p4tc_table_policy[P4TC_TABLE_MAX + 1] = {
++	[P4TC_TABLE_NAME] = { .type = NLA_STRING, .len = TABLENAMSIZ },
++	[P4TC_TABLE_INFO] = { .type = NLA_BINARY,
++			      .len = sizeof(struct p4tc_table_parm) },
++	[P4TC_TABLE_PREACTIONS] = { .type = NLA_NESTED },
++	[P4TC_TABLE_KEY] = { .type = NLA_NESTED },
++	[P4TC_TABLE_POSTACTIONS] = { .type = NLA_NESTED },
++	[P4TC_TABLE_DEFAULT_HIT] = { .type = NLA_NESTED },
++	[P4TC_TABLE_DEFAULT_MISS] = { .type = NLA_NESTED },
++	[P4TC_TABLE_ACTS_LIST] = { .type = NLA_NESTED },
++	[P4TC_TABLE_OPT_ENTRY] = { .type = NLA_NESTED },
++};
++
++static const struct nla_policy p4tc_table_key_policy[P4TC_MAXPARSE_KEYS + 1] = {
++	[P4TC_KEY_ACT] = { .type = NLA_NESTED },
++};
++
++static int tcf_table_key_fill_nlmsg(struct sk_buff *skb,
++				    struct p4tc_table_key *key)
++{
++	int ret = 0;
++	struct nlattr *nest_action;
++
++	if (key->key_acts) {
++		nest_action = nla_nest_start(skb, P4TC_KEY_ACT);
++		ret = tcf_action_dump(skb, key->key_acts, 0, 0, false);
++		if (ret < 0)
++			return ret;
++		nla_nest_end(skb, nest_action);
++	}
++
++	return ret;
++}
++
++static int _tcf_table_fill_nlmsg(struct sk_buff *skb, struct p4tc_table *table)
 +{
 +	unsigned char *b = nlmsg_get_pos(skb);
 +	int i = 1;
-+	struct nlattr *nest, *parms, *cmds;
-+	struct p4tc_act_param *param;
-+	unsigned long param_id, tmp;
++	struct p4tc_table_perm *tbl_perm;
++	struct p4tc_table_act *table_act;
++	struct nlattr *nested_tbl_acts;
++	struct nlattr *default_missact;
++	struct nlattr *default_hitact;
++	struct nlattr *nested_count;
++	struct p4tc_table_parm parm;
++	struct nlattr *nest_key;
++	struct nlattr *nest;
++	struct nlattr *preacts;
++	struct nlattr *postacts;
++	int err;
 +
-+	if (nla_put_u32(skb, P4TC_PATH, act->a_id))
++	if (nla_put_u32(skb, P4TC_PATH, table->tbl_id))
 +		goto out_nlmsg_trim;
 +
 +	nest = nla_nest_start(skb, P4TC_PARAMS);
 +	if (!nest)
 +		goto out_nlmsg_trim;
 +
-+	if (nla_put_string(skb, P4TC_ACT_NAME, act->common.name))
++	if (nla_put_string(skb, P4TC_TABLE_NAME, table->common.name))
 +		goto out_nlmsg_trim;
 +
-+	parms = nla_nest_start(skb, P4TC_ACT_PARMS);
-+	if (!parms)
-+		goto out_nlmsg_trim;
++	parm.tbl_keysz = table->tbl_keysz;
++	parm.tbl_max_entries = table->tbl_max_entries;
++	parm.tbl_max_masks = table->tbl_max_masks;
++	parm.tbl_num_entries = refcount_read(&table->tbl_entries_ref) - 1;
 +
-+	idr_for_each_entry_ul(&act->params_idr, param, tmp, param_id) {
-+		struct nlattr *nest_count;
++	tbl_perm = rcu_dereference_rtnl(table->tbl_permissions);
++	parm.tbl_permissions = tbl_perm->permissions;
 +
-+		nest_count = nla_nest_start(skb, i);
-+		if (!nest_count)
++	if (table->tbl_key) {
++		nest_key = nla_nest_start(skb, P4TC_TABLE_KEY);
++		err = tcf_table_key_fill_nlmsg(skb, table->tbl_key);
++		if (err < 0)
++			goto out_nlmsg_trim;
++		nla_nest_end(skb, nest_key);
++	}
++
++	if (table->tbl_preacts) {
++		preacts = nla_nest_start(skb, P4TC_TABLE_PREACTIONS);
++		if (tcf_action_dump(skb, table->tbl_preacts, 0, 0, false) < 0)
++			goto out_nlmsg_trim;
++		nla_nest_end(skb, preacts);
++	}
++
++	if (table->tbl_postacts) {
++		postacts = nla_nest_start(skb, P4TC_TABLE_POSTACTIONS);
++		if (tcf_action_dump(skb, table->tbl_postacts, 0, 0, false) < 0)
++			goto out_nlmsg_trim;
++		nla_nest_end(skb, postacts);
++	}
++
++	if (table->tbl_default_hitact) {
++		struct p4tc_table_defact *hitact;
++
++		default_hitact = nla_nest_start(skb, P4TC_TABLE_DEFAULT_HIT);
++		rcu_read_lock();
++		hitact = rcu_dereference_rtnl(table->tbl_default_hitact);
++		if (hitact->default_acts) {
++			struct nlattr *nest;
++
++			nest = nla_nest_start(skb, P4TC_TABLE_DEFAULT_ACTION);
++			if (tcf_action_dump(skb, hitact->default_acts, 0, 0,
++					    false) < 0) {
++				rcu_read_unlock();
++				goto out_nlmsg_trim;
++			}
++			nla_nest_end(skb, nest);
++		}
++		if (nla_put_u16(skb, P4TC_TABLE_DEFAULT_PERMISSIONS,
++				hitact->permissions) < 0) {
++			rcu_read_unlock();
++			goto out_nlmsg_trim;
++		}
++		rcu_read_unlock();
++		nla_nest_end(skb, default_hitact);
++	}
++
++	if (table->tbl_default_missact) {
++		struct p4tc_table_defact *missact;
++
++		default_missact = nla_nest_start(skb, P4TC_TABLE_DEFAULT_MISS);
++		rcu_read_lock();
++		missact = rcu_dereference_rtnl(table->tbl_default_missact);
++		if (missact->default_acts) {
++			struct nlattr *nest;
++
++			nest = nla_nest_start(skb, P4TC_TABLE_DEFAULT_ACTION);
++			if (tcf_action_dump(skb, missact->default_acts, 0, 0,
++					    false) < 0) {
++				rcu_read_unlock();
++				goto out_nlmsg_trim;
++			}
++			nla_nest_end(skb, nest);
++		}
++		if (nla_put_u16(skb, P4TC_TABLE_DEFAULT_PERMISSIONS,
++				missact->permissions) < 0) {
++			rcu_read_unlock();
++			goto out_nlmsg_trim;
++		}
++		rcu_read_unlock();
++		nla_nest_end(skb, default_missact);
++	}
++
++	nested_tbl_acts = nla_nest_start(skb, P4TC_TABLE_ACTS_LIST);
++	list_for_each_entry(table_act, &table->tbl_acts_list, node) {
++		nested_count = nla_nest_start(skb, i);
++		if (nla_put_string(skb, P4TC_TABLE_ACT_NAME,
++				   table_act->ops->kind) < 0)
++			goto out_nlmsg_trim;
++		if (nla_put_u32(skb, P4TC_TABLE_ACT_FLAGS,
++				table_act->flags) < 0)
 +			goto out_nlmsg_trim;
 +
-+		if (nla_put_string(skb, P4TC_ACT_PARAMS_NAME, param->name))
-+			goto out_nlmsg_trim;
-+
-+		if (nla_put_u32(skb, P4TC_ACT_PARAMS_ID, param->id))
-+			goto out_nlmsg_trim;
-+
-+		if (nla_put_u32(skb, P4TC_ACT_PARAMS_TYPE, param->type))
-+			goto out_nlmsg_trim;
-+
-+		nla_nest_end(skb, nest_count);
++		nla_nest_end(skb, nested_count);
 +		i++;
 +	}
-+	nla_nest_end(skb, parms);
++	nla_nest_end(skb, nested_tbl_acts);
 +
-+	cmds = nla_nest_start(skb, P4TC_ACT_CMDS_LIST);
-+	nla_nest_end(skb, cmds);
-+
++	if (nla_put(skb, P4TC_TABLE_INFO, sizeof(parm), &parm))
++		goto out_nlmsg_trim;
 +	nla_nest_end(skb, nest);
 +
 +	return skb->len;
@@ -2072,34 +903,1207 @@ index 000000000..f47b42bbe
 +	return -1;
 +}
 +
-+static int tcf_act_fill_nlmsg(struct net *net, struct sk_buff *skb,
-+			      struct p4tc_template_common *tmpl,
-+			      struct netlink_ext_ack *extack)
++static int tcf_table_fill_nlmsg(struct net *net, struct sk_buff *skb,
++				struct p4tc_template_common *template,
++				struct netlink_ext_ack *extack)
 +{
-+	return _tcf_act_fill_nlmsg(net, skb, to_act(tmpl));
++	struct p4tc_table *table = to_table(template);
++
++	if (_tcf_table_fill_nlmsg(skb, table) <= 0) {
++		NL_SET_ERR_MSG(extack,
++			       "Failed to fill notification attributes for table");
++		return -EINVAL;
++	}
++
++	return 0;
 +}
 +
-+static int tcf_act_flush(struct sk_buff *skb, struct net *net,
-+			 struct p4tc_pipeline *pipeline,
++static inline void tcf_table_key_put(struct p4tc_table_key *key)
++{
++	p4tc_action_destroy(key->key_acts);
++	kfree(key);
++}
++
++static inline void p4tc_table_defact_destroy(struct p4tc_table_defact *defact)
++{
++	if (defact) {
++		p4tc_action_destroy(defact->default_acts);
++		kfree(defact);
++	}
++}
++
++void tcf_table_acts_list_destroy(struct list_head *acts_list)
++{
++	struct p4tc_table_act *table_act, *tmp;
++
++	list_for_each_entry_safe(table_act, tmp, acts_list, node) {
++		struct p4tc_act *act;
++
++		act = container_of(table_act->ops, typeof(*act), ops);
++		list_del(&table_act->node);
++		kfree(table_act);
++		WARN_ON(!refcount_dec_not_one(&act->a_ref));
++	}
++}
++
++static inline int _tcf_table_put(struct net *net, struct nlattr **tb,
++				 struct p4tc_pipeline *pipeline,
++				 struct p4tc_table *table,
++				 bool unconditional_purge,
++				 struct netlink_ext_ack *extack)
++{
++	bool default_act_del = false;
++	struct p4tc_table_perm *perm;
++
++	if (tb)
++		default_act_del = tb[P4TC_TABLE_DEFAULT_HIT] ||
++				  tb[P4TC_TABLE_DEFAULT_MISS];
++
++	if (!default_act_del) {
++		if (!unconditional_purge &&
++		    !refcount_dec_if_one(&table->tbl_ctrl_ref)) {
++			NL_SET_ERR_MSG(extack,
++				       "Unable to delete referenced table");
++			return -EBUSY;
++		}
++
++		if (!unconditional_purge &&
++		    !refcount_dec_if_one(&table->tbl_ref)) {
++			refcount_set(&table->tbl_ctrl_ref, 1);
++			NL_SET_ERR_MSG(extack,
++				       "Unable to delete referenced table");
++			return -EBUSY;
++		}
++	}
++
++	if (tb && tb[P4TC_TABLE_DEFAULT_HIT]) {
++		struct p4tc_table_defact *hitact;
++
++		rcu_read_lock();
++		hitact = rcu_dereference(table->tbl_default_hitact);
++		if (hitact && !p4tc_ctrl_delete_ok(hitact->permissions)) {
++			NL_SET_ERR_MSG(extack,
++				       "Permission denied: Unable to delete default hitact");
++			rcu_read_unlock();
++			return -EPERM;
++		}
++		rcu_read_unlock();
++	}
++
++	if (tb && tb[P4TC_TABLE_DEFAULT_MISS]) {
++		struct p4tc_table_defact *missact;
++
++		rcu_read_lock();
++		missact = rcu_dereference(table->tbl_default_missact);
++		if (missact && !p4tc_ctrl_delete_ok(missact->permissions)) {
++			NL_SET_ERR_MSG(extack,
++				       "Permission denied: Unable to delete default missact");
++			rcu_read_unlock();
++			return -EPERM;
++		}
++		rcu_read_unlock();
++	}
++
++	if (!default_act_del || tb[P4TC_TABLE_DEFAULT_HIT]) {
++		struct p4tc_table_defact *hitact;
++
++		hitact = rtnl_dereference(table->tbl_default_hitact);
++		if (hitact) {
++			rcu_replace_pointer_rtnl(table->tbl_default_hitact,
++						 NULL);
++			synchronize_rcu();
++			p4tc_table_defact_destroy(hitact);
++		}
++	}
++
++	if (!default_act_del || tb[P4TC_TABLE_DEFAULT_MISS]) {
++		struct p4tc_table_defact *missact;
++
++		missact = rtnl_dereference(table->tbl_default_missact);
++		if (missact) {
++			rcu_replace_pointer_rtnl(table->tbl_default_missact,
++						 NULL);
++			synchronize_rcu();
++			p4tc_table_defact_destroy(missact);
++		}
++	}
++
++	if (default_act_del)
++		return 0;
++
++	if (table->tbl_key)
++		tcf_table_key_put(table->tbl_key);
++
++	p4tc_action_destroy(table->tbl_preacts);
++	p4tc_action_destroy(table->tbl_postacts);
++
++	tcf_table_acts_list_destroy(&table->tbl_acts_list);
++
++	idr_destroy(&table->tbl_masks_idr);
++	idr_destroy(&table->tbl_prio_idr);
++
++	perm = rcu_replace_pointer_rtnl(table->tbl_permissions, NULL);
++	kfree_rcu(perm, rcu);
++
++	idr_remove(&pipeline->p_tbl_idr, table->tbl_id);
++	pipeline->curr_tables -= 1;
++
++	kfree(table);
++
++	return 0;
++}
++
++static int tcf_table_put(struct net *net, struct p4tc_template_common *tmpl,
++			 bool unconditional_purge,
 +			 struct netlink_ext_ack *extack)
 +{
++	struct p4tc_pipeline *pipeline =
++		tcf_pipeline_find_byid(net, tmpl->p_id);
++	struct p4tc_table *table = to_table(tmpl);
++
++	return _tcf_table_put(net, NULL, pipeline, table, unconditional_purge,
++			      extack);
++}
++
++static inline struct p4tc_table_key *
++tcf_table_key_add(struct net *net, struct p4tc_table *table, struct nlattr *nla,
++		  struct netlink_ext_ack *extack)
++{
++	int ret = 0;
++	struct nlattr *tb[P4TC_TKEY_MAX + 1];
++	struct p4tc_table_key *key;
++
++	ret = nla_parse_nested(tb, P4TC_TKEY_MAX, nla, p4tc_table_key_policy,
++			       extack);
++	if (ret < 0)
++		goto out;
++
++	key = kzalloc(sizeof(*key), GFP_KERNEL);
++	if (!key) {
++		NL_SET_ERR_MSG(extack, "Failed to allocate table key");
++		ret = -ENOMEM;
++		goto out;
++	}
++
++	if (tb[P4TC_KEY_ACT]) {
++		key->key_acts = kcalloc(TCA_ACT_MAX_PRIO,
++					sizeof(struct tc_action *), GFP_KERNEL);
++		if (!key->key_acts) {
++			ret = -ENOMEM;
++			goto free_key;
++		}
++
++		ret = p4tc_action_init(net, tb[P4TC_KEY_ACT], key->key_acts,
++				       table->common.p_id, 0, extack);
++		if (ret < 0) {
++			kfree(key->key_acts);
++			goto free_key;
++		}
++		key->key_num_acts = ret;
++	}
++
++	return key;
++
++free_key:
++	kfree(key);
++
++out:
++	return ERR_PTR(ret);
++}
++
++struct p4tc_table *tcf_table_find_byid(struct p4tc_pipeline *pipeline,
++				       const u32 tbl_id)
++{
++	return idr_find(&pipeline->p_tbl_idr, tbl_id);
++}
++
++static struct p4tc_table *table_find_byname(const char *tblname,
++					    struct p4tc_pipeline *pipeline)
++{
++	struct p4tc_table *table;
++	unsigned long tmp, id;
++
++	idr_for_each_entry_ul(&pipeline->p_tbl_idr, table, tmp, id)
++		if (strncmp(table->common.name, tblname, TABLENAMSIZ) == 0)
++			return table;
++
++	return NULL;
++}
++
++#define SEPARATOR '/'
++struct p4tc_table *tcf_table_find_byany(struct p4tc_pipeline *pipeline,
++					const char *tblname, const u32 tbl_id,
++					struct netlink_ext_ack *extack)
++{
++	struct p4tc_table *table;
++	int err;
++
++	if (tbl_id) {
++		table = tcf_table_find_byid(pipeline, tbl_id);
++		if (!table) {
++			NL_SET_ERR_MSG(extack, "Unable to find table by id");
++			err = -EINVAL;
++			goto out;
++		}
++	} else {
++		if (tblname) {
++			table = table_find_byname(tblname, pipeline);
++			if (!table) {
++				NL_SET_ERR_MSG(extack, "Table name not found");
++				err = -EINVAL;
++				goto out;
++			}
++		} else {
++			NL_SET_ERR_MSG(extack, "Must specify table name or id");
++			err = -EINVAL;
++			goto out;
++		}
++	}
++
++	return table;
++out:
++	return ERR_PTR(err);
++}
++
++struct p4tc_table *tcf_table_get(struct p4tc_pipeline *pipeline,
++				 const char *tblname, const u32 tbl_id,
++				 struct netlink_ext_ack *extack)
++{
++	struct p4tc_table *table;
++
++	table = tcf_table_find_byany(pipeline, tblname, tbl_id, extack);
++	if (IS_ERR(table))
++		return table;
++
++	/* Should never be zero */
++	WARN_ON(!refcount_inc_not_zero(&table->tbl_ref));
++	return table;
++}
++
++void tcf_table_put_ref(struct p4tc_table *table)
++{
++	/* Should never be zero */
++	WARN_ON(!refcount_dec_not_one(&table->tbl_ref));
++}
++
++static int tcf_table_init_default_act(struct net *net, struct nlattr **tb,
++				      struct p4tc_table_defact **default_act,
++				      u32 pipeid, __u16 curr_permissions,
++				      struct netlink_ext_ack *extack)
++{
++	int ret;
++
++	*default_act = kzalloc(sizeof(**default_act), GFP_KERNEL);
++	if (!(*default_act))
++		return -ENOMEM;
++
++	if (tb[P4TC_TABLE_DEFAULT_PERMISSIONS]) {
++		__u16 *permissions;
++
++		permissions = nla_data(tb[P4TC_TABLE_DEFAULT_PERMISSIONS]);
++		if (*permissions > P4TC_MAX_PERMISSION) {
++			NL_SET_ERR_MSG(extack,
++				       "Permission may only have 10 bits turned on");
++			ret = -EINVAL;
++			goto default_act_free;
++		}
++		if (!p4tc_data_exec_ok(*permissions)) {
++			NL_SET_ERR_MSG(extack,
++				       "Default action must have data path execute permissions");
++			ret = -EINVAL;
++			goto default_act_free;
++		}
++		(*default_act)->permissions = *permissions;
++	} else {
++		(*default_act)->permissions = curr_permissions;
++	}
++
++	if (tb[P4TC_TABLE_DEFAULT_ACTION]) {
++		struct tc_action **default_acts;
++
++		if (!p4tc_ctrl_update_ok(curr_permissions)) {
++			NL_SET_ERR_MSG(extack,
++				       "Permission denied: Unable to update default hit action");
++			ret = -EPERM;
++			goto default_act_free;
++		}
++
++		default_acts = kcalloc(TCA_ACT_MAX_PRIO,
++				       sizeof(struct tc_action *), GFP_KERNEL);
++		if (!default_acts) {
++			ret = -ENOMEM;
++			goto default_act_free;
++		}
++
++		ret = p4tc_action_init(net, tb[P4TC_TABLE_DEFAULT_ACTION],
++				       default_acts, pipeid, 0, extack);
++		if (ret < 0) {
++			kfree(default_acts);
++			goto default_act_free;
++		} else if (ret > 1) {
++			NL_SET_ERR_MSG(extack, "Can only have one hit action");
++			tcf_action_destroy(default_acts, TCA_ACT_UNBIND);
++			kfree(default_acts);
++			ret = -EINVAL;
++			goto default_act_free;
++		}
++		(*default_act)->default_acts = default_acts;
++	}
++
++	return 0;
++
++default_act_free:
++	kfree(*default_act);
++
++	return ret;
++}
++
++static int tcf_table_check_defacts(struct tc_action *defact,
++				   struct list_head *acts_list)
++{
++	struct p4tc_table_act *table_act;
++
++	list_for_each_entry(table_act, acts_list, node) {
++		if (table_act->ops->id == defact->ops->id &&
++		    !(table_act->flags & BIT(P4TC_TABLE_ACTS_TABLE_ONLY)))
++			return true;
++	}
++
++	return false;
++}
++
++static int
++tcf_table_init_default_acts(struct net *net, struct nlattr **tb,
++			    struct p4tc_table *table,
++			    struct p4tc_table_defact **default_hitact,
++			    struct p4tc_table_defact **default_missact,
++			    struct list_head *acts_list,
++			    struct netlink_ext_ack *extack)
++{
++	struct nlattr *tb_default[P4TC_TABLE_DEFAULT_MAX + 1];
++	__u16 permissions = P4TC_CONTROL_PERMISSIONS | P4TC_DATA_PERMISSIONS;
++	int ret;
++
++	*default_missact = NULL;
++	*default_hitact = NULL;
++
++	if (tb[P4TC_TABLE_DEFAULT_HIT]) {
++		struct p4tc_table_defact *defact;
++
++		rcu_read_lock();
++		defact = rcu_dereference(table->tbl_default_hitact);
++		if (defact)
++			permissions = defact->permissions;
++		rcu_read_unlock();
++
++		ret = nla_parse_nested(tb_default, P4TC_TABLE_DEFAULT_MAX,
++				       tb[P4TC_TABLE_DEFAULT_HIT], NULL,
++				       extack);
++		if (ret < 0)
++			return ret;
++
++		if (!tb_default[P4TC_TABLE_DEFAULT_ACTION] &&
++		    !tb_default[P4TC_TABLE_DEFAULT_PERMISSIONS])
++			return 0;
++
++		ret = tcf_table_init_default_act(net, tb_default,
++						 default_hitact,
++						 table->common.p_id, permissions,
++						 extack);
++		if (ret < 0)
++			return ret;
++		if (!tcf_table_check_defacts((*default_hitact)->default_acts[0],
++					     acts_list)) {
++			ret = -EPERM;
++			NL_SET_ERR_MSG(extack,
++				       "Action is not allowed as default hit action");
++			goto default_hitacts_free;
++		}
++	}
++
++	if (tb[P4TC_TABLE_DEFAULT_MISS]) {
++		struct p4tc_table_defact *defact;
++
++		rcu_read_lock();
++		defact = rcu_dereference(table->tbl_default_missact);
++		if (defact)
++			permissions = defact->permissions;
++		rcu_read_unlock();
++
++		ret = nla_parse_nested(tb_default, P4TC_TABLE_DEFAULT_MAX,
++				       tb[P4TC_TABLE_DEFAULT_MISS], NULL,
++				       extack);
++		if (ret < 0)
++			goto default_hitacts_free;
++
++		if (!tb_default[P4TC_TABLE_DEFAULT_ACTION] &&
++		    !tb_default[P4TC_TABLE_DEFAULT_PERMISSIONS])
++			return 0;
++
++		ret = tcf_table_init_default_act(net, tb_default,
++						 default_missact,
++						 table->common.p_id, permissions,
++						 extack);
++		if (ret < 0)
++			goto default_hitacts_free;
++		if (!tcf_table_check_defacts((*default_missact)->default_acts[0],
++					     acts_list)) {
++			ret = -EPERM;
++			NL_SET_ERR_MSG(extack,
++				       "Action is not allowed as default miss action");
++			goto default_missact_free;
++		}
++	}
++
++	return 0;
++
++default_missact_free:
++	p4tc_table_defact_destroy(*default_missact);
++
++default_hitacts_free:
++	p4tc_table_defact_destroy(*default_hitact);
++
++	return ret;
++}
++
++static const struct nla_policy p4tc_acts_list_policy[P4TC_TABLE_MAX + 1] = {
++	[P4TC_TABLE_ACT_FLAGS] =
++		NLA_POLICY_RANGE(NLA_U8, 0, BIT(P4TC_TABLE_ACTS_FLAGS_MAX)),
++	[P4TC_TABLE_ACT_NAME] = { .type = NLA_STRING, .len = ACTNAMSIZ },
++};
++
++static struct p4tc_table_act *tcf_table_act_init(struct nlattr *nla,
++						 struct p4tc_pipeline *pipeline,
++						 struct netlink_ext_ack *extack)
++{
++	struct nlattr *tb[P4TC_TABLE_ACT_MAX + 1];
++	struct p4tc_table_act *table_act;
++	int ret;
++
++	ret = nla_parse_nested(tb, P4TC_TABLE_ACT_MAX, nla,
++			       p4tc_acts_list_policy, extack);
++	if (ret < 0)
++		return ERR_PTR(ret);
++
++	table_act = kzalloc(sizeof(*table_act), GFP_KERNEL);
++	if (!table_act)
++		return ERR_PTR(-ENOMEM);
++
++	if (tb[P4TC_TABLE_ACT_NAME]) {
++		const char *actname = nla_data(tb[P4TC_TABLE_ACT_NAME]);
++		char *act_name_clone, *act_name, *p_name;
++		struct p4tc_act *act;
++
++		act_name_clone = act_name = kstrdup(actname, GFP_KERNEL);
++		if (!act_name) {
++			ret = -ENOMEM;
++			goto free_table_act;
++		}
++
++		p_name = strsep(&act_name, "/");
++		act = tcf_action_find_byname(act_name, pipeline);
++		if (!act) {
++			NL_SET_ERR_MSG_FMT(extack,
++					   "Unable to find action %s/%s",
++					   p_name, act_name);
++			ret = -ENOENT;
++			kfree(act_name_clone);
++			goto free_table_act;
++		}
++
++		kfree(act_name_clone);
++
++		table_act->ops = &act->ops;
++		WARN_ON(!refcount_inc_not_zero(&act->a_ref));
++	} else {
++		NL_SET_ERR_MSG(extack,
++			       "Must specify allowed table action name");
++		ret = -EINVAL;
++		goto free_table_act;
++	}
++
++	if (tb[P4TC_TABLE_ACT_FLAGS]) {
++		u8 *flags = nla_data(tb[P4TC_TABLE_ACT_FLAGS]);
++
++		table_act->flags = *flags;
++	}
++
++	return table_act;
++
++free_table_act:
++	kfree(table_act);
++	return ERR_PTR(ret);
++}
++
++static int tcf_table_acts_list_init(struct nlattr *nla,
++				    struct p4tc_pipeline *pipeline,
++				    struct list_head *acts_list,
++				    struct netlink_ext_ack *extack)
++{
++	struct nlattr *tb[P4TC_MSGBATCH_SIZE + 1];
++	struct p4tc_table_act *table_act;
++	int ret;
++	int i;
++
++	ret = nla_parse_nested(tb, P4TC_MSGBATCH_SIZE, nla, NULL, extack);
++	if (ret < 0)
++		return ret;
++
++	for (i = 1; i < P4TC_MSGBATCH_SIZE + 1 && tb[i]; i++) {
++		table_act = tcf_table_act_init(tb[i], pipeline, extack);
++		if (IS_ERR(table_act)) {
++			ret = PTR_ERR(table_act);
++			goto free_acts_list_list;
++		}
++		list_add_tail(&table_act->node, acts_list);
++	}
++
++	return 0;
++
++free_acts_list_list:
++	tcf_table_acts_list_destroy(acts_list);
++
++	return ret;
++}
++
++static struct p4tc_table *
++tcf_table_find_byanyattr(struct p4tc_pipeline *pipeline,
++			 struct nlattr *name_attr, const u32 tbl_id,
++			 struct netlink_ext_ack *extack)
++{
++	char *tblname = NULL;
++
++	if (name_attr)
++		tblname = nla_data(name_attr);
++
++	return tcf_table_find_byany(pipeline, tblname, tbl_id, extack);
++}
++
++static struct p4tc_table *tcf_table_create(struct net *net, struct nlattr **tb,
++					   u32 tbl_id,
++					   struct p4tc_pipeline *pipeline,
++					   struct netlink_ext_ack *extack)
++{
++	struct p4tc_table_key *key = NULL;
++	struct p4tc_table_parm *parm;
++	struct p4tc_table *table;
++	char *tblname;
++	int ret;
++
++	if (pipeline->curr_tables == pipeline->num_tables) {
++		NL_SET_ERR_MSG(extack,
++			       "Table range exceeded max allowed value");
++		ret = -EINVAL;
++		goto out;
++	}
++
++	if (!tb[P4TC_TABLE_NAME]) {
++		NL_SET_ERR_MSG(extack, "Must specify table name");
++		ret = -EINVAL;
++		goto out;
++	}
++
++	tblname =
++		strnchr(nla_data(tb[P4TC_TABLE_NAME]), TABLENAMSIZ, SEPARATOR);
++	if (!tblname) {
++		NL_SET_ERR_MSG(extack, "Table name must contain control block");
++		ret = -EINVAL;
++		goto out;
++	}
++
++	tblname += 1;
++	if (tblname[0] == '\0') {
++		NL_SET_ERR_MSG(extack, "Control block name is too big");
++		ret = -EINVAL;
++		goto out;
++	}
++
++	table = tcf_table_find_byanyattr(pipeline, tb[P4TC_TABLE_NAME], tbl_id,
++					 NULL);
++	if (!IS_ERR(table)) {
++		NL_SET_ERR_MSG(extack, "Table already exists");
++		ret = -EEXIST;
++		goto out;
++	}
++
++	table = kzalloc(sizeof(*table), GFP_KERNEL);
++	if (!table) {
++		NL_SET_ERR_MSG(extack, "Unable to create table");
++		ret = -ENOMEM;
++		goto out;
++	}
++
++	table->common.p_id = pipeline->common.p_id;
++	strscpy(table->common.name, nla_data(tb[P4TC_TABLE_NAME]), TABLENAMSIZ);
++
++	if (tb[P4TC_TABLE_INFO]) {
++		parm = nla_data(tb[P4TC_TABLE_INFO]);
++	} else {
++		ret = -EINVAL;
++		NL_SET_ERR_MSG(extack, "Missing table info");
++		goto free;
++	}
++
++	if (parm->tbl_flags & P4TC_TABLE_FLAGS_KEYSZ) {
++		if (!parm->tbl_keysz) {
++			NL_SET_ERR_MSG(extack, "Table keysz cannot be zero");
++			ret = -EINVAL;
++			goto free;
++		}
++		if (parm->tbl_keysz > P4TC_MAX_KEYSZ) {
++			NL_SET_ERR_MSG(extack,
++				       "Table keysz exceeds maximum keysz");
++			ret = -EINVAL;
++			goto free;
++		}
++		table->tbl_keysz = parm->tbl_keysz;
++	} else {
++		NL_SET_ERR_MSG(extack, "Must specify table key size");
++		ret = -EINVAL;
++		goto free;
++	}
++
++	if (parm->tbl_flags & P4TC_TABLE_FLAGS_MAX_ENTRIES) {
++		if (!parm->tbl_max_entries) {
++			NL_SET_ERR_MSG(extack,
++				       "Table max_entries cannot be zero");
++			ret = -EINVAL;
++			goto free;
++		}
++		if (parm->tbl_max_entries > P4TC_MAX_TENTRIES) {
++			NL_SET_ERR_MSG(extack,
++				       "Table max_entries exceeds maximum value");
++			ret = -EINVAL;
++			goto free;
++		}
++		table->tbl_max_entries = parm->tbl_max_entries;
++	} else {
++		table->tbl_max_entries = P4TC_DEFAULT_TENTRIES;
++	}
++
++	if (parm->tbl_flags & P4TC_TABLE_FLAGS_MAX_MASKS) {
++		if (!parm->tbl_max_masks) {
++			NL_SET_ERR_MSG(extack,
++				       "Table max_masks cannot be zero");
++			ret = -EINVAL;
++			goto free;
++		}
++		if (parm->tbl_max_masks > P4TC_MAX_TMASKS) {
++			NL_SET_ERR_MSG(extack,
++				       "Table max_masks exceeds maximum value");
++			ret = -EINVAL;
++			goto free;
++		}
++		table->tbl_max_masks = parm->tbl_max_masks;
++	} else {
++		table->tbl_max_masks = P4TC_DEFAULT_TMASKS;
++	}
++
++	if (parm->tbl_flags & P4TC_TABLE_FLAGS_PERMISSIONS) {
++		if (parm->tbl_permissions > P4TC_MAX_PERMISSION) {
++			NL_SET_ERR_MSG(extack,
++				       "Permission may only have 10 bits turned on");
++			ret = -EINVAL;
++			goto free;
++		}
++		if (!p4tc_data_exec_ok(parm->tbl_permissions)) {
++			NL_SET_ERR_MSG(extack,
++				       "Table must have execute permissions");
++			ret = -EINVAL;
++			goto free;
++		}
++		if (!p4tc_data_read_ok(parm->tbl_permissions)) {
++			NL_SET_ERR_MSG(extack,
++				       "Data path read permissions must be set");
++			ret = -EINVAL;
++			goto free;
++		}
++		table->tbl_permissions =
++			kzalloc(sizeof(*table->tbl_permissions), GFP_KERNEL);
++		if (!table->tbl_permissions) {
++			ret = -ENOMEM;
++			goto free;
++		}
++		table->tbl_permissions->permissions = parm->tbl_permissions;
++	} else {
++		table->tbl_permissions =
++			kzalloc(sizeof(*table->tbl_permissions), GFP_KERNEL);
++		if (!table->tbl_permissions) {
++			ret = -ENOMEM;
++			goto free;
++		}
++		table->tbl_permissions->permissions = P4TC_TABLE_PERMISSIONS;
++	}
++
++	refcount_set(&table->tbl_ref, 1);
++	refcount_set(&table->tbl_ctrl_ref, 1);
++
++	if (tbl_id) {
++		table->tbl_id = tbl_id;
++		ret = idr_alloc_u32(&pipeline->p_tbl_idr, table, &table->tbl_id,
++				    table->tbl_id, GFP_KERNEL);
++		if (ret < 0) {
++			NL_SET_ERR_MSG(extack, "Unable to allocate table id");
++			goto free_permissions;
++		}
++	} else {
++		table->tbl_id = 1;
++		ret = idr_alloc_u32(&pipeline->p_tbl_idr, table, &table->tbl_id,
++				    UINT_MAX, GFP_KERNEL);
++		if (ret < 0) {
++			NL_SET_ERR_MSG(extack, "Unable to allocate table id");
++			goto free_permissions;
++		}
++	}
++
++	INIT_LIST_HEAD(&table->tbl_acts_list);
++	if (tb[P4TC_TABLE_ACTS_LIST]) {
++		ret = tcf_table_acts_list_init(tb[P4TC_TABLE_ACTS_LIST],
++					       pipeline, &table->tbl_acts_list,
++					       extack);
++		if (ret < 0)
++			goto idr_rm;
++	}
++
++	if (tb[P4TC_TABLE_PREACTIONS]) {
++		table->tbl_preacts = kcalloc(TCA_ACT_MAX_PRIO,
++					     sizeof(struct tc_action *),
++					     GFP_KERNEL);
++		if (!table->tbl_preacts) {
++			ret = -ENOMEM;
++			goto table_acts_destroy;
++		}
++
++		ret = p4tc_action_init(net, tb[P4TC_TABLE_PREACTIONS],
++				       table->tbl_preacts, table->common.p_id,
++				       0, extack);
++		if (ret < 0) {
++			kfree(table->tbl_preacts);
++			goto table_acts_destroy;
++		}
++		table->tbl_num_preacts = ret;
++	} else {
++		table->tbl_preacts = NULL;
++	}
++
++	if (tb[P4TC_TABLE_POSTACTIONS]) {
++		table->tbl_postacts = kcalloc(TCA_ACT_MAX_PRIO,
++					      sizeof(struct tc_action *),
++					      GFP_KERNEL);
++		if (!table->tbl_postacts) {
++			ret = -ENOMEM;
++			goto preactions_destroy;
++		}
++
++		ret = p4tc_action_init(net, tb[P4TC_TABLE_POSTACTIONS],
++				       table->tbl_postacts, table->common.p_id,
++				       0, extack);
++		if (ret < 0) {
++			kfree(table->tbl_postacts);
++			goto preactions_destroy;
++		}
++		table->tbl_num_postacts = ret;
++	} else {
++		table->tbl_postacts = NULL;
++		table->tbl_num_postacts = 0;
++	}
++
++	if (tb[P4TC_TABLE_KEY]) {
++		key = tcf_table_key_add(net, table, tb[P4TC_TABLE_KEY], extack);
++		if (IS_ERR(key)) {
++			ret = PTR_ERR(key);
++			goto postacts_destroy;
++		}
++	}
++
++	ret = tcf_table_init_default_acts(net, tb, table,
++					  &table->tbl_default_hitact,
++					  &table->tbl_default_missact,
++					  &table->tbl_acts_list, extack);
++	if (ret < 0)
++		goto key_put;
++
++	table->tbl_curr_used_entries = 0;
++	table->tbl_curr_count = 0;
++
++	refcount_set(&table->tbl_entries_ref, 1);
++
++	idr_init(&table->tbl_masks_idr);
++	idr_init(&table->tbl_prio_idr);
++	spin_lock_init(&table->tbl_masks_idr_lock);
++	spin_lock_init(&table->tbl_prio_idr_lock);
++
++	table->tbl_key = key;
++
++	pipeline->curr_tables += 1;
++
++	table->common.ops = (struct p4tc_template_ops *)&p4tc_table_ops;
++
++	return table;
++
++key_put:
++	if (key)
++		tcf_table_key_put(key);
++
++postacts_destroy:
++	p4tc_action_destroy(table->tbl_postacts);
++
++preactions_destroy:
++	p4tc_action_destroy(table->tbl_preacts);
++
++idr_rm:
++	idr_remove(&pipeline->p_tbl_idr, table->tbl_id);
++
++free_permissions:
++	kfree(table->tbl_permissions);
++
++table_acts_destroy:
++	tcf_table_acts_list_destroy(&table->tbl_acts_list);
++
++free:
++	kfree(table);
++
++out:
++	return ERR_PTR(ret);
++}
++
++static struct p4tc_table *tcf_table_update(struct net *net, struct nlattr **tb,
++					   u32 tbl_id,
++					   struct p4tc_pipeline *pipeline,
++					   u32 flags,
++					   struct netlink_ext_ack *extack)
++{
++	struct p4tc_table_key *key = NULL;
++	int num_postacts = 0, num_preacts = 0;
++	struct p4tc_table_defact *default_hitact = NULL;
++	struct p4tc_table_defact *default_missact = NULL;
++	struct list_head *tbl_acts_list = NULL;
++	struct p4tc_table_perm *perm = NULL;
++	struct p4tc_table_parm *parm = NULL;
++	struct tc_action **postacts = NULL;
++	struct tc_action **preacts = NULL;
++	int ret = 0;
++	struct p4tc_table *table;
++
++	table = tcf_table_find_byanyattr(pipeline, tb[P4TC_TABLE_NAME], tbl_id,
++					 extack);
++	if (IS_ERR(table))
++		return table;
++
++	if (tb[P4TC_TABLE_ACTS_LIST]) {
++		tbl_acts_list = kzalloc(sizeof(*tbl_acts_list), GFP_KERNEL);
++		if (!tbl_acts_list) {
++			ret = -ENOMEM;
++			goto out;
++		}
++		INIT_LIST_HEAD(tbl_acts_list);
++		ret = tcf_table_acts_list_init(tb[P4TC_TABLE_ACTS_LIST],
++					       pipeline, tbl_acts_list, extack);
++		if (ret < 0)
++			goto table_acts_destroy;
++	}
++
++	if (tb[P4TC_TABLE_PREACTIONS]) {
++		preacts = kcalloc(TCA_ACT_MAX_PRIO, sizeof(struct tc_action *),
++				  GFP_KERNEL);
++		if (!preacts) {
++			ret = -ENOMEM;
++			goto table_acts_destroy;
++		}
++
++		ret = p4tc_action_init(net, tb[P4TC_TABLE_PREACTIONS], preacts,
++				       table->common.p_id, 0, extack);
++		if (ret < 0) {
++			kfree(preacts);
++			goto table_acts_destroy;
++		}
++		num_preacts = ret;
++	}
++
++	if (tb[P4TC_TABLE_POSTACTIONS]) {
++		postacts = kcalloc(TCA_ACT_MAX_PRIO, sizeof(struct tc_action *),
++				   GFP_KERNEL);
++		if (!postacts) {
++			ret = -ENOMEM;
++			goto preactions_destroy;
++		}
++
++		ret = p4tc_action_init(net, tb[P4TC_TABLE_POSTACTIONS],
++				       postacts, table->common.p_id, 0, extack);
++		if (ret < 0) {
++			kfree(postacts);
++			goto preactions_destroy;
++		}
++		num_postacts = ret;
++	}
++
++	if (tbl_acts_list)
++		ret = tcf_table_init_default_acts(net, tb, table,
++						  &default_hitact,
++						  &default_missact,
++						  tbl_acts_list, extack);
++	else
++		ret = tcf_table_init_default_acts(net, tb, table,
++						  &default_hitact,
++						  &default_missact,
++						  &table->tbl_acts_list,
++						  extack);
++	if (ret < 0)
++		goto postactions_destroy;
++
++	if (tb[P4TC_TABLE_KEY]) {
++		key = tcf_table_key_add(net, table, tb[P4TC_TABLE_KEY], extack);
++		if (IS_ERR(key)) {
++			ret = PTR_ERR(key);
++			goto defaultacts_destroy;
++		}
++	}
++
++	if (tb[P4TC_TABLE_INFO]) {
++		parm = nla_data(tb[P4TC_TABLE_INFO]);
++		if (parm->tbl_flags & P4TC_TABLE_FLAGS_KEYSZ) {
++			if (!parm->tbl_keysz) {
++				NL_SET_ERR_MSG(extack,
++					       "Table keysz cannot be zero");
++				ret = -EINVAL;
++				goto key_destroy;
++			}
++			if (parm->tbl_keysz > P4TC_MAX_KEYSZ) {
++				NL_SET_ERR_MSG(extack,
++					       "Table keysz exceeds maximum keysz");
++				ret = -EINVAL;
++				goto key_destroy;
++			}
++			table->tbl_keysz = parm->tbl_keysz;
++		}
++
++		if (parm->tbl_flags & P4TC_TABLE_FLAGS_MAX_ENTRIES) {
++			if (!parm->tbl_max_entries) {
++				NL_SET_ERR_MSG(extack,
++					       "Table max_entries cannot be zero");
++				ret = -EINVAL;
++				goto key_destroy;
++			}
++			if (parm->tbl_max_entries > P4TC_MAX_TENTRIES) {
++				NL_SET_ERR_MSG(extack,
++					       "Table max_entries exceeds maximum value");
++				ret = -EINVAL;
++				goto key_destroy;
++			}
++			table->tbl_max_entries = parm->tbl_max_entries;
++		}
++
++		if (parm->tbl_flags & P4TC_TABLE_FLAGS_MAX_MASKS) {
++			if (!parm->tbl_max_masks) {
++				NL_SET_ERR_MSG(extack,
++					       "Table max_masks cannot be zero");
++				ret = -EINVAL;
++				goto key_destroy;
++			}
++			if (parm->tbl_max_masks > P4TC_MAX_TMASKS) {
++				NL_SET_ERR_MSG(extack,
++					       "Table max_masks exceeds maximum value");
++				ret = -EINVAL;
++				goto key_destroy;
++			}
++			table->tbl_max_masks = parm->tbl_max_masks;
++		}
++		if (parm->tbl_flags & P4TC_TABLE_FLAGS_PERMISSIONS) {
++			if (parm->tbl_permissions > P4TC_MAX_PERMISSION) {
++				NL_SET_ERR_MSG(extack,
++					       "Permission may only have 10 bits turned on");
++				ret = -EINVAL;
++				goto key_destroy;
++			}
++			if (!p4tc_data_exec_ok(parm->tbl_permissions)) {
++				NL_SET_ERR_MSG(extack,
++					       "Table must have execute permissions");
++				ret = -EINVAL;
++				goto key_destroy;
++			}
++			if (!p4tc_data_read_ok(parm->tbl_permissions)) {
++				NL_SET_ERR_MSG(extack,
++					       "Data path read permissions must be set");
++				ret = -EINVAL;
++				goto key_destroy;
++			}
++
++			perm = kzalloc(sizeof(*perm), GFP_KERNEL);
++			if (!perm) {
++				ret = -ENOMEM;
++				goto key_destroy;
++			}
++			perm->permissions = parm->tbl_permissions;
++		}
++	}
++
++	if (preacts) {
++		p4tc_action_destroy(table->tbl_preacts);
++		table->tbl_preacts = preacts;
++		table->tbl_num_preacts = num_preacts;
++	}
++
++	if (postacts) {
++		p4tc_action_destroy(table->tbl_postacts);
++		table->tbl_postacts = postacts;
++		table->tbl_num_postacts = num_postacts;
++	}
++
++	if (default_hitact) {
++		struct p4tc_table_defact *hitact;
++
++		hitact = rcu_replace_pointer_rtnl(table->tbl_default_hitact,
++						  default_hitact);
++		if (hitact) {
++			synchronize_rcu();
++			p4tc_table_defact_destroy(hitact);
++		}
++	}
++
++	if (default_missact) {
++		struct p4tc_table_defact *missact;
++
++		missact = rcu_replace_pointer_rtnl(table->tbl_default_missact,
++						   default_missact);
++		if (missact) {
++			synchronize_rcu();
++			p4tc_table_defact_destroy(missact);
++		}
++	}
++
++	if (key) {
++		if (table->tbl_key)
++			tcf_table_key_put(table->tbl_key);
++		table->tbl_key = key;
++	}
++
++	if (perm) {
++		perm = rcu_replace_pointer_rtnl(table->tbl_permissions, perm);
++		kfree_rcu(perm, rcu);
++	}
++
++	return table;
++
++key_destroy:
++	if (key)
++		tcf_table_key_put(key);
++
++defaultacts_destroy:
++	p4tc_table_defact_destroy(default_missact);
++	p4tc_table_defact_destroy(default_hitact);
++
++postactions_destroy:
++	p4tc_action_destroy(postacts);
++
++preactions_destroy:
++	p4tc_action_destroy(preacts);
++
++table_acts_destroy:
++	if (tbl_acts_list) {
++		tcf_table_acts_list_destroy(tbl_acts_list);
++		kfree(tbl_acts_list);
++	}
++
++out:
++	return ERR_PTR(ret);
++}
++
++static bool tcf_table_check_runtime_update(struct nlmsghdr *n,
++					   struct nlattr **tb)
++{
++	int i;
++
++	if (n->nlmsg_type == RTM_CREATEP4TEMPLATE &&
++	    !(n->nlmsg_flags & NLM_F_REPLACE))
++		return false;
++
++	if (tb[P4TC_TABLE_INFO]) {
++		struct p4tc_table_parm *info;
++
++		info = nla_data(tb[P4TC_TABLE_INFO]);
++		if ((info->tbl_flags & ~P4TC_TABLE_FLAGS_PERMISSIONS) ||
++		    !(info->tbl_flags & P4TC_TABLE_FLAGS_PERMISSIONS))
++			return false;
++	}
++
++	for (i = P4TC_TABLE_PREACTIONS; i < P4TC_TABLE_MAX; i++) {
++		if (i != P4TC_TABLE_DEFAULT_HIT &&
++		    i != P4TC_TABLE_DEFAULT_MISS && tb[i])
++			return false;
++	}
++
++	return true;
++}
++
++static struct p4tc_template_common *
++tcf_table_cu(struct net *net, struct nlmsghdr *n, struct nlattr *nla,
++	     struct p4tc_nl_pname *nl_pname, u32 *ids,
++	     struct netlink_ext_ack *extack)
++{
++	u32 pipeid = ids[P4TC_PID_IDX], tbl_id = ids[P4TC_TBLID_IDX];
++	struct nlattr *tb[P4TC_TABLE_MAX + 1];
++	struct p4tc_pipeline *pipeline;
++	struct p4tc_table *table;
++	int ret;
++
++	pipeline = tcf_pipeline_find_byany(net, nl_pname->data, pipeid, extack);
++	if (IS_ERR(pipeline))
++		return (void *)pipeline;
++
++	ret = nla_parse_nested(tb, P4TC_TABLE_MAX, nla, p4tc_table_policy,
++			       extack);
++	if (ret < 0)
++		return ERR_PTR(ret);
++
++	if (pipeline_sealed(pipeline) &&
++	    !tcf_table_check_runtime_update(n, tb)) {
++		NL_SET_ERR_MSG(extack,
++			       "Only default action updates are allowed in sealed pipeline");
++		return ERR_PTR(-EINVAL);
++	}
++
++	if (n->nlmsg_flags & NLM_F_REPLACE)
++		table = tcf_table_update(net, tb, tbl_id, pipeline,
++					 n->nlmsg_flags, extack);
++	else
++		table = tcf_table_create(net, tb, tbl_id, pipeline, extack);
++
++	if (IS_ERR(table))
++		goto out;
++
++	if (!nl_pname->passed)
++		strscpy(nl_pname->data, pipeline->common.name, PIPELINENAMSIZ);
++
++	if (!ids[P4TC_PID_IDX])
++		ids[P4TC_PID_IDX] = pipeline->common.p_id;
++
++	if (!ids[P4TC_TBLID_IDX])
++		ids[P4TC_TBLID_IDX] = table->tbl_id;
++
++out:
++	return (struct p4tc_template_common *)table;
++}
++
++static int tcf_table_flush(struct net *net, struct sk_buff *skb,
++			   struct p4tc_pipeline *pipeline,
++			   struct netlink_ext_ack *extack)
++{
 +	unsigned char *b = nlmsg_get_pos(skb);
-+	struct p4tc_act *act;
-+	unsigned long tmp, act_id;
++	struct p4tc_table *table;
++	unsigned long tmp, tbl_id;
 +	int ret = 0;
 +	int i = 0;
 +
 +	if (nla_put_u32(skb, P4TC_PATH, 0))
 +		goto out_nlmsg_trim;
 +
-+	if (idr_is_empty(&pipeline->p_act_idr)) {
-+		NL_SET_ERR_MSG(extack,
-+			       "There are not action templates to flush");
++	if (idr_is_empty(&pipeline->p_tbl_idr)) {
++		NL_SET_ERR_MSG(extack, "There are not tables to flush");
 +		goto out_nlmsg_trim;
 +	}
 +
-+	idr_for_each_entry_ul(&pipeline->p_act_idr, act, tmp, act_id) {
-+		if (__tcf_act_put(net, pipeline, act, false, extack) < 0) {
++	idr_for_each_entry_ul(&pipeline->p_tbl_idr, table, tmp, tbl_id) {
++		if (_tcf_table_put(net, NULL, pipeline, table, false, extack) < 0) {
 +			ret = -EBUSY;
 +			continue;
 +		}
@@ -2110,12 +2114,10 @@ index 000000000..f47b42bbe
 +
 +	if (ret < 0) {
 +		if (i == 0) {
-+			NL_SET_ERR_MSG(extack,
-+				       "Unable to flush any action template");
++			NL_SET_ERR_MSG(extack, "Unable to flush any table");
 +			goto out_nlmsg_trim;
 +		} else {
-+			NL_SET_ERR_MSG(extack,
-+				       "Unable to flush all action templates");
++			NL_SET_ERR_MSG(extack, "Unable to flush all tables");
 +		}
 +	}
 +
@@ -2126,32 +2128,36 @@ index 000000000..f47b42bbe
 +	return ret;
 +}
 +
-+static int tcf_act_gd(struct net *net, struct sk_buff *skb, struct nlmsghdr *n,
-+		      struct nlattr *nla, struct p4tc_nl_pname *nl_pname,
-+		      u32 *ids, struct netlink_ext_ack *extack)
++static int tcf_table_gd(struct net *net, struct sk_buff *skb,
++			struct nlmsghdr *n, struct nlattr *nla,
++			struct p4tc_nl_pname *nl_pname, u32 *ids,
++			struct netlink_ext_ack *extack)
 +{
-+	const u32 pipeid = ids[P4TC_PID_IDX], a_id = ids[P4TC_AID_IDX];
-+	struct nlattr *tb[P4TC_ACT_MAX + 1] = { NULL };
++	u32 pipeid = ids[P4TC_PID_IDX], tbl_id = ids[P4TC_MID_IDX];
++	struct nlattr *tb[P4TC_TABLE_MAX + 1] = {};
 +	unsigned char *b = nlmsg_get_pos(skb);
 +	int ret = 0;
 +	struct p4tc_pipeline *pipeline;
-+	struct p4tc_act *act;
-+
-+	if (n->nlmsg_type == RTM_DELP4TEMPLATE)
-+		pipeline = tcf_pipeline_find_byany_unsealed(net, nl_pname->data,
-+							    pipeid, extack);
-+	else
-+		pipeline = tcf_pipeline_find_byany(net, nl_pname->data, pipeid,
-+						   extack);
-+	if (IS_ERR(pipeline))
-+		return PTR_ERR(pipeline);
++	struct p4tc_table *table;
 +
 +	if (nla) {
-+		ret = nla_parse_nested(tb, P4TC_ACT_MAX, nla, p4tc_act_policy,
-+				       extack);
++		ret = nla_parse_nested(tb, P4TC_TABLE_MAX, nla,
++				       p4tc_table_policy, extack);
++
 +		if (ret < 0)
 +			return ret;
 +	}
++
++	if (n->nlmsg_type == RTM_GETP4TEMPLATE ||
++	    tcf_table_check_runtime_update(n, tb))
++		pipeline = tcf_pipeline_find_byany(net, nl_pname->data, pipeid,
++						   extack);
++	else
++		pipeline = tcf_pipeline_find_byany_unsealed(net, nl_pname->data,
++							    pipeid, extack);
++
++	if (IS_ERR(pipeline))
++		return PTR_ERR(pipeline);
 +
 +	if (!nl_pname->passed)
 +		strscpy(nl_pname->data, pipeline->common.name, PIPELINENAMSIZ);
@@ -2160,21 +2166,21 @@ index 000000000..f47b42bbe
 +		ids[P4TC_PID_IDX] = pipeline->common.p_id;
 +
 +	if (n->nlmsg_type == RTM_DELP4TEMPLATE && (n->nlmsg_flags & NLM_F_ROOT))
-+		return tcf_act_flush(skb, net, pipeline, extack);
++		return tcf_table_flush(net, skb, pipeline, extack);
 +
-+	act = tcf_action_find_byanyattr(tb[P4TC_ACT_NAME], a_id, pipeline,
-+					extack);
-+	if (IS_ERR(act))
-+		return PTR_ERR(act);
++	table = tcf_table_find_byanyattr(pipeline, tb[P4TC_TABLE_NAME], tbl_id,
++					 extack);
++	if (IS_ERR(table))
++		return PTR_ERR(table);
 +
-+	if (_tcf_act_fill_nlmsg(net, skb, act) < 0) {
++	if (_tcf_table_fill_nlmsg(skb, table) < 0) {
 +		NL_SET_ERR_MSG(extack,
-+			       "Failed to fill notification attributes for template action");
++			       "Failed to fill notification attributes for table");
 +		return -EINVAL;
 +	}
 +
 +	if (n->nlmsg_type == RTM_DELP4TEMPLATE) {
-+		ret = __tcf_act_put(net, pipeline, act, false, extack);
++		ret = _tcf_table_put(net, tb, pipeline, table, false, extack);
 +		if (ret < 0)
 +			goto out_nlmsg_trim;
 +	}
@@ -2186,289 +2192,9 @@ index 000000000..f47b42bbe
 +	return ret;
 +}
 +
-+static int tcf_act_put(struct net *net, struct p4tc_template_common *tmpl,
-+		       bool unconditional_purge, struct netlink_ext_ack *extack)
-+{
-+	struct p4tc_act *act = to_act(tmpl);
-+	struct p4tc_pipeline *pipeline;
-+
-+	pipeline = tcf_pipeline_find_byid(net, tmpl->p_id);
-+
-+	return __tcf_act_put(net, pipeline, act, unconditional_purge, extack);
-+}
-+
-+static void p4tc_params_replace_many(struct idr *params_idr,
-+				     struct p4tc_act_param *params[],
-+				     int params_count)
-+{
-+	int i;
-+
-+	for (i = 0; i < params_count; i++) {
-+		struct p4tc_act_param *param = params[i];
-+
-+		param = idr_replace(params_idr, param, param->id);
-+		kfree(param);
-+	}
-+}
-+
-+static struct p4tc_act *tcf_act_create(struct net *net, struct nlattr **tb,
-+				       struct p4tc_pipeline *pipeline, u32 *ids,
-+				       struct netlink_ext_ack *extack)
-+{
-+	struct p4tc_act_param *params[P4TC_MSGBATCH_SIZE] = { NULL };
-+	u32 a_id = ids[P4TC_AID_IDX];
-+	int num_params = 0;
-+	int ret = 0;
-+	struct p4tc_act_dep_node *dep_node;
-+	struct p4tc_act *act;
-+	char *act_name;
-+
-+	if (tb[P4TC_ACT_NAME]) {
-+		act_name = nla_data(tb[P4TC_ACT_NAME]);
-+	} else {
-+		NL_SET_ERR_MSG(extack, "Must supply action name");
-+		return ERR_PTR(-EINVAL);
-+	}
-+
-+	if ((tcf_action_find_byname(act_name, pipeline))) {
-+		NL_SET_ERR_MSG(extack, "Action already exists with same name");
-+		return ERR_PTR(-EEXIST);
-+	}
-+
-+	if (tcf_action_find_byid(pipeline, a_id)) {
-+		NL_SET_ERR_MSG(extack, "Action already exists with same id");
-+		return ERR_PTR(-EEXIST);
-+	}
-+
-+	act = kzalloc(sizeof(*act), GFP_KERNEL);
-+	if (!act)
-+		return ERR_PTR(-ENOMEM);
-+
-+	act->ops.owner = THIS_MODULE;
-+	act->ops.act = tcf_p4_dyna_act;
-+	act->ops.dump = tcf_p4_dyna_dump;
-+	act->ops.cleanup = tcf_p4_dyna_cleanup;
-+	act->ops.init_ops = tcf_p4_dyna_init;
-+	act->ops.lookup = tcf_p4_dyna_lookup;
-+	act->ops.walk = tcf_p4_dyna_walker;
-+	act->ops.size = sizeof(struct tcf_p4act);
-+	INIT_LIST_HEAD(&act->head);
-+
-+	act->tn = kzalloc(sizeof(*act->tn), GFP_KERNEL);
-+	if (!act->tn) {
-+		ret = -ENOMEM;
-+		goto free_act_ops;
-+	}
-+
-+	ret = tc_action_net_init(net, act->tn, &act->ops);
-+	if (ret < 0) {
-+		kfree(act->tn);
-+		goto free_act_ops;
-+	}
-+	act->tn->ops = &act->ops;
-+
-+	snprintf(act->ops.kind, ACTNAMSIZ, "%s/%s", pipeline->common.name,
-+		 act_name);
-+
-+	if (a_id) {
-+		ret = idr_alloc_u32(&pipeline->p_act_idr, act, &a_id, a_id,
-+				    GFP_KERNEL);
-+		if (ret < 0) {
-+			NL_SET_ERR_MSG(extack, "Unable to alloc action id");
-+			goto free_action_net;
-+		}
-+
-+		act->a_id = a_id;
-+	} else {
-+		act->a_id = 1;
-+
-+		ret = idr_alloc_u32(&pipeline->p_act_idr, act, &act->a_id,
-+				    UINT_MAX, GFP_KERNEL);
-+		if (ret < 0) {
-+			NL_SET_ERR_MSG(extack, "Unable to alloc action id");
-+			goto free_action_net;
-+		}
-+	}
-+
-+	dep_node = kzalloc(sizeof(*dep_node), GFP_KERNEL);
-+	if (!dep_node) {
-+		ret = -ENOMEM;
-+		goto idr_rm;
-+	}
-+	dep_node->act_id = act->a_id;
-+	INIT_LIST_HEAD(&dep_node->incoming_egde_list);
-+	list_add_tail(&dep_node->head, &pipeline->act_dep_graph);
-+
-+	refcount_set(&act->ops.dyn_ref, 1);
-+	ret = __tcf_register_action(&act->ops);
-+	if (ret < 0) {
-+		NL_SET_ERR_MSG(extack,
-+			       "Unable to register new action template");
-+		goto free_dep_node;
-+	}
-+
-+	num_params = p4_act_init(act, tb[P4TC_ACT_PARMS], params, extack);
-+	if (num_params < 0) {
-+		ret = num_params;
-+		goto unregister;
-+	}
-+
-+	INIT_LIST_HEAD(&act->cmd_operations);
-+	act->pipeline = pipeline;
-+
-+	pipeline->num_created_acts++;
-+
-+	ret = determine_act_topological_order(pipeline, true);
-+	if (ret < 0) {
-+		pipeline->num_created_acts--;
-+		goto uninit;
-+	}
-+
-+	act->common.p_id = pipeline->common.p_id;
-+	snprintf(act->common.name, ACTNAMSIZ, "%s/%s", pipeline->common.name,
-+		 act_name);
-+	act->common.ops = (struct p4tc_template_ops *)&p4tc_act_ops;
-+
-+	refcount_set(&act->a_ref, 1);
-+
-+	list_add_tail(&act->head, &dynact_list);
-+
-+	return act;
-+
-+uninit:
-+	p4_put_many_params(&act->params_idr, params, num_params);
-+	idr_destroy(&act->params_idr);
-+
-+unregister:
-+	rtnl_unlock();
-+	__tcf_unregister_action(&act->ops);
-+	rtnl_lock();
-+
-+free_dep_node:
-+	list_del(&dep_node->head);
-+	kfree(dep_node);
-+
-+idr_rm:
-+	idr_remove(&pipeline->p_act_idr, act->a_id);
-+
-+free_action_net:
-+	p4tc_action_net_exit(act->tn);
-+
-+free_act_ops:
-+	kfree(act);
-+
-+	return ERR_PTR(ret);
-+}
-+
-+static struct p4tc_act *tcf_act_update(struct net *net, struct nlattr **tb,
-+				       struct p4tc_pipeline *pipeline, u32 *ids,
-+				       u32 flags,
-+				       struct netlink_ext_ack *extack)
-+{
-+	struct p4tc_act_param *params[P4TC_MSGBATCH_SIZE] = { NULL };
-+	const u32 a_id = ids[P4TC_AID_IDX];
-+	int num_params = 0;
-+	s8 active = -1;
-+	int ret = 0;
-+	struct p4tc_act *act;
-+
-+	act = tcf_action_find_byanyattr(tb[P4TC_ACT_NAME], a_id, pipeline,
-+					extack);
-+	if (IS_ERR(act))
-+		return act;
-+
-+	if (tb[P4TC_ACT_ACTIVE])
-+		active = *((u8 *)nla_data(tb[P4TC_ACT_ACTIVE]));
-+
-+	if (act->active) {
-+		if (!active) {
-+			if (refcount_read(&act->ops.dyn_ref) > 1) {
-+				NL_SET_ERR_MSG(extack,
-+					       "Unable to inactivate referenced action");
-+				return ERR_PTR(-EINVAL);
-+			}
-+			act->active = false;
-+			return act;
-+		}
-+		NL_SET_ERR_MSG(extack, "Unable to update active action");
-+		return ERR_PTR(-EINVAL);
-+	}
-+
-+	if (tb[P4TC_ACT_PARMS]) {
-+		num_params = p4_act_init_params(act, tb[P4TC_ACT_PARMS], params,
-+						true, extack);
-+		if (num_params < 0) {
-+			ret = num_params;
-+			goto out;
-+		}
-+	}
-+
-+	act->pipeline = pipeline;
-+	if (active == 1) {
-+		act->active = true;
-+	} else if (!active) {
-+		NL_SET_ERR_MSG(extack, "Action is already inactive");
-+		ret = -EINVAL;
-+		goto params_del;
-+	}
-+
-+	if (tb[P4TC_ACT_CMDS_LIST]) {
-+		ret = determine_act_topological_order(pipeline, true);
-+		if (ret < 0)
-+			goto params_del;
-+	}
-+
-+	p4tc_params_replace_many(&act->params_idr, params, num_params);
-+	return act;
-+
-+params_del:
-+	p4_put_many_params(&act->params_idr, params, num_params);
-+
-+out:
-+	return ERR_PTR(ret);
-+}
-+
-+static struct p4tc_template_common *
-+tcf_act_cu(struct net *net, struct nlmsghdr *n, struct nlattr *nla,
-+	   struct p4tc_nl_pname *nl_pname, u32 *ids,
-+	   struct netlink_ext_ack *extack)
-+{
-+	const u32 pipeid = ids[P4TC_PID_IDX];
-+	struct nlattr *tb[P4TC_ACT_MAX + 1];
-+	struct p4tc_act *act;
-+	struct p4tc_pipeline *pipeline;
-+	int ret;
-+
-+	pipeline = tcf_pipeline_find_byany_unsealed(net, nl_pname->data, pipeid,
-+						    extack);
-+	if (IS_ERR(pipeline))
-+		return (void *)pipeline;
-+
-+	ret = nla_parse_nested(tb, P4TC_ACT_MAX, nla, p4tc_act_policy, extack);
-+	if (ret < 0)
-+		return ERR_PTR(ret);
-+
-+	if (n->nlmsg_flags & NLM_F_REPLACE)
-+		act = tcf_act_update(net, tb, pipeline, ids, n->nlmsg_flags,
-+				     extack);
-+	else
-+		act = tcf_act_create(net, tb, pipeline, ids, extack);
-+	if (IS_ERR(act))
-+		goto out;
-+
-+	if (!nl_pname->passed)
-+		strscpy(nl_pname->data, pipeline->common.name, PIPELINENAMSIZ);
-+
-+	if (!ids[P4TC_PID_IDX])
-+		ids[P4TC_PID_IDX] = pipeline->common.p_id;
-+
-+out:
-+	return (struct p4tc_template_common *)act;
-+}
-+
-+static int tcf_act_dump(struct sk_buff *skb, struct p4tc_dump_ctx *ctx,
-+			struct nlattr *nla, char **p_name, u32 *ids,
-+			struct netlink_ext_ack *extack)
++static int tcf_table_dump(struct sk_buff *skb, struct p4tc_dump_ctx *ctx,
++			  struct nlattr *nla, char **p_name, u32 *ids,
++			  struct netlink_ext_ack *extack)
 +{
 +	struct net *net = sock_net(skb->sk);
 +	struct p4tc_pipeline *pipeline;
@@ -2489,403 +2215,55 @@ index 000000000..f47b42bbe
 +	if (!(*p_name))
 +		*p_name = pipeline->common.name;
 +
-+	return tcf_p4_tmpl_generic_dump(skb, ctx, &pipeline->p_act_idr,
-+					P4TC_AID_IDX, extack);
++	return tcf_p4_tmpl_generic_dump(skb, ctx, &pipeline->p_tbl_idr,
++					P4TC_TBLID_IDX, extack);
 +}
 +
-+static int tcf_act_dump_1(struct sk_buff *skb,
-+			  struct p4tc_template_common *common)
++static int tcf_table_dump_1(struct sk_buff *skb,
++			    struct p4tc_template_common *common)
 +{
-+	struct nlattr *param = nla_nest_start(skb, P4TC_PARAMS);
-+	unsigned char *b = nlmsg_get_pos(skb);
-+	struct p4tc_act *act = to_act(common);
-+	struct nlattr *nest;
++	struct p4tc_table *table = to_table(common);
++	struct nlattr *nest = nla_nest_start(skb, P4TC_PARAMS);
 +
-+	if (!param)
-+		goto out_nlmsg_trim;
++	if (!nest)
++		return -ENOMEM;
 +
-+	if (nla_put_string(skb, P4TC_ACT_NAME, act->common.name))
-+		goto out_nlmsg_trim;
++	if (nla_put_string(skb, P4TC_TABLE_NAME, table->common.name)) {
++		nla_nest_cancel(skb, nest);
++		return -ENOMEM;
++	}
 +
-+	nest = nla_nest_start(skb, P4TC_ACT_CMDS_LIST);
 +	nla_nest_end(skb, nest);
 +
-+	if (nla_put_u8(skb, P4TC_ACT_ACTIVE, act->active))
-+		goto out_nlmsg_trim;
-+
-+	nla_nest_end(skb, param);
-+
 +	return 0;
-+
-+out_nlmsg_trim:
-+	nlmsg_trim(skb, b);
-+	return -ENOMEM;
 +}
 +
-+const struct p4tc_template_ops p4tc_act_ops = {
++const struct p4tc_template_ops p4tc_table_ops = {
 +	.init = NULL,
-+	.cu = tcf_act_cu,
-+	.put = tcf_act_put,
-+	.gd = tcf_act_gd,
-+	.fill_nlmsg = tcf_act_fill_nlmsg,
-+	.dump = tcf_act_dump,
-+	.dump_1 = tcf_act_dump_1,
++	.cu = tcf_table_cu,
++	.fill_nlmsg = tcf_table_fill_nlmsg,
++	.gd = tcf_table_gd,
++	.put = tcf_table_put,
++	.dump = tcf_table_dump,
++	.dump_1 = tcf_table_dump_1,
 +};
-diff --git a/net/sched/p4tc/p4tc_pipeline.c b/net/sched/p4tc/p4tc_pipeline.c
-index 6fc7bd49d..e43e120a3 100644
---- a/net/sched/p4tc/p4tc_pipeline.c
-+++ b/net/sched/p4tc/p4tc_pipeline.c
-@@ -77,10 +77,226 @@ static const struct nla_policy tc_pipeline_policy[P4TC_PIPELINE_MAX + 1] = {
- 	[P4TC_PIPELINE_POSTACTIONS] = { .type = NLA_NESTED },
- };
- 
-+static void __act_dep_graph_free(struct list_head *incoming_egde_list)
-+{
-+	struct p4tc_act_dep_edge_node *cursor_edge, *tmp_edge;
-+
-+	list_for_each_entry_safe(cursor_edge, tmp_edge, incoming_egde_list,
-+				 head) {
-+		list_del(&cursor_edge->head);
-+		kfree(cursor_edge);
-+	}
-+}
-+
-+static void act_dep_graph_free(struct list_head *graph)
-+{
-+	struct p4tc_act_dep_node *cursor, *tmp;
-+
-+	list_for_each_entry_safe(cursor, tmp, graph, head) {
-+		__act_dep_graph_free(&cursor->incoming_egde_list);
-+
-+		list_del(&cursor->head);
-+		kfree(cursor);
-+	}
-+}
-+
-+void tcf_pipeline_delete_from_dep_graph(struct p4tc_pipeline *pipeline,
-+					struct p4tc_act *act)
-+{
-+	struct p4tc_act_dep_node *act_node, *node_tmp;
-+
-+	list_for_each_entry_safe(act_node, node_tmp, &pipeline->act_dep_graph,
-+				 head) {
-+		if (act_node->act_id == act->a_id) {
-+			__act_dep_graph_free(&act_node->incoming_egde_list);
-+			list_del(&act_node->head);
-+			kfree(act_node);
-+		}
-+	}
-+
-+	list_for_each_entry_safe(act_node, node_tmp,
-+				 &pipeline->act_topological_order, head) {
-+		if (act_node->act_id == act->a_id) {
-+			list_del(&act_node->head);
-+			kfree(act_node);
-+		}
-+	}
-+}
-+
-+/* Node id indicates the callee's act id.
-+ * edge_node->act_id indicates the caller's act id.
-+ */
-+void tcf_pipeline_add_dep_edge(struct p4tc_pipeline *pipeline,
-+			       struct p4tc_act_dep_edge_node *edge_node,
-+			       u32 node_id)
-+{
-+	struct p4tc_act_dep_node *cursor;
-+
-+	list_for_each_entry(cursor, &pipeline->act_dep_graph, head) {
-+		if (cursor->act_id == node_id)
-+			break;
-+	}
-+
-+	list_add_tail(&edge_node->head, &cursor->incoming_egde_list);
-+}
-+
-+/* Find root node, that is, the node in our graph that has no incoming edges.
-+ */
-+struct p4tc_act_dep_node *find_root_node(struct list_head *act_dep_graph)
-+{
-+	struct p4tc_act_dep_node *cursor, *root_node;
-+
-+	list_for_each_entry(cursor, act_dep_graph, head) {
-+		if (list_empty(&cursor->incoming_egde_list)) {
-+			root_node = cursor;
-+			return root_node;
-+		}
-+	}
-+
-+	return NULL;
-+}
-+
-+/* node_id indicates where the edge is directed to
-+ * edge_node->act_id indicates where the edge comes from.
-+ */
-+bool tcf_pipeline_check_act_backedge(struct p4tc_pipeline *pipeline,
-+				     struct p4tc_act_dep_edge_node *edge_node,
-+				     u32 node_id)
-+{
-+	struct p4tc_act_dep_node *root_node = NULL;
-+
-+	/* make sure we dont call ourselves */
-+	if (edge_node->act_id == node_id)
-+		return true;
-+
-+	/* add to the list temporarily so we can run our algorithm to
-+	 * find edgeless node and detect a cycle
-+	 */
-+	tcf_pipeline_add_dep_edge(pipeline, edge_node, node_id);
-+
-+	/* Now lets try to find a node which has no incoming edges (root node).
-+	 * If we find a root node it means there is no cycle;
-+	 * OTOH, if we dont find one, it means we have circular depency.
-+	 */
-+	root_node = find_root_node(&pipeline->act_dep_graph);
-+
-+	if (!root_node)
-+		return true;
-+
-+	list_del(&edge_node->head);
-+
-+	return false;
-+}
-+
-+static struct p4tc_act_dep_node *
-+find_and_del_root_node(struct list_head *act_dep_graph)
-+{
-+	struct p4tc_act_dep_node *cursor, *tmp, *root_node;
-+
-+	root_node = find_root_node(act_dep_graph);
-+	list_del(&root_node->head);
-+
-+	list_for_each_entry_safe(cursor, tmp, act_dep_graph, head) {
-+		struct p4tc_act_dep_edge_node *cursor_edge, *tmp_edge;
-+
-+		list_for_each_entry_safe(cursor_edge, tmp_edge,
-+					 &cursor->incoming_egde_list, head) {
-+			if (cursor_edge->act_id == root_node->act_id) {
-+				list_del(&cursor_edge->head);
-+				kfree(cursor_edge);
-+			}
-+		}
-+	}
-+
-+	return root_node;
-+}
-+
-+static int act_dep_graph_copy(struct list_head *new_graph,
-+			      struct list_head *old_graph)
-+{
-+	int err = -ENOMEM;
-+	struct p4tc_act_dep_node *cursor, *tmp;
-+
-+	list_for_each_entry_safe(cursor, tmp, old_graph, head) {
-+		struct p4tc_act_dep_edge_node *cursor_edge, *tmp_edge;
-+		struct p4tc_act_dep_node *new_dep_node;
-+
-+		new_dep_node = kzalloc(sizeof(*new_dep_node), GFP_KERNEL);
-+		if (!new_dep_node)
-+			goto free_graph;
-+
-+		INIT_LIST_HEAD(&new_dep_node->incoming_egde_list);
-+		list_add_tail(&new_dep_node->head, new_graph);
-+		new_dep_node->act_id = cursor->act_id;
-+
-+		list_for_each_entry_safe(cursor_edge, tmp_edge,
-+					 &cursor->incoming_egde_list, head) {
-+			struct p4tc_act_dep_edge_node *new_dep_edge_node;
-+
-+			new_dep_edge_node =
-+				kzalloc(sizeof(*new_dep_edge_node), GFP_KERNEL);
-+			if (!new_dep_edge_node)
-+				goto free_graph;
-+
-+			list_add_tail(&new_dep_edge_node->head,
-+				      &new_dep_node->incoming_egde_list);
-+			new_dep_edge_node->act_id = cursor_edge->act_id;
-+		}
-+	}
-+
-+	return 0;
-+
-+free_graph:
-+	act_dep_graph_free(new_graph);
-+	return err;
-+}
-+
-+int determine_act_topological_order(struct p4tc_pipeline *pipeline,
-+				    bool copy_dep_graph)
-+{
-+	int i = pipeline->num_created_acts;
-+	struct p4tc_act_dep_node *act_node, *node_tmp;
-+	struct p4tc_act_dep_node *node;
-+	struct list_head *dep_graph;
-+
-+	if (copy_dep_graph) {
-+		int err;
-+
-+		dep_graph = kzalloc(sizeof(*dep_graph), GFP_KERNEL);
-+		if (!dep_graph)
-+			return -ENOMEM;
-+
-+		INIT_LIST_HEAD(dep_graph);
-+		err = act_dep_graph_copy(dep_graph, &pipeline->act_dep_graph);
-+		if (err < 0)
-+			return err;
-+	} else {
-+		dep_graph = &pipeline->act_dep_graph;
-+	}
-+
-+	/* Clear from previous calls */
-+	list_for_each_entry_safe(act_node, node_tmp,
-+				 &pipeline->act_topological_order, head) {
-+		list_del(&act_node->head);
-+		kfree(act_node);
-+	}
-+
-+	while (i--) {
-+		node = find_and_del_root_node(dep_graph);
-+		list_add_tail(&node->head, &pipeline->act_topological_order);
-+	}
-+
-+	if (copy_dep_graph)
-+		kfree(dep_graph);
-+
-+	return 0;
-+}
-+
- static void tcf_pipeline_destroy(struct p4tc_pipeline *pipeline,
- 				 bool free_pipeline)
- {
- 	idr_destroy(&pipeline->p_meta_idr);
-+	idr_destroy(&pipeline->p_act_idr);
- 
- 	if (free_pipeline)
- 		kfree(pipeline);
-@@ -106,21 +322,15 @@ static int tcf_pipeline_put(struct net *net,
- 	struct p4tc_pipeline_net *pipe_net = net_generic(net, pipeline_net_id);
- 	struct p4tc_pipeline *pipeline = to_pipeline(template);
- 	struct net *pipeline_net = maybe_get_net(net);
--	struct p4tc_metadata *meta;
-+	struct p4tc_act_dep_node *act_node, *node_tmp;
- 	unsigned long m_id, tmp;
-+	struct p4tc_metadata *meta;
- 
- 	if (pipeline_net && !refcount_dec_if_one(&pipeline->p_ref)) {
- 		NL_SET_ERR_MSG(extack, "Can't delete referenced pipeline");
- 		return -EBUSY;
-         }
- 
--	idr_remove(&pipe_net->pipeline_idr, pipeline->common.p_id);
--	if (pipeline->parser)
--		tcf_parser_del(net, pipeline, pipeline->parser, extack);
--
--	idr_for_each_entry_ul(&pipeline->p_meta_idr, meta, tmp, m_id)
--		meta->common.ops->put(net, &meta->common, true, extack);
--
- 	/* XXX: The action fields are only accessed in the control path
- 	 * since they will be copied to the filter, where the data path
- 	 * will use them. So there is no need to free them in the rcu
-@@ -129,6 +339,26 @@ static int tcf_pipeline_put(struct net *net,
- 	p4tc_action_destroy(pipeline->preacts);
- 	p4tc_action_destroy(pipeline->postacts);
- 
-+	act_dep_graph_free(&pipeline->act_dep_graph);
-+
-+	list_for_each_entry_safe(act_node, node_tmp,
-+				 &pipeline->act_topological_order, head) {
-+		struct p4tc_act *act;
-+
-+		act = tcf_action_find_byid(pipeline, act_node->act_id);
-+		act->common.ops->put(net, &act->common, true, extack);
-+		list_del(&act_node->head);
-+		kfree(act_node);
-+	}
-+
-+	idr_for_each_entry_ul(&pipeline->p_meta_idr, meta, tmp, m_id)
-+		meta->common.ops->put(net, &meta->common, true, extack);
-+
-+	if (pipeline->parser)
-+		tcf_parser_del(net, pipeline, pipeline->parser, extack);
-+
-+	idr_remove(&pipe_net->pipeline_idr, pipeline->common.p_id);
-+
- 	if (pipeline_net)
- 		call_rcu(&pipeline->rcu, tcf_pipeline_destroy_rcu);
- 	else
-@@ -159,26 +389,13 @@ static inline int pipeline_try_set_state_ready(struct p4tc_pipeline *pipeline,
- 		return -EINVAL;
- 	}
- 
-+	/* Will never fail in this case */
-+	determine_act_topological_order(pipeline, false);
-+
- 	pipeline->p_state = P4TC_STATE_READY;
- 	return true;
- }
- 
--static int p4tc_action_init(struct net *net, struct nlattr *nla,
--			    struct tc_action *acts[], u32 pipeid, u32 flags,
--			    struct netlink_ext_ack *extack)
--{
--	int init_res[TCA_ACT_MAX_PRIO];
--	size_t attrs_size;
--	int ret;
--
--	/* If action was already created, just bind to existing one*/
--	flags = TCA_ACT_FLAGS_BIND;
--	ret = tcf_action_init(net, NULL, nla, NULL, acts, init_res, &attrs_size,
--			      flags, 0, extack);
--
--	return ret;
--}
--
- struct p4tc_pipeline *tcf_pipeline_find_byid(struct net *net, const u32 pipeid)
- {
- 	struct p4tc_pipeline_net *pipe_net;
-@@ -323,9 +540,15 @@ static struct p4tc_pipeline *tcf_pipeline_create(struct net *net,
- 
- 	pipeline->parser = NULL;
- 
-+	idr_init(&pipeline->p_act_idr);
-+
- 	idr_init(&pipeline->p_meta_idr);
- 	pipeline->p_meta_offset = 0;
- 
-+	INIT_LIST_HEAD(&pipeline->act_dep_graph);
-+	INIT_LIST_HEAD(&pipeline->act_topological_order);
-+	pipeline->num_created_acts = 0;
-+
- 	pipeline->p_state = P4TC_STATE_NOT_READY;
- 
- 	pipeline->net = net;
-@@ -658,7 +881,8 @@ static int tcf_pipeline_gd(struct net *net, struct sk_buff *skb,
- 		return PTR_ERR(pipeline);
- 
- 	tmpl = (struct p4tc_template_common *)pipeline;
--	if (tcf_pipeline_fill_nlmsg(net, skb, tmpl, extack) < 0)
-+	ret = tcf_pipeline_fill_nlmsg(net, skb, tmpl, extack);
-+	if (ret < 0)
- 		return -1;
- 
- 	if (!ids[P4TC_PID_IDX])
 diff --git a/net/sched/p4tc/p4tc_tmpl_api.c b/net/sched/p4tc/p4tc_tmpl_api.c
-index 325b56d2e..2296ae97b 100644
+index 2296ae97b..2963f6497 100644
 --- a/net/sched/p4tc/p4tc_tmpl_api.c
 +++ b/net/sched/p4tc/p4tc_tmpl_api.c
-@@ -44,6 +44,7 @@ static bool obj_is_valid(u32 obj)
- 	case P4TC_OBJ_PIPELINE:
+@@ -45,6 +45,7 @@ static bool obj_is_valid(u32 obj)
  	case P4TC_OBJ_META:
  	case P4TC_OBJ_HDR_FIELD:
-+	case P4TC_OBJ_ACT:
+ 	case P4TC_OBJ_ACT:
++	case P4TC_OBJ_TABLE:
  		return true;
  	default:
  		return false;
-@@ -54,6 +55,7 @@ static const struct p4tc_template_ops *p4tc_ops[P4TC_OBJ_MAX] = {
- 	[P4TC_OBJ_PIPELINE] = &p4tc_pipeline_ops,
+@@ -56,6 +57,7 @@ static const struct p4tc_template_ops *p4tc_ops[P4TC_OBJ_MAX] = {
  	[P4TC_OBJ_META] = &p4tc_meta_ops,
  	[P4TC_OBJ_HDR_FIELD] = &p4tc_hdrfield_ops,
-+	[P4TC_OBJ_ACT] = &p4tc_act_ops,
+ 	[P4TC_OBJ_ACT] = &p4tc_act_ops,
++	[P4TC_OBJ_TABLE] = &p4tc_table_ops,
  };
  
  int tcf_p4_tmpl_generic_dump(struct sk_buff *skb, struct p4tc_dump_ctx *ctx,
