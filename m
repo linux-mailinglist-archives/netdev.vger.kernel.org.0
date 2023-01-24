@@ -2,113 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFCCF679586
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 11:43:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C384A679590
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 11:45:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233386AbjAXKnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 05:43:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47794 "EHLO
+        id S233539AbjAXKpc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 05:45:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232664AbjAXKnA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 05:43:00 -0500
-Received: from metanate.com (unknown [IPv6:2001:8b0:1628:5005::111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C3CEF82;
-        Tue, 24 Jan 2023 02:42:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=metanate.com; s=stronger; h=Content-Transfer-Encoding:Message-Id:Date:
-        Subject:Cc:To:From:Content-Type:Reply-To:Content-ID:Content-Description:
-        In-Reply-To:References; bh=+94z0GDF0YwFoOENdLk8LueRV02gPpcPCokC9qXRlYg=; b=Xj
-        I+/zScQTaOW1cJeIgcHY/CCrH9KKVg6mvlJpEDP0rxHzGTvFbWTw5Y2ZM1+Iq+Xy6Zh4UG7EmG27w
-        cpbYZXECiVdWynbzF815ZKgnHXEETp1FMyaeha8LYmPBKaaYIdVM/YyXRrt3B7K7ZCxmCCihA0APV
-        jK/n8mUQRh0qZuG/ApKp8K4cRIkuGEZB6zQEF+y/BLyQt8eVas716louM66kUTkUAZDCvMKmXHQS3
-        GD9FFykFFd6H/CrbFqYuqae/pm8TWHaXNmqPOeJYqCJjGnLeuUVQ1oOIbOiE0zMbpSMTRB+aJBgZg
-        qeXqRUSRq6wfpJ2GKP7mHcRJD9vfPiJA==;
-Received: from [81.174.171.191] (helo=donbot.metanate.com)
-        by email.metanate.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <john@metanate.com>)
-        id 1pKGlS-0008HV-J2;
-        Tue, 24 Jan 2023 10:42:54 +0000
-From:   John Keeping <john@metanate.com>
-To:     netdev@vger.kernel.org
-Cc:     John Keeping <john@metanate.com>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231871AbjAXKpb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 05:45:31 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062CF12F04;
+        Tue, 24 Jan 2023 02:45:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1674557125; x=1706093125;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=RwiF2ESGcXxGOh6GWmHVLESVsmvz3aB1KmPhfiNoAWg=;
+  b=BodJBWjF3j4mmgyfVQnwr8Kd4gIK7rdzlEk3FalZm+9fX7l8ipLsf+oy
+   hHtEuZjrUCQAS+xzUAcRWrYMnqeA60LHHjdEfSj0o9yzdPv/oOFm7iIIB
+   ubskp+rXNEoQO/amU7e41jFKrPLiK1bKXACRLF5NwwrPBwb0CvPbWASwm
+   V12EcINeuEm/Itf45qvni14G2yVBvDkFQ8DDgVIgLfvPKFFqG4G5bVmrz
+   d8N7DrQPJ9N0i2KzCfWlhfHXUALqSX5lekIMuAX8n1Jfegh1VzbkDMlrj
+   sC6ieLPBdwFX2g5ZoQ9waxzKZuN9SieiJ/kC4BAuSJEfeMJnx+Iso9Whs
+   g==;
+X-IronPort-AV: E=Sophos;i="5.97,242,1669100400"; 
+   d="scan'208";a="197853103"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Jan 2023 03:45:19 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Tue, 24 Jan 2023 03:45:17 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Tue, 24 Jan 2023 03:45:13 -0700
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] brcmfmac: support CQM RSSI notification with older firmware
-Date:   Tue, 24 Jan 2023 10:42:48 +0000
-Message-Id: <20230124104248.2917465-1-john@metanate.com>
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Steen Hegelund <steen.hegelund@microchip.com>,
+        <UNGLinuxDriver@microchip.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "Casper Andersson" <casper.casan@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        "Nathan Huckleberry" <nhuck@google.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        "Steen Hegelund" <Steen.Hegelund@microchip.com>,
+        Daniel Machon <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Dan Carpenter <error27@gmail.com>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next v2 0/8] Adding Sparx5 IS0 VCAP support
+Date:   Tue, 24 Jan 2023 11:45:03 +0100
+Message-ID: <20230124104511.293938-1-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Authenticated: YES
-X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RDNS_NONE,SPF_HELO_PASS,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using the BCM4339 firmware from linux-firmware (version "BCM4339/2 wl0:
-Sep  5 2019 11:05:52 version 6.37.39.113 (r722271 CY)" from
-cypress/cyfmac4339-sdio.bin) the RSSI respose is only 4 bytes, which
-results in an error being logged.
+This provides the Ingress Stage 0 (IS0) VCAP (Versatile Content-Aware
+Processor) support for the Sparx5 platform.
 
-It seems that older devices send only the RSSI field and neither SNR nor
-noise is included.  Handle this by accepting a 4 byte message and
-reading only the RSSI from it.
+The IS0 VCAP (also known in the datasheet as CLM) is a classifier VCAP that
+mainly extracts frame information to metadata that follows the frame in the
+Sparx5 processing flow all the way to the egress port.
 
-Fixes: 7dd56ea45a66 ("brcmfmac: add support for CQM RSSI notifications")
-Signed-off-by: John Keeping <john@metanate.com>
----
-v2:
-- Cast to __be32* to fix a Sparse warning (kernel test robot)
+The IS0 VCAP has 4 lookups and they are accessible with a TC chain id:
 
- .../broadcom/brcm80211/brcmfmac/cfg80211.c         | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+- chain 1000000: IS0 Lookup 0
+- chain 1100000: IS0 Lookup 1
+- chain 1200000: IS0 Lookup 2
+- chain 1300000: IS0 Lookup 3
+- chain 1400000: IS0 Lookup 4
+- chain 1500000: IS0 Lookup 5
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-index b115902eb475..43dc0faee92d 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-@@ -6489,18 +6489,20 @@ static s32 brcmf_notify_rssi(struct brcmf_if *ifp,
- {
- 	struct brcmf_cfg80211_vif *vif = ifp->vif;
- 	struct brcmf_rssi_be *info = data;
--	s32 rssi, snr, noise;
-+	s32 rssi, snr = 0, noise = 0;
- 	s32 low, high, last;
- 
--	if (e->datalen < sizeof(*info)) {
-+	if (e->datalen >= sizeof(*info)) {
-+		rssi = be32_to_cpu(info->rssi);
-+		snr = be32_to_cpu(info->snr);
-+		noise = be32_to_cpu(info->noise);
-+	} else if (e->datalen >= sizeof(rssi)) {
-+		rssi = be32_to_cpu(*(__be32 *)data);
-+	} else {
- 		brcmf_err("insufficient RSSI event data\n");
- 		return 0;
- 	}
- 
--	rssi = be32_to_cpu(info->rssi);
--	snr = be32_to_cpu(info->snr);
--	noise = be32_to_cpu(info->noise);
--
- 	low = vif->cqm_rssi_low;
- 	high = vif->cqm_rssi_high;
- 	last = vif->cqm_rssi_last;
+Each of these lookups have their own port keyset configuration that decides
+which keys will be used for matching on which traffic type.
+
+The IS0 VCAP has these traffic classifications:
+
+- IPv4 frames
+- IPv6 frames
+- Unicast MPLS frames (ethertype = 0x8847)
+- Multicast MPLS frames (ethertype = 0x8847)
+- Other frame types than MPLS, IPv4 and IPv6
+
+The IS0 VCAP has an action that allows setting the value of a PAG (Policy
+Association Group) key field in the frame metadata, and this can be used
+for matching in an IS2 VCAP rule.
+
+This allow rules in the IS0 VCAP to be linked to rules in the IS2 VCAP.
+
+The linking is exposed by using the TC "goto chain" action with an offset
+from the IS2 chain ids.
+
+As an example a "goto chain 8000001" will use a PAG value of 1 to chain to
+a rule in IS2 Lookup 0.
+
+Version History:
+================
+v2      Added corrections suggested by Dan Carpenter.
+
+v1      Initial version
+
+Steen Hegelund (8):
+  net: microchip: sparx5: Add IS0 VCAP model and updated KUNIT VCAP
+    model
+  net: microchip: sparx5: Add IS0 VCAP keyset configuration for Sparx5
+  net: microchip: sparx5: Add actionset type id information to rule
+  net: microchip: sparx5: Add TC support for IS0 VCAP
+  net: microchip: sparx5: Add TC filter chaining support for IS0 and IS2
+    VCAPs
+  net: microchip: sparx5: Add automatic selection of VCAP rule actionset
+  net: microchip: sparx5: Add support for IS0 VCAP ethernet protocol
+    types
+  net: microchip: sparx5: Add support for IS0 VCAP CVLAN TC keys
+
+ .../microchip/sparx5/sparx5_main_regs.h       |   64 +-
+ .../microchip/sparx5/sparx5_tc_flower.c       |  227 +-
+ .../microchip/sparx5/sparx5_vcap_ag_api.c     | 1110 ++++++++-
+ .../microchip/sparx5/sparx5_vcap_debugfs.c    |  131 +-
+ .../microchip/sparx5/sparx5_vcap_impl.c       |  401 +++-
+ .../microchip/sparx5/sparx5_vcap_impl.h       |   61 +
+ .../net/ethernet/microchip/vcap/vcap_ag_api.h |  336 +--
+ .../net/ethernet/microchip/vcap/vcap_api.c    |  184 +-
+ .../net/ethernet/microchip/vcap/vcap_api.h    |    7 +
+ .../ethernet/microchip/vcap/vcap_api_client.h |    2 +
+ .../ethernet/microchip/vcap/vcap_api_kunit.c  |    2 +-
+ .../microchip/vcap/vcap_model_kunit.c         | 1994 ++---------------
+ 12 files changed, 2360 insertions(+), 2159 deletions(-)
+
 -- 
 2.39.1
 
