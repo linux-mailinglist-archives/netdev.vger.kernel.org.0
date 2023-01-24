@@ -2,78 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B20767A0FD
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 19:15:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 666BA67A10B
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 19:17:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233370AbjAXSPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 13:15:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59620 "EHLO
+        id S229965AbjAXSRg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 13:17:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232517AbjAXSPU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 13:15:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F84C18A9C;
-        Tue, 24 Jan 2023 10:15:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DAE1FB81627;
-        Tue, 24 Jan 2023 18:15:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8F29C433EF;
-        Tue, 24 Jan 2023 18:15:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674584116;
-        bh=Rd5xkF/cF7E/u3PgEI5wGUAi752Z3HB3dNv8+uQX9fI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iitDX4kGEgESvMEN9vsfiloiePb3zngO/h2zx1xg2pXOiduYvd1rJV5gORW1/FIrf
-         1gei/g6WgprhadktlY+jtm4dZYKkHe5HLmQ/1SSUo4s/mwifuCjI1UaTdFy8ofKLPM
-         BLKlf7yW3aL3v1SsHifm017nscb0xckBLzIBKZ13obE8vy98ELW8dh3Y1jhFroi6st
-         S/BxGEQ1FnOH2flPXuPPdiUd0QSYh/X+mJZLlEsQpJaQZHWHcFwPFDMnOTS6AMBR+4
-         Qyr6CYTYjyLQvSs/LKVrvsgqyCuMYT8QNzHewwiB0xdqmzQ8oTvCZ8tUSbUUFpI2np
-         jkEUAlkVxV5yw==
-Date:   Tue, 24 Jan 2023 20:15:11 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Neal Cardwell <ncardwell@google.com>, selinux@vger.kernel.org,
-        Paul Moore <paul@paul-moore.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>, kernel-team@cloudflare.com,
-        Marek Majkowski <marek@cloudflare.com>
-Subject: Re: [PATCH net-next v6 0/2] Add IP_LOCAL_PORT_RANGE socket option
-Message-ID: <Y9AgL9TlxvQCRPFO@unreal>
-References: <20221221-sockopt-port-range-v6-0-be255cc0e51f@cloudflare.com>
+        with ESMTP id S229956AbjAXSRe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 13:17:34 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 122244C6E6;
+        Tue, 24 Jan 2023 10:17:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=sGkPrI9T/JW6jnSg9wDuqsLtaD2yspPjDXYdbyVMsxI=; b=4ygpDxXafniLv9bX62broNnGvL
+        5wvEnJ1kr5M2yB91imIHIzMLAncnNPOXpt9+ASgeV2ctyFcArNn9+6TmG1v4i8ZRiYyZHWGPe7eWo
+        oqkf8K8EMsIiYGvgh9SiVh+R8TdUSaszLQ6olS17PTcMDg03jJNy4+i+2qMne8vvhOsvUkVmmTG4H
+        AGEdYNlxdFiBckGnfb5HKvvnvKCRUwwOvGw47uzq3/STOozfro18L5y1HaZ3BOUNTCjWZBxIu2SP6
+        Fcxr+VGw/6NFkKPU0JtTKtSoIvxrWvm8rCHC9VZljXG2SXi+RXVbkJkstvGN/HmeBkGnZtC4IydaZ
+        xmzR6szQ==;
+Received: from [2601:1c2:d80:3110::9307] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1pKNrJ-004vl4-BA; Tue, 24 Jan 2023 18:17:25 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     netdev@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: [PATCH net-next] net: Kconfig: fix spellos
+Date:   Tue, 24 Jan 2023 10:17:24 -0800
+Message-Id: <20230124181724.18166-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221221-sockopt-port-range-v6-0-be255cc0e51f@cloudflare.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 24, 2023 at 02:36:43PM +0100, Jakub Sitnicki wrote:
-> This patch set is a follow up to the "How to share IPv4 addresses by
-> partitioning the port space" talk given at LPC 2022 [1].
+Fix spelling in net/ Kconfig files.
+(reported by codespell)
 
-<...>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
+Cc: Florian Westphal <fw@strlen.de>
+Cc: netfilter-devel@vger.kernel.org
+Cc: coreteam@netfilter.org
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+---
+ net/netfilter/ipset/Kconfig |    2 +-
+ net/sched/Kconfig           |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-> 	      
-> Changelog:
-> ---------
-> 
-> v5 -> v6:
-> v5: https://lore.kernel.org/r/20221221-sockopt-port-range-v5-0-9fb2c00ad293@cloudflare.com
-> 
->  * Move changelog in individual patches below the trailer. (Leon)
-
-Thank you for doing that.
-
+diff -- a/net/netfilter/ipset/Kconfig b/net/netfilter/ipset/Kconfig
+--- a/net/netfilter/ipset/Kconfig
++++ b/net/netfilter/ipset/Kconfig
+@@ -30,7 +30,7 @@ config IP_SET_BITMAP_IP
+ 	depends on IP_SET
+ 	help
+ 	  This option adds the bitmap:ip set type support, by which one
+-	  can store IPv4 addresses (or network addresse) from a range.
++	  can store IPv4 addresses (or network addresses) from a range.
+ 
+ 	  To compile it as a module, choose M here.  If unsure, say N.
+ 
+diff -- a/net/sched/Kconfig b/net/sched/Kconfig
+--- a/net/sched/Kconfig
++++ b/net/sched/Kconfig
+@@ -337,7 +337,7 @@ config NET_SCH_FQ
+ 	  Say Y here if you want to use the FQ packet scheduling algorithm.
+ 
+ 	  FQ does flow separation, and is able to respect pacing requirements
+-	  set by TCP stack into sk->sk_pacing_rate (for localy generated
++	  set by TCP stack into sk->sk_pacing_rate (for locally generated
+ 	  traffic)
+ 
+ 	  To compile this driver as a module, choose M here: the module
