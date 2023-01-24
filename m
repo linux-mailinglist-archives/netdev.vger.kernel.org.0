@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 30251679A0B
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 14:44:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6286679A08
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 14:44:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234320AbjAXNoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 08:44:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34410 "EHLO
+        id S234450AbjAXNoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 08:44:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234315AbjAXNne (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 08:43:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA2C1E5F7;
-        Tue, 24 Jan 2023 05:42:54 -0800 (PST)
+        with ESMTP id S234370AbjAXNnY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 08:43:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA57F1F5D0;
+        Tue, 24 Jan 2023 05:42:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4BE34B811E1;
-        Tue, 24 Jan 2023 13:42:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8537DC433A1;
-        Tue, 24 Jan 2023 13:42:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8646B6117D;
+        Tue, 24 Jan 2023 13:42:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71F35C4339E;
+        Tue, 24 Jan 2023 13:42:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674567766;
-        bh=oO0wEpPVDbKGv/d7IauLB1VA8rBVN7mdSwL4WrW9w40=;
+        s=k20201202; t=1674567768;
+        bh=6qEweodQCR6FEb6DBQxVypNlBcAFlt73MVsK/n68V88=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kBSr+jK7Jau9kRWMcSk3oM3zrxf5lnHHGznfnM1rxPHlGIoUZsfvnXWIhzoDeJ5M+
-         PIkQz84TNFHQDFGF0Ndqlc+wUd6cnd4lpSP603nVDy3iL2n+cnlCb/MyaykjGNwqkI
-         2RoGTC1b+Vp1sqUNdhw5s7FkYyK+SoRAMnYI6ml8iNEC0JdlAm3y7tAtdSlB7hJaMY
-         x3kbcmdJQFrE+fFSibEB/nH0YHGmpvrsqRO9YkjlDmCnRZ0+7ZeeupNayRmkeHT0bO
-         dfmxX6H9zOEyoVGloE+eUFOgMS35Ton/rNc8acPENMWboMHFgBPqiG4EQ2yVUJnEaT
-         bQx/RcA/fUqMA==
+        b=tx5mSM/9o8RUK1g8ko6Vk82gWFHAqbf5m5Yw6H5hLjXnoB3BLmiXktqQc2d1zkWzM
+         3J6tsVLCXMqnhU1GKvwh5wt5xs/FwYz7C78yDfJyghYdXZat53J4uraU+ptmkTsVjW
+         XmbDlEmTSWtsQOmdWflCcW46t+POoryocvJYKjgzHCf8+oTmv8Lca946DcW64Q7SBq
+         Lu0APy5MAbLe+/FfI1xBN/I/nIHF5Mw0YWk/ACWp3ztA9rU7/6zNplWSlEUYa/kxm8
+         k952wv0imtiMLaz/q+2a1GhAV7c766xSzSVGiHjgerh1ir2b8Lrg0skN4wb/B4mqS8
+         ArQZOSQKjv9Mw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Srujana Challa <schalla@marvell.com>,
+Cc:     Nithin Dabilpuram <ndabilpuram@marvell.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, sgoutham@marvell.com,
         lcherian@marvell.com, gakula@marvell.com, jerinj@marvell.com,
         hkelam@marvell.com, sbhatta@marvell.com, edumazet@google.com,
         kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.1 30/35] octeontx2-af: optimize cpt pf identification
-Date:   Tue, 24 Jan 2023 08:41:26 -0500
-Message-Id: <20230124134131.637036-30-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 31/35] octeontx2-af: restore rxc conf after teardown sequence
+Date:   Tue, 24 Jan 2023 08:41:27 -0500
+Message-Id: <20230124134131.637036-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230124134131.637036-1-sashal@kernel.org>
 References: <20230124134131.637036-1-sashal@kernel.org>
@@ -58,106 +58,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Srujana Challa <schalla@marvell.com>
+From: Nithin Dabilpuram <ndabilpuram@marvell.com>
 
-[ Upstream commit 9adb04ff62f51265002c2c83e718bcf459e06e48 ]
+[ Upstream commit d5b2e0a299f36c6ccdda4830525ca20550243536 ]
 
-Optimize CPT PF identification in mbox handling for faster
-mbox response by doing it at AF driver probe instead of
-every mbox message.
+CN10K CPT coprocessor includes a component named RXC which
+is responsible for reassembly of inner IP packets. RXC has
+the feature to evict oldest entries based on age/threshold.
+The age/threshold is being set to minimum values to evict
+all entries at the time of teardown.
+This patch adds code to restore timeout and threshold config
+after teardown sequence is complete as it is global config.
 
-Signed-off-by: Srujana Challa <schalla@marvell.com>
+Signed-off-by: Nithin Dabilpuram <ndabilpuram@marvell.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c     |  8 ++++++++
- drivers/net/ethernet/marvell/octeontx2/af/rvu.h     |  2 ++
- drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c | 13 ++++++++++---
- 3 files changed, 20 insertions(+), 3 deletions(-)
+ .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 22 +++++++++++++++----
+ 1 file changed, 18 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index 3f5e09b77d4b..8683ce57ed3f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -1164,8 +1164,16 @@ static int rvu_setup_hw_resources(struct rvu *rvu)
- 		goto nix_err;
- 	}
- 
-+	err = rvu_cpt_init(rvu);
-+	if (err) {
-+		dev_err(rvu->dev, "%s: Failed to initialize cpt\n", __func__);
-+		goto mcs_err;
-+	}
-+
- 	return 0;
- 
-+mcs_err:
-+	rvu_mcs_exit(rvu);
- nix_err:
- 	rvu_nix_freemem(rvu);
- npa_err:
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index a981463939ac..0210318698b2 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -505,6 +505,7 @@ struct rvu {
- 	struct ptp		*ptp;
- 
- 	int			mcs_blk_cnt;
-+	int			cpt_pf_num;
- 
- #ifdef CONFIG_DEBUG_FS
- 	struct rvu_debugfs	rvu_dbg;
-@@ -870,6 +871,7 @@ void rvu_cpt_unregister_interrupts(struct rvu *rvu);
- int rvu_cpt_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int lf,
- 			int slot);
- int rvu_cpt_ctx_flush(struct rvu *rvu, u16 pcifunc);
-+int rvu_cpt_init(struct rvu *rvu);
- 
- /* CN10K RVU */
- int rvu_set_channels_base(struct rvu *rvu);
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-index e8973294c4f8..f970cb9b0bff 100644
+index f970cb9b0bff..302ff549284e 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-@@ -340,7 +340,7 @@ static int get_cpt_pf_num(struct rvu *rvu)
+@@ -812,10 +812,21 @@ int rvu_mbox_handler_cpt_sts(struct rvu *rvu, struct cpt_sts_req *req,
+ #define RXC_ZOMBIE_COUNT  GENMASK_ULL(60, 48)
  
- static bool is_cpt_pf(struct rvu *rvu, u16 pcifunc)
+ static void cpt_rxc_time_cfg(struct rvu *rvu, struct cpt_rxc_time_cfg_req *req,
+-			     int blkaddr)
++			     int blkaddr, struct cpt_rxc_time_cfg_req *save)
  {
--	int cpt_pf_num = get_cpt_pf_num(rvu);
-+	int cpt_pf_num = rvu->cpt_pf_num;
+ 	u64 dfrg_reg;
  
- 	if (rvu_get_pf(pcifunc) != cpt_pf_num)
- 		return false;
-@@ -352,7 +352,7 @@ static bool is_cpt_pf(struct rvu *rvu, u16 pcifunc)
++	if (save) {
++		/* Save older config */
++		dfrg_reg = rvu_read64(rvu, blkaddr, CPT_AF_RXC_DFRG);
++		save->zombie_thres = FIELD_GET(RXC_ZOMBIE_THRES, dfrg_reg);
++		save->zombie_limit = FIELD_GET(RXC_ZOMBIE_LIMIT, dfrg_reg);
++		save->active_thres = FIELD_GET(RXC_ACTIVE_THRES, dfrg_reg);
++		save->active_limit = FIELD_GET(RXC_ACTIVE_LIMIT, dfrg_reg);
++
++		save->step = rvu_read64(rvu, blkaddr, CPT_AF_RXC_TIME_CFG);
++	}
++
+ 	dfrg_reg = FIELD_PREP(RXC_ZOMBIE_THRES, req->zombie_thres);
+ 	dfrg_reg |= FIELD_PREP(RXC_ZOMBIE_LIMIT, req->zombie_limit);
+ 	dfrg_reg |= FIELD_PREP(RXC_ACTIVE_THRES, req->active_thres);
+@@ -840,7 +851,7 @@ int rvu_mbox_handler_cpt_rxc_time_cfg(struct rvu *rvu,
+ 	    !is_cpt_vf(rvu, req->hdr.pcifunc))
+ 		return CPT_AF_ERR_ACCESS_DENIED;
  
- static bool is_cpt_vf(struct rvu *rvu, u16 pcifunc)
- {
--	int cpt_pf_num = get_cpt_pf_num(rvu);
-+	int cpt_pf_num = rvu->cpt_pf_num;
- 
- 	if (rvu_get_pf(pcifunc) != cpt_pf_num)
- 		return false;
-@@ -1015,7 +1015,7 @@ int rvu_cpt_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int lf, int s
- static int cpt_inline_inb_lf_cmd_send(struct rvu *rvu, int blkaddr,
- 				      int nix_blkaddr)
- {
--	int cpt_pf_num = get_cpt_pf_num(rvu);
-+	int cpt_pf_num = rvu->cpt_pf_num;
- 	struct cpt_inst_lmtst_req *req;
- 	dma_addr_t res_daddr;
- 	int timeout = 3000;
-@@ -1159,3 +1159,10 @@ int rvu_cpt_ctx_flush(struct rvu *rvu, u16 pcifunc)
+-	cpt_rxc_time_cfg(rvu, req, blkaddr);
++	cpt_rxc_time_cfg(rvu, req, blkaddr, NULL);
  
  	return 0;
  }
+@@ -886,7 +897,7 @@ int rvu_mbox_handler_cpt_lf_reset(struct rvu *rvu, struct cpt_lf_rst_req *req,
+ 
+ static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
+ {
+-	struct cpt_rxc_time_cfg_req req;
++	struct cpt_rxc_time_cfg_req req, prev;
+ 	int timeout = 2000;
+ 	u64 reg;
+ 
+@@ -902,7 +913,7 @@ static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
+ 	req.active_thres = 1;
+ 	req.active_limit = 1;
+ 
+-	cpt_rxc_time_cfg(rvu, &req, blkaddr);
++	cpt_rxc_time_cfg(rvu, &req, blkaddr, &prev);
+ 
+ 	do {
+ 		reg = rvu_read64(rvu, blkaddr, CPT_AF_RXC_ACTIVE_STS);
+@@ -928,6 +939,9 @@ static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
+ 
+ 	if (timeout == 0)
+ 		dev_warn(rvu->dev, "Poll for RXC zombie count hits hard loop counter\n");
 +
-+int rvu_cpt_init(struct rvu *rvu)
-+{
-+	/* Retrieve CPT PF number */
-+	rvu->cpt_pf_num = get_cpt_pf_num(rvu);
-+	return 0;
-+}
++	/* Restore config */
++	cpt_rxc_time_cfg(rvu, &prev, blkaddr, NULL);
+ }
+ 
+ #define INFLIGHT   GENMASK_ULL(8, 0)
 -- 
 2.39.0
 
