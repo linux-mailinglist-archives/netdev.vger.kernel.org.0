@@ -2,148 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 796CD67A14C
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 19:38:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9974967A17C
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 19:41:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233939AbjAXSiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 13:38:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42046 "EHLO
+        id S233542AbjAXSlC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 13:41:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233730AbjAXSiH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 13:38:07 -0500
-Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D007A457F6
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 10:37:58 -0800 (PST)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed50:2f4a:8573:c294:b2ce])
-        by laurent.telenet-ops.be with bizsmtp
-        id CidZ2900K56uRqi01idZ2h; Tue, 24 Jan 2023 19:37:55 +0100
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtp (Exim 4.95)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1pKOAe-007HCs-OB;
-        Tue, 24 Jan 2023 19:37:33 +0100
-Received: from geert by rox.of.borg with local (Exim 4.95)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1pKOAn-002n1A-8j;
-        Tue, 24 Jan 2023 19:37:33 +0100
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Vinod Koul <vkoul@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Kishon Vijay Abraham I <kishon@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Siddharth Vadapalli <s-vadapalli@ti.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     linux-phy@lists.infradead.org, linux-doc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2 9/9] usb: host: ohci-exynos: Convert to devm_of_phy_optional_get()
-Date:   Tue, 24 Jan 2023 19:37:28 +0100
-Message-Id: <3adc5dd1149a17ea7daf4463549feab886c6b145.1674584626.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1674584626.git.geert+renesas@glider.be>
-References: <cover.1674584626.git.geert+renesas@glider.be>
+        with ESMTP id S233657AbjAXSk7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 13:40:59 -0500
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 43E3449558;
+        Tue, 24 Jan 2023 10:40:35 -0800 (PST)
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com
+Subject: [PATCH net 0/4] Netfilter fixes for net
+Date:   Tue, 24 Jan 2023 19:39:29 +0100
+Message-Id: <20230124183933.4752-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new devm_of_phy_optional_get() helper instead of open-coding the
-same operation.
+Hi,
 
-As devm_of_phy_optional_get() returns NULL if either the PHY cannot be
-found, or if support for the PHY framework is not enabled, it is no
-longer needed to check for -ENODEV or -ENOSYS.
+The following patchset contains Netfilter fixes for net:
 
-This lets us drop several checks for IS_ERR(), as phy_power_{on,off}()
-handle NULL parameters fine.
+1) Perform SCTP vtag verification for ABORT/SHUTDOWN_COMPLETE according
+   to RFC 9260, Sect 8.5.1.
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
----
-v2:
-  - Add Acked-by,
-  - Clarify removed checks for -ENODEV and -ENOSYS,
-  - Remove error printing in case of real failures.
----
- drivers/usb/host/ohci-exynos.c | 23 ++++++-----------------
- 1 file changed, 6 insertions(+), 17 deletions(-)
+2) Fix infinite loop if SCTP chunk size is zero in for_each_sctp_chunk().
+   And remove useless check in this macro too.
 
-diff --git a/drivers/usb/host/ohci-exynos.c b/drivers/usb/host/ohci-exynos.c
-index 8d7977fd5d3bd502..8af17c1ee5cc8f1e 100644
---- a/drivers/usb/host/ohci-exynos.c
-+++ b/drivers/usb/host/ohci-exynos.c
-@@ -69,19 +69,11 @@ static int exynos_ohci_get_phy(struct device *dev,
- 			return -EINVAL;
- 		}
- 
--		phy = devm_of_phy_get(dev, child, NULL);
-+		phy = devm_of_phy_optional_get(dev, child, NULL);
- 		exynos_ohci->phy[phy_number] = phy;
- 		if (IS_ERR(phy)) {
--			ret = PTR_ERR(phy);
--			if (ret == -EPROBE_DEFER) {
--				of_node_put(child);
--				return ret;
--			} else if (ret != -ENOSYS && ret != -ENODEV) {
--				dev_err(dev,
--					"Error retrieving usb2 phy: %d\n", ret);
--				of_node_put(child);
--				return ret;
--			}
-+			of_node_put(child);
-+			return PTR_ERR(phy);
- 		}
- 	}
- 
-@@ -97,12 +89,10 @@ static int exynos_ohci_phy_enable(struct device *dev)
- 	int ret = 0;
- 
- 	for (i = 0; ret == 0 && i < PHY_NUMBER; i++)
--		if (!IS_ERR(exynos_ohci->phy[i]))
--			ret = phy_power_on(exynos_ohci->phy[i]);
-+		ret = phy_power_on(exynos_ohci->phy[i]);
- 	if (ret)
- 		for (i--; i >= 0; i--)
--			if (!IS_ERR(exynos_ohci->phy[i]))
--				phy_power_off(exynos_ohci->phy[i]);
-+			phy_power_off(exynos_ohci->phy[i]);
- 
- 	return ret;
- }
-@@ -114,8 +104,7 @@ static void exynos_ohci_phy_disable(struct device *dev)
- 	int i;
- 
- 	for (i = 0; i < PHY_NUMBER; i++)
--		if (!IS_ERR(exynos_ohci->phy[i]))
--			phy_power_off(exynos_ohci->phy[i]);
-+		phy_power_off(exynos_ohci->phy[i]);
- }
- 
- static int exynos_ohci_probe(struct platform_device *pdev)
--- 
-2.34.1
+3) Revert DATA_SENT state in the SCTP tracker, this was applied in the
+   previous merge window. Next patch in this series provides a more
+   simple approach to multihoming support.
 
+4) Unify HEARTBEAT_ACKED and ESTABLISHED states for SCTP multihoming
+   support, use default ESTABLISHED of 210 seconds based on
+   heartbeat timeout * maximum number of retransmission + round-trip timeout.
+   Otherwise, SCTP conntrack entry that represents secondary paths
+   remain stale in the table for up to 5 days.
+
+This is a slightly large batch with fixes for the SCTP connection
+tracking helper, all patches from Sriram Yagnaraman.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit 208a21107ef0ae86c92078caf84ce80053e73f7a:
+
+  Merge branch '40GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue (2023-01-23 22:36:59 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git HEAD
+
+for you to fetch changes up to a44b7651489f26271ac784b70895e8a85d0cebf4:
+
+  netfilter: conntrack: unify established states for SCTP paths (2023-01-24 09:52:52 +0100)
+
+----------------------------------------------------------------
+Sriram Yagnaraman (4):
+      netfilter: conntrack: fix vtag checks for ABORT/SHUTDOWN_COMPLETE
+      netfilter: conntrack: fix bug in for_each_sctp_chunk
+      Revert "netfilter: conntrack: add sctp DATA_SENT state"
+      netfilter: conntrack: unify established states for SCTP paths
+
+ Documentation/networking/nf_conntrack-sysctl.rst   |  10 +-
+ include/uapi/linux/netfilter/nf_conntrack_sctp.h   |   3 +-
+ include/uapi/linux/netfilter/nfnetlink_cttimeout.h |   3 +-
+ net/netfilter/nf_conntrack_proto_sctp.c            | 170 +++++++++------------
+ net/netfilter/nf_conntrack_standalone.c            |  16 --
+ 5 files changed, 77 insertions(+), 125 deletions(-)
