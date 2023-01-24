@@ -2,162 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FC4D679E16
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 16:58:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0755679E11
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 16:57:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234472AbjAXP6G convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 24 Jan 2023 10:58:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35738 "EHLO
+        id S234215AbjAXP5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 10:57:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234330AbjAXP6E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 10:58:04 -0500
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A16BE448A
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 07:58:00 -0800 (PST)
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-502-a8fTusk4Pvm1gLpPlMB6Tg-1; Tue, 24 Jan 2023 10:57:58 -0500
-X-MC-Unique: a8fTusk4Pvm1gLpPlMB6Tg-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8ED1E38149A3;
-        Tue, 24 Jan 2023 15:57:57 +0000 (UTC)
-Received: from hog (unknown [10.39.192.162])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id CD820492C14;
-        Tue, 24 Jan 2023 15:57:55 +0000 (UTC)
-Date:   Tue, 24 Jan 2023 16:56:23 +0100
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Boris Pismenny <borisp@nvidia.com>, Simo Sorce <simo@redhat.com>,
-        Daiki Ueno <dueno@redhat.com>
-Cc:     Gal Pressman <gal@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Frantisek Krenzelok <fkrenzel@redhat.com>
-Subject: Re: [PATCH net-next 0/5] tls: implement key updates for TLS1.3
-Message-ID: <Y8//pypyM3HAu+cf@hog>
-References: <cover.1673952268.git.sd@queasysnail.net>
- <20230117180351.1cf46cb3@kernel.org>
- <Y8fEodSWeJZyp+Sh@hog>
- <20230118185522.44c75f73@kernel.org>
- <516756d7-0a99-da18-2818-9bef6c3b6c24@nvidia.com>
- <bb406004-f344-4783-b1f0-883d254f2146@nvidia.com>
+        with ESMTP id S234088AbjAXP5j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 10:57:39 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E7264A1FF;
+        Tue, 24 Jan 2023 07:57:38 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id jm10so15091519plb.13;
+        Tue, 24 Jan 2023 07:57:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=hqolBxXCNuOBmobd0DkrzxBEkxNCJTU7jxiH5MLZ5rw=;
+        b=VF7hIVFm9tEJXxqAAb0rT9WiklBsCz88lSzN/0M+/jCBVz+OddZ6zSXuzXjPF1/Iiz
+         JRgnR9Cfjd+dCpQJWHo5dXLjNAVtGVTDmeVKTdr7eiBWa+dm4XreQsETmoLM+aEy/g6d
+         udi2YadJqdKylNnYxEsV0apiMAzgE0qJeNG23GnoIKCa0Ly9azN/GS2IWSe4LT6X6568
+         wDNtxMw98ByheGDBbdlU45EZYgDRc0MJozQmF5Ww7AuD2rc3fX2ZZLhWnyq4fOcMe6L3
+         o3f5sIx+5s84l9UPQqQDbqBMY9GRLNz0pae5fUEM4oH4RcoBe+q3dc9wz7tGly0W1aWa
+         8s+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hqolBxXCNuOBmobd0DkrzxBEkxNCJTU7jxiH5MLZ5rw=;
+        b=q/iJP0/ADwDVD6wbldhnJQ0B9An639UHbWSCmqjCfH2PXWzG5htzH0MSSBGFZZskpm
+         82+YdszLkdC3JkCGwkii6J9AmuYLq60lwwVhwNza06G4XVPcP1EUupbOfzez84R0AZvM
+         6QjfGMtaUr5vUGqELk4CAIk8bnbg8q5gFG9dbqOdhreBTtTTx6dyLPTS7XctFHiveqKi
+         E31TQGn46hYCH5kDzrT2VecvYD4Y93KM1U9heqJp+vPONna+M6+9yn+wNi8CnNYZTcQo
+         t9vizaA1LY7akFoMsQ88GF27vvRS4n4dg7qAx1+67aZ22PC5dJWrNdAU7sep+7jKfobe
+         ABaQ==
+X-Gm-Message-State: AO0yUKUt82IjO/s/8IE0NPSAvI3waNWGd89qNNFAu+axklzDC6VY+ebW
+        MMZGYuUANnYzbW1w1q1wYQhQ0s0EDhs=
+X-Google-Smtp-Source: AK7set/kfxCTTixwnKqQQKv0TFk9Ak4D/IsCJdHqSVJy+e6AyuWjQDmIdKoIa3+JnmnpLKV3A+QV/Q==
+X-Received: by 2002:a17:90a:191c:b0:22b:e71b:1fde with SMTP id 28-20020a17090a191c00b0022be71b1fdemr3822120pjg.15.1674575857534;
+        Tue, 24 Jan 2023 07:57:37 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.116.5])
+        by smtp.googlemail.com with ESMTPSA id b26-20020a63931a000000b00478e7f87f3bsm1609790pge.67.2023.01.24.07.57.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Jan 2023 07:57:36 -0800 (PST)
+Message-ID: <f3d079ce930895475f307de3fdaed0b85b4f2671.camel@gmail.com>
+Subject: Re: [PATCH] net: page_pool: fix refcounting issues with fragmented
+ allocation
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Felix Fietkau <nbd@nbd.name>
+Cc:     netdev@vger.kernel.org, Jesper Dangaard Brouer <hawk@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        linux-kernel@vger.kernel.org, Yunsheng Lin <linyunsheng@huawei.com>
+Date:   Tue, 24 Jan 2023 07:57:35 -0800
+In-Reply-To: <CAC_iWjKAEgUB8Z3WNNVgUK8omXD+nwt_VPSVyFn1i4EQzJadog@mail.gmail.com>
+References: <20230124124300.94886-1-nbd@nbd.name>
+         <CAC_iWjKAEgUB8Z3WNNVgUK8omXD+nwt_VPSVyFn1i4EQzJadog@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-In-Reply-To: <bb406004-f344-4783-b1f0-883d254f2146@nvidia.com>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(adding Simo and Daiki for the OpenSSL/GnuTLS sides)
+On Tue, 2023-01-24 at 16:11 +0200, Ilias Apalodimas wrote:
+> Hi Felix,
+>=20
+> ++cc Alexander and Yunsheng.
+>=20
+> Thanks for the report
+>=20
+> On Tue, 24 Jan 2023 at 14:43, Felix Fietkau <nbd@nbd.name> wrote:
+> >=20
+> > While testing fragmented page_pool allocation in the mt76 driver, I was=
+ able
+> > to reliably trigger page refcount underflow issues, which did not occur=
+ with
+> > full-page page_pool allocation.
+> > It appears to me, that handling refcounting in two separate counters
+> > (page->pp_frag_count and page refcount) is racy when page refcount gets
+> > incremented by code dealing with skb fragments directly, and
+> > page_pool_return_skb_page is called multiple times for the same fragmen=
+t.
+> >=20
+> > Dropping page->pp_frag_count and relying entirely on the page refcount =
+makes
+> > these underflow issues and crashes go away.
+> >=20
+>=20
+> This has been discussed here [1].  TL;DR changing this to page
+> refcount might blow up in other colorful ways.  Can we look closer and
+> figure out why the underflow happens?
+>=20
+> [1] https://lore.kernel.org/netdev/1625903002-31619-4-git-send-email-liny=
+unsheng@huawei.com/
+>=20
+> Thanks
+> /Ilias
+>=20
+>=20
 
-2023-01-23, 10:13:58 +0000, Boris Pismenny wrote:
-> On 19/01/2023 10:27, Gal Pressman wrote:
-> > On 19/01/2023 4:55, Jakub Kicinski wrote:
-> >> On Wed, 18 Jan 2023 11:06:25 +0100 Sabrina Dubroca wrote:
-> >>> 2023-01-17, 18:03:51 -0800, Jakub Kicinski wrote:
-> >>>> On Tue, 17 Jan 2023 14:45:26 +0100 Sabrina Dubroca wrote:  
-> >>>>> This adds support for receiving KeyUpdate messages (RFC 8446, 4.6.3
-> >>>>> [1]). A sender transmits a KeyUpdate message and then changes its TX
-> >>>>> key. The receiver should react by updating its RX key before
-> >>>>> processing the next message.
-> >>>>>
-> >>>>> This patchset implements key updates by:
-> >>>>>  1. pausing decryption when a KeyUpdate message is received, to avoid
-> >>>>>     attempting to use the old key to decrypt a record encrypted with
-> >>>>>     the new key
-> >>>>>  2. returning -EKEYEXPIRED to syscalls that cannot receive the
-> >>>>>     KeyUpdate message, until the rekey has been performed by userspace  
-> >>>>
-> >>>> Why? We return to user space after hitting a cmsg, don't we?
-> >>>> If the user space wants to keep reading with the old key - 🤷️  
-> >>>
-> >>> But they won't be able to read anything. Either we don't pause
-> >>> decryption, and the socket is just broken when we look at the next
-> >>> record, or we pause, and there's nothing to read until the rekey is
-> >>> done. I think that -EKEYEXPIRED is better than breaking the socket
-> >>> just because a read snuck in between getting the cmsg and setting the
-> >>> new key.
-> >>
-> >> IDK, we don't interpret any other content types/cmsgs, and for well
-> >> behaved user space there should be no problem (right?).
-> >> I'm weakly against, if nobody agrees with me you can keep as is.
-> >>
-> >>>>>  3. passing the KeyUpdate message to userspace as a control message
-> >>>>>  4. allowing updates of the crypto_info via the TLS_TX/TLS_RX
-> >>>>>     setsockopts
-> >>>>>
-> >>>>> This API has been tested with gnutls to make sure that it allows
-> >>>>> userspace libraries to implement key updates [2]. Thanks to Frantisek
-> >>>>> Krenzelok <fkrenzel@redhat.com> for providing the implementation in
-> >>>>> gnutls and testing the kernel patches.  
-> >>>>
-> >>>> Please explain why - the kernel TLS is not faster than user space, 
-> >>>> the point of it is primarily to enable offload. And you don't add
-> >>>> offload support here.  
-> >>>
-> >>> Well, TLS1.3 support was added 4 years ago, and yet the offload still
-> >>> doesn't support 1.3 at all.
-> >>
-> >> I'm pretty sure some devices support it. None of the vendors could 
-> >> be bothered to plumb in the kernel support, yet, tho.
-> > 
-> > Our device supports TLS 1.3, it's in our plans to add driver/kernel support.
-> > 
-> >> I don't know of anyone supporting rekeying.
-> > 
-> > Boris, Tariq, do you know?
-> 
-> Rekeying is not trivial to get right with offload. There are at least
-> two problems to solve:
-> 1. On transmit, we need to handle both the new and the old key for new
-> and old (retransmitted) data, respectively. Our device will be able to
-> hold both keys in parallel and to choose the right one at the cost of an
-> if statement in the data-path. Alternatively, we can just fallback to
-> software for the old key and focus on the new key.
+The logic should be safe in terms of the page pool itself as it should
+be holding one reference to the page while the pp_frag_count is non-
+zero. That one reference is what keeps the two halfs in sync as the
+page shouldn't be able to be freed until we exhaust the pp_frag_count.
 
-We'll need to keep the old key around until we know all the records
-using it have been fully received, right?  And that could be multiple
-old keys, in case of a quick series of key updates.
+To have an underflow there are two possible scenarios. One is that
+either put_page or free_page is being called somewhere that the
+page_pool freeing functions should be used. The other possibility is
+that a pp_frag_count reference was taken somewhere a page reference
+should have.
 
-> 2. On Rx, packets with the new key may arrive before the key is
-> installed unless we design a mechanism for preemptively setting the next
-> key in HW. As a result, we may get a resync on every rekey.
-> 
-> Have you considered an API to preemptively set the next key in the
-> kernel such that there is never a need to stop the datapath? I think
-> that the change in SSL libraries is minor and it can really help KTLS.
-
-I don't like the idea of having some unused key stored in the kernel
-for long durations too much.
-
-You can't be sure that there will be only one rekey in the next short
-interval, so you'll need to be able to handle those resyncs anyway, in
-case userspace is too slow providing the 3rd key (for the 2nd
-rekey). For example, the RFC mentions:
-
-   If implementations independently send their own KeyUpdates with
-   request_update set to "update_requested" and they cross in flight,
-   then each side will also send a response, with the result that each
-   side increments by two generations.
-
-   https://www.rfc-editor.org/rfc/rfc8446#section-4.6.3
-
-So I think what you're suggesting can only be an optimization,
-not a full solution.
-
-I hope I'm not getting too confused by all this.
-
--- 
-Sabrina
-
+Do we have a backtrace for the spots that are showing this underrun? If
+nothing else we may want to look at tracking down the spots that are
+freeing the page pool pages via put_page or free_page to determine what
+paths these pages are taking.
