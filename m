@@ -2,46 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36A9367A272
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 20:15:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AE1667A274
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 20:15:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233854AbjAXTPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 14:15:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50728 "EHLO
+        id S233955AbjAXTPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 14:15:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229933AbjAXTPD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 14:15:03 -0500
-Received: from mx12lb.world4you.com (mx12lb.world4you.com [81.19.149.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 292054B4AD
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 11:15:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=4T78B+RlxXXg+VLUQmY0eyW1+b4sW26iTrlsx3knAo8=; b=FTe6A08EK+hqQh8Gt1nl8M3r/8
-        balKSXT4fDhzwIPgeiHWxjtUBPAJeeKsYP5/nU7IPJSVmWTd+0WEcyu0NB6ODGvkF04yDmJ4BWa+f
-        Lad5770IbTIxSCep48EmMbWakfurQrGu7J8T70hGW+zU8ywMVDfwtV7AhmQWNEyl+J2E=;
-Received: from [88.117.49.184] (helo=hornet.engleder.at)
-        by mx12lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1pKOl2-0006Ms-A2; Tue, 24 Jan 2023 20:15:00 +0100
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net] tsnep: Fix TX queue stop/wake for multiple queues
-Date:   Tue, 24 Jan 2023 20:14:40 +0100
-Message-Id: <20230124191440.56887-1-gerhard@engleder-embedded.com>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S229933AbjAXTPf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 14:15:35 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45BFE4B76F
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 11:15:35 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id j5so2410033pjn.5
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 11:15:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=4qsy3LEiupKxYI9DxJf68i2S5/rawXXYVYdql9/4JsU=;
+        b=VtZBaVR6SCQcbu1WErwfawsXJwKXPwXlwKDavzjsYlCpmqw3BQYM2Z+l+uGMsYsa7X
+         1gtKGzjcxlt455SXmddqrbCKT0DKuMlsVXQAEfkfmTS8MdaEJeJyxW9ZPdpYpiWIzN6c
+         uDa4Kn2mCnQFGxxhovaKJtdpnf2dIy1+bgsz9gpO0U57Zc02bafIi8RYHiRmqH+wGqyR
+         0Ziz0iiGjDrmgWlmxl+aYkvECnJAB/vbV+0Pa34zlPqHwgTcjliNKl7+fc8G13jRPCSn
+         Y6ip1Cqkt0XsjBnfhsROM0E3Ux9x+hA3i23TpDn3dniVepW7ibyRXYclgIkcIvxLZHV5
+         s7pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4qsy3LEiupKxYI9DxJf68i2S5/rawXXYVYdql9/4JsU=;
+        b=volI6ZK5Hv3ehvzvzCOSqdZWyUZTxerifUWccSr9PqbDZWVhIMVPtqnhwdj2MhcpQP
+         ni68e8Is60GHOTmhlfK9ffINod2SpBGi+xf9ShnMlaRBNxnS2HcWMfuxWr6VJDJmjCSl
+         W2XuwECpSO4fkFSgY+zU4/LVVjakLfxDjGEjslFBVoPMBgmvCqO22f+xkJznRBSKuenu
+         nVwOyfdDObMqCD/rVboTYO3aJBOgzG9TMOf7YN3YkPcR15fQUTCI+geZ5x6y/c6XQK3p
+         xgPbTyJuIYueptKWBmKfw3VqPrIklaGzEJ+rE5Dr0EhtihrufIAeBP1rZp7xbVqaU4Ti
+         Dk2g==
+X-Gm-Message-State: AFqh2koeiE3NGB2m3PrjXZvpej7tZrQE07+3icYEbtmQX6RSuGIgGXgv
+        RjwN7sYXv4DtsCole1NFYHM=
+X-Google-Smtp-Source: AMrXdXsdM/jAA9YukclTJcyG2GhfsOG79GzGm5D1hj1AnW/hYQV7Li8zM6hxzfmyNW0BVjk4nk9WMg==
+X-Received: by 2002:a05:6a20:4d91:b0:b9:7a34:a78d with SMTP id gj17-20020a056a204d9100b000b97a34a78dmr16090360pzb.9.1674587734755;
+        Tue, 24 Jan 2023 11:15:34 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id 203-20020a6215d4000000b0058d9e7bed75sm1963591pfv.60.2023.01.24.11.15.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Jan 2023 11:15:34 -0800 (PST)
+Date:   Tue, 24 Jan 2023 11:15:31 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Bar Shapira <bar.shapira.work@gmail.com>
+Cc:     Rahul Rameshbabu <rrameshbabu@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Vincent Cheng <vincent.cheng.xh@renesas.com>
+Subject: Re: [net-next 03/15] net/mlx5: Add adjphase function to support
+ hardware-only offset control
+Message-ID: <Y9AuU4zSQ0++RV7z@hoboy.vegasvil.org>
+References: <87r0vpcch0.fsf@nvidia.com>
+ <3312dd93-398d-f891-1170-5d471b3d7482@intel.com>
+ <20230120160609.19160723@kernel.org>
+ <87ilgyw9ya.fsf@nvidia.com>
+ <Y83vgvTBnCYCzp49@hoboy.vegasvil.org>
+ <878rhuj78u.fsf@nvidia.com>
+ <Y8336MEkd6R/XU7x@hoboy.vegasvil.org>
+ <87y1pt6qgc.fsf@nvidia.com>
+ <Y88L6EPtgvW4tSA+@hoboy.vegasvil.org>
+ <8fceff1b-180d-b089-8259-cd4caf46e7d2@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-AV-Do-Run: Yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8fceff1b-180d-b089-8259-cd4caf46e7d2@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -49,70 +89,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-netif_stop_queue() and netif_wake_queue() act on TX queue 0. This is ok
-as long as only a single TX queue is supported. But support for multiple
-TX queues was introduced with 762031375d5c and I missed to adapt stop
-and wake of TX queues.
+On Tue, Jan 24, 2023 at 12:33:05PM +0200, Bar Shapira wrote:
+> I guess this expectation should be part of the documentation too, right? Are
+> there more expectations when calling adjphase?
 
-Use netif_stop_subqueue() and netif_tx_wake_queue() to act on specific
-TX queue.
+I'll gladly ack improvements to the documentation. I myself won't
+spend time on that, because it will only get ignored, even when it is
+super clear.  Like ptp_clock_register(), for example.
 
-Fixes: 762031375d5c ("tsnep: Support multiple TX/RX queue pairs")
-Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
----
- drivers/net/ethernet/engleder/tsnep_main.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+> In previous responses on the mailing list it said that adjphase should not
+> cause the time to 'jump' - is it also correct?
 
-diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index bf0190e1d2ea..00e2108f2ca4 100644
---- a/drivers/net/ethernet/engleder/tsnep_main.c
-+++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -450,7 +450,7 @@ static netdev_tx_t tsnep_xmit_frame_ring(struct sk_buff *skb,
- 		/* ring full, shall not happen because queue is stopped if full
- 		 * below
- 		 */
--		netif_stop_queue(tx->adapter->netdev);
-+		netif_stop_subqueue(tx->adapter->netdev, tx->queue_index);
+correct.
  
- 		spin_unlock_irqrestore(&tx->lock, flags);
- 
-@@ -493,7 +493,7 @@ static netdev_tx_t tsnep_xmit_frame_ring(struct sk_buff *skb,
- 
- 	if (tsnep_tx_desc_available(tx) < (MAX_SKB_FRAGS + 1)) {
- 		/* ring can get full with next frame */
--		netif_stop_queue(tx->adapter->netdev);
-+		netif_stop_subqueue(tx->adapter->netdev, tx->queue_index);
- 	}
- 
- 	spin_unlock_irqrestore(&tx->lock, flags);
-@@ -503,11 +503,14 @@ static netdev_tx_t tsnep_xmit_frame_ring(struct sk_buff *skb,
- 
- static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- {
-+	struct tsnep_tx_entry *entry;
-+	struct netdev_queue *nq;
- 	unsigned long flags;
- 	int budget = 128;
--	struct tsnep_tx_entry *entry;
--	int count;
- 	int length;
-+	int count;
-+
-+	nq = netdev_get_tx_queue(tx->adapter->netdev, tx->queue_index);
- 
- 	spin_lock_irqsave(&tx->lock, flags);
- 
-@@ -564,8 +567,8 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- 	} while (likely(budget));
- 
- 	if ((tsnep_tx_desc_available(tx) >= ((MAX_SKB_FRAGS + 1) * 2)) &&
--	    netif_queue_stopped(tx->adapter->netdev)) {
--		netif_wake_queue(tx->adapter->netdev);
-+	    netif_tx_queue_stopped(nq)) {
-+		netif_tx_wake_queue(nq);
- 	}
- 
- 	spin_unlock_irqrestore(&tx->lock, flags);
--- 
-2.30.2
+> It seems that "Feeds the given phase offset into the hardware clock's servo"
+> is still missing some information.
+> Can you help clarify the expected result after calling adjphase from SW?
 
+If you don't have a servo implemented in hardware, then don't
+implement .adjphase in your device driver.
+
+Thanks,
+Richard
