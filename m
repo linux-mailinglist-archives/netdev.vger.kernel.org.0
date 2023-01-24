@@ -2,122 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A4FC6790CC
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 07:27:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F9286790F2
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 07:31:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233252AbjAXG1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 01:27:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
+        id S231588AbjAXGar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 01:30:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231544AbjAXG1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 01:27:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE8530B17;
-        Mon, 23 Jan 2023 22:27:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C9135611E8;
-        Tue, 24 Jan 2023 06:26:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B04B8C433EF;
-        Tue, 24 Jan 2023 06:26:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674541619;
-        bh=0E4Oc7/Z2stBA8qPrvNH0kEWWPBwgaEO48l8pr7o85U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Y0C8LuIeZXm8qzNM/0x9oaruuBIALECSGYaMY6JmMXHEt/4OO6fq6+06qZLWrY6i8
-         /YYXqNse4w2KUvniABDf9pA3W11MlsCChz5gJvaziaPWU5exQ10jdXHnq18ftwwENJ
-         WFWPLGpiW20wYNKbJJEXOqd9nDmLzA81okfyPzqIWTVrb6JlllE262R87ggNDsSftd
-         ILWr1fy2sGPKt1lW5713650iPtEhl5Bemos7Ul6Kw5aghe/uDMFQCr1TmgUCJPph8Z
-         Xu57x2nxiwSFl/idayA3VSw1jJzKxozO5QYBFU7NORPZvlvN0aI9/owULgjlII7j/5
-         tcOXg3V17Py7Q==
-Date:   Tue, 24 Jan 2023 08:22:33 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jonathan Corbet <corbet@lwn.net>, oss-drivers@corigine.com,
-        linux-doc@vger.kernel.org, Raju Rangoju <rajur@chelsio.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: Re: [Intel-wired-lan] [PATCH net-next 09/10] bonding: fill IPsec
- state validation failure reason
-Message-ID: <Y895KXqtQgXOytj1@unreal>
-References: <cover.1674481435.git.leon@kernel.org>
- <d563de401d6fdc1c52959300eebb2bbb27c6c181.1674481435.git.leon@kernel.org>
- <5064.1674514892@famine>
+        with ESMTP id S232847AbjAXG37 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 01:29:59 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B7F3E09C;
+        Mon, 23 Jan 2023 22:29:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=4u7sdeygL2SI0vuOn3AQXqOOeojipj5nJ8JBXiSMSP4=; b=Y1N1Bp85zWT1Yc4mWO5RM/5swn
+        z1s/ae7nZBU1XI2LeDBAOv+06U0Bu1PJWHXCDrEjlbbph1xr+oh6cmoXIod4hdcTSIhg05KsUMsH6
+        Mt0SAUZbeNMdj95LikeyPio6/J/WyHzPQbupOE2KMJ+OXZv8xSLLdBNtO7Ot/A8dx2JalSA7ubKi2
+        aFuBB1XW7qW1wiu2y2b/BJd4x/N6dLqevlGltWAruZGC7j2J5NPe6Xz6f5IgVH1uIF87LFk4mGzQ9
+        1iI2DWcT8gQ30YpVU8YQ5BM2WIzRNm5oNr5lR1NU6lLpwGy0B15qzrZcjDOK9MRUi3zNGYFfM5749
+        r4m38yZA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1pKCny-002Vim-8c; Tue, 24 Jan 2023 06:29:14 +0000
+Date:   Mon, 23 Jan 2023 22:29:14 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Alistair Popple <apopple@nvidia.com>
+Cc:     linux-mm@kvack.org, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jgg@nvidia.com, jhubbard@nvidia.com,
+        tjmercier@google.com, hannes@cmpxchg.org, surenb@google.com,
+        mkoutny@suse.com, daniel@ffwll.ch, linuxppc-dev@lists.ozlabs.org,
+        linux-fpga@vger.kernel.org, linux-rdma@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, io-uring@vger.kernel.org,
+        bpf@vger.kernel.org, rds-devel@oss.oracle.com,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [RFC PATCH 01/19] mm: Introduce vm_account
+Message-ID: <Y896ugI8HoXDRjp3@infradead.org>
+References: <cover.f52b9eb2792bccb8a9ecd6bc95055705cfe2ae03.1674538665.git-series.apopple@nvidia.com>
+ <748338ffe4c42d86669923159fe0426808ecb04d.1674538665.git-series.apopple@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5064.1674514892@famine>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <748338ffe4c42d86669923159fe0426808ecb04d.1674538665.git-series.apopple@nvidia.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 23, 2023 at 03:01:32PM -0800, Jay Vosburgh wrote:
-> Leon Romanovsky <leon@kernel.org> wrote:
-> 
-> >From: Leon Romanovsky <leonro@nvidia.com>
-> >
-> >Rely on extack to return failure reason.
-> >
-> >Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> >Signed-off-by: Leon Romanovsky <leon@kernel.org>
-> >---
-> > drivers/net/bonding/bond_main.c | 2 +-
-> > 1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> >diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> >index 686b2a6fd674..00646aa315c3 100644
-> >--- a/drivers/net/bonding/bond_main.c
-> >+++ b/drivers/net/bonding/bond_main.c
-> >@@ -444,7 +444,7 @@ static int bond_ipsec_add_sa(struct xfrm_state *xs,
-> > 	if (!slave->dev->xfrmdev_ops ||
-> > 	    !slave->dev->xfrmdev_ops->xdo_dev_state_add ||
-> > 	    netif_is_bond_master(slave->dev)) {
-> >-		slave_warn(bond_dev, slave->dev, "Slave does not support ipsec offload\n");
-> >+		NL_SET_ERR_MSG_MOD(extack, "Slave does not support ipsec offload");
-> > 		rcu_read_unlock();
-> > 		return -EINVAL;
-> > 	}
-> 
-> 	Why only this one, and not include the other similar
-> slave_warn() calls in the bond_ipsec_* functions?  
-
-Which functions did you have in mind?
-
-The extack was added to XFRM .xdo_dev_state_add() call, which is
-translated to bond_ipsec_add_sa() with only one slave_warn() print.
-
-If you are talking about bond_ipsec_add_sa_all(), that function isn't
-directly connected to netlink and doesn't have extack pointer to fill.
-
-If you are talking about bond_ipsec_del_sai*() and slave_warn() there, it
-will be better to be deleted/changed to make sure what ipsec_list have
-only valid devices.
-
-Thanks
+> +/**
+> + * vm_account_init - Initialise a new struct vm_account.
+> + * @vm_account: pointer to uninitialised vm_account.
+> + * @task: task to charge against.
+> + * @user: user to charge against. Must be non-NULL for VM_ACCOUNT_USER.
+> + * @flags: flags to use when charging to vm_account.
+> + *
+> + * Initialise a new uninitialiused struct vm_account. Takes references
+> + * on the task/mm/user/cgroup as required although callers must ensure
+> + * any references passed in remain valid for the duration of this
+> + * call.
+> + */
+> +void vm_account_init(struct vm_account *vm_account, struct task_struct *task,
+> +		struct user_struct *user, enum vm_account_flags flags);
 
 
-> That would seem to make some failures show up in dmesg,
-> and others returned to the caller via extack.
-> 
-> 	-J
-> 
-> ---
-> 	-Jay Vosburgh, jay.vosburgh@canonical.com
+kerneldoc comments are supposed to be next to the implementation, and
+not the declaration in the header.
+
