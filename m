@@ -2,75 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 300FC6796D6
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 12:42:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3304679706
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 12:50:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234256AbjAXLmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 06:42:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37050 "EHLO
+        id S232963AbjAXLuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 06:50:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234244AbjAXLmC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 06:42:02 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B9E3B652
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 03:42:00 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id g11so12479356eda.12
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 03:42:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=yeBk2oTqxjs94yIGjzSu7p0Q0VqviO+iBLaR2P5DC24=;
-        b=NqWDRIzkPwm9hIf6yBAL4JvVcZXbjtgeioGW3hZckQBIColwLfX1LgOVxAn4KQc53K
-         ex9W9VM679jykw8fYpQZWUbfPar5MpL/NiGRIzujmzY8+F8VkQ9aSbr/RDD8RfAYV+UO
-         BuXMQSbrXsCSUe9gOqR0c1sSHhZVwpI0VJqbr8Y4sWnRuh8B1Mp8LiivRK+vxd44poCI
-         HyK+/8Kd2tt0dXKbrVDECOkvLHIapiKLRm1l3WoNlTjS5CrXtZyMNcxAgdVwzwknEQQ2
-         H653OQCIXAa0/BZlmOzSy4O6BrGvQ694SQDvQHIx4RehGcRnpkRKlQcrszSlecGDq+ho
-         j5cA==
+        with ESMTP id S232977AbjAXLuL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 06:50:11 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D967640BDB
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 03:49:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1674560970;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=E+8CpAUiEMzDSueeZ/CcPXedjzkC+Vhi6CdGhcnqLlw=;
+        b=Ggdwg5S/6Ghe/7OqpwMSqA/Ad3abToCLqY7SaPSnYquST2lUYs3uCH2yGaSqWk3Fjm3sQ2
+        w//XDl1/ts9298v/E7aHbrWfsigo9/vVMnQg17PAVqTLHUrH7p4jPve7tnys+EU0aURXy2
+        a1EC3EdDwpqCYtMazl5GCg9SqTBrp4I=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-494-Wl6mk_21PGiFEhqj9jaUqg-1; Tue, 24 Jan 2023 06:49:26 -0500
+X-MC-Unique: Wl6mk_21PGiFEhqj9jaUqg-1
+Received: by mail-ed1-f70.google.com with SMTP id s14-20020a056402520e00b0049e0bea1c3fso10476541edd.3
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 03:49:26 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yeBk2oTqxjs94yIGjzSu7p0Q0VqviO+iBLaR2P5DC24=;
-        b=XIXRxUK327QFruZrsybXKN+vyymtnOiPyY05/OTJTtrBmzv/RLs/eUSnZShR7QvHI4
-         +4O9fTQ/+Jv6wOcojUhycnprzJEpW6inyQrz7s8GNnI4ksrc52HGtlcmaWRXlQOFzKkK
-         k5INi1acCLSmOe83QwS3QQwojHsQsnQg2zqeHsiIJl7SdKk5n6TlEBOZREw5pcNrp4ev
-         +n8NXw9GEAKYP4LeyEwLIBD4aX8RLXZeG6kdBWXnqrVwqufMaLj8slhi5D9qy6rKjhrE
-         Bn9UA0V1ibwYFGzss9ILHAE/Y4NLOVMys9im5F2iZ3NunAiN/CCKDEftSVf1kZEx01Hg
-         p++Q==
-X-Gm-Message-State: AO0yUKXXDY3gkMClxEh//2znRq+hr6kB8eWp25EoYczy7rTYSATPXjUV
-        PAJkfo+sg5zUjec7d6B7boAmN9dAB+o=
-X-Google-Smtp-Source: AK7set97Lh2GeRJC6c7FdTTZcOhwBoQQvEF8LETiT0eICEhuFYRpYygrXxc2DPLzYFgamg6rtqoWRQ==
-X-Received: by 2002:a05:6402:550f:b0:49f:da00:47a5 with SMTP id fi15-20020a056402550f00b0049fda0047a5mr2455638edb.25.1674560518644;
-        Tue, 24 Jan 2023 03:41:58 -0800 (PST)
-Received: from skbuf ([188.27.185.42])
-        by smtp.gmail.com with ESMTPSA id p4-20020a056402044400b0048ecd372fc9sm960209edw.2.2023.01.24.03.41.58
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=E+8CpAUiEMzDSueeZ/CcPXedjzkC+Vhi6CdGhcnqLlw=;
+        b=TAFM8U76eP8J/v8/TFbcBg2j6YKtYyEBu/CcgeXXq7B9de3E81Sr8KeeKU6Eq5jt4a
+         TIt4F6FDF0L7tKITs2s4j2raE76VQ0Ago91dCbqdD8N2Zk0+uPIAZCVsIkoulizIDjlH
+         tYyYCfUcKmEbtorIkOGyNcXE/tonrmTHXZ6FObkza2KdtZhBbe5xpK3Y1LF2PwpyIjXS
+         OwxYLgXzeKhP0ODMG0SSyCE138DQ3GWijSIYbsZRGv603QL61Ksv4RIHWDtteENbYIAz
+         +uujW12H5IS37hfIFEpwDNhQyfx8ZrGP+SboC098T78l6sx4ZBA3uflOXNeaAhyqTS+B
+         BuqA==
+X-Gm-Message-State: AFqh2kpjHoO+PwrvQIrv5yeNz4V6nT+i12HwUjmRieNN4zL/P3GexuQ9
+        NBuwICj4n/lMaf1kH2Br1D6+Ia4rzwvRl2e5TsTTSKQgWKiUPOc+74xaZjPV80OkBAeoQ7Ceako
+        yrg0eRzMKvrl0L5We
+X-Received: by 2002:a17:906:4e09:b0:86f:2cc2:7029 with SMTP id z9-20020a1709064e0900b0086f2cc27029mr28409506eju.38.1674560965311;
+        Tue, 24 Jan 2023 03:49:25 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXuFW42pOrJS5TdgBDaQkg1EwxDSUf3jHUle3aR/jouGbhcEhzEDRCQA583LajKdODxHNXcZZQ==
+X-Received: by 2002:a17:906:4e09:b0:86f:2cc2:7029 with SMTP id z9-20020a1709064e0900b0086f2cc27029mr28409417eju.38.1674560964159;
+        Tue, 24 Jan 2023 03:49:24 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id vt4-20020a170907a60400b007e0e2e35205sm810924ejc.143.2023.01.24.03.49.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Jan 2023 03:41:58 -0800 (PST)
-Date:   Tue, 24 Jan 2023 13:41:56 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Angelo Dureghello <angelo@kernel-space.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-Subject: Re: mv88e6321, dual cpu port
-Message-ID: <20230124114156.ua4koty3xvu5xsfx@skbuf>
-References: <Y7yIK4a8mfAUpQ2g@lunn.ch>
- <ed027411-c1ec-631a-7560-7344c738754e@kernel-space.org>
- <20230110222246.iy7m7f36iqrmiyqw@skbuf>
- <Y73ub0xgNmY5/4Qr@lunn.ch>
- <8d0fce6c-6138-4594-0d75-9a030d969f99@kernel-space.org>
- <20230123112828.yusuihorsl2tyjl3@skbuf>
- <7e29d955-2673-ea54-facb-3f96ce027e96@kernel-space.org>
- <20230123191844.ltcm7ez5yxhismos@skbuf>
- <Y87pLbMC4GRng6fa@lunn.ch>
- <7dd335e4-55ec-9276-37c2-0ecebba986b9@kernel-space.org>
+        Tue, 24 Jan 2023 03:49:23 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id E30DB942AEF; Tue, 24 Jan 2023 12:49:22 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Stanislav Fomichev <sdf@google.com>
+Cc:     Martin KaFai Lau <martin.lau@linux.dev>, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [xdp-hints] Re: [PATCH bpf-next v8 00/17] xdp: hints via kfuncs
+In-Reply-To: <5b757a2a-86a7-346c-4493-9ab903de19e4@intel.com>
+References: <20230119221536.3349901-1-sdf@google.com>
+ <901e1a7a-bb86-8d62-4bd7-512a1257d3b0@linux.dev>
+ <CAKH8qBs=1NgpJBNwJg7dZQnSAAGpH4vJj0+=LNWuQamGFerfZw@mail.gmail.com>
+ <5b757a2a-86a7-346c-4493-9ab903de19e4@intel.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 24 Jan 2023 12:49:22 +0100
+Message-ID: <87lelsp2yl.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7dd335e4-55ec-9276-37c2-0ecebba986b9@kernel-space.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,34 +91,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 24, 2023 at 08:21:35AM +0100, Angelo Dureghello wrote:
-> What i need is something as
-> 
->         eth0 ->  vlan1 -> port5(rmii)  ->  port 0,1,2
->         eth1 ->  vlan2 -> port6(rgmii) ->  port 3,4
-> 
-> The custom board i have here is already designed in this way
-> (2 fixed-link mac-to-mac connecitons) and trying my best to have
-> the above layout working.
-> 
-> If you have any suggestion on how to proceed, really appreciated.
+Alexander Lobakin <alexandr.lobakin@intel.com> writes:
 
-The way this would have traditionally worked prior to having UAPI for
-fine-grained user port to CPU port assignment was to declare in the
-device tree that port6(rgmii) is a user port. This makes eth1 see
-DSA-untagged traffic. Then you put port6 in a bridge with the other
-ports, and isolate just ports 6, 3 and 4 in the VLAN that you desire,
-and eth1's packets will be forwarded just to ports 3 and 4. Control
-packts (STP, PTP) received over ports 3 and 4 are still trapped to the
-CPU port (port5).
+> From: Stanislav Fomichev <sdf@google.com>
+> Date: Mon, 23 Jan 2023 10:55:52 -0800
+>
+>> On Mon, Jan 23, 2023 at 10:53 AM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+>>>
+>>> On 1/19/23 2:15 PM, Stanislav Fomichev wrote:
+>>>> Please see the first patch in the series for the overall
+>>>> design and use-cases.
+>>>>
+>>>> See the following email from Toke for the per-packet metadata overhead:
+>>>> https://lore.kernel.org/bpf/20221206024554.3826186-1-sdf@google.com/T/#m49d48ea08d525ec88360c7d14c4d34fb0e45e798
+>>>>
+>>>> Recent changes:
+>>>> - Keep new functions in en/xdp.c, do 'extern mlx5_xdp_metadata_ops' (Tariq)
+>>>>
+>>>> - Remove mxbuf pointer and use xsk_buff_to_mxbuf (Tariq)
+>>>>
+>>>> - Clarify xdp_buff vs 'XDP frame' (Jesper)
+>>>>
+>>>> - Explicitly mention that AF_XDP RX descriptor lacks metadata size (Jesper)
+>>>>
+>>>> - Drop libbpf_flags/xdp_flags from selftests and use ifindex instead
+>>>>    of ifname (due to recent xsk.h refactoring)
+>>>
+>>> Applied with the minor changes in the selftests discussed in patch 11 and 17.
+>>> Thanks!
+>> 
+>> Awesome, thanks! I was gonna resend around Wed, but thank you for
+>> taking care of that!
+> Great stuff, congrats! :)
 
-For some use cases, on LS1028A we still need to declare one of the CPU
-ports as a user port. To achieve that, we take the existing upstream
-device tree (which declares both CPU ports as CPU ports) and remove the
-"ethernet" property from one of them, dynamically, from the U-Boot shell:
+Yeah! Thanks for carrying this forward, Stanislav! :)
 
-=> tftp $fdt_addr_r fsl-ls1028a-rdb.dtb
-=> fdt addr $fdt_addr_r
-=> fdt rm /soc/pcie@1f0000000/ethernet-switch@0,5/ports/port@4 ethernet
-=> tftp $kernel_addr_r uImage
-=> bootm $kernel_addr_r - $fdt_addr_r
+-Toke
+
