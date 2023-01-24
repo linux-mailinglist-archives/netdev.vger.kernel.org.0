@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 873A5678E2E
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 03:20:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A451678E2F
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 03:20:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232315AbjAXCUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 21:20:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46664 "EHLO
+        id S231733AbjAXCUn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 21:20:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232240AbjAXCUV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 21:20:21 -0500
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C9383A863
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 18:20:16 -0800 (PST)
-Received: by mail-qt1-x834.google.com with SMTP id d16so12033066qtw.8
-        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 18:20:16 -0800 (PST)
+        with ESMTP id S232299AbjAXCUW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 21:20:22 -0500
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72DD73A840
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 18:20:17 -0800 (PST)
+Received: by mail-qt1-x82c.google.com with SMTP id j9so12059680qtv.4
+        for <netdev@vger.kernel.org>; Mon, 23 Jan 2023 18:20:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HaCBPY9taiJwDw7qkQaAo7rOjDTTF2XX5hJIsC+YZm4=;
-        b=FAxTplsM/3PPgwSrxP3nOz9ZC849BUTbdkeJk1x+ZdXev2HtpAV7E+Oiot1mD/I2G9
-         SMsFuVlwLEaVDvHwuBoNFIjAwTqx8eV63GK46dFVm0ularUgvMB37UIde7gvGMvzvINp
-         KL+Lz71+9rz/7PLaE/Ib5o5jVIgVxPMo6TnIc8E+yRyO7dBd8IRId907QjI2c7cn9HWr
-         F5I4c+LKuV0mZB/zNPSB5WPgkazOLsoaWX53zChZYXZiU71qW8ccY+rF1YUcnkJWJij5
-         W/7GjfDsTLFgbcHr1Ls+bc7ibUyk0MZqhFVyJxhu8ULGZACUHXVVZIpCCZEnwrbSFRA3
-         TvmA==
+        bh=0hbUyBh1zPDHGKtsmgkDKwqAxLhgAY3/Mg+p631es5Y=;
+        b=oirVX+xXt35lRKgNz8f4BpNSuUHiYprTzNiCd3ioA+elXOn83BVT1l0yDdgGBYl1lM
+         u8oJ/w3FerC/BF4LmxPQD5M8L2e6dCHgmrxxIHJhtopzJHHqvu5BqvWrPS7ufaNoUMc8
+         DBKyqh/QcqoOxvwqdShvbgimv4iQB8VeBY8b/W47FT0GVsomXq/e/rGyY47TWQJCsDF6
+         1JNHiaWdayMJI4M9bshWNWjFX8VpXjJcerAShGBmZqyvXw1EC90ug9ufH39fSVLAzjXO
+         WfLjpv/SWZ1owY8LgnPpee6k+ZhILyqK2jcG5TUyj4RxQ2EjDsMHo/m9uDOf69MtLYpb
+         1SXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=HaCBPY9taiJwDw7qkQaAo7rOjDTTF2XX5hJIsC+YZm4=;
-        b=DOWsm5EewA9d4eSF+DuOI2R+SQXQQyarQyNvd2MEmZnXXrTK0KVUrEq5yfGQItQQhP
-         UnzCLZfgFEMMWJtgghW2mlrM2OgR5rmakqUJ9iKsk31yX1MZUggaxTXVVKdaZlE5NLIS
-         A20uF//SDEk2EpzCnuZGgh1xfurxCxXL6zSUY0iyhry4fZRY9p4E4ilGDDzCA+rOe2kt
-         M8AnKyWTXindManZWI10NBGLfokPdMPeJFTKpDTf7jWonXd1IIfuT66JU1OTsgc6dYz4
-         w+uk8EmvbeiSpoyDoudQcGGXL4G/mZJ6XZr4zRJgpyO+q7dPca0o1cfIb7BvvVGRffFY
-         JYhw==
-X-Gm-Message-State: AFqh2kpcT2wWaY9ZtEtf891sFEB/+EB7M2SQDqakOD/SbZiYpV5tnQBN
-        CVbBeCJw4+LZXs++yTPQwAXdY7Kjl+/fVQ==
-X-Google-Smtp-Source: AMrXdXs4rt2yXIFk00wZFebZOd6k8SUvA96YTdATTHeIK4jKnjjsG1cqZyorXD0a0v8GUX0r3DiNfg==
-X-Received: by 2002:ac8:734a:0:b0:3b6:471f:3e88 with SMTP id q10-20020ac8734a000000b003b6471f3e88mr34398019qtp.50.1674526815156;
-        Mon, 23 Jan 2023 18:20:15 -0800 (PST)
+        bh=0hbUyBh1zPDHGKtsmgkDKwqAxLhgAY3/Mg+p631es5Y=;
+        b=1Vyaejz67MzECN1HKGPOAX3uKfsameHKwhQXp1kYx0ehmXZ1zPpVt40TaJ6IqfUR6w
+         EZedndlHX4/B72e1PWLVzSaoq44RF5RCQtPcTTgfjvYP2I1nv1AZQX9XKNC+sKoWG77l
+         x3XLLX8mgnd0mTCpwG00xxxSfE2zUdLdSZao39dCrZlVgKyz3+RDjmWIW9TjXMWwmEbv
+         ZCstSk96xHDb3D8XjcE52j6lBsJFizic4ipWLoZIybRZCw87bjD8ynLIut1niPcn7Rdy
+         5bDjdjxRirWmDvP9PIuVOEA0o5+ArBYpvYuyBK2wkNCpRk6G64fqEINCC0XrzvtqRd3N
+         9OlA==
+X-Gm-Message-State: AFqh2koWwcHI9IEQbCaSrfIoQ7GhI+t0l4u6d6up6BRFvXocIfIaoJw2
+        DVnrpldY9r5Va4yw76cu2P+b4CzCkrnsSg==
+X-Google-Smtp-Source: AMrXdXshEq3AzK4iLW4rVQlaHpyYLud+17NbOyAtXlOK8JBfDz4p9QlQKc0Oe/E//n1WBvleUBQSBw==
+X-Received: by 2002:ac8:73c6:0:b0:3b6:6669:dd33 with SMTP id v6-20020ac873c6000000b003b66669dd33mr31879910qtp.41.1674526816357;
+        Mon, 23 Jan 2023 18:20:16 -0800 (PST)
 Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id f1-20020ac840c1000000b003a981f7315bsm410558qtm.44.2023.01.23.18.20.14
+        by smtp.gmail.com with ESMTPSA id f1-20020ac840c1000000b003a981f7315bsm410558qtm.44.2023.01.23.18.20.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Jan 2023 18:20:14 -0800 (PST)
+        Mon, 23 Jan 2023 18:20:16 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -70,9 +70,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         Mahesh Bandewar <maheshb@google.com>,
         Paul Moore <paul@paul-moore.com>,
         Guillaume Nault <gnault@redhat.com>
-Subject: [PATCHv2 net-next 07/10] ipvlan: use skb_ip_totlen in ipvlan_get_L3_hdr
-Date:   Mon, 23 Jan 2023 21:20:01 -0500
-Message-Id: <fab665f877b591c9c568d5b7ae84b6017dfe8115.1674526718.git.lucien.xin@gmail.com>
+Subject: [PATCHv2 net-next 08/10] packet: add TP_STATUS_GSO_TCP for tp_status
+Date:   Mon, 23 Jan 2023 21:20:02 -0500
+Message-Id: <995ffc0f6636aa0cd4e4ae4c076b02a3e56a30ee.1674526718.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1674526718.git.lucien.xin@gmail.com>
 References: <cover.1674526718.git.lucien.xin@gmail.com>
@@ -88,28 +88,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ipvlan devices calls netif_inherit_tso_max() to get the tso_max_size/segs
-from the lower device, so when lower device supports BIG TCP, the ipvlan
-devices support it too. We also should consider its iph tot_len accessing.
+Introduce TP_STATUS_GSO_TCP tp_status flag to tell the af_packet user
+that this is a TCP GSO packet. When parsing IPv4 BIG TCP packets in
+tcpdump/libpcap, it can use tp_len as the IPv4 packet len when this
+flag is set, as iph tot_len is set to 0 for IPv4 BIG TCP packets.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- drivers/net/ipvlan/ipvlan_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/uapi/linux/if_packet.h | 1 +
+ net/packet/af_packet.c         | 4 ++++
+ 2 files changed, 5 insertions(+)
 
-diff --git a/drivers/net/ipvlan/ipvlan_core.c b/drivers/net/ipvlan/ipvlan_core.c
-index bb1c298c1e78..460b3d4f2245 100644
---- a/drivers/net/ipvlan/ipvlan_core.c
-+++ b/drivers/net/ipvlan/ipvlan_core.c
-@@ -157,7 +157,7 @@ void *ipvlan_get_L3_hdr(struct ipvl_port *port, struct sk_buff *skb, int *type)
- 			return NULL;
+diff --git a/include/uapi/linux/if_packet.h b/include/uapi/linux/if_packet.h
+index a8516b3594a4..78c981d6a9d4 100644
+--- a/include/uapi/linux/if_packet.h
++++ b/include/uapi/linux/if_packet.h
+@@ -115,6 +115,7 @@ struct tpacket_auxdata {
+ #define TP_STATUS_BLK_TMO		(1 << 5)
+ #define TP_STATUS_VLAN_TPID_VALID	(1 << 6) /* auxdata has valid tp_vlan_tpid */
+ #define TP_STATUS_CSUM_VALID		(1 << 7)
++#define TP_STATUS_GSO_TCP		(1 << 8)
  
- 		ip4h = ip_hdr(skb);
--		pktlen = ntohs(ip4h->tot_len);
-+		pktlen = skb_ip_totlen(skb);
- 		if (ip4h->ihl < 5 || ip4h->version != 4)
- 			return NULL;
- 		if (skb->len < pktlen || pktlen < (ip4h->ihl * 4))
+ /* Tx ring - header status */
+ #define TP_STATUS_AVAILABLE	      0
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index b5ab98ca2511..8ffb19c643ab 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -2296,6 +2296,8 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	else if (skb->pkt_type != PACKET_OUTGOING &&
+ 		 skb_csum_unnecessary(skb))
+ 		status |= TP_STATUS_CSUM_VALID;
++	if (skb_is_gso(skb) && skb_is_gso_tcp(skb))
++		status |= TP_STATUS_GSO_TCP;
+ 
+ 	if (snaplen > res)
+ 		snaplen = res;
+@@ -3522,6 +3524,8 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 		else if (skb->pkt_type != PACKET_OUTGOING &&
+ 			 skb_csum_unnecessary(skb))
+ 			aux.tp_status |= TP_STATUS_CSUM_VALID;
++		if (skb_is_gso(skb) && skb_is_gso_tcp(skb))
++			aux.tp_status |= TP_STATUS_GSO_TCP;
+ 
+ 		aux.tp_len = origlen;
+ 		aux.tp_snaplen = skb->len;
 -- 
 2.31.1
 
