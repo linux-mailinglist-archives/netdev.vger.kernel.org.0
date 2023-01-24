@@ -2,117 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97DDD678D59
-	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 02:24:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71527678DA6
+	for <lists+netdev@lfdr.de>; Tue, 24 Jan 2023 02:44:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232174AbjAXBYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Jan 2023 20:24:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51272 "EHLO
+        id S231510AbjAXBoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Jan 2023 20:44:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232166AbjAXBYH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 20:24:07 -0500
-Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76613757B;
-        Mon, 23 Jan 2023 17:23:31 -0800 (PST)
-Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-15f97c478a8so16017091fac.13;
-        Mon, 23 Jan 2023 17:23:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=date:subject:message-id:references:in-reply-to:cc:to:from
-         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=GLVto5yh3pJz6zu6tYjZ+M6kKyH93aiMkaD5/MTlBWE=;
-        b=flznn8Vx665lOgJN6Q6Co3YtZZ0YZS6Bw2KgwlcAG3yF6vctEmde6gSl/u/Hwkkpfc
-         7jVXidLQSgXObawA0hjA6GwVKhQDFc8WiePuZBmjZ2BpeKvbl7MfTbTlA7eFmX6Z2GP6
-         Ot7HfgHWud1YmGWnCrcAR2wxkhPWSRIe2Dai/+vIxuyUqdDr07dVtZUxtkgP69no0log
-         qYAyDolHV3aoHI0+WQHaj30d1ioYl5J31+R2dKqmGoc/uofOpjx2L5EqPiWvAubWPoNV
-         zr//c/xarRc5o92DuCOP3ZhrWzoHvlodQrSSvXm9hru+5+dbIg3OBM1rt68TMJKfDtIU
-         4iDg==
-X-Gm-Message-State: AFqh2kq87X/p6+bP03MaNAER7856jM97W3umDx8v769NlN611tRJlF8+
-        YOwwTtFGyGbBUkcP4SslCQ+0DTV1RA==
-X-Google-Smtp-Source: AMrXdXtytUFc/3CGNMl4vK4INEEhyGrE/0xGZ7ONnXHIP1hzrgKo4K1R2LtegXWqsO91zJ+MQU6vBA==
-X-Received: by 2002:a05:6870:9b09:b0:15f:456:6b98 with SMTP id hq9-20020a0568709b0900b0015f04566b98mr13453079oab.7.1674523364347;
-        Mon, 23 Jan 2023 17:22:44 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id eb44-20020a056870a8ac00b0014fb4bdc746sm210523oab.8.2023.01.23.17.22.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Jan 2023 17:22:43 -0800 (PST)
-Received: (nullmailer pid 3121716 invoked by uid 1000);
-        Tue, 24 Jan 2023 01:22:42 -0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-MIME-Version: 1.0
-From:   Rob Herring <robh@kernel.org>
-To:     Francesco Dolcini <francesco@dolcini.it>
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
-        Stefan Eichenberger <stefan.eichenberger@toradex.com>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229589AbjAXBoW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Jan 2023 20:44:22 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69796392B1;
+        Mon, 23 Jan 2023 17:44:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=tVzKOa9T2IRU8P2Mj1uxknCEpQe8KQ0SnikmQEFNOjA=; b=f7qRojPtxwepLEjSQniONpkH8e
+        UIH3SYylITIKBFR096XyeEqB+teycnoBeS6/0bu+AAxId1iYdXH61B0NqCom4nzzcLUWvBApd58hb
+        s370/NwfWt0Nyup/BqJ533rwo+BI3YRulFVFy9G4sLBlPHdQj8sLHM/shgWDXLUjzl6g=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pK8Lx-002y4d-16; Tue, 24 Jan 2023 02:44:01 +0100
+Date:   Tue, 24 Jan 2023 02:44:01 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Francesco Dolcini <francesco.dolcini@toradex.com>,
-        devicetree@vger.kernel.org, Marcel Holtmann <marcel@holtmann.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-In-Reply-To: <20230118122817.42466-3-francesco@dolcini.it>
-References: <20230118122817.42466-1-francesco@dolcini.it>
- <20230118122817.42466-3-francesco@dolcini.it>
-Message-Id: <167452324070.3116911.2276760222144588940.robh@kernel.org>
-Subject: Re: [PATCH v1 2/4] dt-bindings: bluetooth: marvell: add max-speed property
-Date:   Mon, 23 Jan 2023 19:22:42 -0600
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Xu Liang <lxu@maxlinear.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 0/5] net: phy: C45-over-C22 access
+Message-ID: <Y8834YKbZAoLyMQJ@lunn.ch>
+References: <20230120224011.796097-1-michael@walle.cc>
+ <Y87L5r8uzINALLw4@lunn.ch>
+ <Y87WR/T395hKmgKm@shell.armlinux.org.uk>
+ <Y87og1SIe1OsoLfU@lunn.ch>
+ <05e044a5f308ad81919d28a5b2dfdd42@walle.cc>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <05e044a5f308ad81919d28a5b2dfdd42@walle.cc>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Wed, 18 Jan 2023 13:28:15 +0100, Francesco Dolcini wrote:
-> From: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+On Tue, Jan 24, 2023 at 01:35:48AM +0100, Michael Walle wrote:
+> >       - const: ethernet-phy-ieee802.3-c45
+> >         description: PHYs that implement IEEE802.3 clause 45
+> > 
+> > But it is not clear what that actually means. Does it mean it has c45
+> > registers, or does it mean it supports C45 bus transactions?
 > 
-> The 88W8997 bluetooth module supports setting the max-speed property.
+> PHYs which support C45 access but don't have C45 registers aren't
+> a thing I presume - or doesn't make any sense, right?
 > 
-> Signed-off-by: Stefan Eichenberger <stefan.eichenberger@toradex.com>
-> Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
-> ---
->  .../bindings/net/marvell-bluetooth.yaml          | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
+> PHYs which have C45 registers but don't support C45 access exists.
+> e.g. the EEE registers of C22 PHYs. But they are C22 PHYs.
+
+I wonder if there are any C22 PHYs which only allow access to EEE via
+C45 transactions. That would be pretty broken...
+
+To some extent, i'm still looking at everything and trying to decide
+if the current definitions/documentation make it clear if means C45
+transfers or registers. And the documentation in DT is ambiguous, but
+as you point out, it probably means registers, not transactions.
+
+> So I'd say if you have compatible = "ethernet-phy-ieee802.3-c45",
+> it is a PHY with C45 registers _and_ which are accessible by
+> C45 transactions. But they might or might not support C22 access.
+> But I think thats pretty irrelevant because you always do C45 if
+> you can. You cannot do C45 if:
+>  (1) the mdio bus doesn't support C45
+>  (2) you have a broken C22 phy on the mdio bus
 > 
+> In both cases, if the PHY doesn't support C22-over-C45 you are
+> screwed. Therefore, if you have either (1) or (2) we should always
+> fall back to C22-over-C45.
+> 
+> > If we have that compatible, we could probe first using C45 and if that
+> > fails, or is not supported by the bus master, probe using C45 over
+> > C22. That seems safe. For Michael use case, the results of
+> > mdiobus_prevent_c45_scan(bus) needs keeping as a property of bus, so
+> > we know not to perform the C45 scan, and go direct to C45 over C22.
+> 
+> So you are talking about DT, in which case there is no auto probing.
+> See phy_mask in the dt code. Only PHYs in the device tree are probed.
+> (unless of course there is no reg property.. then there is some
+> obscure auto scanning). So if you want a C45 PHY you'd have to
+> have that compatible in any case.
+> 
+> Btw. I still don't know how you can get a C45 PHY instance without
+> a device tree, except if there is a C45 only bus or the PHY doesn't
+> respond on C22 ids. Maybe I'm missing something here..
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+In the DT case, you are probably correct. But there are a number of
+MDIO busses which don't come from DT. Those are typically PCIe or USB
+devices. Those do get scanned, and my recent changes should mean they
+first get scanned using C22 and then C45. DSA switches also typically
+don't have a MDIO node in DT, it is assumed there is a 1:1 mapping
+between port number and address on the MDIO bus. But as you said, it
+would require that they don't respond to C22, or the bus master does
+not support C22, which does actually exist from Marvell at least.
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/net/marvell-bluetooth.yaml:29:8: [error] empty value in block mapping (empty-values)
+In the none DT case, we probably cannot easily do anything about
+C22-over-C45, because as Russell pointed out, it is potentially a
+destructive process doing a scan. We want some indication we do expect
+a PHY to be there. And "ethernet-phy-ieee802.3-c45" would do that.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/marvell-bluetooth.yaml: allOf:0:if: None is not of type 'object', 'boolean'
-	from schema $id: http://json-schema.org/draft-07/schema#
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/marvell-bluetooth.yaml: ignoring, error in schema: allOf: 0: if
-Documentation/devicetree/bindings/net/marvell-bluetooth.example.dtb: /example-0/serial/bluetooth: failed to match any schema with compatible: ['mrvl,88w8897']
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230118122817.42466-3-francesco@dolcini.it
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
-
+	Andrew
