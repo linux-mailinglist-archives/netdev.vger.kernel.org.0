@@ -2,139 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 521EC67A974
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 05:00:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B34C67A97A
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 05:04:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233488AbjAYEAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 23:00:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59066 "EHLO
+        id S234343AbjAYEEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 23:04:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbjAYEAs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 23:00:48 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B4973B3DD;
-        Tue, 24 Jan 2023 20:00:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674619246; x=1706155246;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bFcfCoc34iYDSEWU4hpN/Ow3DangmLoJDiVkUyyHicA=;
-  b=LpMFYIsX/ubwORLihUuo8Ta0jJ72JUoqSzl7nnd/dp8VpflfAMFQtKlK
-   RktUw8apEKYvxlL10TJzJ/CszmiiZSkHAsPHYA8UmGSMTglIRYpZGWdqB
-   S4mKjbkDmlKsYcfIS6bqyUHWBwW2rxSVGdBDU144DsNNlCdMUEwF3aMhq
-   Y6pZkkjzmjZnwJK9E19yblJQr31pNouOp3Pb1WrozqSgdWT4fPlX9huyJ
-   9QabIc+hOpLR8VC2lQQUheBx1u7oz3ZZ6rqn5no/LH3jDNAwhhsUM5UNq
-   7EyUGwdLjV3LcutUdGrO0I5k7IMdhsahuI6OHSI1rCVnPNk9kEn7+yIEE
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10600"; a="324174286"
-X-IronPort-AV: E=Sophos;i="5.97,244,1669104000"; 
-   d="scan'208";a="324174286"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2023 20:00:45 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10600"; a="692817992"
-X-IronPort-AV: E=Sophos;i="5.97,244,1669104000"; 
-   d="scan'208";a="692817992"
-Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 24 Jan 2023 20:00:37 -0800
-Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pKWxg-00071S-1q;
-        Wed, 25 Jan 2023 04:00:36 +0000
-Date:   Wed, 25 Jan 2023 12:00:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org
-Cc:     oe-kbuild-all@lists.linux.dev, netdev@vger.kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, toke@redhat.com,
-        memxor@gmail.com, alardam@gmail.com, saeedm@nvidia.com,
-        anthony.l.nguyen@intel.com, gospo@broadcom.com,
-        vladimir.oltean@nxp.com, nbd@nbd.name, john@phrozen.org,
-        leon@kernel.org, simon.horman@corigine.com, aelior@marvell.com,
-        christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
-        mst@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
-        maciej.fijalkowski@intel.com, intel-wired-lan@lists.osuosl.org,
-        lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH v2 bpf-next 2/8] drivers: net: turn on XDP features
-Message-ID: <202301251150.xzkLwNpI-lkp@intel.com>
-References: <c1171111f8af76da11331277b1e4a930c10f3c30.1674606197.git.lorenzo@kernel.org>
+        with ESMTP id S229931AbjAYEET (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 23:04:19 -0500
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18204AA40
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 20:04:15 -0800 (PST)
+Received: by mail-pg1-x52f.google.com with SMTP id 78so12620471pgb.8
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 20:04:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=FcnTDJJRJLnAcGyKzJWIX9FAeZvmDKRyTv30CMpkzNs=;
+        b=2gZUOLi0wG7EyjRboogZXUO4Z5cmo/jeAmy5AHLRCr9NPQdHpGmiAa+mNB9AlTiJca
+         CpSUZbtc7wLtTZEtnPdRm8qudP2WO3cQjYn96V8NIUKqccQkSfskAkA/jt1zoO9xz76N
+         Pn0Ftt+wNXAcrWdADqpe4nryv7Gm8LjmwUA2IarmfDE4BDWpCkkW2+mhBE+qTZuU9P0V
+         UEDpCIO1vUw1cYFj9hVxvDezVWsoRZcLBKE8vmCbIwuXLIwWCGWq4sWDne8cMbE4QPNy
+         j1fNarf77ZneysgMFJUcBCodfSpsDSF71kHVNM8FlO2A/CzpvrSY5Y8/9JElrJVXunWw
+         Leeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=FcnTDJJRJLnAcGyKzJWIX9FAeZvmDKRyTv30CMpkzNs=;
+        b=W4abC5+3ZtTEy1fDiUHfr8Zm7eooFdZdsyClt9eUvE+Ozncn3WJNxnoHOX5IJfVRXw
+         bGipnmfdVCtka11VJ4tAjRSyLRJozogwXOw5sPhuPYNnVVE5W4YuxHcRQlu2KcCJSrx3
+         TXP6C9hy3dBLdgz1F1BKGDr71HysZwmsuot5q5D97GlBW6O1rbOxopCj1bEK++f3/O+U
+         Ydb5WwHBLNB/ZE5hyfQUAYj0M3DUIxklnKiLEVQPM9nHKnm7p90bM71qquPYGt0VWWIh
+         qI6aW6tYXEU6Y8bkoVKUnhbGsCR8Jxnda9tHi4onAUVbn/4iCzYZB2lyH/sQ7kKmz5ZP
+         ahXw==
+X-Gm-Message-State: AFqh2kr65L53eQAhhySVp/H86nboKiAbdYvCpHzsmA03yKMCZVJUePU8
+        /xet6ia/7fsDHpRqPWlRIgM/bQ==
+X-Google-Smtp-Source: AMrXdXvU5nZQfE1g8DWAa2Tx9zY1CmMmhisFdT5KhcqS39aPUzqw5a/pDdy04dsVryLa1u2dp63pbQ==
+X-Received: by 2002:a62:ea0e:0:b0:577:d10d:6eab with SMTP id t14-20020a62ea0e000000b00577d10d6eabmr31519118pfh.21.1674619455213;
+        Tue, 24 Jan 2023 20:04:15 -0800 (PST)
+Received: from ?IPV6:2400:4050:a840:1e00:4457:c267:5e09:481b? ([2400:4050:a840:1e00:4457:c267:5e09:481b])
+        by smtp.gmail.com with ESMTPSA id 17-20020aa79211000000b00575b6d7c458sm2397550pfo.21.2023.01.24.20.04.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 24 Jan 2023 20:04:14 -0800 (PST)
+Message-ID: <f81f8974-3c1b-4e34-ce51-5e0e7472079b@daynix.com>
+Date:   Wed, 25 Jan 2023 13:04:10 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c1171111f8af76da11331277b1e4a930c10f3c30.1674606197.git.lorenzo@kernel.org>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [Intel-wired-lan] [PATCH RESEND] igbvf: Fix rx_buffer_len
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        Yan Vugenfirer <yvugenfi@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Yuri Benditovich <yuri.benditovich@daynix.com>,
+        Eric Dumazet <edumazet@google.com>,
+        intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20230124043915.12952-1-akihiko.odaki@daynix.com>
+ <a23d0eb5-123f-a2ad-5585-59147bb9b172@molgen.mpg.de>
+Content-Language: en-US
+From:   Akihiko Odaki <akihiko.odaki@daynix.com>
+In-Reply-To: <a23d0eb5-123f-a2ad-5585-59147bb9b172@molgen.mpg.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Lorenzo,
+On 2023/01/24 19:49, Paul Menzel wrote:
+> Dear Akihiko,
+> 
+> 
+> Thank you for your patch.
+> 
+> Am 24.01.23 um 05:39 schrieb Akihiko Odaki:
+> 
+> Maybe improve the commit message summary to be more specific:
+> 
+> igbvf: Align rx_buffer_len to fix memory corrption
+> 
+>> When rx_buffer_len is not aligned by 1024, igbvf sets the aligned size
+>> to SRRCTL while the buffer is allocated with the unaligned size. This
+>> allows the device to write more data than rx_buffer_len, resulting in
+>> memory corruption. Align rx_buffer_len itself so that the buffer will
+>> be allocated with the aligned size.
+>>
+>> The condition to split RX packet header, which uses rx_buffer_len, is
+>> also modified so that it doesn't change the behavior for the same
+>> actual (unaligned) packet size. Actually the new condition is not
+>> identical with the old one as it will no longer request splitting when
+>> the actual packet size is exactly 2048, but that should be negligible.
+> 
+> Is there an easy way to reproduce it?
+> 
+> 
+> Kind regards,
+> 
+> Paul
+> 
+> 
 
-Thank you for the patch! Yet something to improve:
+I withdraw this patch. While igbvf sets a value greater than the actual 
+buffer size to SRRCTL.BSIZEPKT, such a long packet should be dropped 
+according to VMOLR.RLPML.
 
-[auto build test ERROR on bpf-next/master]
+Regards,
+Akihiko Odaki
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Lorenzo-Bianconi/netdev-genl-create-a-simple-family-for-netdev-stuff/20230125-083645
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-patch link:    https://lore.kernel.org/r/c1171111f8af76da11331277b1e4a930c10f3c30.1674606197.git.lorenzo%40kernel.org
-patch subject: [PATCH v2 bpf-next 2/8] drivers: net: turn on XDP features
-config: arc-defconfig (https://download.01.org/0day-ci/archive/20230125/202301251150.xzkLwNpI-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/7dab4c7d96218eccccedd50e72c84e0ef4de0f4a
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Lorenzo-Bianconi/netdev-genl-create-a-simple-family-for-netdev-stuff/20230125-083645
-        git checkout 7dab4c7d96218eccccedd50e72c84e0ef4de0f4a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arc olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> net/core/xdp.c:777:6: error: redefinition of 'xdp_features_set_redirect_target'
-     777 | void xdp_features_set_redirect_target(struct net_device *dev, bool support_sg)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from include/linux/netdevice.h:43,
-                    from include/linux/if_vlan.h:10,
-                    from include/linux/filter.h:20,
-                    from net/core/xdp.c:8:
-   include/net/xdp.h:418:1: note: previous definition of 'xdp_features_set_redirect_target' with type 'void(struct net_device *, bool)' {aka 'void(struct net_device *, _Bool)'}
-     418 | xdp_features_set_redirect_target(struct net_device *dev, bool support_sg)
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> net/core/xdp.c:787:6: error: redefinition of 'xdp_features_clear_redirect_target'
-     787 | void xdp_features_clear_redirect_target(struct net_device *dev)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/net/xdp.h:423:1: note: previous definition of 'xdp_features_clear_redirect_target' with type 'void(struct net_device *)'
-     423 | xdp_features_clear_redirect_target(struct net_device *dev)
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/xdp_features_set_redirect_target +777 net/core/xdp.c
-
-   776	
- > 777	void xdp_features_set_redirect_target(struct net_device *dev, bool support_sg)
-   778	{
-   779		dev->xdp_features |= NETDEV_XDP_ACT_NDO_XMIT;
-   780		if (support_sg)
-   781			dev->xdp_features |= NETDEV_XDP_ACT_NDO_XMIT_SG;
-   782	
-   783		call_netdevice_notifiers(NETDEV_XDP_FEAT_CHANGE, dev);
-   784	}
-   785	EXPORT_SYMBOL_GPL(xdp_features_set_redirect_target);
-   786	
- > 787	void xdp_features_clear_redirect_target(struct net_device *dev)
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+>> Fixes: d4e0fe01a38a ("igbvf: add new driver to support 82576 virtual 
+>> functions")
+>> Signed-off-by: Akihiko Odaki <akihiko.odaki@daynix.com>
+>> ---
+>>   drivers/net/ethernet/intel/igbvf/netdev.c | 9 +++++----
+>>   1 file changed, 5 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/intel/igbvf/netdev.c 
+>> b/drivers/net/ethernet/intel/igbvf/netdev.c
+>> index 3a32809510fc..b6bca78198fa 100644
+>> --- a/drivers/net/ethernet/intel/igbvf/netdev.c
+>> +++ b/drivers/net/ethernet/intel/igbvf/netdev.c
+>> @@ -1341,10 +1341,9 @@ static void igbvf_setup_srrctl(struct 
+>> igbvf_adapter *adapter)
+>>       srrctl |= E1000_SRRCTL_DROP_EN;
+>>       /* Setup buffer sizes */
+>> -    srrctl |= ALIGN(adapter->rx_buffer_len, 1024) >>
+>> -          E1000_SRRCTL_BSIZEPKT_SHIFT;
+>> +    srrctl |= adapter->rx_buffer_len >> E1000_SRRCTL_BSIZEPKT_SHIFT;
+>> -    if (adapter->rx_buffer_len < 2048) {
+>> +    if (adapter->rx_buffer_len <= 2048) {
+>>           adapter->rx_ps_hdr_size = 0;
+>>           srrctl |= E1000_SRRCTL_DESCTYPE_ADV_ONEBUF;
+>>       } else {
+>> @@ -1625,7 +1624,7 @@ static int igbvf_sw_init(struct igbvf_adapter 
+>> *adapter)
+>>       struct net_device *netdev = adapter->netdev;
+>>       s32 rc;
+>> -    adapter->rx_buffer_len = ETH_FRAME_LEN + VLAN_HLEN + ETH_FCS_LEN;
+>> +    adapter->rx_buffer_len = ALIGN(ETH_FRAME_LEN + VLAN_HLEN + 
+>> ETH_FCS_LEN, 1024);
+>>       adapter->rx_ps_hdr_size = 0;
+>>       adapter->max_frame_size = netdev->mtu + ETH_HLEN + ETH_FCS_LEN;
+>>       adapter->min_frame_size = ETH_ZLEN + ETH_FCS_LEN;
+>> @@ -2429,6 +2428,8 @@ static int igbvf_change_mtu(struct net_device 
+>> *netdev, int new_mtu)
+>>           adapter->rx_buffer_len = ETH_FRAME_LEN + VLAN_HLEN +
+>>                        ETH_FCS_LEN;
+>> +    adapter->rx_buffer_len = ALIGN(adapter->rx_buffer_len, 1024);
+>> +
+>>       netdev_dbg(netdev, "changing MTU from %d to %d\n",
+>>              netdev->mtu, new_mtu);
+>>       netdev->mtu = new_mtu;
