@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 905A667A917
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 04:08:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 304E867A91D
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 04:10:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233302AbjAYDIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 22:08:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
+        id S232680AbjAYDKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 22:10:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbjAYDIo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 22:08:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68EC11A4A1;
-        Tue, 24 Jan 2023 19:08:43 -0800 (PST)
+        with ESMTP id S229754AbjAYDKX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 22:10:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BCBB2367A;
+        Tue, 24 Jan 2023 19:10:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D994B81892;
-        Wed, 25 Jan 2023 03:08:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A8F1C433EF;
-        Wed, 25 Jan 2023 03:08:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35775B81892;
+        Wed, 25 Jan 2023 03:10:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C9102C4339B;
+        Wed, 25 Jan 2023 03:10:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674616120;
-        bh=5oiMg+0VyQdvhQHhZVkaJkLHhTmGPlkFp71iVLKtxVc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZmJlHo6fbLCrgF1shrY34EQXgOctdb6su62XuEtOlDnSLQ8RqC4xQpvaynf4mHT72
-         AOXwa/JQ9CZPHTvuPZY+7OqbTTne9tseZBdI7k4zrcA7r0wUWeMSzAY7KqDGT+BUqH
-         2lEC4tdZh80XulhsultdF9gcd0EPADOy8h4glmn7tXcLM1ahfY8DwTNMfzgWuGWJsl
-         6A9dvShd7H0s+7vkukzQqk6CQ9r8ma5H02rr0/ypAZME1dRVvuw1ASBf6GllvRzy6t
-         o9Q7JQQPtXFJZIR2BUhGRJa7QKk0JCtkNSweoVEC/DvpSS4PLdFrQKvq5FFuWc9YkV
-         QOSQHxJpW7gwg==
-Date:   Tue, 24 Jan 2023 19:08:39 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: ls1046ardb: Use in-band-status for SFP module
-Message-ID: <20230124190839.5b59e7aa@kernel.org>
-In-Reply-To: <20230124174757.2956299-1-sean.anderson@seco.com>
-References: <20230124174757.2956299-1-sean.anderson@seco.com>
+        s=k20201202; t=1674616216;
+        bh=24Jiq9WinHM7H/7vVdn0/MneZbxBoh7NZy+b5NRXnWs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=FcFAQe/sUZbNpfNe/u6CSewY6Q5YzX1+PIEyAcPNAi62+/oiXyjgf078gBQuEvGlv
+         4VkZR2hXIEvUPe3jyuNZgh2KqPBPSrM4mCY7WfPEtgPOW2wOFkGzP+SObwaKcuwllN
+         iOkCAEZ+fhD3NoCagWRVYPJdQPBCXJMQbRVlfYomUKSMhP1FJleqsF3XuqOrUI8pmz
+         KxcsQ8uTMaqmEhqVlanNTQvBfjzin9L0WM3IQ/I93HtjKcvI+0xEL0wtq0FYi33Get
+         CsxmXKrWKL8k2c68i4oiOE7kuzm+6C1pzgy0U/TWBWsWDTLE/SaS7FETtMOUtyemQy
+         AV8wJWAnPbnUw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AEBA1E21EE1;
+        Wed, 25 Jan 2023 03:10:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 1/4] netfilter: conntrack: fix vtag checks for
+ ABORT/SHUTDOWN_COMPLETE
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167461621671.15286.11489367104029709339.git-patchwork-notify@kernel.org>
+Date:   Wed, 25 Jan 2023 03:10:16 +0000
+References: <20230124183933.4752-2-pablo@netfilter.org>
+In-Reply-To: <20230124183933.4752-2-pablo@netfilter.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,9 +57,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 24 Jan 2023 12:47:57 -0500 Sean Anderson wrote:
-> This should likely go through Shawn Guo's tree, although it could also
-> go through net-next. It will conflict with [1] which modifies the
-> adjoining lines and is likely to go through the phy tree.
+Hello:
 
-I'm dropping it from networking pw, FWIW.
+This series was applied to netdev/net.git (master)
+by Pablo Neira Ayuso <pablo@netfilter.org>:
+
+On Tue, 24 Jan 2023 19:39:30 +0100 you wrote:
+> From: Sriram Yagnaraman <sriram.yagnaraman@est.tech>
+> 
+> RFC 9260, Sec 8.5.1 states that for ABORT/SHUTDOWN_COMPLETE, the chunk
+> MUST be accepted if the vtag of the packet matches its own tag and the
+> T bit is not set OR if it is set to its peer's vtag and the T bit is set
+> in chunk flags. Otherwise the packet MUST be silently dropped.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/4] netfilter: conntrack: fix vtag checks for ABORT/SHUTDOWN_COMPLETE
+    https://git.kernel.org/netdev/net/c/a9993591fa94
+  - [net,2/4] netfilter: conntrack: fix bug in for_each_sctp_chunk
+    https://git.kernel.org/netdev/net/c/98ee00774525
+  - [net,3/4] Revert "netfilter: conntrack: add sctp DATA_SENT state"
+    https://git.kernel.org/netdev/net/c/13bd9b31a969
+  - [net,4/4] netfilter: conntrack: unify established states for SCTP paths
+    https://git.kernel.org/netdev/net/c/a44b7651489f
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
