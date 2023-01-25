@@ -2,96 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F89667BC49
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 21:10:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 601F067BC9C
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 21:33:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236330AbjAYUKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 15:10:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45324 "EHLO
+        id S235840AbjAYUdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 15:33:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236305AbjAYUKf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 15:10:35 -0500
-Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48B225D913;
-        Wed, 25 Jan 2023 12:10:06 -0800 (PST)
-Received: from [192.168.0.2] (ip5f5ae969.dynamic.kabel-deutschland.de [95.90.233.105])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S235400AbjAYUdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 15:33:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA1654219
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 12:33:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 8FA9561CC40F9;
-        Wed, 25 Jan 2023 21:09:40 +0100 (CET)
-Message-ID: <21a41a1c-4ae4-47c7-c608-b6dd82758b16@molgen.mpg.de>
-Date:   Wed, 25 Jan 2023 21:09:39 +0100
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2403D61610
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 20:33:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D883C4339B;
+        Wed, 25 Jan 2023 20:33:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674678827;
+        bh=4Pz9oqJnsXyX3bXmJJaE28NO6FQwa1m7Pnb9b59nUKU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qiJVzKBvfPqEsm9ASoVY+Fqiw6e1iVoA9W3NJHJNsYq9zcG8w0bzUp3KuY/QeLE+t
+         Tjek5re6aNbar+mGE5v8mrI04x+7+/uxyVNjQY9Qp2rLEp80d0BZxgebaPR1nWYt7R
+         fYnggZ2nyRrYuaYCOiMbYfKdBx+/KVkEgol1wUpefQoKuIZvhuEvOtRphZYnoZnfDN
+         rOjyh1g04hsFo1ygVrit+cKmdZX2ndkUl2erKbOdrrPf5upvChtNBXdVIm7bCD2iwk
+         IVnXrEWwEmPsbCgwuZbf/llVFy7cNPuIUcM9IK/SykFztr74mtUqjqxgMPcZZaOvlL
+         hToLx1tj5WmcQ==
+Date:   Wed, 25 Jan 2023 12:33:46 -0800
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Vadim Fedorenko <vadfed@meta.com>
+Cc:     Gal Pressman <gal@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Aya Levin <ayal@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net 1/2] mlx5: fix possible ptp queue fifo overflow
+Message-ID: <Y9GSKrk95A4/Xo68@x130>
+References: <20230122161602.1958577-1-vadfed@meta.com>
+ <20230122161602.1958577-2-vadfed@meta.com>
+ <c73fe66a-2d9a-d675-79bc-09d7f63caa53@meta.com>
+ <46b57864-5a1a-7707-442c-b53e14d3a6b8@nvidia.com>
+ <45d08ca1-e156-c482-777d-df2bc48dffed@meta.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [Intel-wired-lan] [PATCH] i40e: Add checking for null for
- nlmsg_find_attr()
-To:     Natalia Petrova <n.petrova@fintech.ru>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        lvc-project@linuxtesting.org, intel-wired-lan@lists.osuosl.org,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20230125141328.8479-1-n.petrova@fintech.ru>
-Content-Language: en-US
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20230125141328.8479-1-n.petrova@fintech.ru>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <45d08ca1-e156-c482-777d-df2bc48dffed@meta.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Natalia,
+On 25 Jan 14:42, Vadim Fedorenko wrote:
+>On 24/01/2023 14:39, Gal Pressman wrote:
+>> Anyway, I'd like to zoom out for a second, the whole fifo was designed
+>> under the assumption that completions are in-order (this is a guarantee
+>> for all SQs, not just ptp ones!), this fix seems more of a bandage that
+>> potentially hides a more severe issue.
+>>
+>>>
+>>> It really shows that CQE are coming OOO sometimes.
+>>
+>> Can we reproduce it somehow?
+>> Can you please try to update your firmware version? I'm quite confident
+>> that this issue is fixed already.
+>>
+
+Hi Vadim, 
+
+As Gal pointed out above,
+we shouldn't be seeing OOO on TX data path, otherwise, what's the point
+of the fifo ? Also you can't have a proper reseliency since it seems when
+this OOO happen the skb_cc, which is derived from the we_counter seems to
+fall out of range which makes me think it can be a completely random
+value, so we can't really be protected from all OOO scenarios.
+
+This is clearly a FW bug and we will get to the bottom of
+this internally, Can you please create a bug request ?
+
+For the SKB leak, I will take the 2nd patch as is and improve it as
+necessary if that's ok with you.
+
+Thanks,
+Saeed.
 
 
-Thank you for your patch.
-
-Am 25.01.23 um 15:13 schrieb Natalia Petrova:
-
-In the commit message summary, you could use:
-
-Check if nlmsg_find_attr() returns null
-
-> The result of nlmsg_find_attr() 'br_spec' is dereferenced in
-> nla_for_each_nested, but it can take null value in 'nla_find' finction,
-
-f*u*nction
-
-> which will result in an error.
-> 
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
-> 
-> Fixes: 51616018dd1b ("i40e: Add support for getlink, setlink ndo ops")
-> Signed-off-by: Natalia Petrova <n.petrova@fintech.ru>
-> ---
->   drivers/net/ethernet/intel/i40e/i40e_main.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-> index b36bf9c3e1e4..ed4be4ffeb09 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-> @@ -13101,6 +13101,8 @@ static int i40e_ndo_bridge_setlink(struct net_device *dev,
->   	}
->   
->   	br_spec = nlmsg_find_attr(nlh, sizeof(struct ifinfomsg), IFLA_AF_SPEC);
-> +	if (!br_spec)
-> +		return -ENOENT;
->   
->   	nla_for_each_nested(attr, br_spec, rem) {
->   		__u16 mode;
-
-
-Kind regards,
-
-Paul
