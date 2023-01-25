@@ -2,80 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C602667B0AD
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 12:09:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71D5B67B108
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 12:21:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235715AbjAYLJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 06:09:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35412 "EHLO
+        id S235255AbjAYLVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 06:21:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235065AbjAYLIo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 06:08:44 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F88E83E5
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 03:08:43 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id h5-20020a17090a9c0500b0022bb85eb35dso1646354pjp.3
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 03:08:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=theori.io; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=p1TZ9HgFaUKxGS7c+lLSxsI3P/cyPJN6ga8wsZCYuGY=;
-        b=RqurFXTSNH1gTEosFbblzxWowqr1IVNJgjVZWBR+k+2ptzeUtGV8DfzWd4Z/wd2Zjl
-         4dbmqWQciRUyE5DdwECInD4DtG52J1ip6ycrE4nKizPm3Z0jmjzOt6z984niv8kWskFb
-         qJxy7WDLQ43ZkAjzYpgWmFkEGaDSx/GShBcMk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=p1TZ9HgFaUKxGS7c+lLSxsI3P/cyPJN6ga8wsZCYuGY=;
-        b=Xk0jUUUcdyZoXMjYdwHK5hBcym95g3hoXAUpULQ0DsIqlBiPgS5aof8lj6yQdMvUL9
-         UDMGEVIHplo9eHlLQNCOZLqXsMd8kQ/RWwjF+fC/lKjzByqh0mdvy65CC+CE4her8/yw
-         MvqhaCFrycufdDExi34R4+ek0DFx7qgLhykR6Jpej15TjLmug3J2wRdhePomZH1bTB2l
-         ex7jN+T2bFssqyXEQK6QntJpoWiUpvokmgHRbMmTn3xgRwpgxoYq7VICSKBc3fPhYLNI
-         rTBlbunX4nFZquBdXU1DGlQTCKDlfiFURUNYxf4jU6cnfEHzzplWBxD5FDA/9ZDcPffA
-         MuFg==
-X-Gm-Message-State: AFqh2koC5iEJACRn2UX69oLbCb9ipL94g6k9LPwjcXOj/ezlXOUG+j44
-        F1Z8V0GLlkLX9cIWOvmHo/249A==
-X-Google-Smtp-Source: AMrXdXvmeDWUgmAe8r/0jNtSomPn1ELkUhmgwqGY9Sq8MnDE/IJKwtX93wF1nwDeAc4QEzIo0aCimg==
-X-Received: by 2002:a17:902:bd07:b0:194:9331:3d79 with SMTP id p7-20020a170902bd0700b0019493313d79mr32118890pls.32.1674644922650;
-        Wed, 25 Jan 2023 03:08:42 -0800 (PST)
-Received: from ubuntu ([39.115.108.115])
-        by smtp.gmail.com with ESMTPSA id jc11-20020a17090325cb00b00189c62eac37sm3384683plb.32.2023.01.25.03.08.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Jan 2023 03:08:42 -0800 (PST)
-Date:   Wed, 25 Jan 2023 03:08:37 -0800
-From:   Hyunwoo Kim <v4bel@theori.io>
-To:     patchwork-bot+netdevbpf@kernel.org
-Cc:     ms@dev.tdt.de, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, v4bel@theori.io,
-        imv4bel@gmail.com, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2] net/x25: Fix to not accept on connected socket
-Message-ID: <20230125110837.GA134263@ubuntu>
-References: <20230123194323.GA116515@ubuntu>
- <167464081679.8627.16186557969987796753.git-patchwork-notify@kernel.org>
+        with ESMTP id S235526AbjAYLVR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 06:21:17 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1DF154208
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 03:21:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674645660; x=1706181660;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=VN0QQh82k1BcojhCMMpLNoUwuv+wMO6dQc/9vOAZnWI=;
+  b=htQiqR1Ju3bs8i3aoJFTKI5gVKMxmpqskZpQtS/I0uZiMEzRFZSrYrwq
+   IyU/FBJ5zq5koZ9qccaWYx+vd8738BvEhtrs+sr/xp0y1pd99dUxm3j0t
+   l5N4irQFCoxP5IFX7kal1iKVBuP3Xn72c2tD6ph3IgUikykS4EARAkMxw
+   piXhCBkWNslS0EwkLE1VofisZmJTjNU3insIhyhiqHMszgjCH93BR9mpk
+   eyaYFUHXZkLFQsDyt/irhew5KisVvYOOcHOIuZP9iBaS8Ioyk1zcOSWgN
+   inr1GCrGWNdOyXHKA1llKDxphDNOBe5e2Q+eg+x7tfYu1RITm03imtXce
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10600"; a="391037108"
+X-IronPort-AV: E=Sophos;i="5.97,245,1669104000"; 
+   d="scan'208";a="391037108"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2023 03:20:59 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10600"; a="751160490"
+X-IronPort-AV: E=Sophos;i="5.97,245,1669104000"; 
+   d="scan'208";a="751160490"
+Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 25 Jan 2023 03:20:56 -0800
+Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pKdpo-0007GT-03;
+        Wed, 25 Jan 2023 11:20:56 +0000
+Date:   Wed, 25 Jan 2023 19:20:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     alejandro.lucero-palau@amd.com, netdev@vger.kernel.org,
+        linux-net-drivers@amd.com
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, habetsm.xilinx@gmail.com,
+        ecree.xilinx@gmail.com,
+        Alejandro Lucero <alejandro.lucero-palau@amd.com>
+Subject: Re: [PATCH v2 net-next 2/8] sfc: add devlink info support for ef100
+Message-ID: <202301251924.Vt4cZmeM-lkp@intel.com>
+References: <20230124223029.51306-3-alejandro.lucero-palau@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <167464081679.8627.16186557969987796753.git-patchwork-notify@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230124223029.51306-3-alejandro.lucero-palau@amd.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear,
+Hi,
 
-This patch's description is incorrect and should not be applied.
+Thank you for the patch! Yet something to improve:
 
-Newly submitted corrected v3 patch:
-https://lore.kernel.org/all/20230125110514.GA134174@ubuntu/
+[auto build test ERROR on net-next/master]
 
+url:    https://github.com/intel-lab-lkp/linux/commits/alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230125-063245
+patch link:    https://lore.kernel.org/r/20230124223029.51306-3-alejandro.lucero-palau%40amd.com
+patch subject: [PATCH v2 net-next 2/8] sfc: add devlink info support for ef100
+config: i386-randconfig-a016-20230123 (https://download.01.org/0day-ci/archive/20230125/202301251924.Vt4cZmeM-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/c6a73da54918310be8c54a4b2caf2ab4a3419594
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230125-063245
+        git checkout c6a73da54918310be8c54a4b2caf2ab4a3419594
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-Regards,
-Hyunwoo Kim
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+
+All error/warnings (new ones prefixed by >>, old ones prefixed by <<):
+
+>> ERROR: modpost: "efx_mcdi_nvram_metadata" [drivers/net/ethernet/sfc/sfc.ko] undefined!
+--
+>> drivers/net/ethernet/sfc/efx_devlink.c:350:20: warning: variable 'offset' set but not used [-Wunused-but-set-variable]
+size_t outlength, offset;
+^
+1 warning generated.
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
