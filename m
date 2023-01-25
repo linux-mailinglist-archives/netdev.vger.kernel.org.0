@@ -2,130 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C00A967A8C1
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 03:29:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4139267A8C4
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 03:30:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229918AbjAYC3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 21:29:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55514 "EHLO
+        id S233279AbjAYCa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 21:30:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbjAYC3N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 21:29:13 -0500
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DBAD45F49;
-        Tue, 24 Jan 2023 18:29:12 -0800 (PST)
+        with ESMTP id S230251AbjAYCa2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 21:30:28 -0500
+Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 441C645F5E;
+        Tue, 24 Jan 2023 18:30:26 -0800 (PST)
+Received: by mail-oo1-xc2f.google.com with SMTP id h3-20020a4ac443000000b004fb2954e7c3so2945356ooq.10;
+        Tue, 24 Jan 2023 18:30:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1674613752; x=1706149752;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=5yENitLhmnB5lcFwq2NGFvsRR9PFM2iW0iudgDkY0c0=;
-  b=XjZz2YlVE2fCSJWZyjgXJ6h68of+n7HFh/EutWhFG7aTq95DU1t34Zg4
-   aD9WNjSFImuWvIRe24RSsfMqehxv0Z4MtP1SL1fEajp6JAQm6wlPFkda5
-   vAHXTqs5y6rEu1JAh2fCOsm0ZZoCsaU/oe4/f+XhkgFGHrvy/srDdIumk
-   E=;
-X-IronPort-AV: E=Sophos;i="5.97,244,1669075200"; 
-   d="scan'208";a="1095923950"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-d2040ec1.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2023 02:29:07 +0000
-Received: from EX13MTAUWB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2c-m6i4x-d2040ec1.us-west-2.amazon.com (Postfix) with ESMTPS id EC1D541E3B;
-        Wed, 25 Jan 2023 02:29:06 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
- id 15.0.1497.45; Wed, 25 Jan 2023 02:29:06 +0000
-Received: from 88665a182662.ant.amazon.com.com (10.43.160.120) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.7;
- Wed, 25 Jan 2023 02:29:02 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <v4bel@theori.io>
-CC:     <kuniyu@amazon.com>, <davem@davemloft.net>, <edumazet@google.com>,
-        <imv4bel@gmail.com>, <kuba@kernel.org>,
-        <linux-hams@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <pabeni@redhat.com>, <ralf@linux-mips.org>
-Subject: Re: [PATCH v2] net/rose: Fix to not accept on connected socket
-Date:   Tue, 24 Jan 2023 18:28:54 -0800
-Message-ID: <20230125022854.69146-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230125020809.67989-1-kuniyu@amazon.com>
-References: <20230125020809.67989-1-kuniyu@amazon.com>
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=BJExUS8crGcUXgJHEJI5GEH9KPZmVFh2RbeUyVORSms=;
+        b=lRmnxkLWAlxS7hvgjplK/0QE15EFNbDkUm60gqtwUVaD8wVsWfwEeCllwKYJE2dAux
+         kGtiKbzuiVNpz02kJusnBg+cdrMm5j5h3GmOlJyQkAkHYL0565zp2Gc4TfRR9ZGZssQD
+         TVEExdwlI9lz+IByNMKbg1gzWLBpPxyn0dsaab5o6AmhKs7sq8SSS4s4fkTacZvUdQ2F
+         kyB6fdOFN2L7eAJdsPlStIYOygRse1Jk9KQkRmOxVm0sFAQAcRiiEQQe9G6mkYHcpqIp
+         KCb9TC7fC8UH42/Ls1sPw4FwRYFlvNu1e1W1FtIIewg54U01oeIE3D9EIeD5O51tPPYA
+         P5sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=BJExUS8crGcUXgJHEJI5GEH9KPZmVFh2RbeUyVORSms=;
+        b=0w6rH5ebtoDWOrLfwPfDTWJ9j72c018w8ocslX4nXps5TDbKgEZ4wKDOndSEOoOr6f
+         shVlmk9heSw5fu3lIIFBoifLEA7OyCFldzxvSMFNWusutjqF+1wjGHpnSHe9EH9SECiU
+         Lew5e/kOHETWBAJDIWX0mfmHicrZue6eirnxoV4hOyWKeu1c8MiGF9IJkq7ZIr70WYLj
+         JR+zlJldeGe+WiiC1Vf6P/L2Or6A40elpfKje+yfeYz4FStMsnolwzQhgzGnMvF6sQVv
+         hrr2+D9hV/FcDJboZZEMiZnNacikr3UiZe9N7W6uO2SX3jTM5TskpTbUlMcsulVxbw2B
+         TW4w==
+X-Gm-Message-State: AFqh2kqV5k3rWSM2cwtBQLrelLmNOyeAwZSva4ih4JWjFcWDV6Rt+OiY
+        ehSHltLcd5D4o21kOjlYMsc=
+X-Google-Smtp-Source: AMrXdXsFn7mPjCUei34jCi8frpRDkqA/+WC7BJpfI/zoTKOciI8aFZUPFst0ie/vBzfIaYnlm8STHw==
+X-Received: by 2002:a4a:e4c6:0:b0:4f2:b25b:574 with SMTP id w6-20020a4ae4c6000000b004f2b25b0574mr11814087oov.2.1674613825382;
+        Tue, 24 Jan 2023 18:30:25 -0800 (PST)
+Received: from t14s.localdomain ([2001:1284:f013:d30f:6272:a08b:2b30:ac0e])
+        by smtp.gmail.com with ESMTPSA id b43-20020a4a98ee000000b0051134f333d3sm461983ooj.16.2023.01.24.18.30.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Jan 2023 18:30:24 -0800 (PST)
+Received: by t14s.localdomain (Postfix, from userid 1000)
+        id 571854AF03F; Tue, 24 Jan 2023 23:30:22 -0300 (-03)
+Date:   Tue, 24 Jan 2023 23:30:22 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
+        Xin Long <lucien.xin@gmail.com>,
+        Pietro Borrello <borrello@diag.uniroma1.it>
+Subject: Re: [PATCH net] sctp: fail if no bound addresses can be used for a
+ given scope
+Message-ID: <Y9CUPsuuYgdr/g+s@t14s.localdomain>
+References: <9fcd182f1099f86c6661f3717f63712ddd1c676c.1674496737.git.marcelo.leitner@gmail.com>
+ <20230124181416.6218adb7@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.120]
-X-ClientProxiedBy: EX13D38UWC002.ant.amazon.com (10.43.162.46) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230124181416.6218adb7@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-Date:   Tue, 24 Jan 2023 18:08:09 -0800
-> From:   Hyunwoo Kim <v4bel@theori.io>
-> Date:   Mon, 23 Jan 2023 11:40:20 -0800
-> > If listen() and accept() are called on a rose socket
-> > that connect() is successful, accept() succeeds immediately.
-> > This is because rose_connect() queues the skb to
-> > sk->sk_receive_queue, and rose_accept() dequeues it.
-
-Same comment for the netrom patch here.
-https://lore.kernel.org/netdev/20230125014347.65971-1-kuniyu@amazon.com/
-
-The skb which the problematic accept() dequeues is created by
-sendmsg(), not connect(), right ?
-
-
+On Tue, Jan 24, 2023 at 06:14:16PM -0800, Jakub Kicinski wrote:
+> On Mon, 23 Jan 2023 14:59:33 -0300 Marcelo Ricardo Leitner wrote:
+> > Currently, if you bind the socket to something like:
+> >         servaddr.sin6_family = AF_INET6;
+> >         servaddr.sin6_port = htons(0);
+> >         servaddr.sin6_scope_id = 0;
+> >         inet_pton(AF_INET6, "::1", &servaddr.sin6_addr);
 > > 
-> > This creates a child socket with the sk of the parent
-> > rose socket, which can cause confusion.
+> > And then request a connect to:
+> >         connaddr.sin6_family = AF_INET6;
+> >         connaddr.sin6_port = htons(20000);
+> >         connaddr.sin6_scope_id = if_nametoindex("lo");
+> >         inet_pton(AF_INET6, "fe88::1", &connaddr.sin6_addr);
 > > 
-> > Fix rose_listen() to return -EINVAL if the socket has
-> > already been successfully connected, and add lock_sock
-> > to prevent this issue.
+> > What the stack does is:
+> >  - bind the socket
+> >  - create a new asoc
+> >  - to handle the connect
+> >    - copy the addresses that can be used for the given scope
+> >    - try to connect
 > > 
-> > Signed-off-by: Hyunwoo Kim <v4bel@theori.io>
+> > But the copy returns 0 addresses, and the effect is that it ends up
+> > trying to connect as if the socket wasn't bound, which is not the
+> > desired behavior. This unexpected behavior also allows KASLR leaks
+> > through SCTP diag interface.
+> > 
+> > The fix here then is, if when trying to copy the addresses that can
+> > be used for the scope used in connect() it returns 0 addresses, bail
+> > out. This is what TCP does with a similar reproducer.
+> > 
+> > Reported-by: Pietro Borrello <borrello@diag.uniroma1.it>
+> > Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 > 
-> Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> 
-> 
-> > ---
-> >  net/rose/af_rose.c | 8 ++++++++
-> >  1 file changed, 8 insertions(+)
-> > 
-> > diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
-> > index 36fefc3957d7..ca2b17f32670 100644
-> > --- a/net/rose/af_rose.c
-> > +++ b/net/rose/af_rose.c
-> > @@ -488,6 +488,12 @@ static int rose_listen(struct socket *sock, int backlog)
-> >  {
-> >  	struct sock *sk = sock->sk;
-> >  
-> > +	lock_sock(sk);
-> > +	if (sock->state != SS_UNCONNECTED) {
-> > +		release_sock(sk);
-> > +		return -EINVAL;
-> > +	}
-> > +
-> >  	if (sk->sk_state != TCP_LISTEN) {
-> >  		struct rose_sock *rose = rose_sk(sk);
-> >  
-> > @@ -497,8 +503,10 @@ static int rose_listen(struct socket *sock, int backlog)
-> >  		memset(rose->dest_digis, 0, AX25_ADDR_LEN * ROSE_MAX_DIGIS);
-> >  		sk->sk_max_ack_backlog = backlog;
-> >  		sk->sk_state           = TCP_LISTEN;
-> > +		release_sock(sk);
-> >  		return 0;
-> >  	}
-> > +	release_sock(sk);
-> >  
-> >  	return -EOPNOTSUPP;
-> >  }
-> > -- 
-> > 2.25.1
+> Fixes tag?
+
+Lost in Narnia again, I suppose. :)
+
+Ok, I had forgot it, but now checking, it predates git.
+What should I have used in this case again please? Perhaps just:
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+
