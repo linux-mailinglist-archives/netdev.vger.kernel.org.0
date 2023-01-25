@@ -2,109 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56F0067B170
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 12:34:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5A9067B16D
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 12:34:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234997AbjAYLer (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 06:34:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53240 "EHLO
+        id S235355AbjAYLes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 06:34:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235599AbjAYLeZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 06:34:25 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FEFE29E38;
-        Wed, 25 Jan 2023 03:34:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674646462; x=1706182462;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=08uSAz9IGIV2NFGRJPWT7DES35ILstPMqGOpt+Go8nU=;
-  b=dlq4HGrcBbkSon/uX9m7cEGOgogs42bdLj7FonhaRvU48Rx9WIOHkA83
-   nmW4CEM49kXRJp9q4KkS5BmDbBemVobz+xTLv73PwgZojwGcJZEL45Yj/
-   nPlkxYpIRTjfMfB9mHiDJgoBnLtgo9SJHaBYyNWFHnaS/jYvvoUXoAyLz
-   0jCoTU85DGHyNNRTCXT+yWWp/VA2Em2b9pUYSJt44i2PpDd9w+8/IiSHS
-   +dmzcGl76SBLtHz9gIVDNklliZarj9tieJTZauVP18xfn+vyN3H5qsUmu
-   /6b2AhJhFqVoCMRPNopLB581N37KRrduCbRML8F5Uab20rLfMY0lxYYDE
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10600"; a="325207935"
-X-IronPort-AV: E=Sophos;i="5.97,245,1669104000"; 
-   d="scan'208";a="325207935"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2023 03:34:14 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10600"; a="694711234"
-X-IronPort-AV: E=Sophos;i="5.97,245,1669104000"; 
-   d="scan'208";a="694711234"
-Received: from rbgutie-mobl1.amr.corp.intel.com ([10.251.210.131])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2023 03:34:08 -0800
-Date:   Wed, 25 Jan 2023 13:34:07 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
-cc:     Jakub Kicinski <kuba@kernel.org>, Netdev <netdev@vger.kernel.org>,
-        davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        ricardo.martinez@linux.intel.com,
-        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
-        edumazet@google.com, pabeni@redhat.com,
-        chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
-        linuxwwan_5g@intel.com, corbet@lwn.net, linux-doc@vger.kernel.org,
-        jiri@nvidia.com
-Subject: Re: [PATCH v5 net-next 5/5] net: wwan: t7xx: Devlink documentation
-In-Reply-To: <c9f0eca7-99e8-62a5-9790-1230c43e1817@linux.intel.com>
-Message-ID: <9b6f9537-59eb-3ec-2895-e43f55771f7@linux.intel.com>
-References: <cover.1674307425.git.m.chetan.kumar@linux.intel.com> <f902d4a0cb807a205687f7e693079fba72ca7341.1674307425.git.m.chetan.kumar@linux.intel.com> <20230124205142.772ac24c@kernel.org> <c9f0eca7-99e8-62a5-9790-1230c43e1817@linux.intel.com>
+        with ESMTP id S235681AbjAYLeb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 06:34:31 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 874088E;
+        Wed, 25 Jan 2023 03:34:30 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 26FFB1FD87;
+        Wed, 25 Jan 2023 11:34:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1674646469; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=l49gqrR00YStom+4XbW1P7OXxNNfJs2Zagbrz3cxZDY=;
+        b=pTPV48ccsT35BHMOK1sMKdn9C2GwooatjjrH9AG3y4DLkRYKxLgTungIRgVixtSoT/oTI7
+        woGGottIqQtagTebAP0C3aYeI+CJUFAZI+E8AKxN9K2BTe+2UjhTJJIVLyw/f4/HVOHl/Y
+        BaQIEOw585ptaepsLrRy58308FjTRts=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 0223E2C141;
+        Wed, 25 Jan 2023 11:34:28 +0000 (UTC)
+Date:   Wed, 25 Jan 2023 12:34:26 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Seth Forshee <sforshee@kernel.org>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] vhost: check for pending livepatches from vhost
+ worker kthreads
+Message-ID: <Y9ETwsT4LTXyH/0m@alley>
+References: <20230120-vhost-klp-switching-v1-0-7c2b65519c43@kernel.org>
+ <20230120-vhost-klp-switching-v1-2-7c2b65519c43@kernel.org>
+ <Y8/ohzRGcOiqsh69@alley>
+ <Y9ATo5FukOhphwqT@do-x1extreme>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y9ATo5FukOhphwqT@do-x1extreme>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Jan 2023, Kumar, M Chetan wrote:
-
-> On 1/25/2023 10:21 AM, Jakub Kicinski wrote:
-> > On Sat, 21 Jan 2023 19:03:58 +0530 m.chetan.kumar@linux.intel.com wrote:
-> > > +In fastboot mode the userspace application uses these commands for
-> > > obtaining the
-> > > +current snapshot of second stage bootloader.
+On Tue 2023-01-24 11:21:39, Seth Forshee wrote:
+> On Tue, Jan 24, 2023 at 03:17:43PM +0100, Petr Mladek wrote:
+> > On Fri 2023-01-20 16:12:22, Seth Forshee (DigitalOcean) wrote:
+> > > Livepatch relies on stack checking of sleeping tasks to switch kthreads,
+> > > so a busy kthread can block a livepatch transition indefinitely. We've
+> > > seen this happen fairly often with busy vhost kthreads.
 > > 
-> > I don't know what fastboot is, and reading this doc I see it used in
-> > three forms:
-> >   - fastboot protocol
-> >   - fastboot mode
-> >   - fastboot command & response
+> > To be precise, it would be "indefinitely" only when the kthread never
+> > sleeps.
+> > 
+> > But yes. I believe that the problem is real. It might be almost
+> > impossible to livepatch some busy kthreads, especially when they
+> > have a dedicated CPU.
+> > 
+> > 
+> > > Add a check to call klp_switch_current() from vhost_worker() when a
+> > > livepatch is pending. In testing this allowed vhost kthreads to switch
+> > > immediately when they had previously blocked livepatch transitions for
+> > > long periods of time.
+> > > 
+> > > Signed-off-by: Seth Forshee (DigitalOcean) <sforshee@kernel.org>
+> > > ---
+> > >  drivers/vhost/vhost.c | 4 ++++
+> > >  1 file changed, 4 insertions(+)
+> > > 
+> > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > > index cbe72bfd2f1f..d8624f1f2d64 100644
+> > > --- a/drivers/vhost/vhost.c
+> > > +++ b/drivers/vhost/vhost.c
+> > > @@ -366,6 +367,9 @@ static int vhost_worker(void *data)
+> > >  			if (need_resched())
+> > >  				schedule();
+> > >  		}
+> > > +
+> > > +		if (unlikely(klp_patch_pending(current)))
+> > > +			klp_switch_current();
+> > 
+> > I suggest to use the following intead:
+> > 
+> > 		if (unlikely(klp_patch_pending(current)))
+> > 			klp_update_patch_state(current);
+> > 
+> > We already use this in do_idle(). The reason is basically the same.
+> > It is almost impossible to livepatch the idle task when a CPU is
+> > very idle.
+> > 
+> > klp_update_patch_state(current) does not check the stack.
+> > It switches the task immediately.
+> > 
+> > It should be safe because the kthread never leaves vhost_worker().
+> > It means that the same kthread could never re-enter this function
+> > and use the new code.
 > 
-> The fastboot is sort of a tool. It implements the protocol for programming the
-> device flash or getting device information. The device implements the fastboot
-> commands and host issue those commands for programming the firmware to device
-> flash or to obtain device information. Inorder to execute those commands,
-> first the device needs to be put into fastboot mode.
+> My knowledge of livepatching internals is fairly limited, so I'll accept
+> it if you say that it's safe to do it this way. But let me ask about one
+> scenario.
 > 
-> More details on fastboot can be found in links [1].
-> 
-> > In the end - I have no idea what the devlink param you're adding does.
-> 
-> "fastboot" devlink param is used to put the device into fastboot mode
-> to program firmware to device flash or to obtain device information.
-> 
-> 
-> [1]
-> https://en.wikipedia.org/wiki/Fastboot
-> https://android.googlesource.com/platform/system/core/+/refs/heads/master/fastboot/README.md
+> Let's say that a livepatch is loaded which replaces vhost_worker(). New
+> vhost worker threads are started which use the replacement function. Now
+> if the patch is disabled, these new worker threads would be switched
+> despite still running the code from the patch module, correct? Could the
+> module then be unloaded, freeing the memory containing the code these
+> kthreads are executing?
 
-Make sure to improve the documentation too so that the next reader won't 
-have the same problem in understanding. I hope this was obvious but just 
-in case it wasn't, your true audience is the ones reading the doc later
-and if a reviewer cannot understand your doc, the chances are the person 
-reading the doc understands even less. And they won't have your reply to
-the reviewer available so enough information should go into the 
-documentation itself.
+Great catch! Yes, this might theoretically happen.
+
+The above scenario would require calling klp_update_patch_state() from
+the code in the livepatch module. It is not possible at the moment because
+this function is not exported for modules.
+
+Hmm, the same problem might be when we livepatch a function that calls
+another function that calls klp_update_patch_state(). But in this case
+it would be kthread() from kernel/kthread.c. It would affect any
+running kthread. I doubt that anyone would seriously think about
+livepatching this function.
+
+A good enough solution might be to document this. Livepatches could
+not be created blindly. There are more situations where the
+livepatch is tricky or not possible at all.
+
+Crazy idea. We could prevent this problem even technically. A solution
+would be to increment a per-process counter in klp_ftrace_handler() when a
+function is redirected(). And klp_update_patch_state() might refuse
+the migration when this counter is not zero. But it would require
+to use a trampoline on return that would decrement the counter.
+I am not sure if this is worth the complexity.
+
+One the other hand, this counter might actually remove the need
+of the reliable backtrace. It is possible that I miss something
+or that it is not easy/possible to implement the return trampoline.
 
 
--- 
- i.
+Back to the original problem. I still consider calling
+klp_update_patch_state(current) in vhost_worker() safe.
 
+Best Regards,
+Petr
