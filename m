@@ -2,78 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA2DF67B3FA
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 15:13:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F145E67B3FE
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 15:14:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235239AbjAYONh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 09:13:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51494 "EHLO
+        id S235172AbjAYOOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 09:14:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbjAYONe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 09:13:34 -0500
-Received: from exchange.fintech.ru (exchange.fintech.ru [195.54.195.159])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1CF2940E;
-        Wed, 25 Jan 2023 06:13:33 -0800 (PST)
-Received: from Ex16-01.fintech.ru (10.0.10.18) by exchange.fintech.ru
- (195.54.195.169) with Microsoft SMTP Server (TLS) id 14.3.498.0; Wed, 25 Jan
- 2023 17:13:32 +0300
-Received: from KANASHIN1.fintech.ru (10.0.253.125) by Ex16-01.fintech.ru
- (10.0.10.18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4; Wed, 25 Jan
- 2023 17:13:31 +0300
-From:   Natalia Petrova <n.petrova@fintech.ru>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
-CC:     Natalia Petrova <n.petrova@fintech.ru>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <lvc-project@linuxtesting.org>
-Subject: [PATCH] i40e: Add checking for null for nlmsg_find_attr()
-Date:   Wed, 25 Jan 2023 17:13:28 +0300
-Message-ID: <20230125141328.8479-1-n.petrova@fintech.ru>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229778AbjAYOOT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 09:14:19 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6177144BC8
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 06:14:17 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id hw16so47915631ejc.10
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 06:14:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=O/pW/Pf+CT3nkLWJ5qVvwfoniNiiewUIr46bWZnEEpc=;
+        b=GSiqnsg3QTD0IPUB2W7CgeInyhOr+V12JSbR/qX0WT2VHSlEPxS1sm0TuC7ajtQZ4g
+         gzWXecEB450RVC+thwJxMoh9M5wJuxB++GH51/b472ZPZDaovszZkNx4fdwjSavd3vBP
+         s/88an5IMo28g26wa/25w2Wf6PTkWUxDneVL/utGQ8G8Q6al3LlPv39DuDrOVEfrD35u
+         iwAQ4J/9vWv7Y/wsXhCalZNAdFCaCf+NlyCx0PuBnblhZtlI/rzdP54aT2TQ7N3aCEQg
+         bBzUWVYFcvSFoYzNiu0+PxfR60aYxkBGX/mxeZQS/OJTNQaLq5ii2dLp5O+t3J9guAhE
+         b4TA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=O/pW/Pf+CT3nkLWJ5qVvwfoniNiiewUIr46bWZnEEpc=;
+        b=1r4jicFv2yQZfR5+MKT8aEpTqTbNLLtosvgQiqtdfNXM5eiMknIWEeh4u3McCOhko8
+         OUIKMDZOA7aEWWpkFzUHsie0PT0+vBroCKZr+DIhh5CDqc4vHgQWjXmmxAJznIYtYjuH
+         rjN2Q9+wdV702n0QQEIndSEMvqUy5FBUZVCDm244KODgWSR2ZGB1BPtUgNN9SNuYOuxq
+         9Fu7izjsCqa7Fi4VVnhBSULuc2PvPX5j0ivHMqL0Q2Jzd4Zhc9vlq6402Z/rQ2bkCcKn
+         eOLjdYpiwenhn8D2kIwvDrYH4XPLww0yWACtcSQz+mYlAJ6jzUKfQ/vEN99mhCXPI369
+         lvaQ==
+X-Gm-Message-State: AFqh2krEtBubSlQz37avheubf2W4AjulnWGJp1k65U3vpZIZwD8TE32f
+        jxVz80JjsCC0LIMtVLQ4m9+mKV2pDQkbhaFER9I=
+X-Google-Smtp-Source: AMrXdXvqTnU1e8su+lCkNZ0mq0Zuhwp2fJ2Bx6R79s2BBNNtdUZk8hQrcRdZSvHY6E8HosCItuzf9g==
+X-Received: by 2002:a17:906:d787:b0:872:5c0a:5597 with SMTP id pj7-20020a170906d78700b008725c0a5597mr31269412ejb.70.1674656055627;
+        Wed, 25 Jan 2023 06:14:15 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id ui42-20020a170907c92a00b0085214114218sm2407426ejc.185.2023.01.25.06.14.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Jan 2023 06:14:14 -0800 (PST)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, michael.chan@broadcom.com,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        tariqt@nvidia.com, saeedm@nvidia.com, leon@kernel.org,
+        idosch@nvidia.com, petrm@nvidia.com, simon.horman@corigine.com,
+        aelior@marvell.com, manishc@marvell.com, jacob.e.keller@intel.com,
+        gal@nvidia.com, yinjun.zhang@corigine.com, fei.qin@corigine.com,
+        Niklas.Cassel@wdc.com
+Subject: [patch net-next 00/12] devlink: Cleanup params usage
+Date:   Wed, 25 Jan 2023 15:14:00 +0100
+Message-Id: <20230125141412.1592256-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.0.253.125]
-X-ClientProxiedBy: Ex16-01.fintech.ru (10.0.10.18) To Ex16-01.fintech.ru
- (10.0.10.18)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The result of nlmsg_find_attr() 'br_spec' is dereferenced in
-nla_for_each_nested, but it can take null value in 'nla_find' finction,
-which will result in an error.
+From: Jiri Pirko <jiri@nvidia.com>
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
+This patchset takes care of small cleanup of devlink params usage.
+Some of the patches (first 2/3) are cosmetic, but I would like to
+point couple of interesting ones:
 
-Fixes: 51616018dd1b ("i40e: Add support for getlink, setlink ndo ops")
-Signed-off-by: Natalia Petrova <n.petrova@fintech.ru>
----
- drivers/net/ethernet/intel/i40e/i40e_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+Patch 9 is the main one of this set and introduces devlink instance
+locking for params, similar to other devlink objects. That allows params
+to be registered/unregistered when devlink instance is registered.
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index b36bf9c3e1e4..ed4be4ffeb09 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -13101,6 +13101,8 @@ static int i40e_ndo_bridge_setlink(struct net_device *dev,
- 	}
- 
- 	br_spec = nlmsg_find_attr(nlh, sizeof(struct ifinfomsg), IFLA_AF_SPEC);
-+	if (!br_spec)
-+		return -ENOENT;
- 
- 	nla_for_each_nested(attr, br_spec, rem) {
- 		__u16 mode;
+Patches 10-12 change mlx5 code to register non-driverinit params in the
+code they are related to, and thanks to patch 8 this might be when
+devlink instance is registered - for example during devlink reload.
+
+Jiri Pirko (12):
+  net/mlx5: Change devlink param register/unregister function names
+  net/mlx5: Covert devlink params registration to use
+    devlink_params_register/unregister()
+  devlink: make devlink_param_register/unregister static
+  devlink: don't work with possible NULL pointer in
+    devlink_param_unregister()
+  ice: remove pointless calls to devlink_param_driverinit_value_set()
+  qed: remove pointless call to devlink_param_driverinit_value_set()
+  devlink: make devlink_param_driverinit_value_set() return void
+  devlink: put couple of WARN_ONs in
+    devlink_param_driverinit_value_get()
+  devlink: protect devlink param list by instance lock
+  net/mlx5: Move fw reset devlink param to fw reset code
+  net/mlx5: Move flow steering devlink param to flow steering code
+  net/mlx5: Move eswitch port metadata devlink param to flow eswitch
+    code
+
+ drivers/net/ethernet/intel/ice/ice_devlink.c  |  20 +-
+ drivers/net/ethernet/mellanox/mlx4/main.c     |  80 ++---
+ drivers/net/ethernet/mellanox/mlx5/core/dev.c |  18 +-
+ .../net/ethernet/mellanox/mlx5/core/devlink.c | 283 +++++-------------
+ .../net/ethernet/mellanox/mlx5/core/devlink.h |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c  |  12 +-
+ .../net/ethernet/mellanox/mlx5/core/eswitch.c |  10 +-
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |   4 +-
+ .../mellanox/mlx5/core/eswitch_offloads.c     |  92 +++++-
+ .../net/ethernet/mellanox/mlx5/core/fs_core.c |  84 +++++-
+ .../ethernet/mellanox/mlx5/core/fw_reset.c    |  44 ++-
+ .../ethernet/mellanox/mlx5/core/fw_reset.h    |   2 -
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  22 +-
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  18 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  16 +-
+ .../ethernet/netronome/nfp/devlink_param.c    |   8 +-
+ .../net/ethernet/netronome/nfp/nfp_net_main.c |   7 +-
+ drivers/net/ethernet/qlogic/qed/qed_devlink.c |   6 -
+ drivers/net/netdevsim/dev.c                   |  36 +--
+ include/net/devlink.h                         |  20 +-
+ net/devlink/leftover.c                        | 185 ++++++------
+ 21 files changed, 521 insertions(+), 450 deletions(-)
+
 -- 
-2.34.1
+2.39.0
 
