@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9D5F67AB31
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 08:49:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B93F767AB32
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 08:49:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234860AbjAYHtT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 02:49:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44562 "EHLO
+        id S234885AbjAYHtV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 02:49:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234420AbjAYHtR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 02:49:17 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD1574943B;
-        Tue, 24 Jan 2023 23:49:16 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id g10so13088162wmo.1;
-        Tue, 24 Jan 2023 23:49:16 -0800 (PST)
+        with ESMTP id S234833AbjAYHtT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 02:49:19 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C302A49950;
+        Tue, 24 Jan 2023 23:49:17 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id f12-20020a7bc8cc000000b003daf6b2f9b9so617487wml.3;
+        Tue, 24 Jan 2023 23:49:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6aa1jo3Gm6IQD13Q3su+lnnZXPzXg/tUFIWCE6r8QJU=;
-        b=iSgK2/Pi9HJwCbrRBVMur6oVbbvyIHBYBsY+Itbzsm+nk2ohtDmfjbzkTQyPszr4v/
-         QKHifA7gFr91fFiE0ypCeRngWzYhZzSptXo1Z8RXA27vsr2jcR7yaC96UKnO7NL7ZxfK
-         68amlVNJAomthjAq+aB/CQAe14ga/9qNTqm59HQeKO1r+TM2z5zgPlTSNgmxkfdRql6/
-         VM/HhXO5IEPXr0u3/a4Xnk9GuUMOAXqq5AjUf9ck3LtpxYi5s2Lw4hAjmwZi13xUcmY0
-         db1yP0be3RoeomcU92fzXkhef5N6yOkMnmAEJ5mvDgexoBKrmWfR6tGtETrRII6NWW+N
-         4uHQ==
+        bh=xmo4viDahGQArnmS4tCJdyEC7O2nKFQBmZiFDh4E4Aw=;
+        b=bpwJVTZmhC3HFJ2BAi2Z7lUWA9H+1qcxkF4OysKlNTJVEJJIJwGI6yQHPh+9A41Faa
+         HiggUDZ+A6QWCHWgjAcD3zKrlnjzE+RPMo7mcWWiiI/ToZfWKetQEDl0qRv/4Usb4rM4
+         6HMlJazbq97JSnkHYlLUb9pUELEFTPSiXUEFBJO4YQ4DNt69+/6jfos4qmyvqApMyn9q
+         YR4BZTICwHKhK9AE0dl3hro37jLr1U6e0dCpww46HKagsAvXjnnG4FeKwlzQ1oVI+ewh
+         T4fYT8ssk7Hwzedx8HggtxSyiIsNhc0P9GDNyfdirJhgf57JGG3o8ZJaLnYhOP76W5L9
+         Ckfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=6aa1jo3Gm6IQD13Q3su+lnnZXPzXg/tUFIWCE6r8QJU=;
-        b=dl97JX3456NbZychXH+yregooxNpE46P5bbi/BeT3rUbK8qIgCIbZ3JCBCXXOG52lM
-         oJ92hP5jht8sxmyMsMxdMP2hz35PvUJEATwniAtHEdNZyHKI+yhw8IY/Jgmz0lvTqUOj
-         XxvPvM/4znBEa+4VxOoPlNK4UGzlWxH5c9MnWxPil6UMzbNe9ymaWnhJJMzyG4IvCmD5
-         x+5wBWEaXq9vGus6crek6b3Fit/+En1lnbfeWeBxlheELyI1W4Al3Owxj4GDN6KVruks
-         kTAiZYvCk2TgKi0W+wsE/0PpAt7YLNw4LCACfm6N70sd6Wtc0Qlavdhe0179wkh8VN5Q
-         ByHQ==
-X-Gm-Message-State: AFqh2kp/Vz9NMHaAqEWRoLyu5MLWGuA8jK/tcp7rUlyP/Kme3xtVuocU
-        MrFMojSPvBC9HhdWXcUvofY=
-X-Google-Smtp-Source: AMrXdXt+oFJn5hWkI9BLdUFy9INfrqJo3BZQbOAvYIZSrp9vV9fGYOWE9iv9hwshiA3FYcnew163vQ==
-X-Received: by 2002:a05:600c:920:b0:3da:22a6:7b6b with SMTP id m32-20020a05600c092000b003da22a67b6bmr30971526wmp.13.1674632955251;
-        Tue, 24 Jan 2023 23:49:15 -0800 (PST)
+        bh=xmo4viDahGQArnmS4tCJdyEC7O2nKFQBmZiFDh4E4Aw=;
+        b=sXK9KN9wNn3zKFXwkZAeo/tGuco5ZUi09SyiMMTxsUPj4GbImPsPRdeobXCzwmc0QN
+         MT4xeaPNN6LqxcyfcI99k/f06vRSolAbj3aLSPoWgk9UMg9DpMk38kzZlTRT25ow/EYq
+         ka1fuYqUgcjwEsaV1B1pycGUhK1hR+LxblCJMI+iCjzmB6hcAU+qvcFFFZv3hEjarQkW
+         6k1n8zIwESWdqKisUGyooiIqjC2rjSt5u9vKrNRtx8RLaNQoqTwLl7xH4Zuz6GJB3NtZ
+         +HxLxrGTfThaMZHal6nELufluWD4NHT58MvnbxDbbXNhez+WFr9hjdX0xVQKsWtDaem/
+         R1iw==
+X-Gm-Message-State: AFqh2kqPlTi5OSVlIVXaQmitOBXRwaFsmjRNuwG++dnpLj0vIHEMApJM
+        gb9esUN5feGyEy0SEkNlUY8=
+X-Google-Smtp-Source: AMrXdXuRiTTUXHzVJtIqPkU7yfp0FE6szlOO2ITdCnfKFBmI36bpubMiX1sgEnrrVyrpf6MRpG6T0w==
+X-Received: by 2002:a05:600c:4928:b0:3d9:a5a2:65fa with SMTP id f40-20020a05600c492800b003d9a5a265famr30523857wmp.7.1674632957288;
+        Tue, 24 Jan 2023 23:49:17 -0800 (PST)
 Received: from localhost.localdomain (h-176-10-254-193.A165.priv.bahnhof.se. [176.10.254.193])
-        by smtp.gmail.com with ESMTPSA id n13-20020a05600c500d00b003db2b81660esm1032051wmr.21.2023.01.24.23.49.13
+        by smtp.gmail.com with ESMTPSA id n13-20020a05600c500d00b003db2b81660esm1032051wmr.21.2023.01.24.23.49.15
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 24 Jan 2023 23:49:14 -0800 (PST)
+        Tue, 24 Jan 2023 23:49:16 -0800 (PST)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
@@ -58,10 +58,10 @@ To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com,
         mst@redhat.com, jasowang@redhat.com, ioana.ciornei@nxp.com,
         madalin.bucur@nxp.com
-Cc:     bpf@vger.kernel.org, Steen Hegelund <Steen.Hegelund@microchip.com>
-Subject: [PATCH net v2 2/5] lan966x: execute xdp_do_flush() before napi_complete_done()
-Date:   Wed, 25 Jan 2023 08:48:58 +0100
-Message-Id: <20230125074901.2737-3-magnus.karlsson@gmail.com>
+Cc:     bpf@vger.kernel.org
+Subject: [PATCH net v2 3/5] virtio-net: execute xdp_do_flush() before napi_complete_done()
+Date:   Wed, 25 Jan 2023 08:48:59 +0100
+Message-Id: <20230125074901.2737-4-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230125074901.2737-1-magnus.karlsson@gmail.com>
 References: <20230125074901.2737-1-magnus.karlsson@gmail.com>
@@ -95,36 +95,36 @@ being inside a single NAPI instance through to the xdp_do_flush() call
 for RCU protection of all in-kernel data structures. Details can be
 found in the second link below.
 
-Fixes: a825b611c7c1 ("net: lan966x: Add support for XDP_REDIRECT")
+Fixes: 186b3c998c50 ("virtio-net: support XDP_REDIRECT")
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Acked-by: Steen Hegelund <Steen.Hegelund@microchip.com>
 Link: https://lore.kernel.org/r/20221220185903.1105011-1-sbohrer@cloudflare.com
 Link: https://lore.kernel.org/all/20210624160609.292325-1-toke@redhat.com/
 ---
- drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c | 6 +++---
+ drivers/net/virtio_net.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-index 5314c064ceae..55b484b10562 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-@@ -608,12 +608,12 @@ static int lan966x_fdma_napi_poll(struct napi_struct *napi, int weight)
- 		lan966x_fdma_rx_reload(rx);
- 	}
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 18b3de854aeb..6df14dd5bf46 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -1677,13 +1677,13 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
  
--	if (counter < weight && napi_complete_done(napi, counter))
--		lan_wr(0xff, lan966x, FDMA_INTR_DB_ENA);
--
- 	if (redirect)
- 		xdp_do_flush();
+ 	received = virtnet_receive(rq, budget, &xdp_xmit);
  
-+	if (counter < weight && napi_complete_done(napi, counter))
-+		lan_wr(0xff, lan966x, FDMA_INTR_DB_ENA);
++	if (xdp_xmit & VIRTIO_XDP_REDIR)
++		xdp_do_flush();
 +
- 	return counter;
- }
+ 	/* Out of packets? */
+ 	if (received < budget)
+ 		virtqueue_napi_complete(napi, rq->vq, received);
  
+-	if (xdp_xmit & VIRTIO_XDP_REDIR)
+-		xdp_do_flush();
+-
+ 	if (xdp_xmit & VIRTIO_XDP_TX) {
+ 		sq = virtnet_xdp_get_sq(vi);
+ 		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq)) {
 -- 
 2.34.1
 
