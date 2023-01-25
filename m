@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32BAB67A848
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 02:12:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FA6967A846
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 02:12:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231563AbjAYBLq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 20:11:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33998 "EHLO
+        id S229798AbjAYBLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 20:11:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230130AbjAYBLp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 20:11:45 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA10C301B3
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 17:11:43 -0800 (PST)
+        with ESMTP id S229633AbjAYBLi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 20:11:38 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFC002BF03
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 17:11:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674609103; x=1706145103;
+  t=1674609096; x=1706145096;
   h=from:to:cc:subject:in-reply-to:references:date:
    message-id:mime-version;
-  bh=qncDB4QX71FDulKG670LVutXjZKlsfXS3s115zvu0WY=;
-  b=ZS/4REf1ttkJ0clZjDRKcPQ7lpRw9OcJlApR0OmnIyD8WO0Ks66xN+v/
-   xP5Oa/GJ+c58B4PDWcQtjTwkQnEv8vXRu9LEgqfUm6iL1g0a9sOVsMBwD
-   MIXNQ4W5koyZXCJCTdJVt7+JRSsbwsRiKNK1UzguCrGYJV9KyZANPw2JA
-   UaRFG5MfLv4SN3rXq00L/RZxaCF1Y0sWcyFsK+bKdNk9Auxi+ss9LQnE4
-   iaBy3ObUiDHQjCiIFXp/TOcaXW0FC7eXE5QFd6wjmRGWhiJ9xblupGZY9
-   kRDMtEHUE8Gm3LQJBP2q0i9Vm+JmXKvRd9XB+NsuxuIlgZf4Idhy8Nxq+
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10600"; a="326488727"
+  bh=6VuUDtmER4sNmZ4k3ZCWpxqebkz1fhjMNARJ4V6+Ui0=;
+  b=jZhJ/hV6RLwweRrFvWfDcXq5/NMnyuwmupc08MdsBGHoaKi337XB70Cb
+   3SfjYFg5rmVsO10gfHIKnhJgHv0BGhqOY599j5UraPrLwI75KUqAm3gzD
+   R7TBOaRYyAo25z/j0eDI5fCWq1WgGTowV0KFOsuWMDzv+3P0G6E8igEqR
+   fX9b68ZHNy3MCWzLIGu6b18LnwEMpiZqU4O6g4jvbybbk+56+WLOXIrMi
+   zC3cnUgcAMpSgD1hIzKlPZtn1KZz+5bKdVF+Vk+vlfab9I9kDRdYGySJW
+   Kv8WlJwgYSbe0OfXU/tuVfT1NBKVZlxP7XShK9mCWeiF3jnitbh2YPR9p
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10600"; a="324154878"
 X-IronPort-AV: E=Sophos;i="5.97,244,1669104000"; 
-   d="scan'208";a="326488727"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2023 17:11:30 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10600"; a="991098001"
+   d="scan'208";a="324154878"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2023 17:11:36 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10600"; a="639770228"
 X-IronPort-AV: E=Sophos;i="5.97,244,1669104000"; 
-   d="scan'208";a="991098001"
+   d="scan'208";a="639770228"
 Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.17])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2023 17:11:29 -0800
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2023 17:11:36 -0800
 From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
         John Fastabend <john.fastabend@gmail.com>
@@ -54,11 +54,13 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Jacob Keller <jacob.e.keller@intel.com>
-Subject: Re: [RFC PATCH net-next 00/11] ENETC mqprio/taprio cleanup
-In-Reply-To: <20230120141537.1350744-1-vladimir.oltean@nxp.com>
+Subject: Re: [RFC PATCH net-next 11/11] net/sched: taprio: only calculate
+ gate mask per TXQ for igc
+In-Reply-To: <20230120141537.1350744-12-vladimir.oltean@nxp.com>
 References: <20230120141537.1350744-1-vladimir.oltean@nxp.com>
-Date:   Tue, 24 Jan 2023 17:11:29 -0800
-Message-ID: <87tu0fh0zi.fsf@intel.com>
+ <20230120141537.1350744-12-vladimir.oltean@nxp.com>
+Date:   Tue, 24 Jan 2023 17:11:36 -0800
+Message-ID: <87r0vjh0zb.fsf@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -70,115 +72,146 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir,
-
-Sorry for the delay. I had to sleep on this for a bit.
-
 Vladimir Oltean <vladimir.oltean@nxp.com> writes:
 
-> I realize that this patch set will start a flame war, but there are
-> things about the mqprio qdisc that I simply don't understand, so in an
-> attempt to explain how I see things should be done, I've made some
-> patches to the code. I hope the reviewers will be patient enough with me :)
+> Vinicius has repeated a couple of times in our discussion that it was a
+> mistake for the taprio UAPI to take as input the Qbv gate mask per TC
+> rather than per TXQ. In the Frame Preemption RFC thread:
+> https://patchwork.kernel.org/project/netdevbpf/patch/20220816222920.1952936-3-vladimir.oltean@nxp.com/#25011225
 >
-> I need to touch mqprio because I'm preparing a patch set for Frame
-> Preemption (an IEEE 802.1Q feature). A disagreement started with
-> Vinicius here:
-> https://patchwork.kernel.org/project/netdevbpf/patch/20220816222920.1952936-3-vladimir.oltean@nxp.com/#24976672
+> I had this unanswered question:
 >
-> regarding how TX packet prioritization should be handled. Vinicius said
-> that for some Intel NICs, prioritization at the egress scheduler stage
-> is fundamentally attached to TX queues rather than traffic classes.
->
-> In other words, in the "popular" mqprio configuration documented by him:
->
-> $ tc qdisc replace dev $IFACE parent root handle 100 mqprio \
->       num_tc 3 \
->       map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
->       queues 1@0 1@1 2@2 \
->       hw 0
->
-> there are 3 Linux traffic classes and 4 TX queues. The TX queues are
-> organized in strict priority fashion, like this: TXQ 0 has highest prio
-> (hardware dequeue precedence for TX scheduler), TXQ 3 has lowest prio.
-> Packets classified by Linux to TC 2 are hashed between TXQ 2 and TXQ 3,
-> but the hardware has higher precedence for TXQ2 over TXQ 3, and Linux
-> doesn't know that.
->
-> I am surprised by this fact, and this isn't how ENETC works at all.
-> For ENETC, we try to prioritize on TCs rather than TXQs, and TC 7 has
-> higher priority than TC 7. For us, groups of TXQs that map to the same
-> TC have the same egress scheduling priority. It is possible (and maybe
-> useful) to have 2 TXQs per TC - one TXQ per CPU). Patch 07/11 tries to
-> make that more clear.
->
+> | > And even that it works out because taprio "translates" from traffic
+> | > classes to queues when it sends the offload information to the driver,
+> | > i.e. the driver knows the schedule of queues, not traffic classes.
+> |
+> | Which is incredibly strange to me, since the standard clearly defines
+> | Qbv gates to be per traffic class, and in ENETC, even if we have 2 TX
+> | queues for the same traffic class (one per CPU), the hardware schedule
+> | is still per traffic class and not per independent TX queue (BD ring).
+> |
+> | How does this work for i225/i226, if 2 queues are configured for the
+> | same dequeue priority? Do the taprio gates still take effect per
+> | queue?
 
-That makes me think, making "queues" visible on mqprio/taprio perhaps
-was a mistake. Perhaps if we only had the "prio to tc" map, and relied
-on drivers implementing .ndo_select_queue() that would be less
-problematic. And for devices with tens/hundreds of queues, this "no
-queues to the user exposed" sounds like a better model. Anyway... just
-wondering.
+Sorry that I haven't answered this before.
 
-Perhaps something to think about for mqprio/taprio/etc "the next generation" ;-)
-
-> Furthermore (and this is really the biggest point of contention), myself
-> and Vinicius have the fundamental disagreement whether the 802.1Qbv
-> (taprio) gate mask should be passed to the device driver per TXQ or per
-> TC. This is what patch 11/11 is about.
->
-
-I think that I was being annoying because I believed that some
-implementation detail of the netdev prio_tc_map and the way that netdev
-select TX queues (the "core of how mqprio works") would leak, and it
-would be easier/more correct to make other vendors adapt themselves to
-the "Intel"/"queues have priorities" model. But I stand corrected, as
-you (and others) have proven.
-
-In short, I am not opposed to this idea. This capability operation
-really opens some possibilities. The patches look clean.
-
-I'll play with the patches later in the week, quite swamped at this
-point.
-
-> Again, I'm not *certain* that my opinion on this topic is correct
-> (and it sure is confusing to see such a different approach for Intel).
-> But I would appreciate any feedback.
-
-And that reminds me, I owe you a beverage of your choice. For all your
-effort.
+Two things, for i225/i226:
+  - The gates open/close registers are per-queue, i.e. I control
+  explicitly when each gate is going to close/open inside each cycle
+  (yes, this design does have limitations);
+  - Looking at the datasheet there's also this: "Each queue must be
+  assigned with a unique priority level". Not sure what happens if I set
+  the same, I would expect that the ordering would be undefined, but I
+  never tested that.
 
 >
-> Vladimir Oltean (11):
->   net/sched: mqprio: refactor nlattr parsing to a separate function
->   net/sched: mqprio: refactor offloading and unoffloading to dedicated
->     functions
->   net/sched: move struct tc_mqprio_qopt_offload from pkt_cls.h to
->     pkt_sched.h
->   net/sched: mqprio: allow offloading drivers to request queue count
->     validation
->   net/sched: mqprio: add extack messages for queue count validation
->   net: enetc: request mqprio to validate the queue counts
->   net: enetc: act upon the requested mqprio queue configuration
->   net/sched: taprio: pass mqprio queue configuration to ndo_setup_tc()
->   net: enetc: act upon mqprio queue config in taprio offload
->   net/sched: taprio: validate that gate mask does not exceed number of
->     TCs
->   net/sched: taprio: only calculate gate mask per TXQ for igc
+> I haven't gotten an answer, and some things are still unclear, but I
+> suspect that igc is the outlier, and all the other hardware actually has
+> the gate mask per TC and not per TXQ, just like the standard says.
 >
->  drivers/net/ethernet/freescale/enetc/enetc.c  |  67 ++--
->  .../net/ethernet/freescale/enetc/enetc_qos.c  |  27 +-
->  drivers/net/ethernet/intel/igc/igc_main.c     |  17 +
->  include/net/pkt_cls.h                         |  10 -
->  include/net/pkt_sched.h                       |  16 +
->  net/sched/sch_mqprio.c                        | 298 +++++++++++-------
->  net/sched/sch_taprio.c                        |  57 ++--
->  7 files changed, 310 insertions(+), 182 deletions(-)
+> For example, in ENETC up until now, we weren't passed the mqprio queue
+> configuration via struct tc_taprio_qopt_offload, and hence, we needed to
+> assume that the TC:TXQ mapping was 1:1. So "per TC" or "per TXQ" did not
+> make a practical difference. I suspect that other drivers are in the
+> same position.
 >
+> Benefit from the TC_QUERY_CAPS feature that Jakub suggested we add, and
+> query the device driver before calling the proper ndo_setup_tc(), and
+> figure out if it expects the gate mask to be per TC or per TXQ.
+>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  drivers/net/ethernet/intel/igc/igc_main.c | 17 +++++++++++++++++
+>  include/net/pkt_sched.h                   |  1 +
+>  net/sched/sch_taprio.c                    | 11 ++++++++---
+>  3 files changed, 26 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+> index e86b15efaeb8..9b6f2aaf78c2 100644
+> --- a/drivers/net/ethernet/intel/igc/igc_main.c
+> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
+> @@ -6205,12 +6205,29 @@ static int igc_tsn_enable_cbs(struct igc_adapter *adapter,
+>  	return igc_tsn_offload_apply(adapter);
+>  }
+>  
+> +static int igc_tc_query_caps(struct tc_query_caps_base *base)
+> +{
+> +	switch (base->type) {
+> +	case TC_SETUP_QDISC_TAPRIO: {
+> +		struct tc_taprio_caps *caps = base->caps;
+> +
+> +		caps->gate_mask_per_txq = true;
+> +
+> +		return 0;
+> +	}
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +}
+> +
+>  static int igc_setup_tc(struct net_device *dev, enum tc_setup_type type,
+>  			void *type_data)
+>  {
+>  	struct igc_adapter *adapter = netdev_priv(dev);
+>  
+>  	switch (type) {
+> +	case TC_QUERY_CAPS:
+> +		return igc_tc_query_caps(type_data);
+>  	case TC_SETUP_QDISC_TAPRIO:
+>  		return igc_tsn_enable_qbv_scheduling(adapter, type_data);
+>  
+> diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+> index ace8be520fb0..fd889fc4912b 100644
+> --- a/include/net/pkt_sched.h
+> +++ b/include/net/pkt_sched.h
+> @@ -176,6 +176,7 @@ struct tc_mqprio_qopt_offload {
+>  
+>  struct tc_taprio_caps {
+>  	bool supports_queue_max_sdu:1;
+> +	bool gate_mask_per_txq:1;
+>  };
+>  
+>  struct tc_taprio_sched_entry {
+> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+> index a3fa5debe513..58efa982db65 100644
+> --- a/net/sched/sch_taprio.c
+> +++ b/net/sched/sch_taprio.c
+> @@ -1212,7 +1212,8 @@ static u32 tc_map_to_queue_mask(struct net_device *dev, u32 tc_mask)
+>  
+>  static void taprio_sched_to_offload(struct net_device *dev,
+>  				    struct sched_gate_list *sched,
+> -				    struct tc_taprio_qopt_offload *offload)
+> +				    struct tc_taprio_qopt_offload *offload,
+> +				    bool gate_mask_per_txq)
+>  {
+>  	struct sched_entry *entry;
+>  	int i = 0;
+> @@ -1226,7 +1227,11 @@ static void taprio_sched_to_offload(struct net_device *dev,
+>  
+>  		e->command = entry->command;
+>  		e->interval = entry->interval;
+> -		e->gate_mask = tc_map_to_queue_mask(dev, entry->gate_mask);
+> +		if (gate_mask_per_txq)
+> +			e->gate_mask = tc_map_to_queue_mask(dev,
+> +							    entry->gate_mask);
+> +		else
+> +			e->gate_mask = entry->gate_mask;
+>  
+>  		i++;
+>  	}
+> @@ -1273,7 +1278,7 @@ static int taprio_enable_offload(struct net_device *dev,
+>  	offload->enable = 1;
+>  	if (mqprio)
+>  		offload->mqprio.qopt = *mqprio;
+> -	taprio_sched_to_offload(dev, sched, offload);
+> +	taprio_sched_to_offload(dev, sched, offload, caps.gate_mask_per_txq);
+>  
+>  	for (tc = 0; tc < TC_MAX_QUEUE; tc++)
+>  		offload->max_sdu[tc] = q->max_sdu[tc];
 > -- 
 > 2.34.1
 >
 
-Cheers,
 -- 
 Vinicius
