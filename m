@@ -2,94 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AB6067B59A
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 16:11:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCA2367B5A4
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 16:13:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236006AbjAYPLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 10:11:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38280 "EHLO
+        id S235907AbjAYPNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 10:13:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236012AbjAYPLd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 10:11:33 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA57D40C3
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 07:10:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1674659439;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=V250dp57YvGpsXo8e5z0OqUiYsupt7OECDxcc0HcLsM=;
-        b=JczEtbO7L3wdefOtuOUs+I0S6FnlyZQ4ViduLLVN5qJkcKGJ3BlyejkkaGJeb4pE3o9cPI
-        1xLTh0Jxv90O3saBOiUWkg1ispIzFwt6UG1i0x1mKWdPOOCoUNiN9F6EUTE6mLoiMNJiNQ
-        uYumiJlBles/FAb5RO2t/a1x1eUz6I4=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-390-ZQh_anKWPS2crDJGBEWuzQ-1; Wed, 25 Jan 2023 10:10:38 -0500
-X-MC-Unique: ZQh_anKWPS2crDJGBEWuzQ-1
-Received: by mail-ed1-f69.google.com with SMTP id z18-20020a05640235d200b0049d84165065so13193328edc.18
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 07:10:38 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=V250dp57YvGpsXo8e5z0OqUiYsupt7OECDxcc0HcLsM=;
-        b=djueMCkRHELOYNgYz+NaomhBdxU5Ck2UMLwHo2iN5OP3eMpEnLuT6Zt+W/tG7ZRvXi
-         g//pd84XiO/RKS1AZKzAtR1EkZBVC3xvhHMVnuFPyWaiQfrMsL7dQYbGWXi4qEvpfHcQ
-         wm+jl3nRcz3apPR7RFMx87JYMAOTlzYTTKk/IRp6GyhRWzV+UsMxRcTqqQzQC1EQyX6P
-         sLD7scUE3FYvGtAe12UhFKVibP9q+61w+upGhcmSBPlxlCbEB0NzlXF/eP2UvJ6SrydJ
-         1NXRd36UgWQ2BCuE6DlihdyqxqPMNzFko0ufApF2jTBYCp5k83Z61YfLt7nLfdxd+zha
-         vfTQ==
-X-Gm-Message-State: AFqh2ko5TtP71pNMoJKiCy+H1zmw7CZZue/9QjFUy7BPbWanwUbdMzqO
-        wrUAR7FVmRPg+Ow9CCX6b8GCx6QKrMtlXl0G/+s8xQd8MhSUJkVX0/mJyA/TXXbx4F9uAxiZSda
-        vTrSjDDlYKD5spS1Z
-X-Received: by 2002:a05:6402:524f:b0:49e:910:5706 with SMTP id t15-20020a056402524f00b0049e09105706mr47037689edd.2.1674659435863;
-        Wed, 25 Jan 2023 07:10:35 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXv9mD/nNbis0WE/I3tSCVhhJAQmz3Rn4k9HQBDL67wovPMOLXC1R45lFvlBjEtRRY5PLFM19w==
-X-Received: by 2002:a05:6402:524f:b0:49e:910:5706 with SMTP id t15-20020a056402524f00b0049e09105706mr47037641edd.2.1674659435478;
-        Wed, 25 Jan 2023 07:10:35 -0800 (PST)
-Received: from [192.168.41.200] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
-        by smtp.gmail.com with ESMTPSA id fw19-20020a170907501300b0085a958808c6sm2481916ejc.7.2023.01.25.07.10.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Jan 2023 07:10:34 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <f3a116dc-1b14-3432-ad20-a36179ef0608@redhat.com>
-Date:   Wed, 25 Jan 2023 16:10:32 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Cc:     brouer@redhat.com, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
+        with ESMTP id S235264AbjAYPNR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 10:13:17 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032C0233F2;
+        Wed, 25 Jan 2023 07:12:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=z09YQWZaNeyU5LlbPTAJDfM0JH/4UK1IAx6XSK7tCyU=; b=Wwh9EVUpzB4tnYoH3BAKok+CJi
+        eqRkB7pQq8kx/0XBa0l2cq5vfNE/HnY5WY4XL7ouQuJ5+WmHxcWGN39qT1Y1TZjMvHXmCkb/T1W5n
+        chA+814FYsLFeRCAz37bP6hK6YSKmDXCbpSpaNrTYxZS4l1upr40JR59S92DbhYx/xRsWDQxrNUH+
+        DXzGeD/KrpkBoB+6QdTGdcLuId15wyup6vEdsB/8pJOLXFhubDGdD8ogvPwgBEjBD9YSw0NDu2ker
+        1LEk6nDq8OKwpYbD2demB5MmWNjDS4A6a+OlUeJijMW+SLDeZYmDlHM3h5SRCbc9RfEFl+auZ7THo
+        tjJTE2yA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36292)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pKhS4-0000ph-3g; Wed, 25 Jan 2023 15:12:39 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pKhS1-0006Lm-18; Wed, 25 Jan 2023 15:12:37 +0000
+Date:   Wed, 25 Jan 2023 15:12:36 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Lukasz Majewski <lukma@denx.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCH bpf-next v8 17/17] selftests/bpf: Simple program to dump
- XDP RX metadata
-Content-Language: en-US
-To:     sdf@google.com, Jesper Dangaard Brouer <jbrouer@redhat.com>
-References: <20230119221536.3349901-1-sdf@google.com>
- <20230119221536.3349901-18-sdf@google.com>
- <71be95ee-b522-b3db-105a-0f25d8dc52cb@redhat.com>
- <CAKH8qBvK-tJxQwBsUvQZ39KyhyAbd76H1xhdzmzeKbbN5Hzq7Q@mail.gmail.com>
- <Y9AoEcjb+MET41NB@google.com>
-In-Reply-To: <Y9AoEcjb+MET41NB@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/3] dsa: marvell: Provide per device information
+ about max frame size
+Message-ID: <Y9FG5PxOq7qsfvtz@shell.armlinux.org.uk>
+References: <20230106101651.1137755-1-lukma@denx.de>
+ <Y8Fno+svcnNY4h/8@shell.armlinux.org.uk>
+ <20230116105148.230ef4ae@wsk>
+ <20230125122412.4eb1746d@wsk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230125122412.4eb1746d@wsk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -97,240 +66,156 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 24/01/2023 19.48, sdf@google.com wrote:
-> On 01/24, Stanislav Fomichev wrote:
->> On Tue, Jan 24, 2023 at 7:26 AM Jesper Dangaard Brouer
->> <jbrouer@redhat.com> wrote:
->> >
->> >
->> > Testing this on mlx5 and I'm not getting the RX-timestamp.
->> > See command details below.
+On Wed, Jan 25, 2023 at 12:24:12PM +0100, Lukasz Majewski wrote:
+> Hi,
 > 
->> CC'ed Toke since I've never tested mlx5 myself.
->> I was pretty close to getting the setup late last week, let me try to
->> see whether it's ready or not.
+> > Hi Russell,
+> > 
+> > > On Fri, Jan 06, 2023 at 11:16:49AM +0100, Lukasz Majewski wrote:  
+> > > > Different Marvell DSA switches support different size of max frame
+> > > > bytes to be sent. This value corresponds to the memory allocated
+> > > > in switch to store single frame.
+> > > > 
+> > > > For example mv88e6185 supports max 1632 bytes, which is now
+> > > > in-driver standard value. On the other hand - mv88e6250 supports
+> > > > 2048 bytes. To be more interresting - devices supporting jumbo
+> > > > frames - use yet another value (10240 bytes)
+> > > > 
+> > > > As this value is internal and may be different for each switch IC,
+> > > > new entry in struct mv88e6xxx_info has been added to store it.
+> > > > 
+> > > > This commit doesn't change the code functionality - it just
+> > > > provides the max frame size value explicitly - up till now it has
+> > > > been assigned depending on the callback provided by the IC driver
+> > > > (e.g. .set_max_frame_size, .port_set_jumbo_size).    
+> > > 
+> > > I don't think this patch is correct.
+> > > 
+> > > One of the things that mv88e6xxx_setup_port() does when initialising
+> > > each port is:
+> > > 
+> > >         if (chip->info->ops->port_set_jumbo_size) {
+> > >                 err = chip->info->ops->port_set_jumbo_size(chip,
+> > > port, 10218); if (err)
+> > >                         return err;
+> > >         }
+> > > 
+> > > There is one implementation of this, which is
+> > > mv88e6165_port_set_jumbo_size() and that has the effect of setting
+> > > port register 8 to the largest size. So any chip that supports the
+> > > port_set_jumbo_size() method will be programmed on initialisation to
+> > > support this larger size.
+> > > 
+> > > However, you seem to be listing e.g. the 88e6190 (if I'm
+> > > interpreting the horrid mv88e6xxx_table changes correctly)  
+> > 
+> > Those changes were requested by the community. Previous versions of
+> > this patch were just changing things to allow correct operation of the
+> > switch ICs on which I do work (i.e. 88e6020 and 88e6071).
+> > 
+> > And yes, for 88e6190 the max_frame_size = 10240, but (by mistake) the
+> > same value was not updated for 88e6190X.
+> > 
+> > The question is - how shall I proceed? 
+> > 
+> > After the discussion about this code - it looks like approach from v3
+> > [1] seems to be the most non-intrusive for other ICs.
+> > 
 > 
->> > On 19/01/2023 23.15, Stanislav Fomichev wrote:
->> > > To be used for verification of driver implementations. Note that
->> > > the skb path is gone from the series, but I'm still keeping the
->> > > implementation for any possible future work.
->> > >
->> > > $ xdp_hw_metadata <ifname>
->> >
->> > sudo ./xdp_hw_metadata mlx5p1
->> >
->> > Output:
->> > [...cut ...]
->> > open bpf program...
->> > load bpf program...
->> > prepare skb endpoint...
->> > XXX timestamping_enable(): setsockopt(SO_TIMESTAMPING) ret:0
->> > prepare xsk map...
->> > map[0] = 3
->> > map[1] = 4
->> > map[2] = 5
->> > map[3] = 6
->> > map[4] = 7
->> > map[5] = 8
->> > attach bpf program...
->> > poll: 0 (0)
->> > poll: 0 (0)
->> > poll: 0 (0)
->> > poll: 1 (0)
->> > xsk_ring_cons__peek: 1
->> > 0x1821788: rx_desc[0]->addr=100000000008000 addr=8100 comp_addr=8000
->> > rx_timestamp: 0
->> > rx_hash: 2773355807
->> > 0x1821788: complete idx=8 addr=8000
->> > poll: 0 (0)
->> >
->> > The trace_pipe:
->> >
->> > $ sudo cat /sys/kernel/debug/tracing/trace_pipe
->> >            <idle>-0       [005] ..s2.  2722.884762: bpf_trace_printk:
->> > forwarding UDP:9091 to AF_XDP
->> >            <idle>-0       [005] ..s2.  2722.884771: bpf_trace_printk:
->> > populated rx_hash with 2773355807
->> >
->> >
->> > > On the other machine:
->> > >
->> > > $ echo -n xdp | nc -u -q1 <target> 9091 # for AF_XDP
->> >
->> > Fixing the source-port to see if RX-hash remains the same.
->> >
->> >   $ echo xdp | nc --source-port=2000 --udp 198.18.1.1 9091
->> >
->> > > $ echo -n skb | nc -u -q1 <target> 9092 # for skb
->> > >
->> > > Sample output:
->> > >
->> > >    # xdp
->> > >    xsk_ring_cons__peek: 1
->> > >    0x19f9090: rx_desc[0]->addr=100000000008000 addr=8100 
->> comp_addr=8000
->> > >    rx_timestamp_supported: 1
->> > >    rx_timestamp: 1667850075063948829
->> > >    0x19f9090: complete idx=8 addr=8000
->> >
->> > xsk_ring_cons__peek: 1
->> > 0x1821788: rx_desc[0]->addr=100000000008000 addr=8100 comp_addr=8000
->> > rx_timestamp: 0
->> > rx_hash: 2773355807
->> > 0x1821788: complete idx=8 addr=8000
->> >
->> > It doesn't look like hardware RX-timestamps are getting enabled.
->> >
->> > [... cut to relevant code ...]
->> >
->> > > diff --git a/tools/testing/selftests/bpf/xdp_hw_metadata.c 
->> b/tools/testing/selftests/bpf/xdp_hw_metadata.c
->> > > new file mode 100644
->> > > index 000000000000..0008f0f239e8
->> > > --- /dev/null
->> > > +++ b/tools/testing/selftests/bpf/xdp_hw_metadata.c
->> > > @@ -0,0 +1,403 @@
->> > [...]
->> >
->> > > +static void timestamping_enable(int fd, int val)
->> > > +{
->> > > +     int ret;
->> > > +
->> > > +     ret = setsockopt(fd, SOL_SOCKET, SO_TIMESTAMPING, &val, 
->> sizeof(val));
->> > > +     if (ret < 0)
->> > > +             error(-1, errno, "setsockopt(SO_TIMESTAMPING)");
->> > > +}
->> > > +
->> > > +int main(int argc, char *argv[])
->> > > +{
->> > [...]
->> >
->> > > +     printf("prepare skb endpoint...\n");
->> > > +     server_fd = start_server(AF_INET6, SOCK_DGRAM, NULL, 9092, 
->> 1000);
->> > > +     if (server_fd < 0)
->> > > +             error(-1, errno, "start_server");
->> > > +     timestamping_enable(server_fd,
->> > > +                         SOF_TIMESTAMPING_SOFTWARE |
->> > > +                         SOF_TIMESTAMPING_RAW_HARDWARE);
->> > > +
->> >
->> > I don't think this timestamping_enable() with these flags are enough to
->> > enable hardware timestamping.
-> 
-> Yeah, agreed, looks like that's the issue. timestamping_enable() has
-> been used for the xdp->skb path that I've eventually removed from the
-> series, so it's mostly a noop here..
-> 
-> Maybe you can try the following before I send a proper patch?
+> I would appreciate _any_ hints on how shall I proceed to prepare those
+> patches, so the community will accept them...
 
-Yes, below patch fixed the issue, thx.
+What I'm concerned about, and why I replied, is that setting the devices
+to have a max frame size of 1522 when we program them to use a larger
+frame size means we break those switches for normal sized packets.
 
-Now I get HW timestamps, plus I added some software CLOCK_TAI timestamps
-to compare against.
+The current logic in mv88e6xxx_get_max_mtu() is:
 
-Output is now:
+	If the chip implements port_set_jumbo_size, then packet sizes of
+	up to 10240 are supported.
+	(ops: 6131, 6141, 6171, 6172, 6175, 6176, 6190, 6190x, 6240, 6320,
+	6321, 6341, 6350, 6351, 6352, 6390, 6390x, 6393x)
+	If the chip implements set_max_frame_size, then packet sizes of
+	up to 1632 are supported.
+	(ops: 6085, 6095, 6097, 6123, 6161, 6185)
+	Otherwise, packets of up to 1522 are supported.
 
-  poll: 1 (0)
-  xsk_ring_cons__peek: 1
-  0xf64788: rx_desc[0]->addr=100000000008000 addr=8100 comp_addr=8000
-  rx_hash: 3697961069
-  rx_timestamp:  1674657672142214773 (sec:1674657672.1422)
-  XDP RX-time:   1674657709561774876 (sec:1674657709.5618) delta sec:37.4196
-  AF_XDP time:   1674657709561871034 (sec:1674657709.5619) delta 
-sec:0.0001 (96.158 usec)
-  0xf64788: complete idx=8 addr=8000
+Now, going through the patch, I see:
 
-My NIC hardware clock is clearly not synced with system time, as above 
-delta say 37.4 seconds between HW and XDP timestamps (using 
-bpf_ktime_get_tai_ns()).
+	88e6085 has 10240 but currently has 1632
+	88e6095 has 1632 (no change)
+	88e6097 has 1632 (no change)
+	88e6123 has 10240 but currently has 1632
+	88e6131 has 10240 (no change)
+	88e6141 has 10240 (no change)
+	88e6161 has 1632 but currently has 10240
+	88e6165 has 1632 but currently has 1522
+	88e6171 has 1522 but currently has 10240
+	88e6172 has 10240 (no change)
+	88e6175 has 1632 but currently has 10240
+	88e6176 has 10240 (no change)
+	88e6185 has 1632 (no change)
+	88e6190 has 10240 (no change)
+	88e6190x has 10240 (no change)
+	88e6191 has 10240 but currently has 1522
+	88e6191x has 1522 but currently has 10240
+	88e6193x has 1522 but currently has 10240
+	88e6220 has 2048 but currently has 1522
+	88e6240 has 10240 (no change)
+	88e6250 has 2048 but currently has 1522
+	88e6290 has 10240 but currently has 1522
+	88e6320 has 10240 (no change)
+	88e6321 has 10240 (no change)
+	88e6341 has 10240 (no change)
+	88e6350 has 10240 (no change)
+	88e6351 has 10240 (no change)
+	88e6352 has 10240 (no change)
+	88e6390 has 1522 but currently has 10240
+	88e6390x has 1522 but currently has 10240
+	88e6393x has 1522 but currently has 10240
 
-Time between XDP and AF_XDP wakeup is reported to be 96 usec, which is 
-also higher than I expected.  As explained in [1] this is caused by CPU 
-sleep states.
+My point is that based on the above, there's an awful lot of changes
+that this one patch brings, and I'm not sure many of them are intended.
 
-My /dev/cpu_dma_latency was set to 2000000000.  Applying tuned-adm 
-profile latency-performance this value change to 2.
+All the ones with "but currently has 10240", it seems they implement
+port_set_jumbo_size() which, although the switch may default to a
+smaller frame size, we configure it to be higher. Maybe these don't
+implement the field that configures those? Maybe your patch is wrong?
+I don't know.
 
-  $ sudo hexdump --format '"%d\n"' /dev/cpu_dma_latency
-  2000000000
-  $ sudo hexdump --format '"%d\n"' /dev/cpu_dma_latency
-  2
+Similarly for the ones with "but currently has 1632", it seems they
+implement set_max_frame_size(), but this is only called via
+mv88e6xxx_change_mtu(), and I haven't worked out whether that will
+be called during initialisation by the networking layer.
 
-Now the time between XDP and AF_XDP wakeup is reduced to approx 12 usec.
+Now, what really concerns me is the difficulty in making this change.
+As we can see from the above, there's a lot of changes going on here,
+and it's not obvious which are intentional and which may be bugs.
 
-  rx_timestamp:  1674659206344977544 (sec:1674659206.3450)
-  XDP RX-time:   1674659243776087765 (sec:1674659243.7761) delta sec:37.4311
-  AF_XDP time:   1674659243776099841 (sec:1674659243.7761) delta 
-sec:0.0000 (12.076 usec)
+So, I think it would be far better to introduce the "max_frame_size"
+field using the existing values, and then verify that value during
+initialisation time for every entry in mv88e6xxx_table[] using the
+rules that mv88e6xxx_get_max_mtu() was using. Boot that kernel, and
+have it run that verification, and state that's what's happened and
+was successful in the commit message.
 
+In the next commit, change mv88e6xxx_get_max_mtu() to use those
+verified values and remove the verification code.
 
-[1] 
-https://github.com/xdp-project/bpf-examples/tree/master/AF_XDP-interaction
+Then in the following commit, update the "max_frame_size" values with
+the changes you intend to make.
 
-> diff --git a/tools/testing/selftests/bpf/xdp_hw_metadata.c 
-> b/tools/testing/selftests/bpf/xdp_hw_metadata.c
-> index 0008f0f239e8..dceddb17fbc9 100644
-> --- a/tools/testing/selftests/bpf/xdp_hw_metadata.c
-> +++ b/tools/testing/selftests/bpf/xdp_hw_metadata.c
-> @@ -24,6 +24,7 @@
->   #include <linux/net_tstamp.h>
->   #include <linux/udp.h>
->   #include <linux/sockios.h>
-> +#include <linux/net_tstamp.h>
->   #include <sys/mman.h>
->   #include <net/if.h>
->   #include <poll.h>
-> @@ -278,13 +279,37 @@ static int rxq_num(const char *ifname)
-> 
->       ret = ioctl(fd, SIOCETHTOOL, &ifr);
->       if (ret < 0)
-> -        error(-1, errno, "socket");
-> +        error(-1, errno, "ioctl(SIOCETHTOOL)");
-> 
->       close(fd);
-> 
->       return ch.rx_count + ch.combined_count;
->   }
-> 
-> +static void hwtstamp_enable(const char *ifname)
-> +{
-> +    struct hwtstamp_config cfg = {
-> +        .rx_filter = HWTSTAMP_FILTER_ALL,
-> +
-> +    };
-> +
-> +    struct ifreq ifr = {
-> +        .ifr_data = (void *)&cfg,
-> +    };
-> +    strcpy(ifr.ifr_name, ifname);
-> +    int fd, ret;
-> +
-> +    fd = socket(AF_UNIX, SOCK_DGRAM, 0);
-> +    if (fd < 0)
-> +        error(-1, errno, "socket");
-> +
-> +    ret = ioctl(fd, SIOCSHWTSTAMP, &ifr);
-> +    if (ret < 0)
-> +        error(-1, errno, "ioctl(SIOCSHWTSTAMP)");
-> +
-> +    close(fd);
-> +}
-> +
->   static void cleanup(void)
->   {
->       LIBBPF_OPTS(bpf_xdp_attach_opts, opts);
-> @@ -341,6 +366,8 @@ int main(int argc, char *argv[])
-> 
->       printf("rxq: %d\n", rxq);
-> 
-> +    hwtstamp_enable(ifname);
-> +
->       rx_xsk = malloc(sizeof(struct xsk) * rxq);
->       if (!rx_xsk)
->           error(-1, ENOMEM, "malloc");
-> 
-> 
+Then, we can (a) have confidence that each of the new members were
+properly initialised, and (b) we can also see what changes you're
+intentionally making.
 
+Right now, given that at least two of the "max_frame_size" values are
+wrong in this patch, I think we can say for certain that we've proven
+that trying to introduce this new member and use it in a single patch
+is too error prone.
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
