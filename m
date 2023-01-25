@@ -2,90 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06BD467AFC8
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 11:36:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE1D067AFCC
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 11:38:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235331AbjAYKgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 05:36:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40464 "EHLO
+        id S235603AbjAYKiB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 05:38:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229827AbjAYKgq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 05:36:46 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44D25144B0
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 02:36:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1674642963;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=q11Y6sRP5eB+2E1lyhg8TSSmTlKL355gp5xgzQC5zjU=;
-        b=EcY754DihpdpviHwT1PKxdAaNe6ppj1Lqcj7QY/p3O8slW3pOEgj6zEdwdIiVqWSJb/R5Z
-        o33zBHnlAmSp0wAuJz8RDlXJnMLK6lCtucOxtOY2B/G+J2DRrIkfPK6P9MGmU9uRIWhy14
-        e03bR3TeeNOCzNQ0tqw1xYxxADfqssA=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-353-SdDLXq_OMpuSCF4pLoevfA-1; Wed, 25 Jan 2023 05:36:02 -0500
-X-MC-Unique: SdDLXq_OMpuSCF4pLoevfA-1
-Received: by mail-ed1-f72.google.com with SMTP id h18-20020a056402281200b0049e5078a6c3so12671756ede.12
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 02:36:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=q11Y6sRP5eB+2E1lyhg8TSSmTlKL355gp5xgzQC5zjU=;
-        b=YxfXVV6OhtJd7BVPBZCb9vRaUuuffQYyDDTM7ezwxbmr3P0EC1EUixBf7KTJx5I84Z
-         oqKj0gRCCQt9FxiX3QJ9lGji6Drq3xLuKyWxuKbd5PH0wJpBZBZLCd700IPFdT3o6Hiu
-         CuBDpWv/piblcBQufJDcYLFHmBtj8YPCki2GTiNeoEDsfGat9K0XqWfIfIH3ensod1DO
-         olHoVf46KDRxcC1PyNu7N5USctRKdABVg42f3th+ewaPBMVyKiTsuD8oTe/xYIzEd9Pr
-         lL6xtaz2xfnw6SDHJsq6O1h0JZOt/ofJdCSHwjY5vK+PFz/WjdoW1QF0IujUs3G0+jMt
-         ITrA==
-X-Gm-Message-State: AFqh2kod53PWysIwGvopgZ30gNFbhmUz7pdenZ1wcLX9Womwd0DJQZnK
-        q08Zd46H37X9wIJm5l0ULGzEVMzOAAcOTIhz+33HlPks8dJyQKJC29wyx1GoFVCiT6+HD1hY7hT
-        L+7oAkRCCJ1CwFsPe
-X-Received: by 2002:a50:ff17:0:b0:499:d208:e8f4 with SMTP id a23-20020a50ff17000000b00499d208e8f4mr32863566edu.19.1674642960970;
-        Wed, 25 Jan 2023 02:36:00 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXsDrWe+0gNE++0AFOt7XfTm42J1viN/NP1zx2tX/yL5luN1ZDInl8rOSE8HEiSjpLfJOIWeTw==
-X-Received: by 2002:a50:ff17:0:b0:499:d208:e8f4 with SMTP id a23-20020a50ff17000000b00499d208e8f4mr32863520edu.19.1674642960737;
-        Wed, 25 Jan 2023 02:36:00 -0800 (PST)
-Received: from [192.168.41.200] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
-        by smtp.gmail.com with ESMTPSA id j21-20020a17090686d500b007c1675d2626sm2168222ejy.96.2023.01.25.02.35.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Jan 2023 02:36:00 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <d3a041f3-5fba-a114-1796-492b68a8c011@redhat.com>
-Date:   Wed, 25 Jan 2023 11:35:57 +0100
+        with ESMTP id S235501AbjAYKiA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 05:38:00 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6439EEF94
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 02:37:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674643078; x=1706179078;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=l/a76dR3DNdIFjk9AoRrJrSuRI8dACos29wIPLbOMb0=;
+  b=PJTWxmuCUcE4wESHlje/LEtBP/uBWjbF7BTZv/cWzaLFVJlxjuGvgxxx
+   FQbH2oadyIAEqWtC/S5UMSNA/aFUq/TKKJEZAOkafp9bkFrIoMqSdky74
+   v8ozsm6Cl3RuSuBbu8evJX6hjW94ObNxRqvSicbzuR78B/JAvYrkn+Zy6
+   SXPo80qqEDLXSZ3J7WGxHqzR+GEnzQTlZ9AvECHlNzjtgYcJH9PK3EqyM
+   WACQRuDp/yg0Lt4l/EI0t9FJ8XKneMOfr8dPCPKHayGjw+6jMsyBNyqV1
+   Ly/HGEST9yPmkGI0Ll/tNav/W+cJvazuBXWm7HIcYK+z/gT1+MynYxReh
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10600"; a="353806035"
+X-IronPort-AV: E=Sophos;i="5.97,245,1669104000"; 
+   d="scan'208";a="353806035"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2023 02:37:58 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10600"; a="664399811"
+X-IronPort-AV: E=Sophos;i="5.97,245,1669104000"; 
+   d="scan'208";a="664399811"
+Received: from mckumar-mobl2.gar.corp.intel.com (HELO [10.213.86.11]) ([10.213.86.11])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2023 02:37:52 -0800
+Message-ID: <35f9613b-ac56-fdef-4020-af35b16321bb@linux.intel.com>
+Date:   Wed, 25 Jan 2023 16:07:50 +0530
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, toke@redhat.com, memxor@gmail.com,
-        alardam@gmail.com, saeedm@nvidia.com, anthony.l.nguyen@intel.com,
-        gospo@broadcom.com, vladimir.oltean@nxp.com, nbd@nbd.name,
-        john@phrozen.org, leon@kernel.org, simon.horman@corigine.com,
-        aelior@marvell.com, christophe.jaillet@wanadoo.fr,
-        ecree.xilinx@gmail.com, mst@redhat.com, bjorn@kernel.org,
-        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        intel-wired-lan@lists.osuosl.org, lorenzo.bianconi@redhat.com,
-        martin.lau@linux.dev
-Subject: Re: [PATCH v2 bpf-next 6/8] bpf: devmap: check XDP features in
- __xdp_enqueue routine
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v5 net-next 4/5] net: wwan: t7xx: Enable devlink based fw
+ flashing and coredump collection
 Content-Language: en-US
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org
-References: <cover.1674606193.git.lorenzo@kernel.org>
- <46f49d11939557aee7315bc23589cf261c19b494.1674606198.git.lorenzo@kernel.org>
-In-Reply-To: <46f49d11939557aee7315bc23589cf261c19b494.1674606198.git.lorenzo@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        johannes@sipsolutions.net, ryazanov.s.a@gmail.com,
+        loic.poulain@linaro.org, ilpo.jarvinen@linux.intel.com,
+        ricardo.martinez@linux.intel.com,
+        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
+        edumazet@google.com, pabeni@redhat.com,
+        chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
+        linuxwwan_5g@intel.com,
+        Mishra Soumya Prakash <soumya.prakash.mishra@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+References: <cover.1674307425.git.m.chetan.kumar@linux.intel.com>
+ <fc8bbb0b66a5ff3a489ea9857d79b374508090ef.1674307425.git.m.chetan.kumar@linux.intel.com>
+ <20230124205356.2bd6683e@kernel.org>
+From:   "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
+In-Reply-To: <20230124205356.2bd6683e@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -93,97 +73,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 25/01/2023 01.33, Lorenzo Bianconi wrote:
-> Check if the destination device implements ndo_xdp_xmit callback relying
-> on NETDEV_XDP_ACT_NDO_XMIT flags. Moreover, check if the destination device
-> supports XDP non-linear frame in __xdp_enqueue and is_valid_dst routines.
-> This patch allows to perform XDP_REDIRECT on non-linear XDP buffers.
+On 1/25/2023 10:23 AM, Jakub Kicinski wrote:
+> On Sat, 21 Jan 2023 19:03:38 +0530 m.chetan.kumar@linux.intel.com wrote:
+>> 1> Driver Registers with Devlink framework.
+>> 2> Implements devlink ops flash_update callback that programs modem fw.
+>> 3> Creates region & snapshot required for device coredump log collection.
 > 
-> Co-developed-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->   kernel/bpf/devmap.c | 16 +++++++++++++---
->   net/core/filter.c   | 13 +++++--------
->   2 files changed, 18 insertions(+), 11 deletions(-)
+> Sounds like these should be 3 patches?
+
+Flashing and coredump feature implementation is kept under single
+patch. I can revist and break it into 2 patches to seperate out
+flashing and coredump logic. I hope this fine.
+
 > 
+>> +	devlink_params_register(dl_ctx, t7xx_devlink_params, ARRAY_SIZE(t7xx_devlink_params));
+>> +	value.vbool = false;
+>> +	devlink_param_driverinit_value_set(dl_ctx, T7XX_DEVLINK_PARAM_ID_FASTBOOT, value);
+>> +	devlink_set_features(dl_ctx, DEVLINK_F_RELOAD);
+>> +	devlink_register(dl_ctx);
+> 
+> Please take the devl_lock() explicitly and use the devl_
+> version of those calls.
 
-LGTM
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Ok. will modify it as per your suggestion.
 
-> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-> index d01e4c55b376..2675fefc6cb6 100644
-> --- a/kernel/bpf/devmap.c
-> +++ b/kernel/bpf/devmap.c
-> @@ -474,7 +474,11 @@ static inline int __xdp_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
->   {
->   	int err;
->   
-> -	if (!dev->netdev_ops->ndo_xdp_xmit)
-> +	if (!(dev->xdp_features & NETDEV_XDP_ACT_NDO_XMIT))
-> +		return -EOPNOTSUPP;
-
-Good: dev->netdev_ops and dev->xdp_features are on same cacheline.
-
-This means dev->netdev_ops will be hot, once we need to deref 
-netdev_ops->ndo_xdp_xmit, which only happens as part of bulking towards 
-driver.
-
-> +
-> +	if (unlikely(!(dev->xdp_features & NETDEV_XDP_ACT_NDO_XMIT_SG) &&
-> +		     xdp_frame_has_frags(xdpf)))
-
-Good: xdp_frame_has_frags() look at xdpf->flags and avoids deref of 
-shared_info area.
-
->   		return -EOPNOTSUPP;
->   
->   	err = xdp_ok_fwd_dev(dev, xdp_get_frame_len(xdpf));
-> @@ -532,8 +536,14 @@ int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_frame *xdpf,
->   
->   static bool is_valid_dst(struct bpf_dtab_netdev *obj, struct xdp_frame *xdpf)
->   {
-> -	if (!obj ||
-> -	    !obj->dev->netdev_ops->ndo_xdp_xmit)
-> +	if (!obj)
-> +		return false;
-> +
-> +	if (!(obj->dev->xdp_features & NETDEV_XDP_ACT_NDO_XMIT))
-> +		return false;
-> +
-> +	if (unlikely(!(obj->dev->xdp_features & NETDEV_XDP_ACT_NDO_XMIT_SG) &&
-> +		     xdp_frame_has_frags(xdpf)))
->   		return false;
->   
->   	if (xdp_ok_fwd_dev(obj->dev, xdp_get_frame_len(xdpf)))
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index ed08dbf10338..aeebe21a7eff 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -4314,16 +4314,13 @@ int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
->   	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
->   	enum bpf_map_type map_type = ri->map_type;
->   
-> -	/* XDP_REDIRECT is not fully supported yet for xdp frags since
-> -	 * not all XDP capable drivers can map non-linear xdp_frame in
-> -	 * ndo_xdp_xmit.
-> -	 */
-> -	if (unlikely(xdp_buff_has_frags(xdp) &&
-> -		     map_type != BPF_MAP_TYPE_CPUMAP))
-> -		return -EOPNOTSUPP;
-
-Nice to see this limitation being lifted :-)
-
-> +	if (map_type == BPF_MAP_TYPE_XSKMAP) {
-> +		/* XDP_REDIRECT is not supported AF_XDP yet. */
-> +		if (unlikely(xdp_buff_has_frags(xdp)))
-> +			return -EOPNOTSUPP;
->   
-> -	if (map_type == BPF_MAP_TYPE_XSKMAP)
->   		return __xdp_do_redirect_xsk(ri, dev, xdp, xdp_prog);
-> +	}
->   
->   	return __xdp_do_redirect_frame(ri, dev, xdp_convert_buff_to_frame(xdp),
->   				       xdp_prog);
-
+-- 
+Chetan
