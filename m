@@ -2,128 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D2FB67AFE1
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 11:42:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B6EA67B032
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 11:48:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235636AbjAYKmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 05:42:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44084 "EHLO
+        id S235729AbjAYKsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 05:48:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235057AbjAYKml (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 05:42:41 -0500
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F1CE21A0D
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 02:42:40 -0800 (PST)
-Received: by mail-il1-f198.google.com with SMTP id g11-20020a056e021a2b00b0030da3e7916fso12393252ile.18
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 02:42:40 -0800 (PST)
+        with ESMTP id S235655AbjAYKsg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 05:48:36 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 427EB56EFD
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 02:48:03 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id c4-20020a1c3504000000b003d9e2f72093so932579wma.1
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 02:48:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares.net; s=google;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Sm7cAXvuksIT8Vn2KQfM6U5yXB3a8DRF5yFqF7/IqD8=;
+        b=1DG9Q4JaxhWmDSfrx9wk2S4ODUu5D6gqvoB6VO/OCaz2SOQSO3tjWY73kamLORPcBs
+         56QmJF4rzK2p74s4oX2uBD3waQUQ53Kixs4jk1ALWv+c5d9BHhh0ftllxk9dMguVzn5a
+         B5XjxReIgyKyP0kQqfsJmKpnv49gQLWO/JicjGLQVJHavsgprJs7AW+l5VE1/9EJatep
+         88ftE+66RVdR4tra/hy7oWcjZijq5eln7VYfBbp5GVADqPcnwu85xD5UsnbvBdbBGtHQ
+         EZtRJsFpD9FgH2TxCxiufaMmnJkqbY8ybwCJlDoi6g4v1rATIQkY/un3sGjVCBd9vFiu
+         DeUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=c2orMjLOVvDEreFzT3yDkDcGRcoylFJF29UL7OlIXu4=;
-        b=WyylXEUUsafx9WP1wdFcJoYGEGWcZzBMOw+iQY+tmgAEW6STuVS8CPD/C8aFiwo2h/
-         EXWTgDcpoFOHa3hK/jgZyRlk+olsrjU/neRzsUa2dAIQjSWZj78PchOXpS0uR8Kg82N+
-         4EsTWQ/MkORnpwXTgtLWSvZIR9HyKdO5T9+2XnfC0HkofRdqUFQiskdw9+WpV9torajv
-         1isR3G/33NUDoJNIHWP1jzEV0RtNkxxzcZmiHILTHfHp72gQjwjt+RA9YjJVkp86lYU4
-         kzpKCN/gEZN8SFxWHD7BjtPjKENhEXlzkMTrlEyjA3xkpaxfVRQeiP1a56io0t4R5LcB
-         of9w==
-X-Gm-Message-State: AFqh2koy1Jz/dz7ifs3r1Q9hYrW95C4CayCGdExFfOJ8C/LnOiurXhWT
-        eqAGgk110IjMhe3Xs3VmlcTIp+gtAML7FuMv7fiFZw2Hi7KG
-X-Google-Smtp-Source: AMrXdXsDyHMwPyrfIR3G7jVx7r39rE62in+kvwIsTTWGz8uGjf+f/YEon21aM3hzF0jeA2HWa1EI9UrRxuaVLrb4/JL4/W7nQiTp
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Sm7cAXvuksIT8Vn2KQfM6U5yXB3a8DRF5yFqF7/IqD8=;
+        b=o6P6o/P4UAhlAdfGJXZF8wcDCBdWWwiIccOP4bNH8lw6dPHcWauWfSIDCqIFFbgwIo
+         fdyji8kwiMUFa2PN9s9tJX3VkpK2GbXeaqiw/YVRCV5NFCQbsfA8zMewK78mP8qbkvAV
+         c8nRT92MOganjS3HFW5M41QcYbMXkkvTox9M8hP1zjoT169Z3QPc/a7YtT+uHF7I/98+
+         4PitY8VoRfb+g/UA2+VJGHp6oTZCu5TGMRbRZSGyJhhaDWeM7+guW5MeFCxApCv743Vc
+         tm5fyTyzr0E7ofMIH8081YrvMgy0O1FMbhERtkR3XKR2UWe8yPv8gSlaragod9B9jTNB
+         bT2A==
+X-Gm-Message-State: AFqh2kpFgxRrCt9pzrmZJfoQjITKqvKtSxE1stSm83fvWjxZTkv1xJTO
+        vZ/DWmN5qZF8ZWZ1OkIx3bOWLg==
+X-Google-Smtp-Source: AMrXdXsG9G6gXlDwKCzRzfrFFehM2xBbZSrI5a0qX8I0kxu8fudTbJrBiiil6k+s843f+kkQHh9C+g==
+X-Received: by 2002:a05:600c:a15:b0:3db:18a0:310f with SMTP id z21-20020a05600c0a1500b003db18a0310fmr25637661wmp.33.1674643679225;
+        Wed, 25 Jan 2023 02:47:59 -0800 (PST)
+Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
+        by smtp.gmail.com with ESMTPSA id r1-20020a05600c424100b003d9a86a13bfsm1423692wmm.28.2023.01.25.02.47.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Jan 2023 02:47:58 -0800 (PST)
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: [PATCH net-next 0/8] mptcp: add mixed v4/v6 support for the
+ in-kernel PM
+Date:   Wed, 25 Jan 2023 11:47:20 +0100
+Message-Id: <20230123-upstream-net-next-pm-v4-v6-v1-0-43fac502bfbf@tessares.net>
 MIME-Version: 1.0
-X-Received: by 2002:a02:cf9e:0:b0:3a5:73ac:b6c1 with SMTP id
- w30-20020a02cf9e000000b003a573acb6c1mr3306246jar.40.1674643359334; Wed, 25
- Jan 2023 02:42:39 -0800 (PST)
-Date:   Wed, 25 Jan 2023 02:42:39 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008f0a6505f3144a6c@google.com>
-Subject: [syzbot] KMSAN: uninit-value in qrtr_tx_resume
-From:   syzbot <syzbot+4436c9630a45820fda76@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, glider@google.com,
-        kuba@kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mani@kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIALgI0WMC/0WNwQqDMBBEf0X23IUkBpH+SulhY7d1D6ZhkwZB/
+ HdjofQwh8cwbzbIrMIZrt0GylWyvGMDe+lgmim+GOXRGJxxvbGux0/KRZkWjFxa1oJpweqxDhj
+ sOPjRkg/GQBMEyoxBKU7zqfgNziopP2X9/t7+xX3fDwd82FWRAAAA
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
+Cc:     netdev@vger.kernel.org, mptcp@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+X-Mailer: b4 0.12.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2147;
+ i=matthieu.baerts@tessares.net; h=from:subject:message-id;
+ bh=y7xt/jDxFXcJ15EgIkD8oBTqZDL9ojRU13M9eMUQTFQ=;
+ b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBj0QjdXadWm/alm36siF313JgJqm+QfrUf00BHhUMv
+ Oqy+kBeJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCY9EI3QAKCRD2t4JPQmmgc7g9D/
+ 49zFh8NUIeA1NRsjrUD0s0nvcXhkcm1uDs+xlatBCfkwwhyLVci2wWXKq9rEzynsV6Ff+IQe70UXwZ
+ Bega11YJTkt84+t1DJCbQ8RW6m79vF3dETy7Huuv6yfSZjgtbaiv1rS/7Qy0dQSKkH3MOoHBSau9Gd
+ CIx4MIY6OYi3Q2mn4wociPth1irrJ1bnU7YqWt9qtu1f3G8EaEPiBfYki7X6JPqi6dmJylb0Li5PZS
+ /p2jUczI7ctJDWCGU3JTn42cgk5O6aKi5zqEKm2p6uLxdFhhd8x/Z36yLChfdO8dn5t28JHFqA5Z7K
+ V4ybZ2x4yflm+GilYKxrnP9pn7ryn47k9Cumg2GPG7jT4E5LeEhvFIDjjFEMIDeFtVBdRi6VB3syG9
+ hS4Ig5Us92VM82fFDxav6yMOsqzppwe45+oC/j7nOTDcESeGaWY4w3LUOAnUxYC77peICUM3p3wcyn
+ z2oWhpcgsNmF79QnfONrsxeEDSBVNoqZWMLmYlldc8MmTrmjMCxmOyxu9NGyN+l3WjR6mA+wJ5F1Sy
+ cEeqBi6wXxuOrFbCjgJcu4+IFY0XC8GlJAViBH1rF9rYocoR+VwF4HoHLoZm6FXYmxFIWU8gDImogL
+ CB/IGVehkyu/rQwkYp45hdw3OUoZpa/yyVhNpIpWUIHLsvwPnQX+Hk4Dp+3w==
+X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp;
+ fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Before these patches, the in-kernel Path-Manager would not allow, for
+the same MPTCP connection, having a mix of subflows in v4 and v6.
 
-syzbot found the following issue on:
+MPTCP's RFC 8684 doesn't forbid that and it is even recommended to do so
+as the path in v4 and v6 are likely different. Some networks are also
+v4 or v6 only, we cannot assume they all have both v4 and v6 support.
 
-HEAD commit:    41c66f470616 kmsan: silence -Wmissing-prototypes warnings
-git tree:       https://github.com/google/kmsan.git master
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=155a4ffe480000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a9a22da1efde3af6
-dashboard link: https://syzkaller.appspot.com/bug?extid=4436c9630a45820fda76
-compiler:       clang version 15.0.0 (https://github.com/llvm/llvm-project.git 610139d2d9ce6746b3c617fb3e2f7886272d26ff), GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12254a76480000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11cdf796480000
+Patch 1 then removes this artificial constraint in the in-kernel PM
+currently enforcing there are no mixed subflows in place, either in
+address announcement or in subflow creation areas.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/69d5eef879e6/disk-41c66f47.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/e91a447c44a2/vmlinux-41c66f47.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/c549edb9c410/bzImage-41c66f47.xz
+Patch 2 makes sure the sk_ipv6only attribute is also propagated to
+subflows, just in case a new PM wouldn't respect it.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+4436c9630a45820fda76@syzkaller.appspotmail.com
+Some selftests have also been added for the in-kernel PM (patch 3).
 
-=====================================================
-BUG: KMSAN: uninit-value in qrtr_tx_resume+0x185/0x1f0 net/qrtr/af_qrtr.c:230
- qrtr_tx_resume+0x185/0x1f0 net/qrtr/af_qrtr.c:230
- qrtr_endpoint_post+0xf85/0x11b0 net/qrtr/af_qrtr.c:519
- qrtr_tun_write_iter+0x270/0x400 net/qrtr/tun.c:108
- call_write_iter include/linux/fs.h:2189 [inline]
- aio_write+0x63a/0x950 fs/aio.c:1600
- io_submit_one+0x1d1c/0x3bf0 fs/aio.c:2019
- __do_sys_io_submit fs/aio.c:2078 [inline]
- __se_sys_io_submit+0x293/0x770 fs/aio.c:2048
- __x64_sys_io_submit+0x92/0xd0 fs/aio.c:2048
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
+Patches 4 to 8 are just some cleanups and small improvements in the
+printed messages in the userspace PM. It is not linked to the rest but
+identified when working on a related patch modifying this selftest,
+already in -net:
 
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:766 [inline]
- slab_alloc_node mm/slub.c:3452 [inline]
- __kmem_cache_alloc_node+0x71f/0xce0 mm/slub.c:3491
- __do_kmalloc_node mm/slab_common.c:967 [inline]
- __kmalloc_node_track_caller+0x114/0x3b0 mm/slab_common.c:988
- kmalloc_reserve net/core/skbuff.c:492 [inline]
- __alloc_skb+0x3af/0x8f0 net/core/skbuff.c:565
- __netdev_alloc_skb+0x120/0x7d0 net/core/skbuff.c:630
- qrtr_endpoint_post+0xbd/0x11b0 net/qrtr/af_qrtr.c:446
- qrtr_tun_write_iter+0x270/0x400 net/qrtr/tun.c:108
- call_write_iter include/linux/fs.h:2189 [inline]
- aio_write+0x63a/0x950 fs/aio.c:1600
- io_submit_one+0x1d1c/0x3bf0 fs/aio.c:2019
- __do_sys_io_submit fs/aio.c:2078 [inline]
- __se_sys_io_submit+0x293/0x770 fs/aio.c:2048
- __x64_sys_io_submit+0x92/0xd0 fs/aio.c:2048
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-CPU: 0 PID: 4984 Comm: syz-executor328 Not tainted 6.2.0-rc5-syzkaller-80200-g41c66f470616 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/12/2023
-=====================================================
-
+  commit 4656d72c1efa ("selftests: mptcp: userspace: validate v4-v6 subflows mix")
 
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Matthieu Baerts (6):
+      mptcp: propagate sk_ipv6only to subflows
+      mptcp: userspace pm: use a single point of exit
+      selftests: mptcp: userspace: print titles
+      selftests: mptcp: userspace: refactor asserts
+      selftests: mptcp: userspace: print error details if any
+      selftests: mptcp: userspace: avoid read errors
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Paolo Abeni (2):
+      mptcp: let the in-kernel PM use mixed IPv4 and IPv6 addresses
+      selftests: mptcp: add test-cases for mixed v4/v6 subflows
+
+ net/mptcp/pm_netlink.c                            |  58 ++++----
+ net/mptcp/pm_userspace.c                          |   5 +-
+ net/mptcp/sockopt.c                               |   1 +
+ tools/testing/selftests/net/mptcp/mptcp_join.sh   |  53 ++++++--
+ tools/testing/selftests/net/mptcp/userspace_pm.sh | 153 +++++++++++++---------
+ 5 files changed, 171 insertions(+), 99 deletions(-)
+---
+base-commit: 4373a023e0388fc19e27d37f61401bce6ff4c9d7
+change-id: 20230123-upstream-net-next-pm-v4-v6-b186481a4b00
+
+Best regards,
+-- 
+Matthieu Baerts <matthieu.baerts@tessares.net>
+
