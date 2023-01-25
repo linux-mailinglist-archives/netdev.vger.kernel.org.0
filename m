@@ -2,72 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D185B67BAFF
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 20:50:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 777DB67BB02
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 20:51:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234990AbjAYTua (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 14:50:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48126 "EHLO
+        id S235528AbjAYTvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 14:51:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbjAYTu3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 14:50:29 -0500
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB6EEEF88
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 11:50:27 -0800 (PST)
-Received: by mail-qt1-x832.google.com with SMTP id o5so16951704qtr.11
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 11:50:27 -0800 (PST)
+        with ESMTP id S235327AbjAYTvI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 14:51:08 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA0A2ED61
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 11:51:04 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id nd31so34833ejc.8
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 11:51:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ZoHg4ev9fSktbcMxE1AoB5FvBrcNF8OI64tDCG3F9+M=;
-        b=nAZ0NEeyW4QmhBDtGTv3IY0zq9AO6EuUCKXwjZTerYwmayJp9IDQeJA/hkkDLX4eOU
-         QVYuvHgcfChsx63d9582ML7P+Atfl3tBdRlFv2RlZj8+YNJwfnfghc4bVTgLlC4xrtDg
-         yuimmAgvt6zDEvvvch2lIV299x8u+OIiCo3Nn6J/UD/P4PTQlnO/vX+mSD9Hv6kOqewU
-         pHnxxG5Jfk/MlX4bWsQym67EgfQRE8QQs3y4zw1ozdzXTK9rwZXFF9CjaaDSaxW412Bo
-         tggdrTPeM/FBapEjRzsfudUoRxdCrM7Li3peSCkYswhFGpSaUEHiRlouA0PNUHYwges4
-         jvDw==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=zCu9ReBp8rsUO7BPnJkennx1RK9hssnXuHiiktJzKeY=;
+        b=t0nV3aR/PpIjUcTvkuLzezyONXZoGiYlCSyzddvcFBdl1eRAIwg6doXK+FpyXwM7ps
+         q/FAjrEdff4IjIwjZfezT1VIyxIH/vTDHxvDT10L+c5Y0DNAlq8L3rKQ17ot0EGAeHWC
+         LuHJkj26o0qYMm85yao9HuvfDsMBOdX1ESIaZ0I8iJtk+NNHzR6qZWU3lvMgJ3kAmXa6
+         gneikFnIHIiiuFBeZRRPxQxmDRGLYecZjkMQ89NMK1G3f6VsyMGegGhbVE3vmL1I2uUW
+         1tA7AaJI0EEBkdOpLVkkz+G8JHnWDuSq9qoDGCxs6K+mt0hTzwv+/SXK/Bj+yVLSHrvP
+         T6gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZoHg4ev9fSktbcMxE1AoB5FvBrcNF8OI64tDCG3F9+M=;
-        b=puJBglG8DNi6F8hdAWx4ppTLZQYPMgHyFL1AXVqxls2qOOUoXD+gyceOzykSVENd9b
-         rpqnVySBQgwd9PEsZtpoGJOp0nqbuuSIw1BYXm4rS16KH3U4KvgGyTHHxBssA8Cfpzfn
-         tXc3qLOFXvF+b+crKj4hH89xTBKY2xuKCfEAZ3y8EczbmhMn9dB9LDT0Qv0BnORvIohB
-         1eSS1FNLeXXpvKsY25BLbt+xx8fgAUdjAUik0aw0Lcon1fDK3u1GYstcsxM+qrAb5BAm
-         CG3zfEMXAy9eOhb8dpXQFY7UsZMWNG9b33tXzn6zEnNjKpi6lPgR5FcYOLdLfZoJ+PUo
-         65qw==
-X-Gm-Message-State: AFqh2kp4MlGOb9EFCkx7gsIuCbxQuJ6x8ICCiX5HqKxP9+K29t6FfqJE
-        sfwBsj+UXhRuSPrko0xeXvNBUZ0tIAU9zw==
-X-Google-Smtp-Source: AMrXdXtu79/DW3qiHvStPwXfnF9mXH1TTcaEn3OUYR/cVZH8dQ87QdkPZFHKmCcjhQ4tgxAii5nzug==
-X-Received: by 2002:ac8:6f09:0:b0:3b6:3468:8417 with SMTP id bs9-20020ac86f09000000b003b634688417mr52164804qtb.17.1674676226878;
-        Wed, 25 Jan 2023 11:50:26 -0800 (PST)
-Received: from ?IPV6:2601:18f:700:287c::1006? ([2601:18f:700:287c::1006])
-        by smtp.gmail.com with ESMTPSA id x17-20020a05620a14b100b007069fde14a6sm4089167qkj.25.2023.01.25.11.50.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Jan 2023 11:50:26 -0800 (PST)
-Message-ID: <10278d1e-0aee-ee8e-3d54-0a82b2bcdbb9@gmail.com>
-Date:   Wed, 25 Jan 2023 14:50:25 -0500
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zCu9ReBp8rsUO7BPnJkennx1RK9hssnXuHiiktJzKeY=;
+        b=0xIbyYSNkKy1+AVobCuOevgQcbkm5fTKbqovkqrlqTGtUm8qPqhbl4WdHOdFCJZXgP
+         /A9p42DrHP82QuRC/s3tCfpwt2YczvnHmRO+F/YcVDsoPLpYjRQKp2/3UL8OgwUQljgM
+         pbVm4jRcGFJXcppfg/fHfkFLG8gqtyGxd3+S5tiGaIlk2JKJZdLvfaJGRY/lEcxFWkby
+         yy071GCZiAsy4YiTJ9E/A9Mzi34Re0nL+ov5lcRkhrJW6S+gFLnIYBc3Pg8U6GS6vgfy
+         LXPHhT6dMiKcZCkOLdXEol+zZBZvyye6ICvp27ZLzWjcS5dtcT+KrDJBsVx1dh/e1eCN
+         +UYA==
+X-Gm-Message-State: AFqh2kru9iejsXLAsVR6EkmRztgDuUOky71GFBxh+cahRLQB/23LKIfp
+        jqLHyal04PqUlZiuSnwoVQUhcw==
+X-Google-Smtp-Source: AMrXdXv15kHa1dGmlL79wyog14d50xdg7+O1i+O7wOxn7Vzp9LxrmOLhHmtM/BEYVKhhwJFvIsK8Hg==
+X-Received: by 2002:a17:907:1dcd:b0:877:6288:eff2 with SMTP id og13-20020a1709071dcd00b008776288eff2mr28762238ejc.75.1674676264497;
+        Wed, 25 Jan 2023 11:51:04 -0800 (PST)
+Received: from blmsp.fritz.box ([2001:4091:a247:815f:ef74:e427:628a:752c])
+        by smtp.gmail.com with ESMTPSA id s15-20020a170906454f00b00872c0bccab2sm2778830ejq.35.2023.01.25.11.51.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Jan 2023 11:51:04 -0800 (PST)
+From:   Markus Schneider-Pargmann <msp@baylibre.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>
+Cc:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Markus Schneider-Pargmann <msp@baylibre.com>
+Subject: [PATCH v2 00/18] can: m_can: Optimizations for m_can/tcan part 2
+Date:   Wed, 25 Jan 2023 20:50:41 +0100
+Message-Id: <20230125195059.630377-1-msp@baylibre.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH net-next] neighbor: fix proxy_delay usage when it is zero
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org
-References: <20230123185829.238909-1-haleyb.dev@gmail.com>
- <20230124203059.59cdb789@kernel.org>
-From:   Brian Haley <haleyb.dev@gmail.com>
-In-Reply-To: <20230124203059.59cdb789@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,103 +71,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub - thanks for the review.
+Hi Marc and everyone,
 
-On 1/24/23 11:30 PM, Jakub Kicinski wrote:
-> On Mon, 23 Jan 2023 13:58:29 -0500 Brian Haley wrote:
->> When set to zero, the neighbor sysctl proxy_delay value
->> does not cause an immediate reply for ARP/ND requests
->> as expected, it instead causes a random delay between
->> [0, U32_MAX]. Looking at this comment from
->> __get_random_u32_below() explains the reason:
->>
->> /*
->>   * This function is technically undefined for ceil == 0, and in fact
->>   * for the non-underscored constant version in the header, we build bug
->>   * on that. But for the non-constant case, it's convenient to have that
->>   * evaluate to being a straight call to get_random_u32(), so that
->>   * get_random_u32_inclusive() can work over its whole range without
->>   * undefined behavior.
->>   */
->>
->> Added helper function that does not call get_random_u32_below()
->> if proxy_delay is zero and just uses the current value of
->> jiffies instead, causing pneigh_enqueue() to respond
->> immediately.
->>
->> Also added definition of proxy_delay to ip-sysctl.txt since
->> it was missing.
-> 
-> Sounds like this never worked, until commit a533b70a657c ("net:
-> neighbor: fix a crash caused by mod zero") it crashed, now it
-> does something silly. Can we instead reject 0 as invalid input
-> during configuration?
+second version part 2, I fixed the bug I noticed for integrated m_can
+devices. The accounting was wrong or missing for these. I don't have the
+integrated hardware myself so any testing is appreciated (I only have
+the tcan device to test the mcan driver). Also v2 rebases on top of
+v6.2-rc5.
 
-To me, proxy_delay==0 implies respond immediately, so I think zero is 
-valid input.
+The series implements many small and bigger throughput improvements and
+adds rx/tx coalescing at the end.
 
->> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
->> index 7fbd060d6047..34183fb38b20 100644
->> --- a/Documentation/networking/ip-sysctl.rst
->> +++ b/Documentation/networking/ip-sysctl.rst
->> @@ -1589,6 +1589,12 @@ proxy_arp_pvlan - BOOLEAN
->>   	  Hewlett-Packard call it Source-Port filtering or port-isolation.
->>   	  Ericsson call it MAC-Forced Forwarding (RFC Draft).
->>   
->> +proxy_delay - INTEGER
->> +	Delay proxy response.
->> +
->> +	The maximum number of jiffies to delay a response to a neighbor
->> +	solicitation when proxy_arp or proxy_ndp is enabled. Defaults to 80.
-> 
-> Is there a better way of expressing the fact that we always
-> choose a value lower than proxy_delay ? Maximum sounds a bit
-> like we'd do:
-> 
-> 	when = jiffies + random() % (proxy_delay + 1);
+Best,
+Markus
 
-I think technically it's in the range of [0, proxy_delay] but I'll 
-change the text to make that more obvious.
+Changes in v2:
+- Rebased on v6.2-rc5
+- Fixed missing/broken accounting for non peripheral m_can devices.
 
->>   shared_media - BOOLEAN
->>   	Send(router) or accept(host) RFC1620 shared media redirects.
->>   	Overrides secure_redirects.
->> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
->> index f00a79fc301b..8bd8aaae6d5e 100644
->> --- a/net/core/neighbour.c
->> +++ b/net/core/neighbour.c
->> @@ -1662,11 +1662,22 @@ static void neigh_proxy_process(struct timer_list *t)
->>   	spin_unlock(&tbl->proxy_queue.lock);
->>   }
->>   
->> +static __inline__ unsigned long neigh_proxy_delay(struct neigh_parms *p)
-> 
-> Drop the inline please, it's pointless for a tiny static function
+part 1:
+v1 - https://lore.kernel.org/lkml/20221116205308.2996556-1-msp@baylibre.com
+v2 - https://lore.kernel.org/lkml/20221206115728.1056014-1-msp@baylibre.com
 
-JayV mentioned the same in private, guess I owe him a beer.
+part 2:
+v1 - https://lore.kernel.org/lkml/20221221152537.751564-1-msp@baylibre.com
 
->> +{
->> +	/*
-> 
-> did you run checkpatch?
+Markus Schneider-Pargmann (18):
+  can: tcan4x5x: Remove reserved register 0x814 from writable table
+  can: tcan4x5x: Check size of mram configuration
+  can: m_can: Remove repeated check for is_peripheral
+  can: m_can: Always acknowledge all interrupts
+  can: m_can: Remove double interrupt enable
+  can: m_can: Disable unused interrupts
+  can: m_can: Keep interrupts enabled during peripheral read
+  can: m_can: Write transmit header and data in one transaction
+  can: m_can: Implement receive coalescing
+  can: m_can: Implement transmit coalescing
+  can: m_can: Add rx coalescing ethtool support
+  can: m_can: Add tx coalescing ethtool support
+  can: m_can: Cache tx putidx
+  can: m_can: Use the workqueue as queue
+  can: m_can: Introduce a tx_fifo_in_flight counter
+  can: m_can: Use tx_fifo_in_flight for netif_queue control
+  can: m_can: Implement BQL
+  can: m_can: Implement transmit submission coalescing
 
-No, my kernel-fu is a little rusty, will do on v2.
+ drivers/net/can/m_can/m_can.c           | 514 ++++++++++++++++++------
+ drivers/net/can/m_can/m_can.h           |  36 +-
+ drivers/net/can/m_can/tcan4x5x-core.c   |   5 +
+ drivers/net/can/m_can/tcan4x5x-regmap.c |   1 -
+ 4 files changed, 432 insertions(+), 124 deletions(-)
 
-> 
->> +	 * If proxy_delay is zero, do not call get_random_u32_below()
->> +	 * as it is undefined behavior.
->> +	 */
->> +	unsigned long proxy_delay = NEIGH_VAR(p, PROXY_DELAY);
-> 
-> empty line here
-> 
->> +	return proxy_delay ?
->> +	       jiffies + get_random_u32_below(NEIGH_VAR(p, PROXY_DELAY)) :
-> 
-> also - since you have proxy_delay in a local variable why not use it
+-- 
+2.39.0
 
-Ack.
-
-Thanks,
-
--Brian
