@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDBAA67BE31
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 22:24:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A33567BE33
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 22:24:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236488AbjAYVYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 16:24:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48730 "EHLO
+        id S236674AbjAYVYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 16:24:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236470AbjAYVYi (ORCPT
+        with ESMTP id S236514AbjAYVYi (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 16:24:38 -0500
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E3B845F6E
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB05245BC1
         for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 13:24:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1674681877; x=1706217877;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=vme2vVxI/vwdRGLXseUPe+lknPGoYIMo8dx5PL9Bwak=;
-  b=LKpTFgn19zTmze4fU/nKoa9+GTCfXtkGtmmP1kx2Aew/aRzlsQNK8FGS
-   rMM9mjluGDxGfgmgfXVlhAl3psdGXerpcpGrvqqjcwHsmtRvxUqNQL96J
-   6MWP3JsfcSsD1lz4OMS438jGXonscazJfYc2S1IvYQ1h8NclOXNTtZXOY
-   8MB/jn4mkKPmH2k6Zw5FdtFPVJ4GsBOgJcRAmK51nz4+A2nxrZqIt6f9b
-   mHgSl3yM2WlZH02RrZKg1Wvob6foI+wtjCVBwK3cipEOqkIQhl+Xu9ZOr
-   RO8J/4wbbuwDfCQ2SnKYxIE8V4RQh1pV01qHpE6axl841BCmxzGlnr1kp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10601"; a="328767486"
+  bh=4LysYDy5WwgLWIIXH3A0OHy8oNE2vNwiJd1RUouVVok=;
+  b=PW3I7m4btCUU+sjK4mIUhaPnS+uyCQ+sv67pYJHeBZHKXO3j3RJezDxW
+   lyRc3rHCWc0FkVmpv+PMab+NLThDC7ob9vUdrlaZJfv1omk4jr8oWFkxU
+   IW35jtKdkkUwlkP8tw9UyM1rS8ATN6Rane2n0GOwqsPxFAyYGPoug4iR+
+   vtfA+0jBrURJn5mCHXzzUA6oZx8DaUA9hsBYhc6sIvGUpXkAxDWdZXzwK
+   t2msb5GtInHaVWBiiY6znM8O/gLDDjMP5z8YtS4lvXtSfEMFNHRj7l4UR
+   7poZDxmmREEaULkwYxvccniI4eT7Wj3T/UTYZzbobQTaDBgp4CCFka5eI
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10601"; a="328767492"
 X-IronPort-AV: E=Sophos;i="5.97,246,1669104000"; 
-   d="scan'208";a="328767486"
+   d="scan'208";a="328767492"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2023 13:24:35 -0800
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2023 13:24:36 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10601"; a="770894103"
+X-IronPort-AV: E=McAfee;i="6500,9779,10601"; a="770894108"
 X-IronPort-AV: E=Sophos;i="5.97,246,1669104000"; 
-   d="scan'208";a="770894103"
+   d="scan'208";a="770894108"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
   by fmsmga002.fm.intel.com with ESMTP; 25 Jan 2023 13:24:35 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -44,9 +44,9 @@ To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
 Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
         Marek Szlosek <marek.szlosek@intel.com>
-Subject: [PATCH net-next 1/4] virtchnl: remove unused structure declaration
-Date:   Wed, 25 Jan 2023 13:24:38 -0800
-Message-Id: <20230125212441.4030014-2-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 2/4] virtchnl: update header and increase header clarity
+Date:   Wed, 25 Jan 2023 13:24:39 -0800
+Message-Id: <20230125212441.4030014-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230125212441.4030014-1-anthony.l.nguyen@intel.com>
 References: <20230125212441.4030014-1-anthony.l.nguyen@intel.com>
@@ -63,39 +63,97 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-Nothing uses virtchnl_msg, just remove it.
+We already have the SPDX header, so just leave a copyright notice with
+an updated year and get rid of the boilerplate header (so 2002!).
+
+In addition, update a couple of comments to clarify how the various
+parts of the virtchannel header interaction work.
+
+No functional changes.
 
 Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 Tested-by: Marek Szlosek <marek.szlosek@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- include/linux/avf/virtchnl.h | 13 -------------
- 1 file changed, 13 deletions(-)
+ include/linux/avf/virtchnl.h | 33 ++++++++++++++++++---------------
+ 1 file changed, 18 insertions(+), 15 deletions(-)
 
 diff --git a/include/linux/avf/virtchnl.h b/include/linux/avf/virtchnl.h
-index d91af50ac58d..b1cfa84904b1 100644
+index b1cfa84904b1..2e685aa37688 100644
 --- a/include/linux/avf/virtchnl.h
 +++ b/include/linux/avf/virtchnl.h
-@@ -162,19 +162,6 @@ enum virtchnl_ops {
- #define VIRTCHNL_CHECK_UNION_LEN(n, X) enum virtchnl_static_asset_enum_##X \
- 	{ virtchnl_static_assert_##X = (n)/((sizeof(union X) == (n)) ? 1 : 0) }
+@@ -1,21 +1,13 @@
+ /* SPDX-License-Identifier: GPL-2.0-only */
+-/*******************************************************************************
+- *
+- * Intel Ethernet Controller XL710 Family Linux Virtual Function Driver
+- * Copyright(c) 2013 - 2014 Intel Corporation.
+- *
+- * Contact Information:
+- * e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
+- * Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
+- *
+- ******************************************************************************/
++/* Copyright (c) 2013-2022, Intel Corporation. */
  
--/* Virtual channel message descriptor. This overlays the admin queue
-- * descriptor. All other data is passed in external buffers.
-- */
--
--struct virtchnl_msg {
--	u8 pad[8];			 /* AQ flags/opcode/len/retval fields */
--	enum virtchnl_ops v_opcode; /* avoid confusion with desc->opcode */
--	enum virtchnl_status_code v_retval;  /* ditto for desc->retval */
--	u32 vfid;			 /* used by PF when sending to VF */
--};
--
--VIRTCHNL_CHECK_STRUCT_LEN(20, virtchnl_msg);
--
- /* Message descriptions and data structures. */
+ #ifndef _VIRTCHNL_H_
+ #define _VIRTCHNL_H_
  
- /* VIRTCHNL_OP_VERSION
+ /* Description:
+- * This header file describes the VF-PF communication protocol used
+- * by the drivers for all devices starting from our 40G product line
++ * This header file describes the Virtual Function (VF) - Physical Function
++ * (PF) communication protocol used by the drivers for all devices starting
++ * from our 40G product line
+  *
+  * Admin queue buffer usage:
+  * desc->opcode is always aqc_opc_send_msg_to_pf
+@@ -29,8 +21,8 @@
+  * have a maximum of sixteen queues for all of its VSIs.
+  *
+  * The PF is required to return a status code in v_retval for all messages
+- * except RESET_VF, which does not require any response. The return value
+- * is of status_code type, defined in the shared type.h.
++ * except RESET_VF, which does not require any response. The returned value
++ * is of virtchnl_status_code type, defined here.
+  *
+  * In general, VF driver initialization should roughly follow the order of
+  * these opcodes. The VF driver must first validate the API version of the
+@@ -323,6 +315,9 @@ VIRTCHNL_CHECK_STRUCT_LEN(40, virtchnl_rxq_info);
+  * PF configures queues and returns status.
+  * If the number of queues specified is greater than the number of queues
+  * associated with the VSI, an error is returned and no queues are configured.
++ * NOTE: The VF is not required to configure all queues in a single request.
++ * It may send multiple messages. PF drivers must correctly handle all VF
++ * requests.
+  */
+ struct virtchnl_queue_pair_info {
+ 	/* NOTE: vsi_id and queue_id should be identical for both queues. */
+@@ -360,8 +355,13 @@ struct virtchnl_vf_res_request {
+  * VF uses this message to map vectors to queues.
+  * The rxq_map and txq_map fields are bitmaps used to indicate which queues
+  * are to be associated with the specified vector.
+- * The "other" causes are always mapped to vector 0.
++ * The "other" causes are always mapped to vector 0. The VF may not request
++ * that vector 0 be used for traffic.
+  * PF configures interrupt mapping and returns status.
++ * NOTE: due to hardware requirements, all active queues (both TX and RX)
++ * should be mapped to interrupts, even if the driver intends to operate
++ * only in polling mode. In this case the interrupt may be disabled, but
++ * the ITR timer will still run to trigger writebacks.
+  */
+ struct virtchnl_vector_map {
+ 	u16 vsi_id;
+@@ -388,6 +388,9 @@ VIRTCHNL_CHECK_STRUCT_LEN(14, virtchnl_irq_map_info);
+  * (Currently, we only support 16 queues per VF, but we make the field
+  * u32 to allow for expansion.)
+  * PF performs requested action and returns status.
++ * NOTE: The VF is not required to enable/disable all queues in a single
++ * request. It may send multiple messages.
++ * PF drivers must correctly handle all VF requests.
+  */
+ struct virtchnl_queue_select {
+ 	u16 vsi_id;
 -- 
 2.38.1
 
