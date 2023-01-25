@@ -2,125 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11E3467B9E7
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 19:52:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0D9A67B9FE
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 19:57:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235174AbjAYSwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 13:52:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45480 "EHLO
+        id S234913AbjAYS5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 13:57:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbjAYSwt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 13:52:49 -0500
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CEFF171F;
-        Wed, 25 Jan 2023 10:52:45 -0800 (PST)
-Received: by mail-ej1-f49.google.com with SMTP id os24so6448643ejb.8;
-        Wed, 25 Jan 2023 10:52:44 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=RQeDdHynJPckR6TzoLgOIVW3N1/aAZvGLbwQhlPV21k=;
-        b=sqHZNek6y90ncWo+JFnqD1P9uVxHTznNcifvTYvWJoGFjbCmCDK6/GTbUwXzn2b2La
-         UUMNB3uhcFvJdCxJbDYvCYFfP0wXhBEn2PrFPe4aiV0zQiBi68wA9FdDusMXZQCQ7fn7
-         +0Fv9FwCMlQNPU0d5aAIr+aDiJy4RAu31B+SzTjkVPYe+45RDP0lK6hlnN1kmnQi9svG
-         mTKfhZ2uJ3u7AaKo8Bil/k4Pqya6CA+mU3eQQ3BxuK6rGsl0cryhBnDTewKSXR9Pv/tT
-         4OYTMqAqjmv9ZhJGDpLo+Lh20p+v8wDOLO+4XA444UeRa9h/f6yY+ecaZcZ9MeuWKCly
-         CsEw==
-X-Gm-Message-State: AFqh2koIN0/Lk2J4Ff4aQtbGT4wKYi/f4G9yMpXrTui9Cy33jo2toAv4
-        uIJCzykk52xKLwlR8wx7BUM=
-X-Google-Smtp-Source: AMrXdXt9KVvifwzbI7QYwDKfgYLTPfsvX+seF3bVuy/8Ekey/CYt6oSHzdPyVitRNiPnqIRVr8UEYw==
-X-Received: by 2002:a17:906:c409:b0:863:73ee:bb67 with SMTP id u9-20020a170906c40900b0086373eebb67mr34402293ejz.73.1674672763593;
-        Wed, 25 Jan 2023 10:52:43 -0800 (PST)
-Received: from localhost (fwdproxy-cln-007.fbsv.net. [2a03:2880:31ff:7::face:b00c])
-        by smtp.gmail.com with ESMTPSA id p16-20020a1709060e9000b008779570227bsm2675642ejf.112.2023.01.25.10.52.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Jan 2023 10:52:42 -0800 (PST)
-From:   Breno Leitao <leitao@debian.org>
-To:     kuba@kernel.org, netdev@vger.kernel.org
-Cc:     leitao@debian.org, leit@fb.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, andrew@lunn.ch,
-        linux-kernel@vger.kernel.org,
-        Michael van der Westhuizen <rmikey@meta.com>
-Subject: [PATCH v3] netpoll: Remove 4s sleep during carrier detection
-Date:   Wed, 25 Jan 2023 10:52:30 -0800
-Message-Id: <20230125185230.3574681-1-leitao@debian.org>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S235373AbjAYS5t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 13:57:49 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F8740E7
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 10:57:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 908A1B8198A
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 18:57:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAAAAC433D2;
+        Wed, 25 Jan 2023 18:57:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674673065;
+        bh=ODihhGg+fvePSvXcHLfT1u3HSt0/QLf9enTGWoZiB9k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fl98JuCyf/b4Jn7bNrJDI5LdJosUUkjdQh8QJuN5uUs0a624uOTgdgypYPKfKmlNW
+         0YOBmjGIx8Fhn8XwehjdUklgdGOIWBJCzxmhM+rwhdW6Pw2X5Fwdx3kPet6wEQw/aa
+         mkCTrRiPRgs22BkE+S/4izvjkPjsR76Jt75BLXNYBS6xhQROsNXCXWXYrIswVqHvs8
+         GgWT/w4nShJrKwEv38Xg0Y/fhdaixoneKafP1MZ4OG1dN5EA+6ZxVpcHZ0Uoyc2iYQ
+         Tj8g+QwBBf6HbWfd7/EkVv/Iw8KVlo6htcQO9cyw9k77PNlIkJFPQyHVPYykxLsWX5
+         j3pc/oXCPIzIw==
+Date:   Wed, 25 Jan 2023 10:57:43 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Apoorv Kothari <apoorvko@amazon.com>
+Cc:     <sd@queasysnail.net>, <borisp@nvidia.com>, <dueno@redhat.com>,
+        <fkrenzel@redhat.com>, <gal@nvidia.com>, <netdev@vger.kernel.org>,
+        <simo@redhat.com>, <tariqt@nvidia.com>
+Subject: Re: [PATCH net-next 0/5] tls: implement key updates for TLS1.3
+Message-ID: <20230125105743.16d7d4c6@kernel.org>
+In-Reply-To: <20230125184720.56498-1-apoorvko@amazon.com>
+References: <Y8//pypyM3HAu+cf@hog>
+        <20230125184720.56498-1-apoorvko@amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch removes the msleep(4s) during netpoll_setup() if the carrier
-appears instantly.
+On Wed, 25 Jan 2023 10:47:20 -0800 Apoorv Kothari wrote:
+> > We'll need to keep the old key around until we know all the records
+> > using it have been fully received, right?  And that could be multiple
+> > old keys, in case of a quick series of key updates.  
+> 
+> Why does the hardware implementation need to store old keys? Does the need
+> for retransmitted data assume we are operating in TLS_HW_RECORD mode and
+> the hardware is also implementing the TCP stack?
 
-Here are some scenarios where this workaround is counter-productive in
-modern ages:
+We're talking about the Tx direction, the packets are queued to the
+lower layers of the stack unencrypted, and get encrypted by the NIC.
+Until TCP gets acks for all the data awaiting offloaded crypto - we
+must hold onto the keys.
 
-Servers which have BMC communicating over NC-SI via the same NIC as gets
-used for netconsole. BMC will keep the PHY up, hence the carrier
-appearing instantly.
+Rx direction is much simpler indeed.
 
-The link is fibre, SERDES getting sync could happen within 0.1Hz, and
-the carrier also appears instantly.
+> The TLS RFC assumes that the underlying transport layer provides reliable
+> and in-order deliver so storing previous keys and encrypting 'old' data
+> would be quite divergent from normal TLS behavior. Is the TLS_HW_RECORD mode
+> processing TLS records out of order? If the hardware offload is handling
+> the TCP networking stack then I feel it should also handle the
+> retransmission of lost data.
 
-Other than that, if a driver is reporting instant carrier and then
-losing it, this is probably a driver bug.
-
-Reported-by: Michael van der Westhuizen <rmikey@meta.com>
-Signed-off-by: Breno Leitao <leitao@debian.org>
---
-v1->v2: added "RFC" in the subject
-v2->v3: improved the commit message
----
- net/core/netpoll.c | 12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
-
-diff --git a/net/core/netpoll.c b/net/core/netpoll.c
-index 9be762e1d..a089b704b 100644
---- a/net/core/netpoll.c
-+++ b/net/core/netpoll.c
-@@ -682,7 +682,7 @@ int netpoll_setup(struct netpoll *np)
- 	}
- 
- 	if (!netif_running(ndev)) {
--		unsigned long atmost, atleast;
-+		unsigned long atmost;
- 
- 		np_info(np, "device %s not up yet, forcing it\n", np->dev_name);
- 
-@@ -694,7 +694,6 @@ int netpoll_setup(struct netpoll *np)
- 		}
- 
- 		rtnl_unlock();
--		atleast = jiffies + HZ/10;
- 		atmost = jiffies + carrier_timeout * HZ;
- 		while (!netif_carrier_ok(ndev)) {
- 			if (time_after(jiffies, atmost)) {
-@@ -704,15 +703,6 @@ int netpoll_setup(struct netpoll *np)
- 			msleep(1);
- 		}
- 
--		/* If carrier appears to come up instantly, we don't
--		 * trust it and pause so that we don't pump all our
--		 * queued console messages into the bitbucket.
--		 */
--
--		if (time_before(jiffies, atleast)) {
--			np_notice(np, "carrier detect appears untrustworthy, waiting 4 seconds\n");
--			msleep(4000);
--		}
- 		rtnl_lock();
- 	}
- 
--- 
-2.30.2
-
+Ignore TLS_HW_RECORD, it's a ToE offload, the offload we care about
+just offloads encryption.
