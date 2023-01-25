@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CC9C67B40B
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 15:15:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D1B267B40C
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 15:15:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234913AbjAYOPi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 09:15:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
+        id S235656AbjAYOPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 09:15:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235696AbjAYOPX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 09:15:23 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E2AD59744
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 06:14:41 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id y11so21874173edd.6
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 06:14:41 -0800 (PST)
+        with ESMTP id S235708AbjAYOPY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 09:15:24 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DDB59559
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 06:14:42 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id hw16so47918967ejc.10
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 06:14:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=iQYuuxmdPZo1LjfvwwLGbJy3o66zLzedFnyh2nC+4Lc=;
-        b=Nsf4/OoK/WyM98RJ9icIo3FnCo7f8ITDJHCQoe6iFlEFgU/mvHmQBtBqyWZmeumfJU
-         1xSrDpeYhAHAbH3jTFyDPPvl75U30n4iuQ9gH3ud4F+3BIoGhf5ed6LLeP858ed1v2ED
-         UF6VdrPnTkOxcMsJpaEU8P+C41f9BdjW/izC5n1Pf+ts0p8ihVIexdoDhu/jQiNJSK7a
-         yysqu4USnSQuKd9xt2uM6Jx5oidx5vr6YxsPZQScJLSdq2c/A9QhvYIlpSj8U3N3U6cc
-         Y6d9r4OdQEsfup7aOfeqbQH2vX3oDuR2MnEdVC+RjCyRp8UJIt4JaikzRU99Xzdv9TEH
-         Qbcg==
+        bh=bMxofvSpuuiakewAR7vYqmlInYg0fSZyJzDBOnhXCWo=;
+        b=UgmVJ6qtuTKMSkVEYv4e5FQ2xtW7q3hVgp2DwbyPNtT20HYQbA8ns7xfrBe6fpeO+b
+         dlF/NwNKvUjM8hjTlD7IU26078FDLNqtza4NJzasgqf95CoBy2DYSpM7R4QEJM7kHY9D
+         gdDdejUTmqvCMRSc5Zd6t5GqGZTN0QSaCWLpTpcN3LZ4JaYUlUiJgMYm+l/H2Of4uuRo
+         Vy9Z6oTbdYGxxeOySpPMsEXdLPJCXQ/lQYVQuAVKFkrneBWmY5ijpn5xs2NuBxD1VwgJ
+         4m2x2Iclwc7mBsmMh7fYtbglqUkIcF9tYvGmEeieClBN2a5rp+YVxsSUtGuBXfky+f4d
+         MMKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=iQYuuxmdPZo1LjfvwwLGbJy3o66zLzedFnyh2nC+4Lc=;
-        b=fDXJjtjEDQlvVcRE4mWLQ70SDoPtEkkMvtv6onhzCcIxDeEdrWvTMJpgMctKCZcsNx
-         odJV9FQzSnPCSmMb1wTNbaDT4F9Z6AyqBuqzitAZJpdA+YQNEg63UFpX34rbUjKFBLGr
-         lMbkkDiaVZQYGzawKX4AStn2J0neQBUiZhsbQA2uHRM8Xrhd+K53oMZ3uh9LfWafhBDG
-         nalqr5kuxRCSdkSvlEwAbpOzL5iDe8rbXLe1hVgeU/OvsbZgv1DiBxyI/BQC/n+YXf90
-         mjRWtYs/4jxGajEKK/XdPjC07utM7zRDfcZGlhMIkMK794e447jyDMcRbaVCuIWtagzx
-         A5kw==
-X-Gm-Message-State: AO0yUKVgbJi9bbBTbcjEFgGzhdLvcPsGj23hexKlI1ma02O6s7UfBnfc
-        H22OSD+lqBoZVdhSnXCzz9R0d8cDgmUGWvs16Ww=
-X-Google-Smtp-Source: AK7set98DFgAPUKc8WeDztqeMD/oxRdX1t/SxZ8hrP0wDh9ukWOA3Fg98doBqcTyWUQiiQfWqwbEAQ==
-X-Received: by 2002:a05:6402:31f8:b0:4a0:8eb8:bb8 with SMTP id dy24-20020a05640231f800b004a08eb80bb8mr5249960edb.18.1674656079601;
-        Wed, 25 Jan 2023 06:14:39 -0800 (PST)
+        bh=bMxofvSpuuiakewAR7vYqmlInYg0fSZyJzDBOnhXCWo=;
+        b=un6ohdbxGNhf66As5rNDbhEsF7ebgRQxcJFlRdFoNokep+D+v9umSebXY/APfiiiC8
+         eCthotcV2IhmwRuJ0U0rtkqld0lrhHTDqpXWYqsP++mqbiFyDruPTdg8bJdI4e9605sn
+         E5aUfHiVkI/mZAS90X/5LboF7BFUi9MM7HIa04JNsKMyxpeSxKgJr4HiypFpctT+zKLw
+         i+6ITVE0LwOzbuaOTTQfQ44G2z1qh2D9dPg2RYDxo6cpt/CnpiTKdvcLX/ClSDfisr6X
+         RPF/p21bbQBLz1xEMDMp5RfP+Pk8HAuFMz/JkDL4nHWgu0J4vbcp3kTuFdTIuQ+vVyW+
+         1JQw==
+X-Gm-Message-State: AFqh2kpnzgBivpjmQ3PxgCpgzMzI5TY9KZlZ4txYk60flsFNTRsmwF9y
+        fg/2qGMgYqeg87rtznK3FZ+lqx8KU8hIH7bDMys=
+X-Google-Smtp-Source: AMrXdXtSfKyd3i4uAT5yX6ME0KXn8OlEKMQtOg6zpIt3HVgEjBCgJ1+R7uwo8A2GLxiqXXUmTWN0nA==
+X-Received: by 2002:a17:906:c409:b0:863:73ee:bb67 with SMTP id u9-20020a170906c40900b0086373eebb67mr33486010ejz.73.1674656081875;
+        Wed, 25 Jan 2023 06:14:41 -0800 (PST)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id em1-20020a056402364100b00483dd234ac6sm2372314edb.96.2023.01.25.06.14.38
+        by smtp.gmail.com with ESMTPSA id q25-20020a1709060e5900b008448d273670sm2424930eji.49.2023.01.25.06.14.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Jan 2023 06:14:38 -0800 (PST)
+        Wed, 25 Jan 2023 06:14:41 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
@@ -59,9 +59,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         aelior@marvell.com, manishc@marvell.com, jacob.e.keller@intel.com,
         gal@nvidia.com, yinjun.zhang@corigine.com, fei.qin@corigine.com,
         Niklas.Cassel@wdc.com
-Subject: [patch net-next 11/12] net/mlx5: Move flow steering devlink param to flow steering code
-Date:   Wed, 25 Jan 2023 15:14:11 +0100
-Message-Id: <20230125141412.1592256-12-jiri@resnulli.us>
+Subject: [patch net-next 12/12] net/mlx5: Move eswitch port metadata devlink param to flow eswitch code
+Date:   Wed, 25 Jan 2023 15:14:12 +0100
+Message-Id: <20230125141412.1592256-13-jiri@resnulli.us>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230125141412.1592256-1-jiri@resnulli.us>
 References: <20230125141412.1592256-1-jiri@resnulli.us>
@@ -78,223 +78,239 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Move the param registration and handling code into the flow steering
+Move the param registration and handling code into the eswitch offloads
 code as they are related to each other. No point in having the
 devlink param registration done in separate file.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/devlink.c | 69 ---------------
- .../net/ethernet/mellanox/mlx5/core/fs_core.c | 84 ++++++++++++++++++-
- 2 files changed, 83 insertions(+), 70 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/devlink.c | 49 ----------
+ .../net/ethernet/mellanox/mlx5/core/eswitch.c |  4 +-
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |  4 +-
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 92 ++++++++++++++++++-
+ 4 files changed, 94 insertions(+), 55 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index 8bda15dda0d7..5918c8c3e943 100644
+index 5918c8c3e943..95a69544a685 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -396,70 +396,6 @@ void mlx5_devlink_free(struct devlink *devlink)
- 	devlink_free(devlink);
+@@ -432,49 +432,6 @@ static int mlx5_devlink_large_group_num_validate(struct devlink *devlink, u32 id
+ 	return 0;
  }
  
--static int mlx5_devlink_fs_mode_validate(struct devlink *devlink, u32 id,
--					 union devlink_param_value val,
--					 struct netlink_ext_ack *extack)
+-static int mlx5_devlink_esw_port_metadata_set(struct devlink *devlink, u32 id,
+-					      struct devlink_param_gset_ctx *ctx)
 -{
 -	struct mlx5_core_dev *dev = devlink_priv(devlink);
--	char *value = val.vstr;
--	int err = 0;
 -
--	if (!strcmp(value, "dmfs")) {
--		return 0;
--	} else if (!strcmp(value, "smfs")) {
--		u8 eswitch_mode;
--		bool smfs_cap;
+-	if (!MLX5_ESWITCH_MANAGER(dev))
+-		return -EOPNOTSUPP;
 -
--		eswitch_mode = mlx5_eswitch_mode(dev);
--		smfs_cap = mlx5_fs_dr_is_supported(dev);
+-	return mlx5_esw_offloads_vport_metadata_set(dev->priv.eswitch, ctx->val.vbool);
+-}
 -
--		if (!smfs_cap) {
--			err = -EOPNOTSUPP;
--			NL_SET_ERR_MSG_MOD(extack,
--					   "Software managed steering is not supported by current device");
--		}
+-static int mlx5_devlink_esw_port_metadata_get(struct devlink *devlink, u32 id,
+-					      struct devlink_param_gset_ctx *ctx)
+-{
+-	struct mlx5_core_dev *dev = devlink_priv(devlink);
 -
--		else if (eswitch_mode == MLX5_ESWITCH_OFFLOADS) {
--			NL_SET_ERR_MSG_MOD(extack,
--					   "Software managed steering is not supported when eswitch offloads enabled.");
--			err = -EOPNOTSUPP;
--		}
--	} else {
--		NL_SET_ERR_MSG_MOD(extack,
--				   "Bad parameter: supported values are [\"dmfs\", \"smfs\"]");
--		err = -EINVAL;
+-	if (!MLX5_ESWITCH_MANAGER(dev))
+-		return -EOPNOTSUPP;
+-
+-	ctx->val.vbool = mlx5_eswitch_vport_match_metadata_enabled(dev->priv.eswitch);
+-	return 0;
+-}
+-
+-static int mlx5_devlink_esw_port_metadata_validate(struct devlink *devlink, u32 id,
+-						   union devlink_param_value val,
+-						   struct netlink_ext_ack *extack)
+-{
+-	struct mlx5_core_dev *dev = devlink_priv(devlink);
+-	u8 esw_mode;
+-
+-	if (!MLX5_ESWITCH_MANAGER(dev)) {
+-		NL_SET_ERR_MSG_MOD(extack, "E-Switch is unsupported");
+-		return -EOPNOTSUPP;
 -	}
--
--	return err;
--}
--
--static int mlx5_devlink_fs_mode_set(struct devlink *devlink, u32 id,
--				    struct devlink_param_gset_ctx *ctx)
--{
--	struct mlx5_core_dev *dev = devlink_priv(devlink);
--	enum mlx5_flow_steering_mode mode;
--
--	if (!strcmp(ctx->val.vstr, "smfs"))
--		mode = MLX5_FLOW_STEERING_MODE_SMFS;
--	else
--		mode = MLX5_FLOW_STEERING_MODE_DMFS;
--	dev->priv.steering->mode = mode;
--
+-	esw_mode = mlx5_eswitch_mode(dev);
+-	if (esw_mode == MLX5_ESWITCH_OFFLOADS) {
+-		NL_SET_ERR_MSG_MOD(extack,
+-				   "E-Switch must either disabled or non switchdev mode");
+-		return -EBUSY;
+-	}
 -	return 0;
 -}
 -
--static int mlx5_devlink_fs_mode_get(struct devlink *devlink, u32 id,
--				    struct devlink_param_gset_ctx *ctx)
--{
--	struct mlx5_core_dev *dev = devlink_priv(devlink);
--
--	if (dev->priv.steering->mode == MLX5_FLOW_STEERING_MODE_SMFS)
--		strcpy(ctx->val.vstr, "smfs");
--	else
--		strcpy(ctx->val.vstr, "dmfs");
--	return 0;
--}
--
- static int mlx5_devlink_enable_roce_validate(struct devlink *devlink, u32 id,
- 					     union devlink_param_value val,
- 					     struct netlink_ext_ack *extack)
-@@ -549,11 +485,6 @@ static int mlx5_devlink_eq_depth_validate(struct devlink *devlink, u32 id,
+ #endif
+ 
+ static int mlx5_devlink_eq_depth_validate(struct devlink *devlink, u32 id,
+@@ -493,12 +450,6 @@ static const struct devlink_param mlx5_devlink_params[] = {
+ 			     BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
+ 			     NULL, NULL,
+ 			     mlx5_devlink_large_group_num_validate),
+-	DEVLINK_PARAM_DRIVER(MLX5_DEVLINK_PARAM_ID_ESW_PORT_METADATA,
+-			     "esw_port_metadata", DEVLINK_PARAM_TYPE_BOOL,
+-			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
+-			     mlx5_devlink_esw_port_metadata_get,
+-			     mlx5_devlink_esw_port_metadata_set,
+-			     mlx5_devlink_esw_port_metadata_validate),
+ #endif
+ 	DEVLINK_PARAM_GENERIC(IO_EQ_SIZE, BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
+ 			      NULL, NULL, mlx5_devlink_eq_depth_validate),
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+index 0be01d702049..0f052513fefa 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+@@ -1640,7 +1640,7 @@ int mlx5_eswitch_init(struct mlx5_core_dev *dev)
+ 	if (err)
+ 		goto abort;
+ 
+-	err = esw_offloads_init_reps(esw);
++	err = esw_offloads_init(esw);
+ 	if (err)
+ 		goto reps_err;
+ 
+@@ -1706,7 +1706,7 @@ void mlx5_eswitch_cleanup(struct mlx5_eswitch *esw)
+ 	mlx5e_mod_hdr_tbl_destroy(&esw->offloads.mod_hdr);
+ 	mutex_destroy(&esw->offloads.encap_tbl_lock);
+ 	mutex_destroy(&esw->offloads.decap_tbl_lock);
+-	esw_offloads_cleanup_reps(esw);
++	esw_offloads_cleanup(esw);
+ 	mlx5_esw_vports_cleanup(esw);
+ 	kfree(esw);
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+index 92644fbb5081..5b5a215a7dc5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+@@ -346,8 +346,8 @@ struct mlx5_eswitch {
+ 
+ void esw_offloads_disable(struct mlx5_eswitch *esw);
+ int esw_offloads_enable(struct mlx5_eswitch *esw);
+-void esw_offloads_cleanup_reps(struct mlx5_eswitch *esw);
+-int esw_offloads_init_reps(struct mlx5_eswitch *esw);
++void esw_offloads_cleanup(struct mlx5_eswitch *esw);
++int esw_offloads_init(struct mlx5_eswitch *esw);
+ 
+ struct mlx5_flow_handle *
+ mlx5_eswitch_add_send_to_vport_meta_rule(struct mlx5_eswitch *esw, u16 vport_num);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 5fb9d5e99734..9f69d48866d9 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -2403,7 +2403,7 @@ static void mlx5_esw_offloads_rep_cleanup(struct mlx5_eswitch *esw,
+ 	kfree(rep);
  }
  
- static const struct devlink_param mlx5_devlink_params[] = {
--	DEVLINK_PARAM_DRIVER(MLX5_DEVLINK_PARAM_ID_FLOW_STEERING_MODE,
--			     "flow_steering_mode", DEVLINK_PARAM_TYPE_STRING,
--			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
--			     mlx5_devlink_fs_mode_get, mlx5_devlink_fs_mode_set,
--			     mlx5_devlink_fs_mode_validate),
- 	DEVLINK_PARAM_GENERIC(ENABLE_ROCE, BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
- 			      NULL, NULL, mlx5_devlink_enable_roce_validate),
- #ifdef CONFIG_MLX5_ESWITCH
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index 5a85d8c1e797..dd43a940499b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -34,12 +34,14 @@
- #include <linux/mlx5/driver.h>
- #include <linux/mlx5/vport.h>
- #include <linux/mlx5/eswitch.h>
-+#include <net/devlink.h>
+-void esw_offloads_cleanup_reps(struct mlx5_eswitch *esw)
++static void esw_offloads_cleanup_reps(struct mlx5_eswitch *esw)
+ {
+ 	struct mlx5_eswitch_rep *rep;
+ 	unsigned long i;
+@@ -2413,7 +2413,7 @@ void esw_offloads_cleanup_reps(struct mlx5_eswitch *esw)
+ 	xa_destroy(&esw->offloads.vport_reps);
+ }
  
- #include "mlx5_core.h"
- #include "fs_core.h"
- #include "fs_cmd.h"
- #include "fs_ft_pool.h"
- #include "diag/fs_tracepoint.h"
-+#include "devlink.h"
- 
- #define INIT_TREE_NODE_ARRAY_SIZE(...)	(sizeof((struct init_tree_node[]){__VA_ARGS__}) /\
- 					 sizeof(struct init_tree_node))
-@@ -3143,6 +3145,78 @@ static int init_egress_root_ns(struct mlx5_flow_steering *steering)
+-int esw_offloads_init_reps(struct mlx5_eswitch *esw)
++static int esw_offloads_init_reps(struct mlx5_eswitch *esw)
+ {
+ 	struct mlx5_vport *vport;
+ 	unsigned long i;
+@@ -2433,6 +2433,94 @@ int esw_offloads_init_reps(struct mlx5_eswitch *esw)
  	return err;
  }
  
-+static int mlx5_fs_mode_validate(struct devlink *devlink, u32 id,
-+				 union devlink_param_value val,
-+				 struct netlink_ext_ack *extack)
++static int esw_port_metadata_set(struct devlink *devlink, u32 id,
++				 struct devlink_param_gset_ctx *ctx)
 +{
 +	struct mlx5_core_dev *dev = devlink_priv(devlink);
-+	char *value = val.vstr;
-+	int err = 0;
++	struct mlx5_eswitch *esw = dev->priv.eswitch;
++	int err;
 +
-+	if (!strcmp(value, "dmfs")) {
-+		return 0;
-+	} else if (!strcmp(value, "smfs")) {
-+		u8 eswitch_mode;
-+		bool smfs_cap;
-+
-+		eswitch_mode = mlx5_eswitch_mode(dev);
-+		smfs_cap = mlx5_fs_dr_is_supported(dev);
-+
-+		if (!smfs_cap) {
-+			err = -EOPNOTSUPP;
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Software managed steering is not supported by current device");
-+		}
-+
-+		else if (eswitch_mode == MLX5_ESWITCH_OFFLOADS) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Software managed steering is not supported when eswitch offloads enabled.");
-+			err = -EOPNOTSUPP;
-+		}
-+	} else {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Bad parameter: supported values are [\"dmfs\", \"smfs\"]");
-+		err = -EINVAL;
++	down_write(&esw->mode_lock);
++	if (mlx5_esw_is_fdb_created(esw)) {
++		err = -EBUSY;
++		goto done;
 +	}
-+
++	if (!mlx5_esw_vport_match_metadata_supported(esw)) {
++		err = -EOPNOTSUPP;
++		goto done;
++	}
++	if (ctx->val.vbool)
++		esw->flags |= MLX5_ESWITCH_VPORT_MATCH_METADATA;
++	else
++		esw->flags &= ~MLX5_ESWITCH_VPORT_MATCH_METADATA;
++done:
++	up_write(&esw->mode_lock);
 +	return err;
 +}
 +
-+static int mlx5_fs_mode_set(struct devlink *devlink, u32 id,
-+			    struct devlink_param_gset_ctx *ctx)
-+{
-+	struct mlx5_core_dev *dev = devlink_priv(devlink);
-+	enum mlx5_flow_steering_mode mode;
-+
-+	if (!strcmp(ctx->val.vstr, "smfs"))
-+		mode = MLX5_FLOW_STEERING_MODE_SMFS;
-+	else
-+		mode = MLX5_FLOW_STEERING_MODE_DMFS;
-+	dev->priv.steering->mode = mode;
-+
-+	return 0;
-+}
-+
-+static int mlx5_fs_mode_get(struct devlink *devlink, u32 id,
-+			    struct devlink_param_gset_ctx *ctx)
++static int esw_port_metadata_get(struct devlink *devlink, u32 id,
++				 struct devlink_param_gset_ctx *ctx)
 +{
 +	struct mlx5_core_dev *dev = devlink_priv(devlink);
 +
-+	if (dev->priv.steering->mode == MLX5_FLOW_STEERING_MODE_SMFS)
-+		strcpy(ctx->val.vstr, "smfs");
-+	else
-+		strcpy(ctx->val.vstr, "dmfs");
++	ctx->val.vbool = mlx5_eswitch_vport_match_metadata_enabled(dev->priv.eswitch);
 +	return 0;
 +}
 +
-+static const struct devlink_param mlx5_fs_params[] = {
-+	DEVLINK_PARAM_DRIVER(MLX5_DEVLINK_PARAM_ID_FLOW_STEERING_MODE,
-+			     "flow_steering_mode", DEVLINK_PARAM_TYPE_STRING,
++static int esw_port_metadata_validate(struct devlink *devlink, u32 id,
++				      union devlink_param_value val,
++				      struct netlink_ext_ack *extack)
++{
++	struct mlx5_core_dev *dev = devlink_priv(devlink);
++	u8 esw_mode;
++
++	esw_mode = mlx5_eswitch_mode(dev);
++	if (esw_mode == MLX5_ESWITCH_OFFLOADS) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "E-Switch must either disabled or non switchdev mode");
++		return -EBUSY;
++	}
++	return 0;
++}
++
++static const struct devlink_param esw_devlink_params[] = {
++	DEVLINK_PARAM_DRIVER(MLX5_DEVLINK_PARAM_ID_ESW_PORT_METADATA,
++			     "esw_port_metadata", DEVLINK_PARAM_TYPE_BOOL,
 +			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			     mlx5_fs_mode_get, mlx5_fs_mode_set,
-+			     mlx5_fs_mode_validate),
++			     esw_port_metadata_get,
++			     esw_port_metadata_set,
++			     esw_port_metadata_validate),
 +};
 +
- void mlx5_fs_core_cleanup(struct mlx5_core_dev *dev)
- {
- 	struct mlx5_flow_steering *steering = dev->priv.steering;
-@@ -3155,12 +3229,20 @@ void mlx5_fs_core_cleanup(struct mlx5_core_dev *dev)
- 	cleanup_root_ns(steering->rdma_rx_root_ns);
- 	cleanup_root_ns(steering->rdma_tx_root_ns);
- 	cleanup_root_ns(steering->egress_root_ns);
-+
-+	devl_params_unregister(priv_to_devlink(dev), mlx5_fs_params,
-+			       ARRAY_SIZE(mlx5_fs_params));
- }
- 
- int mlx5_fs_core_init(struct mlx5_core_dev *dev)
- {
- 	struct mlx5_flow_steering *steering = dev->priv.steering;
--	int err = 0;
++int esw_offloads_init(struct mlx5_eswitch *esw)
++{
 +	int err;
 +
-+	err = devl_params_register(priv_to_devlink(dev), mlx5_fs_params,
-+				   ARRAY_SIZE(mlx5_fs_params));
++	err = esw_offloads_init_reps(esw);
 +	if (err)
 +		return err;
- 
- 	if ((((MLX5_CAP_GEN(dev, port_type) == MLX5_CAP_PORT_TYPE_ETH) &&
- 	      (MLX5_CAP_GEN(dev, nic_flow_table))) ||
++
++	err = devl_params_register(priv_to_devlink(esw->dev),
++				   esw_devlink_params,
++				   ARRAY_SIZE(esw_devlink_params));
++	if (err)
++		goto err_params;
++
++	return 0;
++
++err_params:
++	esw_offloads_cleanup_reps(esw);
++	return err;
++}
++
++void esw_offloads_cleanup(struct mlx5_eswitch *esw)
++{
++	devl_params_unregister(priv_to_devlink(esw->dev),
++			       esw_devlink_params,
++			       ARRAY_SIZE(esw_devlink_params));
++	esw_offloads_cleanup_reps(esw);
++}
++
+ static void __esw_offloads_unload_rep(struct mlx5_eswitch *esw,
+ 				      struct mlx5_eswitch_rep *rep, u8 rep_type)
+ {
 -- 
 2.39.0
 
