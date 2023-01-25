@@ -2,190 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59E0C67A8C5
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 03:31:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83F3E67A8CA
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 03:31:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232748AbjAYCbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 21:31:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56326 "EHLO
+        id S231563AbjAYCby (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 21:31:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230009AbjAYCbI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 21:31:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13EB0E389
-        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 18:31:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A83956142A
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 02:31:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E264FC433EF;
-        Wed, 25 Jan 2023 02:31:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674613863;
-        bh=5Wz9tTvwf2zBG4V/9ey62qsW+AajmFARDoshqYObUbU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=d/2x9N0cNCkzQTC3pS/tXu92fmJ41VMpGDe4QhHAyYPd2rRvDbsuu7x0c5yWzrisY
-         +ns8QsF2v9olWHwwiHbZTK9bDjMIqfnE4vK/NoRVEtyjaHgXvTZ/5+OXaTdNNSUbFj
-         K6RzYNat3dBdZ0kCG2cQzJg+Dls5GHkD8EcFamHxJY7mrgVb1ENfX3386g+piOVe03
-         2UbQhBtx0pajnlftOf7bL4xv7s4YLkb5+bEfQYLHSUe6ed/Gc9C4+Zybjy6drM6XM0
-         xIPSLkW5Jg4fMcnrLv60fdEZHedeZ24+im1aVa2rnpVgG6KDDGST3e10LziH20uR0/
-         Pb2QCYDTbUCrA==
-Date:   Tue, 24 Jan 2023 18:31:02 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Geoff Levand <geoff@infradead.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net v2 1/2] net/ps3_gelic_net: Fix RX skbuff length
-Message-ID: <20230124183102.44d015c3@kernel.org>
-In-Reply-To: <c9a523347acc2d399b667472e158b5fdfbadc941.1674436603.git.geoff@infradead.org>
-References: <cover.1674436603.git.geoff@infradead.org>
-        <c9a523347acc2d399b667472e158b5fdfbadc941.1674436603.git.geoff@infradead.org>
+        with ESMTP id S232876AbjAYCbw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 21:31:52 -0500
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5001F4FC3F;
+        Tue, 24 Jan 2023 18:31:45 -0800 (PST)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-1442977d77dso19911145fac.6;
+        Tue, 24 Jan 2023 18:31:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=8kCsukhVDS/c7tuRdeCrUX7U/E2xZNP5HI/GGFAaFiE=;
+        b=FEVbXRpHzyHt2qh1mEGig45KpGvRwYaEWRia/Wk2VYc4n02CR2HbqxXxWspb8tJt+z
+         LUAYWjdfxnC3HYGGKABdPjzeIUKHbESXeqQJzH0KNvGCqQyB/ZCJkkMtatHS+22PGyoW
+         8yBXFjXhM4QYbam8U4nUZKOgefWJ5PuJ6YnkqJEla+fEFrJAY3DYvuZjKE+vvxxfdyAx
+         OTYi2UB9EQhmzzaugLCfDNbYXfoZzcpc6oOyT93xHgt272deRCEF6eoGAqVNT8QXVmZH
+         2STj/eIiN5KNAe4D1jitEa0Fa+QsixMlUBtYVZdu4Xh7WnYvap5tOEukPTz7tK59ZOOX
+         Kdaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=8kCsukhVDS/c7tuRdeCrUX7U/E2xZNP5HI/GGFAaFiE=;
+        b=bArhI+/wCkwIf4En2c95uRcnKEO0AOqEMs4i/NGqH8teVEk+txDAFHvdjbi0x35Rq2
+         mmCb419bk7471YuyhNeLwnbEcR5ZDrTlJe6fAeHfzNAZXt07UQghnjeLZr+QVzUNOkz1
+         1nt9FbWN26OVOUYHrpSI/BveP+FdvQeqGKp1jluCy35PHTmRIUNMisXFRl85R0BcSuU7
+         XtpG/k+cAALEOXXC4ZUrdvpgbiN3kN1dOhpPLQu2TVVArScPuAvg4rZy/mJu8XAxMxj3
+         mi+2seTSkTNrl3P71ocmuSOgcnwBzmxAWR/0k7TOne2u8Wubk03jYvccpbqrii9UM797
+         00yg==
+X-Gm-Message-State: AFqh2kre0spF/o5NWrQo323JXdwNc7mkvM0R9Pv19WQ1e5nIn+lKifid
+        To+TnCAIcZAeRetXu/7N2ET+FHpR0YE9xrUHicE=
+X-Google-Smtp-Source: AMrXdXsv/wYPwDlp2qCLvItL6QPtD2iv1rwhJgyk3VyrRoJE5hng6Qe0F6mF5pEESMydu87TUrmxgRP4o/kHb5eRV1c=
+X-Received: by 2002:a05:6870:2b18:b0:15f:4b09:ce85 with SMTP id
+ ld24-20020a0568702b1800b0015f4b09ce85mr2124174oab.24.1674613904618; Tue, 24
+ Jan 2023 18:31:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230106113129.694750-1-miquel.raynal@bootlin.com>
+ <CAK-6q+jNmvtBKKxSp1WepVXbaQ65CghZv3bS2ptjB9jyzOSGTA@mail.gmail.com>
+ <20230118102058.3b1f275b@xps-13> <CAK-6q+gwP8P--5e9HKt2iPhjeefMXrXUVy-G+szGdFXZvgYKvg@mail.gmail.com>
+ <CAK-6q+gn7W9x2+ihSC41RzkhmBn1E44pKtJFHgqRdd8aBpLrVQ@mail.gmail.com> <20230124110814.6096ecbe@xps-13>
+In-Reply-To: <20230124110814.6096ecbe@xps-13>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Tue, 24 Jan 2023 21:31:33 -0500
+Message-ID: <CAB_54W69KcM0UJjf8py-VyRXx2iEUvcAKspXiAkykkQoF6ccDA@mail.gmail.com>
+Subject: Re: [PATCH wpan-next 0/2] ieee802154: Beaconing support
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <aahringo@redhat.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The patches didn't make it to patchwork or the lore archive.
-Keep an eye for any irregularities when reposting.
+Hi,
 
-On Mon, 23 Jan 2023 01:24:25 +0000 Geoff Levand wrote:
-> The Gelic Etherenet device needs to have the RX skbuffs aligned to 128 bytes.
-> The current Gelic Etherenet driver was not allocating skbuffs large enough to
-> allow for this alignment.
-> 
-> This change adds a new local structure named aligned_buff to help calculate a
-> buffer size large enough to allow for this alignment.
-> 
-> Fixes various randomly occurring runtime network errors.
-> 
-> Signed-off-by: Geoff Levand <geoff@infradead.org>
+On Tue, Jan 24, 2023 at 5:08 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>
+> Hi Alexander,
+>
+> aahringo@redhat.com wrote on Mon, 23 Jan 2023 09:02:48 -0500:
+>
+> > Hi,
+> >
+> > On Mon, Jan 23, 2023 at 9:01 AM Alexander Aring <aahringo@redhat.com> wrote:
+> > >
+> > > Hi,
+> > >
+> > > On Wed, Jan 18, 2023 at 4:21 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > > >
+> > > > Hi Alexander,
+> > > >
+> > > > aahringo@redhat.com wrote on Sun, 15 Jan 2023 20:54:02 -0500:
+> > > >
+> > > > > Hi,
+> > > > >
+> > > > > On Fri, Jan 6, 2023 at 6:33 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > > > > >
+> > > > > > Scanning being now supported, we can eg. play with hwsim to verify
+> > > > > > everything works as soon as this series including beaconing support gets
+> > > > > > merged.
+> > > > > >
+> > > > >
+> > > > > I am not sure if a beacon send should be handled by an mlme helper
+> > > > > handling as this is a different use-case and the user does not trigger
+> > > > > an mac command and is waiting for some reply and a more complex
+> > > > > handling could be involved. There is also no need for hotpath xmit
+> > > > > handling is disabled during this time. It is just an async messaging
+> > > > > in some interval and just "try" to send it and don't care if it fails,
+> > > > > or? For mac802154 therefore I think we should use the dev_queue_xmit()
+> > > > > function to queue it up to send it through the hotpath?
+> > > > >
+> > > > > I can ack those patches, it will work as well. But I think we should
+> > > > > switch at some point to dev_queue_xmit(). It should be simple to
+> > > > > switch it. Just want to mention there is a difference which will be
+> > > > > there in mac-cmds like association.
+> > > >
+> > > > I see what you mean. That's indeed true, we might just switch to
+> > > > a less constrained transmit path.
+> > > >
+> > >
+> > > I would define the difference in bypass qdisc or not. Whereas the
+> > > qdisc can drop or delay transmitting... For me, the qdisc is currently
+> > > in a "works for now" state.
+> >
+> > probably also bypass other hooks like tc, etc. :-/ Not sure if we want that.
+>
+> Actually, IIUC, we no longer want to go through the entire net stack.
+> We still want to bypass it but without stopping/flushing the full
+> queue like with an mlme transmission, so what about using
+> ieee802154_subif_start_xmit() instead of dev_queue_xmit()? I think it
+> is more appropriate.
 
-Please add a Fixes tag.
+I do not understand, what do we currently do with mlme ops via the
+ieee802154_subif_start_xmit() function, or? So we bypass everything
+from dev_queue_xmit() until do_xmit() netdev callback.
 
-> diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.c b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-> index cf8de8a7a8a1..43e438f8f595 100644
-> --- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-> +++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-> @@ -366,50 +366,67 @@ static int gelic_card_init_chain(struct gelic_card *card,
->   * allocates a new rx skb, iommu-maps it and attaches it to the descriptor.
->   * Activate the descriptor state-wise
->   */
-> +
+I think it is fine, also I think "mostly" only dataframes should go
+through dev_queue_xmit(). With a HardMAC transceiver we would have
+control about "mostly" other frames than data either. So we should do
+everything with mlme-ops do what the spec says (to match up with
+HardMAC behaviour?) and don't allow common net hooks/etc. to change
+this behaviour?
 
-Why this new line?
-
->  static int gelic_descr_prepare_rx(struct gelic_card *card,
->  				  struct gelic_descr *descr)
->  {
-> -	int offset;
-> -	unsigned int bufsize;
-> +	struct device *dev = ctodev(card);
-> +	struct aligned_buff {
-> +		unsigned int total_bytes;
-> +		unsigned int offset;
-> +	};
-> +	struct aligned_buff a_buf;
-
-You can declare this as a anonymous struct:
-
-	struct {
-		unsigned int total_bytes;
-		unsigned int offset;
-	} a_buf;
-
-> +	dma_addr_t cpu_addr;
-> +
-> +	if (gelic_descr_get_status(descr) !=  GELIC_DESCR_DMA_NOT_IN_USE) {
-> +		dev_err(dev, "%s:%d: ERROR status\n", __func__, __LINE__);
-> +	}
-
-The fixes should be minimal, please don't change prints or reformat 
-the code unless it makes it a lot easier to understand.
-
-> +	a_buf.total_bytes = ALIGN(GELIC_NET_MAX_MTU, GELIC_NET_RXBUF_ALIGN)
-> +		+ GELIC_NET_RXBUF_ALIGN;
->  
-> -	if (gelic_descr_get_status(descr) !=  GELIC_DESCR_DMA_NOT_IN_USE)
-> -		dev_info(ctodev(card), "%s: ERROR status\n", __func__);
-> -	/* we need to round up the buffer size to a multiple of 128 */
-> -	bufsize = ALIGN(GELIC_NET_MAX_MTU, GELIC_NET_RXBUF_ALIGN);
-> +	descr->skb = dev_alloc_skb(a_buf.total_bytes);
->  
-> -	/* and we need to have it 128 byte aligned, therefore we allocate a
-> -	 * bit more */
-> -	descr->skb = dev_alloc_skb(bufsize + GELIC_NET_RXBUF_ALIGN - 1);
-
-So what did you change? This is hard to read.
-Allocating ALIGN - 1 more space should be enough to align the pointer.
-
->  	if (!descr->skb) {
-> -		descr->buf_addr = 0; /* tell DMAC don't touch memory */
-> +		descr->buf_addr = 0;
->  		return -ENOMEM;
->  	}
-> -	descr->buf_size = cpu_to_be32(bufsize);
-> +
-> +	a_buf.offset = PTR_ALIGN(descr->skb->data, GELIC_NET_RXBUF_ALIGN)
-> +		- descr->skb->data;
-> +
-> +	if (a_buf.offset) {
-> +		dev_dbg(dev, "%s:%d: offset=%u\n", __func__, __LINE__,
-> +			a_buf.offset);
-> +		skb_reserve(descr->skb, a_buf.offset);
-> +	}
-> +
-> +	descr->buf_size = a_buf.total_bytes - a_buf.offset;
->  	descr->dmac_cmd_status = 0;
->  	descr->result_size = 0;
->  	descr->valid_size = 0;
->  	descr->data_error = 0;
->  
-> -	offset = ((unsigned long)descr->skb->data) &
-> -		(GELIC_NET_RXBUF_ALIGN - 1);
-> -	if (offset)
-> -		skb_reserve(descr->skb, GELIC_NET_RXBUF_ALIGN - offset);
-> -	/* io-mmu-map the skb */
-> -	descr->buf_addr = cpu_to_be32(dma_map_single(ctodev(card),
-> -						     descr->skb->data,
-> -						     GELIC_NET_MAX_MTU,
-> -						     DMA_FROM_DEVICE));
-> -	if (!descr->buf_addr) {
-> +	cpu_addr = dma_map_single(dev, descr->skb->data,
-> +		descr->buf_size, DMA_FROM_DEVICE);
-> +	descr->buf_addr = cpu_to_be32(cpu_addr);
-> +
-> +	if (unlikely(dma_mapping_error(dev, cpu_addr))) {
-
-adding dma mapping error handling should be a separate fix
-
-> +		dev_err(dev, "%s:%d: dma_mapping_error\n", __func__, __LINE__);
-> +
-> +		descr->buf_addr = 0;
-> +		descr->buf_size = 0;
-> +
->  		dev_kfree_skb_any(descr->skb);
->  		descr->skb = NULL;
-> -		dev_info(ctodev(card),
-> -			 "%s:Could not iommu-map rx buffer\n", __func__);
-> +
->  		gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
-> +
->  		return -ENOMEM;
-> -	} else {
-> -		gelic_descr_set_status(descr, GELIC_DESCR_DMA_CARDOWNED);
-> -		return 0;
->  	}
-> +
-> +	gelic_descr_set_status(descr, GELIC_DESCR_DMA_CARDOWNED);
-> +	return 0;
->  }
->  
->  /**
-
+- Alex
