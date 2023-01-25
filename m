@@ -2,162 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9A4E67ABAF
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 09:29:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2294367ABD7
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 09:34:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234832AbjAYI3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 03:29:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34654 "EHLO
+        id S235203AbjAYIeC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 03:34:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235022AbjAYI3J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 03:29:09 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2083.outbound.protection.outlook.com [40.107.92.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C8B73FF06
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 00:29:04 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H9p69n3L6Nc75uStEh0wd57wEriUIh68zLH5j3U7jo9VR1Na/6MWaT5l2g1XFT9Q0FOaWCWAeiZJsY3T+U4G6oKiAnkJj2B9H1byZN9aRohslaSh7bmnl7fFakzeKOn30pUskW/FVOOaJQ+6Rqd0evL8VVDbZV5Dugxxkn43agegKZsqsO7r0TB8oGFrLD7lL+LKsHP6nTip+boTxrdczTA+++TfB+wqlVVMbZtksfM48s0WLocTNNQnf61ApCwnoV1oQ6JDBsqW/2uClwo/IGINmMJ0cv7HkKCLVAjZiF8bwHYOORO6p9fiJ4GKhtM40Ar+2HbffZ1DsmPDQWSHJA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JsZwej55mAODPfa3IG0EnAG5j8lzEP9BDJ4rynQlCXE=;
- b=BZMeFdS12otZJoeWgaiYFcNorsTX6swl1+vIfE6M1KlBJ/pQXy69Qrzc1p5m6dTVQkr4r3dmqZcEiGqTeqndsyXEQAVp4IBY3BWFYhermhMFRNgCovRBsxpkyD6uQd5lw/WrtB61rop4Iw5TYrB69li1RNEszFSl5wvpA2qjfmpaJaRL1C0Tc8SLHwlzK4gtr3xCDg+W+9mpEabNvnMIqycT2wlfakZSgcxCLma0ciVTQded6NK37l8Dud+niuM7YRN2Ej++CXXckzQnFqyFyYsfXIg1TDbvS4EDc4xbeq5owobuSE47fk69abbFcsYKtIY9xEDbyzRsfFQAueWlSg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JsZwej55mAODPfa3IG0EnAG5j8lzEP9BDJ4rynQlCXE=;
- b=rGx0znBIDOLyNG30oZPp0DdKRw3OLYEKosiJsosfUXQzKDmKI6wIUx9Qj7M+BRRU+5jEmCiedMH+kaTLe8DmcnjDGIKrRN7Lcp+uGBSXV95r//JH3E+OShqR8X1H1Nd+252xN76C1OoH1VaTmhiD9t4ySVjK6OSlgLMhBsrDDm5mX9sVC+HPL1kv8fubVg+677IhpAySHV93DKBtgBjxgA5pUIXazR6liHC87cn6uPP58st1yw/TU06s4H++JaAbzEUrjCy3Tu1Pw0WQdV8ZYuPrSPKp4Tzbo6ndoIN+bT9PViPyA1s2gR2GJqldINvDk4GbCms0gRFwTDTr19o96g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DS7PR12MB6288.namprd12.prod.outlook.com (2603:10b6:8:93::7) by
- IA1PR12MB7542.namprd12.prod.outlook.com (2603:10b6:208:42e::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Wed, 25 Jan
- 2023 08:29:02 +0000
-Received: from DS7PR12MB6288.namprd12.prod.outlook.com
- ([fe80::d01c:4567:fb90:72b9]) by DS7PR12MB6288.namprd12.prod.outlook.com
- ([fe80::d01c:4567:fb90:72b9%3]) with mapi id 15.20.6002.033; Wed, 25 Jan 2023
- 08:29:02 +0000
-Message-ID: <fc8f0ae6-de4f-0468-201f-298abf21e91a@nvidia.com>
-Date:   Wed, 25 Jan 2023 10:28:47 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [net-next 03/15] net/mlx5: Add adjphase function to support
- hardware-only offset control
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Bar Shapira <bar.shapira.work@gmail.com>,
-        Rahul Rameshbabu <rrameshbabu@nvidia.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Vincent Cheng <vincent.cheng.xh@renesas.com>,
-        Richard Cochran <richardcochran@gmail.com>
-References: <87r0vpcch0.fsf@nvidia.com>
- <3312dd93-398d-f891-1170-5d471b3d7482@intel.com>
- <20230120160609.19160723@kernel.org> <87ilgyw9ya.fsf@nvidia.com>
- <Y83vgvTBnCYCzp49@hoboy.vegasvil.org> <878rhuj78u.fsf@nvidia.com>
- <Y8336MEkd6R/XU7x@hoboy.vegasvil.org> <87y1pt6qgc.fsf@nvidia.com>
- <Y88L6EPtgvW4tSA+@hoboy.vegasvil.org>
- <8fceff1b-180d-b089-8259-cd4caf46e7d2@gmail.com>
- <Y9AuU4zSQ0++RV7z@hoboy.vegasvil.org> <20230124164832.71674574@kernel.org>
-Content-Language: en-US
-From:   Gal Pressman <gal@nvidia.com>
-In-Reply-To: <20230124164832.71674574@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0637.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:296::14) To DS7PR12MB6288.namprd12.prod.outlook.com
- (2603:10b6:8:93::7)
+        with ESMTP id S235225AbjAYIds (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 03:33:48 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716B76A77
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 00:33:36 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id w2so12883377pfc.11
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 00:33:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=m12ICOxTmveJri2R2ed0Ea2FtI37uhPR7EGM+M28Uj0=;
+        b=R/5EhroRk9K2foaBL8kGRio7wGBENprqHx9lHedwpixFFwRPEAA4avCNwb6b1aAXj5
+         6Mkx1XVfJDabpGVsO7ptWiTGzurDVxyc7BgF9B5k4dlzxqyJxaq6ITL1AC2fn4iYxSku
+         VFyKcMkX/OAEk11Dvh+h3sryD1JB3bbK7cPEQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=m12ICOxTmveJri2R2ed0Ea2FtI37uhPR7EGM+M28Uj0=;
+        b=C5kmw946G8Js/wXtqKnE3sCZqdHxnntp4HUEO+8lSJ3UA8rQb7EQHI2vKRlwr5ETnP
+         nqAjyLxTmQUe/1Kj2KJEAgTgyD4vnXLb6iYLvDzv1kG9CywX3fmUfp0ogixsFeJkQ0+I
+         wKI/lb7vAGYguFYB63aAAG+kPTBuuvO0CCS3fb40l7NYe42Gcd0HOSatoBOjjl1xSvi1
+         pKFYAID8QvEvDnSPL1W8YjBioeshUrFpAz+2r9ryQy+f/XadT2xM8T3KbFIJ/wsMPeq3
+         PVt24Z76b7m9mtNJ8boMF1jiLyNMOYeDSEgV3r7LlX2aODXlOxJetg62+MMMkyzvxDp6
+         LRIg==
+X-Gm-Message-State: AFqh2kosBL+1IQmUuyXkTiK49YLR6VXyVuIg1JyWwMyw/2a7LzW3Ehby
+        GOb7umuEYBOvoCHhNAwGk8w195bBsjXc8pzwng7qrw==
+X-Google-Smtp-Source: AMrXdXulq+J/4U8OrvqWcYd56zAIiabB3aOMJs2MHCLqLmvOBgbumBAlGjZ7GfTr/8HzTd3SNOyRZSPOoMeMr0zMYU4=
+X-Received: by 2002:a05:6a00:4c0b:b0:575:c692:3813 with SMTP id
+ ea11-20020a056a004c0b00b00575c6923813mr3559372pfb.7.1674635615726; Wed, 25
+ Jan 2023 00:33:35 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6288:EE_|IA1PR12MB7542:EE_
-X-MS-Office365-Filtering-Correlation-Id: f6e65cfa-7723-41b9-1289-08dafeae3661
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Bc5FKMIDEu1rrYsFn/A6Cbqzmj8aXA+kXhChxFEUHkFXmKHO7ytWgq0l/RK3g1nSwRI7zgrnRqTz2XCdSpPE0TWFKVH8bdmu3IxHNqweCIix0LUCISWUoOjPzJa0/CfkVww7x3bmANwJMG1L8DGNlssi0Gd3XblMmZVzXP7MhuboWbPsCAslKaVrmnTvo9PThZX5eNQTspgUNBt1EJphvLw6iFsjmwDAylxbDLGXT8tK8CB4Ouwj/WPG6H3nkIMWyRT9UXM3QF8xK5WbKjqay9u2R3fQ8Gy4JzjMF5UXj9PszunwJ3RcxuFo/3YX8AIYLr1/RNTAfWG4/oO2/WfWh1PLBAnixPDsDvr3nAYsqdrXZ/1J3AoXg7FWQ+SEAFjwUyEQs77KPLUQeXtWcmnaxbJJvpjdc/DrVU1dBYNx6IM+rO0Q8gJ48+URhK9PYaB2rRAC6j+aXkabHHwKUI2dNnBB1ZCkNPWhgpS6c8Di1sHcXV7P+eJcLZV/qN8HdlUtFc5qVxiYrGZ8FSnwzNGKZYB1atAX4tSq9JfL1i1nLCK3DrlE3IChwV4402lRWsjVfNkVkiJdJhZmSMl5vhaFSItcG+cZThy+owGSDtJgTt/cY3J1K60dqW4qU7Bwt6w0k4KFT4PXrfK0NX9PshBLZN3QWyeJP5lBYwwm+Q7ZdPY9ILUiskDEgl1K720i4ye+xK2KAwaF1QFjlKQmeKSQWt2JDFPagWB1DHlfc1Qyt5I=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6288.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(366004)(396003)(136003)(376002)(346002)(451199018)(36756003)(38100700002)(53546011)(6512007)(6666004)(83380400001)(41300700001)(86362001)(8936002)(6506007)(26005)(5660300002)(7416002)(4744005)(66946007)(186003)(316002)(66556008)(8676002)(66476007)(6486002)(31696002)(2906002)(6916009)(54906003)(478600001)(31686004)(4326008)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Y0NNYUJ3Wkx2OFZqY3VJVENkQmlwN3NhL1E5RkJPa2o3YW5kT0dsUkQwdDA4?=
- =?utf-8?B?QlNvbHhnVjZGQTRTcW1HNk52ejRORmlleFh2RU1INE9yM1BtUFl3eWVVRlBn?=
- =?utf-8?B?Z3M5eHY4QlpqcHg1WDhmdU1kSTZ3ZTA5QXBqT2xtTGwwVXZ4QkVQMDlWR0NI?=
- =?utf-8?B?QnRnaUNrN0NkOVFuUlU5WmxtaDA5UFdyWkVNMUJIYWJ3S2tRdFdsc2NxT29W?=
- =?utf-8?B?eXZ0RGxGcjZHY2F2R0FaVnh3WFI2OUF0cVJqY0hGbnBoazhTa1NzTE9BRjRT?=
- =?utf-8?B?bUVEc29VeXVERk9rQnlaSitLckNkL2FqbFZmWlBRRzZNZmZpRHprQVJTT2wx?=
- =?utf-8?B?L2g3T3BzTTg2YXN5RzBrS29vRUlzWkNCaGVPTGpQSjFqQ2ljNU9TYlc2dGZj?=
- =?utf-8?B?WC95VEF2V3BJWExZMUQ2UHVPU3FSS1d6SmIrUEo5WGJOTTVGNEpCQkZMSHBu?=
- =?utf-8?B?MC9wNmFLMFl6cjVxM0pBRWViZFVGbkpiUytoQWpDc0p6alQxUW5PL2RPaWFZ?=
- =?utf-8?B?ZWU5STRIeG1EdXR5OXFSdS9iNitmTDJhVkVOaVNsd0dqblhJL1dZdEk5Q29H?=
- =?utf-8?B?OGQyYzJiWWxsNVIvNXJDLzhjODhLcTRmNU5zQVllQWNXZ0wwZHY2TllxSVBn?=
- =?utf-8?B?TE1yK2krM2UxS21pR096SXRYNXA5TVlaS290SVZnMTluTkdkMkpNcDJvTk02?=
- =?utf-8?B?dUNGQ2FEM1ZVSkpCZS9tbS9NVDBDUnlvUkJ4bTUxOXNCK1BONzJOaXR0SEJW?=
- =?utf-8?B?VVdyS0hpaEcyVFArQ0RqYVR5OExNdXhTWXcvcFI3VFdUNkNpWERqZUZLOThn?=
- =?utf-8?B?MmNrSGpXWk9BQ2xSRXBHUVh3cktQcDg0dTA4WnpCcUdicW9kSzIvVGxoR1N3?=
- =?utf-8?B?SExBdXFDSVQ2NEpORHZ1Vi9iYVBIZXBXWTlrdkQwNFlkU2tZY2FmZkx5SmlJ?=
- =?utf-8?B?TXplTmdrS1N5Y2ZrZXZhVkMwdGxKY3Z4bS9kYkp6VmJJWlVDZ2puMitTZ2JX?=
- =?utf-8?B?SDBuLzZaQ2pCSUZYYi9lb0hqUWloN1hielRhYmtuUWlja3hHeWRTTnFyUDZa?=
- =?utf-8?B?SzlxMWRxZjYzNkVBNERKWG8wN3NTWlVxVCs0emlRTTRtU3RiTHg0dUVMOFhT?=
- =?utf-8?B?SGY1SlZDY3BDc0t4clY2QlRSUlUzdjN3OHZ3eFFlejJsaFpQL2pNdUxJcVNU?=
- =?utf-8?B?YWxsU2lVbG12ZllVVXVXb20wZUtCSzBwdklld044T1htSVBqcGUwTG9ENlZp?=
- =?utf-8?B?Z0k0SkpEZTZCRmNpTDNDamxpLzVvSG81ZnVYcEVYdVVXdUcvdStBU3pRN21o?=
- =?utf-8?B?clUwNXF5YXJvNkhpTkdVRU5Uend3ZEZQL3dqamJXL2hmb0QvWkRpdGpRT24z?=
- =?utf-8?B?TlFFRVZWN09lZ3Y0WjFldVcxNEFlUWZyRTYvU2dsWENWTEg2VVpPMXZ4Nm5Z?=
- =?utf-8?B?aWpaR2tjQTJob0ZWSmdPRGFyd3p6K3I2MzZKcUNtbmg3S2hUZzJDbGxaaXIz?=
- =?utf-8?B?M21LdmMrM3Y1ZFJTMENhejRtam14TnhwZkRvL2UwS1UxSlBDS2xZZUVmeTFs?=
- =?utf-8?B?WUdaUXZXV2VSWlppTm5hWGprMnJIazJwWG1IQ3FwcEhsWU9Xc2N4eS9peXpX?=
- =?utf-8?B?YUs2SlRYM0JpQjZuRGhiNlYxcEZQeU1SMEIycDJqdld4UWZpRC9ISWZwN3Zm?=
- =?utf-8?B?aHRRZUdZajc1QkNxK2tpaElxY1BSWlU2NitWTE91bGxvT3BLOFlDcEN0SWJl?=
- =?utf-8?B?T3ptYUEzVHRDcUpvaGNobk11YXViQUgyUmdPVEQ2UHgvaHNHYUp3ald1cGhq?=
- =?utf-8?B?TVVHZzBTMWgveW52dnZOMjRQTEhHUDFVVG0yUXdUUmVtM0V0SlhpTnZsT3R2?=
- =?utf-8?B?WmhHakE1Q0wvKzFUYTNUVHYzZFBCSElaZThmandnY1g3TG52ZXpmcnJac0ZI?=
- =?utf-8?B?cWdodlJGcm0wNVowSS9rOWQ5Nnl0MExhbGZpT0h5N3hpL1JkVXVjWm1uWDFD?=
- =?utf-8?B?dTV2VmROZExRUzczNTY2cmg1YW41cVlsZEJtSFpyTVBDZ1M1c2FDdzZOYkEz?=
- =?utf-8?B?azJFWHV3L3I2QTIvSXRLR25YYXFjYWJuQnowZGZIVG80bzNZbEc1VGh0QjdG?=
- =?utf-8?Q?Kt3WuwzDnWMlL41uS0/UA+oZ1?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f6e65cfa-7723-41b9-1289-08dafeae3661
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6288.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2023 08:29:01.9254
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ks0XLIZpB0YVO1WcWNOA9pUdOU3NI7VVjktTOxI6xSd+uL7xnTpOXKZRtk7UpgUt
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7542
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20230124003107.214307-1-drc@linux.vnet.ibm.com> <20230124185339.225806-1-drc@linux.vnet.ibm.com>
+In-Reply-To: <20230124185339.225806-1-drc@linux.vnet.ibm.com>
+From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
+Date:   Wed, 25 Jan 2023 14:03:24 +0530
+Message-ID: <CALs4sv0=m9zXHX0j2o-36AEUNkK1PVeHM5YirRMD7GLUqU=umQ@mail.gmail.com>
+Subject: Re: [PATCH v2] net/tg3: resolve deadlock in tg3_reset_task() during EEH
+To:     David Christensen <drc@linux.vnet.ibm.com>
+Cc:     netdev@vger.kernel.org, siva.kallam@broadcom.com,
+        prashant@broadcom.com, mchan@broadcom.com
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000008041b05f3127d3c"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/01/2023 2:48, Jakub Kicinski wrote:
-> On Tue, 24 Jan 2023 11:15:31 -0800 Richard Cochran wrote:
->> On Tue, Jan 24, 2023 at 12:33:05PM +0200, Bar Shapira wrote:
->>> I guess this expectation should be part of the documentation too, right? Are
->>> there more expectations when calling adjphase?  
->>
->> I'll gladly ack improvements to the documentation. I myself won't
->> spend time on that, because it will only get ignored, even when it is
->> super clear.  Like ptp_clock_register(), for example.
-> 
-> IMHO it is a responsibility of maintainers to try to teach, even if not
-> everyone turns out to be a diligent listener/reader. I've looked for
-> information about this callback at least twice in the last 6 months.
-> 
-> nVidia folks, could you please improve the doc, in that case? 
-> I think you also owe me the docs for your "debug" configuration 
-> of hairpin queues in debugfs.
+--00000000000008041b05f3127d3c
+Content-Type: text/plain; charset="UTF-8"
 
-I have patches converting the hairpin debugfs to devlink params, the
-write debugfs files will be reverted.
+On Wed, Jan 25, 2023 at 12:23 AM David Christensen
+<drc@linux.vnet.ibm.com> wrote:
+>
+> During EEH error injection testing, a deadlock was encountered in the tg3
+> driver when tg3_io_error_detected() was attempting to cancel outstanding
+> reset tasks:
+>
+> crash> foreach UN bt
+> ...
+> PID: 159    TASK: c0000000067c6000  CPU: 8   COMMAND: "eehd"
+> ...
+>  #5 [c00000000681f990] __cancel_work_timer at c00000000019fd18
+>  #6 [c00000000681fa30] tg3_io_error_detected at c00800000295f098 [tg3]
+>  #7 [c00000000681faf0] eeh_report_error at c00000000004e25c
+> ...
+>
+> PID: 290    TASK: c000000036e5f800  CPU: 6   COMMAND: "kworker/6:1"
+> ...
+>  #4 [c00000003721fbc0] rtnl_lock at c000000000c940d8
+>  #5 [c00000003721fbe0] tg3_reset_task at c008000002969358 [tg3]
+>  #6 [c00000003721fc60] process_one_work at c00000000019e5c4
+> ...
+>
+> PID: 296    TASK: c000000037a65800  CPU: 21  COMMAND: "kworker/21:1"
+> ...
+>  #4 [c000000037247bc0] rtnl_lock at c000000000c940d8
+>  #5 [c000000037247be0] tg3_reset_task at c008000002969358 [tg3]
+>  #6 [c000000037247c60] process_one_work at c00000000019e5c4
+> ...
+>
+> PID: 655    TASK: c000000036f49000  CPU: 16  COMMAND: "kworker/16:2"
+> ...:1
+>
+>  #4 [c0000000373ebbc0] rtnl_lock at c000000000c940d8
+>  #5 [c0000000373ebbe0] tg3_reset_task at c008000002969358 [tg3]
+>  #6 [c0000000373ebc60] process_one_work at c00000000019e5c4
+> ...
+>
+> Code inspection shows that both tg3_io_error_detected() and
+> tg3_reset_task() attempt to acquire the RTNL lock at the beginning of
+> their code blocks.  If tg3_reset_task() should happen to execute between
+> the times when tg3_io_error_deteced() acquires the RTNL lock and
+> tg3_reset_task_cancel() is called, a deadlock will occur.
+>
+> Moving tg3_reset_task_cancel() call earlier within the code block, prior
+> to acquiring RTNL, prevents this from happening, but also exposes another
+> deadlock issue where tg3_reset_task() may execute AFTER
+> tg3_io_error_detected() has executed:
+>
+> crash> foreach UN bt
+> PID: 159    TASK: c0000000067d2000  CPU: 9   COMMAND: "eehd"
+> ...
+>  #4 [c000000006867a60] rtnl_lock at c000000000c940d8
+>  #5 [c000000006867a80] tg3_io_slot_reset at c0080000026c2ea8 [tg3]
+>  #6 [c000000006867b00] eeh_report_reset at c00000000004de88
+> ...
+> PID: 363    TASK: c000000037564000  CPU: 6   COMMAND: "kworker/6:1"
+> ...
+>  #3 [c000000036c1bb70] msleep at c000000000259e6c
+>  #4 [c000000036c1bba0] napi_disable at c000000000c6b848
+>  #5 [c000000036c1bbe0] tg3_reset_task at c0080000026d942c [tg3]
+>  #6 [c000000036c1bc60] process_one_work at c00000000019e5c4
+> ...
+>
+> This issue can be avoided by aborting tg3_reset_task() if EEH error
+> recovery is already in progress.
+>
+> Signed-off-by: David Christensen <drc@linux.vnet.ibm.com>
+> Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+> ---
+> History:
+>
+> v2: Remove tp->dev check
+> ---
+>  drivers/net/ethernet/broadcom/tg3.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+Thanks.
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+
+> diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
+> index 59debdc344a5..58747292521d 100644
+> --- a/drivers/net/ethernet/broadcom/tg3.c
+> +++ b/drivers/net/ethernet/broadcom/tg3.c
+> @@ -11166,7 +11166,7 @@ static void tg3_reset_task(struct work_struct *work)
+>         rtnl_lock();
+>         tg3_full_lock(tp, 0);
+>
+> -       if (!netif_running(tp->dev)) {
+> +       if (tp->pcierr_recovery || !netif_running(tp->dev)) {
+>                 tg3_flag_clear(tp, RESET_TASK_PENDING);
+>                 tg3_full_unlock(tp);
+>                 rtnl_unlock();
+> @@ -18101,6 +18101,9 @@ static pci_ers_result_t tg3_io_error_detected(struct pci_dev *pdev,
+>
+>         netdev_info(netdev, "PCI I/O error detected\n");
+>
+> +       /* Want to make sure that the reset task doesn't run */
+> +       tg3_reset_task_cancel(tp);
+> +
+>         rtnl_lock();
+>
+>         /* Could be second call or maybe we don't have netdev yet */
+> @@ -18117,9 +18120,6 @@ static pci_ers_result_t tg3_io_error_detected(struct pci_dev *pdev,
+>
+>         tg3_timer_stop(tp);
+>
+> -       /* Want to make sure that the reset task doesn't run */
+> -       tg3_reset_task_cancel(tp);
+> -
+>         netif_device_detach(netdev);
+>
+>         /* Clean up software state, even if MMIO is blocked */
+> --
+> 2.31.1
+>
+
+--00000000000008041b05f3127d3c
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+OltyqaGBuzv+bJTUL+bmV7E4QBLIqGt4jVr1R9hJdH6KxXwJdyfHZ9C6qXmoe2NQhiFUyBOJ0wgk
+dB9Z1IU7nCwvNKYg2JMoJs93tIgbhPJg/D7pqW8gabkCAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUEV6y/89alKPoFbKUaJXsvWu5
+fdowDQYJKoZIhvcNAQELBQADggEBAEHSIB6g652wVb+r2YCmfHW47Jo+5TuCBD99Hla8PYhaWGkd
+9HIyD3NPhb6Vb6vtMWJW4MFGQF42xYRrAS4LZj072DuMotr79rI09pbOiWg0FlRRFt6R9vgUgebu
+pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
+25Azqtwvjt5nbrEd81iBmboNTEnLaKuxbbCtLaMEP8xKeDjAKnNOqHUMps0AsQT8c0EGq39YHpjp
+Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIOwx8H+Sgcjc2SIy5DUxmiDpsggm7g+P
+i9uoe00xAi7TMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDEy
+NTA4MzMzNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQBBmlJovS6NOMfDubYW9nkCz1RTTq2DCpqMIlPXsTFGgSQJY306
+7SBUXDqp4PlrlzAKmJH8lhxf9JG184sKJ8J0CfXSx6nvmGOfKX5zXvtiK9fU/c+Bcsk7WWxZV/nf
+GYNbYUdTMPDPpOuMPcNvqPNp5dJCCUAklS+f+n0lX3RuuGJKBbhU9iZxZQFykKRQwx2Hqxtyd5zg
+QmuicsciPzXxittPyE//uysDcd51CU2ERcEEM/c6pZXbSDgujBS1P5i6vj6ZgA45MtJbZczNclpN
+4GmZSBvIwY4+YrM4O70Nvu0gEEbyE3yoEYeZjwbutmYSrme5KH9Lfhd9FYqkaK0t
+--00000000000008041b05f3127d3c--
