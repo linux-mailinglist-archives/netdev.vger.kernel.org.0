@@ -2,57 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E8DD67B38B
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 14:39:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C9F467B3AF
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 14:50:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235370AbjAYNjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 08:39:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35478 "EHLO
+        id S234848AbjAYNup (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 08:50:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235233AbjAYNj1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 08:39:27 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B81356EE3
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 05:39:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ocX1zgrok/klJTIJ8/NOXVr7g8xBepvgYUvc4xVF4qI=; b=HRheRYHlR3TJ3+jV2xxg5xvnYo
-        y+UeS789grM75QO8Mu6D8UCiBqM13SMXrIIcYW0WNYU3SEOcpH8N3Rw5KDzE1q8qshQ0dvWvsR2ur
-        RCtojcN39j93vJbdSsI1O5MvgMP/qoJhFSNdU8bHtFX7GR08kErUegmfXTFzewjFb0k8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pKfzc-0038sL-D4; Wed, 25 Jan 2023 14:39:12 +0100
-Date:   Wed, 25 Jan 2023 14:39:12 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Raju Rangoju <Raju.Rangoju@amd.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        edumazet@google.com, pabeni@redhat.com, Shyam-sundar.S-k@amd.com
-Subject: Re: [PATCH net-next 1/2] amd-xgbe: add 2.5GbE support to 10G BaseT
- mode
-Message-ID: <Y9ExAOZ5q6rrZoLc@lunn.ch>
-References: <20230125072529.2222420-1-Raju.Rangoju@amd.com>
- <20230125072529.2222420-2-Raju.Rangoju@amd.com>
+        with ESMTP id S229573AbjAYNuo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 08:50:44 -0500
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 25 Jan 2023 05:50:41 PST
+Received: from exchange.fintech.ru (e10edge.fintech.ru [195.54.195.159])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84509193CD;
+        Wed, 25 Jan 2023 05:50:41 -0800 (PST)
+Received: from Ex16-01.fintech.ru (10.0.10.18) by exchange.fintech.ru
+ (195.54.195.159) with Microsoft SMTP Server (TLS) id 14.3.498.0; Wed, 25 Jan
+ 2023 16:48:35 +0300
+Received: from KANASHIN1.fintech.ru (10.0.253.125) by Ex16-01.fintech.ru
+ (10.0.10.18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4; Wed, 25 Jan
+ 2023 16:48:34 +0300
+From:   Natalia Petrova <n.petrova@fintech.ru>
+To:     Manivannan Sadhasivam <mani@kernel.org>
+CC:     Natalia Petrova <n.petrova@fintech.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        <linux-arm-msm@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <lvc-project@linuxtesting.org>
+Subject: [PATCH] net: qrtr: free memory on error path in radix_tree_insert()
+Date:   Wed, 25 Jan 2023 16:48:31 +0300
+Message-ID: <20230125134831.8090-1-n.petrova@fintech.ru>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230125072529.2222420-2-Raju.Rangoju@amd.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.0.253.125]
+X-ClientProxiedBy: Ex16-01.fintech.ru (10.0.10.18) To Ex16-01.fintech.ru
+ (10.0.10.18)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 25, 2023 at 12:55:28PM +0530, Raju Rangoju wrote:
-> Add support to the driver to fully recognize and enable 2.5GbE speed in
-> 10GBaseT mode.
+Function radix_tree_insert() returns errors if the node hasn't
+been initialized and added to the tree.
 
-Can the hardware also do 5G? It is reasonably common for a 10GBASE-T
-PHY which can do 2.5GBASE-T can also do 5GBASE-T?
+"kfree(node)" and return value "NULL" of node_get() help
+to avoid using unclear node in other calls.
 
-    Andrew
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
+
+Fixes: 0c2204a4ad71 ("net: qrtr: Migrate nameservice to kernel from userspace")
+Signed-off-by: Natalia Petrova <n.petrova@fintech.ru>
+---
+ net/qrtr/ns.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/net/qrtr/ns.c b/net/qrtr/ns.c
+index 1990d496fcfc..e595079c2caf 100644
+--- a/net/qrtr/ns.c
++++ b/net/qrtr/ns.c
+@@ -83,7 +83,10 @@ static struct qrtr_node *node_get(unsigned int node_id)
+ 
+ 	node->id = node_id;
+ 
+-	radix_tree_insert(&nodes, node_id, node);
++	if (radix_tree_insert(&nodes, node_id, node)) {
++		kfree(node);
++		return NULL;
++	}
+ 
+ 	return node;
+ }
+-- 
+2.34.1
+
