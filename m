@@ -2,63 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75D8767BEE0
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 22:44:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86CBF67BF2D
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 22:51:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235791AbjAYVon (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 16:44:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39838 "EHLO
+        id S235791AbjAYVvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 16:51:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235786AbjAYVob (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 16:44:31 -0500
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2041.outbound.protection.outlook.com [40.107.212.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683051BE5
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 13:44:28 -0800 (PST)
+        with ESMTP id S236034AbjAYVvE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 16:51:04 -0500
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2070.outbound.protection.outlook.com [40.107.237.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87FCF66FAE
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 13:49:33 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aZWAIIy7caB5Ee1hEydFOjC7RegoGGcAB6h3TR0AOWO3toL3CJJfh8a1qIwLX2e6q4OSWOcMEKn8FTxacZY8TJgkq9YQ03hibNzvO+2jHcGHSm7XL5P9QlRX/82rlIbeJ/mwyeuIqy46tAsEmIx+WYPL6myNgKsAlxdhrKHC5vjlewnECqk/59AuHXuhQDdQZwjtUmv9yBk0J3tnDc5l/5+umPH9KQNl2unJ20JlMIJZbpVuGfhX3mf6UppD1OF1aE5h0BNjOGb9hVveqaVYSgtX4WQV2uqypOj/K/X+k+WNMLzDX5bvA50Qe+8ghNJHYc5Fp2MgcmjsjGHwKH9lYA==
+ b=gXlHcTZoN85J/Ap30s88TfsdA8TZM51BMWv9y1MsMX0Ub8zBVr7LCaUfpY3v5QDnl+3xexuvQ3WoxU8leqj3hSvJsIfd9SdcmqyKagUvubLNzjt7RYkaQ1bDq9BKyxG9Ez3edbA24AK8S55bcEv6Er7pzzJUnfvYC7hbFgq3y02ckiTdHvQKChA6x2Xyjmhgggd2va+6Fgk0KjGas9yxMdoLhJoD4YlY1E9gDYG3MtmG9kucoCc04zLTKRPzwMqfDDrY9dQAgZ4d28gAe/+8UXl2a1aNh62/5mfG7tpPKiN+FbznAhHOydBnBco6tJFzpUB2M8CAG7a4Zj/WhmDTSQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PMjGiXhEblvPEgJYq6c7eNN5tynnPs2a9O4f3vfD0IE=;
- b=eCFsqYppcngfMCVnVAFzsPusS1fwGlHLU/NEw1Emqb2iQaOamUWIOPHY0TRCRPpDaSlFnJFFtjEnQrspiXDR3lAC1MXkJzdCqTiFX3LNCJRaHtXBFYVOFM5Y6wigsnsEmHEpT3QUsJd2vu0CHLk7hjBK7XTbNWCsliI1gGJpYhpfH3pAwXF4g8DDtUrO1bnTw/8aUcAjSvIUEuLUcShNlL1mMCx8rLtt8lUx7kbq66LjTbTl4XsHiJJKZAaJpoiHzE7yPYC1TgVBKHOjWGvk+PdM+fJmkgbqWQt9bRE1Fuexx17p8fQGlWjTRwL/YiM7CY4zYj5pIWVw2OLqWKTkNQ==
+ bh=l6CP6CjvgPEvziq+Zlc3zD4cbgPnhp/thMhKB2XD1Co=;
+ b=hJR8J1C5lmqUSJFm7nsGrrKx2pVCddJ+Lj1znam0aluQNkMaRb+0FSrnxBgpDzEH542X+Kiej2GUHVLULQRVL6iUCaxdRSKtUhFbA4meehGb8fo7JfEfBFEUvUSHvy8WpNMvkGkH73L+G8zbtX3G17viMw/sPaR+7tJyPnpsTk7w+E6nCroWpxtznpjuWkdjY9RS2Ut7z8kCZyA5XHCOmNp8l9sQ+PPgv05t7TeW3+PmNaRHagN72ln+gejvcadWgnE6FDUDB/cJL1h7fDcybue4WV3qas+clcj9dlXHgWejWnkNMjYafRprBJ4RYOXhK7KQThmWYAaSXMTMvMv1Rg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=corigine.com smtp.mailfrom=nvidia.com;
+ 216.228.117.161) smtp.rcpttodomain=corigine.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PMjGiXhEblvPEgJYq6c7eNN5tynnPs2a9O4f3vfD0IE=;
- b=I0KeAltX1zRJQH4kaYme3J3SLvetywbWz0e3pnRx+YBuCZ1nV6vnfete/UP6XNstLRBXIPSZj/pFXGNE/d8RkIQde96IGbU06kX/ro7bfdMUCiROyAx7NPQ0lmTBx5I67fFYx27Nq4Tj517VjiOKCddR7CUcj5uWIMsWrUOIWUa3R9eSXZ81xlRGQvOKex030DBKWPTtUeLUatrDMnoSjaAbpllQA4QzWy/wci4mKq6Oq5QA3y+EpKEYoeIpJt7rFHANBnckgeeL21X2+MbJ7B4nyfnljW/yRsuqxilOr+/+JiXjmAJ1ThSnUbGAH5je5P/8D8UQc4ClCIk6BB3YsQ==
-Received: from DS7PR06CA0043.namprd06.prod.outlook.com (2603:10b6:8:54::25) by
- CY5PR12MB6345.namprd12.prod.outlook.com (2603:10b6:930:22::21) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6002.33; Wed, 25 Jan 2023 21:44:26 +0000
-Received: from DM6NAM11FT084.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:54:cafe::c5) by DS7PR06CA0043.outlook.office365.com
- (2603:10b6:8:54::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33 via Frontend
- Transport; Wed, 25 Jan 2023 21:44:25 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ bh=l6CP6CjvgPEvziq+Zlc3zD4cbgPnhp/thMhKB2XD1Co=;
+ b=KJJIpNiGov+30dFw3PKX4P1bPa3GQ6patb6kzvNO1YF8w0XMHFFX/dQ4j5IGvi0f9w4quZIdl1VCo280hggPix4WDF0nUPZgeJZH02zuJTV95BhWk8twTUeGVDY8uTTMwT/yoc6XZZNNc4h5W74AOk5QlkTVMwTkgFgm/aKG8IvL5kovfg5ZqK/c3Dh2oA5n5N5ZLxIbiPhK02301sDVvI//3qhi7jgvNN9Sp31HTLZIJY6yF/KuDFpmSptpx7hni42h7z4OjTgfxywFZZJz8z3tgjofhC+VG3GN1OTOv1kYgVhpLy3PCGdUNENlZ/H/SHlcCTaJJKMzYlKx4lIgTA==
+Received: from BN8PR07CA0026.namprd07.prod.outlook.com (2603:10b6:408:ac::39)
+ by DM4PR12MB7696.namprd12.prod.outlook.com (2603:10b6:8:100::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Wed, 25 Jan
+ 2023 21:49:31 +0000
+Received: from BN8NAM11FT063.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:ac:cafe::b6) by BN8PR07CA0026.outlook.office365.com
+ (2603:10b6:408:ac::39) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.20 via Frontend
+ Transport; Wed, 25 Jan 2023 21:49:30 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT084.mail.protection.outlook.com (10.13.172.132) with Microsoft SMTP
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN8NAM11FT063.mail.protection.outlook.com (10.13.177.110) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6043.21 via Frontend Transport; Wed, 25 Jan 2023 21:44:25 +0000
+ 15.20.6043.17 via Frontend Transport; Wed, 25 Jan 2023 21:49:30 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 25 Jan
- 2023 13:44:18 -0800
-Received: from fedora.nvidia.com (10.126.230.37) by rnnvmail201.nvidia.com
+ 2023 13:49:21 -0800
+Received: from fedora.nvidia.com (10.126.231.37) by rnnvmail201.nvidia.com
  (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 25 Jan
- 2023 13:44:12 -0800
+ 2023 13:49:15 -0800
 References: <20230124170510.316970-1-jhs@mojatatu.com>
- <20230124170510.316970-14-jhs@mojatatu.com>
+ <20230124170510.316970-18-jhs@mojatatu.com>
 User-agent: mu4e 1.6.6; emacs 28.1
 From:   Vlad Buslov <vladbu@nvidia.com>
 To:     Jamal Hadi Salim <jhs@mojatatu.com>
@@ -69,35 +70,35 @@ CC:     <netdev@vger.kernel.org>, <kernel@mojatatu.com>,
         <xiyou.wangcong@gmail.com>, <davem@davemloft.net>,
         <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <simon.horman@corigine.com>
-Subject: Re: [PATCH net-next RFC 14/20] p4tc: add header field create, get,
- delete, flush and dump
-Date:   Wed, 25 Jan 2023 23:39:34 +0200
-In-Reply-To: <20230124170510.316970-14-jhs@mojatatu.com>
-Message-ID: <87357ycms6.fsf@nvidia.com>
+Subject: Re: [PATCH net-next RFC 18/20] p4tc: add register create, update,
+ delete, get, flush and dump
+Date:   Wed, 25 Jan 2023 23:44:46 +0200
+In-Reply-To: <20230124170510.316970-18-jhs@mojatatu.com>
+Message-ID: <87y1pqb7zb.fsf@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.126.230.37]
+X-Originating-IP: [10.126.231.37]
 X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT084:EE_|CY5PR12MB6345:EE_
-X-MS-Office365-Filtering-Correlation-Id: aa26e042-680a-4f6d-13b7-08daff1d5423
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT063:EE_|DM4PR12MB7696:EE_
+X-MS-Office365-Filtering-Correlation-Id: 92aaf911-c0b7-4383-4e2e-08daff1e09f5
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dapJSIjSpwDrksVzmX+j+UofcP43DFGZlRIZGSzFzVikVydVyhWmQ9AseSwi3ikDFc2/YO5pLu22mX6RbBhKg3+jWgKUP0qyFALj5lYwkh3YRJvi/afIPgGo49QL2G5drYxxSyIMtrGEsd7DDqIWTY7rj04Yg9cAhwwhRPqNMCVxoedasIDER2SN5iDgmIjVfSFY9koPttyKI0griSsohJiZ7cm/BdnfYdsVlWptV1dRXFV2hs6AqqUwh/ztT7QelCDTBJzU/mSXN/qAUvvuQKihbGJeyjFG/ed1PDoCDdaEz00OMNltt28jUUl4iJcg8g/bBwQEWWRHVDjCytU5mhgp7xYtyMJUkqISIdlxuKxyJd8iFGBf7VeU+P4Rw3Uyod2o3HjnuQ4mH8kxb+fMizRh2AkowJjk1pwVSTLlcnZkJKNuakCEr7+hbUd92yzGRUc+g9NGqdFBeXRVu1iVFkui+lEGFFhi80InoBmnNNv6gTeOka+Iixlw+gn2dtQO+qYL1RloX1y8ql0ZfnM8G6eaaKztTbHv93FDWgL5HE2QzAv3oHkXAd3kXbA80SkPnlWxFzuWdDUyARAhSJ1eUXHFzvDgYAtLF6GmkaFNTZe60OuVeefzN3MIydhH5xuD2xAVeeuZi0minL3L6kQ66brLbrmufsC2jE9y9fjjTqeDJ1a+JoJtDEooLUtciUeM6XM6QiVTVRNSAXeeFN6E0/OknPcClkYEaQpjaeu3hTXC7zYTqNZW3kSmgCO1mN0oAsuK1NKhUt9ToN8ME3EeEoB0H33NtfPBKPUpwmR8kiE=
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(136003)(396003)(39860400002)(346002)(451199018)(40470700004)(46966006)(36840700001)(54906003)(356005)(36860700001)(316002)(40480700001)(2616005)(82310400005)(47076005)(70586007)(478600001)(86362001)(336012)(6666004)(6916009)(70206006)(4326008)(8676002)(16526019)(26005)(7696005)(186003)(30864003)(41300700001)(82740400003)(36756003)(83380400001)(2906002)(5660300002)(8936002)(426003)(7636003)(7416002)(40460700003)(21314003)(32563001)(309714004);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: a92WuI7LF1hU2Iu8CpPVUeYecRWlAKkW2LW6ieGcNVFt43jAG/3nvuZuRnZoDJcvXi7SdqfxriOGA4b0w5ZVSKGlEKIwd2qon70uTAWH0B6GymuapGstpdZXRE6e9PSXutKld2TVzJsdtkYnC6LjkpWeR1XsBZZJOmScA/tei4PaP8hXbMHoC1UshX9214Ol7z5s7XkEyzrC+Rj/7YDUJ2WpPT9BrId4WUsva9UxD33Kd+P5nGtFibRmECL5iw3yP8k1Ftn6KX4SBu/GM+xy69aXWJ+RmJ7hCYqxft4koH6tpUeH7NXovq6alPMUMUE7W1EzY8KJXX3Lzg4EN6uP3bZRjjUcWij+Tdmeel5TtWgQSq5A72aeXXzkDHyrcRDKBIqGhHK+B6thjUopIy+3ZFbyq4o1UtC4cj494uecV3M0Fuxr7xvcZDxf++jGGXmyf+Mfl3cIlGgzAKcwXYUp2k9+w9FMUigXQTS/Wb72IZjpUZbevO4wBmNjI5RGJwQvyfGSKdmMWXPHc+7zoDLjpyXKNG1hNN4RvDqkzwFfaUtEAwN5sjw34YJ0mp7lo69b+1goBLRKpUgxsPB+ZuPsZQvc0MF1gewpn6jKMOrG5kGPdIoXy9aM2VjbhavyT6+BJZJ+wonUEJ/qYyoy7QL1DuqTi9+tOL6obTqQQjnGWhboKheyoKZGcuSsq7LhnxKcXpfO89sdXNT6lyCUDqcvT9sRjIcC6b8Uts4b9w3H3wU=
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(39860400002)(136003)(396003)(451199018)(36840700001)(40470700004)(46966006)(36860700001)(36756003)(15650500001)(356005)(40460700003)(8676002)(40480700001)(86362001)(82310400005)(336012)(186003)(70586007)(478600001)(54906003)(16526019)(6666004)(26005)(7696005)(82740400003)(70206006)(4326008)(41300700001)(8936002)(83380400001)(47076005)(316002)(7416002)(426003)(2906002)(2616005)(30864003)(5660300002)(6916009)(7636003)(32563001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2023 21:44:25.5659
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2023 21:49:30.5488
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa26e042-680a-4f6d-13b7-08daff1d5423
+X-MS-Exchange-CrossTenant-Network-Message-Id: 92aaf911-c0b7-4383-4e2e-08daff1e09f5
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT084.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT063.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6345
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7696
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -110,57 +111,113 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On Tue 24 Jan 2023 at 12:05, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
-> This commit allows control to create, get, delete, flush and dump header
-> field objects. The created header fields are retrieved at runtime by
-> the parser. From a control plane interaction, a header field can only be
-> created once the appropriate parser is instantiated. At runtime, existing
-> header fields can be referenced for computation reasons from metact:
-> metact will use header fields to either create lookup keys or edit the
-> header fields.
+> This commit allows users to create, update, delete, get, flush and dump
+> P4 registers.
 >
-> Header fields are part of a pipeline and a parser instance and header
-> fields can only be created in an unsealed pipeline.
+> It's important to note that write operations, such as create, update
+> and delete, can only be made if the pipeline is not sealed.
 >
-> To create a header field, the user must issue the equivalent of the
+> Registers in P4 provide a way to store data in your program that can be
+> accessed throughout the lifetime of your P4 program. Which means this a
+> way of storing state between the P4 program's invocations.
+>
+> Let's take a look at an example register declaration in a P4 program:
+>
+> Register<bit<32>>(2) register1;
+>
+> This declaration corresponds to a register named register1, with 2
+> elements which are of type bit32. You can think of this register as an
+> array of bit32s with 2 elements.
+>
+> If one were to create this register with P4TC, one would issue the
 > following command:
 >
-> tc p4template create hdrfield/myprog/myparser/ipv4/dstAddr hdrfieldid 4 \
->  type ipv4
+> tc p4template create register/ptables/register1 type bit32 numelems 2
 >
-> where myprog is the name of a pipeline, myparser is a name of a parser
-> instance, ipv4/dstAddr is the name of header field which is of type ipv4.
+> This will create register "register1" and give it an ID that will be
+> assigned by the kernel. If the user wished to specify also the register
+> id, the command would be the following
 >
-> To delete a header field, the user must issue the equivalent of the
-> following command:
+> tc p4template create register/ptables/register1 regid 1 type bit32 \
+> numelems 2
 >
-> tc p4template delete hdrfield/myprog/myparser/ipv4/dstAddr
->
-> where myprog is the name of pipeline, myparser is a name of a parser
-> instance, ipv4/dstAddr is the name of header field to be deleted.
->
-> To retrieve meta-information from a header field, such as length,
-> position and type, the user must issue the equivalent of the following
+> Now, after creating register1, if one wished to, for example, update
+> index 1 of register1 with value 32, one would issue the following
 > command:
 >
-> tc p4template get hdrfield/myprog/myparser/ipv4/dstAddr
+> tc p4template update register/ptables/register1 index 1 \
+> value constant.bit32.32
 >
-> where myprog is the name of pipeline, myparser is a name of a parser
-> instance, ipv4/dstAddr is the name of header field to be deleted.
+> One could also change the value of a specific index using hex notation,
+> examplified by the following command:
 >
-> The user can also dump all the header fields available in a parser
-> instance using the equivalent of the following command:
+> tc p4template update register/ptables/ regid 1 index 1 \
+> value constant.bit32.0x20
 >
-> tc p4template get hdrfield/myprog/myparser/
+> Note that we used regid in here instead of the register name (register1).
+> We can always use name or id.
 >
-> With that, the user will get all the header field names available in a
-> specific parser instance.
+> It's important to note that all elements of a register will be
+> initialised with zero when the register is created
 >
-> The user can also flush all the header fields available in a parser
-> instance using the equivalent of the following command:
+> Now, after updating the new register the user could issue a get command
+> to check if the register's parameters (type, num elems, id, ...) and the
+> register element values are correct. To do so, the user would issue the
+> following command:
 >
-> tc p4template del hdrfield/myprog/myparser/
+> tc p4template get register/ptables/register1
 >
-> Header fields do not support update operations.
+> Which will output the following:
+>
+> template obj type register
+> pipeline name ptables id 22
+>     register name register1
+>     register id 1
+>     container type bit32
+>     startbit 0
+>     endbit 31
+>     number of elements 2
+>         register1[0] 0
+>         register1[1] 32
+>
+> Notice that register[0] was unaltered, so it is a 0 because zero is the
+> default initial values. register[1] has value 32, because it was
+> updated in the previous command.
+>
+> The user could also list all of the created registers associated to a
+> pipeline. For example, to list all of the registers associated with
+> pipeline ptables, the user would issue the following command:
+>
+> tc p4template get register/ptables/
+>
+> Which will output the following:
+>
+> template obj type register
+> pipeline name ptables id 22
+>     register name register1
+>
+> Another option is to check the value of a specific index inside
+> register1, that can be done using the following command:
+>
+> tc p4template get register/ptables/register1 index 1
+>
+> Which will output the following:
+>
+> template obj type register
+> pipeline name ptables id 22
+>     register name register1
+>     register id 1
+>     container type bit32
+>         register1[1] 32
+>
+> To delete register1, the user would issue the following command:
+>
+> tc p4template del register/ptables/register1
+>
+> Now, to delete all the registers associated with pipeline ptables, the
+> user would issue the following command:
+>
+> tc p4template del register/ptables/
 >
 > Co-developed-by: Victor Nogueira <victor@mojatatu.com>
 > Signed-off-by: Victor Nogueira <victor@mojatatu.com>
@@ -168,175 +225,204 @@ On Tue 24 Jan 2023 at 12:05, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
 > Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 > Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
 > ---
->  include/net/p4tc.h               |  62 +++
->  include/uapi/linux/p4tc.h        |  19 +
->  net/sched/p4tc/Makefile          |   3 +-
->  net/sched/p4tc/p4tc_hdrfield.c   | 625 +++++++++++++++++++++++++++++++
->  net/sched/p4tc/p4tc_parser_api.c | 229 +++++++++++
->  net/sched/p4tc/p4tc_pipeline.c   |   4 +
->  net/sched/p4tc/p4tc_tmpl_api.c   |   2 +
->  7 files changed, 943 insertions(+), 1 deletion(-)
->  create mode 100644 net/sched/p4tc/p4tc_hdrfield.c
->  create mode 100644 net/sched/p4tc/p4tc_parser_api.c
+>  include/net/p4tc.h             |  32 ++
+>  include/uapi/linux/p4tc.h      |  28 ++
+>  net/sched/p4tc/Makefile        |   2 +-
+>  net/sched/p4tc/p4tc_pipeline.c |   9 +-
+>  net/sched/p4tc/p4tc_register.c | 749 +++++++++++++++++++++++++++++++++
+>  net/sched/p4tc/p4tc_tmpl_api.c |   2 +
+>  6 files changed, 820 insertions(+), 2 deletions(-)
+>  create mode 100644 net/sched/p4tc/p4tc_register.c
 >
 > diff --git a/include/net/p4tc.h b/include/net/p4tc.h
-> index 748a70c85..13cf4162e 100644
+> index 9a7942992..d9267b798 100644
 > --- a/include/net/p4tc.h
 > +++ b/include/net/p4tc.h
-> @@ -19,6 +19,10 @@
+> @@ -31,6 +31,7 @@
+>  #define P4TC_AID_IDX 1
+>  #define P4TC_PARSEID_IDX 1
+>  #define P4TC_HDRFIELDID_IDX 2
+> +#define P4TC_REGID_IDX 1
 >  
->  #define P4TC_PID_IDX 0
->  #define P4TC_MID_IDX 1
-> +#define P4TC_PARSEID_IDX 1
-> +#define P4TC_HDRFIELDID_IDX 2
-> +
-> +#define P4TC_HDRFIELD_IS_VALIDITY_BIT 0x1
+>  #define P4TC_HDRFIELD_IS_VALIDITY_BIT 0x1
 >  
->  struct p4tc_dump_ctx {
->  	u32 ids[P4TC_PATH_MAX];
-> @@ -83,6 +87,7 @@ struct p4tc_pipeline {
+> @@ -109,6 +110,7 @@ struct p4tc_pipeline {
 >  	struct idr                  p_meta_idr;
+>  	struct idr                  p_act_idr;
+>  	struct idr                  p_tbl_idr;
+> +	struct idr                  p_reg_idr;
 >  	struct rcu_head             rcu;
 >  	struct net                  *net;
-> +	struct p4tc_parser          *parser;
->  	struct tc_action            **preacts;
->  	int                         num_preacts;
->  	struct tc_action            **postacts;
-> @@ -150,6 +155,30 @@ struct p4tc_metadata {
+>  	struct p4tc_parser          *parser;
+> @@ -395,6 +397,21 @@ struct p4tc_hdrfield {
 >  
->  extern const struct p4tc_template_ops p4tc_meta_ops;
+>  extern const struct p4tc_template_ops p4tc_hdrfield_ops;
 >  
-> +struct p4tc_parser {
-> +	char parser_name[PARSERNAMSIZ];
-> +	struct idr hdr_fields_idr;
-> +#ifdef CONFIG_KPARSER
-> +	const struct kparser_parser *kparser;
-> +#endif
-> +	refcount_t parser_ref;
-> +	u32 parser_inst_id;
-> +};
-> +
-> +struct p4tc_hdrfield {
+> +struct p4tc_register {
 > +	struct p4tc_template_common common;
-> +	struct p4tc_parser          *parser;
-> +	u32                         parser_inst_id;
-> +	u32                         hdrfield_id;
-> +	refcount_t                  hdrfield_ref;
-> +	u16                         startbit;
-> +	u16                         endbit;
-> +	u8                          datatype; /* T_XXX */
-> +	u8                          flags;  /* P4TC_HDRFIELD_FLAGS_* */
+> +	spinlock_t                  reg_value_lock;
+> +	struct p4tc_type            *reg_type;
+> +	struct p4tc_type_mask_shift *reg_mask_shift;
+> +	void                        *reg_value;
+> +	u32                         reg_num_elems;
+> +	u32                         reg_id;
+> +	refcount_t                  reg_ref;
+> +	u16                         reg_startbit; /* Relative to its container */
+> +	u16                         reg_endbit; /* Relative to its container */
 > +};
 > +
-> +extern const struct p4tc_template_ops p4tc_hdrfield_ops;
+> +extern const struct p4tc_template_ops p4tc_register_ops;
 > +
 >  struct p4tc_metadata *tcf_meta_find_byid(struct p4tc_pipeline *pipeline,
 >  					 u32 m_id);
 >  void tcf_meta_fill_user_offsets(struct p4tc_pipeline *pipeline);
-> @@ -159,7 +188,40 @@ struct p4tc_metadata *tcf_meta_get(struct p4tc_pipeline *pipeline,
->  				   struct netlink_ext_ack *extack);
->  void tcf_meta_put_ref(struct p4tc_metadata *meta);
+> @@ -556,10 +573,25 @@ extern const struct p4tc_act_param_ops param_ops[P4T_MAX + 1];
+>  int generic_dump_param_value(struct sk_buff *skb, struct p4tc_type *type,
+>  			     struct p4tc_act_param *param);
 >  
-> +struct p4tc_parser *tcf_parser_create(struct p4tc_pipeline *pipeline,
-> +				      const char *parser_name,
-> +				      u32 parser_inst_id,
-> +				      struct netlink_ext_ack *extack);
-> +
-> +struct p4tc_parser *tcf_parser_find_byid(struct p4tc_pipeline *pipeline,
-> +					 const u32 parser_inst_id);
-> +struct p4tc_parser *tcf_parser_find_byany(struct p4tc_pipeline *pipeline,
-> +					  const char *parser_name,
-> +					  u32 parser_inst_id,
-> +					  struct netlink_ext_ack *extack);
-> +int tcf_parser_del(struct net *net, struct p4tc_pipeline *pipeline,
-> +		   struct p4tc_parser *parser, struct netlink_ext_ack *extack);
-> +bool tcf_parser_is_callable(struct p4tc_parser *parser);
-> +int tcf_skb_parse(struct sk_buff *skb, struct p4tc_skb_ext *p4tc_ext,
-> +		  struct p4tc_parser *parser);
-> +
-> +struct p4tc_hdrfield *tcf_hdrfield_find_byid(struct p4tc_parser *parser,
-> +					     const u32 hdrfield_id);
-> +struct p4tc_hdrfield *tcf_hdrfield_find_byany(struct p4tc_parser *parser,
-> +					      const char *hdrfield_name,
-> +					      u32 hdrfield_id,
-> +					      struct netlink_ext_ack *extack);
-> +bool tcf_parser_check_hdrfields(struct p4tc_parser *parser,
-> +				struct p4tc_hdrfield *hdrfield);
-> +void *tcf_hdrfield_fetch(struct sk_buff *skb, struct p4tc_hdrfield *hdrfield);
-> +struct p4tc_hdrfield *tcf_hdrfield_get(struct p4tc_parser *parser,
-> +				       const char *hdrfield_name,
-> +				       u32 hdrfield_id,
+> +struct p4tc_register *tcf_register_find_byid(struct p4tc_pipeline *pipeline,
+> +					     const u32 reg_id);
+> +struct p4tc_register *tcf_register_get(struct p4tc_pipeline *pipeline,
+> +				       const char *regname, const u32 reg_id,
 > +				       struct netlink_ext_ack *extack);
-> +void tcf_hdrfield_put_ref(struct p4tc_hdrfield *hdrfield);
+> +void tcf_register_put_ref(struct p4tc_register *reg);
+> +
+> +struct p4tc_register *tcf_register_find_byany(struct p4tc_pipeline *pipeline,
+> +					      const char *regname,
+> +					      const u32 reg_id,
+> +					      struct netlink_ext_ack *extack);
+> +
+> +void tcf_register_put_rcu(struct rcu_head *head);
 > +
 >  #define to_pipeline(t) ((struct p4tc_pipeline *)t)
 >  #define to_meta(t) ((struct p4tc_metadata *)t)
-> +#define to_hdrfield(t) ((struct p4tc_hdrfield *)t)
+>  #define to_hdrfield(t) ((struct p4tc_hdrfield *)t)
+>  #define to_act(t) ((struct p4tc_act *)t)
+>  #define to_table(t) ((struct p4tc_table *)t)
+> +#define to_register(t) ((struct p4tc_register *)t)
 >  
 >  #endif
 > diff --git a/include/uapi/linux/p4tc.h b/include/uapi/linux/p4tc.h
-> index 8934c032d..72714df9e 100644
+> index 727fdcfe5..0c5f2943e 100644
 > --- a/include/uapi/linux/p4tc.h
 > +++ b/include/uapi/linux/p4tc.h
-> @@ -27,6 +27,8 @@ struct p4tcmsg {
->  #define TEMPLATENAMSZ 256
->  #define PIPELINENAMSIZ TEMPLATENAMSZ
->  #define METANAMSIZ TEMPLATENAMSZ
-> +#define PARSERNAMSIZ TEMPLATENAMSZ
-> +#define HDRFIELDNAMSIZ TEMPLATENAMSZ
+> @@ -22,6 +22,7 @@ struct p4tcmsg {
+>  #define P4TC_MAX_KEYSZ 512
+>  #define HEADER_MAX_LEN 512
+>  #define META_MAX_LEN 512
+> +#define P4TC_MAX_REGISTER_ELEMS 128
 >  
->  /* Root attributes */
->  enum {
-> @@ -55,6 +57,7 @@ enum {
->  	P4TC_OBJ_UNSPEC,
->  	P4TC_OBJ_PIPELINE,
->  	P4TC_OBJ_META,
-> +	P4TC_OBJ_HDR_FIELD,
+>  #define P4TC_MAX_KEYSZ 512
+>  
+> @@ -32,6 +33,7 @@ struct p4tcmsg {
+>  #define HDRFIELDNAMSIZ TEMPLATENAMSZ
+>  #define ACTPARAMNAMSIZ TEMPLATENAMSZ
+>  #define TABLENAMSIZ TEMPLATENAMSZ
+> +#define REGISTERNAMSIZ TEMPLATENAMSZ
+>  
+>  #define P4TC_TABLE_FLAGS_KEYSZ 0x01
+>  #define P4TC_TABLE_FLAGS_MAX_ENTRIES 0x02
+> @@ -120,6 +122,7 @@ enum {
+>  	P4TC_OBJ_ACT,
+>  	P4TC_OBJ_TABLE,
+>  	P4TC_OBJ_TABLE_ENTRY,
+> +	P4TC_OBJ_REGISTER,
 >  	__P4TC_OBJ_MAX,
 >  };
 >  #define P4TC_OBJ_MAX __P4TC_OBJ_MAX
-> @@ -153,6 +156,22 @@ enum {
+> @@ -353,6 +356,31 @@ enum {
+>  	P4TC_ENTITY_MAX
 >  };
->  #define P4TC_KERNEL_META_MAX (__P4TC_KERNEL_META_MAX - 1)
 >  
-> +struct p4tc_hdrfield_ty {
+> +#define P4TC_REGISTER_FLAGS_DATATYPE 0x1
+> +#define P4TC_REGISTER_FLAGS_STARTBIT 0x2
+> +#define P4TC_REGISTER_FLAGS_ENDBIT 0x4
+> +#define P4TC_REGISTER_FLAGS_NUMELEMS 0x8
+> +#define P4TC_REGISTER_FLAGS_INDEX 0x10
+> +
+> +struct p4tc_u_register {
+> +	__u32 num_elems;
+> +	__u32 datatype;
+> +	__u32 index;
 > +	__u16 startbit;
 > +	__u16 endbit;
-> +	__u8  datatype; /* P4T_* */
+> +	__u16 flags;
 > +};
 > +
-> +/* Header field attributes */
+> +/* P4 Register attributes */
 > +enum {
-> +	P4TC_HDRFIELD_UNSPEC,
-> +	P4TC_HDRFIELD_DATA,
-> +	P4TC_HDRFIELD_NAME,
-> +	P4TC_HDRFIELD_PARSER_NAME,
-> +	__P4TC_HDRFIELD_MAX
+> +	P4TC_REGISTER_UNSPEC,
+> +	P4TC_REGISTER_NAME, /* string */
+> +	P4TC_REGISTER_INFO, /* struct p4tc_u_register */
+> +	P4TC_REGISTER_VALUE, /* value blob */
+> +	__P4TC_REGISTER_MAX
 > +};
-> +#define P4TC_HDRFIELD_MAX (__P4TC_HDRFIELD_MAX - 1)
+> +#define P4TC_REGISTER_MAX (__P4TC_REGISTER_MAX - 1)
 > +
 >  #define P4TC_RTA(r) \
 >  	((struct rtattr *)(((char *)(r)) + NLMSG_ALIGN(sizeof(struct p4tcmsg))))
 >  
 > diff --git a/net/sched/p4tc/Makefile b/net/sched/p4tc/Makefile
-> index d523e668c..add22c909 100644
+> index 0d2c20223..b35ced1e3 100644
 > --- a/net/sched/p4tc/Makefile
 > +++ b/net/sched/p4tc/Makefile
-> @@ -1,3 +1,4 @@
->  # SPDX-License-Identifier: GPL-2.0
+> @@ -2,4 +2,4 @@
 >  
-> -obj-y := p4tc_types.o p4tc_tmpl_api.o p4tc_pipeline.o p4tc_meta.o
-> +obj-y := p4tc_types.o p4tc_pipeline.o p4tc_tmpl_api.o p4tc_meta.o \
-> +	p4tc_parser_api.o p4tc_hdrfield.o
-> diff --git a/net/sched/p4tc/p4tc_hdrfield.c b/net/sched/p4tc/p4tc_hdrfield.c
+>  obj-y := p4tc_types.o p4tc_pipeline.o p4tc_tmpl_api.o p4tc_meta.o \
+>  	p4tc_parser_api.o p4tc_hdrfield.o p4tc_action.o p4tc_table.o \
+> -	p4tc_tbl_api.o
+> +	p4tc_tbl_api.o p4tc_register.o
+> diff --git a/net/sched/p4tc/p4tc_pipeline.c b/net/sched/p4tc/p4tc_pipeline.c
+> index f8fcde20b..9f8433545 100644
+> --- a/net/sched/p4tc/p4tc_pipeline.c
+> +++ b/net/sched/p4tc/p4tc_pipeline.c
+> @@ -298,6 +298,7 @@ static void tcf_pipeline_destroy(struct p4tc_pipeline *pipeline,
+>  	idr_destroy(&pipeline->p_meta_idr);
+>  	idr_destroy(&pipeline->p_act_idr);
+>  	idr_destroy(&pipeline->p_tbl_idr);
+> +	idr_destroy(&pipeline->p_reg_idr);
+>  
+>  	if (free_pipeline)
+>  		kfree(pipeline);
+> @@ -324,8 +325,9 @@ static int tcf_pipeline_put(struct net *net,
+>  	struct p4tc_pipeline *pipeline = to_pipeline(template);
+>  	struct net *pipeline_net = maybe_get_net(net);
+>  	struct p4tc_act_dep_node *act_node, *node_tmp;
+> -	unsigned long tbl_id, m_id, tmp;
+> +	unsigned long reg_id, tbl_id, m_id, tmp;
+>  	struct p4tc_metadata *meta;
+> +	struct p4tc_register *reg;
+>  	struct p4tc_table *table;
+>  
+>  	if (!refcount_dec_if_one(&pipeline->p_ctrl_ref)) {
+> @@ -371,6 +373,9 @@ static int tcf_pipeline_put(struct net *net,
+>  	if (pipeline->parser)
+>  		tcf_parser_del(net, pipeline, pipeline->parser, extack);
+>  
+> +	idr_for_each_entry_ul(&pipeline->p_reg_idr, reg, tmp, reg_id)
+> +		reg->common.ops->put(net, &reg->common, true, extack);
+> +
+>  	idr_remove(&pipe_net->pipeline_idr, pipeline->common.p_id);
+>  
+>  	if (pipeline_net)
+> @@ -567,6 +572,8 @@ static struct p4tc_pipeline *tcf_pipeline_create(struct net *net,
+>  	idr_init(&pipeline->p_meta_idr);
+>  	pipeline->p_meta_offset = 0;
+>  
+> +	idr_init(&pipeline->p_reg_idr);
+> +
+>  	INIT_LIST_HEAD(&pipeline->act_dep_graph);
+>  	INIT_LIST_HEAD(&pipeline->act_topological_order);
+>  	pipeline->num_created_acts = 0;
+> diff --git a/net/sched/p4tc/p4tc_register.c b/net/sched/p4tc/p4tc_register.c
 > new file mode 100644
-> index 000000000..2cbb0a624
+> index 000000000..deac38fd2
 > --- /dev/null
-> +++ b/net/sched/p4tc/p4tc_hdrfield.c
-> @@ -0,0 +1,625 @@
+> +++ b/net/sched/p4tc/p4tc_register.c
+> @@ -0,0 +1,749 @@
 > +// SPDX-License-Identifier: GPL-2.0-or-later
 > +/*
-> + * net/sched/p4tc_hdrfield.c	P4 TC HEADER FIELD
+> + * net/sched/p4tc_register.c	P4 TC REGISTER
 > + *
 > + * Copyright (c) 2022, Mojatatu Networks
 > + * Copyright (c) 2022, Intel Corporation.
@@ -351,392 +437,174 @@ On Tue 24 Jan 2023 at 12:05, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
 > +#include <linux/errno.h>
 > +#include <linux/slab.h>
 > +#include <linux/skbuff.h>
+> +#include <linux/init.h>
+> +#include <linux/kmod.h>
 > +#include <linux/err.h>
 > +#include <linux/module.h>
 > +#include <net/net_namespace.h>
+> +#include <net/sock.h>
+> +#include <net/sch_generic.h>
 > +#include <net/pkt_cls.h>
 > +#include <net/p4tc.h>
 > +#include <net/netlink.h>
-> +#include <net/p4tc_types.h>
-> +#include <net/sock.h>
+> +#include <net/flow_offload.h>
 > +
-> +static const struct nla_policy tc_hdrfield_policy[P4TC_HDRFIELD_MAX + 1] = {
-> +	[P4TC_HDRFIELD_DATA] = { .type = NLA_BINARY,
-> +				 .len = sizeof(struct p4tc_hdrfield_ty) },
-> +	[P4TC_HDRFIELD_NAME] = { .type = NLA_STRING, .len = HDRFIELDNAMSIZ },
-> +	[P4TC_HDRFIELD_PARSER_NAME] = { .type = NLA_STRING,
-> +					.len = PARSERNAMSIZ },
+> +static const struct nla_policy p4tc_register_policy[P4TC_REGISTER_MAX + 1] = {
+> +	[P4TC_REGISTER_NAME] = { .type = NLA_STRING, .len  = REGISTERNAMSIZ },
+> +	[P4TC_REGISTER_INFO] = {
+> +		.type = NLA_BINARY,
+> +		.len = sizeof(struct p4tc_u_register),
+> +	},
+> +	[P4TC_REGISTER_VALUE] = { .type = NLA_BINARY },
 > +};
 > +
-> +static int _tcf_hdrfield_put(struct p4tc_pipeline *pipeline,
-> +			     struct p4tc_parser *parser,
-> +			     struct p4tc_hdrfield *hdrfield,
-> +			     bool unconditional_purge,
-> +			     struct netlink_ext_ack *extack)
+> +struct p4tc_register *tcf_register_find_byid(struct p4tc_pipeline *pipeline,
+> +					     const u32 reg_id)
 > +{
-> +	if (!refcount_dec_if_one(&hdrfield->hdrfield_ref) &&
-> +	    !unconditional_purge) {
-> +		NL_SET_ERR_MSG(extack,
-> +			       "Unable to delete referenced header field");
-> +		return -EBUSY;
-> +	}
-> +	idr_remove(&parser->hdr_fields_idr, hdrfield->hdrfield_id);
-> +
-> +	WARN_ON(!refcount_dec_not_one(&parser->parser_ref));
-> +	kfree(hdrfield);
-> +
-> +	return 0;
+> +	return idr_find(&pipeline->p_reg_idr, reg_id);
 > +}
 > +
-> +static int tcf_hdrfield_put(struct net *net, struct p4tc_template_common *tmpl,
-> +			    bool unconditional_purge,
-> +			    struct netlink_ext_ack *extack)
+> +static struct p4tc_register *
+> +tcf_register_find_byname(const char *regname, struct p4tc_pipeline *pipeline)
 > +{
-> +	struct p4tc_hdrfield *hdrfield;
-> +	struct p4tc_pipeline *pipeline;
-> +	struct p4tc_parser *parser;
-> +
-> +	pipeline = tcf_pipeline_find_byid(net, tmpl->p_id);
-> +
-> +	hdrfield = to_hdrfield(tmpl);
-> +	parser = pipeline->parser;
-> +
-> +	return _tcf_hdrfield_put(pipeline, parser, hdrfield,
-> +				 unconditional_purge, extack);
-> +}
-> +
-> +static struct p4tc_hdrfield *hdrfield_find_name(struct p4tc_parser *parser,
-> +						const char *hdrfield_name)
-> +{
-> +	struct p4tc_hdrfield *hdrfield;
+> +	struct p4tc_register *reg;
 > +	unsigned long tmp, id;
 > +
-> +	idr_for_each_entry_ul(&parser->hdr_fields_idr, hdrfield, tmp, id)
-> +		if (hdrfield->common.name[0] &&
-> +		    strncmp(hdrfield->common.name, hdrfield_name,
-> +			    HDRFIELDNAMSIZ) == 0)
-> +			return hdrfield;
+> +	idr_for_each_entry_ul(&pipeline->p_reg_idr, reg, tmp, id)
+> +		if (strncmp(reg->common.name, regname, REGISTERNAMSIZ) == 0)
+> +			return reg;
 > +
 > +	return NULL;
 > +}
 > +
-> +struct p4tc_hdrfield *tcf_hdrfield_find_byid(struct p4tc_parser *parser,
-> +					     const u32 hdrfield_id)
-> +{
-> +	return idr_find(&parser->hdr_fields_idr, hdrfield_id);
-> +}
-> +
-> +struct p4tc_hdrfield *tcf_hdrfield_find_byany(struct p4tc_parser *parser,
-> +					      const char *hdrfield_name,
-> +					      u32 hdrfield_id,
+> +struct p4tc_register *tcf_register_find_byany(struct p4tc_pipeline *pipeline,
+> +					      const char *regname,
+> +					      const u32 reg_id,
 > +					      struct netlink_ext_ack *extack)
 > +{
-> +	struct p4tc_hdrfield *hdrfield;
+> +	struct p4tc_register *reg;
 > +	int err;
 > +
-> +	if (hdrfield_id) {
-> +		hdrfield = tcf_hdrfield_find_byid(parser, hdrfield_id);
-> +		if (!hdrfield) {
-> +			NL_SET_ERR_MSG(extack, "Unable to find hdrfield by id");
+> +	if (reg_id) {
+> +		reg = tcf_register_find_byid(pipeline, reg_id);
+> +		if (!reg) {
+> +			NL_SET_ERR_MSG(extack, "Unable to find register by id");
 > +			err = -EINVAL;
 > +			goto out;
 > +		}
 > +	} else {
-> +		if (hdrfield_name) {
-> +			hdrfield = hdrfield_find_name(parser, hdrfield_name);
-> +			if (!hdrfield) {
+> +		if (regname) {
+> +			reg = tcf_register_find_byname(regname, pipeline);
+> +			if (!reg) {
 > +				NL_SET_ERR_MSG(extack,
-> +					       "Header field name not found");
+> +					       "Register name not found");
 > +				err = -EINVAL;
 > +				goto out;
 > +			}
 > +		} else {
 > +			NL_SET_ERR_MSG(extack,
-> +				       "Must specify hdrfield name or id");
+> +				       "Must specify register name or id");
 > +			err = -EINVAL;
 > +			goto out;
 > +		}
 > +	}
 > +
-> +	return hdrfield;
-> +
+> +	return reg;
 > +out:
 > +	return ERR_PTR(err);
 > +}
 > +
-> +struct p4tc_hdrfield *tcf_hdrfield_get(struct p4tc_parser *parser,
-> +				       const char *hdrfield_name,
-> +				       u32 hdrfield_id,
+> +struct p4tc_register *tcf_register_get(struct p4tc_pipeline *pipeline,
+> +				       const char *regname, const u32 reg_id,
 > +				       struct netlink_ext_ack *extack)
 > +{
-> +	struct p4tc_hdrfield *hdrfield;
+> +	struct p4tc_register *reg;
 > +
-> +	hdrfield = tcf_hdrfield_find_byany(parser, hdrfield_name, hdrfield_id,
-> +					   extack);
-> +	if (IS_ERR(hdrfield))
-> +		return hdrfield;
+> +	reg = tcf_register_find_byany(pipeline, regname, reg_id, extack);
+> +	if (IS_ERR(reg))
+> +		return reg;
 > +
-> +	/* Should never happen */
-> +	WARN_ON(!refcount_inc_not_zero(&hdrfield->hdrfield_ref));
-
-I think regular refcount_inc() already generates a warning when
-reference value is 0.
-
+> +	WARN_ON(!refcount_inc_not_zero(&reg->reg_ref));
 > +
-> +	return hdrfield;
+> +	return reg;
 > +}
 > +
-> +void tcf_hdrfield_put_ref(struct p4tc_hdrfield *hdrfield)
+> +void tcf_register_put_ref(struct p4tc_register *reg)
 > +{
-> +	WARN_ON(!refcount_dec_not_one(&hdrfield->hdrfield_ref));
+> +	WARN_ON(!refcount_dec_not_one(&reg->reg_ref));
 
-ditto
+I must admit that this series overuses
+refcount_{inc|dec}_not_{zero|one}() functions and underuses regular
+refcount_inc()/refcount_dec_and_test() a bit too much. I'm not saying
+there is anything wrong per se with reference counting here or in other
+patches of this series, but I can't comprehend it TBH.
 
 > +}
 > +
-> +static struct p4tc_hdrfield *
-> +tcf_hdrfield_find_byanyattr(struct p4tc_parser *parser,
-> +			    struct nlattr *name_attr, u32 hdrfield_id,
+> +static struct p4tc_register *
+> +tcf_register_find_byanyattr(struct p4tc_pipeline *pipeline,
+> +			    struct nlattr *name_attr, const u32 reg_id,
 > +			    struct netlink_ext_ack *extack)
 > +{
-> +	char *hdrfield_name = NULL;
+> +	char *regname = NULL;
 > +
 > +	if (name_attr)
-> +		hdrfield_name = nla_data(name_attr);
+> +		regname = nla_data(name_attr);
 > +
-> +	return tcf_hdrfield_find_byany(parser, hdrfield_name, hdrfield_id,
-> +				       extack);
+> +	return tcf_register_find_byany(pipeline, regname, reg_id, extack);
 > +}
 > +
-> +void *tcf_hdrfield_fetch(struct sk_buff *skb, struct p4tc_hdrfield *hdrfield)
-> +{
-> +	size_t hdr_offset_len = sizeof(u16);
-> +	u16 *hdr_offset_bits, hdr_offset;
-> +	struct p4tc_skb_ext *p4tc_skb_ext;
-> +	u16 hdr_offset_index;
-> +
-> +	p4tc_skb_ext = skb_ext_find(skb, P4TC_SKB_EXT);
-> +	if (!p4tc_skb_ext) {
-> +		pr_err("Unable to find P4TC_SKB_EXT\n");
-> +		return NULL;
-> +	}
-> +
-> +	hdr_offset_index = (hdrfield->hdrfield_id - 1) * hdr_offset_len;
-> +	if (hdrfield->flags & P4TC_HDRFIELD_IS_VALIDITY_BIT)
-> +		return &p4tc_skb_ext->p4tc_ext->hdrs[hdr_offset_index];
-> +
-> +	hdr_offset_bits =
-> +		(u16 *)&p4tc_skb_ext->p4tc_ext->hdrs[hdr_offset_index];
-> +	hdr_offset = BITS_TO_BYTES(*hdr_offset_bits);
-> +
-> +	return skb_mac_header(skb) + hdr_offset;
-> +}
-> +
-> +static struct p4tc_hdrfield *tcf_hdrfield_create(struct nlmsghdr *n,
-> +						 struct nlattr *nla,
-> +						 struct p4tc_pipeline *pipeline,
-> +						 u32 *ids,
-> +						 struct netlink_ext_ack *extack)
-> +{
-> +	u32 parser_id = ids[P4TC_PARSEID_IDX];
-> +	char *hdrfield_name = NULL;
-> +	const char *parser_name = NULL;
-> +	u32 hdrfield_id = 0;
-> +	struct nlattr *tb[P4TC_HDRFIELD_MAX + 1];
-> +	struct p4tc_hdrfield_ty *hdr_arg;
-> +	struct p4tc_hdrfield *hdrfield;
-> +	struct p4tc_parser *parser;
-> +	char *s;
-> +	int ret;
-> +
-> +	ret = nla_parse_nested(tb, P4TC_HDRFIELD_MAX, nla, tc_hdrfield_policy,
-> +			       extack);
-> +	if (ret < 0)
-> +		return ERR_PTR(ret);
-> +
-> +	hdrfield_id = ids[P4TC_HDRFIELDID_IDX];
-> +	if (!hdrfield_id) {
-> +		NL_SET_ERR_MSG(extack, "Must specify header field id");
-> +		return ERR_PTR(-EINVAL);
-> +	}
-> +
-> +	if (!tb[P4TC_HDRFIELD_DATA]) {
-> +		NL_SET_ERR_MSG(extack, "Must supply header field data");
-> +		return ERR_PTR(-EINVAL);
-> +	}
-> +	hdr_arg = nla_data(tb[P4TC_HDRFIELD_DATA]);
-> +
-> +	if (tb[P4TC_HDRFIELD_PARSER_NAME])
-> +		parser_name = nla_data(tb[P4TC_HDRFIELD_PARSER_NAME]);
-> +
-> +	rcu_read_lock();
-> +	parser = tcf_parser_find_byany(pipeline, parser_name, parser_id, NULL);
-> +	if (IS_ERR(parser)) {
-> +		rcu_read_unlock();
-> +		if (!parser_name) {
-> +			NL_SET_ERR_MSG(extack, "Must supply parser name");
-> +			return ERR_PTR(-EINVAL);
-> +		}
-> +
-> +		/* If the parser instance wasn't created, let's create it here */
-> +		parser = tcf_parser_create(pipeline, parser_name, parser_id,
-> +					   extack);
-> +
-> +		if (IS_ERR(parser))
-> +			return (void *)parser;
-> +		rcu_read_lock();
-> +	}
-> +
-> +	if (!refcount_inc_not_zero(&parser->parser_ref)) {
-> +		NL_SET_ERR_MSG(extack, "Parser is stale");
-> +		rcu_read_unlock();
-> +		return ERR_PTR(-EBUSY);
-> +	}
-> +	rcu_read_unlock();
-> +
-> +	if (tb[P4TC_HDRFIELD_NAME])
-> +		hdrfield_name = nla_data(tb[P4TC_HDRFIELD_NAME]);
-> +
-> +	if ((hdrfield_name && hdrfield_find_name(parser, hdrfield_name)) ||
-> +	    tcf_hdrfield_find_byid(parser, hdrfield_id)) {
-> +		NL_SET_ERR_MSG(extack,
-> +			       "Header field with same id or name was already inserted");
-> +		ret = -EEXIST;
-> +		goto refcount_dec_parser;
-> +	}
-> +
-> +	if (hdr_arg->startbit > hdr_arg->endbit) {
-> +		NL_SET_ERR_MSG(extack, "Header field startbit > endbit");
-> +		ret = -EINVAL;
-> +		goto refcount_dec_parser;
-> +	}
-> +
-> +	hdrfield = kzalloc(sizeof(*hdrfield), GFP_KERNEL);
-> +	if (!hdrfield) {
-> +		NL_SET_ERR_MSG(extack, "Failed to allocate hdrfield");
-> +		ret = -ENOMEM;
-> +		goto refcount_dec_parser;
-> +	}
-> +
-> +	hdrfield->hdrfield_id = hdrfield_id;
-> +
-> +	s = strnchr(hdrfield_name, HDRFIELDNAMSIZ, '/');
-> +	if (s++ && strncmp(s, "isValid", HDRFIELDNAMSIZ) == 0) {
-> +		if (hdr_arg->datatype != P4T_U8 || hdr_arg->startbit != 0 ||
-> +		    hdr_arg->endbit != 0) {
-> +			NL_SET_ERR_MSG(extack,
-> +				       "isValid data type must be bit1");
-> +			ret = -EINVAL;
-> +			goto free_hdr;
-> +		}
-> +		hdrfield->datatype = hdr_arg->datatype;
-> +		hdrfield->flags = P4TC_HDRFIELD_IS_VALIDITY_BIT;
-> +	} else {
-> +		if (!p4type_find_byid(hdr_arg->datatype)) {
-> +			NL_SET_ERR_MSG(extack, "Invalid hdrfield data type");
-> +			ret = -EINVAL;
-> +			goto free_hdr;
-> +		}
-> +		hdrfield->datatype = hdr_arg->datatype;
-> +	}
-> +
-> +	hdrfield->startbit = hdr_arg->startbit;
-> +	hdrfield->endbit = hdr_arg->endbit;
-> +	hdrfield->parser_inst_id = parser->parser_inst_id;
-> +
-> +	ret = tcf_parser_check_hdrfields(parser, hdrfield);
-> +	if (ret < 0)
-> +		goto free_hdr;
-> +
-> +	ret = idr_alloc_u32(&parser->hdr_fields_idr, hdrfield, &hdrfield_id,
-> +			    hdrfield_id, GFP_KERNEL);
-> +	if (ret < 0) {
-> +		NL_SET_ERR_MSG(extack, "Unable to allocate ID for hdrfield");
-> +		goto free_hdr;
-> +	}
-> +
-> +	hdrfield->common.p_id = pipeline->common.p_id;
-> +	hdrfield->common.ops = (struct p4tc_template_ops *)&p4tc_hdrfield_ops;
-> +	hdrfield->parser = parser;
-> +	refcount_set(&hdrfield->hdrfield_ref, 1);
-> +
-> +	if (hdrfield_name)
-> +		strscpy(hdrfield->common.name, hdrfield_name, HDRFIELDNAMSIZ);
-> +
-> +	return hdrfield;
-> +
-> +free_hdr:
-> +	kfree(hdrfield);
-> +
-> +refcount_dec_parser:
-> +	WARN_ON(!refcount_dec_not_one(&parser->parser_ref));
-> +	return ERR_PTR(ret);
-> +}
-> +
-> +static struct p4tc_template_common *
-> +tcf_hdrfield_cu(struct net *net, struct nlmsghdr *n, struct nlattr *nla,
-> +		struct p4tc_nl_pname *nl_pname, u32 *ids,
-> +		struct netlink_ext_ack *extack)
-> +{
-> +	u32 pipeid = ids[P4TC_PID_IDX];
-> +	struct p4tc_hdrfield *hdrfield;
-> +	struct p4tc_pipeline *pipeline;
-> +
-> +	if (n->nlmsg_flags & NLM_F_REPLACE) {
-> +		NL_SET_ERR_MSG(extack, "Header field update not supported");
-> +		return ERR_PTR(-EOPNOTSUPP);
-> +	}
-> +
-> +	pipeline = tcf_pipeline_find_byany_unsealed(net, nl_pname->data, pipeid,
-> +						    extack);
-> +	if (IS_ERR(pipeline))
-> +		return (void *)pipeline;
-> +
-> +	hdrfield = tcf_hdrfield_create(n, nla, pipeline, ids, extack);
-> +	if (IS_ERR(hdrfield))
-> +		goto out;
-> +
-> +	if (!nl_pname->passed)
-> +		strscpy(nl_pname->data, pipeline->common.name, PIPELINENAMSIZ);
-> +
-> +	if (!ids[P4TC_PID_IDX])
-> +		ids[P4TC_PID_IDX] = pipeline->common.p_id;
-> +
-> +out:
-> +	return (struct p4tc_template_common *)hdrfield;
-> +}
-> +
-> +static int _tcf_hdrfield_fill_nlmsg(struct sk_buff *skb,
-> +				    struct p4tc_hdrfield *hdrfield)
+> +static int _tcf_register_fill_nlmsg(struct sk_buff *skb,
+> +				    struct p4tc_register *reg,
+> +				    struct p4tc_u_register *parm_arg)
 > +{
 > +	unsigned char *b = nlmsg_get_pos(skb);
-> +	struct p4tc_hdrfield_ty hdr_arg;
+> +	struct p4tc_u_register parm = { 0 };
+> +	size_t value_bytesz;
 > +	struct nlattr *nest;
-> +	/* Parser instance id + header field id */
-> +	u32 ids[2];
+> +	void *value;
 > +
-> +	ids[0] = hdrfield->parser_inst_id;
-> +	ids[1] = hdrfield->hdrfield_id;
-> +
-> +	if (nla_put(skb, P4TC_PATH, sizeof(ids), ids))
+> +	if (nla_put_u32(skb, P4TC_PATH, reg->reg_id))
 > +		goto out_nlmsg_trim;
 > +
 > +	nest = nla_nest_start(skb, P4TC_PARAMS);
 > +	if (!nest)
 > +		goto out_nlmsg_trim;
 > +
-> +	hdr_arg.datatype = hdrfield->datatype;
-> +	hdr_arg.startbit = hdrfield->startbit;
-> +	hdr_arg.endbit = hdrfield->endbit;
+> +	if (nla_put_string(skb, P4TC_REGISTER_NAME, reg->common.name))
+> +		goto out_nlmsg_trim;
 > +
-> +	if (hdrfield->common.name[0]) {
-> +		if (nla_put_string(skb, P4TC_HDRFIELD_NAME,
-> +				   hdrfield->common.name))
-> +			goto out_nlmsg_trim;
+> +	parm.datatype = reg->reg_type->typeid;
+> +	parm.flags |= P4TC_REGISTER_FLAGS_DATATYPE;
+> +	if (parm_arg) {
+> +		parm.index = parm_arg->index;
+> +		parm.flags |= P4TC_REGISTER_FLAGS_INDEX;
+> +	} else {
+> +		parm.startbit = reg->reg_startbit;
+> +		parm.flags |= P4TC_REGISTER_FLAGS_STARTBIT;
+> +		parm.endbit = reg->reg_endbit;
+> +		parm.flags |= P4TC_REGISTER_FLAGS_ENDBIT;
+> +		parm.num_elems = reg->reg_num_elems;
+> +		parm.flags |= P4TC_REGISTER_FLAGS_NUMELEMS;
 > +	}
 > +
-> +	if (nla_put(skb, P4TC_HDRFIELD_DATA, sizeof(hdr_arg), &hdr_arg))
+> +	if (nla_put(skb, P4TC_REGISTER_INFO, sizeof(parm), &parm))
 > +		goto out_nlmsg_trim;
+> +
+> +	value_bytesz = BITS_TO_BYTES(reg->reg_type->container_bitsz);
+> +	spin_lock_bh(&reg->reg_value_lock);
+> +	if (parm.flags & P4TC_REGISTER_FLAGS_INDEX) {
+> +		value = reg->reg_value + parm.index * value_bytesz;
+> +	} else {
+> +		value = reg->reg_value;
+> +		value_bytesz *= reg->reg_num_elems;
+> +	}
+> +
+> +	if (nla_put(skb, P4TC_REGISTER_VALUE, value_bytesz, value)) {
+> +		spin_unlock_bh(&reg->reg_value_lock);
+> +		goto out_nlmsg_trim;
+> +	}
+> +	spin_unlock_bh(&reg->reg_value_lock);
 > +
 > +	nla_nest_end(skb, nest);
 > +
@@ -747,46 +615,402 @@ ditto
 > +	return -1;
 > +}
 > +
-> +static int tcf_hdrfield_fill_nlmsg(struct net *net, struct sk_buff *skb,
+> +static int tcf_register_fill_nlmsg(struct net *net, struct sk_buff *skb,
 > +				   struct p4tc_template_common *template,
 > +				   struct netlink_ext_ack *extack)
 > +{
-> +	struct p4tc_hdrfield *hdrfield = to_hdrfield(template);
+> +	struct p4tc_register *reg = to_register(template);
 > +
-> +	if (_tcf_hdrfield_fill_nlmsg(skb, hdrfield) <= 0) {
+> +	if (_tcf_register_fill_nlmsg(skb, reg, NULL) <= 0) {
 > +		NL_SET_ERR_MSG(extack,
-> +			       "Failed to fill notification attributes for pipeline");
+> +			       "Failed to fill notification attributes for register");
 > +		return -EINVAL;
 > +	}
 > +
 > +	return 0;
 > +}
 > +
-> +static int tcf_hdrfield_flush(struct sk_buff *skb,
+> +static int _tcf_register_put(struct p4tc_pipeline *pipeline,
+> +			     struct p4tc_register *reg,
+> +			     bool unconditional_purge,
+> +			     struct netlink_ext_ack *extack)
+> +{
+> +	void *value;
+> +
+> +	if (!refcount_dec_if_one(&reg->reg_ref) && !unconditional_purge)
+> +		return -EBUSY;
+> +
+> +	idr_remove(&pipeline->p_reg_idr, reg->reg_id);
+> +
+> +	spin_lock_bh(&reg->reg_value_lock);
+> +	value = reg->reg_value;
+> +	reg->reg_value = NULL;
+> +	spin_unlock_bh(&reg->reg_value_lock);
+> +	kfree(value);
+> +
+> +	if (reg->reg_mask_shift) {
+> +		kfree(reg->reg_mask_shift->mask);
+> +		kfree(reg->reg_mask_shift);
+> +	}
+> +	kfree(reg);
+> +
+> +	return 0;
+> +}
+> +
+> +static int tcf_register_put(struct net *net, struct p4tc_template_common *tmpl,
+> +			    bool unconditional_purge,
+> +			    struct netlink_ext_ack *extack)
+> +{
+> +	struct p4tc_pipeline *pipeline =
+> +		tcf_pipeline_find_byid(net, tmpl->p_id);
+> +	struct p4tc_register *reg = to_register(tmpl);
+> +	int ret;
+> +
+> +	ret = _tcf_register_put(pipeline, reg, unconditional_purge, extack);
+> +	if (ret < 0)
+> +		NL_SET_ERR_MSG(extack, "Unable to delete referenced register");
+> +
+> +	return ret;
+> +}
+> +
+> +static struct p4tc_register *tcf_register_create(struct net *net,
+> +						 struct nlmsghdr *n,
+> +						 struct nlattr *nla, u32 reg_id,
+> +						 struct p4tc_pipeline *pipeline,
+> +						 struct netlink_ext_ack *extack)
+> +{
+> +	struct nlattr *tb[P4TC_REGISTER_MAX + 1];
+> +	struct p4tc_u_register *parm;
+> +	struct p4tc_type *datatype;
+> +	struct p4tc_register *reg;
+> +	int ret;
+> +
+> +	ret = nla_parse_nested(tb, P4TC_REGISTER_MAX, nla, p4tc_register_policy,
+> +			       extack);
+> +
+> +	if (ret < 0)
+> +		return ERR_PTR(ret);
+> +
+> +	reg = kzalloc(sizeof(*reg), GFP_KERNEL);
+> +	if (!reg)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	if (!tb[P4TC_REGISTER_NAME]) {
+> +		NL_SET_ERR_MSG(extack, "Must specify register name");
+> +		ret = -EINVAL;
+> +		goto free_reg;
+> +	}
+> +
+> +	if (tcf_register_find_byname(nla_data(tb[P4TC_REGISTER_NAME]), pipeline) ||
+> +	    tcf_register_find_byid(pipeline, reg_id)) {
+> +		NL_SET_ERR_MSG(extack, "Register already exists");
+> +		ret = -EEXIST;
+> +		goto free_reg;
+> +	}
+> +
+> +	reg->common.p_id = pipeline->common.p_id;
+> +	strscpy(reg->common.name, nla_data(tb[P4TC_REGISTER_NAME]),
+> +		REGISTERNAMSIZ);
+> +
+> +	if (tb[P4TC_REGISTER_INFO]) {
+> +		parm = nla_data(tb[P4TC_REGISTER_INFO]);
+> +	} else {
+> +		ret = -EINVAL;
+> +		NL_SET_ERR_MSG(extack, "Missing register info");
+> +		goto free_reg;
+> +	}
+> +
+> +	if (tb[P4TC_REGISTER_VALUE]) {
+> +		ret = -EINVAL;
+> +		NL_SET_ERR_MSG(extack, "Value can't be passed in create");
+> +		goto free_reg;
+> +	}
+> +
+> +	if (parm->flags & P4TC_REGISTER_FLAGS_INDEX) {
+> +		ret = -EINVAL;
+> +		NL_SET_ERR_MSG(extack, "Index can't be passed in create");
+> +		goto free_reg;
+> +	}
+> +
+> +	if (parm->flags & P4TC_REGISTER_FLAGS_NUMELEMS) {
+> +		if (!parm->num_elems) {
+> +			ret = -EINVAL;
+> +			NL_SET_ERR_MSG(extack, "Num elems can't be zero");
+> +			goto free_reg;
+> +		}
+> +
+> +		if (parm->num_elems > P4TC_MAX_REGISTER_ELEMS) {
+> +			NL_SET_ERR_MSG(extack,
+> +				       "Number of elements exceededs P4 register maximum");
+> +			ret = -EINVAL;
+> +			goto free_reg;
+> +		}
+> +	} else {
+> +		NL_SET_ERR_MSG(extack, "Must specify num elems");
+> +		ret = -EINVAL;
+> +		goto free_reg;
+> +	}
+> +
+> +	if (!(parm->flags & P4TC_REGISTER_FLAGS_STARTBIT) ||
+> +	    !(parm->flags & P4TC_REGISTER_FLAGS_ENDBIT)) {
+> +		ret = -EINVAL;
+> +		NL_SET_ERR_MSG(extack, "Must specify start and endbit");
+> +		goto free_reg;
+> +	}
+> +
+> +	if (parm->startbit > parm->endbit) {
+> +		ret = -EINVAL;
+> +		NL_SET_ERR_MSG(extack, "startbit > endbit");
+> +		goto free_reg;
+> +	}
+> +
+> +	if (parm->flags & P4TC_REGISTER_FLAGS_DATATYPE) {
+> +		datatype = p4type_find_byid(parm->datatype);
+> +		if (!datatype) {
+> +			NL_SET_ERR_MSG(extack,
+> +				       "Invalid data type for P4 register");
+> +			ret = -EINVAL;
+> +			goto free_reg;
+> +		}
+> +		reg->reg_type = datatype;
+> +	} else {
+> +		ret = -EINVAL;
+> +		NL_SET_ERR_MSG(extack, "Must specify datatype");
+> +		goto free_reg;
+> +	}
+> +
+> +	if (parm->endbit > datatype->bitsz) {
+> +		NL_SET_ERR_MSG(extack,
+> +			       "Endbit doesn't fix in container datatype");
+> +		ret = -EINVAL;
+> +		goto free_reg;
+> +	}
+> +	reg->reg_startbit = parm->startbit;
+> +	reg->reg_endbit = parm->endbit;
+> +
+> +	reg->reg_num_elems = parm->num_elems;
+> +
+> +	spin_lock_init(&reg->reg_value_lock);
+> +
+> +	reg->reg_value = kcalloc(reg->reg_num_elems,
+> +				 BITS_TO_BYTES(datatype->container_bitsz),
+> +				 GFP_KERNEL);
+> +	if (!reg->reg_value) {
+> +		ret = -ENOMEM;
+> +		goto free_reg;
+> +	}
+> +
+> +	if (reg_id) {
+> +		reg->reg_id = reg_id;
+> +		ret = idr_alloc_u32(&pipeline->p_reg_idr, reg, &reg->reg_id,
+> +				    reg->reg_id, GFP_KERNEL);
+> +		if (ret < 0) {
+> +			NL_SET_ERR_MSG(extack,
+> +				       "Unable to allocate register id");
+> +			goto free_reg_value;
+> +		}
+> +	} else {
+> +		reg->reg_id = 1;
+> +		ret = idr_alloc_u32(&pipeline->p_reg_idr, reg, &reg->reg_id,
+> +				    UINT_MAX, GFP_KERNEL);
+> +		if (ret < 0) {
+> +			NL_SET_ERR_MSG(extack,
+> +				       "Unable to allocate register id");
+> +			goto free_reg_value;
+> +		}
+> +	}
+> +
+> +	if (datatype->ops->create_bitops) {
+> +		size_t bitsz = reg->reg_endbit - reg->reg_startbit + 1;
+> +		struct p4tc_type_mask_shift *mask_shift;
+> +
+> +		mask_shift = datatype->ops->create_bitops(bitsz,
+> +							  reg->reg_startbit,
+> +							  reg->reg_endbit,
+> +							  extack);
+> +		if (IS_ERR(mask_shift)) {
+> +			ret = PTR_ERR(mask_shift);
+> +			goto idr_rm;
+> +		}
+> +		reg->reg_mask_shift = mask_shift;
+> +	}
+> +
+> +	refcount_set(&reg->reg_ref, 1);
+> +
+> +	reg->common.ops = (struct p4tc_template_ops *)&p4tc_register_ops;
+> +
+> +	return reg;
+> +
+> +idr_rm:
+> +	idr_remove(&pipeline->p_reg_idr, reg->reg_id);
+> +
+> +free_reg_value:
+> +	kfree(reg->reg_value);
+> +
+> +free_reg:
+> +	kfree(reg);
+> +	return ERR_PTR(ret);
+> +}
+> +
+> +static struct p4tc_register *tcf_register_update(struct net *net,
+> +						 struct nlmsghdr *n,
+> +						 struct nlattr *nla, u32 reg_id,
+> +						 struct p4tc_pipeline *pipeline,
+> +						 struct netlink_ext_ack *extack)
+> +{
+> +	void *user_value = NULL;
+> +	struct nlattr *tb[P4TC_REGISTER_MAX + 1];
+> +	struct p4tc_u_register *parm;
+> +	struct p4tc_type *datatype;
+> +	struct p4tc_register *reg;
+> +	int ret;
+> +
+> +	ret = nla_parse_nested(tb, P4TC_REGISTER_MAX, nla, p4tc_register_policy,
+> +			       extack);
+> +
+> +	if (ret < 0)
+> +		return ERR_PTR(ret);
+> +
+> +	reg = tcf_register_find_byanyattr(pipeline, tb[P4TC_REGISTER_NAME],
+> +					  reg_id, extack);
+> +	if (IS_ERR(reg))
+> +		return reg;
+> +
+> +	if (tb[P4TC_REGISTER_INFO]) {
+> +		parm = nla_data(tb[P4TC_REGISTER_INFO]);
+> +	} else {
+> +		ret = -EINVAL;
+> +		NL_SET_ERR_MSG(extack, "Missing register info");
+> +		goto err;
+> +	}
+> +
+> +	datatype = reg->reg_type;
+> +
+> +	if (parm->flags & P4TC_REGISTER_FLAGS_NUMELEMS) {
+> +		ret = -EINVAL;
+> +		NL_SET_ERR_MSG(extack, "Can't update register num elems");
+> +		goto err;
+> +	}
+> +
+> +	if (!(parm->flags & P4TC_REGISTER_FLAGS_STARTBIT) ||
+> +	    !(parm->flags & P4TC_REGISTER_FLAGS_ENDBIT)) {
+> +		ret = -EINVAL;
+> +		NL_SET_ERR_MSG(extack, "Must specify start and endbit");
+> +		goto err;
+> +	}
+> +
+> +	if (parm->startbit != reg->reg_startbit ||
+> +	    parm->endbit != reg->reg_endbit) {
+> +		ret = -EINVAL;
+> +		NL_SET_ERR_MSG(extack,
+> +			       "Start and endbit don't match with register values");
+> +		goto err;
+> +	}
+> +
+> +	if (!(parm->flags & P4TC_REGISTER_FLAGS_INDEX)) {
+> +		ret = -EINVAL;
+> +		NL_SET_ERR_MSG(extack, "Must specify index");
+> +		goto err;
+> +	}
+> +
+> +	if (tb[P4TC_REGISTER_VALUE]) {
+> +		if (nla_len(tb[P4TC_REGISTER_VALUE]) !=
+> +		    BITS_TO_BYTES(datatype->container_bitsz)) {
+> +			ret = -EINVAL;
+> +			NL_SET_ERR_MSG(extack,
+> +				       "Value size differs from register type's container size");
+> +			goto err;
+> +		}
+> +		user_value = nla_data(tb[P4TC_REGISTER_VALUE]);
+> +	} else {
+> +		ret = -EINVAL;
+> +		NL_SET_ERR_MSG(extack, "Missing register value");
+> +		goto err;
+> +	}
+> +
+> +	if (parm->index >= reg->reg_num_elems) {
+> +		ret = -EINVAL;
+> +		NL_SET_ERR_MSG(extack, "Register index out of bounds");
+> +		goto err;
+> +	}
+> +
+> +	if (user_value) {
+> +		u64 read_user_value[2] = { 0 };
+> +		size_t type_bytesz;
+> +		void *value;
+> +
+> +		type_bytesz = BITS_TO_BYTES(datatype->container_bitsz);
+> +
+> +		datatype->ops->host_read(datatype, reg->reg_mask_shift,
+> +					 user_value, read_user_value);
+> +
+> +		spin_lock_bh(&reg->reg_value_lock);
+> +		value = reg->reg_value + parm->index * type_bytesz;
+> +		datatype->ops->host_write(datatype, reg->reg_mask_shift,
+> +					  read_user_value, value);
+> +		spin_unlock_bh(&reg->reg_value_lock);
+> +	}
+> +
+> +	return reg;
+> +
+> +err:
+> +	return ERR_PTR(ret);
+> +}
+> +
+> +static struct p4tc_template_common *
+> +tcf_register_cu(struct net *net, struct nlmsghdr *n, struct nlattr *nla,
+> +		struct p4tc_nl_pname *nl_pname, u32 *ids,
+> +		struct netlink_ext_ack *extack)
+> +{
+> +	u32 pipeid = ids[P4TC_PID_IDX], reg_id = ids[P4TC_REGID_IDX];
+> +	struct p4tc_pipeline *pipeline;
+> +	struct p4tc_register *reg;
+> +
+> +	pipeline = tcf_pipeline_find_byany_unsealed(net, nl_pname->data, pipeid,
+> +						    extack);
+> +	if (IS_ERR(pipeline))
+> +		return (void *)pipeline;
+> +
+> +	if (n->nlmsg_flags & NLM_F_REPLACE)
+> +		reg = tcf_register_update(net, n, nla, reg_id, pipeline,
+> +					  extack);
+> +	else
+> +		reg = tcf_register_create(net, n, nla, reg_id, pipeline,
+> +					  extack);
+> +
+> +	if (IS_ERR(reg))
+> +		goto out;
+> +
+> +	if (!nl_pname->passed)
+> +		strscpy(nl_pname->data, pipeline->common.name, PIPELINENAMSIZ);
+> +
+> +	if (!ids[P4TC_PID_IDX])
+> +		ids[P4TC_PID_IDX] = reg->common.p_id;
+> +
+> +out:
+> +	return (struct p4tc_template_common *)reg;
+> +}
+> +
+> +static int tcf_register_flush(struct sk_buff *skb,
 > +			      struct p4tc_pipeline *pipeline,
-> +			      struct p4tc_parser *parser,
 > +			      struct netlink_ext_ack *extack)
 > +{
 > +	unsigned char *b = nlmsg_get_pos(skb);
+> +	struct p4tc_register *reg;
+> +	unsigned long tmp, reg_id;
 > +	int ret = 0;
 > +	int i = 0;
-> +	struct p4tc_hdrfield *hdrfield;
-> +	u32 path[2];
-> +	unsigned long tmp, hdrfield_id;
 > +
-> +	path[0] = parser->parser_inst_id;
-> +	path[1] = 0;
-> +
-> +	if (nla_put(skb, P4TC_PATH, sizeof(path), path))
+> +	if (nla_put_u32(skb, P4TC_PATH, 0))
 > +		goto out_nlmsg_trim;
 > +
-> +	if (idr_is_empty(&parser->hdr_fields_idr)) {
-> +		NL_SET_ERR_MSG(extack, "There are no header fields to flush");
+> +	if (idr_is_empty(&pipeline->p_reg_idr)) {
+> +		NL_SET_ERR_MSG(extack, "There are no registers to flush");
 > +		goto out_nlmsg_trim;
 > +	}
 > +
-> +	idr_for_each_entry_ul(&parser->hdr_fields_idr, hdrfield, tmp, hdrfield_id) {
-> +		if (_tcf_hdrfield_put(pipeline, parser, hdrfield, false, extack) < 0) {
+> +	idr_for_each_entry_ul(&pipeline->p_reg_idr, reg, tmp, reg_id) {
+> +		if (_tcf_register_put(pipeline, reg, false, extack) < 0) {
 > +			ret = -EBUSY;
 > +			continue;
 > +		}
@@ -797,12 +1021,10 @@ ditto
 > +
 > +	if (ret < 0) {
 > +		if (i == 0) {
-> +			NL_SET_ERR_MSG(extack,
-> +				       "Unable to flush any table instance");
+> +			NL_SET_ERR_MSG(extack, "Unable to flush any register");
 > +			goto out_nlmsg_trim;
 > +		} else {
-> +			NL_SET_ERR_MSG(extack,
-> +				       "Unable to flush all table instances");
+> +			NL_SET_ERR_MSG(extack, "Unable to flush all registers");
 > +		}
 > +	}
 > +
@@ -810,65 +1032,87 @@ ditto
 > +
 > +out_nlmsg_trim:
 > +	nlmsg_trim(skb, b);
-> +	return 0;
+> +	return ret;
 > +}
 > +
-> +static int tcf_hdrfield_gd(struct net *net, struct sk_buff *skb,
+> +static int tcf_register_gd(struct net *net, struct sk_buff *skb,
 > +			   struct nlmsghdr *n, struct nlattr *nla,
 > +			   struct p4tc_nl_pname *nl_pname, u32 *ids,
 > +			   struct netlink_ext_ack *extack)
 > +{
+> +	u32 pipeid = ids[P4TC_PID_IDX], reg_id = ids[P4TC_REGID_IDX];
+> +	struct nlattr *tb[P4TC_REGISTER_MAX + 1] = {};
 > +	unsigned char *b = nlmsg_get_pos(skb);
-> +	u32 pipeid = ids[P4TC_PID_IDX];
-> +	u32 parser_inst_id = ids[P4TC_PARSEID_IDX];
-> +	u32 hdrfield_id = ids[P4TC_HDRFIELDID_IDX];
-> +	struct nlattr *tb[P4TC_HDRFIELD_MAX + 1];
-> +	struct p4tc_hdrfield *hdrfield;
+> +	struct p4tc_u_register *parm_arg = NULL;
+> +	int ret = 0;
 > +	struct p4tc_pipeline *pipeline;
-> +	struct p4tc_parser *parser;
-> +	char *parser_name;
-> +	int ret;
+> +	struct p4tc_register *reg;
+> +	struct nlattr *attr_info;
 > +
-> +	pipeline = tcf_pipeline_find_byany(net, nl_pname->data, pipeid, extack);
+> +	if (n->nlmsg_type == RTM_DELP4TEMPLATE)
+> +		pipeline = tcf_pipeline_find_byany_unsealed(net, nl_pname->data,
+> +							    pipeid, extack);
+> +	else
+> +		pipeline = tcf_pipeline_find_byany(net, nl_pname->data, pipeid,
+> +						   extack);
+> +
 > +	if (IS_ERR(pipeline))
 > +		return PTR_ERR(pipeline);
 > +
-> +	ret = nla_parse_nested(tb, P4TC_HDRFIELD_MAX, nla, tc_hdrfield_policy,
-> +			       extack);
-> +	if (ret < 0)
-> +		return ret;
+> +	if (nla) {
+> +		ret = nla_parse_nested(tb, P4TC_REGISTER_MAX, nla,
+> +				       p4tc_register_policy, extack);
 > +
-> +	parser_name = tb[P4TC_HDRFIELD_PARSER_NAME] ?
-> +		nla_data(tb[P4TC_HDRFIELD_PARSER_NAME]) : NULL;
-> +
-> +	parser = tcf_parser_find_byany(pipeline, parser_name, parser_inst_id,
-> +				       extack);
-> +	if (IS_ERR(parser))
-> +		return PTR_ERR(parser);
-> +
-> +	if (!ids[P4TC_PID_IDX])
-> +		ids[P4TC_PID_IDX] = pipeline->common.p_id;
+> +		if (ret < 0)
+> +			return ret;
+> +	}
 > +
 > +	if (!nl_pname->passed)
 > +		strscpy(nl_pname->data, pipeline->common.name, PIPELINENAMSIZ);
 > +
-> +	if (n->nlmsg_type == RTM_DELP4TEMPLATE && n->nlmsg_flags & NLM_F_ROOT)
-> +		return tcf_hdrfield_flush(skb, pipeline, parser, extack);
+> +	if (!ids[P4TC_PID_IDX])
+> +		ids[P4TC_PID_IDX] = pipeline->common.p_id;
 > +
-> +	hdrfield = tcf_hdrfield_find_byanyattr(parser, tb[P4TC_HDRFIELD_NAME],
-> +					       hdrfield_id, extack);
-> +	if (IS_ERR(hdrfield))
-> +		return PTR_ERR(hdrfield);
+> +	if (n->nlmsg_type == RTM_DELP4TEMPLATE && (n->nlmsg_flags & NLM_F_ROOT))
+> +		return tcf_register_flush(skb, pipeline, extack);
 > +
-> +	ret = _tcf_hdrfield_fill_nlmsg(skb, hdrfield);
-> +	if (ret < 0)
-> +		return -ENOMEM;
+> +	reg = tcf_register_find_byanyattr(pipeline, tb[P4TC_REGISTER_NAME],
+> +					  reg_id, extack);
+> +	if (IS_ERR(reg))
+> +		return PTR_ERR(reg);
+> +
+> +	attr_info = tb[P4TC_REGISTER_INFO];
+> +	if (attr_info) {
+> +		if (n->nlmsg_type == RTM_DELP4TEMPLATE) {
+> +			NL_SET_ERR_MSG(extack,
+> +				       "Can't pass info attribute in delete");
+> +			return -EINVAL;
+> +		}
+> +		parm_arg = nla_data(attr_info);
+> +		if (!(parm_arg->flags & P4TC_REGISTER_FLAGS_INDEX) ||
+> +		    (parm_arg->flags & ~P4TC_REGISTER_FLAGS_INDEX)) {
+> +			NL_SET_ERR_MSG(extack,
+> +				       "Must specify param index and only param index");
+> +			return -EINVAL;
+> +		}
+> +		if (parm_arg->index >= reg->reg_num_elems) {
+> +			NL_SET_ERR_MSG(extack, "Register index out of bounds");
+> +			return -EINVAL;
+> +		}
+> +	}
+> +	if (_tcf_register_fill_nlmsg(skb, reg, parm_arg) < 0) {
+> +		NL_SET_ERR_MSG(extack,
+> +			       "Failed to fill notification attributes for register");
+> +		return -EINVAL;
+> +	}
 > +
 > +	if (n->nlmsg_type == RTM_DELP4TEMPLATE) {
-> +		ret = _tcf_hdrfield_put(pipeline, parser, hdrfield, false,
-> +					extack);
-> +		if (ret < 0)
+> +		ret = _tcf_register_put(pipeline, reg, false, extack);
+> +		if (ret < 0) {
+> +			NL_SET_ERR_MSG(extack,
+> +				       "Unable to delete referenced register");
 > +			goto out_nlmsg_trim;
+> +		}
 > +	}
 > +
 > +	return 0;
@@ -878,73 +1122,21 @@ ditto
 > +	return ret;
 > +}
 > +
-> +static int tcf_hdrfield_dump_1(struct sk_buff *skb,
-> +			       struct p4tc_template_common *common)
-> +{
-> +	struct p4tc_hdrfield *hdrfield = to_hdrfield(common);
-> +	struct nlattr *param = nla_nest_start(skb, P4TC_PARAMS);
-> +	unsigned char *b = nlmsg_get_pos(skb);
-> +	u32 path[2];
-> +
-> +	if (!param)
-> +		goto out_nlmsg_trim;
-> +
-> +	if (hdrfield->common.name[0] &&
-> +	    nla_put_string(skb, P4TC_HDRFIELD_NAME, hdrfield->common.name))
-> +		goto out_nlmsg_trim;
-> +
-> +	nla_nest_end(skb, param);
-> +
-> +	path[0] = hdrfield->parser_inst_id;
-> +	path[1] = hdrfield->hdrfield_id;
-> +	if (nla_put(skb, P4TC_PATH, sizeof(path), path))
-> +		goto out_nlmsg_trim;
-> +
-> +	return 0;
-> +
-> +out_nlmsg_trim:
-> +	nlmsg_trim(skb, b);
-> +	return -ENOMEM;
-> +}
-> +
-> +static int tcf_hdrfield_dump(struct sk_buff *skb, struct p4tc_dump_ctx *ctx,
+> +static int tcf_register_dump(struct sk_buff *skb, struct p4tc_dump_ctx *ctx,
 > +			     struct nlattr *nla, char **p_name, u32 *ids,
 > +			     struct netlink_ext_ack *extack)
 > +{
-> +	struct nlattr *tb[P4TC_HDRFIELD_MAX + 1] = { NULL };
-> +	const u32 pipeid = ids[P4TC_PID_IDX];
 > +	struct net *net = sock_net(skb->sk);
 > +	struct p4tc_pipeline *pipeline;
-> +	struct p4tc_parser *parser;
-> +	int ret;
 > +
 > +	if (!ctx->ids[P4TC_PID_IDX]) {
-> +		pipeline =
-> +			tcf_pipeline_find_byany(net, *p_name, pipeid, extack);
+> +		pipeline = tcf_pipeline_find_byany(net, *p_name,
+> +						   ids[P4TC_PID_IDX], extack);
 > +		if (IS_ERR(pipeline))
 > +			return PTR_ERR(pipeline);
 > +		ctx->ids[P4TC_PID_IDX] = pipeline->common.p_id;
 > +	} else {
 > +		pipeline = tcf_pipeline_find_byid(net, ctx->ids[P4TC_PID_IDX]);
-> +	}
-> +
-> +	if (!ctx->ids[P4TC_PARSEID_IDX]) {
-> +		if (nla) {
-> +			ret = nla_parse_nested(tb, P4TC_HDRFIELD_MAX, nla,
-> +					       tc_hdrfield_policy, extack);
-> +			if (ret < 0)
-> +				return ret;
-> +		}
-> +
-> +		parser = tcf_parser_find_byany(pipeline,
-> +					       nla_data(tb[P4TC_HDRFIELD_PARSER_NAME]),
-> +					       ids[P4TC_PARSEID_IDX], extack);
-> +		if (IS_ERR(parser))
-> +			return PTR_ERR(parser);
-> +
-> +		ctx->ids[P4TC_PARSEID_IDX] = parser->parser_inst_id;
-> +	} else {
-> +		parser = pipeline->parser;
 > +	}
 > +
 > +	if (!ids[P4TC_PID_IDX])
@@ -953,293 +1145,54 @@ ditto
 > +	if (!(*p_name))
 > +		*p_name = pipeline->common.name;
 > +
-> +	return tcf_p4_tmpl_generic_dump(skb, ctx, &parser->hdr_fields_idr,
-> +					P4TC_HDRFIELDID_IDX, extack);
+> +	return tcf_p4_tmpl_generic_dump(skb, ctx, &pipeline->p_reg_idr,
+> +					P4TC_REGID_IDX, extack);
 > +}
 > +
-> +const struct p4tc_template_ops p4tc_hdrfield_ops = {
-> +	.init = NULL,
-> +	.cu = tcf_hdrfield_cu,
-> +	.fill_nlmsg = tcf_hdrfield_fill_nlmsg,
-> +	.gd = tcf_hdrfield_gd,
-> +	.put = tcf_hdrfield_put,
-> +	.dump = tcf_hdrfield_dump,
-> +	.dump_1 = tcf_hdrfield_dump_1,
+> +static int tcf_register_dump_1(struct sk_buff *skb,
+> +			       struct p4tc_template_common *common)
+> +{
+> +	struct nlattr *nest = nla_nest_start(skb, P4TC_PARAMS);
+> +	struct p4tc_register *reg = to_register(common);
+> +
+> +	if (!nest)
+> +		return -ENOMEM;
+> +
+> +	if (nla_put_string(skb, P4TC_REGISTER_NAME, reg->common.name)) {
+> +		nla_nest_cancel(skb, nest);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	nla_nest_end(skb, nest);
+> +
+> +	return 0;
+> +}
+> +
+> +const struct p4tc_template_ops p4tc_register_ops = {
+> +	.cu = tcf_register_cu,
+> +	.fill_nlmsg = tcf_register_fill_nlmsg,
+> +	.gd = tcf_register_gd,
+> +	.put = tcf_register_put,
+> +	.dump = tcf_register_dump,
+> +	.dump_1 = tcf_register_dump_1,
 > +};
-> diff --git a/net/sched/p4tc/p4tc_parser_api.c b/net/sched/p4tc/p4tc_parser_api.c
-> new file mode 100644
-> index 000000000..267a58aeb
-> --- /dev/null
-> +++ b/net/sched/p4tc/p4tc_parser_api.c
-> @@ -0,0 +1,229 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/*
-> + * net/sched/p4tc_parser_api.c	P4 TC PARSER API
-> + *
-> + * Copyright (c) 2022, Mojatatu Networks
-> + * Copyright (c) 2022, Intel Corporation.
-> + * Authors:     Jamal Hadi Salim <jhs@mojatatu.com>
-> + *              Victor Nogueira <victor@mojatatu.com>
-> + *              Pedro Tammela <pctammela@mojatatu.com>
-> + */
-> +
-> +#include <linux/types.h>
-> +#include <linux/kernel.h>
-> +#include <linux/string.h>
-> +#include <linux/errno.h>
-> +#include <linux/slab.h>
-> +#include <linux/skbuff.h>
-> +#include <linux/err.h>
-> +#include <linux/module.h>
-> +#include <net/net_namespace.h>
-> +#include <net/pkt_cls.h>
-> +#include <net/p4tc.h>
-> +#include <net/kparser.h>
-> +#include <net/netlink.h>
-> +
-> +static struct p4tc_parser *parser_find_name(struct p4tc_pipeline *pipeline,
-> +					    const char *parser_name)
-> +{
-> +	if (unlikely(!pipeline->parser))
-> +		return NULL;
-> +
-> +	if (!strncmp(pipeline->parser->parser_name, parser_name, PARSERNAMSIZ))
-> +		return pipeline->parser;
-> +
-> +	return NULL;
-> +}
-> +
-> +struct p4tc_parser *tcf_parser_find_byid(struct p4tc_pipeline *pipeline,
-> +					 const u32 parser_inst_id)
-> +{
-> +	if (unlikely(!pipeline->parser))
-> +		return NULL;
-> +
-> +	if (parser_inst_id == pipeline->parser->parser_inst_id)
-> +		return pipeline->parser;
-> +
-> +	return NULL;
-> +}
-> +
-> +static struct p4tc_parser *__parser_find(struct p4tc_pipeline *pipeline,
-> +					 const char *parser_name,
-> +					 u32 parser_inst_id,
-> +					 struct netlink_ext_ack *extack)
-> +{
-> +	struct p4tc_parser *parser;
-> +	int err;
-> +
-> +	if (parser_inst_id) {
-> +		parser = tcf_parser_find_byid(pipeline, parser_inst_id);
-> +		if (!parser) {
-> +			if (extack)
-> +				NL_SET_ERR_MSG(extack,
-> +					       "Unable to find parser by id");
-> +			err = -EINVAL;
-> +			goto out;
-> +		}
-> +	} else {
-> +		if (parser_name) {
-> +			parser = parser_find_name(pipeline, parser_name);
-> +			if (!parser) {
-> +				if (extack)
-> +					NL_SET_ERR_MSG(extack,
-> +						       "Parser name not found");
-> +				err = -EINVAL;
-> +				goto out;
-> +			}
-> +		} else {
-> +			if (extack)
-> +				NL_SET_ERR_MSG(extack,
-> +					       "Must specify parser name or id");
-> +			err = -EINVAL;
-> +			goto out;
-> +		}
-> +	}
-> +
-> +	return parser;
-> +
-> +out:
-> +	return ERR_PTR(err);
-> +}
-> +
-> +struct p4tc_parser *tcf_parser_find_byany(struct p4tc_pipeline *pipeline,
-> +					  const char *parser_name,
-> +					  u32 parser_inst_id,
-> +					  struct netlink_ext_ack *extack)
-> +{
-> +	return __parser_find(pipeline, parser_name, parser_inst_id, extack);
-> +}
-> +
-> +#ifdef CONFIG_KPARSER
-> +int tcf_skb_parse(struct sk_buff *skb, struct p4tc_skb_ext *p4tc_skb_ext,
-> +		  struct p4tc_parser *parser)
-> +{
-> +	void *hdr = skb_mac_header(skb);
-> +	size_t pktlen = skb_mac_header_len(skb) + skb->len;
-> +
-> +	return __kparser_parse(parser->kparser, hdr, pktlen,
-> +			       p4tc_skb_ext->p4tc_ext->hdrs, HEADER_MAX_LEN);
-> +}
-> +
-> +static int __tcf_parser_fill(struct p4tc_parser *parser,
-> +			     struct netlink_ext_ack *extack)
-> +{
-> +	struct kparser_hkey kparser_key = { 0 };
-> +
-> +	kparser_key.id = parser->parser_inst_id;
-> +	strscpy(kparser_key.name, parser->parser_name, KPARSER_MAX_NAME);
-> +
-> +	parser->kparser = kparser_get_parser(&kparser_key, false);
-> +	if (!parser->kparser) {
-> +		NL_SET_ERR_MSG(extack, "Unable to get kparser instance");
-> +		return -ENOENT;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +void __tcf_parser_put(struct p4tc_parser *parser)
-> +{
-> +	kparser_put_parser(parser->kparser, false);
-> +}
-> +
-> +bool tcf_parser_is_callable(struct p4tc_parser *parser)
-> +{
-> +	return parser && parser->kparser;
-> +}
-> +#else
-> +int tcf_skb_parse(struct sk_buff *skb, struct p4tc_skb_ext *p4tc_skb_ext,
-> +		  struct p4tc_parser *parser)
-> +{
-> +	return 0;
-> +}
-> +
-> +static int __tcf_parser_fill(struct p4tc_parser *parser,
-> +			     struct netlink_ext_ack *extack)
-> +{
-> +	return 0;
-> +}
-> +
-> +void __tcf_parser_put(struct p4tc_parser *parser)
-> +{
-> +}
-> +
-> +bool tcf_parser_is_callable(struct p4tc_parser *parser)
-> +{
-> +	return !!parser;
-> +}
-> +#endif
-> +
-> +struct p4tc_parser *
-> +tcf_parser_create(struct p4tc_pipeline *pipeline, const char *parser_name,
-> +		  u32 parser_inst_id, struct netlink_ext_ack *extack)
-> +{
-> +	struct p4tc_parser *parser;
-> +	int ret;
-> +
-> +	if (pipeline->parser) {
-> +		NL_SET_ERR_MSG(extack,
-> +			       "Can only have one parser instance per pipeline");
-> +		return ERR_PTR(-EEXIST);
-> +	}
-> +
-> +	parser = kzalloc(sizeof(*parser), GFP_KERNEL);
-> +	if (!parser)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	if (parser_inst_id)
-> +		parser->parser_inst_id = parser_inst_id;
-> +	else
-> +		/* Assign to KPARSER_KMOD_ID_MAX + 1 if no ID was supplied */
-> +		parser->parser_inst_id = KPARSER_KMOD_ID_MAX + 1;
-> +
-> +	strscpy(parser->parser_name, parser_name, PARSERNAMSIZ);
-> +
-> +	ret = __tcf_parser_fill(parser, extack);
-> +	if (ret < 0)
-> +		goto err;
-> +
-> +	refcount_set(&parser->parser_ref, 1);
-> +
-> +	idr_init(&parser->hdr_fields_idr);
-> +
-> +	pipeline->parser = parser;
-> +
-> +	return parser;
-> +
-> +err:
-> +	kfree(parser);
-> +	return ERR_PTR(ret);
-> +}
-> +
-> +/* Dummy function which just returns true
-> + * Once we have the proper parser code, this function will work properly
-> + */
-> +bool tcf_parser_check_hdrfields(struct p4tc_parser *parser,
-> +				struct p4tc_hdrfield *hdrfield)
-> +{
-> +	return true;
-> +}
-> +
-> +int tcf_parser_del(struct net *net, struct p4tc_pipeline *pipeline,
-> +		   struct p4tc_parser *parser, struct netlink_ext_ack *extack)
-> +{
-> +	struct p4tc_hdrfield *hdrfield;
-> +	unsigned long hdr_field_id, tmp;
-> +
-> +	__tcf_parser_put(parser);
-> +
-> +	idr_for_each_entry_ul(&parser->hdr_fields_idr, hdrfield, tmp, hdr_field_id)
-> +		hdrfield->common.ops->put(net, &hdrfield->common, true, extack);
-> +
-> +	idr_destroy(&parser->hdr_fields_idr);
-> +
-> +	pipeline->parser = NULL;
-> +
-> +	kfree(parser);
-> +
-> +	return 0;
-> +}
-> diff --git a/net/sched/p4tc/p4tc_pipeline.c b/net/sched/p4tc/p4tc_pipeline.c
-> index 49f0062ad..6fc7bd49d 100644
-> --- a/net/sched/p4tc/p4tc_pipeline.c
-> +++ b/net/sched/p4tc/p4tc_pipeline.c
-> @@ -115,6 +115,8 @@ static int tcf_pipeline_put(struct net *net,
->          }
->  
->  	idr_remove(&pipe_net->pipeline_idr, pipeline->common.p_id);
-> +	if (pipeline->parser)
-> +		tcf_parser_del(net, pipeline, pipeline->parser, extack);
->  
->  	idr_for_each_entry_ul(&pipeline->p_meta_idr, meta, tmp, m_id)
->  		meta->common.ops->put(net, &meta->common, true, extack);
-> @@ -319,6 +321,8 @@ static struct p4tc_pipeline *tcf_pipeline_create(struct net *net,
->  		pipeline->num_postacts = 0;
->  	}
->  
-> +	pipeline->parser = NULL;
-> +
->  	idr_init(&pipeline->p_meta_idr);
->  	pipeline->p_meta_offset = 0;
->  
 > diff --git a/net/sched/p4tc/p4tc_tmpl_api.c b/net/sched/p4tc/p4tc_tmpl_api.c
-> index a13d02ce5..325b56d2e 100644
+> index 2963f6497..5712cfaf8 100644
 > --- a/net/sched/p4tc/p4tc_tmpl_api.c
 > +++ b/net/sched/p4tc/p4tc_tmpl_api.c
-> @@ -43,6 +43,7 @@ static bool obj_is_valid(u32 obj)
->  	switch (obj) {
->  	case P4TC_OBJ_PIPELINE:
->  	case P4TC_OBJ_META:
-> +	case P4TC_OBJ_HDR_FIELD:
+> @@ -46,6 +46,7 @@ static bool obj_is_valid(u32 obj)
+>  	case P4TC_OBJ_HDR_FIELD:
+>  	case P4TC_OBJ_ACT:
+>  	case P4TC_OBJ_TABLE:
+> +	case P4TC_OBJ_REGISTER:
 >  		return true;
 >  	default:
 >  		return false;
-> @@ -52,6 +53,7 @@ static bool obj_is_valid(u32 obj)
->  static const struct p4tc_template_ops *p4tc_ops[P4TC_OBJ_MAX] = {
->  	[P4TC_OBJ_PIPELINE] = &p4tc_pipeline_ops,
->  	[P4TC_OBJ_META] = &p4tc_meta_ops,
-> +	[P4TC_OBJ_HDR_FIELD] = &p4tc_hdrfield_ops,
+> @@ -58,6 +59,7 @@ static const struct p4tc_template_ops *p4tc_ops[P4TC_OBJ_MAX] = {
+>  	[P4TC_OBJ_HDR_FIELD] = &p4tc_hdrfield_ops,
+>  	[P4TC_OBJ_ACT] = &p4tc_act_ops,
+>  	[P4TC_OBJ_TABLE] = &p4tc_table_ops,
+> +	[P4TC_OBJ_REGISTER] = &p4tc_register_ops,
 >  };
 >  
 >  int tcf_p4_tmpl_generic_dump(struct sk_buff *skb, struct p4tc_dump_ctx *ctx,
