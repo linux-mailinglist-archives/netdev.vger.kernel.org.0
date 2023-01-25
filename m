@@ -2,85 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2080D67BA83
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 20:16:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CD7D67BA88
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 20:16:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235422AbjAYTQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 14:16:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34922 "EHLO
+        id S234999AbjAYTQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 14:16:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbjAYTQD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 14:16:03 -0500
-Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 629C2C157;
-        Wed, 25 Jan 2023 11:16:02 -0800 (PST)
-Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-142b72a728fso22551159fac.9;
-        Wed, 25 Jan 2023 11:16:02 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:references:message-id:subject:cc
-         :to:from:date:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ET5JmTgXm+LbQNG9OMNR0lWgn8/fOI2cY5p7uWgl0cw=;
-        b=tohIGw/UD7003TfWJDS7NFwTVfV4eiDQ/TWDqzVN+pWrC1SA/XmFgf08ZG2Gf10wWF
-         mOLkLoezWuYTG/vfD6gCHsJ+Afi+I9cDY7frW8gWKS4V5oxUEZzDg5UAURVC94AAtp57
-         H124L1ozYjDp36kgnxMkaLLEINUcAm99VAD8CD0xS0+S3ATavz2+JZBudQO9N2UvRJnG
-         E4wT1YLwnxmHJrhzsnJzQWNO0unuMejeTR0IXmkxpGml0v0bV7WOnFihxdNf9qkUI+3m
-         RDbmTP2zDXF9MuOv1KzKTw5luakPJdv+6BVdI0AQ6Sw+sbWPGquaa6FDp7OxpbQwm1BH
-         LNMw==
-X-Gm-Message-State: AFqh2ko4eHQnJSyp9Zb7rw3p2z7cfofWVw5QBlTnH0vwQM1miMe3vRhI
-        UZ/djK2ecXpSqRuWxNiZvA==
-X-Google-Smtp-Source: AMrXdXvgbQawq2+Dx+lUA/Un4UhhydyHNV1fwE7OY++wHZ5Jfdc8HZRVnRUHFbUZ/xm3meqgLnZyzQ==
-X-Received: by 2002:a05:6870:4985:b0:152:d0dc:2bba with SMTP id ho5-20020a056870498500b00152d0dc2bbamr17286732oab.15.1674674161655;
-        Wed, 25 Jan 2023 11:16:01 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id k43-20020a4a94ae000000b004f1f6b25091sm2193375ooi.41.2023.01.25.11.16.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Jan 2023 11:16:01 -0800 (PST)
-Received: (nullmailer pid 2709254 invoked by uid 1000);
-        Wed, 25 Jan 2023 19:16:00 -0000
-Date:   Wed, 25 Jan 2023 13:16:00 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     linux-can@vger.kernel.org, Ulrich Hecht <uli+renesas@fpond.eu>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-renesas-soc@vger.kernel.org,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>
-Subject: Re: [PATCH 03/12] dt-bindings: can: renesas,rcar-canfd: Add
- transceiver support
-Message-ID: <167467416007.2709195.16290383367221054920.robh@kernel.org>
-References: <cover.1674499048.git.geert+renesas@glider.be>
+        with ESMTP id S229505AbjAYTQu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 14:16:50 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A37C157
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 11:16:49 -0800 (PST)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30PJCK2P011313;
+        Wed, 25 Jan 2023 19:16:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Kw6y/k3JVtY/PJ+o+FkxSFGfrlT5w8ZPzHsbbKZuVNc=;
+ b=QNwZ1i2W0T3JW3KzgxAk8rDjD1UbSGTXL2zm8gm3Lrk5dd4lEN9dSaHAV6Q+bmMcJP08
+ 6Eetx8IJI14Ldxaue0hHuFDnqks9XlZJcnOrmGpE5P0xL6dr4sJgF2JSkgnjziCejT1M
+ oB5h3DE9iXJViihoFek/jdiLlRZKPkwe1j2qs3i4UN9lzgrlvNsKbgWqXA0i+Von2rkI
+ 4hE+rLNgrjhqAaRuR4j0NKVtgAlt8lyR9PZsondc3zEyFb4+qAxw404h+8S6SFGn4KYc
+ SiUPOptV74FFP250fMXBOhoAFXuj4mrecLRcG4WJHi3DVJ9cgdQWXetdm5sGU9pmasb9 xg== 
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3nb8yu2d2b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 25 Jan 2023 19:16:46 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 30PGkIKS004500;
+        Wed, 25 Jan 2023 19:16:45 GMT
+Received: from smtprelay06.dal12v.mail.ibm.com ([9.208.130.100])
+        by ppma01dal.us.ibm.com (PPS) with ESMTPS id 3n87p87tw2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 25 Jan 2023 19:16:45 +0000
+Received: from smtpav02.wdc07v.mail.ibm.com (smtpav02.wdc07v.mail.ibm.com [10.39.53.229])
+        by smtprelay06.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 30PJGhgY000712
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 25 Jan 2023 19:16:44 GMT
+Received: from smtpav02.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AD2ED5805B;
+        Wed, 25 Jan 2023 19:16:43 +0000 (GMT)
+Received: from smtpav02.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 894085805D;
+        Wed, 25 Jan 2023 19:16:42 +0000 (GMT)
+Received: from [9.65.236.34] (unknown [9.65.236.34])
+        by smtpav02.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+        Wed, 25 Jan 2023 19:16:42 +0000 (GMT)
+Message-ID: <c2ee03e3-0947-5f25-da09-79d387e62ed2@linux.vnet.ibm.com>
+Date:   Wed, 25 Jan 2023 11:16:41 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH net-next] ibmvnic: Toggle between queue types in affinity
+ mapping
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Nick Child <nnac123@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, bjking1@linux.ibm.com, haren@linux.ibm.com,
+        ricklind@us.ibm.com
+References: <20230123221727.30423-1-nnac123@linux.ibm.com>
+ <20230124183925.257621e8@kernel.org>
+From:   Rick Lindsley <ricklind@linux.vnet.ibm.com>
+In-Reply-To: <20230124183925.257621e8@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: yO9X3fPCTr68JpPX3i61ycS_aWymGlLg
+X-Proofpoint-ORIG-GUID: yO9X3fPCTr68JpPX3i61ycS_aWymGlLg
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-01-25_13,2023-01-25_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ mlxlogscore=884 impostorscore=0 adultscore=0 priorityscore=1501 mlxscore=0
+ phishscore=0 malwarescore=0 bulkscore=0 lowpriorityscore=0 clxscore=1011
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2301250169
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 1/24/23 18:39, Jakub Kicinski wrote:
 
-On Mon, 23 Jan 2023 19:56:05 +0100, Geert Uytterhoeven wrote:
-> Add support for describing CAN transceivers as PHYs.
-> 
-> While simple CAN transceivers can do without, this is needed for CAN
-> transceivers like NXP TJR1443 that need a configuration step (like
-> pulling standby or enable lines), and/or impose a bitrate limit.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  .../devicetree/bindings/net/can/renesas,rcar-canfd.yaml       | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
+> Seems sensible but why did you invert the order? To save LoC?
 
-Acked-by: Rob Herring <robh@kernel.org>
+Proc zero is often the default vector for other interrupts.  If we're going to diddle with the irq's for performance,  it would make sense to me to steer around proc 0.
+
+Rick
+
