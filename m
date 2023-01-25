@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 803F367BE8B
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 22:29:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2947A67BE8C
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 22:30:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236681AbjAYV3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 16:29:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52730 "EHLO
+        id S236789AbjAYV37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 16:29:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236699AbjAYV3n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 16:29:43 -0500
+        with ESMTP id S236780AbjAYV34 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 16:29:56 -0500
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83908C665
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 13:29:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A39545A82D
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 13:29:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674682153; x=1706218153;
+  t=1674682161; x=1706218161;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=8ub431RK9zJ8hY++PnShyILNfVdvc68+HUNOtvp8rmU=;
-  b=LYe0BzNbSx6ejgbx9FljH8GImwf99DycZYCj+KvgRcv0tq4iodUtc65u
-   GeI0kUEfFqUMYxQ4ssadf3bqlN8lmiXbyGvH72waDcC774BEbIjiad8Vb
-   szxUxDon7BQYreo8Cg4jQWua4koRFjVnINvU55rX/yBlE+NvPFx0NAJwG
-   lO6rjAEtSupLfFwbnIVlbhAjhQVbaJJfp5VUQ1OzQS0zPFouQ03EkAbjC
-   XAS+HwCezOXgnD1Ky5rJb0lNi3vOAa5nw2JIuNrJGl1XHSMFYSBa9Rowr
-   5ibearVv2DKQEKs87PU3OIhzMCtqTBC5GjdfnkYrXl0VyAleBASGSZpsi
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10601"; a="310261531"
+  bh=a4p4g39zQgqRc9cEkbF+NSyLRrl8dGfec7zkDqyT/3Y=;
+  b=OhuX6SIqL0k6yfDvXFDI8N37kjRQxC6sQFJi0OGyFFFR4lzBXGkqSaPD
+   0/U2ag9ed0hcSCcSf0a5nUL/uoEfc/a1AbXBw9XwhbEjfWGjeGYGBs9YF
+   1ByfGbdTDyptXOMeDpMQcVlpDRO0IeXfRCQ9EFGokQZLBDJJPEzl2j0l6
+   lgABEfRAh2MI1tJd0P1K4d7k9DE3eh4j0gM9+9e3x64DGAd3yOKNLgSZN
+   ELi6wiyeDmRRekSm/SinokBceOHlpHVYHhghKENfPRsNcOf3azWJJRQly
+   r+1MpwHEuCtDVzgj6wUch0oR+ws87kcX+XT9k5TRjJqVJ9GqueM1ymXj6
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10601"; a="310261539"
 X-IronPort-AV: E=Sophos;i="5.97,246,1669104000"; 
-   d="scan'208";a="310261531"
+   d="scan'208";a="310261539"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2023 13:26:58 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10601"; a="731189729"
+X-IronPort-AV: E=McAfee;i="6500,9779,10601"; a="731189734"
 X-IronPort-AV: E=Sophos;i="5.97,246,1669104000"; 
-   d="scan'208";a="731189729"
+   d="scan'208";a="731189734"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
   by fmsmga004.fm.intel.com with ESMTP; 25 Jan 2023 13:26:57 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        sasha.neftin@intel.com, Naama Meir <naamax.meir@linux.intel.com>
-Subject: [PATCH net-next 1/3] igc: Add qbv_config_change_errors counter
-Date:   Wed, 25 Jan 2023 13:27:00 -0800
-Message-Id: <20230125212702.4030240-2-anthony.l.nguyen@intel.com>
+Cc:     Tan Tee Min <tee.min.tan@linux.intel.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, sasha.neftin@intel.com,
+        Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>,
+        Naama Meir <naamax.meir@linux.intel.com>
+Subject: [PATCH net-next 2/3] igc: offload queue max SDU from tc-taprio
+Date:   Wed, 25 Jan 2023 13:27:01 -0800
+Message-Id: <20230125212702.4030240-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230125212702.4030240-1-anthony.l.nguyen@intel.com>
 References: <20230125212702.4030240-1-anthony.l.nguyen@intel.com>
@@ -61,80 +62,148 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
+From: Tan Tee Min <tee.min.tan@linux.intel.com>
 
-Add ConfigChangeError(qbv_config_change_errors) when user try to set the
-AdminBaseTime to past value while the current GCL is still running.
+Add support for configuring the max SDU for each Tx queue.
+If not specified, keep the default.
 
-The ConfigChangeError counter should not be increased when a gate control
-list is scheduled into the future.
+All link speeds have been tested with this implementation.
+No performance issue observed.
 
-User can use "ethtool -S <interface> | grep qbv_config_change_errors"
-command to check the counter values.
+How to test:
 
+1) Configure the tc with max-sdu
+
+tc qdisc replace dev $IFACE parent root handle 100 taprio \
+    num_tc 4 \
+    map 0 1 2 3 3 3 3 3 3 3 3 3 3 3 3 3 \
+    queues 1@0 1@1 1@2 1@3 \
+    base-time $BASE \
+    sched-entry S 0xF 1000000 \
+    max-sdu 1500 1498 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \
+    flags 0x2 \
+    txtime-delay 0
+
+2) Use network statistic to watch the tx queue packet to see if
+packet able to go out or drop.
+
+Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
 Signed-off-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
 Tested-by: Naama Meir <naamax.meir@linux.intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc.h         | 1 +
- drivers/net/ethernet/intel/igc/igc_ethtool.c | 1 +
- drivers/net/ethernet/intel/igc/igc_main.c    | 1 +
- drivers/net/ethernet/intel/igc/igc_tsn.c     | 6 ++++++
- 4 files changed, 9 insertions(+)
+ drivers/net/ethernet/intel/igc/igc.h      |  1 +
+ drivers/net/ethernet/intel/igc/igc_main.c | 44 +++++++++++++++++++++++
+ 2 files changed, 45 insertions(+)
 
 diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
-index df3e26c0cf01..79cc99af4317 100644
+index 79cc99af4317..c0c00b8bd8d8 100644
 --- a/drivers/net/ethernet/intel/igc/igc.h
 +++ b/drivers/net/ethernet/intel/igc/igc.h
-@@ -185,6 +185,7 @@ struct igc_adapter {
- 	ktime_t base_time;
- 	ktime_t cycle_time;
- 	bool qbv_enable;
-+	u32 qbv_config_change_errors;
+@@ -99,6 +99,7 @@ struct igc_ring {
  
- 	/* OS defined structs */
- 	struct pci_dev *pdev;
-diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-index 5a26a7805ef8..0e2cb00622d1 100644
---- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
-+++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-@@ -67,6 +67,7 @@ static const struct igc_stats igc_gstrings_stats[] = {
- 	IGC_STAT("rx_hwtstamp_cleared", rx_hwtstamp_cleared),
- 	IGC_STAT("tx_lpi_counter", stats.tlpic),
- 	IGC_STAT("rx_lpi_counter", stats.rlpic),
-+	IGC_STAT("qbv_config_change_errors", qbv_config_change_errors),
- };
+ 	u32 start_time;
+ 	u32 end_time;
++	u32 max_sdu;
  
- #define IGC_NETDEV_STAT(_net_stat) { \
+ 	/* CBS parameters */
+ 	bool cbs_enable;                /* indicates if CBS is enabled */
 diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index e86b15efaeb8..20bcf9c4e310 100644
+index 20bcf9c4e310..811f842a20a4 100644
 --- a/drivers/net/ethernet/intel/igc/igc_main.c
 +++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -6029,6 +6029,7 @@ static int igc_tsn_clear_schedule(struct igc_adapter *adapter)
+@@ -1508,6 +1508,7 @@ static netdev_tx_t igc_xmit_frame_ring(struct sk_buff *skb,
+ 	__le32 launch_time = 0;
+ 	u32 tx_flags = 0;
+ 	unsigned short f;
++	u32 max_sdu = 0;
+ 	ktime_t txtime;
+ 	u8 hdr_len = 0;
+ 	int tso = 0;
+@@ -1527,6 +1528,14 @@ static netdev_tx_t igc_xmit_frame_ring(struct sk_buff *skb,
+ 		return NETDEV_TX_BUSY;
+ 	}
  
- 	adapter->base_time = 0;
- 	adapter->cycle_time = NSEC_PER_SEC;
-+	adapter->qbv_config_change_errors = 0;
- 
- 	for (i = 0; i < adapter->num_tx_queues; i++) {
- 		struct igc_ring *ring = adapter->tx_ring[i];
-diff --git a/drivers/net/ethernet/intel/igc/igc_tsn.c b/drivers/net/ethernet/intel/igc/igc_tsn.c
-index a386c8d61dbf..b38c1c7569a0 100644
---- a/drivers/net/ethernet/intel/igc/igc_tsn.c
-+++ b/drivers/net/ethernet/intel/igc/igc_tsn.c
-@@ -239,6 +239,12 @@ static int igc_tsn_enable_offload(struct igc_adapter *adapter)
- 		s64 n = div64_s64(ktime_sub_ns(systim, base_time), cycle);
- 
- 		base_time = ktime_add_ns(base_time, (n + 1) * cycle);
++	if (tx_ring->max_sdu > 0) {
++		max_sdu = tx_ring->max_sdu +
++			  (skb_vlan_tagged(skb) ? VLAN_HLEN : 0);
 +
-+		/* Increase the counter if scheduling into the past while
-+		 * Gate Control List (GCL) is running.
-+		 */
-+		if (rd32(IGC_BASET_H) || rd32(IGC_BASET_L))
-+			adapter->qbv_config_change_errors++;
- 	} else {
- 		/* According to datasheet section 7.5.2.9.3.3, FutScdDis bit
- 		 * has to be configured before the cycle time and base time.
++		if (skb->len > max_sdu)
++			goto skb_drop;
++	}
++
+ 	if (!tx_ring->launchtime_enable)
+ 		goto done;
+ 
+@@ -1606,6 +1615,12 @@ static netdev_tx_t igc_xmit_frame_ring(struct sk_buff *skb,
+ 	dev_kfree_skb_any(first->skb);
+ 	first->skb = NULL;
+ 
++	return NETDEV_TX_OK;
++
++skb_drop:
++	dev_kfree_skb_any(skb);
++	skb = NULL;
++
+ 	return NETDEV_TX_OK;
+ }
+ 
+@@ -6036,6 +6051,7 @@ static int igc_tsn_clear_schedule(struct igc_adapter *adapter)
+ 
+ 		ring->start_time = 0;
+ 		ring->end_time = NSEC_PER_SEC;
++		ring->max_sdu = 0;
+ 	}
+ 
+ 	return 0;
+@@ -6119,6 +6135,16 @@ static int igc_save_qbv_schedule(struct igc_adapter *adapter,
+ 		}
+ 	}
+ 
++	for (i = 0; i < adapter->num_tx_queues; i++) {
++		struct igc_ring *ring = adapter->tx_ring[i];
++		struct net_device *dev = adapter->netdev;
++
++		if (qopt->max_sdu[i])
++			ring->max_sdu = qopt->max_sdu[i] + dev->hard_header_len;
++		else
++			ring->max_sdu = 0;
++	}
++
+ 	return 0;
+ }
+ 
+@@ -6206,12 +6232,30 @@ static int igc_tsn_enable_cbs(struct igc_adapter *adapter,
+ 	return igc_tsn_offload_apply(adapter);
+ }
+ 
++static int igc_tsn_query_caps(struct tc_query_caps_base *base)
++{
++	switch (base->type) {
++	case TC_SETUP_QDISC_TAPRIO: {
++		struct tc_taprio_caps *caps = base->caps;
++
++		caps->supports_queue_max_sdu = true;
++
++		return 0;
++	}
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
+ static int igc_setup_tc(struct net_device *dev, enum tc_setup_type type,
+ 			void *type_data)
+ {
+ 	struct igc_adapter *adapter = netdev_priv(dev);
+ 
+ 	switch (type) {
++	case TC_QUERY_CAPS:
++		return igc_tsn_query_caps(type_data);
++
+ 	case TC_SETUP_QDISC_TAPRIO:
+ 		return igc_tsn_enable_qbv_scheduling(adapter, type_data);
+ 
 -- 
 2.38.1
 
