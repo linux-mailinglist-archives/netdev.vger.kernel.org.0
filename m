@@ -2,1369 +2,1974 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DE1667AA41
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 07:19:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97EF267AA82
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 07:43:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234465AbjAYGTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 01:19:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35164 "EHLO
+        id S234800AbjAYGnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 01:43:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbjAYGTO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 01:19:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E15228868;
-        Tue, 24 Jan 2023 22:19:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47269B81733;
-        Wed, 25 Jan 2023 06:19:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A94C6C433EF;
-        Wed, 25 Jan 2023 06:19:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674627546;
-        bh=/8g+2hoXhDCQxIkVDyEF6c9/FoRIcJkJGwLN11zwEF0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=tli83U0mecWHlyA1k7A/3R3uDTu+9MlMs1y+SeXP2yyjxr50YHDqCP85CgWdiNRhr
-         T1ZyCNwEc09Gh6ilMoGJrlKTkoDQrn5hKEzlMo4hQJNaj9WsJnD8LixjLaOTrsLIJG
-         dEsd+YlvK4tW//5x9mKRx/zmrzVHne2ehLM+yYHBbWs/8AC75NRO/J2gtg+p0bUZca
-         aAlYUxq7Pr/AW3b6lzC7W1SvKuV772MJUUsa+f7WSk0gbtJe1BE4w5b928FFMTRLXv
-         Hiz4NxOxaHP1a1di9rafMBQ7KGBaMxqxg03oNmQ1906gmgNjAKHoMPm2sCcBThoZ8O
-         MCCQtWsR/4Gew==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, linux-rdma@vger.kernel.org,
-        Leon Romanovsky <leonro@nvidia.com>, netdev@vger.kernel.org
-Subject: pull-request: mlx5-next 2023-01-24
-Date:   Tue, 24 Jan 2023 22:19:05 -0800
-Message-Id: <20230125061905.96986-1-saeed@kernel.org>
-X-Mailer: git-send-email 2.39.1
-MIME-Version: 1.0
+        with ESMTP id S234393AbjAYGnI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 01:43:08 -0500
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A890C45231;
+        Tue, 24 Jan 2023 22:43:02 -0800 (PST)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30P4x0ZK031751;
+        Wed, 25 Jan 2023 06:42:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : from : to : cc : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2022-7-12;
+ bh=0AZ/+2diuaGPEPDfp9hg2iHs4mZICeTc0y4hTJTCWq4=;
+ b=jMAxirlkFHNsv8rbcbDcWKwtbclvwToPipDMCN++iWsFKhlX5dPRxIhQMR7C/TEhHAyg
+ jiIwsxdBxVP7dZpi0DdbUghx0S86AyLE/0knVJDCoZ1VmrXW0D8VOMOchMNeF9FNA3cZ
+ OkWdqH6u8KqLgsTl5ovBIRH1p+8mBD9t937gbQ9rqmD90mU4F3jswaHMzP4t14O3qM/j
+ J/PXiToAAQ2cvmGPmx//SwWqtbeCLA68TmOGORzwbm/E9Rqc+Fz5j/blJcCVRg3nTkCb
+ xhkhm06Du7qThFjTXkcVazs+SI9NvRwwnxNZircg34uMl1vadijn0xg5c24nDvl6xiEb /w== 
+Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3n86u2y8ds-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 25 Jan 2023 06:42:42 +0000
+Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 30P4cA3L021350;
+        Wed, 25 Jan 2023 06:42:41 GMT
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2175.outbound.protection.outlook.com [104.47.56.175])
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3n86g62hqv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 25 Jan 2023 06:42:41 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kN9M2G4+XoJ3EMbfjUj4/q4gnbq0I3McavYqnJkLaFYS9fBwij/V4wAMagWWr0LX/ApDnqFpJ6DbIPxaAEhcWrkL/Dkk2c1b4GyUZcZquqYgKfP+ZmXUXGJ5eYfI7+kSx4TOP/rNNV8rtOPJkJCg0XwhgbcNcjMjR4gzlU1c8dUe3dIZd71xdd0JOVoOgi0qVFsrGqosH5JrCSiSBcxtGv+H9kUTdY/D60RKxjBcokYPPBshf/hVZMPuuAvURGoSWH4U/GWg/UIC9ecCff4rBskToADHLjaOTUkE4h3rNXKnqKcBYhxtb6XoTbl+/t3Ia8d/pNYXRSBXQXPRETqZkg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0AZ/+2diuaGPEPDfp9hg2iHs4mZICeTc0y4hTJTCWq4=;
+ b=GXxvzO+Frf/9chn7BOp3AlFuJtjhJqjwYPcRvZaEDOUiysMJxrpwIIiNg0W2fmfs1afwY9BAtn0ST8DL/OmfqbVKpIi6lAu1qqQ2HN4Lx+CitadDnVbBSYezuALBGuFdQd7QjOEz95VC+aYVQSMSpr5cvBzSxRkGtDMygIiS/GIjcnIQygsOtG7OJfpAjiOZbugPaO9/hxYtNlpHe2zixo2I1Kd74Srig2IlEYe5Yog0OR9IU3NCGoNxpgfXDumxL1Vw3y6q1HlxynVffdG8UmMBb4TOtF3vmTNcDLx87QPyfWwXbNU+F3nZAfyL0g7foOCvU9oLxjnTS5XoWZ8wyA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0AZ/+2diuaGPEPDfp9hg2iHs4mZICeTc0y4hTJTCWq4=;
+ b=GneI+fhJi9T18s5MN+Tmf7rOVHS13T301e92rlYOb7Fty6kQZPdzQ6975tYR5X5Rqj3LGA1fyzhZPKFydonvePd9/Eum0qZvwXKeWXWQEptXOi5TL57QdYPLafn5ONuQp//xgniT1NSA6ROIbJB11NH7RG5smpTsHbiCSTOEBmE=
+Received: from PH0PR10MB4581.namprd10.prod.outlook.com (2603:10b6:510:42::16)
+ by PH8PR10MB6337.namprd10.prod.outlook.com (2603:10b6:510:1cc::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.9; Wed, 25 Jan
+ 2023 06:42:37 +0000
+Received: from PH0PR10MB4581.namprd10.prod.outlook.com
+ ([fe80::54a1:30f9:c42e:d74f]) by PH0PR10MB4581.namprd10.prod.outlook.com
+ ([fe80::54a1:30f9:c42e:d74f%8]) with mapi id 15.20.6043.020; Wed, 25 Jan 2023
+ 06:42:37 +0000
+Message-ID: <98f01b4f-7504-dec5-bb90-ed5081dec324@oracle.com>
+Date:   Wed, 25 Jan 2023 12:12:25 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v1 3/3] Bluetooth: NXP: Add protocol support for NXP
+ Bluetooth chipsets
+Content-Language: en-US
+From:   ALOK TIWARI <alok.a.tiwari@oracle.com>
+To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-serial@vger.kernel.org, amitkumar.karwar@nxp.com,
+        rohit.fule@nxp.com, sherry.sun@nxp.com
+References: <20230124174714.2775680-1-neeraj.sanjaykale@nxp.com>
+ <20230124174714.2775680-4-neeraj.sanjaykale@nxp.com>
+ <aa9db6f6-cf21-c5bf-af73-ff9336cf381b@oracle.com>
+Organization: Oracle Corporation
+In-Reply-To: <aa9db6f6-cf21-c5bf-af73-ff9336cf381b@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-ClientProxiedBy: SI2PR02CA0030.apcprd02.prod.outlook.com
+ (2603:1096:4:195::17) To PH0PR10MB4581.namprd10.prod.outlook.com
+ (2603:10b6:510:42::16)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR10MB4581:EE_|PH8PR10MB6337:EE_
+X-MS-Office365-Filtering-Correlation-Id: 60f08da2-e109-41db-928a-08dafe9f58df
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: x73WMdTYRT0IOnPTUhx9aemydVAVt41SaFDe00VGxLfwbFHt432l/Yse+GwhjK7P7K9uNksjMKSbvImuCu96CDg8aB9d9Ht+rCUBuJbLMIZh73WRSiyEQuouuxqIsu/vBRw/xSVCXwqM1S8VM7H/erKNs8CNZfdlqT9XbiaruuaMW5/mqSGb9aNczjtStFieZGQcz7UG5B/51QR72NSVZxXzbIB+1L2M1pv+ZnZBLiDmbGcOOzqWeccAM5RR66lFLcuqPOyRwYKoSCZLK8/PaTpKropOB40bK8BtkH/E9T4qOSgxHRGjuIXvavSEmGRDdNF8Y2m+q1MMR/terPv+9wSsAJC+1pulzDnzFOpuMZOMectVoIHXiov4dUvi2Bd9yFyQ59Iei0ce35Cu7hVS344ei0Q6pJg5rbYXGrjLolXgVqT4xouGcfxNb/rmJ+UF3a0Z+H0BxLLCAHVYRkZQQSwT9ezmYqeL95NxUxHdpG4IvN0E74yUrdx1HCcBnYeNHTtNf1jdPvmv1qi7x00Ey381nL65bqXIcrjENaKelEH9Flfcbr6r+Xru07LDDSAAxt4LZGZ2/yBv1GMmS/Kzolq0eQCMGJuMFEo4WRBqyjRAFEvyaQWE1/cC4DFo+1Tz6nvpgheEO/8kMJFzcRX8tE3aWEtGjlm4ZDsDNEKSx0gERVamkuZJYMErLbQaQZhkxHSQGIimgkYbK48+gISuO7CtBEh2lgi16rA2yuJDywcpkvn6dfF5tQ83Gd1juuPzBqE1KSjro+/4lVhqxDK75g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB4581.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(346002)(396003)(39860400002)(376002)(366004)(136003)(451199018)(66899018)(31696002)(2906002)(6486002)(8676002)(2616005)(66476007)(66946007)(186003)(316002)(4326008)(41300700001)(26005)(478600001)(83380400001)(53546011)(38100700002)(6506007)(36916002)(86362001)(921005)(7416002)(30864003)(8936002)(6666004)(5660300002)(6512007)(36756003)(31686004)(66556008)(2004002)(45980500001)(43740500002)(579004)(559001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OHFMZk1NQ3NpM2VFdG5EU2JyQkVKTE5UVDJxci9JSW5JUUxWVnkvWWZNT3Mx?=
+ =?utf-8?B?QjRvSFJKMEUvc0JBSk5Fa0pKYis0anFZWHpVWVdiRGkrOVFnTzJ1b3B5c0VJ?=
+ =?utf-8?B?a3lnYURFL1hzejRSby8xSHpqSGUrTnhvTlh1cy9kZW12cmk2eFpZRkViK0ho?=
+ =?utf-8?B?aTRvNlcyVmx2N0NHUzF2S1MwZk1CR2x4bXBMc3ZnYzQ4aGRkaDdqVVhMN3kw?=
+ =?utf-8?B?L21HSjFEUEphc0lBa1c4NmVjTUQ1bDdHTmNTdENpMTlSZWtEbEN6dTg5N2FW?=
+ =?utf-8?B?RTc4S2M2UnI3M2RhbmppQ2NuODFHWCtpYUN3WlYzb3RXUUVyS2w2V3lOUDA3?=
+ =?utf-8?B?YUJINlU0Sm5FSVU4SmFkczR5VTdVNU1oemNLR3hmem9BaDRyYkRNeDlyUmVH?=
+ =?utf-8?B?cEg4dytuR0dpQTFGT05GUnRyRjM3N0FmeVdJR1NxMFhvOS92Uk9Eb2wyVzZH?=
+ =?utf-8?B?NDN2MFdTTHo0WldIK2dFdGtEZndFNlJaM0dITjFTdUlWUEdXK3ZoU2FuY0hi?=
+ =?utf-8?B?YnlFWC9oRUMxLzd3RWNlZnFLNGdPZndwVWV4c0JRdWxZZ0swL2E4aXhuRS9n?=
+ =?utf-8?B?djExbVZCcHNVTVpNcXBpMTNISzBEV1daNWpEVURISzZKdnFCaXNXVW1zRWFM?=
+ =?utf-8?B?VmVJTHhoKytXUStaamkweGVEWWJBYVBEOWp1UXk4Y29OT1VQOCt1TEhGNS9y?=
+ =?utf-8?B?M1d2SU8rU1hYVjRwaWc4Y1MwRzVkaUZlUHkrWHhXSWNYM3JIdHpSWFFraWtm?=
+ =?utf-8?B?YW40TlBQUXFneWFUT3prT2d4R3ZOV0Jxa0EyUURMNStUcGd6YUdOUmlxN2RH?=
+ =?utf-8?B?MEpaOG9pbE9ySE43MmJIQW5qTjBsTXErSTNRejNrVHFzRFR2VWp6Z1NOQnBh?=
+ =?utf-8?B?UlN5bmJjRWlJM0pDT2UrNUdWbzY3NEt2dEh3Q3BoV0IxQWRzOEVWWWZYSEZZ?=
+ =?utf-8?B?eDFOd3Y3c0NXUk9FUGZXTGE0ZmpYaitObE90NWFSQnNzYnFJSTlQaWE0cXNM?=
+ =?utf-8?B?QW9Hb3RWa3RoM2lVQXJvWWNTSDJOYm5KQ1k0RkFkZjllVE16VkVvVkFDMlp5?=
+ =?utf-8?B?UlgyVGlTdDV0eVNZODFUNTJ2MlB0MEFCei9GNTBOMEJFWnllWWpzMWI4MnRI?=
+ =?utf-8?B?QXo1K0QvdllEZWtSdTh4VVE2N3d2eUVnNGpOcGxqZWhWSEpSUFhXTHBPeklM?=
+ =?utf-8?B?dVlHcjFGS0NtSk8rSml2NS9MZytYejYxckh0dVpoNmYvNzlMZS9rdHZaN0k0?=
+ =?utf-8?B?a2lJVmgremdYRnZoQXRQU2M4N2dTOVJIUmRvWDhnMlRCNCtEY2FhcVpNV0Nv?=
+ =?utf-8?B?NndkOERncTR3ZDBlc3R6VVo5czFOMi8rR1VicVFZeGNrRUd4M0NqSVFIbGRk?=
+ =?utf-8?B?NGdUZnorU0JsL1lXbnNLc09SS0lJMGtKSEVIclJHMEhJelN0QUlsVkxha3VQ?=
+ =?utf-8?B?WlAzb0tzZU1DbFJHMGp0ODlkK2F5cHZyWlF2c252Zk8ydXZKLzFMbFJEWm5k?=
+ =?utf-8?B?ZllqNGg4alRiMldLbVhHakpjamwyV2czTkZsaDI3c1JYcWlXMlo5QzRvWnF2?=
+ =?utf-8?B?c3l0QStSYURhdHRQb1o1TzAzbjFCcSs0VHYxRFdVbk5FdVRTVmZhN213V3lC?=
+ =?utf-8?B?UE91Zm5saHFCR0d4MnJ0Sm9EemhwQmZsM2REZ3dtYkl6M2prRkkxUnFWaHN4?=
+ =?utf-8?B?MFo2UWhXM043aTNCWTBnSXB0TUdteTc3RUxKS21KTVUzbWlQYm1LVTl0SnNz?=
+ =?utf-8?B?NFY0RzNuWm5nZWtsUFZCcEU4c2ROYTg0Ukd4bEcwTmNrQ1VXMXRodjN2R05M?=
+ =?utf-8?B?RVRseXo5TG9zbmhVbTJKbXVYLzZoeWRwZjZiUVdGS0xCSkZHWWxxa2R5S3Nr?=
+ =?utf-8?B?bkZweUQxMVV0NzBrRU1GRXNOLzYrRWZzNVB4VlZOUnh6ek1qRkh4ZzdQUnpF?=
+ =?utf-8?B?clNpd2RQZnNuRjhNb1JoK3Y3Mm9henhCbnk4WFZpRnQzUDl3UEs4dGkxaUZT?=
+ =?utf-8?B?dk9HNzUwUnZMRUJKVGE0NUhEV2NrT3FaNHBQeU8xdldvNDNMSGNSNjBOcjJn?=
+ =?utf-8?B?dVhWcW03T2U4Mk5nK3JDOC9xclhZeUMxQVh2REMxanVkS2h2aTl0Z1pZdC8x?=
+ =?utf-8?B?L1h6MUlSc3Fac3NhRnNiQTJUR1M1TEpZVDE4bGxnVFFUaG5jd1Z5UnFBZERU?=
+ =?utf-8?B?aEE9PQ==?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: =?utf-8?B?Yi9EbFhzTXFnQmQrU1FidFUvakxkcnR4YXkzWjdVSDFsb0syMkZkSmhYUXRk?=
+ =?utf-8?B?Q0VORllyNlRINWVjQWVhQUR2czJZYjNhNkVMTUdrVUh5MkZuZGpINEJwc0pK?=
+ =?utf-8?B?VkNqMnJ4a3NSL2ZvRnFjR3AyUVV1SEdvdEZPT1Ava3JCWlBJcnVITlplL2xM?=
+ =?utf-8?B?YlcyVndmZ2hQcGxTdDRTTWFvN2lSVU5YanZpTzhKM1dzOXp5aTRXRCtZNGpx?=
+ =?utf-8?B?QXFkcitlZXE4b1orUmczbDRtU2FnT2NCcXVWZ0todjE0anQ4akdiYktmZS9w?=
+ =?utf-8?B?Q1pIa3BNaUVhMTVqekZUUzY2V3pHdERlbFNzai9VQWt3TkE3UFZEeGcyanpE?=
+ =?utf-8?B?WDdjbE9ZcXpsYVRndGYxQkE4Y25OczI0TjB2elhNQ1V1eDlpUHNiWjBGdno0?=
+ =?utf-8?B?TnJrRW5EUzNURnArdDl6K3pLeEdBYlpscFNuZ0ZwUFlic2dZWnZPdHBLeTlC?=
+ =?utf-8?B?bVJHYXhOZFhUR3JieXV2c2VadlNjeEtiTDdhMERvMi8vWkg1ZDFtdFljeklQ?=
+ =?utf-8?B?aGpReEZrWE83S1FQWkhXOW96NmVxd05uN1pIeitQWFFVSnJodHNYay9wL29m?=
+ =?utf-8?B?MnRydnlOQ2U1U0ZXZml0dlRzcWFBUFdpVUVxOWhSTGxXcGI0cFd3bmhIbmJT?=
+ =?utf-8?B?U0t0V3crbXZBeFZjb0xidWxLMHRRTk1Uci9YWlRQMzFHc0s5Wm82bXpHSnkv?=
+ =?utf-8?B?SHJVVTN4ZDRkaHRVNGZ0THplUEtrdXlwWk16SzU0N200SlJaLzNJNS94bEx1?=
+ =?utf-8?B?QmNxRnFlMzllbE1tSDlNa3pvTXI3MjZSUGdYT2ZUU2I5VDcwczlVb093d0JC?=
+ =?utf-8?B?ZWRZeWx2ZGtSRDI3d3NpLzBKTk1MTzNpMXJTNzBmYU5ZVjExMkU1OU1uaVBO?=
+ =?utf-8?B?czhKdlRJbnpJS3ptZ3MyK3pYQUZpMWUzT3NVeVhxaTBnSWxEYW9iT1FnVXJG?=
+ =?utf-8?B?enpHQTF3amRFb29XSzBSWEU5TVNtYThlNDRCbFVwK3Zsa3dQd3BLNkVTSnpG?=
+ =?utf-8?B?MUQyWEsxelFJckNiU3VCaG1hbmxQMCs2ckxsWUFlQ2ZkNjR4ZTAwV3BTTENW?=
+ =?utf-8?B?YUFXd0xFNTU0clRtcHZlOXpPZU9HeG0yUzZ1Um50dW4wL1R6N2JWM2lOVE15?=
+ =?utf-8?B?bElqYWlLZUlqK3NUWlNJZzh4bjFLMU1EUVhBMEgrMS9qZkh1QS9mUno3MVVk?=
+ =?utf-8?B?TTk5YVFIaXo4YU1CRUpCcXUyUk5jMmNLR2NJYk5VVmZxVGR1Wk5hNkVCY1Z2?=
+ =?utf-8?B?TmlveWtIWldzblg5MC9VZjJsQ2lDQmd0OE1SZUN2NkdLVHBQMy92WDN1NnJN?=
+ =?utf-8?B?UkRvYkhKbUVCSTgxRkloRzhjMllPUzl1eXlwc0JpckM4TUZhTmQrUnpsL2wx?=
+ =?utf-8?Q?v3830lbb4AmZHG3VedpTCuF5orAz58HM=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 60f08da2-e109-41db-928a-08dafe9f58df
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB4581.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2023 06:42:37.5958
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Usl3UYOX9TOiprVuzAQBS8SApRFORCqN9KHdiQnsPK1PaR9tayrIU1r6rlAwigGpaLXoldT6mMr/8/00pPOzpSAffnMuV7wPEtGQOKv+9hc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR10MB6337
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-01-25_02,2023-01-24_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0
+ malwarescore=0 phishscore=0 mlxlogscore=999 adultscore=0 mlxscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2301250060
+X-Proofpoint-GUID: jAGZRr_Hf_rltB7OpZqdyh7u49vqEW9c
+X-Proofpoint-ORIG-GUID: jAGZRr_Hf_rltB7OpZqdyh7u49vqEW9c
+X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, 
+Hi Neeraj,
 
-This pulls mlx5-next branch which includes changes from [1]:
+ > we can remove double space after  == and =
+  63         if (psdata->cur_psmode ==  PS_MODE_ENABLE) {
 
-1) From Jiri: fixe a deadlock in mlx5_ib's netdev notifier unregister.
-2) From Mark and Patrisious: add IPsec RoCEv2 support.
+  156                 psdata->wakeupmode =  WAKEUP_METHOD_DTR;
+  157                 break;
+  158         case  WAKEUP_METHOD_BREAK:
+  159         default:
+160                  psdata->wakeupmode =  WAKEUP_METHOD_BREAK;
 
-[1] https://lore.kernel.org/netdev/20230105041756.677120-1-saeed@kernel.org/
 
-Please pull into net-next and rdma-next.
+ >can remove extra space for /* break OFF */
+         default:
+                 serdev_device_break_ctl(nxpdev->serdev, -1); /* break ON */
+                 serdev_device_break_ctl(nxpdev->serdev, 0);             
+/* break OFF */
+
+ >when we are using (kzalloc) nxpdev = devm_kzalloc(&serdev->dev, 
+sizeof(*nxpdev), GFP_KERNEL); and struct ps_data *psdata = 
+kzalloc(sizeof(*psdata), GFP_KERNEL)
+is it require to use memset(nxpdev, 0, sizeof(*nxpdev)); ?
 
 Thanks,
-Saeed.
 
-The following changes since commit b7bfaa761d760e72a969d116517eaa12e404c262:
+Alok
 
-  Linux 6.2-rc3 (2023-01-08 11:49:43 -0600)
 
-are available in the Git repository at:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux.git c4d508fbe54a
-
-for you to fetch changes up to c4d508fbe54af3119e01672299514bfc83dfd59f:
-
-  net/mlx5: Configure IPsec steering for egress RoCEv2 traffic (2023-01-18 00:12:58 -0800)
-
-----------------------------------------------------------------
-Jiri Pirko (3):
-      net/mlx5e: Fix trap event handling
-      net/mlx5e: Propagate an internal event in case uplink netdev changes
-      RDMA/mlx5: Track netdev to avoid deadlock during netdev notifier unregister
-
-Mark Zhang (4):
-      net/mlx5: Implement new destination type TABLE_TYPE
-      net/mlx5: Add IPSec priorities in RDMA namespaces
-      net/mlx5: Configure IPsec steering for ingress RoCEv2 traffic
-      net/mlx5: Configure IPsec steering for egress RoCEv2 traffic
-
-Patrisious Haddad (2):
-      net/mlx5: Introduce CQE error syndrome
-      net/mlx5: Introduce new destination type TABLE_TYPE
-
- drivers/infiniband/hw/mlx5/main.c                  |  78 +++--
- drivers/infiniband/hw/mlx5/mlx5_ib.h               |   3 +
- drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/devlink.c  |   9 +-
- drivers/net/ethernet/mellanox/mlx5/core/devlink.h  |   5 +
- .../mellanox/mlx5/core/diag/fs_tracepoint.c        |   4 +
- drivers/net/ethernet/mellanox/mlx5/core/en/fs.h    |   1 +
- .../ethernet/mellanox/mlx5/core/en_accel/ipsec.h   |   1 +
- .../mellanox/mlx5/core/en_accel/ipsec_fs.c         |  59 +++-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  15 +-
- drivers/net/ethernet/mellanox/mlx5/core/events.c   |   2 +
- drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c   |   6 +
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |  44 ++-
- .../mellanox/mlx5/core/lib/ipsec_fs_roce.c         | 372 +++++++++++++++++++++
- .../mellanox/mlx5/core/lib/ipsec_fs_roce.h         |  20 ++
- drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h |   5 -
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |  20 ++
- include/linux/mlx5/device.h                        |   1 +
- include/linux/mlx5/driver.h                        |   5 +
- include/linux/mlx5/fs.h                            |   3 +
- include/linux/mlx5/mlx5_ifc.h                      |  59 +++-
- 21 files changed, 656 insertions(+), 58 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/ipsec_fs_roce.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/ipsec_fs_roce.h
-
-diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
-index c669ef6e47e7..dc32e4518a28 100644
---- a/drivers/infiniband/hw/mlx5/main.c
-+++ b/drivers/infiniband/hw/mlx5/main.c
-@@ -3012,26 +3012,63 @@ static void mlx5_eth_lag_cleanup(struct mlx5_ib_dev *dev)
- 	}
- }
- 
--static int mlx5_add_netdev_notifier(struct mlx5_ib_dev *dev, u32 port_num)
-+static void mlx5_netdev_notifier_register(struct mlx5_roce *roce,
-+					  struct net_device *netdev)
- {
- 	int err;
- 
--	dev->port[port_num].roce.nb.notifier_call = mlx5_netdev_event;
--	err = register_netdevice_notifier(&dev->port[port_num].roce.nb);
--	if (err) {
--		dev->port[port_num].roce.nb.notifier_call = NULL;
--		return err;
--	}
-+	if (roce->tracking_netdev)
-+		return;
-+	roce->tracking_netdev = netdev;
-+	roce->nb.notifier_call = mlx5_netdev_event;
-+	err = register_netdevice_notifier_dev_net(netdev, &roce->nb, &roce->nn);
-+	WARN_ON(err);
-+}
- 
--	return 0;
-+static void mlx5_netdev_notifier_unregister(struct mlx5_roce *roce)
-+{
-+	if (!roce->tracking_netdev)
-+		return;
-+	unregister_netdevice_notifier_dev_net(roce->tracking_netdev, &roce->nb,
-+					      &roce->nn);
-+	roce->tracking_netdev = NULL;
- }
- 
--static void mlx5_remove_netdev_notifier(struct mlx5_ib_dev *dev, u32 port_num)
-+static int mlx5e_mdev_notifier_event(struct notifier_block *nb,
-+				     unsigned long event, void *data)
- {
--	if (dev->port[port_num].roce.nb.notifier_call) {
--		unregister_netdevice_notifier(&dev->port[port_num].roce.nb);
--		dev->port[port_num].roce.nb.notifier_call = NULL;
-+	struct mlx5_roce *roce = container_of(nb, struct mlx5_roce, mdev_nb);
-+	struct net_device *netdev = data;
-+
-+	switch (event) {
-+	case MLX5_DRIVER_EVENT_UPLINK_NETDEV:
-+		if (netdev)
-+			mlx5_netdev_notifier_register(roce, netdev);
-+		else
-+			mlx5_netdev_notifier_unregister(roce);
-+		break;
-+	default:
-+		return NOTIFY_DONE;
- 	}
-+
-+	return NOTIFY_OK;
-+}
-+
-+static void mlx5_mdev_netdev_track(struct mlx5_ib_dev *dev, u32 port_num)
-+{
-+	struct mlx5_roce *roce = &dev->port[port_num].roce;
-+
-+	roce->mdev_nb.notifier_call = mlx5e_mdev_notifier_event;
-+	mlx5_blocking_notifier_register(dev->mdev, &roce->mdev_nb);
-+	mlx5_core_uplink_netdev_event_replay(dev->mdev);
-+}
-+
-+static void mlx5_mdev_netdev_untrack(struct mlx5_ib_dev *dev, u32 port_num)
-+{
-+	struct mlx5_roce *roce = &dev->port[port_num].roce;
-+
-+	mlx5_blocking_notifier_unregister(dev->mdev, &roce->mdev_nb);
-+	mlx5_netdev_notifier_unregister(roce);
- }
- 
- static int mlx5_enable_eth(struct mlx5_ib_dev *dev)
-@@ -3138,7 +3175,7 @@ static void mlx5_ib_unbind_slave_port(struct mlx5_ib_dev *ibdev,
- 	if (mpi->mdev_events.notifier_call)
- 		mlx5_notifier_unregister(mpi->mdev, &mpi->mdev_events);
- 	mpi->mdev_events.notifier_call = NULL;
--	mlx5_remove_netdev_notifier(ibdev, port_num);
-+	mlx5_mdev_netdev_untrack(ibdev, port_num);
- 	spin_lock(&port->mp.mpi_lock);
- 
- 	comps = mpi->mdev_refcnt;
-@@ -3196,12 +3233,7 @@ static bool mlx5_ib_bind_slave_port(struct mlx5_ib_dev *ibdev,
- 	if (err)
- 		goto unbind;
- 
--	err = mlx5_add_netdev_notifier(ibdev, port_num);
--	if (err) {
--		mlx5_ib_err(ibdev, "failed adding netdev notifier for port %u\n",
--			    port_num + 1);
--		goto unbind;
--	}
-+	mlx5_mdev_netdev_track(ibdev, port_num);
- 
- 	mpi->mdev_events.notifier_call = mlx5_ib_event_slave_port;
- 	mlx5_notifier_register(mpi->mdev, &mpi->mdev_events);
-@@ -3909,9 +3941,7 @@ static int mlx5_ib_roce_init(struct mlx5_ib_dev *dev)
- 		port_num = mlx5_core_native_port_num(dev->mdev) - 1;
- 
- 		/* Register only for native ports */
--		err = mlx5_add_netdev_notifier(dev, port_num);
--		if (err)
--			return err;
-+		mlx5_mdev_netdev_track(dev, port_num);
- 
- 		err = mlx5_enable_eth(dev);
- 		if (err)
-@@ -3920,7 +3950,7 @@ static int mlx5_ib_roce_init(struct mlx5_ib_dev *dev)
- 
- 	return 0;
- cleanup:
--	mlx5_remove_netdev_notifier(dev, port_num);
-+	mlx5_mdev_netdev_untrack(dev, port_num);
- 	return err;
- }
- 
-@@ -3938,7 +3968,7 @@ static void mlx5_ib_roce_cleanup(struct mlx5_ib_dev *dev)
- 		mlx5_disable_eth(dev);
- 
- 		port_num = mlx5_core_native_port_num(dev->mdev) - 1;
--		mlx5_remove_netdev_notifier(dev, port_num);
-+		mlx5_mdev_netdev_untrack(dev, port_num);
- 	}
- }
- 
-diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-index 8b91babdd4c0..7394e7f36ba7 100644
---- a/drivers/infiniband/hw/mlx5/mlx5_ib.h
-+++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-@@ -832,6 +832,9 @@ struct mlx5_roce {
- 	rwlock_t		netdev_lock;
- 	struct net_device	*netdev;
- 	struct notifier_block	nb;
-+	struct netdev_net_notifier nn;
-+	struct notifier_block	mdev_nb;
-+	struct net_device	*tracking_netdev;
- 	atomic_t		tx_port_affinity;
- 	enum ib_port_state last_port_state;
- 	struct mlx5_ib_dev	*dev;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-index cd4a1ab0ea78..8415a44fb965 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-@@ -97,7 +97,7 @@ mlx5_core-$(CONFIG_MLX5_EN_MACSEC) += en_accel/macsec.o en_accel/macsec_fs.o \
- 
- mlx5_core-$(CONFIG_MLX5_EN_IPSEC) += en_accel/ipsec.o en_accel/ipsec_rxtx.o \
- 				     en_accel/ipsec_stats.o en_accel/ipsec_fs.o \
--				     en_accel/ipsec_offload.o
-+				     en_accel/ipsec_offload.o lib/ipsec_fs_roce.o
- 
- mlx5_core-$(CONFIG_MLX5_EN_TLS) += en_accel/ktls_stats.o \
- 				   en_accel/fs_tcp.o en_accel/ktls.o en_accel/ktls_txrx.o \
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index 5bd83c0275f8..f641ff9bb3bb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -263,6 +263,7 @@ static int mlx5_devlink_trap_action_set(struct devlink *devlink,
- 					struct netlink_ext_ack *extack)
- {
- 	struct mlx5_core_dev *dev = devlink_priv(devlink);
-+	struct mlx5_devlink_trap_event_ctx trap_event_ctx;
- 	enum devlink_trap_action action_orig;
- 	struct mlx5_devlink_trap *dl_trap;
- 	int err = 0;
-@@ -289,10 +290,14 @@ static int mlx5_devlink_trap_action_set(struct devlink *devlink,
- 
- 	action_orig = dl_trap->trap.action;
- 	dl_trap->trap.action = action;
-+	trap_event_ctx.trap = &dl_trap->trap;
-+	trap_event_ctx.err = 0;
- 	err = mlx5_blocking_notifier_call_chain(dev, MLX5_DRIVER_EVENT_TYPE_TRAP,
--						&dl_trap->trap);
--	if (err)
-+						&trap_event_ctx);
-+	if (err == NOTIFY_BAD) {
- 		dl_trap->trap.action = action_orig;
-+		err = trap_event_ctx.err;
-+	}
- out:
- 	return err;
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.h b/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
-index fd033df24856..b84cb70eb3ae 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
-@@ -24,6 +24,11 @@ struct mlx5_devlink_trap {
- 	struct list_head list;
- };
- 
-+struct mlx5_devlink_trap_event_ctx {
-+	struct mlx5_trap_ctx *trap;
-+	int err;
-+};
-+
- struct mlx5_core_dev;
- void mlx5_devlink_trap_report(struct mlx5_core_dev *dev, int trap_id, struct sk_buff *skb,
- 			      struct devlink_port *dl_port);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/fs_tracepoint.c b/drivers/net/ethernet/mellanox/mlx5/core/diag/fs_tracepoint.c
-index 2732128e7a6e..6d73127b7217 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/diag/fs_tracepoint.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/fs_tracepoint.c
-@@ -275,6 +275,10 @@ const char *parse_fs_dst(struct trace_seq *p,
- 				 fs_dest_range_field_to_str(dst->range.field),
- 				 dst->range.min, dst->range.max);
- 		break;
-+	case MLX5_FLOW_DESTINATION_TYPE_TABLE_TYPE:
-+		trace_seq_printf(p, "flow_table_type=%u id:%u\n", dst->ft->type,
-+				 dst->ft->id);
-+		break;
- 	case MLX5_FLOW_DESTINATION_TYPE_NONE:
- 		trace_seq_printf(p, "none\n");
- 		break;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h b/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
-index 379c6dc9a3be..d2149f0138d8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
-@@ -87,6 +87,7 @@ enum {
- 	MLX5E_ACCEL_FS_POL_FT_LEVEL = MLX5E_INNER_TTC_FT_LEVEL + 1,
- 	MLX5E_ACCEL_FS_ESP_FT_LEVEL,
- 	MLX5E_ACCEL_FS_ESP_FT_ERR_LEVEL,
-+	MLX5E_ACCEL_FS_ESP_FT_ROCE_LEVEL,
- #endif
- };
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-index a92e19c4c499..a72261ce7598 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-@@ -141,6 +141,7 @@ struct mlx5e_ipsec {
- 	struct mlx5e_ipsec_tx *tx;
- 	struct mlx5e_ipsec_aso *aso;
- 	struct notifier_block nb;
-+	struct mlx5_ipsec_fs *roce_ipsec;
- };
- 
- struct mlx5e_ipsec_esn_state {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-index 9f19f4b59a70..4de528687536 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-@@ -6,6 +6,7 @@
- #include "en/fs.h"
- #include "ipsec.h"
- #include "fs_core.h"
-+#include "lib/ipsec_fs_roce.h"
- 
- #define NUM_IPSEC_FTE BIT(15)
- 
-@@ -166,7 +167,8 @@ static int ipsec_miss_create(struct mlx5_core_dev *mdev,
- 	return err;
- }
- 
--static void rx_destroy(struct mlx5_core_dev *mdev, struct mlx5e_ipsec_rx *rx)
-+static void rx_destroy(struct mlx5_core_dev *mdev, struct mlx5e_ipsec_rx *rx, u32 family,
-+		       struct mlx5_ipsec_fs *roce_ipsec)
- {
- 	mlx5_del_flow_rules(rx->pol.rule);
- 	mlx5_destroy_flow_group(rx->pol.group);
-@@ -179,6 +181,8 @@ static void rx_destroy(struct mlx5_core_dev *mdev, struct mlx5e_ipsec_rx *rx)
- 	mlx5_del_flow_rules(rx->status.rule);
- 	mlx5_modify_header_dealloc(mdev, rx->status.modify_hdr);
- 	mlx5_destroy_flow_table(rx->ft.status);
-+
-+	mlx5_ipsec_fs_roce_rx_destroy(roce_ipsec, family);
- }
- 
- static int rx_create(struct mlx5_core_dev *mdev, struct mlx5e_ipsec *ipsec,
-@@ -186,18 +190,35 @@ static int rx_create(struct mlx5_core_dev *mdev, struct mlx5e_ipsec *ipsec,
- {
- 	struct mlx5_flow_namespace *ns = mlx5e_fs_get_ns(ipsec->fs, false);
- 	struct mlx5_ttc_table *ttc = mlx5e_fs_get_ttc(ipsec->fs, false);
-+	struct mlx5_flow_destination default_dest;
- 	struct mlx5_flow_destination dest[2];
- 	struct mlx5_flow_table *ft;
- 	int err;
- 
-+	default_dest = mlx5_ttc_get_default_dest(ttc, family2tt(family));
-+	err = mlx5_ipsec_fs_roce_rx_create(ipsec->roce_ipsec, ns, &default_dest, family,
-+					   MLX5E_ACCEL_FS_ESP_FT_ROCE_LEVEL, MLX5E_NIC_PRIO,
-+					   ipsec->mdev);
-+	if (err)
-+		return err;
-+
- 	ft = ipsec_ft_create(ns, MLX5E_ACCEL_FS_ESP_FT_ERR_LEVEL,
- 			     MLX5E_NIC_PRIO, 1);
--	if (IS_ERR(ft))
--		return PTR_ERR(ft);
-+	if (IS_ERR(ft)) {
-+		err = PTR_ERR(ft);
-+		goto err_fs_ft_status;
-+	}
- 
- 	rx->ft.status = ft;
- 
--	dest[0] = mlx5_ttc_get_default_dest(ttc, family2tt(family));
-+	ft = mlx5_ipsec_fs_roce_ft_get(ipsec->roce_ipsec, family);
-+	if (ft) {
-+		dest[0].type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
-+		dest[0].ft = ft;
-+	} else {
-+		dest[0] = default_dest;
-+	}
-+
- 	dest[1].type = MLX5_FLOW_DESTINATION_TYPE_COUNTER;
- 	dest[1].counter_id = mlx5_fc_id(rx->fc->cnt);
- 	err = ipsec_status_rule(mdev, rx, dest);
-@@ -245,6 +266,8 @@ static int rx_create(struct mlx5_core_dev *mdev, struct mlx5e_ipsec *ipsec,
- 	mlx5_modify_header_dealloc(mdev, rx->status.modify_hdr);
- err_add:
- 	mlx5_destroy_flow_table(rx->ft.status);
-+err_fs_ft_status:
-+	mlx5_ipsec_fs_roce_rx_destroy(ipsec->roce_ipsec, family);
- 	return err;
- }
- 
-@@ -304,7 +327,7 @@ static void rx_ft_put(struct mlx5_core_dev *mdev, struct mlx5e_ipsec *ipsec,
- 	mlx5_ttc_fwd_default_dest(ttc, family2tt(family));
- 
- 	/* remove FT */
--	rx_destroy(mdev, rx);
-+	rx_destroy(mdev, rx, family, ipsec->roce_ipsec);
- 
- out:
- 	mutex_unlock(&rx->ft.mutex);
-@@ -343,6 +366,14 @@ static int tx_create(struct mlx5_core_dev *mdev, struct mlx5e_ipsec_tx *tx)
- 	return err;
- }
- 
-+static void tx_destroy(struct mlx5e_ipsec_tx *tx)
-+{
-+	mlx5_del_flow_rules(tx->pol.rule);
-+	mlx5_destroy_flow_group(tx->pol.group);
-+	mlx5_destroy_flow_table(tx->ft.pol);
-+	mlx5_destroy_flow_table(tx->ft.sa);
-+}
-+
- static struct mlx5e_ipsec_tx *tx_ft_get(struct mlx5_core_dev *mdev,
- 					struct mlx5e_ipsec *ipsec)
- {
-@@ -356,6 +387,13 @@ static struct mlx5e_ipsec_tx *tx_ft_get(struct mlx5_core_dev *mdev,
- 	err = tx_create(mdev, tx);
- 	if (err)
- 		goto out;
-+
-+	err = mlx5_ipsec_fs_roce_tx_create(ipsec->roce_ipsec, tx->ft.pol, ipsec->mdev);
-+	if (err) {
-+		tx_destroy(tx);
-+		goto out;
-+	}
-+
- skip:
- 	tx->ft.refcnt++;
- out:
-@@ -374,10 +412,9 @@ static void tx_ft_put(struct mlx5e_ipsec *ipsec)
- 	if (tx->ft.refcnt)
- 		goto out;
- 
--	mlx5_del_flow_rules(tx->pol.rule);
--	mlx5_destroy_flow_group(tx->pol.group);
--	mlx5_destroy_flow_table(tx->ft.pol);
--	mlx5_destroy_flow_table(tx->ft.sa);
-+	mlx5_ipsec_fs_roce_tx_destroy(ipsec->roce_ipsec);
-+
-+	tx_destroy(tx);
- out:
- 	mutex_unlock(&tx->ft.mutex);
- }
-@@ -1008,6 +1045,8 @@ void mlx5e_accel_ipsec_fs_cleanup(struct mlx5e_ipsec *ipsec)
- 	if (!ipsec->tx)
- 		return;
- 
-+	mlx5_ipsec_fs_roce_cleanup(ipsec->roce_ipsec);
-+
- 	ipsec_fs_destroy_counters(ipsec);
- 	mutex_destroy(&ipsec->tx->ft.mutex);
- 	WARN_ON(ipsec->tx->ft.refcnt);
-@@ -1053,6 +1092,8 @@ int mlx5e_accel_ipsec_fs_init(struct mlx5e_ipsec *ipsec)
- 	mutex_init(&ipsec->rx_ipv6->ft.mutex);
- 	ipsec->tx->ns = ns;
- 
-+	ipsec->roce_ipsec = mlx5_ipsec_fs_roce_init(ipsec->mdev);
-+
- 	return 0;
- 
- err_counters:
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index cff5f2e29e1e..85b51039d2a6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -179,17 +179,21 @@ static void mlx5e_disable_async_events(struct mlx5e_priv *priv)
- static int blocking_event(struct notifier_block *nb, unsigned long event, void *data)
- {
- 	struct mlx5e_priv *priv = container_of(nb, struct mlx5e_priv, blocking_events_nb);
-+	struct mlx5_devlink_trap_event_ctx *trap_event_ctx = data;
- 	int err;
- 
- 	switch (event) {
- 	case MLX5_DRIVER_EVENT_TYPE_TRAP:
--		err = mlx5e_handle_trap_event(priv, data);
-+		err = mlx5e_handle_trap_event(priv, trap_event_ctx->trap);
-+		if (err) {
-+			trap_event_ctx->err = err;
-+			return NOTIFY_BAD;
-+		}
- 		break;
- 	default:
--		netdev_warn(priv->netdev, "Sync event: Unknown event %ld\n", event);
--		err = -EINVAL;
-+		return NOTIFY_DONE;
- 	}
--	return err;
-+	return NOTIFY_OK;
- }
- 
- static void mlx5e_enable_blocking_events(struct mlx5e_priv *priv)
-@@ -5957,7 +5961,7 @@ static int mlx5e_probe(struct auxiliary_device *adev,
- 	}
- 
- 	mlx5e_dcbnl_init_app(priv);
--	mlx5_uplink_netdev_set(mdev, netdev);
-+	mlx5_core_uplink_netdev_set(mdev, netdev);
- 	mlx5e_params_print_info(mdev, &priv->channels.params);
- 	return 0;
- 
-@@ -5977,6 +5981,7 @@ static void mlx5e_remove(struct auxiliary_device *adev)
- 	struct mlx5e_priv *priv = auxiliary_get_drvdata(adev);
- 	pm_message_t state = {};
- 
-+	mlx5_core_uplink_netdev_set(priv->mdev, NULL);
- 	mlx5e_dcbnl_delete_app(priv);
- 	unregister_netdev(priv->netdev);
- 	mlx5e_suspend(adev, state);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/events.c b/drivers/net/ethernet/mellanox/mlx5/core/events.c
-index 9459e56ee90a..718cf09c28ce 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/events.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/events.c
-@@ -424,6 +424,7 @@ int mlx5_blocking_notifier_register(struct mlx5_core_dev *dev, struct notifier_b
- 
- 	return blocking_notifier_chain_register(&events->sw_nh, nb);
- }
-+EXPORT_SYMBOL(mlx5_blocking_notifier_register);
- 
- int mlx5_blocking_notifier_unregister(struct mlx5_core_dev *dev, struct notifier_block *nb)
- {
-@@ -431,6 +432,7 @@ int mlx5_blocking_notifier_unregister(struct mlx5_core_dev *dev, struct notifier
- 
- 	return blocking_notifier_chain_unregister(&events->sw_nh, nb);
- }
-+EXPORT_SYMBOL(mlx5_blocking_notifier_unregister);
- 
- int mlx5_blocking_notifier_call_chain(struct mlx5_core_dev *dev, unsigned int event,
- 				      void *data)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-index 32d4c967469c..a3a9cc6f15ca 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-@@ -653,6 +653,12 @@ static int mlx5_cmd_set_fte(struct mlx5_core_dev *dev,
- 				id = dst->dest_attr.sampler_id;
- 				ifc_type = MLX5_IFC_FLOW_DESTINATION_TYPE_FLOW_SAMPLER;
- 				break;
-+			case MLX5_FLOW_DESTINATION_TYPE_TABLE_TYPE:
-+				MLX5_SET(dest_format_struct, in_dests,
-+					 destination_table_type, dst->dest_attr.ft->type);
-+				id = dst->dest_attr.ft->id;
-+				ifc_type = MLX5_IFC_FLOW_DESTINATION_TYPE_TABLE_TYPE;
-+				break;
- 			default:
- 				id = dst->dest_attr.tir_num;
- 				ifc_type = MLX5_IFC_FLOW_DESTINATION_TYPE_TIR;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index 5a85d8c1e797..cb28cdb59c17 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -111,8 +111,10 @@
- #define ETHTOOL_PRIO_NUM_LEVELS 1
- #define ETHTOOL_NUM_PRIOS 11
- #define ETHTOOL_MIN_LEVEL (KERNEL_MIN_LEVEL + ETHTOOL_NUM_PRIOS)
--/* Promiscuous, Vlan, mac, ttc, inner ttc, {UDP/ANY/aRFS/accel/{esp, esp_err}}, IPsec policy */
--#define KERNEL_NIC_PRIO_NUM_LEVELS 8
-+/* Promiscuous, Vlan, mac, ttc, inner ttc, {UDP/ANY/aRFS/accel/{esp, esp_err}}, IPsec policy,
-+ * IPsec RoCE policy
-+ */
-+#define KERNEL_NIC_PRIO_NUM_LEVELS 9
- #define KERNEL_NIC_NUM_PRIOS 1
- /* One more level for tc */
- #define KERNEL_MIN_LEVEL (KERNEL_NIC_PRIO_NUM_LEVELS + 1)
-@@ -219,19 +221,30 @@ static struct init_tree_node egress_root_fs = {
- };
- 
- enum {
-+	RDMA_RX_IPSEC_PRIO,
- 	RDMA_RX_COUNTERS_PRIO,
- 	RDMA_RX_BYPASS_PRIO,
- 	RDMA_RX_KERNEL_PRIO,
- };
- 
-+#define RDMA_RX_IPSEC_NUM_PRIOS 1
-+#define RDMA_RX_IPSEC_NUM_LEVELS 2
-+#define RDMA_RX_IPSEC_MIN_LEVEL  (RDMA_RX_IPSEC_NUM_LEVELS)
-+
- #define RDMA_RX_BYPASS_MIN_LEVEL MLX5_BY_PASS_NUM_REGULAR_PRIOS
- #define RDMA_RX_KERNEL_MIN_LEVEL (RDMA_RX_BYPASS_MIN_LEVEL + 1)
- #define RDMA_RX_COUNTERS_MIN_LEVEL (RDMA_RX_KERNEL_MIN_LEVEL + 2)
- 
- static struct init_tree_node rdma_rx_root_fs = {
- 	.type = FS_TYPE_NAMESPACE,
--	.ar_size = 3,
-+	.ar_size = 4,
- 	.children = (struct init_tree_node[]) {
-+		[RDMA_RX_IPSEC_PRIO] =
-+		ADD_PRIO(0, RDMA_RX_IPSEC_MIN_LEVEL, 0,
-+			 FS_CHAINING_CAPS,
-+			 ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_DEF,
-+				ADD_MULTIPLE_PRIO(RDMA_RX_IPSEC_NUM_PRIOS,
-+						  RDMA_RX_IPSEC_NUM_LEVELS))),
- 		[RDMA_RX_COUNTERS_PRIO] =
- 		ADD_PRIO(0, RDMA_RX_COUNTERS_MIN_LEVEL, 0,
- 			 FS_CHAINING_CAPS,
-@@ -254,15 +267,20 @@ static struct init_tree_node rdma_rx_root_fs = {
- 
- enum {
- 	RDMA_TX_COUNTERS_PRIO,
-+	RDMA_TX_IPSEC_PRIO,
- 	RDMA_TX_BYPASS_PRIO,
- };
- 
- #define RDMA_TX_BYPASS_MIN_LEVEL MLX5_BY_PASS_NUM_PRIOS
- #define RDMA_TX_COUNTERS_MIN_LEVEL (RDMA_TX_BYPASS_MIN_LEVEL + 1)
- 
-+#define RDMA_TX_IPSEC_NUM_PRIOS 1
-+#define RDMA_TX_IPSEC_PRIO_NUM_LEVELS 1
-+#define RDMA_TX_IPSEC_MIN_LEVEL  (RDMA_TX_COUNTERS_MIN_LEVEL + RDMA_TX_IPSEC_NUM_PRIOS)
-+
- static struct init_tree_node rdma_tx_root_fs = {
- 	.type = FS_TYPE_NAMESPACE,
--	.ar_size = 2,
-+	.ar_size = 3,
- 	.children = (struct init_tree_node[]) {
- 		[RDMA_TX_COUNTERS_PRIO] =
- 		ADD_PRIO(0, RDMA_TX_COUNTERS_MIN_LEVEL, 0,
-@@ -270,6 +288,13 @@ static struct init_tree_node rdma_tx_root_fs = {
- 			 ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_DEF,
- 				ADD_MULTIPLE_PRIO(MLX5_RDMA_TX_NUM_COUNTERS_PRIOS,
- 						  RDMA_TX_COUNTERS_PRIO_NUM_LEVELS))),
-+		[RDMA_TX_IPSEC_PRIO] =
-+		ADD_PRIO(0, RDMA_TX_IPSEC_MIN_LEVEL, 0,
-+			 FS_CHAINING_CAPS,
-+			 ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_DEF,
-+				ADD_MULTIPLE_PRIO(RDMA_TX_IPSEC_NUM_PRIOS,
-+						  RDMA_TX_IPSEC_PRIO_NUM_LEVELS))),
-+
- 		[RDMA_TX_BYPASS_PRIO] =
- 		ADD_PRIO(0, RDMA_TX_BYPASS_MIN_LEVEL, 0,
- 			 FS_CHAINING_CAPS_RDMA_TX,
-@@ -449,7 +474,8 @@ static bool is_fwd_dest_type(enum mlx5_flow_destination_type type)
- 		type == MLX5_FLOW_DESTINATION_TYPE_VPORT ||
- 		type == MLX5_FLOW_DESTINATION_TYPE_FLOW_SAMPLER ||
- 		type == MLX5_FLOW_DESTINATION_TYPE_TIR ||
--		type == MLX5_FLOW_DESTINATION_TYPE_RANGE;
-+		type == MLX5_FLOW_DESTINATION_TYPE_RANGE ||
-+		type == MLX5_FLOW_DESTINATION_TYPE_TABLE_TYPE;
- }
- 
- static bool check_valid_spec(const struct mlx5_flow_spec *spec)
-@@ -2367,6 +2393,14 @@ struct mlx5_flow_namespace *mlx5_get_flow_namespace(struct mlx5_core_dev *dev,
- 		root_ns = steering->rdma_tx_root_ns;
- 		prio = RDMA_TX_COUNTERS_PRIO;
- 		break;
-+	case MLX5_FLOW_NAMESPACE_RDMA_RX_IPSEC:
-+		root_ns = steering->rdma_rx_root_ns;
-+		prio = RDMA_RX_IPSEC_PRIO;
-+		break;
-+	case MLX5_FLOW_NAMESPACE_RDMA_TX_IPSEC:
-+		root_ns = steering->rdma_tx_root_ns;
-+		prio = RDMA_TX_IPSEC_PRIO;
-+		break;
- 	default: /* Must be NIC RX */
- 		WARN_ON(!is_nic_rx_ns(type));
- 		root_ns = steering->root_ns;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/ipsec_fs_roce.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/ipsec_fs_roce.c
-new file mode 100644
-index 000000000000..2711892fd5cb
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/ipsec_fs_roce.c
-@@ -0,0 +1,372 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
-+
-+#include "fs_core.h"
-+#include "lib/ipsec_fs_roce.h"
-+#include "mlx5_core.h"
-+
-+struct mlx5_ipsec_miss {
-+	struct mlx5_flow_group *group;
-+	struct mlx5_flow_handle *rule;
-+};
-+
-+struct mlx5_ipsec_rx_roce {
-+	struct mlx5_flow_group *g;
-+	struct mlx5_flow_table *ft;
-+	struct mlx5_flow_handle *rule;
-+	struct mlx5_ipsec_miss roce_miss;
-+
-+	struct mlx5_flow_table *ft_rdma;
-+	struct mlx5_flow_namespace *ns_rdma;
-+};
-+
-+struct mlx5_ipsec_tx_roce {
-+	struct mlx5_flow_group *g;
-+	struct mlx5_flow_table *ft;
-+	struct mlx5_flow_handle *rule;
-+	struct mlx5_flow_namespace *ns;
-+};
-+
-+struct mlx5_ipsec_fs {
-+	struct mlx5_ipsec_rx_roce ipv4_rx;
-+	struct mlx5_ipsec_rx_roce ipv6_rx;
-+	struct mlx5_ipsec_tx_roce tx;
-+};
-+
-+static void ipsec_fs_roce_setup_udp_dport(struct mlx5_flow_spec *spec, u16 dport)
-+{
-+	spec->match_criteria_enable |= MLX5_MATCH_OUTER_HEADERS;
-+	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.ip_protocol);
-+	MLX5_SET(fte_match_param, spec->match_value, outer_headers.ip_protocol, IPPROTO_UDP);
-+	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.udp_dport);
-+	MLX5_SET(fte_match_param, spec->match_value, outer_headers.udp_dport, dport);
-+}
-+
-+static int ipsec_fs_roce_rx_rule_setup(struct mlx5_flow_destination *default_dst,
-+				       struct mlx5_ipsec_rx_roce *roce, struct mlx5_core_dev *mdev)
-+{
-+	struct mlx5_flow_destination dst = {};
-+	MLX5_DECLARE_FLOW_ACT(flow_act);
-+	struct mlx5_flow_handle *rule;
-+	struct mlx5_flow_spec *spec;
-+	int err = 0;
-+
-+	spec = kvzalloc(sizeof(*spec), GFP_KERNEL);
-+	if (!spec)
-+		return -ENOMEM;
-+
-+	ipsec_fs_roce_setup_udp_dport(spec, ROCE_V2_UDP_DPORT);
-+
-+	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
-+	dst.type = MLX5_FLOW_DESTINATION_TYPE_TABLE_TYPE;
-+	dst.ft = roce->ft_rdma;
-+	rule = mlx5_add_flow_rules(roce->ft, spec, &flow_act, &dst, 1);
-+	if (IS_ERR(rule)) {
-+		err = PTR_ERR(rule);
-+		mlx5_core_err(mdev, "Fail to add RX roce ipsec rule err=%d\n",
-+			      err);
-+		goto fail_add_rule;
-+	}
-+
-+	roce->rule = rule;
-+
-+	memset(spec, 0, sizeof(*spec));
-+	rule = mlx5_add_flow_rules(roce->ft, spec, &flow_act, default_dst, 1);
-+	if (IS_ERR(rule)) {
-+		err = PTR_ERR(rule);
-+		mlx5_core_err(mdev, "Fail to add RX roce ipsec miss rule err=%d\n",
-+			      err);
-+		goto fail_add_default_rule;
-+	}
-+
-+	roce->roce_miss.rule = rule;
-+
-+	kvfree(spec);
-+	return 0;
-+
-+fail_add_default_rule:
-+	mlx5_del_flow_rules(roce->rule);
-+fail_add_rule:
-+	kvfree(spec);
-+	return err;
-+}
-+
-+static int ipsec_fs_roce_tx_rule_setup(struct mlx5_core_dev *mdev, struct mlx5_ipsec_tx_roce *roce,
-+				       struct mlx5_flow_table *pol_ft)
-+{
-+	struct mlx5_flow_destination dst = {};
-+	MLX5_DECLARE_FLOW_ACT(flow_act);
-+	struct mlx5_flow_handle *rule;
-+	int err = 0;
-+
-+	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
-+	dst.type = MLX5_FLOW_DESTINATION_TYPE_TABLE_TYPE;
-+	dst.ft = pol_ft;
-+	rule = mlx5_add_flow_rules(roce->ft, NULL, &flow_act, &dst,
-+				   1);
-+	if (IS_ERR(rule)) {
-+		err = PTR_ERR(rule);
-+		mlx5_core_err(mdev, "Fail to add TX roce ipsec rule err=%d\n",
-+			      err);
-+		goto out;
-+	}
-+	roce->rule = rule;
-+
-+out:
-+	return err;
-+}
-+
-+void mlx5_ipsec_fs_roce_tx_destroy(struct mlx5_ipsec_fs *ipsec_roce)
-+{
-+	struct mlx5_ipsec_tx_roce *tx_roce;
-+
-+	if (!ipsec_roce)
-+		return;
-+
-+	tx_roce = &ipsec_roce->tx;
-+
-+	mlx5_del_flow_rules(tx_roce->rule);
-+	mlx5_destroy_flow_group(tx_roce->g);
-+	mlx5_destroy_flow_table(tx_roce->ft);
-+}
-+
-+#define MLX5_TX_ROCE_GROUP_SIZE BIT(0)
-+
-+int mlx5_ipsec_fs_roce_tx_create(struct mlx5_ipsec_fs *ipsec_roce, struct mlx5_flow_table *pol_ft,
-+				 struct mlx5_core_dev *mdev)
-+{
-+	struct mlx5_flow_table_attr ft_attr = {};
-+	struct mlx5_ipsec_tx_roce *roce;
-+	struct mlx5_flow_table *ft;
-+	struct mlx5_flow_group *g;
-+	int ix = 0;
-+	int err;
-+	u32 *in;
-+
-+	if (!ipsec_roce)
-+		return 0;
-+
-+	roce = &ipsec_roce->tx;
-+
-+	in = kvzalloc(MLX5_ST_SZ_BYTES(create_flow_group_in), GFP_KERNEL);
-+	if (!in)
-+		return -ENOMEM;
-+
-+	ft_attr.max_fte = 1;
-+	ft = mlx5_create_flow_table(roce->ns, &ft_attr);
-+	if (IS_ERR(ft)) {
-+		err = PTR_ERR(ft);
-+		mlx5_core_err(mdev, "Fail to create ipsec tx roce ft err=%d\n", err);
-+		return err;
-+	}
-+
-+	roce->ft = ft;
-+
-+	MLX5_SET_CFG(in, start_flow_index, ix);
-+	ix += MLX5_TX_ROCE_GROUP_SIZE;
-+	MLX5_SET_CFG(in, end_flow_index, ix - 1);
-+	g = mlx5_create_flow_group(ft, in);
-+	if (IS_ERR(g)) {
-+		err = PTR_ERR(g);
-+		mlx5_core_err(mdev, "Fail to create ipsec tx roce group err=%d\n", err);
-+		goto fail;
-+	}
-+	roce->g = g;
-+
-+	err = ipsec_fs_roce_tx_rule_setup(mdev, roce, pol_ft);
-+	if (err) {
-+		mlx5_core_err(mdev, "Fail to create ipsec tx roce rules err=%d\n", err);
-+		goto rule_fail;
-+	}
-+
-+	return 0;
-+
-+rule_fail:
-+	mlx5_destroy_flow_group(roce->g);
-+fail:
-+	mlx5_destroy_flow_table(ft);
-+	return err;
-+}
-+
-+struct mlx5_flow_table *mlx5_ipsec_fs_roce_ft_get(struct mlx5_ipsec_fs *ipsec_roce, u32 family)
-+{
-+	struct mlx5_ipsec_rx_roce *rx_roce;
-+
-+	if (!ipsec_roce)
-+		return NULL;
-+
-+	rx_roce = (family == AF_INET) ? &ipsec_roce->ipv4_rx :
-+					&ipsec_roce->ipv6_rx;
-+
-+	return rx_roce->ft;
-+}
-+
-+void mlx5_ipsec_fs_roce_rx_destroy(struct mlx5_ipsec_fs *ipsec_roce, u32 family)
-+{
-+	struct mlx5_ipsec_rx_roce *rx_roce;
-+
-+	if (!ipsec_roce)
-+		return;
-+
-+	rx_roce = (family == AF_INET) ? &ipsec_roce->ipv4_rx :
-+					&ipsec_roce->ipv6_rx;
-+
-+	mlx5_del_flow_rules(rx_roce->roce_miss.rule);
-+	mlx5_del_flow_rules(rx_roce->rule);
-+	mlx5_destroy_flow_table(rx_roce->ft_rdma);
-+	mlx5_destroy_flow_group(rx_roce->roce_miss.group);
-+	mlx5_destroy_flow_group(rx_roce->g);
-+	mlx5_destroy_flow_table(rx_roce->ft);
-+}
-+
-+#define MLX5_RX_ROCE_GROUP_SIZE BIT(0)
-+
-+int mlx5_ipsec_fs_roce_rx_create(struct mlx5_ipsec_fs *ipsec_roce, struct mlx5_flow_namespace *ns,
-+				 struct mlx5_flow_destination *default_dst, u32 family, u32 level,
-+				 u32 prio, struct mlx5_core_dev *mdev)
-+{
-+	struct mlx5_flow_table_attr ft_attr = {};
-+	struct mlx5_ipsec_rx_roce *roce;
-+	struct mlx5_flow_table *ft;
-+	struct mlx5_flow_group *g;
-+	void *outer_headers_c;
-+	int ix = 0;
-+	u32 *in;
-+	int err;
-+	u8 *mc;
-+
-+	if (!ipsec_roce)
-+		return 0;
-+
-+	roce = (family == AF_INET) ? &ipsec_roce->ipv4_rx :
-+				     &ipsec_roce->ipv6_rx;
-+
-+	ft_attr.max_fte = 2;
-+	ft_attr.level = level;
-+	ft_attr.prio = prio;
-+	ft = mlx5_create_flow_table(ns, &ft_attr);
-+	if (IS_ERR(ft)) {
-+		err = PTR_ERR(ft);
-+		mlx5_core_err(mdev, "Fail to create ipsec rx roce ft at nic err=%d\n", err);
-+		return err;
-+	}
-+
-+	roce->ft = ft;
-+
-+	in = kvzalloc(MLX5_ST_SZ_BYTES(create_flow_group_in), GFP_KERNEL);
-+	if (!in) {
-+		err = -ENOMEM;
-+		goto fail_nomem;
-+	}
-+
-+	mc = MLX5_ADDR_OF(create_flow_group_in, in, match_criteria);
-+	outer_headers_c = MLX5_ADDR_OF(fte_match_param, mc, outer_headers);
-+	MLX5_SET_TO_ONES(fte_match_set_lyr_2_4, outer_headers_c, ip_protocol);
-+	MLX5_SET_TO_ONES(fte_match_set_lyr_2_4, outer_headers_c, udp_dport);
-+
-+	MLX5_SET_CFG(in, match_criteria_enable, MLX5_MATCH_OUTER_HEADERS);
-+	MLX5_SET_CFG(in, start_flow_index, ix);
-+	ix += MLX5_RX_ROCE_GROUP_SIZE;
-+	MLX5_SET_CFG(in, end_flow_index, ix - 1);
-+	g = mlx5_create_flow_group(ft, in);
-+	if (IS_ERR(g)) {
-+		err = PTR_ERR(g);
-+		mlx5_core_err(mdev, "Fail to create ipsec rx roce group at nic err=%d\n", err);
-+		goto fail_group;
-+	}
-+	roce->g = g;
-+
-+	memset(in, 0, MLX5_ST_SZ_BYTES(create_flow_group_in));
-+	MLX5_SET_CFG(in, start_flow_index, ix);
-+	ix += MLX5_RX_ROCE_GROUP_SIZE;
-+	MLX5_SET_CFG(in, end_flow_index, ix - 1);
-+	g = mlx5_create_flow_group(ft, in);
-+	if (IS_ERR(g)) {
-+		err = PTR_ERR(g);
-+		mlx5_core_err(mdev, "Fail to create ipsec rx roce miss group at nic err=%d\n", err);
-+		goto fail_mgroup;
-+	}
-+	roce->roce_miss.group = g;
-+
-+	memset(&ft_attr, 0, sizeof(ft_attr));
-+	if (family == AF_INET)
-+		ft_attr.level = 1;
-+	ft = mlx5_create_flow_table(roce->ns_rdma, &ft_attr);
-+	if (IS_ERR(ft)) {
-+		err = PTR_ERR(ft);
-+		mlx5_core_err(mdev, "Fail to create ipsec rx roce ft at rdma err=%d\n", err);
-+		goto fail_rdma_table;
-+	}
-+
-+	roce->ft_rdma = ft;
-+
-+	err = ipsec_fs_roce_rx_rule_setup(default_dst, roce, mdev);
-+	if (err) {
-+		mlx5_core_err(mdev, "Fail to create ipsec rx roce rules err=%d\n", err);
-+		goto fail_setup_rule;
-+	}
-+
-+	kvfree(in);
-+	return 0;
-+
-+fail_setup_rule:
-+	mlx5_destroy_flow_table(roce->ft_rdma);
-+fail_rdma_table:
-+	mlx5_destroy_flow_group(roce->roce_miss.group);
-+fail_mgroup:
-+	mlx5_destroy_flow_group(roce->g);
-+fail_group:
-+	kvfree(in);
-+fail_nomem:
-+	mlx5_destroy_flow_table(roce->ft);
-+	return err;
-+}
-+
-+void mlx5_ipsec_fs_roce_cleanup(struct mlx5_ipsec_fs *ipsec_roce)
-+{
-+	kfree(ipsec_roce);
-+}
-+
-+#define NIC_RDMA_BOTH_DIRS_CAPS (MLX5_FT_NIC_RX_2_NIC_RX_RDMA | MLX5_FT_NIC_TX_RDMA_2_NIC_TX)
-+
-+struct mlx5_ipsec_fs *mlx5_ipsec_fs_roce_init(struct mlx5_core_dev *mdev)
-+{
-+	struct mlx5_ipsec_fs *roce_ipsec;
-+	struct mlx5_flow_namespace *ns;
-+
-+	if (!mlx5_get_roce_state(mdev))
-+		return NULL;
-+
-+	if ((MLX5_CAP_GEN_2(mdev, flow_table_type_2_type) &
-+	     NIC_RDMA_BOTH_DIRS_CAPS) != NIC_RDMA_BOTH_DIRS_CAPS) {
-+		mlx5_core_dbg(mdev, "Failed to init roce ipsec flow steering, capabilities not supported\n");
-+		return NULL;
-+	}
-+
-+	ns = mlx5_get_flow_namespace(mdev, MLX5_FLOW_NAMESPACE_RDMA_RX_IPSEC);
-+	if (!ns) {
-+		mlx5_core_err(mdev, "Failed to get roce rx ns\n");
-+		return NULL;
-+	}
-+
-+	roce_ipsec = kzalloc(sizeof(*roce_ipsec), GFP_KERNEL);
-+	if (!roce_ipsec)
-+		return NULL;
-+
-+	roce_ipsec->ipv4_rx.ns_rdma = ns;
-+	roce_ipsec->ipv6_rx.ns_rdma = ns;
-+
-+	ns = mlx5_get_flow_namespace(mdev, MLX5_FLOW_NAMESPACE_RDMA_TX_IPSEC);
-+	if (!ns) {
-+		mlx5_core_err(mdev, "Failed to get roce tx ns\n");
-+		goto err_tx;
-+	}
-+
-+	roce_ipsec->tx.ns = ns;
-+
-+	return roce_ipsec;
-+
-+err_tx:
-+	kfree(roce_ipsec);
-+	return NULL;
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/ipsec_fs_roce.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/ipsec_fs_roce.h
-new file mode 100644
-index 000000000000..4b69d4e34234
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/ipsec_fs_roce.h
-@@ -0,0 +1,20 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-+/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
-+
-+#ifndef __MLX5_LIB_IPSEC_H__
-+#define __MLX5_LIB_IPSEC_H__
-+
-+struct mlx5_ipsec_fs;
-+
-+struct mlx5_flow_table *mlx5_ipsec_fs_roce_ft_get(struct mlx5_ipsec_fs *ipsec_roce, u32 family);
-+void mlx5_ipsec_fs_roce_rx_destroy(struct mlx5_ipsec_fs *ipsec_roce, u32 family);
-+int mlx5_ipsec_fs_roce_rx_create(struct mlx5_ipsec_fs *ipsec_roce, struct mlx5_flow_namespace *ns,
-+				 struct mlx5_flow_destination *default_dst, u32 family, u32 level,
-+				 u32 prio, struct mlx5_core_dev *mdev);
-+void mlx5_ipsec_fs_roce_tx_destroy(struct mlx5_ipsec_fs *ipsec_roce);
-+int mlx5_ipsec_fs_roce_tx_create(struct mlx5_ipsec_fs *ipsec_roce, struct mlx5_flow_table *pol_ft,
-+				 struct mlx5_core_dev *mdev);
-+void mlx5_ipsec_fs_roce_cleanup(struct mlx5_ipsec_fs *ipsec_roce);
-+struct mlx5_ipsec_fs *mlx5_ipsec_fs_roce_init(struct mlx5_core_dev *mdev);
-+
-+#endif /* __MLX5_LIB_IPSEC_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
-index 032adb21ad4b..bfd3a1121ed8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
-@@ -96,11 +96,6 @@ static inline struct net *mlx5_core_net(struct mlx5_core_dev *dev)
- 	return devlink_net(priv_to_devlink(dev));
- }
- 
--static inline void mlx5_uplink_netdev_set(struct mlx5_core_dev *mdev, struct net_device *netdev)
--{
--	mdev->mlx5e_res.uplink_netdev = netdev;
--}
--
- static inline struct net_device *mlx5_uplink_netdev_get(struct mlx5_core_dev *mdev)
- {
- 	return mdev->mlx5e_res.uplink_netdev;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index df134f6d32dc..72716d1f8b37 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -336,6 +336,24 @@ static u16 to_fw_pkey_sz(struct mlx5_core_dev *dev, u32 size)
- 	}
- }
- 
-+void mlx5_core_uplink_netdev_set(struct mlx5_core_dev *dev, struct net_device *netdev)
-+{
-+	mutex_lock(&dev->mlx5e_res.uplink_netdev_lock);
-+	dev->mlx5e_res.uplink_netdev = netdev;
-+	mlx5_blocking_notifier_call_chain(dev, MLX5_DRIVER_EVENT_UPLINK_NETDEV,
-+					  netdev);
-+	mutex_unlock(&dev->mlx5e_res.uplink_netdev_lock);
-+}
-+
-+void mlx5_core_uplink_netdev_event_replay(struct mlx5_core_dev *dev)
-+{
-+	mutex_lock(&dev->mlx5e_res.uplink_netdev_lock);
-+	mlx5_blocking_notifier_call_chain(dev, MLX5_DRIVER_EVENT_UPLINK_NETDEV,
-+					  dev->mlx5e_res.uplink_netdev);
-+	mutex_unlock(&dev->mlx5e_res.uplink_netdev_lock);
-+}
-+EXPORT_SYMBOL(mlx5_core_uplink_netdev_event_replay);
-+
- static int mlx5_core_get_caps_mode(struct mlx5_core_dev *dev,
- 				   enum mlx5_cap_type cap_type,
- 				   enum mlx5_cap_mode cap_mode)
-@@ -1608,6 +1626,7 @@ int mlx5_mdev_init(struct mlx5_core_dev *dev, int profile_idx)
- 	lockdep_register_key(&dev->lock_key);
- 	mutex_init(&dev->intf_state_mutex);
- 	lockdep_set_class(&dev->intf_state_mutex, &dev->lock_key);
-+	mutex_init(&dev->mlx5e_res.uplink_netdev_lock);
- 
- 	mutex_init(&priv->bfregs.reg_head.lock);
- 	mutex_init(&priv->bfregs.wc_head.lock);
-@@ -1696,6 +1715,7 @@ void mlx5_mdev_uninit(struct mlx5_core_dev *dev)
- 	mutex_destroy(&priv->alloc_mutex);
- 	mutex_destroy(&priv->bfregs.wc_head.lock);
- 	mutex_destroy(&priv->bfregs.reg_head.lock);
-+	mutex_destroy(&dev->mlx5e_res.uplink_netdev_lock);
- 	mutex_destroy(&dev->intf_state_mutex);
- 	lockdep_unregister_key(&dev->lock_key);
- }
-diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
-index 29d4b201c7b2..f2b271169daf 100644
---- a/include/linux/mlx5/device.h
-+++ b/include/linux/mlx5/device.h
-@@ -362,6 +362,7 @@ enum mlx5_event {
- 
- enum mlx5_driver_event {
- 	MLX5_DRIVER_EVENT_TYPE_TRAP = 0,
-+	MLX5_DRIVER_EVENT_UPLINK_NETDEV,
- };
- 
- enum {
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index d476255c9a3f..cc48aa308269 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -49,6 +49,7 @@
- #include <linux/notifier.h>
- #include <linux/refcount.h>
- #include <linux/auxiliary_bus.h>
-+#include <linux/mutex.h>
- 
- #include <linux/mlx5/device.h>
- #include <linux/mlx5/doorbell.h>
-@@ -674,6 +675,7 @@ struct mlx5e_resources {
- 	} hw_objs;
- 	struct devlink_port dl_port;
- 	struct net_device *uplink_netdev;
-+	struct mutex uplink_netdev_lock;
- };
- 
- enum mlx5_sw_icm_type {
-@@ -1011,6 +1013,9 @@ int mlx5_cmd_exec_polling(struct mlx5_core_dev *dev, void *in, int in_size,
- 			  void *out, int out_size);
- bool mlx5_cmd_is_down(struct mlx5_core_dev *dev);
- 
-+void mlx5_core_uplink_netdev_set(struct mlx5_core_dev *mdev, struct net_device *netdev);
-+void mlx5_core_uplink_netdev_event_replay(struct mlx5_core_dev *mdev);
-+
- int mlx5_core_get_caps(struct mlx5_core_dev *dev, enum mlx5_cap_type cap_type);
- void mlx5_health_cleanup(struct mlx5_core_dev *dev);
- int mlx5_health_init(struct mlx5_core_dev *dev);
-diff --git a/include/linux/mlx5/fs.h b/include/linux/mlx5/fs.h
-index ba6958b49a8e..d72a09a3798c 100644
---- a/include/linux/mlx5/fs.h
-+++ b/include/linux/mlx5/fs.h
-@@ -51,6 +51,7 @@ enum mlx5_flow_destination_type {
- 	MLX5_FLOW_DESTINATION_TYPE_COUNTER,
- 	MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE_NUM,
- 	MLX5_FLOW_DESTINATION_TYPE_RANGE,
-+	MLX5_FLOW_DESTINATION_TYPE_TABLE_TYPE,
- };
- 
- enum {
-@@ -102,6 +103,8 @@ enum mlx5_flow_namespace_type {
- 	MLX5_FLOW_NAMESPACE_PORT_SEL,
- 	MLX5_FLOW_NAMESPACE_RDMA_RX_COUNTERS,
- 	MLX5_FLOW_NAMESPACE_RDMA_TX_COUNTERS,
-+	MLX5_FLOW_NAMESPACE_RDMA_RX_IPSEC,
-+	MLX5_FLOW_NAMESPACE_RDMA_TX_IPSEC,
- };
- 
- enum {
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index a9ee7bc59c90..c3d3a2eef7d4 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -315,6 +315,11 @@ enum {
- 	MLX5_CMD_OP_GENERAL_END = 0xd00,
- };
- 
-+enum {
-+	MLX5_FT_NIC_RX_2_NIC_RX_RDMA = BIT(0),
-+	MLX5_FT_NIC_TX_RDMA_2_NIC_TX = BIT(1),
-+};
-+
- struct mlx5_ifc_flow_table_fields_supported_bits {
- 	u8         outer_dmac[0x1];
- 	u8         outer_smac[0x1];
-@@ -1496,7 +1501,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 	u8         null_mkey[0x1];
- 	u8         log_max_klm_list_size[0x6];
- 
--	u8         reserved_at_120[0xa];
-+	u8         reserved_at_120[0x2];
-+	u8	   qpc_extension[0x1];
-+	u8	   reserved_at_123[0x7];
- 	u8         log_max_ra_req_dc[0x6];
- 	u8         reserved_at_130[0x2];
- 	u8         eth_wqe_too_small[0x1];
-@@ -1662,7 +1669,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 
- 	u8         log_bf_reg_size[0x5];
- 
--	u8         reserved_at_270[0x6];
-+	u8         reserved_at_270[0x3];
-+	u8	   qp_error_syndrome[0x1];
-+	u8	   reserved_at_274[0x2];
- 	u8         lag_dct[0x2];
- 	u8         lag_tx_port_affinity[0x1];
- 	u8         lag_native_fdb_selection[0x1];
-@@ -1899,7 +1908,8 @@ struct mlx5_ifc_cmd_hca_cap_2_bits {
- 
- 	u8	   reserved_at_e0[0xc0];
- 
--	u8	   reserved_at_1a0[0xb];
-+	u8	   flow_table_type_2_type[0x8];
-+	u8	   reserved_at_1a8[0x3];
- 	u8	   log_min_mkey_entity_size[0x5];
- 	u8	   reserved_at_1b0[0x10];
- 
-@@ -1923,6 +1933,7 @@ enum mlx5_ifc_flow_destination_type {
- 	MLX5_IFC_FLOW_DESTINATION_TYPE_TIR          = 0x2,
- 	MLX5_IFC_FLOW_DESTINATION_TYPE_FLOW_SAMPLER = 0x6,
- 	MLX5_IFC_FLOW_DESTINATION_TYPE_UPLINK       = 0x8,
-+	MLX5_IFC_FLOW_DESTINATION_TYPE_TABLE_TYPE   = 0xA,
- };
- 
- enum mlx5_flow_table_miss_action {
-@@ -1937,7 +1948,8 @@ struct mlx5_ifc_dest_format_struct_bits {
- 
- 	u8         destination_eswitch_owner_vhca_id_valid[0x1];
- 	u8         packet_reformat[0x1];
--	u8         reserved_at_22[0xe];
-+	u8         reserved_at_22[0x6];
-+	u8         destination_table_type[0x8];
- 	u8         destination_eswitch_owner_vhca_id[0x10];
- };
- 
-@@ -5342,6 +5354,37 @@ struct mlx5_ifc_query_rmp_in_bits {
- 	u8         reserved_at_60[0x20];
- };
- 
-+struct mlx5_ifc_cqe_error_syndrome_bits {
-+	u8         hw_error_syndrome[0x8];
-+	u8         hw_syndrome_type[0x4];
-+	u8         reserved_at_c[0x4];
-+	u8         vendor_error_syndrome[0x8];
-+	u8         syndrome[0x8];
-+};
-+
-+struct mlx5_ifc_qp_context_extension_bits {
-+	u8         reserved_at_0[0x60];
-+
-+	struct mlx5_ifc_cqe_error_syndrome_bits error_syndrome;
-+
-+	u8         reserved_at_80[0x580];
-+};
-+
-+struct mlx5_ifc_qpc_extension_and_pas_list_in_bits {
-+	struct mlx5_ifc_qp_context_extension_bits qpc_data_extension;
-+
-+	u8         pas[0][0x40];
-+};
-+
-+struct mlx5_ifc_qp_pas_list_in_bits {
-+	struct mlx5_ifc_cmd_pas_bits pas[0];
-+};
-+
-+union mlx5_ifc_qp_pas_or_qpc_ext_and_pas_bits {
-+	struct mlx5_ifc_qp_pas_list_in_bits qp_pas_list;
-+	struct mlx5_ifc_qpc_extension_and_pas_list_in_bits qpc_ext_and_pas_list;
-+};
-+
- struct mlx5_ifc_query_qp_out_bits {
- 	u8         status[0x8];
- 	u8         reserved_at_8[0x18];
-@@ -5358,7 +5401,7 @@ struct mlx5_ifc_query_qp_out_bits {
- 
- 	u8         reserved_at_800[0x80];
- 
--	u8         pas[][0x40];
-+	union mlx5_ifc_qp_pas_or_qpc_ext_and_pas_bits qp_pas_or_qpc_ext_and_pas;
- };
- 
- struct mlx5_ifc_query_qp_in_bits {
-@@ -5368,7 +5411,8 @@ struct mlx5_ifc_query_qp_in_bits {
- 	u8         reserved_at_20[0x10];
- 	u8         op_mod[0x10];
- 
--	u8         reserved_at_40[0x8];
-+	u8         qpc_ext[0x1];
-+	u8         reserved_at_41[0x7];
- 	u8         qpn[0x18];
- 
- 	u8         reserved_at_60[0x20];
-@@ -8571,7 +8615,8 @@ struct mlx5_ifc_create_qp_in_bits {
- 	u8         reserved_at_20[0x10];
- 	u8         op_mod[0x10];
- 
--	u8         reserved_at_40[0x8];
-+	u8         qpc_ext[0x1];
-+	u8         reserved_at_41[0x7];
- 	u8         input_qpn[0x18];
- 
- 	u8         reserved_at_60[0x20];
+On 1/25/2023 1:07 AM, ALOK TIWARI wrote:
+> correct the indentation
+>                          len = serdev_device_write_buf(serdev, skb->data,
+> skb->len);
+>
+> remove extra tab
+> serdev_device_break_ctl(nxpdev->serdev, 0);     /* break OFF */
+>                  else
+> serdev_device_break_ctl(nxpdev->serdev, -1); /* break ON */
+>
+> extra space b/w else if
+>          else  if (data->ps_cmd == PS_CMD_EXIT_PS)
+>
+> can we use strncmp in case strcmp
+> (!strcmp(chip_id_name_table[i].chip_name, name_str))
+>
+>
+> when config flag using CONFIG_BT_NXPUART -> why not give driver name 
+> btnxpuart.o
+>
+>
+> Thanks,
+>
+> Alok
+>
+> On 1/24/2023 11:17 PM, Neeraj Sanjay Kale wrote:
+>> This adds a driver based on serdev driver for the NXP BT serial
+>> protocol based on running H:4, which can enable the built-in
+>> Bluetooth device inside a generic NXP BT chip.
+>>
+>> This driver has Power Save feature that will put the chip into
+>> sleep state whenever there is no activity for 2000ms, and will
+>> be woken up when any activity is to be initiated.
+>>
+>> This driver enables the power save feature by default by sending
+>> the vendor specific commands to the chip during setup.
+>>
+>> During setup, the driver is capable of reading the bootloader
+>> signature unique to every chip, and downloading corresponding
+>> FW file defined in a user-space config file. The firmware file
+>> name can be defined in DTS file as well, in which case the
+>> user-space config file will be ignored.
+>>
+>> Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+>> ---
+>>   MAINTAINERS                |    7 +
+>>   drivers/bluetooth/Kconfig  |   11 +
+>>   drivers/bluetooth/Makefile |    1 +
+>>   drivers/bluetooth/btnxp.c  | 1337 ++++++++++++++++++++++++++++++++++++
+>>   drivers/bluetooth/btnxp.h  |  230 +++++++
+>>   5 files changed, 1586 insertions(+)
+>>   create mode 100644 drivers/bluetooth/btnxp.c
+>>   create mode 100644 drivers/bluetooth/btnxp.h
+>>
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index 32dd41574930..20bb9e6b44b5 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -22835,6 +22835,13 @@ L:    linux-mm@kvack.org
+>>   S:    Maintained
+>>   F:    mm/zswap.c
+>>   +NXP BLUETOOTH WIRELESS DRIVERS
+>> +M:    Amitkumar Karwar <amitkumar.karwar@nxp.com>
+>> +M:    Neeraj Kale <neeraj.sanjaykale@nxp.com>
+>> +S:    Maintained
+>> +F: Documentation/devicetree/bindings/net/bluetooth/nxp-bluetooth.yaml
+>> +F:    drivers/bluetooth/btnxp*
+>> +
+>>   THE REST
+>>   M:    Linus Torvalds <torvalds@linux-foundation.org>
+>>   L:    linux-kernel@vger.kernel.org
+>> diff --git a/drivers/bluetooth/Kconfig b/drivers/bluetooth/Kconfig
+>> index 5a1a7bec3c42..773b40d34b7b 100644
+>> --- a/drivers/bluetooth/Kconfig
+>> +++ b/drivers/bluetooth/Kconfig
+>> @@ -465,4 +465,15 @@ config BT_VIRTIO
+>>         Say Y here to compile support for HCI over Virtio into the
+>>         kernel or say M to compile as a module.
+>>   +config BT_NXPUART
+>> +    tristate "NXP protocol support"
+>> +    depends on SERIAL_DEV_BUS
+>> +    help
+>> +      NXP is serial driver required for NXP Bluetooth
+>> +      devices with UART interface.
+>> +
+>> +      Say Y here to compile support for NXP Bluetooth UART device into
+>> +      the kernel, or say M here to compile as a module.
+>> +
+>> +
+>>   endmenu
+>> diff --git a/drivers/bluetooth/Makefile b/drivers/bluetooth/Makefile
+>> index e0b261f24fc9..6c0e7fbe2297 100644
+>> --- a/drivers/bluetooth/Makefile
+>> +++ b/drivers/bluetooth/Makefile
+>> @@ -29,6 +29,7 @@ obj-$(CONFIG_BT_QCA)        += btqca.o
+>>   obj-$(CONFIG_BT_MTK)        += btmtk.o
+>>     obj-$(CONFIG_BT_VIRTIO)        += virtio_bt.o
+>> +obj-$(CONFIG_BT_NXPUART)    += btnxp.o
+>>     obj-$(CONFIG_BT_HCIUART_NOKIA)    += hci_nokia.o
+>>   diff --git a/drivers/bluetooth/btnxp.c b/drivers/bluetooth/btnxp.c
+>> new file mode 100644
+>> index 000000000000..0066f778593a
+>> --- /dev/null
+>> +++ b/drivers/bluetooth/btnxp.c
+>> @@ -0,0 +1,1337 @@
+>> +// SPDX-License-Identifier: GPL-2.0-or-later
+>> +/*
+>> + *
+>> + *  NXP Bluetooth driver
+>> + *  Copyright 2018-2023 NXP
+>> + *
+>> + *
+>> + *  This program is free software; you can redistribute it and/or 
+>> modify
+>> + *  it under the terms of the GNU General Public License as 
+>> published by
+>> + *  the Free Software Foundation; either version 2 of the License, or
+>> + *  (at your option) any later version.
+>> + *
+>> + *  This program is distributed in the hope that it will be useful,
+>> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + *  GNU General Public License for more details.
+>> + *
+>> + */
+>> +
+>> +#include <linux/module.h>
+>> +#include <linux/kernel.h>
+>> +
+>> +#include <linux/serdev.h>
+>> +#include <linux/of.h>
+>> +#include <linux/skbuff.h>
+>> +#include <asm/unaligned.h>
+>> +#include <linux/firmware.h>
+>> +#include <linux/string.h>
+>> +#include <linux/crc8.h>
+>> +
+>> +#include <net/bluetooth/bluetooth.h>
+>> +#include <net/bluetooth/hci_core.h>
+>> +
+>> +#include "btnxp.h"
+>> +#include "h4_recv.h"
+>> +
+>> +#define BTNXPUART_TX_STATE_ACTIVE    1
+>> +#define BTNXPUART_TX_STATE_WAKEUP    2
+>> +#define BTNXPUART_FW_DOWNLOADING    3
+>> +
+>> +static const struct chip_id_map_table chip_id_name_table[] = {
+>> +    {0xffff, "legacy_chip"},    /* for legacy bootloader chipsets 
+>> w8987 and w8997 */
+>> +    {0x7201, "iw416"},
+>> +    {0x7601, "iw612"},
+>> +    {0x5c03, "w9098"},
+>> +};
+>> +
+>> +static u8 crc8_table[CRC8_TABLE_SIZE];
+>> +static unsigned long crc32_table[256];
+>> +static struct fw_params fw_mod_params[MAX_NO_OF_CHIPS_SUPPORT];
+>> +
+>> +/* NXP Power Save Feature */
+>> +int wakeupmode = WAKEUP_METHOD_BREAK;
+>> +int ps_mode = PS_MODE_ENABLE;
+>> +
+>> +static void ps_start_timer(struct btnxpuart_dev *nxpdev)
+>> +{
+>> +    struct ps_data *psdata = nxpdev->psdata;
+>> +
+>> +    if (!psdata)
+>> +        return;
+>> +
+>> +    if (psdata->cur_psmode ==  PS_MODE_ENABLE) {
+>> +        psdata->timer_on = 1;
+>> +        mod_timer(&psdata->ps_timer, jiffies + (psdata->interval * 
+>> HZ) / 1000);
+>> +    }
+>> +}
+>> +
+>> +static void ps_cancel_timer(struct btnxpuart_dev *nxpdev)
+>> +{
+>> +    struct ps_data *psdata = nxpdev->psdata;
+>> +
+>> +    if (!psdata)
+>> +        return;
+>> +
+>> +    flush_scheduled_work();
+>> +    if (psdata->timer_on)
+>> +        del_timer(&psdata->ps_timer);
+>> +    kfree(psdata);
+>> +}
+>> +
+>> +static void ps_control(struct hci_dev *hdev, u8 ps_state)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    struct ps_data *psdata = nxpdev->psdata;
+>> +
+>> +    if (psdata->ps_state == ps_state)
+>> +        return;
+>> +
+>> +    switch (psdata->cur_wakeupmode) {
+>> +    case WAKEUP_METHOD_DTR:
+>> +        if (ps_state == PS_STATE_AWAKE)
+>> +            serdev_device_set_tiocm(nxpdev->serdev, TIOCM_DTR, 0);  
+>> /* DTR ON */
+>> +        else
+>> +            serdev_device_set_tiocm(nxpdev->serdev, 0, TIOCM_DTR);  
+>> /* DTR OFF */
+>> +        break;
+>> +    case WAKEUP_METHOD_BREAK:
+>> +    default:
+>> +        BT_INFO("Set UART break: %s", ps_state == PS_STATE_AWAKE ? 
+>> "off" : "on");
+>> +        if (ps_state == PS_STATE_AWAKE)
+>> +            serdev_device_break_ctl(nxpdev->serdev, 0); /* break OFF */
+>> +        else
+>> +            serdev_device_break_ctl(nxpdev->serdev, -1); /* break ON */
+>> +        break;
+>> +    }
+>> +    psdata->ps_state = ps_state;
+>> +
+>> +    if (ps_state == PS_STATE_AWAKE)
+>> +        btnxpuart_tx_wakeup(nxpdev);
+>> +}
+>> +
+>> +static void ps_work_func(struct work_struct *work)
+>> +{
+>> +    struct ps_data *data = container_of(work, struct ps_data, work);
+>> +
+>> +    if (data->ps_cmd == PS_CMD_ENTER_PS && data->cur_psmode == 
+>> PS_MODE_ENABLE)
+>> +        ps_control(data->hdev, PS_STATE_SLEEP);
+>> +    else  if (data->ps_cmd == PS_CMD_EXIT_PS)
+>> +        ps_control(data->hdev, PS_STATE_AWAKE);
+>> +}
+>> +
+>> +static void ps_timeout_func(struct timer_list *t)
+>> +{
+>> +    struct ps_data *data = from_timer(data, t, ps_timer);
+>> +    struct hci_dev *hdev = data->hdev;
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +
+>> +    data->timer_on = 0;
+>> +    if (test_bit(BTNXPUART_TX_STATE_ACTIVE, &nxpdev->tx_state)) {
+>> +        ps_start_timer(nxpdev);
+>> +    } else {
+>> +        data->ps_cmd = PS_CMD_ENTER_PS;
+>> +        schedule_work(&data->work);
+>> +    }
+>> +}
+>> +
+>> +static int ps_init_work(struct hci_dev *hdev)
+>> +{
+>> +    struct ps_data *psdata = kzalloc(sizeof(*psdata), GFP_KERNEL);
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +
+>> +    if (!psdata) {
+>> +        BT_ERR("Can't allocate control structure for Power Save 
+>> feature");
+>> +        return -ENOMEM;
+>> +    }
+>> +    nxpdev->psdata = psdata;
+>> +
+>> +    memset(psdata, 0, sizeof(*psdata));
+>> +    psdata->interval = PS_DEFAULT_TIMEOUT_PERIOD;
+>> +    psdata->ps_state = PS_STATE_AWAKE;
+>> +    psdata->ps_mode = ps_mode;
+>> +    psdata->hdev = hdev;
+>> +
+>> +    switch (wakeupmode) {
+>> +    case WAKEUP_METHOD_DTR:
+>> +        psdata->wakeupmode =  WAKEUP_METHOD_DTR;
+>> +        break;
+>> +    case  WAKEUP_METHOD_BREAK:
+>> +    default:
+>> +        psdata->wakeupmode =  WAKEUP_METHOD_BREAK;
+>> +        break;
+>> +    }
+>> +
+>> +    psdata->cur_psmode = PS_MODE_DISABLE;
+>> +    psdata->cur_wakeupmode = WAKEUP_METHOD_INVALID;
+>> +    INIT_WORK(&psdata->work, ps_work_func);
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +static void ps_init_timer(struct hci_dev *hdev)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    struct ps_data *psdata = nxpdev->psdata;
+>> +
+>> +    psdata->timer_on = 0;
+>> +    timer_setup(&psdata->ps_timer, ps_timeout_func, 0);
+>> +}
+>> +
+>> +static int ps_wakeup(struct btnxpuart_dev *nxpdev)
+>> +{
+>> +    struct ps_data *psdata = nxpdev->psdata;
+>> +    int ret = 1;
+>> +
+>> +    if (psdata->ps_state == PS_STATE_AWAKE)
+>> +        ret = 0;
+>> +    psdata->ps_cmd = PS_CMD_EXIT_PS;
+>> +    schedule_work(&psdata->work);
+>> +
+>> +    return ret;
+>> +}
+>> +
+>> +static int send_ps_cmd(struct hci_dev *hdev, void *data)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    struct ps_data *psdata = nxpdev->psdata;
+>> +    u8 pcmd;
+>> +    struct sk_buff *skb;
+>> +    u8 *status;
+>> +
+>> +    if (psdata->ps_mode ==  PS_MODE_ENABLE)
+>> +        pcmd = BT_PS_ENABLE;
+>> +    else
+>> +        pcmd = BT_PS_DISABLE;
+>> +
+>> +    psdata->driver_sent_cmd = true;    /* set flag to prevent 
+>> re-sending command in nxp_enqueue */
+>> +    skb = __hci_cmd_sync(hdev, HCI_NXP_AUTO_SLEEP_MODE, 1, &pcmd, 
+>> HCI_CMD_TIMEOUT);
+>> +    psdata->driver_sent_cmd = false;
+>> +
+>> +    if (IS_ERR(skb)) {
+>> +        bt_dev_err(hdev, "Setting Power Save mode failed (%ld)",
+>> +               PTR_ERR(skb));
+>> +        return PTR_ERR(skb);
+>> +    }
+>> +
+>> +    status = skb_pull_data(skb, 1);
+>> +
+>> +    if (status) {
+>> +        if (!*status)
+>> +            psdata->cur_psmode = psdata->ps_mode;
+>> +        else
+>> +            psdata->ps_mode = psdata->cur_psmode;
+>> +        if (psdata->cur_psmode == PS_MODE_ENABLE)
+>> +            ps_start_timer(nxpdev);
+>> +        else
+>> +            ps_wakeup(nxpdev);
+>> +        BT_INFO("Power Save mode response: status=%d, ps_mode=%d",
+>> +            *status, psdata->cur_psmode);
+>> +    }
+>> +    return 0;
+>> +}
+>> +
+>> +static int send_wakeup_method_cmd(struct hci_dev *hdev, void *data)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    struct ps_data *psdata = nxpdev->psdata;
+>> +    u8 pcmd[4];
+>> +    struct sk_buff *skb;
+>> +    u8 *status;
+>> +
+>> +    pcmd[0] = BT_HOST_WAKEUP_METHOD_NONE;
+>> +    pcmd[1] = BT_HOST_WAKEUP_DEFAULT_GPIO;
+>> +    switch (psdata->wakeupmode) {
+>> +    case WAKEUP_METHOD_DTR:
+>> +        pcmd[2] = BT_CTRL_WAKEUP_METHOD_DSR;
+>> +        break;
+>> +    case WAKEUP_METHOD_BREAK:
+>> +    default:
+>> +        pcmd[2] = BT_CTRL_WAKEUP_METHOD_BREAK;
+>> +        break;
+>> +    }
+>> +    pcmd[3] = 0xFF;
+>> +
+>> +    psdata->driver_sent_cmd = true;    /* set flag to prevent 
+>> re-sending command in nxp_enqueue */
+>> +    skb = __hci_cmd_sync(hdev, HCI_NXP_WAKEUP_METHOD, 4, pcmd, 
+>> HCI_CMD_TIMEOUT);
+>> +    psdata->driver_sent_cmd = false;
+>> +
+>> +    if (IS_ERR(skb)) {
+>> +        bt_dev_err(hdev, "Setting wake-up method failed (%ld)",
+>> +               PTR_ERR(skb));
+>> +        return PTR_ERR(skb);
+>> +    }
+>> +
+>> +    status = skb_pull_data(skb, 1);
+>> +    if (status) {
+>> +        if (*status == 0)
+>> +            psdata->cur_wakeupmode = psdata->wakeupmode;
+>> +        else
+>> +            psdata->wakeupmode = psdata->cur_wakeupmode;
+>> +        BT_INFO("Set Wakeup Method response: status=%d, wakeupmode=%d",
+>> +            *status, psdata->cur_wakeupmode);
+>> +    }
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +static int ps_init(struct hci_dev *hdev)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    struct ps_data *psdata = nxpdev->psdata;
+>> +
+>> +    serdev_device_set_tiocm(nxpdev->serdev, TIOCM_RTS, 0); /* RTS ON */
+>> +
+>> +    switch (psdata->wakeupmode) {
+>> +    case WAKEUP_METHOD_DTR:
+>> +        serdev_device_set_tiocm(nxpdev->serdev, 0, TIOCM_DTR); /* 
+>> DTR OFF */
+>> +        serdev_device_set_tiocm(nxpdev->serdev, TIOCM_DTR, 0); /* 
+>> DTR ON */
+>> +        break;
+>> +    case WAKEUP_METHOD_BREAK:
+>> +    default:
+>> +        serdev_device_break_ctl(nxpdev->serdev, -1);    /* break ON */
+>> +        serdev_device_break_ctl(nxpdev->serdev, 0); /* break OFF */
+>> +        break;
+>> +    }
+>> +    if (!test_bit(HCI_RUNNING, &hdev->flags)) {
+>> +        BT_ERR("HCI_RUNNING is not set");
+>> +        return -EBUSY;
+>> +    }
+>> +    if (psdata->cur_wakeupmode != psdata->wakeupmode)
+>> +        hci_cmd_sync_queue(hdev, send_wakeup_method_cmd, NULL, NULL);
+>> +    if (psdata->cur_psmode != psdata->ps_mode)
+>> +        hci_cmd_sync_queue(hdev, send_ps_cmd, NULL, NULL);
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +/* NXP Firmware Download Feature */
+>> +static u16 nxp_get_chip_id_from_name(u8 *name_str)
+>> +{
+>> +    int map_table_size = sizeof(chip_id_name_table) / sizeof(struct 
+>> chip_id_map_table);
+>> +    int i;
+>> +
+>> +    for (i = 0; i < map_table_size; i++) {
+>> +        if (!strcmp(chip_id_name_table[i].chip_name, name_str))
+>> +            return chip_id_name_table[i].chip_id;
+>> +    }
+>> +
+>> +    return 0;  /* invalid name_str */
+>> +}
+>> +
+>> +static int nxp_parse_conf_file(struct hci_dev *hdev)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    const char *sptr;
+>> +    char *dptr, *label, *value;
+>> +    char line[100];
+>> +    int i = 0;
+>> +    int param_index = 0;
+>> +    int line_num = 1;
+>> +    int ret = 0;
+>> +    bool skipline = false;
+>> +    bool valid_param = false;
+>> +
+>> +    memset(fw_mod_params, 0, sizeof(fw_mod_params));
+>> +    sptr = nxpdev->fw_config->data;
+>> +    dptr = line;
+>> +    for (i = 0; i < nxpdev->fw_config->size; i++) {
+>> +        /* if current line is a comment, ignore */
+>> +        if (sptr[i] == '#') {
+>> +            skipline = true;
+>> +            continue;
+>> +        }
+>> +        if (sptr[i] != '\n' && skipline)
+>> +            continue;
+>> +        /* ignore space <CR> and comma*/
+>> +        if (sptr[i] == ' ' || sptr[i] == '\r' || sptr[i] == ',')
+>> +            continue;
+>> +        /* select next fw_mod_params index */
+>> +        if (sptr[i] == '}') {
+>> +            if (!valid_param) {
+>> +                BT_ERR("Unexpected '}' on line %d", line_num);
+>> +                ret = -1;
+>> +                goto err;
+>> +            }
+>> +            param_index++;
+>> +            valid_param = false;
+>> +            continue;
+>> +        }
+>> +        if (sptr[i] == '\n') {
+>> +            line_num++;
+>> +            if (skipline) {
+>> +                skipline = false;
+>> +                continue;
+>> +            }
+>> +            *dptr = '\0';
+>> +            /* ignore empty lines */
+>> +            if (strlen(line) == 0)
+>> +                continue;
+>> +            dptr = line;
+>> +            label = strsep(&dptr, "=");
+>> +            value = strsep(&dptr, "=");
+>> +            if (label && value) {
+>> +                if (!strcmp(value, "{")) {
+>> +                    valid_param = true;
+>> + strncpy(fw_mod_params[param_index].chip_name,
+>> +                        label, MAX_CHIP_NAME_LEN);
+>> +                    fw_mod_params[param_index].chip_id =
+>> + nxp_get_chip_id_from_name(label);
+>> +                    if (fw_mod_params[param_index].chip_id == 0) {
+>> +                        BT_ERR("Invalid label %s in %s", label,
+>> +                               BT_FW_CONF_FILE);
+>> +                        ret = -1;
+>> +                        goto err;
+>> +                    }
+>> +                } else {
+>> +                    if (!valid_param) {
+>> +                        BT_ERR("Expecting a '{' on line %d", 
+>> line_num - 1);
+>> +                        ret = -1;
+>> +                        goto err;
+>> +                    }
+>> +                    if (!strcmp(label, FW_NAME_TAG)) {
+>> + strncpy(fw_mod_params[param_index].fw_name,
+>> +                            value, MAX_FW_FILE_NAME_LEN);
+>> +                    } else if (!strcmp(label, OPER_SPEED_TAG)) {
+>> +                        ret = kstrtouint(value, 10,
+>> + &fw_mod_params[param_index].oper_speed);
+>> +                    } else if (!strcmp(label, 
+>> FW_DL_PRI_BAUDRATE_TAG)) {
+>> +                        ret = kstrtouint(value, 10,
+>> + &fw_mod_params[param_index].fw_dnld_pri_baudrate);
+>> +                    } else if (!strcmp(label, 
+>> FW_DL_SEC_BAUDRATE_TAG)) {
+>> +                        ret = kstrtouint(value, 10,
+>> + &fw_mod_params[param_index].fw_dnld_sec_baudrate);
+>> +                    } else if (!strcmp(label, FW_INIT_BAUDRATE)) {
+>> +                        ret = kstrtouint(value, 10,
+>> + &fw_mod_params[param_index].fw_init_baudrate);
+>> +                    } else {
+>> +                        BT_ERR("Unknown tag: %s", label);
+>> +                        ret = -1;
+>> +                        goto err;
+>> +                    }
+>> +                }
+>> +            } else {
+>> +                BT_ERR("Invalid \"key\" = \"value\" pair at line: %d",
+>> +                       line_num - 1);
+>> +            }
+>> +            dptr = line;
+>> +        } else {
+>> +            *dptr = sptr[i];
+>> +            dptr++;
+>> +        }
+>> +    }
+>> +    /* '}' not found till the end of the file */
+>> +    if (valid_param) {
+>> +        BT_ERR("Expecting a '}' before the end of the file");
+>> +        ret = -1;
+>> +        goto err;
+>> +    }
+>> +err:
+>> +    return ret;
+>> +}
+>> +
+>> +static int nxp_load_fw_params_for_chip_id(u16 chip_id, struct 
+>> hci_dev *hdev)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    int i;
+>> +
+>> +    for (i = 0; i < MAX_NO_OF_CHIPS_SUPPORT; i++) {
+>> +        if (chip_id == fw_mod_params[i].chip_id) {
+>> +            strncpy(nxpdev->fw_name, fw_mod_params[i].fw_name, 
+>> MAX_FW_FILE_NAME_LEN);
+>> +            nxpdev->oper_speed = fw_mod_params[i].oper_speed;
+>> +            nxpdev->fw_dnld_pri_baudrate = 
+>> fw_mod_params[i].fw_dnld_pri_baudrate;
+>> +            nxpdev->fw_dnld_sec_baudrate = 
+>> fw_mod_params[i].fw_dnld_sec_baudrate;
+>> +            nxpdev->fw_init_baudrate = 
+>> fw_mod_params[i].fw_init_baudrate;
+>> +            break;
+>> +        }
+>> +    }
+>> +    if (i == MAX_NO_OF_CHIPS_SUPPORT) {
+>> +        if (chip_id == 0xffff)
+>> +            BT_ERR("%s does not contain entry for 'legacy_chip'", 
+>> BT_FW_CONF_FILE);
+>> +        else
+>> +            BT_ERR("Unsupported chip signature: %04X", chip_id);
+>> +        clear_bit(BTNXPUART_FW_DOWNLOADING, &nxpdev->tx_state);
+>> +        return -ENOENT;
+>> +    }
+>> +    return 0;
+>> +}
+>> +
+>> +static int nxp_download_firmware(struct hci_dev *hdev)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    const struct btnxpuart_data *nxp_data = nxpdev->nxp_data;
+>> +    int err = 0;
+>> +
+>> +    nxpdev->fw_dnld_offset = 0;
+>> +    nxpdev->fw_sent_bytes = 0;
+>> +
+>> +    crc8_populate_msb(crc8_table, POLYNOMIAL8);
+>> +
+>> +    serdev_device_set_baudrate(nxpdev->serdev, 
+>> nxp_data->fw_dnld_pri_baudrate);
+>> +    serdev_device_set_flow_control(nxpdev->serdev, 0);
+>> +    set_bit(BTNXPUART_FW_DOWNLOADING, &nxpdev->tx_state);
+>> +    nxpdev->current_baudrate = nxp_data->fw_dnld_pri_baudrate;
+>> +    nxpdev->fw_v3_offset_correction = 0;
+>> +
+>> +    /* Wait till FW is downloaded and CTS becomes low */
+>> +    init_waitqueue_head(&nxpdev->suspend_wait_q);
+>> +    err = wait_event_interruptible_timeout(nxpdev->suspend_wait_q,
+>> +            !test_bit(BTNXPUART_FW_DOWNLOADING, &nxpdev->tx_state),
+>> +            msecs_to_jiffies(60000));
+>> +    if (err == 0) {
+>> +        BT_ERR("FW Download Timeout.");
+>> +        return -ETIMEDOUT;
+>> +    }
+>> +
+>> +    err = serdev_device_wait_for_cts(nxpdev->serdev, 1, 60000);
+>> +    if (err < 0) {
+>> +        BT_ERR("CTS is still high. FW Download failed.");
+>> +        return err;
+>> +    }
+>> +    BT_INFO("CTS is low");
+>> +    release_firmware(nxpdev->fw);
+>> +
+>> +    /* Allow the downloaded FW to initialize */
+>> +    usleep_range(20000, 22000);
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +static int nxp_send_ack(u8 ack, struct hci_dev *hdev)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    u8 ack_nak[2];
+>> +
+>> +    if (ack == NXP_ACK_V1 || ack == NXP_NAK_V1) {
+>> +        ack_nak[0] = ack;
+>> +        serdev_device_write_buf(nxpdev->serdev, ack_nak, 1);
+>> +    } else if (ack == NXP_ACK_V3) {
+>> +        ack_nak[0] = ack;
+>> +        ack_nak[1] = crc8(crc8_table, ack_nak, 1, 0xFF);
+>> +        serdev_device_write_buf(nxpdev->serdev, ack_nak, 2);
+>> +    }
+>> +    return 0;
+>> +}
+>> +
+>> +static void nxp_fw_dnld_gen_crc_table(void)
+>> +{
+>> +    int i, j;
+>> +    unsigned long crc_accum;
+>> +
+>> +    for (i = 0; i < 256; i++) {
+>> +        crc_accum = ((unsigned long)i << 24);
+>> +        for (j = 0;  j < 8;  j++) {
+>> +            if (crc_accum & 0x80000000L)
+>> +                crc_accum = (crc_accum << 1) ^ POLYNOMIAL32;
+>> +            else
+>> +                crc_accum = (crc_accum << 1);
+>> +        }
+>> +        crc32_table[i] = crc_accum;
+>> +    }
+>> +}
+>> +
+>> +static unsigned long nxp_fw_dnld_update_crc(unsigned long crc_accum,
+>> +                                        char *data_blk_ptr,
+>> +                                        int data_blk_size)
+>> +{
+>> +    unsigned long i, j;
+>> +
+>> +    for (j = 0; j < data_blk_size; j++) {
+>> +        i = ((unsigned long)(crc_accum >> 24) ^ *data_blk_ptr++) & 
+>> 0xff;
+>> +        crc_accum = (crc_accum << 8) ^ crc32_table[i];
+>> +    }
+>> +    return crc_accum;
+>> +}
+>> +
+>> +static bool nxp_fw_change_baudrate(struct hci_dev *hdev, u16 req_len)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    static u8 nxp_cmd5_header[HDR_LEN] = {
+>> +                            0x05, 0x00, 0x00, 0x00,
+>> +                            0x00, 0x00, 0x00, 0x00,
+>> +                            0x2c, 0x00, 0x00, 0x00,
+>> +                            0x77, 0xdb, 0xfd, 0xe0};
+>> +    static u8 uart_config[60] = {0};
+>> +    u32 header_len = 0;
+>> +    u32 uart_config_len = 0;
+>> +    u32 mcr = MCR;
+>> +    u32 init = INIT;
+>> +    u32 icr = ICR;
+>> +    u32 fcr = FCR;
+>> +    u32 br_addr = CLKDIVADDR;
+>> +    u32 div_addr = UARTDIVADDR;
+>> +    u32 mcr_addr = UARTMCRADDR;
+>> +    u32 re_init_addr = UARTREINITADDR;
+>> +    u32 icr_addr = UARTICRADDR;
+>> +    u32 fcr_addr = UARTFCRADDR;
+>> +    u32 uart_div = 1;
+>> +    u32 uart_clk = 0x00C00000;
+>> +    u32 crc = 0;
+>> +    bool ret = false;
+>> +
+>> +    nxpdev->fw_v3_offset_correction += req_len;
+>> +
+>> +    if (req_len == HDR_LEN) {
+>> +        /* Create CMD5 payload */
+>> +        memcpy(uart_config + uart_config_len, &br_addr, 
+>> sizeof(br_addr));
+>> +        uart_config_len += 4;
+>> +        memcpy(uart_config + uart_config_len, &uart_clk, 
+>> sizeof(uart_clk));
+>> +        uart_config_len += 4;
+>> +        memcpy(uart_config + uart_config_len, &div_addr, 4);
+>> +        uart_config_len += 4;
+>> +        memcpy(uart_config + uart_config_len, &uart_div, 4);
+>> +        uart_config_len += 4;
+>> +        memcpy(uart_config + uart_config_len, &mcr_addr, 4);
+>> +        uart_config_len += 4;
+>> +        memcpy(uart_config + uart_config_len, &mcr, 4);
+>> +        uart_config_len += 4;
+>> +        memcpy(uart_config + uart_config_len, &re_init_addr, 4);
+>> +        uart_config_len += 4;
+>> +        memcpy(uart_config + uart_config_len, &init, 4);
+>> +        uart_config_len += 4;
+>> +        memcpy(uart_config + uart_config_len, &icr_addr, 4);
+>> +        uart_config_len += 4;
+>> +        memcpy(uart_config + uart_config_len, &icr, 4);
+>> +        uart_config_len += 4;
+>> +        memcpy(uart_config + uart_config_len, &fcr_addr, 4);
+>> +        uart_config_len += 4;
+>> +        memcpy(uart_config + uart_config_len, &fcr, 4);
+>> +        uart_config_len += 4;
+>> +        header_len = uart_config_len + 4;
+>> +
+>> +        nxp_fw_dnld_gen_crc_table();
+>> +
+>> +        /* Calculate CRC for CMD5 Header */
+>> +        memcpy(nxp_cmd5_header + 8, &header_len, sizeof(header_len));
+>> +        crc = (u32)nxp_fw_dnld_update_crc(0UL, nxp_cmd5_header, 12);
+>> +        crc = (u32)SWAPL(crc);
+>> +        memcpy(nxp_cmd5_header + 12, &crc, 4);
+>> +
+>> +        /* Calculate CRC for CMD5 Payload */
+>> +        crc = (u32)nxp_fw_dnld_update_crc(0UL, uart_config, 
+>> uart_config_len);
+>> +        crc = (u32)SWAPL(crc);
+>> +        memcpy(uart_config + uart_config_len, &crc, 4);
+>> +        uart_config_len += 4;
+>> +
+>> +        serdev_device_write_buf(nxpdev->serdev, nxp_cmd5_header, 
+>> req_len);
+>> +    } else {
+>> +        serdev_device_write_buf(nxpdev->serdev, uart_config, req_len);
+>> +        serdev_device_wait_until_sent(nxpdev->serdev, 0);
+>> +        ret = true;
+>> +    }
+>> +    return ret;
+>> +}
+>> +
+>> +static bool nxp_fw_change_timeout(struct hci_dev *hdev, u16 req_len)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    bool ret = false;
+>> +    u8 nxp_cmd7_header[HDR_LEN] = {0x07, 0x00, 0x00, 0x00,
+>> +                                   0x70, 0x00, 0x00, 0x00,
+>> +                                   0x00, 0x00, 0x00, 0x00,
+>> +                                   0x5b, 0x88, 0xf8, 0xba};
+>> +
+>> +    nxpdev->fw_v3_offset_correction += req_len;
+>> +
+>> +    if (req_len == HDR_LEN) {
+>> +        serdev_device_write_buf(nxpdev->serdev, nxp_cmd7_header, 
+>> req_len);
+>> +        serdev_device_wait_until_sent(nxpdev->serdev, 0);
+>> +        ret = true;
+>> +    }
+>> +    return ret;
+>> +}
+>> +
+>> +static u32 nxp_get_data_len(const u8 *buf)
+>> +{
+>> +    return (buf[8] | (buf[9] << 8));
+>> +}
+>> +
+>> +/* for legacy chipsets with V1 bootloader */
+>> +static int nxp_recv_fw_req_v1(struct hci_dev *hdev, struct sk_buff 
+>> *skb)
+>> +{
+>> +    struct V1_DATA_REQ *req = skb_pull_data(skb, sizeof(struct 
+>> V1_DATA_REQ));
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    const struct btnxpuart_data *nxp_data = nxpdev->nxp_data;
+>> +    static bool timeout_changed;
+>> +    static bool baudrate_changed;
+>> +    u32 requested_len;
+>> +    static u32 expected_len = HDR_LEN;
+>> +    int err;
+>> +
+>> +    if (!test_bit(BTNXPUART_FW_DOWNLOADING, &nxpdev->tx_state))
+>> +        return 0;
+>> +
+>> +    if (strlen(nxpdev->fw_name) == 0) {
+>> +        err = nxp_load_fw_params_for_chip_id(0xffff, hdev);
+>> +        if (err < 0)
+>> +            return err;
+>> +        timeout_changed = false;
+>> +        baudrate_changed = false;
+>> +        /* If secondary baudrate is not read from
+>> +         * the conf file set default value from nxp_data
+>> +         */
+>> +        if (nxpdev->fw_dnld_sec_baudrate == 0)
+>> +            nxpdev->fw_dnld_sec_baudrate = 
+>> nxp_data->fw_dnld_sec_baudrate;
+>> +    }
+>> +
+>> +    if (nxpdev->fw_dnld_sec_baudrate != nxpdev->current_baudrate) {
+>> +        if (!timeout_changed) {
+>> +            nxp_send_ack(NXP_ACK_V1, hdev);
+>> +            timeout_changed = nxp_fw_change_timeout(hdev, req->len);
+>> +            return 0;
+>> +        }
+>> +        if (!baudrate_changed) {
+>> +            nxp_send_ack(NXP_ACK_V1, hdev);
+>> +            baudrate_changed = nxp_fw_change_baudrate(hdev, req->len);
+>> +            if (baudrate_changed) {
+>> +                serdev_device_set_baudrate(nxpdev->serdev,
+>> + nxpdev->fw_dnld_sec_baudrate);
+>> +                nxpdev->current_baudrate = 
+>> nxpdev->fw_dnld_sec_baudrate;
+>> +            }
+>> +            return 0;
+>> +        }
+>> +    }
+>> +
+>> +    if (!nxpdev->fw) {
+>> +        BT_INFO("Request Firmware: %s", nxpdev->fw_name);
+>> +        err = request_firmware(&nxpdev->fw, nxpdev->fw_name, 
+>> &hdev->dev);
+>> +        if (err < 0) {
+>> +            BT_ERR("Firmware file %s not found", nxpdev->fw_name);
+>> +            clear_bit(BTNXPUART_FW_DOWNLOADING, &nxpdev->tx_state);
+>> +            return err;
+>> +        }
+>> +    }
+>> +
+>> +    if (req && (req->len ^ req->len_comp) == 0xffff) {
+>> +        nxp_send_ack(NXP_ACK_V1, hdev);
+>> +        if (req->len == 0) {
+>> +            BT_INFO("FW_Downloaded Successfully: %ld bytes", 
+>> nxpdev->fw->size);
+>> +            clear_bit(BTNXPUART_FW_DOWNLOADING, &nxpdev->tx_state);
+>> + wake_up_interruptible(&nxpdev->suspend_wait_q);
+>> +            return 0;
+>> +        }
+>> +        if (req->len & 0x01) {
+>> +            /* The CRC did not match at the other end.
+>> +             * That's why the request to re-send.
+>> +             * Simply send the same bytes again.
+>> +             */
+>> +            requested_len = nxpdev->fw_sent_bytes;
+>> +            BT_ERR("CRC error. Resend %d bytes of FW.", requested_len);
+>> +        } else {
+>> +            /* Increment offset by number of previous successfully 
+>> sent bytes */
+>> +            nxpdev->fw_dnld_offset += nxpdev->fw_sent_bytes;
+>> +            requested_len = req->len;
+>> +        }
+>> +
+>> +        /* The FW bin file is made up of many blocks of
+>> +         * 16 byte header and payload data chunks. If the
+>> +         * FW has requested a header, read the payload length
+>> +         * info from the header, and then send the header.
+>> +         * In the next iteration, the FW should request the
+>> +         * payload data chunk, which should be equal to the
+>> +         * payload length read from header. If there is a
+>> +         * mismatch, clearly the driver and FW are out of sync,
+>> +         * and we need to re-send the previous header again.
+>> +         */
+>> +        if (requested_len == expected_len) {
+>> +            if (requested_len == HDR_LEN)
+>> +                expected_len = nxp_get_data_len(nxpdev->fw->data +
+>> +                                    nxpdev->fw_dnld_offset);
+>> +            else
+>> +                expected_len = HDR_LEN;
+>> +        } else {
+>> +            if (requested_len == HDR_LEN) {
+>> +                /* FW download out of sync. Send previous chunk 
+>> again */
+>> +                nxpdev->fw_dnld_offset -= nxpdev->fw_sent_bytes;
+>> +                expected_len = HDR_LEN;
+>> +            }
+>> +        }
+>> +
+>> +        if (nxpdev->fw_dnld_offset + requested_len <= nxpdev->fw->size)
+>> +            serdev_device_write_buf(nxpdev->serdev,
+>> +                    nxpdev->fw->data + nxpdev->fw_dnld_offset,
+>> +                    requested_len);
+>> +        nxpdev->fw_sent_bytes = requested_len;
+>> +    } else {
+>> +        BT_INFO("ERR: Send NAK");
+>> +        nxp_send_ack(NXP_NAK_V1, hdev);
+>> +    }
+>> +    return 0;
+>> +}
+>> +
+>> +static int nxp_recv_chip_ver_v3(struct hci_dev *hdev, struct sk_buff 
+>> *skb)
+>> +{
+>> +    struct V3_START_IND *req = skb_pull_data(skb, sizeof(struct 
+>> V3_START_IND));
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    const struct btnxpuart_data *nxp_data = nxpdev->nxp_data;
+>> +    int err = 0;
+>> +
+>> +    if (!test_bit(BTNXPUART_FW_DOWNLOADING, &nxpdev->tx_state))
+>> +        return 0;
+>> +
+>> +    if (req) {
+>> +        if (strlen(nxpdev->fw_name) == 0) {
+>> +            nxp_load_fw_params_for_chip_id(req->chip_id, hdev);
+>> +        } else if (!nxpdev->fw) {
+>> +            BT_INFO("Request Firmware: %s", nxpdev->fw_name);
+>> +            err = request_firmware(&nxpdev->fw, nxpdev->fw_name, 
+>> &hdev->dev);
+>> +            if (err < 0) {
+>> +                BT_ERR("Firmware file %s not found", nxpdev->fw_name);
+>> +                clear_bit(BTNXPUART_FW_DOWNLOADING, &nxpdev->tx_state);
+>> +            }
+>> +        } else {
+>> +            /* If secondary baudrate is not read from
+>> +             * the conf file set default value from nxp_data
+>> +             */
+>> +            if (nxpdev->fw_dnld_sec_baudrate == 0)
+>> +                nxpdev->fw_dnld_sec_baudrate = 
+>> nxp_data->fw_dnld_sec_baudrate;
+>> +            nxp_send_ack(NXP_ACK_V3, hdev);
+>> +        }
+>> +    }
+>> +    return err;
+>> +}
+>> +
+>> +static int nxp_recv_fw_req_v3(struct hci_dev *hdev, struct sk_buff 
+>> *skb)
+>> +{
+>> +    struct V3_DATA_REQ *req = skb_pull_data(skb, sizeof(struct 
+>> V3_DATA_REQ));
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    static bool timeout_changed;
+>> +    static bool baudrate_changed;
+>> +
+>> +    if (!req || !nxpdev || !strlen(nxpdev->fw_name) || 
+>> !nxpdev->fw->data)
+>> +        return 0;
+>> +
+>> +    if (!test_bit(BTNXPUART_FW_DOWNLOADING, &nxpdev->tx_state))
+>> +        return 0;
+>> +
+>> +    nxp_send_ack(NXP_ACK_V3, hdev);
+>> +
+>> +    if (nxpdev->fw_dnld_sec_baudrate != nxpdev->current_baudrate) {
+>> +        if (!timeout_changed) {
+>> +            timeout_changed = nxp_fw_change_timeout(hdev, req->len);
+>> +            return 0;
+>> +        }
+>> +
+>> +        if (!baudrate_changed) {
+>> +            baudrate_changed = nxp_fw_change_baudrate(hdev, req->len);
+>> +            if (baudrate_changed) {
+>> +                serdev_device_set_baudrate(nxpdev->serdev,
+>> + nxpdev->fw_dnld_sec_baudrate);
+>> +                nxpdev->current_baudrate = 
+>> nxpdev->fw_dnld_sec_baudrate;
+>> +            }
+>> +            return 0;
+>> +        }
+>> +    }
+>> +
+>> +    if (req->len == 0) {
+>> +        BT_INFO("FW_Downloaded Successfully: %ld bytes", 
+>> nxpdev->fw->size);
+>> +        clear_bit(BTNXPUART_FW_DOWNLOADING, &nxpdev->tx_state);
+>> +        wake_up_interruptible(&nxpdev->suspend_wait_q);
+>> +        return 0;
+>> +    }
+>> +    if (req->error)
+>> +        BT_ERR("FW Download received err 0x%02X from chip. Resending 
+>> FW chunk.",
+>> +               req->error);
+>> +
+>> +    if (req->offset < nxpdev->fw_v3_offset_correction) {
+>> +        /* This scenario should ideally never occur.
+>> +         * But if it ever does, FW is out of sync and
+>> +         * needs a power cycle.
+>> +         */
+>> +        BT_ERR("Something went wrong during FW download. Please 
+>> power cycle and try again");
+>> +        return 0;
+>> +    }
+>> +
+>> +    serdev_device_write_buf(nxpdev->serdev,
+>> +                nxpdev->fw->data + req->offset - 
+>> nxpdev->fw_v3_offset_correction,
+>> +                req->len);
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +static int nxp_set_baudrate_cmd(struct hci_dev *hdev, void *data)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    struct ps_data *psdata = nxpdev->psdata;
+>> +    u8 *pcmd = (u8 *)&nxpdev->new_baudrate;
+>> +    struct sk_buff *skb;
+>> +    u8 *status;
+>> +    int ret = 0;
+>> +
+>> +    if (!psdata)
+>> +        return -EFAULT;
+>> +
+>> +    psdata->driver_sent_cmd = true;    /* set flag to prevent 
+>> re-sending command in nxp_enqueue */
+>> +    skb = __hci_cmd_sync(hdev, HCI_NXP_SET_OPER_SPEED, 4, pcmd, 
+>> HCI_CMD_TIMEOUT);
+>> +    psdata->driver_sent_cmd = false;
+>> +
+>> +    if (IS_ERR(skb)) {
+>> +        bt_dev_err(hdev, "Setting baudrate failed (%ld)",
+>> +               PTR_ERR(skb));
+>> +        return PTR_ERR(skb);
+>> +    }
+>> +
+>> +    status = skb_pull_data(skb, 1);
+>> +    if (status) {
+>> +        if (*status == 0) {
+>> +            serdev_device_set_baudrate(nxpdev->serdev, 
+>> nxpdev->new_baudrate);
+>> +            nxpdev->current_baudrate = nxpdev->new_baudrate;
+>> +        }
+>> +        ret = *status;
+>> +        BT_INFO("Set baudrate response: status=%d, baudrate=%d",
+>> +            *status, nxpdev->new_baudrate);
+>> +    }
+>> +
+>> +    return ret;
+>> +}
+>> +
+>> +/* NXP protocol */
+>> +static int nxp_setup(struct hci_dev *hdev)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    const struct btnxpuart_data *nxp_data = nxpdev->nxp_data;
+>> +    const char *fw_name_dt;
+>> +    const char *fw_path = "nxp/";
+>> +    int ret = 0;
+>> +
+>> +    if (!serdev_device_get_cts(nxpdev->serdev)) {
+>> +        BT_INFO("CTS high. Need FW Download");
+>> +
+>> +        /* Try reading FW name from DT */
+>> +        if (!device_property_read_string(&nxpdev->serdev->dev, 
+>> "firmware-name",
+>> +                                         &fw_name_dt)) {
+>> +            strncpy(nxpdev->fw_name, fw_path, MAX_FW_FILE_NAME_LEN);
+>> +            strncpy(nxpdev->fw_name + strlen(fw_path), fw_name_dt,
+>> +                    MAX_FW_FILE_NAME_LEN);
+>> +        } else {
+>> +            /* If no input from DT, parse conf file from user-space.
+>> +             * FW name will be selected based on the chip bootloader
+>> +             * signature read, and corresponding entry in conf file.
+>> +             */
+>> +            ret = request_firmware(&nxpdev->fw_config, 
+>> BT_FW_CONF_FILE, &hdev->dev);
+>> +            if (ret < 0) {
+>> +                BT_INFO("Firmware conf file not found: %s", 
+>> BT_FW_CONF_FILE);
+>> +                clear_bit(BTNXPUART_FW_DOWNLOADING, &nxpdev->tx_state);
+>> +                goto err;
+>> +            }
+>> +            ret = nxp_parse_conf_file(hdev);
+>> +            release_firmware(nxpdev->fw_config);
+>> +            if (ret < 0) {
+>> +                BT_ERR("Error parsing config file: %s", 
+>> BT_FW_CONF_FILE);
+>> +                goto err;
+>> +            }
+>> +        }
+>> +
+>> +        ret = nxp_download_firmware(hdev);
+>> +        if (ret < 0)
+>> +            goto err;
+>> +    } else {
+>> +        BT_INFO("CTS low. FW already running.");
+>> +    }
+>> +
+>> +    serdev_device_set_flow_control(nxpdev->serdev, 1);
+>> +
+>> +    /* If fw_init_baudrate is not read from
+>> +     * the conf file set default value from nxp_data
+>> +     */
+>> +    if (nxpdev->fw_init_baudrate == 0)
+>> +        nxpdev->fw_init_baudrate = nxp_data->fw_init_baudrate;
+>> +    serdev_device_set_baudrate(nxpdev->serdev, 
+>> nxpdev->fw_init_baudrate);
+>> +    nxpdev->current_baudrate = nxpdev->fw_init_baudrate;
+>> +
+>> +    /* If oper_speed is not read from
+>> +     * the conf file set default value from nxp_data
+>> +     */
+>> +    if (nxpdev->oper_speed == 0)
+>> +        nxpdev->oper_speed = nxp_data->oper_speed;
+>> +
+>> +    if (nxpdev->current_baudrate != nxpdev->oper_speed) {
+>> +        /* Queue cmd to set baudrate to oper-speed */
+>> +        nxpdev->new_baudrate = nxpdev->oper_speed;
+>> +        hci_cmd_sync_queue(hdev, nxp_set_baudrate_cmd, NULL, NULL);
+>> +    }
+>> +
+>> +    if (ps_init_work(hdev) == 0)
+>> +        ps_init_timer(hdev);
+>> +    ps_init(hdev);
+>> +err:
+>> +    return ret;
+>> +}
+>> +
+>> +static int nxp_enqueue(struct hci_dev *hdev, struct sk_buff *skb)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    struct ps_data *psdata = nxpdev->psdata;
+>> +    struct hci_command_hdr *hdr;
+>> +    u8 *param;
+>> +
+>> +    /* if commands are received from user space (e.g. hcitool), update
+>> +     * driver flags accordingly and ask driver to re-send the command
+>> +     */
+>> +    if (bt_cb(skb)->pkt_type == HCI_COMMAND_PKT && 
+>> !psdata->driver_sent_cmd) {
+>> +        hdr = (struct hci_command_hdr *)skb->data;
+>> +        param = skb->data + HCI_COMMAND_HDR_SIZE;
+>> +        switch (__le16_to_cpu(hdr->opcode)) {
+>> +        case HCI_NXP_AUTO_SLEEP_MODE:
+>> +            if (hdr->plen >= 1) {
+>> +                if (param[0] == BT_PS_ENABLE)
+>> +                    psdata->ps_mode = PS_MODE_ENABLE;
+>> +                else if (param[0] == BT_PS_DISABLE)
+>> +                    psdata->ps_mode = PS_MODE_DISABLE;
+>> +                hci_cmd_sync_queue(hdev, send_ps_cmd, NULL, NULL);
+>> +                kfree_skb(skb);
+>> +                goto ret;
+>> +            }
+>> +            break;
+>> +        case HCI_NXP_WAKEUP_METHOD:
+>> +            if (hdr->plen >= 4) {
+>> +                switch (param[2]) {
+>> +                case BT_CTRL_WAKEUP_METHOD_DSR:
+>> +                    psdata->wakeupmode = WAKEUP_METHOD_DTR;
+>> +                    break;
+>> +                case BT_CTRL_WAKEUP_METHOD_BREAK:
+>> +                default:
+>> +                    psdata->wakeupmode = WAKEUP_METHOD_BREAK;
+>> +                    break;
+>> +                }
+>> +                hci_cmd_sync_queue(hdev, send_wakeup_method_cmd, 
+>> NULL, NULL);
+>> +                kfree_skb(skb);
+>> +                goto ret;
+>> +            }
+>> +            break;
+>> +        case HCI_NXP_SET_OPER_SPEED:
+>> +            if (hdr->plen == 4) {
+>> +                nxpdev->new_baudrate = *((u32 *)param);
+>> +                hci_cmd_sync_queue(hdev, nxp_set_baudrate_cmd, NULL, 
+>> NULL);
+>> +                kfree_skb(skb);
+>> +                goto ret;
+>> +            }
+>> +        }
+>> +    }
+>> +
+>> +    /* Prepend skb with frame type */
+>> +    memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
+>> +    skb_queue_tail(&nxpdev->txq, skb);
+>> +
+>> +    btnxpuart_tx_wakeup(nxpdev);
+>> +ret:
+>> +    return 0;
+>> +}
+>> +
+>> +static struct sk_buff *nxp_dequeue(void *data)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = (struct btnxpuart_dev *)data;
+>> +
+>> +    ps_wakeup(nxpdev);
+>> +    ps_start_timer(nxpdev);
+>> +    return skb_dequeue(&nxpdev->txq);
+>> +}
+>> +
+>> +/* btnxpuart based on serdev */
+>> +static void btnxpuart_tx_work(struct work_struct *work)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = container_of(work, struct 
+>> btnxpuart_dev,
+>> +                           tx_work);
+>> +    struct serdev_device *serdev = nxpdev->serdev;
+>> +    struct hci_dev *hdev = nxpdev->hdev;
+>> +
+>> +    if (!nxpdev->nxp_data->dequeue)
+>> +        return;
+>> +
+>> +    while (1) {
+>> +        clear_bit(BTNXPUART_TX_STATE_WAKEUP, &nxpdev->tx_state);
+>> +
+>> +        while (1) {
+>> +            struct sk_buff *skb = nxpdev->nxp_data->dequeue(nxpdev);
+>> +            int len;
+>> +
+>> +            if (!skb)
+>> +                break;
+>> +
+>> +            len = serdev_device_write_buf(serdev, skb->data,
+>> +                                          skb->len);
+>> +            hdev->stat.byte_tx += len;
+>> +
+>> +            skb_pull(skb, len);
+>> +            if (skb->len > 0) {
+>> +                skb_queue_head(&nxpdev->txq, skb);
+>> +                break;
+>> +            }
+>> +
+>> +            switch (hci_skb_pkt_type(skb)) {
+>> +            case HCI_COMMAND_PKT:
+>> +                hdev->stat.cmd_tx++;
+>> +                break;
+>> +            case HCI_ACLDATA_PKT:
+>> +                hdev->stat.acl_tx++;
+>> +                break;
+>> +            case HCI_SCODATA_PKT:
+>> +                hdev->stat.sco_tx++;
+>> +                break;
+>> +            }
+>> +
+>> +            kfree_skb(skb);
+>> +        }
+>> +
+>> +        if (!test_bit(BTNXPUART_TX_STATE_WAKEUP, &nxpdev->tx_state))
+>> +            break;
+>> +    }
+>> +    clear_bit(BTNXPUART_TX_STATE_ACTIVE, &nxpdev->tx_state);
+>> +}
+>> +
+>> +static void btnxpuart_tx_wakeup(struct btnxpuart_dev *nxpdev)
+>> +{
+>> +    if (test_and_set_bit(BTNXPUART_TX_STATE_ACTIVE, 
+>> &nxpdev->tx_state)) {
+>> +        set_bit(BTNXPUART_TX_STATE_WAKEUP, &nxpdev->tx_state);
+>> +        return;
+>> +    }
+>> +    schedule_work(&nxpdev->tx_work);
+>> +}
+>> +
+>> +static int btnxpuart_open(struct hci_dev *hdev)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    int err;
+>> +
+>> +    err = serdev_device_open(nxpdev->serdev);
+>> +    if (err) {
+>> +        bt_dev_err(hdev, "Unable to open UART device %s",
+>> +               dev_name(&nxpdev->serdev->dev));
+>> +        return err;
+>> +    }
+>> +
+>> +    if (nxpdev->nxp_data->open) {
+>> +        err = nxpdev->nxp_data->open(hdev);
+>> +        if (err) {
+>> +            serdev_device_close(nxpdev->serdev);
+>> +            return err;
+>> +        }
+>> +    }
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +static int btnxpuart_close(struct hci_dev *hdev)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +    int err;
+>> +
+>> +    if (nxpdev->nxp_data->close) {
+>> +        err = nxpdev->nxp_data->close(hdev);
+>> +        if (err)
+>> +            return err;
+>> +    }
+>> +
+>> +    serdev_device_close(nxpdev->serdev);
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +static int btnxpuart_flush(struct hci_dev *hdev)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +
+>> +    /* Flush any pending characters */
+>> +    serdev_device_write_flush(nxpdev->serdev);
+>> +    skb_queue_purge(&nxpdev->txq);
+>> +
+>> +    cancel_work_sync(&nxpdev->tx_work);
+>> +
+>> +    kfree_skb(nxpdev->rx_skb);
+>> +    nxpdev->rx_skb = NULL;
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +static int btnxpuart_setup(struct hci_dev *hdev)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +
+>> +    if (nxpdev->nxp_data->setup)
+>> +        return nxpdev->nxp_data->setup(hdev);
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +static int btnxpuart_send_frame(struct hci_dev *hdev, struct sk_buff 
+>> *skb)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+>> +
+>> +    if (nxpdev->nxp_data->enqueue)
+>> +        nxpdev->nxp_data->enqueue(hdev, skb);
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +static int btnxpuart_receive_buf(struct serdev_device *serdev, const 
+>> u8 *data,
+>> +                                 size_t count)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = serdev_device_get_drvdata(serdev);
+>> +    const struct btnxpuart_data *nxp_data = nxpdev->nxp_data;
+>> +
+>> +    if (test_bit(BTNXPUART_FW_DOWNLOADING, &nxpdev->tx_state)) {
+>> +        if (*data != NXP_V1_FW_REQ_PKT && *data != 
+>> NXP_V1_CHIP_VER_PKT &&
+>> +            *data != NXP_V3_FW_REQ_PKT && *data != 
+>> NXP_V3_CHIP_VER_PKT) {
+>> +            /* Unknown bootloader signature, skip without returning 
+>> error */
+>> +            return count;
+>> +        }
+>> +    }
+>> +
+>> +    ps_start_timer(nxpdev);
+>> +
+>> +    nxpdev->rx_skb = h4_recv_buf(nxpdev->hdev, nxpdev->rx_skb, data, 
+>> count,
+>> +                        nxp_data->recv_pkts, nxp_data->recv_pkts_cnt);
+>> +    if (IS_ERR(nxpdev->rx_skb)) {
+>> +        int err = PTR_ERR(nxpdev->rx_skb);
+>> +
+>> +        bt_dev_err(nxpdev->hdev, "Frame reassembly failed (%d)", err);
+>> +        nxpdev->rx_skb = NULL;
+>> +        return err;
+>> +    }
+>> +    nxpdev->hdev->stat.byte_rx += count;
+>> +    return count;
+>> +}
+>> +
+>> +static void btnxpuart_write_wakeup(struct serdev_device *serdev)
+>> +{
+>> +    serdev_device_write_wakeup(serdev);
+>> +}
+>> +
+>> +static const struct serdev_device_ops btnxpuart_client_ops = {
+>> +    .receive_buf = btnxpuart_receive_buf,
+>> +    .write_wakeup = btnxpuart_write_wakeup,
+>> +};
+>> +
+>> +static int nxp_serdev_probe(struct serdev_device *serdev)
+>> +{
+>> +    struct hci_dev *hdev;
+>> +    struct btnxpuart_dev *nxpdev;
+>> +
+>> +    nxpdev = devm_kzalloc(&serdev->dev, sizeof(*nxpdev), GFP_KERNEL);
+>> +    if (!nxpdev)
+>> +        return -ENOMEM;
+>> +
+>> +    memset(nxpdev, 0, sizeof(*nxpdev));
+>> +
+>> +    nxpdev->nxp_data = device_get_match_data(&serdev->dev);
+>> +
+>> +    nxpdev->serdev = serdev;
+>> +    serdev_device_set_drvdata(serdev, nxpdev);
+>> +
+>> +    serdev_device_set_client_ops(serdev, &btnxpuart_client_ops);
+>> +
+>> +    INIT_WORK(&nxpdev->tx_work, btnxpuart_tx_work);
+>> +    skb_queue_head_init(&nxpdev->txq);
+>> +
+>> +    /* Initialize and register HCI device */
+>> +    hdev = hci_alloc_dev();
+>> +    if (!hdev) {
+>> +        dev_err(&serdev->dev, "Can't allocate HCI device\n");
+>> +        return -ENOMEM;
+>> +    }
+>> +
+>> +    nxpdev->hdev = hdev;
+>> +
+>> +    hdev->bus = HCI_UART;
+>> +    hci_set_drvdata(hdev, nxpdev);
+>> +
+>> +    /* Only when vendor specific setup callback is provided, consider
+>> +     * the manufacturer information valid. This avoids filling in the
+>> +     * value for NXP when nothing is specified.
+>> +     */
+>> +    if (nxpdev->nxp_data->setup)
+>> +        hdev->manufacturer = nxpdev->nxp_data->manufacturer;
+>> +
+>> +    hdev->open  = btnxpuart_open;
+>> +    hdev->close = btnxpuart_close;
+>> +    hdev->flush = btnxpuart_flush;
+>> +    hdev->setup = btnxpuart_setup;
+>> +    hdev->send  = btnxpuart_send_frame;
+>> +    SET_HCIDEV_DEV(hdev, &serdev->dev);
+>> +
+>> +    if (hci_register_dev(hdev) < 0) {
+>> +        dev_err(&serdev->dev, "Can't register HCI device\n");
+>> +        hci_free_dev(hdev);
+>> +        return -ENODEV;
+>> +    }
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +static void nxp_serdev_remove(struct serdev_device *serdev)
+>> +{
+>> +    struct btnxpuart_dev *nxpdev = serdev_device_get_drvdata(serdev);
+>> +    struct hci_dev *hdev = nxpdev->hdev;
+>> +
+>> +    /* Restore FW baudrate to fw_init_baudrate if changed.
+>> +     * This will ensure FW baudrate is in sync with
+>> +     * driver baudrate in case this driver is re-inserted.
+>> +     */
+>> +    if (nxpdev->fw_init_baudrate != nxpdev->current_baudrate) {
+>> +        nxpdev->new_baudrate = nxpdev->fw_init_baudrate;
+>> +        nxp_set_baudrate_cmd(hdev, NULL);
+>> +    }
+>> +
+>> +    ps_cancel_timer(nxpdev);
+>> +    hci_unregister_dev(hdev);
+>> +    hci_free_dev(hdev);
+>> +}
+>> +
+>> +static const struct h4_recv_pkt nxp_recv_pkts[] = {
+>> +    { H4_RECV_ACL,          .recv = hci_recv_frame },
+>> +    { H4_RECV_SCO,          .recv = hci_recv_frame },
+>> +    { H4_RECV_EVENT,        .recv = hci_recv_frame },
+>> +    { NXP_RECV_FW_REQ_V1,   .recv = nxp_recv_fw_req_v1 },
+>> +    { NXP_RECV_CHIP_VER_V3, .recv = nxp_recv_chip_ver_v3 },
+>> +    { NXP_RECV_FW_REQ_V3,   .recv = nxp_recv_fw_req_v3 },
+>> +};
+>> +
+>> +static const struct btnxpuart_data nxp_generic_data = {
+>> +    .recv_pkts    = nxp_recv_pkts,
+>> +    .recv_pkts_cnt    = ARRAY_SIZE(nxp_recv_pkts),
+>> +    .manufacturer    = 18,
+>> +    .fw_dnld_pri_baudrate = 115200,
+>> +    .fw_dnld_sec_baudrate = 3000000,
+>> +    .fw_init_baudrate = 3000000,
+>> +    .oper_speed        = 3000000,
+>> +    .setup        = nxp_setup,
+>> +    .enqueue    = nxp_enqueue,
+>> +    .dequeue    = nxp_dequeue,
+>> +};
+>> +
+>> +static const struct btnxpuart_data nxp_legacy_data = {
+>> +    .recv_pkts    = nxp_recv_pkts,
+>> +    .recv_pkts_cnt    = ARRAY_SIZE(nxp_recv_pkts),
+>> +    .manufacturer    = 18,
+>> +    .fw_dnld_pri_baudrate = 115200,
+>> +    .fw_dnld_sec_baudrate = 3000000,
+>> +    .fw_init_baudrate = 115200,
+>> +    .oper_speed        = 3000000,
+>> +    .setup        = nxp_setup,
+>> +    .enqueue    = nxp_enqueue,
+>> +    .dequeue    = nxp_dequeue,
+>> +};
+>> +
+>> +#ifdef CONFIG_OF
+>> +static const struct of_device_id nxpuart_of_match_table[] = {
+>> +    { .compatible = "nxp,nxp-generic-bt-chip", .data = 
+>> &nxp_generic_data },
+>> +    { .compatible = "nxp,nxp-legacy-bt-chip", .data = 
+>> &nxp_legacy_data },
+>> +    { }
+>> +};
+>> +MODULE_DEVICE_TABLE(of, nxpuart_of_match_table);
+>> +#endif
+>> +
+>> +static struct serdev_device_driver nxp_serdev_driver = {
+>> +    .probe = nxp_serdev_probe,
+>> +    .remove = nxp_serdev_remove,
+>> +    .driver = {
+>> +        .name = "btnxpuart",
+>> +        .of_match_table = of_match_ptr(nxpuart_of_match_table),
+>> +    },
+>> +};
+>> +
+>> +module_serdev_device_driver(nxp_serdev_driver);
+>> +
+>> +MODULE_AUTHOR("Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>");
+>> +MODULE_DESCRIPTION("NXP Bluetooth Serial driver v1.0 ");
+>> +MODULE_VERSION("v1.0");
+>> +MODULE_LICENSE("GPL");
+>> diff --git a/drivers/bluetooth/btnxp.h b/drivers/bluetooth/btnxp.h
+>> new file mode 100644
+>> index 000000000000..23ab11c1ce8d
+>> --- /dev/null
+>> +++ b/drivers/bluetooth/btnxp.h
+>> @@ -0,0 +1,230 @@
+>> +/* SPDX-License-Identifier: GPL-2.0-or-later */
+>> +/*
+>> + *
+>> + *  NXP Bluetooth driver
+>> + *  Copyright 2018-2023 NXP
+>> + *
+>> + *
+>> + *  This program is free software; you can redistribute it and/or 
+>> modify
+>> + *  it under the terms of the GNU General Public License as 
+>> published by
+>> + *  the Free Software Foundation; either version 2 of the License, or
+>> + *  (at your option) any later version.
+>> + *
+>> + *  This program is distributed in the hope that it will be useful,
+>> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + *  GNU General Public License for more details.
+>> + *
+>> + */
+>> +
+>> +#ifndef BT_NXP_H_
+>> +#define BT_NXP_H_
+>> +
+>> +#define BT_FW_CONF_FILE             "nxp/bt_mod_para.conf"
+>> +#define FW_NAME_TAG                 "fw_name"
+>> +#define OPER_SPEED_TAG              "oper_speed"
+>> +#define FW_DL_PRI_BAUDRATE_TAG      "fw_dl_pri_speed"
+>> +#define FW_DL_SEC_BAUDRATE_TAG      "fw_dl_sec_speed"
+>> +#define FW_INIT_BAUDRATE            "fw_init_speed"
+>> +
+>> +#define MAX_CHIP_NAME_LEN       20
+>> +#define MAX_FW_FILE_NAME_LEN    50
+>> +#define MAX_NO_OF_CHIPS_SUPPORT 20
+>> +
+>> +/* Default ps timeout period in milli-second */
+>> +#define PS_DEFAULT_TIMEOUT_PERIOD     2000
+>> +
+>> +/* wakeup methods */
+>> +#define WAKEUP_METHOD_DTR       0
+>> +#define WAKEUP_METHOD_BREAK     1
+>> +#define WAKEUP_METHOD_EXT_BREAK 2
+>> +#define WAKEUP_METHOD_RTS       3
+>> +#define WAKEUP_METHOD_INVALID   0xff
+>> +
+>> +/* power save mode status */
+>> +#define PS_MODE_DISABLE         0
+>> +#define PS_MODE_ENABLE          1
+>> +
+>> +/* Power Save Commands to ps_work_func  */
+>> +#define PS_CMD_EXIT_PS          1
+>> +#define PS_CMD_ENTER_PS         2
+>> +
+>> +/* power save state */
+>> +#define PS_STATE_AWAKE          0
+>> +#define PS_STATE_SLEEP          1
+>> +
+>> +/* Bluetooth vendor command : Sleep mode */
+>> +#define HCI_NXP_AUTO_SLEEP_MODE    0xFC23
+>> +/* Bluetooth vendor command : Wakeup method */
+>> +#define HCI_NXP_WAKEUP_METHOD    0xFC53
+>> +/* Bluetooth vendor command : Set operational baudrate */
+>> +#define HCI_NXP_SET_OPER_SPEED    0xFC09
+>> +
+>> +/* Bluetooth Power State : Vendor cmd params */
+>> +#define BT_PS_ENABLE            0x02
+>> +#define BT_PS_DISABLE            0x03
+>> +
+>> +/* Bluetooth Host Wakeup Methods */
+>> +#define BT_HOST_WAKEUP_METHOD_NONE      0x00
+>> +#define BT_HOST_WAKEUP_METHOD_DTR       0x01
+>> +#define BT_HOST_WAKEUP_METHOD_BREAK     0x02
+>> +#define BT_HOST_WAKEUP_METHOD_GPIO      0x03
+>> +#define BT_HOST_WAKEUP_DEFAULT_GPIO     5
+>> +
+>> +/* Bluetooth Chip Wakeup Methods */
+>> +#define BT_CTRL_WAKEUP_METHOD_DSR       0x00
+>> +#define BT_CTRL_WAKEUP_METHOD_BREAK     0x01
+>> +#define BT_CTRL_WAKEUP_METHOD_GPIO      0x02
+>> +#define BT_CTRL_WAKEUP_METHOD_EXT_BREAK 0x04
+>> +#define BT_CTRL_WAKEUP_METHOD_RTS       0x05
+>> +#define BT_CTRL_WAKEUP_DEFAULT_GPIO     4
+>> +
+>> +struct ps_data {
+>> +    u8    ps_mode;
+>> +    u8    cur_psmode;
+>> +    u8    ps_state;
+>> +    u8    ps_cmd;
+>> +    u8    wakeupmode;
+>> +    u8    cur_wakeupmode;
+>> +    u8    driver_sent_cmd;
+>> +    u8    timer_on;
+>> +    u32   interval;
+>> +    struct hci_dev *hdev;
+>> +    struct work_struct work;
+>> +    struct timer_list ps_timer;
+>> +};
+>> +
+>> +struct btnxpuart_data {
+>> +    const struct h4_recv_pkt *recv_pkts;
+>> +    int recv_pkts_cnt;
+>> +    unsigned int manufacturer;
+>> +    int (*open)(struct hci_dev *hdev);
+>> +    int (*close)(struct hci_dev *hdev);
+>> +    int (*setup)(struct hci_dev *hdev);
+>> +    int (*enqueue)(struct hci_dev *hdev, struct sk_buff *skb);
+>> +    struct sk_buff *(*dequeue)(void *data);
+>> +    u32 fw_dnld_pri_baudrate;
+>> +    u32 fw_dnld_sec_baudrate;
+>> +    u32 fw_init_baudrate;
+>> +    u32 oper_speed;
+>> +};
+>> +
+>> +struct btnxpuart_dev {
+>> +    struct hci_dev *hdev;
+>> +    struct serdev_device *serdev;
+>> +
+>> +    struct work_struct tx_work;
+>> +    unsigned long tx_state;
+>> +    struct sk_buff_head txq;
+>> +    struct sk_buff *rx_skb;
+>> +
+>> +    const struct firmware *fw;
+>> +    const struct firmware *fw_config;
+>> +    u8 fw_name[MAX_FW_FILE_NAME_LEN];
+>> +    u32 fw_dnld_offset;
+>> +    u32 fw_sent_bytes;
+>> +    u32 fw_v3_offset_correction;
+>> +    wait_queue_head_t suspend_wait_q;
+>> +
+>> +    u32 fw_dnld_pri_baudrate;
+>> +    u32 fw_dnld_sec_baudrate;
+>> +    u32 fw_init_baudrate;
+>> +    u32 oper_speed;
+>> +    u32 new_baudrate;
+>> +    u32 current_baudrate;
+>> +
+>> +    struct ps_data *psdata;
+>> +    const struct btnxpuart_data *nxp_data;
+>> +};
+>> +
+>> +struct chip_id_map_table {
+>> +    u16 chip_id;
+>> +    const u8 *chip_name;
+>> +};
+>> +
+>> +struct fw_params {
+>> +    u16 chip_id;
+>> +    u8  chip_name[MAX_CHIP_NAME_LEN];
+>> +    u8  fw_name[MAX_FW_FILE_NAME_LEN];
+>> +    u32 fw_dnld_pri_baudrate;
+>> +    u32 fw_dnld_sec_baudrate;
+>> +    u32 fw_init_baudrate;
+>> +    u32 oper_speed;
+>> +};
+>> +
+>> +#define NXP_V1_FW_REQ_PKT      0xA5
+>> +#define NXP_V1_CHIP_VER_PKT    0xAA
+>> +#define NXP_V3_FW_REQ_PKT      0xA7
+>> +#define NXP_V3_CHIP_VER_PKT    0xAB
+>> +
+>> +#define NXP_ACK_V1             0x5A
+>> +#define NXP_NAK_V1             0xBF
+>> +#define NXP_ACK_V3             0x7A
+>> +#define NXP_NAK_V3             0x7B
+>> +#define NXP_CRC_ERROR_V3       0x7C
+>> +
+>> +#define HDR_LEN                    16
+>> +
+>> +#define NXP_RECV_FW_REQ_V1 \
+>> +    .type = NXP_V1_FW_REQ_PKT, \
+>> +    .hlen = 4, \
+>> +    .loff = 0, \
+>> +    .lsize = 0, \
+>> +    .maxlen = 4
+>> +
+>> +#define NXP_RECV_CHIP_VER_V3 \
+>> +    .type = NXP_V3_CHIP_VER_PKT, \
+>> +    .hlen = 4, \
+>> +    .loff = 0, \
+>> +    .lsize = 0, \
+>> +    .maxlen = 4
+>> +
+>> +#define NXP_RECV_FW_REQ_V3 \
+>> +    .type = NXP_V3_FW_REQ_PKT, \
+>> +    .hlen = 9, \
+>> +    .loff = 0, \
+>> +    .lsize = 0, \
+>> +    .maxlen = 9
+>> +
+>> +struct V1_DATA_REQ {
+>> +    u16 len;
+>> +    u16 len_comp;
+>> +} __packed;
+>> +
+>> +struct V3_DATA_REQ {
+>> +    u16 len;
+>> +    u32 offset;
+>> +    u16 error;
+>> +    u8 crc;
+>> +} __packed;
+>> +
+>> +struct V3_START_IND {
+>> +    u16 chip_id;
+>> +    u8 loader_ver;
+>> +    u8 crc;
+>> +} __packed;
+>> +
+>> +/* UART register addresses of BT chip */
+>> +#define CLKDIVADDR       0x7f00008f
+>> +#define UARTDIVADDR      0x7f000090
+>> +#define UARTMCRADDR      0x7f000091
+>> +#define UARTREINITADDR   0x7f000092
+>> +#define UARTICRADDR      0x7f000093
+>> +#define UARTFCRADDR      0x7f000094
+>> +
+>> +#define MCR   0x00000022
+>> +#define INIT  0x00000001
+>> +#define ICR   0x000000c7
+>> +#define FCR   0x000000c7
+>> +
+>> +#define SWAPL(x) ((((x) >> 24) & 0xff) \
+>> +                 | (((x) >> 8) & 0xff00) \
+>> +                 | (((x) << 8) & 0xff0000L) \
+>> +                 | (((x) << 24) & 0xff000000L))
+>> +
+>> +#define POLYNOMIAL8                0x07
+>> +#define POLYNOMIAL32            0x04c11db7L
+>> +
+>> +static void btnxpuart_tx_wakeup(struct btnxpuart_dev *nxpdev);
+>> +
+>> +#endif
