@@ -2,65 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFCC867AAF2
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 08:35:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 503F367AB2C
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 08:49:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235044AbjAYHfn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 02:35:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35494 "EHLO
+        id S233965AbjAYHtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 02:49:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234644AbjAYHfm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 02:35:42 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057EA366B3;
-        Tue, 24 Jan 2023 23:35:41 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id qx13so45109626ejb.13;
-        Tue, 24 Jan 2023 23:35:40 -0800 (PST)
+        with ESMTP id S233434AbjAYHtN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 02:49:13 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEDC440BD0;
+        Tue, 24 Jan 2023 23:49:12 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id e19-20020a05600c439300b003db1cac0c1fso613275wmn.5;
+        Tue, 24 Jan 2023 23:49:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=nGlLQMRMs18KEtYyX/ac08EXCvqt8zu6xcJXDeQV2dY=;
-        b=bWNJ/LJR+NUbijN/7bqMprkmjukf4ykfGNFFWppAlD3Cx/K5m1emzCRPf9to0gB8KT
-         e4ZAfaCU5ytNjLogzpSG9Rvws5G8DUWw8pl0djAUr3ZMmDCSvU1uB+kVKIeBJznv7bgP
-         S+yMx0c7B4CI585tCkNkIU0uUg6eU2oGNxs2JgqfuTxlfhbSF2/hFBFyKDX2xBl7Di3A
-         GHjAs1hpGgSU1bbhAaLNAZRejq0MOCdHrK1YD3G3W5/LXSMH4d5QEE+sMNDfOWWaRuDZ
-         YQjtsp1KIgZLIubEMuOTnX5REeqF1thciqndV5FF/NKJ526imNpA7D7AwlWqjfV/DlEb
-         rbGw==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=6LJgasmO9PH76fUp0i98E0QbqnthyjGIC8nu/COY+Q4=;
+        b=l8uvUp60OU19mnA6ikHIaIs5IkEIFl2IufEyujTfiXw+xkL4qRkZ4SrTogfS0WeXTF
+         qlGaUP2vIALi/6cRNj5YCLY8LFYTXOd7iWCDqggkOXmxitX3HJQu8Z45dCTAxb3/WOzg
+         Jj3cLUDivgLw3XZv9SMh7GpivQJDcsX3CzZoWOFS8kt2ZX/K2KJQgQz/qyWQCWCwlxM2
+         OqT2bTaUWV1/0CylRbPpA79svMMt35Sgkhh6JmAkY63R+h35vSONhh3Fkvh9scqxvp3n
+         siSdVFAw/MGGMzrqifscIgditf0KqJsDL69aokvSSOc0tcRoYpy8iUftmuMygj6U8Vfs
+         T+qA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=nGlLQMRMs18KEtYyX/ac08EXCvqt8zu6xcJXDeQV2dY=;
-        b=BFgDztUCfa2FVEruxs6WbjmGmnEjBOxe4xmZ+U89dxxeMZN2Ftnu1+gltQ6GKJTB9c
-         ulx7ccPOdqlvunT78mTGsKVzTfFqI2Gflc826X6JwD5rl7WTsSPRqNRmX0a4etrMIN4I
-         vGrRA50cZIqOESiLsNGH8SC7iZM9ZHmU9KC0WOyboA42o4qjH+7wO6O28GemrGo4jqYC
-         F764PstGZqBhL1XTlHSBKmSpSkUSaSatwZyIu00VRoPpgTTkIZylDXe8HVsX3zW4lqBb
-         jfSQAgXMYIRkJ0p6c7xVb71BSAUQe9c+ZFjXBxkUDwHJKIn9grNZqF0EPZN2TXIJKrzV
-         KScw==
-X-Gm-Message-State: AFqh2kqmc8Xeh9eACIKq4zMJsTkjnx4YUQ5o0Kj/hawlhsyXDSzRQNbK
-        V/dMRpgXGWWDwgNhLv8RLsU6I3VUhW9QkL6k7xc=
-X-Google-Smtp-Source: AMrXdXt8i9aVPI6v11qB48IeNNXkHiq5ha7Oj7NPA6OVN6+Co5mVwtVBruuOJ2igGy1FFungvJuKuwF3qFgVtRskGBs=
-X-Received: by 2002:a17:906:9f21:b0:872:f8b7:3b52 with SMTP id
- fy33-20020a1709069f2100b00872f8b73b52mr2819374ejc.373.1674632139408; Tue, 24
- Jan 2023 23:35:39 -0800 (PST)
+        bh=6LJgasmO9PH76fUp0i98E0QbqnthyjGIC8nu/COY+Q4=;
+        b=Zw1gsLeqSYKy5XR4pju7hsEDXkAUIILc/gGnSP1sOsKRpX09rp9NgaMzhOTY/Vp+LE
+         h7bXhuYIYlWb5kXHmSo9heNGV2klD/c24VbzpFxdl7gnhfQ/6pMJzUrzNHh2qbG2iF/R
+         oHwOE1+BxuB1KMomyOf7TLg98I9ZRc6FYfTI2hqXqqsvbWN83xcDCmtlN4XUZGckk23w
+         6Z7/AH37EfC+RPI4BgexuR0QV6ZjCqIh0Njh7pcFu3QTB6ooAaLN2DlqhZUY+m76HW76
+         p5JlEwnWPaPEpj3mNpPh9xHjcIrNbTKn7d261NbSO6omx6bEsH8+sa2LsCNshnyDpaIs
+         WsCQ==
+X-Gm-Message-State: AFqh2koSsQlVrF8PiHZjbMc3Y5Ft4yORwq2DBhxuYWNAVTVjE1fJZ17/
+        O6ubdxVCKN7m5FVxsOtPWcZjxpF8EEO1jg==
+X-Google-Smtp-Source: AMrXdXuF8ltl3cPyitQS/G2ed87ROm49TfTX6jOLt5Mxud376zWxVhMzIzxeNLwJmwc9tOBbcjcpFw==
+X-Received: by 2002:a05:600c:3083:b0:3da:e4d:e6ba with SMTP id g3-20020a05600c308300b003da0e4de6bamr29857011wmn.14.1674632951213;
+        Tue, 24 Jan 2023 23:49:11 -0800 (PST)
+Received: from localhost.localdomain (h-176-10-254-193.A165.priv.bahnhof.se. [176.10.254.193])
+        by smtp.gmail.com with ESMTPSA id n13-20020a05600c500d00b003db2b81660esm1032051wmr.21.2023.01.24.23.49.09
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 24 Jan 2023 23:49:10 -0800 (PST)
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com, maciej.fijalkowski@intel.com,
+        kuba@kernel.org, toke@redhat.com, pabeni@redhat.com,
+        davem@davemloft.net, aelior@marvell.com, manishc@marvell.com,
+        horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com,
+        mst@redhat.com, jasowang@redhat.com, ioana.ciornei@nxp.com,
+        madalin.bucur@nxp.com
+Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>, bpf@vger.kernel.org
+Subject: [PATCH net v2 0/5] net: xdp: execute xdp_do_flush() before napi_complete_done()
+Date:   Wed, 25 Jan 2023 08:48:56 +0100
+Message-Id: <20230125074901.2737-1-magnus.karlsson@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20230121085521.9566-1-kerneljasonxing@gmail.com>
-In-Reply-To: <20230121085521.9566-1-kerneljasonxing@gmail.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Wed, 25 Jan 2023 15:35:03 +0800
-Message-ID: <CAL+tcoCcTHUXKiNW7jau4E5_H6HKXLN6-m8D9B2fBXSgRReS4A@mail.gmail.com>
-Subject: Re: [PATCH net] ixgbe: allow to increase MTU to some extent with XDP enalbed
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, richardcochran@gmail.com, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Jason Xing <kernelxing@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -71,63 +75,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I'm sorry. I just noticed that I sent it to the wrong email address of
-john.fastabend previously. So I corrected it here.
+Make sure that xdp_do_flush() is always executed before
+napi_complete_done(). This is important for two reasons. First, a
+redirect to an XSKMAP assumes that a call to xdp_do_redirect() from
+napi context X on CPU Y will be followed by a xdp_do_flush() from the
+same napi context and CPU. This is not guaranteed if the
+napi_complete_done() is executed before xdp_do_flush(), as it tells
+the napi logic that it is fine to schedule napi context X on another
+CPU. Details from a production system triggering this bug using the
+veth driver can be found in [1].
 
-Thanks,
-Jason
+The second reason is that the XDP_REDIRECT logic in itself relies on
+being inside a single NAPI instance through to the xdp_do_flush() call
+for RCU protection of all in-kernel data structures. Details can be
+found in [2].
 
-On Sat, Jan 21, 2023 at 4:55 PM Jason Xing <kerneljasonxing@gmail.com> wrote:
->
-> From: Jason Xing <kernelxing@tencent.com>
->
-> I encountered one case where I cannot increase the MTU size with XDP
-> enabled if the server is equipped with IXGBE card, which happened on
-> thousands of servers. I noticed it was prohibited from 2017[1] and
-> added size checks[2] if allowed soon after the previous patch.
->
-> Interesting part goes like this:
-> 1) Changing MTU directly from 1500 (default value) to 2000 doesn't
-> work because the driver finds out that 'new_frame_size >
-> ixgbe_rx_bufsz(ring)' in ixgbe_change_mtu() function.
-> 2) However, if we change MTU to 1501 then change from 1501 to 2000, it
-> does work, because the driver sets __IXGBE_RX_3K_BUFFER when MTU size
-> is converted to 1501, which later size check policy allows.
->
-> The default MTU value for most servers is 1500 which cannot be adjusted
-> directly to the value larger than IXGBE_MAX_2K_FRAME_BUILD_SKB (1534 or
-> 1536) if it loads XDP.
->
-> After I do a quick study on the manner of i40E driver allowing two kinds
-> of buffer size (one is 2048 while another is 3072) to support XDP mode in
-> i40e_max_xdp_frame_size(), I believe the default MTU size is possibly not
-> satisfied in XDP mode when IXGBE driver is in use, we sometimes need to
-> insert a new header, say, vxlan header. So setting the 3K-buffer flag
-> could solve the issue.
->
-> [1] commit 38b7e7f8ae82 ("ixgbe: Do not allow LRO or MTU change with XDP")
-> [2] commit fabf1bce103a ("ixgbe: Prevent unsupported configurations with
-> XDP")
->
-> Signed-off-by: Jason Xing <kernelxing@tencent.com>
-> ---
->  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> index ab8370c413f3..dc016582f91e 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> @@ -4313,6 +4313,9 @@ static void ixgbe_set_rx_buffer_len(struct ixgbe_adapter *adapter)
->                 if (IXGBE_2K_TOO_SMALL_WITH_PADDING ||
->                     (max_frame > (ETH_FRAME_LEN + ETH_FCS_LEN)))
->                         set_bit(__IXGBE_RX_3K_BUFFER, &rx_ring->state);
-> +
-> +               if (ixgbe_enabled_xdp_adapter(adapter))
-> +                       set_bit(__IXGBE_RX_3K_BUFFER, &rx_ring->state);
->  #endif
->         }
->  }
-> --
-> 2.37.3
->
+The drivers have only been compile-tested since I do not own any of
+the HW below. So if you are a maintainer, it would be great if you
+could take a quick look to make sure I did not mess something up.
+
+Note that these were the drivers I found that violated the ordering by
+running a simple script and manually checking the ones that came up as
+potential offenders. But the script was not perfect in any way. There
+might still be offenders out there, since the script can generate
+false negatives.
+
+v1 -> v2:
+* Added acks [Toke, Steen]
+* Corrected two spelling errors [Toke]
+
+[1] https://lore.kernel.org/r/20221220185903.1105011-1-sbohrer@cloudflare.com
+[2] https://lore.kernel.org/all/20210624160609.292325-1-toke@redhat.com/
+
+Thanks: Magnus
+
+Magnus Karlsson (5):
+  qede: execute xdp_do_flush() before napi_complete_done()
+  lan966x: execute xdp_do_flush() before napi_complete_done()
+  virtio-net: execute xdp_do_flush() before napi_complete_done()
+  dpaa_eth: execute xdp_do_flush() before napi_complete_done()
+  dpaa2-eth: execute xdp_do_flush() before napi_complete_done()
+
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c        | 6 +++---
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c      | 9 ++++++---
+ drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c | 6 +++---
+ drivers/net/ethernet/qlogic/qede/qede_fp.c            | 7 ++++---
+ drivers/net/virtio_net.c                              | 6 +++---
+ 5 files changed, 19 insertions(+), 15 deletions(-)
+
+
+base-commit: 2a48216cff7a2e3964fbed16f84d33f68b3e5e42
+--
+2.34.1
