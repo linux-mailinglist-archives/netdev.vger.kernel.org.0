@@ -2,154 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 156B467B80A
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 18:09:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FE6167B80E
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 18:10:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235506AbjAYRJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 12:09:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59968 "EHLO
+        id S236080AbjAYRKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 12:10:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235395AbjAYRJL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 12:09:11 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31905AA6C;
-        Wed, 25 Jan 2023 09:08:39 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        with ESMTP id S236078AbjAYRKN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 12:10:13 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44BCF5B596
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 09:09:24 -0800 (PST)
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com [209.85.221.72])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id D8DC81FD8E;
-        Wed, 25 Jan 2023 17:08:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1674666487; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FNzsO8QkHd4bwcFXjgFFOOBC/xElVC4T91KIaFtN0Io=;
-        b=D/br1xSsxQfk6apBfZHBB6RWB236iiiYqtOZ2eZ95J8WjWhuYAEVV+tXTEh0QKRmA1b4xH
-        QN55Gxk1acvIRqe6qMTQwSbVuwI9C24RIc9UEoj8Q4rbZSCTfRh25I8IC+VWb1YjIErqcg
-        9b1EbAjGibksBO3NPm+wpmCzLKQPsIY=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7757F1358F;
-        Wed, 25 Jan 2023 17:08:07 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id T+qcHPdh0WP1JAAAMHmgww
-        (envelope-from <mhocko@suse.com>); Wed, 25 Jan 2023 17:08:07 +0000
-Date:   Wed, 25 Jan 2023 18:08:06 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Suren Baghdasaryan <surenb@google.com>
-Cc:     akpm@linux-foundation.org, michel@lespinasse.org,
-        jglisse@google.com, vbabka@suse.cz, hannes@cmpxchg.org,
-        mgorman@techsingularity.net, dave@stgolabs.net,
-        willy@infradead.org, liam.howlett@oracle.com, peterz@infradead.org,
-        ldufour@linux.ibm.com, paulmck@kernel.org, luto@kernel.org,
-        songliubraving@fb.com, peterx@redhat.com, david@redhat.com,
-        dhowells@redhat.com, hughd@google.com, bigeasy@linutronix.de,
-        kent.overstreet@linux.dev, punit.agrawal@bytedance.com,
-        lstoakes@gmail.com, peterjung1337@gmail.com, rientjes@google.com,
-        axelrasmussen@google.com, joelaf@google.com, minchan@google.com,
-        jannh@google.com, shakeelb@google.com, tatashin@google.com,
-        edumazet@google.com, gthelen@google.com, gurua@google.com,
-        arjunroy@google.com, soheil@google.com, hughlynch@google.com,
-        leewalsh@google.com, posk@google.com, will@kernel.org,
-        aneesh.kumar@linux.ibm.com, npiggin@gmail.com,
-        chenhuacai@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, richard@nod.at,
-        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
-        qianweili@huawei.com, wangzhou1@hisilicon.com,
-        herbert@gondor.apana.org.au, davem@davemloft.net, vkoul@kernel.org,
-        airlied@gmail.com, daniel@ffwll.ch,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, l.stach@pengutronix.de,
-        krzysztof.kozlowski@linaro.org, patrik.r.jakobsson@gmail.com,
-        matthias.bgg@gmail.com, robdclark@gmail.com,
-        quic_abhinavk@quicinc.com, dmitry.baryshkov@linaro.org,
-        tomba@kernel.org, hjc@rock-chips.com, heiko@sntech.de,
-        ray.huang@amd.com, kraxel@redhat.com, sre@kernel.org,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
-        tfiga@chromium.org, m.szyprowski@samsung.com, mchehab@kernel.org,
-        dimitri.sivanich@hpe.com, zhangfei.gao@linaro.org,
-        jejb@linux.ibm.com, martin.petersen@oracle.com,
-        dgilbert@interlog.com, hdegoede@redhat.com, mst@redhat.com,
-        jasowang@redhat.com, alex.williamson@redhat.com, deller@gmx.de,
-        jayalk@intworks.biz, viro@zeniv.linux.org.uk, nico@fluxnic.net,
-        xiang@kernel.org, chao@kernel.org, tytso@mit.edu,
-        adilger.kernel@dilger.ca, miklos@szeredi.hu,
-        mike.kravetz@oracle.com, muchun.song@linux.dev, bhe@redhat.com,
-        andrii@kernel.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, pabeni@redhat.com, perex@perex.cz, tiwai@suse.com,
-        haojian.zhuang@gmail.com, robert.jarzmik@free.fr,
-        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org, linux-graphics-maintainer@vmware.com,
-        linux-ia64@vger.kernel.org, linux-arch@vger.kernel.org,
-        loongarch@lists.linux.dev, kvm@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-sgx@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-acpi@vger.kernel.org,
-        linux-crypto@vger.kernel.org, nvdimm@lists.linux.dev,
-        dmaengine@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, etnaviv@lists.freedesktop.org,
-        linux-samsung-soc@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org,
-        linux-rockchip@lists.infradead.org, linux-tegra@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        xen-devel@lists.xenproject.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-rdma@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-accelerators@lists.ozlabs.org, sparclinux@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-staging@lists.linux.dev,
-        target-devel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-erofs@lists.ozlabs.org, linux-ext4@vger.kernel.org,
-        devel@lists.orangefs.org, kexec@lists.infradead.org,
-        linux-xfs@vger.kernel.org, bpf@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, kasan-dev@googlegroups.com,
-        selinux@vger.kernel.org, alsa-devel@alsa-project.org,
-        kernel-team@android.com
-Subject: Re: [PATCH v2 4/6] mm: replace vma->vm_flags indirect modification
- in ksm_madvise
-Message-ID: <Y9Fh9joU3vTCwYbX@dhcp22.suse.cz>
-References: <20230125083851.27759-1-surenb@google.com>
- <20230125083851.27759-5-surenb@google.com>
- <Y9D4rWEsajV/WfNx@dhcp22.suse.cz>
- <CAJuCfpGd2eG0RSMte9OVgsRVWPo+Sj7+t8EOo8o_iKzZoh1MXA@mail.gmail.com>
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id A93813F2D5
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 17:09:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1674666558;
+        bh=1pZvzv+KflAf7vIEa8jpMx+2B8SROeL8aqXFHfenOiI=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=vFI/KKjqYsuAs63k+4BfD4iZOHsp1ueoiEY4Okr3exXgQG9ZXas3U6jfsyPHfqC+v
+         FONpujZbkrX9DfVaXUpWUdPu7mkz+VQTnvFZYyAFRnn9iWyOok6AHkeWd10XAFNDUG
+         fd40OyqK7ErgBjzKxRiasD6kR2jNEzpe7DwGCUNyaMr07ZL32XtSVWUarAPuDU48Yo
+         d4htGFNqdzr2hI0GeDNHAsng7FHXn4C0dQ80pyyzyGXUuwf6h9OfJ1cEXwI/YyC3r2
+         iLfrT6G+T4t05bfm6nPL9IFsg3Rv3wkAFTztN0Zbuqj+Q8ESaKSsvxHP1fmoh/zsJ7
+         YPUHPRkzuzZnA==
+Received: by mail-wr1-f72.google.com with SMTP id v5-20020adf8b45000000b002bde0366b11so3346438wra.7
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 09:09:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1pZvzv+KflAf7vIEa8jpMx+2B8SROeL8aqXFHfenOiI=;
+        b=yrUgfHry6SmVJKwsl7SP7f+sfHUKFBSh4MvI8fraOkvPADOKkyE/KemJdqkfg9deNu
+         /zqNoK8J2/EROHOWzMAt6R08IWMuU6+JJej2cG3Sr6woQog/81z/QNaCir+O7E0KAnvF
+         uX3Ni0GNIsHUf8nIDC5iuMRlZvdjuYzVGSGPdpP0SFrJVPnfMoIeqG2+2887vkk0FH91
+         fbMGkZ4P05QldZ6Nv22XzWQ7kBVNiTteSvl3kkIx2NqR6nTwjNL3H+bkUlD3yMG0Ujl/
+         3tqKzXuOpur6P1JoXSnl46sffzLZuRWsVfSAqpYldHSTyv4W7CuIgy1CpA/+oM2LkXA3
+         u9og==
+X-Gm-Message-State: AO0yUKVX4lmRJb/i+0yU1CC/EKyK7Y/JnupwWo+9nIq3jnqqHBV1LsGr
+        s1SHrVCRvlTF4lZSWvXLMEm2VJmgijVNLdZVBOoI0FUowVRr49GRuusUB5Eni6DJo6tzhaNEgsZ
+        iFxhrrNyihe/cn2BW6je3SUMxV04gwjftvQ==
+X-Received: by 2002:adf:eb12:0:b0:2bf:b1f6:7db7 with SMTP id s18-20020adfeb12000000b002bfb1f67db7mr4974004wrn.27.1674666558396;
+        Wed, 25 Jan 2023 09:09:18 -0800 (PST)
+X-Google-Smtp-Source: AK7set9Yau3RcyKrwSYnXVLJqxfF8rJF5bNvRjqoqFOjcS5MQWnt1HjAo3+zYU12Y7dMZhpvZJf3yg==
+X-Received: by 2002:adf:eb12:0:b0:2bf:b1f6:7db7 with SMTP id s18-20020adfeb12000000b002bfb1f67db7mr4973985wrn.27.1674666558143;
+        Wed, 25 Jan 2023 09:09:18 -0800 (PST)
+Received: from qwirkle.internal ([81.2.157.149])
+        by smtp.gmail.com with ESMTPSA id a3-20020adff7c3000000b002bdc3f5945dsm4793280wrq.89.2023.01.25.09.09.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Jan 2023 09:09:17 -0800 (PST)
+From:   Andrei Gherzan <andrei.gherzan@canonical.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
+Cc:     Andrei <andrei.gherzan@canonical.com>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH 1/2] selftests: net: Fix missing nat6to4.o when running udpgro_frglist.sh
+Date:   Wed, 25 Jan 2023 17:08:44 +0000
+Message-Id: <20230125170845.85237-1-andrei.gherzan@canonical.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJuCfpGd2eG0RSMte9OVgsRVWPo+Sj7+t8EOo8o_iKzZoh1MXA@mail.gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 25-01-23 08:57:48, Suren Baghdasaryan wrote:
-> On Wed, Jan 25, 2023 at 1:38 AM 'Michal Hocko' via kernel-team
-> <kernel-team@android.com> wrote:
-> >
-> > On Wed 25-01-23 00:38:49, Suren Baghdasaryan wrote:
-> > > Replace indirect modifications to vma->vm_flags with calls to modifier
-> > > functions to be able to track flag changes and to keep vma locking
-> > > correctness. Add a BUG_ON check in ksm_madvise() to catch indirect
-> > > vm_flags modification attempts.
-> >
-> > Those BUG_ONs scream to much IMHO. KSM is an MM internal code so I
-> > gueess we should be willing to trust it.
-> 
-> Yes, but I really want to prevent an indirect misuse since it was not
-> easy to find these. If you feel strongly about it I will remove them
-> or if you have a better suggestion I'm all for it.
+From: Andrei <andrei.gherzan@canonical.com>
 
-You can avoid that by making flags inaccesible directly, right?
+The udpgro_frglist.sh uses nat6to4.o which is tested for existence in
+bpf/nat6to4.o (relative to the script). This is where the object is
+compiled. Even so, the script attempts to use it as part of tc with a
+different path (../bpf/nat6to4.o). As a consequence, this fails the script:
 
+Error opening object ../bpf/nat6to4.o: No such file or directory
+Cannot initialize ELF context!
+Unable to load program
+
+This change refactors these references to use a variable for consistency
+and also reformats two long lines.
+
+Signed-off-by: Andrei <andrei.gherzan@canonical.com>
+---
+ tools/testing/selftests/net/udpgro_frglist.sh | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/tools/testing/selftests/net/udpgro_frglist.sh b/tools/testing/selftests/net/udpgro_frglist.sh
+index c9c4b9d65839..1fdf2d53944d 100755
+--- a/tools/testing/selftests/net/udpgro_frglist.sh
++++ b/tools/testing/selftests/net/udpgro_frglist.sh
+@@ -6,6 +6,7 @@
+ readonly PEER_NS="ns-peer-$(mktemp -u XXXXXX)"
+ 
+ BPF_FILE="../bpf/xdp_dummy.bpf.o"
++BPF_NAT6TO4_FILE="./bpf/nat6to4.o"
+ 
+ cleanup() {
+ 	local -r jobs="$(jobs -p)"
+@@ -40,8 +41,12 @@ run_one() {
+ 
+ 	ip -n "${PEER_NS}" link set veth1 xdp object ${BPF_FILE} section xdp
+ 	tc -n "${PEER_NS}" qdisc add dev veth1 clsact
+-	tc -n "${PEER_NS}" filter add dev veth1 ingress prio 4 protocol ipv6 bpf object-file ../bpf/nat6to4.o section schedcls/ingress6/nat_6  direct-action
+-	tc -n "${PEER_NS}" filter add dev veth1 egress prio 4 protocol ip bpf object-file ../bpf/nat6to4.o section schedcls/egress4/snat4 direct-action
++	tc -n "${PEER_NS}" filter add dev veth1 ingress prio 4 protocol \
++		ipv6 bpf object-file "$BPF_NAT6TO4_FILE" section \
++		schedcls/ingress6/nat_6 direct-action
++	tc -n "${PEER_NS}" filter add dev veth1 egress prio 4 protocol \
++		ip bpf object-file "$BPF_NAT6TO4_FILE" section \
++		schedcls/egress4/snat4 direct-action
+         echo ${rx_args}
+ 	ip netns exec "${PEER_NS}" ./udpgso_bench_rx ${rx_args} -r &
+ 
+@@ -88,7 +93,7 @@ if [ ! -f ${BPF_FILE} ]; then
+ 	exit -1
+ fi
+ 
+-if [ ! -f bpf/nat6to4.o ]; then
++if [ ! -f "$BPF_NAT6TO4_FILE" ]; then
+ 	echo "Missing nat6to4 helper. Build bpfnat6to4.o selftest first"
+ 	exit -1
+ fi
 -- 
-Michal Hocko
-SUSE Labs
+2.34.1
+
