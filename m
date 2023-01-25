@@ -2,81 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69EAE67B959
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 19:30:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAADF67B98C
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 19:39:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236019AbjAYSae (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 13:30:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58360 "EHLO
+        id S236102AbjAYSi7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 13:38:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235791AbjAYSa3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 13:30:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 110305A803
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 10:30:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BABB1B81B90
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 18:30:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6548DC433A1;
-        Wed, 25 Jan 2023 18:30:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674671418;
-        bh=RlihWquj7NKp5GHxIePW17RwCvtdNxGU8kI1tAzSbVI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hhG6eROhdz2HJMYBARFXFj/6D5YF7PNJ+CzlWz9jjTFG4UURT+oQjPCg1Gp9cKSpC
-         j2XzbA2QQLpE1AaBUxCS7/ajOEE+gVUcvzdOri39ZIdIs2hizWJfTZVrWxMFR+kUtW
-         J9iwwDg4Rqfn60xmVxYk8pjpZWGqg2W/AZh5V99/P+QoUjDsDlUd9KCwlYZc8v8T+6
-         IMf36E7MiABwQxP9SAh3OxkuD/ey4V67CMY5gFbznw4GX2odRnuf5mKiaSHLgc7RnK
-         dPsNRXoMVBOStzEKOZJeD+9eU0BYd+TYh/Cp/Hop2ftSj9KKVLQkBtd6Luxkfo5dnM
-         7N05tPe0Rf22A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4D74AF83ED3;
-        Wed, 25 Jan 2023 18:30:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230257AbjAYSix (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 13:38:53 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C885A366A8;
+        Wed, 25 Jan 2023 10:38:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=WhE3p5nMlMDjaV/irGLArTSJUCL3MW0izpTScdbc1OU=; b=mx74wVm8uyXRMzRkznkmPv14f3
+        DM5mkZY0d2Y454KV/p1DBO6bVWUBYmLnjNwq5de4oOCp4K1tzlZ+pYhblaAnUsgNim9Cg22n4lXC7
+        YVziRodKlXV3h1dcA4wCil3iZ6I2W+LteukgjO5nFw9bnJFOnLJvx0ni4Ju6wCzLw38ztU2xqwXDF
+        Hz7a4pCnrIPatIpdvDFmrtxTdMVr7eH9j59LSpJj79ys6zGb7fhMV69syzXZoxm/q67WE7IxkNx+x
+        YR6wIJfVUlSwCzFkthS2vqR79CZmfDxbuiYrAaQdlm8CD16FJpwzTtCFj0zPf7AtdmoIV8Mlhhb7E
+        KwDK04uQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1pKkaL-0066XZ-MG; Wed, 25 Jan 2023 18:33:25 +0000
+Date:   Wed, 25 Jan 2023 18:33:25 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     akpm@linux-foundation.org, michel@lespinasse.org,
+        jglisse@google.com, mhocko@suse.com, vbabka@suse.cz,
+        hannes@cmpxchg.org, mgorman@techsingularity.net, dave@stgolabs.net,
+        liam.howlett@oracle.com, peterz@infradead.org,
+        ldufour@linux.ibm.com, paulmck@kernel.org, luto@kernel.org,
+        songliubraving@fb.com, peterx@redhat.com, david@redhat.com,
+        dhowells@redhat.com, hughd@google.com, bigeasy@linutronix.de,
+        kent.overstreet@linux.dev, punit.agrawal@bytedance.com,
+        lstoakes@gmail.com, peterjung1337@gmail.com, rientjes@google.com,
+        axelrasmussen@google.com, joelaf@google.com, minchan@google.com,
+        jannh@google.com, shakeelb@google.com, tatashin@google.com,
+        edumazet@google.com, gthelen@google.com, gurua@google.com,
+        arjunroy@google.com, soheil@google.com, hughlynch@google.com,
+        leewalsh@google.com, posk@google.com, will@kernel.org,
+        aneesh.kumar@linux.ibm.com, npiggin@gmail.com,
+        chenhuacai@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, richard@nod.at,
+        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
+        qianweili@huawei.com, wangzhou1@hisilicon.com,
+        herbert@gondor.apana.org.au, davem@davemloft.net, vkoul@kernel.org,
+        airlied@gmail.com, daniel@ffwll.ch,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, l.stach@pengutronix.de,
+        krzysztof.kozlowski@linaro.org, patrik.r.jakobsson@gmail.com,
+        matthias.bgg@gmail.com, robdclark@gmail.com,
+        quic_abhinavk@quicinc.com, dmitry.baryshkov@linaro.org,
+        tomba@kernel.org, hjc@rock-chips.com, heiko@sntech.de,
+        ray.huang@amd.com, kraxel@redhat.com, sre@kernel.org,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
+        tfiga@chromium.org, m.szyprowski@samsung.com, mchehab@kernel.org,
+        dimitri.sivanich@hpe.com, zhangfei.gao@linaro.org,
+        jejb@linux.ibm.com, martin.petersen@oracle.com,
+        dgilbert@interlog.com, hdegoede@redhat.com, mst@redhat.com,
+        jasowang@redhat.com, alex.williamson@redhat.com, deller@gmx.de,
+        jayalk@intworks.biz, viro@zeniv.linux.org.uk, nico@fluxnic.net,
+        xiang@kernel.org, chao@kernel.org, tytso@mit.edu,
+        adilger.kernel@dilger.ca, miklos@szeredi.hu,
+        mike.kravetz@oracle.com, muchun.song@linux.dev, bhe@redhat.com,
+        andrii@kernel.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, perex@perex.cz, tiwai@suse.com,
+        haojian.zhuang@gmail.com, robert.jarzmik@free.fr,
+        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org, linux-graphics-maintainer@vmware.com,
+        linux-ia64@vger.kernel.org, linux-arch@vger.kernel.org,
+        loongarch@lists.linux.dev, kvm@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-sgx@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-acpi@vger.kernel.org,
+        linux-crypto@vger.kernel.org, nvdimm@lists.linux.dev,
+        dmaengine@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, etnaviv@lists.freedesktop.org,
+        linux-samsung-soc@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org,
+        linux-rockchip@lists.infradead.org, linux-tegra@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        xen-devel@lists.xenproject.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-rdma@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-accelerators@lists.ozlabs.org, sparclinux@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-staging@lists.linux.dev,
+        target-devel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-erofs@lists.ozlabs.org, linux-ext4@vger.kernel.org,
+        devel@lists.orangefs.org, kexec@lists.infradead.org,
+        linux-xfs@vger.kernel.org, bpf@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, kasan-dev@googlegroups.com,
+        selinux@vger.kernel.org, alsa-devel@alsa-project.org,
+        kernel-team@android.com
+Subject: Re: [PATCH v2 1/6] mm: introduce vma->vm_flags modifier functions
+Message-ID: <Y9F19QEDX5d/44EV@casper.infradead.org>
+References: <20230125083851.27759-1-surenb@google.com>
+ <20230125083851.27759-2-surenb@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH iproute2 1/1] macsec: Fix Macsec packet number attribute print
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167467141831.9880.16237331351485806347.git-patchwork-notify@kernel.org>
-Date:   Wed, 25 Jan 2023 18:30:18 +0000
-References: <20230119115302.28067-1-ehakim@nvidia.com>
-In-Reply-To: <20230119115302.28067-1-ehakim@nvidia.com>
-To:     Emeel Hakim <ehakim@nvidia.com>
-Cc:     sd@queasysnail.net, dsahern@kernel.org, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230125083851.27759-2-surenb@google.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, Jan 25, 2023 at 12:38:46AM -0800, Suren Baghdasaryan wrote:
+> +/* Use when VMA is not part of the VMA tree and needs no locking */
+> +static inline void init_vm_flags(struct vm_area_struct *vma,
+> +				 unsigned long flags)
+> +{
+> +	vma->vm_flags = flags;
 
-This patch was applied to iproute2/iproute2.git (main)
-by Stephen Hemminger <stephen@networkplumber.org>:
+vm_flags are supposed to have type vm_flags_t.  That's not been
+fully realised yet, but perhaps we could avoid making it worse?
 
-On Thu, 19 Jan 2023 13:53:02 +0200 you wrote:
-> From: Emeel Hakim <ehakim@nvidia.com>
-> 
-> Currently Macsec print routines uses a 32 bit print routine
-> to print out the value of the packet number (PN) attribute, a
-> miss use of the 32 bit print routine is causing a miss print of
-> only the 32 least significant bit (LSB) of an extended packet
-> number (XPN) which is a 64 bit attribute.
-> 
-> [...]
+>  	pgprot_t vm_page_prot;
+> -	unsigned long vm_flags;		/* Flags, see mm.h. */
+> +
+> +	/*
+> +	 * Flags, see mm.h.
+> +	 * WARNING! Do not modify directly.
+> +	 * Use {init|reset|set|clear|mod}_vm_flags() functions instead.
+> +	 */
+> +	unsigned long vm_flags;
 
-Here is the summary with links:
-  - [iproute2,1/1] macsec: Fix Macsec packet number attribute print
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=55738f8ee1eb
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Including changing this line to vm_flags_t
