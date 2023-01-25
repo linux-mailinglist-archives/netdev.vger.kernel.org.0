@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E494167AADA
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 08:27:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5BD967AAD9
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 08:27:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235030AbjAYH1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 02:27:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59002 "EHLO
+        id S235023AbjAYH1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 02:27:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235027AbjAYH07 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 02:26:59 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2069.outbound.protection.outlook.com [40.107.93.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 009AA4A20F
+        with ESMTP id S235024AbjAYH06 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 02:26:58 -0500
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2061.outbound.protection.outlook.com [40.107.212.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D18F74995B
         for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 23:26:55 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ayLkcTFh54DPJhgxT8rv6DLU4nlUEnws6hssGssxrPXhiTPap55U0ARY4e0FEEISFjC/9A/Sv8lP/FTD9xEKUHHupTr+QXtS6Mmdnoap1vr4U/Q9m31+tjeSPER62DFVf6DnPShqF1kQTQLwRc5YqDDF6ULXkjfdEGOljHD8iaaTeksLkEw/31fgu2Xjnc9bz3jrn4D64mv3NVL4hlaki5DO9RMeliIDfuQnrWnPIkYKC3vOhfimJVs8foFcha3Z8wT2xPpluUm0eCqDcfzQwShjwgRVaFmDrVBQ/FMyrvq3Ym3LtCW0rpstoZN8xLareTnR/dmmXJNuv7dY/90Zfg==
+ b=P2mAv30SqGm5bCSnI90ukeeNuqqfvDDJLv07cNiaGhK6o7X4PJtpW3ifP1nGoRysg9yD0P8ucVdqa3rzSOVAci7lESqnWcyxoeeXauQ0uV9OSjGyxbrPTx0IP2si/+Rmg7L2zSQ4WO4+KtvioIV3Iz1JSJfIy9TpPciS8oxLgkkDDD6vf/ox9OGoB3kEHSXI52el8dqjftyFszjmjOMxIJDFHArYVsC59Wwtt9xydTjNZg/ScLtz03LWZCzEgv8snbiRfV6rVlNKEPwtb9csPe1Px3eKufwnejhrNzUGi6UKnBRTLLQjLC8WPB9/OCKXaiz0lxG/qksrgsA7/+t3ZA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=n5fNAIcP0P95p6eCquyTOeldDK9SsHdl6SdWfzPisWg=;
- b=BXN1xPKXEJQaoVyLUeNNYSANBrWejWH1hGXCv10FInZR4S6UGz+ThGKl6EQZEGLzXZ9VdXD00CqKnbUE3usptqK73jI9fx5rWiYy0OxtsWffTfm00+b6oczxOtcmW1txZ8iM7NaAazfoLnfZN8S8UtuqsfqX024jPwmz6EtdKUHHTvBKf86oeUV2u/pwTjWCTNQ3j34NkxO/BsUq5r0Gqe5ZQA4D2Q/LRlDzhY26cvLUf/8/4PXQjdHswSqK1B5zBv/cDUxH3muu+a48FfsMtjjsfXa61Q6Ostvo8LPa1Sfy+blsEbLQDRdwEmsoFXuO78B8+Kx9sagnn01Cyz72aw==
+ bh=gfjMkID/YT8exSvoQwg+zeeebRZCgiICrbrLNLus+ok=;
+ b=bro3vJvn/GZensC51s8EFVZkMl5Ri3M2nnfx8uS+PPN0iIQ0LKsZCUVKX4ZjvpyL9/zPOtMf4PoIm3zYeGdzGW1BOy6BslP3Am25nb2mrSZDelrSTwzB3/NMPUzPBLgsVGZ79PKnL+DHpXaT0vWxD8V+O9F+Vr97nPHJk1yNxVK9T8g+s6VYVEtZdhReitNotzKztEe77jhJRAkCoPo0ko4Ii8oVumRvTnFLHwx5TEY1vykOpS9fBSrH36A6iW82zPHILuVvtz1+uf+AAg6KqD90o7yyIJno89UdEifNCxU1FWCbW1KEEmvkD1uFL1JLDOAwgfB39CePS3s6/BBdig==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n5fNAIcP0P95p6eCquyTOeldDK9SsHdl6SdWfzPisWg=;
- b=M0yWsoMs2B30H77VgEbjy506bMyk2As7iD0zvqaNuvT2VeT+alqj9Yj0JHFdlx7yP5xupAvsdhL4PVRmH6IO9CQakxX3PDqNPZR6fSRxgD1XX8M2Le8D25Vfnk88w3UXAD3sbyXxzGftJoLtou9w7bQ93MJwfAH++8mAPpRDpSo=
-Received: from DM6PR07CA0114.namprd07.prod.outlook.com (2603:10b6:5:330::29)
- by CH0PR12MB5370.namprd12.prod.outlook.com (2603:10b6:610:d5::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Wed, 25 Jan
- 2023 07:26:51 +0000
-Received: from DM6NAM11FT097.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:330:cafe::15) by DM6PR07CA0114.outlook.office365.com
- (2603:10b6:5:330::29) with Microsoft SMTP Server (version=TLS1_2,
+ bh=gfjMkID/YT8exSvoQwg+zeeebRZCgiICrbrLNLus+ok=;
+ b=FKjh73eDsMb2T99yIxA0AjxN5eA31HL/Rgik/8mbjhm/7lWFK3/tnLCiIa8ZIBU6QERIRUhY5uwbArZEpp2W/0+/CQFcFpe7+s/K7Mds+Okqx9fCGhHokhVeWJOorNWyP4oYN2St3mKf17zWAauZJHTDtlPnRak5R59dKuJMWtM=
+Received: from DM5PR07CA0074.namprd07.prod.outlook.com (2603:10b6:4:ad::39) by
+ DM4PR12MB6301.namprd12.prod.outlook.com (2603:10b6:8:a5::21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6002.33; Wed, 25 Jan 2023 07:26:53 +0000
+Received: from DM6NAM11FT074.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:4:ad:cafe::aa) by DM5PR07CA0074.outlook.office365.com
+ (2603:10b6:4:ad::39) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.21 via Frontend
- Transport; Wed, 25 Jan 2023 07:26:51 +0000
+ Transport; Wed, 25 Jan 2023 07:26:53 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -46,21 +45,21 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT097.mail.protection.outlook.com (10.13.172.72) with Microsoft SMTP
+ DM6NAM11FT074.mail.protection.outlook.com (10.13.173.203) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6002.13 via Frontend Transport; Wed, 25 Jan 2023 07:26:50 +0000
+ 15.20.6043.17 via Frontend Transport; Wed, 25 Jan 2023 07:26:53 +0000
 Received: from jatayu.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 25 Jan
- 2023 01:26:48 -0600
+ 2023 01:26:50 -0600
 From:   Raju Rangoju <Raju.Rangoju@amd.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
         <pabeni@redhat.com>, <Shyam-sundar.S-k@amd.com>,
         Raju Rangoju <Raju.Rangoju@amd.com>
-Subject: [PATCH net-next 1/2] amd-xgbe: add 2.5GbE support to 10G BaseT mode
-Date:   Wed, 25 Jan 2023 12:55:28 +0530
-Message-ID: <20230125072529.2222420-2-Raju.Rangoju@amd.com>
+Subject: [PATCH net-next 2/2] amd-xgbe: add support for rx-adaptation
+Date:   Wed, 25 Jan 2023 12:55:29 +0530
+Message-ID: <20230125072529.2222420-3-Raju.Rangoju@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230125072529.2222420-1-Raju.Rangoju@amd.com>
 References: <20230125072529.2222420-1-Raju.Rangoju@amd.com>
@@ -72,23 +71,23 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT097:EE_|CH0PR12MB5370:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2d3c2b0f-24a3-4d74-89a4-08dafea586c8
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT074:EE_|DM4PR12MB6301:EE_
+X-MS-Office365-Filtering-Correlation-Id: a118b23d-6f14-425d-9b0f-08dafea58852
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eRNn8BAWk7hsuHgw1ZIgsYFLrBv8dyPJ8JwY0wXG2hbRx/OlPWJM/1AECkr7Ar+N/lNTyE9nHWhZNhiWLSeCuwp88fMhfmDCDQg3Qt3uzyXn09pYsNGSL2PXrJ6u/1MuIEemWqF0dtzvkuLF+eFA79I8pSluNJXIsjbU2seSmqWGWHNFrIIhjl9121N5oOiuJI/red8etY5xQg9RRjEoYbDeeYD2lrnAgRczAonMHomHemzqSmMWgeMM+JYUhMQopYghP7GVtc6CU/U7cxyOHPT2ILgZRPtOrd5laLYInWF9XFwB+zwqtczPpZ0P2rHE4Jnz4wXMwvlNJUSrB5fsf8wt70TIp/QmY6gI+pHXoi4a8hZGWnxb6+EDLSOgJhH1ZpVqPR7lBCeexG0qVfrpfI8sy7rYyVdMHAjhQyT30RtozYNUHU1+qHLy+yeb0WL+RnuHNKOuz5suO0AAQ365RgUOEVpMKytAFkOIT8zV/3aEoYcwRMMzIGMRPH8tAd23VtNu17LqKWuZvuTSZV0JrJ01CWg2lAlG5wmF9BPBDl6wXb/DhylGJ9jg0j6htDzpyjzNSdh5kH4/3T7SeGuvcm1N0T5EJekxWH84R3azvzUjJiYnXtnFqvhSpwjjbLmNO4bNwNTba2fHi+eLSteUNaE3v+WAq7B+dPFdwshRCRbPbpoJxknc4QGtbU9KPkku3TevH+oIymQZCnnkCx/zLDQp/s2ePyzCh4gkX27jdWQ=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(376002)(396003)(136003)(346002)(451199018)(46966006)(36840700001)(40470700004)(36860700001)(40480700001)(83380400001)(70586007)(86362001)(6916009)(70206006)(4326008)(8676002)(316002)(36756003)(426003)(54906003)(16526019)(26005)(7696005)(186003)(6666004)(478600001)(356005)(336012)(1076003)(81166007)(2616005)(8936002)(40460700003)(82310400005)(5660300002)(47076005)(82740400003)(41300700001)(2906002)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: LPXh38iJOUBKtBkRPM0FBTeJxzTOzDRGTYb/erzYdnAfr81FaJIyQJeq2TE/Y07hjcxcy6EJzQwX4o7mUuzdeUqdWQsG5h7F9tKAMirCb0mQ/sIuEYAxn8Ml+yHbtNFvfFD64tBSTGolb5mwGf0cpbK2oOuuefHiVyXV/ymJMwblLm3etiuy+FYuPSYfoGnEbgXaGLl8Tvo13d9IUpmtF5ryuGoBsMNE68yPOPHvC6f1jE9hfOaDx3sje3YRXGFSuQeGDYB26TZvoQy80p4O1Hq1VA2ITDcJHa+zWOt//iCiU12j4uhsAkV63uHwrBh/RwVNPEtfNMRs8FsUCtqZiRZ/5wjqrczk3h4gzCmPdbAFNk9mvjx8n03fhzJv0+0n0t0EbIov9BDaq1BJUjEu2A8KPK18CLoG9/YqjeJkfL6osIhAioksZffQ5q+/IkiDh9liKQKszFn5uiaqw9XcLk76a71t6FXYvaTWNRCEiLRw7lLhlqt2N7yqOFMu5QuCggGpIadXI9BRVnKYyPGf53Ab0aSIhJ6QboV5rd1rN7FSrJqHifs3uSdnlhrwF0yG45wFyWD6OsvIQs1nZaKZB/bDq+g1RcsvA4zD/g4ePRJpcGKwfa/bTO94SpDLhmPrbIQkmzrGbf0bhjA/rUVO0OPVK5MRHb6TQxVodKtpB+HHpRgk2jqqd+QgpUlv7ind8YS0HlAFjafpmtd5za7kcXg1JAVCGollG0xtUluU8j4=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(376002)(396003)(346002)(136003)(451199018)(46966006)(40470700004)(36840700001)(70586007)(40480700001)(70206006)(83380400001)(86362001)(6916009)(8676002)(36860700001)(36756003)(316002)(54906003)(4326008)(16526019)(26005)(7696005)(186003)(6666004)(1076003)(356005)(2616005)(478600001)(336012)(81166007)(47076005)(5660300002)(2906002)(40460700003)(82310400005)(8936002)(426003)(30864003)(82740400003)(41300700001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2023 07:26:50.9913
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2023 07:26:53.5895
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2d3c2b0f-24a3-4d74-89a4-08dafea586c8
+X-MS-Exchange-CrossTenant-Network-Message-Id: a118b23d-6f14-425d-9b0f-08dafea58852
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT097.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT074.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5370
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6301
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -99,71 +98,338 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support to the driver to fully recognize and enable 2.5GbE speed in
-10GBaseT mode.
+The existing implementation for non-Autonegotiation 10G speed modes does
+not enable RX adaptation in the Driver and FW. The RX Equalization
+settings (AFE settings alone) are manually configured and the existing
+link-up sequence in the driver does not perform rx adaptation process as
+mentioned in the Synopsys databook. There's a customer request for 10G
+backplane mode without Auto-negotiation and for the DAC cables of more
+significant length that follow the non-Autonegotiation mode. These modes
+require PHY to perform RX Adaptation.
 
-Acked-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+The proposed logic adds the necessary changes to Yellow Carp devices to
+ensure seamless RX Adaptation for 10G-SFI (LONG DAC) and 10G-KR without
+AN (CL72 not present). The RX adaptation core algorithm is executed by
+firmware, however, to achieve that a new mailbox sub-command is required
+to be sent by the driver.
+
+Co-developed-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
 Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
 ---
- drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/amd/xgbe/xgbe-common.h |  37 +++++
+ drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 160 +++++++++++++++++++-
+ drivers/net/ethernet/amd/xgbe/xgbe.h        |   5 +
+ 3 files changed, 198 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-common.h b/drivers/net/ethernet/amd/xgbe/xgbe-common.h
+index 3fd9728f817f..52964ce72950 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-common.h
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-common.h
+@@ -1285,6 +1285,22 @@
+ #define MDIO_PMA_RX_CTRL1		0x8051
+ #endif
+ 
++#ifndef MDIO_PMA_RX_LSTS
++#define MDIO_PMA_RX_LSTS		0x018020
++#endif
++
++#ifndef MDIO_PMA_RX_EQ_CTRL4
++#define MDIO_PMA_RX_EQ_CTRL4		0x0001805C
++#endif
++
++#ifndef MDIO_PMA_MP_MISC_STS
++#define MDIO_PMA_MP_MISC_STS		0x0078
++#endif
++
++#ifndef MDIO_PMA_PHY_RX_EQ_CEU
++#define MDIO_PMA_PHY_RX_EQ_CEU		0x1800E
++#endif
++
+ #ifndef MDIO_PCS_DIG_CTRL
+ #define MDIO_PCS_DIG_CTRL		0x8000
+ #endif
+@@ -1395,6 +1411,27 @@
+ #define XGBE_PMA_RX_RST_0_RESET_ON	0x10
+ #define XGBE_PMA_RX_RST_0_RESET_OFF	0x00
+ 
++#define XGBE_PMA_RX_SIG_DET_0_MASK	BIT(4)
++#define XGBE_PMA_RX_SIG_DET_0_ENABLE	BIT(4)
++#define XGBE_PMA_RX_SIG_DET_0_DISABLE	0x0000
++
++#define XGBE_PMA_RX_VALID_0_MASK	BIT(12)
++#define XGBE_PMA_RX_VALID_0_ENABLE	BIT(12)
++#define XGBE_PMA_RX_VALID_0_DISABLE	0x0000
++
++#define XGBE_PMA_RX_AD_REQ_MASK		BIT(12)
++#define XGBE_PMA_RX_AD_REQ_ENABLE	BIT(12)
++#define XGBE_PMA_RX_AD_REQ_DISABLE	0x0000
++
++#define XGBE_PMA_RX_ADPT_ACK_MASK	BIT(12)
++#define XGBE_PMA_RX_ADPT_ACK		BIT(12)
++
++#define XGBE_PMA_CFF_UPDTM1_VLD		BIT(8)
++#define XGBE_PMA_CFF_UPDT0_VLD		BIT(9)
++#define XGBE_PMA_CFF_UPDT1_VLD		BIT(10)
++#define XGBE_PMA_CFF_UPDT_MASK		(XGBE_PMA_CFF_UPDTM1_VLD | XGBE_PMA_CFF_UPDT0_VLD |\
++					 XGBE_PMA_CFF_UPDT1_VLD)
++
+ #define XGBE_PMA_PLL_CTRL_MASK		BIT(15)
+ #define XGBE_PMA_PLL_CTRL_ENABLE	BIT(15)
+ #define XGBE_PMA_PLL_CTRL_DISABLE	0x0000
 diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-index f4683d53e58c..eea06e07b4a0 100644
+index eea06e07b4a0..e48c1986926a 100644
 --- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
 +++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-@@ -1882,6 +1882,9 @@ static void xgbe_phy_an_advertising(struct xgbe_prv_data *pdata,
- 		if (phy_data->phydev &&
- 		    (phy_data->phydev->speed == SPEED_10000))
- 			XGBE_SET_ADV(dlks, 10000baseKR_Full);
-+		else if (phy_data->phydev &&
-+			 (phy_data->phydev->speed == SPEED_2500))
-+			XGBE_SET_ADV(dlks, 2500baseX_Full);
- 		else
- 			XGBE_SET_ADV(dlks, 1000baseKX_Full);
- 		break;
-@@ -2282,9 +2285,11 @@ static enum xgbe_mode xgbe_phy_switch_baset_mode(struct xgbe_prv_data *pdata)
- 	case XGBE_MODE_SGMII_100:
- 	case XGBE_MODE_SGMII_1000:
- 		return XGBE_MODE_KR;
-+	case XGBE_MODE_KX_2500:
-+		return XGBE_MODE_SGMII_1000;
- 	case XGBE_MODE_KR:
- 	default:
--		return XGBE_MODE_SGMII_1000;
-+		return XGBE_MODE_KX_2500;
- 	}
+@@ -387,7 +387,13 @@ struct xgbe_phy_data {
+ /* I2C, MDIO and GPIO lines are muxed, so only one device at a time */
+ static DEFINE_MUTEX(xgbe_phy_comm_lock);
+ 
++static void xgbe_phy_perform_ratechange(struct xgbe_prv_data *pdata,
++					unsigned int cmd, unsigned int sub_cmd);
+ static enum xgbe_an_mode xgbe_phy_an_mode(struct xgbe_prv_data *pdata);
++static void xgbe_phy_rrc(struct xgbe_prv_data *pdata);
++static void xgbe_phy_set_mode(struct xgbe_prv_data *pdata, enum xgbe_mode mode);
++static void xgbe_phy_kr_mode(struct xgbe_prv_data *pdata);
++static void xgbe_phy_sfi_mode(struct xgbe_prv_data *pdata);
+ 
+ static int xgbe_phy_i2c_xfer(struct xgbe_prv_data *pdata,
+ 			     struct xgbe_i2c_op *i2c_op)
+@@ -2038,6 +2044,87 @@ static void xgbe_phy_set_redrv_mode(struct xgbe_prv_data *pdata)
+ 	xgbe_phy_put_comm_ownership(pdata);
  }
  
-@@ -2644,7 +2649,8 @@ static bool xgbe_phy_valid_speed_baset_mode(struct xgbe_prv_data *pdata,
- 	case SPEED_1000:
- 		return true;
- 	case SPEED_2500:
--		return (phy_data->port_mode == XGBE_PORT_MODE_NBASE_T);
-+		return ((phy_data->port_mode == XGBE_PORT_MODE_10GBASE_T) ||
-+			(phy_data->port_mode == XGBE_PORT_MODE_NBASE_T));
- 	case SPEED_10000:
- 		return (phy_data->port_mode == XGBE_PORT_MODE_10GBASE_T);
- 	default:
-@@ -3024,6 +3030,7 @@ static bool xgbe_phy_port_mode_mismatch(struct xgbe_prv_data *pdata)
- 		if ((phy_data->port_speeds & XGBE_PHY_PORT_SPEED_10) ||
- 		    (phy_data->port_speeds & XGBE_PHY_PORT_SPEED_100) ||
- 		    (phy_data->port_speeds & XGBE_PHY_PORT_SPEED_1000) ||
-+		    (phy_data->port_speeds & XGBE_PHY_PORT_SPEED_2500) ||
- 		    (phy_data->port_speeds & XGBE_PHY_PORT_SPEED_10000))
- 			return false;
- 		break;
-@@ -3474,6 +3481,10 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
- 			XGBE_SET_SUP(lks, 1000baseT_Full);
- 			phy_data->start_mode = XGBE_MODE_SGMII_1000;
- 		}
-+		if (phy_data->port_speeds & XGBE_PHY_PORT_SPEED_2500) {
-+			XGBE_SET_SUP(lks, 2500baseT_Full);
-+			phy_data->start_mode = XGBE_MODE_KX_2500;
++#define MAX_RX_ADAPT_RETRIES	1
++#define XGBE_PMA_RX_VAL_SIG_MASK	(XGBE_PMA_RX_SIG_DET_0_MASK | XGBE_PMA_RX_VALID_0_MASK)
++
++static inline void xgbe_set_rx_adap_mode(struct xgbe_prv_data *pdata, enum xgbe_mode mode)
++{
++	if (pdata->rx_adapt_retries++ >= MAX_RX_ADAPT_RETRIES) {
++		pdata->rx_adapt_retries = 0;
++		return;
++	}
++
++	xgbe_phy_perform_ratechange(pdata,
++				    mode == XGBE_MODE_KR ?
++				    XGBE_MB_CMD_SET_10G_KR :
++				    XGBE_MB_CMD_SET_10G_SFI,
++				    XGBE_MB_SUBCMD_RX_ADAP);
++}
++
++static void xgbe_rx_adaptation(struct xgbe_prv_data *pdata)
++{
++	struct xgbe_phy_data *phy_data = pdata->phy_data;
++	unsigned int reg;
++
++	/* step 2: force PCS to send RX_ADAPT Req to PHY */
++	XMDIO_WRITE_BITS(pdata, MDIO_MMD_PMAPMD, MDIO_PMA_RX_EQ_CTRL4,
++			 XGBE_PMA_RX_AD_REQ_MASK, XGBE_PMA_RX_AD_REQ_ENABLE);
++
++	/* Step 3: Wait for RX_ADAPT ACK from the PHY */
++	msleep(200);
++
++	/* Software polls for coefficient update command (given by local PHY) */
++	reg = XMDIO_READ(pdata, MDIO_MMD_PMAPMD, MDIO_PMA_PHY_RX_EQ_CEU);
++
++	/* Clear the RX_AD_REQ bit */
++	XMDIO_WRITE_BITS(pdata, MDIO_MMD_PMAPMD, MDIO_PMA_RX_EQ_CTRL4,
++			 XGBE_PMA_RX_AD_REQ_MASK, XGBE_PMA_RX_AD_REQ_DISABLE);
++
++	/* Check if coefficient update command is set */
++	if ((reg & XGBE_PMA_CFF_UPDT_MASK) != XGBE_PMA_CFF_UPDT_MASK)
++		goto set_mode;
++
++	/* Step 4: Check for Block lock */
++
++	/* Link status is latched low, so read once to clear
++	 * and then read again to get current state
++	 */
++	reg = XMDIO_READ(pdata, MDIO_MMD_PCS, MDIO_STAT1);
++	reg = XMDIO_READ(pdata, MDIO_MMD_PCS, MDIO_STAT1);
++	if (reg & MDIO_STAT1_LSTATUS) {
++		/* If the block lock is found, update the helpers and declare the link up */
++		netif_dbg(pdata, link, pdata->netdev, "Block_lock done");
++		pdata->rx_adapt_done = true;
++		pdata->mode_set = false;
++		return;
++	}
++
++set_mode:
++	xgbe_set_rx_adap_mode(pdata, phy_data->cur_mode);
++}
++
++static void xgbe_phy_rx_adaptation(struct xgbe_prv_data *pdata)
++{
++	unsigned int reg;
++
++rx_adapt_reinit:
++	reg = XMDIO_READ_BITS(pdata, MDIO_MMD_PMAPMD, MDIO_PMA_RX_LSTS, XGBE_PMA_RX_VAL_SIG_MASK);
++
++	/* step 1: Check for RX_VALID && LF_SIGDET */
++	if ((reg & XGBE_PMA_RX_VAL_SIG_MASK) != XGBE_PMA_RX_VAL_SIG_MASK) {
++		netif_dbg(pdata, link, pdata->netdev, "RX_VALID or LF_SIGDET is unset, issue rrc");
++		xgbe_phy_rrc(pdata);
++		if (pdata->rx_adapt_retries++ >= MAX_RX_ADAPT_RETRIES) {
++			pdata->rx_adapt_retries = 0;
++			return;
 +		}
- 		if (phy_data->port_speeds & XGBE_PHY_PORT_SPEED_10000) {
- 			XGBE_SET_SUP(lks, 10000baseT_Full);
- 			phy_data->start_mode = XGBE_MODE_KR;
++		goto rx_adapt_reinit;
++	}
++
++	/* perform rx adaptation */
++	xgbe_rx_adaptation(pdata);
++}
++
+ static void xgbe_phy_rx_reset(struct xgbe_prv_data *pdata)
+ {
+ 	int reg;
+@@ -2103,7 +2190,7 @@ static void xgbe_phy_perform_ratechange(struct xgbe_prv_data *pdata,
+ 	wait = XGBE_RATECHANGE_COUNT;
+ 	while (wait--) {
+ 		if (!XP_IOREAD_BITS(pdata, XP_DRIVER_INT_RO, STATUS))
+-			goto reenable_pll;
++			goto do_rx_adaptation;
+ 
+ 		usleep_range(1000, 2000);
+ 	}
+@@ -2113,6 +2200,17 @@ static void xgbe_phy_perform_ratechange(struct xgbe_prv_data *pdata,
+ 
+ 	/* Reset on error */
+ 	xgbe_phy_rx_reset(pdata);
++	goto reenable_pll;
++
++do_rx_adaptation:
++	if (pdata->en_rx_adap && sub_cmd == XGBE_MB_SUBCMD_RX_ADAP &&
++	    (cmd == XGBE_MB_CMD_SET_10G_KR || cmd == XGBE_MB_CMD_SET_10G_SFI)) {
++		netif_dbg(pdata, link, pdata->netdev, "Enabling RX adaptation\n");
++		pdata->mode_set = true;
++		xgbe_phy_rx_adaptation(pdata);
++		/* return from here to avoid enabling PLL ctrl during adaptation phase */
++		return;
++	}
+ 
+ reenable_pll:
+ 	/* Enable PLL re-initialization, not needed for PHY Power Off and RRC cmds */
+@@ -2141,6 +2239,31 @@ static void xgbe_phy_power_off(struct xgbe_prv_data *pdata)
+ 	netif_dbg(pdata, link, pdata->netdev, "phy powered off\n");
+ }
+ 
++static bool enable_rx_adap(struct xgbe_prv_data *pdata, enum xgbe_mode mode)
++{
++	struct xgbe_phy_data *phy_data = pdata->phy_data;
++	unsigned int ver;
++
++	/* Rx-Adaptation is not supported on older platforms(< 0x30H) */
++	ver = XGMAC_GET_BITS(pdata->hw_feat.version, MAC_VR, SNPSVER);
++	if (ver < 0x30)
++		return false;
++
++	/* Re-driver models 4223 && 4227 do not support Rx-Adaptation */
++	if (phy_data->redrv &&
++	    (phy_data->redrv_model == XGBE_PHY_REDRV_MODEL_4223 ||
++	     phy_data->redrv_model == XGBE_PHY_REDRV_MODEL_4227))
++		return false;
++
++	/* 10G KR mode with AN does not support Rx-Adaptation */
++	if (mode == XGBE_MODE_KR &&
++	    phy_data->port_mode != XGBE_PORT_MODE_BACKPLANE_NO_AUTONEG)
++		return false;
++
++	pdata->en_rx_adap = 1;
++	return true;
++}
++
+ static void xgbe_phy_sfi_mode(struct xgbe_prv_data *pdata)
+ {
+ 	struct xgbe_phy_data *phy_data = pdata->phy_data;
+@@ -2149,7 +2272,11 @@ static void xgbe_phy_sfi_mode(struct xgbe_prv_data *pdata)
+ 
+ 	/* 10G/SFI */
+ 	if (phy_data->sfp_cable != XGBE_SFP_CABLE_PASSIVE) {
++		pdata->en_rx_adap = 0;
+ 		xgbe_phy_perform_ratechange(pdata, XGBE_MB_CMD_SET_10G_SFI, XGBE_MB_SUBCMD_ACTIVE);
++	} else if ((phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE) &&
++		   (enable_rx_adap(pdata, XGBE_MODE_SFI))) {
++		xgbe_phy_perform_ratechange(pdata, XGBE_MB_CMD_SET_10G_SFI, XGBE_MB_SUBCMD_RX_ADAP);
+ 	} else {
+ 		if (phy_data->sfp_cable_len <= 1)
+ 			xgbe_phy_perform_ratechange(pdata, XGBE_MB_CMD_SET_10G_SFI,
+@@ -2230,7 +2357,10 @@ static void xgbe_phy_kr_mode(struct xgbe_prv_data *pdata)
+ 	xgbe_phy_set_redrv_mode(pdata);
+ 
+ 	/* 10G/KR */
+-	xgbe_phy_perform_ratechange(pdata, XGBE_MB_CMD_SET_10G_KR, XGBE_MB_SUBCMD_NONE);
++	if (enable_rx_adap(pdata, XGBE_MODE_KR))
++		xgbe_phy_perform_ratechange(pdata, XGBE_MB_CMD_SET_10G_KR, XGBE_MB_SUBCMD_RX_ADAP);
++	else
++		xgbe_phy_perform_ratechange(pdata, XGBE_MB_CMD_SET_10G_KR, XGBE_MB_SUBCMD_NONE);
+ 
+ 	phy_data->cur_mode = XGBE_MODE_KR;
+ 
+@@ -2743,8 +2873,11 @@ static int xgbe_phy_link_status(struct xgbe_prv_data *pdata, int *an_restart)
+ 			return 0;
+ 		}
+ 
+-		if (phy_data->sfp_mod_absent || phy_data->sfp_rx_los)
++		if (phy_data->sfp_mod_absent || phy_data->sfp_rx_los) {
++			if (pdata->en_rx_adap)
++				pdata->rx_adapt_done = false;
+ 			return 0;
++		}
+ 	}
+ 
+ 	if (phy_data->phydev) {
+@@ -2766,7 +2899,26 @@ static int xgbe_phy_link_status(struct xgbe_prv_data *pdata, int *an_restart)
+ 	 */
+ 	reg = XMDIO_READ(pdata, MDIO_MMD_PCS, MDIO_STAT1);
+ 	reg = XMDIO_READ(pdata, MDIO_MMD_PCS, MDIO_STAT1);
+-	if (reg & MDIO_STAT1_LSTATUS)
++
++	if (pdata->en_rx_adap) {
++		/* if the link is available and adaptation is done, declare link up */
++		if ((reg & MDIO_STAT1_LSTATUS) && pdata->rx_adapt_done)
++			return 1;
++		/* If either link is not available or adaptation not done, retrigger the
++		 * adaptation logic. (if the mode is not set, then issue mailbox command first)
++		 */
++		if (pdata->mode_set) {
++			xgbe_phy_rx_adaptation(pdata);
++		} else {
++			pdata->rx_adapt_done = false;
++			xgbe_phy_set_mode(pdata, phy_data->cur_mode);
++		}
++
++		/* check again for the link and adaptation status */
++		reg = XMDIO_READ(pdata, MDIO_MMD_PCS, MDIO_STAT1);
++		if ((reg & MDIO_STAT1_LSTATUS) && pdata->rx_adapt_done)
++			return 1;
++	} else if (reg & MDIO_STAT1_LSTATUS)
+ 		return 1;
+ 
+ 	if (pdata->phy.autoneg == AUTONEG_ENABLE &&
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe.h b/drivers/net/ethernet/amd/xgbe/xgbe.h
+index 16e73df3e9b9..ad136ed493ed 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe.h
++++ b/drivers/net/ethernet/amd/xgbe/xgbe.h
+@@ -625,6 +625,7 @@ enum xgbe_mb_cmd {
+ 
+ enum xgbe_mb_subcmd {
+ 	XGBE_MB_SUBCMD_NONE = 0,
++	XGBE_MB_SUBCMD_RX_ADAP,
+ 
+ 	/* 10GbE SFP subcommands */
+ 	XGBE_MB_SUBCMD_ACTIVE = 0,
+@@ -1316,6 +1317,10 @@ struct xgbe_prv_data {
+ 
+ 	bool debugfs_an_cdr_workaround;
+ 	bool debugfs_an_cdr_track_early;
++	bool en_rx_adap;
++	int rx_adapt_retries;
++	bool rx_adapt_done;
++	bool mode_set;
+ };
+ 
+ /* Function prototypes*/
 -- 
 2.25.1
 
