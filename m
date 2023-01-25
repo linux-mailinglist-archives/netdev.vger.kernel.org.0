@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D74D367B300
+	by mail.lfdr.de (Postfix) with ESMTP id 8087167B2FF
 	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 14:10:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235461AbjAYNKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 08:10:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48962 "EHLO
+        id S235154AbjAYNKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 08:10:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235102AbjAYNKj (ORCPT
+        with ESMTP id S235511AbjAYNKj (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 08:10:39 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305E148A39
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 05:10:21 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3125654211;
+        Wed, 25 Jan 2023 05:10:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9E1AB819C2
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 13:10:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 61110C433D2;
+        by ams.source.kernel.org (Postfix) with ESMTPS id B312AB819B4;
+        Wed, 25 Jan 2023 13:10:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 58077C4339B;
         Wed, 25 Jan 2023 13:10:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1674652218;
-        bh=4HtDQ+DPw6m9aHa63F516IY/XD6l1jZeMXJn97QTR5E=;
+        bh=YzpixvpW9PCMMyM0yTjHSwl7B7McNWqkoZlzm88zMtM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CGeD9xKf3S6rumQ9oh1EUs3r7Uo7b/z36eoIkh6dtwq17b80lLLc5K8mqzK/kpC9u
-         2EQJYT1n3CmVozpRFmnxFVUJsTTTJ/AQj9RoNhiEFKcKrzsZ7jTrsyDvX7nTL7Lyjx
-         dSGx42kEJeSQkVk6qkMqgC1jk0d1aNl2BAbh1wfdu+Ril80rVOhi03WCfJasiHCweL
-         xi3Fpjd72+Vt2whPfegAZ8euj/VKZnllgZgAduGeDMaQKuJthosiwdXaaNIRA5sTqO
-         32PYNFR1GmzfWKNvZYzK1sA/hf5x5Io45Q2ZfSMtJlSFhknb9J/rKcJOObhG2lKq1V
-         BIrwbJR5aDsJQ==
+        b=GSerYtmkxTB/wiMovCOdwgakkZMpL+//Jk8RwYEA/wlXtBxkUPJaUMucP86CAVGbe
+         BGNXuWmWmli6fUfUw4ojk93XdLKzqJc3WIHXkXy148GkDuwWipTlQt0odaAkd5Gsj1
+         pAZ9P6mBYaTL2Q99M8UIOHS3FqpGc4Ns+hOscnURNAC01/IeIqeZfezth9p6M8HCj2
+         qQh1iKgeIhTZ6fuuVlosAUTMFkickPNWBRXv2+TicPHedf6k5vF8VvJnE6Iah9DQ0p
+         4TdYSxtmM5K5WanWpgfypb6UE4PiNjNPfxFKjFVby0E0lqtLGDkazAy0JRq5frRB+r
+         8zmuzjS2F1vQg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 47199F83ED3;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4080EC04E34;
         Wed, 25 Jan 2023 13:10:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/4] net: mctp: struct sock lifetime fixes
+Subject: Re: [PATCH net v3 0/2] net: ravb: Fix potential issues
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167465221828.7884.5467954248621980921.git-patchwork-notify@kernel.org>
+Message-Id: <167465221826.7884.3610835644530936754.git-patchwork-notify@kernel.org>
 Date:   Wed, 25 Jan 2023 13:10:18 +0000
-References: <20230124020106.743966-1-jk@codeconstruct.com.au>
-In-Reply-To: <20230124020106.743966-1-jk@codeconstruct.com.au>
-To:     Jeremy Kerr <jk@codeconstruct.com.au>
-Cc:     netdev@vger.kernel.org, matt@codeconstruct.com.au,
-        pabeni@redhat.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, noamr@ssd-disclosure.com
+References: <20230124000211.1426624-1-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <20230124000211.1426624-1-yoshihiro.shimoda.uh@renesas.com>
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     s.shtylyov@omp.ru, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,26 +61,21 @@ Hello:
 This series was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue, 24 Jan 2023 10:01:02 +0800 you wrote:
-> This series is a set of fixes for the sock lifetime handling in the
-> AF_MCTP code, fixing a uaf reported by Noam Rathaus
-> <noamr@ssd-disclosure.com>.
+On Tue, 24 Jan 2023 09:02:09 +0900 you wrote:
+> Fix potentiall issues on the ravb driver.
 > 
-> The Fixes: tags indicate the original patches affected, but some
-> tweaking to backport to those commits may be needed; I have a separate
-> branch with backports to 5.15 if that helps with stable trees.
+> Changes from v2:
+> https://lore.kernel.org/all/20230123131331.1425648-1-yoshihiro.shimoda.uh@renesas.com/
+>  - Add Reviewed-by in the patch [2/2].
+>  - Add a commit description in the patch [2/2].
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/4] net: mctp: add an explicit reference from a mctp_sk_key to sock
-    https://git.kernel.org/netdev/net/c/de8a6b15d965
-  - [net,2/4] net: mctp: move expiry timer delete to unhash
-    https://git.kernel.org/netdev/net/c/5f41ae6fca9d
-  - [net,3/4] net: mctp: hold key reference when looking up a general key
-    https://git.kernel.org/netdev/net/c/6e54ea37e344
-  - [net,4/4] net: mctp: mark socks as dead on unhash, prevent re-add
-    https://git.kernel.org/netdev/net/c/b98e1a04e27f
+  - [net,v3,1/2] net: ravb: Fix lack of register setting after system resumed for Gen3
+    https://git.kernel.org/netdev/net/c/c2b6cdee1d13
+  - [net,v3,2/2] net: ravb: Fix possible hang if RIS2_QFF1 happen
+    https://git.kernel.org/netdev/net/c/f3c07758c900
 
 You are awesome, thank you!
 -- 
