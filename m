@@ -2,209 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6D8267BDD1
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 22:12:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76B5C67BDE4
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 22:14:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235490AbjAYVMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 16:12:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60952 "EHLO
+        id S236226AbjAYVOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 16:14:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236356AbjAYVMb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 16:12:31 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2055AB5B
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 13:12:18 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id i17-20020a25bc11000000b007b59a5b74aaso20840989ybh.7
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 13:12:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=mjUP68ZzzFyh8hG9RPeRlc5xrTMio/O97kr7jaJq5/0=;
-        b=bZKAmtw+epp2hdpRq2aYZvzRqfJc+Q6/JLBQqH5S+RddlZ7/gEumJ8QBuUtH4JWCly
-         j7q66n+q3gB/gV8f/YYIHMDdCMOwWhy+uzwQtvA/D61T0UT1V0/8briK5e8ZSyVk9mAq
-         59XvAqGaezM4lbTaFzWrDGZIMwNbymCD559QZxaOngdKp1+Ve6S35nnMjPrWPEuM8mkv
-         ipDr0Yg39ysUTCH6HQ/gFQfaGx9E+Nsl3gUQYX1hdhyHPC14SwlYYLynR6SU91texQ0c
-         skYI1gNfNvokuscJm7PhDqmEn8trMNm6HJi7YaGhBxfK3BDztlX1jjguaQxvsshZ/wsm
-         CxmQ==
+        with ESMTP id S235736AbjAYVOh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 16:14:37 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1223E4EE7
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 13:14:34 -0800 (PST)
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 9C63D3F2D8
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 21:14:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1674681272;
+        bh=zuLI4Bp627ZhHkhqlP1iDRjahT6gPWQWdVEKJTBWAPw=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=milhjyYU/VIlfgLs7mYOiy1Qk5ePQycjQFWZfpnudW9pm930ztrrA00v+0UoNnMDk
+         kTSYhLsNVqhWyhydUiCRVG3lFNktTNJUty5pFIWQeELWb4/R5NpMkAHJHFNoYMKOFb
+         ECwQfFqEkwz29fwvAXiFF0/J009gRlGb/HEF84ekHvB6v/L7Hxi2CESWaYQvwXTrc4
+         nq4kq3T49StRw/ut0QGJfAdjaCor5zEjmT83C1MNJJO+xBnH1WVBcSXOJFqS6SlZxW
+         jMmVFWNqdETKyEQaiuLDfrZhv4fRcU8M+kStB9AWuFmOhS8QT0LZL9scTrCGA2GQ+V
+         rO3ZAW3ApAqRQ==
+Received: by mail-wm1-f72.google.com with SMTP id r15-20020a05600c35cf00b003d9a14517b2so1727734wmq.2
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 13:14:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mjUP68ZzzFyh8hG9RPeRlc5xrTMio/O97kr7jaJq5/0=;
-        b=xMnWL3DPHBPWpRiiBHgJIQnjrgxXg7upsW+XEgLsC7QcXYSA0+ZXnjbER87zDiryIu
-         0CbHk3AELbhBmCIzXuae58gYuiUXsSAymUDsTiJPFaViZSIS/IJsZAuAmvONbVz3P1iJ
-         aa0x3ZAZnrHhZ9VKIG+PayvV3prERiS4fCnBK0gFdJgZpCo4oGRLwQhtZPV5PBJ7Wcqu
-         ieQ47nzcsF2AFCpxsZbtQYtQ8qVZjPLB0Bjc8f5rhMq1zYLI08plzt2a0Gk/0qKaBn0W
-         EzNGfPUSHeSeO6I7LNuY/tfYTuHenm+5OIqTLr8Nv4D/J06VmfwXQnXO4sIO6LvOknwJ
-         2c/w==
-X-Gm-Message-State: AO0yUKXEmoRHsWay9+ZlwXOzLSyRR8k/t8NO+NxWzHHBThg2fvgCjLXw
-        LdtwD4Lj7o6P8QhIqo6of2OI18s4yITo
-X-Google-Smtp-Source: AK7set/jBOwnX0/QoX7ixwv9e2pNPa64RC5YCboTV73zgRZKUW3KNBAU33alOxNSlCaoaeo/b2tuD9s294fU
-X-Received: from jiangzp-glinux-dev.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:4c52])
- (user=jiangzp job=sendgmr) by 2002:a0d:d6c7:0:b0:506:3481:ced0 with SMTP id
- y190-20020a0dd6c7000000b005063481ced0mr1197728ywd.396.1674681137911; Wed, 25
- Jan 2023 13:12:17 -0800 (PST)
-Date:   Wed, 25 Jan 2023 13:12:10 -0800
-In-Reply-To: <20230125211210.552679-1-jiangzp@google.com>
-Mime-Version: 1.0
-References: <20230125211210.552679-1-jiangzp@google.com>
-X-Mailer: git-send-email 2.39.1.456.gfc5497dd1b-goog
-Message-ID: <20230125131159.kernel.v1.1.Id80089feef7af8846cc6f8182eddc5d7a0ac4ea7@changeid>
-Subject: [kernel PATCH v1 1/1] Bluetooth: Don't send HCI commands to remove
- adv if adapter is off
-From:   Zhengping Jiang <jiangzp@google.com>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        luiz.dentz@gmail.com
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        Archie Pusaka <apusaka@chromium.org>,
-        Zhengping Jiang <jiangzp@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zuLI4Bp627ZhHkhqlP1iDRjahT6gPWQWdVEKJTBWAPw=;
+        b=lkZLGGT/VEJ1mq8U/DFJYjSER9BKGXZ8Lv1A/DrQH0haficC/EiBMCFSBVJME84gZI
+         +BLGlqL7gclpvdk8OPI2dbfjTH17JPaOFdCztRdVeR6BBQAauKeKc0ODjq7c9PgKDYHT
+         817bQSGaK+5g8/czA2K9MSwHJHXONA+RJtFzl1+uKZ1TmM0NSqCO/WMARaFnhePyjelo
+         RbKxY39umLIDWsK+indahFGUH6dK5EtNmqtKpGs/BEDfG0WF+JbgJjiqpdkPYTFqJpjO
+         MWV6ViXCKcOT24VqmG6KKVcaCv8uYlrjpEURSZ7mOq3XuUjB+kGjGrCjoFPwtK9Mjnve
+         oD5g==
+X-Gm-Message-State: AFqh2krXmcOrPBboHF1a2/2KmSgwchR1vHFyJsi6OhsvDBt6VAvX0FhL
+        z/5vQJH6+kA8s3ogc7rspyriexC7BiugeGRrluDNxjpHU9idH0X/mCOUF4gBvPK0qGRyfMp8laY
+        disODbNPlfsmQM7p8cL1XGxIZe3m0Otvptg==
+X-Received: by 2002:adf:f0c7:0:b0:2bd:e18d:c9e5 with SMTP id x7-20020adff0c7000000b002bde18dc9e5mr30002379wro.40.1674681272278;
+        Wed, 25 Jan 2023 13:14:32 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXsEXTSteavR2oIdqHFpmfgQvV0sc0iT8QGFY/uEQuvNeO8SmPQBaIfEVUScik9B0mqdVFu5KA==
+X-Received: by 2002:adf:f0c7:0:b0:2bd:e18d:c9e5 with SMTP id x7-20020adff0c7000000b002bde18dc9e5mr30002370wro.40.1674681272108;
+        Wed, 25 Jan 2023 13:14:32 -0800 (PST)
+Received: from qwirkle.internal ([81.2.157.149])
+        by smtp.gmail.com with ESMTPSA id l10-20020a05600012ca00b002bfb02153d1sm5738146wrx.45.2023.01.25.13.14.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Jan 2023 13:14:31 -0800 (PST)
+From:   Andrei Gherzan <andrei.gherzan@canonical.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
+Cc:     Andrei Gherzan <andrei.gherzan@canonical.com>,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH v2 1/2] selftests: net: Fix missing nat6to4.o when running udpgro_frglist.sh
+Date:   Wed, 25 Jan 2023 21:13:49 +0000
+Message-Id: <20230125211350.113855-1-andrei.gherzan@canonical.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Archie Pusaka <apusaka@chromium.org>
+The udpgro_frglist.sh uses nat6to4.o which is tested for existence in
+bpf/nat6to4.o (relative to the script). This is where the object is
+compiled. Even so, the script attempts to use it as part of tc with a
+different path (../bpf/nat6to4.o). As a consequence, this fails the script:
 
-Mark the advertisement as disabled when powering off the adapter
-without removing the advertisement, so they can be correctly
-re-enabled when adapter is powered on again.
+Error opening object ../bpf/nat6to4.o: No such file or directory
+Cannot initialize ELF context!
+Unable to load program
 
-When adapter is off and user requested to remove advertisement,
-a HCI command will be issued. This causes the command to timeout
-and trigger GPIO reset.
+This change refactors these references to use a variable for consistency
+and also reformats two long lines.
 
-Therefore, immediately remove the advertisement without sending
-any HCI commands.
-
-Note that the above scenario only happens with extended advertisement
-(i.e. not using software rotation), because on the SW rotation
-scenario, we just wait until the rotation timer runs out before
-sending the HCI command. Since the timer is inactive when adapter is
-off, no HCI commands are sent.
-
-Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-Signed-off-by: Zhengping Jiang <jiangzp@google.com>
-
+Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
 ---
+ tools/testing/selftests/net/udpgro_frglist.sh | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-Changes in v1:
-- Mark the advertisement as disabled instead of clearing it.
-- Remove the advertisement without sending HCI command if the adapter is off.
-
- net/bluetooth/hci_sync.c | 57 +++++++++++++++++++++++++++++++++++++---
- 1 file changed, 53 insertions(+), 4 deletions(-)
-
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 117eedb6f709..08da68a30acc 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -1591,6 +1591,16 @@ int hci_remove_ext_adv_instance_sync(struct hci_dev *hdev, u8 instance,
- 	if (!ext_adv_capable(hdev))
- 		return 0;
+diff --git a/tools/testing/selftests/net/udpgro_frglist.sh b/tools/testing/selftests/net/udpgro_frglist.sh
+index c9c4b9d65839..1fdf2d53944d 100755
+--- a/tools/testing/selftests/net/udpgro_frglist.sh
++++ b/tools/testing/selftests/net/udpgro_frglist.sh
+@@ -6,6 +6,7 @@
+ readonly PEER_NS="ns-peer-$(mktemp -u XXXXXX)"
  
-+	/* When adapter is off, remove adv without sending HCI commands */
-+	if (!hdev_is_powered(hdev)) {
-+		hci_dev_lock(hdev);
-+		err = hci_remove_adv_instance(hdev, instance);
-+		if (!err)
-+			mgmt_advertising_removed(sk, hdev, instance);
-+		hci_dev_unlock(hdev);
-+		return err;
-+	}
-+
- 	err = hci_disable_ext_adv_instance_sync(hdev, instance);
- 	if (err)
- 		return err;
-@@ -1772,6 +1782,23 @@ int hci_schedule_adv_instance_sync(struct hci_dev *hdev, u8 instance,
- 	return hci_start_adv_sync(hdev, instance);
- }
+ BPF_FILE="../bpf/xdp_dummy.bpf.o"
++BPF_NAT6TO4_FILE="./bpf/nat6to4.o"
  
-+static void hci_clear_ext_adv_ins_during_power_off(struct hci_dev *hdev,
-+						   struct sock *sk)
-+{
-+	struct adv_info *adv, *n;
-+	int err;
-+
-+	hci_dev_lock(hdev);
-+	list_for_each_entry_safe(adv, n, &hdev->adv_instances, list) {
-+		u8 instance = adv->instance;
-+
-+		err = hci_remove_adv_instance(hdev, instance);
-+		if (!err)
-+			mgmt_advertising_removed(sk, hdev, instance);
-+	}
-+	hci_dev_unlock(hdev);
-+}
-+
- static int hci_clear_adv_sets_sync(struct hci_dev *hdev, struct sock *sk)
- {
- 	int err;
-@@ -1779,6 +1806,12 @@ static int hci_clear_adv_sets_sync(struct hci_dev *hdev, struct sock *sk)
- 	if (!ext_adv_capable(hdev))
- 		return 0;
+ cleanup() {
+ 	local -r jobs="$(jobs -p)"
+@@ -40,8 +41,12 @@ run_one() {
  
-+	/* When adapter is off, remove adv without sending HCI commands */
-+	if (!hdev_is_powered(hdev)) {
-+		hci_clear_ext_adv_ins_during_power_off(hdev, sk);
-+		return 0;
-+	}
-+
- 	/* Disable instance 0x00 to disable all instances */
- 	err = hci_disable_ext_adv_instance_sync(hdev, 0x00);
- 	if (err)
-@@ -5177,9 +5210,27 @@ static int hci_disconnect_all_sync(struct hci_dev *hdev, u8 reason)
- 	return 0;
- }
+ 	ip -n "${PEER_NS}" link set veth1 xdp object ${BPF_FILE} section xdp
+ 	tc -n "${PEER_NS}" qdisc add dev veth1 clsact
+-	tc -n "${PEER_NS}" filter add dev veth1 ingress prio 4 protocol ipv6 bpf object-file ../bpf/nat6to4.o section schedcls/ingress6/nat_6  direct-action
+-	tc -n "${PEER_NS}" filter add dev veth1 egress prio 4 protocol ip bpf object-file ../bpf/nat6to4.o section schedcls/egress4/snat4 direct-action
++	tc -n "${PEER_NS}" filter add dev veth1 ingress prio 4 protocol \
++		ipv6 bpf object-file "$BPF_NAT6TO4_FILE" section \
++		schedcls/ingress6/nat_6 direct-action
++	tc -n "${PEER_NS}" filter add dev veth1 egress prio 4 protocol \
++		ip bpf object-file "$BPF_NAT6TO4_FILE" section \
++		schedcls/egress4/snat4 direct-action
+         echo ${rx_args}
+ 	ip netns exec "${PEER_NS}" ./udpgso_bench_rx ${rx_args} -r &
  
-+static void hci_disable_ext_advertising_temporarily(struct hci_dev *hdev)
-+{
-+	struct adv_info *adv, *n;
-+
-+	if (!ext_adv_capable(hdev))
-+		return;
-+
-+	hci_dev_lock(hdev);
-+
-+	list_for_each_entry_safe(adv, n, &hdev->adv_instances, list)
-+		adv->enabled = false;
-+
-+	hci_dev_clear_flag(hdev, HCI_LE_ADV);
-+
-+	hci_dev_unlock(hdev);
-+}
-+
- /* This function perform power off HCI command sequence as follows:
-  *
-- * Clear Advertising
-+ * Disable Advertising Instances. Do not clear adv instances so advertising
-+ * can be re-enabled on power on.
-  * Stop Discovery
-  * Disconnect all connections
-  * hci_dev_close_sync
-@@ -5199,9 +5250,7 @@ static int hci_power_off_sync(struct hci_dev *hdev)
- 			return err;
- 	}
+@@ -88,7 +93,7 @@ if [ ! -f ${BPF_FILE} ]; then
+ 	exit -1
+ fi
  
--	err = hci_clear_adv_sync(hdev, NULL, false);
--	if (err)
--		return err;
-+	hci_disable_ext_advertising_temporarily(hdev);
- 
- 	err = hci_stop_discovery_sync(hdev);
- 	if (err)
+-if [ ! -f bpf/nat6to4.o ]; then
++if [ ! -f "$BPF_NAT6TO4_FILE" ]; then
+ 	echo "Missing nat6to4 helper. Build bpfnat6to4.o selftest first"
+ 	exit -1
+ fi
 -- 
-2.39.1.456.gfc5497dd1b-goog
+2.34.1
 
