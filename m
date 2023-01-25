@@ -2,110 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7D8867B516
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 15:49:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC53167B534
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 15:56:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235387AbjAYOtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 09:49:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53252 "EHLO
+        id S235928AbjAYOz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 09:55:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235046AbjAYOtI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 09:49:08 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2136.outbound.protection.outlook.com [40.107.94.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F813530E6
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 06:49:07 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kyVDtptzpNQeQGmUUHzl797wHC7t73AsbrrCwd50KD9OC9mALWmK3reA1ASqCiHt0xbY6zqNuiJGb5BMMymw6A0shHleZQdYLN3/DYMQ0GyaGj5ArXUuyvR4Iad7wCyLITaGI0s9jA1eVwSulzhUCGitGIDvzbeZsrhImfdhQh9RZSyEVN6QN1kMHkTWiganE9tcofU9ejZ6XM/BgxWXGvyWX3+hFVAXLsWZDD4tFGNNt5cTR763O2/jn1cnQr/lsVdwPEjXA2p3PuaUKtb3osVqICh4cay9jbvtwdSQjQqr113uDLy2fQyRF38aC1yBxsFmO/toNutY3c+4Hx3BQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dfpm73UDY/nam/6d0BO24R3NSSpDILhev0iT4gTGN1w=;
- b=fr0KwaM2q27bld9PEoIVpMAmP8U/z+2e5DP4ci0tIpR7o/WbzawzCATW2qA4wvTLDnh3xIR2p4fcPzVLTnHsItRwKQ/BwQVVMHvRb6Gvv6xSowTI+t6Nu0s8ecJIzEoXS7hBJrHJ5E/d4D9r7T/HfJwkhse2bPPMW1xV7QGKhudz3iNLNQGSEIvRKppe4AgBm+UJrLlKfkA7sbmdTlm/uWxDYSeWkA8i02dpSnKkJ44BFPkgswWgIh36jqYhlyyGp9iJf47ky61yLMWLRceoFduZNqs+5DJN22rhvW7eQkS72R77e+TZFUQjWIr5qfn/CrkA5EtvbWs5YVu9plDKFA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dfpm73UDY/nam/6d0BO24R3NSSpDILhev0iT4gTGN1w=;
- b=KLann+7M3NYkCglAY9kvSLMAga3xY44VgyQMiSnTXHEvie6io6jX+bb71tGS/fe2lbO2KKGlp3PFpRNW74X/6rmFea8KjHpnfj2qFnk+hY4TkpuDjNbZpYuuXC6+8h5g6mzpsUt++6ixG83lzN1Rhu/I8dJzboDnrruft3l2Z+g=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by MN2PR13MB3869.namprd13.prod.outlook.com (2603:10b6:208:1e0::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Wed, 25 Jan
- 2023 14:49:06 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65%6]) with mapi id 15.20.6043.021; Wed, 25 Jan 2023
- 14:49:05 +0000
-Date:   Wed, 25 Jan 2023 15:48:58 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Sven Neuhaus <sven-netdev@sven.de>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2] ip-rule.8: Bring synopsis in line with
- description
-Message-ID: <Y9FBWkR3TjuV9ETZ@corigine.com>
-References: <2d32d885-6d27-7cb9-e1e6-c179c2f4d8c5@sven.de>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2d32d885-6d27-7cb9-e1e6-c179c2f4d8c5@sven.de>
-X-ClientProxiedBy: AS4P192CA0003.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:20b:5da::13) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S235922AbjAYOzs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 09:55:48 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9C630FE;
+        Wed, 25 Jan 2023 06:55:46 -0800 (PST)
+Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C565B1EC0493;
+        Wed, 25 Jan 2023 15:55:43 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1674658543;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=Y5InzrMMR7tYD7K8IQxbCKmCrcbndsF98jURDpiEvtA=;
+        b=QhsVXgG9+mQg62pSTSotZNXiTHgj4Kr6DjoD6RzyyIrLoNuw0inT+OEDkhvYR4sZ9y9twf
+        dkUtWiZR9A2rC/a29R9t7FALlEu268HgkolBGU6CkU1ELWPMp15xxUqQFFuhLce3GKLUNv
+        ZZy1MIaPxdrIzvmknDNQqsceFa0jwx4=
+Date:   Wed, 25 Jan 2023 15:55:40 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc:     "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "sathyanarayanan.kuppuswamy@linux.intel.com" 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+        "jane.chu@oracle.com" <jane.chu@oracle.com>,
+        "seanjc@google.com" <seanjc@google.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
+ to map as encrypted
+Message-ID: <Y9FC7Dpzr5Uge/Mi@zn.tnic>
+References: <1673559753-94403-1-git-send-email-mikelley@microsoft.com>
+ <1673559753-94403-7-git-send-email-mikelley@microsoft.com>
+ <Y8r2TjW/R3jymmqT@zn.tnic>
+ <BYAPR21MB168897DBA98E91B72B4087E1D7CA9@BYAPR21MB1688.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MN2PR13MB3869:EE_
-X-MS-Office365-Filtering-Correlation-Id: ee4a4aa9-b57e-409d-977a-08dafee34e9d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yw+xP0IhT48/7F+M2LdmaZnTg2lRV+Q/ADA9zknJXi9gJ14iURGIwu39nEGLQzgTo9iW9r2INzY4OL+FQc1bkXGdfW0VXMbPVxU6xvtqczrZYFqOGsbWvspHxtjKQjZSN9aG42uUde7SsPPpC5+SlLVYx8VHjMDE5GzegcZlAtUhx2Eg6XlkGOszzDV5B20Yay27qmCX4EH/jmnLtcNl5ty826/Dy+PXeRhptb5ZzEI42FoesTOWUthXrfSSTeZyLWfgNaN2xQ1W0DVGaT7yLhg/miX3w3AC9zEuInsSk5PnD/w1SAJYxkKF/nVjeTzGGOwE6xIK0q/FKXEa3vyGFuF2+hLeeC7bn7tTaCgIHkbV0TyAFAPLAnV9aJcoPP+wnhgVkQf2K+yu8e+NgBZF3evhre66uNDd5L/b9pMQn6+qltyrQA/901CJHcee0l0OQ1Xv6XMAuTwUzMtS7dW5SCLfhU/Bn72TgsxLkL82JboiVIdSGYwHD+fPWHTSfCx8Ash1+2D02XgA78yMvWf0mesdeCdbj1JDDCRUSpFrXHNnzSu3iZPpQJ9F7j80AzaX1+6DrgwnCJDilNBmzspKipPjOuUcbI3MUVVR1RJoAnI3QKGo0LHrm5pWoX4KFontQ/PQLCOg0PirhRcuP0BMJw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(346002)(376002)(136003)(39830400003)(396003)(451199018)(83380400001)(6486002)(4326008)(2616005)(6666004)(66946007)(316002)(8676002)(186003)(66556008)(86362001)(478600001)(36756003)(44832011)(4744005)(2906002)(38100700002)(66476007)(6916009)(6512007)(6506007)(41300700001)(5660300002)(8936002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5k7++A9o4iqprgpTSB+EkNcNqcIOcODxejBS21/GQRchvpZTiFtpJJprUINY?=
- =?us-ascii?Q?X8zlSP0Rc5oZPlCY6IZU0LHdHZ2HtReBTow8bE169v1ZKqgXvKVxTlXGIvNf?=
- =?us-ascii?Q?P+KVoPNRk514lrownldtD6hKAJ1EwMiJiVsq/wWtKqJElUFRVJ4Zu+3ldl4l?=
- =?us-ascii?Q?WSEGJAAVmFmaTiji+0sVwpf85GgGjsP5WzyPD8AHB2Q1Z5WZ9p16vQ0917AA?=
- =?us-ascii?Q?2jBUMb9WA7kdFqHG4nNa24QzF3gqWhkDQsfg2idqcMw3MrC+FofOFTDczZbx?=
- =?us-ascii?Q?3MoWMqmJYSFy6I14PQpI1w2DjWTHpvewjSUUynIrA0mOcgUuud3Eo19IyKVI?=
- =?us-ascii?Q?dQyiy0v2BjC8N+SOeJjTtz5j8PU9BqX4bIkJM4jWz5G2ianGEcB/TtrIrXMv?=
- =?us-ascii?Q?NbgEh9k6OSs2i+rE/saGFiVKu61DXzoSsZoagwXdQVrOh1eSC2Sn46paelHb?=
- =?us-ascii?Q?pm7HqsOd4BiTb0OAACRrHXfmLH73C9MvXliSjXnJUdrezHFk0ZnO+FqwBNVc?=
- =?us-ascii?Q?VoV+hWer2jGJjkbFT6sImv3EOKOmlDWA6Xdf3Tg840G72hPoTVz9RTjV443O?=
- =?us-ascii?Q?l3fV1SWfRm66Evkzn02KFnxmNjXrwvAQuMEGcZlH9WjsXqbsQFresmDsxsD5?=
- =?us-ascii?Q?wBqsREOJUEueZAnJP7BjriaGZXdx9CfOUlVFAXUH5NGT6Jg/5QY62J4qIJkU?=
- =?us-ascii?Q?5vbI6/clngzFgETwtSO/QMixDKP2toQP4bh4V3vnU+pKY4nJRXjVGRfu49qz?=
- =?us-ascii?Q?WgNyjrCe4seN+RGY/nXbqRCqtA6rJ76dK/+v2vCnXgV6GYWSYTzGUrjsdSgj?=
- =?us-ascii?Q?1NbL0ace1fM5Cw0GGANa6XqpFQYJXS8mAr9ZAgd6y7B6NiC1TCPgvvVKa+dr?=
- =?us-ascii?Q?4T1DXT0KdIAySXQcphr7JNKasoNHeCBWL/8RELRODe/bezKYCtgcdLzEKJZ7?=
- =?us-ascii?Q?J2TTYKPa5+S3F6NMivyX/1JwpeGv0WWbG7p+q+WOWS9+LYy4Gd3nfJ6GYQOZ?=
- =?us-ascii?Q?1kdMNV5w6qpyMLMmtVZPj42g8da60cbsZO5miRmciblljzwV4RLzuF2YKQzI?=
- =?us-ascii?Q?2KdNoqmYXH9ZrJgY5tJnMyWcSLxQnTDjBjsOb7BYohI/1SG/rbT5sRVHi0/R?=
- =?us-ascii?Q?/uVULNwVRvPG1OMQS/cZ8Lad+Vze1IHGmL+jzWr36pQh+Wu9AmG6o/K0zjW1?=
- =?us-ascii?Q?T/JtIHL/u+9mmDP4e4nNzLUjUvSiACfIZAzoiRUpWoFAW4gR9eM6mmOqN0qk?=
- =?us-ascii?Q?ml8l7Z0dl26ZCyPAQMWF7qkEj28ywtzu01CdwSSXV/T+y6WNdwhVqidfPj+7?=
- =?us-ascii?Q?U++J9PScb2Tbp3+ZsLjFpt6AxrnSKnhnGL9MQdHk2Bc2Kj0wBePf7Uj34RKL?=
- =?us-ascii?Q?MfjMQCzqS+AYPtL6h5gyhlxDJywXJIANVZG+pEWqXK58a8ANktXDelrMxQgL?=
- =?us-ascii?Q?XVnpWuW6ef9pUW9ygzSEvqxYr/1UGC9O1eX8pAI9eyukKFDvnUKiaWHBVigV?=
- =?us-ascii?Q?MkkPQ78Gx0LBDKK4HVfe1CkqZ0P+j7DRJagLvUk4S7zosJ/2YBiO1eB43ESF?=
- =?us-ascii?Q?Mic9+mANhRKCkmq6U+jV3l/lVjTRSwLZ+2qtDjne516MsUgSeBY3QKPUakNu?=
- =?us-ascii?Q?iinS0rUFf4yuwjr8EenDE7ogi6q09Xejl8fm6FlIccW8ZFNBJG0E5eNxH5Du?=
- =?us-ascii?Q?JzyFxA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ee4a4aa9-b57e-409d-977a-08dafee34e9d
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2023 14:49:05.8684
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QDQpA8hU6pyzF8D6jdBZmQqm4xjUY7TJMuLjt8nE5G5VrQ5ASZHSpDNyrCWA5vBOrAk6688uMBCrZ7T7VUWBuwhlSO+KZfWyr7S+JTwPZvM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB3869
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <BYAPR21MB168897DBA98E91B72B4087E1D7CA9@BYAPR21MB1688.namprd21.prod.outlook.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -113,27 +89,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 25, 2023 at 09:20:22AM +0100, Sven Neuhaus wrote:
-> Rename the option "priority" (with the aliases "preference" or "order") in
-> the SYNOPSIS to be the same as under "DESCRIPTION".
+On Sat, Jan 21, 2023 at 04:10:23AM +0000, Michael Kelley (LINUX) wrote:
+> Per the commit message for 009767dbf42a, it's not safe to read MSR_AMD64_SEV
+> on all implementations of AMD processors.
 
-Seems reasonable to me.
-But if so, should 'list' also be updated to 'show'
-a but further up in the SYNOPSIS?
+1. Why does that matter to you? This is Hygon.
 
-> diff --git a/man/man8/ip-rule.8 b/man/man8/ip-rule.8
-> index 2c12bf64..43820cf7 100644
-> --- a/man/man8/ip-rule.8
-> +++ b/man/man8/ip-rule.8
-> @@ -42,8 +42,8 @@ ip-rule \- routing policy database management
->  .IR STRING " ] [ "
->  .B  oif
->  .IR STRING " ] [ "
-> -.B  pref
-> -.IR NUMBER " ] [ "
-> +.B  priority
-> +.IR PREFERENCE " ] [ "
->  .IR l3mdev " ] [ "
->  .B uidrange
->  .IR NUMBER "-" NUMBER " ] [ "
-> 
+2. The MSR access is behind CPUID check.
+
+> CC_ATTR_ACCESS_IOAPIC_ENCRYPTED is used in io_apic_set_fixmap(), which is
+> called on all Intel/AMD systems without any qualifications.   Even if
+> rdmsrl_safe() works at this point in boot, I'm a little leery of reading a new
+> MSR in a path that essentially every x86 bare-metal system or VM takes during
+> boot.
+
+You read the MSR once and cache it. sme_enable() already does that. I don't see
+what the problem is.
+
+> Or am I being overly paranoid about old processor models or hypervisor
+> versions potentially doing something weird?
+
+Yes, you are. :)
+
+If they're doing something weird which is out of spec, then we'll deal with them
+later.
+
+> But in any case, the whole point of cc_platform_has() is to provide a level of
+> abstraction from the hardware registers, and it's fully safe to use on every x86
+> bare-metal system or VM.  And while I don't anticipate it now, maybe there's
+> some future scheme where a paravisor-like entity could be used with Intel
+> TDX.  It seems like using a cc_platform_has() abstraction is better than directly
+> accessing the MSR.
+
+That's fine but we're talking about this particular implementation and that is
+vTOM-like with the address space split. If TDX does address space split later,
+we can accomodate it too. (Although I think they are not interested in this).
+
+And if you really want to use cc_platform_has(), we could do
+
+	cc_platform_has(CC_ADDRESS_SPACE_SPLIT_ON_A_PARAVISOR)
+
+or something with a better name.
+
+The point is, you want to do things which are specific for this particular
+implementation. If so, then check for it. Do not do hacky things which get the
+work done for your case but can very easily be misused by others.
+
+> My resolution of the TPM driver issue is admittedly a work-around.   I think
+> of it as temporary in anticipation of future implementations of PCIe TDISP
+> hardware, which allows PCI devices to DMA directly into guest encrypted
+> memory.
+
+Yap, that sounds real nice.
+
+> TDISP also places the device's BAR values in an encrypted portion
+> of the GPA space. Assuming TDISP hardware comes along in the next couple
+> of years, Linux will need a robust way to deal with a mix of PCI devices
+> being in unencrypted and encrypted GPA space.  I don't know how a
+> specific device will be mapped correctly, but I hope it can happen in the
+> generic PCI code, and not by modifying each device driver.
+
+I guess those devices would advertize that capability somehow so that code can
+query it and act accordingly.
+
+> It's probably premature to build that robust mechanism now, but when it comes,
+> my work-around would be replaced.
+
+It would be replaced if it doesn't have any users. By the looks of it, it'll
+soon grow others and then good luck removing it.
+
+> With all that in mind, I don't want to modify the TPM driver to special-case
+> its MMIO space being encrypted.  FWIW, the TPM driver today uses
+> devm_ioremap_resource() to do the mapping, which defaults to mapping
+> decrypted except for the exceptions implemented in __ioremap_caller().
+> There's no devm_* option for specifying encrypted.
+
+You mean, it is hard to add a DEVM_IOREMAP_ENCRYPTED type which will have
+__devm_ioremap() call ioremap_encrypted()?
+
+Or define a IORESOURCE_ENCRYPTED and pass it through the ioresource flags?
+
+Why is that TPM driver so precious that it can be touched and the arch code
+would have to accept hacks?
+
+> Handling decrypted vs. encrypted in the driver would require extending the
+> driver API to provide an "encrypted" option, and that seems like going in the
+> wrong long-term direction.
+
+Sorry, I can't follow here.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
