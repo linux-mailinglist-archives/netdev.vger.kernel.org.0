@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3E2F67B404
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 15:14:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB43167B405
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 15:14:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235646AbjAYOOr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 09:14:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52112 "EHLO
+        id S235664AbjAYOOs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 09:14:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235492AbjAYOOb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 09:14:31 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD8159269
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 06:14:28 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id qx13so47901216ejb.13
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 06:14:28 -0800 (PST)
+        with ESMTP id S235655AbjAYOOq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 09:14:46 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD3359550
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 06:14:30 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id qx13so47901480ejb.13
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 06:14:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=cCcvigqHW9b86rA8k/1atgagp1ktjzYjfZEE64VdQWY=;
-        b=haplY+SLoeA28LXcx6pV7e8WAb7uioqO8VPbE93OabDo3tj3XeKyIua0Ez2qLOKCng
-         S2YDlv15Vd+lBk1oyyduzT+UMWvGSPL09GM5c/dKBLWLwN3rNJgulNwaFCE46ggiEvi0
-         lLgSzwz7jPeenj25ydDb3lV6oUa+aIGG2e5Jiwo9ZDWbFquaBJMmyPJ2c0MTbNgIi2Ma
-         nj5ogPEq9684AP40bf/vOUQ3tODcklts+Zs8Ugp6kURYvwK7VZgIZhWcLB0Ro/EVUMZf
-         TQEk8IV3P7lEs6yOFCwQPZTDVlMN1KO2YRx2NP4uFhJ/zFbNwje+Xsm/vyaoY6qprP/R
-         5rvg==
+        bh=YYxeqF3Zn5ZSlrii+Op6Svhd80/z8dsw3BGSu2pt45o=;
+        b=H7C8CYFop9b9Uki9n2RVKVqWLzPVSHxUMxC0ctxcdE+8VwMfal3DYu57T66LECxzpE
+         WvqbCQ7J0WL2f4rSaCgGUwbywPjitSyqjA2TgcmLeagMmFo0nUVamdsjH25Fep7YnTXb
+         C5/80RVDbAjqA71kpkY0oRT58C4pAKsImstLRjFvnAEw9OE02NnvVXo9XNzCxoziVJK/
+         0TP8f5tjXdGvMLwXky6QSeBdQN6aAaF+5DSFg5gacotU+Wo9ZjrAyc7cPF6+LxlDEfyP
+         eNfC3wTPKENAco5rT399Ft8tZZq2bSxN2ckRsl/GHrNu7ONDaZCwoI4ON5h7S5Dv12tr
+         yHfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=cCcvigqHW9b86rA8k/1atgagp1ktjzYjfZEE64VdQWY=;
-        b=rtGHKFgtcFS/pNUw024NOsGmctCnF80gHUOefVeQTfv4vuXkHX3A9nGZQts56JKdkv
-         2Z+cm7dWIyYvh79VRY37F8rRz7+S+x84FiYJb+FVEvHQ+NUpPR0s57/XeiK9wh0BvgkN
-         Hz64QOjoT34L5jw/0DQ+abHAKTvDtsCm0GefX35hs3uwYMgbLdVLxRX/i5e9yZCdqmz8
-         NtuV5acrPGhbK/sklkH5d5WsLMAhewxLlleCH4lnCzA9KfV95/dpZScv0UxzaKri2ATP
-         YNOJbkxnCqZEpE7GSHgHVRIR3Q6SWHeifnWt6Qe57UUjLwiXXecJSAXIkDdcifN5+NTX
-         ezTw==
-X-Gm-Message-State: AFqh2koqqcEKUP+Z8TvOOl3CU9pt6nn/47oNYUdWSJYWgC87WC8CwPaO
-        3N+lZaFVv1/ea0F8DeWzfUSVBMRS9gUPupH8WZY=
-X-Google-Smtp-Source: AMrXdXuOxsUiSvapO+0s0632uPn4B1QabFHMwKQN+yqxxJqIE9LHjO/TGVeEhknnh0l4DWCQgXrpJQ==
-X-Received: by 2002:a17:907:7248:b0:872:b1d7:8028 with SMTP id ds8-20020a170907724800b00872b1d78028mr45227230ejc.3.1674656066750;
-        Wed, 25 Jan 2023 06:14:26 -0800 (PST)
+        bh=YYxeqF3Zn5ZSlrii+Op6Svhd80/z8dsw3BGSu2pt45o=;
+        b=MCjE+7TcclPzvjPySyvkFaqrzRn9yZqDGYaPNbmdFPvLIjTq9NwzlGYkw9uv9XOGRB
+         OliYT+QLDO4nI0mGC8xttZf/7RRU5iDQk57d+C0TQsFYrWzWemb0U/31JpuzK1pOyeM2
+         NG/csa4SY7LPicslBX+gp6ef5XVdeF/vCoVFg2tbuk1eMZeeFlWSwZYF5N4XiShXYEK2
+         Z/m5jNZNFasG3GWLcnkQ9yHl1k3TY7jTfgASsY/v5sYIHJxdS9ZLp/rRqIa8h5MDjWOn
+         phxMfPakTIj2elU7UOY2pUjSAvJSJHxvLHtNFrzYWuDBZfF2ZkT0Mxs/3TOcABTn/+TP
+         SOZg==
+X-Gm-Message-State: AFqh2ko02msseRJCu8SDvUGXrYshiurMA1tz6pTdjya1+yrG7HYKNGw9
+        PwjR0hCHhNZ4MSZkU9meccbNSb9lEIsnnC0o88k=
+X-Google-Smtp-Source: AMrXdXtcQaGOBKXB3/rN1SgzfYeo+hA7iOlzO/6ASYOyzzro9ityTUMD3+JKcsYAaDZ4BpiNAk5QZg==
+X-Received: by 2002:a17:907:a4c6:b0:86f:1283:7b1d with SMTP id vq6-20020a170907a4c600b0086f12837b1dmr23368873ejc.71.1674656068850;
+        Wed, 25 Jan 2023 06:14:28 -0800 (PST)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id ks27-20020a170906f85b00b0085fc3dec567sm2444039ejb.175.2023.01.25.06.14.25
+        by smtp.gmail.com with ESMTPSA id fx35-20020a1709069ea300b0085d6bfc6201sm2418103ejc.86.2023.01.25.06.14.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Jan 2023 06:14:26 -0800 (PST)
+        Wed, 25 Jan 2023 06:14:28 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
@@ -59,9 +59,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         aelior@marvell.com, manishc@marvell.com, jacob.e.keller@intel.com,
         gal@nvidia.com, yinjun.zhang@corigine.com, fei.qin@corigine.com,
         Niklas.Cassel@wdc.com
-Subject: [patch net-next 05/12] ice: remove pointless calls to devlink_param_driverinit_value_set()
-Date:   Wed, 25 Jan 2023 15:14:05 +0100
-Message-Id: <20230125141412.1592256-6-jiri@resnulli.us>
+Subject: [patch net-next 06/12] qed: remove pointless call to devlink_param_driverinit_value_set()
+Date:   Wed, 25 Jan 2023 15:14:06 +0100
+Message-Id: <20230125141412.1592256-7-jiri@resnulli.us>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230125141412.1592256-1-jiri@resnulli.us>
 References: <20230125141412.1592256-1-jiri@resnulli.us>
@@ -78,49 +78,41 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-devlink_param_driverinit_value_set() call makes sense only for
-"driverinit" params. However here, both params are "runtime".
+devlink_param_driverinit_value_set() call makes sense only for "
+driverinit" params. However here, the param is "runtime".
 devlink_param_driverinit_value_set() returns -EOPNOTSUPP in such case
-and does not do anything. So remove the pointless calls to
+and does not do anything. So remove the pointless call to
 devlink_param_driverinit_value_set() entirely.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- drivers/net/ethernet/intel/ice/ice_devlink.c | 20 ++------------------
- 1 file changed, 2 insertions(+), 18 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed_devlink.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index 8286e47b4bae..ce753d23aba9 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.c
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -1411,25 +1411,9 @@ ice_devlink_set_switch_id(struct ice_pf *pf, struct netdev_phys_item_id *ppid)
- int ice_devlink_register_params(struct ice_pf *pf)
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_devlink.c b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
+index 922c47797af6..be5cc8b79bd5 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_devlink.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
+@@ -198,7 +198,6 @@ static const struct devlink_ops qed_dl_ops = {
+ 
+ struct devlink *qed_devlink_register(struct qed_dev *cdev)
  {
- 	struct devlink *devlink = priv_to_devlink(pf);
 -	union devlink_param_value value;
--	int err;
--
--	err = devlink_params_register(devlink, ice_devlink_params,
--				      ARRAY_SIZE(ice_devlink_params));
--	if (err)
--		return err;
+ 	struct qed_devlink *qdevlink;
+ 	struct devlink *dl;
+ 	int rc;
+@@ -216,11 +215,6 @@ struct devlink *qed_devlink_register(struct qed_dev *cdev)
+ 	if (rc)
+ 		goto err_unregister;
  
 -	value.vbool = false;
--	devlink_param_driverinit_value_set(devlink,
--					   DEVLINK_PARAM_GENERIC_ID_ENABLE_IWARP,
+-	devlink_param_driverinit_value_set(dl,
+-					   QED_DEVLINK_PARAM_ID_IWARP_CMT,
 -					   value);
 -
--	value.vbool = test_bit(ICE_FLAG_RDMA_ENA, pf->flags) ? true : false;
--	devlink_param_driverinit_value_set(devlink,
--					   DEVLINK_PARAM_GENERIC_ID_ENABLE_ROCE,
--					   value);
--
--	return 0;
-+	return devlink_params_register(devlink, ice_devlink_params,
-+				       ARRAY_SIZE(ice_devlink_params));
- }
+ 	cdev->iwarp_cmt = false;
  
- void ice_devlink_unregister_params(struct ice_pf *pf)
+ 	qed_fw_reporters_create(dl);
 -- 
 2.39.0
 
