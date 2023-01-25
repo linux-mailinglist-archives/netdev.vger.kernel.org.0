@@ -2,145 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 842B867A7ED
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 01:44:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B08F767A7F0
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 01:45:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233370AbjAYAoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Jan 2023 19:44:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50106 "EHLO
+        id S233454AbjAYAp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Jan 2023 19:45:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230151AbjAYAoh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 19:44:37 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCFF37F38;
-        Tue, 24 Jan 2023 16:44:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674607473; x=1706143473;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QM2+POLX0q7xcehfBUAPRbRSsX9KORGrbBZHP2QA5B4=;
-  b=O4GwL7D/ILhQO5gWJIRepYIt246TNpqi36W31B9FgeoxDuFx+G+LQDaK
-   kQDHEI42L5ztwWWZlJxwq3r5X9Jc8wjXZ2IRxxUBZ3Z6DSNTxuwwTn4DM
-   V1TNoG9jPxpBZGdqNvbFPYr0fjxAOCVts5+igtb8iSrlEHhQa+ErkLIoC
-   xldLJow1OED4wLXtC7cLaa+tZBt8yDTtoRpmqZx7H4xhaD/AxqXDh0UGJ
-   VyjIVyj7Q4//PJIOa0+OZR48jak5qvk4Jd/0GiJcOoxMGf3vlJ0mRACP0
-   GBprQ2+wXfjzoEQJzSozrmPZ1Y7lKcXd3d8x17kfg6VQVDou2ejW2gLPv
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10600"; a="412684651"
-X-IronPort-AV: E=Sophos;i="5.97,243,1669104000"; 
-   d="scan'208";a="412684651"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2023 16:44:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10600"; a="804816336"
-X-IronPort-AV: E=Sophos;i="5.97,243,1669104000"; 
-   d="scan'208";a="804816336"
-Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 24 Jan 2023 16:44:28 -0800
-Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pKTtr-0006uW-1S;
-        Wed, 25 Jan 2023 00:44:27 +0000
-Date:   Wed, 25 Jan 2023 08:44:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     oe-kbuild-all@lists.linux.dev, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org,
-        amitkumar.karwar@nxp.com, rohit.fule@nxp.com, sherry.sun@nxp.com,
-        neeraj.sanjaykale@nxp.com
-Subject: Re: [PATCH v1 3/3] Bluetooth: NXP: Add protocol support for NXP
- Bluetooth chipsets
-Message-ID: <202301250824.iVWBIZts-lkp@intel.com>
-References: <20230124174714.2775680-4-neeraj.sanjaykale@nxp.com>
-MIME-Version: 1.0
+        with ESMTP id S230151AbjAYAp0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Jan 2023 19:45:26 -0500
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-ve1eur01on0606.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe1f::606])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B29D2442C5
+        for <netdev@vger.kernel.org>; Tue, 24 Jan 2023 16:45:24 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dTQ/kOck0T16o2icbmSRlgRUxcAcBxANaaKnNRTIiaOZJtIc2w4JC5GlFz3yRDhcbw+XWtjDmoBzZIE49x6CeeVg8IXXh3pwYL1MYGpgYvbTfjjwhRMz71Bx0rg6fPjtJ3FW33RTGMhqolg+8dx1UyeJzDhD8hdB+jLAzjkF/OE4U1P4TNCmR55uS+Fc2mQIV+DTfu0S0hoGjjKuAG+4c8FI1XrmThoUOhcTMheRQSMiJGPCZ9SMxd4IUU/t9HIV1NU8CjE1H9fSRnZm0InRT7uqEgYA3rRD4XUKARtBZo+39tDBSQKtsy5YioRG4ilSfHG8ybNpKYNK+SBWR1rbzw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NA/HqnjzOGhZx+AC2eQWX0A87QlxVsGizpVTHWe2ewg=;
+ b=c6qXxMuLkiiQEX0QT8tuENOb44OxfVYQGi5lyszwqR2/nt7s5de1phtgVtcOsO3Hyv5pU79HscoiQ5i44p4ky0oAgMyTcKXAJ1ZUNcqg6kCPkrvpAsLJn8rRenMj1gthcPZ7HJyrNyjiHiLqgOEUcSd0Rf3LJM9jWrUQfcfIBkSOeLTL9eCYWwKjvzl1Xtv8sZCNb62amb3l2Nqo5HYAkQ6kpIhoZJB9X0CuovawSDlfApYBA12VWarBHkxuIekw4iZW354ulySR91xpaAwswOR5D4XOdzuhKxtkWTrZqpPzCvhQAP6MVKGxZ/QF6/jEukYFdBPlHW5dwePfxr1qpA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NA/HqnjzOGhZx+AC2eQWX0A87QlxVsGizpVTHWe2ewg=;
+ b=IOiQ+3swcuhjxj1rdtnX35sWYXKk20EWaP6bfksRlFYIknWnbkes6JS3ZJ7m9gZNrFH8WXJve1g0XVy1OZPzTri/komVUT0W+K60/ZLteq66lKFhVfkOvONzj77Zqpdw22NWOGFOSLxef2AUyQjNnJWaKrkDkZK3SXqGwtbhf5o=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM7PR04MB6968.eurprd04.prod.outlook.com (2603:10a6:20b:dc::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Wed, 25 Jan
+ 2023 00:45:20 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b%7]) with mapi id 15.20.6002.033; Wed, 25 Jan 2023
+ 00:45:20 +0000
+Date:   Wed, 25 Jan 2023 02:45:17 +0200
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michal Kubecek <mkubecek@suse.cz>
+Subject: Re: [PATCH net-next] net: ethtool: fix NULL pointer dereference in
+ stats_prepare_data()
+Message-ID: <20230125004517.74c7ssj47zykciuv@skbuf>
+References: <20230124110801.3628545-1-vladimir.oltean@nxp.com>
+ <20230124162347.48bdae92@kernel.org>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230124174714.2775680-4-neeraj.sanjaykale@nxp.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230124162347.48bdae92@kernel.org>
+X-ClientProxiedBy: BE1P281CA0076.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:78::13) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM7PR04MB6968:EE_
+X-MS-Office365-Filtering-Correlation-Id: 285a2d3a-92f7-4da3-7e94-08dafe6d6f33
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PcCfqrTQbpXkk2M3yxK6jNx2N5a3GsXye7+uyDQQ+pHZ+hpnSmlifeMkwpVYCV4L2sYQTALwgQsWetcO05Msi0Gx8LdS3QTMTtaB7uSCTP6vs8EHsx5NeIwphXqj10etsqfwkVzM04THOxf6Yd+6Ol0AZ1CE2cqMsTlhyuj0zluWnn69AGDaA9BbHlipm9KV8/VdRk7PGln2lBRiZCBoBs465J7aRF23W225fYmlxViGUNhj1kJrgxrRiboUYII5xssC/EHKUBZah4jT52um8Gta+85iyq6b7jOoa4bGC0jyjqZBUwlyvWxBwiIwqbCjGuAgLYGedPuhZsobvW9J5DvfddbGqvXB/Uw1zqga0VJWounvv3Rnlsw8ppRE8rCWP4UrOE6skIO3EJ+u+1RZxiSVbwzqQs/O5mUUmf1EmqHl/tsvgKVk/EqeY9yVSelvsPY0bRSQpF3rVGMlR64jwoHC3QeleB6dXV1DHQC2JuDk4+lj/+XUPkGeS7caX/9s9fY/+mw1x8+GMuZCbT64fm/mjOD+Rz6L4l4p4OWcbzNGGdMBtJa5pMtSRDHgT33pWn/oYn0nXDVX16q/2BCM7yzHNdmBcVfSDoK6TTSOh+8lVW5evtZFfcNIbNcRHV4NVI6+wMdVcmFe0QyzXQvQJg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(7916004)(4636009)(39860400002)(376002)(346002)(136003)(366004)(396003)(451199018)(66899018)(6486002)(478600001)(33716001)(6506007)(26005)(9686003)(186003)(1076003)(6666004)(6512007)(38100700002)(5660300002)(86362001)(66476007)(66946007)(8676002)(316002)(66556008)(83380400001)(41300700001)(54906003)(4326008)(6916009)(8936002)(44832011)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7lDgPHQdcUjBg2lVmXwJUtgSextzpT8/ZT35vinW85T2O5UkZpOjyKSENQ+q?=
+ =?us-ascii?Q?DkzzfhCIUjESqUa0g1TDqXcQUlygpQYfdcv42VCcDmbhxhsbjgR5LnysjJla?=
+ =?us-ascii?Q?6Fr5NjFfq8+FiTyTs3aQ6+srBYyxznstxKWjkgZrkrmCNqk0THlSPHBj8xTo?=
+ =?us-ascii?Q?Sr7PiOPQ38eez/4XWB4tom/n23SZm95Fa9efoOs0ZM2fGy6zWWnsD+gIXjwn?=
+ =?us-ascii?Q?S0YOTH12cMriGcWIirBR2yMR/3FOgGyS6frwOyV02gLMQNmPVIUUYI4WxLL7?=
+ =?us-ascii?Q?teA6ZjPO7oqSzFXf0RHhhyMWCXw+WcI/7bLy6b0wO0dc3noCBaeU2MRtkht4?=
+ =?us-ascii?Q?80emVn/1t6w9BwFL3/0Txi9NdjrRkgvHguU7pvQzvLA6Q4DjnzuezSlnOQkP?=
+ =?us-ascii?Q?A8vWLag99B0vQ+IP2uUKI0e0jcnoaxQSP3ZqSBW9gSScwwq0UjBdEDKDqjge?=
+ =?us-ascii?Q?fd4gYNaS/I5QaTY9M0YpWk9FX4Davn20J8ETfeCODwFVqbyhnOslXO4hDG5g?=
+ =?us-ascii?Q?EA617GoSax67FFcqDsj21hyFIY7af6u5/iaCXtUIKSfyxe76hfS+XEcUSVSP?=
+ =?us-ascii?Q?DhxxH564IjZUDb+4OLQn0e7iD0ayP9G6FekA44YZaKTAXeU0Q7kTIEPimNY4?=
+ =?us-ascii?Q?MwmHWbznQbCARM/ZDLoNzBNKDgPVNvQFNe0BaY3oCDSzuDJUYo7JQJrsTs2n?=
+ =?us-ascii?Q?F0gX8zPk9Sb1WndKJzkvz/ULhHRZCqrYCsQrYpMxKr4kISBZre+k4hjWBENU?=
+ =?us-ascii?Q?9/KRPAmDI3wq8tH9zGSVEOME/TrZ+X3fmOP7/0+KE6Tmp4Fp0zdyFa+CKwRB?=
+ =?us-ascii?Q?rzQ76YYdHYb1Ty+SB0jbIJ7dgGLMKfonAs5/HSgubfs2EKc9uH0cw3l1hNbg?=
+ =?us-ascii?Q?huyW6yVGLyrrT3DCHqa312AV97FZixtZB0NkjT9H8B68B8R096QNgIWcvy3H?=
+ =?us-ascii?Q?ha3PSVzmNMDZU1EfQxj5WEM9tiDufEBeeEf5YXd/ySXmWiXvxubN9HLjG9t7?=
+ =?us-ascii?Q?lDUvPyR0lZe9QVol8AFDqKQjmAp0fzXZ8jNoy0ewxH1T4//IiwmCGmrm+8Jx?=
+ =?us-ascii?Q?g06hv1DtGPNbEYQEnmMxapqlOizwd/g+ShkcptC2JYvfas7KDGXZYxJ3ANxv?=
+ =?us-ascii?Q?9cduNUkzVIOpLIDyMz8YcGITLoA/JSiuqrPoqzq1LqABP8el0hBEx3bSXSre?=
+ =?us-ascii?Q?WEEqhu75iIsI4/MCNW0iGSOGUEUN83C2r3h408axvk46l85pCcFcCWQKOwGZ?=
+ =?us-ascii?Q?w7lYQHX+WbeoDq8SN224rSpwC2QITRmMRsYbUSo+3lvaWZw2hZHG3UmJlG95?=
+ =?us-ascii?Q?zqioSxgcgoslS/ryeWVzKKGxeZ6NGXYY4C01rUn4QnijvUK6y13fHOmAKJGG?=
+ =?us-ascii?Q?yly1B0DFQMz/ta838zVuWyWtRVcq550jJJug1JQgkRNPB9I3Rq3I139qP8/a?=
+ =?us-ascii?Q?gMeijpQ7/VhvOEjH4eAHkQDyktwhp0qO3R0t+1XubEikBp2vXDu57Tgzf86g?=
+ =?us-ascii?Q?6IgjzbobISpg+7sym1aJpEkpkFxk0Oi2poEEaLVBqHtHwYKJnI3Z0UImdeff?=
+ =?us-ascii?Q?IvgdmI7BPV5vQn4tThUd0fSkD7cVHa3OYEKpCRmApBD17bmWWNSfccnCd3aD?=
+ =?us-ascii?Q?Zw=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 285a2d3a-92f7-4da3-7e94-08dafe6d6f33
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2023 00:45:20.5475
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ifIzlvnrz4KZPPTVWyWUSFCN4Rc4Zku7wKXMY3YxBPtrHQQKMTvzuJXe825sBQIH4oUVRDN/h9/ZtUQnKUrzVw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6968
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,
+        T_SPF_PERMERROR autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Neeraj,
+On Tue, Jan 24, 2023 at 04:23:47PM -0800, Jakub Kicinski wrote:
+> On Tue, 24 Jan 2023 13:08:01 +0200 Vladimir Oltean wrote:
+> > In the following call path:
+> > 
+> > ethnl_default_dumpit
+> > -> ethnl_default_dump_one
+> >    -> ctx->ops->prepare_data
+> >       -> stats_prepare_data  
+> > 
+> > struct genl_info *info will be passed as NULL, and stats_prepare_data()
+> > dereferences it while getting the extended ack pointer.
+> > 
+> > To avoid that, just set the extack to NULL if "info" is NULL, since the
+> > netlink extack handling messages know how to deal with that.
+> > 
+> > The pattern "info ? info->extack : NULL" is present in quite a few other
+> > "prepare_data" implementations, so it's clear that it's a more general
+> > problem to be dealt with at a higher level, but the code should have at
+> > least adhered to the current conventions to avoid the NULL dereference.
+> 
+> Choose one:
+>  - you disagree with my comment on the report
+>  - you don't think that we should mix the immediate fix with the
+>    structural change
+>  - you agree but "don't have the time" to fix this properly
 
-Thank you for the patch! Perhaps something to improve:
+Yeah, sorry, I shouldn't have left your question unanswered ("should we make
+a fake struct genl_info * to pass here?") - but I don't think I'm qualified
+enough to have an opinion, either. Whereas the immediate fix is neutral
+enough to not be controversial, or so I thought.
 
-[auto build test WARNING on bluetooth-next/master]
-[also build test WARNING on bluetooth/master tty/tty-testing tty/tty-next tty/tty-linus linus/master v6.2-rc5 next-20230124]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Neeraj-Sanjay-Kale/serdev-Add-method-to-assert-break/20230125-015108
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git master
-patch link:    https://lore.kernel.org/r/20230124174714.2775680-4-neeraj.sanjaykale%40nxp.com
-patch subject: [PATCH v1 3/3] Bluetooth: NXP: Add protocol support for NXP Bluetooth chipsets
-config: sparc-allyesconfig (https://download.01.org/0day-ci/archive/20230125/202301250824.iVWBIZts-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/e5f775c45ec84de38a4cadfb115c488cb44e5943
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Neeraj-Sanjay-Kale/serdev-Add-method-to-assert-break/20230125-015108
-        git checkout e5f775c45ec84de38a4cadfb115c488cb44e5943
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc SHELL=/bin/bash drivers/
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/bluetooth/btnxp.c: In function 'nxp_load_fw_params_for_chip_id':
->> drivers/bluetooth/btnxp.c:439:25: warning: 'strncpy' specified bound 50 equals destination size [-Wstringop-truncation]
-     439 |                         strncpy(nxpdev->fw_name, fw_mod_params[i].fw_name, MAX_FW_FILE_NAME_LEN);
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/strncpy +439 drivers/bluetooth/btnxp.c
-
-   431	
-   432	static int nxp_load_fw_params_for_chip_id(u16 chip_id, struct hci_dev *hdev)
-   433	{
-   434		struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
-   435		int i;
-   436	
-   437		for (i = 0; i < MAX_NO_OF_CHIPS_SUPPORT; i++) {
-   438			if (chip_id == fw_mod_params[i].chip_id) {
- > 439				strncpy(nxpdev->fw_name, fw_mod_params[i].fw_name, MAX_FW_FILE_NAME_LEN);
-   440				nxpdev->oper_speed = fw_mod_params[i].oper_speed;
-   441				nxpdev->fw_dnld_pri_baudrate = fw_mod_params[i].fw_dnld_pri_baudrate;
-   442				nxpdev->fw_dnld_sec_baudrate = fw_mod_params[i].fw_dnld_sec_baudrate;
-   443				nxpdev->fw_init_baudrate = fw_mod_params[i].fw_init_baudrate;
-   444				break;
-   445			}
-   446		}
-   447		if (i == MAX_NO_OF_CHIPS_SUPPORT) {
-   448			if (chip_id == 0xffff)
-   449				BT_ERR("%s does not contain entry for 'legacy_chip'", BT_FW_CONF_FILE);
-   450			else
-   451				BT_ERR("Unsupported chip signature: %04X", chip_id);
-   452			clear_bit(BTNXPUART_FW_DOWNLOADING, &nxpdev->tx_state);
-   453			return -ENOENT;
-   454		}
-   455		return 0;
-   456	}
-   457	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+The problem is not so much "the time to fix this properly", but rather,
+I'm not even sure how to trigger the ethtool dumpit() code...
