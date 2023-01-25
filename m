@@ -2,74 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94C2967A9FB
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 06:28:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14BC667A9FD
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 06:35:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230334AbjAYF21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 00:28:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51602 "EHLO
+        id S231820AbjAYFe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 00:34:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbjAYF20 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 00:28:26 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DEF83A86;
-        Tue, 24 Jan 2023 21:28:25 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id h5-20020a17090a9c0500b0022bb85eb35dso916850pjp.3;
-        Tue, 24 Jan 2023 21:28:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9dTsBzB881E1M2fTbfgy/sXd8SVlUbmiX5kQp9uEBTg=;
-        b=KHyOUCG4VPg/INz1nUHlpx47dBWeDgjiKYkJLp1LyPX+78Wt5AKcO2b2ZnuD4JzuDy
-         lyQF28ihVCgm5207FlaPSljCaIUTYBojPqiFwDxin0AF6ZKsRW+h7Wc8vCEncwlZnUXs
-         7x9gr6HhnzjmmYXhoixTg/v3ktQpY9Fwvz3xiucVEsB6tMSdls7q0XZFRUv2G7L0H5Jk
-         yWSpIu8TLBXgr6ZLtlUfU7YmiG0M97Ej4vZO7SBAqL4mq4fdb3hc7qw9fs0LwNW2i7bX
-         Ufg/NJEcWoxEXkGwL4sz9VCTK0ypGXSokhyxiczSQt2U9KMtCiau1PGgYecNIzczGPY1
-         kKSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=9dTsBzB881E1M2fTbfgy/sXd8SVlUbmiX5kQp9uEBTg=;
-        b=DYvko1xvXgfWgr/H5gEij2lvWRgKOlQwwI3mer6nXup38e4cEd4hJPJCGfEAs2dldo
-         NJWieWlScmepZ89geF1Fek2jznvNjL7t3orVdijzAaFiXiCr386Ge/iG0KcBNUcjvZGO
-         2zD+FJJSPwOs+ByJfwJ9BoAiEp77bWwP5Ohg41s/xwOVjaanVRHuEkZV/rlDlCEW1ozq
-         GDpbFNOJEwM5xIfMSvkgzeZYV0zrqpuVsGhj0CMQ+MoQPZWb0otXkdXH2EAvl7PkKGiI
-         Q1Oc3hoXD+a25+mI0b/gEQHjfeQvDnc3YHUk7jlc1IPBKY3a/kFSkQtInJGdJXqOa5zd
-         l/qw==
-X-Gm-Message-State: AFqh2kr09aZ7soMkxryp67mtcCSetcdEBEkcr5hml4cGBZ3Hpb4RFFLF
-        Krs6Wr3NfNXgt2fpbWWx16U=
-X-Google-Smtp-Source: AMrXdXtvHhsDkpV+5aXlJ9Sax5RSsMSfbtEeybIbYpaQARRLr7+D7miab63UOJWjev9R0maOaHCXPA==
-X-Received: by 2002:a17:902:8498:b0:194:4724:806d with SMTP id c24-20020a170902849800b001944724806dmr29207957plo.33.1674624504975;
-        Tue, 24 Jan 2023 21:28:24 -0800 (PST)
-Received: from localhost ([98.97.33.45])
-        by smtp.gmail.com with ESMTPSA id 6-20020a170902c20600b00186acb14c4asm2618710pll.67.2023.01.24.21.28.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Jan 2023 21:28:24 -0800 (PST)
-Date:   Tue, 24 Jan 2023 21:28:22 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, John Fastabend <john.fastabend@gmail.com>,
+        with ESMTP id S229621AbjAYFez (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 00:34:55 -0500
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7BC53CE1F;
+        Tue, 24 Jan 2023 21:34:53 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1674624875; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=PEzdFTFkNZOUdFSaAcNemSKww9U6vSJrOpZU7jktUEzwa2B0cCXgXxlH+0SFkaPCtSDca9Uv6HGH/JnZRgeHZT7XvdE5M4RxS0hCbML2d57KBbHeZ2cKarzTlREVTIYqSHUPm7h5lZqm7WYFVQEBTjtt5SEM356PqnQ5jLDdHu4=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1674624875; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=1T7HNJXIHg2UTJ+bfgTgUwnUvVRcQuFybMkS/9ZYQRo=; 
+        b=L0uFYzgDrFBfVYOdd4xrY4cb0mNZh1GpfyfpavOIPNSP75xXhHuRxQETpnQArAPaS46fwodYbwLFyMRfA7hMC0/U6exqU/z0Yrbqew4lEfFtgQIlmiCi64l42URocW3hdB5QmfNPeHrI7dq3AyAwOBw9BSYqfRJ+Oz1VrCJvbCg=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1674624875;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=1T7HNJXIHg2UTJ+bfgTgUwnUvVRcQuFybMkS/9ZYQRo=;
+        b=D0VoWL8GTORuGifyPnFi95832PkWH1GYef+Lu0bEOS6eM/Qt5DIIUinwwbe0Duj/
+        zv7eSYaEcSkBM6rslkehrkmIS6nRhlTOdKqPpQPZjcejkgS+YBzyNJScSSyRJcuptw4
+        95mepzHEAit9noPszfzuWngNaq5/x+jju48tKaYY=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 16746248725217.955622735674183; Tue, 24 Jan 2023 21:34:32 -0800 (PST)
+Message-ID: <7ea0f205-f6cb-c608-4205-fa5bd7ba5a6f@arinc9.com>
+Date:   Wed, 25 Jan 2023 08:34:28 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH] net: dsa: mt7530: fix tristate and help description
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, kernel-team@cloudflare.com
-Message-ID: <63d0bdf6f395f_641f20827@john.notmuch>
-In-Reply-To: <20230113-sockmap-fix-v2-4-1e0ee7ac2f90@cloudflare.com>
-References: <20230113-sockmap-fix-v2-0-1e0ee7ac2f90@cloudflare.com>
- <20230113-sockmap-fix-v2-4-1e0ee7ac2f90@cloudflare.com>
-Subject: RE: [PATCH bpf v2 4/4] selftests/bpf: Cover listener cloning with
- progs attached to sockmap
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, erkin.bozoglu@xeront.com
+References: <20230123170853.400977-1-arinc.unal@arinc9.com>
+ <20230124181650.6f2c28c0@kernel.org>
+Content-Language: en-US
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20230124181650.6f2c28c0@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,16 +66,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Sitnicki wrote:
-> Today we test if a child socket is cloned properly from a listening socket
-> inside a sockmap only when there are no BPF programs attached to the map.
+On 25.01.2023 05:16, Jakub Kicinski wrote:
+> On Mon, 23 Jan 2023 20:08:53 +0300 Arınç ÜNAL wrote:
+>> Fix description for tristate and help sections which include inaccurate
+>> information.
+>>
+>> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 > 
-> A bug has been reported [1] for the case when sockmap has a verdict program
-> attached. So cover this case as well to prevent regressions.
-> 
-> [1]: https://lore.kernel.org/r/00000000000073b14905ef2e7401@google.com
-> 
-> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> ---
+> The patch didn't make it to patchwork or lore for some reason :(
+> Could you repost? And when you do - add the tree name in the subject?
+> If the chips you're listing are supported in Linus's tree then
+> [PATCH net] ?
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+Yup it's for net, thanks for the heads up Jakub.
+
+Arınç
