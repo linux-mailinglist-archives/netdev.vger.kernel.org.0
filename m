@@ -2,294 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CDC2D67B73C
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 17:49:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C47F67B78C
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 17:58:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235859AbjAYQtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 11:49:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42468 "EHLO
+        id S235046AbjAYQ57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 11:57:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235800AbjAYQtF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 11:49:05 -0500
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7362B4697;
-        Wed, 25 Jan 2023 08:48:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1674665311; x=1706201311;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YTSWcHQekiw3+4CfT/T3V5kV0GNQO0El8PMe6pXucj0=;
-  b=dWg9rtdrg7T7R/5Oj1vx8ZdevQc7++3bj5EdMku2d0JvMmlUv4fY+9pH
-   6siAmzSfWQ74OseVmxtoaHuku6SUKsXZB9XMgl46zgto7qwT0glBzh5mS
-   ZKKPPlFT/PlwtlEunvIdKtBJTlbV3KeMPp7AzDz3Atg8g2TMzEhHJ88Nc
-   k=;
-X-IronPort-AV: E=Sophos;i="5.97,245,1669075200"; 
-   d="scan'208";a="304186894"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-ed19f671.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2023 16:48:25 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2b-m6i4x-ed19f671.us-west-2.amazon.com (Postfix) with ESMTPS id ADBCE82214;
-        Wed, 25 Jan 2023 16:48:24 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.45; Wed, 25 Jan 2023 16:48:23 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.120) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.7;
- Wed, 25 Jan 2023 16:48:20 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <v4bel@theori.io>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <imv4bel@gmail.com>,
-        <kuba@kernel.org>, <kuniyu@amazon.com>,
-        <linux-hams@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <pabeni@redhat.com>, <ralf@linux-mips.org>,
-        <syzbot+caa188bdfc1eeafeb418@syzkaller.appspotmail.com>
-Subject: Re: [PATCH v3] netrom: Fix use-after-free caused by accept on already connected socket
-Date:   Wed, 25 Jan 2023 08:48:12 -0800
-Message-ID: <20230125164812.15270-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230125105038.GA132343@ubuntu>
-References: <20230125105038.GA132343@ubuntu>
+        with ESMTP id S235516AbjAYQ55 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 11:57:57 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2043.outbound.protection.outlook.com [40.107.220.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38A4EBB92
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 08:57:49 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nLR0EqUN1BAp36nRjZlJ4p/jMyO2YV6V4cHFyf+JKgxohqynkQOd7/48silPecUVIYXItZqSN5PdC91BRCnfws4fEYZGAcuNlLy293zXNR58B6NhOHGBY1/znvWqBXGf3H3pKNYt5KhXIQ7KGMl63K4qiOwWo/kdrUtxEjaIuW/wwgKWkkAl7umaLDY6QghzV0ZrruC8U8sG9hVmaM3Bpja5wJ6brHVI+Xyjzq6z69kgpCkGf2i51tcxDB0ylVR6YxshpQbawtjhv+bdQoKwCmoOGloo9sD+MARP9yf8Nnddx4KTPqlW9AW/5dI9g6j701Xrq6pqXjV9fVkTFs0jTw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BeTPWkTVLwr9iPg3CG5exdyds759z4hZkPzCNSVqtEw=;
+ b=llsb8yVDexBl/XhpeHKVv6WaQ5h4dRrHKIV1WAmlNuyt+OjgxxJvjBiSt8QYD6atwP0F3RDYqwubFYw4WAGiN5+gmXcq+wvOe2ehk00OnsAJAW0qlOIrj+YTmKRycyD6Z8vw6z1JZIeVRxGiGox30qechNGWUWfknDHYe+6a9w+Ie3xQ+tvbG0Ote/54Cj35F+wHeAf4zM5FrTbxGvzjgRSSryO00lkgUjzsJd2X0xm2lgRG6ju1qOwB8VxAENTiFBP5qOn7agF2JHp85D8iT0jnuzTUu5HgqrXSdXeUwsodsJXxLaKNRwEiEBIiM1226Z6WSYnmS4lkgfmtz4F/4g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=corigine.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BeTPWkTVLwr9iPg3CG5exdyds759z4hZkPzCNSVqtEw=;
+ b=AVsK3GVPIb99aozbSIVMRsdUBOgC3RozqyiQr8xLzppC3RJ63o4OtR6kiyPdIWY7YrklINir4oRLMZuPQrd9jdUsX4xcNg8yrl4JQsXzx1ryVri+RbXOnx/z5w/jCL+pzds7nFzTiUsGIwwGiqgC2l/p0YDeLcb0FQV3y/PHPUX5TU73Od31GsXdONXTrWZAclgQ7tzRkZJVTE+cYj532cD0ihIcmzR42mJT898M+ANVn5FP2F68FcZvpKfeQjRlNyElHZFwWlW1mUZBGzpUwl7KI/7bp7swcK3k5s/wE59t/W7CMYtMAIuG7KcLbVSpO6Vtyknv7u5JWgwaLidV7g==
+Received: from DM6PR03CA0096.namprd03.prod.outlook.com (2603:10b6:5:333::29)
+ by BY5PR12MB4274.namprd12.prod.outlook.com (2603:10b6:a03:206::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.21; Wed, 25 Jan
+ 2023 16:57:45 +0000
+Received: from DS1PEPF0000E655.namprd02.prod.outlook.com
+ (2603:10b6:5:333:cafe::fd) by DM6PR03CA0096.outlook.office365.com
+ (2603:10b6:5:333::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33 via Frontend
+ Transport; Wed, 25 Jan 2023 16:57:45 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ DS1PEPF0000E655.mail.protection.outlook.com (10.167.18.11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6043.12 via Frontend Transport; Wed, 25 Jan 2023 16:57:44 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 25 Jan
+ 2023 08:57:44 -0800
+Received: from fedora.nvidia.com (10.126.231.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 25 Jan
+ 2023 08:57:39 -0800
+References: <20230124170510.316970-1-jhs@mojatatu.com>
+User-agent: mu4e 1.6.6; emacs 28.1
+From:   Vlad Buslov <vladbu@nvidia.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+CC:     <netdev@vger.kernel.org>, <kernel@mojatatu.com>,
+        <deb.chatterjee@intel.com>, <anjali.singhai@intel.com>,
+        <namrata.limaye@intel.com>, <khalidm@nvidia.com>, <tom@sipanda.io>,
+        <pratyush@sipanda.io>, <jiri@resnulli.us>,
+        <xiyou.wangcong@gmail.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <simon.horman@corigine.com>
+Subject: Re: [PATCH net-next RFC 01/20] net/sched: act_api: change act_base
+ into an IDR
+Date:   Wed, 25 Jan 2023 18:48:57 +0200
+In-Reply-To: <20230124170510.316970-1-jhs@mojatatu.com>
+Message-ID: <87k01ad01q.fsf@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.43.160.120]
-X-ClientProxiedBy: EX13P01UWB001.ant.amazon.com (10.43.161.59) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [10.126.231.37]
+X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS1PEPF0000E655:EE_|BY5PR12MB4274:EE_
+X-MS-Office365-Filtering-Correlation-Id: 79c3c225-c90c-4951-5878-08dafef547aa
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: H86OTHMCBr+OJPVMf7F+3O0s9x5Lie3fGXz9OivvxojxereGl65yLveZxPHdqJVyIjMWSGxUA8zb9Wco0GOUwQAGMHSnHcmmj8PsLNcFQJn0U5StdvH7lXNFlqP+xE4cpXZHbojSgXIsE5KI6EsnQ22sGqnx3s3SxT2Go4JdtC7wHOV1SnjQSeU6YcsEO8xzo8E8DiW0o+gIwuHXzubLGfa7YVcmB8OkKe92EGNcZpz3h9zj1Shgo+a9+5hCLNFRHxVVQnsuvETNpaOl51hJjFym6IF7OJYCnbqBPuuvdcD8Fj1IXug6JyI42GRRbjttRFbH76l7v56xHvK3iIRsEwmaKY/U/G2mEPwyAY6UOXwatDnnnyOq/IyuWauQJGM424fDLLPJAj3uK6Hs3/1kVwGAVgB6/XlwLleOrmM/MZa9i1Nbr3zyaHM1oP5nj464oQBzs4cfWO476l7hV37TGN12gc9opezKfiaBGVbMtiANrL3k8bwfOR0onhCGRA0GLyXyAre3aRadSE6Zxr9c9ObzsaXOYgcdAZW2ATOlS7R/ymrwVAnZA7i0KIDEfA4QfuKM/iJPrQwFW945kS7hOmAohNUuzi5pDq6+H+dawfuOwTTI91QiCkcsq1mnuqQVZ13hqAx7CT3fPOS9l4+Nb9i5yivTBe2G4Swf4HJohhE=
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(136003)(39860400002)(376002)(346002)(451199018)(46966006)(36840700001)(16526019)(66899018)(47076005)(36756003)(8676002)(40480700001)(54906003)(356005)(36860700001)(7636003)(336012)(2616005)(426003)(83380400001)(86362001)(26005)(82310400005)(186003)(478600001)(7416002)(5660300002)(6666004)(82740400003)(7696005)(316002)(70206006)(6916009)(41300700001)(8936002)(2906002)(70586007)(4326008);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2023 16:57:44.7729
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 79c3c225-c90c-4951-5878-08dafef547aa
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000E655.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4274
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Hyunwoo Kim <v4bel@theori.io>
-Date:   Wed, 25 Jan 2023 02:50:38 -0800
-> If you call listen() and accept() on an already connect()ed
-> AF_NETROM socket, accept() can successfully connect.
-> This is because when the peer socket sends data to sendmsg,
-> the skb with its own sk stored in the connected socket's
-> sk->sk_receive_queue is connected, and nr_accept() dequeues
-> the skb waiting in the sk->sk_receive_queue.
-> 
-> As a result, nr_accept() allocates and returns a sock with
-> the sk of the parent AF_NETROM socket.
-> 
-> And here use-after-free can happen through complex race conditions:
-> ```
->                   cpu0                                                     cpu1
->                                                                1. socket_2 = socket(AF_NETROM)
->                                                                         .
->                                                                         .
->                                                                   listen(socket_2)
->                                                                   accepted_socket = accept(socket_2)
->        2. socket_1 = socket(AF_NETROM)
->             nr_create()    // sk refcount : 1
->           connect(socket_1)
->             nr_connect()
->             nr_establish_data_link()
->             nr_write_internal()
->             nr_transmit_buffer()
->             nr_route_frame()
->             nr_loopback_queue()
->             nr_loopback_timer()
->             nr_rx_frame()
->             nr_process_rx_frame()
->             nr_state1_machine()
->             nr->state      = NR_STATE_3;
 
-See my comments on v2.
-
-Please do not send the next version while we are in discussion
-on the previous version (at least while you are asking for
-comments).
-
-
->                                                                3. write(accepted_socket)
->                                                                     nr_sendmsg()
->                                                                     nr_output()
->                                                                     nr_kick()
->                                                                     nr_send_iframe()
->                                                                     nr_transmit_buffer()
->                                                                     nr_route_frame()
->                                                                     nr_loopback_queue()
->                                                                     nr_loopback_timer()
->                                                                     nr_rx_frame()
->                                                                     nr_process_rx_frame(sk, skb);    // sk : socket_1's sk
->                                                                     nr_state3_machine()
->                                                                     nr_queue_rx_frame()
->                                                                     sock_queue_rcv_skb()
->                                                                     sock_queue_rcv_skb_reason()
->                                                                     __sock_queue_rcv_skb()
->                                                                     __skb_queue_tail(list, skb);    // list : socket_1's sk->sk_receive_queue
->        4. listen(socket_1)
->             nr_listen()
->           uaf_socket = accept(socket_1)
->             nr_accept()
->             skb_dequeue(&sk->sk_receive_queue);
->                                                                5. close(accepted_socket)
->                                                                     nr_release()
->                                                                     nr_write_internal(sk, NR_DISCREQ)
->                                                                     nr_transmit_buffer()    // NR_DISCREQ
->                                                                     nr_route_frame()
->                                                                     nr_loopback_queue()
->                                                                     nr_loopback_timer()
->                                                                     nr_rx_frame()    // sk : socket_1's sk
->                                                                     nr_process_rx_frame()  // NR_STATE_3
->                                                                     nr_state3_machine()    // NR_DISCREQ
->                                                                     nr_disconnect()
->                                                                     nr_sk(sk)->state = NR_STATE_0;
->        6. close(socket_1)    // sk refcount : 3
->             nr_release()    // NR_STATE_0
->             sock_put(sk);    // sk refcount : 0
->             sk_free(sk);
->           close(uaf_socket)
->             nr_release()
->             sock_hold(sk);    // UAF
-> ```
-> 
-> KASAN report by syzbot:
-> ```
-> BUG: KASAN: use-after-free in nr_release+0x66/0x460 net/netrom/af_netrom.c:520
-> Write of size 4 at addr ffff8880235d8080 by task syz-executor564/5128
-> 
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
->  print_address_description mm/kasan/report.c:306 [inline]
->  print_report+0x15e/0x461 mm/kasan/report.c:417
->  kasan_report+0xbf/0x1f0 mm/kasan/report.c:517
->  check_region_inline mm/kasan/generic.c:183 [inline]
->  kasan_check_range+0x141/0x190 mm/kasan/generic.c:189
->  instrument_atomic_read_write include/linux/instrumented.h:102 [inline]
->  atomic_fetch_add_relaxed include/linux/atomic/atomic-instrumented.h:116 [inline]
->  __refcount_add include/linux/refcount.h:193 [inline]
->  __refcount_inc include/linux/refcount.h:250 [inline]
->  refcount_inc include/linux/refcount.h:267 [inline]
->  sock_hold include/net/sock.h:775 [inline]
->  nr_release+0x66/0x460 net/netrom/af_netrom.c:520
->  __sock_release+0xcd/0x280 net/socket.c:650
->  sock_close+0x1c/0x20 net/socket.c:1365
->  __fput+0x27c/0xa90 fs/file_table.c:320
->  task_work_run+0x16f/0x270 kernel/task_work.c:179
->  exit_task_work include/linux/task_work.h:38 [inline]
->  do_exit+0xaa8/0x2950 kernel/exit.c:867
->  do_group_exit+0xd4/0x2a0 kernel/exit.c:1012
->  get_signal+0x21c3/0x2450 kernel/signal.c:2859
->  arch_do_signal_or_restart+0x79/0x5c0 arch/x86/kernel/signal.c:306
->  exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
->  exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:203
->  __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
->  syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
->  do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
->  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> RIP: 0033:0x7f6c19e3c9b9
-> Code: Unable to access opcode bytes at 0x7f6c19e3c98f.
-> RSP: 002b:00007fffd4ba2ce8 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
-> RAX: 0000000000000116 RBX: 0000000000000003 RCX: 00007f6c19e3c9b9
-> RDX: 0000000000000318 RSI: 00000000200bd000 RDI: 0000000000000006
-> RBP: 0000000000000003 R08: 000000000000000d R09: 000000000000000d
-> R10: 0000000000000000 R11: 0000000000000246 R12: 000055555566a2c0
-> R13: 0000000000000011 R14: 0000000000000000 R15: 0000000000000000
->  </TASK>
-> 
-> Allocated by task 5128:
->  kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
->  kasan_set_track+0x25/0x30 mm/kasan/common.c:52
->  ____kasan_kmalloc mm/kasan/common.c:371 [inline]
->  ____kasan_kmalloc mm/kasan/common.c:330 [inline]
->  __kasan_kmalloc+0xa3/0xb0 mm/kasan/common.c:380
->  kasan_kmalloc include/linux/kasan.h:211 [inline]
->  __do_kmalloc_node mm/slab_common.c:968 [inline]
->  __kmalloc+0x5a/0xd0 mm/slab_common.c:981
->  kmalloc include/linux/slab.h:584 [inline]
->  sk_prot_alloc+0x140/0x290 net/core/sock.c:2038
->  sk_alloc+0x3a/0x7a0 net/core/sock.c:2091
->  nr_create+0xb6/0x5f0 net/netrom/af_netrom.c:433
->  __sock_create+0x359/0x790 net/socket.c:1515
->  sock_create net/socket.c:1566 [inline]
->  __sys_socket_create net/socket.c:1603 [inline]
->  __sys_socket_create net/socket.c:1588 [inline]
->  __sys_socket+0x133/0x250 net/socket.c:1636
->  __do_sys_socket net/socket.c:1649 [inline]
->  __se_sys_socket net/socket.c:1647 [inline]
->  __x64_sys_socket+0x73/0xb0 net/socket.c:1647
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> 
-> Freed by task 5128:
->  kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
->  kasan_set_track+0x25/0x30 mm/kasan/common.c:52
->  kasan_save_free_info+0x2b/0x40 mm/kasan/generic.c:518
->  ____kasan_slab_free mm/kasan/common.c:236 [inline]
->  ____kasan_slab_free+0x13b/0x1a0 mm/kasan/common.c:200
->  kasan_slab_free include/linux/kasan.h:177 [inline]
->  __cache_free mm/slab.c:3394 [inline]
->  __do_kmem_cache_free mm/slab.c:3580 [inline]
->  __kmem_cache_free+0xcd/0x3b0 mm/slab.c:3587
->  sk_prot_free net/core/sock.c:2074 [inline]
->  __sk_destruct+0x5df/0x750 net/core/sock.c:2166
->  sk_destruct net/core/sock.c:2181 [inline]
->  __sk_free+0x175/0x460 net/core/sock.c:2192
->  sk_free+0x7c/0xa0 net/core/sock.c:2203
->  sock_put include/net/sock.h:1991 [inline]
->  nr_release+0x39e/0x460 net/netrom/af_netrom.c:554
->  __sock_release+0xcd/0x280 net/socket.c:650
->  sock_close+0x1c/0x20 net/socket.c:1365
->  __fput+0x27c/0xa90 fs/file_table.c:320
->  task_work_run+0x16f/0x270 kernel/task_work.c:179
->  exit_task_work include/linux/task_work.h:38 [inline]
->  do_exit+0xaa8/0x2950 kernel/exit.c:867
->  do_group_exit+0xd4/0x2a0 kernel/exit.c:1012
->  get_signal+0x21c3/0x2450 kernel/signal.c:2859
->  arch_do_signal_or_restart+0x79/0x5c0 arch/x86/kernel/signal.c:306
->  exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
->  exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:203
->  __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
->  syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
->  do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
->  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> ```
-> 
-> To fix this issue, nr_listen() returns -EINVAL for sockets that
-> successfully nr_connect().
-> 
-> Reported-by: syzbot+caa188bdfc1eeafeb418@syzkaller.appspotmail.com
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Signed-off-by: Hyunwoo Kim <v4bel@theori.io>
-> Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-
-I haven't given this tag for this patch nor the previous version.
-
-
+On Tue 24 Jan 2023 at 12:04, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+> Convert act_base from a list to an IDR.
+>
+> With the introduction of P4TC action templates, we introduce the concept of
+> dynamically creating actions on the fly. Dynamic action IDs are not statically
+> defined (as was the case previously) and are therefore harder to manage within
+> existing linked list approach. We convert to IDR because it has built in ID
+> management which we would have to re-invent with linked lists.
+>
+> Co-developed-by: Victor Nogueira <victor@mojatatu.com>
+> Signed-off-by: Victor Nogueira <victor@mojatatu.com>
+> Co-developed-by: Pedro Tammela <pctammela@mojatatu.com>
+> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+> Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
 > ---
-> v1 -> v2 : Change the flag to check to SS_UNCONNECTED
-> v2 -> v3 : Fix wrong patch description
-> ---
->  net/netrom/af_netrom.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/net/netrom/af_netrom.c b/net/netrom/af_netrom.c
-> index 6f7f4392cffb..5a4cb796150f 100644
-> --- a/net/netrom/af_netrom.c
-> +++ b/net/netrom/af_netrom.c
-> @@ -400,6 +400,11 @@ static int nr_listen(struct socket *sock, int backlog)
->  	struct sock *sk = sock->sk;
+>  include/uapi/linux/pkt_cls.h |  1 +
+>  net/sched/act_api.c          | 39 +++++++++++++++++++++---------------
+>  2 files changed, 24 insertions(+), 16 deletions(-)
+>
+> diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+> index 648a82f32..4d716841c 100644
+> --- a/include/uapi/linux/pkt_cls.h
+> +++ b/include/uapi/linux/pkt_cls.h
+> @@ -139,6 +139,7 @@ enum tca_id {
+>  	TCA_ID_MPLS,
+>  	TCA_ID_CT,
+>  	TCA_ID_GATE,
+> +	TCA_ID_DYN,
+>  	/* other actions go here */
+>  	__TCA_ID_MAX = 255
+>  };
+> diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+> index cd09ef49d..811dddc3b 100644
+> --- a/net/sched/act_api.c
+> +++ b/net/sched/act_api.c
+> @@ -890,7 +890,7 @@ void tcf_idrinfo_destroy(const struct tc_action_ops *ops,
+>  }
+>  EXPORT_SYMBOL(tcf_idrinfo_destroy);
 >  
->  	lock_sock(sk);
-> +	if (sock->state != SS_UNCONNECTED) {
-> +		release_sock(sk);
-> +		return -EINVAL;
-> +	}
+> -static LIST_HEAD(act_base);
+> +static DEFINE_IDR(act_base);
+>  static DEFINE_RWLOCK(act_mod_lock);
+>  /* since act ops id is stored in pernet subsystem list,
+>   * then there is no way to walk through only all the action
+> @@ -949,7 +949,6 @@ static void tcf_pernet_del_id_list(unsigned int id)
+>  int tcf_register_action(struct tc_action_ops *act,
+>  			struct pernet_operations *ops)
+>  {
+> -	struct tc_action_ops *a;
+>  	int ret;
+>  
+>  	if (!act->act || !act->dump || !act->init)
+> @@ -970,13 +969,24 @@ int tcf_register_action(struct tc_action_ops *act,
+>  	}
+>  
+>  	write_lock(&act_mod_lock);
+> -	list_for_each_entry(a, &act_base, head) {
+> -		if (act->id == a->id || (strcmp(act->kind, a->kind) == 0)) {
+> +	if (act->id) {
+> +		if (idr_find(&act_base, act->id)) {
+>  			ret = -EEXIST;
+>  			goto err_out;
+>  		}
+> +		ret = idr_alloc_u32(&act_base, act, &act->id, act->id,
+> +				    GFP_ATOMIC);
+> +		if (ret < 0)
+> +			goto err_out;
+> +	} else {
+> +		/* Only dynamic actions will require ID generation */
+> +		act->id = TCA_ID_DYN;
+
+Hi Jamal,
+
+Since TCA_ID_DYN is exposed to userspace and this code expects to use
+the whole range of [TCA_ID_DYN, TCA_ID_MAX] for dynamic actions any new
+action added after that will have two choices:
+
+- Insert future TCA_ID_*NEW_ACTION* before TCA_ID_DYN in the enum tca_id
+in order for this code to continue to work (probably breaking userspace
+code compiled for previous kernels).
+
+- Modify this code to allocate dynamic action id from empty range
+following new action enum value, which is not ideal.
+
+Maybe consider defining TCA_ID_DYN=128 in order to leave some space for
+new actions to be added before it without affecting the userspace?
+
 > +
->  	if (sk->sk_state != TCP_LISTEN) {
->  		memset(&nr_sk(sk)->user_addr, 0, AX25_ADDR_LEN);
->  		sk->sk_max_ack_backlog = backlog;
-> -- 
-> 2.25.1
+> +		ret = idr_alloc_u32(&act_base, act, &act->id, TCA_ID_MAX,
+> +				    GFP_ATOMIC);
+> +		if (ret < 0)
+> +			goto err_out;
+>  	}
+> -	list_add_tail(&act->head, &act_base);
+>  	write_unlock(&act_mod_lock);
+>  
+>  	return 0;
+> @@ -994,17 +1004,12 @@ EXPORT_SYMBOL(tcf_register_action);
+>  int tcf_unregister_action(struct tc_action_ops *act,
+>  			  struct pernet_operations *ops)
+>  {
+> -	struct tc_action_ops *a;
+> -	int err = -ENOENT;
+> +	int err = 0;
+>  
+>  	write_lock(&act_mod_lock);
+> -	list_for_each_entry(a, &act_base, head) {
+> -		if (a == act) {
+> -			list_del(&act->head);
+> -			err = 0;
+> -			break;
+> -		}
+> -	}
+> +	if (!idr_remove(&act_base, act->id))
+> +		err = -EINVAL;
+> +
+>  	write_unlock(&act_mod_lock);
+>  	if (!err) {
+>  		unregister_pernet_subsys(ops);
+> @@ -1019,10 +1024,11 @@ EXPORT_SYMBOL(tcf_unregister_action);
+>  static struct tc_action_ops *tc_lookup_action_n(char *kind)
+>  {
+>  	struct tc_action_ops *a, *res = NULL;
+> +	unsigned long tmp, id;
+>  
+>  	if (kind) {
+>  		read_lock(&act_mod_lock);
+> -		list_for_each_entry(a, &act_base, head) {
+> +		idr_for_each_entry_ul(&act_base, a, tmp, id) {
+>  			if (strcmp(kind, a->kind) == 0) {
+>  				if (try_module_get(a->owner))
+>  					res = a;
+> @@ -1038,10 +1044,11 @@ static struct tc_action_ops *tc_lookup_action_n(char *kind)
+>  static struct tc_action_ops *tc_lookup_action(struct nlattr *kind)
+>  {
+>  	struct tc_action_ops *a, *res = NULL;
+> +	unsigned long tmp, id;
+>  
+>  	if (kind) {
+>  		read_lock(&act_mod_lock);
+> -		list_for_each_entry(a, &act_base, head) {
+> +		idr_for_each_entry_ul(&act_base, a, tmp, id) {
+>  			if (nla_strcmp(kind, a->kind) == 0) {
+>  				if (try_module_get(a->owner))
+>  					res = a;
+
