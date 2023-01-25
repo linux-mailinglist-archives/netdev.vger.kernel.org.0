@@ -2,184 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC53167B534
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 15:56:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9BC367B53A
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 15:57:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235928AbjAYOz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 09:55:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55782 "EHLO
+        id S235535AbjAYO5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 09:57:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235922AbjAYOzs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 09:55:48 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9C630FE;
-        Wed, 25 Jan 2023 06:55:46 -0800 (PST)
-Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C565B1EC0493;
-        Wed, 25 Jan 2023 15:55:43 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1674658543;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=Y5InzrMMR7tYD7K8IQxbCKmCrcbndsF98jURDpiEvtA=;
-        b=QhsVXgG9+mQg62pSTSotZNXiTHgj4Kr6DjoD6RzyyIrLoNuw0inT+OEDkhvYR4sZ9y9twf
-        dkUtWiZR9A2rC/a29R9t7FALlEu268HgkolBGU6CkU1ELWPMp15xxUqQFFuhLce3GKLUNv
-        ZZy1MIaPxdrIzvmknDNQqsceFa0jwx4=
-Date:   Wed, 25 Jan 2023 15:55:40 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc:     "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-        "jane.chu@oracle.com" <jane.chu@oracle.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
- to map as encrypted
-Message-ID: <Y9FC7Dpzr5Uge/Mi@zn.tnic>
-References: <1673559753-94403-1-git-send-email-mikelley@microsoft.com>
- <1673559753-94403-7-git-send-email-mikelley@microsoft.com>
- <Y8r2TjW/R3jymmqT@zn.tnic>
- <BYAPR21MB168897DBA98E91B72B4087E1D7CA9@BYAPR21MB1688.namprd21.prod.outlook.com>
+        with ESMTP id S234990AbjAYO5f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 09:57:35 -0500
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2086.outbound.protection.outlook.com [40.107.22.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9A2F3EFFD
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 06:57:29 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eNWgk9u631GTJJ7e0Qeej24QoZyU/ILzvbS/EHf3a0A8IVRk0Iq4XbPvWRzZMi1N4TFNmIwmpArMCVzfgp4yBGKTvDS3huTZhPacPtrGQX4x0x71ai+mjWAuIPVi5w3lAnSCmT/zvNC/upl+0J5M/3eJqUM7Q4BwopvUeFv5uW/mho6GsUIPyW9o3cYntFwkMm1tMtqaSLKSowOdORdwBnx4VUEXtiX0SzGplOSQ0qTfv4VhlVdrE1YXnoLafpUGC4qNwKnjS1JYOlWrufrBP0WdMMmJPOXFKlEhUZeuIjuPl2hbxL7GkrWi1d+rBfyCbQp48KLpUeNdGTTbCyAXSQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FXn/MAh5ML+MuZhjfRpMo/b4Pbyos8jHIyBc6XAi+0g=;
+ b=mGMvndzWizP28LQYP3UJPjiqa9Y1ueC94VryojJ7ZXhGfD58+mMypiMlvY0BFILDVlIpKmwMbFjOXWKsqTbmnS1xOsk5POisoD2YVuAnhXRJ2Bgoy9q6v/nTSiLbeM5ocYX6Mz5EYfrw66Q1AvIWvK/JBfA8DX95FU1h9P3lk1QSvMJ32N3prBScStwzOohQzoc3jDjGtrnxAp0WxgJe76Djqq2ccR8CJjkEZRL4k5TS83sy74BgPaghdSgLSCe7oSc8I9v0vhvw4oUJqeG10BU9wH8tEUZxACbjtYXZIUQFyVX9eOTr/7Nmzm44Ovjvvrpf8okXp7+ZJ315Of3osg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FXn/MAh5ML+MuZhjfRpMo/b4Pbyos8jHIyBc6XAi+0g=;
+ b=HNTidgtAkd1RojbpNyEW8GDoEN+sg2muk03rZ0lXFaVYqLxE0fygtuiMqBENO7DxInEodcESZiS+wi9pagHvuzPERTh7BwMe5NB9z4mynKD76NbN9i0NZzxBcy4+m88YxylYS0yzYv6OsEfIFQd3j5WCASgnTbWPZXv0SsKfqQA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AS8PR04MB8691.eurprd04.prod.outlook.com (2603:10a6:20b:42a::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Wed, 25 Jan
+ 2023 14:57:27 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b%7]) with mapi id 15.20.6002.033; Wed, 25 Jan 2023
+ 14:57:27 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>
+Subject: [PATCH net-next] net: dsa: ocelot: build felix.c into a dedicated kernel module
+Date:   Wed, 25 Jan 2023 16:57:16 +0200
+Message-Id: <20230125145716.271355-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BE1P281CA0189.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:8d::20) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <BYAPR21MB168897DBA98E91B72B4087E1D7CA9@BYAPR21MB1688.namprd21.prod.outlook.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB8691:EE_
+X-MS-Office365-Filtering-Correlation-Id: b59064ba-bf42-441e-c8dd-08dafee47973
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QOFVYTLP2pl3PZ2dHlHWnhtyJIAWY4TprT5k0qqkGGhWx90sE995xMd0JztoamY2ZLW99IYO82Qw2VY3bcHnnbmfKDdT6poZ+b+/lE99lQIwvx146gSqf067J/0S4VSt8K8GK7ToX7BXrp5LyifFRpSMr6O4EjO9rq6uy+JpGqMamgh2pvPEj8VQLVc+KU1fuCCPsjOdwFKQ38N8HekwY81N4KiAa5BMPJBjsPMwVAOryzT4HHBo/1rdsytR1Drku1D3OUXtVCSeLrg/h538o3mM8ZyopIQGuX/nvI/2BFvoUwCr7I+uomj5EZg26hFW1G8dU6BPks2V4n4HiZYx+WXOo997gt3AC7AKKwimpPpJ11ex665sHSM25YTvmwRvRi21P90KRJ37qBCE45cjExUl7iMPqGxG9P01dVL/MuozPixjhcVHZtiZj86j3odhSxHCft/GWefcXtSOPv1Fyu57ATvlBLundDH68CQ9xXNTh32fqjr0eGRqhgIvH51dpdLJcN0Jw0I/OcEoOmkt42ak53anbJlc9y6C/8bZLtMwfXjsb1Ce6qnUZ+JOMGlHzfdt+AFiH4BYxevpgraCOHoisdFvO7E2ZhH1FQevQmwf3YpbnzAJDZpBQ2Wz3yMMlPMDlq3s2opwVx2mZZopTtASbnDQ0hEDTWh036hUqqIlNavgCbgJ83Z09OjW0CmFTI73wgaiJfK1BivOSFMEIg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(376002)(136003)(366004)(39860400002)(346002)(451199018)(26005)(186003)(6506007)(36756003)(2906002)(44832011)(38100700002)(38350700002)(6486002)(52116002)(7416002)(8936002)(86362001)(41300700001)(6512007)(316002)(54906003)(5660300002)(1076003)(2616005)(6666004)(478600001)(66556008)(6916009)(8676002)(66946007)(66476007)(83380400001)(4326008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VK7bYAkJH/ETPAY2jd861pMBXFcwWLyGM/CgmongcjJ95t7apUDqn2gTPdHN?=
+ =?us-ascii?Q?AhibXWJZAvILWcLxmM/3BasYIUQCacZ1dHZZEaoPUqpxcBO1SuKTH0ZVpUD+?=
+ =?us-ascii?Q?LeBaIEvdJRuQ6ptGZNdIm/wuGguhgjXooKcWoZd5aDuxfcvI39HjOMS8xFYi?=
+ =?us-ascii?Q?nURnw2XKM7XrUShtnAh+JBgRGZA+Fz/yoObapQgkIfFLPeqzEhtUqNOllkX/?=
+ =?us-ascii?Q?RhgH1ocVl34aWEPSSlr7mJgzxig86jYiOpuBmeml1FvC0LFIp9z5ReiCAHAL?=
+ =?us-ascii?Q?NgaFMlVeXyzMIRt4wxFQtIpAmKpL5um5y3rQJSkVEv8wy7Wyr6s9X7mw8qF8?=
+ =?us-ascii?Q?DC++G81xe7w11YhhF2a/AiQGLuhMI84ALIvJuqmbmlE4JFeM2qu2gDfma1xn?=
+ =?us-ascii?Q?XTA0ew/95m/gdZjdCWoIAr+s6/xm4RU6+7pcfE8TMTl+zpe3XYe3I2INLQkX?=
+ =?us-ascii?Q?f1x5Lkt+mfezxpMFOzVK+7mhiy8PMgJNsUyattCtQhUN/oGJ14TvTxU/2z/F?=
+ =?us-ascii?Q?tPD4KTekZVlv1x2f07t5CC1//VMvkRr86w50jgD+CbPd+qTtAlsTN33l5YMN?=
+ =?us-ascii?Q?vUjYDESCQuHEQBPQ7KB5FRICD6ZcGjBGmx+8nCdv36Ublh2lUwRlg7Mf8uPp?=
+ =?us-ascii?Q?OFoQXaoyVxNn7UoLhZaeIpwQTNjLLYS1sbcicSoQjWHKvYBQsnb6eYk/larB?=
+ =?us-ascii?Q?ndiHaK6baqLPAOE+I3t6gF8Bb+6sVuqRU4xImlhEqXuZA+x+mx0OzLN2Mswk?=
+ =?us-ascii?Q?I4GCvAo3AXaMi+ekUPScyZtc7ksAsVvsKhXOikt5IutW/LN5O24CWDaVX+Mb?=
+ =?us-ascii?Q?fbhzphI+Jn1CK+ILl/33zfjDtBW3d9XR9bgFbuL9i0Hh5rpiokHytpCPRfqm?=
+ =?us-ascii?Q?qWXAnOtMDTbBOFGmt9Nk7R0q0+Dg3kErHnDmgaDbwH/hGOPlkpVM3ENL4YMn?=
+ =?us-ascii?Q?tHgSX/wsFlIodTZ8RkCQm6SVn8vHHa4RHxCwjROgt4jEJhHxwnIryZXN8UGt?=
+ =?us-ascii?Q?5mdAShIxU30Lcvx4HLwu9q/N/4feZbU24PsBhT9MnjzDqaOEzxFJw4mmB+jb?=
+ =?us-ascii?Q?XlyvEOO6fhh0123YxzbD177YgDfj5LD3zDZONoVf3Bou9Acg9xMnKSGWHZ7z?=
+ =?us-ascii?Q?kqYrRAJ9PWtQlfJ4NuWJ4VepYW0YHsAipTXP6Cx6VFVx+iaO2niJb4dB/QOU?=
+ =?us-ascii?Q?sOK5E/fyVW5v9IpGG2XCsWmhiNTRUA1bgHobd1rrZmxvVztUbO3Q1CbeivG2?=
+ =?us-ascii?Q?YIsl1LpwEk1IbmUF4tRZp3Fn9Upl7lAthd6SeCw7RsWNli3optP0dUjdiqo7?=
+ =?us-ascii?Q?IAxaHtXdrzk3wdzGtXa4y2Ou3Kcr0DZFlUoovS5dFKHwrU18tL3l0EgYscwH?=
+ =?us-ascii?Q?WvX61/707pumzISGVv/5qZZ7oP7rBtCImNgKwlQDyVrKnDrI6d3URha/s/wZ?=
+ =?us-ascii?Q?Q2vKw5OJtj2jtWUn7yvbzP3BIgNFYQ2XfEzO6jji//eP9Gtm09+n1zJ9SZlX?=
+ =?us-ascii?Q?cv10K5J6SkHeoe38kv2dT71fQAPLHHv08PuaxHhhkdkvd8ePb33a/G7FwUur?=
+ =?us-ascii?Q?G/dTLKN7+zopZhah26Obf6HKLhvjwx3EsX1E0tsBySq+GemhTcx+0DB/QbWc?=
+ =?us-ascii?Q?Cw=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b59064ba-bf42-441e-c8dd-08dafee47973
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2023 14:57:27.2163
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: cUt9r2B9Zf12kqVWhrY1clhmm6ODZ5iVsg87m1pcm4St+eeUaJUliR2fkXWBxwTwrsJw+6aAq7yLCk3q34Ow6w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8691
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 21, 2023 at 04:10:23AM +0000, Michael Kelley (LINUX) wrote:
-> Per the commit message for 009767dbf42a, it's not safe to read MSR_AMD64_SEV
-> on all implementations of AMD processors.
+The build system currently complains:
 
-1. Why does that matter to you? This is Hygon.
+scripts/Makefile.build:252: drivers/net/dsa/ocelot/Makefile:
+felix.o is added to multiple modules: mscc_felix mscc_seville
 
-2. The MSR access is behind CPUID check.
+Since felix.c holds the DSA glue layer, create a mscc_felix_dsa_lib.ko.
+This is similar to how mscc_ocelot_switch_lib.ko holds a library for
+configuring the hardware.
 
-> CC_ATTR_ACCESS_IOAPIC_ENCRYPTED is used in io_apic_set_fixmap(), which is
-> called on all Intel/AMD systems without any qualifications.   Even if
-> rdmsrl_safe() works at this point in boot, I'm a little leery of reading a new
-> MSR in a path that essentially every x86 bare-metal system or VM takes during
-> boot.
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/dsa/ocelot/Kconfig  | 11 +++++++++++
+ drivers/net/dsa/ocelot/Makefile | 11 ++++-------
+ drivers/net/dsa/ocelot/felix.c  |  6 ++++++
+ 3 files changed, 21 insertions(+), 7 deletions(-)
 
-You read the MSR once and cache it. sme_enable() already does that. I don't see
-what the problem is.
-
-> Or am I being overly paranoid about old processor models or hypervisor
-> versions potentially doing something weird?
-
-Yes, you are. :)
-
-If they're doing something weird which is out of spec, then we'll deal with them
-later.
-
-> But in any case, the whole point of cc_platform_has() is to provide a level of
-> abstraction from the hardware registers, and it's fully safe to use on every x86
-> bare-metal system or VM.  And while I don't anticipate it now, maybe there's
-> some future scheme where a paravisor-like entity could be used with Intel
-> TDX.  It seems like using a cc_platform_has() abstraction is better than directly
-> accessing the MSR.
-
-That's fine but we're talking about this particular implementation and that is
-vTOM-like with the address space split. If TDX does address space split later,
-we can accomodate it too. (Although I think they are not interested in this).
-
-And if you really want to use cc_platform_has(), we could do
-
-	cc_platform_has(CC_ADDRESS_SPACE_SPLIT_ON_A_PARAVISOR)
-
-or something with a better name.
-
-The point is, you want to do things which are specific for this particular
-implementation. If so, then check for it. Do not do hacky things which get the
-work done for your case but can very easily be misused by others.
-
-> My resolution of the TPM driver issue is admittedly a work-around.   I think
-> of it as temporary in anticipation of future implementations of PCIe TDISP
-> hardware, which allows PCI devices to DMA directly into guest encrypted
-> memory.
-
-Yap, that sounds real nice.
-
-> TDISP also places the device's BAR values in an encrypted portion
-> of the GPA space. Assuming TDISP hardware comes along in the next couple
-> of years, Linux will need a robust way to deal with a mix of PCI devices
-> being in unencrypted and encrypted GPA space.  I don't know how a
-> specific device will be mapped correctly, but I hope it can happen in the
-> generic PCI code, and not by modifying each device driver.
-
-I guess those devices would advertize that capability somehow so that code can
-query it and act accordingly.
-
-> It's probably premature to build that robust mechanism now, but when it comes,
-> my work-around would be replaced.
-
-It would be replaced if it doesn't have any users. By the looks of it, it'll
-soon grow others and then good luck removing it.
-
-> With all that in mind, I don't want to modify the TPM driver to special-case
-> its MMIO space being encrypted.  FWIW, the TPM driver today uses
-> devm_ioremap_resource() to do the mapping, which defaults to mapping
-> decrypted except for the exceptions implemented in __ioremap_caller().
-> There's no devm_* option for specifying encrypted.
-
-You mean, it is hard to add a DEVM_IOREMAP_ENCRYPTED type which will have
-__devm_ioremap() call ioremap_encrypted()?
-
-Or define a IORESOURCE_ENCRYPTED and pass it through the ioresource flags?
-
-Why is that TPM driver so precious that it can be touched and the arch code
-would have to accept hacks?
-
-> Handling decrypted vs. encrypted in the driver would require extending the
-> driver API to provide an "encrypted" option, and that seems like going in the
-> wrong long-term direction.
-
-Sorry, I can't follow here.
-
+diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
+index 08db9cf76818..60f1f7ada465 100644
+--- a/drivers/net/dsa/ocelot/Kconfig
++++ b/drivers/net/dsa/ocelot/Kconfig
+@@ -1,4 +1,13 @@
+ # SPDX-License-Identifier: GPL-2.0-only
++config NET_DSA_MSCC_FELIX_DSA_LIB
++	tristate
++	help
++	  This is an umbrella module for all network switches that are
++	  register-compatible with Ocelot and that perform I/O to their host
++	  CPU through an NPI (Node Processor Interface) Ethernet port.
++	  Its name comes from the first hardware chip to make use of it
++	  (VSC9959), code named Felix.
++
+ config NET_DSA_MSCC_FELIX
+ 	tristate "Ocelot / Felix Ethernet switch support"
+ 	depends on NET_DSA && PCI
+@@ -8,6 +17,7 @@ config NET_DSA_MSCC_FELIX
+ 	depends on PTP_1588_CLOCK_OPTIONAL
+ 	depends on NET_SCH_TAPRIO || NET_SCH_TAPRIO=n
+ 	select MSCC_OCELOT_SWITCH_LIB
++	select NET_DSA_MSCC_FELIX_DSA_LIB
+ 	select NET_DSA_TAG_OCELOT_8021Q
+ 	select NET_DSA_TAG_OCELOT
+ 	select FSL_ENETC_MDIO
+@@ -24,6 +34,7 @@ config NET_DSA_MSCC_SEVILLE
+ 	depends on PTP_1588_CLOCK_OPTIONAL
+ 	select MDIO_MSCC_MIIM
+ 	select MSCC_OCELOT_SWITCH_LIB
++	select NET_DSA_MSCC_FELIX_DSA_LIB
+ 	select NET_DSA_TAG_OCELOT_8021Q
+ 	select NET_DSA_TAG_OCELOT
+ 	select PCS_LYNX
+diff --git a/drivers/net/dsa/ocelot/Makefile b/drivers/net/dsa/ocelot/Makefile
+index f6dd131e7491..fd7dde570d4e 100644
+--- a/drivers/net/dsa/ocelot/Makefile
++++ b/drivers/net/dsa/ocelot/Makefile
+@@ -1,11 +1,8 @@
+ # SPDX-License-Identifier: GPL-2.0-only
++obj-$(CONFIG_NET_DSA_MSCC_FELIX_DSA_LIB) += mscc_felix_dsa_lib.o
+ obj-$(CONFIG_NET_DSA_MSCC_FELIX) += mscc_felix.o
+ obj-$(CONFIG_NET_DSA_MSCC_SEVILLE) += mscc_seville.o
+ 
+-mscc_felix-objs := \
+-	felix.o \
+-	felix_vsc9959.o
+-
+-mscc_seville-objs := \
+-	felix.o \
+-	seville_vsc9953.o
++mscc_felix_dsa_lib-objs := felix.o
++mscc_felix-objs := felix_vsc9959.o
++mscc_seville-objs := seville_vsc9953.o
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index d21e7be2f8c7..f57b4095b793 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -2131,6 +2131,7 @@ const struct dsa_switch_ops felix_switch_ops = {
+ 	.port_set_host_flood		= felix_port_set_host_flood,
+ 	.port_change_master		= felix_port_change_master,
+ };
++EXPORT_SYMBOL_GPL(felix_switch_ops);
+ 
+ struct net_device *felix_port_to_netdev(struct ocelot *ocelot, int port)
+ {
+@@ -2142,6 +2143,7 @@ struct net_device *felix_port_to_netdev(struct ocelot *ocelot, int port)
+ 
+ 	return dsa_to_port(ds, port)->slave;
+ }
++EXPORT_SYMBOL_GPL(felix_port_to_netdev);
+ 
+ int felix_netdev_to_port(struct net_device *dev)
+ {
+@@ -2153,3 +2155,7 @@ int felix_netdev_to_port(struct net_device *dev)
+ 
+ 	return dp->index;
+ }
++EXPORT_SYMBOL_GPL(felix_netdev_to_port);
++
++MODULE_DESCRIPTION("Felix DSA library");
++MODULE_LICENSE("GPL");
 -- 
-Regards/Gruss,
-    Boris.
+2.34.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
