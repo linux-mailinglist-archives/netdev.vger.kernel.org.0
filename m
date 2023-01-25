@@ -2,46 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0D9A67B9FE
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 19:57:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FC9167BA11
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 20:01:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234913AbjAYS5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 13:57:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49496 "EHLO
+        id S235772AbjAYTBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 14:01:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235373AbjAYS5t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 13:57:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F8740E7
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 10:57:47 -0800 (PST)
+        with ESMTP id S234805AbjAYTBj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 14:01:39 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCE2D23C55;
+        Wed, 25 Jan 2023 11:01:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 908A1B8198A
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 18:57:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAAAAC433D2;
-        Wed, 25 Jan 2023 18:57:44 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 38E09CE2129;
+        Wed, 25 Jan 2023 19:01:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AADBC433EF;
+        Wed, 25 Jan 2023 19:01:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674673065;
-        bh=ODihhGg+fvePSvXcHLfT1u3HSt0/QLf9enTGWoZiB9k=;
+        s=k20201202; t=1674673295;
+        bh=AXaUtpNg3QgcsfBT6bp4+5ZQ5MYWDv9VhOmUZbTWnSA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fl98JuCyf/b4Jn7bNrJDI5LdJosUUkjdQh8QJuN5uUs0a624uOTgdgypYPKfKmlNW
-         0YOBmjGIx8Fhn8XwehjdUklgdGOIWBJCzxmhM+rwhdW6Pw2X5Fwdx3kPet6wEQw/aa
-         mkCTrRiPRgs22BkE+S/4izvjkPjsR76Jt75BLXNYBS6xhQROsNXCXWXYrIswVqHvs8
-         GgWT/w4nShJrKwEv38Xg0Y/fhdaixoneKafP1MZ4OG1dN5EA+6ZxVpcHZ0Uoyc2iYQ
-         Tj8g+QwBBf6HbWfd7/EkVv/Iw8KVlo6htcQO9cyw9k77PNlIkJFPQyHVPYykxLsWX5
-         j3pc/oXCPIzIw==
-Date:   Wed, 25 Jan 2023 10:57:43 -0800
+        b=JZLmlLIsVO5/PNbtG96h90qvJZDxugRBOB6FfaCfl767Y3S+jHYyamYGzDLnqsV+i
+         hm+PbuwyiX8nzUHL3++9JOwsm7HZiKMnFKxVc1KX2EVGb1mig9eYgHaHqhGj0yJHJu
+         hxAEcn9mXXNjtwEDP6fy0OAWUO3+X1cjhA9EIOpe7ntewNDBRBTblFx7NJM8xwuGoi
+         mOaHNAW52/vQs9X1ORq3L+o81eafxZcKsyB+jftIQU905ijscxtKPa0itatbKW8WQ5
+         T584vxFIV0tdNdmrwZIZTN60YO/bJ1mHQ21TXQZa1DvS1AR80xwBk6ORrEX2EcZmqG
+         uyFsyben+XrsQ==
+Date:   Wed, 25 Jan 2023 11:01:33 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Apoorv Kothari <apoorvko@amazon.com>
-Cc:     <sd@queasysnail.net>, <borisp@nvidia.com>, <dueno@redhat.com>,
-        <fkrenzel@redhat.com>, <gal@nvidia.com>, <netdev@vger.kernel.org>,
-        <simo@redhat.com>, <tariqt@nvidia.com>
-Subject: Re: [PATCH net-next 0/5] tls: implement key updates for TLS1.3
-Message-ID: <20230125105743.16d7d4c6@kernel.org>
-In-Reply-To: <20230125184720.56498-1-apoorvko@amazon.com>
-References: <Y8//pypyM3HAu+cf@hog>
-        <20230125184720.56498-1-apoorvko@amazon.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        intel-wired-lan@lists.osuosl.org,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, Paolo Abeni <pabeni@redhat.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Veaceslav Falico <vfalico@gmail.com>
+Subject: Re: [PATCH net-next v1 00/10] Convert drivers to return XFRM
+ configuration errors through extack
+Message-ID: <20230125110133.7195b663@kernel.org>
+In-Reply-To: <cover.1674560845.git.leon@kernel.org>
+References: <cover.1674560845.git.leon@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,28 +68,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Jan 2023 10:47:20 -0800 Apoorv Kothari wrote:
-> > We'll need to keep the old key around until we know all the records
-> > using it have been fully received, right?  And that could be multiple
-> > old keys, in case of a quick series of key updates.  
-> 
-> Why does the hardware implementation need to store old keys? Does the need
-> for retransmitted data assume we are operating in TLS_HW_RECORD mode and
-> the hardware is also implementing the TCP stack?
+On Tue, 24 Jan 2023 13:54:56 +0200 Leon Romanovsky wrote:
+> This series continues effort started by Sabrina to return XFRM configuration
+> errors through extack. It allows for user space software stack easily present
+> driver failure reasons to users.
 
-We're talking about the Tx direction, the packets are queued to the
-lower layers of the stack unencrypted, and get encrypted by the NIC.
-Until TCP gets acks for all the data awaiting offloaded crypto - we
-must hold onto the keys.
-
-Rx direction is much simpler indeed.
-
-> The TLS RFC assumes that the underlying transport layer provides reliable
-> and in-order deliver so storing previous keys and encrypting 'old' data
-> would be quite divergent from normal TLS behavior. Is the TLS_HW_RECORD mode
-> processing TLS records out of order? If the hardware offload is handling
-> the TCP networking stack then I feel it should also handle the
-> retransmission of lost data.
-
-Ignore TLS_HW_RECORD, it's a ToE offload, the offload we care about
-just offloads encryption.
+Steffen, would you like to take these into your tree or should we apply
+directly? Looks like mostly driver changes.
