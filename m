@@ -2,161 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD95A67AE80
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 10:43:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC86667AF0D
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 11:00:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235368AbjAYJnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 04:43:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56926 "EHLO
+        id S234689AbjAYKAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 05:00:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235389AbjAYJng (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 04:43:36 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BBFA5648A;
-        Wed, 25 Jan 2023 01:43:08 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id E2F3821C7D;
-        Wed, 25 Jan 2023 09:43:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1674639786; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        with ESMTP id S230174AbjAYKAD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 05:00:03 -0500
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6846B4997B;
+        Wed, 25 Jan 2023 02:00:01 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 19623FF80E;
+        Wed, 25 Jan 2023 09:59:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1674640799;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/H7fv8j3//amIhsuvsnszBORL7yxYM5gHjte1pGnd6k=;
-        b=cJ84t8+Z/oyAwTTCtaCrRcZJz3vmv0agsy9pwxx1mjpy2wVyb9bbJa/fovrQrusm/Svjk5
-        J6I5Atn+BG/uY1djc0bMaR2EhFHHAjtT6MjckOpioFidRZmoo/SxgZTemFBWI/hmnJ034Z
-        w1GOPFueJOKBcny/L6MDveuVWEd9TYY=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8FA761358F;
-        Wed, 25 Jan 2023 09:43:06 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id usqPIqr50GPHIgAAMHmgww
-        (envelope-from <mhocko@suse.com>); Wed, 25 Jan 2023 09:43:06 +0000
-Date:   Wed, 25 Jan 2023 10:43:05 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Suren Baghdasaryan <surenb@google.com>
-Cc:     akpm@linux-foundation.org, michel@lespinasse.org,
-        jglisse@google.com, vbabka@suse.cz, hannes@cmpxchg.org,
-        mgorman@techsingularity.net, dave@stgolabs.net,
-        willy@infradead.org, liam.howlett@oracle.com, peterz@infradead.org,
-        ldufour@linux.ibm.com, paulmck@kernel.org, luto@kernel.org,
-        songliubraving@fb.com, peterx@redhat.com, david@redhat.com,
-        dhowells@redhat.com, hughd@google.com, bigeasy@linutronix.de,
-        kent.overstreet@linux.dev, punit.agrawal@bytedance.com,
-        lstoakes@gmail.com, peterjung1337@gmail.com, rientjes@google.com,
-        axelrasmussen@google.com, joelaf@google.com, minchan@google.com,
-        jannh@google.com, shakeelb@google.com, tatashin@google.com,
-        edumazet@google.com, gthelen@google.com, gurua@google.com,
-        arjunroy@google.com, soheil@google.com, hughlynch@google.com,
-        leewalsh@google.com, posk@google.com, will@kernel.org,
-        aneesh.kumar@linux.ibm.com, npiggin@gmail.com,
-        chenhuacai@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, richard@nod.at,
-        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
-        qianweili@huawei.com, wangzhou1@hisilicon.com,
-        herbert@gondor.apana.org.au, davem@davemloft.net, vkoul@kernel.org,
-        airlied@gmail.com, daniel@ffwll.ch,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, l.stach@pengutronix.de,
-        krzysztof.kozlowski@linaro.org, patrik.r.jakobsson@gmail.com,
-        matthias.bgg@gmail.com, robdclark@gmail.com,
-        quic_abhinavk@quicinc.com, dmitry.baryshkov@linaro.org,
-        tomba@kernel.org, hjc@rock-chips.com, heiko@sntech.de,
-        ray.huang@amd.com, kraxel@redhat.com, sre@kernel.org,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
-        tfiga@chromium.org, m.szyprowski@samsung.com, mchehab@kernel.org,
-        dimitri.sivanich@hpe.com, zhangfei.gao@linaro.org,
-        jejb@linux.ibm.com, martin.petersen@oracle.com,
-        dgilbert@interlog.com, hdegoede@redhat.com, mst@redhat.com,
-        jasowang@redhat.com, alex.williamson@redhat.com, deller@gmx.de,
-        jayalk@intworks.biz, viro@zeniv.linux.org.uk, nico@fluxnic.net,
-        xiang@kernel.org, chao@kernel.org, tytso@mit.edu,
-        adilger.kernel@dilger.ca, miklos@szeredi.hu,
-        mike.kravetz@oracle.com, muchun.song@linux.dev, bhe@redhat.com,
-        andrii@kernel.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, pabeni@redhat.com, perex@perex.cz, tiwai@suse.com,
-        haojian.zhuang@gmail.com, robert.jarzmik@free.fr,
-        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org, linux-graphics-maintainer@vmware.com,
-        linux-ia64@vger.kernel.org, linux-arch@vger.kernel.org,
-        loongarch@lists.linux.dev, kvm@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-sgx@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-acpi@vger.kernel.org,
-        linux-crypto@vger.kernel.org, nvdimm@lists.linux.dev,
-        dmaengine@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, etnaviv@lists.freedesktop.org,
-        linux-samsung-soc@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org,
-        linux-rockchip@lists.infradead.org, linux-tegra@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        xen-devel@lists.xenproject.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-rdma@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-accelerators@lists.ozlabs.org, sparclinux@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-staging@lists.linux.dev,
-        target-devel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-erofs@lists.ozlabs.org, linux-ext4@vger.kernel.org,
-        devel@lists.orangefs.org, kexec@lists.infradead.org,
-        linux-xfs@vger.kernel.org, bpf@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, kasan-dev@googlegroups.com,
-        selinux@vger.kernel.org, alsa-devel@alsa-project.org,
-        kernel-team@android.com
-Subject: Re: [PATCH v2 6/6] mm: export dump_mm()
-Message-ID: <Y9D5qS02j/fPLP/6@dhcp22.suse.cz>
-References: <20230125083851.27759-1-surenb@google.com>
- <20230125083851.27759-7-surenb@google.com>
+        bh=b32jowcL09Pq3mOJpkXEjTseoNMw15SMTSszTjV1ZG0=;
+        b=Ve3aa/ssUj7kATRuuiCEZFjL13lKl7+3YXNoyJm+VO+bFStA4+KmggbzKIC3WqdjDfs/6q
+        UujqKFUa3O7ogc/LFMUSvGa1tagPqW2CMWpUTT8bfjtWOs1bWqH4ffO8eLfGzy6wT0fejo
+        R94dPGTlnE/9rqBvgnbePR2lcAKRidq/boc/gIDRgmCRua/OJ76ok2ZwycRT/yZ8qYgeMh
+        Dtix3aGeQJa0oTKmspmUYGRDFmD11ZfymNGdM1IN2i1C25u/zt/col+VksRElRwN0jt9uH
+        HPzpa61pVP0ds/ULaN7M7TxPO4eOpSMlhZ62+9lqhyu3kEqNTbXAzCcOBg1XIQ==
+Date:   Wed, 25 Jan 2023 10:59:56 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>
+Cc:     Alexander Aring <aahringo@redhat.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next 0/2] ieee802154: Beaconing support
+Message-ID: <20230125105653.44e9498f@xps-13>
+In-Reply-To: <CAB_54W69KcM0UJjf8py-VyRXx2iEUvcAKspXiAkykkQoF6ccDA@mail.gmail.com>
+References: <20230106113129.694750-1-miquel.raynal@bootlin.com>
+        <CAK-6q+jNmvtBKKxSp1WepVXbaQ65CghZv3bS2ptjB9jyzOSGTA@mail.gmail.com>
+        <20230118102058.3b1f275b@xps-13>
+        <CAK-6q+gwP8P--5e9HKt2iPhjeefMXrXUVy-G+szGdFXZvgYKvg@mail.gmail.com>
+        <CAK-6q+gn7W9x2+ihSC41RzkhmBn1E44pKtJFHgqRdd8aBpLrVQ@mail.gmail.com>
+        <20230124110814.6096ecbe@xps-13>
+        <CAB_54W69KcM0UJjf8py-VyRXx2iEUvcAKspXiAkykkQoF6ccDA@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230125083851.27759-7-surenb@google.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 25-01-23 00:38:51, Suren Baghdasaryan wrote:
-> mmap_assert_write_locked() is used in vm_flags modifiers. Because
-> mmap_assert_write_locked() uses dump_mm() and vm_flags are sometimes
-> modified from from inside a module, it's necessary to export
-> dump_mm() function.
-> 
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+Hi Alexander,
 
-Acked-by: Michal Hocko <mhocko@suse.com>
+alex.aring@gmail.com wrote on Tue, 24 Jan 2023 21:31:33 -0500:
 
-> ---
->  mm/debug.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/mm/debug.c b/mm/debug.c
-> index 9d3d893dc7f4..96d594e16292 100644
-> --- a/mm/debug.c
-> +++ b/mm/debug.c
-> @@ -215,6 +215,7 @@ void dump_mm(const struct mm_struct *mm)
->  		mm->def_flags, &mm->def_flags
->  	);
->  }
-> +EXPORT_SYMBOL(dump_mm);
->  
->  static bool page_init_poisoning __read_mostly = true;
->  
-> -- 
-> 2.39.1
+> Hi,
+>=20
+> On Tue, Jan 24, 2023 at 5:08 AM Miquel Raynal <miquel.raynal@bootlin.com>=
+ wrote:
+> >
+> > Hi Alexander,
+> >
+> > aahringo@redhat.com wrote on Mon, 23 Jan 2023 09:02:48 -0500:
+> > =20
+> > > Hi,
+> > >
+> > > On Mon, Jan 23, 2023 at 9:01 AM Alexander Aring <aahringo@redhat.com>=
+ wrote: =20
+> > > >
+> > > > Hi,
+> > > >
+> > > > On Wed, Jan 18, 2023 at 4:21 AM Miquel Raynal <miquel.raynal@bootli=
+n.com> wrote: =20
+> > > > >
+> > > > > Hi Alexander,
+> > > > >
+> > > > > aahringo@redhat.com wrote on Sun, 15 Jan 2023 20:54:02 -0500:
+> > > > > =20
+> > > > > > Hi,
+> > > > > >
+> > > > > > On Fri, Jan 6, 2023 at 6:33 AM Miquel Raynal <miquel.raynal@boo=
+tlin.com> wrote: =20
+> > > > > > >
+> > > > > > > Scanning being now supported, we can eg. play with hwsim to v=
+erify
+> > > > > > > everything works as soon as this series including beaconing s=
+upport gets
+> > > > > > > merged.
+> > > > > > > =20
+> > > > > >
+> > > > > > I am not sure if a beacon send should be handled by an mlme hel=
+per
+> > > > > > handling as this is a different use-case and the user does not =
+trigger
+> > > > > > an mac command and is waiting for some reply and a more complex
+> > > > > > handling could be involved. There is also no need for hotpath x=
+mit
+> > > > > > handling is disabled during this time. It is just an async mess=
+aging
+> > > > > > in some interval and just "try" to send it and don't care if it=
+ fails,
+> > > > > > or? For mac802154 therefore I think we should use the dev_queue=
+_xmit()
+> > > > > > function to queue it up to send it through the hotpath?
+> > > > > >
+> > > > > > I can ack those patches, it will work as well. But I think we s=
+hould
+> > > > > > switch at some point to dev_queue_xmit(). It should be simple to
+> > > > > > switch it. Just want to mention there is a difference which wil=
+l be
+> > > > > > there in mac-cmds like association. =20
+> > > > >
+> > > > > I see what you mean. That's indeed true, we might just switch to
+> > > > > a less constrained transmit path.
+> > > > > =20
+> > > >
+> > > > I would define the difference in bypass qdisc or not. Whereas the
+> > > > qdisc can drop or delay transmitting... For me, the qdisc is curren=
+tly
+> > > > in a "works for now" state. =20
+> > >
+> > > probably also bypass other hooks like tc, etc. :-/ Not sure if we wan=
+t that. =20
+> >
+> > Actually, IIUC, we no longer want to go through the entire net stack.
+> > We still want to bypass it but without stopping/flushing the full
+> > queue like with an mlme transmission, so what about using
+> > ieee802154_subif_start_xmit() instead of dev_queue_xmit()? I think it
+> > is more appropriate. =20
+>=20
+> I do not understand, what do we currently do with mlme ops via the
+> ieee802154_subif_start_xmit() function, or? So we bypass everything
+> from dev_queue_xmit() until do_xmit() netdev callback.
 
--- 
-Michal Hocko
-SUSE Labs
+Yes, that's the plan. We don't want any of the net stack features when
+sending beacons.
+
+> I think it is fine, also I think "mostly" only dataframes should go
+> through dev_queue_xmit(). With a HardMAC transceiver we would have
+> control about "mostly" other frames than data either. So we should do
+> everything with mlme-ops do what the spec says (to match up with
+> HardMAC behaviour?) and don't allow common net hooks/etc. to change
+> this behaviour?
+
+To summarize:
+- Data frames -> should go through dev_queue_xmit()
+- MLME ops with feedback constraints -> should go through the slow MLME
+  path, so ieee802154_mlme_tx*()
+- MLME ops without feedback constraints like beacons -> should go
+  through the hot path, but not through the whole net stack, so
+  ieee802154_subif_start_xmit()
+
+Right now only data frames have security support, I propose we merge
+the initial support like that. Right now I am focused on UWB support
+(coming next, after the whole active scan/association additions), and
+in a second time we would be interested in llsec support for MLME ops.
+
+Does that sounds like a plan? If yes, I'll send a v2 with the right
+transmit helper used.
+
+Thanks,
+Miqu=C3=A8l
+
+NB: Perhaps a prerequisites of bringing security to the MLME ops would
+be to have wpan-tools updated (it looks like the support was never
+merged?) as well as a simple example how to use it on linux-wpan.org.
