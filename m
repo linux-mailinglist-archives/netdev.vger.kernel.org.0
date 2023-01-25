@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A33567BE33
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 22:24:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 201B267BE36
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 22:24:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236674AbjAYVYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 16:24:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48720 "EHLO
+        id S236685AbjAYVYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 16:24:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236514AbjAYVYi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 16:24:38 -0500
+        with ESMTP id S236641AbjAYVYj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 16:24:39 -0500
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB05245BC1
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 13:24:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB4846178
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 13:24:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674681877; x=1706217877;
+  t=1674681878; x=1706217878;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=4LysYDy5WwgLWIIXH3A0OHy8oNE2vNwiJd1RUouVVok=;
-  b=PW3I7m4btCUU+sjK4mIUhaPnS+uyCQ+sv67pYJHeBZHKXO3j3RJezDxW
-   lyRc3rHCWc0FkVmpv+PMab+NLThDC7ob9vUdrlaZJfv1omk4jr8oWFkxU
-   IW35jtKdkkUwlkP8tw9UyM1rS8ATN6Rane2n0GOwqsPxFAyYGPoug4iR+
-   vtfA+0jBrURJn5mCHXzzUA6oZx8DaUA9hsBYhc6sIvGUpXkAxDWdZXzwK
-   t2msb5GtInHaVWBiiY6znM8O/gLDDjMP5z8YtS4lvXtSfEMFNHRj7l4UR
-   7poZDxmmREEaULkwYxvccniI4eT7Wj3T/UTYZzbobQTaDBgp4CCFka5eI
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10601"; a="328767492"
+  bh=fJXqR4Pfmpk3ehfxr11DaDVbOEPR6AJWSkddWiatxYw=;
+  b=F+bGYbwpV9ZrKWaszLPyBXjUg+Kz1A4nC7367D7xm/oUTeHiiEjJG4Gn
+   1ztvsTCtrZ05dDsi3k7IMLfp6nZ2CQWORT4Ediv6kixCpNgr5SMHAP3/G
+   qB6iY6BWKlwVnQWz+tm6vgmqzHebCk9lulALonWaqWTa9ywjeS0ChofnU
+   NG30dGrYsPPOaIgovY5eIuK/Nb6iQp+XNNKagef5yhUjAAE7JMtai7lnv
+   MWpubp5hgtn2rLvqn98Zr8WQgCTgg4I0wN9z/57MYTGSNbWgSTpbC3Yjh
+   FzFFm0crySHVhb0OQOzH5fJRnQIk3TyP62/X3LaZqpya76m8sJngVZr+J
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10601"; a="328767497"
 X-IronPort-AV: E=Sophos;i="5.97,246,1669104000"; 
-   d="scan'208";a="328767492"
+   d="scan'208";a="328767497"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2023 13:24:36 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10601"; a="770894108"
+X-IronPort-AV: E=McAfee;i="6500,9779,10601"; a="770894112"
 X-IronPort-AV: E=Sophos;i="5.97,246,1669104000"; 
-   d="scan'208";a="770894108"
+   d="scan'208";a="770894112"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
   by fmsmga002.fm.intel.com with ESMTP; 25 Jan 2023 13:24:35 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -44,9 +44,9 @@ To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
 Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
         Marek Szlosek <marek.szlosek@intel.com>
-Subject: [PATCH net-next 2/4] virtchnl: update header and increase header clarity
-Date:   Wed, 25 Jan 2023 13:24:39 -0800
-Message-Id: <20230125212441.4030014-3-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 3/4] virtchnl: do structure hardening
+Date:   Wed, 25 Jan 2023 13:24:40 -0800
+Message-Id: <20230125212441.4030014-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230125212441.4030014-1-anthony.l.nguyen@intel.com>
 References: <20230125212441.4030014-1-anthony.l.nguyen@intel.com>
@@ -63,97 +63,170 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-We already have the SPDX header, so just leave a copyright notice with
-an updated year and get rid of the boilerplate header (so 2002!).
+The virtchnl interface can have a bunch of "soft" defined structures
+hardened by using explicit sizes for declarations, and then referring to
+the enum type that uses them in a comment. None of these changes should
+change any of the structure sizes.
 
-In addition, update a couple of comments to clarify how the various
-parts of the virtchannel header interaction work.
-
-No functional changes.
+Also, remove a duplicate line in a switch statement and let two cases
+uses the same code.
 
 Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 Tested-by: Marek Szlosek <marek.szlosek@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- include/linux/avf/virtchnl.h | 33 ++++++++++++++++++---------------
- 1 file changed, 18 insertions(+), 15 deletions(-)
+ include/linux/avf/virtchnl.h | 48 ++++++++++++++++++++++++------------
+ 1 file changed, 32 insertions(+), 16 deletions(-)
 
 diff --git a/include/linux/avf/virtchnl.h b/include/linux/avf/virtchnl.h
-index b1cfa84904b1..2e685aa37688 100644
+index 2e685aa37688..5c630c818370 100644
 --- a/include/linux/avf/virtchnl.h
 +++ b/include/linux/avf/virtchnl.h
-@@ -1,21 +1,13 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
--/*******************************************************************************
-- *
-- * Intel Ethernet Controller XL710 Family Linux Virtual Function Driver
-- * Copyright(c) 2013 - 2014 Intel Corporation.
-- *
-- * Contact Information:
-- * e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
-- * Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
-- *
-- ******************************************************************************/
-+/* Copyright (c) 2013-2022, Intel Corporation. */
- 
- #ifndef _VIRTCHNL_H_
- #define _VIRTCHNL_H_
- 
- /* Description:
-- * This header file describes the VF-PF communication protocol used
-- * by the drivers for all devices starting from our 40G product line
-+ * This header file describes the Virtual Function (VF) - Physical Function
-+ * (PF) communication protocol used by the drivers for all devices starting
-+ * from our 40G product line
-  *
-  * Admin queue buffer usage:
-  * desc->opcode is always aqc_opc_send_msg_to_pf
-@@ -29,8 +21,8 @@
-  * have a maximum of sixteen queues for all of its VSIs.
-  *
-  * The PF is required to return a status code in v_retval for all messages
-- * except RESET_VF, which does not require any response. The return value
-- * is of status_code type, defined in the shared type.h.
-+ * except RESET_VF, which does not require any response. The returned value
-+ * is of virtchnl_status_code type, defined here.
-  *
-  * In general, VF driver initialization should roughly follow the order of
-  * these opcodes. The VF driver must first validate the API version of the
-@@ -323,6 +315,9 @@ VIRTCHNL_CHECK_STRUCT_LEN(40, virtchnl_rxq_info);
-  * PF configures queues and returns status.
-  * If the number of queues specified is greater than the number of queues
-  * associated with the VSI, an error is returned and no queues are configured.
-+ * NOTE: The VF is not required to configure all queues in a single request.
-+ * It may send multiple messages. PF drivers must correctly handle all VF
-+ * requests.
-  */
- struct virtchnl_queue_pair_info {
- 	/* NOTE: vsi_id and queue_id should be identical for both queues. */
-@@ -360,8 +355,13 @@ struct virtchnl_vf_res_request {
-  * VF uses this message to map vectors to queues.
-  * The rxq_map and txq_map fields are bitmaps used to indicate which queues
-  * are to be associated with the specified vector.
-- * The "other" causes are always mapped to vector 0.
-+ * The "other" causes are always mapped to vector 0. The VF may not request
-+ * that vector 0 be used for traffic.
-  * PF configures interrupt mapping and returns status.
-+ * NOTE: due to hardware requirements, all active queues (both TX and RX)
-+ * should be mapped to interrupts, even if the driver intends to operate
-+ * only in polling mode. In this case the interrupt may be disabled, but
-+ * the ITR timer will still run to trigger writebacks.
-  */
- struct virtchnl_vector_map {
+@@ -214,7 +214,9 @@ enum virtchnl_vsi_type {
+ struct virtchnl_vsi_resource {
  	u16 vsi_id;
-@@ -388,6 +388,9 @@ VIRTCHNL_CHECK_STRUCT_LEN(14, virtchnl_irq_map_info);
-  * (Currently, we only support 16 queues per VF, but we make the field
-  * u32 to allow for expansion.)
-  * PF performs requested action and returns status.
-+ * NOTE: The VF is not required to enable/disable all queues in a single
-+ * request. It may send multiple messages.
-+ * PF drivers must correctly handle all VF requests.
-  */
- struct virtchnl_queue_select {
- 	u16 vsi_id;
+ 	u16 num_queue_pairs;
+-	enum virtchnl_vsi_type vsi_type;
++
++	/* see enum virtchnl_vsi_type */
++	s32 vsi_type;
+ 	u16 qset_handle;
+ 	u8 default_mac_addr[ETH_ALEN];
+ };
+@@ -303,7 +305,9 @@ struct virtchnl_rxq_info {
+ 	u8 rxdid;
+ 	u8 pad1[2];
+ 	u64 dma_ring_addr;
+-	enum virtchnl_rx_hsplit rx_split_pos; /* deprecated with AVF 1.0 */
++
++	/* see enum virtchnl_rx_hsplit; deprecated with AVF 1.0 */
++	s32 rx_split_pos;
+ 	u32 pad2;
+ };
+ 
+@@ -955,8 +959,12 @@ enum virtchnl_flow_type {
+ struct virtchnl_filter {
+ 	union	virtchnl_flow_spec data;
+ 	union	virtchnl_flow_spec mask;
+-	enum	virtchnl_flow_type flow_type;
+-	enum	virtchnl_action action;
++
++	/* see enum virtchnl_flow_type */
++	s32	flow_type;
++
++	/* see enum virtchnl_action */
++	s32	action;
+ 	u32	action_meta;
+ 	u8	field_flags;
+ 	u8	pad[3];
+@@ -984,7 +992,8 @@ enum virtchnl_event_codes {
+ #define PF_EVENT_SEVERITY_CERTAIN_DOOM	255
+ 
+ struct virtchnl_pf_event {
+-	enum virtchnl_event_codes event;
++	/* see enum virtchnl_event_codes */
++	s32 event;
+ 	union {
+ 		/* If the PF driver does not support the new speed reporting
+ 		 * capabilities then use link_event else use link_event_adv to
+@@ -997,6 +1006,7 @@ struct virtchnl_pf_event {
+ 		struct {
+ 			enum virtchnl_link_speed link_speed;
+ 			bool link_status;
++			u8 pad[3];
+ 		} link_event;
+ 		struct {
+ 			/* link_speed provided in Mbps */
+@@ -1006,7 +1016,7 @@ struct virtchnl_pf_event {
+ 		} link_event_adv;
+ 	} event_data;
+ 
+-	int severity;
++	s32 severity;
+ };
+ 
+ VIRTCHNL_CHECK_STRUCT_LEN(16, virtchnl_pf_event);
+@@ -1097,7 +1107,7 @@ enum virtchnl_rss_algorithm {
+ #define VIRTCHNL_GET_PROTO_HDR_TYPE(hdr) \
+ 	(((hdr)->type) >> PROTO_HDR_SHIFT)
+ #define VIRTCHNL_TEST_PROTO_HDR_TYPE(hdr, val) \
+-	((hdr)->type == ((val) >> PROTO_HDR_SHIFT))
++	((hdr)->type == ((s32)((val) >> PROTO_HDR_SHIFT)))
+ #define VIRTCHNL_TEST_PROTO_HDR(hdr, val) \
+ 	(VIRTCHNL_TEST_PROTO_HDR_TYPE((hdr), (val)) && \
+ 	 VIRTCHNL_TEST_PROTO_HDR_FIELD((hdr), (val)))
+@@ -1193,7 +1203,8 @@ enum virtchnl_proto_hdr_field {
+ };
+ 
+ struct virtchnl_proto_hdr {
+-	enum virtchnl_proto_hdr_type type;
++	/* see enum virtchnl_proto_hdr_type */
++	s32 type;
+ 	u32 field_selector; /* a bit mask to select field for header type */
+ 	u8 buffer[64];
+ 	/**
+@@ -1223,15 +1234,18 @@ VIRTCHNL_CHECK_STRUCT_LEN(2312, virtchnl_proto_hdrs);
+ 
+ struct virtchnl_rss_cfg {
+ 	struct virtchnl_proto_hdrs proto_hdrs;	   /* protocol headers */
+-	enum virtchnl_rss_algorithm rss_algorithm; /* RSS algorithm type */
+-	u8 reserved[128];			   /* reserve for future */
++
++	/* see enum virtchnl_rss_algorithm; rss algorithm type */
++	s32 rss_algorithm;
++	u8 reserved[128];                          /* reserve for future */
+ };
+ 
+ VIRTCHNL_CHECK_STRUCT_LEN(2444, virtchnl_rss_cfg);
+ 
+ /* action configuration for FDIR */
+ struct virtchnl_filter_action {
+-	enum virtchnl_action type;
++	/* see enum virtchnl_action type */
++	s32 type;
+ 	union {
+ 		/* used for queue and qgroup action */
+ 		struct {
+@@ -1319,7 +1333,9 @@ struct virtchnl_fdir_add {
+ 	u16 validate_only; /* INPUT */
+ 	u32 flow_id;       /* OUTPUT */
+ 	struct virtchnl_fdir_rule rule_cfg; /* INPUT */
+-	enum virtchnl_fdir_prgm_status status; /* OUTPUT */
++
++	/* see enum virtchnl_fdir_prgm_status; OUTPUT */
++	s32 status;
+ };
+ 
+ VIRTCHNL_CHECK_STRUCT_LEN(2616, virtchnl_fdir_add);
+@@ -1332,7 +1348,9 @@ struct virtchnl_fdir_del {
+ 	u16 vsi_id;  /* INPUT */
+ 	u16 pad;
+ 	u32 flow_id; /* INPUT */
+-	enum virtchnl_fdir_prgm_status status; /* OUTPUT */
++
++	/* see enum virtchnl_fdir_prgm_status; OUTPUT */
++	s32 status;
+ };
+ 
+ VIRTCHNL_CHECK_STRUCT_LEN(12, virtchnl_fdir_del);
+@@ -1351,7 +1369,7 @@ virtchnl_vc_validate_vf_msg(struct virtchnl_version_info *ver, u32 v_opcode,
+ 			    u8 *msg, u16 msglen)
+ {
+ 	bool err_msg_format = false;
+-	int valid_len = 0;
++	u32 valid_len = 0;
+ 
+ 	/* Validate message length. */
+ 	switch (v_opcode) {
+@@ -1492,8 +1510,6 @@ virtchnl_vc_validate_vf_msg(struct virtchnl_version_info *ver, u32 v_opcode,
+ 	case VIRTCHNL_OP_DISABLE_CHANNELS:
+ 		break;
+ 	case VIRTCHNL_OP_ADD_CLOUD_FILTER:
+-		valid_len = sizeof(struct virtchnl_filter);
+-		break;
+ 	case VIRTCHNL_OP_DEL_CLOUD_FILTER:
+ 		valid_len = sizeof(struct virtchnl_filter);
+ 		break;
 -- 
 2.38.1
 
