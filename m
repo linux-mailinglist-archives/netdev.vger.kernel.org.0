@@ -2,69 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB57867A9F7
-	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 06:25:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A01067A9F9
+	for <lists+netdev@lfdr.de>; Wed, 25 Jan 2023 06:27:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230334AbjAYFZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 00:25:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50646 "EHLO
+        id S231820AbjAYF1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 00:27:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbjAYFZt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 00:25:49 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B88D1166D;
-        Tue, 24 Jan 2023 21:25:48 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id m11so5535335pji.0;
-        Tue, 24 Jan 2023 21:25:48 -0800 (PST)
+        with ESMTP id S229621AbjAYF1m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 00:27:42 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B22422DC4;
+        Tue, 24 Jan 2023 21:27:41 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id z9-20020a17090a468900b00226b6e7aeeaso919371pjf.1;
+        Tue, 24 Jan 2023 21:27:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:subject:references
          :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YzUKvlx/l4x5SFk9d2w3bJt/HNHl8Jrjy4nP9COeZE8=;
-        b=iwCtXxiP8m7j710I3xBqUNiP/2lquL/SfC5ZWw9iqKVHXL+GpGEXievSOKsDhO0Hub
-         Ac1H8mGyejlIPKE1dhMeJqtK5X4BCANjHsH/3ENcx+uM8UWBUqqYzwq5pFuPEK7LrbJD
-         m541cYscBTXoZmONd3oKMKH8i27A4ZiiDkbXwhrv/y53NcB1g4vEyacRnG8Nch+eTt10
-         JCY9mkPqim4pPN3uMrgeu/sF3GHEj55JXSjLyRETgKP7IIguRBHnk0H0jHJeY5Orv9JJ
-         ahdGZ4z+Kyd44Wih7VBf9+54eB7PE6ipsugjpSwL57CxhKAa9+m1B4EqCkBVTsMJQi3S
-         DJ/w==
+        bh=bhprMAuemk+eh+KpYy16rh1sP3lhIZAgEc14EY/ZdhI=;
+        b=Hlt67mgy/qitfayYabQVt5PYwLe+xwAiJQ9lOnHzjRWmp147bqBB1bTZPHxnH6ONNG
+         gIFZYRTIFmkq0J2+vk3cE/w5BWt+d71HAXuYjrbLO603Ylsnc3zfr900DL0beuyZcHYu
+         eVP7QWWlaz1nCyiiuGboDQ+2UMNabYvxNLDwLXUiLFIOwlWFT8rFeK0DwwwAy74yyicu
+         5DHN81hYFR8ZpDMkwy5Er8rt0s9rnCtMkMzYSyEFbQTj4Xqtr/uUREdRLGKxhIo4VpUO
+         4Sk4dc61iWHDRsw2K+J7ceyXh3zU/ncup7dH5uVqOcLPNxbg+7vUnqwxn+b8oAC6Rm+w
+         CkBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:subject:references
          :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=YzUKvlx/l4x5SFk9d2w3bJt/HNHl8Jrjy4nP9COeZE8=;
-        b=De0TbbGNrvA2Ma/v6w9FEBcYcrVUV1tRu0ND/IrURA5BqUSr4OePmRHg2rUarUg33B
-         QKvJmWbWxOvT/QXKirYp1c38fZi+UZ2A6TkJ1HOGm4ZXDigtlUnL3Zl5xjL3+XsW7BwN
-         AKQYQGlCoyRTlHh1enT5fNQ42D4kuvb4T5H/chLsofD5W9Y227xL6D5qK24/bPHqf4Pb
-         nS2WRH6jok3BfgK5BXEr1Re3gw0wF93fQ03FKbWda+UzhCeQa3kXNSi75QPY3lQiW5G8
-         Wj/RaJBsPe3X8lmkEf/I8Gb2VHc5lX/hn1ItC/PxQVq8qVjFBOEIEObP9tHR9W3/esod
-         oSgw==
-X-Gm-Message-State: AFqh2krRmkDXJGHTc86zJ+EOa9oHQ/88uYF8uqx5AmhEfOErOxQ8xnkb
-        LVg6b+iouU9zfgPOLff8sSU=
-X-Google-Smtp-Source: AMrXdXsURZ6NSIHpK2AO4jaaLDrqcwuTwEqOGhCh6gImu1l/bOiGG77Fmmal3UY1ijl/zBEpnZvqXw==
-X-Received: by 2002:a17:90b:3148:b0:22b:ae0b:ac88 with SMTP id ip8-20020a17090b314800b0022bae0bac88mr19451127pjb.47.1674624347742;
-        Tue, 24 Jan 2023 21:25:47 -0800 (PST)
+        bh=bhprMAuemk+eh+KpYy16rh1sP3lhIZAgEc14EY/ZdhI=;
+        b=GUh3PeG3hnu+cCyLdwb4TKmTZMXc3a42m3YA0+0iqWUSaJc1WlLrYdLYTR58IlHEN+
+         YjCbhkETXuTHDuvf0QhuwkuAZYPsP/VkidQA3HTZpx4cotdBsnhdyCrj3KO60d5Y8eT0
+         AHENWZzp69v/76z78+VJ++FrMsAT7UVXKAPkhehm9Y90qrjkcscga3zmOVS2OLCqVFrg
+         FojD5SrOaf0SW4X5sqo3tidCq13W+0rM7rCFgms9+ERZu7CVhutEY0LWHm1KuRs8dQS7
+         zcQWieqYWauYxfqvGQkTeivcAeJTyaF7ltS8+w1UEl3DAkPlIqJFqVGgTcg4yksh/3/+
+         Bwmw==
+X-Gm-Message-State: AFqh2kqevfeoRHOGZjf19cGsZo4cvcfae7gC84VWF1kzY5lAjRRRU8Sa
+        /+DJVkAldB0PnBSmmwrCJgAVWs8mb9w=
+X-Google-Smtp-Source: AMrXdXvV27PJ/sKiL9xJjW3GLotLVohOVWVUajlUFNoaoSuWTbD51hzVrbD9MedFtdo4vZs2MYWxiA==
+X-Received: by 2002:a17:90a:7e8d:b0:228:f893:bc4d with SMTP id j13-20020a17090a7e8d00b00228f893bc4dmr32159755pjl.23.1674624461035;
+        Tue, 24 Jan 2023 21:27:41 -0800 (PST)
 Received: from localhost ([98.97.33.45])
-        by smtp.gmail.com with ESMTPSA id mv17-20020a17090b199100b0022be311523dsm515495pjb.35.2023.01.24.21.25.45
+        by smtp.gmail.com with ESMTPSA id gz16-20020a17090b0ed000b00223f495dc28sm536330pjb.14.2023.01.24.21.27.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Jan 2023 21:25:46 -0800 (PST)
-Date:   Tue, 24 Jan 2023 21:25:43 -0800
+        Tue, 24 Jan 2023 21:27:40 -0800 (PST)
+Date:   Tue, 24 Jan 2023 21:27:38 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, John Fastabend <john.fastabend@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        kernel-team@cloudflare.com,
-        syzbot+04c21ed96d861dccc5cd@syzkaller.appspotmail.com
-Message-ID: <63d0bd576b61c_641f2086b@john.notmuch>
-In-Reply-To: <20230113-sockmap-fix-v2-2-1e0ee7ac2f90@cloudflare.com>
+        Andrii Nakryiko <andrii@kernel.org>, kernel-team@cloudflare.com
+Message-ID: <63d0bdca5fe7a_641f208c5@john.notmuch>
+In-Reply-To: <20230113-sockmap-fix-v2-3-1e0ee7ac2f90@cloudflare.com>
 References: <20230113-sockmap-fix-v2-0-1e0ee7ac2f90@cloudflare.com>
- <20230113-sockmap-fix-v2-2-1e0ee7ac2f90@cloudflare.com>
-Subject: RE: [PATCH bpf v2 2/4] bpf, sockmap: Check for any of tcp_bpf_prots
- when cloning a listener
+ <20230113-sockmap-fix-v2-3-1e0ee7ac2f90@cloudflare.com>
+Subject: RE: [PATCH bpf v2 3/4] selftests/bpf: Pass BPF skeleton to
+ sockmap_listen ops tests
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -80,41 +78,12 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Jakub Sitnicki wrote:
-> A listening socket linked to a sockmap has its sk_prot overridden. It
-> points to one of the struct proto variants in tcp_bpf_prots. The variant
-> depends on the socket's family and which sockmap programs are attached.
+> Following patch extends the sockmap ops tests to cover the scenario when a
+> sockmap with attached programs holds listening sockets.
 > 
-> A child socket cloned from a TCP listener initially inherits their sk_prot.
-> But before cloning is finished, we restore the child's proto to the
-> listener's original non-tcp_bpf_prots one. This happens in
-> tcp_create_openreq_child -> tcp_bpf_clone.
+> Pass the BPF skeleton to sockmap ops test so that the can access and attach
+> the BPF programs.
 > 
-> Today, in tcp_bpf_clone we detect if the child's proto should be restored
-> by checking only for the TCP_BPF_BASE proto variant. This is not
-> correct. The sk_prot of listening socket linked to a sockmap can point to
-> to any variant in tcp_bpf_prots.
-> 
-> If the listeners sk_prot happens to be not the TCP_BPF_BASE variant, then
-> the child socket unintentionally is left if the inherited sk_prot by
-> tcp_bpf_clone.
-> 
-> This leads to issues like infinite recursion on close [1], because the
-> child state is otherwise not set up for use with tcp_bpf_prot operations.
-> 
-> Adjust the check in tcp_bpf_clone to detect all of tcp_bpf_prots variants.
-> 
-> Note that it wouldn't be sufficient to check the socket state when
-> overriding the sk_prot in tcp_bpf_update_proto in order to always use the
-> TCP_BPF_BASE variant for listening sockets. Since commit
-> b8b8315e39ff ("bpf, sockmap: Remove unhash handler for BPF sockmap usage")
-> it is possible for a socket to transition to TCP_LISTEN state while already
-> linked to a sockmap, e.g. connect() -> insert into map ->
-> connect(AF_UNSPEC) -> listen().
-> 
-> [1]: https://lore.kernel.org/all/00000000000073b14905ef2e7401@google.com/
-> 
-> Fixes: e80251555f0b ("tcp_bpf: Don't let child socket inherit parent protocol ops on copy")
-> Reported-by: syzbot+04c21ed96d861dccc5cd@syzkaller.appspotmail.com
 > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 > ---
 
