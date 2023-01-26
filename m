@@ -2,125 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA58667D004
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 16:22:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1002F67D027
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 16:26:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232262AbjAZPWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 10:22:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60264 "EHLO
+        id S230423AbjAZP0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 10:26:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232259AbjAZPWs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 10:22:48 -0500
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7B36BBD6;
-        Thu, 26 Jan 2023 07:22:28 -0800 (PST)
-Received: from booty.fritz.box (unknown [77.244.183.192])
-        (Authenticated sender: luca.ceresoli@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPA id CCC7724000B;
-        Thu, 26 Jan 2023 15:22:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1674746531;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=y4XXZUb/eXTVLt3Io7nRJONtjd6MFURYEBCczeziRlI=;
-        b=n4O/TPhP8ss3Yw55rWDZdfKA5BDB3pD/eXKOubNenym/Wz0Z3oFGqXygem7AXQ4QxtQUs0
-        aTFUIxv3UvBbXaXdfjKt/+DxdiIH3m9pjffuOqX3kEawUd0mIoICswgkMt7Cl2V+9f/nlP
-        wZtZJUP9mFhHT8NCsMwnF+uxqasFUWG+4xeiWbYsWAqegNctl6/A3D+q+p+1IifdAbD+ru
-        UjJ9ogApnYQW65IA/tLjadQBDynMEBwsEPvMih4MQzWaAqI8kJqr9zHQN6Oc88cQ1ZyKA8
-        qBD027A6BojfXIfwIovLnoGdIEzq5/ovTr1GPKV7MYxKP8XDojIjVN3rfVcGNQ==
-From:   Luca Ceresoli <luca.ceresoli@bootlin.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Shengjiu Wang <shengjiu.wang@gmail.com>,
-        Xiubo Li <Xiubo.Lee@gmail.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Nicolin Chen <nicoleotsuka@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Luca Ceresoli <luca.ceresoli@bootlin.com>
-Cc:     Colin Ian King <colin.i.king@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        dev@openvswitch.org, alsa-devel@alsa-project.org,
-        linuxppc-dev@lists.ozlabs.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH] scripts/spelling.txt: add "exsits" pattern and fix typo instances
-Date:   Thu, 26 Jan 2023 16:22:05 +0100
-Message-Id: <20230126152205.959277-1-luca.ceresoli@bootlin.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S232097AbjAZP0S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 10:26:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA96E93E6;
+        Thu, 26 Jan 2023 07:25:57 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B576B81CC0;
+        Thu, 26 Jan 2023 15:25:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E50C2C433EF;
+        Thu, 26 Jan 2023 15:25:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674746754;
+        bh=RPUA4JH2jMe4RjW6UY8ohwD1XnJ4ZRgpkSpDUl9Wqbc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=dy30E4CoimoXuS07cBIkJ9HKwdhUEwpJOmxe5NMRtY/QrTekyTsSyqvcdf1SVxEE7
+         yovxQvwWKiuJ4GCFSvkTfGrcUREYSG/t6VhHRzioXYFrdvx0OW323YkHai9AShZXUp
+         OsDP/ibGiTk84l1lAwUk+Di+ybwP5U2cttf1eGxE5fqgey69eysFpuC4UuxDzDQmy2
+         isx9m9yq7SF/udzB8OwRZ9YbWhCnjH9RFmRvQszASmRnQ+pQdRszh9zW+BiCyLQxGv
+         OyDw17MIUWb60Xo7RWFv1Nj7pGrcWpqMIEKDpaWWo4jCrQ8QzDiKZv6bofIOGIJMyX
+         GabUanj2jjiqg==
+Date:   Thu, 26 Jan 2023 09:25:52 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        m.chetan.kumar@linux.intel.com, netdev@vger.kernel.org,
+        davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        ilpo.jarvinen@linux.intel.com, ricardo.martinez@linux.intel.com,
+        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
+        edumazet@google.com, pabeni@redhat.com,
+        chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
+        linuxwwan_5g@intel.com,
+        Madhusmita Sahu <madhusmita.sahu@intel.com>,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH v5 net-next 3/5] net: wwan: t7xx: PCIe reset rescan
+Message-ID: <20230126152552.GA1265322@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230124204543.550d88e3@kernel.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix typos and add the following to the scripts/spelling.txt:
+On Tue, Jan 24, 2023 at 08:45:43PM -0800, Jakub Kicinski wrote:
+> Hi Bjorn,
+> 
+> any objections to the kind of shenanigans this is playing?
 
-  exsits||exists
+Yes, thanks for asking.  Drivers definitely should not have to do this
+sort of thing.
 
-Signed-off-by: Luca Ceresoli <luca.ceresoli@bootlin.com>
----
- drivers/infiniband/ulp/iser/iscsi_iser.c | 2 +-
- net/openvswitch/flow_table.c             | 2 +-
- scripts/spelling.txt                     | 1 +
- sound/soc/fsl/fsl-asoc-card.c            | 2 +-
- 4 files changed, 4 insertions(+), 3 deletions(-)
+> On Sat, 21 Jan 2023 19:03:23 +0530 m.chetan.kumar@linux.intel.com wrote:
+> > From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+> > 
+> > PCI rescan module implements "rescan work queue".
+> > In firmware flashing or coredump collection procedure
+> > WWAN device is programmed to boot in fastboot mode and
+> > a work item is scheduled for removal & detection.
+> > 
+> > The WWAN device is reset using APCI call as part driver
+> > removal flow. Work queue rescans pci bus at fixed interval
+> > for device detection, later when device is detect work queue
+> > exits.
 
-diff --git a/drivers/infiniband/ulp/iser/iscsi_iser.c b/drivers/infiniband/ulp/iser/iscsi_iser.c
-index 620ae5b2d80d..6b7603765383 100644
---- a/drivers/infiniband/ulp/iser/iscsi_iser.c
-+++ b/drivers/infiniband/ulp/iser/iscsi_iser.c
-@@ -446,7 +446,7 @@ iscsi_iser_conn_create(struct iscsi_cls_session *cls_session,
-  * @is_leading:      indicate if this is the session leading connection (MCS)
-  *
-  * Return: zero on success, $error if iscsi_conn_bind fails and
-- *         -EINVAL in case end-point doesn't exsits anymore or iser connection
-+ *         -EINVAL in case end-point doesn't exists anymore or iser connection
-  *         state is not UP (teardown already started).
-  */
- static int iscsi_iser_conn_bind(struct iscsi_cls_session *cls_session,
-diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
-index 0a0e4c283f02..cfac54cbafdf 100644
---- a/net/openvswitch/flow_table.c
-+++ b/net/openvswitch/flow_table.c
-@@ -1012,7 +1012,7 @@ static int flow_mask_insert(struct flow_table *tbl, struct sw_flow *flow,
- 
- 	mask = flow_mask_find(tbl, new);
- 	if (!mask) {
--		/* Allocate a new mask if none exsits. */
-+		/* Allocate a new mask if none exists. */
- 		mask = mask_alloc();
- 		if (!mask)
- 			return -ENOMEM;
-diff --git a/scripts/spelling.txt b/scripts/spelling.txt
-index ded8bcfc0247..0147bd8dc6e2 100644
---- a/scripts/spelling.txt
-+++ b/scripts/spelling.txt
-@@ -625,6 +625,7 @@ exeuction||execution
- existance||existence
- existant||existent
- exixt||exist
-+exsits||exists
- exlcude||exclude
- exlcusive||exclusive
- exmaple||example
-diff --git a/sound/soc/fsl/fsl-asoc-card.c b/sound/soc/fsl/fsl-asoc-card.c
-index 8d14b5593658..2f25358196ee 100644
---- a/sound/soc/fsl/fsl-asoc-card.c
-+++ b/sound/soc/fsl/fsl-asoc-card.c
-@@ -811,7 +811,7 @@ static int fsl_asoc_card_probe(struct platform_device *pdev)
- 	priv->card.num_links = 1;
- 
- 	if (asrc_pdev) {
--		/* DPCM DAI Links only if ASRC exsits */
-+		/* DPCM DAI Links only if ASRC exists */
- 		priv->dai_link[1].cpus->of_node = asrc_np;
- 		priv->dai_link[1].platforms->of_node = asrc_np;
- 		priv->dai_link[2].codecs->dai_name = codec_dai_name;
--- 
-2.34.1
+I'm not sure what's going on here.  Do we need to reset the device
+when the t7xx driver is loaded so the device will load new firmware
+when it comes out of reset?
 
+There are a few drivers that do that, e.g., with pci_reset_function().
+
+> > +static struct remove_rescan_context t7xx_rescan_ctx;
+
+Apparently this only supports a single t7xx instance in a system?  Not
+good.
+
+> > +void t7xx_pci_dev_rescan(void)
+> > +{
+> > +	struct pci_bus *b = NULL;
+> > +
+> > +	pci_lock_rescan_remove();
+> > +	while ((b = pci_find_next_bus(b)))
+> > +		pci_rescan_bus(b);
+
+No, this driver absolutely cannot rescan and assign unassigned
+resources for all the PCI buses in the system.
+
+Bjorn
