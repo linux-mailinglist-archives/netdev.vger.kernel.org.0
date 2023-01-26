@@ -2,103 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCA7267C840
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 11:17:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E250867C8B8
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 11:37:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236426AbjAZKRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 05:17:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40504 "EHLO
+        id S236530AbjAZKhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 05:37:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236355AbjAZKRQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 05:17:16 -0500
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E953430A;
-        Thu, 26 Jan 2023 02:16:47 -0800 (PST)
-Received: by mail-pg1-x529.google.com with SMTP id 7so762253pga.1;
-        Thu, 26 Jan 2023 02:16:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=N25kb8917DsEocMyJFvAiiipeCXaDAmvWVoSKk7Ucb0=;
-        b=J7dO80kzV3/qF3wGrZBEcsJCeJEp5R/pt3hGmXvqpAEmso/l5D0u0sgHZ9RX0xvomZ
-         2dXKQeZ7zV7XD2xGzCpF9px9ss3aPwnTXgST9A0Uwgza423jYi/HHbKXn30hs8pHiu2p
-         A2YvV4WXVMrfd404HQKm2lhJdiefVdJ4hka/Wv7qWnUBsu58j6fWmc6KHywb2EbEnaO/
-         xa6eVNhGPFffCvLG0vLIpx5VjW6WGgpcFIYtC3JAbXzwpovK5GFHnDCw15gLnss4zqiB
-         OZ89/CLLoE1HbK/sNFKMwqmug8CSOfk1w27usyit/ZFFB+ffZtyYuWW5HfDSWLOpaEip
-         1ODA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=N25kb8917DsEocMyJFvAiiipeCXaDAmvWVoSKk7Ucb0=;
-        b=d7tT/ZEg+U4KJdUUCbRB/IGawtYqjojxXjpD97tfQUjAMK48sfwlKYqMgsbeuM42ZS
-         UZXMGn0+qzNAdsodTZatfuJcN2PB6yofF1o/Hb3qqSY8GxbUkAH51jnFYeHXvTWhWfsE
-         aU+A+VRC0jgzxfhJfORsDSzmqotu1kA8PaGtclft7A0hLQARNoZarJWBc/9Tc19wJA+B
-         K7KBJryqsnYvYNnNwoLVPtycZ4R30qhToPsF2hgqWkdTsBX+4/M1zb6Wff/Ksb95diyp
-         4gkbjPlw3zEhAX+lM6aawPPnnUViPnJuh44ZNJ8pHjno6ZUNNGNTwy738iNuF988X3nA
-         TnqA==
-X-Gm-Message-State: AFqh2kreLO9SqagSEpc20Rwnl4FoioVCN8YKcSvJHqXcmN1ICYhXLCLq
-        aslU4u8FU4fwJv87StA1c+HBEUb0C4hbYZNQNg0=
-X-Google-Smtp-Source: AMrXdXuMrEBm+4oiJayh39LZrd1yppbt7a1PGYiFSqbjJHTWfkPRXLJ75/k1Yg/4x1L+XesT/pbGxb/r2VgM0gsID0k=
-X-Received: by 2002:aa7:9010:0:b0:578:6897:597c with SMTP id
- m16-20020aa79010000000b005786897597cmr4172567pfo.35.1674728206647; Thu, 26
- Jan 2023 02:16:46 -0800 (PST)
-MIME-Version: 1.0
-References: <20230124110057.1.I69cf3d56c97098287fe3a70084ee515098390b70@changeid>
-In-Reply-To: <20230124110057.1.I69cf3d56c97098287fe3a70084ee515098390b70@changeid>
-From:   Jonas Gorski <jonas.gorski@gmail.com>
-Date:   Thu, 26 Jan 2023 11:16:35 +0100
-Message-ID: <CAOiHx=niyEho+tJJ-dvOr3wOYiEOsvCvvJbxQvXGGoHbdxFhBQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] wifi: ath11k: Use platform_get_irq() to get the interrupt
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Nick Kossifidis <mickflemm@gmail.com>,
-        Youghandhar Chintala <quic_youghand@quicinc.com>,
-        junyuu@chromium.org, Kalle Valo <kvalo@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S236342AbjAZKhu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 05:37:50 -0500
+X-Greylist: delayed 424 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 26 Jan 2023 02:37:49 PST
+Received: from smtp.chopps.org (smtp.chopps.org [54.88.81.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E0C6AAD30
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 02:37:48 -0800 (PST)
+Received: from labnh.big (172-222-091-149.res.spectrum.com [172.222.91.149])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by smtp.chopps.org (Postfix) with ESMTPSA id 29DD67D12D;
+        Thu, 26 Jan 2023 10:30:43 +0000 (UTC)
+From:   Christian Hopps <chopps@labn.net>
+To:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>, devel@linux-ipsec.org
+Cc:     Christian Hopps <chopps@labn.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Manikanta Pubbisetty <quic_mpubbise@quicinc.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        chopps@chopps.org
+Subject: [PATCH] xfrm: fix bug with DSCP copy to v6 from v4 tunnel
+Date:   Thu, 26 Jan 2023 05:29:34 -0500
+Message-Id: <20230126102933.1245451-1-chopps@labn.net>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_FAIL,
+        SPF_HELO_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 24 Jan 2023 at 20:05, Douglas Anderson <dianders@chromium.org> wrote:
->
-> For the same reasons talked about in commit 9503a1fc123d ("ath9k: Use
-> platform_get_irq() to get the interrupt"), we should be using
-> platform_get_irq() in ath11k. Let's make the switch.
->
-> Without this change, WiFi wasn't coming up on my Qualcomm sc7280-based
-> hardware. Specifically, "platform_get_resource(pdev, IORESOURCE_IRQ,
-> i)" was failing even for i=0. Digging into the platform device there
-> truly were no IRQs present in the list of resources when the call was
-> made.
->
-> I didn't dig into what changed between 5.15 (where
-> platform_get_resource() seems to work) and mainline Linux (where it
-> doesn't). Given the zeal robot report for ath9k I assume it's a known
-> issue. I'll mark this as "fixing" the patch that introduced the
-> platform_get_resource() call since it should have always been fine to
-> just call platform_get_irq() and that'll make sure it goes back as far
-> as it needs to go.
+When copying the DSCP bits for decap-dscp into IPv6 don't assume the
+outer encap is always IPv6. Instead, as with the inner IPv4 case, copy
+the DSCP bits from the correctly saved "tos" value in the control block.
 
-Since I recently stumbled upon this in a different (external) driver,
-it's likely a1a2b7125e10 ("of/platform: Drop static setup of IRQ
-resource from DT core").
+fixes: 227620e29509 ("[IPSEC]: Separate inner/outer mode processing on input")
 
-Regards
-Jonas
+Signed-off-by: Christian Hopps <chopps@labn.net>
+---
+ net/xfrm/xfrm_input.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+index c06e54a10540..436d29640ac2 100644
+--- a/net/xfrm/xfrm_input.c
++++ b/net/xfrm/xfrm_input.c
+@@ -279,8 +279,7 @@ static int xfrm6_remove_tunnel_encap(struct xfrm_state *x, struct sk_buff *skb)
+ 		goto out;
+ 
+ 	if (x->props.flags & XFRM_STATE_DECAP_DSCP)
+-		ipv6_copy_dscp(ipv6_get_dsfield(ipv6_hdr(skb)),
+-			       ipipv6_hdr(skb));
++		ipv6_copy_dscp(XFRM_MODE_SKB_CB(skb)->tos, ipipv6_hdr(skb));
+ 	if (!(x->props.flags & XFRM_STATE_NOECN))
+ 		ipip6_ecn_decapsulate(skb);
+ 
+-- 
+2.34.1
+
