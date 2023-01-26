@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C286267D11F
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 17:17:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CD3D67D125
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 17:18:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231882AbjAZQRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 11:17:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54420 "EHLO
+        id S232005AbjAZQR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 11:17:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232490AbjAZQRI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 11:17:08 -0500
+        with ESMTP id S232154AbjAZQRy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 11:17:54 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A466A35A8;
-        Thu, 26 Jan 2023 08:17:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4BB82D163;
+        Thu, 26 Jan 2023 08:17:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F483B81E84;
-        Thu, 26 Jan 2023 16:17:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EBB7C433EF;
-        Thu, 26 Jan 2023 16:17:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8925DB81E95;
+        Thu, 26 Jan 2023 16:17:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AC1FC4339B;
+        Thu, 26 Jan 2023 16:17:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674749824;
-        bh=il9nEzHQefCpXbKAxdsRaVuBE+i1m12IQ1FVPUbBB5U=;
+        s=k20201202; t=1674749863;
+        bh=qoJdV7Hy0K/c3KYKzdd66F4ZCzYzGAgyJAzosdZYTXY=;
         h=From:To:Cc:Subject:Date:From;
-        b=VYJ0hCgxkWYFhdQayaqAd+NRTEZ0J+iD/iMUMbTqTlslkBpKPMdQrdlYx60+96vQa
-         Kv8De8LuYAec9m1uv3Fe27NtET72SRMBynIBv4p/hdI9IhJ44QumSRo1z82S8VX+Ji
-         5Mr5gzW+nQygR7tyoyit2Vld6kpvsJ8h9EIaOAOM5aDz7CCVRydX2swsR9gwWuHVr+
-         EwAZfuYOW1qsydeqzr2Jvg3n08+sQP4yLhewPzB7snyIBEt3O5vlw/1xs2Ycsh++JX
-         qeWfwwHytK+h5n5Go8K8XdUVIyc9OyGyfTF2GjPWKDjkFlarjPehny8PnQeCQnqCFc
-         D7bdKtLSzr9TA==
+        b=cTckPmHczcg+AmhpY0WopBVBiM4auGprubeGb+ETYLShjMPmJ5mpuaJ5Fb9c3chV7
+         4oAxWJ37kNRL0IUroFpa8oppcSeG4A1V/D4789jqdycoA0h1mZwo6sQluhxF23HL9Q
+         3U0qeWhGPgwjuBxF95V8hBvtfFkf2Kjx05CAFKDYm54iaXuf5l8o1w60oYVYKcbGFD
+         OfqMZY2DuXEYF8x403lWa5nu9rB5e1Ddnk62W2bGW28QMoLwc+I9Y8tDoYSOzJT7zO
+         zqXtMaglx4z6G99tVWYzg5RdC1YaJcxunFnbvfxRr/VGjienZC9y9u/6FTLeKoLfbS
+         WLmQofbj2Pb1Q==
 From:   Arnd Bergmann <arnd@kernel.org>
-To:     Varka Bhadram <varkabhadram@gmail.com>,
-        Alexander Aring <alex.aring@gmail.com>,
+To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>
 Cc:     linux-gpio@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH] cc2520: move to gpio descriptors
-Date:   Thu, 26 Jan 2023 17:15:59 +0100
-Message-Id: <20230126161658.2983292-1-arnd@kernel.org>
+        Paolo Abeni <pabeni@redhat.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ca8210: move to gpio descriptors
+Date:   Thu, 26 Jan 2023 17:17:15 +0100
+Message-Id: <20230126161737.2985704-1-arnd@kernel.org>
 X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -58,309 +58,214 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-cc2520 supports both probing from static platform_data and
-from devicetree, but there have never been any definitions
-of the platform data in the mainline kernel, so it's safe
-to assume that only the DT path is used.
-
-After folding cc2520_platform_data into the driver itself,
-the GPIO handling can be simplified by moving to the modern
-gpiod interface.
+The driver requires DT based probing already, and can
+be simplified by using the modern gpio interfaces.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- MAINTAINERS                     |   1 -
- drivers/net/ieee802154/cc2520.c | 136 +++++++++-----------------------
- include/linux/spi/cc2520.h      |  21 -----
- 3 files changed, 37 insertions(+), 121 deletions(-)
- delete mode 100644 include/linux/spi/cc2520.h
+ drivers/net/ieee802154/ca8210.c | 93 +++++++++------------------------
+ 1 file changed, 24 insertions(+), 69 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index acda33cbd689..a36ead3ce7a3 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -4650,7 +4650,6 @@ L:	linux-wpan@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/net/ieee802154/cc2520.txt
- F:	drivers/net/ieee802154/cc2520.c
--F:	include/linux/spi/cc2520.h
- 
- CCREE ARM TRUSTZONE CRYPTOCELL REE DRIVER
- M:	Gilad Ben-Yossef <gilad@benyossef.com>
-diff --git a/drivers/net/ieee802154/cc2520.c b/drivers/net/ieee802154/cc2520.c
-index edc769daad07..a94d8dd71aad 100644
---- a/drivers/net/ieee802154/cc2520.c
-+++ b/drivers/net/ieee802154/cc2520.c
-@@ -7,14 +7,13 @@
-  */
- #include <linux/kernel.h>
- #include <linux/module.h>
--#include <linux/gpio.h>
-+#include <linux/gpio/consumer.h>
+diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
+index 5c0be6a3ec5e..2ee2746688ea 100644
+--- a/drivers/net/ieee802154/ca8210.c
++++ b/drivers/net/ieee802154/ca8210.c
+@@ -52,13 +52,11 @@
+ #include <linux/debugfs.h>
  #include <linux/delay.h>
- #include <linux/spi/spi.h>
--#include <linux/spi/cc2520.h>
-+#include <linux/property.h>
- #include <linux/workqueue.h>
- #include <linux/interrupt.h>
- #include <linux/skbuff.h>
--#include <linux/of_gpio.h>
+ #include <linux/gpio/consumer.h>
+-#include <linux/gpio.h>
  #include <linux/ieee802154.h>
- #include <linux/crc-ccitt.h>
- #include <asm/unaligned.h>
-@@ -206,7 +205,7 @@ struct cc2520_private {
- 	struct mutex buffer_mutex;	/* SPI buffer mutex */
- 	bool is_tx;			/* Flag for sync b/w Tx and Rx */
- 	bool amplified;			/* Flag for CC2591 */
--	int fifo_pin;			/* FIFO GPIO pin number */
-+	struct gpio_desc *fifo_pin;	/* FIFO GPIO pin number */
- 	struct work_struct fifop_irqwork;/* Workqueue for FIFOP */
- 	spinlock_t lock;		/* Lock for is_tx*/
- 	struct completion tx_complete;	/* Work completion for Tx */
-@@ -875,7 +874,7 @@ static void cc2520_fifop_irqwork(struct work_struct *work)
+ #include <linux/io.h>
+ #include <linux/kfifo.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+-#include <linux/of_gpio.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/poll.h>
+@@ -312,6 +310,9 @@ struct ca8210_test {
+  * @promiscuous:            whether the ca8210 is in promiscuous mode or not
+  * @retries:                records how many times the current pending spi
+  *                          transfer has been retried
++ * @gpio_reset:     	    gpio of ca8210 reset line
++ * @gpio_irq:       	    gpio number of ca8210 interrupt line
++ * @irq_id:        	    identifier for the ca8210 irq
+  */
+ struct ca8210_priv {
+ 	struct spi_device *spi;
+@@ -332,6 +333,9 @@ struct ca8210_priv {
+ 	struct completion spi_transfer_complete, sync_exchange_complete;
+ 	bool promiscuous;
+ 	int retries;
++	struct gpio_desc *gpio_reset;
++	struct gpio_desc *gpio_irq;
++	int irq_id;
+ };
  
- 	dev_dbg(&priv->spi->dev, "fifop interrupt received\n");
+ /**
+@@ -351,18 +355,12 @@ struct work_priv_container {
+  * @extclockenable: true if the external clock is to be enabled
+  * @extclockfreq:   frequency of the external clock
+  * @extclockgpio:   ca8210 output gpio of the external clock
+- * @gpio_reset:     gpio number of ca8210 reset line
+- * @gpio_irq:       gpio number of ca8210 interrupt line
+- * @irq_id:         identifier for the ca8210 irq
+  *
+  */
+ struct ca8210_platform_data {
+ 	bool extclockenable;
+ 	unsigned int extclockfreq;
+ 	unsigned int extclockgpio;
+-	int gpio_reset;
+-	int gpio_irq;
+-	int irq_id;
+ };
  
--	if (gpio_get_value(priv->fifo_pin))
-+	if (gpiod_get_value(priv->fifo_pin))
- 		cc2520_rx(priv);
- 	else
- 		dev_dbg(&priv->spi->dev, "rxfifo overflow\n");
-@@ -912,49 +911,11 @@ static irqreturn_t cc2520_sfd_isr(int irq, void *data)
- 	return IRQ_HANDLED;
+ /**
+@@ -628,14 +626,13 @@ static int ca8210_spi_transfer(
+  */
+ static void ca8210_reset_send(struct spi_device *spi, unsigned int ms)
+ {
+-	struct ca8210_platform_data *pdata = spi->dev.platform_data;
+ 	struct ca8210_priv *priv = spi_get_drvdata(spi);
+ 	long status;
+ 
+-	gpio_set_value(pdata->gpio_reset, 0);
++	gpiod_set_value(priv->gpio_reset, 0);
+ 	reinit_completion(&priv->ca8210_is_awake);
+ 	msleep(ms);
+-	gpio_set_value(pdata->gpio_reset, 1);
++	gpiod_set_value(priv->gpio_reset, 1);
+ 	priv->promiscuous = false;
+ 
+ 	/* Wait until wakeup indication seen */
+@@ -2788,74 +2785,34 @@ static void ca8210_unregister_ext_clock(struct spi_device *spi)
+ 	dev_info(&spi->dev, "External clock unregistered\n");
  }
  
--static int cc2520_get_platform_data(struct spi_device *spi,
--				    struct cc2520_platform_data *pdata)
+-/**
+- * ca8210_reset_init() - Initialise the reset input to the ca8210
+- * @spi:  Pointer to target ca8210 spi device
+- *
+- * Return: 0 or linux error code
+- */
+-static int ca8210_reset_init(struct spi_device *spi)
 -{
--	struct device_node *np = spi->dev.of_node;
--	struct cc2520_private *priv = spi_get_drvdata(spi);
+-	int ret;
+-	struct ca8210_platform_data *pdata = spi->dev.platform_data;
 -
--	if (!np) {
--		struct cc2520_platform_data *spi_pdata = spi->dev.platform_data;
+-	pdata->gpio_reset = of_get_named_gpio(
+-		spi->dev.of_node,
+-		"reset-gpio",
+-		0
+-	);
 -
--		if (!spi_pdata)
--			return -ENOENT;
--		*pdata = *spi_pdata;
--		priv->fifo_pin = pdata->fifo;
--		return 0;
+-	ret = gpio_direction_output(pdata->gpio_reset, 1);
+-	if (ret < 0) {
+-		dev_crit(
+-			&spi->dev,
+-			"Reset GPIO %d did not set to output mode\n",
+-			pdata->gpio_reset
+-		);
 -	}
 -
--	pdata->fifo = of_get_named_gpio(np, "fifo-gpio", 0);
--	priv->fifo_pin = pdata->fifo;
--
--	pdata->fifop = of_get_named_gpio(np, "fifop-gpio", 0);
--
--	pdata->sfd = of_get_named_gpio(np, "sfd-gpio", 0);
--	pdata->cca = of_get_named_gpio(np, "cca-gpio", 0);
--	pdata->vreg = of_get_named_gpio(np, "vreg-gpio", 0);
--	pdata->reset = of_get_named_gpio(np, "reset-gpio", 0);
--
--	/* CC2591 front end for CC2520 */
--	if (of_property_read_bool(np, "amplified"))
--		priv->amplified = true;
--
--	return 0;
+-	return ret;
 -}
 -
- static int cc2520_hw_init(struct cc2520_private *priv)
+ /**
+  * ca8210_interrupt_init() - Initialise the irq output from the ca8210
+  * @spi:  Pointer to target ca8210 spi device
+  *
+  * Return: 0 or linux error code
+  */
+-static int ca8210_interrupt_init(struct spi_device *spi)
++static int ca8210_interrupt_init(struct spi_device *spi, struct ca8210_priv *priv)
  {
- 	u8 status = 0, state = 0xff;
  	int ret;
- 	int timeout = 100;
--	struct cc2520_platform_data pdata;
--
--	ret = cc2520_get_platform_data(priv->spi, &pdata);
--	if (ret)
--		goto err_ret;
+-	struct ca8210_platform_data *pdata = spi->dev.platform_data;
  
- 	ret = cc2520_read_register(priv, CC2520_FSMSTAT1, &state);
- 	if (ret)
-@@ -1071,7 +1032,11 @@ static int cc2520_hw_init(struct cc2520_private *priv)
- static int cc2520_probe(struct spi_device *spi)
+-	pdata->gpio_irq = of_get_named_gpio(
+-		spi->dev.of_node,
+-		"irq-gpio",
+-		0
+-	);
+-
+-	pdata->irq_id = gpio_to_irq(pdata->gpio_irq);
+-	if (pdata->irq_id < 0) {
+-		dev_crit(
+-			&spi->dev,
+-			"Could not get irq for gpio pin %d\n",
+-			pdata->gpio_irq
+-		);
+-		gpio_free(pdata->gpio_irq);
+-		return pdata->irq_id;
++	priv->gpio_irq = gpiod_get(&spi->dev, "irq", GPIOD_IN);
++	priv->irq_id = gpiod_to_irq(priv->gpio_irq);
++	if (priv->irq_id < 0) {
++		dev_crit(&spi->dev, "Could not get irq for gpio pin\n");
++		gpiod_put(priv->gpio_irq);
++		return priv->irq_id;
+ 	}
+ 
+ 	ret = request_irq(
+-		pdata->irq_id,
++		priv->irq_id,
+ 		ca8210_interrupt_handler,
+ 		IRQF_TRIGGER_FALLING,
+ 		"ca8210-irq",
+ 		spi_get_drvdata(spi)
+ 	);
+ 	if (ret) {
+-		dev_crit(&spi->dev, "request_irq %d failed\n", pdata->irq_id);
+-		gpiod_unexport(gpio_to_desc(pdata->gpio_irq));
+-		gpio_free(pdata->gpio_irq);
++		dev_crit(&spi->dev, "request_irq %d failed\n", priv->irq_id);
++		gpiod_put(priv->gpio_irq);
+ 	}
+ 
+ 	return ret;
+@@ -3009,7 +2966,7 @@ static void ca8210_test_interface_clear(struct ca8210_priv *priv)
+  */
+ static void ca8210_remove(struct spi_device *spi_device)
  {
- 	struct cc2520_private *priv;
--	struct cc2520_platform_data pdata;
-+	struct gpio_desc *fifop;
-+	struct gpio_desc *cca;
-+	struct gpio_desc *sfd;
-+	struct gpio_desc *reset;
-+	struct gpio_desc *vreg;
- 	int ret;
+-	struct ca8210_priv *priv;
++	struct ca8210_priv *priv = spi_get_drvdata(spi_device);
+ 	struct ca8210_platform_data *pdata;
  
- 	priv = devm_kzalloc(&spi->dev, sizeof(*priv), GFP_KERNEL);
-@@ -1080,11 +1045,11 @@ static int cc2520_probe(struct spi_device *spi)
- 
- 	spi_set_drvdata(spi, priv);
- 
--	ret = cc2520_get_platform_data(spi, &pdata);
--	if (ret < 0) {
--		dev_err(&spi->dev, "no platform data\n");
--		return -EINVAL;
--	}
-+	/* CC2591 front end for CC2520 */
-+	/* Assumption that CC2591 is not connected */
-+	priv->amplified = false;
-+	if (device_property_read_bool(&spi->dev, "amplified"))
-+		priv->amplified = true;
- 
- 	priv->spi = spi;
- 
-@@ -1098,80 +1063,53 @@ static int cc2520_probe(struct spi_device *spi)
- 	spin_lock_init(&priv->lock);
- 	init_completion(&priv->tx_complete);
- 
--	/* Assumption that CC2591 is not connected */
--	priv->amplified = false;
--
- 	/* Request all the gpio's */
--	if (!gpio_is_valid(pdata.fifo)) {
-+	priv->fifo_pin = devm_gpiod_get(&spi->dev, "fifo", GPIOD_IN);
-+	if (IS_ERR(priv->fifo_pin)) {
- 		dev_err(&spi->dev, "fifo gpio is not valid\n");
--		ret = -EINVAL;
-+		ret = PTR_ERR(priv->fifo_pin);
- 		goto err_hw_init;
+ 	dev_info(&spi_device->dev, "Removing ca8210\n");
+@@ -3020,12 +2977,10 @@ static void ca8210_remove(struct spi_device *spi_device)
+ 			ca8210_unregister_ext_clock(spi_device);
+ 			ca8210_config_extern_clk(pdata, spi_device, 0);
+ 		}
+-		free_irq(pdata->irq_id, spi_device->dev.driver_data);
++		free_irq(priv->irq_id, spi_device->dev.driver_data);
+ 		kfree(pdata);
+ 		spi_device->dev.platform_data = NULL;
+ 	}
+-	/* get spi_device private data */
+-	priv = spi_get_drvdata(spi_device);
+ 	if (priv) {
+ 		dev_info(
+ 			&spi_device->dev,
+@@ -3114,13 +3069,13 @@ static int ca8210_probe(struct spi_device *spi_device)
+ 		dev_crit(&spi_device->dev, "ca8210_dev_com_init failed\n");
+ 		goto error;
+ 	}
+-	ret = ca8210_reset_init(priv->spi);
+-	if (ret) {
+-		dev_crit(&spi_device->dev, "ca8210_reset_init failed\n");
++	priv->gpio_reset = gpiod_get(&spi_device->dev, "reset", GPIOD_OUT_HIGH);
++	if (IS_ERR(priv->gpio_reset)) {
++		dev_crit(&spi_device->dev, "ca8210 reset init failed\n");
+ 		goto error;
  	}
  
--	ret = devm_gpio_request_one(&spi->dev, pdata.fifo,
--				    GPIOF_IN, "fifo");
--	if (ret)
--		goto err_hw_init;
--
--	if (!gpio_is_valid(pdata.cca)) {
-+	cca = devm_gpiod_get(&spi->dev, "cca", GPIOD_IN);
-+	if (IS_ERR(cca)) {
- 		dev_err(&spi->dev, "cca gpio is not valid\n");
--		ret = -EINVAL;
-+		ret = PTR_ERR(cca);
- 		goto err_hw_init;
- 	}
- 
--	ret = devm_gpio_request_one(&spi->dev, pdata.cca,
--				    GPIOF_IN, "cca");
--	if (ret)
--		goto err_hw_init;
--
--	if (!gpio_is_valid(pdata.fifop)) {
-+	fifop = devm_gpiod_get(&spi->dev, "fifop", GPIOD_IN);
-+	if (IS_ERR(fifop)) {
- 		dev_err(&spi->dev, "fifop gpio is not valid\n");
--		ret = -EINVAL;
-+		ret = PTR_ERR(fifop);
- 		goto err_hw_init;
- 	}
- 
--	ret = devm_gpio_request_one(&spi->dev, pdata.fifop,
--				    GPIOF_IN, "fifop");
--	if (ret)
--		goto err_hw_init;
--
--	if (!gpio_is_valid(pdata.sfd)) {
-+	sfd = devm_gpiod_get(&spi->dev, "sfd", GPIOD_IN);
-+	if (IS_ERR(sfd)) {
- 		dev_err(&spi->dev, "sfd gpio is not valid\n");
--		ret = -EINVAL;
-+		ret = PTR_ERR(sfd);
- 		goto err_hw_init;
- 	}
- 
--	ret = devm_gpio_request_one(&spi->dev, pdata.sfd,
--				    GPIOF_IN, "sfd");
--	if (ret)
--		goto err_hw_init;
--
--	if (!gpio_is_valid(pdata.reset)) {
-+	reset = devm_gpiod_get(&spi->dev, "reset", GPIOD_OUT_LOW);
-+	if (IS_ERR(reset)) {
- 		dev_err(&spi->dev, "reset gpio is not valid\n");
--		ret = -EINVAL;
-+		ret = PTR_ERR(reset);
- 		goto err_hw_init;
- 	}
- 
--	ret = devm_gpio_request_one(&spi->dev, pdata.reset,
--				    GPIOF_OUT_INIT_LOW, "reset");
--	if (ret)
--		goto err_hw_init;
--
--	if (!gpio_is_valid(pdata.vreg)) {
-+	vreg = devm_gpiod_get(&spi->dev, "vreg", GPIOD_OUT_LOW);
-+	if (IS_ERR(vreg)) {
- 		dev_err(&spi->dev, "vreg gpio is not valid\n");
--		ret = -EINVAL;
-+		ret = PTR_ERR(vreg);
- 		goto err_hw_init;
- 	}
- 
--	ret = devm_gpio_request_one(&spi->dev, pdata.vreg,
--				    GPIOF_OUT_INIT_LOW, "vreg");
--	if (ret)
--		goto err_hw_init;
--
--	gpio_set_value(pdata.vreg, HIGH);
-+	gpiod_set_value(vreg, HIGH);
- 	usleep_range(100, 150);
- 
--	gpio_set_value(pdata.reset, HIGH);
-+	gpiod_set_value(reset, HIGH);
- 	usleep_range(200, 250);
- 
- 	ret = cc2520_hw_init(priv);
-@@ -1180,7 +1118,7 @@ static int cc2520_probe(struct spi_device *spi)
- 
- 	/* Set up fifop interrupt */
- 	ret = devm_request_irq(&spi->dev,
--			       gpio_to_irq(pdata.fifop),
-+			       gpiod_to_irq(fifop),
- 			       cc2520_fifop_isr,
- 			       IRQF_TRIGGER_RISING,
- 			       dev_name(&spi->dev),
-@@ -1192,7 +1130,7 @@ static int cc2520_probe(struct spi_device *spi)
- 
- 	/* Set up sfd interrupt */
- 	ret = devm_request_irq(&spi->dev,
--			       gpio_to_irq(pdata.sfd),
-+			       gpiod_to_irq(sfd),
- 			       cc2520_sfd_isr,
- 			       IRQF_TRIGGER_FALLING,
- 			       dev_name(&spi->dev),
-@@ -1241,7 +1179,7 @@ MODULE_DEVICE_TABLE(of, cc2520_of_ids);
- static struct spi_driver cc2520_driver = {
- 	.driver = {
- 		.name = "cc2520",
--		.of_match_table = of_match_ptr(cc2520_of_ids),
-+		.of_match_table = cc2520_of_ids,
- 	},
- 	.id_table = cc2520_ids,
- 	.probe = cc2520_probe,
-diff --git a/include/linux/spi/cc2520.h b/include/linux/spi/cc2520.h
-deleted file mode 100644
-index 449bacf10700..000000000000
---- a/include/linux/spi/cc2520.h
-+++ /dev/null
-@@ -1,21 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-or-later */
--/* Header file for cc2520 radio driver
-- *
-- * Copyright (C) 2014 Varka Bhadram <varkab@cdac.in>
-- *                    Md.Jamal Mohiuddin <mjmohiuddin@cdac.in>
-- *                    P Sowjanya <sowjanyap@cdac.in>
-- */
--
--#ifndef __CC2520_H
--#define __CC2520_H
--
--struct cc2520_platform_data {
--	int fifo;
--	int fifop;
--	int cca;
--	int sfd;
--	int reset;
--	int vreg;
--};
--
--#endif
+-	ret = ca8210_interrupt_init(priv->spi);
++	ret = ca8210_interrupt_init(priv->spi, priv);
+ 	if (ret) {
+ 		dev_crit(&spi_device->dev, "ca8210_interrupt_init failed\n");
+ 		goto error;
 -- 
 2.39.0
 
