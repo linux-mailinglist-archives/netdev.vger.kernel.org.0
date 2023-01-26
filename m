@@ -2,125 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A389D67D695
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 21:40:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C69F367D697
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 21:41:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232421AbjAZUkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 15:40:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47750 "EHLO
+        id S232571AbjAZUlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 15:41:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232108AbjAZUkA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 15:40:00 -0500
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2070.outbound.protection.outlook.com [40.107.22.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B1610E9
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 12:39:59 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ny/Onn5jthowpcBOXY9hQo1BSCKlWElt3HYoGT7GcT1W3eETWReW4sNhZ00Eml+JXeRD2shDAWdAVysANNaggkS3c/6B7SprgyEnNePx34F+e1KLJ1+aC4+4EN1DK0Y2Jh5XlOwnFbsh44YrVYJ5cUcnHb4a0HAD5wT28FojelK7mRzfO2ZG2wkxFheNayzNElTmjB12cDdA7jhwoszLlC9mc+AJrThiXTZcJaoyMO6f3wHtROjw7vJn8vSHFwPmeoN7UKx9P4rC/axJXN7Zo+5crP2e8wj+fmIzHw8X/uGUClOh2UIfatxANpD8AMmk2PhmYZ0cJ8AWufxL/zVi/A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GBfh3XGEGRPPnwvNNnycTSj7KTmHJ/7yNKl+xPzvYqM=;
- b=ZfqcTDMBvA/j77c8P6KauzqGQbPzDXdeqEOP+yaOl+Mo4SnNl1uTWFb6o/xiHyidXCCNFSQBWrXVlUMbeIml6+rmWUai/Co7tT9mUXvt5ydPCsDB+3Ug9uHHhdITEJR5KN0ZBDA7+ASyLIxx/UPV0h/cldIdmcOZZdFHm/B577PEKb1MKMo8jy437Fj2pwVul3ufzdIh7f0yf1VvK+Z6Bt8xKWIVn9M9EiW504nceAXnbko3O+GUUJtn+ldcJs4GlqPmHfzlkllu4/d67CnGX0MaAJVdUqrkWOkNgIs0kky3FR/ijIa5dR150euChXwRVNU9cpkXHpFIFNIMtLrFLw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GBfh3XGEGRPPnwvNNnycTSj7KTmHJ/7yNKl+xPzvYqM=;
- b=lNu51iV5WR4GZtpSGYPTz255WjWe2qtqZzBG2ZlYKG/kAgEGdqA6Fm99cGVbciafBVWM66+PK7USmqV73Zsm+L7OrJT/4uC0RUF3jNtlKVevFIfRGjAr07soB6ihDY/v0WkkX1rjGALkYap/pXmRu+4Q5XwBlKJcA8fysHItCko=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AS8PR04MB7624.eurprd04.prod.outlook.com (2603:10a6:20b:291::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.22; Thu, 26 Jan
- 2023 20:39:55 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3cfb:3ae7:1686:a68b%7]) with mapi id 15.20.6002.033; Thu, 26 Jan 2023
- 20:39:55 +0000
-Date:   Thu, 26 Jan 2023 22:39:49 +0200
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc:     netdev@vger.kernel.org, John Fastabend <john.fastabend@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231488AbjAZUle (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 15:41:34 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A062DE63
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 12:41:32 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id c4-20020a1c3504000000b003d9e2f72093so4044756wma.1
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 12:41:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Zyt4/66kcmx0D8t+eK4BTAUUiN+c7StU5dV40A8x/AM=;
+        b=qLBU/WLlMffIk5vzbANluis+9ZDViPz7FORSnWMX31iRBgznM6ZA6nuEYvo5MS6VoF
+         fhQqoA5Ef/tG/j2M1O3VWBTHYG5u472kHqt30Y8Ycf9yhpTatNLTdjzETFIPa3W5NbXi
+         /2OflGoaSVkWR5xUZ+j5f7EfgCsPbWTPrM/iSk45MTFHm2HBDTN0McBvYmfbDauU1C9T
+         pnJzS3KIO/vi/wtazbEXisOngHioXayRtX2Vru5S+6xvED6VA/0fZfNgj68HRsWJhHN7
+         vNrAGkybeFBcFjRj8fw1FWRXg2q8cdFvD666BghtO8kk382QbLHFi9wVDfC9QlLz9cCR
+         pRYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Zyt4/66kcmx0D8t+eK4BTAUUiN+c7StU5dV40A8x/AM=;
+        b=ByifRwoaV8y7XALC7srI6tzWmWOHzApJ2cEGsmmYv8PY7kF4JYgbaX91Vw5mXYwLH7
+         qIQFmxVlTG+NpOeTEzzDMEOwaD8Z7/hbIA0Z2sc4DKmO3FChObyyOhQl1UJ7ws5AublQ
+         Yon/RyS+OSSrbYZDDVsKHXhLYvFE0Q5mf/KMLwMuexUY3Iq6b+NBtvnVAeVYWZViDZBw
+         vLRYsgttmF/rzjHtT6ii3IZY8y9criSIsxHZE8vo/P+dr3rjioUFsNTmTnOwtk66LnPX
+         t0eb9oi4O59u45XVGD/xtoX2G4NIpND8bbjeh089Zi4DfBvEiD8LslYWhjoDkbiWp57L
+         WG1g==
+X-Gm-Message-State: AFqh2kpO0fbMBt8Tn5KUeimXiHYo6LeecQmOn94VDajtujjz/Z5wDbVx
+        FqiwWsr/+uFVDNvdjcCSXTA=
+X-Google-Smtp-Source: AMrXdXuvSLNlUW5lNGuEYJ4Zt24nwiqjMA1C1HW6Zl7kUN8x2BVEjthwKsDpU6OZAsxyq6ERaadVuA==
+X-Received: by 2002:a05:600c:3582:b0:3d3:5c21:dd94 with SMTP id p2-20020a05600c358200b003d35c21dd94mr34304378wmq.9.1674765691417;
+        Thu, 26 Jan 2023 12:41:31 -0800 (PST)
+Received: from [192.168.0.106] ([77.126.163.156])
+        by smtp.gmail.com with ESMTPSA id o17-20020a05600c511100b003dc0d5b4fa6sm12357784wms.3.2023.01.26.12.41.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Jan 2023 12:41:30 -0800 (PST)
+Message-ID: <25a72690-6cae-bc7b-b30c-a0ece4fa0393@gmail.com>
+Date:   Thu, 26 Jan 2023 22:41:30 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH net 1/2] net/mlx5e: XDP, Allow growing tail for XDP multi
+ buffer
+Content-Language: en-US
+To:     Maxim Mikityanskiy <maxtram95@gmail.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Camelia Groza <camelia.groza@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Ferenc Fejes <ferenc.fejes@ericsson.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>
-Subject: Re: [RFC PATCH net-next 00/11] ENETC mqprio/taprio cleanup
-Message-ID: <20230126203949.vd2mptdxmbbz55r2@skbuf>
-References: <20230120141537.1350744-1-vladimir.oltean@nxp.com>
- <87tu0fh0zi.fsf@intel.com>
- <20230125131011.hs64czbvv6n3tojh@skbuf>
- <87h6wegrjz.fsf@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87h6wegrjz.fsf@intel.com>
-X-ClientProxiedBy: BE1P281CA0110.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:7b::18) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB7624:EE_
-X-MS-Office365-Filtering-Correlation-Id: 66d50c66-51fc-4dab-a2f5-08daffdd7b59
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vzXAXOZYe9GSYFAlh+4NfLwQKd4FBrKgPLmMUqb8z84gFOEMxSQfhBkGf2NIQY3wdrrdkuc3sHcCXurEGKNpEfiejvDCn/mUbtfkK32qxcqV+uQTXYjKPVLkEv1X7/Sdeua0ZU66e1rf42kyiHpGMR7n2Qa6trqzvxSNSiuuKJTRVda38PrzNmL65AirrRLk531Tku+tHG6H2PEzaVCnUUsO8jlb9evleEXFTxMXXXSVu7x1sQs3PVN7KVuY98MNdHPwpMNM1+PAqdtIdzDBxpGNmpXC43sthVc8fbgTWSDuyYWJRO6Q4hnpTIkMBo2Op7E7I9wmp0TgmaV5kUYZIggdQReFrcAq74Ua1K1bj2U7QNnYdAy8XHiBPzTX2gjJEn+SSm/wUTzE0ZN5YAK3eH1X2M/wY4Eg13YR6+nxiTdB5z6yR0H+gxNLODY2s+W6qQ/Tlkd4b/iLYKZUGf+pvx7WDDbS841wit7cVBiQv3iLj9Q/vxC7Gbhu0YdthinNhqryz0ILbzr8dnpBqZG3TSzlTNOZquqAj2j0MjpeMHq+QKgYB1enSAeOFObe7OsBO0T3iQ9AdHSIgFEIN02D4Y6/+JITW7pqsfW81uj8UpOyZfyEeONExpPc3vaIsyVpQ/usUQq9eWYZMp2lBYaY0Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(7916004)(376002)(346002)(366004)(396003)(39860400002)(136003)(451199018)(316002)(54906003)(38100700002)(41300700001)(8676002)(66476007)(6916009)(66556008)(5660300002)(7416002)(86362001)(8936002)(4326008)(66946007)(44832011)(2906002)(6506007)(1076003)(9686003)(26005)(6512007)(186003)(66899018)(33716001)(478600001)(6486002)(83380400001)(6666004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?eluCGcyIHKLrF/EDEM1MzppZgyN+3Rl4qATCepi+lWIpFGYlM1iPDyL5EcTJ?=
- =?us-ascii?Q?NAaAsu9Bm7PujMYPXL/Shz49vGmIKoZyAJq/ZCTi8UkCYDqWZK8+SLrQLsdI?=
- =?us-ascii?Q?GdCu1+j9tzhjn+yQHFGKflTVEEg6gBEk67gjJe8bBFrrLOWCLl/m7tWqUMBT?=
- =?us-ascii?Q?An8z/gQhxVtRaj/a//RrvUVPfrEqlx62zk+9P4cHqHQTYTHLkjCRAcjUq8Zq?=
- =?us-ascii?Q?NoAXo1vTjB+MT8LkuxeRgl30c33iy2JKFB2cLvP47AMrlYobUE92kx1d3RuD?=
- =?us-ascii?Q?VmQstXkVo9mXoRfKRfRpYusBgxBI5z5MvtNLqoa0fHYoJ4l83rC9zJABk7aV?=
- =?us-ascii?Q?hOMrRKL08Jjha3RwWUbeqi4ujs4v6bzP/MDx9t+uJTFSUpJKUF1zOvnMLE37?=
- =?us-ascii?Q?gxs5x0mUifgfyiNRN5k9AOiZuIaxH0RCKYsDPPnmswWth1oduQf38xaWxIiK?=
- =?us-ascii?Q?oCjaoqVv3tK6H3wyQ0XgT7SIrq9CDLOdXPY7YD6ecA09OoYnPHpCvtbjCcyv?=
- =?us-ascii?Q?cvcR/UJGijGi8JqjKlZUgcGnIILE0Ro54uI7kT40Vd74D8RrWW0SZQ3W9gFx?=
- =?us-ascii?Q?Hnx/1Bp/oyg1JEYiZ+UShZx04DK5ZzPHFvs9bDB8+nX1NMFMhBTn8DSyXOwf?=
- =?us-ascii?Q?w2IVvr0aFKM06M5oRjzIFCrlZFmOLtCpYfeeo9A7gOYM4dNBEyJkQdZhxrul?=
- =?us-ascii?Q?/P2jIO55+Qzf1x6RyvozrEIh1N+ouPFmuoX7awEAwNDL6t3R+SgGdtL5mJAJ?=
- =?us-ascii?Q?7k/l0ED5/Npn4228W+Q2wRPyDf6Xitam6rJMqYbrXzfc67RcNqY0NBmXYdWV?=
- =?us-ascii?Q?6nk0jz3jYIIO7F5svunB7dznOeIsD2yRG062ObA92sm1m3G9sDbDz/dMdwfJ?=
- =?us-ascii?Q?WBD1tEYAWFBsOF2aDkgHmV7drecDNqV1fu7xzrX6cUNv76TJb6l4VVQYN+Gq?=
- =?us-ascii?Q?pPiVOEAAkFcnhgv0CoKpnUJWQy3nuiY3j3bwil6FyX8phH1e0rYn4phrRfAp?=
- =?us-ascii?Q?+afwnt0PelV45NuE0tM/vnGpyv7C8KFfP1ze8N7lIWR5jow4kyNTsU8y9X+q?=
- =?us-ascii?Q?xvYkZ5We+2BOUb98mGlwiJoiEcuG5TNZieTYA8WcBSqbDQEr7dF6zZvH8XJf?=
- =?us-ascii?Q?SA+Peto47tuim3u46vqiuXIMGD61tXtc2XJoJGVNURMuyGXLlznj2KnqZFbn?=
- =?us-ascii?Q?zZFn7iKNbrX9uIsfYeZWOFI/zlFiTeQYzDxbjj2LCfcALnd9PiC9hMguoWj6?=
- =?us-ascii?Q?CMaUeU3OpltUEgzDi/Zhif9BIwscJNZ/nxOzJB/oT1o1olCkigAkLYTOQeF+?=
- =?us-ascii?Q?0gCYyJ1B2oVD8fI83HJ8djXByPz9JendxzL7IpwAz9FJU8rN4Ih4l2HcL5/b?=
- =?us-ascii?Q?qJJWfRxFMBAUkhUn0jSf4t6FQyFpdR5IFL3XEhCQ+0F3Knu+VroTDe51qcr3?=
- =?us-ascii?Q?HbqFKHOuKTkFM0YICzQJ0h7AHmsVNx/P1BpvRdvOEJRzR6FNDNG/EkbajCwp?=
- =?us-ascii?Q?B6jeU0mqjW8lt3LDIpncRZG2EvsE99XV2Ie0JFvUPj644cIuOuJ+irCOb9st?=
- =?us-ascii?Q?dS/PdRyo1mWGsuaplGWFkYxEMW7wdAHqDLoN1MjaPXEZOGN3QJp8/L0e+fYl?=
- =?us-ascii?Q?BA=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 66d50c66-51fc-4dab-a2f5-08daffdd7b59
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2023 20:39:55.3517
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IfGv8Rem30tRXQxPpBLm9WF/Cun0U0fmcZtIG8sDetCHKIYoIFLthymDCH5yL8DTdzoZizb5BhF0wlIzcHts3w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7624
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        Paolo Abeni <pabeni@redhat.com>, Gal Pressman <gal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+References: <20230126191050.220610-1-maxtram95@gmail.com>
+ <20230126191050.220610-2-maxtram95@gmail.com>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+In-Reply-To: <20230126191050.220610-2-maxtram95@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -128,37 +80,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 25, 2023 at 02:47:28PM -0800, Vinicius Costa Gomes wrote:
-> > The problem with gates per TXQ is that it doesn't answer the obvious
-> > question of how does that work out when there is >1 TXQ per TC.
-> > With the clarification that "gates per TXQ" requires that there is a
-> > single TXQ per TC, this effectively becomes just a matter of changing
-> > the indices of set bits in the gate mask (TC 3 may correspond to TXQ
-> > offset 5), which is essentially what Gerhard seems to want to see with
-> > tsnep. That is something I don't have a problem with.
-> >
-> > But I may want, as a sanity measure, to enforce that the mqprio queue
-> > count for each TC is no more than 1 ;) Otherwise, we fall into that
-> > problem I keep repeating: skb_tx_hash() arbitrarily hashes between 2
-> > TXQs, both have an open gate in software (allowing traffic to pass),
-> > but in hardware, one TXQ has an open gate and the other has a closed gate.
-> > So half the traffic goes into the bitbucket, because software doesn't
-> > know what hardware does/expects.
-> >
-> > So please ACK this issue and my proposal to break your "popular" mqprio
-> > configuration.
-> 
-> I am afraid that I cannot give my ACK for that, that is, for some
-> definition, a breaking change. A config that has been working for many
-> years is going to stop working.
-> 
-> I know that is not ideal, perhaps we could use the capabilities "trick"
-> to help minimize the breakage? i.e. add a capability whether or not the
-> device supports/"make sense" having multiple TXQs handling a single TC?
-> 
-> Would it help?
 
-Not having multiple TXQs handling a single TC (that is fine), but having
-multiple TXQs of different priorities handling a single tc...
 
-So how does it work with igc, what exactly are we keeping alive?
+On 26/01/2023 21:10, Maxim Mikityanskiy wrote:
+> The cited commits missed passing frag_size to __xdp_rxq_info_reg, which
+> is required by bpf_xdp_adjust_tail to support growing the tail pointer
+> in fragmented packets. Pass the missing parameter when the current RQ
+> mode allows XDP multi buffer.
+> 
+> Fixes: ea5d49bdae8b ("net/mlx5e: Add XDP multi buffer support to the non-linear legacy RQ")
+> Fixes: 9cb9482ef10e ("net/mlx5e: Use fragments of the same size in non-linear legacy RQ with XDP")
+> Signed-off-by: Maxim Mikityanskiy <maxtram95@gmail.com>
+> Cc: Tariq Toukan <tariqt@nvidia.com>
+> ---
+>   drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 11 ++++++++---
+>   1 file changed, 8 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> index abcc614b6191..cdd1e47e18f9 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> @@ -576,9 +576,10 @@ static void mlx5e_free_mpwqe_rq_drop_page(struct mlx5e_rq *rq)
+>   }
+>   
+>   static int mlx5e_init_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *params,
+> -			     struct mlx5e_rq *rq)
+> +			     struct mlx5e_rq_param *rq_params, struct mlx5e_rq *rq)
+>   {
+>   	struct mlx5_core_dev *mdev = c->mdev;
+> +	u32 xdp_frag_size = 0;
+>   	int err;
+>   
+>   	rq->wq_type      = params->rq_wq_type;
+> @@ -599,7 +600,11 @@ static int mlx5e_init_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *param
+>   	if (err)
+>   		return err;
+>   
+> -	return xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq->ix, c->napi.napi_id);
+> +	if (rq->wq_type == MLX5_WQ_TYPE_CYCLIC && rq_params->frags_info.num_frags > 1)
+
+How about a more generic check? like:
+if (params->xdp_prog && params->xdp_prog->aux->xdp_has_frags)
+
+So we won't have to maintain this when Stridng RQ support is added.
+
+> +		xdp_frag_size = rq_params->frags_info.arr[1].frag_stride;
+
+Again, in order to not maintain this (frags_info.arr[1].frag_stride not 
+relevant for Striding RQ), isn't the value always PAGE_SIZE?
+
+Another idea is to introduce something like
+#define XDP_MB_FRAG_SZ (PAGE_SIZE)
+use it here and in mlx5e_build_rq_frags_info ::
+if (byte_count > max_mtu || params->xdp_prog) {
+	frag_size_max = XDP_MB_FRAG_SZ;
+Not sure it's worth it...
+
+Both ways we save passing rq_params in the callstack.
+
+> +
+> +	return __xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq->ix, c->napi.napi_id,
+> +				  xdp_frag_size);
+>   }
+>   
+>   static int mlx5_rq_shampo_alloc(struct mlx5_core_dev *mdev,
+> @@ -2214,7 +2219,7 @@ static int mlx5e_open_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *param
+>   {
+>   	int err;
+>   
+> -	err = mlx5e_init_rxq_rq(c, params, &c->rq);
+> +	err = mlx5e_init_rxq_rq(c, params, rq_params, &c->rq);
+>   	if (err)
+>   		return err;
+>   
