@@ -2,344 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DCA167C4E4
+	by mail.lfdr.de (Postfix) with ESMTP id A3E9A67C4E5
 	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 08:30:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233194AbjAZHat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 02:30:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51902 "EHLO
+        id S233467AbjAZHav (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 02:30:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231276AbjAZH3K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 02:29:10 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1F8611D1
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 23:28:47 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id h24so1766379lfv.6
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 23:28:47 -0800 (PST)
+        with ESMTP id S230003AbjAZHaO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 02:30:14 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2124.outbound.protection.outlook.com [40.107.93.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7414765EE6
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 23:30:03 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ImrFftR3mqto37Mk6sNIIZ0pCUgWKxUolYQnIyiZT8ujOuMW9lt280CbfjHoUTIm9giTbr/C+9hWMD6W4TBnzCSdiPhTprm1ueoLlKUdQY7oyEnZyGpR9or3JqsKZm2B+4YNA3z/IBgiMDM4NUCg1AjcXFMRMq7qGnCBzOE6wYEwK0UyfzuuQ/noqecfyKqzLRFCUZSvOnM25nWtC3mgwFjt0kjhtVtngNELPlZFzk/x8WMPc5pppeR0/DgbvqtrSNG42e9iZsoQT7eXuJDsM0jBaomDOrIkvbixT6XeoHNaG2p/7rwqwd1K/4X14wvf/69WZOBjhaoLv2+LIZtqCw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=iALbejCfAQ3vuoNEVIpmwHvczF0zoA59A2Sbjt20K+g=;
+ b=iq6hmvvaEixdinkt4dlS005ZL5FyH/cMZVZTDd9DDMmclZReGkeJstx9LeR91CqkJ9uKzM9ECqjKXW/v4H1xX8+G/R7ixMlRoyAbIU6ebK8gqppBn+jteJvTUm7SPn4shZfcVQ7fycsH0l0a2xl2uoC/sWbeFcOTQzTPNS9U3bOufTZexaqZNHv/uOxIB8b+yEKsM+v7dLWlslcSWOXv0UBtFeeGaD6rySNt088WCHHUFctpJ0wakdEEg9M67Ng3Qr0aSvK1YCelRYYsC3O1fdIf+vkQ1/YwXMHrfeVwN46VYwD8kShOKt8fM6hxKYZKzDhyoBKAExbvuyEyKxzVXQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=so9p6d/6DvwvQuxJkDI/Q49HgfZm9liS89fwd5ePGrQ=;
-        b=f85MKKLnxsVAdy8qsBqGkE1aRLeva2He3ynreiX34ak0UdODCV9RNPEliWSv0i6Yl0
-         r6szerrmvsQSiIYfDwPCz5L9jyYxoLs7ngGzrZjgTFLLFqlpzeVrMIgAOYVmsGBGTww5
-         oGHXMPQhyMTL7p3IuoQR6pcpAKkgVF5hgTtEMQwyhUEVqD5esWTjuDnuYUag2qGYRTxp
-         sTfj0bou2Ava4eRhhFgYKheoaowRSy3KFo8k2DsPEyqja3oDEAV7NqxxZrekEhRrhWyF
-         5C57QDzVLv7d8VcErXIoRHUNPrBYf5eUck69EnAyZQzkuArW6OGG2D79f3844boBCSJ0
-         ADBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=so9p6d/6DvwvQuxJkDI/Q49HgfZm9liS89fwd5ePGrQ=;
-        b=4R8akRC/OZZA4l37HgvdnzgRyns8i8jFRGK652YsWlgCv0ZvEoRem5O+crb9VD7NKh
-         P/TrkuzEWQ4gBykCMMjo4nWD+/Idjdym0jJPcowrQY6of0r9CELqaSbt02Vr/b7sqCzq
-         CjaaoiE8kbDHyirCKYsk2eREQoehehajEgPvIn+6gdxI8IKEzj7tF+d0i0nPG+/Waduf
-         SCa2JV4mKg3V/f2uqyByVK5DR/0kjK1j2fcKJaj75EOxkDZDWWUJkjacl916uHegg1XI
-         h0/ZMvF85Q0dH8tI+iS/y7wLDavPi/7e/OlwEvcMyt51YFE/soKHh/dBDT+35I2TnyFx
-         QNXw==
-X-Gm-Message-State: AFqh2kr3k/hrnOfJ623C6KdOqakJQ+hTVo+unWuYfJWYSU6Xd2gh9Ueq
-        vksi1PYdrTD29+G5vYoPHHr1e9aWoIsv2O4NLKY=
-X-Google-Smtp-Source: AMrXdXufE8d70SaFjal2Yjk34mMk6Po5aakU1UqIKIgm3+XIBixdsvijjnmAhk0ZQlB6iFxVkt6JTr8WV8LL2+6JtCw=
-X-Received: by 2002:ac2:5596:0:b0:4cb:334f:85ef with SMTP id
- v22-20020ac25596000000b004cb334f85efmr1555688lfg.67.1674718125849; Wed, 25
- Jan 2023 23:28:45 -0800 (PST)
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iALbejCfAQ3vuoNEVIpmwHvczF0zoA59A2Sbjt20K+g=;
+ b=RDTUcef7vBs8+AdTcfMBsdHgaJGWZfKXVk3q4zaxdnXAgTa8r289onP6wE1lS5C6jyyk4E/5qBRMmIf0CM1WHOnTtvWhs3neMilHpcP/raYrvx+ogjQrcu+ptwDkrcKo3ZN0lRPZ+T9Tb/6T0Yayd5ckE8CEqqb9AS8Dagfp5oI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by BY5PR13MB3731.namprd13.prod.outlook.com (2603:10b6:a03:219::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.22; Thu, 26 Jan
+ 2023 07:30:00 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65%6]) with mapi id 15.20.6043.021; Thu, 26 Jan 2023
+ 07:29:59 +0000
+Date:   Thu, 26 Jan 2023 08:29:52 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     =?utf-8?B?QmrDuHJu?= Mork <bjorn@mork.no>
+Cc:     netdev@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Alexander Couzens <lynxis@fe80.eu>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Subject: Re: [PATCH v4 net 1/3] net: mediatek: sgmii: ensure the SGMII PHY is
+ powered down on configuration
+Message-ID: <Y9Ir8AQd8wmhIIiQ@corigine.com>
+References: <20230125181602.861843-1-bjorn@mork.no>
+ <20230125181602.861843-2-bjorn@mork.no>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230125181602.861843-2-bjorn@mork.no>
+X-ClientProxiedBy: AM0PR10CA0093.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:208:15::46) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-References: <20230120170025.20178-1-luizluca@gmail.com> <20230121120744.4krs4esfab56pvdz@bang-olufsen.dk>
-In-Reply-To: <20230121120744.4krs4esfab56pvdz@bang-olufsen.dk>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Thu, 26 Jan 2023 04:28:33 -0300
-Message-ID: <CAJq09z61eH8NXu9DJpLLadGXu0vDt7FC_vr3uZJFemYKmcfheA@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: dsa: realtek: rtl8365mb: add change_mtu
-To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BY5PR13MB3731:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2a256855-9709-4f3d-b40b-08daff6f218d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: U9ImDPeubIVDTNXa++ChVaw8gFxDYvhdizviHP3DYTqUIKCj65xAr8qZ9i0Xi6EPJdovZ2Lf7PdZSge9jP1dv7rjr5iZEZxewb851z/CDW3DORU30XYklH5WxUYaYyJNGUip/RMnds8FDnAr7X5b4mBnEnFKrcrtQnJcjyg56PNicX/Ar8OJko6sbl9kKY+bqRVf/IBEXrDQqxmdijLazmIdRemjXc3KQdpNOi1KE28YzsuZtuVpZCUubqa34R3cYIwV5SARrrenmBsdq3ixPiyp3NxRtzmXGShCrMGVPBIOJFmsp4QKQ0RTHdLoxYE46LK3zCkF4E2YRsElIkwarEdJtvfnthtwXNrt6gLONp8zU5AHy4dk/fBpne6wm2g4jeBaC1bSmTiRmqh33AORqRpoQ+b5pPaN3M6zmoO3lgg+7S7Qnm5JaWGR9xb0ZRCJMMM2cfZnLWMC+NI0a+ygBO24H8MK3WgRbNzZ/coNwWILodXZ+eVpp+tjths/v2wAhYwxq8SHXlEHlb20IS7iiCTLOR1qjpeukiYs8SuFX7Y2b2IrhtZ6AGgmGEkd482YYOVvLBnNQCXPHFqptgmGwjm4EsL/z8E8sSA0ZFZiiuIspxsQiXRZc1kuqk1azQIQc7YT1t06KQ4Xav/oOx0vaQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(376002)(366004)(136003)(396003)(39830400003)(451199018)(54906003)(316002)(38100700002)(41300700001)(8676002)(6916009)(66476007)(66556008)(4326008)(66946007)(44832011)(7416002)(5660300002)(86362001)(8936002)(36756003)(2906002)(6506007)(6666004)(6512007)(186003)(478600001)(6486002)(83380400001)(2616005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?S0o2cWoxbEtUYkM1eVJLSHlZT3Nnc1QvU0RQMVFWMmZxM2VuV3ZDdDFSUXFo?=
+ =?utf-8?B?bFNOQktmZWluditNdFhEd2lHNHE5U2J4eDFHYWhVOHFlK3ozaml6MTdYaXJl?=
+ =?utf-8?B?ZFNzakVyUnZjNHFzTm8wc1oyUGtMTmo0Y1g3dEJNSmpBN0lzanpNVm1JWTky?=
+ =?utf-8?B?R0lJVUF1ODBiTzBjak5kN0pTNmJpRXdWS05od21CK2ZOSHFKajFGOFNTV2Z3?=
+ =?utf-8?B?dUx2ei9yZ3prRkNMYnIwQWNqd2FMdTZDTlk1ZUduVUdZUWpGOVhYUnJIc1d1?=
+ =?utf-8?B?N0JZM2FHK1ZkSFF4aTRHdHlPR0w1cmxvQm8yMXhhR2lBVlhxTmhNWlR4ejNL?=
+ =?utf-8?B?Ukd1V0piSGo1L1EzYmxmcGs2SmpRaFd3UFpwWkFPakt2ZDB3SVlhUTlGU0Jz?=
+ =?utf-8?B?RENlaytzMmpwMld3aWFQaWlRRnlMeUdUNnkwUjc5ODlqK0dzK25WRUIvTEM5?=
+ =?utf-8?B?cjczbE5SWXcrYmV1aGJ0Q0h0NklMbnhjV3YvUG5OSkFsTjhiUnpDZmtwYWRn?=
+ =?utf-8?B?RGwwWk4vZ1crNUEyYjQ1WG10Sm5PM2xBRldObnFUbVQzaitra1lNQWJhMWhW?=
+ =?utf-8?B?WmlWOWU4emVxK2ZpUmNBZW83M3cwOXA5cTA0SlBYRW9ueXd0VVcwZmxsUzhT?=
+ =?utf-8?B?Z0cxK1pEaDBiMm1xZkV0V3dFZ1JVS1BYWGVvOUUvS2hrSFlxNUY0U1BJa1g5?=
+ =?utf-8?B?akluaG1RYzYvUXZZNU5RNmdBRGhhbWZjdFAwbGR0VnBZZHZZamd3YlhCNFV0?=
+ =?utf-8?B?d3oydzMxY0lrQjBNektoSG1CRUppYWVuQ240WitBbmRlOGxGaThwdk8wQXpv?=
+ =?utf-8?B?KzhDY2NxTkZpZlpnVGFpVmdkdzBaN1ZrUkV5TDhvSjFIdDNxaDNlR0tHSFgv?=
+ =?utf-8?B?ZVlWaFoyV3JIY1QyNW5xM1Q3ME1SV2FQaUcySHoycnlFbHdtSFlnNTE1N2tw?=
+ =?utf-8?B?Z0ErQzNnOUF4SVk3QTJ5ZjAwaE1rT0Y1ZXU1anRMYkx2SFFjZm5SdE45UDVp?=
+ =?utf-8?B?WnczVDVQOUlqVWQ2dTZreHBybFhLYUtDbG9HZ2x4Z1d0TEJ4UDViaWNxeTlJ?=
+ =?utf-8?B?ZXZxMmF6aWNiUS9hQkEvYndjVlNHRW1wN2MzZjVLTHNWdXl1QXdYR3IvNHhh?=
+ =?utf-8?B?anVhZTd4WjVybDExTXJWdEQ2RlVWQ2lJaEVlclREemZBcUdhTnFpZUNlSmRO?=
+ =?utf-8?B?STFoUGUvcS93eDN1QUxhM29GenNRSTFGemd6cm5jblI5ZkJFODI1WGJNSVAx?=
+ =?utf-8?B?TEVoQTh3alNRZm9FQ2hDTDJSVThwdDlYTUhhcDFWVnpiR2xvalU3QUNzdTRJ?=
+ =?utf-8?B?NC9Db1FZR2ZneHBzdHJIbjhTNUhVc3ozK1pvd1F0aStnRE55MkhydlA2UENT?=
+ =?utf-8?B?bFRXUUZVbmFMTk9GSGUxVWZSMEJTRmppUU1GazJGb2NPTkNjSDZrQmlKdVlF?=
+ =?utf-8?B?WmU4OUpFU0JaYVlQU0RwcHdoL0dvY2hwWFh0R1pVZ0ZRVDgvaFVwNXBXdmZJ?=
+ =?utf-8?B?Zy9Ec0JmaW9DcmhIeWt3Mnc2aDVaV2dBUnc4cXRwUEF5UndwWG1nUWg4enpF?=
+ =?utf-8?B?MG5wekx6dWltSE5PSE5WckwySG9hYTF4dWNoRGs4czNTZDdTSzRqR3BvTzBI?=
+ =?utf-8?B?QzdjRUhjRkxSMWhaQ2RrTGdkMmdUWHpjSVhxMURpay9EZk9LS1cyNDdwRmFZ?=
+ =?utf-8?B?dUlWdlNNRklmcitDZklFc01ST2lJcGREN1BVUTJycE03eGNocUNIVE1sZ0M5?=
+ =?utf-8?B?Y2NlODVZbDhBeE5UQnZMV2hFSTNraEU2RG9ZR0RJVEk5WjA2cFU4T01STTdL?=
+ =?utf-8?B?VUQ5RmhDQ2lEbGVMeXh3WDRZcmRmanNyQ2ZCQi9XWjlVT09aWWR6Nmp0d0F3?=
+ =?utf-8?B?N0psSTFqRUNaNEdicTBGOGNrTkJFWld6NlR0WU1xaFdjSkRvclcvL0d5L2My?=
+ =?utf-8?B?MVpCbHV5U0l5VmVGNm1xZVY1RTFYRXpZT3B5R2tscmlHaE55N2NlS2xGd3Zy?=
+ =?utf-8?B?NjNpWG1aRTl0LzJUNkNnTHptUkRtdjhZZXJTS25paE5UQ2tWaXBsUytqeWxT?=
+ =?utf-8?B?VHNxeE9JUkY2dTlNeittZXhVUlArZUhlSXVlNnJVSlVHcmZvVU5mZzRKWFU2?=
+ =?utf-8?B?UjFaeTZqOVN3OE5uY3N6ZXhkZzg1WEtrS2g3K1FuOGhJUXF1NGtKVUxXbDJT?=
+ =?utf-8?B?eFAyR28wMGVjSlY2K2J2S2NWeHRPSVBReExzMi9kMUR2MTR5WlVkNnBzWEty?=
+ =?utf-8?B?YVV3SXBrbU15YytFbS9YNG5DYlh3PT0=?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2a256855-9709-4f3d-b40b-08daff6f218d
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2023 07:29:59.6983
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: AXXXYiWhrjfkDfHI3hQN9cJ0Eo2LoyN9Lloz644idbSEdCbTGv/1vQ9rrS7LOq5bqTU/StW58KkcskaanQoyY5MI8McS8wX4C1LaJraH3pI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR13MB3731
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Fri, Jan 20, 2023 at 02:00:26PM -0300, Luiz Angelo Daros de Luca wrote:
-> > rtl8365mb was using a fixed MTU size of 1536, probably inspired by
-> > rtl8366rb initial packet size. Different from that family, rtl8365mb
-> > family can specify the max packet size in bytes and not in fixed steps.
-> > Now it defaults to VLAN_ETH_HLEN+ETH_DATA_LEN+ETH_FCS_LEN (1522 bytes).
-> >
-> > DSA calls change_mtu for the CPU port once the max mtu value among the
-> > ports changes. As the max packet size is defined globally, the switch
-> > is configured only when the call affects the CPU port.
-> >
-> > The available specs do not directly define the max supported packet
-> > size, but it mentions a 16k limit. However, the switch sets the max
-> > packet size to 16368 bytes (0x3FF0) after it resets. That value was
-> > assumed as the maximum supported packet size.
-> >
-> > MTU was tested up to 2018 (with 802.1Q) as that is as far as mt7620
-> > (where rtl8367s is stacked) can go.
-> >
-> > There is a jumbo register, enabled by default at 6k packet size.
-> > However, the jumbo settings does not seem to limit nor expand the
-> > maximum tested MTU (2018), even when jumbo is disabled. More tests are
-> > needed with a device that can handle larger frames.
-> >
-> > Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-> > ---
-> >  drivers/net/dsa/realtek/rtl8365mb.c | 63 +++++++++++++++++++++++++++--
-> >  1 file changed, 59 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
-> > index da31d8b839ac..da9e5f16c8cc 100644
-> > --- a/drivers/net/dsa/realtek/rtl8365mb.c
-> > +++ b/drivers/net/dsa/realtek/rtl8365mb.c
-> > @@ -98,6 +98,7 @@
-> >  #include <linux/of_irq.h>
-> >  #include <linux/regmap.h>
-> >  #include <linux/if_bridge.h>
-> > +#include <linux/if_vlan.h>
-> >
-> >  #include "realtek.h"
-> >
-> > @@ -267,6 +268,12 @@
-> >  /* Maximum packet length register */
-> >  #define RTL8365MB_CFG0_MAX_LEN_REG   0x088C
-> >  #define   RTL8365MB_CFG0_MAX_LEN_MASK        0x3FFF
-> > +/* Not sure but it is the default value after reset */
-> > +#define RTL8365MB_CFG0_MAX_LEN_MAX   0x3FF0
->
-> The max length is 0x3FFF as seen in the mask defined right above.
+On Wed, Jan 25, 2023 at 07:16:00PM +0100, Bjørn Mork wrote:
+> From: Alexander Couzens <lynxis@fe80.eu>
+> 
+> The code expect the PHY to be in power down which is only true after reset.
+> Allow changes of the SGMII parameters more than once.
+> 
+> Only power down when reconfiguring to avoid bouncing the link when there's
+> no reason to - based on code from Russell King.
+> 
+> There are cases when the SGMII_PHYA_PWD register contains 0x9 which
+> prevents SGMII from working. The SGMII still shows link but no traffic
+> can flow. Writing 0x0 to the PHYA_PWD register fix the issue. 0x0 was
+> taken from a good working state of the SGMII interface.
+> 
+> Fixes: 42c03844e93d ("net-next: mediatek: add support for MediaTek MT7622 SoC")
+> Suggested-by: Russell King (Oracle) <linux@armlinux.org.uk>
+> Signed-off-by: Alexander Couzens <lynxis@fe80.eu>
+> [ bmork: rebased and squashed into one patch ]
+> Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> Signed-off-by: Bjørn Mork <bjorn@mork.no>
+> ---
+>  drivers/net/ethernet/mediatek/mtk_eth_soc.h |  2 ++
+>  drivers/net/ethernet/mediatek/mtk_sgmii.c   | 39 +++++++++++++++------
+>  2 files changed, 30 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+> index 18a50529ce7b..b299a7df3c30 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+> @@ -1037,10 +1037,12 @@ struct mtk_soc_data {
+>   *                     SGMII modes
+>   * @ana_rgc3:          The offset refers to register ANA_RGC3 related to regmap
+>   * @pcs:               Phylink PCS structure
+> + * @interface:         Currently configured interface mode
 
-The mask does allow up to 0x3FFF but, as I said in the commit message,
-I assumed the value that register has after reset as the max one
-(16368 / 0x3ff0).
-It is, at least, a value that the switch can handle and only 15 bytes
-smaller than 0x3fff. Should I use 0x3FFF instead? They might have a
-reason for using that value;
+nit: @interface should probably be above @pcs
 
-> > +
-> > +#define RTL8365MB_FLOWCTRL_JUMBO_SIZE_REG    0x123B
-> > +#define  RTL8365MB_FLOWCTRL_JUMBO_SIZE_MASK  GENMASK(1,0)
-> > +#define  RTL8365MB_FLOWCTRL_JUMBO_ENABLE_MASK        GENMASK(2,2)
->
-> You were unable to test this so please drop it from the patch.
+>   */
+>  struct mtk_pcs {
+>  	struct regmap	*regmap;
+>  	u32             ana_rgc3;
+> +	phy_interface_t	interface;
+>  	struct phylink_pcs pcs;
+>  };
 
-I'll drop all the jumbo code. My hope was that someone with better
-hardware could test it.
-Up to 2k, all those settings do nothing.
-
-> >
-> >  /* Port learning limit registers */
-> >  #define RTL8365MB_LUT_PORT_LEARN_LIMIT_BASE          0x0A20
-> > @@ -309,6 +316,14 @@
-> >   */
-> >  #define RTL8365MB_STATS_INTERVAL_JIFFIES     (3 * HZ)
-> >
-> > +/* FIXME: is k in {3,4,6,9}k 1000 or 1024 */
-> > +enum rtl8365mb_jumbo_size {
-> > +     RTL8365MB_JUMBO_SIZE_3K = 0,
-> > +     RTL8365MB_JUMBO_SIZE_4K,
-> > +     RTL8365MB_JUMBO_SIZE_6K,
-> > +     RTL8365MB_JUMBO_SIZE_9K
-> > +};
-> > +
-> >  enum rtl8365mb_mib_counter_index {
-> >       RTL8365MB_MIB_ifInOctets,
-> >       RTL8365MB_MIB_dot3StatsFCSErrors,
-> > @@ -1135,6 +1150,44 @@ static void rtl8365mb_phylink_mac_link_up(struct dsa_switch *ds, int port,
-> >       }
-> >  }
-> >
-> > +static int rtl8365mb_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
-> > +{
-> > +     struct realtek_priv *priv = ds->priv;
-> > +
-> > +     /* When a new MTU is set, DSA always set the CPU port's MTU to the
->
-> s/always set/always sets/
-
-It is actually a copied typo:
-
-drivers/net/dsa/qca/qca8k-common.c:      * DSA always set the CPU
-port's MTU to the largest MTU of the slave
-drivers/net/dsa/mt7530.c:       /* When a new MTU is set, DSA always
-set the CPU port's MTU to the
-
-> > +      * largest MTU of the slave ports. Because the switch only has a global
-> > +      * RX length register, only allowing CPU port here is enough.
-> > +      */
-> > +     if (!dsa_is_cpu_port(ds, port))
-> > +             return 0;
-> > +
-> > +     new_mtu += VLAN_ETH_HLEN + ETH_FCS_LEN;
->
-> Why VLAN_ETH_HLEN rather than ETH_HLEN?
-
-That is an interesting point to discuss. MTU is a L3 property, the
-size of the ethernet payload. The switch, however, works with L2
-values. When you set RTL8365MB_CFG0_MAX_LEN_REG, you are actually
-setting the frame size (maybe I should have used a new variable name
-frame_size instead of summing extra bytes to the new_mtu).
-
-The issue is that you cannot tell the exact frame size a priori
-because it could include the optional 802.1Q tag (or even the double
-QinQ). If you use ETH_HLEN, all vlan-tagged packets with payload size
-between 1997-1500 bytes will be dropped. I got to this empirically but
-after I saw that other drivers are also doing something similar.
-
-drivers/net/dsa/hirschmann/hellcreek.c:         u32 max_sdu =
-schedule->max_sdu[tc] + VLAN_ETH_HLEN - ETH_FCS_LEN;
-drivers/net/dsa/microchip/ksz8795.c:    frame_size = mtu +
-VLAN_ETH_HLEN + ETH_FCS_LEN;
-drivers/net/dsa/microchip/ksz9477.c:    frame_size = mtu +
-VLAN_ETH_HLEN + ETH_FCS_LEN;
-drivers/net/dsa/microchip/ksz_common.c:         return
-KSZ8795_HUGE_PACKET_SIZE - VLAN_ETH_HLEN - ETH_FCS_LEN;
-drivers/net/dsa/microchip/ksz_common.c:         return
-KSZ8863_HUGE_PACKET_SIZE - VLAN_ETH_HLEN - ETH_FCS_LEN;
-drivers/net/dsa/microchip/ksz_common.c:         return
-KSZ9477_MAX_FRAME_SIZE - VLAN_ETH_HLEN - ETH_FCS_LEN;
-drivers/net/dsa/microchip/lan937x_main.c:       new_mtu +=
-VLAN_ETH_HLEN + ETH_FCS_LEN;
-drivers/net/dsa/mv88e6xxx/chip.c:               return 10240 -
-VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
-drivers/net/dsa/mv88e6xxx/chip.c:               return 1632 -
-VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
-drivers/net/dsa/mv88e6xxx/chip.c:       return 1522 - VLAN_ETH_HLEN -
-EDSA_HLEN - ETH_FCS_LEN;
-drivers/net/dsa/mv88e6xxx/port.c:       size += VLAN_ETH_HLEN + ETH_FCS_LEN;
-drivers/net/dsa/sja1105/sja1105_main.c: new_mtu += VLAN_ETH_HLEN + ETH_FCS_LEN;
-drivers/net/dsa/sja1105/sja1105_main.c: return 2043 - VLAN_ETH_HLEN -
-ETH_FCS_LEN;
-drivers/net/dsa/lantiq_gswip.c: return GSWIP_MAX_PACKET_LENGTH -
-VLAN_ETH_HLEN - ETH_FCS_LEN;
-drivers/net/dsa/lantiq_gswip.c:         gswip_switch_w(priv,
-VLAN_ETH_HLEN + new_mtu + ETH_FCS_LEN,
-
-Optimally, if the DSA tree could calculate the frame size, we could
-change the change_mtu signature to include that value as well. As
-other drivers show, it  is a common problem. We will still accept
-untagged packets up to 1504 but the receiver OS should be able to
-handle that.
-
-However, what really bugs me is if all these are really necessary. Are
-there any drawbacks to accepting a larger frame? If not, why not
-simply set it to max_mtu at setup and return 0 in change_mtu?
-
-> > +
-> > +     /* FIXME: We might need to adjust the jumbo size as well. However, the
-> > +      * device seems to forward at least up to mtu=2018 (test device limit)
-> > +      * even with jumbo frames disabled.
-> > +      */
-> > +     /* This is the switch state after reset */
-> > +     /*enum rtl8365mb_jumbo_size jumbo_size = RTL8365MB_JUMBO_SIZE_6K;
-> > +
-> > +     regmap_update_bits(priv->map, RTL8365MB_FLOWCTRL_JUMBO_SIZE_REG,
-> > +                        RTL8365MB_FLOWCTRL_JUMBO_ENABLE_MASK |
-> > +                        RTL8365MB_FLOWCTRL_JUMBO_SIZE_MASK,
-> > +                        FIELD_PREP(RTL8365MB_FLOWCTRL_JUMBO_ENABLE_MASK,1) |
-> > +                        FIELD_PREP(RTL8365MB_FLOWCTRL_JUMBO_SIZE_MASK,
-> > +                                   jumbo_size));
-> > +     */
->
-> No commented out code can be accepted into the driver, please drop it
-> from the patch if it is not able to be used.
-
-OK
-
->
-> > +
-> > +     return regmap_update_bits(priv->map, RTL8365MB_CFG0_MAX_LEN_REG,
-> > +                              RTL8365MB_CFG0_MAX_LEN_MASK,
-> > +                              FIELD_PREP(RTL8365MB_CFG0_MAX_LEN_MASK, new_mtu));
->
-> 80 columns + looks like arguments aren't aligned with the (
-
-Sorry, I missed that.
-
->
-> > +}
-> > +
-> > +static int rtl8365mb_max_mtu(struct dsa_switch *ds, int port)
-> > +{
-> > +     return RTL8365MB_CFG0_MAX_LEN_MAX - VLAN_ETH_HLEN - ETH_FCS_LEN;
-> > +}
-> > +
-> >  static void rtl8365mb_port_stp_state_set(struct dsa_switch *ds, int port,
-> >                                        u8 state)
-> >  {
-> > @@ -1980,10 +2033,8 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
-> >               p->index = i;
-> >       }
-> >
-> > -     /* Set maximum packet length to 1536 bytes */
-> > -     ret = regmap_update_bits(priv->map, RTL8365MB_CFG0_MAX_LEN_REG,
-> > -                              RTL8365MB_CFG0_MAX_LEN_MASK,
-> > -                              FIELD_PREP(RTL8365MB_CFG0_MAX_LEN_MASK, 1536));
-> > +     /* Set packet length from 16368 to 1500+14+4+4=1522 */
-> > +     ret = rtl8365mb_change_mtu(ds, cpu->trap_port, ETH_DATA_LEN);
->
-> I think DSA sets the MTU automatically, cf. dsa_slave_create(). This can
-> probably be dropped now that the dsa_switch_ops are implemented.
-
-During my tests, it does not emit a change_mtu for the CPU port (the
-one I care about) nor any other ports.
-The side-effect is that reg 0x088c is kept untouched, with value 0x3ff0.
-
-> >       if (ret)
-> >               goto out_teardown_irq;
-> >
-> > @@ -2103,6 +2154,8 @@ static const struct dsa_switch_ops rtl8365mb_switch_ops_smi = {
-> >       .get_eth_mac_stats = rtl8365mb_get_mac_stats,
-> >       .get_eth_ctrl_stats = rtl8365mb_get_ctrl_stats,
-> >       .get_stats64 = rtl8365mb_get_stats64,
-> > +     .port_change_mtu = rtl8365mb_change_mtu,
-> > +     .port_max_mtu = rtl8365mb_max_mtu,
->
-> Please name the functions according to the dsa_switch_ops name:
->
-> rtl8365mb_change_mtu -> rtl8365mb_port_change_mtu
-> rtl8365mb_max_mtu -> rtl8365mb_port_max_mtu
->
-
-OK
-
-> >  };
-> >
-> >  static const struct dsa_switch_ops rtl8365mb_switch_ops_mdio = {
-> > @@ -2124,6 +2177,8 @@ static const struct dsa_switch_ops rtl8365mb_switch_ops_mdio = {
-> >       .get_eth_mac_stats = rtl8365mb_get_mac_stats,
-> >       .get_eth_ctrl_stats = rtl8365mb_get_ctrl_stats,
-> >       .get_stats64 = rtl8365mb_get_stats64,
-> > +     .port_change_mtu = rtl8365mb_change_mtu,
-> > +     .port_max_mtu = rtl8365mb_max_mtu,
-> >  };
-> >
-> >  static const struct realtek_ops rtl8365mb_ops = {
-> > --
-> > 2.39.0
-> >
->
-> Kind regards,
-> Alvin
-
-Thanks Alvin,
-
-Regards,
-
-Luiz
+Thanks for tweaking the location of the interface field so
+there is no hole in mtk_pcs. Looks good (on x86_64).
