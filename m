@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 61EB967C541
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 08:59:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E65F67C542
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 08:59:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236180AbjAZH7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 02:59:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36908 "EHLO
+        id S236208AbjAZH7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 02:59:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235993AbjAZH6x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 02:58:53 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 181A061D60
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 23:58:51 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id q8so545752wmo.5
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 23:58:51 -0800 (PST)
+        with ESMTP id S236001AbjAZH6z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 02:58:55 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9022966FA6
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 23:58:52 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id o17-20020a05600c511100b003db021ef437so541728wms.4
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 23:58:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Lj7KarjuxPadhr9CQIWx51afE00/MSL/XrxMtdZLvSk=;
-        b=V2xcq3OIEzasBVkS40FmRwxylv4TceRjWpCqIcKSNUKaVQONytdfG/fHlSpv6DIO7B
-         nGPzPn+P2UffTL8oYBXIH/Wtqc7qkOmJP+obdH3fuPJOgtKQdkz2EHN+2wjwYAy5zysq
-         N68pvFu96/t1BPpP3oMnIO1D6x6oiNDoIKERdcavOLoNx9kqx9JvI7mdRiVYkW6CR6O5
-         NZQQUTqaP4TFf/VKDN+SVvCd7aRd2RJtv2DHc1GzTMp35g6+lsTkMdB03DGFiko+91UO
-         c4GzGfZR17GKHZ/l4JZWN4SD3XTm9TQCFPIMA923s+1MCSM+2/BkZkTiqaqv+T9ixIdC
-         +nWw==
+        bh=/onV282aFntC1GXe3qzoBjkqW5qz7JFW0VysSCjmKhs=;
+        b=r4mk/r1fVby7GAmQSUzHOW1kNeXu93s39nzWRC/vSF0/2f/tq4uG6iMna+d0SiqekP
+         mkdg3G3yEG/fpkVbwGARoEeS9XgkhGkb2DYojitvgk6iEvEdLG1iqleb0MFrEWwT7icx
+         JD6Sewfu8BilshR6lwszAcQT/xBL/oBLjN4oW5tnasOA4A6FH7V+thK3JQsjv+/6cFkS
+         +M1pbXN8XaIHU5p8AGfLe8Pe4KsRQO2nTA0N1ApzI5fNLnW3n/nwTtq5DmJTsc60m11P
+         iJ4B0T8xh8EPKbVmvT8jHeEVZ5cOJG54iMxo/ELvDV6zDoBtLYqXjMk/kTzlGZUDFZzB
+         1Hmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Lj7KarjuxPadhr9CQIWx51afE00/MSL/XrxMtdZLvSk=;
-        b=rWXHoDq8b7kigxUaKF6Ka6EP4WJtNr4sZtCsLyoNUG3PwOLB/A6meLngM2V8TvS8Ob
-         s7uaA6nZiCZXHsl6SpdWP0dgb3JtUE/hDKzkNpbAbW9AEpgfeRJByLh4W0e/r2XfREa3
-         d1dQBJRKb/SeTb33ehyc5jBnDO/fjsdd8FG0yO8/K9PU99uCsP6meAZudZ0BcnXpoH03
-         j6z4jup8cnWyLKhghkcFV/wrq94IoRImmHHKPkuqWkxjJfWDTv+hlFXyiKLGlzFoOuRF
-         LhKhWp+UFWrlNl0FpBnIShYh1OPbtsbyTG0CXb2efg3DGYBx24ntjeLRgexJh8FOrnkF
-         9YFg==
-X-Gm-Message-State: AFqh2kpZs5lcuhgjj9mKFvUAL0cUS1xoY4lPQ3DhM79TovI2sWeGIeua
-        JrI7FVTWR3KkVqCYUZtJfso36JWAuWqNu3ZXMQyChg==
-X-Google-Smtp-Source: AMrXdXsQCkbcnP54jnOA/fDai+GkegWEWICpQvm6G2fsCsmx+9ukMp/sanodpT2CrRCY6/QAtJT8hg==
-X-Received: by 2002:a05:600c:540d:b0:3d9:fb59:c16b with SMTP id he13-20020a05600c540d00b003d9fb59c16bmr31462566wmb.36.1674719929485;
-        Wed, 25 Jan 2023 23:58:49 -0800 (PST)
+        bh=/onV282aFntC1GXe3qzoBjkqW5qz7JFW0VysSCjmKhs=;
+        b=OcPdRiuojHg8+g5xQ7MvKhLBVuDvKquTKzeoh5bWjVLlq/EoQytBpz2rKxI6yUWQmT
+         LT+C2z26E9Otrnyn5igtenTikrCglq0B4pQhqirb10yyWGZw1e0BKihHUEemKxrA7+Eq
+         CZxj69bnFR55tj0gsHOZOqHfmU3Y1xqbQyafMV5qeeFFy4tAXsbldewgMp8aAi07Gq+t
+         suB0+6cSexBYa9TTCx/PNeJEBDfOHrF2Rr+FmIBAh1MU0RG088eFCBchqWdOzNr5eDyb
+         loDklc0Tp/H7PEZ1YSS0Ol1o0yRmsyaQc8YKr1YsOMVdZSqZJt+kwaRrvWJW6alofpQT
+         83wg==
+X-Gm-Message-State: AFqh2koIf7G65g2FGhg04r6e6l53PbRNx/bFEI0t+/4IQf0L/yPmkfrU
+        Wy3zxM/1B/3MTxoinbE9rYBjKSaaYXmThSQpiGWuyQ==
+X-Google-Smtp-Source: AMrXdXvQJojMdGm4mGYna5V7zoch8EWfAjRzG1F0NKh/IRNgmlWza1p9dZrmgch1M3fQiWRE5uyCrA==
+X-Received: by 2002:a05:600c:d3:b0:3da:23a4:627e with SMTP id u19-20020a05600c00d300b003da23a4627emr33140037wmm.6.1674719931134;
+        Wed, 25 Jan 2023 23:58:51 -0800 (PST)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id i21-20020a1c5415000000b003dc23574bf4sm727957wmb.7.2023.01.25.23.58.48
+        by smtp.gmail.com with ESMTPSA id t10-20020a05600c328a00b003d9a86a13bfsm678763wmp.28.2023.01.25.23.58.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Jan 2023 23:58:48 -0800 (PST)
+        Wed, 25 Jan 2023 23:58:50 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
@@ -59,9 +59,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         aelior@marvell.com, manishc@marvell.com, jacob.e.keller@intel.com,
         gal@nvidia.com, yinjun.zhang@corigine.com, fei.qin@corigine.com,
         Niklas.Cassel@wdc.com
-Subject: [patch net-next v2 06/12] qed: remove pointless call to devlink_param_driverinit_value_set()
-Date:   Thu, 26 Jan 2023 08:58:32 +0100
-Message-Id: <20230126075838.1643665-7-jiri@resnulli.us>
+Subject: [patch net-next v2 07/12] devlink: make devlink_param_driverinit_value_set() return void
+Date:   Thu, 26 Jan 2023 08:58:33 +0100
+Message-Id: <20230126075838.1643665-8-jiri@resnulli.us>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230126075838.1643665-1-jiri@resnulli.us>
 References: <20230126075838.1643665-1-jiri@resnulli.us>
@@ -78,43 +78,72 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-devlink_param_driverinit_value_set() call makes sense only for "
-driverinit" params. However here, the param is "runtime".
-devlink_param_driverinit_value_set() returns -EOPNOTSUPP in such case
-and does not do anything. So remove the pointless call to
-devlink_param_driverinit_value_set() entirely.
+devlink_param_driverinit_value_set() currently returns int with possible
+error, but no user is checking it anyway. The only reason for a fail is
+a driver bug. So convert the function to return void and put WARN_ONs
+on error paths.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 Reviewed-by: Jakub Kicinski <kuba@kernel.org>
 Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
- drivers/net/ethernet/qlogic/qed/qed_devlink.c | 6 ------
- 1 file changed, 6 deletions(-)
+ include/net/devlink.h  |  4 ++--
+ net/devlink/leftover.c | 15 +++++++--------
+ 2 files changed, 9 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_devlink.c b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
-index 922c47797af6..be5cc8b79bd5 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_devlink.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
-@@ -198,7 +198,6 @@ static const struct devlink_ops qed_dl_ops = {
- 
- struct devlink *qed_devlink_register(struct qed_dev *cdev)
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index cf74b6391896..e0d773dfa637 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -1775,8 +1775,8 @@ void devlink_params_unregister(struct devlink *devlink,
+ 			       size_t params_count);
+ int devlink_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
+ 				       union devlink_param_value *init_val);
+-int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
+-				       union devlink_param_value init_val);
++void devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
++					union devlink_param_value init_val);
+ void devlink_param_value_changed(struct devlink *devlink, u32 param_id);
+ struct devlink_region *devl_region_create(struct devlink *devlink,
+ 					  const struct devlink_region_ops *ops,
+diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
+index fca2b6661362..693470af548f 100644
+--- a/net/devlink/leftover.c
++++ b/net/devlink/leftover.c
+@@ -10931,18 +10931,18 @@ EXPORT_SYMBOL_GPL(devlink_param_driverinit_value_get);
+  *	This function should be used by the driver to set driverinit
+  *	configuration mode default value.
+  */
+-int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
+-				       union devlink_param_value init_val)
++void devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
++					union devlink_param_value init_val)
  {
--	union devlink_param_value value;
- 	struct qed_devlink *qdevlink;
- 	struct devlink *dl;
- 	int rc;
-@@ -216,11 +215,6 @@ struct devlink *qed_devlink_register(struct qed_dev *cdev)
- 	if (rc)
- 		goto err_unregister;
+ 	struct devlink_param_item *param_item;
  
--	value.vbool = false;
--	devlink_param_driverinit_value_set(dl,
--					   QED_DEVLINK_PARAM_ID_IWARP_CMT,
--					   value);
--
- 	cdev->iwarp_cmt = false;
+ 	param_item = devlink_param_find_by_id(&devlink->param_list, param_id);
+-	if (!param_item)
+-		return -EINVAL;
++	if (WARN_ON(!param_item))
++		return;
  
- 	qed_fw_reporters_create(dl);
+-	if (!devlink_param_cmode_is_supported(param_item->param,
+-					      DEVLINK_PARAM_CMODE_DRIVERINIT))
+-		return -EOPNOTSUPP;
++	if (WARN_ON(!devlink_param_cmode_is_supported(param_item->param,
++						      DEVLINK_PARAM_CMODE_DRIVERINIT)))
++		return;
+ 
+ 	if (param_item->param->type == DEVLINK_PARAM_TYPE_STRING)
+ 		strcpy(param_item->driverinit_value.vstr, init_val.vstr);
+@@ -10951,7 +10951,6 @@ int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
+ 	param_item->driverinit_value_valid = true;
+ 
+ 	devlink_param_notify(devlink, 0, param_item, DEVLINK_CMD_PARAM_NEW);
+-	return 0;
+ }
+ EXPORT_SYMBOL_GPL(devlink_param_driverinit_value_set);
+ 
 -- 
 2.39.0
 
