@@ -2,77 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B07367D1E6
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 17:40:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D396F67D1F0
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 17:41:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232032AbjAZQkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 11:40:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51628 "EHLO
+        id S232231AbjAZQlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 11:41:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231819AbjAZQkc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 11:40:32 -0500
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D08DB4483;
-        Thu, 26 Jan 2023 08:40:31 -0800 (PST)
-Received: by mail-pg1-x533.google.com with SMTP id s67so1416619pgs.3;
-        Thu, 26 Jan 2023 08:40:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Zsu1XXuoF2/96aeBfEHXZNf0ZiITGZdQYd8L9imSFJM=;
-        b=G2DhB6J50kohw6MFhszVAkdEzfccit7sgqjhotiBJBmbBC5Rben9zQqn7AkvpSOONC
-         ZmwdNFrBFeY6t67lZ8Z3DEWfCpLc1v3JY1SYQR1hyl5c5UXYdftgi51UrlwIA+g8k4rb
-         Uqn7e8+KvSI29Sii9OK/ek5+NB0ANTzRj/dz0rymJvS1VcnCSnYziAeh407uVfMiBkFv
-         tt+ggp3nhpuSkL0v4WqLZo3+zVYP2/ZnwOXl6+oSoOouDSZxkFgVTqT/QQdvZzmajcYl
-         KjQTgHq2h5eenl/tWx5TXH7yq9hOWqbwDf5Qmc8ursfwWn3ehVfgzC0G0Bc1e+uJTYd9
-         EMTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Zsu1XXuoF2/96aeBfEHXZNf0ZiITGZdQYd8L9imSFJM=;
-        b=JeJ/Dd4qK2T3v2u5K4gWmJJpJl7fSS6fK9QNdndUhjo99iRwTFXAcZLqjCDWhaxxLW
-         F0aaDecAaiWs9Rx2fEeayPrE+D4J4mdp+0vzmap/f+1qG35BnstRXmQiPGX/CGjy3Mkp
-         N/NV1qwK+2cBIHnO4sHQztNZH2FPkPwMlYAoaRVzht+cIrEo8/ERH269j7m9Xp3eH8nt
-         nN27NJlMgHFJLUMbcps+0eWNZcMxm0Sy6z7twV2X5Hn/8G8+JnoKzdEm/Hlmz6nfRzVR
-         UT9VrZOd3Is84bwISbGSxN+9ffvKmITyK/tSzUuEKPMP3ebSRaDSE03DJ1m7sWiP9BqZ
-         otrQ==
-X-Gm-Message-State: AFqh2krXl4uOC+GoiHwYa6jcqzQHAaO947bmUOxoYvZDbD45Kqb4OT2X
-        +8TZ7k4X3y2e43DHEA+sKnAjc2hBXge+TPf51fI=
-X-Google-Smtp-Source: AMrXdXtXMPrQNDhCGq+W1jMAH/lYgZoI1xz+u0p+Ha+FNVeDDc/1UrGzG7S35E2P47oA1JasBEWiaxsV60Utpfl3OAI=
-X-Received: by 2002:aa7:8b57:0:b0:589:1130:d3ce with SMTP id
- i23-20020aa78b57000000b005891130d3cemr4555176pfd.66.1674751231260; Thu, 26
- Jan 2023 08:40:31 -0800 (PST)
-MIME-Version: 1.0
-References: <20230124124300.94886-1-nbd@nbd.name> <CAC_iWjKAEgUB8Z3WNNVgUK8omXD+nwt_VPSVyFn1i4EQzJadog@mail.gmail.com>
- <19121deb-368f-9786-8700-f1c45d227a4c@nbd.name> <cd35316065cfe8d706ca2730babe3e6519df6034.camel@gmail.com>
- <c7f1ade0-a607-2e55-d106-9acc26cbed94@nbd.name> <49703c370e26ae1a6b19a39dc05e262acf58f6aa.camel@gmail.com>
- <9baecde9-d92b-c18c-daa8-e7a96baa019b@nbd.name> <595c5e36b0260ba16833c2a8d9418fd978ca9300.camel@gmail.com>
- <0c0e96a7-1cf1-b856-b339-1f3df36a562c@nbd.name> <a0b43a978ae43064777d9d240ef38b3567f58e5a.camel@gmail.com>
- <9992e7b5-7f2b-b79d-9c48-cf689807f185@nbd.name> <301aa48a-eb3b-eb56-5041-d6f8d61024d1@nbd.name>
- <148028e75d720091caa56e8b0a89544723fda47e.camel@gmail.com>
- <8ec239d3-a005-8609-0724-f1042659791e@nbd.name> <8a331165-4435-4c2d-70e0-20655019dc51@nbd.name>
- <CAKgT0Ud8npNtncH-KbMtj_R=UZ=aFA9T8U=TZoLG_94eVUxKPA@mail.gmail.com>
-In-Reply-To: <CAKgT0Ud8npNtncH-KbMtj_R=UZ=aFA9T8U=TZoLG_94eVUxKPA@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 26 Jan 2023 08:40:19 -0800
-Message-ID: <CAKgT0Uc88xF5AjEhpBnr7m_+gnH5WVAoJFC=AVEPY0+qN1BNsQ@mail.gmail.com>
-Subject: Re: [PATCH] net: page_pool: fix refcounting issues with fragmented allocation
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        netdev@vger.kernel.org, Jesper Dangaard Brouer <hawk@kernel.org>,
+        with ESMTP id S231281AbjAZQlI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 11:41:08 -0500
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2061.outbound.protection.outlook.com [40.107.104.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E771C4DBD2;
+        Thu, 26 Jan 2023 08:40:53 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XCedKCTKH8cNdT/eU20lDYthhT5SQkNHqpc610xhc2s8CWTA/G8LKDJIR8pSS9H9yzTIMp+mlv1woaUQcXIds0bV9YhCiwx144d8uHDZTpobCGizHCdJV3mE84oxhf8wVXi3Rz/dPWh3zJ0w7WdzjAuyBjKaFu/2+QXaAVWhmKAnxqHP70cT8NXZxt3zkQGkKcUChlqXeivvl0JuDBHWhMFajmO5ExtdZAMDg0kqX2KDJUyZEnltnBlUVk96NmwBM7hPKSbRp48GD3MBoFMT0kCIg+24gGSo2JMlpVUpi5WyTRy1nM0gmeZumSRlFd1CH0nBUhfiG/c13uWSbGfHSg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=69M+rqyAD24ENZGnwy0Fs6447mPizigfkZ7UDt921qI=;
+ b=Vgd8uRpzhPYxLhXp8LgWmWJrWzZcZ3Q9WE/KADGqlVyg7pn8/eckC8p3POvkXnxXLQS4K07ril834oZti/3MS3s3LI01Yt2NDVMH9M2oUSbyXFUxvSpK066SusyRQ/qi4mNCOpnNI0ShXHFTklx3cxzMUHEpOw8bKPYFngdZlIE919IMYsbOQ0EJfg3gzL6vfQPS2PJrni6VI6bG+4Zyc/t2+bTR9sEGthyhIBYOs1VadmLDo6M6MQjw8xDRbPKR+sxZihiEfr0LdWVluPnMIi76qosLv1Ou3GkclB0WFeFuX/CfngTkw2KERxyYI1BUHBfxD/LQVAzGb5cL9J5GcA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=69M+rqyAD24ENZGnwy0Fs6447mPizigfkZ7UDt921qI=;
+ b=JQeO88lmqrDgW1WWky0LrN520k61ji//1lxLmJ3CJL6CWzHYMThBC0Ryy7+J0pxRXPuRK5PGC1jxNfh83tlySWohe1gG8aSNtu+Y5jJ4sZdyRBm0yUk7xmaiw0+onekrXMTNM+vX6rH2PCfyhV+shmQiW7kn7XSLL2zaRHpv+SA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AS1PR04MB9240.eurprd04.prod.outlook.com (2603:10a6:20b:4c4::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.22; Thu, 26 Jan
+ 2023 16:40:51 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b%7]) with mapi id 15.20.6002.033; Thu, 26 Jan 2023
+ 16:40:51 +0000
+Date:   Thu, 26 Jan 2023 18:40:46 +0200
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        linux-kernel@vger.kernel.org, Yunsheng Lin <linyunsheng@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: mscc: ocelot: add ETHTOOL_NETLINK dependency
+Message-ID: <20230126164046.4sk5qaqiwgygt2cg@skbuf>
+References: <20230126163647.3554883-1-arnd@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230126163647.3554883-1-arnd@kernel.org>
+X-ClientProxiedBy: FR0P281CA0097.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a9::10) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS1PR04MB9240:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5dc034e3-2405-4d80-f4ff-08daffbc15b6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rsW4myjwFtNnBIsuOkGedPL+r6RX8CWLUbOp6/f70VB3r85abfZ8VmkT7nL1fLMITlohn8UkUvRqoIUUxEkODkfhsxA3boYAVwUpe/xSblCmTvfOsxDp1pUevXq27RhW6OqpXoeaJvlq7aVEEXaaGzE22GuEFIhcZ2IyBcf1No+Wut+FRnX26DqOcRiLvIRFn3ff0+OAXchOtwgOaDHG+SLyCuEP8hD+2CQXYaw5hgGC93MxyA57BPA7wdv638uxE6org1Fe8HTNxLS9oJIXUSCrjQOM24Qvr2Woq5u1z8qsHRcnn44oiL+XZ39DNmg8oUDsDyUzdR5qvQepC/RjU7CYIRfPW985SJ6x4fE5xjW1ZdFeUx6dKwk+eo9x9mtcFbcCDg4NHVrTuXH2wxppMuC40BlhniOToZf6Ut35lZYkC/AsdbpITu2Df/nPSAth9CUdkAWl27Veh75O/gdk7FxNZlrSWdwN5LhjIbNXXwzofFc/7WXoJStt831aNWhyR2vwgFJTDihlKk/z+M+csN0D0vWNCEN9h6cXBOGv9Cq2PqVzFb5LABdVJ755hpj1Xhpke+DKtGtooVX2IDCOLUWqGGloCQf3iE9bn5ZkV501AjVXVOMafBTBGvDdl6RAU7poXviyGb1qsIco143vDmHwir0cPef3KzenAPfQoOM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(7916004)(4636009)(366004)(39860400002)(376002)(396003)(136003)(346002)(451199018)(66556008)(6916009)(41300700001)(8936002)(66476007)(5660300002)(44832011)(2906002)(7416002)(33716001)(38100700002)(8676002)(54906003)(478600001)(6486002)(66946007)(86362001)(4326008)(6506007)(83380400001)(316002)(186003)(9686003)(1076003)(26005)(6512007)(966005)(6666004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PWVT4VGGbNY9NG9rM8GLqqVHp79ZURd2KPOq1mSef6kziI/aO+h6Qcw1SSph?=
+ =?us-ascii?Q?skjentAFQOaTxkQbaV/niaOUVWMPd8YlbafCBXAsOxJJ1zWioBhhZBRpNWWI?=
+ =?us-ascii?Q?n3gWgrXTb8fss5cdyyQLZ8nUfuosUU6OAkHUlrOr8iPnIgDwt8OpUEI1a62s?=
+ =?us-ascii?Q?c3PP84lUV6BPTThtxuWzF4A2rT7JyM13uCTFfrCE9zWNCl4knbuVBmhDL+gY?=
+ =?us-ascii?Q?1kZmbFjQqgtTY3l65RM4Pa8y07Pc+xmlsdu/k3HhX7SrIvcxSe/dt7J6RHb3?=
+ =?us-ascii?Q?skwsBEdfDTqzzn0dzXVVdVHsxG1zC5SOU2DRnn+iA7pJB50iBK63ZSs/T4kd?=
+ =?us-ascii?Q?zW8jOAcqIJqjvPcCmAjZpqGe56FNGW5N2lTFYAAws+ctlgF2ebk6QZMOrj57?=
+ =?us-ascii?Q?YuRCpdLg62orP3m44NwD9TSYRnWFEz9SlUpwvNtzecsGRi/2pxA+yyDlKM4H?=
+ =?us-ascii?Q?+15utbWXdcuyzuRqGM+bcwOkRkzZFRdgKFh5/Jc5b3PwTuKwvYReg6JkDExn?=
+ =?us-ascii?Q?BKhL6uCLrprP/heQLIM8gO6yCBeNL9L6Sw8tCTT6arz9N3IkrRKaaRFvf1ia?=
+ =?us-ascii?Q?nyJnAdTAHpRWfYXqY9ioN5QG7uZdvGAAYVcRgp98lsJ7Rl9GpFYkD+2Tki4V?=
+ =?us-ascii?Q?HOcYvpjNL2OvUN+M1wIqgcRNvx0quHLEz5izVgTR7BnRRbj1nMZTewfoiAHL?=
+ =?us-ascii?Q?hGn2VO6unGUEI8qKOgV5EeP6UImvo+BVERQNn0H01/Q+pm9ZX0b6kyRy9wl1?=
+ =?us-ascii?Q?kMiYOHPK7oZ/24Ywtn9VAZRRkID2KdtFs3O0uCB/iCKteBCx3I4WYFt1kFZv?=
+ =?us-ascii?Q?yWWhuUex0GugbVdNQCnp7DQOD/n/BUX0yho49+25kDY2otIxHUzBIRK//3aj?=
+ =?us-ascii?Q?lK1MeW/5UNG6hSV4/TTuAUz2rjDwLLfYhMRcrBsOD4nDwMPe28cA6hskIGbR?=
+ =?us-ascii?Q?tWM1HhgS0lX2yt+0i8CPUkOkz1hA9Mm/doZe6d3OI3TmHY5w/gF7OWYnonsf?=
+ =?us-ascii?Q?EmVHSykq/xBqa1esd1nfHn/PJubaRrnlf5VkMSQLbhbgUKEHw53VWdOxM8PK?=
+ =?us-ascii?Q?UQkseeApDJHmSkfXVUgSjjOM0cWBau9Ja8DCLwYfrjeYl3HkeBuufBFG0kJW?=
+ =?us-ascii?Q?zWrLbhQNP6PTIW4NzhJLoJkHdTP9iKLdZr84N/ib9JjsbVQC5adRKXbZBd5H?=
+ =?us-ascii?Q?tIhKjIx1soPSYNXLNM9nsBpg0O/AtkMrsSTq9gQuwnHswQuAEGNNMmCItkp8?=
+ =?us-ascii?Q?FS/rZsE+O55P+BvBCo1S2YmK6SnUzRrQYQMO1VE9bKnV+fl43e3uwkqP8iEw?=
+ =?us-ascii?Q?Pv1JYiIaz8iBhePvaDmjXuyAqtmuFnPmLUl8fE2As2kwui3ZSXuYE/sPllpa?=
+ =?us-ascii?Q?3S1DByfCoOOUfY+eo4oq+pleK+td3bG8WWIlgyle/BkgIP8K+vKcIFx5hYSY?=
+ =?us-ascii?Q?dpcgLxgp65EzEQR8wtDrjQNiCjfCMuRc4+wAoMxcS0hFsljrtvtlvPQUDFJ2?=
+ =?us-ascii?Q?5+BEvlznSrhc9rM+ykDnozHnmkFLythEiD/rZjKoxtRwni9gYOnKtXw43DCl?=
+ =?us-ascii?Q?BlwCLNC6Hh26jqM8AlzkRWxp+QvEcqgIZNS1X8MPwz1CqiMFmuwtqveZISBm?=
+ =?us-ascii?Q?3Q=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5dc034e3-2405-4d80-f4ff-08daffbc15b6
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2023 16:40:51.4592
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: YBFViJGJ/8gZJ9nBoSe/hlBljuCtG1fAdlWn4l322hK9W8zELUVz0TNAjW6SZEx1laBJsSekbAq0qK4KR6O4nA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR04MB9240
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,24 +120,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-?
+Hi Arnd,
 
-On Thu, Jan 26, 2023 at 8:08 AM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
->
-> On Thu, Jan 26, 2023 at 1:15 AM Felix Fietkau <nbd@nbd.name> wrote:
-> >
+On Thu, Jan 26, 2023 at 05:36:36PM +0100, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The driver now directly calls into ethtool code, which fails if
+> ethtool is disabled:
+> 
+> arm-linux-gnueabi-ld: drivers/net/ethernet/mscc/ocelot_stats.o: in function `ocelot_port_get_pause_stats':
+> ocelot_stats.c:(.text+0xe54): undefined reference to `ethtool_aggregate_pause_stats'
+> arm-linux-gnueabi-ld: drivers/net/ethernet/mscc/ocelot_stats.o: in function `ocelot_port_get_rmon_stats':
+> ocelot_stats.c:(.text+0x1090): undefined reference to `ethtool_aggregate_rmon_stats'
+> arm-linux-gnueabi-ld: drivers/net/ethernet/mscc/ocelot_stats.o: in function `ocelot_port_get_eth_ctrl_stats':
+> ocelot_stats.c:(.text+0x1228): undefined reference to `ethtool_aggregate_ctrl_stats'
+> arm-linux-gnueabi-ld: drivers/net/ethernet/mscc/ocelot_stats.o: in function `ocelot_port_get_eth_mac_stats':
+> ocelot_stats.c:(.text+0x13a8): undefined reference to `ethtool_aggregate_mac_stats'
+> arm-linux-gnueabi-ld: drivers/net/ethernet/mscc/ocelot_stats.o: in function `ocelot_port_get_eth_phy_stats':
+> ocelot_stats.c:(.text+0x1540): undefined reference to `ethtool_aggregate_phy_stats'
+> 
+> Add a dependency on ETHTOOL_NETLINK, since that controls the
+> compilation of the ethtool stats code. It would probably be possible
+> to have a more fine-grained symbol there, but in practice this is
+> already required.
+> 
+> Fixes: 6505b6805655 ("net: mscc: ocelot: add MAC Merge layer support for VSC9959")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
 
-...
-
-> > - if I return false in skb_try_coalesce, it still crashes:
-> > https://nbd.name/p/18cac078
->
-> Yeah, I wasn't suspecting skb_try_coalesce since we have exercised the
-> code. My thought was something like the function you mentioned above
-> plus cloning or something else.
-
-One question I would have. Is GRO happening after the call to
-ieee80211_amsdu_to_8023s? If so we might want to try switching that
-off to see if it might be aggregating page pool frames and non-page
-pool frames together.
+Thanks for the patch and sorry for the breakage. This is now fixed by commit:
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=9179f5fe4173
