@@ -2,43 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67D0267C4B4
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 08:14:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 041B767C4B9
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 08:14:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233181AbjAZHOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 02:14:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47222 "EHLO
+        id S229536AbjAZHOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 02:14:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229510AbjAZHOb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 02:14:31 -0500
+        with ESMTP id S233264AbjAZHOc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 02:14:32 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 280DE46702
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 23:14:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6E04940D;
+        Wed, 25 Jan 2023 23:14:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CE3BBB81CFD
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 07:14:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36C71C433D2;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5387BB81CFE;
+        Thu, 26 Jan 2023 07:14:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BBC9C4339C;
         Thu, 26 Jan 2023 07:14:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674717267;
-        bh=gKJjCMf6RbfXNoFe/xO6/p31XjuTLxB4BN6S5Nv03mw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ffbMoHSPmGdpBr1WeKiBLcQdnVC4Q+qjIuyhgOVxXmhw6POZbkG2vWTt/8EcrakIo
-         Nwujdi/M70oqIvQNZIr3Irwa6nESBq8gD9+dcvt9yBpBYzj2PRJd1gTK4fD88aA6mZ
-         sdeQWTesQ14FN0Qxu7S5gkvR5/HJEUpJhx59Teg1IUtW2wKG4/LYhj1ysOKtVNjPoH
-         a2948IR44orMxq/GjtckP8FqxNDe8F4OnJz4pGBkMbOYRoofq1CFnHN4qetwn23cCS
-         faFqvDHTYCuYO1Ihz6dZOsXMWqMf7oXAHR4TT+pJ0Sh60RyOsm7PKKb0Gq+LBUamc+
-         wGxh3B9PCMzMg==
+        s=k20201202; t=1674717268;
+        bh=2buijH5NC03JTe4ruxSgx6ayDJXbPvvqXaW977NwBNw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KrN3PHd+UbX/mQnRrPrHxU3oxNZUTe7VLsZ1geNM4mbrHxAV6s4TdG5CBZCpA41xV
+         jHT4HiWjxyO46LiVhTM5bkbNTRVzLdODPYsOCLdcPWqD+7r/bJefi/K0CqsjtMeINv
+         IKAX/+DY2KLvFgf0RizXERcJYFQZ8vs3WAAyTuXMZX17gpUZge42XwJfjfaa5T7VGw
+         9gJk9qEj3nZlIZPVBTQssj4w/oI3QuctdRXh2yrYzvYrLPbnSesFS4LBe4Ia88u2xb
+         xY9FjHJWgz1e24PfS2NAM5smvyuMFyJ8Jefd3MieusY1Pi1ga7zSqRXfAW3U+7uIXq
+         WIKjo9BEOLz1Q==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 00/11] net: skbuff: clean up unnecessary includes
-Date:   Wed, 25 Jan 2023 23:14:13 -0800
-Message-Id: <20230126071424.1250056-1-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>, kvalo@kernel.org,
+        martin.lau@kernel.org, ast@kernel.org,
+        linux-wireless@vger.kernel.org
+Subject: [PATCH net-next 01/11] net: add missing includes of linux/net.h
+Date:   Wed, 25 Jan 2023 23:14:14 -0800
+Message-Id: <20230126071424.1250056-2-kuba@kernel.org>
 X-Mailer: git-send-email 2.39.1
+In-Reply-To: <20230126071424.1250056-1-kuba@kernel.org>
+References: <20230126071424.1250056-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -50,43 +54,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-skbuff.h is included in a significant portion of the tree.
-Clean up unused dependencies to speed up builds.
+linux/net.h will soon not be included by linux/skbuff.h.
+Fix the cases where source files were depending on the implicit
+include.
 
-This set only takes care of the most obvious cases.
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+CC: kvalo@kernel.org
+CC: martin.lau@kernel.org
+CC: ast@kernel.org
+CC: linux-wireless@vger.kernel.org
+---
+ drivers/net/wireless/intersil/orinoco/hermes.c | 1 +
+ include/linux/igmp.h                           | 1 +
+ 2 files changed, 2 insertions(+)
 
-Jakub Kicinski (11):
-  net: add missing includes of linux/net.h
-  net: skbuff: drop the linux/net.h include
-  net: checksum: drop the linux/uaccess.h include
-  net: skbuff: drop the linux/textsearch.h include
-  net: add missing includes of linux/sched/clock.h
-  net: skbuff: drop the linux/sched/clock.h include
-  net: skbuff: drop the linux/sched.h include
-  net: add missing includes of linux/splice.h
-  net: skbuff: drop the linux/splice.h include
-  net: skbuff: drop the linux/hrtimer.h include
-  net: remove unnecessary includes from net/flow.h
-
- arch/arm/include/asm/checksum.h                            | 1 +
- arch/x86/include/asm/checksum_64.h                         | 1 -
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 1 +
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c     | 2 ++
- drivers/net/wireless/intersil/orinoco/hermes.c             | 1 +
- drivers/scsi/lpfc/lpfc_init.c                              | 1 +
- include/linux/filter.h                                     | 1 +
- include/linux/igmp.h                                       | 1 +
- include/linux/skbuff.h                                     | 7 +------
- include/net/checksum.h                                     | 4 +++-
- include/net/flow.h                                         | 5 +++--
- net/core/skbuff.c                                          | 1 +
- net/rds/ib_recv.c                                          | 1 +
- net/rds/recv.c                                             | 1 +
- net/smc/af_smc.c                                           | 1 +
- net/smc/smc_rx.c                                           | 1 +
- net/unix/af_unix.c                                         | 1 +
- 17 files changed, 21 insertions(+), 10 deletions(-)
-
+diff --git a/drivers/net/wireless/intersil/orinoco/hermes.c b/drivers/net/wireless/intersil/orinoco/hermes.c
+index 256946552742..4888286727ff 100644
+--- a/drivers/net/wireless/intersil/orinoco/hermes.c
++++ b/drivers/net/wireless/intersil/orinoco/hermes.c
+@@ -38,6 +38,7 @@
+  * under either the MPL or the GPL.
+  */
+ 
++#include <linux/net.h>
+ #include <linux/module.h>
+ #include <linux/kernel.h>
+ #include <linux/delay.h>
+diff --git a/include/linux/igmp.h b/include/linux/igmp.h
+index 78890143f079..b19d3284551f 100644
+--- a/include/linux/igmp.h
++++ b/include/linux/igmp.h
+@@ -15,6 +15,7 @@
+ #include <linux/in.h>
+ #include <linux/ip.h>
+ #include <linux/refcount.h>
++#include <linux/sockptr.h>
+ #include <uapi/linux/igmp.h>
+ 
+ static inline struct igmphdr *igmp_hdr(const struct sk_buff *skb)
 -- 
 2.39.1
 
