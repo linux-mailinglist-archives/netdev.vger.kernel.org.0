@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70C0E67D267
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 18:02:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8339967D26C
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 18:02:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231629AbjAZRCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 12:02:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39428 "EHLO
+        id S231260AbjAZRCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 12:02:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231718AbjAZRCe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 12:02:34 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2061.outbound.protection.outlook.com [40.107.93.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B4CB627AB;
-        Thu, 26 Jan 2023 09:02:22 -0800 (PST)
+        with ESMTP id S231599AbjAZRCm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 12:02:42 -0500
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2046.outbound.protection.outlook.com [40.107.244.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112306B9A4
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 09:02:25 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=G74Wccb1vKJ1+e5iQggM1j8q6OUwERHI66smmJRIwA94lVaV0YXEL4EQeHj2/t+ZLnoq6mNkN4oKpGRySrxueT3Nw2fzRIvN28l/X8Ui8Zq+mRzXJ00ujBWccaVbx3ncYVfcK6dGwFpzATmCI48G8JzAahsN0yqCA0syphRRePleZr9fxumxh1wh1MF9HersKhiOqTq5Repq+Vf4y7138p9yHLUx047ztgURhYyUmJ/m1nlFAXervz3suRoDEkzolSl5dhP353o+STbMdO5QzHmVEYP3Wa2jWMT3D+4wOU2N6OCsDmJ/6eTQ1n6FAazat2/4Otlvi0EjhSD9JkAFpw==
+ b=ayjcbHnQeEUxP6J3rQgTQNCoVaGDC2yrd9WEceR0+ZJJ4LM/WgTGgEEzM1mOvXpTcuMLVlpcA+IogmMjj/iPqmC2myWzqqza4azPWsariD4yXg5oTamHNhAdCEO1fOcuT5xyePy4SKCX3eA95/YBj87s+8YMdlv90Xl+M0vVE8mXOQM5li1VvQ96dXw8w0ymOT3fWuSX0v3JvdSTkjbuZ5fjLfPO1Q+8YABIwRdMVgy1gQcGM7MXS54nt7yWAheHUsYImw9t2W8fdHAOpLAh/CPD4ubhk/zq5uPyaAK8oXJqlhaXV1VoX/Nk/BVljuReH6o771F/sbUmKewXhno9Zw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8XGSeSqpbeKmuOlOmAqvCcULsRstgABL80DNrjXF1a4=;
- b=E+dGpTqLR4TAdT/IZQ+6U6K+56VQBGQJbS8bR3fUsQ4+OlKAHCGl4+2aoh7G8V6Qq/FVm6BrEyFlZ2f6dLqIpkwi1MFPGc1pOdhWg2GA2m0dqlPNH8vChSF53eVCZz8jzjaOC4WKjlaLhABhXg04nphJ7d7bd8x/PSiIu0jWWgzX4XcsMOWbGUtFXgDISlMZ3QhpMiZdq+bEYvwjqFNZ0HP5qTFMqJSJvKGpJWSnX8sYDfIEsg7i6QEY/1JZW/QwdqfXFBi5nHV9xRwUKU9Edw3KNhsH1XGqbkQgL2r/LguP/zF/9kuio9Xl2qj7Z6I09RwmwQ0sZADScGj1RGUuAg==
+ bh=cw14YMkqXTBlyLd0EqhPujuCIcZzy7LvXikSk3Ihu0E=;
+ b=X7Bp6clIpBQIxB1M5CXqBUkdEq7F9tumFVSl5gRoGSc9FYmQt1AbS+ClBWOTU87lgRaTyE6R0DM2QNLAUfiu5LEwnZA6mcRWn8bv0RRKX3JuKgkNkI3ntCeIPBamZ3ADGhafQShE8kt7zHZs8iu+oN6Dh24nCbHgy3K7d+8nakp+xQkFnDEl0jOoZ9jjMiVOqjDbAojGpSPH6YFFMu0vg34LE9913lgo9rLuCrx59bxG8qQjI2lWg7vRxVhG6BF56cHDzyL1lE4vQ92O4Sbi+5sc/JqOYEOsrjxR4/ek8EYxnRStLm+dRikSgzbkHv94w62MtlU25qBkRLXY4PpnHQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.160) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -28,18 +28,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8XGSeSqpbeKmuOlOmAqvCcULsRstgABL80DNrjXF1a4=;
- b=Ah0OzJUKlNTCInhibvKo7PQ1eaAIyVJJYkQffymbeDqlkC5fq3rqGjtPPpbBylZxJf/rOuk3NEaNKt4RscDng9Uio9Dn0gIpR7jTHgIpFZtFluC5yZ/5O6xCC80zmcNnUU6jHJodJCmInvvD2DfgYzYBQTjk8FkZ3EXq8l5oHXJqo+8XAA6wGg6dsflu1bfkwe7hnCZc7cOsBWBwEv/DNQfdYrGt8nAh3WrJ6Q86R091XKwiPTEitTW2OQWym26ENWYK4sqywntot/pFXpPP4eX55ccQkXhl3/JvtK6wkkP6Kr9ViXcmeAACIZcDJjRDIpf1eSlWWNcqzDsWgk3Hnw==
-Received: from MW4PR03CA0304.namprd03.prod.outlook.com (2603:10b6:303:dd::9)
- by SA1PR12MB6993.namprd12.prod.outlook.com (2603:10b6:806:24c::22) with
+ bh=cw14YMkqXTBlyLd0EqhPujuCIcZzy7LvXikSk3Ihu0E=;
+ b=ed3FvgqP8HVotZK1ZccWJXrVB1KVT9LZqWss5apffmxflIdXdp7L1IYQa93npHWx3IxnhQB8uzSbZw3SWkaEmqVeYRCL4OWuyglii1MRirBjHL1feWV0Niz4AhULxbC8nIP37ECAwwQudA6iKD7NDempX0d8451bbxm4F5NiKzNhPrmJd4rfoqlM+b2spE8C9XuMug3z1J1YGPe4dExaxSdKoRpgX1oJPL1Z+DsW66cZa0cREEbdalQdMviE5j00solW8gVh8VmZg92L00LaGtkKUQBhnc7KCMr3n7IFTy4dZI8Ji6+BLLsA7Ecg0CW2lWB98iWysZpw8Np0eSCnBw==
+Received: from MW4PR03CA0326.namprd03.prod.outlook.com (2603:10b6:303:dd::31)
+ by LV2PR12MB5871.namprd12.prod.outlook.com (2603:10b6:408:174::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Thu, 26 Jan
- 2023 17:02:20 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.21; Thu, 26 Jan
+ 2023 17:02:22 +0000
 Received: from CO1NAM11FT071.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:dd:cafe::a1) by MW4PR03CA0304.outlook.office365.com
- (2603:10b6:303:dd::9) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10b6:303:dd:cafe::1c) by MW4PR03CA0326.outlook.office365.com
+ (2603:10b6:303:dd::31) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.22 via Frontend
- Transport; Thu, 26 Jan 2023 17:02:20 +0000
+ Transport; Thu, 26 Jan 2023 17:02:22 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -49,15 +49,15 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
 Received: from mail.nvidia.com (216.228.117.160) by
  CO1NAM11FT071.mail.protection.outlook.com (10.13.175.56) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6043.17 via Frontend Transport; Thu, 26 Jan 2023 17:02:20 +0000
+ 15.20.6043.17 via Frontend Transport; Thu, 26 Jan 2023 17:02:22 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
  (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 26 Jan
- 2023 09:02:07 -0800
+ 2023 09:02:10 -0800
 Received: from localhost.localdomain (10.126.231.37) by rnnvmail201.nvidia.com
  (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 26 Jan
- 2023 09:02:04 -0800
+ 2023 09:02:07 -0800
 From:   Petr Machata <petrm@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -68,12 +68,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
         <netdev@vger.kernel.org>
 CC:     <bridge@lists.linux-foundation.org>,
         Petr Machata <petrm@nvidia.com>,
-        "Ido Schimmel" <idosch@nvidia.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        <linux-trace-kernel@vger.kernel.org>
-Subject: [PATCH net-next 06/16] net: bridge: Add a tracepoint for MDB overflows
-Date:   Thu, 26 Jan 2023 18:01:14 +0100
-Message-ID: <ed2e2e305dd49423745b62c0152a0b85bc84a767.1674752051.git.petrm@nvidia.com>
+        "Ido Schimmel" <idosch@nvidia.com>
+Subject: [PATCH net-next 07/16] net: bridge: Maintain number of MDB entries in net_bridge_mcast_port
+Date:   Thu, 26 Jan 2023 18:01:15 +0100
+Message-ID: <1dcd4638d78c469eaa2f528de1f69b098222876f.1674752051.git.petrm@nvidia.com>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <cover.1674752051.git.petrm@nvidia.com>
 References: <cover.1674752051.git.petrm@nvidia.com>
@@ -85,23 +83,23 @@ X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT071:EE_|SA1PR12MB6993:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1da694ef-b6c2-4002-1131-08daffbf164a
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT071:EE_|LV2PR12MB5871:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1459bff3-b3a8-4b27-89fd-08daffbf176a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4Dzp+IkgyhcQLEktxPtUPFbXNF55jHs/MuIrsR5e/SpCsGYHs2JWVOkdXv78UBSZPH8sat7ujombZbzP04Nj4W848jU2beUDmnEvBOrWQYo1WTFfiq5E3aGiL9MSiwb2YlAenNSPLI1kMPqgewX3+CZJ8RuIJj1qIpf3Ne7uYgsuMzBQ77K1cWYON19xCTaxIk3Du9WmQJq4RzyHdTw97l8LuWYBs6jKgNPn12wimOKTMqpEsmzDfLi1iNpMJPGK3Xfi83e1+MfAvSRibJbvOUoBk6ie7hp8+Ovb7WGHOApyJuhk/WxxHbknRtHxHHYb+jFSxBJhTlo9K3wkG7RfhE5j/0LEi9DzQPuFOhMcpLVz0whNkZPtdwjzadl6FLy4P8owVfoDbCCnhjMP1tlsE9sriiS84EsXFrVjUsbwlkdGaEyx5/Ls3RZuXyJ/8uNn1KJKdj1Hmx1gqevGPizzexciZ661969/jkcFDNy/943lFxeme1y9EDZij1gqlk7aQurhEroKmJXD8N2FVDxRjbItDl8ykmn5hZ9ukjsVdLFu08YrXT6HrfG8Ulw+N5s1fKwn8QxeLCOJgZNa09isKnv6TZCQ9IeGHj7FZtYGzAEqFSk24FRlKLiVf5gjYjHwbsatr9ODh0K3HWQtUFX7R/mKfEcfrEN3n/ZDRTAzkp2Nii1NPIwZlCDfNp0fo3eo/8nCi+vFfGhtSao2xj9h0Q==
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(396003)(39860400002)(136003)(451199018)(46966006)(40470700004)(36840700001)(16526019)(70586007)(41300700001)(426003)(2616005)(8936002)(47076005)(86362001)(8676002)(478600001)(2906002)(316002)(4326008)(36860700001)(82310400005)(336012)(6666004)(5660300002)(54906003)(36756003)(186003)(110136005)(26005)(70206006)(40460700003)(7636003)(356005)(82740400003)(83380400001)(40480700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: NZdlYS3Qcma44ocBadlQKQKRs0xj12YbnP81iRK/GMmZDRtlr2LtQbjuHY6o9bu12etSV1HqA3vKo00+7jYQcCF9KifogC4twWLSy36BZ6wlHLU9dZqJL5qB6kWoh34CJNextopAMRVZIn6nZyehG6uuVcE8Jsoxv+o7mOx/PwZJDPq0KVhQ1EXpG0bcV5Kk47JP4pf4WaseEPwndbQ5PHe5O6YAFYo2OXkPqFyStS1XJyTdVGLtoE9ttiLgQZZ4eziiMyVCIPYNziE/CNr6gpue1zbe9ysJRY8rPewjCgBrJTvMpVhzyG+ZcnyyBWUYYj6ILd0IATzJBIW8tnkoFvQk6pzxrRdh6I9q5LarlbfGT3ehFZh7xy7lP8tGIpUQ31k+JqEUTkYU7ObMEZI1e5CRVIDiMMZoLymEIHbPkPFvofZTSU9o7m2hgxb77SfnN0VRjYu8hdG1RQhlgmm6sZhG1RpkObRDzEBh7mJkym+k3o9t7bdKJypEWW4/AdS8CAgZsRysrTcGbgyIx2jT8qCPM6OhHYWlEkyHCIjorLxjMJyGILgldYKu06tI/dqylce9/F9QvriCm2n9bNJ7zny8NizLXGUq5w1wB24Ul0h/IjR80rfmPmeYOujT3DSLPwG/mAvV9G9iv4jZ3WhLuRk3kUaH71mkgk5kilsjluIgUj9cwjkSfhDQTLZ3tZHtbGKtFwW81GwzxWV2Q+TMJg==
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(39860400002)(136003)(376002)(396003)(451199018)(46966006)(40470700004)(36840700001)(36756003)(40460700003)(86362001)(54906003)(107886003)(110136005)(6666004)(316002)(82310400005)(70206006)(70586007)(478600001)(2906002)(83380400001)(40480700001)(8936002)(8676002)(4326008)(82740400003)(36860700001)(7636003)(5660300002)(2616005)(356005)(186003)(26005)(336012)(41300700001)(16526019)(426003)(66574015)(47076005);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2023 17:02:20.2573
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2023 17:02:22.2103
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1da694ef-b6c2-4002-1131-08daffbf164a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1459bff3-b3a8-4b27-89fd-08daffbf176a
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT071.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6993
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5871
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -112,123 +110,277 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following patch will add two more maximum MDB allowances to the global
-one, mcast_hash_max, that exists today. In all these cases, attempts to add
-MDB entries above the configured maximums through netlink, fail noisily and
-obviously. Such visibility is missing when adding entries through the
-control plane traffic, by IGMP or MLD packets.
+The MDB maintained by the bridge is limited. When the bridge is configured
+for IGMP / MLD snooping, a buggy or malicious client can easily exhaust its
+capacity. In SW datapath, the capacity is configurable through the
+IFLA_BR_MCAST_HASH_MAX parameter, but ultimately is finite. Obviously a
+similar limit exists in the HW datapath for purposes of offloading.
 
-To improve visibility in those cases, add a trace point that reports the
-violation, including the relevant netdevice (be it a slave or the bridge
-itself), and the MDB entry parameters:
+In order to prevent the issue of unilateral exhaustion of MDB resources,
+introduce two parameters in each of two contexts:
 
-	# perf record -e bridge:br_mdb_full &
-	# [...]
-	# perf script | cut -d: -f4-
-	 dev v2 af 2 src 192.0.2.1/:: grp 239.1.1.1/::/00:00:00:00:00:00 vid 0
-	 dev v2 af 10 src 0.0.0.0/2001:db8:1::1 grp 0.0.0.0/ff0e::1/00:00:00:00:00:00 vid 0
-	 dev v2 af 2 src 192.0.2.1/:: grp 239.1.1.1/::/00:00:00:00:00:00 vid 10
-	 dev v2 af 10 src 0.0.0.0/2001:db8:1::1 grp 0.0.0.0/ff0e::1/00:00:00:00:00:00 vid 10
+- Per-port and per-port-VLAN number of MDB entries that the port
+  is member in.
 
-CC: Steven Rostedt <rostedt@goodmis.org>
-CC: linux-trace-kernel@vger.kernel.org
+- Per-port and (when BROPT_MCAST_VLAN_SNOOPING_ENABLED is enabled)
+  per-port-VLAN maximum permitted number of MDB entries, or 0 for
+  no limit.
+
+The per-port multicast context is used for tracking of MDB entries for the
+port as a whole. This is available for all bridges.
+
+The per-port-VLAN multicast context is then only available on
+VLAN-filtering bridges on VLANs that have multicast snooping on.
+
+With these changes in place, it will be possible to configure MDB limit for
+bridge as a whole, or any one port as a whole, or any single port-VLAN.
+
+Note that unlike the global limit, exhaustion of the per-port and
+per-port-VLAN maximums does not cause disablement of multicast snooping.
+It is also permitted to configure the local limit larger than hash_max,
+even though that is not useful.
+
+In this patch, introduce only the accounting for number of entries, and the
+max field itself, but not the means to toggle the max. The next patch
+introduces the netlink APIs to toggle and read the values.
+
+Note that the per-port-VLAN mcast_max_groups value gets reset when VLAN
+snooping is enabled. The reason for this is that while VLAN snooping is
+disabled, permanent entries can be added above the limit imposed by the
+configured maximum. Under those circumstances, whatever caused the VLAN
+context enablement, would need to be rolled back, adding a fair amount of
+code that would be rarely hit and tricky to maintain. At the same time,
+the feature that this would enable is IMHO not interesting: I posit that
+the usefulness of keeping mcast_max_groups intact across
+mcast_vlan_snooping toggles is marginal at best.
+
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 ---
- include/trace/events/bridge.h | 67 +++++++++++++++++++++++++++++++++++
- net/core/net-traces.c         |  1 +
- 2 files changed, 68 insertions(+)
+ net/bridge/br_multicast.c | 131 +++++++++++++++++++++++++++++++++++++-
+ net/bridge/br_private.h   |   2 +
+ 2 files changed, 132 insertions(+), 1 deletion(-)
 
-diff --git a/include/trace/events/bridge.h b/include/trace/events/bridge.h
-index 6b200059c2c5..00d5e2dcb3ad 100644
---- a/include/trace/events/bridge.h
-+++ b/include/trace/events/bridge.h
-@@ -122,6 +122,73 @@ TRACE_EVENT(br_fdb_update,
- 		  __entry->flags)
- );
- 
-+TRACE_EVENT(br_mdb_full,
-+
-+	TP_PROTO(const struct net_device *dev,
-+		 const struct br_ip *group),
-+
-+	TP_ARGS(dev, group),
-+
-+	TP_STRUCT__entry(
-+		__string(dev, dev->name)
-+		__field(int, af)
-+		__field(u16, vid)
-+		__array(__u8, src4, 4)
-+		__array(__u8, src6, 16)
-+		__array(__u8, grp4, 4)
-+		__array(__u8, grp6, 16)
-+		__array(__u8, grpmac, ETH_ALEN) /* For af == 0. */
-+	),
-+
-+	TP_fast_assign(
-+		__assign_str(dev, dev->name);
-+		__entry->vid = group->vid;
-+
-+		if (!group->proto) {
-+			__entry->af = 0;
-+
-+			memset(__entry->src4, 0, sizeof(__entry->src4));
-+			memset(__entry->src6, 0, sizeof(__entry->src6));
-+			memset(__entry->grp4, 0, sizeof(__entry->grp4));
-+			memset(__entry->grp6, 0, sizeof(__entry->grp6));
-+			memcpy(__entry->grpmac, group->dst.mac_addr, ETH_ALEN);
-+		} else if (group->proto == htons(ETH_P_IP)) {
-+			__be32 *p32;
-+
-+			__entry->af = AF_INET;
-+
-+			p32 = (__be32 *) __entry->src4;
-+			*p32 = group->src.ip4;
-+
-+			p32 = (__be32 *) __entry->grp4;
-+			*p32 = group->dst.ip4;
-+
-+			memset(__entry->src6, 0, sizeof(__entry->src6));
-+			memset(__entry->grp6, 0, sizeof(__entry->grp6));
-+			memset(__entry->grpmac, 0, ETH_ALEN);
-+#if IS_ENABLED(CONFIG_IPV6)
-+		} else {
-+			struct in6_addr *in6;
-+
-+			__entry->af = AF_INET6;
-+
-+			in6 = (struct in6_addr *)__entry->src6;
-+			*in6 = group->src.ip6;
-+
-+			in6 = (struct in6_addr *)__entry->grp6;
-+			*in6 = group->dst.ip6;
-+
-+			memset(__entry->src4, 0, sizeof(__entry->src4));
-+			memset(__entry->grp4, 0, sizeof(__entry->grp4));
-+			memset(__entry->grpmac, 0, ETH_ALEN);
-+#endif
-+		}
-+	),
-+
-+	TP_printk("dev %s af %u src %pI4/%pI6c grp %pI4/%pI6c/%pM vid %u",
-+		  __get_str(dev), __entry->af, __entry->src4, __entry->src6,
-+		  __entry->grp4, __entry->grp6, __entry->grpmac, __entry->vid)
-+);
- 
- #endif /* _TRACE_BRIDGE_H */
- 
-diff --git a/net/core/net-traces.c b/net/core/net-traces.c
-index ee7006bbe49b..805b7385dd8d 100644
---- a/net/core/net-traces.c
-+++ b/net/core/net-traces.c
-@@ -41,6 +41,7 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(br_fdb_add);
- EXPORT_TRACEPOINT_SYMBOL_GPL(br_fdb_external_learn_add);
- EXPORT_TRACEPOINT_SYMBOL_GPL(fdb_delete);
- EXPORT_TRACEPOINT_SYMBOL_GPL(br_fdb_update);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(br_mdb_full);
+diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+index 51b622afdb67..de531109b947 100644
+--- a/net/bridge/br_multicast.c
++++ b/net/bridge/br_multicast.c
+@@ -31,6 +31,7 @@
+ #include <net/ip6_checksum.h>
+ #include <net/addrconf.h>
  #endif
++#include <trace/events/bridge.h>
  
- #if IS_ENABLED(CONFIG_PAGE_POOL)
+ #include "br_private.h"
+ #include "br_private_mcast_eht.h"
+@@ -234,6 +235,29 @@ br_multicast_pg_to_port_ctx(const struct net_bridge_port_group *pg)
+ 	return pmctx;
+ }
+ 
++static struct net_bridge_mcast_port *
++br_multicast_port_vid_to_port_ctx(struct net_bridge_port *port, u16 vid)
++{
++	struct net_bridge_mcast_port *pmctx = NULL;
++	struct net_bridge_vlan *vlan;
++
++	lockdep_assert_held_once(&port->br->multicast_lock);
++
++	if (!br_opt_get(port->br, BROPT_MCAST_VLAN_SNOOPING_ENABLED))
++		return NULL;
++
++	/* Take RCU to access the vlan. */
++	rcu_read_lock();
++
++	vlan = br_vlan_find(nbp_vlan_group_rcu(port), vid);
++	if (vlan && !br_multicast_port_ctx_vlan_disabled(&vlan->port_mcast_ctx))
++		pmctx = &vlan->port_mcast_ctx;
++
++	rcu_read_unlock();
++
++	return pmctx;
++}
++
+ /* when snooping we need to check if the contexts should be used
+  * in the following order:
+  * - if pmctx is non-NULL (port), check if it should be used
+@@ -668,6 +692,80 @@ void br_multicast_del_group_src(struct net_bridge_group_src *src,
+ 	__br_multicast_del_group_src(src);
+ }
+ 
++static int
++br_multicast_port_ngroups_inc_one(struct net_bridge_mcast_port *pmctx,
++				  struct netlink_ext_ack *extack)
++{
++	if (pmctx->mdb_max_entries &&
++	    pmctx->mdb_n_entries == pmctx->mdb_max_entries)
++		return -E2BIG;
++
++	pmctx->mdb_n_entries++;
++	return 0;
++}
++
++static void br_multicast_port_ngroups_dec_one(struct net_bridge_mcast_port *pmctx)
++{
++	WARN_ON_ONCE(pmctx->mdb_n_entries-- == 0);
++}
++
++static int br_multicast_port_ngroups_inc(struct net_bridge_port *port,
++					 const struct br_ip *group,
++					 struct netlink_ext_ack *extack)
++{
++	struct net_bridge_mcast_port *pmctx;
++	int err;
++
++	lockdep_assert_held_once(&port->br->multicast_lock);
++
++	/* Always count on the port context. */
++	err = br_multicast_port_ngroups_inc_one(&port->multicast_ctx, extack);
++	if (err) {
++		NL_SET_ERR_MSG_FMT_MOD(extack, "Port is already a member in mcast_max_groups (%u) groups",
++				       port->multicast_ctx.mdb_max_entries);
++		trace_br_mdb_full(port->dev, group);
++		return err;
++	}
++
++	/* Only count on the VLAN context if VID is given, and if snooping on
++	 * that VLAN is enabled.
++	 */
++	if (!group->vid)
++		return 0;
++
++	pmctx = br_multicast_port_vid_to_port_ctx(port, group->vid);
++	if (!pmctx)
++		return 0;
++
++	err = br_multicast_port_ngroups_inc_one(pmctx, extack);
++	if (err) {
++		NL_SET_ERR_MSG_FMT_MOD(extack, "Port-VLAN is already a member in mcast_max_groups (%u) groups",
++				       pmctx->mdb_max_entries);
++		trace_br_mdb_full(port->dev, group);
++		goto dec_one_out;
++	}
++
++	return 0;
++
++dec_one_out:
++	br_multicast_port_ngroups_dec_one(&port->multicast_ctx);
++	return err;
++}
++
++static void br_multicast_port_ngroups_dec(struct net_bridge_port *port, u16 vid)
++{
++	struct net_bridge_mcast_port *pmctx;
++
++	lockdep_assert_held_once(&port->br->multicast_lock);
++
++	if (vid) {
++		pmctx = br_multicast_port_vid_to_port_ctx(port, vid);
++		if (pmctx)
++			br_multicast_port_ngroups_dec_one(pmctx);
++	}
++	br_multicast_port_ngroups_dec_one(&port->multicast_ctx);
++}
++
+ static void br_multicast_destroy_port_group(struct net_bridge_mcast_gc *gc)
+ {
+ 	struct net_bridge_port_group *pg;
+@@ -702,6 +800,7 @@ void br_multicast_del_pg(struct net_bridge_mdb_entry *mp,
+ 	} else {
+ 		br_multicast_star_g_handle_mode(pg, MCAST_INCLUDE);
+ 	}
++	br_multicast_port_ngroups_dec(pg->key.port, pg->key.addr.vid);
+ 	hlist_add_head(&pg->mcast_gc.gc_node, &br->mcast_gc_list);
+ 	queue_work(system_long_wq, &br->mcast_gc_work);
+ 
+@@ -1165,6 +1264,7 @@ struct net_bridge_mdb_entry *br_multicast_new_group(struct net_bridge *br,
+ 		return mp;
+ 
+ 	if (atomic_read(&br->mdb_hash_tbl.nelems) >= br->hash_max) {
++		trace_br_mdb_full(br->dev, group);
+ 		br_mc_disabled_update(br->dev, false, NULL);
+ 		br_opt_toggle(br, BROPT_MULTICAST_ENABLED, false);
+ 		return ERR_PTR(-E2BIG);
+@@ -1288,11 +1388,16 @@ struct net_bridge_port_group *br_multicast_new_port_group(
+ 			struct netlink_ext_ack *extack)
+ {
+ 	struct net_bridge_port_group *p;
++	int err;
++
++	err = br_multicast_port_ngroups_inc(port, group, extack);
++	if (err)
++		return NULL;
+ 
+ 	p = kzalloc(sizeof(*p), GFP_ATOMIC);
+ 	if (unlikely(!p)) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Couldn't allocate new port group");
+-		return NULL;
++		goto dec_out;
+ 	}
+ 
+ 	p->key.addr = *group;
+@@ -1326,18 +1431,22 @@ struct net_bridge_port_group *br_multicast_new_port_group(
+ 
+ free_out:
+ 	kfree(p);
++dec_out:
++	br_multicast_port_ngroups_dec(port, group->vid);
+ 	return NULL;
+ }
+ 
+ void br_multicast_del_port_group(struct net_bridge_port_group *p)
+ {
+ 	struct net_bridge_port *port = p->key.port;
++	__u16 vid = p->key.addr.vid;
+ 
+ 	hlist_del_init(&p->mglist);
+ 	if (!br_multicast_is_star_g(&p->key.addr))
+ 		rhashtable_remove_fast(&port->br->sg_port_tbl, &p->rhnode,
+ 				       br_sg_port_rht_params);
+ 	kfree(p);
++	br_multicast_port_ngroups_dec(port, vid);
+ }
+ 
+ void br_multicast_host_join(const struct net_bridge_mcast *brmctx,
+@@ -1951,6 +2060,26 @@ static void __br_multicast_enable_port_ctx(struct net_bridge_mcast_port *pmctx)
+ 		br_ip4_multicast_add_router(brmctx, pmctx);
+ 		br_ip6_multicast_add_router(brmctx, pmctx);
+ 	}
++
++	if (br_multicast_port_ctx_is_vlan(pmctx)) {
++		struct net_bridge_port_group *pg;
++
++		/* If BR_VLFLAG_MCAST_ENABLED was enabled in the past, but then
++		 * disabled, the mcast_n_groups counter is now wrong. First,
++		 * BR_VLFLAG_MCAST_ENABLED is toggled before temporary entries
++		 * are flushed, thus mcast_n_groups after the toggle does not
++		 * reflect the true values. And second, permanent entries added
++		 * while BR_VLFLAG_MCAST_ENABLED was disabled, are not reflected
++		 * either. Thus we have to refresh the counter.
++		 */
++
++		pmctx->mdb_max_entries = 0;
++		pmctx->mdb_n_entries = 0;
++		hlist_for_each_entry(pg, &pmctx->port->mglist, mglist) {
++			if (pg->key.addr.vid == pmctx->vlan->vid)
++				br_multicast_port_ngroups_inc_one(pmctx, NULL);
++		}
++	}
+ }
+ 
+ void br_multicast_enable_port(struct net_bridge_port *port)
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index e4069e27b5c6..49f411a0a1f1 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -126,6 +126,8 @@ struct net_bridge_mcast_port {
+ 	struct hlist_node		ip6_rlist;
+ #endif /* IS_ENABLED(CONFIG_IPV6) */
+ 	unsigned char			multicast_router;
++	u32				mdb_n_entries;
++	u32				mdb_max_entries;
+ #endif /* CONFIG_BRIDGE_IGMP_SNOOPING */
+ };
+ 
 -- 
 2.39.0
 
