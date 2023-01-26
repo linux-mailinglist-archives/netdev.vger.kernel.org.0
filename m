@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3347567CED4
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 15:49:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3D0B67CEF4
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 15:52:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232321AbjAZOtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 09:49:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
+        id S232348AbjAZOv5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 09:51:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbjAZOsz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 09:48:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 606A94489;
-        Thu, 26 Jan 2023 06:48:53 -0800 (PST)
+        with ESMTP id S232029AbjAZOvt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 09:51:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92C7A23862;
+        Thu, 26 Jan 2023 06:51:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE0DA61856;
-        Thu, 26 Jan 2023 14:48:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05241C4339B;
-        Thu, 26 Jan 2023 14:48:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5798A61842;
+        Thu, 26 Jan 2023 14:51:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3695EC433EF;
+        Thu, 26 Jan 2023 14:51:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674744532;
-        bh=WNohoknU9nLfbwIXeO77neZ4yMyv64MASZK2UIAfOfc=;
+        s=k20201202; t=1674744706;
+        bh=vTtNm5B4uxkFGkyUcD6bt7bUv740cC5zoLQ3n4iCXig=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OyaVsT5ePzTFS76R1FH5KLxOUgzscan6sLv55lgf+totKkalpj5P4hTJ0CFzpg2nB
-         FjnAcEI6WBL0tfwF/TTw8b+wwY6a9pfQDEoFaNDhDzv4Bx4E//TKL2HIis05iqFTqA
-         6cWnwUhcKJagQmydnhE9MWdKN98RZA7QH0/g2op6Qc+WX5kkWc6P8AxP1IQok4d4Iv
-         rC+rDq5bfpCpp87TX2zmlNbavkxhh4pjEZT5VQ1/5GQQQR5j3P3SiDxYUla0TLmDmY
-         tHoanGw9DWG+oAt/RnrhsxsQ7gltrsJN75kvWssUX4MOKayClNcjWM9UluK5fqquNs
-         P9OGQuC06AeFQ==
-Date:   Thu, 26 Jan 2023 16:48:04 +0200
+        b=r54XDevqCxaIthjhpV90e/3PReNDit6CxkjYziBMldcr+DpwGPcGH7s0yFhPlYu8B
+         NohDoJ7KVIUCX5Zs7V0ydKB7t9XQRchAYOCR8XLnEbVPCZ8e7MIHv0UEcp73VODAq8
+         aFhcsGcrVCc28IZRly/gODnl3cguu4R9trJCc4u2GtQ9ygUwR4IFSGftEKj188geBR
+         3987kGANtDLWA/GzBI6W69E/F450ClXU14kAngo3y+A1wCivQR2InkOef4HeCwIwVj
+         QYEspA95Wv7WS3mfCUr9QMGnsDd2HsZvTUBOWl52ZSZiQBqHvpwy1Yy3PsmXixNWVQ
+         B28KDvwGClVRQ==
+Date:   Thu, 26 Jan 2023 16:50:59 +0200
 From:   Mike Rapoport <rppt@kernel.org>
 To:     Suren Baghdasaryan <surenb@google.com>
 Cc:     akpm@linux-foundation.org, michel@lespinasse.org,
@@ -104,14 +104,15 @@ Cc:     akpm@linux-foundation.org, michel@lespinasse.org,
         linux-perf-users@vger.kernel.org, kasan-dev@googlegroups.com,
         selinux@vger.kernel.org, alsa-devel@alsa-project.org,
         kernel-team@android.com
-Subject: Re: [PATCH v2 6/6] mm: export dump_mm()
-Message-ID: <Y9KSpNJ4y0GMwkrW@kernel.org>
+Subject: Re: [PATCH v2 1/6] mm: introduce vma->vm_flags modifier functions
+Message-ID: <Y9KTUw/04FmBVplw@kernel.org>
 References: <20230125083851.27759-1-surenb@google.com>
- <20230125083851.27759-7-surenb@google.com>
+ <20230125083851.27759-2-surenb@google.com>
+ <Y9JFFYjfJf9uDijE@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230125083851.27759-7-surenb@google.com>
+In-Reply-To: <Y9JFFYjfJf9uDijE@kernel.org>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -121,32 +122,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 25, 2023 at 12:38:51AM -0800, Suren Baghdasaryan wrote:
-> mmap_assert_write_locked() is used in vm_flags modifiers. Because
-> mmap_assert_write_locked() uses dump_mm() and vm_flags are sometimes
-> modified from from inside a module, it's necessary to export
-> dump_mm() function.
+On Thu, Jan 26, 2023 at 11:17:09AM +0200, Mike Rapoport wrote:
+> On Wed, Jan 25, 2023 at 12:38:46AM -0800, Suren Baghdasaryan wrote:
+> > vm_flags are among VMA attributes which affect decisions like VMA merging
+> > and splitting. Therefore all vm_flags modifications are performed after
+> > taking exclusive mmap_lock to prevent vm_flags updates racing with such
+> > operations. Introduce modifier functions for vm_flags to be used whenever
+> > flags are updated. This way we can better check and control correct
+> > locking behavior during these updates.
+> > 
+> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> > ---
+> >  include/linux/mm.h       | 37 +++++++++++++++++++++++++++++++++++++
+> >  include/linux/mm_types.h |  8 +++++++-
+> >  2 files changed, 44 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/include/linux/mm.h b/include/linux/mm.h
+> > index c2f62bdce134..b71f2809caac 100644
+> > --- a/include/linux/mm.h
+> > +++ b/include/linux/mm.h
+> > @@ -627,6 +627,43 @@ static inline void vma_init(struct vm_area_struct *vma, struct mm_struct *mm)
+> >  	INIT_LIST_HEAD(&vma->anon_vma_chain);
+> >  }
+> >  
+> > +/* Use when VMA is not part of the VMA tree and needs no locking */
+> > +static inline void init_vm_flags(struct vm_area_struct *vma,
+> > +				 unsigned long flags)
 > 
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> I'd suggest to make it vm_flags_init() etc.
 
-Acked-by: Mike Rapoport (IBM) <rppt@kernel.org>
+Thinking more about it, it will be even clearer to name these vma_flags_xyz()
 
-> ---
->  mm/debug.c | 1 +
->  1 file changed, 1 insertion(+)
+> Except that
 > 
-> diff --git a/mm/debug.c b/mm/debug.c
-> index 9d3d893dc7f4..96d594e16292 100644
-> --- a/mm/debug.c
-> +++ b/mm/debug.c
-> @@ -215,6 +215,7 @@ void dump_mm(const struct mm_struct *mm)
->  		mm->def_flags, &mm->def_flags
->  	);
->  }
-> +EXPORT_SYMBOL(dump_mm);
->  
->  static bool page_init_poisoning __read_mostly = true;
->  
-> -- 
-> 2.39.1
+> Acked-by: Mike Rapoport (IBM) <rppt@kernel.org>
 > 
+
+--
+Sincerely yours,
+Mike.
