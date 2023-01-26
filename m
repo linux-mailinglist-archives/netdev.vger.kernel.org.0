@@ -2,42 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA1F767C4B8
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 08:14:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B386F67C4B5
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 08:14:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233546AbjAZHOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 02:14:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47240 "EHLO
+        id S233194AbjAZHOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 02:14:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233283AbjAZHOc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 02:14:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112664A1F2
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 23:14:31 -0800 (PST)
+        with ESMTP id S229554AbjAZHOb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 02:14:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F9DC46D42
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 23:14:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B62B7B81CC6
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C44061756
         for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 07:14:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27363C433A7;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CFC0C433A0;
         Thu, 26 Jan 2023 07:14:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674717268;
-        bh=41/N6LtRk6c8HHuj5ty3hxm5Z1MeaEyhWU8v1NLK7ZE=;
+        s=k20201202; t=1674717269;
+        bh=5bx3UCvvOgOMcpOsOlksTtFP2jT80Mmv6NUQ5JH4OwY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sgjxgCKAjuaYZbsyPkG0fwNc78pk4JbbOqWszTV4eiOn+sPHJoUaohRkwUDG8c1Rp
-         erwrGIJSdP0CWptuCNmqUWE7qNtUWWCYAcnH8Lp3ZPzCDy2+9lnQmPjyYFpS8+VNxJ
-         /6DBBV4RTCgPpLP6jYQj61FTYvSNDxhY7KaEqT0eQgmOsF/8NzF9LvQvr2Fp9sldV/
-         ObIEZ+FS2jhz0ZfpDQBYXriJFe6aXt0vcqdMUjcG9Ey29IozVioWjgUzSbihxzV2aO
-         O58M9ohR9S82XQMH97dY5xel+N2BKuOtS8HCpqI+t6Mn3lYnKQCHtb2N2sfTb3gBBO
-         rnr9HqesjdDWQ==
+        b=CbxEaaC8iCTOFyKI63+I0g7wwYQ8IJnbnRYtLmc+R73ewh/84FvnVqGLtPmoAaC+i
+         JdnCxgXdYvyiBss+4Ep8ktU/nwsx4JI83RPuvYVcwsYZfXj4uVrsc1QXg5JQwGfxVn
+         ZXE+sLzLx3biu003LC6RvO35PIGbeBKwkt4QHKOJ2Z8mKNDjc2OE/FCw9DNVhvlkg3
+         txALZPjJ4k82hpiZhjxItKRKuVpR1OOkaNoyJWP7DN3/B6CsHQCat4lObxKlbqdr8R
+         hGiK/ldG14aWM5NBQ4kUzXKxJFj4c6Ydv8+EnDx5iD9Lhzvg5wPemzuR7Au5TvmYP6
+         gC5BJagmvMW0g==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>, imagedong@tencent.com
-Subject: [PATCH net-next 02/11] net: skbuff: drop the linux/net.h include
-Date:   Wed, 25 Jan 2023 23:14:15 -0800
-Message-Id: <20230126071424.1250056-3-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>, linux@armlinux.org.uk,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com
+Subject: [PATCH net-next 03/11] net: checksum: drop the linux/uaccess.h include
+Date:   Wed, 25 Jan 2023 23:14:16 -0800
+Message-Id: <20230126071424.1250056-4-kuba@kernel.org>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230126071424.1250056-1-kuba@kernel.org>
 References: <20230126071424.1250056-1-kuba@kernel.org>
@@ -52,38 +54,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It appears nothing needs it. The kernel builds fine with this
-include removed, building an otherwise empty source file with:
+net/checksum.h pulls in linux/uaccess.h which is large.
 
- #include <linux/skbuff.h>
- #ifdef _LINUX_NET_H
- #error linux/net.h is back
- #endif
+In the x86 header the include seems to not be needed at all.
+ARM on the other hand does not include uaccess.h, even tho
+it calls access_ok().
 
-works too (meaning net.h is not just pulled in indirectly).
+In the generic implementation guard the include of linux/uaccess.h
+with the same condition as the code that needs it.
 
-This gives us a slight 0.5% reduction in the pre-processed size
-of skbuff.h.
+With this change pre-processed net/checksum.h shrinks on x86
+from 30616 lines to just 1193.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: imagedong@tencent.com
+CC: linux@armlinux.org.uk
+CC: tglx@linutronix.de
+CC: mingo@redhat.com
+CC: bp@alien8.de
+CC: dave.hansen@linux.intel.com
+CC: x86@kernel.org
+CC: hpa@zytor.com
 ---
- include/linux/skbuff.h | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm/include/asm/checksum.h    | 1 +
+ arch/x86/include/asm/checksum_64.h | 1 -
+ include/net/checksum.h             | 4 +++-
+ 3 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 4c8492401a10..b93818e11da0 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -23,7 +23,6 @@
- #include <linux/atomic.h>
+diff --git a/arch/arm/include/asm/checksum.h b/arch/arm/include/asm/checksum.h
+index f0f54aef3724..d8a13959bff0 100644
+--- a/arch/arm/include/asm/checksum.h
++++ b/arch/arm/include/asm/checksum.h
+@@ -11,6 +11,7 @@
+ #define __ASM_ARM_CHECKSUM_H
+ 
+ #include <linux/in6.h>
++#include <linux/uaccess.h>
+ 
+ /*
+  * computes the checksum of a memory block at buff, length len,
+diff --git a/arch/x86/include/asm/checksum_64.h b/arch/x86/include/asm/checksum_64.h
+index 407beebadaf4..4d4a47a3a8ab 100644
+--- a/arch/x86/include/asm/checksum_64.h
++++ b/arch/x86/include/asm/checksum_64.h
+@@ -9,7 +9,6 @@
+  */
+ 
+ #include <linux/compiler.h>
+-#include <linux/uaccess.h>
+ #include <asm/byteorder.h>
+ 
+ /**
+diff --git a/include/net/checksum.h b/include/net/checksum.h
+index 6bc783b7a06c..1338cb92c8e7 100644
+--- a/include/net/checksum.h
++++ b/include/net/checksum.h
+@@ -18,8 +18,10 @@
+ #include <linux/errno.h>
  #include <asm/types.h>
- #include <linux/spinlock.h>
--#include <linux/net.h>
- #include <linux/textsearch.h>
- #include <net/checksum.h>
- #include <linux/rcupdate.h>
+ #include <asm/byteorder.h>
+-#include <linux/uaccess.h>
+ #include <asm/checksum.h>
++#if !defined(_HAVE_ARCH_COPY_AND_CSUM_FROM_USER) || !defined(HAVE_CSUM_COPY_USER)
++#include <linux/uaccess.h>
++#endif
+ 
+ #ifndef _HAVE_ARCH_COPY_AND_CSUM_FROM_USER
+ static __always_inline
 -- 
 2.39.1
 
