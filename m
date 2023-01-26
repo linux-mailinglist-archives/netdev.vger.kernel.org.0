@@ -2,116 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62D3E67C62F
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 09:50:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D039A67C643
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 09:53:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233473AbjAZIu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 03:50:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37698 "EHLO
+        id S233020AbjAZIxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 03:53:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233264AbjAZIuZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 03:50:25 -0500
-X-Greylist: delayed 307 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 26 Jan 2023 00:50:23 PST
-Received: from mail.linogate.de (mail.linogate.de [213.179.141.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA4D82194B
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 00:50:23 -0800 (PST)
-Received: from riab.mowin.de (support.linogate.de [213.179.141.14] (may be forged))
-        by mail.linogate.de with ESMTPS id 30Q8kwpE001181
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Thu, 26 Jan 2023 09:46:58 +0100
-Received: from riab.mowin.de (localhost [127.0.0.1])
-        (authenticated bits=128)
-        by riab.mowin.de with ESMTPSA id 30Q8hxBg023402
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Thu, 26 Jan 2023 09:43:59 +0100
-X-Virus-Scanned: by amavisd-new at 
-Received: from [192.168.0.163] ([192.168.0.163])
-        by riab.mowin.de with ESMTP id 30Q8hvWX023332;
-        Thu, 26 Jan 2023 09:43:57 +0100
-Content-Type: multipart/mixed; boundary="------------nEQ99tltSZsUZyXEMMC1Fxnh"
-Message-ID: <f4461b32-852f-da7e-a893-97e08c455e44@linogate.de>
-Date:   Thu, 26 Jan 2023 09:43:57 +0100
+        with ESMTP id S234330AbjAZIxI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 03:53:08 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870966A339
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 00:52:29 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id n7so1010464wrx.5
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 00:52:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:mail-followup-to:message-id:subject:cc:to
+         :from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=09S0zXnEWE7OwkaLkcnmfZZGQsVszbcmZ2vyt1Z1g+I=;
+        b=NMtlXSeoDy64o1PJpq6bJy3U+JYUQze64A0S8IL0NHPaJBmD8LcifEPxje/WqWvl7d
+         IxxBbepqF4n7bq5/3rRDizuJNbuG+75T0nT4OYXnHozoks6CoX6hxmnO5ur2PXocNOSC
+         B7HcXoJwZXzYAGaVzAwaTSVDYISS4t9+uxuHsVyQvrQqMzUPOZyxLLDat77qEmwzSUfZ
+         zOlEKIJT/aOIOcFMUBlTFYjxDpZCAErgXvV2NmzWdzyRlIKBll6wneFoqM3nUNIEyJP4
+         RmPrs5pJm6qtESYXzhztvclHDaUIDSYSU8BNvpUNlwD7W7Z6xhHhe/14b1FnZSnzU0ZX
+         /+GQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:mail-followup-to:message-id:subject:cc:to
+         :from:date:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=09S0zXnEWE7OwkaLkcnmfZZGQsVszbcmZ2vyt1Z1g+I=;
+        b=jqWLtvhg7H8dqGh8bodN17eBd6vXEAYUCHdSlkUqJ1KuLJogaI+24E9UWqD4h29Kam
+         FsAoERakW5LCRrbNBwo8ijU8W3awrN407NOLg2YTnFd2nrjd7l10z9NBkYV0/BcgimOJ
+         0IRU56Y3eAVvmpiGdffzoSiU65OB7qdVUfyvDvzCudC76l1DYUm882cq1Gf1+Eo8U3je
+         lWJ0UfyAQcL/wzcRnW1Nu9QEjifxVeN89veZBGE+mPFGfMrZ+irUBzzY8eXx+7mF/SmF
+         BiY+9Wi4hOF2zOcfp6q5OJcSm/i2DzLPcblPY2BxvXhCphox+vDEhQGQAljMQsOD/S+X
+         kRWA==
+X-Gm-Message-State: AFqh2krAqB9ULP+RIV0XmyqYyTu0DznXLo/ZJ6Az1Mxp6BV86yt105VZ
+        0B1Lw99pSZkHVlsh3VDnqYM=
+X-Google-Smtp-Source: AMrXdXsyqzxYA1d1BpamHHbYVelW4UOIrg4v6foD4AQfAamOBd5EnCcfsDNYTgGQJU5NI2p5ewVXsw==
+X-Received: by 2002:a05:6000:1c04:b0:232:be5d:5ee9 with SMTP id ba4-20020a0560001c0400b00232be5d5ee9mr34201035wrb.64.1674723146433;
+        Thu, 26 Jan 2023 00:52:26 -0800 (PST)
+Received: from gmail.com ([81.168.73.77])
+        by smtp.gmail.com with ESMTPSA id d3-20020adfe2c3000000b002bc7fcf08ddsm634222wrj.103.2023.01.26.00.52.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Jan 2023 00:52:25 -0800 (PST)
+Date:   Thu, 26 Jan 2023 08:52:22 +0000
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>
+Cc:     ecree.xilinx@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        Tianhao Zhao <tizhao@redhat.com>
+Subject: Re: [PATCH net] sfc: correctly advertise tunneled IPv6 segmentation
+Message-ID: <Y9I/RmuOPJeHJ8X1@gmail.com>
+Mail-Followup-To: =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>,
+        ecree.xilinx@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        Tianhao Zhao <tizhao@redhat.com>
+References: <20230125143513.25841-1-ihuguet@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.0
-Content-Language: en-GB
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-From:   Wolfgang Nothdurft <wolfgang@linogate.de>
-Subject: Problem with xfrm interface and bridged devices
-X-Scanned-By: MIMEDefang 2.78 on 213.179.141.2
-X-Scanned-By: MIMEDefang 2.78
-X-Greylist: ACL 256 matched, not delayed by milter-greylist-4.6.2 (mail.linogate.de [213.179.141.2]); Thu, 26 Jan 2023 09:46:58 +0100 (CET)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230125143513.25841-1-ihuguet@redhat.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------nEQ99tltSZsUZyXEMMC1Fxnh
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+On Wed, Jan 25, 2023 at 03:35:13PM +0100, Íñigo Huguet wrote:
+> Recent sfc NICs are TSO capable for some tunnel protocols. However, it
+> was not working properly because the feature was not advertised in
+> hw_enc_features, but in hw_features only.
+> 
+> Setting up a GENEVE tunnel and using iperf3 to send IPv4 and IPv6 traffic
+> to the tunnel show, with tcpdump, that the IPv4 packets still had ~64k
+> size but the IPv6 ones had only ~1500 bytes (they had been segmented by
+> software, not offloaded). With this patch segmentation is offloaded as
+> expected and the traffic is correctly received at the other end.
+> 
+> Fixes: 24b2c3751aa3 ("sfc: advertise encapsulated offloads on EF10")
+> Reported-by: Tianhao Zhao <tizhao@redhat.com>
+> Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
 
-Hi there,
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
 
-when using a xfrm interface in a bridged setup (the outgoing device is 
-bridged), the incoming packets in the xfrm interface inherit the bridge 
-info and confuses the netfilter connection tracking.
-
-brctl show
-bridge name     bridge id               STP enabled     interfaces
-br_eth1         8000.000c29fe9646       no              eth1
-
-This messes up the connection tracking so that only the outgoing packets 
-shows up and the connections through the xfrm interface are UNREPLIED. 
-When using stateful netfilter rules, the response packet will be blocked 
-as state invalid.
-
-telnet 192.168.12.1 7
-Trying 192.168.12.1...
-
-conntrack -L
-tcp      6 115 SYN_SENT src=192.168.11.1 dst=192.168.12.1 sport=52476 
-dport=7 packets=2 bytes=104 [UNREPLIED] src=192.168.12.1 
-dst=192.168.11.1 sport=7 dport=52476 packets=0 bytes=0 mark=0 
-secctx=system_u:object_r:unlabeled_t:s0 use=1
-
-Chain INPUT (policy DROP 0 packets, 0 bytes)
-     2   104 DROP_invalid  all  --  *      *       0.0.0.0/0 
-0.0.0.0/0            state INVALID
-
-Jan 26 09:28:12 defendo kernel: fw-chk drop [STATE=invalid] IN=ipsec0 
-OUT= PHYSIN=eth1 MAC= SRC=192.168.12.1 DST=192.168.11.1 LEN=52 TOS=0x00 
-PREC=0x00 TTL=64 ID=0 DF PROTO=TCP SPT=7 DPT=52476 WINDOW=64240 RES=0x00 
-ACK SYN URGP=0 MARK=0x1000000
-
-The attached patch removes the bridge info from the incoming packets on 
-the xfrm interface, so the packet can be properly assigned to the 
-connection.
-
-Kind Regards,
-Wolfgang
---------------nEQ99tltSZsUZyXEMMC1Fxnh
-Content-Type: text/x-patch; charset=UTF-8;
- name="remove_inherited_bridge_info_from_skb.patch"
-Content-Disposition: attachment;
- filename="remove_inherited_bridge_info_from_skb.patch"
-Content-Transfer-Encoding: base64
-
-ZGlmZiAtLWdpdCBhL25ldC94ZnJtL3hmcm1faW5wdXQuYyBiL25ldC94ZnJtL3hmcm1faW5w
-dXQuYwppbmRleCA3N2U4MjAzM2FkNzAuLjU4OGNkMzhlMmU2OCAxMDA2NDQKLS0tIGEvbmV0
-L3hmcm0veGZybV9pbnB1dC5jCisrKyBiL25ldC94ZnJtL3hmcm1faW5wdXQuYwpAQCAtNTM5
-LDYgKzUzOSwxMSBAQCBpbnQgeGZybV9pbnB1dChzdHJ1Y3Qgc2tfYnVmZiAqc2tiLCBpbnQg
-bmV4dGhkciwgX19iZTMyIHNwaSwgaW50IGVuY2FwX3R5cGUpCiAJCWdvdG8gbG9jazsKIAl9
-CiAKKwkvLyBzdHJpcCBicmlkZ2UgaW5mbyBmcm9tIHNrYgorCWlmIChza2JfZXh0X2V4aXN0
-KHNrYiwgU0tCX0VYVF9CUklER0VfTkYpKXsKKwkJc2tiX2V4dF9kZWwoc2tiLCBTS0JfRVhU
-X0JSSURHRV9ORik7CisJfQorCiAJZmFtaWx5ID0gWEZSTV9TUElfU0tCX0NCKHNrYiktPmZh
-bWlseTsKIAogCS8qIGlmIHR1bm5lbCBpcyBwcmVzZW50IG92ZXJyaWRlIHNrYi0+bWFyayB2
-YWx1ZSB3aXRoIHR1bm5lbCBpX2tleSAqLwo=
-
---------------nEQ99tltSZsUZyXEMMC1Fxnh--
+> ---
+>  drivers/net/ethernet/sfc/efx.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
+> index 0556542d7a6b..3a86f1213a05 100644
+> --- a/drivers/net/ethernet/sfc/efx.c
+> +++ b/drivers/net/ethernet/sfc/efx.c
+> @@ -1003,8 +1003,11 @@ static int efx_pci_probe_post_io(struct efx_nic *efx)
+>  	/* Determine netdevice features */
+>  	net_dev->features |= (efx->type->offload_features | NETIF_F_SG |
+>  			      NETIF_F_TSO | NETIF_F_RXCSUM | NETIF_F_RXALL);
+> -	if (efx->type->offload_features & (NETIF_F_IPV6_CSUM | NETIF_F_HW_CSUM))
+> +	if (efx->type->offload_features & (NETIF_F_IPV6_CSUM | NETIF_F_HW_CSUM)) {
+>  		net_dev->features |= NETIF_F_TSO6;
+> +		if (efx_has_cap(efx, TX_TSO_V2_ENCAP))
+> +			net_dev->hw_enc_features |= NETIF_F_TSO6;
+> +	}
+>  	/* Check whether device supports TSO */
+>  	if (!efx->type->tso_versions || !efx->type->tso_versions(efx))
+>  		net_dev->features &= ~NETIF_F_ALL_TSO;
+> -- 
+> 2.34.3
