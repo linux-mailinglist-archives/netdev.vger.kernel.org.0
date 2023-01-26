@@ -2,318 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2117F67C549
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 08:59:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D573967C577
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 09:05:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236248AbjAZH7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 02:59:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37194 "EHLO
+        id S236278AbjAZIFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 03:05:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236174AbjAZH7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 02:59:17 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A57D69B32
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 23:59:01 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id fl24so562662wmb.1
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 23:59:01 -0800 (PST)
+        with ESMTP id S229730AbjAZIFH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 03:05:07 -0500
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2098.outbound.protection.outlook.com [40.107.237.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 429C65C0E9;
+        Thu, 26 Jan 2023 00:05:06 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ENAgIpcE6b8PzGIUVfyixu0ojB8WGRi3iPbFiZBepxGI3DMJKfpmImRYIgxEkZ0mHuYjMflUQ4jTQ4RVrtvyHh5o3YCxPtMNjASVxuVL/DJ685bkHbiNasiJnZnhjgt1gWSYS9cbqVv4AZLjeIBJaQVmula5kISaV/lKPtL9LbUQs+ysGGEQBhn6MLb09x3u36LmNqWjNtRZTIBDSl6L3JpzbMLr7ec7VaFkyMhYdS9q5L4wJRIxDn2V37PhLNkj/4Y3LzdOtqa95R7b3CBzre+9Du5c3gs3+QblAvLdEGMc0WZwCGJWryeqP5U2unTeaAHit2W5mVDQHrACpp2LcA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=J/EciPoGgWY8aUxzKHI7WMT+VObzAlBXq2DSBPdfMK0=;
+ b=K9J+cx7xywY5iEaUszNSj8XM470iG/GqoUPEeq74EhnX+c0zMh3ZHmUfHnFdknTp6gQxe0Skd8t2+B3wTKLAhm4gQMOp8CiSeveRwtr7KNHMfhKXTVvTb3azfMja4T33vPT59omrPSUmxOWmhcDNBhUa9sy8OJFYtIRFFMBJPuCs39otEErLS/iRTAMLXijfrH/JSAaVJokAsgxs/aYxwKshha51d3ob6L6r7gegrPvq3kQluyPftkTolqTpDe7a2i3xjouWI4xl6RUpbGcN+Ky1MPCyvITfsTUii4sRDKsFlvH+06hTyQakwxJEbP8aOWzTWt6zjwWpyEkCGl++lg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=711hkH0MYRM5ILELB/4eoA/18VzXn4eFEw0ADhGfdeA=;
-        b=Or0ac9ZCDEdlW1szh4IaStIbD48UxX3B3TMY+YdHWWzyLuB9RbZXyVfCJvih9Jht6I
-         qcB1lDBpYItppZpiIyftGoDdLDkfc9S5X+Ahy5ltu1PvGGnMqsj/NSVcvWlg1OWuFX6w
-         A82MEbk/JuB02IVKjhoVaoE+ftPZIM0rmPhkAyYGNzW4YxL1PBu1LIbzFAJfef0AKQB2
-         GqHurrZBukDb57duaLrbEIePloaWVEEtvdB9W+nrZDlPikRTluP2wHPlZ5DjRrkJzfhM
-         g2zDjKaK1REDBYdscWH07qHR+j7IKErpQCjH4qWSGKw8y3rGhkbHs9vAgfocmX1EYhk+
-         oatQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=711hkH0MYRM5ILELB/4eoA/18VzXn4eFEw0ADhGfdeA=;
-        b=xiAsVvX9Qr6Wt531qMlgYnBYZs2MXZ3dHNMbmAUhEArfXVvPBDPHVF7FTk+Z1IB96X
-         lqYZnjTEujxRjrsfTCLV//q9Hkm+37rHg1zcRaoJeJJ50KxiTqHPD4a0ZognxPyYcm8h
-         8timPBsQuWZoOIssdmeo8+ICjaHTu/aBKAqlbHMKGekfDMYXdEPjfU+TBGhN6bfDST23
-         TQh6463wbHShB9T+K8IZa8J2vZ69FOFbv54QYj4VV2t5owWOLhjJTnZSXwaeD25OJCXD
-         1cu1xchJr93+o4yBn7CvoCT7wIVUCdcPwT3N9fefu1NP2SzGEi54FhvrS8k6DuOIAVu0
-         igVg==
-X-Gm-Message-State: AFqh2krmnNmITRzuI53kBt2+qgWkELm92lUEeV0uBIehucqyBBOHhmTe
-        9SfDZpJ680Igve9cbHubyZPudEVmeg1XB1B2HF2XhA==
-X-Google-Smtp-Source: AMrXdXt6fDUW8WvIorIL+8i9KQgTUFDujpbOXV9XluuhMgRyy1cYs9bGBloTgtVQUNAKS4vdP6gAuw==
-X-Received: by 2002:a05:600c:1e09:b0:3d1:f16d:5848 with SMTP id ay9-20020a05600c1e0900b003d1f16d5848mr34365996wmb.26.1674719939377;
-        Wed, 25 Jan 2023 23:58:59 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id n10-20020a05600c180a00b003daf672a616sm712293wmp.22.2023.01.25.23.58.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Jan 2023 23:58:58 -0800 (PST)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, michael.chan@broadcom.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        tariqt@nvidia.com, saeedm@nvidia.com, leon@kernel.org,
-        idosch@nvidia.com, petrm@nvidia.com, simon.horman@corigine.com,
-        aelior@marvell.com, manishc@marvell.com, jacob.e.keller@intel.com,
-        gal@nvidia.com, yinjun.zhang@corigine.com, fei.qin@corigine.com,
-        Niklas.Cassel@wdc.com
-Subject: [patch net-next v2 12/12] net/mlx5: Move eswitch port metadata devlink param to flow eswitch code
-Date:   Thu, 26 Jan 2023 08:58:38 +0100
-Message-Id: <20230126075838.1643665-13-jiri@resnulli.us>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230126075838.1643665-1-jiri@resnulli.us>
-References: <20230126075838.1643665-1-jiri@resnulli.us>
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=J/EciPoGgWY8aUxzKHI7WMT+VObzAlBXq2DSBPdfMK0=;
+ b=IsQ9GRCs7N8ByDECGHuuc+xh+n8dR4Y1h2PD9XZIRBPdLOaIidva2Uowkuf+10BgBWXkW8Lt9R3119kpRSfYWMapt8oWu1no1WNtgu9k07ha0TBnJHjJvoxzRnHpzmMFcJVYu0NUnVQeuQG4Z5DdH2XvXLtujlharAf7AeMM2fE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CO6PR13MB5324.namprd13.prod.outlook.com (2603:10b6:303:14b::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.22; Thu, 26 Jan
+ 2023 08:05:03 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65%6]) with mapi id 15.20.6043.021; Thu, 26 Jan 2023
+ 08:05:03 +0000
+Date:   Thu, 26 Jan 2023 09:04:56 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Markus Schneider-Pargmann <msp@baylibre.com>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 08/18] can: m_can: Write transmit header and data in
+ one transaction
+Message-ID: <Y9I0KEeWq0JFy6iB@corigine.com>
+References: <20230125195059.630377-1-msp@baylibre.com>
+ <20230125195059.630377-9-msp@baylibre.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230125195059.630377-9-msp@baylibre.com>
+X-ClientProxiedBy: AM3PR07CA0101.eurprd07.prod.outlook.com
+ (2603:10a6:207:7::11) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CO6PR13MB5324:EE_
+X-MS-Office365-Filtering-Correlation-Id: 97604de9-93a1-47f1-d76b-08daff740731
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8ngZ6XtDca7QKYQ52zzo3I+u+NUcijV8e8kC/dwJUBf+w2wauE8hFDnTKzvKR1y35QzPOnbG4kggChlv1kLyN02hsRadETE5zuK5mQzHinLZuTlqZC1ffr81NwtUH7xQrSN1mIa9JyZBXg4d9ya9YEyZB0+UznoGNbD8hcmkhkA8bjabj6gE+GrfPz63pV1iNysnCGAjq9tJcK/yVXuyQdCUnQGorBU5kkjhyBZw9/QQYOJMll2NFbLWez7qsXDoG574OVeLN/72RtWdLihl+ZSSoUBEJMtdQXtY2biYFc3r9f9LJIlGquLIkESFng+iL0ooejtMK+FiXioRwmG7xoX7lhOWeO/OYWQroETNySpRQfztVHD+gWLO4tLh60mo4wAodQMLAMMb3kj3RF/9n6Bds1bK+r3+PoGdkof6WsMNhcvf23HZmZutbGc1KD8jqBqjypPkYiIsr6v2TU4yNmapCYW6sB+jwBoxnOBXgplfN/9tzfugBsfpdN72nRNIer4wi8Yb4T/AaXxVab7OJEQJR9AY7G/IPAIB1R+bnFmUcRzJ08hrJXNJ0Boo/7AibiMAdKS4oCrghn9Ns/Af3HHOMF0pF9lKyMggpBr385d3srDNufSeC0kJn3fpMrKHJ1EyjPtR/tI2YCxMyR7m/A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(376002)(136003)(39830400003)(366004)(396003)(451199018)(41300700001)(66946007)(66556008)(66476007)(8676002)(6916009)(4326008)(83380400001)(38100700002)(44832011)(2906002)(8936002)(5660300002)(6486002)(2616005)(86362001)(478600001)(6506007)(6512007)(186003)(6666004)(54906003)(316002)(36756003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+mCmgCfEQ7Fp2UrP4tc9RW0iG1lykY6dBNrO85/qhUu4yYQ2/41uqyKxxvOJ?=
+ =?us-ascii?Q?u9+TDRIEfD9qMyTBYgRnin1emIYaUErWsyZSnAgAJFz+Ta4yxmg07OpJgB5N?=
+ =?us-ascii?Q?UnKD99u8CSN1uNbkj/c5rm0QDaYdX+ge/SA/mErwfVVLNqqQP15M2V1Vc+jL?=
+ =?us-ascii?Q?lSwNNmydpwDR+KEv5CyckmyOY2H5hF0O22hPiBZDoBOz2SQiTKMkgy9WlQ92?=
+ =?us-ascii?Q?5UWzaGRyo6W5osY+j8ebPBiYugrxbQ0VTiYakZgEFC7xVxxx3Wmw7fn6UYYq?=
+ =?us-ascii?Q?xF3WXnzSXA6SQTsn/04nesf40h3lCplIwmpigHQlyOddkUUTujNXsi1syQ1G?=
+ =?us-ascii?Q?ok0eXWDUT/oyq7PhOgc6p4IpYaC/iYfpqif6BScJz8RYu5vYH/PimhVJlR6J?=
+ =?us-ascii?Q?hdykJtTh0hSa4s5gDgooNwnkQHMjVMZ0rfuUdqO35eHg70Iw7iMoTGAdm+Po?=
+ =?us-ascii?Q?w3wvqJkbvwlc1qnRatvJYJZ+CnSSm8iiM7YUk3DdLS4qiGgUWUn+OfOCvFnP?=
+ =?us-ascii?Q?c/euwibDtGhvbyn/N6IKsnjctdYqYdkjnW5hN3omilcX+p4nWF/+dgpqtggP?=
+ =?us-ascii?Q?oUB5tJ+9cNPYocvXHTrcIVsQSR0yjYe4R4reZRqsOzz/59GlUlsor8kEXpa8?=
+ =?us-ascii?Q?A0VgrCmtuRlRk7zReUUNvFv285HTg+0U1uhiKuxfJQhhu6j1DhGq/cMo8Xdj?=
+ =?us-ascii?Q?b5FVn+3ubL36DeFx0OqxUKaE28sRfh40fd/c/ONJC9nGUk4bpl3EeIsBlXn2?=
+ =?us-ascii?Q?M9rOinhrMDAGKvDLLZVM6U/P9DTlhlgJrhWNMYdaMHQliNk2MmNVjpB3zwZK?=
+ =?us-ascii?Q?sj2jhbvxxeZB8RZesYDk5+aFKKc2yHXzBf99IvgpgEphlu1Cz0v/UNxv5fRR?=
+ =?us-ascii?Q?PCGH40ix9E7jozNADL3L166F795khoYN4EhLecVoPRnPQJUzXkry885Qb+Wy?=
+ =?us-ascii?Q?qL7vS5MVPB0BsPz1+hMTWLoJ7rkbd7gJEzrOOe0bfQn+miieyuxJP6CP98qb?=
+ =?us-ascii?Q?LmTBkFS3UBH/xBq46HRTkZwpbeYEEx4TawfKUF6vLx5dB+Ra2FRiddqS9wsZ?=
+ =?us-ascii?Q?pTsEugJS5bFIrKtVZp7orJtk5UwOAqYvGVXttEYauh26gcuxzO31/6JkYUjJ?=
+ =?us-ascii?Q?hNdSnLvC/GfuWYvIVV6wKuGHRXbAQ7Tyt+IRFzmfB2SZwywMZHPmi5DyF25R?=
+ =?us-ascii?Q?zYcOdRwbVrHWo8WihLjgicVuRlkaYeMaAZpPV9bhm7wKIYQPJxpe5ISkSD04?=
+ =?us-ascii?Q?0rIxNhClHtYMifS/LiUqTLGH5kLk3Jl3yt+jodoHuXQO0VT81ZEsdXh4kfqj?=
+ =?us-ascii?Q?MX24rRWov0bcX++mW7FVIoEWF5IUhvgRULmcwTwirVu8AFGPUL9OK8IsBAlw?=
+ =?us-ascii?Q?Xkj8lm3pe0shCt9CYXs+s8FuqJ51ui9PyyfwSkRT0vPgwOgUm31dxORGt9Af?=
+ =?us-ascii?Q?1fcp1R6/rAHDJvyWh6rIi7FPDxMrhmi4JP9q1T5cU/l8SrLTYdBPBjVZONdb?=
+ =?us-ascii?Q?d8XKXrTtW75nTlF52qfkkSiZcMjfFlAYsgfv78OnLShLkY3W4S730pNI403O?=
+ =?us-ascii?Q?5MhDoF+7DNEsuxdRlBFG8hBauiPIN824NuMBEyM//yfRrP8cGHqdXJkVdUA0?=
+ =?us-ascii?Q?zIvqhFG+7KJ1FsWiWhNoSnTL404wsKUkN/hA7sTKkNyxGkFiF6gvNYB46dkw?=
+ =?us-ascii?Q?frS/qw=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 97604de9-93a1-47f1-d76b-08daff740731
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2023 08:05:03.0842
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lxZVzc5OmjT1mMPLUNm+jSmzl8F/Fc15h8/D33zHg1GSGIGfmjYLLhZvHUtqKOQg2955MzKcKykHSm41BZons+aTNwO29KlLMeEDy66lyOY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR13MB5324
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+On Wed, Jan 25, 2023 at 08:50:49PM +0100, Markus Schneider-Pargmann wrote:
+> Combine header and data before writing to the transmit fifo to reduce
+> the overhead for peripheral chips.
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> ---
+>  drivers/net/can/m_can/m_can.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+> index 78f6ed744c36..440bc0536951 100644
+> --- a/drivers/net/can/m_can/m_can.c
+> +++ b/drivers/net/can/m_can/m_can.c
+> @@ -1681,6 +1681,7 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
+>  		m_can_write(cdev, M_CAN_TXBAR, 0x1);
+>  		/* End of xmit function for version 3.0.x */
+>  	} else {
+> +		char buf[TXB_ELEMENT_SIZE];
+>  		/* Transmit routine for version >= v3.1.x */
+>  
+>  		txfqs = m_can_read(cdev, M_CAN_TXFQS);
+> @@ -1720,12 +1721,11 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
+>  		fifo_header.dlc = FIELD_PREP(TX_BUF_MM_MASK, putidx) |
+>  			FIELD_PREP(TX_BUF_DLC_MASK, can_fd_len2dlc(cf->len)) |
+>  			fdflags | TX_BUF_EFC;
+> -		err = m_can_fifo_write(cdev, putidx, M_CAN_FIFO_ID, &fifo_header, 2);
+> -		if (err)
+> -			goto out_fail;
+> +		memcpy(buf, &fifo_header, 8);
+> +		memcpy(&buf[8], &cf->data, cf->len);
+>  
+> -		err = m_can_fifo_write(cdev, putidx, M_CAN_FIFO_DATA,
+> -				       cf->data, DIV_ROUND_UP(cf->len, 4));
+> +		err = m_can_fifo_write(cdev, putidx, M_CAN_FIFO_ID,
+> +				       buf, 8 + DIV_ROUND_UP(cf->len, 4));
 
-Move the param registration and handling code into the eswitch offloads
-code as they are related to each other. No point in having the
-devlink param registration done in separate file.
+Perhaps I am missing something here, but my reading is that:
 
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
----
-v1->v2:
-- fixed uninitialized variable issue in esw_port_metadata_set()
----
- .../net/ethernet/mellanox/mlx5/core/devlink.c | 49 ----------
- .../net/ethernet/mellanox/mlx5/core/eswitch.c |  4 +-
- .../net/ethernet/mellanox/mlx5/core/eswitch.h |  4 +-
- .../mellanox/mlx5/core/eswitch_offloads.c     | 92 ++++++++++++++++++-
- 4 files changed, 94 insertions(+), 55 deletions(-)
+- 8 is a length in bytes
+- the 5th argument to m_can_fifo_write is the val_count parameter,
+  whose unit is 4-byte long values.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index 5918c8c3e943..95a69544a685 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -432,49 +432,6 @@ static int mlx5_devlink_large_group_num_validate(struct devlink *devlink, u32 id
- 	return 0;
- }
- 
--static int mlx5_devlink_esw_port_metadata_set(struct devlink *devlink, u32 id,
--					      struct devlink_param_gset_ctx *ctx)
--{
--	struct mlx5_core_dev *dev = devlink_priv(devlink);
--
--	if (!MLX5_ESWITCH_MANAGER(dev))
--		return -EOPNOTSUPP;
--
--	return mlx5_esw_offloads_vport_metadata_set(dev->priv.eswitch, ctx->val.vbool);
--}
--
--static int mlx5_devlink_esw_port_metadata_get(struct devlink *devlink, u32 id,
--					      struct devlink_param_gset_ctx *ctx)
--{
--	struct mlx5_core_dev *dev = devlink_priv(devlink);
--
--	if (!MLX5_ESWITCH_MANAGER(dev))
--		return -EOPNOTSUPP;
--
--	ctx->val.vbool = mlx5_eswitch_vport_match_metadata_enabled(dev->priv.eswitch);
--	return 0;
--}
--
--static int mlx5_devlink_esw_port_metadata_validate(struct devlink *devlink, u32 id,
--						   union devlink_param_value val,
--						   struct netlink_ext_ack *extack)
--{
--	struct mlx5_core_dev *dev = devlink_priv(devlink);
--	u8 esw_mode;
--
--	if (!MLX5_ESWITCH_MANAGER(dev)) {
--		NL_SET_ERR_MSG_MOD(extack, "E-Switch is unsupported");
--		return -EOPNOTSUPP;
--	}
--	esw_mode = mlx5_eswitch_mode(dev);
--	if (esw_mode == MLX5_ESWITCH_OFFLOADS) {
--		NL_SET_ERR_MSG_MOD(extack,
--				   "E-Switch must either disabled or non switchdev mode");
--		return -EBUSY;
--	}
--	return 0;
--}
--
- #endif
- 
- static int mlx5_devlink_eq_depth_validate(struct devlink *devlink, u32 id,
-@@ -493,12 +450,6 @@ static const struct devlink_param mlx5_devlink_params[] = {
- 			     BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
- 			     NULL, NULL,
- 			     mlx5_devlink_large_group_num_validate),
--	DEVLINK_PARAM_DRIVER(MLX5_DEVLINK_PARAM_ID_ESW_PORT_METADATA,
--			     "esw_port_metadata", DEVLINK_PARAM_TYPE_BOOL,
--			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
--			     mlx5_devlink_esw_port_metadata_get,
--			     mlx5_devlink_esw_port_metadata_set,
--			     mlx5_devlink_esw_port_metadata_validate),
- #endif
- 	DEVLINK_PARAM_GENERIC(IO_EQ_SIZE, BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
- 			      NULL, NULL, mlx5_devlink_eq_depth_validate),
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-index 0be01d702049..0f052513fefa 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-@@ -1640,7 +1640,7 @@ int mlx5_eswitch_init(struct mlx5_core_dev *dev)
- 	if (err)
- 		goto abort;
- 
--	err = esw_offloads_init_reps(esw);
-+	err = esw_offloads_init(esw);
- 	if (err)
- 		goto reps_err;
- 
-@@ -1706,7 +1706,7 @@ void mlx5_eswitch_cleanup(struct mlx5_eswitch *esw)
- 	mlx5e_mod_hdr_tbl_destroy(&esw->offloads.mod_hdr);
- 	mutex_destroy(&esw->offloads.encap_tbl_lock);
- 	mutex_destroy(&esw->offloads.decap_tbl_lock);
--	esw_offloads_cleanup_reps(esw);
-+	esw_offloads_cleanup(esw);
- 	mlx5_esw_vports_cleanup(esw);
- 	kfree(esw);
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-index 92644fbb5081..5b5a215a7dc5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-@@ -346,8 +346,8 @@ struct mlx5_eswitch {
- 
- void esw_offloads_disable(struct mlx5_eswitch *esw);
- int esw_offloads_enable(struct mlx5_eswitch *esw);
--void esw_offloads_cleanup_reps(struct mlx5_eswitch *esw);
--int esw_offloads_init_reps(struct mlx5_eswitch *esw);
-+void esw_offloads_cleanup(struct mlx5_eswitch *esw);
-+int esw_offloads_init(struct mlx5_eswitch *esw);
- 
- struct mlx5_flow_handle *
- mlx5_eswitch_add_send_to_vport_meta_rule(struct mlx5_eswitch *esw, u16 vport_num);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index 5fb9d5e99734..3a82e385544d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -2403,7 +2403,7 @@ static void mlx5_esw_offloads_rep_cleanup(struct mlx5_eswitch *esw,
- 	kfree(rep);
- }
- 
--void esw_offloads_cleanup_reps(struct mlx5_eswitch *esw)
-+static void esw_offloads_cleanup_reps(struct mlx5_eswitch *esw)
- {
- 	struct mlx5_eswitch_rep *rep;
- 	unsigned long i;
-@@ -2413,7 +2413,7 @@ void esw_offloads_cleanup_reps(struct mlx5_eswitch *esw)
- 	xa_destroy(&esw->offloads.vport_reps);
- }
- 
--int esw_offloads_init_reps(struct mlx5_eswitch *esw)
-+static int esw_offloads_init_reps(struct mlx5_eswitch *esw)
- {
- 	struct mlx5_vport *vport;
- 	unsigned long i;
-@@ -2433,6 +2433,94 @@ int esw_offloads_init_reps(struct mlx5_eswitch *esw)
- 	return err;
- }
- 
-+static int esw_port_metadata_set(struct devlink *devlink, u32 id,
-+				 struct devlink_param_gset_ctx *ctx)
-+{
-+	struct mlx5_core_dev *dev = devlink_priv(devlink);
-+	struct mlx5_eswitch *esw = dev->priv.eswitch;
-+	int err = 0;
-+
-+	down_write(&esw->mode_lock);
-+	if (mlx5_esw_is_fdb_created(esw)) {
-+		err = -EBUSY;
-+		goto done;
-+	}
-+	if (!mlx5_esw_vport_match_metadata_supported(esw)) {
-+		err = -EOPNOTSUPP;
-+		goto done;
-+	}
-+	if (ctx->val.vbool)
-+		esw->flags |= MLX5_ESWITCH_VPORT_MATCH_METADATA;
-+	else
-+		esw->flags &= ~MLX5_ESWITCH_VPORT_MATCH_METADATA;
-+done:
-+	up_write(&esw->mode_lock);
-+	return err;
-+}
-+
-+static int esw_port_metadata_get(struct devlink *devlink, u32 id,
-+				 struct devlink_param_gset_ctx *ctx)
-+{
-+	struct mlx5_core_dev *dev = devlink_priv(devlink);
-+
-+	ctx->val.vbool = mlx5_eswitch_vport_match_metadata_enabled(dev->priv.eswitch);
-+	return 0;
-+}
-+
-+static int esw_port_metadata_validate(struct devlink *devlink, u32 id,
-+				      union devlink_param_value val,
-+				      struct netlink_ext_ack *extack)
-+{
-+	struct mlx5_core_dev *dev = devlink_priv(devlink);
-+	u8 esw_mode;
-+
-+	esw_mode = mlx5_eswitch_mode(dev);
-+	if (esw_mode == MLX5_ESWITCH_OFFLOADS) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "E-Switch must either disabled or non switchdev mode");
-+		return -EBUSY;
-+	}
-+	return 0;
-+}
-+
-+static const struct devlink_param esw_devlink_params[] = {
-+	DEVLINK_PARAM_DRIVER(MLX5_DEVLINK_PARAM_ID_ESW_PORT_METADATA,
-+			     "esw_port_metadata", DEVLINK_PARAM_TYPE_BOOL,
-+			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			     esw_port_metadata_get,
-+			     esw_port_metadata_set,
-+			     esw_port_metadata_validate),
-+};
-+
-+int esw_offloads_init(struct mlx5_eswitch *esw)
-+{
-+	int err;
-+
-+	err = esw_offloads_init_reps(esw);
-+	if (err)
-+		return err;
-+
-+	err = devl_params_register(priv_to_devlink(esw->dev),
-+				   esw_devlink_params,
-+				   ARRAY_SIZE(esw_devlink_params));
-+	if (err)
-+		goto err_params;
-+
-+	return 0;
-+
-+err_params:
-+	esw_offloads_cleanup_reps(esw);
-+	return err;
-+}
-+
-+void esw_offloads_cleanup(struct mlx5_eswitch *esw)
-+{
-+	devl_params_unregister(priv_to_devlink(esw->dev),
-+			       esw_devlink_params,
-+			       ARRAY_SIZE(esw_devlink_params));
-+	esw_offloads_cleanup_reps(esw);
-+}
-+
- static void __esw_offloads_unload_rep(struct mlx5_eswitch *esw,
- 				      struct mlx5_eswitch_rep *rep, u8 rep_type)
- {
--- 
-2.39.0
+  By this logic, perhaps the correct value for this argument is:
 
+  DIV_ROUND_UP(8 + cf->len, 4)
+
+Also:
+
+- If cf->len is not a multiple of 4, is there a possibility
+  that uninitialised trailing data in buf will be used
+  indirectly by m_can_fifo_write()?
+
+>  		if (err)
+>  			goto out_fail;
+>  
+> -- 
+> 2.39.0
+> 
