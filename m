@@ -2,106 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D854267CB6C
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 13:57:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E0C867CB6E
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 13:59:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236368AbjAZM5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 07:57:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40212 "EHLO
+        id S236312AbjAZM7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 07:59:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236001AbjAZM5n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 07:57:43 -0500
-Received: from mail.linogate.de (mail.linogate.de [213.179.141.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D19F3C2E
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 04:57:41 -0800 (PST)
-Received: from riab.mowin.de (support.linogate.de [213.179.141.14] (may be forged))
-        by mail.linogate.de with ESMTPS id 30QD0gLn018577
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Thu, 26 Jan 2023 14:00:42 +0100
-Received: from riab.mowin.de (localhost [127.0.0.1])
-        (authenticated bits=128)
-        by riab.mowin.de with ESMTPSA id 30QCvZak013433
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Thu, 26 Jan 2023 13:57:35 +0100
-X-Virus-Scanned: by amavisd-new at 
-Received: from wolfi.linogate.intern ([192.168.0.163])
-        by riab.mowin.de with ESMTP id 30QCvYYf013364;
-        Thu, 26 Jan 2023 13:57:34 +0100
-From:   wolfgang@linogate.de
-To:     steffen.klassert@secunet.com
-Cc:     netdev@vger.kernel.org, Wolfgang Nothdurft <wolfgang@linogate.de>
-Subject: [PATCH net] xfrm: remove inherited bridge info from skb
-Date:   Thu, 26 Jan 2023 13:56:37 +0100
-Message-Id: <20230126125637.91969-1-wolfgang@linogate.de>
+        with ESMTP id S236001AbjAZM7A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 07:59:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E756C183;
+        Thu, 26 Jan 2023 04:58:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 70A11617C7;
+        Thu, 26 Jan 2023 12:58:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59415C433D2;
+        Thu, 26 Jan 2023 12:58:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674737937;
+        bh=J56pUYj3hx6vcxR8OCAg3bPvvHztWkZxEUSF+x91Jdw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=XdME3FC5ZV82frKWDhlc+YcU46v5lTVpRvN2zwDgmRkp8hLG7fJDZMlHZbsTyi+HU
+         27G53poaO0XODBElJFNkFh7JxXF3Ga2ssfOeORz2WeKJAWFWKGyfplCkeOPvVxsUX0
+         CzKVtBZzCmzafXpXtKFJaLJRi+JaGc0pmlUc7xS19b+URBZkfBmyGwGf7bR8IB8vfM
+         yuhHHWY06rj2ELmkjrPiIpJ3JujGJe/vzWveVb6Gnfyy2VKLibW0D0APsZ8j+YhND1
+         ECFAt6bNujRQ3Emk0oAR4F5P0jy+dZDZub2SFhzdhpDToZKJ+mBFFFN9KIBLroL/Xy
+         gPvJ9geZibfHg==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        hawk@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        toke@redhat.com, memxor@gmail.com, alardam@gmail.com,
+        saeedm@nvidia.com, anthony.l.nguyen@intel.com, gospo@broadcom.com,
+        vladimir.oltean@nxp.com, nbd@nbd.name, john@phrozen.org,
+        leon@kernel.org, simon.horman@corigine.com, aelior@marvell.com,
+        christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
+        mst@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
+        maciej.fijalkowski@intel.com, intel-wired-lan@lists.osuosl.org,
+        lorenzo.bianconi@redhat.com, martin.lau@linux.dev
+Subject: [PATCH v3 bpf-next 0/8] xdp: introduce xdp-feature support
+Date:   Thu, 26 Jan 2023 13:58:25 +0100
+Message-Id: <cover.1674737592.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 213.179.141.2
-X-Scanned-By: MIMEDefang 2.78
-X-Greylist: Recipient e-mail whitelisted, not delayed by milter-greylist-4.6.2 (mail.linogate.de [213.179.141.2]); Thu, 26 Jan 2023 14:00:42 +0100 (CET)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wolfgang Nothdurft <wolfgang@linogate.de>
+Introduce the capability to export the XDP features supported by the NIC.
+Introduce a XDP compliance test tool (xdp_features) to check the features
+exported by the NIC match the real features supported by the driver.
+Allow XDP_REDIRECT of non-linear XDP frames into a devmap.
+Export XDP features for each XDP capable driver.
+Extend libbpf netlink implementation in order to support netlink_generic
+protocol.
+Introduce a simple generic netlink family for netdev data.
 
-When using a xfrm interface in a bridged setup (the outgoing device is
-bridged), the incoming packets in the xfrm interface inherit the bridge
-info an confuses the netfilter connection tracking.
+Changes since v2:
+- rebase on top of bpf-next
+- fix compilation error
 
-brctl show
-bridge name     bridge id               STP enabled     interfaces
-br_eth1         8000.000c29fe9646       no              eth1
+Changes since v1:
+- add Documentation to netdev.yaml
+- use flags instead of enum as type for netdev.yaml definitions
+- squash XDP_PASS, XDP_DROP, XDP_TX and XDP_ABORTED into XDP_BASIC since they
+  are supported by all drivers.
+- add notifier event to xdp_features_set_redirect_target() and
+  xdp_features_clear_redirect_target()
+- add selftest for xdp-features support in bpf_xdp_detach()
+- add IPv6 preliminary support to XDP compliance test tool
 
-This messes up the connection tracking so that only the outgoing packets
-show up and the connections through the xfrm interface are UNREPLIED.
-When using stateful netfilter rules, the response packet will be blocked
-as state invalid.
+Changes since RFCv2:
+- do not assume fixed layout for genl kernel messages
+- fix warnings in netdev_nl_dev_fill
+- fix capabilities for nfp driver
+- add supported_sg parameter to xdp_features_set_redirect_target and drop
+  __xdp_features_set_redirect_target routine
 
-telnet 192.168.12.1 7
-Trying 192.168.12.1...
+Changes since RFCv1:
+- Introduce netdev-genl implementation and get rid of rtnl one.
+- Introduce netlink_generic support in libbpf netlink implementation
+- Rename XDP_FEATURE_* in NETDEV_XDP_ACT_*
+- Rename XDP_FEATURE_REDIRECT_TARGET in NETDEV_XDP_ACT_NDO_XMIT
+- Rename XDP_FEATURE_FRAG_RX in NETDEV_XDP_ACT_RX_SG
+- Rename XDP_FEATURE_FRAG_TARFET in NETDEV_XDP_ACT_NDO_XMIT
+- Get rid of XDP_LOCK feature.
+- Move xdp_feature field in a netdevice struct hole in the 4th cacheline.
 
-conntrack -L
-tcp      6 115 SYN_SENT src=192.168.11.1 dst=192.168.12.1 sport=52476
-dport=7 packets=2 bytes=104 [UNREPLIED] src=192.168.12.1
-dst=192.168.11.1 sport=7 dport=52476 packets=0 bytes=0 mark=0
-secctx=system_u:object_r:unlabeled_t:s0 use=1
+Jakub Kicinski (1):
+  netdev-genl: create a simple family for netdev stuff
 
-Chain INPUT (policy DROP 0 packets, 0 bytes)
-    2   104 DROP_invalid all -- * * 0.0.0.0/0 0.0.0.0/0  state INVALID
+Lorenzo Bianconi (5):
+  libbpf: add the capability to specify netlink proto in
+    libbpf_netlink_send_recv
+  libbpf: add API to get XDP/XSK supported features
+  bpf: devmap: check XDP features in __xdp_enqueue routine
+  selftests/bpf: add test for bpf_xdp_query xdp-features support
+  selftests/bpf: introduce XDP compliance test tool
 
-Jan 26 09:28:12 defendo kernel: fw-chk drop [STATE=invalid] IN=ipsec0
-OUT= PHYSIN=eth1 MAC= SRC=192.168.12.1 DST=192.168.11.1 LEN=52 TOS=0x00
-PREC=0x00 TTL=64 ID=0 DF PROTO=TCP SPT=7 DPT=52476 WINDOW=64240 RES=0x00
-ACK SYN URGP=0 MARK=0x1000000
+Marek Majtyka (2):
+  drivers: net: turn on XDP features
+  xsk: add usage of XDP features flags
 
-This patch removes the bridge info from the incoming packets on the xfrm
-interface, so the packet can be properly assigned to the connection.
+ Documentation/netlink/specs/netdev.yaml       | 100 +++
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  |   4 +
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   |   5 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   3 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |   2 +
+ .../net/ethernet/cavium/thunder/nicvf_main.c  |   2 +
+ .../net/ethernet/freescale/dpaa/dpaa_eth.c    |   4 +
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |   4 +
+ .../net/ethernet/freescale/enetc/enetc_pf.c   |   3 +
+ .../ethernet/fungible/funeth/funeth_main.c    |   6 +
+ drivers/net/ethernet/intel/i40e/i40e_main.c   |  10 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |   5 +
+ drivers/net/ethernet/intel/igb/igb_main.c     |   9 +-
+ drivers/net/ethernet/intel/igc/igc_main.c     |   3 +
+ drivers/net/ethernet/intel/igc/igc_xdp.c      |   5 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   6 +
+ .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |   1 +
+ drivers/net/ethernet/marvell/mvneta.c         |   3 +
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |   4 +
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |   8 +-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c   |   6 +
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    |   2 +
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  11 +
+ drivers/net/ethernet/microsoft/mana/mana_en.c |   2 +
+ .../ethernet/netronome/nfp/nfp_net_common.c   |   5 +
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |   3 +
+ drivers/net/ethernet/sfc/efx.c                |   4 +
+ drivers/net/ethernet/sfc/siena/efx.c          |   4 +
+ drivers/net/ethernet/socionext/netsec.c       |   3 +
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |   2 +
+ drivers/net/ethernet/ti/cpsw.c                |   4 +
+ drivers/net/ethernet/ti/cpsw_new.c            |   4 +
+ drivers/net/hyperv/netvsc_drv.c               |   2 +
+ drivers/net/netdevsim/netdev.c                |   1 +
+ drivers/net/tun.c                             |   5 +
+ drivers/net/veth.c                            |   4 +
+ drivers/net/virtio_net.c                      |   4 +
+ drivers/net/xen-netfront.c                    |   2 +
+ include/linux/netdevice.h                     |   3 +
+ include/net/xdp.h                             |  15 +
+ include/uapi/linux/netdev.h                   |  59 ++
+ kernel/bpf/devmap.c                           |  16 +-
+ net/core/Makefile                             |   3 +-
+ net/core/dev.c                                |   1 +
+ net/core/filter.c                             |  13 +-
+ net/core/netdev-genl-gen.c                    |  48 ++
+ net/core/netdev-genl-gen.h                    |  23 +
+ net/core/netdev-genl.c                        | 179 +++++
+ net/core/xdp.c                                |  18 +
+ net/xdp/xsk_buff_pool.c                       |   7 +-
+ tools/include/uapi/linux/netdev.h             |  59 ++
+ tools/lib/bpf/libbpf.h                        |   3 +-
+ tools/lib/bpf/netlink.c                       | 121 ++-
+ tools/lib/bpf/nlattr.h                        |  12 +
+ tools/testing/selftests/bpf/.gitignore        |   1 +
+ tools/testing/selftests/bpf/Makefile          |  11 +-
+ .../bpf/prog_tests/xdp_do_redirect.c          |  27 +-
+ .../selftests/bpf/prog_tests/xdp_info.c       |   8 +
+ .../selftests/bpf/progs/xdp_features.c        | 249 ++++++
+ .../selftests/bpf/test_xdp_features.sh        |  99 +++
+ tools/testing/selftests/bpf/xdp_features.c    | 736 ++++++++++++++++++
+ tools/testing/selftests/bpf/xdp_features.h    |  33 +
+ 62 files changed, 1966 insertions(+), 33 deletions(-)
+ create mode 100644 Documentation/netlink/specs/netdev.yaml
+ create mode 100644 include/uapi/linux/netdev.h
+ create mode 100644 net/core/netdev-genl-gen.c
+ create mode 100644 net/core/netdev-genl-gen.h
+ create mode 100644 net/core/netdev-genl.c
+ create mode 100644 tools/include/uapi/linux/netdev.h
+ create mode 100644 tools/testing/selftests/bpf/progs/xdp_features.c
+ create mode 100755 tools/testing/selftests/bpf/test_xdp_features.sh
+ create mode 100644 tools/testing/selftests/bpf/xdp_features.c
+ create mode 100644 tools/testing/selftests/bpf/xdp_features.h
 
-Signed-off-by: Wolfgang Nothdurft <wolfgang@linogate.de>
----
- net/xfrm/xfrm_input.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index c06e54a10540..e2c43a5c6c4c 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -541,6 +541,10 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
- 		goto lock;
- 	}
- 
-+	/* strip bridge info from skb */
-+	if (skb_ext_exist(skb, SKB_EXT_BRIDGE_NF))
-+		skb_ext_del(skb, SKB_EXT_BRIDGE_NF);
-+
- 	family = XFRM_SPI_SKB_CB(skb)->family;
- 
- 	/* if tunnel is present override skb->mark value with tunnel i_key */
 -- 
 2.39.1
 
