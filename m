@@ -2,82 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D198A67CD08
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 14:59:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6398C67CD55
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 15:12:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231490AbjAZN7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 08:59:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52624 "EHLO
+        id S229615AbjAZOMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 09:12:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230404AbjAZN67 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 08:58:59 -0500
-Received: from exchange.fintech.ru (exchange.fintech.ru [195.54.195.159])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35BDE1043B;
-        Thu, 26 Jan 2023 05:58:53 -0800 (PST)
-Received: from Ex16-01.fintech.ru (10.0.10.18) by exchange.fintech.ru
- (195.54.195.169) with Microsoft SMTP Server (TLS) id 14.3.498.0; Thu, 26 Jan
- 2023 16:56:20 +0300
-Received: from KANASHIN1.fintech.ru (10.0.253.125) by Ex16-01.fintech.ru
- (10.0.10.18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4; Thu, 26 Jan
- 2023 16:56:20 +0300
-From:   Natalia Petrova <n.petrova@fintech.ru>
-To:     <stable@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Natalia Petrova <n.petrova@fintech.ru>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        with ESMTP id S229696AbjAZOMw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 09:12:52 -0500
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE5B7DBE;
+        Thu, 26 Jan 2023 06:12:49 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 600BEE0002;
+        Thu, 26 Jan 2023 14:12:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1674742368;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=apF64NQiPjd6Pbr1s+6HUnhFlM+3Mq22SH9S9MZDcH8=;
+        b=hnH9mwjYFt2M2tI9JelUob400f+76ivnks2/saJ8ZpdQc+zTj4qyrgYZEMPXdRzMzN5qZH
+        /vaIMaWI98Xl2wzS8/K8DldzGDCAY2CKRPlaFCfHe222zDuqx0ephF3BvPFVMDDQltfnLX
+        dbuDNb3Y1O3ajRXp1wcPDupk7o9J2sGefDkYeXMYwkugkrya+VaLQDr4f5cxJmTVmosF1o
+        FCSQMi3mXQd6f3JJ3eIjRHGq/eaVsxAdd+ZefJJfRlcXW+8Ulp5IOsLkChFOZxKgi9frog
+        3g+OcFgw+dSqjrnqVAG8cnJ/IcICfZQDmyNoF4/+AOYnZ/aIKNejkycmxVobnw==
+Date:   Thu, 26 Jan 2023 15:12:43 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-gpio@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <lvc-project@linuxtesting.org>
-Subject: [PATCH 5.10 1/1] i40e: Add checking for null for nlmsg_find_attr()
-Date:   Thu, 26 Jan 2023 16:55:55 +0300
-Message-ID: <20230126135555.11407-2-n.petrova@fintech.ru>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230126135555.11407-1-n.petrova@fintech.ru>
-References: <20230126135555.11407-1-n.petrova@fintech.ru>
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
+        <u.kleine-koenig@pengutronix.de>, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] at86rf230: convert to gpio descriptors
+Message-ID: <20230126151243.3acc1fe2@xps-13>
+In-Reply-To: <20230126135215.3387820-1-arnd@kernel.org>
+References: <20230126135215.3387820-1-arnd@kernel.org>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.0.253.125]
-X-ClientProxiedBy: Ex16-01.fintech.ru (10.0.10.18) To Ex16-01.fintech.ru
- (10.0.10.18)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The result of nlmsg_find_attr() 'br_spec' is dereferenced in
-nla_for_each_nested(), but it can take null value in nla_find() function,
-which will result in an error.
+Hi Arnd,
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
+arnd@kernel.org wrote on Thu, 26 Jan 2023 14:51:23 +0100:
 
-Fixes: 51616018dd1b ("i40e: Add support for getlink, setlink ndo ops")
-Signed-off-by: Natalia Petrova <n.petrova@fintech.ru>
----
- drivers/net/ethernet/intel/i40e/i40e_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+> From: Arnd Bergmann <arnd@arndb.de>
+>=20
+> There are no remaining in-tree users of the platform_data,
+> so this driver can be converted to using the simpler gpiod
+> interfaces.
+>=20
+> Any out-of-tree users that rely on the platform data can
+> provide the data using the device_property and gpio_lookup
+> interfaces instead.
+>=20
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  drivers/net/ieee802154/at86rf230.c | 82 +++++++++---------------------
+>  include/linux/spi/at86rf230.h      | 20 --------
+>  2 files changed, 25 insertions(+), 77 deletions(-)
+>  delete mode 100644 include/linux/spi/at86rf230.h
+>=20
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 53d0083e35da..4626d2a1af91 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -13167,6 +13167,8 @@ static int i40e_ndo_bridge_setlink(struct net_device *dev,
- 	}
- 
- 	br_spec = nlmsg_find_attr(nlh, sizeof(struct ifinfomsg), IFLA_AF_SPEC);
-+	if (!br_spec)
-+		return -EINVAL;
- 
- 	nla_for_each_nested(attr, br_spec, rem) {
- 		__u16 mode;
--- 
-2.34.1
+[...]
 
+> @@ -1682,7 +1650,7 @@ MODULE_DEVICE_TABLE(spi, at86rf230_device_id);
+>  static struct spi_driver at86rf230_driver =3D {
+>  	.id_table =3D at86rf230_device_id,
+>  	.driver =3D {
+> -		.of_match_table =3D of_match_ptr(at86rf230_of_match),
+> +		.of_match_table =3D at86rf230_of_match,linux-gnueabihf embed a C libra=
+ry which relies on kernel headers (for example, to provide an open API whic=
+h translates to an open syscall), for exam
+
+Looks like an unrelated change? Or is it a consequence of "not having
+any in-tree users of platform_data" that plays a role here?
+
+Anyhow, the changes in the driver look good, so:
+
+Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
+
+Thanks,
+Miqu=C3=A8l
