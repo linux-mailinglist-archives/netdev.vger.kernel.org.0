@@ -2,130 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E6BA67D1C9
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 17:37:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B07367D1E6
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 17:40:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231710AbjAZQhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 11:37:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46344 "EHLO
+        id S232032AbjAZQkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 11:40:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231485AbjAZQhC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 11:37:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27363EC44;
-        Thu, 26 Jan 2023 08:36:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C644618B9;
-        Thu, 26 Jan 2023 16:36:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CBA2C4339B;
-        Thu, 26 Jan 2023 16:36:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674751012;
-        bh=Zc6e+eUqfPJO+05OsGiTtY0oTOxGFgAZIR3Yj5hlt0k=;
-        h=From:To:Cc:Subject:Date:From;
-        b=DEv1NX1vOiHrGyYE5IuvIc04fn6o0YlfYw0nAtVYJIQ9KeS8yzOUWq/+kLv1Dr0/2
-         t41gs0f0I8lNhQvThbzWggkY2wC8fv2UB0J+S3kSGplRk4DOe3KAiqQGqP1kyKjMEA
-         dO1/LR0zCpVA6sIxgL8D53V+NH8NQmC0iNAMcJKBsCVoUb5eI1IsT5IFAlt0sGhkMY
-         HEpu7ijgVmD8xBb4ga+2RBn2QfhfE8KkSizsnGptncBrIuAiJe8GTmGR/jB/7aJ2Ju
-         PZGcSpesBH36VkOJn0LE+sG9y2/6kSFtBfw8wpDSGzBxxE4zAmW8IgrDOUMtnp1uJS
-         lXAxjJlqvjufQ==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S231819AbjAZQkc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 11:40:32 -0500
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D08DB4483;
+        Thu, 26 Jan 2023 08:40:31 -0800 (PST)
+Received: by mail-pg1-x533.google.com with SMTP id s67so1416619pgs.3;
+        Thu, 26 Jan 2023 08:40:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Zsu1XXuoF2/96aeBfEHXZNf0ZiITGZdQYd8L9imSFJM=;
+        b=G2DhB6J50kohw6MFhszVAkdEzfccit7sgqjhotiBJBmbBC5Rben9zQqn7AkvpSOONC
+         ZmwdNFrBFeY6t67lZ8Z3DEWfCpLc1v3JY1SYQR1hyl5c5UXYdftgi51UrlwIA+g8k4rb
+         Uqn7e8+KvSI29Sii9OK/ek5+NB0ANTzRj/dz0rymJvS1VcnCSnYziAeh407uVfMiBkFv
+         tt+ggp3nhpuSkL0v4WqLZo3+zVYP2/ZnwOXl6+oSoOouDSZxkFgVTqT/QQdvZzmajcYl
+         KjQTgHq2h5eenl/tWx5TXH7yq9hOWqbwDf5Qmc8ursfwWn3ehVfgzC0G0Bc1e+uJTYd9
+         EMTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Zsu1XXuoF2/96aeBfEHXZNf0ZiITGZdQYd8L9imSFJM=;
+        b=JeJ/Dd4qK2T3v2u5K4gWmJJpJl7fSS6fK9QNdndUhjo99iRwTFXAcZLqjCDWhaxxLW
+         F0aaDecAaiWs9Rx2fEeayPrE+D4J4mdp+0vzmap/f+1qG35BnstRXmQiPGX/CGjy3Mkp
+         N/NV1qwK+2cBIHnO4sHQztNZH2FPkPwMlYAoaRVzht+cIrEo8/ERH269j7m9Xp3eH8nt
+         nN27NJlMgHFJLUMbcps+0eWNZcMxm0Sy6z7twV2X5Hn/8G8+JnoKzdEm/Hlmz6nfRzVR
+         UT9VrZOd3Is84bwISbGSxN+9ffvKmITyK/tSzUuEKPMP3ebSRaDSE03DJ1m7sWiP9BqZ
+         otrQ==
+X-Gm-Message-State: AFqh2krXl4uOC+GoiHwYa6jcqzQHAaO947bmUOxoYvZDbD45Kqb4OT2X
+        +8TZ7k4X3y2e43DHEA+sKnAjc2hBXge+TPf51fI=
+X-Google-Smtp-Source: AMrXdXtXMPrQNDhCGq+W1jMAH/lYgZoI1xz+u0p+Ha+FNVeDDc/1UrGzG7S35E2P47oA1JasBEWiaxsV60Utpfl3OAI=
+X-Received: by 2002:aa7:8b57:0:b0:589:1130:d3ce with SMTP id
+ i23-20020aa78b57000000b005891130d3cemr4555176pfd.66.1674751231260; Thu, 26
+ Jan 2023 08:40:31 -0800 (PST)
+MIME-Version: 1.0
+References: <20230124124300.94886-1-nbd@nbd.name> <CAC_iWjKAEgUB8Z3WNNVgUK8omXD+nwt_VPSVyFn1i4EQzJadog@mail.gmail.com>
+ <19121deb-368f-9786-8700-f1c45d227a4c@nbd.name> <cd35316065cfe8d706ca2730babe3e6519df6034.camel@gmail.com>
+ <c7f1ade0-a607-2e55-d106-9acc26cbed94@nbd.name> <49703c370e26ae1a6b19a39dc05e262acf58f6aa.camel@gmail.com>
+ <9baecde9-d92b-c18c-daa8-e7a96baa019b@nbd.name> <595c5e36b0260ba16833c2a8d9418fd978ca9300.camel@gmail.com>
+ <0c0e96a7-1cf1-b856-b339-1f3df36a562c@nbd.name> <a0b43a978ae43064777d9d240ef38b3567f58e5a.camel@gmail.com>
+ <9992e7b5-7f2b-b79d-9c48-cf689807f185@nbd.name> <301aa48a-eb3b-eb56-5041-d6f8d61024d1@nbd.name>
+ <148028e75d720091caa56e8b0a89544723fda47e.camel@gmail.com>
+ <8ec239d3-a005-8609-0724-f1042659791e@nbd.name> <8a331165-4435-4c2d-70e0-20655019dc51@nbd.name>
+ <CAKgT0Ud8npNtncH-KbMtj_R=UZ=aFA9T8U=TZoLG_94eVUxKPA@mail.gmail.com>
+In-Reply-To: <CAKgT0Ud8npNtncH-KbMtj_R=UZ=aFA9T8U=TZoLG_94eVUxKPA@mail.gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Thu, 26 Jan 2023 08:40:19 -0800
+Message-ID: <CAKgT0Uc88xF5AjEhpBnr7m_+gnH5WVAoJFC=AVEPY0+qN1BNsQ@mail.gmail.com>
+Subject: Re: [PATCH] net: page_pool: fix refcounting issues with fragmented allocation
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        netdev@vger.kernel.org, Jesper Dangaard Brouer <hawk@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: mscc: ocelot: add ETHTOOL_NETLINK dependency
-Date:   Thu, 26 Jan 2023 17:36:36 +0100
-Message-Id: <20230126163647.3554883-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.39.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        linux-kernel@vger.kernel.org, Yunsheng Lin <linyunsheng@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+?
 
-The driver now directly calls into ethtool code, which fails if
-ethtool is disabled:
+On Thu, Jan 26, 2023 at 8:08 AM Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
+>
+> On Thu, Jan 26, 2023 at 1:15 AM Felix Fietkau <nbd@nbd.name> wrote:
+> >
 
-arm-linux-gnueabi-ld: drivers/net/ethernet/mscc/ocelot_stats.o: in function `ocelot_port_get_pause_stats':
-ocelot_stats.c:(.text+0xe54): undefined reference to `ethtool_aggregate_pause_stats'
-arm-linux-gnueabi-ld: drivers/net/ethernet/mscc/ocelot_stats.o: in function `ocelot_port_get_rmon_stats':
-ocelot_stats.c:(.text+0x1090): undefined reference to `ethtool_aggregate_rmon_stats'
-arm-linux-gnueabi-ld: drivers/net/ethernet/mscc/ocelot_stats.o: in function `ocelot_port_get_eth_ctrl_stats':
-ocelot_stats.c:(.text+0x1228): undefined reference to `ethtool_aggregate_ctrl_stats'
-arm-linux-gnueabi-ld: drivers/net/ethernet/mscc/ocelot_stats.o: in function `ocelot_port_get_eth_mac_stats':
-ocelot_stats.c:(.text+0x13a8): undefined reference to `ethtool_aggregate_mac_stats'
-arm-linux-gnueabi-ld: drivers/net/ethernet/mscc/ocelot_stats.o: in function `ocelot_port_get_eth_phy_stats':
-ocelot_stats.c:(.text+0x1540): undefined reference to `ethtool_aggregate_phy_stats'
+...
 
-Add a dependency on ETHTOOL_NETLINK, since that controls the
-compilation of the ethtool stats code. It would probably be possible
-to have a more fine-grained symbol there, but in practice this is
-already required.
+> > - if I return false in skb_try_coalesce, it still crashes:
+> > https://nbd.name/p/18cac078
+>
+> Yeah, I wasn't suspecting skb_try_coalesce since we have exercised the
+> code. My thought was something like the function you mentioned above
+> plus cloning or something else.
 
-Fixes: 6505b6805655 ("net: mscc: ocelot: add MAC Merge layer support for VSC9959")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/dsa/ocelot/Kconfig    | 2 ++
- drivers/net/ethernet/mscc/Kconfig | 2 ++
- 2 files changed, 4 insertions(+)
-
-diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
-index 08db9cf76818..9b0624a1837e 100644
---- a/drivers/net/dsa/ocelot/Kconfig
-+++ b/drivers/net/dsa/ocelot/Kconfig
-@@ -7,6 +7,7 @@ config NET_DSA_MSCC_FELIX
- 	depends on HAS_IOMEM
- 	depends on PTP_1588_CLOCK_OPTIONAL
- 	depends on NET_SCH_TAPRIO || NET_SCH_TAPRIO=n
-+	depends on ETHTOOL_NETLINK
- 	select MSCC_OCELOT_SWITCH_LIB
- 	select NET_DSA_TAG_OCELOT_8021Q
- 	select NET_DSA_TAG_OCELOT
-@@ -22,6 +23,7 @@ config NET_DSA_MSCC_SEVILLE
- 	depends on NET_VENDOR_MICROSEMI
- 	depends on HAS_IOMEM
- 	depends on PTP_1588_CLOCK_OPTIONAL
-+	depends on ETHTOOL_NETLINK
- 	select MDIO_MSCC_MIIM
- 	select MSCC_OCELOT_SWITCH_LIB
- 	select NET_DSA_TAG_OCELOT_8021Q
-diff --git a/drivers/net/ethernet/mscc/Kconfig b/drivers/net/ethernet/mscc/Kconfig
-index 8dd8c7f425d2..8b1a145971b2 100644
---- a/drivers/net/ethernet/mscc/Kconfig
-+++ b/drivers/net/ethernet/mscc/Kconfig
-@@ -13,6 +13,7 @@ if NET_VENDOR_MICROSEMI
- 
- # Users should depend on NET_SWITCHDEV, HAS_IOMEM, BRIDGE
- config MSCC_OCELOT_SWITCH_LIB
-+	depends on ETHTOOL_NETLINK
- 	select NET_DEVLINK
- 	select REGMAP_MMIO
- 	select PACKING
-@@ -25,6 +26,7 @@ config MSCC_OCELOT_SWITCH_LIB
- config MSCC_OCELOT_SWITCH
- 	tristate "Ocelot switch driver"
- 	depends on PTP_1588_CLOCK_OPTIONAL
-+	depends on ETHTOOL_NETLINK
- 	depends on BRIDGE || BRIDGE=n
- 	depends on NET_SWITCHDEV
- 	depends on HAS_IOMEM
--- 
-2.39.0
-
+One question I would have. Is GRO happening after the call to
+ieee80211_amsdu_to_8023s? If so we might want to try switching that
+off to see if it might be aggregating page pool frames and non-page
+pool frames together.
