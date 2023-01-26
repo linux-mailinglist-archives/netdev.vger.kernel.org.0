@@ -2,195 +2,264 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC0A067C78C
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 10:38:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D2A567C7D1
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 10:54:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229633AbjAZJic (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 04:38:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45116 "EHLO
+        id S236887AbjAZJyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 04:54:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbjAZJib (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 04:38:31 -0500
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7DDE54220
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 01:38:30 -0800 (PST)
-Received: by mail-pf1-x42a.google.com with SMTP id g9so754556pfo.5
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 01:38:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=T20sBMtFZ4um92oypoBuleFJdw1Ex7teC7NKz4p5sdA=;
-        b=fWwRKHHKrG39Kc4FF/yBXXxwKu8HvFqmBuYqzs3XEbaeXS5wSd+fJ2h+3rIfZLj43g
-         4xD9Iuzv7iQoSI/qAI7aS4cgIi59gzoUFFyt91TtyMES+DDyq4iZLuPOha4wL0tgFdSY
-         1T49YPWcQ7JinYpMUyxjZkOZpt9fJnYfJ/CBk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=T20sBMtFZ4um92oypoBuleFJdw1Ex7teC7NKz4p5sdA=;
-        b=MnTHRI1NK64tsrfMTzfttnUVPVrVVRQIN5LGMTzYvcZXH14CwShAcG6SOP0M2mCdj9
-         3zZ65xQwzDyzCenFVdJf8kqUOHXXRNG1Wi0CX6H8B6UxvzLBmiByGn1KtYoP8hkTO3ME
-         RlJ3+krGgJP3x8rLPu6ew+7AgeQmM0lv3DZXCPwukTn0aJ3ndkXntFfwOOac1/uqLGjs
-         2T2OIfPn2NAbGsfNsbO4tNfoimt9EIT3kkN+s1B82sfyKzhc8GDfodTbmZiF90ATnZp5
-         VUayLU24JyvEVS5AwL84RZKrIdaHtPFx8Etw7zZrHXZ9YbX0x7JTmhclJbe/AE4/N5L5
-         C2Nw==
-X-Gm-Message-State: AFqh2koSFNXEPqNX8nFsvlCjDy/rOus6muzpulIVGZMfjJJ0uxtgEKeK
-        n1wJCAIS2pNs+pimjvNWBLIlt1/goC5ONAqIu9KivpqX+ioIGJUkx2g=
-X-Google-Smtp-Source: AMrXdXtL6/TrLV5idgi6N58GKZBnCxwBE0YMQn5Qfl88za7IYi1gTQOxofhBXyZ2/GIEewu52BwJpwWoD1p9pTLzT6s=
-X-Received: by 2002:a05:6a00:1acc:b0:562:86a3:12fc with SMTP id
- f12-20020a056a001acc00b0056286a312fcmr3984175pfv.8.1674725910225; Thu, 26 Jan
- 2023 01:38:30 -0800 (PST)
+        with ESMTP id S229543AbjAZJyf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 04:54:35 -0500
+X-Greylist: delayed 904 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 26 Jan 2023 01:54:33 PST
+Received: from sender4-op-o16.zoho.com (sender4-op-o16.zoho.com [136.143.188.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7171C13D55;
+        Thu, 26 Jan 2023 01:54:33 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1674725950; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=W0nDO9DQodspNukYT6V5BYIuHa74HKPqmZ+pODiSveIj3QcXOEd22N3l139v4EaBblaD4IoVPebT2zYCZzdlI2/AuFJsGteCUTGT7fQVLarZtGrwxyEFwu0g9U+dZiLCD4g87JJJoDCbNW8s+n/UjpWDfhcp8LO9lXUwGZ0aJg8=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1674725950; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=eM3PwY8UosSKUAZF2lEDlTETPPYFIpm4Y/WcqRwKK4w=; 
+        b=Q7xXzERRYwNAp8h+nlyfWvGmMgsX/oAhanyC59XALq7Se9rov51sy3Y++aOBHXuLHBTX00QXcQZ7UDykZOuQuVvcrkO0Ac0bF2vWz5Qyn7FTh6DkthcYzVyOBJfXezwG0FcCCjglRDOYbYrqu2FvzJNuoY54hkpOvaLWemOt7/M=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1674725950;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=eM3PwY8UosSKUAZF2lEDlTETPPYFIpm4Y/WcqRwKK4w=;
+        b=EQy5kCL2+wjxUUD7U+S/BKMAZH1jgm46DDW+JFM4VviLwid0kImxdqNzYi8OZCoE
+        uYkhj+VbutDPcPe1T340264HjY6mX9FEwooe6jVUw6UPOup1d77yFF23L0pOgabnyZf
+        E7EYFXlQVw3geQ2auLNxx/+mnzBnnhS7mUte3b/0=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1674725948622795.6681702059498; Thu, 26 Jan 2023 01:39:08 -0800 (PST)
+Message-ID: <d6201a04-96dc-abb5-147e-39ab24dfbcae@arinc9.com>
+Date:   Thu, 26 Jan 2023 12:39:01 +0300
 MIME-Version: 1.0
-References: <f4461b32-852f-da7e-a893-97e08c455e44@linogate.de>
-In-Reply-To: <f4461b32-852f-da7e-a893-97e08c455e44@linogate.de>
-From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
-Date:   Thu, 26 Jan 2023 15:08:18 +0530
-Message-ID: <CALs4sv1G6Fa8isc9YymUyJona3f8zxzLorH2ATvjpK3Yum7rqA@mail.gmail.com>
-Subject: Re: Problem with xfrm interface and bridged devices
-To:     Wolfgang Nothdurft <wolfgang@linogate.de>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000000078d805f32783f9"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net] net: dsa: mt7530: fix tristate and help description
+Content-Language: en-US
+To:     John 'Warthog9' Hawley <warthog9@eaglescrag.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, erkin.bozoglu@xeront.com,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20230125053653.6316-1-arinc.unal@arinc9.com>
+ <20230125224411.5a535817@kernel.org>
+ <dd21bd3d-b3bb-c90b-8950-e71f4af6b167@kernel.org>
+ <1f0e41f4-edf8-fcb5-9bb6-5b5163afa599@arinc9.com>
+ <56b25571-6083-47d6-59e9-259a36dab462@kernel.org>
+ <c4b65e0d-ce10-1fa4-d468-ba50a5441778@arinc9.com>
+ <9539b880-642d-9ac5-ccfa-2b237548f4fc@kernel.org>
+ <9ede1ace-4d10-142b-3dc1-6bcd87d9e646@arinc9.com>
+ <191747ad-fe90-7510-055c-1a31771818e5@eaglescrag.net>
+ <78e7c3c3-4d8b-3812-28f6-cd04297d465c@arinc9.com>
+ <173da36f-e912-4f41-a15d-ee1542766ac3@arinc9.com>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <173da36f-e912-4f41-a15d-ee1542766ac3@arinc9.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_BL_SPAMCOP_NET,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000000078d805f32783f9
-Content-Type: text/plain; charset="UTF-8"
+Removing lists from recipient.
 
-The SubmittingPatches and the Netdev FAQ documents can help in getting
-this patch in the proper format.
+On 26.01.2023 12:13, Arınç ÜNAL wrote:
+> On 26.01.2023 12:00, Arınç ÜNAL wrote:
+>> On 26.01.2023 11:51, John 'Warthog9' Hawley wrote:
+>>> Popping the lists off -JH
+>>>
+>>> On 1/26/2023 12:24 AM, Arınç ÜNAL wrote:
+>>>> On 26.01.2023 11:12, John 'Warthog9' Hawley wrote:
+>>>>> On 1/25/2023 11:48 PM, Arınç ÜNAL wrote:
+>>>>>> On 26.01.2023 10:45, John 'Warthog9' Hawley wrote:
+>>>>>>> On 1/25/2023 11:34 PM, Arınç ÜNAL wrote:
+>>>>>>>> On 26.01.2023 10:23, John 'Warthog9' Hawley wrote:
+>>>>>>>>> On 1/25/2023 10:44 PM, Jakub Kicinski wrote:
+>>>>>>>>>> On Wed, 25 Jan 2023 08:36:53 +0300 Arınç ÜNAL wrote:
+>>>>>>>>>>> Fix description for tristate and help sections which include 
+>>>>>>>>>>> inaccurate
+>>>>>>>>>>> information.
+>>>>>>>>>>>
+>>>>>>>>>>> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+>>>>>>>>>>
+>>>>>>>>>> Didn't make it thru to the list again :(
+>>>>>>>>>> Double check that none of the addresses in To: or Cc: are missing
+>>>>>>>>>> spaces between name and email or after a dot. That seems to be 
+>>>>>>>>>> the most
+>>>>>>>>>> common cause of trouble. Or try to resend using just emails, 
+>>>>>>>>>> no names.
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> You are also likely to run into trouble if your character set 
+>>>>>>>>> is set to UTF-8.
+>>>>>>>>
+>>>>>>>> I think that may be the problem here. I just resent this with 
+>>>>>>>> only Jakub and the lists without names. It didn't make it to 
+>>>>>>>> netdev. My name includes non-Latin characters. I'm not sure how 
+>>>>>>>> I can change UTF-8 to something else that works with this list. 
+>>>>>>>> I had no such issues with linux-mediatek.
+>>>>>>>>
+>>>>>>>> Arınç
+>>>>>>>>
+>>>>>>>
+>>>>>>> So dug it out of the logs, you aren't running into UTF-8 issues, 
+>>>>>>> so that's good.  However your mail client is appending 
+>>>>>>> 'Delivered-To:' to the messages, which is a significant indicator 
+>>>>>>> of some weird mail problem for lists, I.E. why is a message 
+>>>>>>> that's been delivered being passed back through to the list, 
+>>>>>>> which is on the published taboo list:
+>>>>>>>
+>>>>>>> http://vger.kernel.org/majordomo-taboos.txt
+>>>>>>>
+>>>>>>> What are you using to send these messages, as that's a header I 
+>>>>>>> absolutely wouldn't expect to be on messages heading to vger?
+>>>>>>
+>>>>>> It's just git send-email on git version 2.37.2. Zoho is doing the 
+>>>>>> hosting & SMTP.
+>>>>>>
+>>>>>> Arınç
+>>>>>>
+>>>>>
+>>>>> Best I can suggest for testing is try sending the patch series to 
+>>>>> only the following 2 e-mail addresses:
+>>>>>      to: testing@vger.kernel.org
+>>>>>      cc: warthog9@eaglescrag.net
+>>>>>
+>>>>> That will cut out more or less everything in the interim and might 
+>>>>> get me a better look at the series.
+>>>>
+>>>> Done, thanks for looking over this.
+>>>
+>>> Got the the patch, and the test list does flag it for taboo, so at 
+>>> least it's consistent.
+>>>
+>>> Looking at the headers to my direct e-mail it's still got the 
+>>> delivered-to header so zoho is doing something they shouldn't be doing:
+>>>
+>>> Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com 
+>>> [136.143.188.14])
+>>>      by mail.monkeyblade.net (Postfix) with ESMTPS id 7F14F83ED027
+>>>      for <warthog9@eaglescrag.net>; Thu, 26 Jan 2023 00:17:53 -0800 
+>>> (PST)
+>>> X-Virus-Status: Clean
+>>> X-Virus-Scanned: clamav-milter 0.103.7 at shards.monkeyblade.net
+>>> Delivered-To: arinc.unal@arinc9.com
+>>> ARC-Seal: i=1; a=rsa-sha256; t=1674721072; cv=none;
+>>>      d=zohomail.com; s=zohoarc;
+>>>
+>>>>
+>>>>>
+>>>>> Only other thing I can think of is how is git send-email 
+>>>>> configured? Where the 'Delivered-To:' header is in the headers 
+>>>>> makes me think that it's added somewhere in what zoho is doing, 
+>>>>> which doesn't particularly make any sense, as that would imply you 
+>>>>> are sending it to yourself and then it passes it on?
+>>>>
+>>>> My .gitconfig is as follows, the rest is straight out of apt install 
+>>>> git-email.
+>>>>
+>>>> [user]
+>>>>          email = arinc.unal@arinc9.com
+>>>>          name = Arınç ÜNAL
+>>>>
+>>>> [sendemail]
+>>>>          smtpEncryption = ssl
+>>>>          smtpServer = smtppro.zoho.com
+>>>>          smtpUser = arinc.unal@arinc9.com
+>>>>          smtpPass =
+>>>>          smtpServerPort = 465
+>>>
+>>> That looks utterly boring and exactly how I would hope to find it, so 
+>>> that's probably not it.
+>>>
+>>> Between that config, and the headers I'm seeing from zoho to shards, 
+>>> noted above, I'm pretty sure they are adding it and they absolutely 
+>>> shouldn't be...
+>>>
+>>>>
+>>>>>
+>>>>> I'll admit zoho is one of the mail providers that has a tendency to 
+>>>>> reject a lot of mail coming from vger and has been unresponsive to 
+>>>>> any queries I've made on that front (though I'll note your domain 
+>>>>> is not on the list of domains that are having problems there).  
+>>>>> Only other thing I could suggest is pinging zoho technical support 
+>>>>> and asking them what's up, as that's a very odd header to have there.
+>>>>
+>>>> I'll see what I can do. I've been getting suspicious header mails 
+>>>> from linux-arm-kernel and pabeni@redhat.com's mail server outright 
+>>>> claims Zoho's SMTP IP as spam.
+>>>>
+>>>> Your mail to 'linux-arm-kernel' with the subject
+>>>>
+>>>>      [PATCH net] net: ethernet: mtk_eth_soc: disable hardware DSA
+>>>> untagging for second MAC
+>>>>
+>>>> Is being held until the list moderator can review it for approval.
+>>>>
+>>>> The reason it is being held:
+>>>>
+>>>>      Message has a suspicious header
+>>>
+>>> 1 $local_currency_unit says it's a 'Delivered-To:' header ;-)
+>>>
+>>>>
+>>>> ---
+>>>>
+>>>> This message was created automatically by mail delivery software.
+>>>>   A message that you sent could not be delivered to one or more of 
+>>>> its recipients. This is a permanent error.
+>>>>
+>>>> pabeni@redhat.com, ERROR CODE :550 - spamcop.mimecast.org Blocked - 
+>>>> see https://www.spamcop.net/bl.shtml?136.143.188.14. - 
+>>>> https://community.mimecast.com/docs/DOC-1369#550 
+>>>> [nSq2mM6RNqWOxCrbHVMv8Q.us380]
+>>>
+>>> Hmmmm wonder what they ran afoul of to trigger spamcop.  The IP isn't 
+>>> listed on mxtoolbox ( 
+>>> https://mxtoolbox.com/SuperTool.aspx?action=blacklist%3a136.143.188.14&run=toolpage )
+>>>
+>>> and weirdly it's also not listed on spamcop.net itself:
+>>>
+>>> https://www.spamcop.net/w3m?action=blcheck&ip=136.143.188.14
+>>>
+>>> Could be a generic response message via mimecast but it might be 
+>>> kicking it back similarly on the odd headers.  Either way something 
+>>> is definitely wonky with the way zoho's handling e-mail and
+>>>
+>>> On a side note for Paolo, any way you can check with Redhat IT and 
+>>> see if they can fish out a reason for the rejection from their mail 
+>>> logs? Might prove helpful to Arınç, though I'm not entirely hopeful 
+>>> for Zoho's support being able to remedy this.
+>>>
+>>> Your best bet is to check with Zoho directly, my own experience tends 
+>>> to be since I'm not the paying customer I tend to be ignored or 'we 
+>>> can't talk to you'.  If you need any logs or the headers let me know 
+>>> and I'll snag them for you.
+>>
+>> Let's see if this mail reaches the list. I suspect Delivered-To: 
+>> header is being added by Zoho when git send-email automatically adds 
+>> my own address to CC. My normal responses end up on the list fine.
+> 
+> I forgot to add the lists back, oops. Take two.
 
+Yeah it didn't reach the list. I'll tell Zoho to stop adding this header 
+when my own address is on CC. Thanks for the help John!
 
-On Thu, Jan 26, 2023 at 2:20 PM Wolfgang Nothdurft <wolfgang@linogate.de> wrote:
->
-> Hi there,
->
-> when using a xfrm interface in a bridged setup (the outgoing device is
-> bridged), the incoming packets in the xfrm interface inherit the bridge
-> info and confuses the netfilter connection tracking.
->
-> brctl show
-> bridge name     bridge id               STP enabled     interfaces
-> br_eth1         8000.000c29fe9646       no              eth1
->
-> This messes up the connection tracking so that only the outgoing packets
-> shows up and the connections through the xfrm interface are UNREPLIED.
-> When using stateful netfilter rules, the response packet will be blocked
-> as state invalid.
->
-> telnet 192.168.12.1 7
-> Trying 192.168.12.1...
->
-> conntrack -L
-> tcp      6 115 SYN_SENT src=192.168.11.1 dst=192.168.12.1 sport=52476
-> dport=7 packets=2 bytes=104 [UNREPLIED] src=192.168.12.1
-> dst=192.168.11.1 sport=7 dport=52476 packets=0 bytes=0 mark=0
-> secctx=system_u:object_r:unlabeled_t:s0 use=1
->
-> Chain INPUT (policy DROP 0 packets, 0 bytes)
->      2   104 DROP_invalid  all  --  *      *       0.0.0.0/0
-> 0.0.0.0/0            state INVALID
->
-> Jan 26 09:28:12 defendo kernel: fw-chk drop [STATE=invalid] IN=ipsec0
-> OUT= PHYSIN=eth1 MAC= SRC=192.168.12.1 DST=192.168.11.1 LEN=52 TOS=0x00
-> PREC=0x00 TTL=64 ID=0 DF PROTO=TCP SPT=7 DPT=52476 WINDOW=64240 RES=0x00
-> ACK SYN URGP=0 MARK=0x1000000
->
-> The attached patch removes the bridge info from the incoming packets on
-> the xfrm interface, so the packet can be properly assigned to the
-> connection.
->
-> Kind Regards,
-> Wolfgang
-
---0000000000000078d805f32783f9
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-OltyqaGBuzv+bJTUL+bmV7E4QBLIqGt4jVr1R9hJdH6KxXwJdyfHZ9C6qXmoe2NQhiFUyBOJ0wgk
-dB9Z1IU7nCwvNKYg2JMoJs93tIgbhPJg/D7pqW8gabkCAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUEV6y/89alKPoFbKUaJXsvWu5
-fdowDQYJKoZIhvcNAQELBQADggEBAEHSIB6g652wVb+r2YCmfHW47Jo+5TuCBD99Hla8PYhaWGkd
-9HIyD3NPhb6Vb6vtMWJW4MFGQF42xYRrAS4LZj072DuMotr79rI09pbOiWg0FlRRFt6R9vgUgebu
-pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
-25Azqtwvjt5nbrEd81iBmboNTEnLaKuxbbCtLaMEP8xKeDjAKnNOqHUMps0AsQT8c0EGq39YHpjp
-Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIHQK8t9R4pdf6nEkA6BxYiDSXNa//KeM
-cZ8+pBJttgysMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDEy
-NjA5MzgzMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBR65lATvlsgLtqJMG6TNQDLCJJxi1QhP3McdotydCkoUtKXomJ
-qtrkshj0GK/bM+0tYLnoUgJe9YrFp90rF6P/E8ho4a0HutY38KckbHGhouwTYhTbi5L/nJz9lZbL
-OCwIfHr0h8ROVTpfFP5MPBxI36M929n2N64Cc9GBGhgufRnSNYzyHlj7N92zwnDg9d5n+2bHE4Ta
-NNVIlcNw7n4C9lU1eoSa89Z2WBH24gVPX4e37Rm70OBiAlO6czs7I9PMuiTKBYyda4vEKPu258HS
-P+yObolFZLQV8+MeOjCt1zqBcfp56ETyU8wpcvMOAqVnQSSlMIIDv/NvesGQqgxh
---0000000000000078d805f32783f9--
+Arınç
