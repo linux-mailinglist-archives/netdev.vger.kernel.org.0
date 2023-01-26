@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B88B67CB4C
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 13:53:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B3CA67CB4E
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 13:53:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231201AbjAZMxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 07:53:41 -0500
+        id S236314AbjAZMxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 07:53:48 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230244AbjAZMxk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 07:53:40 -0500
+        with ESMTP id S235569AbjAZMxn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 07:53:43 -0500
 Received: from EUR02-AM0-obe.outbound.protection.outlook.com (mail-am0eur02on2061.outbound.protection.outlook.com [40.107.247.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00FAC2B619
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 04:53:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D7B2B619
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 04:53:42 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=asA8SJ0Uu0QQutSFRqKhWScgla090MmEw8h9W0uuyFikdWAdcE0DNaVYOQGR0X8ybF0DpHmq0Y9LwxiHV/vXq7fevImautYHXhEbWfAAGCX+6hx+7nEW/IgtXywL7Q2JBlnbQMJyF9FdVS5Kqnu3YOdy0eDeH4IR75g7n/W81MwiT/eune53A5bf/LcTvGEBi9OR7xbBulR02iWLnhOsRvAxiM332uwL5oF+DV8c6fU/laT/cnSLeJ/Eblwqk5FDm5Nxk3iOSv7Hdk/dp4hZf040Znip4+JuSBeMw/icxXpGY+1qYHgeR42ajCYhSiJwM2BdTSnb25ki5Qp4OSRTjw==
+ b=fMmlT12YokYtdWZUzB6mC9Z6hR7F1j9C5FvEhdK442RuNCGDcU7kbJwkPBbQBq3QdVRrVUQeM2E/KXGgxZmP1GZwcI6UjrXTnV2NI9FCvGxM3oPhfbE0WbicEmOIhCuczLQXEGNXAotCUPViCAA79Y/MLEDHkj0kHz7oXPwik1ZVFmTL7Gyj9VyAmgOp2qEZcEw1SFFYac4ERBvhXeEfCKhc2W5aB1bTsNwp0wGmvtECdSA47AeQ2zt1CfLlj4nJR53XhvVpJkVTUE1Zpewlv73sAarD7sDb43nYhwKy2rqw1xQcW0dsZ1GPH3ibGXnpOVC9zs7D33iOnRfp6MELFQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6oSbk28IqTzQyLtqioc/vfCkbFIUAaInlbF+vYYFr6Y=;
- b=SgUbi4wmC9u+T2iIAOncqnxum9EJ8QOcU1e9L4IGC2RuVrgWYJhpXr5ltj0gb8fZRY50EFIHWmEvpnXpJiCYeRdOiYF+9r0HD+JqkEbOv39KG8MtwM6iALlLqstN+owNkEt1ZJo229MUNkwQIhdPyKXJ6vBNaPvLJBmpHTS2xIEfKgPbJ1jw1BnsCmZtmtN7nKkjQGY+h99nmWsfG7+t1vqlmdKW/wXxiTtqbq1/fWDiuFDJthoF6CA240zSEiDNN7BO9LZB1eM/aLbIgMXpLqOmMhKj27WfAQvdEGOEfR0pgWwZE0boOkvlB9ebZ/3Wg5pagRamThAfhq1TW2QVpA==
+ bh=xtlPqUmBkWwnPvOXXr8NvMr6svEqGlwO0E3nP7YdIxM=;
+ b=luRQFgKdtLzjc03kDv+ETq3xNkiEImjAOuKtfjqS/578Enu7zeYqY8pgiQAqeHLEXIbKlzllyzaTlc3YKIkaCj9jxQyHxI6R2UMwYduS/Jk6qUrxCIsikvj9EgmXBQeb1l6qLywYjKbkatUvgZNV1FfFe14uy1038QH3lCZ3DPBqf8Oq18FG4PVncazCvqOqS7jcB7Z/RGjLClgErFBXfwvwXQkvX5lfplbzgUevScW5BTw0yfBC2W08ovpChBfeyKKhsur++hb2bbg52B9/Bo/aId5Jm9xg2wXCvVVfGCHWDj6R12DItl8btVUN5al+9XcYXfbXgi8EGOzRVvm8bw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6oSbk28IqTzQyLtqioc/vfCkbFIUAaInlbF+vYYFr6Y=;
- b=RlXuVx2ZYwYMSSxAsjQ4Ua1xdhTt+N4I/fkcn/bcpQFI3zVSJizoqcyD1mLLZKVtw++QnLIGaCgZMXSzRoKHbabDyWq9SIZSiNl6EsoOEqt2NsyOdDaepu0C6o3LeBmWByY8wK5+YnucX0B3kB0yRRpmzyrCP1KVfg1WxiLoGIw=
+ bh=xtlPqUmBkWwnPvOXXr8NvMr6svEqGlwO0E3nP7YdIxM=;
+ b=jmT+VH6EfUxZf4fGQHC18oxzFYqygS/0qx5TOSU/E7IMjl0yYSaP5yDE9wUYkr0758NKdrgJcugry/aX1jnSbkHItcUZmjeSwEn7KdJ4PRfUdC3Q052i08ksQj7JVfvI0wJVPsHN0znrj+Nyl5sL1qDYc91ZnEtspdb8he34mYY=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by AM8PR04MB7795.eurprd04.prod.outlook.com (2603:10a6:20b:24f::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.21; Thu, 26 Jan
- 2023 12:53:36 +0000
+ 2023 12:53:37 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b%7]) with mapi id 15.20.6002.033; Thu, 26 Jan 2023
- 12:53:36 +0000
+ 12:53:37 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -49,9 +49,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Vinicius Costa Gomes <vinicius.gomes@intel.com>,
         Kurt Kanzenbach <kurt@linutronix.de>,
         Jacob Keller <jacob.e.keller@intel.com>
-Subject: [PATCH v2 net-next 01/15] net: enetc: simplify enetc_num_stack_tx_queues()
-Date:   Thu, 26 Jan 2023 14:52:54 +0200
-Message-Id: <20230126125308.1199404-2-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 02/15] net: enetc: allow the enetc_reconfigure() callback to fail
+Date:   Thu, 26 Jan 2023 14:52:55 +0200
+Message-Id: <20230126125308.1199404-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230126125308.1199404-1-vladimir.oltean@nxp.com>
 References: <20230126125308.1199404-1-vladimir.oltean@nxp.com>
@@ -63,51 +63,51 @@ X-ClientProxiedBy: BE1P281CA0123.DEUP281.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM8PR04MB7795:EE_
-X-MS-Office365-Filtering-Correlation-Id: 366657a4-7c30-4b72-9c4e-08daff9c567f
+X-MS-Office365-Filtering-Correlation-Id: 90a052bf-c3b5-4b17-091c-08daff9c5711
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: T3yFwx9jXMMyeFcQEwyHpGktDGmBsscy0KVdAp4AV8/CEaJoAFEV23OV5paz6qRRzO3C7NY4zurRivXiwLsUB478WPcCuj+kPTsYai6mqy65pDrRlrmBPegnK09OpwVqEyZh3GU4IdJhryXPRbZd/39owYV1RWZal8Xsu/ofbdBnwWudjqdSW0+NyaCVDP6ziSkBY+B1vM1Z+1rMUhZKblhtpVPSuVtcdOFQDpXbY02OthecVni99wTgrwPkW/cahCcFuqjCyvFbsWDArT0aAY2VeHUHGg18ItuZiO+Jzxmyy9cnzEHLx3pgaxrfntViqVZaLYA4PAo/sr4PtVzFzI4Zvm2+2qAUYLKQGfTsO2YfPP018Y6pbRbCoIMEbgujp+VBKLWfPRmLrhvKLfWawSqcjXSb8dFdBAg4e4uOzP184YFIbLDZTyFKwHb4sgrZtlreVg0VmrKjr90KqYdSvBR5QnCqURpiGGpR0XCk6kvOpMPX5Y8hC2+V8v8TJSFmxzwtZ8o69tMY/NBRlnQOL7/4dAzuQvAKdwnuGFsVo8ZMs1nIMagQqTRn3EvQygG5CyAvqrcqwBFGaUggHz4SeAlovq+RDsh/CPnzVtOgJlPN0cP5kkGQY+dGIH+1PN6bklDGkZE3cuwZUacEO2Q4eT2bfFi4SImlNNnEIEFiD+7TkyhujrTWh0Pz9xg1KEBOB/D4TGy9h/D1Bv/VQwaq4A==
+X-Microsoft-Antispam-Message-Info: XmdsffoXqMJxozHnodHe5qb2QBHToqSeMIj1loATfKudTsEYcnYq8EiiT7Fra51W7kwrx6MVZ586gsKBooAp7txy4AeDPwPCVpjKa5hF6mXPkc4NGXKH8n0Ig6EMF/nGEuMT/PdoC6SeV/110bZ1tGCLDNWOOIZQiArdqEJ8t/PranPwzmmXOTjz8kTN2NReYs/BK1prA27ZY7Ei+DA8zoMKu7kgmFyAEljdAvFwcex1DBCXCNb3sU4vJhuZKZyUVMmNOiVMa4udVp06hBKBSLVAPnJ8I+uRRd5Gmp6nNizJ1htzcEoCcuKdbjtZ3EUeA+Tuqv2GT/2MCX2DysfwoMl6pmWE5p3PU7QdrsGH9+wXtO2XrvrEhYjL1CiC/0mMuCRTZjXYLoHsWgCGv8V/erTYfyCurDgZWuttzE9EcrH5dtUPYTZGVpR+SVUpePIyRRraX6Jn+JOm3ysVFqaUxClKboL9H9c2fVJD75kzE0OzMTLoEDffpoI/eJMOHhCNOLOn/cTYIYhutJdlWYK//1jLe/eCwvlxhTG48m8391gT0HNP6Y3FmYPx0PaCFChYiN9I2Q8ZRO0ckbxa7cSav4szYLzQJgjwUz21GpjfvPKU+BoVjL58zX2266mzI0+X0ht0KhxJs66F8nC8wCfjnSU1JIt7Rouko5uN1JI3ifZfCjpQ3f0A3O8rP/OUjS5fIDpS45N7bvitfKjXbdl+oQ==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(396003)(346002)(39860400002)(136003)(366004)(451199018)(478600001)(6666004)(1076003)(66556008)(6486002)(26005)(6512007)(316002)(54906003)(66946007)(52116002)(4326008)(66476007)(8676002)(41300700001)(6916009)(2616005)(83380400001)(5660300002)(8936002)(6506007)(44832011)(2906002)(186003)(86362001)(36756003)(38100700002)(38350700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ge7/zax7t337wMsRdyni7mbohBdaN8zqwXjWziGsG9YtEfgmD4U+5hABV5nX?=
- =?us-ascii?Q?VTQBGuSEzIc0hGu0kdYDpCoRs7tMJeg2nfhQ6Y/L+ipghMsrU/sIA9VD4Ok2?=
- =?us-ascii?Q?hPt6Z3Gly1TA05WBDono+7n5qVsLoO5Kz3OJtLfTUv9CCQ94FSgocLlkhYT1?=
- =?us-ascii?Q?a4seeuXCu5cQanYgWvv2SaSsu47znNrPpdvB2Yvx3tFAsvNKegvKhH64O/iT?=
- =?us-ascii?Q?Zsng7VIr+9Er35EdQjQ70ZqYa/pUkd+9O9LcitYPrDx0q4TLrADKhO1wjBU5?=
- =?us-ascii?Q?fwbzFC2B15jdGAVglzUL8gEdp2L3UVFWQSPpqV1/GCrC0r7YRV9e2eqg2VXQ?=
- =?us-ascii?Q?5cVk4y3c+Xoi87zN4lfrVJYL7UCKZIRTx8xXIIShDYU445oNtS2ADwcYHaOF?=
- =?us-ascii?Q?8j7XCtutYE9fQaoRCDh2cWN1oSyseiPiRAGr48pkRgYmEC/wg0aU/DKslbVW?=
- =?us-ascii?Q?emr7pyoAHNq5y5qNV8zTwPapK7UzjO4NfQkonLNjAtiDc+pucxAFygXn7asD?=
- =?us-ascii?Q?IbnJgRsaXMd4mM8XdXHyZ6TcD6TUl1eE+17nL24UQHkIFvMuhYeLJ6rZuu4j?=
- =?us-ascii?Q?kJARg7CBrXNpKIRbMfU/DjEaiPBVkKO0yPdA9MAiWuTGOYL65G+mBEmbobbO?=
- =?us-ascii?Q?gCa2z0ARh0Ls+p/1Yhz2Z4jNEDxrST8fZSCt/mDOqZ0iS3kZYVloUTvJTwRG?=
- =?us-ascii?Q?QdHPTa4Eq1jtGX4LO8oa0O3fvODZJeUueuwsju42CvQ96q+J+XCqPJlaLCy3?=
- =?us-ascii?Q?F9wgHqC4nZSGii+Poj5DJy8CgQHIWC5JHajqdz22WIiTYgQ7K4lF+JDWHSgx?=
- =?us-ascii?Q?5+H7OpvyzY+bSYX67dTZpNP7Vw16YnvD953NiAdFLTfgYo5xI6v2F/XhPdkN?=
- =?us-ascii?Q?rVX7aqUXAX73Ft/wMB1ZjMHuD0LKEJdib0Pb/bfJ7zDT1byR3MqeK1nQi07p?=
- =?us-ascii?Q?xA2OoO4BOsDu2VW5kNNXW6rKycYMELaYPwNvuPtcIDdw9LUfwjvv0trw3Nos?=
- =?us-ascii?Q?XkkfBKmGg8c3jYzRF2wo8E9N/Up7r80G0bYi/PwK/ihTT8JENQ3muKJxTpha?=
- =?us-ascii?Q?/QLkelFbBTLRrYG/NMBn7erj6bKh2yA3UlK0Yb0byaod/0c3vvT2nK/9qgq8?=
- =?us-ascii?Q?Ns/eBHYDwzAqjKDotlGGtD89DnMZtTCYhitQrI7ZXJC4c2zvPpu0VVfzLfqD?=
- =?us-ascii?Q?8tVWzCbDApw5HRAr3+fndojZNJZoo/aAPHMRVVqRBn3cJjQ/Cl3wo+YaCt+k?=
- =?us-ascii?Q?Kiyz1JmPDz9srQJ95GzMTVGQzBiBGbhf2TOT+MUSfICyEfKkI8PDjuVtwr3q?=
- =?us-ascii?Q?L3hY2FgUsA0G3aX4wT4pb+IPWsw3CQuSEn/XBzdUQ8CveCyl73uScRMsGPsd?=
- =?us-ascii?Q?QE4rWR46UK4TCLkNCgGtdzNJxGQ8VxE+JmgsiN9l7500qsk1EAG0gRJGVljL?=
- =?us-ascii?Q?KNWNloC+9q+fyYRgrtNi8DeNAK08WQXipZvXfHeE6rIRkVCVCpvamoQyH5Oq?=
- =?us-ascii?Q?nspzyrTI7uvIJexhgd4fdoBGj2vIDQDAMwZF71UIL979P5MRIKrdr89Jk7rp?=
- =?us-ascii?Q?2yi5Zul05gXqFdx3eNDLr+sJErkJ7UcdrU3JsYxyb3Gm6eRjGnxZeP9ZVDH7?=
- =?us-ascii?Q?wA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?STYcBg+c5rgy+QiJExdDXUJdTRECqbaR+0tetYzKRrB08/QWUKsSlMy2slnk?=
+ =?us-ascii?Q?oLC3Z/pKBZaS7Qbg8oH2dGz7m1RbSiTXu+aMktbkmuEHp2K1Etfaae1K7Nvb?=
+ =?us-ascii?Q?FMSN7uwdC4yAhUMuo+gP1myo1Gjys/A13cSdtSVJel8acpezEnL/JZG+vx7O?=
+ =?us-ascii?Q?CotksifVAoNkFNyY7WQxgw6LysoVsXm0hLRFv6FzpSeQQJmeEE5mVkQYoZGs?=
+ =?us-ascii?Q?d7cCcIwR7gPvqJnWpLwP9sQTNdK3HDHaJr1mRqCqnFfOueCFOXss/6MXi43W?=
+ =?us-ascii?Q?AIXFVzbdFFiu49sZQ76RSlNvPq0Jxavp8jeUkckbv5mOnkh4jmQrNdr5lS58?=
+ =?us-ascii?Q?iutmaBewT96liXFJg3JZNE+ngJlKUCPM8RJe5mGUWr1mxHUcCGxeEqWLFm4B?=
+ =?us-ascii?Q?SDtNyRWyvEweZB0tSCkmZowB+2rUcFKx1i9OzDUzn1BsScW39qr+7G6QinIk?=
+ =?us-ascii?Q?DSr2U3BHswCdCOUFiE1DXZUS3/FykFY3CFIwKmOnuQLx9+xiUicyo0bnsDsC?=
+ =?us-ascii?Q?fve9q4Y0r0jKWLncjxc2NiSN12kcgh1KLK8peR/nldBZa5D13I0klXestq+n?=
+ =?us-ascii?Q?z8hEW0+qVvApxpFYWV9ZHRLsDalkLVuqqn3raC1zWLstdASzL57gYa2QTCsf?=
+ =?us-ascii?Q?E+xDeYDxu19+d2H0FnO/vs/DtsiEewJVfwya7LOQT/nAr9I0PjhfHefbf3/W?=
+ =?us-ascii?Q?ST1ooCo3KIw27Q/9RWfqIytDvPL7yiw878ABgkedmrZ3G6k4G4uAXc7FYNeo?=
+ =?us-ascii?Q?toXgDtSLUiE/o1EbxgelHz0MYOGb9z/fCjcdTR5J9msVFb4XQKoMXpMQ30bn?=
+ =?us-ascii?Q?FQ+dgqXaGKuRg+Ve9qj9dEs5k0QsXRimzFbOAjIWY52bx48rFtD+5wZ0dToe?=
+ =?us-ascii?Q?gGYDayupPgABkuqMdQQBK5R3lZGzkS8tb+YesuRk5n3LmdbVtPmCZlHBUBjl?=
+ =?us-ascii?Q?kXn9N4C3S9NGdaUODz/xMTbHWYs6kLK1XcJfqUcOK/rKNJjKIzSib/NUmSFX?=
+ =?us-ascii?Q?ZZt1a5ELPIrianZ/oLJr+DD0Qdg1gttUrJCH7UQJIiY5nhBl2YXrH70lbBmD?=
+ =?us-ascii?Q?4LWhnTQN3EVx0GxvEiEGm/v9wv/IN4JrGUhm723PiTbyVnRWWsXZ0pzlg1l2?=
+ =?us-ascii?Q?xzp0GlynL+1PeXRuHNrW8fBV3h+Aw82SqBjExibFd/DlonVpyi/+lsZgJbqi?=
+ =?us-ascii?Q?67T8IMBf4yip3aL/Z3MgPKXF9b4Rqk5R9y8CNgi5CyJIV74kbx84ds9tMPKv?=
+ =?us-ascii?Q?0hHu6ofYRQXUNmUn07ZEKSfRK2Q824WRpHd4E2IoW0kzsvbU2NIrcuQP6g9C?=
+ =?us-ascii?Q?bvEtdcTR3S3DSdQ+IWr9J51VNzK0Kqyz5abDmzXJmJe3r7kPAgEdea+kYZus?=
+ =?us-ascii?Q?9zihX0DuD9B5ErzdGWAjfX9ZOuMUgKCsJlw8L8NttOsQ8BP83Qe5sNfQ7M3s?=
+ =?us-ascii?Q?gUmRHZLqJFKBaC7dff3UG6SxGuwaWHKgXVsUiPcFP9pu16VGma/bkkjM85+x?=
+ =?us-ascii?Q?mBjxawLthzA66uMGC8OwsM5S7YT1zjfudbuC61qlytUhQAioceg8987RRO2N?=
+ =?us-ascii?Q?8RicG3r2I/KGwbeiFCdkZ7bFXbPPJp6YQvbx0Y3Rw+4eqqM8i1IjAtSz/V/V?=
+ =?us-ascii?Q?4g=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 366657a4-7c30-4b72-9c4e-08daff9c567f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 90a052bf-c3b5-4b17-091c-08daff9c5711
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2023 12:53:36.0187
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2023 12:53:36.9405
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: waNmuXG+85/ZiT6Xnv4GGBfy0FJgshjlDVYldU/g2uHJp/5VsP4WRMJAF1+2s6m2RwZ2y4uPxRkNDmkhs7N4Gg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: BHLrwSKaUyaiCiOJLWojXJU5CgixKmkE8NDrMPNeZVDCL6skMxDSsS0iALnfGHA9d03+0uRlqN9SL5U6UgnFbQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB7795
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -119,38 +119,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We keep a pointer to the xdp_prog in the private netdev structure as
-well; what's replicated per RX ring is done so just for more convenient
-access from the NAPI poll procedure.
+enetc_reconfigure() was modified in commit c33bfaf91c4c ("net: enetc:
+set up XDP program under enetc_reconfigure()") to take an optional
+callback that runs while the netdev is down, but this callback currently
+cannot fail.
 
-Simplify enetc_num_stack_tx_queues() by looking at priv->xdp_prog rather
-than iterating through the information replicated per RX ring.
+Code up the error handling so that the interface is restarted with the
+old resources if the callback fails.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 v1->v2: patch is new
 
- drivers/net/ethernet/freescale/enetc/enetc.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/freescale/enetc/enetc.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index 159ae740ba3c..3a80f259b17e 100644
+index 3a80f259b17e..5d7eeb1b5a23 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc.c
 +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -28,11 +28,9 @@ EXPORT_SYMBOL_GPL(enetc_port_mac_wr);
- static int enetc_num_stack_tx_queues(struct enetc_ndev_priv *priv)
- {
- 	int num_tx_rings = priv->num_tx_rings;
--	int i;
+@@ -2574,8 +2574,11 @@ static int enetc_reconfigure(struct enetc_ndev_priv *priv, bool extended,
+ 	 * without reconfiguration.
+ 	 */
+ 	if (!netif_running(priv->ndev)) {
+-		if (cb)
+-			cb(priv, ctx);
++		if (cb) {
++			err = cb(priv, ctx);
++			if (err)
++				return err;
++		}
  
--	for (i = 0; i < priv->num_rx_rings; i++)
--		if (priv->rx_ring[i]->xdp.prog)
--			return num_tx_rings - num_possible_cpus();
-+	if (priv->xdp_prog)
-+		return num_tx_rings - num_possible_cpus();
+ 		return 0;
+ 	}
+@@ -2596,8 +2599,11 @@ static int enetc_reconfigure(struct enetc_ndev_priv *priv, bool extended,
+ 	enetc_free_rxtx_rings(priv);
  
- 	return num_tx_rings;
- }
+ 	/* Interface is down, run optional callback now */
+-	if (cb)
+-		cb(priv, ctx);
++	if (cb) {
++		err = cb(priv, ctx);
++		if (err)
++			goto out_restart;
++	}
+ 
+ 	enetc_assign_tx_resources(priv, tx_res);
+ 	enetc_assign_rx_resources(priv, rx_res);
+@@ -2606,6 +2612,10 @@ static int enetc_reconfigure(struct enetc_ndev_priv *priv, bool extended,
+ 
+ 	return 0;
+ 
++out_restart:
++	enetc_setup_bdrs(priv, extended);
++	enetc_start(priv->ndev);
++	enetc_free_rx_resources(rx_res, priv->num_rx_rings);
+ out_free_tx_res:
+ 	enetc_free_tx_resources(tx_res, priv->num_tx_rings);
+ out:
 -- 
 2.34.1
 
