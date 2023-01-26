@@ -2,87 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD5AC67C792
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 10:39:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 221BF67C7A8
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 10:43:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236146AbjAZJjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 04:39:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45672 "EHLO
+        id S236156AbjAZJnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 04:43:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbjAZJjX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 04:39:23 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45D135CFEA;
-        Thu, 26 Jan 2023 01:39:23 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        with ESMTP id S233071AbjAZJnJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 04:43:09 -0500
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 383C993EB;
+        Thu, 26 Jan 2023 01:43:07 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 0973F20265;
+        Thu, 26 Jan 2023 10:43:05 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id D3n78DnnaS0g; Thu, 26 Jan 2023 10:43:04 +0100 (CET)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C99126177C;
-        Thu, 26 Jan 2023 09:39:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B1DBC433D2;
-        Thu, 26 Jan 2023 09:39:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674725962;
-        bh=ZVfkZK/3rtmQ0HI/dGtBJXuuEqesnN3UrC2d9Id/22U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jPHR1tsysvXfEcAXi3dVKJzUK+/pBcLMN81V0rrV3lmJSitmZ4dzX2dg51hi5IejN
-         7zEL7Xap67RZv3VIzSlaiGiUZdkRohbmuBt6g1G6k/ZDi5w4ErbGUQzamGymp/2NAN
-         /pJpCqLuAJbsS7TQBPReskyZpzFgV+3QY8OuQL/WhZVfC+T0+8u9vOvjEiG2Oyz3az
-         QJ0nBWa4aWc9iOXY1sXphvYX2+rpFeNABo5LS/x4hv9HRfZpwHSA0CMCq+G8UuXlKn
-         +pNbjyotsjQUd9+f7lksSfZ3pI2eP1YfAMNkOmd6YHDneNBbuqYHPRthY6aI1BzTUE
-         4YD93KKDkzx3g==
-Date:   Thu, 26 Jan 2023 11:39:07 +0200
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>, lsf-pc@lists.linuxfoundation.org,
-        linux-mm@kvack.org, iommu@lists.linux.dev,
-        linux-rdma@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Joao Martins <joao.m.martins@oracle.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Ming Lei <ming.lei@redhat.com>, linux-block@vger.kernel.org,
-        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        nvdimm@lists.linux.dev, Shakeel Butt <shakeelb@google.com>
-Subject: Re: [LSF/MM/BPF proposal]: Physr discussion
-Message-ID: <Y9JKO7FITJQ7dxAv@kernel.org>
-References: <Y8v+qVZ8OmodOCQ9@nvidia.com>
- <Y84OyQSKHelPOkW3@casper.infradead.org>
+        by a.mx.secunet.com (Postfix) with ESMTPS id 70ECD201E4;
+        Thu, 26 Jan 2023 10:43:04 +0100 (CET)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id 6132680004A;
+        Thu, 26 Jan 2023 10:43:04 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Thu, 26 Jan 2023 10:43:04 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 26 Jan
+ 2023 10:43:03 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id B49063180DFB; Thu, 26 Jan 2023 10:43:03 +0100 (CET)
+Date:   Thu, 26 Jan 2023 10:43:03 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Leon Romanovsky <leon@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        <intel-wired-lan@lists.osuosl.org>,
+        "Jay Vosburgh" <j.vosburgh@gmail.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <oss-drivers@corigine.com>, Paolo Abeni <pabeni@redhat.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Veaceslav Falico <vfalico@gmail.com>
+Subject: Re: [PATCH net-next v1 00/10] Convert drivers to return XFRM
+ configuration errors through extack
+Message-ID: <20230126094303.GA665047@gauss3.secunet.de>
+References: <cover.1674560845.git.leon@kernel.org>
+ <20230125110133.7195b663@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Y84OyQSKHelPOkW3@casper.infradead.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230125110133.7195b663@kernel.org>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 23, 2023 at 04:36:25AM +0000, Matthew Wilcox wrote:
-> On Sat, Jan 21, 2023 at 11:03:05AM -0400, Jason Gunthorpe wrote:
-> > I would like to have a session at LSF to talk about Matthew's
-> > physr discussion starter:
-> > 
-> >  https://lore.kernel.org/linux-mm/YdyKWeU0HTv8m7wD@casper.infradead.org/
+On Wed, Jan 25, 2023 at 11:01:33AM -0800, Jakub Kicinski wrote:
+> On Tue, 24 Jan 2023 13:54:56 +0200 Leon Romanovsky wrote:
+> > This series continues effort started by Sabrina to return XFRM configuration
+> > errors through extack. It allows for user space software stack easily present
+> > driver failure reasons to users.
 > 
-> I'm definitely interested in discussing phyrs (even if you'd rather
-> pronounce it "fizzers" than "fires" ;-)
+> Steffen, would you like to take these into your tree or should we apply
+> directly? Looks like mostly driver changes.
 
-I'm also interested in this discussion. With my accent it will be фыр,
-though ;-)
- 
-> > I've been working on an implementation and hope to have something
-> > draft to show on the lists in a few weeks. It is pretty clear there
-> > are several interesting decisions to make that I think will benefit
-> > from a live discussion.
-> 
-> Cool!  Here's my latest noodlings:
-> https://git.infradead.org/users/willy/pagecache.git/shortlog/refs/heads/phyr
-> 
-> Just the top two commits; the other stuff is unrelated.  Shakeel has
-> also been interested in this.
-> 
-> 
+You can just take it directly as it is mostly driver changes.
+The ipsec-next tree is currently empty so there will be no
+conflicts.
+
+Thanks!
