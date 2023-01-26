@@ -2,565 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36CD667D0D5
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 17:02:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A4B067D0DC
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 17:05:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232481AbjAZQCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 11:02:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40982 "EHLO
+        id S232559AbjAZQFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 11:05:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232490AbjAZQCk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 11:02:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49BBD53B21
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 08:02:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C50C8618B8
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 16:02:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ED29C433EF;
-        Thu, 26 Jan 2023 16:02:30 +0000 (UTC)
-Subject: [PATCH v2 3/3] net/tls: Support AF_HANDSHAKE in kTLS
-From:   Chuck Lever <chuck.lever@oracle.com>
-To:     kuba@kernel.org
-Cc:     netdev@vger.kernel.org, hare@suse.com, dhowells@redhat.com,
-        kolga@netapp.com, jmeneghi@redhat.com, bcodding@redhat.com,
-        jlayton@redhat.com
-Date:   Thu, 26 Jan 2023 11:02:29 -0500
-Message-ID: <167474894957.5189.5031816070836427226.stgit@91.116.238.104.host.secureserver.net>
-In-Reply-To: <167474840929.5189.15539668431467077918.stgit@91.116.238.104.host.secureserver.net>
-References: <167474840929.5189.15539668431467077918.stgit@91.116.238.104.host.secureserver.net>
-User-Agent: StGit/1.5
+        with ESMTP id S229606AbjAZQF3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 11:05:29 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74272E825
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 08:05:27 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id rl14so6381295ejb.2
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 08:05:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=4R9VU7bgL5VkiFaNTYPtp+i7Hh4kaXEyBrwYrOQBvfc=;
+        b=ol3iP/xq8sEzOSy+Z1cXt6oIE9M1M59gr96RAckN1R3bx79eetaxqKNT6lqmLxR9M8
+         04UdMFUrwpASv7HA+VENgH2+u2RPraMHswI4CBDMLHhBIhBJK6pLIMWewgwz4Lual96E
+         A9aOJgwzjiZiTPZ9VGEBnVcsG8ipj2Uky3b+xbVYgZItSCkDrkrm5aOuMMyTT/NaSaKw
+         ffpYMr/qZGrVnC9gEC3XrArgqlnLWtvbQUwrl6TO7f40q2jSnRcfYtGp/zbDkgyRX6Lo
+         aIAvdDOd2YReEwwfwZhJTUNML8oJdJDBJ9t/BtP5dRjQf+9uTVTuuVey/VTXenHAfg1D
+         RDhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4R9VU7bgL5VkiFaNTYPtp+i7Hh4kaXEyBrwYrOQBvfc=;
+        b=hGLwQY6BK4wLAhFvVCsUtcoecwqzy/bkJT0FNDEI/Tk/Xmzzwc1lIjfx/ewvpV0IPq
+         Yx/ckUNTIjoZOzkpUaWIK+uMHvFZ/SAR/lIqlryqmtvksLi64K0oMMVCNTpy8pTqHL9z
+         ICAeqs0gIuSwd4Q8NPb2x2UYnwDYaIURpv9qqeHx5LmEqgYNZNQNqetLaEQOMWjTVcVa
+         ocoB+w+7jM+YtDenwRrHuQbilLbTUAyRot88CO4AMZxy40viXbV7KTQzL0zNK6pnqBd1
+         LSmJSqp5hawXNBY2JwHsrYgvYZ3ZjEVu73vOGzUP7SBJeNnqGYOQPgYGtxPltxfOWc0p
+         N0cw==
+X-Gm-Message-State: AO0yUKXOEslip62SmJnAUrqj2YvpWpQTb9nJ+YhUHCiC01lRAOHR3dN+
+        1Iyl98KUKRSBZQiWsAMnLJ9iJ8skSKgFCTBe
+X-Google-Smtp-Source: AK7set9vT3e8xRrM8+HlTJnRfef9PkTmEpxaDgupkI1udw/5Y94RvjgPnTZMRq/8IaIAD9XfN6P1Og==
+X-Received: by 2002:a17:906:840f:b0:878:6675:d07c with SMTP id n15-20020a170906840f00b008786675d07cmr2335544ejx.37.1674749126317;
+        Thu, 26 Jan 2023 08:05:26 -0800 (PST)
+Received: from hera (ppp079167090036.access.hol.gr. [79.167.90.36])
+        by smtp.gmail.com with ESMTPSA id t18-20020a1709063e5200b007e0e2e35205sm786866eji.143.2023.01.26.08.05.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Jan 2023 08:05:25 -0800 (PST)
+Date:   Thu, 26 Jan 2023 18:05:18 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        linux-kernel@vger.kernel.org, Yunsheng Lin <linyunsheng@huawei.com>
+Subject: Re: [PATCH] net: page_pool: fix refcounting issues with fragmented
+ allocation
+Message-ID: <Y9Kkvp8qwgbp3w1C@hera>
+References: <20230124124300.94886-1-nbd@nbd.name>
+ <CAC_iWjKAEgUB8Z3WNNVgUK8omXD+nwt_VPSVyFn1i4EQzJadog@mail.gmail.com>
+ <f3d079ce930895475f307de3fdaed0b85b4f2671.camel@gmail.com>
+ <Y9JWniFQmcc7m5Ey@hera>
+ <CAKgT0UcSD5N7A4Bu1V3ue_+RVfiMqN+e8TQwn0FtAL_sXE3bkA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKgT0UcSD5N7A4Bu1V3ue_+RVfiMqN+e8TQwn0FtAL_sXE3bkA@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To enable kernel consumers of TLS to request a TLS handshake, add
-support to net/tls/ to send a handshake upcall.
+On Thu, Jan 26, 2023 at 07:41:15AM -0800, Alexander Duyck wrote:
+> On Thu, Jan 26, 2023 at 2:32 AM Ilias Apalodimas
+> <ilias.apalodimas@linaro.org> wrote:
+> >
+> > Hi Alexander,
+> >
+> > Sorry for being late to the party,  was overloaded...
+> >
+> > On Tue, Jan 24, 2023 at 07:57:35AM -0800, Alexander H Duyck wrote:
+> > > On Tue, 2023-01-24 at 16:11 +0200, Ilias Apalodimas wrote:
+> > > > Hi Felix,
+> > > >
+> > > > ++cc Alexander and Yunsheng.
+> > > >
+> > > > Thanks for the report
+> > > >
+> > > > On Tue, 24 Jan 2023 at 14:43, Felix Fietkau <nbd@nbd.name> wrote:
+> > > > >
+> > > > > While testing fragmented page_pool allocation in the mt76 driver, I was able
+> > > > > to reliably trigger page refcount underflow issues, which did not occur with
+> > > > > full-page page_pool allocation.
+> > > > > It appears to me, that handling refcounting in two separate counters
+> > > > > (page->pp_frag_count and page refcount) is racy when page refcount gets
+> > > > > incremented by code dealing with skb fragments directly, and
+> > > > > page_pool_return_skb_page is called multiple times for the same fragment.
+> > > > >
+> > > > > Dropping page->pp_frag_count and relying entirely on the page refcount makes
+> > > > > these underflow issues and crashes go away.
+> > > > >
+> > > >
+> > > > This has been discussed here [1].  TL;DR changing this to page
+> > > > refcount might blow up in other colorful ways.  Can we look closer and
+> > > > figure out why the underflow happens?
+> > > >
+> > > > [1] https://lore.kernel.org/netdev/1625903002-31619-4-git-send-email-linyunsheng@huawei.com/
+> > > >
+> > > > Thanks
+> > > > /Ilias
+> > > >
+> > > >
+> > >
+> > > The logic should be safe in terms of the page pool itself as it should
+> > > be holding one reference to the page while the pp_frag_count is non-
+> > > zero. That one reference is what keeps the two halfs in sync as the
+> > > page shouldn't be able to be freed until we exhaust the pp_frag_count.
+> >
+> > Do you remember why we decided to go with the fragment counter instead of
+> > page references?
+>
+> The issue has to do with when to destroy the mappings. Basically with
+> the fragment counter we destroy the mappings and remove the page from
+> the pool when the count hits 0. The reference count is really used for
+> the page allocator to do its tracking. If we end up trying to merge
+> the two the problem becomes one of lifetimes as we wouldn't know when
+> to destroy the DMA mappings as they would have to live the full life
+> of the page.
 
-This patch also acts as a template for adding handshake upcall
-support to other transport layer security mechanisms.
+Ah yes thanks! We need that on a comment somewhere,  I keep forgetting...
+Basically the pp_frag_count is our number of outstanding dma mappings.
 
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
----
- include/net/tls.h              |   16 ++
- include/uapi/linux/handshake.h |   24 ++
- net/handshake/netlink.c        |   18 ++
- net/tls/Makefile               |    2 
- net/tls/tls_handshake.c        |  385 ++++++++++++++++++++++++++++++++++++++++
- 5 files changed, 444 insertions(+), 1 deletion(-)
- create mode 100644 net/tls/tls_handshake.c
+>
+> > >
+> > > To have an underflow there are two possible scenarios. One is that
+> > > either put_page or free_page is being called somewhere that the
+> > > page_pool freeing functions should be used.
+> >
+> > Wouldn't that affect the non fragmented path as well? IOW the driver that
+> > works with a full page would crash as well.
+>
+> The problem is the non-fragmented path doesn't get as noisy. Also
+> there aren't currently any wireless drivers making use of the page
+> pool, or at least that is my understanding. I'm suspecting something
+> like the issue we saw in 1effe8ca4e34c ("skbuff: fix coalescing for
+> page_pool fragment recycling"). We likely have some corner case where
+> we should be taking a page reference and clearing a pp_recycle flag.
 
-diff --git a/include/net/tls.h b/include/net/tls.h
-index 154949c7b0c8..5156c3a80faa 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -512,4 +512,20 @@ static inline bool tls_is_sk_rx_device_offloaded(struct sock *sk)
- 	return tls_get_ctx(sk)->rx_conf == TLS_HW;
- }
- #endif
-+
-+#define TLS_DEFAULT_PRIORITIES		(NULL)
-+
-+int tls_client_hello_anon(struct socket *sock,
-+			  void (*done)(void *data, int status), void *data,
-+			  const char *priorities);
-+int tls_client_hello_x509(struct socket *sock,
-+			  void (*done)(void *data, int status), void *data,
-+			  const char *priorities, key_serial_t cert,
-+			  key_serial_t privkey);
-+int tls_client_hello_psk(struct socket *sock,
-+			 void (*done)(void *data, int status), void *data,
-+			 const char *priorities, key_serial_t peerid);
-+int tls_server_hello(struct socket *sock, void (*done)(void *data, int status),
-+		     void *data, const char *priorities);
-+
- #endif /* _TLS_OFFLOAD_H */
-diff --git a/include/uapi/linux/handshake.h b/include/uapi/linux/handshake.h
-index 72facc352c71..ec3f4a5e465f 100644
---- a/include/uapi/linux/handshake.h
-+++ b/include/uapi/linux/handshake.h
-@@ -18,8 +18,26 @@
- 
- enum handshake_protocol {
- 	HANDSHAKE_PROTO_UNSPEC = 0,
-+	HANDSHAKE_PROTO_TLS_13,
- };
- 
-+enum handshake_type {
-+	HANDSHAKE_TYPE_UNSPEC = 0,
-+	HANDSHAKE_TYPE_CLIENTHELLO,
-+	HANDSHAKE_TYPE_SERVERHELLO,
-+};
-+
-+enum handshake_auth_type {
-+	HANDSHAKE_AUTHTYPE_UNSPEC = 0,
-+	HANDSHAKE_AUTHTYPE_UNAUTH,
-+	HANDSHAKE_AUTHTYPE_X509,
-+	HANDSHAKE_AUTHTYPE_PSK,
-+};
-+
-+#define HANDSHAKE_NO_PEERID		(0)
-+#define HANDSHAKE_NO_CERT		(0)
-+#define HANDSHAKE_NO_PRIVKEY		(0)
-+
- #define HANDSHAKE_GENL_NAME	"HANDSHAKE_GENL"
- #define HANDSHAKE_GENL_VERSION	0x01
- 
-@@ -28,6 +46,12 @@ enum handshake_genl_attrs {
- 	HANDSHAKE_GENL_ATTR_SOCKFD,
- 	HANDSHAKE_GENL_ATTR_STATUS,
- 	HANDSHAKE_GENL_ATTR_PROTOCOL,
-+	HANDSHAKE_GENL_ATTR_HANDSHAKE_TYPE,
-+	HANDSHAKE_GENL_ATTR_AUTH_TYPE,
-+	HANDSHAKE_GENL_ATTR_TLS_PRIORITIES,
-+	HANDSHAKE_GENL_ATTR_X509_CERT_SERIAL,
-+	HANDSHAKE_GENL_ATTR_X509_PRIVKEY_SERIAL,
-+	HANDSHAKE_GENL_ATTR_PSK_SERIAL,
- 	__HANDSHAKE_GENL_ATTR_MAX
- };
- #define HANDSHAKE_GENL_ATTR_MAX	(__HANDSHAKE_GENL_ATTR_MAX - 1)
-diff --git a/net/handshake/netlink.c b/net/handshake/netlink.c
-index 1d209473f106..d993f284ae0a 100644
---- a/net/handshake/netlink.c
-+++ b/net/handshake/netlink.c
-@@ -132,6 +132,24 @@ handshake_genl_policy[HANDSHAKE_GENL_ATTR_MAX + 1] = {
- 	[HANDSHAKE_GENL_ATTR_PROTOCOL] = {
- 		.type = NLA_U32
- 	},
-+	[HANDSHAKE_GENL_ATTR_HANDSHAKE_TYPE] = {
-+		.type = NLA_U32
-+	},
-+	[HANDSHAKE_GENL_ATTR_AUTH_TYPE] = {
-+		.type = NLA_U32
-+	},
-+	[HANDSHAKE_GENL_ATTR_TLS_PRIORITIES] = {
-+		.type = NLA_STRING
-+	},
-+	[HANDSHAKE_GENL_ATTR_X509_CERT_SERIAL] = {
-+		.type = NLA_U32
-+	},
-+	[HANDSHAKE_GENL_ATTR_X509_PRIVKEY_SERIAL] = {
-+		.type = NLA_U32
-+	},
-+	[HANDSHAKE_GENL_ATTR_PSK_SERIAL] = {
-+		.type = NLA_U32
-+	},
- };
- 
- static const struct genl_ops handshake_genl_ops[] = {
-diff --git a/net/tls/Makefile b/net/tls/Makefile
-index e41c800489ac..7e56b57f14f6 100644
---- a/net/tls/Makefile
-+++ b/net/tls/Makefile
-@@ -7,7 +7,7 @@ CFLAGS_trace.o := -I$(src)
- 
- obj-$(CONFIG_TLS) += tls.o
- 
--tls-y := tls_main.o tls_sw.o tls_proc.o trace.o tls_strp.o
-+tls-y := tls_handshake.o tls_main.o tls_sw.o tls_proc.o trace.o tls_strp.o
- 
- tls-$(CONFIG_TLS_TOE) += tls_toe.o
- tls-$(CONFIG_TLS_DEVICE) += tls_device.o tls_device_fallback.o
-diff --git a/net/tls/tls_handshake.c b/net/tls/tls_handshake.c
-new file mode 100644
-index 000000000000..c718cafd8676
---- /dev/null
-+++ b/net/tls/tls_handshake.c
-@@ -0,0 +1,385 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Establish a TLS session for a kernel socket consumer
-+ *
-+ * Author: Chuck Lever <chuck.lever@oracle.com>
-+ *
-+ * Copyright (c) 2021-2023, Oracle and/or its affiliates.
-+ */
-+
-+/**
-+ * DOC: kTLS handshake overview
-+ *
-+ * When a kernel TLS consumer wants to establish a TLS session, it
-+ * makes an AF_TLSH Listener ready. When user space accepts on that
-+ * listener, the kernel fabricates a user space socket endpoint on
-+ * which a user space TLS library can perform the TLS handshake.
-+ *
-+ * Closing the user space descriptor signals to the kernel that the
-+ * library handshake process is complete. If the library has managed
-+ * to initialize the socket's TLS crypto_info, the kernel marks the
-+ * handshake as a success.
-+ */
-+
-+#include <linux/types.h>
-+#include <linux/socket.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+
-+#include <net/sock.h>
-+
-+#include <net/tls.h>
-+#include <net/handshake.h>
-+
-+#include <uapi/linux/handshake.h>
-+
-+static void tlsh_handshake_done(struct handshake_info *hsi);
-+
-+struct tlsh_sock_info {
-+	struct handshake_info	tsi_handshake_info;
-+
-+	void			(*tsi_handshake_done)(void *data, int status);
-+	void			*tsi_handshake_data;
-+
-+	char			*tsi_tls_priorities;
-+	key_serial_t		tsi_peerid;
-+	key_serial_t		tsi_certificate;
-+	key_serial_t		tsi_privkey;
-+
-+};
-+
-+static struct tlsh_sock_info *tlsh_sock_info_alloc(struct socket *sock,
-+						   const char *priorities)
-+{
-+	struct tlsh_sock_info *tsi;
-+
-+	tsi = kzalloc(sizeof(*tsi), GFP_KERNEL);
-+	if (!tsi)
-+		return NULL;
-+
-+	if (priorities != TLS_DEFAULT_PRIORITIES && strlen(priorities)) {
-+		tsi->tsi_tls_priorities = kstrdup(priorities, GFP_KERNEL);
-+		if (!tsi->tsi_tls_priorities) {
-+			kfree(tsi);
-+			return NULL;
-+		}
-+	}
-+
-+	tsi->tsi_handshake_info.hi_done = tlsh_handshake_done,
-+	tsi->tsi_handshake_info.hi_data = sock->sk;
-+	tsi->tsi_peerid = HANDSHAKE_NO_PEERID;
-+	tsi->tsi_certificate = HANDSHAKE_NO_CERT;
-+	tsi->tsi_privkey = HANDSHAKE_NO_PRIVKEY;
-+	return tsi;
-+}
-+
-+static void tlsh_sock_info_free(struct tlsh_sock_info *tsi)
-+{
-+	if (tsi)
-+		kfree(tsi->tsi_tls_priorities);
-+	kfree(tsi);
-+}
-+
-+static bool tlsh_crypto_info_initialized(struct sock *sk)
-+{
-+	struct tls_context *ctx = tls_get_ctx(sk);
-+
-+	return ctx &&
-+		TLS_CRYPTO_INFO_READY(&ctx->crypto_send.info) &&
-+		TLS_CRYPTO_INFO_READY(&ctx->crypto_recv.info);
-+}
-+
-+/**
-+ * tlsh_handshake_done - call the handshake "done" callback for @sk.
-+ * @hsi: socket on which the handshake was performed
-+ *
-+ */
-+static void tlsh_handshake_done(struct handshake_info *hsi)
-+{
-+	struct tlsh_sock_info *tsi = container_of(hsi, struct tlsh_sock_info,
-+						  tsi_handshake_info);
-+	void (*done)(void *data, int status) = tsi->tsi_handshake_done;
-+	struct sock *sk = hsi->hi_data;
-+
-+	done(tsi->tsi_handshake_data,
-+	     tlsh_crypto_info_initialized(sk) ? 0 : -EACCES);
-+	tlsh_sock_info_free(tsi);
-+}
-+
-+/*
-+ * Specifically for kernel TLS consumers: enable only TLS v1.3 and the
-+ * ciphers that are supported by kTLS.
-+ *
-+ * This list is generated by hand from the supported ciphers found
-+ * in include/uapi/linux/tls.h.
-+ */
-+#define KTLS_PRIORITIES \
-+	"SECURE256:+SECURE128:-COMP-ALL" \
-+	":-VERS-ALL:+VERS-TLS1.3:%NO_TICKETS" \
-+	":-CIPHER-ALL:+CHACHA20-POLY1305:+AES-256-GCM:+AES-128-GCM:+AES-128-CCM"
-+
-+static int tlsh_genl_tls_priorities(struct sk_buff *msg,
-+				    struct tlsh_sock_info *tsi)
-+{
-+	int ret;
-+
-+	if (tsi->tsi_tls_priorities)
-+		ret = nla_put(msg, HANDSHAKE_GENL_ATTR_TLS_PRIORITIES,
-+			      strlen(tsi->tsi_tls_priorities),
-+			      tsi->tsi_tls_priorities);
-+	else
-+		ret = nla_put(msg, HANDSHAKE_GENL_ATTR_TLS_PRIORITIES,
-+			      strlen(KTLS_PRIORITIES), KTLS_PRIORITIES);
-+	if (ret < 0)
-+		return ret;
-+	return 0;
-+}
-+
-+static int tlsh_genl_ch_anon_reply(struct sk_buff *msg,
-+				   struct handshake_info *hsi)
-+{
-+	struct tlsh_sock_info *tsi = container_of(hsi, struct tlsh_sock_info,
-+						  tsi_handshake_info);
-+	int ret;
-+
-+	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_PROTOCOL,
-+			  HANDSHAKE_PROTO_TLS_13);
-+	if (ret < 0)
-+		return ret;
-+	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_HANDSHAKE_TYPE,
-+			  HANDSHAKE_TYPE_CLIENTHELLO);
-+	if (ret < 0)
-+		return ret;
-+	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_AUTH_TYPE,
-+			  HANDSHAKE_AUTHTYPE_UNAUTH);
-+	if (ret < 0)
-+		return ret;
-+	return tlsh_genl_tls_priorities(msg, tsi);
-+}
-+
-+/**
-+ * tls_client_hello_anon - request an anonymous TLS handshake on a socket
-+ * @sock: connected socket on which to perform the handshake
-+ * @done: function to call when the handshake has completed
-+ * @data: token to pass back to @done
-+ * @priorities: GnuTLS TLS priorities string, or NULL
-+ *
-+ * Return values:
-+ *   %0: Handshake request enqueue; ->done will be called when complete
-+ *   %-ENOENT: No user agent is available
-+ *   %-ENOMEM: Memory allocation failed
-+ */
-+int tls_client_hello_anon(struct socket *sock,
-+			  void (*done)(void *data, int status), void *data,
-+			  const char *priorities)
-+{
-+	struct tlsh_sock_info *tsi;
-+	int rc;
-+
-+	tsi = tlsh_sock_info_alloc(sock, priorities);
-+	if (!tsi)
-+		return -ENOMEM;
-+
-+
-+	tsi->tsi_handshake_done = done;
-+	tsi->tsi_handshake_data = data;
-+
-+	tsi->tsi_handshake_info.hi_fd_parms_reply = tlsh_genl_ch_anon_reply;
-+
-+	rc = handshake_enqueue_sock(sock, &tsi->tsi_handshake_info);
-+	if (rc)
-+		tlsh_sock_info_free(tsi);
-+	return rc;
-+}
-+EXPORT_SYMBOL(tls_client_hello_anon);
-+
-+static int tlsh_genl_ch_x509_reply(struct sk_buff *msg,
-+				   struct handshake_info *hsi)
-+{
-+	struct tlsh_sock_info *tsi = container_of(hsi, struct tlsh_sock_info,
-+						  tsi_handshake_info);
-+	int ret;
-+
-+	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_PROTOCOL,
-+			  HANDSHAKE_PROTO_TLS_13);
-+	if (ret < 0)
-+		return ret;
-+	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_HANDSHAKE_TYPE,
-+			  HANDSHAKE_TYPE_CLIENTHELLO);
-+	if (ret < 0)
-+		return ret;
-+	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_AUTH_TYPE,
-+			  HANDSHAKE_AUTHTYPE_X509);
-+	if (ret < 0)
-+		return ret;
-+	ret = tlsh_genl_tls_priorities(msg, tsi);
-+	if (ret < 0)
-+		return ret;
-+	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_X509_CERT_SERIAL,
-+			  tsi->tsi_certificate);
-+	if (ret < 0)
-+		return ret;
-+	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_X509_PRIVKEY_SERIAL,
-+			  tsi->tsi_privkey);
-+	if (ret < 0)
-+		return ret;
-+	return 0;
-+}
-+
-+/**
-+ * tls_client_hello_x509 - request an x.509-based TLS handshake on a socket
-+ * @sock: connected socket on which to perform the handshake
-+ * @done: function to call when the handshake has completed
-+ * @data: token to pass back to @done
-+ * @priorities: GnuTLS TLS priorities string
-+ * @cert: serial number of key containing client's x.509 certificate
-+ * @privkey: serial number of key containing client's private key
-+ *
-+ * Return values:
-+ *   %0: Handshake request enqueue; ->done will be called when complete
-+ *   %-ENOENT: No user agent is available
-+ *   %-ENOMEM: Memory allocation failed
-+ */
-+int tls_client_hello_x509(struct socket *sock,
-+			  void (*done)(void *data, int status), void *data,
-+			  const char *priorities, key_serial_t cert,
-+			  key_serial_t privkey)
-+{
-+	struct tlsh_sock_info *tsi;
-+	int rc;
-+
-+	tsi = tlsh_sock_info_alloc(sock, priorities);
-+	if (!tsi)
-+		return -ENOMEM;
-+
-+	tsi->tsi_handshake_done = done;
-+	tsi->tsi_handshake_data = data;
-+
-+	tsi->tsi_handshake_info.hi_fd_parms_reply = tlsh_genl_ch_x509_reply;
-+	tsi->tsi_certificate = cert;
-+	tsi->tsi_privkey = privkey;
-+
-+	rc = handshake_enqueue_sock(sock, &tsi->tsi_handshake_info);
-+	if (rc)
-+		tlsh_sock_info_free(tsi);
-+	return rc;
-+}
-+EXPORT_SYMBOL(tls_client_hello_x509);
-+
-+static int tlsh_genl_ch_psk_reply(struct sk_buff *msg,
-+				  struct handshake_info *hsi)
-+{
-+	struct tlsh_sock_info *tsi = container_of(hsi, struct tlsh_sock_info,
-+						  tsi_handshake_info);
-+	int ret;
-+
-+	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_PROTOCOL,
-+			  HANDSHAKE_PROTO_TLS_13);
-+	if (ret < 0)
-+		return ret;
-+	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_HANDSHAKE_TYPE,
-+			  HANDSHAKE_TYPE_CLIENTHELLO);
-+	if (ret < 0)
-+		return ret;
-+	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_AUTH_TYPE,
-+			  HANDSHAKE_AUTHTYPE_PSK);
-+	if (ret < 0)
-+		return ret;
-+	ret = tlsh_genl_tls_priorities(msg, tsi);
-+	if (ret < 0)
-+		return ret;
-+	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_PSK_SERIAL,
-+			  tsi->tsi_peerid);
-+	if (ret < 0)
-+		return ret;
-+	return 0;
-+}
-+
-+/**
-+ * tls_client_hello_psk - request a PSK-based TLS handshake on a socket
-+ * @sock: connected socket on which to perform the handshake
-+ * @done: function to call when the handshake has completed
-+ * @data: token to pass back to @done
-+ * @priorities: GnuTLS TLS priorities string
-+ * @peerid: serial number of key containing TLS identity
-+ *
-+ * Return values:
-+ *   %0: Handshake request enqueue; ->done will be called when complete
-+ *   %-ENOENT: No user agent is available
-+ *   %-ENOMEM: Memory allocation failed
-+ */
-+int tls_client_hello_psk(struct socket *sock,
-+			 void (*done)(void *data, int status), void *data,
-+			 const char *priorities, key_serial_t peerid)
-+{
-+	struct tlsh_sock_info *tsi;
-+	int rc;
-+
-+	tsi = tlsh_sock_info_alloc(sock, priorities);
-+	if (!tsi)
-+		return -ENOMEM;
-+
-+	tsi->tsi_handshake_done = done;
-+	tsi->tsi_handshake_data = data;
-+
-+	tsi->tsi_handshake_info.hi_fd_parms_reply = tlsh_genl_ch_psk_reply;
-+	tsi->tsi_peerid = peerid;
-+
-+	rc = handshake_enqueue_sock(sock, &tsi->tsi_handshake_info);
-+	if (rc)
-+		tlsh_sock_info_free(tsi);
-+	return rc;
-+}
-+EXPORT_SYMBOL(tls_client_hello_psk);
-+
-+static int tlsh_genl_sh_reply(struct sk_buff *msg, struct handshake_info *hsi)
-+{
-+	struct tlsh_sock_info *tsi = container_of(hsi, struct tlsh_sock_info,
-+						  tsi_handshake_info);
-+	int ret;
-+
-+	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_PROTOCOL,
-+			  HANDSHAKE_PROTO_TLS_13);
-+	if (ret < 0)
-+		return ret;
-+	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_HANDSHAKE_TYPE,
-+			  HANDSHAKE_TYPE_SERVERHELLO);
-+	if (ret < 0)
-+		return ret;
-+	return tlsh_genl_tls_priorities(msg, tsi);
-+}
-+
-+/**
-+ * tls_server_hello - request a server TLS handshake on a socket
-+ * @sock: connected socket on which to perform the handshake
-+ * @done: function to call when the handshake has completed
-+ * @data: token to pass back to @done
-+ * @priorities: GnuTLS TLS priorities string
-+ *
-+ * Return values:
-+ *   %0: Handshake request enqueue; ->done will be called when complete
-+ *   %-ENOENT: No user agent is available
-+ *   %-ENOMEM: Memory allocation failed
-+ */
-+int tls_server_hello(struct socket *sock, void (*done)(void *data, int status),
-+		     void *data, const char *priorities)
-+{
-+	struct tlsh_sock_info *tsi;
-+	int rc;
-+
-+	tsi = tlsh_sock_info_alloc(sock, priorities);
-+	if (!tsi)
-+		return -ENOMEM;
-+
-+	tsi->tsi_handshake_done = done;
-+	tsi->tsi_handshake_data = data;
-+
-+	tsi->tsi_handshake_info.hi_fd_parms_reply = tlsh_genl_sh_reply;
-+
-+	rc = handshake_enqueue_sock(sock, &tsi->tsi_handshake_info);
-+	if (rc)
-+		tlsh_sock_info_free(tsi);
-+	return rc;
-+}
-+EXPORT_SYMBOL(tls_server_hello);
+Yea, same thinking here. I'll have another closer look tomorrow, but
+looking at the wireless internals what happens is
+1. They alloc a fragment
+2. They create a new SKB, without the recycle bit and refer to the existing
+fragments.  Since the recyle bit is off *that* skb will never try to
+decrease the frag counter.  Instead it bumps the page refcnt which should be
+properly decremented one that SKB is freed. I guess somehow an SKB ends up with
+the recycle bit set, when it shouldn't.
 
-
+Regards
+/Ilias
