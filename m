@@ -2,99 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1618E67C518
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 08:46:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ED2767C50E
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 08:45:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236123AbjAZHqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 02:46:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59280 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236130AbjAZHpv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 02:45:51 -0500
-Received: from smtp-out-06.comm2000.it (smtp-out-06.comm2000.it [212.97.32.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8529169B1B;
-        Wed, 25 Jan 2023 23:45:26 -0800 (PST)
-Received: from francesco-nb.pivistrello.it (93-49-2-63.ip317.fastwebnet.it [93.49.2.63])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: francesco@dolcini.it)
-        by smtp-out-06.comm2000.it (Postfix) with ESMTPSA id D51BC561372;
-        Thu, 26 Jan 2023 08:45:09 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailserver.it;
-        s=mailsrv; t=1674719110;
-        bh=Y9XCnAPij17MA+QoBNd8FvPcBvFaxXeiz+vHwwOCDWE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=I2CYUxZwZ+wcSRyagmyhnstP4jB889U8C2lqZHpElTSvXWVR1/M7WQiK0ZxYc0UKq
-         0LMoyg4QPXsFwbl4KGpeTUvIguB6XcOlKh/hMUzofuiaMrmsxmuQZnNJXaMIoKd/XM
-         oI4pq0Qa6uQI24787uklIx/aJQ5uwuyYfM5YejbEBGFD2NKqOYJobBaBYLPNIXTZXu
-         4d4pVwWCZNAewoeChn75KpnBz32Lu2jtDQ3zieRArOSZOEmBR/ie3E7MbDgN04jfdc
-         xh/RqctVwlWC+hcSFFKwoH40lFg8psglNFENlygH5e3aTDy7+Ars85MMWm2vy460W/
-         Y11hPaXaXkH9A==
-From:   Francesco Dolcini <francesco@dolcini.it>
-To:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Shawn Guo <shawnguo@kernel.org>
-Cc:     Stefan Eichenberger <stefan.eichenberger@toradex.com>,
+        id S235490AbjAZHpX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 02:45:23 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:40684 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234723AbjAZHpQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 02:45:16 -0500
+Received: from [IPV6:2620:137:e001:0:a10c:af48:696f:8164] (unknown [IPv6:2620:137:e001:0:a10c:af48:696f:8164])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id B5CC083ED016;
+        Wed, 25 Jan 2023 23:45:15 -0800 (PST)
+Message-ID: <56b25571-6083-47d6-59e9-259a36dab462@kernel.org>
+Date:   Wed, 25 Jan 2023 23:45:13 -0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH net] net: dsa: mt7530: fix tristate and help description
+Content-Language: en-US
+To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Francesco Dolcini <francesco.dolcini@toradex.com>
-Subject: [PATCH v2 5/5] arm64: dts: imx8mp-verdin: add 88W8997 serdev to uart4
-Date:   Thu, 26 Jan 2023 08:43:56 +0100
-Message-Id: <20230126074356.431306-6-francesco@dolcini.it>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230126074356.431306-1-francesco@dolcini.it>
-References: <20230126074356.431306-1-francesco@dolcini.it>
-MIME-Version: 1.0
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, erkin.bozoglu@xeront.com
+References: <20230125053653.6316-1-arinc.unal@arinc9.com>
+ <20230125224411.5a535817@kernel.org>
+ <dd21bd3d-b3bb-c90b-8950-e71f4af6b167@kernel.org>
+ <1f0e41f4-edf8-fcb5-9bb6-5b5163afa599@arinc9.com>
+From:   John 'Warthog9' Hawley <warthog9@kernel.org>
+In-Reply-To: <1f0e41f4-edf8-fcb5-9bb6-5b5163afa599@arinc9.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-        lindbergh.monkeyblade.net
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Wed, 25 Jan 2023 23:45:16 -0800 (PST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+On 1/25/2023 11:34 PM, Arınç ÜNAL wrote:
+> On 26.01.2023 10:23, John 'Warthog9' Hawley wrote:
+>> On 1/25/2023 10:44 PM, Jakub Kicinski wrote:
+>>> On Wed, 25 Jan 2023 08:36:53 +0300 Arınç ÜNAL wrote:
+>>>> Fix description for tristate and help sections which include inaccurate
+>>>> information.
+>>>>
+>>>> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+>>>
+>>> Didn't make it thru to the list again :(
+>>> Double check that none of the addresses in To: or Cc: are missing
+>>> spaces between name and email or after a dot. That seems to be the most
+>>> common cause of trouble. Or try to resend using just emails, no names.
+>>>
+>>
+>> You are also likely to run into trouble if your character set is set 
+>> to UTF-8.
+> 
+> I think that may be the problem here. I just resent this with only Jakub 
+> and the lists without names. It didn't make it to netdev. My name 
+> includes non-Latin characters. I'm not sure how I can change UTF-8 to 
+> something else that works with this list. I had no such issues with 
+> linux-mediatek.
+> 
+> Arınç
+> 
 
-Use the serdev feature to load the driver for the 88W8997 bluetooth
-driver.
+So dug it out of the logs, you aren't running into UTF-8 issues, so 
+that's good.  However your mail client is appending 'Delivered-To:' to 
+the messages, which is a significant indicator of some weird mail 
+problem for lists, I.E. why is a message that's been delivered being 
+passed back through to the list, which is on the published taboo list:
 
-Signed-off-by: Stefan Eichenberger <stefan.eichenberger@toradex.com>
-Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
----
-v2: no changes
----
- arch/arm64/boot/dts/freescale/imx8mp-verdin-wifi.dtsi | 5 +++++
- 1 file changed, 5 insertions(+)
+http://vger.kernel.org/majordomo-taboos.txt
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mp-verdin-wifi.dtsi b/arch/arm64/boot/dts/freescale/imx8mp-verdin-wifi.dtsi
-index 36289c175e6e..ef94f9a57e20 100644
---- a/arch/arm64/boot/dts/freescale/imx8mp-verdin-wifi.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mp-verdin-wifi.dtsi
-@@ -65,6 +65,11 @@ &uart4 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_bt_uart>;
- 	status = "okay";
-+
-+	bluetooth {
-+		compatible = "mrvl,88w8997";
-+		max-speed = <921600>;
-+	};
- };
- 
- /* On-module Wi-Fi */
--- 
-2.25.1
+What are you using to send these messages, as that's a header I 
+absolutely wouldn't expect to be on messages heading to vger?
 
+- John 'Warthog9' Hawley
