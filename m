@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88A2C67D38D
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 18:53:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53D9467D3B6
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 19:03:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232033AbjAZRxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 12:53:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52192 "EHLO
+        id S231585AbjAZSDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 13:03:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbjAZRxw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 12:53:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D28FCEB5C;
-        Thu, 26 Jan 2023 09:53:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65E4BB81EB7;
-        Thu, 26 Jan 2023 17:53:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACD70C433D2;
-        Thu, 26 Jan 2023 17:53:46 +0000 (UTC)
-Date:   Thu, 26 Jan 2023 12:53:44 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Petr Machata <petrm@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229572AbjAZSC7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 13:02:59 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21C323320;
+        Thu, 26 Jan 2023 10:02:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=2fn1f2DBGOfmVNObvGAqQdKxfCARW6QU6WUMMysdb0A=; b=6IUr4h54isdqRSgXZ+fIMyiapA
+        Ld5fGDkEMhmPEPHdAIQopdowK5Gx0iyzrdFwATryqkSfNz2OqNtlvxkE//VUSXwd+di0I8eNtPMKX
+        IAjYjni1HbAvvLg3iLk9TjRjTvpwCyBwsSvbfWFAe1cqpjVWGipNoBaZVRqXOiiFxL9A=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pL6a9-003GdB-3T; Thu, 26 Jan 2023 19:02:41 +0100
+Date:   Thu, 26 Jan 2023 19:02:41 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Wei Fang <wei.fang@nxp.com>, linux-gpio@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Shenwei Wang <shenwei.wang@nxp.com>,
+        Clark Wang <xiaoning.wang@nxp.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        <netdev@vger.kernel.org>, <bridge@lists.linux-foundation.org>,
-        "Ido Schimmel" <idosch@nvidia.com>,
-        <linux-trace-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 06/16] net: bridge: Add a tracepoint for MDB
- overflows
-Message-ID: <20230126125344.1b7b34e2@gandalf.local.home>
-In-Reply-To: <ed2e2e305dd49423745b62c0152a0b85bc84a767.1674752051.git.petrm@nvidia.com>
-References: <cover.1674752051.git.petrm@nvidia.com>
-        <ed2e2e305dd49423745b62c0152a0b85bc84a767.1674752051.git.petrm@nvidia.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] fec: convert to gpio descriptor
+Message-ID: <Y9LAQRjb6h+ynXBZ@lunn.ch>
+References: <20230126135339.3488682-1-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230126135339.3488682-1-arnd@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,152 +54,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 26 Jan 2023 18:01:14 +0100
-Petr Machata <petrm@nvidia.com> wrote:
-
-> The following patch will add two more maximum MDB allowances to the global
-> one, mcast_hash_max, that exists today. In all these cases, attempts to add
-> MDB entries above the configured maximums through netlink, fail noisily and
-> obviously. Such visibility is missing when adding entries through the
-> control plane traffic, by IGMP or MLD packets.
+On Thu, Jan 26, 2023 at 02:52:58PM +0100, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> To improve visibility in those cases, add a trace point that reports the
-> violation, including the relevant netdevice (be it a slave or the bridge
-> itself), and the MDB entry parameters:
+> The driver can be trivially converted, as it only triggers the gpio
+> pin briefly to do a reset, and it already only supports DT.
 > 
-> 	# perf record -e bridge:br_mdb_full &
-> 	# [...]
-> 	# perf script | cut -d: -f4-
-> 	 dev v2 af 2 src 192.0.2.1/:: grp 239.1.1.1/::/00:00:00:00:00:00 vid 0
-> 	 dev v2 af 10 src 0.0.0.0/2001:db8:1::1 grp 0.0.0.0/ff0e::1/00:00:00:00:00:00 vid 0
-> 	 dev v2 af 2 src 192.0.2.1/:: grp 239.1.1.1/::/00:00:00:00:00:00 vid 10
-> 	 dev v2 af 10 src 0.0.0.0/2001:db8:1::1 grp 0.0.0.0/ff0e::1/00:00:00:00:00:00 vid 10
-> 
-> CC: Steven Rostedt <rostedt@goodmis.org>
-> CC: linux-trace-kernel@vger.kernel.org
-> Signed-off-by: Petr Machata <petrm@nvidia.com>
-> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 > ---
->  include/trace/events/bridge.h | 67 +++++++++++++++++++++++++++++++++++
->  net/core/net-traces.c         |  1 +
->  2 files changed, 68 insertions(+)
+>  drivers/net/ethernet/freescale/fec_main.c | 25 ++++++++++-------------
+>  1 file changed, 11 insertions(+), 14 deletions(-)
 > 
-> diff --git a/include/trace/events/bridge.h b/include/trace/events/bridge.h
-> index 6b200059c2c5..00d5e2dcb3ad 100644
-> --- a/include/trace/events/bridge.h
-> +++ b/include/trace/events/bridge.h
-> @@ -122,6 +122,73 @@ TRACE_EVENT(br_fdb_update,
->  		  __entry->flags)
->  );
+> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+> index 5ff45b1a74a5..dee2890fd702 100644
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -56,7 +56,7 @@
+>  #include <linux/fec.h>
+>  #include <linux/of.h>
+>  #include <linux/of_device.h>
+> -#include <linux/of_gpio.h>
+> +#include <linux/gpio/consumer.h>
+>  #include <linux/of_mdio.h>
+>  #include <linux/of_net.h>
+>  #include <linux/regulator/consumer.h>
+> @@ -4035,7 +4035,8 @@ static int fec_enet_init(struct net_device *ndev)
+>  #ifdef CONFIG_OF
+>  static int fec_reset_phy(struct platform_device *pdev)
+>  {
+> -	int err, phy_reset;
+> +	int err;
+> +	struct gpio_desc *phy_reset;
+>  	bool active_high = false;
+>  	int msec = 1, phy_post_delay = 0;
+>  	struct device_node *np = pdev->dev.of_node;
+
+Hi Arnd
+
+netdev drivers are supposed to use 'reverse Christmas tree'. It looks
+like this function is actually using 'Christmas tree' :-) Please could
+you keep with the current coding style.
+
+> @@ -4048,12 +4049,6 @@ static int fec_reset_phy(struct platform_device *pdev)
+>  	if (!err && msec > 1000)
+>  		msec = 1;
 >  
-> +TRACE_EVENT(br_mdb_full,
-> +
-> +	TP_PROTO(const struct net_device *dev,
-> +		 const struct br_ip *group),
-> +
-> +	TP_ARGS(dev, group),
-> +
-> +	TP_STRUCT__entry(
-> +		__string(dev, dev->name)
-> +		__field(int, af)
-> +		__field(u16, vid)
-> +		__array(__u8, src4, 4)
-> +		__array(__u8, src6, 16)
-> +		__array(__u8, grp4, 4)
-> +		__array(__u8, grp6, 16)
-> +		__array(__u8, grpmac, ETH_ALEN) /* For af == 0. */
-
-Instead of wasting ring buffer space, why not just have:
-
-		__array(__u8, src, 16)
-		__array(__u8, grp, 16)
-
-
-> +	),
-> +
-> +	TP_fast_assign(
-> +		__assign_str(dev, dev->name);
-> +		__entry->vid = group->vid;
-> +
-> +		if (!group->proto) {
-> +			__entry->af = 0;
-> +
-> +			memset(__entry->src4, 0, sizeof(__entry->src4));
-> +			memset(__entry->src6, 0, sizeof(__entry->src6));
-> +			memset(__entry->grp4, 0, sizeof(__entry->grp4));
-> +			memset(__entry->grp6, 0, sizeof(__entry->grp6));
-> +			memcpy(__entry->grpmac, group->dst.mac_addr, ETH_ALEN);
-> +		} else if (group->proto == htons(ETH_P_IP)) {
-> +			__be32 *p32;
-> +
-> +			__entry->af = AF_INET;
-> +
-> +			p32 = (__be32 *) __entry->src4;
-> +			*p32 = group->src.ip4;
-> +
-> +			p32 = (__be32 *) __entry->grp4;
-> +			*p32 = group->dst.ip4;
-
-			struct in6_addr *in6;
-
-			in6 = (struct in6_addr *)__entry->src;
-			ipv6_addr_set_v4mapped(group->src.ip4, in6);
-
-			in6 = (struct in6_addr *)__entry->grp;
-			ipv6_addr_set_v4mapped(group->grp.ip4, in6);
-
-> +
-> +			memset(__entry->src6, 0, sizeof(__entry->src6));
-> +			memset(__entry->grp6, 0, sizeof(__entry->grp6));
-> +			memset(__entry->grpmac, 0, ETH_ALEN);
-> +#if IS_ENABLED(CONFIG_IPV6)
-> +		} else {
-> +			struct in6_addr *in6;
-> +
-> +			__entry->af = AF_INET6;
-> +
-> +			in6 = (struct in6_addr *)__entry->src6;
-> +			*in6 = group->src.ip6;
-> +
-> +			in6 = (struct in6_addr *)__entry->grp6;
-> +			*in6 = group->dst.ip6;
-> +
-> +			memset(__entry->src4, 0, sizeof(__entry->src4));
-> +			memset(__entry->grp4, 0, sizeof(__entry->grp4));
-> +			memset(__entry->grpmac, 0, ETH_ALEN);
-> +#endif
-> +		}
-> +	),
-> +
-> +	TP_printk("dev %s af %u src %pI4/%pI6c grp %pI4/%pI6c/%pM vid %u",
-> +		  __get_str(dev), __entry->af, __entry->src4, __entry->src6,
-> +		  __entry->grp4, __entry->grp6, __entry->grpmac, __entry->vid)
-
-And just have: 
-
-	TP_printk("dev %s af %u src %pI6c grp %pI6c/%pM vid %u",
-		  __get_str(dev), __entry->af, __entry->src, __entry->grp,
-		  __entry->grpmac, __entry->vid)
-
-As the %pI6c should detect that it's a ipv4 address and show that.
-
--- Steve
-
-
-> +);
+> -	phy_reset = of_get_named_gpio(np, "phy-reset-gpios", 0);
+> -	if (phy_reset == -EPROBE_DEFER)
+> -		return phy_reset;
+> -	else if (!gpio_is_valid(phy_reset))
+> -		return 0;
+> -
+>  	err = of_property_read_u32(np, "phy-reset-post-delay", &phy_post_delay);
+>  	/* valid reset duration should be less than 1s */
+>  	if (!err && phy_post_delay > 1000)
+> @@ -4061,11 +4056,13 @@ static int fec_reset_phy(struct platform_device *pdev)
 >  
->  #endif /* _TRACE_BRIDGE_H */
+>  	active_high = of_property_read_bool(np, "phy-reset-active-high");
 >  
-> diff --git a/net/core/net-traces.c b/net/core/net-traces.c
-> index ee7006bbe49b..805b7385dd8d 100644
-> --- a/net/core/net-traces.c
-> +++ b/net/core/net-traces.c
-> @@ -41,6 +41,7 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(br_fdb_add);
->  EXPORT_TRACEPOINT_SYMBOL_GPL(br_fdb_external_learn_add);
->  EXPORT_TRACEPOINT_SYMBOL_GPL(fdb_delete);
->  EXPORT_TRACEPOINT_SYMBOL_GPL(br_fdb_update);
-> +EXPORT_TRACEPOINT_SYMBOL_GPL(br_mdb_full);
->  #endif
->  
->  #if IS_ENABLED(CONFIG_PAGE_POOL)
+> -	err = devm_gpio_request_one(&pdev->dev, phy_reset,
+> -			active_high ? GPIOF_OUT_INIT_HIGH : GPIOF_OUT_INIT_LOW,
+> -			"phy-reset");
+> -	if (err) {
+> -		dev_err(&pdev->dev, "failed to get phy-reset-gpios: %d\n", err);
+> +	phy_reset = devm_gpiod_get(&pdev->dev, "phy-reset",
+> +			active_high ? GPIOD_OUT_HIGH : GPIOD_OUT_LOW);
+> +	if (IS_ERR(phy_reset)) {
+> +		err = PTR_ERR(phy_reset);
+> +		if (err != -EPROBE_DEFER)
+> +			dev_err(&pdev->dev,
+> +				"failed to get phy-reset-gpios: %d\n", err);
 
+dev_err_probe() looks usable here.
+
+		Andrew
