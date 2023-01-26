@@ -2,111 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2267E67D475
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 19:42:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 188D067D489
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 19:44:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232163AbjAZSl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 13:41:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60204 "EHLO
+        id S231607AbjAZSoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 13:44:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230019AbjAZSl5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 13:41:57 -0500
-Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7AD3EFC6;
-        Thu, 26 Jan 2023 10:41:43 -0800 (PST)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailout.west.internal (Postfix) with ESMTP id 0AB3E32000D9;
-        Thu, 26 Jan 2023 13:41:39 -0500 (EST)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Thu, 26 Jan 2023 13:41:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1674758499; x=1674844899; bh=s/3u3IdhZX
-        LqBuo4DZdO5LrZKWdZJ/fXn8nsI7x5qv8=; b=FpYz1KWomhYBEGMOKTj6x5Kn5l
-        1DHsVSZb3K0d3QkItsPmvcQH31GP710+8Efw1VLHUE6VQK7zAAyEfPBrDIiP0jDM
-        PQ3TjZgWQ4oE6TBlY1dgNQRmb/8N7apPIGJuj8koMiod7r33aCU/2rmK059CJVtL
-        xU6Bs1K0iTE1xuAFTuZH4fvcfgWbkWOJftbuZG6tnePkqoNRrOQQQRasdzqx611H
-        OP8OnqI6I09P0UkQhATWZwhkygZTMtug9kN18+s1NE8oSWEt4CLBLTTZdepswNQc
-        cATI8IKZbxYvV4hxvnqilGcXKiSNoq/HwVnas6wA2dICzDrHeLd4jUNMVuHA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1674758499; x=1674844899; bh=s/3u3IdhZXLqBuo4DZdO5LrZKWdZ
-        J/fXn8nsI7x5qv8=; b=YuHXoEXx5blFxXBbkw5H+PsaxScEXQIcgdWvf78r0G5L
-        a7n1gL1b1ZgT7be3EZwfF3KT7GxettJlq6PBbTzOvD7RSlW3chK4kXeYps4+eK1O
-        YJywqsEYwpBv0NPndDaIJQI4eZ5tnXfXB9Lzgtgh9zacI7GB4qOJ68UqeDRsILS0
-        U4iaHF4Z9JNaTasGXdzorVoXOoh56P6Wn6Y3e53i3YeFlm3sQQbNppWXO7ZREwcb
-        QBWtCUdJn0fE6+hlozaALBgUY2+OKJKkSm59xkyv+Q63iKdnf052s1ECWPvOnZWQ
-        OBLIY+pq1zGEA+0lHogMZ5IpBPnslMYiPTKP/NxFGg==
-X-ME-Sender: <xms:Y8nSY4OfXRXctYOJ8kHq-RPx3tb87SDkmINi6exFN1daN6301GCYgA>
-    <xme:Y8nSY--45iQ-pBNn1SburrssP3OljWCTAqHk_kh0pfHAb-kOWtcmNtnInaZaTaP91
-    CDZaRwUtdg60IUDEos>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedruddvgedgudduiecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdet
-    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
-    htthgvrhhnpeffheeugeetiefhgeethfejgfdtuefggeejleehjeeutefhfeeggefhkedt
-    keetffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    grrhhnugesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:Y8nSY_TPF7alI46nUTidbO_C_DXkOKVUf3pz5mTBEJ224kDe8jhcng>
-    <xmx:Y8nSYwsvzH4ZCb_Cu0zfXRzKTu7rwH8PAtV4SLqZ3CvsSTOfSxil8Q>
-    <xmx:Y8nSYweum5M6XgJ8mO5p4k37gPh00yxW7WmR14j2B9_He2SZnIHj0Q>
-    <xmx:Y8nSY44oR1hLP64jHYL4F4OTVZxWrcoAtQS95dc23hQouyF_hbuZKw>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 43B3DB60086; Thu, 26 Jan 2023 13:41:39 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-85-gd6d859e0cf-fm-20230116.001-gd6d859e0
-Mime-Version: 1.0
-Message-Id: <5313ee39-7313-493b-9b66-a9c697962831@app.fastmail.com>
-In-Reply-To: <Y9LDIvWiG9gSl9f2@unreal>
-References: <20230126135454.3556647-1-arnd@kernel.org>
- <Y9LDIvWiG9gSl9f2@unreal>
-Date:   Thu, 26 Jan 2023 19:41:19 +0100
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Leon Romanovsky" <leon@kernel.org>,
-        "Arnd Bergmann" <arnd@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] wiznet: convert to GPIO descriptors
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229619AbjAZSoY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 13:44:24 -0500
+Received: from nbd.name (nbd.name [46.4.11.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB806BB;
+        Thu, 26 Jan 2023 10:43:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=mh8ipCV8VjoxIYZIu67rp3FSPW2Sfioq7c+945zRJRo=; b=Xn/GEYV+M7tqZj0tVgKSErm0Gk
+        pKYpFf/6ciuSHaDCGjNY4S6yVhGlhfzvxTawlA2UQXSuXVJa32OHBNWncgpgUl+SQDFz1pQUYZLlF
+        rbEZioWxj7n1DRm4AEZI+m6oiMIiQ+nBNAACmGPS0CF6bZfCQu8G5AJl0NcwvTvBtthQ=;
+Received: from p5b206403.dip0.t-ipconnect.de ([91.32.100.3] helo=nf.local)
+        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <nbd@nbd.name>)
+        id 1pL7DX-002ctH-6H; Thu, 26 Jan 2023 19:43:23 +0100
+Message-ID: <04e27096-9ace-07eb-aa51-1663714a586d@nbd.name>
+Date:   Thu, 26 Jan 2023 19:43:22 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.6.1
+Subject: Re: [PATCH] net: page_pool: fix refcounting issues with fragmented
+ allocation
+Content-Language: en-US
+To:     Alexander H Duyck <alexander.duyck@gmail.com>
+Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        netdev@vger.kernel.org, Jesper Dangaard Brouer <hawk@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        linux-kernel@vger.kernel.org, Yunsheng Lin <linyunsheng@huawei.com>
+References: <20230124124300.94886-1-nbd@nbd.name>
+ <CAC_iWjKAEgUB8Z3WNNVgUK8omXD+nwt_VPSVyFn1i4EQzJadog@mail.gmail.com>
+ <19121deb-368f-9786-8700-f1c45d227a4c@nbd.name>
+ <cd35316065cfe8d706ca2730babe3e6519df6034.camel@gmail.com>
+ <c7f1ade0-a607-2e55-d106-9acc26cbed94@nbd.name>
+ <49703c370e26ae1a6b19a39dc05e262acf58f6aa.camel@gmail.com>
+ <9baecde9-d92b-c18c-daa8-e7a96baa019b@nbd.name>
+ <595c5e36b0260ba16833c2a8d9418fd978ca9300.camel@gmail.com>
+ <0c0e96a7-1cf1-b856-b339-1f3df36a562c@nbd.name>
+ <a0b43a978ae43064777d9d240ef38b3567f58e5a.camel@gmail.com>
+ <9992e7b5-7f2b-b79d-9c48-cf689807f185@nbd.name>
+ <301aa48a-eb3b-eb56-5041-d6f8d61024d1@nbd.name>
+ <148028e75d720091caa56e8b0a89544723fda47e.camel@gmail.com>
+ <8ec239d3-a005-8609-0724-f1042659791e@nbd.name>
+ <8a331165-4435-4c2d-70e0-20655019dc51@nbd.name>
+ <CAKgT0Ud8npNtncH-KbMtj_R=UZ=aFA9T8U=TZoLG_94eVUxKPA@mail.gmail.com>
+ <bc0fa31a-c935-c6f0-f968-9e2a54bafd45@nbd.name>
+ <156f3e120bd0757133cb6bc11b76889637b5e0a6.camel@gmail.com>
+From:   Felix Fietkau <nbd@nbd.name>
+In-Reply-To: <156f3e120bd0757133cb6bc11b76889637b5e0a6.camel@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 26, 2023, at 19:14, Leon Romanovsky wrote:
-> On Thu, Jan 26, 2023 at 02:54:12PM +0100, Arnd Bergmann wrote:
->>  
->> @@ -139,6 +139,12 @@ MODULE_LICENSE("GPL");
->>  #define W5500_RX_MEM_START	0x30000
->>  #define W5500_RX_MEM_SIZE	0x04000
->>  
->> +#ifndef CONFIG_WIZNET_BUS_SHIFT
->> +#define CONFIG_WIZNET_BUS_SHIFT 0
->> +#endif
->
-> I don't see any define of CONFIG_WIZNET_BUS_SHIFT in the code, so it looks
-> like it always zero and can be removed.
+On 26.01.23 19:38, Alexander H Duyck wrote:
+> Okay, I think that tells me exactly what is going on. Can you give the
+> change below a try and see if it solves the problem for you.
+> 
+> I think what is happening is that after you are reassigning the frags
+> they are getting merged into GRO frames where the head may have
+> pp_recycle set. As a result I think the pages are getting recycled when
+> they should be just freed via put_page.
+> 
+> I'm suspecting this wasn't an issue up until now as I don't believe
+> there are any that are running in a mixed mode where they have both
+> pp_recycle and non-pp_recycle skbs coming from the same device.
+> 
+> diff --git a/net/core/gro.c b/net/core/gro.c
+> index 506f83d715f8..4bac7ea6e025 100644
+> --- a/net/core/gro.c
+> +++ b/net/core/gro.c
+> @@ -162,6 +162,15 @@ int skb_gro_receive(struct sk_buff *p, struct
+> sk_buff *skb)
+>   	struct sk_buff *lp;
+>   	int segs;
+>   
+> +	/* Do not splice page pool based packets w/ non-page pool
+> +	 * packets. This can result in reference count issues as page
+> +	 * pool pages will not decrement the reference count and will
+> +	 * instead be immediately returned to the pool or have frag
+> +	 * count decremented.
+> +	 */
+> +	if (p->pp_recycle != skb->pp_recycle)
+> +		return -ETOOMANYREFS;
+> +
+>   	/* pairs with WRITE_ONCE() in netif_set_gro_max_size() */
+>   	gro_max_size = READ_ONCE(p->dev->gro_max_size);
+>   
+That works, thanks!
 
-Good catch! Evidently the original idea was that this would
-be set to a machine specific value through Kconfig. I've renamed
-the constant, removed the #ifdef and explained it in the changelog
-text now.
-
-     Arnd
+- Felix
