@@ -2,105 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1002F67D027
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 16:26:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0658167D02E
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 16:29:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230423AbjAZP0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 10:26:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37696 "EHLO
+        id S231823AbjAZP3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 10:29:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232097AbjAZP0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 10:26:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA96E93E6;
-        Thu, 26 Jan 2023 07:25:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6B576B81CC0;
-        Thu, 26 Jan 2023 15:25:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E50C2C433EF;
-        Thu, 26 Jan 2023 15:25:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674746754;
-        bh=RPUA4JH2jMe4RjW6UY8ohwD1XnJ4ZRgpkSpDUl9Wqbc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=dy30E4CoimoXuS07cBIkJ9HKwdhUEwpJOmxe5NMRtY/QrTekyTsSyqvcdf1SVxEE7
-         yovxQvwWKiuJ4GCFSvkTfGrcUREYSG/t6VhHRzioXYFrdvx0OW323YkHai9AShZXUp
-         OsDP/ibGiTk84l1lAwUk+Di+ybwP5U2cttf1eGxE5fqgey69eysFpuC4UuxDzDQmy2
-         isx9m9yq7SF/udzB8OwRZ9YbWhCnjH9RFmRvQszASmRnQ+pQdRszh9zW+BiCyLQxGv
-         OyDw17MIUWb60Xo7RWFv1Nj7pGrcWpqMIEKDpaWWo4jCrQ8QzDiKZv6bofIOGIJMyX
-         GabUanj2jjiqg==
-Date:   Thu, 26 Jan 2023 09:25:52 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        m.chetan.kumar@linux.intel.com, netdev@vger.kernel.org,
-        davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        ilpo.jarvinen@linux.intel.com, ricardo.martinez@linux.intel.com,
-        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
-        edumazet@google.com, pabeni@redhat.com,
-        chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
-        linuxwwan_5g@intel.com,
-        Madhusmita Sahu <madhusmita.sahu@intel.com>,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH v5 net-next 3/5] net: wwan: t7xx: PCIe reset rescan
-Message-ID: <20230126152552.GA1265322@bhelgaas>
+        with ESMTP id S230423AbjAZP3D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 10:29:03 -0500
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4034170D
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 07:29:00 -0800 (PST)
+Received: by mail-io1-xd2b.google.com with SMTP id y69so709439iof.3
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 07:29:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Vhzd9mVvtO9xrnQSd81VID3Vc5urJ1mPS6Ug9FWKZf0=;
+        b=k/TecLWDx07q77nyq7OuBS5KAnBsIY/ZtA2eGLgf5uf0h1F5YSP+8J+34/iLNp4cIx
+         87zpIQLFr2Mr1sq9n3TDfhByi4kHevLc5Vx+S3kOQxXLArXh7omkXLXYPhMFTrbbzyn5
+         dMwe6TjimTa9L+BivvuR74siz4GA+Ukivy4KaX64krRwVqWlLZLrAv5zGGAeMYEwPVIa
+         v+w1yyX7LyxGVU5iFjgoFdn5DsFHQoO+ug1l4q0j/LIDAUMomZXCQTmQsxViyt+X1yXE
+         Vo+PD80R3ivibAIC4f5xzXcczoueRpykydvLIyaa30+1ZEL09/Z9jhcWiSpFXxo6wCWh
+         6SGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Vhzd9mVvtO9xrnQSd81VID3Vc5urJ1mPS6Ug9FWKZf0=;
+        b=44opS0qDBglksz0vUy0A3T+cHPQTJH472k9ygA5TRrY30ymM76FRC6Xs9k6YvIMnQm
+         /r5YzYZ3W3UJeEiTZyayIZM8u8JF3KbaDbjlZjXqSlrjvSWCLZ/u6/q1mSht8XGPVUIt
+         iitNArGhc93sMdgBCJtakhGaFNycqoZpzGIsyt3WJxXYIfyMIl4OTOjgEBUax3w7SCgd
+         JHSMI2W8eWthZH4a55MpZiP47b8HZqC0Bi0dGqI3yIhIgw5U9i3rVzGy2BM14mVH4o9o
+         EXRpMq+ucU+xtCHPzqKyQR7QJE0wBNxu8vOBX0zXh+ZXfRstkJ8OyQYQrLOpVGAYlrBe
+         a7sA==
+X-Gm-Message-State: AFqh2kroUvB4QbWKrX7DZGueZzfAAcKmTW945Y65SeHpsfJFIsv1mfyV
+        lkSa1mpOsy3qip0bew04AZWGm8tKdSvLjubg8sYSDQ==
+X-Google-Smtp-Source: AMrXdXvzYzEz/Q8kINSnWz0o8VxWlMXtjv2r/TVd+6w0UTP9/e/9F2m39XCFE0sEDZy+Los0KygfEvumv03/yyKnLAE=
+X-Received: by 2002:a02:cc96:0:b0:39e:5dc6:eba5 with SMTP id
+ s22-20020a02cc96000000b0039e5dc6eba5mr4046674jap.115.1674746940333; Thu, 26
+ Jan 2023 07:29:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230124204543.550d88e3@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230124170510.316970-1-jhs@mojatatu.com> <20230124170510.316970-15-jhs@mojatatu.com>
+ <87fsbyco43.fsf@nvidia.com>
+In-Reply-To: <87fsbyco43.fsf@nvidia.com>
+From:   Jamal Hadi Salim <hadi@mojatatu.com>
+Date:   Thu, 26 Jan 2023 10:28:49 -0500
+Message-ID: <CAAFAkD8CYey6inOuxv7doWBaro-rpwcLXyDjbte=VMKb-YRKcg@mail.gmail.com>
+Subject: Re: [PATCH net-next RFC 15/20] p4tc: add action template create,
+ update, delete, get, flush and dump
+To:     Vlad Buslov <vladbu@nvidia.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, netdev@vger.kernel.org,
+        kernel@mojatatu.com, deb.chatterjee@intel.com,
+        anjali.singhai@intel.com, namrata.limaye@intel.com,
+        khalidm@nvidia.com, tom@sipanda.io, pratyush@sipanda.io,
+        jiri@resnulli.us, xiyou.wangcong@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        simon.horman@corigine.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 24, 2023 at 08:45:43PM -0800, Jakub Kicinski wrote:
-> Hi Bjorn,
-> 
-> any objections to the kind of shenanigans this is playing?
+On Wed, Jan 25, 2023 at 4:15 PM 'Vlad Buslov' via kernel issues
+<kernel@mojatatu.com> wrote:
+>
+> On Tue 24 Jan 2023 at 12:05, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+> > index fd012270d..e4a6d7da6 100644
+> > +                     bool miss;
 
-Yes, thanks for asking.  Drivers definitely should not have to do this
-sort of thing.
+[..]
 
-> On Sat, 21 Jan 2023 19:03:23 +0530 m.chetan.kumar@linux.intel.com wrote:
-> > From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-> > 
-> > PCI rescan module implements "rescan work queue".
-> > In firmware flashing or coredump collection procedure
-> > WWAN device is programmed to boot in fastboot mode and
-> > a work item is scheduled for removal & detection.
-> > 
-> > The WWAN device is reset using APCI call as part driver
-> > removal flow. Work queue rescans pci bus at fixed interval
-> > for device detection, later when device is detect work queue
-> > exits.
-
-I'm not sure what's going on here.  Do we need to reset the device
-when the t7xx driver is loaded so the device will load new firmware
-when it comes out of reset?
-
-There are a few drivers that do that, e.g., with pci_reset_function().
-
-> > +static struct remove_rescan_context t7xx_rescan_ctx;
-
-Apparently this only supports a single t7xx instance in a system?  Not
-good.
-
-> > +void t7xx_pci_dev_rescan(void)
+> > +static int __tcf_p4_dyna_init(struct net *net, struct nlattr *est,
+> > +                           struct p4tc_act *act, struct tc_act_dyna *parm,
+> > +                           struct tc_action **a, struct tcf_proto *tp,
+> > +                           struct tc_action_ops *a_o,
+> > +                           struct tcf_chain **goto_ch, u32 flags,
+> > +                           struct netlink_ext_ack *extack)
 > > +{
-> > +	struct pci_bus *b = NULL;
+> > +     bool bind = flags & TCA_ACT_FLAGS_BIND;
+> > +     bool exists = false;
+> > +     int ret = 0;
+> > +     struct p4tc_pipeline *pipeline;
+> > +     u32 index;
+> > +     int err;
 > > +
-> > +	pci_lock_rescan_remove();
-> > +	while ((b = pci_find_next_bus(b)))
-> > +		pci_rescan_bus(b);
+> > +     index = parm->index;
+> > +
+> > +     err = tcf_idr_check_alloc(act->tn, &index, a, bind);
+> > +     if (err < 0)
+> > +             return err;
+> > +
+> > +     exists = err;
+> > +     if (!exists) {
+> > +             struct tcf_p4act *p;
+> > +
+> > +             ret = tcf_idr_create(act->tn, index, est, a, a_o, bind, false,
+> > +                                  flags);
+> > +             if (ret) {
+> > +                     tcf_idr_cleanup(act->tn, index);
+> > +                     return ret;
+> > +             }
+> > +
+> > +             /* dyn_ref here should never be 0, because if we are here, it
+> > +              * means that a template action of this kind was created. Thus
+> > +              * dyn_ref should be at least 1. Also since this operation and
+> > +              * others that add or delete action templates run with
+> > +              * rtnl_lock held, we cannot do this op and a deletion op in
+> > +              * parallel.
+> > +              */
+>
+> I'm not getting why you need atomic refcount here if according to the
+> comment it is used with rtnl lock protection anyway...
+>
 
-No, this driver absolutely cannot rescan and assign unassigned
-resources for all the PCI buses in the system.
+> > +             WARN_ON(!refcount_inc_not_zero(&a_o->dyn_ref));
+> > +
+> > +             pipeline = act->pipeline;
+> > +
+> > +             p = to_p4act(*a);
+> > +             p->p_id = pipeline->common.p_id;
+> > +             p->act_id = act->a_id;
+> > +             INIT_LIST_HEAD(&p->cmd_operations);
 
-Bjorn
+[..]
+
+> > +
+> > +     params = rcu_dereference_protected(m->params, 1);
+> > +
+> > +     if (refcount_read(&ops->dyn_ref) > 1)
+> > +             refcount_dec(&ops->dyn_ref);
+>
+> ...especially since usage like this is definitely not concurrency-safe
+> without some external protection.
+>
+
+I think you may be right - we'll take a closer look. Initially our
+goal was to avoid
+rtnl lock then we decided to use rtnl only for templates and this may have been
+a leftover.
+
+> > +
+> > +     spin_lock_bh(&m->tcf_lock);
+> > +     if (params)
+> > +             call_rcu(&params->rcu, tcf_p4_act_params_destroy_rcu);
+> > +     spin_unlock_bh(&m->tcf_lock);
+>
+> Why take tcf_lock for scheduling a rcu callback?
+>
+
+Seems like a leftover.. Thanks for catching this.
+
+cheers,
+jamal
