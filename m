@@ -2,119 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D47AB67D7C5
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 22:33:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3156F67D7D4
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 22:36:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232842AbjAZVd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 16:33:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55672 "EHLO
+        id S233019AbjAZVgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 16:36:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229666AbjAZVdZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 16:33:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E8C23C66
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 13:33:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5286E617D1
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 21:33:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 784C6C433D2;
-        Thu, 26 Jan 2023 21:33:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674768803;
-        bh=rK9T2fODgMb94K7jKDW27/OpyXDWXJ6UKstCb/pTZC8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DY0/PQP1O7EM9QSIvzMGKQV40p4dTKNmj2xigqAEJYBP7wQf7BlBj5Xrnat+bPONE
-         TA8HMKwhdRER1WlZ+U7MLZJ959rs4fTgDkvPr0T+HAJVRd2Sq7PVg72/SdIMDw4vxm
-         1umDN3z83ZKpCl6fYLhtdfX3nYa5BxAcyU8eJ48LVXPOaYN2Da5OLGsNsPomcWBlMC
-         Qx92aC8RJ0EsAXf1XbrTawYEJUmkXyx9bn47WGJ52KbzpK/WrQqtSrGUimfx5Uzsq7
-         HsDSvFWBr+n6VFyjEZpydwWAONLM3R7sQpFKXpo3FpvVh+CuMkrSWJd66ywfAPIFC6
-         Fbcg0zcQdOBxw==
-Date:   Thu, 26 Jan 2023 13:33:22 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Kirill Tkhai <tkhai@ya.ru>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        kuniyu@amazon.com, gorcunov@gmail.com
-Subject: Re: [PATCH net-next] unix: Guarantee sk_state relevance in case of
- it was assigned by a task on other cpu
-Message-ID: <20230126133322.3bfab5e0@kernel.org>
-In-Reply-To: <20230126202511.GL2948950@paulmck-ThinkPad-P17-Gen-1>
-References: <72ae40ef-2d68-2e89-46d3-fc8f820db42a@ya.ru>
-        <20230124173557.2b13e194@kernel.org>
-        <6953ec3b-6c48-954e-f3db-63450a5ab886@ya.ru>
-        <20230125221053.301c0341@kernel.org>
-        <20230126202511.GL2948950@paulmck-ThinkPad-P17-Gen-1>
+        with ESMTP id S229874AbjAZVgR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 16:36:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC6A13E
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 13:35:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1674768931;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wPp5FgezLTRv8/n6j2CbiI3M1hJrXQSjOFT+aTSHCWQ=;
+        b=BR8Fn1YSWXzDZk+vs4FQ8c9uy0W4HZI9z0yCV72u5mts6tnPHf9L7ZSYXhzVjHpg5InnyD
+        Qc2UliviMwoNH8SKAUlMFPFN8tABKnOWD788KjQFiyzgW4tVYZyhPklIji7P4VXkl5iKZr
+        WP0Kv/GYVArsPRVQXa8o1eousk1ucL4=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-76-S6cHk9qGO5yqYUYNIi5Yjw-1; Thu, 26 Jan 2023 16:35:30 -0500
+X-MC-Unique: S6cHk9qGO5yqYUYNIi5Yjw-1
+Received: by mail-ej1-f70.google.com with SMTP id nb4-20020a1709071c8400b0084d4712780bso2046721ejc.18
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 13:35:30 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=wPp5FgezLTRv8/n6j2CbiI3M1hJrXQSjOFT+aTSHCWQ=;
+        b=VoiVugm8luEPzbcEHQn1vLtc4rYvEybIcevbUWz5tXL5lfU8Vr6xY8v06WRmJF4fuW
+         KNpbHq+3XHqqnoN5txLXlcs9fm9T7fI5dLQ2X9yDHi1KvZVVrMgyUOEyiMpYjzN/ADvb
+         GeoZ9sMQojMaN29krHP3zvapyoy5DpWqP6GUIxkBd9Gk7lUeVFoUleX230ehz8lHDHEZ
+         zqQYQ3UyEVYArfNghZ24+fbvT+/BraArte1cAoHwPgnAxhusXg5v9bM+xEYdvFVJ8uoF
+         vJ6Wr8gH/UQSTXxjJhtdcSUfPnkhP7w9zhBmyO/QzInXLb5Ev/JMi70ChNp51oyY0Q/J
+         i0UQ==
+X-Gm-Message-State: AFqh2kolHGN9LwP+zUV9G+xOK9U+JCm0Ei+ixJYv38gJJ2aYQd2AzulJ
+        nLw3pu/6VK7+zbt3gthC5NfNjGeklnBqqB7HwrAwUlOancr1CzFf3XEX7VdMX1lZyZPbMqhhV9p
+        8KhzTTRHSpclX/zkK
+X-Received: by 2002:a17:906:f299:b0:7c0:fd1a:79ee with SMTP id gu25-20020a170906f29900b007c0fd1a79eemr39636414ejb.63.1674768929148;
+        Thu, 26 Jan 2023 13:35:29 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXse1aQgjk7OzwHyV0hK4unOcklvyKMqYnBLn5Dt4eFYSU4VegC3jZmirDgxa/gkgJwaBBS/EA==
+X-Received: by 2002:a17:906:f299:b0:7c0:fd1a:79ee with SMTP id gu25-20020a170906f29900b007c0fd1a79eemr39636386ejb.63.1674768928756;
+        Thu, 26 Jan 2023 13:35:28 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id cm20-20020a170907939400b0086f40238403sm1125890ejc.223.2023.01.26.13.35.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Jan 2023 13:35:28 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 7327B9430CD; Thu, 26 Jan 2023 22:35:27 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     nbd@nbd.name, davem@davemloft.net, edumazet@google.com,
+        hawk@kernel.org, ilias.apalodimas@linaro.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linyunsheng@huawei.com,
+        lorenzo@kernel.org, netdev@vger.kernel.org, pabeni@redhat.com
+Subject: Re: [net PATCH] skb: Do mix page pool and page referenced frags in GRO
+In-Reply-To: <CAKgT0UfsLFuCK0vQF70s=8XC8qwrzxag_NR2dCDvxqx84E0K=g@mail.gmail.com>
+References: <04e27096-9ace-07eb-aa51-1663714a586d@nbd.name>
+ <167475990764.1934330.11960904198087757911.stgit@localhost.localdomain>
+ <87tu0dkt1h.fsf@toke.dk>
+ <CAKgT0UfsLFuCK0vQF70s=8XC8qwrzxag_NR2dCDvxqx84E0K=g@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 26 Jan 2023 22:35:27 +0100
+Message-ID: <87o7qlkmhs.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 26 Jan 2023 12:25:11 -0800 Paul E. McKenney wrote:
-> > Me trying to prove that memory ordering is transitive would be 100%
-> > speculation. Let's ask Paul instead - is the above valid? Or the fact
-> > that CPU1 observes state from CPU0 and is strongly ordered with CPU2
-> > implies that CPU2 will also observe CPU0's state?  
-> 
-> Hmmm...  What is listen() doing?  There seem to be a lot of them
-> in the kernel.
-> 
-> But proceeding on first principles...
-> 
-> Sometimes.  Memory ordering is transitive only when the ordering is
-> sufficiently strong.
-> 
-> In this case, I do not see any ordering between CPU 0 and anything else.
-> If the listen() function were to acquire the same mutex as CPU1 and CPU2
-> did, and if it acquired it first, then CPU2 would be guaranteed to see
-> anything CPU0 did while holding that mutex.
+Alexander Duyck <alexander.duyck@gmail.com> writes:
 
-The fuller picture would be:
+> On Thu, Jan 26, 2023 at 11:14 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
+edhat.com> wrote:
+>>
+>> Alexander Duyck <alexander.duyck@gmail.com> writes:
+>>
+>> > From: Alexander Duyck <alexanderduyck@fb.com>
+>> >
+>> > GSO should not merge page pool recycled frames with standard reference
+>> > counted frames. Traditionally this didn't occur, at least not often.
+>> > However as we start looking at adding support for wireless adapters th=
+ere
+>> > becomes the potential to mix the two due to A-MSDU repartitioning fram=
+es in
+>> > the receive path. There are possibly other places where this may have
+>> > occurred however I suspect they must be few and far between as we have=
+ not
+>> > seen this issue until now.
+>> >
+>> > Fixes: 53e0961da1c7 ("page_pool: add frag page recycling support in pa=
+ge pool")
+>> > Reported-by: Felix Fietkau <nbd@nbd.name>
+>> > Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
+>>
+>> I know I'm pattern matching a bit crudely here, but we recently had
+>> another report where doing a get_page() on skb->head didn't seem to be
+>> enough; any chance they might be related?
+>>
+>> See: https://lore.kernel.org/r/Y9BfknDG0LXmruDu@JNXK7M3
+>
+> Looking at it I wouldn't think so. Doing get_page() on these frames is
+> fine. In the case you reference it looks like get_page() is being
+> called on a slab allocated skb head. So somehow a slab allocated head
+> is leaking through.
 
-[CPU0]                     [CPU1]                [CPU2]
-WRITE_ONCE(sk->sk_state,
-           TCP_LISTEN);
-                           val = READ_ONCE(sk->sk_state) 
-                           mutex_lock()
-                           shared_mem_var = val
-                           mutex_unlock()
-                                                  mutex_lock()
-                                                  if (shared_mem_var == TCP_LISTEN)
-                                                     BUG_ON(READ_ONCE(sk->sk_state)
-                                                            != TCP_LISTEN)
-                                                  mutex_unlock()
+Alright, thanks for taking a look! :)
 
-> Alternatively, if CPU0 wrote to some memory, and CPU1 read that value
-> before releasing the mutex (including possibly before acquiring that
-> mutex), then CPU2 would be guaranteed to see that value (or the value
-> written by some later write to that same memory) after acquiring that
-> mutex.
+-Toke
 
-Which I believe is exactly what happens in the example.
-
-> So here are some things you can count on transitively:
-> 
-> 1.	After acquiring a given lock (or mutex or whatever), you will
-> 	see any values written or read prior to any earlier conflicting
-> 	release of that same lock.
-> 
-> 2.	After an access with acquire semantics (for example,
-> 	smp_load_acquire()) you will see any values written or read
-> 	prior to any earlier access with release semantics (for example,
-> 	smp_store_release()).
-> 
-> Or in all cases, you might see later values, in case someone else also
-> did a write to the location in question.
-> 
-> Does that help, or am I missing a turn in there somewhere?
-
-Very much so, thank you!
