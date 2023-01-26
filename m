@@ -2,47 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8C3167CCAC
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 14:51:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 665DA67CCB5
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 14:52:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231522AbjAZNvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 08:51:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40076 "EHLO
+        id S230289AbjAZNwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 08:52:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231639AbjAZNvC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 08:51:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3EA4CE7F;
-        Thu, 26 Jan 2023 05:50:42 -0800 (PST)
+        with ESMTP id S229651AbjAZNwb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 08:52:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FABD442E4;
+        Thu, 26 Jan 2023 05:52:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CCD51617FF;
-        Thu, 26 Jan 2023 13:50:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEECBC433A0;
-        Thu, 26 Jan 2023 13:50:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67667B81D4A;
+        Thu, 26 Jan 2023 13:52:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5994CC433D2;
+        Thu, 26 Jan 2023 13:52:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674741040;
-        bh=waQRMFuqxVZvLTarVOLu2AMjbJkqhlrOHWytHi3gGkQ=;
+        s=k20201202; t=1674741143;
+        bh=Z3ryCpbhMhxybS2atGPOTf/Ymkz/FXi9EazhV0g8+xM=;
         h=From:To:Cc:Subject:Date:From;
-        b=lgLtdinpU/cdpYmJaguihJy2shzDnw1ETYSp6SSljokJpfSf2+1vzpeeLMzYfd1qV
-         re1vWWKe/h1Evf1VtbwdREJ5VNH+p469I/ieMIoYsZosH/OaHjFUdPKA937Wg5hcfG
-         dy3PJXtKiQB1WwSnC6AOxmdsZ4mcCsC9uS9piHTAD+i6oAuC1QSUZwKPjeiSQuoX9J
-         oGv6AbjpP1QLqP27V+Ht7Xs1ub9pLa3SV9OsEWFigaWuHl/zeOdzmsGzhDuFEDGVKW
-         rLggeNHipavLW0fec6i6YmhJYOaP39SbViMImyJnNMXJxPaBDCfCWJi+5CFo+jlg+9
-         sauZ3x65FrsCw==
+        b=qSOsnuu5WjuMXdvtDwsOZlHQACIW3/uYSBhkLOrdUX8HKDsHyEIH7JT5g4p45IaXk
+         WLN1jHgX+zOkN0adTPu3HV9vNev9obFBmBjX0L1tounexZzg2YsiQxDHGY4BauQoeu
+         vTW9a8zGOArEgereAA3KgQIVmxW74B4JRHlhtJR2GwS6NAlsPKOhyN8J75En1Ga9GK
+         jum4IzYdR7sQpKUiNV5cgb8aGW3n6cTWe18SV5blta0EW9a9GI3m/5VUT0klu0LdRZ
+         pELlV6HIaTkh73qBr+JKb+z1Edcot07xyIginVYbNlkp6T9tIhNA8409Au4tBFzwPy
+         qhebWdMQq6BGQ==
 From:   Arnd Bergmann <arnd@kernel.org>
-To:     Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
+To:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>
 Cc:     linux-gpio@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org
-Subject: [PATCH] mmc: atmel: convert to gpio descriptos
-Date:   Thu, 26 Jan 2023 14:50:04 +0100
-Message-Id: <20230126135034.3320638-1-arnd@kernel.org>
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH] at86rf230: convert to gpio descriptors
+Date:   Thu, 26 Jan 2023 14:51:23 +0100
+Message-Id: <20230126135215.3387820-1-arnd@kernel.org>
 X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -57,428 +61,217 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-All Atmel (now Microchip) machines boot using DT, so the
-old platform_data for this driver is no longer used by any
-boards.
+There are no remaining in-tree users of the platform_data,
+so this driver can be converted to using the simpler gpiod
+interfaces.
 
-Removing the pdata probe lets us simplify the GPIO handling
-with the use of the descriptor API.
+Any out-of-tree users that rely on the platform data can
+provide the data using the device_property and gpio_lookup
+interfaces instead.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/mmc/host/atmel-mci.c | 179 +++++++++++++++--------------------
- include/linux/atmel-mci.h    |  46 ---------
- 2 files changed, 77 insertions(+), 148 deletions(-)
- delete mode 100644 include/linux/atmel-mci.h
+ drivers/net/ieee802154/at86rf230.c | 82 +++++++++---------------------
+ include/linux/spi/at86rf230.h      | 20 --------
+ 2 files changed, 25 insertions(+), 77 deletions(-)
+ delete mode 100644 include/linux/spi/at86rf230.h
 
-diff --git a/drivers/mmc/host/atmel-mci.c b/drivers/mmc/host/atmel-mci.c
-index bb9bbf1c927b..40006a960277 100644
---- a/drivers/mmc/host/atmel-mci.c
-+++ b/drivers/mmc/host/atmel-mci.c
-@@ -30,7 +30,6 @@
- #include <linux/mmc/host.h>
- #include <linux/mmc/sdio.h>
+diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
+index 15f283b26721..66193756c891 100644
+--- a/drivers/net/ieee802154/at86rf230.c
++++ b/drivers/net/ieee802154/at86rf230.c
+@@ -15,14 +15,13 @@
+ #include <linux/jiffies.h>
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+-#include <linux/gpio.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/delay.h>
+ #include <linux/spi/spi.h>
+-#include <linux/spi/at86rf230.h>
+ #include <linux/regmap.h>
+ #include <linux/skbuff.h>
+-#include <linux/of_gpio.h>
+ #include <linux/ieee802154.h>
++#include <linux/property.h>
  
--#include <linux/atmel-mci.h>
- #include <linux/atmel_pdc.h>
- #include <linux/pm.h>
- #include <linux/pm_runtime.h>
-@@ -40,6 +39,30 @@
- #include <asm/io.h>
- #include <asm/unaligned.h>
+ #include <net/mac802154.h>
+ #include <net/cfg802154.h>
+@@ -82,7 +81,7 @@ struct at86rf230_local {
+ 	struct ieee802154_hw *hw;
+ 	struct at86rf2xx_chip_data *data;
+ 	struct regmap *regmap;
+-	int slp_tr;
++	struct gpio_desc *slp_tr;
+ 	bool sleep;
  
-+#define ATMCI_MAX_NR_SLOTS	2
-+
-+/**
-+ * struct mci_slot_pdata - board-specific per-slot configuration
-+ * @bus_width: Number of data lines wired up the slot
-+ * @wp_pin: GPIO pin wired to the write protect sensor
-+ * @detect_is_active_high: The state of the detect pin when it is active
-+ * @non_removable: The slot is not removable, only detect once
-+ *
-+ * If a given slot is not present on the board, @bus_width should be
-+ * set to 0. The other fields are ignored in this case.
-+ *
-+ * Any pins that aren't available should be set to a negative value.
-+ *
-+ * Note that support for multiple slots is experimental -- some cards
-+ * might get upset if we don't get the clock management exactly right.
-+ * But in most cases, it should work just fine.
-+ */
-+struct mci_slot_pdata {
-+	unsigned int		bus_width;
-+	bool			detect_is_active_high;
-+	bool			non_removable;
-+};
-+
- /*
-  * Superset of MCI IP registers integrated in Atmel AT91 Processor
-  * Registers and bitfields marked with [2] are only available in MCI2
-@@ -388,8 +411,8 @@ struct atmel_mci_slot {
- #define ATMCI_CARD_NEED_INIT	1
- #define ATMCI_SHUTDOWN		2
- 
--	int			detect_pin;
--	int			wp_pin;
-+	struct gpio_desc	*detect_pin;
-+	struct gpio_desc	*wp_pin;
- 	bool			detect_is_active_high;
- 
- 	struct timer_list	detect_timer;
-@@ -593,7 +616,6 @@ static void atmci_init_debugfs(struct atmel_mci_slot *slot)
- 			   &host->completed_events);
+ 	struct completion state_complete;
+@@ -107,8 +106,8 @@ at86rf230_async_state_change(struct at86rf230_local *lp,
+ static inline void
+ at86rf230_sleep(struct at86rf230_local *lp)
+ {
+-	if (gpio_is_valid(lp->slp_tr)) {
+-		gpio_set_value(lp->slp_tr, 1);
++	if (lp->slp_tr) {
++		gpiod_set_value(lp->slp_tr, 1);
+ 		usleep_range(lp->data->t_off_to_sleep,
+ 			     lp->data->t_off_to_sleep + 10);
+ 		lp->sleep = true;
+@@ -118,8 +117,8 @@ at86rf230_sleep(struct at86rf230_local *lp)
+ static inline void
+ at86rf230_awake(struct at86rf230_local *lp)
+ {
+-	if (gpio_is_valid(lp->slp_tr)) {
+-		gpio_set_value(lp->slp_tr, 0);
++	if (lp->slp_tr) {
++		gpiod_set_value(lp->slp_tr, 0);
+ 		usleep_range(lp->data->t_sleep_to_off,
+ 			     lp->data->t_sleep_to_off + 100);
+ 		lp->sleep = false;
+@@ -204,9 +203,9 @@ at86rf230_write_subreg(struct at86rf230_local *lp,
+ static inline void
+ at86rf230_slp_tr_rising_edge(struct at86rf230_local *lp)
+ {
+-	gpio_set_value(lp->slp_tr, 1);
++	gpiod_set_value(lp->slp_tr, 1);
+ 	udelay(1);
+-	gpio_set_value(lp->slp_tr, 0);
++	gpiod_set_value(lp->slp_tr, 0);
  }
  
--#if defined(CONFIG_OF)
- static const struct of_device_id atmci_dt_ids[] = {
- 	{ .compatible = "atmel,hsmci" },
- 	{ /* sentinel */ }
-@@ -601,23 +623,13 @@ static const struct of_device_id atmci_dt_ids[] = {
+ static bool
+@@ -819,7 +818,7 @@ at86rf230_write_frame_complete(void *context)
  
- MODULE_DEVICE_TABLE(of, atmci_dt_ids);
+ 	ctx->trx.len = 2;
  
--static struct mci_platform_data*
--atmci_of_init(struct platform_device *pdev)
-+static int
-+atmci_of_init(struct platform_device *pdev, struct mci_slot_pdata *pdata)
- {
- 	struct device_node *np = pdev->dev.of_node;
- 	struct device_node *cnp;
--	struct mci_platform_data *pdata;
- 	u32 slot_id;
+-	if (gpio_is_valid(lp->slp_tr))
++	if (lp->slp_tr)
+ 		at86rf230_slp_tr_rising_edge(lp);
+ 	else
+ 		at86rf230_async_write_reg(lp, RG_TRX_STATE, STATE_BUSY_TX, ctx,
+@@ -1415,32 +1414,6 @@ static int at86rf230_hw_init(struct at86rf230_local *lp, u8 xtal_trim)
+ 	return at86rf230_write_subreg(lp, SR_SLOTTED_OPERATION, 0);
+ }
  
--	if (!np) {
--		dev_err(&pdev->dev, "device node not found\n");
--		return ERR_PTR(-EINVAL);
--	}
--
--	pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
--	if (!pdata)
--		return ERR_PTR(-ENOMEM);
--
- 	for_each_child_of_node(np, cnp) {
- 		if (of_property_read_u32(cnp, "reg", &slot_id)) {
- 			dev_warn(&pdev->dev, "reg property is missing for %pOF\n",
-@@ -633,31 +645,18 @@ atmci_of_init(struct platform_device *pdev)
- 		}
- 
- 		if (of_property_read_u32(cnp, "bus-width",
--		                         &pdata->slot[slot_id].bus_width))
--			pdata->slot[slot_id].bus_width = 1;
--
--		pdata->slot[slot_id].detect_pin =
--			of_get_named_gpio(cnp, "cd-gpios", 0);
-+		                         &pdata[slot_id].bus_width))
-+			pdata[slot_id].bus_width = 1;
- 
--		pdata->slot[slot_id].detect_is_active_high =
-+		pdata[slot_id].detect_is_active_high =
- 			of_property_read_bool(cnp, "cd-inverted");
- 
--		pdata->slot[slot_id].non_removable =
-+		pdata[slot_id].non_removable =
- 			of_property_read_bool(cnp, "non-removable");
--
--		pdata->slot[slot_id].wp_pin =
--			of_get_named_gpio(cnp, "wp-gpios", 0);
- 	}
- 
--	return pdata;
--}
--#else /* CONFIG_OF */
--static inline struct mci_platform_data*
--atmci_of_init(struct platform_device *dev)
+-static int
+-at86rf230_get_pdata(struct spi_device *spi, int *rstn, int *slp_tr,
+-		    u8 *xtal_trim)
 -{
--	return ERR_PTR(-EINVAL);
-+	return 0;
- }
--#endif
- 
- static inline unsigned int atmci_get_version(struct atmel_mci *host)
- {
-@@ -1509,8 +1508,8 @@ static int atmci_get_ro(struct mmc_host *mmc)
- 	int			read_only = -ENOSYS;
- 	struct atmel_mci_slot	*slot = mmc_priv(mmc);
- 
--	if (gpio_is_valid(slot->wp_pin)) {
--		read_only = gpio_get_value(slot->wp_pin);
-+	if (slot->wp_pin) {
-+		read_only = gpiod_get_value(slot->wp_pin);
- 		dev_dbg(&mmc->class_dev, "card is %s\n",
- 				read_only ? "read-only" : "read-write");
- 	}
-@@ -1523,8 +1522,8 @@ static int atmci_get_cd(struct mmc_host *mmc)
- 	int			present = -ENOSYS;
- 	struct atmel_mci_slot	*slot = mmc_priv(mmc);
- 
--	if (gpio_is_valid(slot->detect_pin)) {
--		present = !(gpio_get_value(slot->detect_pin) ^
-+	if (slot->detect_pin) {
-+		present = !(gpiod_get_value(slot->detect_pin) ^
- 			    slot->detect_is_active_high);
- 		dev_dbg(&mmc->class_dev, "card is %spresent\n",
- 				present ? "" : "not ");
-@@ -1637,8 +1636,8 @@ static void atmci_detect_change(struct timer_list *t)
- 	if (test_bit(ATMCI_SHUTDOWN, &slot->flags))
- 		return;
- 
--	enable_irq(gpio_to_irq(slot->detect_pin));
--	present = !(gpio_get_value(slot->detect_pin) ^
-+	enable_irq(gpiod_to_irq(slot->detect_pin));
-+	present = !(gpiod_get_value(slot->detect_pin) ^
- 		    slot->detect_is_active_high);
- 	present_old = test_bit(ATMCI_CARD_PRESENT, &slot->flags);
- 
-@@ -2231,18 +2230,15 @@ static int atmci_init_slot(struct atmel_mci *host,
- 	slot = mmc_priv(mmc);
- 	slot->mmc = mmc;
- 	slot->host = host;
--	slot->detect_pin = slot_data->detect_pin;
--	slot->wp_pin = slot_data->wp_pin;
- 	slot->detect_is_active_high = slot_data->detect_is_active_high;
- 	slot->sdc_reg = sdc_reg;
- 	slot->sdio_irq = sdio_irq;
- 
- 	dev_dbg(&mmc->class_dev,
--	        "slot[%u]: bus_width=%u, detect_pin=%d, "
--		"detect_is_active_high=%s, wp_pin=%d\n",
--		id, slot_data->bus_width, slot_data->detect_pin,
--		slot_data->detect_is_active_high ? "true" : "false",
--		slot_data->wp_pin);
-+	        "slot[%u]: bus_width=%u, "
-+		"detect_is_active_high=%s\n",
-+		id, slot_data->bus_width,
-+		slot_data->detect_is_active_high ? "true" : "false");
- 
- 	mmc->ops = &atmci_ops;
- 	mmc->f_min = DIV_ROUND_UP(host->bus_hz, 512);
-@@ -2278,30 +2274,29 @@ static int atmci_init_slot(struct atmel_mci *host,
- 
- 	/* Assume card is present initially */
- 	set_bit(ATMCI_CARD_PRESENT, &slot->flags);
--	if (gpio_is_valid(slot->detect_pin)) {
--		if (devm_gpio_request(&host->pdev->dev, slot->detect_pin,
--				      "mmc_detect")) {
--			dev_dbg(&mmc->class_dev, "no detect pin available\n");
--			slot->detect_pin = -EBUSY;
--		} else if (gpio_get_value(slot->detect_pin) ^
--				slot->detect_is_active_high) {
-+
-+	slot->detect_pin = devm_gpiod_get_optional(&host->pdev->dev, "cd", GPIOD_IN);
-+	if (!IS_ERR(slot->detect_pin)) {
-+		dev_dbg(&mmc->class_dev, "no detect pin available\n");
-+		slot->detect_pin = NULL;
-+	} else if (slot->detect_pin) {
-+		if (gpiod_get_value(slot->detect_pin) ^
-+		    slot->detect_is_active_high) {
- 			clear_bit(ATMCI_CARD_PRESENT, &slot->flags);
- 		}
- 	}
- 
--	if (!gpio_is_valid(slot->detect_pin)) {
-+	if (!slot->detect_pin) {
- 		if (slot_data->non_removable)
- 			mmc->caps |= MMC_CAP_NONREMOVABLE;
- 		else
- 			mmc->caps |= MMC_CAP_NEEDS_POLL;
- 	}
- 
--	if (gpio_is_valid(slot->wp_pin)) {
--		if (devm_gpio_request(&host->pdev->dev, slot->wp_pin,
--				      "mmc_wp")) {
--			dev_dbg(&mmc->class_dev, "no WP pin available\n");
--			slot->wp_pin = -EBUSY;
--		}
-+	slot->wp_pin = devm_gpiod_get_optional(&host->pdev->dev, "wp", GPIOD_IN);
-+	if (IS_ERR(slot->wp_pin)) {
-+		dev_dbg(&mmc->class_dev, "no WP pin available\n");
-+		slot->wp_pin = NULL;
- 	}
- 
- 	host->slot[id] = slot;
-@@ -2312,18 +2307,18 @@ static int atmci_init_slot(struct atmel_mci *host,
- 		return ret;
- 	}
- 
--	if (gpio_is_valid(slot->detect_pin)) {
-+	if (slot->detect_pin) {
- 		timer_setup(&slot->detect_timer, atmci_detect_change, 0);
- 
--		ret = request_irq(gpio_to_irq(slot->detect_pin),
-+		ret = request_irq(gpiod_to_irq(slot->detect_pin),
- 				atmci_detect_interrupt,
- 				IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING,
- 				"mmc-detect", slot);
- 		if (ret) {
- 			dev_dbg(&mmc->class_dev,
- 				"could not request IRQ %d for detect pin\n",
--				gpio_to_irq(slot->detect_pin));
--			slot->detect_pin = -EBUSY;
-+				gpiod_to_irq(slot->detect_pin));
-+			slot->detect_pin = NULL;
- 		}
- 	}
- 
-@@ -2342,10 +2337,8 @@ static void atmci_cleanup_slot(struct atmel_mci_slot *slot,
- 
- 	mmc_remove_host(slot->mmc);
- 
--	if (gpio_is_valid(slot->detect_pin)) {
--		int pin = slot->detect_pin;
+-	struct at86rf230_platform_data *pdata = spi->dev.platform_data;
+-	int ret;
 -
--		free_irq(gpio_to_irq(pin), slot);
-+	if (slot->detect_pin) {
-+		free_irq(gpiod_to_irq(slot->detect_pin), slot);
- 		del_timer_sync(&slot->detect_timer);
- 	}
- 
-@@ -2357,22 +2350,6 @@ static int atmci_configure_dma(struct atmel_mci *host)
- {
- 	host->dma.chan = dma_request_chan(&host->pdev->dev, "rxtx");
- 
--	if (PTR_ERR(host->dma.chan) == -ENODEV) {
--		struct mci_platform_data *pdata = host->pdev->dev.platform_data;
--		dma_cap_mask_t mask;
+-	if (!IS_ENABLED(CONFIG_OF) || !spi->dev.of_node) {
+-		if (!pdata)
+-			return -ENOENT;
 -
--		if (!pdata || !pdata->dma_filter)
--			return -ENODEV;
--
--		dma_cap_zero(mask);
--		dma_cap_set(DMA_SLAVE, mask);
--
--		host->dma.chan = dma_request_channel(mask, pdata->dma_filter,
--						     pdata->dma_slave);
--		if (!host->dma.chan)
--			host->dma.chan = ERR_PTR(-ENODEV);
+-		*rstn = pdata->rstn;
+-		*slp_tr = pdata->slp_tr;
+-		*xtal_trim = pdata->xtal_trim;
+-		return 0;
 -	}
 -
- 	if (IS_ERR(host->dma.chan))
- 		return PTR_ERR(host->dma.chan);
- 
-@@ -2450,7 +2427,7 @@ static void atmci_get_cap(struct atmel_mci *host)
- 
- static int atmci_probe(struct platform_device *pdev)
+-	*rstn = of_get_named_gpio(spi->dev.of_node, "reset-gpio", 0);
+-	*slp_tr = of_get_named_gpio(spi->dev.of_node, "sleep-gpio", 0);
+-	ret = of_property_read_u8(spi->dev.of_node, "xtal-trim", xtal_trim);
+-	if (ret < 0 && ret != -EINVAL)
+-		return ret;
+-
+-	return 0;
+-}
+-
+ static int
+ at86rf230_detect_device(struct at86rf230_local *lp)
  {
--	struct mci_platform_data	*pdata;
-+	struct mci_slot_pdata		pdata[ATMCI_MAX_NR_SLOTS];
- 	struct atmel_mci		*host;
- 	struct resource			*regs;
- 	unsigned int			nr_slots;
-@@ -2460,23 +2437,21 @@ static int atmci_probe(struct platform_device *pdev)
- 	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!regs)
- 		return -ENXIO;
--	pdata = pdev->dev.platform_data;
--	if (!pdata) {
--		pdata = atmci_of_init(pdev);
--		if (IS_ERR(pdata)) {
--			dev_err(&pdev->dev, "platform data not available\n");
--			return PTR_ERR(pdata);
--		}
-+
-+	host = devm_kzalloc(&pdev->dev, sizeof(*host), GFP_KERNEL);
-+	if (!host)
-+		return -ENOMEM;
-+
-+	ret = atmci_of_init(pdev, pdata);
-+	if (ret) {
-+		dev_err(&pdev->dev, "error parsing DT\n");
-+		return ret;
+@@ -1547,7 +1520,8 @@ static int at86rf230_probe(struct spi_device *spi)
+ 	struct ieee802154_hw *hw;
+ 	struct at86rf230_local *lp;
+ 	unsigned int status;
+-	int rc, irq_type, rstn, slp_tr;
++	int rc, irq_type;
++	struct gpio_desc *rstn, *slp_tr;
+ 	u8 xtal_trim = 0;
+ 
+ 	if (!spi->irq) {
+@@ -1555,32 +1529,26 @@ static int at86rf230_probe(struct spi_device *spi)
+ 		return -EINVAL;
  	}
  
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq < 0)
- 		return irq;
- 
--	host = devm_kzalloc(&pdev->dev, sizeof(*host), GFP_KERNEL);
--	if (!host)
--		return -ENOMEM;
--
- 	host->pdev = pdev;
- 	spin_lock_init(&host->lock);
- 	INIT_LIST_HEAD(&host->queue);
-@@ -2540,16 +2515,16 @@ static int atmci_probe(struct platform_device *pdev)
- 	/* We need at least one slot to succeed */
- 	nr_slots = 0;
- 	ret = -ENODEV;
--	if (pdata->slot[0].bus_width) {
--		ret = atmci_init_slot(host, &pdata->slot[0],
-+	if (pdata[0].bus_width) {
-+		ret = atmci_init_slot(host, &pdata[0],
- 				0, ATMCI_SDCSEL_SLOT_A, ATMCI_SDIOIRQA);
- 		if (!ret) {
- 			nr_slots++;
- 			host->buf_size = host->slot[0]->mmc->max_req_size;
- 		}
+-	rc = at86rf230_get_pdata(spi, &rstn, &slp_tr, &xtal_trim);
+-	if (rc < 0) {
+-		dev_err(&spi->dev, "failed to parse platform_data: %d\n", rc);
++	rc = device_property_read_u8(&spi->dev, "xtal-trim", &xtal_trim);
++	if (rc < 0 && rc != -EINVAL) {
++		dev_err(&spi->dev, "failed to parse xtal-trim: %d\n", rc);
+ 		return rc;
  	}
--	if (pdata->slot[1].bus_width) {
--		ret = atmci_init_slot(host, &pdata->slot[1],
-+	if (pdata[1].bus_width) {
-+		ret = atmci_init_slot(host, &pdata[1],
- 				1, ATMCI_SDCSEL_SLOT_B, ATMCI_SDIOIRQB);
- 		if (!ret) {
- 			nr_slots++;
-@@ -2671,7 +2646,7 @@ static struct platform_driver atmci_driver = {
- 	.driver		= {
- 		.name		= "atmel_mci",
- 		.probe_type	= PROBE_PREFER_ASYNCHRONOUS,
--		.of_match_table	= of_match_ptr(atmci_dt_ids),
-+		.of_match_table	= atmci_dt_ids,
- 		.pm		= &atmci_dev_pm_ops,
+ 
+-	if (gpio_is_valid(rstn)) {
+-		rc = devm_gpio_request_one(&spi->dev, rstn,
+-					   GPIOF_OUT_INIT_HIGH, "rstn");
+-		if (rc)
+-			return rc;
+-	}
++	rstn = devm_gpiod_get_optional(&spi->dev, "rstn", GPIOD_OUT_HIGH);
++	if (IS_ERR(rstn))
++		return PTR_ERR(rstn);
+ 
+-	if (gpio_is_valid(slp_tr)) {
+-		rc = devm_gpio_request_one(&spi->dev, slp_tr,
+-					   GPIOF_OUT_INIT_LOW, "slp_tr");
+-		if (rc)
+-			return rc;
+-	}
++	slp_tr = devm_gpiod_get_optional(&spi->dev, "slp_tr", GPIOD_OUT_LOW);
++	if (IS_ERR(slp_tr))
++		return PTR_ERR(slp_tr);
+ 
+ 	/* Reset */
+-	if (gpio_is_valid(rstn)) {
++	if (rstn) {
+ 		udelay(1);
+-		gpio_set_value_cansleep(rstn, 0);
++		gpiod_set_value_cansleep(rstn, 0);
+ 		udelay(1);
+-		gpio_set_value_cansleep(rstn, 1);
++		gpiod_set_value_cansleep(rstn, 1);
+ 		usleep_range(120, 240);
+ 	}
+ 
+@@ -1682,7 +1650,7 @@ MODULE_DEVICE_TABLE(spi, at86rf230_device_id);
+ static struct spi_driver at86rf230_driver = {
+ 	.id_table = at86rf230_device_id,
+ 	.driver = {
+-		.of_match_table = of_match_ptr(at86rf230_of_match),
++		.of_match_table = at86rf230_of_match,
+ 		.name	= "at86rf230",
  	},
- };
-diff --git a/include/linux/atmel-mci.h b/include/linux/atmel-mci.h
+ 	.probe      = at86rf230_probe,
+diff --git a/include/linux/spi/at86rf230.h b/include/linux/spi/at86rf230.h
 deleted file mode 100644
-index 1491af38cc6e..000000000000
---- a/include/linux/atmel-mci.h
+index d278576ab692..000000000000
+--- a/include/linux/spi/at86rf230.h
 +++ /dev/null
-@@ -1,46 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef __LINUX_ATMEL_MCI_H
--#define __LINUX_ATMEL_MCI_H
--
--#include <linux/types.h>
--#include <linux/dmaengine.h>
--
--#define ATMCI_MAX_NR_SLOTS	2
--
--/**
-- * struct mci_slot_pdata - board-specific per-slot configuration
-- * @bus_width: Number of data lines wired up the slot
-- * @detect_pin: GPIO pin wired to the card detect switch
-- * @wp_pin: GPIO pin wired to the write protect sensor
-- * @detect_is_active_high: The state of the detect pin when it is active
-- * @non_removable: The slot is not removable, only detect once
+@@ -1,20 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-only */
+-/*
+- * AT86RF230/RF231 driver
 - *
-- * If a given slot is not present on the board, @bus_width should be
-- * set to 0. The other fields are ignored in this case.
+- * Copyright (C) 2009-2012 Siemens AG
 - *
-- * Any pins that aren't available should be set to a negative value.
-- *
-- * Note that support for multiple slots is experimental -- some cards
-- * might get upset if we don't get the clock management exactly right.
-- * But in most cases, it should work just fine.
+- * Written by:
+- * Dmitry Eremin-Solenikov <dmitry.baryshkov@siemens.com>
 - */
--struct mci_slot_pdata {
--	unsigned int		bus_width;
--	int			detect_pin;
--	int			wp_pin;
--	bool			detect_is_active_high;
--	bool			non_removable;
+-#ifndef AT86RF230_H
+-#define AT86RF230_H
+-
+-struct at86rf230_platform_data {
+-	int rstn;
+-	int slp_tr;
+-	int dig2;
+-	u8 xtal_trim;
 -};
 -
--/**
-- * struct mci_platform_data - board-specific MMC/SDcard configuration
-- * @dma_slave: DMA slave interface to use in data transfers.
-- * @slot: Per-slot configuration data.
-- */
--struct mci_platform_data {
--	void			*dma_slave;
--	dma_filter_fn		dma_filter;
--	struct mci_slot_pdata	slot[ATMCI_MAX_NR_SLOTS];
--};
--
--#endif /* __LINUX_ATMEL_MCI_H */
+-#endif
 -- 
 2.39.0
 
