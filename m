@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C794567D51F
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 20:11:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB74267D522
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 20:11:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232462AbjAZTLT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 14:11:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54336 "EHLO
+        id S232471AbjAZTLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 14:11:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229777AbjAZTLS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 14:11:18 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C396F5B8D
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 11:11:16 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id u21so2799886edv.3
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 11:11:16 -0800 (PST)
+        with ESMTP id S232480AbjAZTLY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 14:11:24 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C5147ED3
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 11:11:22 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id rl14so7822250ejb.2
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 11:11:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=DlpJfV4hWe2uhPAfHOImfRNc1k8rQdcTwafyBbxLpcQ=;
-        b=eNlt4Xv9gxJSH6oG8ZLm/4QCKvVM7AbgwM3gbY+xQMIt1Bd/eZjnSTT+1JBbIWz21H
-         Zf3Gql6PCYDL+n7twrZyLCse/WpM9jIsIU+y9/5WrwfA4EGZYS+89MrTQVB/NQYKcirb
-         shBnyV1t9qGgI8mSbzpAbxjZ1DiCE3XTn1US72kJEUcGf6z46JWeeAbkYGemJ3jc0QQW
-         nn9uWdpYBVmEl6Lzx57df5OJVeiE43C6L0JwF6NAzvlhQyWw14KCuWYhA3dIzpmLEu+Y
-         MOhjWbPzb3tf4xvAo6gVfVA2Xbl7mmi+YuGBsSfYk8FeQqgg6+LTnDSDaT7IoNKUIbMS
-         Otgg==
+        bh=5tqYThsEyvBfa4vP3pF/e7lpGtERv1Meo65M4KPES54=;
+        b=LY1K/H+roSDpJnEDZsYoMumJxlvzjhB1n5mpWknN5lPHCSRg3u2+r4uWZwk85arJrv
+         eDvd9uIaMcswVsVHNyYq+eWx94Nmw6ZsUCt2PPw4n5O6sRbMx9qNmPky1sWDgaJKJGy8
+         LlzrOfHDCXWddPMVZjtWsblw4zF22QvkgJgJIb5eVF2byWjKXRIEKf8CuMNYr/dCydbb
+         nUdSFrauc2hF/SqoO+mlPXOHiK1biybmvxW50najYveDH9nw4LGVxCRoZCDTaln5dSVs
+         GLKrtvfa76Ofk3JkRqxVi04yiktbFZ1MKtWxiUNUQEhHJlZriz8c1FcP0nxOXdrqDWQU
+         KB9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=DlpJfV4hWe2uhPAfHOImfRNc1k8rQdcTwafyBbxLpcQ=;
-        b=7s5A/ZnAuWaYPGSFpVVa2mZfZ9T2tIhM06a9EQZdC6flK+adBrdwtHZNVw1aKXOqdv
-         b3pRARQMGtgKrZWuIdhWAURvJSIGJZeBdr4kf+aupu6q6a4uAh+CBKBI5cGvvAe5vP64
-         EkIcoM1zWAzbtEpRK/n/WFHEZS+fbWuSkSSx3UxChB0t3+/d+HAZ5dc9l1yscaNIDzPb
-         nI07bLz7yCSAyfF69lKRioxvFeQEPzCsyovCWQM5uCdWcay14A4Bh19Tcm50JwBvk0wJ
-         zcNCda1Ieu/UVpV4UHlHp4WeAU0AkAODLQoVM7NR5JsLXuJZ3J77Y1rowsUEC9Xt4LyI
-         z0UA==
-X-Gm-Message-State: AFqh2kpaBMXMLgZKpGY9HcuarMoe1rGtgFO20IL4BwPR8KttQKK4vZnz
-        dr2OAk+O1Ejx6EB+1yabfacAbKeeLt51s5yf3vk=
-X-Google-Smtp-Source: AMrXdXuX4A6qIWKBJWAwli9uxVj89RSrh0sE0962NDZeWcAjC5dwEXNTnhzcTXXKIJ4/kkvZ6+o7YQ==
-X-Received: by 2002:aa7:cc98:0:b0:486:ecd3:15f8 with SMTP id p24-20020aa7cc98000000b00486ecd315f8mr37748654edt.6.1674760274974;
-        Thu, 26 Jan 2023 11:11:14 -0800 (PST)
+        bh=5tqYThsEyvBfa4vP3pF/e7lpGtERv1Meo65M4KPES54=;
+        b=2o68P/AincpNbVByO90sR1K5M9QNnMGTAB04KUjvUUTb8WeFpSSfZsFo7FhgFojAOS
+         hrNQF8Fa3ue0ybhPdmc3bQ5RQnaQHjTsVy8zYl5kMg/vAO+ZHz1BRsHPMby40o3Iwjgi
+         eaXenmoag98tYgOSvQxmBGxdUZD6fM32GsnGXWmBfw7xVEokyIu0TTIPD6X2wHF9PMWv
+         /yBfd4fbC3O7SSV4yNvWQNAhTDJQ5c0knkDCTCGhz+X1Oo1gYXe+OeMswFKNmYhg/Ebp
+         I829SA3/Gy+bfwpDZu/w/irM2MOpMn5bMRTFMuPqrblizRcXYLDJwch8hMEsEmWaimdN
+         +UTw==
+X-Gm-Message-State: AFqh2krdCC/1df3lsyy7Y2C2+EMsnk5hJfH3LfmHZgiJ3TwsYyu4riC+
+        UYNyYei3hdOZbehR8iTt869IIPWV4WunKwNEnJY=
+X-Google-Smtp-Source: AMrXdXsXS/MC3g0Q4hXs7g1zE+VtWVtbug23E4axT8qMI3dfI96/RaeLynG2tYyIsZvGMGPliIXxIw==
+X-Received: by 2002:a17:906:7f18:b0:877:77f5:a8e1 with SMTP id d24-20020a1709067f1800b0087777f5a8e1mr30121818ejr.35.1674760280734;
+        Thu, 26 Jan 2023 11:11:20 -0800 (PST)
 Received: from localhost (tor-exit-relay-3.anonymizing-proxy.digitalcourage.de. [185.220.102.249])
-        by smtp.gmail.com with ESMTPSA id u24-20020a509518000000b0047a3a407b49sm1158311eda.43.2023.01.26.11.11.13
+        by smtp.gmail.com with ESMTPSA id ke8-20020a17090798e800b0084d4cb00f0csm991479ejc.99.2023.01.26.11.11.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Jan 2023 11:11:14 -0800 (PST)
+        Thu, 26 Jan 2023 11:11:20 -0800 (PST)
 From:   Maxim Mikityanskiy <maxtram95@gmail.com>
 To:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -57,9 +57,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>, Gal Pressman <gal@nvidia.com>,
         Tariq Toukan <tariqt@nvidia.com>,
         Maxim Mikityanskiy <maxtram95@gmail.com>
-Subject: [PATCH net 1/2] net/mlx5e: XDP, Allow growing tail for XDP multi buffer
-Date:   Thu, 26 Jan 2023 21:10:49 +0200
-Message-Id: <20230126191050.220610-2-maxtram95@gmail.com>
+Subject: [PATCH net 2/2] net/mlx5e: xsk: Set napi_id to support busy polling on XSK RQ
+Date:   Thu, 26 Jan 2023 21:10:50 +0200
+Message-Id: <20230126191050.220610-3-maxtram95@gmail.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230126191050.220610-1-maxtram95@gmail.com>
 References: <20230126191050.220610-1-maxtram95@gmail.com>
@@ -75,57 +75,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The cited commits missed passing frag_size to __xdp_rxq_info_reg, which
-is required by bpf_xdp_adjust_tail to support growing the tail pointer
-in fragmented packets. Pass the missing parameter when the current RQ
-mode allows XDP multi buffer.
+The cited commit missed setting napi_id on XSK RQs, it only affected
+regular RQs. Add the missing part to support socket busy polling on XSK
+RQs.
 
-Fixes: ea5d49bdae8b ("net/mlx5e: Add XDP multi buffer support to the non-linear legacy RQ")
-Fixes: 9cb9482ef10e ("net/mlx5e: Use fragments of the same size in non-linear legacy RQ with XDP")
+Fixes: a2740f529da2 ("net/mlx5e: xsk: Set napi_id to support busy polling")
 Signed-off-by: Maxim Mikityanskiy <maxtram95@gmail.com>
-Cc: Tariq Toukan <tariqt@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index abcc614b6191..cdd1e47e18f9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -576,9 +576,10 @@ static void mlx5e_free_mpwqe_rq_drop_page(struct mlx5e_rq *rq)
- }
- 
- static int mlx5e_init_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *params,
--			     struct mlx5e_rq *rq)
-+			     struct mlx5e_rq_param *rq_params, struct mlx5e_rq *rq)
- {
- 	struct mlx5_core_dev *mdev = c->mdev;
-+	u32 xdp_frag_size = 0;
- 	int err;
- 
- 	rq->wq_type      = params->rq_wq_type;
-@@ -599,7 +600,11 @@ static int mlx5e_init_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *param
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
+index ff03c43833bb..53c93d1daa7e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
+@@ -71,7 +71,7 @@ static int mlx5e_init_xsk_rq(struct mlx5e_channel *c,
  	if (err)
  		return err;
  
--	return xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq->ix, c->napi.napi_id);
-+	if (rq->wq_type == MLX5_WQ_TYPE_CYCLIC && rq_params->frags_info.num_frags > 1)
-+		xdp_frag_size = rq_params->frags_info.arr[1].frag_stride;
-+
-+	return __xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq->ix, c->napi.napi_id,
-+				  xdp_frag_size);
+-	return  xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq_xdp_ix, 0);
++	return xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq_xdp_ix, c->napi.napi_id);
  }
  
- static int mlx5_rq_shampo_alloc(struct mlx5_core_dev *mdev,
-@@ -2214,7 +2219,7 @@ static int mlx5e_open_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *param
- {
- 	int err;
- 
--	err = mlx5e_init_rxq_rq(c, params, &c->rq);
-+	err = mlx5e_init_rxq_rq(c, params, rq_params, &c->rq);
- 	if (err)
- 		return err;
- 
+ static int mlx5e_open_xsk_rq(struct mlx5e_channel *c, struct mlx5e_params *params,
 -- 
 2.39.1
 
