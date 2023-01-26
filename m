@@ -2,101 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B32267C46B
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 07:11:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEAB567C46C
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 07:12:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229908AbjAZGK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 01:10:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59472 "EHLO
+        id S230288AbjAZGMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 01:12:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbjAZGK6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 01:10:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71A028D2C
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 22:10:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76594B81BA5
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 06:10:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEAA1C433EF;
-        Thu, 26 Jan 2023 06:10:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674713455;
-        bh=JKMJQQK/ppyCjBBY85vdtV9IzA4fhrWxUQpRW56AFTM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TyRPoPy6AUgQv7TOy4lyO7NdPUemUEN1mAzyfOCjTPjwOu6n2YE4YGZTPe6CYqAAB
-         rBrA24pTpVV3tz037X5X7HC595VZxsiN0ypMxZMZtWQRG+iYHDAGRW6lmwcJg1hv1f
-         yGEsCm5Nf5hygaIRYxHUNEmyG8uukPklZ+eb3uyG6uPG3ObQ5k/Z/9uxVSP5zgD/0w
-         TfQV9qMHnhIlz6uh/8d4gn/qTpC5mWGHUZj8V8j9+w6co+7SdBi/HVrr+Z3cG1oLSN
-         WC7awxgLQyjegdbmXSQmNuAlgIZDeRQnLYa4UtSep5p7oialB8YgG5vOugp3F1Acht
-         jtUJfTjo6//Iw==
-Date:   Wed, 25 Jan 2023 22:10:53 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Kirill Tkhai <tkhai@ya.ru>, "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        kuniyu@amazon.com, gorcunov@gmail.com
-Subject: Re: [PATCH net-next] unix: Guarantee sk_state relevance in case of
- it was assigned by a task on other cpu
-Message-ID: <20230125221053.301c0341@kernel.org>
-In-Reply-To: <6953ec3b-6c48-954e-f3db-63450a5ab886@ya.ru>
-References: <72ae40ef-2d68-2e89-46d3-fc8f820db42a@ya.ru>
-        <20230124173557.2b13e194@kernel.org>
-        <6953ec3b-6c48-954e-f3db-63450a5ab886@ya.ru>
+        with ESMTP id S229472AbjAZGML (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 01:12:11 -0500
+Received: from nbd.name (nbd.name [46.4.11.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECF00561B2;
+        Wed, 25 Jan 2023 22:12:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:From
+        :References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=E26z4NVJzqOdOJLD4siZBzqaZ/0nN127BV3Z64CfA0Q=; b=Urc4/f18/6Fft7us+9miPj5aIl
+        wodqWExFWOg9+9AlotMGGy2cAOcA8P4lcwNX+lvpmFpM5iSqbzymvtPZ5nRXKrSt94CZJ9L61+nFk
+        VgJs1tNUlZR5uL5XyOtiASRa9iUjQkm5HcsWk1qCDtJaTNV48LYC5LXbSLJAYddo4JTI=;
+Received: from p5b206403.dip0.t-ipconnect.de ([91.32.100.3] helo=nf.local)
+        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <nbd@nbd.name>)
+        id 1pKvUO-002WYs-Qi; Thu, 26 Jan 2023 07:12:00 +0100
+Message-ID: <8ec239d3-a005-8609-0724-f1042659791e@nbd.name>
+Date:   Thu, 26 Jan 2023 07:12:00 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.6.1
+Content-Language: en-US
+To:     Alexander H Duyck <alexander.duyck@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     netdev@vger.kernel.org, Jesper Dangaard Brouer <hawk@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        linux-kernel@vger.kernel.org, Yunsheng Lin <linyunsheng@huawei.com>
+References: <20230124124300.94886-1-nbd@nbd.name>
+ <CAC_iWjKAEgUB8Z3WNNVgUK8omXD+nwt_VPSVyFn1i4EQzJadog@mail.gmail.com>
+ <19121deb-368f-9786-8700-f1c45d227a4c@nbd.name>
+ <cd35316065cfe8d706ca2730babe3e6519df6034.camel@gmail.com>
+ <c7f1ade0-a607-2e55-d106-9acc26cbed94@nbd.name>
+ <49703c370e26ae1a6b19a39dc05e262acf58f6aa.camel@gmail.com>
+ <9baecde9-d92b-c18c-daa8-e7a96baa019b@nbd.name>
+ <595c5e36b0260ba16833c2a8d9418fd978ca9300.camel@gmail.com>
+ <0c0e96a7-1cf1-b856-b339-1f3df36a562c@nbd.name>
+ <a0b43a978ae43064777d9d240ef38b3567f58e5a.camel@gmail.com>
+ <9992e7b5-7f2b-b79d-9c48-cf689807f185@nbd.name>
+ <301aa48a-eb3b-eb56-5041-d6f8d61024d1@nbd.name>
+ <148028e75d720091caa56e8b0a89544723fda47e.camel@gmail.com>
+From:   Felix Fietkau <nbd@nbd.name>
+Subject: Re: [PATCH] net: page_pool: fix refcounting issues with fragmented
+ allocation
+In-Reply-To: <148028e75d720091caa56e8b0a89544723fda47e.camel@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 26 Jan 2023 00:09:08 +0300 Kirill Tkhai wrote:
-> 1)There are a many combinations with third task involved:
->=20
-> [CPU0:Task0]  [CPU1:Task1]                           [CPU2:Task2]
-> listen(sk)
->               kernel:
->                 sk_diag_fill(sk)
->                   rep->udiag_state =3D TCP_LISTEN
->                 return_from_syscall
->               userspace:
->                 mutex_lock()
->                 shared_mem_var =3D rep->udiag_state=20
->                 mutex_unlock()
->=20
->                                                      userspace:=20
->                                                        mutex_lock()
->                                                        if (shared_mem_var=
- =3D=3D TCP_LISTEN)
->                                                          accept(sk); /* -=
-> fail, since sk_state is not visible */
->                                                        mutex_unlock()
->=20
-> In this situation Task2 definitely knows Task0's listen() has succeed, bu=
-t there is no a possibility
-> to guarantee its accept() won't fail. Despite there are appropriate barri=
-ers in mutex_lock() and mutex_unlock(),
-> there is no a possibility to add a barrier on CPU1 to make Task0's store =
-visible on CPU2.
+On 25.01.23 23:14, Alexander H Duyck wrote:
+> On Wed, 2023-01-25 at 20:40 +0100, Felix Fietkau wrote:
+>> On 25.01.23 20:10, Felix Fietkau wrote:
+>> > On 25.01.23 20:02, Alexander H Duyck wrote:
+>> > > On Wed, 2023-01-25 at 19:42 +0100, Felix Fietkau wrote:
+>> > > > On 25.01.23 19:26, Alexander H Duyck wrote:
+>> > > > > On Wed, 2023-01-25 at 18:32 +0100, Felix Fietkau wrote:
+>> > > > > > On 25.01.23 18:11, Alexander H Duyck wrote:
+>> > > > > > > On Tue, 2023-01-24 at 22:30 +0100, Felix Fietkau wrote:
+>> > > > > > > > On 24.01.23 22:10, Alexander H Duyck wrote:
+>> > > > > > > > > On Tue, 2023-01-24 at 18:22 +0100, Felix Fietkau wrote:
+>> > > > > > > > > > On 24.01.23 15:11, Ilias Apalodimas wrote:
+>> > > > > > > > > > > Hi Felix,
+>> > > > > > > > > > > 
+>> > > > > > > > > > > ++cc Alexander and Yunsheng.
+>> > > > > > > > > > > 
+>> > > > > > > > > > > Thanks for the report
+>> > > > > > > > > > > 
+>> > > > > > > > > > > On Tue, 24 Jan 2023 at 14:43, Felix Fietkau <nbd@nbd.name> wrote:
+>> > > > > > > > > > > > 
+>> > > > > > > > > > > > While testing fragmented page_pool allocation in the mt76 driver, I was able
+>> > > > > > > > > > > > to reliably trigger page refcount underflow issues, which did not occur with
+>> > > > > > > > > > > > full-page page_pool allocation.
+>> > > > > > > > > > > > It appears to me, that handling refcounting in two separate counters
+>> > > > > > > > > > > > (page->pp_frag_count and page refcount) is racy when page refcount gets
+>> > > > > > > > > > > > incremented by code dealing with skb fragments directly, and
+>> > > > > > > > > > > > page_pool_return_skb_page is called multiple times for the same fragment.
+>> > > > > > > > > > > > 
+>> > > > > > > > > > > > Dropping page->pp_frag_count and relying entirely on the page refcount makes
+>> > > > > > > > > > > > these underflow issues and crashes go away.
+>> > > > > > > > > > > > 
+>> > > > > > > > > > > 
+>> > > > > > > > > > > This has been discussed here [1].  TL;DR changing this to page
+>> > > > > > > > > > > refcount might blow up in other colorful ways.  Can we look closer and
+>> > > > > > > > > > > figure out why the underflow happens?
+>> > > > > > > > > > I don't see how the approch taken in my patch would blow up. From what I 
+>> > > > > > > > > > can tell, it should be fairly close to how refcount is handled in 
+>> > > > > > > > > > page_frag_alloc. The main improvement it adds is to prevent it from 
+>> > > > > > > > > > blowing up if pool-allocated fragments get shared across multiple skbs 
+>> > > > > > > > > > with corresponding get_page and page_pool_return_skb_page calls.
+>> > > > > > > > > > 
+>> > > > > > > > > > - Felix
+>> > > > > > > > > > 
+>> > > > > > > > > 
+>> > > > > > > > > Do you have the patch available to review as an RFC? From what I am
+>> > > > > > > > > seeing it looks like you are underrunning on the pp_frag_count itself.
+>> > > > > > > > > I would suspect the issue to be something like starting with a bad
+>> > > > > > > > > count in terms of the total number of references, or deducing the wrong
+>> > > > > > > > > amount when you finally free the page assuming you are tracking your
+>> > > > > > > > > frag count using a non-atomic value in the driver.
+>> > > > > > > > The driver patches for page pool are here:
+>> > > > > > > > https://patchwork.kernel.org/project/linux-wireless/patch/64abb23f4867c075c19d704beaae5a0a2f8e8821.1673963374.git.lorenzo@kernel.org/
+>> > > > > > > > https://patchwork.kernel.org/project/linux-wireless/patch/68081e02cbe2afa2d35c8aa93194f0adddbd0f05.1673963374.git.lorenzo@kernel.org/
+>> > > > > > > > 
+>> > > > > > > > They are also applied in my mt76 tree at:
+>> > > > > > > > https://github.com/nbd168/wireless
+>> > > > > > > > 
+>> > > > > > > > - Felix
+>> > > > > > > 
+>> > > > > > > So one thing I am thinking is that we may be seeing an issue where we
+>> > > > > > > are somehow getting a mix of frag and non-frag based page pool pages.
+>> > > > > > > That is the only case I can think of where we might be underflowing
+>> > > > > > > negative. If you could add some additional debug info on the underflow
+>> > > > > > > WARN_ON case in page_pool_defrag_page that might be useful.
+>> > > > > > > Specifically I would be curious what the actual return value is. I'm
+>> > > > > > > assuming we are only hitting negative 1, but I would want to verify we
+>> > > > > > > aren't seeing something else.
+>> > > > > > I'll try to run some more tests soon. However, I think I found the piece 
+>> > > > > > of code that is incompatible with using pp_frag_count.
+>> > > > > > When receiving an A-MSDU packet (multiple MSDUs within a single 802.11 
+>> > > > > > packet), and it is not split by the hardware, a cfg80211 function 
+>> > > > > > extracts the individual MSDUs into separate skbs. In that case, a 
+>> > > > > > fragment can be shared across multiple skbs, and get_page is used to 
+>> > > > > > increase the refcount.
+>> > > > > > You can find this in net/wireless/util.c: ieee80211_amsdu_to_8023s (and 
+>> > > > > > its helper functions).
+>> > > > > 
+>> > > > > I'm not sure if it is problematic or not. Basically it is trading off
+>> > > > > by copying over the frags, calling get_page on each frag, and then
+>> > > > > using dev_kfree_skb to disassemble and release the pp_frag references.
+>> > > > > There should be other paths in the kernel that are doing something
+>> > > > > similar.
+>> > > > > 
+>> > > > > > This code also has a bug where it doesn't set pp_recycle on the newly 
+>> > > > > > allocated skb if the previous one has it, but that's a separate matter 
+>> > > > > > and fixing it doesn't make the crash go away.
+>> > > > > 
+>> > > > > Adding the recycle would cause this bug. So one thing we might be
+>> > > > > seeing is something like that triggering this error. Specifically if
+>> > > > > the page is taken via get_page when assembling the new skb then we
+>> > > > > cannot set the recycle flag in the new skb otherwise it will result in
+>> > > > > the reference undercount we are seeing. What we are doing is shifting
+>> > > > > the references away from the pp_frag_count to the page reference count
+>> > > > > in this case. If we set the pp_recycle flag then it would cause us to
+>> > > > > decrement pp_frag_count instead of the page reference count resulting
+>> > > > > in the underrun.
+>> > > > Couldn't leaving out the pp_recycle flag potentially lead to a case 
+>> > > > where the last user of the page drops it via page_frag_free instead of 
+>> > > > page_pool_return_skb_page? Is that valid?
+>> > > 
+>> > > No. What will happen is that when the pp_frag_count is exhausted the
+>> > > page will be unmapped and evicted from the page pool. When the page is
+>> > > then finally freed it will end up going back to the page allocator
+>> > > instead of page pool.
+>> > > 
+>> > > Basically the idea is that until pp_frag_count reaches 0 there will be
+>> > > at least 1 page reference held.
+>> > > 
+>> > > > > > Is there any way I can make that part of the code work with the current 
+>> > > > > > page pool frag implementation?
+>> > > > > 
+>> > > > > The current code should work. Basically as long as the references are
+>> > > > > taken w/ get_page and skb->pp_recycle is not set then we shouldn't run
+>> > > > > into this issue because the pp_frag_count will be dropped when the
+>> > > > > original skb is freed and the page reference count will be decremented
+>> > > > > when the new one is freed.
+>> > > > > 
+>> > > > > For page pool page fragments the main thing to keep in mind is that if
+>> > > > > pp_recycle is set it will update the pp_frag_count and if it is not
+>> > > > > then it will just decrement the page reference count.
+>> > > > What takes care of DMA unmap and other cleanup if the last reference to 
+>> > > > the page is dropped via page_frag_free?
+>> > > > 
+>> > > > - Felix
+>> > > 
+>> > > When the page is freed on the skb w/ pp_recycle set it will unmap the
+>> > > page and evict it from the page pool. Basically in these cases the page
+>> > > goes from the page pool back to the page allocator.
+>> > > 
+>> > > The general idea with this is that if we are using fragments that there
+>> > > will be enough of them floating around that if one or two frags have a
+>> > > temporeary detour through a non-recycling path that hopefully by the
+>> > > time the last fragment is freed the other instances holding the
+>> > > additional page reference will have let them go. If not then the page
+>> > > will go back to the page allocator and it will have to be replaced in
+>> > > the page pool.
+>> > Thanks for the explanation, it makes sense to me now. Unfortunately it
+>> > also means that I have no idea what could cause this issue. I will
+>> > finish my mt76 patch rework which gets rid of the pp vs non-pp
+>> > allocation mix and re-run my tests to provide updated traces.
+>> Here's the updated mt76 page pool support commit:
+>> https://github.com/nbd168/wireless/commit/923cdab6d4c92a0acb3536b3b0cc4af9fee7c808
+> 
+> Yeah, so I don't see anything wrong with the patch in terms of page
+> pool.
+> 
+>> And here is the trace that I'm getting with 6.1:
+>> https://nbd.name/p/a16957f2
+>> 
+>> If you have any debug patch you'd like me to test, please let me know.
+>> 
+>> - Felix
+> 
+> So looking at the traces I am assuming what we are seeing is the
+> deferred freeing from the TCP Rx path since I don't see a driver
+> anywhere between net_rx_action and napi_consume skb. So it seems like
+> the packets are likely making it all the way up the network stack.
+> 
+> Is this the first wireless driver to add support for page pool? I'm
+> thinking we must be seeing something in the wireless path that is
+> causing an issue such as the function you called out earlier but I
+> can't see anything obvious.
+Yes, it's the first driver with page pool support.
 
-Me trying to prove that memory ordering is transitive would be 100%
-speculation. Let's ask Paul instead - is the above valid? Or the fact
-that CPU1 observes state from CPU0 and is strongly ordered with CPU2
-implies that CPU2 will also observe CPU0's state?
+> One thing we need to be on the lookout for is cloned skbs. When an skb
+> is cloned the pp_recycle gets copied over. In that case the reference
+> is moved over to the skb dataref count. What comes to mind is something
+> like commit 1effe8ca4e34c ("skbuff: fix coalescing for page_pool
+> fragment recycling").
+I suspect that the crash might be related to a bad interaction between 
+the page reuse in A-MSDU rx + skb coalescing on TCP rx.
+If I change the A-MSDU code to copy data instead of reusing fragments, 
+it doesn't crash anymore.
+I believe the issue must be specific to that codepath, since most 
+received and processed packets are either not A-MSDU or A-MSDU decap has 
+already been performed by the hardware.
+If I change my test to use 3 client mode interfaces instead of 4, the 
+hardware is able to offload all A-MSDU rx processing and I don't see any 
+crashes anymore.
 
-> 2)My understanding is chronologically later accept() mustn't miss sk_stat=
-e.
-> Otherwise, kernel says that ordering between internal syscalls data
-> is userspace duty, which is wrong. Userspace knows nothing about internal
-> kernel data.
+Could you please take another look at ieee80211_amsdu_to_8023s to see if 
+there's anything in there that could cause these issues?
 
-> 3)Such possible situations in log file also look strange:
+- Felix
 
-Dunno those points are a bit subjective. Squeezing perf out of
-distributed systems requires sacrifices =F0=9F=A4=B7=EF=B8=8F
