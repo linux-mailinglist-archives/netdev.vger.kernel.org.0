@@ -2,117 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90A9F67D130
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 17:21:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70F6E67D131
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 17:22:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232611AbjAZQVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 11:21:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57710 "EHLO
+        id S232670AbjAZQWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 11:22:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232494AbjAZQVw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 11:21:52 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2049.outbound.protection.outlook.com [40.107.92.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B60A855BC
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 08:21:49 -0800 (PST)
+        with ESMTP id S232644AbjAZQV5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 11:21:57 -0500
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2089.outbound.protection.outlook.com [40.107.100.89])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2180279A1
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 08:21:55 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MEBkZXeXJDQx9SOilocPYy7yyM9cfpgR2Q0uqhhTDp33c+s31qQfmaLhEOgYAywjSHgg+suTPGMkEfP5A+mcJC8BpCo6jvKAlpwGscr2WAWezSGu982wXJ1t99jm0QpGHx+fho44GNOuBg46VmfMSnuStSDIlu4KX64T18yk9uinGJs1lPrNtmQuiaf380GWyZyrattsLWV1eWW3J0mAUYZVbq8LOeUfqLh9GlCKDMlg0Y9ylsyNWR1QhIHPe7mcAwki6S4MWSadOCgr2R7ChnPsvbRAXkeTOZcnP6tEvbmQbEOoA3zqDaSPjal1Cem4UwHP0RDO2D3l1i9uw9f4wQ==
+ b=AQ2R6Q9wXsJqqdhYl9TfnAgtQaJcVE/fJMBscC6al5IvdcDqY0oDOH3dWhapFPP8W+nQukcpSpM9pPq8Sk7N6xNfnMt4OFbh+7b1J4w1kYqwi0QQxEhk9vMGQL+z5IzLsf/gnpMKApSVKrTwxgiJCFt+2BrVwYdbb+GJIGylgZ1QeMDTUuVmLIUr7yc1ATWY0ayrckhqLTLl2yopBVFyQ0Yo/vA2pnL6qGVYpy5lWqftfD9W//0HBlDjNP7D2p9KMyBi9MV+/hebQVYwqLcAm9Jz0tihE3soDAyKdZw7aYXcqU4qVv4JY4vuY/fM6SBY7iUxz8Xz97E2VI0MEuemkg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=V0V27EDISwYougR+lV6ULBQcCovHyiqw/G74Lg25Zyg=;
- b=dGqV1W+0Zj/tsTO31oWETRPeQArGfbnSnPPJs4LUeohJn1ptgxfaqgRN1jj6uThmq540SgYbibYCkqzeRG0mT/DmeZzK+FwtVBkbrwF2Pzz4I+YqQOtjm4rHKNjKMCVCUIXP8h55NAOHSOVyDnRENFJNXxQCM5dESC9mhJYzLqAB8/+Aso/aOb++QOVjc/tnjk4Z0eQqxvxOajdEVU7XLt9LpbpAAiT/A/AyPb6SEq47Wu2breHyb+mlhVqMczJ8htzX9qgv2d7pQwHhglcOzBrwur3Q1KjJyiUvVyksua+NzeVk0eeapxb9CtXPZKmhzw9HZ0ZVk8G1e06Zx+ItvA==
+ bh=zco3Rye9t8L5HeNT0o8pojqa6/I6RzXj1AyZBLRytV0=;
+ b=c9JoKaefZPIOq7pCTd5TevL6KpAaGi8WDA/97QAnL60DrGhSn8YelaqHHvj2dsPvGdq3t+2VHpR7UJMPafulqqAXtHqr17zH+/RvqPrJLpiUBDEoXQP5Z4/VAr9FoYPgBUbtf2jRwf7iMWHp2RLxAAjCdXENAVHVNrEcwBA/AW7TR8MbfArX8PVxLhCtr/2clRzerA2GgVsU53jE78uLOR3VZd4a2o2z50QZBc7sOcsvv5yZh8zKaZePOKGKjoP1OavADQF9szppXvuYQDV6M6DhOV3BfAJ8iYOZ2N+hltbkeZt/ngs3awzDhTudVCNVb5gR2f3ZeZtVG5qbOQvZQQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V0V27EDISwYougR+lV6ULBQcCovHyiqw/G74Lg25Zyg=;
- b=ZLNjlhVJFBFZfkgpkJb6OdLTB53T71TX2K/KgywmDVcHKCU7wOYkGRKmp5kXtH+Yn7Z5AvYYFALajcW+A2zn/yi5bNqLo9vK2IRXv+bZLADPAh9b5fvx0Ap0QQJEo5aZo7LIhoZUm3uJOTIN9qFL+MSfPTbQ/kPIK3shvSruDf0sBMf+XCdjCG2SRC4zYB8pqijFmiEHI58khY94Cp//9gb6ItctHIDU5w3GVbAa/qPZoHy+MX216fNKMAtRZdQTMfUSogmjxJP/rLat32N+rIveh1COhucSL0M3CpVL+3tkKyY4pqW9vM3yDx55V2q3Raq868K/4RlxodNPFpPO8Q==
+ bh=zco3Rye9t8L5HeNT0o8pojqa6/I6RzXj1AyZBLRytV0=;
+ b=Utdcr4DOpSU3iQPovzgZAJg86ThTePw1rwCqn138Wz9y43lTgeonxnM+qm97UdjnFB5vgQR1iGnTq4EwICNmVjkEDZU6aWOX1cq9j0fpyMFZ2jmUh0XQvJtRppDGoJoOE0ejjKbs4VLW4PS7s67kVAQRidHolMFjIDkleDuJTx8PC7tb/hWLe32aESd8mIqlPOAcPaCBTSq+w4AVc5gIRvK+8/ZIOdabtBdvs4odROI97XBcHAnAjvhwItRuUXO2xWGHVSD6HuzmiUxVvWckMIPrEBD2/dgtWUdcaDkbFwL6AzbeY/3kTX1DEmBxvd7jfwO8SImOgaNheyjnfYDyMA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from SJ1PR12MB6075.namprd12.prod.outlook.com (2603:10b6:a03:45e::8)
- by PH0PR12MB7792.namprd12.prod.outlook.com (2603:10b6:510:281::21) with
+ by SJ0PR12MB5422.namprd12.prod.outlook.com (2603:10b6:a03:3ac::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Thu, 26 Jan
- 2023 16:21:47 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.22; Thu, 26 Jan
+ 2023 16:21:53 +0000
 Received: from SJ1PR12MB6075.namprd12.prod.outlook.com
  ([fe80::9fd9:dadc:4d8a:2d84]) by SJ1PR12MB6075.namprd12.prod.outlook.com
  ([fe80::9fd9:dadc:4d8a:2d84%6]) with mapi id 15.20.6043.022; Thu, 26 Jan 2023
- 16:21:47 +0000
+ 16:21:53 +0000
 From:   Aurelien Aptel <aaptel@nvidia.com>
 To:     linux-nvme@lists.infradead.org, netdev@vger.kernel.org,
         sagi@grimberg.me, hch@lst.de, kbusch@kernel.org, axboe@fb.com,
-        chaitanyak@nvidia.com, davem@davemloft.net, kuba@kernel.org
-Cc:     aaptel@nvidia.com, aurelien.aptel@gmail.com, smalin@nvidia.com,
-        malin1024@gmail.com, ogerlitz@nvidia.com, yorayz@nvidia.com,
-        borisp@nvidia.com
-Subject: [PATCH v10 00/25] nvme-tcp receive offloads
-Date:   Thu, 26 Jan 2023 18:21:11 +0200
-Message-Id: <20230126162136.13003-1-aaptel@nvidia.com>
+        chaitanyak@nvidia.com, davem@davemloft.net, kuba@kernel.org,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Aurelien Aptel <aaptel@nvidia.com>, aurelien.aptel@gmail.com,
+        smalin@nvidia.com, malin1024@gmail.com, ogerlitz@nvidia.com,
+        yorayz@nvidia.com, borisp@nvidia.com
+Subject: [PATCH v10 01/25] net: Introduce direct data placement tcp offload
+Date:   Thu, 26 Jan 2023 18:21:12 +0200
+Message-Id: <20230126162136.13003-2-aaptel@nvidia.com>
 X-Mailer: git-send-email 2.31.1
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <20230126162136.13003-1-aaptel@nvidia.com>
+References: <20230126162136.13003-1-aaptel@nvidia.com>
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: LO4P123CA0575.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:276::7) To SJ1PR12MB6075.namprd12.prod.outlook.com
+Content-Type: text/plain
+X-ClientProxiedBy: LO4P123CA0571.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:276::10) To SJ1PR12MB6075.namprd12.prod.outlook.com
  (2603:10b6:a03:45e::8)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PR12MB6075:EE_|PH0PR12MB7792:EE_
-X-MS-Office365-Filtering-Correlation-Id: 570a093e-3e95-431a-ab32-08daffb96be5
+X-MS-TrafficTypeDiagnostic: SJ1PR12MB6075:EE_|SJ0PR12MB5422:EE_
+X-MS-Office365-Filtering-Correlation-Id: 144279f6-2f6d-4b22-c134-08daffb96f6b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: y3AZM/s2jrPeZtovzUG9TtVeGrv1XuebpDD17eles7BRndyRRJIu1+wsWDu5nSUv4hbcUZY4SRykpIi+wvvYUzRzVGaebTzIAt6gNZ4Hzl9XDumJ8MI0wO1Uhn3P8NtwXhyx5nxw46viv96DpZSCNJSH1X2+Zc7ZHSrKgx1QWHjYpg21uendV9CwpG/nNYC7hhXupo5apVgWh8rYC0gK7Erhga8qj+NA6PqMHOs7F4at4o7ugF23M7hrqeOaCMsLbCSJtrWmuT2AFmO98oqbMBadbvI2wBqbJy5fLRcYhLnE5kd5rQqQ6sGupmg741wxrtjY2Rw8BAjY//rVZtgiZtslOtX0McK4DgRMSdpk3aYXSewuyv5XrcPhpDO+IQv9kFqd6/pZP+Y/0w/f1+Tbq5u0y01LovnyRrnFHvbXPDcOmfGgxV0z3VS8nRUiJSih4T1+fLjs7h1BS64RJ4sldhenUIpF2X6jJawJ0g9uOvjL36Y/lPfvH2JRH08JVzT6R3Lq4FWXmpYBnsU/K+n3jsXlhYJxugM8i4lXomUqya/A+rZ9fempP7vQumZM/KTjRCrTenTcEJIf/wA1RFVdZUpL2akaawG4HD6LhCGGlU7B40uXZHuj2wXih2dNUI/Sju8Ud/3WQEDVmbu+7EUfkjWBpBHJdq3+t/fNS1Yly0xCSgkKcP1kCpUOHxRRCYQYVpRqhH5YPrDgPqC5PiVa2/0RsAlA6EjwOt5hboBTC4pvQMCL7vcrIVXezPbLSKxK
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ1PR12MB6075.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(39860400002)(136003)(396003)(366004)(376002)(451199018)(66899018)(4326008)(66476007)(316002)(36756003)(66556008)(86362001)(66946007)(8676002)(6512007)(107886003)(966005)(478600001)(2616005)(26005)(83380400001)(8936002)(186003)(6666004)(5660300002)(1076003)(6486002)(2906002)(7416002)(38100700002)(6506007)(41300700001)(30864003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: /y1lRuCu7FDjBALRLdrzDwVA9Zwrr1arWygwBFUja5vj2T2ZBVShfalMwJBFu3Fl9Xd2K6u72XZIqhTpn8nrRAoe31FIKWZcB2TCJ2U+kcGCKrZpfQt92ap1Sa4I4WeOGHSz14WueE/wtL5U7g7WLY2SXR5KTvKZtG9sziaxgFb+BKrXOdP0sjFR22VUv5/mYLDd5WfXmHtah9FCgKsdXMFREoxKMmw1b+JSdCFP9J554NG3HrCb+TKua6ECwL3Jm8tyYeL2yUDJOqkPNfrQwhckqwXexklX7bgpwIzLHrI1ctRK3G/muxBTETxrc64gOGNP+K2nmZ7vRtW+BmmuTm8AeR1ck7LYmJCUUErOuVkJyhM/wNPc2UKsOP+Rl10XJDC6itaYyIvaDeSTXBLf4XLQaJcn5EJBlZsUS4Jd2dQ9X7MIfAgGhEc22MteF4GZEjlEqMs6+usKk2cI4AGpuwxqcVgZWXLzBntlzAez4sMh3cGmZSA6yrSwx2tBXUT81DyC7+FIhAy0HHpmVti+XbGSKs+kew32s0HxAIcQ/Zws6L/TwMv76TlJ7VcaXhx0WwHI4BDRAD4twrHUdyAtbuPkSb77UPpOt8XIVqXb8t8Z9dLt8nRYQTqMsbcUQWqcyCl6Qc/VNWbZ9oGXvQtekmaSIh3iHEoFSDleeWgczjrT3qv+8Z8NknpNc1Tck09X
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ1PR12MB6075.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(376002)(39860400002)(136003)(396003)(366004)(451199018)(316002)(38100700002)(41300700001)(8676002)(66556008)(66946007)(66476007)(6916009)(4326008)(5660300002)(30864003)(7416002)(36756003)(86362001)(8936002)(921005)(2906002)(6506007)(1076003)(26005)(6512007)(186003)(478600001)(6486002)(83380400001)(6666004)(107886003)(2616005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?d0lRbHNNYVRQcjJXZ2pHUDFIU25YdmtDWVl4Yk1ibmZNeUQ1OU1jZ1FyekJP?=
- =?utf-8?B?eUdGVzU5YXVZMTl2SDNSS254b0tKZ3NWZVBTT0YwNnBLL0crWnZoMENVUW5a?=
- =?utf-8?B?bWVvS09rRzN1a2Y1M0RmWE9YcVNucVNjVHg3UFhic1cxYmlGbTdZeVdIUzJw?=
- =?utf-8?B?V1l3M0dHeHY5VUxiUElFakpXQUNDKzVmM29WOU92QWdYVERZZC9DN0huaTZn?=
- =?utf-8?B?QVBEVjFiaUw0YUNxMHVFS1VoUE14OU82dDQ4cHMvOEdLRmpGN2NXMVgvZGZD?=
- =?utf-8?B?ZTM1M2F0UmlTN00ydjR4bFYrbGZwKzVKZ3JoRkhwaTRJZUFyaDhGdDR2N005?=
- =?utf-8?B?WEduQzJ4dlVLOW8rbFVTQWo5QVNPQVJmZzh0clNvb21DU3FtZGs5eVZtRVpo?=
- =?utf-8?B?ZnZ0WDZsMWpRTGVRMHh5UUJZN0VJSEJ1L1psdEs0RVpTMFEyYi8vL01WSWlG?=
- =?utf-8?B?alVBajRIeTBGWE03V0RWYVg0SCt0VVNYbitrOFd3VEZuM01YVEg1NWNqcWUv?=
- =?utf-8?B?UWEveGtncm5oL1VvL1BGNDY2Qk93c0pCb21OS2xoN0RZbUFGcU1aRnk3QWhB?=
- =?utf-8?B?cnJsZXMrTk93UVVTR2RvN0Y1d3RUTUwwYWw0MnM5TFhqa2ZQSWhyWnlJem82?=
- =?utf-8?B?SmJBcTFNaHNEUkhSTFhBdHduYWlNbXFMRzNVWDN6SFdJUm9FQ0VXNmdMSVV3?=
- =?utf-8?B?Q0ljOFZwaUt6VEY4elZyUzhzdmR0cmkvTmNKaTZOTlVBNkU2cFN4eXMya0kz?=
- =?utf-8?B?cXJ5RUdiSmwxQ2dBN0ZVanpscWxKdGNVbjFockhGVzl4N2VUMVljR2t3TlZW?=
- =?utf-8?B?MTVmVmxEWXZNYmdJSUpDWGpyalVsaVU4bXpOamZCNHQ1SVFPNU5ua2dhMUdM?=
- =?utf-8?B?NzRtM1p2OW1PemZWdER4VzRBSEZWNi9wWS9IVUVLbVpKMjlSQU9uclZiZ2h2?=
- =?utf-8?B?UmtoVlZEWVQ1U0RaWTBhMDBmSWhzb2ZtUFJRK3BoQVFZQ3U1ZVRBWDIzVCtE?=
- =?utf-8?B?c2xzdzBSSFNyZTc2cW9vRXNLeXZqWW1pNkRRQ0Jjc0hwSUNpWldnY1ljaEN5?=
- =?utf-8?B?Y3B4RU0xYmpDSGlhcXR6WlBPNEJtME5meVo0VzJ0NG55OHA0TlFYdmhXSFhr?=
- =?utf-8?B?UXhZdTlKQVlHWEZTN1NqVmxORm5DVGxYZ3h0ZUs2KzNGdUlPRnRCdE10Y1Zi?=
- =?utf-8?B?ZUJnb1JWQkkySW9JOE1JckJxSHF6Sk8xYXBDd05JZVZobWhpdy9aWHl1cTZC?=
- =?utf-8?B?emNOMm5paUM5b1NYSkRQL3VpL3ppenJuNXFXVTQ1ejF3ZEpXUTd4eW1yc09L?=
- =?utf-8?B?c001a0xaeW9PQTFaYU55cGxXYVZ2SEV3WHUwSlNpWjM1VEVqT3d3QlI3aHox?=
- =?utf-8?B?dUszQ1gyNzFUL1BkZUhuZmg5UndOejVYRkY2YmxEVktsaC9rR2tTVC82Tjha?=
- =?utf-8?B?YmZQWWVNRTZlaHNmNEIrZFdMMjdUMFdjZHI4VXdGYjZ2QVdaODh5UldXc1Rq?=
- =?utf-8?B?RUZ3bk1JM0REY1VuN2FCRU0xWkVsMjJnQjZtd3lKcG1vV3l5UWViL0h1QWZJ?=
- =?utf-8?B?NnJmdkQ4bEFndUllSVVEQVRJcHlSOU5LYlY2RDlqV1BETnkreG9mRW0xSkM5?=
- =?utf-8?B?cEVueDRpN0w3Q2Y3c014MnZTenlwdmIvdXRRTktHZm0yazhwSzF1M0RGWFlT?=
- =?utf-8?B?MUoydDIxMC9telJCK3ZmSlhyZSsxNkdyLytmTVVmbXF6NHVwUC8yZEE1UEF4?=
- =?utf-8?B?ZUhaQTM2T3dWR1hXN3hWRGVJSi9mRTdoZXNZUjBxMjZVMFhCTURMeVIrVnlD?=
- =?utf-8?B?bmVJMENFZTZpeE02SDFCdlJoZEkwcm1TL01EWDFhSUsxV2RFcThwVVp2LzI3?=
- =?utf-8?B?Ty9oNkVQaGdqMmNIUmRMeGFHWUswNWpPS2lYblFZS2NXNzdPcmV2VVJwZWJm?=
- =?utf-8?B?TEdxNFZFYmVDa0lac0RyTkxqT24xYmpGT2JhY2luYkdOajVPaS8yR3IrYUlN?=
- =?utf-8?B?UERWOVNndW5MOEFoUHExbkljeUZLbkRvMDlTSDdKOVYvZTBUK2l6amk2amJl?=
- =?utf-8?B?N3BxV2JpQXlRWVB4cXBFT0ZDQmJVTFhqTzdHQzJqTE9Va1ZaZmtzZ240TFky?=
- =?utf-8?Q?nvbVobcdAXTfkArSJj4W2I5oc?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?u3cVvFtUnbOUIw08bLD58Pnr2qIr4EvQvpiWMuGzUtMe+irww1pI6899AnFq?=
+ =?us-ascii?Q?B8E8izngcmcyzehx1yklRouDhUIeDWXOjpc5UTd46JZHLnGwIkr1YIcpVPia?=
+ =?us-ascii?Q?QDdmeLisF+9Cp3+pJMhNCTTwLR1Lvc7N2AgGtbXmHQ7XmbE7x7hNKHandpki?=
+ =?us-ascii?Q?/i8m6Eqw82DWlQ9o7QToNGe55K9T2mvWk9ATxwlE7voDt0J8o2IoEdYyRvs7?=
+ =?us-ascii?Q?h5kWOdff/gx+NDD4ejQtYL9wvlipWYsJRjpgEuCq9wjub1+AUTMX5zLR4hU2?=
+ =?us-ascii?Q?i1v46YSvn+0z0PEzsgdTUdQMuTXnkRMLUZF3i6YEObl50kCCLirhp3zlACPN?=
+ =?us-ascii?Q?e6fx4CsA/6UYp8rU1asJ1W4mjILDQQw2c9ccoqYzLrTbW02vVO2mAK46G/KY?=
+ =?us-ascii?Q?NteeZaMXf5tmpkQyLcuzGlhaHoivrQOXAwRLrwK2JPNeIqL6c+PEpze38auQ?=
+ =?us-ascii?Q?BgTV9MhPPihPNBzQnuoR9vWIf59srcdr9eb6L8hfIhllDOGPQVw7ic3XnAiQ?=
+ =?us-ascii?Q?KVEueKx8qkJhWEReGh2zcKdaqRAj9rMwWN8XITs3ZJYGuZM7K7J/dfd19pqe?=
+ =?us-ascii?Q?ETK0P4/ngR0yp4FQraSjVU/qO1ApGCDFQUvzAFRRMd1a03mE4M3R6mGpEhtB?=
+ =?us-ascii?Q?Y35/0fizWqsAIn97ECCyZGI/4bZJXjmeVdvPjtV4RPeMCwmiF66p9EZYwmXI?=
+ =?us-ascii?Q?Me7z6UkkSPDCuEOax0ZEI/JaUJPCUeirpMl/yi5BSZbuuIX5VrieAuABg5BI?=
+ =?us-ascii?Q?CwRDXZBPyDiu6xgrDd/hMj5V41nhhNlUTM6kLJeOVS/IBAc2J7fSaUQtvpWN?=
+ =?us-ascii?Q?QS9FmUaJ9LsoppdprmjbeqfnAME+IQSjLNyOT0A39HlLBfd2uMHf0kvra8Og?=
+ =?us-ascii?Q?eKTSRZY1Aefj6hTkq9eU9CjoGEEjS27BMV+74tBsfY2dBuSNspbCial6R80X?=
+ =?us-ascii?Q?8dby5A/bTyPOgYwPNi1Su5cL/lpa5pmFZI3dGkjZKEQIeOmP5I5NL7DaHwyi?=
+ =?us-ascii?Q?Bd4opXNZVkVeKetL4C6ql/uTDacogj8D8orE0M1sFMOyY6etEN+fnM/CUplD?=
+ =?us-ascii?Q?HHueccCdfx3fN2ASaBLIvxO6To3j5QX28lRotApCbAybRSw3Pu/zJarReftI?=
+ =?us-ascii?Q?48U1g6JX+XOJ7KeiO1mOUBjK8EL81Bqm9JbnP0Z9MpIncNIruM09JneurI5c?=
+ =?us-ascii?Q?nHzqvocS+PEbSAORgpMoYmo79rDfp3LVXXHgwrqe8EIkkcFY8MKNBNqBoKu/?=
+ =?us-ascii?Q?iCkLOr3o2UPOpC3cPAEcrEtaGJe2RzpBh5Dz32mYzQlXduuI8vAziVOuXZOU?=
+ =?us-ascii?Q?H7dMmNHKvi8AMNO+oJCuT18tb4hjZLFIgcPULSxZ7GMNA4kbb5vx6YGWFMbr?=
+ =?us-ascii?Q?EaeJU+zWs6O5XC2DWt2eSF0MoJ/Rgu4XejSZZKCDfRZpn4C8mSou7fSUMHaO?=
+ =?us-ascii?Q?NW/uyZme+XUBCgTqVpbGZ6rBy4fMyUbgr1JqRUP0guIvP4uT/JGUxRAfDbeQ?=
+ =?us-ascii?Q?eBXS+0IWgd4+SiEtuC24RQZ4jlgY0dvSfLB4vQfmOZ5ByZIToKcmB27zFS6r?=
+ =?us-ascii?Q?my2Y8hNiq0oFKIQhaKE/DN45lNi4uJ28Qvn7WZDz?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 570a093e-3e95-431a-ab32-08daffb96be5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 144279f6-2f6d-4b22-c134-08daffb96f6b
 X-MS-Exchange-CrossTenant-AuthSource: SJ1PR12MB6075.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2023 16:21:47.2311
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2023 16:21:53.2836
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Xp/tYRr/jY8DlRhLyt299AeuRbSfv5SZK8yytoaiKXG6/qZ/R1OJax/OTfpAyYfzRpdSknpwmtgXgBq8bQhdCQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7792
+X-MS-Exchange-CrossTenant-UserPrincipalName: Lh1Qy5wSqQGGoDbI0heqX2CMu/E/rkmBvI7shKKzjJ/Zwk6h+q5Ap1LeWtmvGJYcaMA4/zDMVUpSjXKHqKXqWw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5422
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -123,449 +117,552 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-Here is the next iteration of our nvme-tcp receive offload series.
-
-The main changes are in patch 1 (ulp crc check) and patches 2, 3, 4, 12 (netlink stats).
-
-Rebased on top of today net-next
-97f7d3dd761a ("Merge branch 'mptcp-add-mixed-v4-v6-support-for-the-in-kernel-pm'")
-
-The changes are also available through git:
-
-Repo: https://github.com/aaptel/linux.git branch nvme-rx-offload-v10
-Web: https://github.com/aaptel/linux/tree/nvme-rx-offload-v10
-
-The NVMeTCP offload was presented in netdev 0x16 (video now available):
-- https://netdevconf.info/0x16/session.html?NVMeTCP-Offload-%E2%80%93-Implementation-and-Performance-Gains
-- https://youtu.be/W74TR-SNgi4
-
-From: Aurelien Aptel <aaptel@nvidia.com>
-From: Shai Malin <smalin@nvidia.com>
-From: Ben Ben-Ishay <benishay@nvidia.com>
 From: Boris Pismenny <borisp@nvidia.com>
-From: Or Gerlitz <ogerlitz@nvidia.com>
-From: Yoray Zack <yorayz@nvidia.com>
 
-=========================================
+This commit introduces direct data placement (DDP) offload for TCP.
 
-This series adds support for NVMe-TCP receive offloads. The method here
-does not mandate the offload of the network stack to the device.
-Instead, these work together with TCP to offload:
-1. copy from SKB to the block layer buffers.
-2. CRC calculation and verification for received PDU.
+The motivation is saving compute resources/cycles that are spent
+to copy data from SKBs to the block layer buffers and CRC
+calculation/verification for received PDUs (Protocol Data Units).
 
-The series implements these as a generic offload infrastructure for storage
-protocols, which calls TCP Direct Data Placement and TCP Offload CRC
-respectively. We use this infrastructure to implement NVMe-TCP offload for
-copy and CRC.
-Future implementations can reuse the same infrastructure for other protocols
-such as iSCSI.
+The DDP capability is accompanied by new net_device operations that
+configure hardware contexts.
 
-Note:
-These offloads are similar in nature to the packet-based NIC TLS offloads,
-which are already upstream (see net/tls/tls_device.c).
-You can read more about TLS offload here:
-https://www.kernel.org/doc/html/latest/networking/tls-offload.html
+There is a context per socket, and a context per DDP operation.
+Additionally, a resynchronization routine is used to assist
+hardware handle TCP OOO, and continue the offload. Furthermore,
+we let the offloading driver advertise what is the max hw
+sectors/segments.
 
-Queue Level
-===========
-The offload for IO queues is initialized after the handshake of the
-NVMe-TCP protocol is finished by calling `nvme_tcp_offload_socket`
-with the tcp socket of the nvme_tcp_queue:
-This operation sets all relevant hardware contexts in
-hardware. If it fails, then the IO queue proceeds as usual with no offload.
-If it succeeds then `nvme_tcp_setup_ddp` and `nvme_tcp_teardown_ddp` may be
-called to perform copy offload, and crc offload will be used.
-This initialization does not change the normal operation of NVMe-TCP in any
-way besides adding the option to call the above mentioned NDO operations.
+The interface includes five net-device ddp operations:
 
-For the admin queue, NVMe-TCP does not initialize the offload.
-Instead, NVMe-TCP calls the driver to configure limits for the controller,
-such as max_hw_sectors and max_segments, these must be limited to accommodate
-potential HW resource limits, and to improve performance.
+ 1. sk_add - add offload for the queue represented by socket+config pair
+ 2. sk_del - remove the offload for the socket/queue
+ 3. ddp_setup - request copy offload for buffers associated with an IO
+ 4. ddp_teardown - release offload resources for that IO
+ 5. limits - query NIC driver for quirks and limitations (e.g.
+             max number of scatter gather entries per IO)
 
-If some error occurs, and the IO queue must be closed or reconnected, then
-offload is teardown and initialized again. Additionally, we handle netdev
-down events via the existing error recovery flow.
+Using this interface, the NIC hardware will scatter TCP payload
+directly to the BIO pages according to the command_id.
 
-IO Level
-========
-The NVMe-TCP layer calls the NIC driver to map block layer buffers to CID
-using `nvme_tcp_setup_ddp` before sending the read request. When the response
-is received, then the NIC HW will write the PDU payload directly into the
-designated buffer, and build an SKB such that it points into the destination
-buffer. This SKB represents the entire packet received on the wire, but it
-points to the block layer buffers. Once NVMe-TCP attempts to copy data from
-this SKB to the block layer buffer it can skip the copy by checking in the
-copying function: if (src == dst) -> skip copy
+To maintain the correctness of the network stack, the driver is
+expected to construct SKBs that point to the BIO pages.
 
-Finally, when the PDU has been processed to completion, the NVMe-TCP layer
-releases the NIC HW context by calling `nvme_tcp_teardown_ddp` which
-asynchronously unmaps the buffers from NIC HW.
+The SKB passed to the network stack from the driver represents
+data as it is on the wire, while it is pointing directly to data
+in destination buffers.
 
-The NIC must release its mapping between command IDs and the target buffers.
-This mapping is released when NVMe-TCP calls the NIC
-driver (`nvme_tcp_offload_socket`).
-As completing IOs is performance critical, we introduce asynchronous
-completions for NVMe-TCP, i.e. NVMe-TCP calls the NIC, which will later
-call NVMe-TCP to complete the IO (`nvme_tcp_ddp_teardown_done`).
+As a result, data from page frags should not be copied out to
+the linear part. To avoid needless copies, such as when using
+skb_condense, we mark the skb->ulp_ddp bit.
+In addition, the skb->ulp_crc will be used by the upper layers to
+determine if CRC re-calculation is required. The two separated skb
+indications are needed to avoid false positives GRO flushing events.
 
-On the IO level, and in order to use the offload only when a clear
-performance improvement is expected, the offload is used only for IOs
-which are bigger than io_threshold.
+Follow-up patches will use this interface for DDP in NVMe-TCP.
 
-SKB
-===
-The DDP (zero-copy) and CRC offloads require two additional bits in the SKB.
-The ddp bit is useful to prevent condensing of SKBs which are targeted
-for zero-copy. The crc bit is useful to prevent GRO coalescing SKBs with
-different offload values. This bit is similar in concept to the
-"decrypted" bit.
+Capability bits stored in net_device allow drivers to report which
+ULP DDP capabilities a device supports. Control over these
+capabilities will be exposed to userspace in later patches.
 
-After offload is initialized, we use the SKB's crc bit to indicate that:
-"there was no problem with the verification of all CRC fields in this packet's
-payload". The bit is set to zero if there was an error, or if HW skipped
-offload for some reason. If *any* SKB in a PDU has (crc != 1), then the
-calling driver must compute the CRC, and check it. We perform this check, and
-accompanying software fallback at the end of the processing of a received PDU.
-
-Resynchronization flow
-======================
-The resynchronization flow is performed to reset the hardware tracking of
-NVMe-TCP PDUs within the TCP stream. The flow consists of a request from
-the hardware proxied by the driver, regarding a possible location of a
-PDU header. Followed by a response from the NVMe-TCP driver.
-
-This flow is rare, and it should happen only after packet loss or
-reordering events that involve NVMe-TCP PDU headers.
-
-CID Mapping
-===========
-ConnectX-7 assumes linear CID (0...N-1 for queue of size N) where the Linux NVMe
-driver uses part of the 16 bit CCID for generation counter.
-To address that, we use the existing quirk in the NVMe layer when the HW
-driver advertises that they don't support the full 16 bit CCID range.
-
-Enablement on ConnectX-7
-========================
-By default, NVMeTCP offload is disabled in the mlx driver and in the nvme-tcp host.
-In order to enable it:
-
-	# Disable CQE compression (specific for ConnectX)
-	ethtool --set-priv-flags <device> rx_cqe_compress off
-
-	# Enable the ULP-DDP
-	ethtool --ulp-ddp <device> nvme-tcp-ddp on nvme-tcp-ddgst-rx-offload on
-
-	# Enable ULP offload in nvme-tcp
-	modprobe nvme-tcp ulp_offload=1
-
-Following the device ULP-DDP enablement, all the IO queues/sockets which are
-running on the device are offloaded.
-
-This feature requires a patched ethtool that can be obtained from
-Web: https://github.com/aaptel/ethtool/tree/ulp-ddp
-Git: https://github.com/aaptel/ethtool.git
-Branch: ulp-ddp
-
-Performance
-===========
-With this implementation, using the ConnectX-7 NIC, we were able to
-demonstrate the following CPU utilization improvement:
-
-Without data digest:
-For  64K queued read IOs – up to 32% improvement in the BW/IOPS (111 Gbps vs. 84 Gbps).
-For 512K queued read IOs – up to 55% improvement in the BW/IOPS (148 Gbps vs. 98 Gbps).
-
-With data digest:
-For  64K queued read IOs – up to 107% improvement in the BW/IOPS (111 Gbps vs. 53 Gbps).
-For 512K queued read IOs – up to 138% improvement in the BW/IOPS (146 Gbps vs. 61 Gbps).
-
-With small IOs we are not expecting that the offload will show a performance gain.
-
-The test configuration:
-- fio command: qd=128, jobs=8.
-- Server: Intel(R) Xeon(R) Platinum 8380 CPU @ 2.30GHz, 160 cores.
-
-Patches
-=======
-Patch 1:  Introduce the infrastructure for all ULP DDP and ULP DDP CRC offloads.
-Patch 2:  Add ethtool string sets for ULP DDP capability names and stats names.
-Patch 3:  Add ethtool operations to get/set ULP DDP capabilities and statistics.
-Patch 4:  Documentation of ULP DDP ethtool netlink messages.
-Patch 5:  The iov_iter change to skip copy if (src == dst).
-Patch 6:  Export the get_netdev_for_sock function from TLS to generic location.
-Patch 7:  NVMe-TCP changes to call NIC driver on queue init/teardown and resync.
-Patch 8:  NVMe-TCP changes to call NIC driver on IO operation
-          setup/teardown, and support async completions.
-Patch 9:  NVMe-TCP changes to support CRC offload on receive
-          Also, this patch moves CRC calculation to the end of PDU
-          in case offload requires software fallback.
-Patch 10: NVMe-TCP handling of netdev events: stop the offload if netdev is
-          going down.
-Patch 11: Add module parameter to the NVMe-TCP control the enable ULP offload.
-Patch 12: Documentation of ULP DDP offloads.
-
-The rest of the series is the mlx5 implementation of the offload.
-
-Testing
-=======
-This series was tested on ConnectX-7 HW using various configurations
-of IO sizes, queue depths, MTUs, and with both the SPDK and kernel NVMe-TCP
-targets.
-
-Compatibility
-=============
-* The offload works with bare-metal or SRIOV.
-* The HW can support up to 64K connections per device (assuming no
-  other HW accelerations are used). In this series, we will introduce
-  the support for up to 4k connections, and we have plans to increase it.
-* SW TLS could not work together with the NVMeTCP offload as the HW
-  will need to track the NVMeTCP headers in the TCP stream.
-* The ConnectX HW support HW TLS, but in ConnectX-7 those features
-  could not co-exists (and it is not part of this series).
-* The NVMeTCP offload ConnectX 7 HW can support tunneling, but we
-  don’t see the need for this feature yet.
-* NVMe poll queues are not in the scope of this series.
-
-Future Work
-===========
-* NVMeTCP transmit offload.
-* NVMeTCP host offloads incremental features.
-* NVMeTCP target offload.
-
-Changes since v9:
-=================
-- Add missing crc checks in tcp_try_coalesce() (Paolo).
-- Add missing ifdef guard for socket ops (Paolo).
-- Remove verbose netlink format for statistics (Jakub).
-- Use regular attributes for statistics (Jakub).
-- Expose and document individual stats to uAPI (Jakub).
-- Move ethtool ops for caps&stats to netdev_ops->ulp_ddp_ops (Jakub).
-
-Changes since v8:
-=================
-- Make stats stringset global instead of per-device (Jakub).
-- Remove per-queue stats (Jakub).
-- Rename ETH_SS_ULP_DDP stringset to ETH_SS_ULP_DDP_CAPS.
-- Update & fix kdoc comments.
-- Use 80 columns limit for nvme code.
-
-Changes since v7:
-=================
-- Remove ULP DDP netdev->feature bit (Jakub).
-- Expose ULP DDP capabilities to userspace via ethtool netlink messages (Jakub).
-- Move ULP DDP stats to dedicated stats group (Jakub).
-- Add ethtool_ops operations for setting capabilities and getting stats (Jakub).
-- Move ulp_ddp_netdev_ops into net_device_ops (Jakub).
-- Use union for protocol-specific struct instances (Jakub).
-- Fold netdev_sk_get_lowest_dev() into get_netdev_for_sock (Christoph).
-- Rename memcpy skip patch to something more obvious (Christoph).
-- Move capabilities from ulp_ddp.h to ulp_ddp_caps.h.
-- Add "Compatibility" section on the cover letter (Sagi).
-
-Changes since v6:
-=================
-- Moved IS_ULP_{DDP,CRC} macros to skb_is_ulp_{ddp,crc} inline functions (Jakub).
-- Fix copyright notice (Leon).
-- Added missing ifdef to allow build with MLX5_EN_TLS disabled.
-- Fix space alignment, indent and long lines (max 99 columns).
-- Add missing field documentation in ulp_ddp.h.
-
-Changes since v5:
-=================
-- Limit the series to RX offloads.
-- Added two separated skb indications to avoid wrong flushing of GRO
-  when aggerating offloaded packets.
-- Use accessor functions for skb->ddp and skb->crc (Eric D) bits.
-- Add kernel-doc for get_netdev_for_sock (Christoph).
-- Remove ddp_iter* routines and only modify _copy_to_iter (Al Viro, Christoph).
-- Remove consume skb (Sagi).
-- Add a knob in the ddp limits struct for the HW driver to advertise
-  if they need the nvme-tcp driver to apply the generation counter
-  quirk. Use this knob for the mlx5 CX7 offload.
-- bugfix: use u8 flags instead of bool in mlx5e_nvmeotcp_queue->dgst.
-- bugfix: use sg_dma_len(sgl) instead of sgl->length.
-- bugfix: remove sgl leak in nvme_tcp_setup_ddp().
-- bugfix: remove sgl leak when only using DDGST_RX offload.
-- Add error check for dma_map_sg().
-- Reduce #ifdef by using dummy macros/functions.
-- Remove redundant netdev null check in nvme_tcp_pdu_last_send().
-- Rename ULP_DDP_RESYNC_{REQ -> PENDING}.
-- Add per-ulp limits struct (Sagi).
-- Add ULP DDP capabilities querying (Sagi).
-- Simplify RX DDGST logic (Sagi).
-- Document resync flow better.
-- Add ulp_offload param to nvme-tcp module to enable ULP offload (Sagi).
-- Add a revert commit to reintroduce nvme_tcp_queue->queue_size.
-
-Changes since v4:
-=================
-- Add transmit offload patches.
-- Use one feature bit for both receive and transmit offload.
-
-Changes since v3:
-=================
-- Use DDP_TCP ifdefs in iov_iter and skb iterators to minimize impact
-  when compiled out (Christoph).
-- Simplify netdev references and reduce the use of
-  get_netdev_for_sock (Sagi).
-- Avoid "static" in it's own line, move it one line down (Christoph)
-- Pass (queue, skb, *offset) and retrieve the pdu_seq in
-  nvme_tcp_resync_response (Sagi).
-- Add missing assignment of offloading_netdev to null in offload_limits
-  error case (Sagi).
-- Set req->offloaded = false once -- the lifetime rules are:
-  set to false on cmd_setup / set to true when ddp setup succeeds (Sagi).
-- Replace pr_info_ratelimited with dev_info_ratelimited (Sagi).
-- Add nvme_tcp_complete_request and invoke it from two similar call
-  sites (Sagi).
-- Introduce nvme_tcp_req_map_sg earlier in the series (Sagi).
-- Add nvme_tcp_consume_skb and put into it a hunk from
-  nvme_tcp_recv_data to handle copy with and without offload.
-
-Changes since v2:
-=================
-- Use skb->ddp_crc for copy offload to avoid skb_condense.
-- Default mellanox driver support to no (experimental feature).
-- In iov_iter use non-ddp functions for kvec and iovec.
-- Remove typecasting in NVMe-TCP.
-
-Changes since v1:
-=================
-- Rework iov_iter copy skip if src==dst to be less intrusive (David Ahern).
-- Add tcp-ddp documentation (David Ahern).
-- Refactor mellanox driver patches into more patches (Saeed Mahameed).
-- Avoid pointer casting (David Ahern).
-- Rename NVMe-TCP offload flags (Shai Malin).
-- Update cover-letter according to the above.
-
-Changes since RFC v1:
-=====================
-- Split mlx5 driver patches to several commits.
-- Fix NVMe-TCP handling of recovery flows. In particular, move queue offload.
-  init/teardown to the start/stop functions.
-
+Signed-off-by: Boris Pismenny <borisp@nvidia.com>
+Signed-off-by: Ben Ben-Ishay <benishay@nvidia.com>
 Signed-off-by: Or Gerlitz <ogerlitz@nvidia.com>
-
-Aurelien Aptel (6):
-  net/ethtool: add new stringset ETH_SS_ULP_DDP_{CAPS,STATS}
-  net/ethtool: add ULP_DDP_{GET,SET} operations for caps and stats
-  Documentation: document netlink ULP_DDP_GET/SET messages
-  net/tls,core: export get_netdev_for_sock
-  nvme-tcp: Add modparam to control the ULP offload enablement
-  net/mlx5e: NVMEoTCP, statistics
-
-Ben Ben-Ishay (8):
-  iov_iter: skip copy if src == dst for direct data placement
-  net/mlx5: Add NVMEoTCP caps, HW bits, 128B CQE and enumerations
-  net/mlx5e: NVMEoTCP, offload initialization
-  net/mlx5e: NVMEoTCP, use KLM UMRs for buffer registration
-  net/mlx5e: NVMEoTCP, queue init/teardown
-  net/mlx5e: NVMEoTCP, ddp setup and resync
-  net/mlx5e: NVMEoTCP, async ddp invalidation
-  net/mlx5e: NVMEoTCP, data-path for DDP+DDGST offload
-
-Boris Pismenny (4):
-  net: Introduce direct data placement tcp offload
-  nvme-tcp: Add DDP offload control path
-  nvme-tcp: Add DDP data-path
-  net/mlx5e: TCP flow steering for nvme-tcp acceleration
-
-Or Gerlitz (5):
-  nvme-tcp: Deal with netdevice DOWN events
-  net/mlx5e: Rename from tls to transport static params
-  net/mlx5e: Refactor ico sq polling to get budget
-  net/mlx5e: Have mdev pointer directly on the icosq structure
-  net/mlx5e: Refactor doorbell function to allow avoiding a completion
-
-Yoray Zack (2):
-  nvme-tcp: RX DDGST offload
-  Documentation: add ULP DDP offload documentation
-
- Documentation/networking/ethtool-netlink.rst  |   91 ++
- Documentation/networking/index.rst            |    1 +
- Documentation/networking/statistics.rst       |    1 +
- Documentation/networking/ulp-ddp-offload.rst  |  376 ++++++
- .../net/ethernet/mellanox/mlx5/core/Kconfig   |   11 +
- .../net/ethernet/mellanox/mlx5/core/Makefile  |    3 +
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |   10 +
- .../net/ethernet/mellanox/mlx5/core/en/fs.h   |    4 +-
- .../ethernet/mellanox/mlx5/core/en/params.c   |   12 +-
- .../ethernet/mellanox/mlx5/core/en/params.h   |    3 +
- .../mellanox/mlx5/core/en/reporter_rx.c       |    4 +-
- .../ethernet/mellanox/mlx5/core/en/rx_res.c   |   28 +
- .../ethernet/mellanox/mlx5/core/en/rx_res.h   |    4 +
- .../net/ethernet/mellanox/mlx5/core/en/tir.c  |   15 +
- .../net/ethernet/mellanox/mlx5/core/en/tir.h  |    2 +
- .../net/ethernet/mellanox/mlx5/core/en/txrx.h |   28 +-
- .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   |    1 +
- .../ethernet/mellanox/mlx5/core/en/xsk/rx.h   |    1 +
- .../mlx5/core/en_accel/common_utils.h         |   32 +
- .../mellanox/mlx5/core/en_accel/en_accel.h    |    3 +
- .../mellanox/mlx5/core/en_accel/fs_tcp.c      |   12 +-
- .../mellanox/mlx5/core/en_accel/fs_tcp.h      |    2 +-
- .../mellanox/mlx5/core/en_accel/ktls.c        |    2 +-
- .../mellanox/mlx5/core/en_accel/ktls_rx.c     |    8 +-
- .../mellanox/mlx5/core/en_accel/ktls_tx.c     |    8 +-
- .../mellanox/mlx5/core/en_accel/ktls_txrx.c   |   36 +-
- .../mellanox/mlx5/core/en_accel/ktls_utils.h  |   17 +-
- .../mellanox/mlx5/core/en_accel/nvmeotcp.c    | 1115 +++++++++++++++++
- .../mellanox/mlx5/core/en_accel/nvmeotcp.h    |  142 +++
- .../mlx5/core/en_accel/nvmeotcp_rxtx.c        |  325 +++++
- .../mlx5/core/en_accel/nvmeotcp_rxtx.h        |   37 +
- .../mlx5/core/en_accel/nvmeotcp_stats.c       |   66 +
- .../mlx5/core/en_accel/nvmeotcp_utils.h       |   66 +
- .../ethernet/mellanox/mlx5/core/en_ethtool.c  |    6 +
- .../net/ethernet/mellanox/mlx5/core/en_fs.c   |    4 +-
- .../net/ethernet/mellanox/mlx5/core/en_main.c |   31 +-
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   |   78 +-
- .../ethernet/mellanox/mlx5/core/en_stats.h    |    7 +
- .../net/ethernet/mellanox/mlx5/core/en_txrx.c |    4 +-
- drivers/net/ethernet/mellanox/mlx5/core/fw.c  |    6 +
- .../net/ethernet/mellanox/mlx5/core/main.c    |    1 +
- drivers/nvme/host/tcp.c                       |  567 ++++++++-
- include/linux/ethtool.h                       |   32 +
- include/linux/mlx5/device.h                   |   59 +-
- include/linux/mlx5/mlx5_ifc.h                 |   82 +-
- include/linux/mlx5/qp.h                       |    1 +
- include/linux/netdevice.h                     |   18 +-
- include/linux/skbuff.h                        |   24 +
- include/net/inet_connection_sock.h            |    6 +
- include/net/ulp_ddp.h                         |  187 +++
- include/net/ulp_ddp_caps.h                    |   35 +
- include/uapi/linux/ethtool.h                  |    4 +
- include/uapi/linux/ethtool_netlink.h          |   37 +
- lib/iov_iter.c                                |    8 +-
- net/Kconfig                                   |   20 +
- net/core/dev.c                                |   26 +-
- net/core/skbuff.c                             |    3 +-
- net/ethtool/Makefile                          |    2 +-
- net/ethtool/common.c                          |   22 +
- net/ethtool/common.h                          |    2 +
- net/ethtool/netlink.c                         |   17 +
- net/ethtool/netlink.h                         |    4 +
- net/ethtool/strset.c                          |   11 +
- net/ethtool/ulp_ddp.c                         |  334 +++++
- net/ipv4/tcp_input.c                          |   13 +-
- net/ipv4/tcp_ipv4.c                           |    3 +
- net/ipv4/tcp_offload.c                        |    3 +
- net/tls/tls_device.c                          |   16 -
- 68 files changed, 3988 insertions(+), 151 deletions(-)
- create mode 100644 Documentation/networking/ulp-ddp-offload.rst
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/common_utils.h
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.h
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.h
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_stats.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_utils.h
+Signed-off-by: Yoray Zack <yorayz@nvidia.com>
+Signed-off-by: Shai Malin <smalin@nvidia.com>
+Signed-off-by: Aurelien Aptel <aaptel@nvidia.com>
+---
+ include/linux/netdevice.h          |  15 +++
+ include/linux/skbuff.h             |  24 ++++
+ include/net/inet_connection_sock.h |   6 +
+ include/net/ulp_ddp.h              | 187 +++++++++++++++++++++++++++++
+ include/net/ulp_ddp_caps.h         |  35 ++++++
+ net/Kconfig                        |  20 +++
+ net/core/skbuff.c                  |   3 +-
+ net/ipv4/tcp_input.c               |  13 +-
+ net/ipv4/tcp_ipv4.c                |   3 +
+ net/ipv4/tcp_offload.c             |   3 +
+ 10 files changed, 307 insertions(+), 2 deletions(-)
  create mode 100644 include/net/ulp_ddp.h
  create mode 100644 include/net/ulp_ddp_caps.h
- create mode 100644 net/ethtool/ulp_ddp.c
 
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index aad12a179e54..289cfdade177 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -52,6 +52,10 @@
+ #include <net/net_trackers.h>
+ #include <net/net_debug.h>
+ 
++#ifdef CONFIG_ULP_DDP
++#include <net/ulp_ddp_caps.h>
++#endif
++
+ struct netpoll_info;
+ struct device;
+ struct ethtool_ops;
+@@ -1392,6 +1396,8 @@ struct netdev_net_notifier {
+  *	Get hardware timestamp based on normal/adjustable time or free running
+  *	cycle counter. This function is required if physical clock supports a
+  *	free running cycle counter.
++ * struct ulp_ddp_dev_ops *ulp_ddp_ops;
++ *	ULP DDP operations (see include/net/ulp_ddp.h)
+  */
+ struct net_device_ops {
+ 	int			(*ndo_init)(struct net_device *dev);
+@@ -1616,6 +1622,9 @@ struct net_device_ops {
+ 	ktime_t			(*ndo_get_tstamp)(struct net_device *dev,
+ 						  const struct skb_shared_hwtstamps *hwtstamps,
+ 						  bool cycles);
++#if IS_ENABLED(CONFIG_ULP_DDP)
++	const struct ulp_ddp_dev_ops	*ulp_ddp_ops;
++#endif
+ };
+ 
+ /**
+@@ -1783,6 +1792,9 @@ enum netdev_ml_priv_type {
+  *	@mpls_features:	Mask of features inheritable by MPLS
+  *	@gso_partial_features: value(s) from NETIF_F_GSO\*
+  *
++ *	@ulp_ddp_caps:	Bitflags keeping track of supported and enabled
++ *			ULP DDP capabilities.
++ *
+  *	@ifindex:	interface index
+  *	@group:		The group the device belongs to
+  *
+@@ -2071,6 +2083,9 @@ struct net_device {
+ 	netdev_features_t	mpls_features;
+ 	netdev_features_t	gso_partial_features;
+ 
++#ifdef CONFIG_ULP_DDP
++	struct ulp_ddp_netdev_caps ulp_ddp_caps;
++#endif
+ 	unsigned int		min_mtu;
+ 	unsigned int		max_mtu;
+ 	unsigned short		type;
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 4c8492401a10..8708c5935e89 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -811,6 +811,8 @@ typedef unsigned char *sk_buff_data_t;
+  *		delivery_time in mono clock base (i.e. EDT).  Otherwise, the
+  *		skb->tstamp has the (rcv) timestamp at ingress and
+  *		delivery_time at egress.
++ *	@ulp_ddp: DDP offloaded
++ *	@ulp_crc: CRC offloaded
+  *	@napi_id: id of the NAPI struct this skb came from
+  *	@sender_cpu: (aka @napi_id) source CPU in XPS
+  *	@alloc_cpu: CPU which did the skb allocation.
+@@ -983,6 +985,10 @@ struct sk_buff {
+ 	__u8			slow_gro:1;
+ 	__u8			csum_not_inet:1;
+ 	__u8			scm_io_uring:1;
++#ifdef CONFIG_ULP_DDP
++	__u8                    ulp_ddp:1;
++	__u8			ulp_crc:1;
++#endif
+ 
+ #ifdef CONFIG_NET_SCHED
+ 	__u16			tc_index;	/* traffic control index */
+@@ -5053,5 +5059,23 @@ static inline void skb_mark_for_recycle(struct sk_buff *skb)
+ }
+ #endif
+ 
++static inline bool skb_is_ulp_ddp(struct sk_buff *skb)
++{
++#ifdef CONFIG_ULP_DDP
++	return skb->ulp_ddp;
++#else
++	return 0;
++#endif
++}
++
++static inline bool skb_is_ulp_crc(struct sk_buff *skb)
++{
++#ifdef CONFIG_ULP_DDP
++	return skb->ulp_crc;
++#else
++	return 0;
++#endif
++}
++
+ #endif	/* __KERNEL__ */
+ #endif	/* _LINUX_SKBUFF_H */
+diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
+index c2b15f7e5516..b11fbbc95541 100644
+--- a/include/net/inet_connection_sock.h
++++ b/include/net/inet_connection_sock.h
+@@ -68,6 +68,8 @@ struct inet_connection_sock_af_ops {
+  * @icsk_ulp_ops	   Pluggable ULP control hook
+  * @icsk_ulp_data	   ULP private data
+  * @icsk_clean_acked	   Clean acked data hook
++ * @icsk_ulp_ddp_ops	   Pluggable ULP direct data placement control hook
++ * @icsk_ulp_ddp_data	   ULP direct data placement private data
+  * @icsk_ca_state:	   Congestion control state
+  * @icsk_retransmits:	   Number of unrecovered [RTO] timeouts
+  * @icsk_pending:	   Scheduled timer event
+@@ -98,6 +100,10 @@ struct inet_connection_sock {
+ 	const struct tcp_ulp_ops  *icsk_ulp_ops;
+ 	void __rcu		  *icsk_ulp_data;
+ 	void (*icsk_clean_acked)(struct sock *sk, u32 acked_seq);
++#ifdef CONFIG_ULP_DDP
++	const struct ulp_ddp_ulp_ops  *icsk_ulp_ddp_ops;
++	void __rcu		  *icsk_ulp_ddp_data;
++#endif
+ 	unsigned int		  (*icsk_sync_mss)(struct sock *sk, u32 pmtu);
+ 	__u8			  icsk_ca_state:5,
+ 				  icsk_ca_initialized:1,
+diff --git a/include/net/ulp_ddp.h b/include/net/ulp_ddp.h
+new file mode 100644
+index 000000000000..50a8f29630c0
+--- /dev/null
++++ b/include/net/ulp_ddp.h
+@@ -0,0 +1,187 @@
++/* SPDX-License-Identifier: GPL-2.0
++ *
++ * ulp_ddp.h
++ *	Author:	Boris Pismenny <borisp@nvidia.com>
++ *	Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
++ */
++#ifndef _ULP_DDP_H
++#define _ULP_DDP_H
++
++#include <linux/netdevice.h>
++#include <net/inet_connection_sock.h>
++#include <net/sock.h>
++
++#include "ulp_ddp_caps.h"
++
++enum ulp_ddp_type {
++	ULP_DDP_NVME = 1,
++};
++
++/**
++ * struct nvme_tcp_ddp_limits - nvme tcp driver limitations
++ *
++ * @full_ccid_range:	true if the driver supports the full CID range
++ */
++struct nvme_tcp_ddp_limits {
++	bool			full_ccid_range;
++};
++
++/**
++ * struct ulp_ddp_limits - Generic ulp ddp limits: tcp ddp
++ * protocol limits.
++ * Add new instances of ulp_ddp_limits in the union below (nvme-tcp, etc.).
++ *
++ * @type:		type of this limits struct
++ * @max_ddp_sgl_len:	maximum sgl size supported (zero means no limit)
++ * @io_threshold:	minimum payload size required to offload
++ * @nvmeotcp:		NVMe-TCP specific limits
++ */
++struct ulp_ddp_limits {
++	enum ulp_ddp_type	type;
++	int			max_ddp_sgl_len;
++	int			io_threshold;
++	union {
++		struct nvme_tcp_ddp_limits nvmeotcp;
++	};
++};
++
++/**
++ * struct nvme_tcp_ddp_config - nvme tcp ddp configuration for an IO queue
++ *
++ * @pfv:	pdu version (e.g., NVME_TCP_PFV_1_0)
++ * @cpda:	controller pdu data alignment (dwords, 0's based)
++ * @dgst:	digest types enabled (header or data, see enum nvme_tcp_digest_option).
++ *		The netdev will offload crc if it is supported.
++ * @queue_size: number of nvme-tcp IO queue elements
++ * @queue_id:	queue identifier
++ * @io_cpu:	cpu core running the IO thread for this queue
++ */
++struct nvme_tcp_ddp_config {
++	u16			pfv;
++	u8			cpda;
++	u8			dgst;
++	int			queue_size;
++	int			queue_id;
++	int			io_cpu;
++};
++
++/**
++ * struct ulp_ddp_config - Generic ulp ddp configuration
++ * Add new instances of ulp_ddp_config in the union below (nvme-tcp, etc.).
++ *
++ * @type:	type of this config struct
++ * @nvmeotcp:	NVMe-TCP specific config
++ */
++struct ulp_ddp_config {
++	enum ulp_ddp_type    type;
++	union {
++		struct nvme_tcp_ddp_config nvmeotcp;
++	};
++};
++
++/**
++ * struct ulp_ddp_io - ulp ddp configuration for an IO request.
++ *
++ * @command_id: identifier on the wire associated with these buffers
++ * @nents:	number of entries in the sg_table
++ * @sg_table:	describing the buffers for this IO request
++ * @first_sgl:	first SGL in sg_table
++ */
++struct ulp_ddp_io {
++	u32			command_id;
++	int			nents;
++	struct sg_table		sg_table;
++	struct scatterlist	first_sgl[SG_CHUNK_SIZE];
++};
++
++struct ethtool_ulp_ddp_stats;
++
++/**
++ * struct ulp_ddp_dev_ops - operations used by an upper layer protocol
++ *                          to configure ddp offload
++ *
++ * @limits:    query ulp driver limitations and quirks.
++ * @sk_add:    add offload for the queue represented by socket+config
++ *             pair. this function is used to configure either copy, crc
++ *             or both offloads.
++ * @sk_del:    remove offload from the socket, and release any device
++ *             related resources.
++ * @setup:     request copy offload for buffers associated with a
++ *             command_id in ulp_ddp_io.
++ * @teardown:  release offload resources association between buffers
++ *             and command_id in ulp_ddp_io.
++ * @resync:    respond to the driver's resync_request. Called only if
++ *             resync is successful.
++ * @set_caps:  set device ULP DDP capabilities.
++ *	       returns a negative error code or zero.
++ * @get_stats: query ULP DDP statistics.
++ */
++struct ulp_ddp_dev_ops {
++	int (*limits)(struct net_device *netdev,
++		      struct ulp_ddp_limits *limits);
++	int (*sk_add)(struct net_device *netdev,
++		      struct sock *sk,
++		      struct ulp_ddp_config *config);
++	void (*sk_del)(struct net_device *netdev,
++		       struct sock *sk);
++	int (*setup)(struct net_device *netdev,
++		     struct sock *sk,
++		     struct ulp_ddp_io *io);
++	void (*teardown)(struct net_device *netdev,
++			 struct sock *sk,
++			 struct ulp_ddp_io *io,
++			 void *ddp_ctx);
++	void (*resync)(struct net_device *netdev,
++		       struct sock *sk, u32 seq);
++	int (*set_caps)(struct net_device *dev, unsigned long *bits);
++	int (*get_stats)(struct net_device *dev,
++			 struct ethtool_ulp_ddp_stats *stats);
++};
++
++#define ULP_DDP_RESYNC_PENDING BIT(0)
++
++/**
++ * struct ulp_ddp_ulp_ops - Interface to register upper layer
++ *                          Direct Data Placement (DDP) TCP offload.
++ * @resync_request:         NIC requests ulp to indicate if @seq is the start
++ *                          of a message.
++ * @ddp_teardown_done:      NIC driver informs the ulp that teardown is done,
++ *                          used for async completions.
++ */
++struct ulp_ddp_ulp_ops {
++	bool (*resync_request)(struct sock *sk, u32 seq, u32 flags);
++	void (*ddp_teardown_done)(void *ddp_ctx);
++};
++
++/**
++ * struct ulp_ddp_ctx - Generic ulp ddp context
++ *
++ * @type:	type of this context struct
++ * @buf:	protocol-specific context struct
++ */
++struct ulp_ddp_ctx {
++	enum ulp_ddp_type	type;
++	unsigned char		buf[];
++};
++
++static inline struct ulp_ddp_ctx *ulp_ddp_get_ctx(const struct sock *sk)
++{
++#ifdef CONFIG_ULP_DDP
++	struct inet_connection_sock *icsk = inet_csk(sk);
++
++	return (__force struct ulp_ddp_ctx *)icsk->icsk_ulp_ddp_data;
++#else
++	return NULL;
++#endif
++}
++
++static inline void ulp_ddp_set_ctx(struct sock *sk, void *ctx)
++{
++#ifdef CONFIG_ULP_DDP
++	struct inet_connection_sock *icsk = inet_csk(sk);
++
++	rcu_assign_pointer(icsk->icsk_ulp_ddp_data, ctx);
++#endif
++}
++
++#endif	/* _ULP_DDP_H */
+diff --git a/include/net/ulp_ddp_caps.h b/include/net/ulp_ddp_caps.h
+new file mode 100644
+index 000000000000..8ee964a4df78
+--- /dev/null
++++ b/include/net/ulp_ddp_caps.h
+@@ -0,0 +1,35 @@
++/* SPDX-License-Identifier: GPL-2.0
++ *
++ * ulp_ddp.h
++ *	Author:	Aurelien Aptel <aaptel@nvidia.com>
++ *	Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
++ */
++#ifndef _ULP_DDP_CAPS_H
++#define _ULP_DDP_CAPS_H
++
++#include <linux/types.h>
++
++enum {
++	ULP_DDP_C_NVME_TCP_BIT,
++	ULP_DDP_C_NVME_TCP_DDGST_RX_BIT,
++
++	/* add capabilities above */
++	ULP_DDP_C_COUNT,
++};
++
++struct ulp_ddp_netdev_caps {
++	DECLARE_BITMAP(active, ULP_DDP_C_COUNT);
++	DECLARE_BITMAP(hw, ULP_DDP_C_COUNT);
++};
++
++static inline bool ulp_ddp_cap_turned_on(unsigned long *old, unsigned long *new, int bit_nr)
++{
++	return !test_bit(bit_nr, old) && test_bit(bit_nr, new);
++}
++
++static inline bool ulp_ddp_cap_turned_off(unsigned long *old, unsigned long *new, int bit_nr)
++{
++	return test_bit(bit_nr, old) && !test_bit(bit_nr, new);
++}
++
++#endif
+diff --git a/net/Kconfig b/net/Kconfig
+index 48c33c222199..3c59eba4a438 100644
+--- a/net/Kconfig
++++ b/net/Kconfig
+@@ -471,4 +471,24 @@ config NETDEV_ADDR_LIST_TEST
+ 	default KUNIT_ALL_TESTS
+ 	depends on KUNIT
+ 
++config ULP_DDP
++	bool "ULP direct data placement offload"
++	help
++	  This feature provides a generic infrastructure for Direct
++	  Data Placement (DDP) offload for Upper Layer Protocols (ULP,
++	  such as NVMe-TCP).
++
++	  If the ULP and NIC driver supports it, the ULP code can
++	  request the NIC to place ULP response data directly
++	  into application memory, avoiding a costly copy.
++
++	  This infrastructure also allows for offloading the ULP data
++	  integrity checks (e.g. data digest) that would otherwise
++	  require another costly pass on the data we managed to avoid
++	  copying.
++
++	  For more information, see
++	  <file:Documentation/networking/ulp-ddp-offload.rst>.
++
++
+ endif   # if NET
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 180df58e85c7..a3d2104c93b7 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -72,6 +72,7 @@
+ #include <net/mptcp.h>
+ #include <net/mctp.h>
+ #include <net/page_pool.h>
++#include <net/ulp_ddp.h>
+ 
+ #include <linux/uaccess.h>
+ #include <trace/events/skb.h>
+@@ -6520,7 +6521,7 @@ void skb_condense(struct sk_buff *skb)
+ {
+ 	if (skb->data_len) {
+ 		if (skb->data_len > skb->end - skb->tail ||
+-		    skb_cloned(skb))
++		    skb_cloned(skb) || skb_is_ulp_ddp(skb))
+ 			return;
+ 
+ 		/* Nice, we can free page frag(s) right now */
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index cc072d2cfcd8..4a7edad5b2b7 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -4671,7 +4671,10 @@ static bool tcp_try_coalesce(struct sock *sk,
+ 	if (from->decrypted != to->decrypted)
+ 		return false;
+ #endif
+-
++#ifdef CONFIG_ULP_DDP
++	if (skb_is_ulp_crc(from) != skb_is_ulp_crc(to))
++		return false;
++#endif
+ 	if (!skb_try_coalesce(to, from, fragstolen, &delta))
+ 		return false;
+ 
+@@ -5234,6 +5237,10 @@ tcp_collapse(struct sock *sk, struct sk_buff_head *list, struct rb_root *root,
+ 		memcpy(nskb->cb, skb->cb, sizeof(skb->cb));
+ #ifdef CONFIG_TLS_DEVICE
+ 		nskb->decrypted = skb->decrypted;
++#endif
++#ifdef CONFIG_ULP_DDP
++		nskb->ulp_ddp = skb->ulp_ddp;
++		nskb->ulp_crc = skb->ulp_crc;
+ #endif
+ 		TCP_SKB_CB(nskb)->seq = TCP_SKB_CB(nskb)->end_seq = start;
+ 		if (list)
+@@ -5267,6 +5274,10 @@ tcp_collapse(struct sock *sk, struct sk_buff_head *list, struct rb_root *root,
+ #ifdef CONFIG_TLS_DEVICE
+ 				if (skb->decrypted != nskb->decrypted)
+ 					goto end;
++#endif
++#ifdef CONFIG_ULP_DDP
++				if (skb_is_ulp_crc(skb) != skb_is_ulp_crc(nskb))
++					goto end;
+ #endif
+ 			}
+ 		}
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 8320d0ecb13a..8c5e1e2e2809 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1861,6 +1861,9 @@ bool tcp_add_backlog(struct sock *sk, struct sk_buff *skb,
+ 	      TCP_SKB_CB(skb)->tcp_flags) & (TCPHDR_ECE | TCPHDR_CWR)) ||
+ #ifdef CONFIG_TLS_DEVICE
+ 	    tail->decrypted != skb->decrypted ||
++#endif
++#ifdef CONFIG_ULP_DDP
++	    skb_is_ulp_crc(tail) != skb_is_ulp_crc(skb) ||
+ #endif
+ 	    thtail->doff != th->doff ||
+ 	    memcmp(thtail + 1, th + 1, hdrlen - sizeof(*th)))
+diff --git a/net/ipv4/tcp_offload.c b/net/ipv4/tcp_offload.c
+index 45dda7889387..2e62f18e85c0 100644
+--- a/net/ipv4/tcp_offload.c
++++ b/net/ipv4/tcp_offload.c
+@@ -268,6 +268,9 @@ struct sk_buff *tcp_gro_receive(struct list_head *head, struct sk_buff *skb)
+ #ifdef CONFIG_TLS_DEVICE
+ 	flush |= p->decrypted ^ skb->decrypted;
+ #endif
++#ifdef CONFIG_ULP_DDP
++	flush |= skb_is_ulp_crc(p) ^ skb_is_ulp_crc(skb);
++#endif
+ 
+ 	if (flush || skb_gro_receive(p, skb)) {
+ 		mss = 1;
 -- 
 2.31.1
 
