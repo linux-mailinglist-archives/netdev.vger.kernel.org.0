@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2859567C144
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 01:02:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF23367C146
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 01:02:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229928AbjAZACn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Jan 2023 19:02:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54310 "EHLO
+        id S230203AbjAZACv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Jan 2023 19:02:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbjAZACm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 19:02:42 -0500
+        with ESMTP id S229844AbjAZACn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Jan 2023 19:02:43 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 579092CC47
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9EE53A861
         for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 16:02:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21364B81C5E
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70761B81C66
         for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 00:02:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A20CC4339C;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E97F3C4339E;
         Thu, 26 Jan 2023 00:02:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674691358;
-        bh=5c6Gwqw1x0tgfqAncIDtlpoPTpYEqVMExwvKf4poV7w=;
+        s=k20201202; t=1674691359;
+        bh=ozw8mv6BXVF3wW0k53iqSxn5XDaDz+6JRot2NQxwYm8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WlrG43iLWsprJ7ljY2Csw84XmDhVyDJ7AEpLnmpc0RRkZnoJSzS3npDhDjw9VqsWR
-         Eis7bpuDG1wJ+byzJj06LFpPL6UjpuVS7UfUpJxxVsjEWqzf7jzAHU/uq6EJqi1lot
-         HezxJ5ASrkr7e0+yu7afOVMMbJ+FDS9cy0cFFHXz6wVjA1mP8VHLcSMlsRJ/lffEYZ
-         9RtdWlSPJ4QSPlmWoX09JviJWpoobMBpQZjmLdR2h0RmDCfNeMd5DEw5P+FRQsJkmX
-         5QzDQdByCH+bt8P+YAEFnSEuDda33Q+OVyfqtNx1C1xuAfEI3isxf0lMHtfEi9VjQz
-         0adyVvKW4ZlIg==
+        b=Gcn0j/gfLgd+5ehOJrmBbyJia5rSMG4jD9NOxMBO8x0fQRYArzc5RDbB2N2rhUIBX
+         XPf+xdKyRfKhN2QYXOjDeRXRRv+1/8Tcfsc9rfEFfmx93rtZucfgjX+HOxtNgrF6Gl
+         10vk/NoJxk+IrNa12qF6ydHIEMRbaM6NgLAilIznL6qwszz5rGV5QJEZXClfF/vrXe
+         0wyxBlsfrpxOn6ZgrNIJpEPaZYFSoAWPFtoNEDJWJ70UjayrbsHeDS3d0tMBf1+/EN
+         LNuI/8xCmPM3SWk29k2dL7i/YfGrPj4YFtkyUBkWPTfmRc0IRHzY84fHJv/U765wMS
+         c/x21FNUVorKw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Subject: [PATCH net-next 1/3] tools: ynl: support kdocs for flags in code generation
-Date:   Wed, 25 Jan 2023 16:02:33 -0800
-Message-Id: <20230126000235.1085551-2-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 2/3] tools: ynl: rename ops_list -> msg_list
+Date:   Wed, 25 Jan 2023 16:02:34 -0800
+Message-Id: <20230126000235.1085551-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230126000235.1085551-1-kuba@kernel.org>
 References: <20230126000235.1085551-1-kuba@kernel.org>
@@ -53,116 +52,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenzo reports that after switching from enum to flags netdev
-family lost ability to render kdoc (and the enum contents got
-generally garbled).
+ops_list contains all the operations, but the main iteration use
+case is to walk only ops which define attrs. Rename ops_list to
+msg_list, because now it looks like the contents are the same,
+just the format is different. While at it convert from tuple
+to just keys, none of the users care about the name of the op.
 
-Combine the flags and enum handling in uAPI handling.
-
-Reported-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- tools/net/ynl/ynl-gen-c.py | 37 ++++++++++++++++++++-----------------
- 1 file changed, 20 insertions(+), 17 deletions(-)
+ tools/net/ynl/ynl-gen-c.py | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
 diff --git a/tools/net/ynl/ynl-gen-c.py b/tools/net/ynl/ynl-gen-c.py
-index 0c0f18540b7f..91df8eec86f9 100755
+index 91df8eec86f9..9297cfacbe06 100755
 --- a/tools/net/ynl/ynl-gen-c.py
 +++ b/tools/net/ynl/ynl-gen-c.py
-@@ -565,6 +565,7 @@ import yaml
-             self.doc = yaml.get('doc', '')
+@@ -790,8 +790,10 @@ import yaml
+         self.mcgrps = self.yaml.get('mcast-groups', {'list': []})
  
-         self.yaml = yaml
-+        self.enum_set = enum_set
-         self.c_name = c_upper(enum_set.value_pfx + self.name)
+         self.consts = dict()
++        # list of all operations
++        self.msg_list = []
++        # dict of operations which have their own message type (have attributes)
+         self.ops = dict()
+-        self.ops_list = []
+         self.attr_sets = dict()
+         self.attr_sets_list = []
  
-         if 'value' in yaml:
-@@ -572,11 +573,14 @@ import yaml
-             if prev:
-                 self.value_change = (self.value != prev.value + 1)
-         elif prev:
-+            self.value_change = False
-             self.value = prev.value + 1
-         else:
-             self.value = value_start
-             self.value_change = (self.value != 0)
+@@ -858,7 +860,7 @@ import yaml
+             op = Operation(self, elem, val)
+             val += 1
  
-+        self.value_change = self.value_change or self.enum_set['type'] == 'flags'
-+
-     def __getitem__(self, key):
-         return self.yaml[key]
+-            self.ops_list.append((elem['name'], op),)
++            self.msg_list.append(op)
+             if 'notify' in elem:
+                 ntf.append(op)
+                 continue
+@@ -2063,7 +2065,7 @@ _C_KW = {
+     max_value = f"({cnt_name} - 1)"
  
-@@ -586,6 +590,17 @@ import yaml
-     def has_doc(self):
-         return bool(self.doc)
+     uapi_enum_start(family, cw, family['operations'], 'enum-name')
+-    for _, op in family.ops_list:
++    for op in family.msg_list:
+         if separate_ntf and ('notify' in op or 'event' in op):
+             continue
  
-+    # raw value, i.e. the id in the enum, unlike user value which is a mask for flags
-+    def raw_value(self):
-+        return self.value
-+
-+    # user value, same as raw value for enums, for flags it's the mask
-+    def user_value(self):
-+        if self.enum_set['type'] == 'flags':
-+            return 1 << self.value
-+        else:
-+            return self.value
-+
+@@ -2082,7 +2084,7 @@ _C_KW = {
  
- class EnumSet:
-     def __init__(self, family, yaml):
-@@ -824,7 +839,7 @@ import yaml
+     if separate_ntf:
+         uapi_enum_start(family, cw, family['operations'], enum_name='async-enum')
+-        for _, op in family.ops_list:
++        for op in family.msg_list:
+             if separate_ntf and not ('notify' in op or 'event' in op):
+                 continue
  
-     def _dictify(self):
-         for elem in self.yaml['definitions']:
--            if elem['type'] == 'enum':
-+            if elem['type'] == 'enum' or elem['type'] == 'flags':
-                 self.consts[elem['name']] = EnumSet(self, elem)
-             else:
-                 self.consts[elem['name']] = elem
-@@ -1973,7 +1988,8 @@ _C_KW = {
-             defines = []
-             cw.nl()
- 
--        if const['type'] == 'enum':
-+        # Write kdoc for enum and flags (one day maybe also structs)
-+        if const['type'] == 'enum' or const['type'] == 'flags':
-             enum = family.consts[const['name']]
- 
-             if enum.has_doc():
-@@ -1989,13 +2005,11 @@ _C_KW = {
-                 cw.p(' */')
- 
-             uapi_enum_start(family, cw, const, 'name')
--            first = True
-             name_pfx = const.get('name-prefix', f"{family.name}-{const['name']}-")
-             for entry in enum.entry_list:
-                 suffix = ','
--                if first and 'value-start' in const:
--                    suffix = f" = {const['value-start']}" + suffix
--                first = False
-+                if entry.value_change:
-+                    suffix = f" = {entry.user_value()}" + suffix
-                 cw.p(entry.c_name + suffix)
- 
-             if const.get('render-max', False):
-@@ -2005,17 +2019,6 @@ _C_KW = {
-                 cw.p(max_name + ' = (__' + max_name + ' - 1)')
-             cw.block_end(line=';')
-             cw.nl()
--        elif const['type'] == 'flags':
--            uapi_enum_start(family, cw, const, 'name')
--            i = const.get('value-start', 0)
--            for item in const['entries']:
--                item_name = item
--                if 'name-prefix' in const:
--                    item_name = c_upper(const['name-prefix'] + item)
--                cw.p(f'{item_name} = {1 << i},')
--                i += 1
--            cw.block_end(line=';')
--            cw.nl()
-         elif const['type'] == 'const':
-             defines.append([c_upper(family.get('c-define-name',
-                                                f"{family.name}-{const['name']}")),
 -- 
 2.39.1
 
