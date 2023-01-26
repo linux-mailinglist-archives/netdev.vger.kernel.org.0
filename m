@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54FD367C545
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 08:59:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B09C67C546
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 08:59:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236197AbjAZH7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 02:59:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37174 "EHLO
+        id S236298AbjAZH7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 02:59:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236182AbjAZH7A (ORCPT
+        with ESMTP id S236186AbjAZH7A (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 02:59:00 -0500
 Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137E066F98
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 23:58:56 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id b7so894652wrt.3
-        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 23:58:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88224677A8
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 23:58:57 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id y1so895862wru.2
+        for <netdev@vger.kernel.org>; Wed, 25 Jan 2023 23:58:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=o4fSd5ZFlQvLV9GpO1dcZT909oKx1rPLQzex4LtYyT8=;
-        b=hsddtI1lxqr63091sB/jrcFDiZpF2uCKoj36f4fkKN1W6yEU2k241gCmlgoy+0WfPn
-         GeyT9rczTcLpSG5WEpV2+EqnWUAOt5un1GEmbeJ8tVZox1kwck24WGGmfpiBtQEMfYYH
-         /s8VRW5YxTYm48lCUm6vUVxN4v81qeew6sLJaGvXzGZcdubYPLj+ujOsyiK+Irqty/Mp
-         bmS45mQqngXwiRev9Zhh+vXXfTP3zFecXFd+QbnB6xQ2vHKv44AljOnr4CNFPOV4j8Og
-         36WfwryaQ5Ul0fuEkBGOgOP5RePZIiS7DkYrqAXH46hMvX+h/TQ3SdGvRrBL3uIjnJ0A
-         fpww==
+        bh=8oGCiJkiyf1YHjEjbUt8I5OOPXt9kJ58zh07JDs7V44=;
+        b=6avUcF6tvbI9PtckHsYYxRheDqdB4P3lVZ/Y8Ecy/FzJ3FYIwBAj9p0T0UE2BUyV0m
+         GN+GhB4H87eV/s6sw131j3EWCNosVcrCVyESU0CNbm1U1ynXuTqS9wvigDvFHIpcqfW6
+         qNpK+V/DR3ATgrdVPYmKR4kXKx3GdHiSOFrx7VTyW8Nhnv6y19ajqUktsrXwXwMGU/Bp
+         0p8Jr+0UiTWsOgRfwDQLlE5Yq3G+Ue2tdHRTM0lH1D1725PvEhaUv5LWn6NuHftRkJCD
+         a5cGfLsiT8gEaf6mYSz1k3d7bKvUYL0Ba0J5Gz2r0gxdQA0FG0RWFFnDb7Cm7xX0ibaI
+         0xbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=o4fSd5ZFlQvLV9GpO1dcZT909oKx1rPLQzex4LtYyT8=;
-        b=OXYJoUKcUIDMEUQro5o0BjTp9eVTLhcRfYSeJqqhU1HuoHlk/MNi0W9SkA7di4fKsj
-         DlCZQ57dQOKt3UFOdsfFBT+Ub/01///5KrtAt538zkT6K3+XbgXRKu0RxoDOIVdDS7ok
-         bszVNz5VitsjQSL8Hxm1Pb6/5tss1Ob7xlRXvr8mkRvpVva/sPbmoNXJiqWmWzAmYE3Z
-         oVjXePW/ESNMQAlTafLCAfwOph4t2CGTxSXxCoctH3Y5949b+xYa6+gsigkpRam0CGnu
-         qitR5cIurr1dfXjcmnXUG6iq9zxYQ5qsXL+ZJGdrOFqAs1VKiKsx9oBiz40+NwXByBvo
-         ri4Q==
-X-Gm-Message-State: AO0yUKWhIFryPOWSzvCGB7gvfzUw7SUZ9pOjErU16SHz7Z7Tq3VhLzdP
-        61f90MDe9IwS6SBNqxQgsDT2rPiIbRlXfJbaL651GA==
-X-Google-Smtp-Source: AK7set/fi1wQ24T1BtXgMp1TGA04N4IWFdz8gQ6CetuThot6OH1KKDKsRsocRaYDt5Dwi3oXrGQ2yA==
-X-Received: by 2002:adf:fb4c:0:b0:2bf:affa:c83a with SMTP id c12-20020adffb4c000000b002bfaffac83amr6548479wrs.65.1674719934433;
-        Wed, 25 Jan 2023 23:58:54 -0800 (PST)
+        bh=8oGCiJkiyf1YHjEjbUt8I5OOPXt9kJ58zh07JDs7V44=;
+        b=4Baat10dFNjhtY53a17bZcITzuFPM7uRgV5KwbHZ741rRuXFHQ83W/kkVo8bnj8HsJ
+         1BX4ppwHRgmPXL8l0y7J9s+bP50RuxuNbF0Kbgnxh0ChWnf1JebHEjrI9Hw3Jc6hfmL/
+         OfUOPNijPtX1JqUoWdltG/IL2KiToB3+AsII0myaByiUZrJYel8ryLd9emxrhCGmyrJX
+         Zl7V4RHNaFKp1WuiMtZSu2GDmNEcCGcFsNRZAg+XBNAG0/eaCHpo14AH8Q8j3wVcMTJL
+         qHoEEM+mNwjw1slRiCY/mRWXQlN4qdi/UxmYBpiFsypJmSJjMMfwirysjVQi58YIxGbn
+         YG7Q==
+X-Gm-Message-State: AFqh2kpjwITknaYXec5ENSE4CKAOz1p3VkIqY59I2n6lBCiPVuyfv9Ao
+        bIYCZ2N+0W3m4tZwIKEzNhjL1n8SQLPwCpjytFppWw==
+X-Google-Smtp-Source: AMrXdXssd024ucEt/20EPsRJphc1m3OZ0eR6J1R7nS+0uJiNF4KfGOj52P2g57WQ/zJmLTLVQt1YlQ==
+X-Received: by 2002:a5d:5b0e:0:b0:2bd:e873:e20c with SMTP id bx14-20020a5d5b0e000000b002bde873e20cmr38567928wrb.70.1674719936038;
+        Wed, 25 Jan 2023 23:58:56 -0800 (PST)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id n15-20020a5d67cf000000b002bdef155868sm519190wrw.106.2023.01.25.23.58.53
+        by smtp.gmail.com with ESMTPSA id m2-20020a056000180200b002bfb5618ee7sm542547wrh.91.2023.01.25.23.58.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Jan 2023 23:58:53 -0800 (PST)
+        Wed, 25 Jan 2023 23:58:55 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
@@ -59,9 +59,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         aelior@marvell.com, manishc@marvell.com, jacob.e.keller@intel.com,
         gal@nvidia.com, yinjun.zhang@corigine.com, fei.qin@corigine.com,
         Niklas.Cassel@wdc.com
-Subject: [patch net-next v2 09/12] devlink: protect devlink param list by instance lock
-Date:   Thu, 26 Jan 2023 08:58:35 +0100
-Message-Id: <20230126075838.1643665-10-jiri@resnulli.us>
+Subject: [patch net-next v2 10/12] net/mlx5: Move fw reset devlink param to fw reset code
+Date:   Thu, 26 Jan 2023 08:58:36 +0100
+Message-Id: <20230126075838.1643665-11-jiri@resnulli.us>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230126075838.1643665-1-jiri@resnulli.us>
 References: <20230126075838.1643665-1-jiri@resnulli.us>
@@ -78,923 +78,165 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Commit 1d18bb1a4ddd ("devlink: allow registering parameters after
-the instance") as the subject implies introduced possibility to register
-devlink params even for already registered devlink instance. This is a
-bit problematic, as the consistency or params list was originally
-secured by the fact it is static during devlink lifetime. So in order to
-protect the params list, take devlink instance lock during the params
-operations. Introduce unlocked function variants and use them in drivers
-in locked context. Put lock assertions to appropriate places.
+Move the param registration and handling code into the fw reset code
+as they are related to each other. No point in having the devlink param
+registration done in separate file.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
 Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
- drivers/net/ethernet/mellanox/mlx4/main.c     | 80 ++++++++--------
- drivers/net/ethernet/mellanox/mlx5/core/dev.c | 18 ++--
- .../net/ethernet/mellanox/mlx5/core/devlink.c | 92 +++++++++----------
- drivers/net/ethernet/mellanox/mlx5/core/eq.c  | 12 +--
- .../net/ethernet/mellanox/mlx5/core/eswitch.c |  6 +-
- .../net/ethernet/mellanox/mlx5/core/main.c    | 12 +--
- drivers/net/ethernet/mellanox/mlxsw/core.c    | 18 ++--
- .../net/ethernet/mellanox/mlxsw/spectrum.c    | 16 ++--
- .../ethernet/netronome/nfp/devlink_param.c    |  8 +-
- .../net/ethernet/netronome/nfp/nfp_net_main.c |  7 +-
- drivers/net/netdevsim/dev.c                   | 36 ++++----
- include/net/devlink.h                         | 16 +++-
- net/devlink/leftover.c                        | 77 +++++++++++-----
- 13 files changed, 218 insertions(+), 180 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/devlink.c | 21 ---------
+ .../ethernet/mellanox/mlx5/core/fw_reset.c    | 44 ++++++++++++++++---
+ .../ethernet/mellanox/mlx5/core/fw_reset.h    |  2 -
+ 3 files changed, 38 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
-index 3ae246391549..6152f77dcfd8 100644
---- a/drivers/net/ethernet/mellanox/mlx4/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/main.c
-@@ -265,29 +265,29 @@ static void mlx4_devlink_set_params_init_values(struct devlink *devlink)
- 	union devlink_param_value value;
- 
- 	value.vbool = !!mlx4_internal_err_reset;
--	devlink_param_driverinit_value_set(devlink,
--					   DEVLINK_PARAM_GENERIC_ID_INT_ERR_RESET,
--					   value);
-+	devl_param_driverinit_value_set(devlink,
-+					DEVLINK_PARAM_GENERIC_ID_INT_ERR_RESET,
-+					value);
- 
- 	value.vu32 = 1UL << log_num_mac;
--	devlink_param_driverinit_value_set(devlink,
--					   DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
--					   value);
-+	devl_param_driverinit_value_set(devlink,
-+					DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
-+					value);
- 
- 	value.vbool = enable_64b_cqe_eqe;
--	devlink_param_driverinit_value_set(devlink,
--					   MLX4_DEVLINK_PARAM_ID_ENABLE_64B_CQE_EQE,
--					   value);
-+	devl_param_driverinit_value_set(devlink,
-+					MLX4_DEVLINK_PARAM_ID_ENABLE_64B_CQE_EQE,
-+					value);
- 
- 	value.vbool = enable_4k_uar;
--	devlink_param_driverinit_value_set(devlink,
--					   MLX4_DEVLINK_PARAM_ID_ENABLE_4K_UAR,
--					   value);
-+	devl_param_driverinit_value_set(devlink,
-+					MLX4_DEVLINK_PARAM_ID_ENABLE_4K_UAR,
-+					value);
- 
- 	value.vbool = false;
--	devlink_param_driverinit_value_set(devlink,
--					   DEVLINK_PARAM_GENERIC_ID_REGION_SNAPSHOT,
--					   value);
-+	devl_param_driverinit_value_set(devlink,
-+					DEVLINK_PARAM_GENERIC_ID_REGION_SNAPSHOT,
-+					value);
- }
- 
- static inline void mlx4_set_num_reserved_uars(struct mlx4_dev *dev,
-@@ -3910,37 +3910,37 @@ static void mlx4_devlink_param_load_driverinit_values(struct devlink *devlink)
- 	union devlink_param_value saved_value;
- 	int err;
- 
--	err = devlink_param_driverinit_value_get(devlink,
--						 DEVLINK_PARAM_GENERIC_ID_INT_ERR_RESET,
--						 &saved_value);
-+	err = devl_param_driverinit_value_get(devlink,
-+					      DEVLINK_PARAM_GENERIC_ID_INT_ERR_RESET,
-+					      &saved_value);
- 	if (!err && mlx4_internal_err_reset != saved_value.vbool) {
- 		mlx4_internal_err_reset = saved_value.vbool;
- 		/* Notify on value changed on runtime configuration mode */
--		devlink_param_value_changed(devlink,
--					    DEVLINK_PARAM_GENERIC_ID_INT_ERR_RESET);
-+		devl_param_value_changed(devlink,
-+					 DEVLINK_PARAM_GENERIC_ID_INT_ERR_RESET);
- 	}
--	err = devlink_param_driverinit_value_get(devlink,
--						 DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
--						 &saved_value);
-+	err = devl_param_driverinit_value_get(devlink,
-+					      DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
-+					      &saved_value);
- 	if (!err)
- 		log_num_mac = order_base_2(saved_value.vu32);
--	err = devlink_param_driverinit_value_get(devlink,
--						 MLX4_DEVLINK_PARAM_ID_ENABLE_64B_CQE_EQE,
--						 &saved_value);
-+	err = devl_param_driverinit_value_get(devlink,
-+					      MLX4_DEVLINK_PARAM_ID_ENABLE_64B_CQE_EQE,
-+					      &saved_value);
- 	if (!err)
- 		enable_64b_cqe_eqe = saved_value.vbool;
--	err = devlink_param_driverinit_value_get(devlink,
--						 MLX4_DEVLINK_PARAM_ID_ENABLE_4K_UAR,
--						 &saved_value);
-+	err = devl_param_driverinit_value_get(devlink,
-+					      MLX4_DEVLINK_PARAM_ID_ENABLE_4K_UAR,
-+					      &saved_value);
- 	if (!err)
- 		enable_4k_uar = saved_value.vbool;
--	err = devlink_param_driverinit_value_get(devlink,
--						 DEVLINK_PARAM_GENERIC_ID_REGION_SNAPSHOT,
--						 &saved_value);
-+	err = devl_param_driverinit_value_get(devlink,
-+					      DEVLINK_PARAM_GENERIC_ID_REGION_SNAPSHOT,
-+					      &saved_value);
- 	if (!err && crdump->snapshot_enable != saved_value.vbool) {
- 		crdump->snapshot_enable = saved_value.vbool;
--		devlink_param_value_changed(devlink,
--					    DEVLINK_PARAM_GENERIC_ID_REGION_SNAPSHOT);
-+		devl_param_value_changed(devlink,
-+					 DEVLINK_PARAM_GENERIC_ID_REGION_SNAPSHOT);
- 	}
- }
- 
-@@ -4021,8 +4021,8 @@ static int mlx4_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
- 	mutex_init(&dev->persist->interface_state_mutex);
- 	mutex_init(&dev->persist->pci_status_mutex);
- 
--	ret = devlink_params_register(devlink, mlx4_devlink_params,
--				      ARRAY_SIZE(mlx4_devlink_params));
-+	ret = devl_params_register(devlink, mlx4_devlink_params,
-+				   ARRAY_SIZE(mlx4_devlink_params));
- 	if (ret)
- 		goto err_devlink_unregister;
- 	mlx4_devlink_set_params_init_values(devlink);
-@@ -4037,8 +4037,8 @@ static int mlx4_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
- 	return 0;
- 
- err_params_unregister:
--	devlink_params_unregister(devlink, mlx4_devlink_params,
--				  ARRAY_SIZE(mlx4_devlink_params));
-+	devl_params_unregister(devlink, mlx4_devlink_params,
-+			       ARRAY_SIZE(mlx4_devlink_params));
- err_devlink_unregister:
- 	kfree(dev->persist);
- err_devlink_free:
-@@ -4181,8 +4181,8 @@ static void mlx4_remove_one(struct pci_dev *pdev)
- 
- 	pci_release_regions(pdev);
- 	mlx4_pci_disable_device(dev);
--	devlink_params_unregister(devlink, mlx4_devlink_params,
--				  ARRAY_SIZE(mlx4_devlink_params));
-+	devl_params_unregister(devlink, mlx4_devlink_params,
-+			       ARRAY_SIZE(mlx4_devlink_params));
- 	kfree(dev->persist);
- 	devl_unlock(devlink);
- 	devlink_free(devlink);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-index d7ae87ce435e..49bbfadc8c64 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-@@ -114,9 +114,9 @@ static bool is_eth_enabled(struct mlx5_core_dev *dev)
- 	union devlink_param_value val;
- 	int err;
- 
--	err = devlink_param_driverinit_value_get(priv_to_devlink(dev),
--						 DEVLINK_PARAM_GENERIC_ID_ENABLE_ETH,
--						 &val);
-+	err = devl_param_driverinit_value_get(priv_to_devlink(dev),
-+					      DEVLINK_PARAM_GENERIC_ID_ENABLE_ETH,
-+					      &val);
- 	return err ? false : val.vbool;
- }
- 
-@@ -147,9 +147,9 @@ static bool is_vnet_enabled(struct mlx5_core_dev *dev)
- 	union devlink_param_value val;
- 	int err;
- 
--	err = devlink_param_driverinit_value_get(priv_to_devlink(dev),
--						 DEVLINK_PARAM_GENERIC_ID_ENABLE_VNET,
--						 &val);
-+	err = devl_param_driverinit_value_get(priv_to_devlink(dev),
-+					      DEVLINK_PARAM_GENERIC_ID_ENABLE_VNET,
-+					      &val);
- 	return err ? false : val.vbool;
- }
- 
-@@ -221,9 +221,9 @@ static bool is_ib_enabled(struct mlx5_core_dev *dev)
- 	union devlink_param_value val;
- 	int err;
- 
--	err = devlink_param_driverinit_value_get(priv_to_devlink(dev),
--						 DEVLINK_PARAM_GENERIC_ID_ENABLE_RDMA,
--						 &val);
-+	err = devl_param_driverinit_value_get(priv_to_devlink(dev),
-+					      DEVLINK_PARAM_GENERIC_ID_ENABLE_RDMA,
-+					      &val);
- 	return err ? false : val.vbool;
- }
- 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index 2d2fcb518172..ed4b79aeecd1 100644
+index ed4b79aeecd1..8bda15dda0d7 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -602,26 +602,26 @@ static void mlx5_devlink_set_params_init_values(struct devlink *devlink)
- 	union devlink_param_value value;
+@@ -541,24 +541,6 @@ static int mlx5_devlink_esw_port_metadata_validate(struct devlink *devlink, u32
  
- 	value.vbool = MLX5_CAP_GEN(dev, roce);
--	devlink_param_driverinit_value_set(devlink,
--					   DEVLINK_PARAM_GENERIC_ID_ENABLE_ROCE,
--					   value);
-+	devl_param_driverinit_value_set(devlink,
-+					DEVLINK_PARAM_GENERIC_ID_ENABLE_ROCE,
-+					value);
- 
- #ifdef CONFIG_MLX5_ESWITCH
- 	value.vu32 = ESW_OFFLOADS_DEFAULT_NUM_GROUPS;
--	devlink_param_driverinit_value_set(devlink,
--					   MLX5_DEVLINK_PARAM_ID_ESW_LARGE_GROUP_NUM,
--					   value);
-+	devl_param_driverinit_value_set(devlink,
-+					MLX5_DEVLINK_PARAM_ID_ESW_LARGE_GROUP_NUM,
-+					value);
  #endif
  
- 	value.vu32 = MLX5_COMP_EQ_SIZE;
--	devlink_param_driverinit_value_set(devlink,
--					   DEVLINK_PARAM_GENERIC_ID_IO_EQ_SIZE,
--					   value);
-+	devl_param_driverinit_value_set(devlink,
-+					DEVLINK_PARAM_GENERIC_ID_IO_EQ_SIZE,
-+					value);
+-static int mlx5_devlink_enable_remote_dev_reset_set(struct devlink *devlink, u32 id,
+-						    struct devlink_param_gset_ctx *ctx)
+-{
+-	struct mlx5_core_dev *dev = devlink_priv(devlink);
+-
+-	mlx5_fw_reset_enable_remote_dev_reset_set(dev, ctx->val.vbool);
+-	return 0;
+-}
+-
+-static int mlx5_devlink_enable_remote_dev_reset_get(struct devlink *devlink, u32 id,
+-						    struct devlink_param_gset_ctx *ctx)
+-{
+-	struct mlx5_core_dev *dev = devlink_priv(devlink);
+-
+-	ctx->val.vbool = mlx5_fw_reset_enable_remote_dev_reset_get(dev);
+-	return 0;
+-}
+-
+ static int mlx5_devlink_eq_depth_validate(struct devlink *devlink, u32 id,
+ 					  union devlink_param_value val,
+ 					  struct netlink_ext_ack *extack)
+@@ -587,9 +569,6 @@ static const struct devlink_param mlx5_devlink_params[] = {
+ 			     mlx5_devlink_esw_port_metadata_set,
+ 			     mlx5_devlink_esw_port_metadata_validate),
+ #endif
+-	DEVLINK_PARAM_GENERIC(ENABLE_REMOTE_DEV_RESET, BIT(DEVLINK_PARAM_CMODE_RUNTIME),
+-			      mlx5_devlink_enable_remote_dev_reset_get,
+-			      mlx5_devlink_enable_remote_dev_reset_set, NULL),
+ 	DEVLINK_PARAM_GENERIC(IO_EQ_SIZE, BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
+ 			      NULL, NULL, mlx5_devlink_eq_depth_validate),
+ 	DEVLINK_PARAM_GENERIC(EVENT_EQ_SIZE, BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+index 1e46f9afa40e..1da4da564e6d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+@@ -1,6 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
+ /* Copyright (c) 2020, Mellanox Technologies inc.  All rights reserved. */
  
- 	value.vu32 = MLX5_NUM_ASYNC_EQE;
--	devlink_param_driverinit_value_set(devlink,
--					   DEVLINK_PARAM_GENERIC_ID_EVENT_EQ_SIZE,
--					   value);
-+	devl_param_driverinit_value_set(devlink,
-+					DEVLINK_PARAM_GENERIC_ID_EVENT_EQ_SIZE,
-+					value);
- }
- 
- static const struct devlink_param mlx5_devlink_eth_params[] = {
-@@ -638,15 +638,15 @@ static int mlx5_devlink_eth_params_register(struct devlink *devlink)
- 	if (!mlx5_eth_supported(dev))
- 		return 0;
- 
--	err = devlink_params_register(devlink, mlx5_devlink_eth_params,
--				      ARRAY_SIZE(mlx5_devlink_eth_params));
-+	err = devl_params_register(devlink, mlx5_devlink_eth_params,
-+				   ARRAY_SIZE(mlx5_devlink_eth_params));
- 	if (err)
- 		return err;
- 
- 	value.vbool = true;
--	devlink_param_driverinit_value_set(devlink,
--					   DEVLINK_PARAM_GENERIC_ID_ENABLE_ETH,
--					   value);
-+	devl_param_driverinit_value_set(devlink,
-+					DEVLINK_PARAM_GENERIC_ID_ENABLE_ETH,
-+					value);
- 	return 0;
- }
- 
-@@ -657,8 +657,8 @@ static void mlx5_devlink_eth_params_unregister(struct devlink *devlink)
- 	if (!mlx5_eth_supported(dev))
- 		return;
- 
--	devlink_params_unregister(devlink, mlx5_devlink_eth_params,
--				  ARRAY_SIZE(mlx5_devlink_eth_params));
-+	devl_params_unregister(devlink, mlx5_devlink_eth_params,
-+			       ARRAY_SIZE(mlx5_devlink_eth_params));
- }
- 
- static int mlx5_devlink_enable_rdma_validate(struct devlink *devlink, u32 id,
-@@ -686,15 +686,15 @@ static int mlx5_devlink_rdma_params_register(struct devlink *devlink)
- 	if (!IS_ENABLED(CONFIG_MLX5_INFINIBAND))
- 		return 0;
- 
--	err = devlink_params_register(devlink, mlx5_devlink_rdma_params,
--				      ARRAY_SIZE(mlx5_devlink_rdma_params));
-+	err = devl_params_register(devlink, mlx5_devlink_rdma_params,
-+				   ARRAY_SIZE(mlx5_devlink_rdma_params));
- 	if (err)
- 		return err;
- 
- 	value.vbool = true;
--	devlink_param_driverinit_value_set(devlink,
--					   DEVLINK_PARAM_GENERIC_ID_ENABLE_RDMA,
--					   value);
-+	devl_param_driverinit_value_set(devlink,
-+					DEVLINK_PARAM_GENERIC_ID_ENABLE_RDMA,
-+					value);
- 	return 0;
- }
- 
-@@ -703,8 +703,8 @@ static void mlx5_devlink_rdma_params_unregister(struct devlink *devlink)
- 	if (!IS_ENABLED(CONFIG_MLX5_INFINIBAND))
- 		return;
- 
--	devlink_params_unregister(devlink, mlx5_devlink_rdma_params,
--				  ARRAY_SIZE(mlx5_devlink_rdma_params));
-+	devl_params_unregister(devlink, mlx5_devlink_rdma_params,
-+			       ARRAY_SIZE(mlx5_devlink_rdma_params));
- }
- 
- static const struct devlink_param mlx5_devlink_vnet_params[] = {
-@@ -721,15 +721,15 @@ static int mlx5_devlink_vnet_params_register(struct devlink *devlink)
- 	if (!mlx5_vnet_supported(dev))
- 		return 0;
- 
--	err = devlink_params_register(devlink, mlx5_devlink_vnet_params,
--				      ARRAY_SIZE(mlx5_devlink_vnet_params));
-+	err = devl_params_register(devlink, mlx5_devlink_vnet_params,
-+				   ARRAY_SIZE(mlx5_devlink_vnet_params));
- 	if (err)
- 		return err;
- 
- 	value.vbool = true;
--	devlink_param_driverinit_value_set(devlink,
--					   DEVLINK_PARAM_GENERIC_ID_ENABLE_VNET,
--					   value);
-+	devl_param_driverinit_value_set(devlink,
-+					DEVLINK_PARAM_GENERIC_ID_ENABLE_VNET,
-+					value);
- 	return 0;
- }
- 
-@@ -740,8 +740,8 @@ static void mlx5_devlink_vnet_params_unregister(struct devlink *devlink)
- 	if (!mlx5_vnet_supported(dev))
- 		return;
- 
--	devlink_params_unregister(devlink, mlx5_devlink_vnet_params,
--				  ARRAY_SIZE(mlx5_devlink_vnet_params));
-+	devl_params_unregister(devlink, mlx5_devlink_vnet_params,
-+			       ARRAY_SIZE(mlx5_devlink_vnet_params));
- }
- 
- static int mlx5_devlink_auxdev_params_register(struct devlink *devlink)
-@@ -814,15 +814,15 @@ static int mlx5_devlink_max_uc_list_params_register(struct devlink *devlink)
- 	if (!MLX5_CAP_GEN_MAX(dev, log_max_current_uc_list_wr_supported))
- 		return 0;
- 
--	err = devlink_params_register(devlink, mlx5_devlink_max_uc_list_params,
--				      ARRAY_SIZE(mlx5_devlink_max_uc_list_params));
-+	err = devl_params_register(devlink, mlx5_devlink_max_uc_list_params,
-+				   ARRAY_SIZE(mlx5_devlink_max_uc_list_params));
- 	if (err)
- 		return err;
- 
- 	value.vu32 = 1 << MLX5_CAP_GEN(dev, log_max_current_uc_list);
--	devlink_param_driverinit_value_set(devlink,
--					   DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
--					   value);
-+	devl_param_driverinit_value_set(devlink,
-+					DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
-+					value);
- 	return 0;
- }
- 
-@@ -834,8 +834,8 @@ mlx5_devlink_max_uc_list_params_unregister(struct devlink *devlink)
- 	if (!MLX5_CAP_GEN_MAX(dev, log_max_current_uc_list_wr_supported))
- 		return;
- 
--	devlink_params_unregister(devlink, mlx5_devlink_max_uc_list_params,
--				  ARRAY_SIZE(mlx5_devlink_max_uc_list_params));
-+	devl_params_unregister(devlink, mlx5_devlink_max_uc_list_params,
-+			       ARRAY_SIZE(mlx5_devlink_max_uc_list_params));
- }
- 
- #define MLX5_TRAP_DROP(_id, _group_id)					\
-@@ -886,8 +886,8 @@ int mlx5_devlink_params_register(struct devlink *devlink)
- 	struct mlx5_core_dev *dev = devlink_priv(devlink);
- 	int err;
- 
--	err = devlink_params_register(devlink, mlx5_devlink_params,
--				      ARRAY_SIZE(mlx5_devlink_params));
-+	err = devl_params_register(devlink, mlx5_devlink_params,
-+				   ARRAY_SIZE(mlx5_devlink_params));
- 	if (err)
- 		return err;
- 
-@@ -909,8 +909,8 @@ int mlx5_devlink_params_register(struct devlink *devlink)
- max_uc_list_err:
- 	mlx5_devlink_auxdev_params_unregister(devlink);
- auxdev_reg_err:
--	devlink_params_unregister(devlink, mlx5_devlink_params,
--				  ARRAY_SIZE(mlx5_devlink_params));
-+	devl_params_unregister(devlink, mlx5_devlink_params,
-+			       ARRAY_SIZE(mlx5_devlink_params));
- 	return err;
- }
- 
-@@ -918,6 +918,6 @@ void mlx5_devlink_params_unregister(struct devlink *devlink)
- {
- 	mlx5_devlink_max_uc_list_params_unregister(devlink);
- 	mlx5_devlink_auxdev_params_unregister(devlink);
--	devlink_params_unregister(devlink, mlx5_devlink_params,
--				  ARRAY_SIZE(mlx5_devlink_params));
-+	devl_params_unregister(devlink, mlx5_devlink_params,
-+			       ARRAY_SIZE(mlx5_devlink_params));
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-index 8f7580fec193..9b44557e7271 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -629,9 +629,9 @@ static u16 async_eq_depth_devlink_param_get(struct mlx5_core_dev *dev)
- 	union devlink_param_value val;
- 	int err;
- 
--	err = devlink_param_driverinit_value_get(devlink,
--						 DEVLINK_PARAM_GENERIC_ID_EVENT_EQ_SIZE,
--						 &val);
-+	err = devl_param_driverinit_value_get(devlink,
-+					      DEVLINK_PARAM_GENERIC_ID_EVENT_EQ_SIZE,
-+					      &val);
- 	if (!err)
- 		return val.vu32;
- 	mlx5_core_dbg(dev, "Failed to get param. using default. err = %d\n", err);
-@@ -874,9 +874,9 @@ static u16 comp_eq_depth_devlink_param_get(struct mlx5_core_dev *dev)
- 	union devlink_param_value val;
- 	int err;
- 
--	err = devlink_param_driverinit_value_get(devlink,
--						 DEVLINK_PARAM_GENERIC_ID_IO_EQ_SIZE,
--						 &val);
-+	err = devl_param_driverinit_value_get(devlink,
-+					      DEVLINK_PARAM_GENERIC_ID_IO_EQ_SIZE,
-+					      &val);
- 	if (!err)
- 		return val.vu32;
- 	mlx5_core_dbg(dev, "Failed to get param. using default. err = %d\n", err);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-index d809c9192496..0be01d702049 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-@@ -1190,9 +1190,9 @@ static void mlx5_eswitch_get_devlink_param(struct mlx5_eswitch *esw)
- 	union devlink_param_value val;
- 	int err;
- 
--	err = devlink_param_driverinit_value_get(devlink,
--						 MLX5_DEVLINK_PARAM_ID_ESW_LARGE_GROUP_NUM,
--						 &val);
-+	err = devl_param_driverinit_value_get(devlink,
-+					      MLX5_DEVLINK_PARAM_ID_ESW_LARGE_GROUP_NUM,
-+					      &val);
- 	if (!err) {
- 		esw->params.large_group_num = val.vu32;
- 	} else {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 65cd6c393c0a..8823f20d2122 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -484,9 +484,9 @@ static int max_uc_list_get_devlink_param(struct mlx5_core_dev *dev)
- 	union devlink_param_value val;
- 	int err;
- 
--	err = devlink_param_driverinit_value_get(devlink,
--						 DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
--						 &val);
-+	err = devl_param_driverinit_value_get(devlink,
-+					      DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
-+					      &val);
- 	if (!err)
- 		return val.vu32;
- 	mlx5_core_dbg(dev, "Failed to get param. err = %d\n", err);
-@@ -499,9 +499,9 @@ bool mlx5_is_roce_on(struct mlx5_core_dev *dev)
- 	union devlink_param_value val;
- 	int err;
- 
--	err = devlink_param_driverinit_value_get(devlink,
--						 DEVLINK_PARAM_GENERIC_ID_ENABLE_ROCE,
--						 &val);
-+	err = devl_param_driverinit_value_get(devlink,
-+					      DEVLINK_PARAM_GENERIC_ID_ENABLE_ROCE,
-+					      &val);
- 
- 	if (!err)
- 		return val.vbool;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index f952a6518ba9..f8623e8388c8 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -1243,9 +1243,9 @@ static int mlxsw_core_fw_rev_validate(struct mlxsw_core *mlxsw_core,
- 		return 0;
- 
- 	/* Don't check if devlink 'fw_load_policy' param is 'flash' */
--	err = devlink_param_driverinit_value_get(priv_to_devlink(mlxsw_core),
--						 DEVLINK_PARAM_GENERIC_ID_FW_LOAD_POLICY,
--						 &value);
-+	err = devl_param_driverinit_value_get(priv_to_devlink(mlxsw_core),
-+					      DEVLINK_PARAM_GENERIC_ID_FW_LOAD_POLICY,
-+					      &value);
- 	if (err)
- 		return err;
- 	if (value.vu8 == DEVLINK_PARAM_FW_LOAD_POLICY_VALUE_FLASH)
-@@ -1316,20 +1316,22 @@ static int mlxsw_core_fw_params_register(struct mlxsw_core *mlxsw_core)
- 	union devlink_param_value value;
- 	int err;
- 
--	err = devlink_params_register(devlink, mlxsw_core_fw_devlink_params,
--				      ARRAY_SIZE(mlxsw_core_fw_devlink_params));
-+	err = devl_params_register(devlink, mlxsw_core_fw_devlink_params,
-+				   ARRAY_SIZE(mlxsw_core_fw_devlink_params));
- 	if (err)
- 		return err;
- 
- 	value.vu8 = DEVLINK_PARAM_FW_LOAD_POLICY_VALUE_DRIVER;
--	devlink_param_driverinit_value_set(devlink, DEVLINK_PARAM_GENERIC_ID_FW_LOAD_POLICY, value);
-+	devl_param_driverinit_value_set(devlink,
-+					DEVLINK_PARAM_GENERIC_ID_FW_LOAD_POLICY,
-+					value);
- 	return 0;
- }
- 
- static void mlxsw_core_fw_params_unregister(struct mlxsw_core *mlxsw_core)
- {
--	devlink_params_unregister(priv_to_devlink(mlxsw_core), mlxsw_core_fw_devlink_params,
--				  ARRAY_SIZE(mlxsw_core_fw_devlink_params));
-+	devl_params_unregister(priv_to_devlink(mlxsw_core), mlxsw_core_fw_devlink_params,
-+			       ARRAY_SIZE(mlxsw_core_fw_devlink_params));
- }
- 
- static void *__dl_port(struct devlink_port *devlink_port)
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 3d15d3387aa2..b0bdb9640ebf 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -3898,23 +3898,23 @@ static int mlxsw_sp2_params_register(struct mlxsw_core *mlxsw_core)
- 	union devlink_param_value value;
- 	int err;
- 
--	err = devlink_params_register(devlink, mlxsw_sp2_devlink_params,
--				      ARRAY_SIZE(mlxsw_sp2_devlink_params));
-+	err = devl_params_register(devlink, mlxsw_sp2_devlink_params,
-+				   ARRAY_SIZE(mlxsw_sp2_devlink_params));
- 	if (err)
- 		return err;
- 
- 	value.vu32 = 0;
--	devlink_param_driverinit_value_set(devlink,
--					   MLXSW_DEVLINK_PARAM_ID_ACL_REGION_REHASH_INTERVAL,
--					   value);
-+	devl_param_driverinit_value_set(devlink,
-+					MLXSW_DEVLINK_PARAM_ID_ACL_REGION_REHASH_INTERVAL,
-+					value);
- 	return 0;
- }
- 
- static void mlxsw_sp2_params_unregister(struct mlxsw_core *mlxsw_core)
- {
--	devlink_params_unregister(priv_to_devlink(mlxsw_core),
--				  mlxsw_sp2_devlink_params,
--				  ARRAY_SIZE(mlxsw_sp2_devlink_params));
-+	devl_params_unregister(priv_to_devlink(mlxsw_core),
-+			       mlxsw_sp2_devlink_params,
-+			       ARRAY_SIZE(mlxsw_sp2_devlink_params));
- }
- 
- static void mlxsw_sp_ptp_transmitted(struct mlxsw_core *mlxsw_core,
-diff --git a/drivers/net/ethernet/netronome/nfp/devlink_param.c b/drivers/net/ethernet/netronome/nfp/devlink_param.c
-index db297ee4d7ad..a655f9e69a7b 100644
---- a/drivers/net/ethernet/netronome/nfp/devlink_param.c
-+++ b/drivers/net/ethernet/netronome/nfp/devlink_param.c
-@@ -233,8 +233,8 @@ int nfp_devlink_params_register(struct nfp_pf *pf)
- 	if (err <= 0)
- 		return err;
- 
--	return devlink_params_register(devlink, nfp_devlink_params,
--				       ARRAY_SIZE(nfp_devlink_params));
-+	return devl_params_register(devlink, nfp_devlink_params,
-+				    ARRAY_SIZE(nfp_devlink_params));
- }
- 
- void nfp_devlink_params_unregister(struct nfp_pf *pf)
-@@ -245,6 +245,6 @@ void nfp_devlink_params_unregister(struct nfp_pf *pf)
- 	if (err <= 0)
- 		return;
- 
--	devlink_params_unregister(priv_to_devlink(pf), nfp_devlink_params,
--				  ARRAY_SIZE(nfp_devlink_params));
-+	devl_params_unregister(priv_to_devlink(pf), nfp_devlink_params,
-+			       ARRAY_SIZE(nfp_devlink_params));
- }
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_main.c b/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
-index abfe788d558f..cbe4972ba104 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
-@@ -754,11 +754,11 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
- 	if (err)
- 		goto err_devlink_unreg;
- 
-+	devl_lock(devlink);
- 	err = nfp_devlink_params_register(pf);
- 	if (err)
- 		goto err_shared_buf_unreg;
- 
--	devl_lock(devlink);
- 	pf->ddir = nfp_net_debugfs_device_add(pf->pdev);
- 
- 	/* Allocate the vnics and do basic init */
-@@ -791,9 +791,9 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
- 	nfp_net_pf_free_vnics(pf);
- err_clean_ddir:
- 	nfp_net_debugfs_dir_clean(&pf->ddir);
--	devl_unlock(devlink);
- 	nfp_devlink_params_unregister(pf);
- err_shared_buf_unreg:
-+	devl_unlock(devlink);
- 	nfp_shared_buf_unregister(pf);
- err_devlink_unreg:
- 	cancel_work_sync(&pf->port_refresh_work);
-@@ -821,9 +821,10 @@ void nfp_net_pci_remove(struct nfp_pf *pf)
- 	/* stop app first, to avoid double free of ctrl vNIC's ddir */
- 	nfp_net_debugfs_dir_clean(&pf->ddir);
- 
-+	nfp_devlink_params_unregister(pf);
++#include <devlink.h>
 +
- 	devl_unlock(devlink);
+ #include "fw_reset.h"
+ #include "diag/fw_tracer.h"
+ #include "lib/tout.h"
+@@ -28,21 +30,32 @@ struct mlx5_fw_reset {
+ 	int ret;
+ };
  
--	nfp_devlink_params_unregister(pf);
- 	nfp_shared_buf_unregister(pf);
- 
- 	nfp_net_pf_free_irqs(pf);
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 738784fda117..f88095b0f836 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -527,13 +527,13 @@ static void nsim_devlink_set_params_init_values(struct nsim_dev *nsim_dev,
- 	union devlink_param_value value;
- 
- 	value.vu32 = nsim_dev->max_macs;
--	devlink_param_driverinit_value_set(devlink,
--					   DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
--					   value);
-+	devl_param_driverinit_value_set(devlink,
-+					DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
-+					value);
- 	value.vbool = nsim_dev->test1;
--	devlink_param_driverinit_value_set(devlink,
--					   NSIM_DEVLINK_PARAM_ID_TEST1,
--					   value);
-+	devl_param_driverinit_value_set(devlink,
-+					NSIM_DEVLINK_PARAM_ID_TEST1,
-+					value);
- }
- 
- static void nsim_devlink_param_load_driverinit_values(struct devlink *devlink)
-@@ -542,14 +542,14 @@ static void nsim_devlink_param_load_driverinit_values(struct devlink *devlink)
- 	union devlink_param_value saved_value;
- 	int err;
- 
--	err = devlink_param_driverinit_value_get(devlink,
--						 DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
--						 &saved_value);
-+	err = devl_param_driverinit_value_get(devlink,
-+					      DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
-+					      &saved_value);
- 	if (!err)
- 		nsim_dev->max_macs = saved_value.vu32;
--	err = devlink_param_driverinit_value_get(devlink,
--						 NSIM_DEVLINK_PARAM_ID_TEST1,
--						 &saved_value);
-+	err = devl_param_driverinit_value_get(devlink,
-+					      NSIM_DEVLINK_PARAM_ID_TEST1,
-+					      &saved_value);
- 	if (!err)
- 		nsim_dev->test1 = saved_value.vbool;
- }
-@@ -1564,8 +1564,8 @@ int nsim_drv_probe(struct nsim_bus_dev *nsim_bus_dev)
- 	if (err)
- 		goto err_dl_unregister;
- 
--	err = devlink_params_register(devlink, nsim_devlink_params,
--				      ARRAY_SIZE(nsim_devlink_params));
-+	err = devl_params_register(devlink, nsim_devlink_params,
-+				   ARRAY_SIZE(nsim_devlink_params));
- 	if (err)
- 		goto err_resource_unregister;
- 	nsim_devlink_set_params_init_values(nsim_dev, devlink);
-@@ -1630,8 +1630,8 @@ int nsim_drv_probe(struct nsim_bus_dev *nsim_bus_dev)
- err_dummy_region_exit:
- 	nsim_dev_dummy_region_exit(nsim_dev);
- err_params_unregister:
--	devlink_params_unregister(devlink, nsim_devlink_params,
--				  ARRAY_SIZE(nsim_devlink_params));
-+	devl_params_unregister(devlink, nsim_devlink_params,
-+			       ARRAY_SIZE(nsim_devlink_params));
- err_resource_unregister:
- 	devl_resources_unregister(devlink);
- err_dl_unregister:
-@@ -1678,8 +1678,8 @@ void nsim_drv_remove(struct nsim_bus_dev *nsim_bus_dev)
- 
- 	nsim_bpf_dev_exit(nsim_dev);
- 	nsim_dev_debugfs_exit(nsim_dev);
--	devlink_params_unregister(devlink, nsim_devlink_params,
--				  ARRAY_SIZE(nsim_devlink_params));
-+	devl_params_unregister(devlink, nsim_devlink_params,
-+			       ARRAY_SIZE(nsim_devlink_params));
- 	devl_resources_unregister(devlink);
- 	devl_unregister(devlink);
- 	kfree(nsim_dev->vfconfigs);
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index e0d773dfa637..ab654cf552b8 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1767,17 +1767,23 @@ void devl_resource_occ_get_unregister(struct devlink *devlink,
- 
- void devlink_resource_occ_get_unregister(struct devlink *devlink,
- 					 u64 resource_id);
-+int devl_params_register(struct devlink *devlink,
-+			 const struct devlink_param *params,
-+			 size_t params_count);
- int devlink_params_register(struct devlink *devlink,
- 			    const struct devlink_param *params,
- 			    size_t params_count);
-+void devl_params_unregister(struct devlink *devlink,
-+			    const struct devlink_param *params,
-+			    size_t params_count);
- void devlink_params_unregister(struct devlink *devlink,
- 			       const struct devlink_param *params,
- 			       size_t params_count);
--int devlink_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
--				       union devlink_param_value *init_val);
--void devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
--					union devlink_param_value init_val);
--void devlink_param_value_changed(struct devlink *devlink, u32 param_id);
-+int devl_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
-+				    union devlink_param_value *init_val);
-+void devl_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
-+				     union devlink_param_value init_val);
-+void devl_param_value_changed(struct devlink *devlink, u32 param_id);
- struct devlink_region *devl_region_create(struct devlink *devlink,
- 					  const struct devlink_region_ops *ops,
- 					  u32 region_max_snapshots,
-diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
-index 512ed4ccbdc7..bd4c5d2dd612 100644
---- a/net/devlink/leftover.c
-+++ b/net/devlink/leftover.c
-@@ -10832,7 +10832,7 @@ static void devlink_param_unregister(struct devlink *devlink,
- }
- 
- /**
-- *	devlink_params_register - register configuration parameters
-+ *	devl_params_register - register configuration parameters
-  *
-  *	@devlink: devlink
-  *	@params: configuration parameters array
-@@ -10840,13 +10840,15 @@ static void devlink_param_unregister(struct devlink *devlink,
-  *
-  *	Register the configuration parameters supported by the driver.
-  */
--int devlink_params_register(struct devlink *devlink,
--			    const struct devlink_param *params,
--			    size_t params_count)
-+int devl_params_register(struct devlink *devlink,
-+			 const struct devlink_param *params,
-+			 size_t params_count)
+-void mlx5_fw_reset_enable_remote_dev_reset_set(struct mlx5_core_dev *dev, bool enable)
++static int mlx5_fw_reset_enable_remote_dev_reset_set(struct devlink *devlink, u32 id,
++						     struct devlink_param_gset_ctx *ctx)
  {
- 	const struct devlink_param *param = params;
- 	int i, err;
+-	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
++	struct mlx5_core_dev *dev = devlink_priv(devlink);
++	struct mlx5_fw_reset *fw_reset;
  
-+	lockdep_assert_held(&devlink->lock);
+-	if (enable)
++	fw_reset = dev->priv.fw_reset;
 +
- 	for (i = 0; i < params_count; i++, param++) {
- 		err = devlink_param_register(devlink, param);
- 		if (err)
-@@ -10862,29 +10864,54 @@ int devlink_params_register(struct devlink *devlink,
- 		devlink_param_unregister(devlink, param);
- 	return err;
++	if (ctx->val.vbool)
+ 		clear_bit(MLX5_FW_RESET_FLAGS_NACK_RESET_REQUEST, &fw_reset->reset_flags);
+ 	else
+ 		set_bit(MLX5_FW_RESET_FLAGS_NACK_RESET_REQUEST, &fw_reset->reset_flags);
++	return 0;
  }
-+EXPORT_SYMBOL_GPL(devl_params_register);
+ 
+-bool mlx5_fw_reset_enable_remote_dev_reset_get(struct mlx5_core_dev *dev)
++static int mlx5_fw_reset_enable_remote_dev_reset_get(struct devlink *devlink, u32 id,
++						     struct devlink_param_gset_ctx *ctx)
+ {
+-	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
++	struct mlx5_core_dev *dev = devlink_priv(devlink);
++	struct mlx5_fw_reset *fw_reset;
 +
-+int devlink_params_register(struct devlink *devlink,
-+			    const struct devlink_param *params,
-+			    size_t params_count)
-+{
++	fw_reset = dev->priv.fw_reset;
+ 
+-	return !test_bit(MLX5_FW_RESET_FLAGS_NACK_RESET_REQUEST, &fw_reset->reset_flags);
++	ctx->val.vbool = !test_bit(MLX5_FW_RESET_FLAGS_NACK_RESET_REQUEST,
++				   &fw_reset->reset_flags);
++	return 0;
+ }
+ 
+ static int mlx5_reg_mfrl_set(struct mlx5_core_dev *dev, u8 reset_level,
+@@ -517,9 +530,16 @@ void mlx5_drain_fw_reset(struct mlx5_core_dev *dev)
+ 	cancel_work_sync(&fw_reset->reset_abort_work);
+ }
+ 
++static const struct devlink_param mlx5_fw_reset_devlink_params[] = {
++	DEVLINK_PARAM_GENERIC(ENABLE_REMOTE_DEV_RESET, BIT(DEVLINK_PARAM_CMODE_RUNTIME),
++			      mlx5_fw_reset_enable_remote_dev_reset_get,
++			      mlx5_fw_reset_enable_remote_dev_reset_set, NULL),
++};
++
+ int mlx5_fw_reset_init(struct mlx5_core_dev *dev)
+ {
+ 	struct mlx5_fw_reset *fw_reset = kzalloc(sizeof(*fw_reset), GFP_KERNEL);
 +	int err;
+ 
+ 	if (!fw_reset)
+ 		return -ENOMEM;
+@@ -532,6 +552,15 @@ int mlx5_fw_reset_init(struct mlx5_core_dev *dev)
+ 	fw_reset->dev = dev;
+ 	dev->priv.fw_reset = fw_reset;
+ 
++	err = devl_params_register(priv_to_devlink(dev),
++				   mlx5_fw_reset_devlink_params,
++				   ARRAY_SIZE(mlx5_fw_reset_devlink_params));
++	if (err) {
++		destroy_workqueue(fw_reset->wq);
++		kfree(fw_reset);
++		return err;
++	}
 +
-+	devl_lock(devlink);
-+	err = devl_params_register(devlink, params, params_count);
-+	devl_unlock(devlink);
-+	return err;
-+}
- EXPORT_SYMBOL_GPL(devlink_params_register);
- 
- /**
-- *	devlink_params_unregister - unregister configuration parameters
-+ *	devl_params_unregister - unregister configuration parameters
-  *	@devlink: devlink
-  *	@params: configuration parameters to unregister
-  *	@params_count: number of parameters provided
-  */
--void devlink_params_unregister(struct devlink *devlink,
--			       const struct devlink_param *params,
--			       size_t params_count)
-+void devl_params_unregister(struct devlink *devlink,
-+			    const struct devlink_param *params,
-+			    size_t params_count)
+ 	INIT_WORK(&fw_reset->fw_live_patch_work, mlx5_fw_live_patch_event);
+ 	INIT_WORK(&fw_reset->reset_request_work, mlx5_sync_reset_request_event);
+ 	INIT_WORK(&fw_reset->reset_reload_work, mlx5_sync_reset_reload_work);
+@@ -546,6 +575,9 @@ void mlx5_fw_reset_cleanup(struct mlx5_core_dev *dev)
  {
- 	const struct devlink_param *param = params;
- 	int i;
+ 	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
  
-+	lockdep_assert_held(&devlink->lock);
-+
- 	for (i = 0; i < params_count; i++, param++)
- 		devlink_param_unregister(devlink, param);
++	devl_params_unregister(priv_to_devlink(dev),
++			       mlx5_fw_reset_devlink_params,
++			       ARRAY_SIZE(mlx5_fw_reset_devlink_params));
+ 	destroy_workqueue(fw_reset->wq);
+ 	kfree(dev->priv.fw_reset);
  }
-+EXPORT_SYMBOL_GPL(devl_params_unregister);
-+
-+void devlink_params_unregister(struct devlink *devlink,
-+			       const struct devlink_param *params,
-+			       size_t params_count)
-+{
-+	devl_lock(devlink);
-+	devl_params_unregister(devlink, params, params_count);
-+	devl_unlock(devlink);
-+}
- EXPORT_SYMBOL_GPL(devlink_params_unregister);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
+index dc141c7e641a..c57465595f7c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
+@@ -6,8 +6,6 @@
  
- /**
-- *	devlink_param_driverinit_value_get - get configuration parameter
-- *					     value for driver initializing
-+ *	devl_param_driverinit_value_get - get configuration parameter
-+ *					  value for driver initializing
-  *
-  *	@devlink: devlink
-  *	@param_id: parameter ID
-@@ -10893,11 +10920,13 @@ EXPORT_SYMBOL_GPL(devlink_params_unregister);
-  *	This function should be used by the driver to get driverinit
-  *	configuration for initialization after reload command.
-  */
--int devlink_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
--				       union devlink_param_value *init_val)
-+int devl_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
-+				    union devlink_param_value *init_val)
- {
- 	struct devlink_param_item *param_item;
+ #include "mlx5_core.h"
  
-+	lockdep_assert_held(&devlink->lock);
-+
- 	if (WARN_ON(!devlink_reload_supported(devlink->ops)))
- 		return -EOPNOTSUPP;
- 
-@@ -10919,12 +10948,12 @@ int devlink_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
- 
- 	return 0;
- }
--EXPORT_SYMBOL_GPL(devlink_param_driverinit_value_get);
-+EXPORT_SYMBOL_GPL(devl_param_driverinit_value_get);
- 
- /**
-- *	devlink_param_driverinit_value_set - set value of configuration
-- *					     parameter for driverinit
-- *					     configuration mode
-+ *	devl_param_driverinit_value_set - set value of configuration
-+ *					  parameter for driverinit
-+ *					  configuration mode
-  *
-  *	@devlink: devlink
-  *	@param_id: parameter ID
-@@ -10933,8 +10962,8 @@ EXPORT_SYMBOL_GPL(devlink_param_driverinit_value_get);
-  *	This function should be used by the driver to set driverinit
-  *	configuration mode default value.
-  */
--void devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
--					union devlink_param_value init_val)
-+void devl_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
-+				     union devlink_param_value init_val)
- {
- 	struct devlink_param_item *param_item;
- 
-@@ -10954,12 +10983,12 @@ void devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
- 
- 	devlink_param_notify(devlink, 0, param_item, DEVLINK_CMD_PARAM_NEW);
- }
--EXPORT_SYMBOL_GPL(devlink_param_driverinit_value_set);
-+EXPORT_SYMBOL_GPL(devl_param_driverinit_value_set);
- 
- /**
-- *	devlink_param_value_changed - notify devlink on a parameter's value
-- *				      change. Should be called by the driver
-- *				      right after the change.
-+ *	devl_param_value_changed - notify devlink on a parameter's value
-+ *				   change. Should be called by the driver
-+ *				   right after the change.
-  *
-  *	@devlink: devlink
-  *	@param_id: parameter ID
-@@ -10968,7 +10997,7 @@ EXPORT_SYMBOL_GPL(devlink_param_driverinit_value_set);
-  *	change, excluding driverinit configuration mode.
-  *	For driverinit configuration mode driver should use the function
-  */
--void devlink_param_value_changed(struct devlink *devlink, u32 param_id)
-+void devl_param_value_changed(struct devlink *devlink, u32 param_id)
- {
- 	struct devlink_param_item *param_item;
- 
-@@ -10977,7 +11006,7 @@ void devlink_param_value_changed(struct devlink *devlink, u32 param_id)
- 
- 	devlink_param_notify(devlink, 0, param_item, DEVLINK_CMD_PARAM_NEW);
- }
--EXPORT_SYMBOL_GPL(devlink_param_value_changed);
-+EXPORT_SYMBOL_GPL(devl_param_value_changed);
- 
- /**
-  * devl_region_create - create a new address region
+-void mlx5_fw_reset_enable_remote_dev_reset_set(struct mlx5_core_dev *dev, bool enable);
+-bool mlx5_fw_reset_enable_remote_dev_reset_get(struct mlx5_core_dev *dev);
+ int mlx5_fw_reset_query(struct mlx5_core_dev *dev, u8 *reset_level, u8 *reset_type);
+ int mlx5_fw_reset_set_reset_sync(struct mlx5_core_dev *dev, u8 reset_type_sel,
+ 				 struct netlink_ext_ack *extack);
 -- 
 2.39.0
 
