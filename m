@@ -2,126 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3156F67D7D4
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 22:36:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 465CB67D7D1
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 22:36:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233019AbjAZVgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 16:36:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56324 "EHLO
+        id S233009AbjAZVgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 16:36:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229874AbjAZVgR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 16:36:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC6A13E
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 13:35:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1674768931;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wPp5FgezLTRv8/n6j2CbiI3M1hJrXQSjOFT+aTSHCWQ=;
-        b=BR8Fn1YSWXzDZk+vs4FQ8c9uy0W4HZI9z0yCV72u5mts6tnPHf9L7ZSYXhzVjHpg5InnyD
-        Qc2UliviMwoNH8SKAUlMFPFN8tABKnOWD788KjQFiyzgW4tVYZyhPklIji7P4VXkl5iKZr
-        WP0Kv/GYVArsPRVQXa8o1eousk1ucL4=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-76-S6cHk9qGO5yqYUYNIi5Yjw-1; Thu, 26 Jan 2023 16:35:30 -0500
-X-MC-Unique: S6cHk9qGO5yqYUYNIi5Yjw-1
-Received: by mail-ej1-f70.google.com with SMTP id nb4-20020a1709071c8400b0084d4712780bso2046721ejc.18
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 13:35:30 -0800 (PST)
+        with ESMTP id S230363AbjAZVgJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 16:36:09 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25FA65587
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 13:36:05 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id bk15so8720596ejb.9
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 13:36:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=wIV+Q732OCBJD0p4AmY7v+jtOPaCIpj1Xm7fn1GMOyc=;
+        b=I44+h8L6l6h2SvZ5Z6XtzccMc4n2OExyAOP8PgwyV1C7x4gdmUjeYgwd6q+bEwQt4L
+         oeDXF3HlJR3/orc4OGrU4iLUUqYj+aPzXbCtu8S3emI1Z+X89mvvb9D1DbGz+QIUOMXX
+         Xd8MU8IXoZxxhyHINYbNo77Hju5bh3VWmuHMqio686kqgVtdiMCITSkOuvt6EM1ae++Z
+         3BAgWBdThbNcQhm+X4WtjPcQZ7QSBRPgbbBreUNY8sDR6kTzLWmg1TBFV6jn47BYtR9K
+         RwkxGGTCzLYbe75JlK21W0SG3T3z5cC8H12kgKKAV1HXIONn50Znhxc1e0pvOmWPmeV3
+         d/fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=wPp5FgezLTRv8/n6j2CbiI3M1hJrXQSjOFT+aTSHCWQ=;
-        b=VoiVugm8luEPzbcEHQn1vLtc4rYvEybIcevbUWz5tXL5lfU8Vr6xY8v06WRmJF4fuW
-         KNpbHq+3XHqqnoN5txLXlcs9fm9T7fI5dLQ2X9yDHi1KvZVVrMgyUOEyiMpYjzN/ADvb
-         GeoZ9sMQojMaN29krHP3zvapyoy5DpWqP6GUIxkBd9Gk7lUeVFoUleX230ehz8lHDHEZ
-         zqQYQ3UyEVYArfNghZ24+fbvT+/BraArte1cAoHwPgnAxhusXg5v9bM+xEYdvFVJ8uoF
-         vJ6Wr8gH/UQSTXxjJhtdcSUfPnkhP7w9zhBmyO/QzInXLb5Ev/JMi70ChNp51oyY0Q/J
-         i0UQ==
-X-Gm-Message-State: AFqh2kolHGN9LwP+zUV9G+xOK9U+JCm0Ei+ixJYv38gJJ2aYQd2AzulJ
-        nLw3pu/6VK7+zbt3gthC5NfNjGeklnBqqB7HwrAwUlOancr1CzFf3XEX7VdMX1lZyZPbMqhhV9p
-        8KhzTTRHSpclX/zkK
-X-Received: by 2002:a17:906:f299:b0:7c0:fd1a:79ee with SMTP id gu25-20020a170906f29900b007c0fd1a79eemr39636414ejb.63.1674768929148;
-        Thu, 26 Jan 2023 13:35:29 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXse1aQgjk7OzwHyV0hK4unOcklvyKMqYnBLn5Dt4eFYSU4VegC3jZmirDgxa/gkgJwaBBS/EA==
-X-Received: by 2002:a17:906:f299:b0:7c0:fd1a:79ee with SMTP id gu25-20020a170906f29900b007c0fd1a79eemr39636386ejb.63.1674768928756;
-        Thu, 26 Jan 2023 13:35:28 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id cm20-20020a170907939400b0086f40238403sm1125890ejc.223.2023.01.26.13.35.28
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wIV+Q732OCBJD0p4AmY7v+jtOPaCIpj1Xm7fn1GMOyc=;
+        b=3WzKcWVHAmmqV0CX/l4Kpt+zOIprVKUTjq+Wk592/+eWUCPuAIsQOIKoDuAIdYUUzm
+         HRWMLQi2et2XfXvE/y+X370KZqp1WFmmxsMoRs+yt7UdA2WCg0v5Lv9N/NKzYcKgqD28
+         4amiNoVgQybXAk0GgR860eU+ToyhZBapJKp+rIYLerLH0zb8XWvfMaDRPa9bPOiiny0k
+         CpvSdp0pIoxLtaq8nEmdH1YVmlw+maTNE4wOVzHPV943S1L1n3oWL0i1UH6vtX6mRxXh
+         zvz09D4u09SGUIWeGiTZchybV1pU0olwAeQSfaD4Q0YEfd1Rv375WNYxQ3BHxNg/QYhD
+         lH0Q==
+X-Gm-Message-State: AFqh2kpp6MqG/lcyGRQp49BtXN9oHUoDpTrzt2JhCdS4YdhPR2XtA+GR
+        nZOI/clcCPV1G9qjfwpjnLyPhA==
+X-Google-Smtp-Source: AMrXdXsnvPaWHDjgsBn+HZ/GVOyl2b2GyhHJeg94Ac0afrLPKAuV5G9MnwKxUHumh/XBqb7xrBs44g==
+X-Received: by 2002:a17:906:670b:b0:7c1:8f53:83a0 with SMTP id a11-20020a170906670b00b007c18f5383a0mr35445316ejp.13.1674768963598;
+        Thu, 26 Jan 2023 13:36:03 -0800 (PST)
+Received: from Lat-5310.. ([87.116.162.186])
+        by smtp.gmail.com with ESMTPSA id gy4-20020a170906f24400b0083ffb81f01esm1148486ejb.136.2023.01.26.13.36.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Jan 2023 13:35:28 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7327B9430CD; Thu, 26 Jan 2023 22:35:27 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     nbd@nbd.name, davem@davemloft.net, edumazet@google.com,
-        hawk@kernel.org, ilias.apalodimas@linaro.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linyunsheng@huawei.com,
-        lorenzo@kernel.org, netdev@vger.kernel.org, pabeni@redhat.com
-Subject: Re: [net PATCH] skb: Do mix page pool and page referenced frags in GRO
-In-Reply-To: <CAKgT0UfsLFuCK0vQF70s=8XC8qwrzxag_NR2dCDvxqx84E0K=g@mail.gmail.com>
-References: <04e27096-9ace-07eb-aa51-1663714a586d@nbd.name>
- <167475990764.1934330.11960904198087757911.stgit@localhost.localdomain>
- <87tu0dkt1h.fsf@toke.dk>
- <CAKgT0UfsLFuCK0vQF70s=8XC8qwrzxag_NR2dCDvxqx84E0K=g@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 26 Jan 2023 22:35:27 +0100
-Message-ID: <87o7qlkmhs.fsf@toke.dk>
+        Thu, 26 Jan 2023 13:36:03 -0800 (PST)
+From:   Andrey Konovalov <andrey.konovalov@linaro.org>
+To:     vkoul@kernel.org, bhupesh.sharma@linaro.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        andrew@lunn.ch, robh@kernel.org, alexandre.torgue@foss.st.com,
+        peppe.cavallaro@st.com, joabreu@synopsys.com,
+        mcoquelin.stm32@gmail.com
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Andrey Konovalov <andrey.konovalov@linaro.org>
+Subject: [PATCH 0/1] net: stmmac: do not stop RX_CLK in Rx LPI state for qcs404 SoC
+Date:   Fri, 27 Jan 2023 00:35:38 +0300
+Message-Id: <20230126213539.166298-1-andrey.konovalov@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexander Duyck <alexander.duyck@gmail.com> writes:
+This is a different, for one SoC only solution to the issue described below
+vs a generic one submitted earlier [1].
 
-> On Thu, Jan 26, 2023 at 11:14 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
-edhat.com> wrote:
->>
->> Alexander Duyck <alexander.duyck@gmail.com> writes:
->>
->> > From: Alexander Duyck <alexanderduyck@fb.com>
->> >
->> > GSO should not merge page pool recycled frames with standard reference
->> > counted frames. Traditionally this didn't occur, at least not often.
->> > However as we start looking at adding support for wireless adapters th=
-ere
->> > becomes the potential to mix the two due to A-MSDU repartitioning fram=
-es in
->> > the receive path. There are possibly other places where this may have
->> > occurred however I suspect they must be few and far between as we have=
- not
->> > seen this issue until now.
->> >
->> > Fixes: 53e0961da1c7 ("page_pool: add frag page recycling support in pa=
-ge pool")
->> > Reported-by: Felix Fietkau <nbd@nbd.name>
->> > Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
->>
->> I know I'm pattern matching a bit crudely here, but we recently had
->> another report where doing a get_page() on skb->head didn't seem to be
->> enough; any chance they might be related?
->>
->> See: https://lore.kernel.org/r/Y9BfknDG0LXmruDu@JNXK7M3
->
-> Looking at it I wouldn't think so. Doing get_page() on these frames is
-> fine. In the case you reference it looks like get_page() is being
-> called on a slab allocated skb head. So somehow a slab allocated head
-> is leaking through.
+On my qcs404 based board the ethernet MAC has issues with handling
+Rx LPI exit / Rx LPI entry interrupts.
 
-Alright, thanks for taking a look! :)
+When in LPI mode the "refresh transmission" is received, the driver may
+see both "Rx LPI exit", and "Rx LPI entry" bits set in the single read from
+GMAC4_LPI_CTRL_STATUS register (vs "Rx LPI exit" first, and "Rx LPI entry"
+then). In this case an interrupt storm happens: the LPI interrupt is
+triggered every few microseconds - with all the status bits in the
+GMAC4_LPI_CTRL_STATUS register being read as zeros. This interrupt storm
+continues until a normal non-zero status is read from GMAC4_LPI_CTRL_STATUS
+register (single "Rx LPI exit", or "Tx LPI exit").
 
--Toke
+The reason seems to be in the hardware not being able to properly clear
+the "Rx LPI exit" interrupt if GMAC4_LPI_CTRL_STATUS register is read
+after Rx LPI mode is entered again.
+
+The current driver unconditionally sets the "Clock-stop enable" bit
+(bit 10 in PHY's PCS Control 1 register) when calling phy_init_eee().
+Not setting this bit - so that the PHY continues to provide RX_CLK
+to the ethernet controller during Rx LPI state - prevents the LPI
+interrupt storm.
+
+Until this bug is confirmed by the SoC and the ethernet IP vendors,
+and until we get the information of what IP versions are affected,
+the solution could be to keep RX_CLK running in Rx LPI state for qcs404
+SoC - for the moment, the only SoC which is known to have this issue.
+
+[1] https://www.spinics.net/lists/netdev/msg875806.html
+
+Andrey Konovalov (1):
+  net: stmmac: do not stop RX_CLK in Rx LPI state for qcs404 SoC
+
+ drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c | 2 ++
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c       | 3 ++-
+ include/linux/stmmac.h                                  | 1 +
+ 3 files changed, 5 insertions(+), 1 deletion(-)
+
+-- 
+2.34.1
 
