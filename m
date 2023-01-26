@@ -2,115 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D1D567D510
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 20:07:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD95867D53C
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 20:17:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232090AbjAZTHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 14:07:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50118 "EHLO
+        id S231700AbjAZTR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 14:17:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230221AbjAZTHI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 14:07:08 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9E34526F;
-        Thu, 26 Jan 2023 11:07:01 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id k13so2776421plg.0;
-        Thu, 26 Jan 2023 11:07:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:message-id:date:cc:to:from:subject:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=uCv4gRxFA6EVdh6HH0URpLxFamW9QobkbMQUcrragFA=;
-        b=d7zk+ziM5pl3fshYkdFnHqJelj/bCdpeh61z0rKS3HyiBOxqqSaSrpmOOjue+oFzkA
-         tiXUtVosjqMu4+mh3INRd10ByCUaavhnwKIzlEMvnLp5j/HmIC4r/1ag9aLrea7cEhn1
-         lqaWCPflpEsHOHnuDKlsFlFhSwNtQymZ9qNJxw8L3ydnUSV4xQUJCK9or+zPVB7z66fD
-         sPApZtNqFXZacMd1MHJny2jBYh1w843FZSMeHa6M5UqTQsL80av6VqgHXS1ev5rU5ATh
-         Oa9uxUgTplrbNV09S3P/iiWdBWBVqn0g+XlLnFQ5dQqzGQm7iw5rRCou6VnaM6it6Hg2
-         t0yQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:message-id:date:cc:to:from:subject:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=uCv4gRxFA6EVdh6HH0URpLxFamW9QobkbMQUcrragFA=;
-        b=Bx/owZFQZ4eAdH2LA06yalxsjUJ6uZ+WWMAFsIPDV4XfLAzfXQEU+U/OqJYbm5f9ay
-         uIJiCFoYqSGzUtNzLRSGrQi3evvAKXYiYriiKFz2pw9Sii/j3XstHJqouRjMy50sHVDU
-         vu2NsCCCGV5zuuXIYhCi8NwjEZGvqDBcTOUHedjkLT9i+72o0ejPfvaDt3vmfrLh+ypk
-         zFPniaPhLwyWYiUDUr7fEhShinIfePeK8zeojC7yP65aeIM7kb58mWNmd9hbBcSdfYBq
-         0fxaAu7LT/fEyqgd4n7zCwQEotT02yYMhbIX5UC4FMMxgfsU5dtMxFZHBLOWmWwr2y6R
-         HtZQ==
-X-Gm-Message-State: AO0yUKVmzeKSPWxToYF75IuxT+pGIrpvXbJn//i3hyJnG7OVPa8WHTlv
-        8UsKpCmHWkwJM4qQDmTVBW8=
-X-Google-Smtp-Source: AK7set/OLpLWySmoIoTSIuSxTXA7Mlwa8/JW/hSOI/oQhinkbOnkQxACuK0hnP5jEQ99H5J9ABEIaA==
-X-Received: by 2002:a17:90b:4d81:b0:22c:1e60:dc04 with SMTP id oj1-20020a17090b4d8100b0022c1e60dc04mr3291871pjb.16.1674760020927;
-        Thu, 26 Jan 2023 11:07:00 -0800 (PST)
-Received: from localhost.localdomain ([98.97.119.47])
-        by smtp.gmail.com with ESMTPSA id e11-20020a17090a728b00b00229094aabd0sm3632313pjg.35.2023.01.26.11.06.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Jan 2023 11:07:00 -0800 (PST)
-Subject: [net PATCH] skb: Do mix page pool and page referenced frags in GRO
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-To:     nbd@nbd.name
-Cc:     alexander.duyck@gmail.com, davem@davemloft.net,
-        edumazet@google.com, hawk@kernel.org, ilias.apalodimas@linaro.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linyunsheng@huawei.com, lorenzo@kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com
-Date:   Thu, 26 Jan 2023 11:06:59 -0800
-Message-ID: <167475990764.1934330.11960904198087757911.stgit@localhost.localdomain>
-In-Reply-To: <04e27096-9ace-07eb-aa51-1663714a586d@nbd.name>
-References: <04e27096-9ace-07eb-aa51-1663714a586d@nbd.name>
-User-Agent: StGit/1.5
+        with ESMTP id S229529AbjAZTR4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 14:17:56 -0500
+X-Greylist: delayed 506 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 26 Jan 2023 11:17:53 PST
+Received: from mx23lb.world4you.com (mx23lb.world4you.com [81.19.149.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1879B758;
+        Thu, 26 Jan 2023 11:17:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:References:Cc:To:Subject:From:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=iI5nfSnVTsfzi2TlCeq92ugJV3Nwoh2wrjkWIusgImY=; b=G0ue/G7tl16TgJINez8QJijHtJ
+        uKd+cqh62/qlUUSdzeAmHvdxGaeG0iUG8xoHEk9E2speQJ1GP/06dlwCf6vz2pEPhiF9hNYldKpOl
+        vL0OhK295xa99LumXda6C2PudttuqpphE4gBWgutC0oI7M7whHtnblynlaGErkcOMDtU=;
+Received: from [88.117.49.184] (helo=[10.0.0.160])
+        by mx23lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gerhard@engleder-embedded.com>)
+        id 1pL7cf-0006HX-88; Thu, 26 Jan 2023 20:09:21 +0100
+Message-ID: <28eedfd5-4444-112b-bfbc-1c7682385c88@engleder-embedded.com>
+Date:   Thu, 26 Jan 2023 20:09:20 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+Subject: Re: [PATCH v2 bpf-next 2/8] drivers: net: turn on XDP features
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        hawk@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        toke@redhat.com, memxor@gmail.com, alardam@gmail.com,
+        saeedm@nvidia.com, anthony.l.nguyen@intel.com, gospo@broadcom.com,
+        vladimir.oltean@nxp.com, nbd@nbd.name, john@phrozen.org,
+        leon@kernel.org, simon.horman@corigine.com, aelior@marvell.com,
+        christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
+        mst@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
+        maciej.fijalkowski@intel.com, intel-wired-lan@lists.osuosl.org,
+        lorenzo.bianconi@redhat.com, martin.lau@linux.dev
+References: <cover.1674606193.git.lorenzo@kernel.org>
+ <c1171111f8af76da11331277b1e4a930c10f3c30.1674606197.git.lorenzo@kernel.org>
+Content-Language: en-US
+In-Reply-To: <c1171111f8af76da11331277b1e4a930c10f3c30.1674606197.git.lorenzo@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-AV-Do-Run: Yes
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Duyck <alexanderduyck@fb.com>
+On 25.01.23 01:33, Lorenzo Bianconi wrote:
+> From: Marek Majtyka <alardam@gmail.com>
+> 
+> A summary of the flags being set for various drivers is given below.
+> Note that XDP_F_REDIRECT_TARGET and XDP_F_FRAG_TARGET are features
+> that can be turned off and on at runtime. This means that these flags
+> may be set and unset under RTNL lock protection by the driver. Hence,
+> READ_ONCE must be used by code loading the flag value.
+> 
+> Also, these flags are not used for synchronization against the availability
+> of XDP resources on a device. It is merely a hint, and hence the read
+> may race with the actual teardown of XDP resources on the device. This
+> may change in the future, e.g. operations taking a reference on the XDP
+> resources of the driver, and in turn inhibiting turning off this flag.
+> However, for now, it can only be used as a hint to check whether device
+> supports becoming a redirection target.
+> 
+> Turn 'hw-offload' feature flag on for:
+>   - netronome (nfp)
+>   - netdevsim.
+> 
+> Turn 'native' and 'zerocopy' features flags on for:
+>   - intel (i40e, ice, ixgbe, igc)
+>   - mellanox (mlx5).
+>   - stmmac
+> 
+> Turn 'native' features flags on for:
+>   - amazon (ena)
+>   - broadcom (bnxt)
+>   - freescale (dpaa, dpaa2, enetc)
+>   - funeth
+>   - intel (igb)
+>   - marvell (mvneta, mvpp2, octeontx2)
+>   - mellanox (mlx4)
+>   - qlogic (qede)
+>   - sfc
+>   - socionext (netsec)
+>   - ti (cpsw)
+>   - tap
+>   - veth
+>   - xen
+>   - virtio_net.
+> 
+> Turn 'basic' (tx, pass, aborted and drop) features flags on for:
+>   - netronome (nfp)
+>   - cavium (thunder)
+>   - hyperv.
+> 
+> Turn 'redirect_target' feature flag on for:
+>   - amanzon (ena)
+>   - broadcom (bnxt)
+>   - freescale (dpaa, dpaa2)
+>   - intel (i40e, ice, igb, ixgbe)
+>   - ti (cpsw)
+>   - marvell (mvneta, mvpp2)
+>   - sfc
+>   - socionext (netsec)
+>   - qlogic (qede)
+>   - mellanox (mlx5)
+>   - tap
+>   - veth
+>   - virtio_net
+>   - xen
 
-GSO should not merge page pool recycled frames with standard reference
-counted frames. Traditionally this didn't occur, at least not often.
-However as we start looking at adding support for wireless adapters there
-becomes the potential to mix the two due to A-MSDU repartitioning frames in
-the receive path. There are possibly other places where this may have
-occurred however I suspect they must be few and far between as we have not
-seen this issue until now.
+XDP support for tsnep was merged to net-next last week. So this driver
+cannot get XDP feature support in bpf-next as it is not there currently.
+Should I add these flags with a fix afterwards? Or would net-next be the
+better target for this patch series?
 
-Fixes: 53e0961da1c7 ("page_pool: add frag page recycling support in page pool")
-Reported-by: Felix Fietkau <nbd@nbd.name>
-Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
----
- net/core/gro.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/net/core/gro.c b/net/core/gro.c
-index 506f83d715f8..4bac7ea6e025 100644
---- a/net/core/gro.c
-+++ b/net/core/gro.c
-@@ -162,6 +162,15 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
- 	struct sk_buff *lp;
- 	int segs;
- 
-+	/* Do not splice page pool based packets w/ non-page pool
-+	 * packets. This can result in reference count issues as page
-+	 * pool pages will not decrement the reference count and will
-+	 * instead be immediately returned to the pool or have frag
-+	 * count decremented.
-+	 */
-+	if (p->pp_recycle != skb->pp_recycle)
-+		return -ETOOMANYREFS;
-+
- 	/* pairs with WRITE_ONCE() in netif_set_gro_max_size() */
- 	gro_max_size = READ_ONCE(p->dev->gro_max_size);
- 
-
-
+Gerhard
