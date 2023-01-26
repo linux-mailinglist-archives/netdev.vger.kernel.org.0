@@ -2,128 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1807567D660
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 21:26:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED65767D665
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 21:27:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232252AbjAZU0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 15:26:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39640 "EHLO
+        id S229732AbjAZU14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 15:27:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231655AbjAZUZ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 15:25:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC4C7377C
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 12:25:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD5E9B81E0B
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 20:25:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C2ADC433EF;
-        Thu, 26 Jan 2023 20:25:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674764712;
-        bh=DYWL9vRnyYNAFlP/SzWCeksMdIP+NTn2/u5hVh9iuSc=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=QYHk9teg0kf+CJpNs5xw7TalppHCbp4WmeE/6kjkaqWahACQhITbRyAM8rjz3CHqo
-         SJAIZwuA69gRKm5EzyYTWpBblJsmXIVo2QnV6lbt3jUtCGW9kRWwfHyRDA9ZqYiT2J
-         aYrnY1tGH6Sf134csfY4DBFIkzkY05TYJ6/Fm4m30OXsMy71u9fWv45AKqgg2qpA1E
-         F84NZio63LnuwAvfaYV1BxvSaRSMwcywcs8JmfmDQ0RudCmIGccuKXStiReBYyNkGU
-         +JtuWCZgbOYofbtMupDPuqsPHPXW/8JBR4Jr+L4O4Ckp1JXwUPjrffy/fIqeqa1RL6
-         2J3TZahuW6Byg==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id E07D95C1C6D; Thu, 26 Jan 2023 12:25:11 -0800 (PST)
-Date:   Thu, 26 Jan 2023 12:25:11 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Kirill Tkhai <tkhai@ya.ru>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        kuniyu@amazon.com, gorcunov@gmail.com
-Subject: Re: [PATCH net-next] unix: Guarantee sk_state relevance in case of
- it was assigned by a task on other cpu
-Message-ID: <20230126202511.GL2948950@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <72ae40ef-2d68-2e89-46d3-fc8f820db42a@ya.ru>
- <20230124173557.2b13e194@kernel.org>
- <6953ec3b-6c48-954e-f3db-63450a5ab886@ya.ru>
- <20230125221053.301c0341@kernel.org>
+        with ESMTP id S229471AbjAZU14 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 15:27:56 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F70F74A
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 12:27:54 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id vw16so8214289ejc.12
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 12:27:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=p6e1idkozAdyFbwzDMBHWW8sAO0btgqXBL7hMwd+oBo=;
+        b=rvmm5Mwlqg15HnFqmljC0zk3wG+Tmm/MAtPRw7Z7iIY2XJM4sSAfDUGWgJ2Iz5WMUL
+         aT28kc0M17ns4kNIhpn+o/UBxWC+4/Y2dE1AgaCXCnTHgjXlUnVo2s9sP1GyLHcPc+GT
+         2oZCZauWaTCoKLnZrbtb2FzA6J5rANzAab0EEFBEa0mS9tqBLzPhZERUfgi8ucIVpGMd
+         zjFIT7SH6+BC8FPZIu+6yjc/QTO6sG//ik+hwfWrP3tLXNwoFS7a6FM8S33knZAZs3na
+         7iBG3KLKS3Oi/tlDacEcr0HKdEBE6Bfh1cIJcwfBYu9PolKJN2SiTuVSJpjvfwarCx5Y
+         /QYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=p6e1idkozAdyFbwzDMBHWW8sAO0btgqXBL7hMwd+oBo=;
+        b=XkR/MLZoQZNCiTdPrZtQBeVRWtDpi26ZGtTg3dcKHmsb4E3Bx94O0ltH89Vgif6JDm
+         jQVLdd2dAT22Enn/w0syAE4nu9Kh1/uG8LFq4rXa9enk8TIcQVpqjtiBKRZyKj/iGboq
+         JqwMwN6uLLq8mlr+QCnRoeyOtO6eX0N11VjCLlIe0le5UYiQEx72a/j02Hz7f6QAlLPy
+         KZKpdAipFDdSpGJ/ZsiZ3RT7tN9UnDj01A/XL7GONhHrA4ycSg5ta2D7PwhyeMMGQds+
+         3URhgS6GWwQOcuOHMP3fwYTenK9s1F6bJAfXIGVXmXfa/g+eUHaybuFRTgYgHXZTwSYA
+         Fvkw==
+X-Gm-Message-State: AFqh2koxPrhfAr+WQihBXbzzJZv3ZLkSOzhylAK7O++IbTk0dLobCrtf
+        0elBff8rgmFTkTQjMC8HohZ04g==
+X-Google-Smtp-Source: AMrXdXuQu7N2nYVtMau04TrCmrZdh4kSM3AJuPlbOZYtuWMHLYAiSPs3hcqLTqLpEtU1WRVAegP7ug==
+X-Received: by 2002:a17:906:b009:b0:877:8ae7:2e44 with SMTP id v9-20020a170906b00900b008778ae72e44mr28128735ejy.5.1674764873072;
+        Thu, 26 Jan 2023 12:27:53 -0800 (PST)
+Received: from [127.0.0.1] ([149.62.206.225])
+        by smtp.gmail.com with ESMTPSA id y14-20020a17090668ce00b0087329ff591esm1068749ejr.132.2023.01.26.12.27.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Jan 2023 12:27:52 -0800 (PST)
+Date:   Thu, 26 Jan 2023 22:27:49 +0200
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        Petr Machata <petrm@nvidia.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org, Ido Schimmel <idosch@nvidia.com>
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_net-next_01/16=5D_net=3A_bridge?= =?US-ASCII?Q?=3A_Set_strict=5Fstart=5Ftype_at_two_policies?=
+User-Agent: K-9 Mail for Android
+In-Reply-To: <20230126111843.2544f7d1@hermes.local>
+References: <cover.1674752051.git.petrm@nvidia.com> <8886e11bde5874305a26c0b7dc397923a1d5a794.1674752051.git.petrm@nvidia.com> <20230126111843.2544f7d1@hermes.local>
+Message-ID: <A066ECE0-C02B-426E-9591-670CC234299A@blackwall.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230125221053.301c0341@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 25, 2023 at 10:10:53PM -0800, Jakub Kicinski wrote:
-> On Thu, 26 Jan 2023 00:09:08 +0300 Kirill Tkhai wrote:
-> > 1)There are a many combinations with third task involved:
-> > 
-> > [CPU0:Task0]  [CPU1:Task1]                           [CPU2:Task2]
-> > listen(sk)
-> >               kernel:
-> >                 sk_diag_fill(sk)
-> >                   rep->udiag_state = TCP_LISTEN
-> >                 return_from_syscall
-> >               userspace:
-> >                 mutex_lock()
-> >                 shared_mem_var = rep->udiag_state 
-> >                 mutex_unlock()
-> > 
-> >                                                      userspace: 
-> >                                                        mutex_lock()
-> >                                                        if (shared_mem_var == TCP_LISTEN)
-> >                                                          accept(sk); /* -> fail, since sk_state is not visible */
-> >                                                        mutex_unlock()
-> > 
-> > In this situation Task2 definitely knows Task0's listen() has succeed, but there is no a possibility
-> > to guarantee its accept() won't fail. Despite there are appropriate barriers in mutex_lock() and mutex_unlock(),
-> > there is no a possibility to add a barrier on CPU1 to make Task0's store visible on CPU2.
-> 
-> Me trying to prove that memory ordering is transitive would be 100%
-> speculation. Let's ask Paul instead - is the above valid? Or the fact
-> that CPU1 observes state from CPU0 and is strongly ordered with CPU2
-> implies that CPU2 will also observe CPU0's state?
+On January 26, 2023 9:18:43 PM GMT+02:00, Stephen Hemminger <stephen@networ=
+kplumber=2Eorg> wrote:
+>On Thu, 26 Jan 2023 18:01:09 +0100
+>Petr Machata <petrm@nvidia=2Ecom> wrote:
+>
+>>  static const struct nla_policy br_port_policy[IFLA_BRPORT_MAX + 1] =3D=
+ {
+>> +	[IFLA_BRPORT_UNSPEC]	=3D { =2Estrict_start_type =3D
+>> +					IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT + 1 },
+>
+>Is the original IFLA_BRPORT a typo? ETH not EHT
 
-Hmmm...  What is listen() doing?  There seem to be a lot of them
-in the kernel.
 
-But proceeding on first principles...
-
-Sometimes.  Memory ordering is transitive only when the ordering is
-sufficiently strong.
-
-In this case, I do not see any ordering between CPU 0 and anything else.
-If the listen() function were to acquire the same mutex as CPU1 and CPU2
-did, and if it acquired it first, then CPU2 would be guaranteed to see
-anything CPU0 did while holding that mutex.
-
-Alternatively, if CPU0 wrote to some memory, and CPU1 read that value
-before releasing the mutex (including possibly before acquiring that
-mutex), then CPU2 would be guaranteed to see that value (or the value
-written by some later write to that same memory) after acquiring that
-mutex.
-
-So here are some things you can count on transitively:
-
-1.	After acquiring a given lock (or mutex or whatever), you will
-	see any values written or read prior to any earlier conflicting
-	release of that same lock.
-
-2.	After an access with acquire semantics (for example,
-	smp_load_acquire()) you will see any values written or read
-	prior to any earlier access with release semantics (for example,
-	smp_store_release()).
-
-Or in all cases, you might see later values, in case someone else also
-did a write to the location in question.
-
-Does that help, or am I missing a turn in there somewhere?
-
-							Thanx, Paul
+No, it's not a typo, Explicit Host Tracking
