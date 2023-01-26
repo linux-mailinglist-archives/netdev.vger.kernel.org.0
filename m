@@ -2,194 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7133E67C720
-	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 10:26:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE92867C745
+	for <lists+netdev@lfdr.de>; Thu, 26 Jan 2023 10:28:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236733AbjAZJ0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 04:26:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35946 "EHLO
+        id S236930AbjAZJ2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 04:28:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233508AbjAZJ0P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 04:26:15 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BFBC170C
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 01:26:14 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id e10-20020a17090a630a00b0022bedd66e6dso4723566pjj.1
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 01:26:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=11PEDfvJk5QynmslkUyxnYW8Ga/tj0XdcIZKaXDPHFI=;
-        b=ORDmthKKp/nDHWq8VMloD7JowCZzNIohA7JNkWkBpPCwHCEqPFq/m7PPXiRcIwKE/E
-         bwN2KEvG12tf2NyxXthPSVJArtWvX2pz6A7LzSPLp5Lv70AAAmmVxdLObWTiEcQmnFbx
-         aXI+XuV7b67JxUzessaAAHGXmF4L93mmUA8UI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=11PEDfvJk5QynmslkUyxnYW8Ga/tj0XdcIZKaXDPHFI=;
-        b=QS7aU9YkHFyUvOUPnV8FRFRAUY2ZlrB8jnS+7+iNFhrBj21zg1rnee78ZBkvH54vrr
-         CECJot+CSiH4Ndv8UtZmtzcUMR34PcWzEmoWy+KnSGccQIvYCx+fbztg7v24FVpxmP9R
-         6JIHb5YF4VGhjuihHr7J1fLS0BhyNVpYoANDoQQ5tY/Xni5IR/s4iyqFW97AYnrzhnlo
-         OuFQgwK2RVCCCwG5uYJL52NBwrNCbASmNzSoYPUdiX68TILeKJ52k+/zsRdzh246iI4d
-         veE5vLl5PJq1EiSIv2zTxG9A15TyYFt5DzPk/DgTABNMkINQ7YrGhhzsBCm6fp1Eed57
-         PsDA==
-X-Gm-Message-State: AFqh2komkihqhqRsN/H6Iyk5lJseUuiRQ1V4gsL3tviz9cmxXbBVFZpQ
-        35X90a3JWeTG8jHmGS7tM8/SYKHo7OfIJ8I1yRHruw==
-X-Google-Smtp-Source: AMrXdXsl5g9vLmz2ocR4ZZp6A42faNhkz+BY5v7bIzihnSz8Olyf5pmQ1iZbEgDk5rtW/ck7yRINJAr6LLdUlmqqCf8=
-X-Received: by 2002:a17:90b:378c:b0:229:2927:ee16 with SMTP id
- mz12-20020a17090b378c00b002292927ee16mr3294156pjb.7.1674725173601; Thu, 26
- Jan 2023 01:26:13 -0800 (PST)
+        with ESMTP id S236733AbjAZJ15 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 04:27:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC06411EA4;
+        Thu, 26 Jan 2023 01:27:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41B696177A;
+        Thu, 26 Jan 2023 09:27:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3921C433EF;
+        Thu, 26 Jan 2023 09:27:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674725274;
+        bh=SoMuUCKccvLBFFlS2yaoZNAJ6vi8hf11UD5LIFXhHPI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=j//Fl5kIolRbc8e9oVCQ2yHwbpz0TuieYLSj+mDFLpa1qwKxXUhf5PJmcO75Ujh3s
+         twG4fOSIQIUcY+3MnnJB2LFgFpgYd/SthHle/+axd8X6B40DgEguPrzEIDstErfxF8
+         ko0Mb6Gc7DtRkgMx2KamDNuuhnb/IfTXyWRUAI8okoWPpJCrU+5VBwHmsXg3EJf5FZ
+         gJ2/jlRLLWN+Ab/FNlmJJeHDKv+eOxzvt50mhgYbacQHyS9BYwkvyF434NJwFVAGsI
+         dA9tzS1LLkbpY2wsykh131+0o90nnu9297soO8LSNeHRZppCk70KOOayN+gSrVyob+
+         3jVum/MlvC8IQ==
+Date:   Thu, 26 Jan 2023 11:26:58 +0200
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     akpm@linux-foundation.org, michel@lespinasse.org,
+        jglisse@google.com, mhocko@suse.com, vbabka@suse.cz,
+        hannes@cmpxchg.org, mgorman@techsingularity.net, dave@stgolabs.net,
+        willy@infradead.org, liam.howlett@oracle.com, peterz@infradead.org,
+        ldufour@linux.ibm.com, paulmck@kernel.org, luto@kernel.org,
+        songliubraving@fb.com, peterx@redhat.com, david@redhat.com,
+        dhowells@redhat.com, hughd@google.com, bigeasy@linutronix.de,
+        kent.overstreet@linux.dev, punit.agrawal@bytedance.com,
+        lstoakes@gmail.com, peterjung1337@gmail.com, rientjes@google.com,
+        axelrasmussen@google.com, joelaf@google.com, minchan@google.com,
+        jannh@google.com, shakeelb@google.com, tatashin@google.com,
+        edumazet@google.com, gthelen@google.com, gurua@google.com,
+        arjunroy@google.com, soheil@google.com, hughlynch@google.com,
+        leewalsh@google.com, posk@google.com, will@kernel.org,
+        aneesh.kumar@linux.ibm.com, npiggin@gmail.com,
+        chenhuacai@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, richard@nod.at,
+        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
+        qianweili@huawei.com, wangzhou1@hisilicon.com,
+        herbert@gondor.apana.org.au, davem@davemloft.net, vkoul@kernel.org,
+        airlied@gmail.com, daniel@ffwll.ch,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, l.stach@pengutronix.de,
+        krzysztof.kozlowski@linaro.org, patrik.r.jakobsson@gmail.com,
+        matthias.bgg@gmail.com, robdclark@gmail.com,
+        quic_abhinavk@quicinc.com, dmitry.baryshkov@linaro.org,
+        tomba@kernel.org, hjc@rock-chips.com, heiko@sntech.de,
+        ray.huang@amd.com, kraxel@redhat.com, sre@kernel.org,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
+        tfiga@chromium.org, m.szyprowski@samsung.com, mchehab@kernel.org,
+        dimitri.sivanich@hpe.com, zhangfei.gao@linaro.org,
+        jejb@linux.ibm.com, martin.petersen@oracle.com,
+        dgilbert@interlog.com, hdegoede@redhat.com, mst@redhat.com,
+        jasowang@redhat.com, alex.williamson@redhat.com, deller@gmx.de,
+        jayalk@intworks.biz, viro@zeniv.linux.org.uk, nico@fluxnic.net,
+        xiang@kernel.org, chao@kernel.org, tytso@mit.edu,
+        adilger.kernel@dilger.ca, miklos@szeredi.hu,
+        mike.kravetz@oracle.com, muchun.song@linux.dev, bhe@redhat.com,
+        andrii@kernel.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, perex@perex.cz, tiwai@suse.com,
+        haojian.zhuang@gmail.com, robert.jarzmik@free.fr,
+        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org, linux-graphics-maintainer@vmware.com,
+        linux-ia64@vger.kernel.org, linux-arch@vger.kernel.org,
+        loongarch@lists.linux.dev, kvm@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-sgx@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-acpi@vger.kernel.org,
+        linux-crypto@vger.kernel.org, nvdimm@lists.linux.dev,
+        dmaengine@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, etnaviv@lists.freedesktop.org,
+        linux-samsung-soc@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org,
+        linux-rockchip@lists.infradead.org, linux-tegra@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        xen-devel@lists.xenproject.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-rdma@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-accelerators@lists.ozlabs.org, sparclinux@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-staging@lists.linux.dev,
+        target-devel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-erofs@lists.ozlabs.org, linux-ext4@vger.kernel.org,
+        devel@lists.orangefs.org, kexec@lists.infradead.org,
+        linux-xfs@vger.kernel.org, bpf@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, kasan-dev@googlegroups.com,
+        selinux@vger.kernel.org, alsa-devel@alsa-project.org,
+        kernel-team@android.com
+Subject: Re: [PATCH v2 4/6] mm: replace vma->vm_flags indirect modification
+ in ksm_madvise
+Message-ID: <Y9JHYvihjxGpAFPg@kernel.org>
+References: <20230125083851.27759-1-surenb@google.com>
+ <20230125083851.27759-5-surenb@google.com>
 MIME-Version: 1.0
-References: <20230126064551.464468-1-jk@codeconstruct.com.au>
-In-Reply-To: <20230126064551.464468-1-jk@codeconstruct.com.au>
-From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
-Date:   Thu, 26 Jan 2023 14:56:01 +0530
-Message-ID: <CALs4sv13aOXYT8omFMeR+ks9a=BZWN_6ZcEtBwD6wFuK7+47dg@mail.gmail.com>
-Subject: Re: [PATCH net] net: mctp: purge receive queues on sk destruction
-To:     Jeremy Kerr <jk@codeconstruct.com.au>
-Cc:     netdev@vger.kernel.org, Matt Johnston <matt@codeconstruct.com.au>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000001be54205f327570b"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230125083851.27759-5-surenb@google.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000001be54205f327570b
-Content-Type: text/plain; charset="UTF-8"
+On Wed, Jan 25, 2023 at 12:38:49AM -0800, Suren Baghdasaryan wrote:
+> Replace indirect modifications to vma->vm_flags with calls to modifier
+> functions to be able to track flag changes and to keep vma locking
+> correctness. Add a BUG_ON check in ksm_madvise() to catch indirect
+> vm_flags modification attempts.
+> 
+> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 
-On Thu, Jan 26, 2023 at 12:16 PM Jeremy Kerr <jk@codeconstruct.com.au> wrote:
->
-> We may have pending skbs in the receive queue when the sk is being
-> destroyed; add a destructor to purge the queue.
->
-> MCTP doesn't use the error queue, so only the receive_queue is purged.
->
-> Fixes: 833ef3b91de6 ("mctp: Populate socket implementation")
-> Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
+Acked-by: Mike Rapoport (IBM) <rppt@kernel.org>
+
 > ---
->  net/mctp/af_mctp.c | 6 ++++++
->  1 file changed, 6 insertions(+)
->
-> diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
-> index 45bbe3e54cc2..3150f3f0c872 100644
-> --- a/net/mctp/af_mctp.c
-> +++ b/net/mctp/af_mctp.c
-> @@ -587,6 +587,11 @@ static void mctp_sk_unhash(struct sock *sk)
->         del_timer_sync(&msk->key_expiry);
->  }
->
-> +static void mctp_sk_destruct(struct sock *sk)
-> +{
-> +       skb_queue_purge(&sk->sk_receive_queue);
-> +}
-> +
->  static struct proto mctp_proto = {
->         .name           = "MCTP",
->         .owner          = THIS_MODULE,
-> @@ -623,6 +628,7 @@ static int mctp_pf_create(struct net *net, struct socket *sock,
->                 return -ENOMEM;
->
->         sock_init_data(sock, sk);
-> +       sk->sk_destruct = mctp_sk_destruct;
->
->         rc = 0;
->         if (sk->sk_prot->init)
-> --
-> 2.35.1
->
-Looks good to me.
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-
---0000000000001be54205f327570b
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-OltyqaGBuzv+bJTUL+bmV7E4QBLIqGt4jVr1R9hJdH6KxXwJdyfHZ9C6qXmoe2NQhiFUyBOJ0wgk
-dB9Z1IU7nCwvNKYg2JMoJs93tIgbhPJg/D7pqW8gabkCAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUEV6y/89alKPoFbKUaJXsvWu5
-fdowDQYJKoZIhvcNAQELBQADggEBAEHSIB6g652wVb+r2YCmfHW47Jo+5TuCBD99Hla8PYhaWGkd
-9HIyD3NPhb6Vb6vtMWJW4MFGQF42xYRrAS4LZj072DuMotr79rI09pbOiWg0FlRRFt6R9vgUgebu
-pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
-25Azqtwvjt5nbrEd81iBmboNTEnLaKuxbbCtLaMEP8xKeDjAKnNOqHUMps0AsQT8c0EGq39YHpjp
-Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIKxnUaLN/p5pbRtxgtMh+ha8lhtrUHsf
-j2q10T5UXCygMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDEy
-NjA5MjYxNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAklAKsebOLDiHR9SExDfD2Ea/uQs8bWpxv/XCuQ1LWw4eBmKE2
-4wowNhFGpf7MYvmIWH+xmbLVw59n2NvUSvQeWJ2E2fVsDyzCsKQaLpFg+NuUwM+Ct/nAfsXrcs2g
-jWFXM8g5k0KuGy7W91sYYugI6MKeeGlJCpp0j4sfAJQXzBGGzVhW1/8ab21tJQHViHMLFNV8YubN
-H9ek59LwmEzDv5y91tdfNesYBZqerczelYDzoi9DVco98WG+S+ZA7CFa1gBPZCjItGK+radQrWsC
-609s+BlLqMlsIOowM4IliltL4ZVkFQ6PWVdqVQ4ZIgoJIcx1Y10yJizM0k3C/xM7
---0000000000001be54205f327570b--
+>  arch/powerpc/kvm/book3s_hv_uvmem.c | 5 ++++-
+>  arch/s390/mm/gmap.c                | 5 ++++-
+>  mm/khugepaged.c                    | 2 ++
+>  mm/ksm.c                           | 2 ++
+>  4 files changed, 12 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/powerpc/kvm/book3s_hv_uvmem.c b/arch/powerpc/kvm/book3s_hv_uvmem.c
+> index 1d67baa5557a..325a7a47d348 100644
+> --- a/arch/powerpc/kvm/book3s_hv_uvmem.c
+> +++ b/arch/powerpc/kvm/book3s_hv_uvmem.c
+> @@ -393,6 +393,7 @@ static int kvmppc_memslot_page_merge(struct kvm *kvm,
+>  {
+>  	unsigned long gfn = memslot->base_gfn;
+>  	unsigned long end, start = gfn_to_hva(kvm, gfn);
+> +	unsigned long vm_flags;
+>  	int ret = 0;
+>  	struct vm_area_struct *vma;
+>  	int merge_flag = (merge) ? MADV_MERGEABLE : MADV_UNMERGEABLE;
+> @@ -409,12 +410,14 @@ static int kvmppc_memslot_page_merge(struct kvm *kvm,
+>  			ret = H_STATE;
+>  			break;
+>  		}
+> +		vm_flags = vma->vm_flags;
+>  		ret = ksm_madvise(vma, vma->vm_start, vma->vm_end,
+> -			  merge_flag, &vma->vm_flags);
+> +			  merge_flag, &vm_flags);
+>  		if (ret) {
+>  			ret = H_STATE;
+>  			break;
+>  		}
+> +		reset_vm_flags(vma, vm_flags);
+>  		start = vma->vm_end;
+>  	} while (end > vma->vm_end);
+>  
+> diff --git a/arch/s390/mm/gmap.c b/arch/s390/mm/gmap.c
+> index 3a695b8a1e3c..d5eb47dcdacb 100644
+> --- a/arch/s390/mm/gmap.c
+> +++ b/arch/s390/mm/gmap.c
+> @@ -2587,14 +2587,17 @@ int gmap_mark_unmergeable(void)
+>  {
+>  	struct mm_struct *mm = current->mm;
+>  	struct vm_area_struct *vma;
+> +	unsigned long vm_flags;
+>  	int ret;
+>  	VMA_ITERATOR(vmi, mm, 0);
+>  
+>  	for_each_vma(vmi, vma) {
+> +		vm_flags = vma->vm_flags;
+>  		ret = ksm_madvise(vma, vma->vm_start, vma->vm_end,
+> -				  MADV_UNMERGEABLE, &vma->vm_flags);
+> +				  MADV_UNMERGEABLE, &vm_flags);
+>  		if (ret)
+>  			return ret;
+> +		reset_vm_flags(vma, vm_flags);
+>  	}
+>  	mm->def_flags &= ~VM_MERGEABLE;
+>  	return 0;
+> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+> index 8abc59345bf2..76b24cd0c179 100644
+> --- a/mm/khugepaged.c
+> +++ b/mm/khugepaged.c
+> @@ -354,6 +354,8 @@ struct attribute_group khugepaged_attr_group = {
+>  int hugepage_madvise(struct vm_area_struct *vma,
+>  		     unsigned long *vm_flags, int advice)
+>  {
+> +	/* vma->vm_flags can be changed only using modifier functions */
+> +	BUG_ON(vm_flags == &vma->vm_flags);
+>  	switch (advice) {
+>  	case MADV_HUGEPAGE:
+>  #ifdef CONFIG_S390
+> diff --git a/mm/ksm.c b/mm/ksm.c
+> index 04f1c8c2df11..992b2be9f5e6 100644
+> --- a/mm/ksm.c
+> +++ b/mm/ksm.c
+> @@ -2573,6 +2573,8 @@ int ksm_madvise(struct vm_area_struct *vma, unsigned long start,
+>  	struct mm_struct *mm = vma->vm_mm;
+>  	int err;
+>  
+> +	/* vma->vm_flags can be changed only using modifier functions */
+> +	BUG_ON(vm_flags == &vma->vm_flags);
+>  	switch (advice) {
+>  	case MADV_MERGEABLE:
+>  		/*
+> -- 
+> 2.39.1
+> 
+> 
