@@ -2,112 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0F1067E5C1
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 13:50:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2EEA67E624
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 14:09:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234426AbjA0MuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 07:50:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33378 "EHLO
+        id S233988AbjA0NJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 08:09:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234030AbjA0MuY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 07:50:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED08E17CF1
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 04:50:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9D99EB820FD
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 12:50:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 21D6EC433EF;
-        Fri, 27 Jan 2023 12:50:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674823819;
-        bh=Q9B/Mt2qJzV5xWmNYsCp1uGdb9wTNmmCE0qQY6OSa+U=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=YJs36ptL01J2jjJOiFWPj0LvEaJNmD9e8cVLlo2mZOIKE+QnBqgIJJ8nhNy7Q68MP
-         XnkP8ADjmrTy1S3U7qgq6iXBHJEEwDv0Q8GhjS5IU/gvtXEVdZ8mKrgxEPhKuzOSrl
-         nb3gQ14r0tE1qox0qHAQG8L3/EdfIzR/rvKAqsWYn+4jJbARXH+L/RXhmyG+VIe7mx
-         ma6RJDS3aJM13UnjZSjzYJPLxf1zQXZvpnvkTSHBc2CcOjjR0svtgU7krBP/JmiVGy
-         kDkD8OC6pvysZJT62D9LZ64fxP87rs4NBfsmdIGBbcO3PQVwD+Otc2gr97cn6sn09P
-         +O28iiAIHZsRQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 05004F83ECD;
-        Fri, 27 Jan 2023 12:50:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S234217AbjA0NJ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 08:09:26 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 797D17EFFD;
+        Fri, 27 Jan 2023 05:09:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1674824940; x=1706360940;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=6OU5WNoVZZvJd9NlVlGxnPHtjT/vU2I5rNLU9tH7Wmw=;
+  b=2Phi9Rlut0FaZOs+P5K7tgM/UZJetmMlwJnJ8u90kcAjaN9XhaIrKRxN
+   1RE6klRcyZUk6RQjIGYObuudnWfmcD4mKSwjOusp+8GeOg1taGycDMmPs
+   lFGT3UNKCGYhAt2uCImKwooQG6WgveXHMxiwEPzyoh5B3gvHY+1h49R8I
+   5mWZyzimqW2sJjT8OymDQlIuoCGMLQa2Au2l0LlCNpxd4+Jfcbk1TEYiQ
+   WYyyHSxZLbBXTeLweaScxfHlqjcorZmvPAdSvDhXot5ytrHAZNGuOp3JG
+   YngdH1Hg3aWT4tFQ4CYqhqC1k18lTJuCfAq5t5L3Z0LrTDKeRlxZoeaNT
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.97,251,1669100400"; 
+   d="scan'208";a="194150129"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jan 2023 06:08:41 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Fri, 27 Jan 2023 06:08:40 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Fri, 27 Jan 2023 06:08:34 -0700
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Steen Hegelund <steen.hegelund@microchip.com>,
+        <UNGLinuxDriver@microchip.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "Casper Andersson" <casper.casan@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        "Nathan Huckleberry" <nhuck@google.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        "Steen Hegelund" <Steen.Hegelund@microchip.com>,
+        Daniel Machon <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Dan Carpenter <error27@gmail.com>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next 0/8] Adding Sparx5 ES2 VCAP support
+Date:   Fri, 27 Jan 2023 14:08:22 +0100
+Message-ID: <20230127130830.1481526-1-steen.hegelund@microchip.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [patch net-next v2 00/12] devlink: Cleanup params usage
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167482381901.15666.2800630597243633345.git-patchwork-notify@kernel.org>
-Date:   Fri, 27 Jan 2023 12:50:19 +0000
-References: <20230126075838.1643665-1-jiri@resnulli.us>
-In-Reply-To: <20230126075838.1643665-1-jiri@resnulli.us>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, michael.chan@broadcom.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        tariqt@nvidia.com, saeedm@nvidia.com, leon@kernel.org,
-        idosch@nvidia.com, petrm@nvidia.com, simon.horman@corigine.com,
-        aelior@marvell.com, manishc@marvell.com, jacob.e.keller@intel.com,
-        gal@nvidia.com, yinjun.zhang@corigine.com, fei.qin@corigine.com,
-        Niklas.Cassel@wdc.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This provides the Egress Stage 2 (ES2) VCAP (Versatile Content-Aware
+Processor) support for the Sparx5 platform.
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+The ES2 VCAP is an Egress Access Control VCAP that uses frame keyfields and
+previously classified keyfields to apply e.g. policing, trapping or
+mirroring to frames.
 
-On Thu, 26 Jan 2023 08:58:26 +0100 you wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
-> 
-> This patchset takes care of small cleanup of devlink params usage.
-> Some of the patches (first 2/3) are cosmetic, but I would like to
-> point couple of interesting ones:
-> 
-> Patch 9 is the main one of this set and introduces devlink instance
-> locking for params, similar to other devlink objects. That allows params
-> to be registered/unregistered when devlink instance is registered.
-> 
-> [...]
+The ES2 VCAP has 2 lookups and they are accessible with a TC chain id:
 
-Here is the summary with links:
-  - [net-next,v2,01/12] net/mlx5: Change devlink param register/unregister function names
-    https://git.kernel.org/netdev/net-next/c/c8aebff4599f
-  - [net-next,v2,02/12] net/mlx5: Covert devlink params registration to use devlink_params_register/unregister()
-    https://git.kernel.org/netdev/net-next/c/a756185ac3b9
-  - [net-next,v2,03/12] devlink: make devlink_param_register/unregister static
-    https://git.kernel.org/netdev/net-next/c/020dd127a3fe
-  - [net-next,v2,04/12] devlink: don't work with possible NULL pointer in devlink_param_unregister()
-    https://git.kernel.org/netdev/net-next/c/bb9bb6bfd1c3
-  - [net-next,v2,05/12] ice: remove pointless calls to devlink_param_driverinit_value_set()
-    https://git.kernel.org/netdev/net-next/c/2fc631b5d75d
-  - [net-next,v2,06/12] qed: remove pointless call to devlink_param_driverinit_value_set()
-    https://git.kernel.org/netdev/net-next/c/6fd6eda0e65d
-  - [net-next,v2,07/12] devlink: make devlink_param_driverinit_value_set() return void
-    https://git.kernel.org/netdev/net-next/c/85fe0b324c83
-  - [net-next,v2,08/12] devlink: put couple of WARN_ONs in devlink_param_driverinit_value_get()
-    https://git.kernel.org/netdev/net-next/c/3f716a620e13
-  - [net-next,v2,09/12] devlink: protect devlink param list by instance lock
-    https://git.kernel.org/netdev/net-next/c/075935f0ae0f
-  - [net-next,v2,10/12] net/mlx5: Move fw reset devlink param to fw reset code
-    https://git.kernel.org/netdev/net-next/c/c2077fbc42ae
-  - [net-next,v2,11/12] net/mlx5: Move flow steering devlink param to flow steering code
-    https://git.kernel.org/netdev/net-next/c/db492c1e5b1b
-  - [net-next,v2,12/12] net/mlx5: Move eswitch port metadata devlink param to flow eswitch code
-    https://git.kernel.org/netdev/net-next/c/d2a651ef18c0
+- chain 20000000: ES2 Lookup 0
+- chain 20100000: ES2 Lookup 1
 
-You are awesome, thank you!
+As the other Sparx5 VCAPs the ES2 VCAP has its own lookup/port keyset
+configuration that decides which keys will be used for matching on which
+traffic type.
+
+The ES2 VCAP has these traffic classifications:
+
+- IPv4 frames
+- IPv6 frames
+- Other frames
+
+The ES2 VCAP can match on an ISDX key (Ingress Service Index) as one of the
+frame metadata keyfields.  The IS0 VCAP can update this key using its
+actions, and this allows a IS0 VCAP rule to be linked to an ES2 rule.
+
+This is similar to how the IS0 VCAP and the IS2 VCAP use the PAG
+(Policy Association Group) keyfield to link rules.
+
+From user space this is exposed via "chain offsets", so an IS0 rule with a
+"goto chain 20000015" action will use an ISDX key value of 15 to link to a
+rule in the ES2 VCAP attached to the same chain id.
+
+Steen Hegelund (8):
+  net: microchip: sparx5: Add support for getting keysets without a type
+    id
+  net: microchip: sparx5: Improve the IP frame key match for IPv6 frames
+  net: microchip: sparx5: Improve error message when parsing CVLAN
+    filter
+  net: microchip: sparx5: Add ES2 VCAP model and updated KUNIT VCAP
+    model
+  net: microchip: sparx5: Add ES2 VCAP keyset configuration for Sparx5
+  net: microchip: sparx5: Add ingress information to VCAP instance
+  net: microchip: sparx5: Add TC support for the ES2 VCAP
+  net: microchip: sparx5: Add  KUNIT tests for enabling/disabling chains
+
+ .../ethernet/microchip/lan966x/lan966x_main.h |    3 +-
+ .../ethernet/microchip/lan966x/lan966x_tc.c   |    2 +-
+ .../microchip/lan966x/lan966x_tc_flower.c     |   16 +-
+ .../microchip/lan966x/lan966x_vcap_impl.c     |    3 +
+ .../ethernet/microchip/sparx5/sparx5_main.c   |    1 +
+ .../microchip/sparx5/sparx5_main_regs.h       |  227 +++-
+ .../microchip/sparx5/sparx5_tc_flower.c       |   57 +-
+ .../microchip/sparx5/sparx5_vcap_ag_api.c     | 1166 ++++++++++++++++-
+ .../microchip/sparx5/sparx5_vcap_debugfs.c    |  117 ++
+ .../microchip/sparx5/sparx5_vcap_impl.c       |  786 +++++++++--
+ .../microchip/sparx5/sparx5_vcap_impl.h       |   34 +
+ .../net/ethernet/microchip/vcap/vcap_ag_api.h |   11 +-
+ .../net/ethernet/microchip/vcap/vcap_api.c    |   36 +-
+ .../net/ethernet/microchip/vcap/vcap_api.h    |    1 +
+ .../ethernet/microchip/vcap/vcap_api_client.h |    2 +-
+ .../microchip/vcap/vcap_api_debugfs.c         |    6 +-
+ .../microchip/vcap/vcap_api_debugfs_kunit.c   |    4 +
+ .../ethernet/microchip/vcap/vcap_api_kunit.c  |   66 +
+ .../microchip/vcap/vcap_model_kunit.c         |   14 +-
+ 19 files changed, 2390 insertions(+), 162 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.39.1
 
