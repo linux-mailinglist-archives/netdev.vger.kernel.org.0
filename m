@@ -2,108 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A102D67EF5F
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 21:12:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43C0767EE70
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 20:41:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231532AbjA0UMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 15:12:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59904 "EHLO
+        id S231352AbjA0Tln (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 14:41:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbjA0UMv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 15:12:51 -0500
-X-Greylist: delayed 1077 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 27 Jan 2023 12:12:48 PST
-Received: from relay.sandelman.ca (relay.cooperix.net [176.58.120.209])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC73044AF;
-        Fri, 27 Jan 2023 12:12:47 -0800 (PST)
-Received: from dyas.sandelman.ca (unknown [142.169.78.18])
-        by relay.sandelman.ca (Postfix) with ESMTPS id 394731F4A5;
-        Fri, 27 Jan 2023 19:39:49 +0000 (UTC)
-Received: by dyas.sandelman.ca (Postfix, from userid 1000)
-        id 2C80DA1807; Fri, 27 Jan 2023 14:39:40 -0500 (EST)
-Received: from dyas (localhost [127.0.0.1])
-        by dyas.sandelman.ca (Postfix) with ESMTP id 2A691A17E1;
-        Fri, 27 Jan 2023 14:39:40 -0500 (EST)
-From:   Michael Richardson <mcr@sandelman.ca>
-To:     Alexander Aring <aahringo@redhat.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Guilhem Imberton <guilhem.imberton@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan-next 0/2] ieee802154: Beaconing support
-In-reply-to: <CAK-6q+irhYroxV_P5ORtO9Ui9-Bs=SNS+vO5bZ7_X-geab+XrA@mail.gmail.com>
-References: <20230106113129.694750-1-miquel.raynal@bootlin.com> <CAK-6q+jNmvtBKKxSp1WepVXbaQ65CghZv3bS2ptjB9jyzOSGTA@mail.gmail.com> <20230118102058.3b1f275b@xps-13> <CAK-6q+gwP8P--5e9HKt2iPhjeefMXrXUVy-G+szGdFXZvgYKvg@mail.gmail.com> <CAK-6q+gn7W9x2+ihSC41RzkhmBn1E44pKtJFHgqRdd8aBpLrVQ@mail.gmail.com> <20230124110814.6096ecbe@xps-13> <CAB_54W69KcM0UJjf8py-VyRXx2iEUvcAKspXiAkykkQoF6ccDA@mail.gmail.com> <20230125105653.44e9498f@xps-13> <CAK-6q+irhYroxV_P5ORtO9Ui9-Bs=SNS+vO5bZ7_X-geab+XrA@mail.gmail.com>
-Comments: In-reply-to Alexander Aring <aahringo@redhat.com>
-   message dated "Thu, 26 Jan 2023 20:29:25 -0500."
-X-Mailer: MH-E 8.6+git; nmh 1.7+dev; GNU Emacs 26.3
+        with ESMTP id S229908AbjA0Tlm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 14:41:42 -0500
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90FE6DBEA;
+        Fri, 27 Jan 2023 11:41:14 -0800 (PST)
+Received: by mail-qt1-x82b.google.com with SMTP id q15so5003413qtn.0;
+        Fri, 27 Jan 2023 11:41:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Tie7P8DpWVuLMjQ05PFQFoqxbFyJhXbe0tq79aNlVHc=;
+        b=ihrjdm9OC16yFFyWeePT0TRmevtzAE8AkrxT5JjRYbw2KBMouT0QIsvZOlwj9xlF/O
+         TXLoYrsby1wav6KdpyeDH3fMJ+Im9MTJPHhzwEZoW6tdPpPTCa2sPq422r5JZrqNYMJ1
+         /A1L2bKwSxn4CPTOnKEU6NXyzzdDu24IjgxzVbMS+L+uYG5Bcg0pKrg/5qXxEWiuMAia
+         vffdUbtcNsLvtKrlK4k+jcwRwHNdA8Lw5naABJfruZOqGKC8i603wB1dFg+AwO1TudBg
+         hRMFIt5PYGst7e+ep5PnmbaJMN+bQmW3H7kQk9yN8FS3aXz8K9H46JTxNwFfjubGd7N0
+         ozSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Tie7P8DpWVuLMjQ05PFQFoqxbFyJhXbe0tq79aNlVHc=;
+        b=Ksr4Af37xZ++BeNkmFyEmmOT7YzsN1mUIa0ezevHvXMeGRcwM08m0EBi8tTy5wRPNq
+         AeKn+S4rTcSba4KhV3lFE7WRM8dg8mujJwZUM73+tTN9WuGBVSvByVzk5lz3n6V+qkYI
+         Ys0rWqV5/3oL/DRE/1Bc8/AtCiPq7ilUqQ/eudp/lKRADiy7QftRNgWKuviptrfJMiEc
+         usAf8Qz+iUOZTLPtmeSO1/ffwMkO/lAMG4S03CeaW94MWmTfLz2pad7uWcjOoxZ49ztZ
+         dnnYIsXZE/BKFEse3HLAHi57kxrnCRGL8glXwAFRDrG9UIdKH5uKXdIIUkqJvxyrCa5m
+         fGoQ==
+X-Gm-Message-State: AFqh2koSqi0PZpCJnPsb4BSauhlNNKWVvGGvAiPGjW2BXq33UJk+mk5k
+        QbDe+6OBGiU/hEVyCZKZJww=
+X-Google-Smtp-Source: AMrXdXseVuSIixnld/BKH87fSqTycVCSeEtcwnb5kCMqIbpauSSGWuC7wNW9jWBlj1betMg434qPNg==
+X-Received: by 2002:a05:622a:2483:b0:3a8:20e5:49bc with SMTP id cn3-20020a05622a248300b003a820e549bcmr67081993qtb.41.1674848400053;
+        Fri, 27 Jan 2023 11:40:00 -0800 (PST)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id i25-20020ac860d9000000b003b54a8fd02dsm3151745qtm.87.2023.01.27.11.39.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 27 Jan 2023 11:39:59 -0800 (PST)
+Message-ID: <5f033009-fcb2-702f-be98-507b421dd35f@gmail.com>
+Date:   Fri, 27 Jan 2023 11:39:56 -0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
-Date:   Fri, 27 Jan 2023 14:39:40 -0500
-Message-ID: <1322777.1674848380@dyas>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.0
+Subject: Re: [PATCH v5 net-next 06/13] net: dsa: felix: add configurable
+ device quirks
+Content-Language: en-US
+To:     Colin Foster <colin.foster@in-advantage.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, Lee Jones <lee@kernel.org>
+References: <20230127193559.1001051-1-colin.foster@in-advantage.com>
+ <20230127193559.1001051-7-colin.foster@in-advantage.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230127193559.1001051-7-colin.foster@in-advantage.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
 
 
-Alexander Aring <aahringo@redhat.com> wrote:
-    >> - MLME ops without feedback constraints like beacons -> should go
-    >> through the hot path, but not through the whole net stack, so
-    >> ieee802154_subif_start_xmit()
-    >>
+On 1/27/2023 11:35 AM, Colin Foster wrote:
+> The define FELIX_MAC_QUIRKS was used directly in the felix.c shared driver.
+> Other devices (VSC7512 for example) don't require the same quirks, so they
+> need to be configured on a per-device basis.
+> 
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-    > it will bypass the qdisc handling (+ some other things which are around
-    > there). The current difference is what I see llsec handling and other
-    > things which might be around there? It depends if other "MLME-ops" need
-    > to be e.g. encrypted or not.
-
-I haven't followed the whole thread.
-So I am neither agreeing nor disagreeing, just clarifying.
-Useful beacons are "signed" (have integrity applied), but not encrypted.
-
-It's important for userspace to be able to receive them, even if we don't
-have a key that can verify them.  AFAIK, we have no specific interface to
-receive beacons.
-
-    >> NB: Perhaps a prerequisites of bringing security to the MLME ops would
-    >> be to have wpan-tools updated (it looks like the support was never
-    >> merged?) as well as a simple example how to use it on linux-wpan.org.
-    >>
-
-    > this is correct. It is still in a branch, I am fine to merge it in this
-    > state although it's not really practical to use right now.
-
-:-)
-
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEERK+9HEcJHTJ9UqTMlUzhVv38QpAFAmPUKHsACgkQlUzhVv38
-QpAEIQf/VmalH2lNjcl0ZYTMhoMXYeowU8ZvHbg2ArQ8XNdjOTRYHJ1k55alotPX
-sUYITkgKA4wQRob2s9JrvAR4NlfrJ6j96PCbQUqGv1OyvztgQkdhJ5bmnYdz6Gmd
-KWhy+IgxX5GPsJbab4jAvQDtP0+dz+FXqo8uULFzXMfU1zl9tmJqzPMktWeHobLM
-nOmQcuAVbm48+OLUClBuWZfknuRGXHzx7MiuuIw3oEKkIhDDtZB8HzV+zjgpU1wo
-8fvXUQ0k9j3jhlFQkL4ca7aDfHu18dXo+zCKz9IAFUhwQ4U+KlxVFedLGgWasOYR
-1KSvlFMeY/qEO5YEeJZwAJNojJDtZQ==
-=O6FF
------END PGP SIGNATURE-----
---=-=-=--
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
