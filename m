@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B27DF67EE12
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 20:19:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E78C067EE10
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 20:19:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234896AbjA0TTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 14:19:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35932 "EHLO
+        id S234723AbjA0TTJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 14:19:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234401AbjA0TTE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 14:19:04 -0500
+        with ESMTP id S233984AbjA0TTB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 14:19:01 -0500
 Received: from 66-220-144-178.mail-mxout.facebook.com (66-220-144-178.mail-mxout.facebook.com [66.220.144.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 916DD7D2A7
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 11:18:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6570F7D6D8
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 11:18:41 -0800 (PST)
 Received: by devvm15675.prn0.facebook.com (Postfix, from userid 115148)
-        id 957E04CC624D; Fri, 27 Jan 2023 11:18:25 -0800 (PST)
+        id 256654CC6269; Fri, 27 Jan 2023 11:18:26 -0800 (PST)
 From:   Joanne Koong <joannelkoong@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     daniel@iogearbox.net, andrii@kernel.org, martin.lau@kernel.org,
         ast@kernel.org, netdev@vger.kernel.org, memxor@gmail.com,
         kernel-team@fb.com, Joanne Koong <joannelkoong@gmail.com>
-Subject: [PATCH v9 bpf-next 3/5] bpf: Add skb dynptrs
-Date:   Fri, 27 Jan 2023 11:17:01 -0800
-Message-Id: <20230127191703.3864860-4-joannelkoong@gmail.com>
+Subject: [PATCH v9 bpf-next 4/5] bpf: Add xdp dynptrs
+Date:   Fri, 27 Jan 2023 11:17:02 -0800
+Message-Id: <20230127191703.3864860-5-joannelkoong@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230127191703.3864860-1-joannelkoong@gmail.com>
 References: <20230127191703.3864860-1-joannelkoong@gmail.com>
@@ -40,1028 +40,477 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add skb dynptrs, which are dynptrs whose underlying pointer points
-to a skb. The dynptr acts on skb data. skb dynptrs have two main
+Add xdp dynptrs, which are dynptrs whose underlying pointer points
+to a xdp_buff. The dynptr acts on xdp data. xdp dynptrs have two main
 benefits. One is that they allow operations on sizes that are not
 statically known at compile-time (eg variable-sized accesses).
 Another is that parsing the packet data through dynptrs (instead of
-through direct access of skb->data and skb->data_end) can be more
+through direct access of xdp->data and xdp->data_end) can be more
 ergonomic and less brittle (eg does not need manual if checking for
 being within bounds of data_end).
 
-For bpf prog types that don't support writes on skb data, the dynptr is
-read-only (bpf_dynptr_write() will return an error and bpf_dynptr_data()
-will return a data slice that is read-only where any writes to it will
-be rejected by the verifier).
+For reads and writes on the dynptr, this includes reading/writing
+from/to and across fragments. For data slices, direct access to
+data in fragments is also permitted, but access across fragments
+is not.
 
-For reads and writes through the bpf_dynptr_read() and bpf_dynptr_write()
-interfaces, reading and writing from/to data in the head as well as from/=
-to
-non-linear paged buffers is supported. For data slices (through the
-bpf_dynptr_data() interface), if the data is in a paged buffer, the user
-must first call bpf_skb_pull_data() to pull the data into the linear
-portion.
+Any helper calls that change the underlying packet buffer (eg
+bpf_xdp_adjust_head) invalidates any data slices of the associated
+dynptr. The stack trace for this is check_helper_call() ->
+clear_all_pkt_pointers() -> __clear_all_pkt_pointers() ->
+mark_reg_unknown().
 
-Any bpf_dynptr_write() automatically invalidates any prior data slices
-to the skb dynptr. This is because a bpf_dynptr_write() may be writing
-to data in a paged buffer, so it will need to pull the buffer first into
-the head. The reason it needs to be pulled instead of writing directly to
-the paged buffers is because they may be cloned (only the head of the skb
-is by default uncloned). As such, any bpf_dynptr_write() will
-automatically have its prior data slices invalidated, even if the write
-is to data in the skb head (the verifier has no way of differentiating
-whether the write is to the head or paged buffers during program load
-time). Please note as well that any other helper calls that change the
-underlying packet buffer (eg bpf_skb_pull_data()) invalidates any data
-slices of the skb dynptr as well. The stack trace for this is
-check_helper_call() -> clear_all_pkt_pointers() ->
-__clear_all_pkt_pointers() -> mark_reg_unknown().
-
-For examples of how skb dynptrs can be used, please see the attached
+For examples of how xdp dynptrs can be used, please see the attached
 selftests.
 
 Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
 ---
- include/linux/bpf.h            |  82 +++++++++------
- include/linux/filter.h         |  18 ++++
- include/uapi/linux/bpf.h       |  37 +++++--
- kernel/bpf/btf.c               |  18 ++++
- kernel/bpf/helpers.c           |  95 ++++++++++++++---
- kernel/bpf/verifier.c          | 185 ++++++++++++++++++++++++++-------
- net/core/filter.c              |  60 ++++++++++-
- tools/include/uapi/linux/bpf.h |  37 +++++--
- 8 files changed, 432 insertions(+), 100 deletions(-)
+ include/linux/bpf.h            |  8 ++++-
+ include/linux/filter.h         | 20 ++++++++++++
+ include/uapi/linux/bpf.h       | 10 ++++--
+ kernel/bpf/helpers.c           | 12 +++++++
+ kernel/bpf/verifier.c          | 57 +++++++++++++++++++++-------------
+ net/core/filter.c              | 46 ++++++++++++++++++++++-----
+ tools/include/uapi/linux/bpf.h | 10 ++++--
+ 7 files changed, 127 insertions(+), 36 deletions(-)
 
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 14a0264fac57..1ac061b64582 100644
+index 1ac061b64582..94e910d9598e 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -575,11 +575,14 @@ enum bpf_type_flag {
- 	/* MEM is tagged with rcu and memory access needs rcu_read_lock protect=
-ion. */
- 	MEM_RCU			=3D BIT(13 + BPF_BASE_TYPE_BITS),
+@@ -578,11 +578,15 @@ enum bpf_type_flag {
+ 	/* DYNPTR points to sk_buff */
+ 	DYNPTR_TYPE_SKB		=3D BIT(14 + BPF_BASE_TYPE_BITS),
 =20
-+	/* DYNPTR points to sk_buff */
-+	DYNPTR_TYPE_SKB		=3D BIT(14 + BPF_BASE_TYPE_BITS),
++	/* DYNPTR points to xdp_buff */
++	DYNPTR_TYPE_XDP		=3D BIT(15 + BPF_BASE_TYPE_BITS),
 +
  	__BPF_TYPE_FLAG_MAX,
  	__BPF_TYPE_LAST_FLAG	=3D __BPF_TYPE_FLAG_MAX - 1,
  };
 =20
--#define DYNPTR_TYPE_FLAG_MASK	(DYNPTR_TYPE_LOCAL | DYNPTR_TYPE_RINGBUF)
-+#define DYNPTR_TYPE_FLAG_MASK	(DYNPTR_TYPE_LOCAL | DYNPTR_TYPE_RINGBUF |=
+-#define DYNPTR_TYPE_FLAG_MASK	(DYNPTR_TYPE_LOCAL | DYNPTR_TYPE_RINGBUF |=
  DYNPTR_TYPE_SKB)
++#define DYNPTR_TYPE_FLAG_MASK	(DYNPTR_TYPE_LOCAL | DYNPTR_TYPE_RINGBUF |=
+ DYNPTR_TYPE_SKB \
++				 | DYNPTR_TYPE_XDP)
 =20
  /* Max number of base types. */
  #define BPF_BASE_TYPE_LIMIT	(1UL << BPF_BASE_TYPE_BITS)
-@@ -1082,6 +1085,35 @@ static __always_inline __nocfi unsigned int bpf_di=
-spatcher_nop_func(
- 	return bpf_func(ctx, insnsi);
- }
+@@ -1109,6 +1113,8 @@ enum bpf_dynptr_type {
+ 	BPF_DYNPTR_TYPE_RINGBUF,
+ 	/* Underlying data is a sk_buff */
+ 	BPF_DYNPTR_TYPE_SKB,
++	/* Underlying data is a xdp_buff */
++	BPF_DYNPTR_TYPE_XDP,
+ };
 =20
-+/* the implementation of the opaque uapi struct bpf_dynptr */
-+struct bpf_dynptr_kern {
-+	void *data;
-+	/* Size represents the number of usable bytes of dynptr data.
-+	 * If for example the offset is at 4 for a local dynptr whose data is
-+	 * of type u64, the number of usable bytes is 4.
-+	 *
-+	 * The upper 8 bits are reserved. It is as follows:
-+	 * Bits 0 - 23 =3D size
-+	 * Bits 24 - 30 =3D dynptr type
-+	 * Bit 31 =3D whether dynptr is read-only
-+	 */
-+	u32 size;
-+	u32 offset;
-+} __aligned(8);
-+
-+enum bpf_dynptr_type {
-+	BPF_DYNPTR_TYPE_INVALID,
-+	/* Points to memory that is local to the bpf program */
-+	BPF_DYNPTR_TYPE_LOCAL,
-+	/* Underlying data is a ringbuf record */
-+	BPF_DYNPTR_TYPE_RINGBUF,
-+	/* Underlying data is a sk_buff */
-+	BPF_DYNPTR_TYPE_SKB,
-+};
-+
-+int bpf_dynptr_check_size(u32 size);
-+u32 bpf_dynptr_get_size(const struct bpf_dynptr_kern *ptr);
-+
- #ifdef CONFIG_BPF_JIT
- int bpf_trampoline_link_prog(struct bpf_tramp_link *link, struct bpf_tra=
-mpoline *tr);
- int bpf_trampoline_unlink_prog(struct bpf_tramp_link *link, struct bpf_t=
-rampoline *tr);
-@@ -2216,6 +2248,11 @@ static inline bool has_current_bpf_ctx(void)
- }
-=20
- void notrace bpf_prog_inc_misses_counter(struct bpf_prog *prog);
-+
-+void bpf_dynptr_init(struct bpf_dynptr_kern *ptr, void *data,
-+		     enum bpf_dynptr_type type, u32 offset, u32 size);
-+void bpf_dynptr_set_null(struct bpf_dynptr_kern *ptr);
-+void bpf_dynptr_set_rdonly(struct bpf_dynptr_kern *ptr);
- #else /* !CONFIG_BPF_SYSCALL */
- static inline struct bpf_prog *bpf_prog_get(u32 ufd)
- {
-@@ -2445,6 +2482,19 @@ static inline void bpf_prog_inc_misses_counter(str=
-uct bpf_prog *prog)
- static inline void bpf_cgrp_storage_free(struct cgroup *cgroup)
- {
- }
-+
-+static inline void bpf_dynptr_init(struct bpf_dynptr_kern *ptr, void *da=
-ta,
-+				   enum bpf_dynptr_type type, u32 offset, u32 size)
-+{
-+}
-+
-+static inline void bpf_dynptr_set_null(struct bpf_dynptr_kern *ptr)
-+{
-+}
-+
-+static inline void bpf_dynptr_set_rdonly(struct bpf_dynptr_kern *ptr)
-+{
-+}
- #endif /* CONFIG_BPF_SYSCALL */
-=20
- void __bpf_free_used_btfs(struct bpf_prog_aux *aux,
-@@ -2863,36 +2913,6 @@ int bpf_bprintf_prepare(char *fmt, u32 fmt_size, c=
-onst u64 *raw_args,
- 			u32 num_args, struct bpf_bprintf_data *data);
- void bpf_bprintf_cleanup(struct bpf_bprintf_data *data);
-=20
--/* the implementation of the opaque uapi struct bpf_dynptr */
--struct bpf_dynptr_kern {
--	void *data;
--	/* Size represents the number of usable bytes of dynptr data.
--	 * If for example the offset is at 4 for a local dynptr whose data is
--	 * of type u64, the number of usable bytes is 4.
--	 *
--	 * The upper 8 bits are reserved. It is as follows:
--	 * Bits 0 - 23 =3D size
--	 * Bits 24 - 30 =3D dynptr type
--	 * Bit 31 =3D whether dynptr is read-only
--	 */
--	u32 size;
--	u32 offset;
--} __aligned(8);
--
--enum bpf_dynptr_type {
--	BPF_DYNPTR_TYPE_INVALID,
--	/* Points to memory that is local to the bpf program */
--	BPF_DYNPTR_TYPE_LOCAL,
--	/* Underlying data is a kernel-produced ringbuf record */
--	BPF_DYNPTR_TYPE_RINGBUF,
--};
--
--void bpf_dynptr_init(struct bpf_dynptr_kern *ptr, void *data,
--		     enum bpf_dynptr_type type, u32 offset, u32 size);
--void bpf_dynptr_set_null(struct bpf_dynptr_kern *ptr);
--int bpf_dynptr_check_size(u32 size);
--u32 bpf_dynptr_get_size(const struct bpf_dynptr_kern *ptr);
--
- #ifdef CONFIG_BPF_LSM
- void bpf_cgroup_atype_get(u32 attach_btf_id, int cgroup_atype);
- void bpf_cgroup_atype_put(int cgroup_atype);
+ int bpf_dynptr_check_size(u32 size);
 diff --git a/include/linux/filter.h b/include/linux/filter.h
-index ccc4a4a58c72..c87d13954d89 100644
+index c87d13954d89..674795ea9d20 100644
 --- a/include/linux/filter.h
 +++ b/include/linux/filter.h
-@@ -1541,4 +1541,22 @@ static __always_inline int __bpf_xdp_redirect_map(=
-struct bpf_map *map, u64 index
- 	return XDP_REDIRECT;
- }
-=20
-+#ifdef CONFIG_NET
-+int __bpf_skb_load_bytes(const struct sk_buff *skb, u32 offset, void *to=
+@@ -1545,6 +1545,9 @@ static __always_inline int __bpf_xdp_redirect_map(s=
+truct bpf_map *map, u64 index
+ int __bpf_skb_load_bytes(const struct sk_buff *skb, u32 offset, void *to=
 , u32 len);
-+int __bpf_skb_store_bytes(struct sk_buff *skb, u32 offset, const void *f=
+ int __bpf_skb_store_bytes(struct sk_buff *skb, u32 offset, const void *f=
 rom,
-+			  u32 len, u64 flags);
-+#else /* CONFIG_NET */
-+static inline int __bpf_skb_load_bytes(const struct sk_buff *skb, u32 of=
+ 			  u32 len, u64 flags);
++int __bpf_xdp_load_bytes(struct xdp_buff *xdp, u32 offset, void *buf, u3=
+2 len);
++int __bpf_xdp_store_bytes(struct xdp_buff *xdp, u32 offset, void *buf, u=
+32 len);
++void *bpf_xdp_pointer(struct xdp_buff *xdp, u32 offset, u32 len);
+ #else /* CONFIG_NET */
+ static inline int __bpf_skb_load_bytes(const struct sk_buff *skb, u32 of=
 fset,
-+				       void *to, u32 len)
+ 				       void *to, u32 len)
+@@ -1557,6 +1560,23 @@ static inline int __bpf_skb_store_bytes(struct sk_=
+buff *skb, u32 offset,
+ {
+ 	return -EOPNOTSUPP;
+ }
++
++static inline int __bpf_xdp_load_bytes(struct xdp_buff *xdp, u32 offset,
++				       void *buf, u32 len)
 +{
 +	return -EOPNOTSUPP;
 +}
 +
-+static inline int __bpf_skb_store_bytes(struct sk_buff *skb, u32 offset,
-+					const void *from, u32 len, u64 flags)
++static inline int __bpf_xdp_store_bytes(struct xdp_buff *xdp, u32 offset=
+,
++					void *buf, u32 len)
 +{
 +	return -EOPNOTSUPP;
 +}
-+#endif /* CONFIG_NET */
 +
++static inline void *bpf_xdp_pointer(struct xdp_buff *xdp, u32 offset, u3=
+2 len)
++{
++	return NULL;
++}
+ #endif /* CONFIG_NET */
+=20
  #endif /* __LINUX_FILTER_H__ */
 diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index ba0f0cfb5e42..f6910392d339 100644
+index f6910392d339..9cc988e063de 100644
 --- a/include/uapi/linux/bpf.h
 +++ b/include/uapi/linux/bpf.h
-@@ -5320,22 +5320,45 @@ union bpf_attr {
-  *	Description
-  *		Write *len* bytes from *src* into *dst*, starting from *offset*
-  *		into *dst*.
-- *		*flags* is currently unused.
+@@ -5352,13 +5352,17 @@ union bpf_attr {
+  *		      and try again.
+  *
+  *		    * The data slice is automatically invalidated anytime
+- *		      **bpf_dynptr_write**\ () or a helper call that changes
+- *		      the underlying packet buffer (eg **bpf_skb_pull_data**\ ())
++ *		      **bpf_dynptr_write**\ () is called.
 + *
-+ *		*flags* must be 0 except for skb-type dynptrs.
-+ *
-+ *		For skb-type dynptrs:
-+ *		    *  All data slices of the dynptr are automatically
-+ *		       invalidated after **bpf_dynptr_write**\ (). If you wish to
-+ *		       avoid this, please perform the write using direct data slices
-+ *		       instead.
-+ *
-+ *		    *  For *flags*, please see the flags accepted by
-+ *		       **bpf_skb_store_bytes**\ ().
++ *		For skb-type and xdp-type dynptrs:
++ *		    * The data slice is automatically invalidated anytime a
++ *		      helper call that changes the underlying packet buffer
++ *		      (eg **bpf_skb_pull_data**\ (), **bpf_xdp_adjust_head**\ ())
+  *		      is called.
   *	Return
-  *		0 on success, -E2BIG if *offset* + *len* exceeds the length
-  *		of *dst*'s data, -EINVAL if *dst* is an invalid dynptr or if *dst*
-- *		is a read-only dynptr or if *flags* is not 0.
-+ *		is a read-only dynptr or if *flags* is not correct. For skb-type dyn=
-ptrs,
-+ *		other errors correspond to errors returned by **bpf_skb_store_bytes*=
-*\ ().
-  *
-  * void *bpf_dynptr_data(const struct bpf_dynptr *ptr, u32 offset, u32 l=
-en)
-  *	Description
-  *		Get a pointer to the underlying dynptr data.
-  *
-  *		*len* must be a statically known value. The returned data slice
-- *		is invalidated whenever the dynptr is invalidated.
-- *	Return
-- *		Pointer to the underlying dynptr data, NULL if the dynptr is
-- *		read-only, if the dynptr is invalid, or if the offset and length
-- *		is out of bounds.
-+ *		is invalidated whenever the dynptr is invalidated. Please note
-+ *		that if the dynptr is read-only, then the returned data slice will
-+ *		be read-only.
-+ *
-+ *		For skb-type dynptrs:
-+ *		    * If *offset* + *len* extends into the skb's paged buffers,
-+ *		      the user should manually pull the skb with **bpf_skb_pull_data=
-**\ ()
-+ *		      and try again.
-+ *
-+ *		    * The data slice is automatically invalidated anytime
-+ *		      **bpf_dynptr_write**\ () or a helper call that changes
-+ *		      the underlying packet buffer (eg **bpf_skb_pull_data**\ ())
-+ *		      is called.
-+ *	Return
-+ *		Pointer to the underlying dynptr data, NULL if the dynptr is invalid=
+  *		Pointer to the underlying dynptr data, NULL if the dynptr is invalid=
 ,
-+ *		or if the offset and length is out of bounds or in a paged buffer fo=
+  *		or if the offset and length is out of bounds or in a paged buffer fo=
 r
-+ *		skb-type dynptrs.
+- *		skb-type dynptrs.
++ *		skb-type dynptrs or across fragments for xdp-type dynptrs.
   *
   * s64 bpf_tcp_raw_gen_syncookie_ipv4(struct iphdr *iph, struct tcphdr *=
 th, u32 th_len)
   *	Description
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index b4da17688c65..35d0780f2eb9 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -207,6 +207,11 @@ enum btf_kfunc_hook {
- 	BTF_KFUNC_HOOK_TRACING,
- 	BTF_KFUNC_HOOK_SYSCALL,
- 	BTF_KFUNC_HOOK_FMODRET,
-+	BTF_KFUNC_HOOK_CGROUP_SKB,
-+	BTF_KFUNC_HOOK_SCHED_ACT,
-+	BTF_KFUNC_HOOK_SK_SKB,
-+	BTF_KFUNC_HOOK_SOCKET_FILTER,
-+	BTF_KFUNC_HOOK_LWT,
- 	BTF_KFUNC_HOOK_MAX,
- };
-=20
-@@ -7609,6 +7614,19 @@ static int bpf_prog_type_to_kfunc_hook(enum bpf_pr=
-og_type prog_type)
- 		return BTF_KFUNC_HOOK_TRACING;
- 	case BPF_PROG_TYPE_SYSCALL:
- 		return BTF_KFUNC_HOOK_SYSCALL;
-+	case BPF_PROG_TYPE_CGROUP_SKB:
-+		return BTF_KFUNC_HOOK_CGROUP_SKB;
-+	case BPF_PROG_TYPE_SCHED_ACT:
-+		return BTF_KFUNC_HOOK_SCHED_ACT;
-+	case BPF_PROG_TYPE_SK_SKB:
-+		return BTF_KFUNC_HOOK_SK_SKB;
-+	case BPF_PROG_TYPE_SOCKET_FILTER:
-+		return BTF_KFUNC_HOOK_SOCKET_FILTER;
-+	case BPF_PROG_TYPE_LWT_OUT:
-+	case BPF_PROG_TYPE_LWT_IN:
-+	case BPF_PROG_TYPE_LWT_XMIT:
-+	case BPF_PROG_TYPE_LWT_SEG6LOCAL:
-+		return BTF_KFUNC_HOOK_LWT;
- 	default:
- 		return BTF_KFUNC_HOOK_MAX;
- 	}
 diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index 458db2db2f81..a79d522b3a26 100644
+index a79d522b3a26..ede199107016 100644
 --- a/kernel/bpf/helpers.c
 +++ b/kernel/bpf/helpers.c
-@@ -1420,11 +1420,21 @@ static bool bpf_dynptr_is_rdonly(const struct bpf=
-_dynptr_kern *ptr)
- 	return ptr->size & DYNPTR_RDONLY_BIT;
- }
-=20
-+void bpf_dynptr_set_rdonly(struct bpf_dynptr_kern *ptr)
-+{
-+	ptr->size |=3D DYNPTR_RDONLY_BIT;
-+}
-+
- static void bpf_dynptr_set_type(struct bpf_dynptr_kern *ptr, enum bpf_dy=
-nptr_type type)
- {
- 	ptr->size |=3D type << DYNPTR_TYPE_SHIFT;
- }
-=20
-+static enum bpf_dynptr_type bpf_dynptr_get_type(const struct bpf_dynptr_=
-kern *ptr)
-+{
-+	return (ptr->size & ~(DYNPTR_RDONLY_BIT)) >> DYNPTR_TYPE_SHIFT;
-+}
-+
- u32 bpf_dynptr_get_size(const struct bpf_dynptr_kern *ptr)
- {
- 	return ptr->size & DYNPTR_SIZE_MASK;
-@@ -1497,6 +1507,7 @@ static const struct bpf_func_proto bpf_dynptr_from_=
-mem_proto =3D {
- BPF_CALL_5(bpf_dynptr_read, void *, dst, u32, len, const struct bpf_dynp=
-tr_kern *, src,
- 	   u32, offset, u64, flags)
- {
-+	enum bpf_dynptr_type type;
- 	int err;
-=20
- 	if (!src->data || flags)
-@@ -1506,13 +1517,23 @@ BPF_CALL_5(bpf_dynptr_read, void *, dst, u32, len=
-, const struct bpf_dynptr_kern
- 	if (err)
- 		return err;
-=20
--	/* Source and destination may possibly overlap, hence use memmove to
--	 * copy the data. E.g. bpf_dynptr_from_mem may create two dynptr
--	 * pointing to overlapping PTR_TO_MAP_VALUE regions.
--	 */
--	memmove(dst, src->data + src->offset + offset, len);
-+	type =3D bpf_dynptr_get_type(src);
-=20
--	return 0;
-+	switch (type) {
-+	case BPF_DYNPTR_TYPE_LOCAL:
-+	case BPF_DYNPTR_TYPE_RINGBUF:
-+		/* Source and destination may possibly overlap, hence use memmove to
-+		 * copy the data. E.g. bpf_dynptr_from_mem may create two dynptr
-+		 * pointing to overlapping PTR_TO_MAP_VALUE regions.
-+		 */
-+		memmove(dst, src->data + src->offset + offset, len);
-+		return 0;
-+	case BPF_DYNPTR_TYPE_SKB:
-+		return __bpf_skb_load_bytes(src->data, src->offset + offset, dst, len)=
+@@ -1530,6 +1530,8 @@ BPF_CALL_5(bpf_dynptr_read, void *, dst, u32, len, =
+const struct bpf_dynptr_kern
+ 		return 0;
+ 	case BPF_DYNPTR_TYPE_SKB:
+ 		return __bpf_skb_load_bytes(src->data, src->offset + offset, dst, len)=
 ;
-+	default:
-+		WARN_ONCE(true, "bpf_dynptr_read: unknown dynptr type %d\n", type);
-+		return -EFAULT;
-+	}
- }
-=20
- static const struct bpf_func_proto bpf_dynptr_read_proto =3D {
-@@ -1529,22 +1550,36 @@ static const struct bpf_func_proto bpf_dynptr_rea=
-d_proto =3D {
- BPF_CALL_5(bpf_dynptr_write, const struct bpf_dynptr_kern *, dst, u32, o=
-ffset, void *, src,
- 	   u32, len, u64, flags)
- {
-+	enum bpf_dynptr_type type;
- 	int err;
-=20
--	if (!dst->data || flags || bpf_dynptr_is_rdonly(dst))
-+	if (!dst->data || bpf_dynptr_is_rdonly(dst))
- 		return -EINVAL;
-=20
- 	err =3D bpf_dynptr_check_off_len(dst, offset, len);
- 	if (err)
- 		return err;
-=20
--	/* Source and destination may possibly overlap, hence use memmove to
--	 * copy the data. E.g. bpf_dynptr_from_mem may create two dynptr
--	 * pointing to overlapping PTR_TO_MAP_VALUE regions.
--	 */
--	memmove(dst->data + dst->offset + offset, src, len);
-+	type =3D bpf_dynptr_get_type(dst);
-=20
--	return 0;
-+	switch (type) {
-+	case BPF_DYNPTR_TYPE_LOCAL:
-+	case BPF_DYNPTR_TYPE_RINGBUF:
++	case BPF_DYNPTR_TYPE_XDP:
++		return __bpf_xdp_load_bytes(src->data, src->offset + offset, dst, len)=
+;
+ 	default:
+ 		WARN_ONCE(true, "bpf_dynptr_read: unknown dynptr type %d\n", type);
+ 		return -EFAULT;
+@@ -1576,6 +1578,10 @@ BPF_CALL_5(bpf_dynptr_write, const struct bpf_dynp=
+tr_kern *, dst, u32, offset, v
+ 	case BPF_DYNPTR_TYPE_SKB:
+ 		return __bpf_skb_store_bytes(dst->data, dst->offset + offset, src, len=
+,
+ 					     flags);
++	case BPF_DYNPTR_TYPE_XDP:
 +		if (flags)
 +			return -EINVAL;
-+		/* Source and destination may possibly overlap, hence use memmove to
-+		 * copy the data. E.g. bpf_dynptr_from_mem may create two dynptr
-+		 * pointing to overlapping PTR_TO_MAP_VALUE regions.
++		return __bpf_xdp_store_bytes(dst->data, dst->offset + offset, src, len=
+);
+ 	default:
+ 		WARN_ONCE(true, "bpf_dynptr_write: unknown dynptr type %d\n", type);
+ 		return -EFAULT;
+@@ -1631,6 +1637,12 @@ BPF_CALL_3(bpf_dynptr_data, const struct bpf_dynpt=
+r_kern *, ptr, u32, offset, u3
+ 		data =3D skb->data;
+ 		break;
+ 	}
++	case BPF_DYNPTR_TYPE_XDP:
++		/* if the requested data in across fragments, then it cannot
++		 * be accessed directly - bpf_xdp_pointer will return NULL
 +		 */
-+		memmove(dst->data + dst->offset + offset, src, len);
-+		return 0;
-+	case BPF_DYNPTR_TYPE_SKB:
-+		return __bpf_skb_store_bytes(dst->data, dst->offset + offset, src, len=
-,
-+					     flags);
-+	default:
-+		WARN_ONCE(true, "bpf_dynptr_write: unknown dynptr type %d\n", type);
-+		return -EFAULT;
-+	}
- }
-=20
- static const struct bpf_func_proto bpf_dynptr_write_proto =3D {
-@@ -1560,6 +1595,8 @@ static const struct bpf_func_proto bpf_dynptr_write=
-_proto =3D {
-=20
- BPF_CALL_3(bpf_dynptr_data, const struct bpf_dynptr_kern *, ptr, u32, of=
-fset, u32, len)
- {
-+	enum bpf_dynptr_type type;
-+	void *data;
- 	int err;
-=20
- 	if (!ptr->data)
-@@ -1569,10 +1606,36 @@ BPF_CALL_3(bpf_dynptr_data, const struct bpf_dynp=
-tr_kern *, ptr, u32, offset, u3
- 	if (err)
++		return (unsigned long)bpf_xdp_pointer(ptr->data,
++						      ptr->offset + offset, len);
+ 	default:
+ 		WARN_ONCE(true, "bpf_dynptr_data: unknown dynptr type %d\n", type);
  		return 0;
-=20
--	if (bpf_dynptr_is_rdonly(ptr))
--		return 0;
-+	type =3D bpf_dynptr_get_type(ptr);
-+
-+	switch (type) {
-+	case BPF_DYNPTR_TYPE_LOCAL:
-+	case BPF_DYNPTR_TYPE_RINGBUF:
-+		if (bpf_dynptr_is_rdonly(ptr))
-+			return 0;
-+
-+		data =3D ptr->data;
-+		break;
-+	case BPF_DYNPTR_TYPE_SKB:
-+	{
-+		struct sk_buff *skb =3D ptr->data;
-=20
--	return (unsigned long)(ptr->data + ptr->offset + offset);
-+		/* if the data is paged, the caller needs to pull it first */
-+		if (ptr->offset + offset + len > skb_headlen(skb))
-+			return 0;
-+
-+		/* Depending on the prog type, the data slice will be either
-+		 * read-writable or read-only. The verifier will enforce that
-+		 * any writes to read-only data slices are rejected
-+		 */
-+		data =3D skb->data;
-+		break;
-+	}
-+	default:
-+		WARN_ONCE(true, "bpf_dynptr_data: unknown dynptr type %d\n", type);
-+		return 0;
-+	}
-+	return (unsigned long)(data + ptr->offset + offset);
- }
-=20
- static const struct bpf_func_proto bpf_dynptr_data_proto =3D {
 diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 853ab671be0b..3b022abc34e3 100644
+index 3b022abc34e3..fce06cb44598 100644
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
-@@ -741,6 +741,8 @@ static enum bpf_dynptr_type arg_to_dynptr_type(enum b=
+@@ -743,6 +743,8 @@ static enum bpf_dynptr_type arg_to_dynptr_type(enum b=
 pf_arg_type arg_type)
- 		return BPF_DYNPTR_TYPE_LOCAL;
- 	case DYNPTR_TYPE_RINGBUF:
  		return BPF_DYNPTR_TYPE_RINGBUF;
-+	case DYNPTR_TYPE_SKB:
-+		return BPF_DYNPTR_TYPE_SKB;
+ 	case DYNPTR_TYPE_SKB:
+ 		return BPF_DYNPTR_TYPE_SKB;
++	case DYNPTR_TYPE_XDP:
++		return BPF_DYNPTR_TYPE_XDP;
  	default:
  		return BPF_DYNPTR_TYPE_INVALID;
  	}
-@@ -1625,6 +1627,12 @@ static bool reg_is_pkt_pointer_any(const struct bp=
-f_reg_state *reg)
- 	       reg->type =3D=3D PTR_TO_PACKET_END;
+@@ -1630,7 +1632,7 @@ static bool reg_is_pkt_pointer_any(const struct bpf=
+_reg_state *reg)
+ static bool reg_is_dynptr_slice_pkt(const struct bpf_reg_state *reg)
+ {
+ 	return base_type(reg->type) =3D=3D PTR_TO_MEM &&
+-		reg->type & DYNPTR_TYPE_SKB;
++		(reg->type & DYNPTR_TYPE_SKB || reg->type & DYNPTR_TYPE_XDP);
  }
 =20
-+static bool reg_is_dynptr_slice_pkt(const struct bpf_reg_state *reg)
-+{
-+	return base_type(reg->type) =3D=3D PTR_TO_MEM &&
-+		reg->type & DYNPTR_TYPE_SKB;
-+}
-+
  /* Unmodified PTR_TO_PACKET[_META,_END] register from ctx access. */
- static bool reg_is_init_pkt_pointer(const struct bpf_reg_state *reg,
- 				    enum bpf_reg_type which)
-@@ -6148,7 +6156,7 @@ static int process_kptr_func(struct bpf_verifier_en=
-v *env, int regno,
-  * type, and declare it as 'const struct bpf_dynptr *' in their prototyp=
-e.
-  */
- int process_dynptr_func(struct bpf_verifier_env *env, int regno, int ins=
-n_idx,
--			enum bpf_arg_type arg_type)
-+			enum bpf_arg_type arg_type, int func_id)
- {
- 	struct bpf_reg_state *regs =3D cur_regs(env), *reg =3D &regs[regno];
- 	int err;
-@@ -6233,6 +6241,9 @@ int process_dynptr_func(struct bpf_verifier_env *en=
+@@ -6244,6 +6246,9 @@ int process_dynptr_func(struct bpf_verifier_env *en=
 v, int regno, int insn_idx,
- 			case DYNPTR_TYPE_RINGBUF:
- 				err_extra =3D "ringbuf";
+ 			case DYNPTR_TYPE_SKB:
+ 				err_extra =3D "skb ";
  				break;
-+			case DYNPTR_TYPE_SKB:
-+				err_extra =3D "skb ";
++			case DYNPTR_TYPE_XDP:
++				err_extra =3D "xdp ";
 +				break;
  			default:
  				err_extra =3D "<unknown>";
  				break;
-@@ -6581,6 +6592,28 @@ int check_func_arg_reg_off(struct bpf_verifier_env=
- *env,
- 	}
- }
-=20
-+static struct bpf_reg_state *get_dynptr_arg_reg(struct bpf_verifier_env =
-*env,
-+						const struct bpf_func_proto *fn,
-+						struct bpf_reg_state *regs)
-+{
-+	struct bpf_reg_state *state =3D NULL;
-+	int i;
-+
-+	for (i =3D 0; i < MAX_BPF_FUNC_REG_ARGS; i++)
-+		if (arg_type_is_dynptr(fn->arg_type[i])) {
-+			if (state) {
-+				verbose(env, "verifier internal error: multiple dynptr args\n");
-+				return NULL;
-+			}
-+			state =3D &regs[BPF_REG_1 + i];
-+		}
-+
-+	if (!state)
-+		verbose(env, "verifier internal error: no dynptr arg found\n");
-+
-+	return state;
-+}
-+
- static int dynptr_id(struct bpf_verifier_env *env, struct bpf_reg_state =
-*reg)
- {
- 	struct bpf_func_state *state =3D func(env, reg);
-@@ -6607,6 +6640,24 @@ static int dynptr_ref_obj_id(struct bpf_verifier_e=
-nv *env, struct bpf_reg_state
- 	return state->stack[spi].spilled_ptr.ref_obj_id;
- }
-=20
-+static enum bpf_dynptr_type dynptr_get_type(struct bpf_verifier_env *env=
-,
-+					    struct bpf_reg_state *reg)
-+{
-+	struct bpf_func_state *state =3D func(env, reg);
-+	int spi;
-+
-+	if (reg->type =3D=3D CONST_PTR_TO_DYNPTR)
-+		return reg->dynptr.type;
-+
-+	spi =3D __get_spi(reg->off);
-+	if (spi < 0) {
-+		verbose(env, "verifier internal error: invalid spi when querying dynpt=
-r type\n");
-+		return BPF_DYNPTR_TYPE_INVALID;
-+	}
-+
-+	return state->stack[spi].spilled_ptr.dynptr.type;
-+}
-+
- static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
- 			  struct bpf_call_arg_meta *meta,
- 			  const struct bpf_func_proto *fn,
-@@ -6819,7 +6870,7 @@ static int check_func_arg(struct bpf_verifier_env *=
-env, u32 arg,
- 		err =3D check_mem_size_reg(env, reg, regno, true, meta);
- 		break;
- 	case ARG_PTR_TO_DYNPTR:
--		err =3D process_dynptr_func(env, regno, insn_idx, arg_type);
-+		err =3D process_dynptr_func(env, regno, insn_idx, arg_type, meta->func=
-_id);
- 		if (err)
- 			return err;
- 		break;
-@@ -7267,6 +7318,9 @@ static int check_func_proto(const struct bpf_func_p=
+@@ -7319,7 +7324,7 @@ static int check_func_proto(const struct bpf_func_p=
 roto *fn, int func_id)
-=20
  /* Packet data might have moved, any old PTR_TO_PACKET[_META,_END]
   * are now invalid, so turn them into unknown SCALAR_VALUE.
-+ *
-+ * This also applies to dynptr slices belonging to skb dynptrs,
-+ * since these slices point to packet data.
+  *
+- * This also applies to dynptr slices belonging to skb dynptrs,
++ * This also applies to dynptr slices belonging to skb or xdp dynptrs,
+  * since these slices point to packet data.
   */
  static void clear_all_pkt_pointers(struct bpf_verifier_env *env)
- {
-@@ -7274,7 +7328,7 @@ static void clear_all_pkt_pointers(struct bpf_verif=
-ier_env *env)
- 	struct bpf_reg_state *reg;
-=20
- 	bpf_for_each_reg_in_vstate(env->cur_state, state, reg, ({
--		if (reg_is_pkt_pointer_any(reg))
-+		if (reg_is_pkt_pointer_any(reg) || reg_is_dynptr_slice_pkt(reg))
- 			__mark_reg_unknown(env, reg);
- 	}));
- }
-@@ -7958,6 +8012,7 @@ static int check_helper_call(struct bpf_verifier_en=
-v *env, struct bpf_insn *insn
- 			     int *insn_idx_p)
- {
- 	enum bpf_prog_type prog_type =3D resolve_prog_type(env->prog);
-+	enum bpf_dynptr_type dynptr_type =3D BPF_DYNPTR_TYPE_INVALID;
- 	const struct bpf_func_proto *fn =3D NULL;
- 	enum bpf_return_type ret_type;
- 	enum bpf_type_flag ret_flag;
-@@ -8140,43 +8195,61 @@ static int check_helper_call(struct bpf_verifier_=
+@@ -8316,27 +8321,30 @@ static int check_helper_call(struct bpf_verifier_=
 env *env, struct bpf_insn *insn
- 		}
- 		break;
- 	case BPF_FUNC_dynptr_data:
--		for (i =3D 0; i < MAX_BPF_FUNC_REG_ARGS; i++) {
--			if (arg_type_is_dynptr(fn->arg_type[i])) {
--				struct bpf_reg_state *reg =3D &regs[BPF_REG_1 + i];
--				int id, ref_obj_id;
--
--				if (meta.dynptr_id) {
--					verbose(env, "verifier internal error: meta.dynptr_id already set\n=
-");
--					return -EFAULT;
--				}
-+	{
-+		struct bpf_reg_state *reg;
-+		int id, ref_obj_id;
-=20
--				if (meta.ref_obj_id) {
--					verbose(env, "verifier internal error: meta.ref_obj_id already set\=
-n");
--					return -EFAULT;
--				}
-+		reg =3D get_dynptr_arg_reg(env, fn, regs);
-+		if (!reg)
-+			return -EFAULT;
-=20
--				id =3D dynptr_id(env, reg);
--				if (id < 0) {
--					verbose(env, "verifier internal error: failed to obtain dynptr id\n=
-");
--					return id;
--				}
-+		if (meta.dynptr_id) {
-+			verbose(env, "verifier internal error: meta.dynptr_id already set\n")=
-;
-+			return -EFAULT;
-+		}
-+		if (meta.ref_obj_id) {
-+			verbose(env, "verifier internal error: meta.ref_obj_id already set\n"=
-);
-+			return -EFAULT;
-+		}
-=20
--				ref_obj_id =3D dynptr_ref_obj_id(env, reg);
--				if (ref_obj_id < 0) {
--					verbose(env, "verifier internal error: failed to obtain dynptr ref_=
-obj_id\n");
--					return ref_obj_id;
--				}
-+		id =3D dynptr_id(env, reg);
-+		if (id < 0) {
-+			verbose(env, "verifier internal error: failed to obtain dynptr id\n")=
-;
-+			return id;
-+		}
-=20
--				meta.dynptr_id =3D id;
--				meta.ref_obj_id =3D ref_obj_id;
--				break;
--			}
-+		ref_obj_id =3D dynptr_ref_obj_id(env, reg);
-+		if (ref_obj_id < 0) {
-+			verbose(env, "verifier internal error: failed to obtain dynptr ref_ob=
-j_id\n");
-+			return ref_obj_id;
- 		}
--		if (i =3D=3D MAX_BPF_FUNC_REG_ARGS) {
--			verbose(env, "verifier internal error: no dynptr in bpf_dynptr_data()=
-\n");
-+
-+		meta.dynptr_id =3D id;
-+		meta.ref_obj_id =3D ref_obj_id;
-+
-+		dynptr_type =3D dynptr_get_type(env, reg);
-+		if (dynptr_type =3D=3D BPF_DYNPTR_TYPE_INVALID)
- 			return -EFAULT;
--		}
-+
- 		break;
-+	}
-+	case BPF_FUNC_dynptr_write:
-+	{
-+		struct bpf_reg_state *reg;
-+
-+		reg =3D get_dynptr_arg_reg(env, fn, regs);
-+		if (!reg)
-+			return -EFAULT;
-+
-+		dynptr_type =3D dynptr_get_type(env, reg);
-+		if (dynptr_type =3D=3D BPF_DYNPTR_TYPE_INVALID)
-+			return -EFAULT;
-+
-+		if (dynptr_type =3D=3D BPF_DYNPTR_TYPE_SKB)
-+			changes_data =3D true;
-+
-+		break;
-+	}
- 	case BPF_FUNC_user_ringbuf_drain:
- 		err =3D __check_func_call(env, insn, insn_idx_p, meta.subprogno,
- 					set_user_ringbuf_callback_state);
-@@ -8243,6 +8316,28 @@ static int check_helper_call(struct bpf_verifier_e=
-nv *env, struct bpf_insn *insn
  		mark_reg_known_zero(env, regs, BPF_REG_0);
  		regs[BPF_REG_0].type =3D PTR_TO_MEM | ret_flag;
  		regs[BPF_REG_0].mem_size =3D meta.mem_size;
-+		if (func_id =3D=3D BPF_FUNC_dynptr_data &&
-+		    dynptr_type =3D=3D BPF_DYNPTR_TYPE_SKB) {
-+			bool seen_direct_write =3D env->seen_direct_write;
-+
-+			regs[BPF_REG_0].type |=3D DYNPTR_TYPE_SKB;
-+			if (!may_access_direct_pkt_data(env, NULL, BPF_WRITE))
-+				regs[BPF_REG_0].type |=3D MEM_RDONLY;
-+			else
-+				/*
-+				 * Calling may_access_direct_pkt_data() will set
-+				 * env->seen_direct_write to true if the skb is
-+				 * writable. As an optimization, we can ignore
-+				 * setting env->seen_direct_write.
-+				 *
-+				 * env->seen_direct_write is used by skb
-+				 * programs to determine whether the skb's page
-+				 * buffers should be cloned. Since data slice
-+				 * writes would only be to the head, we can skip
-+				 * this.
-+				 */
-+				env->seen_direct_write =3D seen_direct_write;
-+		}
+-		if (func_id =3D=3D BPF_FUNC_dynptr_data &&
+-		    dynptr_type =3D=3D BPF_DYNPTR_TYPE_SKB) {
+-			bool seen_direct_write =3D env->seen_direct_write;
++		if (func_id =3D=3D BPF_FUNC_dynptr_data) {
++			if (dynptr_type =3D=3D BPF_DYNPTR_TYPE_SKB) {
++				bool seen_direct_write =3D env->seen_direct_write;
+=20
+-			regs[BPF_REG_0].type |=3D DYNPTR_TYPE_SKB;
+-			if (!may_access_direct_pkt_data(env, NULL, BPF_WRITE))
+-				regs[BPF_REG_0].type |=3D MEM_RDONLY;
+-			else
+-				/*
+-				 * Calling may_access_direct_pkt_data() will set
+-				 * env->seen_direct_write to true if the skb is
+-				 * writable. As an optimization, we can ignore
+-				 * setting env->seen_direct_write.
+-				 *
+-				 * env->seen_direct_write is used by skb
+-				 * programs to determine whether the skb's page
+-				 * buffers should be cloned. Since data slice
+-				 * writes would only be to the head, we can skip
+-				 * this.
+-				 */
+-				env->seen_direct_write =3D seen_direct_write;
++				regs[BPF_REG_0].type |=3D DYNPTR_TYPE_SKB;
++				if (!may_access_direct_pkt_data(env, NULL, BPF_WRITE))
++					regs[BPF_REG_0].type |=3D MEM_RDONLY;
++				else
++					/*
++					 * Calling may_access_direct_pkt_data() will set
++					 * env->seen_direct_write to true if the skb is
++					 * writable. As an optimization, we can ignore
++					 * setting env->seen_direct_write.
++					 *
++					 * env->seen_direct_write is used by skb
++					 * programs to determine whether the skb's page
++					 * buffers should be cloned. Since data slice
++					 * writes would only be to the head, we can skip
++					 * this.
++					 */
++					env->seen_direct_write =3D seen_direct_write;
++			} else if (dynptr_type =3D=3D BPF_DYNPTR_TYPE_XDP) {
++				regs[BPF_REG_0].type |=3D DYNPTR_TYPE_XDP;
++			}
+ 		}
  		break;
  	case RET_PTR_TO_MEM_OR_BTF_ID:
- 	{
-@@ -8649,6 +8744,7 @@ enum special_kfunc_type {
- 	KF_bpf_list_pop_back,
+@@ -8745,6 +8753,7 @@ enum special_kfunc_type {
  	KF_bpf_cast_to_kern_ctx,
  	KF_bpf_rdonly_cast,
-+	KF_bpf_dynptr_from_skb,
+ 	KF_bpf_dynptr_from_skb,
++	KF_bpf_dynptr_from_xdp,
  	KF_bpf_rcu_read_lock,
  	KF_bpf_rcu_read_unlock,
  };
-@@ -8662,6 +8758,7 @@ BTF_ID(func, bpf_list_pop_front)
- BTF_ID(func, bpf_list_pop_back)
+@@ -8759,6 +8768,7 @@ BTF_ID(func, bpf_list_pop_back)
  BTF_ID(func, bpf_cast_to_kern_ctx)
  BTF_ID(func, bpf_rdonly_cast)
-+BTF_ID(func, bpf_dynptr_from_skb)
+ BTF_ID(func, bpf_dynptr_from_skb)
++BTF_ID(func, bpf_dynptr_from_xdp)
  BTF_SET_END(special_kfunc_set)
 =20
  BTF_ID_LIST(special_kfunc_list)
-@@ -8673,6 +8770,7 @@ BTF_ID(func, bpf_list_pop_front)
- BTF_ID(func, bpf_list_pop_back)
+@@ -8771,6 +8781,7 @@ BTF_ID(func, bpf_list_pop_back)
  BTF_ID(func, bpf_cast_to_kern_ctx)
  BTF_ID(func, bpf_rdonly_cast)
-+BTF_ID(func, bpf_dynptr_from_skb)
+ BTF_ID(func, bpf_dynptr_from_skb)
++BTF_ID(func, bpf_dynptr_from_xdp)
  BTF_ID(func, bpf_rcu_read_lock)
  BTF_ID(func, bpf_rcu_read_unlock)
 =20
-@@ -9263,17 +9361,26 @@ static int check_kfunc_args(struct bpf_verifier_e=
-nv *env, struct bpf_kfunc_call_
- 				return ret;
- 			break;
- 		case KF_ARG_PTR_TO_DYNPTR:
-+		{
-+			enum bpf_arg_type dynptr_arg_type =3D ARG_PTR_TO_DYNPTR;
-+
- 			if (reg->type !=3D PTR_TO_STACK &&
- 			    reg->type !=3D CONST_PTR_TO_DYNPTR) {
- 				verbose(env, "arg#%d expected pointer to stack or dynptr_ptr\n", i);
- 				return -EINVAL;
- 			}
+@@ -9372,6 +9383,8 @@ static int check_kfunc_args(struct bpf_verifier_env=
+ *env, struct bpf_kfunc_call_
 =20
--			ret =3D process_dynptr_func(env, regno, insn_idx,
--						  ARG_PTR_TO_DYNPTR | MEM_RDONLY);
-+			if (meta->func_id =3D=3D special_kfunc_list[KF_bpf_dynptr_from_skb])
-+				dynptr_arg_type |=3D MEM_UNINIT | DYNPTR_TYPE_SKB;
-+			else
-+				dynptr_arg_type |=3D MEM_RDONLY;
-+
-+			ret =3D process_dynptr_func(env, regno, insn_idx, dynptr_arg_type,
-+						  meta->func_id);
- 			if (ret < 0)
- 				return ret;
- 			break;
-+		}
- 		case KF_ARG_PTR_TO_LIST_HEAD:
- 			if (reg->type !=3D PTR_TO_MAP_VALUE &&
- 			    reg->type !=3D (PTR_TO_BTF_ID | MEM_ALLOC)) {
-@@ -15857,6 +15964,14 @@ static int fixup_kfunc_call(struct bpf_verifier_=
-env *env, struct bpf_insn *insn,
- 		   desc->func_id =3D=3D special_kfunc_list[KF_bpf_rdonly_cast]) {
- 		insn_buf[0] =3D BPF_MOV64_REG(BPF_REG_0, BPF_REG_1);
- 		*cnt =3D 1;
-+	} else if (desc->func_id =3D=3D special_kfunc_list[KF_bpf_dynptr_from_s=
-kb]) {
-+		bool is_rdonly =3D !may_access_direct_pkt_data(env, NULL, BPF_WRITE);
-+		struct bpf_insn addr[2] =3D { BPF_LD_IMM64(BPF_REG_4, is_rdonly) };
-+
-+		insn_buf[0] =3D addr[0];
-+		insn_buf[1] =3D addr[1];
-+		insn_buf[2] =3D *insn;
-+		*cnt =3D 3;
- 	}
- 	return 0;
- }
+ 			if (meta->func_id =3D=3D special_kfunc_list[KF_bpf_dynptr_from_skb])
+ 				dynptr_arg_type |=3D MEM_UNINIT | DYNPTR_TYPE_SKB;
++			else if (meta->func_id =3D=3D special_kfunc_list[KF_bpf_dynptr_from_x=
+dp])
++				dynptr_arg_type |=3D MEM_UNINIT | DYNPTR_TYPE_XDP;
+ 			else
+ 				dynptr_arg_type |=3D MEM_RDONLY;
+=20
 diff --git a/net/core/filter.c b/net/core/filter.c
-index 6da78b3d381e..ddb47126071a 100644
+index ddb47126071a..fb77d0c9bad6 100644
 --- a/net/core/filter.c
 +++ b/net/core/filter.c
-@@ -1684,8 +1684,8 @@ static inline void bpf_pull_mac_rcsum(struct sk_buf=
-f *skb)
- 		skb_postpull_rcsum(skb, skb_mac_header(skb), skb->mac_len);
- }
-=20
--BPF_CALL_5(bpf_skb_store_bytes, struct sk_buff *, skb, u32, offset,
--	   const void *, from, u32, len, u64, flags)
-+int __bpf_skb_store_bytes(struct sk_buff *skb, u32 offset, const void *f=
-rom,
-+			  u32 len, u64 flags)
- {
- 	void *ptr;
-=20
-@@ -1710,6 +1710,12 @@ BPF_CALL_5(bpf_skb_store_bytes, struct sk_buff *, =
-skb, u32, offset,
- 	return 0;
- }
-=20
-+BPF_CALL_5(bpf_skb_store_bytes, struct sk_buff *, skb, u32, offset,
-+	   const void *, from, u32, len, u64, flags)
-+{
-+	return __bpf_skb_store_bytes(skb, offset, from, len, flags);
-+}
-+
- static const struct bpf_func_proto bpf_skb_store_bytes_proto =3D {
- 	.func		=3D bpf_skb_store_bytes,
- 	.gpl_only	=3D false,
-@@ -1721,8 +1727,7 @@ static const struct bpf_func_proto bpf_skb_store_by=
-tes_proto =3D {
- 	.arg5_type	=3D ARG_ANYTHING,
+@@ -3855,7 +3855,19 @@ static const struct bpf_func_proto sk_skb_change_h=
+ead_proto =3D {
+ 	.arg3_type	=3D ARG_ANYTHING,
  };
 =20
--BPF_CALL_4(bpf_skb_load_bytes, const struct sk_buff *, skb, u32, offset,
--	   void *, to, u32, len)
-+int __bpf_skb_load_bytes(const struct sk_buff *skb, u32 offset, void *to=
-, u32 len)
- {
- 	void *ptr;
-=20
-@@ -1741,6 +1746,12 @@ BPF_CALL_4(bpf_skb_load_bytes, const struct sk_buf=
-f *, skb, u32, offset,
- 	return -EFAULT;
- }
-=20
-+BPF_CALL_4(bpf_skb_load_bytes, const struct sk_buff *, skb, u32, offset,
-+	   void *, to, u32, len)
-+{
-+	return __bpf_skb_load_bytes(skb, offset, to, len);
-+}
-+
- static const struct bpf_func_proto bpf_skb_load_bytes_proto =3D {
- 	.func		=3D bpf_skb_load_bytes,
- 	.gpl_only	=3D false,
-@@ -1852,6 +1863,22 @@ static const struct bpf_func_proto bpf_skb_pull_da=
-ta_proto =3D {
- 	.arg2_type	=3D ARG_ANYTHING,
- };
-=20
-+int bpf_dynptr_from_skb(struct sk_buff *skb, u64 flags,
-+			struct bpf_dynptr_kern *ptr, int is_rdonly)
+-BPF_CALL_1(bpf_xdp_get_buff_len, struct  xdp_buff*, xdp)
++int bpf_dynptr_from_xdp(struct xdp_buff *xdp, u64 flags, struct bpf_dynp=
+tr_kern *ptr)
 +{
 +	if (flags) {
 +		bpf_dynptr_set_null(ptr);
 +		return -EINVAL;
 +	}
 +
-+	bpf_dynptr_init(ptr, skb, BPF_DYNPTR_TYPE_SKB, 0, skb->len);
-+
-+	if (is_rdonly)
-+		bpf_dynptr_set_rdonly(ptr);
++	bpf_dynptr_init(ptr, xdp, BPF_DYNPTR_TYPE_XDP, 0, xdp_get_buff_len(xdp)=
+);
 +
 +	return 0;
 +}
 +
- BPF_CALL_1(bpf_sk_fullsock, struct sock *, sk)
++BPF_CALL_1(bpf_xdp_get_buff_len, struct xdp_buff*, xdp)
  {
- 	return sk_fullsock(sk) ? (unsigned long)sk : (unsigned long)NULL;
-@@ -11607,3 +11634,28 @@ bpf_sk_base_func_proto(enum bpf_func_id func_id)
+ 	return xdp_get_buff_len(xdp);
+ }
+@@ -3957,7 +3969,7 @@ static void bpf_xdp_copy_buf(struct xdp_buff *xdp, =
+unsigned long off,
+ 	}
+ }
 =20
+-static void *bpf_xdp_pointer(struct xdp_buff *xdp, u32 offset, u32 len)
++void *bpf_xdp_pointer(struct xdp_buff *xdp, u32 offset, u32 len)
+ {
+ 	struct skb_shared_info *sinfo =3D xdp_get_shared_info_from_buff(xdp);
+ 	u32 size =3D xdp->data_end - xdp->data;
+@@ -3988,8 +4000,7 @@ static void *bpf_xdp_pointer(struct xdp_buff *xdp, =
+u32 offset, u32 len)
+ 	return offset + len <=3D size ? addr + offset : NULL;
+ }
+=20
+-BPF_CALL_4(bpf_xdp_load_bytes, struct xdp_buff *, xdp, u32, offset,
+-	   void *, buf, u32, len)
++int __bpf_xdp_load_bytes(struct xdp_buff *xdp, u32 offset, void *buf, u3=
+2 len)
+ {
+ 	void *ptr;
+=20
+@@ -4005,6 +4016,12 @@ BPF_CALL_4(bpf_xdp_load_bytes, struct xdp_buff *, =
+xdp, u32, offset,
+ 	return 0;
+ }
+=20
++BPF_CALL_4(bpf_xdp_load_bytes, struct xdp_buff *, xdp, u32, offset,
++	   void *, buf, u32, len)
++{
++	return __bpf_xdp_load_bytes(xdp, offset, buf, len);
++}
++
+ static const struct bpf_func_proto bpf_xdp_load_bytes_proto =3D {
+ 	.func		=3D bpf_xdp_load_bytes,
+ 	.gpl_only	=3D false,
+@@ -4015,8 +4032,7 @@ static const struct bpf_func_proto bpf_xdp_load_byt=
+es_proto =3D {
+ 	.arg4_type	=3D ARG_CONST_SIZE,
+ };
+=20
+-BPF_CALL_4(bpf_xdp_store_bytes, struct xdp_buff *, xdp, u32, offset,
+-	   void *, buf, u32, len)
++int __bpf_xdp_store_bytes(struct xdp_buff *xdp, u32 offset, void *buf, u=
+32 len)
+ {
+ 	void *ptr;
+=20
+@@ -4032,6 +4048,12 @@ BPF_CALL_4(bpf_xdp_store_bytes, struct xdp_buff *,=
+ xdp, u32, offset,
+ 	return 0;
+ }
+=20
++BPF_CALL_4(bpf_xdp_store_bytes, struct xdp_buff *, xdp, u32, offset,
++	   void *, buf, u32, len)
++{
++	return __bpf_xdp_store_bytes(xdp, offset, buf, len);
++}
++
+ static const struct bpf_func_proto bpf_xdp_store_bytes_proto =3D {
+ 	.func		=3D bpf_xdp_store_bytes,
+ 	.gpl_only	=3D false,
+@@ -11635,6 +11657,10 @@ bpf_sk_base_func_proto(enum bpf_func_id func_id)
  	return func;
  }
+=20
++BTF_SET8_START(bpf_kfunc_check_set_xdp)
++BTF_ID_FLAGS(func, bpf_dynptr_from_xdp)
++BTF_SET8_END(bpf_kfunc_check_set_xdp)
 +
-+BTF_SET8_START(bpf_kfunc_check_set_skb)
-+BTF_ID_FLAGS(func, bpf_dynptr_from_skb)
-+BTF_SET8_END(bpf_kfunc_check_set_skb)
-+
-+static const struct btf_kfunc_id_set bpf_kfunc_set_skb =3D {
+ BTF_SET8_START(bpf_kfunc_check_set_skb)
+ BTF_ID_FLAGS(func, bpf_dynptr_from_skb)
+ BTF_SET8_END(bpf_kfunc_check_set_skb)
+@@ -11644,6 +11670,11 @@ static const struct btf_kfunc_id_set bpf_kfunc_s=
+et_skb =3D {
+ 	.set =3D &bpf_kfunc_check_set_skb,
+ };
+=20
++static const struct btf_kfunc_id_set bpf_kfunc_set_xdp =3D {
 +	.owner =3D THIS_MODULE,
-+	.set =3D &bpf_kfunc_check_set_skb,
++	.set =3D &bpf_kfunc_check_set_xdp,
 +};
 +
-+static int __init bpf_kfunc_init(void)
-+{
-+	int ret;
-+
-+	ret =3D register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS, &bpf_kfunc_s=
-et_skb);
-+	ret =3D ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_ACT, &bpf_=
-kfunc_set_skb);
-+	ret =3D ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_SK_SKB, &bpf_kfu=
-nc_set_skb);
-+	ret =3D ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_SOCKET_FILTER, &=
-bpf_kfunc_set_skb);
-+	ret =3D ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_CGROUP_SKB, &bpf=
-_kfunc_set_skb);
-+	ret =3D ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_LWT_OUT, &bpf_kf=
+ static int __init bpf_kfunc_init(void)
+ {
+ 	int ret;
+@@ -11656,6 +11687,7 @@ static int __init bpf_kfunc_init(void)
+ 	ret =3D ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_LWT_OUT, &bpf_kf=
 unc_set_skb);
-+	ret =3D ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_LWT_IN, &bpf_kfu=
+ 	ret =3D ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_LWT_IN, &bpf_kfu=
 nc_set_skb);
-+	ret =3D ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_LWT_XMIT, &bpf_k=
+ 	ret =3D ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_LWT_XMIT, &bpf_k=
 func_set_skb);
-+	return ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_LWT_SEG6LOCAL, &b=
+-	return ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_LWT_SEG6LOCAL, &b=
 pf_kfunc_set_skb);
-+}
-+late_initcall(bpf_kfunc_init);
++	ret =3D ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_LWT_SEG6LOCAL, &=
+bpf_kfunc_set_skb);
++	return ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_XDP, &bpf_kfunc_s=
+et_xdp);
+ }
+ late_initcall(bpf_kfunc_init);
 diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bp=
 f.h
-index 7f024ac22edd..6b58e5a75fc5 100644
+index 6b58e5a75fc5..04aa7d0b6437 100644
 --- a/tools/include/uapi/linux/bpf.h
 +++ b/tools/include/uapi/linux/bpf.h
-@@ -5320,22 +5320,45 @@ union bpf_attr {
-  *	Description
-  *		Write *len* bytes from *src* into *dst*, starting from *offset*
-  *		into *dst*.
-- *		*flags* is currently unused.
+@@ -5352,13 +5352,17 @@ union bpf_attr {
+  *		      and try again.
+  *
+  *		    * The data slice is automatically invalidated anytime
+- *		      **bpf_dynptr_write**\ () or a helper call that changes
+- *		      the underlying packet buffer (eg **bpf_skb_pull_data**\ ())
++ *		      **bpf_dynptr_write**\ () is called.
 + *
-+ *		*flags* must be 0 except for skb-type dynptrs.
-+ *
-+ *		For skb-type dynptrs:
-+ *		    *  All data slices of the dynptr are automatically
-+ *		       invalidated after **bpf_dynptr_write**\ (). If you wish to
-+ *		       avoid this, please perform the write using direct data slices
-+ *		       instead.
-+ *
-+ *		    *  For *flags*, please see the flags accepted by
-+ *		       **bpf_skb_store_bytes**\ ().
++ *		For skb-type and xdp-type dynptrs:
++ *		    * The data slice is automatically invalidated anytime a
++ *		      helper call that changes the underlying packet buffer
++ *		      (eg **bpf_skb_pull_data**\ (), **bpf_xdp_adjust_head**\ ())
+  *		      is called.
   *	Return
-  *		0 on success, -E2BIG if *offset* + *len* exceeds the length
-  *		of *dst*'s data, -EINVAL if *dst* is an invalid dynptr or if *dst*
-- *		is a read-only dynptr or if *flags* is not 0.
-+ *		is a read-only dynptr or if *flags* is not correct. For skb-type dyn=
-ptrs,
-+ *		other errors correspond to errors returned by **bpf_skb_store_bytes*=
-*\ ().
-  *
-  * void *bpf_dynptr_data(const struct bpf_dynptr *ptr, u32 offset, u32 l=
-en)
-  *	Description
-  *		Get a pointer to the underlying dynptr data.
-  *
-  *		*len* must be a statically known value. The returned data slice
-- *		is invalidated whenever the dynptr is invalidated.
-- *	Return
-- *		Pointer to the underlying dynptr data, NULL if the dynptr is
-- *		read-only, if the dynptr is invalid, or if the offset and length
-- *		is out of bounds.
-+ *		is invalidated whenever the dynptr is invalidated. Please note
-+ *		that if the dynptr is read-only, then the returned data slice will
-+ *		be read-only.
-+ *
-+ *		For skb-type dynptrs:
-+ *		    * If *offset* + *len* extends into the skb's paged buffers,
-+ *		      the user should manually pull the skb with **bpf_skb_pull_data=
-**\ ()
-+ *		      and try again.
-+ *
-+ *		    * The data slice is automatically invalidated anytime
-+ *		      **bpf_dynptr_write**\ () or a helper call that changes
-+ *		      the underlying packet buffer (eg **bpf_skb_pull_data**\ ())
-+ *		      is called.
-+ *	Return
-+ *		Pointer to the underlying dynptr data, NULL if the dynptr is invalid=
+  *		Pointer to the underlying dynptr data, NULL if the dynptr is invalid=
 ,
-+ *		or if the offset and length is out of bounds or in a paged buffer fo=
+  *		or if the offset and length is out of bounds or in a paged buffer fo=
 r
-+ *		skb-type dynptrs.
+- *		skb-type dynptrs.
++ *		skb-type dynptrs or across fragments for xdp-type dynptrs.
   *
   * s64 bpf_tcp_raw_gen_syncookie_ipv4(struct iphdr *iph, struct tcphdr *=
 th, u32 th_len)
