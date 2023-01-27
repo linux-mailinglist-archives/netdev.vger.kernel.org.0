@@ -2,651 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E836967EE25
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 20:28:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C48F467EE38
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 20:36:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233994AbjA0T2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 14:28:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40758 "EHLO
+        id S229577AbjA0TgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 14:36:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231274AbjA0T2G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 14:28:06 -0500
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C127B3B0F9
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 11:28:04 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id p185so5005368oif.2
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 11:28:04 -0800 (PST)
+        with ESMTP id S229502AbjA0TgT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 14:36:19 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2106.outbound.protection.outlook.com [40.107.93.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60510783EF;
+        Fri, 27 Jan 2023 11:36:18 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ft8dGppzjKI1kkp9cZTpPXMgYaasD0fNVs6ZCwswXEWCTcKeBCGm0O79HWKy4H//XfGLrcgHxtprB6s9NS9D5UML1gRAv9xjnCq2qpt4fbiqxjdON0ewv05DeJGWvaqNNo4f+uqnre4DOZ7aMS+dFsZt7/6FrAarHmYyanMiIDjVwD8N9GUQ7Bwg960DcnmVm/BTRzOM8Ihh3RCVQpt6BnV+9jZn5/vickG0MCAeAb/2XqMDaYbxvDx7X0ss/0gEL5dq9N0mRk3sqZ+W5ehMRy7uMnO65D8RNF1v9dDfyOpc0YjRWYthH8apnIX7FHsNyfztwxsfdZUupEiB1eKxQA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=eO7dIcVQPFkc6w1KvJhnXuOt0hlynzrLIS5vT1u+ncw=;
+ b=gSDVs3fQ7XI7yb+OYUDaWFL+a0rMv34tT2n8R8cBX+nSJq4l1+NPgfrhMrFSyfmCRUUKxLpwzB0G4tg/DD/Z5q35SlLKleaHltAouR32mP/nh+EL6zZ4myWSuc/0xO8+wh+u8fkIpAYJNHgfmaz9evTF463J3VfeBo3HYgjO1njv+QwEhCfdxKA+sddQ+ZVtDqUWNnl+x8Lg2fO7xkAKFpFM8qTeKymmV/1ZzHrCtvwAd0B2ueMUaaKW4LiLuHGeekL3aGIyXXVtfEMtvDsu6METYCsFDSkBL+bW9E3F0K16i3f1+fWsQj4aa5FtM15B+hAQtQL8bb+Y1lHn6TQfBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=dKKx+fdJHwPfqmMegS53MKIL56BJeRV0CL9s2NH38MY=;
-        b=pMNyrpxYqMqe9lYRSgCBv1hyBnIi3NgIb75SUlIecva6QURg/s3L2DOccQZC85Xn0K
-         nJ6xjkd8g5pyYroXZTV4UfiY96mzzwg5Sq67pCggt0f71uxie2JGAgFeCSkaAeuMun3Z
-         +0UbvliOvHxWZdOBe8zP2ITQOezxQskoGimb/G4HLd4VjzXuOthoXhvNwfOLPwCeAd7I
-         KZxO4exbEiTFDMJa0oDev1wygWuB1JRqWt9a7zm6jPC5w+3jEq58p+Mlpww8/bw6uK+2
-         l6cWlYB7gLoN1zgH1SkI3rrh308juz1jpz2GFe8522m8VaeBA8MyFC2ITXH1gg9cuae0
-         6NUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=dKKx+fdJHwPfqmMegS53MKIL56BJeRV0CL9s2NH38MY=;
-        b=GOJgwFx61kdvRcV20cbNq/qb6gvNxRT/hYJuXo7y1WWcQ4YP01gh46MjElHD83Zwdr
-         oF0RIo2Ww+RlyTQn0wEF9/vWm5CgLFBlYqFSNEqHvUNjENil5luW5v5n+/n/G+Bwd4+5
-         zJuNuyvXEoFf/oghQUehlVpcoukiT+9IZ3rVEXplHXdmZ91nifWbXI5GcsaVQbK5w5Cz
-         ZhihDELO6pr6KBQBV2lSqXPSaMRDqHBKsgfqbHjqmoGI/UXlV71h7whJCD46hnLBjevz
-         4TCC0YgDio5t9Pph7oqvSxBUVmghj1OmyKjKpwlkor5It6lQuj28M99FK5k2Hith3mQa
-         29Xg==
-X-Gm-Message-State: AO0yUKXIw2SuoAnRSGeTEwKi+M+QQjRn//X+FLbK1f1bhRaXu9yGQ1r9
-        lrug0SJ9OeVfDR63pUIY4g3npliPD9Z3h4T5
-X-Google-Smtp-Source: AK7set8HQ3fmyal38JCudtzIXvEdqx8aWiXMveRW5rkqJSbjXiydzUFzsRJHGy7qp0hwz9POlKd3oA==
-X-Received: by 2002:aca:3355:0:b0:377:f994:4c03 with SMTP id z82-20020aca3355000000b00377f9944c03mr887919oiz.55.1674847683735;
-        Fri, 27 Jan 2023 11:28:03 -0800 (PST)
-Received: from localhost.localdomain ([2804:14d:5c5e:4698:565e:e8a4:f2b8:3713])
-        by smtp.gmail.com with ESMTPSA id k25-20020a05680808d900b0036eb408a81fsm1928429oij.24.2023.01.27.11.28.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Jan 2023 11:28:03 -0800 (PST)
-From:   Pedro Tammela <pctammela@mojatatu.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, Pedro Tammela <pctammela@mojatatu.com>
-Subject: [PATCH net-next v3] net/sched: transition act_pedit to rcu and percpu stats
-Date:   Fri, 27 Jan 2023 16:27:52 -0300
-Message-Id: <20230127192752.3643015-1-pctammela@mojatatu.com>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eO7dIcVQPFkc6w1KvJhnXuOt0hlynzrLIS5vT1u+ncw=;
+ b=dDc7UIsE7MI+lDXZ1Q6uMDLMhOprY+7xSWKDaF5JGnkctG7v5/8/X3ocN0WZFJDIDK+yBGHKzsqw2Kyg5SFNUP6su3C0lNToOoP8fr+nKBuBnXyTbZWYFrOOr/4sm6HoA52vaLPktzyeelijCYT9ltaSswKOpsFniyTQLUt45ck=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from DM5PR1001MB2345.namprd10.prod.outlook.com (2603:10b6:4:2d::31)
+ by SA2PR10MB4636.namprd10.prod.outlook.com (2603:10b6:806:11e::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.13; Fri, 27 Jan
+ 2023 19:36:12 +0000
+Received: from DM5PR1001MB2345.namprd10.prod.outlook.com
+ ([fe80::221:4186:6ea3:9097]) by DM5PR1001MB2345.namprd10.prod.outlook.com
+ ([fe80::221:4186:6ea3:9097%7]) with mapi id 15.20.6064.010; Fri, 27 Jan 2023
+ 19:36:11 +0000
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, Lee Jones <lee@kernel.org>
+Subject: [PATCH v5 net-next 00/13] add support for the the vsc7512 internal copper phys
+Date:   Fri, 27 Jan 2023 11:35:46 -0800
+Message-Id: <20230127193559.1001051-1-colin.foster@in-advantage.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BYAPR02CA0011.namprd02.prod.outlook.com
+ (2603:10b6:a02:ee::24) To DM5PR1001MB2345.namprd10.prod.outlook.com
+ (2603:10b6:4:2d::31)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM5PR1001MB2345:EE_|SA2PR10MB4636:EE_
+X-MS-Office365-Filtering-Correlation-Id: b537fcda-e6f4-49a9-eac6-08db009dbe77
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: KwMnrrJH9/3K9JAZNRkAlifcMneXa9/dKDYZ9ov4htlbT+3YiUMMbqCcnckuPtrm3eJm706lX1W8B40kFPGhEVGmq7a+lIXnBGZwMXq1nq2cu4TqI7F20nFyDDw0aUudrIZVfYWojCPidjXFcRYHRJIXrUs3+wft3tNzynzwOQbnbKPxdysUujeSi20IlErTFhkkutMrK1ODVF+06C+O4UhkNTL6iLj7D1M556QzRgS6UuJrqB5u9y1N4IVrv6lrZKIll4mTpCD9ti1dqPHX013vcJLleZQ9dIs/4Ewqk8R+9hQ5SzSRAuvblWdZolBrQf2TSj4mmBKL+Rc0tIGhtwu4TTOIhEdD8THTDtJS62ToVkWeVjjrPTZ9sK0L8giJJNe2pnn4+ZFx7lkkPr2RToqXpw7bvTJqo7Jo8bT/fwSNn6l+tHLSmz8bq5fLrC4/uh9puRSZADF0/ssVv5oX+j8zXTyNhfRdBKvz29e9fkEmk3iDo5tNuWVMw+52iiElxF3UvZ+S317OqegSTGD3FWcz+v4oBX9Ug3HZ0pivjxOa3PVuOK2uVOjXo/OlxWI5MZ0q5DzzFh0dQPywcS56VEmcsNPNfRZt4rXXxlPFGaakyXCnCIN/onIPBzYari+Bn1ysjTcFLq3/GJxIhd8Z8Y9TEy4VDOjoF1FnVUc9V5UkExJd1k0dB58ctpwUrIf4jjcbIK7WL3+7WhljXULuA/y9cS86Dx2UF6L5uFF7jko=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1001MB2345.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(376002)(39830400003)(136003)(396003)(346002)(366004)(451199018)(36756003)(86362001)(2906002)(2616005)(6512007)(26005)(186003)(66946007)(66556008)(8676002)(4326008)(66476007)(52116002)(316002)(54906003)(6666004)(1076003)(6506007)(966005)(6486002)(478600001)(38350700002)(38100700002)(5660300002)(44832011)(41300700001)(7416002)(8936002)(83380400001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rMRe78/jBFnInNRhavMd33iiD4HdYe+S155L6QmJXrzFb7bL3XQIax3wwRTK?=
+ =?us-ascii?Q?N8D7qgKmoSOuaA8Ig4JdctsiMYldr/l6Qh0KEUH6g27NupHHiHmZzG5SC0w7?=
+ =?us-ascii?Q?E4yDBptIzM0G+8mjN75Iv0XM71aFwSLwGhQnyxty0o3WHG+XkWNUAmQPPN0s?=
+ =?us-ascii?Q?sV4/1GmRFoVo/k/WblVTRKO7bmTzPRs7KQn1+x/MF8mm6XsUQhk5G9678Zqm?=
+ =?us-ascii?Q?67IbSYxNhucHgDmuVnm3yUlgl/2BQu/bJMuvMi4Ukf8gxf7gVrdOnX3DO05B?=
+ =?us-ascii?Q?A0Zjh3j3adpsF0f7EwoHFPrdVC2n7cJQXB4WpSwONLtI7GKnVp9kjPa+nb/p?=
+ =?us-ascii?Q?6sRFd2X4ZFXhhqgQB8G1HLVl6C2CMy2DX1zwfcjRPn8H6PgqHt0znNFBIPJN?=
+ =?us-ascii?Q?hpH+u4Vy0olPuwxRC7P+KvIpTCEzMLaHgUrt3/y8iK9rrNAKHXrvJGsNzxtk?=
+ =?us-ascii?Q?3RRRtBi41Idbj9LUHBAWPGtPCFA7YqSdQvo5Ys8WY7E6RMhY1UlwwmHtt5sG?=
+ =?us-ascii?Q?KFZDzqB+26+c5n+F4m9VFaU2ef0YzY3sbMq3BBThxk559VLKrkCP99kRU6pO?=
+ =?us-ascii?Q?amwvnCOwGTcC7LQ3KJAi5O7oMyUdfor/ny/VuT7xIjDoDCpUVRM7tHD1f50/?=
+ =?us-ascii?Q?LmlMPNz+udnTwtHQ9b1TNXheM7bpUBgyaYAIQhL/jbMpbwna59BpGdxw7FN2?=
+ =?us-ascii?Q?V19Cd66dVQvRKIN3mjzz5q62Wb7Tf7CNrJE3wy+kOVpdqS0UG3L9qnc4FpfB?=
+ =?us-ascii?Q?pNfZZpCaP/sdhJqBAJgGcXtGQjM2w1be6Bv+3P+Szs01OjTthup1sgCuyFdd?=
+ =?us-ascii?Q?jFAYfL09IQP9qvBNb+3rZU/zYKJZbdUh0KkS5QppF1mIfx5M/jhJfmFZtn15?=
+ =?us-ascii?Q?nt0r2m22UPshdR3flYPscZ/Ay7AO+wG8XjVh/1osCbszRJx3FAsD6CldlOk9?=
+ =?us-ascii?Q?PAHh+595TDjWHglBqVuKmOQBAutYO6Io+pjNaYvBopYW8B7O/fLDT2AwMKOA?=
+ =?us-ascii?Q?IUY4jgpWSXnCfTL2de0BflxGgvXvt44Tm7UcNRqAvMdemj+lLpnxoYGddXjU?=
+ =?us-ascii?Q?Qki1UJVGQ5Bie8vrrEw25z03O/P/4BBOvQwbsKEDxNwRRofv3GYnESIqwgJ2?=
+ =?us-ascii?Q?GCWFD/baolNb/j0pwmiCX0JZ+B523/+TIqEAOSSCjRzcF820gi7eOmaq8DHZ?=
+ =?us-ascii?Q?QAkN4RXNPknprcP27Ks/y4hMT9rslZyE8CMYKFfhV5tJuHlVUeD73EA3FtUy?=
+ =?us-ascii?Q?+pP5F6+YYJ9siPPM51pe/hLl0NPBxOQnBY/xfK3dqLR4NUC1KXYHJRJ8AAlA?=
+ =?us-ascii?Q?b+Pc63/vehu5WydADgPXbv3Ks8Jfs45FWwOYXnooS6Z4DHVSScvMfcc+FVdX?=
+ =?us-ascii?Q?nkgzJdqamr26EQ7uTV7Gh0gMgxL4n7qxyE8zucdoqDgjZCC7IwLiKm2mbr3l?=
+ =?us-ascii?Q?zBSb1wfh2IKXEZoOH1d6vYtMnV0x2AsffpKi8FbJHHOkgOlrLfHiFv+PcYsA?=
+ =?us-ascii?Q?uYYn6FE3ElFczg7ko/nalnQl/OtbNF2PDVBR5YM11clbk+h5+JJ77+GM6sSA?=
+ =?us-ascii?Q?Sar1Ro/KjRY7621YajayGfLpJn4EJHm8enK168nduDYQ+6xqkM8eXFx4hiJ8?=
+ =?us-ascii?Q?TLWUq1/AnP8jmlQwBG+NfyE=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b537fcda-e6f4-49a9-eac6-08db009dbe77
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR1001MB2345.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jan 2023 19:36:11.0327
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HbX4CpXjMSnobYIP7+xZ5M9BiJjC9yBmsXSKW/61b+n20hc5Pr1kpoEYEWL3q31bZOgosfEniIxSTfQk3JU1WhwFoWkqFb6d2CWu9mm9UVM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR10MB4636
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The software pedit action didn't get the same love as some of the
-other actions and it's still using spinlocks and shared stats.
-Transition the action to rcu and percpu stats which improves the
-action's performance dramatically.
+This patch series is a continuation to add support for the VSC7512:
+https://patchwork.kernel.org/project/netdevbpf/list/?series=674168&state=*
 
-We test this change with a very simple packet forwarding setup:
+That series added the framework and initial functionality for the
+VSC7512 chip. Several of these patches grew during the initial
+development of the framework, which is why v1 will include changelogs.
+It was during v9 of that original MFD patch set that these were dropped.
 
-tc filter add dev ens2f0 ingress protocol ip matchall \
-   action pedit ex munge eth src set b8:ce:f6:4b:68:35 pipe \
-   action pedit ex munge eth dst set ac:1f:6b:e4:ff:93 pipe \
-   action mirred egress redirect dev ens2f1
-tc filter add dev ens2f1 ingress protocol ip matchall \
-   action pedit ex munge eth src set b8:ce:f6:4b:68:34 pipe \
-   action pedit ex munge eth dst set ac:1f:6b:e4:ff:92 pipe \
-   action mirred egress redirect dev ens2f0
+With that out of the way, the VSC7512 is mainly a subset of the VSC7514
+chip. The 7512 lacks an internal MIPS processor, but otherwise many of
+the register definitions are identical. That is why several of these
+patches are simply to expose common resources from
+drivers/net/ethernet/mscc/*.
 
-Using TRex with a http-like profile, in our setup with a 25G NIC
-and a 26 cores Intel CPU, we observe the following in perf:
-   before:
-    11.59%  2.30%  [kernel]  [k] tcf_pedit_act
-       2.55% tcf_pedit_act
-	     8.38% _raw_spin_lock
-		       6.43% native_queued_spin_lock_slowpath
-   after:
-    1.46%  1.46%  [kernel]  [k] tcf_pedit_act
+This patch only adds support for the first four ports (swp0-swp3). The
+remaining ports require more significant changes to the felix driver,
+and will be handled in the future.
 
-Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
-Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
 
-v2->v3:
-- Add missing change in act idr create
+***
+Note on V5: This driver triggers a bug in phy_device.c. A fix has been
+sent to 'net': https://lkml.org/lkml/2023/1/27/1105
+***
 
-v1->v2:
-- Fix lock unbalance found by sparse
+v5
+    * Documentation overhauled to use
+      /schemas/net/mscc,vsc7514-switch.yaml instead of
+      /schemas/net/dsa/mscc,ocelot.yaml
+    * Two patches were applied elsewhere, so have been dropped:
+      "net: dsa: felix: populate mac_capabilities for all ports" and
+      "dt-bindings: mfd: ocelot: remove spi-max-frequency from required
+       properties"
+    * stats_layout changes are no longer necessary, so the patch
+      "net: mscc: ocelot: expose stats layout definition to be used by
+       other drivers" has been dropped
+    * Common naming macros has been dropped:
+      "mfd: ocelot: add shared resource names for switch functionality".
+      This changed patches 12-13 slightly.
+    * Patch 12 had some small changes due to the rebase - more info there
 
----
- include/net/tc_act/tc_pedit.h |  81 ++++++++--
- net/sched/act_pedit.c         | 273 +++++++++++++++++++---------------
- 2 files changed, 217 insertions(+), 137 deletions(-)
+v4
+    * Update documentation to include all ports / modes (patch 15)
+    * Fix dt_bindings_check warnings (patch 13, 14, 15)
+    * Utilize new "resource_names" reference (patch 9, 12, 16)
+    * Drop unnecessary #undef REG patch in pinctl: ocelot
+    * Utilize standard MFD resource addition (patch 17)
+    * Utilize shared vsc7514_regmap (new patch 6)
+    * Allow forward-compatibility on fully-defined device trees
+      (patch 10,14)
 
-diff --git a/include/net/tc_act/tc_pedit.h b/include/net/tc_act/tc_pedit.h
-index 3e02709a1df6..7c597db2b4fa 100644
---- a/include/net/tc_act/tc_pedit.h
-+++ b/include/net/tc_act/tc_pedit.h
-@@ -4,22 +4,29 @@
- 
- #include <net/act_api.h>
- #include <linux/tc_act/tc_pedit.h>
-+#include <linux/types.h>
- 
- struct tcf_pedit_key_ex {
- 	enum pedit_header_type htype;
- 	enum pedit_cmd cmd;
- };
- 
--struct tcf_pedit {
--	struct tc_action	common;
--	unsigned char		tcfp_nkeys;
--	unsigned char		tcfp_flags;
--	u32			tcfp_off_max_hint;
-+struct tcf_pedit_parms {
- 	struct tc_pedit_key	*tcfp_keys;
- 	struct tcf_pedit_key_ex	*tcfp_keys_ex;
-+	u32			tcfp_off_max_hint;
-+	unsigned char		tcfp_nkeys;
-+	unsigned char		tcfp_flags;
-+	struct rcu_head	rcu;
-+};
-+
-+struct tcf_pedit {
-+	struct tc_action common;
-+	struct tcf_pedit_parms __rcu *parms;
- };
- 
- #define to_pedit(a) ((struct tcf_pedit *)a)
-+#define to_pedit_parms(a) (rcu_dereference(to_pedit(a)->parms))
- 
- static inline bool is_tcf_pedit(const struct tc_action *a)
- {
-@@ -32,37 +39,81 @@ static inline bool is_tcf_pedit(const struct tc_action *a)
- 
- static inline int tcf_pedit_nkeys(const struct tc_action *a)
- {
--	return to_pedit(a)->tcfp_nkeys;
-+	struct tcf_pedit_parms *parms;
-+	int nkeys;
-+
-+	rcu_read_lock();
-+	parms = to_pedit_parms(a);
-+	nkeys = parms->tcfp_nkeys;
-+	rcu_read_unlock();
-+
-+	return nkeys;
- }
- 
- static inline u32 tcf_pedit_htype(const struct tc_action *a, int index)
- {
--	if (to_pedit(a)->tcfp_keys_ex)
--		return to_pedit(a)->tcfp_keys_ex[index].htype;
-+	struct tcf_pedit_parms *parms;
-+	u32 htype = TCA_PEDIT_KEY_EX_HDR_TYPE_NETWORK;
-+
-+	rcu_read_lock();
-+	parms = to_pedit_parms(a);
-+	if (parms->tcfp_keys_ex)
-+		htype = parms->tcfp_keys_ex[index].htype;
-+	rcu_read_unlock();
- 
--	return TCA_PEDIT_KEY_EX_HDR_TYPE_NETWORK;
-+	return htype;
- }
- 
- static inline u32 tcf_pedit_cmd(const struct tc_action *a, int index)
- {
--	if (to_pedit(a)->tcfp_keys_ex)
--		return to_pedit(a)->tcfp_keys_ex[index].cmd;
-+	struct tcf_pedit_parms *parms;
-+	u32 cmd = __PEDIT_CMD_MAX;
- 
--	return __PEDIT_CMD_MAX;
-+	rcu_read_lock();
-+	parms = to_pedit_parms(a);
-+	if (parms->tcfp_keys_ex)
-+		cmd = parms->tcfp_keys_ex[index].cmd;
-+	rcu_read_unlock();
-+
-+	return cmd;
- }
- 
- static inline u32 tcf_pedit_mask(const struct tc_action *a, int index)
- {
--	return to_pedit(a)->tcfp_keys[index].mask;
-+	struct tcf_pedit_parms *parms;
-+	u32 mask;
-+
-+	rcu_read_lock();
-+	parms = to_pedit_parms(a);
-+	mask = parms->tcfp_keys[index].mask;
-+	rcu_read_unlock();
-+
-+	return mask;
- }
- 
- static inline u32 tcf_pedit_val(const struct tc_action *a, int index)
- {
--	return to_pedit(a)->tcfp_keys[index].val;
-+	struct tcf_pedit_parms *parms;
-+	u32 val;
-+
-+	rcu_read_lock();
-+	parms = to_pedit_parms(a);
-+	val = parms->tcfp_keys[index].val;
-+	rcu_read_unlock();
-+
-+	return val;
- }
- 
- static inline u32 tcf_pedit_offset(const struct tc_action *a, int index)
- {
--	return to_pedit(a)->tcfp_keys[index].off;
-+	struct tcf_pedit_parms *parms;
-+	u32 off;
-+
-+	rcu_read_lock();
-+	parms = to_pedit_parms(a);
-+	off = parms->tcfp_keys[index].off;
-+	rcu_read_unlock();
-+
-+	return off;
- }
- #endif /* __NET_TC_PED_H */
-diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
-index a0378e9f0121..1b3499585d7a 100644
---- a/net/sched/act_pedit.c
-+++ b/net/sched/act_pedit.c
-@@ -134,6 +134,17 @@ static int tcf_pedit_key_ex_dump(struct sk_buff *skb,
- 	return -EINVAL;
- }
- 
-+static void tcf_pedit_cleanup_rcu(struct rcu_head *head)
-+{
-+	struct tcf_pedit_parms *parms =
-+		container_of(head, struct tcf_pedit_parms, rcu);
-+
-+	kfree(parms->tcfp_keys_ex);
-+	kfree(parms->tcfp_keys);
-+
-+	kfree(parms);
-+}
-+
- static int tcf_pedit_init(struct net *net, struct nlattr *nla,
- 			  struct nlattr *est, struct tc_action **a,
- 			  struct tcf_proto *tp, u32 flags,
-@@ -143,8 +154,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
- 	bool bind = flags & TCA_ACT_FLAGS_BIND;
- 	struct nlattr *tb[TCA_PEDIT_MAX + 1];
- 	struct tcf_chain *goto_ch = NULL;
--	struct tc_pedit_key *keys = NULL;
--	struct tcf_pedit_key_ex *keys_ex;
-+	struct tcf_pedit_parms *oparms, *nparms;
- 	struct tc_pedit *parm;
- 	struct nlattr *pattr;
- 	struct tcf_pedit *p;
-@@ -181,18 +191,25 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
- 		return -EINVAL;
- 	}
- 
--	keys_ex = tcf_pedit_keys_ex_parse(tb[TCA_PEDIT_KEYS_EX], parm->nkeys);
--	if (IS_ERR(keys_ex))
--		return PTR_ERR(keys_ex);
-+	nparms = kzalloc(sizeof(*nparms), GFP_KERNEL);
-+	if (!nparms)
-+		return -ENOMEM;
-+
-+	nparms->tcfp_keys_ex =
-+		tcf_pedit_keys_ex_parse(tb[TCA_PEDIT_KEYS_EX], parm->nkeys);
-+	if (IS_ERR(nparms->tcfp_keys_ex)) {
-+		ret = PTR_ERR(nparms->tcfp_keys_ex);
-+		goto out_free;
-+	}
- 
- 	index = parm->index;
- 	err = tcf_idr_check_alloc(tn, &index, a, bind);
- 	if (!err) {
--		ret = tcf_idr_create(tn, index, est, a,
--				     &act_pedit_ops, bind, false, flags);
-+		ret = tcf_idr_create_from_flags(tn, index, est, a,
-+						&act_pedit_ops, bind, flags);
- 		if (ret) {
- 			tcf_idr_cleanup(tn, index);
--			goto out_free;
-+			goto out_free_ex;
- 		}
- 		ret = ACT_P_CREATED;
- 	} else if (err > 0) {
-@@ -204,7 +221,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
- 		}
- 	} else {
- 		ret = err;
--		goto out_free;
-+		goto out_free_ex;
- 	}
- 
- 	err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch, extack);
-@@ -212,68 +229,79 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
- 		ret = err;
- 		goto out_release;
- 	}
-+
-+	nparms->tcfp_off_max_hint = 0;
-+	nparms->tcfp_flags = parm->flags;
-+
- 	p = to_pedit(*a);
- 	spin_lock_bh(&p->tcf_lock);
- 
-+	oparms = rcu_dereference_protected(p->parms, 1);
-+
- 	if (ret == ACT_P_CREATED ||
--	    (p->tcfp_nkeys && p->tcfp_nkeys != parm->nkeys)) {
--		keys = kmalloc(ksize, GFP_ATOMIC);
--		if (!keys) {
-+	    (oparms->tcfp_nkeys && oparms->tcfp_nkeys != parm->nkeys)) {
-+		nparms->tcfp_keys = kmalloc(ksize, GFP_ATOMIC);
-+		if (!nparms->tcfp_keys) {
- 			spin_unlock_bh(&p->tcf_lock);
- 			ret = -ENOMEM;
--			goto put_chain;
-+			goto out_release;
- 		}
--		kfree(p->tcfp_keys);
--		p->tcfp_keys = keys;
--		p->tcfp_nkeys = parm->nkeys;
-+		nparms->tcfp_nkeys = parm->nkeys;
-+	} else {
-+		nparms->tcfp_keys = oparms->tcfp_keys;
-+		nparms->tcfp_nkeys = oparms->tcfp_nkeys;
- 	}
--	memcpy(p->tcfp_keys, parm->keys, ksize);
--	p->tcfp_off_max_hint = 0;
--	for (i = 0; i < p->tcfp_nkeys; ++i) {
--		u32 cur = p->tcfp_keys[i].off;
-+
-+	memcpy(nparms->tcfp_keys, parm->keys, ksize);
-+
-+	for (i = 0; i < nparms->tcfp_nkeys; ++i) {
-+		u32 cur = nparms->tcfp_keys[i].off;
- 
- 		/* sanitize the shift value for any later use */
--		p->tcfp_keys[i].shift = min_t(size_t, BITS_PER_TYPE(int) - 1,
--					      p->tcfp_keys[i].shift);
-+		nparms->tcfp_keys[i].shift = min_t(size_t,
-+						   BITS_PER_TYPE(int) - 1,
-+						   nparms->tcfp_keys[i].shift);
- 
- 		/* The AT option can read a single byte, we can bound the actual
- 		 * value with uchar max.
- 		 */
--		cur += (0xff & p->tcfp_keys[i].offmask) >> p->tcfp_keys[i].shift;
-+		cur += (0xff & nparms->tcfp_keys[i].offmask) >> nparms->tcfp_keys[i].shift;
- 
- 		/* Each key touches 4 bytes starting from the computed offset */
--		p->tcfp_off_max_hint = max(p->tcfp_off_max_hint, cur + 4);
-+		nparms->tcfp_off_max_hint =
-+			max(nparms->tcfp_off_max_hint, cur + 4);
- 	}
- 
--	p->tcfp_flags = parm->flags;
- 	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
- 
--	kfree(p->tcfp_keys_ex);
--	p->tcfp_keys_ex = keys_ex;
-+	rcu_assign_pointer(p->parms, nparms);
- 
- 	spin_unlock_bh(&p->tcf_lock);
-+
-+	if (oparms)
-+		call_rcu(&oparms->rcu, tcf_pedit_cleanup_rcu);
-+
- 	if (goto_ch)
- 		tcf_chain_put_by_act(goto_ch);
-+
- 	return ret;
- 
--put_chain:
--	if (goto_ch)
--		tcf_chain_put_by_act(goto_ch);
- out_release:
- 	tcf_idr_release(*a, bind);
-+out_free_ex:
-+	kfree(nparms->tcfp_keys_ex);
- out_free:
--	kfree(keys_ex);
-+	kfree(nparms);
- 	return ret;
--
- }
- 
- static void tcf_pedit_cleanup(struct tc_action *a)
- {
- 	struct tcf_pedit *p = to_pedit(a);
--	struct tc_pedit_key *keys = p->tcfp_keys;
-+	struct tcf_pedit_parms *parms;
- 
--	kfree(keys);
--	kfree(p->tcfp_keys_ex);
-+	parms = rcu_dereference_protected(p->parms, 1);
-+	call_rcu(&parms->rcu, tcf_pedit_cleanup_rcu);
- }
- 
- static bool offset_valid(struct sk_buff *skb, int offset)
-@@ -324,109 +352,107 @@ TC_INDIRECT_SCOPE int tcf_pedit_act(struct sk_buff *skb,
- 				    const struct tc_action *a,
- 				    struct tcf_result *res)
- {
-+	enum pedit_header_type htype = TCA_PEDIT_KEY_EX_HDR_TYPE_NETWORK;
-+	enum pedit_cmd cmd = TCA_PEDIT_KEY_EX_CMD_SET;
- 	struct tcf_pedit *p = to_pedit(a);
-+	struct tcf_pedit_key_ex *tkey_ex;
-+	struct tcf_pedit_parms *parms;
-+	struct tc_pedit_key *tkey;
- 	u32 max_offset;
- 	int i;
- 
--	spin_lock(&p->tcf_lock);
-+	parms = rcu_dereference_bh(p->parms);
- 
- 	max_offset = (skb_transport_header_was_set(skb) ?
- 		      skb_transport_offset(skb) :
- 		      skb_network_offset(skb)) +
--		     p->tcfp_off_max_hint;
-+		     parms->tcfp_off_max_hint;
- 	if (skb_ensure_writable(skb, min(skb->len, max_offset)))
--		goto unlock;
-+		goto done;
- 
- 	tcf_lastuse_update(&p->tcf_tm);
-+	tcf_action_update_bstats(&p->common, skb);
- 
--	if (p->tcfp_nkeys > 0) {
--		struct tc_pedit_key *tkey = p->tcfp_keys;
--		struct tcf_pedit_key_ex *tkey_ex = p->tcfp_keys_ex;
--		enum pedit_header_type htype =
--			TCA_PEDIT_KEY_EX_HDR_TYPE_NETWORK;
--		enum pedit_cmd cmd = TCA_PEDIT_KEY_EX_CMD_SET;
--
--		for (i = p->tcfp_nkeys; i > 0; i--, tkey++) {
--			u32 *ptr, hdata;
--			int offset = tkey->off;
--			int hoffset;
--			u32 val;
--			int rc;
--
--			if (tkey_ex) {
--				htype = tkey_ex->htype;
--				cmd = tkey_ex->cmd;
--
--				tkey_ex++;
--			}
-+	tkey_ex = parms->tcfp_keys_ex;
-+	tkey = parms->tcfp_keys;
- 
--			rc = pedit_skb_hdr_offset(skb, htype, &hoffset);
--			if (rc) {
--				pr_info("tc action pedit bad header type specified (0x%x)\n",
--					htype);
--				goto bad;
--			}
-+	for (i = parms->tcfp_nkeys; i > 0; i--, tkey++) {
-+		u32 *ptr, hdata;
-+		int offset = tkey->off;
-+		int hoffset;
-+		u32 val;
-+		int rc;
- 
--			if (tkey->offmask) {
--				u8 *d, _d;
--
--				if (!offset_valid(skb, hoffset + tkey->at)) {
--					pr_info("tc action pedit 'at' offset %d out of bounds\n",
--						hoffset + tkey->at);
--					goto bad;
--				}
--				d = skb_header_pointer(skb, hoffset + tkey->at,
--						       sizeof(_d), &_d);
--				if (!d)
--					goto bad;
--				offset += (*d & tkey->offmask) >> tkey->shift;
--			}
-+		if (tkey_ex) {
-+			htype = tkey_ex->htype;
-+			cmd = tkey_ex->cmd;
- 
--			if (offset % 4) {
--				pr_info("tc action pedit offset must be on 32 bit boundaries\n");
--				goto bad;
--			}
-+			tkey_ex++;
-+		}
- 
--			if (!offset_valid(skb, hoffset + offset)) {
--				pr_info("tc action pedit offset %d out of bounds\n",
--					hoffset + offset);
--				goto bad;
--			}
-+		rc = pedit_skb_hdr_offset(skb, htype, &hoffset);
-+		if (rc) {
-+			pr_info("tc action pedit bad header type specified (0x%x)\n",
-+				htype);
-+			goto bad;
-+		}
- 
--			ptr = skb_header_pointer(skb, hoffset + offset,
--						 sizeof(hdata), &hdata);
--			if (!ptr)
--				goto bad;
--			/* just do it, baby */
--			switch (cmd) {
--			case TCA_PEDIT_KEY_EX_CMD_SET:
--				val = tkey->val;
--				break;
--			case TCA_PEDIT_KEY_EX_CMD_ADD:
--				val = (*ptr + tkey->val) & ~tkey->mask;
--				break;
--			default:
--				pr_info("tc action pedit bad command (%d)\n",
--					cmd);
-+		if (tkey->offmask) {
-+			u8 *d, _d;
-+
-+			if (!offset_valid(skb, hoffset + tkey->at)) {
-+				pr_info("tc action pedit 'at' offset %d out of bounds\n",
-+					hoffset + tkey->at);
- 				goto bad;
- 			}
-+			d = skb_header_pointer(skb, hoffset + tkey->at,
-+					       sizeof(_d), &_d);
-+			if (!d)
-+				goto bad;
-+			offset += (*d & tkey->offmask) >> tkey->shift;
-+		}
- 
--			*ptr = ((*ptr & tkey->mask) ^ val);
--			if (ptr == &hdata)
--				skb_store_bits(skb, hoffset + offset, ptr, 4);
-+		if (offset % 4) {
-+			pr_info("tc action pedit offset must be on 32 bit boundaries\n");
-+			goto bad;
- 		}
- 
--		goto done;
--	} else {
--		WARN(1, "pedit BUG: index %d\n", p->tcf_index);
-+		if (!offset_valid(skb, hoffset + offset)) {
-+			pr_info("tc action pedit offset %d out of bounds\n",
-+				hoffset + offset);
-+			goto bad;
-+		}
-+
-+		ptr = skb_header_pointer(skb, hoffset + offset,
-+					 sizeof(hdata), &hdata);
-+		if (!ptr)
-+			goto bad;
-+		/* just do it, baby */
-+		switch (cmd) {
-+		case TCA_PEDIT_KEY_EX_CMD_SET:
-+			val = tkey->val;
-+			break;
-+		case TCA_PEDIT_KEY_EX_CMD_ADD:
-+			val = (*ptr + tkey->val) & ~tkey->mask;
-+			break;
-+		default:
-+			pr_info("tc action pedit bad command (%d)\n",
-+				cmd);
-+			goto bad;
-+		}
-+
-+		*ptr = ((*ptr & tkey->mask) ^ val);
-+		if (ptr == &hdata)
-+			skb_store_bits(skb, hoffset + offset, ptr, 4);
- 	}
- 
-+	goto done;
-+
- bad:
-+	spin_lock(&p->tcf_lock);
- 	p->tcf_qstats.overlimits++;
--done:
--	bstats_update(&p->tcf_bstats, skb);
--unlock:
- 	spin_unlock(&p->tcf_lock);
-+done:
- 	return p->tcf_action;
- }
- 
-@@ -445,30 +471,33 @@ static int tcf_pedit_dump(struct sk_buff *skb, struct tc_action *a,
- {
- 	unsigned char *b = skb_tail_pointer(skb);
- 	struct tcf_pedit *p = to_pedit(a);
-+	struct tcf_pedit_parms *parms;
- 	struct tc_pedit *opt;
- 	struct tcf_t t;
- 	int s;
- 
--	s = struct_size(opt, keys, p->tcfp_nkeys);
-+	spin_lock_bh(&p->tcf_lock);
-+	parms = rcu_dereference_protected(p->parms, 1);
-+	s = struct_size(opt, keys, parms->tcfp_nkeys);
- 
--	/* netlink spinlocks held above us - must use ATOMIC */
- 	opt = kzalloc(s, GFP_ATOMIC);
--	if (unlikely(!opt))
-+	if (unlikely(!opt)) {
-+		spin_unlock_bh(&p->tcf_lock);
- 		return -ENOBUFS;
-+	}
- 
--	spin_lock_bh(&p->tcf_lock);
--	memcpy(opt->keys, p->tcfp_keys, flex_array_size(opt, keys, p->tcfp_nkeys));
-+	memcpy(opt->keys, parms->tcfp_keys,
-+	       flex_array_size(opt, keys, parms->tcfp_nkeys));
- 	opt->index = p->tcf_index;
--	opt->nkeys = p->tcfp_nkeys;
--	opt->flags = p->tcfp_flags;
-+	opt->nkeys = parms->tcfp_nkeys;
-+	opt->flags = parms->tcfp_flags;
- 	opt->action = p->tcf_action;
- 	opt->refcnt = refcount_read(&p->tcf_refcnt) - ref;
- 	opt->bindcnt = atomic_read(&p->tcf_bindcnt) - bind;
- 
--	if (p->tcfp_keys_ex) {
--		if (tcf_pedit_key_ex_dump(skb,
--					  p->tcfp_keys_ex,
--					  p->tcfp_nkeys))
-+	if (parms->tcfp_keys_ex) {
-+		if (tcf_pedit_key_ex_dump(skb, parms->tcfp_keys_ex,
-+					  parms->tcfp_nkeys))
- 			goto nla_put_failure;
- 
- 		if (nla_put(skb, TCA_PEDIT_PARMS_EX, s, opt))
+v3
+    * Fix allmodconfig build (patch 8)
+    * Change documentation wording (patch 12)
+    * Import module namespace (patch 13)
+    * Fix array initializer (patch 13)
+
+v2
+    * Utilize common ocelot_reset routine (new patch 5, modified patch 13)
+    * Change init_regmap() routine to be string-based (new patch 8)
+    * Split patches where necessary (patches 9 and 14)
+    * Add documentation (patch 12) and MAINTAINERS (patch 13)
+    * Upgrade to PATCH status
+
+v1 (from RFC v8 suggested above):
+    * Utilize the MFD framework for creating regmaps, as well as
+      dev_get_regmap() (patches 7 and 8 of this series)
+
+
+Colin Foster (13):
+  net: mscc: ocelot: expose ocelot wm functions
+  net: mscc: ocelot: expose regfield definition to be used by other
+    drivers
+  net: mscc: ocelot: expose vcap_props structure
+  net: mscc: ocelot: expose ocelot_reset routine
+  net: mscc: ocelot: expose vsc7514_regmap definition
+  net: dsa: felix: add configurable device quirks
+  net: dsa: felix: add support for MFD configurations
+  net: dsa: felix: add functionality when not all ports are supported
+  mfd: ocelot: prepend resource size macros to be 32-bit
+  dt-bindings: net: mscc,vsc7514-switch: add dsa binding for the vsc7512
+  dt-bindings: mfd: ocelot: add ethernet-switch hardware support
+  net: dsa: ocelot: add external ocelot switch control
+  mfd: ocelot: add external ocelot switch control
+
+ .../devicetree/bindings/mfd/mscc,ocelot.yaml  |   9 +
+ .../bindings/net/mscc,vsc7514-switch.yaml     | 113 ++++++++---
+ MAINTAINERS                                   |   1 +
+ drivers/mfd/ocelot-core.c                     |  68 ++++++-
+ drivers/net/dsa/ocelot/Kconfig                |  20 ++
+ drivers/net/dsa/ocelot/Makefile               |   2 +
+ drivers/net/dsa/ocelot/felix.c                |  25 ++-
+ drivers/net/dsa/ocelot/felix.h                |   2 +
+ drivers/net/dsa/ocelot/felix_vsc9959.c        |   1 +
+ drivers/net/dsa/ocelot/ocelot_ext.c           | 163 +++++++++++++++
+ drivers/net/dsa/ocelot/seville_vsc9953.c      |   1 +
+ drivers/net/ethernet/mscc/ocelot.c            |  48 ++++-
+ drivers/net/ethernet/mscc/ocelot_devlink.c    |  31 +++
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c    | 190 +-----------------
+ drivers/net/ethernet/mscc/vsc7514_regs.c      | 117 +++++++++++
+ include/soc/mscc/ocelot.h                     |   6 +
+ include/soc/mscc/vsc7514_regs.h               |   6 +
+ 17 files changed, 582 insertions(+), 221 deletions(-)
+ create mode 100644 drivers/net/dsa/ocelot/ocelot_ext.c
+
 -- 
-2.34.1
+2.25.1
 
