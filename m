@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2C6367ECAD
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 18:41:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5007367ECBB
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 18:48:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235007AbjA0Rlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 12:41:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33250 "EHLO
+        id S235153AbjA0Rsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 12:48:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235143AbjA0Rll (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 12:41:41 -0500
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3E077E684
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 09:41:38 -0800 (PST)
-Received: by mail-yb1-xb2e.google.com with SMTP id b1so6848798ybn.11
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 09:41:38 -0800 (PST)
+        with ESMTP id S229711AbjA0Rsw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 12:48:52 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1276432E51
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 09:48:52 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id b1so6872994ybn.11
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 09:48:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=KlO5tZJ3nSqtFTlZpoEvGGrCN4DC9OGY4LAyhIbxX+M=;
-        b=XsE6E/fFZNAlApUbIxKWPs7zvNCJdampMGv4NAMMKsEfY7bbD+p0MT+lksxcLg/g/2
-         fH6GC71xu888aQXNQHUIBSjVd3Ip06LZUD4SPksBugOmtWTM4P18jy18sy2wlrBpJCX9
-         kCqWgec65MchezxCIKD6HdpiGdGVriyG58lt2Mn3kMZJbal/k2SmzEglNR6P4HUXZpkZ
-         qrukMOYknREhGhTqtZOfQ1y6OBoe8KlWlVVIJd0Wt3VBVZxe2s12GlX6g3nxa3M81Esm
-         9QRsYdI6Zui7xOSTs6g4VD/d5MPl6ohnR6fhEEA7rG1zYxSWduGpnosf4n+z0Z8gfh5M
-         2g3A==
+        bh=eieLlMtUQzDO09X9B4p1rcAat7hYw6HTgh7Q6bnDcaw=;
+        b=Wqb+Dod4io8SaenzXGi1FZuPfthgItQ13pMJsNCiOWXYKH89tx2JTM12+PZceomjrB
+         3L9Rl43IZkPeIhV6+WLYMdhekZUc7btkPf9XRayWu9VHWB1C0KQhxcGKXJCsMCW1Uj7n
+         KhHbNblIR3Rh/KeIuqAJbAa7t+GxqnE5h14tE1aIJrSkkUrm35ixPE5wMYJisANRuACi
+         psWk1cXIxq95/I7OLYn4hxO37aO3hKIPUoT3pM8foHWtF5KRrXBNt5Af3VaXJkXaZPC6
+         5lcQqttPN8JZ6dd3/vijoD3wtmrKsuWx+Bnpv/Bd8Autf6RUqjTFhg0FYqcg5y2K9Pa3
+         2dAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=KlO5tZJ3nSqtFTlZpoEvGGrCN4DC9OGY4LAyhIbxX+M=;
-        b=RwR4wcx4YICAqw+u8IJHv8zGAltKOTCLGMHoQJDIhs3pA8L8R2YJh1k0TEIGdA5Clw
-         RknyBiyvgAUM99e2lL/rPyWpSCEs5mj8AxMXCXthpPOx57zsnDwBp8ClE3N/Gftn5o3k
-         o7NEjU/3MVC7w+EVQs6IRZ9cMhQloU8c/vXpyMAY3w6D3AAHT48bSEjfgmL6lHhbWkWZ
-         bt5Wiqv+PWmwuY1C00QaHssAmifqrgKoSRdIUZNJll/49yQriESDZ2XaZPE4OHZHwH8v
-         iJ7jCW4j+jZZbAvwjEL0/YgB4OIElHqxXfrJsLkbfcdft1pilgqGBWMGiRGsArpLC7V9
-         RN1Q==
-X-Gm-Message-State: AO0yUKUCOpaj/C9ioMhiVEUEhyfM88fR4YVifXIC0zDRwOFP2Hn5p2Yw
-        QvBfJ2BwV1+UPCRekNP9wonxDRFdJ5nIrhEIWvd6Ug==
-X-Google-Smtp-Source: AK7set8EChHmdlW9HnZJ0MS2NQwhw5HzSVKVMusEkH4EeybjzcwpeLnR0HIym/tXRuqmfryjCzJZon8EQ20UURThVNw=
-X-Received: by 2002:a25:2f8b:0:b0:80b:b46c:916c with SMTP id
- v133-20020a252f8b000000b0080bb46c916cmr968257ybv.55.1674841297676; Fri, 27
- Jan 2023 09:41:37 -0800 (PST)
+        bh=eieLlMtUQzDO09X9B4p1rcAat7hYw6HTgh7Q6bnDcaw=;
+        b=LX8AxDEqVEZ5Jye7b8KHNotfeD58Fd8qLLvwme2I+0QQvQQN4mp6UHFQJ/2K5z7hT+
+         nxnkNQAI2Cul3GGfVKQBe05MynPTtHK7SsM7M8gIAJCi9akIGF+GHiqoePnu2MCNmhKa
+         raJIHxX1oBnivwNiTFlETm3g5tkETbQ2xe//ju36qbtuFj00e8+vsZKTvplDKsVD4mAq
+         8AY0r5CAHndSJ7PzqFCRP1eGOPu4eFtBHQ5fOczBV4pTtDxB9ChAlBjCdKgKRJkb7lRb
+         q+AR6apS9Hp6irccUbaRfCzhZpazxJBfYBnplrbpzWy6RvZ1J0w1K/LbOJ/KpvMsDEFg
+         U4VQ==
+X-Gm-Message-State: AO0yUKUT6DeFtOMxlMhDjVCRO4oOA2I0MZJiARvquGaZNPyAF8LNGCmU
+        g+CnnqpTdDhQk1PuoSS263P0UkoKlvW1a9KVRfaS6g==
+X-Google-Smtp-Source: AK7set9C/iHihBmD9nG8Ow6aSaiS2ARlS4kCyfX/DeaMPaopULqek3Sa5BtFew/gBmeV62ZulPnjo0rfy6CvM4bquRg=
+X-Received: by 2002:a25:37d4:0:b0:80b:8602:f3fe with SMTP id
+ e203-20020a2537d4000000b0080b8602f3femr1810255yba.36.1674841730975; Fri, 27
+ Jan 2023 09:48:50 -0800 (PST)
 MIME-Version: 1.0
-References: <cover.1674835106.git.lucien.xin@gmail.com> <798ca80553e73028eeec4be08ba1549d08b2e5fc.1674835106.git.lucien.xin@gmail.com>
-In-Reply-To: <798ca80553e73028eeec4be08ba1549d08b2e5fc.1674835106.git.lucien.xin@gmail.com>
+References: <cover.1674835106.git.lucien.xin@gmail.com> <905adccfe82888a8f0ca05fe6f2abd7e3a9649a0.1674835106.git.lucien.xin@gmail.com>
+In-Reply-To: <905adccfe82888a8f0ca05fe6f2abd7e3a9649a0.1674835106.git.lucien.xin@gmail.com>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 27 Jan 2023 18:41:26 +0100
-Message-ID: <CANn89iL11WjtqNx0=fL2hOzpH_S6y=J5U9uS3g+iusupJLLsTg@mail.gmail.com>
-Subject: Re: [PATCHv3 net-next 10/10] net: add support for ipv4 big tcp
+Date:   Fri, 27 Jan 2023 18:48:40 +0100
+Message-ID: <CANn89iJWRZNpSbCYVzgKGpzVjuQo2nXk9y-ysWyQ7dJ+PzUHjQ@mail.gmail.com>
+Subject: Re: [PATCHv3 net-next 09/10] net: add gso_ipv4_max_size and
+ gro_ipv4_max_size per device
 To:     Xin Long <lucien.xin@gmail.com>
 Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
         kuba@kernel.org, Paolo Abeni <pabeni@redhat.com>,
@@ -85,183 +86,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, Jan 27, 2023 at 5:00 PM Xin Long <lucien.xin@gmail.com> wrote:
 >
-> Similar to Eric's IPv6 BIG TCP, this patch is to enable IPv4 BIG TCP.
+> This patch introduces gso_ipv4_max_size and gro_ipv4_max_size
+> per device and adds netlink attributes for them, so that IPV4
+> BIG TCP can be guarded by a separate tunable in the next patch.
 >
-> Firstly, allow sk->sk_gso_max_size to be set to a value greater than
-> GSO_LEGACY_MAX_SIZE by not trimming gso_max_size in sk_trim_gso_size()
-> for IPv4 TCP sockets.
->
-> Then on TX path, set IP header tot_len to 0 when skb->len > IP_MAX_MTU
-> in __ip_local_out() to allow to send BIG TCP packets, and this implies
-> that skb->len is the length of a IPv4 packet; On RX path, use skb->len
-> as the length of the IPv4 packet when the IP header tot_len is 0 and
-> skb->len > IP_MAX_MTU in ip_rcv_core(). As the API iph_set_totlen() and
-> skb_ip_totlen() are used in __ip_local_out() and ip_rcv_core(), we only
-> need to update these APIs.
->
-> Also in GRO receive, add the check for ETH_P_IP/IPPROTO_TCP, and allows
-> the merged packet size >= GRO_LEGACY_MAX_SIZE in skb_gro_receive(). In
-> GRO complete, set IP header tot_len to 0 when the merged packet size
-> greater than IP_MAX_MTU in iph_set_totlen() so that it can be processed
-> on RX path.
->
-> Note that by checking skb_is_gso_tcp() in API iph_totlen(), it makes
-> this implementation safe to use iph->len == 0 indicates IPv4 BIG TCP
-> packets.
+> To not break the old application using "gso/gro_max_size" for
+> IPv4 GSO packets, this patch updates "gso/gro_ipv4_max_size"
+> in netif_set_gso/gro_max_size() if the new size isn't greater
+> than GSO_LEGACY_MAX_SIZE, so that nothing will change even if
+> userspace doesn't realize the new netlink attributes.
 >
 > Signed-off-by: Xin Long <lucien.xin@gmail.com>
 > ---
->  net/core/gro.c       | 12 +++++++-----
->  net/core/sock.c      |  8 ++++++--
->  net/ipv4/af_inet.c   |  7 ++++---
->  net/ipv4/ip_input.c  |  2 +-
->  net/ipv4/ip_output.c |  2 +-
->  5 files changed, 19 insertions(+), 12 deletions(-)
+>  include/linux/netdevice.h    |  6 ++++++
+>  include/uapi/linux/if_link.h |  3 +++
+>  net/core/dev.c               |  4 ++++
+>  net/core/dev.h               | 18 ++++++++++++++++++
+>  net/core/rtnetlink.c         | 33 +++++++++++++++++++++++++++++++++
+>  5 files changed, 64 insertions(+)
 >
-> diff --git a/net/core/gro.c b/net/core/gro.c
-> index 506f83d715f8..b15f85546bdd 100644
-> --- a/net/core/gro.c
-> +++ b/net/core/gro.c
-> @@ -162,16 +162,18 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
->         struct sk_buff *lp;
->         int segs;
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 63b77cbc947e..ce075241ec47 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -2010,6 +2010,9 @@ enum netdev_ml_priv_type {
+>   *                     SET_NETDEV_DEVLINK_PORT macro. This pointer is static
+>   *                     during the time netdevice is registered.
+>   *
+> + *     @gso_ipv4_max_size:     Maximum size of IPv4 GSO packets.
+> + *     @gro_ipv4_max_size:     Maximum size of IPv4 GRO packets.
+> + *
+>   *     FIXME: cleanup struct net_device such that network protocol info
+>   *     moves out.
+>   */
+> @@ -2362,6 +2365,9 @@ struct net_device {
+>         struct rtnl_hw_stats64  *offload_xstats_l3;
 >
-> -       /* pairs with WRITE_ONCE() in netif_set_gro_max_size() */
-> -       gro_max_size = READ_ONCE(p->dev->gro_max_size);
-> +       /* pairs with WRITE_ONCE() in netif_set_gro(_ipv4)_max_size() */
-> +       gro_max_size = p->protocol == htons(ETH_P_IPV6) ?
-> +                       READ_ONCE(p->dev->gro_max_size) :
-> +                               READ_ONCE(p->dev->gro_ipv4_max_size);
->
->         if (unlikely(p->len + len >= gro_max_size || NAPI_GRO_CB(skb)->flush))
->                 return -E2BIG;
->
->         if (unlikely(p->len + len >= GRO_LEGACY_MAX_SIZE)) {
-> -               if (p->protocol != htons(ETH_P_IPV6) ||
-> -                   skb_headroom(p) < sizeof(struct hop_jumbo_hdr) ||
-> -                   ipv6_hdr(p)->nexthdr != IPPROTO_TCP ||
-> +               if (NAPI_GRO_CB(skb)->proto != IPPROTO_TCP ||
-> +                   (p->protocol == htons(ETH_P_IPV6) &&
-> +                    skb_headroom(p) < sizeof(struct hop_jumbo_hdr)) ||
->                     p->encapsulation)
->                         return -E2BIG;
->         }
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index 7ba4891460ad..c98f9a4eeff9 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -2383,6 +2383,8 @@ static void sk_trim_gso_size(struct sock *sk)
->             !ipv6_addr_v4mapped(&sk->sk_v6_rcv_saddr))
->                 return;
->  #endif
-> +       if (sk->sk_family == AF_INET && sk_is_tcp(sk))
-> +               return;
+>         struct devlink_port     *devlink_port;
+> +
+> +       unsigned int            gso_ipv4_max_size;
+> +       unsigned int            gro_ipv4_max_size;
 
-Or simply
+This seems a pretty bad choice in terms of data locality.
 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 7ba4891460adbd6c13c0ce1dcdd7f23c8c1f0f5d..dcb8fff91fd9a9472267a2cf2fdc98114a7d2b7d
-100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -2375,14 +2375,9 @@ EXPORT_SYMBOL_GPL(sk_free_unlock_clone);
+Field order in "struct net_device" is very important for performance.
 
- static void sk_trim_gso_size(struct sock *sk)
- {
--       if (sk->sk_gso_max_size <= GSO_LEGACY_MAX_SIZE)
-+       if (sk->sk_gso_max_size <= GSO_LEGACY_MAX_SIZE ||
-+           sk_is_tcp(sk))
-                return;
--#if IS_ENABLED(CONFIG_IPV6)
--       if (sk->sk_family == AF_INET6 &&
--           sk_is_tcp(sk) &&
--           !ipv6_addr_v4mapped(&sk->sk_v6_rcv_saddr))
--               return;
--#endif
-        sk->sk_gso_max_size = GSO_LEGACY_MAX_SIZE;
- }
+Please put gro_ipv4_max_size close to other related fields, so that we
+do not need an extra cache line miss.
+
+Same for gso_ipv4_max_size.
+
+Use "pahole --hex" to study how "struct net_device" is currently partitioned.
+It seems we have a hole after tso_max_segs, so this would be for
+gso_ipv4_max_size
 
 
-
->         sk->sk_gso_max_size = GSO_LEGACY_MAX_SIZE;
->  }
+>  };
+>  #define to_net_dev(d) container_of(d, struct net_device, dev)
 >
-> @@ -2403,8 +2405,10 @@ void sk_setup_caps(struct sock *sk, struct dst_entry *dst)
->                         sk->sk_route_caps &= ~NETIF_F_GSO_MASK;
->                 } else {
->                         sk->sk_route_caps |= NETIF_F_SG | NETIF_F_HW_CSUM;
-> -                       /* pairs with the WRITE_ONCE() in netif_set_gso_max_size() */
-> -                       sk->sk_gso_max_size = READ_ONCE(dst->dev->gso_max_size);
-> +                       /* pairs with the WRITE_ONCE() in netif_set_gso(_ipv4)_max_size() */
-> +                       sk->sk_gso_max_size = sk->sk_family == AF_INET6 ?
-> +                                       READ_ONCE(dst->dev->gso_max_size) :
-> +                                               READ_ONCE(dst->dev->gso_ipv4_max_size);
->                         sk_trim_gso_size(sk);
->                         sk->sk_gso_max_size -= (MAX_TCP_HEADER + 1);
->                         /* pairs with the WRITE_ONCE() in netif_set_gso_max_segs() */
-> diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-> index 6c0ec2789943..2f992a323b95 100644
-> --- a/net/ipv4/af_inet.c
-> +++ b/net/ipv4/af_inet.c
-> @@ -1485,6 +1485,7 @@ struct sk_buff *inet_gro_receive(struct list_head *head, struct sk_buff *skb)
->         if (unlikely(ip_fast_csum((u8 *)iph, 5)))
->                 goto out;
->
-> +       NAPI_GRO_CB(skb)->proto = proto;
->         id = ntohl(*(__be32 *)&iph->id);
->         flush = (u16)((ntohl(*(__be32 *)iph) ^ skb_gro_len(skb)) | (id & ~IP_DF));
->         id >>= 16;
-> @@ -1618,9 +1619,9 @@ int inet_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len)
->
->  int inet_gro_complete(struct sk_buff *skb, int nhoff)
->  {
-> -       __be16 newlen = htons(skb->len - nhoff);
->         struct iphdr *iph = (struct iphdr *)(skb->data + nhoff);
->         const struct net_offload *ops;
-> +       __be16 totlen = iph->tot_len;
->         int proto = iph->protocol;
->         int err = -ENOSYS;
->
-> @@ -1629,8 +1630,8 @@ int inet_gro_complete(struct sk_buff *skb, int nhoff)
->                 skb_set_inner_network_header(skb, nhoff);
->         }
->
-> -       csum_replace2(&iph->check, iph->tot_len, newlen);
-> -       iph->tot_len = newlen;
-> +       iph_set_totlen(iph, skb->len - nhoff);
-> +       csum_replace2(&iph->check, totlen, iph->tot_len);
->
->         ops = rcu_dereference(inet_offloads[proto]);
->         if (WARN_ON(!ops || !ops->callbacks.gro_complete))
-> diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-> index e880ce77322a..0aa8c49b4e1b 100644
-> --- a/net/ipv4/ip_input.c
-> +++ b/net/ipv4/ip_input.c
-> @@ -511,7 +511,7 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
->         if (unlikely(ip_fast_csum((u8 *)iph, iph->ihl)))
->                 goto csum_error;
->
-> -       len = ntohs(iph->tot_len);
-> +       len = skb_ip_totlen(skb);
-
-len = iph_totlen(skb, iph);
-
->         if (skb->len < len) {
->                 drop_reason = SKB_DROP_REASON_PKT_TOO_SMALL;
->                 __IP_INC_STATS(net, IPSTATS_MIB_INTRUNCATEDPKTS);
-> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-> index 922c87ef1ab5..4e4e308c3230 100644
-> --- a/net/ipv4/ip_output.c
-> +++ b/net/ipv4/ip_output.c
-> @@ -100,7 +100,7 @@ int __ip_local_out(struct net *net, struct sock *sk, struct sk_buff *skb)
->  {
->         struct iphdr *iph = ip_hdr(skb);
->
-> -       iph->tot_len = htons(skb->len);
-> +       iph_set_totlen(iph, skb->len);
->         ip_send_check(iph);
->
->         /* if egress device is enslaved to an L3 master device pass the
-> --
-> 2.31.1
 >
