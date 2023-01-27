@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35C4167E627
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 14:09:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07B8C67E62A
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 14:10:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233552AbjA0NJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 08:09:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52438 "EHLO
+        id S232889AbjA0NKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 08:10:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234612AbjA0NJ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 08:09:27 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D797FA01;
-        Fri, 27 Jan 2023 05:09:11 -0800 (PST)
+        with ESMTP id S232874AbjA0NJa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 08:09:30 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E0C80012;
+        Fri, 27 Jan 2023 05:09:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1674824952; x=1706360952;
+  t=1674824953; x=1706360953;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=aOekovlU26BZ6lJ7Al8iWnX4uypFmQKrzcdds3/X4kA=;
-  b=ZDNk7kFVOvbpPYnBBQjnBVgyBHFwEafS/iHVYqLumBLR3r2HHxRtVg0a
-   LRO0UjT5e6YQfXjTOyhKz0wmInpef6V67KjL1Q4YAPx9kGjcfmL98dD0+
-   gsSZ/YH3HjQkLkZLP2tnRHJapZ46Lm9XhDIOpgSN3CSgCCc3z31E/lu98
-   ByPBdLtN4GtM5lkUHr4TgY6stjOyhDJemVqCLRtvAx7lbOj7SH69CKIkj
-   JPtNYRRquZkeiyHRSOySA/imR+GDjQAlXUuJsnQC4yf3mGpmLKdFUgkPE
-   rWLuxgqIK/7gbRoy+Bf1ZsZqlysn1Dut1miZy92JzUl/TkLgtbeAS2OpY
-   A==;
+  bh=u8DnF1t00zWzTonmr+R22MKl2bbsYSJ4oF8S7fYeWRI=;
+  b=s/ytQforZQEFfLlqO5KAkONSeUD7oz1M1P90YnCMMxveDrGzHW1cMeke
+   ITXZdV8mXPcbU9ILjryVoDFo9uR3Q/7roGMHT7J+HIi7fQ4vVU/XTmL1t
+   OWgm+gTJ90UO+Zm4MEJ77J66+rBaE6eFVymtDJn5NCHW6vpny0938ctHF
+   m4O4sxucWQEsIPdXnNunyBz6mU2BK4OZ+2NZxtVfRKgWIFXHTNjTOsGZE
+   tvf2ObsINIAyN4zFLOfDPgmli749AaeCGYppiradT8IE0QYvXn3F6LGNI
+   gRP1u9i/N7GwjYeXPnV+quo5wi3tYa/XE94DzWRtH85jJ7TqOIUFqYXf3
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.97,251,1669100400"; 
-   d="scan'208";a="198504099"
+   d="scan'208";a="194150444"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jan 2023 06:08:53 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jan 2023 06:09:01 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Fri, 27 Jan 2023 06:08:52 -0700
+ 15.1.2507.16; Fri, 27 Jan 2023 06:08:56 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Fri, 27 Jan 2023 06:08:47 -0700
+ 15.1.2507.16 via Frontend Transport; Fri, 27 Jan 2023 06:08:52 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -58,9 +58,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>,
         Dan Carpenter <error27@gmail.com>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next 2/8] net: microchip: sparx5: Improve the IP frame key match for IPv6 frames
-Date:   Fri, 27 Jan 2023 14:08:24 +0100
-Message-ID: <20230127130830.1481526-3-steen.hegelund@microchip.com>
+Subject: [PATCH net-next 3/8] net: microchip: sparx5: Improve error message when parsing CVLAN filter
+Date:   Fri, 27 Jan 2023 14:08:25 +0100
+Message-ID: <20230127130830.1481526-4-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230127130830.1481526-1-steen.hegelund@microchip.com>
 References: <20230127130830.1481526-1-steen.hegelund@microchip.com>
@@ -77,36 +77,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This ensures that it will be possible for a VCAP rule to distinguish IPv6
-frames from non-IP frames, as the IS0 keyset usually selected for the IPv6
-traffic class in (7TUPLE) does not offer a key that specifies IPv6
-directly: only non-IPv4.
-
-The IP_SNAP key ensures that we select (at least) IP frames.
+This improves the error message when a TC filter with CVLAN tag is used and
+the selected VCAP instance does not support this.
 
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 ---
- drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-index 59d6ed6f4191..8982c434cf54 100644
+index 8982c434cf54..f9922b35ee33 100644
 --- a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
 +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-@@ -266,6 +266,14 @@ sparx5_tc_flower_handler_basic_usage(struct sparx5_tc_flower_parse_usage *st)
- 						    VCAP_BIT_0);
- 			if (err)
- 				goto out;
-+			if (st->admin->vtype == VCAP_TYPE_IS0) {
-+				err = vcap_rule_add_key_bit(st->vrule,
-+							    VCAP_KF_IP_SNAP_IS,
-+							    VCAP_BIT_1);
-+				if (err)
-+					goto out;
-+			}
-+
- 		}
- 	}
+@@ -325,8 +325,11 @@ sparx5_tc_flower_handler_cvlan_usage(struct sparx5_tc_flower_parse_usage *st)
+ 	u16 tpid;
+ 	int err;
+ 
+-	if (st->admin->vtype != VCAP_TYPE_IS0)
++	if (st->admin->vtype != VCAP_TYPE_IS0) {
++		NL_SET_ERR_MSG_MOD(st->fco->common.extack,
++				   "cvlan not supported in this VCAP");
+ 		return -EINVAL;
++	}
+ 
+ 	flow_rule_match_cvlan(st->frule, &mt);
  
 -- 
 2.39.1
