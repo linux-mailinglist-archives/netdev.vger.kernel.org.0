@@ -2,142 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F30D67F116
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 23:27:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A55867F13F
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 23:39:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231955AbjA0W1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 17:27:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57180 "EHLO
+        id S231948AbjA0WjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 17:39:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbjA0W1A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 17:27:00 -0500
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A238E86EB9
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 14:26:59 -0800 (PST)
-Received: by mail-pl1-x64a.google.com with SMTP id u15-20020a170902a60f00b00194d7d89168so3492890plq.10
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 14:26:59 -0800 (PST)
+        with ESMTP id S229674AbjA0WjD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 17:39:03 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC4E193EA
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 14:38:56 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id u5so3921714pfm.10
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 14:38:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=NbuyITvPSOKc1jz+S/ft6dofjUNp+cIGwMA79f3VFEk=;
-        b=f5x3qhocuPlwqyCCe4KzyunFep02grb522QNo+B29UMko/YawVUY7kGNJX6d9iaiiP
-         QqwgcVCt7Q/ELI42F3mCZYhcPhXXfsxcz4LvYkKrge+iRkD4O9OC7SgCRbicUpRY/dox
-         FdKv841T16VH1iJK9T2QkR73zG63mXlGXK0c4BETEhSbdCBOdbi8oase32jL9NYh674o
-         XKIFriuKQSVMyPY3lPa81MWTwrr+dtF2MQ2SHyCW+niafiLEdyNkz2wwo0wXRoL95l62
-         S9WW7gkzNLpOkGTbiJeUpSEJKnnJVXFOHttH0IfPeXvh40MV+bCCna3VvGW+tCS4AWos
-         QAeA==
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Q6iBoXpwgGR/ZVf0A5SekY8NMqe2gKVl+e0DSwe8dcg=;
+        b=cQRXyyWhjENY1EiRP7qhQP3wf+6XMReMMAZnfWe2Kur1YO8bKgprzMVIQHTQs2DG82
+         bpmy5tKTm5RBWsUwvT6HOsWbJR1SXZaIP93syx0Y1BvqG10wdKJrUXq/iYPkgUmUS6Z6
+         m3DmEvmavq2Fh5cIiGPWYfyC54a7ureEExsJ4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NbuyITvPSOKc1jz+S/ft6dofjUNp+cIGwMA79f3VFEk=;
-        b=v46VvtHLY47XUsjMdmRS6N8MJZ23owQtRuopJognKgY/dIZFeC6hzS9bhS9MpT0zIK
-         VwJqJwfTM+XUjHSMjh2/3LOoMW0CKTZ0lWFr1DK5NXNdfTLZvYgCBsqULeAiZl+ya018
-         6An+L8FuK9/qkVtsxVqqgdUvjmIblBL9pWAsgt9v/08k9cKwXeI45S5IQ60YzqgqfT6m
-         SlBVOpFZBmE6KR4RYUE4z4DpOhNYKmjWHu4hSGiatTqMHx1ATj2vzMIQjl2HnTlg9SE5
-         mn4hvgUIBMZvbnRidhb3Ozonq7Hz7gVAwUg0Zaca5WUWrWxQxYSAtGvEGv1F7wiVglH1
-         ocYw==
-X-Gm-Message-State: AO0yUKW4vAlicR3jtjRQvhVKQsQ+nw8aGgbHsqf3IRTnqM40MXOBb9al
-        rs47eIAneEbCC9M55J/Z3VUVk+Y=
-X-Google-Smtp-Source: AK7set+6qTy1UmuYi7HnnnQ/P+t1vNnSAXf1kqyS88Xzu95Wbftj8mxyiGZXV7/kZR1s5vHMA5f1yu0=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a17:90b:1003:b0:226:9980:67f3 with SMTP id
- gm3-20020a17090b100300b00226998067f3mr18917pjb.1.1674858418809; Fri, 27 Jan
- 2023 14:26:58 -0800 (PST)
-Date:   Fri, 27 Jan 2023 14:26:57 -0800
-In-Reply-To: <CAAFAkD8kahd0Ao6BVjwx+F+a0nUK0BzTNFocnpaeQrN7E8VRdQ@mail.gmail.com>
-Mime-Version: 1.0
-References: <20230124170346.316866-1-jhs@mojatatu.com> <20230126153022.23bea5f2@kernel.org>
- <Y9QXWSaAxl7Is0yz@nanopsycho> <CAAFAkD8kahd0Ao6BVjwx+F+a0nUK0BzTNFocnpaeQrN7E8VRdQ@mail.gmail.com>
-Message-ID: <Y9RPsYbi2a9Q/H8h@google.com>
-Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
-From:   sdf@google.com
-To:     Jamal Hadi Salim <hadi@mojatatu.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>, netdev@vger.kernel.org,
-        kernel@mojatatu.com, deb.chatterjee@intel.com,
-        anjali.singhai@intel.com, namrata.limaye@intel.com,
-        khalidm@nvidia.com, tom@sipanda.io, pratyush@sipanda.io,
-        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, vladbu@nvidia.com, simon.horman@corigine.com,
-        stefanc@marvell.com, seong.kim@amd.com, mattyk@nvidia.com,
-        dan.daly@intel.com, john.andy.fingerhut@intel.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Q6iBoXpwgGR/ZVf0A5SekY8NMqe2gKVl+e0DSwe8dcg=;
+        b=hJJRMCP/qw7efyTSfgYlnmqkwBoYeNmvGhC/8VjGp6SKsqucqvRsP15KeY+o/somQP
+         eRfnwBXW4WGyhotAjZpX9lTy3S7v+DxfOk5+l4bp33WO+oYnkrqLecbgFpHLNZtBajhI
+         K6Xbym0Lts8ivv7pGijHPXq4hKY+mpvj+xZsbwruORGMQtLPKppmsrIbvL4a4PQjwjpW
+         Id5Wz/3iE7gtPC/a81KasDtqQEZBNtq9mKSwouhX+QI9UwtNX5bKsDWq6ouNIkD8BWTK
+         Ji9wNIqmwKA2bvTeBQO0KmBtSvR2LxlmRDIiizRETiS0mbyUdQfOOVXzXR+9ftxLjgZn
+         dz5Q==
+X-Gm-Message-State: AO0yUKXqorbhM3kLDPYmobknHO1bXvErlgMZbqTvuLoLDwnUEREPB4A6
+        53DUNcKdjXOp8jwrGgnnzcEmQQ==
+X-Google-Smtp-Source: AK7set9nEOp8oJvvITNyqKkOgdNSk+TAokzAcmXTUWbfu3zV7ISgRJfcLKUBqQSOq9XH0hqHE2L/bQ==
+X-Received: by 2002:a05:6a00:1d04:b0:592:7341:781f with SMTP id a4-20020a056a001d0400b005927341781fmr35668pfx.31.1674859136095;
+        Fri, 27 Jan 2023 14:38:56 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id br13-20020a056a00440d00b00581ad007a9fsm3088755pfb.153.2023.01.27.14.38.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Jan 2023 14:38:55 -0800 (PST)
+From:   Kees Cook <keescook@chromium.org>
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     Kees Cook <keescook@chromium.org>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH] net: ethernet: mtk_eth_soc: Avoid truncating allocation
+Date:   Fri, 27 Jan 2023 14:38:54 -0800
+Message-Id: <20230127223853.never.014-kees@kernel.org>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2447; h=from:subject:message-id; bh=yfJ1UtZNOwTETD8Al2XTKq5PIE5VchaJolozWYUefHY=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBj1FJ9hMXYGB04Nb8fnZvQFD8SaUvBjTtQlF3d5mZ8 JQnQwBqJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCY9RSfQAKCRCJcvTf3G3AJuk7D/ 98s7Y81Xj52PumgZDzo42yrLNHSRGuvMRYB0A/Q4Zt7FebJnq8KJmO1UKXey36nsJXuwoxCuFJw6VQ WoGAcBv3Xd6q2yO8GzMzPv/2JSTc8ATaSQaljNkd8bAbGvtpLTMwzLNW/JXYovBqgZzMRVzRvSogMF fA51JTFGlNoiZQjfsVIfnV9yVf0MeOJXx58PbH2hPftHeA63ZMVVgGZCzyWqrXqrPeiYtJ/oybWxhd X++53/jblEmlKNyhcpGxEmMnLtk7whId4NiXn+TECSGFOfGy/uwip6rvRdKSrjufQ0iNCHMQtN4L0Y t7Rrm+ldNKiGr2RfYhfk78//8keWFu7lfOEt7WcSsx+e07aSWGIYFxb3t99JktWxVGztvciwIE5irP bQos//ov2Bi7hRrZjt5mZKfpBlfB5MyparOnAE9nf3Wc4jRi9eYaPNg+9XAFAhO8oNCw5YEHsluu2i sCzLo3iPw7Se47jNfjm5JyIIu1rmL6M6w4E3jDDqyMPGsQ5Q4obMjaZJAuEicR5KpoTlcnLp3CJohC AChj0Z0ugQJ77+9dAAXUzahg5vmgs0HkmTqMtgaV3QmOvsla5A7NR1DYyvl18aAZJo9n4bcscCV850 5Mud8wqUAhE+EHIBq1qNLVa0ksoN2cUcOyVcYwv3IdiqilS9ndN263ArKt8g==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/27, Jamal Hadi Salim wrote:
-> On Fri, Jan 27, 2023 at 1:26 PM Jiri Pirko <jiri@resnulli.us> wrote:
-> >
-> > Fri, Jan 27, 2023 at 12:30:22AM CET, kuba@kernel.org wrote:
-> > >On Tue, 24 Jan 2023 12:03:46 -0500 Jamal Hadi Salim wrote:
-> > >> There have been many discussions and meetings since about 2015 in  
-> regards to
-> > >> P4 over TC and now that the market has chosen P4 as the datapath  
-> specification
-> > >> lingua franca
-> > >
-> > >Which market?
-> > >
-> > >Barely anyone understands the existing TC offloads. We'd need strong,
-> > >and practical reasons to merge this. Speaking with my "have suffered
-> > >thru the TC offloads working for a vendor" hat on, not the "junior
-> > >maintainer" hat.
-> >
-> > You talk about offload, yet I don't see any offload code in this RFC.
-> > It's pure sw implementation.
-> >
-> > But speaking about offload, how exactly do you plan to offload this
-> > Jamal? AFAIK there is some HW-specific compiler magic needed to generate
-> > HW acceptable blob. How exactly do you plan to deliver it to the driver?
-> > If HW offload offload is the motivation for this RFC work and we cannot
-> > pass the TC in kernel objects to drivers, I fail to see why exactly do
-> > you need the SW implementation...
+There doesn't appear to be a reason to truncate the allocation used for
+flow_info, so do a full allocation and remove the unused empty struct.
+GCC does not like having a reference to an object that has been
+partially allocated, as bounds checking may become impossible when
+such an object is passed to other code. Seen with GCC 13:
 
-> Our rule in TC is: _if you want to offload using TC you must have a
-> s/w equivalent_.
-> We enforced this rule multiple times (as you know).
-> P4TC has a sw equivalent to whatever the hardware would do. We are  
-> pushing that
-> first. Regardless, it has value on its own merit:
-> I can run P4 equivalent in s/w in a scriptable (as in no compilation
-> in the same spirit as u32 and pedit),
-> by programming the kernel datapath without changing any kernel code.
+../drivers/net/ethernet/mediatek/mtk_ppe.c: In function 'mtk_foe_entry_commit_subflow':
+../drivers/net/ethernet/mediatek/mtk_ppe.c:623:18: warning: array subscript 'struct mtk_flow_entry[0]' is partly outside array bounds of 'unsigned char[48]' [-Warray-bounds=]
+  623 |         flow_info->l2_data.base_flow = entry;
+      |                  ^~
 
-Not to derail too much, but maybe you can clarify the following for me:
-In my (in)experience, P4 is usually constrained by the vendor
-specific extensions. So how real is that goal where we can have a generic
-P4@TC with an option to offload? In my view, the reality (at least
-currently) is that there are NIC-specific P4 programs which won't have
-a chance of running generically at TC (unless we implement those vendor
-extensions).
+Cc: Felix Fietkau <nbd@nbd.name>
+Cc: John Crispin <john@phrozen.org>
+Cc: Sean Wang <sean.wang@mediatek.com>
+Cc: Mark Lee <Mark-MC.Lee@mediatek.com>
+Cc: Lorenzo Bianconi <lorenzo@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-mediatek@lists.infradead.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+ drivers/net/ethernet/mediatek/mtk_ppe.c | 3 +--
+ drivers/net/ethernet/mediatek/mtk_ppe.h | 1 -
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-And regarding custom parser, someone has to ask that 'what about bpf
-question': let's say we have a P4 frontend at TC, can we use bpfilter-like
-usermode helper to transparently compile it to bpf (for SW path) instead
-inventing yet another packet parser? Wrestling with the verifier won't be
-easy here, but I trust it more than this new kParser.
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
+index 451a87b1bc20..6883eb34cd8b 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
+@@ -615,8 +615,7 @@ mtk_foe_entry_commit_subflow(struct mtk_ppe *ppe, struct mtk_flow_entry *entry,
+ 	u32 ib1_mask = mtk_get_ib1_pkt_type_mask(ppe->eth) | MTK_FOE_IB1_UDP;
+ 	int type;
+ 
+-	flow_info = kzalloc(offsetof(struct mtk_flow_entry, l2_data.end),
+-			    GFP_ATOMIC);
++	flow_info = kzalloc(sizeof(*flow_info), GFP_ATOMIC);
+ 	if (!flow_info)
+ 		return;
+ 
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.h b/drivers/net/ethernet/mediatek/mtk_ppe.h
+index 16b02e1d4649..5e8bc48252b1 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe.h
++++ b/drivers/net/ethernet/mediatek/mtk_ppe.h
+@@ -279,7 +279,6 @@ struct mtk_flow_entry {
+ 		struct {
+ 			struct mtk_flow_entry *base_flow;
+ 			struct hlist_node list;
+-			struct {} end;
+ 		} l2_data;
+ 	};
+ 	struct rhash_head node;
+-- 
+2.34.1
 
-> To answer your question in regards to what the interfaces "P4
-> speaking" hardware or drivers
-> are going to be programmed, there are discussions going on right now:
-> There is a strong
-> leaning towards devlink for the hardware side loading.... The idea
-> from the driver side is to
-> reuse the tc ndos.
-> We have biweekly meetings which are open. We do have Nvidia folks, but
-> would be great if
-> we can have you there. Let me find the link and send it to you.
-> Do note however, our goal is to get s/w first as per tradition of
-> other offloads with TC .
-
-> cheers,
-> jamal
