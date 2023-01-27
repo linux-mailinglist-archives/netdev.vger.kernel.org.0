@@ -2,113 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DAFD67EC48
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 18:18:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 196DD67EC4A
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 18:18:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235122AbjA0RSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 12:18:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48034 "EHLO
+        id S234344AbjA0RSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 12:18:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234344AbjA0RSU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 12:18:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30AA236456
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 09:18:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B73E061D54
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 17:18:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07F89C433D2;
-        Fri, 27 Jan 2023 17:18:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674839897;
-        bh=2+Eqsg4iAmC/sGpfxRwsyaO6aw/FLQ74Lv6oVyX8STQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TbXCiBAWwhPvVHo2dmi992T09LLpRfAuXBF/x0SD6E79ztg+N99ihFCLJ0OonaXd7
-         ZEUoTpDTKoIXCsUxPOIr4qqrHzyh7ADtG2CiW3LbeVfOfY32Nr5m4H6BrQpSBPNfaE
-         k2N63SO95UnNjZ+7qBjZ21PWi6P1ZyeiY93lmt9iR45FUG1YwEWAHqKVqPB8Aft3R7
-         /xI8ofkjBG7KDbmoOcA10pZWsbFrAugmuwvKpaJbD0Ycrvkb793aidkWQsjGglQk/5
-         y2+UtSUtIKzwrxpNqB+MwexgAdDQmoBFqovnpMQ8PU7R68t398C0q6E0MVR5LjROx+
-         atYwUWq34rXMg==
-Date:   Fri, 27 Jan 2023 09:18:15 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     netdev@vger.kernel.org, kernel@mojatatu.com,
-        deb.chatterjee@intel.com, anjali.singhai@intel.com,
-        namrata.limaye@intel.com, khalidm@nvidia.com, tom@sipanda.io,
-        pratyush@sipanda.io, jiri@resnulli.us, xiyou.wangcong@gmail.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        vladbu@nvidia.com, simon.horman@corigine.com, stefanc@marvell.com,
-        seong.kim@amd.com, mattyk@nvidia.com, dan.daly@intel.com,
-        john.andy.fingerhut@intel.com
-Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
-Message-ID: <20230127091815.3e066e43@kernel.org>
-In-Reply-To: <CAM0EoMnHcR9jFVtLt+L1FPRY5BK7_NgH3gsOZxQrXzEkaR1HYQ@mail.gmail.com>
-References: <20230124170346.316866-1-jhs@mojatatu.com>
-        <20230126153022.23bea5f2@kernel.org>
-        <CAM0EoMnHcR9jFVtLt+L1FPRY5BK7_NgH3gsOZxQrXzEkaR1HYQ@mail.gmail.com>
+        with ESMTP id S235127AbjA0RSc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 12:18:32 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F96D38013
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 09:18:31 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id m7-20020a17090a71c700b0022c0c070f2eso8567506pjs.4
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 09:18:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qtouv6Z6Gh5nIAaDvGdVmaZJMnuDScOHiRWBgSzL7vs=;
+        b=PjAdEhrytMEw3NDmnzkGw1Ha9Tvj3WrOYvmJ/JxVPPndm1Eto9HncK/RgyZG10Ib1y
+         gAuxnGwpLb1YAzBZhf6DMq7l2rKD12NP5F5Z2QwrLz+ddsMDKugz0uDkYpxCsg9cPGck
+         ce6tlscI7EwqoY8T4tmzNrcI0qaXc3a1xnNyk8YVzk0Um2AcH9vlwG7SmOqfqJbHEDKJ
+         gBeXDi13HKr8kDvKltX2mLHWGXkRLij7Zg2b6hq3GJ2dGYyM7ocCUxeA6k7Ct9sNcJ8E
+         iHNj10fJndFoE9p6ISqSVpKJ9NjXTq4vXuXvIpJDzbalrGA87YXH354pwBXe0rACZuak
+         3Sxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=qtouv6Z6Gh5nIAaDvGdVmaZJMnuDScOHiRWBgSzL7vs=;
+        b=EXTkRJZnqFjBTqb2gC2ZK+QecVv9t9WS4YgUs6FzAofF+ugU5veFu+Cd+Vg7VXWWrO
+         G90N/HGfYI18fyXGAJhSzi8+MgyKozpCl/31/VG6WE+u7VHySppySGNbULycd6WRjqqa
+         dGemIGBjOo+YerDTNJEG4gxvjkHq7wvA0PQ1gMI3YaboKqxGqww8cc4y7HOPbRrWPel+
+         vsMeAwBiwtio1jdAyW7KWEnjxrWY4Ny1YFzGzgFO2K/Xv5lv/GlVKQ/LSzzdwC9W9cYy
+         GLLYUon56Wc4erZyN6URYCic3zO0oUNVMu2lTfL+gtg5GCghjfXTYp2RUcWE60E/XISB
+         nVxg==
+X-Gm-Message-State: AO0yUKUN/MECLvs8k0y3/YpbCPnXm/rMJvd7Gc+10ZQBRGxVvdSTslHN
+        vv1efeqzphYNVSfIvux7Vw4Vi4Nq38+awhvdkiVing==
+X-Google-Smtp-Source: AK7set/1hpxNVHlFIAFcnSPfgMcdJgv+C7gc3wU/4TGtqW8mjpZXmVYc0HKBp1hxQxUFwUzdaARiCeiMlJXlQofVbTk=
+X-Received: by 2002:a17:902:82c6:b0:196:cca:a0b4 with SMTP id
+ u6-20020a17090282c600b001960ccaa0b4mr2367989plz.20.1674839910675; Fri, 27 Jan
+ 2023 09:18:30 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <167482734243.892262.18210955230092032606.stgit@firesoul> <87cz70krjv.fsf@toke.dk>
+In-Reply-To: <87cz70krjv.fsf@toke.dk>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Fri, 27 Jan 2023 09:18:19 -0800
+Message-ID: <CAKH8qBtc0TRorF2zsD0dZjgredpzcmczK=KMgt1mpEX_mQG2Kg@mail.gmail.com>
+Subject: Re: [xdp-hints] [PATCH bpf-next RFC V1] selftests/bpf:
+ xdp_hw_metadata clear metadata when -EOPNOTSUPP
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, martin.lau@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        dsahern@gmail.com, willemb@google.com, void@manifault.com,
+        kuba@kernel.org, xdp-hints@xdp-project.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 Jan 2023 08:33:39 -0500 Jamal Hadi Salim wrote:
-> On Thu, Jan 26, 2023 at 6:30 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Tue, 24 Jan 2023 12:03:46 -0500 Jamal Hadi Salim wrote:  
-> > > There have been many discussions and meetings since about 2015 in regards to
-> > > P4 over TC and now that the market has chosen P4 as the datapath specification
-> > > lingua franca  
+On Fri, Jan 27, 2023 at 5:58 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> Jesper Dangaard Brouer <brouer@redhat.com> writes:
+>
+> > The AF_XDP userspace part of xdp_hw_metadata see non-zero as a signal o=
+f
+> > the availability of rx_timestamp and rx_hash in data_meta area. The
+> > kernel-side BPF-prog code doesn't initialize these members when kernel
+> > returns an error e.g. -EOPNOTSUPP.  This memory area is not guaranteed =
+to
+> > be zeroed, and can contain garbage/previous values, which will be read
+> > and interpreted by AF_XDP userspace side.
 > >
-> > Which market?  
-> 
-> Network programmability involving hardware  - where at minimal the
-> specification of the datapath is in P4 and
-> often the implementation is. For samples of specification using P4
-> (that are public) see for example MS Azure:
-> https://github.com/sonic-net/DASH/tree/main/dash-pipeline
+> > Tested this on different drivers. The experiences are that for most
+> > packets they will have zeroed this data_meta area, but occasionally it
+> > will contain garbage data.
+> >
+> > Example of failure tested on ixgbe:
+> >  poll: 1 (0)
+> >  xsk_ring_cons__peek: 1
+> >  0x18ec788: rx_desc[0]->addr=3D100000000008000 addr=3D8100 comp_addr=3D=
+8000
+> >  rx_hash: 3697961069
+> >  rx_timestamp:  9024981991734834796 (sec:9024981991.7348)
+> >  0x18ec788: complete idx=3D8 addr=3D8000
+> >
+> > Converting to date:
+> >  date -d @9024981991
+> >  2255-12-28T20:26:31 CET
+> >
+> > I choose a simple fix in this patch. When kfunc fails or isn't supporte=
+d
+> > assign zero to the corresponding struct meta value.
+> >
+> > It's up to the individual BPF-programmer to do something smarter e.g.
+> > that fits their use-case, like getting a software timestamp and marking
+> > a flag that gives the type of timestamp.
+> >
+> > Another possibility is for the behavior of kfunc's
+> > bpf_xdp_metadata_rx_timestamp and bpf_xdp_metadata_rx_hash to require
+> > clearing return value pointer.
+>
+> I definitely think we should leave it up to the BPF programmer to react
+> to failures; that's what the return code is there for, after all :)
 
-That's an IPU thing?
++1
 
-> If you are a vendor and want to sell a NIC in that space, the spec you
-> get is in P4.
+Maybe we can unconditionally memset(meta, sizeof(*meta), 0) in
+tools/testing/selftests/bpf/progs/xdp_hw_metadata.c?
+Since it's not a performance tool, it should be ok functionality-wise.
 
-s/NIC/IPU/ ?
-
-> Your underlying hardware
-> doesnt have to be P4 native, but at minimal the abstraction (as we are
-> trying to provide with P4TC) has to be
-> able to consume the P4 specification.
-
-P4 is certainly an option, especially for specs, but I haven't seen much
-adoption myself.
-What's the benefit / use case?
-
-> For implementations where P4 is in use, there are many - some public
-> others not, sample space:
-> https://cloud.google.com/blog/products/gcp/google-cloud-using-p4runtime-to-build-smart-networks
-
-Hyper-scaler proprietary.
-
-> There are NICs and switches which are P4 native in the market.
-
-Link to docs?
-
-> IOW, there is beacoup $ investment in this space that makes it worth pursuing.
-
-Pursuing $ is good! But the community IMO should maximize
-a different function.
-
-> TC is the kernel offload mechanism that has gathered deployment
-> experience over many years - hence P4TC.
-
-I don't wanna argue. I thought it'd be more fair towards you if I made
-my lack of conviction known, rather than sit quiet and ignore it since
-it's just an RFC.
+> -Toke
+>
