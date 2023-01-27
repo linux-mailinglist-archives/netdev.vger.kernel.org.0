@@ -2,114 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EFE367EB83
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 17:49:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8BC967EB9D
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 17:53:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234676AbjA0Qtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 11:49:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43364 "EHLO
+        id S232303AbjA0Qxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 11:53:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233428AbjA0Qt2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 11:49:28 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 441AD7E04A
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 08:49:18 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id d4-20020a05600c3ac400b003db1de2aef0so3933720wms.2
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 08:49:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=MwxIin163802ACvSCq0jg4HlDZfjOU+b7ag/1i6mXEE=;
-        b=p0bN2yAu28MNGvTlRbQWr0+f8dRrN7+Tn627u0K/x42EmNDLphayIf9NlMev0wqj8h
-         /EmzHfmLQqKOVu8ZgIciDK/fUJr6PvWPKCTqRsZtsPxIDrQvOH3aJeQUvnun7rNkTSUQ
-         6/KZMhpjpBCdTsrlPk0Pq1AqbefuhemfseqENDs+CCppSNm6HT2vKHwFAalheOqTayxm
-         dtjoNuM92e8Dp5V+KrvfMQYfpqoVE/fUi7G9DPER5YIOirUmedqSV5KeWbBKvr23C7Je
-         C0hL4yNzr1apQ8T4Xaqa5bA4xfUJep3aF5qWXf5H1dWiQl4NI8yI1oLJqFFQ+XguiBLe
-         Z84Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=MwxIin163802ACvSCq0jg4HlDZfjOU+b7ag/1i6mXEE=;
-        b=M/Gsi+rbN+JfRrmt76xO/HhvqqCemVIfVliJrHgQIXQPXD4oCmVlu65LnlinjwQJIV
-         N+c3gcRrFCUsg6DWszSlfk29V7E/xRVLyQxvc8ICHtGpECd2yJkcW6fEJA8Y6UGliHA1
-         L1ETFP4LvMM07AR96+6xK7tLgLy+2mRooKuLEJvGyyIBEy+EQosERFg12zmLoHwx9vAq
-         ct7r9Ql+GczNC9vd+2Mc0BGqlgSe2AJFL9N4AQy1KjSgU0tgSHmk0xepfSYJpwietUcz
-         +1Enssna2udo5EabVtY4Vyye4MZc/TQBGmU7PmoHnLeHjDdUPCZQXVPaPS9hJVwR4fix
-         Xf1g==
-X-Gm-Message-State: AO0yUKXdURSxk7AaehyUD00cFGgPoGeKT3ZIJ7AQwKXBenoCF4FU7uom
-        70cAYg5OO9RBjYLBXzWFSbS5wQ==
-X-Google-Smtp-Source: AK7set91BwRn6DZssbXKyvbz30nnUQMYADbkS+Drm/RA9jZHFwp9Oe0M3rmb1c4Tgb8gUCp8+I209g==
-X-Received: by 2002:a05:600c:3151:b0:3dc:443e:420e with SMTP id h17-20020a05600c315100b003dc443e420emr40585wmo.2.1674838156833;
-        Fri, 27 Jan 2023 08:49:16 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id p24-20020a05600c1d9800b003dafadd2f77sm8990779wms.1.2023.01.27.08.49.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Jan 2023 08:49:16 -0800 (PST)
-Message-ID: <1e498b93-d3bd-bd12-e991-e3f4bedf632d@linaro.org>
-Date:   Fri, 27 Jan 2023 17:49:13 +0100
+        with ESMTP id S231382AbjA0Qxe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 11:53:34 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1589C761C6;
+        Fri, 27 Jan 2023 08:53:02 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 81771CE0A36;
+        Fri, 27 Jan 2023 16:52:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21A53C433D2;
+        Fri, 27 Jan 2023 16:52:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674838358;
+        bh=4PEOSgaSNZcRyv2+4Vf4N0LKGu/uE0t/eNTGrTjQCE8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tDh7dRFiEDjTkn4QUY9DLfEhv4hvKDWOhuQFr/co53t+6RPG8/mbbd5IK3vfgBt4u
+         M15ZbDdGsTTvA/8kqxutPALB+tbijKfZqnH4ZLBndUu/BFDLGqFuw28pcR52cr1hyG
+         MbjAq0l6vdbGGWV2GbQzFQRwGqw6NXabRaExO2g01wSKMkkrL4muK4RfzJI6rCAjG3
+         3Z8kQ4YNkKGSOx6j7VjdfP682dkniDgwBbYkhjFA1OhOGJ0qRssXq8m4B0h/uFgKa9
+         EPR2bCInKU59FsqGVXDYnl3T98HdVXsie8++FxlNWSZvS1Z0QiHmX5CMik5q8CPozA
+         5Q07DNmxQ4H8Q==
+Date:   Fri, 27 Jan 2023 08:52:36 -0800
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>, kvm@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        Jiri Kosina <jikos@kernel.org>, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        "Seth Forshee (DigitalOcean)" <sforshee@digitalocean.com>,
+        live-patching@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
+Subject: Re: [PATCH 0/2] vhost: improve livepatch switching for heavily
+ loaded vhost worker kthreads
+Message-ID: <20230127165236.rjcp6jm6csdta6z3@treble>
+References: <20230120-vhost-klp-switching-v1-0-7c2b65519c43@kernel.org>
+ <Y9KyVKQk3eH+RRse@alley>
+ <Y9LswwnPAf+nOVFG@do-x1extreme>
+ <20230127044355.frggdswx424kd5dq@treble>
+ <Y9OpTtqWjAkC2pal@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v3 1/6] dt-bindings: Document common device controller
- bindings
-Content-Language: en-US
-To:     Gatien Chevallier <gatien.chevallier@foss.st.com>,
-        Oleksii_Moisieiev@epam.com, gregkh@linuxfoundation.org,
-        herbert@gondor.apana.org.au, davem@davemloft.net,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        alexandre.torgue@foss.st.com, vkoul@kernel.org, jic23@kernel.org,
-        olivier.moysan@foss.st.com, arnaud.pouliquen@foss.st.com,
-        mchehab@kernel.org, fabrice.gasnier@foss.st.com,
-        ulf.hansson@linaro.org, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-crypto@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org
-References: <20230127164040.1047583-1-gatien.chevallier@foss.st.com>
- <20230127164040.1047583-2-gatien.chevallier@foss.st.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230127164040.1047583-2-gatien.chevallier@foss.st.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Y9OpTtqWjAkC2pal@hirez.programming.kicks-ass.net>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/01/2023 17:40, Gatien Chevallier wrote:
-> From: Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
-> 
-> Introducing of the common device controller bindings for the controller
-> provider and consumer devices. Those bindings are intended to allow
-> divided system on chip into muliple domains, that can be used to
-> configure hardware permissions.
-> 
-> Signed-off-by: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
-> ---
-> 
-> No change since V1. I'm letting this patch for dependency with bindings to
-> avoid noise with dt/bindings checks. Therefore, it should be reviewed on the
-> appropriate thread.
+On Fri, Jan 27, 2023 at 11:37:02AM +0100, Peter Zijlstra wrote:
+> On Thu, Jan 26, 2023 at 08:43:55PM -0800, Josh Poimboeuf wrote:
+> > Here's another idea, have we considered this?  Have livepatch set
+> > TIF_NEED_RESCHED on all kthreads to force them into schedule(), and then
+> > have the scheduler call klp_try_switch_task() if TIF_PATCH_PENDING is
+> > set.
+> > 
+> > Not sure how scheduler folks would feel about that ;-)
 
-There was a v6 already, this is v3 and I don't understand this comment.
-What do you let? Whom? If it is not for review and not for merging,
-please annotate it in the title ([IGNORE PATCH] or something).
+Hmmmm, with preemption I guess the above doesn't work for kthreads
+calling cond_resched() instead of what vhost_worker() does (explicit
+need_resched/schedule).
 
-Best regards,
-Krzysztof
+> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+> index f1b25ec581e0..06746095a724 100644
+> --- a/kernel/livepatch/transition.c
+> +++ b/kernel/livepatch/transition.c
+> @@ -9,6 +9,7 @@
+>  
+>  #include <linux/cpu.h>
+>  #include <linux/stacktrace.h>
+> +#include <linux/stop_machine.h>
+>  #include "core.h"
+>  #include "patch.h"
+>  #include "transition.h"
+> @@ -334,6 +335,16 @@ static bool klp_try_switch_task(struct task_struct *task)
+>  	return !ret;
+>  }
+>  
+> +static int __stop_try_switch(void *arg)
+> +{
+> +	return klp_try_switch_task(arg) ? 0 : -EBUSY;
+> +}
+> +
+> +static bool klp_try_switch_task_harder(struct task_struct *task)
+> +{
+> +	return !stop_one_cpu(task_cpu(task), __stop_try_switch, task);
+> +}
+> +
+>  /*
+>   * Sends a fake signal to all non-kthread tasks with TIF_PATCH_PENDING set.
+>   * Kthreads with TIF_PATCH_PENDING set are woken up.
 
+Doesn't work for PREEMPT+!ORC.  Non-ORC reliable unwinders will detect
+preemption on the stack and automatically report unreliable.
+
+-- 
+Josh
