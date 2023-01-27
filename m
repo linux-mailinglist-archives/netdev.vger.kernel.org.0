@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4565B67DB6E
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 02:48:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36C1867DB71
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 02:48:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232495AbjA0BsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 20:48:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60158 "EHLO
+        id S232545AbjA0BsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 20:48:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbjA0BsS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 20:48:18 -0500
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 14727524D;
-        Thu, 26 Jan 2023 17:48:16 -0800 (PST)
+        with ESMTP id S232076AbjA0BsT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 20:48:19 -0500
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 371EE22A0C;
+        Thu, 26 Jan 2023 17:48:18 -0800 (PST)
 X-IronPort-AV: E=Sophos;i="5.97,249,1669042800"; 
-   d="scan'208";a="147581401"
+   d="scan'208";a="150707073"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 27 Jan 2023 10:48:16 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 27 Jan 2023 10:48:16 +0900
 Received: from localhost.localdomain (unknown [10.166.15.32])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 6865A415F67A;
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 81C3D415F68D;
         Fri, 27 Jan 2023 10:48:16 +0900 (JST)
 From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 To:     linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
@@ -27,9 +27,9 @@ To:     linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
         pabeni@redhat.com
 Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
         Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH net-next v3 1/4] net: phylink: Set host_interfaces for a non-sfp PHY
-Date:   Fri, 27 Jan 2023 10:48:09 +0900
-Message-Id: <20230127014812.1656340-2-yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH net-next v3 2/4] net: ethernet: renesas: rswitch: Simplify struct phy * handling
+Date:   Fri, 27 Jan 2023 10:48:10 +0900
+Message-Id: <20230127014812.1656340-3-yoshihiro.shimoda.uh@renesas.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230127014812.1656340-1-yoshihiro.shimoda.uh@renesas.com>
 References: <20230127014812.1656340-1-yoshihiro.shimoda.uh@renesas.com>
@@ -43,64 +43,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If a new flag (ovr_host_interfaces) in the phylink_config is set,
-overwrite the host_interfaces in the phy_device by link_interface.
-
-Note that an ethernet PHY driver like marvell10g will check
-PHY_INTERFACE_MODE_SGMII in the host_interfaces whther the host
-controller supports a rate matching interface mode or not. So, set
-PHY_INTERFACE_MODE_SGMII to the host_interfaces if it is set in
-the supported_interfaces.
+Simplify struct phy *serdes handling by keeping the valiable in
+the struct rswitch_device.
 
 Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 ---
- drivers/net/phy/phylink.c | 11 +++++++++++
- include/linux/phylink.h   |  3 +++
- 2 files changed, 14 insertions(+)
+ drivers/net/ethernet/renesas/rswitch.c | 40 ++++++++++++--------------
+ drivers/net/ethernet/renesas/rswitch.h |  1 +
+ 2 files changed, 19 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 319790221d7f..dee64b4a1175 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -1814,6 +1814,17 @@ int phylink_fwnode_phy_connect(struct phylink *pl,
- 		pl->link_config.interface = pl->link_interface;
- 	}
+diff --git a/drivers/net/ethernet/renesas/rswitch.c b/drivers/net/ethernet/renesas/rswitch.c
+index 14fc0af304ce..b0c1ea72772e 100644
+--- a/drivers/net/ethernet/renesas/rswitch.c
++++ b/drivers/net/ethernet/renesas/rswitch.c
+@@ -1222,49 +1222,40 @@ static void rswitch_phylink_deinit(struct rswitch_device *rdev)
+ 	phylink_destroy(rdev->phylink);
+ }
  
-+	if (pl->config->ovr_host_interfaces) {
-+		__set_bit(pl->link_interface, phy_dev->host_interfaces);
+-static int rswitch_serdes_set_params(struct rswitch_device *rdev)
++static int rswitch_serdes_phy_get(struct rswitch_device *rdev)
+ {
+ 	struct device_node *port = rswitch_get_port_node(rdev);
+ 	struct phy *serdes;
+-	int err;
+ 
+ 	serdes = devm_of_phy_get(&rdev->priv->pdev->dev, port, NULL);
+ 	of_node_put(port);
+ 	if (IS_ERR(serdes))
+ 		return PTR_ERR(serdes);
++	rdev->serdes = serdes;
 +
-+		/* An ethernet PHY driver will check PHY_INTERFACE_MODE_SGMII
-+		 * in the host_interfaces whether the host controller supports
-+		 * a rate matching interface mode or not.
-+		 */
-+		if (test_bit(PHY_INTERFACE_MODE_SGMII, pl->config->supported_interfaces))
-+			__set_bit(PHY_INTERFACE_MODE_SGMII, phy_dev->host_interfaces);
-+	}
++	return 0;
++}
 +
- 	ret = phy_attach_direct(pl->netdev, phy_dev, flags,
- 				pl->link_interface);
- 	if (ret) {
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index c492c26202b5..c8dd53b1e857 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -124,6 +124,8 @@ enum phylink_op_type {
-  *		      if MAC link is at %MLO_AN_FIXED mode.
-  * @mac_managed_pm: if true, indicate the MAC driver is responsible for PHY PM.
-  * @ovr_an_inband: if true, override PCS to MLO_AN_INBAND
-+ * @ovr_host_interfaces: if true, override host_interfaces of phy_device from
-+ *			 link_interface.
-  * @get_fixed_state: callback to execute to determine the fixed link state,
-  *		     if MAC link is at %MLO_AN_FIXED mode.
-  * @supported_interfaces: bitmap describing which PHY_INTERFACE_MODE_xxx
-@@ -137,6 +139,7 @@ struct phylink_config {
- 	bool poll_fixed_state;
- 	bool mac_managed_pm;
- 	bool ovr_an_inband;
-+	bool ovr_host_interfaces;
- 	void (*get_fixed_state)(struct phylink_config *config,
- 				struct phylink_link_state *state);
- 	DECLARE_PHY_INTERFACE_MASK(supported_interfaces);
++static int rswitch_serdes_set_params(struct rswitch_device *rdev)
++{
++	int err;
+ 
+-	err = phy_set_mode_ext(serdes, PHY_MODE_ETHERNET,
++	err = phy_set_mode_ext(rdev->serdes, PHY_MODE_ETHERNET,
+ 			       rdev->etha->phy_interface);
+ 	if (err < 0)
+ 		return err;
+ 
+-	return phy_set_speed(serdes, rdev->etha->speed);
++	return phy_set_speed(rdev->serdes, rdev->etha->speed);
+ }
+ 
+ static int rswitch_serdes_init(struct rswitch_device *rdev)
+ {
+-	struct device_node *port = rswitch_get_port_node(rdev);
+-	struct phy *serdes;
+-
+-	serdes = devm_of_phy_get(&rdev->priv->pdev->dev, port, NULL);
+-	of_node_put(port);
+-	if (IS_ERR(serdes))
+-		return PTR_ERR(serdes);
+-
+-	return phy_init(serdes);
++	return phy_init(rdev->serdes);
+ }
+ 
+ static int rswitch_serdes_deinit(struct rswitch_device *rdev)
+ {
+-	struct device_node *port = rswitch_get_port_node(rdev);
+-	struct phy *serdes;
+-
+-	serdes = devm_of_phy_get(&rdev->priv->pdev->dev, port, NULL);
+-	of_node_put(port);
+-	if (IS_ERR(serdes))
+-		return PTR_ERR(serdes);
+-
+-	return phy_exit(serdes);
++	return phy_exit(rdev->serdes);
+ }
+ 
+ static int rswitch_ether_port_init_one(struct rswitch_device *rdev)
+@@ -1286,6 +1277,10 @@ static int rswitch_ether_port_init_one(struct rswitch_device *rdev)
+ 	if (err < 0)
+ 		goto err_phylink_init;
+ 
++	err = rswitch_serdes_phy_get(rdev);
++	if (err < 0)
++		goto err_serdes_phy_get;
++
+ 	err = rswitch_serdes_set_params(rdev);
+ 	if (err < 0)
+ 		goto err_serdes_set_params;
+@@ -1293,6 +1288,7 @@ static int rswitch_ether_port_init_one(struct rswitch_device *rdev)
+ 	return 0;
+ 
+ err_serdes_set_params:
++err_serdes_phy_get:
+ 	rswitch_phylink_deinit(rdev);
+ 
+ err_phylink_init:
+diff --git a/drivers/net/ethernet/renesas/rswitch.h b/drivers/net/ethernet/renesas/rswitch.h
+index 49efb0f31c77..c79b1bdd8072 100644
+--- a/drivers/net/ethernet/renesas/rswitch.h
++++ b/drivers/net/ethernet/renesas/rswitch.h
+@@ -953,6 +953,7 @@ struct rswitch_device {
+ 
+ 	int port;
+ 	struct rswitch_etha *etha;
++	struct phy *serdes;
+ };
+ 
+ struct rswitch_mfwd_mac_table_entry {
 -- 
 2.25.1
 
