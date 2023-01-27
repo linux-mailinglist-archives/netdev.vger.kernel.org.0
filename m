@@ -2,174 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7604567DF54
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 09:34:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5651767DFFC
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 10:23:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232588AbjA0Iey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 03:34:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41762 "EHLO
+        id S231520AbjA0JXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 04:23:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232641AbjA0Iex (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 03:34:53 -0500
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49EE223117;
-        Fri, 27 Jan 2023 00:34:52 -0800 (PST)
-Received: by mail-qt1-f180.google.com with SMTP id m26so3443033qtp.9;
-        Fri, 27 Jan 2023 00:34:52 -0800 (PST)
+        with ESMTP id S232029AbjA0JXd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 04:23:33 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 930AC6E95
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 01:22:47 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id m2so11532139ejb.8
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 01:22:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=7q//eWD7kpKVjwkvP9sSwP1duHlI8w+YBBfIBpjcKsU=;
+        b=XOWnbPeHK869eG5NgRyxRRIGBWXGJksAbHxR5YyTn4BIx6+j+VvSQiBjgC3IN9kLM6
+         AIo37Y0Rc444kkJFPhPJ6euTVgyNThZCA2oJb2LzDS/1SVriuTTi8EvYecyC8eIdiBEA
+         la8iyZFBSWntYG3t4RdeHYi2TDDpBZODccGCEEg9KztzkAhrwpRR4+oZ8vRrEH6hfG1I
+         +R2LKV3N6AglJsS27FLGOe6VHMW4SFpYZRrG1BWdBlBxB0tdFUCbmlrjFalVdDQAPvUE
+         UZjgytkW2zekKT3kN+TYRvzQJK4PsaCiyRzKlKREKYukuda1NuaZ59TM9s4yuM4laT8M
+         VHYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=hY3siCQpqUTqTnZ9pzJ4oPleQ2RuWtp/ZoxSSndTMRI=;
-        b=KH/rmaVbFcR5mln/pv39h+bOgwkSR/C/yCI5uIwzjp9xrt42B8yqtcarfG52WQHqfe
-         kcPJNgqnhjhOBvR7Cx8rbq1CYhccrjbq1/Frx+rXD+WzzVuIqdU88A9cm2LY4xYAp4Oi
-         HuTDHBDXsKCcEASwKc4Zj3yFgq7e32VHNKhmcSqcK5kQAWiAiDqF1ZP0sl9bbnsIzkn5
-         c2ZLJ02fIO+qGXJrWomoZb0T7hTj+dMT1LS9/NN3pC0gRynxRlAL+KyV4JDtY0lnRlQ8
-         BZv4rGWgEhROUI0ZDx7bBAshFCTQ9GmaQy2t6LiJy3tanw+gySFcFeFVb0CwYStBbNt6
-         gnSA==
-X-Gm-Message-State: AO0yUKV2sjOtAoOXQ8NQZAtPZGn8m10k3RupYH0qtkToeoWKyPbqb/J2
-        uKhMwhIQ2o5q+mWeg5iNqt7jlV5ibI7JXA==
-X-Google-Smtp-Source: AK7set9UJjbYpV4LjGI+YluxUYhWKpL9ZLSqP2HJ6Oe2mMBgMf3nc4VtghCYYvIXDepxXVhfcIjjpg==
-X-Received: by 2002:a05:622a:1016:b0:3b8:248b:a035 with SMTP id d22-20020a05622a101600b003b8248ba035mr1714613qte.19.1674808491184;
-        Fri, 27 Jan 2023 00:34:51 -0800 (PST)
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com. [209.85.128.172])
-        by smtp.gmail.com with ESMTPSA id g13-20020ac8468d000000b003a7e4129f83sm2274786qto.85.2023.01.27.00.34.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Jan 2023 00:34:50 -0800 (PST)
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-50660e2d2ffso58113397b3.1;
-        Fri, 27 Jan 2023 00:34:50 -0800 (PST)
-X-Received: by 2002:a81:5204:0:b0:507:86ae:c733 with SMTP id
- g4-20020a815204000000b0050786aec733mr1184162ywb.358.1674808490126; Fri, 27
- Jan 2023 00:34:50 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7q//eWD7kpKVjwkvP9sSwP1duHlI8w+YBBfIBpjcKsU=;
+        b=s0hcwvBzXLHSGXKNxJHm/SEh3Kh6JZpaARnuFBSAWF/O6qhhLgMEobTiJGF7cLu14T
+         ZUVRO6KS0T1Wl4ixQpIdLDoFIutAUOYI2Y+m5QKZcMOh/NdA5rB6xaPA/rO49iChIAcw
+         DLYDXiOcu1HJ/eLavWuIxwiA29ZG8P/GQn7dLe3DTNATXn2VeU+35bFCy+CDAv11Ldyv
+         ed3iaFKUjWf+NMJmi85LvyzHO7bMTcwqwneRQHMKN05hC8oJbJLFiW2N4KvlaBhfrTq/
+         n/U0Fk6crJlgDDuWJvbUu3jpg7dsrlGqG9utw68V7sN+t06zwAYl8hoeJKog8GXyaWUz
+         Bv7A==
+X-Gm-Message-State: AFqh2kryfSVTUULpHDc5uorqRdbxOid8ZuOK6+QP/7l0XO5pwPEAYrFp
+        fnNptyQtl46xv4pBTwH1i0w=
+X-Google-Smtp-Source: AMrXdXsI0jN67mGYaa42H82OuSgQ4JsGdf/ChsuoiIeoIX5rV8ZZhPMBjBwTpMW0C2YxZ8KtVkdWQw==
+X-Received: by 2002:a17:907:8e86:b0:84d:43c3:a897 with SMTP id tx6-20020a1709078e8600b0084d43c3a897mr57904255ejc.2.1674811365461;
+        Fri, 27 Jan 2023 01:22:45 -0800 (PST)
+Received: from skbuf ([188.27.185.85])
+        by smtp.gmail.com with ESMTPSA id x26-20020a1709060a5a00b00877f2b842fasm1898006ejf.67.2023.01.27.01.22.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Jan 2023 01:22:45 -0800 (PST)
+Date:   Fri, 27 Jan 2023 11:22:42 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        bridge@lists.linux-foundation.org,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, Nikolay Aleksandrov <razor@blackwall.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>
+Subject: Re: [PATCH net-next] netlink: provide an ability to set default
+ extack message
+Message-ID: <20230127092242.ajwlo3tivxsjsul7@skbuf>
+References: <2919eb55e2e9b92265a3ba600afc8137a901ae5f.1674760340.git.leon@kernel.org>
+ <20230126223213.riq6i2gdztwuinwi@skbuf>
+ <Y9NfkgRbWAbrxQ1G@unreal>
 MIME-Version: 1.0
-References: <20230127014812.1656340-1-yoshihiro.shimoda.uh@renesas.com> <20230127014812.1656340-3-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <20230127014812.1656340-3-yoshihiro.shimoda.uh@renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 27 Jan 2023 09:34:39 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXGNWZ6NQxFKKJ-aWKO6YG=dD+jeJynDyK9XZNRx=hgJA@mail.gmail.com>
-Message-ID: <CAMuHMdXGNWZ6NQxFKKJ-aWKO6YG=dD+jeJynDyK9XZNRx=hgJA@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 2/4] net: ethernet: renesas: rswitch: Simplify
- struct phy * handling
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y9NfkgRbWAbrxQ1G@unreal>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Shimoda-san,
-
-On Fri, Jan 27, 2023 at 2:49 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> Simplify struct phy *serdes handling by keeping the valiable in
-> the struct rswitch_device.
->
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-
-Thanks for your patch!
-
-> --- a/drivers/net/ethernet/renesas/rswitch.c
-> +++ b/drivers/net/ethernet/renesas/rswitch.c
-> @@ -1222,49 +1222,40 @@ static void rswitch_phylink_deinit(struct rswitch_device *rdev)
->         phylink_destroy(rdev->phylink);
+On Fri, Jan 27, 2023 at 07:22:26AM +0200, Leon Romanovsky wrote:
+> It means changing ALL error unwind places where extack was forwarded
+> before to subfunctions.
+> 
+> Places like this:
+>  ret = func(..., extack)
+>  if (ret) {
+>    NL_SET_ERR_MSG_MOD...
+>    return ret;
 >  }
->
-> -static int rswitch_serdes_set_params(struct rswitch_device *rdev)
-> +static int rswitch_serdes_phy_get(struct rswitch_device *rdev)
->  {
->         struct device_node *port = rswitch_get_port_node(rdev);
->         struct phy *serdes;
-> -       int err;
->
->         serdes = devm_of_phy_get(&rdev->priv->pdev->dev, port, NULL);
->         of_node_put(port);
->         if (IS_ERR(serdes))
->                 return PTR_ERR(serdes);
-
-You may as well just return serdes...
-
-> +       rdev->serdes = serdes;
-
-... and move the above assignment into the caller.
-That would save one if (...) check.
-
-After that, not much is left in this function, so I'm wondering if it
-can just be inlined at the single callsite?
-
-BTW, there seem to be several calls to rswitch_get_port_node(), which
-calls into DT tree traversal, so you may want to call it once, and store
-a pointer to the port device node, too.  Then rswitch_serdes_phy_get()
-becomes a candidate for manual inlining for sure.
-
-> +
-> +       return 0;
-> +}
-> +
-> +static int rswitch_serdes_set_params(struct rswitch_device *rdev)
-> +{
-> +       int err;
->
-> -       err = phy_set_mode_ext(serdes, PHY_MODE_ETHERNET,
-> +       err = phy_set_mode_ext(rdev->serdes, PHY_MODE_ETHERNET,
->                                rdev->etha->phy_interface);
->         if (err < 0)
->                 return err;
->
-> -       return phy_set_speed(serdes, rdev->etha->speed);
-> +       return phy_set_speed(rdev->serdes, rdev->etha->speed);
->  }
->
->  static int rswitch_serdes_init(struct rswitch_device *rdev)
->  {
-> -       struct device_node *port = rswitch_get_port_node(rdev);
-> -       struct phy *serdes;
-> -
-> -       serdes = devm_of_phy_get(&rdev->priv->pdev->dev, port, NULL);
-> -       of_node_put(port);
-> -       if (IS_ERR(serdes))
-> -               return PTR_ERR(serdes);
-> -
-> -       return phy_init(serdes);
-> +       return phy_init(rdev->serdes);
+> 
+> will need to be changed to something like this:
+>  ret = func(..., extack)
+>  if (ret) {
+>    NL_SET_ERR_MSG_WEAK...
+>    return ret;
 >  }
 
-As this is now a one-line function, just call phy_init() in all
-callers instead?
+Yeah, but my point is that you inspect the code that you plan to convert,
+rather than converting it in bulk and inspecting later...
 
->
->  static int rswitch_serdes_deinit(struct rswitch_device *rdev)
->  {
-> -       struct device_node *port = rswitch_get_port_node(rdev);
-> -       struct phy *serdes;
-> -
-> -       serdes = devm_of_phy_get(&rdev->priv->pdev->dev, port, NULL);
-> -       of_node_put(port);
-> -       if (IS_ERR(serdes))
-> -               return PTR_ERR(serdes);
-> -
-> -       return phy_exit(serdes);
-> +       return phy_exit(rdev->serdes);
->  }
+> Can we please discuss current code and not over-engineered case which
+> doesn't exist in the reality?
+> 
+> Even for your case, I would like to see NL_SET_ERR_MSG_FORCE() to
+> explicitly say that message will be overwritten.
 
-Just call phy_exit() in all callers instead?
+__nla_validate_parse()
 
-Gr{oetje,eeting}s,
+	if (unlikely(rem > 0)) {
+		pr_warn_ratelimited("netlink: %d bytes leftover after parsing attributes in process `%s'.\n",
+				    rem, current->comm);
+		NL_SET_ERR_MSG(extack, "bytes leftover after parsing attributes");
+		if (validate & NL_VALIDATE_TRAILING)
+			return -EINVAL;
+	}
 
-                        Geert
+	return 0;
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+called by nla_validate_deprecated() with validate == NL_VALIDATE_LIBERAL
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+followed by other extack setting in tunnel_key_copy_opts(), which will
+not overwrite the initial warning message.
