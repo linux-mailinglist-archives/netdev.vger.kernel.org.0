@@ -2,151 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C00F667ED55
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 19:22:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93BA967ED7E
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 19:27:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234197AbjA0SWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 13:22:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56608 "EHLO
+        id S235377AbjA0S1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 13:27:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233524AbjA0SWF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 13:22:05 -0500
-Received: from smtp-8fac.mail.infomaniak.ch (smtp-8fac.mail.infomaniak.ch [IPv6:2001:1600:4:17::8fac])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F5F713A
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 10:22:04 -0800 (PST)
-Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4P3Qs70cMgzMrKjv;
-        Fri, 27 Jan 2023 19:22:03 +0100 (CET)
-Received: from unknown by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4P3Qs62JxwzMqRTG;
-        Fri, 27 Jan 2023 19:22:02 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1674843722;
-        bh=mbU1ZCTAJKgGA0HVCsd8RhnkbptpgGkUzNoNdAFWErk=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=S5quP2KXbpiMOFnxYVBjWYQ3y7WKU49VNSVtVbJ2idyrXmNYGlPRwIZ051yNDaf2B
-         Kg/5ULPbNpe5sQS3lfLlqs9e6Wov5ahf54vauMXw3EmuuCVdfPiunob9RTfuPgw7ls
-         tOqs1WluKkBXXz8wk5A66twKt4NZVKiHaLSmNXoM=
-Message-ID: <68f26cf2-f382-4d31-c80f-22392a85376f@digikod.net>
-Date:   Fri, 27 Jan 2023 19:22:01 +0100
+        with ESMTP id S235132AbjA0S1W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 13:27:22 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE6186E80
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 10:26:37 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id m2so15542201ejb.8
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 10:26:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=9u3WxTrZmLjukWHU6qX/2Cs4pf22iX78kD+Zj5KZkzQ=;
+        b=VF8MIZMRjh0VziF43nm0lS32BCjkiMEYYnlGOrA9KB1IaDI2D890AG1BexMSOT8FEx
+         usLk20megIFG3LA3FCpCFT/uJLla+3HW57DnaUsiONm/+d8y2NTSuBnARs1Tuk1Wcgo2
+         PunzaXRetSfd5mmHINpa8B0LcDvbjR/Pa0qZE1tDs+lJEEP6whuAWuVlyz4pghwZBSOu
+         RIPmnCfyvKoYyH5lG2SciV4XhJkwHx5wkXopH8hxe/zkhzRgO/Fl5qiWzIRFRoh24wA0
+         BCQFk2vq9MoHOlWcBZPb5Kc7Fd4B9r9ZDWZ7WC0VypRGMW0niCHzQg1nWFmR7tm9dtbO
+         iySw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9u3WxTrZmLjukWHU6qX/2Cs4pf22iX78kD+Zj5KZkzQ=;
+        b=oUy24qfvEBBcLKVunyjVDart4+mAdR3vGjcSonL9nbnBq28nklOwfQA2wCioQvEAFc
+         V5M+3X00kP4PetJU3tF2rKQmRTLqZgqxBPKwMjQoVr4OHzPeG20ZTZJy+lkV0zfawQoz
+         /wb3iEYQ0fJxeF1Jk21nizTrmxMeZrqlv4SyJEaAAfAjbZ3Q550g/Tjys1CM8bI2GbdC
+         tzDc4fzoNMD3+SCYl5DWbmDiHEy0pHeQiRxdpYykZrBq+nRQE25sNZFByfMwZZnzUBIJ
+         Kv2rZ2Cd3haa304ZP6VTuBJPpsKXaZBfYZcyqAEJ7dn4z0mLcKP0uaUMVaZBXYs2azcH
+         e4uQ==
+X-Gm-Message-State: AO0yUKXlyZN9/9n+rZmKpOWU1tQZgmGKi6F5sReIK61etHwrvlX6c5XM
+        m3uxLyYnw0mjRFO9kpr2YCaZXg==
+X-Google-Smtp-Source: AK7set8T4qHcBkhDPpK2x7Q/9T7DKNSi8u1e8emZyrNWvdgrzXgXiSlteJaw68UBjnRj3tatPfj8yg==
+X-Received: by 2002:a17:907:6e20:b0:87a:7097:ebcf with SMTP id sd32-20020a1709076e2000b0087a7097ebcfmr5717272ejc.42.1674843995235;
+        Fri, 27 Jan 2023 10:26:35 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id my20-20020a1709065a5400b00878465f059dsm2643848ejc.59.2023.01.27.10.26.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Jan 2023 10:26:34 -0800 (PST)
+Date:   Fri, 27 Jan 2023 19:26:33 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, netdev@vger.kernel.org,
+        kernel@mojatatu.com, deb.chatterjee@intel.com,
+        anjali.singhai@intel.com, namrata.limaye@intel.com,
+        khalidm@nvidia.com, tom@sipanda.io, pratyush@sipanda.io,
+        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, vladbu@nvidia.com, simon.horman@corigine.com,
+        stefanc@marvell.com, seong.kim@amd.com, mattyk@nvidia.com,
+        dan.daly@intel.com, john.andy.fingerhut@intel.com
+Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
+Message-ID: <Y9QXWSaAxl7Is0yz@nanopsycho>
+References: <20230124170346.316866-1-jhs@mojatatu.com>
+ <20230126153022.23bea5f2@kernel.org>
 MIME-Version: 1.0
-User-Agent: 
-Subject: Re: [PATCH v9 12/12] landlock: Document Landlock's network support
-Content-Language: en-US
-To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>,
-        =?UTF-8?Q?G=c3=bcnther_Noack?= <gnoack3000@gmail.com>
-Cc:     willemdebruijn.kernel@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
-        artem.kuzin@huawei.com
-References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
- <20230116085818.165539-13-konstantin.meskhidze@huawei.com>
- <Y8xwLvDbhKPG8JqY@galopp> <eb33371b-551e-ae6c-d7e3-a3101644b7ec@huawei.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-In-Reply-To: <eb33371b-551e-ae6c-d7e3-a3101644b7ec@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Infomaniak-Routing: alpha
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230126153022.23bea5f2@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Fri, Jan 27, 2023 at 12:30:22AM CET, kuba@kernel.org wrote:
+>On Tue, 24 Jan 2023 12:03:46 -0500 Jamal Hadi Salim wrote:
+>> There have been many discussions and meetings since about 2015 in regards to
+>> P4 over TC and now that the market has chosen P4 as the datapath specification
+>> lingua franca
+>
+>Which market?
+>
+>Barely anyone understands the existing TC offloads. We'd need strong,
+>and practical reasons to merge this. Speaking with my "have suffered
+>thru the TC offloads working for a vendor" hat on, not the "junior
+>maintainer" hat.
 
-On 23/01/2023 10:38, Konstantin Meskhidze (A) wrote:
-> 
-> 
-> 1/22/2023 2:07 AM, Günther Noack пишет:
+You talk about offload, yet I don't see any offload code in this RFC.
+It's pure sw implementation.
 
-[...]
+But speaking about offload, how exactly do you plan to offload this
+Jamal? AFAIK there is some HW-specific compiler magic needed to generate
+HW acceptable blob. How exactly do you plan to deliver it to the driver?
+If HW offload offload is the motivation for this RFC work and we cannot
+pass the TC in kernel objects to drivers, I fail to see why exactly do
+you need the SW implementation...
 
->>> @@ -143,10 +157,24 @@ for the ruleset creation, by filtering access rights according to the Landlock
->>>   ABI version.  In this example, this is not required because all of the requested
->>>   ``allowed_access`` rights are already available in ABI 1.
->>>   
->>> -We now have a ruleset with one rule allowing read access to ``/usr`` while
->>> -denying all other handled accesses for the filesystem.  The next step is to
->>> -restrict the current thread from gaining more privileges (e.g. thanks to a SUID
->>> -binary).
->>> +For network access-control, we can add a set of rules that allow to use a port
->>> +number for a specific action. All ports values must be defined in network byte
->>> +order.
->>
->> What is the point of asking user space to convert this to network byte
->> order? It seems to me that the kernel would be able to convert it to
->> network byte order very easily internally and in a single place -- why
->> ask all of the users to deal with that complexity? Am I overlooking
->> something?
-> 
->    I had a discussion about this issue with Mickaёl.
->    Please check these threads:
->    1.
-> https://lore.kernel.org/netdev/49391484-7401-e7c7-d909-3bd6bd024731@digikod.net/
->    2.
-> https://lore.kernel.org/netdev/1ed20e34-c252-b849-ab92-78c82901c979@huawei.com/
-
-I'm definitely not sure if this is the right solution, or if there is 
-one. The rationale is to make it close to the current (POSIX) API. We 
-didn't get many opinion about that but I'd really like to have a 
-discussion about port endianness for this Landlock API.
-
-I looked at some code (e.g. see [1]) and it seems that using htons() 
-might make application patching more complex after all. What do you 
-think? Is there some network (syscall) API that don't use this convention?
-
-[1] https://github.com/landlock-lsm/tuto-lighttpd
-
->>
->>> +
->>> +.. code-block:: c
->>> +
->>> +    struct landlock_net_service_attr net_service = {
->>> +        .allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
->>> +        .port = htons(8080),
->>> +    };
->>
->> This is a more high-level comment:
->>
->> The notion of a 16-bit "port" seems to be specific to TCP and UDP --
->> how do you envision this struct to evolve if other protocols need to
->> be supported in the future?
-> 
->     When TCP restrictions land into Linux, we need to think about UDP
-> support. Then other protocols will be on the road. Anyway you are right
-> this struct will be evolving in long term, but I don't have a particular
-> envision now. Thanks for the question - we need to think about it.
->>
->> Should this struct and the associated constants have "TCP" in its
->> name, and other protocols use a separate struct in the future?
-
-Other protocols such as AF_VSOCK uses a 32-bit port. We could use a 
-32-bits port field or ever a 64-bit one. The later could make more sense 
-because each field would eventually be aligned on 64-bit. Picking a 
-16-bit value was to help developers (and compilers/linters) with the 
-"correct" type (for TCP).
-
-If we think about protocols other than TCP and UDP (e.g. AF_VSOCK), it 
-could make sense to have a dedicated attr struct specifying other 
-properties (e.g. CID). Anyway, the API is flexible but it would be nice 
-to not mess with it too much. What do you think?
-
-
->>
->>> +
->>> +    err = landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
->>> +                            &net_service, 0);
->>> +
->>> +The next step is to restrict the current thread from gaining more privileges
->>> +(e.g. thanks to a SUID binary). We now have a ruleset with the first rule allowing
->>            ^^^^^^
->>            "through" a SUID binary? "thanks to" sounds like it's desired
->>            to do that, while we're actually trying to prevent it here?
-> 
->     This is Mickaёl's part. Let's ask his opinion here.
-> 
->     Mickaёl, any thoughts?
-
-Yep, "through" looks better.
