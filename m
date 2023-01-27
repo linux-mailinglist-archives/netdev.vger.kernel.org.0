@@ -2,145 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 924A367E6BE
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 14:30:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A512C67E6CE
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 14:33:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231923AbjA0Nam (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 08:30:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46490 "EHLO
+        id S233230AbjA0Ndx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 08:33:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234018AbjA0Nal (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 08:30:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B98D77A4AE;
-        Fri, 27 Jan 2023 05:30:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63984B82114;
-        Fri, 27 Jan 2023 13:30:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBC7AC4339B;
-        Fri, 27 Jan 2023 13:30:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674826236;
-        bh=hOO4tEkvmkNfnd/kUv2lz7JQJ8CUBZuogljG/l3nIcc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=LQTl5p+qHOhPIdJ+NhcTwSON0xj9q9BDC71p6Pv2bTPFgaSSn3ZbsAF6PKtq+RkyG
-         3N38xTMK/R7o6Di97DNpk1aIxU7z9ZGnF8h23i8bVh6sY4EwiHgPFH+qNZYgCRfFMN
-         3EKvbxILcjip4hPAwtZ1jA4/v1A4UisVh/Ma+VItJ7WKxlR95QOeMco1O01aPAWH5C
-         h/I2/nXxGqsPugCtW3cmgH3INb+B6gTfxL3ZAdwdQ/Lh7+aeoXNNenAnHsChJ0oqkM
-         Ujn7pAAenGYQwwYNfGMQIkReJyZ+z43+kYbBzQtZ7pYHeWoMX29L31qEucNu4uzUfG
-         5RnU5qYwg/4Qw==
-Date:   Fri, 27 Jan 2023 07:30:34 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        ilpo.jarvinen@linux.intel.com, ricardo.martinez@linux.intel.com,
-        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
-        edumazet@google.com, pabeni@redhat.com,
-        chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
-        linuxwwan_5g@intel.com,
-        Madhusmita Sahu <madhusmita.sahu@intel.com>,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH v5 net-next 3/5] net: wwan: t7xx: PCIe reset rescan
-Message-ID: <20230127133034.GA1364550@bhelgaas>
+        with ESMTP id S229819AbjA0Ndw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 08:33:52 -0500
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E7EDB46A
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 05:33:51 -0800 (PST)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-4fda31c3351so66683747b3.11
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 05:33:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=LsiVPv7OXf3ExuR/x1QLsbSK0Yc1X3gJCIkhgm59BZ8=;
+        b=cKvzye7ysgghYqJwZq//rXKC9NNK/vH0zjdQ4DLup+j9TQeljMsktpRr48J6qAkyi8
+         Xgebg4JFvgSN1egVKtWBTiDT9FR93WoCNanKGheWYcxHifqbxuzCQ/fR8FLcjcxr4onh
+         205SKJKzexd+6Y0DlxZIIsosND6gdI57QrW7O5RLDRR2wj8ifctwV7FuiPBI2yxnbY1U
+         G+kqmlFWvrsSoq/8vGun5xhnt+zFBQt+kf2XHO0gBCsIKFc9J+QH6nOW99GnVZdsUxys
+         Rcz4z7Iz04PZ8ZcPI0MmKsio/njLfQ13cWemmwK1WOr488PmrktOw5L+hqoMC4BSYIsa
+         pI2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=LsiVPv7OXf3ExuR/x1QLsbSK0Yc1X3gJCIkhgm59BZ8=;
+        b=x3fDerjGth1jk3LxkuHsZnZEFJStQvqioNOqoGo/7XYGpZ76VaibfAVRZGheefaPs+
+         RxSs104jcRurHjQgDbXrJSi5FNO7DUh25o6dRc+4FAe69BSfoIUtVjtgdN5DmftsARWo
+         UYROlss/KnLBZGPXKGZPlChcOi+ZEIItjGLfxdwzLmcuJtF2/2gHscWZDoQhh6c7UhQF
+         JsS7rU1T0s22QUTtgnCv0iesCGuAlbZICRSUMt8qGpYrhsTkEogMG/lqiR7u6+4IR0g9
+         BBNq2eHdy6t2R0fy/9dqfR53LxMZNL+LrkjIfs6uAgSbdYQGf9J5KEuGehIOavwLZYk3
+         g5AA==
+X-Gm-Message-State: AO0yUKXdCFfr/YOPO9TrOwBzfvH4hKNKBPGj2QUJ/BA4DCfqgXbw6gAu
+        e3Vefr18cclvP0IYBlyaz3SOvJwAAStsJSdok1L8PA==
+X-Google-Smtp-Source: AK7set+23XABERc4/9M4iGnepCQcsMHI6qX9mtTdr1x2sMDQOz8Z0hhaQdNg4xs3ifqtUCquLHhiBRNh1hEQpLb3tZ8=
+X-Received: by 2002:a81:ab53:0:b0:506:3a16:693d with SMTP id
+ d19-20020a81ab53000000b005063a16693dmr1952939ywk.360.1674826430379; Fri, 27
+ Jan 2023 05:33:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7f5be4cd-ae84-aa24-cf8f-8261c825fafd@linux.intel.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230124170346.316866-1-jhs@mojatatu.com> <20230126153022.23bea5f2@kernel.org>
+In-Reply-To: <20230126153022.23bea5f2@kernel.org>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Fri, 27 Jan 2023 08:33:39 -0500
+Message-ID: <CAM0EoMnHcR9jFVtLt+L1FPRY5BK7_NgH3gsOZxQrXzEkaR1HYQ@mail.gmail.com>
+Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, kernel@mojatatu.com,
+        deb.chatterjee@intel.com, anjali.singhai@intel.com,
+        namrata.limaye@intel.com, khalidm@nvidia.com, tom@sipanda.io,
+        pratyush@sipanda.io, jiri@resnulli.us, xiyou.wangcong@gmail.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        vladbu@nvidia.com, simon.horman@corigine.com, stefanc@marvell.com,
+        seong.kim@amd.com, mattyk@nvidia.com, dan.daly@intel.com,
+        john.andy.fingerhut@intel.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 27, 2023 at 03:57:16PM +0530, Kumar, M Chetan wrote:
-> On 1/26/2023 8:55 PM, Bjorn Helgaas wrote:
-> > On Tue, Jan 24, 2023 at 08:45:43PM -0800, Jakub Kicinski wrote:
-> > > On Sat, 21 Jan 2023 19:03:23 +0530 m.chetan.kumar@linux.intel.com wrote:
-> > > > From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-> > > > 
-> > > > PCI rescan module implements "rescan work queue".
-> > > > In firmware flashing or coredump collection procedure
-> > > > WWAN device is programmed to boot in fastboot mode and
-> > > > a work item is scheduled for removal & detection.
-> > > > 
-> > > > The WWAN device is reset using APCI call as part driver
-> > > > removal flow. Work queue rescans pci bus at fixed interval
-> > > > for device detection, later when device is detect work queue
-> > > > exits.
-> > 
-> > I'm not sure what's going on here.  Do we need to reset the device
-> > when the t7xx driver is loaded so the device will load new
-> > firmware when it comes out of reset?
-> 
-> Flow is, Reset the device to get into firmware download mode then
-> update the firmware and later reset it to go back to normal mode.
+On Thu, Jan 26, 2023 at 6:30 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Tue, 24 Jan 2023 12:03:46 -0500 Jamal Hadi Salim wrote:
+> > There have been many discussions and meetings since about 2015 in regards to
+> > P4 over TC and now that the market has chosen P4 as the datapath specification
+> > lingua franca
+>
+> Which market?
 
-Thanks, that makes sense, and I'm confident that t7xx is not the only
-driver that needs to do something like this, so we should be able to
-figure out a nice way to do it.
+Network programmability involving hardware  - where at minimal the
+specification of the datapath is in P4 and
+often the implementation is. For samples of specification using P4
+(that are public) see for example MS Azure:
+https://github.com/sonic-net/DASH/tree/main/dash-pipeline
+If you are a vendor and want to sell a NIC in that space, the spec you
+get is in P4. Your underlying hardware
+doesnt have to be P4 native, but at minimal the abstraction (as we are
+trying to provide with P4TC) has to be
+able to consume the P4 specification.
+For implementations where P4 is in use, there are many - some public
+others not, sample space:
+https://cloud.google.com/blog/products/gcp/google-cloud-using-p4runtime-to-build-smart-networks
 
-> > > > +void t7xx_pci_dev_rescan(void)
-> > > > +{
-> > > > +	struct pci_bus *b = NULL;
-> > > > +
-> > > > +	pci_lock_rescan_remove();
-> > > > +	while ((b = pci_find_next_bus(b)))
-> > > > +		pci_rescan_bus(b);
-> > 
-> > No, this driver absolutely cannot rescan and assign unassigned
-> > resources for all the PCI buses in the system.
-> 
-> T7xx device falls off the bus due to ACPI reset.
-> Would you please suggest how we can bring device back on the bus
-> without such changes inside driver ?  Will pci_reset_function() help
-> in this regard ?
+There are NICs and switches which are P4 native in the market. IOW,
+there is beacoup $ investment
+in this space that makes it worth pursuing. TC is the kernel offload
+mechanism that has gathered deployment
+experience over many years - hence P4TC.
 
-"Falling off the bus" is not very precise language, but it usually
-means the device stops responding to PCI transactions like config,
-memory, or I/O accesses.
+> Barely anyone understands the existing TC offloads.
 
-Any kind of reset, whether it's done via ACPI _RST or one of the
-mechanisms used by pci_reset_function(), causes a PCI device to stop
-responding temporarily.  When the device exits reset, it does some
-internal initialization and eventually becomes ready to respond to PCI
-transactions again.
+Hyperboles like these are never helpful in a discussion.
+TC offloads are deployed today, they work and many folks are actively
+working on them.
+Are there challenges? yes. For one (and this applies to all kernel
+offloads) the process gets
+in the way of exposing new features. So there are learnings that we
+try to resolve in P4TC.
+I'd be curious to hear about your suffering with TC offloads and see
+if we can take that
+experience and make things better.
 
-The PCI core doesn't do anything to the device to "bring it back on
-the bus" other than powering on the device or deasserting whatever
-signal initiated the reset in the first place.
+>We'd need strong,
+> and practical reasons to merge this. Speaking with my "have suffered
+> thru the TC offloads working for a vendor" hat on, not the "junior
+> maintainer" hat.
 
-For example, if we do the reset via pci_reset_secondary_bus(), we set
-the Secondary Bus Reset (PCI_BRIDGE_CTL_BUS_RESET) bit in a bridge,
-which triggers a reset for devices below the bridge.  When we clear
-Secondary Bus Reset, those devices reinitialize themselves and start
-responding to PCI transactions.  pci_reset_secondary_bus() contains a
-ssleep(1) to give the device time for that initialization.
+P4TC is "standalone" in that it does not affect other TC consumers or
+any other subsystems on performance; it is also
+sufficiently isolated in that  you can choose to compile it out
+altogether and more importantly it comes with committed
+support.
+And i should emphasize this discussion on getting P4 on TC has been
+going on for a few years in the community
+culminating with this.
 
-The t7xx_pci_dev_rescan() loop calls pci_rescan_bus(), which does
-nothing to bring devices back on the bus.  It merely issues config
-reads to all the possible device addresses to see which respond.
-
-If t7xx_pci_dev_rescan() seems to bring the device back on the bus, it
-is probably simply because it takes time and gives the device time to
-finish its initialization.  It doesn't actually *do* anything to the
-device other than do a config read to it.
-
-I notice that t7xx_remove_rescan() would actually *remove* the
-pci_dev, and pci_rescan_bus() would create a new pci_dev if the t7xx
-device responds to a config read.  But this a real mess.  When you
-remove the device, the driver is detached from it, and we should no
-longer be running any driver code.
-
-If you can use pci_reset_function(), there's no need to remove and
-re-enumerate the device, so that should let you get rid of the whole
-t7xx_remove_rescan() workqueue.
-
-Bjorn
+cheers,
+jamal
