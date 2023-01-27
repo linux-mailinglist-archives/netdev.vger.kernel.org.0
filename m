@@ -2,233 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A31867F0DA
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 23:04:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60BBD67F0E7
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 23:08:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232285AbjA0WEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 17:04:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41216 "EHLO
+        id S232618AbjA0WIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 17:08:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232387AbjA0WET (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 17:04:19 -0500
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 928697AE44
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 14:04:16 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id b1so7624000ybn.11
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 14:04:16 -0800 (PST)
+        with ESMTP id S232504AbjA0WIh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 17:08:37 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BA4F7F698
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 14:08:36 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id b127so2447289iof.8
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 14:08:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=chromium.org; s=google;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=5ohR+0rZmCaLAS7ieSQMPFcMY0YXXufvyIxmbzUJjpY=;
-        b=QsatLhaFnWSXhPmdRslUYg6oNm7HsNFs6MeWjyLitafGucJCB84BxrprRLjnBSgA08
-         9Vx/7QVTiCgz05zEtILq63eX5YLEhToFKOwhCj9fUqZ20YeK1sUe/tUZ/DIkMFmgbIj+
-         mEaXlsCv5ZsMtg7XwB7Ri7a3n5ODRM/+bjA4Sr9BwI1IpDzkM2eeCxIXjipG41EmDC57
-         +qDvnMtE3WCC5hiFdyuSucCOtSy2veG4b3ZWcTYJ+zATEhGtANBzW15Q3Crajm534M36
-         OqIjXAEojFjJvUDEx9e31HsTOaiiMjbD3VB1lsQHFLPkrYf4XqhZlYHOio4e3IDU5jEa
-         Z85Q==
+        bh=al9oy3E79ODPhEjXEHhJKk/A8XmQzAwjko7z1WJnZkc=;
+        b=NPwfv5aXAsscvOxtwXtO9484xYSoDmyOBMRHaq6lKLS61CV1IWSbgh14Mvd5VHqR4X
+         bwh/qNckPyHJ3rRfcMqtRB0SQKEsB2IPGnJT/H4kwO7OemTtVM4iRqS2UZSsGlDbjn/Y
+         nkENSjnV/+noRbM4zBn6bygihOczkHMzXE/os=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=5ohR+0rZmCaLAS7ieSQMPFcMY0YXXufvyIxmbzUJjpY=;
-        b=w06Dfcfh0HSyOfTqjCubRJxL0sqhapE6nSgACtp+pmbIMA2d8RINIBVuIbvHHGJoq8
-         G4MzESD1488BbBYXWLwnlQtzAoke2HpWUBdJwlFESCBCV7o3M/TMPDFqJnZEYCwCgwzW
-         +5pBC6XFWskz23ZXjsH7pXoaDHEdnJ90dAOnSfXOo69W67KCryucE/SNGzSvdOPjBsBq
-         56XFZ8Zz1yrIiaUPz8wXPSekWLV5kZb1JGXOf+K4A2v8NPnK7ng1BNmrHEyfLKXdOmVq
-         4uHDP8qGj2P44OFp95m5WxVgqG2nmXcqM+/Dm049vvlSRBkdHGLDASWU7Sw40eja21YN
-         74Nw==
-X-Gm-Message-State: AFqh2krEmpC/2mWxdoL3gxj+EjhyiomrCGl2TsdvXC+F1CyQzyT6UoEo
-        fa7G/yRj7kugjq82JDnIWkzCVya7rKthCX3fymDRWW++9jz9e10u
-X-Google-Smtp-Source: AMrXdXvOK9+ujMEgBOAsX5NGN3GRpCK9UUEcoO25Huvd8luJUDO/qifWrBXYWnRUCH8A9y4wQ+xTMmoZNBOmn+KobLM=
-X-Received: by 2002:a25:750b:0:b0:7d0:f8e3:6d80 with SMTP id
- q11-20020a25750b000000b007d0f8e36d80mr3376773ybc.363.1674857055672; Fri, 27
- Jan 2023 14:04:15 -0800 (PST)
+        bh=al9oy3E79ODPhEjXEHhJKk/A8XmQzAwjko7z1WJnZkc=;
+        b=ZAbU2m3hIrDZr930n+moocAH9mUtBQxRBos1aSudJvTKhyWi0m5T3Acim1N46vBRx4
+         fdLgRkRkfMWzFf2yfbme6hu0SVTmmcjfdLF+lsdvdnSVnaqotF8GwQGeXM8JC0teoojS
+         95kfOOkA+f0fIkD9ooFPA/qL235CQYB3BL3EgaVSmrPKABV6jXRUZskDug0Ch9a5YGza
+         eS8TiI3bmsLgcltZU/H8N2Sw15ViKd8t/wmi3u+Uh4qyf4Xn6ZUzUnCSGWIgKzuBw/VR
+         B5gVq4o5OcF8l/v+WlqLAvEYhM36M6JlS1EabQwzzx7pskVzDEZ5NNPtNdDpI/HvVODJ
+         Hmpw==
+X-Gm-Message-State: AO0yUKW4RKYSC8Z1vDIXU93mihq6y9uRHwaLzLtmRG9DpohhKeykc0M1
+        5GeNzEF4AaLIv0BWjHcDMaE4QtfWP7AYAz06a8C7dw==
+X-Google-Smtp-Source: AK7set/q2kaa+ypIxOjsL1soOvTsxLlm1mLlh4dFrILigvfOQioehJJTu0K8nJ8YHs49B/9ZVlPODT+AvZNEaOu5JHQ=
+X-Received: by 2002:a05:6638:10d4:b0:3a9:6f3a:4b55 with SMTP id
+ q20-20020a05663810d400b003a96f3a4b55mr805907jad.6.1674857315411; Fri, 27 Jan
+ 2023 14:08:35 -0800 (PST)
 MIME-Version: 1.0
-References: <20230127181625.286546-1-andrei.gherzan@canonical.com>
-In-Reply-To: <20230127181625.286546-1-andrei.gherzan@canonical.com>
-From:   Willem de Bruijn <willemb@google.com>
-Date:   Fri, 27 Jan 2023 17:03:39 -0500
-Message-ID: <CA+FuTSewU6bjYLsyLzZ1Yne=6YBPDJZ=U1mZc+6cJVdr06BhiQ@mail.gmail.com>
-Subject: Re: [PATCH] selftests: net: udpgso_bench_tx: Introduce exponential
- back-off retries
-To:     Andrei Gherzan <andrei.gherzan@canonical.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+References: <20221220075215.1.Ic12e347e0d61a618124b742614e82bbd5d770173@changeid>
+ <56d4941a-ad35-37ca-48ca-5f1bf7a86d25@quicinc.com> <CACTWRwt7oQrCyHf=ZF6dW8TtRhOfa14XMZW39cYZWi4hhszcqg@mail.gmail.com>
+ <87tu0wcb3l.fsf@kernel.org>
+In-Reply-To: <87tu0wcb3l.fsf@kernel.org>
+From:   Abhishek Kumar <kuabhs@chromium.org>
+Date:   Fri, 27 Jan 2023 14:08:23 -0800
+Message-ID: <CACTWRwvhRUFvdv06YkQEgnz1Zyig_FqCeJU06VypT0Lvzv5OXw@mail.gmail.com>
+Subject: Re: [PATCH] ath10k: snoc: enable threaded napi on WCN3990
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     Manikanta Pubbisetty <quic_mpubbise@quicinc.com>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        Paolo Abeni <pabeni@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 27, 2023 at 1:16 PM Andrei Gherzan
-<andrei.gherzan@canonical.com> wrote:
->
-> The tx and rx test programs are used in a couple of test scripts including
-> "udpgro_bench.sh". Taking this as an example, when the rx/tx programs
-> are invoked subsequently, there is a chance that the rx one is not ready to
-> accept socket connections. This racing bug could fail the test with at
-> least one of the following:
->
-> ./udpgso_bench_tx: connect: Connection refused
-> ./udpgso_bench_tx: sendmsg: Connection refused
-> ./udpgso_bench_tx: write: Connection refused
->
-> This change addresses this by adding routines that retry the socket
-> operations with an exponential back off algorithm from 100ms to 2s.
->
-> Fixes: 3a687bef148d ("selftests: udp gso benchmark")
-> Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
+Thanks for all the comments. I will call dev_set_threaded() directly
+without HW params and rollout a v2 soon.
 
-Synchronizing the two processes is indeed tricky.
-
-Perhaps more robust is opening an initial TCP connection, with
-SO_RCVTIMEO to bound the waiting time. That covers all tests in one
-go.
-
-> ---
->  tools/testing/selftests/net/udpgso_bench_tx.c | 57 +++++++++++++------
->  1 file changed, 41 insertions(+), 16 deletions(-)
+On Thu, Jan 12, 2023 at 2:15 AM Kalle Valo <kvalo@kernel.org> wrote:
 >
-> diff --git a/tools/testing/selftests/net/udpgso_bench_tx.c b/tools/testing/selftests/net/udpgso_bench_tx.c
-> index f1fdaa270291..4dea9ee7eb46 100644
-> --- a/tools/testing/selftests/net/udpgso_bench_tx.c
-> +++ b/tools/testing/selftests/net/udpgso_bench_tx.c
-> @@ -53,6 +53,9 @@
+> Abhishek Kumar <kuabhs@chromium.org> writes:
 >
->  #define NUM_PKT                100
+> >> > --- a/drivers/net/wireless/ath/ath10k/snoc.c
+> >> > +++ b/drivers/net/wireless/ath/ath10k/snoc.c
+> >> > @@ -927,6 +927,9 @@ static int ath10k_snoc_hif_start(struct ath10k *ar)
+> >> >
+> >> >       bitmap_clear(ar_snoc->pending_ce_irqs, 0, CE_COUNT_MAX);
+> >> >
+> >> > +     if (ar->hw_params.enable_threaded_napi)
+> >> > +             dev_set_threaded(&ar->napi_dev, true);
+> >> > +
+> >>
+> >> Since this is done in the API specific to WCN3990, we do not need
+> >> hw_param for this.
+> >
+> > Just so that I am clear, are you suggesting to enable this by default
+> > in snoc.c, similar to what you did in
+> >
+> > https://lore.kernel.org/all/20220905071805.31625-2-quic_mpubbise@quicinc.com/
+> >
+> > If my understanding is correct and there is no objection, I can remove
+> > hw_param and enable it by default on snoc.c . I used hw_param because,
+> > as I see it, threaded NAPI can have some adverse effect on the cache
+> > utilization and power.
 >
-> +#define MAX_DELAY      2000000
-> +#define INIT_DELAY     100000
-> +
->  static bool    cfg_cache_trash;
->  static int     cfg_cpu         = -1;
->  static int     cfg_connected   = true;
-> @@ -257,13 +260,18 @@ static void flush_errqueue(int fd, const bool do_poll)
->  static int send_tcp(int fd, char *data)
->  {
->         int ret, done = 0, count = 0;
-> +       useconds_t delay = INIT_DELAY;
+> WCN3990 is the only device using SNOC bus so the hw_param is not needed.
+> It's safe to call dev_set_threaded() in ath10k_snoc_hif_start()
+> unconditionally as it only affects WCN3990.
 >
->         while (done < cfg_payload_len) {
-> -               ret = send(fd, data + done, cfg_payload_len - done,
-> -                          cfg_zerocopy ? MSG_ZEROCOPY : 0);
-> -               if (ret == -1)
-> -                       error(1, errno, "write");
-> -
-> +               delay = INIT_DELAY;
-> +               while ((ret = send(fd, data + done, cfg_payload_len - done,
-> +                               cfg_zerocopy ? MSG_ZEROCOPY : 0)) == -1) {
-> +                       usleep(delay);
-> +                       if (delay < MAX_DELAY)
-> +                               delay *= 2;
-> +                       else
-> +                               error(1, errno, "write");
-> +               }
->                 done += ret;
->                 count++;
->         }
-
-send_tcp should not be affected, as connect will by then already have
-succeeded. Also, as a reliable protocol it will internally retry,
-after returning with success.
-
-> @@ -274,17 +282,23 @@ static int send_tcp(int fd, char *data)
->  static int send_udp(int fd, char *data)
->  {
->         int ret, total_len, len, count = 0;
-> +       useconds_t delay = INIT_DELAY;
->
->         total_len = cfg_payload_len;
->
->         while (total_len) {
->                 len = total_len < cfg_mss ? total_len : cfg_mss;
->
-> -               ret = sendto(fd, data, len, cfg_zerocopy ? MSG_ZEROCOPY : 0,
-> -                            cfg_connected ? NULL : (void *)&cfg_dst_addr,
-> -                            cfg_connected ? 0 : cfg_alen);
-> -               if (ret == -1)
-> -                       error(1, errno, "write");
-> +               delay = INIT_DELAY;
-> +               while ((ret = sendto(fd, data, len, cfg_zerocopy ? MSG_ZEROCOPY : 0,
-> +                               cfg_connected ? NULL : (void *)&cfg_dst_addr,
-> +                               cfg_connected ? 0 : cfg_alen)) == -1) {
-
-should ideally only retry on the expected errno. Unreliable datagram
-sendto will succeed and initially. It will fail with error later,
-after reception of an ICMP dst unreachable response.
-
-> +                       usleep(delay);
-> +                       if (delay < MAX_DELAY)
-> +                               delay *= 2;
-> +                       else
-> +                               error(1, errno, "write");
-> +               }
->                 if (ret != len)
->                         error(1, errno, "write: %uB != %uB\n", ret, len);
->
-> @@ -378,6 +392,7 @@ static int send_udp_segment(int fd, char *data)
->         struct iovec iov = {0};
->         size_t msg_controllen;
->         struct cmsghdr *cmsg;
-> +       useconds_t delay = INIT_DELAY;
->         int ret;
->
->         iov.iov_base = data;
-> @@ -401,9 +416,13 @@ static int send_udp_segment(int fd, char *data)
->         msg.msg_name = (void *)&cfg_dst_addr;
->         msg.msg_namelen = cfg_alen;
->
-> -       ret = sendmsg(fd, &msg, cfg_zerocopy ? MSG_ZEROCOPY : 0);
-> -       if (ret == -1)
-> -               error(1, errno, "sendmsg");
-> +       while ((ret = sendmsg(fd, &msg, cfg_zerocopy ? MSG_ZEROCOPY : 0)) == -1) {
-> +               usleep(delay);
-> +               if (delay < MAX_DELAY)
-> +                       delay *= 2;
-> +               else
-> +                       error(1, errno, "sendmsg");
-> +       }
->         if (ret != iov.iov_len)
->                 error(1, 0, "sendmsg: %u != %llu\n", ret,
->                         (unsigned long long)iov.iov_len);
-> @@ -616,6 +635,7 @@ int main(int argc, char **argv)
->  {
->         unsigned long num_msgs, num_sends;
->         unsigned long tnow, treport, tstop;
-> +       useconds_t delay = INIT_DELAY;
->         int fd, i, val, ret;
->
->         parse_opts(argc, argv);
-> @@ -648,9 +668,14 @@ int main(int argc, char **argv)
->                 }
->         }
->
-> -       if (cfg_connected &&
-> -           connect(fd, (void *)&cfg_dst_addr, cfg_alen))
-> -               error(1, errno, "connect");
-> +       if (cfg_connected)
-> +               while (connect(fd, (void *)&cfg_dst_addr, cfg_alen)) {
-> +                       usleep(delay);
-> +                       if (delay < MAX_DELAY)
-> +                               delay *= 2;
-> +                       else
-> +                               error(1, errno, "connect");
-> +               }
->
->         if (cfg_segment)
->                 set_pmtu_discover(fd, cfg_family == PF_INET);
 > --
-> 2.34.1
+> https://patchwork.kernel.org/project/linux-wireless/list/
 >
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
