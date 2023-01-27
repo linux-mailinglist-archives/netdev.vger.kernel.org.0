@@ -2,81 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FF4267EDC2
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 19:45:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B40B67EDF6
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 20:08:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234348AbjA0So7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 13:44:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50026 "EHLO
+        id S229765AbjA0TH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 14:07:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235231AbjA0So6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 13:44:58 -0500
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991A575790
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 10:44:56 -0800 (PST)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-5063029246dso79013657b3.6
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 10:44:56 -0800 (PST)
+        with ESMTP id S229469AbjA0TH6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 14:07:58 -0500
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CAD1E05D
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 11:07:56 -0800 (PST)
+Received: by mail-pg1-x549.google.com with SMTP id z10-20020a655a4a000000b004de9d84987bso2337204pgs.9
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 11:07:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=ljtZ4ypLfej4LcEk6Nj/mIZ/IU9OQUKDueO29CYxzr8=;
-        b=ERjS+/UKvT2Uae5aQlJZ2ipzeTGoFeDOQzkFOf5SlGEg1ubHn6Z19kckP11b+zBnIQ
-         svPSJLWuqZg0JG6k46PrnQ40nXe99YYQgIcxuRde/HgFQRJN5fpB168Dv57roKqfUhcj
-         c3Wl672YDNIQZQzVx6H3a9AzJ6RT1VejPlYYAXL9lvw0ZJlcyQOQnUhHSGL2SzMO1Ls2
-         RDhv9WArl+zP1yDzvieI9qpg7zj3gop2WXN0b1h/9G7huOca2wcuwxHzPpXWn1vprgLT
-         2iJJg5EuvfF5JxIewWDg+hKR6u/aiKErE7GfIk6bXRUEGs53SFD7eKo/4JC4vNXw0a0X
-         zi4g==
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=j9AjCteT5oXOliiBDsi/BtPpjWzY8Wi3XK8EjycIbYY=;
+        b=n6AzdOLNRTqb4i6FyEqbFi5s6pTlhyre25ufFwx+T+VmajjxssTt0l8XCKQR/Aqecv
+         t5czYE9FLkrlUSl51FMuykQ1e1GcF3m5oNdeJBZLdw2D63jbXf6XfTeNurXdbWrn/zPD
+         0oTbY9zSFrSWwarkUi/JZeBmWAeeYdlF6qUJU5pVqeOuE7Omi52/PsLVpsnLgGzmyvs8
+         Qzi8KLY+VRFCIgj68RifAkcwvQfGqbGSzt51gfoz1FGRmwAX8HkbYcV17zQFE/36rY2Y
+         t8ertkB8APqDAym2fHdv+w+6uQ6EsF9ADBteRoCKRbbfopznDFmxuVd2dDrS3CqEW1Ev
+         jKmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ljtZ4ypLfej4LcEk6Nj/mIZ/IU9OQUKDueO29CYxzr8=;
-        b=pw7c1fmARy7Ak2Qf+OFI+kPDbfHXO8Nd0DoDVq3TsgaKyV9CP8AweBifHkHnGkOZ/Z
-         cpzNkWmqi8bvIc1/AURvO14qLau6/AAU2kjcqapemU/iw27JP8M4Xu4Wn0/U7iHpFm4q
-         CLEF7JHn5nmXJB0auP8d56IpFgn2KwyV83xWKyECp11IRDeUck3wSMoPSlPwcD72p17L
-         8mX1qlRm55UpMu3TrkEB7KqvGoP1jyE42rTk3fAM8EKPZjOzaXUx0Mguyr2xi2s4e/Ah
-         9wMALi2hsMF3rdJ1rX//G983A5C1DPO/38gWJxQqGzdXHxI/22UFS+03jAeg/8t60oKm
-         lHFA==
-X-Gm-Message-State: AFqh2kqCD0bxSaRdu2k8Wj+DnVjSKD4AuK8Q2roHZa+cDCo9Io6Y/mFd
-        /TYI18NK/JOnGGJcrxubIWPKyu/FFNuksmynIFIr5w==
-X-Google-Smtp-Source: AMrXdXvETSEU+MmqLTpHVbvFds6LgQpXaPsY9N8oyVVygl8xjrgCoJr+fg0dnYfR+zKcya5/ytTzJ7GeWxYLdgtKZ5E=
-X-Received: by 2002:a81:d42:0:b0:501:5ab3:9e6e with SMTP id
- 63-20020a810d42000000b005015ab39e6emr3726097ywn.278.1674845095482; Fri, 27
- Jan 2023 10:44:55 -0800 (PST)
-MIME-Version: 1.0
-References: <cover.1674835106.git.lucien.xin@gmail.com> <798ca80553e73028eeec4be08ba1549d08b2e5fc.1674835106.git.lucien.xin@gmail.com>
- <CANn89iL11WjtqNx0=fL2hOzpH_S6y=J5U9uS3g+iusupJLLsTg@mail.gmail.com> <CADvbK_dfVBNRQunV1mp-Cs+Xh57dnQJqEQ6RQR+feqQNnQ-iTQ@mail.gmail.com>
-In-Reply-To: <CADvbK_dfVBNRQunV1mp-Cs+Xh57dnQJqEQ6RQR+feqQNnQ-iTQ@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 27 Jan 2023 19:44:43 +0100
-Message-ID: <CANn89iL+o-SeOXOajTqcNnyajK2PRAMTMEk1b_A1JC-dFTMrNA@mail.gmail.com>
-Subject: Re: [PATCHv3 net-next 10/10] net: add support for ipv4 big tcp
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Aaron Conole <aconole@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Guillaume Nault <gnault@redhat.com>
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=j9AjCteT5oXOliiBDsi/BtPpjWzY8Wi3XK8EjycIbYY=;
+        b=C9kFO5DsXNtE2ZZ+L8zmJFF2ARRbDUKWBiO5SK5pRPLzqyt7DaZ2f5FDgTH2YI9Ewk
+         zk0YCmZFiV8DlzB8LAX6RlLO0GS8K/YjQbZ3keuUkmdFWxVmAl9uefj72hnDBjDOCQ4t
+         dBqrfHRlLaSsEvq6uR2irvQx7u9ZweWjf0WLcroO254nu8aD7O7P+QMfq6Z7LnQzyet3
+         emfat7WikRmnBT/dg1JDRYvIMaO6NIfi+jFLpHDiMv3CnYPdKYGrArde3hROC8vVqMDm
+         kM7TDTC1A6syJJC3/Vk8m3AhW7Um85L7geQq+PX6OwDoyHWvvD9aMDlLq8RLsg0bWI0s
+         Ktzg==
+X-Gm-Message-State: AO0yUKU3xMYR5wf9GaiGiNOeWQo7KunfgJGxGwFaKyX5BhMEYEwT8PB6
+        cUTTMxGbdy+KpuWr87MCfvXVlvIXrz+TC2v6lq3o14tRpw+0vDcvKgcQ11YxuLnKNt6tIRM8dna
+        RKlhCi2lTXqVdilmwDD5jljzda81GP4kLUId+ZBNepB/ScVtpMqN3KQU4AuJY1yTcW8M=
+X-Google-Smtp-Source: AK7set8IKnNvbkL5X+lizk9XC9rrApWvSt+9UUc/xXEKp4X9BleheZae0GjrYEJO3IX6PWizWkCBlbsbszCbxA==
+X-Received: from jeroendb9128802.sea.corp.google.com ([2620:15c:100:202:f20d:8b00:2281:bf9a])
+ (user=jeroendb job=sendgmr) by 2002:a63:131e:0:b0:4d9:ed5e:5e99 with SMTP id
+ i30-20020a63131e000000b004d9ed5e5e99mr1260832pgl.69.1674846475741; Fri, 27
+ Jan 2023 11:07:55 -0800 (PST)
+Date:   Fri, 27 Jan 2023 11:07:44 -0800
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.39.1.456.gfc5497dd1b-goog
+Message-ID: <20230127190744.3721063-1-jeroendb@google.com>
+Subject: [PATCH net-next] gve: Introduce a way to disable queue formats
+From:   Jeroen de Borst <jeroendb@google.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Jeroen de Borst <jeroendb@google.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,191 +66,340 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 27, 2023 at 7:37 PM Xin Long <lucien.xin@gmail.com> wrote:
->
-> On Fri, Jan 27, 2023 at 12:41 PM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > On Fri, Jan 27, 2023 at 5:00 PM Xin Long <lucien.xin@gmail.com> wrote:
-> > >
-> > > Similar to Eric's IPv6 BIG TCP, this patch is to enable IPv4 BIG TCP.
-> > >
-> > > Firstly, allow sk->sk_gso_max_size to be set to a value greater than
-> > > GSO_LEGACY_MAX_SIZE by not trimming gso_max_size in sk_trim_gso_size()
-> > > for IPv4 TCP sockets.
-> > >
-> > > Then on TX path, set IP header tot_len to 0 when skb->len > IP_MAX_MTU
-> > > in __ip_local_out() to allow to send BIG TCP packets, and this implies
-> > > that skb->len is the length of a IPv4 packet; On RX path, use skb->len
-> > > as the length of the IPv4 packet when the IP header tot_len is 0 and
-> > > skb->len > IP_MAX_MTU in ip_rcv_core(). As the API iph_set_totlen() and
-> > > skb_ip_totlen() are used in __ip_local_out() and ip_rcv_core(), we only
-> > > need to update these APIs.
-> > >
-> > > Also in GRO receive, add the check for ETH_P_IP/IPPROTO_TCP, and allows
-> > > the merged packet size >= GRO_LEGACY_MAX_SIZE in skb_gro_receive(). In
-> > > GRO complete, set IP header tot_len to 0 when the merged packet size
-> > > greater than IP_MAX_MTU in iph_set_totlen() so that it can be processed
-> > > on RX path.
-> > >
-> > > Note that by checking skb_is_gso_tcp() in API iph_totlen(), it makes
-> > > this implementation safe to use iph->len == 0 indicates IPv4 BIG TCP
-> > > packets.
-> > >
-> > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > > ---
-> > >  net/core/gro.c       | 12 +++++++-----
-> > >  net/core/sock.c      |  8 ++++++--
-> > >  net/ipv4/af_inet.c   |  7 ++++---
-> > >  net/ipv4/ip_input.c  |  2 +-
-> > >  net/ipv4/ip_output.c |  2 +-
-> > >  5 files changed, 19 insertions(+), 12 deletions(-)
-> > >
-> > > diff --git a/net/core/gro.c b/net/core/gro.c
-> > > index 506f83d715f8..b15f85546bdd 100644
-> > > --- a/net/core/gro.c
-> > > +++ b/net/core/gro.c
-> > > @@ -162,16 +162,18 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
-> > >         struct sk_buff *lp;
-> > >         int segs;
-> > >
-> > > -       /* pairs with WRITE_ONCE() in netif_set_gro_max_size() */
-> > > -       gro_max_size = READ_ONCE(p->dev->gro_max_size);
-> > > +       /* pairs with WRITE_ONCE() in netif_set_gro(_ipv4)_max_size() */
-> > > +       gro_max_size = p->protocol == htons(ETH_P_IPV6) ?
-> > > +                       READ_ONCE(p->dev->gro_max_size) :
-> > > +                               READ_ONCE(p->dev->gro_ipv4_max_size);
-> > >
-> > >         if (unlikely(p->len + len >= gro_max_size || NAPI_GRO_CB(skb)->flush))
-> > >                 return -E2BIG;
-> > >
-> > >         if (unlikely(p->len + len >= GRO_LEGACY_MAX_SIZE)) {
-> > > -               if (p->protocol != htons(ETH_P_IPV6) ||
-> > > -                   skb_headroom(p) < sizeof(struct hop_jumbo_hdr) ||
-> > > -                   ipv6_hdr(p)->nexthdr != IPPROTO_TCP ||
-> > > +               if (NAPI_GRO_CB(skb)->proto != IPPROTO_TCP ||
-> > > +                   (p->protocol == htons(ETH_P_IPV6) &&
-> > > +                    skb_headroom(p) < sizeof(struct hop_jumbo_hdr)) ||
-> > >                     p->encapsulation)
-> > >                         return -E2BIG;
-> > >         }
-> > > diff --git a/net/core/sock.c b/net/core/sock.c
-> > > index 7ba4891460ad..c98f9a4eeff9 100644
-> > > --- a/net/core/sock.c
-> > > +++ b/net/core/sock.c
-> > > @@ -2383,6 +2383,8 @@ static void sk_trim_gso_size(struct sock *sk)
-> > >             !ipv6_addr_v4mapped(&sk->sk_v6_rcv_saddr))
-> > >                 return;
-> > >  #endif
-> > > +       if (sk->sk_family == AF_INET && sk_is_tcp(sk))
-> > > +               return;
-> >
-> > Or simply
-> >
-> > diff --git a/net/core/sock.c b/net/core/sock.c
-> > index 7ba4891460adbd6c13c0ce1dcdd7f23c8c1f0f5d..dcb8fff91fd9a9472267a2cf2fdc98114a7d2b7d
-> > 100644
-> > --- a/net/core/sock.c
-> > +++ b/net/core/sock.c
-> > @@ -2375,14 +2375,9 @@ EXPORT_SYMBOL_GPL(sk_free_unlock_clone);
-> >
-> >  static void sk_trim_gso_size(struct sock *sk)
-> >  {
-> > -       if (sk->sk_gso_max_size <= GSO_LEGACY_MAX_SIZE)
-> > +       if (sk->sk_gso_max_size <= GSO_LEGACY_MAX_SIZE ||
-> > +           sk_is_tcp(sk))
-> >                 return;
-> > -#if IS_ENABLED(CONFIG_IPV6)
-> > -       if (sk->sk_family == AF_INET6 &&
-> > -           sk_is_tcp(sk) &&
-> > -           !ipv6_addr_v4mapped(&sk->sk_v6_rcv_saddr))
-> > -               return;
-> > -#endif
-> >         sk->sk_gso_max_size = GSO_LEGACY_MAX_SIZE;
-> >  }
-> There's a difference,  AF_INET6 TCP socket may send ipv4 packets with
-> ipv6_addr_v4mapped, if we don't check ipv6_addr_v4mapped(), IPV4
-> GSO packets might go with the "gso_max_size" for IPV6.
->
+The device is capable of simultaneously supporting multiple
+queue formats. With this change the driver can deliberately
+pick a queue format.
 
-But the change you wrote in sk_setup_caps() only checked sk_family.
+Signed-off-by: Jeroen de Borst <jeroendb@google.com>
+---
+ drivers/net/ethernet/google/gve/gve.h         | 30 +++++++++-
+ drivers/net/ethernet/google/gve/gve_adminq.c  | 35 +++++++-----
+ drivers/net/ethernet/google/gve/gve_ethtool.c | 57 ++++++++++++-------
+ drivers/net/ethernet/google/gve/gve_main.c    | 26 ++++++++-
+ 4 files changed, 110 insertions(+), 38 deletions(-)
 
+diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
+index 64eb0442c82f..b78b48887023 100644
+--- a/drivers/net/ethernet/google/gve/gve.h
++++ b/drivers/net/ethernet/google/gve/gve.h
+@@ -505,6 +505,8 @@ enum gve_queue_format {
+ 	GVE_DQO_RDA_FORMAT		= 0x3,
+ };
+ 
++const char *gve_queue_format_name(enum gve_queue_format format);
++
+ struct gve_priv {
+ 	struct net_device *dev;
+ 	struct gve_tx_ring *tx; /* array of tx_cfg.num_queues */
+@@ -584,6 +586,7 @@ struct gve_priv {
+ 	u64 stats_report_len;
+ 	dma_addr_t stats_report_bus; /* dma address for the stats report */
+ 	unsigned long ethtool_flags;
++	unsigned long ethtool_formats; /* queue formats allowed */
+ 
+ 	unsigned long stats_report_timer_period;
+ 	struct timer_list stats_report_timer;
+@@ -599,6 +602,7 @@ struct gve_priv {
+ 	int data_buffer_size_dqo;
+ 
+ 	enum gve_queue_format queue_format;
++	enum gve_queue_format next_queue_format;
+ 
+ 	/* Interrupt coalescing settings */
+ 	u32 tx_coalesce_usecs;
+@@ -609,7 +613,7 @@ enum gve_service_task_flags_bit {
+ 	GVE_PRIV_FLAGS_DO_RESET			= 1,
+ 	GVE_PRIV_FLAGS_RESET_IN_PROGRESS	= 2,
+ 	GVE_PRIV_FLAGS_PROBE_IN_PROGRESS	= 3,
+-	GVE_PRIV_FLAGS_DO_REPORT_STATS = 4,
++	GVE_PRIV_FLAGS_DO_REPORT_STATS		= 4,
+ };
+ 
+ enum gve_state_flags_bit {
+@@ -621,8 +625,17 @@ enum gve_state_flags_bit {
+ 
+ enum gve_ethtool_flags_bit {
+ 	GVE_PRIV_FLAGS_REPORT_STATS		= 0,
++	GVE_PRIV_FLAGS_ENABLE_DQO_RDA		= 1,
++	GVE_PRIV_FLAGS_ENABLE_GQI_RDA		= 2,
++	GVE_PRIV_FLAGS_ENABLE_GQI_QPL		= 3,
+ };
+ 
++#define GVE_PRIV_FLAGS_MASK \
++	(BIT(GVE_PRIV_FLAGS_REPORT_STATS)	| \
++	 BIT(GVE_PRIV_FLAGS_ENABLE_DQO_RDA)	| \
++	 BIT(GVE_PRIV_FLAGS_ENABLE_GQI_RDA)	| \
++	 BIT(GVE_PRIV_FLAGS_ENABLE_GQI_QPL))
++
+ static inline bool gve_get_do_reset(struct gve_priv *priv)
+ {
+ 	return test_bit(GVE_PRIV_FLAGS_DO_RESET, &priv->service_task_flags);
+@@ -756,6 +769,21 @@ static inline void gve_clear_report_stats(struct gve_priv *priv)
+ 	clear_bit(GVE_PRIV_FLAGS_REPORT_STATS, &priv->ethtool_flags);
+ }
+ 
++static inline bool gve_get_enable_dqo_rda(struct gve_priv *priv)
++{
++	return test_bit(GVE_PRIV_FLAGS_ENABLE_DQO_RDA, &priv->ethtool_flags);
++}
++
++static inline bool gve_get_enable_gqi_rda(struct gve_priv *priv)
++{
++	return test_bit(GVE_PRIV_FLAGS_ENABLE_GQI_RDA, &priv->ethtool_flags);
++}
++
++static inline bool gve_get_enable_gqi_qpl(struct gve_priv *priv)
++{
++	return test_bit(GVE_PRIV_FLAGS_ENABLE_GQI_QPL, &priv->ethtool_flags);
++}
++
+ /* Returns the address of the ntfy_blocks irq doorbell
+  */
+ static inline __be32 __iomem *gve_irq_doorbell(struct gve_priv *priv,
+diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c b/drivers/net/ethernet/google/gve/gve_adminq.c
+index 60061288ad9d..d8bf761ef133 100644
+--- a/drivers/net/ethernet/google/gve/gve_adminq.c
++++ b/drivers/net/ethernet/google/gve/gve_adminq.c
+@@ -59,10 +59,9 @@ void gve_parse_device_option(struct gve_priv *priv,
+ 				 option_length, req_feat_mask);
+ 			break;
+ 		}
+-
+ 		dev_info(&priv->pdev->dev,
+ 			 "Gqi raw addressing device option enabled.\n");
+-		priv->queue_format = GVE_GQI_RDA_FORMAT;
++		priv->ethtool_formats |= BIT(GVE_PRIV_FLAGS_ENABLE_GQI_RDA);
+ 		break;
+ 	case GVE_DEV_OPT_ID_GQI_RDA:
+ 		if (option_length < sizeof(**dev_op_gqi_rda) ||
+@@ -79,6 +78,7 @@ void gve_parse_device_option(struct gve_priv *priv,
+ 				 GVE_DEVICE_OPTION_TOO_BIG_FMT, "GQI RDA");
+ 		}
+ 		*dev_op_gqi_rda = (void *)(option + 1);
++		priv->ethtool_formats |= BIT(GVE_PRIV_FLAGS_ENABLE_GQI_RDA);
+ 		break;
+ 	case GVE_DEV_OPT_ID_GQI_QPL:
+ 		if (option_length < sizeof(**dev_op_gqi_qpl) ||
+@@ -95,6 +95,7 @@ void gve_parse_device_option(struct gve_priv *priv,
+ 				 GVE_DEVICE_OPTION_TOO_BIG_FMT, "GQI QPL");
+ 		}
+ 		*dev_op_gqi_qpl = (void *)(option + 1);
++		priv->ethtool_formats |= BIT(GVE_PRIV_FLAGS_ENABLE_GQI_QPL);
+ 		break;
+ 	case GVE_DEV_OPT_ID_DQO_RDA:
+ 		if (option_length < sizeof(**dev_op_dqo_rda) ||
+@@ -111,6 +112,7 @@ void gve_parse_device_option(struct gve_priv *priv,
+ 				 GVE_DEVICE_OPTION_TOO_BIG_FMT, "DQO RDA");
+ 		}
+ 		*dev_op_dqo_rda = (void *)(option + 1);
++		priv->ethtool_formats |= BIT(GVE_PRIV_FLAGS_ENABLE_DQO_RDA);
+ 		break;
+ 	case GVE_DEV_OPT_ID_JUMBO_FRAMES:
+ 		if (option_length < sizeof(**dev_op_jumbo_frames) ||
+@@ -737,33 +739,36 @@ int gve_adminq_describe_device(struct gve_priv *priv)
+ 	if (err)
+ 		goto free_device_descriptor;
+ 
++	priv->ethtool_flags = priv->ethtool_formats;
++
+ 	/* If the GQI_RAW_ADDRESSING option is not enabled and the queue format
+ 	 * is not set to GqiRda, choose the queue format in a priority order:
+ 	 * DqoRda, GqiRda, GqiQpl. Use GqiQpl as default.
+ 	 */
+ 	if (dev_op_dqo_rda) {
+ 		priv->queue_format = GVE_DQO_RDA_FORMAT;
+-		dev_info(&priv->pdev->dev,
+-			 "Driver is running with DQO RDA queue format.\n");
+ 		supported_features_mask =
+ 			be32_to_cpu(dev_op_dqo_rda->supported_features_mask);
+ 	} else if (dev_op_gqi_rda) {
+ 		priv->queue_format = GVE_GQI_RDA_FORMAT;
+-		dev_info(&priv->pdev->dev,
+-			 "Driver is running with GQI RDA queue format.\n");
+ 		supported_features_mask =
+ 			be32_to_cpu(dev_op_gqi_rda->supported_features_mask);
+-	} else if (priv->queue_format == GVE_GQI_RDA_FORMAT) {
+-		dev_info(&priv->pdev->dev,
+-			 "Driver is running with GQI RDA queue format.\n");
+-	} else {
++	} else if (dev_op_gqi_qpl) {
+ 		priv->queue_format = GVE_GQI_QPL_FORMAT;
+-		if (dev_op_gqi_qpl)
+-			supported_features_mask =
+-				be32_to_cpu(dev_op_gqi_qpl->supported_features_mask);
+-		dev_info(&priv->pdev->dev,
+-			 "Driver is running with GQI QPL queue format.\n");
++		supported_features_mask =
++			be32_to_cpu(dev_op_gqi_qpl->supported_features_mask);
++	} else if (gve_get_enable_gqi_rda(priv)) {
++		priv->queue_format = GVE_GQI_RDA_FORMAT;
++	} else {
++		dev_err(&priv->pdev->dev, "No compatible queue formats\n");
++		err = -EINVAL;
++		goto free_device_descriptor;
+ 	}
++	dev_info(&priv->pdev->dev, "Driver is running with %s queue format.\n",
++		 gve_queue_format_name(priv->queue_format));
++
++	priv->next_queue_format = priv->queue_format;
++
+ 	if (gve_is_gqi(priv)) {
+ 		err = gve_set_desc_cnt(priv, descriptor);
+ 	} else {
+diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
+index ce574d097e28..7f682d266f0e 100644
+--- a/drivers/net/ethernet/google/gve/gve_ethtool.c
++++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
+@@ -68,7 +68,7 @@ static const char gve_gstrings_adminq_stats[][ETH_GSTRING_LEN] = {
+ };
+ 
+ static const char gve_gstrings_priv_flags[][ETH_GSTRING_LEN] = {
+-	"report-stats",
++	"report-stats", "enable-dqo-rda", "enable-gqi-rda", "enable-gqi-qpl",
+ };
+ 
+ #define GVE_MAIN_STATS_LEN  ARRAY_SIZE(gve_gstrings_main_stats)
+@@ -490,37 +490,36 @@ static int gve_set_tunable(struct net_device *netdev,
+ static u32 gve_get_priv_flags(struct net_device *netdev)
+ {
+ 	struct gve_priv *priv = netdev_priv(netdev);
+-	u32 ret_flags = 0;
+-
+-	/* Only 1 flag exists currently: report-stats (BIT(O)), so set that flag. */
+-	if (priv->ethtool_flags & BIT(0))
+-		ret_flags |= BIT(0);
+-	return ret_flags;
++	return priv->ethtool_flags & GVE_PRIV_FLAGS_MASK;
+ }
+ 
+ static int gve_set_priv_flags(struct net_device *netdev, u32 flags)
+ {
+ 	struct gve_priv *priv = netdev_priv(netdev);
+-	u64 ori_flags, new_flags;
++	u32 ori_flags;
++	enum gve_queue_format new_format;
++
++	/* Make sure there is a queue format to use */
++	if ((priv->ethtool_formats & flags) == 0) {
++		dev_err(&priv->pdev->dev,
++			"All available queue formats disabled\n");
++		return -EINVAL;
++	}
+ 
+ 	ori_flags = READ_ONCE(priv->ethtool_flags);
+-	new_flags = ori_flags;
+ 
+-	/* Only one priv flag exists: report-stats (BIT(0))*/
+-	if (flags & BIT(0))
+-		new_flags |= BIT(0);
+-	else
+-		new_flags &= ~(BIT(0));
+-	priv->ethtool_flags = new_flags;
++	priv->ethtool_flags = flags & GVE_PRIV_FLAGS_MASK;
++
+ 	/* start report-stats timer when user turns report stats on. */
+-	if (flags & BIT(0)) {
++	if (gve_get_report_stats(priv))
+ 		mod_timer(&priv->stats_report_timer,
+ 			  round_jiffies(jiffies +
+ 					msecs_to_jiffies(priv->stats_report_timer_period)));
+-	}
++
+ 	/* Zero off gve stats when report-stats turned off and */
+ 	/* delete report stats timer. */
+-	if (!(flags & BIT(0)) && (ori_flags & BIT(0))) {
++	if (!gve_get_report_stats(priv) &&
++	    (ori_flags & BIT(GVE_PRIV_FLAGS_REPORT_STATS))) {
+ 		int tx_stats_num = GVE_TX_STATS_REPORT_NUM *
+ 			priv->tx_cfg.num_queues;
+ 		int rx_stats_num = GVE_RX_STATS_REPORT_NUM *
+@@ -530,7 +529,27 @@ static int gve_set_priv_flags(struct net_device *netdev, u32 flags)
+ 				   sizeof(struct stats));
+ 		del_timer_sync(&priv->stats_report_timer);
+ 	}
+-	return 0;
++
++	if (priv->ethtool_formats == 0)
++		/* Can't change queue format */
++		return 0;
++
++	/* Check if a new queue format should be activated */
++	if (gve_get_enable_dqo_rda(priv))
++		new_format = GVE_DQO_RDA_FORMAT;
++	else if (gve_get_enable_gqi_rda(priv))
++		new_format = GVE_GQI_RDA_FORMAT;
++	else
++		new_format = GVE_GQI_QPL_FORMAT;
++
++	if (priv->queue_format == new_format)
++		return 0;
++
++	priv->next_queue_format = new_format;
++	dev_info(&priv->pdev->dev, "Driver is switching to %s queue format.\n",
++		 gve_queue_format_name(priv->next_queue_format));
++
++	return gve_reset(priv, false);
+ }
+ 
+ static int gve_get_link_ksettings(struct net_device *netdev,
+diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
+index 5b40f9c53196..23f30d9d97a0 100644
+--- a/drivers/net/ethernet/google/gve/gve_main.c
++++ b/drivers/net/ethernet/google/gve/gve_main.c
+@@ -32,6 +32,23 @@
+ const char gve_version_str[] = GVE_VERSION;
+ static const char gve_version_prefix[] = GVE_VERSION_PREFIX;
+ 
++const char *gve_queue_format_name(enum gve_queue_format format)
++{
++	switch (format) {
++	case GVE_QUEUE_FORMAT_UNSPECIFIED:
++		return "unspecified";
++	case GVE_GQI_RDA_FORMAT:
++		return "GQI RDA";
++	case GVE_GQI_QPL_FORMAT:
++		return "GQI QPL";
++	case GVE_DQO_RDA_FORMAT:
++		return "DQO RDA";
++	default:
++		return "unknown";
++	}
++}
++
++struct bpf_prog;
+ static int gve_verify_driver_compatibility(struct gve_priv *priv)
+ {
+ 	int err;
+@@ -1413,6 +1430,11 @@ static int gve_init_priv(struct gve_priv *priv, bool skip_describe_device)
+ 		return err;
+ 	}
+ 
++	if (skip_describe_device) {
++		priv->queue_format = priv->next_queue_format;
++		goto setup_device;
++	}
++
+ 	err = gve_verify_driver_compatibility(priv);
+ 	if (err) {
+ 		dev_err(&priv->pdev->dev,
+@@ -1420,9 +1442,6 @@ static int gve_init_priv(struct gve_priv *priv, bool skip_describe_device)
+ 		goto err;
+ 	}
+ 
+-	if (skip_describe_device)
+-		goto setup_device;
+-
+ 	priv->queue_format = GVE_QUEUE_FORMAT_UNSPECIFIED;
+ 	/* Get the initial information we need from the device */
+ 	err = gve_adminq_describe_device(priv);
+@@ -1661,6 +1680,7 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	priv->service_task_flags = 0x0;
+ 	priv->state_flags = 0x0;
+ 	priv->ethtool_flags = 0x0;
++	priv->ethtool_formats = 0x0;
+ 
+ 	gve_set_probe_in_progress(priv);
+ 	priv->gve_wq = alloc_ordered_workqueue("gve", 0);
+-- 
+2.39.1.456.gfc5497dd1b-goog
 
-> I think we could use the change you wrote above, but we also need to
-> use dst->ops->family instead of sk->sk_family in sk_setup_caps():
->
-> +                       sk->sk_gso_max_size = dst->ops->family == AF_INET6 ?
-> +                                       READ_ONCE(dst->dev->gso_max_size) :
-> +
-> READ_ONCE(dst->dev->gso_ipv4_max_size);
->
-> >
-> >
-> >
-> > >         sk->sk_gso_max_size = GSO_LEGACY_MAX_SIZE;
-> > >  }
-> > >
-> > > @@ -2403,8 +2405,10 @@ void sk_setup_caps(struct sock *sk, struct dst_entry *dst)
-> > >                         sk->sk_route_caps &= ~NETIF_F_GSO_MASK;
-> > >                 } else {
-> > >                         sk->sk_route_caps |= NETIF_F_SG | NETIF_F_HW_CSUM;
-> > > -                       /* pairs with the WRITE_ONCE() in netif_set_gso_max_size() */
-> > > -                       sk->sk_gso_max_size = READ_ONCE(dst->dev->gso_max_size);
-> > > +                       /* pairs with the WRITE_ONCE() in netif_set_gso(_ipv4)_max_size() */
-> > > +                       sk->sk_gso_max_size = sk->sk_family == AF_INET6 ?
-> > > +                                       READ_ONCE(dst->dev->gso_max_size) :
-> > > +                                               READ_ONCE(dst->dev->gso_ipv4_max_size);
-
-Here...
-
-So if you need ipv6_addr_v4mapped() this should be done here anyway.
-
-> > >                         sk_trim_gso_size(sk);
-> > >                         sk->sk_gso_max_size -= (MAX_TCP_HEADER + 1);
-> > >                         /* pairs with the WRITE_ONCE() in netif_set_gso_max_segs() */
-> > > diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-> > > index 6c0ec2789943..2f992a323b95 100644
-> > > --- a/net/ipv4/af_inet.c
-> > > +++ b/net/ipv4/af_inet.c
-> > > @@ -1485,6 +1485,7 @@ struct sk_buff *inet_gro_receive(struct list_head *head, struct sk_buff *skb)
-> > >         if (unlikely(ip_fast_csum((u8 *)iph, 5)))
-> > >                 goto out;
-> > >
-> > > +       NAPI_GRO_CB(skb)->proto = proto;
-> > >         id = ntohl(*(__be32 *)&iph->id);
-> > >         flush = (u16)((ntohl(*(__be32 *)iph) ^ skb_gro_len(skb)) | (id & ~IP_DF));
-> > >         id >>= 16;
-> > > @@ -1618,9 +1619,9 @@ int inet_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len)
-> > >
-> > >  int inet_gro_complete(struct sk_buff *skb, int nhoff)
-> > >  {
-> > > -       __be16 newlen = htons(skb->len - nhoff);
-> > >         struct iphdr *iph = (struct iphdr *)(skb->data + nhoff);
-> > >         const struct net_offload *ops;
-> > > +       __be16 totlen = iph->tot_len;
-> > >         int proto = iph->protocol;
-> > >         int err = -ENOSYS;
-> > >
-> > > @@ -1629,8 +1630,8 @@ int inet_gro_complete(struct sk_buff *skb, int nhoff)
-> > >                 skb_set_inner_network_header(skb, nhoff);
-> > >         }
-> > >
-> > > -       csum_replace2(&iph->check, iph->tot_len, newlen);
-> > > -       iph->tot_len = newlen;
-> > > +       iph_set_totlen(iph, skb->len - nhoff);
-> > > +       csum_replace2(&iph->check, totlen, iph->tot_len);
-> > >
-> > >         ops = rcu_dereference(inet_offloads[proto]);
-> > >         if (WARN_ON(!ops || !ops->callbacks.gro_complete))
-> > > diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-> > > index e880ce77322a..0aa8c49b4e1b 100644
-> > > --- a/net/ipv4/ip_input.c
-> > > +++ b/net/ipv4/ip_input.c
-> > > @@ -511,7 +511,7 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
-> > >         if (unlikely(ip_fast_csum((u8 *)iph, iph->ihl)))
-> > >                 goto csum_error;
-> > >
-> > > -       len = ntohs(iph->tot_len);
-> > > +       len = skb_ip_totlen(skb);
-> >
-> > len = iph_totlen(skb, iph);
-> OK, thanks.
