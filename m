@@ -2,76 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D35267ECAC
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 18:41:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2C6367ECAD
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 18:41:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234993AbjA0Rlc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 12:41:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33068 "EHLO
+        id S235007AbjA0Rlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 12:41:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233172AbjA0Rlb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 12:41:31 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75AFC7D2AB
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 09:41:17 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id p24so5722809plw.11
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 09:41:17 -0800 (PST)
+        with ESMTP id S235143AbjA0Rll (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 12:41:41 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3E077E684
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 09:41:38 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id b1so6848798ybn.11
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 09:41:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=vaFfeyznNWWLniOTpc7LIMcZgLL/w0JJguh0UKjmu2k=;
-        b=iRHN3MzE1iFEGAMAGuIB6NvnylFL1REExeROTRo7EA9B8whSIprjx/k1HR0+KKgQVu
-         eQekjw2VHMl1v/GTlQpGj+HVLNrKWY31ahyDXScS3RRnRixyZUEscuM+QfyQDF4rkL7d
-         F8h1lOKUheRaPVXD2QjS6suIkV61eBeQJzB64D8ydA98NPQ5+Qi+K9x1cyAgphBORdT2
-         Os387DnSqKBrM7JG+oaQRrr2NxDofndAqUbvHxmUiinn4/AAugk08cpQlW0LFKr4FusA
-         9lP7b2bBv2F5GQohWEdnDx4MLZlcN202k5EFq+D7z5p3S+V3asILxNBPGnZpEv63+8B1
-         fQCg==
+        bh=KlO5tZJ3nSqtFTlZpoEvGGrCN4DC9OGY4LAyhIbxX+M=;
+        b=XsE6E/fFZNAlApUbIxKWPs7zvNCJdampMGv4NAMMKsEfY7bbD+p0MT+lksxcLg/g/2
+         fH6GC71xu888aQXNQHUIBSjVd3Ip06LZUD4SPksBugOmtWTM4P18jy18sy2wlrBpJCX9
+         kCqWgec65MchezxCIKD6HdpiGdGVriyG58lt2Mn3kMZJbal/k2SmzEglNR6P4HUXZpkZ
+         qrukMOYknREhGhTqtZOfQ1y6OBoe8KlWlVVIJd0Wt3VBVZxe2s12GlX6g3nxa3M81Esm
+         9QRsYdI6Zui7xOSTs6g4VD/d5MPl6ohnR6fhEEA7rG1zYxSWduGpnosf4n+z0Z8gfh5M
+         2g3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=vaFfeyznNWWLniOTpc7LIMcZgLL/w0JJguh0UKjmu2k=;
-        b=gA2jLnFlErNd5q4IRdsHY55WFY+BghI3weYjhvrKWgj5LYP/o2qFYSTm4GZ9KmZEHf
-         kpFtq1rAMvfL/QWec76ab+SwkqY0tU9nYZfbRK4vbatjhTB3637rZNYa3oiWoe7W3okx
-         uKKLvILXFYUBIb7bZZUmsFwcYP+rjdWjzOPZRbFhD0I0f/L/ojNNMUot9YPus0hyeBOb
-         hWzpJyhOEZpp7wbdd0xRShv4D08qKkn44QD+GknrJJlclOSyWUxAZu00GaipVPQdn6xZ
-         xvEnrO31czk2VTVj+4P5YDqCJFAUoekreRou/55R/XQHeRtBh5aGtcdpE7LnNZf3AJpg
-         239g==
-X-Gm-Message-State: AO0yUKX3FrU+2IwvkzwrFPqsuveYOU3UL5LWEmfBatkUmoF/PnfzUtp/
-        nlFguu20oaQeKRGuG8/lulJMeMOUh0TsyqrpjOc4H1818aVT9vAUJN39YA==
-X-Google-Smtp-Source: AK7set/tnCuI9RjTvgVvTHoLjEj61ZxaKD287AXcYVYorLt8jMQJgsYq5f4K/2s+DNufIz5TvDgclZumH8e8H3/rz9o=
-X-Received: by 2002:a17:902:82c6:b0:196:cca:a0b4 with SMTP id
- u6-20020a17090282c600b001960ccaa0b4mr2381925plz.20.1674841276647; Fri, 27 Jan
- 2023 09:41:16 -0800 (PST)
+        bh=KlO5tZJ3nSqtFTlZpoEvGGrCN4DC9OGY4LAyhIbxX+M=;
+        b=RwR4wcx4YICAqw+u8IJHv8zGAltKOTCLGMHoQJDIhs3pA8L8R2YJh1k0TEIGdA5Clw
+         RknyBiyvgAUM99e2lL/rPyWpSCEs5mj8AxMXCXthpPOx57zsnDwBp8ClE3N/Gftn5o3k
+         o7NEjU/3MVC7w+EVQs6IRZ9cMhQloU8c/vXpyMAY3w6D3AAHT48bSEjfgmL6lHhbWkWZ
+         bt5Wiqv+PWmwuY1C00QaHssAmifqrgKoSRdIUZNJll/49yQriESDZ2XaZPE4OHZHwH8v
+         iJ7jCW4j+jZZbAvwjEL0/YgB4OIElHqxXfrJsLkbfcdft1pilgqGBWMGiRGsArpLC7V9
+         RN1Q==
+X-Gm-Message-State: AO0yUKUCOpaj/C9ioMhiVEUEhyfM88fR4YVifXIC0zDRwOFP2Hn5p2Yw
+        QvBfJ2BwV1+UPCRekNP9wonxDRFdJ5nIrhEIWvd6Ug==
+X-Google-Smtp-Source: AK7set8EChHmdlW9HnZJ0MS2NQwhw5HzSVKVMusEkH4EeybjzcwpeLnR0HIym/tXRuqmfryjCzJZon8EQ20UURThVNw=
+X-Received: by 2002:a25:2f8b:0:b0:80b:b46c:916c with SMTP id
+ v133-20020a252f8b000000b0080bb46c916cmr968257ybv.55.1674841297676; Fri, 27
+ Jan 2023 09:41:37 -0800 (PST)
 MIME-Version: 1.0
-References: <cover.1674737592.git.lorenzo@kernel.org> <0b05b08d4579b017dd96869d1329cd82801bd803.1674737592.git.lorenzo@kernel.org>
- <Y9LIPaojtpTjYlNu@google.com> <Y9QJQHq8X9HZxoW3@lore-desk>
-In-Reply-To: <Y9QJQHq8X9HZxoW3@lore-desk>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Fri, 27 Jan 2023 09:41:05 -0800
-Message-ID: <CAKH8qBv9wKzkW8Qk+hDKCmROKem6ajkqhF_KRqdEKWSLL6_HsA@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 8/8] selftests/bpf: introduce XDP compliance
- test tool
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, toke@redhat.com, memxor@gmail.com,
-        alardam@gmail.com, saeedm@nvidia.com, anthony.l.nguyen@intel.com,
-        gospo@broadcom.com, vladimir.oltean@nxp.com, nbd@nbd.name,
-        john@phrozen.org, leon@kernel.org, simon.horman@corigine.com,
-        aelior@marvell.com, christophe.jaillet@wanadoo.fr,
-        ecree.xilinx@gmail.com, mst@redhat.com, bjorn@kernel.org,
-        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        intel-wired-lan@lists.osuosl.org, lorenzo.bianconi@redhat.com,
-        martin.lau@linux.dev
+References: <cover.1674835106.git.lucien.xin@gmail.com> <798ca80553e73028eeec4be08ba1549d08b2e5fc.1674835106.git.lucien.xin@gmail.com>
+In-Reply-To: <798ca80553e73028eeec4be08ba1549d08b2e5fc.1674835106.git.lucien.xin@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 27 Jan 2023 18:41:26 +0100
+Message-ID: <CANn89iL11WjtqNx0=fL2hOzpH_S6y=J5U9uS3g+iusupJLLsTg@mail.gmail.com>
+Subject: Re: [PATCHv3 net-next 10/10] net: add support for ipv4 big tcp
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Aaron Conole <aconole@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Guillaume Nault <gnault@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,400 +83,185 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 27, 2023 at 9:26 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+On Fri, Jan 27, 2023 at 5:00 PM Xin Long <lucien.xin@gmail.com> wrote:
 >
-> > On 01/26, Lorenzo Bianconi wrote:
+> Similar to Eric's IPv6 BIG TCP, this patch is to enable IPv4 BIG TCP.
 >
-> [...]
+> Firstly, allow sk->sk_gso_max_size to be set to a value greater than
+> GSO_LEGACY_MAX_SIZE by not trimming gso_max_size in sk_trim_gso_size()
+> for IPv4 TCP sockets.
 >
-> >
-> > Why do we need the namespaces? Why not have two veth peers in the
-> > current namespace?
+> Then on TX path, set IP header tot_len to 0 when skb->len > IP_MAX_MTU
+> in __ip_local_out() to allow to send BIG TCP packets, and this implies
+> that skb->len is the length of a IPv4 packet; On RX path, use skb->len
+> as the length of the IPv4 packet when the IP header tot_len is 0 and
+> skb->len > IP_MAX_MTU in ip_rcv_core(). As the API iph_set_totlen() and
+> skb_ip_totlen() are used in __ip_local_out() and ip_rcv_core(), we only
+> need to update these APIs.
 >
-> I think we can use just a veth pair here, we do not need two, I will fix it.
+> Also in GRO receive, add the check for ETH_P_IP/IPPROTO_TCP, and allows
+> the merged packet size >= GRO_LEGACY_MAX_SIZE in skb_gro_receive(). In
+> GRO complete, set IP header tot_len to 0 when the merged packet size
+> greater than IP_MAX_MTU in iph_set_totlen() so that it can be processed
+> on RX path.
 >
-> >
-> > (not sure it matters, just wondering)
-> >
-> > > +ret=1
-> > > +
-> > > +setup() {
-> > > +   {
-> > > +           ip netns add ${NS0}
-> > > +           ip netns add ${NS1}
-> > > +
-> > > +           ip link add v01 index 111 type veth peer name v00 netns ${NS0}
-> > > +           ip link add v10 index 222 type veth peer name v11 netns ${NS1}
-> > > +
-> > > +           ip link set v01 up
-> > > +           ip addr add 10.10.0.1/24 dev v01
-> > > +           ip link set v01 address 00:11:22:33:44:55
-> > > +           ip -n ${NS0} link set dev v00 up
-> > > +           ip -n ${NS0} addr add 10.10.0.11/24 dev v00
-> > > +           ip -n ${NS0} route add default via 10.10.0.1
-> > > +           ip -n ${NS0} link set v00 address 00:12:22:33:44:55
-> > > +
-> > > +           ip link set v10 up
-> > > +           ip addr add 10.10.1.1/24 dev v10
-> > > +           ip link set v10 address 00:13:22:33:44:55
-> > > +           ip -n ${NS1} link set dev v11 up
-> > > +           ip -n ${NS1} addr add 10.10.1.11/24 dev v11
-> > > +           ip -n ${NS1} route add default via 10.10.1.1
-> > > +           ip -n ${NS1} link set v11 address 00:14:22:33:44:55
-> > > +
-> > > +           sysctl -w net.ipv4.ip_forward=1
-> > > +           # Enable XDP mode
-> > > +           ethtool -K v01 gro on
-> > > +           ethtool -K v01 tx-checksumming off
-> > > +           ip netns exec ${NS0} ethtool -K v00 gro on
-> > > +           ip netns exec ${NS0} ethtool -K v00 tx-checksumming off
-> > > +           ethtool -K v10 gro on
-> > > +           ethtool -K v10 tx-checksumming off
-> > > +           ip netns exec ${NS1} ethtool -K v11 gro on
-> > > +           ip netns exec ${NS1} ethtool -K v11 tx-checksumming off
-> > > +   } > /dev/null 2>&1
-> > > +}
+> Note that by checking skb_is_gso_tcp() in API iph_totlen(), it makes
+> this implementation safe to use iph->len == 0 indicates IPv4 BIG TCP
+> packets.
 >
-> [...]
-> >
-> > IIRC, Martin mentioned IPv6 support in the previous version. Should we
-> > also make the userspace v6 aware by at least using AF_INET6 dualstack
-> > sockets? I feel like listening on inaddr_any with AF_INET6 should
-> > get us there without too much pain..
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  net/core/gro.c       | 12 +++++++-----
+>  net/core/sock.c      |  8 ++++++--
+>  net/ipv4/af_inet.c   |  7 ++++---
+>  net/ipv4/ip_input.c  |  2 +-
+>  net/ipv4/ip_output.c |  2 +-
+>  5 files changed, 19 insertions(+), 12 deletions(-)
 >
-> ack, I will fix it.
+> diff --git a/net/core/gro.c b/net/core/gro.c
+> index 506f83d715f8..b15f85546bdd 100644
+> --- a/net/core/gro.c
+> +++ b/net/core/gro.c
+> @@ -162,16 +162,18 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
+>         struct sk_buff *lp;
+>         int segs;
 >
-> >
-> > > +
-> > > +   /* start echo channel */
-> > > +   *echo_sockfd = sockfd;
-> > > +   err = pthread_create(t, NULL, dut_echo_thread, echo_sockfd);
-> > > +   if (err) {
-> > > +           fprintf(stderr, "Failed creating dut_echo thread: %s\n",
-> > > +                   strerror(-err));
-> > > +           close(sockfd);
-> > > +           return -EINVAL;
-> > > +   }
-> > > +
-> > > +   return 0;
-> > > +}
-> > > +
-> > > +static int dut_attach_xdp_prog(struct xdp_features *skel, int feature,
-> > > +                          int flags)
-> > > +{
-> > > +   struct bpf_program *prog;
-> > > +   unsigned int key = 0;
-> > > +   int err, fd = 0;
-> > > +
-> > > +   switch (feature) {
-> > > +   case XDP_FEATURE_TX:
-> > > +           prog = skel->progs.xdp_do_tx;
-> > > +           break;
-> > > +   case XDP_FEATURE_DROP:
-> > > +   case XDP_FEATURE_ABORTED:
-> > > +           prog = skel->progs.xdp_do_drop;
-> > > +           break;
-> > > +   case XDP_FEATURE_PASS:
-> > > +           prog = skel->progs.xdp_do_pass;
-> > > +           break;
-> > > +   case XDP_FEATURE_NDO_XMIT: {
-> > > +           struct bpf_devmap_val entry = {
-> > > +                   .ifindex = env.ifindex,
-> > > +           };
-> > > +
-> > > +           err = bpf_map__update_elem(skel->maps.dev_map,
-> > > +                                      &key, sizeof(key),
-> > > +                                      &entry, sizeof(entry), 0);
-> > > +           if (err < 0)
-> > > +                   return err;
-> > > +
-> > > +           fd = bpf_program__fd(skel->progs.xdp_do_redirect_cpumap);
-> > > +   }
-> > > +   case XDP_FEATURE_REDIRECT: {
-> > > +           struct bpf_cpumap_val entry = {
-> > > +                   .qsize = 2048,
-> > > +                   .bpf_prog.fd = fd,
-> > > +           };
-> > > +
-> > > +           err = bpf_map__update_elem(skel->maps.cpu_map,
-> > > +                                      &key, sizeof(key),
-> > > +                                      &entry, sizeof(entry), 0);
-> > > +           if (err < 0)
-> > > +                   return err;
-> > > +
-> > > +           prog = skel->progs.xdp_do_redirect;
-> > > +           break;
-> > > +   }
-> > > +   default:
-> > > +           return -EINVAL;
-> > > +   }
-> > > +
-> > > +   err = bpf_xdp_attach(env.ifindex, bpf_program__fd(prog), flags, NULL);
-> > > +   if (err)
-> > > +           fprintf(stderr,
-> > > +                   "Failed to attach XDP program to ifindex %d\n",
-> > > +                   env.ifindex);
-> > > +   return err;
-> > > +}
-> > > +
-> > > +static int __recv_msg(int sockfd, void *buf, size_t bufsize,
-> > > +                 unsigned int *val, unsigned int val_size)
-> > > +{
-> > > +   struct tlv_hdr *tlv = (struct tlv_hdr *)buf;
-> > > +   int len, n = sizeof(*tlv), i = 0;
-> > > +
-> > > +   len = recv(sockfd, buf, bufsize, 0);
-> > > +   if (len != ntohs(tlv->len))
-> > > +           return -EINVAL;
-> > > +
-> > > +   while (n < len && i < val_size) {
-> > > +           val[i] = ntohl(tlv->data[i]);
-> > > +           n += sizeof(tlv->data[0]);
-> > > +           i++;
-> > > +   }
-> > > +
-> > > +   return i;
-> > > +}
-> > > +
-> > > +static int recv_msg(int sockfd, void *buf, size_t bufsize)
-> > > +{
-> > > +   return __recv_msg(sockfd, buf, bufsize, NULL, 0);
-> > > +}
-> > > +
-> > > +static int dut_run(struct xdp_features *skel)
-> > > +{
-> > > +   int flags = XDP_FLAGS_UPDATE_IF_NOEXIST | XDP_FLAGS_DRV_MODE;
-> > > +   int state, err, sockfd, ctrl_sockfd, echo_sockfd, optval = 1;
-> > > +   struct sockaddr_in ctrl_addr, addr = {
-> > > +           .sin_family = AF_INET,
-> > > +           .sin_addr.s_addr = htonl(INADDR_ANY),
-> > > +           .sin_port = htons(DUT_CTRL_PORT),
-> > > +   };
-> > > +   unsigned int len = sizeof(ctrl_addr);
-> > > +   pthread_t dut_thread;
-> > > +
-> >
-> > [..]
-> >
-> > > +   sockfd = socket(AF_INET, SOCK_STREAM, 0);
-> > > +   if (sockfd < 0) {
-> > > +           fprintf(stderr, "Failed to create DUT socket\n");
-> > > +           return -errno;
-> > > +   }
-> > > +
-> > > +   err = setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optval,
-> > > +                    sizeof(optval));
-> > > +   if (err < 0) {
-> > > +           fprintf(stderr, "Failed sockopt on DUT socket\n");
-> > > +           return -errno;
-> > > +   }
-> > > +
-> > > +   err = bind(sockfd, (struct sockaddr *)&addr, sizeof(addr));
-> > > +   if (err < 0) {
-> > > +           fprintf(stderr, "Failed to bind DUT socket\n");
-> > > +           return -errno;
-> > > +   }
-> > > +
-> > > +   err = listen(sockfd, 5);
-> > > +   if (err) {
-> > > +           fprintf(stderr, "Failed to listen DUT socket\n");
-> > > +           return -errno;
-> > > +   }
-> >
-> > Should we use start_server from network_helpers.h here?
+> -       /* pairs with WRITE_ONCE() in netif_set_gro_max_size() */
+> -       gro_max_size = READ_ONCE(p->dev->gro_max_size);
+> +       /* pairs with WRITE_ONCE() in netif_set_gro(_ipv4)_max_size() */
+> +       gro_max_size = p->protocol == htons(ETH_P_IPV6) ?
+> +                       READ_ONCE(p->dev->gro_max_size) :
+> +                               READ_ONCE(p->dev->gro_ipv4_max_size);
 >
-> ack, I will use it.
+>         if (unlikely(p->len + len >= gro_max_size || NAPI_GRO_CB(skb)->flush))
+>                 return -E2BIG;
 >
-> >
-> > > +
-> > > +   ctrl_sockfd = accept(sockfd, (struct sockaddr *)&ctrl_addr, &len);
-> > > +   if (ctrl_sockfd < 0) {
-> > > +           fprintf(stderr, "Failed to accept connection on DUT socket\n");
-> > > +           close(sockfd);
-> > > +           return -errno;
-> > > +   }
-> > > +
->
-> [...]
->
-> >
-> > There is also connect_to_fd, maybe we can use that? It should take
-> > care of the timeouts.. (requires plumbing server_fd, not sure whether
-> > it's a problem or not)
->
-> please correct me if I am wrong, but in order to have server_fd it is mandatory
-> both tester and DUT are running on the same process, right? Here, I guess 99% of
-> the times DUT and tester will run on two separated devices. Agree?
+>         if (unlikely(p->len + len >= GRO_LEGACY_MAX_SIZE)) {
+> -               if (p->protocol != htons(ETH_P_IPV6) ||
+> -                   skb_headroom(p) < sizeof(struct hop_jumbo_hdr) ||
+> -                   ipv6_hdr(p)->nexthdr != IPPROTO_TCP ||
+> +               if (NAPI_GRO_CB(skb)->proto != IPPROTO_TCP ||
+> +                   (p->protocol == htons(ETH_P_IPV6) &&
+> +                    skb_headroom(p) < sizeof(struct hop_jumbo_hdr)) ||
+>                     p->encapsulation)
+>                         return -E2BIG;
+>         }
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index 7ba4891460ad..c98f9a4eeff9 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+> @@ -2383,6 +2383,8 @@ static void sk_trim_gso_size(struct sock *sk)
+>             !ipv6_addr_v4mapped(&sk->sk_v6_rcv_saddr))
+>                 return;
+>  #endif
+> +       if (sk->sk_family == AF_INET && sk_is_tcp(sk))
+> +               return;
 
-Yes, it's targeting more the case where you have a server fd and a
-bunch of clients in the same process. But I think it's still usable in
-your case, you're not using fork() anywhere afaict, so even if these
-are separate devices, connect_to_fd should still work. (unless I'm
-missing something, haven't looked too closely)
+Or simply
 
-> Regards,
-> Lorenzo
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 7ba4891460adbd6c13c0ce1dcdd7f23c8c1f0f5d..dcb8fff91fd9a9472267a2cf2fdc98114a7d2b7d
+100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2375,14 +2375,9 @@ EXPORT_SYMBOL_GPL(sk_free_unlock_clone);
+
+ static void sk_trim_gso_size(struct sock *sk)
+ {
+-       if (sk->sk_gso_max_size <= GSO_LEGACY_MAX_SIZE)
++       if (sk->sk_gso_max_size <= GSO_LEGACY_MAX_SIZE ||
++           sk_is_tcp(sk))
+                return;
+-#if IS_ENABLED(CONFIG_IPV6)
+-       if (sk->sk_family == AF_INET6 &&
+-           sk_is_tcp(sk) &&
+-           !ipv6_addr_v4mapped(&sk->sk_v6_rcv_saddr))
+-               return;
+-#endif
+        sk->sk_gso_max_size = GSO_LEGACY_MAX_SIZE;
+ }
+
+
+
+>         sk->sk_gso_max_size = GSO_LEGACY_MAX_SIZE;
+>  }
 >
-> >
-> > > +
-> > > +   if (i == 10) {
-> > > +           fprintf(stderr, "Failed to connect to the DUT\n");
-> > > +           return -ETIMEDOUT;
-> > > +   }
-> > > +
-> > > +   err = __send_and_recv_msg(sockfd, CMD_GET_XDP_CAP, val,
-> > > ARRAY_SIZE(val));
-> > > +   if (err < 0) {
-> > > +           close(sockfd);
-> > > +           return err;
-> > > +   }
-> > > +
-> > > +   advertised_cap = tester_collect_advertised_cap(val[0]);
-> > > +
-> > > +   err = bpf_xdp_attach(env.ifindex,
-> > > +                        bpf_program__fd(skel->progs.xdp_tester),
-> > > +                        flags, NULL);
-> > > +   if (err) {
-> > > +           fprintf(stderr, "Failed to attach XDP program to ifindex %d\n",
-> > > +                   env.ifindex);
-> > > +           goto out;
-> > > +   }
-> > > +
-> > > +   err = send_and_recv_msg(sockfd, CMD_START);
-> > > +   if (err)
-> > > +           goto out;
-> > > +
-> > > +   for (i = 0; i < 10 && !exiting; i++) {
-> > > +           err = send_echo_msg();
-> > > +           if (err < 0)
-> > > +                   goto out;
-> > > +
-> > > +           sleep(1);
-> > > +   }
-> > > +
-> > > +   err = __send_and_recv_msg(sockfd, CMD_GET_STATS, val, ARRAY_SIZE(val));
-> > > +   if (err)
-> > > +           goto out;
-> > > +
-> > > +   /* stop the test */
-> > > +   err = send_and_recv_msg(sockfd, CMD_STOP);
-> > > +   /* send a new echo message to wake echo thread of the dut */
-> > > +   send_echo_msg();
-> > > +
-> > > +   detected_cap = tester_collect_detected_cap(skel, val[0]);
-> > > +
-> > > +   fprintf(stdout, "Feature %s: [%s][%s]\n",
-> > > get_xdp_feature_str(env.feature),
-> > > +           detected_cap ? GREEN("DETECTED") : RED("NOT DETECTED"),
-> > > +           advertised_cap ? GREEN("ADVERTISED") : RED("NOT ADVERTISED"));
-> > > +out:
-> > > +   bpf_xdp_detach(env.ifindex, flags, NULL);
-> > > +   close(sockfd);
-> > > +   return err < 0 ? err : 0;
-> > > +}
-> > > +
-> > > +int main(int argc, char **argv)
-> > > +{
-> > > +   struct xdp_features *skel;
-> > > +   int err;
-> > > +
-> > > +   libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
-> > > +   libbpf_set_print(libbpf_print_fn);
-> > > +
-> > > +   signal(SIGINT, sig_handler);
-> > > +   signal(SIGTERM, sig_handler);
-> > > +
-> > > +   set_env_defaul();
-> > > +
-> > > +   /* Parse command line arguments */
-> > > +   err = argp_parse(&argp, argc, argv, 0, NULL, NULL);
-> > > +   if (err)
-> > > +           return err;
-> > > +
-> > > +   if (env.ifindex < 0) {
-> > > +           fprintf(stderr, "Invalid ifindex\n");
-> > > +           return -ENODEV;
-> > > +   }
-> > > +
-> > > +   /* Load and verify BPF application */
-> > > +   skel = xdp_features__open();
-> > > +   if (!skel) {
-> > > +           fprintf(stderr, "Failed to open and load BPF skeleton\n");
-> > > +           return -EINVAL;
-> > > +   }
-> > > +
-> > > +   skel->rodata->expected_feature = env.feature;
-> > > +   skel->rodata->dut_ip = env.dut_ip;
-> > > +   skel->rodata->tester_ip = env.tester_ip;
-> > > +
-> > > +   /* Load & verify BPF programs */
-> > > +   err = xdp_features__load(skel);
-> > > +   if (err) {
-> > > +           fprintf(stderr, "Failed to load and verify BPF skeleton\n");
-> > > +           goto cleanup;
-> > > +   }
-> > > +
-> > > +   err = xdp_features__attach(skel);
-> > > +   if (err) {
-> > > +           fprintf(stderr, "Failed to attach BPF skeleton\n");
-> > > +           goto cleanup;
-> > > +   }
-> > > +
-> > > +   if (env.tester) {
-> > > +           /* Tester */
-> > > +           fprintf(stdout, "Starting tester on device %d\n", env.ifindex);
-> > > +           err = tester_run(skel);
-> > > +   } else {
-> > > +           /* DUT */
-> > > +           fprintf(stdout, "Starting DUT on device %d\n", env.ifindex);
-> > > +           err = dut_run(skel);
-> > > +   }
-> > > +
-> > > +cleanup:
-> > > +   xdp_features__destroy(skel);
-> > > +
-> > > +   return err < 0 ? -err : 0;
-> > > +}
-> > > diff --git a/tools/testing/selftests/bpf/xdp_features.h
-> > > b/tools/testing/selftests/bpf/xdp_features.h
-> > > new file mode 100644
-> > > index 000000000000..28d7614c4f02
-> > > --- /dev/null
-> > > +++ b/tools/testing/selftests/bpf/xdp_features.h
-> > > @@ -0,0 +1,33 @@
-> > > +/* SPDX-License-Identifier: GPL-2.0 */
-> > > +
-> > > +/* test commands */
-> > > +enum test_commands {
-> > > +   CMD_STOP,               /* CMD */
-> > > +   CMD_START,              /* CMD + xdp feature */
-> > > +   CMD_ECHO,               /* CMD */
-> > > +   CMD_ACK,                /* CMD + data */
-> > > +   CMD_GET_XDP_CAP,        /* CMD */
-> > > +   CMD_GET_STATS,          /* CMD */
-> > > +};
-> > > +
-> > > +#define DUT_CTRL_PORT      12345
-> > > +#define DUT_ECHO_PORT      12346
-> > > +
-> > > +struct tlv_hdr {
-> > > +   __be16 type;
-> > > +   __be16 len;
-> > > +   __be32 data[];
-> > > +};
-> > > +
-> > > +enum {
-> > > +   XDP_FEATURE_ABORTED,
-> > > +   XDP_FEATURE_DROP,
-> > > +   XDP_FEATURE_PASS,
-> > > +   XDP_FEATURE_TX,
-> > > +   XDP_FEATURE_REDIRECT,
-> > > +   XDP_FEATURE_NDO_XMIT,
-> > > +   XDP_FEATURE_XSK_ZEROCOPY,
-> > > +   XDP_FEATURE_HW_OFFLOAD,
-> > > +   XDP_FEATURE_RX_SG,
-> > > +   XDP_FEATURE_NDO_XMIT_SG,
-> > > +};
-> > > --
-> > > 2.39.1
-> >
+> @@ -2403,8 +2405,10 @@ void sk_setup_caps(struct sock *sk, struct dst_entry *dst)
+>                         sk->sk_route_caps &= ~NETIF_F_GSO_MASK;
+>                 } else {
+>                         sk->sk_route_caps |= NETIF_F_SG | NETIF_F_HW_CSUM;
+> -                       /* pairs with the WRITE_ONCE() in netif_set_gso_max_size() */
+> -                       sk->sk_gso_max_size = READ_ONCE(dst->dev->gso_max_size);
+> +                       /* pairs with the WRITE_ONCE() in netif_set_gso(_ipv4)_max_size() */
+> +                       sk->sk_gso_max_size = sk->sk_family == AF_INET6 ?
+> +                                       READ_ONCE(dst->dev->gso_max_size) :
+> +                                               READ_ONCE(dst->dev->gso_ipv4_max_size);
+>                         sk_trim_gso_size(sk);
+>                         sk->sk_gso_max_size -= (MAX_TCP_HEADER + 1);
+>                         /* pairs with the WRITE_ONCE() in netif_set_gso_max_segs() */
+> diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+> index 6c0ec2789943..2f992a323b95 100644
+> --- a/net/ipv4/af_inet.c
+> +++ b/net/ipv4/af_inet.c
+> @@ -1485,6 +1485,7 @@ struct sk_buff *inet_gro_receive(struct list_head *head, struct sk_buff *skb)
+>         if (unlikely(ip_fast_csum((u8 *)iph, 5)))
+>                 goto out;
+>
+> +       NAPI_GRO_CB(skb)->proto = proto;
+>         id = ntohl(*(__be32 *)&iph->id);
+>         flush = (u16)((ntohl(*(__be32 *)iph) ^ skb_gro_len(skb)) | (id & ~IP_DF));
+>         id >>= 16;
+> @@ -1618,9 +1619,9 @@ int inet_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len)
+>
+>  int inet_gro_complete(struct sk_buff *skb, int nhoff)
+>  {
+> -       __be16 newlen = htons(skb->len - nhoff);
+>         struct iphdr *iph = (struct iphdr *)(skb->data + nhoff);
+>         const struct net_offload *ops;
+> +       __be16 totlen = iph->tot_len;
+>         int proto = iph->protocol;
+>         int err = -ENOSYS;
+>
+> @@ -1629,8 +1630,8 @@ int inet_gro_complete(struct sk_buff *skb, int nhoff)
+>                 skb_set_inner_network_header(skb, nhoff);
+>         }
+>
+> -       csum_replace2(&iph->check, iph->tot_len, newlen);
+> -       iph->tot_len = newlen;
+> +       iph_set_totlen(iph, skb->len - nhoff);
+> +       csum_replace2(&iph->check, totlen, iph->tot_len);
+>
+>         ops = rcu_dereference(inet_offloads[proto]);
+>         if (WARN_ON(!ops || !ops->callbacks.gro_complete))
+> diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
+> index e880ce77322a..0aa8c49b4e1b 100644
+> --- a/net/ipv4/ip_input.c
+> +++ b/net/ipv4/ip_input.c
+> @@ -511,7 +511,7 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
+>         if (unlikely(ip_fast_csum((u8 *)iph, iph->ihl)))
+>                 goto csum_error;
+>
+> -       len = ntohs(iph->tot_len);
+> +       len = skb_ip_totlen(skb);
+
+len = iph_totlen(skb, iph);
+
+>         if (skb->len < len) {
+>                 drop_reason = SKB_DROP_REASON_PKT_TOO_SMALL;
+>                 __IP_INC_STATS(net, IPSTATS_MIB_INTRUNCATEDPKTS);
+> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+> index 922c87ef1ab5..4e4e308c3230 100644
+> --- a/net/ipv4/ip_output.c
+> +++ b/net/ipv4/ip_output.c
+> @@ -100,7 +100,7 @@ int __ip_local_out(struct net *net, struct sock *sk, struct sk_buff *skb)
+>  {
+>         struct iphdr *iph = ip_hdr(skb);
+>
+> -       iph->tot_len = htons(skb->len);
+> +       iph_set_totlen(iph, skb->len);
+>         ip_send_check(iph);
+>
+>         /* if egress device is enslaved to an L3 master device pass the
+> --
+> 2.31.1
+>
