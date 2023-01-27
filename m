@@ -2,101 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C29E67EEE7
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 20:57:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25E1C67EF21
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 21:05:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232891AbjA0T5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 14:57:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37726 "EHLO
+        id S229847AbjA0UFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 15:05:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbjA0T5D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 14:57:03 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5608BB9C;
-        Fri, 27 Jan 2023 11:54:59 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id h5-20020a17090a9c0500b0022bb85eb35dso5716217pjp.3;
-        Fri, 27 Jan 2023 11:54:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Yz6kQ1IpYKt4VfifN60MhcNWON+aHdItmmwRWsxHFY0=;
-        b=KAmCN824S8+SoOwjm61Gy41fzUeMcDnfEjJEl15OMScNiKP10RsYwTdtorVkfzeoJp
-         IeKsjfnKUVZYUYVzWMa5lqmV25H2UfIXcgg8PYkBwy9VdqFva/ZSc+btymLAL1VOB1x0
-         PYKpYKy3Jdr0U/7PV1YcJjPktVsujB4X9Tvq6Pwhn1ucSbJmv1E8umm6Nzk17WLadK/H
-         1ArHv1yWfB8TWZpuUMCi8UN0Be/Wq6odwQYbXtJsx1N/XfW/p80i9EykjKJbt/pDp4F3
-         Uk3s2ag11JIP7Dj+KIHZCrGcujC9wg+DQ9nPqPvGVUDLs8t9EcmReCGAiiA+IY1aurrn
-         0y1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Yz6kQ1IpYKt4VfifN60MhcNWON+aHdItmmwRWsxHFY0=;
-        b=Y6Q8enws6r3mSeiRYre7YCDx+Buj0y+8gm7jqKgX7OqqCKnWfO0nqHGsnvjJQ1CPmj
-         aM+BOMDgbdo1ViVGpYLkEe2kAIhM9Ax7Blwp/OXwkHXqV87fDhDDdjOpNbSnwFZ1JNvH
-         E1DLeM+oLyBBpogxSXd5hg85ObxKZopun7VcJQoRHZDj1xNbMwk5i6sFsMwofGiAF+dW
-         8++gyW0QfP4GVHvs6FktBGgJQtn707RWf7xFL+BNc8uBECV/QIOJ3SLSapUllqTGsZV2
-         7xqVP4swy1TRztsPkpvfDvgrFKEL+Phun+7IMVVgsG8dZKMslCnVnKeTDm27yAMWFKV4
-         Vtaw==
-X-Gm-Message-State: AO0yUKUoqWIReuWv8CzRHvC6S+xtH0xEuwW8a2aJEKiNdY6BncN5VVi7
-        3n/KyeZHafItiqRRp9NRSsE=
-X-Google-Smtp-Source: AK7set+yDRy+RHBZlNumbI9FYNG1ud+od03i3c45xIx1oQ95c86vvLN9+HGblLXlxotzmquwqEMumg==
-X-Received: by 2002:a17:90b:17ca:b0:22c:4693:ca93 with SMTP id me10-20020a17090b17ca00b0022c4693ca93mr4267064pjb.20.1674849241331;
-        Fri, 27 Jan 2023 11:54:01 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id bb16-20020a17090b009000b0020dc318a43esm3101242pjb.25.2023.01.27.11.53.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Jan 2023 11:54:00 -0800 (PST)
-Message-ID: <44004691-4f1f-a810-b499-9e447f1e0ff0@gmail.com>
-Date:   Fri, 27 Jan 2023 11:53:58 -0800
+        with ESMTP id S233045AbjA0UER (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 15:04:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6FF1ABEB;
+        Fri, 27 Jan 2023 12:02:44 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F14EB821D3;
+        Fri, 27 Jan 2023 20:02:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A449CC433EF;
+        Fri, 27 Jan 2023 20:02:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674849761;
+        bh=ca4jPTCUeRFLCFAPxpZ4gedA/tBamy844ut60yl7Vu0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KoEmrQnaU3o0ETgjT0tTMaPW3aJq0YfRxSse5aoARQu7GzJBPgIt0xWAMnrH0l7nY
+         ZHyo2KKDgGA28F+aJSTJ6Pxfl+dq+MsjvF52GUwgXMR0W6IJXrO912Fi8iaXAHU4VN
+         Sxx5WAkaD84lkZSGctX1sjJWjxoVsS/P6h71DDEEBaHHgE0BQUXlsOBtdcq4nVKUZ1
+         Zp1v0o/32Jbm3Dr5UxD8hRqI0+DcajE+ojat/yxLfWuQ9UfjVq2dcZVk0PCAe8bPvC
+         z7RsXQBl1YACHxA0q2ubF3fbQviB/9NveMb1EDCNehwhv8UlzZtc27mfbVg/Fk6SrY
+         XNavTv6Ocl5Tg==
+Date:   Fri, 27 Jan 2023 14:02:40 -0600
+From:   Seth Forshee <sforshee@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] vhost: improve livepatch switching for heavily
+ loaded vhost worker kthreads
+Message-ID: <Y9Qt4BT2WXK2dToL@do-x1extreme>
+References: <20230120-vhost-klp-switching-v1-0-7c2b65519c43@kernel.org>
+ <Y9KyVKQk3eH+RRse@alley>
+ <Y9LswwnPAf+nOVFG@do-x1extreme>
+ <20230127044355.frggdswx424kd5dq@treble>
+ <Y9OpTtqWjAkC2pal@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.0
-Subject: Re: [PATCH v5 net-next 13/13] mfd: ocelot: add external ocelot switch
- control
-Content-Language: en-US
-To:     Colin Foster <colin.foster@in-advantage.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, Lee Jones <lee@kernel.org>
-References: <20230127193559.1001051-1-colin.foster@in-advantage.com>
- <20230127193559.1001051-14-colin.foster@in-advantage.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230127193559.1001051-14-colin.foster@in-advantage.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y9OpTtqWjAkC2pal@hirez.programming.kicks-ass.net>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/27/2023 11:35 AM, Colin Foster wrote:
-> Utilize the existing ocelot MFD interface to add switch functionality to
-> the Microsemi VSC7512 chip.
+On Fri, Jan 27, 2023 at 11:37:02AM +0100, Peter Zijlstra wrote:
+> On Thu, Jan 26, 2023 at 08:43:55PM -0800, Josh Poimboeuf wrote:
+> > On Thu, Jan 26, 2023 at 03:12:35PM -0600, Seth Forshee (DigitalOcean) wrote:
+> > > On Thu, Jan 26, 2023 at 06:03:16PM +0100, Petr Mladek wrote:
+> > > > On Fri 2023-01-20 16:12:20, Seth Forshee (DigitalOcean) wrote:
+> > > > > We've fairly regularaly seen liveptches which cannot transition within kpatch's
+> > > > > timeout period due to busy vhost worker kthreads.
+> > > > 
+> > > > I have missed this detail. Miroslav told me that we have solved
+> > > > something similar some time ago, see
+> > > > https://lore.kernel.org/all/20220507174628.2086373-1-song@kernel.org/
+> > > 
+> > > Interesting thread. I had thought about something along the lines of the
+> > > original patch, but there are some ideas in there that I hadn't
+> > > considered.
+> > 
+> > Here's another idea, have we considered this?  Have livepatch set
+> > TIF_NEED_RESCHED on all kthreads to force them into schedule(), and then
+> > have the scheduler call klp_try_switch_task() if TIF_PATCH_PENDING is
+> > set.
+> > 
+> > Not sure how scheduler folks would feel about that ;-)
 > 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> Acked-for-MFD-by: Lee Jones <lee@kernel.org>
+> So, let me try and page all that back in.... :-)
+> 
+> KLP needs to unwind the stack to see if any of the patched functions are
+> active, if not, flip task to new set.
+> 
+> Unwinding the stack of a task can be done when:
+> 
+>  - task is inactive (stable reg and stack) -- provided it stays inactive
+>    while unwinding etc..
+> 
+>  - task is current (guarantees stack doesn't dip below where we started
+>    due to being busy on top etc..)
+> 
+> Can NOT be done from interrupt context, because can hit in the middle of
+> setting up stack frames etc..
+> 
+> The issue at hand is that some tasks run for a long time without passing
+> through an explicit check.
+> 
+> The thread above tried sticking something in cond_resched() which is a
+> problem for PREEMPT=y since cond_resched() is a no-op.
+> 
+> Preempt notifiers were raised, and those would actually be nice, except
+> you can only install a notifier on current and you need some memory
+> allocated per task, which makes it less than ideal. Plus ...
+> 
+> ... putting something in finish_task_switch() wouldn't be the end of the
+> world I suppose, but then you still need to force schedule the task --
+> imagine it being the only runnable task on the CPU, there's nothing
+> going to make it actually switch.
+> 
+> Which then leads me to suggest something daft like this.. does that
+> help?
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+The changes below are working well for me. The context has a read lock
+on tasklist_lock so it can't sleep, so I'm using stop_one_cpu_nowait()
+with per-CPU state.
+
+Based on Josh's comments it sounds like the klp_have_reliable_stack()
+check probably isn't quite right, and we might want to add something
+else for PREEMPT+!ORC. But I wanted to go ahead and see if this approach
+seems reasonable to everyone.
+
+Thanks,
+Seth
+
+
+diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+index f1b25ec581e0..9f3898f02828 100644
+--- a/kernel/livepatch/transition.c
++++ b/kernel/livepatch/transition.c
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/cpu.h>
+ #include <linux/stacktrace.h>
++#include <linux/stop_machine.h>
+ #include "core.h"
+ #include "patch.h"
+ #include "transition.h"
+@@ -334,9 +335,16 @@ static bool klp_try_switch_task(struct task_struct *task)
+ 	return !ret;
+ }
+ 
++static int __try_switch_kthread(void *arg)
++{
++	return klp_try_switch_task(arg) ? 0 : -EBUSY;
++}
++
++static DEFINE_PER_CPU(struct cpu_stop_work, klp_stop_work);
++
+ /*
+  * Sends a fake signal to all non-kthread tasks with TIF_PATCH_PENDING set.
+- * Kthreads with TIF_PATCH_PENDING set are woken up.
++ * Kthreads with TIF_PATCH_PENDING set are preempted or woken up.
+  */
+ static void klp_send_signals(void)
+ {
+@@ -357,11 +365,22 @@ static void klp_send_signals(void)
+ 		 * would be meaningless. It is not serious though.
+ 		 */
+ 		if (task->flags & PF_KTHREAD) {
+-			/*
+-			 * Wake up a kthread which sleeps interruptedly and
+-			 * still has not been migrated.
+-			 */
+-			wake_up_state(task, TASK_INTERRUPTIBLE);
++			if (task_curr(task) && klp_have_reliable_stack()) {
++				/*
++				 * kthread is currently running on a CPU; try
++				 * to preempt it.
++				 */
++				stop_one_cpu_nowait(task_cpu(task),
++						    __try_switch_kthread,
++						    task,
++						    this_cpu_ptr(&klp_stop_work));
++			} else {
++				/*
++				 * Wake up a kthread which sleeps interruptedly
++				 * and still has not been migrated.
++				 */
++				wake_up_state(task, TASK_INTERRUPTIBLE);
++			}
+ 		} else {
+ 			/*
+ 			 * Send fake signal to all non-kthread tasks which are
