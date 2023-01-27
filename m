@@ -2,239 +2,273 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4813D67EDBE
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 19:43:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FF4267EDC2
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 19:45:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233042AbjA0Snv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 13:43:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49442 "EHLO
+        id S234348AbjA0So7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 13:44:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230272AbjA0Snu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 13:43:50 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15BE51F92F
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 10:43:49 -0800 (PST)
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com [209.85.128.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 64CFB3FFED
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 18:43:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1674845027;
-        bh=XiDfwrtQmIYCUcD8u3S8ChFouAMc6g+DcNufJxicUgQ=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Type:In-Reply-To;
-        b=SMQxRgtDUDT6lEFvGQ/bqoFPvdfpQqsBubRf+/6wrGb75HDpyHByU70yUXLJW82tQ
-         aBcl9G99kDh7bR5VyWnkczB6JlSr+lYidDQaP1jXdjqTH9Ctg6qKy+fPiT+Yb8c7as
-         ITysOBOG/CUj95zBy8DAclibKQKQANdtAlbTMnoLFOW5VpkYwebRrKG8tw/y0Ca+x0
-         xvGVuE/Q1yD+0HfDgbCViv7PQRXFd1bkyiD3jQXU8N/aBAg++1nv2M4p/yxnBZ6x4A
-         BGknw2mYADJ0KtbBclV5diI5Ayg9XJXHBMdYx15wnztCHhcyB+6Qw3gLUpJALjO3ql
-         +/bNR5Di1czGw==
-Received: by mail-wm1-f69.google.com with SMTP id l31-20020a05600c1d1f00b003da8b330db2so3944884wms.1
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 10:43:46 -0800 (PST)
+        with ESMTP id S235231AbjA0So6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 13:44:58 -0500
+Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991A575790
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 10:44:56 -0800 (PST)
+Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-5063029246dso79013657b3.6
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 10:44:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=ljtZ4ypLfej4LcEk6Nj/mIZ/IU9OQUKDueO29CYxzr8=;
+        b=ERjS+/UKvT2Uae5aQlJZ2ipzeTGoFeDOQzkFOf5SlGEg1ubHn6Z19kckP11b+zBnIQ
+         svPSJLWuqZg0JG6k46PrnQ40nXe99YYQgIcxuRde/HgFQRJN5fpB168Dv57roKqfUhcj
+         c3Wl672YDNIQZQzVx6H3a9AzJ6RT1VejPlYYAXL9lvw0ZJlcyQOQnUhHSGL2SzMO1Ls2
+         RDhv9WArl+zP1yDzvieI9qpg7zj3gop2WXN0b1h/9G7huOca2wcuwxHzPpXWn1vprgLT
+         2iJJg5EuvfF5JxIewWDg+hKR6u/aiKErE7GfIk6bXRUEGs53SFD7eKo/4JC4vNXw0a0X
+         zi4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=XiDfwrtQmIYCUcD8u3S8ChFouAMc6g+DcNufJxicUgQ=;
-        b=c+qh1xNeFmLqCrDV1nxcNsFJkOtESEmuSEvvOz4Ga7Fv4pJICYi+UIw7bTQZqGyP65
-         uRmyv4ph6UQFBHEwerwPX8+xDuV2+Xq6QcKECfOV8PxxV4acvLAspqiCDhIwCeqfkF+B
-         9TYr4s03J7ogmvAWMpjFvuCjanuTiNKi83VeKRUbHwwGjXRkSaeJoSVAyooHT69+CekN
-         vSxz12uE9KDAK4oLjLulyjjfvhho86gcXtX2GNjIyHpi5drJHTJF8sqsTpt3IWxB06aM
-         A6pEF9K6hsEal+AO3+gcXxd1G2MzWYqjqinWVAyZt51k1wdjR/qJ2IYv3dv16DFApQue
-         BC3g==
-X-Gm-Message-State: AFqh2kq9bD759CWGnwdhgh3zuPyvGR8uMsw3X2Op/JYI0xi5CtmyDnXy
-        HGtgE2PDX2VM+YZG6TaVAQj8CrZ6Bl3YGiEmOPlL2t9TTIhWFFikC1FVBiowCsw6mnXFJr1YIZY
-        GB75lECzGvhCOSHJGvtbBxnEt4dgr7cpYtg==
-X-Received: by 2002:a1c:cc11:0:b0:3da:1d52:26b5 with SMTP id h17-20020a1ccc11000000b003da1d5226b5mr47883410wmb.14.1674845025461;
-        Fri, 27 Jan 2023 10:43:45 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXvC8ImX3BIkyIZQCXDWeCNeGIA82L5yixhvXk4MqP+UfuRQRKikf7sEdocNH//sSFtPcMkd4A==
-X-Received: by 2002:a1c:cc11:0:b0:3da:1d52:26b5 with SMTP id h17-20020a1ccc11000000b003da1d5226b5mr47883392wmb.14.1674845025235;
-        Fri, 27 Jan 2023 10:43:45 -0800 (PST)
-Received: from qwirkle ([81.2.157.149])
-        by smtp.gmail.com with ESMTPSA id r3-20020a05600c424300b003dc3b188411sm2271302wmm.36.2023.01.27.10.43.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Jan 2023 10:43:44 -0800 (PST)
-Date:   Fri, 27 Jan 2023 18:43:42 +0000
-From:   Andrei Gherzan <andrei.gherzan@canonical.com>
-To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        Lina Wang <lina.wang@mediatek.com>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 3/3] selftests: net: Fix udpgro_frglist.sh shellcheck
- warnings and errors
-Message-ID: <Y9QbXuMOV3BWSzt5@qwirkle>
-References: <20230127140944.265135-1-andrei.gherzan@canonical.com>
- <20230127140944.265135-3-andrei.gherzan@canonical.com>
- <CANP3RGchqLRLRAxgWU69DzWfa9R2d0AhgeBdpJhmaE+c-Sszjw@mail.gmail.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ljtZ4ypLfej4LcEk6Nj/mIZ/IU9OQUKDueO29CYxzr8=;
+        b=pw7c1fmARy7Ak2Qf+OFI+kPDbfHXO8Nd0DoDVq3TsgaKyV9CP8AweBifHkHnGkOZ/Z
+         cpzNkWmqi8bvIc1/AURvO14qLau6/AAU2kjcqapemU/iw27JP8M4Xu4Wn0/U7iHpFm4q
+         CLEF7JHn5nmXJB0auP8d56IpFgn2KwyV83xWKyECp11IRDeUck3wSMoPSlPwcD72p17L
+         8mX1qlRm55UpMu3TrkEB7KqvGoP1jyE42rTk3fAM8EKPZjOzaXUx0Mguyr2xi2s4e/Ah
+         9wMALi2hsMF3rdJ1rX//G983A5C1DPO/38gWJxQqGzdXHxI/22UFS+03jAeg/8t60oKm
+         lHFA==
+X-Gm-Message-State: AFqh2kqCD0bxSaRdu2k8Wj+DnVjSKD4AuK8Q2roHZa+cDCo9Io6Y/mFd
+        /TYI18NK/JOnGGJcrxubIWPKyu/FFNuksmynIFIr5w==
+X-Google-Smtp-Source: AMrXdXvETSEU+MmqLTpHVbvFds6LgQpXaPsY9N8oyVVygl8xjrgCoJr+fg0dnYfR+zKcya5/ytTzJ7GeWxYLdgtKZ5E=
+X-Received: by 2002:a81:d42:0:b0:501:5ab3:9e6e with SMTP id
+ 63-20020a810d42000000b005015ab39e6emr3726097ywn.278.1674845095482; Fri, 27
+ Jan 2023 10:44:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CANP3RGchqLRLRAxgWU69DzWfa9R2d0AhgeBdpJhmaE+c-Sszjw@mail.gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <cover.1674835106.git.lucien.xin@gmail.com> <798ca80553e73028eeec4be08ba1549d08b2e5fc.1674835106.git.lucien.xin@gmail.com>
+ <CANn89iL11WjtqNx0=fL2hOzpH_S6y=J5U9uS3g+iusupJLLsTg@mail.gmail.com> <CADvbK_dfVBNRQunV1mp-Cs+Xh57dnQJqEQ6RQR+feqQNnQ-iTQ@mail.gmail.com>
+In-Reply-To: <CADvbK_dfVBNRQunV1mp-Cs+Xh57dnQJqEQ6RQR+feqQNnQ-iTQ@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 27 Jan 2023 19:44:43 +0100
+Message-ID: <CANn89iL+o-SeOXOajTqcNnyajK2PRAMTMEk1b_A1JC-dFTMrNA@mail.gmail.com>
+Subject: Re: [PATCHv3 net-next 10/10] net: add support for ipv4 big tcp
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Aaron Conole <aconole@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Guillaume Nault <gnault@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/01/27 06:32AM, Maciej Żenczykowski wrote:
-> On Fri, Jan 27, 2023 at 6:09 AM Andrei Gherzan
-> <andrei.gherzan@canonical.com> wrote:
+On Fri, Jan 27, 2023 at 7:37 PM Xin Long <lucien.xin@gmail.com> wrote:
+>
+> On Fri, Jan 27, 2023 at 12:41 PM Eric Dumazet <edumazet@google.com> wrote:
 > >
-> > This change fixes the following shellcheck warnings and errors:
+> > On Fri, Jan 27, 2023 at 5:00 PM Xin Long <lucien.xin@gmail.com> wrote:
+> > >
+> > > Similar to Eric's IPv6 BIG TCP, this patch is to enable IPv4 BIG TCP.
+> > >
+> > > Firstly, allow sk->sk_gso_max_size to be set to a value greater than
+> > > GSO_LEGACY_MAX_SIZE by not trimming gso_max_size in sk_trim_gso_size()
+> > > for IPv4 TCP sockets.
+> > >
+> > > Then on TX path, set IP header tot_len to 0 when skb->len > IP_MAX_MTU
+> > > in __ip_local_out() to allow to send BIG TCP packets, and this implies
+> > > that skb->len is the length of a IPv4 packet; On RX path, use skb->len
+> > > as the length of the IPv4 packet when the IP header tot_len is 0 and
+> > > skb->len > IP_MAX_MTU in ip_rcv_core(). As the API iph_set_totlen() and
+> > > skb_ip_totlen() are used in __ip_local_out() and ip_rcv_core(), we only
+> > > need to update these APIs.
+> > >
+> > > Also in GRO receive, add the check for ETH_P_IP/IPPROTO_TCP, and allows
+> > > the merged packet size >= GRO_LEGACY_MAX_SIZE in skb_gro_receive(). In
+> > > GRO complete, set IP header tot_len to 0 when the merged packet size
+> > > greater than IP_MAX_MTU in iph_set_totlen() so that it can be processed
+> > > on RX path.
+> > >
+> > > Note that by checking skb_is_gso_tcp() in API iph_totlen(), it makes
+> > > this implementation safe to use iph->len == 0 indicates IPv4 BIG TCP
+> > > packets.
+> > >
+> > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > > ---
+> > >  net/core/gro.c       | 12 +++++++-----
+> > >  net/core/sock.c      |  8 ++++++--
+> > >  net/ipv4/af_inet.c   |  7 ++++---
+> > >  net/ipv4/ip_input.c  |  2 +-
+> > >  net/ipv4/ip_output.c |  2 +-
+> > >  5 files changed, 19 insertions(+), 12 deletions(-)
+> > >
+> > > diff --git a/net/core/gro.c b/net/core/gro.c
+> > > index 506f83d715f8..b15f85546bdd 100644
+> > > --- a/net/core/gro.c
+> > > +++ b/net/core/gro.c
+> > > @@ -162,16 +162,18 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
+> > >         struct sk_buff *lp;
+> > >         int segs;
+> > >
+> > > -       /* pairs with WRITE_ONCE() in netif_set_gro_max_size() */
+> > > -       gro_max_size = READ_ONCE(p->dev->gro_max_size);
+> > > +       /* pairs with WRITE_ONCE() in netif_set_gro(_ipv4)_max_size() */
+> > > +       gro_max_size = p->protocol == htons(ETH_P_IPV6) ?
+> > > +                       READ_ONCE(p->dev->gro_max_size) :
+> > > +                               READ_ONCE(p->dev->gro_ipv4_max_size);
+> > >
+> > >         if (unlikely(p->len + len >= gro_max_size || NAPI_GRO_CB(skb)->flush))
+> > >                 return -E2BIG;
+> > >
+> > >         if (unlikely(p->len + len >= GRO_LEGACY_MAX_SIZE)) {
+> > > -               if (p->protocol != htons(ETH_P_IPV6) ||
+> > > -                   skb_headroom(p) < sizeof(struct hop_jumbo_hdr) ||
+> > > -                   ipv6_hdr(p)->nexthdr != IPPROTO_TCP ||
+> > > +               if (NAPI_GRO_CB(skb)->proto != IPPROTO_TCP ||
+> > > +                   (p->protocol == htons(ETH_P_IPV6) &&
+> > > +                    skb_headroom(p) < sizeof(struct hop_jumbo_hdr)) ||
+> > >                     p->encapsulation)
+> > >                         return -E2BIG;
+> > >         }
+> > > diff --git a/net/core/sock.c b/net/core/sock.c
+> > > index 7ba4891460ad..c98f9a4eeff9 100644
+> > > --- a/net/core/sock.c
+> > > +++ b/net/core/sock.c
+> > > @@ -2383,6 +2383,8 @@ static void sk_trim_gso_size(struct sock *sk)
+> > >             !ipv6_addr_v4mapped(&sk->sk_v6_rcv_saddr))
+> > >                 return;
+> > >  #endif
+> > > +       if (sk->sk_family == AF_INET && sk_is_tcp(sk))
+> > > +               return;
 > >
-> > * SC2155 (warning): Declare and assign separately to avoid masking return
-> >   values.
-> > * SC2124 (warning): Assigning an array to a string! Assign as array, or use
-> >   instead of @ to concatenate.
-> > * SC2034 (warning): ipv4_args appears unused. Verify use (or export if used
-> >   externally).
-> > * SC2242 (error): Can only exit with status 0-255. Other data should be
-> >   written to stdout/stderr.
-> > * SC2068 (error): Double quote array expansions to avoid re-splitting
-> >   elements.
+> > Or simply
 > >
-> > Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-tests")
-> > Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
-> > ---
-> >  tools/testing/selftests/net/udpgro_frglist.sh | 20 +++++++++----------
-> >  1 file changed, 10 insertions(+), 10 deletions(-)
+> > diff --git a/net/core/sock.c b/net/core/sock.c
+> > index 7ba4891460adbd6c13c0ce1dcdd7f23c8c1f0f5d..dcb8fff91fd9a9472267a2cf2fdc98114a7d2b7d
+> > 100644
+> > --- a/net/core/sock.c
+> > +++ b/net/core/sock.c
+> > @@ -2375,14 +2375,9 @@ EXPORT_SYMBOL_GPL(sk_free_unlock_clone);
 > >
-> > diff --git a/tools/testing/selftests/net/udpgro_frglist.sh b/tools/testing/selftests/net/udpgro_frglist.sh
-> > index e1ca49de2491..97bf20e9afd8 100755
-> > --- a/tools/testing/selftests/net/udpgro_frglist.sh
-> > +++ b/tools/testing/selftests/net/udpgro_frglist.sh
-> > @@ -3,7 +3,8 @@
-> >  #
-> >  # Run a series of udpgro benchmarks
-> >
-> > -readonly PEER_NS="ns-peer-$(mktemp -u XXXXXX)"
-> > +PEER_NS="ns-peer-$(mktemp -u XXXXXX)"
-> > +readonly PEER_NS
-> >
-> >  BPF_FILE="../bpf/xdp_dummy.bpf.o"
-> >  BPF_NAT6TO4_FILE="nat6to4.o"
-> > @@ -19,7 +20,7 @@ trap cleanup EXIT
-> >
-> >  run_one() {
-> >         # use 'rx' as separator between sender args and receiver args
-> > -       local -r all="$@"
-> > +       local -r all="$*"
-> 
-> this should technically use arrays, something like
-> 
-> local -a -r args=("$@")
-> 
-> but perhaps just get rid of args and just use "$@" directly below
-
-Using it directly would not work with the substitutions later because it
-would try to apply it to each positional parameter in turn. Same when
-using an intermediate array.
-
-> 
-> >         local -r tx_args=${all%rx*}
-> >         local rx_args=${all#*rx}
-> >
-> > @@ -56,13 +57,13 @@ run_one() {
+> >  static void sk_trim_gso_size(struct sock *sk)
+> >  {
+> > -       if (sk->sk_gso_max_size <= GSO_LEGACY_MAX_SIZE)
+> > +       if (sk->sk_gso_max_size <= GSO_LEGACY_MAX_SIZE ||
+> > +           sk_is_tcp(sk))
+> >                 return;
+> > -#if IS_ENABLED(CONFIG_IPV6)
+> > -       if (sk->sk_family == AF_INET6 &&
+> > -           sk_is_tcp(sk) &&
+> > -           !ipv6_addr_v4mapped(&sk->sk_v6_rcv_saddr))
+> > -               return;
+> > -#endif
+> >         sk->sk_gso_max_size = GSO_LEGACY_MAX_SIZE;
 > >  }
+> There's a difference,  AF_INET6 TCP socket may send ipv4 packets with
+> ipv6_addr_v4mapped, if we don't check ipv6_addr_v4mapped(), IPV4
+> GSO packets might go with the "gso_max_size" for IPV6.
+>
+
+But the change you wrote in sk_setup_caps() only checked sk_family.
+
+
+> I think we could use the change you wrote above, but we also need to
+> use dst->ops->family instead of sk->sk_family in sk_setup_caps():
+>
+> +                       sk->sk_gso_max_size = dst->ops->family == AF_INET6 ?
+> +                                       READ_ONCE(dst->dev->gso_max_size) :
+> +
+> READ_ONCE(dst->dev->gso_ipv4_max_size);
+>
 > >
-> >  run_in_netns() {
-> > -       local -r args=$@
-> > +       local -r args="$*"
-> >    echo ${args}
-> >         ./in_netns.sh $0 __subprocess ${args}
-> 
-> ie. here could just use "$@" directly twice instead of defining args.
-> $0 should be doublequoted - though I guess it'll never be empty, and
-> is unlikely to include spaces.
-
-That sounds fine to me. I'll include it in v4.
-
-> >  }
 > >
-> >  run_udp() {
-> > -       local -r args=$@
-> > +       local -r args="$*"
 > >
-> >         echo "udp gso - over veth touching data"
-> >         run_in_netns ${args} -u -S 0 rx -4 -v
-> > @@ -72,7 +73,7 @@ run_udp() {
-> >  }
+> > >         sk->sk_gso_max_size = GSO_LEGACY_MAX_SIZE;
+> > >  }
+> > >
+> > > @@ -2403,8 +2405,10 @@ void sk_setup_caps(struct sock *sk, struct dst_entry *dst)
+> > >                         sk->sk_route_caps &= ~NETIF_F_GSO_MASK;
+> > >                 } else {
+> > >                         sk->sk_route_caps |= NETIF_F_SG | NETIF_F_HW_CSUM;
+> > > -                       /* pairs with the WRITE_ONCE() in netif_set_gso_max_size() */
+> > > -                       sk->sk_gso_max_size = READ_ONCE(dst->dev->gso_max_size);
+> > > +                       /* pairs with the WRITE_ONCE() in netif_set_gso(_ipv4)_max_size() */
+> > > +                       sk->sk_gso_max_size = sk->sk_family == AF_INET6 ?
+> > > +                                       READ_ONCE(dst->dev->gso_max_size) :
+> > > +                                               READ_ONCE(dst->dev->gso_ipv4_max_size);
+
+Here...
+
+So if you need ipv6_addr_v4mapped() this should be done here anyway.
+
+> > >                         sk_trim_gso_size(sk);
+> > >                         sk->sk_gso_max_size -= (MAX_TCP_HEADER + 1);
+> > >                         /* pairs with the WRITE_ONCE() in netif_set_gso_max_segs() */
+> > > diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+> > > index 6c0ec2789943..2f992a323b95 100644
+> > > --- a/net/ipv4/af_inet.c
+> > > +++ b/net/ipv4/af_inet.c
+> > > @@ -1485,6 +1485,7 @@ struct sk_buff *inet_gro_receive(struct list_head *head, struct sk_buff *skb)
+> > >         if (unlikely(ip_fast_csum((u8 *)iph, 5)))
+> > >                 goto out;
+> > >
+> > > +       NAPI_GRO_CB(skb)->proto = proto;
+> > >         id = ntohl(*(__be32 *)&iph->id);
+> > >         flush = (u16)((ntohl(*(__be32 *)iph) ^ skb_gro_len(skb)) | (id & ~IP_DF));
+> > >         id >>= 16;
+> > > @@ -1618,9 +1619,9 @@ int inet_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len)
+> > >
+> > >  int inet_gro_complete(struct sk_buff *skb, int nhoff)
+> > >  {
+> > > -       __be16 newlen = htons(skb->len - nhoff);
+> > >         struct iphdr *iph = (struct iphdr *)(skb->data + nhoff);
+> > >         const struct net_offload *ops;
+> > > +       __be16 totlen = iph->tot_len;
+> > >         int proto = iph->protocol;
+> > >         int err = -ENOSYS;
+> > >
+> > > @@ -1629,8 +1630,8 @@ int inet_gro_complete(struct sk_buff *skb, int nhoff)
+> > >                 skb_set_inner_network_header(skb, nhoff);
+> > >         }
+> > >
+> > > -       csum_replace2(&iph->check, iph->tot_len, newlen);
+> > > -       iph->tot_len = newlen;
+> > > +       iph_set_totlen(iph, skb->len - nhoff);
+> > > +       csum_replace2(&iph->check, totlen, iph->tot_len);
+> > >
+> > >         ops = rcu_dereference(inet_offloads[proto]);
+> > >         if (WARN_ON(!ops || !ops->callbacks.gro_complete))
+> > > diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
+> > > index e880ce77322a..0aa8c49b4e1b 100644
+> > > --- a/net/ipv4/ip_input.c
+> > > +++ b/net/ipv4/ip_input.c
+> > > @@ -511,7 +511,7 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
+> > >         if (unlikely(ip_fast_csum((u8 *)iph, iph->ihl)))
+> > >                 goto csum_error;
+> > >
+> > > -       len = ntohs(iph->tot_len);
+> > > +       len = skb_ip_totlen(skb);
 > >
-> >  run_tcp() {
-> > -       local -r args=$@
-> > +       local -r args="$*"
-> >
-> >         echo "tcp - over veth touching data"
-> >         run_in_netns ${args} -t rx -4 -t
-> > @@ -80,7 +81,6 @@ run_tcp() {
-> >
-> >  run_all() {
-> >         local -r core_args="-l 4"
-> 
-> is this still useful? embed directly in ipv6_args
-> 
-> > -       local -r ipv4_args="${core_args} -4  -D 192.168.1.1"
-> 
-> perhaps this should stay as a comment??
-
-Well the way I see it is one or the other. We either embed and drop
-ipv4_args or keep ipv4_args as a comment but also core_args. I'll do the
-former in v4 if no other objections.
-
-> 
-> >         local -r ipv6_args="${core_args} -6  -D 2001:db8::1"
-> >
-> >         echo "ipv6"
-> > @@ -90,19 +90,19 @@ run_all() {
-> >
-> >  if [ ! -f ${BPF_FILE} ]; then
-> 
-> double quote
-> "${BPF_FILE}"
-> in case space in file name
-
-This change only targets warning/error issues. There are way more "info"
-ones, but I didn't want to splash a big patch for all those.
-
-> 
-> >         echo "Missing ${BPF_FILE}. Build bpf selftest first"
-> > -       exit -1
-> > +       exit 1
-> >  fi
-> >
-> >  if [ ! -f "$BPF_NAT6TO4_FILE" ]; then
-> 
-> there seems to be inconsistency around [ vs [[, use [[ if relying on bash anyway
-
-
-
-> 
-> >         echo "Missing nat6to4 helper. Build bpf nat6to4.o selftest first"
-> > -       exit -1
-> > +       exit 1
-> >  fi
-> >
-> >  if [[ $# -eq 0 ]]; then
-> >         run_all
-> >  elif [[ $1 == "__subprocess" ]]; then
-> 
-> while this does indeed work, imho $1 should be "$1" to be less confusing
-
-Agreed and again, there are a good set of other places where this is
-needed. Should I just address them all in an extra patch? Again, this
-one only scoped warnings/errors to avoid impact.
-
-Thanks for the review.
-
--- 
-Andrei Gherzan
+> > len = iph_totlen(skb, iph);
+> OK, thanks.
