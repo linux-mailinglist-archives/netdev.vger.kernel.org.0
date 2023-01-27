@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CC0967EA29
+	by mail.lfdr.de (Postfix) with ESMTP id B431967EA2B
 	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 17:00:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234181AbjA0QAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 11:00:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53464 "EHLO
+        id S234244AbjA0QAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 11:00:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234122AbjA0QAC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 11:00:02 -0500
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB4BA7F6A9
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 08:00:00 -0800 (PST)
-Received: by mail-qt1-x82a.google.com with SMTP id x5so4358283qti.3
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 08:00:00 -0800 (PST)
+        with ESMTP id S233836AbjA0QAE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 11:00:04 -0500
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB2448660D
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 08:00:01 -0800 (PST)
+Received: by mail-qt1-x836.google.com with SMTP id g16so4369388qtu.2
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 08:00:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=IPo2A8/WyRg0uZtMgMrJXTBrF2bqp+xJsCXZ+utu8AQ=;
-        b=n0eBLaQ0piq5nQS2gFn1vaSPymqbYNahrFzNETi2aRVELLQ8l+AJqYn8Za9kCuixqZ
-         0nVSlnrHZ5hVO+O3kkr8Zb/ysV9uhyLTbjdVvLZSyanV6Jpz0yH76iYFTBMB40WnMWpe
-         CkhG7XdIztW7dLeaSciQ+eVjELBcf6nEGhXiCEZMvWArBo8YWOltt5qOIVlDN6Ct2bUd
-         A0YFTMLZuDe+1pEqjg3URq7sjeJ5vTxJC3TwctIguxyP3gQytbk6EgAdz7VuZPet5kZE
-         3ibUchqzXqbvS3Aflx09T8XvqiK1mRW/I/Ld8M0k27bpJrrcIe1GKBR8egQWh7onAHye
-         ReLg==
+        bh=Tl5Hvsf/bhbzo4TjITsPEwXtRmHZPlZaj/ryQGs8Zww=;
+        b=SH9RcQM9TnI9XyzH6t13UlVw/Hjl/S3j2aRuXsmLPKuT0Jf1B99BnMJrJFnc5RQJj/
+         MF/J29BC91NZ1cqjuw2/ImV5AGzqvOoqQ7ae5sjIn67U5QhPlUukFQW0VDJIZiqOWcnY
+         PhynjpfFcBP/DHWvFob5NkAnCdgzVndC9aXCEZLYguDXxnKtUdSTwQp6m3atxvAQ4C5X
+         1HHMW18OCLgyEdaFjrYI8txab4jeiZFVy0EqunhTkrc/wEJHPsJ6xpnaoeUCwECQtsqP
+         2BOLN6lnQcmmZzA2JHbJBTQargKURZmaADgh0CCaYa5pWDGCvWKnBc41033hYu3bi12f
+         eswg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=IPo2A8/WyRg0uZtMgMrJXTBrF2bqp+xJsCXZ+utu8AQ=;
-        b=o5ZjFMHwSgh5FvN+AEKiwLzJz+aIHmBTTQQY8UB8nTcJ1PusnwkjpbS8+SmFHoPAnq
-         w2qhmoqdt2hs2PF5kqAMDtmI8OGi9T+brAF3zoJDs1+K8QQWuCGCu9aZzF70Mw0KO0k+
-         Kcx1RJ2U5HdwzjjAo7tu5OIgi8PuzdI8CWtyTK79XSLPNxQrqk0lncZ2pbW/B3qHSLcM
-         aAqBrpDOkyNxQhPF0Qcwn8UFzHsCT8wPxQFxLHZHpQBGfWDDPJKT25jUV07WPnRcrIKK
-         nao2krdOfb1C64EMCPATSuRXYrlJp/BovU/mrWbljyQ7LM0GIbU4COfma/Pt5XOc6iW4
-         hoTw==
-X-Gm-Message-State: AFqh2kqS6qtC90Xds6+sj7Rl9jZoyehdAnpDTQz0lWFDOrUjRb0ZHzhf
-        3wUt9J7T/v5k6RfPmFLNciERKzyt0cJmWQ==
-X-Google-Smtp-Source: AMrXdXvrC8d6CyKufeUaRQQGyPTcu28uAVcfbmnBXC/w7zvZKDp6tghu2kUn9tld0Kvg+J0iTApTqw==
-X-Received: by 2002:ac8:7312:0:b0:3ab:7bb3:4707 with SMTP id x18-20020ac87312000000b003ab7bb34707mr50654709qto.64.1674835199731;
-        Fri, 27 Jan 2023 07:59:59 -0800 (PST)
+        bh=Tl5Hvsf/bhbzo4TjITsPEwXtRmHZPlZaj/ryQGs8Zww=;
+        b=U8CNbU0TE4V+Mw486ir0OwoW+gcHvOqZ0nCm85cPtZI44zScTmeTuNswUXg2rmXAPy
+         YeV0t60ULNMAZJ5Uv0jCM2Nrf0X2C8dlPrB34nDfOnbnJxTXjDhw6f6dD3pbTAZTP+gy
+         sLnofkacssAl8XgtAXqMzxllVW0q5zLc6p8j5uDb1uAzjVxI0oyB3i383PgxNy2m1Pak
+         IxXgXHUgSsq3XB0oXeUT0vvVGj5X+jaMyZPBflaLqXl1vTqG26KzRjyuK32G8b42I5Rp
+         gEhJkNlWbiQv2KiWeiUlbYBHxJdC7oz1d5oRu1y+Ii+Oa/uZC1KS4v24jsyuLSVaQeRe
+         kg4A==
+X-Gm-Message-State: AFqh2kpfwZp0FF9hxJZrTMahVsuQ9M5BRvDckm8Ikm5fjHMfyU8klE7r
+        s9JTPmxSftDYMmdV2W02ryOOrKKpFr765Q==
+X-Google-Smtp-Source: AMrXdXuofNTDzS7P0CaB7TS2lacppCl/aw5ApXHS4hL/BIxQ40U0gPFHqGO1HRxKBK7+pgMbLevedQ==
+X-Received: by 2002:ac8:4d02:0:b0:3b4:63d8:bcbb with SMTP id w2-20020ac84d02000000b003b463d8bcbbmr56210837qtv.28.1674835200877;
+        Fri, 27 Jan 2023 08:00:00 -0800 (PST)
 Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id z3-20020a05622a124300b003b62bc6cd1csm2860659qtx.82.2023.01.27.07.59.58
+        by smtp.gmail.com with ESMTPSA id z3-20020a05622a124300b003b62bc6cd1csm2860659qtx.82.2023.01.27.07.59.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Jan 2023 07:59:59 -0800 (PST)
+        Fri, 27 Jan 2023 08:00:00 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -70,9 +70,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         Mahesh Bandewar <maheshb@google.com>,
         Paul Moore <paul@paul-moore.com>,
         Guillaume Nault <gnault@redhat.com>
-Subject: [PATCHv3 net-next 01/10] net: add a couple of helpers for iph tot_len
-Date:   Fri, 27 Jan 2023 10:59:47 -0500
-Message-Id: <520630e418a95e6085b7c7399f9741570af82079.1674835106.git.lucien.xin@gmail.com>
+Subject: [PATCHv3 net-next 02/10] bridge: use skb_ip_totlen in br netfilter
+Date:   Fri, 27 Jan 2023 10:59:48 -0500
+Message-Id: <f882977642f2cec5c6c75a18e8594a21d9b7f028.1674835106.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1674835106.git.lucien.xin@gmail.com>
 References: <cover.1674835106.git.lucien.xin@gmail.com>
@@ -88,63 +88,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds three APIs to replace the iph->tot_len setting
-and getting in all places where IPv4 BIG TCP packets may reach,
-they will be used in the following patches.
-
-Note that iph_totlen() will be used when iph is not in linear
-data of the skb.
+These 3 places in bridge netfilter are called on RX path after GRO
+and IPv4 TCP GSO packets may come through, so replace iph tot_len
+accessing with skb_ip_totlen() in there.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- include/linux/ip.h  | 21 +++++++++++++++++++++
- include/net/route.h |  3 ---
- 2 files changed, 21 insertions(+), 3 deletions(-)
+ net/bridge/br_netfilter_hooks.c            | 2 +-
+ net/bridge/netfilter/nf_conntrack_bridge.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/ip.h b/include/linux/ip.h
-index 3d9c6750af62..d11c25f5030a 100644
---- a/include/linux/ip.h
-+++ b/include/linux/ip.h
-@@ -35,4 +35,25 @@ static inline unsigned int ip_transport_len(const struct sk_buff *skb)
- {
- 	return ntohs(ip_hdr(skb)->tot_len) - skb_network_header_len(skb);
- }
-+
-+static inline unsigned int iph_totlen(const struct sk_buff *skb, const struct iphdr *iph)
-+{
-+	u32 len = ntohs(iph->tot_len);
-+
-+	return (len || !skb_is_gso(skb) || !skb_is_gso_tcp(skb)) ?
-+	       len : skb->len - skb_network_offset(skb);
-+}
-+
-+static inline unsigned int skb_ip_totlen(const struct sk_buff *skb)
-+{
-+	return iph_totlen(skb, ip_hdr(skb));
-+}
-+
-+/* IPv4 datagram length is stored into 16bit field (tot_len) */
-+#define IP_MAX_MTU	0xFFFFU
-+
-+static inline void iph_set_totlen(struct iphdr *iph, unsigned int len)
-+{
-+	iph->tot_len = len <= IP_MAX_MTU ? htons(len) : 0;
-+}
- #endif	/* _LINUX_IP_H */
-diff --git a/include/net/route.h b/include/net/route.h
-index 6e92dd5bcd61..fe00b0a2e475 100644
---- a/include/net/route.h
-+++ b/include/net/route.h
-@@ -35,9 +35,6 @@
- #include <linux/cache.h>
- #include <linux/security.h>
+diff --git a/net/bridge/br_netfilter_hooks.c b/net/bridge/br_netfilter_hooks.c
+index f20f4373ff40..b67c9c98effa 100644
+--- a/net/bridge/br_netfilter_hooks.c
++++ b/net/bridge/br_netfilter_hooks.c
+@@ -214,7 +214,7 @@ static int br_validate_ipv4(struct net *net, struct sk_buff *skb)
+ 	if (unlikely(ip_fast_csum((u8 *)iph, iph->ihl)))
+ 		goto csum_error;
  
--/* IPv4 datagram length is stored into 16bit field (tot_len) */
--#define IP_MAX_MTU	0xFFFFU
--
- #define RTO_ONLINK	0x01
+-	len = ntohs(iph->tot_len);
++	len = skb_ip_totlen(skb);
+ 	if (skb->len < len) {
+ 		__IP_INC_STATS(net, IPSTATS_MIB_INTRUNCATEDPKTS);
+ 		goto drop;
+diff --git a/net/bridge/netfilter/nf_conntrack_bridge.c b/net/bridge/netfilter/nf_conntrack_bridge.c
+index 5c5dd437f1c2..71056ee84773 100644
+--- a/net/bridge/netfilter/nf_conntrack_bridge.c
++++ b/net/bridge/netfilter/nf_conntrack_bridge.c
+@@ -212,7 +212,7 @@ static int nf_ct_br_ip_check(const struct sk_buff *skb)
+ 	    iph->version != 4)
+ 		return -1;
  
- #define RT_CONN_FLAGS(sk)   (RT_TOS(inet_sk(sk)->tos) | sock_flag(sk, SOCK_LOCALROUTE))
+-	len = ntohs(iph->tot_len);
++	len = skb_ip_totlen(skb);
+ 	if (skb->len < nhoff + len ||
+ 	    len < (iph->ihl * 4))
+                 return -1;
+@@ -256,7 +256,7 @@ static unsigned int nf_ct_bridge_pre(void *priv, struct sk_buff *skb,
+ 		if (!pskb_may_pull(skb, sizeof(struct iphdr)))
+ 			return NF_ACCEPT;
+ 
+-		len = ntohs(ip_hdr(skb)->tot_len);
++		len = skb_ip_totlen(skb);
+ 		if (pskb_trim_rcsum(skb, len))
+ 			return NF_ACCEPT;
+ 
 -- 
 2.31.1
 
