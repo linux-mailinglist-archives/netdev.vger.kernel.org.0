@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23E6267DA90
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 01:17:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF46867DA93
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 01:17:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232852AbjA0ARS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Jan 2023 19:17:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53172 "EHLO
+        id S232921AbjA0ARa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Jan 2023 19:17:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232512AbjA0ARM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 19:17:12 -0500
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on20614.outbound.protection.outlook.com [IPv6:2a01:111:f400:7d00::614])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F000F7376B
-        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 16:16:50 -0800 (PST)
+        with ESMTP id S232927AbjA0ARZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Jan 2023 19:17:25 -0500
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2063.outbound.protection.outlook.com [40.107.21.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C162B60F
+        for <netdev@vger.kernel.org>; Thu, 26 Jan 2023 16:16:58 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a2xzoGofZA1j8lv2vszVfEm9SMXcz1bgOHZ/OSaf8E0ZZJgi9ZjVUQOApsCPeoWxtcOvdUVmgzlUIKcqKnuaIIZMoK318Fz4zp9Vas1FHlz03eXk1VehtFbYHfe/Y/M/UIolM4VAcajUHcua0f17EkeJI/RqQ+ayXM2XMw2sT/Zvp36aObg8LAZ8gpecXcfREKFNsDvrBdftIRCVKkXvUNo5rrCQ63D+MWawecow1DEodsad5f+SQRx1GpcTZuOk3QMAYrHHACZY5IJOZb7/HJqgmYFaR8d5pkG/rCcSDIjxs9yFYtpu0Qh/Sk13dQf6ZYQVaEtb47lrM7H4EBN/hA==
+ b=JqLp0vVGHte/CtNQMB3faLPW5/mQQ2FwwAYPY1ltwdQfH/TrO6bkBNdcR+gcFPx6aLlyQLADlaSPohunF7/eQoaXQWlIaGKbmZ4eYKrc0ockFX/9UH1Los9qj1J//zzVOLTZcvYsmmisPczbn8uGBqwddvNawH9HENdtBrHE4lBsWRU9V8WY31v2VdaYaqdfxyLUSqVwOzEHDhcC199p4khTWikBSmsvMkJliOhY1pKtDW75xovXLoyyg9mKKojGj4yyAHLomvjfvxsf1uO8FaA5k+CaQQLBW0WLPKBpPOOtDpoK8jSLzKYuOzGyFzzssr7ehk9MqE2SS/dsEvRFDw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4Hv0k8fZzpKFK5uc9tIAyi5kmBtjS0rDWyVnRvvNJGY=;
- b=G4Q8CjRSAcjuEUtMlsJrMgX02NmbmGoe16LcyNK1PRvJ5LIzXDUlBNe8YeIYzebuXG2psGYXKtN1tn1miZmAIB5PAQcZmQaBKl3obvlrE7ylkGX9FFO+KMKon1tabFFpvx98LKAnUPM7DupED9KGCoor/w25pdZnLzBwGEdQDtwDlN+VAxiWffdgajx8lnRNYoWFbRkXHbWKpxi7M2Mig+cM5AYXUnpBHm1DUXY1if27t8WU9mdu+aoMp42KriuCo1uV1ocwwDCOZTFR8I6yqB11gIranBuprbvwZhpi8LXsLiNv/spWHoHCSlQj69ZSW9d6jnYlJA/O3SremVurkA==
+ bh=4bNUjHe/wVjTuOZyfANOx1JkaZGgp6gMxYJWDnIefvU=;
+ b=F8KLc3fY+OV7Mu/9ZCG/0gdcLcQQ1duQR9voiR2MtUNM+g3TeoBvSgSMohc9814sf7BioTvYcZlakAH1qxdrtytocJTHafkgrObHFoDUVALLDl1RLBCq8oL52KG7CP8epFZn0NPQpwKiBuVq6gWL2WJ2+3XDO4tMfBzUc5N8SRyaZCPrnVpnRusMBthp0RXf2vazuOt50OLGVJESecZyC6wamPVwqErOGTvKPwXyLZZl8Zv0VVtjKbCOzgSxpCB8qVNDjm5pBL4srlTmC6+M1kXAs2rTAF6wLY7c+o2qMc/8jcBikYR1WbF4e7d9dB3mXxSZfhX7AwlmSphDuJeGvw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4Hv0k8fZzpKFK5uc9tIAyi5kmBtjS0rDWyVnRvvNJGY=;
- b=AKwDs/DVjCUYvk5Q4CDDWFja5MBbBHlZhoE0udjv02GNElWEkOlFmHr7PgL0IXno6uVM61ShGEGxMN3XgiYaWQFD3ymQm/MRd7NZ+vkleQGXgF1GNQbA59J7+dLawA+UoHQVa/brSDJwOVSnxlvtZR5BearuVZFSX+P2IdBDMfE=
+ bh=4bNUjHe/wVjTuOZyfANOx1JkaZGgp6gMxYJWDnIefvU=;
+ b=S8GC+tG24stsdFRTNjXsM1nV5QoVt/S+7TAXuzK42i+NjgLLShCHV9h9zZ+X9la8ModvoO9YcPiE/3OcTmG0+zE4RI/tmGdSNPjhTGTV5AUJAsvWREaWixFeZolQvJp+XrjH6HX/MfK+ekQ+L6TQ+v1bScDSKcz4hEd8ZdHc5dI=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by AM8PR04MB7347.eurprd04.prod.outlook.com (2603:10a6:20b:1d0::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Fri, 27 Jan
- 2023 00:16:02 +0000
+ 2023 00:16:03 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b%7]) with mapi id 15.20.6002.033; Fri, 27 Jan 2023
- 00:16:01 +0000
+ 00:16:03 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -52,9 +52,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>
-Subject: [PATCH v3 net-next 04/15] net: enetc: ensure we always have a minimum number of TXQs for stack
-Date:   Fri, 27 Jan 2023 02:15:05 +0200
-Message-Id: <20230127001516.592984-5-vladimir.oltean@nxp.com>
+Subject: [PATCH v3 net-next 05/15] net/sched: mqprio: refactor nlattr parsing to a separate function
+Date:   Fri, 27 Jan 2023 02:15:06 +0200
+Message-Id: <20230127001516.592984-6-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230127001516.592984-1-vladimir.oltean@nxp.com>
 References: <20230127001516.592984-1-vladimir.oltean@nxp.com>
@@ -66,152 +66,213 @@ X-ClientProxiedBy: BE1P281CA0057.DEUP281.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM8PR04MB7347:EE_
-X-MS-Office365-Filtering-Correlation-Id: 98ec0949-4047-487a-cdc3-08dafffbaba2
+X-MS-Office365-Filtering-Correlation-Id: 031ac6cd-5271-4faa-617b-08dafffbac3b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zdLIhRE7RuWFCurneEybpEC8kDWcsBh8cdt0sR/hMQQIH7CxjVmwpclt3KZPUggmVrZ5ugyNnWuykWAgVFqTcN4OOUL6tJdBavunCvPXzJkTPglqjfN/NWMlt2bra4HWsk1ojpPvNI3yU2F/yXFNuGbhOVcK4xZwQgU5CzGwCo/P1HPJqu5h+fSXRZA695hmj+ld6dgp+lQV8bgEAWkca1jAvH6Pemh9syZX7kP3nc1uG1iVDXBDLJoOZGAvSiNQ/jvNqBF8QeRDEQdsUF7DXdt3/EDEOqQizQyn2X80FsrvbMsNpPVndpAYYg3h8xN+/3rCfgSv8J7M7XInAe8Q37nSOsAp4o2lN5vyju8wG12jzmZhZDtZbZJu1a05156oXfpZPZr/U7xeEUpdZmGLFHkO4sHLogv9TerQBJCGMy6Qo8UA6Fx4ZwAq33N9QU3WERWCBp6YnQKhMfm50k2EfrXBvmGg6LVfIKSjbZC8+R9oVjm/5RqtKJitjpETlAlUvEu0kSlSoOOO9tS0X5b0rRtqeHqKuUwvcpamNmLOat04hxqXk7FBj+VCZxdtDSdFKrYdSC/QpN1D7jUPc1N+hKTtJEaDx4zhoDsTSYJI3WormCCPS//yn9xQeD1DGM4jwRQ4nDFSR+yeu2mcN/ldrFzRBdMggLKs5z5DeCaXakuU5WQYgIdy9Pk5ga+kMdXOjd7eRBPZRztZcmkaamZsSw==
+X-Microsoft-Antispam-Message-Info: YPKLCjmTTbzDfUpIKheDr4XimlhyPNYk6nIp2w3sVGqgArY5/iIfUGoaehEK6MDqk1E71A8DvLvrzy2xgZNABBctDSmiUO73Fy+ChryX2sspIVBCas5uagbdzopewnWselqapQTQC2FfDBhNEHYzSn/NV3h0Zb8Aq3OYAf05EjVlISD+vUEoou87AV1ZE2EJRPvNE41FxCaUEMiduobleM359tkkMNeQzza59Tst/2kcr2PvgL2/d6YoQs2qaHnvJ19yip+HsMnoom5+/XbeLeXcadizED6JvInCxXfP7BPCyW762nLzedSLewQJ70+BV387XpcP+lggIrAW7eVmn/ObK+S9cRexYFiEb79F2bTWyaHfdTIMuJNRXJ2jsmKUjVlCavGnO9m1YwnfAGEm2K0HPP1Qv/feiicEB307GwTRSnDG5YU6mQcHECnCrWWikAyp2XT4EfF0zkdKWSM68v+t110QsPmzFnuGxS+SOsmJLi2OtR6Bgii4SZM0ogdV6eG82OLBo2x/AuUH8uyYgk/XJwGVPcBvG1mP3wDfEjSyq2JiFpn6mbg7jBXTTcnRqi/w0kV3sntqY8B+u1QkPbFFVB6shASIajeNJVygfGaR/9g0zbzZfdq47KKKVJyeztdrRhmd5iOIbQEaXkQKVS+DzaR7+Uw0ybhW3WIuyCUKE2gQrJO5WvOYFqYT22uFM29jgZbFY8EtNfm+wka9Pw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(346002)(39860400002)(396003)(376002)(366004)(451199018)(7416002)(44832011)(2906002)(36756003)(83380400001)(52116002)(6506007)(38100700002)(26005)(6512007)(186003)(478600001)(6486002)(2616005)(1076003)(86362001)(66946007)(66476007)(66556008)(8676002)(8936002)(4326008)(6916009)(41300700001)(54906003)(316002)(5660300002)(38350700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Uk5Xh12nVhL/BbHc7CPxJVhpBsLnOYNcG1fTPva26tpcV7kq/QyDqb842z1c?=
- =?us-ascii?Q?gOb4DnYrBzJpw9MYMqTWCo5VmaD5mMnUXIiirgSQMViPc10ee5LlHb5pE4jS?=
- =?us-ascii?Q?uk6AdazX+XEmfphthZUcvaw6HuMcTAiZqrrflTH+QSyD/hToi10FrUqxt+W4?=
- =?us-ascii?Q?ViXzWYFtJBscW4xPv/81V0ghpkuMCKhQNQI+311pO2LquCxg6GsOZI1eiwYU?=
- =?us-ascii?Q?oKSHP8j2t0hErNp6cmMpPK+3DxbzcGIQWBhz0JJ0llL98lEwu2qgqqAHoofJ?=
- =?us-ascii?Q?uubedJA4DGQCBcCnWIvTBuzE2NPaQkg/L5MfRMD5eO/xWBwKslYpvWnGyxDv?=
- =?us-ascii?Q?MWdTeRmH3jQOY8Sjb3+2RLkss+r4UrbsBrLMatcAwaOj1277vTXlwc92mEWQ?=
- =?us-ascii?Q?Uhrehp5LpWqNkMMjkwF66o8eiyTmKxR0tbE3fjsbT7AU7zIouh18kJ8HMVQ+?=
- =?us-ascii?Q?Ch29mcZ8W4AFyrGMsF5FYRr47aiNghKA7vY81n3nK+Rj1KH3RF3tAULv5iDi?=
- =?us-ascii?Q?OYdxcgxalsT3TS5wLN2oMhzG8HOQl96hQpzXW/WDjpe3eOo6BSSZ2uM35gYO?=
- =?us-ascii?Q?T0yxruCmkqvNq4MvWjdfVeSz6WS+6+GF6VAnwEbk3h//gmF1x8U0lCqwsbNS?=
- =?us-ascii?Q?ZctcJI1eF3X/y5buCOeTjN9rX0hMtTaHVK8/EW3OLi6wTlBq00p2rkYH7o2l?=
- =?us-ascii?Q?G9HyTsRmIBEzqGbev8mF4qehPTVSal7fSuywODepTLurRDBNIS/hRIHBSUhh?=
- =?us-ascii?Q?UaL2Jg3tGwl0rUEziELB2wPFqAN8NL6S0fBDepfEMMNHp1Qjb/Rah4zWaVLG?=
- =?us-ascii?Q?DtyKnpBVM687pgEovsw9MZxpf5doe83sEjMPNKPjWlCXJ9ZQXZ2/OFhIr8PR?=
- =?us-ascii?Q?Jmb5XFbDi8vIhdnP4bqINKwwhqCkYHkx5TacGgyd5BUolHwtEvDxdjJGWAiA?=
- =?us-ascii?Q?+W31BJ9R6TZyvodeXTRn0FMhr1m2QMR/diO6tPd/5nPtXsk7nnk3ZjVlg2Ty?=
- =?us-ascii?Q?5WbkWXoAhjH0E3dzv61vyifnT4G1C43Au3ZFeqH+7rYLLbMEUshqwIpzpvHY?=
- =?us-ascii?Q?eqh5hRRvpuNv2fg7PhRCLYZ2dttXLKqLEVV3JsVCXVDzg8A369nRHjd9YImz?=
- =?us-ascii?Q?2p+/inshsKYi1HWq1dZCnRB5xBALoa8sZndn8m2loqebIip2zsyeLD4lpjJw?=
- =?us-ascii?Q?4I/YfRi9TbVjpKgrEZ4DPckzheW85xt1l4viJAV0tw9blKypBUq78/aLk0Fg?=
- =?us-ascii?Q?kkxoG7hBzjWCUz1rLhX7d2J1dTPDMXJHZZhWpbMKgVH1yHzkfgptq57kAe3c?=
- =?us-ascii?Q?hcUz27slu5/DtaXbaWhwSissyqu+HQ354CVgevzXaT+2f/1rlT6A8SNUVjlB?=
- =?us-ascii?Q?lqnbDA/aS6wF/ObzsPnDUY26ccqP7AoWodmYE2uXBxovwF5Jxy4II1UkVgrW?=
- =?us-ascii?Q?e9XlCuy+wHN6KJ0GSX35rFZZBVtVB5YFMIl+wHmaCtymwj3SVLlha1xI/NFI?=
- =?us-ascii?Q?zNnuSLdN8CN/SzMKDE+FbEo06pK4N67zIZL+AKhuZLIs1X4Tvk9DF18oWRN3?=
- =?us-ascii?Q?jGlm/81P4J0MmIJXXaprTM5TFFisObFozxdFADTpz9hDNbyhPlSe+syB+9zb?=
- =?us-ascii?Q?eQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Wu0fb+ARVICRYlFgGC/swy2uj6BiRObUBtblgu0HP1Kt5ixeAGrRt75xIKXW?=
+ =?us-ascii?Q?EqbM5lXGmYZgUqkkEHDHTZ3kmLSVcLtVk93BwH+TgbtFz3yIUYCBOYrkiclD?=
+ =?us-ascii?Q?HoELvgyd+acP6GY/yAiNYBlO6hf50TZbXOR4oiHQRkynhxr8Jra+4MVKCSq5?=
+ =?us-ascii?Q?gztw+3YyMa2CH+Sy0EBw5wTc0whp4n9UkcxxrnAq+VBGRDOWvjmYIWGkYvvX?=
+ =?us-ascii?Q?ptik1mJkRFvp1+nlkoFl1rdAFJwlVcmV5kmu8bDJI6sFPj03s/0ai8FqC/mt?=
+ =?us-ascii?Q?g19fx8X0m7XdEGNJhO5MfqRb558UFOvAZYolNzF2+8Ziot3QvRSDuUrxQnas?=
+ =?us-ascii?Q?rUgbIEWbbVqH4lGEn2Vhoije/sPkLMoRkWU3eXulm0SmKe9GJJ5Z+EKD9nUI?=
+ =?us-ascii?Q?yZTEtazxBa+W/SbyVG2dL58DCw84+nDXbNsA4uGnmCYq0o6KGe6W/b4vAQaI?=
+ =?us-ascii?Q?Pt9Eqbu6HneaxuTSlcqHH6YMI/nv2AOPpyzvXkpluNo2PNRMIiTXKyqdtmFQ?=
+ =?us-ascii?Q?IKPjQ4V9dPuRiypkbipDPA23++Kmh/nE4BNAP/KioXJVAFb1frFDd2TKNe/Z?=
+ =?us-ascii?Q?IUfrnj3xokKFwzD4JrNWrdcdyH3DUZwUrwyiIqJ5ECmj9USzjL8TuwunPQbZ?=
+ =?us-ascii?Q?DIjCefsDmw4+UrOKfCc4ln7P4C3nADt/m/k97j/45SslZUwGTYLpUtAyfqSS?=
+ =?us-ascii?Q?chjmSCpTuoYTQEX4Gq3sdsB6lW3QVMv1CdKKWq5fKMCzUDFN6NVrHvRMwnLo?=
+ =?us-ascii?Q?/z7Ro/f9qltcA+nyAz+/ZhzOLiqTOe15wFyHbbb+NmoC1PMQfmhXdDP7p9MQ?=
+ =?us-ascii?Q?OWCVzcvIYeu9e5qq44ZPCCyozJPp+xa2TWgZPT14q8ckx7Eb2G9KrNQ4b5rx?=
+ =?us-ascii?Q?RKstpCsROgXUu/Trz/B+No4OiFw3tUPr6xpubasAH0aCnvNRr/ls0KHi+Zr4?=
+ =?us-ascii?Q?q6wIJ04SqzggyGjtj0D+RncuO6WtT8I4AbfCH8yK8WhvbA4oM9dxh/pOlYx/?=
+ =?us-ascii?Q?QkRIG4bmx5/os1k5vlZpzZERxXgcF/kFJNofj2+OAMgtyTugMyKAC/fEfDa0?=
+ =?us-ascii?Q?FUhOsuDEHnBXajkgfk1eC1/TI1IRfLnhc7dImzyIoMGf4pVGoR9YU6/6nV6z?=
+ =?us-ascii?Q?Evsg5PyIANOgCw0auHWO3ylZJTAHPgxYHfMOAvDhGDQ+NHGBwyq3vnK+lxIC?=
+ =?us-ascii?Q?G/TDAGi3pqDaWnJf0VdxbqyISPfhzVMVhI04GfKxfUeAJURiafjxDkWCZ2ol?=
+ =?us-ascii?Q?ovupckyfESDrtlly9rCJU8ro4U+FcMvt3ZMqcnwoUucwQImtrjGt9G8Sbela?=
+ =?us-ascii?Q?CeE/WpDBW1bh67Wnh9L4H8V+N40lVQ6TBsHlZy9GZiRKUxS4lrqKKBd2+EAY?=
+ =?us-ascii?Q?ORaGp4VSnptWdGq7tZIcdDPTBYJNSAML3Ikavzx3Oea51P/4mFV4u8mXM3UJ?=
+ =?us-ascii?Q?mD86P807evCXxYnbMrVxg4Ks07B2h6TcY5uJZ039g98pLU9q7sa8K/wcLzdK?=
+ =?us-ascii?Q?L60N5FLneteJHLHBa8wQQSeps8SxgUSzQuXjT0oJH0I/DCouSpNEMAttZrh4?=
+ =?us-ascii?Q?Nm4bTrKNjlJzaAyrL9abXi82pcZ9Xp6sDNODS4UkHL1ISB/JNgGvRqUWzasS?=
+ =?us-ascii?Q?1g=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 98ec0949-4047-487a-cdc3-08dafffbaba2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 031ac6cd-5271-4faa-617b-08dafffbac3b
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jan 2023 00:16:00.9356
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jan 2023 00:16:01.9355
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oHVZVkfeBaEePl/NOLhcbOpAAIxPkBCPUkJfLFiYC/uUZGFpFnOTcimu9PsVROviS6gLRApGcR0FEYe9oD2VJw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: dKCfMiNvR6fmxtsyJGPMEoUHR9HHXx/pbWnOibg5l40A+pAzz/6safwTrDqEOMlDjt8vKWhBniYWr84MtD3XCw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB7347
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,T_SPF_PERMERROR autolearn=no
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,RCVD_IN_VALIDITY_RPBL,SPF_HELO_PASS,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently it can happen that an mqprio qdisc is installed with num_tc 8,
-and this will reserve 8 (out of 8) TXQs for the network stack. Then we
-can attach an XDP program, and this will crop 2 TXQs, leaving just 6 for
-mqprio. That's not what the user requested, and we should fail it.
-
-On the other hand, if mqprio isn't requested, we still give the 8 TXQs
-to the network stack (with hashing among a single traffic class), but
-then, cropping 2 TXQs for XDP is fine, because the user didn't
-explicitly ask for any number of TXQs, so no expectations are violated.
-
-Simply put, the logic that mqprio should impose a minimum number of TXQs
-for the network never existed. Let's say (more or less arbitrarily) that
-without mqprio, the driver expects a minimum number of TXQs equal to the
-number of CPUs (on NXP LS1028A, that is either 1, or 2). And with mqprio,
-mqprio gives the minimum required number of TXQs.
+mqprio_init() is quite large and unwieldy to add more code to.
+Split the netlink attribute parsing to a dedicated function.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
-v2->v3: move min_num_stack_tx_queues definition so it doesn't conflict
-        with the ethtool mm patches I haven't submitted yet for enetc
-        (and also to make use of a 4 byte hole)
-v1->v2: patch is new
+v1->v3: none
 
- drivers/net/ethernet/freescale/enetc/enetc.c | 14 ++++++++++++++
- drivers/net/ethernet/freescale/enetc/enetc.h |  3 +++
- 2 files changed, 17 insertions(+)
+ net/sched/sch_mqprio.c | 114 +++++++++++++++++++++++------------------
+ 1 file changed, 63 insertions(+), 51 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index e18a6c834eb4..1c0aeaa13cde 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -2626,6 +2626,7 @@ int enetc_setup_tc_mqprio(struct net_device *ndev, void *type_data)
- 	if (!num_tc) {
- 		netdev_reset_tc(ndev);
- 		netif_set_real_num_tx_queues(ndev, num_stack_tx_queues);
-+		priv->min_num_stack_tx_queues = num_possible_cpus();
+diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
+index 4c68abaa289b..d2d8a02ded05 100644
+--- a/net/sched/sch_mqprio.c
++++ b/net/sched/sch_mqprio.c
+@@ -130,6 +130,67 @@ static int parse_attr(struct nlattr *tb[], int maxtype, struct nlattr *nla,
+ 	return 0;
+ }
  
- 		/* Reset all ring priorities to 0 */
- 		for (i = 0; i < priv->num_tx_rings; i++) {
-@@ -2656,6 +2657,7 @@ int enetc_setup_tc_mqprio(struct net_device *ndev, void *type_data)
- 
- 	/* Reset the number of netdev queues based on the TC count */
- 	netif_set_real_num_tx_queues(ndev, num_tc);
-+	priv->min_num_stack_tx_queues = num_tc;
- 
- 	netdev_set_num_tc(ndev, num_tc);
- 
-@@ -2702,9 +2704,20 @@ static int enetc_reconfigure_xdp_cb(struct enetc_ndev_priv *priv, void *ctx)
- static int enetc_setup_xdp_prog(struct net_device *ndev, struct bpf_prog *prog,
- 				struct netlink_ext_ack *extack)
- {
-+	int num_xdp_tx_queues = prog ? num_possible_cpus() : 0;
- 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
- 	bool extended;
- 
-+	if (priv->min_num_stack_tx_queues + num_xdp_tx_queues >
-+	    priv->num_tx_rings) {
-+		NL_SET_ERR_MSG_FMT_MOD(extack,
-+				       "Reserving %d XDP TXQs does not leave a minimum of %d TXQs for network stack (total %d available)",
-+				       num_xdp_tx_queues,
-+				       priv->min_num_stack_tx_queues,
-+				       priv->num_tx_rings);
-+		return -EBUSY;
++static int mqprio_parse_nlattr(struct Qdisc *sch, struct tc_mqprio_qopt *qopt,
++			       struct nlattr *opt)
++{
++	struct mqprio_sched *priv = qdisc_priv(sch);
++	struct nlattr *tb[TCA_MQPRIO_MAX + 1];
++	struct nlattr *attr;
++	int i, rem, err;
++
++	err = parse_attr(tb, TCA_MQPRIO_MAX, opt, mqprio_policy,
++			 sizeof(*qopt));
++	if (err < 0)
++		return err;
++
++	if (!qopt->hw)
++		return -EINVAL;
++
++	if (tb[TCA_MQPRIO_MODE]) {
++		priv->flags |= TC_MQPRIO_F_MODE;
++		priv->mode = *(u16 *)nla_data(tb[TCA_MQPRIO_MODE]);
 +	}
 +
- 	extended = !!(priv->active_offloads & ENETC_F_RX_TSTAMP);
- 
- 	/* The buffer layout is changing, so we need to drain the old
-@@ -2989,6 +3002,7 @@ int enetc_alloc_msix(struct enetc_ndev_priv *priv)
- 	if (err)
- 		goto fail;
- 
-+	priv->min_num_stack_tx_queues = num_possible_cpus();
- 	first_xdp_tx_ring = priv->num_tx_rings - num_possible_cpus();
- 	priv->xdp_tx_ring = &priv->tx_ring[first_xdp_tx_ring];
- 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
-index 1fe8dfd6b6d4..e21d096c5a90 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.h
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.h
-@@ -369,6 +369,9 @@ struct enetc_ndev_priv {
- 
- 	struct psfp_cap psfp_cap;
- 
-+	/* Minimum number of TX queues required by the network stack */
-+	unsigned int min_num_stack_tx_queues;
++	if (tb[TCA_MQPRIO_SHAPER]) {
++		priv->flags |= TC_MQPRIO_F_SHAPER;
++		priv->shaper = *(u16 *)nla_data(tb[TCA_MQPRIO_SHAPER]);
++	}
 +
- 	struct phylink *phylink;
- 	int ic_mode;
- 	u32 tx_ictt;
++	if (tb[TCA_MQPRIO_MIN_RATE64]) {
++		if (priv->shaper != TC_MQPRIO_SHAPER_BW_RATE)
++			return -EINVAL;
++		i = 0;
++		nla_for_each_nested(attr, tb[TCA_MQPRIO_MIN_RATE64],
++				    rem) {
++			if (nla_type(attr) != TCA_MQPRIO_MIN_RATE64)
++				return -EINVAL;
++			if (i >= qopt->num_tc)
++				break;
++			priv->min_rate[i] = *(u64 *)nla_data(attr);
++			i++;
++		}
++		priv->flags |= TC_MQPRIO_F_MIN_RATE;
++	}
++
++	if (tb[TCA_MQPRIO_MAX_RATE64]) {
++		if (priv->shaper != TC_MQPRIO_SHAPER_BW_RATE)
++			return -EINVAL;
++		i = 0;
++		nla_for_each_nested(attr, tb[TCA_MQPRIO_MAX_RATE64],
++				    rem) {
++			if (nla_type(attr) != TCA_MQPRIO_MAX_RATE64)
++				return -EINVAL;
++			if (i >= qopt->num_tc)
++				break;
++			priv->max_rate[i] = *(u64 *)nla_data(attr);
++			i++;
++		}
++		priv->flags |= TC_MQPRIO_F_MAX_RATE;
++	}
++
++	return 0;
++}
++
+ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
+ 		       struct netlink_ext_ack *extack)
+ {
+@@ -139,9 +200,6 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
+ 	struct Qdisc *qdisc;
+ 	int i, err = -EOPNOTSUPP;
+ 	struct tc_mqprio_qopt *qopt = NULL;
+-	struct nlattr *tb[TCA_MQPRIO_MAX + 1];
+-	struct nlattr *attr;
+-	int rem;
+ 	int len;
+ 
+ 	BUILD_BUG_ON(TC_MAX_QUEUE != TC_QOPT_MAX_QUEUE);
+@@ -166,55 +224,9 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
+ 
+ 	len = nla_len(opt) - NLA_ALIGN(sizeof(*qopt));
+ 	if (len > 0) {
+-		err = parse_attr(tb, TCA_MQPRIO_MAX, opt, mqprio_policy,
+-				 sizeof(*qopt));
+-		if (err < 0)
++		err = mqprio_parse_nlattr(sch, qopt, opt);
++		if (err)
+ 			return err;
+-
+-		if (!qopt->hw)
+-			return -EINVAL;
+-
+-		if (tb[TCA_MQPRIO_MODE]) {
+-			priv->flags |= TC_MQPRIO_F_MODE;
+-			priv->mode = *(u16 *)nla_data(tb[TCA_MQPRIO_MODE]);
+-		}
+-
+-		if (tb[TCA_MQPRIO_SHAPER]) {
+-			priv->flags |= TC_MQPRIO_F_SHAPER;
+-			priv->shaper = *(u16 *)nla_data(tb[TCA_MQPRIO_SHAPER]);
+-		}
+-
+-		if (tb[TCA_MQPRIO_MIN_RATE64]) {
+-			if (priv->shaper != TC_MQPRIO_SHAPER_BW_RATE)
+-				return -EINVAL;
+-			i = 0;
+-			nla_for_each_nested(attr, tb[TCA_MQPRIO_MIN_RATE64],
+-					    rem) {
+-				if (nla_type(attr) != TCA_MQPRIO_MIN_RATE64)
+-					return -EINVAL;
+-				if (i >= qopt->num_tc)
+-					break;
+-				priv->min_rate[i] = *(u64 *)nla_data(attr);
+-				i++;
+-			}
+-			priv->flags |= TC_MQPRIO_F_MIN_RATE;
+-		}
+-
+-		if (tb[TCA_MQPRIO_MAX_RATE64]) {
+-			if (priv->shaper != TC_MQPRIO_SHAPER_BW_RATE)
+-				return -EINVAL;
+-			i = 0;
+-			nla_for_each_nested(attr, tb[TCA_MQPRIO_MAX_RATE64],
+-					    rem) {
+-				if (nla_type(attr) != TCA_MQPRIO_MAX_RATE64)
+-					return -EINVAL;
+-				if (i >= qopt->num_tc)
+-					break;
+-				priv->max_rate[i] = *(u64 *)nla_data(attr);
+-				i++;
+-			}
+-			priv->flags |= TC_MQPRIO_F_MAX_RATE;
+-		}
+ 	}
+ 
+ 	/* pre-allocate qdisc, attachment can't fail */
 -- 
 2.34.1
 
