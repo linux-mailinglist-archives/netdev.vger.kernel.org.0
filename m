@@ -2,219 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3BE767E889
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 15:44:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 500DD67E853
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 15:33:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233757AbjA0Ooj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 09:44:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54290 "EHLO
+        id S233326AbjA0OdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 09:33:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230423AbjA0Ooi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 09:44:38 -0500
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2070.outbound.protection.outlook.com [40.107.95.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84FC27DBE7;
-        Fri, 27 Jan 2023 06:44:37 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DrnnBSBMZFm5ZTQxoH3l1TNQFV7hXCDi4lm6q16DiOFgM/ewBuK7AqYiwyidttV28qDlNAJNPkXS7wOciawKL2lZjAdDakYY+dv/ih6kcz0WsmRxl0qU8cda2+NXjzKpC7ncmRYOIU2wu6V+kv5705OkBVgoDCwFwUzLT8Ext8F952foH4hq0bI2AbPPq2U1YQ51Dc3A8i2qo09tBv3waNMtOt4atv4lwibZp1PUFN8ef0o4qvZ4lleLmy/kd5NP2m4+isTAVo35QZPlvzMS+k5qf420pkJAj5Oa7/1L6t1Q/9e8WHw6yqCV8n0jNLITXBdHpfITiXSa+pSuBxTyLw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yIq/f+MlrXemkUn2KwP3Vd5EB4Af8Ean9vt4f2VAZjA=;
- b=mk8DSXsb4tGnE8YZPwUhvkGFkUBtV/IzE+VwJ3bvBUBJlUZdyTINI3weddBHQHvloh0O7O6EWUkZVLuMaGVkkBGBbY5LqjQmS3bcqCu5ZDb6vZPhab+K6/dRilLDyRt4oBeicPji0WGCbwBED3q4KazmKHhaehHnIsDt2yxOPL529O+WHvwQAH7s3ogrsqdR75MnUkvD/9dX33XxVX5s1/nn3VsCtvYVyWAT++YCZMGQmAmNqw5PS8txdSFLKv04cnh8evHRweFjmHQjPjOPo83U6rmoyH3+NbmSaHNdvjSFsTE5PSM8X+0wmCu/MKaFniwW2FygdoVhlEabdsyGCQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yIq/f+MlrXemkUn2KwP3Vd5EB4Af8Ean9vt4f2VAZjA=;
- b=Ujivl0FQ02eWUptu2R8Pfho+ZCFpg2y/MCcseDN0hB8GWXcsB/iW9GwS6CmNP8BgOer7seRrzjoyPRvuNKmmFguauUP/BbJCKBaylztVYep9R/6Gy3HB+NnFYmY+1fdIDAh7og51XO0R4oaTD49rYoRXb351P6qfyXsRlexpYr6TBU7eQI1t1RWQ8JriOFemDUmx+yrq50d27M/09c+Hzupojeukh8GXGUeLHTH1Tj+a7omv9JKm1M3bkVbmDqcgcxZlh5WDljJE4vpGYOeHXx/CgWiYeCugb6nNj1cpILIUZlbTTLybKLvJ5jw6MgFvLSvgkc6RDVLKjfQojyrgSA==
-Received: from BL0PR02CA0087.namprd02.prod.outlook.com (2603:10b6:208:51::28)
- by SA0PR12MB4400.namprd12.prod.outlook.com (2603:10b6:806:95::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.23; Fri, 27 Jan
- 2023 14:44:35 +0000
-Received: from BL02EPF000108EA.namprd05.prod.outlook.com
- (2603:10b6:208:51:cafe::18) by BL0PR02CA0087.outlook.office365.com
- (2603:10b6:208:51::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.25 via Frontend
- Transport; Fri, 27 Jan 2023 14:44:35 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BL02EPF000108EA.mail.protection.outlook.com (10.167.241.203) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6043.13 via Frontend Transport; Fri, 27 Jan 2023 14:44:35 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 27 Jan
- 2023 06:44:21 -0800
-Received: from yaviefel (10.126.230.37) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 27 Jan
- 2023 06:44:18 -0800
-References: <cover.1674752051.git.petrm@nvidia.com>
- <ed2e2e305dd49423745b62c0152a0b85bc84a767.1674752051.git.petrm@nvidia.com>
- <20230126125344.1b7b34e2@gandalf.local.home>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-CC:     Petr Machata <petrm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S233338AbjA0OdC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 09:33:02 -0500
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08350EC68
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 06:32:57 -0800 (PST)
+Received: by mail-io1-xd2d.google.com with SMTP id k3so407939ioc.10
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 06:32:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=4VJl1LFj78awaMi5u1yCyS89RCOFZobWhyD03Egy1dY=;
+        b=e2S+T+hw8P+2HOsuX++A4wB4qB0exNACPcbnqddJ1iayW63HOp3y7k999fxSY+GNQm
+         WKLwzxo9LrgQ4PKeLugPBdT2kFegxKKjrL89ZJRlHWpJz5DpUOJMwKwnwU76zfPBL+dk
+         6WwLjwPZZbN5HMkYP/crQbMNgnA2BVT4itYy3x2uRkx9Pk4Gq0BH85yZ2mj2BcPj1jEO
+         aJJmcVBgCyIXqiuCL8lYUX0UMRltMyYishf11RCDCu3PRHGmXkAHE7pc0DYCKJJUhXlj
+         K0s+xY04Wsu7L05JBk9Ic/1trtNjjF9ZB9iwVjsJsCqZ3WX1aNftxv5F80uLd4AWvgb7
+         Dvjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4VJl1LFj78awaMi5u1yCyS89RCOFZobWhyD03Egy1dY=;
+        b=vdNqqBk3FyFe/G3gwwKJX/uj9KKSoroeT9JZuOO+cAGyzZS0RaZNvrXaJbQbblZ8Ws
+         XQeE/YYppEVegrSpbvGLv2ufzI3EH5bYKTMeixwOR0ko3rHqaV49SgxSJ7amQahQ7olm
+         +oegSfpwZZ1q/DJgSLiQJkxxVTEbm5uUOPkMPWKc3+4WwOQTa/1vttbHbk33Uy5699CS
+         ypaCjdTaTExHt7X2lfFuC6Dpk+oyBUQULwIiCwHvMmftASW2OKgOKJbs0osHnSOtmmL3
+         77X2iHk3wrWVxENg6q8TE0RK2SCsRtUYuE0oOW8maXCYce3TWT1WkajsvawhROf9QT37
+         I0YA==
+X-Gm-Message-State: AO0yUKVDpETn7qv1IJdQiciuxb+jUvoA2fY82P4pi1O8sKNReBtHeex3
+        JcylmrLDcznan6GT16pMoQP6GEGIEJKIohq3qhpErA==
+X-Google-Smtp-Source: AK7set+3mZJkF8fkciCG6VzvikUhcMDERUzDhLStD/6poffAcfmiE2I8eb4RebH3huth4FaWurCefne/onY5y8p1T2A=
+X-Received: by 2002:a02:ad06:0:b0:3a9:5776:864 with SMTP id
+ s6-20020a02ad06000000b003a957760864mr1383179jan.67.1674829976842; Fri, 27 Jan
+ 2023 06:32:56 -0800 (PST)
+MIME-Version: 1.0
+References: <20230127140944.265135-1-andrei.gherzan@canonical.com> <20230127140944.265135-3-andrei.gherzan@canonical.com>
+In-Reply-To: <20230127140944.265135-3-andrei.gherzan@canonical.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Date:   Fri, 27 Jan 2023 06:32:44 -0800
+Message-ID: <CANP3RGchqLRLRAxgWU69DzWfa9R2d0AhgeBdpJhmaE+c-Sszjw@mail.gmail.com>
+Subject: Re: [PATCH v3 3/3] selftests: net: Fix udpgro_frglist.sh shellcheck
+ warnings and errors
+To:     Andrei Gherzan <andrei.gherzan@canonical.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>, Roopa Prabhu <roopa@nvidia.com>,
-        "Nikolay Aleksandrov" <razor@blackwall.org>,
-        <netdev@vger.kernel.org>, <bridge@lists.linux-foundation.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        <linux-trace-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 06/16] net: bridge: Add a tracepoint for MDB
- overflows
-Date:   Fri, 27 Jan 2023 15:29:19 +0100
-In-Reply-To: <20230126125344.1b7b34e2@gandalf.local.home>
-Message-ID: <87h6wc3um7.fsf@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.230.37]
-X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF000108EA:EE_|SA0PR12MB4400:EE_
-X-MS-Office365-Filtering-Correlation-Id: 872ff41b-fb92-4125-1378-08db0075029d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cZsZzyvAjV00LF+bJK7k5kr8FgS8P5fTDIOGAJKpBM4Nvy2yYLL9B97b+zuAzs5GECj4j+/mX7CuBX6E1Kz5r0B50g8gAJTIAAk2YbaTbiiIzOoabRG9h4IBZ0oxJRCbV/xvxAbfG5BAcJe2T2P3pmbL1RDl75AjL8UOcJgFXhaBRkZ8BDb3haLoPB+YM/9K5Lrfdn/BTDUkw2kJRIrNr8x2eEHyxJy6QNZB3FfytPd2AdITgiKUAZU5+6JUwNYV3SSWoSQI0fmqRqCCIZncjvLWkdHQM1BsgyZpHc0jkjyULM/oaLpZNLSwiHuhEObmFRpNstGFmr74xeiBv31z2ubgNN6+J2QYpFD3CNbcScKFY9l9tp3/MK3KEbz9fpyDDfjtZMy2TxCrsTElsHhPt8oV+e8ZdLZS1ys5UKCj5XDQTU4mIFUI87/W7GNhQRnLjkExospz/qF/VbbGcD3DC9Es+IOZsP5oIyn2EezESh6xkm777wtwPj24xsJEoq1ncv0D7PTGAyQuea94UpUc/GK+e17acwxSKLTBFBFrlER8WnEWz0iXkb8VEBmS1SGzwMS8MaWjoJEa8OUA+GY3HtsxAjdc8XSKAUEsk5yAfzSp/wCMht6Urrk46mvO/lwuG9yNpVBtBLRiE7KP17xaUNSRXhr0W5+gEwcJgVfdRQbH5GVUO3XajmlOQS9iJz0r8Ra5j0vrQQfmDKC1p+DOSQ==
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(136003)(346002)(396003)(376002)(451199018)(46966006)(40470700004)(36840700001)(4326008)(8676002)(41300700001)(6916009)(83380400001)(70206006)(70586007)(54906003)(8936002)(316002)(40460700003)(26005)(36756003)(186003)(16526019)(356005)(47076005)(426003)(36860700001)(40480700001)(2906002)(5660300002)(336012)(7636003)(82740400003)(86362001)(478600001)(82310400005)(2616005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jan 2023 14:44:35.5891
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 872ff41b-fb92-4125-1378-08db0075029d
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BL02EPF000108EA.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4400
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Lina Wang <lina.wang@mediatek.com>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jan 27, 2023 at 6:09 AM Andrei Gherzan
+<andrei.gherzan@canonical.com> wrote:
+>
+> This change fixes the following shellcheck warnings and errors:
+>
+> * SC2155 (warning): Declare and assign separately to avoid masking return
+>   values.
+> * SC2124 (warning): Assigning an array to a string! Assign as array, or use
+>   instead of @ to concatenate.
+> * SC2034 (warning): ipv4_args appears unused. Verify use (or export if used
+>   externally).
+> * SC2242 (error): Can only exit with status 0-255. Other data should be
+>   written to stdout/stderr.
+> * SC2068 (error): Double quote array expansions to avoid re-splitting
+>   elements.
+>
+> Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-tests")
+> Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
+> ---
+>  tools/testing/selftests/net/udpgro_frglist.sh | 20 +++++++++----------
+>  1 file changed, 10 insertions(+), 10 deletions(-)
+>
+> diff --git a/tools/testing/selftests/net/udpgro_frglist.sh b/tools/testing/selftests/net/udpgro_frglist.sh
+> index e1ca49de2491..97bf20e9afd8 100755
+> --- a/tools/testing/selftests/net/udpgro_frglist.sh
+> +++ b/tools/testing/selftests/net/udpgro_frglist.sh
+> @@ -3,7 +3,8 @@
+>  #
+>  # Run a series of udpgro benchmarks
+>
+> -readonly PEER_NS="ns-peer-$(mktemp -u XXXXXX)"
+> +PEER_NS="ns-peer-$(mktemp -u XXXXXX)"
+> +readonly PEER_NS
+>
+>  BPF_FILE="../bpf/xdp_dummy.bpf.o"
+>  BPF_NAT6TO4_FILE="nat6to4.o"
+> @@ -19,7 +20,7 @@ trap cleanup EXIT
+>
+>  run_one() {
+>         # use 'rx' as separator between sender args and receiver args
+> -       local -r all="$@"
+> +       local -r all="$*"
 
-Steven Rostedt <rostedt@goodmis.org> writes:
+this should technically use arrays, something like
 
->> diff --git a/include/trace/events/bridge.h b/include/trace/events/bridge.h
->> index 6b200059c2c5..00d5e2dcb3ad 100644
->> --- a/include/trace/events/bridge.h
->> +++ b/include/trace/events/bridge.h
->> @@ -122,6 +122,73 @@ TRACE_EVENT(br_fdb_update,
->>  		  __entry->flags)
->>  );
->>  
->> +TRACE_EVENT(br_mdb_full,
->> +
->> +	TP_PROTO(const struct net_device *dev,
->> +		 const struct br_ip *group),
->> +
->> +	TP_ARGS(dev, group),
->> +
->> +	TP_STRUCT__entry(
->> +		__string(dev, dev->name)
->> +		__field(int, af)
->> +		__field(u16, vid)
->> +		__array(__u8, src4, 4)
->> +		__array(__u8, src6, 16)
->> +		__array(__u8, grp4, 4)
->> +		__array(__u8, grp6, 16)
->> +		__array(__u8, grpmac, ETH_ALEN) /* For af == 0. */
->
-> Instead of wasting ring buffer space, why not just have:
->
-> 		__array(__u8, src, 16)
-> 		__array(__u8, grp, 16)
->
->> +	),
->> +
->> +	TP_fast_assign(
->> +		__assign_str(dev, dev->name);
->> +		__entry->vid = group->vid;
->> +
->> +		if (!group->proto) {
->> +			__entry->af = 0;
->> +
->> +			memset(__entry->src4, 0, sizeof(__entry->src4));
->> +			memset(__entry->src6, 0, sizeof(__entry->src6));
->> +			memset(__entry->grp4, 0, sizeof(__entry->grp4));
->> +			memset(__entry->grp6, 0, sizeof(__entry->grp6));
->> +			memcpy(__entry->grpmac, group->dst.mac_addr, ETH_ALEN);
->> +		} else if (group->proto == htons(ETH_P_IP)) {
->> +			__be32 *p32;
->> +
->> +			__entry->af = AF_INET;
->> +
->> +			p32 = (__be32 *) __entry->src4;
->> +			*p32 = group->src.ip4;
->> +
->> +			p32 = (__be32 *) __entry->grp4;
->> +			*p32 = group->dst.ip4;
->
-> 			struct in6_addr *in6;
->
-> 			in6 = (struct in6_addr *)__entry->src;
-> 			ipv6_addr_set_v4mapped(group->src.ip4, in6);
->
-> 			in6 = (struct in6_addr *)__entry->grp;
-> 			ipv6_addr_set_v4mapped(group->grp.ip4, in6);
->
->> +
->> +			memset(__entry->src6, 0, sizeof(__entry->src6));
->> +			memset(__entry->grp6, 0, sizeof(__entry->grp6));
->> +			memset(__entry->grpmac, 0, ETH_ALEN);
->> +#if IS_ENABLED(CONFIG_IPV6)
->> +		} else {
->> +			struct in6_addr *in6;
->> +
->> +			__entry->af = AF_INET6;
->> +
->> +			in6 = (struct in6_addr *)__entry->src6;
->> +			*in6 = group->src.ip6;
->> +
->> +			in6 = (struct in6_addr *)__entry->grp6;
->> +			*in6 = group->dst.ip6;
->> +
->> +			memset(__entry->src4, 0, sizeof(__entry->src4));
->> +			memset(__entry->grp4, 0, sizeof(__entry->grp4));
->> +			memset(__entry->grpmac, 0, ETH_ALEN);
->> +#endif
->> +		}
->> +	),
->> +
->> +	TP_printk("dev %s af %u src %pI4/%pI6c grp %pI4/%pI6c/%pM vid %u",
->> +		  __get_str(dev), __entry->af, __entry->src4, __entry->src6,
->> +		  __entry->grp4, __entry->grp6, __entry->grpmac, __entry->vid)
->
-> And just have: 
->
-> 	TP_printk("dev %s af %u src %pI6c grp %pI6c/%pM vid %u",
-> 		  __get_str(dev), __entry->af, __entry->src, __entry->grp,
-> 		  __entry->grpmac, __entry->vid)
->
-> As the %pI6c should detect that it's a ipv4 address and show that.
+local -a -r args=("$@")
 
-So the reason I split the fields was that %pI4, %pI6c, %pM do not seem
-to work with buffers of wrong size.
+but perhaps just get rid of args and just use "$@" directly below
 
-But I can consolidate 4/6 by changing the address to IPv6 like you
-propose. I'll do this for v2. Thanks!
+>         local -r tx_args=${all%rx*}
+>         local rx_args=${all#*rx}
+>
+> @@ -56,13 +57,13 @@ run_one() {
+>  }
+>
+>  run_in_netns() {
+> -       local -r args=$@
+> +       local -r args="$*"
+>    echo ${args}
+>         ./in_netns.sh $0 __subprocess ${args}
+
+ie. here could just use "$@" directly twice instead of defining args.
+$0 should be doublequoted - though I guess it'll never be empty, and
+is unlikely to include spaces.
+>  }
+>
+>  run_udp() {
+> -       local -r args=$@
+> +       local -r args="$*"
+>
+>         echo "udp gso - over veth touching data"
+>         run_in_netns ${args} -u -S 0 rx -4 -v
+> @@ -72,7 +73,7 @@ run_udp() {
+>  }
+>
+>  run_tcp() {
+> -       local -r args=$@
+> +       local -r args="$*"
+>
+>         echo "tcp - over veth touching data"
+>         run_in_netns ${args} -t rx -4 -t
+> @@ -80,7 +81,6 @@ run_tcp() {
+>
+>  run_all() {
+>         local -r core_args="-l 4"
+
+is this still useful? embed directly in ipv6_args
+
+> -       local -r ipv4_args="${core_args} -4  -D 192.168.1.1"
+
+perhaps this should stay as a comment??
+
+>         local -r ipv6_args="${core_args} -6  -D 2001:db8::1"
+>
+>         echo "ipv6"
+> @@ -90,19 +90,19 @@ run_all() {
+>
+>  if [ ! -f ${BPF_FILE} ]; then
+
+double quote
+"${BPF_FILE}"
+in case space in file name
+
+>         echo "Missing ${BPF_FILE}. Build bpf selftest first"
+> -       exit -1
+> +       exit 1
+>  fi
+>
+>  if [ ! -f "$BPF_NAT6TO4_FILE" ]; then
+
+there seems to be inconsistency around [ vs [[, use [[ if relying on bash anyway
+
+>         echo "Missing nat6to4 helper. Build bpf nat6to4.o selftest first"
+> -       exit -1
+> +       exit 1
+>  fi
+>
+>  if [[ $# -eq 0 ]]; then
+>         run_all
+>  elif [[ $1 == "__subprocess" ]]; then
+
+while this does indeed work, imho $1 should be "$1" to be less confusing
+
+>         shift
+> -       run_one $@
+> +       run_one "$@"
+>  else
+> -       run_in_netns $@
+> +       run_in_netns "$@"
+>  fi
+> --
+> 2.34.1
