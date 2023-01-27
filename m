@@ -2,91 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EAC2767F17C
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 23:54:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AAC567F196
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 23:59:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232265AbjA0WyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 17:54:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45992 "EHLO
+        id S232243AbjA0W7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 17:59:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231929AbjA0Wx5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 17:53:57 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A71448F;
-        Fri, 27 Jan 2023 14:53:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674860027; x=1706396027;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=k0FW4EkggWQRCfPtZeaDhmMpy1hVsTfGGXcTPn3H24A=;
-  b=HK7LdYqp860nFikrxJJbTA/PmbgW8uOK+ZrV6K5dUe1tDeD9eiDlqFSC
-   JFeJwcq2KvG/Ddp6xM2eNdogM/v+HA7ysBsC2MXZpZbmWTwzhX90d5diJ
-   8cwvUTZGxV3i2F+HWHJ0W0PGT9kYx/KHLBgpdfThQwxZEDnpKVvkJPO90
-   +BZhheZSb+AW84Wsb1DwpfvasHNkjmUgOGu7Rw5ube1jqBmwfN97Qds/z
-   t/9w1mmczb9lSA8DWUdhEHd1w8upMjkf5kp6MIbzQb+yD8du7MhVQqnOC
-   xBWDQJxw+/CG8D+ChHPL8Qm9IqH9j53AQiqBx80Us1yXTiIOsFjg7ONke
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10603"; a="327229824"
-X-IronPort-AV: E=Sophos;i="5.97,252,1669104000"; 
-   d="scan'208";a="327229824"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2023 14:53:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10603"; a="805976405"
-X-IronPort-AV: E=Sophos;i="5.97,252,1669104000"; 
-   d="scan'208";a="805976405"
-Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by fmsmga001.fm.intel.com with ESMTP; 27 Jan 2023 14:53:37 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Michal Wilczynski <michal.wilczynski@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com, corbet@lwn.net,
-        linux-doc@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: [PATCH net v4 2/2] ice: Fix broken link in ice NAPI doc
-Date:   Fri, 27 Jan 2023 14:53:33 -0800
-Message-Id: <20230127225333.1534783-3-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20230127225333.1534783-1-anthony.l.nguyen@intel.com>
-References: <20230127225333.1534783-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S232256AbjA0W7a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 17:59:30 -0500
+Received: from smtp.chopps.org (smtp.chopps.org [54.88.81.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AEEB57BBF2
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 14:59:29 -0800 (PST)
+Received: from labnh.big (172-222-091-149.res.spectrum.com [172.222.91.149])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by smtp.chopps.org (Postfix) with ESMTPSA id 4B8F77D11E;
+        Fri, 27 Jan 2023 22:59:28 +0000 (UTC)
+From:   Christian Hopps <chopps@chopps.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>, devel@linux-ipsec.org
+Cc:     Christian Hopps <chopps@chopps.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        chopps@labn.net
+Subject: [PATCH ipsec-next v3] xfrm: fix bug with DSCP copy to v6 from v4 tunnel
+Date:   Fri, 27 Jan 2023 17:58:20 -0500
+Message-Id: <20230127225821.1909363-1-chopps@chopps.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230126102933.1245451-1-chopps@labn.net>
+References: <20230126102933.1245451-1-chopps@labn.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Wilczynski <michal.wilczynski@intel.com>
+When copying the DSCP bits for decap-dscp into IPv6 don't assume the
+outer encap is always IPv6. Instead, as with the inner IPv4 case, copy
+the DSCP bits from the correctly saved "tos" value in the control block.
 
-Current link for NAPI documentation in ice driver doesn't work - it
-returns 404. Update the link to the working one.
-
-Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
-Acked-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Christian Hopps <chopps@labn.net>
 ---
- Documentation/networking/device_drivers/ethernet/intel/ice.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/xfrm/xfrm_input.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/Documentation/networking/device_drivers/ethernet/intel/ice.rst b/Documentation/networking/device_drivers/ethernet/intel/ice.rst
-index dc2e60ced927..b481b81f3be5 100644
---- a/Documentation/networking/device_drivers/ethernet/intel/ice.rst
-+++ b/Documentation/networking/device_drivers/ethernet/intel/ice.rst
-@@ -819,7 +819,7 @@ NAPI
- ----
- This driver supports NAPI (Rx polling mode).
- For more information on NAPI, see
--https://www.linuxfoundation.org/collaborate/workgroups/networking/napi
-+https://wiki.linuxfoundation.org/networking/napi
+diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+index c06e54a10540..436d29640ac2 100644
+--- a/net/xfrm/xfrm_input.c
++++ b/net/xfrm/xfrm_input.c
+@@ -279,8 +279,7 @@ static int xfrm6_remove_tunnel_encap(struct xfrm_state *x, struct sk_buff *skb)
+ 		goto out;
  
+ 	if (x->props.flags & XFRM_STATE_DECAP_DSCP)
+-		ipv6_copy_dscp(ipv6_get_dsfield(ipv6_hdr(skb)),
+-			       ipipv6_hdr(skb));
++		ipv6_copy_dscp(XFRM_MODE_SKB_CB(skb)->tos, ipipv6_hdr(skb));
+ 	if (!(x->props.flags & XFRM_STATE_NOECN))
+ 		ipip6_ecn_decapsulate(skb);
  
- MACVLAN
 -- 
-2.38.1
+2.34.1
 
