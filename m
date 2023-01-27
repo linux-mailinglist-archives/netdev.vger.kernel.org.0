@@ -2,229 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B54067E524
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 13:28:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C097567E52E
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 13:29:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232932AbjA0M2K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 07:28:10 -0500
+        id S231675AbjA0M3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 07:29:38 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232859AbjA0M1n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 07:27:43 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66C1E116
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 04:27:02 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id f12-20020a7bc8cc000000b003daf6b2f9b9so5294752wml.3
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 04:27:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8pMkhHFB/0sHM3YaN1HEXuPibcrXDNuPK6D7uK+Id9U=;
-        b=lQ/4mVgQiAmuB+FsdsJbbbOkXqgqSj0xsKckH+v+CniakQb7iBWnGboD/TqhaRrT4x
-         RYLZX62C3prpzOD+8MqAkiquc+icSpiMD1K3a/aBX8xjQLfot8SRS9bWZHhwrsKunWvq
-         pBc5VGfY2E0UnOqUidzcudbindwiRfYR30PM+C53ZQKQ8Al+GUNsKaOkwGMl3HF04ypP
-         UWO/uHHTwViKyzYuR2I34mtJI3gOLSGlxgHJc8vJvlUZ/EOUmY2QvsiOpCE8PDMoLwRP
-         tcVA3bQvt3GD5sl2AuV2JeFmHBpVB6c8aM1p+RNH9Fw3XmCSvllCYe1zmjK92V3IW9gm
-         XXXQ==
+        with ESMTP id S232433AbjA0M3d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 07:29:33 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8962479233
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 04:28:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1674822489;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5xclzS60WKfmjFavTzqp+B0Uxio42pgew/o/vyaA76o=;
+        b=BfVYgSjc8rxSby7ysNQrFh5Z105JXfuyHMBakwupYe24aR9/JjvIEurhHM5yy91iIT+Ojb
+        luhjWbKowqDjvGMSb+SvQvzkGB24erHWW0lE8yZslM/A+aL79rYyIdXN9gqJY+C1kdckp8
+        4VYHw9JCQOmSGIu1gYnLEEMNyxu5qWc=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-119-l4u3VIcRP22soTcHhZiVBw-1; Fri, 27 Jan 2023 07:28:06 -0500
+X-MC-Unique: l4u3VIcRP22soTcHhZiVBw-1
+Received: by mail-qv1-f69.google.com with SMTP id ob12-20020a0562142f8c00b004c6c72bf1d0so2688424qvb.9
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 04:28:06 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8pMkhHFB/0sHM3YaN1HEXuPibcrXDNuPK6D7uK+Id9U=;
-        b=e8tzIIehu1vK1WF0H9mXKxYgLndnx9zJjp1X0KV/s3m5wNqFLFbeyfsFDcN11lFkXR
-         eF4mFn+AXScHQggbzXGtJDgU/ISDzD6vMExFDXKjePKYZBRIeJwZFdYztqpVh0bm2INj
-         j6RDCeJxXeZdbLOjqJGu9mUaq+k5vpEdTcvBEGW+vLx/OwzZnoEYHLVRLOl6LkyDjCKv
-         2NsXHdNzb4xyMgx9qgvrDLwetGWYoG/wI+q8vKf4O6uA8/U+TeFgUOJfp2Rh5j4Q+f1Z
-         zCFP1LWYNJU8vMAynkoosTbObI845l6VOU2IEz9eA/fvarni7OUQCA4ii1GGLGwGJ4IR
-         UgYw==
-X-Gm-Message-State: AFqh2kq/C+FtyMfDz74QKRYdF/IkZyRCCCEyNo373zFQ6iPtc1FjrG2m
-        cwFHcrGLT+qL4UdhXWM/LrA=
-X-Google-Smtp-Source: AMrXdXvtnWtG7ri1sXZDtBzNr5sIPtB9DDa2KHwO0KvlhT9RjMZ4PHhjaR5TYwiBx1PCZCzQxoPV2Q==
-X-Received: by 2002:a05:600c:224b:b0:3d2:640:c4e5 with SMTP id a11-20020a05600c224b00b003d20640c4e5mr40158948wmm.8.1674822420849;
-        Fri, 27 Jan 2023 04:27:00 -0800 (PST)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id c42-20020a05600c4a2a00b003da105437besm4212106wmp.29.2023.01.27.04.27.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Jan 2023 04:27:00 -0800 (PST)
-Date:   Fri, 27 Jan 2023 12:26:58 +0000
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-net-drivers (AMD-Xilinx)" <linux-net-drivers@amd.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>
-Subject: Re: [PATCH v3 net-next 2/8] sfc: add devlink info support for ef100
-Message-ID: <Y9PDEkx8/ZEsDR5b@gmail.com>
-Mail-Followup-To: "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-net-drivers (AMD-Xilinx)" <linux-net-drivers@amd.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>
-References: <20230127093651.54035-1-alejandro.lucero-palau@amd.com>
- <20230127093651.54035-3-alejandro.lucero-palau@amd.com>
- <Y9OzfKzbuSDAD12v@gmail.com>
- <cff1da82-f2c2-773b-b8cb-64ab26d49d9e@amd.com>
+        bh=5xclzS60WKfmjFavTzqp+B0Uxio42pgew/o/vyaA76o=;
+        b=w1vrWab5VYbusU0ZX+aAGqBob+pyEuhl6bVk+xAJan1mdk2FsEpsI7nbG+pOgknZVf
+         //jWH8yGCxREDgNnHZgVskwGAQ11PvnvNH0N93lT6ad3IhDztOzmzP8QAcNZ3GLZL3Su
+         IrDC6b6Qt1YXedrZAWSqV1lkmecM5dokiVdCQSS1gazM1pS9vWBjUSBCl+HuwJYLXLof
+         a4Z5Vl2U4jW6CRmJCb7oWwVWl9LD0+eXb0oepaGlDU7teIUIeOC5bIPIB8/M0fOPKUgp
+         lYdjF7IXP0t/Ih8Mxy/Fa3zly/LPPI2fhUsUmGk8IDZOj9BmSklsmRTvNlbeoCyle7aF
+         5pYg==
+X-Gm-Message-State: AO0yUKX7FIR1XgOsbiL8+gNs6lULvBlJ8u0/eW8boFWiJjSmiLpPZpxK
+        Sx4ZNB0+tC6TzcuzQ69HloZ5WyPv//GMOS2v7cQ8WinI+s4knGfmL6qbJYTcX48HalTKjiDAKgN
+        4jpkfMgmSJ3g1k3Z2
+X-Received: by 2002:a05:622a:1016:b0:3b8:248b:a035 with SMTP id d22-20020a05622a101600b003b8248ba035mr2601182qte.19.1674822485731;
+        Fri, 27 Jan 2023 04:28:05 -0800 (PST)
+X-Google-Smtp-Source: AK7set8IDSemL3lqiCbkX9GCb5pAEaPeJPkc2xzrAclCoOfx1/pjTc6meh6Iz3ye7+UdTcLWZOvLSQ==
+X-Received: by 2002:a05:622a:1016:b0:3b8:248b:a035 with SMTP id d22-20020a05622a101600b003b8248ba035mr2601133qte.19.1674822485329;
+        Fri, 27 Jan 2023 04:28:05 -0800 (PST)
+Received: from [192.168.100.30] ([82.142.8.70])
+        by smtp.gmail.com with ESMTPSA id d15-20020a05620a136f00b006fb112f512csm2751566qkl.74.2023.01.27.04.28.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 27 Jan 2023 04:28:04 -0800 (PST)
+Message-ID: <5d82047d-411b-a98d-ce0e-1195838db42c@redhat.com>
+Date:   Fri, 27 Jan 2023 13:28:01 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cff1da82-f2c2-773b-b8cb-64ab26d49d9e@amd.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Subject: Re: [PATCH v2 1/1] virtio_net: notify MAC address change on device
+ initialization
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Gautam Dawar <gautam.dawar@xilinx.com>,
+        =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>,
+        netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        Eli Cohen <elic@nvidia.com>, Cindy Lu <lulu@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Parav Pandit <parav@nvidia.com>
+References: <20230123120022.2364889-1-lvivier@redhat.com>
+ <20230123120022.2364889-2-lvivier@redhat.com>
+ <20230124024711-mutt-send-email-mst@kernel.org>
+ <971beeaf-5e68-eb4a-1ceb-63a5ffa74aff@redhat.com>
+ <20230127060453-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+From:   Laurent Vivier <lvivier@redhat.com>
+In-Reply-To: <20230127060453-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 27, 2023 at 11:29:08AM +0000, Lucero Palau, Alejandro wrote:
+On 1/27/23 12:08, Michael S. Tsirkin wrote:
+> On Tue, Jan 24, 2023 at 12:04:24PM +0100, Laurent Vivier wrote:
+>> On 1/24/23 11:15, Michael S. Tsirkin wrote:
+>>> On Mon, Jan 23, 2023 at 01:00:22PM +0100, Laurent Vivier wrote:
+>>>> In virtnet_probe(), if the device doesn't provide a MAC address the
+>>>> driver assigns a random one.
+>>>> As we modify the MAC address we need to notify the device to allow it
+>>>> to update all the related information.
+>>>>
+>>>> The problem can be seen with vDPA and mlx5_vdpa driver as it doesn't
+>>>> assign a MAC address by default. The virtio_net device uses a random
+>>>> MAC address (we can see it with "ip link"), but we can't ping a net
+>>>> namespace from another one using the virtio-vdpa device because the
+>>>> new MAC address has not been provided to the hardware.
+>>>
+>>> And then what exactly happens? Does hardware drop the outgoing
+>>> or the incoming packets? Pls include in the commit log.
+>>
+>> I don't know. There is nothing in the kernel logs.
+>>
+>> The ping error is: "Destination Host Unreachable"
+>>
+>> I found the problem with the mlx5 driver as in "it doesn't work when MAC
+>> address is not set"...
+>>
+>> Perhaps Eli can explain what happens when the MAC address is not set?
+>>
+>>>
+>>>> Signed-off-by: Laurent Vivier <lvivier@redhat.com>
+>>>> ---
+>>>>    drivers/net/virtio_net.c | 14 ++++++++++++++
+>>>>    1 file changed, 14 insertions(+)
+>>>>
+>>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>>>> index 7723b2a49d8e..4bdc8286678b 100644
+>>>> --- a/drivers/net/virtio_net.c
+>>>> +++ b/drivers/net/virtio_net.c
+>>>> @@ -3800,6 +3800,8 @@ static int virtnet_probe(struct virtio_device *vdev)
+>>>>    		eth_hw_addr_set(dev, addr);
+>>>>    	} else {
+>>>>    		eth_hw_addr_random(dev);
+>>>> +		dev_info(&vdev->dev, "Assigned random MAC address %pM\n",
+>>>> +			 dev->dev_addr);
+>>>>    	}
+>>>>    	/* Set up our device-specific information */
+>>>> @@ -3956,6 +3958,18 @@ static int virtnet_probe(struct virtio_device *vdev)
+>>>>    	pr_debug("virtnet: registered device %s with %d RX and TX vq's\n",
+>>>>    		 dev->name, max_queue_pairs);
+>>>> +	/* a random MAC address has been assigned, notify the device */
+>>>> +	if (!virtio_has_feature(vdev, VIRTIO_NET_F_MAC) &&
+>>>> +	    virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_MAC_ADDR)) {
+>>>
+>>> Maybe add a comment explaining that we don't fail probe if
+>>> VIRTIO_NET_F_CTRL_MAC_ADDR is not there because
+>>> many devices work fine without getting MAC explicitly.
+>>
+>> OK
+>>
+>>>
+>>>> +		struct scatterlist sg;
+>>>> +
+>>>> +		sg_init_one(&sg, dev->dev_addr, dev->addr_len);
+>>>> +		if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_MAC,
+>>>> +					  VIRTIO_NET_CTRL_MAC_ADDR_SET, &sg)) {
+>>>> +			dev_warn(&vdev->dev, "Failed to update MAC address.\n");
+>>>
+>>> Here, I'm not sure we want to proceed. Is it useful sometimes?
+>>
+>> I think reporting an error is always useful, but I can remove that if you prefer.
 > 
-> On 1/27/23 11:20, Martin Habets wrote:
-> > On Fri, Jan 27, 2023 at 09:36:45AM +0000, alejandro.lucero-palau@amd.com wrote:
-> >> From: Alejandro Lucero <alejandro.lucero-palau@amd.com>
-> >>
-> >> Support for devlink info command.
-> >>
-> >> Signed-off-by: Alejandro Lucero <alejandro.lucero-palau@amd.com>
-> >> ---
-> >>   Documentation/networking/devlink/sfc.rst |  57 ++++
-> >>   drivers/net/ethernet/sfc/efx_devlink.c   | 404 +++++++++++++++++++++++
-> >>   drivers/net/ethernet/sfc/efx_devlink.h   |  17 +
-> >>   drivers/net/ethernet/sfc/mcdi.c          |  72 ++++
-> >>   drivers/net/ethernet/sfc/mcdi.h          |   3 +
-> >>   5 files changed, 553 insertions(+)
-> >>   create mode 100644 Documentation/networking/devlink/sfc.rst
-> >>
+> No the question was whether we should fail probe not
+> whether we print the warning.
 
-<snip>
+Good question.
 
-> >> index af338208eae9..328cae82a7d8 100644
-> >> --- a/drivers/net/ethernet/sfc/mcdi.c
-> >> +++ b/drivers/net/ethernet/sfc/mcdi.c
-> >> @@ -2308,6 +2308,78 @@ static int efx_mcdi_nvram_update_finish(struct efx_nic *efx, unsigned int type)
-> >>   	return rc;
-> >>   }
-> >>   
-> >> +int efx_mcdi_nvram_metadata(struct efx_nic *efx, unsigned int type,
-> >> +			    u32 *subtype, u16 version[4], char *desc,
-> >> +			    size_t descsize)
-> > This is inside an #ifdef CONFIG_SFC_MTD
-> > which is why the kernel test robot is reporting the modpost
-> > errors.
-> > Move it outside of that ifdef.
-> >
-> > Martin
-> 
-> 
-> I can not see this error report. Maybe, is it coming with further builds 
-> not reported yet by patchwork?
-
-See https://lore.kernel.org/netdev/202301251924.Vt4cZmeM-lkp@intel.com/
-To reproduce it disable CONFIG_SFC_MTD in your .config, and build with
-this series.
-
-Martin
+After all, as VIRTIO_NET_F_CTRL_MAC_ADDR is set, if VIRTIO_NET_CTRL_MAC_ADDR_SET fails it 
+means there is a real problem, so yes, we should fail.
 
 > 
 > 
+>>> I note that we deny with virtnet_set_mac_address.
+>>>
+>>>> +		}
+>>>> +	}
+>>>> +
+>>>>    	return 0;
+>>>
+>>>
+>>>
+>>> Also, some code duplication with virtnet_set_mac_address here.
+>>>
+>>> Also:
+>>> 	When using the legacy interface, \field{mac} is driver-writable
+>>> 	which provided a way for drivers to update the MAC without
+>>> 	negotiating VIRTIO_NET_F_CTRL_MAC_ADDR.
+>>>
+>>> How about factoring out code in virtnet_set_mac_address
+>>> and reusing that?
+>>>
+>>
+>> In fact, we can write in the field only if we have VIRTIO_NET_F_MAC
+>> (according to virtnet_set_mac_address(), and this code is executed only if
+>> we do not have VIRTIO_NET_F_MAC. So I think it's better not factoring the
+>> code as we have only the control queue case to manage.
+>>
+>>> This will also handle corner cases such as VIRTIO_NET_F_STANDBY
+>>> which are not currently addressed.
+>>
+>> F_STANDBY is only enabled when virtio-net device MAC address is equal to the
+>> VFIO device MAC address, I don't think it can be enabled when the MAC
+>> address is randomly assigned (in this case it has already failed in
+>> net_failover_create(), as it has been called using the random mac address),
+>> it's why I didn't check for it.
 > 
-> >
-> >> +{
-> >> +	MCDI_DECLARE_BUF(inbuf, MC_CMD_NVRAM_METADATA_IN_LEN);
-> >> +	efx_dword_t *outbuf;
-> >> +	size_t outlen;
-> >> +	u32 flags;
-> >> +	int rc;
-> >> +
-> >> +	outbuf = kzalloc(MC_CMD_NVRAM_METADATA_OUT_LENMAX_MCDI2, GFP_KERNEL);
-> >> +	if (!outbuf)
-> >> +		return -ENOMEM;
-> >> +
-> >> +	MCDI_SET_DWORD(inbuf, NVRAM_METADATA_IN_TYPE, type);
-> >> +
-> >> +	rc = efx_mcdi_rpc_quiet(efx, MC_CMD_NVRAM_METADATA, inbuf,
-> >> +				sizeof(inbuf), outbuf,
-> >> +				MC_CMD_NVRAM_METADATA_OUT_LENMAX_MCDI2,
-> >> +				&outlen);
-> >> +	if (rc)
-> >> +		goto out_free;
-> >> +	if (outlen < MC_CMD_NVRAM_METADATA_OUT_LENMIN) {
-> >> +		rc = -EIO;
-> >> +		goto out_free;
-> >> +	}
-> >> +
-> >> +	flags = MCDI_DWORD(outbuf, NVRAM_METADATA_OUT_FLAGS);
-> >> +
-> >> +	if (desc && descsize > 0) {
-> >> +		if (flags & BIT(MC_CMD_NVRAM_METADATA_OUT_DESCRIPTION_VALID_LBN)) {
-> >> +			if (descsize <=
-> >> +			    MC_CMD_NVRAM_METADATA_OUT_DESCRIPTION_NUM(outlen)) {
-> >> +				rc = -E2BIG;
-> >> +				goto out_free;
-> >> +			}
-> >> +
-> >> +			strncpy(desc,
-> >> +				MCDI_PTR(outbuf, NVRAM_METADATA_OUT_DESCRIPTION),
-> >> +				MC_CMD_NVRAM_METADATA_OUT_DESCRIPTION_NUM(outlen));
-> >> +			desc[MC_CMD_NVRAM_METADATA_OUT_DESCRIPTION_NUM(outlen)] = '\0';
-> >> +		} else {
-> >> +			desc[0] = '\0';
-> >> +		}
-> >> +	}
-> >> +
-> >> +	if (subtype) {
-> >> +		if (flags & BIT(MC_CMD_NVRAM_METADATA_OUT_SUBTYPE_VALID_LBN))
-> >> +			*subtype = MCDI_DWORD(outbuf, NVRAM_METADATA_OUT_SUBTYPE);
-> >> +		else
-> >> +			*subtype = 0;
-> >> +	}
-> >> +
-> >> +	if (version) {
-> >> +		if (flags & BIT(MC_CMD_NVRAM_METADATA_OUT_VERSION_VALID_LBN)) {
-> >> +			version[0] = MCDI_WORD(outbuf, NVRAM_METADATA_OUT_VERSION_W);
-> >> +			version[1] = MCDI_WORD(outbuf, NVRAM_METADATA_OUT_VERSION_X);
-> >> +			version[2] = MCDI_WORD(outbuf, NVRAM_METADATA_OUT_VERSION_Y);
-> >> +			version[3] = MCDI_WORD(outbuf, NVRAM_METADATA_OUT_VERSION_Z);
-> >> +		} else {
-> >> +			version[0] = 0;
-> >> +			version[1] = 0;
-> >> +			version[2] = 0;
-> >> +			version[3] = 0;
-> >> +		}
-> >> +	}
-> >> +
-> >> +out_free:
-> >> +	kfree(outbuf);
-> >> +	return rc;
-> >> +}
-> >> +
-> >>   int efx_mcdi_mtd_read(struct mtd_info *mtd, loff_t start,
-> >>   		      size_t len, size_t *retlen, u8 *buffer)
-> >>   {
-> >> diff --git a/drivers/net/ethernet/sfc/mcdi.h b/drivers/net/ethernet/sfc/mcdi.h
-> >> index 7e35fec9da35..5cb202684858 100644
-> >> --- a/drivers/net/ethernet/sfc/mcdi.h
-> >> +++ b/drivers/net/ethernet/sfc/mcdi.h
-> >> @@ -378,6 +378,9 @@ int efx_mcdi_nvram_info(struct efx_nic *efx, unsigned int type,
-> >>   			size_t *size_out, size_t *erase_size_out,
-> >>   			bool *protected_out);
-> >>   int efx_new_mcdi_nvram_test_all(struct efx_nic *efx);
-> >> +int efx_mcdi_nvram_metadata(struct efx_nic *efx, unsigned int type,
-> >> +			    u32 *subtype, u16 version[4], char *desc,
-> >> +			    size_t descsize);
-> >>   int efx_mcdi_nvram_test_all(struct efx_nic *efx);
-> >>   int efx_mcdi_handle_assertion(struct efx_nic *efx);
-> >>   int efx_mcdi_set_id_led(struct efx_nic *efx, enum efx_led_mode mode);
-> >> -- 
-> >> 2.17.1
+> But the spec did not say there's a dependency :(.
+> My point is what should we do if there's F_STANDBY but no MAC?
+> Maybe add a separate patch clearing F_STANDBY in this case?
+
+The simplest would be to add at the beginning of the probe function:
+
+if (!virtio_has_feature(vdev, VIRTIO_NET_F_MAC) &&
+     virtio_has_feature(vdev, VIRTIO_NET_F_STANDBY)) {
+	pr_err("virtio-net: a standby device cannot be used without a MAC address");
+	return -EOPNOTSUPP;
+}
+
+And I think it would help a lot to debug misconfiguration of the interface.
+
+Thanks,
+Laurent
+
 > 
+>>>
+>>>
+>>>>    free_unregister_netdev:
+>>>> -- 
+>>>> 2.39.0
+>>>
+>>
+>> Thanks,
+>> Laurent
+> 
+
