@@ -2,125 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFBDE67EBDB
-	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 18:02:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B49BB67EC27
+	for <lists+netdev@lfdr.de>; Fri, 27 Jan 2023 18:11:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234591AbjA0RCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 12:02:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55600 "EHLO
+        id S234938AbjA0RLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 12:11:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231342AbjA0RCI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 12:02:08 -0500
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A5E1525F;
-        Fri, 27 Jan 2023 09:02:07 -0800 (PST)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30REGmZ8019692;
-        Fri, 27 Jan 2023 18:01:06 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=QNH1ux7cYrF5KW+Ey5DCbKnkWudemJAed1CdOisOzwU=;
- b=aWrFglN6WN9lJ9UfkuNRCOf+eZLqOK/K/MwebDvkvlJ9BbraR7IaDQjfWJsuxG3qEl+w
- /zcbla1ATkb34/cgfv+jY98hV15W4tnl5ImuyPNlwMV+YJAdJjbH1aopG15aLRkh8wmM
- l4dhdDRjV+hC6xAWQteP9ugkWvZRUn+2SbiSOelz6JrhmEzzjMybo5hBxA3Bcimg9qnY
- zdsENVEPxj6CymobQqyNOE70uQpKyrM9lu7NqbOzhejcg3jASSLXeSHG2+UOFLtTC114
- gDpaZ6/KFUEeQG46+8MaDOHr4QDhzeheFE/3snJXRXDYFzO0erPQuMETrlvse78cpBw2 ww== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3n89chde7x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 27 Jan 2023 18:01:06 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 8FD5D100039;
-        Fri, 27 Jan 2023 18:00:43 +0100 (CET)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 6F28D21F0C6;
-        Fri, 27 Jan 2023 18:00:43 +0100 (CET)
-Received: from [10.201.21.177] (10.201.21.177) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.13; Fri, 27 Jan
- 2023 18:00:40 +0100
-Message-ID: <179fe90c-0ac9-bb43-6e49-8b1d7ec520df@foss.st.com>
-Date:   Fri, 27 Jan 2023 18:00:39 +0100
+        with ESMTP id S234883AbjA0RLF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 12:11:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC2554C18;
+        Fri, 27 Jan 2023 09:10:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0490961D04;
+        Fri, 27 Jan 2023 17:09:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8AE9C433EF;
+        Fri, 27 Jan 2023 17:09:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674839388;
+        bh=gWUbK0c4RR1yn+JaQjbB3L0M42JkQ49jpNPbeYG/EdM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CGkMbCd86HIzYSIxgC+1VgVYp54QrgxBmiEjocBcjp0sg+YSRkNmyKk13FqRwexef
+         SJtzeQyp/QhZ0KuciAFJl/uap4GKzAqnZid+yxpHF+vY7zdmFABQRp8axWxLOjhQlf
+         fKdZa3Phz5tkAbXH3fw7TPdM+tAZiT7C1YlSKVndjGHS7YKzDPFLNeau7OpcdCIjXY
+         0AQtAHtaIwGy8fwTvA7C9nMxVar+8QbL1hXaWcIgs/ZBijm0kHH8cv8+JZO0DrBar5
+         gF8CfW2EJLX3/P/R41YmQmWVuW02IbXVYEHFW1GGvqCUrxQUZLAuivKb4FZXbAzf2s
+         GHoylZp3RdSdQ==
+Date:   Fri, 27 Jan 2023 09:09:46 -0800
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>, kvm@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        Jiri Kosina <jikos@kernel.org>, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        "Seth Forshee (DigitalOcean)" <sforshee@digitalocean.com>,
+        live-patching@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
+Subject: Re: [PATCH 0/2] vhost: improve livepatch switching for heavily
+ loaded vhost worker kthreads
+Message-ID: <20230127170946.zey6xbr4sm4kvh3x@treble>
+References: <20230120-vhost-klp-switching-v1-0-7c2b65519c43@kernel.org>
+ <Y9KyVKQk3eH+RRse@alley>
+ <Y9LswwnPAf+nOVFG@do-x1extreme>
+ <20230127044355.frggdswx424kd5dq@treble>
+ <Y9OpTtqWjAkC2pal@hirez.programming.kicks-ass.net>
+ <20230127165236.rjcp6jm6csdta6z3@treble>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v3 1/6] dt-bindings: Document common device controller
- bindings
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
-        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <alexandre.torgue@foss.st.com>, <vkoul@kernel.org>,
-        <jic23@kernel.org>, <olivier.moysan@foss.st.com>,
-        <arnaud.pouliquen@foss.st.com>, <mchehab@kernel.org>,
-        <fabrice.gasnier@foss.st.com>, <ulf.hansson@linaro.org>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
-        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>
-References: <20230127164040.1047583-1-gatien.chevallier@foss.st.com>
- <20230127164040.1047583-2-gatien.chevallier@foss.st.com>
- <1e498b93-d3bd-bd12-e991-e3f4bedf632d@linaro.org>
-From:   Gatien CHEVALLIER <gatien.chevallier@foss.st.com>
-In-Reply-To: <1e498b93-d3bd-bd12-e991-e3f4bedf632d@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.201.21.177]
-X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-01-27_10,2023-01-27_01,2022-06-22_01
-X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230127165236.rjcp6jm6csdta6z3@treble>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Krzysztof,
-
-On 1/27/23 17:49, Krzysztof Kozlowski wrote:
-> On 27/01/2023 17:40, Gatien Chevallier wrote:
->> From: Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
->>
->> Introducing of the common device controller bindings for the controller
->> provider and consumer devices. Those bindings are intended to allow
->> divided system on chip into muliple domains, that can be used to
->> configure hardware permissions.
->>
->> Signed-off-by: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
->> ---
->>
->> No change since V1. I'm letting this patch for dependency with bindings to
->> avoid noise with dt/bindings checks. Therefore, it should be reviewed on the
->> appropriate thread.
+On Fri, Jan 27, 2023 at 08:52:38AM -0800, Josh Poimboeuf wrote:
+> On Fri, Jan 27, 2023 at 11:37:02AM +0100, Peter Zijlstra wrote:
+> > On Thu, Jan 26, 2023 at 08:43:55PM -0800, Josh Poimboeuf wrote:
+> > > Here's another idea, have we considered this?  Have livepatch set
+> > > TIF_NEED_RESCHED on all kthreads to force them into schedule(), and then
+> > > have the scheduler call klp_try_switch_task() if TIF_PATCH_PENDING is
+> > > set.
+> > > 
+> > > Not sure how scheduler folks would feel about that ;-)
 > 
-> There was a v6 already, this is v3 and I don't understand this comment.
-> What do you let? Whom? If it is not for review and not for merging,
-> please annotate it in the title ([IGNORE PATCH] or something).
-> 
+> Hmmmm, with preemption I guess the above doesn't work for kthreads
+> calling cond_resched() instead of what vhost_worker() does (explicit
+> need_resched/schedule).
 
-Sorry for not being clear in the previous comment.
+Though I guess we could hook into cond_resched() too if we make it a
+non-NOP for PREEMPT+LIVEPATCH?
 
-I meant I'm letting this patch in this patch set so the dependencies on 
-the feature-domain-controller.yaml file are satisfied.
-
-I will annotate it with [IGNORE PATCH], as you suggest.
-
-> Best regards,
-> Krzysztof
-> 
-
-Best regards,
-Gatien
+-- 
+Josh
