@@ -2,70 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E05B967F344
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 01:47:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1F1667F349
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 01:48:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232167AbjA1ArY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 19:47:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57150 "EHLO
+        id S231283AbjA1AsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 19:48:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229883AbjA1ArX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 19:47:23 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA9377BBEB
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 16:47:21 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id nm12-20020a17090b19cc00b0022c2155cc0bso6250587pjb.4
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 16:47:21 -0800 (PST)
+        with ESMTP id S232180AbjA1AsI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 19:48:08 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E80151DBB0
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 16:48:06 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id rm7-20020a17090b3ec700b0022c05558d22so6246090pjb.5
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 16:48:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=LIgXwSDgqyCEDWIbU+2fGDKJCi3l2o8G2rmvmU6lAXs=;
-        b=sutOMQUr6SbcHm7Z9MQZQvHhiR7aAt68AaklJPyZaaIULnzcxNZogYmhf2+u2NVB5D
-         1qAE0cKkMNkVkjQB08hBleUfpQppzPc3SKdKU5ttdyepWiot+QxP7QLIZyZ6+eFqDMzQ
-         TYTAkKKa+7dvXCd1Tj44016SryNCAckvVf+7eF7cUrCzDHZEQ0PaRRnWsa3r4LpzvgbU
-         mlaNlQTpRLHx6svbHBwWUkn8M3hR6aBrRoEYF2Mpj2GGek3rRJlPDPPBiapxpXoqwwef
-         5QzF8zJ2oaYzrlSf1lygNBGE3esjaOv93DUQqVk068J6IVvckTHFzpXvmHb7Aa8fhAIF
-         y7tg==
+        bh=KUB7VhQpOmzbZycPkRq+QPmcGxEJDorYOhvDr1fpga4=;
+        b=JSa+ysIPj1uD+B2+sQ7bBNO5gLG0seqs/VJ80T2u6b2GfggFB69lFxWCD/eNjVQ6KK
+         U2tYKaxXMKN1eSB2BTjQszZ2gkWo2tJv5Ce0dcnWgXPk9sRiG8yCVFYsaOhWmrL05yHq
+         Tjf0Cl33EUleyTvT4hoq24JtC4NiTtZI9tVqKmKKZsabx6+CBariltbI5J4MujhQMGcI
+         hEUB//+miFeDGT4Bu/NljXxFVvKMlByhxAGVzHcIIk07+VitTwRW6BjxDL+pPXI8mD3X
+         PBrNgsR7t6fzu0kbgJUWIBGwfy9NvrLYo5djmsUveGDiH19yBbEJ/vCg70Snc68dPDvm
+         nb3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=LIgXwSDgqyCEDWIbU+2fGDKJCi3l2o8G2rmvmU6lAXs=;
-        b=IMYCLO71o7IVBqb1EngakMCcfdeNxVx/Fsx+PoSdo6u2iSOoAs64eQtwdufVZ9qkY3
-         RaZ08z3KZyATy0pwImkx7iCr93hFOVHZJnIFy7U9zt4Cmm/Spq00S7kAG+/8jr+m8zAH
-         IcrdPPbIoddHBK7fRV0A96fz5+EjxU1LBTNCyN1YqUWN0xu2FKnqSba9w3npxCCsGtzc
-         4z9t7XAZJKNo+Xdqb0LBEhnoEQzBweedKlU7VzLs8fZGMPNiXxvuaSKF2T671yzLSxUJ
-         439Jm/ppoNuKEPuuwOobL+aUAfZfJ8531LwRW6gDosC1emUm7G3HJL6kpZ1FRkxcfUu0
-         mM2g==
-X-Gm-Message-State: AO0yUKWei7kMGGxescImHe0BJ34iKjldTU2F+obOfajdfT7g9cPWVedd
-        18bSDEJlgbbuzEl/yUYpDO9oaUm/1s1Gsrf+dtqqoQ==
-X-Google-Smtp-Source: AK7set8yL03KJM9QWaiw1eCkdVa6AQ/w8X80pKruUrzWSAvEhgPSdlE3IMf/vvqzWFIw0ME/4EDwdxQARgEy37DGfp0=
-X-Received: by 2002:a17:902:82c6:b0:196:cca:a0b4 with SMTP id
- u6-20020a17090282c600b001960ccaa0b4mr2542485plz.20.1674866841124; Fri, 27 Jan
- 2023 16:47:21 -0800 (PST)
+        bh=KUB7VhQpOmzbZycPkRq+QPmcGxEJDorYOhvDr1fpga4=;
+        b=7GXQwMGr6oB2jgVdmM8MJ4f0s8+1fCpX51JiOhw7qAWP7G/q9hFj/dL7A0cvCAwBvZ
+         9cNweXPXUJmlvio/q1mcq31loUbaE97/HYhZjrPYzrFBJIlQ8Xx52tUW1WPHndmQM/sg
+         TFnx/IgUSreMxVF7kLsWGyIxXadHYXBt1UOXADv0mQEmvUxA5Rb7SVC+lmvBBZdkvYEm
+         9C0sfoSKW9i6D+FklvVhoac79CnMdtolBKVV1dSJsX6tCBiSHQcvAnVN+n7feJ+rVn2e
+         Ugk7Xla/wyffkkVyh+A+PETKQqiyOKpZG6HaBpxRURkYC4J/dEF/9UPu/8Wl3/Eh+KlV
+         JL9g==
+X-Gm-Message-State: AFqh2kqnHdVUUtjgUiy0d7ChHNTk72bmBjRMkOwkZ+uz7d7rdZq+1qkg
+        B91JlJH5k3hMP53rX4vNUECsBYl/bfu3Ad1wku83Cw==
+X-Google-Smtp-Source: AMrXdXubCjXCuqVL6rpFu7bVm69wKSqp3/YkuFXPI51vdJh4t7kos2t+v8dFelrta8GrJh8s1UErpQzDVyhutkOWRh4=
+X-Received: by 2002:a17:90a:66cb:b0:229:3b3f:75e1 with SMTP id
+ z11-20020a17090a66cb00b002293b3f75e1mr6072725pjl.0.1674866886149; Fri, 27 Jan
+ 2023 16:48:06 -0800 (PST)
 MIME-Version: 1.0
 References: <20230124170346.316866-1-jhs@mojatatu.com> <20230126153022.23bea5f2@kernel.org>
  <Y9QXWSaAxl7Is0yz@nanopsycho> <CAAFAkD8kahd0Ao6BVjwx+F+a0nUK0BzTNFocnpaeQrN7E8VRdQ@mail.gmail.com>
- <Y9RPsYbi2a9Q/H8h@google.com> <CAOuuhY-JT5mLKDBDScjyDA5grA2M8E9ECvyC6FJE3Ot-VLKh=w@mail.gmail.com>
-In-Reply-To: <CAOuuhY-JT5mLKDBDScjyDA5grA2M8E9ECvyC6FJE3Ot-VLKh=w@mail.gmail.com>
+ <Y9RPsYbi2a9Q/H8h@google.com> <CAM0EoM=ONYkF_1CST7i_F9yDQRxSFSTO25UzWJzcRGa1efM2Sg@mail.gmail.com>
+In-Reply-To: <CAM0EoM=ONYkF_1CST7i_F9yDQRxSFSTO25UzWJzcRGa1efM2Sg@mail.gmail.com>
 From:   Stanislav Fomichev <sdf@google.com>
-Date:   Fri, 27 Jan 2023 16:47:09 -0800
-Message-ID: <CAKH8qBvmbET6GT_XnuxnoAqzjVZhxCu32poPrC=KTnwhjAAC8A@mail.gmail.com>
+Date:   Fri, 27 Jan 2023 16:47:54 -0800
+Message-ID: <CAKH8qBtU-1A1iKnvTXV=5v8Dim1FBmtvL6wOqgdspSFRCwNohA@mail.gmail.com>
 Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
-To:     Tom Herbert <tom@sipanda.io>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
 Cc:     Jamal Hadi Salim <hadi@mojatatu.com>,
         Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         kernel@mojatatu.com, deb.chatterjee@intel.com,
         anjali.singhai@intel.com, namrata.limaye@intel.com,
-        khalidm@nvidia.com, pratyush@sipanda.io, xiyou.wangcong@gmail.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        vladbu@nvidia.com, simon.horman@corigine.com, stefanc@marvell.com,
-        seong.kim@amd.com, mattyk@nvidia.com, dan.daly@intel.com,
-        john.andy.fingerhut@intel.com
+        khalidm@nvidia.com, tom@sipanda.io, pratyush@sipanda.io,
+        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, vladbu@nvidia.com, simon.horman@corigine.com,
+        stefanc@marvell.com, seong.kim@amd.com, mattyk@nvidia.com,
+        dan.daly@intel.com, john.andy.fingerhut@intel.com
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
@@ -78,9 +77,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 27, 2023 at 3:06 PM Tom Herbert <tom@sipanda.io> wrote:
+On Fri, Jan 27, 2023 at 3:27 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
 >
-> On Fri, Jan 27, 2023 at 2:26 PM <sdf@google.com> wrote:
+> On Fri, Jan 27, 2023 at 5:26 PM <sdf@google.com> wrote:
 > >
 > > On 01/27, Jamal Hadi Salim wrote:
 > > > On Fri, Jan 27, 2023 at 1:26 PM Jiri Pirko <jiri@resnulli.us> wrote:
@@ -127,66 +126,42 @@ On Fri, Jan 27, 2023 at 3:06 PM Tom Herbert <tom@sipanda.io> wrote:
 > > currently) is that there are NIC-specific P4 programs which won't have
 > > a chance of running generically at TC (unless we implement those vendor
 > > extensions).
-> >
+>
+> We are going to implement all the PSA/PNA externs. Most of these
+> programs tend to
+> be set or ALU operations on headers or metadata which we can handle.
+> Do you have
+> any examples of NIC-vendor-specific features that cant be generalized?
+
+I don't think I can share more without giving away something that I
+shouldn't give away :-)
+But IIUC, and I might be missing something, it's totally within the
+standard for vendors to differentiate and provide non-standard
+'extern' extensions.
+I'm mostly wondering what are your thoughts on this. If I have a p4
+program depending on one of these externs, we can't sw-emulate it
+unless we also implement the extension. Are we gonna ask NICs that
+have those custom extensions to provide a SW implementation as well?
+Or are we going to prohibit vendors to differentiate that way?
+
 > > And regarding custom parser, someone has to ask that 'what about bpf
 > > question': let's say we have a P4 frontend at TC, can we use bpfilter-like
 > > usermode helper to transparently compile it to bpf (for SW path) instead
 > > inventing yet another packet parser? Wrestling with the verifier won't be
 > > easy here, but I trust it more than this new kParser.
+> >
 >
-> Yes, wrestling with the verifier is tricky, however we do have a
-> solution to compile arbitrarily complex parsers into eBFP. We
-> presented this work at Netdev 0x15
-> https://netdevconf.info/0x15/session.html?Replacing-Flow-Dissector-with-PANDA-Parser.
+> We dont compile anything, the parser (and rest of infra) is scriptable.
 
-Thanks Tom, I'll check it out. I've yet to go through the netdev recordings :-(
+As I've replied to Tom, that seems like a technicality. BPF programs
+can also be scriptable with some maps/tables. Or it can be made to
+look like "scriptable" by recompiling it on every configuration change
+and updating it on the fly. Or am I missing something?
 
-> Of course this has the obvious advantage that we don't have to change
-> the kernel (however, as we talk about in the presentation, this method
-> actually produces a faster more extensible parser than flow dissector,
-> so it's still on my radar to replace flow dissector itself with an
-> eBPF parser :-) )
+Can we have a P4TC frontend and whenever configuration is updated, we
+upcall into userspace to compile this whatever p4 representation into
+whatever bpf bytecode that we then run. No new/custom/scriptable
+parsers needed.
 
-Since there is already a bpf flow dissector, I'm assuming you're
-talking about replacing the existing C flow dissector with a
-PANDA-based one?
-I was hoping that at some point, we can have a BPF flow dissector
-program that supports everything the existing C-one does, and maybe we
-can ship this program with the kernel and load it by default. We can
-keep the C-based one for some minimal non-bpf configurations. But idk,
-the benefit is not 100% clear to me; except maybe bpf-based flow
-dissector can be treated as more "secure" due to all verifier
-constraints...
-
-> The value of kParser is that it is not compiled code, but dynamically
-> scriptable. It's much easier to change on the fly and depends on a CLI
-> interface which works well with P4TC. The front end is the same as
-> what we are using for PANDA parser, that is the same parser frontend
-> (in C code or other) can be compiled into XDP/eBPF, kParser CLI, or
-> other targets (this is based on establishing a IR which we talked
-> about in https://myfoobar2022.sched.com/event/1BhCX/high-performance-programmable-parsers
-
-That seems like a technicality? A BPF-based parser can also be driven
-by maps/tables; or, worst case, can be recompiled and replaced on the
-fly without any downtime.
-
-
-> Tom
->
-> >
-> >
-> > > To answer your question in regards to what the interfaces "P4
-> > > speaking" hardware or drivers
-> > > are going to be programmed, there are discussions going on right now:
-> > > There is a strong
-> > > leaning towards devlink for the hardware side loading.... The idea
-> > > from the driver side is to
-> > > reuse the tc ndos.
-> > > We have biweekly meetings which are open. We do have Nvidia folks, but
-> > > would be great if
-> > > we can have you there. Let me find the link and send it to you.
-> > > Do note however, our goal is to get s/w first as per tradition of
-> > > other offloads with TC .
-> >
-> > > cheers,
-> > > jamal
+> cheers,
+> jamal
