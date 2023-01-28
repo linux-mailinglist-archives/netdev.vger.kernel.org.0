@@ -2,222 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B93E867F7DA
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 13:48:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBFF967F7DF
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 13:59:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231801AbjA1Msx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 07:48:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53622 "EHLO
+        id S233144AbjA1M7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 07:59:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229643AbjA1Msw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 07:48:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D12126F3;
-        Sat, 28 Jan 2023 04:48:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5E8DB80921;
-        Sat, 28 Jan 2023 12:48:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6647C433D2;
-        Sat, 28 Jan 2023 12:48:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674910127;
-        bh=q4YmhCFGMeK7V/V0+kIKf74gh6MkUEKWKYKZr0Q1zcM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DPaiMQg27zAkIo+OpClY8AEt4CVLMA7gO+1YHJDC4A1QYsiQN3DAFrSjJR0++Q9om
-         XTq6Pr9y+zogKe3Smxba9zOL4172/aDqY3ZfBCGCP1IRq6DrebB7Bj9oeVDEcefC4C
-         20EwOPn/AWtNSpu0Iis/oQuIuugkPbDNeOzAenp1SslJg61Eo3UDFYhL2YAqJsP7Eu
-         sBgMi2v9YqTAT9518gmPm8YaBzUFpvm9+nmMjMPDa7vVpp+XWWnufFxBnHbs0/QUni
-         jYJbQmE4yzWsi/cR75E+4Zk3QpLnWDDgnayXeh5878o+i0ilnKAb1qTRhssZf1ujQn
-         5s2AcclSllVqw==
-Date:   Sat, 28 Jan 2023 13:48:43 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, toke@redhat.com, memxor@gmail.com,
-        alardam@gmail.com, saeedm@nvidia.com, anthony.l.nguyen@intel.com,
-        gospo@broadcom.com, vladimir.oltean@nxp.com, nbd@nbd.name,
-        john@phrozen.org, leon@kernel.org, simon.horman@corigine.com,
-        aelior@marvell.com, christophe.jaillet@wanadoo.fr,
-        ecree.xilinx@gmail.com, mst@redhat.com, bjorn@kernel.org,
-        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        intel-wired-lan@lists.osuosl.org, lorenzo.bianconi@redhat.com,
-        martin.lau@linux.dev
-Subject: Re: [PATCH v3 bpf-next 5/8] libbpf: add API to get XDP/XSK supported
- features
-Message-ID: <Y9UZqxwNPDQ9jEu3@lore-desk>
-References: <cover.1674737592.git.lorenzo@kernel.org>
- <a7e6e8da5b2ba24f44f0d5b44a234e2bf90220fd.1674737592.git.lorenzo@kernel.org>
- <CAEf4BzYjt3J5_ESMKjRFRh6ROg-CN=QazAZpKd9wnaSxjjKbAg@mail.gmail.com>
+        with ESMTP id S229643AbjA1M7C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 07:59:02 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD18A24112
+        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 04:58:58 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id mf7so1620274ejc.6
+        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 04:58:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pqrs.dk; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=uuROj3nyp7dV3iUSTum+d5PMx4QdIcb7izQQJDYftSI=;
+        b=Y5p2WTisAeifCG8baObGN6r1dVANpjO/mIRa21zkmSiDA8qQH7zbFhb82+MR79bHbA
+         mUHOTvHoKK6mnTCXN3BpelI/UYoB0RIS8s42fv62X1Ob45HaCjFx31sDV7z+XL3S8oIT
+         QgtoVO4lBOt86t7bsHEmB96Aa19A83qQ8tGXw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=uuROj3nyp7dV3iUSTum+d5PMx4QdIcb7izQQJDYftSI=;
+        b=GgFx3vcwOpkEga1zrFPt9CoAX6w1sYBC4jYpX1uD6q6sJdj+6co2uu3L3PzQ5wH4SJ
+         yJHoWfP+onyojO7qvuNmIR7SRcvuXIN+tOk7FoD+DNJCTzy/pEVGpHPvHKP6ahGcSXTT
+         aWvjBpQgjs6VYw3dekcsn+shVxiAF6pS4GGg6RNJI1OysDy+6ygkPqDpmBjpg+2nR/HR
+         tbms2QVK5NQ/qeChfFC9jhZuSQxr8pp6blaGTyEiIvQ8Ev1/y4dT4tBEDORk/y93eixM
+         kYPuIsCIyOzh45mSmJEzXjDEPX3Jaexbg1deriaqzLYSh4sZbYtZZ7h7byvvZcwKj+dK
+         6h4A==
+X-Gm-Message-State: AO0yUKV7Z3oYrP4pPMDW+M3K29nWjWdKuzgTF9hkODnfwc3awZG8sY88
+        /R+sjYqeUXvkqUMQF8SI9jLg8A==
+X-Google-Smtp-Source: AK7set8V49ATRxWsDpSNlAwGdqeIi+XmJsbTndGlwz/dbBHyC3DwaoCXy4hBkhEk1UwTNsPPUwzhpg==
+X-Received: by 2002:a17:907:a42a:b0:84d:4be4:aa2b with SMTP id sg42-20020a170907a42a00b0084d4be4aa2bmr3122116ejc.68.1674910737282;
+        Sat, 28 Jan 2023 04:58:57 -0800 (PST)
+Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
+        by smtp.gmail.com with ESMTPSA id f25-20020a170906139900b0087b3d555d2esm2730051ejc.33.2023.01.28.04.58.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 Jan 2023 04:58:56 -0800 (PST)
+From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 next 1/2] wifi: nl80211: emit CMD_START_AP on multicast group when an AP is started
+Date:   Sat, 28 Jan 2023 13:58:43 +0100
+Message-Id: <20230128125844.2407135-1-alvin@pqrs.dk>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="H5r5tXaizAjuuM7h"
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYjt3J5_ESMKjRFRh6ROg-CN=QazAZpKd9wnaSxjjKbAg@mail.gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
---H5r5tXaizAjuuM7h
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Userspace processes such as network daemons may wish to be informed when
+any AP interface is brought up on the system, for example to initiate a
+(re)configuration of IP settings or to start a DHCP server.
 
-> On Thu, Jan 26, 2023 at 4:59 AM Lorenzo Bianconi <lorenzo@kernel.org> wro=
-te:
-> >
-> > Extend bpf_xdp_query routine in order to get XDP/XSK supported features
-> > of netdev over route netlink interface.
-> > Extend libbpf netlink implementation in order to support netlink_generic
-> > protocol.
-> >
-> > Co-developed-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > Co-developed-by: Marek Majtyka <alardam@gmail.com>
-> > Signed-off-by: Marek Majtyka <alardam@gmail.com>
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > ---
-> >  tools/lib/bpf/libbpf.h  |  3 +-
-> >  tools/lib/bpf/netlink.c | 99 +++++++++++++++++++++++++++++++++++++++++
-> >  tools/lib/bpf/nlattr.h  | 12 +++++
-> >  3 files changed, 113 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> > index 898db26e42e9..29cb7040fa77 100644
-> > --- a/tools/lib/bpf/libbpf.h
-> > +++ b/tools/lib/bpf/libbpf.h
-> > @@ -982,9 +982,10 @@ struct bpf_xdp_query_opts {
-> >         __u32 hw_prog_id;       /* output */
-> >         __u32 skb_prog_id;      /* output */
-> >         __u8 attach_mode;       /* output */
-> > +       __u64 fflags;           /* output */
-> >         size_t :0;
-> >  };
-> > -#define bpf_xdp_query_opts__last_field attach_mode
-> > +#define bpf_xdp_query_opts__last_field fflags
->=20
-> is "fflags" an obvious name in this context? I'd expect
-> "feature_flags", especially that there are already "flags". Is saving
-> a few characters worth the confusion?
+Currently nl80211 does not broadcast any such event on its multicast
+groups, leaving userspace only two options:
 
-ack, I will fix it.
+1. the process must be the one that actually issued the
+   NL80211_CMD_START_AP request, so that it can react on the response to
+   that request;
 
->=20
->=20
-> >
-> >  LIBBPF_API int bpf_xdp_attach(int ifindex, int prog_fd, __u32 flags,
-> >                               const struct bpf_xdp_attach_opts *opts);
-> > diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
-> > index d2468a04a6c3..674e4d61e67e 100644
-> > --- a/tools/lib/bpf/netlink.c
-> > +++ b/tools/lib/bpf/netlink.c
-> > @@ -9,6 +9,7 @@
-> >  #include <linux/if_ether.h>
-> >  #include <linux/pkt_cls.h>
-> >  #include <linux/rtnetlink.h>
-> > +#include <linux/netdev.h>
-> >  #include <sys/socket.h>
-> >  #include <errno.h>
-> >  #include <time.h>
-> > @@ -39,6 +40,12 @@ struct xdp_id_md {
-> >         int ifindex;
-> >         __u32 flags;
-> >         struct xdp_link_info info;
-> > +       __u64 fflags;
-> > +};
-> > +
-> > +struct xdp_features_md {
-> > +       int ifindex;
-> > +       __u64 flags;
-> >  };
-> >
-> >  static int libbpf_netlink_open(__u32 *nl_pid, int proto)
->=20
-> [...]
->=20
-> >  int bpf_xdp_query(int ifindex, int xdp_flags, struct bpf_xdp_query_opt=
-s *opts)
-> >  {
-> >         struct libbpf_nla_req req =3D {
-> > @@ -393,6 +460,38 @@ int bpf_xdp_query(int ifindex, int xdp_flags, stru=
-ct bpf_xdp_query_opts *opts)
-> >         OPTS_SET(opts, skb_prog_id, xdp_id.info.skb_prog_id);
-> >         OPTS_SET(opts, attach_mode, xdp_id.info.attach_mode);
-> >
-> > +       if (OPTS_HAS(opts, fflags)) {
->=20
-> maybe invert condition, return early, reduce nesting of the following cod=
-e?
+2. the process must react to RTM_NEWLINK events indicating a change in
+   carrier state, and may query for further information about the AP and
+   react accordingly.
 
-ack, fine, I will fix it.
+Option (1) is robust, but it does not cover all scenarios. It is easy to
+imagine a situation where this is not the case (e.g. hostapd +
+systemd-networkd).
 
->=20
-> > +               struct xdp_features_md md =3D {
-> > +                       .ifindex =3D ifindex,
-> > +               };
-> > +               __u16 id;
-> > +
-> > +               err =3D libbpf_netlink_resolve_genl_family_id("netdev",
-> > +                                                           sizeof("net=
-dev"),
-> > +                                                           &id);
->=20
-> nit: if it fits under 100 characters, let's leave it on a single line
+Option (2) is not robust, because RTM_NEWLINK events may be silently
+discarded by the linkwatch logic (cf. linkwatch_fire_event()).
+Concretely, consider a scenario in which the carrier state flip-flops in
+the following way:
 
-ack, fine, I will fix it (I am still used to 79 char limits :))
+ ^ carrier state (high/low = carrier/no carrier)
+ |
+ |        _______      _______ ...
+ |       |       |    |
+ | ______| "foo" |____| "bar"             (SSID in "quotes")
+ |
+ +-------A-------B----C---------> time
 
-Regards,
-Lorenzo
+If the time interval between (A) and (C) is less than 1 second, then
+linkwatch may emit only a single RTM_NEWLINK event indicating carrier
+gain.
 
->=20
-> > +               if (err < 0)
-> > +                       return libbpf_err(err);
-> > +
-> > +               memset(&req, 0, sizeof(req));
-> > +               req.nh.nlmsg_len =3D NLMSG_LENGTH(GENL_HDRLEN);
-> > +               req.nh.nlmsg_flags =3D NLM_F_REQUEST;
-> > +               req.nh.nlmsg_type =3D id;
-> > +               req.gnl.cmd =3D NETDEV_CMD_DEV_GET;
-> > +               req.gnl.version =3D 2;
-> > +
-> > +               err =3D nlattr_add(&req, NETDEV_A_DEV_IFINDEX, &ifindex,
-> > +                                sizeof(ifindex));
-> > +               if (err < 0)
-> > +                       return err;
-> > +
-> > +               err =3D libbpf_netlink_send_recv(&req, NETLINK_GENERIC,
-> > +                                              parse_xdp_features, NULL=
-, &md);
-> > +               if (err)
-> > +                       return libbpf_err(err);
-> > +
-> > +               opts->fflags =3D md.flags;
-> > +       }
-> > +
-> >         return 0;
-> >  }
-> >
->=20
-> [...]
+This is problematic because it is possible that the network
+configuration that should be applied is a function of the AP's
+properties such as SSID (cf. SSID= in systemd.network(5)). As
+illustrated in the above diagram, it may be that the AP with SSID "bar"
+ends up being configured as though it had SSID "foo".
 
---H5r5tXaizAjuuM7h
-Content-Type: application/pgp-signature; name="signature.asc"
+Address the above issue by having nl80211 emit an NL80211_CMD_START_AP
+message on the MLME nl80211 multicast group. This allows for arbitrary
+processes to be reliably informed.
 
------BEGIN PGP SIGNATURE-----
+Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+---
+v1 -> v2: add MLO link ID to the event per Johannes' comments
+---
+ net/wireless/nl80211.c | 38 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY9UZqwAKCRA6cBh0uS2t
-rBxoAP0cbq7hs6/E0Xww1WyBoVO/koarQuFXB5dQjh+u7148WAD+IB9ZdSVQzt5f
-ogltg73yhQG8hmRf64y75STgSRlB6Qc=
-=/DWr
------END PGP SIGNATURE-----
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 64cf6110ce9d..7370ddf84fd3 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -5770,6 +5770,42 @@ static bool nl80211_valid_auth_type(struct cfg80211_registered_device *rdev,
+ 	}
+ }
+ 
++static void nl80211_send_ap_started(struct wireless_dev *wdev,
++				    unsigned int link_id)
++{
++	struct wiphy *wiphy = wdev->wiphy;
++	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wiphy);
++	struct sk_buff *msg;
++	void *hdr;
++
++	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
++	if (!msg)
++		return;
++
++	hdr = nl80211hdr_put(msg, 0, 0, 0, NL80211_CMD_START_AP);
++	if (!hdr)
++		goto out;
++
++	if (nla_put_u32(msg, NL80211_ATTR_WIPHY, rdev->wiphy_idx) ||
++	    nla_put_u32(msg, NL80211_ATTR_IFINDEX, wdev->netdev->ifindex) ||
++	    nla_put_u64_64bit(msg, NL80211_ATTR_WDEV, wdev_id(wdev),
++			      NL80211_ATTR_PAD) ||
++	    (wdev->u.ap.ssid_len &&
++	     nla_put(msg, NL80211_ATTR_SSID, wdev->u.ap.ssid_len,
++		     wdev->u.ap.ssid)) ||
++	    (wdev->valid_links &&
++	     nla_put_u8(msg, NL80211_ATTR_MLO_LINK_ID, link_id)))
++		goto out;
++
++	genlmsg_end(msg, hdr);
++
++	genlmsg_multicast_netns(&nl80211_fam, wiphy_net(wiphy), msg, 0,
++				NL80211_MCGRP_MLME, GFP_KERNEL);
++	return;
++out:
++	nlmsg_free(msg);
++}
++
+ static int nl80211_start_ap(struct sk_buff *skb, struct genl_info *info)
+ {
+ 	struct cfg80211_registered_device *rdev = info->user_ptr[0];
+@@ -6050,6 +6086,8 @@ static int nl80211_start_ap(struct sk_buff *skb, struct genl_info *info)
+ 
+ 		if (info->attrs[NL80211_ATTR_SOCKET_OWNER])
+ 			wdev->conn_owner_nlportid = info->snd_portid;
++
++		nl80211_send_ap_started(wdev, link_id);
+ 	}
+ out_unlock:
+ 	wdev_unlock(wdev);
+-- 
+2.39.0
 
---H5r5tXaizAjuuM7h--
