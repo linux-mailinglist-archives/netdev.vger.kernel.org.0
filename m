@@ -2,119 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0052867F9AD
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 17:52:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76FB067F9B4
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 17:57:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234077AbjA1Qwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 11:52:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49052 "EHLO
+        id S231444AbjA1Q5V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 11:57:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232929AbjA1Qwf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 11:52:35 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2117.outbound.protection.outlook.com [40.107.237.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DA52B0A0
-        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 08:52:34 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a3etOkObWbpuLQWYwOvo0VFu7jELDJDTtH5rXRPXZa+2Mluk38qB41+4eRKmETIDM2DLlemEr7HQnvpz9K6dJO9wdDh4MuBlPfN4IwinuH967zy6k9cdntis4NzSuziGXhVPnB14VdsUBc4/c3aFj/ffIXoPTbZavMe5i9ziciZcGleHh5Yk39sAyt8yiWcTpAxlqxp5DhErrZC2Ne7Ik9CDEGbzDlRdFDz/IdiN7vS/SVF91cWV6uqG+EwUDYtZ+3KXU2YsmOF6eNklDKIOxOKQXwQ2Kk4WQSWiNhGZSHrGWp+slJ35au/c6E5UA+OiSfBZSiL5yxCK5sIsAvpQeg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6bzDeSBFIz8PZ36C2zbIZZTBK+odvElXSk4tGbMvkxs=;
- b=iRowLyu+4riftfYho57whpvF5Y1Lh67YGtI33ig5gG3pG2sBlkJIHoZZTNVeEcF0909Cr97TimgiUB/5CwELVT5TofqREzphicLJ2n8Fr//TCG9bDqUGmpu2EUDRlgdZ9kK6uL91eT5W24jenj60dEdh71imYd8aaEDoWZTP256KXTURLZd6Tp9k+IKzxJFNiBpIVNxFGnyLXtCyE+0Hlt8O00sJFmw++ILlEUDcemfkWKNc5yayopclwCPSIGxZd6E92siqCCrC9cQUIrWxc5BmFCfrHwExGsKuPys/ktDlF7kasksClmT4jrk6dj9xALkcDGYeKhGsFJwaYp/Vrw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S229867AbjA1Q5U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 11:57:20 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84929252BF
+        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 08:57:18 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id x7so4098954edr.0
+        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 08:57:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6bzDeSBFIz8PZ36C2zbIZZTBK+odvElXSk4tGbMvkxs=;
- b=MDbvTFEosZdr/NPUKOlOX8zMo1sl3+droHniVxqSxcS5qTzc8z3G5dP7kYNu7bFIhFyzP4I1PK4zMcVCyOSpM2AEcswJRcz8X5nd6QBavFTwgCmk7PCBLT/yQ9QBEm3FsphO40OETbU9ytDdlHQcZ5YleXWDMi1RtZjyeJ/e5Fk=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB4922.namprd13.prod.outlook.com (2603:10b6:510:92::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.30; Sat, 28 Jan
- 2023 16:52:32 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65%6]) with mapi id 15.20.6043.028; Sat, 28 Jan 2023
- 16:52:32 +0000
-Date:   Sat, 28 Jan 2023 17:52:23 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Paul Blakey <paulb@nvidia.com>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
-Subject: Re: [PATCH net-next v5 1/6] net/sched: cls_api: Support hardware
- miss to tc action
-Message-ID: <Y9VSx/TgS466Hyxg@corigine.com>
-References: <20230125153218.7230-1-paulb@nvidia.com>
- <20230125153218.7230-2-paulb@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230125153218.7230-2-paulb@nvidia.com>
-X-ClientProxiedBy: AM8P189CA0016.EURP189.PROD.OUTLOOK.COM
- (2603:10a6:20b:218::21) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=diag.uniroma1.it; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=tt8Ha/RSXw0RfPBUqnD7ihG/77QJ3kclrfnxQeGKaOg=;
+        b=vdySnnQpnG7PamHqJRpJHTk2/+pkWDwtlaaTwo/4ftut1SPbh2wsoeOBfyqSe97XJr
+         mBy/7KQLHn305eIbrv15wtIC3jt677R6UlSH0zZLLGg/AOXKk5sofUt21qCLjX8Xqvpz
+         ZRdX45XYwjwfNRYgk0ChwEm0M4J3VJXcUuOjg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=tt8Ha/RSXw0RfPBUqnD7ihG/77QJ3kclrfnxQeGKaOg=;
+        b=a8YToQoExTlhb8sMyIlBnukwT7qG0m13aeCj4xVA2BivrBoQmShEWQvjKkr1BOl7Fl
+         KQ4SbyJJvVsfpBMB3aXh3FNb6b47BmMqOSAcg2sv6OEdl7bcPqUqbcIZXQ3WTUpYqb6w
+         3aUhAmlKNsoBQaunJxq322DfFAZGZobCMcRHdWQnN2x4O+0qdaWRIqX0dWIDx0qDi/BR
+         paNp0i2EjzWlGxPS90Dwyx+lVlfG/AyVzEXZYBzBgPUK0yYc/LKB+kBEOHbiP297s9Ot
+         9NLS/CCsG9HDH+j14ns4ez9HTYCQL5bn4YalyMNETIqq0jYkXpDKNMErT1EJhSFzTHg5
+         B3pA==
+X-Gm-Message-State: AO0yUKUDouQWGGLt28PRZEzt9JjHp4i9bT23Y8zhtFNyPXhq5RBNdITq
+        LHpzp+iJ15MBZleS9HJsC4uL1+nBhFxFwOeAu3fJYA==
+X-Google-Smtp-Source: AK7set8gwJjmXGZ7qEK5w/UZ8ko/Bw99HYHzRiyxR2URnKVNJoJLwhG2Y0TJ+hLyQwxjUH1ZmX3ZHnlhwaLOabgBZQ8=
+X-Received: by 2002:a05:6402:552:b0:4a0:8fde:99b4 with SMTP id
+ i18-20020a056402055200b004a08fde99b4mr3865536edx.32.1674925037155; Sat, 28
+ Jan 2023 08:57:17 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB4922:EE_
-X-MS-Office365-Filtering-Correlation-Id: 200604b6-2883-4a9e-4b16-08db01500c97
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: csde/HgcmcWZkVrStG+k+kiEtSmScsmj/JHk11XTYnrDBN62frk98nOEWOBq9W/x1VCMyvlbWIdyU0daWKR5gv9VfbNwhvi38dCzrsKw4RfRT+dOPN9uD4ub3bNOOWtslh3iSSauNw/5ovhQic9cRtZtsOS+rUEsbrpYIHg95zpdg5E91c2cxD0I1Gburtmr8MEtOGt4YXiuO1f1yQMk0dLpolUt5pFJqNlb5/JuUX/PeMpSQx1vu1fpi4Cg/6NJHfdSJFev/sMAhf573L7slUQCGdAURgG01RETmSEV8CA4LiZvFfac0U79ZrS2Li8c+jPAH9k2xiD8nt40eY9Wh5qnoRe51e360/iYXmSyXeleUHvkHAUuPSqMD7s00peKjwZSijcRfjOyDQGFewUOS8zS6we4xZDOSi19JQ/4GrNBNFhoWmHhVGnX7djAo/J90tDSg24TlA1y1OA+THpHCyPC4jMHdgU4XKpjbI25qraAWE2xIYPedO/1O0r+IChbsQKLC4NIrne90RckX2mOV0oYqPS/Dw1rqxebA6Rxi1euVlpC3aOkQlOZPXpZUL2XeeLV7PciUtv4pzOVdKrPZKoWd6mLn6nKOogtOmv0IoxS4XIeA+RBe97l4buhEgz6Fj7bOr9ejq6y962t5mTAvrgoE4SX4WpBJyC67n9iBRAlw6CVRBvbE029ntJdk7I1
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(136003)(39830400003)(346002)(376002)(366004)(451199018)(4326008)(66946007)(66556008)(66476007)(6916009)(41300700001)(8936002)(83380400001)(8676002)(6506007)(36756003)(2616005)(7416002)(316002)(54906003)(5660300002)(44832011)(6512007)(6486002)(186003)(4744005)(86362001)(2906002)(38100700002)(478600001)(6666004);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mPKPWbx19bINIVjFVtoj/t4zlypUqNB6stqjNYCK5uJRfLtC/6t4QedxlZix?=
- =?us-ascii?Q?FIkDFW1za/opnAd2pwPlsOaIHvHw/Rj7pIFgyGyEwt9gVVEtkrc2oD2Ah+kJ?=
- =?us-ascii?Q?IxfG6XzVYgJKKEaib8Eem5rv4RHXOUoiY1as9bhAkUKCXWFjnDqTQp0XHNYF?=
- =?us-ascii?Q?qBLhLihjsspeqD3nhJo52vjDRD5UjATJ9tV8jyEpjXj9kgjvKkYAQVDKOFP8?=
- =?us-ascii?Q?+DBSiPwysR+XXnjiFM5UoWxDq+AKDqXMh6wIgm1YU1uIrPYG+ajF3Yje8BP9?=
- =?us-ascii?Q?OWba+x9p0C0+rKyqX++zB/yNAk47CV8Ktvw+F1UptZ8sUs/Dnvvj6aEeWjmN?=
- =?us-ascii?Q?2Vc1BSSF5ldSQZOty6tGLc/KkiJyADe6Dh07j0AB+VKkua5Sj3c346XOeS/y?=
- =?us-ascii?Q?fXHALAPqgV09y4SL+H9v0AvTLlV30UGwfwp2q64F1t70ktBy1Y94NsWsewb1?=
- =?us-ascii?Q?05zsr5+vzdK1GImRMaCJsboztLGgSnqYrs7LluD7jlubMer2WAMiZymmAKYX?=
- =?us-ascii?Q?I3nJTlYDNscGmAaXR6bhN2zB02/57eRPlWl/mrguGogB6aBYuRsf2NNhJXIt?=
- =?us-ascii?Q?XQwxq3s6rl5tAGsiGkM9vdv6nDfkkCRn7EX0HrHTaypyIfYBLk841gDYGkNQ?=
- =?us-ascii?Q?r78Hd4uIFb8Ek+wUveeYtvhtpSsNnkrKbVHXYZGC96P+K4XjXKKGSvPjfct0?=
- =?us-ascii?Q?Atdc6SPC+r9xsM4JyGuhRXWZxMN17n1gBTYzD0oeomr6qkY4QLJQFGmdFv14?=
- =?us-ascii?Q?FnrDb1gldvqWuff56Z2TWDmW0p8kdz6TaG/Z6YXC5KGkOV/vx7iQlK9vkzLg?=
- =?us-ascii?Q?3Fk5uxEhZzweNwfv3x6PsE/YwgHq172SwDm1oRMX4v93m0KH86Ei+FkACvB1?=
- =?us-ascii?Q?ZHBHfiYl0TUhv0e08ZDukfO16Z165z46oDyfEcQD4YRHeuIwDwnSiQi5uays?=
- =?us-ascii?Q?7kIe8lDxdkPpEiMB6ssooL8gV8X6MttL5BlaxZ7TQZ+wJaWszTt0OIHNSSeR?=
- =?us-ascii?Q?tieQUHyw+DshTa7/ywhyniXoArng1CRzRdWpTIiVi28XclfM7PCuOxlrdn1C?=
- =?us-ascii?Q?igIPw/e6ahp5OR9jekMfMnv2iiHJTn7Dec2SQeLG7sLXLSgSTMb4kNErkNil?=
- =?us-ascii?Q?3qF65aYB64u/+nlTCEMqU2vAXzUKZAhm413x2btIwOFprX1wrZxJpX9Oo4tb?=
- =?us-ascii?Q?fD+S3AbEg02H/NAVqekna3ckLW2BKMonT3AhjC1Se/hXCa4vDJDzuOQuwzF7?=
- =?us-ascii?Q?tnBTexGYOP9O/TFRaiKvCtwM7JO3i8Lx5piiByw6XrETC851ci+EJKq21roo?=
- =?us-ascii?Q?FyRCPOeyzA1Ydi0Lc07DAS8Gd9waJ0TftlI2EYSK7bKmmoOT8Ohhlcsj1S6H?=
- =?us-ascii?Q?rC9C9JX3TWvxBtERp4+ohX73/e0SGPUAEE/SpFARvVW4k6Q0xSeDEAQG0VBe?=
- =?us-ascii?Q?ONlvUorcaZipyu4WnOTug9n7olXraMsUru2FOd07MjVIFaD5dRpmgwbODyHY?=
- =?us-ascii?Q?bkbWS3z2mRLZanpotNwTb0g1l8NGVTsbayZNaXIFPFQjpRIwpPfOLY2H0kVd?=
- =?us-ascii?Q?QXPeGqrLZtVxq+/6Zy/W80w2QkuTVVQ1YWPW3RvzmY0MQKkl1DNI17rFdryV?=
- =?us-ascii?Q?HWGZWxYVuKsatuO4oTXz41ONPbTqcE+fkrrRVxfoUBmN8PS98JfqDEKZXUL2?=
- =?us-ascii?Q?m/7deQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 200604b6-2883-4a9e-4b16-08db01500c97
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jan 2023 16:52:32.5496
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Y7jim57AGNlMFqsR4IorRpR5ChoofzcvwZ4W65mNBEDk0Bb2gOtYoQlqm0BQco0J2aJO98F18hFlo/VFqGteBaA+TRC1aB+nimXlFVGsQ3U=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4922
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+References: <20230128-list-entry-null-check-tls-v1-1-525bbfe6f0d0@diag.uniroma1.it>
+ <Y9VP6Hw7jH0VelUX@corigine.com>
+In-Reply-To: <Y9VP6Hw7jH0VelUX@corigine.com>
+From:   Pietro Borrello <borrello@diag.uniroma1.it>
+Date:   Sat, 28 Jan 2023 17:57:06 +0100
+Message-ID: <CAEih1qX-XG=-OxMcNyWm9NuYG+_=oFHkTPD3s-Q7EPKPAS3+zw@mail.gmail.com>
+Subject: Re: [PATCH net-next] net/tls: tls_is_tx_ready() checked list_entry
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vakul Garg <vakul.garg@nxp.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jkl820.git@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -122,25 +71,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 25, 2023 at 05:32:13PM +0200, Paul Blakey wrote:
-> For drivers to support partial offload of a filter's action list,
-> add support for action miss to specify an action instance to
-> continue from in sw.
-> 
-> CT action in particular can't be fully offloaded, as new connections
-> need to be handled in software. This imposes other limitations on
-> the actions that can be offloaded together with the CT action, such
-> as packet modifications.
-> 
-> Assign each action on a filter's action list a unique miss_cookie
-> which drivers can then use to fill action_miss part of the tc skb
-> extension. On getting back this miss_cookie, find the action
-> instance with relevant cookie and continue classifying from there.
-> 
-> Signed-off-by: Paul Blakey <paulb@nvidia.com>
-> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+On Sat, 28 Jan 2023 at 17:40, Simon Horman <simon.horman@corigine.com> wrote:
+>
+> Hi Pietro,
+>
+> I agree this is correct.
+>
+> However, given that the code has been around for a while,
+> I feel it's relevant to ask if tx_list can ever be NULL.
+> If not, perhaps it's better to remove the error path entirely.
 
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
+Hi Simon,
+Thank you for your fast reply.
+The point is exactly that tx_list will never be NULL, as the list head will
+always be present.
+So the error, as is, will never be detected, resulting in type confusion.
+We found this with static analysis, so we have no way to say for sure that
+the list can never be empty on edge cases.
+As this is a type confusion, the errors are often sneaky and go undetected.
 
-Sorry if this is a duplicate; I did something weird the first time around.
+As an example, the following bug we previously reported resulted in a type
+confusion on net code that went undetected for more than 20 years.
+Link: https://lore.kernel.org/all/9fcd182f1099f86c6661f3717f63712ddd1c676c.1674496737.git.marcelo.leitner@gmail.com/
+In that case, we were able to create a PoC to demonstrate the issue where we
+leveraged the type confusion to bypass KASLR.
 
+In the end, this is the maintainer's call, but I would keep the check and
+correctly issue a list_first_entry_or_null() so that the check will work
+as intended as the added overhead is just a pointer comparison which
+would likely justify the cost of a more solid code.
+Otherwise, I can also submit a patch that entirely removes the check.
+Let me know what you prefer.
+
+Best regards,
+Pietro
