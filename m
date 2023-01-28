@@ -2,144 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD3BD67FA75
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 20:31:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38D3167FA97
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 20:56:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230473AbjA1Tb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 14:31:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39950 "EHLO
+        id S234507AbjA1T4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 14:56:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229850AbjA1Tb1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 14:31:27 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2065.outbound.protection.outlook.com [40.107.223.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BAF77290;
-        Sat, 28 Jan 2023 11:31:26 -0800 (PST)
+        with ESMTP id S232455AbjA1T4g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 14:56:36 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2101.outbound.protection.outlook.com [40.107.92.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325F822DC9;
+        Sat, 28 Jan 2023 11:56:35 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KeYyofIdOB2at+6Bf5XiY7xDveG55kvey9jADj6UTRu43jepm0M6Mrwkpb6+rRNFO2oNFxXgzmr/GfP7Bhgtlgs7dnT9x6FlpHczaeuaXa3ruknzgB95+s5wWrgqIvu3EQYti6KOXIFwb7MV0psPNXt57qrQs8SHdkY5iHaqZ/Gb3Fc5GKcVd3pFbtUOrgStE45C4uXLBTYS4YGmgKTP+3Xgeg4JabPzWSdxtf02TgWcrmco7OqzufLOmJtD+1rheH8ojM5XzziojKeK4H5w7KZe5wqkT84IOzx4iIxrOwvDXpYPgMcOLDBdvlf/IvMQhsZvlqoPiKBLvX9cwuQi6w==
+ b=VHhiQDgADDWDCnHIZWyxkDFRePxrCOGxZ5l0KhyfMc/D9qsTu1L1kpbIYoNTeZB0VeTQovPSL4cC6YhdHsLqgwXXh4R9xFi7H89A97G7wqJ6XMsGuT6eISzgAXQNQxdLBdi6Sj/1l/J5BHMolkLHu/cerUN8rOVCJc/EhZk7+zpkKaSjKTCKwg8bhRqKJLYKyYDdHTlxoXutWt20Ok4DiHtdUjtLS6veSTz5M3o3QcIYDKH/nFYTt3/3pTZE7+u8tOlqRC8Kn4LfSHTDFY/JN9gHhcDRjVJbMqeiWmDKiEWiNVIYs5Le1H3UX62xBr5bCjuahmm+IOYu1T2bFuKoow==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Yfsa47LraUt9o/M5mGpUnxNGslWrcC+ejZ0Rw+2PrAY=;
- b=PMXZk27e3yxP8ufOY0J9b1Ns2gT25LX4Ma0Qh3UMpIwlpYPoO6JBLX972a6ioFb0maw5SC/+OXFBnY4+8BLddBy3377ZTgcll1IREpUJaIYTADvyKKiWcoYQDT/b1QX7l0gsNGIGaYMAmGU+oisOBr0OKL/VdbwKg6qFzT+JbGQWtShFML1/gYLc8dO39N88sVuDgEP9YTnmzL9EpazlfPoUUqVsS9WPDf+9UvBzICn7VrRYQABW46ZTGF7lXCsMUaIhaWx9k9mV2rkFU07TgpriVgTJxsCD91MYxrMmnhaGiCLNxegD6oD7AziSciQ0KI4cuvsJDUej3c3kfbTKNw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=corigine.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=Zgq8rfoNP1X+dGEXGbXFPNJI+FV7R2nGm5jnNvVWHSs=;
+ b=B2jifLCxLdzdR8xVJnjUEX6atIfY3wk/hurjjIJOxgQqtI4ZBT+rDUTKL9pjk5gw8CvsXAlYqc4qbrp+7K+H8QmVif498C8DSuhS0U7RtcgENG4gd4Pwh1nweEYGWLeYIPaUkWL1hTvCuPa3CvZkrDTFh0sWKuaWWp74s7E9PS2ThWDTlT18rZ8xRKn16269SjsOpobutnbXqnXgtlE6xf3kYuGQ1yi7zdgJqEzjdzmHQD/hiBZzRjWVLfdoYtIxx0dNOAeJAfo9Sl7brXp0uWLP6vxvA016x8E9cVe4CJn3LovHbtaoDrDKAf9DInFAEml0emxBjHPE/m46Vp8KJA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Yfsa47LraUt9o/M5mGpUnxNGslWrcC+ejZ0Rw+2PrAY=;
- b=DHLEyBKALWNPfgh+f9S9VAMmxcb6oHfeSru94+WRfYOSsk9/75GrnjwDgkbz3lLilVoprsBLPXs8RGALVupfoZ3+MHaWGq5rPfUqWFw5WhV5PVl05Za2Uw9APqWvzCy0cAeWfYnrdOsBS7yAq+ieMq6XmnFMv0yeeQeiS6RKGRuV/si43QISrBjuNz0ecLx8V7zyJbLvTbzfI6JxUd8sctudVquGQ21zT6y7kRiKj8iy1q7FkidsSI1DpNOi3Q9zZRVEIHpKA0qZSnBPI/U1qzGmmcGJOt4C4QbW29ZYw7lejMHLOOM4juVvO/FpRMmTsFrUQCx7bHP8HDx1vu9lPQ==
-Received: from DM6PR04CA0019.namprd04.prod.outlook.com (2603:10b6:5:334::24)
- by SN7PR12MB8129.namprd12.prod.outlook.com (2603:10b6:806:323::13) with
+ bh=Zgq8rfoNP1X+dGEXGbXFPNJI+FV7R2nGm5jnNvVWHSs=;
+ b=u7+IkvPuA2rlMGvua+xw6YBFkhTm37wN2umFyMxdzof6kJ2O6FQsvErYfP+ho6Ruy96SVqMRFdi9yBn6qzkGfhaMOqe+61IvJ4wbgfb5faBCsh9JwjJIok6FBsPIaEU+ALaQn2mW5+xlx+wXA+aRXJ+ZOu7ocRb3s+y3Wljq6bQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from BY3PR13MB4834.namprd13.prod.outlook.com (2603:10b6:a03:36b::10)
+ by DS7PR13MB4591.namprd13.prod.outlook.com (2603:10b6:5:3a1::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.25; Sat, 28 Jan
- 2023 19:31:24 +0000
-Received: from DM6NAM11FT074.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:334:cafe::af) by DM6PR04CA0019.outlook.office365.com
- (2603:10b6:5:334::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.30 via Frontend
- Transport; Sat, 28 Jan 2023 19:31:24 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT074.mail.protection.outlook.com (10.13.173.203) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6043.30 via Frontend Transport; Sat, 28 Jan 2023 19:31:24 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Sat, 28 Jan
- 2023 11:31:16 -0800
-Received: from fedora.nvidia.com (10.126.231.37) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Sat, 28 Jan
- 2023 11:31:13 -0800
-References: <20230127183845.597861-1-vladbu@nvidia.com>
- <20230127183845.597861-3-vladbu@nvidia.com> <Y9U++4pospqBZugS@salvia>
- <87mt62ejd1.fsf@nvidia.com> <Y9VzBcDwtXIRDPkq@salvia>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <ozsh@nvidia.com>, <marcelo.leitner@gmail.com>,
-        <simon.horman@corigine.com>
-Subject: Re: [PATCH net-next v5 2/7] netfilter: flowtable: fixup UDP timeout
- depending on ct state
-Date:   Sat, 28 Jan 2023 21:30:36 +0200
-In-Reply-To: <Y9VzBcDwtXIRDPkq@salvia>
-Message-ID: <87a622e9s0.fsf@nvidia.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.30; Sat, 28 Jan
+ 2023 19:56:33 +0000
+Received: from BY3PR13MB4834.namprd13.prod.outlook.com
+ ([fe80::1cd0:5238:2916:882]) by BY3PR13MB4834.namprd13.prod.outlook.com
+ ([fe80::1cd0:5238:2916:882%4]) with mapi id 15.20.6043.030; Sat, 28 Jan 2023
+ 19:56:33 +0000
+Date:   Sat, 28 Jan 2023 20:56:27 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, ysato@users.sourceforge.jp, dalias@libc.org,
+        linux-sh@vger.kernel.org
+Subject: Re: [PATCH net-next] sh: checksum: add missing linux/uaccess.h
+ include
+Message-ID: <Y9V963IQhnL9ieLk@corigine.com>
+References: <20230128073108.1603095-1-kuba@kernel.org>
+ <Y9VKZhCOdM4L28UA@corigine.com>
+ <Y9VNY2C1CuHHo6WY@corigine.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y9VNY2C1CuHHo6WY@corigine.com>
+X-ClientProxiedBy: AM4P190CA0003.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:200:56::13) To BY3PR13MB4834.namprd13.prod.outlook.com
+ (2603:10b6:a03:36b::10)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.37]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT074:EE_|SN7PR12MB8129:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1bcdf53c-1f60-4dd0-1f0f-08db01663e18
+X-MS-TrafficTypeDiagnostic: BY3PR13MB4834:EE_|DS7PR13MB4591:EE_
+X-MS-Office365-Filtering-Correlation-Id: 380b6ab0-88f4-42b8-7e1a-08db0169c14a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: TlPuG3RlN+BNPb1XOO5T5uwX3+HfcbexL4YB6iSsKLMNHQI3LWhqAx1ms5Zefx3utGcMz2ZSidY13cPMfLrUgBnl+JX3QFxsjG9LENzvq+TLuhARUDTTCqd0uGNjlANgK9CYgdD/RI+3ESTg0tlBqa8nHYQHOoRXSCrcHZOZX7ZHjlAlQkO8lGZKWw1bxvBpaMhxrTEwf+EfvDs5uyISYCsCaPw7d0mI9PR3VTGTL/QnMAe05sDjVhs9cGzpNeWeYzwsaFJEv7rG/LROtxKaP/t0LjRR84N36stxKyK6iT2PZ3KgxlDZOjWssJ5R3SXy9NbEFpD81LmofJzVrKL6p/1LqE/mt6Al5jXwKLcCbhpVihu9KmuHxFxd4PtXw8UJ5lb18z7kbRo7++8aJyFGBrCnrb0DJrEnRuYNJVDkQz4Gb6c+13Dc8kEoPNO9FK6/PH7k/nvTkzguLbnvr+UtKH/slkuEkx14emAIxX2uoaAU4iCRtB8EPzKsZSw5bp3tiJ+647UiydfXxHwZ6wSg2MlbfdCMYpK8Ay7gXRJ8wgtpN1nKfO3q9ceXQ2X86x5j8u31FLpZ6LuvPDJYQW/kMnTboQ7Qd89dkPnd8iucbyLvXsTgMvER0Dlm784cz5773pJoA3Yy82URl/fOSFbeF+1zptuY/HhH+R/5qSQt2sH5pI0+RqbCZQM/+5gA8iJYebzeMUnjAGBGplId1HxDx1OJ+vlNYu8DbrWM4SwkGlPjZbeWBqC66WXoo5gV4cNZ+47Oiuz7JCHWxjuvYj4T1XdmPF1GMVPqUTgU3+twM6I=
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(136003)(39860400002)(376002)(346002)(396003)(451199018)(36840700001)(40470700004)(46966006)(82310400005)(36756003)(2906002)(16526019)(86362001)(26005)(4326008)(70586007)(6916009)(8676002)(2616005)(186003)(47076005)(70206006)(336012)(426003)(7696005)(6666004)(316002)(40460700003)(54906003)(966005)(478600001)(40480700001)(7416002)(5660300002)(356005)(7636003)(82740400003)(41300700001)(8936002)(36860700001)(83380400001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jan 2023 19:31:24.1711
+X-Microsoft-Antispam-Message-Info: X0T+e0oUl8QQgWGxF+0JNE9TfJimrk/ikrSY4bwnS5R9CTdk5bIEBu2/qPZeeN6Kr6Ete/pjd+FmQhQAXP0rE9Iw4vyWmNOq5h3rYXJUbIQS/1gz6VzvlsFy/H3YOp6o3mXuCfheajZrxc5viAosRqS+gIg4taQS0sNa/killJ8AYzvcOUCbaPgSJ7H4D5LN8t3Q1lm468jDBEifbR1cVSIXW5VrKvGwtWdBGnr3b9QQaoddsJrKy/vYtChOL+F8QOShJF/5mRviZkjxIK/WfFk/c+3JWr7B80i4DdKsONVVpu6p0S2Fd+GTGbxfJCIJoYNoDcGRh1YJa8Sf1xBGIMnXmaB0UhFFOxJtb/a+8+7xAfvRRJ4BTtMQLIyAG8I8b+yNgPOpMvS8+Qu36L0gFDLZreGYd2tTo5b4bIAfaKQH/C5mxwLr4Rn3x3UCm59mCamRg13qjJ1CLMjU2YO312Xt+92lFV8/BaS3vGHTTnv5m58GpooiMIhASiJojW9gMfk6+8S5HyCmXn8GljSBvVWlGOUDGRgXQa9lEzFDbLWzXpps7Nh2+Utn1wpKx4RpMuZIbD9bKqy6kNil5GvLWmSXycquPcYfFXE3CEbL2AbIaaI5bB9llBLRimr9aJCz1Sst6/2MdFivlfJYrkJ8HAMzg9JB5BrtRsKbYmdOcPFAfNjLparqaFcJTkUvSqP88F0c5F1ipRlPTJwgrr5xnd1MrW62cTTA/d/BfE6WfTw=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY3PR13MB4834.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(376002)(346002)(396003)(39840400004)(136003)(451199018)(2616005)(36756003)(6506007)(4744005)(186003)(6512007)(44832011)(6486002)(966005)(6666004)(478600001)(86362001)(2906002)(38100700002)(316002)(5660300002)(66946007)(66556008)(66476007)(6916009)(41300700001)(4326008)(83380400001)(8676002)(8936002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0gzFriPWH4Y9C8gmqjRlMmPzbtY7rA5LNCc7wkDA8N0iDX72H76wO/ROqAVN?=
+ =?us-ascii?Q?eRyA3qs82iWvA8UJ8SF746R0IXXC3nuiaX/Ao50g8YfT2FNWkvmhRk5trgmx?=
+ =?us-ascii?Q?K26i7u9qJmg7JAMQDrvMk4W9yHPpLNCxF2gFpnXf/1ysnHCMEV2gmj9W8aXe?=
+ =?us-ascii?Q?adR+YAZReKSfTL3v+4KPrrgJWsw/ExsYnokz71lMBshx+nlw0JjzT6fN60Eb?=
+ =?us-ascii?Q?kJST5rOmzpfL5RujpRasUa6T4OI/EX64Lk288qWefS/t0MzTwAkaT693XJ23?=
+ =?us-ascii?Q?VIRZgx/RRD6dDvRMjGKPr6LWwZk7fhNdW/wqTaH3Q37C/gw1pmjn0lwZ/nHV?=
+ =?us-ascii?Q?BfBlTg/de1eMvvKB3zd/F9Usa1J/HB1j0jDtmq1vrtsiJYoNbdGE+S4bBsgH?=
+ =?us-ascii?Q?b54apP+5W+iSRs03VUV+zlzghwJPcU+QrB4IIVni2fGBj4Sn5jww+t40WyN9?=
+ =?us-ascii?Q?U5uc7aeE9XeRriJsiE8krvbQCblcvnkkjlGjQAUsZ4moHm2gLmdTmlsMU7/Q?=
+ =?us-ascii?Q?cfH87euzIZXH/Xp3RA0ceSpCuYGXuN4OE3ap1DV2esPT/vm9rIh18+euhSaj?=
+ =?us-ascii?Q?5HiLipwyAJir1H9q5FZrB4mdoTwjP8ZZ7sgU9n0uHl3jOKobrm0iV02y6ibz?=
+ =?us-ascii?Q?r56qFk46OaERs6TiG4hv4FUQPDudXADGQNIkut0IBbJrf2mHG026ww2p9qhS?=
+ =?us-ascii?Q?EZo0I/dtjY7ys25ILgbQ2rowGHxZF3IY4ppLMnQzB4GJjcjoDug+qbN/ilQb?=
+ =?us-ascii?Q?K0rL1pXUwHTzjyHGXZM4c4JsWeBmVitv7wb6Ik+X6mDKOTO7dBB23YJ9CmJr?=
+ =?us-ascii?Q?pEqvIad4KHwHV11zhqYZm2of3Q0VF5NUoJCswaiA8Q8aY8pVia/X2AZrjX+l?=
+ =?us-ascii?Q?LdEp9bmG8uGrAYMlYZfwHJb0C3ps8HXqkRmy6yZXM26s23ZTmPWy2UH5LTpl?=
+ =?us-ascii?Q?M5OIrE32SEWFb6gyxB6GhO7cR9B9ZhQr0VoTDHllsV9Uunbc24Hgk2VaMv23?=
+ =?us-ascii?Q?sms63lm3B8rRh0De99FrXAxSqvWd4o4zfOZi1BHf0smJRo/Rk9jVCJm+1t2w?=
+ =?us-ascii?Q?F9Hw+YfEGW+Tn+epm21FrzXSxEPLyEb6j9ZNKS+Csu7zJ1JeokVBnMGN9U20?=
+ =?us-ascii?Q?++sroSFs34VuzzbdKmKghgfK1aYt3JFv+4EP2IJfNnuNkyGFLWmIsPkmYqQ2?=
+ =?us-ascii?Q?ch1y+i5smaOogpRRHLDUGat/fWij9rLRce6UXMYzupkqOdNNb3e10do1NihE?=
+ =?us-ascii?Q?34klBjS/07ium3S6dLltFGCy80Za5AQ6OecOUnGh12uix4TqbOWhAtS7laKz?=
+ =?us-ascii?Q?iePpfn/Yfz5iv4fg/sy8w17nvdYapG98pLYipFVrFEeW5lzjl2U9udSnMM/l?=
+ =?us-ascii?Q?ihEmuGf5Z1zDztIgxxqTyM3dYEVMAm466Fz6GGpiRaXL5Nz0NO6Zx13Y8m4u?=
+ =?us-ascii?Q?XpR0+Ibz5jB1MsZKodr4wsV0RdcfHpgdARJxVMNJ5fqXaW/3mQZ6LWIdwMtT?=
+ =?us-ascii?Q?99ZOlzwbw8EweZvpbs5/EO4AXxq0grN9rhpV4sa22clytBWqqQu2h9nEQVd8?=
+ =?us-ascii?Q?szkSKAJvMglBnW+1OuEnENedwqQKUAJOi7KvlJOohnvbPv/FQj6FIpG2rcr2?=
+ =?us-ascii?Q?mYPS6RlK/W3nIGaOkkogm7C5aQFxS5f382js1ukIBpmKQZIxSQWgbcw3lIgA?=
+ =?us-ascii?Q?TZiZwA=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 380b6ab0-88f4-42b8-7e1a-08db0169c14a
+X-MS-Exchange-CrossTenant-AuthSource: BY3PR13MB4834.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jan 2023 19:56:33.1009
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1bcdf53c-1f60-4dd0-1f0f-08db01663e18
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT074.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB8129
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: r2+GpA5I/d8M0Ei3F65gsxc0K822bsmol4lpB6YhE8N8e2lDlQm05BO9pxXsp7EaW56EW2vL1e8cMzfbHoXv7up77Qw82szqfKhxzvfONkc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR13MB4591
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Jan 28, 2023 at 05:29:37PM +0100, Simon Horman wrote:
+> On Sat, Jan 28, 2023 at 05:16:48PM +0100, Simon Horman wrote:
+> > On Fri, Jan 27, 2023 at 11:31:08PM -0800, Jakub Kicinski wrote:
+> > > SuperH does not include uaccess.h, even tho it calls access_ok().
+> > 
+> > I see that is true.
+> > But it's less clear to me why that is a problem.
+> 
+> Ok, now I see the kernel test robot splat.
+> Let me try and reproduce it for my own edification.
 
-On Sat 28 Jan 2023 at 20:09, Pablo Neira Ayuso <pablo@netfilter.org> wrote:
-> On Sat, Jan 28, 2023 at 06:03:37PM +0200, Vlad Buslov wrote:
->> 
->> On Sat 28 Jan 2023 at 16:27, Pablo Neira Ayuso <pablo@netfilter.org> wrote:
->> > Hi,
->> >
->> > On Fri, Jan 27, 2023 at 07:38:40PM +0100, Vlad Buslov wrote:
->> >> Currently flow_offload_fixup_ct() function assumes that only replied UDP
->> >> connections can be offloaded and hardcodes UDP_CT_REPLIED timeout value.
->> >> Allow users to modify timeout calculation by implementing new flowtable
->> >> type callback 'timeout' and use the existing algorithm otherwise.
->> >> 
->> >> To enable UDP NEW connection offload in following patches implement
->> >> 'timeout' callback in flowtable_ct of act_ct which extracts the actual
->> >> connections state from ct->status and set the timeout according to it.
->> >
->> > I found a way to fix the netfilter flowtable after your original v3
->> > update.
->> >
->> > Could you use your original patch in v3 for this fixup?
->> 
->> Sure, please send me the fixup.
->
-> What I mean is if you could use your original v3 2/7 for this
-> conntrack timeout fixup:
->
-> https://patchwork.ozlabs.org/project/netfilter-devel/patch/20230119195104.3371966-3-vladbu@nvidia.com/
->
-> I will send a patch for netfilter's flowtable datapath to address the
-> original issue I mentioned, so there is no need for this new timeout
-> callback.
+Done. Unsurprisingly, your patch resolves the problem.
 
-Got it. Will restore the original version of this patch in v6.
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Tested-by: Simon Horman <simon.horman@corigine.com>
+
+For the record, the splat is here:
+- https://lore.kernel.org/netdev/202301281438.ZNGVwW6S-lkp@intel.com/
 
