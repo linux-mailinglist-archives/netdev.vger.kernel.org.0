@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 386BE67F4AB
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 05:32:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7260667F4B0
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 05:32:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231928AbjA1Ec3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 23:32:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41974 "EHLO
+        id S232043AbjA1Ecg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 23:32:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230225AbjA1EcY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 23:32:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE6E7BBEB
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 20:32:22 -0800 (PST)
+        with ESMTP id S231527AbjA1EcZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 23:32:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65F97BBEB
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 20:32:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32A5060A4D
-        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 04:32:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AFBBC4339C;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56780B8222B
+        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 04:32:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBE8AC4339E;
         Sat, 28 Jan 2023 04:32:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674880341;
-        bh=NOE/X1dK0JFc8XEYpg14yfFzyn7RgGNfRMcIGtf0o+k=;
+        s=k20201202; t=1674880342;
+        bh=AgNHGmz/pHx5tPRVf5ALTdu81co3nVwX1T5nzqRfS9E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lOZgK+YeTvx9uD+rVX6ULWx4ZcaMdqilOLjN33np+YQbutQ6cWhd4SpS5VVDlYuJm
-         fjQcBSycG55OW6S7oukiMk49rNLRZ3wClL17tUYnGYILMNByLEhOtYyQR7o2zdgghS
-         5o/mDkA0BfEX4nKzfAQtv0XWzJ7aNrG1+QMI6tV+k0MXXepJ2NogbhQZwXWVMOQKBY
-         HfD3CVwKF64tE2B1DNyGkjlDB1OKGw1HA9yCnHfvDWJkT8qukMJ8JlZMM0TVuGzt7B
-         C5e7Msx6CqRwyjo8sU9F5SNfB9QRrbYDPbyUGqxJXQsCPS4pgtQvD1h5p9LvElpy1/
-         Fd/bMNGy3gQSg==
+        b=czzO3GpwNWFOl8jVUzl5vntlzHy2WIWwrtl66T/5YYw+xZ7EsRluHz5u5eWHr/Jm+
+         Xs4Z2bbAJIai+B6ulKoSzfU48H+JhVzKWYjTvGzl6NCP5VhYqmbtJUeX5LKZxJMJCG
+         6PdiznEXj8GBH33U3oyh78ik2KA854Cf6DarHmGE+HnnNUeWTyCBHiTViM4ysjH9U0
+         r9CNoBNo8ql76Zeehk11cXgqaj7xB9OmpYNJ6I3//gt9Hvv/gBJy7T7/EuFu2PM5el
+         G7eAPapgJjzfDSw8hqz0K4+5+7gZTK/raz1w2lvd1Uj1xxbEgwt2XtYKNCHaaSEw4h
+         BZGaSzEYN3LJQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 05/13] tools: ynl: add support for types needed by ethtool
-Date:   Fri, 27 Jan 2023 20:32:09 -0800
-Message-Id: <20230128043217.1572362-6-kuba@kernel.org>
+Subject: [PATCH net-next 06/13] tools: ynl: support directional enum-model in CLI
+Date:   Fri, 27 Jan 2023 20:32:10 -0800
+Message-Id: <20230128043217.1572362-7-kuba@kernel.org>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230128043217.1572362-1-kuba@kernel.org>
 References: <20230128043217.1572362-1-kuba@kernel.org>
@@ -52,64 +52,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ethtool needs support for handful of extra types.
-It doesn't have the definitions section yet.
+Support families which use different IDs for messages
+to and from the kernel.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- tools/net/ynl/lib/ynl.py | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ tools/net/ynl/lib/ynl.py | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/tools/net/ynl/lib/ynl.py b/tools/net/ynl/lib/ynl.py
-index 0ceb627ba686..a656b655d302 100644
+index a656b655d302..690065003935 100644
 --- a/tools/net/ynl/lib/ynl.py
 +++ b/tools/net/ynl/lib/ynl.py
-@@ -75,6 +75,9 @@ from .nlspec import SpecFamily
-         self.full_len = (self.payload_len + 3) & ~3
-         self.raw = raw[offset + 4:offset + self.payload_len]
+@@ -313,7 +313,7 @@ genl_family_name_to_id = None
  
-+    def as_u8(self):
-+        return struct.unpack("B", self.raw)[0]
-+
-     def as_u16(self):
-         return struct.unpack("H", self.raw)[0]
+         for msg in self.msgs.values():
+             if msg.is_async:
+-                self.async_msg_ids.add(msg.value)
++                self.async_msg_ids.add(msg.rsp_value)
  
-@@ -302,7 +305,7 @@ genl_family_name_to_id = None
+         for op_name, op in self.ops.items():
+             bound_f = functools.partial(self._op, op_name)
+@@ -398,7 +398,7 @@ genl_family_name_to_id = None
+         if self.include_raw:
+             msg['nlmsg'] = nl_msg
+             msg['genlmsg'] = genl_msg
+-        op = self.msgs_by_value[genl_msg.genl_cmd]
++        op = self.rsp_by_value[genl_msg.genl_cmd]
+         msg['name'] = op['name']
+         msg['msg'] = self._decode(genl_msg.raw_attrs, op.attr_set.name)
+         self.async_msg_queue.append(msg)
+@@ -435,7 +435,7 @@ genl_family_name_to_id = None
+             nl_flags |= Netlink.NLM_F_DUMP
  
-         self._types = dict()
+         req_seq = random.randint(1024, 65535)
+-        msg = _genl_msg(self.family.family_id, nl_flags, op.value, 1, req_seq)
++        msg = _genl_msg(self.family.family_id, nl_flags, op.req_value, 1, req_seq)
+         for name, value in vals.items():
+             msg += self._add_attr(op.attr_set.name, name, value)
+         msg = _genl_msg_finalize(msg)
+@@ -458,7 +458,7 @@ genl_family_name_to_id = None
  
--        for elem in self.yaml['definitions']:
-+        for elem in self.yaml.get('definitions', []):
-             self._types[elem['name']] = elem
- 
-         self.async_msg_ids = set()
-@@ -334,6 +337,8 @@ genl_family_name_to_id = None
-             attr_payload = b''
-             for subname, subvalue in value.items():
-                 attr_payload += self._add_attr(attr['nested-attributes'], subname, subvalue)
-+        elif attr["type"] == 'flag':
-+            attr_payload = b''
-         elif attr["type"] == 'u32':
-             attr_payload = struct.pack("I", int(value))
-         elif attr["type"] == 'string':
-@@ -369,6 +374,8 @@ genl_family_name_to_id = None
-             if attr_spec["type"] == 'nest':
-                 subdict = self._decode(NlAttrs(attr.raw), attr_spec['nested-attributes'])
-                 rsp[attr_spec['name']] = subdict
-+            elif attr_spec['type'] == 'u8':
-+                rsp[attr_spec['name']] = attr.as_u8()
-             elif attr_spec['type'] == 'u32':
-                 rsp[attr_spec['name']] = attr.as_u32()
-             elif attr_spec['type'] == 'u64':
-@@ -377,6 +384,8 @@ genl_family_name_to_id = None
-                 rsp[attr_spec['name']] = attr.as_strz()
-             elif attr_spec["type"] == 'binary':
-                 rsp[attr_spec['name']] = attr.as_bin()
-+            elif attr_spec["type"] == 'flag':
-+                rsp[attr_spec['name']] = True
-             else:
-                 raise Exception(f'Unknown {attr.type} {attr_spec["name"]} {attr_spec["type"]}')
- 
+                 gm = GenlMsg(nl_msg)
+                 # Check if this is a reply to our request
+-                if nl_msg.nl_seq != req_seq or gm.genl_cmd != op.value:
++                if nl_msg.nl_seq != req_seq or gm.genl_cmd != op.rsp_value:
+                     if gm.genl_cmd in self.async_msg_ids:
+                         self.handle_ntf(nl_msg, gm)
+                         continue
 -- 
 2.39.1
 
