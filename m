@@ -2,412 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC7E267F9C5
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 18:14:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39BC667F9EC
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 18:39:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233861AbjA1RO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 12:14:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55768 "EHLO
+        id S234772AbjA1RjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 12:39:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231566AbjA1ROz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 12:14:55 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE0BC2005E
-        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 09:14:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674926087; x=1706462087;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iiMzTHSWbUlRJaxH2vCv3UisR61k+u6BGpWZVnQhSeY=;
-  b=kEnuVHZWetiJCegf7gB9Ue4XMoGcM7XpHfVxWACbF+EYXZ50B4uWYIzn
-   52qPYb8MfxElg8DblFyg9i46ymoeSGnMW0dI0jhl0QMrZpnklDjNC28lJ
-   XTjglsG0SvbN2XMoAYmEoshcwR5+9Sn5F2HgwR6yFc4AvIko/Zpv/YzAt
-   n/8RxOzqPM139mdbipwlIJuuvn2UKMJ/oz9QDKfGzZqTK3w0qf+9+s5OF
-   m//g4Bs3ZYbG/nI+o9JGUZzIpUMEODJh7yWYojiW/FlbS6HqjVow4XOF4
-   51dR8XozuE0Ixz17cSD/JYXMLfmcZAK/B3H7FW4xAJoB8Lg7FI8WCeGUe
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="354621806"
-X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
-   d="scan'208";a="354621806"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 09:14:47 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="641059068"
-X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
-   d="scan'208";a="641059068"
-Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 28 Jan 2023 09:14:45 -0800
-Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pLomq-0000wS-0B;
-        Sat, 28 Jan 2023 17:14:44 +0000
-Date:   Sun, 29 Jan 2023 01:14:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     wolfgang@linogate.de, steffen.klassert@secunet.com
-Cc:     oe-kbuild-all@lists.linux.dev, netdev@vger.kernel.org,
-        Wolfgang Nothdurft <wolfgang@linogate.de>
-Subject: Re: [PATCH net] xfrm: remove inherited bridge info from skb
-Message-ID: <202301290140.Y5jX2cAp-lkp@intel.com>
-References: <20230126125637.91969-1-wolfgang@linogate.de>
+        with ESMTP id S234726AbjA1RjC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 12:39:02 -0500
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3B12A175;
+        Sat, 28 Jan 2023 09:39:01 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1674927502; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=XGngZ+CfeF5ETeoZj5mEJCZXNloNBXlYT5+bh/sQwlCnYUEX6rtdAK0ic0s9rBBckX2MqOaFZhulKNV9xvf6xP/8S3AG2mRN80orreVy5aRQCG0lhu5apvcYWiZ8gnE5hNueAiThV1/1MimRfDNUisE+qzCNlOiFz3JdRyvo88U=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1674927502; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=XZyRjGD6IJEi2ji1I50O5QBvIy0FeOzgKH5lESzzl1M=; 
+        b=GDI36+F02nx/AZvz7aFYjb2VfMzR4i4QmmsQsjTfniv/euYDJ0PU7oa8jNZcNTylRc51MxC6dBvjgavpkL/D4kc91caOmj8jQY9JLMwXlLJewEgCyLlitRV/Ov+2oVekpdvDZ6tThChp3WFC3UlIW7rHPwTIy70XI4+7hBBUXLo=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1674927502;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=XZyRjGD6IJEi2ji1I50O5QBvIy0FeOzgKH5lESzzl1M=;
+        b=a10mS5qX5UtpKUNIjBZYBA9Yd4XsZOBwUsHQUk+VEcbHLkc2Gv9vhvQjGOIimyPp
+        06w0ZrDaxHhoU9VTkIzbhet2PChtW10T9SCzv1DIWn7/URdn+vMSxEJz3hnEkqhZgKJ
+        nKZCFFQsG5uF53gnsAi0akpzT7rvWxAD9YuSia3c=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1674927499694831.882213376883; Sat, 28 Jan 2023 09:38:19 -0800 (PST)
+Message-ID: <79506b27-d71a-c341-48fd-0e6d3a973f2e@arinc9.com>
+Date:   Sat, 28 Jan 2023 20:38:11 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230126125637.91969-1-wolfgang@linogate.de>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net v3 4/5] net: ethernet: mtk_eth_soc: drop generic vlan
+ rx offload, only use DSA untagging
+To:     Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        erkin.bozoglu@xeront.com
+References: <20221230073145.53386-1-nbd@nbd.name>
+ <20221230073145.53386-4-nbd@nbd.name>
+Content-Language: en-US
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20221230073145.53386-4-nbd@nbd.name>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 30.12.2022 10:31, Felix Fietkau wrote:
+> Through testing I found out that hardware vlan rx offload support seems to
+> have some hardware issues. At least when using multiple MACs and when receiving
+> tagged packets on the secondary MAC, the hardware can sometimes start to emit
+> wrong tags on the first MAC as well.
+> 
+> In order to avoid such issues, drop the feature configuration and use the
+> offload feature only for DSA hardware untagging on MT7621/MT7622 devices which
+> only use one MAC.
+> 
+> Tested-By: Frank Wunderlich <frank-w@public-files.de>
+> Signed-off-by: Felix Fietkau <nbd@nbd.name>
 
-Thank you for the patch! Yet something to improve:
+You can add this to all patches on the series.
 
-[auto build test ERROR on net/master]
+Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/wolfgang-linogate-de/xfrm-remove-inherited-bridge-info-from-skb/20230128-180508
-patch link:    https://lore.kernel.org/r/20230126125637.91969-1-wolfgang%40linogate.de
-patch subject: [PATCH net] xfrm: remove inherited bridge info from skb
-config: arc-defconfig (https://download.01.org/0day-ci/archive/20230129/202301290140.Y5jX2cAp-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/d1ea8e936ffdff6ceddc242e516a79730af3a017
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review wolfgang-linogate-de/xfrm-remove-inherited-bridge-info-from-skb/20230128-180508
-        git checkout d1ea8e936ffdff6ceddc242e516a79730af3a017
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arc olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+Tested on Unielec U7621-06 (MT7621AT) and Bananapi BPI-R2 (MT7623NI) on 
+latest netnext with buildroot as initramfs. These are tested with my fix 
+[0] applied on top.
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
+VLAN on DSA master gmac0.
+   Works on MT7621 SoC with multi-chip module MT7530 switch and MT7623
+   SoC with standalone MT7530 switch.
 
-All errors (new ones prefixed by >>):
+VLAN on DSA master gmac0 and non-DSA gmac1.
+   Works on MT7621 SoC with multi-chip module MT7530 switch and MT7623
+   SoC with standalone MT7530 switch.
 
-   net/xfrm/xfrm_input.c: In function 'xfrm_input':
->> net/xfrm/xfrm_input.c:545:32: error: 'SKB_EXT_BRIDGE_NF' undeclared (first use in this function)
-     545 |         if (skb_ext_exist(skb, SKB_EXT_BRIDGE_NF))
-         |                                ^~~~~~~~~~~~~~~~~
-   net/xfrm/xfrm_input.c:545:32: note: each undeclared identifier is reported only once for each function it appears in
+VLAN on DSA master gmac1.
+   Can’t test on MT7621 as an unrelated issue prevents from testing.
+     Define port@6 and gmac0, otherwise gmac1 DSA master receives
+     malformed frames from port@5. This issue appears only on MT7621 SoC
+     with multi-chip module MT7530 switch.
+   Works on MT7623 SoC with standalone MT7530 switch.
 
+VLAN on DSA master gmac0 and DSA master gmac1.
+   Works on MT7621 SoC with multi-chip module MT7530 and MT7623 SoC with
+   standalone MT7530 switch switch after compensating an unrelated issue.
+     When both MACs are DSA masters, ping from gmac1 DSA master first,
+     otherwise frames received from user ports won’t reach to gmac1 DSA
+     master. This issue appears on MT7621 SoC with multi-chip module
+     MT7530 switch and MT7623 SoC with standalone MT7530 switch.
 
-vim +/SKB_EXT_BRIDGE_NF +545 net/xfrm/xfrm_input.c
+It'd be great if you could take a look at these issues.
 
-   460	
-   461	int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
-   462	{
-   463		const struct xfrm_state_afinfo *afinfo;
-   464		struct net *net = dev_net(skb->dev);
-   465		const struct xfrm_mode *inner_mode;
-   466		int err;
-   467		__be32 seq;
-   468		__be32 seq_hi;
-   469		struct xfrm_state *x = NULL;
-   470		xfrm_address_t *daddr;
-   471		u32 mark = skb->mark;
-   472		unsigned int family = AF_UNSPEC;
-   473		int decaps = 0;
-   474		int async = 0;
-   475		bool xfrm_gro = false;
-   476		bool crypto_done = false;
-   477		struct xfrm_offload *xo = xfrm_offload(skb);
-   478		struct sec_path *sp;
-   479	
-   480		if (encap_type < 0) {
-   481			x = xfrm_input_state(skb);
-   482	
-   483			if (unlikely(x->km.state != XFRM_STATE_VALID)) {
-   484				if (x->km.state == XFRM_STATE_ACQ)
-   485					XFRM_INC_STATS(net, LINUX_MIB_XFRMACQUIREERROR);
-   486				else
-   487					XFRM_INC_STATS(net,
-   488						       LINUX_MIB_XFRMINSTATEINVALID);
-   489	
-   490				if (encap_type == -1)
-   491					dev_put(skb->dev);
-   492				goto drop;
-   493			}
-   494	
-   495			family = x->outer_mode.family;
-   496	
-   497			/* An encap_type of -1 indicates async resumption. */
-   498			if (encap_type == -1) {
-   499				async = 1;
-   500				seq = XFRM_SKB_CB(skb)->seq.input.low;
-   501				goto resume;
-   502			}
-   503	
-   504			/* encap_type < -1 indicates a GRO call. */
-   505			encap_type = 0;
-   506			seq = XFRM_SPI_SKB_CB(skb)->seq;
-   507	
-   508			if (xo && (xo->flags & CRYPTO_DONE)) {
-   509				crypto_done = true;
-   510				family = XFRM_SPI_SKB_CB(skb)->family;
-   511	
-   512				if (!(xo->status & CRYPTO_SUCCESS)) {
-   513					if (xo->status &
-   514					    (CRYPTO_TRANSPORT_AH_AUTH_FAILED |
-   515					     CRYPTO_TRANSPORT_ESP_AUTH_FAILED |
-   516					     CRYPTO_TUNNEL_AH_AUTH_FAILED |
-   517					     CRYPTO_TUNNEL_ESP_AUTH_FAILED)) {
-   518	
-   519						xfrm_audit_state_icvfail(x, skb,
-   520									 x->type->proto);
-   521						x->stats.integrity_failed++;
-   522						XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEPROTOERROR);
-   523						goto drop;
-   524					}
-   525	
-   526					if (xo->status & CRYPTO_INVALID_PROTOCOL) {
-   527						XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEPROTOERROR);
-   528						goto drop;
-   529					}
-   530	
-   531					XFRM_INC_STATS(net, LINUX_MIB_XFRMINBUFFERERROR);
-   532					goto drop;
-   533				}
-   534	
-   535				if (xfrm_parse_spi(skb, nexthdr, &spi, &seq)) {
-   536					XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
-   537					goto drop;
-   538				}
-   539			}
-   540	
-   541			goto lock;
-   542		}
-   543	
-   544		/* strip bridge info from skb */
- > 545		if (skb_ext_exist(skb, SKB_EXT_BRIDGE_NF))
-   546			skb_ext_del(skb, SKB_EXT_BRIDGE_NF);
-   547	
-   548		family = XFRM_SPI_SKB_CB(skb)->family;
-   549	
-   550		/* if tunnel is present override skb->mark value with tunnel i_key */
-   551		switch (family) {
-   552		case AF_INET:
-   553			if (XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip4)
-   554				mark = be32_to_cpu(XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip4->parms.i_key);
-   555			break;
-   556		case AF_INET6:
-   557			if (XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip6)
-   558				mark = be32_to_cpu(XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip6->parms.i_key);
-   559			break;
-   560		}
-   561	
-   562		sp = secpath_set(skb);
-   563		if (!sp) {
-   564			XFRM_INC_STATS(net, LINUX_MIB_XFRMINERROR);
-   565			goto drop;
-   566		}
-   567	
-   568		seq = 0;
-   569		if (!spi && xfrm_parse_spi(skb, nexthdr, &spi, &seq)) {
-   570			secpath_reset(skb);
-   571			XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
-   572			goto drop;
-   573		}
-   574	
-   575		daddr = (xfrm_address_t *)(skb_network_header(skb) +
-   576					   XFRM_SPI_SKB_CB(skb)->daddroff);
-   577		do {
-   578			sp = skb_sec_path(skb);
-   579	
-   580			if (sp->len == XFRM_MAX_DEPTH) {
-   581				secpath_reset(skb);
-   582				XFRM_INC_STATS(net, LINUX_MIB_XFRMINBUFFERERROR);
-   583				goto drop;
-   584			}
-   585	
-   586			x = xfrm_state_lookup(net, mark, daddr, spi, nexthdr, family);
-   587			if (x == NULL) {
-   588				secpath_reset(skb);
-   589				XFRM_INC_STATS(net, LINUX_MIB_XFRMINNOSTATES);
-   590				xfrm_audit_state_notfound(skb, family, spi, seq);
-   591				goto drop;
-   592			}
-   593	
-   594			skb->mark = xfrm_smark_get(skb->mark, x);
-   595	
-   596			sp->xvec[sp->len++] = x;
-   597	
-   598			skb_dst_force(skb);
-   599			if (!skb_dst(skb)) {
-   600				XFRM_INC_STATS(net, LINUX_MIB_XFRMINERROR);
-   601				goto drop;
-   602			}
-   603	
-   604	lock:
-   605			spin_lock(&x->lock);
-   606	
-   607			if (unlikely(x->km.state != XFRM_STATE_VALID)) {
-   608				if (x->km.state == XFRM_STATE_ACQ)
-   609					XFRM_INC_STATS(net, LINUX_MIB_XFRMACQUIREERROR);
-   610				else
-   611					XFRM_INC_STATS(net,
-   612						       LINUX_MIB_XFRMINSTATEINVALID);
-   613				goto drop_unlock;
-   614			}
-   615	
-   616			if ((x->encap ? x->encap->encap_type : 0) != encap_type) {
-   617				XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEMISMATCH);
-   618				goto drop_unlock;
-   619			}
-   620	
-   621			if (xfrm_replay_check(x, skb, seq)) {
-   622				XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATESEQERROR);
-   623				goto drop_unlock;
-   624			}
-   625	
-   626			if (xfrm_state_check_expire(x)) {
-   627				XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEEXPIRED);
-   628				goto drop_unlock;
-   629			}
-   630	
-   631			spin_unlock(&x->lock);
-   632	
-   633			if (xfrm_tunnel_check(skb, x, family)) {
-   634				XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEMODEERROR);
-   635				goto drop;
-   636			}
-   637	
-   638			seq_hi = htonl(xfrm_replay_seqhi(x, seq));
-   639	
-   640			XFRM_SKB_CB(skb)->seq.input.low = seq;
-   641			XFRM_SKB_CB(skb)->seq.input.hi = seq_hi;
-   642	
-   643			dev_hold(skb->dev);
-   644	
-   645			if (crypto_done)
-   646				nexthdr = x->type_offload->input_tail(x, skb);
-   647			else
-   648				nexthdr = x->type->input(x, skb);
-   649	
-   650			if (nexthdr == -EINPROGRESS)
-   651				return 0;
-   652	resume:
-   653			dev_put(skb->dev);
-   654	
-   655			spin_lock(&x->lock);
-   656			if (nexthdr < 0) {
-   657				if (nexthdr == -EBADMSG) {
-   658					xfrm_audit_state_icvfail(x, skb,
-   659								 x->type->proto);
-   660					x->stats.integrity_failed++;
-   661				}
-   662				XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEPROTOERROR);
-   663				goto drop_unlock;
-   664			}
-   665	
-   666			/* only the first xfrm gets the encap type */
-   667			encap_type = 0;
-   668	
-   669			if (xfrm_replay_recheck(x, skb, seq)) {
-   670				XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATESEQERROR);
-   671				goto drop_unlock;
-   672			}
-   673	
-   674			xfrm_replay_advance(x, seq);
-   675	
-   676			x->curlft.bytes += skb->len;
-   677			x->curlft.packets++;
-   678			x->lastused = ktime_get_real_seconds();
-   679	
-   680			spin_unlock(&x->lock);
-   681	
-   682			XFRM_MODE_SKB_CB(skb)->protocol = nexthdr;
-   683	
-   684			inner_mode = &x->inner_mode;
-   685	
-   686			if (x->sel.family == AF_UNSPEC) {
-   687				inner_mode = xfrm_ip2inner_mode(x, XFRM_MODE_SKB_CB(skb)->protocol);
-   688				if (inner_mode == NULL) {
-   689					XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEMODEERROR);
-   690					goto drop;
-   691				}
-   692			}
-   693	
-   694			if (xfrm_inner_mode_input(x, inner_mode, skb)) {
-   695				XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEMODEERROR);
-   696				goto drop;
-   697			}
-   698	
-   699			if (x->outer_mode.flags & XFRM_MODE_FLAG_TUNNEL) {
-   700				decaps = 1;
-   701				break;
-   702			}
-   703	
-   704			/*
-   705			 * We need the inner address.  However, we only get here for
-   706			 * transport mode so the outer address is identical.
-   707			 */
-   708			daddr = &x->id.daddr;
-   709			family = x->outer_mode.family;
-   710	
-   711			err = xfrm_parse_spi(skb, nexthdr, &spi, &seq);
-   712			if (err < 0) {
-   713				XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
-   714				goto drop;
-   715			}
-   716			crypto_done = false;
-   717		} while (!err);
-   718	
-   719		err = xfrm_rcv_cb(skb, family, x->type->proto, 0);
-   720		if (err)
-   721			goto drop;
-   722	
-   723		nf_reset_ct(skb);
-   724	
-   725		if (decaps) {
-   726			sp = skb_sec_path(skb);
-   727			if (sp)
-   728				sp->olen = 0;
-   729			if (skb_valid_dst(skb))
-   730				skb_dst_drop(skb);
-   731			gro_cells_receive(&gro_cells, skb);
-   732			return 0;
-   733		} else {
-   734			xo = xfrm_offload(skb);
-   735			if (xo)
-   736				xfrm_gro = xo->flags & XFRM_GRO;
-   737	
-   738			err = -EAFNOSUPPORT;
-   739			rcu_read_lock();
-   740			afinfo = xfrm_state_afinfo_get_rcu(x->inner_mode.family);
-   741			if (likely(afinfo))
-   742				err = afinfo->transport_finish(skb, xfrm_gro || async);
-   743			rcu_read_unlock();
-   744			if (xfrm_gro) {
-   745				sp = skb_sec_path(skb);
-   746				if (sp)
-   747					sp->olen = 0;
-   748				if (skb_valid_dst(skb))
-   749					skb_dst_drop(skb);
-   750				gro_cells_receive(&gro_cells, skb);
-   751				return err;
-   752			}
-   753	
-   754			return err;
-   755		}
-   756	
-   757	drop_unlock:
-   758		spin_unlock(&x->lock);
-   759	drop:
-   760		xfrm_rcv_cb(skb, family, x && x->type ? x->type->proto : nexthdr, -1);
-   761		kfree_skb(skb);
-   762		return 0;
-   763	}
-   764	EXPORT_SYMBOL(xfrm_input);
-   765	
+Network configuration:
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+For DSA master gmac0/gmac1
+ip l add link lan3 name lan3.50 type vlan id 50
+ip a add 192.168.3.1/24 dev lan3.50
+ip l set up lan3 && ip l set up lan3.50
+
+For non-DSA gmac1
+ip l del lan3.50
+ip l add link eth1 name eth1.50 type vlan id 50
+ip a add 192.168.3.1/24 dev eth1.50
+ip l set up eth1 && ip l set up eth1.50
+
+Other side
+ip l add link enp9s0 name enp9s0.50 type vlan id 50
+ip a add 192.168.3.2/24 dev enp9s0.50
+ip l set up enp9s0 && ip l set up enp9s0.50
+
+[0] 
+https://lore.kernel.org/netdev/20230128094232.2451947-1-arinc.unal@arinc9.com/
+
+Arınç
