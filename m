@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1387667F7C0
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 13:06:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6239267F7C1
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 13:07:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234101AbjA1MGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 07:06:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47188 "EHLO
+        id S234112AbjA1MHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 07:07:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234100AbjA1MGn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 07:06:43 -0500
+        with ESMTP id S234103AbjA1MHC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 07:07:02 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09974790A8
-        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 04:06:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E1879604
+        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 04:07:01 -0800 (PST)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1674907601;
+        s=2020; t=1674907620;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=f1FgczhDvLPJmHjtpcnbO+YCaifoisVTvSctMpuOSWc=;
-        b=L7RGBwX1P7FwJoFgjOLWL1Xx0vWVzIqA3Kgj05fTNcMsBxrAc0wA8JOMEkKmdfnDSqd5ZI
-        aORT57KwIHwR5PXWRdnyNPrQRj2PbEkBLkhiVt3hUOXk8Werk53bPlR6j5HBEgKhZRmw34
-        QRylsoZgu8FpI9k206RlFwos+/mA9u1bghaswzhrBCQFUoy2BIkhWUDxuE/diQlDkbQs8O
-        DqkN+H3QVUCNjR3fZDURIPaKCZS4SisyIeIo5j6AkZD0LGowp+4usJwMfxLjDCzza/lEmN
-        3Aw+u6M73Q84+bu9vErlpkqgWD5Uqx36lFOhGlsuCRDcR/P5qD0adGIcQsYnYg==
+        bh=ew47kVxKqM6FwWvR58a7SRrFfJ+KifPWcx17XtrGqxY=;
+        b=HuGAAjP15oOTYK99WgdtuORnvBO5OgAeQaWOaycWAE7tkdAqun8VHYdvX0k1Mo6IBnOc2c
+        S+4qZxJvGGFrur7szAvc3niYXB7DUW3N8lNsuTq/P7KD1ADB0sespXCj8tJPuBgqhDa99P
+        xKoF/hL+VTbzNrX1ElDR6/mgbO3j2VU0S79YIUcmkCGPTiHdoFaOvk87TaIF5l9Gxa3F53
+        97x42NUYY399uICLG8/5b5F+Lxopgs0LbxHtx5GzMo6ShTpJ9XiKJNyOytIRpN2m5QDP+T
+        vYzp0Mh4ZsfYykEn9z3ub1KOGj7PGGs5IckAI+DxZZDR1ArV9HDvnxoj/LJBJQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1674907601;
+        s=2020e; t=1674907620;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=f1FgczhDvLPJmHjtpcnbO+YCaifoisVTvSctMpuOSWc=;
-        b=Ju3zS+BAGJZJCwG6jDik4ppYTDH05dGk6U7MeVZUelaEZFyl9iV5L/EwH44eLItgCXLUh7
-        JyAv2VuQ7rcZtuAw==
+        bh=ew47kVxKqM6FwWvR58a7SRrFfJ+KifPWcx17XtrGqxY=;
+        b=t4HO/h9Jw4dokyinXdWIaKBz5CEtWqkT463SnjWi28CdBrzBKZKjSOznC3Kswowmk9gMCS
+        svYrvoSNbwIUIXAQ==
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
 Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Subject: Re: [RFC PATCH net-next 12/15] net/sched: keep the max_frm_len
- information inside struct sched_gate_list
-In-Reply-To: <20230128010719.2182346-13-vladimir.oltean@nxp.com>
+Subject: Re: [RFC PATCH net-next 13/15] net/sched: taprio: automatically
+ calculate queueMaxSDU based on TC gate durations
+In-Reply-To: <20230128010719.2182346-14-vladimir.oltean@nxp.com>
 References: <20230128010719.2182346-1-vladimir.oltean@nxp.com>
- <20230128010719.2182346-13-vladimir.oltean@nxp.com>
-Date:   Sat, 28 Jan 2023 13:06:40 +0100
-Message-ID: <87zga2ualr.fsf@kurt>
+ <20230128010719.2182346-14-vladimir.oltean@nxp.com>
+Date:   Sat, 28 Jan 2023 13:06:58 +0100
+Message-ID: <87wn56ual9.fsf@kurt>
 MIME-Version: 1.0
 Content-Type: multipart/signed; boundary="=-=-=";
         micalg=pgp-sha512; protocol="application/pgp-signature"
@@ -59,28 +59,25 @@ X-Mailing-List: netdev@vger.kernel.org
 Content-Type: text/plain
 
 On Sat Jan 28 2023, Vladimir Oltean wrote:
-> I have one practical reason for doing this and one concerning correctness.
+> taprio today has a huge problem with small TC gate durations, because it
+> might accept packets in taprio_enqueue() which will never be sent by
+> taprio_dequeue().
 >
-> The practical reason has to do with a follow-up patch, which aims to mix
-> 2 sources of max_sdu (one coming from the user and the other automatically
-> calculated based on TC gate durations @current link speed). Among those
-> 2 sources of input, we must always select the smaller max_sdu value, but
-> this can change at various link speeds. So the max_sdu coming from the
-> user must be kept separated from the value that is operationally used
-> (the minimum of the 2), because otherwise we overwrite it and forget
-> what the user asked us to do.
+> Since not much infrastructure was available, a kludge was added in
+> commit 497cc00224cf ("taprio: Handle short intervals and large
+> packets"), which segmented large TCP segments, but the fact of the
+> matter is that the issue isn't specific to large TCP segments (and even
+> worse, the performance penalty in segmenting those is absolutely huge).
 >
-> To solve that, this patch proposes that struct sched_gate_list contains
-> the operationally active max_frm_len, and q->max_sdu contains just what
-> was requested by the user.
+> In commit a54fc09e4cba ("net/sched: taprio: allow user input of per-tc
+> max SDU"), taprio gained support for queueMaxSDU, which is precisely the
+> mechanism through which packets should be dropped at qdisc_enqueue() if
+> they cannot be sent.
 >
-> The reason having to do with correctness lies on the following
-> observation: the admin sched_gate_list becomes operational at a given
-> base_time in the future. Until then, it is inactive and applies no
-> shaping, all gates are open, etc. So the queueMaxSDU dropping shouldn't
-> apply either (this is a mechanism to ensure that packets smaller than
-> the largest gate duration for that TC don't hang the port; clearly it
-> makes little sense if the gates are always open).
+> After that patch, it was necessary for the user to manually limit the
+> maximum MTU per TC. This change adds the necessary logic for taprio to
+> further limit the values specified (or not specified) by the user to
+> some minimum values which never allow oversized packets to be sent.
 >
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
@@ -91,19 +88,19 @@ Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmPVD9ATHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRDBk9HyqkZzghtID/4kS5BpWs2lawiQy/a8Snqcy5OIQDg0
-kdUgX43tEL7o0Pe6zvsJjNgso+NlSTY7b2RXXeeatHR2hZFumA9S4Xk9Wi0c+yE4
-KULoW12dC3ZqfjxfgWXsGKFoTxnMb8Fub32k0gBAZZSFCoNNdnGHpsMdd/Frh7VH
-lYtgUyGY/mAcjGVoOXZo8q6FahL9Cif9xeDKSQfy1mGRTO4R6IKigrw0NbSB+3kN
-DbiRKtFzWEuSSUpm8vvF1vCjbDDagOVX+5PWP2a/PzhD5md7SDflTGRbicCHrD2s
-mrGPpcWSO8na5+Cbj3gR/bOhDvIkLrJXqBFHRdkEpeK0tpazG/lVVBCgs9KKjBeD
-XJI0Mvhsl5uyvSq27vsDU8pfJVggJiVariQ+AAUqHFaFE9TzJQduIefZFqlflMHj
-TLPvzMjTU1xTUij1lb8VN3OYm8hMk4htTvwpUhU29dO/P1cJ59UYOfP69en+fqx2
-1PTLQzePT63/KdHnjM4PJNFbR4ZZgP089e/yGnptY+4FenQEQ7zhpN1udPAB+oVz
-OP5/k3Nyj63kj21u6K8ErKlAj4TEiAaATVpDDOEdlU8q0CPvqAZdW7vC5aFAxzjO
-kw7Oz/ICH6B16cU4n2vA2evwgkDOSa1a3gBp/5ltr01xol60ywUUZSlreaK7Gmq8
-OZZaPqUfGbUdYg==
-=oCkv
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmPVD+MTHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzgu+ZEACYX4yinrSPzpRynQQ6AleKYB8UqfKy
+Fo+iEhRM28rmKmIrzY3SJlWUVAGmpWPhK7iqNf2S17ZuI5WOI4Uq9qc+fS7XDPrc
+ehc0WlkbLm7TVFaS/lzpYsEijIfusE+pAQG1l8r4x+cs8w/k1vqWa6iUrOaphvZe
+hxOo2rMvtvY8k9qQklml2D5RYVyYcdRrK3D8PNOau1RSxsrkKCXB9bgSNVupdeqg
+rXZwcBRetk5ZQS6Se3Xc/Nhpz7zs/Vr8il35YjgUlyMStWyTMlAacziJAiprm0vz
+t9ouF4CL73AUxoDuYy4HVDQI6eZiMwMECqW687ld6ui3qQH8PjxuC+uvDOl86nNL
+D1ueVOhI6blQj8MOjsT3e4h0JOPXJWAWrvreEHHCYcDc7ZDALs+bPu4N03ETddCU
+xWWK8en4PDpJUBlY7eI0WuvcqDF3lE5eLoSh9Dz7Lo42SbQW/6CfxFrPCqlZe96c
+9W2zDLEIpCg0vtNnhLxGnkid/M1Y7Tc0eo/2ghgTLYfX6MMnblGR3lKKF10VYpf9
+3z3PdkONTjAM+bbHz+WgN9QPZqyFR5PLLBRddkcVl06JLAzl+/tqlx6YJwRPsgUw
+PZ4pzjr2shg//m8YU5sSgoNHFIZi9XDr0nnoktuixfKVt6Q/EC04FyS6PKMP9JH2
++rohcK+W3c9DSQ==
+=qAQ0
 -----END PGP SIGNATURE-----
 --=-=-=--
