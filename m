@@ -2,71 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39BC667F9EC
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 18:39:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B50767FA05
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 18:40:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234772AbjA1RjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 12:39:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34864 "EHLO
+        id S235049AbjA1Rkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 12:40:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234726AbjA1RjC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 12:39:02 -0500
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3B12A175;
-        Sat, 28 Jan 2023 09:39:01 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1674927502; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=XGngZ+CfeF5ETeoZj5mEJCZXNloNBXlYT5+bh/sQwlCnYUEX6rtdAK0ic0s9rBBckX2MqOaFZhulKNV9xvf6xP/8S3AG2mRN80orreVy5aRQCG0lhu5apvcYWiZ8gnE5hNueAiThV1/1MimRfDNUisE+qzCNlOiFz3JdRyvo88U=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1674927502; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=XZyRjGD6IJEi2ji1I50O5QBvIy0FeOzgKH5lESzzl1M=; 
-        b=GDI36+F02nx/AZvz7aFYjb2VfMzR4i4QmmsQsjTfniv/euYDJ0PU7oa8jNZcNTylRc51MxC6dBvjgavpkL/D4kc91caOmj8jQY9JLMwXlLJewEgCyLlitRV/Ov+2oVekpdvDZ6tThChp3WFC3UlIW7rHPwTIy70XI4+7hBBUXLo=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1674927502;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=XZyRjGD6IJEi2ji1I50O5QBvIy0FeOzgKH5lESzzl1M=;
-        b=a10mS5qX5UtpKUNIjBZYBA9Yd4XsZOBwUsHQUk+VEcbHLkc2Gv9vhvQjGOIimyPp
-        06w0ZrDaxHhoU9VTkIzbhet2PChtW10T9SCzv1DIWn7/URdn+vMSxEJz3hnEkqhZgKJ
-        nKZCFFQsG5uF53gnsAi0akpzT7rvWxAD9YuSia3c=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1674927499694831.882213376883; Sat, 28 Jan 2023 09:38:19 -0800 (PST)
-Message-ID: <79506b27-d71a-c341-48fd-0e6d3a973f2e@arinc9.com>
-Date:   Sat, 28 Jan 2023 20:38:11 +0300
+        with ESMTP id S234767AbjA1Rki (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 12:40:38 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3306A2C661
+        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 09:40:10 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id z31so5242106pfw.4
+        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 09:40:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pFFvdYk1vXHiZkBaxVTiany7Px8U4wk+N7m1SeKmWQo=;
+        b=whGqje+vaK/kd3RjWuiHwV8jPWfjPi1A2arjb+Ms3jkVeBLS7vK8zAzuttJs4xWcoO
+         FrKe/Y90SBbQ5dB7RB4DbLK1hcJjVZ+v2P3YnfHZ6hoCeB/rzVV9gp8AKITqpQ03gdsr
+         ek7OP+uYODUDJq3QzptZjCQ8eb0C3vO3IMxTd3+erq03BBDW4BupFJBBz2I0CsHQAQUW
+         qDsrfkTK5Kwc/j3CkUWXYsuCnCh3h7cuT+Y8ODhe6+9gXrMWwz90NKjiMJYXTahhWtPM
+         bHc96dxgAu8ws1XdNtyINUcnKoNQRdJ2sYzW3FNvcV5HG474RQS986JqaKmWKUtf2dBE
+         9YBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=pFFvdYk1vXHiZkBaxVTiany7Px8U4wk+N7m1SeKmWQo=;
+        b=1B2OXopdWjcT0czSzSXjFXLuvRUCdV4o0OfGsL+m5fWH7MecnzJKMqI22GJoK/taiI
+         SjlGzYmZLFnJIaKPFEFQpuy+0NAy9DxEwCx44TQxY5XdaF9n/3mEJhPvcdE5CTKMw4vV
+         jgefP29tX87jMpz7PJHJxq9owWfY7adWXVKBJdWD+ZdHBXt4KzzDv9yFGihQVIynKn/E
+         lqTD+2O++83b+MuoA8XzfR6asTIhxl2Y7HMwciZn5RBhX0f0VTNTWSUdTSdqJHUhqQD/
+         2fGY8LUQNgpSYbmoIdw6HkC39GSGbOzD3zo95F58mg7ZrJjcqfKcsZ+qCNF6RSawy7Yn
+         w8uw==
+X-Gm-Message-State: AO0yUKUYIVdHgZ9dYrtilbqO7ppAbcULCJ6IoI81fr8/ShahvQaQravU
+        kpS2NQ0aK78clpd1ImptUzmSOw==
+X-Google-Smtp-Source: AK7set8AN4Ofx81eCY1begDuoePyC+p31KB7u1UEFhz5BQ8fgTJixPkA7CUNZKN2LghzsBwTXV7dtw==
+X-Received: by 2002:aa7:8e01:0:b0:593:9265:3963 with SMTP id c1-20020aa78e01000000b0059392653963mr2768223pfr.31.1674927606810;
+        Sat, 28 Jan 2023 09:40:06 -0800 (PST)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id d16-20020a056a0024d000b005828071bf7asm4575667pfv.22.2023.01.28.09.40.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 Jan 2023 09:40:06 -0800 (PST)
+Date:   Sat, 28 Jan 2023 09:40:05 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Chuck Lever <chuck.lever@oracle.com>, netdev@vger.kernel.org,
+        hare@suse.com, dhowells@redhat.com, kolga@netapp.com,
+        jmeneghi@redhat.com, bcodding@redhat.com, jlayton@redhat.com
+Subject: Re: [PATCH v2 2/3] net/handshake: Add support for PF_HANDSHAKE
+Message-ID: <20230128094005.55190564@hermes.local>
+In-Reply-To: <20230128003212.7f37b45c@kernel.org>
+References: <167474840929.5189.15539668431467077918.stgit@91.116.238.104.host.secureserver.net>
+        <167474894272.5189.9499312703868893688.stgit@91.116.238.104.host.secureserver.net>
+        <20230128003212.7f37b45c@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH net v3 4/5] net: ethernet: mtk_eth_soc: drop generic vlan
- rx offload, only use DSA untagging
-To:     Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        erkin.bozoglu@xeront.com
-References: <20221230073145.53386-1-nbd@nbd.name>
- <20221230073145.53386-4-nbd@nbd.name>
-Content-Language: en-US
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20221230073145.53386-4-nbd@nbd.name>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,71 +73,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30.12.2022 10:31, Felix Fietkau wrote:
-> Through testing I found out that hardware vlan rx offload support seems to
-> have some hardware issues. At least when using multiple MACs and when receiving
-> tagged packets on the secondary MAC, the hardware can sometimes start to emit
-> wrong tags on the first MAC as well.
+On Sat, 28 Jan 2023 00:32:12 -0800
+Jakub Kicinski <kuba@kernel.org> wrote:
+
+> On Thu, 26 Jan 2023 11:02:22 -0500 Chuck Lever wrote:
+> > I've designed a way to pass a connected kernel socket endpoint to
+> > user space using the traditional listen/accept mechanism. accept(2)
+> > gives us a well-worn building block that can materialize a connected
+> > socket endpoint as a file descriptor in a specific user space
+> > process. Like any open socket descriptor, the accepted FD can then
+> > be passed to a library such as GnuTLS to perform a TLS handshake.  
 > 
-> In order to avoid such issues, drop the feature configuration and use the
-> offload feature only for DSA hardware untagging on MT7621/MT7622 devices which
-> only use one MAC.
-> 
-> Tested-By: Frank Wunderlich <frank-w@public-files.de>
-> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+> I can't bring myself to like the new socket family layer.
+> I'd like a second opinion on that, if anyone within netdev
+> is willing to share..
 
-You can add this to all patches on the series.
+Why not just pass fd's with Unix Domain socket?
+The application is going to need to be changed to handle new AF already.
 
-Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-
-Tested on Unielec U7621-06 (MT7621AT) and Bananapi BPI-R2 (MT7623NI) on 
-latest netnext with buildroot as initramfs. These are tested with my fix 
-[0] applied on top.
-
-VLAN on DSA master gmac0.
-   Works on MT7621 SoC with multi-chip module MT7530 switch and MT7623
-   SoC with standalone MT7530 switch.
-
-VLAN on DSA master gmac0 and non-DSA gmac1.
-   Works on MT7621 SoC with multi-chip module MT7530 switch and MT7623
-   SoC with standalone MT7530 switch.
-
-VLAN on DSA master gmac1.
-   Can’t test on MT7621 as an unrelated issue prevents from testing.
-     Define port@6 and gmac0, otherwise gmac1 DSA master receives
-     malformed frames from port@5. This issue appears only on MT7621 SoC
-     with multi-chip module MT7530 switch.
-   Works on MT7623 SoC with standalone MT7530 switch.
-
-VLAN on DSA master gmac0 and DSA master gmac1.
-   Works on MT7621 SoC with multi-chip module MT7530 and MT7623 SoC with
-   standalone MT7530 switch switch after compensating an unrelated issue.
-     When both MACs are DSA masters, ping from gmac1 DSA master first,
-     otherwise frames received from user ports won’t reach to gmac1 DSA
-     master. This issue appears on MT7621 SoC with multi-chip module
-     MT7530 switch and MT7623 SoC with standalone MT7530 switch.
-
-It'd be great if you could take a look at these issues.
-
-Network configuration:
-
-For DSA master gmac0/gmac1
-ip l add link lan3 name lan3.50 type vlan id 50
-ip a add 192.168.3.1/24 dev lan3.50
-ip l set up lan3 && ip l set up lan3.50
-
-For non-DSA gmac1
-ip l del lan3.50
-ip l add link eth1 name eth1.50 type vlan id 50
-ip a add 192.168.3.1/24 dev eth1.50
-ip l set up eth1 && ip l set up eth1.50
-
-Other side
-ip l add link enp9s0 name enp9s0.50 type vlan id 50
-ip a add 192.168.3.2/24 dev enp9s0.50
-ip l set up enp9s0 && ip l set up enp9s0.50
-
-[0] 
-https://lore.kernel.org/netdev/20230128094232.2451947-1-arinc.unal@arinc9.com/
-
-Arınç
+Also, expanding the address families has security impacts as well.
+Either all the container and LSM's need to deny your new AF or they need
+to be taught to validate whether this a valid operation.
