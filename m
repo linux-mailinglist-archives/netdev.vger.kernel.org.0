@@ -2,49 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A501B67F574
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 08:20:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1B4167F573
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 08:20:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232769AbjA1HUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 02:20:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55510 "EHLO
+        id S231612AbjA1HUh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 02:20:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231158AbjA1HUi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 02:20:38 -0500
+        with ESMTP id S231158AbjA1HUg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 02:20:36 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9A57E6C4;
-        Fri, 27 Jan 2023 23:20:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B664E7E6CC;
+        Fri, 27 Jan 2023 23:20:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C750C60A25;
-        Sat, 28 Jan 2023 07:20:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C975FC433EF;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EEFE60A25;
         Sat, 28 Jan 2023 07:20:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A0893C4339B;
+        Sat, 28 Jan 2023 07:20:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674890436;
-        bh=HSM5+WHccH9bmMsZMOH7J0fLCjzl8QAwBswxLLCva8Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XjzKqu9BhG4LhxwImMSrK04c2BkLJkDIon4rxnks5ZNfvBRs/Wp1aHOoUbxny7Dc2
-         JZqK51rQGybT4zlCnceFMKILV7hufhWXwmfZ+WPehr7txZdi+1DYW+9YkoWh5Fw/lT
-         HrltlW76/yCmsW6H+sgKTmaKYCFxZgdnGQ1g9WA/o9UIKMkt7QycYXtrI0FwOsJUgl
-         s22mzdVh+9V0yxk0r0dPuvSaikS/YnK27TEju4GcYonr0g5MtG78KfgqLptK2Cnglq
-         QQSflOs9NDi5YA2dvuW1dB+mqllrLzXqDpJkCYykQ0naHq7olfafJ2jIV1xMVmZHyZ
-         rKiHwv+bb0IKg==
-Date:   Fri, 27 Jan 2023 23:20:34 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jonas Suhr Christensen <jsc@umbraculum.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, michal.simek@xilinx.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        esben@geanix.com
-Subject: Re: [PATCH 1/2] net: ll_temac: fix DMA resources leak
-Message-ID: <20230127232034.1da0f4e1@kernel.org>
-In-Reply-To: <20230126101607.88407-1-jsc@umbraculum.org>
-References: <20230126101607.88407-1-jsc@umbraculum.org>
+        s=k20201202; t=1674890434;
+        bh=MeyRTq/arodCF8K5T7IZpkPAOx4UAPBza5Pct0eGIjI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=FDCdhCzLMvi+7ovTVkyKQFAYh5K740tEV1O/iDNCTjEN5w6tjO5fFG0pLWPx1uyby
+         vTy839buesfXbrUiRHPSSnDFn7oyPUbXsDHXenEWIMfB3i3GevzxQBYyGWUNDChJuN
+         dgcl7FyMMEVyz0kYZHecmaG2OBHdmVWR6q95P72QDQqRdm/2AnojhafuosjXKK1HaH
+         Kd/HwtTTtZi4A9yVho8adWOPmWGTvNh8fmmfVU2kTL/o08tPFC7eYziARBQr3JZtcd
+         4541dsQ2bsQSLxZEr+zKTyTzqffTdeaUegGLs2mhiyZ60u+RegdQZpNNFauIZ25VwB
+         +bNKaz9KdcGVg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 87D24E54D2D;
+        Sat, 28 Jan 2023 07:20:34 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3] net/x25: Fix to not accept on connected socket
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167489043455.16992.12517633627951269745.git-patchwork-notify@kernel.org>
+Date:   Sat, 28 Jan 2023 07:20:34 +0000
+References: <20230125110514.GA134174@ubuntu>
+In-Reply-To: <20230125110514.GA134174@ubuntu>
+To:     Hyunwoo Kim <v4bel@theori.io>
+Cc:     ms@dev.tdt.de, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, kuniyu@amazon.com,
+        imv4bel@gmail.com, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -54,35 +57,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 26 Jan 2023 11:16:06 +0100 Jonas Suhr Christensen wrote:
-> Add missing conversion of address when unmapping dma region causing
-> unmapping to silently fail. At some point resulting in buffer
-> overrun eg. when releasing device.
+Hello:
 
-Could you add a Fixes tag pointing to the commit which introduced 
-the bug? It will help the stable teams backport the patch.
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-When reposting please put [PATCH net v2] as the prefix (noting 
-the target tree for the benefit of bots/CIs).
-
-> Signed-off-by: Jonas Suhr Christensen <jsc@umbraculum.org>
-> ---
->  drivers/net/ethernet/xilinx/ll_temac_main.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
+On Wed, 25 Jan 2023 03:05:14 -0800 you wrote:
+> If you call listen() and accept() on an already connect()ed
+> x25 socket, accept() can successfully connect.
+> This is because when the peer socket sends data to sendmsg,
+> the skb with its own sk stored in the connected socket's
+> sk->sk_receive_queue is connected, and x25_accept() dequeues
+> the skb waiting in the sk->sk_receive_queue.
 > 
-> diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
-> index 1066420d6a83..66c04027f230 100644
-> --- a/drivers/net/ethernet/xilinx/ll_temac_main.c
-> +++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
-> @@ -300,6 +300,7 @@ static void temac_dma_bd_release(struct net_device *ndev)
->  {
->  	struct temac_local *lp = netdev_priv(ndev);
->  	int i;
-> +	struct cdmac_bd *bd;
+> [...]
 
-nit: we like variable declarations longest to shortest in networking
- so before the int i; pls
+Here is the summary with links:
+  - [v3] net/x25: Fix to not accept on connected socket
+    https://git.kernel.org/netdev/net-next/c/f2b0b5210f67
 
->  	/* Reset Local Link (DMA) */
->  	lp->dma_out(lp, DMA_CONTROL_REG, DMA_CONTROL_RST);
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
