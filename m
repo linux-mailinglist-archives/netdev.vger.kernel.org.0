@@ -2,87 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05C8667F3E0
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 02:58:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD69767F3E1
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 02:58:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230078AbjA1B6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 20:58:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59462 "EHLO
+        id S232041AbjA1B6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 20:58:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbjA1B6T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 20:58:19 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4497BBC7
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 17:57:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1674871049;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ev6Iprgm0BfLCNvx4GMlcEnMLp0hyf/TajiPKchsa84=;
-        b=UsG083x/J4dnMSB1B9tGHlcWfYLjJVUianqBjE95Xies15pLfQt+3jXN+8Nq/mXPomBB7I
-        rZQeL1Mtp8foK8sp6IiRqqpY7q6ocEHDr4VoITqtkj/sd0k2VltuReuSWM1VIJD6va+270
-        /mEYota6rp9eyfo2IUuJ3JGCbJCQxU0=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-630-X9KN1PFPPLCarA3tmhMaZw-1; Fri, 27 Jan 2023 20:57:20 -0500
-X-MC-Unique: X9KN1PFPPLCarA3tmhMaZw-1
-Received: by mail-ed1-f71.google.com with SMTP id m12-20020a056402430c00b0049e4ac58509so4674404edc.16
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 17:57:20 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ev6Iprgm0BfLCNvx4GMlcEnMLp0hyf/TajiPKchsa84=;
-        b=p7651HUZnGOosXz6u+3ANqfaFZ7gnVQGx6r8kd93f0N0lQ8//FlT0lJJy3se5Mx4a2
-         fOcIH2lPh9aapG0ZtzbboEJxUX/WMgAporqY5gKcmDFz1A2us6j87iM5GqT6ZTIbBa2a
-         NlgDuUw1y/wFYJ2ymyBM7lp6b6Uv1EzSP9QiK4djmshrkxkxTYib+HBcHJxz6J6wh/aM
-         PRY3+bZIfa202OjlXmFFOIw/WtXL+tiaFot5vyq45f354TZ8Ge8B3SY/r/TL0NRxa0w/
-         KiGWiS340yzAOBzeYFmMpdCmXhWkg7XgCgqiHI7u3NNMRnmQ32enDE3BwucVQgPKzUl8
-         LO/w==
-X-Gm-Message-State: AFqh2krGt0pm3UmkphiHbRSo1VU/mNx4g1TXnZBZ7djs+T2UmAam6hd3
-        0nxEcieWk66IVHF3HuYHz2kh5Nr//KPH8xGEAqiLu56C0HyrdvCBlr2x5dOBnH8WDEiFHqaZSDI
-        skwAIKO5Q1sq/7R+arC82L3iETGc2Oz7s
-X-Received: by 2002:a17:906:3a5b:b0:870:baa6:676c with SMTP id a27-20020a1709063a5b00b00870baa6676cmr6119221ejf.132.1674871039889;
-        Fri, 27 Jan 2023 17:57:19 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXtanqSd7MgToKGma445A3qz4TJxSYPH1M8+rA1DH+9zaVF6lXc4fT4gfM9QDUQKrssiLkQG8gIzdAgJAoggFxU=
-X-Received: by 2002:a17:906:3a5b:b0:870:baa6:676c with SMTP id
- a27-20020a1709063a5b00b00870baa6676cmr6119210ejf.132.1674871039681; Fri, 27
- Jan 2023 17:57:19 -0800 (PST)
-MIME-Version: 1.0
-References: <20230106113129.694750-1-miquel.raynal@bootlin.com>
- <CAK-6q+jNmvtBKKxSp1WepVXbaQ65CghZv3bS2ptjB9jyzOSGTA@mail.gmail.com>
- <20230118102058.3b1f275b@xps-13> <CAK-6q+gwP8P--5e9HKt2iPhjeefMXrXUVy-G+szGdFXZvgYKvg@mail.gmail.com>
- <CAK-6q+gn7W9x2+ihSC41RzkhmBn1E44pKtJFHgqRdd8aBpLrVQ@mail.gmail.com>
- <20230124110814.6096ecbe@xps-13> <CAB_54W69KcM0UJjf8py-VyRXx2iEUvcAKspXiAkykkQoF6ccDA@mail.gmail.com>
- <20230125105653.44e9498f@xps-13> <CAK-6q+irhYroxV_P5ORtO9Ui9-Bs=SNS+vO5bZ7_X-geab+XrA@mail.gmail.com>
- <1322777.1674848380@dyas>
-In-Reply-To: <1322777.1674848380@dyas>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Fri, 27 Jan 2023 20:57:08 -0500
-Message-ID: <CAK-6q+ix3PybA-Af-QRRZ2BwSLYH76SnqhRCsmRpiy_6PFrorw@mail.gmail.com>
-Subject: Re: [PATCH wpan-next 0/2] ieee802154: Beaconing support
-To:     Michael Richardson <mcr@sandelman.ca>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229498AbjA1B6u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 20:58:50 -0500
+Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2052.outbound.protection.outlook.com [40.107.105.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1B4FF0D;
+        Fri, 27 Jan 2023 17:58:49 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XnRjNWd+e/fZc6iAsA4yX92cMp6lqSE78EU0PgzJ55w/cUfqBzrC8gKzs28kww0k0ZaNNkAF3a7KQlUT0qXnCNY0+KAbvEYmLGFcJCKC3gi0Hj64PhPm+vb0cdo/waoI/l4V4qkDRFOyGbGth+2j7aAerVM1LCoTdT3g0G5KzAI/s60ZwRDZq/1oi31AEI2ca+9vbnccq8MMy7m+0hkFHGfwbH4Nh/kYN8YFufHxlzKTsWebC3xvKnATDRNTwUqP35pPQDPi19JurvOYopfyfaNj4C7+Tw+eEW0hQYbZOXBR4iV8QTYR6mCe+LcWv8DC3yypRbJGzjA0nNa99BJgTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=y24ozpEcn88RGwVVcHw/OLmGComB9ngjIsCiFeZElj0=;
+ b=ItqtaxbzYc2j636VbBSn+Ad+jryBD4qwNX4fYvqq4Gu6MNhfkzSsazTvqz1oy7B9Sc10UYVGovGBe+11AlfLWfYdjlH4nvohZZdQOaI+wXTZkyqzhraMGzAGJ8oPdxcSJ81gHnCZeW2mL6NgO8GhkvZU/yXiGI6uOYkAR8FVUYc/s0Ii6S1qRkmcn7JdDWd3lofKJzvDwzUvaJa8UA4piFqdXSVGOI/U2ZXLBUUfhYscSLpy2MrcPOYsHI2JukkU78C9NI/aKhU6w/IF/Tt0Wnz5R52lYLRNqJ2wUjgnTxQhG5kuDbC5I8ChMx0BETulS4+ZDewkhOvdlAIfktbfYQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=y24ozpEcn88RGwVVcHw/OLmGComB9ngjIsCiFeZElj0=;
+ b=KE+7s5vfIbU29tUESWVsbYctJC7k/3q6YyYjrrtL47eYrfu1tLqDhkv3X2Hmj0Gi34wnLD3v6OeRtq8gFEWHyJnM5Zb0TxYskTjDJRf2FDd2bWy0z1v4W8wDjS227IKfzQDzu6s8n+Im+er9+xMh3rM9iykS/inbQQr4oLAFacE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by DB8PR04MB6827.eurprd04.prod.outlook.com (2603:10a6:10:f8::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.22; Sat, 28 Jan
+ 2023 01:58:45 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b%7]) with mapi id 15.20.6043.025; Sat, 28 Jan 2023
+ 01:58:45 +0000
+Date:   Sat, 28 Jan 2023 03:58:41 +0200
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Guilhem Imberton <guilhem.imberton@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com
+Subject: Re: [PATCH net-next] net: pcs: pcs-lynx: remove
+ lynx_get_mdio_device() and refactor cleanup
+Message-ID: <20230128015841.rotwc2arwgn2csef@skbuf>
+References: <20230127134031.156143-1-maxime.chevallier@bootlin.com>
+ <20230127134351.xlz4wqrubfnvmecd@skbuf>
+ <20230127150758.68eb1d29@pc-7.home>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230127150758.68eb1d29@pc-7.home>
+X-ClientProxiedBy: BE1P281CA0038.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:22::17) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|DB8PR04MB6827:EE_
+X-MS-Office365-Filtering-Correlation-Id: b236e40a-2c01-44b2-dad1-08db00d33056
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: IbqQeOBP1oOP4Vd/jG9ijBwM/eOE+TIDccp0qY/qBijA8DHVo4lrt4jQ7zLGyV6q6pZB2GG8Wu264ksJo+LsOs2pT4kH/BepzaQH+30pZFzLgFu05G5xwEYY5yiPN1zxN4y8EN8cTFDpaMAK6YBS8N2J29S2X4NnRtkixPRGUqGEbINDFDx+gMaVsnVVtfFOt3GRVLmyQ/s1UiOJiuAMpttxzZ6F7TJ/WLdUP4UAG3ky47E8bKM+HU+v6vB3s+Y5xB7fBijBnaZg1WeEMvafi/u8a3s1COubkMX+UEaIbu4Sm9nU4N0ZU8cB3Qzh3X+BtEHP/tHDXPTplT7Uxgsbw9/1gVmJmUFEzNJ6yCVOAuzl6BHdBrCwxMMypzQLmOKffzghBH9+0sh/V8uP5rB/Yq+aAiBHf9KJMNJCM/b+nFNqugJSEiA2afmQos6gz4faH2BPa9y0HtvfQggOWQ4i8wcJU6s0ehMJ+OTUcOCkxWNOfgrgP3RqDbmrclmtbYM6iqeWdu5MEo3SKId/xW/FLl5IT7eUds3MR9K0yYsraQ72A5Q+DQVD0BPD12AjNyXXHdsiwfEVTAdY3cjEPK0E98xyRInqAfKtuIVeH24vl62GvJTBRC//v6TJS7IDmdHW6LMUY2iujA8wjEBuMHDZVQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(7916004)(366004)(39860400002)(346002)(136003)(396003)(376002)(451199018)(2906002)(7416002)(44832011)(5660300002)(8936002)(8676002)(4326008)(83380400001)(66476007)(9686003)(66556008)(66946007)(41300700001)(6666004)(6506007)(186003)(33716001)(316002)(86362001)(1076003)(6916009)(26005)(478600001)(6512007)(54906003)(6486002)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LLxdtuq6k+7YqDkHeiSRPKuVJ8BCdNZWstOQSHMUMmVx+n3YWF2AKdBkuMPA?=
+ =?us-ascii?Q?ijIHnmCLSDJCjrmKr6wKDFY8i1VQ3pxv6qlGOlTqDu2TSTmefQaHb1Q3AJiQ?=
+ =?us-ascii?Q?4K9l0jvl/xsaea6T77Tpfg3GeU5Duckw16jNXeENlyPqYVTAhg07d377WnWP?=
+ =?us-ascii?Q?mcYmBuztXXiH8HhRR6uZNBFF1jJuhUs2hJx9fMIRtkCFq/U3ttIQABZVSZ9V?=
+ =?us-ascii?Q?TAy2FqxLaA40SBxCQZhSE+LPS3bQ8dM0QxX71MbcB/YVbDIowzV5Wygbf7lA?=
+ =?us-ascii?Q?ZBob2E4GjG54cJm0y+gAdcGOWcsF+PLAwKcCh5psQCU0h6ALjVDO12hBcHMW?=
+ =?us-ascii?Q?zGfQqBpwkbXnK0MLPePXFsJcdNwaWwfV5Nu9Xnkyp/5vUZovqGoO9uwhdKuO?=
+ =?us-ascii?Q?C2L8lw/L1Q9Hvb5VC+840AtMnXkvjywjh7sx7K96YPME1Fc3dj3CEGfIEGpH?=
+ =?us-ascii?Q?3Cgar4SFt/5kijRh+Xma7oEsdxVq+0OX760rOJv6AGfbLMQ+5DTBvo6Gtyol?=
+ =?us-ascii?Q?DkbRQ6ISI/Fjk3XoqmndR3Rk70xTPZ/CgPeZj0NNOXHyMxgR8nMhRg9Gku4U?=
+ =?us-ascii?Q?BzaETm4Nqqi+Odyq5/EyQxH5bdjpJVTFsZ1mN2Td5TipX7MPJkTW9IcnPBRt?=
+ =?us-ascii?Q?SM9uf4MSGN02ZrKzFWSR54qQq7JLYP3mTF219qqi83GA31qG+FJ6U/5u08sd?=
+ =?us-ascii?Q?gdqyvoX0mOTnDMzcnNDCsTvE1j9VGoBw9ZVTfaP2UOA2sT/So1UPN14+ENnf?=
+ =?us-ascii?Q?l+h12DBdrMYVXsup6HDi2LKOfEBr/tlNRs1874VgtZJEX23MwnZewTyOfD4g?=
+ =?us-ascii?Q?9OrZK/r73yQdUk8GSI1I/iQgZDUMAyS0QFwvn8Xq0U/lbq263BOaxQ71fnfT?=
+ =?us-ascii?Q?79AyfIk9CoroGl7NPF9sztXygqwAvHHuivKr4BYmayjA1H8Kz7f7p8nUB0Ef?=
+ =?us-ascii?Q?I/eMADzGPMq9QwW8Rggjt/htrqcLKCkmGiYgEabrAh/qNIo5uyvdPfN/QcUv?=
+ =?us-ascii?Q?oaXnJaagTqkWBezDl34WLUKbj2OqTcZW8l5mEHNy+3iZoS8JldVEd/J6y4FL?=
+ =?us-ascii?Q?KUyzAx/XNqaEfCt76w8QWaLR0xIXFlcrw/VJFavo9/NGHVEakOdmnSlsqKs4?=
+ =?us-ascii?Q?NCpc+4TwFnteJiab/43am/WPRR4ihVpv2nxWzoAc+uHfQFASW3oi1m5EKmsA?=
+ =?us-ascii?Q?hdEy6U2Ly+lInQzQHNOiSGZruGRgKR4orCTKmujYmKW6mUsx8dbl4VrINBnQ?=
+ =?us-ascii?Q?cpqRBHIlZEBVijw/0d7SPFygUSP7q90Ol+D3bNSvvFrpodh9OIA2BWRL6E03?=
+ =?us-ascii?Q?5FwQ0Xe3FqiCPMgikl7QRjs5xI7xrT5uTtgmWDPFt7uU93X4fO6xuHVP3TPC?=
+ =?us-ascii?Q?wA5hpqHgM1SYy4PJLAJ3fpgimWKUUunwcGjLwYFfRY6gwM9m8rinV23cpAJe?=
+ =?us-ascii?Q?/BXn4ZU059BwQx7wEOQrkoP9FNWS5HLBGy8evujph+CaWi05f1/ydmTrzzKd?=
+ =?us-ascii?Q?bHB68rxSRjS8riUibX4KVyMzmKXOpYgob0XgJRq7Xem+eWwKJ/NWlMA8SVY+?=
+ =?us-ascii?Q?IcZfba55ISqovToxMko64EoYElW5wrjzt0VMeBMP2s/iGXCqZakwA063W/FG?=
+ =?us-ascii?Q?bA=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b236e40a-2c01-44b2-dad1-08db00d33056
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jan 2023 01:58:45.4029
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: j71VsaGVC+VC22mewynXZr80kpo3UbzVzeC6n2xCkDeXnVCIoa6sV+9cGQvoLOgMGqAfSpZ8zlhvGaLFVzIh6Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6827
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -90,46 +127,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Fri, Jan 27, 2023 at 03:07:58PM +0100, Maxime Chevallier wrote:
+> However this current patch still makes sense though right ?
 
-On Fri, Jan 27, 2023 at 2:52 PM Michael Richardson <mcr@sandelman.ca> wrote:
->
->
-> Alexander Aring <aahringo@redhat.com> wrote:
->     >> - MLME ops without feedback constraints like beacons -> should go
->     >> through the hot path, but not through the whole net stack, so
->     >> ieee802154_subif_start_xmit()
->     >>
->
->     > it will bypass the qdisc handling (+ some other things which are around
->     > there). The current difference is what I see llsec handling and other
->     > things which might be around there? It depends if other "MLME-ops" need
->     > to be e.g. encrypted or not.
->
-> I haven't followed the whole thread.
-> So I am neither agreeing nor disagreeing, just clarifying.
-> Useful beacons are "signed" (have integrity applied), but not encrypted.
->
+I have a pretty hard time saying yes; TL;DR yes it's less code, but it's
+structured that way with a reason.
 
-I see. But that means they need to be going through llsec, just the
-payload isn't encrypted and the MIC is appended to provide integrity.
+I don't think it's lynx_pcs_destroy()'s responsibility to call mdio_device_free(),
+just like it isn't lynx_pcs_create()'s responsibility to call mdio_device_create()
+(or whatever). In fact that's the reason why the mdiodev isn't completely
+absorbed by the lynx_pcs - because there isn't a unified way to get a reference
+to it - some platforms have a hardcoded address, others have a phandle in the
+device tree.
 
-> It's important for userspace to be able to receive them, even if we don't
-> have a key that can verify them.  AFAIK, we have no specific interface to
-> receive beacons.
->
+I know this is entirely subjective, but to me, having functions organized
+in pairs which undo precisely what the other has done, and not more, really
+helps with spotting resource leakage issues. I realize that it's not the same
+for everybody. For example, while reviewing your patch, I noticed this
+in the existing code:
 
-This can be done over multiple ways. Either over a socket
-communication or if they appear rarely we can put them into a netlink
-event. In my opinion we already put that in a higher level API in
-passive scan to interpret the receiving of a beacon on kernel level
-and trigger netlink events.
+static struct phylink_pcs *memac_pcs_create(struct device_node *mac_node,
+					    int index)
+{
+	struct device_node *node;
+	struct mdio_device *mdiodev = NULL;
+	struct phylink_pcs *pcs;
 
-I am not sure how HardMAC transceivers handle them on the transceiver
-side only or if they ever provide them to the next layer or not?
-For SoftMAC you can actually create a AF_PACKET raw socket, and you
-should see everything which bypass hardware address filters and kernel
-filters. Then an application can listen to them.
+	node = of_parse_phandle(mac_node, "pcsphy-handle", index);
+	if (node && of_device_is_available(node))
+		mdiodev = of_mdio_find_device(node);
+	of_node_put(node);
 
-- Alex
+	if (!mdiodev)
+		return ERR_PTR(-EPROBE_DEFER);
 
+	pcs = lynx_pcs_create(mdiodev); // if this fails, we miss calling mdio_device_free()
+	return pcs;
+}
+
+and it's clear that what is obvious to me was not obvious to the author
+of commit a7c2a32e7f22 ("net: fman: memac: Use lynx pcs driver"), since
+this organization scheme didn't work for him.
