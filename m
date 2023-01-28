@@ -2,149 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97B7C67F969
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 17:03:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1BF067F926
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 16:33:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231534AbjA1QDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 11:03:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35362 "EHLO
+        id S230263AbjA1Pdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 10:33:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbjA1QDu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 11:03:50 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C0D8C17E;
-        Sat, 28 Jan 2023 08:03:46 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DgyxQRf2NhyD6PO+GN2Aplmi5KII6aVw/XoVRCMsLt0Z7fS7oPmDmlzcGCzw9NNihrJ1eLD61tJ0xQbU7c3FOg0O7mvkBpOilyhtgP+tPE14RuMcPtQRAdzrkJzYJzSUidySnN/vV7o015GW7baY1TH0tYEv9KFZXTc4/VjguvEjle5YSej5dQ1YgO9hNHZrwUdNNLoECrCiWis/BhHsawqKLYULwX1tj6EEBq/xb7RYElLY0CBAUJjmGvhPX+bmkg1KFP3JHUNYnw37noZ1e1rLceA+whAHm7Gl12bYBD7CM0elOPvCfBB0kPi/6XIFz530Kgr1kt4NRAHhlUX5tg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nZIMRus20zSsysvxZegG+NYEcIfpEhpMgYMDdXMrFpU=;
- b=L3TZ+ScDDZRhAX+rBrtog6b4U2Vgx5T58kBDCospKDNFyQE0pKs+Om1omT8T1QiCVYWSz1X3pv+hqtN1Dkv1R98yxaDx84LaU0fqyedKXGTM7DoGimjF9HL2PrWN6l8pDId1A8/mbH+5n9T922/8atnSJCN0sWvbXPkytzyq/HEHmx7EDZ5rp89NETAJVZCHx3fAqVpuHV52d8hxCF9qXsdZwltG+5VZagbiq1+pq/k0Q4MRNlTRrWGMspN3apTVqkTfEkSpF+5uYgtCkrui0bR3o55oxMKBxyVbThAsbBsOjiSUKKaTZ+sF629EOmLtOlkMGLdps5RbXEwcYn4QHQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=corigine.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nZIMRus20zSsysvxZegG+NYEcIfpEhpMgYMDdXMrFpU=;
- b=D29NjcPfDMzCe7I0OLvigmvbi075b6tZTSHaIQ3pYkgiiBy/Sxb7uegB3luKm8iYQReYjsnWHsmSWZU70I4/uL6ecSWYqZPmv37riMbKfNIi3jVa1/gzikVNRiBens5uo2bE97YxnrIUi6eXzSzLXYITZ3P/QYMPENF24ACx4/6lgGWGesFQSNEZetZR/wFYAqf11S2dRsGwThhJt5YeH5nJYzyTvfMmciELBqzB95W5fjVxbo67xI1OqzJlgKH0zcHMDmiIPjrU6X5vqSTzuZ++c7IPYjncEDB2/2vAEZmEtH4bAk5HHmFkxVj1Te2gnpLa0dVTKct0xdJPlEdUnw==
-Received: from MW4PR03CA0285.namprd03.prod.outlook.com (2603:10b6:303:b5::20)
- by MN0PR12MB5956.namprd12.prod.outlook.com (2603:10b6:208:37f::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.28; Sat, 28 Jan
- 2023 16:03:44 +0000
-Received: from CO1PEPF00001A62.namprd05.prod.outlook.com
- (2603:10b6:303:b5:cafe::6f) by MW4PR03CA0285.outlook.office365.com
- (2603:10b6:303:b5::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.28 via Frontend
- Transport; Sat, 28 Jan 2023 16:03:44 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CO1PEPF00001A62.mail.protection.outlook.com (10.167.241.9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6064.17 via Frontend Transport; Sat, 28 Jan 2023 16:03:42 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Sat, 28 Jan
- 2023 08:03:32 -0800
-Received: from fedora.nvidia.com (10.126.230.37) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Sat, 28 Jan
- 2023 08:03:29 -0800
-References: <20230127183845.597861-1-vladbu@nvidia.com>
- <20230127183845.597861-7-vladbu@nvidia.com> <Y9U+pW/2qDskLiYc@salvia>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <ozsh@nvidia.com>, <marcelo.leitner@gmail.com>,
-        <simon.horman@corigine.com>
-Subject: Re: [PATCH net-next v5 6/7] net/sched: act_ct: offload UDP NEW
- connections
-Date:   Sat, 28 Jan 2023 17:31:40 +0200
-In-Reply-To: <Y9U+pW/2qDskLiYc@salvia>
-Message-ID: <87r0veejeb.fsf@nvidia.com>
+        with ESMTP id S229643AbjA1Pdj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 10:33:39 -0500
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D24326593
+        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 07:33:38 -0800 (PST)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-501c3a414acso105331147b3.7
+        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 07:33:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=J0zykJuHCdKxr5ucxwzFSQ6c5nJrN3YX9e/nbyT2e6E=;
+        b=sm14eqT7Im4scKnqPeEWwibcC3BVvTk+Kk7g/7JC/lOAmB8bqPDXpDKPfgRJ8F8Tme
+         RAtgRkpjzzxA/8t6XuFFvbTlvMbIphT1iuQWTnFmFYfvQF6iOQ595pPe4z82eQ2Kc7xL
+         a7Ek5/e+Q6vgrV0y21CaeUCPklZdh19tPhP2oUB1Mt0wBg5JzwcATT6fokYbXv1H7C5L
+         MtFJAhcUX2IdhusuLLq+vC/r8y7vjG6sWoTMlY3y3Vt0bVCW8DwThFKED288Ha+Ehl1K
+         1D/BbCwuYSgypsAOaPLkj2FHrGM2wKREQQ7J8JT6vKL01V8Et6+nYsF8eJTGbwLS2iBj
+         qPUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=J0zykJuHCdKxr5ucxwzFSQ6c5nJrN3YX9e/nbyT2e6E=;
+        b=RlcfAEE3NKH9Q6QQR1j0prRt4ePB3V51kFyV6x5tnpRz6OEyDcU5sTRr+w6aKEU4a6
+         KwxRamAnFN0nZBowHktMDz++0VI3tuaymCy79jHcQhEs81HOi0AZWeQELNpyY6w5yqXn
+         3IKHiuwRiGcBBxlfab7nwhi+sR4oAnWK0n3oxTZOvxOo+I6OCfpUR6pobTjictWGv26K
+         61XrB6qtXnQ4+8nAvy/oBJ+Omz7lVVa8MwHH2ilAoTYP2K6awd7Gx1GEyA8kHQhLygJb
+         lJ5DTx7xelLjCZFenuITU0wO26lqs7pt/rdrSGYtLmKzXyhLjyQ4fWFnU7k8Mzod8jkK
+         /WMg==
+X-Gm-Message-State: AO0yUKWfSDOMKklvJaMuZtFW0qrWQWIZzhlk37nvGHifWBmUqoSytHgY
+        XTH2drlcCbupv40eG9r1nL+YQ7//WptLUg+2xAB1+Q==
+X-Google-Smtp-Source: AK7set9xALKVN6l+zOpcOVT6OSnDy88KoLXMRiBLHHvPEGdwt9sPFdAyWdhkGkdScx2NqE55o6aaPHJvNVHEuuWYUHg=
+X-Received: by 2002:a81:6cd6:0:b0:507:b797:f1b with SMTP id
+ h205-20020a816cd6000000b00507b7970f1bmr1353416ywc.468.1674920017510; Sat, 28
+ Jan 2023 07:33:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.230.37]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF00001A62:EE_|MN0PR12MB5956:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2863465d-c86f-4b59-353e-08db01493a2b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2nBGc2thj1pfLdJALqyiy/pbjxf4HqW6TZl364vFI9ib8eqY425dYFurjADfkrN1OhFI5QH2tPYN9CBIEsTsorQH7ykk3qnF8j1a3BAxjJc63u3U+jxFf+OMUvVVrC8Azc6OWPObl4cAE0xszH+2V6R4AfBkVFi/18fcv0nhVaUYIOCnA56jmyYc1TOMwd4dbx+3nKOHPqcUQW7griUcxd9BU8vBA3CfAGRH/HUKxVuCCXlMWyHbDB3uWucEnlEpdBXSHZpzgzzHUXf5LiZtXJRSKOH9UKJLzg6QJ8HUGhy0/cKwSm/YLjXAOid0aHl8TkJDSrvp0IoVPxH0F4yyWssSAEVU+hBsW9NnpMQ1NwQSV70XOQtG8UMYxOxtrz3Yz3gYtGR5bSkF/TL7D1rbQ0+i3ufPbdHrAPGYgmxcztvOsTJtW7GHx/ksrf8ub7ovsRQwRoS9NnLfZ+o7GkajFtBU/hwRA0O5IYlVKAJavcnitxwvPGJnHdWHEpxwMp+kJzgCtR1SGOt5nuAKmKBEntGTsRjhb+SxF26RS8nrRXDjeqiWSaTRiQqeB27fm326zpmbzrisVizzmtJRQET5S0wKnDx8FUJy0es7qT4nALrn2lijlwsIDDYk1ex0UH41R15CaRwvM98MBQGaH8+c1VfK2FXQjIOdnP5acPJCprGZTHNcmzQxTcYb5uUYLMwz7ANiHmWeG2/51Ydr9Qc0UA==
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(396003)(39860400002)(376002)(451199018)(36840700001)(46966006)(40470700004)(356005)(478600001)(40460700003)(7696005)(2906002)(36756003)(2616005)(83380400001)(426003)(336012)(47076005)(40480700001)(316002)(54906003)(16526019)(86362001)(186003)(82310400005)(82740400003)(6666004)(7636003)(36860700001)(26005)(7416002)(5660300002)(41300700001)(8936002)(70206006)(70586007)(6916009)(4326008)(8676002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jan 2023 16:03:42.2270
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2863465d-c86f-4b59-353e-08db01493a2b
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1PEPF00001A62.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5956
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+References: <20230124170346.316866-1-jhs@mojatatu.com> <20230126153022.23bea5f2@kernel.org>
+ <Y9QXWSaAxl7Is0yz@nanopsycho> <CAAFAkD8kahd0Ao6BVjwx+F+a0nUK0BzTNFocnpaeQrN7E8VRdQ@mail.gmail.com>
+ <Y9RPsYbi2a9Q/H8h@google.com> <CAM0EoM=ONYkF_1CST7i_F9yDQRxSFSTO25UzWJzcRGa1efM2Sg@mail.gmail.com>
+ <CAKH8qBtU-1A1iKnvTXV=5v8Dim1FBmtvL6wOqgdspSFRCwNohA@mail.gmail.com>
+ <CA+FuTScHsm3Ajje=ziRBafXUQ5FHHEAv6R=LRWr1+c3QpCL_9w@mail.gmail.com> <CAM0EoMnBXnWDQKu5e0z1_zE3yabb2pTnOdLHRVKsChRm+7wxmQ@mail.gmail.com>
+In-Reply-To: <CAM0EoMnBXnWDQKu5e0z1_zE3yabb2pTnOdLHRVKsChRm+7wxmQ@mail.gmail.com>
+From:   Willem de Bruijn <willemb@google.com>
+Date:   Sat, 28 Jan 2023 10:33:00 -0500
+Message-ID: <CA+FuTScBO-h6iM47-NbYSDDt6LX7pUXD82_KANDcjp7Y=99jzg@mail.gmail.com>
+Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Jamal Hadi Salim <hadi@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel@mojatatu.com, deb.chatterjee@intel.com,
+        anjali.singhai@intel.com, namrata.limaye@intel.com,
+        khalidm@nvidia.com, tom@sipanda.io, pratyush@sipanda.io,
+        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, vladbu@nvidia.com, simon.horman@corigine.com,
+        stefanc@marvell.com, seong.kim@amd.com, mattyk@nvidia.com,
+        dan.daly@intel.com, john.andy.fingerhut@intel.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Sat 28 Jan 2023 at 16:26, Pablo Neira Ayuso <pablo@netfilter.org> wrote:
-> Hi Vlad,
+On Sat, Jan 28, 2023 at 10:10 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
 >
-> On Fri, Jan 27, 2023 at 07:38:44PM +0100, Vlad Buslov wrote:
->> Modify the offload algorithm of UDP connections to the following:
->> 
->> - Offload NEW connection as unidirectional.
->> 
->> - When connection state changes to ESTABLISHED also update the hardware
->> flow. However, in order to prevent act_ct from spamming offload add wq for
->> every packet coming in reply direction in this state verify whether
->> connection has already been updated to ESTABLISHED in the drivers. If that
->> it the case, then skip flow_table and let conntrack handle such packets
->> which will also allow conntrack to potentially promote the connection to
->> ASSURED.
->> 
->> - When connection state changes to ASSURED set the flow_table flow
->> NF_FLOW_HW_BIDIRECTIONAL flag which will cause refresh mechanism to offload
->> the reply direction.
->> 
->> All other protocols have their offload algorithm preserved and are always
->> offloaded as bidirectional.
->> 
->> Note that this change tries to minimize the load on flow_table add
->> workqueue. First, it tracks the last ctinfo that was offloaded by using new
->> flow 'ext_data' field and doesn't schedule the refresh for reply direction
->> packets when the offloads have already been updated with current ctinfo.
->> Second, when 'add' task executes on workqueue it always update the offload
->> with current flow state (by checking 'bidirectional' flow flag and
->> obtaining actual ctinfo/cookie through meta action instead of caching any
->> of these from the moment of scheduling the 'add' work) preventing the need
->> from scheduling more updates if state changed concurrently while the 'add'
->> work was pending on workqueue.
+> On Sat, Jan 28, 2023 at 8:37 AM Willem de Bruijn <willemb@google.com> wrote:
+> >
+> > On Fri, Jan 27, 2023 at 7:48 PM Stanislav Fomichev <sdf@google.com> wrote:
+> > >
+> > > On Fri, Jan 27, 2023 at 3:27 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+> > > >
+> > > > On Fri, Jan 27, 2023 at 5:26 PM <sdf@google.com> wrote:
+> > > > >
+> > > > > On 01/27, Jamal Hadi Salim wrote:
+> > > > > > On Fri, Jan 27, 2023 at 1:26 PM Jiri Pirko <jiri@resnulli.us> wrote:
+> > > > > > >
+> > > > > > > Fri, Jan 27, 2023 at 12:30:22AM CET, kuba@kernel.org wrote:
+> > > > > > > >On Tue, 24 Jan 2023 12:03:46 -0500 Jamal Hadi Salim wrote:
+> > > > > > > >> There have been many discussions and meetings since about 2015 in
+> > > > > > regards to
+> > > > > > > >> P4 over TC and now that the market has chosen P4 as the datapath
+> > > > > > specification
+> > > > > > > >> lingua franca
+> > > > > > > >
+> > > > > > > >Which market?
+> > > > > > > >
+> > > > > > > >Barely anyone understands the existing TC offloads. We'd need strong,
+> > > > > > > >and practical reasons to merge this. Speaking with my "have suffered
+> > > > > > > >thru the TC offloads working for a vendor" hat on, not the "junior
+> > > > > > > >maintainer" hat.
+> > > > > > >
+> > > > > > > You talk about offload, yet I don't see any offload code in this RFC.
+> > > > > > > It's pure sw implementation.
+> > > > > > >
+> > > > > > > But speaking about offload, how exactly do you plan to offload this
+> > > > > > > Jamal? AFAIK there is some HW-specific compiler magic needed to generate
+> > > > > > > HW acceptable blob. How exactly do you plan to deliver it to the driver?
+> > > > > > > If HW offload offload is the motivation for this RFC work and we cannot
+> > > > > > > pass the TC in kernel objects to drivers, I fail to see why exactly do
+> > > > > > > you need the SW implementation...
+> > > > >
+> > > > > > Our rule in TC is: _if you want to offload using TC you must have a
+> > > > > > s/w equivalent_.
+> > > > > > We enforced this rule multiple times (as you know).
+> > > > > > P4TC has a sw equivalent to whatever the hardware would do. We are
+> > > > > > pushing that
+> > > > > > first. Regardless, it has value on its own merit:
+> > > > > > I can run P4 equivalent in s/w in a scriptable (as in no compilation
+> > > > > > in the same spirit as u32 and pedit),
+> > > > > > by programming the kernel datapath without changing any kernel code.
+> > > > >
+> > > > > Not to derail too much, but maybe you can clarify the following for me:
+> > > > > In my (in)experience, P4 is usually constrained by the vendor
+> > > > > specific extensions. So how real is that goal where we can have a generic
+> > > > > P4@TC with an option to offload? In my view, the reality (at least
+> > > > > currently) is that there are NIC-specific P4 programs which won't have
+> > > > > a chance of running generically at TC (unless we implement those vendor
+> > > > > extensions).
+> > > >
+> > > > We are going to implement all the PSA/PNA externs. Most of these
+> > > > programs tend to
+> > > > be set or ALU operations on headers or metadata which we can handle.
+> > > > Do you have
+> > > > any examples of NIC-vendor-specific features that cant be generalized?
+> > >
+> > > I don't think I can share more without giving away something that I
+> > > shouldn't give away :-)
+> > > But IIUC, and I might be missing something, it's totally within the
+> > > standard for vendors to differentiate and provide non-standard
+> > > 'extern' extensions.
+> > > I'm mostly wondering what are your thoughts on this. If I have a p4
+> > > program depending on one of these externs, we can't sw-emulate it
+> > > unless we also implement the extension. Are we gonna ask NICs that
+> > > have those custom extensions to provide a SW implementation as well?
+> > > Or are we going to prohibit vendors to differentiate that way?
+> > >
+> > > > > And regarding custom parser, someone has to ask that 'what about bpf
+> > > > > question': let's say we have a P4 frontend at TC, can we use bpfilter-like
+> > > > > usermode helper to transparently compile it to bpf (for SW path) instead
+> > > > > inventing yet another packet parser? Wrestling with the verifier won't be
+> > > > > easy here, but I trust it more than this new kParser.
+> > > > >
+> > > >
+> > > > We dont compile anything, the parser (and rest of infra) is scriptable.
+> > >
+> > > As I've replied to Tom, that seems like a technicality. BPF programs
+> > > can also be scriptable with some maps/tables. Or it can be made to
+> > > look like "scriptable" by recompiling it on every configuration change
+> > > and updating it on the fly. Or am I missing something?
+> > >
+> > > Can we have a P4TC frontend and whenever configuration is updated, we
+> > > upcall into userspace to compile this whatever p4 representation into
+> > > whatever bpf bytecode that we then run. No new/custom/scriptable
+> > > parsers needed.
+> >
+> > I would also think that if we need another programmable component in
+> > the kernel, that this would be based on BPF, and compiled outside the
+> > kernel.
+> >
+> > Is the argument for an explicit TC objects API purely that this API
+> > can be passed through to hardware, as well as implemented in the
+> > kernel directly? Something that would be lost if the datapath is
+> > implement as a single BPF program at the TC hook.
+> >
 >
-> Could you use a flag to achieve what you need instead of this ext_data
-> field? Better this ext_data and the flag, I prefer the flags.
+> We use the skip_sw and skip_hw knobs in tc to indicate whether a
+> policy is targeting hw or sw. Not sure if you are familiar with it but its
+> been around (and deployed) for a few years now. So a P4 program
+> policy can target either.
 
-Sure, np. Do you prefer the functionality to be offloaded to gc (as in
-earlier versions of this series) or leverage 'refresh' code as in
-versions 4-5?
+I know. So the only reason the kernel ABI needs to be extended with P4
+objects is to be able to pass the same commands to hardware. The whole
+kernel dataplane could be implemented as a BPF program, correct?
+
+> In regards to the parser - we need a scriptable parser which is offered
+> by kparser in kernel. P4 doesnt describe how to offload the parser
+> just the matches and actions; however, as Tom alluded there's nothing
+> that obstructs us offer the same tc controls to offload the parser or pieces
+> of it.
+
+And this is the only reason that the parser needs to be in the kernel.
+Because the API is at the kernel ABI level. If the P4 program is compiled
+to BPF in userspace, then the parser would be compiled in userspace
+too. A preferable option, as it would not require adding yet another
+parser in C in the kernel.
+
+I understand the value of PANDA as a high level declarative language
+to describe network protocols. I'm just trying to get more explicit
+why compilation from PANDA to BPF is not sufficient for your use-case.
+
+
+> cheers,
+> jamal
+>
+> > Can you elaborate some more why this needs yet another in-kernel
+> > parser separate from BPF? The flow dissection case is solved fine by
+> > the BPF flow dissector. (I also hope one day the kernel can load a BPF
+> > dissector by default and we avoid the majority of the unsafe C code
+> > entirely.)
