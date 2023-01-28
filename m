@@ -2,114 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BB8967F7CC
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 13:21:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B93E867F7DA
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 13:48:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233836AbjA1MVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 07:21:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49400 "EHLO
+        id S231801AbjA1Msx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 07:48:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230175AbjA1MU6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 07:20:58 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E480223C58
-        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 04:20:57 -0800 (PST)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1674908456;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=A1XIVaucNSXynT0+YGvZAYgzlAp2UVil4HlRsF4dvhI=;
-        b=0Pr2Y/sKLram3Oq97WEparvyi76diWyGXlxnE/X67qfmKyCCzFai8Aw1YeYqDYv1fdHxNu
-        kUCmrHPNJphccZ1FKHlS4x/Kr8COC7qVJuPzUHQFJ90NjVw2txgNKwI4A33qf7SjFwU6Ia
-        oO2LCd0oqlIYFXeFMBUsUxHjcVNNXfxsPNHlO+Y5VvAD5adnNbvhROkq65w741+Ayn54sT
-        SP5m2266gH+nXp96kuxGXNNhbfu6VwB6EB8xCt2mQwXXbBkn8TVjWM1HZSa11HHy+7v04s
-        gC4UYx/NDVAndv4Yu8AMU1KMfEg5glacnpt7Lp0YqiIV8TbT1gnEhqQTmCsWCA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1674908456;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=A1XIVaucNSXynT0+YGvZAYgzlAp2UVil4HlRsF4dvhI=;
-        b=CQtUDFJX2Q3aNYDuBeYQMs4iqhsSHlN4+paPUhD9jA0xarDoVGe4PJHji2qaODdj75FWhE
-        pvWE56sRt+lr/pAA==
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Subject: Re: [RFC PATCH net-next 00/15] taprio fixprovements
-In-Reply-To: <20230128010719.2182346-1-vladimir.oltean@nxp.com>
-References: <20230128010719.2182346-1-vladimir.oltean@nxp.com>
-Date:   Sat, 28 Jan 2023 13:20:55 +0100
-Message-ID: <87o7qiu9y0.fsf@kurt>
+        with ESMTP id S229643AbjA1Msw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 07:48:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D12126F3;
+        Sat, 28 Jan 2023 04:48:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B5E8DB80921;
+        Sat, 28 Jan 2023 12:48:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6647C433D2;
+        Sat, 28 Jan 2023 12:48:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674910127;
+        bh=q4YmhCFGMeK7V/V0+kIKf74gh6MkUEKWKYKZr0Q1zcM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DPaiMQg27zAkIo+OpClY8AEt4CVLMA7gO+1YHJDC4A1QYsiQN3DAFrSjJR0++Q9om
+         XTq6Pr9y+zogKe3Smxba9zOL4172/aDqY3ZfBCGCP1IRq6DrebB7Bj9oeVDEcefC4C
+         20EwOPn/AWtNSpu0Iis/oQuIuugkPbDNeOzAenp1SslJg61Eo3UDFYhL2YAqJsP7Eu
+         sBgMi2v9YqTAT9518gmPm8YaBzUFpvm9+nmMjMPDa7vVpp+XWWnufFxBnHbs0/QUni
+         jYJbQmE4yzWsi/cR75E+4Zk3QpLnWDDgnayXeh5878o+i0ilnKAb1qTRhssZf1ujQn
+         5s2AcclSllVqw==
+Date:   Sat, 28 Jan 2023 13:48:43 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, toke@redhat.com, memxor@gmail.com,
+        alardam@gmail.com, saeedm@nvidia.com, anthony.l.nguyen@intel.com,
+        gospo@broadcom.com, vladimir.oltean@nxp.com, nbd@nbd.name,
+        john@phrozen.org, leon@kernel.org, simon.horman@corigine.com,
+        aelior@marvell.com, christophe.jaillet@wanadoo.fr,
+        ecree.xilinx@gmail.com, mst@redhat.com, bjorn@kernel.org,
+        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
+        intel-wired-lan@lists.osuosl.org, lorenzo.bianconi@redhat.com,
+        martin.lau@linux.dev
+Subject: Re: [PATCH v3 bpf-next 5/8] libbpf: add API to get XDP/XSK supported
+ features
+Message-ID: <Y9UZqxwNPDQ9jEu3@lore-desk>
+References: <cover.1674737592.git.lorenzo@kernel.org>
+ <a7e6e8da5b2ba24f44f0d5b44a234e2bf90220fd.1674737592.git.lorenzo@kernel.org>
+ <CAEf4BzYjt3J5_ESMKjRFRh6ROg-CN=QazAZpKd9wnaSxjjKbAg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="H5r5tXaizAjuuM7h"
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYjt3J5_ESMKjRFRh6ROg-CN=QazAZpKd9wnaSxjjKbAg@mail.gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
 
-On Sat Jan 28 2023, Vladimir Oltean wrote:
-> I started to pull on a small thread and the whole thing unraveled :(
->
-> While trying to ignite a more serious discussion about how the i225/i226
-> hardware prioritization model seems to have affected the generic taprio
-> software implementation (patch 05/15), I noticed 2 things:
-> - taprio_peek() is dead code (patch 01/15)
-> - taprio has a ridiculously low iperf3 performance when all gates are
->   open and it behave as a work-conserving qdisc. Patches 06/15 -> 09/15
->   and 13/15 -> 15/15 collectively work to address some of that.
->
-> I had to put a hard stop for today (and at the patch limit of 15), but
-> now that taprio calculates the durations of contiguously open TC gates,
-> part 2 would be the communication of this information to offloading
-> drivers via ndo_setup_tc(), and the deletion of duplicated logic from
-> vsc9959_tas_guard_bands_update(). But that's for another day - I'm not
-> quite sure how that's going to work out. The gate durations change at
-> each link speed change, and this might mean that reoffloading is
-> necessary.
->
-> Another huge issue I'm seeing at small intervals with software
-> scheduling is simply the amount of RCU stalls. I can't get Kurt's
-> schedule from commit 497cc00224cf ("taprio: Handle short intervals
-> and large packets") to work reliably on my system even without these
-> patches. Eventually the system dies unless I increase the entry
-> intervals from the posted 500 us - my CPUs just don't do much of
-> anything else. Maybe someone has any idea what to do.
+--H5r5tXaizAjuuM7h
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for investing the time and improving the software
-scheduling. Especially the calculations of TC durations and
-incorporating the max. frame lengths in a better way. I went over this
-series and it looks good to me. Except for one patch.
+> On Thu, Jan 26, 2023 at 4:59 AM Lorenzo Bianconi <lorenzo@kernel.org> wro=
+te:
+> >
+> > Extend bpf_xdp_query routine in order to get XDP/XSK supported features
+> > of netdev over route netlink interface.
+> > Extend libbpf netlink implementation in order to support netlink_generic
+> > protocol.
+> >
+> > Co-developed-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > Co-developed-by: Marek Majtyka <alardam@gmail.com>
+> > Signed-off-by: Marek Majtyka <alardam@gmail.com>
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  tools/lib/bpf/libbpf.h  |  3 +-
+> >  tools/lib/bpf/netlink.c | 99 +++++++++++++++++++++++++++++++++++++++++
+> >  tools/lib/bpf/nlattr.h  | 12 +++++
+> >  3 files changed, 113 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> > index 898db26e42e9..29cb7040fa77 100644
+> > --- a/tools/lib/bpf/libbpf.h
+> > +++ b/tools/lib/bpf/libbpf.h
+> > @@ -982,9 +982,10 @@ struct bpf_xdp_query_opts {
+> >         __u32 hw_prog_id;       /* output */
+> >         __u32 skb_prog_id;      /* output */
+> >         __u8 attach_mode;       /* output */
+> > +       __u64 fflags;           /* output */
+> >         size_t :0;
+> >  };
+> > -#define bpf_xdp_query_opts__last_field attach_mode
+> > +#define bpf_xdp_query_opts__last_field fflags
+>=20
+> is "fflags" an obvious name in this context? I'd expect
+> "feature_flags", especially that there are already "flags". Is saving
+> a few characters worth the confusion?
 
-Thanks,
-Kurt
+ack, I will fix it.
 
---=-=-=
+>=20
+>=20
+> >
+> >  LIBBPF_API int bpf_xdp_attach(int ifindex, int prog_fd, __u32 flags,
+> >                               const struct bpf_xdp_attach_opts *opts);
+> > diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
+> > index d2468a04a6c3..674e4d61e67e 100644
+> > --- a/tools/lib/bpf/netlink.c
+> > +++ b/tools/lib/bpf/netlink.c
+> > @@ -9,6 +9,7 @@
+> >  #include <linux/if_ether.h>
+> >  #include <linux/pkt_cls.h>
+> >  #include <linux/rtnetlink.h>
+> > +#include <linux/netdev.h>
+> >  #include <sys/socket.h>
+> >  #include <errno.h>
+> >  #include <time.h>
+> > @@ -39,6 +40,12 @@ struct xdp_id_md {
+> >         int ifindex;
+> >         __u32 flags;
+> >         struct xdp_link_info info;
+> > +       __u64 fflags;
+> > +};
+> > +
+> > +struct xdp_features_md {
+> > +       int ifindex;
+> > +       __u64 flags;
+> >  };
+> >
+> >  static int libbpf_netlink_open(__u32 *nl_pid, int proto)
+>=20
+> [...]
+>=20
+> >  int bpf_xdp_query(int ifindex, int xdp_flags, struct bpf_xdp_query_opt=
+s *opts)
+> >  {
+> >         struct libbpf_nla_req req =3D {
+> > @@ -393,6 +460,38 @@ int bpf_xdp_query(int ifindex, int xdp_flags, stru=
+ct bpf_xdp_query_opts *opts)
+> >         OPTS_SET(opts, skb_prog_id, xdp_id.info.skb_prog_id);
+> >         OPTS_SET(opts, attach_mode, xdp_id.info.attach_mode);
+> >
+> > +       if (OPTS_HAS(opts, fflags)) {
+>=20
+> maybe invert condition, return early, reduce nesting of the following cod=
+e?
+
+ack, fine, I will fix it.
+
+>=20
+> > +               struct xdp_features_md md =3D {
+> > +                       .ifindex =3D ifindex,
+> > +               };
+> > +               __u16 id;
+> > +
+> > +               err =3D libbpf_netlink_resolve_genl_family_id("netdev",
+> > +                                                           sizeof("net=
+dev"),
+> > +                                                           &id);
+>=20
+> nit: if it fits under 100 characters, let's leave it on a single line
+
+ack, fine, I will fix it (I am still used to 79 char limits :))
+
+Regards,
+Lorenzo
+
+>=20
+> > +               if (err < 0)
+> > +                       return libbpf_err(err);
+> > +
+> > +               memset(&req, 0, sizeof(req));
+> > +               req.nh.nlmsg_len =3D NLMSG_LENGTH(GENL_HDRLEN);
+> > +               req.nh.nlmsg_flags =3D NLM_F_REQUEST;
+> > +               req.nh.nlmsg_type =3D id;
+> > +               req.gnl.cmd =3D NETDEV_CMD_DEV_GET;
+> > +               req.gnl.version =3D 2;
+> > +
+> > +               err =3D nlattr_add(&req, NETDEV_A_DEV_IFINDEX, &ifindex,
+> > +                                sizeof(ifindex));
+> > +               if (err < 0)
+> > +                       return err;
+> > +
+> > +               err =3D libbpf_netlink_send_recv(&req, NETLINK_GENERIC,
+> > +                                              parse_xdp_features, NULL=
+, &md);
+> > +               if (err)
+> > +                       return libbpf_err(err);
+> > +
+> > +               opts->fflags =3D md.flags;
+> > +       }
+> > +
+> >         return 0;
+> >  }
+> >
+>=20
+> [...]
+
+--H5r5tXaizAjuuM7h
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmPVEycTHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRDBk9HyqkZzgl08D/sGlp/gJ/xqiHUtoVQC2c0omIYDqp8h
-MPiR0TESgqYphArDs3p1W4+LZsICeC2oQTpuOZEnpK182/38P1f61h3AObWJMCaf
-bOdBRrWxhkOA8eSAHeE1hp67qi590/73bWTe+LQk1lzG3pLGB3ggfQlRuG4UI2oR
-cA0nXB+R5hZaOYWWjScsP4OZUZ5UXMuRH4Cf3C9yeLTTIyQGaHOZ4aHt4I2QWkya
-v5WBOQqUsNvba7hhJ+6GoF9OMyn6uTR4IQO2MwC7ck9o4g7LYbkGTWZCN8/OYhTJ
-XDq8KZbtg1GuXqj1JPwmg6LkK9b8VrfvEoMnipiPZ8aLPSU2N8GcQn+dqHl0n4mJ
-yKFvH3AelTP0lkBP7PkYC1POstMPhO9z29Tpvc4gLJHFwftDyW8B79pMh7s4ARz3
-yJ1I1f3YKJmOKbZPatoHXAT8lQjkXzREUb4dTW8elIeVIVKspDxAarjSn0xXNFB+
-QClDTrB22Qv1ORFOlD3jSi0aDANCP9dEur0WVJvikVad4k1cda9rEYhXr957WV6f
-3JuAcAKP13UnzLBDupeTdUJ5LljESTPjndBfkCr0lIqESUTQi7DY6D1lu6wihjHO
-ZeXYeuRyVfWqjZsP4aLnAH0E+DGYSvaFxddQFLOhILEvVu8qCbnmPJmR8uIG5eTP
-bR0QerqyLLoyvQ==
-=MTvu
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY9UZqwAKCRA6cBh0uS2t
+rBxoAP0cbq7hs6/E0Xww1WyBoVO/koarQuFXB5dQjh+u7148WAD+IB9ZdSVQzt5f
+ogltg73yhQG8hmRf64y75STgSRlB6Qc=
+=/DWr
 -----END PGP SIGNATURE-----
---=-=-=--
+
+--H5r5tXaizAjuuM7h--
