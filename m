@@ -2,46 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6D9667F523
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 07:06:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A240467F52F
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 07:25:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229883AbjA1GGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 01:06:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34896 "EHLO
+        id S230025AbjA1GZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 01:25:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229540AbjA1GGv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 01:06:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2677C31E;
-        Fri, 27 Jan 2023 22:06:50 -0800 (PST)
+        with ESMTP id S229530AbjA1GZK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 01:25:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97D12518DD;
+        Fri, 27 Jan 2023 22:25:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9DD0B821EF;
-        Sat, 28 Jan 2023 06:06:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04233C433EF;
-        Sat, 28 Jan 2023 06:06:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CBFD60CBA;
+        Sat, 28 Jan 2023 06:25:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1590FC433D2;
+        Sat, 28 Jan 2023 06:25:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674886008;
-        bh=cCghuNYffKQu60ysymDGhz6B5xEH3az0BIqTSBRNr6E=;
+        s=k20201202; t=1674887108;
+        bh=Umq2aUXuK9lTmblhHQPleWfHoZUAvv9+MtmiHIjdEvY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=C8Az1qnyESWc/tN/73/qnLWbaN54Ma0Nc9RopFVSulLc+S+vGlxmfvoGO4VCVX297
-         wdDM64PHnGVXmN93XeKypjo80C9uYcj/Yls/aw6aLvMRbcisEvKy5RapiNz3pRfBGm
-         DHT5pX70YPDZR0BIHFdZ9yiwtHe74LqMM8edlTfpE1YXUjDfU7HJv7+kDh83gYvscW
-         EgQE+6dmfdtS/Lx6C09QbkNC4u2mcgwXi5+uTeLTkN3zweqHu+Q3kuFBrLK1maXGZa
-         pnaicXL6nuX2YI3xIxsaC8m+Ozv5p0q53/Nt/FfAmUBA6ipbf088GRqfFD/hqqZ36d
-         aIUUiHpD3KL5g==
-Date:   Fri, 27 Jan 2023 22:06:46 -0800
+        b=Nj/BiMD0JZkGPM54uzRsSL3dXml8GVuoWpXqrscvjyHvwi7wttjKj53JcENQbZ89m
+         kG7To/Jk8anW6FHlf/A8nAXFJqJdvFo3qsPC/qCX1gKwUEz2g/MQie8q197uAmMQ+O
+         Ffaoeu3QxyxTmcjRj6PiFvRsp7XS1Fbi7B8eBWVCO/ITOjO9c9mm5lgzs2mgZ1ITMl
+         wnixV8jY+OuzZgegfw5QHYWUry5sySlA7r96KA0CtWMJEtfNs+4D4hPgO7Fk2qYWlP
+         KjG877t1n2Iwm27KqpgKHbLS/5A+7TWkI+0VtJ51TheLvw5vqEuD3Z4SlgEVhJlcqa
+         3kPAhmU/UaTKQ==
+Date:   Fri, 27 Jan 2023 22:25:07 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, Karsten Keil <isdn@linux-pingi.de>,
-        isdn4linux@listserv.isdn4linux.de, netdev@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Subject: Re: [PATCH 13/35] Documentation: isdn: correct spelling
-Message-ID: <20230127220646.2345909b@kernel.org>
-In-Reply-To: <20230127064005.1558-14-rdunlap@infradead.org>
-References: <20230127064005.1558-1-rdunlap@infradead.org>
-        <20230127064005.1558-14-rdunlap@infradead.org>
+To:     Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20230127222507.29c9ffb2@kernel.org>
+In-Reply-To: <1de50d67-1c1d-bf5e-5409-d0cc19aeda73@tessares.net>
+References: <20230127123604.36bb3e99@canb.auug.org.au>
+        <1de50d67-1c1d-bf5e-5409-d0cc19aeda73@tessares.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,15 +57,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 26 Jan 2023 22:39:43 -0800 Randy Dunlap wrote:
-> Correct spelling problems for Documentation/isdn/ as reported
-> by codespell.
+On Fri, 27 Jan 2023 11:39:41 +0100 Matthieu Baerts wrote:
+> On 27/01/2023 02:36, Stephen Rothwell wrote:
+> > Hi all,
+> > 
+> > Today's linux-next merge of the net-next tree got a conflict in:
+> > 
+> >   drivers/net/ethernet/engleder/tsnep_main.c
+> > 
+> > between commit:
+> > 
+> >   3d53aaef4332 ("tsnep: Fix TX queue stop/wake for multiple queues")
+> > 
+> > from the net tree and commit:
+> > 
+> >   25faa6a4c5ca ("tsnep: Replace TX spin_lock with __netif_tx_lock")
+> > 
+> > from the net-next tree.  
 > 
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Karsten Keil <isdn@linux-pingi.de>
-> Cc: isdn4linux@listserv.isdn4linux.de
-> Cc: netdev@vger.kernel.org
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: linux-doc@vger.kernel.org
+> Thank you for the proposed patch. I had the same conflict on my side
+> with MPTCP when merging net-next with -net and your fix seems to do the
+> job correctly!
+> 
+> Tested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+BTW would it be possible to get these in form of rr-cache?
+Or otherwise to import the resolution without fetching all objects 
+from your trees?
