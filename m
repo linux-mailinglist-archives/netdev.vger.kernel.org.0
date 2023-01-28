@@ -2,182 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54A3867F824
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 14:38:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47C9267F827
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 14:38:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234419AbjA1Nh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 08:37:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39514 "EHLO
+        id S234435AbjA1Nih (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 08:38:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231528AbjA1Nh4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 08:37:56 -0500
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C70126E4
-        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 05:37:54 -0800 (PST)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-501c3a414acso102882957b3.7
-        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 05:37:54 -0800 (PST)
+        with ESMTP id S231528AbjA1Nig (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 08:38:36 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2356A1DB8B;
+        Sat, 28 Jan 2023 05:38:35 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id j5so7203809pjn.5;
+        Sat, 28 Jan 2023 05:38:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=1q7pDePeyyn2r0rDBys5viWwLXUR3r2mrQ6UpqXoxos=;
-        b=kehx3r4WOHv+k0+gUdgZr7EyDmYfxNZsktJsUY+gGaFo6r/FrI1LBx97JjfXsNMHQZ
-         00unHEMKH/sXZNp8tEju1Niyz0l4yANUVOQXQsZOdvCDnhH7tKslprq3g2ATnIod3cCe
-         sfAkaUb1blSc45hl7pQvBoIXCAoPN5jN3Oe9n+Oxhd1AW+tIYtTEKUinuWlM3TnfTpcD
-         kDrhOOGKJ7VWGR6OhTgfnlazo+StqmX0AxWL6aa3F1LR9BxgdLQ3YpLoe9CmRI7Stg6n
-         fVMC8q/KpDBfS8KCwtTA4tMPw1inNcTX9j9xHcAmSjKgwXbaK6OXzxQY/h6mW9f/aQ5q
-         J30A==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:from:to:cc:subject:date:message-id:reply-to;
+        bh=oI2APnegFeFVqcu8G9tQYKXTxS90VVWctbcguXYfrxQ=;
+        b=Gvwk+EJXQDGb4Jv1jmrDlg56eNAkoVLc5Hl30vFIACswLRt1GmqdkkHT1ABr1Y02HY
+         w4+GsaEd1fTO9OG39Unx1ugbSBuA2f6rHdS0wXlx1pfj+PZXEDgKqpS4jrsIZEwVwMoz
+         3j0Uf+ZuIFsffQ++UsMxkegvgtIZ2C2FpSyr5srvCKvrtop/SuJjyOSZhRlxtsi9sris
+         iaeHJHA3CCr5VpLlctPFP6Onm3CaimGo7elxL36TQQIade4/nq6UX3wBBMOfoLuL/snW
+         Fpz5tW95X81w17JtHvUajVtHFs/MbM94Uz3dabqJJbD/PLm94D8ZFiTVlIoOkzoIxTpL
+         SU8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=1q7pDePeyyn2r0rDBys5viWwLXUR3r2mrQ6UpqXoxos=;
-        b=YQ1CVxUg34a19cMjkYVtoBLaKoftKlYnMrW8xwybdGHtiivnqYtJFxnDVQEyuVUhfU
-         FR5u7C+nFSS4DQOv3IxwHpQuriXmS+7zxM0Ou2Nn90zF1iZ+yP8f3vKPCZuT/ewIVb/G
-         NuOLxLYepMpnVqCszOrfKfZWnR1jgmwi3n+hqeZuwF24BK++Ysr3NdA3+WbyM/dzd3O3
-         3sfPOK79XEKFbeD42bhqLKP5KR2Ix5vpIopjuF3ocTbRy6PxQwm5JJ+cbS8cTBb01TZ/
-         9Z0ugQDcmTE2K/AU64TJ7Kz8OaDnGrba+VMgReWulcEDzCHPxEdCfuY+f1DTYi0LZSxG
-         FalA==
-X-Gm-Message-State: AFqh2koxj8rCqPC9p39A0aTehoCr3KZOVMnp1az9mkdcHXmMF8zkZ0vs
-        UjuSIfLsC49UAnt9zUlIZRwrNE2XQv2VWwXKAAdsCg==
-X-Google-Smtp-Source: AMrXdXsfNnkuIvLTU9UFlqX3h+pL87X7qR9d8EbXrUZszslsIUIS59VzZLvwVmzUUzq7EP6HDdk0gCFCzp8xoZFQ6Is=
-X-Received: by 2002:a81:4d57:0:b0:4fe:8e35:3c89 with SMTP id
- a84-20020a814d57000000b004fe8e353c89mr3240232ywb.287.1674913073682; Sat, 28
- Jan 2023 05:37:53 -0800 (PST)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=oI2APnegFeFVqcu8G9tQYKXTxS90VVWctbcguXYfrxQ=;
+        b=RYmbEyJhijtRbBJWY4NBuhikU1fTVWpPdL7N3nj0N8nGdtNcxDVoizBTU6Wqyox46o
+         DneV8p5+yjZNKkfIaolgBUzkRiYAIrOnA03+UXfBm6ljbULlUDV5cwV1LXsNkqJi1L9V
+         GpRz8+L7M4nIRaZ6qYCyWXU1MWiQJWi4FFrQUyENuS7EVJAoXvgrpHqyCv61WHkqEv+E
+         8FmROqcVx+u5X3C3ipYOc8TJounuAQqK6pa685KSoNvQk/1iU9Q8jqKu/K6l0amMC523
+         826inQmM6OaAHw3JLoGW+X8ClzDabef+CT2v3dNeY5Aj+MpR1ViE2bxjg5MAL9ShTQkc
+         2GKg==
+X-Gm-Message-State: AO0yUKVjh5aYfiN7NtWz5ad1c9aC6Az8tHqihoAiBxEc6lX3VIa6OsaE
+        Kgfc7Hof15aC7CuDc4tzY25xeUu/Zxo=
+X-Google-Smtp-Source: AK7set/0vBQG+NtXhM10Q+4wEzG/Yp4BrGfPUAFF9+oLD7/VHcbAUHHnrDrf77a8DEl9Oot2V1Ewaw==
+X-Received: by 2002:a05:6a20:698b:b0:b5:e639:2833 with SMTP id t11-20020a056a20698b00b000b5e6392833mr2718382pzk.20.1674913114209;
+        Sat, 28 Jan 2023 05:38:34 -0800 (PST)
+Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
+        by smtp.gmail.com with ESMTPSA id a69-20020a621a48000000b00590163e1762sm3604391pfa.200.2023.01.28.05.38.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 Jan 2023 05:38:33 -0800 (PST)
+Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     linux-can@vger.kernel.org
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH] can: etas_es58x: do not send disable channel command if device is unplugged
+Date:   Sat, 28 Jan 2023 22:38:15 +0900
+Message-Id: <20230128133815.1796221-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-References: <20230124170346.316866-1-jhs@mojatatu.com> <20230126153022.23bea5f2@kernel.org>
- <Y9QXWSaAxl7Is0yz@nanopsycho> <CAAFAkD8kahd0Ao6BVjwx+F+a0nUK0BzTNFocnpaeQrN7E8VRdQ@mail.gmail.com>
- <Y9RPsYbi2a9Q/H8h@google.com> <CAM0EoM=ONYkF_1CST7i_F9yDQRxSFSTO25UzWJzcRGa1efM2Sg@mail.gmail.com>
- <CAKH8qBtU-1A1iKnvTXV=5v8Dim1FBmtvL6wOqgdspSFRCwNohA@mail.gmail.com>
-In-Reply-To: <CAKH8qBtU-1A1iKnvTXV=5v8Dim1FBmtvL6wOqgdspSFRCwNohA@mail.gmail.com>
-From:   Willem de Bruijn <willemb@google.com>
-Date:   Sat, 28 Jan 2023 08:37:16 -0500
-Message-ID: <CA+FuTScHsm3Ajje=ziRBafXUQ5FHHEAv6R=LRWr1+c3QpCL_9w@mail.gmail.com>
-Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jamal Hadi Salim <hadi@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel@mojatatu.com, deb.chatterjee@intel.com,
-        anjali.singhai@intel.com, namrata.limaye@intel.com,
-        khalidm@nvidia.com, tom@sipanda.io, pratyush@sipanda.io,
-        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, vladbu@nvidia.com, simon.horman@corigine.com,
-        stefanc@marvell.com, seong.kim@amd.com, mattyk@nvidia.com,
-        dan.daly@intel.com, john.andy.fingerhut@intel.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 27, 2023 at 7:48 PM Stanislav Fomichev <sdf@google.com> wrote:
->
-> On Fri, Jan 27, 2023 at 3:27 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
-> >
-> > On Fri, Jan 27, 2023 at 5:26 PM <sdf@google.com> wrote:
-> > >
-> > > On 01/27, Jamal Hadi Salim wrote:
-> > > > On Fri, Jan 27, 2023 at 1:26 PM Jiri Pirko <jiri@resnulli.us> wrote:
-> > > > >
-> > > > > Fri, Jan 27, 2023 at 12:30:22AM CET, kuba@kernel.org wrote:
-> > > > > >On Tue, 24 Jan 2023 12:03:46 -0500 Jamal Hadi Salim wrote:
-> > > > > >> There have been many discussions and meetings since about 2015 in
-> > > > regards to
-> > > > > >> P4 over TC and now that the market has chosen P4 as the datapath
-> > > > specification
-> > > > > >> lingua franca
-> > > > > >
-> > > > > >Which market?
-> > > > > >
-> > > > > >Barely anyone understands the existing TC offloads. We'd need strong,
-> > > > > >and practical reasons to merge this. Speaking with my "have suffered
-> > > > > >thru the TC offloads working for a vendor" hat on, not the "junior
-> > > > > >maintainer" hat.
-> > > > >
-> > > > > You talk about offload, yet I don't see any offload code in this RFC.
-> > > > > It's pure sw implementation.
-> > > > >
-> > > > > But speaking about offload, how exactly do you plan to offload this
-> > > > > Jamal? AFAIK there is some HW-specific compiler magic needed to generate
-> > > > > HW acceptable blob. How exactly do you plan to deliver it to the driver?
-> > > > > If HW offload offload is the motivation for this RFC work and we cannot
-> > > > > pass the TC in kernel objects to drivers, I fail to see why exactly do
-> > > > > you need the SW implementation...
-> > >
-> > > > Our rule in TC is: _if you want to offload using TC you must have a
-> > > > s/w equivalent_.
-> > > > We enforced this rule multiple times (as you know).
-> > > > P4TC has a sw equivalent to whatever the hardware would do. We are
-> > > > pushing that
-> > > > first. Regardless, it has value on its own merit:
-> > > > I can run P4 equivalent in s/w in a scriptable (as in no compilation
-> > > > in the same spirit as u32 and pedit),
-> > > > by programming the kernel datapath without changing any kernel code.
-> > >
-> > > Not to derail too much, but maybe you can clarify the following for me:
-> > > In my (in)experience, P4 is usually constrained by the vendor
-> > > specific extensions. So how real is that goal where we can have a generic
-> > > P4@TC with an option to offload? In my view, the reality (at least
-> > > currently) is that there are NIC-specific P4 programs which won't have
-> > > a chance of running generically at TC (unless we implement those vendor
-> > > extensions).
-> >
-> > We are going to implement all the PSA/PNA externs. Most of these
-> > programs tend to
-> > be set or ALU operations on headers or metadata which we can handle.
-> > Do you have
-> > any examples of NIC-vendor-specific features that cant be generalized?
->
-> I don't think I can share more without giving away something that I
-> shouldn't give away :-)
-> But IIUC, and I might be missing something, it's totally within the
-> standard for vendors to differentiate and provide non-standard
-> 'extern' extensions.
-> I'm mostly wondering what are your thoughts on this. If I have a p4
-> program depending on one of these externs, we can't sw-emulate it
-> unless we also implement the extension. Are we gonna ask NICs that
-> have those custom extensions to provide a SW implementation as well?
-> Or are we going to prohibit vendors to differentiate that way?
->
-> > > And regarding custom parser, someone has to ask that 'what about bpf
-> > > question': let's say we have a P4 frontend at TC, can we use bpfilter-like
-> > > usermode helper to transparently compile it to bpf (for SW path) instead
-> > > inventing yet another packet parser? Wrestling with the verifier won't be
-> > > easy here, but I trust it more than this new kParser.
-> > >
-> >
-> > We dont compile anything, the parser (and rest of infra) is scriptable.
->
-> As I've replied to Tom, that seems like a technicality. BPF programs
-> can also be scriptable with some maps/tables. Or it can be made to
-> look like "scriptable" by recompiling it on every configuration change
-> and updating it on the fly. Or am I missing something?
->
-> Can we have a P4TC frontend and whenever configuration is updated, we
-> upcall into userspace to compile this whatever p4 representation into
-> whatever bpf bytecode that we then run. No new/custom/scriptable
-> parsers needed.
+When turning the network interface down, es58x_stop() is called and
+will send a command to the ES58x device to disable the channel
+c.f. es58x_ops::disable_channel().
 
-I would also think that if we need another programmable component in
-the kernel, that this would be based on BPF, and compiled outside the
-kernel.
+However, if the device gets unplugged while the network interface is
+still up, es58x_ops::disable_channel() will obviously fail to send the
+URB command and the driver emits below error message:
 
-Is the argument for an explicit TC objects API purely that this API
-can be passed through to hardware, as well as implemented in the
-kernel directly? Something that would be lost if the datapath is
-implement as a single BPF program at the TC hook.
+  es58x_submit_urb: USB send urb failure: -ENODEV
 
-Can you elaborate some more why this needs yet another in-kernel
-parser separate from BPF? The flow dissection case is solved fine by
-the BPF flow dissector. (I also hope one day the kernel can load a BPF
-dissector by default and we avoid the majority of the unsafe C code
-entirely.)
+Check the usb device state before sending the disable channel command
+in order to silence above error message.
+
+Update the documentation of es58x_stop() accordingly.
+
+The check being added in es58x_stop() is:
+
+  	if (es58x_dev->udev->state >= USB_STATE_UNAUTHENTICATED)
+
+This is just the negation of the check done in usb_submit_urb()[1].
+
+[1] usb_submit_urb(), verify usb device's state.
+Link: https://elixir.bootlin.com/linux/v6.1/source/drivers/usb/core/urb.c#L384
+
+Fixes: 8537257874e9 ("can: etas_es58x: add core support for ETAS ES58X CAN USB interfaces")
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
+As far as I know, there doesn't seem to be an helper function to check
+udev->state values. If anyone is aware of such helper function, let me
+know..
+---
+ drivers/net/can/usb/etas_es58x/es58x_core.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
+index 3e87f4c1547c..916bd9e2e9ea 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_core.c
++++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
+@@ -1817,9 +1817,10 @@ static int es58x_open(struct net_device *netdev)
+  * es58x_stop() - Disable the network device.
+  * @netdev: CAN network device.
+  *
+- * Called when the network transitions to the down state. If all the
+- * channels of the device are closed, free the URB resources which are
+- * not needed anymore.
++ * Called when the network interface transitions to the down
++ * state. Send a disable command to the device if it is still
++ * connected. If all the channels of the device are closed, free the
++ * URB resources which are not needed anymore.
+  *
+  * Return: zero on success, errno when any error occurs.
+  */
+@@ -1830,9 +1831,12 @@ static int es58x_stop(struct net_device *netdev)
+ 	int ret;
+ 
+ 	netif_stop_queue(netdev);
+-	ret = es58x_dev->ops->disable_channel(priv);
+-	if (ret)
+-		return ret;
++
++	if (es58x_dev->udev->state >= USB_STATE_UNAUTHENTICATED) {
++		ret = es58x_dev->ops->disable_channel(priv);
++		if (ret)
++			return ret;
++	}
+ 
+ 	priv->can.state = CAN_STATE_STOPPED;
+ 	es58x_can_reset_echo_fifo(netdev);
+-- 
+2.39.1
+
