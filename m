@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52ED667F925
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 16:32:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC75567F933
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 16:34:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234315AbjA1PcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 10:32:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53150 "EHLO
+        id S233962AbjA1Pep (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 10:34:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229894AbjA1PcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 10:32:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1669623DAD;
-        Sat, 28 Jan 2023 07:32:19 -0800 (PST)
+        with ESMTP id S229579AbjA1Pem (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 10:34:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B38426593;
+        Sat, 28 Jan 2023 07:34:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A37BEB80919;
-        Sat, 28 Jan 2023 15:32:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0C1EC433EF;
-        Sat, 28 Jan 2023 15:32:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D74CDB80AFC;
+        Sat, 28 Jan 2023 15:34:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD3AFC433D2;
+        Sat, 28 Jan 2023 15:34:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674919937;
-        bh=6bUIRH8u5Cxb143fKnG2xu5Mame0Rqrt7wtVXi/pBI0=;
+        s=k20201202; t=1674920078;
+        bh=9p78P6cXR1b4UU7LmDHxucqXQwLRZGC/wmG/lLypzGo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=B/UHPiLasadsoRWpYuGJDp1GLMSeZmlfVRTmB/u7+euzi1jGnfanl6/0d+JYc2Anh
-         w7UO6aa2RsLgUjI1TkHXjO36kqVYHhfXz/NCtaRI8OBIp/Q2pEZFlv4mub7gKuB0qI
-         1Mc7qpLn6KKILoT9rYANmy7LzgbATjPALJjEwNQejFsO1M7vRDp0lv6AF9qG6JMfUy
-         5lpHy0ZUkiHDj2il7+hETu3TJKnGEz59b4YBLnwu8O8u6aCEuUKLoI0SiudsfUi4Fr
-         1BAyerZrGeDn7mhab+7xjaNDPuPf2DsSywJWmBDFLs9BxgUuYRquba0R/ZzEBRsQJE
-         Hlj1/II1JU4cQ==
-Date:   Sat, 28 Jan 2023 15:46:06 +0000
+        b=Sy0kkDvx7E1gVGfY9fcdg6jg5BXRuQjvDhZ65C8k3WA9gemy6YC6wX3Gx8hJ6J27H
+         8x4NyS2i9dc7yo7IjeKLfkJbdrwJvnmDYjTa4VHC3ZyoFewAW5vk21MiodWH4XZwsX
+         hne0KUqKUSiitaWQeznzMa5EsGNKQWvl+kY3QxWw+anNiuYxGsLpiX903y2CKtuGcp
+         1fpsi44mIXd51SeVfoW/J74LAmTLYdVHs6Gm3e4i8FSUlAL+oM3JvIYVMzXpMO2fFv
+         E1feNPP7OEIcUHmrswPBcbUTonWBEPjeef08rq4yiie66P9WWGcsokUtwiNIK3F1g9
+         /JHmxQiRyr/aQ==
+Date:   Sat, 28 Jan 2023 15:48:27 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Gatien Chevallier <gatien.chevallier@foss.st.com>
 Cc:     <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
@@ -50,19 +50,19 @@ Cc:     <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
         <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
         <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
         <linux-phy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>
-Subject: Re: [PATCH v3 2/6] dt-bindings: treewide: add feature-domains
- description in binding files
-Message-ID: <20230128154606.18b70629@jic23-huawei>
-In-Reply-To: <20230127164040.1047583-3-gatien.chevallier@foss.st.com>
+        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        Loic PALLARDY <loic.pallardy@st.com>
+Subject: Re: [PATCH v3 3/6] dt-bindings: bus: add STM32 System Bus
+Message-ID: <20230128154827.4f23534e@jic23-huawei>
+In-Reply-To: <20230127164040.1047583-4-gatien.chevallier@foss.st.com>
 References: <20230127164040.1047583-1-gatien.chevallier@foss.st.com>
-        <20230127164040.1047583-3-gatien.chevallier@foss.st.com>
+        <20230127164040.1047583-4-gatien.chevallier@foss.st.com>
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,72 +70,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 Jan 2023 17:40:36 +0100
+On Fri, 27 Jan 2023 17:40:37 +0100
 Gatien Chevallier <gatien.chevallier@foss.st.com> wrote:
 
-> feature-domains is an optional property that allows a peripheral to
-> refer to one or more feature domain controller(s).
-> 
-> Description of this property is added to all peripheral binding files of
-> the peripheral under the STM32 System Bus. It allows an accurate
-> representation of the hardware, where various peripherals are connected
-> to this firewall bus. The firewall can then check the peripheral accesses
-> before allowing it to probe.
+> Document STM32 System Bus. This bus is intended to control firewall
+> access for the peripherals connected to it.
 > 
 > Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
+> Signed-off-by: Loic PALLARDY <loic.pallardy@st.com>
+Trivial comment on formatting.
 
-There was probably a cleaner way to ensure that this could go via the various
-subsystem trees, but hopefully there won't be any clashes with other work going in
-and if there is, the resolution should be simple. Hence I'm fine with
-this going via the dt tree.
-
-So for the IIO ones below,
-
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-
-> diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
-> index 1c340c95df16..c68b7b0e1903 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
-> @@ -93,6 +93,11 @@ properties:
->    '#size-cells':
->      const: 0
->  
-> +  feature-domains:
-> +    $ref: /schemas/feature-controllers/feature-domain-controller.yaml#/properties/feature-domains
-> +    minItems: 1
-> +    maxItems: 3
 > +
->  allOf:
->    - if:
->        properties:
-> diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
-> index 1970503389aa..d01f60765e48 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
-> @@ -59,6 +59,11 @@ properties:
->        If not, SPI CLKOUT frequency will not be accurate.
->      maximum: 20000000
->  
-> +  feature-domains:
-> +    $ref: /schemas/feature-controllers/feature-domain-controller.yaml#/properties/feature-domains
-> +    minItems: 1
-> +    maxItems: 3
+> +examples:
+> +  - |
+> +    // In this example, the rng1 device refers to etzpc as its domain controller.
+> +    // Same goes for fmc.
+> +    // Access rights are verified before creating devices.
 > +
->  required:
->    - compatible
->    - reg
-> diff --git a/Documentation/devicetree/bindings/iio/dac/st,stm32-dac.yaml b/Documentation/devicetree/bindings/iio/dac/st,stm32-dac.yaml
-> index 0f1bf1110122..f6fe58d2f9b8 100644
-> --- a/Documentation/devicetree/bindings/iio/dac/st,stm32-dac.yaml
-> +++ b/Documentation/devicetree/bindings/iio/dac/st,stm32-dac.yaml
-> @@ -45,6 +45,11 @@ properties:
->    '#size-cells':
->      const: 0
->  
-> +  feature-domains:
-> +    $ref: /schemas/feature-controllers/feature-domain-controller.yaml#/properties/feature-domains
-> +    minItems: 1
-> +    maxItems: 3
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/clock/stm32mp1-clks.h>
+> +    #include <dt-bindings/reset/stm32mp1-resets.h>
 > +
->  additionalProperties: false
+> +    etzpc: bus@5c007000 {
+> +        compatible = "st,stm32mp15-sys-bus";
+> +        reg = <0x5c007000 0x400>;
+> +        #address-cells = <1>;
+> +        #size-cells = <1>;
+> +        ranges;
+> +        feature-domain-controller;
+> +        #feature-domain-cells = <1>;
+> +
+> +        rng1: rng@54003000 {
+
+Odd mixture of 4 spacing and 2 spacing in this example.
+I'd suggest one or the other (slight preference for 4 space indents).
+
+
+> +          compatible = "st,stm32-rng";
+> +          reg = <0x54003000 0x400>;
+> +          clocks = <&rcc RNG1_K>;
+> +          resets = <&rcc RNG1_R>;
+> +          feature-domains = <&etzpc 7>;
+> +          status = "disabled";
+> +        };
