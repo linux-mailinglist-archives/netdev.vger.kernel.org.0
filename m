@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2E4567F7BB
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 13:05:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8558067F7BC
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 13:05:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234050AbjA1MFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 07:05:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46422 "EHLO
+        id S234054AbjA1MFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 07:05:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232477AbjA1MFc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 07:05:32 -0500
+        with ESMTP id S232477AbjA1MFo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 07:05:44 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3455A79099
-        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 04:05:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60F27790BE
+        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 04:05:43 -0800 (PST)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1674907530;
+        s=2020; t=1674907541;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Ygm3Nxkk5pa+SLI1ONz6czhMycSkh9RzC+1YpRQd/7A=;
-        b=Qn7lIRMU/byGZbGBfmFyvCglFad/Dt5IUCkogPVgB6MFmnoLu/yt7mPLnsXXw+nmJ0UA/+
-        WGAv+jLhFCmONw2j6cvNDOyK9A3Aw+UxBl/5wPLSio8v/KmRxR5cofypvqLxVdo3AP5cIr
-        XaSUWvD49uRkUkOyj84Lx5gR/wt/QvdXkjCXzJ486YftQ0kT+EvqalqfYWjdoHs1mvYFX0
-        aIb4CInex/taewD6iWiiYL0mRUtcpCbIDhItcd/LWUEP4mWfqgfBaYOnS5wD413V8W8jq0
-        NsLo+Sz8mULwdB25Xa7Rho/EybU0MmaCTN3e3TfeIPI81oOWxl8RCNCJzjcSzw==
+        bh=1wMoI9B260N8M/m/LDN4UKduCekJ4x1ZgJ0t5YYP2tA=;
+        b=u8neHnjOC5LLSjL9zcw4VyPyg2SPzwotXa2ZH4/t0n3XVsgOzzHEnLmceLd4iIzNUSKcNw
+        xDnpJjyq8BpZ/0nnYRLw21Fbminxna6qcTXYFezQBbL3l9DGy2IcwV3pdW4SlwFocyzb88
+        O/34X+VKiSarBQQC9HxUwRieWaXxzWEWZskSibqhFzSKuJ0MHe3lbS7PSQVf8amNm8n75x
+        BocqPu9BCv++Hp1zn28NIKgIihI9HBx3OOQ6DITW42RK8IlT39Sg/YEXcQWKmIRn3cabK5
+        w89XAToR2keXoLHL6nqKpI5G6hbA0ZBRKLKakwWOx7gaFPEBVuEvHJuKjpwhLQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1674907530;
+        s=2020e; t=1674907541;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Ygm3Nxkk5pa+SLI1ONz6czhMycSkh9RzC+1YpRQd/7A=;
-        b=GWoc8S/gEFzoSeQ3X/s9v5ABbak8ee42DHUJV09b0/QxGLCNksskfJaKuks6w75cPn8Xlg
-        ZYM7hspO9jouZqDg==
+        bh=1wMoI9B260N8M/m/LDN4UKduCekJ4x1ZgJ0t5YYP2tA=;
+        b=+FX981rEzA0Ro64lYWHRdmsHjMivfwRZJV9b1wxfcJJmPNe7ivxarShzpYZOx3biz4vjlo
+        XXiL7XTbe4HuujBQ==
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
 Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Subject: Re: [RFC PATCH net-next 07/15] net/sched: taprio: rename close_time
- to end_time
-In-Reply-To: <20230128010719.2182346-8-vladimir.oltean@nxp.com>
+Subject: Re: [RFC PATCH net-next 08/15] net/sched: taprio: calculate budgets
+ per traffic class
+In-Reply-To: <20230128010719.2182346-9-vladimir.oltean@nxp.com>
 References: <20230128010719.2182346-1-vladimir.oltean@nxp.com>
- <20230128010719.2182346-8-vladimir.oltean@nxp.com>
-Date:   Sat, 28 Jan 2023 13:05:29 +0100
-Message-ID: <87edrevp86.fsf@kurt>
+ <20230128010719.2182346-9-vladimir.oltean@nxp.com>
+Date:   Sat, 28 Jan 2023 13:05:40 +0100
+Message-ID: <87bkmivp7v.fsf@kurt>
 MIME-Version: 1.0
 Content-Type: multipart/signed; boundary="=-=-=";
         micalg=pgp-sha512; protocol="application/pgp-signature"
@@ -59,17 +59,16 @@ X-Mailing-List: netdev@vger.kernel.org
 Content-Type: text/plain
 
 On Sat Jan 28 2023, Vladimir Oltean wrote:
-> There is a confusion in terms in taprio which makes what is called
-> "close_time" to be actually used for 2 things:
+> Currently taprio assumes that the budget for a traffic class expires at
+> the end of the current interval as if the next interval contains a "gate
+> close" event for this traffic class.
 >
-> 1. determining when an entry "closes" such that transmitted skbs are
->    never allowed to overrun that time (?!)
-> 2. an aid for determining when to advance and/or restart the schedule
->    using the hrtimer
+> This is, however, an unfounded assumption. Allow schedule entry
+> intervals to be fused together for a particular traffic class by
+> calculating the budget until the gate *actually* closes.
 >
-> It makes more sense to call this so-called "close_time" "end_time",
-> because it's not clear at all to me what "closes". Future patches will
-> hopefully make better use of the term "to close".
+> This means we need to keep budgets per traffic class, and we also need
+> to update the budget consumption procedure.
 >
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
@@ -80,19 +79,19 @@ Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmPVD4kTHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRDBk9HyqkZzgrsLD/9xcZXfYKg1q1KdnQt1GZhkjmeFRbnW
-jsvrvRwY8gn0NByN1di1v+dBweMjn29eHc7yJfwotQ/qpYDfvcAztM8X1c6qP+OK
-iTKl9BlATfBDC/RNEChf4Zn9LldviAPHas4ECg5TuClOoXGqJ8b3EG8nL5Mxp0yt
-zezRkz8zLToBmPbkG5ErKqjquHTdNoZ9QmBabLMBrdxYI+BRZcY5eHXgkYjSBh6D
-BA/IlymKh3RKj6H6749PGa+7BSfQ6IxdA/y4gCP/yMbFdUux6okQGcgk4LUhoB7v
-/3fOW4w5l+uPe9aydNKEPFSPXY6k/7bh9mVKWD0+akl34Mm4xyQwYFAO7/m/5kN9
-kE7wgW+wnQWowxE323pDiuQbTVBUPcu5Gp53yIrm3sVDprR3PvWzLSRMCidBfxTp
-1ogLfTinyCK6wtMdtUOSq1a4YtQBrv2a9ev6JR3jueDZOIcrw1DWdH69tS25A8a7
-3RRfSRXTWvzIUN9AwKeRDM0atgQBpzXpcAvhj+Q3yeBxb7saXHTZKrkErNBJfl+S
-N0/90Sr9NnDObiIe/BBT+PAyCkd9HZRghmiaeppFurSqCggZMJOi2R0zbHOL88YL
-xT1b+Bc/Blh6yF3F5B+9SBYMUez4W5r/M/ksRJsW5PVFJNsTExlxFqSKUWdQxh6O
-BB14JAOVEEGpCQ==
-=oehW
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmPVD5QTHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzgi/gD/94hzFICLjcizrxlrZHI5qKKa53Wetn
+KC/nZWNXbzBl1nzVTXHG84vOPITgO0YKZXp1BfCaJOOmTNTQ8F/b9df/YF3Amdvl
+PXgnkMqM7A4SMTPQkV94shlFPEzCSEDAHwZQEwUvpOgmoRV2BsLZSJg4j09bu5Wv
+1Y+O7y31dx2Z7V7zq+sJtuIT5XIknGa9vHHTRxAmrENOZ1kVxPws2lYVrfCR6Xji
+x5yKp9CLSx32ADuUvyCxKqRy5zEwY/21xRZzdVUHVbC47AK3Cfv8tQpGtxS+9C8X
+0f4CXHZ9fxncLjbT3xDYp3j63eubHuc3vDS1L1PW3d1Q7qEWjQlIGLexuwutlzun
+JcBbcWtuaLeE0BYF9KBpMYP0xn8/cC5wJ1cF6/UEcpzt/jp5xCJZSVF1B1OqH3Tv
+woMSBMeFWBhhUbAXAN5iQeijCM59TgC10osIv4gBsb5wOUVhIUc0aFjHkMzKzLHm
+/YjBaA7P3XFHo4fISwyszubycVq0DnF0R6pmpGmgs94btM6t5+Huxm9BceCsFz3W
+M6TQxWn1Wo2dKl6yh1MRc01EHpg1YClzWO4wlJ1reRqheFANw+oskphSuEC39VfZ
+eY0r5hp3d8tks5uzP/NtAa+P7ukSexVTJ/oBESDOpIsc9+bstxiYesGgjoM1Anh/
+WcsN9KWANjh2PQ==
+=iaKc
 -----END PGP SIGNATURE-----
 --=-=-=--
