@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AC5367F7B8
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 13:04:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FA6067F7BA
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 13:05:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234034AbjA1MEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 07:04:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46078 "EHLO
+        id S233973AbjA1MFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 07:05:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233973AbjA1MEk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 07:04:40 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EDE790A2
-        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 04:04:39 -0800 (PST)
+        with ESMTP id S232477AbjA1MFN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 07:05:13 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A742F34311
+        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 04:05:12 -0800 (PST)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1674907478;
+        s=2020; t=1674907511;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=5AotKWJ56DuXwWarl6aYeMKXu6k5f8gViBw8hYDWfFE=;
-        b=gfhF3yN5Da0HKgRXW4nV3iaDaE/VGshSpsRXf4891N5MHLv6gMB6DlUl/RR1UJa52H9USU
-        oHns8/ZY6Bbaim+ceX2poIqfdpZpbk0+TwVInNGfCkl7Z7c8YuFg2FZ80ACOhxJ/E0DfLe
-        uXw2Lo2ejGSwBMz1TUYvb3ErbOjw/jV/VImOcNJCSznADucDW/5sg5jZ8ySH0t6d72bP4T
-        kk8yNZVvDllilQw7YwhZ9Wkvzz0dZdG/qmTB9He4c4SuX49eY1KIt21UrtQ5UgeNct6Y9O
-        x2gFrv8E6ft+LeI4NeRIvS1lpQ50Pcc5xigATJNHaCuceqOE/mrbMZnHXUGgNQ==
+        bh=O2uDKmODwmxdpe/qs+XoVbGVsSu3BZpb5VjANJEX830=;
+        b=jBy4LIa76ZtxEx/gFiIdtRbK6yeA39IWqAJ9nsO6JJM7RBJWgcDHGOMqRr30UnrD4rhUks
+        wjLWrl/iyqw7FpPyhv5s7Dv+hDSozsc8ihlhcPujaYs+vZyZIZLnbZ2j3zj9O4ztMlKN6J
+        NvNmVVoK/N3L0CV/GLzR/roNdZ4Y3mbevlP5lqlQuMzxtB5nZfOYYnINtU7xFfiVrnriSN
+        MTF0KCTcUytDEb+4Z2ZiL2hpPG1cHpFYoJtC52LHfzXBedF6zqdvLg37PEnjlLuenxhqMj
+        gH1jO2ukdSr1AY+HlKgP71RZDQPMveD9CSQWJGk2aDB8Zj2Y2xNHT9eXDoDtvg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1674907478;
+        s=2020e; t=1674907511;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=5AotKWJ56DuXwWarl6aYeMKXu6k5f8gViBw8hYDWfFE=;
-        b=LsfC95i4ttQdIMcOsHozAUH1BIngzJ/YmyM2yN3X2gg5PZ7m+J+KhwpJpMwrvSAz9KgAUl
-        KO0MDQbLb1RakeAA==
+        bh=O2uDKmODwmxdpe/qs+XoVbGVsSu3BZpb5VjANJEX830=;
+        b=2H/gmQ+ERR2/+qPUaRDJPXhUmFkU2IYKAX2EaPFxPz9uEiy0htgPhGebA1TXvPPOCRT1iO
+        HuxnYCUlnnhe0/Cg==
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
 Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Subject: Re: [RFC PATCH net-next 05/15] net/sched: taprio: give higher
- priority to higher TCs in software dequeue mode
-In-Reply-To: <20230128010719.2182346-6-vladimir.oltean@nxp.com>
+Subject: Re: [RFC PATCH net-next 06/15] net/sched: taprio: calculate tc gate
+ durations
+In-Reply-To: <20230128010719.2182346-7-vladimir.oltean@nxp.com>
 References: <20230128010719.2182346-1-vladimir.oltean@nxp.com>
- <20230128010719.2182346-6-vladimir.oltean@nxp.com>
-Date:   Sat, 28 Jan 2023 13:04:37 +0100
-Message-ID: <87k016vp9m.fsf@kurt>
+ <20230128010719.2182346-7-vladimir.oltean@nxp.com>
+Date:   Sat, 28 Jan 2023 13:05:09 +0100
+Message-ID: <87h6wavp8q.fsf@kurt>
 MIME-Version: 1.0
 Content-Type: multipart/signed; boundary="=-=-=";
         micalg=pgp-sha512; protocol="application/pgp-signature"
@@ -59,53 +59,65 @@ X-Mailing-List: netdev@vger.kernel.org
 Content-Type: text/plain
 
 On Sat Jan 28 2023, Vladimir Oltean wrote:
-> Currently taprio iterates over child qdiscs in increasing order of TXQ
-> index, therefore giving higher xmit priority to TXQ 0 and lower to TXQ N.
+> Current taprio code operates on a very simplistic (and incorrect)
+> assumption: that egress scheduling for a traffic class can only take
+> place for the duration of the current interval, or i.o.w., it assumes
+> that at the end of each schedule entry, there is a "gate close" event
+> for all traffic classes.
 >
-> However, to the best of my understanding, we should prioritize based on
-> the traffic class, so we should really dequeue starting with the highest
-> traffic class and going down from there. We get to the TXQ using the
-> tc_to_txq[] netdev property.
+> As an example, traffic sent with the schedule below will be jumpy, even
+> though all 8 TC gates are open, so there is absolutely no "gate close"
+> event (effectively a transition from BIT(tc)==1 to BIT(tc)==0 in
+> consecutive schedule entries):
 >
-> TXQs within the same TC have the same (strict) priority, so we should
-> pick from them as fairly as we can. Implement something very similar to
-> q->curband from multiq_dequeue().
-
-Totally makes sense to me...
-
+> tc qdisc replace dev veth0 parent root taprio \
+> 	num_tc 2 \
+> 	map 0 1 \
+> 	queues 1@0 1@1 \
+> 	base-time 0 \
+> 	sched-entry S 0xff 4000000000 \
+> 	clockid CLOCK_TAI \
+> 	flags 0x0
 >
-> Something tells me Vinicius won't like the way in which this patch
-> interacts with TXTIME_ASSIST_IS_ENABLED(q->flags) and NICs where TXQ 0
-> really has higher priority than TXQ 1....
+> This qdisc simply does not have what it takes in terms of logic to
+> *actually* compute the durations of traffic classes. Also, it does not
+> recognize the need to use this information on a per-traffic-class basis:
+> it always looks at entry->interval and entry->close_time.
+>
+> This change proposes that each schedule entry has an array called
+> tc_gate_duration[tc]. This holds the information: "for how long will
+> this traffic class gate remain open, starting from *this* schedule
+> entry". If the traffic class gate is always open, that value is equal to
+> the cycle time of the schedule.
+>
+> We'll also need to keep track, for the purpose of queueMaxSDU[tc]
+> calculation, what is the maximum time duration for a traffic class
+> having an open gate. This gives us directly what is the maximum sized
+> packet that this traffic class will have to accept. For everything else
+> it has to qdisc_drop() it in qdisc_enqueue().
+>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-However, this change may be problematic for i210/i225/i226 NIC(s).
-
-AFAIK the Tx queue priorities for i225/i226 are configurable. Meaning
-the default could be adjusted to have Tx queue 4 with higher priority
-than 3 and so on. For i210 I don't know. Also Tx Launch Time only works
-for the lower queues. Hm.
-
-Thanks,
-Kurt
+Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
 
 --=-=-=
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmPVD1UTHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRDBk9HyqkZzgk/0D/0VzJyh1Qtuz+0/k/+ZEMvyINZEUzVN
-WHcfblOJU4GNqgZOjFvgxvZtF07cjgMG5ro0lCVOOisWfePhL//Fms5v+f31Ykdf
-mKm71m5h4G9XaV3/O6a1iGZZp7lp2L8RAnRfv5kHiMzZHQ8V6H3bIcNhdRW2GiZs
-s+nUmFwyZWGwtTX8TOLth2Sq0IeWQtUWkm3lVa1S1FCznszHvLIOCbSyvrfK4R9e
-zd3wmHslD7BzSfZ7+MOiG2J9vrbW9KjT6gHgmvxDXnk00MOAM1/I0IsGMKxQWm7U
-IYiiz9or7HtHs4iYrkzsSd+txQzMuIjSE95C+7pOvTVkSdxFKZRx/ZCvSwd0GV7d
-dXsIVOJtNGfSADFFh/QGC0fE7H/uU/LDAlXIXeo3IqvQW5eaRBR+GeqnYIxR0Sr6
-1Nk7drLjF2B+SYZ5C0f7famtk21xcQDHWtRXJjYxjCs/V6i4onJLaalwvtSe/VXP
-z070+Acve1WDkFzOPCgjpbAwx7vF5zlxpeUTC8yRucCeZiyk71JW6YMcDkPRLfn7
-Pt/0bmFlLI57Irr/HoUDpJbdWxJRH5f2J7sWOGC5RnR416TqaEPHLkGMh+wyRrun
-w52x8mLybzIE4sSMUhyrOw93I/6hVytqfBCDk27AkuCPzXvSVctuGVNwUwGT/F47
-C1l1+kp0YneLLg==
-=VDMz
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmPVD3UTHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzgplVEACH/0pm5DyPCwvrXcjNs5r+M7mTJBMG
+53peFg//85AGcqMUSASjA6k4LKCMCjWJ1kIT/xo8c3sbKrusqXGh2Oc6KmzW21x0
+oLiKH/yPN2CHhlbIicb54ARm9dwqUBCoVvrIUDLojUoxbE1dVNUa2tXQZYT7a6EZ
+zsA8zZOqkGtt0na+zh6iiWdUQjg/q2CmHwwAXoeeiRAnnbQjusjjQgF6Nf1mFMCo
+XiGOxZn1i8PQxgbrmG6ICfQvlsnVXFEGmujzwaScmuxAeqfb0XRKxd+WgwxJ2FpH
+qZsXD/XgJjtNFjWvrj+qecnQFlTZ1ZOviO4e65Lwp6OwW7hsQ1Y3QOL3XTHL4OTm
+dWF2y2CKfgTn+vy0wJ3qjazkWUvHx4wngj9bp5Phl+LXy/zu6RViq0TP1ICEjdKo
+/ODXN5v8fywcs3hvuiH4aXxW97fqCkX8utxSN96Pg8ibpkEteg8znhuZjHazUA4p
+5UV6h7Frw8lytrFklegLMIePQZPPuuW1uabhgT3A7E61pgQ9k8PZAtk00ccsgvIQ
+61F0xCDgvRv3AROovbNu/Y2lKhVjCe7E958BUsiEQoW6txj6Q1wKFsgb5vm/0Jvn
+uSougQ3kQAOefR/VttiAAbq3RU43a74qTiOFxZF6K74i9C/ASlk4aWHIIJSrPp03
+jRe8UFDk08zZNw==
+=kCTa
 -----END PGP SIGNATURE-----
 --=-=-=--
