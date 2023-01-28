@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F84967F37B
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 02:08:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DB9367F379
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 02:08:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233659AbjA1BII (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 20:08:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38558 "EHLO
+        id S233306AbjA1BIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 20:08:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233628AbjA1BIC (ORCPT
+        with ESMTP id S233602AbjA1BIC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 20:08:02 -0500
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2073.outbound.protection.outlook.com [40.107.7.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 827E14E530
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 17:08:00 -0800 (PST)
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2045.outbound.protection.outlook.com [40.107.8.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36E443461
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 17:07:58 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bKFjtRltkobpjjFm0Wz5DDOpCfnCvDo+hNAxT79YRLos/uXlNRGm3Z1JO0loVsBWAtHYdN+jrI9Q5uOeT63f7iNvcnEDWMQAo5bSInXHDJ96lSEUW21JtnRRh18Igj1t4MQTnhfvT4PsDZGn0cDF504ju7uaUMmL9TxXmQ9g5L4oIQPez3B5G+8F1gCSyAbxSPct6S9hIdy60QnFB3TD98Qun8bz46QtDeeivYJSVZM+Jv00vF1iTa7f4yhh8ZOd5EUmurpbdeqPPNfSMnFpLgqopdigCXFx1uQXZU2W/RUxkZrgD4AAce/s6cPI/b8WZX+rf1imoAQ4FO/2b/DO9w==
+ b=IIt5Lhlgx1gFGXWQBWs/QJ7TY8yA2ETGPL8w3LHgGIbei215AyPYlT3oE/VDJYKmll/OmWberwHs7LG30OIVvRzipG4nDcGJZ4E3eEZfhC5urgrCHTRotAXMDOsLw4wemxqqimZJCylJOOJkVaou23LNICidgCpLV82rKQbNA4oZbtd1N9hQE52wxx9unigr3pg/zsDCUFUE+OHgOn7jPT+IU5JjChYCYPsG+030LkFSmui3p6kW0l73hHSUcHrbH1tR7puCaElxK7m50tp+hKJq0POlWZ8pcTmenjYzGfVR9wqJodULijvgyEPLRtcM33tatMPpLncVsvu9NaP3tw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TOqYcKIvUO2REZekzAq5XFnQe1lhVmnCay507mskTDA=;
- b=f+k69YvEWEUM0nV06v0s9RlmsdFqRe1VcRFxdGrDJjJ5zdHe7M5rq2KhcqQ6zT9WB3jI70OfQgP/0G+cZAvRwhBfVhLFPGzhzhDaRkt+fiyAhLO4WRa+qYdRKJKv2u6xR6WOjG/JeAW+Q3VQAaWlL7CupAX87LAaOjWxAq9221L7mY6iKzLeCLJ2WW/VsWav8Qg0pist4dKw1nqcMSNZtbt8quWDSMhq+qXY3wA0wc9a3SSg/HenyYnT+iQTKeoafxSRspSigTN8PcN43q180IszLQbxC1u6MuXI8hNnUEXTlPyY7brOBhrJ6lRCI/DbcKBmDhpCTyn2eSDmBTY3yw==
+ bh=LjHenr29awFekdslInYr5BdHf0tzqpNTiLJICSzaUjQ=;
+ b=ftu51/ONM36TnZOfewPStv/iNTTBoDeUwTByvyZpMWjBJejIukyb3xPwMIynD9eV0ciQvapJmR4NAIMkVYora136IznVYPgc2FGI1wLoxCsvfxLBYRxZq/GadIWOCuWf7/v4ebbs5uj2bNJEARea/L39WDGlQTaxwsHb4h9Ru8xYw8Mdy4rmo+mzEENgb4RIv5e8O0oNGlfJUwYFILafIJgkJvejsQFHkONdUkEHFygJ6ekNYYLOswmvg4AR8SFAIfOXV5QU0K0Afv2Z/V3Ep8cRpKzxL+UH5c7/j3FwMMM2sDqz6376TndPueCc68vqCeep/BOySt64pLoRK4HgAg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TOqYcKIvUO2REZekzAq5XFnQe1lhVmnCay507mskTDA=;
- b=Ng0ur42a35wQu/vW4elTFCDXEc3ULeSDurA3GCgdFVuwT5x5r/kCFvpbwEEN1G4dP8TlkQfkJbQXNg2trRM95BZJtUChCPzbajVtwvzqn+M8DLP5ndubYOqW7drGXbTbU7n9DykVFIiIKPubWJkDP1nkhQRvNlaohfNcTMmiz8k=
+ bh=LjHenr29awFekdslInYr5BdHf0tzqpNTiLJICSzaUjQ=;
+ b=m4y8lIj3XtwYF/WwMBXZGebBp0jRD3uN4NJzJ7U1jksMThBvIST1fRn24MnVe2E21I4Mv5/rBMTOP6GeyLDuVZAh6wjHMs73eKU7VZqCyFgbFq7J2MWyd6Z27D1Bd4E3nqCvfgNdpSPrngSN8nm7x9oHP/wekxzYZzfzNGrxvdE=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by PAXPR04MB9203.eurprd04.prod.outlook.com (2603:10a6:102:222::5) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.25; Sat, 28 Jan
- 2023 01:07:52 +0000
+ 2023 01:07:53 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b%7]) with mapi id 15.20.6043.025; Sat, 28 Jan 2023
- 01:07:52 +0000
+ 01:07:53 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [RFC PATCH net-next 06/15] net/sched: taprio: calculate tc gate durations
-Date:   Sat, 28 Jan 2023 03:07:10 +0200
-Message-Id: <20230128010719.2182346-7-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 07/15] net/sched: taprio: rename close_time to end_time
+Date:   Sat, 28 Jan 2023 03:07:11 +0200
+Message-Id: <20230128010719.2182346-8-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230128010719.2182346-1-vladimir.oltean@nxp.com>
 References: <20230128010719.2182346-1-vladimir.oltean@nxp.com>
@@ -57,51 +57,51 @@ X-ClientProxiedBy: BE1P281CA0128.DEUP281.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PAXPR04MB9203:EE_
-X-MS-Office365-Filtering-Correlation-Id: 99a39277-07a2-4573-d48e-08db00cc14ae
+X-MS-Office365-Filtering-Correlation-Id: e05c38d8-bb4e-4c6e-a78a-08db00cc1504
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: oCUTo6K5th1yNPc2BIkYmU133UQ/W8f1W749IIRPOFr2a1q3SQyuDUH2xxJKD/W7GM4Rv74sP5srseOcwJK5MRsQ8B5RBf+n9VL2Ij2um5YpnOLADNYaXU8F+Q25m8Moz2esxocx4osW5e6hrSThRE+jRmuKGu71fXf+g8g+iO42SbRcRzADbQUaMv6xKFnJLeRX/YKfk4dZPNRAE0MWIz8xbJQm0RptJdwl8sF6huDoS7EFK/5xMu2At8iD2ZxNHqbhn0I9+LMBg5e+L1rriRpeYdOCOaXu/ucqKzL+nbAb21wmg+OH6dwNXZixGfCgW6jmlsg1OlnwOUSYEyBRpf9caSMDtPjS1YjF5luEAE9V55oYscN5FDh6Fg930Rkey1BCuXqSTdv2S5gJRLPHn4bIFx+2H71Bhykykh+kEKoBUX+eppZlBkLmd8MFEyAgbYRiCK9jcYT9+h78vaXhmoKHVHJulh3l1nwNOwyPrhsiuloCMJEXDqNxcEvVu/vdU4aOOjsURkDmmtIUtLrJEgMO6FkdO4VjN3Mx+9sdJC4eUYcZNh1xByxxpL/dVpb7OoJWEc4BxEaGlWKSC2tDx3ZMH9wOwEBg2PpNxd+5Jd16GiFRbXiNLqeQuTaMOyuEF6SsoWMltcwVrcbl3AKrvdILB+5vCia9nnBFXyV9Jl2Or17ha4r+rzgRtYCzoQ+XMqKO451RSAogWKkaOSBWTw==
+X-Microsoft-Antispam-Message-Info: /vA0+Ks1lIn8sNtLebUy9nqvbRaXgERZ8wDAo356sOz9rQSMXKf+2sY8DkVzw36ru8NmAKFrrM+JH/Bh+8rDhpxMDIbEIx+Y3PZWZJvB2B+LryMbkCiWmNzLhV4KorDyYmDgl4EsYazg+6ie82EjEtSsauIhxSiYb7Uur0V1kmUlkmNs6kU0xD00DfyPSeydtevfrdlNsOyLVjAH2gCLoKd9wCby8Wue6YXp5XCO/J1WVV8qusEDM3ExgzuEBYh1Vo24XWCbVveoSniEpLwrw3WgE85UgjITLHYg2vV6wLtO6WsJ4EbXkGcqXv02teBWYZIx2iHGDfbvzXiiYDTAheZIt1VhBlviYexgjsEckBSo6q3oo4jXF/ZE2hWdHZ7Qw1uJWNkpUQiIFbRyO5yJP/9lYfLid/n9gnD2HCZdGD/7tVh0DNoMJeFVM66DHS93Vnn1uBhymjILd+EuCfdWtK2ZpbNBgFd95GhcrDbzvWdWV3ybWocgd9mK7yrAJBCtvLNd23N6QuWH8wwWDoX4AVCUuh6UnlA3Ov21MhpQ59DkJcfKo2kxpXm0hJOy59vtx/svmMRL4mGJhT85AGlmvirU0E1B72seZ5Rf16cPxFauZ+4KQQVG1N16j6cogSQ0HOuRfust6fT6ZuuBwPQxA9sa2o+SO7H1P6oKczoRyZeItB9T4IHsmWfHsEre8wGDGfYWzFstMJOUFbpMka4Xgg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(396003)(39860400002)(136003)(366004)(376002)(451199018)(186003)(36756003)(6506007)(1076003)(6512007)(26005)(38350700002)(5660300002)(38100700002)(44832011)(2906002)(6486002)(6666004)(52116002)(2616005)(86362001)(83380400001)(6916009)(4326008)(66946007)(54906003)(478600001)(66476007)(66556008)(316002)(8676002)(8936002)(41300700001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Vjg1wq14o/NxSrzbOQKixayjhr4RxPQ4kYkgpfyQX4iiJoO/lYhxOaNti9i1?=
- =?us-ascii?Q?AntWU7dU69Foh/joSWAJnOA7FwdrQIp+3z+mgOQTYHFk9vwSmbgSW4xJlPj/?=
- =?us-ascii?Q?RYJFp0+HKVBLtl89VVs9SAycxTAcTFys0oLHZydap4ktQ01CFXCZKlabvo11?=
- =?us-ascii?Q?QBbWrX35hA9Qv9qadTxJt0uBiKOL5CAO42NdBF3BQ4HZ7fxh1oEA0DuSqbsf?=
- =?us-ascii?Q?sEhodSjoWkD0do+3Q4tqV/k41HVdhUasHDPDeRP+VAuk/rPwbGfEMkjZ8zBZ?=
- =?us-ascii?Q?IJY4BTboCrDElLYwY2LdV0M5W94NjxkYPjNiPv3TV5YQZV9icNKS+Sa2jSm+?=
- =?us-ascii?Q?fcqrwydvj8zL95XGOJB9j3OU1PVX/7H9AckJfXibO0C0dqWr8UAGS5AMPLEs?=
- =?us-ascii?Q?IT5sVqmxajyYIune8pVZFF2mtXAsiYOIsb3OSXzQ08562pehMHqIWcrV8ddH?=
- =?us-ascii?Q?+JGL48thxx+Hw5JDoDPUsl2/5I9xvVV7DojK2isymOyVKgCy/M+rvh/D31Yi?=
- =?us-ascii?Q?JF/BfBKSmouzKKCrI5D1Sy+Mhx6NeDw+qp4EDbhDDpLQcFJEHdQ2/oYMx4B3?=
- =?us-ascii?Q?XMqQu0E+uROo3MhSpMXFrugQGwK+z5yFhhWHvIfOIp/Yib0uRSOU3oYZz0AQ?=
- =?us-ascii?Q?u1ErmhOJlyK3tWY7QNX6ODivxTXJiNqDdXQ2FlPvN7XPet9TRnLDrSTBpSm9?=
- =?us-ascii?Q?goJOBzpGHx6VUBntz5G/6s5w7u5mVG8Q7IoGu++yCWaJST9uoW5AH71/VKkj?=
- =?us-ascii?Q?200zup+Ep8tlK9OUPT9wAX8yXHZLkSFyuXbjItLYFbIgOHOcZd6E8Ffw7LR9?=
- =?us-ascii?Q?eWWLfr+KoenSyWbZDVVnTfJ1P/m6Zj9xSdL3INpX01qUUFsMmCWAxHg3UWg4?=
- =?us-ascii?Q?yQR+YttHHZSI6Z/IIicD+vrNUnn1BQ90EqTBF1K3ue40Ul8H23hZzDOhOrr5?=
- =?us-ascii?Q?POXnLggz64qgsyj6OUitxwFovfw0+3QHUTBUeGvKpLOLacBSyDa240LKXSYu?=
- =?us-ascii?Q?nnbIcJEFnUsFA5jVec4Wj4chnE1ZiP2k9O0YE7ZFilWMCXf2xnGh1aNJaLRq?=
- =?us-ascii?Q?zoWWdWEpXFJ6mewxaGuSq0rMOdB8qw70Ip196ODnCddbasXDW57LflZGNtl9?=
- =?us-ascii?Q?n+kvgpup1Ykw33/Ul9ajuK6BxhN1rTBCnH1bb3mkIA0mZIJOoc78ziiHmHgY?=
- =?us-ascii?Q?uW+fbvoe5ZPPGNYozga58s+g3qscGN+UkDNODAYvWuk0JiYL93fiaiiJZsyL?=
- =?us-ascii?Q?iZnoxqDxV7tuw/1joJsAC92J64CgYfIFoiBBPUuvuKf+CrdI6V3uDvmO3MWF?=
- =?us-ascii?Q?kZgtwQZ91d1zMxMi3TLIZ7FK7vYKWFejTxaqSXH61uu9XKFP4LbdhWtt9qxE?=
- =?us-ascii?Q?0qoSJvgPmzQLpzoIyFe/TKU9fP3nhMmTERkpdCLTdHIVxssWJME6OT29X6su?=
- =?us-ascii?Q?Pv5ncMxwfxzUMeBW1EDABvF+P8ga6V/INOq6JXP4Ao6gG4E2O2ZP8lYyom73?=
- =?us-ascii?Q?+T7ECzcCR8xAudrbXzBAziNXHBl1jXlD4+AT2InRUn892jxPnZXEEdlrb80q?=
- =?us-ascii?Q?9czr/6FNm7S73orJfgqSY154vnFIm2OB+Kb11qWj9HqAwMGZT8XdLCzL9jFO?=
- =?us-ascii?Q?RQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?if+dwK8R2Sfmc2l+wlP3rMRP3/l2Jr+yfqSBWQgS18PdKGoir+nTMXz1r7u7?=
+ =?us-ascii?Q?gLxsMg1AuB2KVlFVN7uoG9A2mymwxI4yxGLHyISeEgEHuTHAZqkQ6QWlLsgU?=
+ =?us-ascii?Q?iW1BhcU77JGlu5xLnxt2PXpD3H9xnbpT7J6GQR/jh+4UC3qoYuoeq79RjS2Z?=
+ =?us-ascii?Q?vDKXY+YUaBqW66RgFQ/AcWZWclkCiKaUgMvAZpji1jzRY4WKECHIFz/zy2mY?=
+ =?us-ascii?Q?kXkcZjjgOE0irOyyKXFujBnxALcmGgDJt4oOIEg6FFkpoeyIXbRBhSHVaOtV?=
+ =?us-ascii?Q?bphXuLZERfkdp1olsKEtdmuYWX3AZov/uCx1YvzFoZlzLpHfKpYTLDiHPaNF?=
+ =?us-ascii?Q?CR59nBu90A9/vCtnAAoB3U8YJg4gzh1N9SCIRXypuj7rSTWoW+dK3ZuMOMjV?=
+ =?us-ascii?Q?Xxlg+hxZvWNpWtqABwpg4plZFpCuP9qmOupRkXojVeRU/9EKCIHbHWzAGktT?=
+ =?us-ascii?Q?DnQgZehFOTHzIVXvfysQD8N7VrHiR8A7R+ZJs37RpPJgNckywafxR1ICwDzz?=
+ =?us-ascii?Q?p8QHk1H1RD4la8OrZEnhQQn+Fuf1rv0wA/cAIyUwbq8h9XxZFw5lhAiP993n?=
+ =?us-ascii?Q?LYuHcUCatV7GlnWjeLHlu2cRuox8IW299cT7qxBoNkC3asaPjhxMGInUmW7p?=
+ =?us-ascii?Q?s6yf/kK5OY7wSJRffUlhBKbIVAcNTZntRa1zxcZwk2Eog1rOKbRUOWfWXlzr?=
+ =?us-ascii?Q?5EOqMCYMVtW0ripWGCxZ2TPWPpM/CirBahuAZOGTmrHR1Zim3raXX/dGXM7N?=
+ =?us-ascii?Q?SHuE7oj5gs65Ryw3do8BgGKiMYQESyAL5CEZARYbQYGirzaC5ZBqqJ2oG/f/?=
+ =?us-ascii?Q?o/hZyJsCKZNCCMx+yVABunGYT+GAEfIx3IGxsbW1e19hiyZfMj5dse/AsiFO?=
+ =?us-ascii?Q?cUY+7N5Ec6WGGfUeQ121+/TvEp559QhoWr3Dc+X1/snsSMFyEZ2N7Hybhvis?=
+ =?us-ascii?Q?o32sCevWYHCqub7ymGe+acqM13MpdSQ9NeOMEAMKVZHuAlTfVROZr0TR7WG4?=
+ =?us-ascii?Q?jUVF/gOKOGwBQR0vAXyCTME7FiRMVuSOvGL8zTd977DmaSbuolnlpmJu6bLU?=
+ =?us-ascii?Q?WNrB6vC5r0XvVvsTB7iqmLVRSsFvdkzCDTj18FxeImUdZNp5j/HBCeii3yk6?=
+ =?us-ascii?Q?sr1RagQRDVcnM/cLkLbXFOapMp9H5Jm0Bek3kRoqmNSvO21zWUu2QdJAVklP?=
+ =?us-ascii?Q?vXTCWvhQw+hbP8CibpPrhIEFS7xH8Ijxx4AAm/jnHvjMo1WF2xk7Wdv37znQ?=
+ =?us-ascii?Q?6oRTFw4BZoUXCHNzeKjDXZ44A/ssFfJm2W0oEFJEiKzz8lj2bPcgf0R+QgwI?=
+ =?us-ascii?Q?rKtoFSDcWWZs8I2PANK4fdBbXamrOgzQcoYdu3Kp20qpd9Q4xb5aIPgXPI81?=
+ =?us-ascii?Q?RLTq/CRCW2aLNlSt4qxCr3niZOj70ugtdLDnjAwEzExVrF/leeHS+KTOcRd+?=
+ =?us-ascii?Q?VJfPV/mElcUp2xumWBhY8YAjf13BrleMZGJvyC9sOoQMTRBivTbuH+xesAEf?=
+ =?us-ascii?Q?A+hgewXVmMy8jEAUvluR9z2WgGQy4/EXZ0hS/Zr4SMuHmj1/TeuJA45ofwtv?=
+ =?us-ascii?Q?YG2c4veV4y+b4Fza57ma5PQNKKzF9FSAyKearPAPMX815IDJVfZg/Vw9cC9v?=
+ =?us-ascii?Q?HQ=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 99a39277-07a2-4573-d48e-08db00cc14ae
+X-MS-Exchange-CrossTenant-Network-Message-Id: e05c38d8-bb4e-4c6e-a78a-08db00cc1504
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jan 2023 01:07:52.5262
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jan 2023 01:07:53.0574
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HPwe86+6EVHh3onFHpmrC0iljaVG1SjNDv2+s+5JETYz+B6oyb9NagmOQ/xRqVb9op1LySs56Afmh5vjTKsQWQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5XO0NMtwO3CKzD4JWpv9+1cMBJdDF9L9w4mLPjKAYcCSH/R7UFJT3mdiRS8af43fzeCSVLU0QptXPrut/Qlx+w==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB9203
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -113,135 +113,193 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Current taprio code operates on a very simplistic (and incorrect)
-assumption: that egress scheduling for a traffic class can only take
-place for the duration of the current interval, or i.o.w., it assumes
-that at the end of each schedule entry, there is a "gate close" event
-for all traffic classes.
+There is a confusion in terms in taprio which makes what is called
+"close_time" to be actually used for 2 things:
 
-As an example, traffic sent with the schedule below will be jumpy, even
-though all 8 TC gates are open, so there is absolutely no "gate close"
-event (effectively a transition from BIT(tc)==1 to BIT(tc)==0 in
-consecutive schedule entries):
+1. determining when an entry "closes" such that transmitted skbs are
+   never allowed to overrun that time (?!)
+2. an aid for determining when to advance and/or restart the schedule
+   using the hrtimer
 
-tc qdisc replace dev veth0 parent root taprio \
-	num_tc 2 \
-	map 0 1 \
-	queues 1@0 1@1 \
-	base-time 0 \
-	sched-entry S 0xff 4000000000 \
-	clockid CLOCK_TAI \
-	flags 0x0
-
-This qdisc simply does not have what it takes in terms of logic to
-*actually* compute the durations of traffic classes. Also, it does not
-recognize the need to use this information on a per-traffic-class basis:
-it always looks at entry->interval and entry->close_time.
-
-This change proposes that each schedule entry has an array called
-tc_gate_duration[tc]. This holds the information: "for how long will
-this traffic class gate remain open, starting from *this* schedule
-entry". If the traffic class gate is always open, that value is equal to
-the cycle time of the schedule.
-
-We'll also need to keep track, for the purpose of queueMaxSDU[tc]
-calculation, what is the maximum time duration for a traffic class
-having an open gate. This gives us directly what is the maximum sized
-packet that this traffic class will have to accept. For everything else
-it has to qdisc_drop() it in qdisc_enqueue().
+It makes more sense to call this so-called "close_time" "end_time",
+because it's not clear at all to me what "closes". Future patches will
+hopefully make better use of the term "to close".
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/sched/sch_taprio.c | 55 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 55 insertions(+)
+ net/sched/sch_taprio.c | 52 +++++++++++++++++++++---------------------
+ 1 file changed, 26 insertions(+), 26 deletions(-)
 
 diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 7dbb09b87bc5..fe92a75701bd 100644
+index fe92a75701bd..d5d284eaab66 100644
 --- a/net/sched/sch_taprio.c
 +++ b/net/sched/sch_taprio.c
-@@ -35,6 +35,10 @@ static LIST_HEAD(taprio_list);
- #define TAPRIO_FLAGS_INVALID U32_MAX
- 
- struct sched_entry {
-+	/* Durations between this GCL entry and the GCL entry where the
-+	 * respective traffic class gate closes
-+	 */
-+	u64 tc_gate_duration[TC_MAX_QUEUE];
+@@ -41,11 +41,11 @@ struct sched_entry {
+ 	u64 tc_gate_duration[TC_MAX_QUEUE];
  	struct list_head list;
  
- 	/* The instant that this entry "closes" and the next one
-@@ -51,6 +55,10 @@ struct sched_entry {
- };
- 
- struct sched_gate_list {
-+	/* Longest non-zero contiguous gate durations per traffic class,
-+	 * or 0 if a traffic class gate never opens during the schedule.
-+	 */
-+	u64 max_open_tc_gate_duration[TC_MAX_QUEUE];
+-	/* The instant that this entry "closes" and the next one
++	/* The instant that this entry ends and the next one
+ 	 * should open, the qdisc will make some effort so that no
+ 	 * packet leaves after this time.
+ 	 */
+-	ktime_t close_time;
++	ktime_t end_time;
+ 	ktime_t next_txtime;
+ 	atomic_t budget;
+ 	int index;
+@@ -62,7 +62,7 @@ struct sched_gate_list {
  	struct rcu_head rcu;
  	struct list_head entries;
  	size_t num_entries;
-@@ -89,6 +97,51 @@ struct __tc_taprio_qopt_offload {
- 	struct tc_taprio_qopt_offload offload;
- };
+-	ktime_t cycle_close_time;
++	ktime_t cycle_end_time;
+ 	s64 cycle_time;
+ 	s64 cycle_time_extension;
+ 	s64 base_time;
+@@ -591,7 +591,7 @@ static struct sk_buff *taprio_dequeue_from_txq(struct Qdisc *sch, int txq,
+ 	 * guard band ...
+ 	 */
+ 	if (gate_mask != TAPRIO_ALL_GATES_OPEN &&
+-	    ktime_after(guard, entry->close_time))
++	    ktime_after(guard, entry->end_time))
+ 		return NULL;
  
-+static void taprio_calculate_tc_gate_durations(struct taprio_sched *q,
-+					       struct sched_gate_list *sched)
-+{
-+	struct net_device *dev = qdisc_dev(q->root);
-+	int num_tc = netdev_get_num_tc(dev);
-+	struct sched_entry *entry, *cur;
-+	int tc;
-+
-+	list_for_each_entry(entry, &sched->entries, list) {
-+		u32 gates_still_open = entry->gate_mask;
-+
-+		/* For each traffic class, calculate each open gate duration,
-+		 * starting at this schedule entry and ending at the schedule
-+		 * entry containing a gate close event for that TC.
-+		 */
-+		cur = entry;
-+
-+		do {
-+			if (!gates_still_open)
-+				break;
-+
-+			for (tc = 0; tc < num_tc; tc++) {
-+				if (!(gates_still_open & BIT(tc)))
-+					continue;
-+
-+				if (cur->gate_mask & BIT(tc))
-+					entry->tc_gate_duration[tc] += cur->interval;
-+				else
-+					gates_still_open &= ~BIT(tc);
-+			}
-+
-+			cur = list_next_entry_circular(cur, &sched->entries, list);
-+		} while (cur != entry);
-+
-+		/* Keep track of the maximum gate duration for each traffic
-+		 * class, taking care to not confuse a traffic class which is
-+		 * temporarily closed with one that is always closed.
-+		 */
-+		for (tc = 0; tc < num_tc; tc++)
-+			if (entry->tc_gate_duration[tc] &&
-+			    sched->max_open_tc_gate_duration[tc] < entry->tc_gate_duration[tc])
-+				sched->max_open_tc_gate_duration[tc] = entry->tc_gate_duration[tc];
-+	}
-+}
-+
- static ktime_t sched_base_time(const struct sched_gate_list *sched)
+ 	/* ... and no budget. */
+@@ -678,7 +678,7 @@ static bool should_restart_cycle(const struct sched_gate_list *oper,
+ 	if (list_is_last(&entry->list, &oper->entries))
+ 		return true;
+ 
+-	if (ktime_compare(entry->close_time, oper->cycle_close_time) == 0)
++	if (ktime_compare(entry->end_time, oper->cycle_end_time) == 0)
+ 		return true;
+ 
+ 	return false;
+@@ -686,7 +686,7 @@ static bool should_restart_cycle(const struct sched_gate_list *oper,
+ 
+ static bool should_change_schedules(const struct sched_gate_list *admin,
+ 				    const struct sched_gate_list *oper,
+-				    ktime_t close_time)
++				    ktime_t end_time)
  {
- 	if (!sched)
-@@ -907,6 +960,8 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
- 		new->cycle_time = cycle;
+ 	ktime_t next_base_time, extension_time;
+ 
+@@ -695,18 +695,18 @@ static bool should_change_schedules(const struct sched_gate_list *admin,
+ 
+ 	next_base_time = sched_base_time(admin);
+ 
+-	/* This is the simple case, the close_time would fall after
++	/* This is the simple case, the end_time would fall after
+ 	 * the next schedule base_time.
+ 	 */
+-	if (ktime_compare(next_base_time, close_time) <= 0)
++	if (ktime_compare(next_base_time, end_time) <= 0)
+ 		return true;
+ 
+-	/* This is the cycle_time_extension case, if the close_time
++	/* This is the cycle_time_extension case, if the end_time
+ 	 * plus the amount that can be extended would fall after the
+ 	 * next schedule base_time, we can extend the current schedule
+ 	 * for that amount.
+ 	 */
+-	extension_time = ktime_add_ns(close_time, oper->cycle_time_extension);
++	extension_time = ktime_add_ns(end_time, oper->cycle_time_extension);
+ 
+ 	/* FIXME: the IEEE 802.1Q-2018 Specification isn't clear about
+ 	 * how precisely the extension should be made. So after
+@@ -725,7 +725,7 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ 	struct sched_gate_list *oper, *admin;
+ 	struct sched_entry *entry, *next;
+ 	struct Qdisc *sch = q->root;
+-	ktime_t close_time;
++	ktime_t end_time;
+ 
+ 	spin_lock(&q->current_entry_lock);
+ 	entry = rcu_dereference_protected(q->current_entry,
+@@ -744,41 +744,41 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ 	 * entry of all schedules are pre-calculated during the
+ 	 * schedule initialization.
+ 	 */
+-	if (unlikely(!entry || entry->close_time == oper->base_time)) {
++	if (unlikely(!entry || entry->end_time == oper->base_time)) {
+ 		next = list_first_entry(&oper->entries, struct sched_entry,
+ 					list);
+-		close_time = next->close_time;
++		end_time = next->end_time;
+ 		goto first_run;
  	}
  
-+	taprio_calculate_tc_gate_durations(q, new);
-+
+ 	if (should_restart_cycle(oper, entry)) {
+ 		next = list_first_entry(&oper->entries, struct sched_entry,
+ 					list);
+-		oper->cycle_close_time = ktime_add_ns(oper->cycle_close_time,
+-						      oper->cycle_time);
++		oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time,
++						    oper->cycle_time);
+ 	} else {
+ 		next = list_next_entry(entry, list);
+ 	}
+ 
+-	close_time = ktime_add_ns(entry->close_time, next->interval);
+-	close_time = min_t(ktime_t, close_time, oper->cycle_close_time);
++	end_time = ktime_add_ns(entry->end_time, next->interval);
++	end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
+ 
+-	if (should_change_schedules(admin, oper, close_time)) {
++	if (should_change_schedules(admin, oper, end_time)) {
+ 		/* Set things so the next time this runs, the new
+ 		 * schedule runs.
+ 		 */
+-		close_time = sched_base_time(admin);
++		end_time = sched_base_time(admin);
+ 		switch_schedules(q, &admin, &oper);
+ 	}
+ 
+-	next->close_time = close_time;
++	next->end_time = end_time;
+ 	taprio_set_budget(q, next);
+ 
+ first_run:
+ 	rcu_assign_pointer(q->current_entry, next);
+ 	spin_unlock(&q->current_entry_lock);
+ 
+-	hrtimer_set_expires(&q->advance_timer, close_time);
++	hrtimer_set_expires(&q->advance_timer, end_time);
+ 
+ 	rcu_read_lock();
+ 	__netif_schedule(sch);
+@@ -1065,8 +1065,8 @@ static int taprio_get_start_time(struct Qdisc *sch,
  	return 0;
  }
  
+-static void setup_first_close_time(struct taprio_sched *q,
+-				   struct sched_gate_list *sched, ktime_t base)
++static void setup_first_end_time(struct taprio_sched *q,
++				 struct sched_gate_list *sched, ktime_t base)
+ {
+ 	struct sched_entry *first;
+ 	ktime_t cycle;
+@@ -1077,9 +1077,9 @@ static void setup_first_close_time(struct taprio_sched *q,
+ 	cycle = sched->cycle_time;
+ 
+ 	/* FIXME: find a better place to do this */
+-	sched->cycle_close_time = ktime_add_ns(base, cycle);
++	sched->cycle_end_time = ktime_add_ns(base, cycle);
+ 
+-	first->close_time = ktime_add_ns(base, first->interval);
++	first->end_time = ktime_add_ns(base, first->interval);
+ 	taprio_set_budget(q, first);
+ 	rcu_assign_pointer(q->current_entry, NULL);
+ }
+@@ -1736,7 +1736,7 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 		if (admin)
+ 			call_rcu(&admin->rcu, taprio_free_sched_cb);
+ 	} else {
+-		setup_first_close_time(q, new_admin, start);
++		setup_first_end_time(q, new_admin, start);
+ 
+ 		/* Protects against advance_sched() */
+ 		spin_lock_irqsave(&q->current_entry_lock, flags);
 -- 
 2.34.1
 
