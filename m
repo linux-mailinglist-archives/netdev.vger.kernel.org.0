@@ -2,106 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76FB067F9B4
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 17:57:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 807CE67F9C1
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 18:09:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231444AbjA1Q5V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 11:57:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50858 "EHLO
+        id S234068AbjA1RJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 12:09:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229867AbjA1Q5U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 11:57:20 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84929252BF
-        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 08:57:18 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id x7so4098954edr.0
-        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 08:57:18 -0800 (PST)
+        with ESMTP id S234014AbjA1RI6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 12:08:58 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1DE124CA6;
+        Sat, 28 Jan 2023 09:08:56 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id z1so2211190pfg.12;
+        Sat, 28 Jan 2023 09:08:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=diag.uniroma1.it; s=google;
+        d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=tt8Ha/RSXw0RfPBUqnD7ihG/77QJ3kclrfnxQeGKaOg=;
-        b=vdySnnQpnG7PamHqJRpJHTk2/+pkWDwtlaaTwo/4ftut1SPbh2wsoeOBfyqSe97XJr
-         mBy/7KQLHn305eIbrv15wtIC3jt677R6UlSH0zZLLGg/AOXKk5sofUt21qCLjX8Xqvpz
-         ZRdX45XYwjwfNRYgk0ChwEm0M4J3VJXcUuOjg=
+        bh=bi2c0AiB4/LoswvJkjpv5gSlOvZirZv7Jl7L6GFn7Vg=;
+        b=PwVIGVIB+CvI+Z0JJaJ5ZeywBMhuIrPTpLWZmAVS6rn5TFgVBBqsJvD8hCakBOQOuu
+         MYtLH1w8NRHEOTVJM7kOd5fHWsMxOtPavGa4hUk79sOpRgGWjhEP2ixgton6x8S/zErF
+         KprYIuirhzPaKgxGmRzLa9Gc2GXn2c2aSFkkQJqNfbX8i20306S789eZAHBLF/m1gDYq
+         BlXjsSD2HyL9dwH5mdqqSTeHzMrL8PAQujeco2624/AvTDNa+EEncYIKuGimVQSgn63y
+         OczuZS2QLGyh8S3a/ctV5uURgfT9C73QFGt+qPWxaQpBT1u3I73nVkqx3qRADRgsfhTi
+         rpiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=tt8Ha/RSXw0RfPBUqnD7ihG/77QJ3kclrfnxQeGKaOg=;
-        b=a8YToQoExTlhb8sMyIlBnukwT7qG0m13aeCj4xVA2BivrBoQmShEWQvjKkr1BOl7Fl
-         KQ4SbyJJvVsfpBMB3aXh3FNb6b47BmMqOSAcg2sv6OEdl7bcPqUqbcIZXQ3WTUpYqb6w
-         3aUhAmlKNsoBQaunJxq322DfFAZGZobCMcRHdWQnN2x4O+0qdaWRIqX0dWIDx0qDi/BR
-         paNp0i2EjzWlGxPS90Dwyx+lVlfG/AyVzEXZYBzBgPUK0yYc/LKB+kBEOHbiP297s9Ot
-         9NLS/CCsG9HDH+j14ns4ez9HTYCQL5bn4YalyMNETIqq0jYkXpDKNMErT1EJhSFzTHg5
-         B3pA==
-X-Gm-Message-State: AO0yUKUDouQWGGLt28PRZEzt9JjHp4i9bT23Y8zhtFNyPXhq5RBNdITq
-        LHpzp+iJ15MBZleS9HJsC4uL1+nBhFxFwOeAu3fJYA==
-X-Google-Smtp-Source: AK7set8gwJjmXGZ7qEK5w/UZ8ko/Bw99HYHzRiyxR2URnKVNJoJLwhG2Y0TJ+hLyQwxjUH1ZmX3ZHnlhwaLOabgBZQ8=
-X-Received: by 2002:a05:6402:552:b0:4a0:8fde:99b4 with SMTP id
- i18-20020a056402055200b004a08fde99b4mr3865536edx.32.1674925037155; Sat, 28
- Jan 2023 08:57:17 -0800 (PST)
+        bh=bi2c0AiB4/LoswvJkjpv5gSlOvZirZv7Jl7L6GFn7Vg=;
+        b=11fyl/dlx440vRM+a3SwQyk4rJlRwDf6gIhyo+HuXzK4nUJ12SgyJ3/er6FswXxN8l
+         AhRSbLdvJuEIPIntgGuKh7+054G0+sRSxLf8m05cRITwlo9SYnz2EucI0EwIt+UY3Chi
+         2WoGTpDbhS5/fB1D85h2I1mLgtbquROiDBiREjzF46FH/U5d+pIYnWCmCp4G69rsQ3I4
+         xixsN/4LqmPHSJzDKlWAfSgY8Mr04Rtkep0I6BZTsCkYL5/jzesanTvUCjh054mngl2x
+         PwJ0iSRO1XxHKPkylYHr4GdjdAXx8yCm6GJ4KdhV+b2GS1TC28M4KgYLyojFUVVDnPEv
+         YlIQ==
+X-Gm-Message-State: AFqh2kpcgfarA6Q2qnxJajl6mMUhuR423oQiuFn/j/90afBMn2WLhYJ7
+        C7gc8rmn/Xe+yWPF0vXaVh7JaUrkldRFWPME6N+gZu84
+X-Google-Smtp-Source: AMrXdXspGTX67unMJYWstzl+rZ6PJ0WnkXGoeLIG43ZfDiHo9vj7qGT2h4kf5EIyjYoS6ogLjp7QsC6nfx51hba/Cuo=
+X-Received: by 2002:a65:4d09:0:b0:4a0:8210:f47a with SMTP id
+ i9-20020a654d09000000b004a08210f47amr4119853pgt.14.1674925736168; Sat, 28 Jan
+ 2023 09:08:56 -0800 (PST)
 MIME-Version: 1.0
-References: <20230128-list-entry-null-check-tls-v1-1-525bbfe6f0d0@diag.uniroma1.it>
- <Y9VP6Hw7jH0VelUX@corigine.com>
-In-Reply-To: <Y9VP6Hw7jH0VelUX@corigine.com>
-From:   Pietro Borrello <borrello@diag.uniroma1.it>
-Date:   Sat, 28 Jan 2023 17:57:06 +0100
-Message-ID: <CAEih1qX-XG=-OxMcNyWm9NuYG+_=oFHkTPD3s-Q7EPKPAS3+zw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net/tls: tls_is_tx_ready() checked list_entry
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vakul Garg <vakul.garg@nxp.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jkl820.git@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <04e27096-9ace-07eb-aa51-1663714a586d@nbd.name>
+ <167475990764.1934330.11960904198087757911.stgit@localhost.localdomain>
+ <cde24ed8-1852-ce93-69f3-ff378731f52c@huawei.com> <20230127212646.4cfeb475@kernel.org>
+ <CANn89iL1x=Wis4xDRF=SJ-8_7FebY9y7hvG71gsvUPGXf6xwHA@mail.gmail.com>
+In-Reply-To: <CANn89iL1x=Wis4xDRF=SJ-8_7FebY9y7hvG71gsvUPGXf6xwHA@mail.gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Sat, 28 Jan 2023 09:08:44 -0800
+Message-ID: <CAKgT0UfWMNwzLmmAoR2oHW9DHmGRQSCLuscjH+4tXW+rdETMJg@mail.gmail.com>
+Subject: Re: [net PATCH] skb: Do mix page pool and page referenced frags in GRO
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Yunsheng Lin <linyunsheng@huawei.com>, nbd@nbd.name,
+        davem@davemloft.net, hawk@kernel.org, ilias.apalodimas@linaro.org,
+        linux-kernel@vger.kernel.org, lorenzo@kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 28 Jan 2023 at 17:40, Simon Horman <simon.horman@corigine.com> wrote:
+On Fri, Jan 27, 2023 at 11:16 PM Eric Dumazet <edumazet@google.com> wrote:
 >
-> Hi Pietro,
+> On Sat, Jan 28, 2023 at 6:26 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Sat, 28 Jan 2023 10:37:47 +0800 Yunsheng Lin wrote:
+> > > If we are not allowing gro for the above case, setting NAPI_GRO_CB(p)->flush
+> > > to 1 in gro_list_prepare() seems to be making more sense so that the above
+> > > case has the same handling as skb_has_frag_list() handling?
+> > > https://elixir.bootlin.com/linux/v6.2-rc4/source/net/core/gro.c#L503
+> > >
+> > > As it seems to avoid some unnecessary operation according to comment
+> > > in tcp4_gro_receive():
+> > > https://elixir.bootlin.com/linux/v6.2-rc4/source/net/ipv4/tcp_offload.c#L322
+> >
+> > The frag_list case can be determined with just the input skb.
+> > For pp_recycle we need to compare input skb's pp_recycle with
+> > the pp_recycle of the skb already held by GRO.
+> >
+> > I'll hold off with applying a bit longer tho, in case Eric
+> > wants to chime in with an ack or opinion.
 >
-> I agree this is correct.
+> Doing the test only if the final step (once all headers have been
+> verified) seems less costly
+> for the vast majority of the cases the driver cooks skbs with a
+> consistent pp_recycle bit ?
 >
-> However, given that the code has been around for a while,
-> I feel it's relevant to ask if tx_list can ever be NULL.
-> If not, perhaps it's better to remove the error path entirely.
+> So Alex patch seems less expensive to me than adding the check very early.
 
-Hi Simon,
-Thank you for your fast reply.
-The point is exactly that tx_list will never be NULL, as the list head will
-always be present.
-So the error, as is, will never be detected, resulting in type confusion.
-We found this with static analysis, so we have no way to say for sure that
-the list can never be empty on edge cases.
-As this is a type confusion, the errors are often sneaky and go undetected.
-
-As an example, the following bug we previously reported resulted in a type
-confusion on net code that went undetected for more than 20 years.
-Link: https://lore.kernel.org/all/9fcd182f1099f86c6661f3717f63712ddd1c676c.1674496737.git.marcelo.leitner@gmail.com/
-In that case, we were able to create a PoC to demonstrate the issue where we
-leveraged the type confusion to bypass KASLR.
-
-In the end, this is the maintainer's call, but I would keep the check and
-correctly issue a list_first_entry_or_null() so that the check will work
-as intended as the added overhead is just a pointer comparison which
-would likely justify the cost of a more solid code.
-Otherwise, I can also submit a patch that entirely removes the check.
-Let me know what you prefer.
-
-Best regards,
-Pietro
+That was the general idea. Basically there is no need to look into
+this until we are looking at merging the skb and it is very unlikely
+that we will see a mix of page pool and non-page pool skbs. I
+considered this check to be something equivalent to discovering there
+is no space in the skb to store the frags so that is one of the
+reasons why I had picked the spot that I did.
