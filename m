@@ -2,138 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AE0167FB2A
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 22:35:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C52167FB33
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 22:43:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230336AbjA1VfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 16:35:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41366 "EHLO
+        id S234530AbjA1VnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 16:43:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230303AbjA1VfH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 16:35:07 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A92318162;
-        Sat, 28 Jan 2023 13:35:05 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id n6so5059996edo.9;
-        Sat, 28 Jan 2023 13:35:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=+zXK+884dLrmhawA8xRQQwxUqchG7ZiNECezW2lOgQA=;
-        b=BVhIi1wAHrJT0sZHx5IKQ6ERyLetJwEsTCVKMe8T2grAtiQV7QwxvxHEmv6xsJAwdF
-         ZjdJF6jjhLdVv89FR55E2mr7soSxcX/14NJjeSkf4/fxXxZDulGyIyUJxu3ZquRtjz2G
-         XW8MQAVmxxM3Vl74UhsCHjfDx+CnMggGvKtlm406tSyFBqQ+JZijnEBmkgYkoXdbJRyd
-         yQ3d6k2fTNJ++nPFl3MpC1tdnjGXp1MU6N2WZW7TgLL7VQTJzMhqLYAtvSXCRxYlJSAt
-         UwufJzQ5QuvrmwBtpfOPcIluWAqJ+1OfWPnZ1fR9JE1IooIaT+JCmWpdNWghdh/+eng5
-         Dqhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+zXK+884dLrmhawA8xRQQwxUqchG7ZiNECezW2lOgQA=;
-        b=HpfVrLsKjzjVKAJjd8AsP0J8fJsxn35tAD/BDuZceBXkjAtEQIC2uNVV1YE/B3JTNe
-         Ha7+ZpoAM8pcbi1/MAeAwN6wLIHPZyw1VZxMf1Pc3d4KAeOGgcwrJVdTOdseJam9QM9W
-         VZpdrGz1xK3oaRJ/dqN+NGndg2lvEeqG9WEQ1v87/Qhl3CbP55iJNtjmcjXYCWdfhl1H
-         sciTxF+MX9H1r6zlwmOrHfkIWVxT0NMgMBvl8dFv8CTBNWHXu5NKMYPF7P3E3DEKX+YK
-         7Bs0QXFwgq4DjEEP7z/G6Pu7GFtk9iGMWG94BGFlnhaTvoZue5jcrKWMX8tQ67njrg4K
-         QZSw==
-X-Gm-Message-State: AFqh2kq6km9aQK1xN73Bnv7ShBtQLOOj7rZ3yX5u116PVFLq4VdSTKre
-        KF1PXoVlTEpcQTaKPpOZRq4BykhQRg1tQFtV+IS4Dgqs
-X-Google-Smtp-Source: AMrXdXsZzarXZgPPZ/o1qFc85WWamUoar/+dUFn/SXh0NavSmkBXF2uugGK4uBHZdiG1JciMajqTm514M4a/kJkg/Jo=
-X-Received: by 2002:a05:6402:3814:b0:49e:6501:57a2 with SMTP id
- es20-20020a056402381400b0049e650157a2mr6932183edb.43.1674941703860; Sat, 28
- Jan 2023 13:35:03 -0800 (PST)
+        with ESMTP id S232125AbjA1VnF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 16:43:05 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD9A24130
+        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 13:43:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674942184; x=1706478184;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=MBTI/xeOVZdfcIhLedNEUnD+z6zRjs1Py93ubAFIyxU=;
+  b=m7ZL1laxLRfRJfoyEZqFfj2UaMyhnIb9QbErtmeS2TNlQWPORPOA8Xwm
+   D2Xym23j66DbjrLZ4E72l7aaHav65appuiSW1lX8IduaormDiBGdxthpK
+   iA0zwUw5ivlXNP0I1C0opRcwfl1XQ39GawyZHwzLc6o4mh4AM9uXoUylZ
+   8y3iN/uoIAMPM9TyXoH//gptyAXKUfkiiUvQtJ11rA0f2Rkbu14NedrQo
+   rj3dCyyPLJilBtZBgtrpHkQWfVYMqaA9ks82JUdZ5rPAvaI8UVwHTJ7N/
+   EAHMAckh4W4rzv+9nSznwWh94190434CdpYBFJ8w1oAKbJzigcfA1FgeS
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="326009593"
+X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
+   d="scan'208";a="326009593"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 13:43:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="992446764"
+X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
+   d="scan'208";a="992446764"
+Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 28 Jan 2023 13:42:59 -0800
+Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pLsyL-00018c-2X;
+        Sat, 28 Jan 2023 21:42:53 +0000
+Date:   Sun, 29 Jan 2023 05:42:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Vadim Fedorenko <vfedorenko@novek.ru>,
+        Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>, Gal Pressman <gal@nvidia.com>
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net v3 2/2] mlx5: fix possible ptp queue fifo
+ use-after-free
+Message-ID: <202301290528.ZvflGIBO-lkp@intel.com>
+References: <20230126010206.13483-3-vfedorenko@novek.ru>
 MIME-Version: 1.0
-References: <cover.1674913191.git.lorenzo@kernel.org> <a7eaa7e3e4c0a7e70f68c32314a7f75c9bba4465.1674913191.git.lorenzo@kernel.org>
-In-Reply-To: <a7eaa7e3e4c0a7e70f68c32314a7f75c9bba4465.1674913191.git.lorenzo@kernel.org>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 28 Jan 2023 13:34:52 -0800
-Message-ID: <CAADnVQJhdxM6eqvxRZ7JjxEc+fDG5CwnV_FAGs+H+djNye0e=w@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 8/8] selftests/bpf: introduce XDP compliance
- test tool
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Marek Majtyka <alardam@gmail.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, anthony.l.nguyen@intel.com,
-        Andy Gospodarek <gospo@broadcom.com>, vladimir.oltean@nxp.com,
-        Felix Fietkau <nbd@nbd.name>, john@phrozen.org,
-        Leon Romanovsky <leon@kernel.org>,
-        Simon Horman <simon.horman@corigine.com>,
-        Ariel Elior <aelior@marvell.com>,
-        christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230126010206.13483-3-vfedorenko@novek.ru>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 28, 2023 at 6:07 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-> diff --git a/tools/testing/selftests/bpf/xdp_features.h b/tools/testing/selftests/bpf/xdp_features.h
-> new file mode 100644
-> index 000000000000..28d7614c4f02
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/xdp_features.h
-> @@ -0,0 +1,33 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +
-> +/* test commands */
-> +enum test_commands {
-> +       CMD_STOP,               /* CMD */
-> +       CMD_START,              /* CMD + xdp feature */
-> +       CMD_ECHO,               /* CMD */
-> +       CMD_ACK,                /* CMD + data */
-> +       CMD_GET_XDP_CAP,        /* CMD */
-> +       CMD_GET_STATS,          /* CMD */
-> +};
-> +
-> +#define DUT_CTRL_PORT  12345
-> +#define DUT_ECHO_PORT  12346
-> +
-> +struct tlv_hdr {
-> +       __be16 type;
-> +       __be16 len;
-> +       __be32 data[];
-> +};
-> +
-> +enum {
-> +       XDP_FEATURE_ABORTED,
-> +       XDP_FEATURE_DROP,
-> +       XDP_FEATURE_PASS,
-> +       XDP_FEATURE_TX,
-> +       XDP_FEATURE_REDIRECT,
-> +       XDP_FEATURE_NDO_XMIT,
-> +       XDP_FEATURE_XSK_ZEROCOPY,
-> +       XDP_FEATURE_HW_OFFLOAD,
-> +       XDP_FEATURE_RX_SG,
-> +       XDP_FEATURE_NDO_XMIT_SG,
-> +};
+Hi Vadim,
 
-This doesn't match the kernel.
-How did you test this?
-What should be the way to prevent such mistakes in the future?
+I love your patch! Yet something to improve:
+
+[auto build test ERROR on net/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Vadim-Fedorenko/mlx5-fix-skb-leak-while-fifo-resync-and-push/20230128-120805
+patch link:    https://lore.kernel.org/r/20230126010206.13483-3-vfedorenko%40novek.ru
+patch subject: [PATCH net v3 2/2] mlx5: fix possible ptp queue fifo use-after-free
+config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20230129/202301290528.ZvflGIBO-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/2516a9785583b92ac82262a813203de696096ccd
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Vadim-Fedorenko/mlx5-fix-skb-leak-while-fifo-resync-and-push/20230128-120805
+        git checkout 2516a9785583b92ac82262a813203de696096ccd
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c:93:18: warning: unused variable 'skb' [-Wunused-variable]
+           struct sk_buff *skb;
+                           ^
+   drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c:92:30: warning: unused variable 'hwts' [-Wunused-variable]
+           struct skb_shared_hwtstamps hwts = {};
+                                       ^
+>> drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c:102:2: error: expected identifier or '('
+           while (skb_cc != skb_id && (skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo))) {
+           ^
+   drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c:110:2: error: expected identifier or '('
+           if (!skb)
+           ^
+   drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c:113:2: error: expected identifier or '('
+           return true;
+           ^
+>> drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c:114:1: error: extraneous closing brace ('}')
+   }
+   ^
+   2 warnings and 4 errors generated.
+
+
+vim +102 drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+
+    88	
+    89	static bool mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq *ptpsq, u16 skb_cc,
+    90						     u16 skb_id, int budget)
+    91	{
+    92		struct skb_shared_hwtstamps hwts = {};
+    93		struct sk_buff *skb;
+    94	
+    95		ptpsq->cq_stats->resync_event++;
+    96	
+    97		if (skb_cc > skb_id || PTP_WQE_CTR2IDX(ptpsq->skb_fifo_pc) < skb_id)
+    98			pr_err_ratelimited("mlx5e: out-of-order ptp cqe\n");
+    99			return false;
+   100		}
+   101	
+ > 102		while (skb_cc != skb_id && (skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo))) {
+   103			hwts.hwtstamp = mlx5e_skb_cb_get_hwts(skb)->cqe_hwtstamp;
+   104			skb_tstamp_tx(skb, &hwts);
+   105			ptpsq->cq_stats->resync_cqe++;
+   106			napi_consume_skb(skb, budget);
+   107			skb_cc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
+   108		}
+   109	
+   110		if (!skb)
+   111			return false;
+   112	
+   113		return true;
+ > 114	}
+   115	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
