@@ -2,264 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DFE367F39E
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 02:14:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C300067F3BB
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 02:32:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233085AbjA1BOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 20:14:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44728 "EHLO
+        id S230237AbjA1Bce (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 20:32:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233037AbjA1BOC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 20:14:02 -0500
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6E48D425
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 17:13:51 -0800 (PST)
-Received: by mail-io1-f69.google.com with SMTP id l18-20020a6b7012000000b007169d5de8f9so130427ioc.9
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 17:13:51 -0800 (PST)
+        with ESMTP id S230085AbjA1Bcc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 20:32:32 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407698CA99
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 17:32:30 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id me3so18141793ejb.7
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 17:32:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sipanda-io.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=42byEHLO2XxzzT4lVbHaeH1eNVKjJBvcINAicOXYWCo=;
+        b=FaNiHgwtjXNmbsb9GGi597LfgeuG3R0VkMPwjJbURlzPAJpwk7dlYpGzbDfm+4tJH1
+         HWCMl5KmEGYxgsQtxd4RIRG4WwVsDgHdT2YkGuzrL4b0yDoqs0vOQItYyaT0p2CgyhXt
+         jwQd2SFAGzBfMjdckTZk1aFQAyPoj9OEojQexgAvEvXyoHY/scHWlaaI4nEAfpnqQBL1
+         xZEf2OP6Q0/fTC8OsZH/boXkE1RftUuREffR1O2JC8xr1utfL5YDcdv1DIOG/lt6AnAs
+         W/8U0wyhNP3f6Mdb/Z5KpOO+Fr8VK12iKWQL18as1KPUvS8sPZbLp/CQo92mHj/fo49R
+         lqYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FKDs0CmGVz1zV9Csg+ORQChQ/H1apdgAoAiGqznBBxU=;
-        b=hqldj+FfHIaN1Q2RU+HRZk+q2LN+INkKbCQiTmkRXNPMrqMGn7QgVmIamrQUrpm8U+
-         PDPcwcoey+UniHvCOJqhD91DuGNPzF02Nd9aEkcgsgrsV1E82fG16gwtLomoBbIoBpMY
-         WwaflBKrls6BQxa5u6eY/qdsAHNvqn6HX4/qj+TkACNvHDy4Iex/XHhpPmsCSTRr3nhL
-         jeHo14UTT3GawyENp8FiWYpGOy2Zl6JeYMXCgqoPuyDZHkgneevjsVp0kpDE7of3Y9B0
-         cUGPvoFLQ3l1hB0Pz/F9mgH7GgCawYwKHs9HOvvjvqM8PDw5DVw3m+E46rhRdO4gt6Kg
-         8BoA==
-X-Gm-Message-State: AFqh2krEcG/ReQbf9ke4zit6YL8RLeeoNo927O+URcsd6d7VuY60ibRt
-        wO6VhO0XolimhAnv7NUIpNaRd37izKMhzI+cR/KDdSsTlNtj
-X-Google-Smtp-Source: AMrXdXugFjcG4UZvQwwWFUpX+psNCaIYHlAjZQyCPWvzf1DWxAOPPX/IZIIF22x2ISTL4OjmJxLTLQhcDXDR1BhRX2W+Pk3QLtVQ
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=42byEHLO2XxzzT4lVbHaeH1eNVKjJBvcINAicOXYWCo=;
+        b=S/SBODR8wPVCYThnSVeJrCo2LQmXg10R5h3JGJYEgQ+K0Zm63c2rCDJWZ/BiZMWoQw
+         dAl8MovxZcITS3JX4AgYzPRTQ+wFgNnMFvtAweGXXUe2+G9EiMKpZTkYi4bYedEaLFZ1
+         TbNmLcTUeDrRIjDo06a+objl9iTXJc/56oBoYuD0G1RaZqflCYNdbOxAXHh+4DoZQ87z
+         wocd4A4rnDO5cLk2QPBKaYoLbmUF3uqNpSdXe9kcU1jtdOzq0LMTAS4ZzGnJY7X/LFXm
+         otK1nl/1atYGXtLr55WEtl/zbHmoe/EW4phQMjjuV0YacWjpMluFQtgDLMCBBYZyHcUI
+         Kabw==
+X-Gm-Message-State: AFqh2kqJHamRsWlOKbNCK2TNLmJalUoO+qV8tkSd0dA5qx87FxLGOH/u
+        rqBuPA35lIb8H/L30bMbMRtFlPYT/E9j1Dg06MZVeg==
+X-Google-Smtp-Source: AMrXdXt+35C+fNifJcQsM77fN3ABOFQByTXKJ8szaxudwWc9MOuHWy4E5t72fjGIf4GyHVhR145MHJ2UZ3y9dEu4IbY=
+X-Received: by 2002:a17:906:c206:b0:78d:b819:e0e7 with SMTP id
+ d6-20020a170906c20600b0078db819e0e7mr5738031ejz.83.1674869548696; Fri, 27 Jan
+ 2023 17:32:28 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a02:2a4b:0:b0:38c:886a:219a with SMTP id
- w72-20020a022a4b000000b0038c886a219amr5778973jaw.133.1674868430690; Fri, 27
- Jan 2023 17:13:50 -0800 (PST)
-Date:   Fri, 27 Jan 2023 17:13:50 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000db685605f348b1f9@google.com>
-Subject: [syzbot] possible deadlock in pppoe_device_event
-From:   syzbot <syzbot+0ba232cc2253a6604b95@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, mostrows@earthlink.net,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
+References: <20230124170346.316866-1-jhs@mojatatu.com> <20230126153022.23bea5f2@kernel.org>
+ <Y9QXWSaAxl7Is0yz@nanopsycho> <CAAFAkD8kahd0Ao6BVjwx+F+a0nUK0BzTNFocnpaeQrN7E8VRdQ@mail.gmail.com>
+ <Y9RPsYbi2a9Q/H8h@google.com> <CAOuuhY-JT5mLKDBDScjyDA5grA2M8E9ECvyC6FJE3Ot-VLKh=w@mail.gmail.com>
+ <CAKH8qBvmbET6GT_XnuxnoAqzjVZhxCu32poPrC=KTnwhjAAC8A@mail.gmail.com>
+In-Reply-To: <CAKH8qBvmbET6GT_XnuxnoAqzjVZhxCu32poPrC=KTnwhjAAC8A@mail.gmail.com>
+From:   Tom Herbert <tom@sipanda.io>
+Date:   Fri, 27 Jan 2023 17:32:17 -0800
+Message-ID: <CAOuuhY8WqGu7WeBEXTKS4DSekEua5ivpsz4wTG4CNbZ4FJ3ZNg@mail.gmail.com>
+Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Jamal Hadi Salim <hadi@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>, netdev@vger.kernel.org,
+        kernel@mojatatu.com, deb.chatterjee@intel.com,
+        anjali.singhai@intel.com, namrata.limaye@intel.com,
+        khalidm@nvidia.com, pratyush@sipanda.io, xiyou.wangcong@gmail.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        vladbu@nvidia.com, simon.horman@corigine.com, stefanc@marvell.com,
+        seong.kim@amd.com, mattyk@nvidia.com, dan.daly@intel.com,
+        john.andy.fingerhut@intel.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Fri, Jan 27, 2023 at 4:47 PM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> On Fri, Jan 27, 2023 at 3:06 PM Tom Herbert <tom@sipanda.io> wrote:
+> >
+> > On Fri, Jan 27, 2023 at 2:26 PM <sdf@google.com> wrote:
+> > >
+> > > On 01/27, Jamal Hadi Salim wrote:
+> > > > On Fri, Jan 27, 2023 at 1:26 PM Jiri Pirko <jiri@resnulli.us> wrote:
+> > > > >
+> > > > > Fri, Jan 27, 2023 at 12:30:22AM CET, kuba@kernel.org wrote:
+> > > > > >On Tue, 24 Jan 2023 12:03:46 -0500 Jamal Hadi Salim wrote:
+> > > > > >> There have been many discussions and meetings since about 2015 in
+> > > > regards to
+> > > > > >> P4 over TC and now that the market has chosen P4 as the datapath
+> > > > specification
+> > > > > >> lingua franca
+> > > > > >
+> > > > > >Which market?
+> > > > > >
+> > > > > >Barely anyone understands the existing TC offloads. We'd need strong,
+> > > > > >and practical reasons to merge this. Speaking with my "have suffered
+> > > > > >thru the TC offloads working for a vendor" hat on, not the "junior
+> > > > > >maintainer" hat.
+> > > > >
+> > > > > You talk about offload, yet I don't see any offload code in this RFC.
+> > > > > It's pure sw implementation.
+> > > > >
+> > > > > But speaking about offload, how exactly do you plan to offload this
+> > > > > Jamal? AFAIK there is some HW-specific compiler magic needed to generate
+> > > > > HW acceptable blob. How exactly do you plan to deliver it to the driver?
+> > > > > If HW offload offload is the motivation for this RFC work and we cannot
+> > > > > pass the TC in kernel objects to drivers, I fail to see why exactly do
+> > > > > you need the SW implementation...
+> > >
+> > > > Our rule in TC is: _if you want to offload using TC you must have a
+> > > > s/w equivalent_.
+> > > > We enforced this rule multiple times (as you know).
+> > > > P4TC has a sw equivalent to whatever the hardware would do. We are
+> > > > pushing that
+> > > > first. Regardless, it has value on its own merit:
+> > > > I can run P4 equivalent in s/w in a scriptable (as in no compilation
+> > > > in the same spirit as u32 and pedit),
+> > > > by programming the kernel datapath without changing any kernel code.
+> > >
+> > > Not to derail too much, but maybe you can clarify the following for me:
+> > > In my (in)experience, P4 is usually constrained by the vendor
+> > > specific extensions. So how real is that goal where we can have a generic
+> > > P4@TC with an option to offload? In my view, the reality (at least
+> > > currently) is that there are NIC-specific P4 programs which won't have
+> > > a chance of running generically at TC (unless we implement those vendor
+> > > extensions).
+> > >
+> > > And regarding custom parser, someone has to ask that 'what about bpf
+> > > question': let's say we have a P4 frontend at TC, can we use bpfilter-like
+> > > usermode helper to transparently compile it to bpf (for SW path) instead
+> > > inventing yet another packet parser? Wrestling with the verifier won't be
+> > > easy here, but I trust it more than this new kParser.
+> >
+> > Yes, wrestling with the verifier is tricky, however we do have a
+> > solution to compile arbitrarily complex parsers into eBFP. We
+> > presented this work at Netdev 0x15
+> > https://netdevconf.info/0x15/session.html?Replacing-Flow-Dissector-with-PANDA-Parser.
+>
+> Thanks Tom, I'll check it out. I've yet to go through the netdev recordings :-(
+>
+> > Of course this has the obvious advantage that we don't have to change
+> > the kernel (however, as we talk about in the presentation, this method
+> > actually produces a faster more extensible parser than flow dissector,
+> > so it's still on my radar to replace flow dissector itself with an
+> > eBPF parser :-) )
+>
+> Since there is already a bpf flow dissector, I'm assuming you're
+> talking about replacing the existing C flow dissector with a
+> PANDA-based one?
 
-syzbot found the following issue on:
+Yes
 
-HEAD commit:    7bf70dbb1882 Merge tag 'vfio-v6.2-rc6' of https://github.c..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1599c5e5480000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=23330449ad10b66f
-dashboard link: https://syzkaller.appspot.com/bug?extid=0ba232cc2253a6604b95
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> I was hoping that at some point, we can have a BPF flow dissector
+> program that supports everything the existing C-one does, and maybe we
+> can ship this program with the kernel and load it by default.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Yes, we have that. Actually, we can provide a superset to include
+things like TCP options which flow dissector doesn't support
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/1fae9956ebf4/disk-7bf70dbb.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/f5d23d32df00/vmlinux-7bf70dbb.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/8447d3427ad4/bzImage-7bf70dbb.xz
+> We can
+> keep the C-based one for some minimal non-bpf configurations. But idk,
+> the benefit is not 100% clear to me; except maybe bpf-based flow
+> dissector can be treated as more "secure" due to all verifier
+> constraints...
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+0ba232cc2253a6604b95@syzkaller.appspotmail.com
+Not just more secure, more robust and extensible. I call flow
+dissector the "function we love to hate". On one hand it has proven to
+be incredibly useful, on the other hand it's been a major pain to
+maintain and isn't remotely extensible. We have seen many problems
+over the years, particularly when people have added support for less
+common protocols. Collapsing all the protocol layers, ensuring that
+the bookkeeping is correct, and trying to maintain some reasonable
+level of performance has led to it being spaghetti code (I wrote the
+first instantiation of flow dissector for RPS, so I accept my fair
+share of blame for the predicament of flow dissector :-) ). The
+optimized eBPF code we're generating also qualifies as spaghetti code
+(i.e. a whole bunch of loop unrolling, inlining tables, and so on).
+The difference is that the front end code in PANDA-C, is well
+organized and abstracts out all the bookkeeping so that the programmer
+doesn't have to worry about it.
 
-======================================================
-WARNING: possible circular locking dependency detected
-6.2.0-rc5-syzkaller-00020-g7bf70dbb1882 #0 Not tainted
-------------------------------------------------------
-syz-executor.3/8543 is trying to acquire lock:
-ffff88802d3f0130 (sk_lock-AF_PPPOX){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1725 [inline]
-ffff88802d3f0130 (sk_lock-AF_PPPOX){+.+.}-{0:0}, at: pppoe_flush_dev drivers/net/ppp/pppoe.c:304 [inline]
-ffff88802d3f0130 (sk_lock-AF_PPPOX){+.+.}-{0:0}, at: pppoe_device_event+0x329/0x980 drivers/net/ppp/pppoe.c:346
+>
+> > The value of kParser is that it is not compiled code, but dynamically
+> > scriptable. It's much easier to change on the fly and depends on a CLI
+> > interface which works well with P4TC. The front end is the same as
+> > what we are using for PANDA parser, that is the same parser frontend
+> > (in C code or other) can be compiled into XDP/eBPF, kParser CLI, or
+> > other targets (this is based on establishing a IR which we talked
+> > about in https://myfoobar2022.sched.com/event/1BhCX/high-performance-programmable-parsers
+>
+> That seems like a technicality? A BPF-based parser can also be driven
+> by maps/tables; or, worst case, can be recompiled and replaced on the
+> fly without any downtime.
 
-but task is already holding lock:
-ffffffff8e0b13d0 (dev_addr_sem){++++}-{3:3}, at: dev_set_mac_address_user+0x23/0x50 net/core/dev.c:8804
+Perhaps. Also, in the spirit of full transparency, kParser is in its
+nature interpreted, so we have to expect that it will have lower
+performance than an optimized compiled parser.
 
-which lock already depends on the new lock.
+Tom
 
-
-the existing dependency chain (in reverse order) is:
-
--> #3 (dev_addr_sem){++++}-{3:3}:
-       down_write+0x94/0x220 kernel/locking/rwsem.c:1562
-       dev_set_mac_address_user+0x23/0x50 net/core/dev.c:8804
-       do_setlink+0x18c4/0x3bb0 net/core/rtnetlink.c:2775
-       __rtnl_newlink+0xd69/0x1840 net/core/rtnetlink.c:3590
-       rtnl_newlink+0x68/0xa0 net/core/rtnetlink.c:3637
-       rtnetlink_rcv_msg+0x43e/0xca0 net/core/rtnetlink.c:6141
-       netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2564
-       netlink_unicast_kernel net/netlink/af_netlink.c:1330 [inline]
-       netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1356
-       netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1932
-       sock_sendmsg_nosec net/socket.c:714 [inline]
-       sock_sendmsg+0xd3/0x120 net/socket.c:734
-       __sys_sendto+0x23a/0x340 net/socket.c:2117
-       __do_sys_sendto net/socket.c:2129 [inline]
-       __se_sys_sendto net/socket.c:2125 [inline]
-       __x64_sys_sendto+0xe1/0x1b0 net/socket.c:2125
-       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-       do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
-       entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
--> #2 (rtnl_mutex){+.+.}-{3:3}:
-       __mutex_lock_common kernel/locking/mutex.c:603 [inline]
-       __mutex_lock+0x12f/0x1360 kernel/locking/mutex.c:747
-       prb_calc_retire_blk_tmo+0x7d/0x1e0 net/packet/af_packet.c:576
-       init_prb_bdqc net/packet/af_packet.c:634 [inline]
-       packet_set_ring+0x158f/0x1980 net/packet/af_packet.c:4439
-       packet_setsockopt+0x1a32/0x3a30 net/packet/af_packet.c:3808
-       __sys_setsockopt+0x2c6/0x5b0 net/socket.c:2246
-       __do_sys_setsockopt net/socket.c:2257 [inline]
-       __se_sys_setsockopt net/socket.c:2254 [inline]
-       __x64_sys_setsockopt+0xbe/0x160 net/socket.c:2254
-       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-       do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
-       entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
--> #1 (sk_lock-AF_PACKET){+.+.}-{0:0}:
-       lock_sock_nested+0x3a/0xf0 net/core/sock.c:3470
-       lock_sock include/net/sock.h:1725 [inline]
-       l2tp_tunnel_register+0x2aa/0x11e0 net/l2tp/l2tp_core.c:1483
-       pppol2tp_connect+0xcdc/0x1a10 net/l2tp/l2tp_ppp.c:723
-       __sys_connect_file+0x153/0x1a0 net/socket.c:1976
-       __sys_connect+0x165/0x1a0 net/socket.c:1993
-       __do_sys_connect net/socket.c:2003 [inline]
-       __se_sys_connect net/socket.c:2000 [inline]
-       __x64_sys_connect+0x73/0xb0 net/socket.c:2000
-       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-       do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
-       entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
--> #0 (sk_lock-AF_PPPOX){+.+.}-{0:0}:
-       check_prev_add kernel/locking/lockdep.c:3097 [inline]
-       check_prevs_add kernel/locking/lockdep.c:3216 [inline]
-       validate_chain kernel/locking/lockdep.c:3831 [inline]
-       __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5055
-       lock_acquire kernel/locking/lockdep.c:5668 [inline]
-       lock_acquire+0x1e3/0x630 kernel/locking/lockdep.c:5633
-       lock_sock_nested+0x3a/0xf0 net/core/sock.c:3470
-       lock_sock include/net/sock.h:1725 [inline]
-       pppoe_flush_dev drivers/net/ppp/pppoe.c:304 [inline]
-       pppoe_device_event+0x329/0x980 drivers/net/ppp/pppoe.c:346
-       notifier_call_chain+0xb5/0x200 kernel/notifier.c:87
-       call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1944
-       call_netdevice_notifiers_extack net/core/dev.c:1982 [inline]
-       call_netdevice_notifiers net/core/dev.c:1996 [inline]
-       dev_set_mac_address+0x2d7/0x3e0 net/core/dev.c:8791
-       bond_set_mac_address+0x359/0x7a0 drivers/net/bonding/bond_main.c:4743
-       dev_set_mac_address+0x26b/0x3e0 net/core/dev.c:8787
-       dev_set_mac_address_user+0x31/0x50 net/core/dev.c:8805
-       do_setlink+0x18c4/0x3bb0 net/core/rtnetlink.c:2775
-       __rtnl_newlink+0xd69/0x1840 net/core/rtnetlink.c:3590
-       rtnl_newlink+0x68/0xa0 net/core/rtnetlink.c:3637
-       rtnetlink_rcv_msg+0x43e/0xca0 net/core/rtnetlink.c:6141
-       netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2564
-       netlink_unicast_kernel net/netlink/af_netlink.c:1330 [inline]
-       netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1356
-       netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1932
-       sock_sendmsg_nosec net/socket.c:714 [inline]
-       sock_sendmsg+0xd3/0x120 net/socket.c:734
-       ____sys_sendmsg+0x712/0x8c0 net/socket.c:2476
-       ___sys_sendmsg+0x110/0x1b0 net/socket.c:2530
-       __sys_sendmsg+0xf7/0x1c0 net/socket.c:2559
-       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-       do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
-       entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-other info that might help us debug this:
-
-Chain exists of:
-  sk_lock-AF_PPPOX --> rtnl_mutex --> dev_addr_sem
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(dev_addr_sem);
-                               lock(rtnl_mutex);
-                               lock(dev_addr_sem);
-  lock(sk_lock-AF_PPPOX);
-
- *** DEADLOCK ***
-
-2 locks held by syz-executor.3/8543:
- #0: ffffffff8e0be1a8 (rtnl_mutex){+.+.}-{3:3}, at: rtnl_lock net/core/rtnetlink.c:75 [inline]
- #0: ffffffff8e0be1a8 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x3e9/0xca0 net/core/rtnetlink.c:6138
- #1: ffffffff8e0b13d0 (dev_addr_sem){++++}-{3:3}, at: dev_set_mac_address_user+0x23/0x50 net/core/dev.c:8804
-
-stack backtrace:
-CPU: 0 PID: 8543 Comm: syz-executor.3 Not tainted 6.2.0-rc5-syzkaller-00020-g7bf70dbb1882 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/12/2023
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
- check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2177
- check_prev_add kernel/locking/lockdep.c:3097 [inline]
- check_prevs_add kernel/locking/lockdep.c:3216 [inline]
- validate_chain kernel/locking/lockdep.c:3831 [inline]
- __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5055
- lock_acquire kernel/locking/lockdep.c:5668 [inline]
- lock_acquire+0x1e3/0x630 kernel/locking/lockdep.c:5633
- lock_sock_nested+0x3a/0xf0 net/core/sock.c:3470
- lock_sock include/net/sock.h:1725 [inline]
- pppoe_flush_dev drivers/net/ppp/pppoe.c:304 [inline]
- pppoe_device_event+0x329/0x980 drivers/net/ppp/pppoe.c:346
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:87
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1944
- call_netdevice_notifiers_extack net/core/dev.c:1982 [inline]
- call_netdevice_notifiers net/core/dev.c:1996 [inline]
- dev_set_mac_address+0x2d7/0x3e0 net/core/dev.c:8791
- bond_set_mac_address+0x359/0x7a0 drivers/net/bonding/bond_main.c:4743
- dev_set_mac_address+0x26b/0x3e0 net/core/dev.c:8787
- dev_set_mac_address_user+0x31/0x50 net/core/dev.c:8805
- do_setlink+0x18c4/0x3bb0 net/core/rtnetlink.c:2775
- __rtnl_newlink+0xd69/0x1840 net/core/rtnetlink.c:3590
- rtnl_newlink+0x68/0xa0 net/core/rtnetlink.c:3637
- rtnetlink_rcv_msg+0x43e/0xca0 net/core/rtnetlink.c:6141
- netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2564
- netlink_unicast_kernel net/netlink/af_netlink.c:1330 [inline]
- netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1356
- netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1932
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xd3/0x120 net/socket.c:734
- ____sys_sendmsg+0x712/0x8c0 net/socket.c:2476
- ___sys_sendmsg+0x110/0x1b0 net/socket.c:2530
- __sys_sendmsg+0xf7/0x1c0 net/socket.c:2559
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f777ee8c0c9
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f777fbfd168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f777efabf80 RCX: 00007f777ee8c0c9
-RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000004
-RBP: 00007f777eee7ae9 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f777f0cfb1f R14: 00007f777fbfd300 R15: 0000000000022000
- </TASK>
-device bond0 entered promiscuous mode
-device bond_slave_0 entered promiscuous mode
-device bond_slave_1 entered promiscuous mode
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+>
+>
+> > Tom
+> >
+> > >
+> > >
+> > > > To answer your question in regards to what the interfaces "P4
+> > > > speaking" hardware or drivers
+> > > > are going to be programmed, there are discussions going on right now:
+> > > > There is a strong
+> > > > leaning towards devlink for the hardware side loading.... The idea
+> > > > from the driver side is to
+> > > > reuse the tc ndos.
+> > > > We have biweekly meetings which are open. We do have Nvidia folks, but
+> > > > would be great if
+> > > > we can have you there. Let me find the link and send it to you.
+> > > > Do note however, our goal is to get s/w first as per tradition of
+> > > > other offloads with TC .
+> > >
+> > > > cheers,
+> > > > jamal
