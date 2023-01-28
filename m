@@ -2,190 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8CBD67F398
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 02:13:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FC9C67F3D7
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 02:49:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232917AbjA1BNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 20:13:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43592 "EHLO
+        id S231708AbjA1BtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 20:49:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232979AbjA1BNL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 20:13:11 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD3868AEA;
-        Fri, 27 Jan 2023 17:13:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674868387; x=1706404387;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=JM0DsUAXnIVbnyyRDEiq76v4MhII6gm7ppcnS6Lm9Js=;
-  b=W9yRSalk+rDz88pl6h0b+FTni/a1UZPC3v7MpPHJeReU9+8Ifse7Z9Bi
-   owifdTNyVOYuFFPxBm3TSCh3nhCKUZ9HAL9P1p19Lm9NYgdl+0Q+/BSM1
-   MT1yRt/uHOeXHowwTCe43j2pEb4owg/D65NZp21m5EgRdyJKgm4GNn6GN
-   LNUlTU17Myv9AgJ8fcEzTH+9UA8x4K41zWuOz9sIrEAWYEBSrazACxfIp
-   1FVaB8F2moWBZSfJ80UVlkyhNMr7DwAg6qEZve02a4CwR8IlsfWhyht6M
-   mi6xXTOAp0Z4W5Q9sJ6YQDydHSrb/pdGYqTCRv3IJEkssxVaiKAFXStXB
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10603"; a="307586085"
-X-IronPort-AV: E=Sophos;i="5.97,252,1669104000"; 
-   d="scan'208";a="307586085"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2023 17:12:43 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10603"; a="695721767"
-X-IronPort-AV: E=Sophos;i="5.97,252,1669104000"; 
-   d="scan'208";a="695721767"
-Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 27 Jan 2023 17:12:40 -0800
-Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pLZln-0000AT-0S;
-        Sat, 28 Jan 2023 01:12:39 +0000
-Date:   Sat, 28 Jan 2023 09:11:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     netdev@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        amd-gfx@lists.freedesktop.org,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [linux-next:master] BUILD REGRESSION
- 9fbee811e479aca2f3523787cae1f46553141b40
-Message-ID: <63d47656.PrqiDwRpfWhLZF/8%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229883AbjA1BtE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 20:49:04 -0500
+X-Greylist: delayed 1199 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 27 Jan 2023 17:49:03 PST
+Received: from evilolive.daedalian.us (evilolive.daedalian.us [96.126.118.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 846CD7EFC7
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 17:49:03 -0800 (PST)
+Received: by evilolive.daedalian.us (Postfix, from userid 111)
+        id 62587120D9; Fri, 27 Jan 2023 17:13:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=daedalian.us;
+        s=default; t=1674868394;
+        bh=m80g/qcKyF6Y8HG7sLJ+YFMv8oIIC64vqUP0h+rSuYc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=RuIDzcGSC3xhxkGbOjKfChdLByh9wYSAX00p+oq+IRvp0Gpju8ZNWadwVK4yMmDYP
+         8TVw1Efbl+orqy9eHox3jN+qfCiaonplOXxwhbxWE/63etr07JH8lfYGPxtF3473OS
+         lfYkqh2obi5WN1cCKmXoh2YMLnbXypnFkQKS6KKpeLzMe6pSGoZU05ryIOXhY1ECkE
+         qgvY3c/gz64w5oOARD3QAIvUyod22RYVrRloGQD9UUKli1aidYN98NUajuilW6EQn6
+         hqNfQK4fm/QS+bN0eWqewKzTYWaFC8CPgq59F3JYhgS4T6JmvyGgdkYOm3Z46sy7Wr
+         LA0D8r3yHZuug==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
+Received: from localhost.localdomain (static-47-181-121-78.lsan.ca.frontiernet.net [47.181.121.78])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by evilolive.daedalian.us (Postfix) with ESMTPSA id 4D6E812084;
+        Fri, 27 Jan 2023 17:13:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=daedalian.us;
+        s=default; t=1674868388;
+        bh=m80g/qcKyF6Y8HG7sLJ+YFMv8oIIC64vqUP0h+rSuYc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LWdhKwSL1TP2BNDpHoX8FR54V51X2xLvhQuQZ1s7cpGSIMUQqPvKvKq+U5f0/npoP
+         8bbbsE/nl+1flnwe29uTdqd2Na6IgRCBPNturH8x8ckRStUYWDkc6CBECd4F1u/QAC
+         2pVQeaN5t8EweUJIlMAz2QvNPPijF2gwjGm4PxEWXAyWAcRr0muYlj6ISbe/i3PHZI
+         ICYHVKTJSu5/C4+8RsC0/eL7aS+XiJJEWPj1Ro+ZMgN0tq4IXzZfkTpR7xH2DHdDzG
+         VGcL8BiuMEkWqddjEPEhY/Q/LCMvCpqTnTOMGpcydjh1CSPdOmTrCSl4BgN2CWeS6Y
+         YNICl+IGu3erg==
+From:   John Hickey <jjh@daedalian.us>
+To:     anthony.l.nguyen@intel.com
+Cc:     John Hickey <jjh@daedalian.us>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH] ixgbe: Panic during XDP_TX with > 64 CPUs
+Date:   Fri, 27 Jan 2023 17:12:12 -0800
+Message-Id: <20230128011213.150171-1-jjh@daedalian.us>
+X-Mailer: git-send-email 2.37.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-branch HEAD: 9fbee811e479aca2f3523787cae1f46553141b40  Add linux-next specific files for 20230125
+In commit 'ixgbe: let the xdpdrv work with more than 64 cpus'
+(4fe815850bdc8d4cc94e06fe1de069424a895826), support was added to allow
+XDP programs to run on systems with more than 64 CPUs by locking the
+XDP TX rings and indexing them using cpu % 64 (IXGBE_MAX_XDP_QS).
 
-Error/Warning: (recently discovered and may have been fixed)
+Upon trying this out patch via the Intel 5.18.6 out of tree driver
+on a system with more than 64 cores, the kernel paniced with an
+array-index-out-of-bounds at the return in ixgbe_determine_xdp_ring in
+ixgbe.h, which means ixgbe_determine_xdp_q_idx was just returning the
+cpu instead of cpu % IXGBE_MAX_XDP_QS.
 
-ERROR: modpost: "devm_platform_ioremap_resource" [drivers/dma/fsl-edma.ko] undefined!
-ERROR: modpost: "devm_platform_ioremap_resource" [drivers/dma/idma64.ko] undefined!
-drivers/gpu/drm/amd/amdgpu/../display/dc/link/accessories/link_dp_trace.c:148:6: warning: no previous prototype for 'link_dp_trace_set_edp_power_timestamp' [-Wmissing-prototypes]
-drivers/gpu/drm/amd/amdgpu/../display/dc/link/accessories/link_dp_trace.c:158:10: warning: no previous prototype for 'link_dp_trace_get_edp_poweron_timestamp' [-Wmissing-prototypes]
-drivers/gpu/drm/amd/amdgpu/../display/dc/link/accessories/link_dp_trace.c:163:10: warning: no previous prototype for 'link_dp_trace_get_edp_poweroff_timestamp' [-Wmissing-prototypes]
-drivers/gpu/drm/amd/amdgpu/../display/dc/link/protocols/link_dp_capability.c:1294:32: warning: variable 'result_write_min_hblank' set but not used [-Wunused-but-set-variable]
-drivers/gpu/drm/amd/amdgpu/../display/dc/link/protocols/link_dp_capability.c:1295:32: warning: variable 'result_write_min_hblank' set but not used [-Wunused-but-set-variable]
-drivers/gpu/drm/amd/amdgpu/../display/dc/link/protocols/link_dp_capability.c:278:42: warning: variable 'ds_port' set but not used [-Wunused-but-set-variable]
-drivers/gpu/drm/amd/amdgpu/../display/dc/link/protocols/link_dp_capability.c:279:42: warning: variable 'ds_port' set but not used [-Wunused-but-set-variable]
-drivers/gpu/drm/amd/amdgpu/../display/dc/link/protocols/link_dp_training.c:1585:38: warning: variable 'result' set but not used [-Wunused-but-set-variable]
+I think this is how it happens:
 
-Unverified Error/Warning (likely false positive, please contact us if interested):
+Upon loading the first XDP program on a system with more than 64 CPUs,
+ixgbe_xdp_locking_key is incremented in ixgbe_xdp_setup.  However,
+immediately after this, the rings are reconfigured by ixgbe_setup_tc.
+ixgbe_setup_tc calls ixgbe_clear_interrupt_scheme which calls
+ixgbe_free_q_vectors which calls ixgbe_free_q_vector in a loop.
+ixgbe_free_q_vector decrements ixgbe_xdp_locking_key once per call if
+it is non-zero.  Commenting out the decrement in ixgbe_free_q_vector
+stopped my system from panicing.
 
-drivers/media/i2c/max9286.c:802 max9286_s_stream() error: buffer overflow 'priv->fmt' 4 <= 32
-drivers/nvmem/imx-ocotp.c:599:21: sparse: sparse: symbol 'imx_ocotp_layout' was not declared. Should it be static?
-net/devlink/leftover.c:7160 devlink_fmsg_prepare_skb() error: uninitialized symbol 'err'.
+I suspect to make the original patch work, I would need to load an XDP
+program and then replace it in order to get ixgbe_xdp_locking_key back
+above 0 since ixgbe_setup_tc is only called when transitioning between
+XDP and non-XDP ring configurations, while ixgbe_xdp_locking_key is
+incremented every time ixgbe_xdp_setup is called.
 
-Error/Warning ids grouped by kconfigs:
+Also, ixgbe_setup_tc can be called via ethtool --set-channels, so this
+becomes another path to decrement ixgbe_xdp_locking_key to 0 on systems
+with greater than 64 CPUs.
 
-gcc_recent_errors
-|-- arc-randconfig-m031-20230123
-|   `-- drivers-media-i2c-max9286.c-max9286_s_stream()-error:buffer-overflow-priv-fmt
-|-- loongarch-randconfig-r014-20230123
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-accessories-link_dp_trace.c:warning:no-previous-prototype-for-link_dp_trace_get_edp_poweroff_timestamp
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-accessories-link_dp_trace.c:warning:no-previous-prototype-for-link_dp_trace_get_edp_poweron_timestamp
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-accessories-link_dp_trace.c:warning:no-previous-prototype-for-link_dp_trace_set_edp_power_timestamp
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-ds_port-set-but-not-used
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- riscv-randconfig-s033-20230123
-|   `-- drivers-nvmem-imx-ocotp.c:sparse:sparse:symbol-imx_ocotp_layout-was-not-declared.-Should-it-be-static
-|-- s390-allmodconfig
-|   |-- ERROR:devm_platform_ioremap_resource-drivers-dma-fsl-edma.ko-undefined
-|   `-- ERROR:devm_platform_ioremap_resource-drivers-dma-idma64.ko-undefined
-|-- s390-randconfig-c042-20230123
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-accessories-link_dp_trace.c:warning:no-previous-prototype-for-link_dp_trace_get_edp_poweroff_timestamp
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-accessories-link_dp_trace.c:warning:no-previous-prototype-for-link_dp_trace_get_edp_poweron_timestamp
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-accessories-link_dp_trace.c:warning:no-previous-prototype-for-link_dp_trace_set_edp_power_timestamp
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-ds_port-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
-|-- s390-randconfig-r032-20230123
-|   `-- ERROR:devm_platform_ioremap_resource-drivers-dma-idma64.ko-undefined
-`-- x86_64-randconfig-m001-20230123
-    `-- net-devlink-leftover.c-devlink_fmsg_prepare_skb()-error:uninitialized-symbol-err-.
+For this patch, I have changed static_branch_inc to static_branch_enable
+in ixgbe_setup_xdp.  We aren't counting references and I don't see any
+reason to turn it off, since all the locking appears to be in the XDP_TX
+path, which isn't run if a XDP program isn't loaded.
 
-elapsed time: 4125m
+Signed-off-by: John Hickey <jjh@daedalian.us>
+---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c  | 3 ---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 2 +-
+ 2 files changed, 1 insertion(+), 4 deletions(-)
 
-configs tested: 62
-configs skipped: 2
-
-gcc tested configs:
-um                             i386_defconfig
-x86_64                            allnoconfig
-um                           x86_64_defconfig
-x86_64                          rhel-8.3-func
-powerpc                           allnoconfig
-x86_64                    rhel-8.3-kselftests
-x86_64                              defconfig
-i386                                defconfig
-x86_64                           rhel-8.3-syz
-x86_64                         rhel-8.3-kunit
-x86_64                           rhel-8.3-kvm
-x86_64                           rhel-8.3-bpf
-arc                                 defconfig
-s390                             allmodconfig
-alpha                               defconfig
-x86_64                               rhel-8.3
-x86_64               randconfig-a002-20230123
-arm                                 defconfig
-i386                 randconfig-a004-20230123
-ia64                             allmodconfig
-i386                 randconfig-a003-20230123
-s390                                defconfig
-sh                               allmodconfig
-x86_64               randconfig-a001-20230123
-x86_64                           allyesconfig
-arc                  randconfig-r043-20230123
-arm                  randconfig-r046-20230123
-i386                 randconfig-a002-20230123
-x86_64               randconfig-a004-20230123
-m68k                             allyesconfig
-i386                 randconfig-a001-20230123
-x86_64               randconfig-a003-20230123
-s390                             allyesconfig
-x86_64               randconfig-a005-20230123
-i386                 randconfig-a005-20230123
-i386                             allyesconfig
-m68k                             allmodconfig
-mips                             allyesconfig
-x86_64               randconfig-a006-20230123
-i386                 randconfig-a006-20230123
-powerpc                          allmodconfig
-arc                              allyesconfig
-alpha                            allyesconfig
-arm64                            allyesconfig
-arm                              allyesconfig
-
-clang tested configs:
-x86_64                          rhel-8.3-rust
-x86_64               randconfig-a013-20230123
-x86_64               randconfig-a011-20230123
-i386                 randconfig-a012-20230123
-x86_64               randconfig-a012-20230123
-i386                 randconfig-a013-20230123
-i386                 randconfig-a011-20230123
-x86_64               randconfig-a015-20230123
-hexagon              randconfig-r041-20230123
-x86_64               randconfig-a014-20230123
-x86_64               randconfig-a016-20230123
-i386                 randconfig-a014-20230123
-hexagon              randconfig-r045-20230123
-i386                 randconfig-a016-20230123
-i386                 randconfig-a015-20230123
-s390                 randconfig-r044-20230123
-riscv                randconfig-r042-20230123
-
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+index f8156fe4b1dc..0ee943db3dc9 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+@@ -1035,9 +1035,6 @@ static void ixgbe_free_q_vector(struct ixgbe_adapter *adapter, int v_idx)
+ 	adapter->q_vector[v_idx] = NULL;
+ 	__netif_napi_del(&q_vector->napi);
+ 
+-	if (static_key_enabled(&ixgbe_xdp_locking_key))
+-		static_branch_dec(&ixgbe_xdp_locking_key);
+-
+ 	/*
+ 	 * after a call to __netif_napi_del() napi may still be used and
+ 	 * ixgbe_get_stats64() might access the rings on this vector,
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index ab8370c413f3..cd2fb72c67be 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -10283,7 +10283,7 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
+ 	if (nr_cpu_ids > IXGBE_MAX_XDP_QS * 2)
+ 		return -ENOMEM;
+ 	else if (nr_cpu_ids > IXGBE_MAX_XDP_QS)
+-		static_branch_inc(&ixgbe_xdp_locking_key);
++		static_branch_enable(&ixgbe_xdp_locking_key);
+ 
+ 	old_prog = xchg(&adapter->xdp_prog, prog);
+ 	need_reset = (!!prog != !!old_prog);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.37.2
+
