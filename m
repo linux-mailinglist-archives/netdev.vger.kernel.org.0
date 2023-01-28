@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1EEE67F376
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 02:08:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0B1F67F375
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 02:07:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233643AbjA1BID (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 20:08:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38420 "EHLO
+        id S233151AbjA1BH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 20:07:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232356AbjA1BH4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 20:07:56 -0500
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2045.outbound.protection.outlook.com [40.107.8.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2271ADCE
-        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 17:07:55 -0800 (PST)
+        with ESMTP id S231953AbjA1BHz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 20:07:55 -0500
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2089.outbound.protection.outlook.com [40.107.8.89])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 180DA1ADCC
+        for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 17:07:54 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MbyWghYKzoahm07iE77nuAEEx3FUgjsfcOw4ImX0fchbXCnuQOQM5mmVWtFsryrl9gC3+Dhn8aKXkUFrVGgOaL8LJlii1ujUD8hoZJ7hrhfwiJ5SGAr0XqQnoHXfYs9ktEU4p50PcmQW3pCczbdb1gVNajd4pRz3Lc0tk3Mt9ZVNvMu+12EJzEtlV3VLUBPl3y4X9qSyUDWl1UAn+SOX9oGIKjFf2Bms5shAHegJYJ0X+YWuE160Xhi9OG8oL/eWQQgypjNSqWp4wNM0Ie+kyMK+iEjEkVr11WMqR5edOHqI56xi6ReiOiBtNiZYOYMMFFzhQDjeKpP7riaNXQLqHw==
+ b=WDy/FGOJI43FQk96MquuuqrBPv3iFIiVhzsLInxsRM66QmKBQOCLcoHGVfa+xGNKyLMxCAzGeCYr01w0L+u+MXrJfxwzufj08uPDfvLHXF2hQ3d7G25tR/b1WGbndDmxWLDap3rKe1mo7vcEEM1k15p3XE3ywM2Hyhobhzg1BmJSELHkzKhOmAhnkHZQp7gQnafZD5kmXdzNvj28rcqLsO17jLCWzPybUAK1VKRIQVY3O5stbus9NEicRTIyJgTaEIo/ec+V7+YMw4yEYq6pXERDl6oVlJHWhEMRE3S+XOKJAtqirsU/uuC7162144EQVnGcM2lku6ZefdQ21oXT3A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eUssSdJtzUQfQiYK0BDmZMG7q2MKAhBmvgYvaTeg8us=;
- b=e7ycrKpjoeTIZA2miVDSokDVOe+J2ol57xcPxSzOxeeA4QRN2sdaOVy7eC8QsNg06zsFVnAL7K56Sm7qOHDqEBz/hyYi3nRLadx3B4HNT0TkeBkaui6exCroxiYC3Nh5k38SmXjdznJzcT1mS8orA3Mf9pKjQyPjaKo7HQ7tX32mbbtkZHY436hLk5zkZBygG1ucPjZ1ERviIfiuXpYvJu1BmZjgVRKoRE+L5i3UPYkGdm1Xi+tST8clqBhRoNQGFSi/cnPw4Kz2atPU612rQ7ahr+Qan9asJwBr8YSz5/RF1bIc5IxXmQ3Is+VLgUbedXZUYOtdqoEx0e1M3yjc0g==
+ bh=F/cwxpkDFqYRd0KtlBJqEIpYgzWS9S4gs3XH5G7eF/Y=;
+ b=jzVm5pdljsNLoXlTcbSdaWlPNHamRI6nIWe3xJug/RX+sSTpO6254KDJ2aTAoz71OvTp0r9z8hhsCjAVn7qFpzMrqL3j9o+bgaS2gA/pLOQ07Mvkdgvna2Vhgfiki+DO31/244hNzqduTqJ8mLW/Jm/Mmym8IZJ0kuwVsuvyriyAqe3ON7YsLglx7rWiJ4IpsHuD5gbWf+HCDKHeHpE/gqsiDVsNNONLwDCLKa7GGfJAxSNrv72FZ6jf/iOSpU6828L/of3mr5FBz9n4LcrJYJgx1AnW9lKcxgSLZKNzyvUycYbmfB57GWnKkBnFp1qV34TCGrk2gMAZsp4QIQUpGA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eUssSdJtzUQfQiYK0BDmZMG7q2MKAhBmvgYvaTeg8us=;
- b=AXmu25YiEvR/C4kmcDhMiJF/7nAIu4aE6gyHED3W85s06fVOAlTVKyDOi+fzE0XposjlGy6pjG9KUzSr1P8sUvSvw8mfQANpk3dUkA+5UYbjAu0fnZZbWYnj8qm1vtPnWktEs9dcqawhec+Dl8+O7wZg21Yd44hQFlgoaOohrcI=
+ bh=F/cwxpkDFqYRd0KtlBJqEIpYgzWS9S4gs3XH5G7eF/Y=;
+ b=kAB/OwOGyRxDnRwDYxrRd0BoiGrJlcWCJOTOcXp0DLP3XqZF0146AAf0ZDsjEVL5M/9sIj/tgbdnsKtRKOVgJFJ1tl9tzcMAjupWL/am1BeI2hvwLRIcmnBqLI04A9jJopu0glNldVrpX2GO4haU2OogMgrMikdu/t/x11VokQA=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
@@ -43,9 +43,9 @@ From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [RFC PATCH net-next 01/15] net/sched: taprio: delete peek() implementation
-Date:   Sat, 28 Jan 2023 03:07:05 +0200
-Message-Id: <20230128010719.2182346-2-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 02/15] net/sched: taprio: continue with other TXQs if one dequeue() failed
+Date:   Sat, 28 Jan 2023 03:07:06 +0200
+Message-Id: <20230128010719.2182346-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230128010719.2182346-1-vladimir.oltean@nxp.com>
 References: <20230128010719.2182346-1-vladimir.oltean@nxp.com>
@@ -57,51 +57,51 @@ X-ClientProxiedBy: BE1P281CA0128.DEUP281.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PAXPR04MB9203:EE_
-X-MS-Office365-Filtering-Correlation-Id: d14b9fd2-b4bf-4202-a0c5-08db00cc130d
+X-MS-Office365-Filtering-Correlation-Id: e29e73b5-d047-487c-1181-08db00cc1361
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AfkyZeG6UGVUAKlw7G5Ll/x5x+rzKZrHd4uZN+04VfZ16e+7rbmjaiYFjaHHkKshdZRgIkuJi9IfqpMazPW/ZfYtAIyFkG7msA+Z+ilxysTLzNJ6bRkPQdTeU2VdCYARyB2Z4NXu1LJ5ULZfX0QG2jHIDFN2SrmqGSGIaCjig/AWBvgUstTnUjEz7deYJCs+re4S9GIqHTLWL3i7eRzrrCwwZd7GdWIPy6Wy2E98v9AGvWKUgU2coLAyaus3jSFSa8U4AnQ+3Kl7MOHArqtskgm+ZUd4/5qTg3QrlO0hczTuV4kFdbG6wMFehhUb54E48r5rGUnzmtMrnokpwJYISws1XBXoVgxgmkke1LxKTck5rdi4EJ7r3ckOv/bCF4P0Tfz0RtIX8zc3Mbo7E7z/yjh8R7L4sJDZeYXPsobUKTGFt5pjRotLlkaX7fSmV2W3Iv9iE9UlllzdcOym9u8Yltc92gFVV7HySWY1EXOFOYWW5dHBVja49BpvUUy+8w531eb+KQY56tFAlL98W3nZjsZ/U/2OUSch4bF0D2imqWNgAP40iIn+e/hJwdKWALPBStPmf4nSImBIkQbIFvWre2XQj9VVnwDy3/QX8XdRlgzncBHCrUIM/pICN37cm+NyyscdCnAffw4xxKWZH7t4tj7t+IWuBKhi8DseiRJTfPcQ/oMJ2YWqWgkemt6nmUDCj6GKkC2Q/oZIvGZDvtcz9g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(396003)(39860400002)(136003)(366004)(376002)(451199018)(186003)(36756003)(6506007)(1076003)(6512007)(26005)(38350700002)(5660300002)(38100700002)(44832011)(2906002)(6486002)(6666004)(52116002)(2616005)(86362001)(83380400001)(6916009)(4326008)(66946007)(54906003)(478600001)(66476007)(66556008)(316002)(8676002)(8936002)(41300700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: g+PBmDfmpsUyZSomwOyPacwm8XXiwxDq9u120qpx72/g6G6quDfkDAAf38JtcGk/tOwUUDjGCiBsVPxOem3c4fASqhHbH5b0Mv3o4wpUHa9VMRAkQorddIMn160UigXqWeg2DKp/+A8rIqtxxhG/vwk2ESnTQ2EpaKBhaPcCu6EO9sWZ3LOJ6EVja+0Jv+TACaMksatgFfmx69mVRoaBmfS5D55T3oYugI9mrCgLgVOpIJ8OxgyDkHoZ+pCx+952ID3tlngUaYuGE9V5gG4AIUHt+abtkSmJLe7H8S+bOdftRGc9UnBX96h0LtBG+C5vNd0h/2ti9t4zVGXBsWBPzIBwRSUl/nLA3Mj8OjpA9FRAZBDWBRglmEYyMXsekKbATJrwTWIEIsuD+RkbpiB2gku1HdCDHIUxbKPCWlY8wibPubWOjr/bWPM327gD1asOdR1/LOCxINGVv68tKy1uFMNK6VZbXWWSECWIIEXoI7OOs2RvkR33xdzsGWMTrQLT2ZvzQ7XsdEqQUfG/2Td//4GXrAxmVQjrpII/KuJV9qJij7qkTcp41KiCqWWatwKPrXa2cSa06kINbtiYW6bcb4HAETJveE5vzx8aa6n7nOtWfOH8zDK696hwwERPqSXOC3OxYeiZdhX5w5ErUu5kyBqK3JwGm4VWJ183X0pZkj1cDuztYUtGFsY8xAXgVt6fm115T/Wwomw4DUroA7670w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(396003)(39860400002)(136003)(366004)(376002)(451199018)(66899018)(186003)(36756003)(6506007)(1076003)(6512007)(26005)(38350700002)(5660300002)(38100700002)(44832011)(2906002)(6486002)(6666004)(52116002)(2616005)(86362001)(83380400001)(6916009)(4326008)(66946007)(54906003)(478600001)(66476007)(66556008)(316002)(8676002)(8936002)(41300700001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vo2CW/IPdYtcqx9+cL0MLuUBo0+qmVmY2kw5YOSEtz2Np/Y4MpWauWl+v/N8?=
- =?us-ascii?Q?+iiEnMRpwuJCBAl496jLfDuaAxVmMGM4ii0ieg2DpJoQwqyTYmdy2ykA7RHu?=
- =?us-ascii?Q?sKm9pjFpxEfLVKZTJguIICCGWJkShr5Lm+HngJvpDHJBP4xiAvGEzGJw1psF?=
- =?us-ascii?Q?jgVkSOEsZ1nQzunEwIVhepRfX4hI1rWONlsp9kPsN8Yg60hrfj4JUaeWJkx1?=
- =?us-ascii?Q?RL+xDoNwK4mHRgaUH2f2Uar3Mskre3u2xobh//yjda3iajhwRs/D9PhKYPIz?=
- =?us-ascii?Q?llzhYHTqEQai+ZcUgKP0sA76eRYtyPFg6/y5VO9byphq/4coS/S6KNZmYbm8?=
- =?us-ascii?Q?9tPGDrItVO8RUpn7UnnYWbUWxw/v+IlD2/R31Mb90e+wDU4zlWAGORIgAilJ?=
- =?us-ascii?Q?huxDS+6z3ryhFag6sKoD7uTpcXogDbIawmqcNlUc+419qVJi1qNJF1uWEKBA?=
- =?us-ascii?Q?s0o/ntgqMpQ747qEzx5Qj5zLYzEu2ceRt9Q4uJrlqidWHERd4sP/Hwzqx25Q?=
- =?us-ascii?Q?pIJhnSWXVE+aSf41Vx/EzBAIVBvfyAFPGa6sqSam/WJ/Wxy/1nK8xa2f8L8f?=
- =?us-ascii?Q?/kuxAc2zDIo+4J0e97O4aLVREHIyiHijDGzuyo4DeNXULs2qMgOOkWS8Pu8J?=
- =?us-ascii?Q?fcYXjAuq1KHeaISArmOANdbBZ4GXBL2A2W5Wmg1HLUSZW+8Pj2hUzBF3eAng?=
- =?us-ascii?Q?WifY5teUSpmJvv3jTPL1aXJr2Qz69dA+4KrUAr8dZiHSuvXMVqVl74aNi1Do?=
- =?us-ascii?Q?EnyH2oV+/tx9lg8H1FAcibX9v3xiGCGpe6shUN8t0d4R178IFRVvpLifzrRy?=
- =?us-ascii?Q?3c0TuEa/3+cs3lIiAFZE4XZQpjaq2LeJfcKA9Ygq/oQduL4VdJLLX218+j6/?=
- =?us-ascii?Q?i4sgTn0uYkpdSA6q17QhYZo/vbYLl68SKmcwRPjwAf+BPPtzUwCI5dHhEwzd?=
- =?us-ascii?Q?Z+7uZ+qMal8sfs80lv2aSiBXRhwG2zEDbnaZEVHc/VA1xOmhimovrThCb1tm?=
- =?us-ascii?Q?DdCpUdP71GyikPW3hI6sqW8u86AjZUFNPYvH2FTdty6TFeBwhF6dIttH8UCy?=
- =?us-ascii?Q?Q3fV1ACw5HCuy1ujVAKIZNoN5a/S7hs9GfzK99FBKMFtiXwHD2TqSxBNNVDq?=
- =?us-ascii?Q?N5GTh0bg+seXM/toqRcOhsiqrnZgwgMG7YSHMkrOu351adIs4DUyGu7Nsdx4?=
- =?us-ascii?Q?InvCxzMuU26YQfn66nGKoWXmp6+W9BjABfIt9MJnF9+Zo2rtQJiW+fj3WPXv?=
- =?us-ascii?Q?yqaFygnpeWVeg2vTbRdR5/FlTh1nMZ819sQTff1oaB6JU52FuHOL6kYnLUAW?=
- =?us-ascii?Q?P5QcXMt0e1HM9t0U7SirzL5PHBDtwhHM690r5Br5thBYT9MsGl7UICtEvrdI?=
- =?us-ascii?Q?MkCK+d0zhzLDPSlcyQxoD3/zzoW1bjRr/bcwZ+1Uk+f7F598G7yq5/yUo+Vh?=
- =?us-ascii?Q?v7CGvK8RhmGdZbsOm9adeFSBv3NklBJ3+kX3ZQZbnSC4yfQmFS68vQH1kXt2?=
- =?us-ascii?Q?+tSSNaOgU2PrxULePhRa3QAEy6DxJMPcpYf1tWaRF4YpmSWzegYWGJfhHjz/?=
- =?us-ascii?Q?qpZaT7+0sJqmnSu0lIM5Agfe/XVD5gqtIyGJArArkcs7vNrls2lqWSnuv+DX?=
- =?us-ascii?Q?Nw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1H75koATdtYicWa1la7SqljDcwc443ekPAd6fi+RopjYrwKtsCMTe21slrmB?=
+ =?us-ascii?Q?Vp4zfe3AkJ7guPDfyH91eTbQy0oG0LHu48v1lk65o8ZaULkeFJguNBNtGVwm?=
+ =?us-ascii?Q?TJuvEPfgCaIxoyi6pRSOMR1wPozeIEvvz7rnnFFR5GIu3eCSpqjOOmvR/9Xs?=
+ =?us-ascii?Q?rZ5ZBm0pANNahuzE415Rac1tzKD3zHYcUbnPMo60VSZuYnO4HhDSeL7LgVV7?=
+ =?us-ascii?Q?vc1vbe0wwKZwSlw4GGFBSsFN0zWX99fPViZaldLmJ0ep2MIe3yMO4onXR7G4?=
+ =?us-ascii?Q?1veV9rWuoS7ZPO16ryFCHi09uf5QAAmLUosiI2JRAX0yoa4mvET/SAe9pFg9?=
+ =?us-ascii?Q?2KKdRwtCCdDCrprXE+dPbvUVnKl4rutk7je0dHYGx9uszYyR4gPv6MA+AHZY?=
+ =?us-ascii?Q?WhlsI5rQxsjmBk9OdnvJ8CtFuqXzw3h4O5Hme/LEhasreYRHPENFWAE2/G+q?=
+ =?us-ascii?Q?qh4kNsDTBe4t/Tpr5w5f415o9tGV4ZRHS2KoTY2CggPCwlOZXr37unEzlCVr?=
+ =?us-ascii?Q?NIL663K03J5vSzivmWIUxKiy1o5T5xyv7xp+BxiCJoEStHJJF5O1AYmSSXCY?=
+ =?us-ascii?Q?jv+Z8Gt2lrZ0epVSz6husqaKT6ylm4H26NQ/+BS8jlMMBNoexEdGrrhgdttZ?=
+ =?us-ascii?Q?US+hyiRWGg5ho5cAdNX79IyXGtlwUntmLPolqRFaG9hcMaaFoTIk8Uj7ixza?=
+ =?us-ascii?Q?jlWfywbnoEpKPcnt+vBZnpS/0bh/XkO7q/TDDIw+lamVLVb9p1RnRU+ava90?=
+ =?us-ascii?Q?QOcZze9wXGZ99u4zX4PIV3KPC2lWlAckDoZGfrNtjQxgzCJV7tkW7kE78gHa?=
+ =?us-ascii?Q?6YUQMiI20uK8ZcXhbW0V+iXtb/nzMS44Ox0/hfkrdiN7aEbeQrlRiHuURg5u?=
+ =?us-ascii?Q?JQYOu+C+npH1SU6GB5AcXHOekRTKMLvi9yjT3OM0XGnOPsfdE6Ap8pJi+k8K?=
+ =?us-ascii?Q?ujtUELVM0D0yrNDe+I2MxgzIejGPWPA/J/2noAukq0NW6Fk/CY2+uceU4GRB?=
+ =?us-ascii?Q?9fV09h33dOS4OA4nHQ0N4BIAnQ85TpbNq2y232XLx29pcIw0y6cvqqLBtjMN?=
+ =?us-ascii?Q?89MYUe0+v6mD0Tc407l1rjkgw432NCKCxWN/4nnT/4oeszADt6JuheFUWfRf?=
+ =?us-ascii?Q?Sma3JgUyMYGX4Jc6Mj8lc9AlSKnHj/dk+S3+JD9tMroPJrtQtQ5QMpl6GJWy?=
+ =?us-ascii?Q?u/xul1CNpiw3WkkQB4KdXRIWGZQGubN860pOpaC44hwp1/lKv03ERhXTLQ0v?=
+ =?us-ascii?Q?gtuxjxaOHBamUSjCDRY9sZB+yXJMvj/BROyGdku1z34jtszT4sNB83bb26/4?=
+ =?us-ascii?Q?9eg92HE5eNG5pj9gKzNmU4gFGR61jshOJUlFKFaWC/T3DjtkFBGLyq4VacIJ?=
+ =?us-ascii?Q?fvWdRvgMxwN6L75jA1JJCoN7OHja8d7W2GcF5RjAngQuUwFvxiLdpD7CBOUi?=
+ =?us-ascii?Q?oQHnbJEv9imS2zkQnd3HkmlNuLcXqX8wrW1mcwjzQ2lTXvkGRkp+e+3gfPyJ?=
+ =?us-ascii?Q?J8yKFOv61mRKDAluRZv12jRpP2LzhtcuSpZyloxNwlOZlDBcVSbDVEPM7kEW?=
+ =?us-ascii?Q?eml9lUg9oZ2W0apCloncVb8Kw0FVr3MwrbQ8tCOcfNHEJAjOVTtv2CDuDyAi?=
+ =?us-ascii?Q?0w=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d14b9fd2-b4bf-4202-a0c5-08db00cc130d
+X-MS-Exchange-CrossTenant-Network-Message-Id: e29e73b5-d047-487c-1181-08db00cc1361
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jan 2023 01:07:49.7920
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jan 2023 01:07:50.3076
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: M6ItDhSPM81VoeO6JslE4yOa76+sq2CrHtP5NdQQA1tX/R2Nw2ceVXo/oM4pNBg/nPdNOztwOGuiNn1CAh+oqw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: pMsSVmwT8Tdj3dUk2zi4aUY/R6s0kI2rnOaOX1xgDvAdbVtPiZQy9/M+3YmN27PaW2cAjBNxKUPOHUEYUaap+g==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB9203
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -113,79 +113,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There isn't any code in the network stack which calls taprio_peek().
-We only see qdisc->ops->peek() being called on child qdiscs of other
-classful qdiscs, never from the generic qdisc code. Whereas taprio is
-never a child qdisc, it is always root.
+This changes the handling of an unlikely condition to not stop dequeuing
+if taprio failed to dequeue the peeked skb in taprio_dequeue().
 
-This snippet of a comment from qdisc_peek_dequeued() seems to confirm:
+I've no idea when this can happen, but the only side effect seems to be
+that the atomic_sub_return() call right above will have consumed some
+budget. This isn't a big deal, since either that made us remain without
+any budget (and therefore, we'd exit on the next peeked skb anyway), or
+we could send some packets from other TXQs.
 
-	/* we can reuse ->gso_skb because peek isn't called for root qdiscs */
-
-Since I've been known to be wrong many times though, I'm not completely
-removing it, but leaving a stub function in place which emits a warning.
+I'm making this change because in a future patch I'll be refactoring the
+dequeue procedure to simplify it, and this corner case will have to go
+away.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/sched/sch_taprio.c | 43 +-----------------------------------------
- 1 file changed, 1 insertion(+), 42 deletions(-)
+ net/sched/sch_taprio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index f2c585bb0519..375f445c1cfb 100644
+index 375f445c1cfb..1504fdae723f 100644
 --- a/net/sched/sch_taprio.c
 +++ b/net/sched/sch_taprio.c
-@@ -497,50 +497,9 @@ static int taprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 	return taprio_enqueue_one(skb, sch, child, to_free);
- }
+@@ -585,7 +585,7 @@ static struct sk_buff *taprio_dequeue(struct Qdisc *sch)
  
--/* Will not be called in the full offload case, since the TX queues are
-- * attached to the Qdisc created using qdisc_create_dflt()
-- */
- static struct sk_buff *taprio_peek(struct Qdisc *sch)
- {
--	struct taprio_sched *q = qdisc_priv(sch);
--	struct net_device *dev = qdisc_dev(sch);
--	struct sched_entry *entry;
--	struct sk_buff *skb;
--	u32 gate_mask;
--	int i;
--
--	rcu_read_lock();
--	entry = rcu_dereference(q->current_entry);
--	gate_mask = entry ? entry->gate_mask : TAPRIO_ALL_GATES_OPEN;
--	rcu_read_unlock();
--
--	if (!gate_mask)
--		return NULL;
--
--	for (i = 0; i < dev->num_tx_queues; i++) {
--		struct Qdisc *child = q->qdiscs[i];
--		int prio;
--		u8 tc;
--
--		if (unlikely(!child))
--			continue;
--
--		skb = child->ops->peek(child);
--		if (!skb)
--			continue;
--
--		if (TXTIME_ASSIST_IS_ENABLED(q->flags))
--			return skb;
--
--		prio = skb->priority;
--		tc = netdev_get_prio_tc_map(dev, prio);
--
--		if (!(gate_mask & BIT(tc)))
--			continue;
--
--		return skb;
--	}
--
-+	WARN_ONCE(1, "taprio only supports operating as root qdisc, peek() not implemented");
- 	return NULL;
- }
+ 		skb = child->ops->dequeue(child);
+ 		if (unlikely(!skb))
+-			goto done;
++			continue;
  
+ skb_found:
+ 		qdisc_bstats_update(sch, skb);
 -- 
 2.34.1
 
