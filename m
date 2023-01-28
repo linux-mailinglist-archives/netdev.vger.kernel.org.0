@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 273DD67F4B1
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 05:32:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A376567F4B2
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 05:32:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232087AbjA1Ecg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 23:32:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42040 "EHLO
+        id S232445AbjA1Ecv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 23:32:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231681AbjA1Ec0 (ORCPT
+        with ESMTP id S231648AbjA1Ec0 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 23:32:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05ACE7C306
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04DCB7AE61
         for <netdev@vger.kernel.org>; Fri, 27 Jan 2023 20:32:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 963AD60A08
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9503C6093C
         for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 04:32:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE598C433EF;
-        Sat, 28 Jan 2023 04:32:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F4C2C4339E;
+        Sat, 28 Jan 2023 04:32:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1674880344;
-        bh=H08foJN1GxlObkJcF6JuE5N6coWdFY46pqMFEk0WPSk=;
+        bh=eBarguq2Ue2KIYg17NIXjPPlUytqZ/y2FxdtwAIL3X0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cXZB2rf5AdNjWSu++tw2KSwQmRRA7xQENnIR8Tx/0N1CiqpPyVa3Bgv54mylxw59y
-         ubL9Wl/QDMNNfnU9dTMYAyiUloEGGVIuu0BUXHB+07jqXth9QvphHTRbmtKCL0ZO3y
-         YyTY3y2j1DEYUmtwYXPcRVIy065mkS6ed8GNGotAVMk7TvJM/DhpB2KvI5Kc8LhO07
-         C/oAxrcjhK1HcZ1AvWpE0El6RmaE2oL2IraPKa+DjQMU5937HS18kMnkiLhM/zeGsr
-         9uTyIN2MguKeXeGhC1QwN2fMwnwN+0nAwpdKZaGWB2cQp+9DllEqMRN8MsSV7s82FB
-         Js03MdAuo+xtQ==
+        b=K9UKcMydWi6tlKUTMlyN9WNjH6o3z6UyxjWiq7sKjfQrDJqy8dX/iOxXYNrIZ6bBp
+         bpE9u/S1PuNYtc2CoWWV8fW6uGzMSEy+jXGesFWi+XSS5zKgCjnh0kPqNomRanFN82
+         qSaup5DNMvbX0KjSHCuzlVmkxeaNnBIkmXjAL0/cZG1GHUEuda5qwLXmC1w9CaTDLS
+         sX/WnMnzNvUY0UxyOdKnPmXqyLTQGLx+ideZ5htMuI2Ap04cGaSUIvwTzlHoalxjJg
+         jEY/FDxwVN9k44wOT2sKYBg10fBKNlcV1WuVyeoRSoaAI/MaaIHM1UTjVRxOfsYhze
+         2mEPQBonZ9zsw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 11/13] netlink: specs: finish up operation enum-models
-Date:   Fri, 27 Jan 2023 20:32:15 -0800
-Message-Id: <20230128043217.1572362-12-kuba@kernel.org>
+Subject: [PATCH net-next 12/13] netlink: specs: add partial specification for ethtool
+Date:   Fri, 27 Jan 2023 20:32:16 -0800
+Message-Id: <20230128043217.1572362-13-kuba@kernel.org>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230128043217.1572362-1-kuba@kernel.org>
 References: <20230128043217.1572362-1-kuba@kernel.org>
@@ -52,177 +52,480 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I had a (bright?) idea of introducing the concept of enum-models
-to account for all the weird ways families enumerate their messages.
-I've never finished it because generating C code for each of them
-is pretty daunting. But for languages which can use ID values directly
-the support is simple enough, so clean this up a bit.
+Ethtool is one of the most actively developed families.
+With the changes to the CLI it should be possible to use
+the YNL based code for easy prototyping and development.
+Add a partial family definition. I've tested the string
+set and rings. I don't have any MAC Merge implementation
+to test with, but I added the definition for it, anyway,
+because it's last. New commands can simply be added at
+the end without having to worry about manually providing
+IDs / values.
 
-"unified" model is what I recommend going forward.
-"directional" model is what ethtool uses.
-"notify-split" is used by the proposed DPLL code, but we can just
-make them use "unified", it hasn't been merged :)
+Set (with notification support - None is the response,
+the data is from the notification):
+
+$ sudo ./tools/net/ynl/cli.py \
+    --spec Documentation/netlink/specs/ethtool.yaml \
+    --do rings-set \
+    --json '{"header":{"dev-name":"enp0s31f6"}, "rx":129}' \
+    --subscribe monitor
+None
+[{'msg': {'header': {'dev-index': 2, 'dev-name': 'enp0s31f6'},
+          'rx': 136,
+          'rx-max': 4096,
+          'tx': 256,
+          'tx-max': 4096,
+          'tx-push': 0},
+  'name': 'rings-ntf'}]
+
+Do / dump (yes, the kernel requires that even for dump and even
+if empty - the "header" nest must be there):
+
+$ ./tools/net/ynl/cli.py \
+    --spec Documentation/netlink/specs/ethtool.yaml \
+    --do rings-get \
+    --json '{"header":{"dev-index": 2}}'
+{'header': {'dev-index': 2, 'dev-name': 'enp0s31f6'},
+ 'rx': 136,
+ 'rx-max': 4096,
+ 'tx': 256,
+ 'tx-max': 4096,
+ 'tx-push': 0}
+
+$ ./tools/net/ynl/cli.py \
+    --spec Documentation/netlink/specs/ethtool.yaml \
+    --dump rings-get \
+    --json '{"header":{}}'
+[{'header': {'dev-index': 2, 'dev-name': 'enp0s31f6'},
+  'rx': 136,
+  'rx-max': 4096,
+  'tx': 256,
+  'tx-max': 4096,
+  'tx-push': 0},
+ {'header': {'dev-index': 3, 'dev-name': 'wlp0s20f3'}, 'tx-push': 0},
+ {'header': {'dev-index': 19, 'dev-name': 'enp58s0u1u1'},
+  'rx': 100,
+  'rx-max': 4096,
+  'tx-push': 0}]
+
+And error reporting:
+
+$ ./tools/net/ynl/cli.py \
+    --spec Documentation/netlink/specs/ethtool.yaml \
+    --dump rings-get \
+    --json '{"header":{"flags":5}}'
+Netlink error: Invalid argument
+nl_len = 68 (52) nl_flags = 0x300 nl_type = 2
+	error: -22	extack: {'msg': 'reserved bit set',
+	                         'bad-attr-offs': 24,
+				 'bad-attr': '.header.flags'}
+None
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- Documentation/netlink/genetlink-c.yaml        |  4 +-
- Documentation/netlink/genetlink-legacy.yaml   | 11 ++-
- Documentation/netlink/genetlink.yaml          |  4 +-
- .../netlink/genetlink-legacy.rst              | 82 +++++++++++++++++++
- 4 files changed, 92 insertions(+), 9 deletions(-)
+ Documentation/netlink/specs/ethtool.yaml | 392 +++++++++++++++++++++++
+ 1 file changed, 392 insertions(+)
+ create mode 100644 Documentation/netlink/specs/ethtool.yaml
 
-diff --git a/Documentation/netlink/genetlink-c.yaml b/Documentation/netlink/genetlink-c.yaml
-index e23e3c94a932..bbcfa2472b04 100644
---- a/Documentation/netlink/genetlink-c.yaml
-+++ b/Documentation/netlink/genetlink-c.yaml
-@@ -218,9 +218,7 @@ additionalProperties: False
-           to a single enum.
-           "directional" has the messages sent to the kernel and from the kernel
-           enumerated separately.
--          "notify-split" has the notifications and request-response types in
--          different enums.
--        enum: [ unified, directional, notify-split ]
-+        enum: [ unified ]
-       name-prefix:
-         description: |
-           Prefix for the C enum name of the command. The name is formed by concatenating
-diff --git a/Documentation/netlink/genetlink-legacy.yaml b/Documentation/netlink/genetlink-legacy.yaml
-index 88db2431ef26..5642925c4ceb 100644
---- a/Documentation/netlink/genetlink-legacy.yaml
-+++ b/Documentation/netlink/genetlink-legacy.yaml
-@@ -241,9 +241,7 @@ additionalProperties: False
-           to a single enum.
-           "directional" has the messages sent to the kernel and from the kernel
-           enumerated separately.
--          "notify-split" has the notifications and request-response types in
--          different enums.
--        enum: [ unified, directional, notify-split ]
-+        enum: [ unified, directional ] # Trim
-       name-prefix:
-         description: |
-           Prefix for the C enum name of the command. The name is formed by concatenating
-@@ -307,6 +305,13 @@ additionalProperties: False
-                       type: array
-                       items:
-                         type: string
-+                    # Start genetlink-legacy
-+                    value:
-+                      description: |
-+                        ID of this message if value for request and response differ,
-+                        i.e. requests and responses have different message enums.
-+                      $ref: '#/$defs/uint'
-+                    # End genetlink-legacy
-                 reply: *subop-attr-list
-                 pre:
-                   description: Hook for a function to run before the main callback (pre_doit or start).
-diff --git a/Documentation/netlink/genetlink.yaml b/Documentation/netlink/genetlink.yaml
-index b5e712bbe7e7..62a922755ce2 100644
---- a/Documentation/netlink/genetlink.yaml
-+++ b/Documentation/netlink/genetlink.yaml
-@@ -188,9 +188,7 @@ additionalProperties: False
-           to a single enum.
-           "directional" has the messages sent to the kernel and from the kernel
-           enumerated separately.
--          "notify-split" has the notifications and request-response types in
--          different enums.
--        enum: [ unified, directional, notify-split ]
-+        enum: [ unified ]
-       name-prefix:
-         description: |
-           Prefix for the C enum name of the command. The name is formed by concatenating
-diff --git a/Documentation/userspace-api/netlink/genetlink-legacy.rst b/Documentation/userspace-api/netlink/genetlink-legacy.rst
-index 65cbbffee0bf..ae6053e3e50c 100644
---- a/Documentation/userspace-api/netlink/genetlink-legacy.rst
-+++ b/Documentation/userspace-api/netlink/genetlink-legacy.rst
-@@ -74,6 +74,88 @@ type. Inside the attr-index nest are the policy attributes. Modern
- Netlink families should have instead defined this as a flat structure,
- the nesting serves no good purpose here.
- 
-+Operations
-+==========
+diff --git a/Documentation/netlink/specs/ethtool.yaml b/Documentation/netlink/specs/ethtool.yaml
+new file mode 100644
+index 000000000000..82f4e6f8ddd3
+--- /dev/null
++++ b/Documentation/netlink/specs/ethtool.yaml
+@@ -0,0 +1,392 @@
++name: ethtool
 +
-+Enum (message ID) model
-+-----------------------
++protocol: genetlink-legacy
 +
-+unified
-+~~~~~~~
++doc: Partial family for Ethtool Netlink.
 +
-+Modern families use the ``unified`` message ID model, which uses
-+a single enumeration for all messages within family. Requests and
-+responses share the same message ID. Notifications have separate
-+IDs from the same space. For example given the following list
-+of operations:
-+
-+.. code-block:: yaml
-+
++attribute-sets:
 +  -
-+    name: a
-+    value: 1
-+    do: ...
-+  -
-+    name: b
-+    do: ...
-+  -
-+    name: c
-+    value: 4
-+    notify: a
-+  -
-+    name: d
-+    do: ...
-+
-+Requests and responses for aperation ``a`` will have the ID of 1,
-+the requests and responses of ``b`` - 2 (since there is no explicit
-+``value`` it's previous operation ``+ 1``). Notification ``c`` will
-+used the ID of 4, operation ``d`` 5 etc.
-+
-+directional
-+~~~~~~~~~~~
-+
-+The ``directional`` model splits the ID assignment by the direction of
-+the message. Messages from and to the kernel can't be confused with
-+each other so this conserves the ID space (at the cost of making
-+the programming more cumbersome).
-+
-+In this case ``value`` attribute should be specified in the ``request``
-+``reply`` sections of the operations (if an operation has both ``do``
-+and ``dump`` the IDs are shared, ``value`` should be set in ``do``).
-+For notifications the ``value`` is provided at the op level but it
-+only allocates a ``reply`` (i.e. a "from-kernel" ID). Let's look
-+at an example:
-+
-+.. code-block:: yaml
-+
-+  -
-+    name: a
-+    do:
-+      request:
-+        value: 2
-+	attributes: ...
-+      reply:
++    name: header
++    attributes:
++      -
++        name: dev-index
++        type: u32
 +        value: 1
-+	attributes: ...
-+  -
-+    name: b
-+    notify: a
-+  -
-+    name: c
-+    notify: a
-+    value: 7
-+  -
-+    name: d
-+    do: ...
++      -
++        name: dev-name
++        type: string
++      -
++        name: flags
++        type: u32
 +
-+In this case ``a`` will use 2 when sending the message to the kernel
-+and expects message with ID 1 in response. Notificatoin ``b`` allocates
-+a "from-kernel" ID which is 2. ``c`` allocates "from-kernel" ID of 7.
-+If operation ``d`` does not set ``values`` explicitly in the spec
-+it will be allocated 3 for the request (``a`` is the previous operation
-+with a request section and the value of 2) and 8 for response (``c`` is
-+the previous operation in the "from-kernel" direction).
++  -
++    name: bitset-bit
++    attributes:
++      -
++        name: index
++        type: u32
++        value: 1
++      -
++        name: name
++        type: string
++      -
++        name: value
++        type: flag
++  -
++    name: bitset-bits
++    attributes:
++      -
++        name: bit
++        type: nest
++        nested-attributes: bitset-bit
++        value: 1
++  -
++    name: bitset
++    attributes:
++      -
++        name: nomask
++        type: flag
++        value: 1
++      -
++        name: size
++        type: u32
++      -
++        name: bits
++        type: nest
++        nested-attributes: bitset-bits
 +
- Other quirks (todo)
- ===================
- 
++  -
++    name: string
++    attributes:
++      -
++        name: index
++        type: u32
++        value: 1
++      -
++        name: value
++        type: string
++  -
++    name: strings
++    attributes:
++      -
++        name: string
++        type: nest
++        value: 1
++        multi-attr: true
++        nested-attributes: string
++  -
++    name: stringset
++    attributes:
++      -
++        name: id
++        type: u32
++        value: 1
++      -
++        name: count
++        type: u32
++      -
++        name: strings
++        type: nest
++        multi-attr: true
++        nested-attributes: strings
++  -
++    name: stringsets
++    attributes:
++      -
++        name: stringset
++        type: nest
++        multi-attr: true
++        value: 1
++        nested-attributes: stringset
++  -
++    name: strset
++    attributes:
++      -
++        name: header
++        value: 1
++        type: nest
++        nested-attributes: header
++      -
++        name: stringsets
++        type: nest
++        nested-attributes: stringsets
++      -
++        name: counts-only
++        type: flag
++
++  -
++    name: privflags
++    attributes:
++      -
++        name: header
++        value: 1
++        type: nest
++        nested-attributes: header
++      -
++        name: flags
++        type: nest
++        nested-attributes: bitset
++
++  -
++    name: rings
++    attributes:
++      -
++        name: header
++        value: 1
++        type: nest
++        nested-attributes: header
++      -
++        name: rx-max
++        type: u32
++      -
++        name: rx-mini-max
++        type: u32
++      -
++        name: rx-jumbo-max
++        type: u32
++      -
++        name: tx-max
++        type: u32
++      -
++        name: rx
++        type: u32
++      -
++        name: rx-mini
++        type: u32
++      -
++        name: rx-jumbo
++        type: u32
++      -
++        name: tx
++        type: u32
++      -
++        name: rx-buf-len
++        type: u32
++      -
++        name: tcp-data-split
++        type: u8
++      -
++        name: cqe-size
++        type: u32
++      -
++        name: tx-push
++        type: u8
++
++  -
++    name: mm-stat
++    attributes:
++      -
++        name: pad
++        value: 1
++        type: pad
++      -
++        name: reassembly-errors
++        type: u64
++      -
++        name: smd-errors
++        type: u64
++      -
++        name: reassembly-ok
++        type: u64
++      -
++        name: rx-frag-count
++        type: u64
++      -
++        name: tx-frag-count
++        type: u64
++      -
++        name: hold-count
++        type: u64
++  -
++    name: mm
++    attributes:
++      -
++        name: header
++        value: 1
++        type: nest
++        nested-attributes: header
++      -
++        name: pmac-enabled
++        type: u8
++      -
++        name: tx-enabled
++        type: u8
++      -
++        name: tx-active
++        type: u8
++      -
++        name: tx-min-frag-size
++        type: u32
++      -
++        name: tx-min-frag-size
++        type: u32
++      -
++        name: verify-enabled
++        type: u8
++      -
++        name: verify-status
++        type: u8
++      -
++        name: verify-time
++        type: u32
++      -
++        name: max-verify-time
++        type: u32
++      -
++        name: stats
++        type: nest
++        nested-attributes: mm-stat
++
++operations:
++  enum-model: directional
++  list:
++    -
++      name: strset-get
++      doc: Get string set from the kernel.
++
++      attribute-set: strset
++
++      do: &strset-get-op
++        request:
++          value: 1
++          attributes:
++            - header
++            - stringsets
++            - counts-only
++        reply:
++          value: 1
++          attributes:
++            - header
++            - stringsets
++      dump: *strset-get-op
++
++    # TODO: fill in the requests in between
++
++    -
++      name: privflags-get
++      doc: Get device private flags.
++
++      attribute-set: privflags
++
++      do: &privflag-get-op
++        request:
++          value: 13
++          attributes:
++            - header
++        reply:
++          value: 14
++          attributes:
++            - header
++            - flags
++      dump: *privflag-get-op
++    -
++      name: privflags-set
++      doc: Set device private flags.
++
++      attribute-set: privflags
++
++      do:
++        request:
++          attributes:
++            - header
++            - flags
++    -
++      name: privflags-ntf
++      doc: Notification for change in device private flags.
++      notify: privflags-get
++
++    -
++      name: rings-get
++      doc: Get ring params.
++
++      attribute-set: rings
++
++      do: &ring-get-op
++        request:
++          attributes:
++            - header
++        reply:
++          attributes:
++            - header
++            - rx-max
++            - rx-mini-max
++            - rx-jumbo-max
++            - tx-max
++            - rx
++            - rx-mini
++            - rx-jumbo
++            - tx
++            - rx-buf-len
++            - tcp-data-split
++            - cqe-size
++            - tx-push
++      dump: *ring-get-op
++    -
++      name: rings-set
++      doc: Set ring params.
++
++      attribute-set: rings
++
++      do:
++        request:
++          attributes:
++            - header
++            - rx
++            - rx-mini
++            - rx-jumbo
++            - tx
++            - rx-buf-len
++            - tcp-data-split
++            - cqe-size
++            - tx-push
++    -
++      name: rings-ntf
++      doc: Notification for change in ring params.
++      notify: rings-get
++
++    # TODO: fill in the requests in between
++
++    -
++      name: mm-get
++      doc: Get MAC Merge configuration and state
++
++      attribute-set: mm
++
++      do: &mm-get-op
++        request:
++          value: 42
++          attributes:
++            - header
++        reply:
++          value: 42
++          attributes:
++            - header
++            - pmac-enabled
++            - tx-enabled
++            - tx-active
++            - tx-min-frag-size
++            - rx-min-frag-size
++            - verify-enabled
++            - verify-time
++            - max-verify-time
++            - stats
++      dump: *mm-get-op
++    -
++      name: mm-set
++      doc: Set MAC Merge configuration
++
++      attribute-set: mm
++
++      do:
++        request:
++          attributes:
++            - header
++            - verify-enabled
++            - verify-time
++            - tx-enabled
++            - pmac-enabled
++            - tx-min-frag-size
++    -
++      name: mm-ntf
++      doc: Notification for change in MAC Merge configuration.
++      notify: mm-get
 -- 
 2.39.1
 
