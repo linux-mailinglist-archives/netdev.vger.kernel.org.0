@@ -2,194 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AC6A67F871
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 15:07:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F31F67F8B0
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 15:28:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234681AbjA1OHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 09:07:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51816 "EHLO
+        id S234283AbjA1O2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 09:28:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233979AbjA1OHR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 09:07:17 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3900A23866
-        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 06:07:05 -0800 (PST)
-Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30SCtEJk022251;
-        Sat, 28 Jan 2023 14:06:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2022-7-12;
- bh=x8twOmu78+fDt8x3r0Xn4FhK0vdV3OJ7pQ/y0HqPitk=;
- b=Yot20JZ9RsDb55O8VPHh6IWkc/wVpkXZWRfFMju8fxNb3GBfFqcsMpt64DC6RVC8gcU4
- A2niIpZT+C8IjESpkOzvyJ6eWPlocop6lGbr2ETPlOdvQBzM1ojA8EArcDlne3Glmg2u
- 4wkHiIIJLDVXwDuOfZXD1eXrg3ezDrGhUxWRxh3ZD8EzCfzNT+GvR2ztrOjB7cynhQl5
- mvgPyjxDzt7GeRW+KHuJFuMn26SeVG9ZcI+F6bri8cs1SIpvbcRq+fbam6NUw5QJrUku
- FuDVxa3T6rUNvF7RduebX7PmyTAMmoTHw3YtalAk2OTDqjTDNkzWiWDesdVN9xoif9Pi Jg== 
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3ncvqwrgy6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 28 Jan 2023 14:06:53 +0000
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 30SDqif8017574;
-        Sat, 28 Jan 2023 14:06:52 GMT
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2175.outbound.protection.outlook.com [104.47.56.175])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3nct59pr72-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 28 Jan 2023 14:06:52 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=imLfjbYKVGkWrhZJEp0QRdEGdkO+khlUa2l3aE8DuRmmy3v9gdrE0HsvRc8aKnHJXFNfRVe9CtJP3bMXA16rqbyaJ8mu7A+8moDF/z7kor2hB8Q0MCcxLX/DM31CN53OS/PCicM7p2WcQDIoRjmAR/rLTvMBcbGztNBvjHljzirTv4XyrGYUsR6Eyf6dk3WMNsPLg+J0nu/oI8HSfZ8NkiG9Caqoih4v1mDIvUBlGY339wD+qut1z6t8jyRElRS6LXCAf4GcPfHnUfbbSBIvhGT6oooVCwCOQgtJKjKzJu3PliNr8BZ3vMIoAOSQ5LKT2J43qzHBclKmP+aP5wG7zQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=x8twOmu78+fDt8x3r0Xn4FhK0vdV3OJ7pQ/y0HqPitk=;
- b=m2oHhDMnUlbs+P60oQJzqnIEVJHIfDYCBu1hwcvTNCH48F/Y5qIA9ZNsVQrvAUxxFpFym0O2oyamijP0xAQQlHAKoj+Oxzaq1/QSsPmuIxupVIwFmjmluCHUgYGFla9mfGHXBUCosiiJlfAg7OlDPIlZA4N+iB9yJLEm1O/pqWVdF9nhHIE+1Jp9t9hna7lPP9dU8fOM6WnVg8ksGXAopEeqh0RLrEM8Pzcx2kSgiwTdYHHhyuXluzehiZN54jI6ZT+UDsL8f04XoUH2Ics+6rKZ0bdcjXZE7f0KKCsIAbTbjBE2LGCu6yT+6eSrSFmZhK88F8ffaJwICOYUW482rw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x8twOmu78+fDt8x3r0Xn4FhK0vdV3OJ7pQ/y0HqPitk=;
- b=qLF8brDCzGfKQ++i5g8/TgctLeCyZOe5STiBmaGR5ajIqyMXHsLRtcv/70+hPWPXAZIEvUahG6zZTn8keBgetpX6LBkrNCpNCtWuoe/sZHPphqP4Plh40fJpZa7vEBf8R7eiYuqxhOnL4CeAjow3jn5hPO4RwHzl3FS4iavSpyI=
-Received: from BN0PR10MB5128.namprd10.prod.outlook.com (2603:10b6:408:117::24)
- by DS0PR10MB7342.namprd10.prod.outlook.com (2603:10b6:8:f9::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.17; Sat, 28 Jan
- 2023 14:06:50 +0000
-Received: from BN0PR10MB5128.namprd10.prod.outlook.com
- ([fe80::96a2:2d53:eb8c:b5ed]) by BN0PR10MB5128.namprd10.prod.outlook.com
- ([fe80::96a2:2d53:eb8c:b5ed%4]) with mapi id 15.20.6064.017; Sat, 28 Jan 2023
- 14:06:49 +0000
-From:   Chuck Lever III <chuck.lever@oracle.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     netdev <netdev@vger.kernel.org>, "hare@suse.com" <hare@suse.com>,
-        David Howells <dhowells@redhat.com>,
-        Olga Kornievskaia <kolga@netapp.com>,
-        "jmeneghi@redhat.com" <jmeneghi@redhat.com>,
-        Benjamin Coddington <bcodding@redhat.com>,
-        Jeff Layton <jlayton@redhat.com>
-Subject: Re: [PATCH v2 2/3] net/handshake: Add support for PF_HANDSHAKE
-Thread-Topic: [PATCH v2 2/3] net/handshake: Add support for PF_HANDSHAKE
-Thread-Index: AQHZMvMNX3GnD3At1ECXj8a1a7fZTa6z3aCA
-Date:   Sat, 28 Jan 2023 14:06:49 +0000
-Message-ID: <860B3B8A-1322-478E-8BF9-C5A3444227F7@oracle.com>
-References: <167474840929.5189.15539668431467077918.stgit@91.116.238.104.host.secureserver.net>
- <167474894272.5189.9499312703868893688.stgit@91.116.238.104.host.secureserver.net>
- <20230128003212.7f37b45c@kernel.org>
-In-Reply-To: <20230128003212.7f37b45c@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3696.120.41.1.1)
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN0PR10MB5128:EE_|DS0PR10MB7342:EE_
-x-ms-office365-filtering-correlation-id: f9d61b36-a425-475f-51f0-08db0138e667
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: RiWWIZucPL3rVTF841H2C1o+7zJO7cTsROLS+tAXsqicukY2JFOzJjCOjRS741ZRwQSdbUzYu9syMnnyibq9JokX+sXdNlEQJkG9R5HQcRWhMpFGkSeBRPT0Z23xluPM9Oz2dQayNGB68UWZae+zqFkMkZDcyMAqcL/2DBdG0BvoiCDpLzWi2c/x70Y1GSEw2G6uLbIFoVdrQIA0YQ4tJTtzvX0ztaBfJacs4Hb5Qh7pGkumHs/7bsm1OjsJFln+Use9IhjnmumszBzQtvwVg5N2UpPTkWFwmnBQAYLGNNC47spoDRStHL5Mpw8xHnjsDFEcH6V0sqTi08pRsaXQNsdHQGhXpArbBujzGfYEFuorxuVLQnw8JKv/iHqNF/pgoJ3kIQrrHeeqQvHwY0o9AZAx+RNG4jU8SUvsuLoF6spTuVtKJXz0NiEyKk4amP15Mkte1j0D1osyuO1yN65vJoobXJrAWlp6YmzymPfN6ewPshMUXQl0kz1jzyp9EuPP1114aKARW117olVKg68km8FUWs0aKlJoAcYZUAfa4pqphIAx+y19ngulQ3heuIA64p+cZB/raLigWfcPjumnjMbOZ54SAE4+JRMDqfHkZhzUXHdHc5YJt+Xk4e2tNqd9Z4LQRRv94NGgGNOlJfhcL1VXxbl/NMeltX3bwXzhz5w1BRCP9rVuABK9V4U+ABWsRuw4YJsYLUfL2qq3yYOGTlhFJLoX7WHVDz4LJYRRlMg=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR10MB5128.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(366004)(376002)(346002)(396003)(136003)(39860400002)(451199018)(478600001)(6486002)(71200400001)(83380400001)(38070700005)(86362001)(122000001)(33656002)(38100700002)(26005)(186003)(6512007)(2616005)(36756003)(53546011)(6506007)(6916009)(4326008)(8676002)(76116006)(66946007)(66556008)(66476007)(66446008)(64756008)(54906003)(8936002)(5660300002)(316002)(41300700001)(91956017)(2906002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?u6MvQq++45b3bXdbyBX/JocinSBYOt0w3VoYB0/87+RKOha101QPSmXN5rUg?=
- =?us-ascii?Q?068jbDiekNjATsL0Z3mIiWKB2EizfaQjJf0YSkpw7ab0QVCQUNAXv00GPa38?=
- =?us-ascii?Q?blFz64qB+xns2NY+Bwc/Idd3Z3NWMKk+wdTxi11ArVw/ke6J3gK6z84sC5Xd?=
- =?us-ascii?Q?mAQczVf0XaS0PRC9ivZVAo7nH9/xqCPhzgSv6W/DPXFBTg3evTWvYNZFosCB?=
- =?us-ascii?Q?iXzocQoU3faaVx0G6BzkhCf4rCjh1vakJEtwm+eh5V5c1AJPfBlio1QMuj++?=
- =?us-ascii?Q?Ut/hJmoWiEJk1gz5dAN/MahR2rup5QKkbvPEM/oyFZwkDFe0gpD3ULCA44KN?=
- =?us-ascii?Q?YtqT5MAb41hz/hkzi01g7KnL8wx9gQ7YXyVQxKdiFqMdfgRjA8uaXStcZomW?=
- =?us-ascii?Q?b3VI3WubUWXEVSzDkedptCGIPpIXf0BpQ6MGUKt6I3pZNa3TrpJd4oEeYbHo?=
- =?us-ascii?Q?QTDrtXpR43HlT6+08qEHz0AoYyZeLDN7K85m4i1MEoBI+QmDUqnnbI5bn87b?=
- =?us-ascii?Q?luXPyfWwl1NoRxgg+142H3cJMGsTX2GEvfHSiSbUC5e6cUkR9bb6LXmwYbVH?=
- =?us-ascii?Q?1B5Kx5zi/mBDtPZ29ibLV3mIQVj/jjDzBJMQc6cZBxhVGcuLqPAu6WHIB0Bi?=
- =?us-ascii?Q?XGpVVl2uoyuH8ln1WSrny2HEj2JyEw8CgJWg0shuGEXs5ee5OQyJEbpaIl6C?=
- =?us-ascii?Q?s7n4aox16Mpiv2iU7N4LnTSGO3WyLcPtvwmEDHkOkP3raZ30LXkPOjYV9LMv?=
- =?us-ascii?Q?w5gR4HTYCDjf6b6Ak0AoF8u3riiO8pBv82v03dmZUA/Dz1gFDV0v5VPQmZ0y?=
- =?us-ascii?Q?5soUagsowHY4J0H54gztmROrgQ3jyZxx21UzTw3sWvkv4TGgjfwkVzCICPJp?=
- =?us-ascii?Q?80UEF9/4opJWpZHVjnc6Jv+sJQSJqWL3/lkIjIw/MfyXdL41nHjIYAvQyU3E?=
- =?us-ascii?Q?iOnlhZ4FqrQq+UxxPbt4u9ScdnojCv0j6JZDYj8sv98VHqOP5bNivdRBGyax?=
- =?us-ascii?Q?uHmAFumrxoqAgnnN+3y0uMqHQ6Z8j3JWJY0huT6FgH2IN53SA8LL1n4zXQlh?=
- =?us-ascii?Q?8Ql14u36BrVztpY2/12AvcN3SUmSoJAWiiU6Z1ciSXpDjAzohjNWtiuRaJ42?=
- =?us-ascii?Q?0L66L3BFIg8EsgkiCzA+h+95BMoM12CEgYCDWRNrZCVdxep/lzxP9TO6OQyJ?=
- =?us-ascii?Q?g2KaZeK85aBo8lyZKe2032IPWRMp5z8xmPMpw7l+mdwhZs5DvxpvZSuA50P3?=
- =?us-ascii?Q?1vyNLGXLPBJkbS4ERxP2wkk7J6xmVl4oyG0dNwwjheyREOnvxEIsjnPZi8eP?=
- =?us-ascii?Q?yRJhUAh3VZu5iPaqyFQl2smMaUZLpzIKC4xWqhyYgdixph7LQaHs181efAWi?=
- =?us-ascii?Q?VCov1G4n1sbxeKoRr96b4SnSZ50gtyaXrPg0UdCK0WTDsDc33I8EAv6nNAe7?=
- =?us-ascii?Q?OrTHj/ZKCQmLBYJ4bouLz0iIXo1w1Up++jKsRxnBPk/jE8UN1YizSXK+Po/r?=
- =?us-ascii?Q?qA8eLrZpdJFlkYZ05Y62Od/JKeCDQdHm/DRajay7zkuQ0z2uIYyVyXJEZSQO?=
- =?us-ascii?Q?LgC4TdYJ1mTIVcZyT3PEru8jU7PBUuWUKjWE5q0R0YNtCrg3tlHNdzPzXRxm?=
- =?us-ascii?Q?BQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <217F0C738179824F8E7DEE8AD179CFE0@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S234377AbjA1O2l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 09:28:41 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEEFD4C6FA;
+        Sat, 28 Jan 2023 06:28:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674916119; x=1706452119;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6nfcuYKU8JjQ7rf68glII7YLgTST5nBCALoULewdYMA=;
+  b=T6/qsolpdZzV/xfL+mqIOQ7ggNB+pUND+d5YiC7DbPD/0k9OGXFVSYGc
+   +wwiDHKgLbYdu0q95oNMTHytb8COX/BmsVcRDS6d8dVH8xfDnrIWD4F+7
+   2jz6PHJ851SOCMMSbDNcimyp/96DBEaHB8Y5TsoHqQzmn3xMrpwKieg0W
+   uzVmv0HFl2/N+r6TjOn2ay3L/xt5vONafisR3HqiSiGY7skI2ctvI9eb+
+   TvmUTbHWiJVERYGZbwyUaKSKReeCeIZ0lFJTH4eYdJ/7GP3lKFL0Krvqu
+   pKxwABak0gyVlWHTZfhqxBLa2A5pJzcqtuqYCeP6q4bTNGrmBPKS0nh/J
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="315248363"
+X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
+   d="scan'208";a="315248363"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 06:28:39 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="732182647"
+X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
+   d="scan'208";a="732182647"
+Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 28 Jan 2023 06:28:35 -0800
+Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pLmC2-0000nV-2B;
+        Sat, 28 Jan 2023 14:28:34 +0000
+Date:   Sat, 28 Jan 2023 22:27:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Joanne Koong <joannelkoong@gmail.com>, bpf@vger.kernel.org
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        daniel@iogearbox.net, andrii@kernel.org, martin.lau@kernel.org,
+        ast@kernel.org, netdev@vger.kernel.org, memxor@gmail.com,
+        kernel-team@fb.com, Joanne Koong <joannelkoong@gmail.com>
+Subject: Re: [PATCH v8 bpf-next 2/5] bpf: Allow initializing dynptrs in kfuncs
+Message-ID: <202301282240.BuACl7kr-lkp@intel.com>
+References: <20230126233439.3739120-3-joannelkoong@gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: /0d0pq2hSnNmhUO5+UsEXU8oF6j7WsqylcBzwO1UmVWj8HzznUjnjZLYvIKFc6dVsRnVHYOFr6KMjVqTvGZbHRNrXw0MfYUKpolGYvuPZulY3fEawhCggVSx/BgHrOkKTVd98rOiTpa1voRJrI1YCIGGPzXc2oNkX0SbeM98bqryfmezbCbvJGGcSaO8GFLn7HEqkEKIreMv5a+iFRGU1qcSNiAemJ1yedOLgY5HoXqOYTol6PrI1fxkD6HcgXAR+loy9UDGkOLqIlz0dVE1lnCf1qbtEycWWHWm2EuJQZ1O0EvpCpQqLNWI/YFzPlYS6JPB/N8cn3xYh3T/w5quxc+qZnhvs3oJAzmJ9uHcSuVrExX8QoM9WpfUXKlg56Bt8x7bMBEYy/LDVIbWw38+rljFGobYCIAigIMgqO4bbhhT5FMaHcivLEvKgEj6suQi+a7hJDW1h41S9bet7STpStX3fVNrRkMTr0RhwWm3X3dE7VfFEjOwc8aikQsPZcmIZXOoyaB1wHppPKAAeZO93pd4GkoxbmwUKClFNLjsUvWubVZC4ES31LkN/S8Bvi7aeBcu2i35eOa174tu6B99iFZoUOZT/tvXTBQk8ZChk4QWMYyH+EhWa/YyCEcrRY34Co5kMfyJNrsXgsDGnwirkdXYAKVksEHRtRU2vWQSAyzorpHK4fv7RFnIxL8/J96NjJmbVfTQkoiZKakhiLSWWUr+gMxSmkggo0SL5MpLAWedMdGCn9CsXq8jz044I9tizbagjkA35ETCT3Sdsmyz/32qlmemchDtxhwcmiqzPk9kEfJxTIwMHs4YySkk9p4jSPIRPEijt8R3Ez+omf+kQSqkzUAo/TZno4EnlT+3nf6ugzk2hHmFlWZp4WWZIVrO
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN0PR10MB5128.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f9d61b36-a425-475f-51f0-08db0138e667
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jan 2023 14:06:49.8228
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: GuwUztSk9PJtMjpKrR1QqwBZ1m9Y36JvZ0lSuAJTmpAQQVOG+CtWKcUJ2P1OZH0RlJSSEgNp+pyVfrj2hcdCCA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR10MB7342
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-01-28_06,2023-01-27_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=835 phishscore=0
- malwarescore=0 mlxscore=0 adultscore=0 suspectscore=0 spamscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301280137
-X-Proofpoint-ORIG-GUID: VLCOPHmlIPem6nO73Ur45AGCjdQ_Jcvk
-X-Proofpoint-GUID: VLCOPHmlIPem6nO73Ur45AGCjdQ_Jcvk
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230126233439.3739120-3-joannelkoong@gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Joanne,
 
-> On Jan 28, 2023, at 3:32 AM, Jakub Kicinski <kuba@kernel.org> wrote:
->=20
-> On Thu, 26 Jan 2023 11:02:22 -0500 Chuck Lever wrote:
->> I've designed a way to pass a connected kernel socket endpoint to
->> user space using the traditional listen/accept mechanism. accept(2)
->> gives us a well-worn building block that can materialize a connected
->> socket endpoint as a file descriptor in a specific user space
->> process. Like any open socket descriptor, the accepted FD can then
->> be passed to a library such as GnuTLS to perform a TLS handshake.
->=20
-> I can't bring myself to like the new socket family layer.
+Thank you for the patch! Perhaps something to improve:
 
-poll/listen/accept is the simplest and most natural way of
-materializing a socket endpoint in a process that I can think
-of. It's a well-understood building block. What specifically
-is troubling you about it?
+[auto build test WARNING on bpf-next/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Joanne-Koong/bpf-Allow-sk_buff-and-xdp_buff-as-valid-kfunc-arg-types/20230128-170947
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+patch link:    https://lore.kernel.org/r/20230126233439.3739120-3-joannelkoong%40gmail.com
+patch subject: [PATCH v8 bpf-next 2/5] bpf: Allow initializing dynptrs in kfuncs
+config: i386-randconfig-a012-20230123 (https://download.01.org/0day-ci/archive/20230128/202301282240.BuACl7kr-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/7993ffba3295a3a3c01c4b62099117b5abd48242
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Joanne-Koong/bpf-Allow-sk_buff-and-xdp_buff-as-valid-kfunc-arg-types/20230128-170947
+        git checkout 7993ffba3295a3a3c01c4b62099117b5abd48242
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/bpf/ net/core/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> kernel/bpf/verifier.c:6150:5: warning: no previous prototype for function 'process_dynptr_func' [-Wmissing-prototypes]
+   int process_dynptr_func(struct bpf_verifier_env *env, int regno, int insn_idx,
+       ^
+   kernel/bpf/verifier.c:6150:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int process_dynptr_func(struct bpf_verifier_env *env, int regno, int insn_idx,
+   ^
+   static 
+   1 warning generated.
 
 
-> I'd like a second opinion on that, if anyone within netdev
-> is willing to share..
+vim +/process_dynptr_func +6150 kernel/bpf/verifier.c
 
-Hopefully that opinion comes with an alternative way of getting
-a connected kernel socket endpoint up to user space without
-race issues.
+  6124	
+  6125	/* There are two register types representing a bpf_dynptr, one is PTR_TO_STACK
+  6126	 * which points to a stack slot, and the other is CONST_PTR_TO_DYNPTR.
+  6127	 *
+  6128	 * In both cases we deal with the first 8 bytes, but need to mark the next 8
+  6129	 * bytes as STACK_DYNPTR in case of PTR_TO_STACK. In case of
+  6130	 * CONST_PTR_TO_DYNPTR, we are guaranteed to get the beginning of the object.
+  6131	 *
+  6132	 * Mutability of bpf_dynptr is at two levels, one is at the level of struct
+  6133	 * bpf_dynptr itself, i.e. whether the helper is receiving a pointer to struct
+  6134	 * bpf_dynptr or pointer to const struct bpf_dynptr. In the former case, it can
+  6135	 * mutate the view of the dynptr and also possibly destroy it. In the latter
+  6136	 * case, it cannot mutate the bpf_dynptr itself but it can still mutate the
+  6137	 * memory that dynptr points to.
+  6138	 *
+  6139	 * The verifier will keep track both levels of mutation (bpf_dynptr's in
+  6140	 * reg->type and the memory's in reg->dynptr.type), but there is no support for
+  6141	 * readonly dynptr view yet, hence only the first case is tracked and checked.
+  6142	 *
+  6143	 * This is consistent with how C applies the const modifier to a struct object,
+  6144	 * where the pointer itself inside bpf_dynptr becomes const but not what it
+  6145	 * points to.
+  6146	 *
+  6147	 * Helpers which do not mutate the bpf_dynptr set MEM_RDONLY in their argument
+  6148	 * type, and declare it as 'const struct bpf_dynptr *' in their prototype.
+  6149	 */
+> 6150	int process_dynptr_func(struct bpf_verifier_env *env, int regno, int insn_idx,
+  6151				enum bpf_arg_type arg_type)
+  6152	{
+  6153		struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
+  6154		int err;
+  6155	
+  6156		/* MEM_UNINIT and MEM_RDONLY are exclusive, when applied to an
+  6157		 * ARG_PTR_TO_DYNPTR (or ARG_PTR_TO_DYNPTR | DYNPTR_TYPE_*):
+  6158		 */
+  6159		if ((arg_type & (MEM_UNINIT | MEM_RDONLY)) == (MEM_UNINIT | MEM_RDONLY)) {
+  6160			verbose(env, "verifier internal error: misconfigured dynptr helper type flags\n");
+  6161			return -EFAULT;
+  6162		}
+  6163	
+  6164		/*  MEM_UNINIT - Points to memory that is an appropriate candidate for
+  6165		 *		 constructing a mutable bpf_dynptr object.
+  6166		 *
+  6167		 *		 Currently, this is only possible with PTR_TO_STACK
+  6168		 *		 pointing to a region of at least 16 bytes which doesn't
+  6169		 *		 contain an existing bpf_dynptr.
+  6170		 *
+  6171		 *  MEM_RDONLY - Points to a initialized bpf_dynptr that will not be
+  6172		 *		 mutated or destroyed. However, the memory it points to
+  6173		 *		 may be mutated.
+  6174		 *
+  6175		 *  None       - Points to a initialized dynptr that can be mutated and
+  6176		 *		 destroyed, including mutation of the memory it points
+  6177		 *		 to.
+  6178		 */
+  6179		if (arg_type & MEM_UNINIT) {
+  6180			int i, spi;
+  6181	
+  6182			if (base_type(reg->type) == CONST_PTR_TO_DYNPTR) {
+  6183				verbose(env, "verifier internal error: CONST_PTR_TO_DYNPTR cannot be initialized\n");
+  6184				return -EFAULT;
+  6185			}
+  6186	
+  6187			/* For -ERANGE (i.e. spi not falling into allocated stack slots),
+  6188			 * check_mem_access will check and update stack bounds, so this
+  6189			 * is okay.
+  6190			 */
+  6191			spi = dynptr_get_spi(env, reg);
+  6192			if (spi < 0 && spi != -ERANGE)
+  6193				return spi;
+  6194	
+  6195			/* we write BPF_DW bits (8 bytes) at a time */
+  6196			for (i = 0; i < BPF_DYNPTR_SIZE; i += 8) {
+  6197				err = check_mem_access(env, insn_idx, regno,
+  6198						       i, BPF_DW, BPF_WRITE, -1, false);
+  6199				if (err)
+  6200					return err;
+  6201			}
+  6202	
+  6203			/* Please note that we allow overwriting existing unreferenced STACK_DYNPTR
+  6204			 * slots (mark_stack_slots_dynptr calls destroy_if_dynptr_stack_slot
+  6205			 * to ensure dynptr objects at the slots we are touching are completely
+  6206			 * destructed before we reinitialize them for a new one). For referenced
+  6207			 * ones, destroy_if_dynptr_stack_slot returns an error early instead of
+  6208			 * delaying it until the end where the user will get "Unreleased
+  6209			 * reference" error.
+  6210			 */
+  6211			err = mark_stack_slots_dynptr(env, reg, arg_type, insn_idx);
+  6212		} else /* MEM_RDONLY and None case from above */ {
+  6213			/* For the reg->type == PTR_TO_STACK case, bpf_dynptr is never const */
+  6214			if (reg->type == CONST_PTR_TO_DYNPTR && !(arg_type & MEM_RDONLY)) {
+  6215				verbose(env, "cannot pass pointer to const bpf_dynptr, the helper mutates it\n");
+  6216				return -EINVAL;
+  6217			}
+  6218	
+  6219			if (!is_dynptr_reg_valid_init(env, reg)) {
+  6220				verbose(env, "Expected an initialized dynptr as arg #%d\n",
+  6221					regno);
+  6222				return -EINVAL;
+  6223			}
+  6224	
+  6225			/* Fold modifiers (in this case, MEM_RDONLY) when checking expected type */
+  6226			if (!is_dynptr_type_expected(env, reg, arg_type & ~MEM_RDONLY)) {
+  6227				const char *err_extra = "";
+  6228	
+  6229				switch (arg_type & DYNPTR_TYPE_FLAG_MASK) {
+  6230				case DYNPTR_TYPE_LOCAL:
+  6231					err_extra = "local";
+  6232					break;
+  6233				case DYNPTR_TYPE_RINGBUF:
+  6234					err_extra = "ringbuf";
+  6235					break;
+  6236				default:
+  6237					err_extra = "<unknown>";
+  6238					break;
+  6239				}
+  6240				verbose(env,
+  6241					"Expected a dynptr of type %s as arg #%d\n",
+  6242					err_extra, regno);
+  6243				return -EINVAL;
+  6244			}
+  6245	
+  6246			err = mark_dynptr_read(env, reg);
+  6247		}
+  6248		return err;
+  6249	}
+  6250	
 
-We need to make some progress on this. If you don't have a
-technical objection, I think we should go with this with the
-idea that eventually something more palatable will come along
-to replace it.
-
-
---
-Chuck Lever
-
-
-
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
