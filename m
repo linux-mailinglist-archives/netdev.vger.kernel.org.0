@@ -2,139 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F78367F93A
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 16:43:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52ED667F925
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 16:32:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231421AbjA1PnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 10:43:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57068 "EHLO
+        id S234315AbjA1PcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 10:32:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229811AbjA1PnG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 10:43:06 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B91721A4A3;
-        Sat, 28 Jan 2023 07:43:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=wUi74KtdSXKX64QHZXYmsThtpxECPWzUkYIa0sd0LmY=; b=jnIR1VMq6UWPmOrvgnWOOpnbA+
-        6ZGyIdlLZvqEB2ftxunczawqzCSJWak1wSSGkFKhFR6MzCQCl7yspkAr1/RuEiPAQzZavjy/QI6NX
-        BgPQKRD288e+EDHbx/xVyKvWIIKaDkQrmA1VzHeopSMh47KZZdy2cwgFjPxvdDleGMXM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pLnLy-003SOt-92; Sat, 28 Jan 2023 16:42:54 +0100
-Date:   Sat, 28 Jan 2023 16:42:54 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Frank Sae <Frank.Sae@motor-comm.com>
-Cc:     Peter Geis <pgwipeout@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, xiaogang.fan@motor-comm.com,
-        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 5/5] net: phy: Add driver for Motorcomm
- yt8531 gigabit ethernet phy
-Message-ID: <Y9VCfkzjHBDjXmet@lunn.ch>
-References: <20230128031314.19752-1-Frank.Sae@motor-comm.com>
- <20230128031314.19752-6-Frank.Sae@motor-comm.com>
+        with ESMTP id S229894AbjA1PcV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 10:32:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1669623DAD;
+        Sat, 28 Jan 2023 07:32:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A37BEB80919;
+        Sat, 28 Jan 2023 15:32:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0C1EC433EF;
+        Sat, 28 Jan 2023 15:32:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674919937;
+        bh=6bUIRH8u5Cxb143fKnG2xu5Mame0Rqrt7wtVXi/pBI0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=B/UHPiLasadsoRWpYuGJDp1GLMSeZmlfVRTmB/u7+euzi1jGnfanl6/0d+JYc2Anh
+         w7UO6aa2RsLgUjI1TkHXjO36kqVYHhfXz/NCtaRI8OBIp/Q2pEZFlv4mub7gKuB0qI
+         1Mc7qpLn6KKILoT9rYANmy7LzgbATjPALJjEwNQejFsO1M7vRDp0lv6AF9qG6JMfUy
+         5lpHy0ZUkiHDj2il7+hETu3TJKnGEz59b4YBLnwu8O8u6aCEuUKLoI0SiudsfUi4Fr
+         1BAyerZrGeDn7mhab+7xjaNDPuPf2DsSywJWmBDFLs9BxgUuYRquba0R/ZzEBRsQJE
+         Hlj1/II1JU4cQ==
+Date:   Sat, 28 Jan 2023 15:46:06 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Gatien Chevallier <gatien.chevallier@foss.st.com>
+Cc:     <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <alexandre.torgue@foss.st.com>, <vkoul@kernel.org>,
+        <olivier.moysan@foss.st.com>, <arnaud.pouliquen@foss.st.com>,
+        <mchehab@kernel.org>, <fabrice.gasnier@foss.st.com>,
+        <ulf.hansson@linaro.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <linux-crypto@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
+        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>
+Subject: Re: [PATCH v3 2/6] dt-bindings: treewide: add feature-domains
+ description in binding files
+Message-ID: <20230128154606.18b70629@jic23-huawei>
+In-Reply-To: <20230127164040.1047583-3-gatien.chevallier@foss.st.com>
+References: <20230127164040.1047583-1-gatien.chevallier@foss.st.com>
+        <20230127164040.1047583-3-gatien.chevallier@foss.st.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230128031314.19752-6-Frank.Sae@motor-comm.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 28, 2023 at 11:13:14AM +0800, Frank Sae wrote:
->  Add a driver for the motorcomm yt8531 gigabit ethernet phy. We have
->  verified the driver on AM335x platform with yt8531 board. On the
->  board, yt8531 gigabit ethernet phy works in utp mode, RGMII
->  interface, supports 1000M/100M/10M speeds, and wol(magic package).
+On Fri, 27 Jan 2023 17:40:36 +0100
+Gatien Chevallier <gatien.chevallier@foss.st.com> wrote:
+
+> feature-domains is an optional property that allows a peripheral to
+> refer to one or more feature domain controller(s).
 > 
-> Signed-off-by: Frank Sae <Frank.Sae@motor-comm.com>
-> ---
->  drivers/net/phy/Kconfig     |   2 +-
->  drivers/net/phy/motorcomm.c | 204 +++++++++++++++++++++++++++++++++++-
->  2 files changed, 203 insertions(+), 3 deletions(-)
+> Description of this property is added to all peripheral binding files of
+> the peripheral under the STM32 System Bus. It allows an accurate
+> representation of the hardware, where various peripherals are connected
+> to this firewall bus. The firewall can then check the peripheral accesses
+> before allowing it to probe.
 > 
-> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-> index f5df2edc94a5..dc2f7d0b0cd8 100644
-> --- a/drivers/net/phy/Kconfig
-> +++ b/drivers/net/phy/Kconfig
-> @@ -257,7 +257,7 @@ config MOTORCOMM_PHY
->  	tristate "Motorcomm PHYs"
->  	help
->  	  Enables support for Motorcomm network PHYs.
-> -	  Currently supports the YT8511, YT8521, YT8531S Gigabit Ethernet PHYs.
-> +	  Currently supports the YT8511, YT8521, YT8531, YT8531S Gigabit Ethernet PHYs.
+> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
 
-This is O.K. for now, but when you add the next PHY, please do this in
-some other way, because it does not scale. Maybe just say YT85xx?
+There was probably a cleaner way to ensure that this could go via the various
+subsystem trees, but hopefully there won't be any clashes with other work going in
+and if there is, the resolution should be simple. Hence I'm fine with
+this going via the dt tree.
 
+So for the IIO ones below,
+
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+
+> diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
+> index 1c340c95df16..c68b7b0e1903 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
+> @@ -93,6 +93,11 @@ properties:
+>    '#size-cells':
+>      const: 0
 >  
->  config NATIONAL_PHY
->  	tristate "National Semiconductor PHYs"
-> diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
-> index 9559fc52814f..f1fc912738e0 100644
-> --- a/drivers/net/phy/motorcomm.c
-> +++ b/drivers/net/phy/motorcomm.c
-> @@ -1,6 +1,6 @@
->  // SPDX-License-Identifier: GPL-2.0+
->  /*
-> - * Motorcomm 8511/8521/8531S PHY driver.
-> + * Motorcomm 8511/8521/8531/8531S PHY driver.
->   *
->   * Author: Peter Geis <pgwipeout@gmail.com>
->   * Author: Frank <Frank.Sae@motor-comm.com>
-> @@ -14,6 +14,7 @@
->  
->  #define PHY_ID_YT8511		0x0000010a
->  #define PHY_ID_YT8521		0x0000011A
-> +#define PHY_ID_YT8531		0x4f51e91b
->  #define PHY_ID_YT8531S		0x4F51E91A
->  
->  /* YT8521/YT8531S Register Overview
-> @@ -517,6 +518,68 @@ static int ytphy_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
->  	return phy_restore_page(phydev, old_page, ret);
->  }
->  
-> +static int yt8531_set_wol(struct phy_device *phydev,
-> +			  struct ethtool_wolinfo *wol)
-> +{
-> +	struct net_device *p_attached_dev;
-> +	const u16 mac_addr_reg[] = {
-> +		YTPHY_WOL_MACADDR2_REG,
-> +		YTPHY_WOL_MACADDR1_REG,
-> +		YTPHY_WOL_MACADDR0_REG,
-> +	};
-> +	const u8 *mac_addr;
-> +	u16 mask, val;
-> +	int ret;
-> +	u8 i;
+> +  feature-domains:
+> +    $ref: /schemas/feature-controllers/feature-domain-controller.yaml#/properties/feature-domains
+> +    minItems: 1
+> +    maxItems: 3
 > +
-> +	if (wol->wolopts & WAKE_MAGIC) {
-> +		p_attached_dev = phydev->attached_dev;
-> +		if (!p_attached_dev)
-> +			return -ENODEV;
+>  allOf:
+>    - if:
+>        properties:
+> diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
+> index 1970503389aa..d01f60765e48 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
+> @@ -59,6 +59,11 @@ properties:
+>        If not, SPI CLKOUT frequency will not be accurate.
+>      maximum: 20000000
+>  
+> +  feature-domains:
+> +    $ref: /schemas/feature-controllers/feature-domain-controller.yaml#/properties/feature-domains
+> +    minItems: 1
+> +    maxItems: 3
 > +
-> +		mac_addr = (const u8 *)p_attached_dev->dev_addr;
-> +		if (!is_valid_ether_addr(mac_addr))
-> +			return -EINVAL;
-
-Have you ever seen that happen? It suggests the MAC driver has a bug,
-not validating its MAC address.
-
-Also, does the PHY actually care? Will the firmware crash if given a
-bad MAC address?
-
-    Andrew
+>  required:
+>    - compatible
+>    - reg
+> diff --git a/Documentation/devicetree/bindings/iio/dac/st,stm32-dac.yaml b/Documentation/devicetree/bindings/iio/dac/st,stm32-dac.yaml
+> index 0f1bf1110122..f6fe58d2f9b8 100644
+> --- a/Documentation/devicetree/bindings/iio/dac/st,stm32-dac.yaml
+> +++ b/Documentation/devicetree/bindings/iio/dac/st,stm32-dac.yaml
+> @@ -45,6 +45,11 @@ properties:
+>    '#size-cells':
+>      const: 0
+>  
+> +  feature-domains:
+> +    $ref: /schemas/feature-controllers/feature-domain-controller.yaml#/properties/feature-domains
+> +    minItems: 1
+> +    maxItems: 3
+> +
+>  additionalProperties: false
