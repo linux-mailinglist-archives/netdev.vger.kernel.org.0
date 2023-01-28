@@ -2,175 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E49567F82F
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 14:41:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E36EB67F834
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 14:43:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234177AbjA1NlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 08:41:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41956 "EHLO
+        id S234510AbjA1Nnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 08:43:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233463AbjA1NlN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 08:41:13 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F2DD3A85B
-        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 05:41:12 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id i1so3415262ilu.8
-        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 05:41:12 -0800 (PST)
+        with ESMTP id S234494AbjA1Nnj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 08:43:39 -0500
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2128.outbound.protection.outlook.com [40.107.100.128])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE79468AEA;
+        Sat, 28 Jan 2023 05:43:37 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VdfGWHhejrqBfnfcHRYMnTIT8D9G6tLVUNYWchJaIxA/tr+OGJTzpiCpiCKqBHHVIJ0aWTgLto6nw+pYuGAurSzY5IEb9ZNvzWDNjJTnRgzn73mCEnORBf2HGCEDaJqFeUYtOkS1KEgMxaoZ+1BL4pxxlnLf6qw5KcExBRu+I518o4ZvgOMM3sNp9BgbYpLjgEf99CNaJFIkk1BhQIw9dyt8kyi/JtsvudECcfpWWWvmQ1sxBsW66ld3a8ZhIxLU7vYQwddE9uE0Aj3BF4H9ipUWqdTcXY+D/DfcVgIJ9cF+/JhQd9TQSJmZHNDLVni+p4j2Ba2imlWSgtPCmzSR7g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hLkgNeJWU846qyoHRet8dXuelO18NAQFL+Rv1YmYlek=;
+ b=KREBAZgz2qfbaXCPrjdgdJji7BUho4NzL+zYBKimPzv1tWMeavd4r+S4sUtB4kFbyQ5POgfsKGHu5UXVYGhcLiZsFyVybTpSoPKW6I5pbuBEQVovh2+edavlJgCgTkJkS8guGyVwyR3f9nvdqCw7DhUsBE3gKwzEAHozsoaAhBdXOS22eIHfaYvfuw4k06xLhsAiIr8Xw3Jc1Tzhx34b5MovC8VHByvFQtSktSJ9LnWcMTLHZVGxmnzXMkMuRWzwmPeZmRwSpSWxNK25t7p7+Zlogv0RRtUrHY81cwFhRl6vWJQbs9YP7z1bFqqX+YB1e3cKGi0UrCwp7XQfpuQ11Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=6PbDeDYHnjXcUjgX9rt+sjAxD+mcicVqmyBP0qmlde0=;
-        b=hVGEk1AlhSc6mB8mZ/PYjNgb4C1k+JxtXuP1df7Nh98bTxFLvlsm3eCyfH51oZ/lin
-         8ELdcQE0GZybnowRiEuWJCWecSPv87eED5RttPYV9F9C7gaoqOpIn85FDry5PXW56qlb
-         Kg8MhXfYgUviDPDckzMcDHZ5mdKPcz9zHXUZ4+kOz8KHm0FEVpM3poPzWSH8oSwgH8rw
-         0ge+uRXRGEId2e7FD5irZ78vtiGIgsHSaO6+GGt5eLMtIbgMBkA9/UyRsxAy3TwncK/G
-         x5RQcQboZWsDmjaoi0H8xc3My/IcPU81HXTxfBWj+VmCTnI/3hgCryE1XDP1de6DFMGs
-         x+/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=6PbDeDYHnjXcUjgX9rt+sjAxD+mcicVqmyBP0qmlde0=;
-        b=OaPCimVp/ZwKy1a8oJ974hJ1W6htO0BEDyd2W+A2tVPivfSs0Tu75v+Yc/vhfRbqpr
-         sCOadQrmgZX8sCEHr/922/g3/v5MjE07KswqyPWZ/B8uKo3Xu+NbRxBZCbyZL3H9HHCR
-         p3ln288JJbTa4WGQEFORN5eJMnLKrBQ9zQaCvWvCFdAhW+MeYZFPZS3bEfq8divWyb9m
-         lSZn8XupN+LCrhQG7LGz6V3z1bTrLrzyNTve9uHsBS1fskjvYw0tgqjG0E5UEY2Jf12M
-         gimaVAeZXF/3k0SNTTT9b0M50qsl2G1BBrTgrsUT/7ZvGZ+H/ZtFoFF0KtdU1orAQZX9
-         kwqw==
-X-Gm-Message-State: AO0yUKXy9ZO32hYpUMzjCuGzyDZB7rf3KEmxe7wirVNLduzNX1MgqaEg
-        O82VngzfDBkEGclQjLMOkojDLhlTJH4PgeCDfbi6jg==
-X-Google-Smtp-Source: AK7set+ztGHBVSEx/p4yd6Foyd7M3NkE/O7hpVuNydG+WHBiunf+XPQ7hpEV2fXq+wLOnNOauf723o/1HBSwWrsYb7E=
-X-Received: by 2002:a92:9510:0:b0:310:ab98:81f2 with SMTP id
- y16-20020a929510000000b00310ab9881f2mr1569495ilh.80.1674913271928; Sat, 28
- Jan 2023 05:41:11 -0800 (PST)
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hLkgNeJWU846qyoHRet8dXuelO18NAQFL+Rv1YmYlek=;
+ b=T/yGww/RlNOTC/3Qsoy71uxufBiqPVjbxDtM2hTaNQiEZWpywFq26RwvW2joCTRGlvdB/auArHIcVboW6i6rw9RE01kL0l98ZCLOjn8N055e27jFoM9rQ5eklZR9qif6XHGUtwv/oAq+pgLu1paILWuF0R4p7Z4zZ+ipLtGxWA0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SA1PR13MB5444.namprd13.prod.outlook.com (2603:10b6:806:233::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.23; Sat, 28 Jan
+ 2023 13:43:34 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65%6]) with mapi id 15.20.6043.028; Sat, 28 Jan 2023
+ 13:43:34 +0000
+Date:   Sat, 28 Jan 2023 14:43:28 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] net: sched: sch: Bounds check priority
+Message-ID: <Y9UmgDQibo7Z0Nqz@corigine.com>
+References: <20230127224036.never.561-kees@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230127224036.never.561-kees@kernel.org>
+X-ClientProxiedBy: AM3PR07CA0093.eurprd07.prod.outlook.com
+ (2603:10a6:207:6::27) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-References: <20230124170346.316866-1-jhs@mojatatu.com> <20230126153022.23bea5f2@kernel.org>
- <Y9QXWSaAxl7Is0yz@nanopsycho> <CAAFAkD8kahd0Ao6BVjwx+F+a0nUK0BzTNFocnpaeQrN7E8VRdQ@mail.gmail.com>
- <Y9RPsYbi2a9Q/H8h@google.com> <CAM0EoM=ONYkF_1CST7i_F9yDQRxSFSTO25UzWJzcRGa1efM2Sg@mail.gmail.com>
- <CAKH8qBtU-1A1iKnvTXV=5v8Dim1FBmtvL6wOqgdspSFRCwNohA@mail.gmail.com>
-In-Reply-To: <CAKH8qBtU-1A1iKnvTXV=5v8Dim1FBmtvL6wOqgdspSFRCwNohA@mail.gmail.com>
-From:   Jamal Hadi Salim <hadi@mojatatu.com>
-Date:   Sat, 28 Jan 2023 08:41:01 -0500
-Message-ID: <CAAFAkD-Uq5Zt5YgP2SwC8_vyBdJgP+_9Y_h=g+bPzxbHRSW5zw@mail.gmail.com>
-Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel@mojatatu.com, deb.chatterjee@intel.com,
-        anjali.singhai@intel.com, namrata.limaye@intel.com,
-        khalidm@nvidia.com, tom@sipanda.io, pratyush@sipanda.io,
-        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, vladbu@nvidia.com, simon.horman@corigine.com,
-        stefanc@marvell.com, seong.kim@amd.com, mattyk@nvidia.com,
-        dan.daly@intel.com, john.andy.fingerhut@intel.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA1PR13MB5444:EE_
+X-MS-Office365-Filtering-Correlation-Id: fe59e432-a4a5-4ba4-5e90-08db0135a691
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: canD0FP8s/CD0SPMwAK5f+EjnoEiBq/bLpwaVapvhPkDyrBB1GpbTI8Uh0fGHOHKfzOvqcU2U/+YvX9U5WyCDKymnBtmzEm/IqVAggHLhihY7sw3E3GCMIMY0ay2sxK/qQfcyRSmTKzrKNLhhF1S8PiaUvu3mIJ1lGKOfxcp1bpuRxjliASURKbOc6U5Teo7I2cp+eMNe2yuo4Y7pfMoJHmeMPx24aac1B1UyD1PFXWHiEV4XhPVK2x7Vu39MjLXEd2ZIyS5ZsKB/pDsXpSipTbP/Gn6UUnE/r/vKx2BxaErN5REA61ZAEqdt3f8t/zaZs4wmpTrasJZBeH/tyNhfgdc0u8ZMFDERoc0A/sREh2AW3xKGKJHFRzF8Ds7rwfo+MKLa/GJXNTfioHI7Lk/ajOt+e65cL6k3xvtz2meFqSJdZrSh0P17f8V6OC76Wvq03G1MrJww0ofWJcpNdRbuCEpU9GKHc3Dz3qH0qcjd4JYE72+O/FzFw5rVi5JOWKqr7JzTcTyXLAWSVSPZEePPtCrtax/XE9kBFiJ2KTUKmbvPnmCbNBV4niet+j3zarWwBRjkzZ064aOTAKWH4p6N79TSHglsC8b4KtC7/sWrKJYW0OHSN1PxY5blOU570qW4k7bmANkeJT7tFasc4PItQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(136003)(346002)(39830400003)(376002)(396003)(451199018)(86362001)(38100700002)(2616005)(54906003)(316002)(2906002)(4326008)(6916009)(8936002)(66946007)(5660300002)(8676002)(83380400001)(66556008)(41300700001)(6512007)(186003)(66476007)(36756003)(6486002)(478600001)(7416002)(44832011)(6666004)(6506007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?gF1wb9wtBTdqH6Nok4rf8Cy3yWI1QjpPwhvBEaYrNChPgdym7wZt40Jlkpqb?=
+ =?us-ascii?Q?NEY9Z7R+eUIovscS8ENbiC/lmTHzJ4Rtm7afClZxbKsuFqz907xBXXpgvUbk?=
+ =?us-ascii?Q?RHC+b3oiFzfrpQYnCVMhCC9D10SLbadKlCZjXg32vbKbNSYIdj4ZgQ5H6tJ7?=
+ =?us-ascii?Q?i6N7HQL4WsOseaQBfl8189CO1T4RvPPgtIKQEXyDhtxFLkC49v3HRM32O6Eb?=
+ =?us-ascii?Q?MXWhzZkh8o+FQV6cirq4+82gpPeTG7ijqQKhsrfLJ9ATpxsIc9WZegxStRl8?=
+ =?us-ascii?Q?+VfXnH8jrnchCMmlgAR0GqPa6SBNf8KegHqBBiEtQCp6z5Xia2pEwDzF6tLG?=
+ =?us-ascii?Q?LbxxN9VtDDSF8rdK/uNJwxc4by23tYRX63GvCO/lGZcSwJ0v0BFkhUJ0MD9f?=
+ =?us-ascii?Q?nDtDVqjFTwNf1ZhbIlFRQO1tH2SWvNQyRqp9eQ+5zIScTuX8R2KfVsMhbkpE?=
+ =?us-ascii?Q?vnHqSJtKX3afufpZ9eY56X9LoPUbD+Q4HaumXAqYdFTXlcD7h0LxKbosJ/3R?=
+ =?us-ascii?Q?9l3+jBU/oFzeZk9YdsT6ZwjR42QMfrEVwvxpS7yHBSu2FffgiMn9m49UR1DP?=
+ =?us-ascii?Q?OVQgMaIp4uruFGk2iwuOK7ZBBt2ny0MWwcdY4MlFDK6zH/8tui7wWrl4yWkO?=
+ =?us-ascii?Q?5H1/a6BeEw3TJ5aWj2IPjDl7wUUrldwv+Mw4VrVHDWGEcHqwYFHQu7N/0TFX?=
+ =?us-ascii?Q?hSbmnyNWHqrZ2yubcVmotCOdW5T1YgbSJZ+PXIim6BYx9k3VoCh6u0Dai640?=
+ =?us-ascii?Q?zWcKjKjAKTb04EZX2ndTjpKRM2rh5wDswWKpNgkIKuri+4tBfPQnFqnYVIlK?=
+ =?us-ascii?Q?1DWEduhCGxs7A8GpJ3FDbQnzecbIqme6EgXNLhHvM1GJNDVcKoeFA85MLTEu?=
+ =?us-ascii?Q?DNpQiXKJkdpZdZtwjS9W7vNRnmBIMHCm230+2MlWmD0BDb0BZTwmj1vdcMSE?=
+ =?us-ascii?Q?K94dKeLwzDi7kdgpOqOpAzbioZHngTpsF6J2iPZ87nkZSes91nNQ+NtaUMpq?=
+ =?us-ascii?Q?TddFNcxe1DMjFj2yItfmUKVj5BEjrHC3oAaIb9nTAOILeNIO1oFNRPpaXDOF?=
+ =?us-ascii?Q?leZq3/RM1e3/cbWinkD96jfmah2TvuKlYVrU0WUtHr/2FaJbXuFg4QVBWPf6?=
+ =?us-ascii?Q?jVWsZrOPnQf9d2u5YmtRoSGZs77Nu08zfjCsHpxYfPikem4DGqaNIH/xy47a?=
+ =?us-ascii?Q?+ffuVfGBsM4bCtKxPwXGM7vb4hx0AM/FU+NJASPG61bW7i8fggpjKPDJLgmx?=
+ =?us-ascii?Q?WOKAnW3v1M9ki6TAtQWz/I5WOqpb2xuJiKkqbrZSYu6HdPRSTYgsdz0fA2fv?=
+ =?us-ascii?Q?oBt71M7tvaUArsAwMH7MPEa2NMW8kmg85JTcpJ3rfai/NKiUfCbLblr/LsYo?=
+ =?us-ascii?Q?gUiQIW74bBTgtuKU/Z59kNAJmepoy+Ebh5YxuXf24QrcQBtJO+DXI6r6Z5i5?=
+ =?us-ascii?Q?bnaRGgYO6QVh+obvHHMjp0g4thX7PrXBbHEbRb4/lhYF5BDvHL3zQP8De8+1?=
+ =?us-ascii?Q?gNqKJ/VeLRLKmh8EUYDxB8Twun5YeTjXJBT0Vs+IcfQ9r2yYnAZsMvxjK9rv?=
+ =?us-ascii?Q?Nn3cH1Uf4EnmUpi4cQr9Iuu84Tzenn8UtMO3TcQsSxfAabKhC/RC4nXILApj?=
+ =?us-ascii?Q?Qj8YeHBs7pFbnAXhkZvSk74pffW/+UbjeMz8N4bt8IZl1WwMHd2yUO3TwgLd?=
+ =?us-ascii?Q?8D6k1g=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fe59e432-a4a5-4ba4-5e90-08db0135a691
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jan 2023 13:43:34.4059
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VrwUSCQr3nXvye6xh45RFrd3gw2hJxsxQyXd3CkCkoQrpLGjf5h62yUOJhep0yXsn5bvOTFE4N2sgtSm0z+K+UBdmzhF+MhU04MDLcWSzng=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB5444
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 27, 2023 at 7:48 PM Stanislav Fomichev <sdf@google.com> wrote:
->
-> On Fri, Jan 27, 2023 at 3:27 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
-> >
-> > On Fri, Jan 27, 2023 at 5:26 PM <sdf@google.com> wrote:
-> > >
-> > > On 01/27, Jamal Hadi Salim wrote:
-> > > > On Fri, Jan 27, 2023 at 1:26 PM Jiri Pirko <jiri@resnulli.us> wrote:
-> > > > >
-> > > > > Fri, Jan 27, 2023 at 12:30:22AM CET, kuba@kernel.org wrote:
-> > > > > >On Tue, 24 Jan 2023 12:03:46 -0500 Jamal Hadi Salim wrote:
+On Fri, Jan 27, 2023 at 02:40:37PM -0800, Kees Cook wrote:
+> Nothing was explicitly bounds checking the priority index used to access
+> clpriop[]. WARN and bail out early if it's pathological. Seen with GCC 13:
+> 
+> ../net/sched/sch_htb.c: In function 'htb_activate_prios':
+> ../net/sched/sch_htb.c:437:44: warning: array subscript [0, 31] is outside array bounds of 'struct htb_prio[8]' [-Warray-bounds=]
+>   437 |                         if (p->inner.clprio[prio].feed.rb_node)
+>       |                             ~~~~~~~~~~~~~~~^~~~~~
+> ../net/sched/sch_htb.c:131:41: note: while referencing 'clprio'
+>   131 |                         struct htb_prio clprio[TC_HTB_NUMPRIO];
+>       |                                         ^~~~~~
+> 
 
-[..]
-> > > Not to derail too much, but maybe you can clarify the following for me:
-> > > In my (in)experience, P4 is usually constrained by the vendor
-> > > specific extensions. So how real is that goal where we can have a generic
-> > > P4@TC with an option to offload? In my view, the reality (at least
-> > > currently) is that there are NIC-specific P4 programs which won't have
-> > > a chance of running generically at TC (unless we implement those vendor
-> > > extensions).
-> >
-> > We are going to implement all the PSA/PNA externs. Most of these
-> > programs tend to
-> > be set or ALU operations on headers or metadata which we can handle.
-> > Do you have
-> > any examples of NIC-vendor-specific features that cant be generalized?
->
-> I don't think I can share more without giving away something that I
-> shouldn't give away :-)
+...
 
-Fair enough.
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  net/sched/sch_htb.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 
-> But IIUC, and I might be missing something, it's totally within the
-> standard for vendors to differentiate and provide non-standard
-> 'extern' extensions.
-> I'm mostly wondering what are your thoughts on this. If I have a p4
-> program depending on one of these externs, we can't sw-emulate it
-> unless we also implement the extension. Are we gonna ask NICs that
-> have those custom extensions to provide a SW implementation as well?
-> Or are we going to prohibit vendors to differentiate that way?
->
+I'm not sure what will happen if we hit the 'break' case.
+But I also think that warning and bailing out is an improvement on whatever
+happens now if that scenario is hit.
 
-It will dilute the value to prohibit any extern.
-What you referred to as "differentiation" is most of the time just
-implementation
-differences i.e someone may use a TCAM vs SRAM or some specific hw
-to implement crypto foobar; however, the "signature" of the extern is
-no different
-in its abstraction than an action. IOW, an Input X would produce an output Y in
-an extern regardless of the black box implementation.
-I understand the cases where some vendor may have some ASIC features that
-noone else cares about and that said functions can be exposed as externs.
-We really dont want these to be part of kernel proper.
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-In our templating above would mean using the command abstraction to
-create the extern.
-
-There are three threads:
-1) PSA/PNA externs like crc, checksums, hash etc. Those are part of P4TC as
-template commands. They are defined in the generic spec, they are not
-vendor specific
-and for almost all cases there's already kernel code that implements their
-features. So we will make them accessible to P4 programs.
-Vendor specific - we dont want them to be part of P4TC and we provide two
-ways to address them.
-2) We can emulate them without offering the equivalent functionality just so
-someone can load a P4 program. This will work with P4TC as is today
-but it means for that extern you dont have functional equivalence to hardware.
-3) Commands, to be specific for externs can be written as kernel modules.
-It's not my favorite option since we want everything to be scriptable but it
-is an option available.
-
-cheers,
-jamal
-
-
-
-
-> > > And regarding custom parser, someone has to ask that 'what about bpf
-> > > question': let's say we have a P4 frontend at TC, can we use bpfilter-like
-> > > usermode helper to transparently compile it to bpf (for SW path) instead
-> > > inventing yet another packet parser? Wrestling with the verifier won't be
-> > > easy here, but I trust it more than this new kParser.
-> > >
-> >
-> > We dont compile anything, the parser (and rest of infra) is scriptable.
->
-> As I've replied to Tom, that seems like a technicality. BPF programs
-> can also be scriptable with some maps/tables. Or it can be made to
-> look like "scriptable" by recompiling it on every configuration change
-> and updating it on the fly. Or am I missing something?
->
-> Can we have a P4TC frontend and whenever configuration is updated, we
-> upcall into userspace to compile this whatever p4 representation into
-> whatever bpf bytecode that we then run. No new/custom/scriptable
-> parsers needed.
->
-> > cheers,
-> > jamal
+> diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+> index f46643850df8..cc28e41fb745 100644
+> --- a/net/sched/sch_htb.c
+> +++ b/net/sched/sch_htb.c
+> @@ -431,7 +431,10 @@ static void htb_activate_prios(struct htb_sched *q, struct htb_class *cl)
+>  	while (cl->cmode == HTB_MAY_BORROW && p && mask) {
+>  		m = mask;
+>  		while (m) {
+> -			int prio = ffz(~m);
+> +			unsigned int prio = ffz(~m);
+> +
+> +			if (WARN_ON_ONCE(prio > ARRAY_SIZE(p->inner.clprio)))
+> +				break;
+>  			m &= ~(1 << prio);
+>  
+>  			if (p->inner.clprio[prio].feed.rb_node)
+> -- 
+> 2.34.1
+> 
