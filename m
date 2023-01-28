@@ -2,111 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8531A67F7EF
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 14:15:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24BDF67F7F3
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 14:16:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234179AbjA1NPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 08:15:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58512 "EHLO
+        id S234279AbjA1NQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 08:16:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230502AbjA1NPM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 08:15:12 -0500
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40F949038;
-        Sat, 28 Jan 2023 05:15:11 -0800 (PST)
-Received: from [192.168.2.51] (p4fe71212.dip0.t-ipconnect.de [79.231.18.18])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 8F9E6C03F6;
-        Sat, 28 Jan 2023 14:15:08 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1674911708;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WPThA8F8arioRGKvheey6dkfAb8Qhp88RQrjp407wvY=;
-        b=PUzpKQEch93i20zMYOSP3iSZUoOjChzzHMyCw8mHsGs7m71RTdA4HpQeRqk1eGFA9rf/Wi
-        swtqSDU6jr7hJI0xBNQXtYM0y6VpBMkguW8nv5oGKlfTrlQP/I5cG1k+2h8cSL4B8TXTPH
-        s8d3YLYiKLe+2ipeoZoCleoebA1+v5mI65lGS6kFHqo0ievl5dZZ6Kgk3NCfqk6n1cj8fR
-        /LvbvYJlRhrcNHbYL/2rQRPxlOfWb7ESSRLBRtp4uoWX8d5WuP7A5SUBYomVilXpCONTa0
-        0+n/xbIide+lk0qpOsqLtkdT0ro1xMBvFe+v7MX2FDB8+te7AgfhoBXup+ZcKg==
-Message-ID: <d17b1f40-b878-28fa-f93d-37f7e5ba856c@datenfreihafen.org>
-Date:   Sat, 28 Jan 2023 14:15:07 +0100
+        with ESMTP id S233397AbjA1NQe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 08:16:34 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CD9160CBD;
+        Sat, 28 Jan 2023 05:16:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674911793; x=1706447793;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xRkizNFLXRZLEBRhpHvIyAhu0m3+jrQc6zYlNa2K1+4=;
+  b=gUtI+KO0nD6ndRN/DXR70lct+xldu+wYnyiu60NbuAmDAXaugmnQ71pQ
+   aum8jtMHoSTpXAJ40EGEbue4N/1YLwz2DPxSlp6QOKOw5M2cGWz0Ui5e0
+   F32IKtYPzwJ7Ql5feJgoUKmtUyfCyeAfkMhCSbng77lukUgP+RjVmuCBQ
+   V9DPBO9b1yH9iUhBxVZoR6F7SAfugYdyZP4Ch4fYKCJJYtfVL1oVJzQRM
+   sqqc/T1PJE31XEPy2iwxlCPk5K9sl0pcmflOuIPKBxCMvn4hA/1DuoCn4
+   5K8lZnCeN0DxC1D+2nYRqiM14UigjAIbgk/FaPsNK2HQ1mnDq2oVnX9Ny
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="329417901"
+X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
+   d="scan'208";a="329417901"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 05:16:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="992378494"
+X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
+   d="scan'208";a="992378494"
+Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 28 Jan 2023 05:16:30 -0800
+Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pLl4H-0000fb-20;
+        Sat, 28 Jan 2023 13:16:29 +0000
+Date:   Sat, 28 Jan 2023 21:15:53 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Joanne Koong <joannelkoong@gmail.com>, bpf@vger.kernel.org
+Cc:     oe-kbuild-all@lists.linux.dev, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@kernel.org, ast@kernel.org,
+        netdev@vger.kernel.org, memxor@gmail.com, kernel-team@fb.com,
+        Joanne Koong <joannelkoong@gmail.com>
+Subject: Re: [PATCH v8 bpf-next 3/5] bpf: Add skb dynptrs
+Message-ID: <202301282140.o95DpYWu-lkp@intel.com>
+References: <20230126233439.3739120-4-joannelkoong@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH wpan-next v2 0/2] ieee802154: Beaconing support
-Content-Language: en-US
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        linux-wpan@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Guilhem Imberton <guilhem.imberton@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-References: <20230125102923.135465-1-miquel.raynal@bootlin.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20230125102923.135465-1-miquel.raynal@bootlin.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230126233439.3739120-4-joannelkoong@gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+Hi Joanne,
 
-On 25.01.23 11:29, Miquel Raynal wrote:
-> Scanning being now supported, we can eg. play with hwsim to verify
-> everything works as soon as this series including beaconing support gets
-> merged.
-> 
-> Thanks,
-> Miquèl
-> 
-> Changes in v2:
-> * Clearly state in the commit log llsec is not supported yet.
-> * Do not use mlme transmission helpers because we don't really need to
->    stop the queue when sending a beacon, as we don't expect any feedback
->    from the PHY nor from the peers. However, we don't want to go through
->    the whole net stack either, so we bypass it calling the subif helper
->    directly.
-> 
-> Miquel Raynal (2):
->    ieee802154: Add support for user beaconing requests
->    mac802154: Handle basic beaconing
-> 
->   include/net/cfg802154.h         |  23 +++++
->   include/net/ieee802154_netdev.h |  16 ++++
->   include/net/nl802154.h          |   3 +
->   net/ieee802154/header_ops.c     |  24 +++++
->   net/ieee802154/nl802154.c       |  93 ++++++++++++++++++++
->   net/ieee802154/nl802154.h       |   1 +
->   net/ieee802154/rdev-ops.h       |  28 ++++++
->   net/ieee802154/trace.h          |  21 +++++
->   net/mac802154/cfg.c             |  31 ++++++-
->   net/mac802154/ieee802154_i.h    |  18 ++++
->   net/mac802154/iface.c           |   3 +
->   net/mac802154/llsec.c           |   5 +-
->   net/mac802154/main.c            |   1 +
->   net/mac802154/scan.c            | 151 ++++++++++++++++++++++++++++++++
->   14 files changed, 415 insertions(+), 3 deletions(-)
+Thank you for the patch! Perhaps something to improve:
 
-These patches have been applied to the wpan-next tree and will be
-part of the next pull request to net-next. Thanks!
+[auto build test WARNING on bpf-next/master]
 
-regards
-Stefan Schmidt
+url:    https://github.com/intel-lab-lkp/linux/commits/Joanne-Koong/bpf-Allow-sk_buff-and-xdp_buff-as-valid-kfunc-arg-types/20230128-170947
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+patch link:    https://lore.kernel.org/r/20230126233439.3739120-4-joannelkoong%40gmail.com
+patch subject: [PATCH v8 bpf-next 3/5] bpf: Add skb dynptrs
+config: ia64-allyesconfig (https://download.01.org/0day-ci/archive/20230128/202301282140.o95DpYWu-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/2581b1dec73f18fa2b7302a1a2ecd788b82f3680
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Joanne-Koong/bpf-Allow-sk_buff-and-xdp_buff-as-valid-kfunc-arg-types/20230128-170947
+        git checkout 2581b1dec73f18fa2b7302a1a2ecd788b82f3680
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash net/core/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> net/core/filter.c:1866:5: warning: no previous prototype for 'bpf_dynptr_from_skb' [-Wmissing-prototypes]
+    1866 | int bpf_dynptr_from_skb(struct sk_buff *skb, u64 flags,
+         |     ^~~~~~~~~~~~~~~~~~~
+
+
+vim +/bpf_dynptr_from_skb +1866 net/core/filter.c
+
+  1865	
+> 1866	int bpf_dynptr_from_skb(struct sk_buff *skb, u64 flags,
+  1867				struct bpf_dynptr_kern *ptr, int is_rdonly)
+  1868	{
+  1869		if (flags) {
+  1870			bpf_dynptr_set_null(ptr);
+  1871			return -EINVAL;
+  1872		}
+  1873	
+  1874		bpf_dynptr_init(ptr, skb, BPF_DYNPTR_TYPE_SKB, 0, skb->len);
+  1875	
+  1876		if (is_rdonly)
+  1877			bpf_dynptr_set_rdonly(ptr);
+  1878	
+  1879		return 0;
+  1880	}
+  1881	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
