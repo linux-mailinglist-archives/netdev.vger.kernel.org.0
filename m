@@ -2,337 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E288367F440
-	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 04:13:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E83167F3F6
+	for <lists+netdev@lfdr.de>; Sat, 28 Jan 2023 03:24:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233038AbjA1DNn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Jan 2023 22:13:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50526 "EHLO
+        id S231961AbjA1CY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Jan 2023 21:24:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232087AbjA1DNj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 22:13:39 -0500
-Received: from out28-73.mail.aliyun.com (out28-73.mail.aliyun.com [115.124.28.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE0DB820DE;
-        Fri, 27 Jan 2023 19:13:35 -0800 (PST)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07436697|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0094743-0.252771-0.737755;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047190;MF=frank.sae@motor-comm.com;NM=1;PH=DS;RN=14;RT=14;SR=0;TI=SMTPD_---.R2VLvg1_1674875610;
-Received: from sun-VirtualBox..(mailfrom:Frank.Sae@motor-comm.com fp:SMTPD_---.R2VLvg1_1674875610)
-          by smtp.aliyun-inc.com;
-          Sat, 28 Jan 2023 11:13:31 +0800
-From:   Frank Sae <Frank.Sae@motor-comm.com>
-To:     Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     xiaogang.fan@motor-comm.com, fei.zhang@motor-comm.com,
-        hua.sun@motor-comm.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Frank <Frank.Sae@motor-comm.com>
-Subject: [PATCH net-next v2 5/5] net: phy: Add driver for Motorcomm yt8531 gigabit ethernet phy
-Date:   Sat, 28 Jan 2023 11:13:14 +0800
-Message-Id: <20230128031314.19752-6-Frank.Sae@motor-comm.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230128031314.19752-1-Frank.Sae@motor-comm.com>
-References: <20230128031314.19752-1-Frank.Sae@motor-comm.com>
+        with ESMTP id S229464AbjA1CYz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Jan 2023 21:24:55 -0500
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F1DF241EF;
+        Fri, 27 Jan 2023 18:24:54 -0800 (PST)
+Received: from kwepemm600003.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4P3dX0039Pz16NNs;
+        Sat, 28 Jan 2023 10:22:55 +0800 (CST)
+Received: from huawei.com (10.175.113.32) by kwepemm600003.china.huawei.com
+ (7.193.23.202) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Sat, 28 Jan
+ 2023 10:24:51 +0800
+From:   Nanyong Sun <sunnanyong@huawei.com>
+To:     <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+        <mst@redhat.com>, <jasowang@redhat.com>
+CC:     <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <wangrong68@huawei.com>,
+        <sunnanyong@huawei.com>
+Subject: [PATCH] vhost/vdpa: Add MSI translation tables to iommu for software-managed MSI
+Date:   Sat, 28 Jan 2023 11:17:40 +0800
+Message-ID: <20230128031740.166743-1-sunnanyong@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.32]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- Add a driver for the motorcomm yt8531 gigabit ethernet phy. We have
- verified the driver on AM335x platform with yt8531 board. On the
- board, yt8531 gigabit ethernet phy works in utp mode, RGMII
- interface, supports 1000M/100M/10M speeds, and wol(magic package).
+From: Rong Wang <wangrong68@huawei.com>
 
-Signed-off-by: Frank Sae <Frank.Sae@motor-comm.com>
+Once enable iommu domain for one device, the MSI
+translation tables have to be there for software-managed MSI.
+Otherwise, platform with software-managed MSI without an
+irq bypass function, can not get a correct memory write event
+from pcie, will not get irqs.
+The solution is to obtain the MSI phy base address from
+iommu reserved region, and set it to iommu MSI cookie,
+then translation tables will be created while request irq.
+
+Signed-off-by: Rong Wang <wangrong68@huawei.com>
+Signed-off-by: Nanyong Sun <sunnanyong@huawei.com>
 ---
- drivers/net/phy/Kconfig     |   2 +-
- drivers/net/phy/motorcomm.c | 204 +++++++++++++++++++++++++++++++++++-
- 2 files changed, 203 insertions(+), 3 deletions(-)
+ drivers/iommu/iommu.c |  1 +
+ drivers/vhost/vdpa.c  | 53 ++++++++++++++++++++++++++++++++++++++++---
+ 2 files changed, 51 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index f5df2edc94a5..dc2f7d0b0cd8 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -257,7 +257,7 @@ config MOTORCOMM_PHY
- 	tristate "Motorcomm PHYs"
- 	help
- 	  Enables support for Motorcomm network PHYs.
--	  Currently supports the YT8511, YT8521, YT8531S Gigabit Ethernet PHYs.
-+	  Currently supports the YT8511, YT8521, YT8531, YT8531S Gigabit Ethernet PHYs.
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index de91dd88705b..f6c65d5d8e2b 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2623,6 +2623,7 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
+ 	if (ops->get_resv_regions)
+ 		ops->get_resv_regions(dev, list);
+ }
++EXPORT_SYMBOL_GPL(iommu_get_resv_regions);
  
- config NATIONAL_PHY
- 	tristate "National Semiconductor PHYs"
-diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
-index 9559fc52814f..f1fc912738e0 100644
---- a/drivers/net/phy/motorcomm.c
-+++ b/drivers/net/phy/motorcomm.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0+
- /*
-- * Motorcomm 8511/8521/8531S PHY driver.
-+ * Motorcomm 8511/8521/8531/8531S PHY driver.
-  *
-  * Author: Peter Geis <pgwipeout@gmail.com>
-  * Author: Frank <Frank.Sae@motor-comm.com>
-@@ -14,6 +14,7 @@
- 
- #define PHY_ID_YT8511		0x0000010a
- #define PHY_ID_YT8521		0x0000011A
-+#define PHY_ID_YT8531		0x4f51e91b
- #define PHY_ID_YT8531S		0x4F51E91A
- 
- /* YT8521/YT8531S Register Overview
-@@ -517,6 +518,68 @@ static int ytphy_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
- 	return phy_restore_page(phydev, old_page, ret);
+ /**
+  * iommu_put_resv_regions - release resered regions
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index ec32f785dfde..31d3e9ed4cfa 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -1103,6 +1103,48 @@ static ssize_t vhost_vdpa_chr_write_iter(struct kiocb *iocb,
+ 	return vhost_chr_write_iter(dev, from);
  }
  
-+static int yt8531_set_wol(struct phy_device *phydev,
-+			  struct ethtool_wolinfo *wol)
++static bool vhost_vdpa_check_sw_msi(struct list_head *dev_resv_regions, phys_addr_t *base)
 +{
-+	struct net_device *p_attached_dev;
-+	const u16 mac_addr_reg[] = {
-+		YTPHY_WOL_MACADDR2_REG,
-+		YTPHY_WOL_MACADDR1_REG,
-+		YTPHY_WOL_MACADDR0_REG,
-+	};
-+	const u8 *mac_addr;
-+	u16 mask, val;
-+	int ret;
-+	u8 i;
++	struct iommu_resv_region *region;
++	bool ret = false;
 +
-+	if (wol->wolopts & WAKE_MAGIC) {
-+		p_attached_dev = phydev->attached_dev;
-+		if (!p_attached_dev)
-+			return -ENODEV;
-+
-+		mac_addr = (const u8 *)p_attached_dev->dev_addr;
-+		if (!is_valid_ether_addr(mac_addr))
-+			return -EINVAL;
-+
-+		/* Store the device address for the magic packet */
-+		for (i = 0; i < 3; i++) {
-+			ret = ytphy_write_ext_with_lock(phydev, mac_addr_reg[i],
-+							((mac_addr[i * 2] << 8)) |
-+							(mac_addr[i * 2 + 1]));
-+			if (ret < 0)
-+				return ret;
++	list_for_each_entry(region, dev_resv_regions, list) {
++		/*
++		 * The presence of any 'real' MSI regions should take
++		 * precedence over the software-managed one if the
++		 * IOMMU driver happens to advertise both types.
++		 */
++		if (region->type == IOMMU_RESV_MSI) {
++			ret = false;
++			break;
 +		}
 +
-+		/* Enable WOL feature */
-+		mask = YTPHY_WCR_PULSE_WIDTH_MASK | YTPHY_WCR_INTR_SEL;
-+		val = YTPHY_WCR_ENABLE | YTPHY_WCR_INTR_SEL;
-+		val |= YTPHY_WCR_TYPE_PULSE | YTPHY_WCR_PULSE_WIDTH_672MS;
-+		ret = ytphy_modify_ext_with_lock(phydev, YTPHY_WOL_CONFIG_REG,
-+						 mask, val);
-+		if (ret < 0)
-+			return ret;
-+
-+		/* Enable WOL interrupt */
-+		ret = phy_modify(phydev, YTPHY_INTERRUPT_ENABLE_REG, 0,
-+				 YTPHY_IER_WOL);
-+		if (ret < 0)
-+			return ret;
-+	} else {
-+		/* Disable WOL feature */
-+		mask = YTPHY_WCR_ENABLE | YTPHY_WCR_INTR_SEL;
-+		ret = ytphy_modify_ext_with_lock(phydev, YTPHY_WOL_CONFIG_REG,
-+						 mask, 0);
-+
-+		/* Disable WOL interrupt */
-+		ret = phy_modify(phydev, YTPHY_INTERRUPT_ENABLE_REG,
-+				 YTPHY_IER_WOL, 0);
-+		if (ret < 0)
-+			return ret;
++		if (region->type == IOMMU_RESV_SW_MSI) {
++			*base = region->start;
++			ret = true;
++		}
 +	}
 +
-+	return 0;
++	return ret;
 +}
 +
- static int yt8511_read_page(struct phy_device *phydev)
++static int vhost_vdpa_get_msi_cookie(struct iommu_domain *domain, struct device *dma_dev)
++{
++	struct list_head dev_resv_regions;
++	phys_addr_t resv_msi_base = 0;
++	int ret = 0;
++
++	INIT_LIST_HEAD(&dev_resv_regions);
++	iommu_get_resv_regions(dma_dev, &dev_resv_regions);
++
++	if (vhost_vdpa_check_sw_msi(&dev_resv_regions, &resv_msi_base))
++		ret = iommu_get_msi_cookie(domain, resv_msi_base);
++
++	iommu_put_resv_regions(dma_dev, &dev_resv_regions);
++
++	return ret;
++}
++
+ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
  {
- 	return __phy_read(phydev, YT8511_PAGE_SELECT);
-@@ -893,6 +956,43 @@ static int yt8521_probe(struct phy_device *phydev)
- 					  val);
- }
+ 	struct vdpa_device *vdpa = v->vdpa;
+@@ -1128,11 +1170,16 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
  
-+static int yt8531_probe(struct phy_device *phydev)
-+{
-+	struct device_node *node = phydev->mdio.dev.of_node;
-+	u16 mask, val;
-+	u32 freq;
-+
-+	if (of_property_read_u32(node, "motorcomm,clk-out-frequency-hz", &freq))
-+		freq = YTPHY_DTS_OUTPUT_CLK_DIS;
-+
-+	switch (freq) {
-+	case YTPHY_DTS_OUTPUT_CLK_DIS:
-+		mask = YT8531_SCR_SYNCE_ENABLE;
-+		val = 0;
-+		break;
-+	case YTPHY_DTS_OUTPUT_CLK_25M:
-+		mask = YT8531_SCR_SYNCE_ENABLE | YT8531_SCR_CLK_SRC_MASK |
-+		       YT8531_SCR_CLK_FRE_SEL_125M;
-+		val = YT8531_SCR_SYNCE_ENABLE |
-+		      FIELD_PREP(YT8531_SCR_CLK_SRC_MASK,
-+				 YT8531_SCR_CLK_SRC_REF_25M);
-+		break;
-+	case YTPHY_DTS_OUTPUT_CLK_125M:
-+		mask = YT8531_SCR_SYNCE_ENABLE | YT8531_SCR_CLK_SRC_MASK |
-+		       YT8531_SCR_CLK_FRE_SEL_125M;
-+		val = YT8531_SCR_SYNCE_ENABLE | YT8531_SCR_CLK_FRE_SEL_125M |
-+		      FIELD_PREP(YT8531_SCR_CLK_SRC_MASK,
-+				 YT8531_SCR_CLK_SRC_PLL_125M);
-+		break;
-+	default:
-+		phydev_warn(phydev, "Freq err:%u\n", freq);
-+		return -EINVAL;
-+	}
-+
-+	return ytphy_modify_ext_with_lock(phydev, YTPHY_SYNCE_CFG_REG, mask,
-+					  val);
-+}
-+
- /**
-  * ytphy_utp_read_lpa() - read LPA then setup lp_advertising for utp
-  * @phydev: a pointer to a &struct phy_device
-@@ -1389,6 +1489,94 @@ static int yt8521_config_init(struct phy_device *phydev)
- 	return phy_restore_page(phydev, old_page, ret);
- }
+ 	ret = iommu_attach_device(v->domain, dma_dev);
+ 	if (ret)
+-		goto err_attach;
++		goto err_alloc_domain;
  
-+static int yt8531_config_init(struct phy_device *phydev)
-+{
-+	struct device_node *node = phydev->mdio.dev.of_node;
-+	int ret;
-+
-+	ret = ytphy_rgmii_clk_delay_config_with_lock(phydev);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (of_property_read_bool(node, "motorcomm,auto-sleep-disabled")) {
-+		/* disable auto sleep */
-+		ret = ytphy_modify_ext_with_lock(phydev,
-+						 YT8521_EXTREG_SLEEP_CONTROL1_REG,
-+						 YT8521_ESC1R_SLEEP_SW, 0);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	if (of_property_read_bool(node, "motorcomm,keep-pll-enabled")) {
-+		/* enable RXC clock when no wire plug */
-+		ret = ytphy_modify_ext_with_lock(phydev,
-+						 YT8521_CLOCK_GATING_REG,
-+						 YT8521_CGR_RX_CLK_EN, 0);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
+-	return 0;
++	ret = vhost_vdpa_get_msi_cookie(v->domain, dma_dev);
++	if (ret)
++		goto err_attach_device;
+ 
+-err_attach:
 +	return 0;
-+}
-+
-+/**
-+ * yt8531_link_change_notify() - Adjust the tx clock direction according to
-+ * the current speed and dts config.
-+ * @phydev: a pointer to a &struct phy_device
-+ *
-+ * NOTE: This function is only used to adapt to VF2 with JH7110 SoC. Please
-+ * keep "motorcomm,tx-clk-adj-enabled" not exist in dts when the soc is not
-+ * JH7110.
-+ */
-+static void yt8531_link_change_notify(struct phy_device *phydev)
-+{
-+	struct device_node *node = phydev->mdio.dev.of_node;
-+	bool tx_clk_adj_enabled = false;
-+	bool tx_clk_1000_inverted;
-+	bool tx_clk_100_inverted;
-+	bool tx_clk_10_inverted;
-+	u16 val = 0;
-+	int ret;
-+
-+	if (of_property_read_bool(node, "motorcomm,tx-clk-adj-enabled"))
-+		tx_clk_adj_enabled = true;
-+
-+	if (!tx_clk_adj_enabled)
-+		return;
-+
-+	if (of_property_read_bool(node, "motorcomm,tx-clk-10-inverted"))
-+		tx_clk_10_inverted = true;
-+	if (of_property_read_bool(node, "motorcomm,tx-clk-100-inverted"))
-+		tx_clk_100_inverted = true;
-+	if (of_property_read_bool(node, "motorcomm,tx-clk-1000-inverted"))
-+		tx_clk_1000_inverted = true;
-+
-+	if (phydev->speed < 0)
-+		return;
-+
-+	switch (phydev->speed) {
-+	case SPEED_1000:
-+		if (tx_clk_1000_inverted)
-+			val = YT8521_RC1R_TX_CLK_SEL_INVERTED;
-+		break;
-+	case SPEED_100:
-+		if (tx_clk_100_inverted)
-+			val = YT8521_RC1R_TX_CLK_SEL_INVERTED;
-+		break;
-+	case SPEED_10:
-+		if (tx_clk_10_inverted)
-+			val = YT8521_RC1R_TX_CLK_SEL_INVERTED;
-+		break;
-+	default:
-+		return;
-+	}
-+
-+	ret = ytphy_modify_ext_with_lock(phydev, YT8521_RGMII_CONFIG1_REG,
-+					 YT8521_RC1R_TX_CLK_SEL_INVERTED, val);
-+	if (ret < 0)
-+		phydev_warn(phydev, "Modify TX_CLK_SEL err:%d\n", ret);
-+}
-+
- /**
-  * yt8521_prepare_fiber_features() -  A small helper function that setup
-  * fiber's features.
-@@ -1971,6 +2159,17 @@ static struct phy_driver motorcomm_phy_drvs[] = {
- 		.suspend	= yt8521_suspend,
- 		.resume		= yt8521_resume,
- 	},
-+	{
-+		PHY_ID_MATCH_EXACT(PHY_ID_YT8531),
-+		.name		= "YT8531 Gigabit Ethernet",
-+		.probe		= yt8531_probe,
-+		.config_init	= yt8531_config_init,
-+		.suspend	= genphy_suspend,
-+		.resume		= genphy_resume,
-+		.get_wol	= ytphy_get_wol,
-+		.set_wol	= yt8531_set_wol,
-+		.link_change_notify = yt8531_link_change_notify,
-+	},
- 	{
- 		PHY_ID_MATCH_EXACT(PHY_ID_YT8531S),
- 		.name		= "YT8531S Gigabit Ethernet",
-@@ -1992,7 +2191,7 @@ static struct phy_driver motorcomm_phy_drvs[] = {
- 
- module_phy_driver(motorcomm_phy_drvs);
- 
--MODULE_DESCRIPTION("Motorcomm 8511/8521/8531S PHY driver");
-+MODULE_DESCRIPTION("Motorcomm 8511/8521/8531/8531S PHY driver");
- MODULE_AUTHOR("Peter Geis");
- MODULE_AUTHOR("Frank");
- MODULE_LICENSE("GPL");
-@@ -2000,6 +2199,7 @@ MODULE_LICENSE("GPL");
- static const struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
- 	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8511) },
- 	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8521) },
-+	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8531) },
- 	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8531S) },
- 	{ /* sentinal */ }
- };
++err_attach_device:
++	iommu_detach_device(v->domain, dma_dev);
++err_alloc_domain:
+ 	iommu_domain_free(v->domain);
+ 	return ret;
+ }
 -- 
-2.34.1
+2.25.1
 
