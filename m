@@ -2,116 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 709286800DD
-	for <lists+netdev@lfdr.de>; Sun, 29 Jan 2023 19:44:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E0916800F3
+	for <lists+netdev@lfdr.de>; Sun, 29 Jan 2023 19:48:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230238AbjA2Sot (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Jan 2023 13:44:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46108 "EHLO
+        id S235346AbjA2Ssk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Jan 2023 13:48:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235296AbjA2Sor (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Jan 2023 13:44:47 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2397F1E1FE
-        for <netdev@vger.kernel.org>; Sun, 29 Jan 2023 10:44:46 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id qw12so10316726ejc.2
-        for <netdev@vger.kernel.org>; Sun, 29 Jan 2023 10:44:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=i4DbpifCqabRgCyCKd8UEM5w26sLROwDi22v6917074=;
-        b=TEyhofPv/3fZEM5gSXQq3zJGsQqeL5iVEnb9IUXSl9sHFoeUNzf1trCcve0zg+JoAR
-         Z0QHqwd8fPynZgr6nZAWUpJFJ3IoYrs6WG+JvCBNRZxExuXtoakkyP8FMvX0meJhkWQo
-         7OSibO+xWr+pYYAv5hszN01KrH5uDAcq7UN9XlrWwHdDcTfLuUJExukgRVHOF/iE7R0G
-         KTY88XS91OvXMY2ZD41fjSCHNkgEHQLlrIvKRSxMcuH9MN1aN9gULcasEj2yNaJ18C6Z
-         XGMKEqylkFKgoU0KBYgvTeLl/PTZP1jqDusucxa7KS2zGHJK+tJpafQty9ou4gTStI/z
-         YSFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=i4DbpifCqabRgCyCKd8UEM5w26sLROwDi22v6917074=;
-        b=YUOdRtuyVXChOAZ4VdbPzHzmMX+HYTJ3k4sUZFJuiJG26UNY9GGeiGAmU4d8hDZKl/
-         tTl4YWwzJu7WVyqwzCMsUT5igXkWJRYnrzbNKhzIineHO7iTKC8KMnrDhfy7iyfViMSK
-         bbR6fUZJPbQSi0P1tPX4Jj48ao6w6lNy38SwpeLREs//IXHhCBL+liN7iyitG25vL+u9
-         pusem7Cxkmkj8YoI6ZZIbIYJwgOedaEeFOIyLnT5eGgFnCbxZV9eVzqJ79+LHEYHuGNq
-         6Y5e2so+8MNdm2JhAjg8BauwRqRMhC7Owjw+tuxjLoBPtBZMqAa9V+GKwlRvTzjGwK3A
-         0dWQ==
-X-Gm-Message-State: AFqh2kr7i1fXfmvUYI3tQROagYX9xtSAlT3/IRP/o+x7sPAlqDBzkXjB
-        5Y1/3AytUl+PUeWaqi60A5kRBQ==
-X-Google-Smtp-Source: AMrXdXuKMGClb4vuI98zxF7uhYaGzagu25lMseZ08PYThnSOqV0hNzzoGbwJXos8Ts9z63SdfMRpuA==
-X-Received: by 2002:a17:907:7e9c:b0:86e:2c11:9bca with SMTP id qb28-20020a1709077e9c00b0086e2c119bcamr66832803ejc.30.1675017884598;
-        Sun, 29 Jan 2023 10:44:44 -0800 (PST)
-Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
-        by smtp.gmail.com with ESMTPSA id e6-20020a1709061e8600b0085e0882cd02sm5734172ejj.92.2023.01.29.10.44.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 29 Jan 2023 10:44:44 -0800 (PST)
-Message-ID: <9b66580a-f158-43d0-36e1-511e6fe63da7@blackwall.org>
-Date:   Sun, 29 Jan 2023 20:44:43 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH net-next v2] netlink: provide an ability to set default
- extack message
-Content-Language: en-US
-To:     Leon Romanovsky <leon@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, bridge@lists.linux-foundation.org,
+        with ESMTP id S229885AbjA2Ssf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Jan 2023 13:48:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 176BD1F4BA;
+        Sun, 29 Jan 2023 10:48:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4010B80CBB;
+        Sun, 29 Jan 2023 18:48:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA412C433D2;
+        Sun, 29 Jan 2023 18:48:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675018085;
+        bh=wqWSHpwy3MUpVmsntNqQHtsxLsPh+QcU+TX0EB5Z+4c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Nz1tZKtoo2WWyX7mMEDJ0juSHAcoJaOdpTBcbcWkG+P8/FhbZM+UEhpuuleS+FLUd
+         4OzJ1t+ZdgzDeJ+nJ4yDp/amMYIlrdWBGOEzygjP42g2g245qB9D3YSX7Pbdh7NvOW
+         5G4KuVbsuWWQ0KnKKM0iPK/t2i+ekATc7EwjAmIiuv6cHg1mOiOx/9Ws+QUbW+Wz9U
+         iOyZMdtrQfBGEEPLquar3kg/yHDyqjMVltQbV/uB/96KSSE2RytjjXyE4kAIQ1je0/
+         KSX1gPVLOhpWEHgNY+q/tEpVTXmBZVKNPWb4FJ1+jipdegmwISU77c+1qKZg14IB+2
+         gkfbLrJHYVGKg==
+Date:   Sun, 29 Jan 2023 19:48:01 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-References: <c1a88f471a8aa6d780dde690e76b73ba15618b6d.1675010984.git.leon@kernel.org>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <c1a88f471a8aa6d780dde690e76b73ba15618b6d.1675010984.git.leon@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
-        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Marek Majtyka <alardam@gmail.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, anthony.l.nguyen@intel.com,
+        Andy Gospodarek <gospo@broadcom.com>, vladimir.oltean@nxp.com,
+        Felix Fietkau <nbd@nbd.name>, john@phrozen.org,
+        Leon Romanovsky <leon@kernel.org>,
+        Simon Horman <simon.horman@corigine.com>,
+        Ariel Elior <aelior@marvell.com>,
+        christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Stanislav Fomichev <sdf@google.com>
+Subject: Re: [PATCH v4 bpf-next 8/8] selftests/bpf: introduce XDP compliance
+ test tool
+Message-ID: <Y9a/YWBBU/cjofIr@lore-desk>
+References: <cover.1674913191.git.lorenzo@kernel.org>
+ <a7eaa7e3e4c0a7e70f68c32314a7f75c9bba4465.1674913191.git.lorenzo@kernel.org>
+ <CAADnVQJhdxM6eqvxRZ7JjxEc+fDG5CwnV_FAGs+H+djNye0e=w@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Nx0wHPKtgW7QyJuF"
+Content-Disposition: inline
+In-Reply-To: <CAADnVQJhdxM6eqvxRZ7JjxEc+fDG5CwnV_FAGs+H+djNye0e=w@mail.gmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/01/2023 18:51, Leon Romanovsky wrote:
-> In netdev common pattern, extack pointer is forwarded to the drivers
-> to be filled with error message. However, the caller can easily
-> overwrite the filled message.
-> 
-> Instead of adding multiple "if (!extack->_msg)" checks before any
-> NL_SET_ERR_MSG() call, which appears after call to the driver, let's
-> add new macro to common code.
-> 
-> [1] https://lore.kernel.org/all/Y9Irgrgf3uxOjwUm@unreal
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
-> Changelog:
-> v2:
->  * Removed () brackets around msg to fix compilation error.
-> v1: https://lore.kernel.org/all/d4843760219f20367c27472f084bd8aa729cf321.1674995155.git.leon@kernel.org
->  * Added special *_WEAK() macro instead of embedding same check in
->    NL_SET_ERR_MSG_MOD/NL_SET_ERR_MSG_FMT.
->  * Reuse same macro for XFRM code which triggered this patch.
-> v0: https://lore.kernel.org/all/2919eb55e2e9b92265a3ba600afc8137a901ae5f.1674760340.git.leon@kernel.org
-> ---
->  include/linux/netlink.h   | 10 ++++++++++
->  net/bridge/br_switchdev.c | 10 ++++------
->  net/dsa/master.c          |  4 +---
->  net/dsa/slave.c           |  4 +---
->  net/xfrm/xfrm_device.c    |  5 ++++-
->  5 files changed, 20 insertions(+), 13 deletions(-)
-> 
 
-Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
+--Nx0wHPKtgW7QyJuF
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Jan 28, Alexei Starovoitov wrote:
+> On Sat, Jan 28, 2023 at 6:07 AM Lorenzo Bianconi <lorenzo@kernel.org> wro=
+te:
+> > diff --git a/tools/testing/selftests/bpf/xdp_features.h b/tools/testing=
+/selftests/bpf/xdp_features.h
+> > new file mode 100644
+> > index 000000000000..28d7614c4f02
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/xdp_features.h
+> > @@ -0,0 +1,33 @@
+> > +/* SPDX-License-Identifier: GPL-2.0 */
+> > +
+> > +/* test commands */
+> > +enum test_commands {
+> > +       CMD_STOP,               /* CMD */
+> > +       CMD_START,              /* CMD + xdp feature */
+> > +       CMD_ECHO,               /* CMD */
+> > +       CMD_ACK,                /* CMD + data */
+> > +       CMD_GET_XDP_CAP,        /* CMD */
+> > +       CMD_GET_STATS,          /* CMD */
+> > +};
+> > +
+> > +#define DUT_CTRL_PORT  12345
+> > +#define DUT_ECHO_PORT  12346
+> > +
+> > +struct tlv_hdr {
+> > +       __be16 type;
+> > +       __be16 len;
+> > +       __be32 data[];
+> > +};
+> > +
+> > +enum {
+> > +       XDP_FEATURE_ABORTED,
+> > +       XDP_FEATURE_DROP,
+> > +       XDP_FEATURE_PASS,
+> > +       XDP_FEATURE_TX,
+> > +       XDP_FEATURE_REDIRECT,
+> > +       XDP_FEATURE_NDO_XMIT,
+> > +       XDP_FEATURE_XSK_ZEROCOPY,
+> > +       XDP_FEATURE_HW_OFFLOAD,
+> > +       XDP_FEATURE_RX_SG,
+> > +       XDP_FEATURE_NDO_XMIT_SG,
+> > +};
+>=20
+> This doesn't match the kernel.
+> How did you test this?
+> What should be the way to prevent such mistakes in the future?
 
+Hi Alexei,
+
+I added the XDP_FEATURE_* enum above since the XDP compliance test tool nee=
+ds
+to differentiate between actions in NETDEV_XDP_ACT_BASIC (e.g XDP_TX and
+XDP_PASS or XDP_REDIRECT are handled differently in the ebpf programs insta=
+lled
+on the tester and DUT devices). However, combining netdev_xdp_act and xdp_a=
+ction
+enum definitions, I think we can keep this logic in xdp_feature userspace p=
+art
+and we can get rid of the XDP_FEATURE_* enum above.
+I will fix it in v5.
+
+Regards,
+Lorenzo
+
+--Nx0wHPKtgW7QyJuF
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY9a/YQAKCRA6cBh0uS2t
+rA0MAQD14qKZyBuuTUx+gcvcXc9dncuAjpGH/LEYEmvcdZpjPgD/evMoa3V8P0ut
+zGEhB25aPtnf/qiDteYI2cvq8czggAw=
+=A3gE
+-----END PGP SIGNATURE-----
+
+--Nx0wHPKtgW7QyJuF--
