@@ -2,158 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6681C67FBF1
-	for <lists+netdev@lfdr.de>; Sun, 29 Jan 2023 01:13:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A696767FC3A
+	for <lists+netdev@lfdr.de>; Sun, 29 Jan 2023 02:55:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231180AbjA2AGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 19:06:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33682 "EHLO
+        id S230008AbjA2BzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 20:55:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229513AbjA2AGD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 19:06:03 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B89D23663
-        for <netdev@vger.kernel.org>; Sat, 28 Jan 2023 16:06:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674950762; x=1706486762;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nGT/F+YKd21Z8Ve19Rp/fgFf9e6GA5LdRKDx4LoUbUI=;
-  b=aJEFmrKrjGnrMb5E1VE/NgljyneMgv8TsB0P0nfP7PEsewwnOPS5NLKB
-   qsEMjDMxXBokHnrjWUOOqmtcokOIF2yXn3Pyj2c4j0m8bGgvpKc4Pq5dT
-   +MpBCMcR47EzIwBTKETGsqLRXWAkYlkM0xvUqOngtOecj74FEw9sH74hS
-   TWk7gdfIZxaEzSLwq7+SidymSed3YQ3UnXFpT4zQmyw3rTqCs1dss8RyB
-   0IjjLLrzFecdMdPTDY3T0LzjZY2hjPn2dRZhBhaQ9gBj3iqnhoNwO6Cv7
-   FGzPOBQ6JGyiZfeVxWKi4SKi2T2Me1982ybop5AdsmPgD+8rIYB6bBeU4
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="354660885"
-X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
-   d="scan'208";a="354660885"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 16:06:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="732266875"
-X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
-   d="scan'208";a="732266875"
-Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 28 Jan 2023 16:05:59 -0800
-Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pLvCp-0001FQ-08;
-        Sun, 29 Jan 2023 00:05:59 +0000
-Date:   Sun, 29 Jan 2023 08:05:26 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vadim Fedorenko <vfedorenko@novek.ru>,
-        Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>, Gal Pressman <gal@nvidia.com>
-Cc:     oe-kbuild-all@lists.linux.dev, netdev@vger.kernel.org
-Subject: Re: [PATCH net v3 2/2] mlx5: fix possible ptp queue fifo
- use-after-free
-Message-ID: <202301290714.hjuYGOXr-lkp@intel.com>
-References: <20230126010206.13483-3-vfedorenko@novek.ru>
+        with ESMTP id S231789AbjA2BzI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 20:55:08 -0500
+Received: from out28-53.mail.aliyun.com (out28-53.mail.aliyun.com [115.124.28.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C0C120D00;
+        Sat, 28 Jan 2023 17:55:06 -0800 (PST)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.1337155|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.00629158-0.000370313-0.993338;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047188;MF=frank.sae@motor-comm.com;NM=1;PH=DS;RN=13;RT=13;SR=0;TI=SMTPD_---.R3NiPf0_1674957301;
+Received: from 10.0.2.15(mailfrom:Frank.Sae@motor-comm.com fp:SMTPD_---.R3NiPf0_1674957301)
+          by smtp.aliyun-inc.com;
+          Sun, 29 Jan 2023 09:55:03 +0800
+Message-ID: <3fc60e9f-b688-8aaa-a112-ca100815a69d@motor-comm.com>
+Date:   Sun, 29 Jan 2023 09:56:09 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230126010206.13483-3-vfedorenko@novek.ru>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next v2 5/5] net: phy: Add driver for Motorcomm yt8531
+ gigabit ethernet phy
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Peter Geis <pgwipeout@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, xiaogang.fan@motor-comm.com,
+        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230128031314.19752-1-Frank.Sae@motor-comm.com>
+ <20230128031314.19752-6-Frank.Sae@motor-comm.com> <Y9VCfkzjHBDjXmet@lunn.ch>
+Content-Language: en-US
+From:   "Frank.Sae" <Frank.Sae@motor-comm.com>
+In-Reply-To: <Y9VCfkzjHBDjXmet@lunn.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vadim,
+Hi Andrew,
 
-I love your patch! Perhaps something to improve:
+On 2023/1/28 23:42, Andrew Lunn wrote:
+> On Sat, Jan 28, 2023 at 11:13:14AM +0800, Frank Sae wrote:
+>>  Add a driver for the motorcomm yt8531 gigabit ethernet phy. We have
+>>  verified the driver on AM335x platform with yt8531 board. On the
+>>  board, yt8531 gigabit ethernet phy works in utp mode, RGMII
+>>  interface, supports 1000M/100M/10M speeds, and wol(magic package).
+>>
+>> Signed-off-by: Frank Sae <Frank.Sae@motor-comm.com>
+>> ---
+>>  drivers/net/phy/Kconfig     |   2 +-
+>>  drivers/net/phy/motorcomm.c | 204 +++++++++++++++++++++++++++++++++++-
+>>  2 files changed, 203 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+>> index f5df2edc94a5..dc2f7d0b0cd8 100644
+>> --- a/drivers/net/phy/Kconfig
+>> +++ b/drivers/net/phy/Kconfig
+>> @@ -257,7 +257,7 @@ config MOTORCOMM_PHY
+>>  	tristate "Motorcomm PHYs"
+>>  	help
+>>  	  Enables support for Motorcomm network PHYs.
+>> -	  Currently supports the YT8511, YT8521, YT8531S Gigabit Ethernet PHYs.
+>> +	  Currently supports the YT8511, YT8521, YT8531, YT8531S Gigabit Ethernet PHYs.
+> 
+> This is O.K. for now, but when you add the next PHY, please do this in
+> some other way, because it does not scale. Maybe just say YT85xx?
+> 
+>>  
+>>  config NATIONAL_PHY
+>>  	tristate "National Semiconductor PHYs"
+>> diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
+>> index 9559fc52814f..f1fc912738e0 100644
+>> --- a/drivers/net/phy/motorcomm.c
+>> +++ b/drivers/net/phy/motorcomm.c
+>> @@ -1,6 +1,6 @@
+>>  // SPDX-License-Identifier: GPL-2.0+
+>>  /*
+>> - * Motorcomm 8511/8521/8531S PHY driver.
+>> + * Motorcomm 8511/8521/8531/8531S PHY driver.
+>>   *
+>>   * Author: Peter Geis <pgwipeout@gmail.com>
+>>   * Author: Frank <Frank.Sae@motor-comm.com>
+>> @@ -14,6 +14,7 @@
+>>  
+>>  #define PHY_ID_YT8511		0x0000010a
+>>  #define PHY_ID_YT8521		0x0000011A
+>> +#define PHY_ID_YT8531		0x4f51e91b
+>>  #define PHY_ID_YT8531S		0x4F51E91A
+>>  
+>>  /* YT8521/YT8531S Register Overview
+>> @@ -517,6 +518,68 @@ static int ytphy_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
+>>  	return phy_restore_page(phydev, old_page, ret);
+>>  }
+>>  
+>> +static int yt8531_set_wol(struct phy_device *phydev,
+>> +			  struct ethtool_wolinfo *wol)
+>> +{
+>> +	struct net_device *p_attached_dev;
+>> +	const u16 mac_addr_reg[] = {
+>> +		YTPHY_WOL_MACADDR2_REG,
+>> +		YTPHY_WOL_MACADDR1_REG,
+>> +		YTPHY_WOL_MACADDR0_REG,
+>> +	};
+>> +	const u8 *mac_addr;
+>> +	u16 mask, val;
+>> +	int ret;
+>> +	u8 i;
+>> +
+>> +	if (wol->wolopts & WAKE_MAGIC) {
+>> +		p_attached_dev = phydev->attached_dev;
+>> +		if (!p_attached_dev)
+>> +			return -ENODEV;
+>> +
+>> +		mac_addr = (const u8 *)p_attached_dev->dev_addr;
+>> +		if (!is_valid_ether_addr(mac_addr))
+>> +			return -EINVAL;
+> 
+> Have you ever seen that happen? It suggests the MAC driver has a bug,
+> not validating its MAC address.
 
-[auto build test WARNING on net/master]
+I have never seen that happen.
+Do you mean that I should change the code from
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Vadim-Fedorenko/mlx5-fix-skb-leak-while-fifo-resync-and-push/20230128-120805
-patch link:    https://lore.kernel.org/r/20230126010206.13483-3-vfedorenko%40novek.ru
-patch subject: [PATCH net v3 2/2] mlx5: fix possible ptp queue fifo use-after-free
-config: alpha-allmodconfig (https://download.01.org/0day-ci/archive/20230129/202301290714.hjuYGOXr-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/2516a9785583b92ac82262a813203de696096ccd
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Vadim-Fedorenko/mlx5-fix-skb-leak-while-fifo-resync-and-push/20230128-120805
-        git checkout 2516a9785583b92ac82262a813203de696096ccd
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=alpha olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash drivers/bluetooth/ drivers/net/ethernet/mediatek/ drivers/net/ethernet/mellanox/mlx5/core/ drivers/pci/controller/ drivers/power/supply/
++	if (wol->wolopts & WAKE_MAGIC) {
++		p_attached_dev = phydev->attached_dev;
++		if (!p_attached_dev)
++			return -ENODEV;
++
++		mac_addr = (const u8 *)p_attached_dev->dev_addr;
++		if (!is_valid_ether_addr(mac_addr))
++			return -EINVAL;
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
+to
 
-All warnings (new ones prefixed by >>):
++	if (wol->wolopts & WAKE_MAGIC) {
++		mac_addr = phydev->attached_dev->dev_addr;
 
-   drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c: In function 'mlx5e_ptp_skb_fifo_ts_cqe_resync':
->> drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c:97:9: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
-      97 |         if (skb_cc > skb_id || PTP_WQE_CTR2IDX(ptpsq->skb_fifo_pc) < skb_id)
-         |         ^~
-   drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c:99:17: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
-      99 |                 return false;
-         |                 ^~~~~~
-   drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c:93:25: warning: unused variable 'skb' [-Wunused-variable]
-      93 |         struct sk_buff *skb;
-         |                         ^~~
-   drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c:92:37: warning: unused variable 'hwts' [-Wunused-variable]
-      92 |         struct skb_shared_hwtstamps hwts = {};
-         |                                     ^~~~
-   drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c: At top level:
-   drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c:102:9: error: expected identifier or '(' before 'while'
-     102 |         while (skb_cc != skb_id && (skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo))) {
-         |         ^~~~~
-   drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c:110:9: error: expected identifier or '(' before 'if'
-     110 |         if (!skb)
-         |         ^~
-   drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c:113:9: error: expected identifier or '(' before 'return'
-     113 |         return true;
-         |         ^~~~~~
-   drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c:114:1: error: expected identifier or '(' before '}' token
-     114 | }
-         | ^
+?
 
+> Also, does the PHY actually care? Will the firmware crash if given a
+> bad MAC address?
+> 
 
-vim +/if +97 drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+The PHY actually is not care this. The firmware is not crash if given a
+bad MAC address.
 
-    88	
-    89	static bool mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq *ptpsq, u16 skb_cc,
-    90						     u16 skb_id, int budget)
-    91	{
-    92		struct skb_shared_hwtstamps hwts = {};
-    93		struct sk_buff *skb;
-    94	
-    95		ptpsq->cq_stats->resync_event++;
-    96	
-  > 97		if (skb_cc > skb_id || PTP_WQE_CTR2IDX(ptpsq->skb_fifo_pc) < skb_id)
-    98			pr_err_ratelimited("mlx5e: out-of-order ptp cqe\n");
-    99			return false;
-   100		}
-   101	
-   102		while (skb_cc != skb_id && (skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo))) {
-   103			hwts.hwtstamp = mlx5e_skb_cb_get_hwts(skb)->cqe_hwtstamp;
-   104			skb_tstamp_tx(skb, &hwts);
-   105			ptpsq->cq_stats->resync_cqe++;
-   106			napi_consume_skb(skb, budget);
-   107			skb_cc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
-   108		}
-   109	
-   110		if (!skb)
-   111			return false;
-   112	
-   113		return true;
-   114	}
-   115	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+>     Andrew
