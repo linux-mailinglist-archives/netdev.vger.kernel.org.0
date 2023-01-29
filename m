@@ -2,120 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E08D67FEA6
-	for <lists+netdev@lfdr.de>; Sun, 29 Jan 2023 12:48:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 461EC67FEE3
+	for <lists+netdev@lfdr.de>; Sun, 29 Jan 2023 13:31:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234569AbjA2Lsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Jan 2023 06:48:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
+        id S230281AbjA2Mav (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Jan 2023 07:30:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229637AbjA2Lsa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Jan 2023 06:48:30 -0500
-Received: from out30-119.freemail.mail.aliyun.com (out30-119.freemail.mail.aliyun.com [115.124.30.119])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE7920D05;
-        Sun, 29 Jan 2023 03:48:27 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R421e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=17;SR=0;TI=SMTPD_---0VaKR4Av_1674992903;
-Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0VaKR4Av_1674992903)
-          by smtp.aliyun-inc.com;
-          Sun, 29 Jan 2023 19:48:24 +0800
-Date:   Sun, 29 Jan 2023 19:48:21 +0800
-From:   Dust Li <dust.li@linux.alibaba.com>
-To:     Jan Karcher <jaka@linux.ibm.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S229519AbjA2Mau (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Jan 2023 07:30:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D9161DBAB
+        for <netdev@vger.kernel.org>; Sun, 29 Jan 2023 04:30:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0ED8B80C94
+        for <netdev@vger.kernel.org>; Sun, 29 Jan 2023 12:30:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1D90C433EF;
+        Sun, 29 Jan 2023 12:30:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674995442;
+        bh=SFa1Tf6DaGpaATtn+gFBOA09DFsVEqjspVrHP2ouWaQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Ly7bRraXGnQHozmRHrpU/oNYWxdDGDwFVojva+g4Mr3O5c4CnB1gvibw18rPLxyqq
+         jjrC/IC86GJS734/yDRqSa+uzCdFtF0u3dcbv1MsovQfHfrbojMlJ4TzZoCq8lFc0U
+         FzKdGKLlqCy3g3efAeaOSmCC+nKlmC3B0QJtMqy70QieIsony3s0jl/fbjREwTE0By
+         5xAwc1XxC24BcJ8uYJjU3HdfZVcyD6YGziFYkeLk2/OW+V2cihV+0JIOcXFZATRCWi
+         u3PxbIJ5iasIzCDEs3d44hRVREo/E3g3vRaDSqBvr8Zd+dZYHxuj2lUtO4K7/e4ipB
+         Tuhd3tJM2lPJQ==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leonro@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
+        bridge@lists.linux-foundation.org,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Thorsten Winkler <twinkler@linux.ibm.com>,
-        Stefan Raspl <raspl@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Nils Hoppmann <niho@linux.ibm.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Tony Lu <tonylu@linux.alibaba.com>,
-        Wen Gu <guwen@linux.alibaba.com>
-Subject: Re: [net-next v2 0/8] drivers/s390/net/ism: Add generalized interface
-Message-ID: <20230129114821.GF74595@linux.alibaba.com>
-Reply-To: dust.li@linux.alibaba.com
-References: <20230123181752.1068-1-jaka@linux.ibm.com>
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, Nikolay Aleksandrov <razor@blackwall.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net-next v1] netlink: provide an ability to set default extack message
+Date:   Sun, 29 Jan 2023 14:30:35 +0200
+Message-Id: <d4843760219f20367c27472f084bd8aa729cf321.1674995155.git.leon@kernel.org>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230123181752.1068-1-jaka@linux.ibm.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 23, 2023 at 07:17:44PM +0100, Jan Karcher wrote:
->Previously, there was no clean separation between SMC-D code and the ISM
->device driver.This patch series addresses the situation to make ISM available
->for uses outside of SMC-D.
->In detail: SMC-D offers an interface via struct smcd_ops, which only the
->ISM module implements so far. However, there is no real separation between
->the smcd and ism modules, which starts right with the ISM device
->initialization, which calls directly into the SMC-D code.
->This patch series introduces a new API in the ISM module, which allows
->registration of arbitrary clients via include/linux/ism.h: struct ism_client.
->Furthermore, it introduces a "pure" struct ism_dev (i.e. getting rid of
->dependencies on SMC-D in the device structure), and adds a number of API
->calls for data transfers via ISM (see ism_register_dmb() & friends).
->Still, the ISM module implements the SMC-D API, and therefore has a number
->of internal helper functions for that matter.
->Note that the ISM API is consciously kept thin for now (as compared to the
->SMC-D API calls), as a number of API calls are only used with SMC-D and
->hardly have any meaningful usage beyond SMC-D, e.g. the VLAN-related calls.
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Hi,
+In netdev common pattern, extack pointer is forwarded to the drivers
+to be filled with error message. However, the caller can easily
+overwrite the filled message.
 
-Great work ! This makes the SMC & ISM code much more clear !
+Instead of adding multiple "if (!extack->_msg)" checks before any
+NL_SET_ERR_MSG() call, which appears after call to the driver, let's
+add new macro to common code.
 
-I like this patchset, just some questions on this refactor.
-I still see there are some SMC related code in
-'drivers/s390/net/ism_drv.c', mainly to implement smcd_ops.
+[1] https://lore.kernel.org/all/Y9Irgrgf3uxOjwUm@unreal
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+Changelog:
+v1: 
+ * Added special *_WEAK() macro instead of embedding same check in
+   NL_SET_ERR_MSG_MOD/NL_SET_ERR_MSG_FMT.
+ * Reuse same macro for XFRM code which triggered this patch.
+v0: https://lore.kernel.org/all/2919eb55e2e9b92265a3ba600afc8137a901ae5f.1674760340.git.leon@kernel.org
+---
+ include/linux/netlink.h   | 10 ++++++++++
+ net/bridge/br_switchdev.c | 10 ++++------
+ net/dsa/master.c          |  4 +---
+ net/dsa/slave.c           |  4 +---
+ net/xfrm/xfrm_device.c    |  5 ++++-
+ 5 files changed, 20 insertions(+), 13 deletions(-)
 
-As ISM is the lower layer of SMC, I think remove the dependency
-on SMC would be better ? Do you have any plan to do that ?
+diff --git a/include/linux/netlink.h b/include/linux/netlink.h
+index fa4d86da0ec7..2cc1dc784273 100644
+--- a/include/linux/netlink.h
++++ b/include/linux/netlink.h
+@@ -130,6 +130,16 @@ struct netlink_ext_ack {
+ #define NL_SET_ERR_MSG_FMT_MOD(extack, fmt, args...)	\
+ 	NL_SET_ERR_MSG_FMT((extack), KBUILD_MODNAME ": " fmt, ##args)
+ 
++#define NL_SET_ERR_MSG_WEAK(extack, msg) do {		\
++	if ((extack) && !(extack)->_msg)		\
++		NL_SET_ERR_MSG((extack), (msg));	\
++} while (0)
++
++#define NL_SET_ERR_MSG_WEAK_MOD(extack, msg) do {	\
++	if ((extack) && !(extack)->_msg)		\
++		NL_SET_ERR_MSG_MOD((extack), (msg));	\
++} while (0)
++
+ #define NL_SET_BAD_ATTR_POLICY(extack, attr, pol) do {	\
+ 	if ((extack)) {					\
+ 		(extack)->bad_attr = (attr);		\
+diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
+index 7eb6fd5bb917..de18e9c1d7a7 100644
+--- a/net/bridge/br_switchdev.c
++++ b/net/bridge/br_switchdev.c
+@@ -104,9 +104,8 @@ int br_switchdev_set_port_flag(struct net_bridge_port *p,
+ 		return 0;
+ 
+ 	if (err) {
+-		if (extack && !extack->_msg)
+-			NL_SET_ERR_MSG_MOD(extack,
+-					   "bridge flag offload is not supported");
++		NL_SET_ERR_MSG_WEAK_MOD(extack,
++					"bridge flag offload is not supported");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+@@ -115,9 +114,8 @@ int br_switchdev_set_port_flag(struct net_bridge_port *p,
+ 
+ 	err = switchdev_port_attr_set(p->dev, &attr, extack);
+ 	if (err) {
+-		if (extack && !extack->_msg)
+-			NL_SET_ERR_MSG_MOD(extack,
+-					   "error setting offload flag on port");
++		NL_SET_ERR_MSG_WEAK_MOD(extack,
++					"error setting offload flag on port");
+ 		return err;
+ 	}
+ 
+diff --git a/net/dsa/master.c b/net/dsa/master.c
+index 26d90140d271..1507b8cdb360 100644
+--- a/net/dsa/master.c
++++ b/net/dsa/master.c
+@@ -464,9 +464,7 @@ int dsa_master_lag_setup(struct net_device *lag_dev, struct dsa_port *cpu_dp,
+ 
+ 	err = dsa_port_lag_join(cpu_dp, lag_dev, uinfo, extack);
+ 	if (err) {
+-		if (extack && !extack->_msg)
+-			NL_SET_ERR_MSG_MOD(extack,
+-					   "CPU port failed to join LAG");
++		NL_SET_ERR_MSG_WEAK_MOD(extack, "CPU port failed to join LAG");
+ 		goto out_master_teardown;
+ 	}
+ 
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 6014ac3aad34..26c458f50ac6 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -2692,9 +2692,7 @@ static int dsa_slave_changeupper(struct net_device *dev,
+ 			if (!err)
+ 				dsa_bridge_mtu_normalization(dp);
+ 			if (err == -EOPNOTSUPP) {
+-				if (extack && !extack->_msg)
+-					NL_SET_ERR_MSG_MOD(extack,
+-							   "Offloading not supported");
++				NL_SET_ERR_MSG_WEAK_MOD(extack, "Offloading not supported");
+ 				err = 0;
+ 			}
+ 			err = notifier_from_errno(err);
+diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
+index 562b9d951598..95f1436bf6a2 100644
+--- a/net/xfrm/xfrm_device.c
++++ b/net/xfrm/xfrm_device.c
+@@ -325,8 +325,10 @@ int xfrm_dev_state_add(struct net *net, struct xfrm_state *x,
+ 		 * authors to do not return -EOPNOTSUPP in packet offload mode.
+ 		 */
+ 		WARN_ON(err == -EOPNOTSUPP && is_packet_offload);
+-		if (err != -EOPNOTSUPP || is_packet_offload)
++		if (err != -EOPNOTSUPP || is_packet_offload) {
++			NL_SET_ERR_MSG_WEAK(extack, "Device failed to offload this state");
+ 			return err;
++		}
+ 	}
+ 
+ 	return 0;
+@@ -388,6 +390,7 @@ int xfrm_dev_policy_add(struct net *net, struct xfrm_policy *xp,
+ 		xdo->type = XFRM_DEV_OFFLOAD_UNSPECIFIED;
+ 		xdo->dir = 0;
+ 		netdev_put(dev, &xdo->dev_tracker);
++		NL_SET_ERR_MSG_WEAK(extack, "Device failed to offload this policy");
+ 		return err;
+ 	}
+ 
+-- 
+2.39.1
 
-One more thing:
-I didn't find any call for smcd_ops->set_vlan_required/reset_vlan_required,
-looks it's not needed, so why not remove it, am I missed something ?
-
-Thanks!
-
->
->v1 -> v2:
->  Removed s390x dependency which broke config for other archs.
->
->Stefan Raspl (8):
->  net/smc: Terminate connections prior to device removal
->  net/ism: Add missing calls to disable bus-mastering
->  s390/ism: Introduce struct ism_dmb
->  net/ism: Add new API for client registration
->  net/smc: Register SMC-D as ISM client
->  net/smc: Separate SMC-D and ISM APIs
->  s390/ism: Consolidate SMC-D-related code
->  net/smc: De-tangle ism and smc device initialization
->
-> drivers/s390/net/ism.h     |  19 +-
-> drivers/s390/net/ism_drv.c | 376 ++++++++++++++++++++++++++++++-------
-> include/linux/ism.h        |  98 ++++++++++
-> include/net/smc.h          |  24 +--
-> net/smc/af_smc.c           |   9 +-
-> net/smc/smc_clc.c          |  11 +-
-> net/smc/smc_core.c         |  13 +-
-> net/smc/smc_diag.c         |   3 +-
-> net/smc/smc_ism.c          | 180 ++++++++++--------
-> net/smc/smc_ism.h          |   3 +-
-> net/smc/smc_pnet.c         |  40 ++--
-> 11 files changed, 560 insertions(+), 216 deletions(-)
-> create mode 100644 include/linux/ism.h
->
->-- 
->2.25.1
