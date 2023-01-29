@@ -2,54 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3A9B680136
-	for <lists+netdev@lfdr.de>; Sun, 29 Jan 2023 20:44:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54AAE68013C
+	for <lists+netdev@lfdr.de>; Sun, 29 Jan 2023 20:47:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231707AbjA2ToS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Jan 2023 14:44:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34450 "EHLO
+        id S234386AbjA2Trp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Jan 2023 14:47:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229760AbjA2ToR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Jan 2023 14:44:17 -0500
-Received: from mg.ssi.bg (mg.ssi.bg [193.238.174.37])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9FBEC196B6;
-        Sun, 29 Jan 2023 11:44:14 -0800 (PST)
-Received: from mg.ssi.bg (localhost [127.0.0.1])
-        by mg.ssi.bg (Proxmox) with ESMTP id 920B23CD80;
-        Sun, 29 Jan 2023 21:44:12 +0200 (EET)
-Received: from ink.ssi.bg (unknown [193.238.174.40])
-        by mg.ssi.bg (Proxmox) with ESMTP id 1C8513CD35;
-        Sun, 29 Jan 2023 21:44:11 +0200 (EET)
-Received: from ja.ssi.bg (unknown [178.16.129.10])
-        by ink.ssi.bg (Postfix) with ESMTPS id 6A2123C0435;
-        Sun, 29 Jan 2023 21:44:00 +0200 (EET)
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.17.1/8.16.1) with ESMTP id 30TJhtRl037792;
-        Sun, 29 Jan 2023 21:43:57 +0200
-Date:   Sun, 29 Jan 2023 21:43:55 +0200 (EET)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>
-cc:     Network Development <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
+        with ESMTP id S229673AbjA2Tro (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Jan 2023 14:47:44 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9E831ABE0;
+        Sun, 29 Jan 2023 11:47:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net; s=s31663417;
+        t=1675021645; bh=MTLyX3h+NXGuXbdJfDx1U1pqVOBOerCWgDGIhuixFmY=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=gaPne94TS8cajMOL9DvUc7eYbLUewCNlvyQ7KsGv0rcW2buI+KS8WHbInXRC484uw
+         4Qrj25lXKntOKr6JESYNZTuh5/S7Q6cn8QtXaHBnApYge8+WLHkBw4PPGx0jgq6NDm
+         VJ2zd3mLO0kLY8tswdJ9PqkiJXcinDyt2DlaRgTSpUdQe0mhVca0U5X/ti5NQ4Js3I
+         qNEmsAJBtDD9POlHiPgZ9j23+dYaWRNE3XXNs9nQP9wLclesivp3bgeZySmOCyY8vZ
+         rrfdMz09T+j56WAJHO8fEIeltwF2mdpNnVdsZPU5HgxzdcqiBdwygRl3GQCP2sYpfE
+         ZrqsNpZeNbxXQ==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from probook ([95.223.44.193]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MQMyf-1p0RVV3Tzl-00MKcG; Sun, 29
+ Jan 2023 20:47:24 +0100
+Date:   Sun, 29 Jan 2023 20:47:23 +0100
+From:   Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Denis V. Lunev" <den@openvz.org>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: Re: [Question] neighbor entry doesn't switch to the STALE state
- after the reachable timer expires
-In-Reply-To: <b1d8722e-5660-c38e-848f-3220d642889d@huawei.com>
-Message-ID: <99532c7f-161e-6d39-7680-ccc1f20349@ssi.bg>
-References: <b1d8722e-5660-c38e-848f-3220d642889d@huawei.com>
+        Paolo Abeni <pabeni@redhat.com>, linux-parisc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: tulip: Fix a typo ("defualt")
+Message-ID: <Y9bNS6DajwdciwAI@probook>
+References: <20230129154005.1567160-1-j.neuschaefer@gmx.net>
+ <Y9a8Y7BZ7wIIZFbm@corigine.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="oPejS3AcJFQL0c7w"
+Content-Disposition: inline
+In-Reply-To: <Y9a8Y7BZ7wIIZFbm@corigine.com>
+X-Provags-ID: V03:K1:eeEc9/orxXgSm+yZ3CkNqJOMXaWFaFKJxWGIFeEI+UChJqEdXgF
+ skqCoJixG+jKT6V5lQcDTIhsbugQvYR/j7BIHyLoDjPcTEFdgq2F7WaHvMsBSTxggnhnMnT
+ fXhBY2IlkS53SHsVXFJRd3wHpq67OJkxT8K9pXw9udybORWZ+OD4xB44EvAjr/cfcZCtMkj
+ sb1KQvXPEfdkvHM04wEfQ==
+UI-OutboundReport: notjunk:1;M01:P0:qaoj20F4uLU=;PJ/GdILnqNI2Uehk9uTgTCLVrYx
+ 2pvy447x4er0pdym72qRZ+HSCc1G9zZHz3UGCgVUn4stFE8T82ARcJf+qQzomt/mGSHPsbq/e
+ 8Ye6fFev2Xvx5fnFz0EkuMyOJu6YfHgFL7tRzKsXB+8/vSsgFZA7SYoAYkSnmC/lOQciV+mCR
+ 8irQxYhwIJ3Q09XUXy4wqtIM/0EKtOtzvhYVGQ9onI8O9QOv69kXat3mHF+PZHgIkpT+46mk9
+ Hq8fq0DLqQVt8lu4awZECi/M7O95COyXX+tnwBkDulfka6irisCmGjpNfu70DiFyax+BkJ3rt
+ oEcUsg6k79Kcmg0niwEoND/Q4gt6ndAWcWzWH1DKGfKg83Dt/crPkrZAeVuGi2j3DXTogKodM
+ TsskU/YPPFOZ7o0Zr+3J5iSC2cfJYR8QQ5mk7w6sd82SylaUXmHriZSaaXh0LLQ3kJZi09hxc
+ qu9qcmdlBrbrI5WMP9FMg8vCOV5sR4/Koh8n4TH06OdYKzbupf0rVpbZGE8S3F52p3X3pYmzo
+ u/4oJqZ+n1tE/RIv+JuLGhAPX1bOypbiLwo8pn6fZxSYDdFzRseSNES3N/YjrL5mWIpwdmetd
+ KTzc+Txc8iV6w2LvCPBYcn6oUIPeVuE5pTO0f6uvjSLj2BQsBqq7/XRmNJ8MnzjPv2bdMUIrj
+ 9ETJ/95Ruk9ped5K0xBUoJBwgP78HOfl7WJF9k3/ftWNA4w77ctTHlecLJh7zpeiTK06xXTAp
+ /6jFKn8vqIj4PHf6XVb1WC6lSCqSr8RMCoX6wdZdCcYVDqqG69Jv/cfca5IMIkkOol+FxzcQl
+ uqJUwtPi1XhuUMpf19qEXWGgvnn+uox0IOxOhw7/uRtv7fgnddynr10ioXg0zYWeuxCYANiDC
+ DzHZGZxSmncS0Ddp1h3DL6GxUf2uSWwilOtNfagnFqv/e8EVHftB0noAMdTLNoLjq0/Mq9o9d
+ DEdkRXQ/3yLTqhqjw7jlzqdCzMI=
+X-Spam-Status: No, score=0.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -57,61 +75,46 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-	Hello,
+--oPejS3AcJFQL0c7w
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, 29 Jan 2023, Zhang Changzhong wrote:
+On Sun, Jan 29, 2023 at 07:35:15PM +0100, Simon Horman wrote:
+> On Sun, Jan 29, 2023 at 04:40:05PM +0100, Jonathan Neusch=C3=A4fer wrote:
+> > Spell it as "default".
+> >=20
+> > Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+>=20
+> Looks good :)
+>=20
+> There also seems to be a misspelling of heartbeat (as hearbeat) on line 2=
+77.
+> Perhaps it would be good to fix that at the same time?
 
-> Hi,
-> 
-> We got the following weird neighbor cache entry on a machine that's been running for over a year:
-> 172.16.1.18 dev bond0 lladdr 0a:0e:0f:01:12:01 ref 1 used 350521/15994171/350520 probes 4 REACHABLE
+Sounds good, I'll spin a v2.
 
-	confirmed time (15994171) is 13 days in the future, more likely
-185 days behind (very outdated), anything above 99 days is invalid
 
-> 350520 seconds have elapsed since this entry was last updated, but it is still in the REACHABLE
-> state (base_reachable_time_ms is 30000), preventing lladdr from being updated through probe.
-> 
-> After some analysis, we found a scenario that may cause such a neighbor entry:
-> 
->           Entry used          	  DELAY_PROBE_TIME expired
-> NUD_STALE ------------> NUD_DELAY ------------------------> NUD_PROBE
->                             |
->                             | DELAY_PROBE_TIME not expired
->                             v
->                       NUD_REACHABLE
-> 
-> The neigh_timer_handler() use time_before_eq() to compare 'now' with 'neigh->confirmed +
-> NEIGH_VAR(neigh->parms, DELAY_PROBE_TIME)', but time_before_eq() only works if delta < ULONG_MAX/2.
-> 
-> This means that if an entry stays in the NUD_STALE state for more than ULONG_MAX/2 ticks, it enters
-> the NUD_RACHABLE state directly when it is used again and cannot be switched to the NUD_STALE state
-> (the timer is set too long).
-> 
-> On 64-bit machines, ULONG_MAX/2 ticks are a extremely long time, but in my case (32-bit machine and
-> kernel compiled with CONFIG_HZ=250), ULONG_MAX/2 ticks are about 99.42 days, which is possible in
-> reality.
-> 
-> Does anyone have a good idea to solve this problem? Or are there other scenarios that might cause
-> such a neighbor entry?
+Jonathan
 
-	Is the neigh entry modified somehow, for example,
-with 'arp -s' or 'ip neigh change' ? Or is bond0 reconfigured
-after initial setup? I mean, 4 days ago?
+--oPejS3AcJFQL0c7w
+Content-Type: application/pgp-signature; name="signature.asc"
 
-	Looking at __neigh_update, there are few cases that
-can assign NUD_STALE without touching neigh->confirmed:
-lladdr = neigh->ha should be called, NEIGH_UPDATE_F_ADMIN
-should be provided. Later, as you explain, it can wrongly
-switch to NUD_REACHABLE state for long time.
+-----BEGIN PGP SIGNATURE-----
 
-	May be there should be some measures to keep
-neigh->confirmed valid during admin modifications.
+iQIzBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAmPWzSoACgkQCDBEmo7z
+X9sh9Q/+I1ZIysq8Wfq51Asb7+cvgUBd7R2Uiu9xFLQV4piJmcNi8/IAzvUHYQMQ
+rub9Rbyw+zJikGugGO002s9X+TQc+6mKOlT1Hrzbz7V2XkLzqTD4E1VB23iXqku8
+y9YBohx+m99CTJT4S8rNRci06T8oGg0RqJ26FlkF1CnlJBgGGWYaQosFbxPSNlbX
+NtQHYWYEEzCiBJ8C3/CZXjopyL0IL05YqhtslERO00/G6vhnne1lO1qZz2Hb1dKg
+U6XX7EZUMQI02JZ93v+RbV/w9HxJHG3SEXje2lo6iIo/Tei1e42iVqyc9QwSOK5e
+SDm9YoQQH97NI1wBm2XWKMCMg5+WT6QYbo5KvbIvcqzlKKKvrU4zX10lapQM0dxT
+9CYiVJZXX8jUq3V6DoF69TgSutNPkJ0N/uZKf0DoZdf2T+eI1t66DTwZo8FhBuoQ
+PK1BCmjYvw/sfJowuvl2LS1B3baehtqYUN17tJWWR6ybAPORhqxntjRLhQ34TrJJ
+Iwgp4BuaZ4sxCKrG3KM5ecU1yIMOj0jIHThBYrHpL+kLjbE+K4fOUsdQa56Zk+QW
+JWoSr+/iKVC0+mnyeC/IrTn85RCLN38x+96NogZkW8A9pFBpph32DdEA5kme5E/t
+/+Y4cZbYSDaF18aGn7v72JG8JHrXQbBF1radhn6xWYxDW7afX1Y=
+=gZkC
+-----END PGP SIGNATURE-----
 
-	What is the kernel version?
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
-
+--oPejS3AcJFQL0c7w--
