@@ -2,102 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EEC867FC54
-	for <lists+netdev@lfdr.de>; Sun, 29 Jan 2023 03:27:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27ABA67FC95
+	for <lists+netdev@lfdr.de>; Sun, 29 Jan 2023 04:08:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230087AbjA2C1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Jan 2023 21:27:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57710 "EHLO
+        id S233395AbjA2DIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Jan 2023 22:08:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229966AbjA2C1D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 21:27:03 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205A923339;
-        Sat, 28 Jan 2023 18:27:03 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id v6-20020a17090ad58600b00229eec90a7fso11054975pju.0;
-        Sat, 28 Jan 2023 18:27:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Hy9KvguFc2gDUCrzkC+qChu1ABG5IuB/NXRbpfk20C0=;
-        b=WvbT2tInonx13nAi6GfeETQXmxg2vbMEdJEaGo/kXSVJPGaaMvTnEIUqJ567lFGDEt
-         ddbMsrGUybFe7ewIczVzJ16c9uX2DSEbihjh4TWqiVyZjoXO44hpAMWIcuo3HfZAOg7O
-         Sw2F2h4ZDP9dUm3FcQZLUimDNETpb4x2T1/LIS99zdJoJtvMoD93psRbjc1SNyVUtjxK
-         FtoFaFLop+2PeCTwmK43LPCwdvYsHuJzmGpYxWIronqZe+mTx6jWF+hdJbL15qjmfYfo
-         pIfLTEq8x4ahJZQ8DqoFaKdVxCYGo9Y0uf0UDhbma6Zqt+ejV53pZBE3IUkRpbOmbUAr
-         AqIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Hy9KvguFc2gDUCrzkC+qChu1ABG5IuB/NXRbpfk20C0=;
-        b=7RCUp36xYhxjYGGKApcUd498dgDBk2xMpI0Es7TD2kM7p/v38QsS49xndwMVz+s27y
-         TTGJKCD6TYVESwAzCjguUJSrmwM8uzx6snl5YRWKEJxfwJ3MQdcxts4wQYob2TbYcoH7
-         jbOGGIC7GXcZ2nYZzlWTQTaX/IFFtI23wVz0Rht2Bj3qK1Hg0SWmqWCRUvXDYQaULS4l
-         XYj90L521sAvWtlWTJzDSywEW1bUEFKmHTTRVMlNA4YcE0hd+8Kkdo4My2R1RoXs/Zu3
-         hSGLdQgFSEBZKgUD6/KthK68sk5pTjSXpq+VfKGlF7Zdc0DKZZ8n7ZztdWXMt+x7DIvJ
-         Hjcg==
-X-Gm-Message-State: AFqh2kopQTUJWaMuGTCHMJ4xtYcAzLWjmkOJLdjrk6jsZNqtqRvc7u3c
-        lxt35wQFINQKRRg4CiO8gVEWp9+OzvE53Q==
-X-Google-Smtp-Source: AMrXdXuvaM36unwlhcOHxtKzhidkbEqTMEzaTXPGrTe4vG4g0hG0lWMeXsNIxWaEYuYqw5wjJN87GA==
-X-Received: by 2002:a05:6a21:3294:b0:a4:414c:84c5 with SMTP id yt20-20020a056a21329400b000a4414c84c5mr61940516pzb.12.1674959222534;
-        Sat, 28 Jan 2023 18:27:02 -0800 (PST)
-Received: from localhost.localdomain.com (2603-8001-4200-6311-92a0-3d53-9224-b276.res6.spectrum.com. [2603:8001:4200:6311:92a0:3d53:9224:b276])
-        by smtp.gmail.com with ESMTPSA id t1-20020aa79461000000b0058da7e58008sm4904189pfq.36.2023.01.28.18.27.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Jan 2023 18:27:02 -0800 (PST)
-From:   Chris Healy <cphealy@gmail.com>
-To:     cphealy@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net,
-        neil.armstrong@linaro.org, khilman@baylibre.com,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        jeremy.wang@amlogic.com
-Cc:     Chris Healy <healych@amazon.com>
-Subject: [PATCH 1/1] net: phy: meson-gxl: Add generic dummy stubs for MMD register access
-Date:   Sat, 28 Jan 2023 18:26:15 -0800
-Message-Id: <20230129022615.379711-1-cphealy@gmail.com>
-X-Mailer: git-send-email 2.39.1
+        with ESMTP id S229513AbjA2DIm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Jan 2023 22:08:42 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1504122A08;
+        Sat, 28 Jan 2023 19:08:41 -0800 (PST)
+Received: from dggpeml500006.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4P4GP875VWzJqDK;
+        Sun, 29 Jan 2023 11:04:12 +0800 (CST)
+Received: from [10.174.178.240] (10.174.178.240) by
+ dggpeml500006.china.huawei.com (7.185.36.76) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Sun, 29 Jan 2023 11:08:38 +0800
+To:     Network Development <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+CC:     Julian Anastasov <ja@ssi.bg>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Denis V. Lunev" <den@openvz.org>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Zhang Changzhong <zhangchangzhong@huawei.com>,
+        YueHaibing <yuehaibing@huawei.com>
+From:   Zhang Changzhong <zhangchangzhong@huawei.com>
+Subject: [Question] neighbor entry doesn't switch to the STALE state after the
+ reachable timer expires
+Message-ID: <b1d8722e-5660-c38e-848f-3220d642889d@huawei.com>
+Date:   Sun, 29 Jan 2023 11:08:38 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.240]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500006.china.huawei.com (7.185.36.76)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chris Healy <healych@amazon.com>
+Hi,
 
-The Meson G12A Internal PHY does not support standard IEEE MMD extended
-register access, therefore add generic dummy stubs to fail the read and
-write MMD calls. This is necessary to prevent the core PHY code from
-erroneously believing that EEE is supported by this PHY even though this
-PHY does not support EEE, as MMD register access returns all FFFFs.
+We got the following weird neighbor cache entry on a machine that's been running for over a year:
+172.16.1.18 dev bond0 lladdr 0a:0e:0f:01:12:01 ref 1 used 350521/15994171/350520 probes 4 REACHABLE
 
-Signed-off-by: Chris Healy <healych@amazon.com>
----
- drivers/net/phy/meson-gxl.c | 2 ++
- 1 file changed, 2 insertions(+)
+350520 seconds have elapsed since this entry was last updated, but it is still in the REACHABLE
+state (base_reachable_time_ms is 30000), preventing lladdr from being updated through probe.
 
-diff --git a/drivers/net/phy/meson-gxl.c b/drivers/net/phy/meson-gxl.c
-index c49062ad72c6..5e41658b1e2f 100644
---- a/drivers/net/phy/meson-gxl.c
-+++ b/drivers/net/phy/meson-gxl.c
-@@ -271,6 +271,8 @@ static struct phy_driver meson_gxl_phy[] = {
- 		.handle_interrupt = meson_gxl_handle_interrupt,
- 		.suspend        = genphy_suspend,
- 		.resume         = genphy_resume,
-+		.read_mmd	= genphy_read_mmd_unsupported,
-+		.write_mmd	= genphy_write_mmd_unsupported,
- 	},
- };
- 
--- 
-2.39.1
+After some analysis, we found a scenario that may cause such a neighbor entry:
 
+          Entry used          	  DELAY_PROBE_TIME expired
+NUD_STALE ------------> NUD_DELAY ------------------------> NUD_PROBE
+                            |
+                            | DELAY_PROBE_TIME not expired
+                            v
+                      NUD_REACHABLE
+
+The neigh_timer_handler() use time_before_eq() to compare 'now' with 'neigh->confirmed +
+NEIGH_VAR(neigh->parms, DELAY_PROBE_TIME)', but time_before_eq() only works if delta < ULONG_MAX/2.
+
+This means that if an entry stays in the NUD_STALE state for more than ULONG_MAX/2 ticks, it enters
+the NUD_RACHABLE state directly when it is used again and cannot be switched to the NUD_STALE state
+(the timer is set too long).
+
+On 64-bit machines, ULONG_MAX/2 ticks are a extremely long time, but in my case (32-bit machine and
+kernel compiled with CONFIG_HZ=250), ULONG_MAX/2 ticks are about 99.42 days, which is possible in
+reality.
+
+Does anyone have a good idea to solve this problem? Or are there other scenarios that might cause
+such a neighbor entry?
+
+-----
+Best Regards,
+Changzhong Zhang
