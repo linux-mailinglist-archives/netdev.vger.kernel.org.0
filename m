@@ -2,101 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 519E967FFEA
-	for <lists+netdev@lfdr.de>; Sun, 29 Jan 2023 16:40:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9183368000C
+	for <lists+netdev@lfdr.de>; Sun, 29 Jan 2023 16:45:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231387AbjA2PkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Jan 2023 10:40:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56116 "EHLO
+        id S233532AbjA2PpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Jan 2023 10:45:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbjA2PkW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Jan 2023 10:40:22 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4281285E;
-        Sun, 29 Jan 2023 07:40:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net; s=s31663417;
-        t=1675006808; bh=YiKAXNFSCMlzXoKkRN50AAzFu992yQn7pF6AViDZrkY=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=nzQ68EaNjzGHEYgdzdcqRw9HpvSbngSb272Zm8fBXF0jaLdIQzcmldyIDVV039vzh
-         PvoYFsPhKs68NVExQUwDFhl3tVq2C0AoLzl0Eo5uQnoBep8gO6i05TCT+o8aD4J3tE
-         WFUaV+I97WPXfLw8Iu/liCtj+wcIkWFyg4QzfMkiS+7uxYM8H0OBcBVBQZDpGYedPK
-         W6kaPZtaEWjrLHkMIcRWpBbndE8zmlyz8AaV+niOjiMVDzOldhQawcMpybPIhzZLic
-         7wNJ9y0QLfIPDHLYLXWoO0G1YIfA89UqSDwlBmjjSTfI/b/XCZ9lQs6oZD/c3rCgdR
-         iHPk8WfDvNXVQ==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from probook ([95.223.44.193]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MsYv3-1oXDpD17Nb-00txjl; Sun, 29
- Jan 2023 16:40:08 +0100
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231386AbjA2PpW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Jan 2023 10:45:22 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72FF30D7
+        for <netdev@vger.kernel.org>; Sun, 29 Jan 2023 07:45:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675007121; x=1706543121;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=E6KDQ+M8+EAM5y8GRJ0L1criDCqr36mpkQ5ScFVsktc=;
+  b=VFVfKWtC5BnHTaAJuaO9fUxh97/VdwhOqEhNjcH2K92DLvIUekb+b3eY
+   18ObeE1lue9tV7B8H2iT3J3N+muQrYLCVlz97c9IrvZfUGgA37EqNRBsM
+   VcskYPgqlrHeJwrOH3OkpnUAdLP1BVXwPdxnxB6HtAEONabWMYSq6W+qc
+   qjMaQ4JJG+nUkuj3WoibEZ2y78C/CX3+F5L7NUG8V5APsqLeqHzKerJnZ
+   3OTtVnjvp0TuowOEb2cYPYn6NKTa+S44bJC2HRLNS9Ouqp2taMdwjQwm6
+   3LT5tdC5ip89Fa+hS7T+/AYWlllNG/vLV87Ay5kkXn8k9ltq5LiK+mljF
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10605"; a="413625488"
+X-IronPort-AV: E=Sophos;i="5.97,256,1669104000"; 
+   d="scan'208";a="413625488"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2023 07:45:18 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10605"; a="694295965"
+X-IronPort-AV: E=Sophos;i="5.97,256,1669104000"; 
+   d="scan'208";a="694295965"
+Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 29 Jan 2023 07:45:13 -0800
+Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pM9rk-0002u4-1r;
+        Sun, 29 Jan 2023 15:45:12 +0000
+Date:   Sun, 29 Jan 2023 23:44:33 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Leon Romanovsky <leon@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        bridge@lists.linux-foundation.org,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-parisc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: tulip: Fix a typo ("defualt")
-Date:   Sun, 29 Jan 2023 16:40:05 +0100
-Message-Id: <20230129154005.1567160-1-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.39.0
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, Nikolay Aleksandrov <razor@blackwall.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net-next v1] netlink: provide an ability to set default
+ extack message
+Message-ID: <202301292320.pYrX8egS-lkp@intel.com>
+References: <d4843760219f20367c27472f084bd8aa729cf321.1674995155.git.leon@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:sKYtz7oO7cugsmepK6A5DJ9yFejnLG/pEG/Q9cq2xFQvG5Dkv3Z
- mUr+idcSDZeU4jUiiSahS9JKGJdVPpXYWjOJYKZlKOLVAhVo8Z6uyP/U4/TJ0z3WfDfzZvr
- qYxqVymenrTlMU6lrHmlUdkQWkHfc16vxC1RzvLmjhv1shd5uR1bvzpNPfA3zxYXx5+JylC
- p5Dzw4yKVBJtgOMQhMUPQ==
-UI-OutboundReport: notjunk:1;M01:P0:Tp7sUqyx1qg=;Muf6IWuwcg8/zZqXKSiTHlUk2MN
- b5Aii1G1d3a3DNio0lVCBvD+bKa/V5B6O7lABhG+WqfZMPWyaKZ/X0eNc/fUyLNT2w3I65WkD
- wmjdF3zmi7Mz4G7bXHU6KxYYJi8uOH1Xenim3aDxbwJYK978dISfP5Zm083VrpTKC1Kp8+1YR
- 6jRu295b77GAVA4tFYeCGlWT3QM9Yfl3WWLyW+vZ9aNc8EQ39yIUbopDEyJ7pUmjcPuSdBQpn
- eUzz+ujq6+R3QGLqvuueGuXjyEKm8NzNZRxeUFkA7DZy8f1TnZp6fsPkjLK5zX6tIJaCGr3oW
- UMGREJhiarKJ8P6atpYZMQpQjH2ewomjT7wtg8q9bTogW6tMKcmKju8hcPFDb3QGkTWK6g5uv
- YrIVDt/Km01hKW+2ULiXC5J9+SV1NZNMgLDVfdOiBvqFMRuTV0dVcxG/KWTIiyH7wkzRhcQ0f
- mlKORSJY6lInBK1r/4VmSkpVNbwFO1MWroQhR6PtjG3/evWsmohCCyLtUAwyRiu+gTn78LC4h
- fZzWTXJ3P4FphZtvBnHdkn7b6D/rtCKkhOguHvLUc1FCE/qtqoJ26PPc5ZyLCWAIOYtEyjcxD
- rMDTeA60ouk7sfVy6eCOWHAzPkM3OPZjsEmeyIvOjLl1XBmdArYC8B1hao8RfoIEvCgJF6d0L
- 93t98oey7Vnn1FszN4COu/i8USMxhBfCfufuUP3i4iK4/aqcMigO36U/CTZHeNDVKWkGUThtd
- /wnZq00Y7RrQCEqWrAXOuTaO7n2/j4Cnii/pqMs0wrfzsBLPc2OSbij11B5re2VerzloEB8On
- tV0xe2UPHTstJ142RmcjERU+qr8+q+p0y7pKfkyFQXcIcTdBQ8EsWzw+wv4f7MjWfONRV3BnA
- pGUZgvrqYU/YSkKsQHCB6IJzGFll9Eju9Km3ddX4he+yC6trCaBcsZGPp1BrmTc9XpVSxkmmI
- awGtMGkv0SS/K9KJbVX5nuJAofM=
-X-Spam-Status: No, score=0.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d4843760219f20367c27472f084bd8aa729cf321.1674995155.git.leon@kernel.org>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Spell it as "default".
+Hi Leon,
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-=2D--
- drivers/net/ethernet/dec/tulip/tulip.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I love your patch! Yet something to improve:
 
-diff --git a/drivers/net/ethernet/dec/tulip/tulip.h b/drivers/net/ethernet=
-/dec/tulip/tulip.h
-index 0ed598dc7569c..0aed3a1d8fe4b 100644
-=2D-- a/drivers/net/ethernet/dec/tulip/tulip.h
-+++ b/drivers/net/ethernet/dec/tulip/tulip.h
-@@ -250,7 +250,7 @@ enum t21143_csr6_bits {
- 	csr6_ttm =3D (1<<22),  /* Transmit Threshold Mode, set for 10baseT, 0 fo=
-r 100BaseTX */
- 	csr6_sf =3D (1<<21),   /* Store and forward. If set ignores TR bits */
- 	csr6_hbd =3D (1<<19),  /* Heart beat disable. Disables SQE function in 1=
-0baseT */
--	csr6_ps =3D (1<<18),   /* Port Select. 0 (defualt) =3D 10baseT, 1 =3D 10=
-0baseTX: can't be set */
-+	csr6_ps =3D (1<<18),   /* Port Select. 0 (default) =3D 10baseT, 1 =3D 10=
-0baseTX: can't be set */
- 	csr6_ca =3D (1<<17),   /* Collision Offset Enable. If set uses special a=
-lgorithm in low collision situations */
- 	csr6_trh =3D (1<<15),  /* Transmit Threshold high bit */
- 	csr6_trl =3D (1<<14),  /* Transmit Threshold low bit */
-=2D-
-2.39.0
+[auto build test ERROR on net-next/master]
 
+url:    https://github.com/intel-lab-lkp/linux/commits/Leon-Romanovsky/netlink-provide-an-ability-to-set-default-extack-message/20230129-203242
+patch link:    https://lore.kernel.org/r/d4843760219f20367c27472f084bd8aa729cf321.1674995155.git.leon%40kernel.org
+patch subject: [PATCH net-next v1] netlink: provide an ability to set default extack message
+config: x86_64-rhel-8.3-rust (https://download.01.org/0day-ci/archive/20230129/202301292320.pYrX8egS-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/f0b11fb09eb6708058858b0cf95d1fec34eba956
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Leon-Romanovsky/netlink-provide-an-ability-to-set-default-extack-message/20230129-203242
+        git checkout f0b11fb09eb6708058858b0cf95d1fec34eba956
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash net/bridge/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> net/bridge/br_switchdev.c:107:3: error: called object type 'char[9]' is not a function or function pointer
+                   NL_SET_ERR_MSG_WEAK_MOD(extack,
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/netlink.h:140:32: note: expanded from macro 'NL_SET_ERR_MSG_WEAK_MOD'
+                   NL_SET_ERR_MSG_MOD((extack), (msg));    \
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+   include/linux/netlink.h:128:47: note: expanded from macro 'NL_SET_ERR_MSG_MOD'
+           NL_SET_ERR_MSG((extack), KBUILD_MODNAME ": " msg)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+   include/linux/netlink.h:99:30: note: expanded from macro 'NL_SET_ERR_MSG'
+           static const char __msg[] = msg;                \
+                                       ^~~
+   net/bridge/br_switchdev.c:117:3: error: called object type 'char[9]' is not a function or function pointer
+                   NL_SET_ERR_MSG_WEAK_MOD(extack,
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/netlink.h:140:32: note: expanded from macro 'NL_SET_ERR_MSG_WEAK_MOD'
+                   NL_SET_ERR_MSG_MOD((extack), (msg));    \
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+   include/linux/netlink.h:128:47: note: expanded from macro 'NL_SET_ERR_MSG_MOD'
+           NL_SET_ERR_MSG((extack), KBUILD_MODNAME ": " msg)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+   include/linux/netlink.h:99:30: note: expanded from macro 'NL_SET_ERR_MSG'
+           static const char __msg[] = msg;                \
+                                       ^~~
+   2 errors generated.
+
+
+vim +107 net/bridge/br_switchdev.c
+
+    72	
+    73	/* Flags that can be offloaded to hardware */
+    74	#define BR_PORT_FLAGS_HW_OFFLOAD (BR_LEARNING | BR_FLOOD | BR_PORT_MAB | \
+    75					  BR_MCAST_FLOOD | BR_BCAST_FLOOD | BR_PORT_LOCKED | \
+    76					  BR_HAIRPIN_MODE | BR_ISOLATED | BR_MULTICAST_TO_UNICAST)
+    77	
+    78	int br_switchdev_set_port_flag(struct net_bridge_port *p,
+    79				       unsigned long flags,
+    80				       unsigned long mask,
+    81				       struct netlink_ext_ack *extack)
+    82	{
+    83		struct switchdev_attr attr = {
+    84			.orig_dev = p->dev,
+    85		};
+    86		struct switchdev_notifier_port_attr_info info = {
+    87			.attr = &attr,
+    88		};
+    89		int err;
+    90	
+    91		mask &= BR_PORT_FLAGS_HW_OFFLOAD;
+    92		if (!mask)
+    93			return 0;
+    94	
+    95		attr.id = SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS;
+    96		attr.u.brport_flags.val = flags;
+    97		attr.u.brport_flags.mask = mask;
+    98	
+    99		/* We run from atomic context here */
+   100		err = call_switchdev_notifiers(SWITCHDEV_PORT_ATTR_SET, p->dev,
+   101					       &info.info, extack);
+   102		err = notifier_to_errno(err);
+   103		if (err == -EOPNOTSUPP)
+   104			return 0;
+   105	
+   106		if (err) {
+ > 107			NL_SET_ERR_MSG_WEAK_MOD(extack,
+   108						"bridge flag offload is not supported");
+   109			return -EOPNOTSUPP;
+   110		}
+   111	
+   112		attr.id = SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS;
+   113		attr.flags = SWITCHDEV_F_DEFER;
+   114	
+   115		err = switchdev_port_attr_set(p->dev, &attr, extack);
+   116		if (err) {
+   117			NL_SET_ERR_MSG_WEAK_MOD(extack,
+   118						"error setting offload flag on port");
+   119			return err;
+   120		}
+   121	
+   122		return 0;
+   123	}
+   124	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
