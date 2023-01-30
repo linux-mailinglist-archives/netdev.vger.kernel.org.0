@@ -2,69 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AE1B6815DB
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 17:03:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1CE16815DE
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 17:03:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235747AbjA3QDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 11:03:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41990 "EHLO
+        id S231635AbjA3QDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 11:03:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235709AbjA3QC6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 11:02:58 -0500
-Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E53A7A94
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 08:02:55 -0800 (PST)
-Received: by mail-oo1-xc33.google.com with SMTP id 19-20020a4ae1b3000000b005173e0749cbso700263ooy.7
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 08:02:55 -0800 (PST)
+        with ESMTP id S234744AbjA3QDp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 11:03:45 -0500
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B91093D4
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 08:03:43 -0800 (PST)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-4fda31c3351so165473007b3.11
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 08:03:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nUxkdcDxyb8uvhf260ZYmPZtg3Cz9pELOlYoywsS4mM=;
-        b=4KiD7NhhIA6FsKRYjmszfOu3qk20r+FSBZZngQtZX7gUdRXloWwSUenKvesnbyGO/L
-         V05k99i30VbvVsQ2oXn7U8ByC++lMHevAqCLSlr0oLpdu7O2PkyzGZVtk3l5VlSonvQ6
-         W9gcC8tTYAwVXNYUlxxcTU2cGdklWODR81FMVnCp0qri3mlayRNc85eLj8fj34Aea/TF
-         +L022KPt9Ty1ZkPvMvtYvT1pliq8cJ+E9Ojnf2CBouO40cpXBvhRHjDJLD9b8ZjtobXU
-         7kI7yT3aM43t04XrhvpbsoPB/4EyfArHeJ+lnPElktGou4ixaC0fJnq1IonV8PHo64IW
-         6p7g==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=kRnVG2nFTl4BwwenWUJgDtW21KKjiHwQU7q0KoM8lwU=;
+        b=fmy99mpVYplzHItVV0gIU7OdiZlttPxcrt/KnNdXQNOWmWxYmnB/WCKhz4K8EBEGXt
+         a5igaK3FNXLKMzHBEzfPPeYeV/IVcNeJuZOldRgf4WXt2Uc4Ytfa8IgUocobC9ryhrgQ
+         /Y5aWaietYFmNytacnPCjqKzBhfhyOSph6Ff5EIiLvSXOR8p+5kNRKrZA86ji2oUKd0b
+         KXSDTV/lz2YYzW+b9PnnlP6VUWiOnrK6JyLRWpuxGDlmjFQsofaF+iqkh7EBvrUXXVnn
+         edUwAZIwEcc3QwYD7LdiYWvtDcWWe+L2Lzit10SscOUAvTC5CCwQnc3EdBjjeHuLWnsy
+         H1rQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=nUxkdcDxyb8uvhf260ZYmPZtg3Cz9pELOlYoywsS4mM=;
-        b=hx94uzpvVooY+kI3ZPPkxmgeASInti5E5jlfvRUJXv3rADKGJaGAeRtne1+PB+R67W
-         1YEpOO7q1K0RlbmOay2ywDGdXVyZQoXbGE4/EBYtNe1kFVWexSrjFB2L5wb7UwDFWblC
-         8mEn7jLFHK49hOP2a54BHubtNlCFLn+KoZFMBn8jIA7tD9v/73TBNoiYtPiLgkZ63yhV
-         NkNkwophff6DtFICTvm7cPLNdbsT6m9dFvbQsRHyIW5B32qvvPfCE9Jkyx9yP3Y/+6Xj
-         o56fe4E/JMIMFpIECbEV/Z3cSL6tGf53JK42jnOy7lOgHyYkVfV5fvAcrspmqAnXWd+P
-         sLIA==
-X-Gm-Message-State: AO0yUKW1DVmPQOabZlim3p6/ivme6NqF/0esaL0cTBEBYZQC+19TMa6H
-        W5rNhTMFTWJ/ZBsnBEJB8m1rsoRA2iR9YOCr
-X-Google-Smtp-Source: AK7set9MYD1xrP72rp4qjUsVSJi3153nq4nvZx0t2f+4VR1tNsGxbsIxUX8CHrmoJ0rfCvQmaigOWg==
-X-Received: by 2002:a4a:88d3:0:b0:511:f3d2:bb8d with SMTP id q19-20020a4a88d3000000b00511f3d2bb8dmr9769823ooh.5.1675094574986;
-        Mon, 30 Jan 2023 08:02:54 -0800 (PST)
-Received: from localhost.localdomain ([2804:14d:5c5e:4698:c9d9:8f8:eebd:a6b0])
-        by smtp.gmail.com with ESMTPSA id s16-20020a4ae550000000b004fd878ef510sm5119845oot.21.2023.01.30.08.02.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Jan 2023 08:02:54 -0800 (PST)
-From:   Pedro Tammela <pctammela@mojatatu.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, simon.horman@corigine.com,
-        Pedro Tammela <pctammela@mojatatu.com>
-Subject: [PATCH net-next v4 2/2] net/sched: simplify tcf_pedit_act
-Date:   Mon, 30 Jan 2023 13:02:33 -0300
-Message-Id: <20230130160233.3702650-3-pctammela@mojatatu.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230130160233.3702650-1-pctammela@mojatatu.com>
-References: <20230130160233.3702650-1-pctammela@mojatatu.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=kRnVG2nFTl4BwwenWUJgDtW21KKjiHwQU7q0KoM8lwU=;
+        b=hPgfKf9F3Lqdn1HCXIOdHv+BcEPCf8u1VyA1KI2ibACFS9dpdS6FTI3x0ubw657pgQ
+         B5xKEO0qnPCefIbwm+oPWuY0eFOWgtDFiID2LMPpPtWPuxgQkIvCy/7NRKJtzwM/cN14
+         sbHJDRQtkKuEX4RmNL9r7ZdZNM4iz5FjqG1HKbw6gQ/vmE2Lmr+R4q0V0Hdei5HdKrbA
+         9BVWVCtb8fTcIJCqt/JhC7/MGvwTkKSVzBQ6btpKQsYshBhQIu9X9CtoMjFjl0v4FrDk
+         /yns8zGldA0qyF4vAhFuIexTpz0sGN4yl97J0ue/gD4lbhMW17Btui+GbR6ClGa/+s+9
+         97LA==
+X-Gm-Message-State: AFqh2krBsHVbGTZtJxPEfRrX2uCQGds0gAH/nBNZxVfMXet6VUCK1W8Y
+        2KTj9BpUlI1WfH/Pv1RdTPnIgNEkKi4DjCfM8PcgPQ==
+X-Google-Smtp-Source: AMrXdXvILrB2xzvcs4JWtChQeHtXR/03YwCUY753A7xYVSr+kSIcmJU0sRWmI+QKZ2CoZyM0GDYqqeq1Y8umluN2zW0=
+X-Received: by 2002:a81:4006:0:b0:46b:c07c:c1d9 with SMTP id
+ l6-20020a814006000000b0046bc07cc1d9mr3775924ywn.56.1675094622259; Mon, 30 Jan
+ 2023 08:03:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+References: <20230127181625.286546-1-andrei.gherzan@canonical.com>
+ <CA+FuTSewU6bjYLsyLzZ1Yne=6YBPDJZ=U1mZc+6cJVdr06BhiQ@mail.gmail.com>
+ <a762638b06684cd63d212d1ce9f65236a08b78b1.camel@redhat.com>
+ <Y9e9S3ENl0oszAH/@qwirkle> <CA+FuTSe_NMm6goSmCNfKjUWPGYtVnnBMv6W54a_GOeLJ2FqyOQ@mail.gmail.com>
+ <Y9fT+LABhW+/3Nal@qwirkle>
+In-Reply-To: <Y9fT+LABhW+/3Nal@qwirkle>
+From:   Willem de Bruijn <willemb@google.com>
+Date:   Mon, 30 Jan 2023 11:03:06 -0500
+Message-ID: <CA+FuTScSfLG7gXS_YqJzsC-Teiryj3jeSQs9w0D1PWJs8sv5Rg@mail.gmail.com>
+Subject: Re: [PATCH] selftests: net: udpgso_bench_tx: Introduce exponential
+ back-off retries
+To:     Andrei Gherzan <andrei.gherzan@canonical.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,184 +76,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove the check for a negative number of keys as
-this cannot ever happen
+On Mon, Jan 30, 2023 at 9:28 AM Andrei Gherzan
+<andrei.gherzan@canonical.com> wrote:
+>
+> On 23/01/30 08:35AM, Willem de Bruijn wrote:
+> > On Mon, Jan 30, 2023 at 7:51 AM Andrei Gherzan
+> > <andrei.gherzan@canonical.com> wrote:
+> > >
+> > > On 23/01/30 09:26AM, Paolo Abeni wrote:
+> > > > On Fri, 2023-01-27 at 17:03 -0500, Willem de Bruijn wrote:
+> > > > > On Fri, Jan 27, 2023 at 1:16 PM Andrei Gherzan
+> > > > > <andrei.gherzan@canonical.com> wrote:
+> > > > > >
+> > > > > > The tx and rx test programs are used in a couple of test scripts including
+> > > > > > "udpgro_bench.sh". Taking this as an example, when the rx/tx programs
+> > > > > > are invoked subsequently, there is a chance that the rx one is not ready to
+> > > > > > accept socket connections. This racing bug could fail the test with at
+> > > > > > least one of the following:
+> > > > > >
+> > > > > > ./udpgso_bench_tx: connect: Connection refused
+> > > > > > ./udpgso_bench_tx: sendmsg: Connection refused
+> > > > > > ./udpgso_bench_tx: write: Connection refused
+> > > > > >
+> > > > > > This change addresses this by adding routines that retry the socket
+> > > > > > operations with an exponential back off algorithm from 100ms to 2s.
+> > > > > >
+> > > > > > Fixes: 3a687bef148d ("selftests: udp gso benchmark")
+> > > > > > Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
+> > > > >
+> > > > > Synchronizing the two processes is indeed tricky.
+> > > > >
+> > > > > Perhaps more robust is opening an initial TCP connection, with
+> > > > > SO_RCVTIMEO to bound the waiting time. That covers all tests in one
+> > > > > go.
+> > > >
+> > > > Another option would be waiting for the listener(tcp)/receiver(udp)
+> > > > socket to show up in 'ss' output before firing-up the client - quite
+> > > > alike what mptcp self-tests are doing.
+> > >
+> > > I like this idea. I have tested it and it works as expected with the
+> > > exeception of:
+> > >
+> > > ./udpgso_bench_tx: sendmsg: No buffer space available
+> > >
+> > > Any ideas on how to handle this? I could retry and that works.
+> >
+> > This happens (also) without the zerocopy flag, right? That
+> >
+> > It might mean reaching the sndbuf limit, which can be adjusted with
+> > SO_SNDBUF (or SO_SNDBUFFORCE if CAP_NET_ADMIN). Though I would not
+> > expect this test to bump up against that limit.
+> >
+> > A few zerocopy specific reasons are captured in
+> > https://www.kernel.org/doc/html/latest/networking/msg_zerocopy.html#transmission.
+>
+> I have dug a bit more into this, and it does look like your hint was in
+> the right direction. The fails I'm seeing are only with the zerocopy
+> flag.
+>
+> From the reasons (doc) above I can only assume optmem limit as I've
+> reproduced it with unlimited locked pages and the fails are transient.
+> That leaves optmem limit. Bumping the value I have by default (20480) to
+> (2048000) made the sendmsg succeed as expected. On the other hand, the
+> tests started to fail with something like:
+>
+> ./udpgso_bench_tx: Unexpected number of Zerocopy completions:    774783
+> expected    773707 received
 
-Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
----
- net/sched/act_pedit.c | 137 +++++++++++++++++++++---------------------
- 1 file changed, 67 insertions(+), 70 deletions(-)
+More zerocopy completions than number of sends. I have not seen this before.
 
-diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
-index c8e8748dc258..d0098b9ebb1b 100644
---- a/net/sched/act_pedit.c
-+++ b/net/sched/act_pedit.c
-@@ -352,8 +352,12 @@ TC_INDIRECT_SCOPE int tcf_pedit_act(struct sk_buff *skb,
- 				    const struct tc_action *a,
- 				    struct tcf_result *res)
- {
-+	enum pedit_header_type htype = TCA_PEDIT_KEY_EX_HDR_TYPE_NETWORK;
-+	enum pedit_cmd cmd = TCA_PEDIT_KEY_EX_CMD_SET;
- 	struct tcf_pedit *p = to_pedit(a);
-+	struct tcf_pedit_key_ex *tkey_ex;
- 	struct tcf_pedit_parms *parms;
-+	struct tc_pedit_key *tkey;
- 	u32 max_offset;
- 	int i;
- 
-@@ -369,88 +373,81 @@ TC_INDIRECT_SCOPE int tcf_pedit_act(struct sk_buff *skb,
- 	tcf_lastuse_update(&p->tcf_tm);
- 	tcf_action_update_bstats(&p->common, skb);
- 
--	if (parms->tcfp_nkeys > 0) {
--		struct tc_pedit_key *tkey = parms->tcfp_keys;
--		struct tcf_pedit_key_ex *tkey_ex = parms->tcfp_keys_ex;
--		enum pedit_header_type htype =
--			TCA_PEDIT_KEY_EX_HDR_TYPE_NETWORK;
--		enum pedit_cmd cmd = TCA_PEDIT_KEY_EX_CMD_SET;
--
--		for (i = parms->tcfp_nkeys; i > 0; i--, tkey++) {
--			u32 *ptr, hdata;
--			int offset = tkey->off;
--			int hoffset;
--			u32 val;
--			int rc;
--
--			if (tkey_ex) {
--				htype = tkey_ex->htype;
--				cmd = tkey_ex->cmd;
--
--				tkey_ex++;
--			}
-+	tkey = parms->tcfp_keys;
-+	tkey_ex = parms->tcfp_keys_ex;
- 
--			rc = pedit_skb_hdr_offset(skb, htype, &hoffset);
--			if (rc) {
--				pr_info("tc action pedit bad header type specified (0x%x)\n",
--					htype);
--				goto bad;
--			}
-+	for (i = parms->tcfp_nkeys; i > 0; i--, tkey++) {
-+		int offset = tkey->off;
-+		u32 *ptr, hdata;
-+		int hoffset;
-+		u32 val;
-+		int rc;
- 
--			if (tkey->offmask) {
--				u8 *d, _d;
--
--				if (!offset_valid(skb, hoffset + tkey->at)) {
--					pr_info("tc action pedit 'at' offset %d out of bounds\n",
--						hoffset + tkey->at);
--					goto bad;
--				}
--				d = skb_header_pointer(skb, hoffset + tkey->at,
--						       sizeof(_d), &_d);
--				if (!d)
--					goto bad;
--				offset += (*d & tkey->offmask) >> tkey->shift;
--			}
-+		if (tkey_ex) {
-+			htype = tkey_ex->htype;
-+			cmd = tkey_ex->cmd;
- 
--			if (offset % 4) {
--				pr_info("tc action pedit offset must be on 32 bit boundaries\n");
--				goto bad;
--			}
-+			tkey_ex++;
-+		}
- 
--			if (!offset_valid(skb, hoffset + offset)) {
--				pr_info("tc action pedit offset %d out of bounds\n",
--					hoffset + offset);
--				goto bad;
--			}
-+		rc = pedit_skb_hdr_offset(skb, htype, &hoffset);
-+		if (rc) {
-+			pr_info("tc action pedit bad header type specified (0x%x)\n",
-+				htype);
-+			goto bad;
-+		}
- 
--			ptr = skb_header_pointer(skb, hoffset + offset,
--						 sizeof(hdata), &hdata);
--			if (!ptr)
--				goto bad;
--			/* just do it, baby */
--			switch (cmd) {
--			case TCA_PEDIT_KEY_EX_CMD_SET:
--				val = tkey->val;
--				break;
--			case TCA_PEDIT_KEY_EX_CMD_ADD:
--				val = (*ptr + tkey->val) & ~tkey->mask;
--				break;
--			default:
--				pr_info("tc action pedit bad command (%d)\n",
--					cmd);
-+		if (tkey->offmask) {
-+			u8 *d, _d;
-+
-+			if (!offset_valid(skb, hoffset + tkey->at)) {
-+				pr_info("tc action pedit 'at' offset %d out of bounds\n",
-+					hoffset + tkey->at);
- 				goto bad;
- 			}
-+			d = skb_header_pointer(skb, hoffset + tkey->at,
-+					       sizeof(_d), &_d);
-+			if (!d)
-+				goto bad;
-+			offset += (*d & tkey->offmask) >> tkey->shift;
-+		}
- 
--			*ptr = ((*ptr & tkey->mask) ^ val);
--			if (ptr == &hdata)
--				skb_store_bits(skb, hoffset + offset, ptr, 4);
-+		if (offset % 4) {
-+			pr_info("tc action pedit offset must be on 32 bit boundaries\n");
-+			goto bad;
- 		}
- 
--		goto done;
--	} else {
--		WARN(1, "pedit BUG: index %d\n", p->tcf_index);
-+		if (!offset_valid(skb, hoffset + offset)) {
-+			pr_info("tc action pedit offset %d out of bounds\n",
-+				hoffset + offset);
-+			goto bad;
-+		}
-+
-+		ptr = skb_header_pointer(skb, hoffset + offset,
-+					 sizeof(hdata), &hdata);
-+		if (!ptr)
-+			goto bad;
-+		/* just do it, baby */
-+		switch (cmd) {
-+		case TCA_PEDIT_KEY_EX_CMD_SET:
-+			val = tkey->val;
-+			break;
-+		case TCA_PEDIT_KEY_EX_CMD_ADD:
-+			val = (*ptr + tkey->val) & ~tkey->mask;
-+			break;
-+		default:
-+			pr_info("tc action pedit bad command (%d)\n",
-+				cmd);
-+			goto bad;
-+		}
-+
-+		*ptr = ((*ptr & tkey->mask) ^ val);
-+		if (ptr == &hdata)
-+			skb_store_bits(skb, hoffset + offset, ptr, 4);
- 	}
- 
-+	goto done;
-+
- bad:
- 	spin_lock(&p->tcf_lock);
- 	p->tcf_qstats.overlimits++;
--- 
-2.34.1
+The completions are ranges of IDs, one per send call for datagram sockets.
 
+Even with segmentation offload, the counter increases per call, not per segment.
+
+Do you experience this without any other changes to udpgso_bench_tx.c.
+Or are there perhaps additional sendmsg calls somewhere (during
+initial sync) that are not accounted to num_sends?
+
+> Also, this audit fail is transient as with the buffer limit one.
