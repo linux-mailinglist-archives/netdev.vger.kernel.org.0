@@ -2,104 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36B75680812
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 10:01:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90817680844
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 10:12:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235977AbjA3JBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 04:01:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43642 "EHLO
+        id S235594AbjA3JMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 04:12:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235609AbjA3JBx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 04:01:53 -0500
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024EA27997
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 01:01:52 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id x40so17911378lfu.12
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 01:01:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=UZj9/cvDapyg3C3XeyJ8O7FcL+Q9vTGYpiiZhybQ3/Y=;
-        b=YpZPybRH2g6b5MNlae882cJyQH3+GhaRS1KtkQ1ic4U9DQ1wAksC7l424HEbF+ADxN
-         fmcDLTrktBtYMQMPkMUDNQIZxVM+BtAxgcnyQJWwaWpP0v1je0i2oRgTSbR2VLze9BqV
-         1BnxymwS2i52LfRIyveXklR4p0oebRBpofJZomFe9/cTpunIeKSf8raZU6JTf07/dnv1
-         GIZ2nHXbEouap68BiQOwnezKzLYrtAAmNMjYXfQejCOEfAY1k18W3dL3Q8XvBXm1rPms
-         898HEjlsuc2LbxFm0rngcEx5mQIZU7LN/4ANBG5/WrHIlhPovrw4VKPZT7M4zGDb1FxL
-         uzPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=UZj9/cvDapyg3C3XeyJ8O7FcL+Q9vTGYpiiZhybQ3/Y=;
-        b=CQYpaH3D7bwljwTJe78QeHaDSZvV8H2HZ3KzAl28DYUvaXklrHeuwEng3dgNQzJY0B
-         I40HehJ15WwievJK6zHUvkSuUjWbevgXZ9jdMv5NsTuKzg/uzwldrBE+h5Nsztr9BL9Q
-         Bgd+30gPjTRxI4aOPTujrh/eUFelkDtpCAAoIcE7cOAxUd9dYmsgyKRVTlk1LyILD7+A
-         4+lToSkhkJndOUmoVratbOvtsrVkypunpFHj4zXx/JGh4XTyKtltK/aVAzHdYJl9EP2x
-         lycoG9a5rT4OpnJMvVTVlCJJr2+L9oOV7lr13CPb/09W74bva7dFqTvROvE2eAcifKJb
-         670Q==
-X-Gm-Message-State: AFqh2kpIWgyfflWz1iGpiRJMKJhB2lSrKsGuUhrBSXTRP1ajN2BXo4pG
-        sZRCbkvJmzGHHZK9mCac08qOoMfqShYGKfkWSPN4Qg==
-X-Google-Smtp-Source: AMrXdXuWZiiyZkf/64VNhp78eRnhB3/NmfVKBBNmIECUtn74jpbV7QLgFX3t7cQcj0HXz/vx4Vtw1n340djOaOQFYX0=
-X-Received: by 2002:a05:6512:2115:b0:4cb:1d3e:685b with SMTP id
- q21-20020a056512211500b004cb1d3e685bmr4243828lfr.126.1675069310153; Mon, 30
- Jan 2023 01:01:50 -0800 (PST)
+        with ESMTP id S236130AbjA3JMQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 04:12:16 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED6F99F
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 01:12:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD2A1B80C7B
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 09:12:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D57E8C4339B;
+        Mon, 30 Jan 2023 09:12:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675069933;
+        bh=zzLTWopEGXdDYBa/wMQV5gC9XG2VUFl/cEOChSq8osk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=B6puhhzjxXQtWfH4ChdrHVfxJ/OL+r5mXuYD5cYD/p8oyizc0ZkEDA7zPf+fcg/e2
+         2X+sJUUb0ysNSLXlCZZ6DCMo/85wmCpJjKZlze3jGcENvpoJMr41pwb/7dwQOeMD2G
+         5ORJw9fBXEdk8MFug5+n25bpXpxZza6Lm/tXWzDHC4MPn8p84yD9OJL3cNsaFLUXE4
+         QJkMxYJSjGfMGcry8puJrlKH9hcJDoyWUKY/y2XCbkqyhyyFt3iPyalb1noE8E8kdy
+         JWcj9nktLaWGE8uUBy5wAfGWwP9E+pWlgOmXDq2EB7h9vdJ25Hkg+raMskGsDxa710
+         phZy5LPTI8rSg==
+Date:   Mon, 30 Jan 2023 11:12:09 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, Dave Ertman <david.m.ertman@intel.com>,
+        netdev@vger.kernel.org, Gurucharan G <gurucharanx.g@intel.com>
+Subject: Re: [PATCH net v4 1/2] ice: Prevent set_channel from changing queues
+ while RDMA active
+Message-ID: <Y9eJ6TasOLEK/LYO@unreal>
+References: <20230127225333.1534783-1-anthony.l.nguyen@intel.com>
+ <20230127225333.1534783-2-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-References: <000000000000021e6b05b0ea60bd@google.com> <000000000000d47cbe05f375a0f1@google.com>
-In-Reply-To: <000000000000d47cbe05f375a0f1@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 30 Jan 2023 10:01:37 +0100
-Message-ID: <CACT4Y+b6Uu4vcuQX+dcmiyzGRX8jnDq3v3SU94Lm2-miB1hBxg@mail.gmail.com>
-Subject: Re: [syzbot] WARNING in hif_usb_send/usb_submit_urb
-To:     syzbot <syzbot+f5378bcf0f0cab45c1c6@syzkaller.appspotmail.com>
-Cc:     andreyknvl@google.com, ath9k-devel@qca.qualcomm.com,
-        ca@plazainn.com.qa, davem@davemloft.net, edumazet@google.com,
-        eli.billauer@gmail.com, gregkh@linuxfoundation.org,
-        gustavoars@kernel.org, ingrassia@epigenesys.com,
-        khoroshilov@ispras.ru, kuba@kernel.org, kvalo@kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        oneukum@suse.com, pabeni@redhat.com, pchelkin@ispras.ru,
-        quic_kvalo@quicinc.com, stern@rowland.harvard.edu,
-        syzkaller-bugs@googlegroups.com, tiwai@suse.de, toke@toke.dk
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230127225333.1534783-2-anthony.l.nguyen@intel.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 30 Jan 2023 at 07:50, syzbot
-<syzbot+f5378bcf0f0cab45c1c6@syzkaller.appspotmail.com> wrote:
->
-> syzbot suspects this issue was fixed by commit:
->
-> commit 16ef02bad239f11f322df8425d302be62f0443ce
-> Author: Fedor Pchelkin <pchelkin@ispras.ru>
-> Date:   Sat Oct 8 21:15:32 2022 +0000
->
->     wifi: ath9k: verify the expected usb_endpoints are present
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1162ac2d480000
-> start commit:   274a2eebf80c Merge tag 'for_linus' of git://git.kernel.org..
-> git tree:       upstream
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=f267ed4fb258122a
-> dashboard link: https://syzkaller.appspot.com/bug?extid=f5378bcf0f0cab45c1c6
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1343a8eb080000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17dc40eb080000
->
-> If the result looks correct, please mark the issue as fixed by replying with:
->
-> #syz fix: wifi: ath9k: verify the expected usb_endpoints are present
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+On Fri, Jan 27, 2023 at 02:53:32PM -0800, Tony Nguyen wrote:
+> From: Dave Ertman <david.m.ertman@intel.com>
+> 
+> The PF controls the set of queues that the RDMA auxiliary_driver requests
+> resources from.  The set_channel command will alter that pool and trigger a
+> reconfiguration of the VSI, which breaks RDMA functionality.
+> 
+> Prevent set_channel from executing when RDMA driver bound to auxiliary
+> device.
+> 
+> Adding a locked variable to pass down the call chain to avoid double
+> locking the device_lock.
+> 
+> Fixes: 348048e724a0 ("ice: Implement iidc operations")
+> Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
+> Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice.h         |  2 +-
+>  drivers/net/ethernet/intel/ice/ice_dcb_lib.c | 23 +++++++++-------
+>  drivers/net/ethernet/intel/ice/ice_dcb_lib.h |  4 +--
+>  drivers/net/ethernet/intel/ice/ice_ethtool.c | 28 +++++++++++++++++---
+>  drivers/net/ethernet/intel/ice/ice_main.c    |  5 ++--
+>  5 files changed, 43 insertions(+), 19 deletions(-)
 
-Looks reasonable, let's close the bug:
+Honestly, it looks horrid to see holding two locks and "locked"
+parameter just to send an event to AUX driver.
 
-#syz fix: wifi: ath9k: verify the expected usb_endpoints are present
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
