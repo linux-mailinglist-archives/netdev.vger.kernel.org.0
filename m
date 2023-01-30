@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A8F96808A2
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 10:23:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31B5A6808A9
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 10:23:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236291AbjA3JXy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 04:23:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54980 "EHLO
+        id S236301AbjA3JX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 04:23:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230335AbjA3JXi (ORCPT
+        with ESMTP id S234878AbjA3JXi (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 04:23:38 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F2510276;
-        Mon, 30 Jan 2023 01:23:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D3B125B7;
+        Mon, 30 Jan 2023 01:23:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=C+v5jKduF/6CPyL8Gd3IL/7SXabgum11sMqCASR0Rjw=; b=Dia0dS4DHkPCJzEQ3GL2aBg3Jf
-        0FzC/sN3iLUP+N8J/1A/U87NBJ+uyEpKkpnh+GuSWq6sEuXcf5jfTNBBOYnUnu05pKwV+mnr+dBW+
-        l0jnhp5PE+zCcWsLLECOowRAOnKIGdMtYEAr62jvNYfNktvspZGptBMO1NjlmVs4DyDbGSYB+KmII
-        HfShoMOrXlSn1TvP3kFHgvZeJnAgNWIbRUDvtlJJtj0z9JYqIs7xD4hBcx6o2hbcuHX9I8P5ctpcD
-        xaxVcGiDk4JK0m74OCpuzA/189QfcEoJAAt91OlSeRWPyROrJOO9qX+PqmUAJXTwLAZqU7f0l1PqF
-        PvDhAwFw==;
+        bh=qHieNPI7z3sFtodokWVnoougmLvZVnqE3Y/VparMyFY=; b=ODubD1C2BRMqrFChW7fD2/w9bG
+        Bek9dBQcKN5N+ru2staBvvFXiwAiWim7hYwhHUZGSLXX24jbnEbAqdmS5Ajj9+NlnFCavBXfsfhs3
+        XI6lzCu2GeqKtRgevITrArS3zGcwLMRZMxlr4utu1juNhvass81bDd906uTcf5xiZsb6cCOqyl8nK
+        m98KeGJ9SE/V3c3ZRyUJeGtRoQ5nsh6i4jGrfSPRpVbUu4hyqMBJxi9JGDZJNhoGK0a94aCuKbtu8
+        rmmcphUXaeiu9gmh/7++19/XF9wkSuRyP7q7ZgI/exYaX7pXYil/gd10qOnCgTC3hp+S0hEq97BKO
+        qjR+Sy/Q==;
 Received: from [2001:4bb8:19a:272a:732e:e417:47d7:2f4a] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pMQMe-002o0P-Jq; Mon, 30 Jan 2023 09:22:13 +0000
+        id 1pMQMh-002o1D-D3; Mon, 30 Jan 2023 09:22:15 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Jens Axboe <axboe@kernel.dk>
 Cc:     Ilya Dryomov <idryomov@gmail.com>,
@@ -59,9 +59,9 @@ Cc:     Ilya Dryomov <idryomov@gmail.com>,
         linux-fsdevel@vger.kernel.org, linux-nfs@vger.kernel.org,
         devel@lists.orangefs.org, io-uring@vger.kernel.org,
         linux-mm@kvack.org
-Subject: [PATCH 02/23] block: add a bvec_set_folio helper
-Date:   Mon, 30 Jan 2023 10:21:36 +0100
-Message-Id: <20230130092157.1759539-3-hch@lst.de>
+Subject: [PATCH 03/23] block: add a bvec_set_virt helper
+Date:   Mon, 30 Jan 2023 10:21:37 +0100
+Message-Id: <20230130092157.1759539-4-hch@lst.de>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230130092157.1759539-1-hch@lst.de>
 References: <20230130092157.1759539-1-hch@lst.de>
@@ -78,34 +78,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A smaller wrapper around bvec_set_page that takes a folio instead.
-There are only two potential users for this in the tree, but the number
-will grow in the future.
+A small wrapper around bvec_set_page for callers that have a virtual
+address.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- include/linux/bvec.h | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ include/linux/bvec.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
 diff --git a/include/linux/bvec.h b/include/linux/bvec.h
-index 9e3dac51eb26b6..f094512ce3bda9 100644
+index f094512ce3bda9..7031d83af02267 100644
 --- a/include/linux/bvec.h
 +++ b/include/linux/bvec.h
-@@ -50,6 +50,19 @@ static inline void bvec_set_page(struct bio_vec *bv, struct page *page,
- 	bv->bv_offset = offset;
+@@ -63,6 +63,18 @@ static inline void bvec_set_folio(struct bio_vec *bv, struct folio *folio,
+ 	bvec_set_page(bv, &folio->page, len, offset);
  }
  
 +/**
-+ * bvec_set_folio - initialize a bvec based off a struct folio
++ * bvec_set_virt - initialize a bvec based on a virtual address
 + * @bv:		bvec to initialize
-+ * @page:	folio the bvec should point to
++ * @vaddr:	virtual address to set the bvec to
 + * @len:	length of the bvec
-+ * @offset:	offset into the folio
 + */
-+static inline void bvec_set_folio(struct bio_vec *bv, struct folio *folio,
-+		unsigned int len, unsigned int offset)
++static inline void bvec_set_virt(struct bio_vec *bv, void *vaddr,
++		unsigned int len)
 +{
-+	bvec_set_page(bv, &folio->page, len, offset);
++	bvec_set_page(bv, virt_to_page(vaddr), len, offset_in_page(vaddr));
 +}
 +
  struct bvec_iter {
