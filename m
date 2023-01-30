@@ -2,117 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C296D681631
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 17:18:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B131681639
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 17:23:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236112AbjA3QS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 11:18:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53948 "EHLO
+        id S236312AbjA3QXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 11:23:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236783AbjA3QSS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 11:18:18 -0500
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62EA61D90C;
-        Mon, 30 Jan 2023 08:18:11 -0800 (PST)
-Received: by mail-pg1-x533.google.com with SMTP id 7so7978775pga.1;
-        Mon, 30 Jan 2023 08:18:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=bZKTm1Tzj27L3hS8NppCLb/m/+R50S5HSNpr2qtjPLI=;
-        b=iN1M2b4dVXrO2mpm5RLA5O8ECHYQxN6uAVkk6o2CKHceF2LxsU+zEMjY25XYfuSdtM
-         +FOI1p5QFjok2PBoGk+3k9H0zBNvQ+EtnaX4M+2inuTKmPfcnbl7aDIDPp9s99sMQioe
-         Vaff49cFzec1aGC2b2Vsu05xPdWj65t9i0REBAoW3oJmLc3d+4mdxPeQkROAq6JLKoBL
-         eu+XR9E9haPAeCohqMzxBZ5GSn/M0AHEVCE0YEOASqvMzTrF3Z9UiPwXl1Fdk7fOZkyv
-         0BzTsUHTqlSjQQbItfZbMoRboc5VEZp/IuiIgwVo/n8PZVdmvYLBk+Aqdo/phybUNkAA
-         KMcQ==
+        with ESMTP id S236074AbjA3QXO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 11:23:14 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 089FE3A853
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 08:23:13 -0800 (PST)
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com [209.85.221.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id C64073F2D1
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 16:23:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1675095791;
+        bh=EKh99Av2dVI8br/juDJKkzbI27Y8Tv0MgpqioM20Ax8=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Type:In-Reply-To;
+        b=d8qvpAuw3iuOJK5+LkUKDWhL0JS/Rb+wcI4C/JpdxK9uB6EHWHtKEUfkcsKeXwVT+
+         u5ac6TSWS6zAEcTi7BJcprR/a31NttZXlcCxiIR0YmQn4mj9VGheIaearPrmnBf2AW
+         LrjEOFF+BaP97LhKBChJBXQ+1mkFtusMxVmq0MxnhdEQRK2no9NreKRCC0J/04fsIa
+         g2k0PxDmvpGA5pQ7V17scsv/jJogNUz+tnsGM3B5/d4i53mxHwSEK+qQVQeouO6WKy
+         eyGLyFSOodhJYyzcz/KacczviL1g9j1SmXBY9iIUYdZGKVP5iqFrXrkZ972n7aZJMb
+         yd8h30aWaWZvQ==
+Received: by mail-wr1-f69.google.com with SMTP id m13-20020a5d4a0d000000b002bfe777a97aso968668wrq.22
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 08:23:11 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=bZKTm1Tzj27L3hS8NppCLb/m/+R50S5HSNpr2qtjPLI=;
-        b=nUhR9I+vhOYxw6sTuqxUDlmUmQkLl7hDvtRWEU1+6WNvceAUuP8wKbxp/Dh/gYAbMk
-         K7QZpQXiJksFBZGXLF2aDqJXX0TGgMYIVMsBexafbNkA4h4b0JOAo4w/skjbZaumC6bK
-         ZtpCuoYw1huI5hoys0vdE2S2m7x4ZzyZPixCMxQB+j3hQQ6nn8uCuT5XTc4s9gedDftf
-         oCXz/IWxYNdoPnLC6l1967US43vMvuayHBnnJ1YRlVbEIaBvecUpz/kI7cRvy7T/LWCi
-         wzisfQi/0BJUdPsPjfJZXhVPLKHooxC1bQ858KkfDG/yt9MuuxFHgUqN+HGESM9bZObu
-         Q+Rw==
-X-Gm-Message-State: AO0yUKWI+WHI6z4aHglO3RVE3P/HjGcQ10gZtWQF69JkjdGI9zYOCaSA
-        U8MKtsnhs7LlV/tlMC59K66EDXJM2Zz51ZeOe3yG7PqL
-X-Google-Smtp-Source: AK7set8X/O9viI2jsP+l4chl6RihdbxH/dJjUTf2DKoaVq88gsv3M14MIRTg8aMOblyyA2Omynh0M9bjhlaKr+r9r/k=
-X-Received: by 2002:a62:830d:0:b0:592:7c9a:1236 with SMTP id
- h13-20020a62830d000000b005927c9a1236mr2099629pfe.26.1675095490680; Mon, 30
- Jan 2023 08:18:10 -0800 (PST)
-MIME-Version: 1.0
-References: <04e27096-9ace-07eb-aa51-1663714a586d@nbd.name>
- <167475990764.1934330.11960904198087757911.stgit@localhost.localdomain>
- <cde24ed8-1852-ce93-69f3-ff378731f52c@huawei.com> <20230127212646.4cfeb475@kernel.org>
- <CANn89iKgZU4Q+THXupzZi4hETuKuCOvOB=iHpp5JzQTNv_Fg_A@mail.gmail.com> <ec534eacabf5c859930eb5ca7f417f7f01197d24.camel@redhat.com>
-In-Reply-To: <ec534eacabf5c859930eb5ca7f417f7f01197d24.camel@redhat.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Mon, 30 Jan 2023 08:17:58 -0800
-Message-ID: <CAKgT0UcwrQ21F2mgaLK2ruWUsRbiuSd=T=V=e1P4GUpAfbxPgQ@mail.gmail.com>
-Subject: Re: [net PATCH] skb: Do mix page pool and page referenced frags in GRO
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EKh99Av2dVI8br/juDJKkzbI27Y8Tv0MgpqioM20Ax8=;
+        b=nl2mux4BG9PTXuvHZg/UZeYgSNFNfzfIMw582woTo6Sxa1+g/a/SqdORkSh0YZ1h74
+         jkkv35wPyGlg2UMwDMcIkBAtXERPrwg5Mz79h5mef32aaa8rnWu6T7AaiEZGsFV2zZIa
+         1MRiiHOBGGLplZag7IFdmKDq1uet/w5aew2H6XxhKBrTbEjObdGQXB5799TvcbGq0DMR
+         678o7+ZiYg7o7GWQcFtqaunckhapHs1oEeZVr0QI9gKJ+9CnBgoa2AaAwIvKoChf6LFy
+         O/HrFSJSVnthBiHJNH2u+Q+HJPpEh4bfDagjIC2LdgPbXljZzkzD1KuQt6fhDxmkEsbO
+         WwkQ==
+X-Gm-Message-State: AFqh2kpT/CUEoNgbULbAztWknxHiVKkqAHtWWF+HqUjGGUItn3PYUOog
+        gCxqlxv3lv6YBQq/Js9En6gO9e6j4YaflgZBcU2SrjaipGYzAwll18CfXa7FiToEhfKYa1Z5No9
+        ibcVCcAzfQzmK8HyuTkvZHxseYgjdChothg==
+X-Received: by 2002:a05:600c:34d1:b0:3db:1434:c51a with SMTP id d17-20020a05600c34d100b003db1434c51amr44052402wmq.40.1675095791479;
+        Mon, 30 Jan 2023 08:23:11 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXv94g3xcpSkCieUluATJV/IVwfPvR4IZ+IgwNWXiloi8TwBETu25mp6RUhJ8NieWs4+Q2LF9A==
+X-Received: by 2002:a05:600c:34d1:b0:3db:1434:c51a with SMTP id d17-20020a05600c34d100b003db1434c51amr44052387wmq.40.1675095791314;
+        Mon, 30 Jan 2023 08:23:11 -0800 (PST)
+Received: from qwirkle ([81.2.157.149])
+        by smtp.gmail.com with ESMTPSA id l10-20020a05600c47ca00b003dc58637163sm4063283wmo.45.2023.01.30.08.23.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Jan 2023 08:23:10 -0800 (PST)
+Date:   Mon, 30 Jan 2023 16:23:09 +0000
+From:   Andrei Gherzan <andrei.gherzan@canonical.com>
+To:     Willem de Bruijn <willemb@google.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Yunsheng Lin <linyunsheng@huawei.com>, nbd@nbd.name,
-        davem@davemloft.net, hawk@kernel.org, ilias.apalodimas@linaro.org,
-        linux-kernel@vger.kernel.org, lorenzo@kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] selftests: net: udpgso_bench_tx: Introduce exponential
+ back-off retries
+Message-ID: <Y9fu7TR5VC33j+EP@qwirkle>
+References: <20230127181625.286546-1-andrei.gherzan@canonical.com>
+ <CA+FuTSewU6bjYLsyLzZ1Yne=6YBPDJZ=U1mZc+6cJVdr06BhiQ@mail.gmail.com>
+ <a762638b06684cd63d212d1ce9f65236a08b78b1.camel@redhat.com>
+ <Y9e9S3ENl0oszAH/@qwirkle>
+ <CA+FuTSe_NMm6goSmCNfKjUWPGYtVnnBMv6W54a_GOeLJ2FqyOQ@mail.gmail.com>
+ <Y9fT+LABhW+/3Nal@qwirkle>
+ <CA+FuTScSfLG7gXS_YqJzsC-Teiryj3jeSQs9w0D1PWJs8sv5Rg@mail.gmail.com>
+ <Y9ftL5c4klThCi9Q@qwirkle>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y9ftL5c4klThCi9Q@qwirkle>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 12:50 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> On Sat, 2023-01-28 at 08:08 +0100, Eric Dumazet wrote:
-> > On Sat, Jan 28, 2023 at 6:26 AM Jakub Kicinski <kuba@kernel.org> wrote:
+On 23/01/30 04:15PM, Andrei Gherzan wrote:
+> On 23/01/30 11:03AM, Willem de Bruijn wrote:
+> > On Mon, Jan 30, 2023 at 9:28 AM Andrei Gherzan
+> > <andrei.gherzan@canonical.com> wrote:
 > > >
-> > > On Sat, 28 Jan 2023 10:37:47 +0800 Yunsheng Lin wrote:
-> > > > If we are not allowing gro for the above case, setting NAPI_GRO_CB(p)->flush
-> > > > to 1 in gro_list_prepare() seems to be making more sense so that the above
-> > > > case has the same handling as skb_has_frag_list() handling?
-> > > > https://elixir.bootlin.com/linux/v6.2-rc4/source/net/core/gro.c#L503
+> > > On 23/01/30 08:35AM, Willem de Bruijn wrote:
+> > > > On Mon, Jan 30, 2023 at 7:51 AM Andrei Gherzan
+> > > > <andrei.gherzan@canonical.com> wrote:
+> > > > >
+> > > > > On 23/01/30 09:26AM, Paolo Abeni wrote:
+> > > > > > On Fri, 2023-01-27 at 17:03 -0500, Willem de Bruijn wrote:
+> > > > > > > On Fri, Jan 27, 2023 at 1:16 PM Andrei Gherzan
+> > > > > > > <andrei.gherzan@canonical.com> wrote:
+> > > > > > > >
+> > > > > > > > The tx and rx test programs are used in a couple of test scripts including
+> > > > > > > > "udpgro_bench.sh". Taking this as an example, when the rx/tx programs
+> > > > > > > > are invoked subsequently, there is a chance that the rx one is not ready to
+> > > > > > > > accept socket connections. This racing bug could fail the test with at
+> > > > > > > > least one of the following:
+> > > > > > > >
+> > > > > > > > ./udpgso_bench_tx: connect: Connection refused
+> > > > > > > > ./udpgso_bench_tx: sendmsg: Connection refused
+> > > > > > > > ./udpgso_bench_tx: write: Connection refused
+> > > > > > > >
+> > > > > > > > This change addresses this by adding routines that retry the socket
+> > > > > > > > operations with an exponential back off algorithm from 100ms to 2s.
+> > > > > > > >
+> > > > > > > > Fixes: 3a687bef148d ("selftests: udp gso benchmark")
+> > > > > > > > Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
+> > > > > > >
+> > > > > > > Synchronizing the two processes is indeed tricky.
+> > > > > > >
+> > > > > > > Perhaps more robust is opening an initial TCP connection, with
+> > > > > > > SO_RCVTIMEO to bound the waiting time. That covers all tests in one
+> > > > > > > go.
+> > > > > >
+> > > > > > Another option would be waiting for the listener(tcp)/receiver(udp)
+> > > > > > socket to show up in 'ss' output before firing-up the client - quite
+> > > > > > alike what mptcp self-tests are doing.
+> > > > >
+> > > > > I like this idea. I have tested it and it works as expected with the
+> > > > > exeception of:
+> > > > >
+> > > > > ./udpgso_bench_tx: sendmsg: No buffer space available
+> > > > >
+> > > > > Any ideas on how to handle this? I could retry and that works.
 > > > >
-> > > > As it seems to avoid some unnecessary operation according to comment
-> > > > in tcp4_gro_receive():
-> > > > https://elixir.bootlin.com/linux/v6.2-rc4/source/net/ipv4/tcp_offload.c#L322
+> > > > This happens (also) without the zerocopy flag, right? That
+> > > >
+> > > > It might mean reaching the sndbuf limit, which can be adjusted with
+> > > > SO_SNDBUF (or SO_SNDBUFFORCE if CAP_NET_ADMIN). Though I would not
+> > > > expect this test to bump up against that limit.
+> > > >
+> > > > A few zerocopy specific reasons are captured in
+> > > > https://www.kernel.org/doc/html/latest/networking/msg_zerocopy.html#transmission.
 > > >
-> > > The frag_list case can be determined with just the input skb.
-> > > For pp_recycle we need to compare input skb's pp_recycle with
-> > > the pp_recycle of the skb already held by GRO.
+> > > I have dug a bit more into this, and it does look like your hint was in
+> > > the right direction. The fails I'm seeing are only with the zerocopy
+> > > flag.
 > > >
-> > > I'll hold off with applying a bit longer tho, in case Eric
-> > > wants to chime in with an ack or opinion.
-> >
-> > We can say that we are adding in the fast path an expensive check
-> > about an unlikely condition.
-> >
-> > GRO is by far the most expensive component in our stack.
->
-> Slightly related to the above: currently the GRO engine performs the
-> skb metadata check for every packet. My understanding is that even with
-> XDP enabled and ebpf running on the given packet, the skb should
-> usually have meta_len == 0.
->
-> What about setting 'skb->slow_gro' together with meta_len and moving
-> the skb_metadata_differs() check under the slow_gro guard?
+> > > From the reasons (doc) above I can only assume optmem limit as I've
+> > > reproduced it with unlimited locked pages and the fails are transient.
+> > > That leaves optmem limit. Bumping the value I have by default (20480) to
+> > > (2048000) made the sendmsg succeed as expected. On the other hand, the
+> > > tests started to fail with something like:
+> > >
+> > > ./udpgso_bench_tx: Unexpected number of Zerocopy completions:    774783
+> > > expected    773707 received
+> > 
+> > More zerocopy completions than number of sends. I have not seen this before.
+> > 
+> > The completions are ranges of IDs, one per send call for datagram sockets.
+> > 
+> > Even with segmentation offload, the counter increases per call, not per segment.
+> > 
+> > Do you experience this without any other changes to udpgso_bench_tx.c.
+> > Or are there perhaps additional sendmsg calls somewhere (during
+> > initial sync) that are not accounted to num_sends?
+> 
+> Indeed, that looks off. No, I have run into this without any changes in
+> the tests (besides the retry routine in the shell script that waits for
+> rx to come up). Also, as a data point.
 
-Makes sense to me, especially since we have to do a pointer chase to
-get the metadata length out of the shared info.
+Actually wait. I don't think that is the case here. "expected" is the
+number of sends. In this case we sent 1076 more messages than
+completions. Am I missing something obvious?
 
-Looking at the code one thing I was wondering about is if we should be
-flagging frames where one is slow_gro and one is not as having a diff
-and just skipping the checks since we know the slow_gro checks are
-expensive and if they differ based on that flag odds are one will have
-a field present that the other doesn't.
+> 
+> As an additional data point, this was only seen on the IPv6 tests. I've
+> never been able to replicate it on the IPv4 run.
+
+I was also fast to send this but it is not correct. I managed to
+reproduce it on both IPv4 and IPv6.
+
+-- 
+Andrei Gherzan
