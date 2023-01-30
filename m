@@ -2,118 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03824680A32
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 10:56:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8984680A34
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 10:56:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236243AbjA3J4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 04:56:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58832 "EHLO
+        id S236163AbjA3J4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 04:56:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236382AbjA3Jzt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 04:55:49 -0500
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82032F7AC;
-        Mon, 30 Jan 2023 01:55:25 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id BE88C20009;
-        Mon, 30 Jan 2023 09:55:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1675072514;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        with ESMTP id S236098AbjA3J4U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 04:56:20 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 163ED30B3F;
+        Mon, 30 Jan 2023 01:55:49 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 8ADDD21A3B;
+        Mon, 30 Jan 2023 09:55:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1675072531; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=D1q99COeEhSgAwyVTxW/RO7yjBL/O8JQ1iE+OT9BH0A=;
-        b=QIN7FUYzn0dtmRGBp0w2TVIW7uDeHwZcmXcfcPutBehGK13ZbLZKEc5pwaqrF9+AJEjB3y
-        BSKTgdxIEJa4lZZXkCNxf5mhTAX6am3nW5b6dAts/HViLKiLy5j4mQbWdE+1hL3x9oXWDS
-        h+1LWDaCCWZNDw/HxYIFukN2VOzn+G4MRw6JD7XPqD+dbE4u8mN/B0twRfw0sjC7S9NJd1
-        dKiQW3oeKppfl+VvXprV05BUH64jZq2b2gFwOKgg74KT1A07t5dQ5jIuitIlAejnVsbeQs
-        wNnLcc8+1kalJIy/UPfxEbbry1ca6EIlUSE6NfosMZkLN5gzeyCDrIO+jlcsMQ==
-Date:   Mon, 30 Jan 2023 10:55:08 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <aahringo@redhat.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Guilhem Imberton <guilhem.imberton@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan-next v2 0/2] ieee802154: Beaconing support
-Message-ID: <20230130105508.38a25780@xps-13>
-In-Reply-To: <CAK-6q+hoquVswZTm+juLasQzUJpGdO+aQ7Q3PCRRwYagge5dTw@mail.gmail.com>
-References: <20230125102923.135465-1-miquel.raynal@bootlin.com>
-        <CAK-6q+jN1bnP1FdneGrfDJuw3r3b=depEdEP49g_t3PKQ-F=Lw@mail.gmail.com>
-        <CAK-6q+hoquVswZTm+juLasQzUJpGdO+aQ7Q3PCRRwYagge5dTw@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        bh=wW8PYSjbj1fhy1DHl5je08VWFBPjfFkiep3fm9ftfHQ=;
+        b=eHUFE3dP4kCVW2OfnU8v4jOJkOWrkHxqxK4gFtlKv2icSzUiJyeFQ3OYS3ZIadLRUXWOEv
+        rhCRsRIRAD5eh6Q3o+nbnyNl1fzrHwsBfh5gSz04qjRP7dmEWwXd2KbY8HwVDLgJIUGlhh
+        vWP8AVHea583RzvUzoRGge0KMOU5ntg=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 64E7E2C141;
+        Mon, 30 Jan 2023 09:55:31 +0000 (UTC)
+Date:   Mon, 30 Jan 2023 10:55:28 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Seth Forshee <sforshee@kernel.org>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] vhost: improve livepatch switching for heavily
+ loaded vhost worker kthreads
+Message-ID: <Y9eUEGu+wC5dm0JI@alley>
+References: <20230120-vhost-klp-switching-v1-0-7c2b65519c43@kernel.org>
+ <Y9KyVKQk3eH+RRse@alley>
+ <Y9LswwnPAf+nOVFG@do-x1extreme>
+ <Y9OzJzHIASUeIrzO@alley>
+ <Y9PmZFBEwUBwV3s/@do-x1extreme>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y9PmZFBEwUBwV3s/@do-x1extreme>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+On Fri 2023-01-27 08:57:40, Seth Forshee wrote:
+> On Fri, Jan 27, 2023 at 12:19:03PM +0100, Petr Mladek wrote:
+> > Could you please provide some more details about the test system?
+> > Is there anything important to make it reproducible?
+> > 
+> > The following aspects come to my mind. It might require:
+> > 
+> >    + more workers running on the same system
+> >    + have a dedicated CPU for the worker
+> >    + livepatching the function called by work->fn()
+> >    + running the same work again and again
+> >    + huge and overloaded system
+> 
+> I'm isolating a CPU, starting a KVM guest with a virtio-net device, and
+> setting the affinity of the vhost worker thread to only the isolated
+> CPU. Thus the vhost-worker thread has a dedicated CPU, as you say. (I'll
+> note that in real-world cases the systems have many CPUs, and while the
+> vhost threads aren't each given a dedicated CPU, if the system load is
+> light enough a thread can end up with exlusive use of a CPU).
+> 
+> Then all I do is run iperf between the guest and the host with several
+> parallel streams. I seem to be hitting the limits of the guest vCPUs
+> before the vhost thread is fully saturated, as this gets it to about 90%
+> CPU utilization by the vhost thread.
 
-aahringo@redhat.com wrote on Thu, 26 Jan 2023 20:48:02 -0500:
+Thanks for the info!
 
-> Hi,
->=20
-> On Thu, Jan 26, 2023 at 8:45 PM Alexander Aring <aahringo@redhat.com> wro=
-te:
-> >
-> > Hi,
-> >
-> > On Wed, Jan 25, 2023 at 5:31 AM Miquel Raynal <miquel.raynal@bootlin.co=
-m> wrote: =20
-> > >
-> > > Scanning being now supported, we can eg. play with hwsim to verify
-> > > everything works as soon as this series including beaconing support g=
-ets
-> > > merged.
-> > >
-> > > Thanks,
-> > > Miqu=C3=A8l
-> > >
-> > > Changes in v2:
-> > > * Clearly state in the commit log llsec is not supported yet.
-> > > * Do not use mlme transmission helpers because we don't really need to
-> > >   stop the queue when sending a beacon, as we don't expect any feedba=
-ck
-> > >   from the PHY nor from the peers. However, we don't want to go throu=
-gh
-> > >   the whole net stack either, so we bypass it calling the subif helper
-> > >   directly.
-> > > =20
->=20
-> moment, we use the mlme helpers to stop tx=20
+> > > > Honestly, kpatch's timeout 1 minute looks incredible low to me. Note
+> > > > that the transition is tried only once per minute. It means that there
+> > > > are "only" 60 attempts.
+> > > > 
+> > > > Just by chance, does it help you to increase the timeout, please?
+> > > 
+> > > To be honest my test setup reproduces the problem well enough to make
+> > > KLP wait significant time due to vhost threads, but it seldom causes it
+> > > to hit kpatch's timeout.
+> > > 
+> > > Our system management software will try to load a patch tens of times in
+> > > a day, and we've seen real-world cases where patches couldn't load
+> > > within kpatch's timeout for multiple days. But I don't have such an
+> > > environment readily accessible for my own testing. I can try to refine
+> > > my test case and see if I can get it to that point.
+> > 
+> > My understanding is that you try to load the patch repeatedly but
+> > it always fails after the 1 minute timeout. It means that it always
+> > starts from the beginning (no livepatched process).
+> > 
+> > Is there any chance to try it with a longer timeout, for example, one
+> > hour? It should increase the chance if there are more problematic kthreads.
+> 
+> Yes, I can try it. But I think I already mentioned that we are somewhat
+> limited by our system management software and how livepatch loading is
+> currently implemented there. I'd need to consult with others about how
+> long we could make the timeout, but 1 hour is definitely too long under
+> our current system.
 
-No, we no longer use the mlme helpers to stop tx when sending beacons
-(but true MLME transmissions, we ack handling and return codes will be
-used for other purposes).
+Another possibility is to do not wait at all. SUSE livepatch packages load
+the livepatch module, remove not longer used livepatch modules and are
+done with it.
 
-> but we use the
-> ieee802154_subif_start_xmit() because of the possibility to invoke
-> current 802.15.4 hooks like llsec? That's how I understand it.
+Note that the module is loaded quickly. The transition is finished
+asynchronously using workqueues.
 
-We go through llsec (see ieee802154_subif_start_xmit() implementation)
-when we send data or beacons. When we send beacons, for now, we just
-discard the llsec logic. This needs of course to be improved. We will
-probably need some llsec handling in the mlme case as well in the near
-future.
+Of course, there is a risk that the transition will never finish.
+It would prevent loading any newer livepatch. But it might be handled
+when the the newer livepatch is loaded. It might revert the pending
+transition, ...
 
-Thanks,
-Miqu=C3=A8l
+Of course, it would be great to make the transition more reliable.
+It would be nice to add the hook into the scheduler as discussed
+in another branch of this thread. But it might bring another problems,
+for example, affect the system performance. Well, it probably can
+be optimized or ratelimited.
+
+Anyway, I wanted to say that there is a way to get rid of the timeout
+completely.
+
+Best Regards,
+Petr
