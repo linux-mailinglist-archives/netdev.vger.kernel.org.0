@@ -2,65 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27FB5680DB1
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 13:31:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 315AE680DC7
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 13:35:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236873AbjA3Mbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 07:31:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58872 "EHLO
+        id S236886AbjA3MfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 07:35:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236854AbjA3Mb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 07:31:28 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8368C367DA;
-        Mon, 30 Jan 2023 04:31:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675081887; x=1706617887;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Us4t9RfFIA7QDDFmTvE79SoNQbhU2WQe72gtsd+ApzY=;
-  b=dyChAvkIXOiUF12arWmG1yEJFd2ihEPZMLleSPUGPY3HGnxvr5ELrzMP
-   RRHOT+tZTJG/buGW3Xc8lZvkZoJcnd46WS/YluJlEOXw5HXLfZA16HRl8
-   zEnkSP9QTP5WTrxpmJiUI0cbR9FQbGRT7FgqKzeYux+IGd73dVb0xumrd
-   yAzSpml9X68gjR714qWRs5XOSlrjO31MCcQk1w2zscctCGmZ+n4TY8O+U
-   cwGaF58OGEVuTOa6SDUgMVualuSpsBpYL5OvaEQsKR8eqihoLjqPMJ9kO
-   xBuzWw1vEmQphx5xQUhxholexU83OgMbK+/KG9LdlLoq/mfRZQojWHl1Q
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10605"; a="327562232"
-X-IronPort-AV: E=Sophos;i="5.97,257,1669104000"; 
-   d="scan'208";a="327562232"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 04:31:27 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10605"; a="696379714"
-X-IronPort-AV: E=Sophos;i="5.97,257,1669104000"; 
-   d="scan'208";a="696379714"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga001.jf.intel.com with ESMTP; 30 Jan 2023 04:31:18 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1pMTJc-00HLVK-33;
-        Mon, 30 Jan 2023 14:31:16 +0200
-Date:   Mon, 30 Jan 2023 14:31:16 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Greg KH <greg@kroah.com>, David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: manual merge of the driver-core tree with the
- net-next tree
-Message-ID: <Y9e4lFKZMylweoQF@smile.fi.intel.com>
-References: <20230130153229.6cb70418@canb.auug.org.au>
+        with ESMTP id S236337AbjA3MfO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 07:35:14 -0500
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78EE14211;
+        Mon, 30 Jan 2023 04:35:10 -0800 (PST)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 1ED3168D09; Mon, 30 Jan 2023 13:35:06 +0100 (CET)
+Date:   Mon, 30 Jan 2023 13:35:05 +0100
+From:   Christoph Hellwig <hch@lst.de>
+To:     Max Gurtovoy <mgurtovoy@nvidia.com>
+Cc:     Christoph Hellwig <hch@lst.de>, Leon Romanovsky <leon@kernel.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Bryan Tan <bryantan@vmware.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Israel Rukshin <israelr@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Keith Busch <kbusch@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-nvme@lists.infradead.org, linux-rdma@vger.kernel.org,
+        linux-trace-kernel@vger.kernel.org,
+        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vishnu Dasa <vdasa@vmware.com>,
+        Yishai Hadas <yishaih@nvidia.com>
+Subject: Re: [PATCH rdma-next 00/13] Add RDMA inline crypto support
+Message-ID: <20230130123505.GA19948@lst.de>
+References: <cover.1673873422.git.leon@kernel.org> <20230118073654.GC27048@lst.de> <ac48766a-b861-4fc0-3171-7b23f175c672@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230130153229.6cb70418@canb.auug.org.au>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+In-Reply-To: <ac48766a-b861-4fc0-3171-7b23f175c672@nvidia.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,34 +52,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 03:32:29PM +1100, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Today's linux-next merge of the driver-core tree got a conflict in:
-> 
->   include/linux/acpi.h
-> 
-> between commit:
-> 
->   1b94ad7ccc21 ("ACPI: utils: Add acpi_evaluate_dsm_typed() and acpi_check_dsm() stubs")
-> 
-> from the net-next tree and commit:
-> 
->   162736b0d71a ("driver core: make struct device_type.uevent() take a const *")
-> 
-> from the driver-core tree.
-> 
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
+On Wed, Jan 18, 2023 at 04:20:27PM +0200, Max Gurtovoy wrote:
+> Today, if one would like to run both features using a capable device then 
+> the PI will be offloaded (no SW fallback) and the Encryption will be using 
+> SW fallback.
 
-Seems correct, thank you!
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+It's not just running both - it's offering both as currently registering
+these fatures is mutally incompatible.
