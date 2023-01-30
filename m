@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 539E46806E8
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 09:07:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2A4D6806FB
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 09:08:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235714AbjA3IHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 03:07:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60030 "EHLO
+        id S235826AbjA3IIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 03:08:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235612AbjA3IHd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 03:07:33 -0500
+        with ESMTP id S235655AbjA3IHf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 03:07:35 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADDC6298EA
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 00:07:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C535229E2D
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 00:07:31 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pMPCB-0003fB-2a; Mon, 30 Jan 2023 09:07:19 +0100
+        id 1pMPCF-0003f6-N3; Mon, 30 Jan 2023 09:07:23 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pMPCA-001PwE-QD; Mon, 30 Jan 2023 09:07:17 +0100
+        id 1pMPCA-001Pvx-1U; Mon, 30 Jan 2023 09:07:17 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pMPC7-000aKS-Mo; Mon, 30 Jan 2023 09:07:15 +0100
+        id 1pMPC7-000aKb-NN; Mon, 30 Jan 2023 09:07:15 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH net-next v3 10/15] net: phy: at803x: implement ethtool access to SmartEEE functionality
-Date:   Mon, 30 Jan 2023 09:07:09 +0100
-Message-Id: <20230130080714.139492-11-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v3 11/15] net: phy: at803x: ar8035: fix EEE support for half duplex links
+Date:   Mon, 30 Jan 2023 09:07:10 +0100
+Message-Id: <20230130080714.139492-12-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230130080714.139492-1-o.rempel@pengutronix.de>
 References: <20230130080714.139492-1-o.rempel@pengutronix.de>
@@ -60,180 +60,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If AR8035 PHY is used with a MAC without EEE support
-(iMX6, etc), then we need to process ethtool_eee::tx_lpi_timer and
-tx_lpi_enabled by the PHY driver. So, add get/set_eee support for this
-functionality.
+If AR8035 is running with enabled EEE and LPI, it will not be able to
+establish an 100BaseTX/Half or 1000BaseT/Half link. Similar issue we
+will have with 100BaseTX/Full and LPI TX timer configured to less then
+80msec.
+
+To avoid this issue, we need to keep LPI disabled before link is
+establish and enable it only we detected supported link configuration.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/phy/at803x.c | 109 +++++++++++++++++++++++++++++++++++++--
- 1 file changed, 104 insertions(+), 5 deletions(-)
+ drivers/net/phy/at803x.c | 41 +++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 36 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 22f4458274aa..9eb4439b0afc 100644
+index 9eb4439b0afc..5ab43eb63581 100644
 --- a/drivers/net/phy/at803x.c
 +++ b/drivers/net/phy/at803x.c
-@@ -166,8 +166,18 @@
- 
- #define AT803X_MMD3_SMARTEEE_CTL1		0x805b
- #define AT803X_MMD3_SMARTEEE_CTL2		0x805c
-+#define AT803X_MMD3_SMARTEEE_LPI_TIME_LOW	GENMASK(15, 0)
-+#define AT803X_MMD3_SMARTEEE_LPI_TIME_15_0	GENMASK(15, 0)
- #define AT803X_MMD3_SMARTEEE_CTL3		0x805d
- #define AT803X_MMD3_SMARTEEE_CTL3_LPI_EN	BIT(8)
-+#define AT803X_MMD3_SMARTEEE_LPI_TIME_HIGH	GENMASK(7, 0)
-+#define AT803X_MMD3_SMARTEEE_LPI_TIME_23_16	GENMASK(23, 16)
-+/* Tx LPI timer resolution */
-+#define AT803X_MMD3_SMARTEEE_LPI_TIME_RESOL_NS	163840
-+#define AT803X_MMD3_SMARTEEE_LPI_TIME_MAX_US	\
-+	((GENMASK(23, 0) * AT803X_MMD3_SMARTEEE_LPI_TIME_RESOL_NS) / \
-+	       NSEC_PER_USEC)
-+#define AT803X_MMD3_SMARTEEE_LPI_TIME_DEF_US	335544
- 
- #define ATH9331_PHY_ID				0x004dd041
- #define ATH8030_PHY_ID				0x004dd076
-@@ -951,17 +961,26 @@ static int at803x_get_features(struct phy_device *phydev)
- 	return 0;
- }
- 
--static int at803x_smarteee_config(struct phy_device *phydev)
-+static int at803x_smarteee_config(struct phy_device *phydev, bool enable,
-+				  u32 tx_lpi_timer_us)
- {
- 	struct at803x_priv *priv = phydev->priv;
-+	u64 tx_lpi_timer_raw;
-+	u64 tx_lpi_timer_ns;
+@@ -313,6 +313,7 @@ struct at803x_priv {
+ 	u8 smarteee_lpi_tw_100m;
+ 	bool is_fiber;
+ 	bool is_1000basex;
++	bool tx_lpi_on;
+ 	struct regulator_dev *vddio_rdev;
+ 	struct regulator_dev *vddh_rdev;
+ 	struct regulator *vddio;
+@@ -970,6 +971,8 @@ static int at803x_smarteee_config(struct phy_device *phydev, bool enable,
  	u16 mask = 0, val = 0;
  	int ret;
  
--	if (priv->flags & AT803X_DISABLE_SMARTEEE)
-+	if (priv->flags & AT803X_DISABLE_SMARTEEE || !enable)
++	priv->tx_lpi_on = enable;
++
+ 	if (priv->flags & AT803X_DISABLE_SMARTEEE || !enable)
  		return phy_modify_mmd(phydev, MDIO_MMD_PCS,
  				      AT803X_MMD3_SMARTEEE_CTL3,
- 				      AT803X_MMD3_SMARTEEE_CTL3_LPI_EN, 0);
- 
-+	if (tx_lpi_timer_us > AT803X_MMD3_SMARTEEE_LPI_TIME_MAX_US) {
-+		phydev_err(phydev, "Max LPI timer is %lu microsecs\n",
-+			   AT803X_MMD3_SMARTEEE_LPI_TIME_MAX_US);
-+		return -EINVAL;
-+	}
-+
- 	if (priv->smarteee_lpi_tw_1g) {
- 		mask |= 0xff00;
- 		val |= priv->smarteee_lpi_tw_1g << 8;
-@@ -978,9 +997,27 @@ static int at803x_smarteee_config(struct phy_device *phydev)
+@@ -1010,10 +1013,15 @@ static int at803x_smarteee_config(struct phy_device *phydev, bool enable,
  	if (ret)
  		return ret;
  
-+	tx_lpi_timer_ns = tx_lpi_timer_us * NSEC_PER_USEC;
-+	tx_lpi_timer_raw =
-+		DIV_ROUND_CLOSEST_ULL(tx_lpi_timer_ns,
-+				      AT803X_MMD3_SMARTEEE_LPI_TIME_RESOL_NS);
-+	val = FIELD_PREP(AT803X_MMD3_SMARTEEE_LPI_TIME_LOW,
-+			 FIELD_GET(AT803X_MMD3_SMARTEEE_LPI_TIME_15_0,
+-	val = AT803X_MMD3_SMARTEEE_CTL3_LPI_EN |
+-		FIELD_PREP(AT803X_MMD3_SMARTEEE_LPI_TIME_HIGH,
+-			   FIELD_GET(AT803X_MMD3_SMARTEEE_LPI_TIME_23_16,
+-				     tx_lpi_timer_raw));
++	val = FIELD_PREP(AT803X_MMD3_SMARTEEE_LPI_TIME_HIGH,
++			 FIELD_GET(AT803X_MMD3_SMARTEEE_LPI_TIME_23_16,
 +				   tx_lpi_timer_raw));
 +
-+	ret = phy_write_mmd(phydev, MDIO_MMD_PCS, AT803X_MMD3_SMARTEEE_CTL2,
-+			    val);
-+	if (ret)
-+		return ret;
-+
-+	val = AT803X_MMD3_SMARTEEE_CTL3_LPI_EN |
-+		FIELD_PREP(AT803X_MMD3_SMARTEEE_LPI_TIME_HIGH,
-+			   FIELD_GET(AT803X_MMD3_SMARTEEE_LPI_TIME_23_16,
-+				     tx_lpi_timer_raw));
-+
++	if (phydev->state == PHY_RUNNING &&
++	    phy_check_valid(phydev->speed, phydev->duplex,
++			    phydev->supported_eee)) {
++		val |= AT803X_MMD3_SMARTEEE_CTL3_LPI_EN;
++	}
+ 
  	return phy_modify_mmd(phydev, MDIO_MMD_PCS, AT803X_MMD3_SMARTEEE_CTL3,
--			      AT803X_MMD3_SMARTEEE_CTL3_LPI_EN,
--			      AT803X_MMD3_SMARTEEE_CTL3_LPI_EN);
-+			      AT803X_MMD3_SMARTEEE_CTL3_LPI_EN |
-+			      AT803X_MMD3_SMARTEEE_LPI_TIME_HIGH, val);
+ 			      AT803X_MMD3_SMARTEEE_CTL3_LPI_EN |
+@@ -1682,7 +1690,7 @@ static int at803x_get_eee(struct phy_device *phydev, struct ethtool_eee *data)
+ 	tx_timer_ns = tx_timer_raw * AT803X_MMD3_SMARTEEE_LPI_TIME_RESOL_NS;
+ 	data->tx_lpi_timer = DIV_ROUND_CLOSEST_ULL(tx_timer_ns, NSEC_PER_USEC);
+ 
+-	data->tx_lpi_enabled = !!(ret & AT803X_MMD3_SMARTEEE_CTL3_LPI_EN);
++	data->tx_lpi_enabled = priv->tx_lpi_on;
+ 
+ 	return genphy_c45_ethtool_get_eee(phydev, data);
+ }
+@@ -1709,6 +1717,28 @@ static int at803x_set_eee(struct phy_device *phydev, struct ethtool_eee *data)
+ 	return genphy_c45_ethtool_set_eee(phydev, data);
  }
  
- static int at803x_clk_out_config(struct phy_device *phydev)
-@@ -1067,7 +1104,8 @@ static int at803x_config_init(struct phy_device *phydev)
- 	if (ret < 0)
- 		return ret;
- 
--	ret = at803x_smarteee_config(phydev);
-+	ret = at803x_smarteee_config(phydev, true,
-+				     AT803X_MMD3_SMARTEEE_LPI_TIME_DEF_US);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -1612,6 +1650,65 @@ static int at803x_cable_test_start(struct phy_device *phydev)
- 	return 0;
- }
- 
-+static int at803x_get_eee(struct phy_device *phydev, struct ethtool_eee *data)
++static void at8035_link_change_notify(struct phy_device *phydev)
 +{
 +	struct at803x_priv *priv = phydev->priv;
-+	u32 tx_timer_raw;
-+	u64 tx_timer_ns;
-+	int ret;
 +
-+	/* If SmartEEE is not enabled, it is expected that tx_lpi_* fields
-+	 * are processed by the MAC driver.
-+	 */
 +	if (priv->flags & AT803X_DISABLE_SMARTEEE)
-+		return genphy_c45_ethtool_get_eee(phydev, data);
++		return;
 +
-+	ret = phy_read_mmd(phydev, MDIO_MMD_PCS,
-+			   AT803X_MMD3_SMARTEEE_CTL2);
-+	tx_timer_raw = FIELD_PREP(AT803X_MMD3_SMARTEEE_LPI_TIME_15_0,
-+				  FIELD_GET(AT803X_MMD3_SMARTEEE_LPI_TIME_LOW,
-+					    ret));
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_PCS,
-+			   AT803X_MMD3_SMARTEEE_CTL3);
-+	if (ret < 0)
-+		return ret;
-+
-+	tx_timer_raw |= FIELD_PREP(AT803X_MMD3_SMARTEEE_LPI_TIME_23_16,
-+				   FIELD_GET(AT803X_MMD3_SMARTEEE_LPI_TIME_HIGH,
-+					     ret));
-+	tx_timer_ns = tx_timer_raw * AT803X_MMD3_SMARTEEE_LPI_TIME_RESOL_NS;
-+	data->tx_lpi_timer = DIV_ROUND_CLOSEST_ULL(tx_timer_ns, NSEC_PER_USEC);
-+
-+	data->tx_lpi_enabled = !!(ret & AT803X_MMD3_SMARTEEE_CTL3_LPI_EN);
-+
-+	return genphy_c45_ethtool_get_eee(phydev, data);
-+}
-+
-+static int at803x_set_eee(struct phy_device *phydev, struct ethtool_eee *data)
-+{
-+	struct at803x_priv *priv = phydev->priv;
-+	int ret;
-+
-+	/* If SmartEEE is not enabled, it is expected that tx_lpi_* fields
-+	 * are processed by the MAC driver.
-+	 */
-+	if (priv->flags & AT803X_DISABLE_SMARTEEE)
-+		return genphy_c45_ethtool_set_eee(phydev, data);
-+
-+	/* Changing Tx LPI on/off or Tx LPI timer settings
-+	 * do not require link reset.
-+	 */
-+	ret = at803x_smarteee_config(phydev, data->tx_lpi_enabled,
-+				     data->tx_lpi_timer);
-+	if (ret)
-+		return ret;
-+
-+	return genphy_c45_ethtool_set_eee(phydev, data);
++	if (phydev->state == PHY_RUNNING) {
++		if (priv->tx_lpi_on && phy_check_valid(phydev->speed,
++						       phydev->duplex,
++						       phydev->supported_eee))
++			phy_set_bits_mmd(phydev, MDIO_MMD_PCS,
++					 AT803X_MMD3_SMARTEEE_CTL3,
++					 AT803X_MMD3_SMARTEEE_CTL3_LPI_EN);
++	} else {
++		if (priv->tx_lpi_on)
++			phy_clear_bits_mmd(phydev, MDIO_MMD_PCS,
++					   AT803X_MMD3_SMARTEEE_CTL3,
++					   AT803X_MMD3_SMARTEEE_CTL3_LPI_EN);
++	}
 +}
 +
  static int qca83xx_config_init(struct phy_device *phydev)
  {
  	u8 switch_revision;
-@@ -2038,6 +2135,8 @@ static struct phy_driver at803x_driver[] = {
- 	.set_tunable		= at803x_set_tunable,
- 	.cable_test_start	= at803x_cable_test_start,
+@@ -2137,6 +2167,7 @@ static struct phy_driver at803x_driver[] = {
  	.cable_test_get_status	= at803x_cable_test_get_status,
-+	.get_eee		= at803x_get_eee,
-+	.set_eee		= at803x_set_eee,
+ 	.get_eee		= at803x_get_eee,
+ 	.set_eee		= at803x_set_eee,
++	.link_change_notify	= at8035_link_change_notify,
  }, {
  	/* Qualcomm Atheros AR8030 */
  	.phy_id			= ATH8030_PHY_ID,
