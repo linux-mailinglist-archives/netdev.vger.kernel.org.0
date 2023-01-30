@@ -2,92 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CAFC680F48
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 14:48:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 329D2680F4D
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 14:49:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236230AbjA3Nsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 08:48:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56568 "EHLO
+        id S235472AbjA3NtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 08:49:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231191AbjA3Nsa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 08:48:30 -0500
-Received: from exchange.fintech.ru (e10edge.fintech.ru [195.54.195.159])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF8739B8E;
-        Mon, 30 Jan 2023 05:48:27 -0800 (PST)
-Received: from Ex16-01.fintech.ru (10.0.10.18) by exchange.fintech.ru
- (195.54.195.159) with Microsoft SMTP Server (TLS) id 14.3.498.0; Mon, 30 Jan
- 2023 16:48:24 +0300
-Received: from Ex16-01.fintech.ru (10.0.10.18) by Ex16-01.fintech.ru
- (10.0.10.18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4; Mon, 30 Jan
- 2023 16:48:24 +0300
-Received: from Ex16-01.fintech.ru ([fe80::2534:7600:5275:d3f9]) by
- Ex16-01.fintech.ru ([fe80::2534:7600:5275:d3f9%7]) with mapi id
- 15.01.2242.004; Mon, 30 Jan 2023 16:48:24 +0300
-From:   =?utf-8?B?0JbQsNC90LTQsNGA0L7QstC40Ycg0J3QuNC60LjRgtCwINCY0LPQvtGA0LU=?=
-         =?utf-8?B?0LLQuNGH?= <n.zhandarovich@fintech.ru>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        with ESMTP id S230340AbjA3NtN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 08:49:13 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B2437556;
+        Mon, 30 Jan 2023 05:49:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Uz0rS13sZn6W3GLJhzVYyYt2P+D5LMPg6daHnApH/qI=; b=I/Gl7Mypfh2GbCGKvoqfKnf/mO
+        Dk3R7Jf2jJyuPmjVvG32uHeO6huTbQoxXATic6aFd9j+35JBv1eHmiqOWB5PkzJI6z9dpS5R5wkJY
+        ILKJUFVCzokxOkSiXLPsKXtOQYkXQid2WqF7Ek5QctA5WG/YJr/iehghN7qeRu/h2ErI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pMUWh-003Zvv-Ej; Mon, 30 Jan 2023 14:48:51 +0100
+Date:   Mon, 30 Jan 2023 14:48:51 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sander Vanheule <sander@svanheule.net>
+Cc:     Christian Marangi <ansuelsmth@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Alexey Khoroshilov" <khoroshilov@ispras.ru>,
-        "lvc-project@linuxtesting.org" <lvc-project@linuxtesting.org>
-Subject: RE: [PATCH 5.10 1/1] mt76: fix mt7615_init_tx_queues() return value
-Thread-Topic: [PATCH 5.10 1/1] mt76: fix mt7615_init_tx_queues() return value
-Thread-Index: AQHZNKePV9Tuf82zRk2tMrTfyN8UZK62u2sAgAA3O6D//9G7AIAANNZg
-Date:   Mon, 30 Jan 2023 13:48:24 +0000
-Message-ID: <e17c785dbacf4605a726cc939bee6533@fintech.ru>
-References: <20230130123655.86339-1-n.zhandarovich@fintech.ru>
- <20230130123655.86339-2-n.zhandarovich@fintech.ru>
- <Y9fAkt/5BRist//g@kroah.com> <b945bd5f3d414ac5bc589d65cf439f7b@fintech.ru>
- <Y9fIFirNHNP06e1L@kroah.com>
-In-Reply-To: <Y9fIFirNHNP06e1L@kroah.com>
-Accept-Language: ru-RU, en-US
-Content-Language: ru-RU
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.0.253.138]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
+        Tim Harvey <tharvey@gateworks.com>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Subject: Re: [PATCH v7 11/11] dt-bindings: net: dsa: qca8k: add LEDs
+ definition example
+Message-ID: <Y9fKwzMyHK7kRjei@lunn.ch>
+References: <20221214235438.30271-1-ansuelsmth@gmail.com>
+ <20221214235438.30271-12-ansuelsmth@gmail.com>
+ <20221220173958.GA784285-robh@kernel.org>
+ <Y6JDOFmcEQ3FjFKq@lunn.ch>
+ <Y6JkXnp0/lF4p0N1@lunn.ch>
+ <63a30221.050a0220.16e5f.653a@mx.google.com>
+ <c609a7f865ab48f858adafdd9c1014dda8ec82d6.camel@svanheule.net>
+ <Y9bs53a9zyqEU9Xw@lunn.ch>
+ <f854183545a6ff55235c9f2264af97c1a7f530c3.camel@svanheule.net>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f854183545a6ff55235c9f2264af97c1a7f530c3.camel@svanheule.net>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBPbiBNb24sIEphbiAzMCwgMjAyMyBhdCAwMToyNzoyNlBNICswMDAwLCDQltCw0L3QtNCw0YDQ
-vtCy0LjRhyDQndC40LrQuNGC0LAg0JjQs9C+0YDQtdCy0LjRhw0KPiB3cm90ZToNCj4gPiA+IFdo
-YXQgaXMgdGhlIGdpdCBjb21taXQgaWQgb2YgdGhpcyB1cHN0cmVhbT8NCj4gPiA+DQo+ID4gPiBB
-bmQgSSBjYW4ndCBhcHBseSB0aGlzIGFzLWlzIGZvciB0aGUgb2J2aW91cyByZWFzb24gaXQgd291
-bGQgbWVzcyB1cA0KPiA+ID4gdGhlIGNoYW5nZWxvZywgaG93IGRpZCB5b3UgY3JlYXRlIHRoaXM/
-DQo+ID4gPg0KPiA+ID4gY29uZnVzZWQsDQo+ID4gPg0KPiA+ID4gZ3JlZyBrLWgNCj4gPg0KPiA+
-IENvbW1pdCBpbiBxdWVzdGlvbiBpcyBiNjcxZGEzM2QxYzU5NzNmOTBmMDk4ZmY2NmE5MTk1MzY5
-MWRmNTgyDQo+ID4gdXBzdHJlYW0uIEkgd2Fzbid0IGNlcnRhaW4gaXQgbWFrZXMgc2Vuc2UgdG8g
-YmFja3BvcnQgdGhlIHdob2xlIHBhdGNoDQo+ID4gYXMgb25seSBhIHNtYWxsIHBvcnRpb24gb2Yg
-aXQgcGVydGFpbnMgdG8gdGhlIGZhdWx0IGF0IHF1ZXN0aW9uLg0KPiANCj4gV2hhdCBpcyB0aGUg
-ImZhdWx0Ij8NCg0KSW4gNS4xMC55ICJtdDc2MTVfaW5pdF90eF9xdWV1ZXMoKSByZXR1cm5zIDAg
-cmVnYXJkbGVzcyBvZiBob3cgZmluYWwNCm10NzYxNV9pbml0X3R4X3F1ZXVlKCkgcGVyZm9ybXMu
-IElmIG10NzYxNV9pbml0X3R4X3F1ZXVlKCkgZmFpbHMgKGR1ZSB0bw0KbWVtb3J5IGlzc3Vlcywg
-Zm9yIGluc3RhbmNlKSwgcGFyZW50IGZ1bmN0aW9uIHdpbGwgc3RpbGwgZXJyb25lb3VzbHkNCnJl
-dHVybiAwLiINCg0KVGhpcyB3YXMgZml4ZWQgdXBzdHJlYW0sIGFsdGhvdWdoIHRoYXQgcGFydGlj
-dWxhciBjb21taXQncyBzY29wZSB3YXMgYnJvYWRlci4NCg0KPiBBbmQgd2h5IG5vdCB0YWtlIHRo
-ZSB3aG9sZSB0aGluZz8gIFdoYXQncyB3cm9uZyB3aXRoIHRoYXQ/ICBXZSBhbG1vc3QNCj4gYWx3
-YXlzIHdhbnQgdG8gdGFrZSB3aGF0ZXZlciBpcyBpbiBMaW51cydzIHRyZWUgYmVjYXVzZSB3aGVu
-IHdlIGRvIG5vdCwgd2UNCj4gYWxtb3N0IGFsd2F5cyBjYXVzZSBidWdzIG9yIG90aGVyIHByb2Js
-ZW1zIChsYXRlciBtZXJnZSBpc3N1ZXMuKQ0KPiANCj4gU28gYWx3YXlzIHRha2UgdGhlIG9yaWdp
-bmFsIGZpeCBwbGVhc2UuDQo+IA0KPiB0aGFua3MsDQo+IA0KPiBncmVnIGstaA0KDQpUaGF0IG1h
-a2VzIHNlbnNlLCBvZiBjb3Vyc2UuIFRoYW5rcyBmb3IgeW91ciBwYXRpZW5jZSwgd2lsbCB3b3Jr
-IHRvd2FyZCBiYWNrcG9ydGluZyB0aGUgd2hvbGUgdGhpbmcuDQoNCnJlZ2FyZHMsDQoNCk5pa2l0
-YQ0K
+> Thanks for the quick clarification. Because you mention this, I realised that
+> the RTL8382's LED controller is actually not in the PHYs. These SoCs use
+> external PHYs, which may have their own, independent, LED controllers. For
+> example the RTL8212D [1].
+> 
+> [1]
+> https://datasheet.lcsc.com/lcsc/2203252253_Realtek-Semicon-RTL8218D-CG_C2901898.pdf
+> 
+> > 
+> > But the point is, the PHYs will probe if listed. They don't have to
+> > have a MAC pointing to them with a phandle. So the phydev will exist,
+> > and that should be enough to get the LED class device registered. If
+> > there is basic on/off support, that should be enough for you to attach
+> > the Morse code panic trigger, the heartbeat handler, or any other LED
+> > trigger.
+> 
+> OK, this makes sense for (external) PHYs which need to be probed anyway to have
+> access to the LEDs.
+> 
+> Looking at the RTL8212D's datasheet (Table 11, p. 24), it appears to be possible
+> to assign an LED to any of the eight PHYs. Perhaps to allow more freedom in the
+> board layout. Maybe I'm just not seeing it, but I don't think the example with
+> an 'leds' node under a PHY contains enough information to perform such a non-
+> trivial mapping. On the other hand, I'm not sure where else that info might go.
+
+The binding is defining all the generic properties need for generic
+PHY LED. For most PHYs, it is probably sufficient. However, there is
+nothing stopping you from adding PHY specific properties. So for
+example, for each PHY LED you could have a property which maps it to
+a LED00-LED35.
+
+So propose a binding for the RTL8218D with whatever extra properties
+you think are needed, and it will be reviewed in the normal way.
+
+    Andrew
