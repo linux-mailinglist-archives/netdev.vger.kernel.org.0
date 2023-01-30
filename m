@@ -2,79 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F28F680AD4
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 11:32:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FD27680AD0
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 11:31:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235365AbjA3Kc3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 05:32:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57796 "EHLO
+        id S233090AbjA3Kbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 05:31:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235297AbjA3Kc1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 05:32:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E47F30B0D
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 02:31:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675074695;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CICRFAbCzChYD1znyWS61qGZqh3HfSsIj8zLg6AqEXc=;
-        b=Uzat8+Ig/K+kyZOjqP8YoZc7WUdG/nGLAU/kWgBg4aJn7DnXXtEWkwH2NSO2fQQAdODWMC
-        ZIxpw1qxPg9KXjiQ1lNZ4LXjLAetUfV57Y9Jzf2LGOmTMcitnC2h9B1YH7q0qRZ6U7AO3X
-        wMFOKwNJb4sjMnYrNLpp5KiXrzQrjq8=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-107-m7rZ0bd0PKa4hu7tOJYsfA-1; Mon, 30 Jan 2023 05:31:27 -0500
-X-MC-Unique: m7rZ0bd0PKa4hu7tOJYsfA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S231398AbjA3Kba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 05:31:30 -0500
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA722DE47
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 02:31:29 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 04FDB2035C;
+        Mon, 30 Jan 2023 11:31:28 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 0D7XANxt5MUA; Mon, 30 Jan 2023 11:31:27 +0100 (CET)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 408462999B26;
-        Mon, 30 Jan 2023 10:31:26 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.97])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4AA28C15BAD;
-        Mon, 30 Jan 2023 10:31:24 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20230130092157.1759539-21-hch@lst.de>
-References: <20230130092157.1759539-21-hch@lst.de> <20230130092157.1759539-1-hch@lst.de>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     dhowells@redhat.com
-Cc:     linux-block@vger.kernel.org, ceph-devel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-nvme@lists.infradead.org, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        linux-fsdevel@vger.kernel.org, linux-nfs@vger.kernel.org,
-        devel@lists.orangefs.org, io-uring@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH 20/23] rxrpc: use bvec_set_page to initialize a bvec
+        by a.mx.secunet.com (Postfix) with ESMTPS id 8F115201A1;
+        Mon, 30 Jan 2023 11:31:27 +0100 (CET)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id 7FE4480004A;
+        Mon, 30 Jan 2023 11:31:27 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Mon, 30 Jan 2023 11:31:27 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 30 Jan
+ 2023 11:31:27 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 928223182945; Mon, 30 Jan 2023 11:31:26 +0100 (CET)
+Date:   Mon, 30 Jan 2023 11:31:26 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Eric Dumazet <edumazet@google.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <eric.dumazet@gmail.com>
+Subject: Re: [PATCH net 0/2] xfrm: two fixes around use_time
+Message-ID: <20230130103126.GJ438791@gauss3.secunet.de>
+References: <20230126112130.2341075-1-edumazet@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3347458.1675074683.1@warthog.procyon.org.uk>
-Date:   Mon, 30 Jan 2023 10:31:23 +0000
-Message-ID: <3347459.1675074683@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+Content-Disposition: inline
+In-Reply-To: <20230126112130.2341075-1-edumazet@google.com>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christoph Hellwig <hch@lst.de> wrote:
+On Thu, Jan 26, 2023 at 11:21:28AM +0000, Eric Dumazet wrote:
+> First patch fixes a long/time64_t mismatch,
+> found while addressing a syzbot report.
+> 
+> Second patch adds annotations to reads and
+> writes of (struct xfrm_lifetime_cur)->use_time field.
+> 
+> Eric Dumazet (2):
+>   xfrm: consistently use time64_t in xfrm_timer_handler()
+>   xfrm: annotate data-race around use_time
 
-> +		bvec_set_page(&bv, ZERO_PAGE(0), len, 0);
-
-Maybe bvec_set_zero_page()?
-
-David
-
+Both applied, thanks a lot Eric!
