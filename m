@@ -2,105 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45A5C681B25
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 21:13:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A858681B2B
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 21:16:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229495AbjA3UNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 15:13:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56998 "EHLO
+        id S229533AbjA3UQT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 15:16:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbjA3UNy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 15:13:54 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5B234C33
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 12:13:51 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id m2so34832862ejb.8
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 12:13:51 -0800 (PST)
+        with ESMTP id S229472AbjA3UQR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 15:16:17 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 490DF3757F;
+        Mon, 30 Jan 2023 12:16:16 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id hx15so15771556ejc.11;
+        Mon, 30 Jan 2023 12:16:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CdepUb0Cf+NMGQp5AZtJg6+OIbVexrLKQo1VoGD0toc=;
-        b=ogKgBKNLhHMfoUS8Vw4OZYVEzq2HhP5OPH99NIkCA0dHYbYvNtNJk06361OyheXg9b
-         ERDdBX+5SddSka2PS5JGOS8nrEkvRzXIT8/pMQfCpP/Uz0PAVQBhTtX4kCDenRmmLdI5
-         BuJb5Rf4Bm2j3+Y8NtEg5s5NWu9vIAzamD1f5NSUsaXNWOiUN5/yKX3zL3PzrXQWtsq4
-         4xD0q9ZzTJyODO3DnRMP0KrBBrOoK0LU2Zq9eDv0dTY9C7GR+pO1yP2ReMR47yBLZkWE
-         cURhb2FdRDVTfkPXCqaRDrikiutnuz3f9AknYGPJBjlDDPlB3P6736Y4V+9Kv71nBJ04
-         uAgQ==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=uPkPZ9hXb0YMQ9faHMJ8j8JGYXj5rWLnlmb1qb1codI=;
+        b=WIJw0SxW2vsP9TRRknDb2FY31vDOZgEWggYys5sjxOFiZibWs2TKug6ZNVKVM0ijVi
+         5clmtMicO0cMGzi+QAUZaQC8pFWRB3FfSnvPgOB5hGcWG/1eVvT7TG8RWdG/rLp1maA4
+         2YusTbQ1V3t3AgT/FDNsE6N83zQVqU5x8aOa+uTYs6Mfn5HqUJzNUUByenEZuoKxjK72
+         PUR2KIKcInpU+2koT99kYNC7WjgGh7juflxgHl5ruF2ols1qRD7FTLqhUr/CfWnK5BCN
+         GgIIPsNRntsUWtZVRqHwrzEMpGBlgMdaJE+wZERFwkDktRL9KXvNqoUgeSA5r3dIex8u
+         CEaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=CdepUb0Cf+NMGQp5AZtJg6+OIbVexrLKQo1VoGD0toc=;
-        b=maPMHHvswm4N6eOfASZa0qlVoR+3zPkNKsNXqvXXDhLhlHzWYmNmdn5IMt+ZLOTtDH
-         nHB33+sWB/osfPmcIdCo+qXmuJ+XGUqjDZY4/yhm/brOZSUr6P5OYk+XfiSV7L8xOiDP
-         xuvEWXk2R3Tdl7+HxguE72G4LEOBeexDhpUXPngkk1rmo2iI3aqC/4fixGbR2OPWm8wm
-         E1cZzeGMh15aMDlRTG9MW9VD0DGDMPhtTvKXarsybbP48Iz7zCqAYELfC2yYzzPUaXfP
-         Yeb54/OzQ0kuRZJ9jeb2QQhGjOEB4Db0VSMnn4yIWMh4VgjZTeV0sPNMkZcxonEBFfvE
-         o4Vw==
-X-Gm-Message-State: AO0yUKUQaQShKIxHaJWN04O8S7ENa2cRPNO4yAIrKzSnwqTjVK1xdimu
-        btWxjJLHpxLPBha0qxClx5/XgrGPrAP5IEsr8u8=
-X-Google-Smtp-Source: AK7set+c/4e3LyVh35DFBbWLXK5ZY5k0404v+X2uoQCm3Fyam+xTrN1ab20kt0SytpAuES+0DKhDZg==
-X-Received: by 2002:a17:906:8d86:b0:878:5a35:c83b with SMTP id ry6-20020a1709068d8600b008785a35c83bmr19330742ejc.15.1675109629457;
-        Mon, 30 Jan 2023 12:13:49 -0800 (PST)
-Received: from localhost (onion.xor.sc. [185.56.83.83])
-        by smtp.gmail.com with ESMTPSA id e18-20020a17090681d200b0088519b92080sm3505766ejx.127.2023.01.30.12.13.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Jan 2023 12:13:49 -0800 (PST)
-From:   Maxim Mikityanskiy <maxtram95@gmail.com>
-To:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Gal Pressman <gal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maxtram95@gmail.com>
-Subject: [PATCH net v2 2/2] net/mlx5e: xsk: Set napi_id to support busy polling on XSK RQ
-Date:   Mon, 30 Jan 2023 22:13:28 +0200
-Message-Id: <20230130201328.132063-3-maxtram95@gmail.com>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <20230130201328.132063-1-maxtram95@gmail.com>
-References: <20230130201328.132063-1-maxtram95@gmail.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=uPkPZ9hXb0YMQ9faHMJ8j8JGYXj5rWLnlmb1qb1codI=;
+        b=OjJ0qzbOMDxOb7kv7U8isbSpa+KRJdZkHrsgI+uLK/DOvBUrjPDiP2IyDsv7FDRrOO
+         xIC6S9mo/il6XGBqvbna6L2aRcug7VHsIhe9lf54Mhv5TLn9SVke42Kj+i6wsfLS0ipA
+         6xF4TTU5hCtFrdPgPY7or1REGI42cR1J13ArSjPDZapkGHtaz9Xg4VvvYCM8FEOmG1Wb
+         CzrQNT6wALDtbYVBQAPCilIVsEt/gxWwj8Ow2aPY5TR1auxAF5QjFcuVzUhx0zelZZuD
+         xo5k+qaa9oTGAIUv1FgFgVdtvvQYE8F9FWDp43gACN1q8NRtBtNeSzsK3TgypNrOGrUB
+         6zdg==
+X-Gm-Message-State: AO0yUKUA9Fm4wzj2XNgsZhy3cCE57lP7TuUanagTGneZoFBaXqFJgjeV
+        6SoMy0CdCBuT4UAugFeWZS7mEwAEa5A=
+X-Google-Smtp-Source: AK7set/iisSzpF5vyGzXWeKEJ9SOXJV/hMny8Yz/vbZ7Y7oBrWg2V1eTmKTsaWJW0ik2OkN3038pKw==
+X-Received: by 2002:a17:906:8444:b0:879:ab3:2864 with SMTP id e4-20020a170906844400b008790ab32864mr12057736ejy.24.1675109774600;
+        Mon, 30 Jan 2023 12:16:14 -0800 (PST)
+Received: from ?IPV6:2a01:c23:c074:7400:d941:3cb5:fa86:8ec8? (dynamic-2a01-0c23-c074-7400-d941-3cb5-fa86-8ec8.c23.pool.telefonica.de. [2a01:c23:c074:7400:d941:3cb5:fa86:8ec8])
+        by smtp.googlemail.com with ESMTPSA id k16-20020a170906579000b0087bdae33badsm5772981ejq.56.2023.01.30.12.16.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 30 Jan 2023 12:16:14 -0800 (PST)
+Message-ID: <0489ac03-ff79-adf1-104d-72523ace9701@gmail.com>
+Date:   Mon, 30 Jan 2023 21:16:10 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v2] net: phy: meson-gxl: Add generic dummy stubs for MMD
+ register access
+Content-Language: en-US
+To:     Chris Healy <cphealy@gmail.com>, andrew@lunn.ch,
+        linux@armlinux.org.uk, davem@davemloft.net,
+        neil.armstrong@linaro.org, khilman@baylibre.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        jeremy.wang@amlogic.com
+Cc:     Chris Healy <healych@amazon.com>
+References: <20230130200352.462548-1-cphealy@gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+In-Reply-To: <20230130200352.462548-1-cphealy@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_BL_SPAMCOP_NET,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL,
-        RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Level: **
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The cited commit missed setting napi_id on XSK RQs, it only affected
-regular RQs. Add the missing part to support socket busy polling on XSK
-RQs.
+On 30.01.2023 21:03, Chris Healy wrote:
+> From: Chris Healy <healych@amazon.com>
+> 
+> The Meson G12A Internal PHY does not support standard IEEE MMD extended
+> register access, therefore add generic dummy stubs to fail the read and
+> write MMD calls. This is necessary to prevent the core PHY code from
+> erroneously believing that EEE is supported by this PHY even though this
+> PHY does not support EEE, as MMD register access returns all FFFFs.
+> 
+> Fixes: 5c3407abb338 ("net: phy: meson-gxl: add g12a support")
+> Signed-off-by: Chris Healy <healych@amazon.com>
+> ---
+> 
+> Change in v2:
+> * Add fixes tag
+> 
+Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-Fixes: a2740f529da2 ("net/mlx5e: xsk: Set napi_id to support busy polling")
-Signed-off-by: Maxim Mikityanskiy <maxtram95@gmail.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-index ff03c43833bb..53c93d1daa7e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-@@ -71,7 +71,7 @@ static int mlx5e_init_xsk_rq(struct mlx5e_channel *c,
- 	if (err)
- 		return err;
- 
--	return  xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq_xdp_ix, 0);
-+	return xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq_xdp_ix, c->napi.napi_id);
- }
- 
- static int mlx5e_open_xsk_rq(struct mlx5e_channel *c, struct mlx5e_params *params,
--- 
-2.39.1
 
