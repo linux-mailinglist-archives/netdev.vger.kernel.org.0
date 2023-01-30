@@ -2,92 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F27F681616
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 17:13:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FC44681626
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 17:15:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237388AbjA3QNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 11:13:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50136 "EHLO
+        id S237483AbjA3QPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 11:15:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237306AbjA3QNT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 11:13:19 -0500
-Received: from exchange.fintech.ru (exchange.fintech.ru [195.54.195.159])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D736A728B;
-        Mon, 30 Jan 2023 08:13:13 -0800 (PST)
-Received: from Ex16-02.fintech.ru (10.0.10.19) by exchange.fintech.ru
- (195.54.195.169) with Microsoft SMTP Server (TLS) id 14.3.498.0; Mon, 30 Jan
- 2023 19:13:12 +0300
-Received: from Ex16-01.fintech.ru (10.0.10.18) by Ex16-02.fintech.ru
- (10.0.10.19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4; Mon, 30 Jan
- 2023 19:13:11 +0300
-Received: from Ex16-01.fintech.ru ([fe80::2534:7600:5275:d3f9]) by
- Ex16-01.fintech.ru ([fe80::2534:7600:5275:d3f9%7]) with mapi id
- 15.01.2242.004; Mon, 30 Jan 2023 19:13:11 +0300
-From:   =?utf-8?B?0JbQsNC90LTQsNGA0L7QstC40Ycg0J3QuNC60LjRgtCwINCY0LPQvtGA0LU=?=
-         =?utf-8?B?0LLQuNGH?= <n.zhandarovich@fintech.ru>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        with ESMTP id S232470AbjA3QPv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 11:15:51 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28AC92136
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 08:15:49 -0800 (PST)
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com [209.85.128.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 81F8C3F2F6
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 16:15:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1675095346;
+        bh=PhHq+Ycbej3d4KYhLJP72cMynQrcbDuGLZK2reA+9Qc=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Type:In-Reply-To;
+        b=KB+cI2s7czhIKx9ZhMPL3+nxSk4tAcKD38br48QNBG/TkMH/O2AK+CqPRRNaZioWk
+         dxy7zN3Feoarhxyt7j8eMeY25S3OHbHlK/aL/xZTMvIop4WAJFuhrWIoKfKelXriDm
+         C2/BkjSravZqG8NlKID5PmbsYQmnRLJYTyRS8DWbV6t1rT1adoV6ZKe9WozX1wbm1w
+         zz3fNalBM1B15U6RX4JSyscWEi4IqmU45nFES8XrQ8AQaqez8RX634pvb+aTlCITw1
+         dENG69+9YHC3jWnuhUz0QIFr1zg8h977F9zIF4R6hsrzMcD0wM+db5vJ1u0WTxN0U4
+         Y6murrpzuEW7g==
+Received: by mail-wm1-f70.google.com with SMTP id j24-20020a05600c1c1800b003dc4480f7bdso4747678wms.5
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 08:15:46 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PhHq+Ycbej3d4KYhLJP72cMynQrcbDuGLZK2reA+9Qc=;
+        b=hO+LLO4sk61nmCzaZ5ifmd1gEd14+9wV5wxEVnT/crwe704qLADP7vEq7dWvowda2s
+         Ge4c4PJRVrfcagw09GZOKb9yDiQzXJSq7/4KL+7a6X+jot/p7OvJyrcKhUZiWFboVZx+
+         V+umBKKNjZBaFAjuYLcbymxZnDO1sUUR30Yuj83s2nNMk6kdv37RsTHztmGltKldqb6x
+         VOovbg//p45BDsCZGXqCN7wz9ev8vdT67JuHwX+d/CmTCcAEHBjNDPt4WPFG1iOXaLZD
+         5ruMNOK1ZO4tJ6LIa9np8CVYqkWGFnd1htdCkBimkD8ikLiRwiUOL/vT/DAIXuwQSP1t
+         dFjQ==
+X-Gm-Message-State: AO0yUKVN80u6sB4CIvwy797Jd4SVQYQtSOUR7PCWhiqTH4Y7xXzDR0cZ
+        Pc1Sy/LJ6Bm1l0onJyUqZhfqj6ZKwVleRXXoCAf/OMAtIiTV33+yZ47vQZhhenuzusbLdi8a6f9
+        YslK1euLntaf8ZOxsRU9KsLsfK39zQbcrfw==
+X-Received: by 2002:a05:600c:ad4:b0:3dc:47d4:58d2 with SMTP id c20-20020a05600c0ad400b003dc47d458d2mr5114wmr.25.1675095346210;
+        Mon, 30 Jan 2023 08:15:46 -0800 (PST)
+X-Google-Smtp-Source: AK7set9fyJTl68upM4rfOAOBzxTOsPvwzOjZLDdq0b4y3tuA36UHt2WfvdM1Z7LBWRpq9EvqbsBWRA==
+X-Received: by 2002:a05:600c:ad4:b0:3dc:47d4:58d2 with SMTP id c20-20020a05600c0ad400b003dc47d458d2mr5091wmr.25.1675095346028;
+        Mon, 30 Jan 2023 08:15:46 -0800 (PST)
+Received: from qwirkle ([81.2.157.149])
+        by smtp.gmail.com with ESMTPSA id m14-20020a5d6a0e000000b002bfd09f2ca6sm10363418wru.3.2023.01.30.08.15.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Jan 2023 08:15:45 -0800 (PST)
+Date:   Mon, 30 Jan 2023 16:15:43 +0000
+From:   Andrei Gherzan <andrei.gherzan@canonical.com>
+To:     Willem de Bruijn <willemb@google.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Alexey Khoroshilov" <khoroshilov@ispras.ru>,
-        "lvc-project@linuxtesting.org" <lvc-project@linuxtesting.org>
-Subject: RE: [PATCH 5.10 1/1] mt76: fix mt7615_init_tx_queues() return value
-Thread-Topic: [PATCH 5.10 1/1] mt76: fix mt7615_init_tx_queues() return value
-Thread-Index: AQHZNKePV9Tuf82zRk2tMrTfyN8UZK62u2sAgAA3O6D//9G7AIAANNZg///R24CAAFTb4A==
-Date:   Mon, 30 Jan 2023 16:13:11 +0000
-Message-ID: <bbd1ce753d8144ee9d4d9da7f3033c68@fintech.ru>
-References: <20230130123655.86339-1-n.zhandarovich@fintech.ru>
- <20230130123655.86339-2-n.zhandarovich@fintech.ru>
- <Y9fAkt/5BRist//g@kroah.com> <b945bd5f3d414ac5bc589d65cf439f7b@fintech.ru>
- <Y9fIFirNHNP06e1L@kroah.com> <e17c785dbacf4605a726cc939bee6533@fintech.ru>
- <Y9fNs5QWbrJh+yH6@kroah.com>
-In-Reply-To: <Y9fNs5QWbrJh+yH6@kroah.com>
-Accept-Language: ru-RU, en-US
-Content-Language: ru-RU
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.0.253.138]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] selftests: net: udpgso_bench_tx: Introduce exponential
+ back-off retries
+Message-ID: <Y9ftL5c4klThCi9Q@qwirkle>
+References: <20230127181625.286546-1-andrei.gherzan@canonical.com>
+ <CA+FuTSewU6bjYLsyLzZ1Yne=6YBPDJZ=U1mZc+6cJVdr06BhiQ@mail.gmail.com>
+ <a762638b06684cd63d212d1ce9f65236a08b78b1.camel@redhat.com>
+ <Y9e9S3ENl0oszAH/@qwirkle>
+ <CA+FuTSe_NMm6goSmCNfKjUWPGYtVnnBMv6W54a_GOeLJ2FqyOQ@mail.gmail.com>
+ <Y9fT+LABhW+/3Nal@qwirkle>
+ <CA+FuTScSfLG7gXS_YqJzsC-Teiryj3jeSQs9w0D1PWJs8sv5Rg@mail.gmail.com>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+FuTScSfLG7gXS_YqJzsC-Teiryj3jeSQs9w0D1PWJs8sv5Rg@mail.gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiA+ID4gV2hhdCBpcyB0aGUgImZhdWx0Ij8NCj4gPg0KPiA+IEluIDUuMTAueSAibXQ3NjE1X2lu
-aXRfdHhfcXVldWVzKCkgcmV0dXJucyAwIHJlZ2FyZGxlc3Mgb2YgaG93IGZpbmFsDQo+ID4gbXQ3
-NjE1X2luaXRfdHhfcXVldWUoKSBwZXJmb3Jtcy4gSWYgbXQ3NjE1X2luaXRfdHhfcXVldWUoKSBm
-YWlscyAoZHVlDQo+ID4gdG8gbWVtb3J5IGlzc3VlcywgZm9yIGluc3RhbmNlKSwgcGFyZW50IGZ1
-bmN0aW9uIHdpbGwgc3RpbGwNCj4gPiBlcnJvbmVvdXNseSByZXR1cm4gMC4iDQo+IA0KPiBBbmQg
-aG93IGNhbiBtZW1vcnkgaXNzdWVzIGFjdHVhbGx5IGJlIHRyaWdnZXJlZCBpbiBhIHJlYWwgc3lz
-dGVtPyAgSXMgdGhpcyBhDQo+IGZha2UgcHJvYmxlbSBvciBzb21ldGhpbmcgeW91IGNhbiB2YWxp
-ZGF0ZSBhbmQgdmVyaWZ5IHdvcmtzIHByb3Blcmx5Pw0KPiANCj4gRG9uJ3Qgd29ycnkgYWJvdXQg
-ZmFrZSBpc3N1ZXMgZm9yIHN0YWJsZSBiYWNrcG9ydHMgcGxlYXNlLg0KPiANCj4gdGhhbmtzLA0K
-PiANCj4gZ3JlZyBrLWgNCg0KbXQ3NjE1X2luaXRfdHhfcXVldWUoKSBjYWxscyBkZXZtX2t6YWxs
-b2MoKSAod2hpY2ggY2FuIHRocm93IC1FTk9NRU0pIGFuZCBtdDc2X3F1ZXVlX2FsbG9jKCkgKHdo
-aWNoIGNhbiBhbHNvIGZhaWwpLiBJdCdzIGhhcmQgZm9yIG1lIHRvIGdhdWdlIGhvdyBwcm9iYWJs
-ZSB0aGVzZSBmYWlsdXJlcyBjYW4gYmUuIEJ1dCBJIGZlZWwgbGlrZSBhdCB0aGUgdmVyeSBsZWFz
-dCBpdCdzIGEgbG9naWNhbCBzYW5pdHkgY2hlY2suIA0KDQpAQCAtODIsNyArODIsNyBAQCBtdDc2
-MTVfaW5pdF90eF9xdWV1ZXMoc3RydWN0IG10NzYxNV9kZXYgKmRldikNCiAJDQogICAgICAgIHJl
-dCA9IG10NzYxNV9pbml0X3R4X3F1ZXVlKGRldiwgTVRfVFhRX01DVSwgTVQ3NjE1X1RYUV9NQ1Us
-DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIE1UNzYxNV9UWF9NQ1VfUklOR19T
-SVpFKTsNCiAgICAgICByZXR1cm4gMDsNCg0KVGhlcmUgaXMgbm8gc3BlY2lhbCByZWFzb24gIGZv
-ciBtdDc2MTVfaW5pdF90eF9xdWV1ZXMoKSB0byBpZ25vcmUgbGFzdCAncmV0Jy4gSWYgbGFzdCBt
-dDc2MTVfaW5pdF90eF9xdWV1ZSgpLCBzbyBzaG91bGQgbXQ3NjE1X2luaXRfdHhfcXVldWVzKCku
-IEFuZCB1cHN0cmVhbSBwYXRjaCAoYjY3MWRhMzNkMWM1OTczZjkwZjA5OGZmNjZhOTE5NTM2OTFk
-ZjU4MikgYWRkcmVzc2VzIHRoaXMgYXMgd2VsbC4gDQpJZiB5b3UgZmVlbCBkaWZmZXJlbnRseSwg
-SSB3aWxsIG9mIGNvdXJzZSBiYWNrIGRvd24uDQoNCnJlZ2FyZHMsDQoNCk5pa2l0YQ0K
+On 23/01/30 11:03AM, Willem de Bruijn wrote:
+> On Mon, Jan 30, 2023 at 9:28 AM Andrei Gherzan
+> <andrei.gherzan@canonical.com> wrote:
+> >
+> > On 23/01/30 08:35AM, Willem de Bruijn wrote:
+> > > On Mon, Jan 30, 2023 at 7:51 AM Andrei Gherzan
+> > > <andrei.gherzan@canonical.com> wrote:
+> > > >
+> > > > On 23/01/30 09:26AM, Paolo Abeni wrote:
+> > > > > On Fri, 2023-01-27 at 17:03 -0500, Willem de Bruijn wrote:
+> > > > > > On Fri, Jan 27, 2023 at 1:16 PM Andrei Gherzan
+> > > > > > <andrei.gherzan@canonical.com> wrote:
+> > > > > > >
+> > > > > > > The tx and rx test programs are used in a couple of test scripts including
+> > > > > > > "udpgro_bench.sh". Taking this as an example, when the rx/tx programs
+> > > > > > > are invoked subsequently, there is a chance that the rx one is not ready to
+> > > > > > > accept socket connections. This racing bug could fail the test with at
+> > > > > > > least one of the following:
+> > > > > > >
+> > > > > > > ./udpgso_bench_tx: connect: Connection refused
+> > > > > > > ./udpgso_bench_tx: sendmsg: Connection refused
+> > > > > > > ./udpgso_bench_tx: write: Connection refused
+> > > > > > >
+> > > > > > > This change addresses this by adding routines that retry the socket
+> > > > > > > operations with an exponential back off algorithm from 100ms to 2s.
+> > > > > > >
+> > > > > > > Fixes: 3a687bef148d ("selftests: udp gso benchmark")
+> > > > > > > Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
+> > > > > >
+> > > > > > Synchronizing the two processes is indeed tricky.
+> > > > > >
+> > > > > > Perhaps more robust is opening an initial TCP connection, with
+> > > > > > SO_RCVTIMEO to bound the waiting time. That covers all tests in one
+> > > > > > go.
+> > > > >
+> > > > > Another option would be waiting for the listener(tcp)/receiver(udp)
+> > > > > socket to show up in 'ss' output before firing-up the client - quite
+> > > > > alike what mptcp self-tests are doing.
+> > > >
+> > > > I like this idea. I have tested it and it works as expected with the
+> > > > exeception of:
+> > > >
+> > > > ./udpgso_bench_tx: sendmsg: No buffer space available
+> > > >
+> > > > Any ideas on how to handle this? I could retry and that works.
+> > >
+> > > This happens (also) without the zerocopy flag, right? That
+> > >
+> > > It might mean reaching the sndbuf limit, which can be adjusted with
+> > > SO_SNDBUF (or SO_SNDBUFFORCE if CAP_NET_ADMIN). Though I would not
+> > > expect this test to bump up against that limit.
+> > >
+> > > A few zerocopy specific reasons are captured in
+> > > https://www.kernel.org/doc/html/latest/networking/msg_zerocopy.html#transmission.
+> >
+> > I have dug a bit more into this, and it does look like your hint was in
+> > the right direction. The fails I'm seeing are only with the zerocopy
+> > flag.
+> >
+> > From the reasons (doc) above I can only assume optmem limit as I've
+> > reproduced it with unlimited locked pages and the fails are transient.
+> > That leaves optmem limit. Bumping the value I have by default (20480) to
+> > (2048000) made the sendmsg succeed as expected. On the other hand, the
+> > tests started to fail with something like:
+> >
+> > ./udpgso_bench_tx: Unexpected number of Zerocopy completions:    774783
+> > expected    773707 received
+> 
+> More zerocopy completions than number of sends. I have not seen this before.
+> 
+> The completions are ranges of IDs, one per send call for datagram sockets.
+> 
+> Even with segmentation offload, the counter increases per call, not per segment.
+> 
+> Do you experience this without any other changes to udpgso_bench_tx.c.
+> Or are there perhaps additional sendmsg calls somewhere (during
+> initial sync) that are not accounted to num_sends?
+
+Indeed, that looks off. No, I have run into this without any changes in
+the tests (besides the retry routine in the shell script that waits for
+rx to come up). Also, as a data point.
+
+As an additional data point, this was only seen on the IPv6 tests. I've
+never been able to replicate it on the IPv4 run.
+
+-- 
+Andrei Gherzan
