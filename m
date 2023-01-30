@@ -2,67 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 48A4D680AD7
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 11:32:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13166680AF4
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 11:35:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236166AbjA3Kcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 05:32:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57958 "EHLO
+        id S236408AbjA3KfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 05:35:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235600AbjA3Kc2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 05:32:28 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1051C32509
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 02:32:26 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id ml19so6789694ejb.0
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 02:32:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=SU4TvQBEgsKKX2t0zkVWhwaH0XkZ8pAq9qTFSGxD3dQ=;
-        b=OP1Z651F8+txYxyFcpg82bxGALd1Nr0m84TaBvHjkdT6RgqqxMFJRKUTe6fKCvTRfm
-         Fik+PpCu+upHtu7lgXul8+iYM9yoMEeHpKBN1J6hCcKa4npYzJ+tAuv3dKPySLlHR9jM
-         XokDuNuNlT12W/pP6Hxr3W69Df4tZyvDlMDJfbFom3SlMJGXTMI1azdhDF0g05hIgfIJ
-         wx7HpzDmUtqWWUQ9jsIAYaZUZgbnUFekmVHjKVIPqakcP10/QuAN8bhN9IE+S71YEiw5
-         GHBdcpKzt+E7WrXDZKQOuRw35tWYDMuI/8xYL2oHJm5Bom/jMuG2sU+uJgmTF905O8Zb
-         BFlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SU4TvQBEgsKKX2t0zkVWhwaH0XkZ8pAq9qTFSGxD3dQ=;
-        b=y4oZu0W8W2kGAcZYh1hyWrRz3s3SbWxzGOvLybP3Z09PNkxk44fypf7iwdcvR7/pzs
-         zhs1OhEQIwSBrq0IjRKSCb8QRUF/mmC2b0fvR/fPiyi4Qi1D9njWZSF1stZHStb0P1FH
-         z7xY6oQzJZ+Bh4xTic3jd0thg94v60Corne1YFlU/sePSuKYdisxlEr0yvUK8NwwUNsP
-         6O4xDFnkypqSNlxDwjWfWlwx9uDAWiUtdmM68f5p1d6wZhYo1rEM1YRhOo4eFQS6t1HU
-         0hQ2iGjJ3cWTNm+frUZ72kd5pzIHQHxcB8p35TbN/xHw6MtH9yW6hnPpVwh3ynIe5U6k
-         zU8Q==
-X-Gm-Message-State: AO0yUKWa7ghhbUibPrrchsPnjJcxFNFnaGDTPkb/Y03u8i7W+8+bgtwV
-        0qyOoPUf0sw+si4srokE+65k8w==
-X-Google-Smtp-Source: AK7set8k4wfgHo0U50knfveZl6pWbGTSilVGX7dAGQjHEJTb5OY/TK8f6PYxFRnhG/6fYoTwNd8GZA==
-X-Received: by 2002:a17:906:275b:b0:88a:d7dc:2dbe with SMTP id a27-20020a170906275b00b0088ad7dc2dbemr409784ejd.74.1675074744473;
-        Mon, 30 Jan 2023 02:32:24 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id z21-20020a1709060f1500b0084debc3fdadsm6625756eji.188.2023.01.30.02.32.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Jan 2023 02:32:23 -0800 (PST)
-Date:   Mon, 30 Jan 2023 11:32:22 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ratheesh Kannoth <rkannoth@marvell.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, leon@kernel.org, sgoutham@marvell.com
-Subject: Re: [net PATCH v1] octeontx2-af: Fix devlink unregister
-Message-ID: <Y9ecthytH/d+xV5v@nanopsycho>
-References: <20230130060443.763564-1-rkannoth@marvell.com>
+        with ESMTP id S236483AbjA3Kel (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 05:34:41 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC85D50A
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 02:33:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675074829;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oT4/+Dsw5hQNhjDNcfeDL08lroMdeVaKhV4kansN0pA=;
+        b=YfHn7bHaxwhcZ/tpq1adMY0IC3kseQUAJJi45LGGyu6FZYayjR3e3p4kZDJs0G2AxZXA5W
+        C0Ix9mNBh+uleOduoSJdRdcyOdQj4EfvMaIolstiCZ9wgW6RIivHQxLn2kntXW1znQ4pXY
+        3WvvwqviJPUN0UW9LgugVmWc9WpHyT4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-323-2Q7zrrTIPmSvdtNBIoEfxQ-1; Mon, 30 Jan 2023 05:33:43 -0500
+X-MC-Unique: 2Q7zrrTIPmSvdtNBIoEfxQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 23F6E85A5A3;
+        Mon, 30 Jan 2023 10:33:42 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.97])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 64AB01121314;
+        Mon, 30 Jan 2023 10:33:37 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20230130092157.1759539-2-hch@lst.de>
+References: <20230130092157.1759539-2-hch@lst.de> <20230130092157.1759539-1-hch@lst.de>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     dhowells@redhat.com, Jens Axboe <axboe@kernel.dk>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Minchan Kim <minchan@kernel.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Xiubo Li <xiubli@redhat.com>, Steve French <sfrench@samba.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna@kernel.org>,
+        Mike Marshall <hubcap@omnibond.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        linux-block@vger.kernel.org, ceph-devel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-nvme@lists.infradead.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, linux-afs@lists.infradead.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        linux-fsdevel@vger.kernel.org, linux-nfs@vger.kernel.org,
+        devel@lists.orangefs.org, io-uring@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH 01/23] block: factor out a bvec_set_page helper
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230130060443.763564-1-rkannoth@marvell.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3347556.1675074816.1@warthog.procyon.org.uk>
+Date:   Mon, 30 Jan 2023 10:33:36 +0000
+Message-ID: <3347557.1675074816@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,100 +91,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Jan 30, 2023 at 07:04:43AM CET, rkannoth@marvell.com wrote:
->Exact match devlink entry is only for CN10K-B.
->Unregistration devlink should subtract this
->entry before invoking devlink unregistration
->
->Fixes: 87e4ea29b030 ("octeontx2-af: Debugsfs support for exact match.")
->Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
->---
-> .../marvell/octeontx2/af/rvu_devlink.c        | 37 ++++++++++++++-----
-> 1 file changed, 28 insertions(+), 9 deletions(-)
->
->diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
->index bda1a6fa2ec4..4950eb13a79f 100644
->--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
->+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
->@@ -1500,6 +1500,9 @@ static const struct devlink_param rvu_af_dl_params[] = {
-> 			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-> 			     rvu_af_dl_dwrr_mtu_get, rvu_af_dl_dwrr_mtu_set,
-> 			     rvu_af_dl_dwrr_mtu_validate),
->+};
->+
->+static const struct devlink_param rvu_af_dl_param_exact_match[] = {
-> 	DEVLINK_PARAM_DRIVER(RVU_AF_DEVLINK_PARAM_ID_NPC_EXACT_FEATURE_DISABLE,
-> 			     "npc_exact_feature_disable", DEVLINK_PARAM_TYPE_STRING,
-> 			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
->@@ -1556,7 +1559,6 @@ int rvu_register_dl(struct rvu *rvu)
-> {
-> 	struct rvu_devlink *rvu_dl;
-> 	struct devlink *dl;
->-	size_t size;
-> 	int err;
-> 
-> 	dl = devlink_alloc(&rvu_devlink_ops, sizeof(struct rvu_devlink),
->@@ -1578,18 +1580,29 @@ int rvu_register_dl(struct rvu *rvu)
-> 		goto err_dl_health;
-> 	}
-> 
->-	/* Register exact match devlink only for CN10K-B */
->-	size = ARRAY_SIZE(rvu_af_dl_params);
->-	if (!rvu_npc_exact_has_match_table(rvu))
->-		size -= 1;
->-
->-	err = devlink_params_register(dl, rvu_af_dl_params, size);
->+	err = devlink_params_register(dl, rvu_af_dl_params, ARRAY_SIZE(rvu_af_dl_params));
-> 	if (err) {
-> 		dev_err(rvu->dev,
-> 			"devlink params register failed with error %d", err);
-> 		goto err_dl_health;
-> 	}
-> 
->+	/* Register exact match devlink only for CN10K-B */
->+	if (!rvu_npc_exact_has_match_table(rvu))
->+		goto done;
->+
->+	err = devlink_params_register(dl, rvu_af_dl_param_exact_match,
->+				      ARRAY_SIZE(rvu_af_dl_param_exact_match));
->+	if (!err)
->+		goto done;
+Christoph Hellwig <hch@lst.de> wrote:
 
-Could you please follow the common error path pattern?
-	if (err)
-		goto err_something;
+> +static inline void bvec_set_page(struct bio_vec *bv, struct page *page,
+> +		unsigned int len, unsigned int offset)
 
-	return 0;
+Could you swap len and offset around?  It reads better offset first.  You move
+offset into the page and then do something with len bytes.
 
+David
 
->+
->+	dev_err(rvu->dev,
->+		"devlink exact match params register failed with error %d", err);
->+
->+	devlink_params_unregister(dl, rvu_af_dl_params, ARRAY_SIZE(rvu_af_dl_params));
->+	goto err_dl_health;
->+
->+done:
-> 	devlink_register(dl);
-> 	return 0;
-> 
->@@ -1605,8 +1618,14 @@ void rvu_unregister_dl(struct rvu *rvu)
-> 	struct devlink *dl = rvu_dl->dl;
-> 
-> 	devlink_unregister(dl);
->-	devlink_params_unregister(dl, rvu_af_dl_params,
->-				  ARRAY_SIZE(rvu_af_dl_params));
->+
->+	devlink_params_unregister(dl, rvu_af_dl_params, ARRAY_SIZE(rvu_af_dl_params));
->+
->+	/* Unregister exact match devlink only for CN10K-B */
->+	if (rvu_npc_exact_has_match_table(rvu))
->+		devlink_params_unregister(dl, rvu_af_dl_param_exact_match,
->+					  ARRAY_SIZE(rvu_af_dl_param_exact_match));
->+
-> 	rvu_health_reporters_destroy(rvu);
-> 	devlink_free(dl);
-> }
->-- 
->2.25.1
->
