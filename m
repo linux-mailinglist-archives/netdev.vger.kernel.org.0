@@ -2,125 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F565680476
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 04:56:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9333F6804B0
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 05:00:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235255AbjA3D4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Jan 2023 22:56:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46114 "EHLO
+        id S235603AbjA3EAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Jan 2023 23:00:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232201AbjA3D4f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Jan 2023 22:56:35 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36768196B5;
-        Sun, 29 Jan 2023 19:56:34 -0800 (PST)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30U0P3m1011796;
-        Sun, 29 Jan 2023 19:56:23 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=2BkxocrkQyuArqadL/m9cRAQ5qXVQ1kYI4JJRWuZG3s=;
- b=kQYOJk5FTlpprD+XlG8xBWVt95+ughimaDF9Xmmhowcd2PfX0bIE9ugdItjdvwhPSUyV
- 9fLa+4f4mRMOsAnzhRq4fv1Tr0R+gqDIYLTT7gvRDSAo+rwGqHurFajKPRjTHV0dv5h7
- wzvrYyMThjroZFdeXHdyO5668H4mKeFRow4PZL9O2wVwjM04KyNrpSSNNviSzRKLWHie
- zH23OaZK/tatXvkqm/w5lzLWVLXoPMh2lVHLZWHWBIx5hlNcU7kqSnrl75vP7RGZTCR9
- oXOcgXDwdy+dV3RoIJtuEQvlD1U9Kp/5E1SPLurYySqLyxEU3JJuE9NbOQxzZdNaxx0f UQ== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3nd1xum1hd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 29 Jan 2023 19:56:22 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Sun, 29 Jan
- 2023 19:56:20 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
- Transport; Sun, 29 Jan 2023 19:56:20 -0800
-Received: from localhost.localdomain (unknown [10.28.36.165])
-        by maili.marvell.com (Postfix) with ESMTP id 9EA823F70A7;
-        Sun, 29 Jan 2023 19:56:16 -0800 (PST)
-From:   Ratheesh Kannoth <rkannoth@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <sgoutham@marvell.com>, Ratheesh Kannoth <rkannoth@marvell.com>
-Subject: [net-next PATCH] octeontx2-af: Removed unnecessary debug messages.
-Date:   Mon, 30 Jan 2023 09:25:56 +0530
-Message-ID: <20230130035556.694814-1-rkannoth@marvell.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S235609AbjA3EAd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Jan 2023 23:00:33 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 802BC24135
+        for <netdev@vger.kernel.org>; Sun, 29 Jan 2023 19:59:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675051136;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QsSvm36Xk+HrOf60OemtCyImDVL0MFVHI7P7OR8LM6g=;
+        b=M/V5eldwKQ9t/8cdjIRSTMKGsuAOJoMV7X9bnXE3xoGdywR3aSqcSfsCGtBak4ubD1KLf4
+        L0/mUGxBac5FSdO8oILBp8NdGfO7098PqFJohaw5M3GZeIpe97geUvVX3D4k2qS4KD8p2f
+        9g9ri4bu3HZVb7LzB3zdKPazsB0fhic=
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
+ [209.85.210.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-645-Cq-o4IFFMLuA1uNPtJh5UQ-1; Sun, 29 Jan 2023 22:58:54 -0500
+X-MC-Unique: Cq-o4IFFMLuA1uNPtJh5UQ-1
+Received: by mail-ot1-f71.google.com with SMTP id w15-20020a056830144f00b00687ec8c75cdso5128130otp.2
+        for <netdev@vger.kernel.org>; Sun, 29 Jan 2023 19:58:54 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=QsSvm36Xk+HrOf60OemtCyImDVL0MFVHI7P7OR8LM6g=;
+        b=CLKAC10GYg5+IWf1GMgLaeyvOjPcP1PBU5CwJHuIvcO0Vm1FHx/vBn7hmYJcysnwE+
+         kjzWrHd2CpkrKWS/bzCrR4WauFKIKmG0gLGBDc4SYmSMBjR6sBG5FqTw9tlU2f2Mp0C/
+         52zEfBGc1Ztgzh4MCdNsHlnH1jQdrsCg2Sp9jlhM2M/Vbe4tEfnB4pcqeTsAe9beXXuU
+         b8VRZDqGMqQEtGhoAXtk1QI4tLX9JD24c6lViJcGTLusqxPF+wcB/QjdVNpXn+vBFfnd
+         /14xcidvIDpCZM/2AhT5qUffEHgk+kVwoK/Yakxwn4wlybyLydK0ZwDJSEoKCKMiPLVN
+         gW7A==
+X-Gm-Message-State: AFqh2krAtUjRMxIzBzcMqn8eunbDCzJU3ew5Bccr//bWmplElMtHhsRr
+        NG2STUiwF3wR5F7gYM7hSWlPrX5c2mEptNTVQn6VevX2jBX2pBWTFbfVMgdr45LDMkaDjKxe/wS
+        rQitSVh0MP1IRSbMLhoytPZ496wAvnlHk
+X-Received: by 2002:a05:6871:10e:b0:15b:96b5:9916 with SMTP id y14-20020a056871010e00b0015b96b59916mr3936904oab.280.1675051133875;
+        Sun, 29 Jan 2023 19:58:53 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXuM5wHn4sTMJyFxc8JJT0li6BZ912wXTAByPVQnh6DAkYFaVUTfYozLdOXqMoX/5eBKpP3njBrqsOtckLHf0bI=
+X-Received: by 2002:a05:6871:10e:b0:15b:96b5:9916 with SMTP id
+ y14-20020a056871010e00b0015b96b59916mr3936902oab.280.1675051133632; Sun, 29
+ Jan 2023 19:58:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: ZlrVuQPv1haZsu45jxG1nMcA2gISeGiz
-X-Proofpoint-GUID: ZlrVuQPv1haZsu45jxG1nMcA2gISeGiz
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-01-30_01,2023-01-27_01,2022-06-22_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20221226074908.8154-1-jasowang@redhat.com> <20221226074908.8154-4-jasowang@redhat.com>
+ <20230129073713.5236-1-hdanton@sina.com>
+In-Reply-To: <20230129073713.5236-1-hdanton@sina.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Mon, 30 Jan 2023 11:58:42 +0800
+Message-ID: <CACGkMEtUf=23oxwe=QjhD9AhSRHPNuHfNKBJHPrAPLQk3oLFWA@mail.gmail.com>
+Subject: Re: [PATCH 3/4] virtio_ring: introduce a per virtqueue waitqueue
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     mst@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, eperezma@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sunil Goutham <sgoutham@marvell.com>
+On Sun, Jan 29, 2023 at 3:37 PM Hillf Danton <hdanton@sina.com> wrote:
+>
+> On Mon, 26 Dec 2022 15:49:07 +0800 Jason Wang <jasowang@redhat.com>
+> > @@ -2654,6 +2663,8 @@ static void vring_free(struct virtqueue *_vq)
+> >  {
+> >       struct vring_virtqueue *vq = to_vvq(_vq);
+> >
+> > +     wake_up_interruptible(&vq->wq);
+> > +
+> >       if (vq->we_own_ring) {
+> >               if (vq->packed_ring) {
+> >                       vring_free_queue(vq->vq.vdev,
+> > @@ -2863,4 +2874,22 @@ const struct vring *virtqueue_get_vring(struct virtqueue *vq)
+> >  }
+> >  EXPORT_SYMBOL_GPL(virtqueue_get_vring);
+> >
+> > +int virtqueue_wait_for_used(struct virtqueue *_vq)
+> > +{
+> > +     struct vring_virtqueue *vq = to_vvq(_vq);
+> > +
+> > +     /* TODO: Tweak the timeout. */
+> > +     return wait_event_interruptible_timeout(vq->wq,
+> > +            virtqueue_is_broken(_vq) || more_used(vq), HZ);
+> > +}
+> > +EXPORT_SYMBOL_GPL(virtqueue_wait_for_used);
+>
+>         waker           waiter
+>         ---             ---
+>         vring_del_virtqueue
+>           vring_free(_vq);
+>             wakeup
+>           kfree(vq);
+>                         get on CPU a tick later
+>                         uaf ?
+>
 
-NPC exact match feature is supported only on one silicon
-variant, removed debug messages which print that this
-feature is not available on all other silicon variants.
+Exactly, this wakeup of vring_free is not needed. It's up to the
+driver to do the proper wake up to avoid race when subsystem un
+registration.
 
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
----
- .../net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c | 12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-index f69102d20c90..ad1374a12a40 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-@@ -200,10 +200,8 @@ void npc_config_secret_key(struct rvu *rvu, int blkaddr)
- 	struct rvu_hwinfo *hw = rvu->hw;
- 	u8 intf;
- 
--	if (!hwcap->npc_hash_extract) {
--		dev_info(rvu->dev, "HW does not support secret key configuration\n");
-+	if (!hwcap->npc_hash_extract)
- 		return;
--	}
- 
- 	for (intf = 0; intf < hw->npc_intfs; intf++) {
- 		rvu_write64(rvu, blkaddr, NPC_AF_INTFX_SECRET_KEY0(intf),
-@@ -221,10 +219,8 @@ void npc_program_mkex_hash(struct rvu *rvu, int blkaddr)
- 	struct rvu_hwinfo *hw = rvu->hw;
- 	u8 intf;
- 
--	if (!hwcap->npc_hash_extract) {
--		dev_dbg(rvu->dev, "Field hash extract feature is not supported\n");
-+	if (!hwcap->npc_hash_extract)
- 		return;
--	}
- 
- 	for (intf = 0; intf < hw->npc_intfs; intf++) {
- 		npc_program_mkex_hash_rx(rvu, blkaddr, intf);
-@@ -1854,16 +1850,12 @@ int rvu_npc_exact_init(struct rvu *rvu)
- 	/* Check exact match feature is supported */
- 	npc_const3 = rvu_read64(rvu, blkaddr, NPC_AF_CONST3);
- 	if (!(npc_const3 & BIT_ULL(62))) {
--		dev_info(rvu->dev, "%s: No support for exact match support\n",
--			 __func__);
- 		return 0;
- 	}
- 
- 	/* Check if kex profile has enabled EXACT match nibble */
- 	cfg = rvu_read64(rvu, blkaddr, NPC_AF_INTFX_KEX_CFG(NIX_INTF_RX));
- 	if (!(cfg & NPC_EXACT_NIBBLE_HIT)) {
--		dev_info(rvu->dev, "%s: NPC exact match nibble not enabled in KEX profile\n",
--			 __func__);
- 		return 0;
- 	}
- 
--- 
-2.25.1
+Thanks
 
