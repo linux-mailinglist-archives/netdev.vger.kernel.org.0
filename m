@@ -2,66 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A89C680E5C
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 14:01:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF4C4680E5A
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 14:01:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237012AbjA3NBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 08:01:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53354 "EHLO
+        id S236899AbjA3NB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 08:01:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237005AbjA3NB2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 08:01:28 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB4C9172B;
-        Mon, 30 Jan 2023 05:01:26 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id m7so10976646wru.8;
-        Mon, 30 Jan 2023 05:01:26 -0800 (PST)
+        with ESMTP id S236980AbjA3NBZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 08:01:25 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0B4302AF;
+        Mon, 30 Jan 2023 05:01:23 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id f7so3625964edw.5;
+        Mon, 30 Jan 2023 05:01:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=user-agent:content-disposition:mime-version:message-id:subject:to
-         :from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=gfP++trWxino2nxmOeW6QjlxbhEmTqO0/dyok6r1CGY=;
-        b=c7ta6ATIyd0Tis+q3Wd5KN1qKCmvOiu05/Rg/8GDqFyKZTW3kGfXeqKCWApKiqiYPI
-         S3AiNEZXfkFgXeM85xREiIUE5lC5teoYvDaszXlSsZQoHm/MP1AtLmvSzU4n8i8D1jQU
-         Im+v0Zm4HghZBwUWW7LpVXaaOEgZx76UkL/525w1ohw/BAJTRBH2DqUCs+v+J9h5MaOG
-         BHT/47scVKVM/sA0oGIoL7QBUFIXASDDVk9juaWKRSQ0cH9DBeBGts/XxkUzkJn16gpY
-         2A9JrZBEXd2R+UffPLqNsG52W01nZszIgHXVxMcOl2SLD2oTvv9RrpdRCLVEy1jFc4wN
-         1f7g==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=neoL0rnVPCzU+65abZKFSowfu0z0tRwtvrCbBBDQLH4=;
+        b=gEjQDI2/GoUW5Wyt9AqJ5KffGpMLWO01c9NtywWi6iUYxwzY6isikPXWseHw7PKrqz
+         T94d7Htx9HrZL7c8jO34FHcpigS/cQJfTRBQDaYlPueBQuWjYRV3FWGnFlKhySW/aun2
+         iHQXlZ3QOIxbNMWOLbtxM6wg2A42YwIhy7U6vbEqhy1OqdbHZNJJSDQPgR1FEm6hIRiM
+         746cJBaXImWKDy38wda3lT24tqOWiu6D7MEImh5U0QIeVMq9SQYhkqMvC1ww5VeN0i/1
+         ua+AfFoD1ah9cmif4rx3c8UpRkN1aNbKRCxER0bPLsOyI3sA+7kQbsPPYEgKm9xZ6G51
+         TAog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=user-agent:content-disposition:mime-version:message-id:subject:to
-         :from:date:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=gfP++trWxino2nxmOeW6QjlxbhEmTqO0/dyok6r1CGY=;
-        b=ghYhl2MIdhTAJIlnCrEHBmUVauNfiLDdyHlJ9gIJTXzls9KTxlMyJ8hPxKcjjiTZa0
-         Y2m6VpYqSjxJuJrS7dgCD5Aul6uyjhWoG5Mor2yaQmBGJCPkXCJ+UyAf/sfJmcyvBkla
-         s+u66O6J0GuhsQ1COm9U1pT/1J/B0iA9ByI0vwAOw4/Qeb/E70wF3CCZg0I5BYIeMd1t
-         Ar8f4TvodrQBHpVGFf14Od4K3i3PwxwhPRx8J3EBNqf2uQKKF+V1mIwzQJBAf517Syb0
-         rXxiXP3JGAQBZJcDReajTFMsRKSwy5wjdE5/9jxs5dBczGiUDGQeiDsDm7mHzSTsdcyz
-         x4Mw==
-X-Gm-Message-State: AFqh2krh4yi0qOfctJLojg0K113v/OKDFarQzxETShHrA0z7FT1Hn1nh
-        06XyS/h5bcDCuzXhsK6S1Xlm4egzze4=
-X-Google-Smtp-Source: AMrXdXtNRBDl9pgIdy02Hy7R/t7CPIpqPKhjMWIHbMEZPwoJZMzUc6bFWwY7pm1EUbnKnIM91H1sGg==
-X-Received: by 2002:a05:6000:1c06:b0:2bf:6f4a:3f66 with SMTP id ba6-20020a0560001c0600b002bf6f4a3f66mr35079299wrb.21.1675083685193;
-        Mon, 30 Jan 2023 05:01:25 -0800 (PST)
-Received: from debian ([89.238.191.199])
-        by smtp.gmail.com with ESMTPSA id o6-20020adfe806000000b002bdf8dd6a8bsm11659174wrm.80.2023.01.30.05.01.15
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=neoL0rnVPCzU+65abZKFSowfu0z0tRwtvrCbBBDQLH4=;
+        b=hcWZ24QtEQCpHEWJTQPDM86M8PlR30P2WGMXjzQBaPTrZJBpdmw9hXn+q9ED1L0Je3
+         sz4po/mhjbMjMMGNkUT2UYu298yrnslCJF/aihYuGBIIu5VYSNbwBoH68XgItaf9j6pa
+         9ct5WY9EjC4duaN+5KBBanog8tNs9OeelCTI8tCYlGVE63FT2vHuGpb9r2hZA8A7bxwz
+         vUzP8qLfHlolGw90B3A5EcV7n0ccqXXEp5R2cTXgGD3tYXIH3QfhpED8opxYAp4pICVh
+         NSK2SBWtmISmSEZYb08GpyjmI/k2/AMKlwCsNe1qRhF+lUK4wSJwjCe+n+4bJXdtM1HV
+         A7UQ==
+X-Gm-Message-State: AFqh2koV7SVxUn1o1Sj0wYc5QvUPJoaNY8dqFNb7NrrnNQdhAEB9ogxD
+        tfPwUfMj5oIr1AAuBn2CcLQ=
+X-Google-Smtp-Source: AMrXdXuIe4ekBpiEOiGmPzMwqm9U6W91/zQ02eHQC6xSIr7ocUhZjk5EJ/cPmUAH6xoPFo0b1rKegg==
+X-Received: by 2002:aa7:dbd0:0:b0:49e:351b:5ab3 with SMTP id v16-20020aa7dbd0000000b0049e351b5ab3mr43751069edt.6.1675083682364;
+        Mon, 30 Jan 2023 05:01:22 -0800 (PST)
+Received: from skbuf ([188.26.57.205])
+        by smtp.gmail.com with ESMTPSA id q11-20020aa7d44b000000b0046ac460da13sm6781607edr.53.2023.01.30.05.01.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Jan 2023 05:01:24 -0800 (PST)
-Date:   Mon, 30 Jan 2023 14:00:55 +0100
-From:   Richard Gobert <richardbgobert@gmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        steffen.klassert@secunet.com, lixiaoyan@google.com,
-        alexanderduyck@fb.com, leon@kernel.org, ye.xingchen@zte.com.cn,
-        iwienand@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 0/2] gro: optimise redundant parsing of packets
-Message-ID: <20230130130047.GA7913@debian>
+        Mon, 30 Jan 2023 05:01:21 -0800 (PST)
+Date:   Mon, 30 Jan 2023 15:01:19 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Frank Wunderlich <frank-w@public-files.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Daniel Golle <daniel@makrotopia.org>
+Subject: Re: [BUG] vlan-aware bridge breaks vlan on another port on same gmac
+Message-ID: <20230130130119.a36qt3t27xqahiup@skbuf>
+References: <trinity-e6294d28-636c-4c40-bb8b-b523521b00be-1674233135062@3c-app-gmx-bs36>
+ <20230120172132.rfo3kf4fmkxtw4cl@skbuf>
+ <trinity-b0df6ff8-cceb-4aa5-a26f-41bc04dc289c-1674303103108@3c-app-gmx-bap60>
+ <20230121122223.3kfcwxqtqm3b6po5@skbuf>
+ <trinity-7c2af652-d3f8-4086-ba12-85cd18cd6a1a-1674304362789@3c-app-gmx-bap60>
+ <20230121133549.vibz2infg5jwupdc@skbuf>
+ <trinity-fd23c4a0-a979-475e-a077-330577d7d632-1674311727972@3c-app-gmx-bap60>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <trinity-fd23c4a0-a979-475e-a077-330577d7d632-1674311727972@3c-app-gmx-bap60>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -72,34 +86,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, the IPv6 extension headers are parsed twice: first in
-ipv6_gro_receive, and then again in ipv6_gro_complete.
+On Sat, Jan 21, 2023 at 03:35:28PM +0100, Frank Wunderlich wrote:
+> btw. why is my vlan software-only and not pushed to hardware?
 
-The field NAPI_GRO_CB(skb)->proto is used by GRO to hold the layer 4
-protocol type that comes after the IPv6 layer. I noticed that it is set
-in ipv6_gro_receive, but isn't used anywhere. By using this field, and
-also storing the size of the network header, we can avoid parsing
-extension headers a second time in ipv6_gro_complete.
+Short story, because committing it to hardware is a useless complication.
+A standalone port should be VLAN-unaware, or i.o.w. it should not drop
+based on VLAN port membership, shouldn't add or strip any VLAN header,
+and should forward as if the VLAN wasn't there.
 
-The first commit frees up space in the GRO CB. The second commit reduces
-the redundant parsing during the complete phase, using the freed CB
-space.
-
-I've applied this optimisation to all base protocols (IPv6, IPv4,
-Ethernet). Then, I benchmarked this patch on my machine, using ftrace to
-measure ipv6_gro_complete's performance, and there was an improvement.
-
-Richard Gobert (2):
-  gro: decrease size of CB
-  gro: optimise redundant parsing of packets
-
- include/net/gro.h      | 32 +++++++++++++++++++++-----------
- net/core/gro.c         | 18 +++++++++++-------
- net/ethernet/eth.c     | 11 +++++++++--
- net/ipv4/af_inet.c     |  8 +++++++-
- net/ipv6/ip6_offload.c | 15 ++++++++++++---
- 5 files changed, 60 insertions(+), 24 deletions(-)
-
--- 
-2.36.1
-
+So the behavior of a standalone port is absolutely sufficient as a basis
+for an 8021q upper interface to see the traffic it needs, and for the
+traffic it sends to reach the outside world as it intended.
