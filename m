@@ -2,119 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04CD6681714
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 17:59:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE0CE681732
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 18:05:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236765AbjA3Q72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 11:59:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56064 "EHLO
+        id S235761AbjA3RFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 12:05:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236545AbjA3Q70 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 11:59:26 -0500
-Received: from smtpout.efficios.com (smtpout.efficios.com [167.114.26.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4605FF11;
-        Mon, 30 Jan 2023 08:59:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=efficios.com;
-        s=smtpout1; t=1675097960;
-        bh=Qp8uMm5mSox9QONqmnFHcCh3GiajeXXyEhxAnHk1o5M=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=eQDNv1uxDs817kNR9qqvqj6vEa7UZkzKxxO+8v+/W1Nz3hOkiAwxFvMhlRPfRihPj
-         OOUQAsfgZF6OBRVtODC1pH5g3mnOsuyD+ckWtiYZJhQUmWYxmosPPPy2Kk1GLOrzN5
-         K9wm/WuuNz9ByDC4GC1dxONNfZhqI1Y5oavTN8pHV34h5Q9iSKfl5Ab0nm3+bCq2+x
-         duWPBZruAJGDfbLn4M4MBFNpcwnpHv7n+7LTr8gMtTlmGCRlBF0qEyS4+Sk721FuCw
-         JC3N4Afz6svdWD1sBA7TidkV8A7k7ysU6eYi1w7Vk9TfgEo29KXlMKN80+/CdaJt8w
-         KlOlM1xSuI+aA==
-Received: from [172.16.0.188] (192-222-180-24.qc.cable.ebox.net [192.222.180.24])
-        by smtpout.efficios.com (Postfix) with ESMTPSA id 4P5DtJ3ncfzhmV;
-        Mon, 30 Jan 2023 11:59:20 -0500 (EST)
-Message-ID: <7023e3f3-bfd3-5842-5624-b1fd21576591@efficios.com>
-Date:   Mon, 30 Jan 2023 12:00:00 -0500
+        with ESMTP id S237386AbjA3REw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 12:04:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99598A5D2
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 09:04:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675098239;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dxwuKRERvITDZ4Jk1vAFyT84zZFQVN0zqx77dghYL/A=;
+        b=FwIIlO+TjEx6YUM6OTeOjqHk73O0BpdVIvPZrDsaocyCQiu9f/S3Pp6LcMLG7l8m827AiI
+        jyRUP2AvoBehFsE2+RBCmISpyOeLCPwyxQmYJKN5r/ZUGXEG/bz96MTjPcyXrFTfX2/qsx
+        +ZGIEVEVgFtfg4LVJhDQ2rEsbIyjrOI=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-159-mPqKzn_SN_e92kOUBgsDxg-1; Mon, 30 Jan 2023 12:03:58 -0500
+X-MC-Unique: mPqKzn_SN_e92kOUBgsDxg-1
+Received: by mail-qk1-f197.google.com with SMTP id v7-20020a05620a0f0700b006faffce43b2so7347375qkl.9
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 09:03:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dxwuKRERvITDZ4Jk1vAFyT84zZFQVN0zqx77dghYL/A=;
+        b=0uYkW39/NAn6Uu5VbrxZidrz5ZWUwM4uTeKbbiBB/S3juvsx1Ufj+02S/PynREnCdP
+         ZMh6V7Mti9iLu9eYOoD0VY0UhIMMf9gyD+E3Mq1nYb0RPWxVuxJhoQ5vlZ50FwwkA5z/
+         zgt17I9jredSz4k7h02wALJo50WITltKPKMegXZg1Od9uifHHeDKDgMKyW/H3JoDzSic
+         fMsqKmr9KxsS3m+V4rTRgE8KSw1up7L7s7OSLp09gNIGjG9d2i/w5MrqwlH39xMOceis
+         wbK3F+GgHLwxm1WydznKPYQWmFmhgJWpWg0oFIeU5ST49mL1rwDYYkgvltIyQH200RNK
+         5HAw==
+X-Gm-Message-State: AFqh2kpNh/KlqkaIUgyM2QZCCPN6jtCPn4TlSg6l4A/Fg/aTbbO2QRRz
+        FRcnzMiH0aShlyj2gok5YbVuqupNAJ0swakDIRzL2l37jhtgw3ZrbF226oXzXXIxh1GA8aNdEFf
+        /WAEo0N3LAhkOQNL8
+X-Received: by 2002:ac8:6b81:0:b0:3a8:1677:bc39 with SMTP id z1-20020ac86b81000000b003a81677bc39mr69297178qts.52.1675098236976;
+        Mon, 30 Jan 2023 09:03:56 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXuZyGvdfQAfbKzWXHEtQvVZ+VSKGCnJwr6ctCYR7OKAfTC5kzKfMj4q0599OaRW2vV5eMiPhw==
+X-Received: by 2002:ac8:6b81:0:b0:3a8:1677:bc39 with SMTP id z1-20020ac86b81000000b003a81677bc39mr69297151qts.52.1675098236671;
+        Mon, 30 Jan 2023 09:03:56 -0800 (PST)
+Received: from debian (2a01cb058918ce009322c8fdd95cb32b.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:9322:c8fd:d95c:b32b])
+        by smtp.gmail.com with ESMTPSA id x15-20020ac8018f000000b003b9a573aec6sm92722qtf.70.2023.01.30.09.03.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Jan 2023 09:03:56 -0800 (PST)
+Date:   Mon, 30 Jan 2023 18:03:52 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Shigeru Yoshida <syoshida@redhat.com>
+Cc:     jchapman@katalix.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] l2tp: Avoid possible recursive deadlock in
+ l2tp_tunnel_register()
+Message-ID: <Y9f4eAhcJXhh0+c2@debian>
+References: <20230130154438.1373750-1-syoshida@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH 02/34] selftests: bpf: Fix incorrect kernel headers search
- path
-Content-Language: en-US
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Cc:     Shuah Khan <shuah@kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-References: <20230127135755.79929-1-mathieu.desnoyers@efficios.com>
- <20230127135755.79929-3-mathieu.desnoyers@efficios.com>
- <4defb04e-ddcb-b344-6e9f-35023dee0d2a@linuxfoundation.org>
- <CAADnVQ+1hB-1B_-2LrYC3XvMiEyA2yZv9fz51dDrMABG3dsQ_g@mail.gmail.com>
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-In-Reply-To: <CAADnVQ+1hB-1B_-2LrYC3XvMiEyA2yZv9fz51dDrMABG3dsQ_g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230130154438.1373750-1-syoshida@redhat.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023-01-30 11:26, Alexei Starovoitov wrote:
-> On Mon, Jan 30, 2023 at 8:12 AM Shuah Khan <skhan@linuxfoundation.org> wrote:
->>
->> On 1/27/23 06:57, Mathieu Desnoyers wrote:
->>> Use $(KHDR_INCLUDES) as lookup path for kernel headers. This prevents
->>> building against kernel headers from the build environment in scenarios
->>> where kernel headers are installed into a specific output directory
->>> (O=...).
->>>
->>> Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
->>> Cc: Shuah Khan <shuah@kernel.org>
->>> Cc: linux-kselftest@vger.kernel.org
->>> Cc: Ingo Molnar <mingo@redhat.com>
->>> Cc: <stable@vger.kernel.org>    [5.18+]
->>> ---
->>>    tools/testing/selftests/bpf/Makefile | 2 +-
->>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
->>> index c22c43bbee19..6998c816afef 100644
->>> --- a/tools/testing/selftests/bpf/Makefile
->>> +++ b/tools/testing/selftests/bpf/Makefile
->>> @@ -327,7 +327,7 @@ endif
->>>    CLANG_SYS_INCLUDES = $(call get_sys_includes,$(CLANG),$(CLANG_TARGET_ARCH))
->>>    BPF_CFLAGS = -g -Werror -D__TARGET_ARCH_$(SRCARCH) $(MENDIAN)               \
->>>             -I$(INCLUDE_DIR) -I$(CURDIR) -I$(APIDIR)                   \
->>> -          -I$(abspath $(OUTPUT)/../usr/include)
->>> +          $(KHDR_INCLUDES)
->>>
->>>    CLANG_CFLAGS = $(CLANG_SYS_INCLUDES) \
->>>               -Wno-compare-distinct-pointer-types
->>
->>
->>
->> Adding bpf maintainers - bpf patches usually go through bpf tree.
->>
->> Acked-by: Shuah Khan <skhan@linuxfoundation.org>
+On Tue, Jan 31, 2023 at 12:44:38AM +0900, Shigeru Yoshida wrote:
+> This patch fixes the issue by returning error when a pppol2tp socket
+> itself is passed.
+
+Fixes: 0b2c59720e65 ("l2tp: close all race conditions in l2tp_tunnel_register()")
+
+> Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
+> ---
+>  net/l2tp/l2tp_ppp.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
 > 
-> Please resubmit as separate patch with [PATCH bpf-next] subj
-> and cc bpf@vger, so that BPF CI can test it on various architectures
-> and config combinations.
+> diff --git a/net/l2tp/l2tp_ppp.c b/net/l2tp/l2tp_ppp.c
+> index db2e584c625e..88d1a339500b 100644
+> --- a/net/l2tp/l2tp_ppp.c
+> +++ b/net/l2tp/l2tp_ppp.c
+> @@ -702,11 +702,14 @@ static int pppol2tp_connect(struct socket *sock, struct sockaddr *uservaddr,
+>  			struct l2tp_tunnel_cfg tcfg = {
+>  				.encap = L2TP_ENCAPTYPE_UDP,
+>  			};
+> +			int dummy = 0;
 
-Hi Shuah,
+There's no need to initialise dummy here. This is just confusing.
+We could even do without any extra variable and reuse error in
+sockfd_lookup().
 
-Do you have means to resubmit it on your end, or should I do it ?
+>  			/* Prevent l2tp_tunnel_register() from trying to set up
+> -			 * a kernel socket.
+> +			 * a kernel socket.  Also, prevent l2tp_tunnel_register()
+> +			 * from trying to use pppol2tp socket itself.
+>  			 */
+> -			if (info.fd < 0) {
+> +			if (info.fd < 0 ||
+> +			    sock == sockfd_lookup(info.fd, &dummy)) {
+>  				error = -EBADF;
+>  				goto end;
+>  			}
 
-Thanks,
-
-Mathieu
-
-
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-https://www.efficios.com
+That should work, but the real problem is calling l2tp_tunnel_register()
+under lock_sock(). We should instead get/create the tunnel before
+locking the pppol2tp socket.
 
