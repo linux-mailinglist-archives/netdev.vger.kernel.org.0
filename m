@@ -2,81 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9FA968174F
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 18:10:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B76168175B
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 18:13:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237474AbjA3RKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 12:10:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34462 "EHLO
+        id S237482AbjA3RNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 12:13:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235466AbjA3RJ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 12:09:59 -0500
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66878402D0
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 09:09:58 -0800 (PST)
-Received: by mail-il1-x132.google.com with SMTP id l7so3512620ilf.0
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 09:09:58 -0800 (PST)
+        with ESMTP id S236120AbjA3RNv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 12:13:51 -0500
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0E98A71
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 09:13:50 -0800 (PST)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-5063029246dso168749937b3.6
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 09:13:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
+        d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=D0NwTkchautTwr2b39Io8oodrygOmHFDn/d5ivG/ofE=;
-        b=IbZSTyOzumgCwaGh9+gOtUafb9wtJruo+OSMMousEq/WYpP7T0K4AzaxxeDJNvPgEw
-         fllUmTju0J0bFbRsQRFV2oTIlltQYtI/daPtMOVtq0SnyxWBT4A2LHrjDMVemIfOcZfw
-         wWlNz5NCKoRqRyAx2OOnh2UEj4yvrRXKVKR+E=
+        bh=lixSC76vyPNWSyhVLFBh/ba2LGNduxP95qqNS4cziqg=;
+        b=l2DuZ8IPOz3WKC8x/hEovmx2OTRDtFWHDwnCyMb9LbsvaVgp7uFWraxk04iiA69KFI
+         yh56oFhhyI1IOH4ozNHTwTEdde9ntYek7yMMD37sjL0C+YHsidcwYPSHWdCDfb28QAQa
+         my+867HigOUNmE7Aj70gBJVtS60ufEkBzuxLpz52CqFi7A+M23KdE8Q33Gd1fEQdw0cU
+         GUXRgaPMcDOVmacxPIrMrBHMQ7FyRgBZa87faaUYcGrm1/dDg1Sl326fuwSZvuJFltEX
+         dp/2XObC9pYKOzAg7J2RHfgxultRJr5S8OCf0XpPUrZuqJ4v1C3QhE3GTSuBBE1jcJNA
+         b1pA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=D0NwTkchautTwr2b39Io8oodrygOmHFDn/d5ivG/ofE=;
-        b=j9Tw7rXW6PEucoX7ivLkRYHOTC2OJSYebeImhOR3x+1ohifyQelq8/sYMZRhbyEejM
-         5Q6ZbgcjSeeBDEt1odGW5i/p310ohB8YodqNFQLH6S4dSE015UdAeWsCMVymMEVUWk/Y
-         a8TLlomRSagBflC5zBZx6xkq1ffZ9BQxuXWadR9BzJcwMFImSfNfQ28juT67OWF9BjuU
-         2Zg4zsPSY2Om4anjTohyP0vupq0WChYBDA2DuR4M14bmv16gkIPfB6UKc8hScR8Lbaxw
-         +5MmCKlQyhqj0aiL1sCEFQUOFVNaHBcErKtPl8wDJMzlaPdLcUa4FzCYisloLePs0k4N
-         jxKQ==
-X-Gm-Message-State: AO0yUKXAJSDkNIxV+BZCBgx94Q+H9SpMUbytdUeeNbXVF96cNeJ0JKdZ
-        nw5T0lMU5aZ1JneBJjFZVWCV5Q==
-X-Google-Smtp-Source: AK7set+Ka13TT616pYhAC6agDWa038VNKK0nbrDwsXNkOBLBm9pJSvboUARiJD/s2Nd4khZm7Kg4fA==
-X-Received: by 2002:a05:6e02:1a46:b0:310:ecea:b488 with SMTP id u6-20020a056e021a4600b00310eceab488mr1021838ilv.3.1675098597745;
-        Mon, 30 Jan 2023 09:09:57 -0800 (PST)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id h19-20020a056638339300b003a2a167e7d9sm4392002jav.96.2023.01.30.09.09.56
+        bh=lixSC76vyPNWSyhVLFBh/ba2LGNduxP95qqNS4cziqg=;
+        b=qEEMKlyVaUU3T4QIXslEnLT+gGq8Zh50w+k7smVCjh2+CCIr2FxNOYLJFmFaDhNoCD
+         HT9mxbkklBnAn8mEU+9iQL74jVrLmn0CRiplpTcFPQjQEbj05D46Geh53ScL6lkuzZ8f
+         MSQSgXOXg19iFD/2HWHO3w2lypasuM79F02GiY79QPh3lVmKhzOEbWEelUFn+TlC6RMs
+         w8llSlcf41KtbyPOATtGnGkYvFlKDd6zIbMTnbZLLbTvuRmmzOI5m3jh3EU7m7WfigwR
+         DtERDmnHIysC5gUoUzxXEjnLV8CpyyTVJn2w/ehNv0ku76XxYk6qkVhuWTJ2ASlMadMQ
+         jPJw==
+X-Gm-Message-State: AO0yUKU5fl9n2oL1r1R6F3c/nJDw1kA4Ct350i8InZMmSK0hOsRVSQYu
+        GimwJIn4oP0qM4QU5BYdmUo=
+X-Google-Smtp-Source: AK7set9qsEkFUXJm7z8484jOe0YgRJAcBXszH8T4j5oFPVBQARHryzyxDR13OVYieq4uT8zdZdk0EA==
+X-Received: by 2002:a0d:ea4b:0:b0:506:39eb:7e02 with SMTP id t72-20020a0dea4b000000b0050639eb7e02mr20598747ywe.13.1675098829482;
+        Mon, 30 Jan 2023 09:13:49 -0800 (PST)
+Received: from ?IPV6:2601:18f:700:287c::1006? ([2601:18f:700:287c::1006])
+        by smtp.gmail.com with ESMTPSA id op52-20020a05620a537400b007186c9e167esm6801109qkn.52.2023.01.30.09.13.48
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Jan 2023 09:09:57 -0800 (PST)
-Message-ID: <a56e460e-f8f5-97e6-f469-9ae44b0eedc2@linuxfoundation.org>
-Date:   Mon, 30 Jan 2023 10:09:56 -0700
+        Mon, 30 Jan 2023 09:13:49 -0800 (PST)
+Message-ID: <78b84d51-b758-8e1b-f2f9-8c844b8a25d2@gmail.com>
+Date:   Mon, 30 Jan 2023 12:13:48 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.4.2
-Subject: Re: [PATCH 02/34] selftests: bpf: Fix incorrect kernel headers search
- path
+Subject: Re: [PATCH net-next v2] neighbor: fix proxy_delay usage when it is
+ zero
 Content-Language: en-US
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Shuah Khan <shuah@kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20230127135755.79929-1-mathieu.desnoyers@efficios.com>
- <20230127135755.79929-3-mathieu.desnoyers@efficios.com>
- <4defb04e-ddcb-b344-6e9f-35023dee0d2a@linuxfoundation.org>
- <CAADnVQ+1hB-1B_-2LrYC3XvMiEyA2yZv9fz51dDrMABG3dsQ_g@mail.gmail.com>
- <7023e3f3-bfd3-5842-5624-b1fd21576591@efficios.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-In-Reply-To: <7023e3f3-bfd3-5842-5624-b1fd21576591@efficios.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org
+References: <20230125195114.596295-1-haleyb.dev@gmail.com>
+ <20230126233713.28c64c4e@kernel.org>
+From:   Brian Haley <haleyb.dev@gmail.com>
+In-Reply-To: <20230126233713.28c64c4e@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,58 +76,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/30/23 10:00, Mathieu Desnoyers wrote:
-> On 2023-01-30 11:26, Alexei Starovoitov wrote:
->> On Mon, Jan 30, 2023 at 8:12 AM Shuah Khan <skhan@linuxfoundation.org> wrote:
->>>
->>> On 1/27/23 06:57, Mathieu Desnoyers wrote:
->>>> Use $(KHDR_INCLUDES) as lookup path for kernel headers. This prevents
->>>> building against kernel headers from the build environment in scenarios
->>>> where kernel headers are installed into a specific output directory
->>>> (O=...).
->>>>
->>>> Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
->>>> Cc: Shuah Khan <shuah@kernel.org>
->>>> Cc: linux-kselftest@vger.kernel.org
->>>> Cc: Ingo Molnar <mingo@redhat.com>
->>>> Cc: <stable@vger.kernel.org>    [5.18+]
->>>> ---
->>>>    tools/testing/selftests/bpf/Makefile | 2 +-
->>>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
->>>> index c22c43bbee19..6998c816afef 100644
->>>> --- a/tools/testing/selftests/bpf/Makefile
->>>> +++ b/tools/testing/selftests/bpf/Makefile
->>>> @@ -327,7 +327,7 @@ endif
->>>>    CLANG_SYS_INCLUDES = $(call get_sys_includes,$(CLANG),$(CLANG_TARGET_ARCH))
->>>>    BPF_CFLAGS = -g -Werror -D__TARGET_ARCH_$(SRCARCH) $(MENDIAN)               \
->>>>             -I$(INCLUDE_DIR) -I$(CURDIR) -I$(APIDIR)                   \
->>>> -          -I$(abspath $(OUTPUT)/../usr/include)
->>>> +          $(KHDR_INCLUDES)
->>>>
->>>>    CLANG_CFLAGS = $(CLANG_SYS_INCLUDES) \
->>>>               -Wno-compare-distinct-pointer-types
->>>
->>>
->>>
->>> Adding bpf maintainers - bpf patches usually go through bpf tree.
->>>
->>> Acked-by: Shuah Khan <skhan@linuxfoundation.org>
->>
->> Please resubmit as separate patch with [PATCH bpf-next] subj
->> and cc bpf@vger, so that BPF CI can test it on various architectures
->> and config combinations.
+On 1/27/23 2:37 AM, Jakub Kicinski wrote:
+> On Wed, 25 Jan 2023 14:51:14 -0500 Brian Haley wrote:
+>> +	or proxy_ndp is enabled. A random value between [0, proxy_delay]
 > 
-> Hi Shuah,
+> Do you mean: [0, proxy_delay) or there's something that can give us an
+> extra jiffy (IOW shouldn't the upper limit be open) ?
 > 
-> Do you have means to resubmit it on your end, or should I do it ?
+> it's
+>    random() % MAX - (1 - noise)
 > 
+> where (1 - noise) is the fraction of jiffy which already passed since
+> the tick.
+> 
+> Sorry if I'm slow to get it..
 
-Hi Mathieu,
+Yes, it's [0, proxy_delay), should have just copied that right from the 
+get_random_u32_below() definition. I'll send a v3 fixing the commit 
+message and sysctl doc.
 
-Please go ahead and resubmit.
-
-thanks,
--- Shuah
-
+-Brian
