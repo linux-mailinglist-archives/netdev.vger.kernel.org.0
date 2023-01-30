@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1278E681C1E
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 22:02:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51C33681C24
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 22:03:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229802AbjA3VCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 16:02:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56014 "EHLO
+        id S229868AbjA3VDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 16:03:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229688AbjA3VCa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 16:02:30 -0500
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C239A460BF
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 13:02:27 -0800 (PST)
-Received: by mail-io1-xd2b.google.com with SMTP id q6so2262724ior.12
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 13:02:27 -0800 (PST)
+        with ESMTP id S229695AbjA3VDA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 16:03:00 -0500
+Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 570AB7EF0
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 13:02:59 -0800 (PST)
+Received: by mail-il1-x12c.google.com with SMTP id k12so668322ilv.10
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 13:02:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=tqiYGrAmfasm6lQ8vFsVNt3ikeeBgKSbwzGX4HertYY=;
-        b=GOVd6u2ieN8ZGU8y66kFT6PF7W6+SfL4LTPkS+jmZR4QDvpgdbiLuiJpwS6fY9WTad
-         ldCcWhlgbHnzm/JZEJhXeB5mga8Vi/07XPX4FVSqAoctajjwX7/BLgHM4/jfcuFeiZf7
-         HrWH0bP4vnnLQmTqE30k40fR6+sdx8JrSPhZQ+zPcXnFaDpAR/JPRk/0RtHtcIMrla74
-         Nqu011nqmcKmUoaJVlZADdltOp8mGTKqAwzXtkc9zqMwhil3olfyHNhDD979rotGmWCj
-         pJ29pICkOFd/Ll9AlDtCt6dgUwq89L/nr3kKYJvpmVXtsuxv/blcbsa5ur11u3BY0dJg
-         QFyw==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hMq3JNiaNSjQXwZ1boO/j34bxxGpJn4ZMoNDU6z/FXU=;
+        b=VZt9ikiN+21jBHUUuDf6aSL8Q1sjS2JZsHMvuEb/YPohu8UFnG+0enzAlO5dDSIJMM
+         OMy6vsJbz+Ds3lKztH+FzQopalTZj2oqhLBeKXdZPA8BJrgStrnHE845X/Qra2htvXWa
+         IsP8LkAwQFn2HfyBnzW2K32UgggAC1WZNw3esxTHs23TeCLtHWO32Gm/NUiIQYaZQ+Bj
+         WUhr8RtVrawRMwdhn7YM2NM1qEgcGCSQIR+eLd3Wwuj5YckOdV7Yw5aW8pmGFcaizNsA
+         NGMCZdZevfj/kS7/eixfa2kLTwmhV/Bjo8+iZPTSefFNe5n9kZKtOVXGkCHE90Va1WCJ
+         IEdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=tqiYGrAmfasm6lQ8vFsVNt3ikeeBgKSbwzGX4HertYY=;
-        b=LM6Ta1J18gswIMNTTg9V3n78q4rrrt4jieo4pguwOkIuthBla35fpe3J5xuZC5w3b4
-         yI4MNAsIuJeddaY5GfQgw+tLaX4aeKMF4YnyNZsZFLbDgdmh6a5/k8PTIdhWwXiCaLPQ
-         CGeel5NwELjYsufcDzc+vQT5lb9i8qXjdF8OqrpyXjEvlHo3ncJlhkE7d59o2JZzuePH
-         n28l1Bl28a5klTFVFYLwyHnQ+kPmQ0N9yNZ0mfRqm9By+ObLZUmit27fPNLQKGn7E133
-         iiPO+fsObcYewwF9hrZgDDJT9IkW1a12O907AkNKtMDe75Cc0SPhnVfRgLs1/cQW1kNx
-         75sg==
-X-Gm-Message-State: AO0yUKWyGWGCKvTebJr6ZZ1hHQUtnDEmI2iHFKaNi4S0CIhjD51hoy45
-        wAEMZOYa59ZZwJe2fmCRpKrbOw==
-X-Google-Smtp-Source: AK7set/L4+20oXstDi7/0z2f8rHrqw8wonXy2WYYfxVyB1zXBMeRcBS0lAtlXiUReQtK4ONZmXBHWQ==
-X-Received: by 2002:a05:6602:370d:b0:716:948a:8871 with SMTP id bh13-20020a056602370d00b00716948a8871mr7157020iob.1.1675112547060;
-        Mon, 30 Jan 2023 13:02:27 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=hMq3JNiaNSjQXwZ1boO/j34bxxGpJn4ZMoNDU6z/FXU=;
+        b=CZgTfj+Srarkha4OhPlK6Xtyb2jAT2lT2fWgHOEL9jnwk9jRqdQldqUaYni99GDGUe
+         cOaJ3ngrw4Ado9N3GysSu9RkR+88FHdDOMTQV7DB9EuEj4u691srFIi9OSiqmB65z/ZJ
+         Fz+I73asmiwTG/2YIq6sOXPQ1AyWGeS8F4fqaPehSFaZq9fdNMEE/aLmIMfX/33/XlLG
+         afHSRVmTxNCa5RJ/4XMNwBKE3wmn7jjBt9wC2+gs++wtXPOaQb8u/4KXjp001BENU7Dx
+         zVxKr4mnpGyVkNl0az+TrxTPYslUiEFPtuF7T0gWrvPHAidE/FfAElr0IKFiqBxNEKP0
+         SIXQ==
+X-Gm-Message-State: AO0yUKVEeY3QrwmKtd//AOr7vp7k6nZgTUjoEnCH/b9h9PI0mEAzBi31
+        SkPiCtEix6J5eCV4AtMKznjbUw==
+X-Google-Smtp-Source: AK7set9TSD4n14c/WyeF+aojzUX61n96RMQWDPaZa6tz9I3XGVGIXKChMmSkPRMBYXSYNcruCyZ/Fg==
+X-Received: by 2002:a05:6e02:2181:b0:310:f912:5a7c with SMTP id j1-20020a056e02218100b00310f9125a7cmr3450789ila.25.1675112578623;
+        Mon, 30 Jan 2023 13:02:58 -0800 (PST)
 Received: from presto.localdomain ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id a30-20020a02735e000000b003aef8fded9asm1992046jae.127.2023.01.30.13.02.03
+        by smtp.gmail.com with ESMTPSA id a30-20020a02735e000000b003aef8fded9asm1992046jae.127.2023.01.30.13.02.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Jan 2023 13:02:11 -0800 (PST)
+        Mon, 30 Jan 2023 13:02:47 -0800 (PST)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -57,67 +58,130 @@ Cc:     caleb.connolly@linaro.org, mka@chromium.org, evgreen@chromium.org,
         quic_subashab@quicinc.com, elder@kernel.org,
         netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 0/8] net: ipa: remaining IPA v5.0 support
-Date:   Mon, 30 Jan 2023 15:01:50 -0600
-Message-Id: <20230130210158.4126129-1-elder@linaro.org>
+Subject: [PATCH net-next 1/8] net: ipa: support more endpoints
+Date:   Mon, 30 Jan 2023 15:01:51 -0600
+Message-Id: <20230130210158.4126129-2-elder@linaro.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230130210158.4126129-1-elder@linaro.org>
+References: <20230130210158.4126129-1-elder@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series includes almost all remaining IPA code changes required
-to support IPA v5.0.  IPA register definitions and configuration
-data for IPA v5.0 will be sent later (soon).  Note that the GSI
-register definitions still require work.  GSI for IPA v5.0 supports
-up to 256 (rather than 32) channels, and this changes the way GSI
-register offsets are calculated.  A few GSI register fields also
-change.
+Increase the number of endpoints supported by the driver to 36,
+which IPA v5.0 supports.  This makes it impossible to check at build
+time whether the supported number is too big to fit within the
+(5-bit) PACKET_INIT destination endpoint field.  Instead, convert
+the build time check to compare against what fits in 8 bits.
 
-The first patch in this series increases the number of IPA endpoints
-supported by the driver, from 32 to 36.  The next updates the width
-of the destination field for the IP_PACKET_INIT immediate command so
-it can represent up to 256 endpoints rather than just 32.  The next
-adds a few definitions of some IPA registers and fields that are
-first available in IPA v5.0.
+Add a check in ipa_endpoint_config() to also ensure the hardware
+reports an endpoint count that's in the expected range.  Just
+open-code 32 as the limit (the PACKET_INIT field mask is not
+available where we'd want to use it).
 
-The next two patches update the code that handles router and filter
-table caches.  Previously these were referred to as "hashed" tables,
-and the IPv4 and IPv6 tables are now combined into one "unified"
-table.  The sixth and seventh patches add support for a new pulse
-generator, which allows time periods to be specified with a wider
-range of clock resolution.  And the last patch just defines two new
-memory regions that were not previously used.
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+ drivers/net/ipa/ipa_cmd.c      | 13 +++++++++----
+ drivers/net/ipa/ipa_endpoint.c | 11 ++++++++++-
+ drivers/net/ipa/ipa_endpoint.h |  4 ++--
+ 3 files changed, 21 insertions(+), 7 deletions(-)
 
-					-Alex
-
-Alex Elder (8):
-  net: ipa: support more endpoints
-  net: ipa: extend endpoints in packet init command
-  net: ipa: define IPA v5.0+ registers
-  net: ipa: update table cache flushing
-  net: ipa: support zeroing new cache tables
-  net: ipa: greater timer granularity options
-  net: ipa: support a third pulse register
-  net: ipa: define two new memory regions
-
- drivers/net/ipa/ipa_cmd.c      |  32 ++++++++---
- drivers/net/ipa/ipa_endpoint.c | 102 ++++++++++++++++++---------------
- drivers/net/ipa/ipa_endpoint.h |   4 +-
- drivers/net/ipa/ipa_main.c     |  14 ++++-
- drivers/net/ipa/ipa_mem.c      |   8 ++-
- drivers/net/ipa/ipa_mem.h      |   8 ++-
- drivers/net/ipa/ipa_reg.h      |  43 ++++++++++++--
- drivers/net/ipa/ipa_table.c    |  61 ++++++++++++++------
- 8 files changed, 187 insertions(+), 85 deletions(-)
-
+diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
+index bb3dfa9a2bc81..aa2b594ca5067 100644
+--- a/drivers/net/ipa/ipa_cmd.c
++++ b/drivers/net/ipa/ipa_cmd.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ 
+ /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
+- * Copyright (C) 2019-2022 Linaro Ltd.
++ * Copyright (C) 2019-2023 Linaro Ltd.
+  */
+ 
+ #include <linux/types.h>
+@@ -157,9 +157,14 @@ static void ipa_cmd_validate_build(void)
+ 	BUILD_BUG_ON(field_max(IP_FLTRT_FLAGS_HASH_ADDR_FMASK) !=
+ 		     field_max(IP_FLTRT_FLAGS_NHASH_ADDR_FMASK));
+ 
+-	/* Valid endpoint numbers must fit in the IP packet init command */
+-	BUILD_BUG_ON(field_max(IPA_PACKET_INIT_DEST_ENDPOINT_FMASK) <
+-		     IPA_ENDPOINT_MAX - 1);
++	/* Prior to IPA v5.0, we supported no more than 32 endpoints,
++	 * and this was reflected in some 5-bit fields that held
++	 * endpoint numbers.  Starting with IPA v5.0, the widths of
++	 * these fields were extended to 8 bits, meaning up to 256
++	 * endpoints.  If the driver claims to support more than
++	 * that it's an error.
++	 */
++	BUILD_BUG_ON(IPA_ENDPOINT_MAX - 1 > U8_MAX);
+ }
+ 
+ /* Validate a memory region holding a table */
+diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+index ce7f2d6e447ed..8909ba8bfd0e9 100644
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ 
+ /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
+- * Copyright (C) 2019-2022 Linaro Ltd.
++ * Copyright (C) 2019-2023 Linaro Ltd.
+  */
+ 
+ #include <linux/types.h>
+@@ -1986,6 +1986,7 @@ int ipa_endpoint_config(struct ipa *ipa)
+ 	struct device *dev = &ipa->pdev->dev;
+ 	const struct ipa_reg *reg;
+ 	u32 endpoint_id;
++	u32 hw_limit;
+ 	u32 tx_count;
+ 	u32 rx_count;
+ 	u32 rx_base;
+@@ -2031,6 +2032,14 @@ int ipa_endpoint_config(struct ipa *ipa)
+ 		return -EINVAL;
+ 	}
+ 
++	/* Until IPA v5.0, the max endpoint ID was 32 */
++	hw_limit = ipa->version < IPA_VERSION_5_0 ? 32 : U8_MAX + 1;
++	if (limit > hw_limit) {
++		dev_err(dev, "unexpected endpoint count, %u > %u\n",
++			limit, hw_limit);
++		return -EINVAL;
++	}
++
+ 	/* Allocate and initialize the available endpoint bitmap */
+ 	ipa->available = bitmap_zalloc(limit, GFP_KERNEL);
+ 	if (!ipa->available)
+diff --git a/drivers/net/ipa/ipa_endpoint.h b/drivers/net/ipa/ipa_endpoint.h
+index 4a5c3bc549df5..3ad2e802040aa 100644
+--- a/drivers/net/ipa/ipa_endpoint.h
++++ b/drivers/net/ipa/ipa_endpoint.h
+@@ -1,7 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ 
+ /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
+- * Copyright (C) 2019-2022 Linaro Ltd.
++ * Copyright (C) 2019-2023 Linaro Ltd.
+  */
+ #ifndef _IPA_ENDPOINT_H_
+ #define _IPA_ENDPOINT_H_
+@@ -38,7 +38,7 @@ enum ipa_endpoint_name {
+ 	IPA_ENDPOINT_COUNT,	/* Number of names (not an index) */
+ };
+ 
+-#define IPA_ENDPOINT_MAX		32	/* Max supported by driver */
++#define IPA_ENDPOINT_MAX		36	/* Max supported by driver */
+ 
+ /**
+  * struct ipa_endpoint_tx - Endpoint configuration for TX endpoints
 -- 
 2.34.1
 
