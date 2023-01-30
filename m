@@ -2,68 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 010FF6805E1
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 07:09:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 169666805FE
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 07:36:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235592AbjA3GJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 01:09:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
+        id S235608AbjA3GgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 01:36:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231324AbjA3GJT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 01:09:19 -0500
-Received: from formenos.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 030769009;
-        Sun, 29 Jan 2023 22:09:17 -0800 (PST)
-Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
-        by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1pMNLr-005Tuy-1Z; Mon, 30 Jan 2023 14:09:12 +0800
-Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Mon, 30 Jan 2023 14:09:11 +0800
-Date:   Mon, 30 Jan 2023 14:09:11 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Chuck Lever III <chuck.lever@oracle.com>
-Cc:     Thomas Graf <tgraf@suug.ch>, netdev <netdev@vger.kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>
-Subject: Re: Fwd: [PATCH RFC] NFSD: Convert filecache to rhltable
-Message-ID: <Y9dfB322nu5d3fB1@gondor.apana.org.au>
-References: <15afb0215ec76ffb54854eda8916efa4b5b3f6c3.camel@redhat.com>
- <7456FF95-0C16-45C7-8CD9-B4436BE80B71@oracle.com>
+        with ESMTP id S229653AbjA3Gf7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 01:35:59 -0500
+Received: from out28-49.mail.aliyun.com (out28-49.mail.aliyun.com [115.124.28.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B0819F39;
+        Sun, 29 Jan 2023 22:35:55 -0800 (PST)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.7564432|0.2926431;CH=green;DM=|AD|false|;DS=CONTINUE|ham_system_inform|0.000518461-2.34874e-05-0.999458;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047193;MF=frank.sae@motor-comm.com;NM=1;PH=DS;RN=18;RT=18;SR=0;TI=SMTPD_---.R4fCY12_1675060546;
+Received: from sun-VirtualBox..(mailfrom:Frank.Sae@motor-comm.com fp:SMTPD_---.R4fCY12_1675060546)
+          by smtp.aliyun-inc.com;
+          Mon, 30 Jan 2023 14:35:50 +0800
+From:   Frank Sae <Frank.Sae@motor-comm.com>
+To:     Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        yanhong.wang@starfivetech.com
+Cc:     xiaogang.fan@motor-comm.com, fei.zhang@motor-comm.com,
+        hua.sun@motor-comm.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Frank <Frank.Sae@motor-comm.com>,
+        devicetree@vger.kernel.org
+Subject: [PATCH net-next v3 0/5] add dts for yt8521 and yt8531s, add driver for yt8531
+Date:   Mon, 30 Jan 2023 14:35:34 +0800
+Message-Id: <20230130063539.3700-1-Frank.Sae@motor-comm.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7456FF95-0C16-45C7-8CD9-B4436BE80B71@oracle.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 24, 2023 at 02:57:35PM +0000, Chuck Lever III wrote:
->
-> > I could be wrong, but it looks like you're safe to traverse the list
-> > even in the case of removals, assuming the objects themselves are
-> > rcu-freed. AFAICT, the object's ->next pointer is not changed when it's
-> > removed from the table. After all, we're not holding a "real" lock here
-> > so the object could be removed by another task at any time.
-> > 
-> > It would be nice if this were documented though.
+ Add dts for yt8521 and yt8531s, add driver for yt8531.
+ These patches have been verified on our AM335x platform (motherboard)
+ which has one integrated yt8521 and one RGMII interface.
+ It can connect to daughter boards like yt8531s or yt8531 board.
 
-Yes this is correct.  As long as rcu_read_lock is still held,
-the list will continue to be valid for walking even if you remove
-entries from it.
+ v3:
+ - change default rx delay from 1900ps to 1950ps
+ - moved ytphy_rgmii_clk_delay_config_with_lock from yt8521's patch to yt8531's patch
+ - removed unnecessary checks of phydev->attached_dev->dev_addr
 
-> Is there a preferred approach for this with rhltable? Can we just
-> hold rcu_read_lock and call rhltable_remove repeatedly without getting
-> a fresh copy of the list these items reside on?
+ v2:
+ - split BIT macro as one patch
+ - split "dts for yt8521/yt8531s ... " patch as two patches
+ - use standard rx-internal-delay-ps and tx-internal-delay-ps, removed motorcomm,sds-tx-amplitude
+ - removed ytphy_parse_dt, ytphy_probe_helper and ytphy_config_init_helper
+ - not store dts arg to yt8521_priv 
 
-Yes you can walk the whole returned list while removing the nodes
-one by one, assuming that you hold the RCU read lock throughout.
-The unhashed nodes are only freed after the RCU grace period so the
-list remains valid after removal.
+Frank Sae (5):
+  dt-bindings: net: Add Motorcomm yt8xxx ethernet phy
+  net: phy: Add BIT macro for Motorcomm yt8521/yt8531 gigabit ethernet
+    phy
+  net: phy: Add dts support for Motorcomm yt8521 gigabit ethernet phy
+  net: phy: Add dts support for Motorcomm yt8531s gigabit ethernet phy
+  net: phy: Add driver for Motorcomm yt8531 gigabit ethernet phy
 
-Cheers,
+ .../bindings/net/motorcomm,yt8xxx.yaml        | 102 ++++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ MAINTAINERS                                   |   1 +
+ drivers/net/phy/Kconfig                       |   2 +-
+ drivers/net/phy/motorcomm.c                   | 553 +++++++++++++++---
+ 5 files changed, 582 insertions(+), 78 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+2.34.1
+
