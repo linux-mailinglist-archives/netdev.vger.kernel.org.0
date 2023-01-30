@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C5D1B6808ED
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 10:24:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D39136808EB
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 10:24:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231364AbjA3JYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 04:24:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55782 "EHLO
+        id S236439AbjA3JYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 04:24:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236202AbjA3JX5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 04:23:57 -0500
+        with ESMTP id S236295AbjA3JXy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 04:23:54 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4DD02B2BE;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0606A2E0EA;
         Mon, 30 Jan 2023 01:23:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=YZUJ7HQihAVM9SQ7v6O493rk0LMuO0CwXzf/a69CjIo=; b=4BcbynZET2dk93MnTnfUkrL330
-        nYKMZsmSMCXKbmb2MM3OP2QpdJU8eNF917CXS5pxtBLjTZMwQrKTtMnws2ohBA7RRWHec4I36770B
-        Ox5+nkrXX9wj79Humb1i22F3sOfhx5Q0INe9jxIOGlDAhH7tSTgYpYPAdribUQEd61yXcFAkUZg7Y
-        usvpEhVaXaFP0bU5cEO5OugHl76HEBC2sYb6BKn5vE9PSlk+fsVSQPb+uYmueklT/b2nfc8UWSSxN
-        kiM0alrKzbROr8GBwV+vS9MFZZ4Cquq6oxKUN9fAM9wRzcs79/fw/ikKNhmMiAHMU8UjJ0DbCv4es
-        UohtdqJA==;
+        bh=3qeMDW+n608lQ7XRYvaqAkQtBBNz7xL+OjR215zkIbk=; b=UO1e7nwChScdGRWnt+ckYdCTpz
+        cffGVwmOAr9WIi1CMtOSiggD0UKfJpw5o3aJR+6RY6f+COa5q8cd3szdKLRSmmBk/8o983U1Lg0wc
+        ItPZU29NZPb3hGmbv+C9saZ2NV8isV+EyAxFRsl5oXGS+ls/Ho2UjhKpsysa46PfwsMOU8Gj7CgYM
+        g6aoeD80FmRnqZoMeGySNr8FML9baX8bb5LYGaXTnEgnd2jL+LSJi2XTvT5eG07ufkWNH7IgdO+Im
+        JptBCekoIOossTAp+JWcidjNg977cn+klaWqiqh63OAS82nhx4jRhacaWv23EStcOVhccFrZOwyrk
+        MX6JjZ0A==;
 Received: from [2001:4bb8:19a:272a:732e:e417:47d7:2f4a] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pMQMy-002o9A-P0; Mon, 30 Jan 2023 09:22:33 +0000
+        id 1pMQN1-002oA8-Cv; Mon, 30 Jan 2023 09:22:35 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Jens Axboe <axboe@kernel.dk>
 Cc:     Ilya Dryomov <idryomov@gmail.com>,
@@ -59,9 +59,9 @@ Cc:     Ilya Dryomov <idryomov@gmail.com>,
         linux-fsdevel@vger.kernel.org, linux-nfs@vger.kernel.org,
         devel@lists.orangefs.org, io-uring@vger.kernel.org,
         linux-mm@kvack.org
-Subject: [PATCH 09/23] virtio_blk: use bvec_set_virt to initialize special_vec
-Date:   Mon, 30 Jan 2023 10:21:43 +0100
-Message-Id: <20230130092157.1759539-10-hch@lst.de>
+Subject: [PATCH 10/23] zram: use bvec_set_page to initialize bvecs
+Date:   Mon, 30 Jan 2023 10:21:44 +0100
+Message-Id: <20230130092157.1759539-11-hch@lst.de>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230130092157.1759539-1-hch@lst.de>
 References: <20230130092157.1759539-1-hch@lst.de>
@@ -78,28 +78,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the bvec_set_virt helper to initialize the special_vec.
+Use the bvec_set_page helper to initialize bvecs.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/block/virtio_blk.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/block/zram/zram_drv.c | 15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
-index 6a77fa91742880..dc6e9b989910b0 100644
---- a/drivers/block/virtio_blk.c
-+++ b/drivers/block/virtio_blk.c
-@@ -170,9 +170,7 @@ static int virtblk_setup_discard_write_zeroes_erase(struct request *req, bool un
+diff --git a/drivers/block/zram/zram_drv.c b/drivers/block/zram/zram_drv.c
+index e290d6d970474e..bd8ae4822dc3ef 100644
+--- a/drivers/block/zram/zram_drv.c
++++ b/drivers/block/zram/zram_drv.c
+@@ -703,9 +703,7 @@ static ssize_t writeback_store(struct device *dev,
+ 	for (; nr_pages != 0; index++, nr_pages--) {
+ 		struct bio_vec bvec;
  
- 	WARN_ON_ONCE(n != segments);
+-		bvec.bv_page = page;
+-		bvec.bv_len = PAGE_SIZE;
+-		bvec.bv_offset = 0;
++		bvec_set_page(&bvec, page, PAGE_SIZE, 0);
  
--	req->special_vec.bv_page = virt_to_page(range);
--	req->special_vec.bv_offset = offset_in_page(range);
--	req->special_vec.bv_len = sizeof(*range) * segments;
-+	bvec_set_virt(&req->special_vec, range, sizeof(*range) * segments);
- 	req->rq_flags |= RQF_SPECIAL_PAYLOAD;
+ 		spin_lock(&zram->wb_limit_lock);
+ 		if (zram->wb_limit_enable && !zram->bd_wb_limit) {
+@@ -1380,12 +1378,9 @@ static void zram_free_page(struct zram *zram, size_t index)
+ static int zram_bvec_read_from_bdev(struct zram *zram, struct page *page,
+ 				    u32 index, struct bio *bio, bool partial_io)
+ {
+-	struct bio_vec bvec = {
+-		.bv_page = page,
+-		.bv_len = PAGE_SIZE,
+-		.bv_offset = 0,
+-	};
++	struct bio_vec bvec;
  
- 	return 0;
++	bvec_set_page(&bvec, page, PAGE_SIZE, 0);
+ 	return read_from_bdev(zram, &bvec, zram_get_element(zram, index), bio,
+ 			      partial_io);
+ }
+@@ -1652,9 +1647,7 @@ static int zram_bvec_write(struct zram *zram, struct bio_vec *bvec,
+ 		memcpy_from_bvec(dst + offset, bvec);
+ 		kunmap_atomic(dst);
+ 
+-		vec.bv_page = page;
+-		vec.bv_len = PAGE_SIZE;
+-		vec.bv_offset = 0;
++		bvec_set_page(&vec, page, PAGE_SIZE, 0);
+ 	}
+ 
+ 	ret = __zram_bvec_write(zram, &vec, index, bio);
 -- 
 2.39.0
 
