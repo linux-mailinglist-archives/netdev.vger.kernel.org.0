@@ -2,124 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34F87680F1D
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 14:35:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ADF3680F28
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 14:37:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236560AbjA3Nfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 08:35:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48852 "EHLO
+        id S236270AbjA3Nhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 08:37:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236504AbjA3Nfy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 08:35:54 -0500
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523222C648
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 05:35:53 -0800 (PST)
-Received: by mail-yb1-xb32.google.com with SMTP id 129so14048650ybb.0
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 05:35:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=G7bHIsj5CD0I4ilihSfFwyjG5glNyA2Pq4/YoxuvE2c=;
-        b=OwZzEt1aOjdubqNG50qkEWrRtN8qHjSzwqzwqxrcBg0nUzXjAGyP23CRc0NyjM+Zyd
-         femf4k138UmtbIMf5F55VQbVLL4yW2SXzhH0wDlsu+8CLjAINQXlN0ZY/Ad6FtGWGHpr
-         +NRWqUjv9QGE3EMdFYoSlkUKFqu9G3Wp0Sp11tF+GG4eomn1sR4V7J3r0jshrMsk7q0w
-         cVrU3RE/y4Nweq4rkP26PB7463qLB5rp7dykqNJCTyf2eHt3eK15kMOBRsAwnDPQg6tt
-         XZv9SyHg0fwxbAHlj1VfiskyHhqS2koyIShboxxmvjDWtCOEY7eWZO7JIV/AbkxDzwBb
-         9q7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=G7bHIsj5CD0I4ilihSfFwyjG5glNyA2Pq4/YoxuvE2c=;
-        b=DkCW2uQxAqlGAn1StIhEH8Ghq7QIPr6xVT19qpT+DpEAoSb1stN5Vr/JsM1ZqYC9Ua
-         Lkn20SpaIVoR/1nD12Ntr+U0OIQS8WdJMn8p/ksCDaDwHX4SmcsjUPQ8TLwGFPuuB+Wf
-         rmdEFNOSpXFrPCIxJBHeUS70+Cr9cnx6zhezebeeX0yr55x6+4TuVipuF6xfMYQ3iuOO
-         n2q7CjuCbaaQNda2p+xUzXkks/iCgRdcFaqpEpvYr+ResmdPgo3Aeg9CCjniMNqBNEIn
-         1c2RI9XO4KQpiRnmi3UnofJDhng5KgFRgL6Xn9ufMjpBuLOwODAvpG3MHmSZxMF/iuiU
-         T1Hw==
-X-Gm-Message-State: AFqh2krq9XW8twr30390+MAtgQ5Ltvmra738Cq7rRv3Hjq7C7tY6y6sR
-        59pF6cBujIYvF7aQcJrRZx3xLOZ8nXA3ZVnUK9vPCg==
-X-Google-Smtp-Source: AMrXdXv4IhoNoQyKPn5TvHWkprEWumyW0THrjKxQU5y+tSgAW3MfscEL+cJCYPDlQtUTOnc6y/ttYfP4jg98K7sLZJ0=
-X-Received: by 2002:a25:53c2:0:b0:703:e000:287 with SMTP id
- h185-20020a2553c2000000b00703e0000287mr5440320ybb.171.1675085752416; Mon, 30
- Jan 2023 05:35:52 -0800 (PST)
-MIME-Version: 1.0
-References: <20230127181625.286546-1-andrei.gherzan@canonical.com>
- <CA+FuTSewU6bjYLsyLzZ1Yne=6YBPDJZ=U1mZc+6cJVdr06BhiQ@mail.gmail.com>
- <a762638b06684cd63d212d1ce9f65236a08b78b1.camel@redhat.com> <Y9e9S3ENl0oszAH/@qwirkle>
-In-Reply-To: <Y9e9S3ENl0oszAH/@qwirkle>
-From:   Willem de Bruijn <willemb@google.com>
-Date:   Mon, 30 Jan 2023 08:35:16 -0500
-Message-ID: <CA+FuTSe_NMm6goSmCNfKjUWPGYtVnnBMv6W54a_GOeLJ2FqyOQ@mail.gmail.com>
-Subject: Re: [PATCH] selftests: net: udpgso_bench_tx: Introduce exponential
- back-off retries
-To:     Andrei Gherzan <andrei.gherzan@canonical.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
+        with ESMTP id S235869AbjA3Nhd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 08:37:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 686B039295;
+        Mon, 30 Jan 2023 05:37:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C63C860FFA;
+        Mon, 30 Jan 2023 13:37:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADFAFC4339E;
+        Mon, 30 Jan 2023 13:37:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1675085849;
+        bh=xVUKXbUIi6xLEiIYm55wmvp+1ETe+NKrYKfL39iZqjk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZWhdZxNByqgLSw9ZeTKMACA5jYn4ulj+8bWVDJshVzFGSC7BiIUszBGzEsXnrQBZN
+         Y6mR3+pWmnNoRqLRkrZHQtJj9e/k4IryR/3jnJpRPLqP9UWarUAFRJ83gj7OeH0Nbf
+         x+vu/g0l6yctoaZ/DAaPY/eJt8CD6euDYXXQyicQ=
+Date:   Mon, 30 Jan 2023 14:37:26 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     =?utf-8?B?0JbQsNC90LTQsNGA0L7QstC40Ycg0J3QuNC60LjRgtCwINCY0LPQvtGA0LU=?=
+         =?utf-8?B?0LLQuNGH?= <n.zhandarovich@fintech.ru>
+Cc:     "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        "lvc-project@linuxtesting.org" <lvc-project@linuxtesting.org>
+Subject: Re: [PATCH 5.10 1/1] mt76: fix mt7615_init_tx_queues() return value
+Message-ID: <Y9fIFirNHNP06e1L@kroah.com>
+References: <20230130123655.86339-1-n.zhandarovich@fintech.ru>
+ <20230130123655.86339-2-n.zhandarovich@fintech.ru>
+ <Y9fAkt/5BRist//g@kroah.com>
+ <b945bd5f3d414ac5bc589d65cf439f7b@fintech.ru>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b945bd5f3d414ac5bc589d65cf439f7b@fintech.ru>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 7:51 AM Andrei Gherzan
-<andrei.gherzan@canonical.com> wrote:
->
-> On 23/01/30 09:26AM, Paolo Abeni wrote:
-> > On Fri, 2023-01-27 at 17:03 -0500, Willem de Bruijn wrote:
-> > > On Fri, Jan 27, 2023 at 1:16 PM Andrei Gherzan
-> > > <andrei.gherzan@canonical.com> wrote:
-> > > >
-> > > > The tx and rx test programs are used in a couple of test scripts including
-> > > > "udpgro_bench.sh". Taking this as an example, when the rx/tx programs
-> > > > are invoked subsequently, there is a chance that the rx one is not ready to
-> > > > accept socket connections. This racing bug could fail the test with at
-> > > > least one of the following:
-> > > >
-> > > > ./udpgso_bench_tx: connect: Connection refused
-> > > > ./udpgso_bench_tx: sendmsg: Connection refused
-> > > > ./udpgso_bench_tx: write: Connection refused
-> > > >
-> > > > This change addresses this by adding routines that retry the socket
-> > > > operations with an exponential back off algorithm from 100ms to 2s.
-> > > >
-> > > > Fixes: 3a687bef148d ("selftests: udp gso benchmark")
-> > > > Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
-> > >
-> > > Synchronizing the two processes is indeed tricky.
-> > >
-> > > Perhaps more robust is opening an initial TCP connection, with
-> > > SO_RCVTIMEO to bound the waiting time. That covers all tests in one
-> > > go.
-> >
-> > Another option would be waiting for the listener(tcp)/receiver(udp)
-> > socket to show up in 'ss' output before firing-up the client - quite
-> > alike what mptcp self-tests are doing.
->
-> I like this idea. I have tested it and it works as expected with the
-> exeception of:
->
-> ./udpgso_bench_tx: sendmsg: No buffer space available
->
-> Any ideas on how to handle this? I could retry and that works.
+On Mon, Jan 30, 2023 at 01:27:26PM +0000, Жандарович Никита Игоревич wrote:
+> > What is the git commit id of this upstream?
+> > 
+> > And I can't apply this as-is for the obvious reason it would mess up the
+> > changelog, how did you create this?
+> > 
+> > confused,
+> > 
+> > greg k-h
+> 
+> Commit in question is b671da33d1c5973f90f098ff66a91953691df582
+> upstream. I wasn't certain it makes sense to backport the whole patch
+> as only a small portion of it pertains to the fault at question.
 
-This happens (also) without the zerocopy flag, right? That
+What is the "fault"?
 
-It might mean reaching the sndbuf limit, which can be adjusted with
-SO_SNDBUF (or SO_SNDBUFFORCE if CAP_NET_ADMIN). Though I would not
-expect this test to bump up against that limit.
+And why not take the whole thing?  What's wrong with that?  We almost
+always want to take whatever is in Linus's tree because when we do not,
+we almost always cause bugs or other problems (later merge issues.)
 
-A few zerocopy specific reasons are captured in
-https://www.kernel.org/doc/html/latest/networking/msg_zerocopy.html#transmission.
+So always take the original fix please.
+
+thanks,
+
+greg k-h
