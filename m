@@ -2,68 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 613CA680716
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 09:11:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22FF668075F
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 09:27:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235804AbjA3ILT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 03:11:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36870 "EHLO
+        id S236001AbjA3I1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 03:27:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235689AbjA3ILR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 03:11:17 -0500
-Received: from mail-vs1-xe36.google.com (mail-vs1-xe36.google.com [IPv6:2607:f8b0:4864:20::e36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5118CDBD1
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 00:10:52 -0800 (PST)
-Received: by mail-vs1-xe36.google.com with SMTP id 187so11556780vsv.10
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 00:10:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ymIAXtCd2MxqtYWvrJZz0PEkm0tFm2YFN6GsAuKltPg=;
-        b=VjBFoQyvxVbZcRjLUrbibXw4+MT8g0UWQSD5G0+jS0OLvVW/KtzPBQ3zu/A9gW63DF
-         f/l3VAfgTqNXiiLTav7jolzt/AvRqrG8xKKncUHoUpkN+9/+rg586QUbOmYg2O/hoYVa
-         iGDrVeTGq4FqWr/Zfhu+fazosEJH8l5CAD642AYSppVIR3mh7EEedUIRs2Bn5x4yzMYK
-         V68lgUNYYVPPGMEIihaSvz7cwNBmtjzuMUaFDRBLdVIbgcknFyCpeNLdOAsL5Ad0Mun4
-         Bp89Q+gJkGPhaIqayZ5HBeoJVUg87pDRxwX1F2+xan/kajjdNkzp/HZTfln2s//WsK/T
-         VISQ==
+        with ESMTP id S229741AbjA3I1Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 03:27:16 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4425B2411E
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 00:26:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675067189;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6AGVQkEQGPmbyUHabR74dVCVn0EngYdjpKD75ZNVK50=;
+        b=Jz+jpodXsTKBCisajNcoix/d64tuw0/yV+65v0qV1972AkNXfa5lALDCUKjfoFX7oLEPZ1
+        nQkNbe/tzMNaEqV9lFszeEK3Ov8LRL7ifmYkIVPeVJC4ECeK7cPulLG+VEEiFX0r+UC9gR
+        fktqN0F0TRqwiQdMvwAnWdQ1wrPU73I=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-414-9Wb-181VOwue5SYqvMOZyg-1; Mon, 30 Jan 2023 03:26:10 -0500
+X-MC-Unique: 9Wb-181VOwue5SYqvMOZyg-1
+Received: by mail-qv1-f71.google.com with SMTP id l6-20020ad44446000000b00537721bfd2dso6163864qvt.11
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 00:26:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ymIAXtCd2MxqtYWvrJZz0PEkm0tFm2YFN6GsAuKltPg=;
-        b=vnlTMRDwfL6TVDyjY7EEwSbvrSyIvJshqq45TEswaKJpk6e6chbnkOO4ElcoxKY2E0
-         dSP8Zvq7zQXYjGqMgr9CNNCYNQoNLIpZ/IkY4i2fifAxO/SBJQYWj0czayEbaG1QFGCF
-         2ilYP6m0sSpO817Gjp8ks6GbNVm705yLqCzDMdT81oSZqS4WPnInVSveV46v6WeNhNwS
-         BxL5ilzFmtujVv45bU1sWSA5j98N6EkNLHHVMjc4aatEiWWohBPKJyae3+qaGl2DVfOO
-         D7eAJgI6BwKY80JbXChchQ09YXF0stxCOH5/fqVfi/JH5e2VzEi2A6t5EiC2S9oMShDQ
-         vfyw==
-X-Gm-Message-State: AO0yUKXp+Bieq158EvWgr4fucVFJLVfozOtT8bDuuJ3DKqDn1jQQ+RXI
-        2fQKAqJteLWOwbbAiSlhgjvCJ8bqu4B+A58l6RBY6B2+mUe6+UcOEus=
-X-Google-Smtp-Source: AK7set9o1e8iWYYvaoq70mZHQVo6LDmk5L7AnpPp1CiDFpmmDUsbP/J1TrEQHND2L6dETz8Z0PbBef9gd1pXrlqpqi4=
-X-Received: by 2002:a67:d998:0:b0:3eb:8780:ced6 with SMTP id
- u24-20020a67d998000000b003eb8780ced6mr2091574vsj.12.1675066145479; Mon, 30
- Jan 2023 00:09:05 -0800 (PST)
-MIME-Version: 1.0
-References: <20230124145430.365495-1-jaewan@google.com> <20230124145430.365495-2-jaewan@google.com>
- <Y8//ZflAidKNJAVQ@kroah.com> <CABZjns5FRY+_WD_G=sjiBxjSwaydgL-wgTAR-PSeh-42OTieRg@mail.gmail.com>
- <Y9dWztPR3FxkLv26@kroah.com>
-In-Reply-To: <Y9dWztPR3FxkLv26@kroah.com>
-From:   Jaewan Kim <jaewan@google.com>
-Date:   Mon, 30 Jan 2023 17:08:54 +0900
-Message-ID: <CABZjns6nER31ZbBKQ_QKU0Hrh5V5U_W6Q4vGsE7kt7S5YYy3mg@mail.gmail.com>
-Subject: Re: [PATCH v6 1/2] mac80211_hwsim: add PMSR capability support
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     johannes@sipsolutions.net, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@android.com, adelva@google.com
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=6AGVQkEQGPmbyUHabR74dVCVn0EngYdjpKD75ZNVK50=;
+        b=DjBtwOziJYxINmK0AfNijWAf5LyEM+a/o/ZyBcsb8gRyc0XCdIKUmuLrP2GCoyheTm
+         HeJvKUlOo7xL6klWb1CZaUvGdbOKd/B/L8AcJhxfKWDwJNy2+w/XjMwJI7kdwHT0T9Lp
+         +0oOXL9H/d6tNkI+ba/J5l3LFx+aTbXTHNTIG/Q5YAg/z4B+aZnPmT/ZKVwSg4nRhNHq
+         vKaDl9JSIJvamfO9gOt0jv8J7+nHE6z7fZRGi6JnifJUmUrwFmzAXxx6v7DKVL3iSD2t
+         b4DS2C0TGqelg9d+5Wck3pQ+mQt5jVaR9+GKXOK4lOu/yc5fIaxodMRiNQsnHlwisLVF
+         t2OA==
+X-Gm-Message-State: AO0yUKVBVJnaeJq45Ldp0I92I3GvvYEuCAKZNDsTDIPe6EjnYIo269ZH
+        rw0RMPVZZf5cJrp6MNI0iER/kZV+nLRDKZj8WcZKqaHb6UMtgKBxbR9b44m5QxZM7hsBTC2hmZM
+        WvZfB+BzGICM0IbhH
+X-Received: by 2002:ac8:5dd0:0:b0:3b6:425d:d5ca with SMTP id e16-20020ac85dd0000000b003b6425dd5camr12051180qtx.24.1675067168816;
+        Mon, 30 Jan 2023 00:26:08 -0800 (PST)
+X-Google-Smtp-Source: AK7set9MV6u8uT0jvPDJaSJ5nfhgUrilLWyrJYf9jx8nwDH/LcG7AI2rY5/eK1DiWBX55qVSUYdn6A==
+X-Received: by 2002:ac8:5dd0:0:b0:3b6:425d:d5ca with SMTP id e16-20020ac85dd0000000b003b6425dd5camr12051162qtx.24.1675067168560;
+        Mon, 30 Jan 2023 00:26:08 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
+        by smtp.gmail.com with ESMTPSA id h6-20020a375306000000b006fa4ac86bfbsm7612982qkb.55.2023.01.30.00.26.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Jan 2023 00:26:08 -0800 (PST)
+Message-ID: <a762638b06684cd63d212d1ce9f65236a08b78b1.camel@redhat.com>
+Subject: Re: [PATCH] selftests: net: udpgso_bench_tx: Introduce exponential
+ back-off retries
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Willem de Bruijn <willemb@google.com>,
+        Andrei Gherzan <andrei.gherzan@canonical.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Mon, 30 Jan 2023 09:26:05 +0100
+In-Reply-To: <CA+FuTSewU6bjYLsyLzZ1Yne=6YBPDJZ=U1mZc+6cJVdr06BhiQ@mail.gmail.com>
+References: <20230127181625.286546-1-andrei.gherzan@canonical.com>
+         <CA+FuTSewU6bjYLsyLzZ1Yne=6YBPDJZ=U1mZc+6cJVdr06BhiQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+MIME-Version: 1.0
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,55 +84,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 2:34 PM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Mon, Jan 30, 2023 at 12:48:37AM +0900, Jaewan Kim wrote:
-> > On Wed, Jan 25, 2023 at 12:55 AM Greg KH <gregkh@linuxfoundation.org> w=
-rote:
-> > > > +static int parse_ftm_capa(const struct nlattr *ftm_capa,
-> > > > +                       struct cfg80211_pmsr_capabilities *out)
-> > > > +{
-> > > > +     struct nlattr *tb[NL80211_PMSR_FTM_CAPA_ATTR_MAX + 1];
-> > > > +     int ret =3D nla_parse_nested(tb, NL80211_PMSR_FTM_CAPA_ATTR_M=
-AX,
-> > > > +                                ftm_capa, hwsim_ftm_capa_policy, N=
-ULL);
-> > > > +     if (ret) {
-> > > > +             pr_err("mac80211_hwsim: malformed FTM capability");
-> > >
-> > > dev_err()?
-> >
-> > Is dev_err() the printing error for device code?
->
-> I am sorry, but I can not understand this question, can you rephrase it?
+On Fri, 2023-01-27 at 17:03 -0500, Willem de Bruijn wrote:
+> On Fri, Jan 27, 2023 at 1:16 PM Andrei Gherzan
+> <andrei.gherzan@canonical.com> wrote:
+> >=20
+> > The tx and rx test programs are used in a couple of test scripts includ=
+ing
+> > "udpgro_bench.sh". Taking this as an example, when the rx/tx programs
+> > are invoked subsequently, there is a chance that the rx one is not read=
+y to
+> > accept socket connections. This racing bug could fail the test with at
+> > least one of the following:
+> >=20
+> > ./udpgso_bench_tx: connect: Connection refused
+> > ./udpgso_bench_tx: sendmsg: Connection refused
+> > ./udpgso_bench_tx: write: Connection refused
+> >=20
+> > This change addresses this by adding routines that retry the socket
+> > operations with an exponential back off algorithm from 100ms to 2s.
+> >=20
+> > Fixes: 3a687bef148d ("selftests: udp gso benchmark")
+> > Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
+>=20
+> Synchronizing the two processes is indeed tricky.
+>=20
+> Perhaps more robust is opening an initial TCP connection, with
+> SO_RCVTIMEO to bound the waiting time. That covers all tests in one
+> go.
 
-I just wanted to know better about `dev_err()`,
-because all existing code in this file uses `pr_err()`,
-and there's no good documentation for `dev_err()`.
+Another option would be waiting for the listener(tcp)/receiver(udp)
+socket to show up in 'ss' output before firing-up the client - quite
+alike what mptcp self-tests are doing.
 
-Given your answer below, it seems like that `pr_err()` isn't a good
-choice in this file.
-Am I correct?
+Cheers,
 
->
-> > If so, would it be better to propose another change for replacing all
-> > pr_err() with dev_err() in this file?
->
-> Odds are, yes, but that should be independent of your change to add a
-> new feature.
+Paolo
 
-Got it. Then I'll break the consistency in this file for my change,
-and also propose another change for using `dev_err()` instead of `pr_err()`=
-.
-
->
-> thanks,
->
-> greg k-h
-
-
-
---=20
-Jaewan Kim (=EA=B9=80=EC=9E=AC=EC=99=84) | Software Engineer in Google Kore=
-a |
-jaewan@google.com | +82-10-2781-5078
