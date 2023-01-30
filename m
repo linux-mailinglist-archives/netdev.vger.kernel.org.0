@@ -2,108 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97D27681581
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 16:49:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0C39680BD8
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 12:25:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236566AbjA3Ptc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 10:49:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56860 "EHLO
+        id S236552AbjA3LZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 06:25:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236739AbjA3PtS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 10:49:18 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2041.outbound.protection.outlook.com [40.107.237.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413B14ED3
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 07:49:15 -0800 (PST)
+        with ESMTP id S236565AbjA3LZJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 06:25:09 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2074.outbound.protection.outlook.com [40.107.93.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A171F48B;
+        Mon, 30 Jan 2023 03:24:53 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=G8jPDr5JdxTFBGJU6Io5K0hyk80gz+Nm5J88jx5DLPYpx7xhGTE/IFHPHRqeAzGil/bn16FiHFSQlq50eN7nN1h5aAGSHFVOP1M1qY9zQvNI6AuwqPIXOteO48oAqq7VZv/51Yr5A441Eet56C6j3vmFjiNWWT0pOntsrXoVpAAJpIiJH666SUOVV2HLgMetAwK/BDiQzq5+M6oUy0FNzGB9GBh4e9HGW8qt1GyMkZj0BtynOTpXrWksdctKBTblDwEKz89tFyqmmFkvW1xFkfH93f9ZI50Kw5w5EfgIuOoOqWAOmkylD0zCayH7quSMQBtFo2gLa+zCCNaDpobVBg==
+ b=c/xWjjlo24/hDcLSh0m5+iFWOjholfC9hlnCWrMjQJrl9OkDcabwtiX6YsDqV/Cr6BDIznoHr9IBzFYMIMZwAQluMeRTEChyVQWV4Y/m7h0esf73wjxPuPUEZofF2E4vNiLiwmOTBONpE4zPfJ4eFgy+V83d/cFyYE5kPcgMIBBj+9XSqcVtDYHEWtVVDDnuCu760yDq6VipTaNXyD1J7bWE5HNY+uhOCzwIg/IietxzKPRcW1Y5aDr5IGoLFLu8crePMOubXMpBEQQUwiy8AQmizfcovdoIlqDAtCV2bUme5gY/m9temQdh3tZbe4Lak/qNoHvHZHs8eGpZ6otvsg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MMG6WauqKhgIWHUSEv1L/F0leQMvyek/gjyf4WFylv0=;
- b=YmDFaMgXhGRnYFYHYtuCRdCgiHgvyyQRLhXa98ebCB8ZY7TdIjORBlbd732nY+wMc01AtJ35/RWdhYn2ETOYb+itFoOmNpA68WLzLLwormqiwMtoxcTguBLYCKgYluSSvjMTA7KoJcXvgoRdbHiOrpmMnxKFysAx+4y5x4Vse0vxBBp72yDKro9RGPgtT+Kiaefcw5e8H1xnuqmN60khOOv96hQxXg19Ag0nzOcDAzqtqi2dqK+EO4SejW1ss+DjYY1k2uqsWEL11hWxAaTysBhcmmB5AcA6x5Twc71aTRZxNdTk9gsl909qMIcHXDC7tsoE2a2BtWO8u1YVGEf2Vw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=lists.linux-foundation.org
- smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
+ bh=Qi0a1JXB1cGcFPTt3q22VNEdnLnaDTHalmup7TcwS7U=;
+ b=gsRbWeZl2y2VRxAxEyr46DPhFetWYI+vWPYOJJXM4JFilsTnyoBGfvTmUs6yQ4aroZO0PqTG8Or8vT3dTPw3rTf9jEaJje0FQwuVJoy0lUmrgQI438+6Veqc9YUPrIW9yT+iyvhp7koEuk/x4mlELiayCIsX6WPYoq6MI9GhQCRQ1QVN8XwXRB+Ni1/l6VJfHx97w9oRMfh9cinf6duF6PNUVCp96R1SzoItUi5vFRxNrMyMPapQ0iW3NRBCqRYX3lGmemSgC1mtrgb8RIc0+GnoYvRpMIX/c06w1Fd2HxUwRSguiA+5Fytu6YrEaAjmX2XSXOMBShR2N+h1DeS3fQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MMG6WauqKhgIWHUSEv1L/F0leQMvyek/gjyf4WFylv0=;
- b=ndbq4mYnFi6Dsp1YU7APD3a+oiwKJCFY8ap4wo2oO6QuzLmwuyehWXKNK2QTs5wceMHhuDEu+AQqI3vv51/S3ThgVERQAhvuFYM8Vfzo8Q4+Ca1pVJvPCNfKpa+hqocembQsfzJfPOpLlBecKDEUtaDY/8fZ9rvsAxZL0hcS2GQZU39P9plUbEEUtBnLc5W8bQ9al7zqBG91nSl1LEHKoELN02f46WhVDh+RTBOuW0ar2xhURur3qLP7hOSkQ7VGme5xjdhDDxywb4S+1PzSTmbLVxtC2ET0u/j/w73vTXLTO8dcJaL5To0VVnIaFEftDfBjFlmaE77essjWV7ietw==
-Received: from DS7PR06CA0022.namprd06.prod.outlook.com (2603:10b6:8:2a::10) by
- SN7PR12MB6929.namprd12.prod.outlook.com (2603:10b6:806:263::11) with
+ bh=Qi0a1JXB1cGcFPTt3q22VNEdnLnaDTHalmup7TcwS7U=;
+ b=X+an6WzZ/iO4RB0FQnOau/akl79bJyMymk+3YsWFT1+K/hpUMrD5f+Ad7K90+bFU7nQPCb++Oum/c9VNwmRbJt138IVFBGoDqQzkTi3/X2t12X+9bqD/w8PTM5vSaMSjyVW2ll2QmtTcHymnVOlrhoEGuFbVY2Eu6rAGiXZMASydiXfv3rJOPXkoEgoNoRfO0akLB5Qf5llJzFEVvaxD2oMgCgD9oNLvgvj7GnY0J3HVptIrGPUGXslQLwAuLRU38ijDZaOyK8oLAEocOYma1wx83YJl1kIEhSuWw0TP0d5aUjpOp5DAz7FzCK1r2GX9iR9ITaeRj4vpprjA4qJ3/g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BYAPR12MB3176.namprd12.prod.outlook.com (2603:10b6:a03:134::26)
+ by DM8PR12MB5432.namprd12.prod.outlook.com (2603:10b6:8:32::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.36; Mon, 30 Jan
- 2023 15:49:11 +0000
-Received: from DM6NAM11FT047.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:2a:cafe::fa) by DS7PR06CA0022.outlook.office365.com
- (2603:10b6:8:2a::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.37 via Frontend
- Transport; Mon, 30 Jan 2023 15:49:11 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DM6NAM11FT047.mail.protection.outlook.com (10.13.172.139) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6043.28 via Frontend Transport; Mon, 30 Jan 2023 15:49:11 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Mon, 30 Jan
- 2023 07:49:01 -0800
-Received: from yaviefel (10.126.231.37) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Mon, 30 Jan
- 2023 07:48:58 -0800
-References: <cover.1674752051.git.petrm@nvidia.com>
- <1bb4bfeaeb14e4b484c6d71adef0b21686468153.1674752051.git.petrm@nvidia.com>
- <e46f0af5-ef19-5260-5524-e53b4e4438f1@blackwall.org>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-CC:     Petr Machata <petrm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>, Roopa Prabhu <roopa@nvidia.com>,
-        <netdev@vger.kernel.org>, <bridge@lists.linux-foundation.org>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next 08/16] net: bridge: Add netlink knobs for
- number / maximum MDB entries
-Date:   Mon, 30 Jan 2023 12:07:27 +0100
-In-Reply-To: <e46f0af5-ef19-5260-5524-e53b4e4438f1@blackwall.org>
-Message-ID: <87mt60f2fr.fsf@nvidia.com>
-MIME-Version: 1.0
+ 2023 11:24:52 +0000
+Received: from BYAPR12MB3176.namprd12.prod.outlook.com
+ ([fe80::465a:6564:6198:2f4e]) by BYAPR12MB3176.namprd12.prod.outlook.com
+ ([fe80::465a:6564:6198:2f4e%4]) with mapi id 15.20.6043.023; Mon, 30 Jan 2023
+ 11:24:52 +0000
+References: <cover.f52b9eb2792bccb8a9ecd6bc95055705cfe2ae03.1674538665.git-series.apopple@nvidia.com>
+ <9b54eef0b41b678cc5f318bd5ae0917bba5b8e21.1674538665.git-series.apopple@nvidia.com>
+ <Y8/wWTOOjyfGBrP0@nvidia.com>
+User-agent: mu4e 1.8.10; emacs 28.2
+From:   Alistair Popple <apopple@nvidia.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     linux-mm@kvack.org, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jhubbard@nvidia.com,
+        tjmercier@google.com, hannes@cmpxchg.org, surenb@google.com,
+        mkoutny@suse.com, daniel@ffwll.ch, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
+Subject: Re: [RFC PATCH 10/19] net: skb: Switch to using vm_account
+Date:   Mon, 30 Jan 2023 22:17:18 +1100
+In-reply-to: <Y8/wWTOOjyfGBrP0@nvidia.com>
+Message-ID: <87pmawz2ma.fsf@nvidia.com>
 Content-Type: text/plain
-X-Originating-IP: [10.126.231.37]
-X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
+X-ClientProxiedBy: SY5PR01CA0032.ausprd01.prod.outlook.com
+ (2603:10c6:10:1f8::9) To BYAPR12MB3176.namprd12.prod.outlook.com
+ (2603:10b6:a03:134::26)
+MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT047:EE_|SN7PR12MB6929:EE_
-X-MS-Office365-Filtering-Correlation-Id: 424f9a25-806c-4d7e-7a03-08db02d98803
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3176:EE_|DM8PR12MB5432:EE_
+X-MS-Office365-Filtering-Correlation-Id: 65205dcd-8944-4c62-da33-08db02b49adf
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: d65IdaYQ2UXzatm3UQVITbmeQwITfIQxdzXbDyR5DnKl106RdkYyWhSbkEqrONuFed9RdE3eOxxpelj3jqAQPGFwoNfcb3uyyykEdvX+nMnWB7FnJjPLueHxHuvJlMjuso3iaZdLO09aWBlFR0dLLyY7/qGtha8Bgox+LrYgA+weCUfDPBaAlv7cpq77o1HMS0nzw4m0gGOvnxQ8nZfsTTq9xW0div1ODUC0b1PKQX1Kh3L97aTdiFneq+8QsYXbpiqRBx0I3mwF/mk8b/yT+C25I0JsXGa65j63ZClvpQcAVIIHpL7RgkiV7yQ3GX890nfWecOavimFG5Q9ebpuo/nPnyj187lRmue8+vqVQ30PAHy1XhY2pboOhEYGSKS6kgzRvoYVHoI3aNmDqeCs2q9LS8uWW7/xBePOssj2FbGO/D9I8lXpZfISANF9mDcuoVBS7k7p4cknB2G/gQFrsOS7dvz257+2/gmPOeP6ow+9TNbghaL8gyxVS6IdTOjTGUv33OpkZJQZlHrdjzyhHDbYgC8YnMwN/8mMQBcR7sMqEEVNKw48nw4hngCmLzQKKvnfoZ5hayMLrA+nWYAebjc1pVwFUFhGNafGZk7Ey8Y++jPI5HH6l3GtA4Ta6CBh5e4nD/jiVAMobPB5wcVGm6XjzJr/eUZHe62Lt8oJhUKHIAIbfyRyjtABau6p8LM7WYUDoBCh93FqnSrd880hFA==
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(346002)(376002)(136003)(39860400002)(451199018)(40470700004)(46966006)(36840700001)(83380400001)(86362001)(2616005)(426003)(336012)(47076005)(7636003)(82740400003)(82310400005)(356005)(2906002)(40460700003)(36756003)(36860700001)(53546011)(186003)(26005)(478600001)(16526019)(6666004)(107886003)(40480700001)(8676002)(6916009)(8936002)(41300700001)(4326008)(66899018)(54906003)(5660300002)(70206006)(316002)(70586007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: ACZdb4BpPVFp7h3wQtnPhQL6KlqB/82JMiX6s5CabgbGiycwIk0cK+pvksUv37K4cVk4s5bGlD/e5bPgVf4YnYAegMWnafwLu+I2UvMz1wDClGMXhPx3bQykHupOIukD2yczLCAIw/Dwzzo5dBlbqgg2GvRI3Lxwi0Mc0kFOMRMIJpPwJk2a7Xd2Zwv6BUeYX3aXpbzq7TlPrlBCtm/47Z2/o7Kr46bObLZUADgwBKYIc651/Cbgc0qIjzL849mMKtbiT/sTjf5SwN6B0uuiWjGE5PrqjM/JllEHCmSQ94ZE2VpcIl1XLCUP8Cec+mek4OCgfBW+f7S4u7eXb4Vmnb9SXJlgNkBcLvsAtLcOhPrAnlxnJtk03vdUvn3zRDnpvmbyFoao4YduqC/dRLquuCGv2hdjcnLK/7XOd2rOpj8AGEwp91PDXWmdPT79pHuH0suBv9JKXfsHJJFASHcTYfbjtM/v2ck463P6oQeSRGIirADMKPxvfSP79eeIrcuPOr2ZczZQXiml0zBMJCyvae7hnD+gMRlldS4LBh90oBYRPwdiJspYZZVr3yNg+B+Yam/a9RRltUhVfLmxxgvo8gF8b1x6bnsKnnKutQIdpRd7aTLjuYkqyQtb/P61OXRr3IAblsc0gvNhP8zRW6yk6g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3176.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(376002)(366004)(346002)(396003)(136003)(451199018)(8936002)(6862004)(41300700001)(86362001)(5660300002)(7416002)(83380400001)(2616005)(37006003)(6636002)(316002)(66556008)(66476007)(66946007)(38100700002)(4326008)(8676002)(6666004)(6512007)(26005)(186003)(6506007)(36756003)(6486002)(478600001)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qzRZ62TLk/RG5NoGVprRSUMF0w/KSBts6RhMaXHJvv2icjVGHFfSDcJKQmrQ?=
+ =?us-ascii?Q?RfZndqH556LBxWXDAVBu6BxS+X39T7P6WGFeULrupmXsIwmyfnrWhXC3v433?=
+ =?us-ascii?Q?XUzXUpYqnfCBZUbj+eLedI/Via5Nwyl+ahovb+x1CyOJA5mvOf515vZxz/Bj?=
+ =?us-ascii?Q?r60AvZ/jN6wckCyOBpxbejjb+yGINwh0dyAyf6gBs0psmpTiE4YILHKTljS6?=
+ =?us-ascii?Q?0SQbY43R553wMHAdi6PIAb6X+UasbZDjeDlF4X6PnI3VadqMVREBE9FT4ZDL?=
+ =?us-ascii?Q?4Uc5bzDrQ0Dv7N/t/9kGSGQrqcG+tJKb8wSh2AdWJHeWQq4EfGMlyA8VWSQw?=
+ =?us-ascii?Q?12Fz/eod2iwtRtp6o54/Ua81pFYQdXQYXQhGbQNXZCaZWKQr5lmwoYFDm5Zw?=
+ =?us-ascii?Q?BjoX+N0/o5VyVaakBWG4s9EcOy/pckv2dvmScc6Lc1/TBRTxKtjhK+U4R1mh?=
+ =?us-ascii?Q?X1dqyjNu0W++so+PkqjP9K5SDmuQyRjJVTTbiXDN7tkV+f99AWZGtRjnmb+y?=
+ =?us-ascii?Q?UPHP5MY8HwIaI7qkLDh2iBT5PGZ+nwl1QVkcHDDiXBa70v7HH3ThRUNWXMmH?=
+ =?us-ascii?Q?u51AJihDt+x5Reva8W6EcHiojoqqQLAwltvvMXnrEzD3GU5VNTyE7lyObsDS?=
+ =?us-ascii?Q?Ac2Y6lEwXKSZiIqslIJQkorgXx8JKxPqrCTeNtSX/RNhmInTAaAm2UdCJ2YJ?=
+ =?us-ascii?Q?OEJ24EFVPybBq0kYDPP3t12/nRl5JEYLYUr2uyHe9dzJ4Qq8vHyPfcKmh2FM?=
+ =?us-ascii?Q?I+0D6hoDZuX5FerVCji8lvHFVD0EDJg/YMZMw62GG/zIHE7twOx7i7/I8uOK?=
+ =?us-ascii?Q?gGk8iAH1wA4pt09lwCLEnzhaYfBFdQIex7bj3bxEP1EVJIGtbB6QHYmI4AMQ?=
+ =?us-ascii?Q?yrKvi1pbF/gJmhgaO+uVN/ytBPjhxXddBJKdc3/12gUGxD53bJMlCrPWrSZE?=
+ =?us-ascii?Q?xWMjlpKmeK5z3l1q1WohxISiscZmhJblm1EBVclJ3eOcO8WRWdWY6PfJTH5z?=
+ =?us-ascii?Q?Gh5HmQOcBY3IMkGnWeo5PNeC2ZQjaGb8IUHiUCIZTRGLQ0gpSkPvGVzrCSA8?=
+ =?us-ascii?Q?VqPF7G//CrfZq5rn14s4gGrZebFFNG24oGQONAPVF3tmMOlIen0zcUREmazJ?=
+ =?us-ascii?Q?8RrGurwQ60raQpk2Yg6dZVu7Ngh3ONqcx/dqO4x3nOEMGHU440zu4rwwaHy8?=
+ =?us-ascii?Q?pn/5lvv7589VBhiBOHbCGu8pCMuQd6KNNu3tJBsrhg8hCINaXUn27Pks6JlJ?=
+ =?us-ascii?Q?CsWr6HdonfZQOLEbNn6o4QvfG9y8OEGEgbpPSAsxGSb9r++cT+0NYz0cBdJC?=
+ =?us-ascii?Q?21SlT2IRVjyYP6yGDKdCyj5XWnYDVF53nA1IpZXHMDIIEJw3XbDRd+8oDJ+z?=
+ =?us-ascii?Q?m24kEvnYKPthky0fHTZ/m2/Xv558m5VLdwxkJ2Zu3Hf/W3z8dT274YfbrGxJ?=
+ =?us-ascii?Q?MXKqth9s4/QRYm3kLzJDnp0seWVWP6nnozmhjJy6TT0rhif1LMbHTrA5uVYe?=
+ =?us-ascii?Q?gKts4M/r7aq7P7yJQomW+fWJeJHOIX+MJUUlX5+cYidFbzeOfwmviJ7qh85J?=
+ =?us-ascii?Q?L+iaftOoKbnqzlavjsEHUGdb+4qgfAiz5kvA8WvZ?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jan 2023 15:49:11.4582
+X-MS-Exchange-CrossTenant-Network-Message-Id: 65205dcd-8944-4c62-da33-08db02b49adf
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3176.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jan 2023 11:24:52.0506
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 424f9a25-806c-4d7e-7a03-08db02d98803
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT047.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6929
-X-Spam-Status: No, score=0.5 required=5.0 tests=BAYES_00,DATE_IN_PAST_03_06,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: C2zgMmggG2blBDeGhjtB4VNuSc8n2YQmzzDI+jEmYrTQRVBIgs6GYZHvUba5K3fs5k2MhCw25qoz7GBsBNIxBA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5432
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -111,70 +118,91 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-Nikolay Aleksandrov <razor@blackwall.org> writes:
+Jason Gunthorpe <jgg@nvidia.com> writes:
 
-> On 26/01/2023 19:01, Petr Machata wrote:
->> diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
->> index de531109b947..04261dd2380b 100644
->> --- a/net/bridge/br_multicast.c
->> +++ b/net/bridge/br_multicast.c
->> @@ -766,6 +766,102 @@ static void br_multicast_port_ngroups_dec(struct net_bridge_port *port, u16 vid)
->>  	br_multicast_port_ngroups_dec_one(&port->multicast_ctx);
->>  }
+> On Tue, Jan 24, 2023 at 04:42:39PM +1100, Alistair Popple wrote:
+>> diff --git a/include/net/sock.h b/include/net/sock.h
+>> index dcd72e6..bc3a868 100644
+>> --- a/include/net/sock.h
+>> +++ b/include/net/sock.h
+>> @@ -334,6 +334,7 @@ struct sk_filter;
+>>    *	@sk_security: used by security modules
+>>    *	@sk_mark: generic packet mark
+>>    *	@sk_cgrp_data: cgroup data for this cgroup
+>> +  *	@sk_vm_account: data for pinned memory accounting
+>>    *	@sk_memcg: this socket's memory cgroup association
+>>    *	@sk_write_pending: a write to stream socket waits to start
+>>    *	@sk_state_change: callback to indicate change in the state of the sock
+>> @@ -523,6 +524,7 @@ struct sock {
+>>  	void			*sk_security;
+>>  #endif
+>>  	struct sock_cgroup_data	sk_cgrp_data;
+>> +	struct vm_account       sk_vm_account;
+>>  	struct mem_cgroup	*sk_memcg;
+>>  	void			(*sk_state_change)(struct sock *sk);
+>>  	void			(*sk_data_ready)(struct sock *sk);
+>
+> I'm not sure this makes sense in a sock - each sock can be shared with
+> different proceses..
+
+TBH it didn't feel right to me either so was hoping for some
+feedback. Will try your suggestion below.
+
+>> diff --git a/net/rds/message.c b/net/rds/message.c
+>> index b47e4f0..2138a70 100644
+>> --- a/net/rds/message.c
+>> +++ b/net/rds/message.c
+>> @@ -99,7 +99,7 @@ static void rds_rm_zerocopy_callback(struct rds_sock *rs,
+>>  	struct list_head *head;
+>>  	unsigned long flags;
 >>  
->> +static int
->> +br_multicast_pmctx_ngroups_set_max(struct net_bridge_mcast_port *pmctx,
->> +				   u32 max, struct netlink_ext_ack *extack)
->> +{
->> +	if (max && max < pmctx->mdb_n_entries) {
->> +		NL_SET_ERR_MSG_FMT_MOD(extack, "Can't set mcast_max_groups=%u, which is below mcast_n_groups=%u",
->> +				       max, pmctx->mdb_n_entries);
+>> -	mm_unaccount_pinned_pages(&znotif->z_mmp);
+>> +	mm_unaccount_pinned_pages(&rs->rs_sk.sk_vm_account, &znotif->z_mmp);
+>>  	q = &rs->rs_zcookie_queue;
+>>  	spin_lock_irqsave(&q->lock, flags);
+>>  	head = &q->zcookie_head;
+>> @@ -367,6 +367,7 @@ static int rds_message_zcopy_from_user(struct rds_message *rm, struct iov_iter *
+>>  	int ret = 0;
+>>  	int length = iov_iter_count(from);
+>>  	struct rds_msg_zcopy_info *info;
+>> +	struct vm_account *vm_account = &rm->m_rs->rs_sk.sk_vm_account;
+>>  
+>>  	rm->m_inc.i_hdr.h_len = cpu_to_be32(iov_iter_count(from));
+>>  
+>> @@ -380,7 +381,9 @@ static int rds_message_zcopy_from_user(struct rds_message *rm, struct iov_iter *
+>>  		return -ENOMEM;
+>>  	INIT_LIST_HEAD(&info->rs_zcookie_next);
+>>  	rm->data.op_mmp_znotifier = &info->znotif;
+>> -	if (mm_account_pinned_pages(&rm->data.op_mmp_znotifier->z_mmp,
+>> +	vm_account_init(vm_account, current, current_user(), VM_ACCOUNT_USER);
+>> +	if (mm_account_pinned_pages(vm_account,
+>> +				    &rm->data.op_mmp_znotifier->z_mmp,
+>>  				    length)) {
+>>  		ret = -ENOMEM;
+>>  		goto err;
+>> @@ -399,7 +402,7 @@ static int rds_message_zcopy_from_user(struct rds_message *rm, struct iov_iter *
+>>  			for (i = 0; i < rm->data.op_nents; i++)
+>>  				put_page(sg_page(&rm->data.op_sg[i]));
+>>  			mmp = &rm->data.op_mmp_znotifier->z_mmp;
+>> -			mm_unaccount_pinned_pages(mmp);
+>> +			mm_unaccount_pinned_pages(vm_account, mmp);
+>>  			ret = -EFAULT;
+>>  			goto err;
+>>  		}
 >
-> Why not? All new entries will be rejected anyway, at most some will expire and make room.
+> I wonder if RDS should just not be doing accounting? Usually things
+> related to iov_iter are short term and we don't account for them.
 
-Yeah, as I wrote in the other thread, I can relax the relationship
-between max and n.
+Yeah, I couldn't easily figure out why these were accounted for in the
+first place either.
 
->> +		return -EINVAL;
->> +	}
->> +
->> +	pmctx->mdb_max_entries = max;
->> +	return 0;
->> +}
->> +
->> +u32 br_multicast_port_ngroups_get(const struct net_bridge_port *port)
->> +{
->> +	u32 n;
->> +
->> +	spin_lock_bh(&port->br->multicast_lock);
->> +	n = port->multicast_ctx.mdb_n_entries;
->> +	spin_unlock_bh(&port->br->multicast_lock);
+> But then I don't really know how RDS works, Santos?
 >
-> This is too much just to read the value, we block all IGMP/MLD processing and potentially
-> block packet processing on the same core just to read it. These reads are done for notifications,
-> getlink and also for fill_slave_info. I think we can just use WRITE/READ_ONCE helpers to access
-> it. Especially since the lock is taken for both values (max and current count). We still get a
-> snapshop that can be wrong by the time it's returned and about changing it we'll start enforcing
-> the new limit with a minor delay which is not a big deal.
+> Regardless, maybe the vm_account should be stored in the
+> rds_msg_zcopy_info ?
 
-Makes sense.
+On first glance that looks like a better spot. Thanks for the
+idea.
 
->> +
->> +	return n;
->> +}
->> +
->> +int br_multicast_vlan_ngroups_get(struct net_bridge *br,
->> +				  const struct net_bridge_vlan *v,
->> +				  u32 *n)
->> +{
->> +	if (br_multicast_port_ctx_vlan_disabled(&v->port_mcast_ctx))
->> +		return -EINVAL;
->> +
->> +	spin_lock_bh(&br->multicast_lock);
->> +	*n = v->port_mcast_ctx.mdb_n_entries;
->> +	spin_unlock_bh(&br->multicast_lock);
->> +
->
-> ditto and for all accesses below that require the lock..
+> Jason
 
-Yah.
