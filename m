@@ -2,144 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74BBC68078C
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 09:38:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D57E6807DC
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 09:51:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235912AbjA3IiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 03:38:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55940 "EHLO
+        id S233731AbjA3Ivp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 03:51:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235394AbjA3IiG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 03:38:06 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CAE1204A;
-        Mon, 30 Jan 2023 00:38:05 -0800 (PST)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30U6vN4M007482;
-        Mon, 30 Jan 2023 08:38:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=Cdkxg+xW+8P0QPbYyaaXnEj5NpJbFcN8CrtjbSiNIBo=;
- b=tdWHv+dxb4FDFNIL99L/+WtKsbmQW/Hpp9i/nw+0Uy5duwJ3gZW8H07XMIqQSxAI41Zz
- dfOWRyXM87ouii25gkD/I0dclfX4B0lzZQEfywPU/fs1Lw9UbwzmBGw0ihopE2B6koEi
- txcolqoB2MnSqHzC7Y8iDvPQErUTvOtkBuy8Zrw8f40TpxZq3YKL0E1Fx3RzvFduwCrw
- jDJJ9zPZSPRG1Ywr1pHC4tJ6su3QiAlYeimziKaID6dyzJPFu5XwV0PaHIuA+CVIBYBR
- lngQ2H22KlFs0qHPvRRAoMI54CRSgBi8twD1VdbgKhUbyyCxGBmZgVG+qDUc4zpUfcIV xQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ne934abak-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 30 Jan 2023 08:38:01 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 30U7Ecrv027301;
-        Mon, 30 Jan 2023 08:38:00 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ne934aba4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 30 Jan 2023 08:38:00 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 30U5xOq2006488;
-        Mon, 30 Jan 2023 08:37:59 GMT
-Received: from smtprelay06.dal12v.mail.ibm.com ([9.208.130.100])
-        by ppma01dal.us.ibm.com (PPS) with ESMTPS id 3ncvtm45an-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 30 Jan 2023 08:37:59 +0000
-Received: from smtpav03.dal12v.mail.ibm.com (smtpav03.dal12v.mail.ibm.com [10.241.53.102])
-        by smtprelay06.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 30U8bwD77406164
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 30 Jan 2023 08:37:58 GMT
-Received: from smtpav03.dal12v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3A9F45806C;
-        Mon, 30 Jan 2023 08:37:58 +0000 (GMT)
-Received: from smtpav03.dal12v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7D77E5806A;
-        Mon, 30 Jan 2023 08:37:56 +0000 (GMT)
-Received: from [9.163.16.35] (unknown [9.163.16.35])
-        by smtpav03.dal12v.mail.ibm.com (Postfix) with ESMTP;
-        Mon, 30 Jan 2023 08:37:56 +0000 (GMT)
-Message-ID: <c45960d9-c358-e47b-0a33-1de8c3a8f94c@linux.ibm.com>
-Date:   Mon, 30 Jan 2023 09:37:54 +0100
+        with ESMTP id S229694AbjA3Ivm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 03:51:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3232CC63
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 00:50:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675068616;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ETWZiFJuvDxfRpj4m9fhbGhq8mdnQQj8KzaCMCobHmE=;
+        b=J21rCLILDEmQeMAqjR8DecvKJexryHBEw7nVZ0O5yQwjU30+FfK/ggmLG0AkVQl8aGCgaw
+        n5QkeHwNN+C/ennj1YjIXu/eI6AX5QHDdLu0ZtnSC3geFaAeafH4em470T+21QisnscVx3
+        sg5LhhPIRCt2b0Ilc/XzGbG5W8nWfY0=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-606-MER5kCtHMwGhKSpwcmpxXQ-1; Mon, 30 Jan 2023 03:50:12 -0500
+X-MC-Unique: MER5kCtHMwGhKSpwcmpxXQ-1
+Received: by mail-qv1-f72.google.com with SMTP id ib5-20020a0562141c8500b0053c23b938a0so1459783qvb.17
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 00:50:12 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ETWZiFJuvDxfRpj4m9fhbGhq8mdnQQj8KzaCMCobHmE=;
+        b=i3T+R85tPanIlncObBfHG+gHfoAB1z7rjzhJe7PSHjpZ3q1vOQxJCxhpH2A/iynSYR
+         lhCRx78Poik8hsDOAJOAmU/CYquDiAB4cY5NJEqWQBY2Bmp1ijihMM6ytaFF+54bRmOI
+         f6V5XTCYsn89ceKUB8TbYbqg4Fy+bpIGc7rbNei4ZU1Rv6nRgzWiTgToXQXuhO1Nnc1g
+         5WWQPL2mJDkTk65mSIzx02TCLHB/bDCSUSL6EuKw7aJ6BeaMH0TYEIj965K+qDV3Qac8
+         RO+i2uryQX0Yj+wm2qIQuSA1pgB7NKzKNDXwv4wvh8N+j3D9xET7RZdOsoOgg+YCNOBp
+         /UcQ==
+X-Gm-Message-State: AFqh2kq+yILNyff08oDBVK1B3Fbqa1Tbm+ieSiUETmVmmiB9uuCAUuxX
+        YTNtJH9pVwJqejcAxfhOIcFwf2k8l747MFJR0RRoDioSjvE7WVgWgU9X/xagYh9IA4kImc5WA1g
+        IRhqbYNpJC2G2LT07
+X-Received: by 2002:a05:6214:3c98:b0:534:a801:1117 with SMTP id ok24-20020a0562143c9800b00534a8011117mr70508934qvb.49.1675068612343;
+        Mon, 30 Jan 2023 00:50:12 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXt62wRIQFd2BqlEWxGlcfaPxrQtbtWHJYjjiPiNI6lpwthrnpINmGwCX2M3B3u0AyoiV+x2Wg==
+X-Received: by 2002:a05:6214:3c98:b0:534:a801:1117 with SMTP id ok24-20020a0562143c9800b00534a8011117mr70508915qvb.49.1675068612068;
+        Mon, 30 Jan 2023 00:50:12 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
+        by smtp.gmail.com with ESMTPSA id dy31-20020a05620a60df00b0070531c5d655sm7694441qkb.90.2023.01.30.00.50.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Jan 2023 00:50:11 -0800 (PST)
+Message-ID: <ec534eacabf5c859930eb5ca7f417f7f01197d24.camel@redhat.com>
+Subject: Re: [net PATCH] skb: Do mix page pool and page referenced frags in
+ GRO
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>, nbd@nbd.name,
+        davem@davemloft.net, hawk@kernel.org, ilias.apalodimas@linaro.org,
+        linux-kernel@vger.kernel.org, lorenzo@kernel.org,
+        netdev@vger.kernel.org
+Date:   Mon, 30 Jan 2023 09:50:08 +0100
+In-Reply-To: <CANn89iKgZU4Q+THXupzZi4hETuKuCOvOB=iHpp5JzQTNv_Fg_A@mail.gmail.com>
+References: <04e27096-9ace-07eb-aa51-1663714a586d@nbd.name>
+         <167475990764.1934330.11960904198087757911.stgit@localhost.localdomain>
+         <cde24ed8-1852-ce93-69f3-ff378731f52c@huawei.com>
+         <20230127212646.4cfeb475@kernel.org>
+         <CANn89iKgZU4Q+THXupzZi4hETuKuCOvOB=iHpp5JzQTNv_Fg_A@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [PATCH net-next v6 1/7] net/smc: remove locks
- smc_client_lgr_pending and smc_server_lgr_pending
-To:     "D. Wythe" <alibuda@linux.alibaba.com>, jaka@linux.ibm.com,
-        kgraul@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <1669453422-38152-1-git-send-email-alibuda@linux.alibaba.com>
- <1669453422-38152-2-git-send-email-alibuda@linux.alibaba.com>
- <2ad147d3-b127-b192-c2a5-29fa704cf3a1@linux.alibaba.com>
-From:   Wenjia Zhang <wenjia@linux.ibm.com>
-In-Reply-To: <2ad147d3-b127-b192-c2a5-29fa704cf3a1@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: sJBST1Bs0wF95BoQDITdhkGdIGoC763i
-X-Proofpoint-ORIG-GUID: 6MZ82YTCMQfVAXZkuHMTsR-T-r0cMhve
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-01-30_07,2023-01-27_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 clxscore=1011
- suspectscore=0 adultscore=0 priorityscore=1501 phishscore=0
- lowpriorityscore=0 spamscore=0 bulkscore=0 mlxlogscore=999 impostorscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301300081
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, 2023-01-28 at 08:08 +0100, Eric Dumazet wrote:
+> On Sat, Jan 28, 2023 at 6:26 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> >=20
+> > On Sat, 28 Jan 2023 10:37:47 +0800 Yunsheng Lin wrote:
+> > > If we are not allowing gro for the above case, setting NAPI_GRO_CB(p)=
+->flush
+> > > to 1 in gro_list_prepare() seems to be making more sense so that the =
+above
+> > > case has the same handling as skb_has_frag_list() handling?
+> > > https://elixir.bootlin.com/linux/v6.2-rc4/source/net/core/gro.c#L503
+> > >=20
+> > > As it seems to avoid some unnecessary operation according to comment
+> > > in tcp4_gro_receive():
+> > > https://elixir.bootlin.com/linux/v6.2-rc4/source/net/ipv4/tcp_offload=
+.c#L322
+> >=20
+> > The frag_list case can be determined with just the input skb.
+> > For pp_recycle we need to compare input skb's pp_recycle with
+> > the pp_recycle of the skb already held by GRO.
+> >=20
+> > I'll hold off with applying a bit longer tho, in case Eric
+> > wants to chime in with an ack or opinion.
+>=20
+> We can say that we are adding in the fast path an expensive check
+> about an unlikely condition.
+>=20
+> GRO is by far the most expensive component in our stack.
 
+Slightly related to the above: currently the GRO engine performs the
+skb metadata check for every packet. My understanding is that even with
+XDP enabled and ebpf running on the given packet, the skb should=20
+usually have meta_len =3D=3D 0.=C2=A0
 
-On 29.01.23 16:11, D. Wythe wrote:
-> 
-> 
-> On 11/26/22 5:03 PM, D.Wythe wrote:
->> From: "D. Wythe" <alibuda@linux.alibaba.com>
->>
->> This patch attempts to remove locks named smc_client_lgr_pending and
->> smc_server_lgr_pending, which aim to serialize the creation of link
->> group. However, once link group existed already, those locks are
->> meaningless, worse still, they make incoming connections have to be
->> queued one after the other.
->>
->> Now, the creation of link group is no longer generated by competition,
->> but allocated through following strategy.
->>
-> 
-> 
-> Hi, all
-> 
-> I have noticed that there may be some difficulties in the advancement of 
-> this series of patches.
-> I guess the main problem is to try remove the global lock in this patch, 
-> the risks of removing locks
-> do harm to SMC-D, at the same time, this patch of removing locks is also 
-> a little too complex.
-> 
-> So, I am considering that we can temporarily delay the advancement of 
-> this patch. We can works on
-> other patches first. Other patches are either simple enough or have no 
-> obvious impact on SMC-D.
-> 
-> What do you think?
-> 
-> Best wishes.
-> D. Wythe
-> 
-> 
-Hi D. Wythe,
+What about setting 'skb->slow_gro' together with meta_len and moving
+the skb_metadata_differs() check under the slow_gro guard?
 
-that sounds good. Thank you for your consideration about SMC-D!
-Removing locks is indeed a big issue, those patches make us difficult to 
-accept without thoroughly testing in every corner.
+Cheers,
 
-Best
-Wenjia
+Paolo
 
