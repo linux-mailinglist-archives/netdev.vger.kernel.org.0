@@ -2,403 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 883C4680D98
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 13:27:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBA1A680DA2
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 13:30:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236232AbjA3M1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 07:27:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55030 "EHLO
+        id S236777AbjA3MaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 07:30:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232776AbjA3M07 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 07:26:59 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD01523658
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 04:26:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675081617; x=1706617617;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Qj62gBusqyKy+9mlorvrtjqpdv32hOaRhv4CLPRk320=;
-  b=kxvGKPMWvCrJVSC3T3ZDfDB6BaGxflgxZnXRnfY7bVLE+XMFM//tUfbJ
-   c9eitFy1jWAOnwNaZBDVKtJvWDu8sZ2dU75YbLLnw5yIx+RUwIOK1vg70
-   ZPpUO60lS0/f4GZWHYbEkxdl7fZO912Cg4ZTODV0EzgMsRAS6SrImqojv
-   58veyTZr55JTFB+CgsDTYlaMByaNqP+l6fkD2uT/lNmsWRcSdxQXPnxyK
-   3CVCpwsgNUUuXdzwJ7A/TgKRqzurwIj/iyHpNSs6woG7114MVuMzVMTvS
-   c2C5Je3mgFAjjXzAAOxgmUqbVV7F2914lSc2L/FfKrz5oE+cvsab6I83V
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10605"; a="328819921"
-X-IronPort-AV: E=Sophos;i="5.97,257,1669104000"; 
-   d="scan'208";a="328819921"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 04:26:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10605"; a="641527171"
-X-IronPort-AV: E=Sophos;i="5.97,257,1669104000"; 
-   d="scan'208";a="641527171"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga006.jf.intel.com with ESMTP; 30 Jan 2023 04:26:54 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 30 Jan 2023 04:26:53 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Mon, 30 Jan 2023 04:26:53 -0800
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.177)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Mon, 30 Jan 2023 04:26:53 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=apR5VQWmkyAAjuB/b0qTwWodgEK4zoVn3NnIaZETQrtJWLKy++MmVl0DTsbHRSwlruHr3ns+uw6vE6aZML99UQ7pwD7A1Y4S4/Ra2lZIFYsnG2D/5Kv0sLWC0iZA7JDaQcR4zLzBH9W2EBpr405c1iGhRMnTNb07GXhkW2rl2/pSLEmxybhHNLJolJM7EUEIvjHBD/peX00WHL+DeTSPzS07NEyjkRn/iUIcZ2wER38BzsD7hycYWPcpOzryPsl76G6vxpRSPwM5aXjhMLIia1WWISsHb50HN3CVhzZZFSEvnKYEww32YaAKSxmZPpSS9tCo5bOP28e45C3Ptb80MA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+ptLL5m3WZ45NfU5jUZO24RHZfHE7uHXxmrcT0rmnJw=;
- b=Cksm4NktXcFcJPxiuiNPkMMNkbxcJ+BRuSW6blVsN+p8zmUIYbVGYQow1tbM9YO/JvyhSE4oDzcaALKM9v0sy1P2jKL3eTLl92n4iYrz+9yTMN35fGM4OyJZtbhtRp2hlG7/PylxPhbqMG2R+6oslOZM8KImxhVqAe0vacDXCB6l/TDnLe5B8UO4D3aHkxVqEV0e33OcvQB5AkJxpzLPU7hjYYMLasdfM8RcdljzGjEhKHOPjr1MhvsW4lXwhhx/1MTY80ceRm0NJbZFaHAymT/z0NEnhsxmFP5n0aTMR2U//GmH6++SL/XKc33teDvBVUJ8+OfTZbeuYdXJuolm6w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
- by CY5PR11MB6461.namprd11.prod.outlook.com (2603:10b6:930:33::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.33; Mon, 30 Jan
- 2023 12:26:45 +0000
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::3ff6:ca60:f9fe:6934]) by DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::3ff6:ca60:f9fe:6934%3]) with mapi id 15.20.6043.033; Mon, 30 Jan 2023
- 12:26:45 +0000
-Message-ID: <1e78d2df-2b9e-3e46-017e-5cc42807db03@intel.com>
-Date:   Mon, 30 Jan 2023 13:26:39 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [RFC PATCH net-next v15] vmxnet3: Add XDP support.
-Content-Language: en-US
-To:     William Tu <u9012063@gmail.com>
-CC:     <netdev@vger.kernel.org>, <jsankararama@vmware.com>,
-        <gyang@vmware.com>, <doshir@vmware.com>,
-        <alexander.duyck@gmail.com>, <bang@vmware.com>,
-        "Yifeng Sun" <yifengs@vmware.com>,
-        Alexander Duyck <alexanderduyck@fb.com>
-References: <20230127163027.60672-1-u9012063@gmail.com>
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-In-Reply-To: <20230127163027.60672-1-u9012063@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO2P265CA0278.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:a1::26) To DM6PR11MB3625.namprd11.prod.outlook.com
- (2603:10b6:5:13a::21)
+        with ESMTP id S231173AbjA3MaN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 07:30:13 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6076B2685F;
+        Mon, 30 Jan 2023 04:30:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=NDbxNE0I4eTGl2OnpaiwvknY+6bp+dKyyLHTKPO4ipY=; b=h4HEyApeAZR/zhkUNISzjjlrEv
+        lv5NBoXjYcrBU9YtPPit6yXBdjiqXepcoLLN51BCbWEo70a5VTHH5cezCos4MOUI/pXtmQZ9w7y1g
+        dRbCtT2DRa1AfmG2UjJRwR5K/tydTewxjkaNQ2miKG5zZ73+R63IAO0npFBa8biRVLLWdNWhTeiuF
+        2F+vGCcjEXGKft9Oc0l4GW4NAWzAzSAzPVEGJVLyhfVm8KjuGXIwxGKECxiGX/lmU0+uEXjXcMLsd
+        Szd07HpQjIt+IwGwRNk9zUg+BN7nvLfjFYgHRXOu0UPUA/lli09jFSvQ0BlyuSMX9Yg/menlIVttl
+        U94GODng==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36358)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pMTIV-00037q-Nc; Mon, 30 Jan 2023 12:30:07 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pMTIU-000387-3o; Mon, 30 Jan 2023 12:30:06 +0000
+Date:   Mon, 30 Jan 2023 12:30:06 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Lukasz Majewski <lukma@denx.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/3] dsa: marvell: Provide per device information
+ about max frame size
+Message-ID: <Y9e4TowGyjOpFt8o@shell.armlinux.org.uk>
+References: <20230106101651.1137755-1-lukma@denx.de>
+ <Y8Fno+svcnNY4h/8@shell.armlinux.org.uk>
+ <20230116105148.230ef4ae@wsk>
+ <20230125122412.4eb1746d@wsk>
+ <Y9FG5PxOq7qsfvtz@shell.armlinux.org.uk>
+ <20230130125731.7dd6dcee@wsk>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|CY5PR11MB6461:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2c6a997c-764b-4fc3-9e7e-08db02bd4035
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: khCTWaFgfgDfSdCvq8jRWTLHV9HPak18OkTIlzVRsbHrYUpAPucq3IXWHakr04QXgdZVdHX72hT8RaD2OvHfJJmQ8ij95x/AUxKC+I2qJZL+8Zf9GcXQ31Gg4rsPslnox1A1oGbh1196hIT2Dzi1adU7lb1en1vEAfm6bj9nBSx5KbMLc5F/vJnol5qOKdTX5c2PZtUQQP6WNe5WOO73I5ieUYdwNifaaZ2wfIXpn9HTvXGbu/+cguYj2NPYJb02D5brvuuU/F/gB5yyajlbVYnsJqPiPMO3X/tVJWrbcceUZm7QuNfrxuMLBNu4LXZeZoRmEEzY/Y3Up9ohsvaNO9uPJGB4ozVBkO/QffzkjrZBgFlBSY6yNzaEm7pNFHXvpy/4RzjX7iCsGPakMyfHBMkePS0Q7k9SmHbDNu/6wkFOX8DWVfLemJIv54Lt9ulwlEvwNGqzLyalHJhcGyVVJMEqkOYz/T37HvTkj6uyHmQ0EhZvBuhv2JL3OG4qn55lxNB+5UB3Ef2BW64YbH6dozTtJdrvUUfGii2UTwNmrwkMFD/9s4Ado0Kdce54reQAnb/54Qj1bzQ3whaUy5Y9B+hYS/A3kH6M/moFwwwpdA6uZ+GXRlGCsKcrM6LGoiC4HQQYhcFciPJKv33tLZEjapTmzblwBomsBhx1m1JsxPLVQH1Bh7V+sYRzVvoDVo3k6NEVNN4s9sQw8UfcvbD3ibYzEObQri0CvDgLdYl7wzY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(376002)(346002)(136003)(396003)(39860400002)(366004)(451199018)(31686004)(186003)(6506007)(478600001)(26005)(6512007)(8676002)(6486002)(6666004)(4326008)(6916009)(66476007)(2616005)(66556008)(82960400001)(66946007)(83380400001)(41300700001)(8936002)(19627235002)(86362001)(38100700002)(36756003)(2906002)(5660300002)(316002)(54906003)(31696002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NHliSXdtZUFZeU9sZ1FxQllyRkxTczlscjUzbWNvZHFkbVpXWUxEa3VNYmtl?=
- =?utf-8?B?SXhGeHBjeW1Ublg4ak9kQkhwdWIwMEwrN2l2dEJaQXZ4cUYyZlB0MmV5dmVx?=
- =?utf-8?B?TlVUYW1SeDJsclNSQmE1dWQrNVp2dGQ3LzNNSTJmamtwZldQdDRkajdGSzhz?=
- =?utf-8?B?eEFIaFZCRTJXSC8rVmpXZU5UdHFVVWhraThIMjN5MzJXRHFDanliejNZTmI1?=
- =?utf-8?B?VXMwYk1PSE5qRTI3TlBCbUowM0FsdkJvdmVlT3hWSXNrNnU5ZXQwcncxMklz?=
- =?utf-8?B?aUFSbGVOYm1WL051YnZxem9rVEtKbVp3Q0ZFTWtBRm92dGNtbUtac0NYOEF4?=
- =?utf-8?B?bm15eGRMQmhyREVoZ0t0ejJhRk1zU0JQTWpJTmVLd3BrM0lXZ2gzKzFDcXNJ?=
- =?utf-8?B?UU54b0dqQlY5a1B1dWFnZWhNVy9BV2Y3bFZ0V0pkRk14MmdaeitENW1RZEd4?=
- =?utf-8?B?Tzhvd0hwUHhhNFV0MC96cnFHZHF1YVpJZVN5eUtnUXVyeVpPcThFU3o2WDRU?=
- =?utf-8?B?OTBFazVrNDBwbGVMcGgyR0VVOHZZMzd4UDlVTEFRL0F2TlZPcnVEb0ZLbmhm?=
- =?utf-8?B?Y3krMHRzblhGWTlnVUpQTmxJME5EbEdNYVNjbEp4U2hjcTcvYWJZeEg5QWVt?=
- =?utf-8?B?T3VGWnE1VEYrSTVOWlE5aWtLZ3dEcytSOEVpTFh0YlJ5RHJOT1hVQnJQTDY5?=
- =?utf-8?B?elVEYW5hZTlTMzhyR0dJZkFhbU9GWnhNSS9pZmpFTzFEcTVxQklXTXV6Umkz?=
- =?utf-8?B?Rk9pZW5pZS9TcEVxSnV2WjMzeFMwekFzUExxSktmSlZXRnJBQk0ya3kwdjVC?=
- =?utf-8?B?dXRQdHdNYlBreGJpZHplc2JndzZGaEc3ejJxWVFkM3YvbmZwQ3NNNTNxRTRH?=
- =?utf-8?B?RC8wNlJoZWhscDBQU1hjd2JkVnRkWlBXdDZGYllhWnRYT09OdURwUW9ta1lz?=
- =?utf-8?B?dDFVUXo4NUhiWnFQNll1V2VrTEhGTWEvNnlXYWxnejRUbHY4dXFicEl0TGpI?=
- =?utf-8?B?djBiWHJpbW9BcmRjK2d1dVV6SFIwQzdyZ1picnRXYmt6UDRyUnoxUmo5c0J1?=
- =?utf-8?B?OVhWM3FRVmlBTUNreWdEWUw2bUo1cERSNStqVVdORE1FeW4wZDhUWWRnVlBy?=
- =?utf-8?B?WFdiRlZHQzNRa3RURGwzbTl0STh1QnltTytxbU9iSG82b09KMFh1czM2MlVF?=
- =?utf-8?B?NVdCaS96Y3dhNmw3YVc1K3FyVHJ4V1Z2V2NHS3lHdE4ySW9BZTJEWnM1bjN5?=
- =?utf-8?B?QjQ5dHlyT1cxZWhaRXZkK2ZSSlNQYSt4b2hBbXY4VTFpUU45Q1B3bGZJVTRu?=
- =?utf-8?B?YkxmTU9BVkp3UEVTLytiWmRiUnduRFk4ZUF4R3NLOUZmczB3L0htWUtVMW15?=
- =?utf-8?B?ejhUeXo4U2tFVW9WRUl2UUJxak9nQm5wb01sMUNVSjNobkRzQnpvV1N1MzNT?=
- =?utf-8?B?SjlwUXZ3UWI0NDF4QWFwZjBwenB1d09SVno4UWxSV3k5bm55ZFJCREFLa0V5?=
- =?utf-8?B?UHI2dUhuUzkrbEd6WXFrNXc0RDk1dkNZdXg2K1ZMZ29mamt2T1BJREIwWGsv?=
- =?utf-8?B?WmlyUnJLd0dkSWJPNnAxMjExOEw0R2loTzBTbDVoRlp4dnpEV2w0Q2tPNys2?=
- =?utf-8?B?ZWtndDdqS1JBcmpXN1BvMlFGdEhoMFNiZ215L3QrNENmMXAwTWExSUcvZExz?=
- =?utf-8?B?bWxZcXRWOFErbE5Rb2ZLU1EvWWNwNnNrYWVMUkMwb3lKZ1ByMUp1SVRMdWIy?=
- =?utf-8?B?OUx0OURueXljUHRFNnBBRUs3azM3UkdoZzZ1enJMN01Ud0tFQnVtZFFKWncx?=
- =?utf-8?B?YVBKa2xyRWFLUmptaERGWHY3b24xM3FURTRSTmI5ZngwKy92WHZYbXE5bVpV?=
- =?utf-8?B?dlBJSExCUWN4aURpOHdpU0x6UU5qTHJyRkVucGNRb0ZVWlp0UzVwK281ekls?=
- =?utf-8?B?UCtUN2ZvS3RnVjFJTTdGS0tpa0tMTGR1VCt2cUZ4V3E4Zks2OGcwOCtTN21C?=
- =?utf-8?B?Z1FpZUdWU0I4SUowMFN3VlpRMGhIMGs4SUh3UUVEZjBJKzRSRTVoWXgxS2ZD?=
- =?utf-8?B?RHdvbGVNbGVaa2wxaXFuR0hUVnRVR1RKcEZTNitnMEkyc2VEWVZ4ekhqekli?=
- =?utf-8?B?SG1mKzlLL3JNbTFRYlU0NmJicVo4MjI2MDNxcWlpVU1DSlBJN3lzUHhSVWFZ?=
- =?utf-8?B?MUE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2c6a997c-764b-4fc3-9e7e-08db02bd4035
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jan 2023 12:26:45.5980
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1Ty1TmQCzoXe76W61ns2SzjBBvyPhp7WjDx7muo6s4/7YAXvO9rfa9ZgiNKn2d7hVt4DPmilHVHrm3e+TPrCzZAlZI6PxRz8izdVMijmB1k=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR11MB6461
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230130125731.7dd6dcee@wsk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: William Tu <u9012063@gmail.com>
-Date: Fri, 27 Jan 2023 08:30:27 -0800
-
-> The patch adds native-mode XDP support: XDP DROP, PASS, TX, and REDIRECT.
+On Mon, Jan 30, 2023 at 12:57:31PM +0100, Lukasz Majewski wrote:
+> Hi Russell,
 > 
-> Background:
-> The vmxnet3 rx consists of three rings: ring0, ring1, and dataring.
-> For r0 and r1, buffers at r0 are allocated using alloc_skb APIs and dma
-> mapped to the ring's descriptor. If LRO is enabled and packet size larger
-> than 3K, VMXNET3_MAX_SKB_BUF_SIZE, then r1 is used to mapped the rest of
-> the buffer larger than VMXNET3_MAX_SKB_BUF_SIZE. Each buffer in r1 is
-> allocated using alloc_page. So for LRO packets, the payload will be in one
-> buffer from r0 and multiple from r1, for non-LRO packets, only one
-> descriptor in r0 is used for packet size less than 3k.
+> > What I'm concerned about, and why I replied, is that setting the
+> > devices to have a max frame size of 1522 when we program them to use
+> > a larger frame size means we break those switches for normal sized
+> > packets.
+> > 
+> > The current logic in mv88e6xxx_get_max_mtu() is:
+> > 
+> > 	If the chip implements port_set_jumbo_size, then packet sizes
+> > of up to 10240 are supported.
+> > 	(ops: 6131, 6141, 6171, 6172, 6175, 6176, 6190, 6190x, 6240,
+> > 6320, 6321, 6341, 6350, 6351, 6352, 6390, 6390x, 6393x)
+> > 	If the chip implements set_max_frame_size, then packet sizes
+> > of up to 1632 are supported.
+> > 	(ops: 6085, 6095, 6097, 6123, 6161, 6185)
+> > 	Otherwise, packets of up to 1522 are supported.
+> > 
+> > Now, going through the patch, I see:
+> > 
+> > 	88e6085 has 10240 but currently has 1632
+> > 	88e6095 has 1632 (no change)
+> > 	88e6097 has 1632 (no change)
+> > 	88e6123 has 10240 but currently has 1632
+> > 	88e6131 has 10240 (no change)
+> > 	88e6141 has 10240 (no change)
+> > 	88e6161 has 1632 but currently has 10240
+> > 	88e6165 has 1632 but currently has 1522
+> > 	88e6171 has 1522 but currently has 10240
+> > 	88e6172 has 10240 (no change)
+> > 	88e6175 has 1632 but currently has 10240
+> > 	88e6176 has 10240 (no change)
+> > 	88e6185 has 1632 (no change)
+> > 	88e6190 has 10240 (no change)
+> > 	88e6190x has 10240 (no change)
+> > 	88e6191 has 10240 but currently has 1522
+> > 	88e6191x has 1522 but currently has 10240
+> > 	88e6193x has 1522 but currently has 10240
+> > 	88e6220 has 2048 but currently has 1522
+> > 	88e6240 has 10240 (no change)
+> > 	88e6250 has 2048 but currently has 1522
+> > 	88e6290 has 10240 but currently has 1522
+> > 	88e6320 has 10240 (no change)
+> > 	88e6321 has 10240 (no change)
+> > 	88e6341 has 10240 (no change)
+> > 	88e6350 has 10240 (no change)
+> > 	88e6351 has 10240 (no change)
+> > 	88e6352 has 10240 (no change)
+> > 	88e6390 has 1522 but currently has 10240
+> > 	88e6390x has 1522 but currently has 10240
+> > 	88e6393x has 1522 but currently has 10240
+> > 
+> > My point is that based on the above, there's an awful lot of changes
+> > that this one patch brings, and I'm not sure many of them are
+> > intended.
+> 
+> As I only have access to mv88e60{20|71} SoCs I had to base on the code
+> to deduce which max frame is supported.
 
-[...]
+The above list of differences are also derived from the code, and this
+rather proves my point that deriving these from the code is hard, and
+we need a way to programmatically verify that we get them correct.
 
-> @@ -1404,6 +1496,8 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
->  	struct Vmxnet3_RxDesc rxCmdDesc;
->  	struct Vmxnet3_RxCompDesc rxComp;
->  #endif
-> +	bool need_flush = false;
-> +
->  	vmxnet3_getRxComp(rcd, &rq->comp_ring.base[rq->comp_ring.next2proc].rcd,
->  			  &rxComp);
->  	while (rcd->gen == rq->comp_ring.gen) {
-> @@ -1444,6 +1538,31 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
->  			goto rcd_done;
->  		}
->  
-> +		if (rcd->sop && rcd->eop && vmxnet3_xdp_enabled(adapter)) {
+> > So, I think it would be far better to introduce the "max_frame_size"
+> > field using the existing values, and then verify that value during
+> > initialisation time for every entry in mv88e6xxx_table[] using the
+> > rules that mv88e6xxx_get_max_mtu() was using. Boot that kernel, and
+> > have it run that verification, and state that's what's happened and
+> > was successful in the commit message.
+> > 
+> > In the next commit, change mv88e6xxx_get_max_mtu() to use those
+> > verified values and remove the verification code.
+> > 
+> > Then in the following commit, update the "max_frame_size" values with
+> > the changes you intend to make.
+> > 
+> > Then, we can (a) have confidence that each of the new members were
+> > properly initialised, and (b) we can also see what changes you're
+> > intentionally making.
+> > 
+> 
+> If I understood you correctly - the approach would be to "simulate" and
+> obtain each max_frame_size assigned in mv88e6xxx_get_max_mtu() to be
+> sure that we do preserve current (buggy or not) behaviour.
 
-Hmm, it's a relatively big block of code for one `if`. I mean, could we
-do it like that?
+What I'm suggesting is something like:
 
-		if (!rcd->sop || !vmxnet3_xdp_enabled(adapter))
-			goto skip_xdp;
+static void mv88e6xxx_validate_frame_size(void)
+{
+	int max;
+	int i;
 
-		if (VMXNET3_RX_DATA_RING(adapter, rcd->rqID)) {
-			...
+	for (i = 0; i < ARRAY_SIZE(mv88e6xxx_table); i++) {
+		/* same logic as in mv88e6xxx_get_max_mtu() */
+		if (mv88e6xxx_table[i].ops->port_set_jumbo_size)
+			max = 10240;
+		else if (mv88e6xxx_table[i].ops->set_max_frame_size)
+			max = 1632;
+		else
+			max = 1522;
 
-This way you would save 1 indent level and make code a little bit more
-readable.
-But it might be a matter of personal tastes :) Just noticed you have
-this `skip_xdp` label anyway, why not reuse it here.
+		if (mv88e6xxx_table[i].max_frame_size != max)
+			pr_err("BUG: %s has differing max_frame_size: %d != %d\n",
+			       mv88e6xxx_table[i].name, max,
+			       mv88e6xxx_table[i].max_frame_size);
+	}
+}
 
-> +			struct sk_buff *skb_xdp_pass;
-> +			int act;
-> +
-> +			if (VMXNET3_RX_DATA_RING(adapter, rcd->rqID)) {
-> +				ctx->skb = NULL;
-> +				goto skip_xdp; /* Handle it later. */
-> +			}
-> +
-> +			if (rbi->buf_type != VMXNET3_RX_BUF_XDP)
-> +				goto rcd_done;
-> +
-> +			act = vmxnet3_process_xdp(adapter, rq, rcd, rbi, rxd,
-> +						  &skb_xdp_pass);
-> +			if (act == XDP_PASS) {
-> +				ctx->skb = skb_xdp_pass;
-> +				goto sop_done;
-> +			}
-> +			ctx->skb = NULL;
-> +			if (act == XDP_REDIRECT)
-> +				need_flush = true;
+called from the mv88e6xxx_probe() function. I don't see any need to
+do much more than that to verify the table, and I don't see any need
+to make it only execute once - it's not like the code will be around
+for very long.
 
-			need_flush |= act == XDP_REDIRECT;
+Provided this code gets run, we can then be sure that the
+max_frame_size values initially added correspond with the values
+the driver currently uses.
 
-But this looks a big ugly to be honest, I just wrote it to show off a
-bit :D Your `if` is perfectly fine, not even sure the line I wrote above
-produces more optimized object code.
-
-> +			goto rcd_done;
-> +		}
-> +skip_xdp:
-> +
->  		if (rcd->sop) { /* first buf of the pkt */
->  			bool rxDataRingUsed;
->  			u16 len;
-> @@ -1452,7 +1571,8 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
->  			       (rcd->rqID != rq->qid &&
->  				rcd->rqID != rq->dataRingQid));
->  
-> -			BUG_ON(rbi->buf_type != VMXNET3_RX_BUF_SKB);
-> +			BUG_ON(rbi->buf_type != VMXNET3_RX_BUF_SKB &&
-> +			       rbi->buf_type != VMXNET3_RX_BUF_XDP);
->  			BUG_ON(ctx->skb != NULL || rbi->skb == NULL);
->  
->  			if (unlikely(rcd->len == 0)) {
-> @@ -1470,6 +1590,26 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
->  			rxDataRingUsed =
->  				VMXNET3_RX_DATA_RING(adapter, rcd->rqID);
->  			len = rxDataRingUsed ? rcd->len : rbi->len;
-> +
-> +			if (rxDataRingUsed && vmxnet3_xdp_enabled(adapter)) {
-
-Maybe save 1 level here as well:
-
-			if (!rxDataRingUsed || !vmxnet3_xdp_enabled(ad))
-				goto alloc_skb;
-
-			sz = rcd->rxdIdx * ...
-
-> +				struct sk_buff *skb_xdp_pass;
-> +				size_t sz;
-> +				int act;
-> +
-> +				sz = rcd->rxdIdx * rq->data_ring.desc_size;
-> +				act = vmxnet3_process_xdp_small(adapter, rq,
-> +								&rq->data_ring.base[sz],
-> +								rcd->len,
-> +								&skb_xdp_pass);
-> +				if (act == XDP_PASS) {
-> +					ctx->skb = skb_xdp_pass;
-> +					goto sop_done;
-> +				}
-> +				if (act == XDP_REDIRECT)
-> +					need_flush = true;
-> +
-> +				goto rcd_done;
-> +			}
-
-alloc_skb:
-
->  			new_skb = netdev_alloc_skb_ip_align(adapter->netdev,
->  							    len);
->  			if (new_skb == NULL) {
-
-[...]
-
-> @@ -217,6 +221,9 @@ struct vmxnet3_tq_driver_stats {
->  	u64 linearized;         /* # of pkts linearized */
->  	u64 copy_skb_header;    /* # of times we have to copy skb header */
->  	u64 oversized_hdr;
-> +
-> +	u64 xdp_xmit;
-> +	u64 xdp_xmit_err;
-
-Sorry for missing this earlier... You use u64 here for stats and
-previously we were using it for the stats, but then u64_stat_t was
-introduced to exclude partial updates and tearing. I know there are
-stats already in u64 above, but maybe right now is the best time to use
-u64_stat_t for the new fields? :)
-
->  };
->  
->  struct vmxnet3_tx_ctx {
-> @@ -253,12 +260,13 @@ struct vmxnet3_tx_queue {
->  						    * stopped */
->  	int				qid;
->  	u16				txdata_desc_size;
-> -} __attribute__((__aligned__(SMP_CACHE_BYTES)));
-> +} ____cacheline_aligned;
->  
->  enum vmxnet3_rx_buf_type {
->  	VMXNET3_RX_BUF_NONE = 0,
->  	VMXNET3_RX_BUF_SKB = 1,
-> -	VMXNET3_RX_BUF_PAGE = 2
-> +	VMXNET3_RX_BUF_PAGE = 2,
-> +	VMXNET3_RX_BUF_XDP = 3,
->  };
->  
->  #define VMXNET3_RXD_COMP_PENDING        0
-> @@ -285,6 +293,12 @@ struct vmxnet3_rq_driver_stats {
->  	u64 drop_err;
->  	u64 drop_fcs;
->  	u64 rx_buf_alloc_failure;
-> +
-> +	u64 xdp_packets;	/* Total packets processed by XDP. */
-> +	u64 xdp_tx;
-> +	u64 xdp_redirects;
-> +	u64 xdp_drops;
-> +	u64 xdp_aborted;
-
-(same)
-
->  };
->  
->  struct vmxnet3_rx_data_ring {
-
-[...]
-
-> +static int
-> +vmxnet3_xdp_xmit_frame(struct vmxnet3_adapter *adapter,
-> +		       struct xdp_frame *xdpf,
-> +		       struct vmxnet3_tx_queue *tq, bool dma_map)
-> +{
-> +	struct vmxnet3_tx_buf_info *tbi = NULL;
-> +	union Vmxnet3_GenericDesc *gdesc;
-> +	struct vmxnet3_tx_ctx ctx;
-> +	int tx_num_deferred;
-> +	struct page *page;
-> +	u32 buf_size;
-> +	int ret = 0;
-> +	u32 dw2;
-> +
-> +	dw2 = (tq->tx_ring.gen ^ 0x1) << VMXNET3_TXD_GEN_SHIFT;
-> +	dw2 |= xdpf->len;
-> +	ctx.sop_txd = tq->tx_ring.base + tq->tx_ring.next2fill;
-> +	gdesc = ctx.sop_txd;
-> +
-> +	buf_size = xdpf->len;
-> +	tbi = tq->buf_info + tq->tx_ring.next2fill;
-> +
-> +	if (vmxnet3_cmd_ring_desc_avail(&tq->tx_ring) == 0) {
-> +		tq->stats.tx_ring_full++;
-> +		return -ENOSPC;
-> +	}
-> +
-> +	tbi->map_type = VMXNET3_MAP_XDP;
-> +	if (dma_map) { /* ndo_xdp_xmit */
-> +		tbi->dma_addr = dma_map_single(&adapter->pdev->dev,
-> +					       xdpf->data, buf_size,
-> +					       DMA_TO_DEVICE);
-> +		if (dma_mapping_error(&adapter->pdev->dev, tbi->dma_addr))
-> +			return -EFAULT;
-> +		tbi->map_type |= VMXNET3_MAP_SINGLE;
-> +	} else { /* XDP buffer from page pool */
-> +		page = virt_to_head_page(xdpf->data);
-
-Nit: your page pools are always order-0, thus you could shortcut those
-virt_to_head_page() throughout the drivers to just virt_to_page() and
-save at least 1 unlikely() condition check this way (it will always be
-false for the pages coming from your page pools). I remember we had huge
-CPU load point on this compound_head() check inside virt_to_head_page()...
-
-> +		tbi->dma_addr = page_pool_get_dma_addr(page) +
-> +				XDP_PACKET_HEADROOM;
-> +		dma_sync_single_for_device(&adapter->pdev->dev,
-> +					   tbi->dma_addr, buf_size,
-> +					   DMA_BIDIRECTIONAL);
-> +	}
-
-[...]
-
-Those are some minors/propositions, up to you whether to address the
-rest was addressed perfectly by you, thanks!
-
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-
-Olek
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
