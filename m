@@ -2,91 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B9E068194C
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 19:35:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B46F68195A
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 19:36:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237500AbjA3Sff (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 13:35:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43482 "EHLO
+        id S238311AbjA3Sgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 13:36:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237393AbjA3Sfd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 13:35:33 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98357170F;
-        Mon, 30 Jan 2023 10:35:30 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id dr8so12888525ejc.12;
-        Mon, 30 Jan 2023 10:35:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=9FE8Tg/ETfLF2znBVGSneSNpDHtD4K+4dzhis/koiic=;
-        b=TdmKB3xUWwABi5gYQNKjBDn+QIkfyNCfLMKldrUBcWh0xLgeMjLs3Qub+GOKGwMozm
-         FUbJ1XZpC2jhGxFhyyhzN118RA97F6oSOXm3m1/Wk+FMjfUWolHE100s5kNNs+L38530
-         uOMnspdpGVscA37fmr5QPdeoxhIyThNBJdmwhiF6nQnureuktWkd6Kjmwi65jygf0nHZ
-         rIy2rkDK2Db/9GyNHpy3U5BFUA5hqu2EF0t9o15V7jSS6IE6idX4bXNtQazLjHQ6mKVg
-         66TdcLQr33MVchRcfI9E3P1LjAwRTNx+NjLiDce4tI2AmTdZIRtd42lzwZYv312KXNeQ
-         C0ZA==
+        with ESMTP id S238046AbjA3Sgb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 13:36:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EEA37AAF
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 10:35:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675103736;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Lt1BSrHjqGxTuQATN1FHlMVFUULtc3t75DalFc1DJkQ=;
+        b=fz5yxH4r+1zcsNy7z44xpI2WNdxoSQoDfDFDk4ZoIuQ0xyTMZubhBfWuw0Nqge9a+e16ys
+        KXsU1GFv7HpWUuJIFOhbZNAKyr+RNuGMNVI1c/0YeCt/bitLRiD/R6hlOtALYu5Vo43Z0l
+        7AxtdG/NoAIMT3GnZvZ0+MwSKa0+65c=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-455-0eD-4nwXO1aHWSttjUADEQ-1; Mon, 30 Jan 2023 13:35:35 -0500
+X-MC-Unique: 0eD-4nwXO1aHWSttjUADEQ-1
+Received: by mail-qt1-f200.google.com with SMTP id m7-20020ac807c7000000b003b80b35c136so5284838qth.5
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 10:35:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=9FE8Tg/ETfLF2znBVGSneSNpDHtD4K+4dzhis/koiic=;
-        b=Ofl4uXiXhCZCIHhOX5LlX3U++GgUD/AfnBc4WI11c03JGtcdUB7DQsH6YI9t9EBTJC
-         Z0v9OGWGYjNwT7uFPleulD683C6nDcWu9f6Y4DsoFXL73S5j2YhSJjAKh6oSTueKXEBk
-         4gxyqJNeew8OVveDIo2p4efbtndy03iHM2o4AjoGzS0acrYqZc3f/yxp6OZVZWOM4ibS
-         zksM5+LL01aS1+WinBGffu2RSeqljJEgrLoy50VK0/BO7YFSmUW0uBHHPjKcLG3FTd/s
-         PZ12WsHVeTuFrhEqDocPNs5PBd2V15QyUcn9TCw6Xx5ugn+EtUhRxd9P2BwfONqK5cb5
-         VJyw==
-X-Gm-Message-State: AFqh2koVoejSB49Rt+fI7qlLud79mKaUDJLr0Ksc17fdVGghDQIfZc/a
-        FEQt1S5uJ9kuuUCRrCqf2BRjGbVvUn2HAVObheI=
-X-Google-Smtp-Source: AMrXdXvnrppwjWc2GYoaSQvqFwNiTQID4l0gmI8rLvQT5AS+GqW5c9yL3gsxiJUvTOWQUcAgkpnAGLzZ827Cy2iv9XQ=
-X-Received: by 2002:a17:906:3658:b0:872:68a:a17e with SMTP id
- r24-20020a170906365800b00872068aa17emr7442256ejb.159.1675103729082; Mon, 30
- Jan 2023 10:35:29 -0800 (PST)
-MIME-Version: 1.0
-References: <20230130092157.1759539-2-hch@lst.de> <20230130092157.1759539-1-hch@lst.de>
- <3347557.1675074816@warthog.procyon.org.uk> <20230130103619.GA11874@lst.de>
-In-Reply-To: <20230130103619.GA11874@lst.de>
-From:   Ilya Dryomov <idryomov@gmail.com>
-Date:   Mon, 30 Jan 2023 19:35:17 +0100
-Message-ID: <CAOi1vP_aU58YpiOkYgQy4a=VVnm64WeWH5pwYf+bc_C=COYY3g@mail.gmail.com>
-Subject: Re: [PATCH 01/23] block: factor out a bvec_set_page helper
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     David Howells <dhowells@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Minchan Kim <minchan@kernel.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Keith Busch <kbusch@kernel.org>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        Xiubo Li <xiubli@redhat.com>, Steve French <sfrench@samba.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>,
-        Mike Marshall <hubcap@omnibond.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Lt1BSrHjqGxTuQATN1FHlMVFUULtc3t75DalFc1DJkQ=;
+        b=Q7fWK0NwLPUrk1EZkyXuAHsBWIedplfk7JdrsLjY/SGk4pZC1D7JTXLvGygPITJZE0
+         /+W09iX3HKTMkNFnA7gu7D2Cbj1Pi4lb0H7b39KcJyTiv2ECMnLwUrL7fWxRgcDblnHS
+         1RLDm5DCnB2aHs5sfDoHgP5BOP5CPBmWpdOIKJSX0EomRZAoQ7ockt5I2bfIcveeimXs
+         0+mRu7Te2wKt/PfVsW8bQGRdWNX54P5PhImbfeQ04RAq3fcCBvMhedxnTmj5/1xcBsJK
+         a7/cSLusjUTiZTdT6F/Xx7I5lHwJmBPoZxPnUrX2IrzxU5QVuH7HcnWH398VrVmKQ2XK
+         i95w==
+X-Gm-Message-State: AO0yUKWAQWRJa7K5AMdvPy9Vp69Pt0B0sVwxHgHrklJDSeovElcMFSrV
+        7s5oIsi6XnIeaBhgjhgSgTQ5n5K04dxJiWGb54fXo7lSGdvpo158xhK9taTRUgUllbbjoBaZiFi
+        z640GemV/fwxrbH64
+X-Received: by 2002:a05:6214:5086:b0:537:7335:144f with SMTP id kk6-20020a056214508600b005377335144fmr33146784qvb.24.1675103734829;
+        Mon, 30 Jan 2023 10:35:34 -0800 (PST)
+X-Google-Smtp-Source: AK7set/FPPbNpiUIaqVWHe+TRyIn3OsGXWnrIppmyHYJIz3KP+w5i9mRZLJBY8tMr/xBanz2UMPsXg==
+X-Received: by 2002:a05:6214:5086:b0:537:7335:144f with SMTP id kk6-20020a056214508600b005377335144fmr33146764qvb.24.1675103734613;
+        Mon, 30 Jan 2023 10:35:34 -0800 (PST)
+Received: from x1 (c-73-214-169-22.hsd1.pa.comcast.net. [73.214.169.22])
+        by smtp.gmail.com with ESMTPSA id o4-20020a05620a0d4400b006ea7f9d8644sm8448062qkl.96.2023.01.30.10.35.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Jan 2023 10:35:33 -0800 (PST)
+Date:   Mon, 30 Jan 2023 13:35:32 -0500
+From:   Brian Masney <bmasney@redhat.com>
+To:     Steev Klimaszewski <steev@kali.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        linux-block@vger.kernel.org, ceph-devel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-nvme@lists.infradead.org, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        linux-fsdevel@vger.kernel.org, linux-nfs@vger.kernel.org,
-        devel@lists.orangefs.org, io-uring@vger.kernel.org,
-        linux-mm@kvack.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Balakrishna Godavarthi <bgodavar@codeaurora.org>,
+        Rocky Liao <rjliao@codeaurora.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH 3/4] arm64: dts: qcom: sc8280xp: Enable BT
+Message-ID: <Y9gN9IKAr6y3xzh7@x1>
+References: <20230129215136.5557-1-steev@kali.org>
+ <20230129215136.5557-2-steev@kali.org>
+ <20230129215136.5557-3-steev@kali.org>
+ <20230129215136.5557-4-steev@kali.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230129215136.5557-4-steev@kali.org>
+User-Agent: Mutt/2.2.7 (2022-08-07)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -94,24 +96,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 11:36 AM Christoph Hellwig <hch@lst.de> wrote:
->
-> On Mon, Jan 30, 2023 at 10:33:36AM +0000, David Howells wrote:
-> > Christoph Hellwig <hch@lst.de> wrote:
-> >
-> > > +static inline void bvec_set_page(struct bio_vec *bv, struct page *page,
-> > > +           unsigned int len, unsigned int offset)
-> >
-> > Could you swap len and offset around?  It reads better offset first.  You move
-> > offset into the page and then do something with len bytes.
->
-> This matches bio_add_page and the order inside bio_vec itself.  willy
-> wanted to switch it around for bio_add_folio but Jens didn't like it,
-> so I'll stick to the current convention in this area as well.
+On Sun, Jan 29, 2023 at 03:51:29PM -0600, Steev Klimaszewski wrote:
+> From: Bjorn Andersson <bjorn.andersson@linaro.org>
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-This also matches sg_set_page() so sticking to the current convention
-is definitely a good idea!
+You should also add your Signed-off-by. Also the title of the patch
+should be updated to say define uart2 instead of enable BT.
 
-Thanks,
+> ---
+>  arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> index 122afa03bb40..2d98687fb1ea 100644
+> --- a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> @@ -1244,6 +1244,20 @@ spi3: spi@98c000 {
+>  				status = "disabled";
+>  			};
+>  
+> +			uart2: serial@988000 {
 
-                Ilya
+This node needs to go after spi2 instead of spi3.
+
+Everything else looks good to me.
+
+Brian
+
