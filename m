@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 873A8681A5D
+	by mail.lfdr.de (Postfix) with ESMTP id D417F681A5E
 	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 20:25:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238033AbjA3TZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 14:25:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53860 "EHLO
+        id S235392AbjA3TZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 14:25:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238055AbjA3TZe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 14:25:34 -0500
+        with ESMTP id S237508AbjA3TZf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 14:25:35 -0500
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B84A2E812
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 11:25:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529301EBC3
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 11:25:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675106732; x=1706642732;
+  t=1675106734; x=1706642734;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=I7aGjHMxjm7jTuEyVEBNqIG5WBc4USBNJYc7jMuCLJE=;
-  b=BZsHm4s9QTidmbDNCDU0IUfutoD4EqHOVXQjng2ci3wnSnwhJO39FW6y
-   tSthtMMm2d1IYqqPQQtjS2/Q7ouCjUXWxQ5g3HgAn+SwHcHqigRLXq3UV
-   z6Uo6eOcHj3yx3Ege5/mgNyO4lykprooA4rcmQBqddfF/u0R7kurORcx+
-   I4j4ADGvbmfLGF4y7huTofw8eOj2FRrBl7sYrVmYb+hAW/KJ3Ll0C25Eo
-   tulO7RjWKTMrxtVyFPvVQ7t1+xbKKlDg+OUbagKvZazhq+ssPabAyAu5H
-   T0gaVSSeJA9ayinOGxa1pZbyA572ch+or38LtS/kJihSlzN+Irrl7kB7i
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="392198606"
+  bh=7SAKN1SMmBh75NXwdgiUY0auYWu0Q1FeMjxA8CfYJtg=;
+  b=A8NDHCa0p15KeZPH5sCzcfAlo8FoaOM72BJjPCawseVXiQrYrmI5a7g/
+   kXTvkwl1a/0oG1VgALUGwCh3AAeL1FCyr3UR7Be90JtYA6mlmLQQubahJ
+   cxi0nkA3SkAc0TCzC5UVE8t/KVi6eelQZqlVj4QfALSpezOkgO49Caa9R
+   L0KJpP7+KqpnSMlx1ORGhEl8hLJm+EpN/TKZR0QBk8CXIwSTuF8kO/Eys
+   G6Vw3XY5KV9rjYilX1TjDQhEu/c3iqS2Vepk0mJ2SECDDbsTcTuHCrreT
+   sR7Qzdu0Fyv3NkZZBj8TAka1z3KRk41o6trhiPiHO8qszrMd0yHVob0EM
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="392198613"
 X-IronPort-AV: E=Sophos;i="5.97,259,1669104000"; 
-   d="scan'208";a="392198606"
+   d="scan'208";a="392198613"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 11:25:25 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="696534366"
+X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="696534370"
 X-IronPort-AV: E=Sophos;i="5.97,259,1669104000"; 
-   d="scan'208";a="696534366"
+   d="scan'208";a="696534370"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
   by orsmga001.jf.intel.com with ESMTP; 30 Jan 2023 11:25:25 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -45,10 +45,10 @@ Cc:     Bjorn Helgaas <bhelgaas@google.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         intel-wired-lan@lists.osuosl.org,
-        Marek Szlosek <marek.szlosek@intel.com>
-Subject: [PATCH net-next 4/8] iavf: Remove redundant pci_enable_pcie_error_reporting()
-Date:   Mon, 30 Jan 2023 11:25:15 -0800
-Message-Id: <20230130192519.686446-5-anthony.l.nguyen@intel.com>
+        Gurucharan G <gurucharanx.g@intel.com>
+Subject: [PATCH net-next 5/8] ice: Remove redundant pci_enable_pcie_error_reporting()
+Date:   Mon, 30 Jan 2023 11:25:16 -0800
+Message-Id: <20230130192519.686446-6-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230130192519.686446-1-anthony.l.nguyen@intel.com>
 References: <20230130192519.686446-1-anthony.l.nguyen@intel.com>
@@ -82,39 +82,37 @@ Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
 Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
 Cc: intel-wired-lan@lists.osuosl.org
 Cc: netdev@vger.kernel.org
-Tested-by: Marek Szlosek <marek.szlosek@intel.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 5 -----
- 1 file changed, 5 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_main.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 2c4480b20db3..3273aeb8fa67 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -4868,8 +4868,6 @@ static int iavf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		goto err_pci_reg;
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index fce86e8ff834..4aa19562fe93 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -4664,7 +4664,6 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
+ 		return err;
  	}
  
 -	pci_enable_pcie_error_reporting(pdev);
--
  	pci_set_master(pdev);
  
- 	netdev = alloc_etherdev_mq(sizeof(struct iavf_adapter),
-@@ -4957,7 +4955,6 @@ static int iavf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- err_alloc_wq:
- 	free_netdev(netdev);
- err_alloc_etherdev:
+ 	pf->pdev = pdev;
+@@ -4981,7 +4980,6 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
+ 	ice_devlink_destroy_regions(pf);
+ 	ice_deinit_hw(hw);
+ err_exit_unroll:
 -	pci_disable_pcie_error_reporting(pdev);
- 	pci_release_regions(pdev);
- err_pci_reg:
- err_dma:
-@@ -5175,8 +5172,6 @@ static void iavf_remove(struct pci_dev *pdev)
- 
- 	free_netdev(netdev);
- 
+ 	pci_disable_device(pdev);
+ 	return err;
+ }
+@@ -5113,7 +5111,6 @@ static void ice_remove(struct pci_dev *pdev)
+ 	ice_reset(hw, ICE_RESET_PFR);
+ 	pci_wait_for_pending_transaction(pdev);
+ 	ice_clear_interrupt_scheme(pf);
 -	pci_disable_pcie_error_reporting(pdev);
--
  	pci_disable_device(pdev);
  }
  
