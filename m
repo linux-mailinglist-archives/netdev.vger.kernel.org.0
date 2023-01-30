@@ -2,106 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 329D2680F4D
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 14:49:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB55F681051
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 15:02:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235472AbjA3NtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 08:49:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57398 "EHLO
+        id S236932AbjA3OCX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 09:02:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230340AbjA3NtN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 08:49:13 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B2437556;
-        Mon, 30 Jan 2023 05:49:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Uz0rS13sZn6W3GLJhzVYyYt2P+D5LMPg6daHnApH/qI=; b=I/Gl7Mypfh2GbCGKvoqfKnf/mO
-        Dk3R7Jf2jJyuPmjVvG32uHeO6huTbQoxXATic6aFd9j+35JBv1eHmiqOWB5PkzJI6z9dpS5R5wkJY
-        ILKJUFVCzokxOkSiXLPsKXtOQYkXQid2WqF7Ek5QctA5WG/YJr/iehghN7qeRu/h2ErI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pMUWh-003Zvv-Ej; Mon, 30 Jan 2023 14:48:51 +0100
-Date:   Mon, 30 Jan 2023 14:48:51 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sander Vanheule <sander@svanheule.net>
-Cc:     Christian Marangi <ansuelsmth@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S236909AbjA3OCI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 09:02:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1664839CF0;
+        Mon, 30 Jan 2023 06:02:02 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2B3F61031;
+        Mon, 30 Jan 2023 14:02:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DF4DC433D2;
+        Mon, 30 Jan 2023 14:02:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1675087321;
+        bh=aUHe/ku59CJyZQYm3tJm3BPQl1OqQXpECyjv8TUP338=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LIbnsMlyR/6YDlxxmjI5FfUDPNV+gmD/SfSs+li+gj+2lSfQk78RwFlyOCRNwu2Jo
+         DqtSaJM4KfHdrNwBFClJnBcQBwWOZWqqra4ClYPDCjvUJBMJDdF145CkEkCfsbcz3m
+         ClTvwDbxQHbHcmEsEu6mgJXDiuCvh0s9FBYKSxtQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     stable@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        patches@lists.linux.dev, Niklas Cassel <Niklas.Cassel@wdc.com>,
+        Michael Chan <michael.chan@broadcom.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
-        Tim Harvey <tharvey@gateworks.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Subject: Re: [PATCH v7 11/11] dt-bindings: net: dsa: qca8k: add LEDs
- definition example
-Message-ID: <Y9fKwzMyHK7kRjei@lunn.ch>
-References: <20221214235438.30271-1-ansuelsmth@gmail.com>
- <20221214235438.30271-12-ansuelsmth@gmail.com>
- <20221220173958.GA784285-robh@kernel.org>
- <Y6JDOFmcEQ3FjFKq@lunn.ch>
- <Y6JkXnp0/lF4p0N1@lunn.ch>
- <63a30221.050a0220.16e5f.653a@mx.google.com>
- <c609a7f865ab48f858adafdd9c1014dda8ec82d6.camel@svanheule.net>
- <Y9bs53a9zyqEU9Xw@lunn.ch>
- <f854183545a6ff55235c9f2264af97c1a7f530c3.camel@svanheule.net>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>,
+        Niklas Cassel <niklas.cassel@wdc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 6.1 139/313] bnxt: Do not read past the end of test names
+Date:   Mon, 30 Jan 2023 14:49:34 +0100
+Message-Id: <20230130134343.125552398@linuxfoundation.org>
+X-Mailer: git-send-email 2.39.1
+In-Reply-To: <20230130134336.532886729@linuxfoundation.org>
+References: <20230130134336.532886729@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f854183545a6ff55235c9f2264af97c1a7f530c3.camel@svanheule.net>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Thanks for the quick clarification. Because you mention this, I realised that
-> the RTL8382's LED controller is actually not in the PHYs. These SoCs use
-> external PHYs, which may have their own, independent, LED controllers. For
-> example the RTL8212D [1].
-> 
-> [1]
-> https://datasheet.lcsc.com/lcsc/2203252253_Realtek-Semicon-RTL8218D-CG_C2901898.pdf
-> 
-> > 
-> > But the point is, the PHYs will probe if listed. They don't have to
-> > have a MAC pointing to them with a phandle. So the phydev will exist,
-> > and that should be enough to get the LED class device registered. If
-> > there is basic on/off support, that should be enough for you to attach
-> > the Morse code panic trigger, the heartbeat handler, or any other LED
-> > trigger.
-> 
-> OK, this makes sense for (external) PHYs which need to be probed anyway to have
-> access to the LEDs.
-> 
-> Looking at the RTL8212D's datasheet (Table 11, p. 24), it appears to be possible
-> to assign an LED to any of the eight PHYs. Perhaps to allow more freedom in the
-> board layout. Maybe I'm just not seeing it, but I don't think the example with
-> an 'leds' node under a PHY contains enough information to perform such a non-
-> trivial mapping. On the other hand, I'm not sure where else that info might go.
+From: Kees Cook <keescook@chromium.org>
 
-The binding is defining all the generic properties need for generic
-PHY LED. For most PHYs, it is probably sufficient. However, there is
-nothing stopping you from adding PHY specific properties. So for
-example, for each PHY LED you could have a property which maps it to
-a LED00-LED35.
+[ Upstream commit d3e599c090fc6977331150c5f0a69ab8ce87da21 ]
 
-So propose a binding for the RTL8218D with whatever extra properties
-you think are needed, and it will be reviewed in the normal way.
+Test names were being concatenated based on a offset beyond the end of
+the first name, which tripped the buffer overflow detection logic:
 
-    Andrew
+ detected buffer overflow in strnlen
+ [...]
+ Call Trace:
+ bnxt_ethtool_init.cold+0x18/0x18
+
+Refactor struct hwrm_selftest_qlist_output to use an actual array,
+and adjust the concatenation to use snprintf() rather than a series of
+strncat() calls.
+
+Reported-by: Niklas Cassel <Niklas.Cassel@wdc.com>
+Link: https://lore.kernel.org/lkml/Y8F%2F1w1AZTvLglFX@x1-carbon/
+Tested-by: Niklas Cassel <Niklas.Cassel@wdc.com>
+Fixes: eb51365846bc ("bnxt_en: Add basic ethtool -t selftest support.")
+Cc: Michael Chan <michael.chan@broadcom.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+Reviewed-by: Niklas Cassel <niklas.cassel@wdc.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 13 ++++---------
+ drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h     |  9 +--------
+ 2 files changed, 5 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 8cad15c458b3..703fc163235f 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -3865,7 +3865,7 @@ void bnxt_ethtool_init(struct bnxt *bp)
+ 		test_info->timeout = HWRM_CMD_TIMEOUT;
+ 	for (i = 0; i < bp->num_tests; i++) {
+ 		char *str = test_info->string[i];
+-		char *fw_str = resp->test0_name + i * 32;
++		char *fw_str = resp->test_name[i];
+ 
+ 		if (i == BNXT_MACLPBK_TEST_IDX) {
+ 			strcpy(str, "Mac loopback test (offline)");
+@@ -3876,14 +3876,9 @@ void bnxt_ethtool_init(struct bnxt *bp)
+ 		} else if (i == BNXT_IRQ_TEST_IDX) {
+ 			strcpy(str, "Interrupt_test (offline)");
+ 		} else {
+-			strscpy(str, fw_str, ETH_GSTRING_LEN);
+-			strncat(str, " test", ETH_GSTRING_LEN - strlen(str));
+-			if (test_info->offline_mask & (1 << i))
+-				strncat(str, " (offline)",
+-					ETH_GSTRING_LEN - strlen(str));
+-			else
+-				strncat(str, " (online)",
+-					ETH_GSTRING_LEN - strlen(str));
++			snprintf(str, ETH_GSTRING_LEN, "%s test (%s)",
++				 fw_str, test_info->offline_mask & (1 << i) ?
++					"offline" : "online");
+ 		}
+ 	}
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h
+index b753032a1047..fb78fc38530d 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h
+@@ -10099,14 +10099,7 @@ struct hwrm_selftest_qlist_output {
+ 	u8	unused_0;
+ 	__le16	test_timeout;
+ 	u8	unused_1[2];
+-	char	test0_name[32];
+-	char	test1_name[32];
+-	char	test2_name[32];
+-	char	test3_name[32];
+-	char	test4_name[32];
+-	char	test5_name[32];
+-	char	test6_name[32];
+-	char	test7_name[32];
++	char	test_name[8][32];
+ 	u8	eyescope_target_BER_support;
+ 	#define SELFTEST_QLIST_RESP_EYESCOPE_TARGET_BER_SUPPORT_BER_1E8_SUPPORTED  0x0UL
+ 	#define SELFTEST_QLIST_RESP_EYESCOPE_TARGET_BER_SUPPORT_BER_1E9_SUPPORTED  0x1UL
+-- 
+2.39.0
+
+
+
