@@ -2,80 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AC95680E4C
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 13:58:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A89C680E5C
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 14:01:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236940AbjA3M6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 07:58:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50846 "EHLO
+        id S237012AbjA3NBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 08:01:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236938AbjA3M6t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 07:58:49 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67DE934304;
-        Mon, 30 Jan 2023 04:58:18 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id x7so7615732edr.0;
-        Mon, 30 Jan 2023 04:58:18 -0800 (PST)
+        with ESMTP id S237005AbjA3NB2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 08:01:28 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB4C9172B;
+        Mon, 30 Jan 2023 05:01:26 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id m7so10976646wru.8;
+        Mon, 30 Jan 2023 05:01:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jSgexImJFvbllsb2hR3ybobUUI/wwigUcBhRfKkOfog=;
-        b=WnI3TvSl212FavxWOkWMzASf/zIj1UOOD3xLh8tKgY0jr9lubQgLZHuu+NelEDy+T3
-         wJLtc2WTm1v87TuE1IhPmaV403HE4Tkx0rN5In1UMSwlwgTMuRLYoR6E2lTnIykggiUw
-         ezlwKOg2+r3YPwr2GfXiCyfkDYrvpjiidG4yhqBVXRJ6Gp1YvzuyQ34zt8mib6A8T0r6
-         GhD3B05WMRm7Eg/SgH+HSle7CE/z/IvqLQCm61NkKxrvLfu6x0kcyyW1HHkBiMUh6lbx
-         bJ19TrC9eh0mOqj+hudtHkIV7HHSxlj9a2i4H8atMIuWaJJYiFFRM841mgKZM4MNO+dP
-         GA3A==
+        h=user-agent:content-disposition:mime-version:message-id:subject:to
+         :from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=gfP++trWxino2nxmOeW6QjlxbhEmTqO0/dyok6r1CGY=;
+        b=c7ta6ATIyd0Tis+q3Wd5KN1qKCmvOiu05/Rg/8GDqFyKZTW3kGfXeqKCWApKiqiYPI
+         S3AiNEZXfkFgXeM85xREiIUE5lC5teoYvDaszXlSsZQoHm/MP1AtLmvSzU4n8i8D1jQU
+         Im+v0Zm4HghZBwUWW7LpVXaaOEgZx76UkL/525w1ohw/BAJTRBH2DqUCs+v+J9h5MaOG
+         BHT/47scVKVM/sA0oGIoL7QBUFIXASDDVk9juaWKRSQ0cH9DBeBGts/XxkUzkJn16gpY
+         2A9JrZBEXd2R+UffPLqNsG52W01nZszIgHXVxMcOl2SLD2oTvv9RrpdRCLVEy1jFc4wN
+         1f7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jSgexImJFvbllsb2hR3ybobUUI/wwigUcBhRfKkOfog=;
-        b=R18PCTvc32WSeJvqMivLWud70i6O0zqF9znbyASGRjxZw70fw/IZfLpQ3G5emxuuhm
-         F9nKY7DbvJITdKUCGzbZNUEl94Jr2TGfHKxF3B9JhHWWz1/yKmBaVf5h69nOeSkTsxGx
-         VkvaO3fB3DF1CyubmqOmrbhOuc4szDOzJX3LSB009vbd9BVGUxklwyoDXEf47BKzz9XG
-         /JPT0qzqsPRID/g7AgrNT5sWHkyWCLyWaPPoHowRktUpsWh5FkZv7Q5sypGRizID3lUN
-         /H2R3sWb6p0hf+pb3lKnaYAMWI5LVQ2B3AmPd4ytP3E3gjyq/GXUqESSAQq/+6nFi5NP
-         olcg==
-X-Gm-Message-State: AO0yUKWs78SrfDHgOX2h6+ny5uf3JSwWBTSTSsvY0ZBBFVBl4Zyimm4v
-        b/NwwGpfifDklk31pZtolKI=
-X-Google-Smtp-Source: AK7set9JkJt7Zz6KHjv7o/kgAl8hsm7AuCNxAD+p1Qxe5KFXyl5rE/TM1/tzqi2oSQTtcNqdA8YEwQ==
-X-Received: by 2002:a05:6402:4003:b0:4a2:2fa:ead4 with SMTP id d3-20020a056402400300b004a202faead4mr14839532eda.17.1675083496377;
-        Mon, 30 Jan 2023 04:58:16 -0800 (PST)
-Received: from skbuf ([188.26.57.205])
-        by smtp.gmail.com with ESMTPSA id c20-20020aa7df14000000b00499b3d09bd2sm2351700edy.91.2023.01.30.04.58.15
+        h=user-agent:content-disposition:mime-version:message-id:subject:to
+         :from:date:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gfP++trWxino2nxmOeW6QjlxbhEmTqO0/dyok6r1CGY=;
+        b=ghYhl2MIdhTAJIlnCrEHBmUVauNfiLDdyHlJ9gIJTXzls9KTxlMyJ8hPxKcjjiTZa0
+         Y2m6VpYqSjxJuJrS7dgCD5Aul6uyjhWoG5Mor2yaQmBGJCPkXCJ+UyAf/sfJmcyvBkla
+         s+u66O6J0GuhsQ1COm9U1pT/1J/B0iA9ByI0vwAOw4/Qeb/E70wF3CCZg0I5BYIeMd1t
+         Ar8f4TvodrQBHpVGFf14Od4K3i3PwxwhPRx8J3EBNqf2uQKKF+V1mIwzQJBAf517Syb0
+         rXxiXP3JGAQBZJcDReajTFMsRKSwy5wjdE5/9jxs5dBczGiUDGQeiDsDm7mHzSTsdcyz
+         x4Mw==
+X-Gm-Message-State: AFqh2krh4yi0qOfctJLojg0K113v/OKDFarQzxETShHrA0z7FT1Hn1nh
+        06XyS/h5bcDCuzXhsK6S1Xlm4egzze4=
+X-Google-Smtp-Source: AMrXdXtNRBDl9pgIdy02Hy7R/t7CPIpqPKhjMWIHbMEZPwoJZMzUc6bFWwY7pm1EUbnKnIM91H1sGg==
+X-Received: by 2002:a05:6000:1c06:b0:2bf:6f4a:3f66 with SMTP id ba6-20020a0560001c0600b002bf6f4a3f66mr35079299wrb.21.1675083685193;
+        Mon, 30 Jan 2023 05:01:25 -0800 (PST)
+Received: from debian ([89.238.191.199])
+        by smtp.gmail.com with ESMTPSA id o6-20020adfe806000000b002bdf8dd6a8bsm11659174wrm.80.2023.01.30.05.01.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Jan 2023 04:58:15 -0800 (PST)
-Date:   Mon, 30 Jan 2023 14:58:13 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Daniel Golle <daniel@makrotopia.org>
-Subject: Re: [BUG] vlan-aware bridge breaks vlan on another port on same gmac
-Message-ID: <20230130125813.asx5qtm6ttuwdobo@skbuf>
-References: <trinity-e6294d28-636c-4c40-bb8b-b523521b00be-1674233135062@3c-app-gmx-bs36>
- <20230120172132.rfo3kf4fmkxtw4cl@skbuf>
- <trinity-b0df6ff8-cceb-4aa5-a26f-41bc04dc289c-1674303103108@3c-app-gmx-bap60>
- <20230121122223.3kfcwxqtqm3b6po5@skbuf>
- <trinity-7c2af652-d3f8-4086-ba12-85cd18cd6a1a-1674304362789@3c-app-gmx-bap60>
- <20230121133549.vibz2infg5jwupdc@skbuf>
- <trinity-cbf3ad23-15c0-4c77-828b-94c76c1785a1-1674310370120@3c-app-gmx-bap60>
+        Mon, 30 Jan 2023 05:01:24 -0800 (PST)
+Date:   Mon, 30 Jan 2023 14:00:55 +0100
+From:   Richard Gobert <richardbgobert@gmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        steffen.klassert@secunet.com, lixiaoyan@google.com,
+        alexanderduyck@fb.com, leon@kernel.org, ye.xingchen@zte.com.cn,
+        iwienand@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] gro: optimise redundant parsing of packets
+Message-ID: <20230130130047.GA7913@debian>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <trinity-cbf3ad23-15c0-4c77-828b-94c76c1785a1-1674310370120@3c-app-gmx-bap60>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -86,147 +72,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Frank,
+Currently, the IPv6 extension headers are parsed twice: first in
+ipv6_gro_receive, and then again in ipv6_gro_complete.
 
-On Sat, Jan 21, 2023 at 03:12:50PM +0100, Frank Wunderlich wrote:
-> Hi
-> 
-> > Gesendet: Samstag, 21. Januar 2023 um 14:35 Uhr
-> > Von: "Vladimir Oltean" <olteanv@gmail.com>
-> > An: "Frank Wunderlich" <frank-w@public-files.de>
-> > Cc: "Andrew Lunn" <andrew@lunn.ch>, "Florian Fainelli" <f.fainelli@gmail.com>, "David S. Miller" <davem@davemloft.net>, "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel.org>, "Paolo Abeni" <pabeni@redhat.com>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, "Landen Chao" <Landen.Chao@mediatek.com>, "Sean Wang" <sean.wang@mediatek.com>, "DENG Qingfang" <dqfext@gmail.com>, "Matthias Brugger" <matthias.bgg@gmail.com>, "Daniel Golle" <daniel@makrotopia.org>
-> > Betreff: Re: [BUG] vlan-aware bridge breaks vlan on another port on same gmac
-> >
-> > On Sat, Jan 21, 2023 at 01:32:42PM +0100, Frank Wunderlich wrote:
-> > > so first patch fixes the behaviour on bpi-r3 (mt7531)...but maybe mt7530 need the tagging on cpu-port
-> > >
-> > > > Can you try the second patch instead of the first one? Without digging
-> > > > deeply into mt7530 hardware docs, that's the best chance of making
-> > > > things work without changing how the hardware operates.
-> > >
-> > > second patch works for wan, but vlan on bridge is broken, no packets receiving my laptop (also no untagged ones).
-> >
-> > It's hard for me to understand how applying only patch "tag_mtk only
-> > combine VLAN tag with MTK tag is user port is VLAN aware" can produce
-> > the results you describe... For packets sent to port lan0, nothing
-> > should have been changed by that patch, because dsa_port_is_vlan_filtering(dp)
-> > should return true.
-> >
-> > If you can confirm there isn't any mistake in the testing procedure,
-> > I'll take a look later today at the hardware documentation and try to
-> > figure out why the CPU port is configured the way it is.
-> 
-> ok, booted again the kernel with first patch ("mt7530 don't make the CPU port a VLAN user port")
-> and yes lan0-vlan is broken...
-> seems i need to reboot after each lan/wan test to at least clean arp-cache.
-> 
-> but patch2 ("tag_mtk only combine VLAN tag with MTK tag is user port is VLAN aware") still not
-> works on lanbridge vlan (no packet received on target).
-> 
-> regards Frank
+The field NAPI_GRO_CB(skb)->proto is used by GRO to hold the layer 4
+protocol type that comes after the IPv6 layer. I noticed that it is set
+in ipv6_gro_receive, but isn't used anywhere. By using this field, and
+also storing the size of the network header, we can avoid parsing
+extension headers a second time in ipv6_gro_complete.
 
-Sorry for the delay and thanks again for testing.
+The first commit frees up space in the GRO CB. The second commit reduces
+the redundant parsing during the complete phase, using the freed CB
+space.
 
-I simply didn't have time to sit down with the hardware documentation
-and (re)understand the concepts governing this switch.
+I've applied this optimisation to all base protocols (IPv6, IPv4,
+Ethernet). Then, I benchmarked this patch on my machine, using ftrace to
+measure ipv6_gro_complete's performance, and there was an improvement.
 
-I now have the patch below which should have everything working. Would
-you mind testing it?
+Richard Gobert (2):
+  gro: decrease size of CB
+  gro: optimise redundant parsing of packets
 
-From 9110460832d99c3b3e86ffcda472a27a52cdf259 Mon Sep 17 00:00:00 2001
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
-Date: Mon, 30 Jan 2023 14:31:17 +0200
-Subject: [PATCH] net: dsa: mt7530: don't change PVC_EG_TAG when CPU port
- becomes VLAN-aware
+ include/net/gro.h      | 32 +++++++++++++++++++++-----------
+ net/core/gro.c         | 18 +++++++++++-------
+ net/ethernet/eth.c     | 11 +++++++++--
+ net/ipv4/af_inet.c     |  8 +++++++-
+ net/ipv6/ip6_offload.c | 15 ++++++++++++---
+ 5 files changed, 60 insertions(+), 24 deletions(-)
 
-Frank reports that in a mt7530 setup where some ports are standalone and
-some are in a VLAN-aware bridge, 8021q uppers of the standalone ports
-lose their VLAN tag on xmit, as seen by the link partner.
-
-This seems to occur because once the other ports join the VLAN-aware
-bridge, mt7530_port_vlan_filtering() also calls
-mt7530_port_set_vlan_aware(ds, cpu_dp->index), and this affects the way
-that the switch processes the traffic of the standalone port.
-
-Relevant is the PVC_EG_TAG bit. The MT7530 documentation says about it:
-
-EG_TAG: Incoming Port Egress Tag VLAN Attribution
-0: disabled (system default)
-1: consistent (keep the original ingress tag attribute)
-
-My interpretation is that this setting applies on the ingress port, and
-"disabled" is basically the normal behavior, where the egress tag format
-of the packet (tagged or untagged) is decided by the VLAN table
-(MT7530_VLAN_EGRESS_UNTAG or MT7530_VLAN_EGRESS_TAG).
-
-But there is also an option of overriding the system default behavior,
-and for the egress tagging format of packets to be decided not by the
-VLAN table, but simply by copying the ingress tag format (if ingress was
-tagged, egress is tagged; if ingress was untagged, egress is untagged;
-aka "consistent). This is useful in 2 scenarios:
-
-- VLAN-unaware bridge ports will always encounter a miss in the VLAN
-  table. They should forward a packet as-is, though. So we use
-  "consistent" there. See commit e045124e9399 ("net: dsa: mt7530: fix
-  tagged frames pass-through in VLAN-unaware mode").
-
-- Traffic injected from the CPU port. The operating system is in god
-  mode; if it wants a packet to exit as VLAN-tagged, it sends it as
-  VLAN-tagged. Otherwise it sends it as VLAN-untagged*.
-
-*This is true only if we don't consider the bridge TX forwarding offload
-feature, which mt7530 doesn't support.
-
-So for now, make the CPU port always stay in "consistent" mode to allow
-software VLANs to be forwarded to their egress ports with the VLAN tag
-intact, and not stripped.
-
-Link: https://lore.kernel.org/netdev/trinity-e6294d28-636c-4c40-bb8b-b523521b00be-1674233135062@3c-app-gmx-bs36/
-Fixes: e045124e9399 ("net: dsa: mt7530: fix tagged frames pass-through in VLAN-unaware mode")
-Reported-by: Frank Wunderlich <frank-w@public-files.de>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/mt7530.c | 26 +++++++++++++++++++-------
- 1 file changed, 19 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 616b21c90d05..3a15015bc409 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -1302,14 +1302,26 @@ mt7530_port_set_vlan_aware(struct dsa_switch *ds, int port)
- 		if (!priv->ports[port].pvid)
- 			mt7530_rmw(priv, MT7530_PVC_P(port), ACC_FRM_MASK,
- 				   MT7530_VLAN_ACC_TAGGED);
--	}
- 
--	/* Set the port as a user port which is to be able to recognize VID
--	 * from incoming packets before fetching entry within the VLAN table.
--	 */
--	mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK | PVC_EG_TAG_MASK,
--		   VLAN_ATTR(MT7530_VLAN_USER) |
--		   PVC_EG_TAG(MT7530_VLAN_EG_DISABLED));
-+		/* Set the port as a user port which is to be able to recognize
-+		 * VID from incoming packets before fetching entry within the
-+		 * VLAN table.
-+		 */
-+		mt7530_rmw(priv, MT7530_PVC_P(port),
-+			   VLAN_ATTR_MASK | PVC_EG_TAG_MASK,
-+			   VLAN_ATTR(MT7530_VLAN_USER) |
-+			   PVC_EG_TAG(MT7530_VLAN_EG_DISABLED));
-+	} else {
-+		/* Also set CPU ports to the "user" VLAN port attribute, to
-+		 * allow VLAN classification, but keep the EG_TAG attribute as
-+		 * "consistent" (i.o.w. don't change its value) for packets
-+		 * received by the switch from the CPU, so that tagged packets
-+		 * are forwarded to user ports as tagged, and untagged as
-+		 * untagged.
-+		 */
-+		mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK,
-+			   VLAN_ATTR(MT7530_VLAN_USER));
-+	}
- }
- 
- static void
 -- 
-2.34.1
+2.36.1
 
