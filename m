@@ -2,73 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D6A16809DC
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 10:48:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F2D36809E8
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 10:51:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235082AbjA3Jsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 04:48:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52412 "EHLO
+        id S235741AbjA3JvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 04:51:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232072AbjA3Jsu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 04:48:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41DE1196AF;
-        Mon, 30 Jan 2023 01:48:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CCADB60EFE;
-        Mon, 30 Jan 2023 09:48:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 556E0C433D2;
-        Mon, 30 Jan 2023 09:48:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675072124;
-        bh=5LtIlqjKnHPmPhoTd1JoMdvaD6d6QRzhmsfGLeEORLU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bycmB+k2yfXw+2NKeuDxedEZTzyTmDVUFMa7ZjGhWUMU6wjzCBxyp67Qn0jQLn1co
-         KRHkYK38WGkwkx1PnNytKRnTg10yumDgn3YuEpy4p3KKTECofzIwtmwm2qDfjjhOTr
-         lML3dtn/g++WK2oMAHjQwNZK3AEvIjaef3mYJP/a6kZsI5OjJm2K/aQMOyiCmsWHSM
-         cik4Qq+vyUGCXCwM5F7PpzzGYDFIof9B25X2ACF4d1AzTJo4IACeach6iKvcbwv7IC
-         Z2hTH7SUSQSjMpLzAYX+laQ1m2BslNhrLYv/hi5clkVnT4AhLBKitx3NYfnX2lhm26
-         o89E6AG03hUDw==
-Date:   Mon, 30 Jan 2023 11:48:39 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jonathan =?iso-8859-1?Q?Neusch=E4fer?= <j.neuschaefer@gmx.net>
-Cc:     netdev@vger.kernel.org, Simon Horman <simon.horman@corigine.com>,
+        with ESMTP id S229694AbjA3JvA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 04:51:00 -0500
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB461BAC5;
+        Mon, 30 Jan 2023 01:50:58 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 09DF3E0009;
+        Mon, 30 Jan 2023 09:50:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1675072256;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6oEeGGNGwoJYbO3Up6NrhRX8Nz4lo6PBQZ7bv235o2Q=;
+        b=GIhRUFcq13oJqopJ7gQwjse9DYg3Yztmsw3ZI65BFVLnbIpbb2Yef3gI8f0b0TOijNVNR2
+        CeGLSR9mRnyeXgIpYRuh5Kpn63YINOmu4+RGm/Q9itrHy7+fDiQdmUnC3ztPK1FN2+qr65
+        y/hO7Ce0assFDUIW8LZONP1SJj/AdzmR3UaS/xZQQ2ATCu3yXXi0S/3DoiwCTjL4yafsLz
+        8CILr9mWV2eXFZ4r4rIWUV/rMHtc4bqDUBcFOl28si9SgpIV5R9omSLn6W+5qaGdEyGLhR
+        UKXdsy3dTwEsSaxoAPf6hTXb97UMmJNiywlkcUIO4RBM80YiVvinx09Olb1Cew==
+Date:   Mon, 30 Jan 2023 10:50:51 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Michael Richardson <mcr@sandelman.ca>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-parisc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: tulip: Fix typos ("defualt" and "hearbeat")
-Message-ID: <Y9eSdwA24uz2W9Z0@unreal>
-References: <20230129195309.1941497-1-j.neuschaefer@gmx.net>
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next 0/2] ieee802154: Beaconing support
+Message-ID: <20230130105051.24926c5f@xps-13>
+In-Reply-To: <CAK-6q+ix3PybA-Af-QRRZ2BwSLYH76SnqhRCsmRpiy_6PFrorw@mail.gmail.com>
+References: <20230106113129.694750-1-miquel.raynal@bootlin.com>
+        <CAK-6q+jNmvtBKKxSp1WepVXbaQ65CghZv3bS2ptjB9jyzOSGTA@mail.gmail.com>
+        <20230118102058.3b1f275b@xps-13>
+        <CAK-6q+gwP8P--5e9HKt2iPhjeefMXrXUVy-G+szGdFXZvgYKvg@mail.gmail.com>
+        <CAK-6q+gn7W9x2+ihSC41RzkhmBn1E44pKtJFHgqRdd8aBpLrVQ@mail.gmail.com>
+        <20230124110814.6096ecbe@xps-13>
+        <CAB_54W69KcM0UJjf8py-VyRXx2iEUvcAKspXiAkykkQoF6ccDA@mail.gmail.com>
+        <20230125105653.44e9498f@xps-13>
+        <CAK-6q+irhYroxV_P5ORtO9Ui9-Bs=SNS+vO5bZ7_X-geab+XrA@mail.gmail.com>
+        <1322777.1674848380@dyas>
+        <CAK-6q+ix3PybA-Af-QRRZ2BwSLYH76SnqhRCsmRpiy_6PFrorw@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230129195309.1941497-1-j.neuschaefer@gmx.net>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 29, 2023 at 08:53:08PM +0100, Jonathan Neuschäfer wrote:
-> Spell them as "default" and "heartbeat".
-> 
-> Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-> ---
-> 
-> v2:
-> - also fix "hearbeat", as suggested by Simon Horman
-> ---
->  drivers/net/ethernet/dec/tulip/tulip.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+Hello,
 
-Patch title should include target: "PATCH net-next ...".
+aahringo@redhat.com wrote on Fri, 27 Jan 2023 20:57:08 -0500:
 
-Thanks
+> Hi,
+>=20
+> On Fri, Jan 27, 2023 at 2:52 PM Michael Richardson <mcr@sandelman.ca> wro=
+te:
+> >
+> >
+> > Alexander Aring <aahringo@redhat.com> wrote: =20
+> >     >> - MLME ops without feedback constraints like beacons -> should go
+> >     >> through the hot path, but not through the whole net stack, so
+> >     >> ieee802154_subif_start_xmit()
+> >     >> =20
+> > =20
+> >     > it will bypass the qdisc handling (+ some other things which are =
+around
+> >     > there). The current difference is what I see llsec handling and o=
+ther
+> >     > things which might be around there?
+
+Not exactly, because llsec handling is not done in the net/ stack, but
+right inside the ieee802154 transmit callbacks, so I'd say it will be
+quite easy to tweak when we have a clear view of what we want in terms
+of encryption/integrity checking/signatures.
+
+> >     > It depends if other "MLME-ops" need
+> >     > to be e.g. encrypted or not. =20
+> >
+> > I haven't followed the whole thread.
+> > So I am neither agreeing nor disagreeing, just clarifying.
+> > Useful beacons are "signed" (have integrity applied), but not encrypted.
+> > =20
+>=20
+> I see. But that means they need to be going through llsec, just the
+> payload isn't encrypted and the MIC is appended to provide integrity.
+>=20
+> > It's important for userspace to be able to receive them, even if we don=
+'t
+> > have a key that can verify them.  AFAIK, we have no specific interface =
+to
+> > receive beacons.
+> > =20
+>=20
+> This can be done over multiple ways. Either over a socket
+> communication or if they appear rarely we can put them into a netlink
+> event. In my opinion we already put that in a higher level API in
+> passive scan to interpret the receiving of a beacon on kernel level
+> and trigger netlink events.
+
+Indeed.
+
+> I am not sure how HardMAC transceivers handle them on the transceiver
+> side only or if they ever provide them to the next layer or not?
+> For SoftMAC you can actually create a AF_PACKET raw socket, and you
+> should see everything which bypass hardware address filters and kernel
+> filters. Then an application can listen to them.
+
+Thanks,
+Miqu=C3=A8l
