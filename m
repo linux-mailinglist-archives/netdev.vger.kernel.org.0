@@ -2,94 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA39868105F
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 15:03:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20817681077
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 15:03:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237047AbjA3ODD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 09:03:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42766 "EHLO
+        id S236968AbjA3ODp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 09:03:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236987AbjA3OCv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 09:02:51 -0500
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A423B0E2;
-        Mon, 30 Jan 2023 06:02:42 -0800 (PST)
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id E9DB2852C0;
-        Mon, 30 Jan 2023 15:02:38 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1675087360;
-        bh=I9qoCeiFdZwWtoDstV4Bw6+TIyjJzJfTohVx+3k+nHM=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=aHzsJyV4HCWjKDnrmzaXgjc6ANf9EO2SGRrlOJyxOSPQ9qOh3Z5d881HR1PoTK+B9
-         fkxy05jJPp2wCXOsNbno+htj1nkobuTCQCXmqYxscBG6ycPBltVapv33SVS3lwVGOg
-         TN/f9zDXcjSREe7toqfiYbDc1W6XUYxuV7ZzCNAMf5aEi3Qgn5ym5fUg/zg+l46LRT
-         Xbrwnl8YufnLMbodkaPzbEHmZG2FjbNFX7vxkbERKBPuqOtO/Jsc/gxY0QWy9MxcXP
-         RU0oWmuOIMu9VOVQQrf6UGzDYYWJpf6CClqJjIFj8FOUceJXKRoyQ7aUlurhTc/0JL
-         XxMCHbUUHhP1Q==
-Message-ID: <22ab680d-cb57-74ab-1a37-c7d7b5c29895@denx.de>
-Date:   Mon, 30 Jan 2023 15:02:38 +0100
+        with ESMTP id S236926AbjA3ODi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 09:03:38 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EA2EFA2;
+        Mon, 30 Jan 2023 06:03:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=+dcVmBh/YrZikxbQul2St0hAP9i18wzWPSEXSugLB+g=; b=L8crlSmcCwacP4KkCGW/RCDNhB
+        UZt9ps7sWD2D/3K5chSD2r5lUGg60MsXPNYIa5tv2ddN3TeElp7Mc5K0ne8WLulUN/LYuOCTL10Km
+        Qw7N53A9p5rb35WjXXXC0oxsOrr7oebVB01JhV4DUwoD6R5qqCruE9YenaJDMA56PtQ0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pMUkZ-003a28-Vp; Mon, 30 Jan 2023 15:03:11 +0100
+Date:   Mon, 30 Jan 2023 15:03:11 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Frank Sae <Frank.Sae@motor-comm.com>
+Cc:     Peter Geis <pgwipeout@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        yanhong.wang@starfivetech.com, xiaogang.fan@motor-comm.com,
+        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v3 1/5] dt-bindings: net: Add Motorcomm yt8xxx
+ ethernet phy
+Message-ID: <Y9fOHxn8rdIHuDbn@lunn.ch>
+References: <20230130063539.3700-1-Frank.Sae@motor-comm.com>
+ <20230130063539.3700-2-Frank.Sae@motor-comm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH] wifi: rsi: Adding new driver Maintainers
-To:     Ganapathi Kondraju <ganapathi.kondraju@silabs.com>,
-        linux-wireless@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Kalle Valo <kvalo@kernel.org>,
-        Martin Fuzzey <martin.fuzzey@flowbird.group>,
-        Martin Kepplinger <martink@posteo.de>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        netdev@vger.kernel.org,
-        Jerome Pouiller <Jerome.Pouiller@silabs.com>,
-        Angus Ainslie <angus@akkea.ca>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Siva Rebbagondla <siva8118@gmail.com>,
-        narasimha.anumolu@silabs.com, amol.hanwate@silabs.com,
-        shivanadam.gude@silabs.com, srinivas.chappidi@silabs.com
-References: <1675071591-7138-1-git-send-email-ganapathi.kondraju@silabs.com>
-Content-Language: en-US
-From:   Marek Vasut <marex@denx.de>
-In-Reply-To: <1675071591-7138-1-git-send-email-ganapathi.kondraju@silabs.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230130063539.3700-2-Frank.Sae@motor-comm.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/30/23 10:39, Ganapathi Kondraju wrote:
-> Silicon Labs acquired Redpine Signals recently. It needs to continue
-> giving support to the existing REDPINE WIRELESS DRIVER. Added new
-> Maintainers for it.
-> 
-> Signed-off-by: Ganapathi Kondraju <ganapathi.kondraju@silabs.com>
+On Mon, Jan 30, 2023 at 02:35:35PM +0800, Frank Sae wrote:
+>  Add a YAML binding document for the Motorcom yt8xxx Ethernet phy driver.
+>  
+> Signed-off-by: Frank Sae <Frank.Sae@motor-comm.com>
 > ---
->   MAINTAINERS | 7 ++++++-
->   1 file changed, 6 insertions(+), 1 deletion(-)
+>  .../bindings/net/motorcomm,yt8xxx.yaml        | 102 ++++++++++++++++++
+>  .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+>  MAINTAINERS                                   |   1 +
+>  3 files changed, 105 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
 > 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index ea941dc..af07b88 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -17709,8 +17709,13 @@ S:	Maintained
->   F:	drivers/net/wireless/realtek/rtw89/
->   
->   REDPINE WIRELESS DRIVER
-> +M:	Narasimha Anumolu <narasimha.anumolu@silabs.com>
-> +M:	Ganapathi Kondraju <ganapathi.kondraju@silabs.com>
-> +M:	Amol Hanwate <amol.hanwate@silabs.com>
-> +M:	Shivanadam Gude <shivanadam.gude@silabs.com>
-> +M:	Jérôme Pouiller <jerome.pouiller@silabs.com>
+> diff --git a/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+> new file mode 100644
+> index 000000000000..8527576c15b3
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+> @@ -0,0 +1,102 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/motorcomm,yt8xxx.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MotorComm yt8xxx Ethernet PHY
+> +
+> +maintainers:
+> +  - frank sae <frank.sae@motor-comm.com>
+> +
+> +allOf:
+> +  - $ref: ethernet-phy.yaml#
+> +
+> +properties:
+> +  rx-internal-delay-ps:
+> +    description: |
+> +      RGMII RX Clock Delay used only when PHY operates in RGMII mode with
+> +      internal delay (phy-mode is 'rgmii-id' or 'rgmii-rxid') in pico-seconds.
+> +    enum: [ 0, 150, 300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650,
+> +            1800, 1900, 1950, 2050, 2100, 2200, 2250, 2350, 2500, 2650, 2800,
+> +            2950, 3100, 3250, 3400, 3550, 3700, 3850, 4000, 4150 ]
+> +    default: 1950
 
-Please keep the list sorted.
+Ah! There has been a misunderstand. Yes, this changes does make sense, but ....
+
+> +
+> +  tx-internal-delay-ps:
+> +    description: |
+> +      RGMII TX Clock Delay used only when PHY operates in RGMII mode with
+> +      internal delay (phy-mode is 'rgmii-id' or 'rgmii-txid') in pico-seconds.
+> +    enum: [ 0, 150, 300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800,
+> +            1950, 2100, 2250 ]
+> +    default: 150
+
+... i was actually trying to say this 150 is odd. Why is this not
+1950?
+
+	Andrew
