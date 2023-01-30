@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B1616806E6
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 09:07:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4998E6806F5
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 09:08:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235660AbjA3IHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 03:07:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60022 "EHLO
+        id S235314AbjA3IH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 03:07:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235604AbjA3IHd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 03:07:33 -0500
+        with ESMTP id S235634AbjA3IHe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 03:07:34 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98877298E6
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 00:07:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C528929E27
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 00:07:31 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pMPCB-0003fA-2e; Mon, 30 Jan 2023 09:07:19 +0100
+        id 1pMPCB-0003f8-2b; Mon, 30 Jan 2023 09:07:19 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pMPCA-001Pw9-Kr; Mon, 30 Jan 2023 09:07:17 +0100
+        id 1pMPCA-001Pw2-5J; Mon, 30 Jan 2023 09:07:17 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pMPC7-000aK1-LH; Mon, 30 Jan 2023 09:07:15 +0100
+        id 1pMPC7-000aKA-Lo; Mon, 30 Jan 2023 09:07:15 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH net-next v3 07/15] net: phy: c45: migrate to genphy_c45_write_eee_adv()
-Date:   Mon, 30 Jan 2023 09:07:06 +0100
-Message-Id: <20230130080714.139492-8-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v3 08/15] net: phy: start using genphy_c45_ethtool_get/set_eee()
+Date:   Mon, 30 Jan 2023 09:07:07 +0100
+Message-Id: <20230130080714.139492-9-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230130080714.139492-1-o.rempel@pengutronix.de>
 References: <20230130080714.139492-1-o.rempel@pengutronix.de>
@@ -60,48 +60,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Migrate from genphy_config_eee_advert() to genphy_c45_write_eee_adv().
-
-It should work as before except write operation to the EEE adv registers
-will be done only if some EEE abilities was detected.
-
-If some driver will have a regression, related driver should provide own
-.get_features callback. See micrel.c:ksz9477_get_features() as example.
+All preparations are done. Now we can start using new functions and remove
+the old code.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/phy/phy-c45.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/net/phy/phy.c | 60 ++-----------------------------------------
+ 1 file changed, 2 insertions(+), 58 deletions(-)
 
-diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-index d89627ee0ec8..3a990e0a8d51 100644
---- a/drivers/net/phy/phy-c45.c
-+++ b/drivers/net/phy/phy-c45.c
-@@ -262,7 +262,11 @@ int genphy_c45_an_config_aneg(struct phy_device *phydev)
- 	linkmode_and(phydev->advertising, phydev->advertising,
- 		     phydev->supported);
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index 41cfb24c48c1..54b62a604238 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -1578,33 +1578,10 @@ EXPORT_SYMBOL(phy_get_eee_err);
+  */
+ int phy_ethtool_get_eee(struct phy_device *phydev, struct ethtool_eee *data)
+ {
+-	int val;
+-
+ 	if (!phydev->drv)
+ 		return -EIO;
  
--	changed = genphy_config_eee_advert(phydev);
-+	ret = genphy_c45_write_eee_adv(phydev, phydev->supported_eee);
-+	if (ret < 0)
-+		return ret;
-+	else if (ret)
-+		changed = true;
- 
- 	if (genphy_c45_baset1_able(phydev))
- 		return genphy_c45_baset1_an_config_aneg(phydev);
-@@ -945,6 +949,11 @@ int genphy_c45_pma_read_abilities(struct phy_device *phydev)
- 		}
- 	}
- 
-+	/* This is optional functionality. If not supported, we may get an error
-+	 * which should be ignored.
-+	 */
-+	genphy_c45_read_eee_abilities(phydev);
-+
- 	return 0;
+-	/* Get Supported EEE */
+-	val = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_EEE_ABLE);
+-	if (val < 0)
+-		return val;
+-	data->supported = mmd_eee_cap_to_ethtool_sup_t(val);
+-
+-	/* Get advertisement EEE */
+-	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV);
+-	if (val < 0)
+-		return val;
+-	data->advertised = mmd_eee_adv_to_ethtool_adv_t(val);
+-	data->eee_enabled = !!data->advertised;
+-
+-	/* Get LP advertisement EEE */
+-	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_LPABLE);
+-	if (val < 0)
+-		return val;
+-	data->lp_advertised = mmd_eee_adv_to_ethtool_adv_t(val);
+-
+-	data->eee_active = !!(data->advertised & data->lp_advertised);
+-
+-	return 0;
++	return genphy_c45_ethtool_get_eee(phydev, data);
  }
- EXPORT_SYMBOL_GPL(genphy_c45_pma_read_abilities);
+ EXPORT_SYMBOL(phy_ethtool_get_eee);
+ 
+@@ -1617,43 +1594,10 @@ EXPORT_SYMBOL(phy_ethtool_get_eee);
+  */
+ int phy_ethtool_set_eee(struct phy_device *phydev, struct ethtool_eee *data)
+ {
+-	int cap, old_adv, adv = 0, ret;
+-
+ 	if (!phydev->drv)
+ 		return -EIO;
+ 
+-	/* Get Supported EEE */
+-	cap = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_EEE_ABLE);
+-	if (cap < 0)
+-		return cap;
+-
+-	old_adv = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV);
+-	if (old_adv < 0)
+-		return old_adv;
+-
+-	if (data->eee_enabled) {
+-		adv = !data->advertised ? cap :
+-		      ethtool_adv_to_mmd_eee_adv_t(data->advertised) & cap;
+-		/* Mask prohibited EEE modes */
+-		adv &= ~phydev->eee_broken_modes;
+-	}
+-
+-	if (old_adv != adv) {
+-		ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV, adv);
+-		if (ret < 0)
+-			return ret;
+-
+-		/* Restart autonegotiation so the new modes get sent to the
+-		 * link partner.
+-		 */
+-		if (phydev->autoneg == AUTONEG_ENABLE) {
+-			ret = phy_restart_aneg(phydev);
+-			if (ret < 0)
+-				return ret;
+-		}
+-	}
+-
+-	return 0;
++	return genphy_c45_ethtool_set_eee(phydev, data);
+ }
+ EXPORT_SYMBOL(phy_ethtool_set_eee);
+ 
 -- 
 2.30.2
 
