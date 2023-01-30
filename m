@@ -2,63 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04FE8681A86
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 20:33:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0191681A92
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 20:34:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236396AbjA3Tc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 14:32:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60192 "EHLO
+        id S238006AbjA3TeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 14:34:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236733AbjA3Tc4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 14:32:56 -0500
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B0819023
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 11:32:54 -0800 (PST)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-5073cf66299so143746607b3.17
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 11:32:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=F7qcVHgFqar+RLPHhCuxmTSqYurpoqGeRnlo4MeMdGM=;
-        b=CS32Maq9UJAiRgqyO0xukKCPo7dsZyvjjAuhNB2mMrr+lZXiZAqa8a46EFpfzMZ2th
-         yjNPa8D9mHMnBEePhzXUh472qX3RcVX6ln6L+6KOQMOKvDv0ShlFIxV1N8yn/oNYsUNN
-         WIEJMbv4C9KxGR4nMnEQsGEsvODz3UaGauFDRanlSksG9EAIH/Us7jgPKNj5CrOKmIxE
-         FZtdsWq077HccqmNXHQeyQ9JokzwQUB0InJq+q19wzFT9uD8ur060EkZR8Lqoa+xdVJE
-         u4FqRzKdfe4FKLq6/FoBp1fkZSB8RwI5XviqMErrHp+E6mVJy72kPuR5zAOAKwr8aBNB
-         uC2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=F7qcVHgFqar+RLPHhCuxmTSqYurpoqGeRnlo4MeMdGM=;
-        b=weYtyX7LLppPVdKe1gf9knfO9lcsyEiTXR3U5x73AyEFYkn3+GO1nIgvkFdkCw4zgZ
-         Gw3uyexCLAS379BhZxYwPtJ5sYAEy/TBywnELXDpSAFxZjIiihEynFTSGmMVuPdneZUq
-         nBEkT/r81dF1QoUGpWNa6RpZRBGx9mLtHyONtmnxzBGoDGhiRlyp7/HA6VDiCsyeetD6
-         MKoXdRMX/4sfSSk2cyBEwBYWJAsA9ko94weskaGQ+Av5BfqQi0VdIqe9IpjZzd8Xql2f
-         GA749ZdZR0fzIaZ6ciF+k92fm/zRUfHYLFAn2w8MOvqOZcR2ZwrlDv3rYcHR4/gusiBp
-         Invw==
-X-Gm-Message-State: AO0yUKXBg6rxMYI41YQ4AwtUlZEjhjUO35iw+LJhfoqdhovZmh2evcFi
-        UN1nEui8E2g+Ygz2CJm+iqVwmTI=
-X-Google-Smtp-Source: AK7set/5Fg6GioxcVztoFtuuSBujoatLB/R0sV1FhzZ5YkHBDHZGMdXBdqjWWPbUYe/m7NQjsfGJ9d0=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a0d:f304:0:b0:508:3e6d:8ac1 with SMTP id
- c4-20020a0df304000000b005083e6d8ac1mr2108805ywf.207.1675107173419; Mon, 30
- Jan 2023 11:32:53 -0800 (PST)
-Date:   Mon, 30 Jan 2023 11:32:51 -0800
-In-Reply-To: <20230128043217.1572362-12-kuba@kernel.org>
-Mime-Version: 1.0
-References: <20230128043217.1572362-1-kuba@kernel.org> <20230128043217.1572362-12-kuba@kernel.org>
-Message-ID: <Y9gbYw3oc7GjfFnU@google.com>
-Subject: Re: [PATCH net-next 11/13] netlink: specs: finish up operation enum-models
-From:   Stanislav Fomichev <sdf@google.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        with ESMTP id S237960AbjA3TeR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 14:34:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32C47CC3E
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 11:33:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675107204;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=B3zRnSLp2ynUX7qdmnYkoyQsTORE3q5pAz8/tYex2W8=;
+        b=NNCqSXwizRw2qbNnILSYPiu2lLgRkmeY6ysFkbNEHuTFK/BkDlHqmb/RABC4yEGsUEPTJr
+        Cu3hVQppXVSyGgiwEvLMT2PTuyGwH9hMk7iho2UP6OvbBH0j1tMTJ8pJbAaURXQARj4cU4
+        BW8CA+STg+h5/BcGOip2Rpl5xQ8ByTM=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-631-x27mjU13MBiDmS4SpAKpeg-1; Mon, 30 Jan 2023 14:33:18 -0500
+X-MC-Unique: x27mjU13MBiDmS4SpAKpeg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5481E1C07548;
+        Mon, 30 Jan 2023 19:33:18 +0000 (UTC)
+Received: from localhost (unknown [10.39.195.80])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AC7EE2026D4B;
+        Mon, 30 Jan 2023 19:33:17 +0000 (UTC)
+Date:   Mon, 30 Jan 2023 14:33:15 -0500
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Bo Liu <liubo03@inspur.com>
+Cc:     mst@redhat.com, jasowang@redhat.com, pbonzini@redhat.com,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vhost-scsi: convert sysfs snprintf and sprintf to
+ sysfs_emit
+Message-ID: <Y9gbe+Pr5AcGbcta@fedora>
+References: <20230129091145.2837-1-liubo03@inspur.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="zXZMPvM7BUyVfKwq"
+Content-Disposition: inline
+In-Reply-To: <20230129091145.2837-1-liubo03@inspur.com>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,207 +62,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/27, Jakub Kicinski wrote:
-> I had a (bright?) idea of introducing the concept of enum-models
-> to account for all the weird ways families enumerate their messages.
-> I've never finished it because generating C code for each of them
-> is pretty daunting. But for languages which can use ID values directly
-> the support is simple enough, so clean this up a bit.
 
-> "unified" model is what I recommend going forward.
-> "directional" model is what ethtool uses.
-> "notify-split" is used by the proposed DPLL code, but we can just
-> make them use "unified", it hasn't been merged :)
+--zXZMPvM7BUyVfKwq
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+On Sun, Jan 29, 2023 at 04:11:45AM -0500, Bo Liu wrote:
+> Follow the advice of the Documentation/filesystems/sysfs.rst
+> and show() should only use sysfs_emit() or sysfs_emit_at()
+> when formatting the value to be returned to user space.
+>=20
+> Signed-off-by: Bo Liu <liubo03@inspur.com>
 > ---
->   Documentation/netlink/genetlink-c.yaml        |  4 +-
->   Documentation/netlink/genetlink-legacy.yaml   | 11 ++-
->   Documentation/netlink/genetlink.yaml          |  4 +-
->   .../netlink/genetlink-legacy.rst              | 82 +++++++++++++++++++
->   4 files changed, 92 insertions(+), 9 deletions(-)
+>  drivers/vhost/scsi.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 
-> diff --git a/Documentation/netlink/genetlink-c.yaml  
-> b/Documentation/netlink/genetlink-c.yaml
-> index e23e3c94a932..bbcfa2472b04 100644
-> --- a/Documentation/netlink/genetlink-c.yaml
-> +++ b/Documentation/netlink/genetlink-c.yaml
-> @@ -218,9 +218,7 @@ additionalProperties: False
->             to a single enum.
->             "directional" has the messages sent to the kernel and from the  
-> kernel
->             enumerated separately.
-> -          "notify-split" has the notifications and request-response  
-> types in
-> -          different enums.
-> -        enum: [ unified, directional, notify-split ]
-> +        enum: [ unified ]
->         name-prefix:
->           description: |
->             Prefix for the C enum name of the command. The name is formed  
-> by concatenating
-> diff --git a/Documentation/netlink/genetlink-legacy.yaml  
-> b/Documentation/netlink/genetlink-legacy.yaml
-> index 88db2431ef26..5642925c4ceb 100644
-> --- a/Documentation/netlink/genetlink-legacy.yaml
-> +++ b/Documentation/netlink/genetlink-legacy.yaml
-> @@ -241,9 +241,7 @@ additionalProperties: False
->             to a single enum.
->             "directional" has the messages sent to the kernel and from the  
-> kernel
->             enumerated separately.
-> -          "notify-split" has the notifications and request-response  
-> types in
-> -          different enums.
-> -        enum: [ unified, directional, notify-split ]
-> +        enum: [ unified, directional ] # Trim
->         name-prefix:
->           description: |
->             Prefix for the C enum name of the command. The name is formed  
-> by concatenating
-> @@ -307,6 +305,13 @@ additionalProperties: False
->                         type: array
->                         items:
->                           type: string
-> +                    # Start genetlink-legacy
-> +                    value:
-> +                      description: |
-> +                        ID of this message if value for request and  
-> response differ,
-> +                        i.e. requests and responses have different  
-> message enums.
-> +                      $ref: '#/$defs/uint'
-> +                    # End genetlink-legacy
->                   reply: *subop-attr-list
->                   pre:
->                     description: Hook for a function to run before the  
-> main callback (pre_doit or start).
-> diff --git a/Documentation/netlink/genetlink.yaml  
-> b/Documentation/netlink/genetlink.yaml
-> index b5e712bbe7e7..62a922755ce2 100644
-> --- a/Documentation/netlink/genetlink.yaml
-> +++ b/Documentation/netlink/genetlink.yaml
-> @@ -188,9 +188,7 @@ additionalProperties: False
->             to a single enum.
->             "directional" has the messages sent to the kernel and from the  
-> kernel
->             enumerated separately.
-> -          "notify-split" has the notifications and request-response  
-> types in
-> -          different enums.
-> -        enum: [ unified, directional, notify-split ]
-> +        enum: [ unified ]
->         name-prefix:
->           description: |
->             Prefix for the C enum name of the command. The name is formed  
-> by concatenating
-> diff --git a/Documentation/userspace-api/netlink/genetlink-legacy.rst  
-> b/Documentation/userspace-api/netlink/genetlink-legacy.rst
-> index 65cbbffee0bf..ae6053e3e50c 100644
-> --- a/Documentation/userspace-api/netlink/genetlink-legacy.rst
-> +++ b/Documentation/userspace-api/netlink/genetlink-legacy.rst
-> @@ -74,6 +74,88 @@ type. Inside the attr-index nest are the policy  
-> attributes. Modern
->   Netlink families should have instead defined this as a flat structure,
->   the nesting serves no good purpose here.
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
-> +Operations
-> +==========
-> +
-> +Enum (message ID) model
-> +-----------------------
-> +
-> +unified
-> +~~~~~~~
-> +
-> +Modern families use the ``unified`` message ID model, which uses
-> +a single enumeration for all messages within family. Requests and
-> +responses share the same message ID. Notifications have separate
-> +IDs from the same space. For example given the following list
-> +of operations:
-> +
-> +.. code-block:: yaml
-> +
-> +  -
-> +    name: a
-> +    value: 1
-> +    do: ...
-> +  -
-> +    name: b
-> +    do: ...
-> +  -
-> +    name: c
-> +    value: 4
-> +    notify: a
-> +  -
-> +    name: d
-> +    do: ...
-> +
-> +Requests and responses for aperation ``a`` will have the ID of 1,
+--zXZMPvM7BUyVfKwq
+Content-Type: application/pgp-signature; name="signature.asc"
 
-s/aperation/operation/ ?
+-----BEGIN PGP SIGNATURE-----
 
-> +the requests and responses of ``b`` - 2 (since there is no explicit
-> +``value`` it's previous operation ``+ 1``). Notification ``c`` will
-> +used the ID of 4, operation ``d`` 5 etc.
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmPYG3sACgkQnKSrs4Gr
+c8hxvwf7B5Mbqo82xgBpjBde9q1dmi1tzl28i35KjgqCpyf6DNJNI7r+MrkPyIuw
+mGOZjZ3icMd82hcJVEi0XIP8A6eUOsqKPzob4h6w28sRV0kfqmvgSPh9zpRXf8PR
+G43mj1UArMtXj2mPqW4NTF3sgTLXJl+sZiDWvIVQIUuNjbtkxZ89fSZ5cH8AwdRy
+Yb3EQ8TRhb5xpfcYj0EPIM/nFUpyQPZxIKZpg2OeTpv0QZ6ZSo+2kiXYQSE1Cljl
+j2F8xN8OsOhzS2JTCBr777dn7JIHWjKvQvz0u2d4WBqkWw5O2P9Ea90IU5rPK28X
+K8iZ3SXmteQjQsroywTO/jHtYylj8g==
+=EEEC
+-----END PGP SIGNATURE-----
 
-s/used/use/ ?
-
-> +
-> +directional
-> +~~~~~~~~~~~
-> +
-> +The ``directional`` model splits the ID assignment by the direction of
-> +the message. Messages from and to the kernel can't be confused with
-> +each other so this conserves the ID space (at the cost of making
-> +the programming more cumbersome).
-> +
-> +In this case ``value`` attribute should be specified in the ``request``
-> +``reply`` sections of the operations (if an operation has both ``do``
-> +and ``dump`` the IDs are shared, ``value`` should be set in ``do``).
-> +For notifications the ``value`` is provided at the op level but it
-> +only allocates a ``reply`` (i.e. a "from-kernel" ID). Let's look
-> +at an example:
-> +
-> +.. code-block:: yaml
-> +
-> +  -
-> +    name: a
-> +    do:
-
-[..]
-
-> +      request:
-> +        value: 2
-> +	attributes: ...
-> +      reply:
-> +        value: 1
-> +	attributes: ...
-
-'attributes' indentation is wrong for both request/reply?
-
-> +  -
-> +    name: b
-> +    notify: a
-> +  -
-> +    name: c
-> +    notify: a
-> +    value: 7
-> +  -
-> +    name: d
-> +    do: ...
-> +
-> +In this case ``a`` will use 2 when sending the message to the kernel
-> +and expects message with ID 1 in response. Notificatoin ``b`` allocates
-> +a "from-kernel" ID which is 2. ``c`` allocates "from-kernel" ID of 7.
-> +If operation ``d`` does not set ``values`` explicitly in the spec
-> +it will be allocated 3 for the request (``a`` is the previous operation
-> +with a request section and the value of 2) and 8 for response (``c`` is
-> +the previous operation in the "from-kernel" direction).
-> +
->   Other quirks (todo)
->   ===================
-
-> --
-> 2.39.1
+--zXZMPvM7BUyVfKwq--
 
