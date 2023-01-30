@@ -2,203 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78CBE680710
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 09:10:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 613CA680716
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 09:11:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235823AbjA3IKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 03:10:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33904 "EHLO
+        id S235804AbjA3ILT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 03:11:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235662AbjA3IKc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 03:10:32 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on20630.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e89::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62EEA11EA9
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 00:09:51 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IQFgCwQ0z2ktm5HWVOIXZY/c5a5sPkXtR+HMUlJAFwVukrbI2OUKkI2pDcjW1uOdikB467Mwfhbj+b9YYL4nMzdYPK7kGxs3NJLyyJD6jnRYlxM2B6JqO7Y+XZq/F2XtYFkGmXM74SIU8jH++qYC8Mgw8//10WJt5JHJ1tcTfLmp6RerirS9LQPVq0t6AedmBuhi5AD41oWv5H7jjf3gp6cxvpevKNaVPwqWuMP2il1XBUO91ds08FsUHqxq5szihpRu1NSijmS49H7yWCDKVqpIKThZ3cC65AD+rZ867fo7sx0DyrPpoD7KK6tILw//YlWkx39au35yxpt74AvHsw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bQSQNHvdmHrZfvTpuOCXzFSzJhBIxeY8EVaGtiQ8U5g=;
- b=LkX1zPZWzsKqUE7oP2jiHFrU+w1pyNCH/vBGa9YsUCUHPp1W7UuCv6/26AAvEUQxJVR2URsu284tMEsrVlamaLOwxpkPXzEs1TrowufRuZkYe9ROsyw8TX/+rQSDd/5gdoZsm3HXizhAsSqeJCZQA5R9fJFhQEoG4tTIj216S0e7UdAWwUiH7WDQqnq5bucamYd0yUtUDoKy5F7GVG2tzZilABU11h43vnLR9oK6JoI+HuIjt95CfnveCekim3S6qsB6uc4Msx6SGZebn/f3DCu/yNJkgUOokH5G+ZtX9nM5jToeb0EA3krPp2iZcjb4NA0ZoftnmzUR9y2fuGkndw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bQSQNHvdmHrZfvTpuOCXzFSzJhBIxeY8EVaGtiQ8U5g=;
- b=AzsGIliu3kymNjiIOIZAxWDOhptJj31kvUlNGKNiSQAbXRSElcaJ9noaiHzx0dim2lxT/d4mnRq+KatAICqY4pDUteyhgMm2Ort4GP4WpiGJ5m+v3ifdjxhlulW4WLvTq2Te2QFloBXitN4bTVTJ0UqoDd/n8bGEI/mIuZTHsMgy1iMG733XvMQP6aOTG+IxVSE7p8mspeHINsVciu5jyNBXctbQF3KkISmxmABugML+8Si//DqeTIWqJaBNtPBUVM391SY9QdJuY+tXXgWiQvz/K9syzm/sSAvz4rgI4e9BDNgIkvPp2Ngj1ryB8KLshi4c/6SbdqQp3zBpSOWw8A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by CH2PR12MB4311.namprd12.prod.outlook.com (2603:10b6:610:a8::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.36; Mon, 30 Jan
- 2023 08:08:28 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::7d2c:828f:5cae:7eab]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::7d2c:828f:5cae:7eab%8]) with mapi id 15.20.6043.036; Mon, 30 Jan 2023
- 08:08:28 +0000
-Date:   Mon, 30 Jan 2023 10:08:21 +0200
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     Petr Machata <petrm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net-next 07/16] net: bridge: Maintain number of MDB
- entries in net_bridge_mcast_port
-Message-ID: <Y9d69bP7tzp/2reQ@shredder>
-References: <cover.1674752051.git.petrm@nvidia.com>
- <1dcd4638d78c469eaa2f528de1f69b098222876f.1674752051.git.petrm@nvidia.com>
- <81821548-4839-e7ba-37b0-92966beb7930@blackwall.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <81821548-4839-e7ba-37b0-92966beb7930@blackwall.org>
-X-ClientProxiedBy: VI1PR07CA0310.eurprd07.prod.outlook.com
- (2603:10a6:800:130::38) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+        with ESMTP id S235689AbjA3ILR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 03:11:17 -0500
+Received: from mail-vs1-xe36.google.com (mail-vs1-xe36.google.com [IPv6:2607:f8b0:4864:20::e36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5118CDBD1
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 00:10:52 -0800 (PST)
+Received: by mail-vs1-xe36.google.com with SMTP id 187so11556780vsv.10
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 00:10:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ymIAXtCd2MxqtYWvrJZz0PEkm0tFm2YFN6GsAuKltPg=;
+        b=VjBFoQyvxVbZcRjLUrbibXw4+MT8g0UWQSD5G0+jS0OLvVW/KtzPBQ3zu/A9gW63DF
+         f/l3VAfgTqNXiiLTav7jolzt/AvRqrG8xKKncUHoUpkN+9/+rg586QUbOmYg2O/hoYVa
+         iGDrVeTGq4FqWr/Zfhu+fazosEJH8l5CAD642AYSppVIR3mh7EEedUIRs2Bn5x4yzMYK
+         V68lgUNYYVPPGMEIihaSvz7cwNBmtjzuMUaFDRBLdVIbgcknFyCpeNLdOAsL5Ad0Mun4
+         Bp89Q+gJkGPhaIqayZ5HBeoJVUg87pDRxwX1F2+xan/kajjdNkzp/HZTfln2s//WsK/T
+         VISQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ymIAXtCd2MxqtYWvrJZz0PEkm0tFm2YFN6GsAuKltPg=;
+        b=vnlTMRDwfL6TVDyjY7EEwSbvrSyIvJshqq45TEswaKJpk6e6chbnkOO4ElcoxKY2E0
+         dSP8Zvq7zQXYjGqMgr9CNNCYNQoNLIpZ/IkY4i2fifAxO/SBJQYWj0czayEbaG1QFGCF
+         2ilYP6m0sSpO817Gjp8ks6GbNVm705yLqCzDMdT81oSZqS4WPnInVSveV46v6WeNhNwS
+         BxL5ilzFmtujVv45bU1sWSA5j98N6EkNLHHVMjc4aatEiWWohBPKJyae3+qaGl2DVfOO
+         D7eAJgI6BwKY80JbXChchQ09YXF0stxCOH5/fqVfi/JH5e2VzEi2A6t5EiC2S9oMShDQ
+         vfyw==
+X-Gm-Message-State: AO0yUKXp+Bieq158EvWgr4fucVFJLVfozOtT8bDuuJ3DKqDn1jQQ+RXI
+        2fQKAqJteLWOwbbAiSlhgjvCJ8bqu4B+A58l6RBY6B2+mUe6+UcOEus=
+X-Google-Smtp-Source: AK7set9o1e8iWYYvaoq70mZHQVo6LDmk5L7AnpPp1CiDFpmmDUsbP/J1TrEQHND2L6dETz8Z0PbBef9gd1pXrlqpqi4=
+X-Received: by 2002:a67:d998:0:b0:3eb:8780:ced6 with SMTP id
+ u24-20020a67d998000000b003eb8780ced6mr2091574vsj.12.1675066145479; Mon, 30
+ Jan 2023 00:09:05 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|CH2PR12MB4311:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7ee37ac8-2076-4d6c-b50e-08db02992b31
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rTOqvxhsDr9Xw8Ixi+biQMVPk2f/aOb1ZpJsQdkRczgbZBSk4B30xlGbcJONbLeOUv/d7o4hqaCjrFcEfnrFrIVa5BBZ0skWWq8S7IV1Ngg1nkioFt7u+56wx6tB5IMlPJAGqCrSh5qMRqyCzRzUGj1WszbTHJRtImseJsFZzRWjUQegIrg9ZlcO+YuMMKNgPNOecEMlvLRslWiK7MYZowntB8EB5vDuxh2QtAXqBXoljenh7zGxMlhym+UIFFY5VUyrwWn8kNp3rlSVPyXMTA/aKkmqV3OESpC/VSqM2Ycr58hZ269FYJPXv8dX+yQbZ2jspTBnCXOpkVP4+I1J+y+Y6epmzQKQx7vN6qsD2yLMCdd+wD03lwR67qNSUcc0pK14pj7+ykJf90Bd+HTGbrWpuwDmrZoF+pz2ZJGLbNMrmo1rPuxsQppVVXqn6j/9dFxj9+TIL5OyMRzbcoxPsok1qryMYkefQzR5UdnU/1bNY3xzkm2kPupJXDogFjfqMnytX4QLxGPz+V7vOB57QLV+LBqOdXSlEGO8sy2gDy7wN8MAX3nAS+2rpaEEz4BnVFkOuDzmJ0gQlVKt3OUesL0HJgFb0TtFO9HCM5bCJSmlgMEQK6S7o7vKv7JeXE2Ai9AB6CW1WnNuBcRx3b7gMw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(7916004)(4636009)(39860400002)(366004)(396003)(376002)(136003)(346002)(451199018)(33716001)(2906002)(83380400001)(66556008)(41300700001)(8936002)(6512007)(26005)(9686003)(53546011)(6506007)(6666004)(186003)(5660300002)(66476007)(86362001)(38100700002)(4326008)(66946007)(6916009)(8676002)(316002)(54906003)(478600001)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2U+nJD+ahrbTJoH+4mL33WyCy82ah7effAmOpRYOkp+vtfm1Tqzlg9hhu6j1?=
- =?us-ascii?Q?euiRbyxqbA8DQlwknyWVMSJYE04hwpLyGzYpiOtwOwDqV+6nfR5u4GwlvHTV?=
- =?us-ascii?Q?1YKLwhHynT8HiDgefT+ObtJMvVzgxYMX5CDfOZczlv3yRVyXLX0IMWef5uW0?=
- =?us-ascii?Q?+NlwPBwgJm/oLe3Nn2XgATouviR/sCUJQ4s4Y1cU2cs/wKv6HxiMJWV+Ct+s?=
- =?us-ascii?Q?R6yg7xUojURKWdgjUqTcwROyxWDqNlx8//majbJzN2MfD4uYpbRczh3ixroG?=
- =?us-ascii?Q?lRwqUQfRWDrfXsdOKjgsdnkOkX6W7UtuKl+KB3P6kLBUAn7x5QYggWGB4Luv?=
- =?us-ascii?Q?KfmC68LmGYStCqXlS2sS3O740lbkXdPfvVp3AXsxPuH4kl+C1xysSSj6G8dt?=
- =?us-ascii?Q?ArrrV6rPRb7agMNEgZ5eEEjBaiJjbF7u6Fk9cr6+7pm23Z6TszNi2ETGrq+s?=
- =?us-ascii?Q?0ELOU1ErDSnynPFThr8ycKKa4GUzBVXbDHbBoGpO9bYlnS7ICZVAXfpoWT3v?=
- =?us-ascii?Q?sOycBpDzT5QwFEi4qzGQzTKTk6L3IxnKjYY0WJr6/m4nO5AoqykVB/X68pq6?=
- =?us-ascii?Q?ZnZCf4kbDFpvB+uUStC2WJzpjKqLGmdqQiIRWw5q0Jo5ZU7CRjBt7Y2kcRZC?=
- =?us-ascii?Q?f1IjJBhZlGoPoLx/EX6ELsSgfuOLtmarNVIbFldL/MZPsto+P2/A3kBgUNTH?=
- =?us-ascii?Q?pKcNwkMKdMc9WmFkrWBUbSzh2fQ9pDQ/zU/hbXGaINYv2ZkNxTVL/slvj1jE?=
- =?us-ascii?Q?FWPg7SDCBfunUpAnnllzOdrQcOjqHUHZGJCW2SqC92z0dxqw8oV4zR06pWnp?=
- =?us-ascii?Q?WnJTNEkchIgjJt9TD7ZgqL261Os1wK9NeLGeXxh8ZoKqGEHP+GelreuFPCNL?=
- =?us-ascii?Q?aAk1c4BaXUfa4zmEtpfQoSJwNrWepPvim9P0GwHNl+wuOt2pD/yqQxyDmeGp?=
- =?us-ascii?Q?unL90R28VXR+MXszHuFU1D7oo223kw94uq5k0h/eUn57wDkOSKRTkKZYw6H5?=
- =?us-ascii?Q?9JMkAKMc0Ro0taC0pdnby+LYuUzk+KpIBtGuQ/J4wnI02nig8Yl8SkswPopW?=
- =?us-ascii?Q?+xx2O1zJFjYIvA2qYbVeS/h8S0DSiALdgDChicADe8JaSJFVbPNhDwb+9S9e?=
- =?us-ascii?Q?KkpQLWQTdOfzBhsDkc9/+waVdCodEKHY/u0FttWQysyWW60vivN6tuF8/cZd?=
- =?us-ascii?Q?ghq+i34hcqcAJ2DiXTdKdKv7TQXq56nagouRAwDnpQyDT0ee6MmZFHnI6Hd6?=
- =?us-ascii?Q?7GqO6fPTFxF1bemE/TqNC4MsN4YBo+WL/KHedKhtt/ujmufgN4yNZu2GMFFQ?=
- =?us-ascii?Q?cPwZUSv6hZ5a0ZZu2sA6f/Jyzbv0JJXB9zPg7hULqrULLTCenuQ98RrlT81e?=
- =?us-ascii?Q?t/dJIEZ8Vtc+hbsXjdcxZZy8x10qdxPxZJdisg090jLBLA2KVryj7dXIKBvn?=
- =?us-ascii?Q?Z3KhH2H/w1VbdpDScZ2uX8thoF5oP3knrn91Z+ZcZ4IVv5rLNl1A6GMwdlW7?=
- =?us-ascii?Q?FRcemG3u9N1k7CY8o3bOJ8DSmz0iZIEsDoT2D4awbSNJREJe5OrKAAGrOrM2?=
- =?us-ascii?Q?qOtjv9bUSRU2p+99eexzyExyFbk6iu6jEsHcL4FH?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7ee37ac8-2076-4d6c-b50e-08db02992b31
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jan 2023 08:08:28.2549
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eqfeKhORd7mznvhq/M4HhPMCFvHw0csOEl2seig3TlOvA4knTdjYDP3Ncu0cLOQc82IEptaOMcsjmiCQ0V+Txw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4311
-X-Spam-Status: No, score=-0.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+References: <20230124145430.365495-1-jaewan@google.com> <20230124145430.365495-2-jaewan@google.com>
+ <Y8//ZflAidKNJAVQ@kroah.com> <CABZjns5FRY+_WD_G=sjiBxjSwaydgL-wgTAR-PSeh-42OTieRg@mail.gmail.com>
+ <Y9dWztPR3FxkLv26@kroah.com>
+In-Reply-To: <Y9dWztPR3FxkLv26@kroah.com>
+From:   Jaewan Kim <jaewan@google.com>
+Date:   Mon, 30 Jan 2023 17:08:54 +0900
+Message-ID: <CABZjns6nER31ZbBKQ_QKU0Hrh5V5U_W6Q4vGsE7kt7S5YYy3mg@mail.gmail.com>
+Subject: Re: [PATCH v6 1/2] mac80211_hwsim: add PMSR capability support
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     johannes@sipsolutions.net, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-team@android.com, adelva@google.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 29, 2023 at 06:55:26PM +0200, Nikolay Aleksandrov wrote:
-> On 26/01/2023 19:01, Petr Machata wrote:
-> > The MDB maintained by the bridge is limited. When the bridge is configured
-> > for IGMP / MLD snooping, a buggy or malicious client can easily exhaust its
-> > capacity. In SW datapath, the capacity is configurable through the
-> > IFLA_BR_MCAST_HASH_MAX parameter, but ultimately is finite. Obviously a
-> > similar limit exists in the HW datapath for purposes of offloading.
-> > 
-> > In order to prevent the issue of unilateral exhaustion of MDB resources,
-> > introduce two parameters in each of two contexts:
-> > 
-> > - Per-port and per-port-VLAN number of MDB entries that the port
-> >   is member in.
-> > 
-> > - Per-port and (when BROPT_MCAST_VLAN_SNOOPING_ENABLED is enabled)
-> >   per-port-VLAN maximum permitted number of MDB entries, or 0 for
-> >   no limit.
-> > 
-> > The per-port multicast context is used for tracking of MDB entries for the
-> > port as a whole. This is available for all bridges.
-> > 
-> > The per-port-VLAN multicast context is then only available on
-> > VLAN-filtering bridges on VLANs that have multicast snooping on.
-> > 
-> > With these changes in place, it will be possible to configure MDB limit for
-> > bridge as a whole, or any one port as a whole, or any single port-VLAN.
-> > 
-> > Note that unlike the global limit, exhaustion of the per-port and
-> > per-port-VLAN maximums does not cause disablement of multicast snooping.
-> > It is also permitted to configure the local limit larger than hash_max,
-> > even though that is not useful.
-> > 
-> > In this patch, introduce only the accounting for number of entries, and the
-> > max field itself, but not the means to toggle the max. The next patch
-> > introduces the netlink APIs to toggle and read the values.
-> > 
-> > Note that the per-port-VLAN mcast_max_groups value gets reset when VLAN
-> > snooping is enabled. The reason for this is that while VLAN snooping is
-> > disabled, permanent entries can be added above the limit imposed by the
-> > configured maximum. Under those circumstances, whatever caused the VLAN
-> > context enablement, would need to be rolled back, adding a fair amount of
-> > code that would be rarely hit and tricky to maintain. At the same time,
-> > the feature that this would enable is IMHO not interesting: I posit that
-> > the usefulness of keeping mcast_max_groups intact across
-> > mcast_vlan_snooping toggles is marginal at best.
-> > 
-> 
-> Hmm, I keep thinking about this one and I don't completely agree. It would be
-> more user-friendly if the max count doesn't get reset when mcast snooping is toggled.
-> Imposing order of operations (first enable snooping, then config max entries) isn't necessary
-> and it makes sense for someone to first set the limit and then enable vlan snooping.
-> Also it would be consistent with port max entries, I'd prefer if we have the same
-> behaviour for port and vlan pmctxs. If we allow to set any maximum at any time we
-> don't need to rollback anything, also we already always lookup vlans in br_multicast_port_vid_to_port_ctx()
-> to check if snooping is enabled so we can keep the count correct regardless, the same as
-> it's done for the ports. Keeping both limits with consistent semantics seems better to me.
-> 
-> WDYT ?
+On Mon, Jan 30, 2023 at 2:34 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Mon, Jan 30, 2023 at 12:48:37AM +0900, Jaewan Kim wrote:
+> > On Wed, Jan 25, 2023 at 12:55 AM Greg KH <gregkh@linuxfoundation.org> w=
+rote:
+> > > > +static int parse_ftm_capa(const struct nlattr *ftm_capa,
+> > > > +                       struct cfg80211_pmsr_capabilities *out)
+> > > > +{
+> > > > +     struct nlattr *tb[NL80211_PMSR_FTM_CAPA_ATTR_MAX + 1];
+> > > > +     int ret =3D nla_parse_nested(tb, NL80211_PMSR_FTM_CAPA_ATTR_M=
+AX,
+> > > > +                                ftm_capa, hwsim_ftm_capa_policy, N=
+ULL);
+> > > > +     if (ret) {
+> > > > +             pr_err("mac80211_hwsim: malformed FTM capability");
+> > >
+> > > dev_err()?
+> >
+> > Is dev_err() the printing error for device code?
+>
+> I am sorry, but I can not understand this question, can you rephrase it?
 
-The current approach is strict and prevents user space from performing
-configuration that does not make a lot of sense:
+I just wanted to know better about `dev_err()`,
+because all existing code in this file uses `pr_err()`,
+and there's no good documentation for `dev_err()`.
 
-1. Setting the maximum to be less than the current count.
+Given your answer below, it seems like that `pr_err()` isn't a good
+choice in this file.
+Am I correct?
 
-2. Increasing the port-VLAN count above port-VLAN maximum when VLAN
-snooping is disabled (i.e., maximum is not enforced) and then enabling
-VLAN snooping.
+>
+> > If so, would it be better to propose another change for replacing all
+> > pr_err() with dev_err() in this file?
+>
+> Odds are, yes, but that should be independent of your change to add a
+> new feature.
 
-However, it is not consistent with similar existing behavior where the
-kernel is more liberal. For example:
+Got it. Then I'll break the consistency in this file for my change,
+and also propose another change for using `dev_err()` instead of `pr_err()`=
+.
 
-1. It is possible to set the global maximum to be less than the current
-number of entries.
+>
+> thanks,
+>
+> greg k-h
 
-2. Other port-VLAN attributes are not reset when VLAN snooping is
-toggled.
 
-And it also results in order of operations problems like you described.
 
-So, it seems to me that we have more good reasons to not reset the
-maximum than to reset it. Regardless of which path we take, it is
-important to document the behavior in the man page (and in the commit
-message, obviously) to avoid "bug reports" later on.
+--=20
+Jaewan Kim (=EA=B9=80=EC=9E=AC=EC=99=84) | Software Engineer in Google Kore=
+a |
+jaewan@google.com | +82-10-2781-5078
