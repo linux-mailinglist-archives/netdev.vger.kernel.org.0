@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D417F681A5E
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 20:25:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAF9D681A5F
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 20:25:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235392AbjA3TZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 14:25:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53824 "EHLO
+        id S238035AbjA3TZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 14:25:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237508AbjA3TZf (ORCPT
+        with ESMTP id S237912AbjA3TZf (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 14:25:35 -0500
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529301EBC3
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522F815548
         for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 11:25:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1675106734; x=1706642734;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=7SAKN1SMmBh75NXwdgiUY0auYWu0Q1FeMjxA8CfYJtg=;
-  b=A8NDHCa0p15KeZPH5sCzcfAlo8FoaOM72BJjPCawseVXiQrYrmI5a7g/
-   kXTvkwl1a/0oG1VgALUGwCh3AAeL1FCyr3UR7Be90JtYA6mlmLQQubahJ
-   cxi0nkA3SkAc0TCzC5UVE8t/KVi6eelQZqlVj4QfALSpezOkgO49Caa9R
-   L0KJpP7+KqpnSMlx1ORGhEl8hLJm+EpN/TKZR0QBk8CXIwSTuF8kO/Eys
-   G6Vw3XY5KV9rjYilX1TjDQhEu/c3iqS2Vepk0mJ2SECDDbsTcTuHCrreT
-   sR7Qzdu0Fyv3NkZZBj8TAka1z3KRk41o6trhiPiHO8qszrMd0yHVob0EM
+  bh=sfc+5iOeCRlVK+WVR/0VUL03/2vYkQcjXe5xI+lLAkM=;
+  b=fDC9KdJGU7qeKwyZGsSK4w9MU/7cRH8BTXR/cz4Xb6mrabVNMRip26Uf
+   /HsVpzbpmT7f+p8g+m6Az9jGpughnGdx7oAvk5KezFZqMNM9jZ6dWxkhb
+   wBqUcDQLNaS+CoZ+Eca39S8LO4MsgR/X1iIMMe6elQVKgvRhjvMPLccxi
+   bbkf8T/4iGZynqNODwVVVBxEsWNF9U1XwcAyTOeCp/yPHpd7zzG9CXwO+
+   3ld8LnsVB/xGlTV6s2qePAWt6VU99ANUYbCYyueOVLs+bmtqxHzp18Jic
+   lKcqRjpG1Z1CykWoh7JIXbtUSwU3phxHhczCl5nHARjzEdmIUaKXhh/9G
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="392198613"
+X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="392198619"
 X-IronPort-AV: E=Sophos;i="5.97,259,1669104000"; 
-   d="scan'208";a="392198613"
+   d="scan'208";a="392198619"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 11:25:25 -0800
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 11:25:26 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="696534370"
+X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="696534373"
 X-IronPort-AV: E=Sophos;i="5.97,259,1669104000"; 
-   d="scan'208";a="696534370"
+   d="scan'208";a="696534373"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
   by orsmga001.jf.intel.com with ESMTP; 30 Jan 2023 11:25:25 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -46,9 +46,9 @@ Cc:     Bjorn Helgaas <bhelgaas@google.com>, netdev@vger.kernel.org,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         intel-wired-lan@lists.osuosl.org,
         Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH net-next 5/8] ice: Remove redundant pci_enable_pcie_error_reporting()
-Date:   Mon, 30 Jan 2023 11:25:16 -0800
-Message-Id: <20230130192519.686446-6-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 6/8] igb: Remove redundant pci_enable_pcie_error_reporting()
+Date:   Mon, 30 Jan 2023 11:25:17 -0800
+Message-Id: <20230130192519.686446-7-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230130192519.686446-1-anthony.l.nguyen@intel.com>
 References: <20230130192519.686446-1-anthony.l.nguyen@intel.com>
@@ -85,34 +85,36 @@ Cc: netdev@vger.kernel.org
 Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/ethernet/intel/igb/igb_main.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index fce86e8ff834..4aa19562fe93 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -4664,7 +4664,6 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 		return err;
- 	}
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 3c0c35ecea10..c56b991fa610 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -3194,8 +3194,6 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if (err)
+ 		goto err_pci_reg;
  
 -	pci_enable_pcie_error_reporting(pdev);
+-
  	pci_set_master(pdev);
+ 	pci_save_state(pdev);
  
- 	pf->pdev = pdev;
-@@ -4981,7 +4980,6 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 	ice_devlink_destroy_regions(pf);
- 	ice_deinit_hw(hw);
- err_exit_unroll:
+@@ -3626,7 +3624,6 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ err_ioremap:
+ 	free_netdev(netdev);
+ err_alloc_etherdev:
 -	pci_disable_pcie_error_reporting(pdev);
- 	pci_disable_device(pdev);
- 	return err;
- }
-@@ -5113,7 +5111,6 @@ static void ice_remove(struct pci_dev *pdev)
- 	ice_reset(hw, ICE_RESET_PFR);
- 	pci_wait_for_pending_transaction(pdev);
- 	ice_clear_interrupt_scheme(pf);
+ 	pci_release_mem_regions(pdev);
+ err_pci_reg:
+ err_dma:
+@@ -3837,8 +3834,6 @@ static void igb_remove(struct pci_dev *pdev)
+ 	kfree(adapter->shadow_vfta);
+ 	free_netdev(netdev);
+ 
 -	pci_disable_pcie_error_reporting(pdev);
+-
  	pci_disable_device(pdev);
  }
  
