@@ -2,111 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4600C681393
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 15:42:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53FA86813D7
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 15:55:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237805AbjA3OmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 09:42:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
+        id S237889AbjA3Oy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 09:54:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235759AbjA3OmY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 09:42:24 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF581D93F
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 06:42:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=TfM2ehciCxuDO9aZadC7nXm35RgVlS2hj1lG/OodgEA=; b=CN
-        9B5xjb1mqY24du+h1I3aTrwTx+w+0w72kKnqll5haG9KKpgaLwrKDR9wE1D6gnsAxz6243PrbJByz
-        lGzL2dAb8TpBcu1hE1+zeHBCLqKSI0ILn51/EVsfLPhEJxIyud58mVhndF4lgxyVJ5kD5tL/vivdR
-        v+1Z7rz/Y2mT1yA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pMVMI-003aDs-5a; Mon, 30 Jan 2023 15:42:10 +0100
-Date:   Mon, 30 Jan 2023 15:42:10 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Jamal Hadi Salim <hadi@mojatatu.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel@mojatatu.com, deb.chatterjee@intel.com,
-        anjali.singhai@intel.com, namrata.limaye@intel.com,
-        khalidm@nvidia.com, tom@sipanda.io, pratyush@sipanda.io,
-        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, vladbu@nvidia.com, simon.horman@corigine.com,
-        stefanc@marvell.com, seong.kim@amd.com, mattyk@nvidia.com,
-        dan.daly@intel.com, john.andy.fingerhut@intel.com
-Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
-Message-ID: <Y9fXQo1kmIXfs7eS@lunn.ch>
-References: <CAKH8qBtU-1A1iKnvTXV=5v8Dim1FBmtvL6wOqgdspSFRCwNohA@mail.gmail.com>
- <CA+FuTScHsm3Ajje=ziRBafXUQ5FHHEAv6R=LRWr1+c3QpCL_9w@mail.gmail.com>
- <CAM0EoMnBXnWDQKu5e0z1_zE3yabb2pTnOdLHRVKsChRm+7wxmQ@mail.gmail.com>
- <CA+FuTScBO-h6iM47-NbYSDDt6LX7pUXD82_KANDcjp7Y=99jzg@mail.gmail.com>
- <63d6069f31bab_2c3eb20844@john.notmuch>
- <CAM0EoMmeYc7KxY=Sv=oynrvYMeb-GD001Zh4m5TMMVXYre=tXw@mail.gmail.com>
- <63d747d91add9_3367c208f1@john.notmuch>
- <Y9eYNsklxkm8CkyP@nanopsycho>
- <87pmawxny5.fsf@toke.dk>
- <CAM0EoM=u-VSDZAifwTiOy8vXAGX7Hwg4rdea62-kNFGsHj7ObQ@mail.gmail.com>
+        with ESMTP id S237881AbjA3Oy5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 09:54:57 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B9C13DCB
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 06:54:55 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id h16so11289306wrz.12
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 06:54:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=DBOpQJYrFBTRisXeKisTfMrcTyjxLh2di8KfVPbWNqU=;
+        b=yKHFfxGFUyCjIMcxvHJEvAUDSj9OgEptKjOD4txVEqyNPntE8lDUViVchodbt0Hj1k
+         c9FHCupazK3N7mGho43gKincjUaeyT7uCaNAy/6uOEg8XZxxztCvFK7oTBh2cJ4gmLgE
+         7r+5gKQ7fPfY3b+YJ8LnW/fwL0vA7ZiaIvLYtuOwEue7lNs7ZVJXg8eZIT8qFLdc8zvt
+         kaMj/LcWL6RJdqqLRdgOT7I+67H8NdS2dsMECQStAZAddAVkeXByo+gddLNkh9BOuc3R
+         1CexiZK4c6kCRryEirmAuBMG8PTviOWRK0QWC5qWNALfDzShp++ifTbl7sJXONrQamjH
+         VxGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=DBOpQJYrFBTRisXeKisTfMrcTyjxLh2di8KfVPbWNqU=;
+        b=IN+UkQZ08pjwl2unCjnCCcylYsvuP+wgQ23NTbmT7DhChNXHKq5NkTVB6Wiwaj/+jf
+         XGeRhSycVyryfVXaYc6/DNs827yTigqcg3hP2fcRoPH/v6Fa3gEpkXQrAeDTOgF+jYVE
+         xF6GtVXupkIRxzkYDrkhtdkCezYa0kwsVdL5rDuTMiFJBhXu0WCDLtT03rtTGpdWBWha
+         TqCob0TA/+8aqYWcCxpiZlwRUzVLtC0Th55xi9zV6dxJRTYCxPKJUN4MF8B+sLxZIvBL
+         TfQL5T6n2sNg13OsDtvkQ3ipCEzzH5QSzgj5z2yi3k5bsiccum0q4rJLKefR8BQsN9L/
+         e/3g==
+X-Gm-Message-State: AO0yUKVppWM/PEN4MGD2/m9Ux9FHqtHf9XHfxqD42NWa8MQmxMDhj8Jy
+        y5Eiy9s0/dD6jbZyD1oN/JftTg==
+X-Google-Smtp-Source: AK7set984+SMpkQTbwcvMG4YeVGE0ndrZoyiRnap/3z+W0qvqktcQHTobeelX/749h7V8DxCcL4QEg==
+X-Received: by 2002:a5d:4c49:0:b0:2bf:c82d:7ad4 with SMTP id n9-20020a5d4c49000000b002bfc82d7ad4mr13257293wrt.7.1675090494310;
+        Mon, 30 Jan 2023 06:54:54 -0800 (PST)
+Received: from linaro.org ([94.52.112.99])
+        by smtp.gmail.com with ESMTPSA id m13-20020a5d56cd000000b002bfd462d13asm11233373wrw.18.2023.01.30.06.54.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Jan 2023 06:54:52 -0800 (PST)
+Date:   Mon, 30 Jan 2023 16:54:51 +0200
+From:   Abel Vesa <abel.vesa@linaro.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        devicetree@vger.kernel.org, kernel@pengutronix.de,
+        Stephen Boyd <sboyd@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        linux-clk@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Abel Vesa <abelvesa@kernel.org>
+Subject: Re: [PATCH v2 15/19] clk: imx6ul: fix enet1 gate configuration
+Message-ID: <Y9faOzCkeNea1bmd@linaro.org>
+References: <20230117061453.3723649-1-o.rempel@pengutronix.de>
+ <20230117061453.3723649-16-o.rempel@pengutronix.de>
+ <Y9atr+Gn60+m4nOg@linaro.org>
+ <20230130121530.GA10978@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAM0EoM=u-VSDZAifwTiOy8vXAGX7Hwg4rdea62-kNFGsHj7ObQ@mail.gmail.com>
+In-Reply-To: <20230130121530.GA10978@pengutronix.de>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jamal
+On 23-01-30 13:15:30, Oleksij Rempel wrote:
+> On Sun, Jan 29, 2023 at 07:32:31PM +0200, Abel Vesa wrote:
+> > On 23-01-17 07:14:49, Oleksij Rempel wrote:
+> > > According to the "i.MX 6UltraLite Applications Processor Reference Manual,
+> > > Rev. 2, 03/2017", BIT(13) is ENET1_125M_EN which is not controlling root
+> > > of PLL6. It is controlling ENET1 separately.
+> > > 
+> > > So, instead of this picture (implementation before this patch):
+> > > fec1 <- enet_ref (divider) <---------------------------,
+> > >                                                        |- pll6_enet (gate)
+> > > fec2 <- enet2_ref_125m (gate) <- enet2_ref (divider) <-´
+> > > 
+> > > we should have this one (after this patch):
+> > > fec1 <- enet1_ref_125m (gate) <- enet1_ref (divider) <-,
+> > >                                                        |- pll6_enet
+> > > fec2 <- enet2_ref_125m (gate) <- enet2_ref (divider) <-´
+> > > 
+> > > With this fix, the RMII reference clock will be turned off, after
+> > > setting network interface down on each separate interface
+> > > (ip l s dev eth0 down). Which was not working before, on system with both
+> > > FECs enabled.
+> > > 
+> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > 
+> > I'm OK with this. Maybe a fixes tag ?
+> 
+> Hm. Initial commit was:
+> Fixes: 787b4271a6a0 ("clk: imx: add imx6ul clk tree support")
+> but this patch will not apply on top of it.
+> Next possible commit would be:
+> Fixes: 1487b60dc2d2 ("clk: imx6ul: Switch to clk_hw based API")
+> But this patch didn't introduce this issue, it was just refactoring.
 
-I'm mostly sat watching and eating popcorn, and i have little
-knowledge in the area.
+Hm, in that case I don't think is qoing to be backported ever.
 
-> Jiri, i think one of the concerns you have is that there is no way to
-> generalize the different hardware by using a single abstraction since
-> all hardware may have different architectures (eg whether using RMT vs
-> DRMT, a mesh processing xbar, TCAM, SRAM, host DRAM,  etc) which may
-> necessitate doing things like underlying table reordering, merging,
-> sorting etc. The consensus is that it is the vendor driver that is
-> responsible for â€œtransformingâ€ P4 abstractions into whatever your
-> hardware does.
+> 
+> What do you prefer?
 
-What is the complexity involved in this 'transformation'? Are we
-talking about putting a P4 'compiler' into each driver, each vendor
-having there own compiler? Performing an upcall into user space with a
-P4 blob and asking the vendor tool to give us back a blob for the
-hardware? Or is it relatively simple, a few hundred lines of code,
-simple transformations?
+I'll apply it as it is.
 
-As far as i know, all offloading done so far in the network stack has
-been purely in kernel. We transform a kernel representation of
-networking state into something the hardware understands and pass it
-to the hardware. That means, except for bugs, what happens in SW
-should be the same as what happens in HW, just faster. But there have
-been mention of P4 extensions. Stuff that the SW P4 implementation
-cannot do, but the hardware can, and vendors appear to think such
-extensions are part of their magic sauce. How will that work? Is the
-'compiler' supposed to recognise plain P4 equivalent of these
-extensions and replace it with those extensions?
+Thanks.
 
-I suppose what i'm trying to get at, is are we going to enforce the SW
-and HW equivalence by doing the transformation in kernel, or could we
-be heading towards in userspace we take our P4 and compile it with one
-toolchain for the SW path, another toolchain for the HW path, and we
-have no guarantee that the resulting blobs actually came from the same
-sources and are supposed to be equivalent? And that then makes the SW
-path somewhat pointless?
-
-     Andrew
+> 
+> Regards,
+> Oleksij
+> -- 
+> Pengutronix e.K.                           |                             |
+> Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+> 31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+> Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
