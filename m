@@ -2,64 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 292C3681BD3
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 21:52:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1278E681C1E
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 22:02:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230043AbjA3UwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 15:52:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46956 "EHLO
+        id S229802AbjA3VCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 16:02:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229605AbjA3UwJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 15:52:09 -0500
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA81B367EF
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 12:51:53 -0800 (PST)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-1636eae256cso12488740fac.0
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 12:51:53 -0800 (PST)
+        with ESMTP id S229688AbjA3VCa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 16:02:30 -0500
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C239A460BF
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 13:02:27 -0800 (PST)
+Received: by mail-io1-xd2b.google.com with SMTP id q6so2262724ior.12
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 13:02:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=/IB0oD7j6geI//ci/tiy0+ABQ2OwEHH45LjNSZJhYPQ=;
-        b=FW9lX520twsG5jJ0zxY/6IfRSq59UShuLTRn6bR70IoKtt6Z2M9AolzsdfSyyO7VJu
-         sz4NftgVz8UjuAx3a23Vjvj+W0ifh5QRTJ1A2GHJS4Sb3UUptQitnPLKz1TPrNmpfa/M
-         qzl/mGjGG9imOoiuIERZMB4ehIEHte4+bgEB4=
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=tqiYGrAmfasm6lQ8vFsVNt3ikeeBgKSbwzGX4HertYY=;
+        b=GOVd6u2ieN8ZGU8y66kFT6PF7W6+SfL4LTPkS+jmZR4QDvpgdbiLuiJpwS6fY9WTad
+         ldCcWhlgbHnzm/JZEJhXeB5mga8Vi/07XPX4FVSqAoctajjwX7/BLgHM4/jfcuFeiZf7
+         HrWH0bP4vnnLQmTqE30k40fR6+sdx8JrSPhZQ+zPcXnFaDpAR/JPRk/0RtHtcIMrla74
+         Nqu011nqmcKmUoaJVlZADdltOp8mGTKqAwzXtkc9zqMwhil3olfyHNhDD979rotGmWCj
+         pJ29pICkOFd/Ll9AlDtCt6dgUwq89L/nr3kKYJvpmVXtsuxv/blcbsa5ur11u3BY0dJg
+         QFyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/IB0oD7j6geI//ci/tiy0+ABQ2OwEHH45LjNSZJhYPQ=;
-        b=liDE+XH0i2OO94uh5XVpxJsD+/s/mdxNEiVkBfytele8hKynrpnUpbQTmBU8IXfVoT
-         Ar3ab+MMjoj/O4qT097/qx9bRZP0b0I02HYlGrMFpvQifgva2oW2z21HR+A6rPIHHPeh
-         LqNXRFGdFGdmKWZbF9hrDzQjOL+OClPz71qszj3UXSy3sJzmtRkCXObpGS+OhaSlbE8V
-         E/NRC6GJ3kAnpj/sZvkk9mHdr4cKHyYe5itw1blV8rNiX/SMSYANgrqXWny5DKfvoDXO
-         J+8oAVI/WgLyukqK+vWowuM96TxAbvBtgzNxLv54MB4UoebsJs+wHNrefyimTSaiStsm
-         ndsw==
-X-Gm-Message-State: AO0yUKXbOdTek87wwzkQkWWGnornPK7p6u+NheQ3S5b1MTRSaqe+FjDx
-        ytmCfhtLI3cF8EOuisrrEco2kPRZHUFe4M5J1oA=
-X-Google-Smtp-Source: AK7set8cdQ9A4QfoqBd5ctwoFW8HQtfRnJVCnRQ8c19mPc4aApku3LxRhuIDZRejZuRpZgON5tN4Dg==
-X-Received: by 2002:a05:6870:82aa:b0:163:419b:3a90 with SMTP id q42-20020a05687082aa00b00163419b3a90mr6700740oae.17.1675111912755;
-        Mon, 30 Jan 2023 12:51:52 -0800 (PST)
-Received: from debian (108-213-68-242.lightspeed.sntcca.sbcglobal.net. [108.213.68.242])
-        by smtp.gmail.com with ESMTPSA id hj15-20020a056870c90f00b001631c5f7404sm5675094oab.22.2023.01.30.12.51.50
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=tqiYGrAmfasm6lQ8vFsVNt3ikeeBgKSbwzGX4HertYY=;
+        b=LM6Ta1J18gswIMNTTg9V3n78q4rrrt4jieo4pguwOkIuthBla35fpe3J5xuZC5w3b4
+         yI4MNAsIuJeddaY5GfQgw+tLaX4aeKMF4YnyNZsZFLbDgdmh6a5/k8PTIdhWwXiCaLPQ
+         CGeel5NwELjYsufcDzc+vQT5lb9i8qXjdF8OqrpyXjEvlHo3ncJlhkE7d59o2JZzuePH
+         n28l1Bl28a5klTFVFYLwyHnQ+kPmQ0N9yNZ0mfRqm9By+ObLZUmit27fPNLQKGn7E133
+         iiPO+fsObcYewwF9hrZgDDJT9IkW1a12O907AkNKtMDe75Cc0SPhnVfRgLs1/cQW1kNx
+         75sg==
+X-Gm-Message-State: AO0yUKWyGWGCKvTebJr6ZZ1hHQUtnDEmI2iHFKaNi4S0CIhjD51hoy45
+        wAEMZOYa59ZZwJe2fmCRpKrbOw==
+X-Google-Smtp-Source: AK7set/L4+20oXstDi7/0z2f8rHrqw8wonXy2WYYfxVyB1zXBMeRcBS0lAtlXiUReQtK4ONZmXBHWQ==
+X-Received: by 2002:a05:6602:370d:b0:716:948a:8871 with SMTP id bh13-20020a056602370d00b00716948a8871mr7157020iob.1.1675112547060;
+        Mon, 30 Jan 2023 13:02:27 -0800 (PST)
+Received: from presto.localdomain ([98.61.227.136])
+        by smtp.gmail.com with ESMTPSA id a30-20020a02735e000000b003aef8fded9asm1992046jae.127.2023.01.30.13.02.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Jan 2023 12:51:52 -0800 (PST)
-Date:   Mon, 30 Jan 2023 12:51:48 -0800
-From:   Yan Zhai <yan@cloudflare.com>
-To:     netdev@vger.kernel.org
-Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        davem@davemloft.net, asml.silence@gmail.com, imagedong@tencent.com,
-        keescook@chromium.org, jbenc@redhat.com, richardbgobert@gmail.com,
-        willemb@google.com, steffen.klassert@secunet.com,
-        daniel@iogearbox.net, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: fix NULL pointer in skb_segment_list
-Message-ID: <Y9gt5EUizK1UImEP@debian>
+        Mon, 30 Jan 2023 13:02:11 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     caleb.connolly@linaro.org, mka@chromium.org, evgreen@chromium.org,
+        andersson@kernel.org, quic_cpratapa@quicinc.com,
+        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
+        quic_subashab@quicinc.com, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/8] net: ipa: remaining IPA v5.0 support
+Date:   Mon, 30 Jan 2023 15:01:50 -0600
+Message-Id: <20230130210158.4126129-1-elder@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,71 +73,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 3a1296a38d0c ("net: Support GRO/GSO fraglist chaining.")
-introduced UDP listifyed GRO. The segmentation relies on frag_list being
-untouched when passing through the network stack. This assumption can be
-broken sometimes, where frag_list itself gets pulled into linear area,
-leaving frag_list being NULL. When this happens it can trigger
-following NULL pointer dereference, and panic the kernel. Reverse the
-test condition should fix it.
+This series includes almost all remaining IPA code changes required
+to support IPA v5.0.  IPA register definitions and configuration
+data for IPA v5.0 will be sent later (soon).  Note that the GSI
+register definitions still require work.  GSI for IPA v5.0 supports
+up to 256 (rather than 32) channels, and this changes the way GSI
+register offsets are calculated.  A few GSI register fields also
+change.
 
-[19185.577801][    C1] BUG: kernel NULL pointer dereference, address:
-...
-[19185.663775][    C1] RIP: 0010:skb_segment_list+0x1cc/0x390
-...
-[19185.834644][    C1] Call Trace:
-[19185.841730][    C1]  <TASK>
-[19185.848563][    C1]  __udp_gso_segment+0x33e/0x510
-[19185.857370][    C1]  inet_gso_segment+0x15b/0x3e0
-[19185.866059][    C1]  skb_mac_gso_segment+0x97/0x110
-[19185.874939][    C1]  __skb_gso_segment+0xb2/0x160
-[19185.883646][    C1]  udp_queue_rcv_skb+0xc3/0x1d0
-[19185.892319][    C1]  udp_unicast_rcv_skb+0x75/0x90
-[19185.900979][    C1]  ip_protocol_deliver_rcu+0xd2/0x200
-[19185.910003][    C1]  ip_local_deliver_finish+0x44/0x60
-[19185.918757][    C1]  __netif_receive_skb_one_core+0x8b/0xa0
-[19185.927834][    C1]  process_backlog+0x88/0x130
-[19185.935840][    C1]  __napi_poll+0x27/0x150
-[19185.943447][    C1]  net_rx_action+0x27e/0x5f0
-[19185.951331][    C1]  ? mlx5_cq_tasklet_cb+0x70/0x160 [mlx5_core]
-[19185.960848][    C1]  __do_softirq+0xbc/0x25d
-[19185.968607][    C1]  irq_exit_rcu+0x83/0xb0
-[19185.976247][    C1]  common_interrupt+0x43/0xa0
-[19185.984235][    C1]  asm_common_interrupt+0x22/0x40
-...
-[19186.094106][    C1]  </TASK>
+The first patch in this series increases the number of IPA endpoints
+supported by the driver, from 32 to 36.  The next updates the width
+of the destination field for the IP_PACKET_INIT immediate command so
+it can represent up to 256 endpoints rather than just 32.  The next
+adds a few definitions of some IPA registers and fields that are
+first available in IPA v5.0.
 
-Fixes: 3a1296a38d0c ("net: Support GRO/GSO fraglist chaining.")
-Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
-Reviewed-by: Willem de Bruijn <willemb@google.com>
-Signed-off-by: Yan Zhai <yan@cloudflare.com>
----
- net/core/skbuff.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+The next two patches update the code that handles router and filter
+table caches.  Previously these were referred to as "hashed" tables,
+and the IPv4 and IPv6 tables are now combined into one "unified"
+table.  The sixth and seventh patches add support for a new pulse
+generator, which allows time periods to be specified with a wider
+range of clock resolution.  And the last patch just defines two new
+memory regions that were not previously used.
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 4a0eb5593275..a31ff4d83ecc 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -4100,7 +4100,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 
- 	skb_shinfo(skb)->frag_list = NULL;
- 
--	do {
-+	while (list_skb) {
- 		nskb = list_skb;
- 		list_skb = list_skb->next;
- 
-@@ -4146,8 +4146,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 		if (skb_needs_linearize(nskb, features) &&
- 		    __skb_linearize(nskb))
- 			goto err_linearize;
--
--	} while (list_skb);
-+	}
- 
- 	skb->truesize = skb->truesize - delta_truesize;
- 	skb->data_len = skb->data_len - delta_len;
+					-Alex
+
+Alex Elder (8):
+  net: ipa: support more endpoints
+  net: ipa: extend endpoints in packet init command
+  net: ipa: define IPA v5.0+ registers
+  net: ipa: update table cache flushing
+  net: ipa: support zeroing new cache tables
+  net: ipa: greater timer granularity options
+  net: ipa: support a third pulse register
+  net: ipa: define two new memory regions
+
+ drivers/net/ipa/ipa_cmd.c      |  32 ++++++++---
+ drivers/net/ipa/ipa_endpoint.c | 102 ++++++++++++++++++---------------
+ drivers/net/ipa/ipa_endpoint.h |   4 +-
+ drivers/net/ipa/ipa_main.c     |  14 ++++-
+ drivers/net/ipa/ipa_mem.c      |   8 ++-
+ drivers/net/ipa/ipa_mem.h      |   8 ++-
+ drivers/net/ipa/ipa_reg.h      |  43 ++++++++++++--
+ drivers/net/ipa/ipa_table.c    |  61 ++++++++++++++------
+ 8 files changed, 187 insertions(+), 85 deletions(-)
+
 -- 
-2.39.0
+2.34.1
 
