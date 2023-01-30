@@ -2,260 +2,366 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68D56681AF0
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 20:58:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CD1B681AF6
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 20:59:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236663AbjA3T6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 14:58:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47698 "EHLO
+        id S237876AbjA3T7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 14:59:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236090AbjA3T6c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 14:58:32 -0500
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE7344BD1
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 11:58:29 -0800 (PST)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-506609635cbso175271967b3.4
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 11:58:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=i03ptR9fFLW5fJH/wPMLlxTLMbIyvVbZn3SkcwYrQcQ=;
-        b=h6MFIKg7fj6u5OaxCTbe48QrqZ0u9cN6VLysxptuK+Kqer56MahV7CjI0JTVFB7kpb
-         rBaWQWvRu5aXlSh9BruBKkUp3A3zH59k13A5wAgFAjilytkzbTwsYPlIZE8ZdjpFVHXO
-         r2Jpn8Btx/a9kycJESwKJ03IiD4In3f8gJjeA/FTV2tTdHWtAgI1gRZFrx4ZRBRty3CZ
-         168sBvYd+mSFh8DSsKZL3H+QJBBg8zCC5aDgy1hKHRS4fuXNjuxHUeFV54MSFYq5mJMt
-         qEJvKmTROBgRjB2CQA1a6IQ0w+trzu3pG9Vyj1Udqu6j5b1kVUHGsoDbpFtJOpmjdjTo
-         tUNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=i03ptR9fFLW5fJH/wPMLlxTLMbIyvVbZn3SkcwYrQcQ=;
-        b=AevqcvHFzPBjCMga3aovVWtT6vWExxwiIRlDrTbsH9w7MTxOfgWm7zMkYQNGXgDyl4
-         zgcn5qLgVk13WLz609e/qNJNVxAcPnluXHxRbbZViCBldlNOtds00RTOjlfHvxTh2oxm
-         UOHfuXj7JrEB/vLiL4Vy3raBZdXYD2rKjtbR8a2hcxlwampoBK3Uq0K3RWH5gNjNSnyT
-         jC4a5Ml0IgszcO+bRKdP+eKydnC2FDVp7RTtbyamKkiKIWb70m3jUsjMDQwaofCoktGx
-         0G18Uu22J+pI8DRRWmPu80z43sMIwtSItPObRIuu4MLU9lTUu5tnAZxDA9ysPoXOgHP7
-         JevQ==
-X-Gm-Message-State: AO0yUKVA6oJiJKLPnYX44xiQuknPh8nfzHHJQURLm2bGD7Q/dfQspIlo
-        k279DautVTAV2GMz1LtDlfvj2T3XZ1VIqTa/doAotg==
-X-Google-Smtp-Source: AK7set+84QqUVzPLTgiujO7cFK7Mj/KcKfR0HfahV7rS2yXkT9qnaCG6qVPvGnsQLBs759QmRN/eDZLWvB/s8zvlrlo=
-X-Received: by 2002:a81:254b:0:b0:519:6acb:f25a with SMTP id
- l72-20020a81254b000000b005196acbf25amr313652ywl.480.1675108708820; Mon, 30
- Jan 2023 11:58:28 -0800 (PST)
+        with ESMTP id S236714AbjA3T7e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 14:59:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C38129435;
+        Mon, 30 Jan 2023 11:59:33 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B402D60C2A;
+        Mon, 30 Jan 2023 19:59:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ADD6C433EF;
+        Mon, 30 Jan 2023 19:59:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675108772;
+        bh=lH8p4PkyNawpDjZbeQEqhqYmi2Mm2kc4lhAa7ikztlQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=V9zMUXmoWAWar0bWjGZruTjFhzR/Be1nqRA/6p/PXXno60UcNHEiBhaH4hdo3Q9/1
+         Kj8jp0eWStmdeCxAlATxTobyzwJY16StTxu9KYxl5MOgLHNHAR5MGWrb+zLyh7HdMW
+         hAQdDFFLXAVHVVsDRxe2C0NN9vwyCkKuqI4C3w9bW3xCmMEcvRL5kDYE2Revzv7WaV
+         PcNjT23pQ/inqkS2icUELqX2/cTIUBYf/qsAZWg807/z6XMeMxsXrHCRVg06LL9uwQ
+         vQu0dNq9lNOAH1VLjuh+A27TF2KA4CLEVCpx4QQ4SjJpHTQrUJf+bUI8cgmT9JUToY
+         qFChE3m06OHTA==
+Date:   Mon, 30 Jan 2023 11:59:30 -0800
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>, kvm@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        Jiri Kosina <jikos@kernel.org>, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        "Seth Forshee (DigitalOcean)" <sforshee@digitalocean.com>,
+        live-patching@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
+Subject: Re: [PATCH 0/2] vhost: improve livepatch switching for heavily
+ loaded vhost worker kthreads
+Message-ID: <20230130195930.s5iu76e56j4q5bra@treble>
+References: <20230120-vhost-klp-switching-v1-0-7c2b65519c43@kernel.org>
+ <Y9KyVKQk3eH+RRse@alley>
+ <Y9LswwnPAf+nOVFG@do-x1extreme>
+ <20230127044355.frggdswx424kd5dq@treble>
+ <Y9OpTtqWjAkC2pal@hirez.programming.kicks-ass.net>
+ <20230127165236.rjcp6jm6csdta6z3@treble>
+ <20230127170946.zey6xbr4sm4kvh3x@treble>
+ <20230127221131.sdneyrlxxhc4h3fa@treble>
+ <Y9e6ssSHUt+MUvum@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-References: <Y9e9S3ENl0oszAH/@qwirkle> <CA+FuTSe_NMm6goSmCNfKjUWPGYtVnnBMv6W54a_GOeLJ2FqyOQ@mail.gmail.com>
- <Y9fT+LABhW+/3Nal@qwirkle> <CA+FuTScSfLG7gXS_YqJzsC-Teiryj3jeSQs9w0D1PWJs8sv5Rg@mail.gmail.com>
- <Y9ftL5c4klThCi9Q@qwirkle> <Y9fu7TR5VC33j+EP@qwirkle> <CA+FuTSf1tJ7kw+GCXf0YBRv0HaR8v7=iy6b36hrsmx8hEr5knQ@mail.gmail.com>
- <Y9f+7tMWMtPACLz9@qwirkle> <CA+FuTScThEWVevZ+KVgLOZ6zb4Ush6RtKL4FmC2cFMg+Q-OWpw@mail.gmail.com>
- <Y9gLeNqorZNQ1gjp@qwirkle> <Y9gfpa7vks5Ndl8q@qwirkle>
-In-Reply-To: <Y9gfpa7vks5Ndl8q@qwirkle>
-From:   Willem de Bruijn <willemb@google.com>
-Date:   Mon, 30 Jan 2023 14:57:52 -0500
-Message-ID: <CA+FuTSckAeDGSBYE3bv2qR9cXpqac8Vmu6YxC1HTJx7YLY7gnQ@mail.gmail.com>
-Subject: Re: [PATCH] selftests: net: udpgso_bench_tx: Introduce exponential
- back-off retries
-To:     Andrei Gherzan <andrei.gherzan@canonical.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Y9e6ssSHUt+MUvum@hirez.programming.kicks-ass.net>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 2:51 PM Andrei Gherzan
-<andrei.gherzan@canonical.com> wrote:
->
-> On 23/01/30 06:24PM, Andrei Gherzan wrote:
-> > On 23/01/30 12:35PM, Willem de Bruijn wrote:
-> > > On Mon, Jan 30, 2023 at 12:31 PM Andrei Gherzan
-> > > <andrei.gherzan@canonical.com> wrote:
-> > > >
-> > > > On 23/01/30 11:29AM, Willem de Bruijn wrote:
-> > > > > On Mon, Jan 30, 2023 at 11:23 AM Andrei Gherzan
-> > > > > <andrei.gherzan@canonical.com> wrote:
-> > > > > >
-> > > > > > On 23/01/30 04:15PM, Andrei Gherzan wrote:
-> > > > > > > On 23/01/30 11:03AM, Willem de Bruijn wrote:
-> > > > > > > > On Mon, Jan 30, 2023 at 9:28 AM Andrei Gherzan
-> > > > > > > > <andrei.gherzan@canonical.com> wrote:
-> > > > > > > > >
-> > > > > > > > > On 23/01/30 08:35AM, Willem de Bruijn wrote:
-> > > > > > > > > > On Mon, Jan 30, 2023 at 7:51 AM Andrei Gherzan
-> > > > > > > > > > <andrei.gherzan@canonical.com> wrote:
-> > > > > > > > > > >
-> > > > > > > > > > > On 23/01/30 09:26AM, Paolo Abeni wrote:
-> > > > > > > > > > > > On Fri, 2023-01-27 at 17:03 -0500, Willem de Bruijn wrote:
-> > > > > > > > > > > > > On Fri, Jan 27, 2023 at 1:16 PM Andrei Gherzan
-> > > > > > > > > > > > > <andrei.gherzan@canonical.com> wrote:
-> > > > > > > > > > > > > >
-> > > > > > > > > > > > > > The tx and rx test programs are used in a couple of test scripts including
-> > > > > > > > > > > > > > "udpgro_bench.sh". Taking this as an example, when the rx/tx programs
-> > > > > > > > > > > > > > are invoked subsequently, there is a chance that the rx one is not ready to
-> > > > > > > > > > > > > > accept socket connections. This racing bug could fail the test with at
-> > > > > > > > > > > > > > least one of the following:
-> > > > > > > > > > > > > >
-> > > > > > > > > > > > > > ./udpgso_bench_tx: connect: Connection refused
-> > > > > > > > > > > > > > ./udpgso_bench_tx: sendmsg: Connection refused
-> > > > > > > > > > > > > > ./udpgso_bench_tx: write: Connection refused
-> > > > > > > > > > > > > >
-> > > > > > > > > > > > > > This change addresses this by adding routines that retry the socket
-> > > > > > > > > > > > > > operations with an exponential back off algorithm from 100ms to 2s.
-> > > > > > > > > > > > > >
-> > > > > > > > > > > > > > Fixes: 3a687bef148d ("selftests: udp gso benchmark")
-> > > > > > > > > > > > > > Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
-> > > > > > > > > > > > >
-> > > > > > > > > > > > > Synchronizing the two processes is indeed tricky.
-> > > > > > > > > > > > >
-> > > > > > > > > > > > > Perhaps more robust is opening an initial TCP connection, with
-> > > > > > > > > > > > > SO_RCVTIMEO to bound the waiting time. That covers all tests in one
-> > > > > > > > > > > > > go.
-> > > > > > > > > > > >
-> > > > > > > > > > > > Another option would be waiting for the listener(tcp)/receiver(udp)
-> > > > > > > > > > > > socket to show up in 'ss' output before firing-up the client - quite
-> > > > > > > > > > > > alike what mptcp self-tests are doing.
-> > > > > > > > > > >
-> > > > > > > > > > > I like this idea. I have tested it and it works as expected with the
-> > > > > > > > > > > exeception of:
-> > > > > > > > > > >
-> > > > > > > > > > > ./udpgso_bench_tx: sendmsg: No buffer space available
-> > > > > > > > > > >
-> > > > > > > > > > > Any ideas on how to handle this? I could retry and that works.
-> > > > > > > > > >
-> > > > > > > > > > This happens (also) without the zerocopy flag, right? That
-> > > > > > > > > >
-> > > > > > > > > > It might mean reaching the sndbuf limit, which can be adjusted with
-> > > > > > > > > > SO_SNDBUF (or SO_SNDBUFFORCE if CAP_NET_ADMIN). Though I would not
-> > > > > > > > > > expect this test to bump up against that limit.
-> > > > > > > > > >
-> > > > > > > > > > A few zerocopy specific reasons are captured in
-> > > > > > > > > > https://www.kernel.org/doc/html/latest/networking/msg_zerocopy.html#transmission.
-> > > > > > > > >
-> > > > > > > > > I have dug a bit more into this, and it does look like your hint was in
-> > > > > > > > > the right direction. The fails I'm seeing are only with the zerocopy
-> > > > > > > > > flag.
-> > > > > > > > >
-> > > > > > > > > From the reasons (doc) above I can only assume optmem limit as I've
-> > > > > > > > > reproduced it with unlimited locked pages and the fails are transient.
-> > > > > > > > > That leaves optmem limit. Bumping the value I have by default (20480) to
-> > > > > > > > > (2048000) made the sendmsg succeed as expected. On the other hand, the
-> > > > > > > > > tests started to fail with something like:
-> > > > > > > > >
-> > > > > > > > > ./udpgso_bench_tx: Unexpected number of Zerocopy completions:    774783
-> > > > > > > > > expected    773707 received
-> > > > > > > >
-> > > > > > > > More zerocopy completions than number of sends. I have not seen this before.
-> > > > > > > >
-> > > > > > > > The completions are ranges of IDs, one per send call for datagram sockets.
-> > > > > > > >
-> > > > > > > > Even with segmentation offload, the counter increases per call, not per segment.
-> > > > > > > >
-> > > > > > > > Do you experience this without any other changes to udpgso_bench_tx.c.
-> > > > > > > > Or are there perhaps additional sendmsg calls somewhere (during
-> > > > > > > > initial sync) that are not accounted to num_sends?
-> > > > > > >
-> > > > > > > Indeed, that looks off. No, I have run into this without any changes in
-> > > > > > > the tests (besides the retry routine in the shell script that waits for
-> > > > > > > rx to come up). Also, as a data point.
-> > > > > >
-> > > > > > Actually wait. I don't think that is the case here. "expected" is the
-> > > > > > number of sends. In this case we sent 1076 more messages than
-> > > > > > completions. Am I missing something obvious?
-> > > > >
-> > > > > Oh indeed.
-> > > > >
-> > > > > Receiving fewer completions than transmission is more likely.
-> > > >
-> > > > Exactly, yes.
-> > > >
-> > > > > This should be the result of datagrams still being somewhere in the
-> > > > > system. In a qdisc, or waiting for the network interface to return a
-> > > > > completion notification, say.
-> > > > >
-> > > > > Does this remain if adding a longer wait before the final flush_errqueue?
-> > > >
-> > > > Yes and no. But not realiably unless I go overboard.
-> > > >
-> > > > > Or, really, the right fix is to keep polling there until the two are
-> > > > > equal, up to some timeout. Currently flush_errqueue calls poll only
-> > > > > once.
-> > > >
-> > > > That makes sense. I have implemented a retry and this ran for a good
-> > > > while now.
-> > > >
-> > > > -               flush_errqueue(fd, true);
-> > > > +               while (true) {
-> > > > +                       flush_errqueue(fd, true);
-> > > > +                       if ((stat_zcopies == num_sends) || (delay >= MAX_DELAY))
-> > > > +                               break;
-> > > > +                       usleep(delay);
-> > > > +                       delay *= 2;
-> > > > +               }
-> > > >
-> > > > What do you think?
-> > >
-> > > Thanks for running experiments.
-> > >
-> > > We can avoid the unconditional sleep, as the poll() inside
-> > > flush_errqueue already takes a timeout.
-> > >
-> > > One option is to use start_time = clock_gettime(..) or gettimeofday
-> > > before poll, and restart poll until either the exit condition or
-> > > timeout is reached, with timeout = orig_time - elapsed_time.
-> >
-> > Yes, this was more of a quick draft. I was thinking to move it into the
-> > flush function (while making it aware of num_sends via a parameter):
-> >
-> > if (do_poll) {
-> >   struct pollfd fds = {0};
-> >   int ret;
-> >   unsigned long tnow, tstop;
-> >
-> >   fds.fd = fd;
-> >   tnow = gettimeofday_ms();
-> >   tstop = tnow + POLL_LOOP_TIMEOUT_MS;
-> >   while ((stat_zcopies != num_sends) && (tnow < tstop)) {
+On Mon, Jan 30, 2023 at 01:40:18PM +0100, Peter Zijlstra wrote:
+> Right, I was thinking you'd do something like:
+> 
+> 	static_call_update(cond_resched, klp_cond_resched);
+> 
+> With:
+> 
+> static int klp_cond_resched(void)
+> {
+> 	klp_try_switch_task(current);
+> 	return __cond_resched();
+> }
 
-The new condition to loop until stat_zcopies == num_sends should only
-be tested on the final call. This likely needs to become a separate
-boolean. Or a separate flush_errqueue_last() function, and leave the
-existing one as is.
+Something like this?
 
-We can probably merge the outer for and inner while loops
-
-> >     ret = poll(&fds, 1, 500);
-
-Instead of 500, this becomes tstop - tnow.
-
-> >     if (ret == 0) {
-> >       if (cfg_verbose)
-> >         fprintf(stderr, "poll timeout\n");
-
-Poll timeouts are now expected to an extent. Only report once at the
-end of the function if the poll was only called once and timed out.
-> >       } else if (ret < 0) {
-> >         error(1, errno, "poll");
-> >     }
-> >     tnow = gettimeofday_ms();
-> >   }
-> > }
-> >
-> > Does this make more sense?
->
-> Obviously, this should be a do/while. Anyway, this works as expected
-> after leaving it for a around two hours.
-
-Great to hear you found the cause.
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index cbe72bfd2f1f..424c0c939f57 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -363,8 +363,7 @@ static int vhost_worker(void *data)
+ 			kcov_remote_start_common(dev->kcov_handle);
+ 			work->fn(work);
+ 			kcov_remote_stop();
+-			if (need_resched())
+-				schedule();
++			cond_resched();
+ 		}
+ 	}
+ 	kthread_unuse_mm(dev->mm);
+diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
+index 293e29960c6e..937816d0867c 100644
+--- a/include/linux/livepatch.h
++++ b/include/linux/livepatch.h
+@@ -14,6 +14,8 @@
+ #include <linux/completion.h>
+ #include <linux/list.h>
+ 
++#include <linux/livepatch_sched.h>
++
+ #if IS_ENABLED(CONFIG_LIVEPATCH)
+ 
+ /* task patch states */
+diff --git a/include/linux/livepatch_sched.h b/include/linux/livepatch_sched.h
+new file mode 100644
+index 000000000000..3237bc6a5b01
+--- /dev/null
++++ b/include/linux/livepatch_sched.h
+@@ -0,0 +1,22 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++#ifndef _LINUX_LIVEPATCH_SCHED_H_
++#define _LINUX_LIVEPATCH_SCHED_H_
++
++#include <linux/static_call_types.h>
++
++#ifdef CONFIG_LIVEPATCH
++
++void __klp_sched_try_switch(void);
++DECLARE_STATIC_CALL(klp_sched_try_switch, __klp_sched_try_switch);
++
++static __always_inline void klp_sched_try_switch(void)
++{
++	//FIXME need static_call_cond_mod() ?
++	static_call_mod(klp_sched_try_switch)();
++}
++
++#else /* !CONFIG_LIVEPATCH */
++static inline void klp_sched_try_switch(void) {}
++#endif /* CONFIG_LIVEPATCH */
++
++#endif /* _LINUX_LIVEPATCH_SCHED_H_ */
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 4df2b3e76b30..a7acf9ae9b90 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -36,6 +36,7 @@
+ #include <linux/seqlock.h>
+ #include <linux/kcsan.h>
+ #include <linux/rv.h>
++#include <linux/livepatch_sched.h>
+ #include <asm/kmap_size.h>
+ 
+ /* task_struct member predeclarations (sorted alphabetically): */
+@@ -2077,11 +2078,15 @@ static __always_inline int _cond_resched(void)
+ 	return static_call_mod(cond_resched)();
+ }
+ 
++void sched_dynamic_klp_enable(void);
++void sched_dynamic_klp_disable(void);
++
+ #elif defined(CONFIG_PREEMPT_DYNAMIC) && defined(CONFIG_HAVE_PREEMPT_DYNAMIC_KEY)
+ extern int dynamic_cond_resched(void);
+ 
+ static __always_inline int _cond_resched(void)
+ {
++	klp_sched_try_switch();
+ 	return dynamic_cond_resched();
+ }
+ 
+@@ -2089,6 +2094,7 @@ static __always_inline int _cond_resched(void)
+ 
+ static inline int _cond_resched(void)
+ {
++	klp_sched_try_switch();
+ 	return __cond_resched();
+ }
+ 
+@@ -2096,7 +2102,10 @@ static inline int _cond_resched(void)
+ 
+ #else
+ 
+-static inline int _cond_resched(void) { return 0; }
++static inline int _cond_resched(void) {
++	klp_sched_try_switch();
++	return 0;
++}
+ 
+ #endif /* !defined(CONFIG_PREEMPTION) || defined(CONFIG_PREEMPT_DYNAMIC) */
+ 
+diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+index f1b25ec581e0..3cc4e0a24dc6 100644
+--- a/kernel/livepatch/transition.c
++++ b/kernel/livepatch/transition.c
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/cpu.h>
+ #include <linux/stacktrace.h>
++#include <linux/static_call.h>
+ #include "core.h"
+ #include "patch.h"
+ #include "transition.h"
+@@ -24,6 +25,9 @@ static int klp_target_state = KLP_UNDEFINED;
+ 
+ static unsigned int klp_signals_cnt;
+ 
++DEFINE_STATIC_CALL_NULL(klp_sched_try_switch, __klp_sched_try_switch);
++EXPORT_STATIC_CALL_TRAMP(klp_sched_try_switch);
++
+ /*
+  * This work can be performed periodically to finish patching or unpatching any
+  * "straggler" tasks which failed to transition in the first attempt.
+@@ -61,6 +65,28 @@ static void klp_synchronize_transition(void)
+ 	schedule_on_each_cpu(klp_sync);
+ }
+ 
++/*
++ * Enable the klp hooks in cond_resched() while livepatching is in progress.
++ * This helps CPU-bound kthreads get patched.
++ */
++static void klp_sched_hook_enable(void)
++{
++#if defined(CONFIG_PREEMPT_DYNAMIC) && defined(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)
++	sched_dynamic_klp_enable();
++#else
++	static_call_update(klp_sched_try_switch, __klp_sched_try_switch);
++#endif
++}
++
++static void klp_sched_hook_disable(void)
++{
++#if defined(CONFIG_PREEMPT_DYNAMIC) && defined(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)
++	sched_dynamic_klp_disable();
++#else
++	static_call_update(klp_sched_try_switch, NULL);
++#endif
++}
++
+ /*
+  * The transition to the target patch state is complete.  Clean up the data
+  * structures.
+@@ -76,6 +102,8 @@ static void klp_complete_transition(void)
+ 		 klp_transition_patch->mod->name,
+ 		 klp_target_state == KLP_PATCHED ? "patching" : "unpatching");
+ 
++	klp_sched_hook_disable();
++
+ 	if (klp_transition_patch->replace && klp_target_state == KLP_PATCHED) {
+ 		klp_unpatch_replaced_patches(klp_transition_patch);
+ 		klp_discard_nops(klp_transition_patch);
+@@ -307,7 +335,11 @@ static bool klp_try_switch_task(struct task_struct *task)
+ 	 * functions.  If all goes well, switch the task to the target patch
+ 	 * state.
+ 	 */
+-	ret = task_call_func(task, klp_check_and_switch_task, &old_name);
++	if (task == current)
++		ret = klp_check_and_switch_task(current, &old_name);
++	else
++		ret = task_call_func(task, klp_check_and_switch_task, &old_name);
++
+ 	switch (ret) {
+ 	case 0:		/* success */
+ 		break;
+@@ -334,6 +366,15 @@ static bool klp_try_switch_task(struct task_struct *task)
+ 	return !ret;
+ }
+ 
++void __klp_sched_try_switch(void)
++{
++	if (likely(!klp_patch_pending(current)))
++		return;
++
++	//FIXME locking
++	klp_try_switch_task(current);
++}
++
+ /*
+  * Sends a fake signal to all non-kthread tasks with TIF_PATCH_PENDING set.
+  * Kthreads with TIF_PATCH_PENDING set are woken up.
+@@ -492,6 +533,8 @@ void klp_start_transition(void)
+ 			set_tsk_thread_flag(task, TIF_PATCH_PENDING);
+ 	}
+ 
++	klp_sched_hook_enable();
++
+ 	klp_signals_cnt = 0;
+ }
+ 
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 3a0ef2fefbd5..4fbf70b05576 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -8648,13 +8648,16 @@ int sched_dynamic_mode(const char *str)
+ #error "Unsupported PREEMPT_DYNAMIC mechanism"
+ #endif
+ 
++static bool klp_override;
++
+ void sched_dynamic_update(int mode)
+ {
+ 	/*
+ 	 * Avoid {NONE,VOLUNTARY} -> FULL transitions from ever ending up in
+ 	 * the ZERO state, which is invalid.
+ 	 */
+-	preempt_dynamic_enable(cond_resched);
++	if (!klp_override)
++		preempt_dynamic_enable(cond_resched);
+ 	preempt_dynamic_enable(might_resched);
+ 	preempt_dynamic_enable(preempt_schedule);
+ 	preempt_dynamic_enable(preempt_schedule_notrace);
+@@ -8662,16 +8665,19 @@ void sched_dynamic_update(int mode)
+ 
+ 	switch (mode) {
+ 	case preempt_dynamic_none:
+-		preempt_dynamic_enable(cond_resched);
++		if (!klp_override)
++			preempt_dynamic_enable(cond_resched);
+ 		preempt_dynamic_disable(might_resched);
+ 		preempt_dynamic_disable(preempt_schedule);
+ 		preempt_dynamic_disable(preempt_schedule_notrace);
+ 		preempt_dynamic_disable(irqentry_exit_cond_resched);
++		//FIXME avoid printk for klp restore
+ 		pr_info("Dynamic Preempt: none\n");
+ 		break;
+ 
+ 	case preempt_dynamic_voluntary:
+-		preempt_dynamic_enable(cond_resched);
++		if (!klp_override)
++			preempt_dynamic_enable(cond_resched);
+ 		preempt_dynamic_enable(might_resched);
+ 		preempt_dynamic_disable(preempt_schedule);
+ 		preempt_dynamic_disable(preempt_schedule_notrace);
+@@ -8680,7 +8686,8 @@ void sched_dynamic_update(int mode)
+ 		break;
+ 
+ 	case preempt_dynamic_full:
+-		preempt_dynamic_disable(cond_resched);
++		if (!klp_override)
++			preempt_dynamic_disable(cond_resched);
+ 		preempt_dynamic_disable(might_resched);
+ 		preempt_dynamic_enable(preempt_schedule);
+ 		preempt_dynamic_enable(preempt_schedule_notrace);
+@@ -8692,6 +8699,28 @@ void sched_dynamic_update(int mode)
+ 	preempt_dynamic_mode = mode;
+ }
+ 
++#ifdef CONFIG_HAVE_PREEMPT_DYNAMIC_CALL
++static int klp_cond_resched(void)
++{
++	__klp_sched_try_switch();
++	return __cond_resched();
++}
++
++void sched_dynamic_klp_enable(void)
++{
++	//FIXME locking
++	klp_override = true;
++	static_call_update(cond_resched, klp_cond_resched);
++}
++
++void sched_dynamic_klp_disable(void)
++{
++	//FIXME locking
++	klp_override = false;
++	sched_dynamic_update(preempt_dynamic_mode);
++}
++#endif /* CONFIG_HAVE_PREEMPT_DYNAMIC_CALL*/
++
+ static int __init setup_preempt_mode(char *str)
+ {
+ 	int mode = sched_dynamic_mode(str);
