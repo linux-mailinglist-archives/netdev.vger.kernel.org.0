@@ -2,74 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B126681643
-	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 17:25:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF7ED681646
+	for <lists+netdev@lfdr.de>; Mon, 30 Jan 2023 17:25:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236468AbjA3QZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 11:25:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57318 "EHLO
+        id S236652AbjA3QZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 11:25:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237048AbjA3QZB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 11:25:01 -0500
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E360C3A853
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 08:24:59 -0800 (PST)
-Received: by mail-il1-x134.google.com with SMTP id i6so1457240ilq.8
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 08:24:59 -0800 (PST)
+        with ESMTP id S235891AbjA3QZh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 11:25:37 -0500
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DF523B0C5;
+        Mon, 30 Jan 2023 08:25:36 -0800 (PST)
+Received: by mail-qt1-x829.google.com with SMTP id o5so10513839qtr.11;
+        Mon, 30 Jan 2023 08:25:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Ya3wnMwrvg6taBiNfREM8J274pCjXCVFQeiXqbJA7+g=;
-        b=V02BEAtbrMg6bxiPKWtAttJPxQhFx6Ob0vV4NjPELuMRkspfmXOmhgTRTz0qCJ93cx
-         cmuw6ghW6RciHIjfCR8RvBgBKKjJ9xzJjoleq3abf/0C1yW+8/qQG5OHPy6vNYxrKVm7
-         duuXvUM/bMiqbpeRT6znfjcS5me3WYoN8MDSo=
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=t1Lofa+1gMMiJHccJk+sMJ3ZPMPxoWE/XN7foApWXHM=;
+        b=S+OEVHB7eC+gLbOGk0sGAq4K2qzCssrIdv3u+QqZ1qkgk1BhHfGpTSAlJQmFOsBcBX
+         wlkOTkHC8Uu0v0bJZeQMgSIsnPAWtdELKPm51LspyPOKjdQbYijDCChAwkEt75jPGaST
+         OEz2SmDtQ6M3QQ1kGHFLzVBTxkYUYGpvhjCcqZJsUxTLyYysRALQ3JBhTKd0bdHROIBB
+         WlVeovtQMgs9IviXRVX3Ok++rg1LUFgnwO8aUGvpQsTUx1Lzi7FbSE4z2X0L8PVSkadg
+         xBsPEuaDREBoAnIm3qPHxf70zjwY4zlEQTJKLMlW2ilSZzlRehwT3+jE2HWNUbJn0Zpx
+         hjiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ya3wnMwrvg6taBiNfREM8J274pCjXCVFQeiXqbJA7+g=;
-        b=n6w6JS0uq11E6XLpchEPQBsnREJr06X1LsC9Q4zTFNEayeAxsTtWugLvqQwH48shPW
-         33ci6uvLlDL1+YBauKL09TlnSzwuv4C/MEFpz3Qj/ByAQNVIZdArFGbluolk8+KYYqW2
-         hHPg+jxE0X3nMt1W5zau+9EJuulJqSi2Rey/VB0PJsmvBwWdxPip9wuzQiz6jJlIl74w
-         QZgoHecyYr9eI7LIbdH/46CqyVp4P7skvYOgtFCh3x+EN4HHKhJZZjIhlFVSWxBssmle
-         i5pQdCRgIgc2hL452/CafbCAf96qRIir4AYCV4o0y19nJWmM/dDwJcE41yJYCgceuvYF
-         /EOg==
-X-Gm-Message-State: AFqh2kpJNGeJuPWRZDClB2ippGBH9THKyMw7xmriRE+K5dF0BKKHXjES
-        N9tqoleo0hwm4T3U1jnzfUor/w==
-X-Google-Smtp-Source: AMrXdXvK65fGYKTVgnNrq5WOSzPoOU6X5vLkyU5Mt7/T3zvd6okTMkIKVIS8y5Z3ocuGCG6rdy1PFw==
-X-Received: by 2002:a92:2a07:0:b0:30c:1dda:42dd with SMTP id r7-20020a922a07000000b0030c1dda42ddmr7224521ile.1.1675095898633;
-        Mon, 30 Jan 2023 08:24:58 -0800 (PST)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id b7-20020a05663805a700b003afc548c3cdsm415088jar.166.2023.01.30.08.24.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Jan 2023 08:24:58 -0800 (PST)
-Message-ID: <b054e29d-1a24-de64-43af-9e44d8f16c3e@linuxfoundation.org>
-Date:   Mon, 30 Jan 2023 09:24:57 -0700
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=t1Lofa+1gMMiJHccJk+sMJ3ZPMPxoWE/XN7foApWXHM=;
+        b=M7suXrWamC1bcpbcJgYYCaGIMfZ6OcZEyF5eqaSulwmevPwPmVuQAQRo/9z/AnM7mS
+         PI3SOhrI7BGx/T3wmpOWN7cJ6czqe/CWnzhAD2X7+UzcwxyIOjXSR9y6eIIT9NZ4Ah2O
+         oXQYWBxRjFYQsPHvmMD0r8ww7ChLfLatu3KaejY/DBFHs2Bb5MMI4ZufOfJu/DnFj+Xe
+         fKt0oD9E2eaJJD/wZ7eIbEAEnfw9nF9jVpEVpWGJoCRpP4TG53MOjRfhtzXL4lpo+1in
+         CafZ9gefqiyABJ1D77PMcGqoV7zqqEFqttqi//JkbLUmCKw91Ww/OZgc14z0wGxUPBwd
+         4MSw==
+X-Gm-Message-State: AFqh2krEC1uFbJev7nDUaqaCxy2H7EiqFT189HublyXgEN5f0NRwg8Ps
+        XZBRrqoY2+R5ZYtZotiCQM1j5E1M8qP6Dw==
+X-Google-Smtp-Source: AMrXdXvYFJNieNtdvtaGOzfmmibEXFTe9uKNy5wmYBXatcz73lwjpQDR0yoqrR7GCk5ZZf4f1AopRA==
+X-Received: by 2002:ac8:70da:0:b0:39c:da21:6bb3 with SMTP id g26-20020ac870da000000b0039cda216bb3mr72862066qtp.56.1675095935109;
+        Mon, 30 Jan 2023 08:25:35 -0800 (PST)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id s39-20020a05622a1aa700b003a7e38055c9sm8298660qtc.63.2023.01.30.08.25.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Jan 2023 08:25:34 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>
+Subject: [PATCH net] sctp: do not check hb_timer.expires when resetting hb_timer
+Date:   Mon, 30 Jan 2023 11:25:33 -0500
+Message-Id: <d958c06985713ec84049a2d5664879802710179a.1675095933.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH 17/34] selftests: net: Fix incorrect kernel headers search
- path
-Content-Language: en-US
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Networking <netdev@vger.kernel.org>
-References: <20230127135755.79929-1-mathieu.desnoyers@efficios.com>
- <20230127135755.79929-18-mathieu.desnoyers@efficios.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-In-Reply-To: <20230127135755.79929-18-mathieu.desnoyers@efficios.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -78,31 +71,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/27/23 06:57, Mathieu Desnoyers wrote:
-> Use $(KHDR_INCLUDES) as lookup path for kernel headers. This prevents
-> building against kernel headers from the build environment in scenarios
-> where kernel headers are installed into a specific output directory
-> (O=...).
-> 
-> Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> Cc: Shuah Khan <shuah@kernel.org>
-> Cc: linux-kselftest@vger.kernel.org
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: <stable@vger.kernel.org>    [5.18+]
-> ---
->   tools/testing/selftests/net/Makefile             | 2 +-
->   tools/testing/selftests/net/bpf/Makefile         | 2 +-
->   tools/testing/selftests/net/mptcp/Makefile       | 2 +-
->   tools/testing/selftests/net/openvswitch/Makefile | 2 +-
->   4 files changed, 4 insertions(+), 4 deletions(-)
-> 
+It tries to avoid the frequently hb_timer refresh in commit ba6f5e33bdbb
+("sctp: avoid refreshing heartbeat timer too often"), and it only allows
+mod_timer when the new expires is after hb_timer.expires. It means even
+a much shorter interval for hb timer gets applied, it will have to wait
+until the current hb timer to time out.
 
-Adding net maintainers:
+In sctp_do_8_2_transport_strike(), when a transport enters PF state, it
+expects to update the hb timer to resend a heartbeat every rto after
+calling sctp_transport_reset_hb_timer(), which will not work as the
+change mentioned above.
 
-Would you me to take this patch through kselftest tree? If you
-decide to take this through yours:
+The frequently hb_timer refresh was caused by sctp_transport_reset_timers()
+called in sctp_outq_flush() and it was already removed in the commit above.
+So we don't have to check hb_timer.expires when resetting hb_timer as it is
+now not called very often.
 
-Acked-by: Shuah Khan <skhan@linuxfoundation.org>
+Fixes: ba6f5e33bdbb ("sctp: avoid refreshing heartbeat timer too often")
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/sctp/transport.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-thanks,
--- Shuah
+diff --git a/net/sctp/transport.c b/net/sctp/transport.c
+index ca1eba95c293..2f66a2006517 100644
+--- a/net/sctp/transport.c
++++ b/net/sctp/transport.c
+@@ -196,9 +196,7 @@ void sctp_transport_reset_hb_timer(struct sctp_transport *transport)
+ 
+ 	/* When a data chunk is sent, reset the heartbeat interval.  */
+ 	expires = jiffies + sctp_transport_timeout(transport);
+-	if ((time_before(transport->hb_timer.expires, expires) ||
+-	     !timer_pending(&transport->hb_timer)) &&
+-	    !mod_timer(&transport->hb_timer,
++	if (!mod_timer(&transport->hb_timer,
+ 		       expires + get_random_u32_below(transport->rto)))
+ 		sctp_transport_hold(transport);
+ }
+-- 
+2.31.1
+
