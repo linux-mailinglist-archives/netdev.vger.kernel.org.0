@@ -2,70 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA7FC682415
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 06:36:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A12868241E
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 06:46:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230185AbjAaFgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 00:36:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43900 "EHLO
+        id S230043AbjAaFqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 00:46:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229686AbjAaFgL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 00:36:11 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 802E23C05;
-        Mon, 30 Jan 2023 21:36:09 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id g9so7404474pfk.13;
-        Mon, 30 Jan 2023 21:36:09 -0800 (PST)
+        with ESMTP id S229608AbjAaFqj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 00:46:39 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 917702BF28
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 21:46:37 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id r2so13140179wrv.7
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 21:46:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=RTGwsFNaAB17iZZpmtBmv1cFUZdLw6nGtLAzTAY4jEk=;
-        b=XgXgjLkexfswJBINO5ySj+qasplIFcKElJsKZRrsr6Rd7wXby2VsaQjE81XLX7gvZQ
-         U7a+wZeaOH/DoeBkAJ1yhYezdMHm+gGslt4olFrg+UPH2XvCnkNvR9+TDeDV8SCdxu2p
-         SPPskS+5PC9/QDd5yC7cV7mQJKqvhxg5OBoyeNxQb/Kol3VFmWSepUfKWU8ERrmvYN8h
-         6/Z5Pur8+04Gh5vPvNUlza7A9GQPZPYPe4E6R9PafGfMLQBTQDk1XHezy5D9jk1WUxKK
-         vw+d+4KWB1aWyrsEKR9uLIsEYR88O8jf9RxkXpfwaHlI33xWuuqvZluOhRqEARn9BE1w
-         0UpA==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=VYLHgOri37gs3oD/KfcmsSJ+vBk/cMS1/JvuOM2x2oA=;
+        b=OH4Tki3AE8P3ulf0ZysLHBblwuVq6X85EHDzZaq+9ufEo6pQ+zvnPRGRPBX3zMBFU+
+         sFjobhnErYSRHpAPbCO1eHm8KVbjbO+nia5TyNCjbETBiLDwFc3yLAogXrI4o2SddARB
+         AYCLjyQ5TvfYLpI3pcogN4onKSzvSdBVecsqNF7ZAYJ/ciw+QJBjZSM+nYFvOdjSD5c7
+         ZONnE1mCVQQgusgQuK4brwj6FuGKxrF+ivo3NhV3XKa6PWvpuwGJ9J4H4r/f2Wd+uPMo
+         ZyGYdtriR8nJYvbI6l3/5NuXEg0L3YyxK8WXC+wIat0JPo0eCeDhs9PKQ1n54uroI4Pj
+         3geQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RTGwsFNaAB17iZZpmtBmv1cFUZdLw6nGtLAzTAY4jEk=;
-        b=E/WiaIS2pKQJVoHcdKnUXQ19BoepPkasmGWdzKqTwhmHEKZ7jql1jftbUhXc3uDjbk
-         amQ1LbmJCDoGbTZNzCZxV1CfWzDZ1hTMah+3VtfSoV1YFIUmpeoRJKQf7LyG79XNaE9t
-         wKpPfx9/Z2VTdqk8aSjHb0+inyWTsVlGu8akzeermfcdmpkLntsS8DNhY5d7X+Lxxp4B
-         u9sJILZXZWlQkbj8/xHQmyLXGj6SfCxgv2/hN5+K4Q5L4g6GvqcQEO4TL9pq+FInRUxS
-         wMD6q11WTlPFmWOVkn333EPs0DMmcjSWC/0rEbzPcOcWQKtg2HoHs9OIUZN7ny1CyfLO
-         VEvA==
-X-Gm-Message-State: AO0yUKWD8FC5SKRXCsg85QgfEW0csz+MsjF0B3cYTtRkAHsbkfi93I+k
-        ugGBFDQR5iFo6Chv0XyjzsKRn3hDNo8=
-X-Google-Smtp-Source: AK7set/hQnEMwVEBXboO86PRdDn7MkuLwenMY2ERX3xfY+ajff49K7L8PXxjLVSIsofR+AJnOwxbEw==
-X-Received: by 2002:a05:6a00:d5d:b0:593:6a1f:3618 with SMTP id n29-20020a056a000d5d00b005936a1f3618mr11035562pfv.34.1675143368778;
-        Mon, 30 Jan 2023 21:36:08 -0800 (PST)
-Received: from macbook-pro-6.dhcp.thefacebook.com ([2620:10d:c090:400::5:a52d])
-        by smtp.gmail.com with ESMTPSA id b15-20020aa7870f000000b0058119caa82csm8350473pfo.205.2023.01.30.21.36.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Jan 2023 21:36:08 -0800 (PST)
-Date:   Mon, 30 Jan 2023 21:36:05 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Joanne Koong <joannelkoong@gmail.com>
-Cc:     bpf@vger.kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@kernel.org, ast@kernel.org, netdev@vger.kernel.org,
-        memxor@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH v9 bpf-next 3/5] bpf: Add skb dynptrs
-Message-ID: <20230131053605.g7o75yylku6nusnp@macbook-pro-6.dhcp.thefacebook.com>
-References: <20230127191703.3864860-1-joannelkoong@gmail.com>
- <20230127191703.3864860-4-joannelkoong@gmail.com>
- <20230129233928.f3wf6dd6ep75w4vz@MacBook-Pro-6.local>
- <CAJnrk1ap0dsdEzR31x0=9hTaA=4xUU+yvgT8=Ur3tEUYur=Edw@mail.gmail.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=VYLHgOri37gs3oD/KfcmsSJ+vBk/cMS1/JvuOM2x2oA=;
+        b=hLkVODyY+wUlKdi9KXNfDZsbP1bWAeFmVFfx3H/e06iGtuRoMLMMa+c2v6W7sTewqJ
+         Zmn/Tp22nLDDsT8GoTWR1R8WJT1+z99HKuTjUucnSFWHzkE5eSATqSXAd7A692dcqVsW
+         hyDPLpglxS3/InLqa9mNmyLaHLCJ7mTpkJWaISTkIOFIcGl8fzRvt2RaOzDBKwr+a6t8
+         TOBbXtOHdZNxNaA2lXYOpWWLT/dG9ziOmRTkqFWJzSwJ63bm82BVFuRd+xeNdlU5ZXj2
+         XW/w/O8SB3a/W19yXpkntDDJ4qS/btgBT81sAiMh0Q7+qRqRCDhr3RKBt8LifJEdQ6IK
+         PC+g==
+X-Gm-Message-State: AO0yUKVBbvXQ+IZ01E6pn8YvOlOA9tsIY5n66nCLzFH+jtruxszj7jw7
+        v3QHWNp/Cf3XiZPfBZ7QmKQ=
+X-Google-Smtp-Source: AK7set9La7l93xVmJV2uraMT8cbu7QI6p/9UsdJgzB8ewnhLNn5WUKKtefs+sbJXSETzKlrgaF6QgQ==
+X-Received: by 2002:a5d:58e9:0:b0:2bf:b65f:d144 with SMTP id f9-20020a5d58e9000000b002bfb65fd144mr21026120wrd.50.1675143995994;
+        Mon, 30 Jan 2023 21:46:35 -0800 (PST)
+Received: from [192.168.0.106] ([77.126.163.156])
+        by smtp.gmail.com with ESMTPSA id k4-20020a5d66c4000000b002bdc19f8e8asm13710647wrw.79.2023.01.30.21.46.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 30 Jan 2023 21:46:35 -0800 (PST)
+Message-ID: <0960cc04-5fe9-4b02-2be9-76c40c89570f@gmail.com>
+Date:   Tue, 31 Jan 2023 07:46:32 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJnrk1ap0dsdEzR31x0=9hTaA=4xUU+yvgT8=Ur3tEUYur=Edw@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH net v2 1/2] net/mlx5e: XDP, Allow growing tail for XDP
+ multi buffer
+Content-Language: en-US
+To:     Maxim Mikityanskiy <maxtram95@gmail.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Gal Pressman <gal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+References: <20230130201328.132063-1-maxtram95@gmail.com>
+ <20230130201328.132063-2-maxtram95@gmail.com>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+In-Reply-To: <20230130201328.132063-2-maxtram95@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -74,247 +80,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 04:44:12PM -0800, Joanne Koong wrote:
-> On Sun, Jan 29, 2023 at 3:39 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Fri, Jan 27, 2023 at 11:17:01AM -0800, Joanne Koong wrote:
-> > > Add skb dynptrs, which are dynptrs whose underlying pointer points
-> > > to a skb. The dynptr acts on skb data. skb dynptrs have two main
-> > > benefits. One is that they allow operations on sizes that are not
-> > > statically known at compile-time (eg variable-sized accesses).
-> > > Another is that parsing the packet data through dynptrs (instead of
-> > > through direct access of skb->data and skb->data_end) can be more
-> > > ergonomic and less brittle (eg does not need manual if checking for
-> > > being within bounds of data_end).
-> > >
-> > > For bpf prog types that don't support writes on skb data, the dynptr is
-> > > read-only (bpf_dynptr_write() will return an error and bpf_dynptr_data()
-> > > will return a data slice that is read-only where any writes to it will
-> > > be rejected by the verifier).
-> > >
-> > > For reads and writes through the bpf_dynptr_read() and bpf_dynptr_write()
-> > > interfaces, reading and writing from/to data in the head as well as from/to
-> > > non-linear paged buffers is supported. For data slices (through the
-> > > bpf_dynptr_data() interface), if the data is in a paged buffer, the user
-> > > must first call bpf_skb_pull_data() to pull the data into the linear
-> > > portion.
-> >
-> > Looks like there is an assumption in parts of this patch that
-> > linear part of skb is always writeable. That's not the case.
-> > See if (ops->gen_prologue || env->seen_direct_write) in convert_ctx_accesses().
-> > For TC progs it calls bpf_unclone_prologue() which adds hidden
-> > bpf_skb_pull_data() in the beginning of the prog to make it writeable.
+
+
+On 30/01/2023 22:13, Maxim Mikityanskiy wrote:
+> The cited commits missed passing frag_size to __xdp_rxq_info_reg, which
+> is required by bpf_xdp_adjust_tail to support growing the tail pointer
+> in fragmented packets. Pass the missing parameter when the current RQ
+> mode allows XDP multi buffer.
 > 
-> I think we can make this assumption? For writable progs (referenced in
-> the may_access_direct_pkt_data() function), all of them have a
-> gen_prologue that unclones the buffer (eg tc_cls_act, lwt_xmit, sk_skb
-> progs) or their linear portion is okay to write into by default (eg
-> xdp, sk_msg, cg_sockopt progs).
-
-but the patch was preserving seen_direct_write in some cases.
-I'm still confused.
-
-> >
-> > > Any bpf_dynptr_write() automatically invalidates any prior data slices
-> > > to the skb dynptr. This is because a bpf_dynptr_write() may be writing
-> > > to data in a paged buffer, so it will need to pull the buffer first into
-> > > the head. The reason it needs to be pulled instead of writing directly to
-> > > the paged buffers is because they may be cloned (only the head of the skb
-> > > is by default uncloned). As such, any bpf_dynptr_write() will
-> > > automatically have its prior data slices invalidated, even if the write
-> > > is to data in the skb head (the verifier has no way of differentiating
-> > > whether the write is to the head or paged buffers during program load
-> > > time).
-> >
-> > Could you explain the workflow how bpf_dynptr_write() invalidates other
-> > pkt pointers ?
-> > I expected bpf_dynptr_write() to be in bpf_helper_changes_pkt_data().
-> > Looks like bpf_dynptr_write() calls bpf_skb_store_bytes() underneath,
-> > but that doesn't help the verifier.
+> Fixes: ea5d49bdae8b ("net/mlx5e: Add XDP multi buffer support to the non-linear legacy RQ")
+> Fixes: 9cb9482ef10e ("net/mlx5e: Use fragments of the same size in non-linear legacy RQ with XDP")
+> Signed-off-by: Maxim Mikityanskiy <maxtram95@gmail.com>
+> Cc: Tariq Toukan <tariqt@nvidia.com>
+> ---
+>   drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 9 +++++++--
+>   drivers/net/ethernet/mellanox/mlx5/core/en/params.h | 1 +
+>   drivers/net/ethernet/mellanox/mlx5/core/en_main.c   | 7 ++++---
+>   3 files changed, 12 insertions(+), 5 deletions(-)
 > 
-> In the verifier in check_helper_call(), for the BPF_FUNC_dynptr_write
-> case (line 8236) the "changes_data" variable gets set to true if the
-> dynptr is an skb type. At the end of check_helper_call() on line 8474,
-> since "changes_data" is true, clear_all_pkt_pointer() gets called,
-> which invalidates the other packet pointers.
 
-Ahh. I see. Thanks for explaining.
+Patch is much cleaner now.
 
-> >
-> > > Please note as well that any other helper calls that change the
-> > > underlying packet buffer (eg bpf_skb_pull_data()) invalidates any data
-> > > slices of the skb dynptr as well. The stack trace for this is
-> > > check_helper_call() -> clear_all_pkt_pointers() ->
-> > > __clear_all_pkt_pointers() -> mark_reg_unknown().
-> >
-> > __clear_all_pkt_pointers isn't present in the tree. Typo ?
-> 
-> I'll update this message, clear_all_pkt_pointers() and
-> __clear_all_pkt_pointers() were combined in a previous commit.
-> 
-> >
-> > >
-> > > For examples of how skb dynptrs can be used, please see the attached
-> > > selftests.
-> > >
-> > > Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
-> > > ---
-> > >  include/linux/bpf.h            |  82 +++++++++------
-> > >  include/linux/filter.h         |  18 ++++
-> > >  include/uapi/linux/bpf.h       |  37 +++++--
-> > >  kernel/bpf/btf.c               |  18 ++++
-> > >  kernel/bpf/helpers.c           |  95 ++++++++++++++---
-> > >  kernel/bpf/verifier.c          | 185 ++++++++++++++++++++++++++-------
-> > >  net/core/filter.c              |  60 ++++++++++-
-> > >  tools/include/uapi/linux/bpf.h |  37 +++++--
-> > >  8 files changed, 432 insertions(+), 100 deletions(-)
-> > >
-> > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > > index 14a0264fac57..1ac061b64582 100644
-> [...]
-> > > @@ -8243,6 +8316,28 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
-> > >               mark_reg_known_zero(env, regs, BPF_REG_0);
-> > >               regs[BPF_REG_0].type = PTR_TO_MEM | ret_flag;
-> > >               regs[BPF_REG_0].mem_size = meta.mem_size;
-> > > +             if (func_id == BPF_FUNC_dynptr_data &&
-> > > +                 dynptr_type == BPF_DYNPTR_TYPE_SKB) {
-> > > +                     bool seen_direct_write = env->seen_direct_write;
-> > > +
-> > > +                     regs[BPF_REG_0].type |= DYNPTR_TYPE_SKB;
-> > > +                     if (!may_access_direct_pkt_data(env, NULL, BPF_WRITE))
-> > > +                             regs[BPF_REG_0].type |= MEM_RDONLY;
-> > > +                     else
-> > > +                             /*
-> > > +                              * Calling may_access_direct_pkt_data() will set
-> > > +                              * env->seen_direct_write to true if the skb is
-> > > +                              * writable. As an optimization, we can ignore
-> > > +                              * setting env->seen_direct_write.
-> > > +                              *
-> > > +                              * env->seen_direct_write is used by skb
-> > > +                              * programs to determine whether the skb's page
-> > > +                              * buffers should be cloned. Since data slice
-> > > +                              * writes would only be to the head, we can skip
-> > > +                              * this.
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+> index 4ad19c981294..151585302cd1 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+> @@ -662,7 +662,8 @@ static int mlx5e_max_nonlinear_mtu(int first_frag_size, int frag_size, bool xdp)
+>   static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
+>   				     struct mlx5e_params *params,
+>   				     struct mlx5e_xsk_param *xsk,
+> -				     struct mlx5e_rq_frags_info *info)
+> +				     struct mlx5e_rq_frags_info *info,
+> +				     u32 *xdp_frag_size)
 
-I was talking about above comment. It reads as 'write to the head are allowed'.
-But they're not. seen_direct_write is needed to do hidden pull.
+Even when returning success, this function does not always provide value 
+for xdp_frag_size.
 
-> > > +                              */
-> > > +                             env->seen_direct_write = seen_direct_write;
-> >
-> > This looks incorrect. skb head might not be writeable.
-> >
-> > > +             }
-> > >               break;
-> > >       case RET_PTR_TO_MEM_OR_BTF_ID:
-> > >       {
-> > > @@ -8649,6 +8744,7 @@ enum special_kfunc_type {
-> > >       KF_bpf_list_pop_back,
-> > >       KF_bpf_cast_to_kern_ctx,
-> > >       KF_bpf_rdonly_cast,
-> > > +     KF_bpf_dynptr_from_skb,
-> > >       KF_bpf_rcu_read_lock,
-> > >       KF_bpf_rcu_read_unlock,
-> > >  };
-> > > @@ -8662,6 +8758,7 @@ BTF_ID(func, bpf_list_pop_front)
-> > >  BTF_ID(func, bpf_list_pop_back)
-> > >  BTF_ID(func, bpf_cast_to_kern_ctx)
-> > >  BTF_ID(func, bpf_rdonly_cast)
-> > > +BTF_ID(func, bpf_dynptr_from_skb)
-> > >  BTF_SET_END(special_kfunc_set)
-> > >
-> > >  BTF_ID_LIST(special_kfunc_list)
-> > > @@ -8673,6 +8770,7 @@ BTF_ID(func, bpf_list_pop_front)
-> > >  BTF_ID(func, bpf_list_pop_back)
-> > >  BTF_ID(func, bpf_cast_to_kern_ctx)
-> > >  BTF_ID(func, bpf_rdonly_cast)
-> > > +BTF_ID(func, bpf_dynptr_from_skb)
-> > >  BTF_ID(func, bpf_rcu_read_lock)
-> > >  BTF_ID(func, bpf_rcu_read_unlock)
-> > >
-> > > @@ -9263,17 +9361,26 @@ static int check_kfunc_args(struct bpf_verifier_env *env, struct bpf_kfunc_call_
-> > >                               return ret;
-> > >                       break;
-> > >               case KF_ARG_PTR_TO_DYNPTR:
-> > > +             {
-> > > +                     enum bpf_arg_type dynptr_arg_type = ARG_PTR_TO_DYNPTR;
-> > > +
-> > >                       if (reg->type != PTR_TO_STACK &&
-> > >                           reg->type != CONST_PTR_TO_DYNPTR) {
-> > >                               verbose(env, "arg#%d expected pointer to stack or dynptr_ptr\n", i);
-> > >                               return -EINVAL;
-> > >                       }
-> > >
-> > > -                     ret = process_dynptr_func(env, regno, insn_idx,
-> > > -                                               ARG_PTR_TO_DYNPTR | MEM_RDONLY);
-> > > +                     if (meta->func_id == special_kfunc_list[KF_bpf_dynptr_from_skb])
-> > > +                             dynptr_arg_type |= MEM_UNINIT | DYNPTR_TYPE_SKB;
-> > > +                     else
-> > > +                             dynptr_arg_type |= MEM_RDONLY;
-> > > +
-> > > +                     ret = process_dynptr_func(env, regno, insn_idx, dynptr_arg_type,
-> > > +                                               meta->func_id);
-> > >                       if (ret < 0)
-> > >                               return ret;
-> > >                       break;
-> > > +             }
-> > >               case KF_ARG_PTR_TO_LIST_HEAD:
-> > >                       if (reg->type != PTR_TO_MAP_VALUE &&
-> > >                           reg->type != (PTR_TO_BTF_ID | MEM_ALLOC)) {
-> > > @@ -15857,6 +15964,14 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
-> > >                  desc->func_id == special_kfunc_list[KF_bpf_rdonly_cast]) {
-> > >               insn_buf[0] = BPF_MOV64_REG(BPF_REG_0, BPF_REG_1);
-> > >               *cnt = 1;
-> > > +     } else if (desc->func_id == special_kfunc_list[KF_bpf_dynptr_from_skb]) {
-> > > +             bool is_rdonly = !may_access_direct_pkt_data(env, NULL, BPF_WRITE);
-> > > +             struct bpf_insn addr[2] = { BPF_LD_IMM64(BPF_REG_4, is_rdonly) };
-> >
-> > Why use 16-byte insn to pass boolean in R4 ?
-> > Single 8-byte MOV would do.
-> 
-> Great, I'll change it to a 8-byte MOV
-> 
-> >
-> > > +
-> > > +             insn_buf[0] = addr[0];
-> > > +             insn_buf[1] = addr[1];
-> > > +             insn_buf[2] = *insn;
-> > > +             *cnt = 3;
-> > >       }
-> > >       return 0;
-> > >  }
-> > > diff --git a/net/core/filter.c b/net/core/filter.c
-> > > index 6da78b3d381e..ddb47126071a 100644
-> > > --- a/net/core/filter.c
-> > > +++ b/net/core/filter.c
-> > > @@ -1684,8 +1684,8 @@ static inline void bpf_pull_mac_rcsum(struct sk_buff *skb)
-> > >               skb_postpull_rcsum(skb, skb_mac_header(skb), skb->mac_len);
-> > >  }
-> > >
-> > > -BPF_CALL_5(bpf_skb_store_bytes, struct sk_buff *, skb, u32, offset,
-> > > -        const void *, from, u32, len, u64, flags)
-> > > +int __bpf_skb_store_bytes(struct sk_buff *skb, u32 offset, const void *from,
-> > > +                       u32 len, u64 flags)
-> >
-> > This change is just to be able to call __bpf_skb_store_bytes() ?
-> > If so, it's unnecessary.
-> > See:
-> > BPF_CALL_4(sk_reuseport_load_bytes,
-> >            const struct sk_reuseport_kern *, reuse_kern, u32, offset,
-> >            void *, to, u32, len)
-> > {
-> >         return ____bpf_skb_load_bytes(reuse_kern->skb, offset, to, len);
-> > }
-> >
-> 
-> There was prior feedback [0] that using four underscores to call a
-> helper function is confusing and makes it ungreppable
+It means that the responsibility of initializing this param is on the 
+caller side. But then it gets no indication whether the function 
+overwrote it or not. It works, but I prefer a different caller/callee 
+communication.
 
-There are plenty of ungreppable funcs in the kernel.
-Try finding where folio_test_dirty() is defined.
-mm subsystem is full of such 'features'.
-Not friendly for casual kernel code reader, but useful.
+I suggest that the function should provide value for xdp_frag_size on 
+every successful flow. Suggestion:
 
-Since quadruple underscore is already used in the code base
-I see no reason to sacrifice bpf_skb_load_bytes performance with extra call.
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+@@ -782,6 +782,9 @@ static int mlx5e_build_rq_frags_info(struct 
+mlx5_core_dev *mdev,
+
+         info->log_num_frags = order_base_2(info->num_frags);
+
++       *xdp_frag_size =
++               info->num_frags > 1 && params->xdp_prog ? PAGE_SIZE : 0;
++
+         return 0;
+  }
+
+
+>   {
+>   	u32 byte_count = MLX5E_SW2HW_MTU(params, params->sw_mtu);
+>   	int frag_size_max = DEFAULT_FRAG_SIZE;
+> @@ -737,6 +738,9 @@ static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
+>   	}
+>   	info->num_frags = i;
+>   
+> +	if (info->num_frags > 1 && params->xdp_prog)
+> +		*xdp_frag_size = PAGE_SIZE;
+> +
+>   	/* The last fragment of WQE with index 2*N may share the page with the
+>   	 * first fragment of WQE with index 2*N+1 in certain cases. If WQE 2*N+1
+>   	 * is not completed yet, WQE 2*N must not be allocated, as it's
+> @@ -917,7 +921,8 @@ int mlx5e_build_rq_param(struct mlx5_core_dev *mdev,
+>   	}
+>   	default: /* MLX5_WQ_TYPE_CYCLIC */
+>   		MLX5_SET(wq, wq, log_wq_sz, params->log_rq_mtu_frames);
+> -		err = mlx5e_build_rq_frags_info(mdev, params, xsk, &param->frags_info);
+> +		err = mlx5e_build_rq_frags_info(mdev, params, xsk, &param->frags_info,
+> +						&param->xdp_frag_size);
+>   		if (err)
+>   			return err;
+>   		ndsegs = param->frags_info.num_frags;
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
+> index c9be6eb88012..e5930fe752e5 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
+> @@ -24,6 +24,7 @@ struct mlx5e_rq_param {
+>   	u32                        rqc[MLX5_ST_SZ_DW(rqc)];
+>   	struct mlx5_wq_param       wq;
+>   	struct mlx5e_rq_frags_info frags_info;
+> +	u32                        xdp_frag_size;
+>   };
+>   
+>   struct mlx5e_sq_param {
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> index abcc614b6191..d02af93035b2 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> @@ -576,7 +576,7 @@ static void mlx5e_free_mpwqe_rq_drop_page(struct mlx5e_rq *rq)
+>   }
+>   
+>   static int mlx5e_init_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *params,
+> -			     struct mlx5e_rq *rq)
+> +			     u32 xdp_frag_size, struct mlx5e_rq *rq)
+>   {
+>   	struct mlx5_core_dev *mdev = c->mdev;
+>   	int err;
+> @@ -599,7 +599,8 @@ static int mlx5e_init_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *param
+>   	if (err)
+>   		return err;
+>   
+> -	return xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq->ix, c->napi.napi_id);
+> +	return __xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq->ix, c->napi.napi_id,
+> +				  xdp_frag_size);
+>   }
+>   
+>   static int mlx5_rq_shampo_alloc(struct mlx5_core_dev *mdev,
+> @@ -2214,7 +2215,7 @@ static int mlx5e_open_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *param
+>   {
+>   	int err;
+>   
+> -	err = mlx5e_init_rxq_rq(c, params, &c->rq);
+> +	err = mlx5e_init_rxq_rq(c, params, rq_params->xdp_frag_size, &c->rq);
+>   	if (err)
+>   		return err;
+>   
