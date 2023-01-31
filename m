@@ -2,165 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A497C682825
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 10:07:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8F7A68281F
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 10:07:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232415AbjAaJF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 04:05:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53894 "EHLO
+        id S232342AbjAaJG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 04:06:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232157AbjAaJFY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 04:05:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3DA7EFD;
-        Tue, 31 Jan 2023 01:01:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 531A46146C;
-        Tue, 31 Jan 2023 09:01:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E91B0C433D2;
-        Tue, 31 Jan 2023 09:01:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675155677;
-        bh=FxfUAfy1NrNxn5s+/Ay/JREjg2ryukTPquy/zDB8xuo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SJd8xvUJOlfRU7uq4LJguUZ6s3fpp+imgdnEzqOBwh8IbVKHsVv7NP8hbC+mr5060
-         jxwExn4RLAbFNGFwXpCsavrbYFEC33DAJXQilzeeMNxEXqG04c0R/TCDUt6r/crqN0
-         Nf5J9suSO7ZPkFo5fMA+Ll2YuEfGcxrtcjVJOPed0QhbK06eEBbUshoF7OKCMR4m3d
-         e88lhpOZ/1xEzWnqlIAywoATlNuZs+HsI5e2CrvT3CGAjX5nDFzK2tWvjcCs6R9nHB
-         ZFxl+859upfY+UDPElWvCjmkn92i5cp0qOLwuk3bBqnGe4M6IW13NLOjZ8fJouRlzY
-         j2eFtmxQxmIPw==
-Date:   Tue, 31 Jan 2023 11:01:13 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        alok.a.tiwari@oracle.com, hdanton@sina.com,
-        ilpo.jarvinen@linux.intel.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org,
-        amitkumar.karwar@nxp.com, rohit.fule@nxp.com, sherry.sun@nxp.com
-Subject: Re: [PATCH v2 3/3] Bluetooth: NXP: Add protocol support for NXP
- Bluetooth chipsets
-Message-ID: <Y9jY2TXpl0rylQW3@unreal>
-References: <20230130180504.2029440-1-neeraj.sanjaykale@nxp.com>
- <20230130180504.2029440-4-neeraj.sanjaykale@nxp.com>
+        with ESMTP id S232344AbjAaJGn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 04:06:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770A439CED
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 01:02:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675155720;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0vt2tjqxlN7/1NemGgBR2FJoG/wRT9bFNFt/hjOlWcI=;
+        b=igVTo55D+tf+/ABLMrw399riM8ZiIsVLxtBhZPQpY5nFNcCurIq5y2JS2kJny8FnJg5biw
+        tnp8SXRar+tmMI14u1JKxbLm6e1trbId2usIjoNszivDJo7LZIBfTcN8OkAzMf7sfyVGDt
+        aIr/YbxZIe+/0RoLbk+N03h0KeyXp+g=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-504-32BcMOs_OKCy4KTtxEFrlg-1; Tue, 31 Jan 2023 04:01:58 -0500
+X-MC-Unique: 32BcMOs_OKCy4KTtxEFrlg-1
+Received: by mail-qv1-f72.google.com with SMTP id p14-20020a05621421ee00b005392216783aso5756000qvj.16
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 01:01:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=0vt2tjqxlN7/1NemGgBR2FJoG/wRT9bFNFt/hjOlWcI=;
+        b=rzw5gv6FlbzSoDxCN0Fo8My9uEHiWBIesu87E/HFJSfbRngPFQdAX4h8FI8QDfYlfE
+         9u6ANnA0e5F7pxBh246MtamGHcTZizS6ehHcYM5WuWmEpM4HRbz17QowCrEyOI/rc36C
+         YEtPpvW0YEhJFRByGo9hDy/aIO3dZYescbPx1HRh1qw706m0yHDAc2ACVhrDln64q1MR
+         qePISpiezwfKBjwTykqQZllpVpioa2nwWVCSizYGGPBcYopPt7WDyQLfbCRYllI68v/m
+         b07DgEI6RoQptDOZBKO0ksM3MXjeHy5c1DjNmdPtewwykFhSCFFUC0qz4zX7ydSlRMYF
+         x1pA==
+X-Gm-Message-State: AO0yUKW9oyPJAHLjWkMgmmGYcKxPkaEHA7rBr493nwrWPgT16PjSBzLd
+        VwnnZ9ufHhAaI2+b8RWqdeNg30jnHNDKTpKPx+QCBwghWUGl6RYGGnCNz2vfAl8NWoMmxCQrdK6
+        kVRy3Bd7rzASFoyO6
+X-Received: by 2002:a0c:b282:0:b0:53a:a0b4:99e5 with SMTP id r2-20020a0cb282000000b0053aa0b499e5mr5701067qve.5.1675155718288;
+        Tue, 31 Jan 2023 01:01:58 -0800 (PST)
+X-Google-Smtp-Source: AK7set/8gyp2fjq9TftLcjH1ZOMz2/ugjeYGTj52R3CtGBrlxJBMNlEq5CYyi69gOrfXhoP9k+Q6SA==
+X-Received: by 2002:a0c:b282:0:b0:53a:a0b4:99e5 with SMTP id r2-20020a0cb282000000b0053aa0b499e5mr5701037qve.5.1675155718008;
+        Tue, 31 Jan 2023 01:01:58 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
+        by smtp.gmail.com with ESMTPSA id z16-20020ae9c110000000b0070617deb4b7sm9385834qki.134.2023.01.31.01.01.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Jan 2023 01:01:57 -0800 (PST)
+Message-ID: <949500bd10077989eb21bd41d6bb1a0de296f9d8.camel@redhat.com>
+Subject: Re: [PATCH v3 2/2] virtio_net: notify MAC address change on device
+ initialization
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Laurent Vivier <lvivier@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        virtualization@lists.linux-foundation.org,
+        Cindy Lu <lulu@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>,
+        Gautam Dawar <gautam.dawar@xilinx.com>,
+        Eugenio =?ISO-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
+        Parav Pandit <parav@nvidia.com>
+Date:   Tue, 31 Jan 2023 10:01:53 +0100
+In-Reply-To: <20230127204500.51930-3-lvivier@redhat.com>
+References: <20230127204500.51930-1-lvivier@redhat.com>
+         <20230127204500.51930-3-lvivier@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230130180504.2029440-4-neeraj.sanjaykale@nxp.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 11:35:04PM +0530, Neeraj Sanjay Kale wrote:
-> This adds a driver based on serdev driver for the NXP BT serial
-> protocol based on running H:4, which can enable the built-in
-> Bluetooth device inside a generic NXP BT chip.
-> 
-> This driver has Power Save feature that will put the chip into
-> sleep state whenever there is no activity for 2000ms, and will
-> be woken up when any activity is to be initiated.
-> 
-> This driver enables the power save feature by default by sending
-> the vendor specific commands to the chip during setup.
-> 
-> During setup, the driver is capable of validating correct chip
-> is attached to the host based on the compatibility parameter
-> from DT and chip's unique bootloader signature, and download
-> firmware.
-> 
-> Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+On Fri, 2023-01-27 at 21:45 +0100, Laurent Vivier wrote:
+> In virtnet_probe(), if the device doesn't provide a MAC address the
+> driver assigns a random one.
+> As we modify the MAC address we need to notify the device to allow it
+> to update all the related information.
+>=20
+> The problem can be seen with vDPA and mlx5_vdpa driver as it doesn't
+> assign a MAC address by default. The virtio_net device uses a random
+> MAC address (we can see it with "ip link"), but we can't ping a net
+> namespace from another one using the virtio-vdpa device because the
+> new MAC address has not been provided to the hardware:
+> RX packets are dropped since they don't go through the receive filters,
+> TX packets go through unaffected.
+>=20
+> Signed-off-by: Laurent Vivier <lvivier@redhat.com>
 > ---
-> v2: Removed conf file support and added static data for each chip based
-> on compatibility devices mentioned in DT bindings. Handled potential
-> memory leaks and null pointer dereference issues, simplified FW download
-> feature, handled byte-order and few cosmetic changes. (Ilpo Järvinen,
-> Alok Tiwari, Hillf Danton)
-> ---
->  MAINTAINERS                   |    1 +
->  drivers/bluetooth/Kconfig     |   11 +
->  drivers/bluetooth/Makefile    |    1 +
->  drivers/bluetooth/btnxpuart.c | 1145 +++++++++++++++++++++++++++++++++
->  drivers/bluetooth/btnxpuart.h |  227 +++++++
->  5 files changed, 1385 insertions(+)
->  create mode 100644 drivers/bluetooth/btnxpuart.c
->  create mode 100644 drivers/bluetooth/btnxpuart.h
-
-<...>
-
-> diff --git a/drivers/bluetooth/btnxpuart.c b/drivers/bluetooth/btnxpuart.c
-> new file mode 100644
-> index 000000000000..6e6bc5a70af2
-> --- /dev/null
-> +++ b/drivers/bluetooth/btnxpuart.c
-> @@ -0,0 +1,1145 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/*
-> + *
-> + *  NXP Bluetooth driver
-> + *  Copyright 2018-2023 NXP
-> + *
-> + *
-> + *  This program is free software; you can redistribute it and/or modify
-> + *  it under the terms of the GNU General Public License as published by
-> + *  the Free Software Foundation; either version 2 of the License, or
-> + *  (at your option) any later version.
-> + *
-> + *  This program is distributed in the hope that it will be useful,
-> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + *  GNU General Public License for more details.
-
-Please don't add license text, SPDX tag is enough.
-
-<...>
-
-> +	skb = nxp_drv_send_cmd(hdev, HCI_NXP_AUTO_SLEEP_MODE, 1, &pcmd);
+>  drivers/net/virtio_net.c | 20 ++++++++++++++++++++
+>  1 file changed, 20 insertions(+)
+>=20
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 7d700f8e545a..704a05f1c279 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -3806,6 +3806,8 @@ static int virtnet_probe(struct virtio_device *vdev=
+)
+>  		eth_hw_addr_set(dev, addr);
+>  	} else {
+>  		eth_hw_addr_random(dev);
+> +		dev_info(&vdev->dev, "Assigned random MAC address %pM\n",
+> +			 dev->dev_addr);
+>  	}
+> =20
+>  	/* Set up our device-specific information */
+> @@ -3933,6 +3935,24 @@ static int virtnet_probe(struct virtio_device *vde=
+v)
+> =20
+>  	virtio_device_ready(vdev);
+> =20
+> +	/* a random MAC address has been assigned, notify the device.
+> +	 * We don't fail probe if VIRTIO_NET_F_CTRL_MAC_ADDR is not there
+> +	 * because many devices work fine without getting MAC explicitly
+> +	 */
+> +	if (!virtio_has_feature(vdev, VIRTIO_NET_F_MAC) &&
+> +	    virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_MAC_ADDR)) {
+> +		struct scatterlist sg;
 > +
-> +	if (IS_ERR(skb)) {
-> +		bt_dev_err(hdev, "Setting Power Save mode failed (%ld)", PTR_ERR(skb));
-> +		return PTR_ERR(skb);
-> +	}
-> +
-> +	status = skb_pull_data(skb, 1);
-> +
-> +	if (status) {
+> +		sg_init_one(&sg, dev->dev_addr, dev->addr_len);
+> +		if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_MAC,
+> +					  VIRTIO_NET_CTRL_MAC_ADDR_SET, &sg)) {
+> +			pr_debug("virtio_net: setting MAC address failed\n");
+> +			rtnl_unlock();
+> +			err =3D -EINVAL;
+> +			goto free_unregister_netdev;
 
-Please don't add blank lines between function call and error checks of
-that function.
+Since the above is still dealing with device initialization, would it
+make sense moving such init step before registering the netdevice?=20
 
-> +		if (!*status)
-> +			psdata->cur_psmode = psdata->ps_mode;
-> +		else
-> +			psdata->ps_mode = psdata->cur_psmode;
-> +		if (psdata->cur_psmode == PS_MODE_ENABLE)
-> +			ps_start_timer(nxpdev);
-> +		else
-> +			ps_wakeup(nxpdev);
-> +		BT_INFO("Power Save mode response: status=%d, ps_mode=%d",
-> +			*status, psdata->cur_psmode);
-> +	}
-> +	kfree_skb(skb);
+Cheers,
 
-<...>
+Paolo
 
-> +module_serdev_device_driver(nxp_serdev_driver);
-> +
-> +MODULE_AUTHOR("Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>");
-> +MODULE_DESCRIPTION("NXP Bluetooth Serial driver v1.0 ");
-> +MODULE_VERSION("v1.0");
-
-No module versions in new code.
-
-Thanks
