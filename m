@@ -2,81 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 000B2683A79
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 00:31:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA21C683ABE
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 00:53:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230360AbjAaXbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 18:31:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33400 "EHLO
+        id S230494AbjAaXxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 18:53:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229876AbjAaXbO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 18:31:14 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723004ABC6
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 15:31:12 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id t16so20259633ybk.2
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 15:31:12 -0800 (PST)
+        with ESMTP id S229992AbjAaXxK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 18:53:10 -0500
+Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC2E1815C;
+        Tue, 31 Jan 2023 15:53:09 -0800 (PST)
+Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-15085b8a2f7so21536080fac.2;
+        Tue, 31 Jan 2023 15:53:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uZuKj3Dqn8WEeTcU/YSrHNVZVkAqLPkzNxn4NneuSWw=;
-        b=fqrh2iml8OrelG0vuxo7YcazKyilfztdMrq+1ZguRFCjB3vNJAdKsSwQOCtuUe/4+Y
-         Vhqo80xKCPA9oArEKit1KngHF0miEeh+IcKudVkPWScHFXxUxxSivp7b81a1xapVd2wl
-         mfuoD5m69wnDRyu3v4RDuXmtCB/Z+KmY8opY/MkO1bG4SW/XcfN5CMsal5GnOcPFwK5u
-         3C2IVRnP/QNBsDkvo/5YDr4tGZeDw9LXGSXIjmdPB41HqG6fJyRzfbc9n/H62VWKm1sN
-         6xMc5XD8PSO3mz2+AXwzMe520/90pCB7IJunPIVxcF2bH//qcU9/vLFnweOdVcS2pmEW
-         H0IQ==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=vYdEeqjNgoJHoM9SJT0m+2v5Gmt/A9maZs7Zf5eYT0U=;
+        b=CXfgZBjaN8iKI3nm7eBxc2m4WpogJtbLT+AgoHycgD3olULfXSwuI5j6/GiFc+jBob
+         VmUL2tKDllcVmP+K2CA7vvg2wZ8pgWhZQ9NCPjNqAmL+zoYygQdvvMS5aA+ysALBl0Ir
+         2kYQpf8bLQhF8b6euAOzPPPUgbN8bjJLUJEXBW/pCQhnKgc/u6aP3zDwfIHXEo22xUoT
+         bDaHWBfqKM1wwYwuE7T/aEGfOx3T8DGPefE270WKYN7FcFSwfmeNPYyFoK29oriJxSay
+         USjEZphJE7VRAjnw253uW3MnklxL2NtDu5vAAfR+wI2xdfwA15SrqJsubYA5m8Y2AiCY
+         yV3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=uZuKj3Dqn8WEeTcU/YSrHNVZVkAqLPkzNxn4NneuSWw=;
-        b=2bpeNF03CcDj9QoRF3EI+3mB4PJY2//m62lwONtv0uTgzP267zFwcocRMsPMVOp6jD
-         yHK55O2uGSKpqwa8JbFIx8pHaWSwO4NAuTV9tNuuAMUW8cWqNYszmy5N8vOxB0K65p5k
-         VuXt7lu5qNWgfkcaWWL+JPTlSHLPNDkEB6GEg6dN3D7vpMdFTrWhfIUf+z0bkgwmnkcs
-         QMmKDk1nZuRjdLUF+btCvHt6AZaOZ7cJsA35GZMjRGA1lflF2kLQdvZHFYfa4cY8F69J
-         Lhstwrqmx8jP/lb+tSE5Rgrzo7h8zhZHBFD/pDi79C69vNK7Sc5WPCd5cU4Aimm/XN9c
-         I11A==
-X-Gm-Message-State: AO0yUKWXMuif0bQE7LqlKEu3VqBlrHo831HiJDWkJtHkJNTU9xpuRlX5
-        zB4B9f+aupnvHCkJIySSoEmGy8ePLPw7NAc1K5O3yg==
-X-Google-Smtp-Source: AK7set+mzJ9QB4VCZdVcEapkj2Bv+GKNr1/7nxGSU6Pe+CbdJLZr32PNDu5/XJ7LhpBwXua5/nUYq3EZhCBHFhbeu4o=
-X-Received: by 2002:a25:ae06:0:b0:803:a6eb:f94b with SMTP id
- a6-20020a25ae06000000b00803a6ebf94bmr110245ybj.509.1675207871713; Tue, 31 Jan
- 2023 15:31:11 -0800 (PST)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vYdEeqjNgoJHoM9SJT0m+2v5Gmt/A9maZs7Zf5eYT0U=;
+        b=D1l+hragq5mQqffvXdZJ3k+IyveYt1zpRvTyJpFA4z7IWUcRU2njDnfKVgPDSJd7U4
+         S+d0dBuFch7Z/0bbBxG4NVwJl5Hnr1ZchMXPkEvW7PDGyywOwCaeVpwZf8q9qMvUintA
+         fuSY1SgRZLkUiaEqWwt4BDPCc2sFKB5uG5pCggyGWwGSU2LPRP/01ZpJQtOEkvlDKoij
+         EHaAchvL9OK6DeVKcYT8EkRGxTLjuB8g6D8E8GTDZnwufBoE479+cZePqdUw1BldbTrz
+         gSvrbRZM5o599K9CNPHZMQg1voWY7YYpdZagxtBKVMOo5WiV95Tmk2NyMHqfAnI8r0eg
+         lwTA==
+X-Gm-Message-State: AO0yUKUzK5eJ4PxR+jgDzRvnnvjmhagRGh3gkd6KTRyAB001fnWfV4SY
+        17WvkOg5w2eMbA5cNSY3yKHqVk/UCqabWi3lHfZYFJ9d/6Y=
+X-Google-Smtp-Source: AK7set9X0fMapUox6SkZRqxLHjb6kHYlavJvRHqQlWZX9LMKSI82Azfoc1BVOABrvqzOsDMgTuUiphTTOOsZEQJxB5E=
+X-Received: by 2002:a05:6870:3913:b0:163:4ae7:f200 with SMTP id
+ b19-20020a056870391300b001634ae7f200mr2021361oap.84.1675209188690; Tue, 31
+ Jan 2023 15:53:08 -0800 (PST)
 MIME-Version: 1.0
-References: <Y9eYNsklxkm8CkyP@nanopsycho> <87pmawxny5.fsf@toke.dk>
- <CAM0EoM=u-VSDZAifwTiOy8vXAGX7Hwg4rdea62-kNFGsHj7ObQ@mail.gmail.com>
- <878rhkx8bd.fsf@toke.dk> <CAAFAkD9Sh5jbp4qkzxuS+J3PGdtN-Kc2HdP8CDqweY36extSdA@mail.gmail.com>
- <87wn53wz77.fsf@toke.dk> <63d8325819298_3985f20824@john.notmuch>
- <87leljwwg7.fsf@toke.dk> <CAM0EoM=i_pTSRokDqDo_8JWjsDYwwzSgJw6sc+0c=Ss81SyJqg@mail.gmail.com>
- <87h6w6vqyd.fsf@toke.dk> <Y9kn6bh8z11xWsDh@nanopsycho> <87357qvdso.fsf@toke.dk>
- <CAM0EoMmx9U5TN6+Lb4sKPhR2PLN_vptVQMBzc0EtoSa6W-hsZA@mail.gmail.com> <87o7qe2u4c.fsf@toke.dk>
-In-Reply-To: <87o7qe2u4c.fsf@toke.dk>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Tue, 31 Jan 2023 18:31:00 -0500
-Message-ID: <CAM0EoM=qeA1zO-FZNjppzc9V7i3dScCT5rFXbqL=ERcnCuZxfA@mail.gmail.com>
-Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jamal Hadi Salim <hadi@mojatatu.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel@mojatatu.com, deb.chatterjee@intel.com,
-        anjali.singhai@intel.com, namrata.limaye@intel.com,
-        khalidm@nvidia.com, tom@sipanda.io, pratyush@sipanda.io,
-        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, vladbu@nvidia.com, simon.horman@corigine.com,
-        stefanc@marvell.com, seong.kim@amd.com, mattyk@nvidia.com,
-        dan.daly@intel.com, john.andy.fingerhut@intel.com
+References: <20230126162323.2986682-1-arnd@kernel.org>
+In-Reply-To: <20230126162323.2986682-1-arnd@kernel.org>
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Date:   Tue, 31 Jan 2023 15:52:55 -0800
+Message-ID: <CAKdAkRQT_Jk5yBeMZqh=M1JscVLFieZTQjLGOGxy8nHh8SnD3A@mail.gmail.com>
+Subject: Re: [PATCH] [v2] at86rf230: convert to gpio descriptors
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-wpan@vger.kernel.org, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,50 +74,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 5:54 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> Jamal Hadi Salim <jhs@mojatatu.com> writes:
->
-> > So while going through this thought process, things to consider:
-> > 1) The autonomy of the tc infra, essentially the skip_sw/hw  controls
-> > and their packet driven iteration. Perhaps (the patch i pointed to
-> > from Paul Blakey) where part of the action graph runs in sw.
->
-> Yeah, I agree that mixed-mode operation is an important consideration,
-> and presumably attaching metadata directly to a packet on the hardware
-> side, and accessing that in sw, is in scope as well? We seem to have
-> landed on exposing that sort of thing via kfuncs in XDP, so expanding on
-> that seems reasonable at a first glance.
+Hi Arnd,
 
-There is  built-in metadata chain id/prio/protocol (stored in cls
-common struct) passed when the policy is installed. The hardware may
-be able to handle received (probably packet encapsulated, but i
-believe that is vendor specific) metadata and transform it into the
-appropriate continuation point. Maybe a simpler example is to look at
-the patch from Paul (since that is the most recent change, so it is
-sticking in my brain); if you can follow the example,  you'll see
-there's some state that is transferred for the action with a cookie
-from/to the driver.
-
-> > 2) The dynamicity of being able to trigger table offloads and/or
-> > kernel table updates which are packet driven (consider scenario where
-> > they have iterated the hardware and ingressed into the kernel).
+On Thu, Jan 26, 2023 at 8:32 AM Arnd Bergmann <arnd@kernel.org> wrote:
 >
-> That could be done by either interface, though: the kernel can propagate
-> a bpf_map_update() from a BPF program to the hardware version of the
-> table as well. I suspect a map-based API at least on the BPF side would
-> be more natural, but I don't really have a strong opinion on this :)
+>         /* Reset */
+> -       if (gpio_is_valid(rstn)) {
+> +       if (rstn) {
+>                 udelay(1);
+> -               gpio_set_value_cansleep(rstn, 0);
+> +               gpiod_set_value_cansleep(rstn, 0);
+>                 udelay(1);
+> -               gpio_set_value_cansleep(rstn, 1);
+> +               gpiod_set_value_cansleep(rstn, 1);
 
-Should have mentioned this earlier as requirement:
-Speed of update is _extremely_ important, i.e how fast you can update
-could make or break things; see talk from Marcelo/Vlad[1]. My gut
-feeling is dealing with feedback from some vendor firmware/driver
-interface that the entry is really offloaded may cause challenges for
-ebpf by stalling the program. We have seen upto several ms delays on
-occasions.
+For gpiod conversions, if we are not willing to chase whether existing
+DTSes specify polarities
+properly and create workarounds in case they are wrong, we should use
+gpiod_set_raw_value*()
+(my preference would be to do the work and not use "raw" variants).
 
-cheers,
-jamal
-[1] https://netdevconf.info/0x15/session.html?Where-turbo-boosting-TC-flowe=
-r-control-path-had-led-us-to
+In this particular case, arch/arm/boot/dts/vf610-zii-dev-rev-c.dts
+defines reset line as active low,
+so you are leaving the device in reset state.
+
+Please review your other conversion patches.
+
+-- 
+Dmitry
