@@ -2,68 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F95F6834AF
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 19:05:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F629683509
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 19:19:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230461AbjAaSFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 13:05:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
+        id S229963AbjAaST0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 13:19:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbjAaSFv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 13:05:51 -0500
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FBA02D4A
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 10:05:50 -0800 (PST)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-4ff1fa82bbbso214323937b3.10
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 10:05:50 -0800 (PST)
+        with ESMTP id S229792AbjAaSTZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 13:19:25 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD4932BF08;
+        Tue, 31 Jan 2023 10:18:53 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id q5so15115534wrv.0;
+        Tue, 31 Jan 2023 10:18:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xWttzzEqLZ4mobKc2KtU79+X9WqztKnmp/PSm+ukpqA=;
-        b=VJm1EAPsPsACM6/mz95Oz1ExYh5K4M2TXCVTD7UvRP84mFTo4aueVArSy4FlpdJ36m
-         axk9OY9931MKlM3i+kLz+34jk8BO+krPdxjbJLKIHrm8b5NKgByas4eQw3/E152Kg2VE
-         FkCq/fRwa0tBj76bxdzAQJtKurRFz5HPiJL4vuB1NqdPTb872bGjM/asA+GqkIMXSf7W
-         kEfI1+H1Zz7S3TvWcMhBYEBB4SU7MtxGbQ3W1lAzwERDcG3qG367bK0owiJK2IetwMJ2
-         Z9FkrS5uzZLU9/RnHcnQ63lShCWsqkvSa6Dlx0dMZBpPdFLx6JUMijHfdNaRyljY29ZX
-         tzBw==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=KQtWetJKNRW19yzIJi5PZLD2MSbSr+5EToDGZLhUjpw=;
+        b=Z+EeN7H40zW94smvkENuVCMV77J0I8/1yBNNx9J5dUkiO6JRLg0vPLpVs/gJEkJsVJ
+         PZdL/BI6jgGqdNUpXQ5e6VLIABsCVMSYGgyFX++Jow220b7/sTZIJZCcu76MA72KNBdp
+         oq6gTacNM217YLZNpONoagLU0CIYXgzjgHgSMxJOJDbFCosKKRPB+KdjxBND5kfhPt4A
+         RkgIaUVZhT+yrLCW00R3jk0I9aX4RKi6isQshWaeZxLpMj/lh2cNGzckQQMeSuL2nn+u
+         c2O6tOO/buO2U9vEQsF3JCHUh3ETYCQGv3gxXXwQa/Dt3zjxCPRIqYd8Ll8g434FywwR
+         72fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xWttzzEqLZ4mobKc2KtU79+X9WqztKnmp/PSm+ukpqA=;
-        b=CQM6PNLhH8X8LtV6U3a0HWSNOhnoLDo3J2MFgGY+4+ras1esQDZ7EYkRdOgiEz2Yf3
-         JXgCrMykSHsp4t29iBwRELPRSMdW0aAMJSqL6PfukqYkUslrrIWSJBCXisGJ1pwmYyxW
-         cLzBYHPBGOANJRgfsILlr1PVgLcoza5vyuT7R/fVWSg5FwmRsuDzZ0vL2SUR/XiAn4hT
-         o2okf1DDIChhp/BwLinaKB1Xzl3nTi4BF2F2tR/qtpfunh+Bk1m9aQSD0Zc0Mt6D5ED0
-         Oq4ppxiKzHMQURigO9vjYX1bKeN/Jxjw/b3gj5kVrbKIZvz0RcM3yzUvA54h8wAjPufF
-         FeJw==
-X-Gm-Message-State: AO0yUKVNBfMIzn9S3TkKLCOYDqx3tlsmsHT6YQs3KgaIsJr+7WN1fTo/
-        dK04VRIVCbvJ+ceZY8+aHMTjg+8HX1c1NmnSdFga
-X-Google-Smtp-Source: AK7set9FHKQF8kjhMobb5qikCjjSVJ5yhENI27t+4pv+8JeADKx4pF7Be0tJDg36DyGIUuQ8FAplSHml32YG3VcBWGc=
-X-Received: by 2002:a81:8582:0:b0:50f:f163:7072 with SMTP id
- v124-20020a818582000000b0050ff1637072mr1081761ywf.285.1675188349551; Tue, 31
- Jan 2023 10:05:49 -0800 (PST)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=KQtWetJKNRW19yzIJi5PZLD2MSbSr+5EToDGZLhUjpw=;
+        b=UPi7KB88beT9YCJupoTvbfyTF9x4xaNg9JTXFNOcq6qQb+/ltfcC/f7M5ipyvymXgc
+         1C/6lI6ft9bdbGItepdXYTsURRbVvIFmMczktY9uqihjShJo5Za50fV2VAki3xkgetUY
+         rwIihzBoCF0j1jW6p7c1dUrvhEse0cMgxgcJOohi+rRtB2/rDCAQ+9N+PCywxqm0/U27
+         /EFYRmfpSpxjmvksi4cdmJFeKMncsTdbbNX/TcYpDzcE5B1ipUhRWHCYY7CSxgVnJlPw
+         l3Py2636/SUG9YsYICUAV4ru99g9pkH0pnC5q+U824JY3hESabQJNR5PR9+HRewqodJu
+         EuRQ==
+X-Gm-Message-State: AO0yUKWmG/6hxVge96dmDp9ah1FZukfhbtrpo529dmio8WpNhYnKWv31
+        AGF3VW6Rls3jxOqcy3SgVKtXCfuCCrkwF5QhVpQ=
+X-Google-Smtp-Source: AK7set9pgNaftSKgqyqDJswcDbD1ZIPXBBAMCbUQgKoXZNNoI+ZJAm8texPrpIeaf2lu43EzhM7egd427gVu9oiOK88=
+X-Received: by 2002:a05:6000:1847:b0:2bf:d1a1:c120 with SMTP id
+ c7-20020a056000184700b002bfd1a1c120mr455065wri.422.1675189132121; Tue, 31 Jan
+ 2023 10:18:52 -0800 (PST)
 MIME-Version: 1.0
-References: <20230130192519.686446-1-anthony.l.nguyen@intel.com> <Y9jQpjLPkRR/emeH@unreal>
-In-Reply-To: <Y9jQpjLPkRR/emeH@unreal>
-From:   Bjorn Helgaas <bhelgaas@google.com>
-Date:   Tue, 31 Jan 2023 12:05:37 -0600
-Message-ID: <CAErSpo64=miv7++wUhHKx=mnN1Rmh3u+cTaPxngbj4nd=9spjQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/8][pull request] Intel Wired LAN: Remove
- redundant Device Control Error Reporting Enable
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        netdev@vger.kernel.org
+References: <20230127191703.3864860-1-joannelkoong@gmail.com>
+ <20230127191703.3864860-4-joannelkoong@gmail.com> <5715ea83-c4aa-c884-ab95-3d5e630cad05@linux.dev>
+In-Reply-To: <5715ea83-c4aa-c884-ab95-3d5e630cad05@linux.dev>
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Tue, 31 Jan 2023 10:18:39 -0800
+Message-ID: <CAJnrk1Yc2zyHb+WRtZrtLMnj6kKAQTg0oBmMq5E4P9Byxamf1g@mail.gmail.com>
+Subject: Re: [PATCH v9 bpf-next 3/5] bpf: Add skb dynptrs
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     daniel@iogearbox.net, andrii@kernel.org, martin.lau@kernel.org,
+        ast@kernel.org, netdev@vger.kernel.org, memxor@gmail.com,
+        kernel-team@fb.com, bpf@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,70 +68,163 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 2:26 AM Leon Romanovsky <leon@kernel.org> wrote:
+On Mon, Jan 30, 2023 at 2:04 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
 >
-> On Mon, Jan 30, 2023 at 11:25:11AM -0800, Tony Nguyen wrote:
-> > Bjorn Helgaas says:
-> >
-> > Since f26e58bf6f54 ("PCI/AER: Enable error reporting when AER is native=
-"),
-> > the PCI core sets the Device Control bits that enable error reporting f=
-or
-> > PCIe devices.
-> >
-> > This series removes redundant calls to pci_enable_pcie_error_reporting(=
-)
-> > that do the same thing from several NIC drivers.
-> >
-> > There are several more drivers where this should be removed; I started =
-with
-> > just the Intel drivers here.
-> > ---
-> > TN: Removed mention of AER driver as this was taken through PCI tree [1=
-]
-> > and fixed a typo.
-> >
-> > [1] https://lore.kernel.org/all/20230126231527.GA1322015@bhelgaas/
-> >
-> > The following are changes since commit 90e8ca0abb05ada6c1e2710eaa21688d=
-afca26f2:
-> >   Merge branch 'devlink-next'
-> > and are available in the git repository at:
-> >   git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 10GbE
-> >
-> > Bjorn Helgaas (8):
-> >   e1000e: Remove redundant pci_enable_pcie_error_reporting()
-> >   fm10k: Remove redundant pci_enable_pcie_error_reporting()
-> >   i40e: Remove redundant pci_enable_pcie_error_reporting()
-> >   iavf: Remove redundant pci_enable_pcie_error_reporting()
-> >   ice: Remove redundant pci_enable_pcie_error_reporting()
-> >   igb: Remove redundant pci_enable_pcie_error_reporting()
-> >   igc: Remove redundant pci_enable_pcie_error_reporting()
-> >   ixgbe: Remove redundant pci_enable_pcie_error_reporting()
-> >
-> >  drivers/net/ethernet/intel/e1000e/netdev.c    | 7 -------
-> >  drivers/net/ethernet/intel/fm10k/fm10k_pci.c  | 5 -----
-> >  drivers/net/ethernet/intel/i40e/i40e_main.c   | 4 ----
-> >  drivers/net/ethernet/intel/iavf/iavf_main.c   | 5 -----
-> >  drivers/net/ethernet/intel/ice/ice_main.c     | 3 ---
-> >  drivers/net/ethernet/intel/igb/igb_main.c     | 5 -----
-> >  drivers/net/ethernet/intel/igc/igc_main.c     | 5 -----
-> >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 5 -----
-> >  8 files changed, 39 deletions(-)
+> On 1/27/23 11:17 AM, Joanne Koong wrote:
+> > @@ -8243,6 +8316,28 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
+> >               mark_reg_known_zero(env, regs, BPF_REG_0);
+> >               regs[BPF_REG_0].type = PTR_TO_MEM | ret_flag;
+> >               regs[BPF_REG_0].mem_size = meta.mem_size;
+> > +             if (func_id == BPF_FUNC_dynptr_data &&
+> > +                 dynptr_type == BPF_DYNPTR_TYPE_SKB) {
+> > +                     bool seen_direct_write = env->seen_direct_write;
+> > +
+> > +                     regs[BPF_REG_0].type |= DYNPTR_TYPE_SKB;
+> > +                     if (!may_access_direct_pkt_data(env, NULL, BPF_WRITE))
+> > +                             regs[BPF_REG_0].type |= MEM_RDONLY;
+> > +                     else
+> > +                             /*
+> > +                              * Calling may_access_direct_pkt_data() will set
+> > +                              * env->seen_direct_write to true if the skb is
+> > +                              * writable. As an optimization, we can ignore
+> > +                              * setting env->seen_direct_write.
+> > +                              *
+> > +                              * env->seen_direct_write is used by skb
+> > +                              * programs to determine whether the skb's page
+> > +                              * buffers should be cloned. Since data slice
+> > +                              * writes would only be to the head, we can skip
+> > +                              * this.
+> > +                              */
+> > +                             env->seen_direct_write = seen_direct_write;
+> > +             }
 >
-> I see that you didn't touch any other places except drivers/net/ethernet/=
-intel/.
-> Are you planning to remove other occurrences too?
+> [ ... ]
 >
-> =E2=9E=9C  kernel git:(rdma-next) git grep pci_enable_pcie_error_reportin=
-g -- drivers/infiniband/
-> drivers/infiniband/hw/hfi1/pcie.c:      (void)pci_enable_pcie_error_repor=
-ting(pdev);
-> drivers/infiniband/hw/qib/qib_pcie.c:   ret =3D pci_enable_pcie_error_rep=
-orting(pdev);
+> > @@ -9263,17 +9361,26 @@ static int check_kfunc_args(struct bpf_verifier_env *env, struct bpf_kfunc_call_
+> >                               return ret;
+> >                       break;
+> >               case KF_ARG_PTR_TO_DYNPTR:
+> > +             {
+> > +                     enum bpf_arg_type dynptr_arg_type = ARG_PTR_TO_DYNPTR;
+> > +
+> >                       if (reg->type != PTR_TO_STACK &&
+> >                           reg->type != CONST_PTR_TO_DYNPTR) {
+> >                               verbose(env, "arg#%d expected pointer to stack or dynptr_ptr\n", i);
+> >                               return -EINVAL;
+> >                       }
+> >
+> > -                     ret = process_dynptr_func(env, regno, insn_idx,
+> > -                                               ARG_PTR_TO_DYNPTR | MEM_RDONLY);
+> > +                     if (meta->func_id == special_kfunc_list[KF_bpf_dynptr_from_skb])
+> > +                             dynptr_arg_type |= MEM_UNINIT | DYNPTR_TYPE_SKB;
+> > +                     else
+> > +                             dynptr_arg_type |= MEM_RDONLY;
+> > +
+> > +                     ret = process_dynptr_func(env, regno, insn_idx, dynptr_arg_type,
+> > +                                               meta->func_id);
+> >                       if (ret < 0)
+> >                               return ret;
+> >                       break;
+> > +             }
+> >               case KF_ARG_PTR_TO_LIST_HEAD:
+> >                       if (reg->type != PTR_TO_MAP_VALUE &&
+> >                           reg->type != (PTR_TO_BTF_ID | MEM_ALLOC)) {
+> > @@ -15857,6 +15964,14 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+> >                  desc->func_id == special_kfunc_list[KF_bpf_rdonly_cast]) {
+> >               insn_buf[0] = BPF_MOV64_REG(BPF_REG_0, BPF_REG_1);
+> >               *cnt = 1;
+> > +     } else if (desc->func_id == special_kfunc_list[KF_bpf_dynptr_from_skb]) {
+> > +             bool is_rdonly = !may_access_direct_pkt_data(env, NULL, BPF_WRITE);
+>
+> Does it need to restore the env->seen_direct_write here also?
+>
+> It seems this 'seen_direct_write' saving/restoring is needed now because
+> 'may_access_direct_pkt_data(BPF_WRITE)' is not only called when it is actually
+> writing the packet. Some refactoring can help to avoid issue like this.
 
-Yes, definitely, I just haven't had a chance yet.  Some of the others
-are a little more complicated than the simple removals for the Intel
-drivers.
+Yes! Great catch! I'll submit a patch that refactors this, so that
+env->seen_direct_write isn't set implicitly within
+may_access_direct_pkt_data()
 
-Bjorn
+>
+> While at 'seen_direct_write', Alexei has also pointed out that the verifier
+> needs to track whether the (packet) 'slice' returned by bpf_dynptr_data() has
+> been written. It should be tracked in 'seen_direct_write'. Take a look at how
+> reg_is_pkt_pointer() and may_access_direct_pkt_data() are done in
+> check_mem_access(). iirc, this reg_is_pkt_pointer() part got loss somewhere in
+> v5 (or v4?) when bpf_dynptr_data() was changed to return register typed
+> PTR_TO_MEM instead of PTR_TO_PACKET.
+>
+
+The verifier right now does track whether the dynptr skb 'slice' is
+writable or not and sets seen_direct_write accordingly. However, it
+currently does it in check_helper_call() where if the bpf program is
+writable, then the env->seen_direct_write is set (regardless of
+whether actual writes occur or not), so I like your idea of moving
+this to check_mem_access(). The PTR_TO_MEM that gets returned for the
+data slice will need to be tagged with DYNPTR_TYPE_SKB.
+
+>
+> [ ... ]
+>
+> > +int bpf_dynptr_from_skb(struct sk_buff *skb, u64 flags,
+> > +                     struct bpf_dynptr_kern *ptr, int is_rdonly)
+>
+> hmm... this exposed kfunc takes "int is_rdonly".
+>
+> What if the bpf prog calls it like bpf_dynptr_from_skb(..., false) in some hook
+> that is not writable to packet?
+
+If the bpf prog tries to do this, their "false" value will be ignored,
+because the "int is_rdonly" arg value gets set by the verifier (in
+fixup_kfunc_call() in line 15969)
+
+>
+> > +{
+> > +     if (flags) {
+> > +             bpf_dynptr_set_null(ptr);
+> > +             return -EINVAL;
+> > +     }
+> > +
+> > +     bpf_dynptr_init(ptr, skb, BPF_DYNPTR_TYPE_SKB, 0, skb->len);
+> > +
+> > +     if (is_rdonly)
+> > +             bpf_dynptr_set_rdonly(ptr);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> >   BPF_CALL_1(bpf_sk_fullsock, struct sock *, sk)
+> >   {
+> >       return sk_fullsock(sk) ? (unsigned long)sk : (unsigned long)NULL;
+> > @@ -11607,3 +11634,28 @@ bpf_sk_base_func_proto(enum bpf_func_id func_id)
+> >
+> >       return func;
+> >   }
+> > +
+> > +BTF_SET8_START(bpf_kfunc_check_set_skb)
+> > +BTF_ID_FLAGS(func, bpf_dynptr_from_skb)
+> > +BTF_SET8_END(bpf_kfunc_check_set_skb)
+> > +
+> > +static const struct btf_kfunc_id_set bpf_kfunc_set_skb = {
+> > +     .owner = THIS_MODULE,
+> > +     .set = &bpf_kfunc_check_set_skb,
+> > +};
+> > +
+> > +static int __init bpf_kfunc_init(void)
+> > +{
+> > +     int ret;
+> > +
+> > +     ret = register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS, &bpf_kfunc_set_skb);
+> > +     ret = ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_ACT, &bpf_kfunc_set_skb);
+> > +     ret = ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_SK_SKB, &bpf_kfunc_set_skb);
+> > +     ret = ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_SOCKET_FILTER, &bpf_kfunc_set_skb);
+> > +     ret = ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_CGROUP_SKB, &bpf_kfunc_set_skb);
+> > +     ret = ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_LWT_OUT, &bpf_kfunc_set_skb);
+> > +     ret = ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_LWT_IN, &bpf_kfunc_set_skb);
+> > +     ret = ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_LWT_XMIT, &bpf_kfunc_set_skb);
+> > +     return ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_LWT_SEG6LOCAL, &bpf_kfunc_set_skb);
+> > +}
+> > +late_initcall(bpf_kfunc_init);
+>
+>
