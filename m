@@ -2,159 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BB4268360A
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 20:06:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA2F968361E
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 20:10:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231617AbjAaTGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 14:06:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55216 "EHLO
+        id S232083AbjAaTK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 14:10:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231761AbjAaTGP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 14:06:15 -0500
-Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7199577DA
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 11:05:53 -0800 (PST)
-Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-16332831ed0so20639517fac.10
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 11:05:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=64Qco5b7aLY11Ta0GbjPVk1CtFuDKLkAGPeJl/hlFok=;
-        b=ZHa5+FyCc9+GLhEvTNzcB1qzDAc2u6uPWZc3IA6y0NOHyEANhPKrGPD69sc9NwDpJg
-         QSQdWrWMdwxVGis5H1tiiwOXmwOjiLKP2RxL75JxUU3tSpWocKZTavBzvLqJVSyQ37vx
-         Vq4ZjnL1UxY5nyqppjFrEuS5h2SiXclzW8SUtVZjYr7rm1MEuHmBpgonYKZaOEZ5l9f9
-         m867NOPonUZiBXh6osT1RXKws+QzGzte+ft/2N/eMlkad3vtXRekuRYbxGS2WnWhVgEI
-         n5Hfwqebz/1SQ3rBiQigFJ/mNiUf/pgmOY0MQzYMqTUMi8awN0c6e2Xt705xcSi0r1QC
-         4F0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=64Qco5b7aLY11Ta0GbjPVk1CtFuDKLkAGPeJl/hlFok=;
-        b=10b3hWHtQ5YP7a5O6WllfrXM+zEhtJZ16ead/KogjRjfDGqgxFpl4SKsbQWUJqV6Pc
-         ArQj8iVOrsKWFulHI7E3PeOfP402SA7VYOFWVmVWVd9VEsPXZycKIW8hEv28uNzSGKZZ
-         haGn6KhAgV2SX8vWMK8+Pmz483HzdKL7Bmj92cSsU68qsz5KmYUMqVPUUl45HMpnlJHH
-         U/QgzPDYLjNOz+ESJemFVpbXCU5gnvVUynCXKLMaKx+ACAECTubWOoTOj4b/KAtYly6J
-         lFuUPeROGPjkS3qTxAL1jq1y4npnW5ViH09h79bTBRDsO0bvX+xGsdDuItJeqL+ABKXL
-         SFGw==
-X-Gm-Message-State: AO0yUKWe+Jw4u6wIL27Mp7HOMXqfZijuh5xquvUFfnZj9kHQoYpPgsP1
-        EBAWYOaxANfV5yobK9gWv9PQ2yJcnb12/VDf
-X-Google-Smtp-Source: AK7set8jv7x90UKwLiCoerr+mzChMhcajNDAgKAK1M0j3GL2JH4cUMJ6Tlxj/lhOLKcdLsBxwb41Og==
-X-Received: by 2002:a05:6870:78a:b0:15e:dbe1:aee3 with SMTP id en10-20020a056870078a00b0015edbe1aee3mr322843oab.51.1675191953029;
-        Tue, 31 Jan 2023 11:05:53 -0800 (PST)
-Received: from ?IPV6:2804:14d:5c5e:4698:1d86:b62f:e05b:126b? ([2804:14d:5c5e:4698:1d86:b62f:e05b:126b])
-        by smtp.gmail.com with ESMTPSA id v10-20020a4a8c4a000000b004f241603c49sm6366947ooj.20.2023.01.31.11.05.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 Jan 2023 11:05:52 -0800 (PST)
-Message-ID: <f044ce61-37a5-a159-02fb-6ff14f5e911a@mojatatu.com>
-Date:   Tue, 31 Jan 2023 16:05:48 -0300
+        with ESMTP id S232054AbjAaTKZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 14:10:25 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B3D577EA
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 11:10:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D270A616CD
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 19:10:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 396AFC433EF;
+        Tue, 31 Jan 2023 19:10:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675192223;
+        bh=/Fefv1OFyYiRPoUmOEmaegBxt6COX4bNc4H2IrzDRt4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QbrHm9ZIxbXd3qLRXE+3DIdQ1j7FdYISBHkctVS9VFIV0IVkk21e/DJSE2uKh07K4
+         DpZxBIy7kIqjN4hXJW1koP4hUZ4Tx5MiVHOWxNar+8hH8VYtxdsoJzyMLKq/5YQpPd
+         sEm+nihmVnXHL9MZn+9PHYx/qH6x2UgfOGR45l6hGc3sNElj49b9CSS2rxBhcsU1ym
+         AYklDvZgndQuKzT7giNDOz4PajW5yEt12YECHXr1CWg54CBfG3FU165sSc12R0HyBV
+         p7C1Oi6GJkLgUtNL/0MAdHXKeSRiTFXSnVPbyvEW9Whe37Ys+XQEg4aCBdKVJCaIH0
+         1ug/5xSkMXvrw==
+Date:   Tue, 31 Jan 2023 11:10:20 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        "Singhai, Anjali" <anjali.singhai@intel.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Jamal Hadi Salim <hadi@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Willem de Bruijn <willemb@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel@mojatatu.com" <kernel@mojatatu.com>,
+        "Chatterjee, Deb" <deb.chatterjee@intel.com>,
+        "Limaye, Namrata" <namrata.limaye@intel.com>,
+        "khalidm@nvidia.com" <khalidm@nvidia.com>,
+        "tom@sipanda.io" <tom@sipanda.io>,
+        "pratyush@sipanda.io" <pratyush@sipanda.io>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "vladbu@nvidia.com" <vladbu@nvidia.com>,
+        "simon.horman@corigine.com" <simon.horman@corigine.com>,
+        "stefanc@marvell.com" <stefanc@marvell.com>,
+        "seong.kim@amd.com" <seong.kim@amd.com>,
+        "mattyk@nvidia.com" <mattyk@nvidia.com>,
+        "Daly, Dan" <dan.daly@intel.com>,
+        "Fingerhut, John Andy" <john.andy.fingerhut@intel.com>
+Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
+Message-ID: <20230131111020.2821ea17@kernel.org>
+In-Reply-To: <CAM0EoMmPbdZD7ZNn2UWKQWnWTnAnnWhdSQtq05PvejAz0Jfx9w@mail.gmail.com>
+References: <CAAFAkD8kahd0Ao6BVjwx+F+a0nUK0BzTNFocnpaeQrN7E8VRdQ@mail.gmail.com>
+        <63d6069f31bab_2c3eb20844@john.notmuch>
+        <CAM0EoMmeYc7KxY=Sv=oynrvYMeb-GD001Zh4m5TMMVXYre=tXw@mail.gmail.com>
+        <63d747d91add9_3367c208f1@john.notmuch>
+        <Y9eYNsklxkm8CkyP@nanopsycho>
+        <87pmawxny5.fsf@toke.dk>
+        <CAM0EoM=u-VSDZAifwTiOy8vXAGX7Hwg4rdea62-kNFGsHj7ObQ@mail.gmail.com>
+        <878rhkx8bd.fsf@toke.dk>
+        <CAAFAkD9Sh5jbp4qkzxuS+J3PGdtN-Kc2HdP8CDqweY36extSdA@mail.gmail.com>
+        <87wn53wz77.fsf@toke.dk>
+        <63d8325819298_3985f20824@john.notmuch>
+        <87leljwwg7.fsf@toke.dk>
+        <CAM0EoM=i_pTSRokDqDo_8JWjsDYwwzSgJw6sc+0c=Ss81SyJqg@mail.gmail.com>
+        <CO1PR11MB4993CA55EDF590EF66FF3D4893D39@CO1PR11MB4993.namprd11.prod.outlook.com>
+        <63d85b9191319_3d8642086a@john.notmuch>
+        <CAM0EoMk8e4rR5tX5giC-ggu_h-y32hLN=ENZ=-A+XqjvnbCYpQ@mail.gmail.com>
+        <20230130201224.435a4b5e@kernel.org>
+        <CAM0EoMkR0+5YHwnrJ_TnW53MAfTC2Y9Wq0WFcEWTq3V=P0OzAg@mail.gmail.com>
+        <CAM0EoMmPbdZD7ZNn2UWKQWnWTnAnnWhdSQtq05PvejAz0Jfx9w@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH net-next v5 1/2] net/sched: transition act_pedit to rcu
- and percpu stats
-Content-Language: en-US
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-References: <20230131145149.3776656-1-pctammela@mojatatu.com>
- <20230131145149.3776656-2-pctammela@mojatatu.com>
- <Y9k8seDdoS1LHB7L@corigine.com>
-From:   Pedro Tammela <pctammela@mojatatu.com>
-In-Reply-To: <Y9k8seDdoS1LHB7L@corigine.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31/01/2023 13:07, Simon Horman wrote:
-> On Tue, Jan 31, 2023 at 11:51:48AM -0300, Pedro Tammela wrote:
->> The software pedit action didn't get the same love as some of the
->> other actions and it's still using spinlocks and shared stats in the
->> datapath.
->> Transition the action to rcu and percpu stats as this improves the
->> action's performance dramatically on multiple cpu deployments.
->>
->> Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
->> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+On Tue, 31 Jan 2023 05:30:10 -0500 Jamal Hadi Salim wrote:
+> > Note, there are two paths in P4TC:
+> > DDP loading via devlink is equivalent to loading the P4 binary for the hardware.
+> > That is one of the 3 (and currently most popular) driver interfaces
+> > suggested. Some of that drew  
 > 
-> ...
-> 
->> diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
->> index a0378e9f0121..674b534be46e 100644
->> --- a/net/sched/act_pedit.c
->> +++ b/net/sched/act_pedit.c
-> 
-> ...
-> 
->> @@ -143,8 +154,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
->>   	bool bind = flags & TCA_ACT_FLAGS_BIND;
->>   	struct nlattr *tb[TCA_PEDIT_MAX + 1];
->>   	struct tcf_chain *goto_ch = NULL;
->> -	struct tc_pedit_key *keys = NULL;
->> -	struct tcf_pedit_key_ex *keys_ex;
->> +	struct tcf_pedit_parms *oparms, *nparms;
-> 
-> nit: reverse xmas tree
-> 
->>   	struct tc_pedit *parm;
->>   	struct nlattr *pattr;
->>   	struct tcf_pedit *p;
-> 
-> ...
-> 
->> @@ -212,48 +228,51 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
->>   		ret = err;
->>   		goto out_release;
->>   	}
->> -	p = to_pedit(*a);
->> -	spin_lock_bh(&p->tcf_lock);
->>   
->> -	if (ret == ACT_P_CREATED ||
->> -	    (p->tcfp_nkeys && p->tcfp_nkeys != parm->nkeys)) {
->> -		keys = kmalloc(ksize, GFP_ATOMIC);
->> -		if (!keys) {
->> -			spin_unlock_bh(&p->tcf_lock);
->> -			ret = -ENOMEM;
->> -			goto put_chain;
->> -		}
->> -		kfree(p->tcfp_keys);
->> -		p->tcfp_keys = keys;
->> -		p->tcfp_nkeys = parm->nkeys;
->> +	nparms->tcfp_off_max_hint = 0;
->> +	nparms->tcfp_flags = parm->flags;
->> +	nparms->tcfp_nkeys = parm->nkeys;
->> +
->> +	nparms->tcfp_keys = kmalloc(ksize, GFP_KERNEL);
-> 
-> Can ksize be zero?
-> 
-> ...
+> Sorry didnt finish my thought here, wanted to say: The loading of the
+> P4 binary over devlink drew (to some people) suspicion it is going to
+> be used for loading kernel bypass.
 
-Hi Simon,
-
-Thanks for your thorough review.
- From the parsing code on lines 183-188:
-           parm = nla_data(pattr);
-           if (!parm->nkeys) {
-                   NL_SET_ERR_MSG_MOD(extack, "Pedit requires keys to be 
-passed");
-                   return -EINVAL;
-           }
-           ksize = parm->nkeys * sizeof(struct tc_pedit_key);
-
-So it seems ksize can't be zero.
-Let me know if you think there are other edge cases, perhaps we can add 
-more tests to tdc.
-
-Pedro
+The only practical use case I heard was the IPU. Worrying about devlink
+programming being a bypass on an IPU is like rearranging chairs on the
+Titanic.
