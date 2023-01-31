@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1DC36820FE
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 01:48:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE6EF682105
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 01:50:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229750AbjAaAsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 19:48:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34458 "EHLO
+        id S229851AbjAaAuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 19:50:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbjAaAsY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 19:48:24 -0500
+        with ESMTP id S229518AbjAaAuH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 19:50:07 -0500
 Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF3E1E298;
-        Mon, 30 Jan 2023 16:48:23 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id ml19so13614416ejb.0;
-        Mon, 30 Jan 2023 16:48:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92994206AA;
+        Mon, 30 Jan 2023 16:50:05 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id p26so25961666ejx.13;
+        Mon, 30 Jan 2023 16:50:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=FSOKizBkssF6gcJAH1aaDSmtjOKhZVdKztN2lJ+lsd4=;
-        b=F4TRmXccWwiU95TC4h+ggypGTwLpOMAiWeL9xnaZjt/ht3yf5TDOTy81pwbWBKMe6F
-         /FI0voBc6pKSRze2rv6DZN7KyOVCUzEz5tOlkWd9bDgLLu0dORZPbdWQMq135EJlkVPr
-         CPwaZyJBVy6dyAo0b6PiV46TZ3ZhojOD3O73wM5daeTKbCWDJUihtMC+mUz9Y7eauRbG
-         h9ajX3oJjHFGbOd/eUegJuXCFBcOaA66j/kh45KiEEo/a9XuxnCeomo6bGYn/sR1wfVG
-         c9BHZ1l2cGZoDBVp61pK4Hd6Wtivx207PPcrxBOrOJMUORMKYICdnmLcWWTn3zluPhFI
-         epnQ==
+        bh=NnKj2aLdM32Qoihlom2cgtRGZ6PATefqnqoDcKWvAE4=;
+        b=HikrjOogNuwR4zLiktbxxsXjhjzZAJrajy0F4e7npz9Y66frjtK4FdIV1dqRO8fWq6
+         HlRnQTmw4Gh0bej2TwRCeyzk9pNbq0DJ593eBa4kjwEwI12oLBfmeH7/YVmsqffdZ6xV
+         45iXR6/zuCdJ/OXzMJ4tnxDZZ22070FFyH5lyAzKQUb5nBQmSjPgdN57+JQz9CwsziHH
+         WMXMd/rYiqpHONwZOGFW3/ttm1EVDYhuleqJ4RFPrz61yAGI8qatEciHazfOOzQlsBJ3
+         dzEUcX2xHxQM++uv/Og4dli4gZgMAFSAXuLTC50CNF5/qHQ0uWLav9xBTZ0H7vHKAX4n
+         GxEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=FSOKizBkssF6gcJAH1aaDSmtjOKhZVdKztN2lJ+lsd4=;
-        b=QlzNUq351bpxAPT3xImmF9MzX3CbkEJToontkFKjlwlea63vYWqUwTgI6qmmUgx79N
-         /r+w8DkTQ0LcSHQ6JCagiWl7YNJ1BTMuC1zu1fTLL1KPugzrrz2OUoEvVaxjfHBqoS3S
-         Ur2CLyZZRRiLYfH7olo9Fely0mIq6o2SFvXKFcR35x9Jrin8vND5/yWyLmptnL+6VSa7
-         UbR0CK2/QTWDMkD+uJLOEBvoqG/M/g0x6qDI7BmxU7827qhEUswWUopRhqnkemKrs4+L
-         aGYg3xhnLlIn/VLF6Dq8K2QbNQaQr/ldarSP4I4h60SgT+ejr0ewcvdWKBr1VbckzYwy
-         k5qA==
-X-Gm-Message-State: AO0yUKUjn9H2ew05/y2LmuUmJJiRjp9w4xA0J5EY4pXVmItfM4ThNa13
-        8x82OQF6Ti0ij4brFR4b9PqXkaYKWwqqAv23oA0=
-X-Google-Smtp-Source: AK7set9F8P1vnCQAqYXmd7qsFLPU73eR1dk7k4B37DGQ09P/JoED1x+fsPKFbCO7oy+N5mr7pyVKuF6p/hIkduZllrA=
-X-Received: by 2002:a17:907:2cea:b0:88b:93c0:34f2 with SMTP id
- hz10-20020a1709072cea00b0088b93c034f2mr530473ejc.296.1675126101657; Mon, 30
- Jan 2023 16:48:21 -0800 (PST)
+        bh=NnKj2aLdM32Qoihlom2cgtRGZ6PATefqnqoDcKWvAE4=;
+        b=gtKmnWW+z979sCiqh6tqCksUURdoO9Bh9r/1yiiys1dwISdSE8QBk05uES/Nxr0rWc
+         OA7NpJ9LXeQWcXYcrk6zG4ZxUJgU//NIX5gAIaA/3H/swkp94uTM3VwOYbreVQ9vqkEC
+         /NmtBaCGm81Va7ZemUrPkYeVJhE2mYfjjU2EpataPmSgEZsNeXRa5+UJy4DZCHgSwOzs
+         YT1k6CiAf7uftoPSzzGssysvQjvioCcOJppkE11oIIYy+sue6Tv0wWiZhZEoHYMRsXCG
+         XI/G+kJZM7F/LMrbvOOuNvHxbk7ux4Tnt61WZVcoL3M3YUCN1ZxZfBVNYN/L/OQS6IWy
+         rRHA==
+X-Gm-Message-State: AO0yUKV9Ut4nAI3/2KKkPCNWd1JI7HrDQsi0IYmqeQpYgQZYv1YFsOyi
+        t2ynVS65RXLA8leffYNsvw8VmV4Pz4W+N19Dm4gdgsdA
+X-Google-Smtp-Source: AK7set8rONj+RngwjnMwPSCQtI8fm6oMehIf2Yn4p+Vc9eELMlTbp1kZsDAHjY9z9MgWcwo0sx2tlFbHN3resgKZxqY=
+X-Received: by 2002:a17:906:7194:b0:884:d15e:10ff with SMTP id
+ h20-20020a170906719400b00884d15e10ffmr2254839ejk.265.1675126203895; Mon, 30
+ Jan 2023 16:50:03 -0800 (PST)
 MIME-Version: 1.0
-References: <20230127191703.3864860-1-joannelkoong@gmail.com> <20230127191703.3864860-4-joannelkoong@gmail.com>
-In-Reply-To: <20230127191703.3864860-4-joannelkoong@gmail.com>
+References: <20230127191703.3864860-1-joannelkoong@gmail.com> <20230127191703.3864860-6-joannelkoong@gmail.com>
+In-Reply-To: <20230127191703.3864860-6-joannelkoong@gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 30 Jan 2023 16:48:09 -0800
-Message-ID: <CAEf4BzYK2JOtChh4VNTg4L9-u9kay3zzG8X6GqTkak22E37wig@mail.gmail.com>
-Subject: Re: [PATCH v9 bpf-next 3/5] bpf: Add skb dynptrs
+Date:   Mon, 30 Jan 2023 16:49:52 -0800
+Message-ID: <CAEf4BzbAQ-+wfCzWFr=QWDQFFoBcdwrkDodO8A17b8rTX4ObHw@mail.gmail.com>
+Subject: Re: [PATCH v9 bpf-next 5/5] selftests/bpf: tests for using dynptrs to
+ parse skb and xdp buffers
 To:     Joanne Koong <joannelkoong@gmail.com>
 Cc:     bpf@vger.kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         martin.lau@kernel.org, ast@kernel.org, netdev@vger.kernel.org,
@@ -69,92 +70,137 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, Jan 27, 2023 at 11:18 AM Joanne Koong <joannelkoong@gmail.com> wrote:
 >
-> Add skb dynptrs, which are dynptrs whose underlying pointer points
-> to a skb. The dynptr acts on skb data. skb dynptrs have two main
-> benefits. One is that they allow operations on sizes that are not
-> statically known at compile-time (eg variable-sized accesses).
-> Another is that parsing the packet data through dynptrs (instead of
-> through direct access of skb->data and skb->data_end) can be more
-> ergonomic and less brittle (eg does not need manual if checking for
-> being within bounds of data_end).
+> Test skb and xdp dynptr functionality in the following ways:
 >
-> For bpf prog types that don't support writes on skb data, the dynptr is
-> read-only (bpf_dynptr_write() will return an error and bpf_dynptr_data()
-> will return a data slice that is read-only where any writes to it will
-> be rejected by the verifier).
+> 1) progs/test_cls_redirect_dynptr.c
+>    * Rewrite "progs/test_cls_redirect.c" test to use dynptrs to parse
+>      skb data
 >
-> For reads and writes through the bpf_dynptr_read() and bpf_dynptr_write()
-> interfaces, reading and writing from/to data in the head as well as from/to
-> non-linear paged buffers is supported. For data slices (through the
-> bpf_dynptr_data() interface), if the data is in a paged buffer, the user
-> must first call bpf_skb_pull_data() to pull the data into the linear
-> portion.
+>    * This is a great example of how dynptrs can be used to simplify a
+>      lot of the parsing logic for non-statically known values.
 >
-> Any bpf_dynptr_write() automatically invalidates any prior data slices
-> to the skb dynptr. This is because a bpf_dynptr_write() may be writing
-> to data in a paged buffer, so it will need to pull the buffer first into
-> the head. The reason it needs to be pulled instead of writing directly to
-> the paged buffers is because they may be cloned (only the head of the skb
-> is by default uncloned). As such, any bpf_dynptr_write() will
-> automatically have its prior data slices invalidated, even if the write
-> is to data in the skb head (the verifier has no way of differentiating
-> whether the write is to the head or paged buffers during program load
-> time). Please note as well that any other helper calls that change the
-> underlying packet buffer (eg bpf_skb_pull_data()) invalidates any data
-> slices of the skb dynptr as well. The stack trace for this is
-> check_helper_call() -> clear_all_pkt_pointers() ->
-> __clear_all_pkt_pointers() -> mark_reg_unknown().
+>      When measuring the user + system time between the original version
+>      vs. using dynptrs, and averaging the time for 10 runs (using
+>      "time ./test_progs -t cls_redirect"):
+>          original version: 0.092 sec
+>          with dynptrs: 0.078 sec
 >
-> For examples of how skb dynptrs can be used, please see the attached
-> selftests.
+> 2) progs/test_xdp_dynptr.c
+>    * Rewrite "progs/test_xdp.c" test to use dynptrs to parse xdp data
+>
+>      When measuring the user + system time between the original version
+>      vs. using dynptrs, and averaging the time for 10 runs (using
+>      "time ./test_progs -t xdp_attach"):
+>          original version: 0.118 sec
+>          with dynptrs: 0.094 sec
+>
+> 3) progs/test_l4lb_noinline_dynptr.c
+>    * Rewrite "progs/test_l4lb_noinline.c" test to use dynptrs to parse
+>      skb data
+>
+>      When measuring the user + system time between the original version
+>      vs. using dynptrs, and averaging the time for 10 runs (using
+>      "time ./test_progs -t l4lb_all"):
+>          original version: 0.062 sec
+>          with dynptrs: 0.081 sec
+>
+>      For number of processed verifier instructions:
+>          original version: 6268 insns
+>          with dynptrs: 2588 insns
+>
+> 4) progs/test_parse_tcp_hdr_opt_dynptr.c
+>    * Add sample code for parsing tcp hdr opt lookup using dynptrs.
+>      This logic is lifted from a real-world use case of packet parsing
+>      in katran [0], a layer 4 load balancer. The original version
+>      "progs/test_parse_tcp_hdr_opt.c" (not using dynptrs) is included
+>      here as well, for comparison.
+>
+>      When measuring the user + system time between the original version
+>      vs. using dynptrs, and averaging the time for 10 runs (using
+>      "time ./test_progs -t parse_tcp_hdr_opt"):
+>          original version: 0.031 sec
+>          with dynptrs: 0.045 sec
+>
+> 5) progs/dynptr_success.c
+>    * Add test case "test_skb_readonly" for testing attempts at writes /
+>      data slices on a prog type with read-only skb ctx.
+>
+> 6) progs/dynptr_fail.c
+>    * Add test cases "skb_invalid_data_slice{1,2}" and
+>      "xdp_invalid_data_slice" for testing that helpers that modify the
+>      underlying packet buffer automatically invalidate the associated
+>      data slice.
+>    * Add test cases "skb_invalid_ctx" and "xdp_invalid_ctx" for testing
+>      that prog types that do not support bpf_dynptr_from_skb/xdp don't
+>      have access to the API.
+>    * Add test case "skb_invalid_write" for testing that writes to a
+>      read-only data slice are rejected by the verifier.
+>
+> [0]
+> https://github.com/facebookincubator/katran/blob/main/katran/lib/bpf/pckt_parsing.h
 >
 > Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
 > ---
->  include/linux/bpf.h            |  82 +++++++++------
->  include/linux/filter.h         |  18 ++++
->  include/uapi/linux/bpf.h       |  37 +++++--
->  kernel/bpf/btf.c               |  18 ++++
->  kernel/bpf/helpers.c           |  95 ++++++++++++++---
->  kernel/bpf/verifier.c          | 185 ++++++++++++++++++++++++++-------
->  net/core/filter.c              |  60 ++++++++++-
->  tools/include/uapi/linux/bpf.h |  37 +++++--
->  8 files changed, 432 insertions(+), 100 deletions(-)
+>  .../selftests/bpf/prog_tests/cls_redirect.c   |  25 +
+>  .../testing/selftests/bpf/prog_tests/dynptr.c |  63 +-
+>  .../selftests/bpf/prog_tests/l4lb_all.c       |   2 +
+>  .../bpf/prog_tests/parse_tcp_hdr_opt.c        |  93 ++
+>  .../selftests/bpf/prog_tests/xdp_attach.c     |  11 +-
+>  .../testing/selftests/bpf/progs/dynptr_fail.c | 124 +++
+>  .../selftests/bpf/progs/dynptr_success.c      |  28 +
+>  .../bpf/progs/test_cls_redirect_dynptr.c      | 973 ++++++++++++++++++
+>  .../bpf/progs/test_l4lb_noinline_dynptr.c     | 474 +++++++++
+>  .../bpf/progs/test_parse_tcp_hdr_opt.c        | 119 +++
+>  .../bpf/progs/test_parse_tcp_hdr_opt_dynptr.c | 112 ++
+>  .../selftests/bpf/progs/test_xdp_dynptr.c     | 237 +++++
+>  .../selftests/bpf/test_tcp_hdr_options.h      |   1 +
+>  13 files changed, 2248 insertions(+), 14 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/parse_tcp_hdr_opt.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_cls_redirect_dynptr.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_l4lb_noinline_dynptr.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_parse_tcp_hdr_opt.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_parse_tcp_hdr_opt_dynptr.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_dynptr.c
 >
 
 [...]
 
->  static const struct bpf_func_proto bpf_dynptr_write_proto = {
-> @@ -1560,6 +1595,8 @@ static const struct bpf_func_proto bpf_dynptr_write_proto = {
+> diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_attach.c b/tools/testing/selftests/bpf/prog_tests/xdp_attach.c
+> index 062fbc8c8e5e..28c453bbb84a 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/xdp_attach.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/xdp_attach.c
+> @@ -4,11 +4,10 @@
+>  #define IFINDEX_LO 1
+>  #define XDP_FLAGS_REPLACE              (1U << 4)
 >
->  BPF_CALL_3(bpf_dynptr_data, const struct bpf_dynptr_kern *, ptr, u32, offset, u32, len)
+> -void serial_test_xdp_attach(void)
+> +static void serial_test_xdp_attach(const char *file)
 >  {
-> +       enum bpf_dynptr_type type;
-> +       void *data;
->         int err;
->
->         if (!ptr->data)
-> @@ -1569,10 +1606,36 @@ BPF_CALL_3(bpf_dynptr_data, const struct bpf_dynptr_kern *, ptr, u32, offset, u3
->         if (err)
->                 return 0;
->
-> -       if (bpf_dynptr_is_rdonly(ptr))
-> -               return 0;
-> +       type = bpf_dynptr_get_type(ptr);
+>         __u32 duration = 0, id1, id2, id0 = 0, len;
+>         struct bpf_object *obj1, *obj2, *obj3;
+> -       const char *file = "./test_xdp.bpf.o";
+>         struct bpf_prog_info info = {};
+>         int err, fd1, fd2, fd3;
+>         LIBBPF_OPTS(bpf_xdp_attach_opts, opts);
+> @@ -85,3 +84,11 @@ void serial_test_xdp_attach(void)
+>  out_1:
+>         bpf_object__close(obj1);
+>  }
 > +
-> +       switch (type) {
-> +       case BPF_DYNPTR_TYPE_LOCAL:
-> +       case BPF_DYNPTR_TYPE_RINGBUF:
-> +               if (bpf_dynptr_is_rdonly(ptr))
-> +                       return 0;
+> +void test_xdp_attach(void)
 
-will something break if we return ptr->data for read-only LOCAL/RINGBUF dynptr?
+this test was marked as serial (it starts with "serial_test_"), so we
+probably want to preserve that? Just keep this as
+"serial_test_xdp_attach" and rename above serial_test_xdp_attach to
+something like "subtest_xdp_attach" (this name doesn't matter to
+test_progs runner).
 
-> +
-> +               data = ptr->data;
-> +               break;
-> +       case BPF_DYNPTR_TYPE_SKB:
-> +       {
-> +               struct sk_buff *skb = ptr->data;
->
+> +{
+> +       if (test__start_subtest("xdp_attach"))
+> +               serial_test_xdp_attach("./test_xdp.bpf.o");
+> +       if (test__start_subtest("xdp_attach_dynptr"))
+> +               serial_test_xdp_attach("./test_xdp_dynptr.bpf.o");
+> +}
 
 [...]
