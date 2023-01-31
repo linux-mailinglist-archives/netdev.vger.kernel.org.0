@@ -2,123 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 456D76825AC
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 08:40:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 857B36825B6
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 08:45:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230238AbjAaHkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 02:40:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45332 "EHLO
+        id S230032AbjAaHpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 02:45:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230272AbjAaHkj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 02:40:39 -0500
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 815F73B3DE;
-        Mon, 30 Jan 2023 23:40:35 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R861e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VaVkH6A_1675150832;
-Received: from localhost(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0VaVkH6A_1675150832)
-          by smtp.aliyun-inc.com;
-          Tue, 31 Jan 2023 15:40:32 +0800
-Date:   Tue, 31 Jan 2023 15:40:32 +0800
-From:   Heng Qi <hengqi@linux.alibaba.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH net-next] virtio-net: fix possible unsigned integer
- overflow
-Message-ID: <20230131074032.GD34480@h68b04307.sqa.eu95>
-References: <20230131034337.55445-1-hengqi@linux.alibaba.com>
- <20230131021758-mutt-send-email-mst@kernel.org>
+        with ESMTP id S229895AbjAaHpy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 02:45:54 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF1236442
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 23:45:37 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id o13so13471920pjg.2
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 23:45:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:to:subject:message-id:date:from:sender
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=r0MK3YQLxWFdNYh+ayMDurpGXKVCtWhmogus04fQ/FY=;
+        b=Pjfj1JIbQTMQKk8Y5slh1CL7bk/TQAeizE7ltp2pX6R1/luDaUpBz6SoLYonT7Bsmh
+         VkH+4X3gUOlZ+5RTnf8SIPHQ2ictt1DiTzbHGZTkKTF7K4b9BB6z9sWWoDmDkbqYhfW/
+         0nww4hz0fAf/C2AKq8Z8Up/l9ICFPMejln3l3/BoTjviccHuGybUtmm7FyBlVYAVziTc
+         9xDwHPPrFWM9MnNdb1mm/eX9U+trB1nZkaWcp3lFB4yeIhKFRVR+xdeUUbEWa7lYuLW5
+         Xz1eXqloJavUrMOknwgsTJgK0F7anTKOEzK4FCdKwKyr6wdNZxl5RTxJzJSCVptAvEsL
+         AXUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:to:subject:message-id:date:from:sender
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=r0MK3YQLxWFdNYh+ayMDurpGXKVCtWhmogus04fQ/FY=;
+        b=MubAiMhtRbNvmWEZplK4CRoYNHAcQ1sjMp5iAB8XBBo53k25E+DdfB184yD9jqnXD3
+         yKS9XE253/ULmuqNA6jnB2LBBtd8hdGsJIFRFu8bHR71A3k5Nj5JvVjOMm8ZlQ4h4u5v
+         9sLi7PfYEAfdFV1En2q7gEKhnVGgfRJtg9WbTiXJdCjRZUMFAYkijX/6DglChVDRg/c4
+         Eu/P3EPN93BtsYHB3mY9APesCGcphIoodhCYzYLQS+TFThraZnOoc30PSw6KNMu2bOtU
+         Vu4s9K4LJnicuUJIKWKWklzZJA8fUmiZDnrJ5T3n5VgdqslK/BlhibNLxVyyQ+CNgn5e
+         gfwg==
+X-Gm-Message-State: AO0yUKXuVhFUBeVWczTzylLs7XzOgZR9MFyHxFUqGbpZx6dx8x/iTXG9
+        JkhhZ74pK0O42Q5S3Oliu0itT5sPv/thnwaQWBM=
+X-Google-Smtp-Source: AK7set9YhgCusOfoRKONIrvzPN92FGGvDq2gprzrQV/7gKiSLY28CbYy8EZiKTMvy3InUjl77UhmXSEDCJOt8we0gbk=
+X-Received: by 2002:a17:90a:64c5:b0:22b:ef05:ea5b with SMTP id
+ i5-20020a17090a64c500b0022bef05ea5bmr4420054pjm.50.1675151137028; Mon, 30 Jan
+ 2023 23:45:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230131021758-mutt-send-email-mst@kernel.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+Sender: samuelakin244@gmail.com
+Received: by 2002:a05:6a10:7c8d:b0:407:de16:8c5b with HTTP; Mon, 30 Jan 2023
+ 23:45:36 -0800 (PST)
+From:   "Mr. Daniel Kafando" <daniekafando001@gmail.com>
+Date:   Tue, 31 Jan 2023 07:45:36 +0000
+X-Google-Sender-Auth: 2nPw5Z0bkCEyMfO2tssvIUhJJD8
+Message-ID: <CACYMRtXL4dcRLMfL2kyxdT8rUtEXYUn52+h9z=_VkFd7Ht-+UA@mail.gmail.com>
+Subject: Am expecting your response
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: Yes, score=5.7 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,LOTS_OF_MONEY,MONEY_FRAUD_3,NA_DOLLARS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,
+        T_MONEY_PERCENT,UNDISC_MONEY autolearn=no autolearn_force=no
         version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:102d listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [samuelakin244[at]gmail.com]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [samuelakin244[at]gmail.com]
+        *  1.5 NA_DOLLARS BODY: Talks about a million North American dollars
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
+        *  0.0 T_MONEY_PERCENT X% of a lot of money for you
+        *  3.3 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+        *  0.0 MONEY_FRAUD_3 Lots of money and several fraud phrases
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 02:20:49AM -0500, Michael S. Tsirkin wrote:
-> On Tue, Jan 31, 2023 at 11:43:37AM +0800, Heng Qi wrote:
-> > When the single-buffer xdp is loaded and after xdp_linearize_page()
-> > is called, *num_buf becomes 0 and (*num_buf - 1) may overflow into
-> > a large integer in virtnet_build_xdp_buff_mrg(), resulting in
-> > unexpected packet dropping.
-> > 
-> > Fixes: ef75cb51f139 ("virtio-net: build xdp_buff with multi buffers")
-> > Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
-> > Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> 
-> Given the confusion, just make num_buf an int?
+Goodday Friend,
 
-In the structure virtio_net_hdr_mrg_rxbuf, \field{num_buffers} is unsigned int,
-which matches each other. And num_buf is used in many different places, it seems
-to be a lot of work to modify it to int.
+I am Mr.Daniel kafando. and I work with UNITED BANK OF AFRICA.Can you
+use ATM Visa card to withdraw money at ATM cash machine in your
+country?  I want to transfer money to you from my country;  it=E2=80=99s pa=
+rt
+of money taken by some old politician that was forced out of power.I
+will change the account details to yours, and apply for a visa card
+with your details in our bank, they will send the visa card to you and
+you will be withdrawing money with it and always send my own
+percentage of the money, and the money we are talking about is
+$4.2Million us dollars. Whatever amount you withdraw daily, you will
+send 50% to me and you will take 50%, the visa card and the bank
+account will be on your name,I expect your response. promptly so that
+I will give you further details.
 
-> 
-> > ---
-> >  drivers/net/virtio_net.c | 7 +++++--
-> >  1 file changed, 5 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index aaa6fe9b214a..a8e9462903fa 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -1007,6 +1007,9 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
-> >  	xdp_prepare_buff(xdp, buf - VIRTIO_XDP_HEADROOM,
-> >  			 VIRTIO_XDP_HEADROOM + vi->hdr_len, len - vi->hdr_len, true);
-> >  
-> > +	if (!*num_buf)
-> > +		return 0;
-> > +
-> >  	if (*num_buf > 1) {
-> >  		/* If we want to build multi-buffer xdp, we need
-> >  		 * to specify that the flags of xdp_buff have the
-> 
-> 
-> This means truesize won't be set.
-
-Do you mean xdp_frags_truesize please? If yes, the answer is yes, this fix
-is only for single-buffer xdp, which doesn't need xdp_frags_truesize, and
-already set it to 0 in its wrapper receive_mergeable().
-
-> 
-> > @@ -1020,10 +1023,10 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
-> >  		shinfo->xdp_frags_size = 0;
-> >  	}
-> >  
-> > -	if ((*num_buf - 1) > MAX_SKB_FRAGS)
-> > +	if (*num_buf > MAX_SKB_FRAGS + 1)
-> >  		return -EINVAL;
-> 
-> Admittedly this is cleaner.
-> 
-> >  
-> > -	while ((--*num_buf) >= 1) {
-> > +	while (--*num_buf) {
-> 
-> A bit more fragile, > 0 would be better.
-
-Sure.
-
-Thanks.
-
-> 
-> >  		buf = virtqueue_get_buf_ctx(rq->vq, &len, &ctx);
-> >  		if (unlikely(!buf)) {
-> >  			pr_debug("%s: rx error: %d buffers out of %d missing\n",
-> > -- 
-> > 2.19.1.6.gb485710b
+Mr.Daniel kafando.
