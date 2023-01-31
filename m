@@ -2,62 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9678A68345C
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 18:55:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56A7668345D
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 18:55:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbjAaRzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 12:55:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54872 "EHLO
+        id S230299AbjAaRzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 12:55:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229972AbjAaRzN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 12:55:13 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB4124A1D6;
-        Tue, 31 Jan 2023 09:55:04 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id o187so2681112ybg.3;
-        Tue, 31 Jan 2023 09:55:04 -0800 (PST)
+        with ESMTP id S229680AbjAaRzp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 12:55:45 -0500
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326F713524
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 09:55:29 -0800 (PST)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-4a263c4ddbaso214527917b3.0
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 09:55:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=KIF4ZdeaCeKjYQdmIsFHXDu+2Z1GY+nWSgWFl8nS/YA=;
-        b=RLF+cyB7m4HGu+APfhye7KrE1xi5ilw7MyG8uPHVmSgUWvoWbLjpbpH+b577q+L3uJ
-         3NUR3S1bouDTcJ337rffvNf0PUZSE2thMlzSUz58b9PvqGoimedY6Dg9tZdYI9Ip6u5s
-         inmYBt/YdwCl2KciPPKInJx2knfqKlO6MtYdUNIYlYaFBJ8UtjtxQBcoq4JB7X3Cs1Rd
-         JGBL5fTWqJcaIYo1yz+VuYZyC/YVAaFu/JsCBJqsD8IoHhfkL2Utyiu51LbDhz9Ju2g9
-         odIrji9+x/F8IN5VuT5cqs9/V6D8ljPOugolzx7d9JDggvZOrm6CfEvxSXDUyBYQY9VT
-         anuA==
+        bh=1syj8d33yfasYg+g/xpFl3jgX3utKwdVmBd7EXfxa3o=;
+        b=MwkJ5mfLVrJmE2lAtGb7PW+JtIKsGsDcwbJIylFbpvv3uT5skZA92CBIOp8orgC8cK
+         Gbgs0T2O876v009lcgeBBTt9Cf3sPdaPWKmWvL8hGciR2c/lwo38X5qmbyYuzOwwYymj
+         8t6urWOH+YyeDZG83wSgHqgHx0ZekR6VICFgUOBI/AILqEjRDvUyXwojHNhsXzMKB/sz
+         vwwK0Y0iYg2oGAdCiJtB1Dy/wE9Ux9LW4HtHSSvUBkCpr0UwESKNLYI94Xf+45wakRhX
+         cqmvu23cW/FNhwbQIcwsiP8uNI8AHOchRAq3HxXxz1irIn6sFY7j0ms9qPL+o1FMZBSA
+         Wd7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=KIF4ZdeaCeKjYQdmIsFHXDu+2Z1GY+nWSgWFl8nS/YA=;
-        b=pygI1aycdPJGGMQnRneJ/JBcoc9uOpoTCvC2Z110Nn6FBRznyytuNA4rABZvr1lToB
-         MQt7Ii5BqlVIVwEDBNq777UkNvkKPmMQLeQgoXkJWunApAGXQPT1Twv+qF7HDm9WM4ZV
-         c6mImCSyydUZsT+/HQxSQrZFUAzCkVsHD6LLVeL8Z2wXa9VtVtjw6QhH1oFjDU8Je/tT
-         plbgAUkGQMqRM+jLCdzAtKnbVJqtnUhR2K1LX+4CyWt91GOLKZBzyqBe2cSh+puX5LPm
-         KtJ5qM5Af3xTYwD5kLQ5rKzty2PZ7H+hu2eur1pfSju/FjB5O5NgdRN3HSfliVcZvwqv
-         6AqQ==
-X-Gm-Message-State: AFqh2kp1+wU8jZ9tuDEsZW1U65FJvQQreCELPMeYGc40enqQCyCd+Mzb
-        bJ+uOv5tKwyA0A46FoKhd36QC7ecfAnJxFVZJjCwcs70K2daTg==
-X-Google-Smtp-Source: AMrXdXvYkX+Q+2Nq55Xtg9CBe63p3xz5VxdUcBvFY/u+fBAokjlVxygj4lWCa8/kosL9wcm/BURlq06iUrN4nhNhtKw=
-X-Received: by 2002:a25:7d45:0:b0:802:b7a:4069 with SMTP id
- y66-20020a257d45000000b008020b7a4069mr4671719ybc.433.1675187703400; Tue, 31
- Jan 2023 09:55:03 -0800 (PST)
+        bh=1syj8d33yfasYg+g/xpFl3jgX3utKwdVmBd7EXfxa3o=;
+        b=SIaLFaWk2mvgQTFlTJIrVfcVPRS2CJmJKstCPchgmle2MExFwMm572BK7EkJsg792j
+         GG4JElGFBAZMSV0kA4wjftTLfJry0OqoWE8ndE4J2iAnPhHkHMnDV8ZTrNfY/Xp6FgcL
+         /tCkdWcmOKY7TVqtP9nhasJ8K+EaNZh2tzpKNe7legj607EB0ELIDU/CE/xPUIrOV5z7
+         OYBpphNt0zBcX0xJgT8EOm1sCzdxz9HgrgIOKpTLjAznpPj3iauPU3ysofqUKUKsuPyp
+         CT2hQLMwx6B5ulCFw8QdE2iegQvROv87H9ZaQ4kUgPXeXi1gy1t+ptOsjc/P0s9sA7ew
+         Z5iA==
+X-Gm-Message-State: AO0yUKURWUCvMQLGzgHaAhoK/c1W3ffGPRpg8LiQZrsDtCUNzVdz02xc
+        B3Ezad3RCH6l+Lh5me2CkTVtK47UbbzQw2O70PY=
+X-Google-Smtp-Source: AK7set9U9naKvXLpp08zE2ervjkczgaoP1ebE2vUJ78Z6NjNiwPURHmHiUuw5cQw6hQmJQYOkpm1AvJJV1AOHlbGv5E=
+X-Received: by 2002:a0d:d70b:0:b0:506:466c:480c with SMTP id
+ z11-20020a0dd70b000000b00506466c480cmr3755323ywd.253.1675187728277; Tue, 31
+ Jan 2023 09:55:28 -0800 (PST)
 MIME-Version: 1.0
-References: <20230127191703.3864860-1-joannelkoong@gmail.com>
- <20230127191703.3864860-4-joannelkoong@gmail.com> <20230129233928.f3wf6dd6ep75w4vz@MacBook-Pro-6.local>
- <CAJnrk1ap0dsdEzR31x0=9hTaA=4xUU+yvgT8=Ur3tEUYur=Edw@mail.gmail.com> <20230131053605.g7o75yylku6nusnp@macbook-pro-6.dhcp.thefacebook.com>
-In-Reply-To: <20230131053605.g7o75yylku6nusnp@macbook-pro-6.dhcp.thefacebook.com>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Tue, 31 Jan 2023 09:54:52 -0800
-Message-ID: <CAJnrk1Z_GB_ynL5kEaVQaxYsPFjad+3dk8JWKqDfvb1VHHavwg@mail.gmail.com>
-Subject: Re: [PATCH v9 bpf-next 3/5] bpf: Add skb dynptrs
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf@vger.kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@kernel.org, ast@kernel.org, netdev@vger.kernel.org,
-        memxor@gmail.com, kernel-team@fb.com
+References: <cover.1674921359.git.lucien.xin@gmail.com> <7e1f733cc96c7f7658fbf3276a90281b2f37acd1.1674921359.git.lucien.xin@gmail.com>
+ <0601c53b3dc178293e05d87f75f481367ff4fd47.camel@redhat.com>
+In-Reply-To: <0601c53b3dc178293e05d87f75f481367ff4fd47.camel@redhat.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 31 Jan 2023 12:55:10 -0500
+Message-ID: <CADvbK_fXGCEwuHX5PCU1-+dTTG4ZMLGLXY8A_AqJpDoR2uV-cA@mail.gmail.com>
+Subject: Re: [PATCHv4 net-next 09/10] net: add gso_ipv4_max_size and
+ gro_ipv4_max_size per device
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Aaron Conole <aconole@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Guillaume Nault <gnault@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -69,296 +84,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 9:36 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Tue, Jan 31, 2023 at 9:59 AM Paolo Abeni <pabeni@redhat.com> wrote:
 >
-> On Mon, Jan 30, 2023 at 04:44:12PM -0800, Joanne Koong wrote:
-> > On Sun, Jan 29, 2023 at 3:39 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Fri, Jan 27, 2023 at 11:17:01AM -0800, Joanne Koong wrote:
-> > > > Add skb dynptrs, which are dynptrs whose underlying pointer points
-> > > > to a skb. The dynptr acts on skb data. skb dynptrs have two main
-> > > > benefits. One is that they allow operations on sizes that are not
-> > > > statically known at compile-time (eg variable-sized accesses).
-> > > > Another is that parsing the packet data through dynptrs (instead of
-> > > > through direct access of skb->data and skb->data_end) can be more
-> > > > ergonomic and less brittle (eg does not need manual if checking for
-> > > > being within bounds of data_end).
-> > > >
-> > > > For bpf prog types that don't support writes on skb data, the dynptr is
-> > > > read-only (bpf_dynptr_write() will return an error and bpf_dynptr_data()
-> > > > will return a data slice that is read-only where any writes to it will
-> > > > be rejected by the verifier).
-> > > >
-> > > > For reads and writes through the bpf_dynptr_read() and bpf_dynptr_write()
-> > > > interfaces, reading and writing from/to data in the head as well as from/to
-> > > > non-linear paged buffers is supported. For data slices (through the
-> > > > bpf_dynptr_data() interface), if the data is in a paged buffer, the user
-> > > > must first call bpf_skb_pull_data() to pull the data into the linear
-> > > > portion.
-> > >
-> > > Looks like there is an assumption in parts of this patch that
-> > > linear part of skb is always writeable. That's not the case.
-> > > See if (ops->gen_prologue || env->seen_direct_write) in convert_ctx_accesses().
-> > > For TC progs it calls bpf_unclone_prologue() which adds hidden
-> > > bpf_skb_pull_data() in the beginning of the prog to make it writeable.
+> On Sat, 2023-01-28 at 10:58 -0500, Xin Long wrote:
+> > This patch introduces gso_ipv4_max_size and gro_ipv4_max_size
+> > per device and adds netlink attributes for them, so that IPV4
+> > BIG TCP can be guarded by a separate tunable in the next patch.
 > >
-> > I think we can make this assumption? For writable progs (referenced in
-> > the may_access_direct_pkt_data() function), all of them have a
-> > gen_prologue that unclones the buffer (eg tc_cls_act, lwt_xmit, sk_skb
-> > progs) or their linear portion is okay to write into by default (eg
-> > xdp, sk_msg, cg_sockopt progs).
+> > To not break the old application using "gso/gro_max_size" for
+> > IPv4 GSO packets, this patch updates "gso/gro_ipv4_max_size"
+> > in netif_set_gso/gro_max_size() if the new size isn't greater
+> > than GSO_LEGACY_MAX_SIZE, so that nothing will change even if
+> > userspace doesn't realize the new netlink attributes.
 >
-> but the patch was preserving seen_direct_write in some cases.
-> I'm still confused.
-
-seen_direct_write is used to determine whether to actually unclone or
-not in the program's prologue function (eg tc_cls_act_prologue() ->
-bpf_unclone_prologue() where in bpf_unclone_prologue(), if
-direct_write was not true, then it can skip doing the actual
-uncloning).
-
-I think the part of the patch you're talking about regarding
-seen_direct_write is this in check_helper_call():
-
-+ if (func_id == BPF_FUNC_dynptr_data &&
-+    dynptr_type == BPF_DYNPTR_TYPE_SKB) {
-+   bool seen_direct_write = env->seen_direct_write;
-+
-+   regs[BPF_REG_0].type |= DYNPTR_TYPE_SKB;
-+   if (!may_access_direct_pkt_data(env, NULL, BPF_WRITE))
-+     regs[BPF_REG_0].type |= MEM_RDONLY;
-+   else
-+     /*
-+     * Calling may_access_direct_pkt_data() will set
-+     * env->seen_direct_write to true if the skb is
-+     * writable. As an optimization, we can ignore
-+     * setting env->seen_direct_write.
-+     *
-+     * env->seen_direct_write is used by skb
-+     * programs to determine whether the skb's page
-+     * buffers should be cloned. Since data slice
-+     * writes would only be to the head, we can skip
-+     * this.
-+     */
-+     env->seen_direct_write = seen_direct_write;
-+ }
-
-If the data slice for a skb dynptr is writable, then seen_direct_write
-gets set to true (done internally in may_access_direct_pkt_data()) so
-that the skb is actually uncloned, whereas if it's read-only, then
-env->seen_direct_write gets reset to its original value (since the
-may_access_direct_pkt_data() call will have set env->seen_direct_write
-to true)
-
+> Not a big deal, but I think it would be nice to include the pahole info
+> showing where the new fields are located and why that are good
+> locations.
 >
-> > >
-> > > > Any bpf_dynptr_write() automatically invalidates any prior data slices
-> > > > to the skb dynptr. This is because a bpf_dynptr_write() may be writing
-> > > > to data in a paged buffer, so it will need to pull the buffer first into
-> > > > the head. The reason it needs to be pulled instead of writing directly to
-> > > > the paged buffers is because they may be cloned (only the head of the skb
-> > > > is by default uncloned). As such, any bpf_dynptr_write() will
-> > > > automatically have its prior data slices invalidated, even if the write
-> > > > is to data in the skb head (the verifier has no way of differentiating
-> > > > whether the write is to the head or paged buffers during program load
-> > > > time).
-> > >
-> > > Could you explain the workflow how bpf_dynptr_write() invalidates other
-> > > pkt pointers ?
-> > > I expected bpf_dynptr_write() to be in bpf_helper_changes_pkt_data().
-> > > Looks like bpf_dynptr_write() calls bpf_skb_store_bytes() underneath,
-> > > but that doesn't help the verifier.
-> >
-> > In the verifier in check_helper_call(), for the BPF_FUNC_dynptr_write
-> > case (line 8236) the "changes_data" variable gets set to true if the
-> > dynptr is an skb type. At the end of check_helper_call() on line 8474,
-> > since "changes_data" is true, clear_all_pkt_pointer() gets called,
-> > which invalidates the other packet pointers.
+> No need to send a new version for just for the above, unless Eric asks
+> otherwise ;)
 >
-> Ahh. I see. Thanks for explaining.
->
-> > >
-> > > > Please note as well that any other helper calls that change the
-> > > > underlying packet buffer (eg bpf_skb_pull_data()) invalidates any data
-> > > > slices of the skb dynptr as well. The stack trace for this is
-> > > > check_helper_call() -> clear_all_pkt_pointers() ->
-> > > > __clear_all_pkt_pointers() -> mark_reg_unknown().
-> > >
-> > > __clear_all_pkt_pointers isn't present in the tree. Typo ?
-> >
-> > I'll update this message, clear_all_pkt_pointers() and
-> > __clear_all_pkt_pointers() were combined in a previous commit.
-> >
-> > >
-> > > >
-> > > > For examples of how skb dynptrs can be used, please see the attached
-> > > > selftests.
-> > > >
-> > > > Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
-> > > > ---
-> > > >  include/linux/bpf.h            |  82 +++++++++------
-> > > >  include/linux/filter.h         |  18 ++++
-> > > >  include/uapi/linux/bpf.h       |  37 +++++--
-> > > >  kernel/bpf/btf.c               |  18 ++++
-> > > >  kernel/bpf/helpers.c           |  95 ++++++++++++++---
-> > > >  kernel/bpf/verifier.c          | 185 ++++++++++++++++++++++++++-------
-> > > >  net/core/filter.c              |  60 ++++++++++-
-> > > >  tools/include/uapi/linux/bpf.h |  37 +++++--
-> > > >  8 files changed, 432 insertions(+), 100 deletions(-)
-> > > >
-> > > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > > > index 14a0264fac57..1ac061b64582 100644
-> > [...]
-> > > > @@ -8243,6 +8316,28 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
-> > > >               mark_reg_known_zero(env, regs, BPF_REG_0);
-> > > >               regs[BPF_REG_0].type = PTR_TO_MEM | ret_flag;
-> > > >               regs[BPF_REG_0].mem_size = meta.mem_size;
-> > > > +             if (func_id == BPF_FUNC_dynptr_data &&
-> > > > +                 dynptr_type == BPF_DYNPTR_TYPE_SKB) {
-> > > > +                     bool seen_direct_write = env->seen_direct_write;
-> > > > +
-> > > > +                     regs[BPF_REG_0].type |= DYNPTR_TYPE_SKB;
-> > > > +                     if (!may_access_direct_pkt_data(env, NULL, BPF_WRITE))
-> > > > +                             regs[BPF_REG_0].type |= MEM_RDONLY;
-> > > > +                     else
-> > > > +                             /*
-> > > > +                              * Calling may_access_direct_pkt_data() will set
-> > > > +                              * env->seen_direct_write to true if the skb is
-> > > > +                              * writable. As an optimization, we can ignore
-> > > > +                              * setting env->seen_direct_write.
-> > > > +                              *
-> > > > +                              * env->seen_direct_write is used by skb
-> > > > +                              * programs to determine whether the skb's page
-> > > > +                              * buffers should be cloned. Since data slice
-> > > > +                              * writes would only be to the head, we can skip
-> > > > +                              * this.
->
-> I was talking about above comment. It reads as 'write to the head are allowed'.
-> But they're not. seen_direct_write is needed to do hidden pull.
->
+The the pahole info without and with the patch shows below:
 
-I will remove this line, I agree that it is confusing.
+- Without the Patch:
 
-> > > > +                              */
-> > > > +                             env->seen_direct_write = seen_direct_write;
-> > >
-> > > This looks incorrect. skb head might not be writeable.
-> > >
-> > > > +             }
-> > > >               break;
-> > > >       case RET_PTR_TO_MEM_OR_BTF_ID:
-> > > >       {
-> > > > @@ -8649,6 +8744,7 @@ enum special_kfunc_type {
-> > > >       KF_bpf_list_pop_back,
-> > > >       KF_bpf_cast_to_kern_ctx,
-> > > >       KF_bpf_rdonly_cast,
-> > > > +     KF_bpf_dynptr_from_skb,
-> > > >       KF_bpf_rcu_read_lock,
-> > > >       KF_bpf_rcu_read_unlock,
-> > > >  };
-> > > > @@ -8662,6 +8758,7 @@ BTF_ID(func, bpf_list_pop_front)
-> > > >  BTF_ID(func, bpf_list_pop_back)
-> > > >  BTF_ID(func, bpf_cast_to_kern_ctx)
-> > > >  BTF_ID(func, bpf_rdonly_cast)
-> > > > +BTF_ID(func, bpf_dynptr_from_skb)
-> > > >  BTF_SET_END(special_kfunc_set)
-> > > >
-> > > >  BTF_ID_LIST(special_kfunc_list)
-> > > > @@ -8673,6 +8770,7 @@ BTF_ID(func, bpf_list_pop_front)
-> > > >  BTF_ID(func, bpf_list_pop_back)
-> > > >  BTF_ID(func, bpf_cast_to_kern_ctx)
-> > > >  BTF_ID(func, bpf_rdonly_cast)
-> > > > +BTF_ID(func, bpf_dynptr_from_skb)
-> > > >  BTF_ID(func, bpf_rcu_read_lock)
-> > > >  BTF_ID(func, bpf_rcu_read_unlock)
-> > > >
-> > > > @@ -9263,17 +9361,26 @@ static int check_kfunc_args(struct bpf_verifier_env *env, struct bpf_kfunc_call_
-> > > >                               return ret;
-> > > >                       break;
-> > > >               case KF_ARG_PTR_TO_DYNPTR:
-> > > > +             {
-> > > > +                     enum bpf_arg_type dynptr_arg_type = ARG_PTR_TO_DYNPTR;
-> > > > +
-> > > >                       if (reg->type != PTR_TO_STACK &&
-> > > >                           reg->type != CONST_PTR_TO_DYNPTR) {
-> > > >                               verbose(env, "arg#%d expected pointer to stack or dynptr_ptr\n", i);
-> > > >                               return -EINVAL;
-> > > >                       }
-> > > >
-> > > > -                     ret = process_dynptr_func(env, regno, insn_idx,
-> > > > -                                               ARG_PTR_TO_DYNPTR | MEM_RDONLY);
-> > > > +                     if (meta->func_id == special_kfunc_list[KF_bpf_dynptr_from_skb])
-> > > > +                             dynptr_arg_type |= MEM_UNINIT | DYNPTR_TYPE_SKB;
-> > > > +                     else
-> > > > +                             dynptr_arg_type |= MEM_RDONLY;
-> > > > +
-> > > > +                     ret = process_dynptr_func(env, regno, insn_idx, dynptr_arg_type,
-> > > > +                                               meta->func_id);
-> > > >                       if (ret < 0)
-> > > >                               return ret;
-> > > >                       break;
-> > > > +             }
-> > > >               case KF_ARG_PTR_TO_LIST_HEAD:
-> > > >                       if (reg->type != PTR_TO_MAP_VALUE &&
-> > > >                           reg->type != (PTR_TO_BTF_ID | MEM_ALLOC)) {
-> > > > @@ -15857,6 +15964,14 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
-> > > >                  desc->func_id == special_kfunc_list[KF_bpf_rdonly_cast]) {
-> > > >               insn_buf[0] = BPF_MOV64_REG(BPF_REG_0, BPF_REG_1);
-> > > >               *cnt = 1;
-> > > > +     } else if (desc->func_id == special_kfunc_list[KF_bpf_dynptr_from_skb]) {
-> > > > +             bool is_rdonly = !may_access_direct_pkt_data(env, NULL, BPF_WRITE);
-> > > > +             struct bpf_insn addr[2] = { BPF_LD_IMM64(BPF_REG_4, is_rdonly) };
-> > >
-> > > Why use 16-byte insn to pass boolean in R4 ?
-> > > Single 8-byte MOV would do.
-> >
-> > Great, I'll change it to a 8-byte MOV
-> >
-> > >
-> > > > +
-> > > > +             insn_buf[0] = addr[0];
-> > > > +             insn_buf[1] = addr[1];
-> > > > +             insn_buf[2] = *insn;
-> > > > +             *cnt = 3;
-> > > >       }
-> > > >       return 0;
-> > > >  }
-> > > > diff --git a/net/core/filter.c b/net/core/filter.c
-> > > > index 6da78b3d381e..ddb47126071a 100644
-> > > > --- a/net/core/filter.c
-> > > > +++ b/net/core/filter.c
-> > > > @@ -1684,8 +1684,8 @@ static inline void bpf_pull_mac_rcsum(struct sk_buff *skb)
-> > > >               skb_postpull_rcsum(skb, skb_mac_header(skb), skb->mac_len);
-> > > >  }
-> > > >
-> > > > -BPF_CALL_5(bpf_skb_store_bytes, struct sk_buff *, skb, u32, offset,
-> > > > -        const void *, from, u32, len, u64, flags)
-> > > > +int __bpf_skb_store_bytes(struct sk_buff *skb, u32 offset, const void *from,
-> > > > +                       u32 len, u64 flags)
-> > >
-> > > This change is just to be able to call __bpf_skb_store_bytes() ?
-> > > If so, it's unnecessary.
-> > > See:
-> > > BPF_CALL_4(sk_reuseport_load_bytes,
-> > >            const struct sk_reuseport_kern *, reuse_kern, u32, offset,
-> > >            void *, to, u32, len)
-> > > {
-> > >         return ____bpf_skb_load_bytes(reuse_kern->skb, offset, to, len);
-> > > }
-> > >
-> >
-> > There was prior feedback [0] that using four underscores to call a
-> > helper function is confusing and makes it ungreppable
->
-> There are plenty of ungreppable funcs in the kernel.
-> Try finding where folio_test_dirty() is defined.
-> mm subsystem is full of such 'features'.
-> Not friendly for casual kernel code reader, but useful.
->
-> Since quadruple underscore is already used in the code base
-> I see no reason to sacrifice bpf_skb_load_bytes performance with extra call.
+# pahole --hex -C net_device vmlinux
+struct net_device {
+...
+long unsigned int          gro_flush_timeout;    /* 0x330   0x8 */
+int                        napi_defer_hard_irqs; /* 0x338   0x4 */
+unsigned int               gro_max_size;         /* 0x33c   0x4 */  <---------
+/* --- cacheline 13 boundary (832 bytes) --- */
+rx_handler_func_t *        rx_handler;           /* 0x340   0x8 */
+void *                     rx_handler_data;      /* 0x348   0x8 */
+struct mini_Qdisc *        miniq_ingress;        /* 0x350   0x8 */
+struct netdev_queue *      ingress_queue;        /* 0x358   0x8 */
+struct nf_hook_entries *   nf_hooks_ingress;     /* 0x360   0x8 */
+unsigned char              broadcast[32];        /* 0x368  0x20 */
+/* --- cacheline 14 boundary (896 bytes) was 8 bytes ago --- */
+struct cpu_rmap *          rx_cpu_rmap;          /* 0x388   0x8 */
+struct hlist_node          index_hlist;          /* 0x390  0x10 */
 
-I don't have a preference either way, I'll change it to use the
-quadruple underscore in the next version
+/* XXX 32 bytes hole, try to pack */
+
+/* --- cacheline 15 boundary (960 bytes) --- */
+struct netdev_queue *      _tx __attribute__((__aligned__(64))); /*
+0x3c0   0x8 */
+...
+
+/* --- cacheline 32 boundary (2048 bytes) was 24 bytes ago --- */
+const struct attribute_group  * sysfs_groups[4]; /* 0x818  0x20 */
+const struct attribute_group  * sysfs_rx_queue_group; /* 0x838   0x8 */
+/* --- cacheline 33 boundary (2112 bytes) --- */
+const struct rtnl_link_ops  * rtnl_link_ops;     /* 0x840   0x8 */
+unsigned int               gso_max_size;         /* 0x848   0x4 */
+unsigned int               tso_max_size;         /* 0x84c   0x4 */
+u16                        gso_max_segs;         /* 0x850   0x2 */
+u16                        tso_max_segs;         /* 0x852   0x2 */   <---------
+
+/* XXX 4 bytes hole, try to pack */
+
+const struct dcbnl_rtnl_ops  * dcbnl_ops;        /* 0x858   0x8 */
+s16                        num_tc;               /* 0x860   0x2 */
+struct netdev_tc_txq       tc_to_txq[16];        /* 0x862  0x40 */
+/* --- cacheline 34 boundary (2176 bytes) was 34 bytes ago --- */
+u8                         prio_tc_map[16];      /* 0x8a2  0x10 */
+...
+}
+
+
+- With the Patch:
+
+For "gso_ipv4_max_size", it filled the hole as expected.
+
+/* --- cacheline 33 boundary (2112 bytes) --- */
+const struct rtnl_link_ops  * rtnl_link_ops;     /* 0x840   0x8 */
+unsigned int               gso_max_size;         /* 0x848   0x4 */
+unsigned int               tso_max_size;         /* 0x84c   0x4 */
+u16                        gso_max_segs;         /* 0x850   0x2 */
+u16                        tso_max_segs;         /* 0x852   0x2 */
+unsigned int               gso_ipv4_max_size;    /* 0x854   0x4 */ <-------
+const struct dcbnl_rtnl_ops  * dcbnl_ops;        /* 0x858   0x8 */
+s16                        num_tc;               /* 0x860   0x2 */
+struct netdev_tc_txq       tc_to_txq[16];        /* 0x862  0x40 */
+/* --- cacheline 34 boundary (2176 bytes) was 34 bytes ago --- */
+u8                         prio_tc_map[16];      /* 0x8a2  0x10 */
+
+
+For "gro_ipv4_max_size", these are no byte holes, I just put it
+in the "Cache lines mostly used on receive path" area, and
+next to gro_max_size.
+
+long unsigned int          gro_flush_timeout;    /* 0x330   0x8 */
+int                        napi_defer_hard_irqs; /* 0x338   0x4 */
+unsigned int               gro_max_size;         /* 0x33c   0x4 */
+/* --- cacheline 13 boundary (832 bytes) --- */
+unsigned int               gro_ipv4_max_size;    /* 0x340   0x4 */  <------
+
+/* XXX 4 bytes hole, try to pack */
+
+rx_handler_func_t *        rx_handler;           /* 0x348   0x8 */
+void *                     rx_handler_data;      /* 0x350   0x8 */
+struct mini_Qdisc *        miniq_ingress;        /* 0x358   0x8 */
+struct netdev_queue *      ingress_queue;        /* 0x360   0x8 */
+struct nf_hook_entries *   nf_hooks_ingress;     /* 0x368   0x8 */
+unsigned char              broadcast[32];        /* 0x370  0x20 */
+/* --- cacheline 14 boundary (896 bytes) was 16 bytes ago --- */
+struct cpu_rmap *          rx_cpu_rmap;          /* 0x390   0x8 */
+struct hlist_node          index_hlist;          /* 0x398  0x10 */
+
+/* XXX 24 bytes hole, try to pack */
+
+/* --- cacheline 15 boundary (960 bytes) --- */
+struct netdev_queue *      _tx __attribute__((__aligned__(64))); /*
+0x3c0   0x8 */
+
+
+Thanks.
