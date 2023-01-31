@@ -2,63 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA4DB683523
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 19:26:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3FA7683526
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 19:27:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231190AbjAaS0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 13:26:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51268 "EHLO
+        id S231254AbjAaS1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 13:27:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231167AbjAaS0K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 13:26:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3330427D7E;
-        Tue, 31 Jan 2023 10:26:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CEC03B81E21;
-        Tue, 31 Jan 2023 18:26:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 245F1C433D2;
-        Tue, 31 Jan 2023 18:26:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675189566;
-        bh=lkbkiaZrD8zXRI/8NCIDbrXjxjGi9DThHe+rjAlqA5w=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=euAsoBtPzn/yYx5mlQiQtm26AtDlx68REJAuTRiDW4BOSy3CBk/q9XRaDsoDtUPmp
-         CoB2/Pu9xwupxGVScMGKmS2HfTGWPUl4cmiDYF/TFq8rWH7n02RJWfiYqPX6iEUYls
-         VUaeInSYwlTD33ytr3rvAopR4D4YYnVPbHyJzBJgcWYwdDF0jFcfZQBPQaZLLfEv/x
-         qJqxhnvgxx+Bp33hb3ivX4UxTf0Y3wVQaQkhn7wJBTpL7JtYETbMtybvOs3uT4/wSA
-         NNdejM649swXEZVONGWcEBoWRcprVUo2RiXdR/O5We0o2jLRfqR2qmdEug1IDcciIn
-         oFOd7GMGqMNrw==
-Message-ID: <e37497f5-bca7-aa9a-6629-472cbd8072a3@kernel.org>
-Date:   Tue, 31 Jan 2023 19:25:58 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH net-next v2 1/5] dt-bindings: net: Add Motorcomm yt8xxx
- ethernet phy
-To:     Frank Sae <Frank.Sae@motor-comm.com>,
-        Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S230295AbjAaS1H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 13:27:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 405EF3EFC6
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 10:26:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675189591;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tPVr9VQU03eEXhGeiXbAtJeJqwMDVcfzCgJzhcu/FKQ=;
+        b=PjX8jO6i9vgN4x1HcbMwX0m1vMa7NKNFR3SAU6pP6lex1B/PdTNgDOlTV1wKi9FCReOmUx
+        5bk15yKGxEXUjoE++Bdgze/hLEZe7e6WfXtE8Cf+BYbATakjZThuSFTjiOm764UT8lZR5P
+        Wl6jVmtn+MlBGn3Qu1JP7mwBO2Xuxgc=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-487-BAeQ2OYrP7upwcZC87y7bQ-1; Tue, 31 Jan 2023 13:26:29 -0500
+X-MC-Unique: BAeQ2OYrP7upwcZC87y7bQ-1
+Received: by mail-qt1-f197.google.com with SMTP id i5-20020ac813c5000000b003b86b748aadso3094008qtj.14
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 10:26:29 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tPVr9VQU03eEXhGeiXbAtJeJqwMDVcfzCgJzhcu/FKQ=;
+        b=GsFce1ioZtyTG4LtipvteZJHT8qAT3v/v53iP4C592QHc4OWvGwdNha8z/5DDf0B7I
+         NMLLI6jC/v0LOGmgKv/78WN7y3Aj/VKvI3ziXEbC305Drm9dojQfxbjZbmH5Q+XVpoXc
+         XeP5RjG5i/H41Yu67npr3DGDXrDbKT7k4XGKPss/Bg0OHGlRMrUE87AjVePYegHMxw1d
+         P5ErY/mLezUaerjFMwpW4QWBLZkDRxPNOoneBliGpjJ2lGMwApSu8Iquhh+PEJ3UmqYC
+         LOfEw4oDVFGVTWRgYyzwf/Zr/1/0UTtr8qNJ0Tu2RIgrP0dPH1wrn+utfjx5/zHesTvq
+         E5+g==
+X-Gm-Message-State: AO0yUKUsks/w2oaCN/OppvW/Q1GHdaFVC2rgoMx15DtffQDvSWHwTTIA
+        za5GIZW4nYUuPRHeBjz3odedRrH+VqfJ25NmnH0PQx3j5DuuNoQAtnmzLJseCWBfQbIVSGPvTMZ
+        6O0HxoaeBhCzQbP9L
+X-Received: by 2002:ac8:550a:0:b0:3b8:6d44:ca7e with SMTP id j10-20020ac8550a000000b003b86d44ca7emr5494711qtq.4.1675189589250;
+        Tue, 31 Jan 2023 10:26:29 -0800 (PST)
+X-Google-Smtp-Source: AK7set/erd8DGEec+uC8MBs3TmM38Y0xZXmeSbm8CsnlfLum7slDnCe96fqRFdeXFk8v8JRTLdgYcA==
+X-Received: by 2002:ac8:550a:0:b0:3b8:6d44:ca7e with SMTP id j10-20020ac8550a000000b003b86d44ca7emr5494682qtq.4.1675189588957;
+        Tue, 31 Jan 2023 10:26:28 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
+        by smtp.gmail.com with ESMTPSA id k14-20020ac8604e000000b003ab7aee56a0sm10161085qtm.39.2023.01.31.10.26.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Jan 2023 10:26:28 -0800 (PST)
+Message-ID: <58cefd5871c4901a6f9c0394891637fed170bb47.camel@redhat.com>
+Subject: Re: [PATCH v2 4/4] selftests: net: udpgso_bench_tx: Cater for
+ pending datagrams zerocopy benchmarking
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Andrei Gherzan <andrei.gherzan@canonical.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     xiaogang.fan@motor-comm.com, fei.zhang@motor-comm.com,
-        hua.sun@motor-comm.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230128031314.19752-1-Frank.Sae@motor-comm.com>
- <20230128031314.19752-2-Frank.Sae@motor-comm.com>
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20230128031314.19752-2-Frank.Sae@motor-comm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 31 Jan 2023 19:26:25 +0100
+In-Reply-To: <Y9lCYT3XUgo4npox@qwirkle>
+References: <20230131130412.432549-1-andrei.gherzan@canonical.com>
+         <20230131130412.432549-4-andrei.gherzan@canonical.com>
+         <d9ca623d01274889913001ce92f686652fa8fea8.camel@redhat.com>
+         <Y9kvADcYZ18XFTXu@qwirkle>
+         <17e062f077235b949090cba893c91f5637cc1f0e.camel@redhat.com>
+         <Y9lCYT3XUgo4npox@qwirkle>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+MIME-Version: 1.0
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,143 +87,154 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/01/2023 04:13, Frank Sae wrote:
->  Add a YAML binding document for the Motorcom yt8xxx Ethernet phy driver.
->  
-> Signed-off-by: Frank Sae <Frank.Sae@motor-comm.com>
+On Tue, 2023-01-31 at 16:31 +0000, Andrei Gherzan wrote:
+> On 23/01/31 05:22PM, Paolo Abeni wrote:
+> > On Tue, 2023-01-31 at 15:08 +0000, Andrei Gherzan wrote:
+> > > On 23/01/31 03:51PM, Paolo Abeni wrote:
+> > > > On Tue, 2023-01-31 at 13:04 +0000, Andrei Gherzan wrote:
+> > > > > The test tool can check that the zerocopy number of completions v=
+alue is
+> > > > > valid taking into consideration the number of datagram send calls=
+. This can
+> > > > > catch the system into a state where the datagrams are still in th=
+e system
+> > > > > (for example in a qdisk, waiting for the network interface to ret=
+urn a
+> > > > > completion notification, etc).
+> > > > >=20
+> > > > > This change adds a retry logic of computing the number of complet=
+ions up to
+> > > > > a configurable (via CLI) timeout (default: 2 seconds).
+> > > > >=20
+> > > > > Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
+> > > > > ---
+> > > > >  tools/testing/selftests/net/udpgso_bench_tx.c | 38 +++++++++++++=
+++----
+> > > > >  1 file changed, 30 insertions(+), 8 deletions(-)
+> > > > >=20
+> > > > > diff --git a/tools/testing/selftests/net/udpgso_bench_tx.c b/tool=
+s/testing/selftests/net/udpgso_bench_tx.c
+> > > > > index b47b5c32039f..5a29b5f24023 100644
+> > > > > --- a/tools/testing/selftests/net/udpgso_bench_tx.c
+> > > > > +++ b/tools/testing/selftests/net/udpgso_bench_tx.c
+> > > > > @@ -62,6 +62,7 @@ static int	cfg_payload_len	=3D (1472 * 42);
+> > > > >  static int	cfg_port	=3D 8000;
+> > > > >  static int	cfg_runtime_ms	=3D -1;
+> > > > >  static bool	cfg_poll;
+> > > > > +static int	cfg_poll_loop_timeout_ms =3D 2000;
+> > > > >  static bool	cfg_segment;
+> > > > >  static bool	cfg_sendmmsg;
+> > > > >  static bool	cfg_tcp;
+> > > > > @@ -235,16 +236,17 @@ static void flush_errqueue_recv(int fd)
+> > > > >  	}
+> > > > >  }
+> > > > > =20
+> > > > > -static void flush_errqueue(int fd, const bool do_poll)
+> > > > > +static void flush_errqueue(int fd, const bool do_poll,
+> > > > > +		unsigned long poll_timeout, const bool poll_err)
+> > > > >  {
+> > > > >  	if (do_poll) {
+> > > > >  		struct pollfd fds =3D {0};
+> > > > >  		int ret;
+> > > > > =20
+> > > > >  		fds.fd =3D fd;
+> > > > > -		ret =3D poll(&fds, 1, 500);
+> > > > > +		ret =3D poll(&fds, 1, poll_timeout);
+> > > > >  		if (ret =3D=3D 0) {
+> > > > > -			if (cfg_verbose)
+> > > > > +			if ((cfg_verbose) && (poll_err))
+> > > > >  				fprintf(stderr, "poll timeout\n");
+> > > > >  		} else if (ret < 0) {
+> > > > >  			error(1, errno, "poll");
+> > > > > @@ -254,6 +256,22 @@ static void flush_errqueue(int fd, const boo=
+l do_poll)
+> > > > >  	flush_errqueue_recv(fd);
+> > > > >  }
+> > > > > =20
+> > > > > +static void flush_errqueue_retry(int fd, const bool do_poll, uns=
+igned long num_sends)
+> > > > > +{
+> > > > > +	unsigned long tnow, tstop;
+> > > > > +	bool first_try =3D true;
+> > > > > +
+> > > > > +	tnow =3D gettimeofday_ms();
+> > > > > +	tstop =3D tnow + cfg_poll_loop_timeout_ms;
+> > > > > +	do {
+> > > > > +		flush_errqueue(fd, do_poll, tstop - tnow, first_try);
+> > > > > +		first_try =3D false;
+> > > > > +		if (!do_poll)
+> > > > > +			usleep(1000);  // a throttling delay if polling is enabled
+> > > >=20
+> > > > Even if the kernel codying style is not very strictly enforced for
+> > > > self-tests, please avoid c++ style comments.
+> > > >=20
+> > > > More importantly, as Willem noded, this function is always called w=
+ith
+> > > > do_poll =3D=3D true. You should drop such argument and the related =
+branch
+> > > > above.
+> > >=20
+> > > Agreed. I will drop.
+> > >=20
+> > > >=20
+> > > > > +		tnow =3D gettimeofday_ms();
+> > > > > +	} while ((stat_zcopies !=3D num_sends) && (tnow < tstop));
+> > > > > +}
+> > > > > +
+> > > > >  static int send_tcp(int fd, char *data)
+> > > > >  {
+> > > > >  	int ret, done =3D 0, count =3D 0;
+> > > > > @@ -413,8 +431,9 @@ static int send_udp_segment(int fd, char *dat=
+a)
+> > > > > =20
+> > > > >  static void usage(const char *filepath)
+> > > > >  {
+> > > > > -	error(1, 0, "Usage: %s [-46acmHPtTuvz] [-C cpu] [-D dst ip] [-l=
+ secs] [-M messagenr] [-p port] [-s sendsize] [-S gsosize]",
+> > > > > -		    filepath);
+> > > > > +	error(1, 0,
+> > > > > +			"Usage: %s [-46acmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] [-L=
+ secs] [-M messagenr] [-p port] [-s sendsize] [-S gsosize]",
+> > > > > +			filepath);
+> > > >=20
+> > > > Please avoid introducing unnecessary white-space changes (no reason=
+ to
+> > > > move the usage text on a new line)
+> > >=20
+> > > The only reason why I've done this was to make scripts/checkpatch.pl
+> > > happy:
+> > >=20
+> > > WARNING: line length of 141 exceeds 100 columns
+> > > #83: FILE: tools/testing/selftests/net/udpgso_bench_tx.c:432:
+> > >=20
+> > > I can drop and ignore the warning, or maybe it would have been better=
+ to
+> > > just mention this in git message. What do you prefer?
+> >=20
+> > Long lines are allowed for (kernel) messages, to make them easily grep-
+> > able.
+> >=20
+> > In this specific case you can either append the new text to the message
+> > without introducing that strange indentation or even better break the
+> > usage string alike:
+> >=20
+> > 	"Usage: %s [-46acmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] [-L secs]"
+> > 	" [-L secs] [-M messagenr] [-p port] [-s sendsize] [-S gsosize]"
+>=20
+> Funny I went through this too but it also fails with:
+>=20
+> WARNING: quoted string split across lines
+> #84: FILE: tools/testing/selftests/net/udpgso_bench_tx.c:433
+>=20
+> This is how I usually do it but it seems like it's flagged too.
 
-Please use scripts/get_maintainers.pl to get a list of necessary people
-and lists to CC.  It might happen, that command when run on an older
-kernel, gives you outdated entries.  Therefore please be sure you base
-your patches on recent Linux kernel.
+I'm all for ignoring this warning in this specific context. Among other
+things it will be consistent with other existing self-tests.
 
-This missed also DT list so it means it won't be tested.
+Eventually the checkpatch script could be tuned (with an unrelated
+patch) to discriminate between kernel and self-tests code.
 
-> ---
->  .../bindings/net/motorcomm,yt8xxx.yaml        | 102 ++++++++++++++++++
->  .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
->  MAINTAINERS                                   |   1 +
->  3 files changed, 105 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
-> new file mode 100644
-> index 000000000000..b666584d51eb
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
-> @@ -0,0 +1,102 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/motorcomm,yt8xxx.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: MotorComm yt8xxx Ethernet PHY
-> +
-> +maintainers:
-> +  - frank sae <frank.sae@motor-comm.com>
-> +
-> +allOf:
-> +  - $ref: ethernet-phy.yaml#
-> +
-> +properties:
+Cheers,
 
-I think the problem of missing compatible is still not solved...
-
-> +  rx-internal-delay-ps:
-> +    description: |
-> +      RGMII RX Clock Delay used only when PHY operates in RGMII mode with
-> +      internal delay (phy-mode is 'rgmii-id' or 'rgmii-rxid') in pico-seconds.
-> +    enum: [ 0, 150, 300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650,
-> +            1800, 1900, 1950, 2050, 2100, 2200, 2250, 2350, 2500, 2650, 2800,
-> +            2950, 3100, 3250, 3400, 3550, 3700, 3850, 4000, 4150 ]
-> +    default: 1900
-> +
-> +  tx-internal-delay-ps:
-> +    description: |
-> +      RGMII TX Clock Delay used only when PHY operates in RGMII mode with
-> +      internal delay (phy-mode is 'rgmii-id' or 'rgmii-txid') in pico-seconds.
-> +    enum: [ 0, 150, 300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800,
-> +            1950, 2100, 2250 ]
-> +    default: 150
-> +
-> +  motorcomm,clk-out-frequency-hz:
-> +    description: clock output on clock output pin.
-> +    enum: [0, 25000000, 125000000]
-> +    default: 0
-> +
-> +  motorcomm,keep-pll-enabled:
-> +    description: |
-> +      If set, keep the PLL enabled even if there is no link. Useful if you
-> +      want to use the clock output without an ethernet link.
-> +    type: boolean
-> +
-> +  motorcomm,auto-sleep-disabled:
-> +    description: |
-> +      If set, PHY will not enter sleep mode and close AFE after unplug cable
-> +      for a timer.
-> +    type: boolean
-> +
-> +  motorcomm,tx-clk-adj-enabled:
-> +    description: |
-> +      This configuration is mainly to adapt to VF2 with JH7110 SoC.
-> +      Useful if you want to use tx-clk-xxxx-inverted to adj the delay of tx clk.
-> +    type: boolean
-> +
-> +  motorcomm,tx-clk-10-inverted:
-> +    description: |
-> +      Use original or inverted RGMII Transmit PHY Clock to drive the RGMII
-> +      Transmit PHY Clock delay train configuration when speed is 10Mbps.
-> +    type: boolean
-> +
-> +  motorcomm,tx-clk-100-inverted:
-> +    description: |
-> +      Use original or inverted RGMII Transmit PHY Clock to drive the RGMII
-> +      Transmit PHY Clock delay train configuration when speed is 100Mbps.
-> +    type: boolean
-> +
-> +  motorcomm,tx-clk-1000-inverted:
-> +    description: |
-> +      Use original or inverted RGMII Transmit PHY Clock to drive the RGMII
-> +      Transmit PHY Clock delay train configuration when speed is 1000Mbps.
-> +    type: boolean
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    mdio0 {
-
-mdio
-
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +        phy-mode = "rgmii-id";
-> +        ethernet-phy@4 {
-> +            reg = <4>;
-> +            rx-internal-delay-ps = <2100>;
-> +            tx-internal-delay-ps = <150>;
-> +            motorcomm,clk-out-frequency-hz = <0>;
-> +            motorcomm,keep-pll-enabled;
-> +            motorcomm,auto-sleep-disabled;
-> +        };
-> +    };
-> +  - |
-> +    mdio0 {
-
-mdio
-
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +        phy-mode = "rgmii";
-> +        ethernet-phy@5 {
-> +            reg = <5>;
-> +            motorcomm,clk-out-frequency-hz = <125000000>;
-> +            motorcomm,keep-pll-enabled;
-> +            motorcomm,auto-sleep-disabled;
-> +        };
-> +    };
-
-Best regards,
-Krzysztof
+Paolo
 
