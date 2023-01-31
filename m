@@ -2,159 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F41A682BAB
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 12:42:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01D88682BB2
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 12:43:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231821AbjAaLl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 06:41:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39460 "EHLO
+        id S231836AbjAaLnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 06:43:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231792AbjAaLlz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 06:41:55 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20CB9CC26
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 03:41:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675165267;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=t0pVvL03jcaCFyRgspQVvHakK5COVOMI25MafnyLE2I=;
-        b=ELEul7R1rw11PjtZC2u/j+I3qJ2L2GKnGbg5xoVlkti23gaBLRLWs7oDpGgDZIKRAWecj3
-        Xl+EW85hKjSL4cQp/fn2uIzxzDt5hoI/Y0gBi9OgZlymPjvG3xDUvzw2aF4nNFsF5Eb6TU
-        EzBN9JL7OfqeyoALsg094mm0cvqC4dw=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-136-lzKTgfrSMBm4PoY89zAl7w-1; Tue, 31 Jan 2023 06:41:06 -0500
-X-MC-Unique: lzKTgfrSMBm4PoY89zAl7w-1
-Received: by mail-qk1-f200.google.com with SMTP id w17-20020a05620a425100b00706bf3b459eso8989430qko.11
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 03:41:06 -0800 (PST)
+        with ESMTP id S231833AbjAaLnM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 06:43:12 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911C5A259
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 03:43:04 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id lu11so3417713ejb.3
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 03:43:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=xyPjlnYpCPxGsCquvTFi5VDTIk6JDJjiRwkGCbPL5r8=;
+        b=oq1A3H0gnWc2MPatjj1BnJMrWoBkm25+DID/+4M1HFmSB10UY6YsLWIdC7y9JAH0eZ
+         Uqa4q5Ze/i4/P1SQDSI14ChcsaA+NtNKqQ1ZzispIeJF7cH0QvF1BBklYxtlv8JJ9YqP
+         6hdBMh0bMkN/ysAF5PHbUYR1lfpJEgaG6uLRqz7S59rWn6rkd9iO2wPeURlVwKGZSfKh
+         0AWKPt7WSt1gWPropkIffu/CTiVfZNudD58tSSlajRA+rUIZkUVFApG1GpfFkIpRA396
+         SPL66Yc4QQuSV3O0mbhNNnBbiytaunaINx62jMZ/6VHukbVjdloo4kVbNNp1NUfO5Z8B
+         ZBRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=t0pVvL03jcaCFyRgspQVvHakK5COVOMI25MafnyLE2I=;
-        b=7XgII4c4t6+gisJHCBIHOeaHCR0aGQI0yKKTMe6waPrUPuVsDI1PZwxhBYx0b6P3De
-         aYavsb5mGiU1i5SxVpSr6gF9Usza4hD9en5dWtmu/eL8xc2civAF7wGdjoowsk6eZMRg
-         0HqrotLLw86vrCTS+MUx6RYB6spVoPtr4EVGXpROav2C7Pcy2Ze4rOESGZJlmGxmcUA0
-         +YKsAc6niM5dTQeAYNRwNd0GP+qq6YJTTt9chao6NHBYmgE1lUqzxHIXY76CvMvava4Z
-         Hvxcqbjf4eBThvOBCkPGj5P6H1IqZXraZAh2b/TIRCBkqzlroETAp92yqJIJ+aMqMe5g
-         kdcQ==
-X-Gm-Message-State: AO0yUKUzSZvvL4luQJK67tBmwbQrwdjj3PP55xHfSyNG8YJOH5oPmgVc
-        QA5xhdaYMGJ6ZXYDX8+i+YeiA8IdDRvkHXQ1TXhz1phQDmPcLSLlA8lw28CVwzhoJ8rlMgWTOpm
-        Xu1eGMbQ4ulU+G+cg
-X-Received: by 2002:a0c:9130:0:b0:53a:6000:e4ae with SMTP id q45-20020a0c9130000000b0053a6000e4aemr6168974qvq.4.1675165265541;
-        Tue, 31 Jan 2023 03:41:05 -0800 (PST)
-X-Google-Smtp-Source: AK7set9f6OCpGakG2JgTMvzK1B61y13TQZr3Nc5Q8YgVjyNptfDGsEnb3nyJlrcbvN1U9e8uqZwy4Q==
-X-Received: by 2002:a0c:9130:0:b0:53a:6000:e4ae with SMTP id q45-20020a0c9130000000b0053a6000e4aemr6168932qvq.4.1675165265060;
-        Tue, 31 Jan 2023 03:41:05 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
-        by smtp.gmail.com with ESMTPSA id p74-20020a37424d000000b0071a5dbcafbfsm6948896qka.29.2023.01.31.03.41.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Jan 2023 03:41:04 -0800 (PST)
-Message-ID: <7c996ac279a6a2fa527906c3e91219ceb64e93fc.camel@redhat.com>
-Subject: Re: [PATCH v3 2/2] virtio_net: notify MAC address change on device
- initialization
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Laurent Vivier <lvivier@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org,
-        Cindy Lu <lulu@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>,
-        Gautam Dawar <gautam.dawar@xilinx.com>,
-        Eugenio =?ISO-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
-        Parav Pandit <parav@nvidia.com>
-Date:   Tue, 31 Jan 2023 12:41:00 +0100
-In-Reply-To: <8bb17aed-d643-2e33-472a-9f237e26e4d1@redhat.com>
-References: <20230127204500.51930-1-lvivier@redhat.com>
-         <20230127204500.51930-3-lvivier@redhat.com>
-         <949500bd10077989eb21bd41d6bb1a0de296f9d8.camel@redhat.com>
-         <8bb17aed-d643-2e33-472a-9f237e26e4d1@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=xyPjlnYpCPxGsCquvTFi5VDTIk6JDJjiRwkGCbPL5r8=;
+        b=iHnTfn5bPt5YDcdeANvXgnrx7hruOu94Ur/wMYVSWNqr0ld67mODiN9nwgv7aJIRao
+         xF3EoX7t+nZ2X0lB8MufR0uY4PdxVcpSbwUfhAxDgu50YWZlSUr80v1wnzoX0CFYAfRg
+         fQMa0Cbjm2Lid6qPnqVFv+sqvtv3K2sAlKKO1AlPAktRh1qLPn/a0CWbGgc3Cmee3LQ2
+         aS75/U2iF0ifxqWCcLUwT00BmUfvD3BW4XKGx7OVOVuUg3Kq8zZP6cPxc0w63b/w9l7b
+         uqpY1+6CboYIFhtCDdbwL4mRsv/OCx1JY4RJM/XiO/2cp+ZRl2AZW5FqnEYaDO1sR7gg
+         YIEg==
+X-Gm-Message-State: AO0yUKWDSeM9YTOiWjHkRlR5oIQajoy8+JbeS5oyKv6H+ceejsvnIa5t
+        U8FSLjO7GVMbtk98ExXLgJXvc1AbUnIXfSkyTu0=
+X-Google-Smtp-Source: AK7set+4aX/K8QGI3mUGCu6vOOofqBAFhsilapzLv/fG0dBt54NzAq/2ifVkYamXT0ybUPt8nXVoazYFChd6Y5vV/j0=
+X-Received: by 2002:a17:907:2cea:b0:88b:93c0:34f2 with SMTP id
+ hz10-20020a1709072cea00b0088b93c034f2mr1034826ejc.296.1675165382446; Tue, 31
+ Jan 2023 03:43:02 -0800 (PST)
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Received: by 2002:a17:907:8e8d:b0:86f:161b:184e with HTTP; Tue, 31 Jan 2023
+ 03:43:01 -0800 (PST)
+Reply-To: lilywilliam989@gmail.com
+From:   Lily William <luben8213@gmail.com>
+Date:   Tue, 31 Jan 2023 03:43:01 -0800
+Message-ID: <CANyAdH_D=o2iO_iAvwjk3e2c186yP+qRqxa_SJrERBYaHUNWJw@mail.gmail.com>
+Subject: Hi Dear,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.6 required=5.0 tests=BAYES_60,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
         autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:62b listed in]
+        [list.dnswl.org]
+        *  1.5 BAYES_60 BODY: Bayes spam probability is 60 to 80%
+        *      [score: 0.6172]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [lilywilliam989[at]gmail.com]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [luben8213[at]gmail.com]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [luben8213[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        *  2.8 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2023-01-31 at 10:32 +0100, Laurent Vivier wrote:
-> On 1/31/23 10:01, Paolo Abeni wrote:
-> > On Fri, 2023-01-27 at 21:45 +0100, Laurent Vivier wrote:
-> > > In virtnet_probe(), if the device doesn't provide a MAC address the
-> > > driver assigns a random one.
-> > > As we modify the MAC address we need to notify the device to allow it
-> > > to update all the related information.
-> > >=20
-> > > The problem can be seen with vDPA and mlx5_vdpa driver as it doesn't
-> > > assign a MAC address by default. The virtio_net device uses a random
-> > > MAC address (we can see it with "ip link"), but we can't ping a net
-> > > namespace from another one using the virtio-vdpa device because the
-> > > new MAC address has not been provided to the hardware:
-> > > RX packets are dropped since they don't go through the receive filter=
-s,
-> > > TX packets go through unaffected.
-> > >=20
-> > > Signed-off-by: Laurent Vivier <lvivier@redhat.com>
-> > > ---
-> > >   drivers/net/virtio_net.c | 20 ++++++++++++++++++++
-> > >   1 file changed, 20 insertions(+)
-> > >=20
-> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > index 7d700f8e545a..704a05f1c279 100644
-> > > --- a/drivers/net/virtio_net.c
-> > > +++ b/drivers/net/virtio_net.c
-> > > @@ -3806,6 +3806,8 @@ static int virtnet_probe(struct virtio_device *=
-vdev)
-> > >   		eth_hw_addr_set(dev, addr);
-> > >   	} else {
-> > >   		eth_hw_addr_random(dev);
-> > > +		dev_info(&vdev->dev, "Assigned random MAC address %pM\n",
-> > > +			 dev->dev_addr);
-> > >   	}
-> > >  =20
-> > >   	/* Set up our device-specific information */
-> > > @@ -3933,6 +3935,24 @@ static int virtnet_probe(struct virtio_device =
-*vdev)
-> > >  =20
-> > >   	virtio_device_ready(vdev);
-> > >  =20
-> > > +	/* a random MAC address has been assigned, notify the device.
-> > > +	 * We don't fail probe if VIRTIO_NET_F_CTRL_MAC_ADDR is not there
-> > > +	 * because many devices work fine without getting MAC explicitly
-> > > +	 */
-> > > +	if (!virtio_has_feature(vdev, VIRTIO_NET_F_MAC) &&
-> > > +	    virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_MAC_ADDR)) {
-> > > +		struct scatterlist sg;
-> > > +
-> > > +		sg_init_one(&sg, dev->dev_addr, dev->addr_len);
-> > > +		if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_MAC,
-> > > +					  VIRTIO_NET_CTRL_MAC_ADDR_SET, &sg)) {
-> > > +			pr_debug("virtio_net: setting MAC address failed\n");
-> > > +			rtnl_unlock();
-> > > +			err =3D -EINVAL;
-> > > +			goto free_unregister_netdev;
-> >=20
-> > Since the above is still dealing with device initialization, would it
-> > make sense moving such init step before registering the netdevice?
->=20
-> It depends if we can send the command using the control command queue or =
-not.
-> I don't think we can use a vq before virtio_device_ready().
+Hi Dear,
 
-Sounds reasonable. @Michael: do you have any additional comments?
+How are you doing? I hope everything is fine and OK with you.
 
-Thanks!
+My name is Lily William, I am an American presently living in the UK,
+as it is my great pleasure to contact you in communication with you
+starting from today, I was just going through the Internet search when
+I found your email address, I want to make a new and special friend,
+so I decided to contact you to see how we can make it work if we can.
+Please I hope you will have the desire with me so that we can get to
+know each other better and see what happens in future.
 
-Paolo
+I will be happy to see your reply for us to get to know each other
+better and give you my pictures and details about me.
 
+Yours
+Lily
