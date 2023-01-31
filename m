@@ -2,114 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8C9E683495
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 19:03:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F95F6834AF
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 19:05:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230474AbjAaSCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 13:02:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59766 "EHLO
+        id S230461AbjAaSFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 13:05:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230487AbjAaSCU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 13:02:20 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F4A4D517
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 10:02:19 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id f47-20020a05600c492f00b003dc584a7b7eso5065311wmp.3
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 10:02:19 -0800 (PST)
+        with ESMTP id S229608AbjAaSFv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 13:05:51 -0500
+Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FBA02D4A
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 10:05:50 -0800 (PST)
+Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-4ff1fa82bbbso214323937b3.10
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 10:05:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=dpDv+9QPHupt1UyeJB0z1k2Ufnogyk9lZGLkIf5nWzc=;
-        b=svhNacA6geE2Ndg8QTafTeJu6fXopqBbRymSroIFbX/LguDYlC21U70PeI85j0xCO/
-         de7Rlm3uRrh8/qlrB1NYmw40Q4ecXeuTtNnWmIu4sV6zoZ1/B40no6R1OICgEj/YiwqO
-         chbqhdxE1n1PbVE6UtbqKZ/dH0C5M6cetlRhN5aflW70jBH8H0V3FdD1Kg1BsTxxEtOp
-         o14OYqQLXk7wjBOd4JHFQrK5rTWVdkXYAnuaXZJIolGF+VmnH9VpjnnC9OkG8YfpzF7N
-         BltxlLu0omgrNryDuBjGAUIG+WKGKdknMrQCjT4rOD2tcGRxjccSZD1mZl/p8KwOR1+H
-         GHNQ==
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xWttzzEqLZ4mobKc2KtU79+X9WqztKnmp/PSm+ukpqA=;
+        b=VJm1EAPsPsACM6/mz95Oz1ExYh5K4M2TXCVTD7UvRP84mFTo4aueVArSy4FlpdJ36m
+         axk9OY9931MKlM3i+kLz+34jk8BO+krPdxjbJLKIHrm8b5NKgByas4eQw3/E152Kg2VE
+         FkCq/fRwa0tBj76bxdzAQJtKurRFz5HPiJL4vuB1NqdPTb872bGjM/asA+GqkIMXSf7W
+         kEfI1+H1Zz7S3TvWcMhBYEBB4SU7MtxGbQ3W1lAzwERDcG3qG367bK0owiJK2IetwMJ2
+         Z9FkrS5uzZLU9/RnHcnQ63lShCWsqkvSa6Dlx0dMZBpPdFLx6JUMijHfdNaRyljY29ZX
+         tzBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=dpDv+9QPHupt1UyeJB0z1k2Ufnogyk9lZGLkIf5nWzc=;
-        b=HFur2dd7oxSvP9iVAV6dJSlkiC5gzFi3+z3WvqpV79Mr/Tn65uQtuqGK4f34NQraoe
-         zhLtD9TE/olU2d7N3Mih4PZ1RfrBDeLwYjR+eDAFYmCOLKrRhzMvrDr02beROtWz0iuo
-         icBkkTkvm90XkIFHJS4HINWeQy3OxMq3PHZcq7G25YWnKCY4fXYnbIhXWHdFwOluEPvn
-         8vk7xhGZ8fjmnPaeTUfRFYosInghO7V6EUfjq0eO3Pp6PLFXTIvTs7QgyqHNKPBS2mRx
-         f9cctrNa9IVlQxa/ATq2uJwLqJza58aE8e/YnCXtukvyFS9npIC8XUO2G3Gu5JIS1xn3
-         I+HQ==
-X-Gm-Message-State: AFqh2kp32goPsHNQI/KdyWSlM7tPvQxNIBgHIhEKKRg1EST9G7xToXf/
-        xRvkr4FbrY1uSYKWSel2TFL9Xg==
-X-Google-Smtp-Source: AMrXdXtKb+4uvfotizMeuQfwAZA8MV5qRAu8vrz2XPdlaH7ZSWFKiEGd/DB4cabCuP4PCRF20iHbaA==
-X-Received: by 2002:a1c:ed0a:0:b0:3d3:4a47:52e9 with SMTP id l10-20020a1ced0a000000b003d34a4752e9mr55153400wmh.15.1675188138023;
-        Tue, 31 Jan 2023 10:02:18 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id h13-20020a05600c314d00b003db2b81660esm7148131wmo.21.2023.01.31.10.02.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 Jan 2023 10:02:17 -0800 (PST)
-Message-ID: <622ef51f-643e-5eb5-3884-3f22bf4fa9be@linaro.org>
-Date:   Tue, 31 Jan 2023 19:02:16 +0100
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=xWttzzEqLZ4mobKc2KtU79+X9WqztKnmp/PSm+ukpqA=;
+        b=CQM6PNLhH8X8LtV6U3a0HWSNOhnoLDo3J2MFgGY+4+ras1esQDZ7EYkRdOgiEz2Yf3
+         JXgCrMykSHsp4t29iBwRELPRSMdW0aAMJSqL6PfukqYkUslrrIWSJBCXisGJ1pwmYyxW
+         cLzBYHPBGOANJRgfsILlr1PVgLcoza5vyuT7R/fVWSg5FwmRsuDzZ0vL2SUR/XiAn4hT
+         o2okf1DDIChhp/BwLinaKB1Xzl3nTi4BF2F2tR/qtpfunh+Bk1m9aQSD0Zc0Mt6D5ED0
+         Oq4ppxiKzHMQURigO9vjYX1bKeN/Jxjw/b3gj5kVrbKIZvz0RcM3yzUvA54h8wAjPufF
+         FeJw==
+X-Gm-Message-State: AO0yUKVNBfMIzn9S3TkKLCOYDqx3tlsmsHT6YQs3KgaIsJr+7WN1fTo/
+        dK04VRIVCbvJ+ceZY8+aHMTjg+8HX1c1NmnSdFga
+X-Google-Smtp-Source: AK7set9FHKQF8kjhMobb5qikCjjSVJ5yhENI27t+4pv+8JeADKx4pF7Be0tJDg36DyGIUuQ8FAplSHml32YG3VcBWGc=
+X-Received: by 2002:a81:8582:0:b0:50f:f163:7072 with SMTP id
+ v124-20020a818582000000b0050ff1637072mr1081761ywf.285.1675188349551; Tue, 31
+ Jan 2023 10:05:49 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v2 1/2] dt: bindings: add dt entry for XO calibration
- support
-Content-Language: en-US
-To:     Youghandhar Chintala <quic_youghand@quicinc.com>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230131140345.6193-1-quic_youghand@quicinc.com>
- <20230131140345.6193-2-quic_youghand@quicinc.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230131140345.6193-2-quic_youghand@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20230130192519.686446-1-anthony.l.nguyen@intel.com> <Y9jQpjLPkRR/emeH@unreal>
+In-Reply-To: <Y9jQpjLPkRR/emeH@unreal>
+From:   Bjorn Helgaas <bhelgaas@google.com>
+Date:   Tue, 31 Jan 2023 12:05:37 -0600
+Message-ID: <CAErSpo64=miv7++wUhHKx=mnN1Rmh3u+cTaPxngbj4nd=9spjQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/8][pull request] Intel Wired LAN: Remove
+ redundant Device Control Error Reporting Enable
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31/01/2023 15:03, Youghandhar Chintala wrote:
-> Add dt binding to get XO calibration data support for Wi-Fi RF clock.
+On Tue, Jan 31, 2023 at 2:26 AM Leon Romanovsky <leon@kernel.org> wrote:
+>
+> On Mon, Jan 30, 2023 at 11:25:11AM -0800, Tony Nguyen wrote:
+> > Bjorn Helgaas says:
+> >
+> > Since f26e58bf6f54 ("PCI/AER: Enable error reporting when AER is native=
+"),
+> > the PCI core sets the Device Control bits that enable error reporting f=
+or
+> > PCIe devices.
+> >
+> > This series removes redundant calls to pci_enable_pcie_error_reporting(=
+)
+> > that do the same thing from several NIC drivers.
+> >
+> > There are several more drivers where this should be removed; I started =
+with
+> > just the Intel drivers here.
+> > ---
+> > TN: Removed mention of AER driver as this was taken through PCI tree [1=
+]
+> > and fixed a typo.
+> >
+> > [1] https://lore.kernel.org/all/20230126231527.GA1322015@bhelgaas/
+> >
+> > The following are changes since commit 90e8ca0abb05ada6c1e2710eaa21688d=
+afca26f2:
+> >   Merge branch 'devlink-next'
+> > and are available in the git repository at:
+> >   git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 10GbE
+> >
+> > Bjorn Helgaas (8):
+> >   e1000e: Remove redundant pci_enable_pcie_error_reporting()
+> >   fm10k: Remove redundant pci_enable_pcie_error_reporting()
+> >   i40e: Remove redundant pci_enable_pcie_error_reporting()
+> >   iavf: Remove redundant pci_enable_pcie_error_reporting()
+> >   ice: Remove redundant pci_enable_pcie_error_reporting()
+> >   igb: Remove redundant pci_enable_pcie_error_reporting()
+> >   igc: Remove redundant pci_enable_pcie_error_reporting()
+> >   ixgbe: Remove redundant pci_enable_pcie_error_reporting()
+> >
+> >  drivers/net/ethernet/intel/e1000e/netdev.c    | 7 -------
+> >  drivers/net/ethernet/intel/fm10k/fm10k_pci.c  | 5 -----
+> >  drivers/net/ethernet/intel/i40e/i40e_main.c   | 4 ----
+> >  drivers/net/ethernet/intel/iavf/iavf_main.c   | 5 -----
+> >  drivers/net/ethernet/intel/ice/ice_main.c     | 3 ---
+> >  drivers/net/ethernet/intel/igb/igb_main.c     | 5 -----
+> >  drivers/net/ethernet/intel/igc/igc_main.c     | 5 -----
+> >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 5 -----
+> >  8 files changed, 39 deletions(-)
+>
+> I see that you didn't touch any other places except drivers/net/ethernet/=
+intel/.
+> Are you planning to remove other occurrences too?
+>
+> =E2=9E=9C  kernel git:(rdma-next) git grep pci_enable_pcie_error_reportin=
+g -- drivers/infiniband/
+> drivers/infiniband/hw/hfi1/pcie.c:      (void)pci_enable_pcie_error_repor=
+ting(pdev);
+> drivers/infiniband/hw/qib/qib_pcie.c:   ret =3D pci_enable_pcie_error_rep=
+orting(pdev);
 
-Use subject prefixes matching the subsystem (which you can get for
-example with `git log --oneline -- DIRECTORY_OR_FILE` on the directory
-your patch is touching).
-Hint: dt-bindings: net: qcom,ath11k:
+Yes, definitely, I just haven't had a chance yet.  Some of the others
+are a little more complicated than the simple removals for the Intel
+drivers.
 
-> 
-> Signed-off-by: Youghandhar Chintala <quic_youghand@quicinc.com>
-> ---
->  .../devicetree/bindings/net/wireless/qcom,ath11k.yaml         | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml b/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
-> index f7cf135aa37f..205ee949daba 100644
-> --- a/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
-> +++ b/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
-> @@ -41,6 +41,10 @@ properties:
->          * reg
->          * reg-names
->  
-> +  xo-cal-data:
-> +    description:
-> +      XO cal offset to be configured in XO trim register
-
-Missing type. I also do not understand what's this and why some register
-offset should be stored in DT. Please give us some justification why
-this is suitable for DT.
-
-Best regards,
-Krzysztof
-
+Bjorn
