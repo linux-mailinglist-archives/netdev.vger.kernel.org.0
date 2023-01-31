@@ -2,208 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E917D6825E2
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 08:51:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EBF66825F0
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 08:55:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229900AbjAaHvq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 02:51:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52890 "EHLO
+        id S230273AbjAaHzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 02:55:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230040AbjAaHvk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 02:51:40 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B050E4EC6
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 23:50:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675151458;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fkrRP7RpjOnONHlxgICu52rfJGhEUI73DmaTHiOVAcw=;
-        b=JjfFBn8bE0DpGfzMOAg6uwe4HUZxUXUgfheXUNFP6yOH3sTF2kfy2QtzJaV4Y/81zXBeUZ
-        v7xp9fWLr0I7gSLbEaQsRU8NAFNiBfxzL88/YRElXLdJH99fmb592WVGCiQbgJxHViDFRQ
-        iEXJWki2j79O5SPsZyNyUM5eK+iAHUI=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-267-R1bFqSPKMHivlvic8ivQBQ-1; Tue, 31 Jan 2023 02:50:55 -0500
-X-MC-Unique: R1bFqSPKMHivlvic8ivQBQ-1
-Received: by mail-wr1-f70.google.com with SMTP id o9-20020adfa109000000b002bfc062eaa8so2314492wro.20
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 23:50:55 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=fkrRP7RpjOnONHlxgICu52rfJGhEUI73DmaTHiOVAcw=;
-        b=XixvTbGDgv68FTZYsfYPhF6/p9Y5o82FGyVgQFQ2wbOHHqZp9MuK0Zf4LxAlKEJP/l
-         wcchxxDfmT3hW1zqqm6VM5rtsNN+3iFQRMRl3So5JGIbZK13YY9g3avu+Krio9Frw2Ms
-         zO1Knt7QkogyZEr3jKpi60TUZvDybGyd1e+1QKdVTLGYFLtkoudn7elF//BynlgDSeKK
-         Kb3QzNFnJVwbWqm/304g74WPEmspVZ2N6vuCjxrSZQaSxMoZZTA0Z77urY5umhlXRqUo
-         4HozUM19p4aJQkOFqIBLpQIYrovK1E3fZx2YS3UhMDIIPlsLIq80myjqmQ/btEvBWUdK
-         I04A==
-X-Gm-Message-State: AO0yUKWy4d4OndO4TaDq1HbTxmDbmc10+/CrjpJ3W1zWGYOd0YFu2jUG
-        uJ/wlflmrAtou72SlA1AmEUb7G9TBzI481Lz1m7HGNEnOf6G9EBsR7gNE6ul5HbeXzkhBUx/MkC
-        ANtPLOQ6lkztyU708
-X-Received: by 2002:a05:600c:3b17:b0:3dd:1ac1:2572 with SMTP id m23-20020a05600c3b1700b003dd1ac12572mr3404415wms.1.1675151454739;
-        Mon, 30 Jan 2023 23:50:54 -0800 (PST)
-X-Google-Smtp-Source: AK7set+lQ5wqmAsvC1NObSC/5LNacEoNIfDtmnn5U/XVAD2LTE3FEsvavzU28/Q1DowOrJ7HL6uCHA==
-X-Received: by 2002:a05:600c:3b17:b0:3dd:1ac1:2572 with SMTP id m23-20020a05600c3b1700b003dd1ac12572mr3404403wms.1.1675151454512;
-        Mon, 30 Jan 2023 23:50:54 -0800 (PST)
-Received: from redhat.com ([2.52.144.173])
-        by smtp.gmail.com with ESMTPSA id n24-20020a7bcbd8000000b003daf7721bb3sm17541710wmi.12.2023.01.30.23.50.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Jan 2023 23:50:53 -0800 (PST)
-Date:   Tue, 31 Jan 2023 02:50:49 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Heng Qi <hengqi@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
+        with ESMTP id S231441AbjAaHy5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 02:54:57 -0500
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-he1eur01on2057.outbound.protection.outlook.com [40.107.13.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C49265AF
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 23:54:54 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jF91ZQkb+vIqR9nW4N1LrcV6Xcgt19ZdPdhzJovmpltMlDvfJ+I6iB29DsDCFWDV4EGboOBgWjiIcGSfIBniVakqMpymecG7LGxZfLEqdD5jhCujsoWiSVENlkPIAtjU/22uhSKiVNsUkppK5BKNoSVSxToEOl2nCPkWfWtPWbC31Een2VhxGw3dew0eygJezZXZuCZ6sZNOHOhoOS6tZdt/kruSq2MhhKz7Abn+omKbCK5MKWR15Eqxb+lO1JLLeKfHLFuV18QjbZWEr5fTBFf8EMdeyfkuE+DIWLFVO4R9/FgdsCb8ljPnSewBi2VD3QTzX9dcFCNS+aJVHVl/7g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Clf+4MwVTYpf4QD/lQxXa35g37jLQ2HLt/dO3A0Igyw=;
+ b=oOhGNlLXCc6C1HJbW1KHN/MZpVOg8iv+fcFRYcbtNNiTJwehF0YAc8GjbLNlLqIdp08L9kLhdOW4uvdbin5VcT40Q+3ZIi34RUfmNcHZqMbriVZUsDukIhKSy3Q/f90CC0rHXJKRZtnoQHsXOljd/gTsON8Yqd2q2LQflwM/nHDFo4uJsvwX+z3RsgyD7F/DAec8DebFQhY6PXwa1LjaD4JBbQumCl2/OPvmawmFaPRgfGR+BAlibTbba0EAQ2gO1Kt512UnhqV1wbgANAm3wpxXdR72a4edkyN/kOfXT03nO6BLQRerXFlXnUtOOmGqFpL2ZJLJcL7fwteEAYmsdg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Clf+4MwVTYpf4QD/lQxXa35g37jLQ2HLt/dO3A0Igyw=;
+ b=Ya2GLC0Dk6QBicoQfABDpzvCeBXj/mebQa2QITUdtDzQqJuCelm62h1/wuRGrz5QY9kLmddnsW2BtC6DVCTcO7kF9mL+C1wQLbQaLkmtzWYwFl5Repn5fEGQMbyynVy1cHFqBKJgoEh3vrxBKSRrle2F4NcLWebpELQ361zPXqs=
+Received: from AM6PR04MB3976.eurprd04.prod.outlook.com (2603:10a6:209:3f::17)
+ by AS8PR04MB8401.eurprd04.prod.outlook.com (2603:10a6:20b:3f3::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.38; Tue, 31 Jan
+ 2023 07:54:51 +0000
+Received: from AM6PR04MB3976.eurprd04.prod.outlook.com
+ ([fe80::ef98:3174:3c92:d2e]) by AM6PR04MB3976.eurprd04.prod.outlook.com
+ ([fe80::ef98:3174:3c92:d2e%5]) with mapi id 15.20.6043.038; Tue, 31 Jan 2023
+ 07:54:51 +0000
+From:   "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH net-next] virtio-net: fix possible unsigned integer
- overflow
-Message-ID: <20230131024630-mutt-send-email-mst@kernel.org>
-References: <20230131034337.55445-1-hengqi@linux.alibaba.com>
- <20230131021758-mutt-send-email-mst@kernel.org>
- <20230131074032.GD34480@h68b04307.sqa.eu95>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Camelia Alexandra Groza <camelia.groza@nxp.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>
+Subject: RE: [PATCH net] net: fman: memac: free mdio device if
+ lynx_pcs_create() fails
+Thread-Topic: [PATCH net] net: fman: memac: free mdio device if
+ lynx_pcs_create() fails
+Thread-Index: AQHZNOFjg710C4RmREGQDNCyLWYsEK64KE8A
+Date:   Tue, 31 Jan 2023 07:54:51 +0000
+Message-ID: <AM6PR04MB3976C49C0FE000A571DA6CA7ECD09@AM6PR04MB3976.eurprd04.prod.outlook.com>
+References: <20230130193051.563315-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20230130193051.563315-1-vladimir.oltean@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: AM6PR04MB3976:EE_|AS8PR04MB8401:EE_
+x-ms-office365-filtering-correlation-id: bc1f7015-39d0-44b5-7545-08db03606eb1
+x-ms-exchange-sharedmailbox-routingagent-processed: True
+x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: YwsoLJNpQr1tNEFhtN5UdTv2yoC52xpx7UM8ERXDPq1iSeoDE13ad/17/CUpxfkhS4qwUN3mh9KV5oDJxFp2A6FddXvHYe4xGVmctEUgpphCOjOo7PN2rfs5MKY/g2qlc2aq1IjcjDigpY2BMrxnnyxGYOTkqS/QlzWlBwp7Zsb344mk+1/Y2ixXrqRmrKvidNFNocjzmmfrKpLzZuc8QEzqHcuq03uJ9Z5TE5xbu4wCoLcQS+eP4iV5YF0an7o1ZqVYnvJ9TTxCQzyHHwCKDPj5D7WPyHGgrIdki3i1qzMOLodYjQP6jZbSTAmnzoE4kaL7VgNQFTPPZoEiT49wzNBwcA1kPeZ6Nc0ja8X2DDFQzpdTAlY5XyAw/o++7gqZDKgPe6uPV0/3cbLscOXiYeHXEFCcuFIqDHrjGh6rQhGB+tEuNeYPEkpc99RDdpq44dsldqRKHJpAabkuddttpjc5SREXdQKpW7w9BtCkSMIqbaQLD3+NByVIMWv+LsMot3puyk7pGPVhSTh3UqemUJLnkktN+d++oxORl8LCmtm/wxlaUAIDRTw1g2kbNq7wSBCNP99A0DrG2q6DrfijwUYHikC4Ms51A0zjP3VMJX93Z51Za+FARkAZ5LbaT2Kd4hgeq3+G3qDG1EMSEDPZopyO2hZtfzxLIKGMQCj1w+0yJzoWnd994+Yjdcjzyb1IiK8hqeMzBt8Lgf3mH01TOA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB3976.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(346002)(136003)(376002)(366004)(39860400002)(451199018)(41300700001)(66446008)(66476007)(66556008)(66946007)(76116006)(83380400001)(64756008)(8676002)(4326008)(316002)(52536014)(8936002)(9686003)(122000001)(4744005)(71200400001)(55016003)(2906002)(33656002)(5660300002)(54906003)(110136005)(86362001)(478600001)(7696005)(6506007)(55236004)(38070700005)(26005)(186003)(38100700002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?cKwmIYhqeXQuPPm/Ey05hXctV9iAUHiuaDB6tivgGETdK7Uu59Wg0k5blOmR?=
+ =?us-ascii?Q?286b8FlCYkaW3Qe7Gb2zZfJjyv2K64cm9hN5OtzAzV8loj3RkCihqc80Ntr4?=
+ =?us-ascii?Q?4YbiaWArzlNxJGyyEgrSyqrpbYSMshen5uQeBqnxnI1horAGxbnRwNxnS5Hd?=
+ =?us-ascii?Q?Afw7rN197PmDCZJW0a+hg8R3n+f3JT2cg6uicGbYkS4AVSDVpt4PVRZsGpY2?=
+ =?us-ascii?Q?rrO4F+oUc+Ef12fczBiwWoyz5RoUSUGfrrVRYZXeJk9h8KHUvSH2CoCNrOoR?=
+ =?us-ascii?Q?eK3LjWTkPH43LInE5U4DYRRy8q+6ogFb0uoUrCGUQe7n7SzBCaX3nlnpqW6f?=
+ =?us-ascii?Q?lUW4Gjjzq7RRo4Ke6qY2a2rsYCiLyeNRNjCBmy8N9GkpkNRTI6cZgiW3lhlD?=
+ =?us-ascii?Q?3BQ/VxAst4eMo979KAkw77DSN3MKTKRXv+Ha8Z4GA6n4sw/63gqrE8+NpFmN?=
+ =?us-ascii?Q?Oms/XEuXWD4TT+hteQy0/PqVGtrdqqe8xevO2kASDRjuLDUVNqg5jcRYSQ3q?=
+ =?us-ascii?Q?9Uh6HnRAQC9fRmB69/7u5k5UngJjyekDcCQ98LurBHi/fq3UgIs9Erp50vUc?=
+ =?us-ascii?Q?etOJzylPM3yYvZDzDLtIoDjEC8sp5UxQtW6CVZ2FdZVu/xxxiIm+n+wqb5jc?=
+ =?us-ascii?Q?/botA9RDKdf4Z2aTFPvja8iVTU8ItGld4qKmh6azm9UUtil5ek+FEAyW2B6v?=
+ =?us-ascii?Q?/uxKvIL8caJsEQatCMA1TEXOcDlKWrQNhhDT2NeeLzmW2a0L2PNgrqiCxp1s?=
+ =?us-ascii?Q?x62xbm60cbZaX3ScME/5h7dniV9dyUeXUOZgJj8K7L+bzXmnQP3WbDjN5Hqg?=
+ =?us-ascii?Q?ohBT3OrI/hWS2Kg18htdGt4PGp3vd37jtq4OlAfFzJMKDtK+fhfkHk6ccjS5?=
+ =?us-ascii?Q?7LCPSb7sXPIOtfreO3Ip/Ui4CAueCUT8d7w0zYSrBVXp7jtUOP89GPBHY+O8?=
+ =?us-ascii?Q?r6AOXBnaHKY7trjbODVt0jIclehJriIwzQAC/kSojwaKR0HlcS7a52WB3q9x?=
+ =?us-ascii?Q?731/NuozMOTKJgn/AuN2dCznxQhcGdDw1C7D772mIN1C7dc6XEJ+/+hr6rVX?=
+ =?us-ascii?Q?NGzFYNXUF955TfyFCS68/2Wg4CeqSdPsbXks4QmdjtP40SC6K7o9Pi773G5T?=
+ =?us-ascii?Q?qDRKLhpZa3pU7IbYMTvlOv5o5WPkKlZ+J6NfVN2RIuAUzzAWRI0O+b131nza?=
+ =?us-ascii?Q?q4jT6X5+RinZjeXxWE5ojz2MjedstIYNC3JU/L/18ZmwEi+Hajz8dhyrApDb?=
+ =?us-ascii?Q?VZW2i4IboRvK1iXoYz+RYxiSyG/8TgPZwDcjbzdNwn17DBc94djh8kp2JSDd?=
+ =?us-ascii?Q?mQbcHbNgYznfBXaT586ZyehSlRWt5+DIl3PhDLvoDMrXDsh61WA9SyqCNY1y?=
+ =?us-ascii?Q?lb2AlYN6r/8Ku3Jg8f8E06VeLofNd0+1QA2RNYSXpaNou7NJQebmIu7CTcuf?=
+ =?us-ascii?Q?5AtYjWRwbyJNJJsm7YvTch8WAvCedjp35FQGcKZsAJOlHByt1FpcxD8XXd11?=
+ =?us-ascii?Q?HsSZc1maIRVJyxzFS7sRa9mZ937mja9WUWemhlxXDSiqlbFzCWJBsC2Vmog7?=
+ =?us-ascii?Q?T2KTNMug50vK8JQ37so/hAipxHU0dRdz8luXJd0I?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230131074032.GD34480@h68b04307.sqa.eu95>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB3976.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bc1f7015-39d0-44b5-7545-08db03606eb1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Jan 2023 07:54:51.1768
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mSFUZZq7dfZFQmeQFwxbdo/ZgdnimfaipDRD8oeQPUaRGVw3iwtcDdU7/hcwQ8E1WcHsBnpL4dGzvQ9FGOuYyg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8401
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 03:40:32PM +0800, Heng Qi wrote:
-> On Tue, Jan 31, 2023 at 02:20:49AM -0500, Michael S. Tsirkin wrote:
-> > On Tue, Jan 31, 2023 at 11:43:37AM +0800, Heng Qi wrote:
-> > > When the single-buffer xdp is loaded and after xdp_linearize_page()
-> > > is called, *num_buf becomes 0 and (*num_buf - 1) may overflow into
-> > > a large integer in virtnet_build_xdp_buff_mrg(), resulting in
-> > > unexpected packet dropping.
-> > > 
-> > > Fixes: ef75cb51f139 ("virtio-net: build xdp_buff with multi buffers")
-> > > Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
-> > > Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > 
-> > Given the confusion, just make num_buf an int?
-> 
-> In the structure virtio_net_hdr_mrg_rxbuf, \field{num_buffers} is unsigned int,
-> which matches each other.
+> -----Original Message-----
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> To: netdev@vger.kernel.org
+> Cc: Madalin Bucur <madalin.bucur@nxp.com>; David S. Miller
+> <davem@davemloft.net>; Eric Dumazet <edumazet@google.com>; Jakub Kicinski
+> <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>; Sean Anderson
+> <sean.anderson@seco.com>; Camelia Alexandra Groza <camelia.groza@nxp.com>=
+;
+> Maxime Chevallier <maxime.chevallier@bootlin.com>
+> Subject: [PATCH net] net: fman: memac: free mdio device if
+> lynx_pcs_create() fails
+>=20
+> When memory allocation fails in lynx_pcs_create() and it returns NULL,
+> there remains a dangling reference to the mdiodev returned by
+> of_mdio_find_device() which is leaked as soon as memac_pcs_create()
+> returns empty-handed.
+>=20
+> Fixes: a7c2a32e7f22 ("net: fman: memac: Use lynx pcs driver")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  drivers/net/ethernet/freescale/fman/fman_memac.c | 3 +++
+>  1 file changed, 3 insertions(+)
 
-Because hardware buffers are all unsigned. Does not mean we need
-to do all math unsigned now.
-
-> And num_buf is used in many different places, it seems
-> to be a lot of work to modify it to int.
-
-Are you sure?
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 18b3de854aeb..97f2e9bfc6f9 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -722,7 +722,7 @@ static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
-  * have enough headroom.
-  */
- static struct page *xdp_linearize_page(struct receive_queue *rq,
--				       u16 *num_buf,
-+				       int *num_buf,
- 				       struct page *p,
- 				       int offset,
- 				       int page_off,
-@@ -822,7 +822,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 		if (unlikely(xdp_headroom < virtnet_get_headroom(vi))) {
- 			int offset = buf - page_address(page) + header_offset;
- 			unsigned int tlen = len + vi->hdr_len;
--			u16 num_buf = 1;
-+			int num_buf = 1;
- 
- 			xdp_headroom = virtnet_get_headroom(vi);
- 			header_offset = VIRTNET_RX_PAD + xdp_headroom;
-@@ -948,7 +948,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 					 struct virtnet_rq_stats *stats)
- {
- 	struct virtio_net_hdr_mrg_rxbuf *hdr = buf;
--	u16 num_buf = virtio16_to_cpu(vi->vdev, hdr->num_buffers);
-+	int num_buf = virtio16_to_cpu(vi->vdev, hdr->num_buffers);
- 	struct page *page = virt_to_head_page(buf);
- 	int offset = buf - page_address(page);
- 	struct sk_buff *head_skb, *curr_skb;
-
-Feel free to reuse.
-
-
-> > 
-> > > ---
-> > >  drivers/net/virtio_net.c | 7 +++++--
-> > >  1 file changed, 5 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > index aaa6fe9b214a..a8e9462903fa 100644
-> > > --- a/drivers/net/virtio_net.c
-> > > +++ b/drivers/net/virtio_net.c
-> > > @@ -1007,6 +1007,9 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
-> > >  	xdp_prepare_buff(xdp, buf - VIRTIO_XDP_HEADROOM,
-> > >  			 VIRTIO_XDP_HEADROOM + vi->hdr_len, len - vi->hdr_len, true);
-> > >  
-> > > +	if (!*num_buf)
-> > > +		return 0;
-> > > +
-> > >  	if (*num_buf > 1) {
-> > >  		/* If we want to build multi-buffer xdp, we need
-> > >  		 * to specify that the flags of xdp_buff have the
-> > 
-> > 
-> > This means truesize won't be set.
-> 
-> Do you mean xdp_frags_truesize please? If yes, the answer is yes, this fix
-> is only for single-buffer xdp, which doesn't need xdp_frags_truesize, and
-> already set it to 0 in its wrapper receive_mergeable().
-
-It seems cleaner to always set the value not rely on caller to do so.
-
-> > 
-> > > @@ -1020,10 +1023,10 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
-> > >  		shinfo->xdp_frags_size = 0;
-> > >  	}
-> > >  
-> > > -	if ((*num_buf - 1) > MAX_SKB_FRAGS)
-> > > +	if (*num_buf > MAX_SKB_FRAGS + 1)
-> > >  		return -EINVAL;
-> > 
-> > Admittedly this is cleaner.
-> > 
-> > >  
-> > > -	while ((--*num_buf) >= 1) {
-> > > +	while (--*num_buf) {
-> > 
-> > A bit more fragile, > 0 would be better.
-> 
-> Sure.
-> 
-> Thanks.
-> 
-> > 
-> > >  		buf = virtqueue_get_buf_ctx(rq->vq, &len, &ctx);
-> > >  		if (unlikely(!buf)) {
-> > >  			pr_debug("%s: rx error: %d buffers out of %d missing\n",
-> > > -- 
-> > > 2.19.1.6.gb485710b
-
+Acked-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
