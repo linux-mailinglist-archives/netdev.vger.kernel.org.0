@@ -2,307 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7DFD682BDB
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 12:51:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD4B8682BDE
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 12:52:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231773AbjAaLvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 06:51:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49042 "EHLO
+        id S231861AbjAaLws (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 06:52:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230135AbjAaLvy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 06:51:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBFB7CDF6
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 03:51:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69A196147C
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 11:51:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53FE8C433EF;
-        Tue, 31 Jan 2023 11:51:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675165911;
-        bh=mdwIEHXz48ciN4NgiNy9rwuG58UZqXAu/Y6NNH6H6Nw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NiYqdXjIl1NOgOZq+Mttt1QwNpn8RonV/ApHhx4GeZ72XuildDejlX8AiRLtFNM6/
-         4Xnt970sZ3Q0G/t9kbfhMe57nv+Hua8rvyKr2P1ZHCP5AChlLau0dESdgdDNnQbJBd
-         aF+QhPoi7uea+DpmxZ8GZMXusmOoKnA9bEhe+lRjfL34VeIM+NPdBDeDeur6RxdzwQ
-         2gJoMua+Q1e63WdTs0OmhY98LXaczed5waVTsE0SEFHU3KtGGpcMhaEfIB3VTjcJfn
-         xY6AiRE8ZkI9F/W4l5VZlfFIIWipZyKt3ulndcVVQiFWJsXfOx8BFzac4gt/dZrJnm
-         gknnv2NOc0gqQ==
-Date:   Tue, 31 Jan 2023 13:51:47 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, jacob.e.keller@intel.com
-Subject: Re: [patch net-next 2/3] devlink: remove "gen" from struct
- devlink_gen_cmd name
-Message-ID: <Y9kA01okvtKYLDZ2@unreal>
-References: <20230131090613.2131740-1-jiri@resnulli.us>
- <20230131090613.2131740-3-jiri@resnulli.us>
+        with ESMTP id S229962AbjAaLwr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 06:52:47 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3351C5FD7;
+        Tue, 31 Jan 2023 03:52:44 -0800 (PST)
+Received: from dggpeml500006.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4P5k1s4jznzfZ4D;
+        Tue, 31 Jan 2023 19:52:33 +0800 (CST)
+Received: from [10.174.178.240] (10.174.178.240) by
+ dggpeml500006.china.huawei.com (7.185.36.76) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Tue, 31 Jan 2023 19:52:41 +0800
+Subject: Re: [Question] neighbor entry doesn't switch to the STALE state after
+ the reachable timer expires
+To:     Julian Anastasov <ja@ssi.bg>
+CC:     Network Development <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Denis V. Lunev" <den@openvz.org>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Zhang Changzhong <zhangchangzhong@huawei.com>
+References: <b1d8722e-5660-c38e-848f-3220d642889d@huawei.com>
+ <99532c7f-161e-6d39-7680-ccc1f20349@ssi.bg>
+ <9ebd0210-a4bb-afda-8a4d-5041b8395d78@huawei.com>
+ <9ac5f4f6-36cc-cc6b-1220-f45db141656c@ssi.bg>
+From:   Zhang Changzhong <zhangchangzhong@huawei.com>
+Message-ID: <1252089d-75db-a45c-d735-6883c772d95a@huawei.com>
+Date:   Tue, 31 Jan 2023 19:52:41 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230131090613.2131740-3-jiri@resnulli.us>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <9ac5f4f6-36cc-cc6b-1220-f45db141656c@ssi.bg>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.240]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500006.china.huawei.com (7.185.36.76)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 10:06:12AM +0100, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
+On 2023/1/30 19:01, Julian Anastasov wrote:> On Mon, 30 Jan 2023, Zhang Changzhong wrote:
 > 
-> No need to have "gen" inside name of the structure for devlink commands.
-> Remove it.
-
-And what about devl_gen_* names? Should they be renamed too?
-
-Thanks
-
+>> On 2023/1/30 3:43, Julian Anastasov wrote:
+>>>
+>>>> Does anyone have a good idea to solve this problem? Or are there other scenarios that might cause
+>>>> such a neighbor entry?
+>>>
+>>> 	Is the neigh entry modified somehow, for example,
+>>> with 'arp -s' or 'ip neigh change' ? Or is bond0 reconfigured
+>>> after initial setup? I mean, 4 days ago?>
+>>
+>> So far, we haven't found any user-space program that modifies the neigh
+>> entry or bond0.
 > 
-> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+> 	Ouch, we do not need tools to hit the problem,
+> thanks to gc_thresh1.
+> 
+>> In fact, the neigh entry has been rarely used since initialization.
+>> 4 days ago, our machine just needed to download files from 172.16.1.18.
+>> However, the laddr has changed, and the neigh entry wrongly switched to
+>> NUD_REACHABLE state, causing the laddr to fail to update.
+> 
+> 	Received ARP packets should be able to change
+> the address. But we do not refresh the entry because
+> its timer is scheduled days ahead.
+> 
+
+Yep.
+
+>>> 	Looking at __neigh_update, there are few cases that
+>>> can assign NUD_STALE without touching neigh->confirmed:
+>>> lladdr = neigh->ha should be called, NEIGH_UPDATE_F_ADMIN
+>>> should be provided. Later, as you explain, it can wrongly
+>>> switch to NUD_REACHABLE state for long time.
+>>>
+>>> 	May be there should be some measures to keep
+>>> neigh->confirmed valid during admin modifications.
+>>>
+>>
+>> This problem can also occur if the neigh entry stays in NUD_STALE state
+>> for more than 99 days, even if it is not modified by the administrator.
+> 
+> 	I see.
+> 
+>>> 	What is the kernel version?
+>>>
+>>
+>> We encountered this problem in 4.4 LTS, and the mainline doesn't seem
+>> to fix it yet.
+> 
+> 	Yep, kernel version is irrelevant.
+> 
+> 	Here is a change that you can comment/test but
+> I'm not sure how many days (100?) are needed :) Not tested.
+> 
+> : From: Julian Anastasov <ja@ssi.bg>
+> Subject: [PATCH] neigh: make sure used and confirmed times are valid
+> 
+> Entries can linger without timer for days, thanks to
+> the gc_thresh1 limit. Later, on traffic, NUD_STALE entries
+> can switch to NUD_DELAY and start the timer which can see
+> confirmed time in the future causing switch to NUD_REACHABLE.
+> But then timer is started again based on the wrong
+> confirmed time, so days in the future. This is more
+> visible on 32-bit platforms.
+> 
+> Problem and the wrong state change reported by Zhang Changzhong:
+> 
+> 172.16.1.18 dev bond0 lladdr 0a:0e:0f:01:12:01 ref 1 used 350521/15994171/350520 probes 4 REACHABLE
+> 
+> 350520 seconds have elapsed since this entry was last updated, but it is
+> still in the REACHABLE state (base_reachable_time_ms is 30000),
+> preventing lladdr from being updated through probe.
+> 
+> Fix it by ensuring timer is started with valid used/confirmed
+> times. There are also places that need used/updated times to be
+> validated.
+> 
+> Reported-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+> Signed-off-by: Julian Anastasov <ja@ssi.bg>
 > ---
->  net/devlink/devl_internal.h | 36 ++++++++++++++++++------------------
->  net/devlink/leftover.c      | 32 ++++++++++++++++----------------
->  net/devlink/netlink.c       |  4 ++--
->  3 files changed, 36 insertions(+), 36 deletions(-)
+>  net/core/neighbour.c | 14 +++++++++++---
+>  1 file changed, 11 insertions(+), 3 deletions(-)
 > 
-> diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
-> index dd4366c68b96..3910db5547fe 100644
-> --- a/net/devlink/devl_internal.h
-> +++ b/net/devlink/devl_internal.h
-> @@ -115,7 +115,7 @@ struct devlink_nl_dump_state {
->  	};
->  };
+> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+> index a77a85e357e0..f063e8b8fb7d 100644
+> --- a/net/core/neighbour.c
+> +++ b/net/core/neighbour.c
+> @@ -269,7 +269,7 @@ static int neigh_forced_gc(struct neigh_table *tbl)
+>  			    (n->nud_state == NUD_NOARP) ||
+>  			    (tbl->is_multicast &&
+>  			     tbl->is_multicast(n->primary_key)) ||
+> -			    time_after(tref, n->updated))
+> +			    !time_in_range(n->updated, tref, jiffies))
+>  				remove = true;
+>  			write_unlock(&n->lock);
 >  
-> -struct devlink_gen_cmd {
-> +struct devlink_cmd {
->  	int (*dump_one)(struct sk_buff *msg, struct devlink *devlink,
->  			struct netlink_callback *cb);
->  };
-> @@ -139,22 +139,22 @@ devlink_dump_state(struct netlink_callback *cb)
->  	return (struct devlink_nl_dump_state *)cb->ctx;
->  }
+> @@ -289,7 +289,13 @@ static int neigh_forced_gc(struct neigh_table *tbl)
 >  
-> -/* gen cmds */
-> -extern const struct devlink_gen_cmd devl_gen_inst;
-> -extern const struct devlink_gen_cmd devl_gen_port;
-> -extern const struct devlink_gen_cmd devl_gen_sb;
-> -extern const struct devlink_gen_cmd devl_gen_sb_pool;
-> -extern const struct devlink_gen_cmd devl_gen_sb_port_pool;
-> -extern const struct devlink_gen_cmd devl_gen_sb_tc_pool_bind;
-> -extern const struct devlink_gen_cmd devl_gen_selftests;
-> -extern const struct devlink_gen_cmd devl_gen_param;
-> -extern const struct devlink_gen_cmd devl_gen_region;
-> -extern const struct devlink_gen_cmd devl_gen_info;
-> -extern const struct devlink_gen_cmd devl_gen_health_reporter;
-> -extern const struct devlink_gen_cmd devl_gen_trap;
-> -extern const struct devlink_gen_cmd devl_gen_trap_group;
-> -extern const struct devlink_gen_cmd devl_gen_trap_policer;
-> -extern const struct devlink_gen_cmd devl_gen_linecard;
-> +/* Commands */
-> +extern const struct devlink_cmd devl_gen_inst;
-> +extern const struct devlink_cmd devl_gen_port;
-> +extern const struct devlink_cmd devl_gen_sb;
-> +extern const struct devlink_cmd devl_gen_sb_pool;
-> +extern const struct devlink_cmd devl_gen_sb_port_pool;
-> +extern const struct devlink_cmd devl_gen_sb_tc_pool_bind;
-> +extern const struct devlink_cmd devl_gen_selftests;
-> +extern const struct devlink_cmd devl_gen_param;
-> +extern const struct devlink_cmd devl_gen_region;
-> +extern const struct devlink_cmd devl_gen_info;
-> +extern const struct devlink_cmd devl_gen_health_reporter;
-> +extern const struct devlink_cmd devl_gen_trap;
-> +extern const struct devlink_cmd devl_gen_trap_group;
-> +extern const struct devlink_cmd devl_gen_trap_policer;
-> +extern const struct devlink_cmd devl_gen_linecard;
->  
->  /* Ports */
->  int devlink_port_netdevice_event(struct notifier_block *nb,
-> @@ -182,7 +182,7 @@ struct devlink_linecard *
->  devlink_linecard_get_from_info(struct devlink *devlink, struct genl_info *info);
->  
->  /* Rates */
-> -extern const struct devlink_gen_cmd devl_gen_rate_get;
-> +extern const struct devlink_cmd devl_gen_rate_get;
->  
->  struct devlink_rate *
->  devlink_rate_get_from_info(struct devlink *devlink, struct genl_info *info);
-> diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
-> index 1461eec423ff..16cb5975de1a 100644
-> --- a/net/devlink/leftover.c
-> +++ b/net/devlink/leftover.c
-> @@ -1236,7 +1236,7 @@ devlink_nl_cmd_rate_get_dump_one(struct sk_buff *msg, struct devlink *devlink,
->  	return err;
->  }
->  
-> -const struct devlink_gen_cmd devl_gen_rate_get = {
-> +const struct devlink_cmd devl_gen_rate_get = {
->  	.dump_one		= devlink_nl_cmd_rate_get_dump_one,
->  };
->  
-> @@ -1303,7 +1303,7 @@ devlink_nl_cmd_get_dump_one(struct sk_buff *msg, struct devlink *devlink,
->  			       cb->nlh->nlmsg_seq, NLM_F_MULTI);
->  }
->  
-> -const struct devlink_gen_cmd devl_gen_inst = {
-> +const struct devlink_cmd devl_gen_inst = {
->  	.dump_one		= devlink_nl_cmd_get_dump_one,
->  };
->  
-> @@ -1359,7 +1359,7 @@ devlink_nl_cmd_port_get_dump_one(struct sk_buff *msg, struct devlink *devlink,
->  	return err;
->  }
->  
-> -const struct devlink_gen_cmd devl_gen_port = {
-> +const struct devlink_cmd devl_gen_port = {
->  	.dump_one		= devlink_nl_cmd_port_get_dump_one,
->  };
->  
-> @@ -2137,7 +2137,7 @@ static int devlink_nl_cmd_linecard_get_dump_one(struct sk_buff *msg,
->  	return err;
->  }
->  
-> -const struct devlink_gen_cmd devl_gen_linecard = {
-> +const struct devlink_cmd devl_gen_linecard = {
->  	.dump_one		= devlink_nl_cmd_linecard_get_dump_one,
->  };
->  
-> @@ -2392,7 +2392,7 @@ devlink_nl_cmd_sb_get_dump_one(struct sk_buff *msg, struct devlink *devlink,
->  	return err;
->  }
->  
-> -const struct devlink_gen_cmd devl_gen_sb = {
-> +const struct devlink_cmd devl_gen_sb = {
->  	.dump_one		= devlink_nl_cmd_sb_get_dump_one,
->  };
->  
-> @@ -2530,7 +2530,7 @@ devlink_nl_cmd_sb_pool_get_dump_one(struct sk_buff *msg,
->  	return err;
->  }
->  
-> -const struct devlink_gen_cmd devl_gen_sb_pool = {
-> +const struct devlink_cmd devl_gen_sb_pool = {
->  	.dump_one		= devlink_nl_cmd_sb_pool_get_dump_one,
->  };
->  
-> @@ -2738,7 +2738,7 @@ devlink_nl_cmd_sb_port_pool_get_dump_one(struct sk_buff *msg,
->  	return err;
->  }
->  
-> -const struct devlink_gen_cmd devl_gen_sb_port_pool = {
-> +const struct devlink_cmd devl_gen_sb_port_pool = {
->  	.dump_one		= devlink_nl_cmd_sb_port_pool_get_dump_one,
->  };
->  
-> @@ -2973,7 +2973,7 @@ devlink_nl_cmd_sb_tc_pool_bind_get_dump_one(struct sk_buff *msg,
->  	return err;
->  }
->  
-> -const struct devlink_gen_cmd devl_gen_sb_tc_pool_bind = {
-> +const struct devlink_cmd devl_gen_sb_tc_pool_bind = {
->  	.dump_one		= devlink_nl_cmd_sb_tc_pool_bind_get_dump_one,
->  };
->  
-> @@ -4785,7 +4785,7 @@ devlink_nl_cmd_selftests_get_dump_one(struct sk_buff *msg,
->  					 cb->extack);
->  }
->  
-> -const struct devlink_gen_cmd devl_gen_selftests = {
-> +const struct devlink_cmd devl_gen_selftests = {
->  	.dump_one		= devlink_nl_cmd_selftests_get_dump_one,
->  };
->  
-> @@ -5271,7 +5271,7 @@ devlink_nl_cmd_param_get_dump_one(struct sk_buff *msg, struct devlink *devlink,
->  	return err;
->  }
->  
-> -const struct devlink_gen_cmd devl_gen_param = {
-> +const struct devlink_cmd devl_gen_param = {
->  	.dump_one		= devlink_nl_cmd_param_get_dump_one,
->  };
->  
-> @@ -5978,7 +5978,7 @@ devlink_nl_cmd_region_get_dump_one(struct sk_buff *msg, struct devlink *devlink,
->  	return 0;
->  }
->  
-> -const struct devlink_gen_cmd devl_gen_region = {
-> +const struct devlink_cmd devl_gen_region = {
->  	.dump_one		= devlink_nl_cmd_region_get_dump_one,
->  };
->  
-> @@ -6625,7 +6625,7 @@ devlink_nl_cmd_info_get_dump_one(struct sk_buff *msg, struct devlink *devlink,
->  	return err;
->  }
->  
-> -const struct devlink_gen_cmd devl_gen_info = {
-> +const struct devlink_cmd devl_gen_info = {
->  	.dump_one		= devlink_nl_cmd_info_get_dump_one,
->  };
->  
-> @@ -7793,7 +7793,7 @@ devlink_nl_cmd_health_reporter_get_dump_one(struct sk_buff *msg,
->  	return 0;
->  }
->  
-> -const struct devlink_gen_cmd devl_gen_health_reporter = {
-> +const struct devlink_cmd devl_gen_health_reporter = {
->  	.dump_one		= devlink_nl_cmd_health_reporter_get_dump_one,
->  };
->  
-> @@ -8311,7 +8311,7 @@ devlink_nl_cmd_trap_get_dump_one(struct sk_buff *msg, struct devlink *devlink,
->  	return err;
->  }
->  
-> -const struct devlink_gen_cmd devl_gen_trap = {
-> +const struct devlink_cmd devl_gen_trap = {
->  	.dump_one		= devlink_nl_cmd_trap_get_dump_one,
->  };
->  
-> @@ -8524,7 +8524,7 @@ devlink_nl_cmd_trap_group_get_dump_one(struct sk_buff *msg,
->  	return err;
->  }
->  
-> -const struct devlink_gen_cmd devl_gen_trap_group = {
-> +const struct devlink_cmd devl_gen_trap_group = {
->  	.dump_one		= devlink_nl_cmd_trap_group_get_dump_one,
->  };
->  
-> @@ -8817,7 +8817,7 @@ devlink_nl_cmd_trap_policer_get_dump_one(struct sk_buff *msg,
->  	return err;
->  }
->  
-> -const struct devlink_gen_cmd devl_gen_trap_policer = {
-> +const struct devlink_cmd devl_gen_trap_policer = {
->  	.dump_one		= devlink_nl_cmd_trap_policer_get_dump_one,
->  };
->  
-> diff --git a/net/devlink/netlink.c b/net/devlink/netlink.c
-> index 11666edf5cd2..33ed3984f3cb 100644
-> --- a/net/devlink/netlink.c
-> +++ b/net/devlink/netlink.c
-> @@ -177,7 +177,7 @@ static void devlink_nl_post_doit(const struct genl_split_ops *ops,
->  	devlink_put(devlink);
->  }
->  
-> -static const struct devlink_gen_cmd *devl_gen_cmds[] = {
-> +static const struct devlink_cmd *devl_gen_cmds[] = {
->  	[DEVLINK_CMD_GET]		= &devl_gen_inst,
->  	[DEVLINK_CMD_PORT_GET]		= &devl_gen_port,
->  	[DEVLINK_CMD_SB_GET]		= &devl_gen_sb,
-> @@ -201,7 +201,7 @@ int devlink_nl_instance_iter_dumpit(struct sk_buff *msg,
+>  static void neigh_add_timer(struct neighbour *n, unsigned long when)
 >  {
->  	const struct genl_dumpit_info *info = genl_dumpit_info(cb);
->  	struct devlink_nl_dump_state *state = devlink_dump_state(cb);
-> -	const struct devlink_gen_cmd *cmd;
-> +	const struct devlink_cmd *cmd;
->  	struct devlink *devlink;
->  	int err = 0;
+> +	unsigned long mint = jiffies - MAX_JIFFY_OFFSET + 86400 * HZ;
+> +
+>  	neigh_hold(n);
+> +	if (!time_in_range(n->confirmed, mint, jiffies))
+> +		n->confirmed = mint;
+> +	if (time_before(n->used, n->confirmed))
+> +		n->used = n->confirmed;
+>  	if (unlikely(mod_timer(&n->timer, when))) {
+>  		printk("NEIGH: BUG, double timer add, state is %x\n",
+>  		       n->nud_state);
+> @@ -982,12 +988,14 @@ static void neigh_periodic_work(struct work_struct *work)
+>  				goto next_elt;
+>  			}
 >  
-> -- 
-> 2.39.0
+> -			if (time_before(n->used, n->confirmed))
+> +			if (time_before(n->used, n->confirmed) &&
+> +			    time_is_before_eq_jiffies(n->confirmed))
+>  				n->used = n->confirmed;
+>  
+>  			if (refcount_read(&n->refcnt) == 1 &&
+>  			    (state == NUD_FAILED ||
+> -			     time_after(jiffies, n->used + NEIGH_VAR(n->parms, GC_STALETIME)))) {
+> +			     !time_in_range_open(jiffies, n->used,
+> +						 n->used + NEIGH_VAR(n->parms, GC_STALETIME)))) {
+>  				*np = n->next;
+>  				neigh_mark_dead(n);
+>  				write_unlock(&n->lock);
 > 
+
+Thanks for your fix!
+
+I reproduced this problem by directly modifying the confirmed time of
+the neigh entry in STALE state. Your change can fix the problem in this
+scenario.
+
+Just curious, why did you choose 'jiffies - MAX_JIFFY_OFFSET + 86400 * HZ'
+as the value of 'mint'?
+
+Regards,
+Changzhong
+
