@@ -2,102 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D70C86829DC
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 11:03:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 056CD6829CC
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 11:01:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229903AbjAaKDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 05:03:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33578 "EHLO
+        id S232064AbjAaKA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 05:00:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbjAaKDC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 05:03:02 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D5D10C7;
-        Tue, 31 Jan 2023 02:02:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=35NY35ZTQdq0jK+LZ4igcXPsRMRGVAft6MTNkJwdTzM=; b=dO5IsznXm5mFnFeoyNc4/TG0s1
-        mpOxkbM+OBJtgsGZLgoSpVZSLQb4T9VkTS2JeBKuFuxshM7ISz0KciiVRowmqcKxrQe8KsIVeSVSE
-        xDRWXakwq+rYSNY/nV0p/uIzeJf2Hv/3lrS9BawTvUB7VKD9O2eWaj63J6ocr3VcXqxmONHLqg+QJ
-        tg+ItIa96WWwZCejlfiXJoRDhXAAxCu1q7tBVVA9P3O885awA5zbkech37f4qphnvC9g8Dbc9rEhn
-        3vlmuZFXbufWoF8t7ub/r+yvvk8g+pPRy/IE1fCdlUNrsbvO81Hvj+8FHHgQzkAwlMVmHLEyqsmCb
-        R7z1bMiA==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-        id 1pMnSe-004J72-0s;
-        Tue, 31 Jan 2023 10:01:56 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id CBE51300673;
-        Tue, 31 Jan 2023 11:02:27 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id AA256240A5DF6; Tue, 31 Jan 2023 11:02:27 +0100 (CET)
-Date:   Tue, 31 Jan 2023 11:02:27 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@kernel.org>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>, kvm@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        Jiri Kosina <jikos@kernel.org>, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        "Seth Forshee (DigitalOcean)" <sforshee@digitalocean.com>,
-        live-patching@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
-Subject: Re: [PATCH 0/2] vhost: improve livepatch switching for heavily
- loaded vhost worker kthreads
-Message-ID: <Y9jnM6BW5CcKjXNv@hirez.programming.kicks-ass.net>
-References: <20230120-vhost-klp-switching-v1-0-7c2b65519c43@kernel.org>
- <Y9KyVKQk3eH+RRse@alley>
- <Y9LswwnPAf+nOVFG@do-x1extreme>
- <20230127044355.frggdswx424kd5dq@treble>
- <Y9OpTtqWjAkC2pal@hirez.programming.kicks-ass.net>
- <20230127165236.rjcp6jm6csdta6z3@treble>
- <20230127170946.zey6xbr4sm4kvh3x@treble>
- <20230127221131.sdneyrlxxhc4h3fa@treble>
- <Y9e6ssSHUt+MUvum@hirez.programming.kicks-ass.net>
- <20230130195930.s5iu76e56j4q5bra@treble>
+        with ESMTP id S232182AbjAaKAx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 05:00:53 -0500
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E14E44ABF6;
+        Tue, 31 Jan 2023 02:00:46 -0800 (PST)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 79BB91C0003;
+        Tue, 31 Jan 2023 10:00:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1675159245;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=aZg/iDWxJ7+7iB6HjrlykOAfUIjKx7WrcYo/FUoXaHA=;
+        b=kq3aI+oYfe/kfZ5btHKDVbJE8LcUPQVmUQr8mSsYlYnPBMu1JIq3A+LtMZ/Icjwuo9ZjrM
+        pUOnT1hCZRlbgHaDwlEWufBdbUY0zE6uWyEYw1Vz6sdnVu5jUoGoxZkAPWqITFC9uJOAIV
+        PGDGJJb96HC4iRczrw006pzPrwruLE1BdAA7BJM/nUPq6Asr+5WdvrM/OQwzpZ85BDzvjn
+        gAZnCWxvoL3AM24GIGkfc+BAY8kdDYq87SjjbO4h1htl21GAuZVBNCcCQIC8GjnCx+RakN
+        LU2NCRsgP4FNpNTAjhZ7PIBTEg/V2Xy76Q73R0uJiQdmHVsaR+zw99xrMOpkSg==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Grant Likely <grant.likely@arm.com>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: phylink: move phy_device_free() to correctly release phy device
+Date:   Tue, 31 Jan 2023 11:02:42 +0100
+Message-Id: <20230131100242.33514-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230130195930.s5iu76e56j4q5bra@treble>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 11:59:30AM -0800, Josh Poimboeuf wrote:
+After calling fwnode_phy_find_device(), the phy device refcount is
+incremented. Then, when the phy device is attached to a netdev with
+phy_attach_direct(), the refcount is also incremented but only
+decremented in the caller if phy_attach_direct() fails. Move
+phy_device_free() before the "if" to always release it correctly.
+Indeed, either phy_attach_direct() failed and we don't want to keep a
+reference to the phydev or it succeeded and a reference has been taken
+internally.
 
-> @@ -8662,16 +8665,19 @@ void sched_dynamic_update(int mode)
->  
->  	switch (mode) {
->  	case preempt_dynamic_none:
-> -		preempt_dynamic_enable(cond_resched);
-> +		if (!klp_override)
-> +			preempt_dynamic_enable(cond_resched);
->  		preempt_dynamic_disable(might_resched);
->  		preempt_dynamic_disable(preempt_schedule);
->  		preempt_dynamic_disable(preempt_schedule_notrace);
->  		preempt_dynamic_disable(irqentry_exit_cond_resched);
-> +		//FIXME avoid printk for klp restore
+Fixes: 25396f680dd6 ("net: phylink: introduce phylink_fwnode_phy_connect()")
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+---
+ drivers/net/phy/phylink.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-		if (mode != preempt_dynamic_mode)
-
->  		pr_info("Dynamic Preempt: none\n");
->  		break;
->  
->  	case preempt_dynamic_voluntary:
-> -		preempt_dynamic_enable(cond_resched);
-> +		if (!klp_override)
-> +			preempt_dynamic_enable(cond_resched);
->  		preempt_dynamic_enable(might_resched);
->  		preempt_dynamic_disable(preempt_schedule);
->  		preempt_dynamic_disable(preempt_schedule_notrace);
-
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 09cc65c0da93..4d2519cdb801 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -1812,10 +1812,9 @@ int phylink_fwnode_phy_connect(struct phylink *pl,
+ 
+ 	ret = phy_attach_direct(pl->netdev, phy_dev, flags,
+ 				pl->link_interface);
+-	if (ret) {
+-		phy_device_free(phy_dev);
++	phy_device_free(phy_dev);
++	if (ret)
+ 		return ret;
+-	}
+ 
+ 	ret = phylink_bringup_phy(pl, phy_dev, pl->link_config.interface);
+ 	if (ret)
+-- 
+2.39.0
 
