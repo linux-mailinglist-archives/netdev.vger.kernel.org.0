@@ -2,81 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56A7668345D
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 18:55:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F41F5683465
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 18:57:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230299AbjAaRzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 12:55:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55310 "EHLO
+        id S229647AbjAaR5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 12:57:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbjAaRzp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 12:55:45 -0500
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326F713524
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 09:55:29 -0800 (PST)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-4a263c4ddbaso214527917b3.0
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 09:55:29 -0800 (PST)
+        with ESMTP id S229504AbjAaR5R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 12:57:17 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 081C06A46
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 09:57:16 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id d132so19178882ybb.5
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 09:57:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=1syj8d33yfasYg+g/xpFl3jgX3utKwdVmBd7EXfxa3o=;
-        b=MwkJ5mfLVrJmE2lAtGb7PW+JtIKsGsDcwbJIylFbpvv3uT5skZA92CBIOp8orgC8cK
-         Gbgs0T2O876v009lcgeBBTt9Cf3sPdaPWKmWvL8hGciR2c/lwo38X5qmbyYuzOwwYymj
-         8t6urWOH+YyeDZG83wSgHqgHx0ZekR6VICFgUOBI/AILqEjRDvUyXwojHNhsXzMKB/sz
-         vwwK0Y0iYg2oGAdCiJtB1Dy/wE9Ux9LW4HtHSSvUBkCpr0UwESKNLYI94Xf+45wakRhX
-         cqmvu23cW/FNhwbQIcwsiP8uNI8AHOchRAq3HxXxz1irIn6sFY7j0ms9qPL+o1FMZBSA
-         Wd7w==
+        bh=GG8/kT0PKwqWP3AvSWmrhBSKsdjFhFnl36yGJFNM3fg=;
+        b=LoEJyeRKXVaDA3jB5BkGvy1teJGGh0e0Ywen6onFL+nR+So1lE66eOtPUpkVHVNyKW
+         uyqQ3eRPcGXbMiZNEa5QxhVmjJHXl9nxhs8py0nTcvwXy0h71zTqC06khUYb17HEu4U+
+         lnqbbtQxkVJBCDwfgW2L18cMhK8MEo/XQ3rKYo/vGqoGFOAJojRsrQf5F9p0zUoz1wtW
+         hTEL27N0htczV7Rk1h3/i7OUVjJHc22B21LNvQ2mZe/zDG1D+sohOwHWm9yZCqMk3zSo
+         xbUFR0u7QPTlt9jQZvlEsol23pfXlxi0sCUOAFvVlbm2m+6Dq/QZo2058ZcClRN04+k2
+         Hd1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=1syj8d33yfasYg+g/xpFl3jgX3utKwdVmBd7EXfxa3o=;
-        b=SIaLFaWk2mvgQTFlTJIrVfcVPRS2CJmJKstCPchgmle2MExFwMm572BK7EkJsg792j
-         GG4JElGFBAZMSV0kA4wjftTLfJry0OqoWE8ndE4J2iAnPhHkHMnDV8ZTrNfY/Xp6FgcL
-         /tCkdWcmOKY7TVqtP9nhasJ8K+EaNZh2tzpKNe7legj607EB0ELIDU/CE/xPUIrOV5z7
-         OYBpphNt0zBcX0xJgT8EOm1sCzdxz9HgrgIOKpTLjAznpPj3iauPU3ysofqUKUKsuPyp
-         CT2hQLMwx6B5ulCFw8QdE2iegQvROv87H9ZaQ4kUgPXeXi1gy1t+ptOsjc/P0s9sA7ew
-         Z5iA==
-X-Gm-Message-State: AO0yUKURWUCvMQLGzgHaAhoK/c1W3ffGPRpg8LiQZrsDtCUNzVdz02xc
-        B3Ezad3RCH6l+Lh5me2CkTVtK47UbbzQw2O70PY=
-X-Google-Smtp-Source: AK7set9U9naKvXLpp08zE2ervjkczgaoP1ebE2vUJ78Z6NjNiwPURHmHiUuw5cQw6hQmJQYOkpm1AvJJV1AOHlbGv5E=
-X-Received: by 2002:a0d:d70b:0:b0:506:466c:480c with SMTP id
- z11-20020a0dd70b000000b00506466c480cmr3755323ywd.253.1675187728277; Tue, 31
- Jan 2023 09:55:28 -0800 (PST)
+        bh=GG8/kT0PKwqWP3AvSWmrhBSKsdjFhFnl36yGJFNM3fg=;
+        b=JolP0BCKApKjzU6q1CfyIneE4VEsyRiHFCLJ+ETjk9715meJBF/M1gZ1MnIGbxXwIz
+         vWwEQO5NM2IVbNFglTtxqY8dsA1ZCQghfxwU3VvCSis7fi629VlFxFnH2tzMTR0kgPt/
+         6+Bsi0pFcXASDy9SXGtjNhAj1Z/LHqHaJM+5pH6rajau6t8Q14EUqbFv6MZZlYW1w2PE
+         eS0CM5ZMppDrCAYhjJQjDKGWDsaR2nXcgIWcC4Qv1gChoy+1R4id+cKXGoTuuPBjRDnM
+         KB6RCoynx654URc4dyNL+xlKhrVkL2mZM85Jj8MGyjev7u9M/of9JPLhxlM/FPWhh1Ox
+         YyVA==
+X-Gm-Message-State: AO0yUKUg/HXmwLHODucAvD/Kt1waxfA+pPcENRAQl7Ons/PWxKeonsnO
+        +qrzf1jbUGwLI0qpMpabyWr1PWcIQybMkeSVBBQgtA==
+X-Google-Smtp-Source: AK7set/HXKaUvajeee5zFP4Daz3XLDIYlWTeJcObla17wC2qxZV3s87DRuri8yGnlGYOH0r0FHNhjvG0pfer3B8MUto=
+X-Received: by 2002:a25:ef51:0:b0:80b:a45b:fd37 with SMTP id
+ w17-20020a25ef51000000b0080ba45bfd37mr2088227ybm.387.1675187834972; Tue, 31
+ Jan 2023 09:57:14 -0800 (PST)
 MIME-Version: 1.0
-References: <cover.1674921359.git.lucien.xin@gmail.com> <7e1f733cc96c7f7658fbf3276a90281b2f37acd1.1674921359.git.lucien.xin@gmail.com>
- <0601c53b3dc178293e05d87f75f481367ff4fd47.camel@redhat.com>
-In-Reply-To: <0601c53b3dc178293e05d87f75f481367ff4fd47.camel@redhat.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Tue, 31 Jan 2023 12:55:10 -0500
-Message-ID: <CADvbK_fXGCEwuHX5PCU1-+dTTG4ZMLGLXY8A_AqJpDoR2uV-cA@mail.gmail.com>
-Subject: Re: [PATCHv4 net-next 09/10] net: add gso_ipv4_max_size and
- gro_ipv4_max_size per device
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Aaron Conole <aconole@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Guillaume Nault <gnault@redhat.com>
+References: <20230131174601.203127-1-jakub@cloudflare.com>
+In-Reply-To: <20230131174601.203127-1-jakub@cloudflare.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 31 Jan 2023 18:57:03 +0100
+Message-ID: <CANn89iL2PCnC=6dOrozW0309W==tWcKpj2iwZgZAD_s0amvzLA@mail.gmail.com>
+Subject: Re: [PATCH net] udp: Pass 2 bytes of data with UDP_GRO cmsg to user-space
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, kernel-team@cloudflare.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,120 +68,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 9:59 AM Paolo Abeni <pabeni@redhat.com> wrote:
+On Tue, Jan 31, 2023 at 6:46 PM Jakub Sitnicki <jakub@cloudflare.com> wrote:
 >
-> On Sat, 2023-01-28 at 10:58 -0500, Xin Long wrote:
-> > This patch introduces gso_ipv4_max_size and gro_ipv4_max_size
-> > per device and adds netlink attributes for them, so that IPV4
-> > BIG TCP can be guarded by a separate tunable in the next patch.
-> >
-> > To not break the old application using "gso/gro_max_size" for
-> > IPv4 GSO packets, this patch updates "gso/gro_ipv4_max_size"
-> > in netif_set_gso/gro_max_size() if the new size isn't greater
-> > than GSO_LEGACY_MAX_SIZE, so that nothing will change even if
-> > userspace doesn't realize the new netlink attributes.
+> While UDP_GRO cmsg interface lacks documentation, the selftests added in
+> commit 3327a9c46352 ("selftests: add functionals test for UDP GRO") suggest
+> that the user-space should allocate CMSG_SPACE for an u16 value and
+> interpret the returned bytes as such:
 >
-> Not a big deal, but I think it would be nice to include the pahole info
-> showing where the new fields are located and why that are good
-> locations.
+> static int recv_msg(int fd, char *buf, int len, int *gso_size)
+> {
+>         char control[CMSG_SPACE(sizeof(uint16_t))] = {0};
+>         ...
+>                         if (cmsg->cmsg_level == SOL_UDP
+>                             && cmsg->cmsg_type == UDP_GRO) {
+>                                 gsosizeptr = (uint16_t *) CMSG_DATA(cmsg);
+>                                 *gso_size = *gsosizeptr;
+>                                 break;
+>                         }
+>         ...
+> }
 >
-> No need to send a new version for just for the above, unless Eric asks
-> otherwise ;)
+> Today user-space will receive 4 bytes of data with an UDP_GRO cmsg, because
+> the kernel packs an int into the cmsg data, as we can confirm with strace:
 >
-The the pahole info without and with the patch shows below:
+>   recvmsg(8, {msg_name=...,
+>               msg_iov=[{iov_base="\0\0..."..., iov_len=96000}],
+>               msg_iovlen=1,
+>               msg_control=[{cmsg_len=20,         <-- sizeof(cmsghdr) + 4
+>                             cmsg_level=SOL_UDP,
+>                             cmsg_type=0x68}],    <-- UDP_GRO
+>                             msg_controllen=24,
+>                             msg_flags=0}, 0) = 11200
+>
+> This means that either UDP_GRO selftests are broken on big endian, or this
+> is a programming error. Assume the latter and pass only the needed 2 bytes
+> of data with the cmsg.
+>
+> Fixing it like that has an added advantage that the cmsg becomes compatible
+> with what is expected by UDP_SEGMENT cmsg. It becomes possible to reuse the
+> cmsg when GSO packets are received on one socket and sent out of another.
+>
+> Fixes: bcd1665e3569 ("udp: add support for UDP_GRO cmsg")
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
+>  include/linux/udp.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/include/linux/udp.h b/include/linux/udp.h
+> index a2892e151644..44bb8d699248 100644
+> --- a/include/linux/udp.h
+> +++ b/include/linux/udp.h
+> @@ -125,7 +125,7 @@ static inline bool udp_get_no_check6_rx(struct sock *sk)
+>  static inline void udp_cmsg_recv(struct msghdr *msg, struct sock *sk,
+>                                  struct sk_buff *skb)
+>  {
+> -       int gso_size;
+> +       __u16 gso_size;
+>
+>         if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4) {
+>                 gso_size = skb_shinfo(skb)->gso_size;
+> --
+> 2.39.1
+>
 
-- Without the Patch:
+This would break some applications.
 
-# pahole --hex -C net_device vmlinux
-struct net_device {
-...
-long unsigned int          gro_flush_timeout;    /* 0x330   0x8 */
-int                        napi_defer_hard_irqs; /* 0x338   0x4 */
-unsigned int               gro_max_size;         /* 0x33c   0x4 */  <---------
-/* --- cacheline 13 boundary (832 bytes) --- */
-rx_handler_func_t *        rx_handler;           /* 0x340   0x8 */
-void *                     rx_handler_data;      /* 0x348   0x8 */
-struct mini_Qdisc *        miniq_ingress;        /* 0x350   0x8 */
-struct netdev_queue *      ingress_queue;        /* 0x358   0x8 */
-struct nf_hook_entries *   nf_hooks_ingress;     /* 0x360   0x8 */
-unsigned char              broadcast[32];        /* 0x368  0x20 */
-/* --- cacheline 14 boundary (896 bytes) was 8 bytes ago --- */
-struct cpu_rmap *          rx_cpu_rmap;          /* 0x388   0x8 */
-struct hlist_node          index_hlist;          /* 0x390  0x10 */
-
-/* XXX 32 bytes hole, try to pack */
-
-/* --- cacheline 15 boundary (960 bytes) --- */
-struct netdev_queue *      _tx __attribute__((__aligned__(64))); /*
-0x3c0   0x8 */
-...
-
-/* --- cacheline 32 boundary (2048 bytes) was 24 bytes ago --- */
-const struct attribute_group  * sysfs_groups[4]; /* 0x818  0x20 */
-const struct attribute_group  * sysfs_rx_queue_group; /* 0x838   0x8 */
-/* --- cacheline 33 boundary (2112 bytes) --- */
-const struct rtnl_link_ops  * rtnl_link_ops;     /* 0x840   0x8 */
-unsigned int               gso_max_size;         /* 0x848   0x4 */
-unsigned int               tso_max_size;         /* 0x84c   0x4 */
-u16                        gso_max_segs;         /* 0x850   0x2 */
-u16                        tso_max_segs;         /* 0x852   0x2 */   <---------
-
-/* XXX 4 bytes hole, try to pack */
-
-const struct dcbnl_rtnl_ops  * dcbnl_ops;        /* 0x858   0x8 */
-s16                        num_tc;               /* 0x860   0x2 */
-struct netdev_tc_txq       tc_to_txq[16];        /* 0x862  0x40 */
-/* --- cacheline 34 boundary (2176 bytes) was 34 bytes ago --- */
-u8                         prio_tc_map[16];      /* 0x8a2  0x10 */
-...
-}
-
-
-- With the Patch:
-
-For "gso_ipv4_max_size", it filled the hole as expected.
-
-/* --- cacheline 33 boundary (2112 bytes) --- */
-const struct rtnl_link_ops  * rtnl_link_ops;     /* 0x840   0x8 */
-unsigned int               gso_max_size;         /* 0x848   0x4 */
-unsigned int               tso_max_size;         /* 0x84c   0x4 */
-u16                        gso_max_segs;         /* 0x850   0x2 */
-u16                        tso_max_segs;         /* 0x852   0x2 */
-unsigned int               gso_ipv4_max_size;    /* 0x854   0x4 */ <-------
-const struct dcbnl_rtnl_ops  * dcbnl_ops;        /* 0x858   0x8 */
-s16                        num_tc;               /* 0x860   0x2 */
-struct netdev_tc_txq       tc_to_txq[16];        /* 0x862  0x40 */
-/* --- cacheline 34 boundary (2176 bytes) was 34 bytes ago --- */
-u8                         prio_tc_map[16];      /* 0x8a2  0x10 */
-
-
-For "gro_ipv4_max_size", these are no byte holes, I just put it
-in the "Cache lines mostly used on receive path" area, and
-next to gro_max_size.
-
-long unsigned int          gro_flush_timeout;    /* 0x330   0x8 */
-int                        napi_defer_hard_irqs; /* 0x338   0x4 */
-unsigned int               gro_max_size;         /* 0x33c   0x4 */
-/* --- cacheline 13 boundary (832 bytes) --- */
-unsigned int               gro_ipv4_max_size;    /* 0x340   0x4 */  <------
-
-/* XXX 4 bytes hole, try to pack */
-
-rx_handler_func_t *        rx_handler;           /* 0x348   0x8 */
-void *                     rx_handler_data;      /* 0x350   0x8 */
-struct mini_Qdisc *        miniq_ingress;        /* 0x358   0x8 */
-struct netdev_queue *      ingress_queue;        /* 0x360   0x8 */
-struct nf_hook_entries *   nf_hooks_ingress;     /* 0x368   0x8 */
-unsigned char              broadcast[32];        /* 0x370  0x20 */
-/* --- cacheline 14 boundary (896 bytes) was 16 bytes ago --- */
-struct cpu_rmap *          rx_cpu_rmap;          /* 0x390   0x8 */
-struct hlist_node          index_hlist;          /* 0x398  0x10 */
-
-/* XXX 24 bytes hole, try to pack */
-
-/* --- cacheline 15 boundary (960 bytes) --- */
-struct netdev_queue *      _tx __attribute__((__aligned__(64))); /*
-0x3c0   0x8 */
-
-
-Thanks.
+I think the test can be fixed instead, this seems less risky.
