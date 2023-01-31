@@ -2,303 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1951682D74
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 14:11:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBEED682D98
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 14:18:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232118AbjAaNLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 08:11:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47706 "EHLO
+        id S230135AbjAaNSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 08:18:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231825AbjAaNLZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 08:11:25 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678503AAB
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 05:10:51 -0800 (PST)
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com [209.85.128.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 2679C41AC9
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 13:10:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1675170650;
-        bh=Q741xVNPxljikF40G1tYF49pa5Q5XmgVMznZqucbJ7U=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Type:In-Reply-To;
-        b=fAca59CdFOSnI/YHCepxXwoKlsHzm+RNDZyqzd3kFwhrLQklSAVekOSa7uDlOnjzm
-         JZEWQWTjVnvCr3KDmLqr5oLH+jprmRUdg3U0WkB+aW5gaG39JSy4f5j3CnSrFabq2s
-         RAi7/ozAa6yU4RxFhamOANCuGWe2nOjXqmWew6DtqQI+XtqfCKzIPsVaLSSgbJoZ+R
-         kjYy67aGFAZsplJQu93bL4kWKZBkpmLY82idjtmP6JrpmnFHQ+Gsgi3RB8bDDLvoAR
-         9Ep/yEPFODkTGWDPZlhz89qgGrbK4WSPm45fotYh43KxaNLUWrnbLbZld5Fix/cTR1
-         /Al3OU7Vj4erw==
-Received: by mail-wm1-f70.google.com with SMTP id n7-20020a05600c3b8700b003dc55dcb298so3391420wms.8
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 05:10:50 -0800 (PST)
+        with ESMTP id S229973AbjAaNSr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 08:18:47 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D97FFF31
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 05:18:10 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id mi9so5020819pjb.4
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 05:18:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=YZDzJyDZmKkrsTBGzSlovl/rcGTQd0wc++sVV76Oabk=;
+        b=Vgre63umWTNjMfqCjdj35sHZ7drSxSBafnMlFQVX6GrbXHwhX0rbLg37+W6F/OhD6b
+         MWg6xbeIdlURqYtZHTGgpdvGozaL124TrYrkRlsz4zAltYRAgNj4vUNWFam/hWc3LY3B
+         luMpEqKHN9RPPCfaZNuEDdnKhDKCWfgciNvQU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Q741xVNPxljikF40G1tYF49pa5Q5XmgVMznZqucbJ7U=;
-        b=5lfVU4I5sk31f8dJNTeZlxI/QzRBgzmiJ1DMgs2H3DndGljU1m1hoorLfh2GVLtlw0
-         2b6OKmyiaGwe4QPRxtbQPYtimM7b6ly+UxktTFNUo9q10yZnylTIv4FvHuLRjNgXTD9s
-         S8MzItY9G4rFF4HpHKT9m9h7I0STBJcoty3f3ql/ezRKEx+8LDqBIHXmzk2/eLubt87K
-         oevZWHYwiye1iLLWBGZo95YY4BF/oGE1F3DwdfukifSTcN9/LNotobZYemzTb6lZN7ql
-         E/VZPfRT4/ifToUK54jj2lQquDjWz87JLx3V9PYG6XrUBCh9Y7YVOfGp0TD5yG555Bhj
-         ZH6Q==
-X-Gm-Message-State: AO0yUKXwLQyKShf9xWSU6/YvWDbF/5In/aIMvUjUCufsGTKUgGcvCCdB
-        AQNveMEKjGlZT9HsL0Hrl5KjLokJKp0y0Pz34ddVQ9bX/GMfU+DIEo2uUDNQ9JvMPMBEZX0PUVy
-        WH991CjQj1Ro9xFKEeFhLEf1D75NT4Z1lAw==
-X-Received: by 2002:a05:600c:4b1c:b0:3dc:5bd7:62ec with SMTP id i28-20020a05600c4b1c00b003dc5bd762ecmr6352551wmp.32.1675170645253;
-        Tue, 31 Jan 2023 05:10:45 -0800 (PST)
-X-Google-Smtp-Source: AK7set9Ugoyg1AvpTA39S5u6IM1/+onmzCaM4fhfsMAW0FXiPhLGAHpTn5QJOXYOy3L9Jftn4bO8uQ==
-X-Received: by 2002:a05:600c:4b1c:b0:3dc:5bd7:62ec with SMTP id i28-20020a05600c4b1c00b003dc5bd762ecmr6352527wmp.32.1675170644924;
-        Tue, 31 Jan 2023 05:10:44 -0800 (PST)
-Received: from qwirkle ([2001:67c:1560:8007::aac:c4dd])
-        by smtp.gmail.com with ESMTPSA id i1-20020a05600c354100b003dc4050c97bsm2331886wmq.3.2023.01.31.05.10.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Jan 2023 05:10:44 -0800 (PST)
-Date:   Tue, 31 Jan 2023 13:10:42 +0000
-From:   Andrei Gherzan <andrei.gherzan@canonical.com>
-To:     Willem de Bruijn <willemb@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        bh=YZDzJyDZmKkrsTBGzSlovl/rcGTQd0wc++sVV76Oabk=;
+        b=gww6dhQTbZi4cEB5ttDmxBkBcdU22zi8yjXhBYefp2EyphMnfdflIEQa4agRNqBr6H
+         T0JgWqITgt+JUHqVLLH0R/wrvO/aFNG4JR6r1W2xc58ZLr9mpt71FUoeZPTnn6OTYSx2
+         tJ5RTAMoiDQA/MJVGxE0ugQVMl7k6LR44opGXTJqvAak2WGxDa3Cs+gJW7s5233CuU20
+         eZgGTktyzeRrQAZFYRA5P7TXp/ZNWUlzIxv9jMl8lIcoNwNgn10FCBEQd38tBHXM2OjK
+         3NJOc0BTslZlkdXpaWYKrGa4dNXA8op71BkckSAdETausvoLitXGxGPv9+Q85g9kxQso
+         jDzA==
+X-Gm-Message-State: AO0yUKVPmQpr9QPnCiOTL6hvZEYl7zRcYtNScTTa+U9eO8Q6CxuY6C0d
+        ZqGeCWUEc4qqncWeqS2gaCMaCg==
+X-Google-Smtp-Source: AK7set8BEakqNepA6gKGPtI38cFRulrXnuyJElw2b1NAulYQLSiOc80+P+OspHNlxRdbO9q6bgiNTg==
+X-Received: by 2002:a17:902:e74d:b0:196:7103:259f with SMTP id p13-20020a170902e74d00b001967103259fmr12943785plf.7.1675171088675;
+        Tue, 31 Jan 2023 05:18:08 -0800 (PST)
+Received: from [10.176.68.61] ([192.19.148.250])
+        by smtp.gmail.com with ESMTPSA id je5-20020a170903264500b001896522a23bsm9816364plb.39.2023.01.31.05.18.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Jan 2023 05:18:07 -0800 (PST)
+Message-ID: <f71ef248-1019-a70d-3f07-1b7874772cf8@broadcom.com>
+Date:   Tue, 31 Jan 2023 14:18:00 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v2 1/5] brcmfmac: Drop all the RAW device IDs
+To:     Hector Martin <marcan@marcan.st>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] selftests: net: udpgso_bench_tx: Introduce exponential
- back-off retries
-Message-ID: <Y9kTUlJLO/H0rbhp@qwirkle>
-References: <CA+FuTScSfLG7gXS_YqJzsC-Teiryj3jeSQs9w0D1PWJs8sv5Rg@mail.gmail.com>
- <Y9ftL5c4klThCi9Q@qwirkle>
- <Y9fu7TR5VC33j+EP@qwirkle>
- <CA+FuTSf1tJ7kw+GCXf0YBRv0HaR8v7=iy6b36hrsmx8hEr5knQ@mail.gmail.com>
- <Y9f+7tMWMtPACLz9@qwirkle>
- <CA+FuTScThEWVevZ+KVgLOZ6zb4Ush6RtKL4FmC2cFMg+Q-OWpw@mail.gmail.com>
- <Y9gLeNqorZNQ1gjp@qwirkle>
- <Y9gfpa7vks5Ndl8q@qwirkle>
- <CA+FuTSckAeDGSBYE3bv2qR9cXpqac8Vmu6YxC1HTJx7YLY7gnQ@mail.gmail.com>
- <Y9gnqNnkiPEw+Pp8@qwirkle>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y9gnqNnkiPEw+Pp8@qwirkle>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Alexander Prutskov <alep@cypress.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Ian Lin <ian.lin@infineon.com>,
+        Soontak Lee <soontak.lee@cypress.com>,
+        Joseph chuang <jiac@cypress.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Aditya Garg <gargaditya08@live.com>, asahi@lists.linux.dev,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230131112840.14017-1-marcan@marcan.st>
+ <20230131112840.14017-2-marcan@marcan.st>
+From:   Arend van Spriel <arend.vanspriel@broadcom.com>
+In-Reply-To: <20230131112840.14017-2-marcan@marcan.st>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000b2acbc05f38f299b"
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/01/30 08:25PM, Andrei Gherzan wrote:
-> On 23/01/30 02:57PM, Willem de Bruijn wrote:
-> > On Mon, Jan 30, 2023 at 2:51 PM Andrei Gherzan
-> > <andrei.gherzan@canonical.com> wrote:
-> > >
-> > > On 23/01/30 06:24PM, Andrei Gherzan wrote:
-> > > > On 23/01/30 12:35PM, Willem de Bruijn wrote:
-> > > > > On Mon, Jan 30, 2023 at 12:31 PM Andrei Gherzan
-> > > > > <andrei.gherzan@canonical.com> wrote:
-> > > > > >
-> > > > > > On 23/01/30 11:29AM, Willem de Bruijn wrote:
-> > > > > > > On Mon, Jan 30, 2023 at 11:23 AM Andrei Gherzan
-> > > > > > > <andrei.gherzan@canonical.com> wrote:
-> > > > > > > >
-> > > > > > > > On 23/01/30 04:15PM, Andrei Gherzan wrote:
-> > > > > > > > > On 23/01/30 11:03AM, Willem de Bruijn wrote:
-> > > > > > > > > > On Mon, Jan 30, 2023 at 9:28 AM Andrei Gherzan
-> > > > > > > > > > <andrei.gherzan@canonical.com> wrote:
-> > > > > > > > > > >
-> > > > > > > > > > > On 23/01/30 08:35AM, Willem de Bruijn wrote:
-> > > > > > > > > > > > On Mon, Jan 30, 2023 at 7:51 AM Andrei Gherzan
-> > > > > > > > > > > > <andrei.gherzan@canonical.com> wrote:
-> > > > > > > > > > > > >
-> > > > > > > > > > > > > On 23/01/30 09:26AM, Paolo Abeni wrote:
-> > > > > > > > > > > > > > On Fri, 2023-01-27 at 17:03 -0500, Willem de Bruijn wrote:
-> > > > > > > > > > > > > > > On Fri, Jan 27, 2023 at 1:16 PM Andrei Gherzan
-> > > > > > > > > > > > > > > <andrei.gherzan@canonical.com> wrote:
-> > > > > > > > > > > > > > > >
-> > > > > > > > > > > > > > > > The tx and rx test programs are used in a couple of test scripts including
-> > > > > > > > > > > > > > > > "udpgro_bench.sh". Taking this as an example, when the rx/tx programs
-> > > > > > > > > > > > > > > > are invoked subsequently, there is a chance that the rx one is not ready to
-> > > > > > > > > > > > > > > > accept socket connections. This racing bug could fail the test with at
-> > > > > > > > > > > > > > > > least one of the following:
-> > > > > > > > > > > > > > > >
-> > > > > > > > > > > > > > > > ./udpgso_bench_tx: connect: Connection refused
-> > > > > > > > > > > > > > > > ./udpgso_bench_tx: sendmsg: Connection refused
-> > > > > > > > > > > > > > > > ./udpgso_bench_tx: write: Connection refused
-> > > > > > > > > > > > > > > >
-> > > > > > > > > > > > > > > > This change addresses this by adding routines that retry the socket
-> > > > > > > > > > > > > > > > operations with an exponential back off algorithm from 100ms to 2s.
-> > > > > > > > > > > > > > > >
-> > > > > > > > > > > > > > > > Fixes: 3a687bef148d ("selftests: udp gso benchmark")
-> > > > > > > > > > > > > > > > Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
-> > > > > > > > > > > > > > >
-> > > > > > > > > > > > > > > Synchronizing the two processes is indeed tricky.
-> > > > > > > > > > > > > > >
-> > > > > > > > > > > > > > > Perhaps more robust is opening an initial TCP connection, with
-> > > > > > > > > > > > > > > SO_RCVTIMEO to bound the waiting time. That covers all tests in one
-> > > > > > > > > > > > > > > go.
-> > > > > > > > > > > > > >
-> > > > > > > > > > > > > > Another option would be waiting for the listener(tcp)/receiver(udp)
-> > > > > > > > > > > > > > socket to show up in 'ss' output before firing-up the client - quite
-> > > > > > > > > > > > > > alike what mptcp self-tests are doing.
-> > > > > > > > > > > > >
-> > > > > > > > > > > > > I like this idea. I have tested it and it works as expected with the
-> > > > > > > > > > > > > exeception of:
-> > > > > > > > > > > > >
-> > > > > > > > > > > > > ./udpgso_bench_tx: sendmsg: No buffer space available
-> > > > > > > > > > > > >
-> > > > > > > > > > > > > Any ideas on how to handle this? I could retry and that works.
-> > > > > > > > > > > >
-> > > > > > > > > > > > This happens (also) without the zerocopy flag, right? That
-> > > > > > > > > > > >
-> > > > > > > > > > > > It might mean reaching the sndbuf limit, which can be adjusted with
-> > > > > > > > > > > > SO_SNDBUF (or SO_SNDBUFFORCE if CAP_NET_ADMIN). Though I would not
-> > > > > > > > > > > > expect this test to bump up against that limit.
-> > > > > > > > > > > >
-> > > > > > > > > > > > A few zerocopy specific reasons are captured in
-> > > > > > > > > > > > https://www.kernel.org/doc/html/latest/networking/msg_zerocopy.html#transmission.
-> > > > > > > > > > >
-> > > > > > > > > > > I have dug a bit more into this, and it does look like your hint was in
-> > > > > > > > > > > the right direction. The fails I'm seeing are only with the zerocopy
-> > > > > > > > > > > flag.
-> > > > > > > > > > >
-> > > > > > > > > > > From the reasons (doc) above I can only assume optmem limit as I've
-> > > > > > > > > > > reproduced it with unlimited locked pages and the fails are transient.
-> > > > > > > > > > > That leaves optmem limit. Bumping the value I have by default (20480) to
-> > > > > > > > > > > (2048000) made the sendmsg succeed as expected. On the other hand, the
-> > > > > > > > > > > tests started to fail with something like:
-> > > > > > > > > > >
-> > > > > > > > > > > ./udpgso_bench_tx: Unexpected number of Zerocopy completions:    774783
-> > > > > > > > > > > expected    773707 received
-> > > > > > > > > >
-> > > > > > > > > > More zerocopy completions than number of sends. I have not seen this before.
-> > > > > > > > > >
-> > > > > > > > > > The completions are ranges of IDs, one per send call for datagram sockets.
-> > > > > > > > > >
-> > > > > > > > > > Even with segmentation offload, the counter increases per call, not per segment.
-> > > > > > > > > >
-> > > > > > > > > > Do you experience this without any other changes to udpgso_bench_tx.c.
-> > > > > > > > > > Or are there perhaps additional sendmsg calls somewhere (during
-> > > > > > > > > > initial sync) that are not accounted to num_sends?
-> > > > > > > > >
-> > > > > > > > > Indeed, that looks off. No, I have run into this without any changes in
-> > > > > > > > > the tests (besides the retry routine in the shell script that waits for
-> > > > > > > > > rx to come up). Also, as a data point.
-> > > > > > > >
-> > > > > > > > Actually wait. I don't think that is the case here. "expected" is the
-> > > > > > > > number of sends. In this case we sent 1076 more messages than
-> > > > > > > > completions. Am I missing something obvious?
-> > > > > > >
-> > > > > > > Oh indeed.
-> > > > > > >
-> > > > > > > Receiving fewer completions than transmission is more likely.
-> > > > > >
-> > > > > > Exactly, yes.
-> > > > > >
-> > > > > > > This should be the result of datagrams still being somewhere in the
-> > > > > > > system. In a qdisc, or waiting for the network interface to return a
-> > > > > > > completion notification, say.
-> > > > > > >
-> > > > > > > Does this remain if adding a longer wait before the final flush_errqueue?
-> > > > > >
-> > > > > > Yes and no. But not realiably unless I go overboard.
-> > > > > >
-> > > > > > > Or, really, the right fix is to keep polling there until the two are
-> > > > > > > equal, up to some timeout. Currently flush_errqueue calls poll only
-> > > > > > > once.
-> > > > > >
-> > > > > > That makes sense. I have implemented a retry and this ran for a good
-> > > > > > while now.
-> > > > > >
-> > > > > > -               flush_errqueue(fd, true);
-> > > > > > +               while (true) {
-> > > > > > +                       flush_errqueue(fd, true);
-> > > > > > +                       if ((stat_zcopies == num_sends) || (delay >= MAX_DELAY))
-> > > > > > +                               break;
-> > > > > > +                       usleep(delay);
-> > > > > > +                       delay *= 2;
-> > > > > > +               }
-> > > > > >
-> > > > > > What do you think?
-> > > > >
-> > > > > Thanks for running experiments.
-> > > > >
-> > > > > We can avoid the unconditional sleep, as the poll() inside
-> > > > > flush_errqueue already takes a timeout.
-> > > > >
-> > > > > One option is to use start_time = clock_gettime(..) or gettimeofday
-> > > > > before poll, and restart poll until either the exit condition or
-> > > > > timeout is reached, with timeout = orig_time - elapsed_time.
-> > > >
-> > > > Yes, this was more of a quick draft. I was thinking to move it into the
-> > > > flush function (while making it aware of num_sends via a parameter):
-> > > >
-> > > > if (do_poll) {
-> > > >   struct pollfd fds = {0};
-> > > >   int ret;
-> > > >   unsigned long tnow, tstop;
-> > > >
-> > > >   fds.fd = fd;
-> > > >   tnow = gettimeofday_ms();
-> > > >   tstop = tnow + POLL_LOOP_TIMEOUT_MS;
-> > > >   while ((stat_zcopies != num_sends) && (tnow < tstop)) {
-> > 
-> > The new condition to loop until stat_zcopies == num_sends should only
-> > be tested on the final call. This likely needs to become a separate
-> > boolean. Or a separate flush_errqueue_last() function, and leave the
-> > existing one as is.
-> 
-> Wouldn't a do/while be enough here?
-> 
-> > 
-> > We can probably merge the outer for and inner while loops
-> > 
-> > > >     ret = poll(&fds, 1, 500);
-> > 
-> > Instead of 500, this becomes tstop - tnow.
-> 
-> Right. Missed this one.
-> 
-> > 
-> > > >     if (ret == 0) {
-> > > >       if (cfg_verbose)
-> > > >         fprintf(stderr, "poll timeout\n");
-> > 
-> > Poll timeouts are now expected to an extent. Only report once at the
-> > end of the function if the poll was only called once and timed out.
-> 
-> I had to think about this a bit but now I see your point and it makes
-> sense.
-> 
-> > > >       } else if (ret < 0) {
-> > > >         error(1, errno, "poll");
-> > > >     }
-> > > >     tnow = gettimeofday_ms();
-> > > >   }
-> > > > }
-> > > >
-> > > > Does this make more sense?
-> > >
-> > > Obviously, this should be a do/while. Anyway, this works as expected
-> > > after leaving it for a around two hours.
-> > 
-> > Great to hear you found the cause.
-> 
-> Hats off for hints.
+--000000000000b2acbc05f38f299b
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-I have pushed a new version with a couple of other changes here and
-there.
+On 1/31/2023 12:28 PM, 'Hector Martin' via BRCM80211-DEV-LIST,PDL wrote:
+> These device IDs are only supposed to be visible internally, in devices
+> without a proper OTP. They should never be seen in devices in the wild,
+> so drop them to avoid confusion.
 
-https://lore.kernel.org/netdev/20230131130412.432549-1-andrei.gherzan@canonical.com/T/#t
+Thanks for this cleanup.
 
-Paolo, for the synchronisation implementation I took your advice.
+Acked-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> ---
+>   drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c       | 4 ----
+>   drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h | 4 ----
+>   2 files changed, 8 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+> index ae57a9a3ab05..93f961d484c3 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+> @@ -2589,17 +2589,14 @@ static const struct dev_pm_ops brcmf_pciedrvr_pm = {
+>   static const struct pci_device_id brcmf_pcie_devid_table[] = {
+>   	BRCMF_PCIE_DEVICE(BRCM_PCIE_4350_DEVICE_ID, WCC),
+>   	BRCMF_PCIE_DEVICE_SUB(0x4355, BRCM_PCIE_VENDOR_ID_BROADCOM, 0x4355, WCC),
+> -	BRCMF_PCIE_DEVICE(BRCM_PCIE_4354_RAW_DEVICE_ID, WCC),
+>   	BRCMF_PCIE_DEVICE(BRCM_PCIE_4356_DEVICE_ID, WCC),
+>   	BRCMF_PCIE_DEVICE(BRCM_PCIE_43567_DEVICE_ID, WCC),
+>   	BRCMF_PCIE_DEVICE(BRCM_PCIE_43570_DEVICE_ID, WCC),
+> -	BRCMF_PCIE_DEVICE(BRCM_PCIE_43570_RAW_DEVICE_ID, WCC),
+>   	BRCMF_PCIE_DEVICE(BRCM_PCIE_4358_DEVICE_ID, WCC),
+>   	BRCMF_PCIE_DEVICE(BRCM_PCIE_4359_DEVICE_ID, WCC),
+>   	BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_DEVICE_ID, WCC),
+>   	BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_2G_DEVICE_ID, WCC),
+>   	BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_5G_DEVICE_ID, WCC),
+> -	BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_RAW_DEVICE_ID, WCC),
+>   	BRCMF_PCIE_DEVICE(BRCM_PCIE_4364_DEVICE_ID, BCA),
+>   	BRCMF_PCIE_DEVICE(BRCM_PCIE_4365_DEVICE_ID, BCA),
+>   	BRCMF_PCIE_DEVICE(BRCM_PCIE_4365_2G_DEVICE_ID, BCA),
+> @@ -2611,7 +2608,6 @@ static const struct pci_device_id brcmf_pcie_devid_table[] = {
+>   	BRCMF_PCIE_DEVICE(BRCM_PCIE_4371_DEVICE_ID, WCC),
+>   	BRCMF_PCIE_DEVICE(BRCM_PCIE_4378_DEVICE_ID, WCC),
+>   	BRCMF_PCIE_DEVICE(CY_PCIE_89459_DEVICE_ID, CYW),
+> -	BRCMF_PCIE_DEVICE(CY_PCIE_89459_RAW_DEVICE_ID, CYW),
+>   	{ /* end: all zeroes */ }
+>   };
+>   
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
+> index f4939cf62767..a211a72fca42 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
+> +++ b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
+> @@ -71,17 +71,14 @@
+>   /* PCIE Device IDs */
+>   #define BRCM_PCIE_4350_DEVICE_ID	0x43a3
+>   #define BRCM_PCIE_4354_DEVICE_ID	0x43df
+> -#define BRCM_PCIE_4354_RAW_DEVICE_ID	0x4354
+>   #define BRCM_PCIE_4356_DEVICE_ID	0x43ec
+>   #define BRCM_PCIE_43567_DEVICE_ID	0x43d3
+>   #define BRCM_PCIE_43570_DEVICE_ID	0x43d9
+> -#define BRCM_PCIE_43570_RAW_DEVICE_ID	0xaa31
+>   #define BRCM_PCIE_4358_DEVICE_ID	0x43e9
+>   #define BRCM_PCIE_4359_DEVICE_ID	0x43ef
+>   #define BRCM_PCIE_43602_DEVICE_ID	0x43ba
+>   #define BRCM_PCIE_43602_2G_DEVICE_ID	0x43bb
+>   #define BRCM_PCIE_43602_5G_DEVICE_ID	0x43bc
+> -#define BRCM_PCIE_43602_RAW_DEVICE_ID	43602
+>   #define BRCM_PCIE_4364_DEVICE_ID	0x4464
+>   #define BRCM_PCIE_4365_DEVICE_ID	0x43ca
+>   #define BRCM_PCIE_4365_2G_DEVICE_ID	0x43cb
+> @@ -92,7 +89,6 @@
+>   #define BRCM_PCIE_4371_DEVICE_ID	0x440d
+>   #define BRCM_PCIE_4378_DEVICE_ID	0x4425
+>   #define CY_PCIE_89459_DEVICE_ID         0x4415
+> -#define CY_PCIE_89459_RAW_DEVICE_ID     0x4355
+>   
+>   /* brcmsmac IDs */
+>   #define BCM4313_D11N2G_ID	0x4727	/* 4313 802.11n 2.4G device */
 
-Looking forward for your feedback.
+--000000000000b2acbc05f38f299b
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
--- 
-Andrei Gherzan
+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
+2Gzj3QNJRLsZu1TLyOyBBIr/BE7UiY3RabgRzknBGAPmzhS+fmyM8OtM5BYBsFBrSUFtZZO2p/tf
+Nbc24J2zf2peoZ8MK+7WQqummYlOnz+FyDkA9EybeNMcS5C+xi/PAgMBAAGjggHdMIIB2TAOBgNV
+HQ8BAf8EBAMCBaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJl
+Lmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYI
+KwYBBQUHMAGGNWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
+Y2EyMDIwME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3
+dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqG
+OGh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3Js
+MCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYB
+BQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFIikAXd8CEtv
+ZbDflDRnf3tuStPuMA0GCSqGSIb3DQEBCwUAA4IBAQCdS5XCYx6k2GGZui9DlFsFm75khkqAU7rT
+zBX04sJU1+B1wtgmWTVIzW7ugdtDZ4gzaV0S9xRhpDErjJaltxPbCylb1DEsLj+AIvBR34caW6ZG
+sQk444t0HPb29HnWYj+OllIGMbdJWr0/P95ZrKk2bP24ub3ZP/8SyzrohfIba9WZKMq6g2nTLZE3
+BtkeSGJx/8dy0h8YmRn+adOrxKXHxhSL8BNn8wsmIZyYWe6fRcBtO3Ks2DOLyHCdkoFlN8x9VUQF
+N2ulEgqCbRKkx+qNirW86eF138lr1gRxzclu/38ko//MmkAYR/+hP3WnBll7zbpIt0jc9wyFkSqH
+p8a1MYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
+YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMTv1t
+bpIzNUky46LXMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCBGXQO4RV9EvCrVf9rG
+Rkm24mBb0vCROLuWkrOR0NipgDAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
+BTEPFw0yMzAxMzExMzE4MDlaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
+AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
+BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEA7QwgBgm5tBUFXjgAoYepRE9txfqbLt5Zq7Pu
+xpTsFhQ5rGsz2WnNG9wqsxQZ8lvvuxBGyKif0p8bwZxb49XCtZixUmCWjKGJz+uSLwTPL1P3ObkH
+NI8wRBh5J2dOx+7CRSvs8v6t5RzmZyusrtIxB56pV3qF6UJ3lWo9trBWopQf0mZdiqDI92nLykPn
+6GKGG+BrRRW/a+d+CiygcJJejjyu6q9Gjin01CAOG+kaOTTq1vpwCMtsG52hwhxeJ6wMBkfkey+B
+PoDMriHmNMCq1p4/wM5/TFkTYczOIkNc9e1NFpmdtMHzc80j9VPhGKZea8BTo5ZhU8KYjSJPAnqg
+aA==
+--000000000000b2acbc05f38f299b--
