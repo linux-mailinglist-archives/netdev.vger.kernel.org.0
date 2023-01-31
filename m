@@ -2,206 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3355B682D4F
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 14:06:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FD3D682D42
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 14:05:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232021AbjAaNGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 08:06:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41376 "EHLO
+        id S230245AbjAaNFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 08:05:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232006AbjAaNGF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 08:06:05 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 336094E536
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 05:05:52 -0800 (PST)
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com [209.85.128.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 5E9B241AE2
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 13:05:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1675170340;
-        bh=wLRgJ2g3xT7I9yLnLnLzzOK8LNCx5zIY7gjodxJIDxM=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=E1v4/qO+ZK/5/tDJqgsqidr+PCnHCAbjwKkB04dokudW/JiEfoz6ywP/2CMr7Lxy1
-         ISSTlIMGcQu2UobgR6UkCV+gAdpytxiKG4Btvs/595W55U7xjcC7xwYpOgfc72Q6WO
-         3c84fyZF/j5nnsR8jU/ysCu4UH6aiCUZXFjYvRrL/K74U4JvXN1QG0cj3jevRQDE7z
-         VDwFykTGjg5G6+Y+p9d9/ozKA0D0d+QpoLVI+IR7cBL564gEvQNnf18XVK8DzoisIf
-         8seMZU/aiPSUKlIy0GL07c6oeqYrLFLJkl/AP3pYt8oYgJjMADZWbwFe+XOICkbSWm
-         hKH4zq+fVmATw==
-Received: by mail-wm1-f70.google.com with SMTP id n7-20020a05600c3b8700b003dc55dcb298so3383588wms.8
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 05:05:40 -0800 (PST)
+        with ESMTP id S231899AbjAaNFc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 08:05:32 -0500
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1DA4ED02
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 05:05:00 -0800 (PST)
+Received: by mail-qt1-x82a.google.com with SMTP id e8so13171571qts.1
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 05:05:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=upUJ2TncehU87L41tsPtlPueesxjmVktEg4rw1YCSSo=;
+        b=NI5AGL3V8hG523ljGEOljP3vZ30GikQg9ymSVEFzCSDY/MI4cBkwgYby64z7O0OlCd
+         oVDzM83dlOcz6OemcQi/bsY8RLbOPlrY1aX849FruSM3CCSJd67By+wjkvLAQXj7ma0J
+         9+P2NUiGZ+hMSa+WojA0C5+5xRjDF3dF0uuZGmnNtdQHHpeaeUjQHHHG2+l1bE6YhC2R
+         C3UhEslTzmWt2+V7r5UM/A5dEAzRUAyaqxcdyCTf1rJs1w0jdZGbNkyNv6jCwWphOo3j
+         MtIIUY4l+vz4cokNasEXOQoULlJoBguymstNOl0MpdjpVS7hOW5gyuwMR0vRJQpiorGJ
+         VtQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=wLRgJ2g3xT7I9yLnLnLzzOK8LNCx5zIY7gjodxJIDxM=;
-        b=aMi3l4qCIqZ7QKpmtjZ2LurWk23xGO2pF7UxAwRocq32+Dt+WkHu53aK0n30xkYOTb
-         5HgOE8dyi7d4mG60CjmRnVjYk+5qdWByoR78llgxFRRUEgKRIEMAwQqS0mPdvtjRmhlu
-         A7RfEJCVwYoeqykOoCFi3RlAd7ZqaPquBkKb3eVmvjCA7qPjU2oTdBiomolmcHvvPR4f
-         kQSmFq5z/P9QFT/CHrXCYSToFLmP4oY1XzuaGUqBm+IHCCCUSkY8hYkLOgUidR3RUos5
-         +kf/p/66ESMd/BvqmKB3qdzfNRMBfOpKl/o9d6LN5NXcUAJ+KkrB/8IE94PYM4QzmRrN
-         YLUQ==
-X-Gm-Message-State: AO0yUKU0hN6P5d4kOoGj7VR+e18m7jAjtbvty7eiUAi8Axg9c2zgArab
-        wkp6vATCm4HPJGUFfslYCwVGJuA/s2Ir8lbbL0YLk/Yy1Iif2zW/RInEuLnKUB7AF+1KJ1wB9DY
-        b6QZBf5LbVNOQyS37VaR7udt7gRQbhp5PLQ==
-X-Received: by 2002:a5d:4650:0:b0:2c3:6a8b:2cec with SMTP id j16-20020a5d4650000000b002c36a8b2cecmr112498wrs.60.1675170339383;
-        Tue, 31 Jan 2023 05:05:39 -0800 (PST)
-X-Google-Smtp-Source: AK7set/akIjMwFjtuH5Lbc7zxow/+PDAFODmUjLu7C6rpySt8f3yNU6mZDxAvz/bS+Ahd90c23ovow==
-X-Received: by 2002:a5d:4650:0:b0:2c3:6a8b:2cec with SMTP id j16-20020a5d4650000000b002c36a8b2cecmr112452wrs.60.1675170338732;
-        Tue, 31 Jan 2023 05:05:38 -0800 (PST)
-Received: from localhost.localdomain ([2001:67c:1560:8007::aac:c4dd])
-        by smtp.gmail.com with ESMTPSA id f6-20020a5d50c6000000b002bfc24e1c55sm14741436wrt.78.2023.01.31.05.05.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Jan 2023 05:05:38 -0800 (PST)
-From:   Andrei Gherzan <andrei.gherzan@canonical.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=upUJ2TncehU87L41tsPtlPueesxjmVktEg4rw1YCSSo=;
+        b=7wkHE6Tnf6YQBjron71w07sOfEDiWj7c+DGBw351IcZf2CRDuJ8Fi4AnpCApbmZEk1
+         LdlCQOUi3HR7KiTYzbSUZO151DVkLno83ii51HGY22V++AM4PqB0P0jd7aXcyMLSMrIq
+         8v6MgbQL4OlifKw+En+6+fVnPz8WFFVlYkeqrHfMmuM1RWi/aNCKUbfG1x9nXcX89t1D
+         0aKdVZoZQ3/CysTzsxvbPR0WHuhEE2wdH7lojf5mU2P6D1daKN9XhvYkHtudQDusZZ8x
+         8MnYeb0lQT77yxaod06CpssT0th6w6EK34YLJqEWCl+iYsnmf4bmG4HJHhM28yOvQAoe
+         hF8w==
+X-Gm-Message-State: AFqh2krlumx5U3gTuCMexddM6Guu43x7Q5wfnqpe2Ww+th0NUPLKfY1c
+        5/96V9Df5nfCH+J4qtSP7NGSSg==
+X-Google-Smtp-Source: AMrXdXu0eIn8QTBeXZ5tBgL5FbWrJ7vV8Ix4v7hcStH02gwfN7CTdZf9t9myJTmM3AdhHw9cFzh4cA==
+X-Received: by 2002:ac8:7107:0:b0:3b6:2f22:75bd with SMTP id z7-20020ac87107000000b003b62f2275bdmr68744159qto.28.1675170299158;
+        Tue, 31 Jan 2023 05:04:59 -0800 (PST)
+Received: from [172.22.22.4] ([98.61.227.136])
+        by smtp.googlemail.com with ESMTPSA id hf19-20020a05622a609300b003b643951117sm6968680qtb.38.2023.01.31.05.04.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Jan 2023 05:04:58 -0800 (PST)
+Message-ID: <42080e79-e7c6-0e2b-5e8c-95aedb5823a0@linaro.org>
+Date:   Tue, 31 Jan 2023 07:04:57 -0600
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next] net: ipa: use dev PM wakeirq handling
+Content-Language: en-US
+To:     Caleb Connolly <caleb.connolly@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
-Cc:     Andrei Gherzan <andrei.gherzan@canonical.com>,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/4] selftests: net: udpgso_bench_tx: Cater for pending datagrams zerocopy benchmarking
-Date:   Tue, 31 Jan 2023 13:04:12 +0000
-Message-Id: <20230131130412.432549-4-andrei.gherzan@canonical.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230131130412.432549-1-andrei.gherzan@canonical.com>
-References: <20230131130412.432549-1-andrei.gherzan@canonical.com>
-MIME-Version: 1.0
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, phone-devel@vger.kernel.org
+References: <20230127202758.2913612-1-caleb.connolly@linaro.org>
+ <8deaed16-385b-6108-e971-0168df2b3c2f@linaro.org>
+ <bc54d9ea-aaa5-eea6-a954-807b3451d070@linaro.org>
+From:   Alex Elder <elder@linaro.org>
+In-Reply-To: <bc54d9ea-aaa5-eea6-a954-807b3451d070@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The test tool can check that the zerocopy number of completions value is
-valid taking into consideration the number of datagram send calls. This can
-catch the system into a state where the datagrams are still in the system
-(for example in a qdisk, waiting for the network interface to return a
-completion notification, etc).
+On 1/31/23 6:40 AM, Caleb Connolly wrote:
+> 
+> 
+> On 1/28/23 13:47, Alex Elder wrote:
+>> On 1/27/23 2:27 PM, Caleb Connolly wrote:
+>>> Replace the enable_irq_wake() call with one to dev_pm_set_wake_irq()
+>>> instead. This will let the dev PM framework automatically manage the
+>>> the wakeup capability of the ipa IRQ and ensure that userspace requests
+>>> to enable/disable wakeup for the IPA via sysfs are respected.
+>>>
+>>> Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+>>
+>> Looks OK to me.  Can you say something about how you
+>> tested this, and what the result was?  Thanks.
+> 
+> Ah yeah. This was tested on the SDM845 (IPA 3.5.1) based SHIFT6mq in the 
+> UK with an EE SIM card.
+> 
+> All network connections were disabled except for mobile data which was 
+> configured using ModemManager. Then I set up a basic TCP server using 
+> netcat on a public IP address and connected to it from the device.
+> 
+> It is then possible to validate that the wakeirq fires and the interrupt 
+> is handled correctly by putting the device into s2idle sleep (echo mem > 
+> /sys/power/state) and typing some data into the server terminal.
+> 
+> Then I disabled the wakeup as follows and repeated the test to ensure 
+> that the device would no longer wake up on incoming data, and that the 
+> data was received when the device resumes.
+> 
+> echo disabled > /sys/devices/platform/soc\@0/1e40000.ipa/power/wakeup
 
-This change adds a retry logic of computing the number of completions up to
-a configurable (via CLI) timeout (default: 2 seconds).
+Great explanation, thank you.  This looks good.
 
-Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
----
- tools/testing/selftests/net/udpgso_bench_tx.c | 38 +++++++++++++++----
- 1 file changed, 30 insertions(+), 8 deletions(-)
+Reviewed-by: Alex Elder <elder@linaro.org>
 
-diff --git a/tools/testing/selftests/net/udpgso_bench_tx.c b/tools/testing/selftests/net/udpgso_bench_tx.c
-index b47b5c32039f..5a29b5f24023 100644
---- a/tools/testing/selftests/net/udpgso_bench_tx.c
-+++ b/tools/testing/selftests/net/udpgso_bench_tx.c
-@@ -62,6 +62,7 @@ static int	cfg_payload_len	= (1472 * 42);
- static int	cfg_port	= 8000;
- static int	cfg_runtime_ms	= -1;
- static bool	cfg_poll;
-+static int	cfg_poll_loop_timeout_ms = 2000;
- static bool	cfg_segment;
- static bool	cfg_sendmmsg;
- static bool	cfg_tcp;
-@@ -235,16 +236,17 @@ static void flush_errqueue_recv(int fd)
- 	}
- }
- 
--static void flush_errqueue(int fd, const bool do_poll)
-+static void flush_errqueue(int fd, const bool do_poll,
-+		unsigned long poll_timeout, const bool poll_err)
- {
- 	if (do_poll) {
- 		struct pollfd fds = {0};
- 		int ret;
- 
- 		fds.fd = fd;
--		ret = poll(&fds, 1, 500);
-+		ret = poll(&fds, 1, poll_timeout);
- 		if (ret == 0) {
--			if (cfg_verbose)
-+			if ((cfg_verbose) && (poll_err))
- 				fprintf(stderr, "poll timeout\n");
- 		} else if (ret < 0) {
- 			error(1, errno, "poll");
-@@ -254,6 +256,22 @@ static void flush_errqueue(int fd, const bool do_poll)
- 	flush_errqueue_recv(fd);
- }
- 
-+static void flush_errqueue_retry(int fd, const bool do_poll, unsigned long num_sends)
-+{
-+	unsigned long tnow, tstop;
-+	bool first_try = true;
-+
-+	tnow = gettimeofday_ms();
-+	tstop = tnow + cfg_poll_loop_timeout_ms;
-+	do {
-+		flush_errqueue(fd, do_poll, tstop - tnow, first_try);
-+		first_try = false;
-+		if (!do_poll)
-+			usleep(1000);  // a throttling delay if polling is enabled
-+		tnow = gettimeofday_ms();
-+	} while ((stat_zcopies != num_sends) && (tnow < tstop));
-+}
-+
- static int send_tcp(int fd, char *data)
- {
- 	int ret, done = 0, count = 0;
-@@ -413,8 +431,9 @@ static int send_udp_segment(int fd, char *data)
- 
- static void usage(const char *filepath)
- {
--	error(1, 0, "Usage: %s [-46acmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] [-M messagenr] [-p port] [-s sendsize] [-S gsosize]",
--		    filepath);
-+	error(1, 0,
-+			"Usage: %s [-46acmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] [-L secs] [-M messagenr] [-p port] [-s sendsize] [-S gsosize]",
-+			filepath);
- }
- 
- static void parse_opts(int argc, char **argv)
-@@ -423,7 +442,7 @@ static void parse_opts(int argc, char **argv)
- 	int max_len, hdrlen;
- 	int c;
- 
--	while ((c = getopt(argc, argv, "46acC:D:Hl:mM:p:s:PS:tTuvz")) != -1) {
-+	while ((c = getopt(argc, argv, "46acC:D:Hl:L:mM:p:s:PS:tTuvz")) != -1) {
- 		switch (c) {
- 		case '4':
- 			if (cfg_family != PF_UNSPEC)
-@@ -452,6 +471,9 @@ static void parse_opts(int argc, char **argv)
- 		case 'l':
- 			cfg_runtime_ms = strtoul(optarg, NULL, 10) * 1000;
- 			break;
-+		case 'L':
-+			cfg_poll_loop_timeout_ms = strtoul(optarg, NULL, 10) * 1000;
-+			break;
- 		case 'm':
- 			cfg_sendmmsg = true;
- 			break;
-@@ -679,7 +701,7 @@ int main(int argc, char **argv)
- 			num_sends += send_udp(fd, buf[i]);
- 		num_msgs++;
- 		if ((cfg_zerocopy && ((num_msgs & 0xF) == 0)) || cfg_tx_tstamp)
--			flush_errqueue(fd, cfg_poll);
-+			flush_errqueue(fd, cfg_poll, 500, true);
- 
- 		if (cfg_msg_nr && num_msgs >= cfg_msg_nr)
- 			break;
-@@ -698,7 +720,7 @@ int main(int argc, char **argv)
- 	} while (!interrupted && (cfg_runtime_ms == -1 || tnow < tstop));
- 
- 	if (cfg_zerocopy || cfg_tx_tstamp)
--		flush_errqueue(fd, true);
-+		flush_errqueue_retry(fd, true, num_sends);
- 
- 	if (close(fd))
- 		error(1, errno, "close");
--- 
-2.34.1
+>>
+>>                      -Alex
+>>
+>>> ---
+>>>   drivers/net/ipa/ipa_interrupt.c | 10 ++++------
+>>>   1 file changed, 4 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/drivers/net/ipa/ipa_interrupt.c 
+>>> b/drivers/net/ipa/ipa_interrupt.c
+>>> index c19cd27ac852..9a1153e80a3a 100644
+>>> --- a/drivers/net/ipa/ipa_interrupt.c
+>>> +++ b/drivers/net/ipa/ipa_interrupt.c
+>>> @@ -22,6 +22,7 @@
+>>>   #include <linux/types.h>
+>>>   #include <linux/interrupt.h>
+>>>   #include <linux/pm_runtime.h>
+>>> +#include <linux/pm_wakeirq.h>
+>>>   #include "ipa.h"
+>>>   #include "ipa_reg.h"
+>>> @@ -269,9 +270,9 @@ struct ipa_interrupt *ipa_interrupt_config(struct 
+>>> ipa *ipa)
+>>>           goto err_kfree;
+>>>       }
+>>> -    ret = enable_irq_wake(irq);
+>>> +    ret = dev_pm_set_wake_irq(dev, irq);
+>>>       if (ret) {
+>>> -        dev_err(dev, "error %d enabling wakeup for \"ipa\" IRQ\n", 
+>>> ret);
+>>> +        dev_err(dev, "error %d registering \"ipa\" IRQ as 
+>>> wakeirq\n", ret);
+>>>           goto err_free_irq;
+>>>       }
+>>> @@ -289,11 +290,8 @@ struct ipa_interrupt 
+>>> *ipa_interrupt_config(struct ipa *ipa)
+>>>   void ipa_interrupt_deconfig(struct ipa_interrupt *interrupt)
+>>>   {
+>>>       struct device *dev = &interrupt->ipa->pdev->dev;
+>>> -    int ret;
+>>> -    ret = disable_irq_wake(interrupt->irq);
+>>> -    if (ret)
+>>> -        dev_err(dev, "error %d disabling \"ipa\" IRQ wakeup\n", ret);
+>>> +    dev_pm_clear_wake_irq(dev);
+>>>       free_irq(interrupt->irq, interrupt);
+>>>       kfree(interrupt);
+>>>   }
+>>
+> 
 
