@@ -2,127 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93C286838B7
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 22:34:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 294356838C1
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 22:37:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230255AbjAaVeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 16:34:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53706 "EHLO
+        id S231589AbjAaVhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 16:37:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229972AbjAaVeB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 16:34:01 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A6D28D35;
-        Tue, 31 Jan 2023 13:34:00 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id d132so19916097ybb.5;
-        Tue, 31 Jan 2023 13:34:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Bex9GgFK9X9Xksw4jkg93+WqmLepRNAqsl/ryrOCgaA=;
-        b=LU6Au0EYECbR7tKLVHr3umh33ht0uGr6A31DerKVAE8/jxpHv5HSw6enaPhXhfEJfz
-         x5xuVoMqccQHi2PIV/KWCQIGBj4fW1d2F/TQwa5Ibe0HDF6F5Vmn9B2Th0Bh9Nqn67we
-         iHbjv+reD4VdgpEbSIgSivQ1Y9PNmUIP5YMVVpmwGy9o1baUYK8zoanJTVZPAsg6ZfpV
-         X4774ZrGV4QExSDnsAxjoJ80NmPLCx/xkdLrT8Kbu8wJWrk9qrMtIh65l5QWPxXcSLaN
-         7r6rwruracH3kRkbD1giTC2N4kQI8nbq/FhWhrvUA6tpEAEAnA8w99ZlKYoE6jZa7iUV
-         DqvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Bex9GgFK9X9Xksw4jkg93+WqmLepRNAqsl/ryrOCgaA=;
-        b=ZQ3YAFwWx5R2nCcQ1jzc9wGg4lrjoiFTkZ+zavXcIrEch1189f/dod86VwRv/OOA3L
-         u0r5foB7CPKTe9kEszYIxrn+KGAAri36zkULbWTqxe/zoLc5iCpxFHv+bcup/7JUvZY7
-         0O/KkzZZy5xPGkVrCZPTVZ3l0DGngw3mxaqMRPvh6BcIldjQ+U4tHHAP2mkf23Pi6VLl
-         War7Mvsae8suNq2QyK9mk5tp59mMXyLQXHzWEPtmKcGWq+G/rwT61PS5QVt+vWPnR2Kl
-         m3dhQfo5nfea3pojryqFDj1Uroml+10DpPNJy4WX38YQeG64xskAOzzV6JoQaTtNOV+O
-         cILw==
-X-Gm-Message-State: AO0yUKUZC/J7GJC7937DI4TZ1ya/U73q//CKegEVRdYEyEqW9Xxe2Q04
-        HXkQE+WfFwioB+eLQOi5zJBYIiPwKry5GOBLH+UERuA+ZJE=
-X-Google-Smtp-Source: AK7set+PfM0lAh9orNmDXrDVUnIRwd9P44LzKOBw0IEOPR9+L28XZ/dLQu5W20aWtjQ7aSaNO5GcXNZf8mXA/iYD0kI=
-X-Received: by 2002:a25:2515:0:b0:727:e539:452f with SMTP id
- l21-20020a252515000000b00727e539452fmr45508ybl.552.1675200839600; Tue, 31 Jan
- 2023 13:33:59 -0800 (PST)
+        with ESMTP id S231339AbjAaVhO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 16:37:14 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 342914B898
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 13:37:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675201033; x=1706737033;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=FJaoM499l/Qx0iN7HhY9mET9Rcf2DC6zK6QCXAeHL94=;
+  b=IdM5QoFRtEsN+Iyil93O9QBVgwLu1mO9AnyZO0MQuqCZK4s9K6V2n318
+   mVGsk2Oeho5WMZkaDnNkprj1v4a8kfB1QdPz9Cz6D2nwV6hQ7JcSH8rG4
+   3LM+az9UgIKzSclS4JHO6kujqKD7DpylPnI6BKAtXtDv5kT04kbOamph5
+   kTV0VmY5YVbNWbvIQ/knOfptOpxImtjlWGhAN0VikuRcrx+IbAoFl+wuG
+   5RCbCt5xPuObM80tQKVCbf+OQhVj7umN8jnq5zFph+xa78S/Q3+n7KZAI
+   RNB020YeuaO1utFww4Jb4/HOKPRH+Hj1QPrZpa9d0iOX4OuEGy6r+RMqA
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="327980264"
+X-IronPort-AV: E=Sophos;i="5.97,261,1669104000"; 
+   d="scan'208";a="327980264"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2023 13:37:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="910063002"
+X-IronPort-AV: E=Sophos;i="5.97,261,1669104000"; 
+   d="scan'208";a="910063002"
+Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
+  by fmsmga006.fm.intel.com with ESMTP; 31 Jan 2023 13:37:12 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
+Subject: [PATCH net 0/6][pull request] Intel Wired LAN Driver Updates 2023-01-31 (ice)
+Date:   Tue, 31 Jan 2023 13:36:57 -0800
+Message-Id: <20230131213703.1347761-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-References: <20230127191703.3864860-1-joannelkoong@gmail.com>
- <20230127191703.3864860-4-joannelkoong@gmail.com> <5715ea83-c4aa-c884-ab95-3d5e630cad05@linux.dev>
- <20230130223141.r24nlg2jp5byvuph@macbook-pro-6.dhcp.thefacebook.com>
- <CAEf4Bzb9=q9TKutW8d7fOtCWaLpA12yvSh-BhL=m3+RA1_xhOQ@mail.gmail.com>
- <CAJnrk1Y9jf7PQ0sHF+hfW0TD+W8r3WzJCu-pJjT3zsZCGt343w@mail.gmail.com>
- <CAADnVQJ9Pb10boAR=ZVaXOJwjHPkFXKn9n9RWrzXgK3GaQ1N0g@mail.gmail.com>
- <CAJnrk1a2SY5NqhibczOhd+jqL3W9U1rbTeiQpYw-oUS8_Cr1_g@mail.gmail.com> <CAADnVQ+N76ed0h9GJyQfVQiN2pmcqJdjeM5rOPdFv2LfZ9eahQ@mail.gmail.com>
-In-Reply-To: <CAADnVQ+N76ed0h9GJyQfVQiN2pmcqJdjeM5rOPdFv2LfZ9eahQ@mail.gmail.com>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Tue, 31 Jan 2023 13:33:48 -0800
-Message-ID: <CAJnrk1YuCUKUmG0s_maz_ZNNCxWhcut-29qmaXghLotqyq2fFA@mail.gmail.com>
-Subject: Re: [PATCH v9 bpf-next 3/5] bpf: Add skb dynptrs
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Kernel Team <kernel-team@fb.com>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 1:11 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Tue, Jan 31, 2023 at 12:48 PM Joanne Koong <joannelkoong@gmail.com> wrote:
-> > > > >
-> > > > > p = bpf_dynptr_slice(dp, off, 16, buf);
-> > > > > if (p == NULL) {
-> > > > >    /* out of range */
-> > > > > } else {
-> > > > >    /* work with p directly */
-> > > > > }
-> > > > >
-> > > > > /* if we wrote something to p and it was copied to buffer, write it back */
-> > > > > if (p == buf) {
-> > > > >     bpf_dynptr_write(dp, buf, 16);
-> > > > > }
-> > > > >
-> > > > >
-> > > > > We'll just need to teach verifier to make sure that buf is at least 16
-> > > > > byte long.
-> > > >
-> > > > I'm confused what the benefit of passing in the buffer is. If it's to
-> > > > avoid the uncloning, this will still need to happen if the user writes
-> > > > back the data to the skb (which will be the majority of cases). If
-> > > > it's to avoid uncloning if the user only reads the data of a writable
-> > > > prog, then we could add logic in the verifier so that we don't pull
-> > > > the data in this case; the uncloning might still happen regardless if
-> > > > another part of the program does a direct write. If the benefit is to
-> > > > avoid needing to pull the data, then can't the user just use
-> > > > bpf_dynptr_read, which takes in a buffer?
-> > >
-> > > There is no unclone and there is no pull in xdp.
-> > > The main idea of this semantics of bpf_dynptr_slice is to make it
-> > > work the same way on skb and xdp for _read_ case.
-> > > Writes are going to be different between skb and xdp anyway.
-> > > In some rare cases the writes can be the same for skb and xdp
-> > > with this bpf_dynptr_slice + bpf_dynptr_write logic,
-> > > but that's a minor feature addition of the api.
-> >
-> > bpf_dynptr_read works the same way on skb and xdp. bpf_dynptr_read
-> > takes in a buffer as well, so what is the added benefit of
-> > bpf_dynptr_slice?
->
-> That it doesn't copy most of the time.
+This series contains updates to ice driver only.
 
-Ohh I see, I missed that bpf_dynptr_slice also returns back a ptr.
-This makes sense to me now, thanks for clarifying.
+Dave moves unplug of auxiliary device to service task to avoid deadlock
+situations with RTNL lock.
+
+Ani removes WQ_MEM_RECLAIM flag from workqueue to resolve
+check_flush_dependency warning.
+
+Michal fixes KASAN out-of-bounds warning.
+
+Brett corrects behaviour for port VLAN Rx filters to prevent receiving
+of unintended traffic.
+
+Dan Carpenter fixes possible off by one issue.
+
+Zhang Changzhong adjusts error path for switch recipe to prevent memory
+leak.
+
+The following are changes since commit de5ca4c3852f896cacac2bf259597aab5e17d9e3:
+  net: sched: sch: Bounds check priority
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 100GbE
+
+Anirudh Venkataramanan (1):
+  ice: Do not use WQ_MEM_RECLAIM flag for workqueue
+
+Brett Creeley (1):
+  ice: Fix disabling Rx VLAN filtering with port VLAN enabled
+
+Dan Carpenter (1):
+  ice: Fix off by one in ice_tc_forward_to_queue()
+
+Dave Ertman (1):
+  ice: avoid bonding causing auxiliary plug/unplug under RTNL lock
+
+Michal Swiatkowski (1):
+  ice: fix out-of-bounds KASAN warning in virtchnl
+
+Zhang Changzhong (1):
+  ice: switch: fix potential memleak in ice_add_adv_recipe()
+
+ drivers/net/ethernet/intel/ice/ice.h          | 14 +++++--------
+ drivers/net/ethernet/intel/ice/ice_common.c   |  9 ++++----
+ drivers/net/ethernet/intel/ice/ice_main.c     | 19 +++++++----------
+ drivers/net/ethernet/intel/ice/ice_switch.c   |  2 +-
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c   |  2 +-
+ drivers/net/ethernet/intel/ice/ice_vf_mbx.c   | 21 +++++++------------
+ .../ethernet/intel/ice/ice_vf_vsi_vlan_ops.c  | 16 +++++++++++++-
+ 7 files changed, 42 insertions(+), 41 deletions(-)
+
+-- 
+2.38.1
+
