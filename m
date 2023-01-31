@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CBE26829F5
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 11:09:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8C336829EA
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 11:07:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229956AbjAaKIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 05:08:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36930 "EHLO
+        id S230245AbjAaKG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 05:06:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230479AbjAaKID (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 05:08:03 -0500
-X-Greylist: delayed 85 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 31 Jan 2023 02:07:41 PST
-Received: from smtpbguseast2.qq.com (smtpbguseast2.qq.com [54.204.34.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C7A4C0C4
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 02:07:41 -0800 (PST)
-X-QQ-mid: bizesmtp69t1675159586t89a8qrm
+        with ESMTP id S231311AbjAaKGl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 05:06:41 -0500
+Received: from smtpbgbr2.qq.com (smtpbgbr2.qq.com [54.207.22.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E6F4B8AD
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 02:06:37 -0800 (PST)
+X-QQ-mid: bizesmtp69t1675159590tid0mken
 Received: from localhost.localdomain ( [183.129.236.74])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 31 Jan 2023 18:06:24 +0800 (CST)
+        id ; Tue, 31 Jan 2023 18:06:28 +0800 (CST)
 X-QQ-SSF: 01400000000000M0O000000A0000000
-X-QQ-FEAT: tPF3p9zbRDLTrIxvXkYUkM03TuOVT6kt4zOrxEhK1T7BMoneCbC5vA+k4Bjwq
-        Op234Sb9Xhs8K0otEb8fR06omC/LKsrcXz/KVxbGD/GXJ8rqvMnCkwcWTYrqPWyYPl2trU1
-        XDlUw4vLEvnHRAL+XmBW7/XlCkw/kwLt3XmaBOdVyFG19kPBA4OhyTDYU/pZlRlGRuudwQU
-        bsr7WLqfkv5Q0krnZM9iL43aGh1FAtpJtCVrh71BBfpxlvfOCqLIeD/k17rpar+Y9OeNynM
-        AprT7pwXIxALkk9N/CLSm3/QoVqPqldkAHJOZBeJGurBkn9bNCwu0i4xCankXDQCOyOmXbB
-        o5Fh6WUi+k8fkHEP/ZELOC9uh7MYLANRYPti2hLjH+6/C/Ae4bkfbRTXC7qrTtsAhgl6l5p
-        Y/3xfG2Toi+QsNTmJ05Qmw==
+X-QQ-FEAT: 3M0okmaRx3hdEe9UWt/2bNL1HTJhuHNhOphli2EkqLCRdWl3atMIqgl0VojP4
+        IIXuGfOSzFHIphLBwO/TQ+ncoTlA5PkJ7jckCPRGFM97cf8lSMRvxLrKao4gVKeihd84vlX
+        w6H3clUm0lOiDpneaQdsnWwXwRwJSe8H2BJrCyLHp+0e3OX6loQL86OXggmAyG5xoz9qjHX
+        J/Sxuqopi52yYhAb/L/V/f5iVvV7l8nA7dQ1+LPzg/zxhpXgJ37Gh25fPWxj7VH+Ro4jzuq
+        8FY3m/7Zr46d/nhCE5H85prCsSjT3DirBMbMJVD0UujZcClH4EibnxomfPQOWbihoQX9/Ln
+        pOLekgMNeXljxcTP7uYAmLC+PbVY2fR2XBh7BNeAVbDPLK4eHSUV5Ji8fJ369kBVd7MOF7O
+        xWsfKDmictb7RzJ4vG42BkSbaqJBZaVh
 X-QQ-GoodBg: 2
 From:   Mengyuan Lou <mengyuanlou@net-swift.com>
 To:     netdev@vger.kernel.org
-Cc:     jiawenwu@trustnetic.com, Mengyuan Lou <mengyuanlou@net-swift.com>
-Subject: [PATCH net-next v2 08/10] net: libwx: Add tx path to process packets
-Date:   Tue, 31 Jan 2023 18:05:39 +0800
-Message-Id: <20230131100541.73757-9-mengyuanlou@net-swift.com>
+Cc:     jiawenwu@trustnetic.com
+Subject: [PATCH net-next v2 09/10] net: txgbe: Support Rx and Tx process path
+Date:   Tue, 31 Jan 2023 18:05:40 +0800
+Message-Id: <20230131100541.73757-10-mengyuanlou@net-swift.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230131100541.73757-1-mengyuanlou@net-swift.com>
 References: <20230131100541.73757-1-mengyuanlou@net-swift.com>
@@ -50,588 +49,126 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support to transmit packets without hardware features.
+From: Jiawen Wu <jiawenwu@trustnetic.com>
 
-Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
+Clean Rx and Tx ring interrupts, process packets in the data path.
+
+Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
 ---
- drivers/net/ethernet/wangxun/libwx/wx_hw.c   |   4 +
- drivers/net/ethernet/wangxun/libwx/wx_lib.c  | 439 +++++++++++++++++++
- drivers/net/ethernet/wangxun/libwx/wx_lib.h  |   3 +
- drivers/net/ethernet/wangxun/libwx/wx_type.h |  19 +
- 4 files changed, 465 insertions(+)
+ .../net/ethernet/wangxun/txgbe/txgbe_main.c   | 37 ++++++++++++++-----
+ 1 file changed, 28 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_hw.c b/drivers/net/ethernet/wangxun/libwx/wx_hw.c
-index 2d8b5b9323d7..c68dcec218d3 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_hw.c
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_hw.c
-@@ -1355,6 +1355,10 @@ static void wx_configure_tx_ring(struct wx *wx,
- 		txdctl |= ring->count / 128 << WX_PX_TR_CFG_TR_SIZE_SHIFT;
- 	txdctl |= 0x20 << WX_PX_TR_CFG_WTHRESH_SHIFT;
+diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
+index 3b50acb09699..094df377726b 100644
+--- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
++++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
+@@ -223,6 +223,10 @@ static void txgbe_up_complete(struct wx *wx)
+ 	wx_control_hw(wx, true);
+ 	wx_configure_vectors(wx);
  
-+	/* reinitialize tx_buffer_info */
-+	memset(ring->tx_buffer_info, 0,
-+	       sizeof(struct wx_tx_buffer) * ring->count);
++	/* make sure to complete pre-operations */
++	smp_mb__before_atomic();
++	wx_napi_enable_all(wx);
 +
- 	/* enable queue */
- 	wr32(wx, WX_PX_TR_CFG(reg_idx), txdctl);
- 
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_lib.c b/drivers/net/ethernet/wangxun/libwx/wx_lib.c
-index fc72b0222327..4f9102e6f725 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_lib.c
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_lib.c
-@@ -504,6 +504,134 @@ static int wx_clean_rx_irq(struct wx_q_vector *q_vector,
- 	return total_rx_packets;
+ 	/* clear any pending interrupts, may auto mask */
+ 	rd32(wx, WX_PX_IC);
+ 	rd32(wx, WX_PX_MISC_IC);
+@@ -236,6 +240,10 @@ static void txgbe_up_complete(struct wx *wx)
+ 	wr32(wx, WX_MAC_WDG_TIMEOUT, reg);
+ 	reg = rd32(wx, WX_MAC_TX_CFG);
+ 	wr32(wx, WX_MAC_TX_CFG, (reg & ~WX_MAC_TX_CFG_SPEED_MASK) | WX_MAC_TX_CFG_SPEED_10G);
++
++	/* enable transmits */
++	netif_tx_start_all_queues(wx->netdev);
++	netif_carrier_on(wx->netdev);
  }
  
-+static struct netdev_queue *wx_txring_txq(const struct wx_ring *ring)
-+{
-+	return netdev_get_tx_queue(ring->netdev, ring->queue_index);
-+}
-+
-+/**
-+ * wx_clean_tx_irq - Reclaim resources after transmit completes
-+ * @q_vector: structure containing interrupt and ring information
-+ * @tx_ring: tx ring to clean
-+ * @napi_budget: Used to determine if we are in netpoll
-+ **/
-+static bool wx_clean_tx_irq(struct wx_q_vector *q_vector,
-+			    struct wx_ring *tx_ring, int napi_budget)
-+{
-+	unsigned int total_bytes = 0, total_packets = 0;
-+	unsigned int budget = q_vector->tx.work_limit;
-+	unsigned int i = tx_ring->next_to_clean;
-+	struct wx_tx_buffer *tx_buffer;
-+	union wx_tx_desc *tx_desc;
-+
-+	if (!netif_carrier_ok(tx_ring->netdev))
-+		return true;
-+
-+	tx_buffer = &tx_ring->tx_buffer_info[i];
-+	tx_desc = WX_TX_DESC(tx_ring, i);
-+	i -= tx_ring->count;
-+
-+	do {
-+		union wx_tx_desc *eop_desc = tx_buffer->next_to_watch;
-+
-+		/* if next_to_watch is not set then there is no work pending */
-+		if (!eop_desc)
-+			break;
-+
-+		/* prevent any other reads prior to eop_desc */
-+		smp_rmb();
-+
-+		/* if DD is not set pending work has not been completed */
-+		if (!(eop_desc->wb.status & cpu_to_le32(WX_TXD_STAT_DD)))
-+			break;
-+
-+		/* clear next_to_watch to prevent false hangs */
-+		tx_buffer->next_to_watch = NULL;
-+
-+		/* update the statistics for this packet */
-+		total_bytes += tx_buffer->bytecount;
-+		total_packets += tx_buffer->gso_segs;
-+
-+		/* free the skb */
-+		napi_consume_skb(tx_buffer->skb, napi_budget);
-+
-+		/* unmap skb header data */
-+		dma_unmap_single(tx_ring->dev,
-+				 dma_unmap_addr(tx_buffer, dma),
-+				 dma_unmap_len(tx_buffer, len),
-+				 DMA_TO_DEVICE);
-+
-+		/* clear tx_buffer data */
-+		dma_unmap_len_set(tx_buffer, len, 0);
-+
-+		/* unmap remaining buffers */
-+		while (tx_desc != eop_desc) {
-+			tx_buffer++;
-+			tx_desc++;
-+			i++;
-+			if (unlikely(!i)) {
-+				i -= tx_ring->count;
-+				tx_buffer = tx_ring->tx_buffer_info;
-+				tx_desc = WX_TX_DESC(tx_ring, 0);
-+			}
-+
-+			/* unmap any remaining paged data */
-+			if (dma_unmap_len(tx_buffer, len)) {
-+				dma_unmap_page(tx_ring->dev,
-+					       dma_unmap_addr(tx_buffer, dma),
-+					       dma_unmap_len(tx_buffer, len),
-+					       DMA_TO_DEVICE);
-+				dma_unmap_len_set(tx_buffer, len, 0);
-+			}
-+		}
-+
-+		/* move us one more past the eop_desc for start of next pkt */
-+		tx_buffer++;
-+		tx_desc++;
-+		i++;
-+		if (unlikely(!i)) {
-+			i -= tx_ring->count;
-+			tx_buffer = tx_ring->tx_buffer_info;
-+			tx_desc = WX_TX_DESC(tx_ring, 0);
-+		}
-+
-+		/* issue prefetch for next Tx descriptor */
-+		prefetch(tx_desc);
-+
-+		/* update budget accounting */
-+		budget--;
-+	} while (likely(budget));
-+
-+	i += tx_ring->count;
-+	tx_ring->next_to_clean = i;
-+	u64_stats_update_begin(&tx_ring->syncp);
-+	tx_ring->stats.bytes += total_bytes;
-+	tx_ring->stats.packets += total_packets;
-+	u64_stats_update_end(&tx_ring->syncp);
-+	q_vector->tx.total_bytes += total_bytes;
-+	q_vector->tx.total_packets += total_packets;
-+
-+	netdev_tx_completed_queue(wx_txring_txq(tx_ring),
-+				  total_packets, total_bytes);
-+
-+#define TX_WAKE_THRESHOLD (DESC_NEEDED * 2)
-+	if (unlikely(total_packets && netif_carrier_ok(tx_ring->netdev) &&
-+		     (wx_desc_unused(tx_ring) >= TX_WAKE_THRESHOLD))) {
-+		/* Make sure that anybody stopping the queue after this
-+		 * sees the new next_to_clean.
-+		 */
-+		smp_mb();
-+
-+		if (__netif_subqueue_stopped(tx_ring->netdev,
-+					     tx_ring->queue_index) &&
-+		    netif_running(tx_ring->netdev))
-+			netif_wake_subqueue(tx_ring->netdev,
-+					    tx_ring->queue_index);
-+	}
-+
-+	return !!budget;
-+}
-+
- /**
-  * wx_poll - NAPI polling RX/TX cleanup routine
-  * @napi: napi struct with our devices info in it
-@@ -519,6 +647,11 @@ static int wx_poll(struct napi_struct *napi, int budget)
- 	bool clean_complete = true;
- 	struct wx_ring *ring;
+ static void txgbe_reset(struct wx *wx)
+@@ -268,10 +276,12 @@ static void txgbe_disable_device(struct wx *wx)
+ 		/* this call also flushes the previous write */
+ 		wx_disable_rx_queue(wx, wx->rx_ring[i]);
  
-+	wx_for_each_ring(ring, q_vector->tx) {
-+		if (!wx_clean_tx_irq(q_vector, ring, budget))
-+			clean_complete = false;
-+	}
-+
- 	/* Exit if we are called by netpoll */
- 	if (budget <= 0)
- 		return budget;
-@@ -552,6 +685,216 @@ static int wx_poll(struct napi_struct *napi, int budget)
- 	return min(work_done, budget - 1);
- }
++	netif_tx_stop_all_queues(netdev);
+ 	netif_carrier_off(netdev);
+ 	netif_tx_disable(netdev);
  
-+static int wx_maybe_stop_tx(struct wx_ring *tx_ring, u16 size)
-+{
-+	if (likely(wx_desc_unused(tx_ring) >= size))
-+		return 0;
-+
-+	netif_stop_subqueue(tx_ring->netdev, tx_ring->queue_index);
-+
-+	/* For the next check */
-+	smp_mb();
-+
-+	/* We need to check again in a case another CPU has just
-+	 * made room available.
-+	 */
-+	if (likely(wx_desc_unused(tx_ring) < size))
-+		return -EBUSY;
-+
-+	/* A reprieve! - use start_queue because it doesn't call schedule */
-+	netif_start_subqueue(tx_ring->netdev, tx_ring->queue_index);
-+
-+	return 0;
-+}
-+
-+static void wx_tx_map(struct wx_ring *tx_ring,
-+		      struct wx_tx_buffer *first)
-+{
-+	struct sk_buff *skb = first->skb;
-+	struct wx_tx_buffer *tx_buffer;
-+	u16 i = tx_ring->next_to_use;
-+	unsigned int data_len, size;
-+	union wx_tx_desc *tx_desc;
-+	skb_frag_t *frag;
-+	dma_addr_t dma;
-+	u32 cmd_type;
-+
-+	cmd_type = WX_TXD_DTYP_DATA | WX_TXD_IFCS;
-+	tx_desc = WX_TX_DESC(tx_ring, i);
-+
-+	tx_desc->read.olinfo_status = cpu_to_le32(skb->len << WX_TXD_PAYLEN_SHIFT);
-+
-+	size = skb_headlen(skb);
-+	data_len = skb->data_len;
-+	dma = dma_map_single(tx_ring->dev, skb->data, size, DMA_TO_DEVICE);
-+
-+	tx_buffer = first;
-+
-+	for (frag = &skb_shinfo(skb)->frags[0];; frag++) {
-+		if (dma_mapping_error(tx_ring->dev, dma))
-+			goto dma_error;
-+
-+		/* record length, and DMA address */
-+		dma_unmap_len_set(tx_buffer, len, size);
-+		dma_unmap_addr_set(tx_buffer, dma, dma);
-+
-+		tx_desc->read.buffer_addr = cpu_to_le64(dma);
-+
-+		while (unlikely(size > WX_MAX_DATA_PER_TXD)) {
-+			tx_desc->read.cmd_type_len =
-+				cpu_to_le32(cmd_type ^ WX_MAX_DATA_PER_TXD);
-+
-+			i++;
-+			tx_desc++;
-+			if (i == tx_ring->count) {
-+				tx_desc = WX_TX_DESC(tx_ring, 0);
-+				i = 0;
-+			}
-+			tx_desc->read.olinfo_status = 0;
-+
-+			dma += WX_MAX_DATA_PER_TXD;
-+			size -= WX_MAX_DATA_PER_TXD;
-+
-+			tx_desc->read.buffer_addr = cpu_to_le64(dma);
-+		}
-+
-+		if (likely(!data_len))
-+			break;
-+
-+		tx_desc->read.cmd_type_len = cpu_to_le32(cmd_type ^ size);
-+
-+		i++;
-+		tx_desc++;
-+		if (i == tx_ring->count) {
-+			tx_desc = WX_TX_DESC(tx_ring, 0);
-+			i = 0;
-+		}
-+		tx_desc->read.olinfo_status = 0;
-+
-+		size = skb_frag_size(frag);
-+
-+		data_len -= size;
-+
-+		dma = skb_frag_dma_map(tx_ring->dev, frag, 0, size,
-+				       DMA_TO_DEVICE);
-+
-+		tx_buffer = &tx_ring->tx_buffer_info[i];
-+	}
-+
-+	/* write last descriptor with RS and EOP bits */
-+	cmd_type |= size | WX_TXD_EOP | WX_TXD_RS;
-+	tx_desc->read.cmd_type_len = cpu_to_le32(cmd_type);
-+
-+	netdev_tx_sent_queue(wx_txring_txq(tx_ring), first->bytecount);
-+
-+	skb_tx_timestamp(skb);
-+
-+	/* Force memory writes to complete before letting h/w know there
-+	 * are new descriptors to fetch.  (Only applicable for weak-ordered
-+	 * memory model archs, such as IA-64).
-+	 *
-+	 * We also need this memory barrier to make certain all of the
-+	 * status bits have been updated before next_to_watch is written.
-+	 */
-+	wmb();
-+
-+	/* set next_to_watch value indicating a packet is present */
-+	first->next_to_watch = tx_desc;
-+
-+	i++;
-+	if (i == tx_ring->count)
-+		i = 0;
-+
-+	tx_ring->next_to_use = i;
-+
-+	wx_maybe_stop_tx(tx_ring, DESC_NEEDED);
-+
-+	if (netif_xmit_stopped(wx_txring_txq(tx_ring)) || !netdev_xmit_more())
-+		writel(i, tx_ring->tail);
-+
-+	return;
-+dma_error:
-+	dev_err(tx_ring->dev, "TX DMA map failed\n");
-+
-+	/* clear dma mappings for failed tx_buffer_info map */
-+	for (;;) {
-+		tx_buffer = &tx_ring->tx_buffer_info[i];
-+		if (dma_unmap_len(tx_buffer, len))
-+			dma_unmap_page(tx_ring->dev,
-+				       dma_unmap_addr(tx_buffer, dma),
-+				       dma_unmap_len(tx_buffer, len),
-+				       DMA_TO_DEVICE);
-+		dma_unmap_len_set(tx_buffer, len, 0);
-+		if (tx_buffer == first)
-+			break;
-+		if (i == 0)
-+			i += tx_ring->count;
-+		i--;
-+	}
-+
-+	dev_kfree_skb_any(first->skb);
-+	first->skb = NULL;
-+
-+	tx_ring->next_to_use = i;
-+}
-+
-+static netdev_tx_t wx_xmit_frame_ring(struct sk_buff *skb,
-+				      struct wx_ring *tx_ring)
-+{
-+	u16 count = TXD_USE_COUNT(skb_headlen(skb));
-+	struct wx_tx_buffer *first;
-+	unsigned short f;
-+
-+	/* need: 1 descriptor per page * PAGE_SIZE/WX_MAX_DATA_PER_TXD,
-+	 *       + 1 desc for skb_headlen/WX_MAX_DATA_PER_TXD,
-+	 *       + 2 desc gap to keep tail from touching head,
-+	 *       + 1 desc for context descriptor,
-+	 * otherwise try next time
-+	 */
-+	for (f = 0; f < skb_shinfo(skb)->nr_frags; f++)
-+		count += TXD_USE_COUNT(skb_frag_size(&skb_shinfo(skb)->
-+						     frags[f]));
-+
-+	if (wx_maybe_stop_tx(tx_ring, count + 3))
-+		return NETDEV_TX_BUSY;
-+
-+	/* record the location of the first descriptor for this packet */
-+	first = &tx_ring->tx_buffer_info[tx_ring->next_to_use];
-+	first->skb = skb;
-+	first->bytecount = skb->len;
-+	first->gso_segs = 1;
-+
-+	wx_tx_map(tx_ring, first);
-+
-+	return NETDEV_TX_OK;
-+}
-+
-+netdev_tx_t wx_xmit_frame(struct sk_buff *skb,
-+			  struct net_device *netdev)
-+{
-+	unsigned int r_idx = skb->queue_mapping;
-+	struct wx *wx = netdev_priv(netdev);
-+	struct wx_ring *tx_ring;
-+
-+	if (!netif_carrier_ok(netdev)) {
-+		dev_kfree_skb_any(skb);
-+		return NETDEV_TX_OK;
-+	}
-+
-+	/* The minimum packet size for olinfo paylen is 17 so pad the skb
-+	 * in order to meet this minimum size requirement.
-+	 */
-+	if (skb_put_padto(skb, 17))
-+		return NETDEV_TX_OK;
-+
-+	if (r_idx >= wx->num_tx_queues)
-+		r_idx = r_idx % wx->num_tx_queues;
-+	tx_ring = wx->tx_ring[r_idx];
-+
-+	return wx_xmit_frame_ring(skb, tx_ring);
-+}
-+EXPORT_SYMBOL(wx_xmit_frame);
-+
- void wx_napi_enable_all(struct wx *wx)
+ 	wx_irq_disable(wx);
++	wx_napi_disable_all(wx);
+ 
+ 	if (wx->bus.func < 2)
+ 		wr32m(wx, TXGBE_MIS_PRB_CTL, TXGBE_MIS_PRB_CTL_LAN_UP(wx->bus.func), 0);
+@@ -300,6 +310,9 @@ static void txgbe_down(struct wx *wx)
  {
- 	struct wx_q_vector *q_vector;
-@@ -1272,6 +1615,81 @@ static void wx_free_all_rx_resources(struct wx *wx)
- 		wx_free_rx_resources(wx->rx_ring[i]);
+ 	txgbe_disable_device(wx);
+ 	txgbe_reset(wx);
++
++	wx_clean_all_tx_rings(wx);
++	wx_clean_all_rx_rings(wx);
  }
  
-+/**
-+ * wx_clean_tx_ring - Free Tx Buffers
-+ * @tx_ring: ring to be cleaned
-+ **/
-+static void wx_clean_tx_ring(struct wx_ring *tx_ring)
-+{
-+	struct wx_tx_buffer *tx_buffer;
-+	u16 i = tx_ring->next_to_clean;
-+
-+	tx_buffer = &tx_ring->tx_buffer_info[i];
-+
-+	while (i != tx_ring->next_to_use) {
-+		union wx_tx_desc *eop_desc, *tx_desc;
-+
-+		/* Free all the Tx ring sk_buffs */
-+		dev_kfree_skb_any(tx_buffer->skb);
-+
-+		/* unmap skb header data */
-+		dma_unmap_single(tx_ring->dev,
-+				 dma_unmap_addr(tx_buffer, dma),
-+				 dma_unmap_len(tx_buffer, len),
-+				 DMA_TO_DEVICE);
-+
-+		/* check for eop_desc to determine the end of the packet */
-+		eop_desc = tx_buffer->next_to_watch;
-+		tx_desc = WX_TX_DESC(tx_ring, i);
-+
-+		/* unmap remaining buffers */
-+		while (tx_desc != eop_desc) {
-+			tx_buffer++;
-+			tx_desc++;
-+			i++;
-+			if (unlikely(i == tx_ring->count)) {
-+				i = 0;
-+				tx_buffer = tx_ring->tx_buffer_info;
-+				tx_desc = WX_TX_DESC(tx_ring, 0);
-+			}
-+
-+			/* unmap any remaining paged data */
-+			if (dma_unmap_len(tx_buffer, len))
-+				dma_unmap_page(tx_ring->dev,
-+					       dma_unmap_addr(tx_buffer, dma),
-+					       dma_unmap_len(tx_buffer, len),
-+					       DMA_TO_DEVICE);
-+		}
-+
-+		/* move us one more past the eop_desc for start of next pkt */
-+		tx_buffer++;
-+		i++;
-+		if (unlikely(i == tx_ring->count)) {
-+			i = 0;
-+			tx_buffer = tx_ring->tx_buffer_info;
-+		}
-+	}
-+
-+	netdev_tx_reset_queue(wx_txring_txq(tx_ring));
-+
-+	/* reset next_to_use and next_to_clean */
-+	tx_ring->next_to_use = 0;
-+	tx_ring->next_to_clean = 0;
-+}
-+
-+/**
-+ * wx_clean_all_tx_rings - Free Tx Buffers for all queues
-+ * @wx: board private structure
-+ **/
-+void wx_clean_all_tx_rings(struct wx *wx)
-+{
-+	int i;
-+
-+	for (i = 0; i < wx->num_tx_queues; i++)
-+		wx_clean_tx_ring(wx->tx_ring[i]);
-+}
-+EXPORT_SYMBOL(wx_clean_all_tx_rings);
-+
  /**
-  * wx_free_tx_resources - Free Tx Resources per Queue
-  * @tx_ring: Tx descriptor ring for a specific queue
-@@ -1280,6 +1698,7 @@ static void wx_free_all_rx_resources(struct wx *wx)
-  **/
- static void wx_free_tx_resources(struct wx_ring *tx_ring)
- {
-+	wx_clean_tx_ring(tx_ring);
- 	kvfree(tx_ring->tx_buffer_info);
- 	tx_ring->tx_buffer_info = NULL;
+@@ -381,10 +394,21 @@ static int txgbe_open(struct net_device *netdev)
+ 	if (err)
+ 		goto err_free_isb;
  
-@@ -1466,6 +1885,9 @@ static int wx_setup_tx_resources(struct wx_ring *tx_ring)
- 	if (!tx_ring->desc)
- 		goto err;
- 
-+	tx_ring->next_to_use = 0;
-+	tx_ring->next_to_clean = 0;
++	/* Notify the stack of the actual queue counts. */
++	err = netif_set_real_num_tx_queues(netdev, wx->num_tx_queues);
++	if (err)
++		goto err_free_irq;
 +
++	err = netif_set_real_num_rx_queues(netdev, wx->num_rx_queues);
++	if (err)
++		goto err_free_irq;
++
+ 	txgbe_up_complete(wx);
+ 
  	return 0;
  
- err:
-@@ -1563,6 +1985,23 @@ void wx_get_stats64(struct net_device *netdev,
- 		}
- 	}
- 
-+	for (i = 0; i < wx->num_tx_queues; i++) {
-+		struct wx_ring *ring = READ_ONCE(wx->tx_ring[i]);
-+		u64 bytes, packets;
-+		unsigned int start;
-+
-+		if (ring) {
-+			do {
-+				start = u64_stats_fetch_begin(&ring->syncp);
-+				packets = ring->stats.packets;
-+				bytes   = ring->stats.bytes;
-+			} while (u64_stats_fetch_retry(&ring->syncp,
-+							   start));
-+			stats->tx_packets += packets;
-+			stats->tx_bytes   += bytes;
-+		}
-+	}
-+
- 	rcu_read_unlock();
++err_free_irq:
++	wx_free_irq(wx);
+ err_free_isb:
+ 	wx_free_isb_resources(wx);
+ err_reset:
+@@ -403,8 +427,6 @@ static int txgbe_open(struct net_device *netdev)
+ static void txgbe_close_suspend(struct wx *wx)
+ {
+ 	txgbe_disable_device(wx);
+-
+-	wx_free_irq(wx);
+ 	wx_free_resources(wx);
  }
- EXPORT_SYMBOL(wx_get_stats64);
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_lib.h b/drivers/net/ethernet/wangxun/libwx/wx_lib.h
-index 8fc7f6f3d40e..50ee41f1fa10 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_lib.h
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_lib.h
-@@ -9,6 +9,8 @@
  
- void wx_alloc_rx_buffers(struct wx_ring *rx_ring, u16 cleaned_count);
- u16 wx_desc_unused(struct wx_ring *ring);
-+netdev_tx_t wx_xmit_frame(struct sk_buff *skb,
-+			  struct net_device *netdev);
- void wx_napi_enable_all(struct wx *wx);
- void wx_napi_disable_all(struct wx *wx);
- void wx_reset_interrupt_capability(struct wx *wx);
-@@ -21,6 +23,7 @@ void wx_free_isb_resources(struct wx *wx);
- u32 wx_misc_isb(struct wx *wx, enum wx_isb_idx idx);
- void wx_configure_vectors(struct wx *wx);
- void wx_clean_all_rx_rings(struct wx *wx);
-+void wx_clean_all_tx_rings(struct wx *wx);
- void wx_free_resources(struct wx *wx);
- int wx_setup_resources(struct wx *wx);
- void wx_get_stats64(struct net_device *netdev,
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_type.h b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-index fd05c0597d94..4e988896ad97 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_type.h
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-@@ -312,6 +312,15 @@
- #endif
+@@ -461,19 +483,14 @@ static void txgbe_shutdown(struct pci_dev *pdev)
+ 	}
+ }
  
- #define WX_RX_BUFFER_WRITE   16      /* Must be power of 2 */
+-static netdev_tx_t txgbe_xmit_frame(struct sk_buff *skb,
+-				    struct net_device *netdev)
+-{
+-	return NETDEV_TX_OK;
+-}
+-
+ static const struct net_device_ops txgbe_netdev_ops = {
+ 	.ndo_open               = txgbe_open,
+ 	.ndo_stop               = txgbe_close,
+-	.ndo_start_xmit         = txgbe_xmit_frame,
++	.ndo_start_xmit         = wx_xmit_frame,
+ 	.ndo_set_rx_mode        = wx_set_rx_mode,
+ 	.ndo_validate_addr      = eth_validate_addr,
+ 	.ndo_set_mac_address    = wx_set_mac,
++	.ndo_get_stats64        = wx_get_stats64,
+ };
+ 
+ /**
+@@ -647,6 +664,8 @@ static int txgbe_probe(struct pci_dev *pdev,
+ 
+ 	pci_set_drvdata(pdev, wx);
+ 
++	netif_tx_stop_all_queues(netdev);
 +
-+#define WX_MAX_DATA_PER_TXD  BIT(14)
-+/* Tx Descriptors needed, worst case */
-+#define TXD_USE_COUNT(S)     DIV_ROUND_UP((S), WX_MAX_DATA_PER_TXD)
-+#define DESC_NEEDED          (MAX_SKB_FRAGS + 4)
-+
-+/* Ether Types */
-+#define WX_ETH_P_CNM                 0x22E7
-+
- #define WX_CFG_PORT_ST               0x14404
- 
- /******************* Receive Descriptor bit definitions **********************/
-@@ -320,6 +329,14 @@
- 
- #define WX_RXD_ERR_RXE               BIT(29) /* Any MAC Error */
- 
-+/*********************** Transmit Descriptor Config Masks ****************/
-+#define WX_TXD_STAT_DD               BIT(0)  /* Descriptor Done */
-+#define WX_TXD_DTYP_DATA             0       /* Adv Data Descriptor */
-+#define WX_TXD_PAYLEN_SHIFT          13      /* Desc PAYLEN shift */
-+#define WX_TXD_EOP                   BIT(24) /* End of Packet */
-+#define WX_TXD_IFCS                  BIT(25) /* Insert FCS */
-+#define WX_TXD_RS                    BIT(27) /* Report Status */
-+
- /* Host Interface Command Structures */
- struct wx_hic_hdr {
- 	u8 cmd;
-@@ -496,6 +513,8 @@ union wx_rx_desc {
- 
- #define WX_RX_DESC(R, i)     \
- 	(&(((union wx_rx_desc *)((R)->desc))[i]))
-+#define WX_TX_DESC(R, i)     \
-+	(&(((union wx_tx_desc *)((R)->desc))[i]))
- 
- /* wrapper around a pointer to a socket buffer,
-  * so a DMA handle can be stored along with the buffer
+ 	/* calculate the expected PCIe bandwidth required for optimal
+ 	 * performance. Note that some older parts will never have enough
+ 	 * bandwidth due to being older generation PCIe parts. We clamp these
 -- 
 2.39.1
 
