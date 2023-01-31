@@ -2,117 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94723683648
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 20:20:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86201683676
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 20:25:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231564AbjAaTUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 14:20:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35854 "EHLO
+        id S231388AbjAaTZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 14:25:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231358AbjAaTUE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 14:20:04 -0500
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5241215568;
-        Tue, 31 Jan 2023 11:20:02 -0800 (PST)
-Received: from fpc.intra.ispras.ru (unknown [10.10.165.10])
-        by mail.ispras.ru (Postfix) with ESMTPSA id AC03B44C1001;
-        Tue, 31 Jan 2023 19:19:58 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru AC03B44C1001
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
-        s=default; t=1675192798;
-        bh=acFv/EVWgo/r3B/eoVvQRH4Rv7zdDgk0cupPU3JKT9M=;
-        h=From:To:Cc:Subject:Date:From;
-        b=jBfys3aNqdowNgIq94lu6N83EpR+X80bo1ofcMXeb1zgvwdvebEsEi/vXWWQtsv4m
-         0ccAt1+HTgCWlkjiUaxj574FkwKu/b/fi8cOTknLy/QOli5JKEa4vd7axb7GZu5PVY
-         p33LaoAlsKacsP8+zQX1mUIDX/A/SYeFPWwZEE5c=
-From:   Fedor Pchelkin <pchelkin@ispras.ru>
-To:     Pravin B Shelar <pshelar@ovn.org>
-Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231344AbjAaTZg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 14:25:36 -0500
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DBD55591;
+        Tue, 31 Jan 2023 11:25:32 -0800 (PST)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.nyi.internal (Postfix) with ESMTP id 1AEC75C00FB;
+        Tue, 31 Jan 2023 14:25:29 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute6.internal (MEProxy); Tue, 31 Jan 2023 14:25:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1675193129; x=1675279529; bh=STVqW/t1lXxI625WVmdd6J2DgvpW
+        tytdItQfHKSXdqQ=; b=pvAHIV0eM4+QKb+ejy+48wcuW96qZLg2LoWcO+Sf7Lxg
+        VZJoYSj82GhuCyozzLD3KFXWvHH40MBt/bexAGwdIa1LJMHTELW4cOg5ZnmocBi8
+        3cwzJE2SUtQGCpVwade+fsQHhXDgnzkG+Qda6Rvx5LViZXs2fDZ6po75kbTeZ2UE
+        yhLV1AaFpX6Qc/SGWfw9rlnaByzqqgIRlLlVrYLrmCQfVhtGFQ/H5fjr1Z82BnNX
+        TotUIg0IysmBL8f1+ecvs++8qjZbuEqTGxc7re/XUExAz3oGsfgg74wDzLhTSx/o
+        CIl94gUrzR4CTdz5AOShMN0Fy9bpSlcwqGo8mkAqwQ==
+X-ME-Sender: <xms:J2vZY-fgvGVd1numoJYdraHNiA44MyNZBd8XssFWUa9aPug7QZBIRQ>
+    <xme:J2vZY4NoZfIQ5go5atuid8fEO7Kq_1TmYtjPgJ3NsbZhS50ck6Y654RrTixzDr5m6
+    a55mB7epka2JwA>
+X-ME-Received: <xmr:J2vZY_iJNzvx_cUkPjWHd0uzN1u4qnf5XJapsBpvTs22935ll2-_SVV0TLnVLIZctn2MmonKVR752X2hU9UW7TOxwbetMw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudefgedguddvhecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkugho
+    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
+    htthgvrhhnpeejkeeltedttdfguedvffeiffdugeffteegtdetffevgfejjeevhfffhedt
+    vdeuveenucffohhmrghinhepphhorhhtrdhshhenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:J2vZY7_6HaIavvpYkeGgiDV1mJuRd2zwV7dCB5cUR40BkovErSn7uQ>
+    <xmx:J2vZY6shY_zfbnl_HDx7b6zJDOyICFeoQXgWImGGHrZFRgajAQSZZg>
+    <xmx:J2vZYyGU_1pOXteqlFTnZM_Gn137-3bCWCjn10yv2CaQ2EOnMa6ndg>
+    <xmx:KWvZYz74eQeBPwTWSbSfgzMWB0OZ4LzXoZdSbTgnAUoxhco6R5pLHg>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 31 Jan 2023 14:25:26 -0500 (EST)
+Date:   Tue, 31 Jan 2023 21:25:21 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     "Hans J. Schultz" <netdev@kapio-technology.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, netdev@vger.kernel.org,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        lvc-project@linuxtesting.org
-Subject: [PATCH] net: openvswitch: fix flow memory leak in ovs_flow_cmd_new
-Date:   Tue, 31 Jan 2023 22:19:39 +0300
-Message-Id: <20230131191939.901288-1-pchelkin@ispras.ru>
-X-Mailer: git-send-email 2.30.2
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
+        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>
+Subject: Re: [PATCH net-next 0/5] ATU and FDB synchronization on locked ports
+Message-ID: <Y9lrIWMnWLqGreZL@shredder>
+References: <20230130173429.3577450-1-netdev@kapio-technology.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230130173429.3577450-1-netdev@kapio-technology.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzkaller reports a memory leak of new_flow in ovs_flow_cmd_new() as it is
-not freed when an allocation of a key fails.
+On Mon, Jan 30, 2023 at 06:34:24PM +0100, Hans J. Schultz wrote:
+> This patch set makes it possible to have synchronized dynamic ATU and FDB
+> entries on locked ports. As locked ports are not able to automatically
+> learn, they depend on userspace added entries, where userspace can add
+> static or dynamic entries. The lifetime of static entries are completely
+> dependent on userspace intervention, and thus not of interest here. We
+> are only concerned with dynamic entries, which can be added with a
+> command like:
+> 
+> bridge fdb replace ADDR dev <DEV> master dynamic
+> 
+> We choose only to support this feature on locked ports, as it involves
+> utilizing the CPU to handle ATU related switchcore events (typically
+> interrupts) and thus can result in significant performance loss if
+> exposed to heavy traffic.
 
-BUG: memory leak
-unreferenced object 0xffff888116668000 (size 632):
-  comm "syz-executor231", pid 1090, jiffies 4294844701 (age 18.871s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000defa3494>] kmem_cache_zalloc include/linux/slab.h:654 [inline]
-    [<00000000defa3494>] ovs_flow_alloc+0x19/0x180 net/openvswitch/flow_table.c:77
-    [<00000000c67d8873>] ovs_flow_cmd_new+0x1de/0xd40 net/openvswitch/datapath.c:957
-    [<0000000010a539a8>] genl_family_rcv_msg_doit+0x22d/0x330 net/netlink/genetlink.c:739
-    [<00000000dff3302d>] genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
-    [<00000000dff3302d>] genl_rcv_msg+0x328/0x590 net/netlink/genetlink.c:800
-    [<000000000286dd87>] netlink_rcv_skb+0x153/0x430 net/netlink/af_netlink.c:2515
-    [<0000000061fed410>] genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
-    [<000000009dc0f111>] netlink_unicast_kernel net/netlink/af_netlink.c:1313 [inline]
-    [<000000009dc0f111>] netlink_unicast+0x545/0x7f0 net/netlink/af_netlink.c:1339
-    [<000000004a5ee816>] netlink_sendmsg+0x8e7/0xde0 net/netlink/af_netlink.c:1934
-    [<00000000482b476f>] sock_sendmsg_nosec net/socket.c:651 [inline]
-    [<00000000482b476f>] sock_sendmsg+0x152/0x190 net/socket.c:671
-    [<00000000698574ba>] ____sys_sendmsg+0x70a/0x870 net/socket.c:2356
-    [<00000000d28d9e11>] ___sys_sendmsg+0xf3/0x170 net/socket.c:2410
-    [<0000000083ba9120>] __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
-    [<00000000c00628f8>] do_syscall_64+0x30/0x40 arch/x86/entry/common.c:46
-    [<000000004abfdcf4>] entry_SYSCALL_64_after_hwframe+0x61/0xc6
+Not sure I understand this reasoning. I was under the impression that
+hostapd is installing dynamic entries instead of static ones since the
+latter are not flushed when carrier is lost. Therefore, with static
+entries it is possible to unplug a host (potentially plugging a
+different one) and not lose authentication.
 
-To fix this the patch removes unnecessary err_kfree_key label and adds a
-proper goto statement on the key-allocation-error path.
+> 
+> On locked ports it is important for userspace to know when an authorized
+> station has become silent, hence not breaking the communication of a
+> station that has been authorized based on the MAC-Authentication Bypass
+> (MAB) scheme. Thus if the station keeps being active after authorization,
+> it will continue to have an open port as long as it is active. Only after
+> a silent period will it have to be reauthorized. As the ageing process in
+> the ATU is dependent on incoming traffic to the switchcore port, it is
+> necessary for the ATU to signal that an entry has aged out, so that the
+> FDB can be updated at the correct time.
 
-Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
+Why mention MAB at all? Don't you want user space to always use dynamic
+entries to authenticate hosts regardless of 802.1X/MAB?
 
-Fixes: 68bb10101e6b ("openvswitch: Fix flow lookup to use unmasked key")
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
----
- net/openvswitch/datapath.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> This patch set includes a solution for the Marvell mv88e6xxx driver, where
+> for this driver we use the Hold-At-One feature so that an age-out
+> violation interrupt occurs when a station has been silent for the
+> system-set age time. The age out violation interrupt allows the switchcore
+> driver to remove both the ATU and the FDB entry at the same time.
+> 
+> It is up to the maintainers of other switchcore drivers to implement the
+> feature for their specific driver.
+> 
+> Hans J. Schultz (5):
+>   net: bridge: add dynamic flag to switchdev notifier
+>   net: dsa: propagate flags down towards drivers
+>   drivers: net: dsa: add fdb entry flags incoming to switchcore drivers
+>   net: bridge: ensure FDB offloaded flag is handled as needed
+>   net: dsa: mv88e6xxx: implementation of dynamic ATU entries
 
-diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index a71795355aec..3d4b5d83d306 100644
---- a/net/openvswitch/datapath.c
-+++ b/net/openvswitch/datapath.c
-@@ -1004,7 +1004,7 @@ static int ovs_flow_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 	key = kzalloc(sizeof(*key), GFP_KERNEL);
- 	if (!key) {
- 		error = -ENOMEM;
--		goto err_kfree_key;
-+		goto err_kfree_flow;
- 	}
- 
- 	ovs_match_init(&match, key, false, &mask);
-@@ -1128,7 +1128,6 @@ static int ovs_flow_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 	ovs_nla_free_flow_actions(acts);
- err_kfree_flow:
- 	ovs_flow_free(new_flow, false);
--err_kfree_key:
- 	kfree(key);
- error:
- 	return error;
--- 
-2.30.2
-
+Will try to review tomorrow, but it looks like this set is missing
+selftests. What about extending bridge_locked_port.sh?
