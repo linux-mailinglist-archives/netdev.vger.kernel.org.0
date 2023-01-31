@@ -2,131 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC4F4682B62
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 12:25:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7286A682B6C
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 12:30:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230104AbjAaLZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 06:25:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57060 "EHLO
+        id S231305AbjAaLaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 06:30:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229693AbjAaLZe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 06:25:34 -0500
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9113B49940;
-        Tue, 31 Jan 2023 03:25:32 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 0D98820011;
-        Tue, 31 Jan 2023 11:25:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1675164330;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tAuea4GKGxpxlpyo6uDuczjlm4urx1r7jKAW9TwYw58=;
-        b=gVNzG7gXQ0X6Pzs6miC99X48DN/XicLuSE0DYYAaa/+Imvqn70W8KZ4rq3vLAvP/tahg3O
-        p4NqIdMTakYZyuWQcoJK/IgpauZCO5069+38mM7Jsizs7iOuOgyceYG6wMWCAXxRNmLfYR
-        dkeRd4fBvrpce5Yj2UwkJrfBMKZ2zLy0zj04NhCcPb2O+P6Pv9/FO85cHWi+zmtUv/Ekq8
-        wo4JBoHDtg8r3qpIdSZiVlx/aY4Jysd/Q/69j0YtuvT+g+zBsUszyQVrp0WrMbsBABhHru
-        /48KeGdIcVeGuvGY0yFhWyPkxB8a+Hz2BfioSwexSxhh6UTWTCCYzA6wQDIong==
-Date:   Tue, 31 Jan 2023 12:25:25 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <aahringo@redhat.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
+        with ESMTP id S229828AbjAaLaM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 06:30:12 -0500
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1379C4A1F9;
+        Tue, 31 Jan 2023 03:30:09 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sendonly@marcansoft.com)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 9270A3FA55;
+        Tue, 31 Jan 2023 11:30:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
+        t=1675164607; bh=ZjWEGCtKMs+iCP880alfcD+T5+jOm8zzDU2+Ng2uQDc=;
+        h=From:To:Cc:Subject:Date;
+        b=WcaKAOgN3oaceGqpcVsb1yX2pGRculvKRUZWCnbe/PpLmIWvlY1o1Hvp53xWYZfmM
+         raarxdAEsmjelXWKX0loX5ApCs0sInyv6/r8u2Hge7qn/cbEnyASZToyQl5liYKhhr
+         KRAa2UsGb/n8ciXCI8zcbDXBz1h3EpO6xFCTa+zTMEda0FC534eCuWPGYM8IxPxD9c
+         tWlizT+zPY1texIAm9/qu/IXneE9te2VzK+6rIcS9pd+BFbAz1TJBChf0JrufUt1Xe
+         dsJ8w904TL6+3ie7kZW2RXT61QWP2AKgLHiR1gfA6g63SYJJgBjpIoaVWPbyzO/BG+
+         czrmHM0hhiU8g==
+From:   Hector Martin <marcan@marcan.st>
+To:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Guilhem Imberton <guilhem.imberton@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan-next v2 0/2] ieee802154: Beaconing support
-Message-ID: <20230131122525.7bd35c2b@xps-13>
-In-Reply-To: <CAK-6q+gqQgFxqBUAhHDMaWv9VfuKa=bCVee_oSLQeVtk_G8=ow@mail.gmail.com>
-References: <20230125102923.135465-1-miquel.raynal@bootlin.com>
-        <CAK-6q+jN1bnP1FdneGrfDJuw3r3b=depEdEP49g_t3PKQ-F=Lw@mail.gmail.com>
-        <CAK-6q+hoquVswZTm+juLasQzUJpGdO+aQ7Q3PCRRwYagge5dTw@mail.gmail.com>
-        <20230130105508.38a25780@xps-13>
-        <CAK-6q+gqQgFxqBUAhHDMaWv9VfuKa=bCVee_oSLQeVtk_G8=ow@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Alexander Prutskov <alep@cypress.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Ian Lin <ian.lin@infineon.com>,
+        Soontak Lee <soontak.lee@cypress.com>,
+        Joseph chuang <jiac@cypress.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Aditya Garg <gargaditya08@live.com>, asahi@lists.linux.dev,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
+Subject: [PATCH v2 0/5] BCM4355/4364/4377 support & identification fixes
+Date:   Tue, 31 Jan 2023 20:28:35 +0900
+Message-Id: <20230131112840.14017-1-marcan@marcan.st>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+Hi all,
 
-> > > > > Changes in v2:
-> > > > > * Clearly state in the commit log llsec is not supported yet.
-> > > > > * Do not use mlme transmission helpers because we don't really ne=
-ed to
-> > > > >   stop the queue when sending a beacon, as we don't expect any fe=
-edback
-> > > > >   from the PHY nor from the peers. However, we don't want to go t=
-hrough
-> > > > >   the whole net stack either, so we bypass it calling the subif h=
-elper
-> > > > >   directly.
-> > > > > =20
-> > >
-> > > moment, we use the mlme helpers to stop tx =20
-> >
-> > No, we no longer use the mlme helpers to stop tx when sending beacons
-> > (but true MLME transmissions, we ack handling and return codes will be
-> > used for other purposes).
-> > =20
->=20
-> then we run into an issue overwriting the framebuffer while the normal
-> transmit path is active?
+This series adds support for the BCM4355, BCM4364, and BCM4377 variants
+found on Intel Apple Macs of the T2 era (and a few pre-T2 ones).
 
-Crap, yes you're right. That's not gonna work.
+The first patch drops the RAW device IDs, as discussed in the v1 thread.
 
-The net core acquires HARD_TX_LOCK() to avoid these issues and we are
-no bypassing the net core without taking care of the proper frame
-transmissions either (which would have worked with mlme_tx_one()). So I
-guess there are two options:
+The second patch fixes a bunch of confusion introduced when adding
+support for the Cypress 89459 chip, which is, as far as I can tell,
+just a BCM4355.
 
-* Either we deal with the extra penalty of stopping the queue and
-  waiting for the beacon to be transmitted with an mlme_tx_one() call,
-  as proposed initially.
+The subsequent patches add the firmware names and remaining missing
+device IDs, including splitting the BCM4364 firmware name by revision
+(since it was previously added without giving thought to the existence
+of more than one revision in the wild with different firmwares,
+resulting in different users manually copying different incompatible
+firmwares as the same firmware name).
 
-* Or we hardcode our own "net" transmit helper, something like:
+None of these devices have firmware in linux-firmware, so we should
+still be able to tweak firmware filenames without breaking anyone that
+matters. Apple T2 users these days are mostly using downstream trees
+with the Asahi Linux WLAN patches merged anyway, so they already know
+about this.
 
-mac802154_fast_mlme_tx() {
-	struct net_device *dev =3D skb->dev;
-	struct netdev_queue *txq;
+Note that these devices aren't fully usable as far as firmware
+selection on these platforms without some extra patches to add support
+for fetching the required info from ACPI, but I want to get the device
+ID stuff out of the way first to move forward.
 
-	txq =3D netdev_core_pick_tx(dev, skb, NULL);
-	cpu =3D smp_processor_id();
-	HARD_TX_LOCK(dev, txq, cpu);
-	if (!netif_xmit_frozen_or_drv_stopped(txq))
-		netdev_start_xmit(skb, dev, txq, 0);
-	HARD_TX_UNLOCK(dev, txq);
-}
+v2: Added a commit in front to drop all the RAW device IDs as discussed,
+    and also fixed the 4364 firmware interface from BCA to WCC, as
+    pointed out in the v1 thread.
 
-Note1: this is very close to generic_xdp_tx() which tries to achieve the
-same goal: sending packets, bypassing qdisc et al. I don't know whether
-it makes sense to define it under mac802154/tx.c or core/dev.c and give
-it another name, like generic_tx() or whatever would be more
-appropriate. Or even adapting generic_xdp_tx() to make it look more
-generic and use that function instead (without the xdp struct pointer).
+Hector Martin (5):
+  brcmfmac: Drop all the RAW device IDs
+  wifi: brcmfmac: Rename Cypress 89459 to BCM4355
+  brcmfmac: pcie: Add IDs/properties for BCM4355
+  brcmfmac: pcie: Add IDs/properties for BCM4377
+  brcmfmac: pcie: Perform correct BCM4364 firmware selection
 
-Note2: I am wondering if it makes sense to disable bh here as well?
+ .../broadcom/brcm80211/brcmfmac/chip.c        |  6 ++--
+ .../broadcom/brcm80211/brcmfmac/pcie.c        | 36 +++++++++++++------
+ .../broadcom/brcm80211/include/brcm_hw_ids.h  | 11 +++---
+ 3 files changed, 34 insertions(+), 19 deletions(-)
 
-Once we settle, I send a patch.
+-- 
+2.35.1
 
-Thanks,
-Miqu=C3=A8l
