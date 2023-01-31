@@ -2,84 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFDAF6820A0
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 01:22:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE0256820AF
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 01:26:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229680AbjAaAWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 19:22:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54518 "EHLO
+        id S229832AbjAaA0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 19:26:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbjAaAWm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 19:22:42 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED6501BDB
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 16:21:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675124515;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JtIojjqPJfWA8r7fIaLtZliC5rFkK+e5G2vXAK457RY=;
-        b=HU1jMZv7vc8wsRMvMWy5p9HMPAo6gho1jHzEQNTwHUEHss2myAUPAStWqfXlccX6qdCyA/
-        KoC1nmNB6eaEhI29CfLkOCCfURrkfsKDUgV03tx3X/fFAEjILUvK+VGNciymWFSCXw1J7v
-        rx2PafBRcQOfC1l7JpPyaegIW5NXaH8=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-76-TA-EGeM3OsyLZdG0npOdWQ-1; Mon, 30 Jan 2023 19:21:53 -0500
-X-MC-Unique: TA-EGeM3OsyLZdG0npOdWQ-1
-Received: by mail-ed1-f69.google.com with SMTP id h18-20020a05640250d200b0049e0e9382c2so9343009edb.13
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 16:21:53 -0800 (PST)
+        with ESMTP id S229807AbjAaA0S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 19:26:18 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA76312586
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 16:26:17 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id 123so16213398ybv.6
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 16:26:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3aVLTDvHnjrme3W3SY4DGV4VMS1aHzAMSbxi5Uf8uzY=;
+        b=lQf3EWFDFk5stpOISNba1yd0+Yo8x08X8+Gvr/UWfc+trU4GlHfJo3iL0EsfY7eblR
+         rhYsBIV3TC17lAbXickqi5KmZvcD/G7tbr0z77ZKuyolbjFdn4Ln53oRJWcVA53mNR49
+         4jHvSihQclLU5q1WIQcVb/rpK9ia/hU2urbfS6hbXyqjGmCU/DGC4f9bNanjgi8P1okC
+         i6JZF0fZXQqEqzL+TSanViS500ptuJOGz9ojuxgYaVMBhIdZOi50C6IEVPDvR8lHhcJC
+         K2FCKu3k0E7gHdyjCpmx6b7r3WD+UqfYeIZ65lDcrtCCGepSyosrP+8ik7Mh7abUiS+j
+         Jr0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=JtIojjqPJfWA8r7fIaLtZliC5rFkK+e5G2vXAK457RY=;
-        b=iiiz4hTLsQ51aS7cFS7AgoRrhfk4qjDKu1cYeaCNY4p7mydAEoJvVyYqzvguxXDNy6
-         4ia6RUsklrhCDODmClHerXTjjN+k6cWcD2ke0vjpC84U5ZubDyhjHtPDw2CDQStPOhBe
-         BBn2swZ2mBPDwLu7TrtQ1DCL6sTgHWaDk3fqlpzD0yC0jW7QzPxsJvcHS22vQBt1to0g
-         c+Apg0UFtnHIW69gFZoF/lBbZ2fqOiqyFIcXXGwumuu7dm9w2x8w+UxB5yWOC5a0zaWT
-         1fLHpIo4FhkJ+GOwlUyVziB3mW3t1D81KNUaWyuVRT2GpJn50kpc72eeEDJGOT9dv5lC
-         1pUQ==
-X-Gm-Message-State: AO0yUKXS/WRlbPMx6browqMMSuScYTXPs5nu6YLVjErQwIqJgoDLnmuM
-        3rQTBYl6wUnY8kyXLHxSYeIDCwKe447FNROBi/SHpFxoev9CtqReE7XS01FOtxZmUgvR+Een6A0
-        TWv637kWukWdwGB6Oqg59l4wX3WRNcO7w
-X-Received: by 2002:a17:906:7244:b0:882:c2dd:f29e with SMTP id n4-20020a170906724400b00882c2ddf29emr2851366ejk.268.1675124512918;
-        Mon, 30 Jan 2023 16:21:52 -0800 (PST)
-X-Google-Smtp-Source: AK7set8sI1WOq/7rZuTLGLFYup/sgDq4GGKe++h1jLu8Hur5lmbBidWwSjTrBx8GwuxZkzmjjc+VOm+4J8sCR678RsU=
-X-Received: by 2002:a17:906:7244:b0:882:c2dd:f29e with SMTP id
- n4-20020a170906724400b00882c2ddf29emr2851357ejk.268.1675124512770; Mon, 30
- Jan 2023 16:21:52 -0800 (PST)
+        bh=3aVLTDvHnjrme3W3SY4DGV4VMS1aHzAMSbxi5Uf8uzY=;
+        b=m7qTrn+GjOtmseanT4vmI75cHrtIQ8EXJKDNX8pbxrEknWcywlEZrgY8zlHXTDFSg4
+         hFVPzZtGLCzPMihwVjFhwDGYLwAkLfd3yGbobauMdfQ2sopFH5A76NA18gnEK5jfMHbY
+         H5tAK9KiIQnSCSVluHy5GRxXAAKj/FlGDhIRq1qgZr5MfoXhyzY/lJpSSV7U2ns83qKA
+         viTE/fVtQBRa6Gc1l1QnLrxClQXHOfAlEECWT/3dlf5tpJWdGLxDoaDMhfvQdJZf2veG
+         4CbTUm2IOBHKNUMdl6KZI1c0ZjjL5cHGiNFDkfF8hReE5BG3Ke1Ffu71fNCf+St0QZPg
+         DyBg==
+X-Gm-Message-State: AO0yUKUBIzP7JIWBSsvVtGeYQNF5BuIhLgUvJfIO7z4EPkP26oVmuGAi
+        VTZegDcTyEwhw5E09mqv5JJwepJwsLrk/CEyr2tNJA==
+X-Google-Smtp-Source: AK7set/osahnUGKCJHscIbrArsQ6F/TUDcntbcgzziJuES958JoH8i+uSAyg1lGoQ5zjXlPCgY8mz4vcc1UAwHsIczI=
+X-Received: by 2002:a25:ab24:0:b0:80b:8fbc:7e68 with SMTP id
+ u33-20020a25ab24000000b0080b8fbc7e68mr3013331ybi.517.1675124777030; Mon, 30
+ Jan 2023 16:26:17 -0800 (PST)
 MIME-Version: 1.0
-References: <20230125102923.135465-1-miquel.raynal@bootlin.com>
- <CAK-6q+jN1bnP1FdneGrfDJuw3r3b=depEdEP49g_t3PKQ-F=Lw@mail.gmail.com>
- <CAK-6q+hoquVswZTm+juLasQzUJpGdO+aQ7Q3PCRRwYagge5dTw@mail.gmail.com> <20230130105508.38a25780@xps-13>
-In-Reply-To: <20230130105508.38a25780@xps-13>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Mon, 30 Jan 2023 19:21:41 -0500
-Message-ID: <CAK-6q+gqQgFxqBUAhHDMaWv9VfuKa=bCVee_oSLQeVtk_G8=ow@mail.gmail.com>
-Subject: Re: [PATCH wpan-next v2 0/2] ieee802154: Beaconing support
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
+References: <CAAFAkD8kahd0Ao6BVjwx+F+a0nUK0BzTNFocnpaeQrN7E8VRdQ@mail.gmail.com>
+ <Y9RPsYbi2a9Q/H8h@google.com> <CAM0EoM=ONYkF_1CST7i_F9yDQRxSFSTO25UzWJzcRGa1efM2Sg@mail.gmail.com>
+ <CAKH8qBtU-1A1iKnvTXV=5v8Dim1FBmtvL6wOqgdspSFRCwNohA@mail.gmail.com>
+ <CA+FuTScHsm3Ajje=ziRBafXUQ5FHHEAv6R=LRWr1+c3QpCL_9w@mail.gmail.com>
+ <CAM0EoMnBXnWDQKu5e0z1_zE3yabb2pTnOdLHRVKsChRm+7wxmQ@mail.gmail.com>
+ <CA+FuTScBO-h6iM47-NbYSDDt6LX7pUXD82_KANDcjp7Y=99jzg@mail.gmail.com>
+ <63d6069f31bab_2c3eb20844@john.notmuch> <CAM0EoMmeYc7KxY=Sv=oynrvYMeb-GD001Zh4m5TMMVXYre=tXw@mail.gmail.com>
+ <63d747d91add9_3367c208f1@john.notmuch> <Y9eYNsklxkm8CkyP@nanopsycho>
+ <87pmawxny5.fsf@toke.dk> <CAM0EoM=u-VSDZAifwTiOy8vXAGX7Hwg4rdea62-kNFGsHj7ObQ@mail.gmail.com>
+ <878rhkx8bd.fsf@toke.dk> <CAAFAkD9Sh5jbp4qkzxuS+J3PGdtN-Kc2HdP8CDqweY36extSdA@mail.gmail.com>
+ <87wn53wz77.fsf@toke.dk> <63d8325819298_3985f20824@john.notmuch>
+ <87leljwwg7.fsf@toke.dk> <CAM0EoM=i_pTSRokDqDo_8JWjsDYwwzSgJw6sc+0c=Ss81SyJqg@mail.gmail.com>
+ <CO1PR11MB4993CA55EDF590EF66FF3D4893D39@CO1PR11MB4993.namprd11.prod.outlook.com>
+ <63d85b9191319_3d8642086a@john.notmuch>
+In-Reply-To: <63d85b9191319_3d8642086a@john.notmuch>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Mon, 30 Jan 2023 19:26:05 -0500
+Message-ID: <CAM0EoMk8e4rR5tX5giC-ggu_h-y32hLN=ENZ=-A+XqjvnbCYpQ@mail.gmail.com>
+Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     "Singhai, Anjali" <anjali.singhai@intel.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Jamal Hadi Salim <hadi@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Willem de Bruijn <willemb@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Guilhem Imberton <guilhem.imberton@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel@mojatatu.com" <kernel@mojatatu.com>,
+        "Chatterjee, Deb" <deb.chatterjee@intel.com>,
+        "Limaye, Namrata" <namrata.limaye@intel.com>,
+        "khalidm@nvidia.com" <khalidm@nvidia.com>,
+        "tom@sipanda.io" <tom@sipanda.io>,
+        "pratyush@sipanda.io" <pratyush@sipanda.io>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "vladbu@nvidia.com" <vladbu@nvidia.com>,
+        "simon.horman@corigine.com" <simon.horman@corigine.com>,
+        "stefanc@marvell.com" <stefanc@marvell.com>,
+        "seong.kim@amd.com" <seong.kim@amd.com>,
+        "mattyk@nvidia.com" <mattyk@nvidia.com>,
+        "Daly, Dan" <dan.daly@intel.com>,
+        "Fingerhut, John Andy" <john.andy.fingerhut@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -87,68 +103,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Mon, Jan 30, 2023 at 4:55 AM Miquel Raynal <miquel.raynal@bootlin.com> w=
+On Mon, Jan 30, 2023 at 7:06 PM John Fastabend <john.fastabend@gmail.com> w=
 rote:
 >
-> Hi Alexander,
->
-> aahringo@redhat.com wrote on Thu, 26 Jan 2023 20:48:02 -0500:
->
-> > Hi,
+> Singhai, Anjali wrote:
+> > Devlink is only for downloading the vendor specific compiler output for=
+ a P4 program and for teaching the driver about the names of runtime P4 obj=
+ect as to how they map onto the HW. This helps with the Initial definition =
+of the Dataplane.
 > >
-> > On Thu, Jan 26, 2023 at 8:45 PM Alexander Aring <aahringo@redhat.com> w=
-rote:
-> > >
-> > > Hi,
-> > >
-> > > On Wed, Jan 25, 2023 at 5:31 AM Miquel Raynal <miquel.raynal@bootlin.=
-com> wrote:
-> > > >
-> > > > Scanning being now supported, we can eg. play with hwsim to verify
-> > > > everything works as soon as this series including beaconing support=
- gets
-> > > > merged.
-> > > >
-> > > > Thanks,
-> > > > Miqu=C3=A8l
-> > > >
-> > > > Changes in v2:
-> > > > * Clearly state in the commit log llsec is not supported yet.
-> > > > * Do not use mlme transmission helpers because we don't really need=
- to
-> > > >   stop the queue when sending a beacon, as we don't expect any feed=
-back
-> > > >   from the PHY nor from the peers. However, we don't want to go thr=
-ough
-> > > >   the whole net stack either, so we bypass it calling the subif hel=
-per
-> > > >   directly.
-> > > >
+> > Devlink is NOT for the runtime programming of the Dataplane, that has t=
+o go through the P4TC block for anybody to deploy a programmable dataplane =
+between the HW and the SW and have some flows that are in HW and some in SW=
+ or some processing HW and some in SW. ndo_setup_tc framework and support i=
+n the drivers will give us the hooks to program the HW match-action entries=
+.
+> > Please explain through ebpf model how do I program the HW at runtime?
 > >
-> > moment, we use the mlme helpers to stop tx
+> > Thanks
+> > Anjali
+> >
 >
-> No, we no longer use the mlme helpers to stop tx when sending beacons
-> (but true MLME transmissions, we ack handling and return codes will be
-> used for other purposes).
+> Didn't see this as it was top posted but, the answer is you don't program
+> hardware the ebpf when your underlying target is a MAT.
 >
-
-then we run into an issue overwriting the framebuffer while the normal
-transmit path is active?
-
-> > but we use the
-> > ieee802154_subif_start_xmit() because of the possibility to invoke
-> > current 802.15.4 hooks like llsec? That's how I understand it.
->
-> We go through llsec (see ieee802154_subif_start_xmit() implementation)
-> when we send data or beacons. When we send beacons, for now, we just
-> discard the llsec logic. This needs of course to be improved. We will
-> probably need some llsec handling in the mlme case as well in the near
-> future.
+> Use devlink for the runtime programming as well, its there to program
+> hardware. This "Devlink is NOT for the runtime programming" is
+> just an artificate of the design here which I disagree with and it feels
+> like many other folks also disagree.
 >
 
-i agree, thanks.
+We are going to need strong justification to use devlink for
+programming the  binary interface to begin with - see the driver
+models discussion. And let me get this clear: you are suggesting we
+use it for runtime and redo all that tc ndo and associated infra?
 
-- Alex
+cheers,
+jamal
 
+> Also if you have some flows going to SW you want to use the most
+> performant option you have which would be XDP-BPF at the moment in a
+> standard linux box or maybe af-xdp. So in these cases you should look
+> to divide your P4 pipeline between XDP and HW. Sure you can say
+> performance doesn't matter for my use case, but surely it does for
+> some things and anyways you have the performant thing already built
+> so just use it.
+> Thanks,
+> John
