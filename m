@@ -2,54 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 314FA6823B2
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 06:17:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 451396823BA
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 06:20:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229815AbjAaFR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 00:17:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58390 "EHLO
+        id S230033AbjAaFUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 00:20:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbjAaFRz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 00:17:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE0B330D0;
-        Mon, 30 Jan 2023 21:17:53 -0800 (PST)
+        with ESMTP id S229680AbjAaFUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 00:20:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0780C65E;
+        Mon, 30 Jan 2023 21:20:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A9A36140C;
-        Tue, 31 Jan 2023 05:17:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27574C433D2;
-        Tue, 31 Jan 2023 05:17:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1675142272;
-        bh=r1QHAE5CMl8j0BmAlptuDNAWDYIcrrh/o2sPtM6Hjy0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=R/mf3WwpaV5fsu3TWYLp1Q7l9wmQIvSUP24s1OjzHzw2swhBCMqHQ6DjW89eTTJW9
-         Xz2sNGG2lXALXIIGf31/sza9eCol6tjosPjVaFJ9x0lGOrn4IqKUawpfNsOcdxfIuA
-         0434uycuN89kzLeT1DOg05GMKNn9Yb8WHtc8uaUY=
-Date:   Tue, 31 Jan 2023 06:17:49 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Natalia Petrova <n.petrova@fintech.ru>
-Cc:     stable@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
-Subject: Re: [PATCH v2] i40e: Add checking for null for nlmsg_find_attr()
-Message-ID: <Y9ikffXU/qV1DV7f@kroah.com>
-References: <20230125141328.8479-1-n.petrova@fintech.ru>
- <20230130221106.19267-1-n.petrova@fintech.ru>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B40B613F7;
+        Tue, 31 Jan 2023 05:20:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A07BCC4339B;
+        Tue, 31 Jan 2023 05:20:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675142417;
+        bh=Ilm19g62Meqe/3IhhpbZ3ncbsmcML0MNvJRB4S69npk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=oPHDunN7/gmd3HvRsFk/BxdB4gqfU+e01JEsRyRwYhsJIVewf4bUxk3vOWwJp3QkI
+         ytQICGa8pH28bFByy8icgao2hYtb5mlml4p5rbKr2SJFVe351FURoAaVpiipfeHLKx
+         VD9NNz+w83wMmIm6cMhobLtCJcjtEBcCYOQSYx8yX6xdAtEVRWFCargxoB0tF/JwZV
+         vOaOANZYQ9y1DxG023MYdWJPxHvvqnHRanETu7Zc/Da9faN05t/wGAHar4QPgjR9pt
+         Z5ez4QWSjs2c7RnWRospS0jtDw7dTPJb2VejLME3KMKnMV38aXk6QzrT4Qz6rNJOO/
+         5mZktmZVEHOWA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 81CACC0C40E;
+        Tue, 31 Jan 2023 05:20:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230130221106.19267-1-n.petrova@fintech.ru>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: ieee802154 for net 2023-01-30
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167514241752.16180.14659503229725926088.git-patchwork-notify@kernel.org>
+Date:   Tue, 31 Jan 2023 05:20:17 +0000
+References: <20230130095646.301448-1-stefan@datenfreihafen.org>
+In-Reply-To: <20230130095646.301448-1-stefan@datenfreihafen.org>
+To:     Stefan Schmidt <stefan@datenfreihafen.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-wpan@vger.kernel.org,
+        alex.aring@gmail.com, netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,28 +55,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 01:11:06AM +0300, Natalia Petrova wrote:
-> The result of nlmsg_find_attr() 'br_spec' is dereferenced in
-> nla_for_each_nested(), but it can take null value in nla_find() function,
-> which will result in an error.
-> 
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
-> 
-> Fixes: 51616018dd1b ("i40e: Add support for getlink, setlink ndo ops")
-> Signed-off-by: Natalia Petrova <n.petrova@fintech.ru>
-> Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> ---
-> v2: The remark about the error code by Simon Horman <simon.horman@corigine.com> 
-> was taken into account; return value -ENOENT was changed to -EINVAL.
->  drivers/net/ethernet/intel/i40e/i40e_main.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+Hello:
 
-<formletter>
+This pull request was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-This is not the correct way to submit patches for inclusion in the
-stable kernel tree.  Please read:
-    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
-for how to do this properly.
+On Mon, 30 Jan 2023 10:56:46 +0100 you wrote:
+> Hello Dave, Jakub.
+> 
+> An update from ieee802154 for your *net* tree:
+> 
+> Only one fix this time around.
+> 
+> Miquel Raynal fixed a potential double free spotted by Dan Carpenter.
+> 
+> [...]
 
-</formletter>
+Here is the summary with links:
+  - pull-request: ieee802154 for net 2023-01-30
+    https://git.kernel.org/netdev/net/c/9b3fc325c2a7
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
