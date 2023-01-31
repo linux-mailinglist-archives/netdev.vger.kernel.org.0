@@ -2,174 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C3E7682166
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 02:32:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CEA5682187
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 02:50:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230299AbjAaBcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 20:32:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49630 "EHLO
+        id S230124AbjAaBt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 20:49:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbjAaBcM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 20:32:12 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D1B298C1;
-        Mon, 30 Jan 2023 17:32:10 -0800 (PST)
-Received: from kwepemm600003.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4P5SCT6GXnzRrJX;
-        Tue, 31 Jan 2023 09:29:57 +0800 (CST)
-Received: from [10.174.179.79] (10.174.179.79) by
- kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Tue, 31 Jan 2023 09:32:08 +0800
-Subject: Re: [PATCH] vhost/vdpa: Add MSI translation tables to iommu for
- software-managed MSI
-To:     Jason Wang <jasowang@redhat.com>
-CC:     <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-        <mst@redhat.com>, <iommu@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <wangrong68@huawei.com>
-References: <20230128031740.166743-1-sunnanyong@huawei.com>
- <CACGkMEtMAFMbhPnaaTwGRFofPM-p8ceKzAUbD2AFBz=fbR6hYQ@mail.gmail.com>
-From:   Nanyong Sun <sunnanyong@huawei.com>
-Message-ID: <ffe21085-13cf-e2e9-e5cc-8755e9e3250b@huawei.com>
-Date:   Tue, 31 Jan 2023 09:32:07 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        with ESMTP id S229456AbjAaBt5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 20:49:57 -0500
+Received: from out-168.mta0.migadu.com (out-168.mta0.migadu.com [91.218.175.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22B227D63
+        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 17:49:54 -0800 (PST)
+Message-ID: <4b7b09b5-fd23-2447-7f05-5f903288625f@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1675129792;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yzVGdn9aa0LimpYNCCMWH6Ih9b/h62H9vpFUrcqxtUM=;
+        b=vxIxpArmj9UCJtA2eJusgm35MyWt2DcyQG1DbxeYuGZdsKWu030ElOTzscW5fPD3ss18If
+        P3/D7LKyYCDd9StEwCJ++tHQaDhyH2F63AuHBJLWcp5IL5CYpBv9Nk20rMrFlkFcdAWZJw
+        VxLXiSffgG38mAsCVb3yx7jXipe48rs=
+Date:   Mon, 30 Jan 2023 17:49:41 -0800
 MIME-Version: 1.0
-In-Reply-To: <CACGkMEtMAFMbhPnaaTwGRFofPM-p8ceKzAUbD2AFBz=fbR6hYQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Subject: Re: [PATCH v9 bpf-next 3/5] bpf: Add skb dynptrs
+Content-Language: en-US
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Joanne Koong <joannelkoong@gmail.com>, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@kernel.org, ast@kernel.org,
+        netdev@vger.kernel.org, memxor@gmail.com, kernel-team@fb.com,
+        bpf@vger.kernel.org,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+References: <20230127191703.3864860-1-joannelkoong@gmail.com>
+ <20230127191703.3864860-4-joannelkoong@gmail.com>
+ <5715ea83-c4aa-c884-ab95-3d5e630cad05@linux.dev>
+ <20230130223141.r24nlg2jp5byvuph@macbook-pro-6.dhcp.thefacebook.com>
+ <CAEf4Bzb9=q9TKutW8d7fOtCWaLpA12yvSh-BhL=m3+RA1_xhOQ@mail.gmail.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <CAEf4Bzb9=q9TKutW8d7fOtCWaLpA12yvSh-BhL=m3+RA1_xhOQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.79]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/1/29 14:02, Jason Wang wrote:
-> On Sat, Jan 28, 2023 at 10:25 AM Nanyong Sun <sunnanyong@huawei.com> wrote:
->> From: Rong Wang <wangrong68@huawei.com>
+On 1/30/23 5:04 PM, Andrii Nakryiko wrote:
+> On Mon, Jan 30, 2023 at 2:31 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
 >>
->> Once enable iommu domain for one device, the MSI
->> translation tables have to be there for software-managed MSI.
->> Otherwise, platform with software-managed MSI without an
->> irq bypass function, can not get a correct memory write event
->> from pcie, will not get irqs.
->> The solution is to obtain the MSI phy base address from
->> iommu reserved region, and set it to iommu MSI cookie,
->> then translation tables will be created while request irq.
+>> On Mon, Jan 30, 2023 at 02:04:08PM -0800, Martin KaFai Lau wrote:
+>>> On 1/27/23 11:17 AM, Joanne Koong wrote:
+>>>> @@ -8243,6 +8316,28 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
+>>>>              mark_reg_known_zero(env, regs, BPF_REG_0);
+>>>>              regs[BPF_REG_0].type = PTR_TO_MEM | ret_flag;
+>>>>              regs[BPF_REG_0].mem_size = meta.mem_size;
+>>>> +           if (func_id == BPF_FUNC_dynptr_data &&
+>>>> +               dynptr_type == BPF_DYNPTR_TYPE_SKB) {
+>>>> +                   bool seen_direct_write = env->seen_direct_write;
+>>>> +
+>>>> +                   regs[BPF_REG_0].type |= DYNPTR_TYPE_SKB;
+>>>> +                   if (!may_access_direct_pkt_data(env, NULL, BPF_WRITE))
+>>>> +                           regs[BPF_REG_0].type |= MEM_RDONLY;
+>>>> +                   else
+>>>> +                           /*
+>>>> +                            * Calling may_access_direct_pkt_data() will set
+>>>> +                            * env->seen_direct_write to true if the skb is
+>>>> +                            * writable. As an optimization, we can ignore
+>>>> +                            * setting env->seen_direct_write.
+>>>> +                            *
+>>>> +                            * env->seen_direct_write is used by skb
+>>>> +                            * programs to determine whether the skb's page
+>>>> +                            * buffers should be cloned. Since data slice
+>>>> +                            * writes would only be to the head, we can skip
+>>>> +                            * this.
+>>>> +                            */
+>>>> +                           env->seen_direct_write = seen_direct_write;
+>>>> +           }
+>>>
+>>> [ ... ]
+>>>
+>>>> @@ -9263,17 +9361,26 @@ static int check_kfunc_args(struct bpf_verifier_env *env, struct bpf_kfunc_call_
+>>>>                              return ret;
+>>>>                      break;
+>>>>              case KF_ARG_PTR_TO_DYNPTR:
+>>>> +           {
+>>>> +                   enum bpf_arg_type dynptr_arg_type = ARG_PTR_TO_DYNPTR;
+>>>> +
+>>>>                      if (reg->type != PTR_TO_STACK &&
+>>>>                          reg->type != CONST_PTR_TO_DYNPTR) {
+>>>>                              verbose(env, "arg#%d expected pointer to stack or dynptr_ptr\n", i);
+>>>>                              return -EINVAL;
+>>>>                      }
+>>>> -                   ret = process_dynptr_func(env, regno, insn_idx,
+>>>> -                                             ARG_PTR_TO_DYNPTR | MEM_RDONLY);
+>>>> +                   if (meta->func_id == special_kfunc_list[KF_bpf_dynptr_from_skb])
+>>>> +                           dynptr_arg_type |= MEM_UNINIT | DYNPTR_TYPE_SKB;
+>>>> +                   else
+>>>> +                           dynptr_arg_type |= MEM_RDONLY;
+>>>> +
+>>>> +                   ret = process_dynptr_func(env, regno, insn_idx, dynptr_arg_type,
+>>>> +                                             meta->func_id);
+>>>>                      if (ret < 0)
+>>>>                              return ret;
+>>>>                      break;
+>>>> +           }
+>>>>              case KF_ARG_PTR_TO_LIST_HEAD:
+>>>>                      if (reg->type != PTR_TO_MAP_VALUE &&
+>>>>                          reg->type != (PTR_TO_BTF_ID | MEM_ALLOC)) {
+>>>> @@ -15857,6 +15964,14 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+>>>>                 desc->func_id == special_kfunc_list[KF_bpf_rdonly_cast]) {
+>>>>              insn_buf[0] = BPF_MOV64_REG(BPF_REG_0, BPF_REG_1);
+>>>>              *cnt = 1;
+>>>> +   } else if (desc->func_id == special_kfunc_list[KF_bpf_dynptr_from_skb]) {
+>>>> +           bool is_rdonly = !may_access_direct_pkt_data(env, NULL, BPF_WRITE);
+>>>
+>>> Does it need to restore the env->seen_direct_write here also?
+>>>
+>>> It seems this 'seen_direct_write' saving/restoring is needed now because
+>>> 'may_access_direct_pkt_data(BPF_WRITE)' is not only called when it is
+>>> actually writing the packet. Some refactoring can help to avoid issue like
+>>> this.
+>>>
+>>> While at 'seen_direct_write', Alexei has also pointed out that the verifier
+>>> needs to track whether the (packet) 'slice' returned by bpf_dynptr_data()
+>>> has been written. It should be tracked in 'seen_direct_write'. Take a look
+>>> at how reg_is_pkt_pointer() and may_access_direct_pkt_data() are done in
+>>> check_mem_access(). iirc, this reg_is_pkt_pointer() part got loss somewhere
+>>> in v5 (or v4?) when bpf_dynptr_data() was changed to return register typed
+>>> PTR_TO_MEM instead of PTR_TO_PACKET.
 >>
->> Signed-off-by: Rong Wang <wangrong68@huawei.com>
->> Signed-off-by: Nanyong Sun <sunnanyong@huawei.com>
->> ---
->>   drivers/iommu/iommu.c |  1 +
->>   drivers/vhost/vdpa.c  | 53 ++++++++++++++++++++++++++++++++++++++++---
->>   2 files changed, 51 insertions(+), 3 deletions(-)
+>> btw tc progs are using gen_prologue() approach because data/data_end are not kfuncs
+>> (nothing is being called by the bpf prog).
+>> In this case we don't need to repeat this approach. If so we don't need to
+>> set seen_direct_write.
+>> Instead bpf_dynptr_data() can call bpf_skb_pull_data() directly.
+>> And technically we don't need to limit it to skb head. It can handle any off/len.
+>> It will work for skb, but there is no equivalent for xdp_pull_data().
+>> I don't think we can implement xdp_pull_data in all drivers.
+>> That's massive amount of work, but we need to be consistent if we want
+>> dynptr to wrap both skb and xdp.
+>> We can say dynptr_data is for head only, but we've seen bugs where people
+>> had to switch from data/data_end to load_bytes.
 >>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index de91dd88705b..f6c65d5d8e2b 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -2623,6 +2623,7 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
->>          if (ops->get_resv_regions)
->>                  ops->get_resv_regions(dev, list);
->>   }
->> +EXPORT_SYMBOL_GPL(iommu_get_resv_regions);
+>> Also bpf_skb_pull_data is quite heavy. For progs that only want to parse
+>> the packet calling that in bpf_dynptr_data is a heavy hammer.
 >>
->>   /**
->>    * iommu_put_resv_regions - release resered regions
->> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
->> index ec32f785dfde..31d3e9ed4cfa 100644
->> --- a/drivers/vhost/vdpa.c
->> +++ b/drivers/vhost/vdpa.c
->> @@ -1103,6 +1103,48 @@ static ssize_t vhost_vdpa_chr_write_iter(struct kiocb *iocb,
->>          return vhost_chr_write_iter(dev, from);
->>   }
->>
->> +static bool vhost_vdpa_check_sw_msi(struct list_head *dev_resv_regions, phys_addr_t *base)
->> +{
->> +       struct iommu_resv_region *region;
->> +       bool ret = false;
->> +
->> +       list_for_each_entry(region, dev_resv_regions, list) {
->> +               /*
->> +                * The presence of any 'real' MSI regions should take
->> +                * precedence over the software-managed one if the
->> +                * IOMMU driver happens to advertise both types.
->> +                */
->> +               if (region->type == IOMMU_RESV_MSI) {
->> +                       ret = false;
->> +                       break;
->> +               }
->> +
->> +               if (region->type == IOMMU_RESV_SW_MSI) {
->> +                       *base = region->start;
->> +                       ret = true;
->> +               }
->> +       }
->> +
->> +       return ret;
->> +}
-> Can we unify this with what VFIO had?
-Yes, these two functions are just the same.
-Do you think move this function to iommu.c, and export from iommu is a 
-good choice?
->
->> +
->> +static int vhost_vdpa_get_msi_cookie(struct iommu_domain *domain, struct device *dma_dev)
->> +{
->> +       struct list_head dev_resv_regions;
->> +       phys_addr_t resv_msi_base = 0;
->> +       int ret = 0;
->> +
->> +       INIT_LIST_HEAD(&dev_resv_regions);
->> +       iommu_get_resv_regions(dma_dev, &dev_resv_regions);
->> +
->> +       if (vhost_vdpa_check_sw_msi(&dev_resv_regions, &resv_msi_base))
->> +               ret = iommu_get_msi_cookie(domain, resv_msi_base);
->> +
->> +       iommu_put_resv_regions(dma_dev, &dev_resv_regions);
->> +
->> +       return ret;
->> +}
->> +
->>   static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
->>   {
->>          struct vdpa_device *vdpa = v->vdpa;
->> @@ -1128,11 +1170,16 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
->>
->>          ret = iommu_attach_device(v->domain, dma_dev);
->>          if (ret)
->> -               goto err_attach;
->> +               goto err_alloc_domain;
->>
->> -       return 0;
->> +       ret = vhost_vdpa_get_msi_cookie(v->domain, dma_dev);
-> Do we need to check the overlap mapping and record it in the interval
-> tree (as what VFIO did)?
->
-> Thanks
-Yes, we need to care about this part, I will handle this recently.
-Thanks a lot.
->> +       if (ret)
->> +               goto err_attach_device;
->>
->> -err_attach:
->> +       return 0;
->> +err_attach_device:
->> +       iommu_detach_device(v->domain, dma_dev);
->> +err_alloc_domain:
->>          iommu_domain_free(v->domain);
->>          return ret;
->>   }
->> --
->> 2.25.1
->>
-> .
+>> It feels that we need to go back to skb_header_pointer-like discussion.
+>> Something like:
+>> bpf_dynptr_slice(const struct bpf_dynptr *ptr, u32 offset, u32 len, void *buffer)
+>> Whether buffer is a part of dynptr or program provided is tbd.
+> 
+> making it hidden within dynptr would make this approach unreliable
+> (memory allocations, which can fail, etc). But if we ask users to pass
+> it directly, then it should be relatively easy to use in practice with
+> some pre-allocated per-CPU buffer:
+> 
+> 
+> struct {
+>    __int(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+>    __int(max_entries, 1);
+>    __type(key, int);
+>    __type(value, char[4096]);
+> } scratch SEC(".maps");
+> 
+> 
+> ...
+> 
+> 
+> struct dyn_ptr *dp = bpf_dynptr_from_skb(...).
+> void *p, *buf;
+> int zero = 0;
+> 
+> buf = bpf_map_lookup_elem(&scratch, &zero);
+> if (!buf) return 0; /* can't happen */
+> 
+> p = bpf_dynptr_slice(dp, off, 16, buf);
+> if (p == NULL) {
+>     /* out of range */
+> } else {
+>     /* work with p directly */
+> }
+> 
+> /* if we wrote something to p and it was copied to buffer, write it back */
+> if (p == buf) {
+>      bpf_dynptr_write(dp, buf, 16);
+> }
+> 
+> 
+> We'll just need to teach verifier to make sure that buf is at least 16
+> byte long.
+
+A fifth __sz arg may do:
+bpf_dynptr_slice(const struct bpf_dynptr *ptr, u32 offset, u32 len, void 
+*buffer, u32 buffer__sz);
+
+The bpf prog usually has buffer in the stack for the common small header parsing.
+
+One side note is the bpf_dynptr_slice() still needs to check if the skb is 
+cloned or not even the off/len is within the head range.
+
+> But I wonder if for simple cases when users are mostly sure that they
+> are going to access only header data directly we can have an option
+> for bpf_dynptr_from_skb() to specify what should be the behavior for
+> bpf_dynptr_slice():
+> 
+>   - either return NULL for anything that crosses into frags (no
+> surprising perf penalty, but surprising NULLs);
+>   - do bpf_skb_pull_data() if bpf_dynptr_data() needs to point to data
+> beyond header (potential perf penalty, but on NULLs, if off+len is
+> within packet).
+> 
+> And then bpf_dynptr_from_skb() can accept a flag specifying this
+> behavior and store it somewhere in struct bpf_dynptr.
+
+xdp does not have the bpf_skb_pull_data() equivalent, so xdp prog will still 
+need the write back handling.
+
