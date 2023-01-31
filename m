@@ -2,135 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F41F5683465
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 18:57:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8C9E683495
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 19:03:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbjAaR5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 12:57:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56492 "EHLO
+        id S230474AbjAaSCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 13:02:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbjAaR5R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 12:57:17 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 081C06A46
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 09:57:16 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id d132so19178882ybb.5
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 09:57:15 -0800 (PST)
+        with ESMTP id S230487AbjAaSCU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 13:02:20 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F4A4D517
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 10:02:19 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id f47-20020a05600c492f00b003dc584a7b7eso5065311wmp.3
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 10:02:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=GG8/kT0PKwqWP3AvSWmrhBSKsdjFhFnl36yGJFNM3fg=;
-        b=LoEJyeRKXVaDA3jB5BkGvy1teJGGh0e0Ywen6onFL+nR+So1lE66eOtPUpkVHVNyKW
-         uyqQ3eRPcGXbMiZNEa5QxhVmjJHXl9nxhs8py0nTcvwXy0h71zTqC06khUYb17HEu4U+
-         lnqbbtQxkVJBCDwfgW2L18cMhK8MEo/XQ3rKYo/vGqoGFOAJojRsrQf5F9p0zUoz1wtW
-         hTEL27N0htczV7Rk1h3/i7OUVjJHc22B21LNvQ2mZe/zDG1D+sohOwHWm9yZCqMk3zSo
-         xbUFR0u7QPTlt9jQZvlEsol23pfXlxi0sCUOAFvVlbm2m+6Dq/QZo2058ZcClRN04+k2
-         Hd1w==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=dpDv+9QPHupt1UyeJB0z1k2Ufnogyk9lZGLkIf5nWzc=;
+        b=svhNacA6geE2Ndg8QTafTeJu6fXopqBbRymSroIFbX/LguDYlC21U70PeI85j0xCO/
+         de7Rlm3uRrh8/qlrB1NYmw40Q4ecXeuTtNnWmIu4sV6zoZ1/B40no6R1OICgEj/YiwqO
+         chbqhdxE1n1PbVE6UtbqKZ/dH0C5M6cetlRhN5aflW70jBH8H0V3FdD1Kg1BsTxxEtOp
+         o14OYqQLXk7wjBOd4JHFQrK5rTWVdkXYAnuaXZJIolGF+VmnH9VpjnnC9OkG8YfpzF7N
+         BltxlLu0omgrNryDuBjGAUIG+WKGKdknMrQCjT4rOD2tcGRxjccSZD1mZl/p8KwOR1+H
+         GHNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=GG8/kT0PKwqWP3AvSWmrhBSKsdjFhFnl36yGJFNM3fg=;
-        b=JolP0BCKApKjzU6q1CfyIneE4VEsyRiHFCLJ+ETjk9715meJBF/M1gZ1MnIGbxXwIz
-         vWwEQO5NM2IVbNFglTtxqY8dsA1ZCQghfxwU3VvCSis7fi629VlFxFnH2tzMTR0kgPt/
-         6+Bsi0pFcXASDy9SXGtjNhAj1Z/LHqHaJM+5pH6rajau6t8Q14EUqbFv6MZZlYW1w2PE
-         eS0CM5ZMppDrCAYhjJQjDKGWDsaR2nXcgIWcC4Qv1gChoy+1R4id+cKXGoTuuPBjRDnM
-         KB6RCoynx654URc4dyNL+xlKhrVkL2mZM85Jj8MGyjev7u9M/of9JPLhxlM/FPWhh1Ox
-         YyVA==
-X-Gm-Message-State: AO0yUKUg/HXmwLHODucAvD/Kt1waxfA+pPcENRAQl7Ons/PWxKeonsnO
-        +qrzf1jbUGwLI0qpMpabyWr1PWcIQybMkeSVBBQgtA==
-X-Google-Smtp-Source: AK7set/HXKaUvajeee5zFP4Daz3XLDIYlWTeJcObla17wC2qxZV3s87DRuri8yGnlGYOH0r0FHNhjvG0pfer3B8MUto=
-X-Received: by 2002:a25:ef51:0:b0:80b:a45b:fd37 with SMTP id
- w17-20020a25ef51000000b0080ba45bfd37mr2088227ybm.387.1675187834972; Tue, 31
- Jan 2023 09:57:14 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=dpDv+9QPHupt1UyeJB0z1k2Ufnogyk9lZGLkIf5nWzc=;
+        b=HFur2dd7oxSvP9iVAV6dJSlkiC5gzFi3+z3WvqpV79Mr/Tn65uQtuqGK4f34NQraoe
+         zhLtD9TE/olU2d7N3Mih4PZ1RfrBDeLwYjR+eDAFYmCOLKrRhzMvrDr02beROtWz0iuo
+         icBkkTkvm90XkIFHJS4HINWeQy3OxMq3PHZcq7G25YWnKCY4fXYnbIhXWHdFwOluEPvn
+         8vk7xhGZ8fjmnPaeTUfRFYosInghO7V6EUfjq0eO3Pp6PLFXTIvTs7QgyqHNKPBS2mRx
+         f9cctrNa9IVlQxa/ATq2uJwLqJza58aE8e/YnCXtukvyFS9npIC8XUO2G3Gu5JIS1xn3
+         I+HQ==
+X-Gm-Message-State: AFqh2kp32goPsHNQI/KdyWSlM7tPvQxNIBgHIhEKKRg1EST9G7xToXf/
+        xRvkr4FbrY1uSYKWSel2TFL9Xg==
+X-Google-Smtp-Source: AMrXdXtKb+4uvfotizMeuQfwAZA8MV5qRAu8vrz2XPdlaH7ZSWFKiEGd/DB4cabCuP4PCRF20iHbaA==
+X-Received: by 2002:a1c:ed0a:0:b0:3d3:4a47:52e9 with SMTP id l10-20020a1ced0a000000b003d34a4752e9mr55153400wmh.15.1675188138023;
+        Tue, 31 Jan 2023 10:02:18 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id h13-20020a05600c314d00b003db2b81660esm7148131wmo.21.2023.01.31.10.02.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Jan 2023 10:02:17 -0800 (PST)
+Message-ID: <622ef51f-643e-5eb5-3884-3f22bf4fa9be@linaro.org>
+Date:   Tue, 31 Jan 2023 19:02:16 +0100
 MIME-Version: 1.0
-References: <20230131174601.203127-1-jakub@cloudflare.com>
-In-Reply-To: <20230131174601.203127-1-jakub@cloudflare.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 31 Jan 2023 18:57:03 +0100
-Message-ID: <CANn89iL2PCnC=6dOrozW0309W==tWcKpj2iwZgZAD_s0amvzLA@mail.gmail.com>
-Subject: Re: [PATCH net] udp: Pass 2 bytes of data with UDP_GRO cmsg to user-space
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel-team@cloudflare.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v2 1/2] dt: bindings: add dt entry for XO calibration
+ support
+Content-Language: en-US
+To:     Youghandhar Chintala <quic_youghand@quicinc.com>, kvalo@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230131140345.6193-1-quic_youghand@quicinc.com>
+ <20230131140345.6193-2-quic_youghand@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230131140345.6193-2-quic_youghand@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 6:46 PM Jakub Sitnicki <jakub@cloudflare.com> wrote:
->
-> While UDP_GRO cmsg interface lacks documentation, the selftests added in
-> commit 3327a9c46352 ("selftests: add functionals test for UDP GRO") suggest
-> that the user-space should allocate CMSG_SPACE for an u16 value and
-> interpret the returned bytes as such:
->
-> static int recv_msg(int fd, char *buf, int len, int *gso_size)
-> {
->         char control[CMSG_SPACE(sizeof(uint16_t))] = {0};
->         ...
->                         if (cmsg->cmsg_level == SOL_UDP
->                             && cmsg->cmsg_type == UDP_GRO) {
->                                 gsosizeptr = (uint16_t *) CMSG_DATA(cmsg);
->                                 *gso_size = *gsosizeptr;
->                                 break;
->                         }
->         ...
-> }
->
-> Today user-space will receive 4 bytes of data with an UDP_GRO cmsg, because
-> the kernel packs an int into the cmsg data, as we can confirm with strace:
->
->   recvmsg(8, {msg_name=...,
->               msg_iov=[{iov_base="\0\0..."..., iov_len=96000}],
->               msg_iovlen=1,
->               msg_control=[{cmsg_len=20,         <-- sizeof(cmsghdr) + 4
->                             cmsg_level=SOL_UDP,
->                             cmsg_type=0x68}],    <-- UDP_GRO
->                             msg_controllen=24,
->                             msg_flags=0}, 0) = 11200
->
-> This means that either UDP_GRO selftests are broken on big endian, or this
-> is a programming error. Assume the latter and pass only the needed 2 bytes
-> of data with the cmsg.
->
-> Fixing it like that has an added advantage that the cmsg becomes compatible
-> with what is expected by UDP_SEGMENT cmsg. It becomes possible to reuse the
-> cmsg when GSO packets are received on one socket and sent out of another.
->
-> Fixes: bcd1665e3569 ("udp: add support for UDP_GRO cmsg")
-> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+On 31/01/2023 15:03, Youghandhar Chintala wrote:
+> Add dt binding to get XO calibration data support for Wi-Fi RF clock.
+
+Use subject prefixes matching the subsystem (which you can get for
+example with `git log --oneline -- DIRECTORY_OR_FILE` on the directory
+your patch is touching).
+Hint: dt-bindings: net: qcom,ath11k:
+
+> 
+> Signed-off-by: Youghandhar Chintala <quic_youghand@quicinc.com>
 > ---
->  include/linux/udp.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/include/linux/udp.h b/include/linux/udp.h
-> index a2892e151644..44bb8d699248 100644
-> --- a/include/linux/udp.h
-> +++ b/include/linux/udp.h
-> @@ -125,7 +125,7 @@ static inline bool udp_get_no_check6_rx(struct sock *sk)
->  static inline void udp_cmsg_recv(struct msghdr *msg, struct sock *sk,
->                                  struct sk_buff *skb)
->  {
-> -       int gso_size;
-> +       __u16 gso_size;
->
->         if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4) {
->                 gso_size = skb_shinfo(skb)->gso_size;
-> --
-> 2.39.1
->
+>  .../devicetree/bindings/net/wireless/qcom,ath11k.yaml         | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml b/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
+> index f7cf135aa37f..205ee949daba 100644
+> --- a/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
+> +++ b/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
+> @@ -41,6 +41,10 @@ properties:
+>          * reg
+>          * reg-names
+>  
+> +  xo-cal-data:
+> +    description:
+> +      XO cal offset to be configured in XO trim register
 
-This would break some applications.
+Missing type. I also do not understand what's this and why some register
+offset should be stored in DT. Please give us some justification why
+this is suitable for DT.
 
-I think the test can be fixed instead, this seems less risky.
+Best regards,
+Krzysztof
+
