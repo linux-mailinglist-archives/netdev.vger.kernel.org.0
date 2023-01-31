@@ -2,188 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0703D6832BD
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 17:31:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8BFC6832C2
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 17:32:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232241AbjAaQbs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 11:31:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40920 "EHLO
+        id S232479AbjAaQcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 11:32:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231936AbjAaQbP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 11:31:15 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2097.outbound.protection.outlook.com [40.107.220.97])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E401372B1
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 08:30:53 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AhVOp5Iyyadw0l36gwPnaPCUGqJxBm935+HLwc0umQOU4RbB5JlIjmnj4lSd9zFU7Ri/zJgCPU9il6rDdJB16QJ2RIo7E01l+UKhmoy7x/yPlF07LPiIYq15AH82IGRB3CgTjhYD6zuVLN8X1a+N77/PeasOjx0EO16b4LUWKCKbNnqMIPlY4kTxYqy//wPl/X01X5bsIWhFuOiUoKO9meWZ9XyewpHSCYMasF/Pp/8VF/VBOjvMEGOdWaBwmZ94oAIFdX9/ZFqDMNysP0q5GZI6zW04Of90zxNTKlOAtzMgdniyn6xZQGAutTMspkaD/eQvJapjC/TDoJG0hetHfg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=57ylOHnP9SqzkLGk5KPc8MZmcdSXRdjQtdvqMc+keFk=;
- b=kGtFlAjeZi4xNa0g+SzaNaXC61KuF+ZbrAfK8oSdqBMmO/LU8tTdNE0vLPPgPpUp5B15wa0ZRhR2D8GM7bC37DJJKqLaUpErYITXIVJZOOUNT35GdqtCf70P/1t0SPVNR4qwK4yL8PKTbfHqNot7J/pTyyBDBcVRKLcSkvsWqgS8dh11VLAe+V3tdFfGfw+wZ1Hz03ozhLyxVAZdfZjXdqkcOFHiNDtJ+twSGttS+aBSuKWaMsLMdSKZcvmUtiE4CCypDnKqJd8tiB09SUIUvVtAc9DP3i2DNFhTrv+n/umYhzVdeFJ3+aZ+4MdeBF0j+09m5WUy+VwFosYvKLkO9A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=57ylOHnP9SqzkLGk5KPc8MZmcdSXRdjQtdvqMc+keFk=;
- b=eL9mGyM1NCyGhn1MKHdb+gY8FTBrbhsaaVaI6LLhTL6Z9xKgDQLVAU8mYGTX9bk0bGs9l3lyYj7HVHtIvIBI4SD1/drD0JznarR26EUiYz6ZY/sRhwhu08j0rgnfdcceBaYfJfUsoojQ4Zc6U6fh7tC3309G7JSYMnYLZghZ5xo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM6PR13MB3897.namprd13.prod.outlook.com (2603:10b6:5:22a::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.33; Tue, 31 Jan
- 2023 16:30:50 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65%7]) with mapi id 15.20.6043.038; Tue, 31 Jan 2023
- 16:30:50 +0000
-From:   Simon Horman <simon.horman@corigine.com>
-To:     David Miller <davem@davemloft.net>,
+        with ESMTP id S232018AbjAaQbh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 11:31:37 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1813AA5
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 08:31:34 -0800 (PST)
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com [209.85.221.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 8EABD41ACF
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 16:31:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1675182692;
+        bh=n/CaqmU/bb0yNkProNxdjfJ6mcTnYxY6CqP06NZVn3c=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Type:In-Reply-To;
+        b=BDQIhe/aYeM3EFr8gAC/tImQItWCQiGdds1EdGH1nPAdPeYvUtlODX3QjVGFa4j+Y
+         OaISoDPEC9dCaJiBhqp+HPvNd8OZ/EEOaJMXN2m0jFrx1fi33N2CTlgmGM2t9o7x/G
+         nPYpNjOjCp/ONZIQx+zOuz98LClRPoInJSZjQcXoyobgijEGBM6ctmYFkjo5eXXsAh
+         q7lqeGe2+4tGUgDdreu3ZGERXfxVM612kSjf62FlZeFy08CU366hnheG3NDS21NK1i
+         u7XMMBNkvfnAN3bOHGnoZH10X3ald0GQV+nsXdDTbetwKaDpECv8SGXQxrQt5G7AbU
+         G73ZR5uWCnXeQ==
+Received: by mail-wr1-f72.google.com with SMTP id l8-20020adfc788000000b002bdfe72089cso2613325wrg.21
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 08:31:32 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=n/CaqmU/bb0yNkProNxdjfJ6mcTnYxY6CqP06NZVn3c=;
+        b=HzjczsOGDAhY2yws5a7thBUbawuBlD+F3OxzjygNl9KYCfEPQkelSaY8mqbWLJtUDi
+         oHLxkydZQ5lR/39ox9rGWJITP4uN85WiF6zSvtvbnU30a6dLEJMTFt8ylzTLmQI/dL0t
+         1KXLtEWRGN31LTpDz/LBmjI7AbrAPrcdiMrAR7Mv3QWcSeW+GHS8l0HovVmiNplFgv9d
+         wEt1/P62LjdK6dTuKuvds72dMQu/z7B21JX2qLMf9vQOtcYOxlLUCi6Cal0xIQkDSgWt
+         I5Ncq6GC5W6bprk5vuDW9bbJXCikikrenYXvi3qEuqlaWlnu72DPJuPycJuVhIZ5+stu
+         oR0w==
+X-Gm-Message-State: AO0yUKVtSJ0x1F02yecpI0FsafgPoXjkIFx1Z5YSHWVVhD7TWaHSwaO2
+        453ASP/jJUKHojgovVFftkSM4MYaMMkrAVYC2JZdbtx7izwGtFIiymjhcWp/qUjWLX1depGVewm
+        CFmYUtxKevS3wrxXXt7Em6Zrn0tJsOB2Q5g==
+X-Received: by 2002:a05:600c:6022:b0:3dd:a4ad:ae45 with SMTP id az34-20020a05600c602200b003dda4adae45mr2134990wmb.12.1675182692037;
+        Tue, 31 Jan 2023 08:31:32 -0800 (PST)
+X-Google-Smtp-Source: AK7set9zBF6o7zL3fJ6hNw5NSvlvEQCRi/XegUVE/rVjPpShff+Un53fy3zh8lgjygf64THgdtxdvA==
+X-Received: by 2002:a05:600c:6022:b0:3dd:a4ad:ae45 with SMTP id az34-20020a05600c602200b003dda4adae45mr2134969wmb.12.1675182691813;
+        Tue, 31 Jan 2023 08:31:31 -0800 (PST)
+Received: from qwirkle ([2001:67c:1560:8007::aac:c4dd])
+        by smtp.gmail.com with ESMTPSA id m29-20020a05600c3b1d00b003dc51c48f0bsm10026808wms.19.2023.01.31.08.31.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Jan 2023 08:31:31 -0800 (PST)
+Date:   Tue, 31 Jan 2023 16:31:29 +0000
+From:   Andrei Gherzan <andrei.gherzan@canonical.com>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Huayu Chen <huayu.chen@corigine.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next] nfp: correct cleanup related to DCB resources
-Date:   Tue, 31 Jan 2023 17:30:33 +0100
-Message-Id: <20230131163033.981937-1-simon.horman@corigine.com>
-X-Mailer: git-send-email 2.30.2
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: AM3PR05CA0115.eurprd05.prod.outlook.com
- (2603:10a6:207:2::17) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/4] selftests: net: udpgso_bench_tx: Cater for
+ pending datagrams zerocopy benchmarking
+Message-ID: <Y9lCYT3XUgo4npox@qwirkle>
+References: <20230131130412.432549-1-andrei.gherzan@canonical.com>
+ <20230131130412.432549-4-andrei.gherzan@canonical.com>
+ <d9ca623d01274889913001ce92f686652fa8fea8.camel@redhat.com>
+ <Y9kvADcYZ18XFTXu@qwirkle>
+ <17e062f077235b949090cba893c91f5637cc1f0e.camel@redhat.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM6PR13MB3897:EE_
-X-MS-Office365-Filtering-Correlation-Id: 435002cd-dd20-4889-a51c-08db03a883c4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VveIdNFObhvHhF9hu0hjJS1S+qv1SH7PPbVQjqPDTjnHAZWs70mThDOtKqbAJt3Vv3ukIagnlj4IVcyPAaztki3FJt4gj/9BV4DyIiZctKOOSE4TgnogP37wqEVf88zh0Yb5TwxyzlxrzGJPQj6sFyMLqBy/fSZsQX5j+4y7p8M3euvH9fbWeOk3SMwB7+WH+AhyUUbp5m5Rs/jl/J07Ubl0GD1o3s5ENf/mrrs/H48WscS2mg9HLSo8FMD5CydnGEEofqz12uuw1Im60kmQerMVFc9BSmNRNr1x338PeqrYVexMHRzblb2k3utoevioRB9PrHX6WAHSIrdv4j+MzJbH5rthgZqiEHGjfEVchJWUymQ7k5RyL6sRWQ+MnWRXAHqzEzXV3CbE3UWK/Ru9bV5n39Q9am1Z92Toe6hIyiY1e2bC9USYBpIxAP/erlljm2GiQOncs0gmCElNxNMXA4MCioY7DemWbqYCbBTnSMpFMD4DGgNJjdwXzolkgPfLE7S2OkHpRCHvj3MERrSO+5wN2oTbflGklYWoXnXGqDf3JXOqUUAny8UmnIsmKJRCb+K8Lz2q5AuoA0NXiqRwaiR41AF0oPpgl9BQfreGsqZyHZnWKPrWUiEnLch3djuguijIQXBGFnOX3ppAAoAB2w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(39840400004)(396003)(136003)(366004)(346002)(451199018)(54906003)(6486002)(4326008)(316002)(110136005)(8936002)(66556008)(8676002)(41300700001)(6666004)(66946007)(66476007)(107886003)(6506007)(6512007)(478600001)(186003)(1076003)(52116002)(2616005)(83380400001)(44832011)(36756003)(5660300002)(2906002)(38100700002)(86362001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MDJGdklKWVdMWWJVaWRhVFFZUTZTeFk1c2RoQWVhaUFhSUZrYkRkQzZBSlpO?=
- =?utf-8?B?MXY0NGpRcENqMzlsOUtNV1hoMWswYkJtTUNiRnpVOXpQSm5MWG42eG0yY1hx?=
- =?utf-8?B?T1RxUnYvWmRVek1JYlJqYjcyVHc1WnhpWWdYblQ5QmZmY1JBbFBaUlpMdHdo?=
- =?utf-8?B?NzQ0T1NYOWFtcEN4NFhTYzAvVlZaY2pvN2FxSmJyTW1NMThhVG5RZ2pSVjhP?=
- =?utf-8?B?RFF5L2JnYTZURkRjUFg5T1BZWmZtazVhelhSOXNxYkx6cEcxVzB4ZUFPWTBS?=
- =?utf-8?B?L0N5M2ZLSThDTS9nY3RwOVIwLytTZWdhdFR4S0tQVVl3cVBrMUJwZ1JxdDJm?=
- =?utf-8?B?REs4bFlzZ1oxdVFSdE44VjBuSDJ5bThYQkdGMHlnZTMxRzN5djhXaURsMkNQ?=
- =?utf-8?B?djM0aGNDM1lwcllCeFpTd3UrWkJTQnlZbWNPTXB4dS9PNW9hVnN5a3hkREo4?=
- =?utf-8?B?MmRlVGE3TmxTOE9URVN3aW5EbHRwMWpCakVPcUh3VVRQRVNmdjV3UTAvdjV4?=
- =?utf-8?B?WVpCdFpCemwrYVovOHFzWlF4OW9GcUZhdG1KbldpNEZEMEd5cDVRWDNKOXZM?=
- =?utf-8?B?VG9jVkVETXlBU21BQjNkK2FLNjJxbmNDb1BKUVpLMi9QdXQ4TUVoMnZROTli?=
- =?utf-8?B?ZTlkdFdVU2FBY2FZMERZNnFoSlJDN0t2cHpoZ3M5Zi9qdWxnZFFJalNKVWpx?=
- =?utf-8?B?QVpiSldVaVpVcEZabXE2Q0Q5WUVlQUxsbHdrYmpnbStFVnB5T1FJdUFTOURR?=
- =?utf-8?B?dDY4SFY2eFd4TStuTkZ3WWI5dHBHajl1UWdZSjdFTGZTWnpRUDVXdk5rTVMy?=
- =?utf-8?B?VG4rYlZHd3BRSXpyWklTNXBIV0o5U0hxTjZMN2FQODVEakZlbUtIVi9FaCto?=
- =?utf-8?B?ZnlGd1JhYnZjQytNcnVhYzY1eFFzeUxLSElKSFlWcThMN1lNTngxRVE3UVhX?=
- =?utf-8?B?anhjMzJ3WDVYMHJyYW82V1dWWUNJeFA5dXZSRzhkODl0K25BU1VZK05pZVJK?=
- =?utf-8?B?UVJTZEtFMGdTKzBManB1NDBrRE5JWGg1Y2RZcUgybG1DcUJFSVVIdjZMQUJE?=
- =?utf-8?B?OHJxdzluTDhWcTlGYU1iVVluRHFpa05KUWNWV0kvTVZLUkNkWkV4L3BoY3pp?=
- =?utf-8?B?clBYTUlvVTM0dTdCUmVYRE9PenlEeHI2eURpdXFLQ2lLS21ZV0loaWIrQnNQ?=
- =?utf-8?B?ZzBrSjNFSStJT1RwWmVZakRiNWVHdVhpcnMvak9pR0FrWFFvdEJpSnZpN3hr?=
- =?utf-8?B?TW1nU1E5M0s3VFF4TFc2WkhZOXkya3B3cE5HV1pVVzhkTTJOTVNEenVzVVcz?=
- =?utf-8?B?SkhmZlN4U1Nud0ttS2RuNXpndG83K0dpWWJNc01GeDNZYXVNMkt1OWFnNHVm?=
- =?utf-8?B?a1h3ckp1dk44dHNYRHJoTDBxNDVBMWJnSTIraC9hSCt1dTI3ZjlyS2hNNmxI?=
- =?utf-8?B?cmZBVjZlS1MvWGlHZ0o4S1IyaWkyTlMwdGYrR2FFVDB6andGcy9LQ1JQd05P?=
- =?utf-8?B?aG8xTzVTbU0yMFVFYldrWmlrbjE5aFF4RTVWS2U1anBFNTBMenZveUd3RFQv?=
- =?utf-8?B?Um9iTW1ucUJBcE5lQzA4blhBVTluRGNsbVQ0ZWc3MWphNFFNQkI3amRLUHlW?=
- =?utf-8?B?bWRiR2tnQU1sRCtxUWxvdGRGUXh3N3dEdXhkbjJuRzg2TStCcldZQ3dOTVRV?=
- =?utf-8?B?QzJ2YXFxN3dqZWh4aUduOWE4c0FFQWJEMFpPNFNhenAzblJHOEZYTHR0YTI2?=
- =?utf-8?B?VWVnQ1Y0bmZtb0RrZnpjZEI2QXZkUTdhZVJabkhDM0NZQno0TGNpcFNrRHE1?=
- =?utf-8?B?OHRRdmtnVTZqc3RRd2l0ZTh5QWxRQmVpSnRmU05xbGx1ZEtjSVFwNldrc3B0?=
- =?utf-8?B?S3BCbzdmVUpGYng3Vmh1UGN5MEZMWVd0aHMxREpwcFJMMTB6UzFnRUUxR3R3?=
- =?utf-8?B?WE9NanlRWUQyUS9WRGdsRGcxdW8vT1U4dWg4N3lyNUhES3R0cjVlR0N6Snp4?=
- =?utf-8?B?bVNHWDVjckhmOWIxVzFyam53ZFZyaloxUXMyWXFidndLeEJ5enlCWHNRZldQ?=
- =?utf-8?B?M2Vkc2NOR1NzS3dsV0FjY3pRKzJoUzZKZHVOWmptOVU5UThzaTB1SWFXQ2J6?=
- =?utf-8?B?aEl3MnpZa2l4YThLb0NaQlJwWU42S2UyVXdtRU5ZUUtkTjZ0ZE1nMWhob0ds?=
- =?utf-8?B?TFBFOVdjVjhtM0RkSmNGTmRRTTNrNDl6VXVZVzJKNzA5eU9OQUdQVVRPclFa?=
- =?utf-8?B?VTM0NnNYK2xxMjNUS3I5KzhScmJBPT0=?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 435002cd-dd20-4889-a51c-08db03a883c4
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jan 2023 16:30:50.5179
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +EBRRFHk8WNeLD7EX9G3ORC0aUiMrsMfkWl76R4d14ofGgR827uuV/wPS6SeEES9RzXCpVtpvnH4ylwkcqakmMbF+WUI/EnheYKGtrUmFwY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB3897
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <17e062f077235b949090cba893c91f5637cc1f0e.camel@redhat.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Huayu Chen <huayu.chen@corigine.com>
+On 23/01/31 05:22PM, Paolo Abeni wrote:
+> On Tue, 2023-01-31 at 15:08 +0000, Andrei Gherzan wrote:
+> > On 23/01/31 03:51PM, Paolo Abeni wrote:
+> > > On Tue, 2023-01-31 at 13:04 +0000, Andrei Gherzan wrote:
+> > > > The test tool can check that the zerocopy number of completions value is
+> > > > valid taking into consideration the number of datagram send calls. This can
+> > > > catch the system into a state where the datagrams are still in the system
+> > > > (for example in a qdisk, waiting for the network interface to return a
+> > > > completion notification, etc).
+> > > > 
+> > > > This change adds a retry logic of computing the number of completions up to
+> > > > a configurable (via CLI) timeout (default: 2 seconds).
+> > > > 
+> > > > Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
+> > > > ---
+> > > >  tools/testing/selftests/net/udpgso_bench_tx.c | 38 +++++++++++++++----
+> > > >  1 file changed, 30 insertions(+), 8 deletions(-)
+> > > > 
+> > > > diff --git a/tools/testing/selftests/net/udpgso_bench_tx.c b/tools/testing/selftests/net/udpgso_bench_tx.c
+> > > > index b47b5c32039f..5a29b5f24023 100644
+> > > > --- a/tools/testing/selftests/net/udpgso_bench_tx.c
+> > > > +++ b/tools/testing/selftests/net/udpgso_bench_tx.c
+> > > > @@ -62,6 +62,7 @@ static int	cfg_payload_len	= (1472 * 42);
+> > > >  static int	cfg_port	= 8000;
+> > > >  static int	cfg_runtime_ms	= -1;
+> > > >  static bool	cfg_poll;
+> > > > +static int	cfg_poll_loop_timeout_ms = 2000;
+> > > >  static bool	cfg_segment;
+> > > >  static bool	cfg_sendmmsg;
+> > > >  static bool	cfg_tcp;
+> > > > @@ -235,16 +236,17 @@ static void flush_errqueue_recv(int fd)
+> > > >  	}
+> > > >  }
+> > > >  
+> > > > -static void flush_errqueue(int fd, const bool do_poll)
+> > > > +static void flush_errqueue(int fd, const bool do_poll,
+> > > > +		unsigned long poll_timeout, const bool poll_err)
+> > > >  {
+> > > >  	if (do_poll) {
+> > > >  		struct pollfd fds = {0};
+> > > >  		int ret;
+> > > >  
+> > > >  		fds.fd = fd;
+> > > > -		ret = poll(&fds, 1, 500);
+> > > > +		ret = poll(&fds, 1, poll_timeout);
+> > > >  		if (ret == 0) {
+> > > > -			if (cfg_verbose)
+> > > > +			if ((cfg_verbose) && (poll_err))
+> > > >  				fprintf(stderr, "poll timeout\n");
+> > > >  		} else if (ret < 0) {
+> > > >  			error(1, errno, "poll");
+> > > > @@ -254,6 +256,22 @@ static void flush_errqueue(int fd, const bool do_poll)
+> > > >  	flush_errqueue_recv(fd);
+> > > >  }
+> > > >  
+> > > > +static void flush_errqueue_retry(int fd, const bool do_poll, unsigned long num_sends)
+> > > > +{
+> > > > +	unsigned long tnow, tstop;
+> > > > +	bool first_try = true;
+> > > > +
+> > > > +	tnow = gettimeofday_ms();
+> > > > +	tstop = tnow + cfg_poll_loop_timeout_ms;
+> > > > +	do {
+> > > > +		flush_errqueue(fd, do_poll, tstop - tnow, first_try);
+> > > > +		first_try = false;
+> > > > +		if (!do_poll)
+> > > > +			usleep(1000);  // a throttling delay if polling is enabled
+> > > 
+> > > Even if the kernel codying style is not very strictly enforced for
+> > > self-tests, please avoid c++ style comments.
+> > > 
+> > > More importantly, as Willem noded, this function is always called with
+> > > do_poll == true. You should drop such argument and the related branch
+> > > above.
+> > 
+> > Agreed. I will drop.
+> > 
+> > > 
+> > > > +		tnow = gettimeofday_ms();
+> > > > +	} while ((stat_zcopies != num_sends) && (tnow < tstop));
+> > > > +}
+> > > > +
+> > > >  static int send_tcp(int fd, char *data)
+> > > >  {
+> > > >  	int ret, done = 0, count = 0;
+> > > > @@ -413,8 +431,9 @@ static int send_udp_segment(int fd, char *data)
+> > > >  
+> > > >  static void usage(const char *filepath)
+> > > >  {
+> > > > -	error(1, 0, "Usage: %s [-46acmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] [-M messagenr] [-p port] [-s sendsize] [-S gsosize]",
+> > > > -		    filepath);
+> > > > +	error(1, 0,
+> > > > +			"Usage: %s [-46acmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] [-L secs] [-M messagenr] [-p port] [-s sendsize] [-S gsosize]",
+> > > > +			filepath);
+> > > 
+> > > Please avoid introducing unnecessary white-space changes (no reason to
+> > > move the usage text on a new line)
+> > 
+> > The only reason why I've done this was to make scripts/checkpatch.pl
+> > happy:
+> > 
+> > WARNING: line length of 141 exceeds 100 columns
+> > #83: FILE: tools/testing/selftests/net/udpgso_bench_tx.c:432:
+> > 
+> > I can drop and ignore the warning, or maybe it would have been better to
+> > just mention this in git message. What do you prefer?
+> 
+> Long lines are allowed for (kernel) messages, to make them easily grep-
+> able.
+> 
+> In this specific case you can either append the new text to the message
+> without introducing that strange indentation or even better break the
+> usage string alike:
+> 
+> 	"Usage: %s [-46acmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] [-L secs]"
+> 	" [-L secs] [-M messagenr] [-p port] [-s sendsize] [-S gsosize]"
 
-This patch corrects two oversights relating to releasing resources
-and DCB initialisation.
+Funny I went through this too but it also fails with:
 
-1. If mapping of the dcbcfg_tbl area fails: an error should be
-   propagated, allowing partial initialisation (probe) to be unwound.
+WARNING: quoted string split across lines
+#84: FILE: tools/testing/selftests/net/udpgso_bench_tx.c:433
 
-2. Conversely, if where dcbcfg_tbl is successfully mapped: it should
-   be unmapped in nfp_nic_dcb_clean() which is called via various error
-   cleanup paths, and shutdown or removal of the PCIE device.
+This is how I usually do it but it seems like it's flagged too.
 
-Fixes: 9b7fe8046d74 ("nfp: add DCB IEEE support")
-Signed-off-by: Huayu Chen <huayu.chen@corigine.com>
-Reviewed-by: Niklas Söderlund <niklas.soderlund@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
----
- drivers/net/ethernet/netronome/nfp/nic/main.c | 8 ++++++--
- drivers/net/ethernet/netronome/nfp/nic/main.h | 2 +-
- 2 files changed, 7 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/netronome/nfp/nic/main.c b/drivers/net/ethernet/netronome/nfp/nic/main.c
-index f78c2447d45b..9dd5afe37f6e 100644
---- a/drivers/net/ethernet/netronome/nfp/nic/main.c
-+++ b/drivers/net/ethernet/netronome/nfp/nic/main.c
-@@ -32,9 +32,12 @@ static void nfp_nic_sriov_disable(struct nfp_app *app)
- 
- static int nfp_nic_vnic_init(struct nfp_app *app, struct nfp_net *nn)
- {
--	nfp_nic_dcb_init(nn);
-+	return nfp_nic_dcb_init(nn);
-+}
- 
--	return 0;
-+static void nfp_nic_vnic_clean(struct nfp_app *app, struct nfp_net *nn)
-+{
-+	nfp_nic_dcb_clean(nn);
- }
- 
- static int nfp_nic_vnic_alloc(struct nfp_app *app, struct nfp_net *nn,
-@@ -72,4 +75,5 @@ const struct nfp_app_type app_nic = {
- 	.sriov_disable	= nfp_nic_sriov_disable,
- 
- 	.vnic_init      = nfp_nic_vnic_init,
-+	.vnic_clean     = nfp_nic_vnic_clean,
- };
-diff --git a/drivers/net/ethernet/netronome/nfp/nic/main.h b/drivers/net/ethernet/netronome/nfp/nic/main.h
-index 7ba04451b8ba..094374df42b8 100644
---- a/drivers/net/ethernet/netronome/nfp/nic/main.h
-+++ b/drivers/net/ethernet/netronome/nfp/nic/main.h
-@@ -33,7 +33,7 @@ struct nfp_dcb {
- int nfp_nic_dcb_init(struct nfp_net *nn);
- void nfp_nic_dcb_clean(struct nfp_net *nn);
- #else
--static inline int nfp_nic_dcb_init(struct nfp_net *nn) {return 0; }
-+static inline int nfp_nic_dcb_init(struct nfp_net *nn) { return 0; }
- static inline void nfp_nic_dcb_clean(struct nfp_net *nn) {}
- #endif
- 
 -- 
-2.30.2
-
+Andrei Gherzan
