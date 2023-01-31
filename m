@@ -2,138 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B0E0682210
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 03:32:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D31C768221F
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 03:34:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229695AbjAaCc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 21:32:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49282 "EHLO
+        id S230163AbjAaCeO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 21:34:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229786AbjAaCcU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 21:32:20 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 926E921958
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 18:31:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675132291;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=utT+RE/MkgWVBG/iNzPiYM+H0kp8FILH2HeviGKceUM=;
-        b=V0M3wGpdBBsw/qnBVJYGvqUuY6TgQf50fzKDFiI6thRAWkSc0D91LO7BU4MOA8viUUO0B8
-        BvdbvTyp47iIjrnKhfl27aaJNqLC2BQmEv7Q0EGEVF4u2Rix3+GlQJ0o4iusJM3sWlfqX4
-        FzyQ3m03bWC7v3ZqVshmtQvPuYD/st4=
-Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com
- [209.85.160.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-308-A1XjOxhmNjmlOGhBP5vyQw-1; Mon, 30 Jan 2023 21:31:29 -0500
-X-MC-Unique: A1XjOxhmNjmlOGhBP5vyQw-1
-Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-15fddea3ee9so5023146fac.21
-        for <netdev@vger.kernel.org>; Mon, 30 Jan 2023 18:31:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=utT+RE/MkgWVBG/iNzPiYM+H0kp8FILH2HeviGKceUM=;
-        b=nAtMINm1Qem6nji677/wx6onv2F8UpDMvXZ1ADzFtf5N9S7Yn5+IsdRyFh2R/TKk38
-         dvHKedw98WAI1l2law4Z42IS0i9a1GjsR2OgutzJr/x01J17A+Mu7XanBoxZ5/jPkA3b
-         XSip3PWGbvTTJnDHsJZPoawP1SEUkZnEl2Uy1UHc+lKewovF9aoad4tN3k4wm4BBbCbo
-         UQbt3fw2ayoeWSwMr08fblZHfnUyYReTCZPcv9Ki73ifEwwA/dKEYUFln39N8Q63sZWB
-         KPiYDpYssYPXcM7VT7wYt1Lr0CLGR0Cvi56rc/cpyVeKuI8gjzjwzMr9FVgdviTh+so5
-         l31g==
-X-Gm-Message-State: AFqh2kpXFfUMc7d3cxwTX9TR2jHlOBzntnnD/+cBdH3YS1bkvhAJyEs7
-        xLTWUf2/Utr5BQq2rAaMBCEVfRRn/wmFxBVM04cegMg8btgXZ4KUtGnphfrC87lvBB+1DUWXOml
-        YcBkSse6+E5j5YDks4bpK4gNVLieiWcD1
-X-Received: by 2002:aca:3f84:0:b0:36e:f5f8:cce1 with SMTP id m126-20020aca3f84000000b0036ef5f8cce1mr1057775oia.35.1675132289133;
-        Mon, 30 Jan 2023 18:31:29 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXssco6mBUOhDTHWFT4/t2hB47krC6OsHE12Ww1f+hysvA2CpNEADdT3xvxh0DzmLnnFuHE/ftXAK22WOSTVfWk=
-X-Received: by 2002:aca:3f84:0:b0:36e:f5f8:cce1 with SMTP id
- m126-20020aca3f84000000b0036ef5f8cce1mr1057763oia.35.1675132288910; Mon, 30
- Jan 2023 18:31:28 -0800 (PST)
+        with ESMTP id S229991AbjAaCeG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 21:34:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36DA5360BC;
+        Mon, 30 Jan 2023 18:34:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9879FB818C2;
+        Tue, 31 Jan 2023 02:34:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFA1BC4339B;
+        Tue, 31 Jan 2023 02:33:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675132439;
+        bh=AZHHuDBuAI5h6ELge/xoV1CEJ2rX/3xkkO9zAmCdBJQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=tfqdz0LqvhH3Y3Pnko+VBlQejKm+jU/jgc9/55ATX0B736pou6RaoK8pGIPLftTyH
+         QzsQE7UHPaJXRjkfW6xdZMsjrMrJCht1SJcuVzZc3jc3J8wNqH/CjTatun2hJqSU+a
+         d9kkxDno170NOYW9PmZ/iIWjelCtfjemCE+L/sKIAPyBmn7fEKha3Utuoupjq5v38i
+         oRlldhTOmL/8skqYfz2bIXkLNd8bgSRHHuUr/ytOaj8HlI5oJYXGzBneccWFcOKj2D
+         9CCJ1f/z9WXYVSwZ+vUaImu1yyuK2FN2ff0TwJu+ChNtFb8T/8/TuFye1/iv1sEiCF
+         yMZCsRehW+S6w==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        sdf@google.com, linux-doc@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v2 00/14] tools: ynl: more docs and basic ethtool support
+Date:   Mon, 30 Jan 2023 18:33:40 -0800
+Message-Id: <20230131023354.1732677-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-References: <20230130092157.1759539-1-hch@lst.de> <20230130092157.1759539-23-hch@lst.de>
-In-Reply-To: <20230130092157.1759539-23-hch@lst.de>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 31 Jan 2023 10:31:18 +0800
-Message-ID: <CACGkMEsPvy5jVWA7AHJkyRKa8-xr9oi4DUAzBcU0pQ_n4rqCFA@mail.gmail.com>
-Subject: Re: [PATCH 22/23] vring: use bvec_set_page to initialize a bvec
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Jens Axboe <axboe@kernel.dk>, Ilya Dryomov <idryomov@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Minchan Kim <minchan@kernel.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Keith Busch <kbusch@kernel.org>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        Xiubo Li <xiubli@redhat.com>, Steve French <sfrench@samba.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>,
-        Mike Marshall <hubcap@omnibond.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        linux-block@vger.kernel.org, ceph-devel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-nvme@lists.infradead.org, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        linux-fsdevel@vger.kernel.org, linux-nfs@vger.kernel.org,
-        devel@lists.orangefs.org, io-uring@vger.kernel.org,
-        linux-mm@kvack.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 5:23 PM Christoph Hellwig <hch@lst.de> wrote:
->
-> Use the bvec_set_page helper to initialize a bvec.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+I got discouraged from supporting ethtool in specs, because
+generating the user space C code seems a little tricky.
+The messages are ID'ed in a "directional" way (to and from
+kernel are separate ID "spaces"). There is value, however,
+in having the spec and being able to for example use it
+in Python.
 
-A typo in the subject, should be "vringh".
+After paying off some technical debt - add a partial
+ethtool spec. Partial because the header for ethtool is almost
+a 1000 LoC, so converting in one sitting is tough. But adding
+new commands should be trivial now.
 
-Other than this
+Last but not least I add more docs, I realized that I've been
+sending a similar "instructions" email to people working on
+new families. It's now intro-specs.rst.
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+v2:
+ - spelling fixes (patch 11)
+ - always use python3 (new patch 14)
 
-Thanks
+Jakub Kicinski (14):
+  tools: ynl-gen: prevent do / dump reordering
+  tools: ynl: move the cli and netlink code around
+  tools: ynl: add an object hierarchy to represent parsed spec
+  tools: ynl: use the common YAML loading and validation code
+  tools: ynl: add support for types needed by ethtool
+  tools: ynl: support directional enum-model in CLI
+  tools: ynl: support multi-attr
+  tools: ynl: support pretty printing bad attribute names
+  tools: ynl: use operation names from spec on the CLI
+  tools: ynl: load jsonschema on demand
+  netlink: specs: finish up operation enum-models
+  netlink: specs: add partial specification for ethtool
+  docs: netlink: add a starting guide for working with specs
+  tools: net: use python3 explicitly
 
-> ---
->  drivers/vhost/vringh.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-> index 33eb941fcf1546..a1e27da544814a 100644
-> --- a/drivers/vhost/vringh.c
-> +++ b/drivers/vhost/vringh.c
-> @@ -1126,9 +1126,8 @@ static int iotlb_translate(const struct vringh *vrh,
->                 size = map->size - addr + map->start;
->                 pa = map->addr + addr - map->start;
->                 pfn = pa >> PAGE_SHIFT;
-> -               iov[ret].bv_page = pfn_to_page(pfn);
-> -               iov[ret].bv_len = min(len - s, size);
-> -               iov[ret].bv_offset = pa & (PAGE_SIZE - 1);
-> +               bvec_set_page(&iov[ret], pfn_to_page(pfn), min(len - s, size),
-> +                             pa & (PAGE_SIZE - 1));
->                 s += size;
->                 addr += size;
->                 ++ret;
-> --
-> 2.39.0
->
+ Documentation/netlink/genetlink-c.yaml        |   4 +-
+ Documentation/netlink/genetlink-legacy.yaml   |  11 +-
+ Documentation/netlink/genetlink.yaml          |   4 +-
+ Documentation/netlink/specs/ethtool.yaml      | 392 ++++++++++++++++++
+ .../netlink/genetlink-legacy.rst              |  82 ++++
+ Documentation/userspace-api/netlink/index.rst |   1 +
+ .../userspace-api/netlink/intro-specs.rst     |  80 ++++
+ Documentation/userspace-api/netlink/specs.rst |   3 +
+ tools/net/ynl/{samples => }/cli.py            |  17 +-
+ tools/net/ynl/lib/__init__.py                 |   7 +
+ tools/net/ynl/lib/nlspec.py                   | 310 ++++++++++++++
+ tools/net/ynl/{samples => lib}/ynl.py         | 192 +++++----
+ tools/net/ynl/ynl-gen-c.py                    | 262 ++++++------
+ 13 files changed, 1109 insertions(+), 256 deletions(-)
+ create mode 100644 Documentation/netlink/specs/ethtool.yaml
+ create mode 100644 Documentation/userspace-api/netlink/intro-specs.rst
+ rename tools/net/ynl/{samples => }/cli.py (76%)
+ create mode 100644 tools/net/ynl/lib/__init__.py
+ create mode 100644 tools/net/ynl/lib/nlspec.py
+ rename tools/net/ynl/{samples => lib}/ynl.py (79%)
+
+-- 
+2.39.1
 
