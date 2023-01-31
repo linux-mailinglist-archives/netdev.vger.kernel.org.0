@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE8DE6837AC
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 21:45:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52E306837AE
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 21:45:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231282AbjAaUpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 15:45:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48456 "EHLO
+        id S231454AbjAaUpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 15:45:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbjAaUpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 15:45:13 -0500
+        with ESMTP id S229565AbjAaUpP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 15:45:15 -0500
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD8549024;
-        Tue, 31 Jan 2023 12:45:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE04B34C2E;
+        Tue, 31 Jan 2023 12:45:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675197912; x=1706733912;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=jmq7RRGlshhZoJmSbplAEOtDxmbFHh5q1JoifDLUQ20=;
-  b=WM7dSmFaI38l6CIfjWcpqwUV9Njd+PtV6V8B9CrpT7rnyi3SOajPPTm7
-   krrUE3o3+sI5DLHDqfTk7yqZ/3bpPZlZRWX+2uNHsWQOiX+1tAu6QVhzI
-   AwCYE86tR20eQNdKXXTiN796obUITilc6n/08uOVrNxr3lPGxmti5FJu9
-   7syZUlvWlxpQ04VY4vNEIzAwN+2cgEdaSPQy8OetIqQl1+KGNQ+OwCXZ2
-   iU8WJAwBX7syZRfz9YmK+GxEMfA8K1gnRFh3byWRNAD69vDSrpjYQ9Jqf
-   mDD2zuZaF4/91EuuFdnd1Y3BoB5c10WBMEj4ElLF0gmLZXGT24miTbTya
+  t=1675197914; x=1706733914;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=uKF05JlRsuC1cLi3twPxky7tQz/KMSJRxWxjpos2CTM=;
+  b=aUJnIJRb8LQ81K+XKtxJQiIZrTRSz6KjPbIxqcb545wK1hCtZLAnzrdv
+   Z+Xota9UuAHXfBk6IpMDOP/5ZVr+2KWPkEXIo68OjVqRpzgXCKOh+zCh8
+   6PAvc3fMEXN20RU8YlVWL8Cqsknk7nRBgAKx6ybrGyrljnZ+EcFaxEVJf
+   dWa6K4t1fTSm09JxHeDVITb7x8PkwAnkOVVCzjTOaeYwMi9FTM2/qcgEd
+   S33JyDi533j0R3jwe3f1v/q4S33ZCeWlVfOywKf3MG6neeYefNPP9g4lA
+   0aW4NJEffjjUG9qEgmslQuehTE0OWzdjk0tbL3vObc6lmUsXQSFIIzPYN
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="414167066"
+X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="414167074"
 X-IronPort-AV: E=Sophos;i="5.97,261,1669104000"; 
-   d="scan'208";a="414167066"
+   d="scan'208";a="414167074"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2023 12:45:12 -0800
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2023 12:45:14 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="788595218"
+X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="788595222"
 X-IronPort-AV: E=Sophos;i="5.97,261,1669104000"; 
-   d="scan'208";a="788595218"
+   d="scan'208";a="788595222"
 Received: from boxer.igk.intel.com ([10.102.20.173])
-  by orsmga004.jf.intel.com with ESMTP; 31 Jan 2023 12:45:09 -0800
+  by orsmga004.jf.intel.com with ESMTP; 31 Jan 2023 12:45:12 -0800
 From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 To:     intel-wired-lan@lists.osuosl.org
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         anthony.l.nguyen@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, alexandr.lobakin@intel.com,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH bpf-next 00/13] ice: add XDP mbuf support
-Date:   Tue, 31 Jan 2023 21:44:53 +0100
-Message-Id: <20230131204506.219292-1-maciej.fijalkowski@intel.com>
+Subject: [PATCH bpf-next 01/13] ice: prepare legacy-rx for upcoming XDP multi-buffer support
+Date:   Tue, 31 Jan 2023 21:44:54 +0100
+Message-Id: <20230131204506.219292-2-maciej.fijalkowski@intel.com>
 X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20230131204506.219292-1-maciej.fijalkowski@intel.com>
+References: <20230131204506.219292-1-maciej.fijalkowski@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -59,77 +61,178 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi there,
+Rx path is going to be modified in a way that fragmented frame will be
+gathered within xdp_buff in the first place. This approach implies that
+underlying buffer has to provide tailroom for skb_shared_info. This is
+currently the case when ring uses build_skb but not when legacy-rx knob
+is turned on. This case configures 2k Rx buffers and has no way to
+provide either headroom or tailroom - FWIW it currently has
+XDP_PACKET_HEADROOM which is broken and in here it is removed. 2k Rx
+buffers were used so driver in this setting was able to support 9k MTU
+as it can chain up to 5 Rx buffers. With offset configuring HW writing
+2k of a data was passing the half of the page which broke the assumption
+of our internal page recycling tricks.
 
-although this work started as an effort to add multi-buffer XDP support
-to ice driver, as usual it turned out that some other side stuff needed
-to be addressed, so let me give you an overview.
+Now if above got fixed and legacy-rx path would be left as is, when
+referring to skb_shared_info via xdp_get_shared_info_from_buff(),
+packet's content would be corrupted again. Hence size of Rx buffer needs
+to be lowered and therefore supported MTU. This operation will allow us
+to keep the unified data path and with 8k MTU users (if any of
+legacy-rx) would still be good to go. However, tendency is to drop the
+support for this code path at some point.
 
-First patch adjusts legacy-rx in a way that it will be possible to refer
-to skb_shared_info being at the end of the buffer when gathering up
-frame fragments within xdp_buff.
+Add ICE_RXBUF_1664 as vsi::rx_buf_len and ICE_MAX_FRAME_LEGACY_RX (8320)
+as vsi::max_frame for legacy-rx. For bigger page sizes configure 3k Rx
+buffers, not 2k.
 
-Then, patches 2-9 prepare ice driver in a way that actual multi-buffer
-patches will be easier to swallow.
+Since headroom support is removed, disable data_meta support on legacy-rx.
+When preparing XDP buff, rely on ice_rx_ring::rx_offset setting when
+deciding whether to support data_meta or not.
 
-10 and 11 are the meat. What is worth mentioning is that this set
-actually *fixes* things as patch 11 removes the logic based on
-next_dd/rs and we previously stepped away from this for ice_xmit_zc().
-Currently, AF_XDP ZC XDP_TX workload is off as there are two cleaning
-sides that can be triggered and two of them work on different internal
-logic. This set unifies that and allows us to improve the performance by
-2x with a trick on the last (13) patch.
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_base.c |  3 ---
+ drivers/net/ethernet/intel/ice/ice_lib.c  |  8 ++------
+ drivers/net/ethernet/intel/ice/ice_main.c | 10 ++++++++--
+ drivers/net/ethernet/intel/ice/ice_txrx.c | 17 +++++------------
+ drivers/net/ethernet/intel/ice/ice_txrx.h |  2 ++
+ 5 files changed, 17 insertions(+), 23 deletions(-)
 
-12th is a simple cleanup of no longer fields from Tx ring.
-
-I might be wrong but I have not seen anyone reporting performance impact
-among patches that add XDP multi-buffer support to a particular driver.
-Numbers below were gathered via xdp_rxq_info and xdp_redirect_map on
-1500 MTU:
-
-XDP_DROP      +1%
-XDP_PASS      -1,2%
-XDP_TX        -0,5%
-XDP_REDIRECT  -3,3%
-
-Cherry on top, which is not directly related to mbuf support (last
-patch):
-XDP_TX ZC +126%
-
-Target the we agreed on was to not degrade performance for any action by
-anything that would be over 5%, so our goal was met. Basically this set
-keeps the performance where it was. Redirect is slower due to more
-frequent tail bumps.
-
-Thanks!
-
-
-Maciej Fijalkowski (13):
-  ice: prepare legacy-rx for upcoming XDP multi-buffer support
-  ice: add xdp_buff to ice_rx_ring struct
-  ice: store page count inside ice_rx_buf
-  ice: pull out next_to_clean bump out of ice_put_rx_buf()
-  ice: inline eop check
-  ice: centrallize Rx buffer recycling
-  ice: use ice_max_xdp_frame_size() in ice_xdp_setup_prog()
-  ice: do not call ice_finalize_xdp_rx() unnecessarily
-  ice: use xdp->frame_sz instead of recalculating truesize
-  ice: add support for XDP multi-buffer on Rx side
-  ice: add support for XDP multi-buffer on Tx side
-  ice: remove next_{dd,rs} fields from ice_tx_ring
-  ice: xsk: do not convert to buff to frame for XDP_TX
-
- drivers/net/ethernet/intel/ice/ice_base.c     |  21 +-
- drivers/net/ethernet/intel/ice/ice_ethtool.c  |   4 +-
- drivers/net/ethernet/intel/ice/ice_lib.c      |   8 +-
- drivers/net/ethernet/intel/ice/ice_main.c     |  47 +-
- drivers/net/ethernet/intel/ice/ice_txrx.c     | 408 ++++++++++--------
- drivers/net/ethernet/intel/ice/ice_txrx.h     |  54 ++-
- drivers/net/ethernet/intel/ice/ice_txrx_lib.c | 236 ++++++----
- drivers/net/ethernet/intel/ice/ice_txrx_lib.h |  75 +++-
- drivers/net/ethernet/intel/ice/ice_xsk.c      | 192 +++++----
- 9 files changed, 629 insertions(+), 416 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
+index 554095b25f44..e36abcfeb958 100644
+--- a/drivers/net/ethernet/intel/ice/ice_base.c
++++ b/drivers/net/ethernet/intel/ice/ice_base.c
+@@ -355,9 +355,6 @@ static unsigned int ice_rx_offset(struct ice_rx_ring *rx_ring)
+ {
+ 	if (ice_ring_uses_build_skb(rx_ring))
+ 		return ICE_SKB_PAD;
+-	else if (ice_is_xdp_ena_vsi(rx_ring->vsi))
+-		return XDP_PACKET_HEADROOM;
+-
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index 94aa834cd9a6..c9ec219d40a6 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -1992,8 +1992,8 @@ void ice_update_eth_stats(struct ice_vsi *vsi)
+ void ice_vsi_cfg_frame_size(struct ice_vsi *vsi)
+ {
+ 	if (!vsi->netdev || test_bit(ICE_FLAG_LEGACY_RX, vsi->back->flags)) {
+-		vsi->max_frame = ICE_AQ_SET_MAC_FRAME_SIZE_MAX;
+-		vsi->rx_buf_len = ICE_RXBUF_2048;
++		vsi->max_frame = ICE_MAX_FRAME_LEGACY_RX;
++		vsi->rx_buf_len = ICE_RXBUF_1664;
+ #if (PAGE_SIZE < 8192)
+ 	} else if (!ICE_2K_TOO_SMALL_WITH_PADDING &&
+ 		   (vsi->netdev->mtu <= ETH_DATA_LEN)) {
+@@ -2002,11 +2002,7 @@ void ice_vsi_cfg_frame_size(struct ice_vsi *vsi)
+ #endif
+ 	} else {
+ 		vsi->max_frame = ICE_AQ_SET_MAC_FRAME_SIZE_MAX;
+-#if (PAGE_SIZE < 8192)
+ 		vsi->rx_buf_len = ICE_RXBUF_3072;
+-#else
+-		vsi->rx_buf_len = ICE_RXBUF_2048;
+-#endif
+ 	}
+ }
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index a9a7f8b52140..88b4a017990d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -7327,8 +7327,8 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+  */
+ static int ice_max_xdp_frame_size(struct ice_vsi *vsi)
+ {
+-	if (PAGE_SIZE >= 8192 || test_bit(ICE_FLAG_LEGACY_RX, vsi->back->flags))
+-		return ICE_RXBUF_2048 - XDP_PACKET_HEADROOM;
++	if (test_bit(ICE_FLAG_LEGACY_RX, vsi->back->flags))
++		return ICE_RXBUF_1664;
+ 	else
+ 		return ICE_RXBUF_3072;
+ }
+@@ -7361,6 +7361,12 @@ static int ice_change_mtu(struct net_device *netdev, int new_mtu)
+ 				   frame_size - ICE_ETH_PKT_HDR_PAD);
+ 			return -EINVAL;
+ 		}
++	} else if (test_bit(ICE_FLAG_LEGACY_RX, pf->flags)) {
++		if (new_mtu + ICE_ETH_PKT_HDR_PAD > ICE_MAX_FRAME_LEGACY_RX) {
++			netdev_err(netdev, "Too big MTU for legacy-rx; Max is %d\n",
++				   ICE_MAX_FRAME_LEGACY_RX - ICE_ETH_PKT_HDR_PAD);
++			return -EINVAL;
++		}
+ 	}
+ 
+ 	/* if a reset is in progress, wait for some time for it to complete */
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
+index 086f0b3ab68d..d0a6534122e0 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.c
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
+@@ -984,17 +984,15 @@ static struct sk_buff *
+ ice_construct_skb(struct ice_rx_ring *rx_ring, struct ice_rx_buf *rx_buf,
+ 		  struct xdp_buff *xdp)
+ {
+-	unsigned int metasize = xdp->data - xdp->data_meta;
+ 	unsigned int size = xdp->data_end - xdp->data;
+ 	unsigned int headlen;
+ 	struct sk_buff *skb;
+ 
+ 	/* prefetch first cache line of first page */
+-	net_prefetch(xdp->data_meta);
++	net_prefetch(xdp->data);
+ 
+ 	/* allocate a skb to store the frags */
+-	skb = __napi_alloc_skb(&rx_ring->q_vector->napi,
+-			       ICE_RX_HDR_SIZE + metasize,
++	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, ICE_RX_HDR_SIZE,
+ 			       GFP_ATOMIC | __GFP_NOWARN);
+ 	if (unlikely(!skb))
+ 		return NULL;
+@@ -1006,13 +1004,8 @@ ice_construct_skb(struct ice_rx_ring *rx_ring, struct ice_rx_buf *rx_buf,
+ 		headlen = eth_get_headlen(skb->dev, xdp->data, ICE_RX_HDR_SIZE);
+ 
+ 	/* align pull length to size of long to optimize memcpy performance */
+-	memcpy(__skb_put(skb, headlen + metasize), xdp->data_meta,
+-	       ALIGN(headlen + metasize, sizeof(long)));
+-
+-	if (metasize) {
+-		skb_metadata_set(skb, metasize);
+-		__skb_pull(skb, metasize);
+-	}
++	memcpy(__skb_put(skb, headlen), xdp->data, ALIGN(headlen,
++							 sizeof(long)));
+ 
+ 	/* if we exhaust the linear part then add what is left as a frag */
+ 	size -= headlen;
+@@ -1187,7 +1180,7 @@ int ice_clean_rx_irq(struct ice_rx_ring *rx_ring, int budget)
+ 
+ 		hard_start = page_address(rx_buf->page) + rx_buf->page_offset -
+ 			     offset;
+-		xdp_prepare_buff(&xdp, hard_start, offset, size, true);
++		xdp_prepare_buff(&xdp, hard_start, offset, size, !!offset);
+ #if (PAGE_SIZE > 4096)
+ 		/* At larger PAGE_SIZE, frame_sz depend on len size */
+ 		xdp.frame_sz = ice_rx_frame_truesize(rx_ring, size);
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
+index 4fd0e5d0a313..166713f8abbd 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.h
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
+@@ -9,10 +9,12 @@
+ #define ICE_DFLT_IRQ_WORK	256
+ #define ICE_RXBUF_3072		3072
+ #define ICE_RXBUF_2048		2048
++#define ICE_RXBUF_1664		1664
+ #define ICE_RXBUF_1536		1536
+ #define ICE_MAX_CHAINED_RX_BUFS	5
+ #define ICE_MAX_BUF_TXD		8
+ #define ICE_MIN_TX_LEN		17
++#define ICE_MAX_FRAME_LEGACY_RX 8320
+ 
+ /* The size limit for a transmit buffer in a descriptor is (16K - 1).
+  * In order to align with the read requests we will align the value to
 -- 
 2.34.1
 
