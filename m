@@ -2,124 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C03E682D30
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 14:01:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90E49682D44
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 14:05:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231563AbjAaNBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 08:01:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35910 "EHLO
+        id S231429AbjAaNFx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 08:05:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229624AbjAaNBq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 08:01:46 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81AEC4C0DD
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 05:01:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675170062;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5LAlV4rwXGaZAkBT5gd6JtG7tn12Ct026ebSvrWPbW4=;
-        b=WqdS2E/up5LGb/B3E8OSmonI/DzYqEURR00wYz24dKM2nC76rldnyP/yFWazwippx9WNLO
-        pyEa0iQ/JU0V3VjNF5pNwgfSwXtzv3yrGNH59/l9KX4a4TCx8t/f5hEJ3Q+17Jqdykaunz
-        jFFjdqp47UNnGtRwnUeG0prbB1w1o+A=
-Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com
- [209.85.160.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-83-woKstKgLM9GmShRRSaGWkA-1; Tue, 31 Jan 2023 08:01:00 -0500
-X-MC-Unique: woKstKgLM9GmShRRSaGWkA-1
-Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-16385ab40f2so3701423fac.20
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 05:00:49 -0800 (PST)
+        with ESMTP id S230360AbjAaNFv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 08:05:51 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB366113DB
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 05:05:37 -0800 (PST)
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com [209.85.128.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 9DF0641AC7
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 13:05:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1675170335;
+        bh=k4C10jaPX9SATgjkcJPgwiqnKoKJu0rj0Lx0+VxMFbA=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=OTcC8sDKIc1YQANEGakG5cBF5JY4WsfSv9i8IUGxHIy0lfVk0SlyeZeZpzAVGPs0X
+         HeHJ/5caZyacGyHKJskvVonsGh+1a5K3VUFVrMUpgrGVtcuc55QO7o8G7NoqnI5QO+
+         Ou0eTl9fc00OZmZRJp+M3Pe47P0pAqS0SKBYnFnpeR4vDYlkY5PLN1OEH8wlYICK0n
+         9YkeAjQ7nSIwQ3e21yhk/xmM4fJVOtdiB+2rAlBdksYRXd6c1XcneNEt1+Lxb5KvAP
+         XBIzY8ws18NFS76wSE2/6+yeTUZuRJ9ldPlPpfr/ZQkuovdWKtWNigcD0Il/zSDMza
+         TnKrgnDQV0s1g==
+Received: by mail-wm1-f69.google.com with SMTP id h18-20020a05600c351200b003dc25fc1849so8628805wmq.6
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 05:05:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=5LAlV4rwXGaZAkBT5gd6JtG7tn12Ct026ebSvrWPbW4=;
-        b=bEjh5R2phSL8jkciQVtyrV2RCjAt+iBCQsvwMZXzdNLYYKYEGZg2JedUmwXWQRq+cJ
-         0uQIrzxUVboY8oLUGOMelIZKCSa5dQ7rsX6ZubZK16qr1uaGqPzxFybLjWNZw/h4JSO4
-         nMVqXd6dbATrN7qGFha/pBx2jX38csH4lINkGaNDh8yCI4oK95i5U/bjlDD1sa0s+3sQ
-         DIujpZE7SqO5Dsm5wB0qW2Fm7Q/ja3LL2aTZexwjWNHmEMiC0spnd6aUIPLgMGtP825o
-         hVHvzJjKdtkG3jibVl1ulkt5LD12JryhRNo4Fou1wVZOoSixauNiKZK7EuA89inoaCcC
-         iUEw==
-X-Gm-Message-State: AO0yUKVkYhnSKkBBEefXAtNvdSCoeKkEaK/dGD01PHO56W5DrzIjVo5Z
-        055C4fqABgkwTn8+tms8bbLOdHo5sKWuTE/M7hvIBOAcecd+2MuI8MSWcsOhxffDYAyGbjsaPdJ
-        N9e/HA4GQTuyq84St
-X-Received: by 2002:a05:6870:ebc3:b0:163:758d:a6b7 with SMTP id cr3-20020a056870ebc300b00163758da6b7mr2880301oab.1.1675170048988;
-        Tue, 31 Jan 2023 05:00:48 -0800 (PST)
-X-Google-Smtp-Source: AK7set/3EcOyUfREamMpigitPUuOxl0q6+e2Sf3auXXnXQriycKTacCv8kCcq1zOOtoetgGsmXZm4Q==
-X-Received: by 2002:a05:6870:ebc3:b0:163:758d:a6b7 with SMTP id cr3-20020a056870ebc300b00163758da6b7mr2880278oab.1.1675170048723;
-        Tue, 31 Jan 2023 05:00:48 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
-        by smtp.gmail.com with ESMTPSA id dy31-20020a05620a60df00b0070531c5d655sm9925169qkb.90.2023.01.31.05.00.45
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=k4C10jaPX9SATgjkcJPgwiqnKoKJu0rj0Lx0+VxMFbA=;
+        b=hoDmGnkG0xjTE2CmNNE/k9/oC2vBUWtql+r2Oc0AJlSCtU+3OiX8QguCckUxbXPRsF
+         bPV9BcLfai378uc0BKwfBHxpHP3FDElcrRtGPSnmtfGKsfhiwvHDnOA5IWvPw9ZLrHiR
+         oevc3bknD8N5HDviPm6ZlaU165GabyXYD52hZntxtTv4nceIh0I9mi5akE/LFRSJO8z/
+         Ja33n6SUcJStfs74TibybZ9U62j8aBsQTbj5a3RlsWUiuu9Wsf7eiFtF7S5W0qhOaIj/
+         u7ZaE/YUBJpv1Qqr186lGu4VHmAcfSWbtOdsK6eRMhgugq5FjcWE0qpHlVM3bRdGBnVk
+         S+kQ==
+X-Gm-Message-State: AO0yUKW4Y2klVv3espBvGYkrQBjxCXwWVBiIpELnTS3o/PKifBRkik+7
+        RQ7iEeqjiwVopiQQG/4b3m232T1ASc5rAZgntiptGGo0pL9HK7TxftlqSci6jbhRN9JculwQMnm
+        OjCUatC+IOfHK63GG7wGg4QulijKN7z7qqg==
+X-Received: by 2002:adf:c68a:0:b0:2bf:f2f2:7d64 with SMTP id j10-20020adfc68a000000b002bff2f27d64mr5125342wrg.33.1675170335335;
+        Tue, 31 Jan 2023 05:05:35 -0800 (PST)
+X-Google-Smtp-Source: AK7set/JKOWFouqXY4USuDFfFzUbfIHyMBzspi6+XkMA9ckLWmUhedeQ3yyjl+8b9xB/uwlPFXvVZA==
+X-Received: by 2002:adf:c68a:0:b0:2bf:f2f2:7d64 with SMTP id j10-20020adfc68a000000b002bff2f27d64mr5125324wrg.33.1675170335068;
+        Tue, 31 Jan 2023 05:05:35 -0800 (PST)
+Received: from localhost.localdomain ([2001:67c:1560:8007::aac:c4dd])
+        by smtp.gmail.com with ESMTPSA id f6-20020a5d50c6000000b002bfc24e1c55sm14741436wrt.78.2023.01.31.05.05.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Jan 2023 05:00:48 -0800 (PST)
-Message-ID: <f753ad2b0c19e085867698f7bbbe37f6d172772e.camel@redhat.com>
-Subject: Re: [PATCH net] net: ethernet: mtk_eth_soc: disable hardware DSA
- untagging for second MAC
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     arinc9.unal@gmail.com, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        Tue, 31 Jan 2023 05:05:34 -0800 (PST)
+From:   Andrei Gherzan <andrei.gherzan@canonical.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     =?UTF-8?Q?Ar=C4=B1n=C3=A7_=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        erkin.bozoglu@xeront.com
-Date:   Tue, 31 Jan 2023 14:00:43 +0100
-In-Reply-To: <20230128094232.2451947-1-arinc.unal@arinc9.com>
-References: <20230128094232.2451947-1-arinc.unal@arinc9.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
+Cc:     Andrei Gherzan <andrei.gherzan@canonical.com>,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/4] selftests: net: udpgso_bench_rx: Fix 'used uninitialized' compiler warning
+Date:   Tue, 31 Jan 2023 13:04:09 +0000
+Message-Id: <20230131130412.432549-1-andrei.gherzan@canonical.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2023-01-28 at 12:42 +0300, arinc9.unal@gmail.com wrote:
-> From: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
->=20
-> According to my tests on MT7621AT and MT7623NI SoCs, hardware DSA untaggi=
-ng
-> won't work on the second MAC. Therefore, disable this feature when the
-> second MAC of the MT7621 and MT7623 SoCs is being used.
->=20
-> Fixes: 2d7605a72906 ("net: ethernet: mtk_eth_soc: enable hardware DSA unt=
-agging")
-> Link: https://lore.kernel.org/netdev/6249fc14-b38a-c770-36b4-5af6d41c21d3=
-@arinc9.com/
-> Tested-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
-> Signed-off-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
-> ---
->=20
-> Final send which should end up on the list. I tested this with Felix's
-> upcoming patch series. This fix is still needed on top of it.
->=20
-> https://lore.kernel.org/netdev/20221230073145.53386-1-nbd@nbd.name/
->=20
-> The MTK_GMAC1_TRGMII capability is only on the MT7621 and MT7623 SoCs whi=
-ch
-> I see this problem on. I'm new to coding so I took an educated guess from
-> the use of MTK_NETSYS_V2 to disable this feature altogether for MT7986 So=
-C.
+This change fixes the following compiler warning:
 
-Keeping this one a little more on pw. It would be great is someone else
-could validate the above on the relevant H/W.
+/usr/include/x86_64-linux-gnu/bits/error.h:40:5: warning: ‘gso_size’ may
+be used uninitialized [-Wmaybe-uninitialized]
+   40 |     __error_noreturn (__status, __errnum, __format,
+   __va_arg_pack ());
+         |
+	 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	 udpgso_bench_rx.c: In function ‘main’:
+	 udpgso_bench_rx.c:253:23: note: ‘gso_size’ was declared here
+	   253 |         int ret, len, gso_size, budget = 256;
 
-Thanks,
+Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
+---
+ tools/testing/selftests/net/udpgso_bench_rx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Paolo
+diff --git a/tools/testing/selftests/net/udpgso_bench_rx.c b/tools/testing/selftests/net/udpgso_bench_rx.c
+index 6a193425c367..d0895bd1933f 100644
+--- a/tools/testing/selftests/net/udpgso_bench_rx.c
++++ b/tools/testing/selftests/net/udpgso_bench_rx.c
+@@ -250,7 +250,7 @@ static int recv_msg(int fd, char *buf, int len, int *gso_size)
+ static void do_flush_udp(int fd)
+ {
+ 	static char rbuf[ETH_MAX_MTU];
+-	int ret, len, gso_size, budget = 256;
++	int ret, len, gso_size = 0, budget = 256;
+ 
+ 	len = cfg_read_all ? sizeof(rbuf) : 0;
+ 	while (budget--) {
+-- 
+2.34.1
 
