@@ -2,56 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46294682DC3
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 14:24:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED087682DDD
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 14:28:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231737AbjAaNYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 08:24:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35458 "EHLO
+        id S231950AbjAaN17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 08:27:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231797AbjAaNYr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 08:24:47 -0500
+        with ESMTP id S231911AbjAaN16 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 08:27:58 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B158B234FE
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 05:24:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB5C883EE
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 05:27:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E72D614E1
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 13:24:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BA09C433EF;
-        Tue, 31 Jan 2023 13:24:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78BF861514
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 13:27:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DB37C433D2;
+        Tue, 31 Jan 2023 13:27:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675171468;
-        bh=QdchDZTgEgFyeOdCSF+aKe+G7SfkpJXMi/Kt0bfNSpI=;
+        s=k20201202; t=1675171675;
+        bh=2+Xxzrzfn8imaPoXS+6oux1nN+VvoW1s2v8bL3wc8wg=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZVWVZn8n9vsmd0pu98EkiYpcS2O9eUCpnyFER3i14mswQLfRFBhlfYib7okSSf/mH
-         8cfe7IURpJE7qpfQQxmbCEXq4hf/yg4lAxPqncA90f1Gpclt1ZbkUQ4PPDdHU8qzln
-         QB7+u3JQEq9hOpSKl4gDjLFuZ1ACC8OPxjLPy/KXPBekp/0rrvD2CaQv1dJKBk2o+I
-         Z9Of9/o5bS1xVffJgiCruSuChzxx7i3qCQmZjUe9XuNlgfrBd0Pibve7SS1T5AW2bw
-         vSG/BiSF8tDVcq+9XIXx+iSRraGhcQSpImXd+7Zr9xrSA1pgXpszBMkaKZYvqrmfP8
-         VhcLd3w+vyE9A==
-Date:   Tue, 31 Jan 2023 15:24:23 +0200
+        b=Y8naEP12QRK+AtiAzC526AAPYuFCl+fU6xxf8GnHx5X3LRDcCbrWk+uB5biesj5nG
+         JqKduyqwedlienL6WIEUojQrIp/0VvYZbWapkpqzvIv05du3voEeCJsYk7lPvwLz10
+         KaIvz8SS4XKQdYf3Nz7SxOMosFZEymK81XCn4oRjCPMXjyGw6uAufsIgp+dku8fwb7
+         odgCiLVuMtCLedvfXHAP+W0c9ys8W3eCvh18QmpnCa9+HyCqUROqjmcSZY6tJ7QGYz
+         7XzUCZkZfaseAJ5VUVbFlSVmJ0R6IcMnPnnZPHxetirAa/I7TDEozbZfcm32xCnYU/
+         KjK0N9+M1faCA==
+Date:   Tue, 31 Jan 2023 15:27:51 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     "wangjie (L)" <wangjie125@huawei.com>
-Cc:     Hao Lan <lanhao@huawei.com>, davem@davemloft.net, kuba@kernel.org,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        edumazet@google.com, pabeni@redhat.com, richardcochran@gmail.com,
-        shenjian15@huawei.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 2/2] net: hns3: add vf fault process in hns3 ras
-Message-ID: <Y9kWh59tootFniqK@unreal>
-References: <20230113020829.48451-1-lanhao@huawei.com>
- <20230113020829.48451-3-lanhao@huawei.com>
- <Y8D/dXTBxrLOwmgc@unreal>
- <a5a603bb-ae04-f274-5d68-f8d63a4bf13b@huawei.com>
- <Y8aEymyUf+WB8T8g@unreal>
- <3ce018d9-e005-f988-37ed-016c559973ec@huawei.com>
- <Y8rLguafAPjNGRpK@unreal>
- <06188aca-7080-2506-1155-a739d84a420f@huawei.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, Yanguo Li <yanguo.li@corigine.com>,
+        Dan Carpenter <error27@gmail.com>
+Subject: Re: [PATCH net] nfp: flower: avoid taking mutex in atomic context
+Message-ID: <Y9kXV1LvDfXjzA9R@unreal>
+References: <20230131080313.2076060-1-simon.horman@corigine.com>
+ <Y9j/Rvi9CSYX2qSk@unreal>
+ <Y9kGcnKUUO5HURZX@corigine.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <06188aca-7080-2506-1155-a739d84a420f@huawei.com>
+In-Reply-To: <Y9kGcnKUUO5HURZX@corigine.com>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,79 +57,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 08:04:14PM +0800, wangjie (L) wrote:
-> 
-> 
-> On 2023/1/21 1:12, Leon Romanovsky wrote:
-> > On Wed, Jan 18, 2023 at 08:34:03PM +0800, wangjie (L) wrote:
+On Tue, Jan 31, 2023 at 01:15:46PM +0100, Simon Horman wrote:
+> On Tue, Jan 31, 2023 at 01:45:10PM +0200, Leon Romanovsky wrote:
+> > On Tue, Jan 31, 2023 at 09:03:13AM +0100, Simon Horman wrote:
+> > > From: Yanguo Li <yanguo.li@corigine.com>
 > > > 
+> > > A mutex may sleep, which is not permitted in atomic context.
+> > > Avoid a case where this may arise by moving the to
+> > > nfp_flower_lag_get_info_from_netdev() in nfp_tun_write_neigh() spinlock.
 > > > 
-> > > On 2023/1/17 19:21, Leon Romanovsky wrote:
-> > > > On Tue, Jan 17, 2023 at 03:04:15PM +0800, wangjie (L) wrote:
-> > > > > 
-> > > > > 
-> > > > > On 2023/1/13 14:51, Leon Romanovsky wrote:
-> > > > > > On Fri, Jan 13, 2023 at 10:08:29AM +0800, Hao Lan wrote:
-> > > > > > > From: Jie Wang <wangjie125@huawei.com>
-> > > > > > > 
-> > > > > > > Currently hns3 driver supports vf fault detect feature. Several ras caused
-> > > > > > > by VF resources don't need to do PF function reset for recovery. The driver
-> > > > > > > only needs to reset the specified VF.
-> > > > > > > 
-> > > > > > > So this patch adds process in ras module. New process will get detailed
-> > > > > > > information about ras and do the most correct measures based on these
-> > > > > > > accurate information.
-> > > > > > > 
-> > > > > > > Signed-off-by: Jie Wang <wangjie125@huawei.com>
-> > > > > > > Signed-off-by: Hao Lan <lanhao@huawei.com>
-> > > > > > > ---
-> > > > > > >  drivers/net/ethernet/hisilicon/hns3/hnae3.h   |   1 +
-> > > > > > >  .../hns3/hns3_common/hclge_comm_cmd.h         |   1 +
-> > > > > > >  .../hisilicon/hns3/hns3pf/hclge_err.c         | 113 +++++++++++++++++-
-> > > > > > >  .../hisilicon/hns3/hns3pf/hclge_err.h         |   2 +
-> > > > > > >  .../hisilicon/hns3/hns3pf/hclge_main.c        |   3 +-
-> > > > > > >  .../hisilicon/hns3/hns3pf/hclge_main.h        |   1 +
-> > > > > > >  6 files changed, 115 insertions(+), 6 deletions(-)
-> > > > > > 
-> > > > > > Why is it good idea to reset VF from PF?
-> > > > > > What will happen with driver bound to this VF?
-> > > > > > Shouldn't PCI recovery handle it?
-> > > > > > 
-> > > > > > Thanks
-> > > > > > .
-> > > > > PF doesn't reset VF directly. These VF faults are detected by hardware,
-> > > > > and only reported to PF. PF get the VF id from firmware, then notify the VF
-> > > > > that it needs reset. VF will do reset after receive the request.
-> > > > 
-> > > > This description isn't aligned with the code. You are issuing
-> > > > hclge_func_reset_cmd() command which will reset VF, while notification
-> > > > are handled by hclge_func_reset_notify_vf().
-> > > > 
-> > > > It also doesn't make any sense to send notification event to VF through
-> > > > FW while the goal is to recover from stuck FW in that VF.
-> > > > 
-> > > Yes, I misunderstand the hclge_func_reset_notify_vf and
-> > > hclge_func_reset_cmd. It should use hclge_func_reset_notify_vf to inform
-> > > the VF for recovery. I will fix and retest it in V2.
+> > > Fixes: abc210952af7 ("nfp: flower: tunnel neigh support bond offload")
+> > > Reported-by: Dan Carpenter <error27@gmail.com>
+> > > Signed-off-by: Yanguo Li <yanguo.li@corigine.com>
+> > > Signed-off-by: Simon Horman <simon.horman@corigine.com>
+> > > ---
+> > >  drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c | 8 +++++++-
+> > >  1 file changed, 7 insertions(+), 1 deletion(-)
 > > > 
-> > > This patch is used to recover specific vf hardware errors, for example the
-> > > tx queue configuration exceptions. It make sense in these cases for the
-> > > firmware is still working properly and can do the recovery rightly.
+> > > diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+> > > index a8678d5612ee..060a77f2265d 100644
+> > > --- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+> > > +++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+> > > @@ -460,6 +460,7 @@ nfp_tun_write_neigh(struct net_device *netdev, struct nfp_app *app,
+> > >  			    sizeof(struct nfp_tun_neigh_v4);
+> > >  	unsigned long cookie = (unsigned long)neigh;
+> > >  	struct nfp_flower_priv *priv = app->priv;
+> > > +	struct nfp_tun_neigh_lag lag_info;
+> > >  	struct nfp_neigh_entry *nn_entry;
+> > >  	u32 port_id;
+> > >  	u8 mtype;
+> > > @@ -468,6 +469,11 @@ nfp_tun_write_neigh(struct net_device *netdev, struct nfp_app *app,
+> > >  	if (!port_id)
+> > >  		return;
+> > >  
+> > > +	if ((port_id & NFP_FL_LAG_OUT) == NFP_FL_LAG_OUT) {
+> > > +		memset(&lag_info, 0, sizeof(struct nfp_tun_neigh_lag));
 > > 
-> > If FW is operational and knows about failure, why can't FW do recovery
-> > internally to that VF without PF involvement?
-> I'm sorry to reply so late because I took a vacation. If firmware reset VF
-> hardware directly without notify the running VF driver, it will cause VF
-> driver works abnormal.
+> > This memset can be removed if you initialize lag_info to zero.
+> > struct nfp_tun_neigh_lag lag_info = {};
+> 
+> Happy to change if that is preferred.
+> Is it preferred?
 
-mlx5 health recovery code proves that it is possible to do.
-Even in your case, FW can notify VF without PF in the middle.
+I don't see why it can't be preferred.
 
 Thanks
-
-> 
-> Thanks
-> > 
-> > Thanks
-> > .
-> > 
