@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B25BE6827BD
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 09:55:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 150C4682790
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 09:53:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230104AbjAaIzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 03:55:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39902 "EHLO
+        id S229944AbjAaIxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 03:53:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231908AbjAaIyb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 03:54:31 -0500
+        with ESMTP id S231903AbjAaIwk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 03:52:40 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D72249949
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 00:49:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2293F4C6F0
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 00:48:35 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pMmHw-0003v4-Bl; Tue, 31 Jan 2023 09:46:48 +0100
+        id 1pMmHv-0003uM-LW; Tue, 31 Jan 2023 09:46:47 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pMmHv-001eMI-T5; Tue, 31 Jan 2023 09:46:46 +0100
+        id 1pMmHv-001eMF-MT; Tue, 31 Jan 2023 09:46:46 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pMmHr-002yZ2-0B; Tue, 31 Jan 2023 09:46:43 +0100
+        id 1pMmHr-002yZB-0y; Tue, 31 Jan 2023 09:46:43 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -42,9 +42,9 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
         Russell King <linux@armlinux.org.uk>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-clk@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v3 01/19] clk: imx: add clk-gpr-mux driver
-Date:   Tue, 31 Jan 2023 09:46:24 +0100
-Message-Id: <20230131084642.709385-2-o.rempel@pengutronix.de>
+Subject: [PATCH v3 02/19] clk: imx6q: add ethernet refclock mux support
+Date:   Tue, 31 Jan 2023 09:46:25 +0100
+Message-Id: <20230131084642.709385-3-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230131084642.709385-1-o.rempel@pengutronix.de>
 References: <20230131084642.709385-1-o.rempel@pengutronix.de>
@@ -63,178 +63,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Almost(?) every i.MX variant has clk mux for ethernet (rgmii/rmii) reference
-clock located in the GPR1 register. So far this clk is configured in
-different ways:
-- mach-imx6q is doing mux configuration based on ptp vs enet_ref clk
-  comparison.
-- mach-imx7d is setting mux to PAD for all boards
-- mach-imx6ul is setting mux to internal clock for all boards.
+Add ethernet refclock mux support and set it to internal clock by
+default. This configuration will not affect existing boards since
+machine code currently overwrites this default.
 
-Since we have imx7d and imx6ul board variants which do not work with
-configurations forced by kernel mach code, we need to implement this clk
-mux properly as part of the clk framework. Which is done by this patch.
+The machine code will be fixed in a separate patch.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 Reviewed-by: Abel Vesa <abel.vesa@linaro.org>
 ---
- drivers/clk/imx/Makefile      |   1 +
- drivers/clk/imx/clk-gpr-mux.c | 119 ++++++++++++++++++++++++++++++++++
- drivers/clk/imx/clk.h         |   5 ++
- 3 files changed, 125 insertions(+)
- create mode 100644 drivers/clk/imx/clk-gpr-mux.c
+ drivers/clk/imx/clk-imx6q.c               | 13 +++++++++++++
+ include/dt-bindings/clock/imx6qdl-clock.h |  4 +++-
+ 2 files changed, 16 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/imx/Makefile b/drivers/clk/imx/Makefile
-index e8aacb0ee6ac..a75d59f7cb8a 100644
---- a/drivers/clk/imx/Makefile
-+++ b/drivers/clk/imx/Makefile
-@@ -22,6 +22,7 @@ mxc-clk-objs += clk-pllv3.o
- mxc-clk-objs += clk-pllv4.o
- mxc-clk-objs += clk-pll14xx.o
- mxc-clk-objs += clk-sscg-pll.o
-+mxc-clk-objs += clk-gpr-mux.o
- obj-$(CONFIG_MXC_CLK) += mxc-clk.o
+diff --git a/drivers/clk/imx/clk-imx6q.c b/drivers/clk/imx/clk-imx6q.c
+index da71e064531e..bf4c1d9c9928 100644
+--- a/drivers/clk/imx/clk-imx6q.c
++++ b/drivers/clk/imx/clk-imx6q.c
+@@ -12,6 +12,7 @@
+ #include <linux/clk-provider.h>
+ #include <linux/err.h>
+ #include <linux/io.h>
++#include <linux/mfd/syscon/imx6q-iomuxc-gpr.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
+ #include <linux/of_irq.h>
+@@ -115,6 +116,10 @@ static struct clk_div_table video_div_table[] = {
+ 	{ /* sentinel */ }
+ };
  
- obj-$(CONFIG_CLK_IMX8MM) += clk-imx8mm.o
-diff --git a/drivers/clk/imx/clk-gpr-mux.c b/drivers/clk/imx/clk-gpr-mux.c
-new file mode 100644
-index 000000000000..47a3e3cdcc82
---- /dev/null
-+++ b/drivers/clk/imx/clk-gpr-mux.c
-@@ -0,0 +1,119 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ */
++static const char * enet_ref_sels[] = { "enet_ref", "enet_ref_pad", };
++static const u32 enet_ref_sels_table[] = { IMX6Q_GPR1_ENET_CLK_SEL_ANATOP, IMX6Q_GPR1_ENET_CLK_SEL_PAD };
++static const u32 enet_ref_sels_table_mask = IMX6Q_GPR1_ENET_CLK_SEL_ANATOP;
 +
-+#define pr_fmt(fmt) "imx:clk-gpr-mux: " fmt
+ static unsigned int share_count_esai;
+ static unsigned int share_count_asrc;
+ static unsigned int share_count_ssi1;
+@@ -908,6 +913,12 @@ static void __init imx6q_clocks_init(struct device_node *ccm_node)
+ 	if (clk_on_imx6q() && imx_get_soc_revision() == IMX_CHIP_REVISION_1_0)
+ 		hws[IMX6QDL_CLK_GPT_3M] = hws[IMX6QDL_CLK_GPT_IPG_PER];
+ 
++	hws[IMX6QDL_CLK_ENET_REF_PAD] = imx6q_obtain_fixed_clk_hw(ccm_node, "enet_ref_pad", 0);
 +
-+#include <linux/module.h>
++	hws[IMX6QDL_CLK_ENET_REF_SEL] = imx_clk_gpr_mux("enet_ref_sel", "fsl,imx6q-iomuxc-gpr",
++				IOMUXC_GPR1, enet_ref_sels, ARRAY_SIZE(enet_ref_sels),
++				enet_ref_sels_table, enet_ref_sels_table_mask);
 +
-+#include <linux/clk-provider.h>
-+#include <linux/errno.h>
-+#include <linux/export.h>
-+#include <linux/io.h>
-+#include <linux/slab.h>
-+#include <linux/regmap.h>
-+#include <linux/mfd/syscon.h>
+ 	imx_check_clk_hws(hws, IMX6QDL_CLK_END);
+ 
+ 	of_clk_add_hw_provider(np, of_clk_hw_onecell_get, clk_hw_data);
+@@ -974,6 +985,8 @@ static void __init imx6q_clocks_init(struct device_node *ccm_node)
+ 			       hws[IMX6QDL_CLK_PLL3_USB_OTG]->clk);
+ 	}
+ 
++	clk_set_parent(hws[IMX6QDL_CLK_ENET_REF_SEL]->clk, hws[IMX6QDL_CLK_ENET_REF]->clk);
 +
-+#include "clk.h"
-+
-+struct imx_clk_gpr {
-+	struct clk_hw hw;
-+	struct regmap *regmap;
-+	u32 mask;
-+	u32 reg;
-+	const u32 *mux_table;
-+};
-+
-+static struct imx_clk_gpr *to_imx_clk_gpr(struct clk_hw *hw)
-+{
-+	return container_of(hw, struct imx_clk_gpr, hw);
-+}
-+
-+static u8 imx_clk_gpr_mux_get_parent(struct clk_hw *hw)
-+{
-+	struct imx_clk_gpr *priv = to_imx_clk_gpr(hw);
-+	unsigned int val;
-+	int ret;
-+
-+	ret = regmap_read(priv->regmap, priv->reg, &val);
-+	if (ret)
-+		goto get_parent_err;
-+
-+	val &= priv->mask;
-+
-+	ret = clk_mux_val_to_index(hw, priv->mux_table, 0, val);
-+	if (ret < 0)
-+		goto get_parent_err;
-+
-+	return ret;
-+
-+get_parent_err:
-+	pr_err("failed to get parent (%pe)\n", ERR_PTR(ret));
-+
-+	/* return some realistic non negative value. Potentially we could
-+	 * give index to some dummy error parent.
-+	 */
-+	return 0;
-+}
-+
-+static int imx_clk_gpr_mux_set_parent(struct clk_hw *hw, u8 index)
-+{
-+	struct imx_clk_gpr *priv = to_imx_clk_gpr(hw);
-+	unsigned int val = clk_mux_index_to_val(priv->mux_table, 0, index);
-+
-+	return regmap_update_bits(priv->regmap, priv->reg, priv->mask, val);
-+}
-+
-+static int imx_clk_gpr_mux_determine_rate(struct clk_hw *hw,
-+					 struct clk_rate_request *req)
-+{
-+	return clk_mux_determine_rate_flags(hw, req, 0);
-+}
-+
-+const struct clk_ops imx_clk_gpr_mux_ops = {
-+	.get_parent = imx_clk_gpr_mux_get_parent,
-+	.set_parent = imx_clk_gpr_mux_set_parent,
-+	.determine_rate = imx_clk_gpr_mux_determine_rate,
-+};
-+
-+struct clk_hw *imx_clk_gpr_mux(const char *name, const char *compatible,
-+			       u32 reg, const char **parent_names,
-+			       u8 num_parents, const u32 *mux_table, u32 mask)
-+{
-+	struct clk_init_data init  = { };
-+	struct imx_clk_gpr *priv;
-+	struct regmap *regmap;
-+	struct clk_hw *hw;
-+	int ret;
-+
-+	regmap = syscon_regmap_lookup_by_compatible(compatible);
-+	if (IS_ERR(regmap)) {
-+		pr_err("failed to find %s regmap\n", compatible);
-+		return ERR_CAST(regmap);
-+	}
-+
-+	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return ERR_PTR(-ENOMEM);
-+
-+	init.name = name;
-+	init.ops = &imx_clk_gpr_mux_ops;
-+	init.parent_names = parent_names;
-+	init.num_parents = num_parents;
-+	init.flags = CLK_SET_RATE_GATE | CLK_SET_PARENT_GATE;
-+
-+	priv->hw.init = &init;
-+	priv->regmap = regmap;
-+	priv->mux_table = mux_table;
-+	priv->reg = reg;
-+	priv->mask = mask;
-+
-+	hw = &priv->hw;
-+	ret = clk_hw_register(NULL, &priv->hw);
-+	if (ret) {
-+		kfree(priv);
-+		hw = ERR_PTR(ret);
-+	}
-+
-+	return hw;
-+}
-diff --git a/drivers/clk/imx/clk.h b/drivers/clk/imx/clk.h
-index c4c73477e772..afc1ea0f5bcf 100644
---- a/drivers/clk/imx/clk.h
-+++ b/drivers/clk/imx/clk.h
-@@ -458,4 +458,9 @@ struct clk_hw *imx_clk_hw_divider_gate(const char *name, const char *parent_name
- 		unsigned long flags, void __iomem *reg, u8 shift, u8 width,
- 		u8 clk_divider_flags, const struct clk_div_table *table,
- 		spinlock_t *lock);
-+
-+struct clk_hw *imx_clk_gpr_mux(const char *name, const char *compatible,
-+			       u32 reg, const char **parent_names,
-+			       u8 num_parents, const u32 *mux_table, u32 mask);
-+
- #endif
+ 	imx_register_uart_clocks();
+ }
+ CLK_OF_DECLARE(imx6q, "fsl,imx6q-ccm", imx6q_clocks_init);
+diff --git a/include/dt-bindings/clock/imx6qdl-clock.h b/include/dt-bindings/clock/imx6qdl-clock.h
+index e20c43cc36f6..e5b2a1ba02bc 100644
+--- a/include/dt-bindings/clock/imx6qdl-clock.h
++++ b/include/dt-bindings/clock/imx6qdl-clock.h
+@@ -273,6 +273,8 @@
+ #define IMX6QDL_CLK_MMDC_P0_IPG			263
+ #define IMX6QDL_CLK_DCIC1			264
+ #define IMX6QDL_CLK_DCIC2			265
+-#define IMX6QDL_CLK_END				266
++#define IMX6QDL_CLK_ENET_REF_SEL		266
++#define IMX6QDL_CLK_ENET_REF_PAD		267
++#define IMX6QDL_CLK_END				268
+ 
+ #endif /* __DT_BINDINGS_CLOCK_IMX6QDL_H */
 -- 
 2.30.2
 
