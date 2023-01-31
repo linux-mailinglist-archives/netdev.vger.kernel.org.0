@@ -2,88 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83833682F45
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 15:30:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52337682F6C
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 15:38:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231236AbjAaOa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 09:30:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60712 "EHLO
+        id S230487AbjAaOik (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 09:38:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbjAaOaX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 09:30:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A152D56;
-        Tue, 31 Jan 2023 06:30:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE5BDB81D11;
-        Tue, 31 Jan 2023 14:30:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 544FBC433EF;
-        Tue, 31 Jan 2023 14:30:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675175419;
-        bh=ITa4o4WFmTxgn+e+nJBzyA+kjxntGeRgij5LNvNc6lE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ASulkSs8sS6iGzxtc1phguQ26cZ/93JVL7rYG9cxXK5pwS2U/6A4RwZuRLedJ5pVK
-         ZbtFFnxVbfZR7BpWdXwBtD1DZ8rKOXjZCCrmiEsu0+t9JPFujpK/CgxmRvVeTwizau
-         ZUgde22tvGqy64GaiLDWltEXijdNaxSDEjkFwnKvp6+f/9ajJvGeuzC+8HvgF1fVbN
-         uGbRAicTYTtiwfT+JmnvO/9GS3oXpqLSNlEp2vk+jCrUZRPQ/2kTn2oyr70jJUYFZw
-         nDKZYmbochlZ8vHQbChUXHxOVAAt2D0qWSprg65eKdGmWY5nN79PgnKOeM6BCszc4g
-         4Bn/NfZuGI0mg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2D2CFE4D00A;
-        Tue, 31 Jan 2023 14:30:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229468AbjAaOij (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 09:38:39 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1A05B95
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 06:38:36 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id n6so11960127edo.9
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 06:38:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=CM90C1hIDCOcuqgsaAT3C7sRdlZjaO5k2QqE3aWUAHk=;
+        b=4a7GgGnkNnk340PoIGp91AScwgV2DQt/yZBRyKbI3D3K+GXa//kC12NcxMnS6X4zzD
+         /jvJxndJiHzER+mxOLLxN7ziuG/CS70sM+QzevY00pYMhzOlwgqSjcRuBtw5lNUv1Jg0
+         PubkFwpmDdJ/GQlXM5I2NbDS8+yS/C0Ny2pTemMt5vZjDSIFXxxYapi5ccZSf7jX+OBx
+         IlKIQzSW6wAHeYWrgbMFAR1KQpe2B1AkPGwgRYYDB4igHoc8MFmRVr6zfxpWXrK9fQqs
+         dQSCM7yuKDsD4qBQkVgMnPxURdBcFB2q2k03/E62nFhOBBdu1JB1+ZGBSNSMJYKny7KF
+         x59g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CM90C1hIDCOcuqgsaAT3C7sRdlZjaO5k2QqE3aWUAHk=;
+        b=J3NBCx8XPGd7aPwg7dwcw7ErlksisjYYlttXGaI2+iHJ6c+ysIHPEtn90JjWfITZKO
+         Cfiz9b2Mims7X7+rxt9Dc3jIAgvAyI0djJNFOOXtU8xc3ogrTndd2WZXMuLPoA+vORkM
+         NLinrrfGLfN4aIgBjpdal30cpNqApFg7dwgXx/n/gaIM9qm8/iAfy4OFhNT4P+H1MYeT
+         rlPgB9x/npvM3Y/NO0mMWSEaXG9bMOV7ADEG/hoEvsOQDn3670k1TRjEz5LE/kbxKGIW
+         GyPXh4kMu/8PKllbWzKf8HxvvXczlolFWRzW0P3T1mCVtmNADdwchtgewGJsdXW1A2dp
+         GRgg==
+X-Gm-Message-State: AO0yUKWqFsDBPM6SSMGUSdqFmCoGNxuRvMZADbdLOe1eNpSK//3qoJpf
+        CUbRdMhLBEJLaehYM/e/CGJyEg==
+X-Google-Smtp-Source: AK7set9+RcnlHbh5DCVOuavl31xqlO7F06zzM9dn8Diw6aslXDBzeV6ZTTjrQPnFfmBYKEIVi2EuPQ==
+X-Received: by 2002:aa7:d69a:0:b0:4a2:dac:d2a4 with SMTP id d26-20020aa7d69a000000b004a20dacd2a4mr18178014edr.9.1675175915198;
+        Tue, 31 Jan 2023 06:38:35 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id z4-20020a170906714400b0087223b8d6efsm8639974ejj.16.2023.01.31.06.38.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Jan 2023 06:38:34 -0800 (PST)
+Date:   Tue, 31 Jan 2023 15:38:33 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jamal Hadi Salim <hadi@mojatatu.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel@mojatatu.com, deb.chatterjee@intel.com,
+        anjali.singhai@intel.com, namrata.limaye@intel.com,
+        khalidm@nvidia.com, tom@sipanda.io, pratyush@sipanda.io,
+        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, vladbu@nvidia.com, simon.horman@corigine.com,
+        stefanc@marvell.com, seong.kim@amd.com, mattyk@nvidia.com,
+        dan.daly@intel.com, john.andy.fingerhut@intel.com
+Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
+Message-ID: <Y9kn6bh8z11xWsDh@nanopsycho>
+References: <Y9eYNsklxkm8CkyP@nanopsycho>
+ <87pmawxny5.fsf@toke.dk>
+ <CAM0EoM=u-VSDZAifwTiOy8vXAGX7Hwg4rdea62-kNFGsHj7ObQ@mail.gmail.com>
+ <878rhkx8bd.fsf@toke.dk>
+ <CAAFAkD9Sh5jbp4qkzxuS+J3PGdtN-Kc2HdP8CDqweY36extSdA@mail.gmail.com>
+ <87wn53wz77.fsf@toke.dk>
+ <63d8325819298_3985f20824@john.notmuch>
+ <87leljwwg7.fsf@toke.dk>
+ <CAM0EoM=i_pTSRokDqDo_8JWjsDYwwzSgJw6sc+0c=Ss81SyJqg@mail.gmail.com>
+ <87h6w6vqyd.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] [v2] net: dsa: microchip: ptp: fix up PTP dependency
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167517541917.29397.11216297645537148512.git-patchwork-notify@kernel.org>
-Date:   Tue, 31 Jan 2023 14:30:19 +0000
-References: <20230130131808.1084796-1-arnd@kernel.org>
-In-Reply-To: <20230130131808.1084796-1-arnd@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
-        kuba@kernel.org, richardcochran@gmail.com, arnd@arndb.de,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        arun.ramadoss@microchip.com, jacob.e.keller@intel.com,
-        ceggers@arri.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87h6w6vqyd.fsf@toke.dk>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Tue, Jan 31, 2023 at 01:17:14PM CET, toke@redhat.com wrote:
+>Jamal Hadi Salim <jhs@mojatatu.com> writes:
+>
+>> Toke, i dont think i have managed to get across that there is an
+>> "autonomous" control built into the kernel. It is not just things that
+>> come across netlink. It's about the whole infra.
+>
+>I'm not disputing the need for the TC infra to configure the pipelines
+>and their relationship in the hardware. I'm saying that your
+>implementation *of the SW path* is the wrong approach and it would be
+>better done by using BPF (not talking about the existing TC-BPF,
+>either).
+>
+>It's a bit hard to know your thinking for sure here, since your patch
+>series doesn't include any of the offload control bits. But from the
+>slides and your hints in this series, AFAICT, the flow goes something
+>like:
+>
+>hw_pipeline_id = devlink_program_hardware(dev, p4_compiled_blob);
+>sw_pipeline_id = `tc p4template create ...` (etc, this is generated by P4C)
+>
+>tc_act = tc_act_create(hw_pipeline_id, sw_pipeline_id)
+>
+>which will turn into something like:
+>
+>struct p4_cls_offload ofl = {
+>  .classid = classid,
+>  .pipeline_id = hw_pipeline_id
+>};
+>
+>if (check_sw_and_hw_equivalence(hw_pipeline_id, sw_pipeline_id)) /* some magic check here */
+>  return -EINVAL;
+>
+>netdev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_P4, &ofl);
+>
+>
+>I.e, all that's being passed to the hardware is the ID of the
+>pre-programmed pipeline, because that programming is going to be
+>out-of-band via devlink anyway.
+>
+>In which case, you could just as well replace the above:
+>
+>sw_pipeline_id = `tc p4template create ...` (etc, this is generated by P4C)
+>
+>with
+>
+>sw_pipeline_id = bpf_prog_load(BPF_PROG_TYPE_P4TC, "my_obj_file.o"); /* my_obj_file is created by P4c */
+>
+>and achieve exactly the same.
+>
+>Having all the P4 data types and concepts exist inside the kernel
+>*might* make sense if the kernel could then translate those into the
+>hardware representations and manage their lifecycle in a uniform way.
+>But as far as I can tell from the slides and what you've been saying in
+>this thread that's not going to be possible anyway, so why do you need
+>anything more granular than the pipeline ID?
 
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+Toke, I understand what what you describe above is applicable for the P4
+program instantiation (pipeline definition).
 
-On Mon, 30 Jan 2023 14:17:51 +0100 you wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> When NET_DSA_MICROCHIP_KSZ_COMMON is built-in but PTP is a loadable
-> module, the ksz_ptp support still causes a link failure:
-> 
-> ld.lld-16: error: undefined symbol: ptp_clock_index
-> >>> referenced by ksz_ptp.c
-> >>>               drivers/net/dsa/microchip/ksz_ptp.o:(ksz_get_ts_info) in archive vmlinux.a
-> 
-> [...]
-
-Here is the summary with links:
-  - [v2] net: dsa: microchip: ptp: fix up PTP dependency
-    https://git.kernel.org/netdev/net-next/c/562c65486cf1
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+What is the suggestion for the actual "rule insertions" ? Would it make
+sense to use TC iface (Jamal's or similar) to insert rules to both BPF SW
+path and offloaded HW path?
 
 
+>
+>-Toke
+>
