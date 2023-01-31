@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 150C4682790
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 09:53:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FC716827A7
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 09:54:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229944AbjAaIxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 03:53:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39638 "EHLO
+        id S232079AbjAaIyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 03:54:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231903AbjAaIwk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 03:52:40 -0500
+        with ESMTP id S232038AbjAaIx3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 03:53:29 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2293F4C6F0
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 00:48:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 630A147EDB
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 00:49:21 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pMmHv-0003uM-LW; Tue, 31 Jan 2023 09:46:47 +0100
+        id 1pMmHv-0003tF-9d; Tue, 31 Jan 2023 09:46:47 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pMmHv-001eMF-MT; Tue, 31 Jan 2023 09:46:46 +0100
+        id 1pMmHv-001eLx-9n; Tue, 31 Jan 2023 09:46:46 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pMmHr-002yZB-0y; Tue, 31 Jan 2023 09:46:43 +0100
+        id 1pMmHr-002yZK-1d; Tue, 31 Jan 2023 09:46:43 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -35,16 +35,15 @@ To:     Rob Herring <robh+dt@kernel.org>,
         Michael Turquette <mturquette@baylibre.com>,
         Stephen Boyd <sboyd@kernel.org>,
         Richard Cochran <richardcochran@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Abel Vesa <abel.vesa@linaro.org>, kernel@pengutronix.de,
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         Fabio Estevam <festevam@gmail.com>,
         NXP Linux Team <linux-imx@nxp.com>,
         Russell King <linux@armlinux.org.uk>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-clk@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v3 02/19] clk: imx6q: add ethernet refclock mux support
-Date:   Tue, 31 Jan 2023 09:46:25 +0100
-Message-Id: <20230131084642.709385-3-o.rempel@pengutronix.de>
+Subject: [PATCH v3 03/19] ARM: imx6q: skip ethernet refclock reconfiguration if enet_clk_ref is present
+Date:   Tue, 31 Jan 2023 09:46:26 +0100
+Message-Id: <20230131084642.709385-4-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230131084642.709385-1-o.rempel@pengutronix.de>
 References: <20230131084642.709385-1-o.rempel@pengutronix.de>
@@ -63,78 +62,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add ethernet refclock mux support and set it to internal clock by
-default. This configuration will not affect existing boards since
-machine code currently overwrites this default.
+Current mach-imx6q code has following logic:
+- if ptp clock of the ethernet controller node is attached to the SoC
+  internal enet_ref clock, then we configure RMII reference clock pin as
+  output by setting IOMUXC_GPR1 BIT(21).
+  In this case - MAC (SoC) is the clock provider, PHY is the clock consumer.
+- if ptp clock of the ethernet controller node is not attached to the
+  enet_ref clock, then we configure RMII reference clock pin as input by
+  clearing IOMUXC_GPR1 BIT(21).
+  In this case - PHY is the clock provider, MAC is the clock consumer.
 
-The machine code will be fixed in a separate patch.
+According to the Freescale MX6SDL ReferenceManual v4, IOMUXC_GPR1 BIT(21)
+(page 2033) this configuration bit is not related to the PTP (IEEE1588)
+clock:
+21 ENET_CLK_SEL - choose enet reference clk mode:
+   0 - get enet tx reference clk from pad (external OSC for both external
+       PHY and Internal Controller)
+   1 - get enet tx reference clk from internal clock from anatop (loopback
+       through pad), this clock also sent out to external PHY.
+
+According to the Documentation/devicetree/bindings/net/fsl,fec.yaml:
+      The "ptp"(option), for IEEE1588 timer clock that requires the clock.
+      The "enet_clk_ref"(option), for MAC transmit/receiver reference clock
+      like RGMII TXC clock or RMII reference clock. It depends on board
+      design, the clock is required if RGMII TXC and RMII reference clock
+      source from SOC internal PLL.
+      The "enet_out"(option), output clock for external device, like supply
+      clock for PHY. The clock is required if PHY clock source from SOC.
+
+We can see, that "enet_clk_ref" clock is the best fit for this purpose.
+Other properties like "ptp" is designed for IEEE1588 and "enet_out" do
+not have real functionality within imx related clock infrastructure.
+
+Since the "enet_clk_ref" is not used by the imx6qdl devicetrees, we can
+use it as indicator of potentially properly configured DT. At same time
+we can keep ptp clock based logic as the fallback for old DTs.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Abel Vesa <abel.vesa@linaro.org>
 ---
- drivers/clk/imx/clk-imx6q.c               | 13 +++++++++++++
- include/dt-bindings/clock/imx6qdl-clock.h |  4 +++-
- 2 files changed, 16 insertions(+), 1 deletion(-)
+ arch/arm/mach-imx/mach-imx6q.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/imx/clk-imx6q.c b/drivers/clk/imx/clk-imx6q.c
-index da71e064531e..bf4c1d9c9928 100644
---- a/drivers/clk/imx/clk-imx6q.c
-+++ b/drivers/clk/imx/clk-imx6q.c
-@@ -12,6 +12,7 @@
- #include <linux/clk-provider.h>
- #include <linux/err.h>
- #include <linux/io.h>
-+#include <linux/mfd/syscon/imx6q-iomuxc-gpr.h>
- #include <linux/of.h>
- #include <linux/of_address.h>
- #include <linux/of_irq.h>
-@@ -115,6 +116,10 @@ static struct clk_div_table video_div_table[] = {
- 	{ /* sentinel */ }
- };
- 
-+static const char * enet_ref_sels[] = { "enet_ref", "enet_ref_pad", };
-+static const u32 enet_ref_sels_table[] = { IMX6Q_GPR1_ENET_CLK_SEL_ANATOP, IMX6Q_GPR1_ENET_CLK_SEL_PAD };
-+static const u32 enet_ref_sels_table_mask = IMX6Q_GPR1_ENET_CLK_SEL_ANATOP;
-+
- static unsigned int share_count_esai;
- static unsigned int share_count_asrc;
- static unsigned int share_count_ssi1;
-@@ -908,6 +913,12 @@ static void __init imx6q_clocks_init(struct device_node *ccm_node)
- 	if (clk_on_imx6q() && imx_get_soc_revision() == IMX_CHIP_REVISION_1_0)
- 		hws[IMX6QDL_CLK_GPT_3M] = hws[IMX6QDL_CLK_GPT_IPG_PER];
- 
-+	hws[IMX6QDL_CLK_ENET_REF_PAD] = imx6q_obtain_fixed_clk_hw(ccm_node, "enet_ref_pad", 0);
-+
-+	hws[IMX6QDL_CLK_ENET_REF_SEL] = imx_clk_gpr_mux("enet_ref_sel", "fsl,imx6q-iomuxc-gpr",
-+				IOMUXC_GPR1, enet_ref_sels, ARRAY_SIZE(enet_ref_sels),
-+				enet_ref_sels_table, enet_ref_sels_table_mask);
-+
- 	imx_check_clk_hws(hws, IMX6QDL_CLK_END);
- 
- 	of_clk_add_hw_provider(np, of_clk_hw_onecell_get, clk_hw_data);
-@@ -974,6 +985,8 @@ static void __init imx6q_clocks_init(struct device_node *ccm_node)
- 			       hws[IMX6QDL_CLK_PLL3_USB_OTG]->clk);
+diff --git a/arch/arm/mach-imx/mach-imx6q.c b/arch/arm/mach-imx/mach-imx6q.c
+index c9d7c29d95e1..7f6200925752 100644
+--- a/arch/arm/mach-imx/mach-imx6q.c
++++ b/arch/arm/mach-imx/mach-imx6q.c
+@@ -79,7 +79,7 @@ static void __init imx6q_enet_phy_init(void)
+ static void __init imx6q_1588_init(void)
+ {
+ 	struct device_node *np;
+-	struct clk *ptp_clk;
++	struct clk *ptp_clk, *fec_enet_ref;
+ 	struct clk *enet_ref;
+ 	struct regmap *gpr;
+ 	u32 clksel;
+@@ -90,6 +90,14 @@ static void __init imx6q_1588_init(void)
+ 		return;
  	}
  
-+	clk_set_parent(hws[IMX6QDL_CLK_ENET_REF_SEL]->clk, hws[IMX6QDL_CLK_ENET_REF]->clk);
++	/*
++	 * If enet_clk_ref configured, we assume DT did it properly and .
++	 * clk-imx6q.c will do needed configuration.
++	 */
++	fec_enet_ref = of_clk_get_by_name(np, "enet_clk_ref");
++	if (!IS_ERR(fec_enet_ref))
++		goto put_node;
 +
- 	imx_register_uart_clocks();
- }
- CLK_OF_DECLARE(imx6q, "fsl,imx6q-ccm", imx6q_clocks_init);
-diff --git a/include/dt-bindings/clock/imx6qdl-clock.h b/include/dt-bindings/clock/imx6qdl-clock.h
-index e20c43cc36f6..e5b2a1ba02bc 100644
---- a/include/dt-bindings/clock/imx6qdl-clock.h
-+++ b/include/dt-bindings/clock/imx6qdl-clock.h
-@@ -273,6 +273,8 @@
- #define IMX6QDL_CLK_MMDC_P0_IPG			263
- #define IMX6QDL_CLK_DCIC1			264
- #define IMX6QDL_CLK_DCIC2			265
--#define IMX6QDL_CLK_END				266
-+#define IMX6QDL_CLK_ENET_REF_SEL		266
-+#define IMX6QDL_CLK_ENET_REF_PAD		267
-+#define IMX6QDL_CLK_END				268
- 
- #endif /* __DT_BINDINGS_CLOCK_IMX6QDL_H */
+ 	ptp_clk = of_clk_get(np, 2);
+ 	if (IS_ERR(ptp_clk)) {
+ 		pr_warn("%s: failed to get ptp clock\n", __func__);
 -- 
 2.30.2
 
