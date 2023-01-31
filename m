@@ -2,90 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3309D682B45
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 12:16:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BA85682B5B
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 12:24:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231769AbjAaLQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 06:16:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53250 "EHLO
+        id S230091AbjAaLYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 06:24:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231788AbjAaLQE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 06:16:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC164B197
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 03:15:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675163710;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=r5WDosCN8ptqhgrL1cgVrQgfmxbqRf8M/DBi7ayRhQA=;
-        b=JOj28pt/5tSkoR2voFgvxr/7OhWYhEkibJo5LD4HWS0ZPJduxO3d3Lf3xYp7L7RKAtOcm0
-        89XNojvtuvUrUUwnzKcHEhkaOszzIEEKaaX+901qrn/BFv19NgaEz+twfHkTlKEJGTjLrd
-        87j+VeOlFO/WzXhVhqPRO+k8mseKxuw=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-664-vaIrxe8IO0i24hpX0-vyVw-1; Tue, 31 Jan 2023 06:15:09 -0500
-X-MC-Unique: vaIrxe8IO0i24hpX0-vyVw-1
-Received: by mail-qk1-f200.google.com with SMTP id q21-20020a05620a0d9500b0070572ccdbf9so8921344qkl.10
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 03:15:09 -0800 (PST)
+        with ESMTP id S229613AbjAaLYi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 06:24:38 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3BA49552;
+        Tue, 31 Jan 2023 03:24:36 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id qw12so24706253ejc.2;
+        Tue, 31 Jan 2023 03:24:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=5yhShQTG17uzw0WRoXPw0Cx2D1Z/lYVkEvXp799OzEk=;
+        b=pENnLJ5+AHsRKrjLpgfnlpghuAYhJOh8LmAs3tw43gQRXZnb4Ch3gAOOdytE0L50E3
+         4N1x6xOqpQwmqVEHHnlhd1dwTmn3WsdMYL9cIyt38MMwDBNpMSzog6wwbzbp7uYMCnl3
+         h7CfsRUO7GPsODB7ADvzThOMeomLPK7J+SexEnpKbsz1M32eMp3JiHeUieYs5lZ9oi7L
+         3IAXZepJ4R+VC13lwz7Km0UzbOmxA37w6qSEmdgmiq43lkaQf4SFG+OnQqPFl7tmr/QW
+         L0Ea3ECrE6e2UgYFXhIgfUqlYX+q/pQQP4NyJBI9rQzQmXumvl87uA3uSKp9/3QQkIfX
+         LpbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=r5WDosCN8ptqhgrL1cgVrQgfmxbqRf8M/DBi7ayRhQA=;
-        b=00sbPXpfotaEnqgi+yZfvF1vjoHY5TxIgtZO0iKeAYrJ+12l3gFnrpmoXhtHfTod+C
-         llL48gGWACt1R2KyP4uwhMhHLoFNA86/9+vZD8DiFPwRi57ZcJrgbdQBczjwnoWDOwGn
-         PgfL0qU877eMR4NnuEEyMRFtHHRxjRVuyVexR0MHkcu9YrhHW5oUHnY7kC/RUoQxkpMp
-         /XSXQPQ5muHBGAEM1T6iWrCAlTD/VcIG5Mjh2TR0804N4K+k6C/1e6dzK+GYAv9baPlH
-         9HbpNpCARwji+Z5/tK4SmJUqeiOzrbBlfknc5w+FeD3UCckLDaCtshM7C55J26bA599O
-         baCg==
-X-Gm-Message-State: AO0yUKUiUgfL/dwk66zlpsjYDPAePeMt7nfTIULlcW2eLbBWuEE2TweR
-        ZTBkpkMgHTDIjFTcvnT87V8rpZfZ2z1gtbISrNNRNxtlK6t2ibq4hx6M0F6w1rNLZUh/u0R6Zlb
-        MEp4CE/HYCLSE5ZeF
-X-Received: by 2002:a05:6214:b85:b0:537:6dfa:efaf with SMTP id fe5-20020a0562140b8500b005376dfaefafmr33023140qvb.13.1675163708314;
-        Tue, 31 Jan 2023 03:15:08 -0800 (PST)
-X-Google-Smtp-Source: AK7set9PvPYF6HAkQ+AlinxEAf03bWrkLFOaUAgoOy2qSI7bVMAHunwsC9vjqR1Y96nmCMq2TF5yVg==
-X-Received: by 2002:a05:6214:b85:b0:537:6dfa:efaf with SMTP id fe5-20020a0562140b8500b005376dfaefafmr33023117qvb.13.1675163708088;
-        Tue, 31 Jan 2023 03:15:08 -0800 (PST)
-Received: from x1 (c-73-214-169-22.hsd1.pa.comcast.net. [73.214.169.22])
-        by smtp.gmail.com with ESMTPSA id bs32-20020a05620a472000b0071d7ade87afsm4839339qkb.67.2023.01.31.03.15.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Jan 2023 03:15:07 -0800 (PST)
-Date:   Tue, 31 Jan 2023 06:15:05 -0500
-From:   Brian Masney <bmasney@redhat.com>
-To:     Steev Klimaszewski <steev@kali.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        Mark Pearson <markpearson@lenovo.com>
-Subject: Re: [PATCH v2 3/4] arm64: dts: qcom: sc8280xp: Define uart2
-Message-ID: <Y9j4ORb4r8+QXx4J@x1>
-References: <20230131043816.4525-1-steev@kali.org>
- <20230131043816.4525-4-steev@kali.org>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=5yhShQTG17uzw0WRoXPw0Cx2D1Z/lYVkEvXp799OzEk=;
+        b=L+k7GgYmd+2hZLON1DBdMA9G134F56Dp1hxh8cS71d4ikNflTQI212XUyVv2b7+eH+
+         +xDnv24CE7+ocH9VM9wRz8oDRh7YswNxdlOIuTl8apUi2apO75zfJO+w1edQAYXmxxZ5
+         XX17oZY03Ux5wGn1Su9k6lV9hZDliPvtq6yTOMcChVJ1zf+v7dHnmXjSbVHvZTvoKtKc
+         NflwrDsgPl6lXzoRaRzpfjGIYDwIkEq1UepYvAnDKUmLxpiZuMuUrsJy3Z0TB8AnFbfp
+         3SJyaSmS2EdrTlA3yZCvliL9/Vci22GqB9Mw86S2BhpNEkra3dvUSyf+wow5URRbygQr
+         L4aA==
+X-Gm-Message-State: AO0yUKUFVnMmmN9C6ROH+bQGpLJCna8VOOtQ+7HRNBHQa9fFv1Q+ktZR
+        OE/R245nAQnZG1aXDcmM3QPLDVGVdcLnknzpNv4=
+X-Google-Smtp-Source: AK7set/Br25oHnhXcuU3UgLhXFHoDyj2IW9wCy+5Mxurk/M9p97GAhQXkCtB/oAnHGLT2tZlN85FUXWQQfctaNgZsbU=
+X-Received: by 2002:a17:906:7108:b0:87b:d4df:32bc with SMTP id
+ x8-20020a170906710800b0087bd4df32bcmr3543288ejj.303.1675164275273; Tue, 31
+ Jan 2023 03:24:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230131043816.4525-4-steev@kali.org>
-User-Agent: Mutt/2.2.7 (2022-08-07)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+References: <20230127122018.2839-1-kerneljasonxing@gmail.com>
+ <Y9fdRqHp7sVFYbr6@boxer> <CAL+tcoBbUKO5Y_dOjZWa4iQyK2C2O76QOLtJ+dFQgr_cpqSiyQ@mail.gmail.com>
+ <192d7154-78a6-e7a0-2810-109b864bbb4f@intel.com>
+In-Reply-To: <192d7154-78a6-e7a0-2810-109b864bbb4f@intel.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Tue, 31 Jan 2023 19:23:59 +0800
+Message-ID: <CAL+tcoBtQSeGi5diwUeg1LryYsB2wDg1ow19F2eApjh7hYbcsA@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] [PATCH v2 net] ixgbe: allow to increase MTU to
+ some extent with XDP enabled
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, richardcochran@gmail.com, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, bpf@vger.kernel.org,
+        Jason Xing <kernelxing@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -93,12 +75,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 10:38:15PM -0600, Steev Klimaszewski wrote:
-> From: Bjorn Andersson <bjorn.andersson@linaro.org>
-> 
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Signed-off-by: Steev Klimaszewski <steev@kali.org>
+On Tue, Jan 31, 2023 at 7:08 PM Alexander Lobakin
+<alexandr.lobakin@intel.com> wrote:
+>
+> From: Jason Xing <kerneljasonxing@gmail.com>
+> Date: Tue, 31 Jan 2023 11:00:05 +0800
+>
+> > On Mon, Jan 30, 2023 at 11:09 PM Maciej Fijalkowski
+> > <maciej.fijalkowski@intel.com> wrote:
+> >>
+> >> On Fri, Jan 27, 2023 at 08:20:18PM +0800, Jason Xing wrote:
+> >>> From: Jason Xing <kernelxing@tencent.com>
+> >>>
+> >>> I encountered one case where I cannot increase the MTU size directly
+> >>> from 1500 to 2000 with XDP enabled if the server is equipped with
+> >>> IXGBE card, which happened on thousands of servers in production
+> >>> environment.
+> >>
+> >
+> >> You said in this thread that you've done several tests - what were they?
+> >
+> > Tests against XDP are running on the server side when MTU varies from
+> > 1500 to 3050 (not including ETH_HLEN, ETH_FCS_LEN and VLAN_HLEN) for a
+>
 
-Reviewed-by: Brian Masney <bmasney@redhat.com>
+> BTW, if ixgbe allows you to set MTU of 3050, it needs to be fixed. Intel
+> drivers at some point didn't include the second VLAN tag into account,
 
+Yes, I noticed that.
+
+It should be like "int new_frame_size = new_mtu + ETH_HLEN +
+ETH_FCS_LEN + (VLAN_HLEN * 2)" instead of only one VLAN_HLEN, which is
+used to compute real size in ixgbe_change_mtu() function.
+I'm wondering if I could submit another patch to fix the issue you
+mentioned because the current patch tells a different issue. Does it
+make sense?
+
+If you're available, please help me review the v3 patch I've already
+sent to the mailing-list. Thanks anyway.
+The Link is https://lore.kernel.org/lkml/20230131032357.34029-1-kerneljasonxing@gmail.com/
+.
+
+Thanks,
+Jason
+
+> thus it was possible to trigger issues on Q-in-Q setups. AICS, not all
+> of them were fixed.
+>
+> > few days.
+> > I choose the iperf tool to test the maximum throughput and observe the
+> > behavior when the machines are under greater pressure. Also, I use
+> > netperf to send different size packets to the server side with
+> > different modes (TCP_RR/_STREAM) applied.
+> [...]
+>
+> Thanks,
+> Olek
