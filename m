@@ -2,204 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9AFC683835
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 22:01:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DFB9683841
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 22:03:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231864AbjAaVBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 16:01:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35640 "EHLO
+        id S231843AbjAaVDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 16:03:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231877AbjAaVBQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 16:01:16 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90CE499
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 13:01:15 -0800 (PST)
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com [209.85.128.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id EECEB3F18C
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 21:01:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1675198873;
-        bh=etom2qVxb9kUkl83UlutiswUofv0UufWb2skcOFCPPw=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=SXIMgrHbyfUSKwtXhmBHEFX14tKGCTAe+ECqlIS6wiK25EedCq74MqdJRd+KatoSJ
-         O+OLy/zOWez9EPgQ+ctTZrQp2x9oNGWPcgP7FtqRFePMI5Szw9r+CisQdmTIWfn4ZI
-         BGY8ESgNbYUC2Ml0a8UJ1cFXhtZzQYq0eIAN3wabIjnNhvJfyJctzXdSt+O+QotoFC
-         5S2Tq8D2W6BHXdI+CfbW3Xv2Nfcc0y61pRtz4Hwn0ScW9PWesEOaeRNEmrQBgxY+KJ
-         +bmbeDnFsPo6kk9FIjT1lB/20QN8siwyaXas1PGEnEI0JpJnV2a7aShqgoDn1hbHNa
-         w9t1KuGinoLjg==
-Received: by mail-wm1-f70.google.com with SMTP id h18-20020a05600c351200b003dc25fc1849so9251983wmq.6
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 13:01:13 -0800 (PST)
+        with ESMTP id S231491AbjAaVDc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 16:03:32 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D0B2739
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 13:03:31 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id m7so15447795wru.8
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 13:03:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:subject:cc:to:from:content-language
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gRUNXSGS7rlhGuB49SDRG+lrGhsOIKZeHh4eRriR12g=;
+        b=p07YQSj0WLysf5divFMPFqvl4Ttdg6e34EgMI4n7egBIhe6zSSChlrJDxmlCGB4MMz
+         wIhVTceeOD8IEJU+PBOHgC53f4zNBTVYkLZamJCHC3z1d3WYfJ1u/JxPp7SDccQosiU+
+         gux6SXkN1Vc/9XSOdtcrhyZJ/uiW3nLLAplgCYggMTeO6LYUuqssVq2KKxY3JyHU90Ub
+         rgjHUuyEM2+Gsx0AqSgwgdyN9GvfPV4RfpxjzD8Cvg48xwD2CGmCk8ZZR1JMT6aABhfW
+         P2zU1n1qCQbUQVBmH6wHuZSBrmBkBg7TqTlHvIRPK5q4HRFvsIFDJjkn88xxAMV+PkwF
+         f9PA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=etom2qVxb9kUkl83UlutiswUofv0UufWb2skcOFCPPw=;
-        b=A/z+p2gW+AcSu88yu7QyyWqP1wIrpS/spW3xJYY90Xo7+zrh+JZUw/GRwDCSmBmI0Y
-         wsyyADhGBCqB4NYiNxul9RcYy9e4eNe4+9+Gd++T+65QuRLh1A07a41EMDVI/kYxJqsN
-         zhhhSRv4mGnG3xWlDIkY2AvUoazesp7/yhWWmftg2L7E5H2yIPdsHc/rynPXpwcXI7vQ
-         orbacbwaYofmmi/My0WcyQM7kfbjb8dDHA1mjVfig0xMFi24bxzAAfv+RBe5K/6J/A4b
-         LLTuRYrfgyEhqveGTwmzlDTe6hcMN59X8cg3xilLrSY1JTHe3PS43rBtTGNDsTs9JyqI
-         BvXw==
-X-Gm-Message-State: AO0yUKX3lZQyuWIdbHN9Xeo0ZPEYbW0FLAkU6m1Bc8ztY723UZbJXzSM
-        4OOqb7GBjw9NdxVy1hJzRfMYbxCAFplgv/qc9MBGs1M5lH1YbYPqcPkgS2mosQNb9elW4irfeyA
-        2LvW/Xp7ydWUwsFSqJ+tt+9XMLj7uhJsBdQ==
-X-Received: by 2002:a5d:5092:0:b0:2bf:ee58:72b1 with SMTP id a18-20020a5d5092000000b002bfee5872b1mr325262wrt.23.1675198871554;
-        Tue, 31 Jan 2023 13:01:11 -0800 (PST)
-X-Google-Smtp-Source: AK7set8tasggKf/Rx9l1go+kcn/gV3gCYWXptSmptiXfMWE21yhGCKkWfePVwItC66FiAsdLnfbQow==
-X-Received: by 2002:a5d:5092:0:b0:2bf:ee58:72b1 with SMTP id a18-20020a5d5092000000b002bfee5872b1mr325240wrt.23.1675198871377;
-        Tue, 31 Jan 2023 13:01:11 -0800 (PST)
-Received: from qwirkle.internal ([81.2.157.149])
-        by smtp.gmail.com with ESMTPSA id t27-20020adfa2db000000b002366553eca7sm15530408wra.83.2023.01.31.13.01.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Jan 2023 13:01:10 -0800 (PST)
-From:   Andrei Gherzan <andrei.gherzan@canonical.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        Fred Klassen <fklassen@appneta.com>
-Cc:     Willem de Bruijn <willemb@google.com>,
-        Andrei Gherzan <andrei.gherzan@canonical.com>,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v3 4/4] selftests: net: udpgso_bench_tx: Cater for pending datagrams zerocopy benchmarking
-Date:   Tue, 31 Jan 2023 21:00:51 +0000
-Message-Id: <20230131210051.475983-4-andrei.gherzan@canonical.com>
-X-Mailer: git-send-email 2.34.1
+        h=content-transfer-encoding:subject:cc:to:from:content-language
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=gRUNXSGS7rlhGuB49SDRG+lrGhsOIKZeHh4eRriR12g=;
+        b=JnTpMyKBT3ob3nlrbO8PzlHpCAW2t0suj5fp+cgO6SsIPyfzAb0/rbc0sWFqdotg7f
+         d/GLIkUFNycn/tMqXDsj2CJUScRnZ06z4nyemd42UWr5VA2QKdrEvReEyDPXloyjwWbR
+         T2+iYb6zyztJvoSNQp3/GPkQj+lomHXMdCPzErIDubXIECY1Hhh4GlcRI2fNlkAyyCjH
+         5+SoSS0Ddbi2HswmLNm5YCf0K3meEUIADTnJtcMHpIbxeXDX7SxEExFtknhmE8u9zCtD
+         hx4xuoMR4h/FnYQSfkIZwxvwr23R/w4pTk+d8x9yNh1AKndUImRkZ+18e6ZaTW89OkRB
+         R1Ow==
+X-Gm-Message-State: AO0yUKXe0EoeNMxT6HxKXW7hmSe3TBZFcDr1b79vXSkCVjDdzneC6Zp9
+        9SqgkvExUm1ypiKV1X9biP8=
+X-Google-Smtp-Source: AK7set/F3m+pEBe1tR71tu2oLCZ4P4O2Nf/2y1a4r5IdlUn8aNbFNA8r3ht6SEIaBLCQ0M4jOZEIuA==
+X-Received: by 2002:adf:e111:0:b0:2bf:d3c2:a36a with SMTP id t17-20020adfe111000000b002bfd3c2a36amr341635wrz.25.1675199009570;
+        Tue, 31 Jan 2023 13:03:29 -0800 (PST)
+Received: from ?IPV6:2a01:c23:b8ba:6a00:8d8f:fa1d:c162:c172? (dynamic-2a01-0c23-b8ba-6a00-8d8f-fa1d-c162-c172.c23.pool.telefonica.de. [2a01:c23:b8ba:6a00:8d8f:fa1d:c162:c172])
+        by smtp.googlemail.com with ESMTPSA id m14-20020a5d6a0e000000b002bfd09f2ca6sm13691513wru.3.2023.01.31.13.03.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Jan 2023 13:03:28 -0800 (PST)
+Message-ID: <23ecd290-56fb-699a-8722-f405b723b763@gmail.com>
+Date:   Tue, 31 Jan 2023 22:03:21 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Content-Language: en-US
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        Chris Healy <cphealy@gmail.com>
+Subject: [PATCH net] net: phy: meson-gxl: use MMD access dummy stubs for GXL,
+ internal PHY
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The test tool can check that the zerocopy number of completions value is
-valid taking into consideration the number of datagram send calls. This can
-catch the system into a state where the datagrams are still in the system
-(for example in a qdisk, waiting for the network interface to return a
-completion notification, etc).
+Jerome provided the information that also the GXL internal PHY doesn't
+support MMD register access and EEE. MMD reads return 0xffff, what
+results in e.g. completely wrong ethtool --show-eee output.
+Therefore use the MMD dummy stubs.
 
-This change adds a retry logic of computing the number of completions up to
-a configurable (via CLI) timeout (default: 2 seconds).
+Note: The Fixes tag references the commit that added the MMD dummy
+access stubs.
 
-Fixes: 79ebc3c26010 ("net/udpgso_bench_tx: options to exercise TX CMSG")
-Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
+Fixes: 5df7af85ecd8 ("net: phy: Add general dummy stubs for MMD register access")
+Suggested-by: Jerome Brunet <jbrunet@baylibre.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- tools/testing/selftests/net/udpgso_bench_tx.c | 34 +++++++++++++++----
- 1 file changed, 27 insertions(+), 7 deletions(-)
+ drivers/net/phy/meson-gxl.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/testing/selftests/net/udpgso_bench_tx.c b/tools/testing/selftests/net/udpgso_bench_tx.c
-index b47b5c32039f..ef887842522a 100644
---- a/tools/testing/selftests/net/udpgso_bench_tx.c
-+++ b/tools/testing/selftests/net/udpgso_bench_tx.c
-@@ -62,6 +62,7 @@ static int	cfg_payload_len	= (1472 * 42);
- static int	cfg_port	= 8000;
- static int	cfg_runtime_ms	= -1;
- static bool	cfg_poll;
-+static int	cfg_poll_loop_timeout_ms = 2000;
- static bool	cfg_segment;
- static bool	cfg_sendmmsg;
- static bool	cfg_tcp;
-@@ -235,16 +236,17 @@ static void flush_errqueue_recv(int fd)
- 	}
- }
- 
--static void flush_errqueue(int fd, const bool do_poll)
-+static void flush_errqueue(int fd, const bool do_poll,
-+		unsigned long poll_timeout, const bool poll_err)
- {
- 	if (do_poll) {
- 		struct pollfd fds = {0};
- 		int ret;
- 
- 		fds.fd = fd;
--		ret = poll(&fds, 1, 500);
-+		ret = poll(&fds, 1, poll_timeout);
- 		if (ret == 0) {
--			if (cfg_verbose)
-+			if ((cfg_verbose) && (poll_err))
- 				fprintf(stderr, "poll timeout\n");
- 		} else if (ret < 0) {
- 			error(1, errno, "poll");
-@@ -254,6 +256,20 @@ static void flush_errqueue(int fd, const bool do_poll)
- 	flush_errqueue_recv(fd);
- }
- 
-+static void flush_errqueue_retry(int fd, unsigned long num_sends)
-+{
-+	unsigned long tnow, tstop;
-+	bool first_try = true;
-+
-+	tnow = gettimeofday_ms();
-+	tstop = tnow + cfg_poll_loop_timeout_ms;
-+	do {
-+		flush_errqueue(fd, true, tstop - tnow, first_try);
-+		first_try = false;
-+		tnow = gettimeofday_ms();
-+	} while ((stat_zcopies != num_sends) && (tnow < tstop));
-+}
-+
- static int send_tcp(int fd, char *data)
- {
- 	int ret, done = 0, count = 0;
-@@ -413,7 +429,8 @@ static int send_udp_segment(int fd, char *data)
- 
- static void usage(const char *filepath)
- {
--	error(1, 0, "Usage: %s [-46acmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] [-M messagenr] [-p port] [-s sendsize] [-S gsosize]",
-+	error(1, 0, "Usage: %s [-46acmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] "
-+		    "[-L secs] [-M messagenr] [-p port] [-s sendsize] [-S gsosize]",
- 		    filepath);
- }
- 
-@@ -423,7 +440,7 @@ static void parse_opts(int argc, char **argv)
- 	int max_len, hdrlen;
- 	int c;
- 
--	while ((c = getopt(argc, argv, "46acC:D:Hl:mM:p:s:PS:tTuvz")) != -1) {
-+	while ((c = getopt(argc, argv, "46acC:D:Hl:L:mM:p:s:PS:tTuvz")) != -1) {
- 		switch (c) {
- 		case '4':
- 			if (cfg_family != PF_UNSPEC)
-@@ -452,6 +469,9 @@ static void parse_opts(int argc, char **argv)
- 		case 'l':
- 			cfg_runtime_ms = strtoul(optarg, NULL, 10) * 1000;
- 			break;
-+		case 'L':
-+			cfg_poll_loop_timeout_ms = strtoul(optarg, NULL, 10) * 1000;
-+			break;
- 		case 'm':
- 			cfg_sendmmsg = true;
- 			break;
-@@ -679,7 +699,7 @@ int main(int argc, char **argv)
- 			num_sends += send_udp(fd, buf[i]);
- 		num_msgs++;
- 		if ((cfg_zerocopy && ((num_msgs & 0xF) == 0)) || cfg_tx_tstamp)
--			flush_errqueue(fd, cfg_poll);
-+			flush_errqueue(fd, cfg_poll, 500, true);
- 
- 		if (cfg_msg_nr && num_msgs >= cfg_msg_nr)
- 			break;
-@@ -698,7 +718,7 @@ int main(int argc, char **argv)
- 	} while (!interrupted && (cfg_runtime_ms == -1 || tnow < tstop));
- 
- 	if (cfg_zerocopy || cfg_tx_tstamp)
--		flush_errqueue(fd, true);
-+		flush_errqueue_retry(fd, num_sends);
- 
- 	if (close(fd))
- 		error(1, errno, "close");
+diff --git a/drivers/net/phy/meson-gxl.c b/drivers/net/phy/meson-gxl.c
+index c49062ad7..fbf5f2416 100644
+--- a/drivers/net/phy/meson-gxl.c
++++ b/drivers/net/phy/meson-gxl.c
+@@ -261,6 +261,8 @@ static struct phy_driver meson_gxl_phy[] = {
+ 		.handle_interrupt = meson_gxl_handle_interrupt,
+ 		.suspend        = genphy_suspend,
+ 		.resume         = genphy_resume,
++		.read_mmd	= genphy_read_mmd_unsupported,
++		.write_mmd	= genphy_write_mmd_unsupported,
+ 	}, {
+ 		PHY_ID_MATCH_EXACT(0x01803301),
+ 		.name		= "Meson G12A Internal PHY",
 -- 
-2.34.1
+2.39.1
 
