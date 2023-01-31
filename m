@@ -2,111 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33ED2682653
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 09:26:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FC186827B9
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 09:55:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229964AbjAaI02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 03:26:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42198 "EHLO
+        id S229686AbjAaIzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 03:55:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229934AbjAaI00 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 03:26:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3311D42DE5
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 00:26:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96E90613B3
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 08:26:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E857C433D2;
-        Tue, 31 Jan 2023 08:26:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675153579;
-        bh=Rr06LWBaEnl40tq45B+s1i72rCZJEuZ9ofFa4YVr9G4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NSBwnZRZ/XOgqr3kULdTtD4KhKdBXnwcTArRIIAkDvcJRk1oa7vtU3RNIzvsenML2
-         kJPqoOa6J2WCR0AyuJpgIpDIGDHBRcMF+rSvRA5kT4cwdvIo00Su94IBE3xuETjD+y
-         Gse2wPvrcygRfH9yvMJUDonIGy3ZApx38DK5/EAKfT/pYEinOYXl782ZsJCbSiqt2X
-         SCmcNLQfNtazxecHDKTKkQRLTIGlJm7+B0uj4AXcNaSzkTKMc/aArINi8+RA50cx61
-         MJPCCbuHCqaR3IpHuTRsOT9C4A2wJ7srHeCq1PoeltK0/J/qjSaEYNrSKSu4xXVwjK
-         mOYqhB7TSOFhw==
-Date:   Tue, 31 Jan 2023 10:26:14 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org, bhelgaas@google.com
-Subject: Re: [PATCH net-next 0/8][pull request] Intel Wired LAN: Remove
- redundant Device Control Error Reporting Enable
-Message-ID: <Y9jQpjLPkRR/emeH@unreal>
-References: <20230130192519.686446-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S232176AbjAaIyP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 03:54:15 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EECAB49437
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 00:49:48 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pMmHw-0003xI-6v; Tue, 31 Jan 2023 09:46:48 +0100
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pMmHw-001eMX-91; Tue, 31 Jan 2023 09:46:47 +0100
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pMmHq-002yYt-VV; Tue, 31 Jan 2023 09:46:42 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Abel Vesa <abelvesa@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Russell King <linux@armlinux.org.uk>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v3 00/19] ARM: imx: make Ethernet refclock configurable
+Date:   Tue, 31 Jan 2023 09:46:23 +0100
+Message-Id: <20230131084642.709385-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230130192519.686446-1-anthony.l.nguyen@intel.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 11:25:11AM -0800, Tony Nguyen wrote:
-> Bjorn Helgaas says:
-> 
-> Since f26e58bf6f54 ("PCI/AER: Enable error reporting when AER is native"),
-> the PCI core sets the Device Control bits that enable error reporting for
-> PCIe devices.
-> 
-> This series removes redundant calls to pci_enable_pcie_error_reporting()
-> that do the same thing from several NIC drivers.
-> 
-> There are several more drivers where this should be removed; I started with
-> just the Intel drivers here.
-> ---
-> TN: Removed mention of AER driver as this was taken through PCI tree [1]
-> and fixed a typo.
-> 
-> [1] https://lore.kernel.org/all/20230126231527.GA1322015@bhelgaas/
-> 
-> The following are changes since commit 90e8ca0abb05ada6c1e2710eaa21688dafca26f2:
->   Merge branch 'devlink-next'
-> and are available in the git repository at:
->   git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 10GbE
-> 
-> Bjorn Helgaas (8):
->   e1000e: Remove redundant pci_enable_pcie_error_reporting()
->   fm10k: Remove redundant pci_enable_pcie_error_reporting()
->   i40e: Remove redundant pci_enable_pcie_error_reporting()
->   iavf: Remove redundant pci_enable_pcie_error_reporting()
->   ice: Remove redundant pci_enable_pcie_error_reporting()
->   igb: Remove redundant pci_enable_pcie_error_reporting()
->   igc: Remove redundant pci_enable_pcie_error_reporting()
->   ixgbe: Remove redundant pci_enable_pcie_error_reporting()
-> 
->  drivers/net/ethernet/intel/e1000e/netdev.c    | 7 -------
->  drivers/net/ethernet/intel/fm10k/fm10k_pci.c  | 5 -----
->  drivers/net/ethernet/intel/i40e/i40e_main.c   | 4 ----
->  drivers/net/ethernet/intel/iavf/iavf_main.c   | 5 -----
->  drivers/net/ethernet/intel/ice/ice_main.c     | 3 ---
->  drivers/net/ethernet/intel/igb/igb_main.c     | 5 -----
->  drivers/net/ethernet/intel/igc/igc_main.c     | 5 -----
->  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 5 -----
->  8 files changed, 39 deletions(-)
+changes v3:
+- add Reviewed-by: Abel Vesa <abel.vesa@linaro.org>
+- rebase on top of abelvesa/for-next
 
-I see that you didn't touch any other places except drivers/net/ethernet/intel/.
-Are you planning to remove other occurrences too?
+changes v2:
+- remove "ARM: imx6q: use of_clk_get_by_name() instead of_clk_get() to
+  get ptp clock" patch
+- fix build warnings
+- add "Acked-by: Lee Jones <lee@kernel.org>"
+- reword some commits as suggested by Fabio
 
-➜  kernel git:(rdma-next) git grep pci_enable_pcie_error_reporting -- drivers/infiniband/
-drivers/infiniband/hw/hfi1/pcie.c:      (void)pci_enable_pcie_error_reporting(pdev);
-drivers/infiniband/hw/qib/qib_pcie.c:   ret = pci_enable_pcie_error_reporting(pdev);
+Most of i.MX SoC variants have configurable FEC/Ethernet reference
+lock
+used by RMII specification. This functionality is located in the
+general purpose registers (GRPx) and till now was not implemented as
+part of SoC clock tree.
 
-Thanks
+With this patch set, we move forward and add this missing functionality
+to some of i.MX clk drivers. So, we will be able to configure clock
+opology
+by using devicetree and be able to troubleshoot clock dependencies
+by using clk_summary etc.
 
-> 
-> -- 
-> 2.38.1
-> 
+Currently implemented and tested i.MX6Q, i.MX6DL and i.MX6UL variants.
+
+
+Oleksij Rempel (19):
+  clk: imx: add clk-gpr-mux driver
+  clk: imx6q: add ethernet refclock mux support
+  ARM: imx6q: skip ethernet refclock reconfiguration if enet_clk_ref is
+    present
+  ARM: dts: imx6qdl: use enet_clk_ref instead of enet_out for the FEC
+    node
+  ARM: dts: imx6dl-lanmcu: configure ethernet reference clock parent
+  ARM: dts: imx6dl-alti6p: configure ethernet reference clock parent
+  ARM: dts: imx6dl-plybas: configure ethernet reference clock parent
+  ARM: dts: imx6dl-plym2m: configure ethernet reference clock parent
+  ARM: dts: imx6dl-prtmvt: configure ethernet reference clock parent
+  ARM: dts: imx6dl-victgo: configure ethernet reference clock parent
+  ARM: dts: imx6q-prtwd2: configure ethernet reference clock parent
+  ARM: dts: imx6qdl-skov-cpu: configure ethernet reference clock parent
+  ARM: dts: imx6dl-eckelmann-ci4x10: configure ethernet reference clock
+    parent
+  clk: imx: add imx_obtain_fixed_of_clock()
+  clk: imx6ul: fix enet1 gate configuration
+  clk: imx6ul: add ethernet refclock mux support
+  ARM: dts: imx6ul: set enet_clk_ref to CLK_ENETx_REF_SEL
+  ARM: mach-imx: imx6ul: remove not optional ethernet refclock overwrite
+  ARM: dts: imx6ul-prti6g: configure ethernet reference clock parent
+
+ arch/arm/boot/dts/imx6dl-alti6p.dts           |  12 +-
+ arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dts |  13 +-
+ arch/arm/boot/dts/imx6dl-lanmcu.dts           |  12 +-
+ arch/arm/boot/dts/imx6dl-plybas.dts           |  12 +-
+ arch/arm/boot/dts/imx6dl-plym2m.dts           |  12 +-
+ arch/arm/boot/dts/imx6dl-prtmvt.dts           |  11 +-
+ arch/arm/boot/dts/imx6dl-victgo.dts           |  12 +-
+ arch/arm/boot/dts/imx6q-prtwd2.dts            |  17 ++-
+ arch/arm/boot/dts/imx6qdl-skov-cpu.dtsi       |  12 +-
+ arch/arm/boot/dts/imx6qdl.dtsi                |   4 +-
+ arch/arm/boot/dts/imx6ul-prti6g.dts           |  14 ++-
+ arch/arm/boot/dts/imx6ul.dtsi                 |  10 +-
+ arch/arm/mach-imx/mach-imx6q.c                |  10 +-
+ arch/arm/mach-imx/mach-imx6ul.c               |  20 ---
+ drivers/clk/imx/Makefile                      |   1 +
+ drivers/clk/imx/clk-gpr-mux.c                 | 119 ++++++++++++++++++
+ drivers/clk/imx/clk-imx6q.c                   |  13 ++
+ drivers/clk/imx/clk-imx6ul.c                  |  33 ++++-
+ drivers/clk/imx/clk.c                         |  14 +++
+ drivers/clk/imx/clk.h                         |   8 ++
+ include/dt-bindings/clock/imx6qdl-clock.h     |   4 +-
+ include/dt-bindings/clock/imx6ul-clock.h      |   7 +-
+ include/linux/mfd/syscon/imx6q-iomuxc-gpr.h   |   6 +-
+ 23 files changed, 296 insertions(+), 80 deletions(-)
+ create mode 100644 drivers/clk/imx/clk-gpr-mux.c
+
+-- 
+2.30.2
+
