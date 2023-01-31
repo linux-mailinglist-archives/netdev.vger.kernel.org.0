@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A2476830AE
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 16:05:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B4976830B8
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 16:05:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232891AbjAaPFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 10:05:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36706 "EHLO
+        id S232734AbjAaPFo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 10:05:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232971AbjAaPEz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 10:04:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2110656EC5;
-        Tue, 31 Jan 2023 07:02:04 -0800 (PST)
+        with ESMTP id S232698AbjAaPFR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 10:05:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36FC154200;
+        Tue, 31 Jan 2023 07:02:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 632B861580;
-        Tue, 31 Jan 2023 15:01:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B77E5C4339E;
-        Tue, 31 Jan 2023 15:01:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 402F3B81D56;
+        Tue, 31 Jan 2023 15:01:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3957C4339C;
+        Tue, 31 Jan 2023 15:01:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675177285;
-        bh=EPTn8O+W9FKdSwBQm8cf1uuYZqyWDXkvTKEHGB5MubY=;
+        s=k20201202; t=1675177291;
+        bh=zv/BiT4SJmHw+pvsgQMRb+Bed+1Da39/4lKFFFRbc4Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kQwLAKlo0JdHyrHikqBtKP8HqlDlitZpD0FRSoR4VurlkmQWScvdFa5OEVsUSc+Y4
-         BHzteNCUMh5kfFgYCFOx9rYCIhWDdFPadA4iedSnc0ZAuSJ/YnmWzzyL8lMSrRbt4q
-         PwQisnX2VZAF9eCdbgqEe2yFQVP3QngD0dnF4V6tpnoD/RRPEFSGwvMQzE+BB/9xaX
-         RZ+Y4DjiqWOKclvHoUGsQMV4VSN9gDL2CBp1peW6S0pe3xWMEwoa86L8367MZntHmi
-         aumkNhw4BhS/wCEyUtLWCPp3OJXRtPcLaeUXCUopj4xNrWcssNLIZuyt1uXn/C5cws
-         IUNYVqac+n8tA==
+        b=CaozNtmQsHNQp0CmuRPJI59lqLU7G08aamT+PedCGYf64SPMIZSHlOSkwp4F5MyI/
+         D5vilR0KUt2VAzN/PEkeTQ6hJssiidBLxChNpoAfaUJtcdk0aobAyDmwmjmmEpgzK9
+         j/HrwsTwYEhr35UVqRV9RkQcwgCQkpYrI4/uU21DjggOVL4Qj+0UJYBtdLyUwzZdVz
+         wKeOhMvy+5+Y93ya10nMvmoKUomWrTlrQG0wutr9zxxzzsHANEbK5R4/oDEKuTYx/1
+         d1b45xsJKbXW05QdZKRR1Au9J/ff1w2zA7d08VlC5V9WQAmyfcId6Bg/eimxOhsEZZ
+         V6CVQHkIJR88Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Hyunwoo Kim <v4bel@theori.io>,
@@ -38,12 +38,12 @@ Cc:     Hyunwoo Kim <v4bel@theori.io>,
         Sasha Levin <sashal@kernel.org>, ms@dev.tdt.de,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         linux-x25@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 4/4] net/x25: Fix to not accept on connected socket
-Date:   Tue, 31 Jan 2023 10:01:18 -0500
-Message-Id: <20230131150118.1250409-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 3/3] net/x25: Fix to not accept on connected socket
+Date:   Tue, 31 Jan 2023 10:01:26 -0500
+Message-Id: <20230131150126.1250471-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230131150118.1250409-1-sashal@kernel.org>
-References: <20230131150118.1250409-1-sashal@kernel.org>
+In-Reply-To: <20230131150126.1250471-1-sashal@kernel.org>
+References: <20230131150126.1250471-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -80,10 +80,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 6 insertions(+)
 
 diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
-index 77d8adb27ec7..9d0328bb30ca 100644
+index e103ec39759f..73e293c3f2fb 100644
 --- a/net/x25/af_x25.c
 +++ b/net/x25/af_x25.c
-@@ -497,6 +497,12 @@ static int x25_listen(struct socket *sock, int backlog)
+@@ -496,6 +496,12 @@ static int x25_listen(struct socket *sock, int backlog)
  	int rc = -EOPNOTSUPP;
  
  	lock_sock(sk);
