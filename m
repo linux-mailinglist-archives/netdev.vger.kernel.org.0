@@ -2,175 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E796B68263C
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 09:17:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33ED2682653
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 09:26:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229895AbjAaIRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 03:17:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37410 "EHLO
+        id S229964AbjAaI02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 03:26:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbjAaIRR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 03:17:17 -0500
-Received: from out30-1.freemail.mail.aliyun.com (out30-1.freemail.mail.aliyun.com [115.124.30.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC21C3B0D0;
-        Tue, 31 Jan 2023 00:17:15 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R431e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VaW01z2_1675153031;
-Received: from 30.221.147.210(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0VaW01z2_1675153031)
-          by smtp.aliyun-inc.com;
-          Tue, 31 Jan 2023 16:17:12 +0800
-Message-ID: <9d5ff72f-14e4-f27f-cb6c-5301ad777f79@linux.alibaba.com>
-Date:   Tue, 31 Jan 2023 16:17:09 +0800
+        with ESMTP id S229934AbjAaI00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 03:26:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3311D42DE5
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 00:26:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96E90613B3
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 08:26:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E857C433D2;
+        Tue, 31 Jan 2023 08:26:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675153579;
+        bh=Rr06LWBaEnl40tq45B+s1i72rCZJEuZ9ofFa4YVr9G4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NSBwnZRZ/XOgqr3kULdTtD4KhKdBXnwcTArRIIAkDvcJRk1oa7vtU3RNIzvsenML2
+         kJPqoOa6J2WCR0AyuJpgIpDIGDHBRcMF+rSvRA5kT4cwdvIo00Su94IBE3xuETjD+y
+         Gse2wPvrcygRfH9yvMJUDonIGy3ZApx38DK5/EAKfT/pYEinOYXl782ZsJCbSiqt2X
+         SCmcNLQfNtazxecHDKTKkQRLTIGlJm7+B0uj4AXcNaSzkTKMc/aArINi8+RA50cx61
+         MJPCCbuHCqaR3IpHuTRsOT9C4A2wJ7srHeCq1PoeltK0/J/qjSaEYNrSKSu4xXVwjK
+         mOYqhB7TSOFhw==
+Date:   Tue, 31 Jan 2023 10:26:14 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org, bhelgaas@google.com
+Subject: Re: [PATCH net-next 0/8][pull request] Intel Wired LAN: Remove
+ redundant Device Control Error Reporting Enable
+Message-ID: <Y9jQpjLPkRR/emeH@unreal>
+References: <20230130192519.686446-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0)
- Gecko/20100101 Thunderbird/109.0
-Subject: Re: [PATCH net-next] virtio-net: fix possible unsigned integer
- overflow
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-References: <20230131034337.55445-1-hengqi@linux.alibaba.com>
- <20230131021758-mutt-send-email-mst@kernel.org>
- <20230131074032.GD34480@h68b04307.sqa.eu95>
- <20230131024630-mutt-send-email-mst@kernel.org>
-From:   Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <20230131024630-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-10.0 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20230130192519.686446-1-anthony.l.nguyen@intel.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jan 30, 2023 at 11:25:11AM -0800, Tony Nguyen wrote:
+> Bjorn Helgaas says:
+> 
+> Since f26e58bf6f54 ("PCI/AER: Enable error reporting when AER is native"),
+> the PCI core sets the Device Control bits that enable error reporting for
+> PCIe devices.
+> 
+> This series removes redundant calls to pci_enable_pcie_error_reporting()
+> that do the same thing from several NIC drivers.
+> 
+> There are several more drivers where this should be removed; I started with
+> just the Intel drivers here.
+> ---
+> TN: Removed mention of AER driver as this was taken through PCI tree [1]
+> and fixed a typo.
+> 
+> [1] https://lore.kernel.org/all/20230126231527.GA1322015@bhelgaas/
+> 
+> The following are changes since commit 90e8ca0abb05ada6c1e2710eaa21688dafca26f2:
+>   Merge branch 'devlink-next'
+> and are available in the git repository at:
+>   git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 10GbE
+> 
+> Bjorn Helgaas (8):
+>   e1000e: Remove redundant pci_enable_pcie_error_reporting()
+>   fm10k: Remove redundant pci_enable_pcie_error_reporting()
+>   i40e: Remove redundant pci_enable_pcie_error_reporting()
+>   iavf: Remove redundant pci_enable_pcie_error_reporting()
+>   ice: Remove redundant pci_enable_pcie_error_reporting()
+>   igb: Remove redundant pci_enable_pcie_error_reporting()
+>   igc: Remove redundant pci_enable_pcie_error_reporting()
+>   ixgbe: Remove redundant pci_enable_pcie_error_reporting()
+> 
+>  drivers/net/ethernet/intel/e1000e/netdev.c    | 7 -------
+>  drivers/net/ethernet/intel/fm10k/fm10k_pci.c  | 5 -----
+>  drivers/net/ethernet/intel/i40e/i40e_main.c   | 4 ----
+>  drivers/net/ethernet/intel/iavf/iavf_main.c   | 5 -----
+>  drivers/net/ethernet/intel/ice/ice_main.c     | 3 ---
+>  drivers/net/ethernet/intel/igb/igb_main.c     | 5 -----
+>  drivers/net/ethernet/intel/igc/igc_main.c     | 5 -----
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 5 -----
+>  8 files changed, 39 deletions(-)
 
+I see that you didn't touch any other places except drivers/net/ethernet/intel/.
+Are you planning to remove other occurrences too?
 
-在 2023/1/31 下午3:50, Michael S. Tsirkin 写道:
-> On Tue, Jan 31, 2023 at 03:40:32PM +0800, Heng Qi wrote:
->> On Tue, Jan 31, 2023 at 02:20:49AM -0500, Michael S. Tsirkin wrote:
->>> On Tue, Jan 31, 2023 at 11:43:37AM +0800, Heng Qi wrote:
->>>> When the single-buffer xdp is loaded and after xdp_linearize_page()
->>>> is called, *num_buf becomes 0 and (*num_buf - 1) may overflow into
->>>> a large integer in virtnet_build_xdp_buff_mrg(), resulting in
->>>> unexpected packet dropping.
->>>>
->>>> Fixes: ef75cb51f139 ("virtio-net: build xdp_buff with multi buffers")
->>>> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
->>>> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
->>> Given the confusion, just make num_buf an int?
->> In the structure virtio_net_hdr_mrg_rxbuf, \field{num_buffers} is unsigned int,
->> which matches each other.
-> Because hardware buffers are all unsigned. Does not mean we need
-> to do all math unsigned now.
+➜  kernel git:(rdma-next) git grep pci_enable_pcie_error_reporting -- drivers/infiniband/
+drivers/infiniband/hw/hfi1/pcie.c:      (void)pci_enable_pcie_error_reporting(pdev);
+drivers/infiniband/hw/qib/qib_pcie.c:   ret = pci_enable_pcie_error_reporting(pdev);
 
-Yes.
+Thanks
 
->
->> And num_buf is used in many different places, it seems
->> to be a lot of work to modify it to int.
-> Are you sure?
->
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-I will also change to int in the next version.
-
->
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 18b3de854aeb..97f2e9bfc6f9 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -722,7 +722,7 @@ static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
->    * have enough headroom.
->    */
->   static struct page *xdp_linearize_page(struct receive_queue *rq,
-> -				       u16 *num_buf,
-> +				       int *num_buf,
->   				       struct page *p,
->   				       int offset,
->   				       int page_off,
-> @@ -822,7 +822,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
->   		if (unlikely(xdp_headroom < virtnet_get_headroom(vi))) {
->   			int offset = buf - page_address(page) + header_offset;
->   			unsigned int tlen = len + vi->hdr_len;
-> -			u16 num_buf = 1;
-> +			int num_buf = 1;
->   
->   			xdp_headroom = virtnet_get_headroom(vi);
->   			header_offset = VIRTNET_RX_PAD + xdp_headroom;
-> @@ -948,7 +948,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->   					 struct virtnet_rq_stats *stats)
->   {
->   	struct virtio_net_hdr_mrg_rxbuf *hdr = buf;
-> -	u16 num_buf = virtio16_to_cpu(vi->vdev, hdr->num_buffers);
-> +	int num_buf = virtio16_to_cpu(vi->vdev, hdr->num_buffers);
->   	struct page *page = virt_to_head_page(buf);
->   	int offset = buf - page_address(page);
->   	struct sk_buff *head_skb, *curr_skb;
->
-> Feel free to reuse.
->
->
->>>> ---
->>>>   drivers/net/virtio_net.c | 7 +++++--
->>>>   1 file changed, 5 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->>>> index aaa6fe9b214a..a8e9462903fa 100644
->>>> --- a/drivers/net/virtio_net.c
->>>> +++ b/drivers/net/virtio_net.c
->>>> @@ -1007,6 +1007,9 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
->>>>   	xdp_prepare_buff(xdp, buf - VIRTIO_XDP_HEADROOM,
->>>>   			 VIRTIO_XDP_HEADROOM + vi->hdr_len, len - vi->hdr_len, true);
->>>>   
->>>> +	if (!*num_buf)
->>>> +		return 0;
->>>> +
->>>>   	if (*num_buf > 1) {
->>>>   		/* If we want to build multi-buffer xdp, we need
->>>>   		 * to specify that the flags of xdp_buff have the
->>>
->>> This means truesize won't be set.
->> Do you mean xdp_frags_truesize please? If yes, the answer is yes, this fix
->> is only for single-buffer xdp, which doesn't need xdp_frags_truesize, and
->> already set it to 0 in its wrapper receive_mergeable().
-> It seems cleaner to always set the value not rely on caller to do so.
-
-Yes, I'll try to separate them in other patches.
-
-Thanks.
-
->>>> @@ -1020,10 +1023,10 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
->>>>   		shinfo->xdp_frags_size = 0;
->>>>   	}
->>>>   
->>>> -	if ((*num_buf - 1) > MAX_SKB_FRAGS)
->>>> +	if (*num_buf > MAX_SKB_FRAGS + 1)
->>>>   		return -EINVAL;
->>> Admittedly this is cleaner.
->>>
->>>>   
->>>> -	while ((--*num_buf) >= 1) {
->>>> +	while (--*num_buf) {
->>> A bit more fragile, > 0 would be better.
->> Sure.
->>
->> Thanks.
->>
->>>>   		buf = virtqueue_get_buf_ctx(rq->vq, &len, &ctx);
->>>>   		if (unlikely(!buf)) {
->>>>   			pr_debug("%s: rx error: %d buffers out of %d missing\n",
->>>> -- 
->>>> 2.19.1.6.gb485710b
-
+> 
+> -- 
+> 2.38.1
+> 
