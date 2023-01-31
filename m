@@ -2,323 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A39E8682CAC
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 13:37:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA7DD682CAD
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 13:37:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231202AbjAaMhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 07:37:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49450 "EHLO
+        id S231295AbjAaMhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 07:37:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231214AbjAaMhN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 07:37:13 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2118.outbound.protection.outlook.com [40.107.220.118])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A764B483
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 04:37:12 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XO7en81N/X41IZAUU/Xl2d8gj3BmoTUZB1teoQVhgwWhdMOLXvcd8ui4O40sBkliH8xtbQ9j/dvRQ6xbT6qk7prLrvc7zUrV/YRjwuSa3qNhfzhCsnnP3Ou2IAj9yvVBEiEuL/Z3y/Z7yZIvGV+kp0BMphfEB+w047wYmWIXvnW7Mp4aV/mrXMYW0naQYUNjnZIeabkjkUZpyed2NgLkQbdBrxvWLjj3l23pTZsGZuP/NnF/cPuawVls1EZQnHoyEHCREiROU7uvwUKEYZgDdYHvOWnRE/qr4eGf4iymZRX3ltVf6tx4inNLcGwi6nzRhUJnIOOLBQmk6ZvR7Tgh4w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=m3dhlHDq+imnp8zZv0vHAjLEbP3zWb7S/Q4+R1vJpUw=;
- b=P5oZdtSnWc4aWSnl7oSGeCnECMzNUsJsttJYSgLoBjAwFg6zVrdJv5QP7QoSG/8nX0+zrfEOnEI1dl/Pqefz6PLemzcvEvepNCyzNrjWcrqOtDmrvG8xLZ8xfCSXSXtR7ng0sWKQ0SkC3Dx8MczzurXg2/evqCYxfJ2qf6x8+e8cwLHsw8x7v8zInQA2tbDfS7n82gyMiQH/NMvbuIDc0mMgGHYSMQ1EUyMlbLAE+J7COybywdInOG+i8IIKlJeQpb2dY9MOcxBFlQycyZfR1gbvTk8bQbNraQMofu7NxGmtn6kmLrLoV+K+3RoHS/7Bo17J094M7N/oXjHlcad5Fg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S231224AbjAaMhT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 07:37:19 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D144B74C
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 04:37:15 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id mf7so22440189ejc.6
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 04:37:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m3dhlHDq+imnp8zZv0vHAjLEbP3zWb7S/Q4+R1vJpUw=;
- b=NWO7+bfZiTsAFHengQWUhSfKoDIsWW95/JjgwXXP+WGMMEWk4Zis+DwkxQRv9dVEsYDZasJeW0RfvBbbmnw8tCMM2XlN2a6szyZq8xuyUyp7qMcH0fuyMgvi1exSuA0v/MP/bwKMUGAqXQJwg9XsauBNy4ri21kohAAeXevcXvY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by MW5PR13MB5608.namprd13.prod.outlook.com (2603:10b6:303:191::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.28; Tue, 31 Jan
- 2023 12:37:08 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65%7]) with mapi id 15.20.6043.038; Tue, 31 Jan 2023
- 12:37:08 +0000
-Date:   Tue, 31 Jan 2023 13:37:03 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Pedro Tammela <pctammela@mojatatu.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Subject: Re: [PATCH net-next v4 1/2] net/sched: transition act_pedit to rcu
- and percpu stats
-Message-ID: <Y9kLbylZSeSst01o@corigine.com>
-References: <20230130160233.3702650-1-pctammela@mojatatu.com>
- <20230130160233.3702650-2-pctammela@mojatatu.com>
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=QtyZHRudbgz5Qd4a4/Imr124YZGFT3m03anE2cLypgM=;
+        b=eUvvWpztzp0o2MroS+6gN4b4D/YQoJdHnl7URZjRJqbBlIoWoh309RDMhZy7N4extS
+         1c3x7m4/ivoiIUlGKpK9LPOyr1GKOuTn8mBna/zb2ff2rIojZ6puUY9VpRE9jRUh+uXb
+         vlppFvCDxeesgwhxB+MS2ZCqgh52GABOQfQj0H4r7VWXhpxN8v4SZh/5HcUZ0EFDFaTm
+         A0sCHxaclwKVqO7qPTtbQvZ/3LJ+siF8Z4/ja50Ort0Or9ecuSxJ0tQ8yvUDuoh+FrM4
+         bm4bMN88eX102+vciXXQDb2Q7apBvFW1uYE5dqdsamoB4qoR0OLlC+JKyFDNB9TdDUF/
+         Rn0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QtyZHRudbgz5Qd4a4/Imr124YZGFT3m03anE2cLypgM=;
+        b=JNcyWTDUNdCVIWAq2pMKStwh+nBsQbHeYN6Sw2tmAXDNnTrQSxpAe5ZU8YppU++r7q
+         WCDsY58nT1Pays2Jm7xLI4UUxEV1rqz3ziMEAtEooth3coiXOVweUiu6KAG/3P1NgRJ3
+         htER2OVBFuacjBuY0Qx+GtwCyhqBs7Byk/KnbV6EFqD1b+ZBIID/xNZAT9EpF7okXz/z
+         vidKpGey7wn7P5xQFzq1cHpZuas3XRRt6u65/JA0fwRPBpa8qTlHjyI0gcle6mpI4ShT
+         DdxSda8wb7SncDfoGC/sqTR2stbl92bhjvcE006mEwt7T9lEQ4zXKa1y49wR8171A1Mk
+         uGxA==
+X-Gm-Message-State: AO0yUKULMX7WxqcYdl24DMtxy7magPMfbSLNWvwha6HUYJMtLIdtSSFm
+        zGxpmhnxxv2S8vtPIPjidKhxzQ==
+X-Google-Smtp-Source: AK7set/FMuH2wFCk8kfcHaq2w3i5e6KSAkeEjr5OEq0DqKRiMW9MbD919p/bco20Aayz/1ckQUpTLw==
+X-Received: by 2002:a17:906:a2d0:b0:883:c829:fc5e with SMTP id by16-20020a170906a2d000b00883c829fc5emr12428407ejb.68.1675168633935;
+        Tue, 31 Jan 2023 04:37:13 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id 1-20020a170906218100b008720c458bd4sm8314863eju.3.2023.01.31.04.37.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Jan 2023 04:37:13 -0800 (PST)
+Date:   Tue, 31 Jan 2023 13:37:12 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jamal Hadi Salim <hadi@mojatatu.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel@mojatatu.com, deb.chatterjee@intel.com,
+        anjali.singhai@intel.com, namrata.limaye@intel.com,
+        khalidm@nvidia.com, tom@sipanda.io, pratyush@sipanda.io,
+        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, vladbu@nvidia.com, simon.horman@corigine.com,
+        stefanc@marvell.com, seong.kim@amd.com, mattyk@nvidia.com,
+        dan.daly@intel.com, john.andy.fingerhut@intel.com
+Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
+Message-ID: <Y9kLeGs0JmIJV0Ch@nanopsycho>
+References: <Y9eYNsklxkm8CkyP@nanopsycho>
+ <87pmawxny5.fsf@toke.dk>
+ <CAM0EoM=u-VSDZAifwTiOy8vXAGX7Hwg4rdea62-kNFGsHj7ObQ@mail.gmail.com>
+ <878rhkx8bd.fsf@toke.dk>
+ <CAAFAkD9Sh5jbp4qkzxuS+J3PGdtN-Kc2HdP8CDqweY36extSdA@mail.gmail.com>
+ <87wn53wz77.fsf@toke.dk>
+ <63d8325819298_3985f20824@john.notmuch>
+ <87leljwwg7.fsf@toke.dk>
+ <CAM0EoM=i_pTSRokDqDo_8JWjsDYwwzSgJw6sc+0c=Ss81SyJqg@mail.gmail.com>
+ <87h6w6vqyd.fsf@toke.dk>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230130160233.3702650-2-pctammela@mojatatu.com>
-X-ClientProxiedBy: AM4P190CA0014.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:200:56::24) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MW5PR13MB5608:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6ac48e5f-b257-4b0d-3233-08db0387de07
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: B1ujva7J9kY+JciE6nV36/ig9mOfZAP9noRsz83bbNV1WkCTE2z/iKNBRcsZiH7/pQbUHBXaGGzGwg+0c8PC72KH5eRKr7CtmKVS0UPE5C1jgdm3eZGz/MjxUeaQ0Aj2Y+nhl1PtOfR7fAvdSbxYVoXY9s8CTOsubG1HGaxJ3AYnmCwvyE2s9aszAJ64LtaPO1Q8SNkW1ZvKfFTe7m39U64bkmooU+jz2/4NmD1UUFr0UKAK8FixPJlNL1oFNzcyvYD8Huvn2JLdaKBDMAUsjy+A06JF1dtKWJnNuLQRmxKIk5oM4OABD4pfqIgzavFwklOgKPU2gkXAQ2zx8e/X8QWb0yZt8zj/AQJYkCSlPQQ+1fscrgTFcbOFW3aJIQXK06dNhZlondZmRCymfVE7tieCjCbqVTMwhlIfAbvePPugPueElUFv+8WWNgQkSxHesxuXitpXt6+8BaUtuafMDSc9W1LPp509wIbbT6nR+qVujkmlV96/6vmoE3u4M7xxp1W98RWdfnVmPpj0g6AO0fkEffVA9873y43pYcTRqaHsl6XkAW+d/JXkIzBnPu/Vft9SlIAVE1clthvDb+6ockKgeNwtDU54rrt0CNlHSXmJ11dCdO7zgoN7vZr6zUUU/6jpjYdvn9pSY6NdNnCocFyEAnYFpAc0uvoY0ju8VMj3Pk2gFESeRQ9qKp936AjS
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(39840400004)(396003)(376002)(366004)(451199018)(38100700002)(6486002)(478600001)(41300700001)(2906002)(36756003)(6666004)(86362001)(44832011)(5660300002)(316002)(8936002)(66946007)(8676002)(66476007)(4326008)(66556008)(83380400001)(186003)(6916009)(6512007)(6506007)(2616005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Tbfn/Jx2KStvnoS5yQiuzZMoEkYm5BdOJ3okFF9Nsimw3q2W7Gs6vjf0EZP9?=
- =?us-ascii?Q?rpTejzKo1CxUqPPFrgdclmfRLPotXIfWsPFQzxeOPaZJAsCfgzzjXlksko0t?=
- =?us-ascii?Q?EhNAL07SciVnBrtUWQQI07u15cNSljmky2u1OUfa+akD3UGQIHzmCvKkDE1A?=
- =?us-ascii?Q?NqS+GanZmvHzPHKUZ9XXMJOvHZWLB+o25Qek/BEvdQT7CWemIbRWjcvrVhB1?=
- =?us-ascii?Q?0glRDmqXurO+rq5/eHMphYdMUKrz3YJ3J8CaVzsz0ZYSsll12YqDvhDcZ+V/?=
- =?us-ascii?Q?wTzNW60KNk/EteWT94xmIyRCismdtIeqt0YQC+EFlGblZBv42CEzdjickSAk?=
- =?us-ascii?Q?gKj5HkLs7l93Jeh1vNyu+r59SDbWZqxQmS16BuCCVJnISDpPezIvoKR01kgR?=
- =?us-ascii?Q?SnnRQmcBiOmkVmDn253VFIpD1IBYh4Dffm9Ru8xJwMlx1vBMws6Qc8PVYUZt?=
- =?us-ascii?Q?b15CB/r9d3hY7qSXFqpwarVCy/BaYGOooc9Mr1w0byZJqwZLzexTcWfJIgnX?=
- =?us-ascii?Q?D0pXVPnWwdfMM2Of6btdoyNVuDcUPpySSSRxDaoDdZQaQ3UkkHDn9wAAm1F0?=
- =?us-ascii?Q?B+N3GhzAT/exStWzLat/OFKLXRnLv+0hbGJQPPPzuwjzp2A3KgnXTb6EkHSq?=
- =?us-ascii?Q?Dk0HQAPwnyNOPwAqYBDabOmHsAOaXgMfUbpKpP+wShbqnmGDS6wnoXhQ0DnM?=
- =?us-ascii?Q?w+ufi6+FoEhQbCfBYOCVxHwsi9TufK+ocKmI5i7QGuV7AKjH1VZDytkSWCZt?=
- =?us-ascii?Q?uHWnozXVbcSn/6FYR5Lohs1oVKFTWKm+B4mjspslfpxsAJxnlFhAz7/GZHoN?=
- =?us-ascii?Q?9vSF6+GRDUOhBlfNr23QZWeGne+tmpp/U2Hj5jNHS4Yr9gc13x5X351X3Zm1?=
- =?us-ascii?Q?GQcEAaEZEs6cMYBkgtIcGy0JbdkTUognmplhHYLilBpjNOG3umDb/SW5Wz/j?=
- =?us-ascii?Q?/iLvmVtAILy2K0X4EBFVlH84noNdn8j7ywgOUNAv+mTKpqGkbn8KshAnGFYj?=
- =?us-ascii?Q?sFm2rFQ+wnycNpVtlu+SSh/2GSGuAk0OQX7WyejcVfdC0yiIoQCe3S25uquG?=
- =?us-ascii?Q?31tex9+DQsftVIoFpJpDg8fB3LmTjFtgXS+pLK0q/p270rumMsIqjNbdLw9J?=
- =?us-ascii?Q?O9EN8s0gE0vRAm6xAkeHY7Nel5pd3Bed1CFZbdHgb4unXmZsXSktYB/M/zYc?=
- =?us-ascii?Q?ZWaI6iqlNfyhU13gBRXSc7fsyl7YNwzbAqqS7Iqt+X571W91JhhvhJFKTjg3?=
- =?us-ascii?Q?nOhBAreKDJQAJTJdBSrK1ZXzDaTOuh6jzyCw03XrvHhFQr3EPJwV/c3jEPcT?=
- =?us-ascii?Q?Wp6242bOfgj2S0gvYosfrtpcYuUNROFXotFJpA86XI2SEeC8Q8Myf79/aGlf?=
- =?us-ascii?Q?mH/fEM/7zl0CjvcVJWrqmgnHWVRn4H/nqUmYbZRyepAolVmZ7HTz/X8K/l50?=
- =?us-ascii?Q?GImFhXG/gJrIi6Oazm8jP5h7J8gFeF9Nfwh4nkUpkZjUE2ek0uuZGSutF+OW?=
- =?us-ascii?Q?i+1lRHV8qdR+v2OBmXGRcuHF67iJW969n93tNKZTFY4GD7w8CEiNhvaV6Y5W?=
- =?us-ascii?Q?slcJAWK6joQHKWRPz0d3lsOZUoh/Mg05qPGmK2vH5RaBhVdsEEnURiAKUEuJ?=
- =?us-ascii?Q?kIsyW4xFy6MW6y9Saqpzi+/sv8mnCsl7eLMZmOt0iGPKImD5SQNTAExyqmVH?=
- =?us-ascii?Q?37zSFQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6ac48e5f-b257-4b0d-3233-08db0387de07
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jan 2023 12:37:08.4945
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SAWqj/08t1DbY6GkTVQK3uUjX0mZvoup72kNnWZ/AWIGL5zJuhS+7f1zVhQd9Ebw4yDE2NTqcfcMtXx829hqt7tlrMyOdbNf6plUgCGjHiU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR13MB5608
+In-Reply-To: <87h6w6vqyd.fsf@toke.dk>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 01:02:32PM -0300, Pedro Tammela wrote:
-> The software pedit action didn't get the same love as some of the
-> other actions and it's still using spinlocks and shared stats in the
-> datapath.
-> Transition the action to rcu and percpu stats as this improves the
-> action's performance on multiple cpu deployments.
-> 
-> Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
-> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
-> ---
->  include/net/tc_act/tc_pedit.h |  81 +++++++++++++++----
->  net/sched/act_pedit.c         | 144 +++++++++++++++++++++-------------
->  2 files changed, 154 insertions(+), 71 deletions(-)
+Tue, Jan 31, 2023 at 01:17:14PM CET, toke@redhat.com wrote:
+>Jamal Hadi Salim <jhs@mojatatu.com> writes:
+>
+>> Toke, i dont think i have managed to get across that there is an
+>> "autonomous" control built into the kernel. It is not just things that
+>> come across netlink. It's about the whole infra.
+>
+>I'm not disputing the need for the TC infra to configure the pipelines
+>and their relationship in the hardware. I'm saying that your
+>implementation *of the SW path* is the wrong approach and it would be
+>better done by using BPF (not talking about the existing TC-BPF,
+>either).
+>
+>It's a bit hard to know your thinking for sure here, since your patch
+>series doesn't include any of the offload control bits. But from the
+>slides and your hints in this series, AFAICT, the flow goes something
+>like:
+>
+>hw_pipeline_id = devlink_program_hardware(dev, p4_compiled_blob);
 
-Hi Pedro,
+I don't think that devlink is the correct iface for this. If you want to
+tight it together with the SW pipeline configurable by TC, use TC as you
+do for the BPF binary in this example. If you have the TC-block shared
+among many netdevs, the HW needs to know that for binding the P4 input.
 
-thanks for the update.
+Btw, you can have multiple netdevs of different vendors sharing the same
+TC-block, then you need to upload multiple HW binary blobs here.
 
-A few questions from my side below.
+What it eventually might result with is that the userspace would upload
+a list of binaries with indication what is the target:
+"BPF" -> xxx.o
+"DRIVERNAMEX" -> aaa.bin
+"DRIVERNAMEY" -> bbb.bin
+In theory, there might be a HW to accept the BPF binary :) My point is,
+userspace provides a list of binaries, individual kernel parts take what
+they like.
 
-> diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
-> index a0378e9f0121..c8e8748dc258 100644
-> --- a/net/sched/act_pedit.c
-> +++ b/net/sched/act_pedit.c
-> @@ -134,6 +134,17 @@ static int tcf_pedit_key_ex_dump(struct sk_buff *skb,
->  	return -EINVAL;
->  }
->  
-> +static void tcf_pedit_cleanup_rcu(struct rcu_head *head)
-> +{
-> +	struct tcf_pedit_parms *parms =
-> +		container_of(head, struct tcf_pedit_parms, rcu);
-> +
-> +	kfree(parms->tcfp_keys_ex);
-> +	kfree(parms->tcfp_keys);
-> +
-> +	kfree(parms);
-> +}
-> +
->  static int tcf_pedit_init(struct net *net, struct nlattr *nla,
->  			  struct nlattr *est, struct tc_action **a,
->  			  struct tcf_proto *tp, u32 flags,
-> @@ -143,8 +154,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
->  	bool bind = flags & TCA_ACT_FLAGS_BIND;
->  	struct nlattr *tb[TCA_PEDIT_MAX + 1];
->  	struct tcf_chain *goto_ch = NULL;
-> -	struct tc_pedit_key *keys = NULL;
-> -	struct tcf_pedit_key_ex *keys_ex;
-> +	struct tcf_pedit_parms *oparms, *nparms;
->  	struct tc_pedit *parm;
->  	struct nlattr *pattr;
->  	struct tcf_pedit *p;
-> @@ -181,18 +191,25 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
->  		return -EINVAL;
->  	}
->  
-> -	keys_ex = tcf_pedit_keys_ex_parse(tb[TCA_PEDIT_KEYS_EX], parm->nkeys);
-> -	if (IS_ERR(keys_ex))
-> -		return PTR_ERR(keys_ex);
-> +	nparms = kzalloc(sizeof(*nparms), GFP_KERNEL);
-> +	if (!nparms)
-> +		return -ENOMEM;
-> +
-> +	nparms->tcfp_keys_ex =
-> +		tcf_pedit_keys_ex_parse(tb[TCA_PEDIT_KEYS_EX], parm->nkeys);
-> +	if (IS_ERR(nparms->tcfp_keys_ex)) {
-> +		ret = PTR_ERR(nparms->tcfp_keys_ex);
-> +		goto out_free;
-> +	}
->  
->  	index = parm->index;
->  	err = tcf_idr_check_alloc(tn, &index, a, bind);
->  	if (!err) {
-> -		ret = tcf_idr_create(tn, index, est, a,
-> -				     &act_pedit_ops, bind, false, flags);
-> +		ret = tcf_idr_create_from_flags(tn, index, est, a,
-> +						&act_pedit_ops, bind, flags);
->  		if (ret) {
->  			tcf_idr_cleanup(tn, index);
-> -			goto out_free;
-> +			goto out_free_ex;
->  		}
->  		ret = ACT_P_CREATED;
->  	} else if (err > 0) {
-> @@ -204,7 +221,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
->  		}
->  	} else {
->  		ret = err;
-> -		goto out_free;
-> +		goto out_free_ex;
->  	}
->  
->  	err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch, extack);
-> @@ -212,68 +229,79 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
->  		ret = err;
->  		goto out_release;
->  	}
-> +
-> +	nparms->tcfp_off_max_hint = 0;
-> +	nparms->tcfp_flags = parm->flags;
-> +
->  	p = to_pedit(*a);
->  	spin_lock_bh(&p->tcf_lock);
->  
-> +	oparms = rcu_dereference_protected(p->parms, 1);
-> +
->  	if (ret == ACT_P_CREATED ||
-> -	    (p->tcfp_nkeys && p->tcfp_nkeys != parm->nkeys)) {
-> -		keys = kmalloc(ksize, GFP_ATOMIC);
-> -		if (!keys) {
-> +	    (oparms->tcfp_nkeys && oparms->tcfp_nkeys != parm->nkeys)) {
-> +		nparms->tcfp_keys = kmalloc(ksize, GFP_ATOMIC);
-> +		if (!nparms->tcfp_keys) {
->  			spin_unlock_bh(&p->tcf_lock);
->  			ret = -ENOMEM;
-> -			goto put_chain;
-> +			goto out_release;
 
-I'm a little unclear on why put_chain is no longer needed.
-It seems to me that there can be a reference to goto_ch held here,
-as was the case before this patch.
+>sw_pipeline_id = `tc p4template create ...` (etc, this is generated by P4C)
+>
+>tc_act = tc_act_create(hw_pipeline_id, sw_pipeline_id)
+>
+>which will turn into something like:
+>
+>struct p4_cls_offload ofl = {
+>  .classid = classid,
+>  .pipeline_id = hw_pipeline_id
+>};
+>
+>if (check_sw_and_hw_equivalence(hw_pipeline_id, sw_pipeline_id)) /* some magic check here */
 
->  		}
-> -		kfree(p->tcfp_keys);
-> -		p->tcfp_keys = keys;
-> -		p->tcfp_nkeys = parm->nkeys;
-> +		nparms->tcfp_nkeys = parm->nkeys;
-> +	} else {
-> +		nparms->tcfp_keys = oparms->tcfp_keys;
+Ha! I would like to see this magic here :)
 
-I feel that I am missing something obvious:
-* Here oparms->tcfp_keys is assigned to nparms->tcfp_keys.
-* Later on there is a call to call_rcu(..., tcf_pedit_cleanup_rcu),
-  which will free oparms->tcfp_keys some time in the future.
-* But the memory bay still be accessed via tcfp_keys.
 
-Is there a life cycle issue here?
-
-> +		nparms->tcfp_nkeys = oparms->tcfp_nkeys;
->  	}
-> -	memcpy(p->tcfp_keys, parm->keys, ksize);
-> -	p->tcfp_off_max_hint = 0;
-> -	for (i = 0; i < p->tcfp_nkeys; ++i) {
-> -		u32 cur = p->tcfp_keys[i].off;
-> +
-> +	memcpy(nparms->tcfp_keys, parm->keys, ksize);
-> +
-> +	for (i = 0; i < nparms->tcfp_nkeys; ++i) {
-> +		u32 cur = nparms->tcfp_keys[i].off;
->  
->  		/* sanitize the shift value for any later use */
-> -		p->tcfp_keys[i].shift = min_t(size_t, BITS_PER_TYPE(int) - 1,
-> -					      p->tcfp_keys[i].shift);
-> +		nparms->tcfp_keys[i].shift = min_t(size_t,
-> +						   BITS_PER_TYPE(int) - 1,
-> +						   nparms->tcfp_keys[i].shift);
->  
->  		/* The AT option can read a single byte, we can bound the actual
->  		 * value with uchar max.
->  		 */
-> -		cur += (0xff & p->tcfp_keys[i].offmask) >> p->tcfp_keys[i].shift;
-> +		cur += (0xff & nparms->tcfp_keys[i].offmask) >> nparms->tcfp_keys[i].shift;
->  
->  		/* Each key touches 4 bytes starting from the computed offset */
-> -		p->tcfp_off_max_hint = max(p->tcfp_off_max_hint, cur + 4);
-> +		nparms->tcfp_off_max_hint =
-> +			max(nparms->tcfp_off_max_hint, cur + 4);
->  	}
->  
-> -	p->tcfp_flags = parm->flags;
->  	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
->  
-> -	kfree(p->tcfp_keys_ex);
-> -	p->tcfp_keys_ex = keys_ex;
-> +	rcu_assign_pointer(p->parms, nparms);
->  
->  	spin_unlock_bh(&p->tcf_lock);
-> +
-> +	if (oparms)
-> +		call_rcu(&oparms->rcu, tcf_pedit_cleanup_rcu);
-
-	Here there is a condition on oparms being non-NULL.
-	But further above oparms is dereference unconditionally.
-	Is there an inconsistency here?
-
-> +
->  	if (goto_ch)
->  		tcf_chain_put_by_act(goto_ch);
-> +
->  	return ret;
->  
-> -put_chain:
-> -	if (goto_ch)
-> -		tcf_chain_put_by_act(goto_ch);
->  out_release:
->  	tcf_idr_release(*a, bind);
-> +out_free_ex:
-> +	kfree(nparms->tcfp_keys_ex);
->  out_free:
-> -	kfree(keys_ex);
-> +	kfree(nparms);
->  	return ret;
-> -
->  }
-
-...
+>  return -EINVAL;
+>
+>netdev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_P4, &ofl);
+>
+>
+>I.e, all that's being passed to the hardware is the ID of the
+>pre-programmed pipeline, because that programming is going to be
+>out-of-band via devlink anyway.
+>
+>In which case, you could just as well replace the above:
+>
+>sw_pipeline_id = `tc p4template create ...` (etc, this is generated by P4C)
+>
+>with
+>
+>sw_pipeline_id = bpf_prog_load(BPF_PROG_TYPE_P4TC, "my_obj_file.o"); /* my_obj_file is created by P4c */
+>
+>and achieve exactly the same.
+>
+>Having all the P4 data types and concepts exist inside the kernel
+>*might* make sense if the kernel could then translate those into the
+>hardware representations and manage their lifecycle in a uniform way.
+>But as far as I can tell from the slides and what you've been saying in
+>this thread that's not going to be possible anyway, so why do you need
+>anything more granular than the pipeline ID?
+>
+>-Toke
+>
