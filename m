@@ -2,123 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BC55682A01
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 11:11:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 952E26829E6
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 11:06:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231285AbjAaKKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 05:10:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38602 "EHLO
+        id S229960AbjAaKGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 05:06:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231214AbjAaKKW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 05:10:22 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19AE155A0
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 02:10:20 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id n28-20020a05600c3b9c00b003ddca7a2bcbso181774wms.3
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 02:10:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=7CdDpf2HvFlRQpQEy8BTNgrbPxxoMvWAhrZNxv0ihbw=;
-        b=EsczMRY9pPKBmk0Uoa90CyuZBNr/wmbe8DL6DdmUKyhg9uT4jfKKwFFR/eXjWogSyS
-         byyQ2TmNEFYrdw1gNOTj7au/GibHuX4b+usuQwoqP6zJAWmiUzHxrBvlJ+jBw1DIrYsv
-         SNHCXPqB+idCsnYL+8IZqYaSe2HFxMEt+coR3oQHHEMG71Fob8ex995m6rbqdBo1DWBd
-         F0h68k2qzLM3JMl+LoAUaN95pSRayhCLxjsWv+biSmsBzwzWGbZY6UmSungwu9YTmLwU
-         kwrcT8DFMIOeGI0jbMWklUnyGTdbv6mukyK/4883jkLf5dpBeCGLnipNcMAgIa6Dkezd
-         ldcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7CdDpf2HvFlRQpQEy8BTNgrbPxxoMvWAhrZNxv0ihbw=;
-        b=rRX+ytde9L70xmMJ2fT6pntOuyBY5HVpajBT5VQsAZN2cpFJ/8fouwbNcrC9Eyt1Vp
-         +JqhCxw79YLdt/luGUG4Hj6TaywDtaoBbotpJPnDyRj06yhCrr3ATHuDqW0nessOPBT6
-         DrWrURlgrPsumf++z4N21c1lFbFq1ll92OAhVQqHh7km0ppE3DgzGH/elwOvrnLqCoYT
-         9Wl7KpbzdKXsx/m8HA7IV6EjVHRGu6LH/4XgAmUw996zrc6miQZQ/tuo78fefiCDaKec
-         Ja9Fr+S/+h+di7OdKJS5Yzha4iJtQe+a1mwXWNN2wsK16779cvK8M9EHlbshass+Zgl8
-         uiXw==
-X-Gm-Message-State: AFqh2koI1SwVD+E6XkpRrElKLGnKXEIJqWoY/jYRXLkkfqWbmV2/ZbOQ
-        bWBc5uu27Pe3JU04sBFZMpzeCg==
-X-Google-Smtp-Source: AMrXdXthUNPuxugLmFyr20OmcGU3scVtN6peVaj9WzwNmFTstwv/1P+9kRFJRaBdgp4jtqclwOZUvw==
-X-Received: by 2002:a05:600c:539b:b0:3da:1bb0:4d78 with SMTP id hg27-20020a05600c539b00b003da1bb04d78mr50940932wmb.14.1675159818451;
-        Tue, 31 Jan 2023 02:10:18 -0800 (PST)
-Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.gmail.com with ESMTPSA id u9-20020a05600c4d0900b003dc54eef495sm7097981wmp.24.2023.01.31.02.10.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Jan 2023 02:10:17 -0800 (PST)
-References: <20230130231402.471493-1-cphealy@gmail.com>
-User-agent: mu4e 1.8.10; emacs 28.2
-From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     cphealy@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net,
-        neil.armstrong@linaro.org, khilman@baylibre.com,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        jeremy.wang@amlogic.com
-Cc:     Chris Healy <healych@amazon.com>
-Subject: Re: [PATCH v3] net: phy: meson-gxl: Add generic dummy stubs for MMD
- register access
-Date:   Tue, 31 Jan 2023 11:05:19 +0100
-In-reply-to: <20230130231402.471493-1-cphealy@gmail.com>
-Message-ID: <1jbkmf2ewn.fsf@starbuckisacylon.baylibre.com>
+        with ESMTP id S229503AbjAaKGF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 05:06:05 -0500
+Received: from smtpbg156.qq.com (smtpbg156.qq.com [15.184.82.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22607DBC
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 02:06:00 -0800 (PST)
+X-QQ-mid: bizesmtp69t1675159553t3f1vvqf
+Received: from localhost.localdomain ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 31 Jan 2023 18:05:43 +0800 (CST)
+X-QQ-SSF: 01400000000000M0O000000A0000000
+X-QQ-FEAT: G3NsQplooNFiZEKgQerUPIrY3maNTHuBJzDv3CwTBE8D6WilN3eSG8tvSY1je
+        n/bNsrwL1L4M0gd+nlmSq4o+fHFc3KX74tUN7RU0pH0ToTvl+RjYoQbvWbB6nISCU6e5NsT
+        wYW9a/MDVHiRnmaAliq1V7Nsj2b7s/AWbQwdFTkCVDbAuviCIZvARFaE93yCmWOFNWU2oxe
+        yw7WrjX0KgFpPRs//UJDEG2uWMa96AF0jKj5UQ3+v3eHdMTSOXTyDUa5KeYN0YID2jNNM74
+        1p3IZtn5E4shWxIjQavAZPyBtHA8tKg//4kl911bDzyeKKnXBXIcc3Tf3aj1QNshQ3xE0Vq
+        WJ+QRIEXoIwYEtDRRK9vaNdA5GFqNXZuOcKpHK20ljrOpmnKBRozVSNOo2KsT9PnNoMGMSD
+        SW4eaxduguy6xltwXJrxFA==
+X-QQ-GoodBg: 2
+From:   Mengyuan Lou <mengyuanlou@net-swift.com>
+To:     netdev@vger.kernel.org
+Cc:     jiawenwu@trustnetic.com, Mengyuan Lou <mengyuanlou@net-swift.com>
+Subject: [PATCH net-next v2 00/10] Wangxun interrupt and RxTx support
+Date:   Tue, 31 Jan 2023 18:05:31 +0800
+Message-Id: <20230131100541.73757-1-mengyuanlou@net-swift.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:net-swift.com:qybglogicsvr:qybglogicsvr1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Configure interrupt, setup RxTx ring, support to receive and transmit
+packets.
 
-On Mon 30 Jan 2023 at 15:14, Chris Healy <cphealy@gmail.com> wrote:
+changes v2:
+- Andrew Lunn: https://lore.kernel.org/netdev/Y86kDphvyHj21IxK@lunn.ch/
+- Add a judgment when allocate dma for descriptor.
 
-> From: Chris Healy <healych@amazon.com>
->
-> The Meson G12A Internal PHY does not support standard IEEE MMD extended
-> register access, therefore add generic dummy stubs to fail the read and
-> write MMD calls. This is necessary to prevent the core PHY code from
-> erroneously believing that EEE is supported by this PHY even though this
-> PHY does not support EEE, as MMD register access returns all FFFFs.
+Jiawen Wu (5):
+  net: txgbe: Add interrupt support
+  net: libwx: Configure Rx and Tx unit on hardware
+  net: libwx: Allocate Rx and Tx resources
+  net: txgbe: Setup Rx and Tx ring
+  net: txgbe: Support Rx and Tx process path
 
-This is definitely something that should be done, Thx !
+Mengyuan Lou (5):
+  net: libwx: Add irq flow functions
+  net: ngbe: Add irqs request flow
+  net: libwx: Support to receive packets in NAPI
+  net: libwx: Add tx path to process packets
+  net: ngbe: Support Rx and Tx process path
 
->
-> Fixes: 5c3407abb338 ("net: phy: meson-gxl: add g12a support")
+ drivers/net/ethernet/wangxun/Kconfig          |    1 +
+ drivers/net/ethernet/wangxun/libwx/Makefile   |    2 +-
+ drivers/net/ethernet/wangxun/libwx/wx_hw.c    |  675 +++++-
+ drivers/net/ethernet/wangxun/libwx/wx_hw.h    |    5 +
+ drivers/net/ethernet/wangxun/libwx/wx_lib.c   | 2009 +++++++++++++++++
+ drivers/net/ethernet/wangxun/libwx/wx_lib.h   |   32 +
+ drivers/net/ethernet/wangxun/libwx/wx_type.h  |  315 +++
+ drivers/net/ethernet/wangxun/ngbe/ngbe_main.c |  249 +-
+ drivers/net/ethernet/wangxun/ngbe/ngbe_type.h |   18 +
+ .../net/ethernet/wangxun/txgbe/txgbe_main.c   |  271 ++-
+ .../net/ethernet/wangxun/txgbe/txgbe_type.h   |   21 +
+ 11 files changed, 3580 insertions(+), 18 deletions(-)
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/wx_lib.c
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/wx_lib.h
 
-This commit does not seems appropriate, especially since only the GXL ops
-are changed, not the g12a variant.
-
-This brings a 2nd point, any reason for not changing the g12 variant ?
-I'm fairly confident it does support EEE either.
-
-> Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
-> Signed-off-by: Chris Healy <healych@amazon.com>
->
-> ---
->
-> Changes in v3:
-> * Add reviewed-by
-> Change in v2:
-> * Add fixes tag
->
->  drivers/net/phy/meson-gxl.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/net/phy/meson-gxl.c b/drivers/net/phy/meson-gxl.c
-> index c49062ad72c6..5e41658b1e2f 100644
-> --- a/drivers/net/phy/meson-gxl.c
-> +++ b/drivers/net/phy/meson-gxl.c
-> @@ -271,6 +271,8 @@ static struct phy_driver meson_gxl_phy[] = {
->  		.handle_interrupt = meson_gxl_handle_interrupt,
->  		.suspend        = genphy_suspend,
->  		.resume         = genphy_resume,
-> +		.read_mmd	= genphy_read_mmd_unsupported,
-> +		.write_mmd	= genphy_write_mmd_unsupported,
->  	},
->  };
+-- 
+2.39.1
 
