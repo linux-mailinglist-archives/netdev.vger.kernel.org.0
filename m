@@ -2,162 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CDBB6682195
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 02:52:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B51368219D
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 02:53:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230440AbjAaBwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 20:52:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58636 "EHLO
+        id S230062AbjAaBxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 20:53:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229792AbjAaBwh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 20:52:37 -0500
-Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0608129165;
-        Mon, 30 Jan 2023 17:52:31 -0800 (PST)
-Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-15ff0a1f735so17626984fac.5;
-        Mon, 30 Jan 2023 17:52:30 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YkhOVKtwqGjloVyH5HhA0nwe/ERN2VhbSaTeDIUnuS8=;
-        b=OjLQWr5jOPQZMPvnoXWdSNH5+ByMgB6O/3OlSBn6TWIlOygW9QjJZvH3vFEdXApCuM
-         5kh2pQMyMQVXDVldCMJnw3a1U/a1H6E/Vsi0psa5UhRKA/ftvIllDY1+PHXUbwc1TAG4
-         Ov+u7VIV1XukhXIzcUre3usnN0SOPIF3311BBfqYPVUMZZj+aDx6AsB9JXq1mI+0uSEL
-         9RuF4iP5Oxjym5PPEngpCU2dmI0gwC85geCLaODt4pr8NUh1p/xKbId69P6cVgp7i2YB
-         Drwk127sYlfIniCzy0t3Q4mfvR4+OsMEcyE8u4x2Ost6X+PdyPiL62OMw8CkZc/jgfe9
-         8BBA==
-X-Gm-Message-State: AO0yUKWuss6nCQkczBZc4SWOnWC1HBBDQg/F47xrbfVjYVIFFDIx8fDz
-        vkDNXfHlBsiuVOkmbKqfhA==
-X-Google-Smtp-Source: AK7set/8OytAoPy2uP+IdddqTcDlyRj6kfw+2UPVg402hqcTw/35UG6u+SQaeuAv7aBL8FshJLZteA==
-X-Received: by 2002:a05:6870:d10e:b0:163:88f7:d947 with SMTP id e14-20020a056870d10e00b0016388f7d947mr4388118oac.43.1675129950231;
-        Mon, 30 Jan 2023 17:52:30 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id v9-20020a05687105c900b00163c90c1513sm1309223oan.28.2023.01.30.17.52.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Jan 2023 17:52:29 -0800 (PST)
-Received: (nullmailer pid 4086481 invoked by uid 1000);
-        Tue, 31 Jan 2023 01:52:28 -0000
-Date:   Mon, 30 Jan 2023 19:52:28 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, krzysztof.kozlowski+dt@linaro.org,
-        marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        alok.a.tiwari@oracle.com, hdanton@sina.com,
-        ilpo.jarvinen@linux.intel.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org,
-        amitkumar.karwar@nxp.com, rohit.fule@nxp.com, sherry.sun@nxp.com
-Subject: Re: [PATCH v2 2/3] dt-bindings: net: bluetooth: Add NXP bluetooth
- support
-Message-ID: <20230131015228.GA4082140-robh@kernel.org>
-References: <20230130180504.2029440-1-neeraj.sanjaykale@nxp.com>
- <20230130180504.2029440-3-neeraj.sanjaykale@nxp.com>
+        with ESMTP id S229519AbjAaBxa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 20:53:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B2E46181;
+        Mon, 30 Jan 2023 17:53:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE71661239;
+        Tue, 31 Jan 2023 01:53:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EA86C4339C;
+        Tue, 31 Jan 2023 01:53:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675130008;
+        bh=+iqqV7Ebh2zl1FwhMmw27fnwfnWuTQ/JjDKl/D2pDJA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=FEpJactq42Nv8YTAh0TnHOWX6OaImJ8mJxC+yZz7ounEW6KOhHInTGu5FD8+PDEjA
+         DdQE51NRlqq99zNcNowsfuSrmn84WNGilGRrp6Iib+pmNJkj8n2HERMn1aCS+/i6DT
+         hEHkOfqxvCcOVb2nKMLU2s2eSgqBLCgVNrbykhgeU3fYR1HLYPX6Wp1HkYXUqtplW9
+         0kFWvlZHvJ2tzWwnzuwjjwO4Tln+byLieA6tkHzJPedd0Ej5jml+JeR3Ar7l6Za82S
+         Qlv56GcFwRO2sSJaumLIhs6RXFJ2xu+3aOm0EQhAhcEocthT/9xneoU6e0ZypONhFD
+         lxpXAnifFtdYw==
+Received: by mail-lj1-f180.google.com with SMTP id j8so881380ljq.1;
+        Mon, 30 Jan 2023 17:53:28 -0800 (PST)
+X-Gm-Message-State: AO0yUKVVQBI0f5hSpaH3phlwG9wXmyrCM0+HpqY2lK/wEDE6ji7PWHMo
+        79wnmyZ1vJaBI7m2iY8Xd0XOo4TZQ/thbi3dWac=
+X-Google-Smtp-Source: AK7set+NRLhpdOUCSZa756Gs9F0vLSw51igAYdk5lRDlENa/2ncLDSH7RUuLzOC4/ef9vS+JvxfvAhN4hzzxWNIgRdU=
+X-Received: by 2002:a2e:a446:0:b0:290:70d1:7157 with SMTP id
+ v6-20020a2ea446000000b0029070d17157mr98630ljn.172.1675130006347; Mon, 30 Jan
+ 2023 17:53:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230130180504.2029440-3-neeraj.sanjaykale@nxp.com>
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+References: <20230120-vhost-klp-switching-v1-0-7c2b65519c43@kernel.org>
+ <Y9KyVKQk3eH+RRse@alley> <Y9LswwnPAf+nOVFG@do-x1extreme> <20230127044355.frggdswx424kd5dq@treble>
+ <Y9OpTtqWjAkC2pal@hirez.programming.kicks-ass.net> <20230127165236.rjcp6jm6csdta6z3@treble>
+ <20230127170946.zey6xbr4sm4kvh3x@treble> <20230127221131.sdneyrlxxhc4h3fa@treble>
+ <Y9e6ssSHUt+MUvum@hirez.programming.kicks-ass.net> <Y9gOMCWGmoc5GQMj@FVFF77S0Q05N>
+ <20230130194823.6y3rc227bvsgele4@treble>
+In-Reply-To: <20230130194823.6y3rc227bvsgele4@treble>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 30 Jan 2023 17:53:14 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW437A5SHnWyAmZh_RTTxbxvvp-swy0JBJQnwJ2jxubX2Q@mail.gmail.com>
+Message-ID: <CAPhsuW437A5SHnWyAmZh_RTTxbxvvp-swy0JBJQnwJ2jxubX2Q@mail.gmail.com>
+Subject: Re: [PATCH 0/2] vhost: improve livepatch switching for heavily loaded
+ vhost worker kthreads
+To:     Josh Poimboeuf <jpoimboe@kernel.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>, kvm@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        Jiri Kosina <jikos@kernel.org>, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        "Seth Forshee (DigitalOcean)" <sforshee@digitalocean.com>,
+        live-patching@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 11:35:03PM +0530, Neeraj Sanjay Kale wrote:
-> Add binding document for generic and legacy NXP bluetooth
-> chipsets.
-> 
-> Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
-> ---
-> v2: Resolved dt_binding_check errors. (Rob Herring)
-> v2: Modified description, added specific compatibility devices,
-> corrected indentations. (Krzysztof Kozlowski)
-> ---
->  .../bindings/net/bluetooth/nxp-bluetooth.yaml | 40 +++++++++++++++++++
->  MAINTAINERS                                   |  6 +++
->  2 files changed, 46 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/bluetooth/nxp-bluetooth.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/bluetooth/nxp-bluetooth.yaml b/Documentation/devicetree/bindings/net/bluetooth/nxp-bluetooth.yaml
-> new file mode 100644
-> index 000000000000..9c8a25396b49
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/bluetooth/nxp-bluetooth.yaml
-> @@ -0,0 +1,40 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/bluetooth/nxp-bluetooth.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: NXP Bluetooth chips
-> +
-> +description:
-> +  This binding describes UART-attached NXP bluetooth chips.
-> +
-> +maintainers:
-> +  - Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - nxp,w8987-bt
-> +      - nxp,w8997-bt
-> +      - nxp,w9098-bt
-> +      - nxp,iw416-bt
-> +      - nxp,iw612-bt
-> +
-> +  firmware-name:
-> +    description:
-> +      Specify firmware file name.
+On Mon, Jan 30, 2023 at 11:48 AM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
+>
+> On Mon, Jan 30, 2023 at 06:36:32PM +0000, Mark Rutland wrote:
+> > On Mon, Jan 30, 2023 at 01:40:18PM +0100, Peter Zijlstra wrote:
+> > > On Fri, Jan 27, 2023 at 02:11:31PM -0800, Josh Poimboeuf wrote:
+> > > > @@ -8500,8 +8502,10 @@ EXPORT_STATIC_CALL_TRAMP(might_resched);
+> > > >  static DEFINE_STATIC_KEY_FALSE(sk_dynamic_cond_resched);
+> > > >  int __sched dynamic_cond_resched(void)
+> > > >  {
+> > > > - if (!static_branch_unlikely(&sk_dynamic_cond_resched))
+> > > > + if (!static_branch_unlikely(&sk_dynamic_cond_resched)) {
+> > > > +         klp_sched_try_switch();
+> > > >           return 0;
+> > > > + }
+> > > >   return __cond_resched();
+> > > >  }
+> > > >  EXPORT_SYMBOL(dynamic_cond_resched);
+> > >
+> > > I would make the klp_sched_try_switch() not depend on
+> > > sk_dynamic_cond_resched, because __cond_resched() is not a guaranteed
+> > > pass through __schedule().
+> > >
+> > > But you'll probably want to check with Mark here, this all might
+> > > generate crap code on arm64.
+> >
+> > IIUC here klp_sched_try_switch() is a static call, so on arm64 this'll generate
+> > at least a load, a conditional branch, and an indirect branch. That's not
+> > ideal, but I'd have to benchmark it to find out whether it's a significant
+> > overhead relative to the baseline of PREEMPT_DYNAMIC.
+> >
+> > For arm64 it'd be a bit nicer to have another static key check, and a call to
+> > __klp_sched_try_switch(). That way the static key check gets turned into a NOP
+> > in the common case, and the call to __klp_sched_try_switch() can be a direct
+> > call (potentially a tail-call if we made it return 0).
+>
+> Hm, it might be nice if our out-of-line static call implementation would
+> automatically do a static key check as part of static_call_cond() for
+> NULL-type static calls.
+>
+> But the best answer is probably to just add inline static calls to
+> arm64.  Is the lack of objtool the only thing blocking that?
+>
+> Objtool is now modular, so all the controversial CFG reverse engineering
+> is now optional, so it shouldn't be too hard to just enable objtool for
+> static call inlines.
 
-default?
+This might be a little off topic, and maybe I missed some threads:
+How far are we from officially supporting livepatch on arm64?
 
+IIUC, stable stack unwinding is the missing piece at the moment?
 
-No interrupts or power supplies on these chips?
-
-> +
-> +required:
-> +  - compatible
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    uart2 {
-
-serial {
-
-> +        bluetooth {
-> +          compatible = "nxp,iw416-bt";
-> +          firmware-name = "uartuart_n61x_v1.bin";
-> +        };
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 32dd41574930..d465c1124699 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -22835,6 +22835,12 @@ L:	linux-mm@kvack.org
->  S:	Maintained
->  F:	mm/zswap.c
->  
-> +NXP BLUETOOTH WIRELESS DRIVERS
-> +M:	Amitkumar Karwar <amitkumar.karwar@nxp.com>
-> +M:	Neeraj Kale <neeraj.sanjaykale@nxp.com>
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/net/bluetooth/nxp-bluetooth.yaml
-> +
->  THE REST
->  M:	Linus Torvalds <torvalds@linux-foundation.org>
->  L:	linux-kernel@vger.kernel.org
-> -- 
-> 2.34.1
-> 
+Thanks,
+Song
