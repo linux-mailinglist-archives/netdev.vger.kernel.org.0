@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7286A682B6C
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 12:30:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D064682B6F
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 12:30:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231305AbjAaLaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 06:30:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59040 "EHLO
+        id S231668AbjAaLaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 06:30:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229828AbjAaLaM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 06:30:12 -0500
+        with ESMTP id S231485AbjAaLaR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 06:30:17 -0500
 Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1379C4A1F9;
-        Tue, 31 Jan 2023 03:30:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71BEC4B898;
+        Tue, 31 Jan 2023 03:30:16 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: sendonly@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 9270A3FA55;
-        Tue, 31 Jan 2023 11:30:01 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id E8E6041A36;
+        Tue, 31 Jan 2023 11:30:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
-        t=1675164607; bh=ZjWEGCtKMs+iCP880alfcD+T5+jOm8zzDU2+Ng2uQDc=;
-        h=From:To:Cc:Subject:Date;
-        b=WcaKAOgN3oaceGqpcVsb1yX2pGRculvKRUZWCnbe/PpLmIWvlY1o1Hvp53xWYZfmM
-         raarxdAEsmjelXWKX0loX5ApCs0sInyv6/r8u2Hge7qn/cbEnyASZToyQl5liYKhhr
-         KRAa2UsGb/n8ciXCI8zcbDXBz1h3EpO6xFCTa+zTMEda0FC534eCuWPGYM8IxPxD9c
-         tWlizT+zPY1texIAm9/qu/IXneE9te2VzK+6rIcS9pd+BFbAz1TJBChf0JrufUt1Xe
-         dsJ8w904TL6+3ie7kZW2RXT61QWP2AKgLHiR1gfA6g63SYJJgBjpIoaVWPbyzO/BG+
-         czrmHM0hhiU8g==
+        t=1675164615; bh=5gnsaR4FOCkWyPrei8p2FxTptYOhZoOOen1N58kwQSk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=Q/RZ2cdRDe3TsB/aQJ5VzDPNFsFaSH6KMIbBxhm/8hf0gGeJMTZAf7UdKNFQsE/fz
+         BsMtDecgp1UzaAIRdRqO9emk/lmSEr4Sn3CFj+Z/9eVe/HgE0ZjNW9G9K9e9eflnjE
+         q7cib2jY/rUlFN+0+kM1/3lwZLk/smZOMOfUwD4wtSNA9W8QVwGq0uKdTEtnxczwK0
+         snJEUWbWm+1AtbITcpXT6X8n25k0MNRzM1NGBgHkjrYux4jKjyhRFJNF6DwwqQ9eWB
+         14F7LTJwQ24mJsRkyyS1NlWK1cH6lFaTpDMcjNqbh+gH3TvvBxUdBIjvgHz3MximC3
+         BfaIUaBXFkFbA==
 From:   Hector Martin <marcan@marcan.st>
 To:     Arend van Spriel <aspriel@gmail.com>,
         Franky Lin <franky.lin@broadcom.com>,
@@ -52,10 +52,12 @@ Cc:     Alexander Prutskov <alep@cypress.com>,
         brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
-Subject: [PATCH v2 0/5] BCM4355/4364/4377 support & identification fixes
-Date:   Tue, 31 Jan 2023 20:28:35 +0900
-Message-Id: <20230131112840.14017-1-marcan@marcan.st>
+Subject: [PATCH v2 1/5] brcmfmac: Drop all the RAW device IDs
+Date:   Tue, 31 Jan 2023 20:28:36 +0900
+Message-Id: <20230131112840.14017-2-marcan@marcan.st>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20230131112840.14017-1-marcan@marcan.st>
+References: <20230131112840.14017-1-marcan@marcan.st>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -67,51 +69,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+These device IDs are only supposed to be visible internally, in devices
+without a proper OTP. They should never be seen in devices in the wild,
+so drop them to avoid confusion.
 
-This series adds support for the BCM4355, BCM4364, and BCM4377 variants
-found on Intel Apple Macs of the T2 era (and a few pre-T2 ones).
+Signed-off-by: Hector Martin <marcan@marcan.st>
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c       | 4 ----
+ drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h | 4 ----
+ 2 files changed, 8 deletions(-)
 
-The first patch drops the RAW device IDs, as discussed in the v1 thread.
-
-The second patch fixes a bunch of confusion introduced when adding
-support for the Cypress 89459 chip, which is, as far as I can tell,
-just a BCM4355.
-
-The subsequent patches add the firmware names and remaining missing
-device IDs, including splitting the BCM4364 firmware name by revision
-(since it was previously added without giving thought to the existence
-of more than one revision in the wild with different firmwares,
-resulting in different users manually copying different incompatible
-firmwares as the same firmware name).
-
-None of these devices have firmware in linux-firmware, so we should
-still be able to tweak firmware filenames without breaking anyone that
-matters. Apple T2 users these days are mostly using downstream trees
-with the Asahi Linux WLAN patches merged anyway, so they already know
-about this.
-
-Note that these devices aren't fully usable as far as firmware
-selection on these platforms without some extra patches to add support
-for fetching the required info from ACPI, but I want to get the device
-ID stuff out of the way first to move forward.
-
-v2: Added a commit in front to drop all the RAW device IDs as discussed,
-    and also fixed the 4364 firmware interface from BCA to WCC, as
-    pointed out in the v1 thread.
-
-Hector Martin (5):
-  brcmfmac: Drop all the RAW device IDs
-  wifi: brcmfmac: Rename Cypress 89459 to BCM4355
-  brcmfmac: pcie: Add IDs/properties for BCM4355
-  brcmfmac: pcie: Add IDs/properties for BCM4377
-  brcmfmac: pcie: Perform correct BCM4364 firmware selection
-
- .../broadcom/brcm80211/brcmfmac/chip.c        |  6 ++--
- .../broadcom/brcm80211/brcmfmac/pcie.c        | 36 +++++++++++++------
- .../broadcom/brcm80211/include/brcm_hw_ids.h  | 11 +++---
- 3 files changed, 34 insertions(+), 19 deletions(-)
-
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+index ae57a9a3ab05..93f961d484c3 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -2589,17 +2589,14 @@ static const struct dev_pm_ops brcmf_pciedrvr_pm = {
+ static const struct pci_device_id brcmf_pcie_devid_table[] = {
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4350_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE_SUB(0x4355, BRCM_PCIE_VENDOR_ID_BROADCOM, 0x4355, WCC),
+-	BRCMF_PCIE_DEVICE(BRCM_PCIE_4354_RAW_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4356_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43567_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43570_DEVICE_ID, WCC),
+-	BRCMF_PCIE_DEVICE(BRCM_PCIE_43570_RAW_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4358_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4359_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_2G_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_5G_DEVICE_ID, WCC),
+-	BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_RAW_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4364_DEVICE_ID, BCA),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4365_DEVICE_ID, BCA),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4365_2G_DEVICE_ID, BCA),
+@@ -2611,7 +2608,6 @@ static const struct pci_device_id brcmf_pcie_devid_table[] = {
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4371_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4378_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(CY_PCIE_89459_DEVICE_ID, CYW),
+-	BRCMF_PCIE_DEVICE(CY_PCIE_89459_RAW_DEVICE_ID, CYW),
+ 	{ /* end: all zeroes */ }
+ };
+ 
+diff --git a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
+index f4939cf62767..a211a72fca42 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
++++ b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
+@@ -71,17 +71,14 @@
+ /* PCIE Device IDs */
+ #define BRCM_PCIE_4350_DEVICE_ID	0x43a3
+ #define BRCM_PCIE_4354_DEVICE_ID	0x43df
+-#define BRCM_PCIE_4354_RAW_DEVICE_ID	0x4354
+ #define BRCM_PCIE_4356_DEVICE_ID	0x43ec
+ #define BRCM_PCIE_43567_DEVICE_ID	0x43d3
+ #define BRCM_PCIE_43570_DEVICE_ID	0x43d9
+-#define BRCM_PCIE_43570_RAW_DEVICE_ID	0xaa31
+ #define BRCM_PCIE_4358_DEVICE_ID	0x43e9
+ #define BRCM_PCIE_4359_DEVICE_ID	0x43ef
+ #define BRCM_PCIE_43602_DEVICE_ID	0x43ba
+ #define BRCM_PCIE_43602_2G_DEVICE_ID	0x43bb
+ #define BRCM_PCIE_43602_5G_DEVICE_ID	0x43bc
+-#define BRCM_PCIE_43602_RAW_DEVICE_ID	43602
+ #define BRCM_PCIE_4364_DEVICE_ID	0x4464
+ #define BRCM_PCIE_4365_DEVICE_ID	0x43ca
+ #define BRCM_PCIE_4365_2G_DEVICE_ID	0x43cb
+@@ -92,7 +89,6 @@
+ #define BRCM_PCIE_4371_DEVICE_ID	0x440d
+ #define BRCM_PCIE_4378_DEVICE_ID	0x4425
+ #define CY_PCIE_89459_DEVICE_ID         0x4415
+-#define CY_PCIE_89459_RAW_DEVICE_ID     0x4355
+ 
+ /* brcmsmac IDs */
+ #define BCM4313_D11N2G_ID	0x4727	/* 4313 802.11n 2.4G device */
 -- 
 2.35.1
 
