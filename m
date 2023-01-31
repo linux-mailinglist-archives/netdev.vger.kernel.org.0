@@ -2,359 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33BC4683236
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 17:06:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04DD5683237
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 17:07:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232408AbjAaQGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 11:06:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45152 "EHLO
+        id S230166AbjAaQHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 11:07:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230014AbjAaQG2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 11:06:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BC994DBF7
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 08:05:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675181135;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=M15miINuBv6FsNuNApYKWaWafj4pvjnY1ZlJNI6mzg4=;
-        b=h3kRLZidUaf/jcU43bUJ9eT781YhHZfVCeTYC3/gE60qUMQz2YjysG4KioKH6gfpFtk3kN
-        Q/6AyZQfNumGarpPZk2K3p75xaDRX1rRcQQdF9R3bMUwUhyBf7hKztlkvRzE3FG95Ml1yi
-        a48W6bSFF7rx1CqpjncqR9h4gFMRjCM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-424-LNKkWdxtPcmCuMAXXhh66Q-1; Tue, 31 Jan 2023 11:05:28 -0500
-X-MC-Unique: LNKkWdxtPcmCuMAXXhh66Q-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4863B85CAB4;
-        Tue, 31 Jan 2023 16:05:25 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.39.192.136])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 80081492B05;
-        Tue, 31 Jan 2023 16:05:23 +0000 (UTC)
-From:   =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
-To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        richardcochran@gmail.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
-        Yalin Li <yalli@redhat.com>
-Subject: [PATCH net 4/4] sfc: remove expired unicast PTP filters
-Date:   Tue, 31 Jan 2023 17:05:06 +0100
-Message-Id: <20230131160506.47552-5-ihuguet@redhat.com>
-In-Reply-To: <20230131160506.47552-1-ihuguet@redhat.com>
-References: <20230131160506.47552-1-ihuguet@redhat.com>
+        with ESMTP id S230014AbjAaQHW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 11:07:22 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2105.outbound.protection.outlook.com [40.107.93.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BDF3C142
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 08:07:21 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=N5dIeT0jX2vRsPsKeF4veBB5zjNRgYbQijmZq9JiOUos0UFM2SMzAbQVpS6HdwDzpz3v0PiU/vlikzWaqrFJ22KOMUeSfiMJ3ZMJI82l2iLCSGnIhHDGTIpEGzYl3nDogMm20NAxwDPF5ggBp19l3HLQYOit7w6d6jCuj5hXYjpyr80Lb3UxoB+Gzcp+RSBzSlgztLT/OcfRreIVMs5z7udht7g+HgARvha+pLKSRFZKTPfj4yd1exrlanIa8VYdE6SF7UinxAC5bkkJfwdJmr/sWyHWAYTKymHUtZS80YLufHbAC9RMYB2+M56qxv1ZdfcRHZSe7CpothygrRnIDg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dT9UNFKXhJLs/I4wr7d9sijgY6xPM32ckDtUDN3vqBc=;
+ b=HPEne9sMrFp/IQcZ1WDn1nOin+g6XLbbCZ5XoD6lxyAPBb2R2AHyvTdc6n8OPUFEd5uJ5nktMWMK7lmVuiBiYPpggD1PuzyK7E5UkTS207dkFJZSaCX3VY0BYFnhPTbiFpw931JXjtlK6M5PcsdF6i1kuOo6J/rXHJ06XPB9jEjeeJHKvdbXm9Rt/2BxOaiBxa4tdLMvDSvckOwsH7CnQX3pXPAos2LugGxGTUtMlQebEMD0olV7WBaB2IANEY4ALdGDoSupXf8bqag16LFjmPNidLcPJcw8/6Vicat25pyNKc+3DnxFdG45UyOizejb031hRDfe1BCY+xSkpr/YEQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dT9UNFKXhJLs/I4wr7d9sijgY6xPM32ckDtUDN3vqBc=;
+ b=ZPMGBXBZHAZJ9tCmjcB7iA8TwJHwBNwUa/KXEyqfPtmORBYZe3E7qsGM3XV9Sn79LldScXPB1hVu4IpLCFhnxUJF9qQLkIi218LmBHF52L56q7QWbJClOlnEQANlGCMzQnfRhfBmLZu+4dPv5EdcOLcsie/AoyLcJFb1RWcWHUQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by PH0PR13MB5448.namprd13.prod.outlook.com (2603:10b6:510:12b::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.38; Tue, 31 Jan
+ 2023 16:07:19 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65%7]) with mapi id 15.20.6043.038; Tue, 31 Jan 2023
+ 16:07:18 +0000
+Date:   Tue, 31 Jan 2023 17:07:13 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Pedro Tammela <pctammela@mojatatu.com>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Subject: Re: [PATCH net-next v5 1/2] net/sched: transition act_pedit to rcu
+ and percpu stats
+Message-ID: <Y9k8seDdoS1LHB7L@corigine.com>
+References: <20230131145149.3776656-1-pctammela@mojatatu.com>
+ <20230131145149.3776656-2-pctammela@mojatatu.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230131145149.3776656-2-pctammela@mojatatu.com>
+X-ClientProxiedBy: AM4P190CA0022.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:200:56::32) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB5448:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7c663e1b-f82c-4740-85ed-08db03a53a50
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YJuyMqqY9MtO/HTEseEvLCleg5gzcQSK/W5XD59l+tdMq++a3AAx7RErbKAg5O8lq5K5d6VT+2L5XcQYCkSktxOpd+/6XQE6fRQ1p+8qbgSKKQGH+ENJ8EpF2WNvAt4e7jXW9VWjkGcrRCOwRTmoK/VguAGOm4DXUKveY9qDXKmQXcgVR6Ofa2py2SclwhUCvF/iZqzPpaBEgvIhSLnDjoGZT50df5hGRhab1lKoN2H7VKgdwLU6HrdgVrNtDVPbO/LTfNQ6o027sHReMrFjM+e76uRq+srieH5ySdgUInS5pVyTaDfvMcCfCrGg3qkWS7Zwc97VV8uzDs1ToCmBKGy6jo9SWvrMV4Cqa/MrB/XKZ6q9XD4uo7Fb8UPujHybw4StAOgbQh+Coc/0BPNQmj8mRY5VmMYwRA78/3xubt1wVO50+0Jsj4lkA4mlK21yr8eM4u93ZS5S13Kx21x/EpHHrhTnVW50mVb8U/LJZi+TEDM44X/gAEPRTZ4fSgwBfmrKyfuoB7Rv9zZ0X0jxZrN9umbHmrPJ39iscZFFsJPjKagNNgbg3qVJsJQB258N4bWHN0OMMbaL8+bAPkqx1VeIs7dGrTIekU2CIlFajnFvve8hjXiJFrbIZ0ukv3glavhsr8JTQ37vhfMPU8mgsb8EHLpokMVkaTcZI79hsn7L6truCG7fW/REC8G7gUFt
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(136003)(39840400004)(346002)(376002)(366004)(451199018)(8676002)(4326008)(66556008)(66476007)(66946007)(6916009)(316002)(2906002)(8936002)(41300700001)(44832011)(5660300002)(38100700002)(6506007)(6666004)(83380400001)(36756003)(186003)(6512007)(2616005)(6486002)(478600001)(86362001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jlGBbCaOJOOBdM1IxT/dUqdiF6C5OMDPWc9W59ryQig5Jne9iG+imScJM8bI?=
+ =?us-ascii?Q?+Dvt1Q/ajkV0glkIl9fH+cfISHWqhSZ/vHRh587JYrgVZnQ8ixLc+Y982zr6?=
+ =?us-ascii?Q?KcgexAHmoHJeme1Hcd7GVQ3dSX+C6lWqnTcIUmygMtl6gUoiNQI8QQxKk7wU?=
+ =?us-ascii?Q?HIQnNBWcPDcMHY8qxrBttzRbhDRPHdxVDPFmKJUoGv6P3wpf1z6YKTvNgusA?=
+ =?us-ascii?Q?IcfHixsTkLi8OK1jYp56fZA/HUJ6zDqxFw7gWs83+9yy38CrEAjM7kum2WNE?=
+ =?us-ascii?Q?5mcJ8RQ2JJhQbHdLb7ahYVdHFiLEhcgYflZ9nB2xzKFLvBRTJkrLzyAsXxBf?=
+ =?us-ascii?Q?elgTQsIfKz6Prle4ZZSvtWqLBI+uy1ruhpK3Tp9xFL07Ey/qmNIpyk5FoYPT?=
+ =?us-ascii?Q?jl1+3NUR0PljfLuSqjKov6SijCwhboX+Yx14mJ79eWTFXH0DQ5RIsp8EGcyj?=
+ =?us-ascii?Q?N98/dA3Am6FwYGHNL6TKnrHhqkpPLp1qvpWCVHJLUlOCeQaiGeWwXKaCgPxp?=
+ =?us-ascii?Q?27iqU8iK6MLoaUTlWDAwFLRE9urGZPtJTGdIj8zvkVU36pJlNFBM27jPFfXq?=
+ =?us-ascii?Q?U5C3TI4KE/gjsMMDS0irEJIGJoIzoK7vE46SblKK0P3IWqNQog3RmIB5t0nS?=
+ =?us-ascii?Q?YqTr013erde1Vc0U3Elhi7ySC/eNqz6UHewkhYtSZxAGBByNJjfTonV90sUv?=
+ =?us-ascii?Q?b8DeSPzcaVGeQzhnnCPNoqNVqPZ44rBWPLPCPLaVzAUmvlL1WfAHsZUtitwU?=
+ =?us-ascii?Q?7RcCmqJTOQ/+hi7PiqhpexuKSPx6ob4aC5kd6dZjhYOrw1gd32ZCG2Byzg3q?=
+ =?us-ascii?Q?GiwBce+aF/v/f/tLObJSQst4PwGfAOEq/aXVYldHfGpC0i1tzKdktFSPYjvT?=
+ =?us-ascii?Q?s6kF+nYcuM+Akhg85Iiickl6K+g8p68TDQ2gxc0cRlcG7SxhHjGNUUcrNeWr?=
+ =?us-ascii?Q?RmzJEmWbwgVqeIdM6ZQLgWHUx9jpGyQOFZgAjdVk3/X4Fksz3txZmbsEy50o?=
+ =?us-ascii?Q?vJDKfYjp0YFLMlOEYSeszlZErvKKNGHtdjGoYaVlVWJEnqkF1SRzsRNY2i/B?=
+ =?us-ascii?Q?3Ru6Z2T57v9huJPSl7DbBNIYCy5Rm3OxzHL3O20OHOVLQ+zOrgDIF+KDe4Sq?=
+ =?us-ascii?Q?aUHicC04mSTHwK+uoxEgXt/NtbhrEsVwr8W5g7OhpBDBRxMr8/39nOdQkNi4?=
+ =?us-ascii?Q?86wC0mSS4ebMHhU7s5mHqSE9FcgP/LzY9b/CHvMdMPn/iYCkj3cPdQPDAyYO?=
+ =?us-ascii?Q?PRJVdKmBwym5NyX48fMq2DbYdzvjN/nowhkG3iA1RbiArWVdLPbF6mNGEs5f?=
+ =?us-ascii?Q?bHxNbggJOgsji7598UdAevQTPVYfRrq4S48ZT677Kd3e0CX4IHyKdMadn/sM?=
+ =?us-ascii?Q?IvACBf6bO8Q1z2ujAmUfN1ZCO/1H4Ty/OQTlLpYj2QkC+X6Hke/6na4fEHk0?=
+ =?us-ascii?Q?Ir51jHQK5kKpzA0zNTCmIq7ODwX0N3LPb2okLBlAbKr6USBo+JFxcpsiB+S2?=
+ =?us-ascii?Q?oTxgjPY6b/LnvqipAJ2AgZtdnN97/glVVGDeruixgWtVT5NyTevP6Zd21Wkm?=
+ =?us-ascii?Q?a7sBgDh1vV7pzVBzTW3jYySnun8hAFxksD2hAL6Q1CYSiZ6f3Aesi+KjZNF5?=
+ =?us-ascii?Q?ReVzn5BZGKLbhMGhxCOWF9AnURX/uj5F85cQ+6MAaL3vW6qGET28BXWpjAaF?=
+ =?us-ascii?Q?YVsbQw=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7c663e1b-f82c-4740-85ed-08db03a53a50
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jan 2023 16:07:18.8555
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: U9Qt3+9N1+VkLGez+OuLwVmHdNKYpyVUUZdp97fvIGjt5HsTUayTvQT5XofmqU9OoZayNE5qt+CCFT/AOpSiE5YLzzWDdD5WOFZbEbn32fc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5448
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Filters inserted to support unicast PTP mode might become unused after
-some time, so we need to remove them to avoid accumulating many of them.
+On Tue, Jan 31, 2023 at 11:51:48AM -0300, Pedro Tammela wrote:
+> The software pedit action didn't get the same love as some of the
+> other actions and it's still using spinlocks and shared stats in the
+> datapath.
+> Transition the action to rcu and percpu stats as this improves the
+> action's performance dramatically on multiple cpu deployments.
+> 
+> Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
+> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 
-Actually, it would be a very unusual situation that many different
-addresses are used, normally only a small set of predefined
-addresses are tried. Anyway, some cleanup is necessary because
-maintaining old filters forever makes very little sense.
+...
 
-Reported-by: Yalin Li <yalli@redhat.com>
-Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
----
- drivers/net/ethernet/sfc/ptp.c | 120 +++++++++++++++++++++------------
- 1 file changed, 76 insertions(+), 44 deletions(-)
+> diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
+> index a0378e9f0121..674b534be46e 100644
+> --- a/net/sched/act_pedit.c
+> +++ b/net/sched/act_pedit.c
 
-diff --git a/drivers/net/ethernet/sfc/ptp.c b/drivers/net/ethernet/sfc/ptp.c
-index f9342e21bf31..fd37a61058e7 100644
---- a/drivers/net/ethernet/sfc/ptp.c
-+++ b/drivers/net/ethernet/sfc/ptp.c
-@@ -75,6 +75,9 @@
- /* How long an unmatched event or packet can be held */
- #define PKT_EVENT_LIFETIME_MS		10
- 
-+/* How long unused unicast filters can be held */
-+#define UCAST_FILTER_EXPIRY_JIFFIES	msecs_to_jiffies(30000)
-+
- /* Offsets into PTP packet for identification.  These offsets are from the
-  * start of the IP header, not the MAC header.  Note that neither PTP V1 nor
-  * PTP V2 permit the use of IPV4 options.
-@@ -226,6 +229,7 @@ struct efx_ptp_rxfilter {
- 	__be16 ether_type;
- 	__be16 loc_port;
- 	__be32 loc_host[4];
-+	unsigned long expiry;
- 	int handle;
- };
- 
-@@ -1319,8 +1323,8 @@ static inline void efx_ptp_process_rx(struct efx_nic *efx, struct sk_buff *skb)
- 	local_bh_enable();
- }
- 
--static bool efx_ptp_filter_exists(struct list_head *ptp_list,
--				  struct efx_filter_spec *spec)
-+static struct efx_ptp_rxfilter *
-+efx_ptp_find_filter(struct list_head *ptp_list, struct efx_filter_spec *spec)
- {
- 	struct efx_ptp_rxfilter *rxfilter;
- 
-@@ -1328,10 +1332,19 @@ static bool efx_ptp_filter_exists(struct list_head *ptp_list,
- 		if (rxfilter->ether_type == spec->ether_type &&
- 		    rxfilter->loc_port == spec->loc_port &&
- 		    !memcmp(rxfilter->loc_host, spec->loc_host, sizeof(spec->loc_host)))
--			return true;
-+			return rxfilter;
- 	}
- 
--	return false;
-+	return NULL;
-+}
-+
-+static inline void efx_ptp_remove_one_filter(struct efx_nic *efx,
-+					     struct efx_ptp_rxfilter *rxfilter)
-+{
-+	efx_filter_remove_id_safe(efx, EFX_FILTER_PRI_REQUIRED,
-+				  rxfilter->handle);
-+	list_del(&rxfilter->list);
-+	kfree(rxfilter);
- }
- 
- static void efx_ptp_remove_filters(struct efx_nic *efx,
-@@ -1340,10 +1353,7 @@ static void efx_ptp_remove_filters(struct efx_nic *efx,
- 	struct efx_ptp_rxfilter *rxfilter, *tmp;
- 
- 	list_for_each_entry_safe(rxfilter, tmp, ptp_list, list) {
--		efx_filter_remove_id_safe(efx, EFX_FILTER_PRI_REQUIRED,
--					  rxfilter->handle);
--		list_del(&rxfilter->list);
--		kfree(rxfilter);
-+		efx_ptp_remove_one_filter(efx, rxfilter);
- 	}
- }
- 
-@@ -1357,23 +1367,24 @@ static void efx_ptp_init_filter(struct efx_nic *efx,
- 			   efx_rx_queue_index(queue));
- }
- 
--static int efx_ptp_insert_filter(struct efx_nic *efx,
--				 struct list_head *ptp_list,
--				 struct efx_filter_spec *spec)
-+static struct efx_ptp_rxfilter *
-+efx_ptp_insert_filter(struct efx_nic *efx, struct list_head *ptp_list,
-+		      struct efx_filter_spec *spec)
- {
- 	struct efx_ptp_rxfilter *rxfilter;
- 	int rc;
- 
--	if (efx_ptp_filter_exists(ptp_list, spec))
--		return 0;
-+	rxfilter = efx_ptp_find_filter(ptp_list, spec);
-+	if (rxfilter)
-+		return rxfilter;
- 
- 	rc = efx_filter_insert_filter(efx, spec, true);
- 	if (rc < 0)
--		return rc;
-+		return ERR_PTR(rc);
- 
- 	rxfilter = kzalloc(sizeof(*rxfilter), GFP_KERNEL);
- 	if (!rxfilter)
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 
- 	rxfilter->handle = rc;
- 	rxfilter->ether_type = spec->ether_type;
-@@ -1381,12 +1392,12 @@ static int efx_ptp_insert_filter(struct efx_nic *efx,
- 	memcpy(rxfilter->loc_host, spec->loc_host, sizeof(spec->loc_host));
- 	list_add(&rxfilter->list, ptp_list);
- 
--	return 0;
-+	return rxfilter;
- }
- 
--static int efx_ptp_insert_ipv4_filter(struct efx_nic *efx,
--				      struct list_head *ptp_list,
--				      __be32 addr, u16 port)
-+static struct efx_ptp_rxfilter *
-+efx_ptp_insert_ipv4_filter(struct efx_nic *efx, struct list_head *ptp_list,
-+			   __be32 addr, u16 port)
- {
- 	struct efx_filter_spec spec;
- 
-@@ -1395,9 +1406,9 @@ static int efx_ptp_insert_ipv4_filter(struct efx_nic *efx,
- 	return efx_ptp_insert_filter(efx, ptp_list, &spec);
- }
- 
--static int efx_ptp_insert_ipv6_filter(struct efx_nic *efx,
--				      struct list_head *ptp_list,
--				      struct in6_addr *addr, u16 port)
-+static struct efx_ptp_rxfilter *
-+efx_ptp_insert_ipv6_filter(struct efx_nic *efx, struct list_head *ptp_list,
-+			   struct in6_addr *addr, u16 port)
- {
- 	struct efx_filter_spec spec;
- 
-@@ -1406,7 +1417,8 @@ static int efx_ptp_insert_ipv6_filter(struct efx_nic *efx,
- 	return efx_ptp_insert_filter(efx, ptp_list, &spec);
- }
- 
--static int efx_ptp_insert_eth_multicast_filter(struct efx_nic *efx)
-+static struct efx_ptp_rxfilter *
-+efx_ptp_insert_eth_multicast_filter(struct efx_nic *efx)
- {
- 	const u8 addr[ETH_ALEN] = PTP_ADDR_ETHER;
- 	struct efx_filter_spec spec;
-@@ -1421,7 +1433,7 @@ static int efx_ptp_insert_eth_multicast_filter(struct efx_nic *efx)
- static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
- {
- 	struct efx_ptp_data *ptp = efx->ptp_data;
--	int rc;
-+	struct efx_ptp_rxfilter *rc;
- 
- 	if (!ptp->channel || !list_empty(&ptp->rxfilters_mcast))
- 		return 0;
-@@ -1431,12 +1443,12 @@ static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
- 	 */
- 	rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_mcast,
- 					htonl(PTP_ADDR_IPV4), PTP_EVENT_PORT);
--	if (rc < 0)
-+	if (IS_ERR(rc))
- 		goto fail;
- 
- 	rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_mcast,
- 					htonl(PTP_ADDR_IPV4), PTP_GENERAL_PORT);
--	if (rc < 0)
-+	if (IS_ERR(rc))
- 		goto fail;
- 
- 	/* if the NIC supports hw timestamps by the MAC, we can support
-@@ -1447,16 +1459,16 @@ static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_mcast,
- 						&ipv6_addr, PTP_EVENT_PORT);
--		if (rc < 0)
-+		if (IS_ERR(rc))
- 			goto fail;
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_mcast,
- 						&ipv6_addr, PTP_GENERAL_PORT);
--		if (rc < 0)
-+		if (IS_ERR(rc))
- 			goto fail;
- 
- 		rc = efx_ptp_insert_eth_multicast_filter(efx);
--		if (rc < 0)
-+		if (IS_ERR(rc))
- 			goto fail;
- 	}
- 
-@@ -1464,7 +1476,7 @@ static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
- 
- fail:
- 	efx_ptp_remove_filters(efx, &ptp->rxfilters_mcast);
--	return rc;
-+	return PTR_ERR(rc);
- }
- 
- static bool efx_ptp_valid_unicast_event_pkt(struct sk_buff *skb)
-@@ -1483,7 +1495,7 @@ static int efx_ptp_insert_unicast_filter(struct efx_nic *efx,
- 					 struct sk_buff *skb)
- {
- 	struct efx_ptp_data *ptp = efx->ptp_data;
--	int rc;
-+	struct efx_ptp_rxfilter *rxfilter;
- 
- 	if (!efx_ptp_valid_unicast_event_pkt(skb))
- 		return -EINVAL;
-@@ -1491,28 +1503,36 @@ static int efx_ptp_insert_unicast_filter(struct efx_nic *efx,
- 	if (skb->protocol == htons(ETH_P_IP)) {
- 		__be32 addr = ip_hdr(skb)->saddr;
- 
--		rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_EVENT_PORT);
--		if (rc < 0)
-+		rxfilter = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
-+						      addr, PTP_EVENT_PORT);
-+		if (IS_ERR(rxfilter))
- 			goto fail;
- 
--		rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_GENERAL_PORT);
--		if (rc < 0)
-+		rxfilter->expiry = jiffies + UCAST_FILTER_EXPIRY_JIFFIES;
-+
-+		rxfilter = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
-+						      addr, PTP_GENERAL_PORT);
-+		if (rxfilter < 0)
- 			goto fail;
-+
-+		rxfilter->expiry = jiffies + UCAST_FILTER_EXPIRY_JIFFIES;
- 	} else if (efx_ptp_use_mac_tx_timestamps(efx)) {
- 		/* IPv6 PTP only supported by devices with MAC hw timestamp */
- 		struct in6_addr *addr = &ipv6_hdr(skb)->saddr;
- 
--		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_EVENT_PORT);
--		if (rc < 0)
-+		rxfilter = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
-+						      addr, PTP_EVENT_PORT);
-+		if (IS_ERR(rxfilter))
- 			goto fail;
- 
--		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_GENERAL_PORT);
--		if (rc < 0)
-+		rxfilter->expiry = jiffies + UCAST_FILTER_EXPIRY_JIFFIES;
-+
-+		rxfilter = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
-+						      addr, PTP_GENERAL_PORT);
-+		if (IS_ERR(rxfilter))
- 			goto fail;
-+
-+		rxfilter->expiry = jiffies + UCAST_FILTER_EXPIRY_JIFFIES;
- 	} else {
- 		return -EOPNOTSUPP;
- 	}
-@@ -1521,7 +1541,18 @@ static int efx_ptp_insert_unicast_filter(struct efx_nic *efx,
- 
- fail:
- 	efx_ptp_remove_filters(efx, &ptp->rxfilters_ucast);
--	return rc;
-+	return PTR_ERR(rxfilter);
-+}
-+
-+static void efx_ptp_drop_expired_unicast_filters(struct efx_nic *efx)
-+{
-+	struct efx_ptp_data *ptp = efx->ptp_data;
-+	struct efx_ptp_rxfilter *rxfilter, *tmp;
-+
-+	list_for_each_entry_safe(rxfilter, tmp, &ptp->rxfilters_ucast, list) {
-+		if (time_is_before_jiffies(rxfilter->expiry))
-+			efx_ptp_remove_one_filter(efx, rxfilter);
-+	}
- }
- 
- static int efx_ptp_start(struct efx_nic *efx)
-@@ -1615,6 +1646,7 @@ static void efx_ptp_worker(struct work_struct *work)
- 	}
- 
- 	efx_ptp_drop_time_expired_events(efx);
-+	efx_ptp_drop_expired_unicast_filters(efx);
- 
- 	__skb_queue_head_init(&tempq);
- 	efx_ptp_process_events(efx, &tempq);
--- 
-2.34.3
+...
 
+> @@ -143,8 +154,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
+>  	bool bind = flags & TCA_ACT_FLAGS_BIND;
+>  	struct nlattr *tb[TCA_PEDIT_MAX + 1];
+>  	struct tcf_chain *goto_ch = NULL;
+> -	struct tc_pedit_key *keys = NULL;
+> -	struct tcf_pedit_key_ex *keys_ex;
+> +	struct tcf_pedit_parms *oparms, *nparms;
+
+nit: reverse xmas tree
+
+>  	struct tc_pedit *parm;
+>  	struct nlattr *pattr;
+>  	struct tcf_pedit *p;
+
+...
+
+> @@ -212,48 +228,51 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
+>  		ret = err;
+>  		goto out_release;
+>  	}
+> -	p = to_pedit(*a);
+> -	spin_lock_bh(&p->tcf_lock);
+>  
+> -	if (ret == ACT_P_CREATED ||
+> -	    (p->tcfp_nkeys && p->tcfp_nkeys != parm->nkeys)) {
+> -		keys = kmalloc(ksize, GFP_ATOMIC);
+> -		if (!keys) {
+> -			spin_unlock_bh(&p->tcf_lock);
+> -			ret = -ENOMEM;
+> -			goto put_chain;
+> -		}
+> -		kfree(p->tcfp_keys);
+> -		p->tcfp_keys = keys;
+> -		p->tcfp_nkeys = parm->nkeys;
+> +	nparms->tcfp_off_max_hint = 0;
+> +	nparms->tcfp_flags = parm->flags;
+> +	nparms->tcfp_nkeys = parm->nkeys;
+> +
+> +	nparms->tcfp_keys = kmalloc(ksize, GFP_KERNEL);
+
+Can ksize be zero?
+
+...
