@@ -2,115 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4FC46827B7
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 09:55:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFF966827C1
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 09:56:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230344AbjAaIyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 03:54:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43222 "EHLO
+        id S232149AbjAaIz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 03:55:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232100AbjAaIyN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 03:54:13 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA21474E4
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 00:49:47 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pMmHu-0003rM-8C; Tue, 31 Jan 2023 09:46:46 +0100
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pMmHu-001eLX-2U; Tue, 31 Jan 2023 09:46:45 +0100
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pMmHr-002ybe-Av; Tue, 31 Jan 2023 09:46:43 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Abel Vesa <abelvesa@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Russell King <linux@armlinux.org.uk>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v3 19/19] ARM: dts: imx6ul-prti6g: configure ethernet reference clock parent
-Date:   Tue, 31 Jan 2023 09:46:42 +0100
-Message-Id: <20230131084642.709385-20-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230131084642.709385-1-o.rempel@pengutronix.de>
-References: <20230131084642.709385-1-o.rempel@pengutronix.de>
+        with ESMTP id S232143AbjAaIzj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 03:55:39 -0500
+Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABE274B493;
+        Tue, 31 Jan 2023 00:50:50 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VaW9vg9_1675155005;
+Received: from localhost(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0VaW9vg9_1675155005)
+          by smtp.aliyun-inc.com;
+          Tue, 31 Jan 2023 16:50:05 +0800
+From:   Heng Qi <hengqi@linux.alibaba.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Subject: [PATCH net-next v2] virtio-net: fix possible unsigned integer overflow
+Date:   Tue, 31 Jan 2023 16:50:04 +0800
+Message-Id: <20230131085004.98687-1-hengqi@linux.alibaba.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On this board the PHY is the ref clock provider. So, configure ethernet
-reference clock as input.
+When the single-buffer xdp is loaded and after xdp_linearize_page()
+is called, *num_buf becomes 0 and (*num_buf - 1) may overflow into
+a large integer in virtnet_build_xdp_buff_mrg(), resulting in
+unexpected packet dropping.
 
-Without this patch we have relatively high amount of dropped packets.
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Fixes: ef75cb51f139 ("virtio-net: build xdp_buff with multi buffers")
+Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 ---
- arch/arm/boot/dts/imx6ul-prti6g.dts | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+v1->v2:
+- Change the type of num_buf from unsigned int to int. @Michael S . Tsirkin
+- Some cleaner codes. @Michael S . Tsirkin
 
-diff --git a/arch/arm/boot/dts/imx6ul-prti6g.dts b/arch/arm/boot/dts/imx6ul-prti6g.dts
-index c18390f238e1..b7c96fbe7a91 100644
---- a/arch/arm/boot/dts/imx6ul-prti6g.dts
-+++ b/arch/arm/boot/dts/imx6ul-prti6g.dts
-@@ -26,6 +26,7 @@ clock_ksz8081_out: clock-ksz8081-out {
- 		compatible = "fixed-clock";
- 		#clock-cells = <0>;
- 		clock-frequency = <50000000>;
-+		clock-output-names = "enet1_ref_pad";
- 	};
+ drivers/net/virtio_net.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index aaa6fe9b214a..8102861785a2 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -716,7 +716,7 @@ static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
+  * have enough headroom.
+  */
+ static struct page *xdp_linearize_page(struct receive_queue *rq,
+-				       u16 *num_buf,
++				       int *num_buf,
+ 				       struct page *p,
+ 				       int offset,
+ 				       int page_off,
+@@ -816,7 +816,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
+ 		if (unlikely(xdp_headroom < virtnet_get_headroom(vi))) {
+ 			int offset = buf - page_address(page) + header_offset;
+ 			unsigned int tlen = len + vi->hdr_len;
+-			u16 num_buf = 1;
++			int num_buf = 1;
  
- 	leds {
-@@ -60,6 +61,13 @@ &can2 {
- 	status = "okay";
- };
+ 			xdp_headroom = virtnet_get_headroom(vi);
+ 			header_offset = VIRTNET_RX_PAD + xdp_headroom;
+@@ -989,7 +989,7 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
+ 				      void *buf,
+ 				      unsigned int len,
+ 				      unsigned int frame_sz,
+-				      u16 *num_buf,
++				      int *num_buf,
+ 				      unsigned int *xdp_frags_truesize,
+ 				      struct virtnet_rq_stats *stats)
+ {
+@@ -1007,6 +1007,9 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
+ 	xdp_prepare_buff(xdp, buf - VIRTIO_XDP_HEADROOM,
+ 			 VIRTIO_XDP_HEADROOM + vi->hdr_len, len - vi->hdr_len, true);
  
-+&clks {
-+	clocks = <&ckil>, <&osc>, <&ipp_di0>, <&ipp_di1>, <&clock_ksz8081_out>;
-+	clock-names = "ckil", "osc", "ipp_di0", "ipp_di1", "enet1_ref_pad";
-+	assigned-clocks = <&clks IMX6UL_CLK_ENET1_REF_SEL>;
-+	assigned-clock-parents = <&clock_ksz8081_out>;
-+};
++	if (!*num_buf)
++		return 0;
 +
- &ecspi1 {
- 	cs-gpios = <&gpio4 26 GPIO_ACTIVE_LOW>;
- 	pinctrl-names = "default";
-@@ -85,12 +93,6 @@ &fec1 {
- 	pinctrl-0 = <&pinctrl_eth1>;
- 	phy-mode = "rmii";
- 	phy-handle = <&rmii_phy>;
--	clocks = <&clks IMX6UL_CLK_ENET>,
--		 <&clks IMX6UL_CLK_ENET_AHB>,
--		 <&clks IMX6UL_CLK_ENET_PTP>,
--		 <&clock_ksz8081_out>;
--	clock-names = "ipg", "ahb", "ptp",
--		      "enet_clk_ref";
- 	status = "okay";
+ 	if (*num_buf > 1) {
+ 		/* If we want to build multi-buffer xdp, we need
+ 		 * to specify that the flags of xdp_buff have the
+@@ -1020,10 +1023,10 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
+ 		shinfo->xdp_frags_size = 0;
+ 	}
  
- 	mdio {
+-	if ((*num_buf - 1) > MAX_SKB_FRAGS)
++	if (*num_buf > MAX_SKB_FRAGS + 1)
+ 		return -EINVAL;
+ 
+-	while ((--*num_buf) >= 1) {
++	while (--*num_buf > 0) {
+ 		buf = virtqueue_get_buf_ctx(rq->vq, &len, &ctx);
+ 		if (unlikely(!buf)) {
+ 			pr_debug("%s: rx error: %d buffers out of %d missing\n",
+@@ -1076,7 +1079,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+ 					 struct virtnet_rq_stats *stats)
+ {
+ 	struct virtio_net_hdr_mrg_rxbuf *hdr = buf;
+-	u16 num_buf = virtio16_to_cpu(vi->vdev, hdr->num_buffers);
++	int num_buf = virtio16_to_cpu(vi->vdev, hdr->num_buffers);
+ 	struct page *page = virt_to_head_page(buf);
+ 	int offset = buf - page_address(page);
+ 	struct sk_buff *head_skb, *curr_skb;
 -- 
-2.30.2
+2.19.1.6.gb485710b
 
