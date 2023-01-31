@@ -2,122 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3293682F05
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 15:18:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4577682F0A
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 15:20:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232228AbjAaOSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 09:18:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51464 "EHLO
+        id S231185AbjAaOUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 09:20:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232118AbjAaOSL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 09:18:11 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE6C16AD6;
-        Tue, 31 Jan 2023 06:18:07 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id cr11so8612657pfb.1;
-        Tue, 31 Jan 2023 06:18:07 -0800 (PST)
+        with ESMTP id S230272AbjAaOUJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 09:20:09 -0500
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D221516AD6
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 06:20:07 -0800 (PST)
+Received: by mail-oi1-x234.google.com with SMTP id bx13so7121412oib.13
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 06:20:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=D/tLUdHiIHb80iO9Lp6bZpLrU9d/zmMciFOjvZujeYU=;
-        b=M7BEAZl9XM9H/0i/cZkTiFAj6gsYn05hTXFFLpAf4k7OyA1bg+txR7mkki7YAcPPW3
-         oLmFuZ8vC9EolA/0BQLZdhhC94OeHSQMECFcMpY/CykmgCZHc77HHG/seByXRbR904mF
-         jIHlzSztlVJRjbrOCMVKJzX4AJvT9NjY5O6+s37lCDOrHfXhfj9qPmyONeuL/Ua502te
-         2GsOE5fZuSDI2Qkf8AauNi7QR3TfbgPVEJz2wfsQLq3Pmn5UbX9JD9JRvBYHdcm8YAuA
-         4aqMNWgRTmojcWqkyThZtuuVwpGeCV/iUhYjVd4jOOjLarkILE8jbk54NrTZXHAxqbTY
-         HFGA==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Ozni4YehMCp2nCGPCf1Ml0KJztjqN0LYq6mkHJNnkes=;
+        b=VFXkbcU68Xml1BxEvYdq+9PFm10aRbDcHME/EfcpGT+nV1BReSfop5soCor45Oagvc
+         2nX6b2OL92CrQnUUa7FHYl09gY2+2rQ70if2o+2wEmoHc0OlIR2nOYR1ChjoqsVZrgnK
+         /RZquZ00W/ijMwYNVCjnbp2WNxZQHsbFmgn59v9lmDpmh2owE42NGF6WByeHzFhZKx6L
+         DyNom3tkR6+OYi8DHd/0U1LUvbwnMzSv78UnFdFGSu1hKkDv0xCEDUAuakbWnaPNCklZ
+         J8KrLI9zbVg4f07fe7v/P2QN7u1Q+n7LohwMmmMOoWtOknzfbeGgTJYdOU0zUgHm+u4g
+         Kqrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=D/tLUdHiIHb80iO9Lp6bZpLrU9d/zmMciFOjvZujeYU=;
-        b=DoJNYxLpJSF4jBuqi7slDa6guIGIZhLivh3ZAkLREmngyEqgbj/XljK2ncRNSz1qoc
-         p+NamXsUS7/2j3oNVqxVLJXcwXIH7PhaKS45dCA+Kh6JHvk7Y0eVDM6Ul6rcTzJVFmOs
-         4/TFLvCIC8WQRkehDvqtOg9z0xG0eQOegySoOEfKcVYr/9xL8QEdGsfm68EllZ4vPMn4
-         GegU4XfTB7D1iXZk7Lw+IE4lbtzP/81jW1B6uqrYWuimo1841tNHVEhtS+vO6p5ZKFpx
-         L1VxNxERhKQbW5pTQaXcinSvxCEiebzpH92aHaBaGEZJUFM5LlB7uohhKIMcjT0kd04M
-         xmeg==
-X-Gm-Message-State: AFqh2krg0oDU+LJb40z7IpzbnYY+mcELFow4Gf9ce+gMw7CtMfD5nLi2
-        cQ4u2/hKEhNbPOmsjkxyYckEeao5O3iPfL2rWcc=
-X-Google-Smtp-Source: AMrXdXs9/A8sqP6U1AUBHsMTAuuw85NEz8wAEfIlns2ZHq3egt0ctehCpLkguo4QE4wz3Iwieal9NkYzu6ISoyDaFl0=
-X-Received: by 2002:a62:1989:0:b0:58d:ae61:c14b with SMTP id
- 131-20020a621989000000b0058dae61c14bmr6651888pfz.51.1675174686518; Tue, 31
- Jan 2023 06:18:06 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ozni4YehMCp2nCGPCf1Ml0KJztjqN0LYq6mkHJNnkes=;
+        b=MrxlFEMUAaiAHYyN4pNJj+W7JsfPVEPF52yTNdOjoaV9GxFbtHoKZPuSA1KtR8CVIe
+         OCt5e8WzSSsZ22ehAY9t9lLDD1VGnKDPGJVWwXFdpTSXpD5OboUVRacgRmDazuI5L6u2
+         SreRF/OFAeVF1FBecWaP8bl0GXknfCoW2Vcmaby7M9x6XEnP+tbzgbQU7IwtzFcLifjz
+         LP23vyCeOzZ/KYHjw70eAkNWIwnNKMBpsEKFJJEeRkmup98JITDLXNU1n4MkejfsepPD
+         8wdhJTnOiS27UKDWa3ZpLOAwxJztAPhOwxetiDm/pa8FFnwXrVhFnKHzXWmk+hWLXghx
+         iXTw==
+X-Gm-Message-State: AO0yUKV2uITPBCVy3RG4D91xj9oPJZflYe7/DD9eXsueI+uQFtzySiA0
+        AabjupFmjxLE4zYQOOH7LxNoTA==
+X-Google-Smtp-Source: AK7set8sYEKDWaa6fNLB8uPFGQsjhA0HCC3UM4RzJMIasQ2ocXHMgW8+TkcWZspK+wcU2n5Agqfdpw==
+X-Received: by 2002:aca:b7c2:0:b0:378:9cbc:9e56 with SMTP id h185-20020acab7c2000000b003789cbc9e56mr154881oif.38.1675174807088;
+        Tue, 31 Jan 2023 06:20:07 -0800 (PST)
+Received: from ?IPV6:2804:14d:5c5e:4698:1d86:b62f:e05b:126b? ([2804:14d:5c5e:4698:1d86:b62f:e05b:126b])
+        by smtp.gmail.com with ESMTPSA id x4-20020a05680801c400b0036a97066646sm5823488oic.8.2023.01.31.06.20.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Jan 2023 06:20:06 -0800 (PST)
+Message-ID: <bf8f3ae0-02e7-dae3-2b93-c7088db1a424@mojatatu.com>
+Date:   Tue, 31 Jan 2023 11:20:02 -0300
 MIME-Version: 1.0
-References: <20230131112840.14017-1-marcan@marcan.st> <20230131112840.14017-2-marcan@marcan.st>
-In-Reply-To: <20230131112840.14017-2-marcan@marcan.st>
-From:   Jonas Gorski <jonas.gorski@gmail.com>
-Date:   Tue, 31 Jan 2023 15:17:55 +0100
-Message-ID: <CAOiHx=mYxFx0kr5s=4X_qywZBpPqCbrNjLnTXfigPOnqZSxjag@mail.gmail.com>
-Subject: Re: [PATCH v2 1/5] brcmfmac: Drop all the RAW device IDs
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexander Prutskov <alep@cypress.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Ian Lin <ian.lin@infineon.com>,
-        Soontak Lee <soontak.lee@cypress.com>,
-        Joseph chuang <jiac@cypress.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Aditya Garg <gargaditya08@live.com>, asahi@lists.linux.dev,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Hauke Mehrtens <hauke@hauke-m.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next v4 1/2] net/sched: transition act_pedit to rcu
+ and percpu stats
+Content-Language: en-US
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+References: <20230130160233.3702650-1-pctammela@mojatatu.com>
+ <20230130160233.3702650-2-pctammela@mojatatu.com>
+ <Y9kLbylZSeSst01o@corigine.com>
+From:   Pedro Tammela <pctammela@mojatatu.com>
+In-Reply-To: <Y9kLbylZSeSst01o@corigine.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 31 Jan 2023 at 12:36, Hector Martin <marcan@marcan.st> wrote:
->
-> These device IDs are only supposed to be visible internally, in devices
-> without a proper OTP. They should never be seen in devices in the wild,
-> so drop them to avoid confusion.
+On 31/01/2023 09:37, Simon Horman wrote:
+[...]
+>>   static int tcf_pedit_init(struct net *net, struct nlattr *nla,
+>>   			  struct nlattr *est, struct tc_action **a,
+>>   			  struct tcf_proto *tp, u32 flags,
+>> @@ -143,8 +154,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
+>>   	bool bind = flags & TCA_ACT_FLAGS_BIND;
+>>   	struct nlattr *tb[TCA_PEDIT_MAX + 1];
+>>   	struct tcf_chain *goto_ch = NULL;
+>> -	struct tc_pedit_key *keys = NULL;
+>> -	struct tcf_pedit_key_ex *keys_ex;
+>> +	struct tcf_pedit_parms *oparms, *nparms;
+>>   	struct tc_pedit *parm;
+>>   	struct nlattr *pattr;
+>>   	struct tcf_pedit *p;
+>> @@ -181,18 +191,25 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
+>>   		return -EINVAL;
+>>   	}
+>>   
+>> -	keys_ex = tcf_pedit_keys_ex_parse(tb[TCA_PEDIT_KEYS_EX], parm->nkeys);
+>> -	if (IS_ERR(keys_ex))
+>> -		return PTR_ERR(keys_ex);
+>> +	nparms = kzalloc(sizeof(*nparms), GFP_KERNEL);
+>> +	if (!nparms)
+>> +		return -ENOMEM;
+>> +
+>> +	nparms->tcfp_keys_ex =
+>> +		tcf_pedit_keys_ex_parse(tb[TCA_PEDIT_KEYS_EX], parm->nkeys);
+>> +	if (IS_ERR(nparms->tcfp_keys_ex)) {
+>> +		ret = PTR_ERR(nparms->tcfp_keys_ex);
+>> +		goto out_free;
+>> +	}
+>>   
+>>   	index = parm->index;
+>>   	err = tcf_idr_check_alloc(tn, &index, a, bind);
+>>   	if (!err) {
+>> -		ret = tcf_idr_create(tn, index, est, a,
+>> -				     &act_pedit_ops, bind, false, flags);
+>> +		ret = tcf_idr_create_from_flags(tn, index, est, a,
+>> +						&act_pedit_ops, bind, flags);
+>>   		if (ret) {
+>>   			tcf_idr_cleanup(tn, index);
+>> -			goto out_free;
+>> +			goto out_free_ex;
+>>   		}
+>>   		ret = ACT_P_CREATED;
+>>   	} else if (err > 0) {
+>> @@ -204,7 +221,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
+>>   		}
+>>   	} else {
+>>   		ret = err;
+>> -		goto out_free;
+>> +		goto out_free_ex;
+>>   	}
+>>   
+>>   	err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch, extack);
+>> @@ -212,68 +229,79 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
+>>   		ret = err;
+>>   		goto out_release;
+>>   	}
+>> +
+>> +	nparms->tcfp_off_max_hint = 0;
+>> +	nparms->tcfp_flags = parm->flags;
+>> +
+>>   	p = to_pedit(*a);
+>>   	spin_lock_bh(&p->tcf_lock);
+>>   
+>> +	oparms = rcu_dereference_protected(p->parms, 1);
+>> +
+>>   	if (ret == ACT_P_CREATED ||
+>> -	    (p->tcfp_nkeys && p->tcfp_nkeys != parm->nkeys)) {
+>> -		keys = kmalloc(ksize, GFP_ATOMIC);
+>> -		if (!keys) {
+>> +	    (oparms->tcfp_nkeys && oparms->tcfp_nkeys != parm->nkeys)) {
+>> +		nparms->tcfp_keys = kmalloc(ksize, GFP_ATOMIC);
+>> +		if (!nparms->tcfp_keys) {
+>>   			spin_unlock_bh(&p->tcf_lock);
+>>   			ret = -ENOMEM;
+>> -			goto put_chain;
+>> +			goto out_release;
+> 
+> I'm a little unclear on why put_chain is no longer needed.
+> It seems to me that there can be a reference to goto_ch held here,
+> as was the case before this patch.
 
-I think these can still show up in embedded platforms where the
-OTP/SPROM is provided on-flash.
+Correct, initially I thought it was assigned unconditionally after the 
+for loop. I will restore it, thanks!
 
-E.g. https://forum.archive.openwrt.org/viewtopic.php?id=3D55367&p=3D4
-shows this bootlog on an BCM4709A0 router with two BCM43602 wifis:
+> 
+>>   		}
+>> -		kfree(p->tcfp_keys);
+>> -		p->tcfp_keys = keys;
+>> -		p->tcfp_nkeys = parm->nkeys;
+>> +		nparms->tcfp_nkeys = parm->nkeys;
+>> +	} else {
+>> +		nparms->tcfp_keys = oparms->tcfp_keys;
+> 
+> I feel that I am missing something obvious:
+> * Here oparms->tcfp_keys is assigned to nparms->tcfp_keys.
+> * Later on there is a call to call_rcu(..., tcf_pedit_cleanup_rcu),
+>    which will free oparms->tcfp_keys some time in the future.
+> * But the memory bay still be accessed via tcfp_keys.
+> 
+> Is there a life cycle issue here?
 
-[    3.237132] pci 0000:01:00.0: [14e4:aa52] type 00 class 0x028000
-[    3.237174] pci 0000:01:00.0: reg 0x10: [mem 0x00000000-0x00007fff 64bit=
-]
-[    3.237199] pci 0000:01:00.0: reg 0x18: [mem 0x00000000-0x003fffff 64bit=
-]
-[    3.237302] pci 0000:01:00.0: supports D1 D2
-...
-[    3.782384] pci 0001:03:00.0: [14e4:aa52] type 00 class 0x028000
-[    3.782440] pci 0001:03:00.0: reg 0x10: [mem 0x00000000-0x00007fff 64bit=
-]
-[    3.782474] pci 0001:03:00.0: reg 0x18: [mem 0x00000000-0x003fffff 64bit=
-]
-[    3.782649] pci 0001:03:00.0: supports D1 D2
+Correct, this is wrong.
+I got the wrong impression we could avoid the memory allocation in the 
+update case.
 
-0xaa52 =3D=3D 43602 (BRCM_PCIE_43602_RAW_DEVICE_ID)
 
-Rafa=C5=82 can probably provide more info there.
+> 
+>> +		nparms->tcfp_nkeys = oparms->tcfp_nkeys;
+>>   	}
+>> -	memcpy(p->tcfp_keys, parm->keys, ksize);
+>> -	p->tcfp_off_max_hint = 0;
+>> -	for (i = 0; i < p->tcfp_nkeys; ++i) {
+>> -		u32 cur = p->tcfp_keys[i].off;
+>> +
+>> +	memcpy(nparms->tcfp_keys, parm->keys, ksize);
+>> +
+>> +	for (i = 0; i < nparms->tcfp_nkeys; ++i) {
+>> +		u32 cur = nparms->tcfp_keys[i].off;
+>>   
+>>   		/* sanitize the shift value for any later use */
+>> -		p->tcfp_keys[i].shift = min_t(size_t, BITS_PER_TYPE(int) - 1,
+>> -					      p->tcfp_keys[i].shift);
+>> +		nparms->tcfp_keys[i].shift = min_t(size_t,
+>> +						   BITS_PER_TYPE(int) - 1,
+>> +						   nparms->tcfp_keys[i].shift);
+>>   
+>>   		/* The AT option can read a single byte, we can bound the actual
+>>   		 * value with uchar max.
+>>   		 */
+>> -		cur += (0xff & p->tcfp_keys[i].offmask) >> p->tcfp_keys[i].shift;
+>> +		cur += (0xff & nparms->tcfp_keys[i].offmask) >> nparms->tcfp_keys[i].shift;
+>>   
+>>   		/* Each key touches 4 bytes starting from the computed offset */
+>> -		p->tcfp_off_max_hint = max(p->tcfp_off_max_hint, cur + 4);
+>> +		nparms->tcfp_off_max_hint =
+>> +			max(nparms->tcfp_off_max_hint, cur + 4);
+>>   	}
+>>   
+>> -	p->tcfp_flags = parm->flags;
+>>   	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
+>>   
+>> -	kfree(p->tcfp_keys_ex);
+>> -	p->tcfp_keys_ex = keys_ex;
+>> +	rcu_assign_pointer(p->parms, nparms);
+>>   
+>>   	spin_unlock_bh(&p->tcf_lock);
+>> +
+>> +	if (oparms)
+>> +		call_rcu(&oparms->rcu, tcf_pedit_cleanup_rcu);
+> 
+> 	Here there is a condition on oparms being non-NULL.
+> 	But further above oparms is dereference unconditionally.
+> 	Is there an inconsistency here?
 
-Regards
-Jonas
+oparms is NULL when we create the action instance.
+I believe this will be way clearer in the next version.
+
+> 
+>> +
+>>   	if (goto_ch)
+>>   		tcf_chain_put_by_act(goto_ch);
+>> +
+>>   	return ret;
+>>   
+>> -put_chain:
+>> -	if (goto_ch)
+>> -		tcf_chain_put_by_act(goto_ch);
+>>   out_release:
+>>   	tcf_idr_release(*a, bind);
+>> +out_free_ex:
+>> +	kfree(nparms->tcfp_keys_ex);
+>>   out_free:
+>> -	kfree(keys_ex);
+>> +	kfree(nparms);
+>>   	return ret;
+>> -
+>>   }
+> 
+> ...
+
