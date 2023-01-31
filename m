@@ -2,91 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 748A26833D0
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 18:25:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D9DD683434
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 18:46:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232088AbjAaRZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 12:25:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32988 "EHLO
+        id S229767AbjAaRqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 12:46:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231737AbjAaRZs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 12:25:48 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08BCA1AE;
-        Tue, 31 Jan 2023 09:25:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=fDSaSa39yivQnOaZDnppDmUcfmn2i3ZzZlEgoY/i8AU=; b=YryJ11H0KUdmJbVE3KNpSwol7R
-        Wy8W73Idiaf9pdaQl8qHeMWCyEM8O7eWGEkPlIzcFTkDr5y2Ikq2UVb5UcDJPF03tNaodv8C3L+eS
-        1r8/XknV3UOSieVIxo6C+Pv/8KiBZU9lkW2LkTuezf2Vj0A3D8dDfksBkbeEDmWtzN9w=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pMuNw-003iAv-Hr; Tue, 31 Jan 2023 18:25:32 +0100
-Date:   Tue, 31 Jan 2023 18:25:32 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Arnd Bergmann <arnd@kernel.org>, Wei Fang <wei.fang@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229613AbjAaRqK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 12:46:10 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026B54212
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 09:46:05 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id n6so12554069edo.9
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 09:46:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=XbAWFwXbBy+KQqySv5cyasj4rmJeuEKmdXJrUasQvjQ=;
+        b=WI0zZvv7UtakDtMck7VlbJBzx7evB9X5E1B1nrKfhUEbZexmM8EpolZpCf+tCF8FYH
+         KcLl0BHdwO3HQzJbDU2znwAotgMqvg6BDdncvojNM2jfmF9M9SoFYX5zJbwIh9aU2urg
+         YoPow/wSM0MQeLGhIdAgPnr8gYFAPoBC3MIQM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=XbAWFwXbBy+KQqySv5cyasj4rmJeuEKmdXJrUasQvjQ=;
+        b=JkR+2qyfoYof1TtU9XC9VVlmb9sLK7DiCNfs20AK3FdW/pyWs7WN7OECNrldLCWp4L
+         k6kDHy4tn6iXCVa3V4ZuTtemn8ley71ficLDUnosW3woBFLDHORAzTlhlrJDay9sf/lQ
+         Ojl67RFTzY67r0icgIHoA7Hr8HgohcDN+B0TSTfYOtvcWEoKb6l5FBeQ4Tzw41coH7aV
+         bd+0BTvTB+V8R8iJ3dorEV8efFu6R3hZYCVHhsH7VoxaiA11HyiK8jcIz6Lc8eqeFnSB
+         4lWZ84iTUNZAZ6YriW0mbDMUMFNQeukJs/1ViEYlrzexRxzZqWOb5GJ6hfoPdUILxZ9U
+         Fd+w==
+X-Gm-Message-State: AO0yUKVQhJs4H/qz8nWMY3bHpVgvrN8hjmB6J5+Xvd0iyKOmUKxCEoqG
+        4w7Ddm1IznuYPLzjgdbpFvqJ6RtSQLRUR/QD
+X-Google-Smtp-Source: AK7set+73ZTSK71b2aXzEfwNqvxc7ynn7w3zn5YbXhC9L8p0RLiOC5XagYp+zkXHy83zaJya2qydew==
+X-Received: by 2002:a05:6402:5307:b0:4a2:112c:ca11 with SMTP id eo7-20020a056402530700b004a2112cca11mr4571363edb.31.1675187163188;
+        Tue, 31 Jan 2023 09:46:03 -0800 (PST)
+Received: from cloudflare.com (79.191.53.204.ipv4.supernova.orange.pl. [79.191.53.204])
+        by smtp.gmail.com with ESMTPSA id dn10-20020a05640222ea00b00482b3d0e1absm8609683edb.87.2023.01.31.09.46.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Jan 2023 09:46:02 -0800 (PST)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ore@pengutronix.de,
-        kernel@pengutronix.de
-Subject: Re: [PATCH] [v2] fec: convert to gpio descriptor
-Message-ID: <Y9lPDGUestsjdWVX@lunn.ch>
-References: <20230126210648.1668178-1-arnd@kernel.org>
- <20230131153851.ua57vy7vc2xdasup@pengutronix.de>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, kernel-team@cloudflare.com
+Subject: [PATCH net] udp: Pass 2 bytes of data with UDP_GRO cmsg to user-space
+Date:   Tue, 31 Jan 2023 18:46:01 +0100
+Message-Id: <20230131174601.203127-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230131153851.ua57vy7vc2xdasup@pengutronix.de>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 04:38:51PM +0100, Marc Kleine-Budde wrote:
-> On 26.01.2023 22:05:59, Arnd Bergmann wrote:
-> > From: Arnd Bergmann <arnd@arndb.de>
-> > 
-> > The driver can be trivially converted, as it only triggers the gpio
-> > pin briefly to do a reset, and it already only supports DT.
-> > 
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> 
-> On current net-next/main 6a8ab436831d ("Merge branch
-> 'add-support-for-the-the-vsc7512-internal-copper-phys'") this causes the
-> riot board (arch/arm/boot/dts/imx6dl-riotboard.dts) to not probe the
-> fec:
-> 
-> | Jan 31 16:32:12 riot kernel: fec 2188000.ethernet: error -ENOENT: failed to get phy-reset-gpios
-> | Jan 31 16:32:12 riot kernel: fec: probe of 2188000.ethernet failed with error -2
+While UDP_GRO cmsg interface lacks documentation, the selftests added in
+commit 3327a9c46352 ("selftests: add functionals test for UDP GRO") suggest
+that the user-space should allocate CMSG_SPACE for an u16 value and
+interpret the returned bytes as such:
 
-Hi Marc
+static int recv_msg(int fd, char *buf, int len, int *gso_size)
+{
+	char control[CMSG_SPACE(sizeof(uint16_t))] = {0};
+	...
+			if (cmsg->cmsg_level == SOL_UDP
+			    && cmsg->cmsg_type == UDP_GRO) {
+				gsosizeptr = (uint16_t *) CMSG_DATA(cmsg);
+				*gso_size = *gsosizeptr;
+				break;
+			}
+	...
+}
 
-Could you try swapping the devm_gpiod_get() for
-devm_gpiod_get_optional().
+Today user-space will receive 4 bytes of data with an UDP_GRO cmsg, because
+the kernel packs an int into the cmsg data, as we can confirm with strace:
 
-It is kind of hidden, but:
+  recvmsg(8, {msg_name=...,
+              msg_iov=[{iov_base="\0\0..."..., iov_len=96000}],
+              msg_iovlen=1,
+              msg_control=[{cmsg_len=20,         <-- sizeof(cmsghdr) + 4
+                            cmsg_level=SOL_UDP,
+                            cmsg_type=0x68}],    <-- UDP_GRO
+                            msg_controllen=24,
+                            msg_flags=0}, 0) = 11200
 
--       else if (!gpio_is_valid(phy_reset))
--               return 0;
+This means that either UDP_GRO selftests are broken on big endian, or this
+is a programming error. Assume the latter and pass only the needed 2 bytes
+of data with the cmsg.
 
-made the GPIO optional, since -2 is not a valid GPIO number and so it
-would silently return.
+Fixing it like that has an added advantage that the cmsg becomes compatible
+with what is expected by UDP_SEGMENT cmsg. It becomes possible to reuse the
+cmsg when GSO packets are received on one socket and sent out of another.
 
-The real fix will need to be a bit more complex, since we don't want
-to do the sleeps etc if the GPIO is not present.
+Fixes: bcd1665e3569 ("udp: add support for UDP_GRO cmsg")
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+---
+ include/linux/udp.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-	Andrew
+diff --git a/include/linux/udp.h b/include/linux/udp.h
+index a2892e151644..44bb8d699248 100644
+--- a/include/linux/udp.h
++++ b/include/linux/udp.h
+@@ -125,7 +125,7 @@ static inline bool udp_get_no_check6_rx(struct sock *sk)
+ static inline void udp_cmsg_recv(struct msghdr *msg, struct sock *sk,
+ 				 struct sk_buff *skb)
+ {
+-	int gso_size;
++	__u16 gso_size;
+ 
+ 	if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4) {
+ 		gso_size = skb_shinfo(skb)->gso_size;
+-- 
+2.39.1
+
