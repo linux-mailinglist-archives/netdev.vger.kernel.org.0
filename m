@@ -2,247 +2,360 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65C64683539
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 19:30:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A105368355E
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 19:32:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231359AbjAaSaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 13:30:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54648 "EHLO
+        id S231624AbjAaScy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 13:32:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231357AbjAaSaU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 13:30:20 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316C85974D;
-        Tue, 31 Jan 2023 10:30:15 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id c4-20020a1c3504000000b003d9e2f72093so13148909wma.1;
-        Tue, 31 Jan 2023 10:30:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=yC+QfTMhv7UIa9RCKmBNebjmmRrerHWnB9uZHjX+4dU=;
-        b=OV6XKfItQjsLuwqVkngpsYLdSPtiqywZ2mX9UWy0CC5ojhNYL5pRqADjY8+D7MWa2C
-         lf8L0NMAnHneGfuhZoIojw9r22+FEePyUnxkl9oXpNwuWYpCUXQOhLB4cVrwwAcBqUV8
-         C8FhfLaYxvyAzUnGuKoLO/WTVWLsrStLJRr1GjVOlkqrcLDfAzB0mp+8o6lQw5MQIBMf
-         06pNEZaU1dKNF8OsgCjmCNmbb6GR8CIKVidZyoknI7lOiX+ZPhhKSvD/9y3LaGnt3TVN
-         y9TidYxvn7asbVzTgDeIBR1uD7jA7B1VQTTbhBeaW2vOODaNU16bx05Ww4LCKjZZKn2v
-         II9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=yC+QfTMhv7UIa9RCKmBNebjmmRrerHWnB9uZHjX+4dU=;
-        b=d5WPzpDmA2PFcKCQ3mv++TXK6+wp169LuVB4gHqCFXOzhNpwqlgdZ5LALc81U7tha1
-         yPPITj2MSTj0hLChr6rSRTLSdWD4yzLD9I667sXinPD7umOP6prL3uVcc5yCaL1hzhEY
-         2i/W+xvtpX0QFEiOKQkc2ZTtPFc1gsu3JKFOhRIqmHpCAegq8TIgr1vO745a3AiVWoaT
-         qW+5iigSGltrLCnMtiF9QagSIp6MfzpwtRrHP+ChUilsnO1f+9/mPjSraPT1BtTcPcYo
-         QwOoPKqjnx/P+uZG8IdrpQLaNPCOQJFH7Wn9uxMTNw9SRfwvyPviH/DR+GuK44pWWvaz
-         mHdA==
-X-Gm-Message-State: AFqh2kpqcWipw03Q/IIj5k9PJ9YVCybs/3fdVjbNeXKTOtIGnQU/LpJM
-        sxh7oayeEtN4H6dLZfIE/ftL/uBvHLUuPswlbNw=
-X-Google-Smtp-Source: AMrXdXu3ghdkSe485ggbifHqvka+XENc8QFIy7vho1D0c37d4M0EJR6OmPdbnAnYcVNIu5f1ABWbzJVOE0yPW5nzubo=
-X-Received: by 2002:a05:600c:444b:b0:3db:74:7ff2 with SMTP id
- v11-20020a05600c444b00b003db00747ff2mr3350072wmn.87.1675189813582; Tue, 31
- Jan 2023 10:30:13 -0800 (PST)
-MIME-Version: 1.0
-References: <20230127191703.3864860-1-joannelkoong@gmail.com>
- <20230127191703.3864860-4-joannelkoong@gmail.com> <5715ea83-c4aa-c884-ab95-3d5e630cad05@linux.dev>
- <20230130223141.r24nlg2jp5byvuph@macbook-pro-6.dhcp.thefacebook.com> <CAEf4Bzb9=q9TKutW8d7fOtCWaLpA12yvSh-BhL=m3+RA1_xhOQ@mail.gmail.com>
-In-Reply-To: <CAEf4Bzb9=q9TKutW8d7fOtCWaLpA12yvSh-BhL=m3+RA1_xhOQ@mail.gmail.com>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Tue, 31 Jan 2023 10:30:01 -0800
-Message-ID: <CAJnrk1Y9jf7PQ0sHF+hfW0TD+W8r3WzJCu-pJjT3zsZCGt343w@mail.gmail.com>
-Subject: Re: [PATCH v9 bpf-next 3/5] bpf: Add skb dynptrs
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        daniel@iogearbox.net, andrii@kernel.org, martin.lau@kernel.org,
-        ast@kernel.org, netdev@vger.kernel.org, memxor@gmail.com,
-        kernel-team@fb.com, bpf@vger.kernel.org
+        with ESMTP id S231826AbjAaSca (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 13:32:30 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A18F59E50
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 10:31:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675189880; x=1706725880;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=yfTe0Hu36BN/OLL4hQi0XZ55KLiJeah8zQh0QbId850=;
+  b=ZTrOVndszXloHjYIBMY7lrWewvmHfh1fjYN+nZg4tbVAojNQCEnhucsw
+   GSA2kqeVa7OksjYp/uMiI3D79IK9C+x1se7VqRRi4stJbdLjS7A03k0TT
+   KnL3755H6KyVnhomUgvHFeTzfs70ONF3Qd6t55pq0MlWkxfnCtwziJMMP
+   +7iUf2Z2XZTui41M8rTuCj3DCMa3CilNHZGyVZlUFNsn+R27iiS3VaxX2
+   ktiEfCpcTM51MijHvcMBv2Tk82YK+B20aqKct8yt6yi4z8u9fR7pIa/zS
+   yoqlQc0vk7T7GJHcFKr37keqTz1rOMedMSJy1nBB/EovCPBmrqZ6dCsTl
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="311540555"
+X-IronPort-AV: E=Sophos;i="5.97,261,1669104000"; 
+   d="scan'208";a="311540555"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2023 10:31:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="614557163"
+X-IronPort-AV: E=Sophos;i="5.97,261,1669104000"; 
+   d="scan'208";a="614557163"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by orsmga003.jf.intel.com with ESMTP; 31 Jan 2023 10:31:12 -0800
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Tue, 31 Jan 2023 10:31:12 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Tue, 31 Jan 2023 10:31:12 -0800
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.103)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Tue, 31 Jan 2023 10:31:12 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KJmyAojTMpg8UzaQG9XNJiZcWH+yBkVd1j/LyMz1oa/twDnEeETnpU7RrtNXo3L2m3n2yC344bfpSnVO4YK68EXFRCVSHoeCYvl+wbpcXV8TPqX0uuLs1Gmr09IMduzXaMBxzQTqMG9+jfnnLXJo/Qy9MTj0Hk6eCeryWaAfbpaVZ52zK14tGXRkI/9hZiHJ4hA+tVxMCrSbhGaLDzbgcwH2S2BHNOc2PGpssU6eX+vsgenxuSQ4XpIUrU3lfNFSof9HfYDvqDm0I4LwegxoSNxrGDdlYKxHzenOCjMlgUKnEmxaH+KI7DCDG0N2veZzhAWRSiia68jjdsP1VNf2MA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yHeRkRzSkrgW8GzWuG+KGmXUgsUoLTD5k2yhnGeesqM=;
+ b=GUfMYGkjEdOt4Vu4nJkYuwtRVoASUpBz6vz/lV2dE6ljOtqkdcLv2dTBOEo3mPYAEam+kaYhx+KNUeMFSA2nz+du+767LwIdmsMpzUPihCM9hgG+LQEERQ8fx0AKClLZoG3bfq30V8rsMAlilclkgnewBl5fT7h5TFKu7Z+8f7dy3B3egttFqvPVnfUa4RUPUPz5aQgfRjNgaFTOINl+KleqwXnIIuyvdQCybAx/4mc0mmI4hxwjUJZy0It2BNUmGw2kYdWC7rKGgEVU+CHt53kpp/XdT3xgzPmvyknHAWKCuirn6eh6eftbudaQCy2pvCDPrYN+gLHIYxx9WIWurw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
+ by DM4PR11MB6335.namprd11.prod.outlook.com (2603:10b6:8:b7::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.36; Tue, 31 Jan
+ 2023 18:31:10 +0000
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::5697:a11e:691e:6acf]) by CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::5697:a11e:691e:6acf%5]) with mapi id 15.20.6043.038; Tue, 31 Jan 2023
+ 18:31:10 +0000
+Message-ID: <6fcff035-ef18-b8ef-3424-fcb30ad4511e@intel.com>
+Date:   Tue, 31 Jan 2023 10:31:08 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [patch net-next 1/3] devlink: rename
+ devlink_nl_instance_iter_dump() to "dumpit"
+To:     Jiri Pirko <jiri@resnulli.us>, <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <edumazet@google.com>
+References: <20230131090613.2131740-1-jiri@resnulli.us>
+ <20230131090613.2131740-2-jiri@resnulli.us>
+Content-Language: en-US
+From:   Jacob Keller <jacob.e.keller@intel.com>
+In-Reply-To: <20230131090613.2131740-2-jiri@resnulli.us>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR03CA0153.namprd03.prod.outlook.com
+ (2603:10b6:a03:338::8) To CO1PR11MB5089.namprd11.prod.outlook.com
+ (2603:10b6:303:9b::16)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|DM4PR11MB6335:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8431a13f-1751-4a59-5afc-08db03b95332
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 3DsYqUwST023F8YuTZ+Yci4Se3wlqcRfVRVslXUwneHWQOIZ9zBx9TjaETWfGnBNr5Iva8de9ZY2YYKibxtzbD0PfHTgnZTcDHJv5f/fx3z838IHv9ARcBtfIMMUyflgR83kJVLolgfZEeo+Qnt80Lfhg+Ql4HXtbnzLgl6oHkastyk3uKrFIvBoo0w53HslBGiI+9+DH0Yy+6yQfAcyG2b0gRANMtX1fK8Mu2gP2bnYnBUqJMvqvhnEbetnvJeuGucENLX3+UeOg02c7tHktLTQK7CN2NgXUzVRRG5H3rGtllaQfgJA8L/mG90eHboBibpCE04JzX3YbOf8sgJYISZMisdD4+gK7I2O/l21xf5GFEX5FxAoWzi4r/pqnvbgLH4UdsyWulrHtuqmiDJJ7c+p2TLs1sxV5IqgEp41oqRdCN5fMC3pMZw08Za1r2yRVi3VTOeSJAGNvxN+p/udeRFusWud4kuqHCdub2YwakT7B2FX/RNrd/s45JNXy0uI07hwgq9x84aXvFOnv/y18Y7pBwt4gmCcQBeN6umBQzAtpO4rRduv7JdLdyRM6cxemLZITpKRLSJy0Zk6mWaAVAzIYw1bodpzgXkhKvTUlUZZTKnPfJuGINL6FpHumNmpVVnTvKxRRv/IxK0tgJdGUvg4vLfWP63B9mbumFfIheLa38HYcNY2SiQv9Zau2OQIj2o1sMVQNeOKzmH3HaT3Lwvt1CrNUMGGYzj5NmMoP2w=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(376002)(39860400002)(346002)(136003)(396003)(366004)(451199018)(8936002)(31696002)(41300700001)(86362001)(83380400001)(82960400001)(6486002)(4326008)(2616005)(66476007)(38100700002)(66946007)(8676002)(316002)(66556008)(186003)(53546011)(6512007)(36756003)(26005)(478600001)(5660300002)(6506007)(31686004)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?am1GV1hOSmFZakNvRDlZOFU4enUyN2gzRnBWRUxVY01JT0RwNHl5Ykw2U2xD?=
+ =?utf-8?B?Z3ZpbXFRV3JLSjAxa0xrMTRUZlU3czYvZGN3bnBjN21nZGUxUDBDSHlzSnpt?=
+ =?utf-8?B?R3dJZ3poeGxqQTh5dllHRFdpRlh1L1d2ZXRSY2M1dXVVTTVQWUVBOGlRMWhB?=
+ =?utf-8?B?aHBSSkZSWDRTN0F3VFdiTkNtZEV3K3k3Mml2dmJxUmZqNFUzTWgra1hWNUZI?=
+ =?utf-8?B?SnVDNnI2VXR5cUdGRDAwR1ZJcjRyKzFSQkIydmdTZGlDYTV4UTdPSHN5UHBY?=
+ =?utf-8?B?Q3FjaE0xc2ExUDRmbzRacElWY1BJY0ZybXd2Qllsc21RbW9KcXdQWWh4QWg3?=
+ =?utf-8?B?NGZYUUxMbkxFRkx0UVBCeDl1WlRhRG9kcTdQRUxCYWJYOHRmK2t5bWRBN0pT?=
+ =?utf-8?B?eGNHQWdYL1Nta0llbHlXOWNzSUtUSU5iSDJLbWk4bWpOWlRFaG16bEgwWTZD?=
+ =?utf-8?B?VS9vYk4zVnllS3NGM2I0ZmQ2VUh2UGtzUWZVbEl1U2svRHFWOVcxdURRekFo?=
+ =?utf-8?B?SGVBZmxKbGpRM0hnWnozS3pibTRCYW9PWWlJcFJ1UERPSXlYb1dDbHZhaFhW?=
+ =?utf-8?B?N3d4cytVTGQrU2JVYU1ydGlkUFpTTUZyYVFNOWUwRmJzR2U4TDRDNGxPZWpO?=
+ =?utf-8?B?ajNvSGptUzdQKzA0Sjc2a0FDTUo0NEs0TEdqeGE2UzBwakRNZUl4RTFqbDhW?=
+ =?utf-8?B?Z0FjSk9vZ1Y2NHdzQ2hyU2Q5aVF2aTl1NGhLeDArTHpOcC9nN0x5ZFl4bUZm?=
+ =?utf-8?B?cytweit1c1JqTlppVkI4OUdNemJmS3RQbjZDcnA4cHJ3dnRBYU14c0poTkl4?=
+ =?utf-8?B?MjJTOGRSYkgyZEYxZkZjS0syajd3TWlra1RsTUoralUxT1hkTTdoNjN1TS9V?=
+ =?utf-8?B?WlRqTTMzM1ZLUVBxZFRTWGtKbTRJK2prV2p4WjRMSUQrQ3hZQklxS2xMZGhL?=
+ =?utf-8?B?WENaQUZaRzQrei9uQ0FlZ3EyVURYMWpJSHFWUFZGMG8xdm5hMjFUYk9LM1JQ?=
+ =?utf-8?B?ckdrOHc0QzIwZXNpaUxaTmpJdlN2eEFab0F2UWZpOG9RdXNxUDVBYVA5cm1u?=
+ =?utf-8?B?Z1QwekVDWWpSLzFsQ2hVQi8rRGlMMFJZQ0Joa0tlQU1pWWhqdU0xVWpTdTdJ?=
+ =?utf-8?B?ZCszanJQeWtJeUNROXlwbmY5WS9EZ2VDSzFpM3lrdmZWVGxqTkhUVXhPelZM?=
+ =?utf-8?B?VVNaeWN0VjZoY2hLbmZlZ2ZaSnlYVStWb2djRE1lWjVLSWZvbjJ1T09VSmk2?=
+ =?utf-8?B?c1NQNGFwVzMrOEQ1amNsU0FKSndMSURTemtNbnNCRWFhZldEa0RxYXEzanJR?=
+ =?utf-8?B?UDhQMWIzZ3puckV3NEIzK3NudnN5VWJTTmwwMG93amJrcXVpSGZ2WVJjb2V1?=
+ =?utf-8?B?VVZpN0Q3a1pFMW5VQUdJdU5rYmhnRGNpVDZ4aGhWM0MwLys3eURuWHpTVktr?=
+ =?utf-8?B?M3hZakNNaCtYNmUzTDNITkdRWldrejk4Z1MxcFBneFhSanpLSXZSQjVtUW5N?=
+ =?utf-8?B?OVUzUjQwZWx6dS9sQmUyTm9mOTY2VWNiU2pRc3hacFVOTXplbkI1Qkxkdzds?=
+ =?utf-8?B?MUlVaDVGUWR6MFFjdTE5d3ZvQmZVajZSSG5ZN3VIY1c2cDFjemt0a0UvVTUw?=
+ =?utf-8?B?cVFjQk9CUk5UMGFRdmFMZnNBR3hqdlhwcHdkZUlMR09SblptWjBFakdZMXFJ?=
+ =?utf-8?B?TG9MMjZEQ2diU2QxL0NUaVh3clR3OWFUeFN2aEg0NlRWOTVKeTE5aDBNOFpv?=
+ =?utf-8?B?OHVMMWJ1RUtpTmFDdlhlNU9oUTdIRnFlb0xSVDFwREoyZmY0QTEwazVyRUNj?=
+ =?utf-8?B?SDZEOGdMQUNTZ1R2M0pia0UzcFZGL2Nna09CVUlLYWFXb2xEK3QwdDBiZzRo?=
+ =?utf-8?B?NFNyUE15R2JmeHhTWVlHODFFWXFNY2tTZDI4ejNDMEUxZGtrRndBL3JIU0RP?=
+ =?utf-8?B?L2dPdWpmMlh3WEZQZmZWNDlHdmI2VTQ5Mms3RFBnMGh3U21BV0VsTE03L2do?=
+ =?utf-8?B?YUlnZS9iTmdyU09XdVlZRzdBVVNxaDNHaFI0NExXeXlqLzZtajNtM2doZHNj?=
+ =?utf-8?B?V3lxUzh6bytpWlVvczN5YlhpL0ZYZHV3MGxZV2UvZVYwWnVHL1REbXVOUGlD?=
+ =?utf-8?B?bXVNWWJ3TkhtR3pOTHViRzZiU3dma3lBcmVtYjFOZXlrSng4TXZYNVVhVWM1?=
+ =?utf-8?B?NUE9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8431a13f-1751-4a59-5afc-08db03b95332
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jan 2023 18:31:10.5667
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ogkN4bht36eZ/VXM8kH0vib4dVCKd59iLnvgFD+IX13o3eWAwccgMbMvQSvqv/xU08Y/H6LvXkbWScNemGdar4XyvXBhGnPOhtRyhdLSFR8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6335
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 5:04 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Mon, Jan 30, 2023 at 2:31 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Mon, Jan 30, 2023 at 02:04:08PM -0800, Martin KaFai Lau wrote:
-> > > On 1/27/23 11:17 AM, Joanne Koong wrote:
-> > > > @@ -8243,6 +8316,28 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
-> > > >             mark_reg_known_zero(env, regs, BPF_REG_0);
-> > > >             regs[BPF_REG_0].type = PTR_TO_MEM | ret_flag;
-> > > >             regs[BPF_REG_0].mem_size = meta.mem_size;
-> > > > +           if (func_id == BPF_FUNC_dynptr_data &&
-> > > > +               dynptr_type == BPF_DYNPTR_TYPE_SKB) {
-> > > > +                   bool seen_direct_write = env->seen_direct_write;
-> > > > +
-> > > > +                   regs[BPF_REG_0].type |= DYNPTR_TYPE_SKB;
-> > > > +                   if (!may_access_direct_pkt_data(env, NULL, BPF_WRITE))
-> > > > +                           regs[BPF_REG_0].type |= MEM_RDONLY;
-> > > > +                   else
-> > > > +                           /*
-> > > > +                            * Calling may_access_direct_pkt_data() will set
-> > > > +                            * env->seen_direct_write to true if the skb is
-> > > > +                            * writable. As an optimization, we can ignore
-> > > > +                            * setting env->seen_direct_write.
-> > > > +                            *
-> > > > +                            * env->seen_direct_write is used by skb
-> > > > +                            * programs to determine whether the skb's page
-> > > > +                            * buffers should be cloned. Since data slice
-> > > > +                            * writes would only be to the head, we can skip
-> > > > +                            * this.
-> > > > +                            */
-> > > > +                           env->seen_direct_write = seen_direct_write;
-> > > > +           }
-> > >
-> > > [ ... ]
-> > >
-> > > > @@ -9263,17 +9361,26 @@ static int check_kfunc_args(struct bpf_verifier_env *env, struct bpf_kfunc_call_
-> > > >                             return ret;
-> > > >                     break;
-> > > >             case KF_ARG_PTR_TO_DYNPTR:
-> > > > +           {
-> > > > +                   enum bpf_arg_type dynptr_arg_type = ARG_PTR_TO_DYNPTR;
-> > > > +
-> > > >                     if (reg->type != PTR_TO_STACK &&
-> > > >                         reg->type != CONST_PTR_TO_DYNPTR) {
-> > > >                             verbose(env, "arg#%d expected pointer to stack or dynptr_ptr\n", i);
-> > > >                             return -EINVAL;
-> > > >                     }
-> > > > -                   ret = process_dynptr_func(env, regno, insn_idx,
-> > > > -                                             ARG_PTR_TO_DYNPTR | MEM_RDONLY);
-> > > > +                   if (meta->func_id == special_kfunc_list[KF_bpf_dynptr_from_skb])
-> > > > +                           dynptr_arg_type |= MEM_UNINIT | DYNPTR_TYPE_SKB;
-> > > > +                   else
-> > > > +                           dynptr_arg_type |= MEM_RDONLY;
-> > > > +
-> > > > +                   ret = process_dynptr_func(env, regno, insn_idx, dynptr_arg_type,
-> > > > +                                             meta->func_id);
-> > > >                     if (ret < 0)
-> > > >                             return ret;
-> > > >                     break;
-> > > > +           }
-> > > >             case KF_ARG_PTR_TO_LIST_HEAD:
-> > > >                     if (reg->type != PTR_TO_MAP_VALUE &&
-> > > >                         reg->type != (PTR_TO_BTF_ID | MEM_ALLOC)) {
-> > > > @@ -15857,6 +15964,14 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
-> > > >                desc->func_id == special_kfunc_list[KF_bpf_rdonly_cast]) {
-> > > >             insn_buf[0] = BPF_MOV64_REG(BPF_REG_0, BPF_REG_1);
-> > > >             *cnt = 1;
-> > > > +   } else if (desc->func_id == special_kfunc_list[KF_bpf_dynptr_from_skb]) {
-> > > > +           bool is_rdonly = !may_access_direct_pkt_data(env, NULL, BPF_WRITE);
-> > >
-> > > Does it need to restore the env->seen_direct_write here also?
-> > >
-> > > It seems this 'seen_direct_write' saving/restoring is needed now because
-> > > 'may_access_direct_pkt_data(BPF_WRITE)' is not only called when it is
-> > > actually writing the packet. Some refactoring can help to avoid issue like
-> > > this.
-> > >
-> > > While at 'seen_direct_write', Alexei has also pointed out that the verifier
-> > > needs to track whether the (packet) 'slice' returned by bpf_dynptr_data()
-> > > has been written. It should be tracked in 'seen_direct_write'. Take a look
-> > > at how reg_is_pkt_pointer() and may_access_direct_pkt_data() are done in
-> > > check_mem_access(). iirc, this reg_is_pkt_pointer() part got loss somewhere
-> > > in v5 (or v4?) when bpf_dynptr_data() was changed to return register typed
-> > > PTR_TO_MEM instead of PTR_TO_PACKET.
-> >
-> > btw tc progs are using gen_prologue() approach because data/data_end are not kfuncs
-> > (nothing is being called by the bpf prog).
-> > In this case we don't need to repeat this approach. If so we don't need to
-> > set seen_direct_write.
-> > Instead bpf_dynptr_data() can call bpf_skb_pull_data() directly.
-> > And technically we don't need to limit it to skb head. It can handle any off/len.
-> > It will work for skb, but there is no equivalent for xdp_pull_data().
-> > I don't think we can implement xdp_pull_data in all drivers.
-> > That's massive amount of work, but we need to be consistent if we want
-> > dynptr to wrap both skb and xdp.
-> > We can say dynptr_data is for head only, but we've seen bugs where people
-> > had to switch from data/data_end to load_bytes.
-> >
-> > Also bpf_skb_pull_data is quite heavy. For progs that only want to parse
-> > the packet calling that in bpf_dynptr_data is a heavy hammer.
-> >
-> > It feels that we need to go back to skb_header_pointer-like discussion.
-> > Something like:
-> > bpf_dynptr_slice(const struct bpf_dynptr *ptr, u32 offset, u32 len, void *buffer)
-> > Whether buffer is a part of dynptr or program provided is tbd.
->
-> making it hidden within dynptr would make this approach unreliable
-> (memory allocations, which can fail, etc). But if we ask users to pass
-> it directly, then it should be relatively easy to use in practice with
-> some pre-allocated per-CPU buffer:
->
->
-> struct {
->   __int(type, BPF_MAP_TYPE_PERCPU_ARRAY);
->   __int(max_entries, 1);
->   __type(key, int);
->   __type(value, char[4096]);
-> } scratch SEC(".maps");
->
->
-> ...
->
->
-> struct dyn_ptr *dp = bpf_dynptr_from_skb(...).
-> void *p, *buf;
-> int zero = 0;
->
-> buf = bpf_map_lookup_elem(&scratch, &zero);
-> if (!buf) return 0; /* can't happen */
->
-> p = bpf_dynptr_slice(dp, off, 16, buf);
-> if (p == NULL) {
->    /* out of range */
-> } else {
->    /* work with p directly */
-> }
->
-> /* if we wrote something to p and it was copied to buffer, write it back */
-> if (p == buf) {
->     bpf_dynptr_write(dp, buf, 16);
-> }
->
->
-> We'll just need to teach verifier to make sure that buf is at least 16
-> byte long.
 
-I'm confused what the benefit of passing in the buffer is. If it's to
-avoid the uncloning, this will still need to happen if the user writes
-back the data to the skb (which will be the majority of cases). If
-it's to avoid uncloning if the user only reads the data of a writable
-prog, then we could add logic in the verifier so that we don't pull
-the data in this case; the uncloning might still happen regardless if
-another part of the program does a direct write. If the benefit is to
-avoid needing to pull the data, then can't the user just use
-bpf_dynptr_read, which takes in a buffer?
 
->
->
-> But I wonder if for simple cases when users are mostly sure that they
-> are going to access only header data directly we can have an option
-> for bpf_dynptr_from_skb() to specify what should be the behavior for
-> bpf_dynptr_slice():
->
->  - either return NULL for anything that crosses into frags (no
-> surprising perf penalty, but surprising NULLs);
->  - do bpf_skb_pull_data() if bpf_dynptr_data() needs to point to data
-> beyond header (potential perf penalty, but on NULLs, if off+len is
-> within packet).
->
-> And then bpf_dynptr_from_skb() can accept a flag specifying this
-> behavior and store it somewhere in struct bpf_dynptr.
->
-> Thoughts?
+On 1/31/2023 1:06 AM, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@nvidia.com>
+> 
+> To have the name of the function consistent with the struct cb name,
+> rename devlink_nl_instance_iter_dump() to
+> devlink_nl_instance_iter_dumpit().
+> 
+> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+> ---
+
+It's a few extra characters, but I think i prefer seeing dumpit in the
+name vs dump. I understand that the use of "it" comes from the fact that
+.do is invalid. However, being consistent seems better to me here.
+Easier to search for dumpit as well vs dump.
+
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+
+Thanks,
+Jake
+
+>  net/devlink/devl_internal.h |  4 ++--
+>  net/devlink/leftover.c      | 32 ++++++++++++++++----------------
+>  net/devlink/netlink.c       |  4 ++--
+>  3 files changed, 20 insertions(+), 20 deletions(-)
+> 
+> diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
+> index ba161de4120e..dd4366c68b96 100644
+> --- a/net/devlink/devl_internal.h
+> +++ b/net/devlink/devl_internal.h
+> @@ -128,8 +128,8 @@ devlink_get_from_attrs_lock(struct net *net, struct nlattr **attrs);
+>  void devlink_notify_unregister(struct devlink *devlink);
+>  void devlink_notify_register(struct devlink *devlink);
+>  
+> -int devlink_nl_instance_iter_dump(struct sk_buff *msg,
+> -				  struct netlink_callback *cb);
+> +int devlink_nl_instance_iter_dumpit(struct sk_buff *msg,
+> +				    struct netlink_callback *cb);
+>  
+>  static inline struct devlink_nl_dump_state *
+>  devlink_dump_state(struct netlink_callback *cb)
+> diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
+> index 92210587d349..1461eec423ff 100644
+> --- a/net/devlink/leftover.c
+> +++ b/net/devlink/leftover.c
+> @@ -8898,14 +8898,14 @@ const struct genl_small_ops devlink_nl_ops[56] = {
+>  		.cmd = DEVLINK_CMD_GET,
+>  		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+>  		.doit = devlink_nl_cmd_get_doit,
+> -		.dumpit = devlink_nl_instance_iter_dump,
+> +		.dumpit = devlink_nl_instance_iter_dumpit,
+>  		/* can be retrieved by unprivileged users */
+>  	},
+>  	{
+>  		.cmd = DEVLINK_CMD_PORT_GET,
+>  		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+>  		.doit = devlink_nl_cmd_port_get_doit,
+> -		.dumpit = devlink_nl_instance_iter_dump,
+> +		.dumpit = devlink_nl_instance_iter_dumpit,
+>  		.internal_flags = DEVLINK_NL_FLAG_NEED_PORT,
+>  		/* can be retrieved by unprivileged users */
+>  	},
+> @@ -8919,7 +8919,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
+>  	{
+>  		.cmd = DEVLINK_CMD_RATE_GET,
+>  		.doit = devlink_nl_cmd_rate_get_doit,
+> -		.dumpit = devlink_nl_instance_iter_dump,
+> +		.dumpit = devlink_nl_instance_iter_dumpit,
+>  		.internal_flags = DEVLINK_NL_FLAG_NEED_RATE,
+>  		/* can be retrieved by unprivileged users */
+>  	},
+> @@ -8967,7 +8967,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
+>  	{
+>  		.cmd = DEVLINK_CMD_LINECARD_GET,
+>  		.doit = devlink_nl_cmd_linecard_get_doit,
+> -		.dumpit = devlink_nl_instance_iter_dump,
+> +		.dumpit = devlink_nl_instance_iter_dumpit,
+>  		.internal_flags = DEVLINK_NL_FLAG_NEED_LINECARD,
+>  		/* can be retrieved by unprivileged users */
+>  	},
+> @@ -8981,14 +8981,14 @@ const struct genl_small_ops devlink_nl_ops[56] = {
+>  		.cmd = DEVLINK_CMD_SB_GET,
+>  		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+>  		.doit = devlink_nl_cmd_sb_get_doit,
+> -		.dumpit = devlink_nl_instance_iter_dump,
+> +		.dumpit = devlink_nl_instance_iter_dumpit,
+>  		/* can be retrieved by unprivileged users */
+>  	},
+>  	{
+>  		.cmd = DEVLINK_CMD_SB_POOL_GET,
+>  		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+>  		.doit = devlink_nl_cmd_sb_pool_get_doit,
+> -		.dumpit = devlink_nl_instance_iter_dump,
+> +		.dumpit = devlink_nl_instance_iter_dumpit,
+>  		/* can be retrieved by unprivileged users */
+>  	},
+>  	{
+> @@ -9001,7 +9001,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
+>  		.cmd = DEVLINK_CMD_SB_PORT_POOL_GET,
+>  		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+>  		.doit = devlink_nl_cmd_sb_port_pool_get_doit,
+> -		.dumpit = devlink_nl_instance_iter_dump,
+> +		.dumpit = devlink_nl_instance_iter_dumpit,
+>  		.internal_flags = DEVLINK_NL_FLAG_NEED_PORT,
+>  		/* can be retrieved by unprivileged users */
+>  	},
+> @@ -9016,7 +9016,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
+>  		.cmd = DEVLINK_CMD_SB_TC_POOL_BIND_GET,
+>  		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+>  		.doit = devlink_nl_cmd_sb_tc_pool_bind_get_doit,
+> -		.dumpit = devlink_nl_instance_iter_dump,
+> +		.dumpit = devlink_nl_instance_iter_dumpit,
+>  		.internal_flags = DEVLINK_NL_FLAG_NEED_PORT,
+>  		/* can be retrieved by unprivileged users */
+>  	},
+> @@ -9097,7 +9097,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
+>  		.cmd = DEVLINK_CMD_PARAM_GET,
+>  		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+>  		.doit = devlink_nl_cmd_param_get_doit,
+> -		.dumpit = devlink_nl_instance_iter_dump,
+> +		.dumpit = devlink_nl_instance_iter_dumpit,
+>  		/* can be retrieved by unprivileged users */
+>  	},
+>  	{
+> @@ -9125,7 +9125,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
+>  		.cmd = DEVLINK_CMD_REGION_GET,
+>  		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+>  		.doit = devlink_nl_cmd_region_get_doit,
+> -		.dumpit = devlink_nl_instance_iter_dump,
+> +		.dumpit = devlink_nl_instance_iter_dumpit,
+>  		.flags = GENL_ADMIN_PERM,
+>  	},
+>  	{
+> @@ -9151,14 +9151,14 @@ const struct genl_small_ops devlink_nl_ops[56] = {
+>  		.cmd = DEVLINK_CMD_INFO_GET,
+>  		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+>  		.doit = devlink_nl_cmd_info_get_doit,
+> -		.dumpit = devlink_nl_instance_iter_dump,
+> +		.dumpit = devlink_nl_instance_iter_dumpit,
+>  		/* can be retrieved by unprivileged users */
+>  	},
+>  	{
+>  		.cmd = DEVLINK_CMD_HEALTH_REPORTER_GET,
+>  		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+>  		.doit = devlink_nl_cmd_health_reporter_get_doit,
+> -		.dumpit = devlink_nl_instance_iter_dump,
+> +		.dumpit = devlink_nl_instance_iter_dumpit,
+>  		.internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK_OR_PORT,
+>  		/* can be retrieved by unprivileged users */
+>  	},
+> @@ -9213,7 +9213,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
+>  	{
+>  		.cmd = DEVLINK_CMD_TRAP_GET,
+>  		.doit = devlink_nl_cmd_trap_get_doit,
+> -		.dumpit = devlink_nl_instance_iter_dump,
+> +		.dumpit = devlink_nl_instance_iter_dumpit,
+>  		/* can be retrieved by unprivileged users */
+>  	},
+>  	{
+> @@ -9224,7 +9224,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
+>  	{
+>  		.cmd = DEVLINK_CMD_TRAP_GROUP_GET,
+>  		.doit = devlink_nl_cmd_trap_group_get_doit,
+> -		.dumpit = devlink_nl_instance_iter_dump,
+> +		.dumpit = devlink_nl_instance_iter_dumpit,
+>  		/* can be retrieved by unprivileged users */
+>  	},
+>  	{
+> @@ -9235,7 +9235,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
+>  	{
+>  		.cmd = DEVLINK_CMD_TRAP_POLICER_GET,
+>  		.doit = devlink_nl_cmd_trap_policer_get_doit,
+> -		.dumpit = devlink_nl_instance_iter_dump,
+> +		.dumpit = devlink_nl_instance_iter_dumpit,
+>  		/* can be retrieved by unprivileged users */
+>  	},
+>  	{
+> @@ -9246,7 +9246,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
+>  	{
+>  		.cmd = DEVLINK_CMD_SELFTESTS_GET,
+>  		.doit = devlink_nl_cmd_selftests_get_doit,
+> -		.dumpit = devlink_nl_instance_iter_dump,
+> +		.dumpit = devlink_nl_instance_iter_dumpit,
+>  		/* can be retrieved by unprivileged users */
+>  	},
+>  	{
+> diff --git a/net/devlink/netlink.c b/net/devlink/netlink.c
+> index 3f44633af01c..11666edf5cd2 100644
+> --- a/net/devlink/netlink.c
+> +++ b/net/devlink/netlink.c
+> @@ -196,8 +196,8 @@ static const struct devlink_gen_cmd *devl_gen_cmds[] = {
+>  	[DEVLINK_CMD_SELFTESTS_GET]	= &devl_gen_selftests,
+>  };
+>  
+> -int devlink_nl_instance_iter_dump(struct sk_buff *msg,
+> -				  struct netlink_callback *cb)
+> +int devlink_nl_instance_iter_dumpit(struct sk_buff *msg,
+> +				    struct netlink_callback *cb)
+>  {
+>  	const struct genl_dumpit_info *info = genl_dumpit_info(cb);
+>  	struct devlink_nl_dump_state *state = devlink_dump_state(cb);
