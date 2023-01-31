@@ -2,101 +2,307 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64CE2682BCA
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 12:49:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7DFD682BDB
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 12:51:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230207AbjAaLtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 06:49:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46506 "EHLO
+        id S231773AbjAaLvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 06:51:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230137AbjAaLs7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 06:48:59 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 208143A88;
-        Tue, 31 Jan 2023 03:48:58 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id v10so14112354edi.8;
-        Tue, 31 Jan 2023 03:48:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=KA/6v65JHISORnR8UYFr5pvgEPglVJPcah6RD9iD6VE=;
-        b=Nujw77PuiFGn4klGYhioYQbFGnOrgJ94CGJa5iR4+YvGmUEVubXX2R7LgcGa5pgJgx
-         X8of2j5/hnuPxExovpETezwRrqd+uybx7A3iSuwnMQw9fbu3lRMBBqyo9F90HwqJD5h3
-         L7KvzKP2KymKW7PufIKYVbmDkD0eXYEiOryTL1ubA2dj6fH1L5kgWww79L9DufgGyadA
-         3+frBKN1mBG5k/ng9iZCpZU/0SiEEdvIo/ikIjUIT7raUBlfFBhxN4DwsxYf5FSfi3du
-         Z6EXaZ25lZ136m7I0vZpi1on1YoulBFXRdVwUVjBOg4NkHCkNhh2gMbPqoBxAjxir47d
-         wKoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=KA/6v65JHISORnR8UYFr5pvgEPglVJPcah6RD9iD6VE=;
-        b=PzCohUSsM4dq6L3PwAeY+hqXKfd4MO0ciM+eWgOuc+WjNcKyP3cqoZITgxvm9SUIZG
-         tdUDXBHfk72gMRcO8yedkgSKq5p3rbqXB2QZg7DxYrAbmxvNzdh2CO1RBnFETU/mH4nW
-         q74t1V6lEzAJOBxZqeJaRlFhoVM213xf8mKCF7Oq3NKrXRtOU5Bu0uXPTCCopu9q2Kdz
-         /Pk1+P575+L+hDhcOMsRP2LHnrWx8vRpus8fhlHe9LyBpD8F6onMz5tf840RS30PNd8P
-         f3IssnTS4Fs4qgnQeL0DdIVf7uDXnA+feNzwjYD8VXeElJwlOAvH1SP4UmKmEHBlN8O+
-         l4Eg==
-X-Gm-Message-State: AO0yUKVGgAmi8CGFRW0UAGU9wjjmF52oxq9eMO1LhhAQdo4+0ltA5J7i
-        7lxQ3SW2RHP1e+1BwifaJxw=
-X-Google-Smtp-Source: AK7set9ONJUUydSWVsEW0vZ9wMG/FheHDnZ8BZqxw4WCElT9fs9JUTmls799MvxYJrqGxDexRGY09w==
-X-Received: by 2002:a05:6402:2421:b0:49e:ed9c:215f with SMTP id t33-20020a056402242100b0049eed9c215fmr22203261eda.38.1675165736692;
-        Tue, 31 Jan 2023 03:48:56 -0800 (PST)
-Received: from touko.myxoz.lan (90-224-45-44-no2390.tbcn.telia.com. [90.224.45.44])
-        by smtp.gmail.com with ESMTPSA id a6-20020aa7cf06000000b004a23558f01fsm4190147edy.43.2023.01.31.03.48.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Jan 2023 03:48:56 -0800 (PST)
-Message-ID: <a9d5c49536b3dc5039d981952aa60db6266516e2.camel@gmail.com>
-Subject: Re: [UNTESTED PATCH] net/usb: kalmia: Fix uninit-value in
- kalmia_send_init_packet
-From:   Miko Larsson <mikoxyzzz@gmail.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 31 Jan 2023 12:48:54 +0100
-In-Reply-To: <Y9j9jAHLDBsTxZB7@kroah.com>
-References: <7266fe67c835f90e5c257129014a63e79e849ef9.camel@gmail.com>
-         <Y9j9jAHLDBsTxZB7@kroah.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3 (3.46.3-1.module_f37+15877+cf3308f9) 
+        with ESMTP id S230135AbjAaLvy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 06:51:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBFB7CDF6
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 03:51:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69A196147C
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 11:51:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53FE8C433EF;
+        Tue, 31 Jan 2023 11:51:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675165911;
+        bh=mdwIEHXz48ciN4NgiNy9rwuG58UZqXAu/Y6NNH6H6Nw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NiYqdXjIl1NOgOZq+Mttt1QwNpn8RonV/ApHhx4GeZ72XuildDejlX8AiRLtFNM6/
+         4Xnt970sZ3Q0G/t9kbfhMe57nv+Hua8rvyKr2P1ZHCP5AChlLau0dESdgdDNnQbJBd
+         aF+QhPoi7uea+DpmxZ8GZMXusmOoKnA9bEhe+lRjfL34VeIM+NPdBDeDeur6RxdzwQ
+         2gJoMua+Q1e63WdTs0OmhY98LXaczed5waVTsE0SEFHU3KtGGpcMhaEfIB3VTjcJfn
+         xY6AiRE8ZkI9F/W4l5VZlfFIIWipZyKt3ulndcVVQiFWJsXfOx8BFzac4gt/dZrJnm
+         gknnv2NOc0gqQ==
+Date:   Tue, 31 Jan 2023 13:51:47 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, jacob.e.keller@intel.com
+Subject: Re: [patch net-next 2/3] devlink: remove "gen" from struct
+ devlink_gen_cmd name
+Message-ID: <Y9kA01okvtKYLDZ2@unreal>
+References: <20230131090613.2131740-1-jiri@resnulli.us>
+ <20230131090613.2131740-3-jiri@resnulli.us>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230131090613.2131740-3-jiri@resnulli.us>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2023-01-31 at 12:37 +0100, Greg KH wrote:
-> On Tue, Jan 31, 2023 at 12:14:54PM +0100, Miko Larsson wrote:
-> > > From ef617d8df22945b871ab989e25c07d7c60ae21f6 Mon Sep 17 00:00:00
-> > > 2001
-> > From: Miko Larsson <mikoxyzzz@gmail.com>
-> > Date: Tue, 31 Jan 2023 11:01:20 +0100
->=20
-> Why is this in the changelog text?
-D'oh, sorry about that. Imported the patch directly into Evolution
-without trimming that away.
+On Tue, Jan 31, 2023 at 10:06:12AM +0100, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@nvidia.com>
+> 
+> No need to have "gen" inside name of the structure for devlink commands.
+> Remove it.
 
-> > Subject: [UNTESTED PATCH] net/usb: kalmia: Fix uninit-value in
-> > kalmia_send_init_packet
-> >=20
-> > syzbot reports that act_len in kalmia_send_init_packet() is
-> > uninitialized. Attempt to fix this by initializing it to 0.
->=20
-> You can send patches to syzbot to have it test things, have you tried
-> that?
-Didn't know that, will try!
+And what about devl_gen_* names? Should they be renamed too?
 
---=20
-~miko
+Thanks
+
+> 
+> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+> ---
+>  net/devlink/devl_internal.h | 36 ++++++++++++++++++------------------
+>  net/devlink/leftover.c      | 32 ++++++++++++++++----------------
+>  net/devlink/netlink.c       |  4 ++--
+>  3 files changed, 36 insertions(+), 36 deletions(-)
+> 
+> diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
+> index dd4366c68b96..3910db5547fe 100644
+> --- a/net/devlink/devl_internal.h
+> +++ b/net/devlink/devl_internal.h
+> @@ -115,7 +115,7 @@ struct devlink_nl_dump_state {
+>  	};
+>  };
+>  
+> -struct devlink_gen_cmd {
+> +struct devlink_cmd {
+>  	int (*dump_one)(struct sk_buff *msg, struct devlink *devlink,
+>  			struct netlink_callback *cb);
+>  };
+> @@ -139,22 +139,22 @@ devlink_dump_state(struct netlink_callback *cb)
+>  	return (struct devlink_nl_dump_state *)cb->ctx;
+>  }
+>  
+> -/* gen cmds */
+> -extern const struct devlink_gen_cmd devl_gen_inst;
+> -extern const struct devlink_gen_cmd devl_gen_port;
+> -extern const struct devlink_gen_cmd devl_gen_sb;
+> -extern const struct devlink_gen_cmd devl_gen_sb_pool;
+> -extern const struct devlink_gen_cmd devl_gen_sb_port_pool;
+> -extern const struct devlink_gen_cmd devl_gen_sb_tc_pool_bind;
+> -extern const struct devlink_gen_cmd devl_gen_selftests;
+> -extern const struct devlink_gen_cmd devl_gen_param;
+> -extern const struct devlink_gen_cmd devl_gen_region;
+> -extern const struct devlink_gen_cmd devl_gen_info;
+> -extern const struct devlink_gen_cmd devl_gen_health_reporter;
+> -extern const struct devlink_gen_cmd devl_gen_trap;
+> -extern const struct devlink_gen_cmd devl_gen_trap_group;
+> -extern const struct devlink_gen_cmd devl_gen_trap_policer;
+> -extern const struct devlink_gen_cmd devl_gen_linecard;
+> +/* Commands */
+> +extern const struct devlink_cmd devl_gen_inst;
+> +extern const struct devlink_cmd devl_gen_port;
+> +extern const struct devlink_cmd devl_gen_sb;
+> +extern const struct devlink_cmd devl_gen_sb_pool;
+> +extern const struct devlink_cmd devl_gen_sb_port_pool;
+> +extern const struct devlink_cmd devl_gen_sb_tc_pool_bind;
+> +extern const struct devlink_cmd devl_gen_selftests;
+> +extern const struct devlink_cmd devl_gen_param;
+> +extern const struct devlink_cmd devl_gen_region;
+> +extern const struct devlink_cmd devl_gen_info;
+> +extern const struct devlink_cmd devl_gen_health_reporter;
+> +extern const struct devlink_cmd devl_gen_trap;
+> +extern const struct devlink_cmd devl_gen_trap_group;
+> +extern const struct devlink_cmd devl_gen_trap_policer;
+> +extern const struct devlink_cmd devl_gen_linecard;
+>  
+>  /* Ports */
+>  int devlink_port_netdevice_event(struct notifier_block *nb,
+> @@ -182,7 +182,7 @@ struct devlink_linecard *
+>  devlink_linecard_get_from_info(struct devlink *devlink, struct genl_info *info);
+>  
+>  /* Rates */
+> -extern const struct devlink_gen_cmd devl_gen_rate_get;
+> +extern const struct devlink_cmd devl_gen_rate_get;
+>  
+>  struct devlink_rate *
+>  devlink_rate_get_from_info(struct devlink *devlink, struct genl_info *info);
+> diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
+> index 1461eec423ff..16cb5975de1a 100644
+> --- a/net/devlink/leftover.c
+> +++ b/net/devlink/leftover.c
+> @@ -1236,7 +1236,7 @@ devlink_nl_cmd_rate_get_dump_one(struct sk_buff *msg, struct devlink *devlink,
+>  	return err;
+>  }
+>  
+> -const struct devlink_gen_cmd devl_gen_rate_get = {
+> +const struct devlink_cmd devl_gen_rate_get = {
+>  	.dump_one		= devlink_nl_cmd_rate_get_dump_one,
+>  };
+>  
+> @@ -1303,7 +1303,7 @@ devlink_nl_cmd_get_dump_one(struct sk_buff *msg, struct devlink *devlink,
+>  			       cb->nlh->nlmsg_seq, NLM_F_MULTI);
+>  }
+>  
+> -const struct devlink_gen_cmd devl_gen_inst = {
+> +const struct devlink_cmd devl_gen_inst = {
+>  	.dump_one		= devlink_nl_cmd_get_dump_one,
+>  };
+>  
+> @@ -1359,7 +1359,7 @@ devlink_nl_cmd_port_get_dump_one(struct sk_buff *msg, struct devlink *devlink,
+>  	return err;
+>  }
+>  
+> -const struct devlink_gen_cmd devl_gen_port = {
+> +const struct devlink_cmd devl_gen_port = {
+>  	.dump_one		= devlink_nl_cmd_port_get_dump_one,
+>  };
+>  
+> @@ -2137,7 +2137,7 @@ static int devlink_nl_cmd_linecard_get_dump_one(struct sk_buff *msg,
+>  	return err;
+>  }
+>  
+> -const struct devlink_gen_cmd devl_gen_linecard = {
+> +const struct devlink_cmd devl_gen_linecard = {
+>  	.dump_one		= devlink_nl_cmd_linecard_get_dump_one,
+>  };
+>  
+> @@ -2392,7 +2392,7 @@ devlink_nl_cmd_sb_get_dump_one(struct sk_buff *msg, struct devlink *devlink,
+>  	return err;
+>  }
+>  
+> -const struct devlink_gen_cmd devl_gen_sb = {
+> +const struct devlink_cmd devl_gen_sb = {
+>  	.dump_one		= devlink_nl_cmd_sb_get_dump_one,
+>  };
+>  
+> @@ -2530,7 +2530,7 @@ devlink_nl_cmd_sb_pool_get_dump_one(struct sk_buff *msg,
+>  	return err;
+>  }
+>  
+> -const struct devlink_gen_cmd devl_gen_sb_pool = {
+> +const struct devlink_cmd devl_gen_sb_pool = {
+>  	.dump_one		= devlink_nl_cmd_sb_pool_get_dump_one,
+>  };
+>  
+> @@ -2738,7 +2738,7 @@ devlink_nl_cmd_sb_port_pool_get_dump_one(struct sk_buff *msg,
+>  	return err;
+>  }
+>  
+> -const struct devlink_gen_cmd devl_gen_sb_port_pool = {
+> +const struct devlink_cmd devl_gen_sb_port_pool = {
+>  	.dump_one		= devlink_nl_cmd_sb_port_pool_get_dump_one,
+>  };
+>  
+> @@ -2973,7 +2973,7 @@ devlink_nl_cmd_sb_tc_pool_bind_get_dump_one(struct sk_buff *msg,
+>  	return err;
+>  }
+>  
+> -const struct devlink_gen_cmd devl_gen_sb_tc_pool_bind = {
+> +const struct devlink_cmd devl_gen_sb_tc_pool_bind = {
+>  	.dump_one		= devlink_nl_cmd_sb_tc_pool_bind_get_dump_one,
+>  };
+>  
+> @@ -4785,7 +4785,7 @@ devlink_nl_cmd_selftests_get_dump_one(struct sk_buff *msg,
+>  					 cb->extack);
+>  }
+>  
+> -const struct devlink_gen_cmd devl_gen_selftests = {
+> +const struct devlink_cmd devl_gen_selftests = {
+>  	.dump_one		= devlink_nl_cmd_selftests_get_dump_one,
+>  };
+>  
+> @@ -5271,7 +5271,7 @@ devlink_nl_cmd_param_get_dump_one(struct sk_buff *msg, struct devlink *devlink,
+>  	return err;
+>  }
+>  
+> -const struct devlink_gen_cmd devl_gen_param = {
+> +const struct devlink_cmd devl_gen_param = {
+>  	.dump_one		= devlink_nl_cmd_param_get_dump_one,
+>  };
+>  
+> @@ -5978,7 +5978,7 @@ devlink_nl_cmd_region_get_dump_one(struct sk_buff *msg, struct devlink *devlink,
+>  	return 0;
+>  }
+>  
+> -const struct devlink_gen_cmd devl_gen_region = {
+> +const struct devlink_cmd devl_gen_region = {
+>  	.dump_one		= devlink_nl_cmd_region_get_dump_one,
+>  };
+>  
+> @@ -6625,7 +6625,7 @@ devlink_nl_cmd_info_get_dump_one(struct sk_buff *msg, struct devlink *devlink,
+>  	return err;
+>  }
+>  
+> -const struct devlink_gen_cmd devl_gen_info = {
+> +const struct devlink_cmd devl_gen_info = {
+>  	.dump_one		= devlink_nl_cmd_info_get_dump_one,
+>  };
+>  
+> @@ -7793,7 +7793,7 @@ devlink_nl_cmd_health_reporter_get_dump_one(struct sk_buff *msg,
+>  	return 0;
+>  }
+>  
+> -const struct devlink_gen_cmd devl_gen_health_reporter = {
+> +const struct devlink_cmd devl_gen_health_reporter = {
+>  	.dump_one		= devlink_nl_cmd_health_reporter_get_dump_one,
+>  };
+>  
+> @@ -8311,7 +8311,7 @@ devlink_nl_cmd_trap_get_dump_one(struct sk_buff *msg, struct devlink *devlink,
+>  	return err;
+>  }
+>  
+> -const struct devlink_gen_cmd devl_gen_trap = {
+> +const struct devlink_cmd devl_gen_trap = {
+>  	.dump_one		= devlink_nl_cmd_trap_get_dump_one,
+>  };
+>  
+> @@ -8524,7 +8524,7 @@ devlink_nl_cmd_trap_group_get_dump_one(struct sk_buff *msg,
+>  	return err;
+>  }
+>  
+> -const struct devlink_gen_cmd devl_gen_trap_group = {
+> +const struct devlink_cmd devl_gen_trap_group = {
+>  	.dump_one		= devlink_nl_cmd_trap_group_get_dump_one,
+>  };
+>  
+> @@ -8817,7 +8817,7 @@ devlink_nl_cmd_trap_policer_get_dump_one(struct sk_buff *msg,
+>  	return err;
+>  }
+>  
+> -const struct devlink_gen_cmd devl_gen_trap_policer = {
+> +const struct devlink_cmd devl_gen_trap_policer = {
+>  	.dump_one		= devlink_nl_cmd_trap_policer_get_dump_one,
+>  };
+>  
+> diff --git a/net/devlink/netlink.c b/net/devlink/netlink.c
+> index 11666edf5cd2..33ed3984f3cb 100644
+> --- a/net/devlink/netlink.c
+> +++ b/net/devlink/netlink.c
+> @@ -177,7 +177,7 @@ static void devlink_nl_post_doit(const struct genl_split_ops *ops,
+>  	devlink_put(devlink);
+>  }
+>  
+> -static const struct devlink_gen_cmd *devl_gen_cmds[] = {
+> +static const struct devlink_cmd *devl_gen_cmds[] = {
+>  	[DEVLINK_CMD_GET]		= &devl_gen_inst,
+>  	[DEVLINK_CMD_PORT_GET]		= &devl_gen_port,
+>  	[DEVLINK_CMD_SB_GET]		= &devl_gen_sb,
+> @@ -201,7 +201,7 @@ int devlink_nl_instance_iter_dumpit(struct sk_buff *msg,
+>  {
+>  	const struct genl_dumpit_info *info = genl_dumpit_info(cb);
+>  	struct devlink_nl_dump_state *state = devlink_dump_state(cb);
+> -	const struct devlink_gen_cmd *cmd;
+> +	const struct devlink_cmd *cmd;
+>  	struct devlink *devlink;
+>  	int err = 0;
+>  
+> -- 
+> 2.39.0
+> 
