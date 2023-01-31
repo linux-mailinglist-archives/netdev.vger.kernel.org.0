@@ -2,198 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A89C56835F6
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 20:01:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D268F6835FD
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 20:02:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232059AbjAaTBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 14:01:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51420 "EHLO
+        id S232100AbjAaTCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 14:02:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232040AbjAaTBp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 14:01:45 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11C3F58993
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 11:01:44 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id j29-20020a05600c1c1d00b003dc52fed235so5845673wms.1
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 11:01:43 -0800 (PST)
+        with ESMTP id S232065AbjAaTCa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 14:02:30 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E01559751
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 11:02:09 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id g9so10935295pfo.5
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 11:02:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=0f5n/Bb4ZQ3NDjDGqKckIUS2qUmXXS6bLtvGcaKg4v8=;
-        b=cdxfXqElRety6rvzIlwBfnO/C4WBsJWfZ8jeoyrmxufbaHUFP6RWEQ2bt8peHS2CHX
-         V9yTNKUbAe98kiY413wXqlUwG/VEsW2YgmWauruCyeEo+k8zCoZPL2o9Po8Nqorxq1sk
-         XN1prF/g5v1Akd25JmZdQplSN5X3HRvfjRJS6tRTr1UrhXZTh0PnAk+xF/l9bCGyYsQB
-         k6+396jkxHnR2D5Ytphl4Wjqap8C0hlsMfh/qdlJ1JeTARhpxq8c9nPzNIvTImjxpT+C
-         GMRwixiuq6GeF0ElW1rqSCwjokJMVWJ6qlQC5MYHS4kR+T3ipjsCQ6wLJAnNTAUCuFaK
-         aPrw==
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iSlbitpVXsAiKWUKOS8hJcan2Um7j/V24BYCeu085pQ=;
+        b=fdvPWwMKP2aLjGaQ8NVXQsaovrWw5foZPtc/QP3r0wy9C/u06t1dfcKtwtMmDD5F12
+         FZtTLNPDw3In1StcXGAVJ/mdFvbA5qNHADV86MCamiZ2ZXKKoSnJojUGhMsTROxc8Glx
+         h/jH0cBg1T8J/4agw+jc7V2tSXMa4jlHuI0aqLB9xLcIg/DW+447kH2fy6uA69JJj0pq
+         3C8evbw5mt/b6SWNqaHToBxE1pxuL5ABD9QJCyQmMeOCjaOJUt9SryikrP80SnjoHrVI
+         0m8djGD8QPjdeDR7Q1jOFvpKMkqm9ls/AgKR0zufuSnHKzp8/HfJ+WiARA1P+nCdBP+c
+         4mqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0f5n/Bb4ZQ3NDjDGqKckIUS2qUmXXS6bLtvGcaKg4v8=;
-        b=y7S831xVLAhi8Wu4EL+Hs3+Om56o/xdJT0U3LI3XugUaEiaLFWrff5rK8CTs3O/6A3
-         rMI6tRvN2vjLkKtKVYsJGHoL730f30YOhlS/mosdTNxwErbFxJiQj/o6QBo8nfFXsF46
-         3thv+E4pZifStQQqmCfZnaUzmps1oLGxQkKZK8jQwKYfX+lWBkKLEmEItmayG9pElpla
-         ZeVbhJM2sUzzldUtjkgtTVSP2lYt6inHG5fl89XInnwECUkwU4Y3arpV1LLqmJrb+k3N
-         kS6wZhUyqP+7IS57P7Dbxw2ca1AHVDZq+OXoZ2VZcECx4Nljy1xG0uvpj4V6WdTd8X+o
-         qT4Q==
-X-Gm-Message-State: AO0yUKV+4QWb94VeJ/gS1Wo733sGwgJpBKdjYxkQwNw9pNqhuaGvLOHM
-        bkCB2q70g2i+3bN3XQG7YuQeIw==
-X-Google-Smtp-Source: AK7set9a7FuW0Dzh6tzfAaUyOZas2h1eDn7WsexBmWEpoMAWXmh8wHpmKr7+Weg1cVXbQ8uHlMwQMg==
-X-Received: by 2002:a05:600c:5386:b0:3cf:9844:7b11 with SMTP id hg6-20020a05600c538600b003cf98447b11mr342875wmb.23.1675191702581;
-        Tue, 31 Jan 2023 11:01:42 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id n15-20020a5d598f000000b002bdff778d87sm16939882wri.34.2023.01.31.11.01.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 Jan 2023 11:01:41 -0800 (PST)
-Message-ID: <c515aae3-88e4-948c-a856-7b45dd2caed9@linaro.org>
-Date:   Tue, 31 Jan 2023 20:01:39 +0100
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=iSlbitpVXsAiKWUKOS8hJcan2Um7j/V24BYCeu085pQ=;
+        b=uQ6MEHv4Di6suICpk4FZ4PXz1I3mwQ1AyOk1x4I4jEwjsb9D6GxmcrtUdXN+r4QGWW
+         ywK6QbOlME6/FygCj7bp+ibjtOAi1jSepbbIW9I/ceZa/9eotPXOx33LcN2PY2IegERH
+         umt3Fu42FU84t9TSkB9qPOQOr/YqWLW56RFQVo/QixNkTE1DFcrUVl/2/IDcHwJslp5e
+         ftOUODEgoOG5SFe198VxBuE/4dIg3VL7N8nsWwdvs20ZUs/AX8BB8nuxMrJZ7jQPvp8y
+         N0FnWSbhLqgrF7LYcJfm2+cSrN7klkkGWHmUAovQrwrvZp9OKRpUs/UvWp8ufzp9scpr
+         kUSA==
+X-Gm-Message-State: AFqh2koUmkJ/p9uJCGsOMnS3yhKVQ2DFo+IYSAJm/TZibD5CDmzmAruq
+        BIitD71v6Tf7sw668iAiJNnQ3sI++fYfkF+zEgZc7Q==
+X-Google-Smtp-Source: AMrXdXsQiX/y+zxoMR4fjq09QC3yLQ82xRlHwgrrx86+hvYct8MxPYHtPo6KhXYHINBUEQsWoCXJoGqyQKakDT8vxoI=
+X-Received: by 2002:a63:946:0:b0:4cf:7ba0:dd5a with SMTP id
+ 67-20020a630946000000b004cf7ba0dd5amr6008626pgj.119.1675191728977; Tue, 31
+ Jan 2023 11:02:08 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v2 4/4] arm64: dts: qcom: thinkpad-x13s: Add bluetooth
-Content-Language: en-US
-To:     Steev Klimaszewski <steev@kali.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        Mark Pearson <markpearson@lenovo.com>
-References: <20230131043816.4525-1-steev@kali.org>
- <20230131043816.4525-5-steev@kali.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230131043816.4525-5-steev@kali.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <167482734243.892262.18210955230092032606.stgit@firesoul>
+ <87cz70krjv.fsf@toke.dk> <CAKH8qBtc0TRorF2zsD0dZjgredpzcmczK=KMgt1mpEX_mQG2Kg@mail.gmail.com>
+ <839c6cbb-1572-b3a8-57eb-2aa2488101dd@redhat.com>
+In-Reply-To: <839c6cbb-1572-b3a8-57eb-2aa2488101dd@redhat.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Tue, 31 Jan 2023 11:01:57 -0800
+Message-ID: <CAKH8qBtcDqru=_g1h17ogu26FTwRLOgyyNTO-5PY2Ur2o7vhXw@mail.gmail.com>
+Subject: Re: [xdp-hints] [PATCH bpf-next RFC V1] selftests/bpf:
+ xdp_hw_metadata clear metadata when -EOPNOTSUPP
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        martin.lau@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, dsahern@gmail.com,
+        willemb@google.com, void@manifault.com, kuba@kernel.org,
+        xdp-hints@xdp-project.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31/01/2023 05:38, Steev Klimaszewski wrote:
-> Signed-off-by: Steev Klimaszewski <steev@kali.org>
-> ---
->  .../qcom/sc8280xp-lenovo-thinkpad-x13s.dts    | 68 +++++++++++++++++++
->  1 file changed, 68 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> index f936b020a71d..951438ac5946 100644
-> --- a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> +++ b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> @@ -24,6 +24,8 @@ / {
->  	aliases {
->  		i2c4 = &i2c4;
->  		i2c21 = &i2c21;
-> +		serial0 = &uart17;
-> +		serial1 = &uart2;
->  	};
->  
->  	wcd938x: audio-codec {
-> @@ -712,6 +714,32 @@ &qup0 {
->  	status = "okay";
->  };
->  
-> +&uart2 {
-> +	status = "okay";
-> +
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&uart2_state>;
-> +
-> +	bluetooth {
-> +		compatible = "qcom,wcn6855-bt";
-> +
-> +/*
+On Tue, Jan 31, 2023 at 5:00 AM Jesper Dangaard Brouer
+<jbrouer@redhat.com> wrote:
+>
+>
+>
+> On 27/01/2023 18.18, Stanislav Fomichev wrote:
+> > On Fri, Jan 27, 2023 at 5:58 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
+redhat.com> wrote:
+> >>
+> >> Jesper Dangaard Brouer <brouer@redhat.com> writes:
+> >>
+> >>> The AF_XDP userspace part of xdp_hw_metadata see non-zero as a signal=
+ of
+> >>> the availability of rx_timestamp and rx_hash in data_meta area. The
+> >>> kernel-side BPF-prog code doesn't initialize these members when kerne=
+l
+> >>> returns an error e.g. -EOPNOTSUPP.  This memory area is not guarantee=
+d to
+> >>> be zeroed, and can contain garbage/previous values, which will be rea=
+d
+> >>> and interpreted by AF_XDP userspace side.
+> >>>
+> >>> Tested this on different drivers. The experiences are that for most
+> >>> packets they will have zeroed this data_meta area, but occasionally i=
+t
+> >>> will contain garbage data.
+> >>>
+> >>> Example of failure tested on ixgbe:
+> >>>   poll: 1 (0)
+> >>>   xsk_ring_cons__peek: 1
+> >>>   0x18ec788: rx_desc[0]->addr=3D100000000008000 addr=3D8100 comp_addr=
+=3D8000
+> >>>   rx_hash: 3697961069
+> >>>   rx_timestamp:  9024981991734834796 (sec:9024981991.7348)
+> >>>   0x18ec788: complete idx=3D8 addr=3D8000
+> >>>
+> >>> Converting to date:
+> >>>   date -d @9024981991
+> >>>   2255-12-28T20:26:31 CET
+> >>>
+> >>> I choose a simple fix in this patch. When kfunc fails or isn't suppor=
+ted
+> >>> assign zero to the corresponding struct meta value.
+> >>>
+> >>> It's up to the individual BPF-programmer to do something smarter e.g.
+> >>> that fits their use-case, like getting a software timestamp and marki=
+ng
+> >>> a flag that gives the type of timestamp.
+> >>>
+> >>> Another possibility is for the behavior of kfunc's
+> >>> bpf_xdp_metadata_rx_timestamp and bpf_xdp_metadata_rx_hash to require
+> >>> clearing return value pointer.
+> >>
+> >> I definitely think we should leave it up to the BPF programmer to reac=
+t
+> >> to failures; that's what the return code is there for, after all :)
+> >
+> > +1
+>
+> +1 I agree.
+> We should keep this default functions as simple as possible, for future
+> "unroll" of BPF-bytecode.
+>
+> I the -EOPNOTSUPP case (default functions for drivers not implementing
+> kfunc), will likely be used runtime by BPF-prog to determine if the
+> hardware have this offload hint, but it comes with the overhead of a
+> function pointer call.
+>
+> I hope we can somehow BPF-bytecode "unroll" these (default functions) at
+> BPF-load time, to remove this overhead, and perhaps even let BPF
+> bytecode do const propagation and code elimination?
+>
+>
+> > Maybe we can unconditionally memset(meta, sizeof(*meta), 0) in
+> > tools/testing/selftests/bpf/progs/xdp_hw_metadata.c?
+> > Since it's not a performance tool, it should be ok functionality-wise.
+>
+> I know this isn't a performance test, but IMHO always memsetting
+> metadata area is a misleading example.  We know from experience that
+> developer simply copy-paste code examples, even quick-n-dirty testing
+> example code.
+>
+> The specific issue in this example can lead to hard-to-find bugs, as my
+> testing shows it is only occasionally that data_meta area contains
+> garbage. We could do a memset, but it deserves a large code comment, why
+> this is needed, so people copy-pasting understand. I choose current
+> approach to keep code close to code people will copy-paste.
 
-Why dead code should be in the kernel?
+SG, I don't think it matters, but agreed that having this stated
+explicitly could help with a blind copy-paste :-)
+Then maybe repost with the TODO's removed from the kfucs? We seem to
+agree that it's the user's job to manage the final buffer..
 
-> +		vddio-supply = <&vreg_s4a_1p8>;
-> +		vddxo-supply = <&vreg_l7a_1p8>;
-> +		vddrf-supply = <&vreg_l17a_1p3>;
-> +		vddch0-supply = <&vreg_l25a_3p3>;
-> +		vddch1-supply = <&vreg_l23a_3p3>;
-> +*/
-> +		max-speed = <3200000>;
-> +
-> +		enable-gpios = <&tlmm 133 GPIO_ACTIVE_HIGH>;
-> +		swctrl-gpios = <&tlmm 132 GPIO_ACTIVE_HIGH>;
-> +
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&bt_en>;
-> +	};
-> +};
-> +
->  &qup1 {
->  	status = "okay";
->  };
-> @@ -720,6 +748,12 @@ &qup2 {
->  	status = "okay";
->  };
->  
-> +&uart17 {
-> +	compatible = "qcom,geni-debug-uart";
-> +
-> +	status = "okay";
-> +};
-> +
->  &remoteproc_adsp {
->  	firmware-name = "qcom/sc8280xp/LENOVO/21BX/qcadsp8280.mbn";
->  
-> @@ -980,6 +1014,19 @@ hastings_reg_en: hastings-reg-en-state {
->  &tlmm {
->  	gpio-reserved-ranges = <70 2>, <74 6>, <83 4>, <125 2>, <128 2>, <154 7>;
->  
-> +	bt_en: bt-en-state {
-> +		hstp-sw-ctrl {
-
-Does not look like you tested the DTS against bindings. Please run `make
-dtbs_check` (see Documentation/devicetree/bindings/writing-schema.rst
-for instructions).
-
-> +			pins = "gpio132";
-> +			function = "gpio";
-> +		};
-> +
-> +		hstp-bt-en {
-> +			pins = "gpio133";
-> +			function = "gpio";
-> +			drive-strength = <16>;
-> +		};
-> +	};
-> +
->  	edp_reg_en: edp-reg-en-state {
->  		pins = "gpio25";
->  		function = "gpio";
-> @@ -1001,6 +1048,27 @@ i2c4_default: i2c4-default-state {
->  		bias-disable;
->  	};
->  
-> +	uart2_state: uart2-state {
-> +		cts {
-
-Does not look like you tested the DTS against bindings. Please run `make
-dtbs_check` (see Documentation/devicetree/bindings/writing-schema.rst
-for instructions).
-
-
-Best regards,
-Krzysztof
-
+> --Jesper
+>
