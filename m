@@ -2,65 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E7256838CC
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 22:38:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DAF36838DE
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 22:47:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231712AbjAaViL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 16:38:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56504 "EHLO
+        id S231817AbjAaVry (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 16:47:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231656AbjAaViH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 16:38:07 -0500
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A033F1EFEA
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 13:37:38 -0800 (PST)
-Received: by mail-pg1-x549.google.com with SMTP id q130-20020a632a88000000b004a03cfb3ac6so7329285pgq.6
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 13:37:38 -0800 (PST)
+        with ESMTP id S231302AbjAaVrx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 16:47:53 -0500
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04DB5A81C
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 13:47:49 -0800 (PST)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-501c3a414acso221444527b3.7
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 13:47:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=3bZD2t4k0gPu8udAjjX6jVXjMh20eSHaCu90Kp2OZAc=;
-        b=YE5KtzJPWgD0qx5kA2APinbFORMleD0v6oanJeRb7QijPLu/8lFoprByccRlC9ptHL
-         5TjXCHDXyyXolXdSmSTzfujf3DFsmEtQVys3M4lW911R5oKOygA4/pkpEsjv1e0fixAf
-         /zLy+c0B/sSUbCKZupetfzPsEIEEWNLDf4H+LfXU3tqqjqnOWe0hrHBMTXkRWqXXIL8h
-         qe6mFU74wRi/qjXHtpF4b+VrdNFovwfJ6sOd8AZWS3GhwlVN9gRveYWy2SNI0l5Yv73L
-         +Ayr1c1cNTZ8wHsEfCi/3SCA2jW9/eEbuffWhN/I3tvh7IsbL+7XmE4+6lezW2b4WMTz
-         RCCA==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=EvA04MAVbr1UuAjYFXOV/pgoyn0pjItg1LdvvQcMI8c=;
+        b=H0BHVeKa4qEFSSRzJElwMZ4GewmdUx3WiPFixCTp+9kb6GH0ec4EOCufp1bGBVJoaU
+         0vzBHCsXLtM7wxZ2o+duBMw3vgJs3cLrYgZ9KViPKlw8qA+8b7pncYkWLM8wXM4EMiLT
+         Wz+vm9YD0dgqaYLnmlzQ2uD+fjZwC8EBuadn+BREBwfGPH1E2O+YTq8b/FRKugSEH02k
+         ljvVLMI9/GzzEOgqq9Fz4PdOk0kVlQvITmFVxUjPOo1bhNIw+qHhlRNO7vo5qmE5gZrM
+         aTNiq7MdRlWqfHXXQoQI45iks7npKbF0tcjRA0fCzl4nVZWRo/5HVY88Y6EJAatig2CY
+         X5Bg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=3bZD2t4k0gPu8udAjjX6jVXjMh20eSHaCu90Kp2OZAc=;
-        b=5+3cSEykHw2/6Tg2Oe7/FqZCp1YflUiz8FDTgL5jtLp2KjP0Hxv7muBXFZyc1h/VRm
-         2xpdqQZpMtrlhXInnsq10tVLdePE1iT/mDSAhuHKYXpS/ZX7k44SVaLRzF3zgICUHksu
-         v64CWFhytceooJkkeihvkU9xcH7OL2rx58MRGsjtcVo7PEDpV38Qe3MmBdxY2OOoc3sS
-         H0juAl1kl/jW7NmITeV/SWx7BD3LTVXKCkOcDa7zk/fU6z54zl9Vh5Ge/9nXqOIe0xeh
-         ezmkBL0oEIefdkCkqXfslCzGmBBhBwZYWOn1mr8BKNiRAv9uhNBV+76tx8O57+infVc7
-         9WWA==
-X-Gm-Message-State: AO0yUKXMd/cLq55S52tBl/f2AyNq/uOOK89t2DvuvaJZxgeq2gTcvqd9
-        hdiZfKtwRZfu6g6wBfE+5vSqImmFiWb1FXDJQrdCMpX19lyKTOcKMVDB5WjNj4KahHrlxIv4rJy
-        7jp96TlsEoXa68vFRfjq1fLBd+ebeZx/YEvwvjjTZtbMdj9AUdIQ2UkN2ySuTpdpttk9IHXmkjJ
-        gPVg==
-X-Google-Smtp-Source: AK7set9P9k0QAnuliDSuMBioJnepUuvW+zNMKBxkqev2tuWhc/QiVas1o05n/W5p7mBsGecuSuBzMeKpK8qqwU8JMAc=
-X-Received: from pkaligineedi.sea.corp.google.com ([2620:15c:100:202:b3b0:66c1:e130:ede9])
- (user=pkaligineedi job=sendgmr) by 2002:a17:90a:740b:b0:229:7638:4499 with
- SMTP id a11-20020a17090a740b00b0022976384499mr147824pjg.167.1675201058030;
- Tue, 31 Jan 2023 13:37:38 -0800 (PST)
-Date:   Tue, 31 Jan 2023 13:37:14 -0800
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.39.1.456.gfc5497dd1b-goog
-Message-ID: <20230131213714.588281-1-pkaligineedi@google.com>
-Subject: [PATCH net-next 1/1] gve: Fix gve interrupt names
-From:   Praveen Kaligineedi <pkaligineedi@google.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Praveen Kaligineedi <pkaligineedi@google.com>,
-        Jeroen de Borst <jeroendb@google.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=EvA04MAVbr1UuAjYFXOV/pgoyn0pjItg1LdvvQcMI8c=;
+        b=jNvrJD4e2fwUWht48BOqyiPgUVSLxAFElTlgnWrRmed68YSltKM2WoFKOKVf1F9moL
+         m2e3pr+y+4ICFUCrffufecaEowa5GYIDOzTNfSyMmx4VBzHlce7E6RVlH9VrHmD6hIYo
+         KwhVZhqy8DEnrSyBE9Isw8JbsFjROoymIOny/q3y+qBJetdy7p2BmQ0OxYSafS7JpL4g
+         89rUuFlOBqhAQLpYn0jU0pqqTB7U0a771X+0T0JrL8lRmXe2L1qrZre9ajjNFvCrmuGB
+         gxuhxFojN3RcnGTY3Eg8mAcZFTDxVg80362mOxdykyL7jtalmOBjghS6lHG1eUrkDNmM
+         hU4g==
+X-Gm-Message-State: AFqh2kq6/oD3x6z6kKPuAb2Js2wa5hvn/ULylCkkoiF9JClMqugdF/Z9
+        5fNW0oximD00G/AkEGLPFat06ZRVOrpggLOcEY0GNQ==
+X-Google-Smtp-Source: AMrXdXvxUzexZvvtDOoB1xHI01ESP1152UTaWhUHhWH0zrdl0HhwlkoUzxS9ShAH3OIgN7jOLAH+IeIK7nYk3bvnCVk=
+X-Received: by 2002:a81:4006:0:b0:46b:c07c:c1d9 with SMTP id
+ l6-20020a814006000000b0046bc07cc1d9mr4380896ywn.56.1675201668950; Tue, 31 Jan
+ 2023 13:47:48 -0800 (PST)
+MIME-Version: 1.0
+References: <20230131210051.475983-4-andrei.gherzan@canonical.com>
+In-Reply-To: <20230131210051.475983-4-andrei.gherzan@canonical.com>
+From:   Willem de Bruijn <willemb@google.com>
+Date:   Tue, 31 Jan 2023 16:47:13 -0500
+Message-ID: <CA+FuTSfeehkZMZonHA-nFDK37=eNdG6E-7xkcixn1Hs_s44_EQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 4/4] selftests: net: udpgso_bench_tx: Cater
+ for pending datagrams zerocopy benchmarking
+To:     Andrei Gherzan <andrei.gherzan@canonical.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Fred Klassen <fklassen@appneta.com>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,51 +72,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IRQs are currently requested before the netdevice is registered
-and a proper name is assigned to the device. Changing interrupt
-name to avoid using the format string in the name.
+On Tue, Jan 31, 2023 at 4:01 PM Andrei Gherzan
+<andrei.gherzan@canonical.com> wrote:
+>
+> The test tool can check that the zerocopy number of completions value is
+> valid taking into consideration the number of datagram send calls. This can
+> catch the system into a state where the datagrams are still in the system
+> (for example in a qdisk, waiting for the network interface to return a
+> completion notification, etc).
+>
+> This change adds a retry logic of computing the number of completions up to
+> a configurable (via CLI) timeout (default: 2 seconds).
+>
+> Fixes: 79ebc3c26010 ("net/udpgso_bench_tx: options to exercise TX CMSG")
+> Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
+> Cc: Willem de Bruijn <willemb@google.com>
+> Cc: Paolo Abeni <pabeni@redhat.com>
 
-Fixes: 893ce44df565 ("gve: Add basic driver framework for Compute Engine Virtual NIC")
-Signed-off-by: Praveen Kaligineedi <pkaligineedi@google.com>
-Reviewed-by: Jeroen de Borst <jeroendb@google.com>
----
- drivers/net/ethernet/google/gve/gve_main.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+Fixes should go to net, instead of net-next.
 
-diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-index 5b40f9c53196..534d3ce8ec40 100644
---- a/drivers/net/ethernet/google/gve/gve_main.c
-+++ b/drivers/net/ethernet/google/gve/gve_main.c
-@@ -327,7 +327,6 @@ static int gve_napi_poll_dqo(struct napi_struct *napi, int budget)
- static int gve_alloc_notify_blocks(struct gve_priv *priv)
- {
- 	int num_vecs_requested = priv->num_ntfy_blks + 1;
--	char *name = priv->dev->name;
- 	unsigned int active_cpus;
- 	int vecs_enabled;
- 	int i, j;
-@@ -371,8 +370,8 @@ static int gve_alloc_notify_blocks(struct gve_priv *priv)
- 	active_cpus = min_t(int, priv->num_ntfy_blks / 2, num_online_cpus());
- 
- 	/* Setup Management Vector  - the last vector */
--	snprintf(priv->mgmt_msix_name, sizeof(priv->mgmt_msix_name), "%s-mgmnt",
--		 name);
-+	snprintf(priv->mgmt_msix_name, sizeof(priv->mgmt_msix_name), "gve%d-mgmnt",
-+		 PCI_SLOT(priv->pdev->devfn));
- 	err = request_irq(priv->msix_vectors[priv->mgmt_msix_idx].vector,
- 			  gve_mgmnt_intr, 0, priv->mgmt_msix_name, priv);
- 	if (err) {
-@@ -401,8 +400,8 @@ static int gve_alloc_notify_blocks(struct gve_priv *priv)
- 		struct gve_notify_block *block = &priv->ntfy_blocks[i];
- 		int msix_idx = i;
- 
--		snprintf(block->name, sizeof(block->name), "%s-ntfy-block.%d",
--			 name, i);
-+		snprintf(block->name, sizeof(block->name), "gve%d-ntfy-block.%d",
-+			 PCI_SLOT(priv->pdev->devfn), i);
- 		block->priv = priv;
- 		err = request_irq(priv->msix_vectors[msix_idx].vector,
- 				  gve_is_gqi(priv) ? gve_intr : gve_intr_dqo,
--- 
-2.39.1.456.gfc5497dd1b-goog
+But the code itself looks good to me.
 
+Reviewed-by: Willem de Bruijn <willemb@google.com>
