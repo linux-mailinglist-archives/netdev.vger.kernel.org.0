@@ -2,158 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52337682F6C
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 15:38:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2E8F682F72
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 15:40:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230487AbjAaOik (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 09:38:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38298 "EHLO
+        id S230329AbjAaOkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 09:40:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjAaOij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 09:38:39 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1A05B95
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 06:38:36 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id n6so11960127edo.9
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 06:38:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=CM90C1hIDCOcuqgsaAT3C7sRdlZjaO5k2QqE3aWUAHk=;
-        b=4a7GgGnkNnk340PoIGp91AScwgV2DQt/yZBRyKbI3D3K+GXa//kC12NcxMnS6X4zzD
-         /jvJxndJiHzER+mxOLLxN7ziuG/CS70sM+QzevY00pYMhzOlwgqSjcRuBtw5lNUv1Jg0
-         PubkFwpmDdJ/GQlXM5I2NbDS8+yS/C0Ny2pTemMt5vZjDSIFXxxYapi5ccZSf7jX+OBx
-         IlKIQzSW6wAHeYWrgbMFAR1KQpe2B1AkPGwgRYYDB4igHoc8MFmRVr6zfxpWXrK9fQqs
-         dQSCM7yuKDsD4qBQkVgMnPxURdBcFB2q2k03/E62nFhOBBdu1JB1+ZGBSNSMJYKny7KF
-         x59g==
+        with ESMTP id S229767AbjAaOkZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 09:40:25 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A98EC3D931
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 06:40:23 -0800 (PST)
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com [209.85.128.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id E2AE941AC9
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 14:40:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1675176021;
+        bh=XHZduMLns3Y7r5k79prz1oAhShsJx/gipbVLJCHhlGk=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Type:In-Reply-To;
+        b=ZHSGVeymwhlYOxob1o+xAbOj+J2o71IqdEZocANOLKYtJ5RRehlnmWh/HOw4oGxBc
+         rBhQQwyXuDfLlnGrqSOUQHqyzS4gEEI4I67fG08Gk0zDPi7T4JEbCDCXYnd+pf5BGU
+         rpDTuJk9kUhcq9osaUHzrP/eQUohsiczVj89Sx9ZT+YDJ6EfSDGvSMur/1kFGGjSET
+         2U6UmhYKBRrdkNLSC64BSUru36APVDzVqBHMZu1plmPUjGjYrncGRnAcYGkTuH4QVN
+         AYc5bGNVyrC5E22FnnXJ6PSsz1MmVhJcQPj3uOvOX2J78HJWX7i2BnfFZcyDnOlK+E
+         P/Lpu+G0ssWoA==
+Received: by mail-wm1-f69.google.com with SMTP id r15-20020a05600c35cf00b003d9a14517b2so11399521wmq.2
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 06:40:21 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=CM90C1hIDCOcuqgsaAT3C7sRdlZjaO5k2QqE3aWUAHk=;
-        b=J3NBCx8XPGd7aPwg7dwcw7ErlksisjYYlttXGaI2+iHJ6c+ysIHPEtn90JjWfITZKO
-         Cfiz9b2Mims7X7+rxt9Dc3jIAgvAyI0djJNFOOXtU8xc3ogrTndd2WZXMuLPoA+vORkM
-         NLinrrfGLfN4aIgBjpdal30cpNqApFg7dwgXx/n/gaIM9qm8/iAfy4OFhNT4P+H1MYeT
-         rlPgB9x/npvM3Y/NO0mMWSEaXG9bMOV7ADEG/hoEvsOQDn3670k1TRjEz5LE/kbxKGIW
-         GyPXh4kMu/8PKllbWzKf8HxvvXczlolFWRzW0P3T1mCVtmNADdwchtgewGJsdXW1A2dp
-         GRgg==
-X-Gm-Message-State: AO0yUKWqFsDBPM6SSMGUSdqFmCoGNxuRvMZADbdLOe1eNpSK//3qoJpf
-        CUbRdMhLBEJLaehYM/e/CGJyEg==
-X-Google-Smtp-Source: AK7set9+RcnlHbh5DCVOuavl31xqlO7F06zzM9dn8Diw6aslXDBzeV6ZTTjrQPnFfmBYKEIVi2EuPQ==
-X-Received: by 2002:aa7:d69a:0:b0:4a2:dac:d2a4 with SMTP id d26-20020aa7d69a000000b004a20dacd2a4mr18178014edr.9.1675175915198;
-        Tue, 31 Jan 2023 06:38:35 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id z4-20020a170906714400b0087223b8d6efsm8639974ejj.16.2023.01.31.06.38.33
+        bh=XHZduMLns3Y7r5k79prz1oAhShsJx/gipbVLJCHhlGk=;
+        b=iI1tlJM814YKfDVN6+Ks+2dSpzszs0NlMEicMmYYNslYaOxH3WCVrPQkss0HTe3EQi
+         JQ2HfHp/tUYsfGJDN7sHJCdkE59Fa/K6RdK9Xr/2JiHrQGPHm2tCVSwyLMI81rfdtgYu
+         ORnkoQD7Sj1I5jU08p3Bl3/O56DSOWkO9fO6LKin/tfVPbkDYXi5iCIEmB+KeBVMaYCU
+         +8C/ohhqDB/pAwciq/6WB/u6mYllFhR4GaHspQkWaS+UNHLWqSf4CPLGobkyDVX/Y/AD
+         +uhfj23kZVckeYFkaYLitfRgy1FM8QldgHXRLZSf41EZPL8sRgfSj/pclW8zSGJAPcJF
+         kOhA==
+X-Gm-Message-State: AO0yUKVA+j/DXJ7fkY9dHbFmQ8bmVkAmWxMMZ85d3VsphvGnMv065LQL
+        FH1YwRWmXKTFQYyObHoH0zKqrHi/vPYuKvFahDZHPY1Kerm5TNhW8u+/w8+jCbaXudR1r/WWaak
+        CfSKVuVjamilXSSlA+dE2hubdlD2cHiSG9Q==
+X-Received: by 2002:a05:600c:3b8f:b0:3dc:4633:9844 with SMTP id n15-20020a05600c3b8f00b003dc46339844mr15329504wms.17.1675176021641;
+        Tue, 31 Jan 2023 06:40:21 -0800 (PST)
+X-Google-Smtp-Source: AK7set+EbSgEyXZd4rdDr0ISKIc/bI1f2vwrKcgwG0bUb2kTOVWw33DTexl9UMEDfIuhWw4JxLpblg==
+X-Received: by 2002:a05:600c:3b8f:b0:3dc:4633:9844 with SMTP id n15-20020a05600c3b8f00b003dc46339844mr15329456wms.17.1675176021119;
+        Tue, 31 Jan 2023 06:40:21 -0800 (PST)
+Received: from qwirkle ([2001:67c:1560:8007::aac:c4dd])
+        by smtp.gmail.com with ESMTPSA id c3-20020a1c3503000000b003dc1d668866sm19414222wma.10.2023.01.31.06.40.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Jan 2023 06:38:34 -0800 (PST)
-Date:   Tue, 31 Jan 2023 15:38:33 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jamal Hadi Salim <hadi@mojatatu.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel@mojatatu.com, deb.chatterjee@intel.com,
-        anjali.singhai@intel.com, namrata.limaye@intel.com,
-        khalidm@nvidia.com, tom@sipanda.io, pratyush@sipanda.io,
-        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, vladbu@nvidia.com, simon.horman@corigine.com,
-        stefanc@marvell.com, seong.kim@amd.com, mattyk@nvidia.com,
-        dan.daly@intel.com, john.andy.fingerhut@intel.com
-Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
-Message-ID: <Y9kn6bh8z11xWsDh@nanopsycho>
-References: <Y9eYNsklxkm8CkyP@nanopsycho>
- <87pmawxny5.fsf@toke.dk>
- <CAM0EoM=u-VSDZAifwTiOy8vXAGX7Hwg4rdea62-kNFGsHj7ObQ@mail.gmail.com>
- <878rhkx8bd.fsf@toke.dk>
- <CAAFAkD9Sh5jbp4qkzxuS+J3PGdtN-Kc2HdP8CDqweY36extSdA@mail.gmail.com>
- <87wn53wz77.fsf@toke.dk>
- <63d8325819298_3985f20824@john.notmuch>
- <87leljwwg7.fsf@toke.dk>
- <CAM0EoM=i_pTSRokDqDo_8JWjsDYwwzSgJw6sc+0c=Ss81SyJqg@mail.gmail.com>
- <87h6w6vqyd.fsf@toke.dk>
+        Tue, 31 Jan 2023 06:40:20 -0800 (PST)
+Date:   Tue, 31 Jan 2023 14:40:18 +0000
+From:   Andrei Gherzan <andrei.gherzan@canonical.com>
+To:     Willem de Bruijn <willemb@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/4] selftests: net: udpgso_bench_rx/tx: Stop when
+ wrong CLI args are provided
+Message-ID: <Y9koUno9kGkNJkma@qwirkle>
+References: <20230131130412.432549-1-andrei.gherzan@canonical.com>
+ <20230131130412.432549-2-andrei.gherzan@canonical.com>
+ <CA+FuTSf1ffpep=wV=__J96Ju_nPkd96=c+ny4mC+SxrhRp0ofA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87h6w6vqyd.fsf@toke.dk>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <CA+FuTSf1ffpep=wV=__J96Ju_nPkd96=c+ny4mC+SxrhRp0ofA@mail.gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Jan 31, 2023 at 01:17:14PM CET, toke@redhat.com wrote:
->Jamal Hadi Salim <jhs@mojatatu.com> writes:
->
->> Toke, i dont think i have managed to get across that there is an
->> "autonomous" control built into the kernel. It is not just things that
->> come across netlink. It's about the whole infra.
->
->I'm not disputing the need for the TC infra to configure the pipelines
->and their relationship in the hardware. I'm saying that your
->implementation *of the SW path* is the wrong approach and it would be
->better done by using BPF (not talking about the existing TC-BPF,
->either).
->
->It's a bit hard to know your thinking for sure here, since your patch
->series doesn't include any of the offload control bits. But from the
->slides and your hints in this series, AFAICT, the flow goes something
->like:
->
->hw_pipeline_id = devlink_program_hardware(dev, p4_compiled_blob);
->sw_pipeline_id = `tc p4template create ...` (etc, this is generated by P4C)
->
->tc_act = tc_act_create(hw_pipeline_id, sw_pipeline_id)
->
->which will turn into something like:
->
->struct p4_cls_offload ofl = {
->  .classid = classid,
->  .pipeline_id = hw_pipeline_id
->};
->
->if (check_sw_and_hw_equivalence(hw_pipeline_id, sw_pipeline_id)) /* some magic check here */
->  return -EINVAL;
->
->netdev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_P4, &ofl);
->
->
->I.e, all that's being passed to the hardware is the ID of the
->pre-programmed pipeline, because that programming is going to be
->out-of-band via devlink anyway.
->
->In which case, you could just as well replace the above:
->
->sw_pipeline_id = `tc p4template create ...` (etc, this is generated by P4C)
->
->with
->
->sw_pipeline_id = bpf_prog_load(BPF_PROG_TYPE_P4TC, "my_obj_file.o"); /* my_obj_file is created by P4c */
->
->and achieve exactly the same.
->
->Having all the P4 data types and concepts exist inside the kernel
->*might* make sense if the kernel could then translate those into the
->hardware representations and manage their lifecycle in a uniform way.
->But as far as I can tell from the slides and what you've been saying in
->this thread that's not going to be possible anyway, so why do you need
->anything more granular than the pipeline ID?
+On 23/01/31 08:35AM, Willem de Bruijn wrote:
+> On Tue, Jan 31, 2023 at 8:08 AM Andrei Gherzan
+> <andrei.gherzan@canonical.com> wrote:
+> >
+> > Leaving unrecognized arguments buried in the output, can easily hide a
+> > CLI/script typo. Avoid this by exiting when wrong arguments are provided to
+> > the udpgso_bench test programs.
+> >
+> > Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
+> 
+> I'm on the fence on this. Test binaries are not necessarily robust
+> against bad input. If you insist.
 
-Toke, I understand what what you describe above is applicable for the P4
-program instantiation (pipeline definition).
+I'll keep it in the set (for next v), but I don't mind if it doesn't end
+up applied. It was just something I stumbled into.
 
-What is the suggestion for the actual "rule insertions" ? Would it make
-sense to use TC iface (Jamal's or similar) to insert rules to both BPF SW
-path and offloaded HW path?
+> When sending patches to net, please always add a Fixes tag.
 
+I'll keep that in mind.
 
->
->-Toke
->
+-- 
+Andrei Gherzan
