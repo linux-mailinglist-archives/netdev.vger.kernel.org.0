@@ -2,138 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 525E1682379
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 05:43:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5216D68237B
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 05:44:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230060AbjAaEnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Jan 2023 23:43:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48984 "EHLO
+        id S229661AbjAaEoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Jan 2023 23:44:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230031AbjAaEnN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 23:43:13 -0500
-Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2121.outbound.protection.outlook.com [40.107.117.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D2615CB9;
-        Mon, 30 Jan 2023 20:42:22 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AiHB2ewWOlzKeqtq8KetSUBQuoZvUhvB3WHRK2Te0Z5HGXB2s2RYWYsPdr+XCGE5QszbsZYsk2GwLQN+I/sDlgJ6yuyRa9GESWrjf3DAdrNWkSGzdEqdkueYhe/xB5OWfONxeYS6c8OC3iLoO58P1VUxkcrqZ8Qko24Mh01Ucqm2J3Qyf/yZMf+ryBJnusZgrxSqkTB4XKilHR4qF3CkrupMikM7tH0mqKL7Ufi2Dr0Y2Fgkmo7IJKI4RITOrEI9mtwARn6lBQhmYxgaX2/nm8HCV15c6YJ1mI2pe+06lPRcTrAc8n8nk5WRhavUa+rK4kuYZqop6SUsUdcu5g0qkg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rDZMYANzz6y/NCHnNCm3eXz7TisT4Y7lNRuqRoK95Z0=;
- b=irnZMNMYOn7gnLraB++w2XeSwAz2WbEu1FDsvFuioMwTU4Znbqb4XHYwdF004HxaBHTkHdO2oZFNjlqCRRSDPLlrbhWUSIpLh244JAj3cjQk5M8srJmwxXxieB6x+OM2Iw/HEJ8P8dvUHAk2C7GGXCv/+7xBX5hH3qTHgpen4ZrIgqID9iq0GSeZZA5BFdPN02BZwJEzCRqpR+oIomIi9pXgpkabqsRB8IzGR84gfGtDKQm7D4tOCSqYH5zUoIz9obR/CF908FnBAKOp3WjMs2QcghucFaXsGTJkjicYcl1fJ/9XMho0SooAmHiDdHSk57kqa8mBdRedrGkNJ1cjkQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rDZMYANzz6y/NCHnNCm3eXz7TisT4Y7lNRuqRoK95Z0=;
- b=aEWwbroeA+AvVvZsjFkbCcU20N8xE66upOk9omSghEEka98Ak8wbtYxs4w+6lv4rR6MO0FefKrrxHQ0AtB1g2/PVZnHUONt+DUhNruc3p+Aa3f1wBAZR7bYsMJIUBffG4u056oiUdzc56MCK5Fjgtaxroz4vKlbnXfGRY4UmJ6s=
-Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
- (2603:1096:404:8028::13) by OS7PR01MB11681.jpnprd01.prod.outlook.com
- (2603:1096:604:249::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.36; Tue, 31 Jan
- 2023 04:42:02 +0000
-Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
- ([fe80::3e61:3792:227e:5f18]) by TYBPR01MB5341.jpnprd01.prod.outlook.com
- ([fe80::3e61:3792:227e:5f18%9]) with mapi id 15.20.6043.036; Tue, 31 Jan 2023
- 04:42:02 +0000
-From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To:     =?utf-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>
-CC:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH net-next v4 4/4] net: ethernet: renesas: rswitch: Add
- phy_power_{on,off}() calling
-Thread-Topic: [PATCH net-next v4 4/4] net: ethernet: renesas: rswitch: Add
- phy_power_{on,off}() calling
-Thread-Index: AQHZMltXgpqNi25oAEyoDsoqfmCDMa6yYD0AgAPiknCAAKGUgIAAR1EAgAAE0ACAAAMXgIAAo0fQ
-Date:   Tue, 31 Jan 2023 04:42:02 +0000
-Message-ID: <TYBPR01MB53411AE36E1186A6E7D6A4CDD8D09@TYBPR01MB5341.jpnprd01.prod.outlook.com>
-References: <20230127142621.1761278-1-yoshihiro.shimoda.uh@renesas.com>
-        <20230127142621.1761278-5-yoshihiro.shimoda.uh@renesas.com>
-        <Y9PrDPPbtIClVtB4@shell.armlinux.org.uk>
-        <TYBPR01MB534129FDE16A6DB654486671D8D39@TYBPR01MB5341.jpnprd01.prod.outlook.com>
-        <Y9e05RJWrzFO7z4T@shell.armlinux.org.uk>        <20230130173048.520f3f3e@thinkpad>
-        <Y9f0wm1sV6B1/ymC@shell.armlinux.org.uk> <20230130175905.7d77781d@thinkpad>
-In-Reply-To: <20230130175905.7d77781d@thinkpad>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TYBPR01MB5341:EE_|OS7PR01MB11681:EE_
-x-ms-office365-filtering-correlation-id: faf63f3c-af52-40e5-65eb-08db03457f4d
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ZPncOTJc0o/s6g2UPzL1JBHCjnJ/MFlks/W96Epb5qcjJxyRG9ZbdclW6PSbVLmxCYCg90Ct5eps0+pydx/0ZaQM1R3yYB/P8OuDahi97P7Tsxl3FONvm5bB02l9vs3tjMRNvz+xKEYnFd9g8ykNYLoIMpmDqxBtO//yKev2lw75XDgUxK/YMMTsH1T40K7Eumze6OQvJTzeqfzAgKHsFDCVRMCw+MYnndzBLNKfH7Ud7jT+W2EzMnQV0Mwhh3PV2iXGMs4qlQsUwn5NNGhBwhMrqpqpq5EhBtJhfIUrrqNU+HWPPj4GNWZNZvs0waAyz3LPWotU1EZqT/E9VC0lCi5mPhvakadC2uAARbMf5OBxKiZiFeC/HadZ5XDlGvSZ+72tMNu0v0JL71/p5Za1fn1cIgaPRDgSnypuQnTUxTnrc6kibd7AKZvWZ5E9JV/weza1aeOUzOBhWYhHEUqSt5SrYmrz5NA9/RqZKTO+TV7CHVENTpO63xhj+mO6TsvecJDKI6B2tc8YX4en0SyPdsMQnZDjJH32DRW3vHwX9/8yN3l2+3xg1V3tjF00a2WTJGuYxeUinXdcAfzQgkLfQr8M+hYDj6O5ARhxFvHEM8aBBwJyszEbgFOTpX52ZHI7aJuTxH9PJby2SHS7mf0ekbS8KTGxsYSulrU7IeoKAI/hJU+Wu73hdCaeoPozAl7eGTvy0pe71kKEDbIdLjLH0Q==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYBPR01MB5341.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(136003)(376002)(396003)(346002)(366004)(451199018)(4326008)(41300700001)(66446008)(66946007)(76116006)(66556008)(64756008)(66476007)(8676002)(6916009)(186003)(8936002)(52536014)(316002)(2906002)(5660300002)(54906003)(478600001)(7696005)(71200400001)(9686003)(6506007)(66574015)(7416002)(122000001)(33656002)(55016003)(38100700002)(38070700005)(86362001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?TTdtdU5ONU5yUDByeVlNKzl4T0E3U0s4RlhMOFlTcXI0OTM4MWNwWTRMWmJo?=
- =?utf-8?B?WCt3ZVdKK28vamtidkVSNmJSQ0puVmZMZFoxTUVoQ093ZzFHazR0Z0NWWnky?=
- =?utf-8?B?aHRPYmlsUDUvQTg2b2k4eHVXWSs5dDBFNzJVT2tEV0N2aUprWDc4VXBrS1RL?=
- =?utf-8?B?SUtNRVAxNG85VTBWSjlUZ0hyZWtoVWNUN2dOZ0VMTXZyK1RUNWxUeVdJaXQy?=
- =?utf-8?B?Si9aTnBYdUsweVZ5RlNFc0l6MzBmSCtzU3RicWpxZFE4VEpVNlpHc2ZZVHR5?=
- =?utf-8?B?Ykk1VWVZTlVTenFTTjNUKzFUY1JvdmltVXlIZldIcHZuamM3ZnNCYThxM25h?=
- =?utf-8?B?Y2x6a3VtQkJRRHAxOTArb0d3d3h2YTVackEwR1NpVGpIR04xNzJjQ21aeXJP?=
- =?utf-8?B?Y1NsQW45UDBLSWw4SmdRZGNJc3UxZmV1UFIwd2RsWFV3d3BETk5ndUptb2dq?=
- =?utf-8?B?ZnpvNDVKRU1qN2dLOUZ1YnFyazVxNU9VZkxvbDh6VDZ5M3ZzUFBUOXlhUHJu?=
- =?utf-8?B?M2ptdFpVVmVGWC9pbHl4YlpzSkJwVWgydklFd3ZjOXdaOTdDNXNMdXE2Zjg0?=
- =?utf-8?B?NWZaT2g1R3o3aXdLZE5VZzZGbUQ0TTNqTUUwVSsxbW9wZ2RnZGR2cno2YmxG?=
- =?utf-8?B?SHVXSk5GaWJoNjhxRnhqWjFudUtqUWY1UXNMRlRBdjVkVGF1V0xNSCtKUnp6?=
- =?utf-8?B?OHMwRWRRWmtPSjNjQ0xmUFdkTGV0ekZHcGZpQXIwbytNYTFpaWVMYm10a1Q0?=
- =?utf-8?B?NzF2a1dnQ1JYVHdVeW5pclVxQlcvSk8wZFpnUEs2Q1lmNExncEJZUTZTSC9H?=
- =?utf-8?B?VTZ2dU9ubmFlbkoxQmxDdDNOMnQ5TU0yODZnODdRVDU1VENzRzhROW1JWU9F?=
- =?utf-8?B?Qk82UDNGQXJZczNLbDhGb2dwclVPbUZUNUVhKzcxblpON0ovUTE5bTB5L2Nm?=
- =?utf-8?B?cXM3bmJIWnVNR2wvZXF4eUp6NXJLTUM4RVdvbXhBMzJDZzBXdXZjUG5RbUtT?=
- =?utf-8?B?RWthWHRvcGIxRHkxTm5rd052Ri92ODBzeWRjaElKK0FycGZjVTBZcUhtU0xQ?=
- =?utf-8?B?UEh1eWVGb3BwUkdQZ3lZVEVXdUNSVlQzMnl6M1U1L0RYT0h0UVcwQlB6VXRK?=
- =?utf-8?B?eHJidHNqRWFiME0xSElPS3NDSzdNQ0hwVVh0cEZ1NmcwK21nR2FLcW5VTURG?=
- =?utf-8?B?VnE0NE9YQ2NpN2RmZzFqc0F0OFhEemR3MUY0T3JPWlB3cVYvUTdwb0tIYlJs?=
- =?utf-8?B?Ym5RWSt6U2tYaUE2YlZVMHFFd2N6alAxT2huQ0ZHVFJuL3F2QWloKzVQUnJ3?=
- =?utf-8?B?bENUUjA5Rkg2UnRhTzN5alBRSlI0RkJMcWpsKzRwODRHMlo2YnBCNHUrSmwz?=
- =?utf-8?B?K1M4a3puZm1KdlV1V0QzRnZLSkRLRU5rZFBCOE9FSXNwZFMxVXgzRTNsY1Ju?=
- =?utf-8?B?R0RvZGJGNWprL2pXcHAxdjFNaDNLRk9RbnRRYnpKTy84VFIvb2pxN0EydUJI?=
- =?utf-8?B?RzN2Mkk4UVRVN2JidlZhS0FoR0JNQmpEbTdVSTcrUm1XVnFta2dtNXhNcVIz?=
- =?utf-8?B?MXpvbExzMlpSSS9KQ0MrM3d3MUp0cHJFbStXVmNGdTdnRHI2THN5N1lDYUZs?=
- =?utf-8?B?Nmx0ZEJYTWR0V25qL1E0V3o2Q2FXaUNnQitJODUvTkx4Y2ovT3k3b2xGc0RT?=
- =?utf-8?B?TGpQUGEzN3hncW13TkdIZWlMWmp5MmhqRHZ3OUZEL3BvRy9ncUlvWjM4RWVw?=
- =?utf-8?B?ODZiOXdaR21vbWRYNUxqcWVjVUJPck5ITWVpK1U2UWFKQnI3TE1jZkpiVUxZ?=
- =?utf-8?B?M2VSSVJsS1ZLc1N0cEFDVEhtaVNwNlYwcDF5ckhGMkpqZEcxWHIzVkwzYURj?=
- =?utf-8?B?TjdhRWF4M1ByWnFqcHg3dERPa28xSytFc1F4bEhXQnh2MUhEWUxSM2tSTjkz?=
- =?utf-8?B?dHg4ZHZMb2ZLQ0pHa3Avd2MzYzhJN2kwSWFsb2xHZXpLSStSV1ZNOU5XYTVy?=
- =?utf-8?B?eTJPM0gyUnQxTTFUVk05VVAydlp4d3k3TGpRUlBBV0hMTGFNTWdrVFdJdjFJ?=
- =?utf-8?B?b25JM0kwLzRkQVpWcGhuWGd0WmsrVldyM2hsQjJldWF4OCtCQWtLVkc4bnIz?=
- =?utf-8?B?UlBwVFFWVTF1NXl1M3lHQkp0b2Uyb0VxdEZDNFR5aCs2eUkvb2txOGViSER3?=
- =?utf-8?B?aTNmZmgrU09yaHRrQzMvOGF5ME9IMGxyTE9XcGZ3M1R3Z2ZKS2t0SjUxSXdh?=
- =?utf-8?B?QllpeDZ6UURqeDR0RmZMTWxEaWdRPT0=?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S230154AbjAaEoD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Jan 2023 23:44:03 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E8A88A76;
+        Mon, 30 Jan 2023 20:44:01 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id mc11so15685036ejb.10;
+        Mon, 30 Jan 2023 20:44:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=hDhEO9nXYlzavDvaS5B48Z4s/QeP4lqi/g8+HXmfGyI=;
+        b=FnuPTOW7OKHzV0KacKT2dlVAXkA04FSQN/CpIIzFdzw/GpT+xzWYjSAkKd2NsEbcyq
+         6/n+p3QmnTgOUygGehbYv/YBjvqYwJMJlvUwB7qKgWL1gzs2zv4cx0vLCZvlqR3scFbx
+         EbnD8FyyJ9t3czPKsDjuLNfGe8pUdtcn7SG57mAwqXIuv+XcyNvRJDcbnTeVBh8ttHX+
+         LPs2G4XONtLCzVdYaIw6yjtgYDGv3rKnOv4jr9M/UlDK9nhODurZhBukeLIGiFHraSRR
+         4XKZP58qZcq9WKM84f3A4tn8bkK/wn5pijeRjevKoKRvkpnnzmaRb/zHCUgISqhVY7rr
+         pHDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hDhEO9nXYlzavDvaS5B48Z4s/QeP4lqi/g8+HXmfGyI=;
+        b=thYUJQfoqD2KNZtZO0ZvykC9/OshtDzQ3hz0PL7RSq5Mea6S54hPutDbL5CY3FBpXJ
+         wQIHtMW8+ZUuIAkE/z47gyrjPBEsOzG6XbN2bLWyCKRQLaA9ztkVhqkRLbOjjpyAT+As
+         cNzAmy3x0mnFimK4Mq3/MeOs4eZQ46hFzGm8LZW1EvmNFYmG2uyvnIwQqY5XPyXwztjB
+         fgGMJr6Fq9QXuB7EdSJiNXlNetde/kAKBukibP3jrGY8P72PZfsvVsVgUzqQJjCe4O7B
+         /nAYh77Fcg1g475RQlPSHQo/51a31v9jDe94z5hFOIsnphJ8Du+TvqHC2yVqrLhJWtPd
+         2xog==
+X-Gm-Message-State: AO0yUKWtSJoxZAmxx8x1SdHPAmUWvXqF0E+GZClEoo1dWLF8H2y47EA0
+        o3x/vu7r5vDPOFSgRFshkg77XsXCNfE1iXTdgV8C1Chp
+X-Google-Smtp-Source: AK7set/9kFWyA0T/+/5inDvbBmwgnctLRa0H884zjgy2KvkWUGOKf+0caxASQDKLNnYG+ZB7Ov1Frd6mocsDkwGWB5I=
+X-Received: by 2002:a17:906:46d3:b0:888:1f21:4424 with SMTP id
+ k19-20020a17090646d300b008881f214424mr1988244ejs.141.1675140239608; Mon, 30
+ Jan 2023 20:43:59 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYBPR01MB5341.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: faf63f3c-af52-40e5-65eb-08db03457f4d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Jan 2023 04:42:02.5994
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qmBHAybiLg5bwXtPesZnPpNiuiW17tbuAoRKqH+rAGBlLsqlQXkJRKjWd0GXmrvdpveh7aIJ5xa2i0hxdj/6tx40FhEiFr1Asti+ibp19DiDvFhj/vQaZY0W1I1IAMxC
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS7PR01MB11681
+References: <20230127191703.3864860-1-joannelkoong@gmail.com>
+ <20230127191703.3864860-4-joannelkoong@gmail.com> <5715ea83-c4aa-c884-ab95-3d5e630cad05@linux.dev>
+ <20230130223141.r24nlg2jp5byvuph@macbook-pro-6.dhcp.thefacebook.com>
+ <CAEf4Bzb9=q9TKutW8d7fOtCWaLpA12yvSh-BhL=m3+RA1_xhOQ@mail.gmail.com> <4b7b09b5-fd23-2447-7f05-5f903288625f@linux.dev>
+In-Reply-To: <4b7b09b5-fd23-2447-7f05-5f903288625f@linux.dev>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 30 Jan 2023 20:43:47 -0800
+Message-ID: <CAEf4BzaQJe+UZxECg__Aga+YKrxK9KEbAuwdxA4ZBz1bQCEmSA@mail.gmail.com>
+Subject: Re: [PATCH v9 bpf-next 3/5] bpf: Add skb dynptrs
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     Joanne Koong <joannelkoong@gmail.com>, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@kernel.org, ast@kernel.org,
+        netdev@vger.kernel.org, memxor@gmail.com, kernel-team@fb.com,
+        bpf@vger.kernel.org,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -141,34 +72,199 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgTWFyZWssDQoNCj4gRnJvbTogTWFyZWsgQmVow7puLCBTZW50OiBUdWVzZGF5LCBKYW51YXJ5
-IDMxLCAyMDIzIDE6NTkgQU0NCj4gDQo+IE9uIE1vbiwgMzAgSmFuIDIwMjMgMTY6NDg6MDIgKzAw
-MDANCj4gIlJ1c3NlbGwgS2luZyAoT3JhY2xlKSIgPGxpbnV4QGFybWxpbnV4Lm9yZy51az4gd3Jv
-dGU6DQo+IA0KPiA+IE9uIE1vbiwgSmFuIDMwLCAyMDIzIGF0IDA1OjMwOjQ4UE0gKzAxMDAsIE1h
-cmVrIEJlaMO6biB3cm90ZToNCj4gPiA+IEJ1dCByc3dpdGNoIGFscmVhZHkgdXNlcyBwaHlsaW5r
-LCBzbyBzaG91bGQgWW9zaGloaXJvIGNvbnZlcnQgaXQgd2hvbGUNCj4gPiA+IGJhY2sgdG8gcGh5
-bGliPyAoSSBhbSBub3Qgc3VyZSBob3cgbXVjaCBwaHlsaW5rIEFQSSBpcyB1c2VkLCBtYXliZSBp
-dA0KPiA+ID4gY2FuIHN0YXkgdGhhdCB3YXkgYW5kIHRoZSBuZXcgcGh5bGliIGZ1bmN0aW9uIGFz
-IHByb3Bvc2VkIGluIFlvc2hpaGlybydzDQo+ID4gPiBwcmV2aW91cyBwcm9wb3NhbCBjYW4ganVz
-dCBiZSBhZGRlZC4pDQo+ID4NCj4gPiBJbiB0ZXJtcyBvZiAiaG93IG11Y2ggcGh5bGluayBBUEkg
-aXMgdXNlZCIuLi4gd2VsbCwgYWxsIHRoZSBwaHlsaW5rDQo+ID4gb3BzIGZ1bmN0aW9ucyBhcmUg
-Y3VycmVudGx5IGVudGlyZWx5IGVtcHR5LiBTbywgcGh5bGluayBpbiB0aGlzIGNhc2UNCj4gPiBp
-cyBqdXN0IGJlaW5nIG5vdGhpbmcgbW9yZSB0aGFuIGEgc2hpbSBiZXR3ZWVuIHRoZSBkcml2ZXIg
-YW5kIHRoZQ0KPiA+IGNvcnJlc3BvbmRpbmcgcGh5bGliIGZ1bmN0aW9ucy4NCj4gPg0KPiANCj4g
-WW9zaGloaXJvLCBzb3JyeSBmb3IgdGhpcy4NCg0KTm8gd2FycmllcyENCg0KPiBJZiBub3QgZm9y
-IG15IGNvbXBsYWludHMsIHlvdXIgcHJvcG9zYWwgY291bGQNCj4gYWxyZWFkeSBiZSBtZXJnZWQg
-KG1heWJlKS4gQW55d2F5LCBJIHRoaW5rIHRoZSBiZXN0IHNvbHV0aW9uIHdvdWxkIGJlDQo+IHRv
-IGltcGxlbWVudCBwaHlsaW5rIHByb3Blcmx5LCBldmVuIGZvciBjYXNlcyB0aGF0IGFyZSBub3Qg
-cmVsZXZhbnQgZm9yDQo+IHlvdXIgYm9hcmQqLCBidXQgdGhpcyB3b3VsZCB0YWtlIGEgbm9uLXRy
-aXZpYWwgYW1vdW50IG9mIHRpbWUsIHNvDQo+IEkgd2lsbCB1bmRlcnN0YW5kIGlmIHlvdSB3YW50
-IHRvIHN0aWNrIHdpdGggcGh5bGliLg0KPiANCj4gKiBBbHRvdWdoIHlvdSBkb24ndCB1c2UgZml4
-ZWQtbGluayBvciBTRlAgb24geW91ciBib2FyZCwgSSB0aGluayBpdA0KPiAgIHNob3VsZCBiZSBw
-b3NzaWJsZSB0byB0ZXN0IGl0IHNvbWVob3cgaWYgeW91IGltcGxlbWVudGVkIGl0Li4uDQo+ICAg
-Rm9yIGV4YW1wbGUsIEkgaGF2ZSB0ZXN0ZWQgZml4ZWQtbGluayBiZXR3ZWVuIFNPQyBhbmQgc3dp
-dGNoIFNlckRlcw0KPiAgIGJ5IGNvbmZpZ3VyaW5nIGl0IGluIGRldmljZS10cmVlIG9uIGJvdGgg
-c2lkZXMuDQoNClRoYW5rIHlvdSB2ZXJ5IG11Y2ggZm9yIHlvdXIgY29tbWVudHMhDQpGb3Igbm93
-IEknbSBpbnRlbmRpbmcgdG8gdXNlIHBoeWxpYiBpbnN0ZWFkLCBiZWNhdXNlIEknbSB0aGlua2lu
-Zw0KdGhhdCBJIGNhbm5vdCBpbXBsZW1lbnQgdGhlIGluLWJhbmQgbW9kZSBvZiBwaHlsaW5rIG9u
-IG15IGJvYXJkLg0KIyBBcyB5b3UgbWVudGlvbmVkLCBmaXhlZC1saW5rIGNhbiBiZSBpbXBsZW1l
-bnRlZCwgSSBndWVzcy4NCg0KQmVzdCByZWdhcmRzLA0KWW9zaGloaXJvIFNoaW1vZGENCg0KPiBN
-YXJlaw0K
+On Mon, Jan 30, 2023 at 5:49 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+>
+> On 1/30/23 5:04 PM, Andrii Nakryiko wrote:
+> > On Mon, Jan 30, 2023 at 2:31 PM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> >>
+> >> On Mon, Jan 30, 2023 at 02:04:08PM -0800, Martin KaFai Lau wrote:
+> >>> On 1/27/23 11:17 AM, Joanne Koong wrote:
+> >>>> @@ -8243,6 +8316,28 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
+> >>>>              mark_reg_known_zero(env, regs, BPF_REG_0);
+> >>>>              regs[BPF_REG_0].type = PTR_TO_MEM | ret_flag;
+> >>>>              regs[BPF_REG_0].mem_size = meta.mem_size;
+> >>>> +           if (func_id == BPF_FUNC_dynptr_data &&
+> >>>> +               dynptr_type == BPF_DYNPTR_TYPE_SKB) {
+> >>>> +                   bool seen_direct_write = env->seen_direct_write;
+> >>>> +
+> >>>> +                   regs[BPF_REG_0].type |= DYNPTR_TYPE_SKB;
+> >>>> +                   if (!may_access_direct_pkt_data(env, NULL, BPF_WRITE))
+> >>>> +                           regs[BPF_REG_0].type |= MEM_RDONLY;
+> >>>> +                   else
+> >>>> +                           /*
+> >>>> +                            * Calling may_access_direct_pkt_data() will set
+> >>>> +                            * env->seen_direct_write to true if the skb is
+> >>>> +                            * writable. As an optimization, we can ignore
+> >>>> +                            * setting env->seen_direct_write.
+> >>>> +                            *
+> >>>> +                            * env->seen_direct_write is used by skb
+> >>>> +                            * programs to determine whether the skb's page
+> >>>> +                            * buffers should be cloned. Since data slice
+> >>>> +                            * writes would only be to the head, we can skip
+> >>>> +                            * this.
+> >>>> +                            */
+> >>>> +                           env->seen_direct_write = seen_direct_write;
+> >>>> +           }
+> >>>
+> >>> [ ... ]
+> >>>
+> >>>> @@ -9263,17 +9361,26 @@ static int check_kfunc_args(struct bpf_verifier_env *env, struct bpf_kfunc_call_
+> >>>>                              return ret;
+> >>>>                      break;
+> >>>>              case KF_ARG_PTR_TO_DYNPTR:
+> >>>> +           {
+> >>>> +                   enum bpf_arg_type dynptr_arg_type = ARG_PTR_TO_DYNPTR;
+> >>>> +
+> >>>>                      if (reg->type != PTR_TO_STACK &&
+> >>>>                          reg->type != CONST_PTR_TO_DYNPTR) {
+> >>>>                              verbose(env, "arg#%d expected pointer to stack or dynptr_ptr\n", i);
+> >>>>                              return -EINVAL;
+> >>>>                      }
+> >>>> -                   ret = process_dynptr_func(env, regno, insn_idx,
+> >>>> -                                             ARG_PTR_TO_DYNPTR | MEM_RDONLY);
+> >>>> +                   if (meta->func_id == special_kfunc_list[KF_bpf_dynptr_from_skb])
+> >>>> +                           dynptr_arg_type |= MEM_UNINIT | DYNPTR_TYPE_SKB;
+> >>>> +                   else
+> >>>> +                           dynptr_arg_type |= MEM_RDONLY;
+> >>>> +
+> >>>> +                   ret = process_dynptr_func(env, regno, insn_idx, dynptr_arg_type,
+> >>>> +                                             meta->func_id);
+> >>>>                      if (ret < 0)
+> >>>>                              return ret;
+> >>>>                      break;
+> >>>> +           }
+> >>>>              case KF_ARG_PTR_TO_LIST_HEAD:
+> >>>>                      if (reg->type != PTR_TO_MAP_VALUE &&
+> >>>>                          reg->type != (PTR_TO_BTF_ID | MEM_ALLOC)) {
+> >>>> @@ -15857,6 +15964,14 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+> >>>>                 desc->func_id == special_kfunc_list[KF_bpf_rdonly_cast]) {
+> >>>>              insn_buf[0] = BPF_MOV64_REG(BPF_REG_0, BPF_REG_1);
+> >>>>              *cnt = 1;
+> >>>> +   } else if (desc->func_id == special_kfunc_list[KF_bpf_dynptr_from_skb]) {
+> >>>> +           bool is_rdonly = !may_access_direct_pkt_data(env, NULL, BPF_WRITE);
+> >>>
+> >>> Does it need to restore the env->seen_direct_write here also?
+> >>>
+> >>> It seems this 'seen_direct_write' saving/restoring is needed now because
+> >>> 'may_access_direct_pkt_data(BPF_WRITE)' is not only called when it is
+> >>> actually writing the packet. Some refactoring can help to avoid issue like
+> >>> this.
+> >>>
+> >>> While at 'seen_direct_write', Alexei has also pointed out that the verifier
+> >>> needs to track whether the (packet) 'slice' returned by bpf_dynptr_data()
+> >>> has been written. It should be tracked in 'seen_direct_write'. Take a look
+> >>> at how reg_is_pkt_pointer() and may_access_direct_pkt_data() are done in
+> >>> check_mem_access(). iirc, this reg_is_pkt_pointer() part got loss somewhere
+> >>> in v5 (or v4?) when bpf_dynptr_data() was changed to return register typed
+> >>> PTR_TO_MEM instead of PTR_TO_PACKET.
+> >>
+> >> btw tc progs are using gen_prologue() approach because data/data_end are not kfuncs
+> >> (nothing is being called by the bpf prog).
+> >> In this case we don't need to repeat this approach. If so we don't need to
+> >> set seen_direct_write.
+> >> Instead bpf_dynptr_data() can call bpf_skb_pull_data() directly.
+> >> And technically we don't need to limit it to skb head. It can handle any off/len.
+> >> It will work for skb, but there is no equivalent for xdp_pull_data().
+> >> I don't think we can implement xdp_pull_data in all drivers.
+> >> That's massive amount of work, but we need to be consistent if we want
+> >> dynptr to wrap both skb and xdp.
+> >> We can say dynptr_data is for head only, but we've seen bugs where people
+> >> had to switch from data/data_end to load_bytes.
+> >>
+> >> Also bpf_skb_pull_data is quite heavy. For progs that only want to parse
+> >> the packet calling that in bpf_dynptr_data is a heavy hammer.
+> >>
+> >> It feels that we need to go back to skb_header_pointer-like discussion.
+> >> Something like:
+> >> bpf_dynptr_slice(const struct bpf_dynptr *ptr, u32 offset, u32 len, void *buffer)
+> >> Whether buffer is a part of dynptr or program provided is tbd.
+> >
+> > making it hidden within dynptr would make this approach unreliable
+> > (memory allocations, which can fail, etc). But if we ask users to pass
+> > it directly, then it should be relatively easy to use in practice with
+> > some pre-allocated per-CPU buffer:
+> >
+> >
+> > struct {
+> >    __int(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+> >    __int(max_entries, 1);
+> >    __type(key, int);
+> >    __type(value, char[4096]);
+> > } scratch SEC(".maps");
+> >
+> >
+> > ...
+> >
+> >
+> > struct dyn_ptr *dp = bpf_dynptr_from_skb(...).
+> > void *p, *buf;
+> > int zero = 0;
+> >
+> > buf = bpf_map_lookup_elem(&scratch, &zero);
+> > if (!buf) return 0; /* can't happen */
+> >
+> > p = bpf_dynptr_slice(dp, off, 16, buf);
+> > if (p == NULL) {
+> >     /* out of range */
+> > } else {
+> >     /* work with p directly */
+> > }
+> >
+> > /* if we wrote something to p and it was copied to buffer, write it back */
+> > if (p == buf) {
+> >      bpf_dynptr_write(dp, buf, 16);
+> > }
+> >
+> >
+> > We'll just need to teach verifier to make sure that buf is at least 16
+> > byte long.
+>
+> A fifth __sz arg may do:
+> bpf_dynptr_slice(const struct bpf_dynptr *ptr, u32 offset, u32 len, void
+> *buffer, u32 buffer__sz);
+
+We'll need to make sure that buffer__sz is >= len (or preferably not
+require extra size at all). We can check that at runtime, of course,
+but rejecting too small buffer at verification time would be a better
+experience.
+
+>
+> The bpf prog usually has buffer in the stack for the common small header parsing.
+
+sure, that would work for small chunks
+
+>
+> One side note is the bpf_dynptr_slice() still needs to check if the skb is
+> cloned or not even the off/len is within the head range.
+
+yep, and the above snippet will still do the right thing with
+bpf_dynptr_write(), right? bpf_dynptr_write() will have to pull
+anyways, if I understand correctly?
+
+>
+> > But I wonder if for simple cases when users are mostly sure that they
+> > are going to access only header data directly we can have an option
+> > for bpf_dynptr_from_skb() to specify what should be the behavior for
+> > bpf_dynptr_slice():
+> >
+> >   - either return NULL for anything that crosses into frags (no
+> > surprising perf penalty, but surprising NULLs);
+> >   - do bpf_skb_pull_data() if bpf_dynptr_data() needs to point to data
+> > beyond header (potential perf penalty, but on NULLs, if off+len is
+> > within packet).
+> >
+> > And then bpf_dynptr_from_skb() can accept a flag specifying this
+> > behavior and store it somewhere in struct bpf_dynptr.
+>
+> xdp does not have the bpf_skb_pull_data() equivalent, so xdp prog will still
+> need the write back handling.
+>
+
+Sure, unfortunately, can't have everything. I'm just thinking how to
+make bpf_dynptr_data() generically usable. Think about some common BPF
+routine that calculates hash for all bytes pointed to by dynptr,
+regardless of underlying dynptr type; it can iterate in small chunks,
+get memory slice, if possible, but fallback to generic
+bpf_dynptr_read() if doesn't. This will work for skb, xdp, LOCAL,
+RINGBUF, any other dynptr type.
