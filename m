@@ -2,255 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2F1C683606
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 20:05:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BB4268360A
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 20:06:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232073AbjAaTFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 14:05:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54700 "EHLO
+        id S231617AbjAaTGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 14:06:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232098AbjAaTFe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 14:05:34 -0500
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F4E5529F
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 11:05:26 -0800 (PST)
-Received: by mail-ot1-x32a.google.com with SMTP id d21-20020a056830005500b0068bd2e0b25bso1839381otp.1
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 11:05:26 -0800 (PST)
+        with ESMTP id S231761AbjAaTGP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 14:06:15 -0500
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7199577DA
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 11:05:53 -0800 (PST)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-16332831ed0so20639517fac.10
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 11:05:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=skMJ5WlKzJfF4SEoAR9i0wroFymN+iYxmoL0G/Rtb1g=;
-        b=pQGD51pRfT+5Or1zQHUEBbBC/Tcm9BcdL/YPRcymXCsJs0eSurovrBltZq0pBBmrkS
-         muuG8dlkr9Ug6MI9zjIMcOwM1AfTLnhGZ74tEJke/5PM75N2klyp5f9s8oWnONKzuxTq
-         S61a6wxANUs0oRCoOisz+dAxuboxpw3NWsNTslE3P0taYllgLFPCp1eQKFavonKW6AtM
-         Ddk0PMSwbXtWK9RJGHyw7NQ15m8ajgTtPeFDZCxvIr1AIAoQt4gmC+UttD2eBGlfBd6b
-         k6g8x4ejiH45x9fdx1XysEA8VSmNxUD1yjtzDJ8NwaWqYt//RUx/SwYNY5qRjdHvVb5Y
-         SyVQ==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=64Qco5b7aLY11Ta0GbjPVk1CtFuDKLkAGPeJl/hlFok=;
+        b=ZHa5+FyCc9+GLhEvTNzcB1qzDAc2u6uPWZc3IA6y0NOHyEANhPKrGPD69sc9NwDpJg
+         QSQdWrWMdwxVGis5H1tiiwOXmwOjiLKP2RxL75JxUU3tSpWocKZTavBzvLqJVSyQ37vx
+         Vq4ZjnL1UxY5nyqppjFrEuS5h2SiXclzW8SUtVZjYr7rm1MEuHmBpgonYKZaOEZ5l9f9
+         m867NOPonUZiBXh6osT1RXKws+QzGzte+ft/2N/eMlkad3vtXRekuRYbxGS2WnWhVgEI
+         n5Hfwqebz/1SQ3rBiQigFJ/mNiUf/pgmOY0MQzYMqTUMi8awN0c6e2Xt705xcSi0r1QC
+         4F0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=skMJ5WlKzJfF4SEoAR9i0wroFymN+iYxmoL0G/Rtb1g=;
-        b=1PDgirxrsxKzdRrZNpYIGc4OqN9WngsJhY4vz0nerGAvv2Jwl6ZH9I1WlR9l3OJf9W
-         XS8lQ4E4bLnYrwFAdfeSrL0Ccc034wqVOVxEgdwzmKOJof6YhIE1W30ttM95wIPSkFLk
-         gvBzm+HEhyqAv9Km9TkG80GUXq1CE14tXH6NwuoPEKYQsLxfIUsNVVnfDdnJGRj03uXT
-         OLc/h8SJeKoyS2KX6LEUcEsZve/wGUeogFavG+wWlAaaFYghEf3VdYolchN7QiP0nFX8
-         zKEZZ/fV55DRVBISD1c42DypPFGIkWH2dfP0J08ngXb008DxWqigBsOHzkGoRU6qnhfs
-         o7QQ==
-X-Gm-Message-State: AO0yUKVHnsIOkidkVTlwIJtwdKS/NQBbXY/iSvQ3eFa0KXUk4rYq5sni
-        oqYbh2KqQ3n699Py5bHIMbLH0IKB7nbqnd3K
-X-Google-Smtp-Source: AK7set9yUaQXTUgzhDhSTAX2WEz+T7ysoXaViBKn9+tJZpUCoxhyMGWt9szvSnVYTChdVfI16bbQfA==
-X-Received: by 2002:a05:6830:1409:b0:66d:ddfe:4308 with SMTP id v9-20020a056830140900b0066dddfe4308mr6540707otp.24.1675191925218;
-        Tue, 31 Jan 2023 11:05:25 -0800 (PST)
-Received: from localhost.localdomain ([2804:14d:5c5e:4698:1d86:b62f:e05b:126b])
-        by smtp.gmail.com with ESMTPSA id i5-20020a9d6505000000b0068649039745sm6941450otl.6.2023.01.31.11.05.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Jan 2023 11:05:25 -0800 (PST)
-From:   Pedro Tammela <pctammela@mojatatu.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, simon.horman@corigine.com,
-        Pedro Tammela <pctammela@mojatatu.com>
-Subject: [PATCH net-next v6 2/2] net/sched: simplify tcf_pedit_act
-Date:   Tue, 31 Jan 2023 16:05:12 -0300
-Message-Id: <20230131190512.3805897-3-pctammela@mojatatu.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230131190512.3805897-1-pctammela@mojatatu.com>
-References: <20230131190512.3805897-1-pctammela@mojatatu.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=64Qco5b7aLY11Ta0GbjPVk1CtFuDKLkAGPeJl/hlFok=;
+        b=10b3hWHtQ5YP7a5O6WllfrXM+zEhtJZ16ead/KogjRjfDGqgxFpl4SKsbQWUJqV6Pc
+         ArQj8iVOrsKWFulHI7E3PeOfP402SA7VYOFWVmVWVd9VEsPXZycKIW8hEv28uNzSGKZZ
+         haGn6KhAgV2SX8vWMK8+Pmz483HzdKL7Bmj92cSsU68qsz5KmYUMqVPUUl45HMpnlJHH
+         U/QgzPDYLjNOz+ESJemFVpbXCU5gnvVUynCXKLMaKx+ACAECTubWOoTOj4b/KAtYly6J
+         lFuUPeROGPjkS3qTxAL1jq1y4npnW5ViH09h79bTBRDsO0bvX+xGsdDuItJeqL+ABKXL
+         SFGw==
+X-Gm-Message-State: AO0yUKWe+Jw4u6wIL27Mp7HOMXqfZijuh5xquvUFfnZj9kHQoYpPgsP1
+        EBAWYOaxANfV5yobK9gWv9PQ2yJcnb12/VDf
+X-Google-Smtp-Source: AK7set8jv7x90UKwLiCoerr+mzChMhcajNDAgKAK1M0j3GL2JH4cUMJ6Tlxj/lhOLKcdLsBxwb41Og==
+X-Received: by 2002:a05:6870:78a:b0:15e:dbe1:aee3 with SMTP id en10-20020a056870078a00b0015edbe1aee3mr322843oab.51.1675191953029;
+        Tue, 31 Jan 2023 11:05:53 -0800 (PST)
+Received: from ?IPV6:2804:14d:5c5e:4698:1d86:b62f:e05b:126b? ([2804:14d:5c5e:4698:1d86:b62f:e05b:126b])
+        by smtp.gmail.com with ESMTPSA id v10-20020a4a8c4a000000b004f241603c49sm6366947ooj.20.2023.01.31.11.05.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Jan 2023 11:05:52 -0800 (PST)
+Message-ID: <f044ce61-37a5-a159-02fb-6ff14f5e911a@mojatatu.com>
+Date:   Tue, 31 Jan 2023 16:05:48 -0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next v5 1/2] net/sched: transition act_pedit to rcu
+ and percpu stats
+Content-Language: en-US
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+References: <20230131145149.3776656-1-pctammela@mojatatu.com>
+ <20230131145149.3776656-2-pctammela@mojatatu.com>
+ <Y9k8seDdoS1LHB7L@corigine.com>
+From:   Pedro Tammela <pctammela@mojatatu.com>
+In-Reply-To: <Y9k8seDdoS1LHB7L@corigine.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove the check for a negative number of keys as
-this cannot ever happen
+On 31/01/2023 13:07, Simon Horman wrote:
+> On Tue, Jan 31, 2023 at 11:51:48AM -0300, Pedro Tammela wrote:
+>> The software pedit action didn't get the same love as some of the
+>> other actions and it's still using spinlocks and shared stats in the
+>> datapath.
+>> Transition the action to rcu and percpu stats as this improves the
+>> action's performance dramatically on multiple cpu deployments.
+>>
+>> Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
+>> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+> 
+> ...
+> 
+>> diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
+>> index a0378e9f0121..674b534be46e 100644
+>> --- a/net/sched/act_pedit.c
+>> +++ b/net/sched/act_pedit.c
+> 
+> ...
+> 
+>> @@ -143,8 +154,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
+>>   	bool bind = flags & TCA_ACT_FLAGS_BIND;
+>>   	struct nlattr *tb[TCA_PEDIT_MAX + 1];
+>>   	struct tcf_chain *goto_ch = NULL;
+>> -	struct tc_pedit_key *keys = NULL;
+>> -	struct tcf_pedit_key_ex *keys_ex;
+>> +	struct tcf_pedit_parms *oparms, *nparms;
+> 
+> nit: reverse xmas tree
+> 
+>>   	struct tc_pedit *parm;
+>>   	struct nlattr *pattr;
+>>   	struct tcf_pedit *p;
+> 
+> ...
+> 
+>> @@ -212,48 +228,51 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
+>>   		ret = err;
+>>   		goto out_release;
+>>   	}
+>> -	p = to_pedit(*a);
+>> -	spin_lock_bh(&p->tcf_lock);
+>>   
+>> -	if (ret == ACT_P_CREATED ||
+>> -	    (p->tcfp_nkeys && p->tcfp_nkeys != parm->nkeys)) {
+>> -		keys = kmalloc(ksize, GFP_ATOMIC);
+>> -		if (!keys) {
+>> -			spin_unlock_bh(&p->tcf_lock);
+>> -			ret = -ENOMEM;
+>> -			goto put_chain;
+>> -		}
+>> -		kfree(p->tcfp_keys);
+>> -		p->tcfp_keys = keys;
+>> -		p->tcfp_nkeys = parm->nkeys;
+>> +	nparms->tcfp_off_max_hint = 0;
+>> +	nparms->tcfp_flags = parm->flags;
+>> +	nparms->tcfp_nkeys = parm->nkeys;
+>> +
+>> +	nparms->tcfp_keys = kmalloc(ksize, GFP_KERNEL);
+> 
+> Can ksize be zero?
+> 
+> ...
 
-Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
----
- net/sched/act_pedit.c | 137 +++++++++++++++++++++---------------------
- 1 file changed, 67 insertions(+), 70 deletions(-)
+Hi Simon,
 
-diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
-index 991541094278..c42fcc47dd6d 100644
---- a/net/sched/act_pedit.c
-+++ b/net/sched/act_pedit.c
-@@ -346,8 +346,12 @@ TC_INDIRECT_SCOPE int tcf_pedit_act(struct sk_buff *skb,
- 				    const struct tc_action *a,
- 				    struct tcf_result *res)
- {
-+	enum pedit_header_type htype = TCA_PEDIT_KEY_EX_HDR_TYPE_NETWORK;
-+	enum pedit_cmd cmd = TCA_PEDIT_KEY_EX_CMD_SET;
- 	struct tcf_pedit *p = to_pedit(a);
-+	struct tcf_pedit_key_ex *tkey_ex;
- 	struct tcf_pedit_parms *parms;
-+	struct tc_pedit_key *tkey;
- 	u32 max_offset;
- 	int i;
- 
-@@ -363,88 +367,81 @@ TC_INDIRECT_SCOPE int tcf_pedit_act(struct sk_buff *skb,
- 	tcf_lastuse_update(&p->tcf_tm);
- 	tcf_action_update_bstats(&p->common, skb);
- 
--	if (parms->tcfp_nkeys > 0) {
--		struct tc_pedit_key *tkey = parms->tcfp_keys;
--		struct tcf_pedit_key_ex *tkey_ex = parms->tcfp_keys_ex;
--		enum pedit_header_type htype =
--			TCA_PEDIT_KEY_EX_HDR_TYPE_NETWORK;
--		enum pedit_cmd cmd = TCA_PEDIT_KEY_EX_CMD_SET;
--
--		for (i = parms->tcfp_nkeys; i > 0; i--, tkey++) {
--			u32 *ptr, hdata;
--			int offset = tkey->off;
--			int hoffset;
--			u32 val;
--			int rc;
--
--			if (tkey_ex) {
--				htype = tkey_ex->htype;
--				cmd = tkey_ex->cmd;
--
--				tkey_ex++;
--			}
-+	tkey = parms->tcfp_keys;
-+	tkey_ex = parms->tcfp_keys_ex;
- 
--			rc = pedit_skb_hdr_offset(skb, htype, &hoffset);
--			if (rc) {
--				pr_info("tc action pedit bad header type specified (0x%x)\n",
--					htype);
--				goto bad;
--			}
-+	for (i = parms->tcfp_nkeys; i > 0; i--, tkey++) {
-+		int offset = tkey->off;
-+		u32 *ptr, hdata;
-+		int hoffset;
-+		u32 val;
-+		int rc;
- 
--			if (tkey->offmask) {
--				u8 *d, _d;
--
--				if (!offset_valid(skb, hoffset + tkey->at)) {
--					pr_info("tc action pedit 'at' offset %d out of bounds\n",
--						hoffset + tkey->at);
--					goto bad;
--				}
--				d = skb_header_pointer(skb, hoffset + tkey->at,
--						       sizeof(_d), &_d);
--				if (!d)
--					goto bad;
--				offset += (*d & tkey->offmask) >> tkey->shift;
--			}
-+		if (tkey_ex) {
-+			htype = tkey_ex->htype;
-+			cmd = tkey_ex->cmd;
- 
--			if (offset % 4) {
--				pr_info("tc action pedit offset must be on 32 bit boundaries\n");
--				goto bad;
--			}
-+			tkey_ex++;
-+		}
- 
--			if (!offset_valid(skb, hoffset + offset)) {
--				pr_info("tc action pedit offset %d out of bounds\n",
--					hoffset + offset);
--				goto bad;
--			}
-+		rc = pedit_skb_hdr_offset(skb, htype, &hoffset);
-+		if (rc) {
-+			pr_info("tc action pedit bad header type specified (0x%x)\n",
-+				htype);
-+			goto bad;
-+		}
- 
--			ptr = skb_header_pointer(skb, hoffset + offset,
--						 sizeof(hdata), &hdata);
--			if (!ptr)
--				goto bad;
--			/* just do it, baby */
--			switch (cmd) {
--			case TCA_PEDIT_KEY_EX_CMD_SET:
--				val = tkey->val;
--				break;
--			case TCA_PEDIT_KEY_EX_CMD_ADD:
--				val = (*ptr + tkey->val) & ~tkey->mask;
--				break;
--			default:
--				pr_info("tc action pedit bad command (%d)\n",
--					cmd);
-+		if (tkey->offmask) {
-+			u8 *d, _d;
-+
-+			if (!offset_valid(skb, hoffset + tkey->at)) {
-+				pr_info("tc action pedit 'at' offset %d out of bounds\n",
-+					hoffset + tkey->at);
- 				goto bad;
- 			}
-+			d = skb_header_pointer(skb, hoffset + tkey->at,
-+					       sizeof(_d), &_d);
-+			if (!d)
-+				goto bad;
-+			offset += (*d & tkey->offmask) >> tkey->shift;
-+		}
- 
--			*ptr = ((*ptr & tkey->mask) ^ val);
--			if (ptr == &hdata)
--				skb_store_bits(skb, hoffset + offset, ptr, 4);
-+		if (offset % 4) {
-+			pr_info("tc action pedit offset must be on 32 bit boundaries\n");
-+			goto bad;
- 		}
- 
--		goto done;
--	} else {
--		WARN(1, "pedit BUG: index %d\n", p->tcf_index);
-+		if (!offset_valid(skb, hoffset + offset)) {
-+			pr_info("tc action pedit offset %d out of bounds\n",
-+				hoffset + offset);
-+			goto bad;
-+		}
-+
-+		ptr = skb_header_pointer(skb, hoffset + offset,
-+					 sizeof(hdata), &hdata);
-+		if (!ptr)
-+			goto bad;
-+		/* just do it, baby */
-+		switch (cmd) {
-+		case TCA_PEDIT_KEY_EX_CMD_SET:
-+			val = tkey->val;
-+			break;
-+		case TCA_PEDIT_KEY_EX_CMD_ADD:
-+			val = (*ptr + tkey->val) & ~tkey->mask;
-+			break;
-+		default:
-+			pr_info("tc action pedit bad command (%d)\n",
-+				cmd);
-+			goto bad;
-+		}
-+
-+		*ptr = ((*ptr & tkey->mask) ^ val);
-+		if (ptr == &hdata)
-+			skb_store_bits(skb, hoffset + offset, ptr, 4);
- 	}
- 
-+	goto done;
-+
- bad:
- 	spin_lock(&p->tcf_lock);
- 	p->tcf_qstats.overlimits++;
--- 
-2.34.1
+Thanks for your thorough review.
+ From the parsing code on lines 183-188:
+           parm = nla_data(pattr);
+           if (!parm->nkeys) {
+                   NL_SET_ERR_MSG_MOD(extack, "Pedit requires keys to be 
+passed");
+                   return -EINVAL;
+           }
+           ksize = parm->nkeys * sizeof(struct tc_pedit_key);
 
+So it seems ksize can't be zero.
+Let me know if you think there are other edge cases, perhaps we can add 
+more tests to tdc.
+
+Pedro
