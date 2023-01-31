@@ -2,91 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D7A6683855
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 22:08:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB502683866
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 22:11:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232046AbjAaVIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 16:08:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40652 "EHLO
+        id S232097AbjAaVLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 16:11:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232022AbjAaVH7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 16:07:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B8F0DBDA
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 13:07:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0492B81ED9
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 21:07:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69A98C433EF;
-        Tue, 31 Jan 2023 21:07:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675199274;
-        bh=Y83ujA6j8/4GvzewW6taFZhnxv3vGaf3WkAwCR1hAc0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JjEB7MW+rKN9Cot+Ur3g6p2YSVXd9U2wRkjhkNz34S5RjcKV4N4gXS9kfRmoX5mhA
-         z7caZ5YFvHia0PMKwM0xwpBjD74O5O1dRvXVtPlmtyLZcIuuOkvav59ltD3s1iSr+7
-         W3/W0UbgGfZsVHkKefy81sJioBqHozVOvVsxPttZew6Y/0ZoyhCzOVhDq44R2boFxi
-         WAS1Hlb0FbBqATv6xWiPiJsqZiOM8pliIUx/yO6fLkpfYl/G3mJik0Z4cxqIRIQDqK
-         ZpawwJ0+/KfUIeoUKyScKhLh7iFSTK6Cjo2UK7SZdlAj5QjCsDW6xK60Z4NkX/5twf
-         MKMj3gA38+Yqw==
-Date:   Tue, 31 Jan 2023 13:07:53 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Michael Walle <michael@walle.cc>, Andrew Lunn <andrew@lunn.ch>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        <netdev@vger.kernel.org>
-Subject: Re: PHY firmware update method
-Message-ID: <20230131130753.32e0e5ba@kernel.org>
-In-Reply-To: <7106dccd-4f3d-17a1-0897-604a1025a937@intel.com>
-References: <YzQ96z73MneBIfvZ@lunn.ch>
-        <YzVDZ4qrBnANEUpm@nanopsycho>
-        <YzWPXcf8kXrd73PC@lunn.ch>
-        <20220929071209.77b9d6ce@kernel.org>
-        <YzWxV/eqD2UF8GHt@lunn.ch>
-        <Yzan3ZgAw3ImHfeK@nanopsycho>
-        <Yzbi335GQGbGLL4k@lunn.ch>
-        <ced75f7f596a146b58b87dd2d6bad210@walle.cc>
-        <Y9BCrtlXXGO5WOKN@lunn.ch>
-        <7bd02bf6880a092b64a0c27d3715f5b6@walle.cc>
-        <Y9lB0MmgyCZxnk3N@shell.armlinux.org.uk>
-        <20230131104122.20c143a2@kernel.org>
-        <7106dccd-4f3d-17a1-0897-604a1025a937@intel.com>
+        with ESMTP id S231731AbjAaVLE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 16:11:04 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A9C53E70;
+        Tue, 31 Jan 2023 13:11:03 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id gr7so20907064ejb.5;
+        Tue, 31 Jan 2023 13:11:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=mZ+EfdGoneEgPdpzwa991bp+XLQi7R5BmAQzM+ojBhM=;
+        b=b3T4Qclicuupe7pt2buXAQXzJQiuekMXFfFlKeaWTj6LqlDBWF0oqshDFKAYCKnoSf
+         J90hg4LIaqs5uPiG9qnHxTOGLXaOpNvzjLRvXcKWrCq3XzKNic5cnR+g31clFP/90ktt
+         emyPXZfO/bu0cmaBk/AxxsOxlwO630Fx+s3NH3+rPuTSnO9zyfvo3P4oKUJMFZXwhfYb
+         E9HhMIog6Gi1nKBgHsLqKoiMjJSLW26BMtr3nsXOsIc2XlIHObbDL/CN0WfIpmMACqJQ
+         b8iMGM3EK3WAX7J7pbn9ybLBtM+2Qu42qiHE3e7RVJsM2Flj4b0QDlaYGVEIGbZ4O/LI
+         yJTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=mZ+EfdGoneEgPdpzwa991bp+XLQi7R5BmAQzM+ojBhM=;
+        b=xIEKNQpLC9JG6ksNLJ2nHt5inBeYe6U65SYRXSt9MloMwmjXVPns0BGYKcjJe/zdEX
+         WZgGJh9xL9dGqNWrzCy/UPnWxaFNFbkOz3YnD0YATHu+mX3ENAF5aAt4WmbJcbjtGYWV
+         HJifNKsmMGGUCBkCOgdDSgbaOjg0SHz9XIrjfGcZyTM5mB6Hur4w2UaJqjKafWhp/lSQ
+         pJZ+AIipxs9IunWL4Q7FC4BRuilM/T+2W7V9MO2ipNcZr/fuJ6OkSA0bmJppyxPF9xie
+         Z0PHl8JXZN7rYdZ/PjfdRwRAV7IAFoUgsle/3wq9CXvWVxjK2PEe3mpMOuszkL6tzKjD
+         dIeQ==
+X-Gm-Message-State: AFqh2krrnzKReJW6NXZmRDwKg4gGZh516TIFoB+43VPjWABMsHeCPTrd
+        uuHHF9wMh58IeuBAHdADHSnlZEGReT2+ztIq4lLOEUH9
+X-Google-Smtp-Source: AMrXdXtIiK2uDbrQWfFeTSFwHnPvVhv1FJ3p78bPbh6GTN5FGoPjS+ke7sjaQoZyStRGBGdcUQwyykSvMPGS+cKyTtI=
+X-Received: by 2002:a17:906:7ac2:b0:86e:429b:6a20 with SMTP id
+ k2-20020a1709067ac200b0086e429b6a20mr9169550ejo.247.1675199461331; Tue, 31
+ Jan 2023 13:11:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230127191703.3864860-1-joannelkoong@gmail.com>
+ <20230127191703.3864860-4-joannelkoong@gmail.com> <5715ea83-c4aa-c884-ab95-3d5e630cad05@linux.dev>
+ <20230130223141.r24nlg2jp5byvuph@macbook-pro-6.dhcp.thefacebook.com>
+ <CAEf4Bzb9=q9TKutW8d7fOtCWaLpA12yvSh-BhL=m3+RA1_xhOQ@mail.gmail.com>
+ <CAJnrk1Y9jf7PQ0sHF+hfW0TD+W8r3WzJCu-pJjT3zsZCGt343w@mail.gmail.com>
+ <CAADnVQJ9Pb10boAR=ZVaXOJwjHPkFXKn9n9RWrzXgK3GaQ1N0g@mail.gmail.com> <CAJnrk1a2SY5NqhibczOhd+jqL3W9U1rbTeiQpYw-oUS8_Cr1_g@mail.gmail.com>
+In-Reply-To: <CAJnrk1a2SY5NqhibczOhd+jqL3W9U1rbTeiQpYw-oUS8_Cr1_g@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 31 Jan 2023 13:10:49 -0800
+Message-ID: <CAADnVQ+N76ed0h9GJyQfVQiN2pmcqJdjeM5rOPdFv2LfZ9eahQ@mail.gmail.com>
+Subject: Re: [PATCH v9 bpf-next 3/5] bpf: Add skb dynptrs
+To:     Joanne Koong <joannelkoong@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Kernel Team <kernel-team@fb.com>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 31 Jan 2023 11:56:26 -0800 Jacob Keller wrote:
-> On 1/31/2023 10:41 AM, Jakub Kicinski wrote:
-> > FWIW we had a concept of "FW load policy" in devlink but IDK if it
-> > addresses the concern sufficiently. For mlxsw IIRC the load policy
-> > "from disk" means "flash the device if loaded FW is older".  
-> 
-> My initial interpretation of this parameter was that "LOAD_DISK" implied
-> the device could choose to load the firmware from disk but didn't
-> necessarily overwrite what was stored in the flash permanently.
-> 
-> Your interpretation also makes sense on a second review, but I'm not
-> sure what "driver" would mean in this context? I guess "whichever driver
-> prefers?"
+On Tue, Jan 31, 2023 at 12:48 PM Joanne Koong <joannelkoong@gmail.com> wrote:
+> > > >
+> > > > p = bpf_dynptr_slice(dp, off, 16, buf);
+> > > > if (p == NULL) {
+> > > >    /* out of range */
+> > > > } else {
+> > > >    /* work with p directly */
+> > > > }
+> > > >
+> > > > /* if we wrote something to p and it was copied to buffer, write it back */
+> > > > if (p == buf) {
+> > > >     bpf_dynptr_write(dp, buf, 16);
+> > > > }
+> > > >
+> > > >
+> > > > We'll just need to teach verifier to make sure that buf is at least 16
+> > > > byte long.
+> > >
+> > > I'm confused what the benefit of passing in the buffer is. If it's to
+> > > avoid the uncloning, this will still need to happen if the user writes
+> > > back the data to the skb (which will be the majority of cases). If
+> > > it's to avoid uncloning if the user only reads the data of a writable
+> > > prog, then we could add logic in the verifier so that we don't pull
+> > > the data in this case; the uncloning might still happen regardless if
+> > > another part of the program does a direct write. If the benefit is to
+> > > avoid needing to pull the data, then can't the user just use
+> > > bpf_dynptr_read, which takes in a buffer?
+> >
+> > There is no unclone and there is no pull in xdp.
+> > The main idea of this semantics of bpf_dynptr_slice is to make it
+> > work the same way on skb and xdp for _read_ case.
+> > Writes are going to be different between skb and xdp anyway.
+> > In some rare cases the writes can be the same for skb and xdp
+> > with this bpf_dynptr_slice + bpf_dynptr_write logic,
+> > but that's a minor feature addition of the api.
+>
+> bpf_dynptr_read works the same way on skb and xdp. bpf_dynptr_read
+> takes in a buffer as well, so what is the added benefit of
+> bpf_dynptr_slice?
 
-Ah, you're right, I dismembered. Looking at the code 'driver' means
-flash to the latest supported by the driver. 'flash' means use what's
-there.
-
-For the NFP IIRC 'driver' meant load whichever is newer (but don't
-write to flash if disk was newer, just load to sram).
-
-> The parameter does seem like a suitable place to allow admin to specify
-> the policy.
+That it doesn't copy most of the time.
