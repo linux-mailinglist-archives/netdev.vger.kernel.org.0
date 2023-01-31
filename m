@@ -2,84 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3FA7683526
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 19:27:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65C64683539
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 19:30:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231254AbjAaS1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 13:27:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51758 "EHLO
+        id S231359AbjAaSaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 13:30:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230295AbjAaS1H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 13:27:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 405EF3EFC6
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 10:26:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675189591;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tPVr9VQU03eEXhGeiXbAtJeJqwMDVcfzCgJzhcu/FKQ=;
-        b=PjX8jO6i9vgN4x1HcbMwX0m1vMa7NKNFR3SAU6pP6lex1B/PdTNgDOlTV1wKi9FCReOmUx
-        5bk15yKGxEXUjoE++Bdgze/hLEZe7e6WfXtE8Cf+BYbATakjZThuSFTjiOm764UT8lZR5P
-        Wl6jVmtn+MlBGn3Qu1JP7mwBO2Xuxgc=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-487-BAeQ2OYrP7upwcZC87y7bQ-1; Tue, 31 Jan 2023 13:26:29 -0500
-X-MC-Unique: BAeQ2OYrP7upwcZC87y7bQ-1
-Received: by mail-qt1-f197.google.com with SMTP id i5-20020ac813c5000000b003b86b748aadso3094008qtj.14
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 10:26:29 -0800 (PST)
+        with ESMTP id S231357AbjAaSaU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 13:30:20 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316C85974D;
+        Tue, 31 Jan 2023 10:30:15 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id c4-20020a1c3504000000b003d9e2f72093so13148909wma.1;
+        Tue, 31 Jan 2023 10:30:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=yC+QfTMhv7UIa9RCKmBNebjmmRrerHWnB9uZHjX+4dU=;
+        b=OV6XKfItQjsLuwqVkngpsYLdSPtiqywZ2mX9UWy0CC5ojhNYL5pRqADjY8+D7MWa2C
+         lf8L0NMAnHneGfuhZoIojw9r22+FEePyUnxkl9oXpNwuWYpCUXQOhLB4cVrwwAcBqUV8
+         C8FhfLaYxvyAzUnGuKoLO/WTVWLsrStLJRr1GjVOlkqrcLDfAzB0mp+8o6lQw5MQIBMf
+         06pNEZaU1dKNF8OsgCjmCNmbb6GR8CIKVidZyoknI7lOiX+ZPhhKSvD/9y3LaGnt3TVN
+         y9TidYxvn7asbVzTgDeIBR1uD7jA7B1VQTTbhBeaW2vOODaNU16bx05Ww4LCKjZZKn2v
+         II9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=tPVr9VQU03eEXhGeiXbAtJeJqwMDVcfzCgJzhcu/FKQ=;
-        b=GsFce1ioZtyTG4LtipvteZJHT8qAT3v/v53iP4C592QHc4OWvGwdNha8z/5DDf0B7I
-         NMLLI6jC/v0LOGmgKv/78WN7y3Aj/VKvI3ziXEbC305Drm9dojQfxbjZbmH5Q+XVpoXc
-         XeP5RjG5i/H41Yu67npr3DGDXrDbKT7k4XGKPss/Bg0OHGlRMrUE87AjVePYegHMxw1d
-         P5ErY/mLezUaerjFMwpW4QWBLZkDRxPNOoneBliGpjJ2lGMwApSu8Iquhh+PEJ3UmqYC
-         LOfEw4oDVFGVTWRgYyzwf/Zr/1/0UTtr8qNJ0Tu2RIgrP0dPH1wrn+utfjx5/zHesTvq
-         E5+g==
-X-Gm-Message-State: AO0yUKUsks/w2oaCN/OppvW/Q1GHdaFVC2rgoMx15DtffQDvSWHwTTIA
-        za5GIZW4nYUuPRHeBjz3odedRrH+VqfJ25NmnH0PQx3j5DuuNoQAtnmzLJseCWBfQbIVSGPvTMZ
-        6O0HxoaeBhCzQbP9L
-X-Received: by 2002:ac8:550a:0:b0:3b8:6d44:ca7e with SMTP id j10-20020ac8550a000000b003b86d44ca7emr5494711qtq.4.1675189589250;
-        Tue, 31 Jan 2023 10:26:29 -0800 (PST)
-X-Google-Smtp-Source: AK7set/erd8DGEec+uC8MBs3TmM38Y0xZXmeSbm8CsnlfLum7slDnCe96fqRFdeXFk8v8JRTLdgYcA==
-X-Received: by 2002:ac8:550a:0:b0:3b8:6d44:ca7e with SMTP id j10-20020ac8550a000000b003b86d44ca7emr5494682qtq.4.1675189588957;
-        Tue, 31 Jan 2023 10:26:28 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
-        by smtp.gmail.com with ESMTPSA id k14-20020ac8604e000000b003ab7aee56a0sm10161085qtm.39.2023.01.31.10.26.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Jan 2023 10:26:28 -0800 (PST)
-Message-ID: <58cefd5871c4901a6f9c0394891637fed170bb47.camel@redhat.com>
-Subject: Re: [PATCH v2 4/4] selftests: net: udpgso_bench_tx: Cater for
- pending datagrams zerocopy benchmarking
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Andrei Gherzan <andrei.gherzan@canonical.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 31 Jan 2023 19:26:25 +0100
-In-Reply-To: <Y9lCYT3XUgo4npox@qwirkle>
-References: <20230131130412.432549-1-andrei.gherzan@canonical.com>
-         <20230131130412.432549-4-andrei.gherzan@canonical.com>
-         <d9ca623d01274889913001ce92f686652fa8fea8.camel@redhat.com>
-         <Y9kvADcYZ18XFTXu@qwirkle>
-         <17e062f077235b949090cba893c91f5637cc1f0e.camel@redhat.com>
-         <Y9lCYT3XUgo4npox@qwirkle>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=yC+QfTMhv7UIa9RCKmBNebjmmRrerHWnB9uZHjX+4dU=;
+        b=d5WPzpDmA2PFcKCQ3mv++TXK6+wp169LuVB4gHqCFXOzhNpwqlgdZ5LALc81U7tha1
+         yPPITj2MSTj0hLChr6rSRTLSdWD4yzLD9I667sXinPD7umOP6prL3uVcc5yCaL1hzhEY
+         2i/W+xvtpX0QFEiOKQkc2ZTtPFc1gsu3JKFOhRIqmHpCAegq8TIgr1vO745a3AiVWoaT
+         qW+5iigSGltrLCnMtiF9QagSIp6MfzpwtRrHP+ChUilsnO1f+9/mPjSraPT1BtTcPcYo
+         QwOoPKqjnx/P+uZG8IdrpQLaNPCOQJFH7Wn9uxMTNw9SRfwvyPviH/DR+GuK44pWWvaz
+         mHdA==
+X-Gm-Message-State: AFqh2kpqcWipw03Q/IIj5k9PJ9YVCybs/3fdVjbNeXKTOtIGnQU/LpJM
+        sxh7oayeEtN4H6dLZfIE/ftL/uBvHLUuPswlbNw=
+X-Google-Smtp-Source: AMrXdXu3ghdkSe485ggbifHqvka+XENc8QFIy7vho1D0c37d4M0EJR6OmPdbnAnYcVNIu5f1ABWbzJVOE0yPW5nzubo=
+X-Received: by 2002:a05:600c:444b:b0:3db:74:7ff2 with SMTP id
+ v11-20020a05600c444b00b003db00747ff2mr3350072wmn.87.1675189813582; Tue, 31
+ Jan 2023 10:30:13 -0800 (PST)
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+References: <20230127191703.3864860-1-joannelkoong@gmail.com>
+ <20230127191703.3864860-4-joannelkoong@gmail.com> <5715ea83-c4aa-c884-ab95-3d5e630cad05@linux.dev>
+ <20230130223141.r24nlg2jp5byvuph@macbook-pro-6.dhcp.thefacebook.com> <CAEf4Bzb9=q9TKutW8d7fOtCWaLpA12yvSh-BhL=m3+RA1_xhOQ@mail.gmail.com>
+In-Reply-To: <CAEf4Bzb9=q9TKutW8d7fOtCWaLpA12yvSh-BhL=m3+RA1_xhOQ@mail.gmail.com>
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Tue, 31 Jan 2023 10:30:01 -0800
+Message-ID: <CAJnrk1Y9jf7PQ0sHF+hfW0TD+W8r3WzJCu-pJjT3zsZCGt343w@mail.gmail.com>
+Subject: Re: [PATCH v9 bpf-next 3/5] bpf: Add skb dynptrs
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        daniel@iogearbox.net, andrii@kernel.org, martin.lau@kernel.org,
+        ast@kernel.org, netdev@vger.kernel.org, memxor@gmail.com,
+        kernel-team@fb.com, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -87,154 +71,178 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2023-01-31 at 16:31 +0000, Andrei Gherzan wrote:
-> On 23/01/31 05:22PM, Paolo Abeni wrote:
-> > On Tue, 2023-01-31 at 15:08 +0000, Andrei Gherzan wrote:
-> > > On 23/01/31 03:51PM, Paolo Abeni wrote:
-> > > > On Tue, 2023-01-31 at 13:04 +0000, Andrei Gherzan wrote:
-> > > > > The test tool can check that the zerocopy number of completions v=
-alue is
-> > > > > valid taking into consideration the number of datagram send calls=
-. This can
-> > > > > catch the system into a state where the datagrams are still in th=
-e system
-> > > > > (for example in a qdisk, waiting for the network interface to ret=
-urn a
-> > > > > completion notification, etc).
-> > > > >=20
-> > > > > This change adds a retry logic of computing the number of complet=
-ions up to
-> > > > > a configurable (via CLI) timeout (default: 2 seconds).
-> > > > >=20
-> > > > > Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
-> > > > > ---
-> > > > >  tools/testing/selftests/net/udpgso_bench_tx.c | 38 +++++++++++++=
-++----
-> > > > >  1 file changed, 30 insertions(+), 8 deletions(-)
-> > > > >=20
-> > > > > diff --git a/tools/testing/selftests/net/udpgso_bench_tx.c b/tool=
-s/testing/selftests/net/udpgso_bench_tx.c
-> > > > > index b47b5c32039f..5a29b5f24023 100644
-> > > > > --- a/tools/testing/selftests/net/udpgso_bench_tx.c
-> > > > > +++ b/tools/testing/selftests/net/udpgso_bench_tx.c
-> > > > > @@ -62,6 +62,7 @@ static int	cfg_payload_len	=3D (1472 * 42);
-> > > > >  static int	cfg_port	=3D 8000;
-> > > > >  static int	cfg_runtime_ms	=3D -1;
-> > > > >  static bool	cfg_poll;
-> > > > > +static int	cfg_poll_loop_timeout_ms =3D 2000;
-> > > > >  static bool	cfg_segment;
-> > > > >  static bool	cfg_sendmmsg;
-> > > > >  static bool	cfg_tcp;
-> > > > > @@ -235,16 +236,17 @@ static void flush_errqueue_recv(int fd)
-> > > > >  	}
-> > > > >  }
-> > > > > =20
-> > > > > -static void flush_errqueue(int fd, const bool do_poll)
-> > > > > +static void flush_errqueue(int fd, const bool do_poll,
-> > > > > +		unsigned long poll_timeout, const bool poll_err)
-> > > > >  {
-> > > > >  	if (do_poll) {
-> > > > >  		struct pollfd fds =3D {0};
-> > > > >  		int ret;
-> > > > > =20
-> > > > >  		fds.fd =3D fd;
-> > > > > -		ret =3D poll(&fds, 1, 500);
-> > > > > +		ret =3D poll(&fds, 1, poll_timeout);
-> > > > >  		if (ret =3D=3D 0) {
-> > > > > -			if (cfg_verbose)
-> > > > > +			if ((cfg_verbose) && (poll_err))
-> > > > >  				fprintf(stderr, "poll timeout\n");
-> > > > >  		} else if (ret < 0) {
-> > > > >  			error(1, errno, "poll");
-> > > > > @@ -254,6 +256,22 @@ static void flush_errqueue(int fd, const boo=
-l do_poll)
-> > > > >  	flush_errqueue_recv(fd);
-> > > > >  }
-> > > > > =20
-> > > > > +static void flush_errqueue_retry(int fd, const bool do_poll, uns=
-igned long num_sends)
-> > > > > +{
-> > > > > +	unsigned long tnow, tstop;
-> > > > > +	bool first_try =3D true;
-> > > > > +
-> > > > > +	tnow =3D gettimeofday_ms();
-> > > > > +	tstop =3D tnow + cfg_poll_loop_timeout_ms;
-> > > > > +	do {
-> > > > > +		flush_errqueue(fd, do_poll, tstop - tnow, first_try);
-> > > > > +		first_try =3D false;
-> > > > > +		if (!do_poll)
-> > > > > +			usleep(1000);  // a throttling delay if polling is enabled
-> > > >=20
-> > > > Even if the kernel codying style is not very strictly enforced for
-> > > > self-tests, please avoid c++ style comments.
-> > > >=20
-> > > > More importantly, as Willem noded, this function is always called w=
-ith
-> > > > do_poll =3D=3D true. You should drop such argument and the related =
-branch
-> > > > above.
-> > >=20
-> > > Agreed. I will drop.
-> > >=20
-> > > >=20
-> > > > > +		tnow =3D gettimeofday_ms();
-> > > > > +	} while ((stat_zcopies !=3D num_sends) && (tnow < tstop));
-> > > > > +}
-> > > > > +
-> > > > >  static int send_tcp(int fd, char *data)
-> > > > >  {
-> > > > >  	int ret, done =3D 0, count =3D 0;
-> > > > > @@ -413,8 +431,9 @@ static int send_udp_segment(int fd, char *dat=
-a)
-> > > > > =20
-> > > > >  static void usage(const char *filepath)
-> > > > >  {
-> > > > > -	error(1, 0, "Usage: %s [-46acmHPtTuvz] [-C cpu] [-D dst ip] [-l=
- secs] [-M messagenr] [-p port] [-s sendsize] [-S gsosize]",
-> > > > > -		    filepath);
-> > > > > +	error(1, 0,
-> > > > > +			"Usage: %s [-46acmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] [-L=
- secs] [-M messagenr] [-p port] [-s sendsize] [-S gsosize]",
-> > > > > +			filepath);
-> > > >=20
-> > > > Please avoid introducing unnecessary white-space changes (no reason=
- to
-> > > > move the usage text on a new line)
-> > >=20
-> > > The only reason why I've done this was to make scripts/checkpatch.pl
-> > > happy:
-> > >=20
-> > > WARNING: line length of 141 exceeds 100 columns
-> > > #83: FILE: tools/testing/selftests/net/udpgso_bench_tx.c:432:
-> > >=20
-> > > I can drop and ignore the warning, or maybe it would have been better=
- to
-> > > just mention this in git message. What do you prefer?
-> >=20
-> > Long lines are allowed for (kernel) messages, to make them easily grep-
-> > able.
-> >=20
-> > In this specific case you can either append the new text to the message
-> > without introducing that strange indentation or even better break the
-> > usage string alike:
-> >=20
-> > 	"Usage: %s [-46acmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] [-L secs]"
-> > 	" [-L secs] [-M messagenr] [-p port] [-s sendsize] [-S gsosize]"
->=20
-> Funny I went through this too but it also fails with:
->=20
-> WARNING: quoted string split across lines
-> #84: FILE: tools/testing/selftests/net/udpgso_bench_tx.c:433
->=20
-> This is how I usually do it but it seems like it's flagged too.
+On Mon, Jan 30, 2023 at 5:04 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Mon, Jan 30, 2023 at 2:31 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Mon, Jan 30, 2023 at 02:04:08PM -0800, Martin KaFai Lau wrote:
+> > > On 1/27/23 11:17 AM, Joanne Koong wrote:
+> > > > @@ -8243,6 +8316,28 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
+> > > >             mark_reg_known_zero(env, regs, BPF_REG_0);
+> > > >             regs[BPF_REG_0].type = PTR_TO_MEM | ret_flag;
+> > > >             regs[BPF_REG_0].mem_size = meta.mem_size;
+> > > > +           if (func_id == BPF_FUNC_dynptr_data &&
+> > > > +               dynptr_type == BPF_DYNPTR_TYPE_SKB) {
+> > > > +                   bool seen_direct_write = env->seen_direct_write;
+> > > > +
+> > > > +                   regs[BPF_REG_0].type |= DYNPTR_TYPE_SKB;
+> > > > +                   if (!may_access_direct_pkt_data(env, NULL, BPF_WRITE))
+> > > > +                           regs[BPF_REG_0].type |= MEM_RDONLY;
+> > > > +                   else
+> > > > +                           /*
+> > > > +                            * Calling may_access_direct_pkt_data() will set
+> > > > +                            * env->seen_direct_write to true if the skb is
+> > > > +                            * writable. As an optimization, we can ignore
+> > > > +                            * setting env->seen_direct_write.
+> > > > +                            *
+> > > > +                            * env->seen_direct_write is used by skb
+> > > > +                            * programs to determine whether the skb's page
+> > > > +                            * buffers should be cloned. Since data slice
+> > > > +                            * writes would only be to the head, we can skip
+> > > > +                            * this.
+> > > > +                            */
+> > > > +                           env->seen_direct_write = seen_direct_write;
+> > > > +           }
+> > >
+> > > [ ... ]
+> > >
+> > > > @@ -9263,17 +9361,26 @@ static int check_kfunc_args(struct bpf_verifier_env *env, struct bpf_kfunc_call_
+> > > >                             return ret;
+> > > >                     break;
+> > > >             case KF_ARG_PTR_TO_DYNPTR:
+> > > > +           {
+> > > > +                   enum bpf_arg_type dynptr_arg_type = ARG_PTR_TO_DYNPTR;
+> > > > +
+> > > >                     if (reg->type != PTR_TO_STACK &&
+> > > >                         reg->type != CONST_PTR_TO_DYNPTR) {
+> > > >                             verbose(env, "arg#%d expected pointer to stack or dynptr_ptr\n", i);
+> > > >                             return -EINVAL;
+> > > >                     }
+> > > > -                   ret = process_dynptr_func(env, regno, insn_idx,
+> > > > -                                             ARG_PTR_TO_DYNPTR | MEM_RDONLY);
+> > > > +                   if (meta->func_id == special_kfunc_list[KF_bpf_dynptr_from_skb])
+> > > > +                           dynptr_arg_type |= MEM_UNINIT | DYNPTR_TYPE_SKB;
+> > > > +                   else
+> > > > +                           dynptr_arg_type |= MEM_RDONLY;
+> > > > +
+> > > > +                   ret = process_dynptr_func(env, regno, insn_idx, dynptr_arg_type,
+> > > > +                                             meta->func_id);
+> > > >                     if (ret < 0)
+> > > >                             return ret;
+> > > >                     break;
+> > > > +           }
+> > > >             case KF_ARG_PTR_TO_LIST_HEAD:
+> > > >                     if (reg->type != PTR_TO_MAP_VALUE &&
+> > > >                         reg->type != (PTR_TO_BTF_ID | MEM_ALLOC)) {
+> > > > @@ -15857,6 +15964,14 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+> > > >                desc->func_id == special_kfunc_list[KF_bpf_rdonly_cast]) {
+> > > >             insn_buf[0] = BPF_MOV64_REG(BPF_REG_0, BPF_REG_1);
+> > > >             *cnt = 1;
+> > > > +   } else if (desc->func_id == special_kfunc_list[KF_bpf_dynptr_from_skb]) {
+> > > > +           bool is_rdonly = !may_access_direct_pkt_data(env, NULL, BPF_WRITE);
+> > >
+> > > Does it need to restore the env->seen_direct_write here also?
+> > >
+> > > It seems this 'seen_direct_write' saving/restoring is needed now because
+> > > 'may_access_direct_pkt_data(BPF_WRITE)' is not only called when it is
+> > > actually writing the packet. Some refactoring can help to avoid issue like
+> > > this.
+> > >
+> > > While at 'seen_direct_write', Alexei has also pointed out that the verifier
+> > > needs to track whether the (packet) 'slice' returned by bpf_dynptr_data()
+> > > has been written. It should be tracked in 'seen_direct_write'. Take a look
+> > > at how reg_is_pkt_pointer() and may_access_direct_pkt_data() are done in
+> > > check_mem_access(). iirc, this reg_is_pkt_pointer() part got loss somewhere
+> > > in v5 (or v4?) when bpf_dynptr_data() was changed to return register typed
+> > > PTR_TO_MEM instead of PTR_TO_PACKET.
+> >
+> > btw tc progs are using gen_prologue() approach because data/data_end are not kfuncs
+> > (nothing is being called by the bpf prog).
+> > In this case we don't need to repeat this approach. If so we don't need to
+> > set seen_direct_write.
+> > Instead bpf_dynptr_data() can call bpf_skb_pull_data() directly.
+> > And technically we don't need to limit it to skb head. It can handle any off/len.
+> > It will work for skb, but there is no equivalent for xdp_pull_data().
+> > I don't think we can implement xdp_pull_data in all drivers.
+> > That's massive amount of work, but we need to be consistent if we want
+> > dynptr to wrap both skb and xdp.
+> > We can say dynptr_data is for head only, but we've seen bugs where people
+> > had to switch from data/data_end to load_bytes.
+> >
+> > Also bpf_skb_pull_data is quite heavy. For progs that only want to parse
+> > the packet calling that in bpf_dynptr_data is a heavy hammer.
+> >
+> > It feels that we need to go back to skb_header_pointer-like discussion.
+> > Something like:
+> > bpf_dynptr_slice(const struct bpf_dynptr *ptr, u32 offset, u32 len, void *buffer)
+> > Whether buffer is a part of dynptr or program provided is tbd.
+>
+> making it hidden within dynptr would make this approach unreliable
+> (memory allocations, which can fail, etc). But if we ask users to pass
+> it directly, then it should be relatively easy to use in practice with
+> some pre-allocated per-CPU buffer:
+>
+>
+> struct {
+>   __int(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+>   __int(max_entries, 1);
+>   __type(key, int);
+>   __type(value, char[4096]);
+> } scratch SEC(".maps");
+>
+>
+> ...
+>
+>
+> struct dyn_ptr *dp = bpf_dynptr_from_skb(...).
+> void *p, *buf;
+> int zero = 0;
+>
+> buf = bpf_map_lookup_elem(&scratch, &zero);
+> if (!buf) return 0; /* can't happen */
+>
+> p = bpf_dynptr_slice(dp, off, 16, buf);
+> if (p == NULL) {
+>    /* out of range */
+> } else {
+>    /* work with p directly */
+> }
+>
+> /* if we wrote something to p and it was copied to buffer, write it back */
+> if (p == buf) {
+>     bpf_dynptr_write(dp, buf, 16);
+> }
+>
+>
+> We'll just need to teach verifier to make sure that buf is at least 16
+> byte long.
 
-I'm all for ignoring this warning in this specific context. Among other
-things it will be consistent with other existing self-tests.
+I'm confused what the benefit of passing in the buffer is. If it's to
+avoid the uncloning, this will still need to happen if the user writes
+back the data to the skb (which will be the majority of cases). If
+it's to avoid uncloning if the user only reads the data of a writable
+prog, then we could add logic in the verifier so that we don't pull
+the data in this case; the uncloning might still happen regardless if
+another part of the program does a direct write. If the benefit is to
+avoid needing to pull the data, then can't the user just use
+bpf_dynptr_read, which takes in a buffer?
 
-Eventually the checkpatch script could be tuned (with an unrelated
-patch) to discriminate between kernel and self-tests code.
-
-Cheers,
-
-Paolo
-
+>
+>
+> But I wonder if for simple cases when users are mostly sure that they
+> are going to access only header data directly we can have an option
+> for bpf_dynptr_from_skb() to specify what should be the behavior for
+> bpf_dynptr_slice():
+>
+>  - either return NULL for anything that crosses into frags (no
+> surprising perf penalty, but surprising NULLs);
+>  - do bpf_skb_pull_data() if bpf_dynptr_data() needs to point to data
+> beyond header (potential perf penalty, but on NULLs, if off+len is
+> within packet).
+>
+> And then bpf_dynptr_from_skb() can accept a flag specifying this
+> behavior and store it somewhere in struct bpf_dynptr.
+>
+> Thoughts?
