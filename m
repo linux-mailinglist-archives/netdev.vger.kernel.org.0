@@ -2,96 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBFAB683994
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 23:50:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05D426839B7
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 23:54:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231151AbjAaWuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 17:50:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42308 "EHLO
+        id S232110AbjAaWyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 17:54:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230315AbjAaWuR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 17:50:17 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8BF013519
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 14:50:16 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id t16so20145348ybk.2
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 14:50:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=JzvU3hptPAwa4hkUBvtSs4yLQLzV+1FO0XItHguv9so=;
-        b=7E4TzeO3XGWuwC+c1e90YBXr+jlCwzaCHxqo7v8G3CqvM3iu7/gTEWyDVXT6Ik29WK
-         MrA0jTLonPNhCKOmB1Zm8LYNQQqCZlOzPA57NpcNQYbnShxPGr8WL/pvwFBWQVxMkOEq
-         4JD/pgdDGbhR82bxG56KfYKkRq7q5plWWMDVEECQWfd5LcITqQDnY6zHsBiXHUqz4Zi1
-         K/5guFdzh6D4mnZnWCQIqRDyE4zc2U0hRXs0o0T7Pq2QVTZ/Cd6TT2YMFME1BxxF6u5S
-         3unsc+FDp/vbUzuESiYGkHLvURtFCga4iz3XgBY8I2wkodtJOS7oT56rFHtfPFUci63d
-         6Pxw==
+        with ESMTP id S232128AbjAaWyu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 17:54:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E2DD26AF
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 14:54:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675205642;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/fhAyqhbHHk4Qeba+vupFvDbyZeKLdXhlhNHJowAPuQ=;
+        b=Mi+pLfjcxH4gx0lTwOVJEQAn/fxichfDXii6VASsxezeL82B5ND8vlzdPMIFCngbH83tt3
+        Bt5pmeJyfdMz2d0KwKu167wJmPIJqQ4tUmwrTls2sS6oAqBJoaSJzxfPHRJfZKfMV/+87t
+        1v02GXPBfKKI3iJU2KTRN4cPhrWLS0I=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-1-RESR_ow-OSSj8mmlEsiE1g-1; Tue, 31 Jan 2023 17:54:00 -0500
+X-MC-Unique: RESR_ow-OSSj8mmlEsiE1g-1
+Received: by mail-ed1-f72.google.com with SMTP id en20-20020a056402529400b004a26ef05c34so1977650edb.16
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 14:54:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=JzvU3hptPAwa4hkUBvtSs4yLQLzV+1FO0XItHguv9so=;
-        b=nxs9lunGDxFJgaO47xMxOG9kP1Wilhot8bwtI5ABwTu54biZw/S1cxk4VOtZOLalK3
-         XbFILG36X+D6NEdgjcVWkQl02VBhNPLS2/NsgIRjuS4yByrKO+KtBvg8z2M3cDdfbWbh
-         WgNOvblUYBbCPziP4RKcNddDnr9trgLVL/qCyVaWUMjqvXu6Eezk6c8CK9KNhRIFxdDq
-         MZOUXT0BsdMa41yX1uU9IB9rGlpunlc1WDhoOow5hbsYUiArbhX/hTMj5DbshwE8LJuj
-         6tKxlV100RnAWIIUtnLueA8u+luokcVBvnFrX/OwulHHVYON/+5Yl5KwM2kZ1yTgi/jG
-         8/cA==
-X-Gm-Message-State: AO0yUKUktyY9cLtbOrjQELPecLT/d3zmCsIqv3OGDAGgmgj8PLXTprOk
-        GgRqlyyK2xuD0phf8XU68Mw1ApqwULiLUMXMJaTxCw==
-X-Google-Smtp-Source: AK7set9Vsv9mWxHzzIoczFJ/w9GH67ltUCqqwdURW63RDSH8ejtIiXFO5vh9MuhwG2HE8wtbjlim9S+wkVTcKKVUf54=
-X-Received: by 2002:a25:d106:0:b0:7e3:5539:9cb5 with SMTP id
- i6-20020a25d106000000b007e355399cb5mr99751ybg.188.1675205416015; Tue, 31 Jan
- 2023 14:50:16 -0800 (PST)
-MIME-Version: 1.0
-References: <CAAFAkD8kahd0Ao6BVjwx+F+a0nUK0BzTNFocnpaeQrN7E8VRdQ@mail.gmail.com>
- <63d747d91add9_3367c208f1@john.notmuch> <Y9eYNsklxkm8CkyP@nanopsycho>
- <87pmawxny5.fsf@toke.dk> <CAM0EoM=u-VSDZAifwTiOy8vXAGX7Hwg4rdea62-kNFGsHj7ObQ@mail.gmail.com>
- <878rhkx8bd.fsf@toke.dk> <CAAFAkD9Sh5jbp4qkzxuS+J3PGdtN-Kc2HdP8CDqweY36extSdA@mail.gmail.com>
- <87wn53wz77.fsf@toke.dk> <63d8325819298_3985f20824@john.notmuch>
- <87leljwwg7.fsf@toke.dk> <CAM0EoM=i_pTSRokDqDo_8JWjsDYwwzSgJw6sc+0c=Ss81SyJqg@mail.gmail.com>
- <CO1PR11MB4993CA55EDF590EF66FF3D4893D39@CO1PR11MB4993.namprd11.prod.outlook.com>
- <63d85b9191319_3d8642086a@john.notmuch> <CAM0EoMk8e4rR5tX5giC-ggu_h-y32hLN=ENZ=-A+XqjvnbCYpQ@mail.gmail.com>
- <20230130201224.435a4b5e@kernel.org> <CAM0EoMkR0+5YHwnrJ_TnW53MAfTC2Y9Wq0WFcEWTq3V=P0OzAg@mail.gmail.com>
- <CAM0EoMmPbdZD7ZNn2UWKQWnWTnAnnWhdSQtq05PvejAz0Jfx9w@mail.gmail.com>
- <20230131111020.2821ea17@kernel.org> <CAM0EoMnKk9=WFm7ZtPbHDRc6_J7Xw8WR3TG2_Em4ucJ6nCNJOw@mail.gmail.com>
- <20230131143623.738f232e@kernel.org>
-In-Reply-To: <20230131143623.738f232e@kernel.org>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Tue, 31 Jan 2023 17:50:04 -0500
-Message-ID: <CAM0EoMkqhODxc=_J41=UxEnf5jKGXnQT5TVc8TjOMzYRr2Myjw@mail.gmail.com>
-Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        "Singhai, Anjali" <anjali.singhai@intel.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=/fhAyqhbHHk4Qeba+vupFvDbyZeKLdXhlhNHJowAPuQ=;
+        b=CFZn4nSRRu3mlUxORF273MXYXhY54PLfVmyIDk5YEd1fukOeGh43K6p5tLuF95vtLg
+         65WM+VgQu9jOS1Yy8/wtHEWfC1AdYEHwiNJle5mJ5AXs4s3VBtn7WuEm2efE+9wk1nwT
+         80Wb2JqyL0Jm6QHm56NpwnO7uF7HaT3K6gCxRUBlJrcJf9n+ckXmRzLiaPd11nOpbW5o
+         97eck9A3O92cIT49jCHVn8fhZ4aW/uqAxF+6Rh5PvPp43e9iIVkpqm5wqNWdKlKj9Cge
+         y6cYa4x6e59zqXJ1Nhl004vNM/NDf5e4UR9/7fB694RuEN2pnFKJRivBIMcnasBOFBsL
+         KAvg==
+X-Gm-Message-State: AO0yUKV44D7wr4F1n8h/JGchO80Mql3cX2ErfPme1pVBUPPl4IqEqMzZ
+        LbJzqvrhk7BmyyOMKtD2iN+biD0N93WGmrMu0B42T6hnoeqkVAlGaACVOxELPFHGZUP7aJOOwxL
+        EyAgAzWoz98vWAshs
+X-Received: by 2002:a17:907:9950:b0:878:5bce:291e with SMTP id kl16-20020a170907995000b008785bce291emr136275ejc.2.1675205638719;
+        Tue, 31 Jan 2023 14:53:58 -0800 (PST)
+X-Google-Smtp-Source: AK7set8nLMadEPBW/u+Xs/1co9KTo3/6aoAiFefSQFzi08uWartYfTnMYBhNCizVk2czXeABjmSAUg==
+X-Received: by 2002:a17:907:9950:b0:878:5bce:291e with SMTP id kl16-20020a170907995000b008785bce291emr136225ejc.2.1675205637806;
+        Tue, 31 Jan 2023 14:53:57 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id q18-20020a1709064c9200b0085ff3202ce7sm9073124eju.219.2023.01.31.14.53.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Jan 2023 14:53:57 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id E0B729728D7; Tue, 31 Jan 2023 23:53:55 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        John Fastabend <john.fastabend@gmail.com>,
         Jamal Hadi Salim <hadi@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
         Willem de Bruijn <willemb@google.com>,
         Stanislav Fomichev <sdf@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel@mojatatu.com" <kernel@mojatatu.com>,
-        "Chatterjee, Deb" <deb.chatterjee@intel.com>,
-        "Limaye, Namrata" <namrata.limaye@intel.com>,
-        "khalidm@nvidia.com" <khalidm@nvidia.com>,
-        "tom@sipanda.io" <tom@sipanda.io>,
-        "pratyush@sipanda.io" <pratyush@sipanda.io>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "vladbu@nvidia.com" <vladbu@nvidia.com>,
-        "simon.horman@corigine.com" <simon.horman@corigine.com>,
-        "stefanc@marvell.com" <stefanc@marvell.com>,
-        "seong.kim@amd.com" <seong.kim@amd.com>,
-        "mattyk@nvidia.com" <mattyk@nvidia.com>,
-        "Daly, Dan" <dan.daly@intel.com>,
-        "Fingerhut, John Andy" <john.andy.fingerhut@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel@mojatatu.com, deb.chatterjee@intel.com,
+        anjali.singhai@intel.com, namrata.limaye@intel.com,
+        khalidm@nvidia.com, tom@sipanda.io, pratyush@sipanda.io,
+        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, vladbu@nvidia.com, simon.horman@corigine.com,
+        stefanc@marvell.com, seong.kim@amd.com, mattyk@nvidia.com,
+        dan.daly@intel.com, john.andy.fingerhut@intel.com
+Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
+In-Reply-To: <CAM0EoMmx9U5TN6+Lb4sKPhR2PLN_vptVQMBzc0EtoSa6W-hsZA@mail.gmail.com>
+References: <Y9eYNsklxkm8CkyP@nanopsycho> <87pmawxny5.fsf@toke.dk>
+ <CAM0EoM=u-VSDZAifwTiOy8vXAGX7Hwg4rdea62-kNFGsHj7ObQ@mail.gmail.com>
+ <878rhkx8bd.fsf@toke.dk>
+ <CAAFAkD9Sh5jbp4qkzxuS+J3PGdtN-Kc2HdP8CDqweY36extSdA@mail.gmail.com>
+ <87wn53wz77.fsf@toke.dk> <63d8325819298_3985f20824@john.notmuch>
+ <87leljwwg7.fsf@toke.dk>
+ <CAM0EoM=i_pTSRokDqDo_8JWjsDYwwzSgJw6sc+0c=Ss81SyJqg@mail.gmail.com>
+ <87h6w6vqyd.fsf@toke.dk> <Y9kn6bh8z11xWsDh@nanopsycho>
+ <87357qvdso.fsf@toke.dk>
+ <CAM0EoMmx9U5TN6+Lb4sKPhR2PLN_vptVQMBzc0EtoSa6W-hsZA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 31 Jan 2023 23:53:55 +0100
+Message-ID: <87o7qe2u4c.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -99,26 +97,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 5:36 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue, 31 Jan 2023 17:32:52 -0500 Jamal Hadi Salim wrote:
-> > > > Sorry didnt finish my thought here, wanted to say: The loading of the
-> > > > P4 binary over devlink drew (to some people) suspicion it is going to
-> > > > be used for loading kernel bypass.
-> > >
-> > > The only practical use case I heard was the IPU. Worrying about devlink
-> > > programming being a bypass on an IPU is like rearranging chairs on the
-> > > Titanic.
-> >
-> > BTW, I do believe FNICs are heading in that direction as well.
-> > I didnt quiet follow the titanic chairs analogy, can you elaborate on
-> > that statement?
->
-> https://en.wiktionary.org/wiki/rearrange_the_deck_chairs_on_the_Titanic
+Jamal Hadi Salim <jhs@mojatatu.com> writes:
 
-LoL. Lets convince Jiri then.
-On programming devlink for the runtime I would respectfully disagree
-that it is the right interface.
+> So while going through this thought process, things to consider:
+> 1) The autonomy of the tc infra, essentially the skip_sw/hw  controls
+> and their packet driven iteration. Perhaps (the patch i pointed to
+> from Paul Blakey) where part of the action graph runs in sw.
 
-cheers,
-jamal
+Yeah, I agree that mixed-mode operation is an important consideration,
+and presumably attaching metadata directly to a packet on the hardware
+side, and accessing that in sw, is in scope as well? We seem to have
+landed on exposing that sort of thing via kfuncs in XDP, so expanding on
+that seems reasonable at a first glance.
+
+> 2) The dynamicity of being able to trigger table offloads and/or
+> kernel table updates which are packet driven (consider scenario where
+> they have iterated the hardware and ingressed into the kernel).
+
+That could be done by either interface, though: the kernel can propagate
+a bpf_map_update() from a BPF program to the hardware version of the
+table as well. I suspect a map-based API at least on the BPF side would
+be more natural, but I don't really have a strong opinion on this :)
+
+-Toke
+
