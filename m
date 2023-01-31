@@ -2,187 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 246C168391C
-	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 23:16:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B815683912
+	for <lists+netdev@lfdr.de>; Tue, 31 Jan 2023 23:10:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230189AbjAaWQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 17:16:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43902 "EHLO
+        id S231736AbjAaWKN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 17:10:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230007AbjAaWQK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 17:16:10 -0500
-X-Greylist: delayed 522 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 31 Jan 2023 14:16:09 PST
-Received: from out-170.mta1.migadu.com (out-170.mta1.migadu.com [95.215.58.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9695645BE8
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 14:16:09 -0800 (PST)
-Message-ID: <c873deaf-6d63-98b1-a29a-01dd311be99a@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1675202846;
+        with ESMTP id S231767AbjAaWKJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 17:10:09 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB7E0268D
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 14:09:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675202963;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ck7B5zBKkHCM9oUtwGTyOQHqePke66EuHA6ljEevXRw=;
-        b=CenTPmdiLMg3jshXTEFCGkCdW2d1qrmfHOQiVjTZu05vjyUWy4dOowfMV4aLNkC4OX5PV6
-        TTgdIpZ0s4DaznUxxmLPffhGlcTQyUXKPTTmI3ZM6P95gOjHmq30zNUrLdeDyMk0DVsm7/
-        sapep+rq2RfdHhsxiCuhi4wpuvUYu8c=
-Date:   Tue, 31 Jan 2023 14:07:17 -0800
+        bh=Ip7LN5t2XMU2RXyA57wD+YKH27SGyN1LXlfzY7WmEN8=;
+        b=WFavo6h/eexQX+XMM5JOfU0buq9keVPsDpNhugzbBdKQPbp3hr5jHQAnr6O5rGhXZaIvk0
+        SdvqiX/9MWJ2Wcr9V06fu8fw8zkojudDc9VNK3ks3+W98OKTmkPa4jYzMYjkltV8aq2GBu
+        GA2Ae0dz6W4kmkldAc2DxUWgj27fL48=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-86-yA3AzOqKMNWTL3Y46dlhKA-1; Tue, 31 Jan 2023 17:09:21 -0500
+X-MC-Unique: yA3AzOqKMNWTL3Y46dlhKA-1
+Received: by mail-ed1-f70.google.com with SMTP id j10-20020a05640211ca00b0049e385d5830so11620860edw.22
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 14:09:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Ip7LN5t2XMU2RXyA57wD+YKH27SGyN1LXlfzY7WmEN8=;
+        b=AUX+y+Kbwx+nVA+7YVwetnSlfzdeozoWJ+CNex1uQY1Z1ye2iPbR/rmf1bvqSwJDKU
+         Zlt1NouuESAJSi4F+0BXozc5l/aWQwV/aLBPU45SUOLDuuODStQGzRMWB6pLoI9CITwg
+         S+qj7qhIlKhBaXh059crajxnQHOZwWS4eh6PEp+siXmcXOX57NaHGw6+lsVzH7cywE37
+         Ux5Zw8bj5b334TEus49q+niQBA62kylSgTUwwiMgEV8FG8INl63RCw4qzVDN/LOqqood
+         6vgeMVaFtPErDedOGvLyu763XVZWiNmhpFRTbRMMGTbrhqOZSG0r2/C+4nnbgjNT/QD3
+         WDWw==
+X-Gm-Message-State: AO0yUKWOLbO9Urh/lnpvc2zaPwJvpfwm10ONuogFYB/ZsszAdGTqAJCA
+        u7S9zJ3/AGTBqAp3ZNJ8bLFL/HXRKv2hMhlCawsogLA44yI/4U+tn4Xr4Hedt/OHZDoY+LtvDv9
+        z6w/+UQ9sxEN8zhZE
+X-Received: by 2002:a05:6402:202e:b0:4a2:449a:9498 with SMTP id ay14-20020a056402202e00b004a2449a9498mr10759873edb.31.1675202960758;
+        Tue, 31 Jan 2023 14:09:20 -0800 (PST)
+X-Google-Smtp-Source: AK7set8v8HniRH4JSAGTfryw69wu0KZFyBxDDgNcZStsKTfdJjHe3oeQBGrcGyuRfy7DNSiGzKJRUQ==
+X-Received: by 2002:a05:6402:202e:b0:4a2:449a:9498 with SMTP id ay14-20020a056402202e00b004a2449a9498mr10759855edb.31.1675202960506;
+        Tue, 31 Jan 2023 14:09:20 -0800 (PST)
+Received: from redhat.com ([2.52.144.173])
+        by smtp.gmail.com with ESMTPSA id a66-20020a509ec8000000b00482e0c55e2bsm889495edf.93.2023.01.31.14.09.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Jan 2023 14:09:19 -0800 (PST)
+Date:   Tue, 31 Jan 2023 17:09:15 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Laurent Vivier <lvivier@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        virtualization@lists.linux-foundation.org,
+        Cindy Lu <lulu@redhat.com>, Eli Cohen <elic@nvidia.com>,
+        Gautam Dawar <gautam.dawar@xilinx.com>,
+        Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
+        Parav Pandit <parav@nvidia.com>
+Subject: Re: [PATCH v3 2/2] virtio_net: notify MAC address change on device
+ initialization
+Message-ID: <20230131170908-mutt-send-email-mst@kernel.org>
+References: <20230127204500.51930-1-lvivier@redhat.com>
+ <20230127204500.51930-3-lvivier@redhat.com>
 MIME-Version: 1.0
-Subject: Re: [PATCH v9 bpf-next 3/5] bpf: Add skb dynptrs
-Content-Language: en-US
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Joanne Koong <joannelkoong@gmail.com>, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@kernel.org, ast@kernel.org,
-        netdev@vger.kernel.org, memxor@gmail.com, kernel-team@fb.com,
-        bpf@vger.kernel.org, Andrii Nakryiko <andrii.nakryiko@gmail.com>
-References: <20230127191703.3864860-1-joannelkoong@gmail.com>
- <20230127191703.3864860-4-joannelkoong@gmail.com>
- <5715ea83-c4aa-c884-ab95-3d5e630cad05@linux.dev>
- <20230130223141.r24nlg2jp5byvuph@macbook-pro-6.dhcp.thefacebook.com>
- <CAEf4Bzb9=q9TKutW8d7fOtCWaLpA12yvSh-BhL=m3+RA1_xhOQ@mail.gmail.com>
- <4b7b09b5-fd23-2447-7f05-5f903288625f@linux.dev>
- <CAEf4BzaQJe+UZxECg__Aga+YKrxK9KEbAuwdxA4ZBz1bQCEmSA@mail.gmail.com>
- <20230131053042.h7wp3w2zq46swfmk@macbook-pro-6.dhcp.thefacebook.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <20230131053042.h7wp3w2zq46swfmk@macbook-pro-6.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230127204500.51930-3-lvivier@redhat.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/30/23 9:30 PM, Alexei Starovoitov wrote:
->>>>> Also bpf_skb_pull_data is quite heavy. For progs that only want to parse
->>>>> the packet calling that in bpf_dynptr_data is a heavy hammer.
->>>>>
->>>>> It feels that we need to go back to skb_header_pointer-like discussion.
->>>>> Something like:
->>>>> bpf_dynptr_slice(const struct bpf_dynptr *ptr, u32 offset, u32 len, void *buffer)
->>>>> Whether buffer is a part of dynptr or program provided is tbd.
->>>>
->>>> making it hidden within dynptr would make this approach unreliable
->>>> (memory allocations, which can fail, etc). But if we ask users to pass
->>>> it directly, then it should be relatively easy to use in practice with
->>>> some pre-allocated per-CPU buffer:
+On Fri, Jan 27, 2023 at 09:45:00PM +0100, Laurent Vivier wrote:
+> In virtnet_probe(), if the device doesn't provide a MAC address the
+> driver assigns a random one.
+> As we modify the MAC address we need to notify the device to allow it
+> to update all the related information.
 > 
-> bpf_skb_pull_data() is even more unreliable, since it's a bigger allocation.
-> I like preallocated approach more, so we're in agreement here.
+> The problem can be seen with vDPA and mlx5_vdpa driver as it doesn't
+> assign a MAC address by default. The virtio_net device uses a random
+> MAC address (we can see it with "ip link"), but we can't ping a net
+> namespace from another one using the virtio-vdpa device because the
+> new MAC address has not been provided to the hardware:
+> RX packets are dropped since they don't go through the receive filters,
+> TX packets go through unaffected.
 > 
->>>>
->>>>
->>>> struct {
->>>>     __int(type, BPF_MAP_TYPE_PERCPU_ARRAY);
->>>>     __int(max_entries, 1);
->>>>     __type(key, int);
->>>>     __type(value, char[4096]);
->>>> } scratch SEC(".maps");
->>>>
->>>>
->>>> ...
->>>>
->>>>
->>>> struct dyn_ptr *dp = bpf_dynptr_from_skb(...).
->>>> void *p, *buf;
->>>> int zero = 0;
->>>>
->>>> buf = bpf_map_lookup_elem(&scratch, &zero);
->>>> if (!buf) return 0; /* can't happen */
->>>>
->>>> p = bpf_dynptr_slice(dp, off, 16, buf);
->>>> if (p == NULL) {
->>>>      /* out of range */
->>>> } else {
->>>>      /* work with p directly */
->>>> }
->>>>
->>>> /* if we wrote something to p and it was copied to buffer, write it back */
->>>> if (p == buf) {
->>>>       bpf_dynptr_write(dp, buf, 16);
->>>> }
->>>>
->>>>
->>>> We'll just need to teach verifier to make sure that buf is at least 16
->>>> byte long.
->>>
->>> A fifth __sz arg may do:
->>> bpf_dynptr_slice(const struct bpf_dynptr *ptr, u32 offset, u32 len, void
->>> *buffer, u32 buffer__sz);
->>
->> We'll need to make sure that buffer__sz is >= len (or preferably not
->> require extra size at all). We can check that at runtime, of course,
->> but rejecting too small buffer at verification time would be a better
->> experience.
-> 
-> I don't follow. Why two equivalent 'len' args ?
-> Just to allow 'len' to be a variable instead of constant ?
-> It's unusual for the verifier to have 'len' before 'buffer',
-> but this is fixable.
+> Signed-off-by: Laurent Vivier <lvivier@redhat.com>
 
-Agree. One const scalar 'len' should be enough. Buffer should have the same size 
-as the requesting slice.
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
+> ---
+>  drivers/net/virtio_net.c | 20 ++++++++++++++++++++
+>  1 file changed, 20 insertions(+)
 > 
-> How about adding 'rd_only vs rdwr' flag ?
-> Then MEM_RDONLY for ret value of bpf_dynptr_slice can be set by the verifier
-> and in run-time bpf_dynptr_slice() wouldn't need to check for skb->cloned.
-> if (rd_only) return skb_header_pointer()
-> if (rdwr) bpf_try_make_writable(); return skb->data + off;
-> and final bpf_dynptr_write() is not needed.
-> 
-> But that doesn't work for xdp, since there is no pull.
-> 
-> It's not clear how to deal with BPF_F_RECOMPUTE_CSUM though.
-> Expose __skb_postpull_rcsum/__skb_postpush_rcsum as kfuncs?
-> But that defeats Andrii's goal to use dynptr as a generic wrapper.
-> skb is quite special.
-> 
-> Maybe something like:
-> void *bpf_dynptr_slice(const struct bpf_dynptr *ptr, u32 offset, u32 len,
->                         void *buffer, u32 buffer__sz)
-> {
->    if (skb_cloned()) {
->      skb_copy_bits(skb, offset, buffer, len);
->      return buffer;
->    }
->    return skb_header_pointer(...);
-> }
-> 
-> When prog is just parsing the packet it doesn't need to finalize with bpf_dynptr_write.
-> The prog can always write into the pointer followed by if (p == buf) bpf_dynptr_write.
-> No need for rdonly flag, but extra copy is there in case of cloned which
-> could have been avoided with extra rd_only flag.
-> 
-> In case of xdp it will be:
-> void *bpf_dynptr_slice(const struct bpf_dynptr *ptr, u32 offset, u32 len,
->                         void *buffer, u32 buffer__sz)
-> {
->     ptr = bpf_xdp_pointer(xdp, offset, len);
->     if (ptr)
->        return ptr;
->     bpf_xdp_copy_buf(xdp, offset, buffer, len, false); /* copy into buf */
->     return buffer;
-> }
-> 
-> bpf_dynptr_write will use bpf_xdp_copy_buf(,true); /* copy into xdp */
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 7d700f8e545a..704a05f1c279 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -3806,6 +3806,8 @@ static int virtnet_probe(struct virtio_device *vdev)
+>  		eth_hw_addr_set(dev, addr);
+>  	} else {
+>  		eth_hw_addr_random(dev);
+> +		dev_info(&vdev->dev, "Assigned random MAC address %pM\n",
+> +			 dev->dev_addr);
+>  	}
+>  
+>  	/* Set up our device-specific information */
+> @@ -3933,6 +3935,24 @@ static int virtnet_probe(struct virtio_device *vdev)
+>  
+>  	virtio_device_ready(vdev);
+>  
+> +	/* a random MAC address has been assigned, notify the device.
+> +	 * We don't fail probe if VIRTIO_NET_F_CTRL_MAC_ADDR is not there
+> +	 * because many devices work fine without getting MAC explicitly
+> +	 */
+> +	if (!virtio_has_feature(vdev, VIRTIO_NET_F_MAC) &&
+> +	    virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_MAC_ADDR)) {
+> +		struct scatterlist sg;
+> +
+> +		sg_init_one(&sg, dev->dev_addr, dev->addr_len);
+> +		if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_MAC,
+> +					  VIRTIO_NET_CTRL_MAC_ADDR_SET, &sg)) {
+> +			pr_debug("virtio_net: setting MAC address failed\n");
+> +			rtnl_unlock();
+> +			err = -EINVAL;
+> +			goto free_unregister_netdev;
+> +		}
+> +	}
+> +
+>  	rtnl_unlock();
+>  
+>  	err = virtnet_cpu_notif_add(vi);
+> -- 
+> 2.39.1
 
-My preference would be making bpf_dynptr_slice() work similarly for skb and xdp, 
-so above bpf_dynptr_slice() skb and xdp logic looks good.
-
-Regarding, MEM_RDONLY, it probably is not relevant to xdp. For skb, not sure how 
-often is the 'skb_cloned() && !skb_clone_writable()'. May be it can be left for 
-later optimization?
-
-Regarding BPF_F_RECOMPUTE_CSUM, I wonder if bpf_csum_diff() is enough to come up 
-the csum. Then the missing kfunc is to update the skb->csum. Not sure how the 
-csum logic will look like in xdp, probably getting csum from the xdp-hint, 
-calculate csum_diff and then set it to the to-be-created skb. All this is likely 
-a kfunc also, eg. a kfunc to directly allocate skb during the XDP_PASS case. The 
-bpf prog will have to be written differently if it needs to deal with the csum 
-but the header parsing part could at least be shared.
