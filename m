@@ -2,95 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B824F686BB6
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 17:30:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02E76686BBA
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 17:31:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229615AbjBAQa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 11:30:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36164 "EHLO
+        id S230508AbjBAQbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 11:31:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbjBAQaZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 11:30:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C40B335AD
-        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 08:30:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 608526187D
-        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 16:30:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CA59CC433EF;
-        Wed,  1 Feb 2023 16:30:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675269023;
-        bh=4sQ5UVeTOpzuYPyk/FbW6K6vTPbFMGRcSGr04OQluCo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HLEOEx2nkFGhb+ECMO/kzckN6oUufp2BxARGOqxAUvroEzeN8pvVZSK/UteaBDuWV
-         BF0HeL9PPvQtIYlj/fZjorCQGdwej+sSaD1Rq3Its0nvBMIlgpg6toXd/ntE3ouG48
-         dM4uBB6p0lonxkXKsHsp+VMgr+EvRnfOyFLpduTXMgwIL76qckfr8+BIW75VkxYFUi
-         99t7QnuDoEDjvWmMJSLNH+CIqJV2UyBtKUf3bX37UFoc+7/VmodWJKntVDS0G+VdSn
-         ZERw3+hOGY2U7AuZP4yhOaeEUVBMdxRTSRw06kj/nLdQuorU8AkFfV0lmY5/o/DUrU
-         FHLNUNpFS4yng==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B7AF5E21ED4;
-        Wed,  1 Feb 2023 16:30:23 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229849AbjBAQbb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 11:31:31 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 589F740E3;
+        Wed,  1 Feb 2023 08:31:30 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=abg3P+95c6azXU5JCfdBuMEgY1WzGYaWxbQbYQZWfThJ9LDY5V7S8xB250Y3H3jqV0P3bI++qQO2vKObzhgcggXxV62/pVk4+b916Ym6CjIvkNe4tig92+gSChyAoY2HCTWBMZngMFLPO7HL0j4ujWHkSsobzbLlhxX32HCoVa6ZgGaPoAzbHdzJbVbWliGZgatDWQjJvuxOEWe01H1e8QKTP1ILw3Xoiz2STZQ5e7tTucA5vOExQjNXj1TRqbiYnTdRzx4GvKaLpCYBxQvGtj4xkxSpKGjyUoXy/fLwVfpA2Dbjif2vXlFU/waUbKAyZtmLsiAlMs0C2WWmofVvYw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rhl1C3mZz++9nE4Or48E5nwmkq+J8N6y+OnmxZOz2Ig=;
+ b=WAMd05Edg4ulI7l53lrI6c3d/NT2LXUc53cOLo/ZmyUlyKC5LtQazrqJIWriwBwsqO2LE6yzJjUybZQRKj7ESS7UGremQArd2eiaMyp+WmicGFgujgWDmVlYzfHR5Qyv2Zwhh/92IWIirwPxsrrA83Gj2a0YNbkK+6wu2AEvp16RNI85E/+ixgFhdmcxb/+DUUf2cjLXQDmge+t643YCb93yU5rABEsgJ2CbssxPzPpPw3ygwrqa6q3XfvDWZK36WULWI9+DhhPZXNu1P9xc1jm4HuLCEIWAmaYf7xHPPVqxrWVCI2WPEEaVpcCBU5BSo69GVnNkRQBTsYqnx6Qunw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rhl1C3mZz++9nE4Or48E5nwmkq+J8N6y+OnmxZOz2Ig=;
+ b=GK+y05+BaQHEcxcyi0QZuFl7uzeKnwfIxy5bELpKemgNJVsjgHU3SU2d08A/b69MdHi8x937SlPPCmHxvIY9KwUMXt+OAANon+oPL3oKrXauPzNANjbyzoY8BB4B2jJZ9nZR/GDe2mL0lWgQHoj1hc1T7zBnD/e9Its8/JNTkx7wZRxz6g5J4rk/ateb+A9SSR5ooEnelPcDG9kEYReB7jzWgJDc+YxgHLB45siy44GpRJwl3QBxANHxAWxIIZJIAlKVkIMEBJTeguOIGXWKtqYaozLNZxCVsSxyuAVx3TATP35dkTmlxMLYPxINP5+qZvZ8RB3TmVq4kfGFrhYp2A==
+Received: from MW4PR04CA0206.namprd04.prod.outlook.com (2603:10b6:303:86::31)
+ by BN9PR12MB5242.namprd12.prod.outlook.com (2603:10b6:408:11f::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.24; Wed, 1 Feb
+ 2023 16:31:28 +0000
+Received: from CO1NAM11FT058.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:86:cafe::5) by MW4PR04CA0206.outlook.office365.com
+ (2603:10b6:303:86::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.38 via Frontend
+ Transport; Wed, 1 Feb 2023 16:31:28 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ CO1NAM11FT058.mail.protection.outlook.com (10.13.174.164) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6043.22 via Frontend Transport; Wed, 1 Feb 2023 16:31:27 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 1 Feb 2023
+ 08:31:18 -0800
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.36; Wed, 1 Feb 2023 08:31:18 -0800
+Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server id 15.2.986.36 via Frontend
+ Transport; Wed, 1 Feb 2023 08:31:15 -0800
+From:   Vlad Buslov <vladbu@nvidia.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <pablo@netfilter.org>
+CC:     <netdev@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
+        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <ozsh@nvidia.com>, <marcelo.leitner@gmail.com>,
+        <simon.horman@corigine.com>, Vlad Buslov <vladbu@nvidia.com>
+Subject: [PATCH net-next v6 0/7] Allow offloading of UDP NEW connections via act_ct
+Date:   Wed, 1 Feb 2023 17:30:53 +0100
+Message-ID: <20230201163100.1001180-1-vladbu@nvidia.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [RESEND PATCH ethtool-next v6 0/2] add netlink support for rss get
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167526902374.23236.9492682925665270615.git-patchwork-notify@kernel.org>
-Date:   Wed, 01 Feb 2023 16:30:23 +0000
-References: <20230123212501.1471308-1-sudheer.mogilappagari@intel.com>
-In-Reply-To: <20230123212501.1471308-1-sudheer.mogilappagari@intel.com>
-To:     Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, mkubecek@suse.cz,
-        sridhar.samudrala@intel.com, anthony.l.nguyen@intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT058:EE_|BN9PR12MB5242:EE_
+X-MS-Office365-Filtering-Correlation-Id: 364a8c66-cb6f-43fc-9c1c-08db0471c4a4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: TaRfciR5iP1z+vlhzzNXaJym6CEIZ8YVj7RA9iuQ0ih+kDfF5R/LBXuB4rZAKs8OiD+1LL3Ng+kMmjdhMa3FCW8891qkl+X2xvdVKgkcrpp5345WMyzwZZRCFyrel5fx/lOx6fWAd7VfkkDM6JNXunJXSdUzOx/xzpUuJ/9iFC2NFobQe2mxx8fpaoJRNTmb5WTlQrrETXWFoJKhhQEkSuZkzXUWtWJ668sXIWmpui+8TaBumEp8SPQ0oUjJmdQwD9hF75OcBMnzh2n4ifoa8kRAdpHj1HV5RlT6JiGEl0zHxGFb5+9UkUUVNHysS4wn0nkWq3WzAefjqMkGVLyz/4EyfrUwuVmWbAj7wuEE+Bf/2iHKJ9KsqQ4hj3514JgiFqOFoOGuVIwSzBA9uhD2dQYn15vOE4ilA5gxWAAI0hmIroZeTYWK9CjF9BIRWhYtTRpeUkQWyTKcZCyz2lcA2w/1knZsUjpDL8EkN/DuEQe12MCBiWGKkosuwPtWZX9BaGHi5TyUYNkKUND9GpoJmHxXuHvEDi+mH/+uPPwKYkNuSRXhVK4ATuO+/Q1/9ZFP24PaNsJQs94UnzhtyFTecCzBtkGICailXNWCLWOLP30C3tK+z5nrJXka94lZYE6kVg9CKfD33CtpD2t24S/lrgACCDmu7XclIWXB2h/3Qa+EoQE+eSKAlCrwA/DoF8Tu7KCBXBjfO++HO3uMmxMVBg==
+X-Forefront-Antispam-Report: CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(376002)(136003)(346002)(396003)(451199018)(40470700004)(36840700001)(46966006)(70206006)(478600001)(7696005)(86362001)(4326008)(36860700001)(41300700001)(47076005)(8676002)(8936002)(70586007)(83380400001)(426003)(336012)(2906002)(26005)(186003)(356005)(107886003)(6666004)(82740400003)(40460700003)(5660300002)(7416002)(36756003)(1076003)(7636003)(40480700001)(2616005)(54906003)(110136005)(316002)(82310400005)(2101003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2023 16:31:27.9057
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 364a8c66-cb6f-43fc-9c1c-08db0471c4a4
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT058.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5242
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Currently only bidirectional established connections can be offloaded
+via act_ct. Such approach allows to hardcode a lot of assumptions into
+act_ct, flow_table and flow_offload intermediate layer codes. In order
+to enabled offloading of unidirectional UDP NEW connections start with
+incrementally changing the following assumptions:
 
-This series was applied to ethtool/ethtool.git (master)
-by Michal Kubecek <mkubecek@suse.cz>:
+- Drivers assume that only established connections are offloaded and
+  don't support updating existing connections. Extract ctinfo from meta
+  action cookie and refuse offloading of new connections in the drivers.
 
-On Mon, 23 Jan 2023 13:24:59 -0800 you wrote:
-> These patches add netlink based handler to fetch RSS information
-> using "ethtool -x <eth> [context %d]" command.
-> 
-> Output without --json option
-> $ethtool -x eno2
-> RX flow hash indirection table for eno2 with 8 RX ring(s):
->     0:      0     0     0     0     0     0     0     0
->     8:      1     1     1     1     1     1     1     1
->    ...skip similar lines...
->   120:      7     7     7     7     7     7     7     7
-> RSS hash key:
-> be:c3:13:a6:59:9a:c3:c5:d8:60:75:2b:4c:b2:12:cc:5c:4e:34:
-> 8a:f9:ab:16:c7:19:5d:ab:1d:b5:c1:c7:57:c7:a2:e1:2b:e3:ea:
-> 02:60:88:8e:96:ef:2d:64:d2:de:2c:16:72:b6
-> RSS hash function:
->     toeplitz: on
->     xor: off
->     crc32: off
-> 
-> [...]
+- Fix flow_table offload fixup algorithm to calculate flow timeout
+  according to current connection state instead of hardcoded
+  "established" value.
 
-Here is the summary with links:
-  - [RESEND,ethtool-next,v6,1/2] Move code that print rss info into common file
-    https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/commit/?id=d139d369c150
-  - [RESEND,ethtool-next,v6,2/2] netlink: add netlink handler for get rss (-x)
-    (no matching commit)
+- Add new flow_table flow flag that designates bidirectional connections
+  instead of assuming it and hardcoding hardware offload of every flow
+  in both directions.
 
-You are awesome, thank you!
+- Add new flow_table flow flag that designates connections that are
+  offloaded to hardware as "established" instead of assuming it. This
+  allows some optimizations in act_ct and prevents spamming the
+  flow_table workqueue with redundant tasks.
+
+With all the necessary infrastructure in place modify act_ct to offload
+UDP NEW as unidirectional connection. Pass reply direction traffic to CT
+and promote connection to bidirectional when UDP connection state
+changes to "assured". Rely on refresh mechanism to propagate connection
+state change to supporting drivers.
+
+Note that early drop algorithm that is designed to free up some space in
+connection tracking table when it becomes full (by randomly deleting up
+to 5% of non-established connections) currently ignores connections
+marked as "offloaded". Now, with UDP NEW connections becoming
+"offloaded" it could allow malicious user to perform DoS attack by
+filling the table with non-droppable UDP NEW connections by sending just
+one packet in single direction. To prevent such scenario change early
+drop algorithm to also consider "offloaded" connections for deletion.
+
+Vlad Buslov (7):
+  net: flow_offload: provision conntrack info in ct_metadata
+  netfilter: flowtable: fixup UDP timeout depending on ct state
+  netfilter: flowtable: allow unidirectional rules
+  netfilter: flowtable: cache info of last offload
+  net/sched: act_ct: set ctinfo in meta action depending on ct state
+  net/sched: act_ct: offload UDP NEW connections
+  netfilter: nf_conntrack: allow early drop of offloaded UDP conns
+
+ .../ethernet/mellanox/mlx5/core/en/tc_ct.c    |  4 ++
+ .../ethernet/netronome/nfp/flower/conntrack.c | 24 +++++++
+ include/net/netfilter/nf_flow_table.h         |  8 ++-
+ net/netfilter/nf_conntrack_core.c             | 11 ++--
+ net/netfilter/nf_flow_table_core.c            |  5 +-
+ net/netfilter/nf_flow_table_inet.c            |  2 +-
+ net/netfilter/nf_flow_table_offload.c         | 18 +++--
+ net/sched/act_ct.c                            | 65 ++++++++++++++-----
+ 8 files changed, 103 insertions(+), 34 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.38.1
 
