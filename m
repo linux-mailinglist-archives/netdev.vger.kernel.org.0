@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1336686A67
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 16:32:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9665F686A69
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 16:32:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231778AbjBAPc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 10:32:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44112 "EHLO
+        id S231685AbjBAPcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 10:32:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232272AbjBAPc0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 10:32:26 -0500
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 348694955E
-        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 07:31:59 -0800 (PST)
-Received: by mail-il1-x129.google.com with SMTP id i17so7872621ils.11
-        for <netdev@vger.kernel.org>; Wed, 01 Feb 2023 07:31:59 -0800 (PST)
+        with ESMTP id S232065AbjBAPca (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 10:32:30 -0500
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D53B7165F
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 07:32:19 -0800 (PST)
+Received: by mail-il1-x12d.google.com with SMTP id x6so895454ilv.7
+        for <netdev@vger.kernel.org>; Wed, 01 Feb 2023 07:32:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=GbF7lkvZ4Amm8xxdiv/QzWo0x6sQSM68u7fXySJZPv0=;
-        b=jfk9r6XLBke3cnm5+mWKI3ZNfEWW8fli/5XK+3gMZM/L1fi4Dtxck9BmIdloF1ClgH
-         dFC264x5ihI1VNtbYxDtMoSBQKS/UdYqWOAbVYVQZOzcM0XQwxI4cVNX5v3xqAnladMj
-         ft9yCeOA1/yvw5RnHLGunxvw6csCgkgFIFAMahtsCMaN+dLKIlBZuJbj483mfeHiUTQX
-         b2Jlq6D+a2LnwFJku8dWHeV+r0uGIQcXzWGNJA864nMjUw9QNMsaoyNv1J3TQhqgBa10
-         /269vVZZrysZLFcsqAmq03SVXiphri9T+2rJicKsU2LwPxkqN9d9Pz2j0jzNLGM7KiZ7
-         QyfA==
+        bh=0w306TBl9xojTD4+m6lXN95NIPdV0ni21/XD11jDBRs=;
+        b=iZzyxeLp6jmZ5AFbGy2eZaRgcQabfYK84x/o5usDsl8BM/A63emii1CVt4U9AsoLgh
+         XSFAC+Il9xWIA1w8qRDGrwBxIWhO90geEjJMXjY0vDac78MiouyV9L6QN5oeTsDEVxgx
+         xaLZ+Uj3+uJEd+lxDHMipy3TjxPcuMWdulMYRWrLWiwCkPeGR65eK4G1I6eotF3ybOpp
+         tPQtefoPYsyI5Rmdro7cIoL9n9xFjSUxDaDoYrzFO27juPwhA5HXDinCkOLOfVgc9UKM
+         9hXPTdlvOyIxZ8M/3XGsYb+Z2qZv9ByXFNuiMnMXelqnNEVRY+VZ6KATJMeNo5l8/oSz
+         XwBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GbF7lkvZ4Amm8xxdiv/QzWo0x6sQSM68u7fXySJZPv0=;
-        b=5F5SD+Su2J7wDQWIji/sXzOWuKTOYorP49j28uhgmJIGT/Ro/Jg+SWly9yhlSRO0WU
-         Z6k4rIj22hNV2ZITwNiCbbYJXg2HKU9Jt4GPlfbJuRe4/WOVsLgePjohJQQ5A6Ri6vw4
-         00YJZaqrKkyE3A3ttq9u1dPsy/DAgSk/SC/6yMOh3FvXIDxiF/x3Wc40ENXHkMgzRPY8
-         M1PDqFu8h76XvsNZzydTt+KkjdtokkM22agl1i6qn2QFZjXGOeYPamQ0NZaJ3xquzk4P
-         oxtLGKjHgDvuboObvUy02MydXrr2JRsCd2Bk4lPwyhVDkIu/i+msWR9XQnGAxaTZcT90
-         Qz8Q==
-X-Gm-Message-State: AO0yUKVDzObKvj6+6WMzHaunxjMYl8vv7yBtUuNrbxc0hEVdRU40Q0qs
-        R5ww6vunnG54RDy56vk57lTVxwjhyFvvpg==
-X-Google-Smtp-Source: AK7set/DkHh6eU9hUqN2r8LBZvYyrbO1L2yxrIdf+10vJ8qUB+Fj0U02i28mnFMHxEg45P95sZldjg==
-X-Received: by 2002:a05:6e02:1a06:b0:310:c066:6052 with SMTP id s6-20020a056e021a0600b00310c0666052mr2398516ild.9.1675265518548;
-        Wed, 01 Feb 2023 07:31:58 -0800 (PST)
+        bh=0w306TBl9xojTD4+m6lXN95NIPdV0ni21/XD11jDBRs=;
+        b=WGT7jPO7+gNKknp+rQ1UMVB7bPkjAkt6iyijEcQcM047Dc7XRWuB++h4hD78ekOMrp
+         VxmVGSLMWlfQZH7Veb2TrqSeRjG8gjvXpXZJ2ytBQF7BcoW8Wv7b/gNXXqM3o+7w0oWt
+         Hr+f2q5l7okGn32ETE0uxI94JPBPjldJNS7V6Jdu4nSfBYWh2ceQPXzvPg+hgjMxrHSh
+         0vwgeqhgynsq/zjxpzCxxUhFNU6HYxh9waJXBI8NdnhNeI5xmpoSLMB1Vp5kQEVN2inT
+         hWOVNRB1hb4c/nLfwFNOM/g9iYC7/faq9Dv6g2+CsPnSMp/HPABcvSd0BbwelwhR4Ac/
+         tGPw==
+X-Gm-Message-State: AO0yUKUnlw+ucrwNh0k0ajSsjNAJ5KMs3+oLnNhN1KIWnxbH5ofwlNv4
+        ZgyNAgpXH6lWTn932TA6AoM=
+X-Google-Smtp-Source: AK7set9SLKO5+nsbf70hDJoRvTOgsYXFczpLvo9T9XnfYjUHJwD9MX5W55GlrJK6mUXGxDi5fJ2TQA==
+X-Received: by 2002:a05:6e02:1ba7:b0:310:c2d5:dfd5 with SMTP id n7-20020a056e021ba700b00310c2d5dfd5mr2463191ili.17.1675265538404;
+        Wed, 01 Feb 2023 07:32:18 -0800 (PST)
 Received: from ?IPV6:2601:282:800:7ed0:1dfd:95ca:34d0:dedb? ([2601:282:800:7ed0:1dfd:95ca:34d0:dedb])
-        by smtp.googlemail.com with ESMTPSA id h36-20020a05663833a400b003b09a205870sm3014663jav.137.2023.02.01.07.31.56
+        by smtp.googlemail.com with ESMTPSA id y4-20020a056638038400b003a7cadffda7sm6112126jap.2.2023.02.01.07.32.17
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Feb 2023 07:31:57 -0800 (PST)
-Message-ID: <9a5634cc-47a2-57fe-4129-cfa6a61d9094@gmail.com>
-Date:   Wed, 1 Feb 2023 08:31:56 -0700
+        Wed, 01 Feb 2023 07:32:17 -0800 (PST)
+Message-ID: <8e84db42-0774-43ed-9293-e80297ece7b4@gmail.com>
+Date:   Wed, 1 Feb 2023 08:32:16 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
  Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [PATCHv4 net-next 01/10] net: add a couple of helpers for iph
- tot_len
+Subject: Re: [PATCHv4 net-next 08/10] packet: add TP_STATUS_GSO_TCP for
+ tp_status
 Content-Language: en-US
 To:     Xin Long <lucien.xin@gmail.com>,
         network dev <netdev@vger.kernel.org>
@@ -78,9 +78,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         Paul Moore <paul@paul-moore.com>,
         Guillaume Nault <gnault@redhat.com>
 References: <cover.1674921359.git.lucien.xin@gmail.com>
- <9a810d8265b12d95e6effff76e2ec722f283b094.1674921359.git.lucien.xin@gmail.com>
+ <0436a569c630a93e7abeedaa7ceccfc369f73c39.1674921359.git.lucien.xin@gmail.com>
 From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <9a810d8265b12d95e6effff76e2ec722f283b094.1674921359.git.lucien.xin@gmail.com>
+In-Reply-To: <0436a569c630a93e7abeedaa7ceccfc369f73c39.1674921359.git.lucien.xin@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -94,18 +94,16 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 1/28/23 8:58 AM, Xin Long wrote:
-> This patch adds three APIs to replace the iph->tot_len setting
-> and getting in all places where IPv4 BIG TCP packets may reach,
-> they will be used in the following patches.
-> 
-> Note that iph_totlen() will be used when iph is not in linear
-> data of the skb.
+> Introduce TP_STATUS_GSO_TCP tp_status flag to tell the af_packet user
+> that this is a TCP GSO packet. When parsing IPv4 BIG TCP packets in
+> tcpdump/libpcap, it can use tp_len as the IPv4 packet len when this
+> flag is set, as iph tot_len is set to 0 for IPv4 BIG TCP packets.
 > 
 > Signed-off-by: Xin Long <lucien.xin@gmail.com>
 > ---
->  include/linux/ip.h  | 21 +++++++++++++++++++++
->  include/net/route.h |  3 ---
->  2 files changed, 21 insertions(+), 3 deletions(-)
+>  include/uapi/linux/if_packet.h | 1 +
+>  net/packet/af_packet.c         | 4 ++++
+>  2 files changed, 5 insertions(+)
 > 
 
 Reviewed-by: David Ahern <dsahern@kernel.org>
