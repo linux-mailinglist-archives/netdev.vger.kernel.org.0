@@ -2,82 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E7B3686D99
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 19:04:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94F97686D9C
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 19:05:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231644AbjBASEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 13:04:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49682 "EHLO
+        id S231939AbjBASFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 13:05:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231864AbjBASEo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 13:04:44 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 255CF5356C;
-        Wed,  1 Feb 2023 10:04:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=OH6U4yR0+G89QSEnVcr38KhJN3Zf5DdwI7KCj4KlqMs=; b=0f4n4TmoRbXPn6e1c7WoA+60LF
-        0NTVfL5ycrTrbA57ptyKusE5K/lB7Nppzd6Nc2iYTdBU5NqFCXBqfn5AnXbhO1Fj9icxwsWqQ6TOa
-        tE8bkQy4EabSGsfK4Rmy6xO97Vt+TwgI+drCqI6roTPbeawiD1DXlL/CQwEI8nb67eOw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pNHTB-003p7i-OB; Wed, 01 Feb 2023 19:04:29 +0100
-Date:   Wed, 1 Feb 2023 19:04:29 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Wei Fang <wei.fang@nxp.com>, Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: fec: fix conversion to gpiod API
-Message-ID: <Y9qprbyr/0sa3sBN@lunn.ch>
-References: <Y9nbJJP/2gvJmpnO@google.com>
+        with ESMTP id S231946AbjBASFI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 13:05:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F0B7CC96
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 10:04:56 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78C1D618F9
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 18:04:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D723C433EF;
+        Wed,  1 Feb 2023 18:04:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675274695;
+        bh=a2CFpdH4rsCMNWh04L+MTq34Wn7rU9CRZf8PYynZFnY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XrF5E8de+mtKiLqUSY0CL4qGjXlPWhuhN6bvGkqHGnu8LT6VrpWUqN4YZhCsWKHhK
+         vaTIjPWvHlDxZ+jblUDevWFumKmY1jQneHoGBLPF1B9OMILXHZCep5RIq5jWi15xBe
+         Fas3rNoW7mETpmUkU1f8usQO/t920QUq/qG4AA3IUMmPqn7c895h/Umhr0a37K7bBi
+         TjPs2iYNOOSxmJX6KsNhD+jdMSb7iUF1XOhf8QaLmyrQtt09cowdU5/Jnuwjz4OSJO
+         DHwal6EaKliCOCDON61jzgDh6pFB8J3Ed3BxucCo4UXLgO960hHnFbRcwEa2oinSOe
+         RRX7tattRXJ6Q==
+Date:   Wed, 1 Feb 2023 10:04:54 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        pabeni@redhat.com, edumazet@google.com, Tom Rix <trix@redhat.com>,
+        netdev@vger.kernel.org, richardcochran@gmail.com,
+        vinicius.gomes@intel.com, Simon Horman <simon.horman@corigine.com>,
+        Sasha Neftin <sasha.neftin@intel.com>,
+        Naama Meir <naamax.meir@linux.intel.com>
+Subject: Re: [PATCH net 1/1] igc: return an error if the mac type is unknown
+ in igc_ptp_systim_to_hwtstamp()
+Message-ID: <20230201100454.61f32747@kernel.org>
+In-Reply-To: <Y9os+zttPvt5mlFM@nanopsycho>
+References: <20230131215437.1528994-1-anthony.l.nguyen@intel.com>
+        <Y9os+zttPvt5mlFM@nanopsycho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y9nbJJP/2gvJmpnO@google.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 07:23:16PM -0800, Dmitry Torokhov wrote:
-> The reset line is optional, so we should be using devm_gpiod_get_optional()
-> and not abort probing if it is not available. Also, there is a quirk in
-> gpiolib (introduced in b02c85c9458cdd15e2c43413d7d2541a468cde57) that
-> transparently handles "phy-reset-active-high" property. Remove handling
-> from the driver to avoid ending up with the double inversion/flipped
-> logic.
-> 
-> Fixes: 468ba54bd616 ("fec: convert to gpio descriptor")
-> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+On Wed, 1 Feb 2023 10:12:27 +0100 Jiri Pirko wrote:
+> >@@ -652,7 +655,8 @@ static void igc_ptp_tx_hwtstamp(struct igc_adapter *=
+adapter)
+> >=20
+> > 	regval =3D rd32(IGC_TXSTMPL);
+> > 	regval |=3D (u64)rd32(IGC_TXSTMPH) << 32;
+> >-	igc_ptp_systim_to_hwtstamp(adapter, &shhwtstamps, regval);
+> >+	if (igc_ptp_systim_to_hwtstamp(adapter, &shhwtstamps, regval)) =20
+>=20
+> Use variable to store the return value.
 
-Please split this into two:
-
-1) Fix for it being optional
-2) Removing support for phy-reset-active-high
-
-The breakage is in net-next, so we are not in a rush, and we don't
-need a minimum of patches. So since this is two logical changes, it
-should be two patches.
-
-Please also update the binding document to indicate that
-'phy-reset-active-high' is no longer deprecated, it has actually been
-removed. So we want the DT checking tools to error out if such a
-property is found.
-
-Thanks
-	Andrew
+Is that a rule.. IDK.. there's probably worse code in this driver =F0=9F=A4=
+=B7=EF=B8=8F
+The return value can't be propagated further anyway, since this is=20
+a work.
