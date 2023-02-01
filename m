@@ -2,110 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A8D0686507
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 12:10:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2D4668651B
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 12:13:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232239AbjBALK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 06:10:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35492 "EHLO
+        id S230218AbjBALNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 06:13:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229849AbjBALK0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 06:10:26 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4605B46D43;
-        Wed,  1 Feb 2023 03:10:25 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 242CA4B3;
-        Wed,  1 Feb 2023 03:11:07 -0800 (PST)
-Received: from FVFF77S0Q05N (unknown [10.57.12.10])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EE2183F882;
-        Wed,  1 Feb 2023 03:10:22 -0800 (PST)
-Date:   Wed, 1 Feb 2023 11:10:20 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Josh Poimboeuf <jpoimboe@kernel.org>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>, kvm@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, netdev@vger.kernel.org,
-        Jiri Kosina <jikos@kernel.org>, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        "Seth Forshee (DigitalOcean)" <sforshee@digitalocean.com>,
-        live-patching@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
-Subject: Re: [PATCH 0/2] vhost: improve livepatch switching for heavily
- loaded vhost worker kthreads
-Message-ID: <Y9pInB8KvcyhAwDa@FVFF77S0Q05N>
-References: <20230127044355.frggdswx424kd5dq@treble>
- <Y9OpTtqWjAkC2pal@hirez.programming.kicks-ass.net>
- <20230127165236.rjcp6jm6csdta6z3@treble>
- <20230127170946.zey6xbr4sm4kvh3x@treble>
- <20230127221131.sdneyrlxxhc4h3fa@treble>
- <Y9e6ssSHUt+MUvum@hirez.programming.kicks-ass.net>
- <Y9gOMCWGmoc5GQMj@FVFF77S0Q05N>
- <20230130194823.6y3rc227bvsgele4@treble>
- <Y9jr0fP7DtA9Of1L@FVFF77S0Q05N>
- <20230131163832.z46ihurbmjcwuvck@treble>
+        with ESMTP id S229601AbjBALNj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 06:13:39 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 709D27694;
+        Wed,  1 Feb 2023 03:13:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675250018; x=1706786018;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=flh3PUhvuWgfXNSYtuUGSsOuSsEecDIk0rcyzyHID84=;
+  b=C34X5F6rQ9CZEle9u8KiUpI/Eh/LY9RyZAHGrDbtkLF5CJhU9xjk745J
+   dInaVkTmOK3KxqdjgfVuh9xhXZkr3+7ar9/+cv7DB8Gj1UfASSJ7nb0Gi
+   s1oC4DpSUGZd3HEycso3cRc/EPIaICPN24eeteXVonlFvspXsOCdO3743
+   BxJXs6AcKAza6yTotArVu9D8Th+nz5DanxyECyUNgbo0jmPs+HseuL7Rx
+   1g+2xBAAsfBExFcrcNNPk0+tsS6p94QJ3NZIbs1fZfBYGvxFYo+DSFWfe
+   3UmNKEVm5yWexGptMtFEC6XiO/zGRFXdfhb+IkVw8unxjqEk9kaak9z2L
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="355447990"
+X-IronPort-AV: E=Sophos;i="5.97,263,1669104000"; 
+   d="scan'208";a="355447990"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2023 03:13:24 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="993649169"
+X-IronPort-AV: E=Sophos;i="5.97,263,1669104000"; 
+   d="scan'208";a="993649169"
+Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 01 Feb 2023 03:13:22 -0800
+Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pNB3J-0005NS-1d;
+        Wed, 01 Feb 2023 11:13:21 +0000
+Date:   Wed, 1 Feb 2023 19:12:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     alejandro.lucero-palau@amd.com, netdev@vger.kernel.org,
+        linux-net-drivers@amd.com
+Cc:     oe-kbuild-all@lists.linux.dev, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        habetsm.xilinx@gmail.com, ecree.xilinx@gmail.com,
+        linux-doc@vger.kernel.org, corbet@lwn.net, jiri@nvidia.com,
+        Alejandro Lucero <alejandro.lucero-palau@amd.com>
+Subject: Re: [PATCH v4 net-next 3/8] sfc: enumerate mports in ef100
+Message-ID: <202302011904.D2L0bvLa-lkp@intel.com>
+References: <20230131145822.36208-4-alejandro.lucero-palau@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230131163832.z46ihurbmjcwuvck@treble>
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230131145822.36208-4-alejandro.lucero-palau@amd.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 08:38:32AM -0800, Josh Poimboeuf wrote:
-> On Tue, Jan 31, 2023 at 10:22:09AM +0000, Mark Rutland wrote:
-> > > Hm, it might be nice if our out-of-line static call implementation would
-> > > automatically do a static key check as part of static_call_cond() for
-> > > NULL-type static calls.
-> > > 
-> > > But the best answer is probably to just add inline static calls to
-> > > arm64.  Is the lack of objtool the only thing blocking that?
-> > 
-> > The major issues were branch range limitations (and needing the linker to add
-> > PLTs),
-> 
-> Does the compiler do the right thing (e.g., force PLT) if the branch
-> target is outside the translation unit?  I'm wondering if we could for
-> example use objtool to help enforce such rules at the call site.
+Hi,
 
-It's the linker (rather than the compiler) that'll generate the PLT if the
-caller and callee are out of range at link time. There are a few other issues
-too (e.g. no guarnatee that the PLT isn't used by multiple distinct callers,
-CMODX patching requirements), so we'd have to generate a pseudo-PLT ourselves
-at build time with a patching-friendly code sequence. Ard had a prototype for
-that:
+Thank you for the patch! Yet something to improve:
 
-  https://lore.kernel.org/linux-arm-kernel/20211105145917.2828911-1-ardb@kernel.org/
+[auto build test ERROR on net-next/master]
 
-... but that was sufficiently painful that we went with the current static key
-approach:
+url:    https://github.com/intel-lab-lkp/linux/commits/alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230131-230245
+patch link:    https://lore.kernel.org/r/20230131145822.36208-4-alejandro.lucero-palau%40amd.com
+patch subject: [PATCH v4 net-next 3/8] sfc: enumerate mports in ef100
+config: ia64-randconfig-c031-20230129 (https://download.01.org/0day-ci/archive/20230201/202302011904.D2L0bvLa-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/82f66ed4b7c25c6b5bbfb1d23dbea705736d7b50
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230131-230245
+        git checkout 82f66ed4b7c25c6b5bbfb1d23dbea705736d7b50
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash
 
-  https://lore.kernel.org/all/20211109172408.49641-1-mark.rutland@arm.com/
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
 
-> > and painful instruction patching requirements (e.g. the architecture's
-> > "CMODX" rules for Concurrent MODification and eXecution of instructions). We
-> > went with the static key scheme above because that was what our assembled code
-> > generation would devolve to anyway.
-> > 
-> > If we knew each call-site would only call a particular function or skip the
-> > call, then we could do better (and would probably need something like objtool
-> > to NOP that out at compile time), but since we don't know the callee at build
-> > time we can't ensure we have a PLT in range when necessary.
-> 
-> Unfortunately most static calls have multiple destinations.
+All errors (new ones prefixed by >>):
 
-Sure, but here we're just enabling/disabling a call, which we could treat
-differently, or wrap at a different level within the scheduler code. I'm happy
-to take a look at that.
+   ia64-linux-ld: drivers/net/ethernet/sfc/ef100_nic.o: in function `ef100_remove':
+>> ef100_nic.c:(.text+0x2e82): undefined reference to `efx_ef100_fini_reps'
+>> ia64-linux-ld: ef100_nic.c:(.text+0x2e92): undefined reference to `efx_fini_mae'
 
-> And most don't have the option of being NULL.
-
-Oh, I was under the impression that all could be disabled/skipped, which is
-what a NULL target implied.
-
-Thanks,
-Mark.
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
