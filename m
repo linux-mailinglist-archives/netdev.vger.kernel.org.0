@@ -2,107 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AB2B686939
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 15:58:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE50B68693F
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 15:59:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231678AbjBAO6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 09:58:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33376 "EHLO
+        id S232735AbjBAO7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 09:59:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230046AbjBAO6f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 09:58:35 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0724365EF9;
-        Wed,  1 Feb 2023 06:58:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675263514; x=1706799514;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=y7lIjMgMVtPV5bm6OW/RddCvD8S3NDjqYUBxTdcVV5w=;
-  b=oAvhkJPyBeNkg0NeDeSoM5sy5dWFGsgjREPE2c5Dvvzae7hh/R/GMwb4
-   rqcpeY4II0Y160K1bJkG5aVfI0995bo2aKQo1+qK5BSUMOXUqHRfuk16N
-   EJGwClD9BLDmnDyaP/RTEbBL2PNbTB1Ddk5B7QlS66R8MRBzz2VdIV+0/
-   HcigVnI1iYEhGrHhRIAD+wxNeDhMv8vhuCW238T9V2EhCjYJOnbU81g3I
-   cot1e5aWj0MD29QsTFKHHVJzseSo30565Av4sEdzm+HvF6UWdMIUedSIa
-   IH1HyvQJ5ArVlmc2raNrsjf8NKkyEVIXA87XqkBekJv9H/zRmDKHZ9+hR
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10608"; a="308502812"
-X-IronPort-AV: E=Sophos;i="5.97,263,1669104000"; 
-   d="scan'208";a="308502812"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2023 06:58:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10608"; a="910343874"
-X-IronPort-AV: E=Sophos;i="5.97,263,1669104000"; 
-   d="scan'208";a="910343874"
-Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 01 Feb 2023 06:58:30 -0800
-Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pNEZB-0005Vw-2Y;
-        Wed, 01 Feb 2023 14:58:29 +0000
-Date:   Wed, 1 Feb 2023 22:57:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     alejandro.lucero-palau@amd.com, netdev@vger.kernel.org,
-        linux-net-drivers@amd.com
-Cc:     oe-kbuild-all@lists.linux.dev, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        habetsm.xilinx@gmail.com, ecree.xilinx@gmail.com,
-        linux-doc@vger.kernel.org, corbet@lwn.net, jiri@nvidia.com,
-        Alejandro Lucero <alejandro.lucero-palau@amd.com>
-Subject: Re: [PATCH v4 net-next 5/8] sfc: add devlink port support for ef100
-Message-ID: <202302012256.duJZ1JQ7-lkp@intel.com>
-References: <20230131145822.36208-6-alejandro.lucero-palau@amd.com>
+        with ESMTP id S232614AbjBAO7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 09:59:07 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6DB6B980
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 06:59:04 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pNEZY-0002ra-0C; Wed, 01 Feb 2023 15:58:52 +0100
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pNEZW-001w1G-Ih; Wed, 01 Feb 2023 15:58:49 +0100
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pNEZT-009hUY-6r; Wed, 01 Feb 2023 15:58:47 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Arun.Ramadoss@microchip.com, intel-wired-lan@lists.osuosl.org
+Subject: [PATCH net-next v4 00/23] net: add EEE support for KSZ9477 and AR8035 with i.MX6
+Date:   Wed,  1 Feb 2023 15:58:22 +0100
+Message-Id: <20230201145845.2312060-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230131145822.36208-6-alejandro.lucero-palau@amd.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+changes v4:
+- remove following helpers:
+  mmd_eee_cap_to_ethtool_sup_t
+  mmd_eee_adv_to_ethtool_adv_t
+  ethtool_adv_to_mmd_eee_adv_t
+  and port drivers from this helpers to linkmode helpers.
+- rebase against latest net-next
+- port phy_init_eee() to genphy_c45_eee_is_active()
 
-Thank you for the patch! Yet something to improve:
+changes v3:
+- rework some parts of EEE infrastructure and move it to c45 code.
+- add supported_eee storage and start using it in EEE code and by the
+  micrel driver.
+- add EEE support for ar8035 PHY
+- add SmartEEE support to FEC i.MX series.
 
-[auto build test ERROR on net-next/master]
+changes v2:
+- use phydev->supported instead of reading MII_BMSR regiaster
+- fix @get_eee > @set_eee
 
-url:    https://github.com/intel-lab-lkp/linux/commits/alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230131-230245
-patch link:    https://lore.kernel.org/r/20230131145822.36208-6-alejandro.lucero-palau%40amd.com
-patch subject: [PATCH v4 net-next 5/8] sfc: add devlink port support for ef100
-config: ia64-randconfig-c031-20230129 (https://download.01.org/0day-ci/archive/20230201/202302012256.duJZ1JQ7-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/b74c06500aff0021c9aaa6edf390252c3e5de2cf
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230131-230245
-        git checkout b74c06500aff0021c9aaa6edf390252c3e5de2cf
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash
+With this patch series we provide EEE control for KSZ9477 family of switches and
+AR8035 with i.MX6 configuration.
+According to my tests, on a system with KSZ8563 switch and 100Mbit idle link,
+we consume 0,192W less power per port if EEE is enabled.
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
+Oleksij Rempel (23):
+  net: dsa: microchip: enable EEE support
+  net: phy: add genphy_c45_read_eee_abilities() function
+  net: phy: micrel: add ksz9477_get_features()
+  net: phy: export phy_check_valid() function
+  net: phy: add genphy_c45_ethtool_get/set_eee() support
+  net: phy: c22: migrate to genphy_c45_write_eee_adv()
+  net: phy: c45: migrate to genphy_c45_write_eee_adv()
+  net: phy: migrate phy_init_eee() to genphy_c45_eee_is_active()
+  net: phy: start using genphy_c45_ethtool_get/set_eee()
+  net: phy: add driver specific get/set_eee support
+  net: phy: at803x: implement ethtool access to SmartEEE functionality
+  net: phy: at803x: ar8035: fix EEE support for half duplex links
+  net: phy: add PHY specifica flag to signal SmartEEE support
+  net: phy: at803x: add PHY_SMART_EEE flag to AR8035
+  net: phy: add phy_has_smarteee() helper
+  net: fec: add support for PHYs with SmartEEE support
+  e1000e: replace EEE ethtool helpers to linkmode variants
+  igb: replace EEE ethtool helpers to linkmode variants
+  igc: replace EEE ethtool helpers to linkmode variants
+  tg3: replace EEE ethtool helpers to linkmode variants
+  r8152: replace EEE ethtool helpers to linkmode variants
+  net: usb: ax88179_178a: replace EEE ethtool helpers to linkmode
+    variants
+  net: mdio: drop EEE ethtool helpers in favor to linkmode variants
 
-All errors (new ones prefixed by >>):
-
-   ia64-linux-ld: drivers/net/ethernet/sfc/ef100_nic.o: in function `ef100_remove':
-   ef100_nic.c:(.text+0x2e82): undefined reference to `efx_ef100_fini_reps'
-   ia64-linux-ld: ef100_nic.c:(.text+0x2e92): undefined reference to `efx_fini_mae'
-   ia64-linux-ld: drivers/net/ethernet/sfc/efx_devlink.o: in function `ef100_set_devlink_port':
->> efx_devlink.c:(.text+0x32): undefined reference to `efx_mae_lookup_mport'
->> ia64-linux-ld: efx_devlink.c:(.text+0x72): undefined reference to `efx_mae_get_mport'
->> ia64-linux-ld: efx_devlink.c:(.text+0xa2): undefined reference to `ef100_mport_on_local_intf'
+ drivers/net/dsa/microchip/ksz_common.c       |  66 ++++
+ drivers/net/ethernet/broadcom/tg3.c          |   9 +-
+ drivers/net/ethernet/freescale/fec_main.c    |  22 +-
+ drivers/net/ethernet/intel/e1000e/ethtool.c  |  16 +-
+ drivers/net/ethernet/intel/igb/igb_ethtool.c |  23 +-
+ drivers/net/ethernet/intel/igc/igc_ethtool.c |  12 +-
+ drivers/net/phy/at803x.c                     | 142 ++++++++-
+ drivers/net/phy/micrel.c                     |  21 ++
+ drivers/net/phy/phy-c45.c                    | 298 ++++++++++++++++++-
+ drivers/net/phy/phy.c                        | 155 ++--------
+ drivers/net/phy/phy_device.c                 |  26 +-
+ drivers/net/usb/ax88179_178a.c               |  24 +-
+ drivers/net/usb/r8152.c                      |  34 ++-
+ include/linux/mdio.h                         | 136 ++++-----
+ include/linux/phy.h                          |  28 ++
+ include/uapi/linux/mdio.h                    |   8 +
+ 16 files changed, 760 insertions(+), 260 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+2.30.2
+
