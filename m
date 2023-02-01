@@ -2,51 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 923B9687143
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 23:54:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 525486871D9
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 00:25:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231215AbjBAWyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 17:54:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33970 "EHLO
+        id S229929AbjBAXY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 18:24:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbjBAWyP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 17:54:15 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78F9B65EFC;
-        Wed,  1 Feb 2023 14:54:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=mVUi9b3avKXCGkK7PJdGHQrWxThubRuQlGj56CQ3xTs=; b=phPs7X3hpkW4twrII4KP+oIuET
-        4nkK2sS9ogAQ42Cv1E2uaa9OELjfE0Ew6d7R9PCAUZPfGFHTyWCc77NEmNYHXcnYh3+w7r8yx+H4u
-        s71F26uf904LTKwha30xsCWc1QdFugAfeUOppDJ9Ju7JDLhUo30bvn7K7rlmoY4boy6g=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pNLzO-003qJ4-Ao; Wed, 01 Feb 2023 23:54:02 +0100
-Date:   Wed, 1 Feb 2023 23:54:02 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Wei Fang <wei.fang@nxp.com>, Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] net: fec: do not double-parse
- 'phy-reset-active-high' property
-Message-ID: <Y9rtil2/y3ykeQoF@lunn.ch>
-References: <20230201215320.528319-1-dmitry.torokhov@gmail.com>
- <20230201215320.528319-2-dmitry.torokhov@gmail.com>
+        with ESMTP id S231486AbjBAXYx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 18:24:53 -0500
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9868518A8D;
+        Wed,  1 Feb 2023 15:24:15 -0800 (PST)
+Received: from biznet-home.integral.gnuweeb.org (unknown [182.253.183.234])
+        by gnuweeb.org (Postfix) with ESMTPSA id 9B45482FB1;
+        Wed,  1 Feb 2023 23:15:29 +0000 (UTC)
+X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1675293332;
+        bh=IvA3kcjhH3kFIonqYsH/a8oN8jrejMfZxNOTHkij1fY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EfvDsl2RbkhIEqGWEDXVjTGIjDqvD96R1AF/0dLMr7WJ8nqgKqVk3E9yk6YyHxgwk
+         1+C+GKS6TbVuAWbQqElqz1oW+e4xmsnTKPmA+08GEZB/pYs10NgzsuMYAtL2OjUbKs
+         exvb9oNHB0dMiJBjEs8XKTBlvCJQbwAOcCWH2nyjIC3GYakPe0yhfqoVPH9K/s/3SB
+         Aqhu7p8rTeHVZ6EUqlQqehZsIgnNuVdIs6pwKQcz28GC1S3N9deXYTgo9Ga9T1ZKxu
+         uT9p2/DslWnkoXvdJT2NzS9ok1hwVYN15yfOVkOFVRDDUewC+EuuKT5iZlbSnNCsE/
+         pTwDHPE7i3HaA==
+Date:   Thu, 2 Feb 2023 06:15:25 +0700
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+To:     Stefan Roesch <shr@devkernel.io>
+Cc:     Facebook Kernel Team <kernel-team@fb.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Olivier Langlois <olivier@trillion01.com>,
+        netdev Mailing List <netdev@vger.kernel.org>,
+        io-uring Mailing List <io-uring@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v6 2/3] io_uring: add api to set / get napi configuration.
+Message-ID: <Y9ryjXdUg2ii8P71@biznet-home.integral.gnuweeb.org>
+References: <20230201222254.744422-1-shr@devkernel.io>
+ <20230201222254.744422-3-shr@devkernel.io>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230201215320.528319-2-dmitry.torokhov@gmail.com>
+In-Reply-To: <20230201222254.744422-3-shr@devkernel.io>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
@@ -56,22 +54,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 01, 2023 at 01:53:20PM -0800, Dmitry Torokhov wrote:
-> Conversion to gpiod API done in commit 468ba54bd616 ("fec: convert
-> to gpio descriptor") clashed with gpiolib applying the same quirk to the
-> reset GPIO polarity (introduced in commit b02c85c9458c). This results in
-> the reset line being left active/device being left in reset state when
-> reset line is "active low".
-> 
-> Remove handling of 'phy-reset-active-high' property from the driver and
-> rely on gpiolib to apply needed adjustments to avoid ending up with the
-> double inversion/flipped logic.
+On Wed, Feb 01, 2023 at 02:22:53PM -0800, Stefan Roesch wrote:
+> +static int io_unregister_napi(struct io_ring_ctx *ctx, void __user *arg)
+> +{
+> +#ifdef CONFIG_NET_RX_BUSY_POLL
+> +	const struct io_uring_napi curr = {
+> +		.busy_poll_to = ctx->napi_busy_poll_to,
+> +	};
+> +
+> +	if (arg) {
+> +		if (copy_to_user(arg, &curr, sizeof(curr)))
+> +			return -EFAULT;
+> +	}
+> +
+> +	WRITE_ONCE(ctx->napi_busy_poll_to, 0);
+> +	return 0;
+> +#else
+> +	return -EINVAL;
+> +#endif
+> +}
 
-I searched the in tree DT files from 4.7 to 6.0. None use
-phy-reset-active-high. I'm don't think it has ever had an in tree
-user.
+Just to follow the common pattern when a feature is not enabled the
+return value is -EOPNOTSUPP instead of -EINVAL. What do you think?
 
-This property was marked deprecated Jul 18 2019. So i suggest we
-completely drop it.
+> +	case IORING_UNREGISTER_NAPI:
+> +		ret = -EINVAL;
+> +		if (!arg)
+> +			break;
+> +		ret = io_unregister_napi(ctx, arg);
+> +		break;
 
-	   Andrew
+This needs to be corrected. If the @arg var is NULL, you return -EINVAL.
+So io_unregister_napi() will always have @arg != NULL. This @arg check
+should go, allow the user to pass a NULL pointer to it.
+
+Our previous agreement on this API is to allow the user to pass a NULL
+pointer in case the user doesn't care about the old value.
+
+Also, having a liburing test case that verifies this behavior would be
+excellent.
+
+-- 
+Ammar Faizi
+
