@@ -2,88 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A425686A80
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 16:39:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA7DB686A94
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 16:45:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231685AbjBAPjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 10:39:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48864 "EHLO
+        id S231836AbjBAPpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 10:45:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbjBAPjU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 10:39:20 -0500
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D92EB234F9
-        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 07:39:19 -0800 (PST)
-Received: by mail-io1-xd31.google.com with SMTP id y7so3617884iob.6
-        for <netdev@vger.kernel.org>; Wed, 01 Feb 2023 07:39:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=McPXi0Wsw094zlljnWMxIPMSnerp8sLMWwxDGW8WaRQ=;
-        b=eh8MTFL+5zP6T7KCvNAzkhSmeZ6EulhbLcZfRIs6PGdVCGxVqdyRJdlNgyhBf6PnHU
-         oyAa5sn3Fq3Xh8PyMJqq2cB/NMMgYEMqjfCdRWSqPWzt8CiM3FEKEQlGyU4mfcAXptqz
-         tZWdmjf5dgZ5ISC2lNcUtR8lYqw3+kG3YYXSq3ikYyWCV/t+NiN1NbxVuBSxQaH7f93+
-         /8lVDEHMxgFGw6g+yKjwGdzlBcvkwxFRPYnACdqiHrygTFIt4uePLev3CGhH0YPXsau1
-         wHiEbtYxuGdUj42vmRTsBt8w5dWkx3x4zZOUoLFMdKUjnHx84sin2W2JVcNN7WXClLDb
-         vRvA==
+        with ESMTP id S232000AbjBAPo7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 10:44:59 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF6924484
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 07:43:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675266237;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=S5Crr6arLnCfcCARGeaiwt5pWggnVd4zfxeJUuRh9Ns=;
+        b=TRMbW5Wxe28jndzTaliOriYeCwOL8ChtMybV2Hx5vnvuT+A0xNMq8wOeDbxFn7Cp2xHQVA
+        tjVKknVSVmlvM4LbsBimOwAbNKDPIh/vDQ5zC6a/itVhCi4p7gSme3fnJGKzZK0jcrew3l
+        KIn0Q5+hi0TdRiamMVo1SEgBV8qE2Ro=
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
+ [209.85.216.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-536-dbTF6AZqMGWmxNnvY6iZUA-1; Wed, 01 Feb 2023 10:43:55 -0500
+X-MC-Unique: dbTF6AZqMGWmxNnvY6iZUA-1
+Received: by mail-pj1-f72.google.com with SMTP id me10-20020a17090b17ca00b002302729c84eso1202169pjb.1
+        for <netdev@vger.kernel.org>; Wed, 01 Feb 2023 07:43:55 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=McPXi0Wsw094zlljnWMxIPMSnerp8sLMWwxDGW8WaRQ=;
-        b=Duv+aBWS23xMjCt1WJY+ZNvl0pZ6PRuvCbT/0wtX1LM9NhlJPw/thBJBZz9n1D4yrB
-         nuc2f2xIi4/4E8+n4OAn1e6MIHtBgW+9pHbuJFdj7HEw+9kLYYm6hOd3VEZQkQhIOCMY
-         80UB+D7k79fH9Nkh8+yHYJRuMadNQD+EaQrbnPvGV8HfqCO2qK7VnRGlneieFvGrsIMR
-         59w2uQ/5Tkmw0Y8JqcjO9O+ZdMz/rCeFRyiTJFQP+ERZvGXbTU7o0iagBFDuVtl91cIG
-         kIzNJAq7DSKTh5mknua+jZ5ifqVzjshwZrKCI9RfGPV8+1vHe0itzGQdkqUQeoPOX1z1
-         3Ahg==
-X-Gm-Message-State: AO0yUKX0bCINwHuBSAXrm3kehw6ux46gyv9UX3GUYZJ5Ut3RFRHxFNYh
-        1emMsuDXQ0GEZQa7+Dw1uBE=
-X-Google-Smtp-Source: AK7set+aCXAvpE/6yJJox2lvt0C8nLhJrmMEeRP3Iw02NdsCzB8KRpMg75saF8QqYVtNfxLwxYU3SQ==
-X-Received: by 2002:a5e:9804:0:b0:707:ad8d:c0ab with SMTP id s4-20020a5e9804000000b00707ad8dc0abmr1718566ioj.10.1675265959197;
-        Wed, 01 Feb 2023 07:39:19 -0800 (PST)
-Received: from ?IPV6:2601:282:800:7ed0:1dfd:95ca:34d0:dedb? ([2601:282:800:7ed0:1dfd:95ca:34d0:dedb])
-        by smtp.googlemail.com with ESMTPSA id i1-20020a6bf401000000b00704608527d1sm5984597iog.37.2023.02.01.07.39.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Feb 2023 07:39:18 -0800 (PST)
-Message-ID: <4445718f-85d6-5ae6-209f-b3e402d483fa@gmail.com>
-Date:   Wed, 1 Feb 2023 08:39:17 -0700
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=S5Crr6arLnCfcCARGeaiwt5pWggnVd4zfxeJUuRh9Ns=;
+        b=i6/GfdV3kc9+/nnDudD268VrIr9ACK8hASif4YzcWoT7PjV7+dMX1HZdBqe3b/SIHx
+         BChVvkDH1cIhlfvB0V6gQRFdg/ZPm5ZqNWicLH0ZpzZ31qfYtBmcLO20OP9n5tCGYTTi
+         CovsBjtxcttGcZVT/rR+NA9c77pxu2TNnkemW0rP1rNQyz0CZGinZdHEkpgNQ3zMIsbk
+         bt8UukDrtyciO66+2NswtohzvkkI/UlXwPBFPrXzKCbxFMcWYF/7tHRB38bobnbjmU9f
+         GTz7ecAhv/h7O57Shbm6RyTRy4UPuUEY62FyR0NG6nGEtietKlWbqeUVH0pL3pM6sSRq
+         C8gA==
+X-Gm-Message-State: AO0yUKVw6Z3EdzdV2dJ3STq/J+M9PoD2ghSuaV3AGh9gLJ5F1QsERnOr
+        49lQKAThXVnrQ1P5a/m9k5BzN9GcpQjuEpOGs5PJJt2WckzYMpC1ejLGtYQsiaOrhaJArxyv53D
+        N+sQ/RMrxOWku6HKa
+X-Received: by 2002:a17:903:2282:b0:196:7a90:5f48 with SMTP id b2-20020a170903228200b001967a905f48mr3185157plh.24.1675266234715;
+        Wed, 01 Feb 2023 07:43:54 -0800 (PST)
+X-Google-Smtp-Source: AK7set+SwIAdWwiCD0ElL1XQniEDQeAa6NpDSd0ywIw1JKfzHV7HJzv1REZX9Ff5sCFE5PoSLX3Fsg==
+X-Received: by 2002:a17:903:2282:b0:196:7a90:5f48 with SMTP id b2-20020a170903228200b001967a905f48mr3185140plh.24.1675266234434;
+        Wed, 01 Feb 2023 07:43:54 -0800 (PST)
+Received: from kernel-devel ([240d:1a:c0d:9f00:ca6:1aff:fead:cef4])
+        by smtp.gmail.com with ESMTPSA id je7-20020a170903264700b001960735c652sm11975028plb.169.2023.02.01.07.43.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Feb 2023 07:43:54 -0800 (PST)
+Date:   Thu, 2 Feb 2023 00:43:49 +0900
+From:   Shigeru Yoshida <syoshida@redhat.com>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     jchapman@katalix.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] l2tp: Avoid possible recursive deadlock in
+ l2tp_tunnel_register()
+Message-ID: <Y9qItT82LcJdJVlF@kernel-devel>
+References: <20230130154438.1373750-1-syoshida@redhat.com>
+ <Y9f4eAhcJXhh0+c2@debian>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [PATCHv4 net-next 00/10] net: support ipv4 big tcp
-Content-Language: en-US
-To:     Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Aaron Conole <aconole@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Guillaume Nault <gnault@redhat.com>
-References: <cover.1674921359.git.lucien.xin@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <cover.1674921359.git.lucien.xin@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y9f4eAhcJXhh0+c2@debian>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -91,24 +79,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/28/23 8:58 AM, Xin Long wrote:
-> This is similar to the BIG TCP patchset added by Eric for IPv6:
-> 
->   https://lwn.net/Articles/895398/
-> 
-> Different from IPv6, IPv4 tot_len is 16-bit long only, and IPv4 header
-> doesn't have exthdrs(options) for the BIG TCP packets' length. To make
-> it simple, as David and Paolo suggested, we set IPv4 tot_len to 0 to
-> indicate this might be a BIG TCP packet and use skb->len as the real
-> IPv4 total length.
-> 
-> This will work safely, as all BIG TCP packets are GSO/GRO packets and
-> processed on the same host as they were created; There is no padding
-> in GSO/GRO packets, and skb->len - network_offset is exactly the IPv4
-> packet total length; Also, before implementing the feature, all those
-> places that may get iph tot_len from BIG TCP packets are taken care
-> with some new APIs:
-> 
+Hi Guillaume,
 
-Thanks for working on this.
+On Mon, Jan 30, 2023 at 06:03:52PM +0100, Guillaume Nault wrote:
+> On Tue, Jan 31, 2023 at 12:44:38AM +0900, Shigeru Yoshida wrote:
+> > This patch fixes the issue by returning error when a pppol2tp socket
+> > itself is passed.
+> 
+> Fixes: 0b2c59720e65 ("l2tp: close all race conditions in l2tp_tunnel_register()")
+> 
+> > Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
+> > ---
+> >  net/l2tp/l2tp_ppp.c | 7 +++++--
+> >  1 file changed, 5 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/net/l2tp/l2tp_ppp.c b/net/l2tp/l2tp_ppp.c
+> > index db2e584c625e..88d1a339500b 100644
+> > --- a/net/l2tp/l2tp_ppp.c
+> > +++ b/net/l2tp/l2tp_ppp.c
+> > @@ -702,11 +702,14 @@ static int pppol2tp_connect(struct socket *sock, struct sockaddr *uservaddr,
+> >  			struct l2tp_tunnel_cfg tcfg = {
+> >  				.encap = L2TP_ENCAPTYPE_UDP,
+> >  			};
+> > +			int dummy = 0;
+> 
+> There's no need to initialise dummy here. This is just confusing.
+> We could even do without any extra variable and reuse error in
+> sockfd_lookup().
+> 
+> >  			/* Prevent l2tp_tunnel_register() from trying to set up
+> > -			 * a kernel socket.
+> > +			 * a kernel socket.  Also, prevent l2tp_tunnel_register()
+> > +			 * from trying to use pppol2tp socket itself.
+> >  			 */
+> > -			if (info.fd < 0) {
+> > +			if (info.fd < 0 ||
+> > +			    sock == sockfd_lookup(info.fd, &dummy)) {
+> >  				error = -EBADF;
+> >  				goto end;
+> >  			}
+> 
+> That should work, but the real problem is calling l2tp_tunnel_register()
+> under lock_sock(). We should instead get/create the tunnel before
+> locking the pppol2tp socket.
+
+Thank you so much for your comment, and sorry for the late response.
+
+Do you mean we can call l2tp_tunnel_register() without pppol2tp socket
+lock?  I've read the source code of pppol2tp_connect(), but I'm not
+sure why pppol2tp socket is locked at the beginning of this function.
+
+If we can call l2tp_tunnel_register() without pppol2tp socket lock, I
+think we can move lock_sock() after l2tp_tunnel_register().
+
+Thanks,
+Shigeru
+
+> 
 
