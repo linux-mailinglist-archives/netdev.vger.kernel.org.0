@@ -2,192 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDD1C68707A
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 22:28:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17F47687087
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 22:41:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229640AbjBAV2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 16:28:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55974 "EHLO
+        id S229774AbjBAVlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 16:41:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbjBAV2x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 16:28:53 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B26D17CFE;
-        Wed,  1 Feb 2023 13:28:51 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 2DFAF33D6D;
-        Wed,  1 Feb 2023 21:28:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1675286930; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        with ESMTP id S229551AbjBAVlw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 16:41:52 -0500
+X-Greylist: delayed 337 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 01 Feb 2023 13:41:50 PST
+Received: from out-26.mta0.migadu.com (out-26.mta0.migadu.com [IPv6:2001:41d0:1004:224b::1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2413145887
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 13:41:49 -0800 (PST)
+Message-ID: <56a2ea34-7730-3794-d2df-53c94b4d9a60@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1675287368;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xoprJCwqDVGxzpr+vLREMgZvu2xo3+B+3gZzNimWhck=;
-        b=Z5jRd/BNVN7n0iMAof0+/phU6WZBUbqX7UYGSnX9GHMZJBMdVxgrYEROunfaTFTfGCQ5Ka
-        B17loG0i4BIrnaBsCXsu5RRQc2iRhNh3iKSrTF228dJYChCzyuKONsvWUdNNVBtpNavW++
-        GUdOJ5m1ziifGoBCCAeB8ety0wOKNeg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1675286930;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xoprJCwqDVGxzpr+vLREMgZvu2xo3+B+3gZzNimWhck=;
-        b=7/io5znkCzIEVPAdWbqU2aLlbrdNHA59NLw7EpznmNMmnZPLmTBfQ1HjVyXDkRot3iGaZJ
-        Hv0AQ8YALNWTcpBg==
-Received: from lion.mk-sys.cz (mkubecek.udp.ovpn2.prg.suse.de [10.100.200.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 400BC2C141;
-        Wed,  1 Feb 2023 21:28:49 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 9844860311; Wed,  1 Feb 2023 22:28:45 +0100 (CET)
-Date:   Wed, 1 Feb 2023 22:28:45 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: Re: [PATCH v4 ethtool-next 2/2] add support for IEEE 802.3cg-2019
- Clause 148 - PLCA RS
-Message-ID: <20230201212845.t5qriiofktivtzse@lion.mk-sys.cz>
-References: <cover.1671236215.git.piergiorgio.beruto@gmail.com>
- <1ddabd3850c3f3aea4b2ce840a053f0e917803ba.1671236216.git.piergiorgio.beruto@gmail.com>
+        bh=x9J7CRDgXk8dbsTIqLYy73tOaxfXKKwvmaKISlG680I=;
+        b=ilBYD6pw9FttH7sS3zmkFtBo1GzJ4VXbD1M4P5q9o0qjFivI6Y7kqtxLInYgb/iQFLvo62
+        akfWqKY0bAPN+uTL4XCJSQeUsPvO/3gae87n3EJxvHiIePjw4pGIC6vwlfXwaK740Jis6j
+        Q8a3upJ3T+xpXzG7ItM0HyoyT86dLSk=
+Date:   Wed, 1 Feb 2023 21:36:01 +0000
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="x372544no2ki3rmo"
-Content-Disposition: inline
-In-Reply-To: <1ddabd3850c3f3aea4b2ce840a053f0e917803ba.1671236216.git.piergiorgio.beruto@gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net v4 2/2] mlx5: fix possible ptp queue fifo
+ use-after-free
+To:     Saeed Mahameed <saeed@kernel.org>,
+        Vadim Fedorenko <vadfed@meta.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Rahul Rameshbabu <rrameshbabu@nvidia.com>,
+        Tariq Toukan <ttoukan.linux@gmail.com>,
+        Gal Pressman <gal@nvidia.com>, netdev@vger.kernel.org
+References: <20230201122605.1350664-1-vadfed@meta.com>
+ <20230201122605.1350664-3-vadfed@meta.com> <Y9qtPtTMvZUWtRso@x130>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Vadim Fedorenko <vadim.fedorenko@linux.dev>
+In-Reply-To: <Y9qtPtTMvZUWtRso@x130>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 01/02/2023 18:19, Saeed Mahameed wrote:
+> On 01 Feb 04:26, Vadim Fedorenko wrote:
+>> Fifo indexes were not checked during pop operations and it leads to
+>> potential use-after-free when poping from empty queue. Such case was
+>> possible during re-sync action.
+>>
+>> There were out-of-order cqe spotted which lead to drain of the queue and
+>> use-after-free because of lack of fifo pointers check. Special check
+>> is added to avoid resync operation if SKB could not exist in the fifo
+>> because of OOO cqe (skb_id must be between consumer and producer index).
+>>
+>> Fixes: 58a518948f60 ("net/mlx5e: Add resiliency for PTP TX port 
+>> timestamp")
+>> Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
+>> ---
+>> .../net/ethernet/mellanox/mlx5/core/en/ptp.c  | 23 ++++++++++++++-----
+>> .../net/ethernet/mellanox/mlx5/core/en/txrx.h |  4 +++-
+>> 2 files changed, 20 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c 
+>> b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+>> index b72de2b520ec..5df726185192 100644
+>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+>> @@ -86,7 +86,7 @@ static bool mlx5e_ptp_ts_cqe_drop(struct mlx5e_ptpsq 
+>> *ptpsq, u16 skb_cc, u16 skb
+>>     return (ptpsq->ts_cqe_ctr_mask && (skb_cc != skb_id));
+>> }
+>>
+>> -static void mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq 
+>> *ptpsq, u16 skb_cc,
+>> +static bool mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq 
+>> *ptpsq, u16 skb_cc,
+>>                          u16 skb_id, int budget)
+>> {
+>>     struct skb_shared_hwtstamps hwts = {};
+>> @@ -94,14 +94,23 @@ static void 
+>> mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq *ptpsq, u16 skb_
+>>
+>>     ptpsq->cq_stats->resync_event++;
+>>
+>> -    while (skb_cc != skb_id) {
+>> -        skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo);
+>> +    if (skb_cc > skb_id || PTP_WQE_CTR2IDX(ptpsq->skb_fifo_pc) < 
+>> skb_id) {
+> 
+> To avoid returning boolean and add more functionality to this function,
+> I prefer to put this check in mlx5e_ptp_handle_ts_cqe(), see below.
+>
 
---x372544no2ki3rmo
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Let's discuss this point, see comments below.
 
-On Sat, Dec 17, 2022 at 01:50:39AM +0100, Piergiorgio Beruto wrote:
-> This patch adds support for the Physical Layer Collision Avoidance
-> Reconciliation Sublayer which was introduced in the IEEE 802.3
-> standard by the 802.3cg working group in 2019.
->=20
-> The ethtool interface has been extended as follows:
-> - show if the device supports PLCA when ethtool is invoked without FLAGS
->    - additionally show what PLCA version is supported
->    - show the current PLCA status
-> - add FLAGS for getting and setting the PLCA configuration
->=20
-> Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-> ---
->  Makefile.am        |   1 +
->  ethtool.c          |  21 ++++
->  netlink/extapi.h   |   6 +
->  netlink/plca.c     | 295 +++++++++++++++++++++++++++++++++++++++++++++
->  netlink/settings.c |  86 ++++++++++++-
+>> +        mlx5_core_err_rl(ptpsq->txqsq.mdev, "out-of-order ptp cqe\n");
+> 
+> it's better to add a counter for this, eg: ptpsq->cq_stats->ooo_cqe_drop++;
 
-Please update also the manual page (ethtool.8.in), this should be done
-whenever adding a new feature so that documented and implemented
-features don't diverge.
+Sure, will do.
 
-[...]
-> diff --git a/netlink/extapi.h b/netlink/extapi.h
-> index 1bb580a889a8..0add156e644a 100644
-> --- a/netlink/extapi.h
-> +++ b/netlink/extapi.h
-[...]
-> @@ -114,6 +117,9 @@ nl_get_eeprom_page(struct cmd_context *ctx __maybe_un=
-used,
->  #define nl_getmodule		NULL
->  #define nl_gmodule		NULL
->  #define nl_smodule		NULL
-> +#define nl_get_plca_cfg		NULL
-> +#define nl_set_plca_cfg		NULL
-> +#define nl_get_plca_status	NULL
-> =20
->  #endif /* ETHTOOL_ENABLE_NETLINK */
-> =20
+> 
+>> +        return false;
+>> +    }
+>> +
+>> +    while (skb_cc != skb_id && (skb = 
+>> mlx5e_skb_fifo_pop(&ptpsq->skb_fifo))) {
+>>         hwts.hwtstamp = mlx5e_skb_cb_get_hwts(skb)->cqe_hwtstamp;
+>>         skb_tstamp_tx(skb, &hwts);
+>>         ptpsq->cq_stats->resync_cqe++;
+>>         napi_consume_skb(skb, budget);
+>>         skb_cc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
+>>     }
+>> +
+>> +    if (!skb)
+>> +        return false;
+>> +
+>> +    return true;
+>> }
+>>
+>> static void mlx5e_ptp_handle_ts_cqe(struct mlx5e_ptpsq *ptpsq,
+>> @@ -111,7 +120,7 @@ static void mlx5e_ptp_handle_ts_cqe(struct 
+>> mlx5e_ptpsq *ptpsq,
+>>     u16 skb_id = PTP_WQE_CTR2IDX(be16_to_cpu(cqe->wqe_counter));
+>>     u16 skb_cc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
+>>     struct mlx5e_txqsq *sq = &ptpsq->txqsq;
+>> -    struct sk_buff *skb;
+>> +    struct sk_buff *skb = NULL;
+>>     ktime_t hwtstamp;
+>>
+>>     if (unlikely(MLX5E_RX_ERR_CQE(cqe))) {
+>> @@ -120,8 +129,10 @@ static void mlx5e_ptp_handle_ts_cqe(struct 
+>> mlx5e_ptpsq *ptpsq,
+>>         goto out;
+>>     }
+>>
+>> -    if (mlx5e_ptp_ts_cqe_drop(ptpsq, skb_cc, skb_id))
+>> -        mlx5e_ptp_skb_fifo_ts_cqe_resync(ptpsq, skb_cc, skb_id, budget);
+> 
+> you can check here:
+>      /* ignore ooo cqe as it was already handled by a previous resync */
+>      if (ooo_cqe(cqe))
+>          return;
 
-The function names are misspelled here so that a build with
---disable-netlink fails.
+I assume that mlx5e_ptp_skb_fifo_ts_cqe_resync() is error-recovery path 
+and should not happen frequently. If we move this check to 
+mlx5e_ptp_handle_ts_cqe() we will have additional if with 2 checks for 
+every cqe coming from ptp queue - the fast path. With our load of 1+Mpps 
+it could be countable. Another point is that 
+mlx5e_ptp_skb_fifo_ts_cqe_resync() will assume that skb_id must always 
+be within fifo indexes and any other (future?) code has to implement 
+this check. Otherwise it will cause use-after-free, double-free and then 
+crash, especially if we remove check in mlx5e_skb_fifo_pop() that you 
+commented below. I think it's ok to have additional check in error path 
+to prevent anything like that in the future.
 
-[...]
-> diff --git a/netlink/plca.c b/netlink/plca.c
-> new file mode 100644
-> index 000000000000..f7d7bdbc5c84
-> --- /dev/null
-> +++ b/netlink/plca.c
-> @@ -0,0 +1,295 @@
-> +/*
-> + * plca.c - netlink implementation of plca command
-> + *
-> + * Implementation of "ethtool --show-plca <dev>" and
-> + * "ethtool --set-plca <dev> ..."
-> + */
-> +
-> +#include <errno.h>
-> +#include <string.h>
-> +#include <stdio.h>
-> +
-> +#include "../internal.h"
-> +#include "../common.h"
-> +#include "netlink.h"
-> +#include "bitset.h"
-> +#include "parser.h"
-> +
-> +/* PLCA_GET_CFG */
-[...]
-> +int plca_get_cfg_reply_cb(const struct nlmsghdr *nlhdr, void *data)
-> +{
-> +	const struct nlattr *tb[ETHTOOL_A_PLCA_MAX + 1] =3D {};
-> +	DECLARE_ATTR_TB_INFO(tb);
-> +	struct nl_context *nlctx =3D data;
-> +	bool silent;
-> +	int idv, val;
-> +	int err_ret;
-> +	int ret;
-[...]
-> +		// The node count is ignored by follower nodes. However, it can
-> +		// be pre-set to enable fast coordinator role switchover.
-> +		// Therefore, on a follower node we still wanto to show it,
-> +		// indicating it is not currently used.
-> +		if (tb[ETHTOOL_A_PLCA_NODE_ID] && idv !=3D 0)
-> +			printf(" (ignored)");
+If you stongly against converting mlx5e_ptp_skb_fifo_ts_cqe_resync() to 
+return bool, I can add the check to 'if mlx5e_ptp_ts_cqe_drop()' scope 
+before calling resync(), but it will not remove problems from my second 
+point and I just would like to see explicit 'yes, we agree to have 
+dangerous code in our driver' from you or other maintainers in this case.
 
-The compiler warns that idv may be uninitialized here. While it's in
-wrong, AFAICS, not even gcc13 is smart enough to recognize that it's not
-actually possible so let's initialize the variable to make it happy.
-Also, both idv and val are used to store unsigned values so they should
-be unsigned int.
+>> +    if (mlx5e_ptp_ts_cqe_drop(ptpsq, skb_cc, skb_id) &&
+>> +        !mlx5e_ptp_skb_fifo_ts_cqe_resync(ptpsq, skb_cc, skb_id, 
+>> budget)) {
+>> +        goto out;
+>> +    }
+>>
+>>     skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo);
+>>     hwtstamp = mlx5e_cqe_ts_to_ns(sq->ptp_cyc2time, sq->clock, 
+>> get_cqe_ts(cqe));
+>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h 
+>> b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+>> index d5afad368a69..e599b86d94b5 100644
+>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+>> @@ -295,13 +295,15 @@ static inline
+>> void mlx5e_skb_fifo_push(struct mlx5e_skb_fifo *fifo, struct sk_buff 
+>> *skb)
+>> {
+>>     struct sk_buff **skb_item = mlx5e_skb_fifo_get(fifo, (*fifo->pc)++);
+>> -
+> 
+> redundant change.
 
-Other than these, the patch looks good to me. The next branch already
-has the UAPI updates needed for it so patch 1 won't be needed any more
-if you rebase on top of current next.
+yep, will remove this artefact.
 
-Michal
+> 
+>>     *skb_item = skb;
+>> }
+>>
+>> static inline
+>> struct sk_buff *mlx5e_skb_fifo_pop(struct mlx5e_skb_fifo *fifo)
+>> {
+>> +    if (*fifo->pc == *fifo->cc)
+>> +        return NULL;
+>> +
+> 
+> I think this won't be necessary if you check for ooo early on
+> mlx5e_ptp_handle_ts_cqe() like i suggested above.
+> 
+And again the only concern here is that we don't have any checks whether 
+FIFO has anything to pop before actually poping the value. That can 
+easily bring use-after-free in the futuee, especially because the 
+function is not ptp specific and is already used for other fifos. I can 
+add unlikely() for this check if it helps, but I would like to have this 
+check in the code.
 
---x372544no2ki3rmo
-Content-Type: application/pgp-signature; name="signature.asc"
+>>     return *mlx5e_skb_fifo_get(fifo, (*fifo->cc)++);
+>> }
+>>
+>> -- 
+>> 2.30.2
+>>
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmPa2YYACgkQ538sG/LR
-dpXUbggAooNGzjQR1VvHhxPWze0Qd/fvsA04bUEcuN0gKATIWDkyjsZnu0INmZvY
-a65z54vZvBWwrUcu12clo4W2b72RfrYwEgdD2QJdldahVeVaJrn/vKVojauG+ujq
-8Nf3zJVTvFKlb2xdaxAjLuOf9ZmTMNoTLe3W/yEspYlU7MJhT1YT0QlR4E6glY4J
-Mt2xNO6PDRC0SQVqsElQKsP/rgujaxCxCdYyjYpAC8MWglXgBtI8Fo2nXgcMw+SX
-4JhqkfHYl86Xo0UsiRAoYgIs7zSnuonBu190ZHMFBHyvmwJA2xd+v0I+27l37P8o
-wRKJW9tV5k1cp224SljyMxbz3Y7G0Q==
-=T6L7
------END PGP SIGNATURE-----
-
---x372544no2ki3rmo--
