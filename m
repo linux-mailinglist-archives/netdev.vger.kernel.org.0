@@ -2,78 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A0C1686BA6
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 17:28:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B824F686BB6
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 17:30:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230136AbjBAQ2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 11:28:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34518 "EHLO
+        id S229615AbjBAQa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 11:30:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbjBAQ2h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 11:28:37 -0500
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE5B2485AC;
-        Wed,  1 Feb 2023 08:28:16 -0800 (PST)
-Received: from [192.168.0.114] (unknown [46.242.14.200])
-        by mail.ispras.ru (Postfix) with ESMTPSA id C4CFF44C1025;
-        Wed,  1 Feb 2023 16:28:09 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru C4CFF44C1025
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
-        s=default; t=1675268889;
-        bh=FK0lXauUGtjIwdmiDlZV7U/nfmHSC2l1ofgQ3Hw9Rsw=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=Xg7t+Z6jGkOcJiHSaKn/1h3ph05IK6cyO/4C9AtLALvLr/MgY7qldHo1YYIehUfOh
-         xg+4lI6ZC40VpNxCjTyflP2QUQibVF5FpVkzKWrqxR5nuOOuALrF3xJDo73T8QrYPp
-         6noMLVdk0qVgWxr/aPh1ohKdl/rhZNEPrdxNKMAA=
-Subject: Re: [PATCH] net: openvswitch: fix flow memory leak in
- ovs_flow_cmd_new
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     Pravin B Shelar <pshelar@ovn.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, netdev@vger.kernel.org,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        lvc-project@linuxtesting.org
-References: <20230131191939.901288-1-pchelkin@ispras.ru>
- <Y9qI/vBRPlDFwkAh@corigine.com>
-From:   Fedor Pchelkin <pchelkin@ispras.ru>
-Message-ID: <a0be13d0-22d5-b92b-9fed-4faeed30fdce@ispras.ru>
-Date:   Wed, 1 Feb 2023 19:28:09 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        with ESMTP id S229451AbjBAQaZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 11:30:25 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C40B335AD
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 08:30:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 608526187D
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 16:30:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CA59CC433EF;
+        Wed,  1 Feb 2023 16:30:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675269023;
+        bh=4sQ5UVeTOpzuYPyk/FbW6K6vTPbFMGRcSGr04OQluCo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=HLEOEx2nkFGhb+ECMO/kzckN6oUufp2BxARGOqxAUvroEzeN8pvVZSK/UteaBDuWV
+         BF0HeL9PPvQtIYlj/fZjorCQGdwej+sSaD1Rq3Its0nvBMIlgpg6toXd/ntE3ouG48
+         dM4uBB6p0lonxkXKsHsp+VMgr+EvRnfOyFLpduTXMgwIL76qckfr8+BIW75VkxYFUi
+         99t7QnuDoEDjvWmMJSLNH+CIqJV2UyBtKUf3bX37UFoc+7/VmodWJKntVDS0G+VdSn
+         ZERw3+hOGY2U7AuZP4yhOaeEUVBMdxRTSRw06kj/nLdQuorU8AkFfV0lmY5/o/DUrU
+         FHLNUNpFS4yng==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B7AF5E21ED4;
+        Wed,  1 Feb 2023 16:30:23 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <Y9qI/vBRPlDFwkAh@corigine.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [RESEND PATCH ethtool-next v6 0/2] add netlink support for rss get
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167526902374.23236.9492682925665270615.git-patchwork-notify@kernel.org>
+Date:   Wed, 01 Feb 2023 16:30:23 +0000
+References: <20230123212501.1471308-1-sudheer.mogilappagari@intel.com>
+In-Reply-To: <20230123212501.1471308-1-sudheer.mogilappagari@intel.com>
+To:     Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, mkubecek@suse.cz,
+        sridhar.samudrala@intel.com, anthony.l.nguyen@intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/1/23 6:45 PM, Simon Horman wrote:
-> I see this would work by virtue of kfree(key) doing nothing
-> of key is NULL, the error case in question. And that otherwise key is
-> non-NULL if this path is hit.
-> 
-> However, the idiomatic approach to error handling is for the error path
-> to unwind resource allocations in the reverse order that they were made.
-> And for goto labels to control how far to unwind.
-> 
+Hello:
 
-You are right, thanks. Have to keep 'goto' structured, otherwise there
-would be a 'goto' mess.
+This series was applied to ethtool/ethtool.git (master)
+by Michal Kubecek <mkubecek@suse.cz>:
 
-> So I think the following would be more in keeping with the intention of the
-> code. Even if it is a somewhat more verbose change.
+On Mon, 23 Jan 2023 13:24:59 -0800 you wrote:
+> These patches add netlink based handler to fetch RSS information
+> using "ethtool -x <eth> [context %d]" command.
 > 
-> *compile tested only!*
+> Output without --json option
+> $ethtool -x eno2
+> RX flow hash indirection table for eno2 with 8 RX ring(s):
+>     0:      0     0     0     0     0     0     0     0
+>     8:      1     1     1     1     1     1     1     1
+>    ...skip similar lines...
+>   120:      7     7     7     7     7     7     7     7
+> RSS hash key:
+> be:c3:13:a6:59:9a:c3:c5:d8:60:75:2b:4c:b2:12:cc:5c:4e:34:
+> 8a:f9:ab:16:c7:19:5d:ab:1d:b5:c1:c7:57:c7:a2:e1:2b:e3:ea:
+> 02:60:88:8e:96:ef:2d:64:d2:de:2c:16:72:b6
+> RSS hash function:
+>     toeplitz: on
+>     xor: off
+>     crc32: off
+> 
+> [...]
 
-I'll test this on error paths and resend the patch.
+Here is the summary with links:
+  - [RESEND,ethtool-next,v6,1/2] Move code that print rss info into common file
+    https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/commit/?id=d139d369c150
+  - [RESEND,ethtool-next,v6,2/2] netlink: add netlink handler for get rss (-x)
+    (no matching commit)
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
