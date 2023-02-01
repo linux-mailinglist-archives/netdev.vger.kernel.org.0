@@ -2,64 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C32D68661D
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 13:42:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC55868662E
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 13:45:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232048AbjBAMmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 07:42:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53096 "EHLO
+        id S231434AbjBAMpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 07:45:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232034AbjBAMmo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 07:42:44 -0500
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91F9CDCF;
-        Wed,  1 Feb 2023 04:42:41 -0800 (PST)
-Received: from [IPV6:2003:e9:d70f:e348:e684:710d:4017:e1c4] (p200300e9d70fe348e684710d4017e1c4.dip0.t-ipconnect.de [IPv6:2003:e9:d70f:e348:e684:710d:4017:e1c4])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 288D3C03DD;
-        Wed,  1 Feb 2023 13:42:39 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1675255359;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pRZxwZKdvipSSAcGaNJknFkoRTNkO+3gbjfMX5XFILw=;
-        b=ZH4OQT1ONs1IsLzNhV5+ncHo4GH1tzmYk4rvqpi0BV+4/y0ds+Yq57ZVxsICT2PVyxN/+s
-        PUu9SP8t+JEfgBCTEp/FYC731wIdWX9kg246H6uM3jkOmi/whEaZXU4Xo+A3oCj2e9wmn7
-        Cnjs92bMAMoftCjVdYEruvCG9uM7qGrQevdqruLMo7tMpuikrYfHnMK0XrOC1c3mzyUIrn
-        BodVxepofVASjSRigB7jdHFTC3AzvMhcT6O0oYUfOvwlQDQRtiqK26EnRfZ5a0/TmAe2zE
-        qZ3Y45synhLbjcBf2NoHmrzMGg2RgOyBJD86C5aBG5nh+yURpRLcx/AQ9p4j3w==
-Message-ID: <77b78287-a352-85ae-0c3d-c3837be9bf1d@datenfreihafen.org>
-Date:   Wed, 1 Feb 2023 13:42:37 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH] [v2] at86rf230: convert to gpio descriptors
-Content-Language: en-US
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Arnd Bergmann <arnd@kernel.org>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        with ESMTP id S231431AbjBAMpV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 07:45:21 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1814367D4
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 04:45:19 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pNCUB-0007To-8B; Wed, 01 Feb 2023 13:45:11 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pNCU9-00012R-71; Wed, 01 Feb 2023 13:45:09 +0100
+Date:   Wed, 1 Feb 2023 13:45:09 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org
-References: <20230126162323.2986682-1-arnd@kernel.org>
- <CAKdAkRQT_Jk5yBeMZqh=M1JscVLFieZTQjLGOGxy8nHh8SnD3A@mail.gmail.com>
- <CAKdAkRSuDJgdsSQqy9Cc_eUYuOfFsLmBJ8Rd93uQhY6HV8nN4w@mail.gmail.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <CAKdAkRSuDJgdsSQqy9Cc_eUYuOfFsLmBJ8Rd93uQhY6HV8nN4w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Arun.Ramadoss@microchip.com
+Subject: Re: [PATCH net-next v3 15/15] net: fec: add support for PHYs with
+ SmartEEE support
+Message-ID: <20230201124509.GA31030@pengutronix.de>
+References: <20230130080714.139492-1-o.rempel@pengutronix.de>
+ <20230130080714.139492-16-o.rempel@pengutronix.de>
+ <20230131205231.ck3xnziejgtr64ig@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230131205231.ck3xnziejgtr64ig@skbuf>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,54 +62,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dmitry.
-
-On 01.02.23 01:50, Dmitry Torokhov wrote:
-> On Tue, Jan 31, 2023 at 3:52 PM Dmitry Torokhov
-> <dmitry.torokhov@gmail.com> wrote:
->>
->> Hi Arnd,
->>
->> On Thu, Jan 26, 2023 at 8:32 AM Arnd Bergmann <arnd@kernel.org> wrote:
->>>
->>>          /* Reset */
->>> -       if (gpio_is_valid(rstn)) {
->>> +       if (rstn) {
->>>                  udelay(1);
->>> -               gpio_set_value_cansleep(rstn, 0);
->>> +               gpiod_set_value_cansleep(rstn, 0);
->>>                  udelay(1);
->>> -               gpio_set_value_cansleep(rstn, 1);
->>> +               gpiod_set_value_cansleep(rstn, 1);
->>
->> For gpiod conversions, if we are not willing to chase whether existing
->> DTSes specify polarities
->> properly and create workarounds in case they are wrong, we should use
->> gpiod_set_raw_value*()
->> (my preference would be to do the work and not use "raw" variants).
->>
->> In this particular case, arch/arm/boot/dts/vf610-zii-dev-rev-c.dts
->> defines reset line as active low,
->> so you are leaving the device in reset state.
->>
->> Please review your other conversion patches.
+On Tue, Jan 31, 2023 at 10:52:31PM +0200, Vladimir Oltean wrote:
+> On Mon, Jan 30, 2023 at 09:07:14AM +0100, Oleksij Rempel wrote:
+> > Ethernet controller in i.MX6*/i.MX7* series do not provide EEE support.
+> > But this chips are used sometimes in combinations with SmartEEE capable
+> > PHYs.
+> > So, instead of aborting get/set_eee access on MACs without EEE support,
+> > ask PHY if it is able to do the EEE job by using SmartEEE.
+> > 
+> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > ---
+> >  drivers/net/ethernet/freescale/fec_main.c | 22 ++++++++++++++++++----
+> >  1 file changed, 18 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+> > index e6238e53940d..25a2a9d860de 100644
+> > --- a/drivers/net/ethernet/freescale/fec_main.c
+> > +++ b/drivers/net/ethernet/freescale/fec_main.c
+> > @@ -3102,8 +3102,15 @@ fec_enet_get_eee(struct net_device *ndev, struct ethtool_eee *edata)
+> >  	struct fec_enet_private *fep = netdev_priv(ndev);
+> >  	struct ethtool_eee *p = &fep->eee;
+> >  
+> > -	if (!(fep->quirks & FEC_QUIRK_HAS_EEE))
+> > -		return -EOPNOTSUPP;
+> > +	if (!(fep->quirks & FEC_QUIRK_HAS_EEE)) {
+> > +		if (!netif_running(ndev))
+> > +			return -ENETDOWN;
+> > +
+> > +		if (!phy_has_smarteee(ndev->phydev))
+> > +			return -EOPNOTSUPP;
+> > +
+> > +		return phy_ethtool_get_eee(ndev->phydev, edata);
 > 
-> We also can not change the names of requested GPIOs from "reset-gpio"
-> to "rstn-gpios" and expect
-> this to work.
+> I see many places in the fec driver guarding against a NULL
+> ndev->phydev, and TBH I don't completely understand why.
+> I guess it's because ndev->phydev is populated at fec_enet_open() time.
 > 
-> Stefan, please consider reverting this and applying a couple of
-> patches I will send out shortly.
+> But then again, if the netif_running() check is sufficient to imply
+> presence of ndev->phydev as you suggest, then why does fec_enet_ioctl()
+> have this?
+> 
+> 	if (!netif_running(ndev))
+> 		return -EINVAL;
+> 
+> 	if (!phydev)
+> 		return -ENODEV;
+> 
+> Asking because phy_init_eee(), phy_ethtool_set_eee() and
+> phy_ethtool_get_eee() don't support being called with a NULL phydev.
 
-Thanks for having another look at these patches. Do you have the same 
-concern for the convesion patch to cc2520 that has been posted and 
-applied as well?
+Hm..
+phy_start() is protected against NULL phydev and it is used in
+fec_enet_open().
 
-Arnd, if you have any concerns about the revert please speak up soon as 
-I am going to revert your patch and get these patches into my tree later 
-today.
+Right now i do not know what is better way go. Any preferences?
 
-regards
-Stefan Schmidt
-
-
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
