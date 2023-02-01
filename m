@@ -2,114 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17CF9686DF1
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 19:30:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64F22686DD3
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 19:23:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229923AbjBASax (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 13:30:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35906 "EHLO
+        id S229991AbjBASX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 13:23:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230246AbjBASaw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 13:30:52 -0500
-X-Greylist: delayed 424 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 01 Feb 2023 10:30:43 PST
-Received: from ms11p00im-qufo17291901.me.com (ms11p00im-qufo17291901.me.com [17.58.38.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 519E37F6A1
-        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 10:30:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com;
-        s=1a1hai; t=1675275818;
-        bh=61bB8txn8pVEN9RkIQW0FGkMPIouSxnXNYo9QxWnrjQ=;
-        h=From:Content-Type:Mime-Version:Subject:Message-Id:Date:To;
-        b=e8fHH62e49rx51BqlaGdrFJY3usOLWTs5A2jyrUmz7myrXVszUxQAjdkx0yUeeoun
-         gHL7S1gfo3rbu7ZgLfFZw29Ztab8XI3wU1NwZZgpgOq2pW00JgZyqKI2NcTGB+hGT7
-         CT4Itraaav7f7idD/YJoPoGtQo8lyAxclT3PUTZlY8GeDG1YSQKBjIS64K/6jFE1XP
-         Yx8HE5GA4vkNpzvtsktPIKJNCGmz8+SGZDWre06H6tDrPkrZCYMymlHlPevd64BRJk
-         4+dxolFueXhrL1TLuSGslKHDy0aBQ0QzXh0NPbAr0SPsodyqLZR/KsMwN4duSfbZUy
-         Rtqez6M5/lzFw==
-Received: from smtpclient.apple (ms11p00im-dlb-asmtpmailmevip.me.com [17.57.154.19])
-        by ms11p00im-qufo17291901.me.com (Postfix) with ESMTPSA id 6CC5DBC09B6;
-        Wed,  1 Feb 2023 18:23:37 +0000 (UTC)
-From:   Christoph Paasch <christophpaasch@icloud.com>
-Content-Type: text/plain;
-        charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.500.161\))
-Subject: WARNING in sk_stream_kill_queues due to inet6_destroy_sock()-changes
-Message-Id: <39725AB4-88F1-41B3-B07F-949C5CAEFF4F@icloud.com>
-Date:   Wed, 1 Feb 2023 10:22:42 -0800
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Matthieu Baerts <notifications@github.com>,
-        netdev <netdev@vger.kernel.org>
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-X-Mailer: Apple Mail (2.3731.500.161)
-X-Proofpoint-ORIG-GUID: 9-Usv4rqi_Ghdj590i9PlIex2bPm-erO
-X-Proofpoint-GUID: 9-Usv4rqi_Ghdj590i9PlIex2bPm-erO
-X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
- =?UTF-8?Q?2903e8d5c8f:6.0.138,18.0.572,17.0.605.474.0000000_definitions?=
- =?UTF-8?Q?=3D2020-02-14=5F11:2020-02-14=5F02,2020-02-14=5F11,2020-01-23?=
- =?UTF-8?Q?=5F02_signatures=3D0?=
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxscore=0 phishscore=0
- adultscore=0 mlxlogscore=843 clxscore=1011 suspectscore=0 spamscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2302010158
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229566AbjBASX2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 13:23:28 -0500
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B77277CC92
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 10:23:27 -0800 (PST)
+Received: by mail-oi1-x234.google.com with SMTP id bj22so7378449oib.11
+        for <netdev@vger.kernel.org>; Wed, 01 Feb 2023 10:23:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ihU85W+Zd6aMHeXdhykYTrwhHFem52+nt0sDgSuV9Hg=;
+        b=dt5mB2xJ1htBPMprJ/16I3Fe5aWGMbz7tTewXTpj4OCm1+MmJrr2JD497TquKNoMHN
+         92VYPyTmoz7ijxfqN0cULy1dV/30HX2L9c1nWScYyE2bkLfxzzmy8jWfYbNVXnableIV
+         f5E34NhScJoGlkDmOfyGYJiOhvNxcMXaBjn1/c/l5WQy9dj94QYEZtKbd0qxHddtuVZf
+         haE64Faj07HkyTbrTorbqrajIQUr/PVNM+zf1JDpCmLfonZt5kfIzUb/sDkjHo/2RLOe
+         DeTNf3ykV3toKmxQWbyKjuZmX+2MK/PlKbsYwxuqFFBdcK0UbFWg9wa8HEBEwcC91mR5
+         BPOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ihU85W+Zd6aMHeXdhykYTrwhHFem52+nt0sDgSuV9Hg=;
+        b=HbXkM1h8nj2LOcWrF+e/tXKqZLd6lvbjmhOhJYMOpBmyKJ0AAXxQV7HO+/TunAL5rx
+         pD8Id266IwM2Y9S2Cm7JdBoZyLRObGXzmIx97tiwuOlgDrTQKSfbLm2ktaZgMhpYEZDG
+         W+MfsAE/0BgbwUv8NUYUZHLiL4GbeRPGNEvlOGFMMAZFN1zpo88Yxb9rD0ytld8Akumv
+         Di7GhQmqE0xNms55rgPXpVUvREskK0tU5VANT7gf7JpKOm7OPanjYwL/7yuWMeirz2YI
+         b1ZFOHBeSANJlvIeAE7aDAyy1n9GElFVX7JpOlNAd78cPoP0VF/4CO1We4q2uSQ8HgV0
+         rTnw==
+X-Gm-Message-State: AO0yUKVAi6uBsj1mwYiFL4id0xzSdO4upeL+RYBU0kk9xIvtXAbLcl65
+        8AFow/E9i3DHGdQ535+CdW0=
+X-Google-Smtp-Source: AK7set840+JhIUuXC2zC+2ll0AjnRekkaSr9FuLTDJ9UdkiXRPMwgwPQadmSWf/InUVOCDG5VVZPXA==
+X-Received: by 2002:a54:438f:0:b0:367:6c7:ba98 with SMTP id u15-20020a54438f000000b0036706c7ba98mr1359647oiv.23.1675275806930;
+        Wed, 01 Feb 2023 10:23:26 -0800 (PST)
+Received: from t14s.localdomain ([2001:1284:f013:4d4c:275c:ceaf:8c2a:93ca])
+        by smtp.gmail.com with ESMTPSA id f8-20020a05680814c800b003785a948b27sm3319580oiw.16.2023.02.01.10.23.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Feb 2023 10:23:26 -0800 (PST)
+Received: by t14s.localdomain (Postfix, from userid 1000)
+        id 83C104B6E09; Wed,  1 Feb 2023 15:23:24 -0300 (-03)
+Date:   Wed, 1 Feb 2023 15:23:24 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, nhorman@tuxdriver.com,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Xin Long <lucien.xin@gmail.com>
+Subject: Re: [PATCH net 4/4] MAINTAINERS: update SCTP maintainers
+Message-ID: <Y9quHA87DkE7iXAu@t14s.localdomain>
+References: <20230201182014.2362044-1-kuba@kernel.org>
+ <20230201182014.2362044-5-kuba@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230201182014.2362044-5-kuba@kernel.org>
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLY,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Feb 01, 2023 at 10:20:14AM -0800, Jakub Kicinski wrote:
+> Vlad has stepped away from SCTP related duties.
+> Move him to CREDITS and add Xin Long.
 
-I am running a syzkaller instance and hit an issue where =
-sk_forward_alloc is not 0 in sk_stream_kill_queues().
+Thanks Xin for accepting it.
 
-I bisected this issue down to the set of changes from the "inet6: Remove =
-inet6_destroy_sock() calls=E2=80=9D-series (see below for the commit =
-hashes).
+> 
+> Subsystem SCTP PROTOCOL
+>   Changes 237 / 629 (37%)
+>   Last activity: 2022-12-12
+>   Vlad Yasevich <vyasevich@gmail.com>:
+>   Neil Horman <nhorman@tuxdriver.com>:
+>     Author 20a785aa52c8 2020-05-19 00:00:00 4
+>     Tags 20a785aa52c8 2020-05-19 00:00:00 84
+>   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>:
+>     Author 557fb5862c92 2021-07-28 00:00:00 41
+>     Tags da05cecc4939 2022-12-12 00:00:00 197
+>   Top reviewers:
+>     [15]: lucien.xin@gmail.com
+>   INACTIVE MAINTAINER Vlad Yasevich <vyasevich@gmail.com>
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-The reproducer is:
-Reproducer:
-# {Threaded:false Repeat:false RepeatTimes:0 Procs:1 Slowdown:1 Sandbox: =
-SandboxArg:0 Leak:false NetInjection:false NetDevices:false =
-NetReset:false Cgroups:false BinfmtMisc:false CloseFDs:false KCSAN:false =
-DevlinkPCI:false NicVF:false USB:false VhciInjection:false Wifi:false =
-IEEE802154:false Sysctl:false UseTmpDir:false HandleSegv:false =
-Repro:false Trace:false LegacyOptions:{Collide:false Fault:false =
-FaultCall:0 FaultNth:0}}
-r0 =3D socket$inet6_tcp(0xa, 0x1, 0x0)
-bind$inet6(r0, &(0x7f00000002c0)=3D{0xa, 0x4e22, 0x0, @loopback}, 0x1c)
-setsockopt$inet6_IPV6_HOPOPTS(r0, 0x29, 0x36, &(0x7f0000000080), 0x8)
-setsockopt$inet6_int(r0, 0x29, 0x35, &(0x7f0000000040)=3D0x8, 0x4)
-sendmsg$inet6(r0, &(0x7f00000003c0)=3D{&(0x7f0000000000)=3D{0xa, 0x4e22, =
-0x0, @loopback}, 0x1c, 0x0}, 0x200880c0)
-
-What ends up happening is that np->pktoptions is not emptied thus the =
-skb=E2=80=99s that have been added there are still accounted in =
-sk_forward_alloc.
-
-
-I=E2=80=99m not sure what would be the best way to fix this, besides a =
-plain revert of this patchset as sk_stream_kill_queues() does rely on =
-the things to have been free=E2=80=99d.
-
-
-More information on the syzkaller issue can be found at =
-https://github.com/multipath-tcp/mptcp_net-next/issues/341.
-
-
-Cheers,
-Christoph
-
-
-b45a337f061e ("inet6: Clean up failure path in do_ipv6_setsockopt().")  =
-(3 months ago) <Kuniyuki Iwashima>
-1f8c4eeb9455 ("inet6: Remove inet6_destroy_sock().")  (3 months ago) =
-<Kuniyuki Iwashima>
-6431b0f6ff16 ("sctp: Call inet6_destroy_sock() via sk->sk_destruct().")  =
-(3 months ago) <Kuniyuki Iwashima>
-1651951ebea5 ("dccp: Call inet6_destroy_sock() via sk->sk_destruct().")  =
-(3 months ago) <Kuniyuki Iwashima>
-b5fc29233d28 ("inet6: Remove inet6_destroy_sock() in =
-sk->sk_prot->destroy().")  (3 months ago) <Kuniyuki Iwashima>=
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
