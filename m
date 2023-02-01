@@ -2,121 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25FA668618E
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 09:23:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 080E26861BE
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 09:33:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231918AbjBAIXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 03:23:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38356 "EHLO
+        id S231576AbjBAIdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 03:33:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230266AbjBAIXY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 03:23:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 287CC5D132
-        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 00:23:23 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82377616EF
-        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 08:23:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AF40C433D2;
-        Wed,  1 Feb 2023 08:23:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675239802;
-        bh=XV+Zu3jDEW9EZhFPMj71z1hFPGnuEG1NkA1g8JyiObk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SKZFG3Gp+RJsaXKBQ9I1wQBfHFH/c6oMEQOzee1VjWePf0qv9+s9MKh7RNGbyu9PA
-         wXY3vsZ8dFGYt+xnlebTOdNAlFZGQ4DBYkyo061Yrmfp03yhfu65PkMF3uppvyGfiL
-         ecY6IZHH+fFMZwkuZAw90p2XThC0YncxD3O2u9wHwvfj5QhMN9Qw9IySnq8f1Sm0W2
-         2/Suq4V11fXD0/5icVc9B0ineKQn6RqwH6PnikIbEDoDyMgfdWvfoW3jpyFhGaMAIE
-         X+qaPr8EKZwMIL450065iyrugmpcjIiIcXGtjo2aDEWuYhJd4ySsqKp3/O8lTFLRSS
-         o1dV6AhbidHWg==
-Date:   Wed, 1 Feb 2023 10:23:17 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Bjorn Helgaas <bhelgaas@google.com>
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 0/8][pull request] Intel Wired LAN: Remove
- redundant Device Control Error Reporting Enable
-Message-ID: <Y9ohdVec3y9lu48e@unreal>
-References: <20230130192519.686446-1-anthony.l.nguyen@intel.com>
- <Y9jQpjLPkRR/emeH@unreal>
- <CAErSpo64=miv7++wUhHKx=mnN1Rmh3u+cTaPxngbj4nd=9spjQ@mail.gmail.com>
+        with ESMTP id S230043AbjBAIdl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 03:33:41 -0500
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16175E5;
+        Wed,  1 Feb 2023 00:33:39 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 28DFB24000D;
+        Wed,  1 Feb 2023 08:33:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1675240418;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+TwIBzQlTlsvHwX2axmKcqN48NoRvr8/6w8iELtG+Mw=;
+        b=IPDX1/NGSdhPXvVTU9NKWXtDwTssz6XefD6k1CtYtFBBOecmkfZZElk9PZDWUv9+oiWx6P
+        HVE5Hj+UyUoK/LEXWu0rrbX4HcDC2bshcEK31ksWpmMFAs8jHR0XmyryjxRIuTsm8h7Val
+        ANOxbia9MkqfZrFp59CT1newgvmqWcOQLGoUImh1v7WeVgC446/SLejA5LuHi5QFyErv+s
+        w64zCMfZj5fB/oY+3NJ4bXyPf73CZ1CUOQlraOx62qFIcyKF5eUNRl81SfsHGyCydg6Ldt
+        dlLVCc7hQcjLHVPLB7j3ucW+tBAqTO/cbUNRo560pog8cdUPOStQmXN9NTAW4Q==
+Date:   Wed, 1 Feb 2023 09:33:32 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Arnd Bergmann <arnd@kernel.org>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-wpan@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] [v2] at86rf230: convert to gpio descriptors
+Message-ID: <20230201093332.15b0ff9a@xps-13>
+In-Reply-To: <CAKdAkRSuDJgdsSQqy9Cc_eUYuOfFsLmBJ8Rd93uQhY6HV8nN4w@mail.gmail.com>
+References: <20230126162323.2986682-1-arnd@kernel.org>
+        <CAKdAkRQT_Jk5yBeMZqh=M1JscVLFieZTQjLGOGxy8nHh8SnD3A@mail.gmail.com>
+        <CAKdAkRSuDJgdsSQqy9Cc_eUYuOfFsLmBJ8Rd93uQhY6HV8nN4w@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAErSpo64=miv7++wUhHKx=mnN1Rmh3u+cTaPxngbj4nd=9spjQ@mail.gmail.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 12:05:37PM -0600, Bjorn Helgaas wrote:
-> On Tue, Jan 31, 2023 at 2:26 AM Leon Romanovsky <leon@kernel.org> wrote:
-> >
-> > On Mon, Jan 30, 2023 at 11:25:11AM -0800, Tony Nguyen wrote:
-> > > Bjorn Helgaas says:
-> > >
-> > > Since f26e58bf6f54 ("PCI/AER: Enable error reporting when AER is native"),
-> > > the PCI core sets the Device Control bits that enable error reporting for
-> > > PCIe devices.
-> > >
-> > > This series removes redundant calls to pci_enable_pcie_error_reporting()
-> > > that do the same thing from several NIC drivers.
-> > >
-> > > There are several more drivers where this should be removed; I started with
-> > > just the Intel drivers here.
-> > > ---
-> > > TN: Removed mention of AER driver as this was taken through PCI tree [1]
-> > > and fixed a typo.
-> > >
-> > > [1] https://lore.kernel.org/all/20230126231527.GA1322015@bhelgaas/
-> > >
-> > > The following are changes since commit 90e8ca0abb05ada6c1e2710eaa21688dafca26f2:
-> > >   Merge branch 'devlink-next'
-> > > and are available in the git repository at:
-> > >   git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 10GbE
-> > >
-> > > Bjorn Helgaas (8):
-> > >   e1000e: Remove redundant pci_enable_pcie_error_reporting()
-> > >   fm10k: Remove redundant pci_enable_pcie_error_reporting()
-> > >   i40e: Remove redundant pci_enable_pcie_error_reporting()
-> > >   iavf: Remove redundant pci_enable_pcie_error_reporting()
-> > >   ice: Remove redundant pci_enable_pcie_error_reporting()
-> > >   igb: Remove redundant pci_enable_pcie_error_reporting()
-> > >   igc: Remove redundant pci_enable_pcie_error_reporting()
-> > >   ixgbe: Remove redundant pci_enable_pcie_error_reporting()
-> > >
-> > >  drivers/net/ethernet/intel/e1000e/netdev.c    | 7 -------
-> > >  drivers/net/ethernet/intel/fm10k/fm10k_pci.c  | 5 -----
-> > >  drivers/net/ethernet/intel/i40e/i40e_main.c   | 4 ----
-> > >  drivers/net/ethernet/intel/iavf/iavf_main.c   | 5 -----
-> > >  drivers/net/ethernet/intel/ice/ice_main.c     | 3 ---
-> > >  drivers/net/ethernet/intel/igb/igb_main.c     | 5 -----
-> > >  drivers/net/ethernet/intel/igc/igc_main.c     | 5 -----
-> > >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 5 -----
-> > >  8 files changed, 39 deletions(-)
-> >
-> > I see that you didn't touch any other places except drivers/net/ethernet/intel/.
-> > Are you planning to remove other occurrences too?
-> >
-> > ➜  kernel git:(rdma-next) git grep pci_enable_pcie_error_reporting -- drivers/infiniband/
-> > drivers/infiniband/hw/hfi1/pcie.c:      (void)pci_enable_pcie_error_reporting(pdev);
-> > drivers/infiniband/hw/qib/qib_pcie.c:   ret = pci_enable_pcie_error_reporting(pdev);
-> 
-> Yes, definitely, I just haven't had a chance yet.  Some of the others
-> are a little more complicated than the simple removals for the Intel
-> drivers.
+Hi Dmitry,
 
-Great, I'll wait for your patch :)
+dmitry.torokhov@gmail.com wrote on Tue, 31 Jan 2023 16:50:07 -0800:
 
-Thanks.
+> On Tue, Jan 31, 2023 at 3:52 PM Dmitry Torokhov
+> <dmitry.torokhov@gmail.com> wrote:
+> >
+> > Hi Arnd,
+> >
+> > On Thu, Jan 26, 2023 at 8:32 AM Arnd Bergmann <arnd@kernel.org> wrote: =
+=20
+> > >
+> > >         /* Reset */
+> > > -       if (gpio_is_valid(rstn)) {
+> > > +       if (rstn) {
+> > >                 udelay(1);
+> > > -               gpio_set_value_cansleep(rstn, 0);
+> > > +               gpiod_set_value_cansleep(rstn, 0);
+> > >                 udelay(1);
+> > > -               gpio_set_value_cansleep(rstn, 1);
+> > > +               gpiod_set_value_cansleep(rstn, 1); =20
+> >
+> > For gpiod conversions, if we are not willing to chase whether existing
+> > DTSes specify polarities
+> > properly and create workarounds in case they are wrong, we should use
+> > gpiod_set_raw_value*()
+> > (my preference would be to do the work and not use "raw" variants).
+> >
+> > In this particular case, arch/arm/boot/dts/vf610-zii-dev-rev-c.dts
+> > defines reset line as active low,
+> > so you are leaving the device in reset state.
 
-> 
-> Bjorn
+You mean the semantics of gpio_set_value() gpiod_set_value() are
+different? Looking at your patch it looks like gpio_set_value() asserts
+a physical line state (high or low) while gpiod_set_value() would
+actually try to assert a logical state (enabled or disabled) with the
+meaning of those being possibly inverted thanks to the DT polarities.
+Am I getting this right?
+
+> > Please review your other conversion patches. =20
+>=20
+> We also can not change the names of requested GPIOs from "reset-gpio"
+> to "rstn-gpios" and expect
+> this to work.
+
+Yep, missed that indeed.
+
+>=20
+> Stefan, please consider reverting this and applying a couple of
+> patches I will send out shortly.
+
+If my above understanding is right, then, yeah, the current
+patches need to be fixed.
+
+Thanks,
+Miqu=C3=A8l
