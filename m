@@ -2,75 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 539AA685C5F
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 01:46:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0239685C6F
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 01:50:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229907AbjBAAqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 19:46:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41726 "EHLO
+        id S231300AbjBAAuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 19:50:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbjBAAqw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 19:46:52 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FBC74F87F;
-        Tue, 31 Jan 2023 16:46:51 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id e8-20020a17090a9a8800b0022c387f0f93so389645pjp.3;
-        Tue, 31 Jan 2023 16:46:51 -0800 (PST)
+        with ESMTP id S229613AbjBAAuX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 19:50:23 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03659125A3;
+        Tue, 31 Jan 2023 16:50:22 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id bk15so46764787ejb.9;
+        Tue, 31 Jan 2023 16:50:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=UN7olhjD9kAre4Oo48B311JGsl1nRIFV7M9eKOSjTso=;
-        b=jO6ocSB+zEj2sIbMLJIDCHh681sd7m5xLLrY16fy8HDr+wv1ZgkkYDk7kH3XAqqQgL
-         uT2eghsdb8kSRw0N9Cc1S7vbsEqa/9pWEKTTXmWhGpUjOUm+gayE8BlpHJQfPY0nzhDm
-         p15nuhiR6E+CcMKxLTXT9tmNxwCxm2x1M/o75dRyNyf+NTVQ40DNci8uWmBwNBmu61Cs
-         B6GL6lp2XDkDxAfhkezDXU/vGJPyE2cavJvud4H3Ev7nBNJpEd5YbuE+WD2/T3VRulse
-         vCh6HqM1BPFiSuIsCHyqtuEqlQdkd3gG5QB2wyod6ckKvcfgsea0srCG/GMnhekEdYpN
-         ic8Q==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=14Rz9IsCEo6lrI4LScZe0yDYpkBPJjzhIJ93HjF95ds=;
+        b=SU9a656eCx8kjuXWl96KuMwptfpNjgImHGqWLpPbShy0obUH7AvXYddMYGhYJMTigA
+         q/kaVok0qgP5QeSm6UPJKr+PwZb8L4DyKKcUU2fkacw9bPcb9JuwlpdNtQW0T0185zCT
+         VhH0KPBg1B8y8656SffYsYm6D8y+/kmH9DVZKroN1Ty/BqFSD35DrvZtF9qHHogzrKbk
+         reFnZnh/wbYXXP9febcx7Y+cSFH9q7loj2VhBHLqnnZqGihQJNNUb/SB7CfqxaRx282v
+         6JiIRUJ7oU3u2H8cqkb/aYnh1t8KF62uADD9qZ2eqvxPCttS7gdl18LO5RwOdtEHhmw3
+         EFaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UN7olhjD9kAre4Oo48B311JGsl1nRIFV7M9eKOSjTso=;
-        b=3uHdUo3C4Jk9cWTEr9fMlZv62VoDL8ueaph2j4o1KcuowQb591KHXcJSIanJqID5Da
-         FQ6Ie67lEpbctPUY+o9zBq9zXpnik5Uj4NGdM9IMquIySViPUwbsluAL1l6sbjGSLZsQ
-         bD0uilXF9z2tmDDZy4QnJwDV3sKYWktbBuFx9vmpicEs5/yrz6sBlHmQWd993JeKrjd1
-         gDdrwW25R9bZBanc/x4n8GOIvS3v67BKlziWEJTAOERVIlGSs6B/pMmmnRX0tB3lwxxR
-         Qie1MbtrUf7Yvu0s6iyhzMMQXvco6zTiNlc0urc7LCPbD2k6T9GW1jYv2SJd30x6Hl/n
-         4aaA==
-X-Gm-Message-State: AO0yUKVCf3Buw50Bsn56lYXmKs/LxyZLw9uWbWyHrhqEezmKdRaGhr0S
-        0qBlIjtUb0XhHP8NouHD5sgc4q1Ghjo=
-X-Google-Smtp-Source: AK7set+5Jb1qZ5b8gzsJa2tS5gewQ6UPja3Rh6GQWetSSuEF6woYiSHdzCRw4OHy7LgzVEu4cWRarg==
-X-Received: by 2002:a17:902:e801:b0:196:89ba:349 with SMTP id u1-20020a170902e80100b0019689ba0349mr995842plg.64.1675212410709;
-        Tue, 31 Jan 2023 16:46:50 -0800 (PST)
-Received: from macbook-pro-6.dhcp.thefacebook.com ([2620:10d:c090:400::5:a530])
-        by smtp.gmail.com with ESMTPSA id f11-20020a170902ce8b00b00172cb8b97a8sm10426073plg.5.2023.01.31.16.46.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Jan 2023 16:46:50 -0800 (PST)
-Date:   Tue, 31 Jan 2023 16:46:47 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Joanne Koong <joannelkoong@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        daniel@iogearbox.net, andrii@kernel.org, martin.lau@kernel.org,
-        ast@kernel.org, netdev@vger.kernel.org, memxor@gmail.com,
-        kernel-team@fb.com, bpf@vger.kernel.org
-Subject: Re: [PATCH v9 bpf-next 3/5] bpf: Add skb dynptrs
-Message-ID: <20230201004647.jyesy2dqqx2a7ytb@macbook-pro-6.dhcp.thefacebook.com>
-References: <20230127191703.3864860-1-joannelkoong@gmail.com>
- <20230127191703.3864860-4-joannelkoong@gmail.com>
- <5715ea83-c4aa-c884-ab95-3d5e630cad05@linux.dev>
- <20230130223141.r24nlg2jp5byvuph@macbook-pro-6.dhcp.thefacebook.com>
- <CAEf4Bzb9=q9TKutW8d7fOtCWaLpA12yvSh-BhL=m3+RA1_xhOQ@mail.gmail.com>
- <4b7b09b5-fd23-2447-7f05-5f903288625f@linux.dev>
- <CAEf4BzaQJe+UZxECg__Aga+YKrxK9KEbAuwdxA4ZBz1bQCEmSA@mail.gmail.com>
- <20230131053042.h7wp3w2zq46swfmk@macbook-pro-6.dhcp.thefacebook.com>
- <CAJnrk1bF+g_2SQ8HaNx0Fb+E42HBi3XJa3M=+y71=XHN1_wdrg@mail.gmail.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=14Rz9IsCEo6lrI4LScZe0yDYpkBPJjzhIJ93HjF95ds=;
+        b=bH1ZOuZAZ5Heglf8Fo8Xn/OxQDLD6pYG9FOziT9nrxW37ccFGxiLoyVnmAn6L4zNrx
+         QQpp/dwC2kLpa/BGBwylOVrA19GLNhnOAchJe/kxCuvSeI5shR/FzfqC2q32597z48lx
+         iYrEc8yXxl4LrxMafXBrZORumU5y4O6aygLKK1y8aSX5iQklXXq7NIGEzWyi9Pix6+bq
+         aTelK/DlleZpNh5OWsa7bKtQmPdBNJ15XjxIXEQBo/Gc/fgHde6iI7DCLFwDbxAji22F
+         g+PWZMhp4qetllpQWAh793FPHpSOh/YZxNU8ZOilkHMMDoJuqNWO7Q831T/z8DLQWJDT
+         574A==
+X-Gm-Message-State: AO0yUKX/6mSsoR7NYPId0A8yH8V/IkBLDmw1BVedDr6sdMEAbGcw7k7s
+        rJSykLIPgRoEwFU4cD/XtQfDHB6u/18JegVd1r8=
+X-Google-Smtp-Source: AK7set+iUvTF3Kdsy7EXm5jI2HjyrWe3w7eLfqf2U1oyWlSnAV6M6aU77qS+7+am4ZW5UHYryom+uxtgJ8A6wCx2PpU=
+X-Received: by 2002:a17:906:139b:b0:88c:1d3d:6fab with SMTP id
+ f27-20020a170906139b00b0088c1d3d6fabmr91900ejc.299.1675212620101; Tue, 31 Jan
+ 2023 16:50:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJnrk1bF+g_2SQ8HaNx0Fb+E42HBi3XJa3M=+y71=XHN1_wdrg@mail.gmail.com>
+References: <20230126162323.2986682-1-arnd@kernel.org> <CAKdAkRQT_Jk5yBeMZqh=M1JscVLFieZTQjLGOGxy8nHh8SnD3A@mail.gmail.com>
+In-Reply-To: <CAKdAkRQT_Jk5yBeMZqh=M1JscVLFieZTQjLGOGxy8nHh8SnD3A@mail.gmail.com>
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Date:   Tue, 31 Jan 2023 16:50:07 -0800
+Message-ID: <CAKdAkRSuDJgdsSQqy9Cc_eUYuOfFsLmBJ8Rd93uQhY6HV8nN4w@mail.gmail.com>
+Subject: Re: [PATCH] [v2] at86rf230: convert to gpio descriptors
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-wpan@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -81,45 +74,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 03:17:08PM -0800, Joanne Koong wrote:
+On Tue, Jan 31, 2023 at 3:52 PM Dmitry Torokhov
+<dmitry.torokhov@gmail.com> wrote:
+>
+> Hi Arnd,
+>
+> On Thu, Jan 26, 2023 at 8:32 AM Arnd Bergmann <arnd@kernel.org> wrote:
 > >
-> > It's not clear how to deal with BPF_F_RECOMPUTE_CSUM though.
-> > Expose __skb_postpull_rcsum/__skb_postpush_rcsum as kfuncs?
-> > But that defeats Andrii's goal to use dynptr as a generic wrapper.
-> > skb is quite special.
-> 
-> If it's the common case that skbs use the same flag across writes in
-> their bpf prog, then we can have bpf_dynptr_from_skb take in
-> BPF_F_RECOMPUTE_CSUM/BPF_F_INVALIDATE_HASH in its flags arg and then
-> always apply this when the skb does a write to packet data.
+> >         /* Reset */
+> > -       if (gpio_is_valid(rstn)) {
+> > +       if (rstn) {
+> >                 udelay(1);
+> > -               gpio_set_value_cansleep(rstn, 0);
+> > +               gpiod_set_value_cansleep(rstn, 0);
+> >                 udelay(1);
+> > -               gpio_set_value_cansleep(rstn, 1);
+> > +               gpiod_set_value_cansleep(rstn, 1);
+>
+> For gpiod conversions, if we are not willing to chase whether existing
+> DTSes specify polarities
+> properly and create workarounds in case they are wrong, we should use
+> gpiod_set_raw_value*()
+> (my preference would be to do the work and not use "raw" variants).
+>
+> In this particular case, arch/arm/boot/dts/vf610-zii-dev-rev-c.dts
+> defines reset line as active low,
+> so you are leaving the device in reset state.
+>
+> Please review your other conversion patches.
 
-Remembering these flags at creation of dynptr is an interesting idea,
-but it doesn't help with direct write into ptr returned from bpf_dynptr_slice.
-The __skb_postpull_rcsum needs to be done before the write and
-__skb_postpush_rcsum after the write.
+We also can not change the names of requested GPIOs from "reset-gpio"
+to "rstn-gpios" and expect
+this to work.
 
-> >
-> > Maybe something like:
-> > void *bpf_dynptr_slice(const struct bpf_dynptr *ptr, u32 offset, u32 len,
-> >                        void *buffer, u32 buffer__sz)
-> > {
-> >   if (skb_cloned()) {
-> >     skb_copy_bits(skb, offset, buffer, len);
-> >     return buffer;
-> >   }
-> >   return skb_header_pointer(...);
-> > }
-> >
-> > When prog is just parsing the packet it doesn't need to finalize with bpf_dynptr_write.
-> > The prog can always write into the pointer followed by if (p == buf) bpf_dynptr_write.
-> > No need for rdonly flag, but extra copy is there in case of cloned which
-> > could have been avoided with extra rd_only flag.
-> 
-> We're able to track in the verifier whether the slice gets written to
-> or not, so if it does get written to in the skb case, can't we just
-> add in a call to bpf_try_make_writable() as a post-processing fixup
-> that gets called before bpf_dynptr_slice? Then bpf_dynptr_slice() can
-> just return a directly writable ptr and avoid the extra memcpy
+Stefan, please consider reverting this and applying a couple of
+patches I will send out shortly.
 
-It's doable, but bpf_try_make_writable can fail and it's much slower than memcpy.
-I'm not sure what you're optimizing here.
+Thanks.
+
+-- 
+Dmitry
