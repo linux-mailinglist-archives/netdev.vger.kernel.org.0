@@ -2,102 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8270686DE4
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 19:26:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CEC5686DD7
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 19:25:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231996AbjBAS0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 13:26:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60880 "EHLO
+        id S231903AbjBASZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 13:25:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229770AbjBAS02 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 13:26:28 -0500
-Received: from dilbert.mork.no (dilbert.mork.no [IPv6:2a01:4f9:c010:a439::d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D907EFE1;
-        Wed,  1 Feb 2023 10:26:27 -0800 (PST)
-Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9a:3200:0:0:0:1])
-        (authenticated bits=0)
-        by dilbert.mork.no (8.15.2/8.15.2) with ESMTPSA id 311INgu6648787
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Wed, 1 Feb 2023 18:23:44 GMT
-Received: from canardo.dyn.mork.no (ip6-localhost [IPv6:0:0:0:0:0:0:0:1])
-        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPS id 311INbfD943502
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Wed, 1 Feb 2023 19:23:37 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1675275817; bh=Glgu/yk2U5EWQt75/QlM/u6TaWcg4FLsGoFLNc2dM8Q=;
-        h=From:To:Cc:Subject:Date:Message-Id:References:From;
-        b=Sph/y2KGFxMJYIQWs6QVFiaaGAQ0wWLhhp7LicCpUJjrfeqIDd+XJzvb2qVKxJ9Mr
-         GoKVwYDVvwbsoYHHw9BL0JEaEW+RJgTIhs1MXveqrhAqMZCzV5y67pbnRjj9vZtam4
-         tOWyevD+aLFExf/dfkE03aa4AFfKGglM9hQe1V4M=
-Received: (from bjorn@localhost)
-        by canardo.dyn.mork.no (8.15.2/8.15.2/Submit) id 311INbas943501;
-        Wed, 1 Feb 2023 19:23:37 +0100
-From:   =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
-To:     netdev@vger.kernel.org
-Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Alexander Couzens <lynxis@fe80.eu>,
-        Simon Horman <simon.horman@corigine.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229608AbjBASZA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 13:25:00 -0500
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBC237CC92;
+        Wed,  1 Feb 2023 10:24:59 -0800 (PST)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 32BA732009B8;
+        Wed,  1 Feb 2023 13:24:57 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Wed, 01 Feb 2023 13:24:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1675275896; x=1675362296; bh=rdu/cSdrf95lHEkaUXGHj3bo8fqo
+        VL5yH9BapQUMiuo=; b=CV7kgIE3AZZdHao+BNdk6vds8PWdGb3GcGOmZzU7IXG4
+        MRbrZZesw1p98Ub/ppz8lTBdsxADyPJkU3A9oOBRlmSLnUYYEfawHosLNeGs3Vvt
+        j4B92h9sAxP7TiHk+PTutosjwxnvfNEOmHLThojboAcyjXR/PMp5gTv4n/HbF2Jq
+        ixgm+8poal0ku5r9xnqFLtZFDEMxMCzHVsTJLmrqmPPxnaVCL3WJr5Drpsqo6ysq
+        VoAI/Zc8yXnKhBAWv+FKOW+a7rYlchL/I4Hq6+0/599vXq6rlD7ez8PQAsW/9nQZ
+        qo0Sx2oLBor+Jo8j9S37B16eohf7/INduBpNSUOUXQ==
+X-ME-Sender: <xms:d67aYy4qxwFGX87O-G2B7M5zxfNZ74Y9mtMbxo8516e9D8bhKTKFzQ>
+    <xme:d67aY75lEMCPrxc4H9pul-2v-J1jgKXwNmZZXLgBjL380mj4lQ3INXR-fJtD_gBjc
+    aqayBisF96gOgI>
+X-ME-Received: <xmr:d67aYxde7AhmFYf5geMb6OVzl7TZpePk5m93x3K5Karc8BF_O6hFyvRjtMlSh9bC0gMvlifcnI-6pA7b1CCjIPnZnTU>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudefiedguddufecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkugho
+    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
+    htthgvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeej
+    geeghfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:d67aY_IlRB3S5TvZlz0o0JCqGYk-kekSFXHC1k4gLs57JEDGrwOmHA>
+    <xmx:d67aY2JYd8Oqu_8vARdEyvRdvd2bj94vUMckvqhcmT51VKOrxJJe9w>
+    <xmx:d67aYwxKd2oRs3vn-UItsemryABabt3_l0YJN5FmVULsC7yP393h_w>
+    <xmx:eK7aY81CA2_3n8FClr5BuI9CkoGQUyvdWQ8klVgJX5u4IrRI1wOKpw>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 1 Feb 2023 13:24:54 -0500 (EST)
+Date:   Wed, 1 Feb 2023 20:24:51 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     "Hans J. Schultz" <netdev@kapio-technology.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
+        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
         Matthias Brugger <matthias.bgg@gmail.com>,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
-Subject: [PATCH v5 net 3/3] mtk_sgmii: enable PCS polling to allow SFP work
-Date:   Wed,  1 Feb 2023 19:23:31 +0100
-Message-Id: <20230201182331.943411-4-bjorn@mork.no>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230201182331.943411-1-bjorn@mork.no>
-References: <20230201182331.943411-1-bjorn@mork.no>
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>
+Subject: Re: [PATCH net-next 4/5] net: bridge: ensure FDB offloaded flag is
+ handled as needed
+Message-ID: <Y9qucziByvXsx5Q0@shredder>
+References: <20230130173429.3577450-1-netdev@kapio-technology.com>
+ <20230130173429.3577450-5-netdev@kapio-technology.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230130173429.3577450-5-netdev@kapio-technology.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Virus-Scanned: clamav-milter 0.103.7 at canardo
-X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Couzens <lynxis@fe80.eu>
+On Mon, Jan 30, 2023 at 06:34:28PM +0100, Hans J. Schultz wrote:
+> Since user added entries in the bridge FDB will get the BR_FDB_OFFLOADED
+> flag set, we do not want the bridge to age those entries and we want the
+> entries to be deleted in the bridge upon an SWITCHDEV_FDB_DEL_TO_BRIDGE
+> event.
+> 
+> Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
+> ---
+>  net/bridge/br_fdb.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+> index e69a872bfc1d..b0c23a72bc76 100644
+> --- a/net/bridge/br_fdb.c
+> +++ b/net/bridge/br_fdb.c
+> @@ -537,6 +537,7 @@ void br_fdb_cleanup(struct work_struct *work)
+>  		unsigned long this_timer = f->updated + delay;
+>  
+>  		if (test_bit(BR_FDB_STATIC, &f->flags) ||
+> +		    test_bit(BR_FDB_OFFLOADED, &f->flags) ||
+>  		    test_bit(BR_FDB_ADDED_BY_EXT_LEARN, &f->flags)) {
+>  			if (test_bit(BR_FDB_NOTIFY, &f->flags)) {
+>  				if (time_after(this_timer, now))
 
-Currently there is no IRQ handling (even the SGMII supports it).
-Enable polling to support SFP ports.
+Looks correct
 
-Fixes: 14a44ab0330d ("net: mtk_eth_soc: partially convert to phylink_pcs")
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Alexander Couzens <lynxis@fe80.eu>
-[ bmork: changed "1" => "true" ]
-Signed-off-by: Bjørn Mork <bjorn@mork.no>
----
- drivers/net/ethernet/mediatek/mtk_sgmii.c | 1 +
- 1 file changed, 1 insertion(+)
+> @@ -1465,7 +1466,9 @@ int br_fdb_external_learn_del(struct net_bridge *br, struct net_bridge_port *p,
+>  	spin_lock_bh(&br->hash_lock);
+>  
+>  	fdb = br_fdb_find(br, addr, vid);
+> -	if (fdb && test_bit(BR_FDB_ADDED_BY_EXT_LEARN, &fdb->flags))
+> +	if (fdb &&
+> +	    (test_bit(BR_FDB_ADDED_BY_EXT_LEARN, &fdb->flags) ||
+> +	     test_bit(BR_FDB_OFFLOADED, &fdb->flags)))
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-index c4261069b521..bb00de1003ac 100644
---- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
-+++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-@@ -187,6 +187,7 @@ int mtk_sgmii_init(struct mtk_sgmii *ss, struct device_node *r, u32 ana_rgc3)
- 			return PTR_ERR(ss->pcs[i].regmap);
- 
- 		ss->pcs[i].pcs.ops = &mtk_pcs_ops;
-+		ss->pcs[i].pcs.poll = true;
- 		ss->pcs[i].interface = PHY_INTERFACE_MODE_NA;
- 	}
- 
--- 
-2.30.2
+This also looks correct, but the function name is not really accurate
+anymore. I guess you can keep it as-is unless someone has a better name
 
+>  		fdb_delete(br, fdb, swdev_notify);
+>  	else
+>  		err = -ENOENT;
+> -- 
+> 2.34.1
+> 
