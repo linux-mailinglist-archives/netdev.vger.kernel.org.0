@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 58F3B685EFE
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 06:34:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 401BB685F01
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 06:35:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230273AbjBAFez (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 00:34:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58020 "EHLO
+        id S230503AbjBAFfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 00:35:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbjBAFey (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 00:34:54 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964593608D;
-        Tue, 31 Jan 2023 21:34:53 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id jh15so8329463plb.8;
-        Tue, 31 Jan 2023 21:34:53 -0800 (PST)
+        with ESMTP id S230366AbjBAFe5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 00:34:57 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45338518C9;
+        Tue, 31 Jan 2023 21:34:56 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id pj3so3429911pjb.1;
+        Tue, 31 Jan 2023 21:34:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZFD+Vrnd0XDD4nt9rmOxBW0D3X3nxjbF33yttjrNMpE=;
-        b=gzu371xpPFb9Ngyx/RNXq84lJl9z6YgBBkokz0eJNuFelO7k90deJDAE2AmLqo5B6E
-         NDRhI81m8IQE3+dpsSnTqa7GYjkBpFmOhcwUftQ//05arPMSdySvQUCjhJMdeivUqk37
-         uEKfbaUPq5By+W7mpR+xkg1lMuZtLoTl6PQuNaoqGZ+oFPi7t0VXY7UXdU/sYpIA0XuH
-         DqF9U0/QB4XcP1UElEEblGD/XIj54cLJrHq4FiRFm27jSA5QOWmkv+OeqfvRPfVZUJoy
-         wq80/zhCULac5jzAP8q3IKI6/zStC5RKDALSeoCUcyGDbRbRCgU4ibdcOfE46JEO8nhV
-         S7hA==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=RA+JqwnnHDN1DqNPiIeZmSltFt5YiL5Iiuh/bEa8zUw=;
+        b=ZLj+Ci2e69SHJ+8dnKDR4QieC3FJsYsbhmkIvtWdF0oR4wHs3WjguvZuw3+0hGsuys
+         eD61hbugaE4o50OYw+YdZH3T3VvoX4XP0f2QtP2kdbwUfcB/xfH1O7+5hJZ/go2R8dX5
+         jEBxRJXotw6dkGc139Sx+Ols2GP5qw+x8xs3Tnl5L8L4Epwdyl/AYf/F8SsIQm2mF+LV
+         Ka0vQ3smtCI/nFPMlKQ+5jJwUsG7RSCIUJJROOPJMnD++Wr0JDt054ftDthR+rUIlxw6
+         /vfJmO2PNJILqqWKDgVx8GsuuoX1n2ZasJR97kDdZqLTqF0Pw+jvATafuvfsmaCd63H8
+         c+vQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ZFD+Vrnd0XDD4nt9rmOxBW0D3X3nxjbF33yttjrNMpE=;
-        b=UXHIuvEXvGUmbSxBcqHhpQ45eSXlhs84rgNFNxD0pLRSKiUfsez/394kABTpKrK/aL
-         jaBAGY/yysJ2RkEZfBkPCeaAGSgpekaXmN3oWBvhfeA6ZqMoZHUx4Mc+zoEV+a6yZKp5
-         TacwZ5DgIms4SuFUUkr2Q3qt6NEBRZNtoXXq3NLDXITiMpZqZshELal0EMO+F8SPE7pq
-         yhEnW2gZ/UmL0wSQHz2r0q4HXaIcT1CSnisPtev/6+QUe4trX/spysgcOBso7Ob17yPo
-         5QiQTGHbvxPPjwlW4f8dgHzc26c2O5rbdwiJ13ZnuSQFEnk45vmsBcdMoJtkwHwNJm++
-         MhPg==
-X-Gm-Message-State: AO0yUKW/WLT/sv39GVrR0Gb6PJrQ2osJXMqeqXI62AK5Ir9e2nKDAaWL
-        9Z7kaUuNiSehPCQmJeQzs3T4an9SqbM=
-X-Google-Smtp-Source: AK7set9oPnlLah1vw+94t4t064jaqb0tGmGNH3hyhZsDN1TXKY02wMLm4pe1X4z6/LlVIDgv6+TEgg==
-X-Received: by 2002:a17:90b:33d1:b0:22b:ec81:c36c with SMTP id lk17-20020a17090b33d100b0022bec81c36cmr774688pjb.45.1675229692826;
-        Tue, 31 Jan 2023 21:34:52 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=RA+JqwnnHDN1DqNPiIeZmSltFt5YiL5Iiuh/bEa8zUw=;
+        b=WI1D/sRo2BjU+uT7CqDFRVzml59QHzhFH9sDrteQ+n9diABgnpZMRIB/9aBPQSIaXu
+         klxMrNN9rCF58cDPw4NiW0hZCuyyc89ik5s593sDbiJL5n0BCCI5Zkj2kMu9Svz8gsUl
+         IHXdV0ERRvo1nZk1UY0+ILJGWes8sbrqrYaAsXywBWEjgr61vP24Ngbk8SlZBgtNB1yj
+         wZlEx8tMzGi7TMKJjWl94vQDPO+EPyPn0CMZq+HQKGDORv+dGwXgnwpBgFluLFm0T7Fk
+         LqJ7lk1G4Bn8MipAoEn2GJ1gaRCt9f+I036eX/1EA4EykXuZ022gm4RaeHtJRgWcWagt
+         BklQ==
+X-Gm-Message-State: AO0yUKV8ETm3kgP78pRsSXmd0N4tbqN1KJIhNaAHtKqldRisybLfLP79
+        J/IWzfaGKtAESDdnBTjaHhbjlUnNfO0=
+X-Google-Smtp-Source: AK7set9LrIB7b0UbsYsW5bGgeSvWti3zX0JC2TNQK4M548wJu+f+hd4yS8L9f9IIyb8FDk6k/khPPA==
+X-Received: by 2002:a17:90a:1a14:b0:229:f714:f779 with SMTP id 20-20020a17090a1a1400b00229f714f779mr893959pjk.26.1675229695607;
+        Tue, 31 Jan 2023 21:34:55 -0800 (PST)
 Received: from dtor-ws.mtv.corp.google.com ([2620:15c:9d:2:ce3a:44de:62b3:7a4b])
-        by smtp.gmail.com with ESMTPSA id kb1-20020a17090ae7c100b001fde655225fsm3233026pjb.2.2023.01.31.21.34.50
+        by smtp.gmail.com with ESMTPSA id kb1-20020a17090ae7c100b001fde655225fsm3233026pjb.2.2023.01.31.21.34.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Jan 2023 21:34:51 -0800 (PST)
+        Tue, 31 Jan 2023 21:34:54 -0800 (PST)
 From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>
@@ -59,10 +60,12 @@ Cc:     Arnd Bergmann <arnd@arndb.de>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
         linux-wpan@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 1/2] ieee802154: at86rf230: drop support for platform data
-Date:   Tue, 31 Jan 2023 21:34:46 -0800
-Message-Id: <20230201053447.4098486-1-dmitry.torokhov@gmail.com>
+Subject: [PATCH 2/2] ieee802154: at86rf230: switch to using gpiod API
+Date:   Tue, 31 Jan 2023 21:34:47 -0800
+Message-Id: <20230201053447.4098486-2-dmitry.torokhov@gmail.com>
 X-Mailer: git-send-email 2.39.1.456.gfc5497dd1b-goog
+In-Reply-To: <20230201053447.4098486-1-dmitry.torokhov@gmail.com>
+References: <20230201053447.4098486-1-dmitry.torokhov@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -75,127 +78,126 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are no users of platform data in the mainline tree, and new
-boards should use either ACPI or device tree, so let's stop supporting
-it. This will help with converting the driver to gpiod API.
+Switch the driver from legacy gpio API that is deprecated to the newer
+gpiod API that respects line polarities described in ACPI/DT.
 
 Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 ---
- drivers/net/ieee802154/at86rf230.c | 42 ++++++++----------------------
- include/linux/spi/at86rf230.h      | 20 --------------
- 2 files changed, 11 insertions(+), 51 deletions(-)
- delete mode 100644 include/linux/spi/at86rf230.h
+ drivers/net/ieee802154/at86rf230.c | 52 +++++++++++++++---------------
+ 1 file changed, 26 insertions(+), 26 deletions(-)
 
 diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
-index 15f283b26721..d6b6b355348b 100644
+index d6b6b355348b..62b984f84d9f 100644
 --- a/drivers/net/ieee802154/at86rf230.c
 +++ b/drivers/net/ieee802154/at86rf230.c
-@@ -17,8 +17,8 @@
- #include <linux/irq.h>
- #include <linux/gpio.h>
- #include <linux/delay.h>
-+#include <linux/property.h>
- #include <linux/spi/spi.h>
--#include <linux/spi/at86rf230.h>
- #include <linux/regmap.h>
- #include <linux/skbuff.h>
- #include <linux/of_gpio.h>
-@@ -1415,32 +1415,6 @@ static int at86rf230_hw_init(struct at86rf230_local *lp, u8 xtal_trim)
- 	return at86rf230_write_subreg(lp, SR_SLOTTED_OPERATION, 0);
+@@ -82,7 +82,7 @@ struct at86rf230_local {
+ 	struct ieee802154_hw *hw;
+ 	struct at86rf2xx_chip_data *data;
+ 	struct regmap *regmap;
+-	int slp_tr;
++	struct gpio_desc *slp_tr;
+ 	bool sleep;
+ 
+ 	struct completion state_complete;
+@@ -107,8 +107,8 @@ at86rf230_async_state_change(struct at86rf230_local *lp,
+ static inline void
+ at86rf230_sleep(struct at86rf230_local *lp)
+ {
+-	if (gpio_is_valid(lp->slp_tr)) {
+-		gpio_set_value(lp->slp_tr, 1);
++	if (lp->slp_tr) {
++		gpiod_set_value(lp->slp_tr, 1);
+ 		usleep_range(lp->data->t_off_to_sleep,
+ 			     lp->data->t_off_to_sleep + 10);
+ 		lp->sleep = true;
+@@ -118,8 +118,8 @@ at86rf230_sleep(struct at86rf230_local *lp)
+ static inline void
+ at86rf230_awake(struct at86rf230_local *lp)
+ {
+-	if (gpio_is_valid(lp->slp_tr)) {
+-		gpio_set_value(lp->slp_tr, 0);
++	if (lp->slp_tr) {
++		gpiod_set_value(lp->slp_tr, 0);
+ 		usleep_range(lp->data->t_sleep_to_off,
+ 			     lp->data->t_sleep_to_off + 100);
+ 		lp->sleep = false;
+@@ -204,9 +204,9 @@ at86rf230_write_subreg(struct at86rf230_local *lp,
+ static inline void
+ at86rf230_slp_tr_rising_edge(struct at86rf230_local *lp)
+ {
+-	gpio_set_value(lp->slp_tr, 1);
++	gpiod_set_value(lp->slp_tr, 1);
+ 	udelay(1);
+-	gpio_set_value(lp->slp_tr, 0);
++	gpiod_set_value(lp->slp_tr, 0);
  }
  
--static int
--at86rf230_get_pdata(struct spi_device *spi, int *rstn, int *slp_tr,
--		    u8 *xtal_trim)
--{
--	struct at86rf230_platform_data *pdata = spi->dev.platform_data;
--	int ret;
--
--	if (!IS_ENABLED(CONFIG_OF) || !spi->dev.of_node) {
--		if (!pdata)
--			return -ENOENT;
--
--		*rstn = pdata->rstn;
--		*slp_tr = pdata->slp_tr;
--		*xtal_trim = pdata->xtal_trim;
--		return 0;
--	}
--
--	*rstn = of_get_named_gpio(spi->dev.of_node, "reset-gpio", 0);
--	*slp_tr = of_get_named_gpio(spi->dev.of_node, "sleep-gpio", 0);
--	ret = of_property_read_u8(spi->dev.of_node, "xtal-trim", xtal_trim);
--	if (ret < 0 && ret != -EINVAL)
--		return ret;
--
--	return 0;
--}
--
- static int
- at86rf230_detect_device(struct at86rf230_local *lp)
+ static bool
+@@ -819,7 +819,7 @@ at86rf230_write_frame_complete(void *context)
+ 
+ 	ctx->trx.len = 2;
+ 
+-	if (gpio_is_valid(lp->slp_tr))
++	if (lp->slp_tr)
+ 		at86rf230_slp_tr_rising_edge(lp);
+ 	else
+ 		at86rf230_async_write_reg(lp, RG_TRX_STATE, STATE_BUSY_TX, ctx,
+@@ -1520,8 +1520,10 @@ static int at86rf230_probe(struct spi_device *spi)
  {
-@@ -1548,19 +1522,24 @@ static int at86rf230_probe(struct spi_device *spi)
+ 	struct ieee802154_hw *hw;
  	struct at86rf230_local *lp;
++	struct gpio_desc *slp_tr;
++	struct gpio_desc *rstn;
  	unsigned int status;
- 	int rc, irq_type, rstn, slp_tr;
--	u8 xtal_trim = 0;
-+	u8 xtal_trim;
+-	int rc, irq_type, rstn, slp_tr;
++	int rc, irq_type;
+ 	u8 xtal_trim;
  
  	if (!spi->irq) {
- 		dev_err(&spi->dev, "no IRQ specified\n");
- 		return -EINVAL;
+@@ -1539,28 +1541,26 @@ static int at86rf230_probe(struct spi_device *spi)
+ 		xtal_trim = 0;
  	}
  
--	rc = at86rf230_get_pdata(spi, &rstn, &slp_tr, &xtal_trim);
-+	rc = device_property_read_u8(&spi->dev, "xtal-trim", &xtal_trim);
- 	if (rc < 0) {
--		dev_err(&spi->dev, "failed to parse platform_data: %d\n", rc);
--		return rc;
-+		if (rc != -EINVAL) {
-+			dev_err(&spi->dev,
-+				"failed to parse xtal-trim: %d\n", rc);
-+			return rc;
-+		}
-+		xtal_trim = 0;
+-	rstn = of_get_named_gpio(spi->dev.of_node, "reset-gpio", 0);
+-	if (gpio_is_valid(rstn)) {
+-		rc = devm_gpio_request_one(&spi->dev, rstn,
+-					   GPIOF_OUT_INIT_HIGH, "rstn");
+-		if (rc)
+-			return rc;
+-	}
++	rstn = devm_gpiod_get_optional(&spi->dev, "reset", GPIOD_OUT_LOW);
++	rc = PTR_ERR_OR_ZERO(rstn);
++	if (rc)
++		return rc;
+ 
+-	slp_tr = of_get_named_gpio(spi->dev.of_node, "sleep-gpio", 0);
+-	if (gpio_is_valid(slp_tr)) {
+-		rc = devm_gpio_request_one(&spi->dev, slp_tr,
+-					   GPIOF_OUT_INIT_LOW, "slp_tr");
+-		if (rc)
+-			return rc;
+-	}
++	gpiod_set_consumer_name(rstn, "rstn");
++
++	slp_tr = devm_gpiod_get_optional(&spi->dev, "sleep", GPIOD_OUT_LOW);
++	rc = PTR_ERR_OR_ZERO(slp_tr);
++	if (rc)
++		return rc;
++
++	gpiod_set_consumer_name(slp_tr, "slp_tr");
+ 
+ 	/* Reset */
+-	if (gpio_is_valid(rstn)) {
++	if (rstn) {
+ 		udelay(1);
+-		gpio_set_value_cansleep(rstn, 0);
++		gpiod_set_value_cansleep(rstn, 1);
+ 		udelay(1);
+-		gpio_set_value_cansleep(rstn, 1);
++		gpiod_set_value_cansleep(rstn, 0);
+ 		usleep_range(120, 240);
  	}
  
-+	rstn = of_get_named_gpio(spi->dev.of_node, "reset-gpio", 0);
- 	if (gpio_is_valid(rstn)) {
- 		rc = devm_gpio_request_one(&spi->dev, rstn,
- 					   GPIOF_OUT_INIT_HIGH, "rstn");
-@@ -1568,6 +1547,7 @@ static int at86rf230_probe(struct spi_device *spi)
- 			return rc;
- 	}
- 
-+	slp_tr = of_get_named_gpio(spi->dev.of_node, "sleep-gpio", 0);
- 	if (gpio_is_valid(slp_tr)) {
- 		rc = devm_gpio_request_one(&spi->dev, slp_tr,
- 					   GPIOF_OUT_INIT_LOW, "slp_tr");
-diff --git a/include/linux/spi/at86rf230.h b/include/linux/spi/at86rf230.h
-deleted file mode 100644
-index d278576ab692..000000000000
---- a/include/linux/spi/at86rf230.h
-+++ /dev/null
-@@ -1,20 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-only */
--/*
-- * AT86RF230/RF231 driver
-- *
-- * Copyright (C) 2009-2012 Siemens AG
-- *
-- * Written by:
-- * Dmitry Eremin-Solenikov <dmitry.baryshkov@siemens.com>
-- */
--#ifndef AT86RF230_H
--#define AT86RF230_H
--
--struct at86rf230_platform_data {
--	int rstn;
--	int slp_tr;
--	int dig2;
--	u8 xtal_trim;
--};
--
--#endif
 -- 
 2.39.1.456.gfc5497dd1b-goog
 
