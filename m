@@ -2,99 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40039685DB9
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 04:11:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60783685DC1
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 04:13:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230502AbjBADLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 22:11:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42698 "EHLO
+        id S231612AbjBADNy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 22:13:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229819AbjBADK7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 22:10:59 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EDE6367C7
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 19:10:58 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id r8so10274059pls.2
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 19:10:58 -0800 (PST)
+        with ESMTP id S230303AbjBADNx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 22:13:53 -0500
+Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2724589B
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 19:13:51 -0800 (PST)
+Received: by mail-oo1-xc34.google.com with SMTP id h12-20020a4a940c000000b004fa81915b1cso1826877ooi.4
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 19:13:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        d=kali.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=dNwmbpoUgpK9RVRkp7WNwRkV3sDOdGK+t1bOk0Us3Hk=;
-        b=uG73jEp1pU2t8G6JHpz8OVvf+yA+gdH9PWjp2kRgjfrsq8czTp9COZCbTrUx//NYbM
-         daMPid1pjogAgV30y1s4yxAiTlW+nRiftfnOeA1RF2tRhMFjA/hawNexXC7jquDXmYSU
-         DvtJzueJqGTs75yE5BaAxl8SHthb5ZcI/Ajyf0UO4t4kBfDHfMKd/KlQF9w1aGFur1g6
-         2HBO5F9vUH/rcu+ybeOVyP91fK1t1XZ7QzGf9yYEjybGgRpx6ziGy3QyWZTt7LhKbKGj
-         ybSEIuhqSPxmjLKxFkqzN4YLTmjll9JKHv57g+ZOkRM2wglcO8at+9mCl/RO7bCsG0cp
-         sdfw==
+        bh=D3YwzPamfjwuuQEM2RnT++paWIr3qoCEOZrgbHTxW64=;
+        b=MOgnvtiSozTzruoGwOmugYaSILZTBMfknxbWXgCDJACJwzf+1UZiN6+wiVvYcGk7hS
+         3Ykc1fwKnTojw9Wm5OgQ8BpUoCLku3rvaI6tXVMYcDPxb8EO0TGKuEg2lJdlHlffzY5a
+         iAboOfuZ4vOqXbRUNRdi0zokHiNFc/+JgGWKVrYe96+3Kr5blF0F6cweRCcXlGX4x1db
+         IGJ7W4sTAxOhfIK1M43AFkfPidRW9hlU8lEti2zi/bOGTaWXtJWHZOId244O+adzZvKb
+         OHDLWj+X3dgw5XqRV8SZ9NJ1hPRrN6QWZ4qCWmkmFHyhZTcb1x9WI92nbJdES5N0a+9m
+         QO6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=dNwmbpoUgpK9RVRkp7WNwRkV3sDOdGK+t1bOk0Us3Hk=;
-        b=e8PVTHW6UnDAxsmLSxsSGkgtW0keeJo1vrvifiMyHnOQP3lxwMd5+suFH+zCHKjBf5
-         WEMJOkclbWWsNCJ1UjiHpCTn1uUza6bFdZLuTqtFNwW+j9SjsizzjiMlsHEuR2mGr9c1
-         rPdnjyIug0WFuX7kC2squYd4ozzPmOFxv4/MBrDFuWBdtsoZlMG+PIszLt5j7EgQ10ug
-         BGUm2eVO7zjvzZiNn3ze+lLJB5eqFnb0F8m9QY/g9mCxBpAql4LpJc9FW2fZZ7KPcLmo
-         JkGPlIyk6kjhMpCZgrGGb0oIT9252Y7BRuiWauImsgLaiwTbp5P9Xb0DY0HJvlrSQ9w5
-         IV8g==
-X-Gm-Message-State: AO0yUKU50dFlbgVKjnd4hYiPqteuu4Hl6e0/O72r8QPWXxCXZAAhktaI
-        vHvDhgzdghXUdTZbNnop3pboLg==
-X-Google-Smtp-Source: AK7set9DGBNGEDhGrSL+h9Vf4nUXZLRGNhzNmVbfvX3VyTGxttxQ7Wg3L8E5XC0X+7fM+r9ZhpFOSQ==
-X-Received: by 2002:a17:902:e1d2:b0:194:9de0:bed1 with SMTP id t18-20020a170902e1d200b001949de0bed1mr964856pla.32.1675221057642;
-        Tue, 31 Jan 2023 19:10:57 -0800 (PST)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id g17-20020a170902869100b00189c62eac37sm10518521plo.32.2023.01.31.19.10.57
+        bh=D3YwzPamfjwuuQEM2RnT++paWIr3qoCEOZrgbHTxW64=;
+        b=4AhEi6sKNzBHn3dVJQ6sBkF4pfr8O40zMOqdiRg1gU42AT175G6BqOimkKBA4BZomW
+         LdTn8cT3Ft2ai7kM6bdWVXYI8ggi/srVyY/tV2+S0iqzXiNwBxLYKpvHeX2j9c1RaBCD
+         fLlUA3PCs8QSUl050U8a3wxTiQGeYK5dyH9E4YRUrS+2kqiUoZVYcBnT4/lAf1RJAczO
+         r+K+wedz+EO/vUQ370a+k+hlKZRFAqEFz8cKXAx/yAPi8l/Gd5ar/FWzv/gfwuP30XxD
+         3BogHoWswjEmjBkTnt9LaanzFC+dgzvHapqZQoZrRWSXTKjy+8geokHxa3HxnyG3HqKd
+         eayw==
+X-Gm-Message-State: AO0yUKVNPySHOylPdAJR8NcdL2enl2gnvkYTarZJAejZOESYeOxlAMVs
+        /7XmmK8oj3iimJxb1xlqvMdncbHY7k8z3hn7F/k=
+X-Google-Smtp-Source: AK7set9KsGzjn5wBbpVtqFW2yRyYfDcWH3ZWqT6jjr/GW26QHQ0Hxu1/dF14CQcqYitui3cWEdRFBw==
+X-Received: by 2002:a4a:a2c9:0:b0:517:640f:5905 with SMTP id r9-20020a4aa2c9000000b00517640f5905mr464907ool.3.1675221230905;
+        Tue, 31 Jan 2023 19:13:50 -0800 (PST)
+Received: from localhost (23-118-233-243.lightspeed.snantx.sbcglobal.net. [23.118.233.243])
+        by smtp.gmail.com with ESMTPSA id k68-20020a4a4a47000000b005176974faf3sm3557618oob.35.2023.01.31.19.13.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Jan 2023 19:10:57 -0800 (PST)
-Date:   Tue, 31 Jan 2023 19:10:55 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Pietro Borrello <borrello@diag.uniroma1.it>
+        Tue, 31 Jan 2023 19:13:50 -0800 (PST)
+From:   Steev Klimaszewski <steev@kali.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jkl820.git@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] tun: tun_chr_open(): correctly initialize
- socket uid
-Message-ID: <20230131191055.45bb4ab7@hermes.local>
-In-Reply-To: <20230131-tuntap-sk-uid-v1-1-af4f9f40979d@diag.uniroma1.it>
-References: <20230131-tuntap-sk-uid-v1-0-af4f9f40979d@diag.uniroma1.it>
-        <20230131-tuntap-sk-uid-v1-1-af4f9f40979d@diag.uniroma1.it>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Sven Peter <sven@svenpeter.dev>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        Mark Pearson <markpearson@lenovo.com>
+Subject: Re: [PATCH v2 4/4] arm64: dts: qcom: thinkpad-x13s: Add bluetooth
+Date:   Tue, 31 Jan 2023 21:13:49 -0600
+Message-Id: <20230201031349.56405-1-steev@kali.org>
+X-Mailer: git-send-email 2.39.0
+In-Reply-To: <c515aae3-88e4-948c-a856-7b45dd2caed9@linaro.org>
+References: <c515aae3-88e4-948c-a856-7b45dd2caed9@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 01 Feb 2023 00:35:45 +0000
-Pietro Borrello <borrello@diag.uniroma1.it> wrote:
+>On 31/01/2023 05:38, Steev Klimaszewski wrote:
+>> Signed-off-by: Steev Klimaszewski <steev@kali.org>
+>> ---
+>>  .../qcom/sc8280xp-lenovo-thinkpad-x13s.dts    | 68 +++++++++++++++++++
+>>  1 file changed, 68 insertions(+)
+>> 
+>> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+>> index f936b020a71d..951438ac5946 100644
+>> --- a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+>> +++ b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+>> @@ -24,6 +24,8 @@ / {
+>>  	aliases {
+>>  		i2c4 = &i2c4;
+>>  		i2c21 = &i2c21;
+>> +		serial0 = &uart17;
+>> +		serial1 = &uart2;
+>>  	};
+>>  
+>>  	wcd938x: audio-codec {
+>> @@ -712,6 +714,32 @@ &qup0 {
+>>  	status = "okay";
+>>  };
+>>  
+>> +&uart2 {
+>> +	status = "okay";
+>> +
+>> +	pinctrl-names = "default";
+>> +	pinctrl-0 = <&uart2_state>;
+>> +
+>> +	bluetooth {
+>> +		compatible = "qcom,wcn6855-bt";
+>> +
+>> +/*
 
-> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> index a7d17c680f4a..6713fffb1488 100644
-> --- a/drivers/net/tun.c
-> +++ b/drivers/net/tun.c
-> @@ -3450,6 +3450,11 @@ static int tun_chr_open(struct inode *inode, struct file * file)
->  
->  	sock_init_data(&tfile->socket, &tfile->sk);
->  
-> +	// sock_init_data initializes sk.sk_uid assuming tfile->socket is embedded
-> +	// in a struct socket_alloc and reading its corresponding inode. Since we
-> +	// pass a socket contained in a struct tun_file we have to fix this manually
-> +	tfile->sk.sk_uid = inode->i_uid;
-> +
+> Why dead code should be in the kernel?
 
-Do not use C++ style comments in the kernel.
+As mentioned in the cover letter, this is a bit closer to an RFC than ready to
+go in, and I do apologize that it wasn't clear enough.  I do not have access to
+the schematics, and based on my reading of the schema for bluetooth, these
+entries are supposed to be required, however, like the wcn6750, I have dummy
+data entered into the qca_soc_data_wcn6855 struct.  I know that these should be
+there, I just do not have access to the correct information to put, if that
+makes sense?
 
-Rule #1 of code maintenance. Bug fixes should not stand out.
+
+<snip>
+
+>Does not look like you tested the DTS against bindings. Please run `make
+>dtbs_check` (see Documentation/devicetree/bindings/writing-schema.rst
+>for instructions).
+
+Correct I had not, but I have now, and will make the corrections test and they
+will be included in v3.
+
+>Best regards,
+>Krzysztof
+
+I appreciate the guidance for what I was doing incorrectly.
+
+-- steev
