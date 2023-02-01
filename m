@@ -2,115 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0239685C6F
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 01:50:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93EFA685CA1
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 02:31:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231300AbjBAAuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 19:50:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42910 "EHLO
+        id S230511AbjBABbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 20:31:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbjBAAuX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 19:50:23 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03659125A3;
-        Tue, 31 Jan 2023 16:50:22 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id bk15so46764787ejb.9;
-        Tue, 31 Jan 2023 16:50:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=14Rz9IsCEo6lrI4LScZe0yDYpkBPJjzhIJ93HjF95ds=;
-        b=SU9a656eCx8kjuXWl96KuMwptfpNjgImHGqWLpPbShy0obUH7AvXYddMYGhYJMTigA
-         q/kaVok0qgP5QeSm6UPJKr+PwZb8L4DyKKcUU2fkacw9bPcb9JuwlpdNtQW0T0185zCT
-         VhH0KPBg1B8y8656SffYsYm6D8y+/kmH9DVZKroN1Ty/BqFSD35DrvZtF9qHHogzrKbk
-         reFnZnh/wbYXXP9febcx7Y+cSFH9q7loj2VhBHLqnnZqGihQJNNUb/SB7CfqxaRx282v
-         6JiIRUJ7oU3u2H8cqkb/aYnh1t8KF62uADD9qZ2eqvxPCttS7gdl18LO5RwOdtEHhmw3
-         EFaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=14Rz9IsCEo6lrI4LScZe0yDYpkBPJjzhIJ93HjF95ds=;
-        b=bH1ZOuZAZ5Heglf8Fo8Xn/OxQDLD6pYG9FOziT9nrxW37ccFGxiLoyVnmAn6L4zNrx
-         QQpp/dwC2kLpa/BGBwylOVrA19GLNhnOAchJe/kxCuvSeI5shR/FzfqC2q32597z48lx
-         iYrEc8yXxl4LrxMafXBrZORumU5y4O6aygLKK1y8aSX5iQklXXq7NIGEzWyi9Pix6+bq
-         aTelK/DlleZpNh5OWsa7bKtQmPdBNJ15XjxIXEQBo/Gc/fgHde6iI7DCLFwDbxAji22F
-         g+PWZMhp4qetllpQWAh793FPHpSOh/YZxNU8ZOilkHMMDoJuqNWO7Q831T/z8DLQWJDT
-         574A==
-X-Gm-Message-State: AO0yUKX/6mSsoR7NYPId0A8yH8V/IkBLDmw1BVedDr6sdMEAbGcw7k7s
-        rJSykLIPgRoEwFU4cD/XtQfDHB6u/18JegVd1r8=
-X-Google-Smtp-Source: AK7set+iUvTF3Kdsy7EXm5jI2HjyrWe3w7eLfqf2U1oyWlSnAV6M6aU77qS+7+am4ZW5UHYryom+uxtgJ8A6wCx2PpU=
-X-Received: by 2002:a17:906:139b:b0:88c:1d3d:6fab with SMTP id
- f27-20020a170906139b00b0088c1d3d6fabmr91900ejc.299.1675212620101; Tue, 31 Jan
- 2023 16:50:20 -0800 (PST)
-MIME-Version: 1.0
-References: <20230126162323.2986682-1-arnd@kernel.org> <CAKdAkRQT_Jk5yBeMZqh=M1JscVLFieZTQjLGOGxy8nHh8SnD3A@mail.gmail.com>
-In-Reply-To: <CAKdAkRQT_Jk5yBeMZqh=M1JscVLFieZTQjLGOGxy8nHh8SnD3A@mail.gmail.com>
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Date:   Tue, 31 Jan 2023 16:50:07 -0800
-Message-ID: <CAKdAkRSuDJgdsSQqy9Cc_eUYuOfFsLmBJ8Rd93uQhY6HV8nN4w@mail.gmail.com>
-Subject: Re: [PATCH] [v2] at86rf230: convert to gpio descriptors
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
+        with ESMTP id S229884AbjBABbf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 20:31:35 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C001252A6;
+        Tue, 31 Jan 2023 17:31:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=FlYnn6qs526jMlhhZYL7BegsSLZDJAUAJkOUYSBLIwE=; b=y2NpP05JUu+EK8RJZAwoaLEgAf
+        fRfQkdl5H/aAOy01GGN9QZmblyTBL70UZWIDryExo+onFTVkB5VaVWak2krtzaEVhJ5j9HFqeV8QX
+        Vd+tNfOWF3UnD9IhY3clVL5qRgjQjrf+Mc8PZtgsQK8XN1QU/+p/DQVvi/7AfdDnoJEA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pN1xw-003k5R-Lt; Wed, 01 Feb 2023 02:31:12 +0100
+Date:   Wed, 1 Feb 2023 02:31:12 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Wei Fang <wei.fang@nxp.com>, Jakub Kicinski <kuba@kernel.org>,
         Arnd Bergmann <arnd@arndb.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Shenwei Wang <shenwei.wang@nxp.com>,
+        Clark Wang <xiaoning.wang@nxp.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Paolo Abeni <pabeni@redhat.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: fec: fix conversion to gpiod API
+Message-ID: <Y9nA4Mmi5hv5OzBh@lunn.ch>
+References: <Y9mar1COtT5z4mvT@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y9mar1COtT5z4mvT@google.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 3:52 PM Dmitry Torokhov
-<dmitry.torokhov@gmail.com> wrote:
->
-> Hi Arnd,
->
-> On Thu, Jan 26, 2023 at 8:32 AM Arnd Bergmann <arnd@kernel.org> wrote:
-> >
-> >         /* Reset */
-> > -       if (gpio_is_valid(rstn)) {
-> > +       if (rstn) {
-> >                 udelay(1);
-> > -               gpio_set_value_cansleep(rstn, 0);
-> > +               gpiod_set_value_cansleep(rstn, 0);
-> >                 udelay(1);
-> > -               gpio_set_value_cansleep(rstn, 1);
-> > +               gpiod_set_value_cansleep(rstn, 1);
->
-> For gpiod conversions, if we are not willing to chase whether existing
-> DTSes specify polarities
-> properly and create workarounds in case they are wrong, we should use
-> gpiod_set_raw_value*()
-> (my preference would be to do the work and not use "raw" variants).
->
-> In this particular case, arch/arm/boot/dts/vf610-zii-dev-rev-c.dts
-> defines reset line as active low,
-> so you are leaving the device in reset state.
->
-> Please review your other conversion patches.
+On Tue, Jan 31, 2023 at 02:48:15PM -0800, Dmitry Torokhov wrote:
+> The reset line is optional, so we should be using
+> devm_gpiod_get_optional() and not abort probing if it is not available.
 
-We also can not change the names of requested GPIOs from "reset-gpio"
-to "rstn-gpios" and expect
-this to work.
+> Also, gpiolib already handles phy-reset-active-high, continuing handling
+> it directly in the driver when using gpiod API results in flipped logic.
 
-Stefan, please consider reverting this and applying a couple of
-patches I will send out shortly.
+Please could you split this part into a separate patch. There is some
+history here, but i cannot remember which driver it actually applies
+to. It might be the FEC, it could be some other Ethernet driver.
 
-Thanks.
+For whatever driver it was, the initial support for GPIOs totally
+ignored the polarity value in DT. The API at the time meant you needed
+to take extra steps to get the polarity, and that was skipped. So it
+was hard coded. But developers copy/pasted DT statement from other DT
+files, putting in the opposite polarity to the hard coded
+value. Nobody noticed until somebody needed the opposite polarity to
+the hard coded implementation to make their board work. And then the
+problem was noticed. The simple solution to actually use the polarity
+in DT would break all the boards which had the wrong value. So a new
+property was added.
 
--- 
-Dmitry
+So i would like this change in a separate patch, so if it causes
+regressions, it can be reverted.
+
+> While at this convert phy properties parsing from OF to generic device
+> properties to avoid #ifdef-ery.
+
+We also need to be careful here. If you read fsl,fec.yaml, there are a
+number of deprecated properties. These need to keep working for OF,
+but we clearly don't want them exposed to ACPI or anything else. So if
+you use generic device properties, please ensure they are only for OF.
+
+    Andrew
