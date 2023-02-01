@@ -2,148 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5AC9685DB2
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 04:07:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40039685DB9
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 04:11:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230054AbjBADHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 22:07:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41354 "EHLO
+        id S230502AbjBADLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 22:11:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbjBADHt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 22:07:49 -0500
+        with ESMTP id S229819AbjBADK7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 22:10:59 -0500
 Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA0283F7
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 19:07:47 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id k13so17189438plg.0
-        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 19:07:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EDE6367C7
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 19:10:58 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id r8so10274059pls.2
+        for <netdev@vger.kernel.org>; Tue, 31 Jan 2023 19:10:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:subject:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Er4Yght1xi+5+mJgB7Cn//y79ZqsVY/jIjJJJ+J+ljY=;
-        b=6aVhHAz01UQrvLjyVPV5EXdcIVvQR7uvcSCyIkZYHipRpK2P44AHNps8eQZ2CQA1Z2
-         GlcFqEiJ3JdTVrBweb7RkWnFFEgiaKa7U3b3BI4KIe/G07Zu+UhSPYY9vkXyvMGFN99O
-         hofpKM0SkhkZCR9bb2dlfkHO4sucB2HlW/Tt0EQ16Ab7k/7xD69vjGAU9vse3Qzaeskj
-         ag+TceCWZd7BG0YQlszdvTQbFkCbhBgAvkQq1aZH6gswaB/hYUVcVKFQdLmE32ZvqKaZ
-         Vi6JDrYW9I6p8Irq1wdgciVPyTHaUnHJqUGF6OOEtRT8aVkKXiqw7Nh0RkmYyUh32q+H
-         2Mmg==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dNwmbpoUgpK9RVRkp7WNwRkV3sDOdGK+t1bOk0Us3Hk=;
+        b=uG73jEp1pU2t8G6JHpz8OVvf+yA+gdH9PWjp2kRgjfrsq8czTp9COZCbTrUx//NYbM
+         daMPid1pjogAgV30y1s4yxAiTlW+nRiftfnOeA1RF2tRhMFjA/hawNexXC7jquDXmYSU
+         DvtJzueJqGTs75yE5BaAxl8SHthb5ZcI/Ajyf0UO4t4kBfDHfMKd/KlQF9w1aGFur1g6
+         2HBO5F9vUH/rcu+ybeOVyP91fK1t1XZ7QzGf9yYEjybGgRpx6ziGy3QyWZTt7LhKbKGj
+         ybSEIuhqSPxmjLKxFkqzN4YLTmjll9JKHv57g+ZOkRM2wglcO8at+9mCl/RO7bCsG0cp
+         sdfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:subject:to:from
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Er4Yght1xi+5+mJgB7Cn//y79ZqsVY/jIjJJJ+J+ljY=;
-        b=v93zBSo2t6VS8VaRQbMG/ec0JwsCeH/sEIHDX8TDNqxby/k4gtmAVn14yp7hEs0v4u
-         a8qCBbOVJmmZx9Nuim9cmsvAiWe9OZiiyQUiHXkoD1Czi8NkuQL6uoCEEZCFdayUMZae
-         IQ/6Fdi0HFmxRvj1B24qzUQGgHdEAKgSBoMeFjkOWEFiQbrKSbqDELJrXQrp558H1+V0
-         CYJ7KZv0InqIfQVOY/2mG88EtFu3Pr1ZhqK50C/AiaYemNZ3IPbSCMHuAyahCzh91p1r
-         ZLwlcv0/20uAmu18LDTqXLPcEJ4R5xmuiAtuxVJE0W+LIEp/D0NGffS9KHhXflxPhm4b
-         H+Eg==
-X-Gm-Message-State: AO0yUKXtK/m2lQagm4OUeV9r+pPRxlv3OY2h41uvPDj0CxwCVCMhd7w7
-        PD4DY+9pZPWhKgedPjGZBD+14cE7c06Bx13t/V0=
-X-Google-Smtp-Source: AK7set95THLxKN+a9/1kubrkd3QRmwOH1mMhWyxp+m1WBCtTrspcgTW7LB5wN9EDPWywPNFmZHvjqg==
-X-Received: by 2002:a17:902:e881:b0:198:a49b:9f3b with SMTP id w1-20020a170902e88100b00198a49b9f3bmr1432167plg.22.1675220867005;
-        Tue, 31 Jan 2023 19:07:47 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dNwmbpoUgpK9RVRkp7WNwRkV3sDOdGK+t1bOk0Us3Hk=;
+        b=e8PVTHW6UnDAxsmLSxsSGkgtW0keeJo1vrvifiMyHnOQP3lxwMd5+suFH+zCHKjBf5
+         WEMJOkclbWWsNCJ1UjiHpCTn1uUza6bFdZLuTqtFNwW+j9SjsizzjiMlsHEuR2mGr9c1
+         rPdnjyIug0WFuX7kC2squYd4ozzPmOFxv4/MBrDFuWBdtsoZlMG+PIszLt5j7EgQ10ug
+         BGUm2eVO7zjvzZiNn3ze+lLJB5eqFnb0F8m9QY/g9mCxBpAql4LpJc9FW2fZZ7KPcLmo
+         JkGPlIyk6kjhMpCZgrGGb0oIT9252Y7BRuiWauImsgLaiwTbp5P9Xb0DY0HJvlrSQ9w5
+         IV8g==
+X-Gm-Message-State: AO0yUKU50dFlbgVKjnd4hYiPqteuu4Hl6e0/O72r8QPWXxCXZAAhktaI
+        vHvDhgzdghXUdTZbNnop3pboLg==
+X-Google-Smtp-Source: AK7set9DGBNGEDhGrSL+h9Vf4nUXZLRGNhzNmVbfvX3VyTGxttxQ7Wg3L8E5XC0X+7fM+r9ZhpFOSQ==
+X-Received: by 2002:a17:902:e1d2:b0:194:9de0:bed1 with SMTP id t18-20020a170902e1d200b001949de0bed1mr964856pla.32.1675221057642;
+        Tue, 31 Jan 2023 19:10:57 -0800 (PST)
 Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id bc11-20020a170902930b00b001960096d28asm10471558plb.27.2023.01.31.19.07.46
-        for <netdev@vger.kernel.org>
+        by smtp.gmail.com with ESMTPSA id g17-20020a170902869100b00189c62eac37sm10518521plo.32.2023.01.31.19.10.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Jan 2023 19:07:46 -0800 (PST)
-Date:   Tue, 31 Jan 2023 19:07:45 -0800
+        Tue, 31 Jan 2023 19:10:57 -0800 (PST)
+Date:   Tue, 31 Jan 2023 19:10:55 -0800
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 216986] New: sendmsg returns EINVAL when neighbor table is
- full
-Message-ID: <20230131190745.6dbca9a3@hermes.local>
+To:     Pietro Borrello <borrello@diag.uniroma1.it>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Colitti <lorenzo@google.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jkl820.git@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/2] tun: tun_chr_open(): correctly initialize
+ socket uid
+Message-ID: <20230131191055.45bb4ab7@hermes.local>
+In-Reply-To: <20230131-tuntap-sk-uid-v1-1-af4f9f40979d@diag.uniroma1.it>
+References: <20230131-tuntap-sk-uid-v1-0-af4f9f40979d@diag.uniroma1.it>
+        <20230131-tuntap-sk-uid-v1-1-af4f9f40979d@diag.uniroma1.it>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 01 Feb 2023 00:35:45 +0000
+Pietro Borrello <borrello@diag.uniroma1.it> wrote:
 
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index a7d17c680f4a..6713fffb1488 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -3450,6 +3450,11 @@ static int tun_chr_open(struct inode *inode, struct file * file)
+>  
+>  	sock_init_data(&tfile->socket, &tfile->sk);
+>  
+> +	// sock_init_data initializes sk.sk_uid assuming tfile->socket is embedded
+> +	// in a struct socket_alloc and reading its corresponding inode. Since we
+> +	// pass a socket contained in a struct tun_file we have to fix this manually
+> +	tfile->sk.sk_uid = inode->i_uid;
+> +
 
-Begin forwarded message:
+Do not use C++ style comments in the kernel.
 
-Date: Wed, 01 Feb 2023 02:21:14 +0000
-From: bugzilla-daemon@kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 216986] New: sendmsg returns EINVAL when neighbor table is fu=
-ll
-
-
-https://bugzilla.kernel.org/show_bug.cgi?id=3D216986
-
-            Bug ID: 216986
-           Summary: sendmsg returns EINVAL when neighbor table is full
-           Product: Networking
-           Version: 2.5
-    Kernel Version: 5.2.60
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: normal
-          Priority: P1
-         Component: IPV4
-          Assignee: stephen@networkplumber.org
-          Reporter: singhpra@juniper.net
-        Regression: No
-
-On one of our linux boxes, we happen to hit the
-net.ipv4.neigh.default.gc_thresh3
-limit and saw "neighbour: arp_cache: neighbor table overflow! ".
-
-Subsequent to this, we saw EINVAL error for some of the applications that w=
-ere
-trying to do a sendmsg. The applications treats the EINVAL error as fatal
-(especially when sendmsg was working with the same set of ARGS earlier on t=
-he
-system).
-
-The question here is should the kernel neighbor table state result in an er=
-ror
-like EINVAL for the application where the arguments provided by the applica=
-tion
-looks valid and have been working so far. Is there any other reason that
-justifies the EINVAL returned for this case by kernel?
-
-Looking further into the code it seems like in the function ip_finish_outpu=
-t2,
-even on the latest kernel, post the checks for neighbor entry, the status of
-ip_neigh_for_gw for error is not used, which in this case would be ENOBUFS =
-and
-I would think could also be a possible alternative to return here instead of
-EINVAL at the end of the function.=20
-
-ip_finish_output2:
-        neigh =3D ip_neigh_for_gw(rt, skb, &is_v6gw); =20
-                    if (!IS_ERR(neigh)) {
-                   =E2=80=A6
-               }                                                           =
-    =20
-        =3D=3D>perhaps can return this neigh if IS_ERR is true =20
-        net_dbg_ratelimited("%s: No header cache and no neighbour!\n",
-                                                                 __func__);
-        kfree_skb_reason(skb, SKB_DROP_REASON_NEIGH_CREATEFAIL);
-        return -EINVAL;=3D=3D> here
-
-
-___neigh_create:
-        n =3D neigh_alloc(tbl, dev, flags, exempt_from_gc);
-        trace_neigh_create(tbl, dev, pkey, n, exempt_from_gc);
-        if (!n) {
-                rc =3D ERR_PTR(-ENOBUFS); =3D=3D> returns ENOBUFS
-                goto out;
-        }
-
---=20
-You may reply to this email to add a comment.
-
-You are receiving this mail because:
-You are the assignee for the bug.
+Rule #1 of code maintenance. Bug fixes should not stand out.
