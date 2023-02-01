@@ -2,129 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F4218686B27
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 17:08:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5549D686B31
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 17:11:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232973AbjBAQII (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 11:08:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44260 "EHLO
+        id S232398AbjBAQK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 11:10:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232334AbjBAQIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 11:08:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CF7B4709A
-        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 08:07:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675267640;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=ds+bcOZr5heYmlSzGupYn5r7OWFEs+A7chvOhxHR7is=;
-        b=CvTsQ8NqT+dVtJ0PcRWX4adqsrpyenHrUWDX6xVuA6E39g78aZgRy+9KVxxUbfHpwrDhd4
-        1wyUaRPcWJ1yKeHeOuJAFjrzCA32mSVb3T2A5/B8mjweeFPW5d9hxrgArFlZz9a39b7joG
-        6/mSaVhau2aGq6rFWif6+whKVVsGrJM=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-673-fL4RBPzWM2KlmJ5N9FunRg-1; Wed, 01 Feb 2023 11:06:46 -0500
-X-MC-Unique: fL4RBPzWM2KlmJ5N9FunRg-1
-Received: by mail-wm1-f69.google.com with SMTP id r15-20020a05600c35cf00b003d9a14517b2so1326029wmq.2
-        for <netdev@vger.kernel.org>; Wed, 01 Feb 2023 08:06:45 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ds+bcOZr5heYmlSzGupYn5r7OWFEs+A7chvOhxHR7is=;
-        b=WUTb/TzPhwWFo6V+m9EKFv1dooqJBc5aSGD88VMUrxqJ3ia9SBecFC0C4UR6Dv1Aeq
-         lBhBhTVlOesJTfVBEPX6fJBG/5/pdzytmxsDPdzPFtuAe5zW6DaNBkwUhvCkQQZ+KCSP
-         cDTw47EtwveB4zvUPE/PgvFFvlEkbgbXjy2hBt5PmkjB501Zsc1ciNqav+MRAH4Y/ajq
-         DrJIWmr6YZOKgKWnLsjUvX1hGPWz3Ji6O0zXXwfDkzxDeS7fyj//oR8wNBDwcep1JLeM
-         5UGUGBRQvmZomn8j3f7Lltj+xV7tlosd0ClcfderZoHBoeONoT+ezm75pBqBvvyLrKQA
-         ipYQ==
-X-Gm-Message-State: AO0yUKUhG84ml+Q/BcBiRSqiEueVOzLG60YOxFFqKbwRbn44XYusX2FX
-        556n5Z4GQUWHhVmOYItnvxzNH8Pc+8g1jKXNUjmxwtIU55gyBqJwatTpKkRIUa+wazuKRYBHhH+
-        dlv4cLoPMWHLlHyRv
-X-Received: by 2002:a7b:c85a:0:b0:3d2:392e:905f with SMTP id c26-20020a7bc85a000000b003d2392e905fmr2555822wml.24.1675267604393;
-        Wed, 01 Feb 2023 08:06:44 -0800 (PST)
-X-Google-Smtp-Source: AK7set/jVf+CtAKaPX7i2XRfI1mq5BUZBWlGIqJzw98LsyTbSpvTi0jhWMgxZEzgBzcbZq6TokPTHg==
-X-Received: by 2002:a7b:c85a:0:b0:3d2:392e:905f with SMTP id c26-20020a7bc85a000000b003d2392e905fmr2555797wml.24.1675267604200;
-        Wed, 01 Feb 2023 08:06:44 -0800 (PST)
-Received: from redhat.com ([2.52.144.173])
-        by smtp.gmail.com with ESMTPSA id m13-20020a05600c3b0d00b003dc51c48f0bsm2433516wms.19.2023.02.01.08.06.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Feb 2023 08:06:43 -0800 (PST)
-Date:   Wed, 1 Feb 2023 11:06:40 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        007047221b@gmail.com, bcodding@redhat.com, eric.auger@redhat.com,
-        jasowang@redhat.com, lingshan.zhu@intel.com, mie@igel.co.jp,
-        mst@redhat.com, nab@linux-iscsi.org, viro@zeniv.linux.org.uk
-Subject: [GIT PULL] virtio,vhost,vdpa: fixes
-Message-ID: <20230201110640-mutt-send-email-mst@kernel.org>
+        with ESMTP id S231895AbjBAQK6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 11:10:58 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 216CA40FD
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 08:10:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675267857; x=1706803857;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=vw5Z0glpJyiCwy0cyVA8rjsV+TX5KMmGLPplMe30Eus=;
+  b=h4pI/bKehSKYI5OxHBrmS0NEvYh9eoX0yCzJ9eimVFS1TxDhIcGALx57
+   atI4HdOfRvqIpZ28xM8YvOhfC4cCfNxKjrSmHc6T5J/elnkNJdOmzfnhK
+   C8TWs40wFymBjnDZZPane9BLKFrJ/y3xtaCbie9JzuC0yTzUJEx0JUKBn
+   qEbLuiqS89sdnETP0lpls3GitOaAQMnqcTkZZ/n4WrIhZ09b40kmCXnBf
+   GqtshCcQEiPTc5MU8PuJs6Bg4h0ZYM/4cjiRqs1HsAlxq5UnAqzT5x5Qb
+   8HFVS3pegTFB1yd7ALHqs03SG4SdyDQWUYG/CTDsqjG0rrDDA+kGDgPUm
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10608"; a="330319877"
+X-IronPort-AV: E=Sophos;i="5.97,263,1669104000"; 
+   d="scan'208";a="330319877"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2023 08:10:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10608"; a="658369623"
+X-IronPort-AV: E=Sophos;i="5.97,263,1669104000"; 
+   d="scan'208";a="658369623"
+Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 01 Feb 2023 08:10:33 -0800
+Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pNFgu-0005ZB-2v;
+        Wed, 01 Feb 2023 16:10:32 +0000
+Date:   Thu, 2 Feb 2023 00:09:41 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>,
+        ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        richardcochran@gmail.com
+Cc:     oe-kbuild-all@lists.linux.dev, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org,
+        =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>,
+        Yalin Li <yalli@redhat.com>
+Subject: Re: [PATCH net 4/4] sfc: remove expired unicast PTP filters
+Message-ID: <202302020019.2MT9fEOy-lkp@intel.com>
+References: <20230131160506.47552-5-ihuguet@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-X-Mutt-Fcc: =sent
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230131160506.47552-5-ihuguet@redhat.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 2241ab53cbb5cdb08a6b2d4688feb13971058f65:
+Hi Íñigo,
 
-  Linux 6.2-rc5 (2023-01-21 16:27:01 -0800)
+Thank you for the patch! Perhaps something to improve:
 
-are available in the Git repository at:
+[auto build test WARNING on net/master]
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+url:    https://github.com/intel-lab-lkp/linux/commits/igo-Huguet/sfc-store-PTP-filters-in-a-list/20230201-000831
+patch link:    https://lore.kernel.org/r/20230131160506.47552-5-ihuguet%40redhat.com
+patch subject: [PATCH net 4/4] sfc: remove expired unicast PTP filters
+config: parisc-randconfig-s033-20230129 (https://download.01.org/0day-ci/archive/20230202/202302020019.2MT9fEOy-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://github.com/intel-lab-lkp/linux/commit/d631c3b59ac7ba7f62da245114156866ea74a15b
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review igo-Huguet/sfc-store-PTP-filters-in-a-list/20230201-000831
+        git checkout d631c3b59ac7ba7f62da245114156866ea74a15b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=parisc olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=parisc SHELL=/bin/bash
 
-for you to fetch changes up to 6b04456e248761cf68f562f2fd7c04e591fcac94:
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
 
-  vdpa: ifcvf: Do proper cleanup if IFCVF init fails (2023-01-27 06:18:41 -0500)
+sparse warnings: (new ones prefixed by >>)
+>> drivers/net/ethernet/sfc/ptp.c:1515:30: sparse: sparse: incompatible types for operation (<):
+>> drivers/net/ethernet/sfc/ptp.c:1515:30: sparse:    struct efx_ptp_rxfilter *[assigned] rxfilter
+>> drivers/net/ethernet/sfc/ptp.c:1515:30: sparse:    int
 
-----------------------------------------------------------------
-virtio,vhost,vdpa: fixes
+vim +1515 drivers/net/ethernet/sfc/ptp.c
 
-Just small bugfixes all over the place.
+  1493	
+  1494	static int efx_ptp_insert_unicast_filter(struct efx_nic *efx,
+  1495						 struct sk_buff *skb)
+  1496	{
+  1497		struct efx_ptp_data *ptp = efx->ptp_data;
+  1498		struct efx_ptp_rxfilter *rxfilter;
+  1499	
+  1500		if (!efx_ptp_valid_unicast_event_pkt(skb))
+  1501			return -EINVAL;
+  1502	
+  1503		if (skb->protocol == htons(ETH_P_IP)) {
+  1504			__be32 addr = ip_hdr(skb)->saddr;
+  1505	
+  1506			rxfilter = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
+  1507							      addr, PTP_EVENT_PORT);
+  1508			if (IS_ERR(rxfilter))
+  1509				goto fail;
+  1510	
+  1511			rxfilter->expiry = jiffies + UCAST_FILTER_EXPIRY_JIFFIES;
+  1512	
+  1513			rxfilter = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
+  1514							      addr, PTP_GENERAL_PORT);
+> 1515			if (rxfilter < 0)
+  1516				goto fail;
+  1517	
+  1518			rxfilter->expiry = jiffies + UCAST_FILTER_EXPIRY_JIFFIES;
+  1519		} else if (efx_ptp_use_mac_tx_timestamps(efx)) {
+  1520			/* IPv6 PTP only supported by devices with MAC hw timestamp */
+  1521			struct in6_addr *addr = &ipv6_hdr(skb)->saddr;
+  1522	
+  1523			rxfilter = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
+  1524							      addr, PTP_EVENT_PORT);
+  1525			if (IS_ERR(rxfilter))
+  1526				goto fail;
+  1527	
+  1528			rxfilter->expiry = jiffies + UCAST_FILTER_EXPIRY_JIFFIES;
+  1529	
+  1530			rxfilter = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
+  1531							      addr, PTP_GENERAL_PORT);
+  1532			if (IS_ERR(rxfilter))
+  1533				goto fail;
+  1534	
+  1535			rxfilter->expiry = jiffies + UCAST_FILTER_EXPIRY_JIFFIES;
+  1536		} else {
+  1537			return -EOPNOTSUPP;
+  1538		}
+  1539	
+  1540		return 0;
+  1541	
+  1542	fail:
+  1543		efx_ptp_remove_filters(efx, &ptp->rxfilters_ucast);
+  1544		return PTR_ERR(rxfilter);
+  1545	}
+  1546	
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-Eric Auger (1):
-      vhost/net: Clear the pending messages when the backend is removed
-
-Jason Wang (1):
-      vhost-scsi: unbreak any layout for response
-
-Shunsuke Mie (1):
-      tools/virtio: fix the vringh test for virtio ring changes
-
-Tanmay Bhushan (1):
-      vdpa: ifcvf: Do proper cleanup if IFCVF init fails
-
- drivers/vdpa/ifcvf/ifcvf_main.c  |  2 +-
- drivers/vhost/net.c              |  3 +++
- drivers/vhost/scsi.c             | 21 +++++++++++++++++----
- drivers/vhost/vhost.c            |  3 ++-
- drivers/vhost/vhost.h            |  1 +
- tools/virtio/linux/bug.h         |  8 +++-----
- tools/virtio/linux/build_bug.h   |  7 +++++++
- tools/virtio/linux/cpumask.h     |  7 +++++++
- tools/virtio/linux/gfp.h         |  7 +++++++
- tools/virtio/linux/kernel.h      |  1 +
- tools/virtio/linux/kmsan.h       | 12 ++++++++++++
- tools/virtio/linux/scatterlist.h |  1 +
- tools/virtio/linux/topology.h    |  7 +++++++
- 13 files changed, 69 insertions(+), 11 deletions(-)
- create mode 100644 tools/virtio/linux/build_bug.h
- create mode 100644 tools/virtio/linux/cpumask.h
- create mode 100644 tools/virtio/linux/gfp.h
- create mode 100644 tools/virtio/linux/kmsan.h
- create mode 100644 tools/virtio/linux/topology.h
-
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
