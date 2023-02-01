@@ -2,130 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE39C685E24
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 05:04:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF25B685E7B
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 05:30:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230255AbjBAEEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Jan 2023 23:04:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58774 "EHLO
+        id S230215AbjBAEam (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Jan 2023 23:30:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230131AbjBAEEh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 23:04:37 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A073B457C0;
-        Tue, 31 Jan 2023 20:04:31 -0800 (PST)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30VMj67G008260;
-        Tue, 31 Jan 2023 20:04:22 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=y1bWAoQwDCisxlh9pZlz7FoeUoSd9CHu/MlmbLIzVOM=;
- b=FflzD2OZ/CPgPrH/xyX7H+nOhv6C3PfB+1/MkYUT46v+fa+l9Bwsp+8mV4DM9qZEtPEl
- boPDmUmnerXZhI0VLo8fiSp242MJWgis8mnTr+4+ZsTdfyOpBlgMr8DRjY8QrhrXykQd
- h0UdxZ3kUgbO69KarjfAu2ngjaF9ZOqmSAs3iHg1b05Xac5BneFxTkWyBl2CMTslUU7O
- aNs7UhmbBOD2MPpv9j3lmQntquK4QQSakhDObki3rFKMujxCW0z0GSfBMyTEUAGsOeti
- jGv7SQp7W/QDW7Sv9bEDHBdNEu6cYBZoFmigTro9ZI1XG2hkVEyufix5ySJZCvSaqvsB Ew== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3nd442vmu4-6
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 31 Jan 2023 20:04:21 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 31 Jan
- 2023 20:03:06 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
- Transport; Tue, 31 Jan 2023 20:03:06 -0800
-Received: from localhost.localdomain (unknown [10.28.36.165])
-        by maili.marvell.com (Postfix) with ESMTP id A468E3F70DC;
-        Tue, 31 Jan 2023 20:03:03 -0800 (PST)
-From:   Ratheesh Kannoth <rkannoth@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <leon@kernel.org>
-CC:     <sgoutham@marvell.com>, Ratheesh Kannoth <rkannoth@marvell.com>
-Subject: [net-next PATCH v1] octeontx2-af: Removed unnecessary debug messages.
-Date:   Wed, 1 Feb 2023 09:33:01 +0530
-Message-ID: <20230201040301.1034843-1-rkannoth@marvell.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229944AbjBAEal (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Jan 2023 23:30:41 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D83C11655;
+        Tue, 31 Jan 2023 20:30:40 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id 7so6685490pgh.7;
+        Tue, 31 Jan 2023 20:30:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=QhmRQh7eGRD4E8NFgtgI0rUXrNELSf240bb2M/M0oZA=;
+        b=JuIp9hpOqQIDNT1wOM3MmsUKQJ3pqtNCY0ekEQGNX5i9w0KZaVqS2iGJvY06mm/LAn
+         qt7z7d4yRGSHb7fS2Z5MAvN0rIwkK7UjWR2ZOOO9IQRk1INW2H+JDVnvODCelFUs1lyy
+         kaw9OxfhFfj/CE0V4Lz8JMoaDJdWjO2YKVXx74XjUMqecU92FewAftJyR4ETCW2QHeI8
+         g+JZAdPaa8zUVJFrmFT7IrdY75Y5fsChXI+q/AbaFX12jmuCP9iASEL+NowKSedSdQ/f
+         HRWp+US2LuAPscs1Oja3pVTzkebThyitcGIVDVSSgEje+xsJ1RnLJ1Mn4MXpBiCFnhiE
+         0WPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=QhmRQh7eGRD4E8NFgtgI0rUXrNELSf240bb2M/M0oZA=;
+        b=1JrwUlRklwdz355Kihf3rh5Uk0RirFQk+5HY2ChvoLnRd4+/7N9vFEA4kqgdW/Do8e
+         zQUcdM/NjeUjk09IiKzOTcBqdUT8dPywqMTxCgmjIQXbrEsewjkcwpjYqi61dAfNIGUb
+         nv2I9ZoVwMvcc++RhbRKeS7frNkDuB/urxooh6ziSiwF6ycdIHcRQerjYNaBNmXB6bCg
+         OIm0dU1EMBKDHw9/KRxwUNnRJVwRri1DyV/HPSEuIShJ4+1i7As6QzorYJkcgE4gQNMu
+         uAAtJghT/Q4wth66C7amvZ+NUY6mk/t8QruE0KFowJgNahbfku4fI462fltfwPTv7de/
+         8fsQ==
+X-Gm-Message-State: AO0yUKURlf0yrT2ffABARjOmJD0xULhbotm/fl+biuhd67PzlebdojjU
+        xzMS/l8JHuLs/CQo7mWcwJx1gpynhIaVrg==
+X-Google-Smtp-Source: AK7set8HcRP1PB44MnW2FWI+532Tm70mZEFd1YX94kUZmEAjQk8Jdu9kZDqWAOTz06bxfgsR7q2gJg==
+X-Received: by 2002:a05:6a00:1495:b0:592:3bf3:f557 with SMTP id v21-20020a056a00149500b005923bf3f557mr1467119pfu.22.1675225839692;
+        Tue, 31 Jan 2023 20:30:39 -0800 (PST)
+Received: from dell.roblox.local ([50.232.73.154])
+        by smtp.gmail.com with ESMTPSA id b5-20020a056a000cc500b0056be1581126sm1434021pfv.143.2023.01.31.20.30.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Jan 2023 20:30:39 -0800 (PST)
+From:   Wenhua Zhao <whzhao@gmail.com>
+Cc:     Wenhua Zhao <whzhao@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net/socket: set socket inode times to current_time
+Date:   Tue, 31 Jan 2023 20:30:19 -0800
+Message-Id: <20230201043019.592994-1-whzhao@gmail.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: PKkPIdpjXqXcaEMn0fywGNowunrsRclX
-X-Proofpoint-ORIG-GUID: PKkPIdpjXqXcaEMn0fywGNowunrsRclX
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-01-31_08,2023-01-31_01,2022-06-22_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sunil Goutham <sgoutham@marvell.com>
+Socket creation time are sometimes useful but not available becasue the
+socket inode times are not set when initializing the inode.  This patch
+sets the socket inode times to current_time().
 
-NPC exact match feature is supported only on one silicon
-variant, removed debug messages which print that this
-feature is not available on all other silicon variants.
+Before the fix, the socket inode times are at epoch, for example:
 
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
+    $ stat -L /proc/383/fd/3
+      File: /proc/383/fd/3
+      Size: 0               Blocks: 0          IO Block: 4096   socket
+    Device: 0,8     Inode: 15996       Links: 1
+    Access: (0777/srwxrwxrwx)  Uid: ( 1000/    arch)   Gid: ( 1000/    arch)
+    Access: 1970-01-01 00:00:00.000000000 +0000
+    Modify: 1970-01-01 00:00:00.000000000 +0000
+    Change: 1970-01-01 00:00:00.000000000 +0000
+
+After the fix, the inode times are the socket creation time:
+
+    $ stat -L /proc/254/fd/3
+      File: /proc/254/fd/3
+      Size: 0               Blocks: 0          IO Block: 4096   socket
+    Device: 0,7     Inode: 13170       Links: 1
+    Access: (0777/srwxrwxrwx)  Uid: ( 1000/    arch)   Gid: ( 1000/    arch)
+    Access: 2023-02-01 03:27:50.094731201 +0000
+    Modify: 2023-02-01 03:27:50.094731201 +0000
+    Change: 2023-02-01 03:27:50.094731201 +0000
+
+Signed-off-by: Wenhua Zhao <whzhao@gmail.com>
 ---
- .../marvell/octeontx2/af/rvu_npc_hash.c        | 18 ++++--------------
- 1 file changed, 4 insertions(+), 14 deletions(-)
+ net/socket.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-index f69102d20c90..20ebb9c95c73 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-@@ -200,10 +200,8 @@ void npc_config_secret_key(struct rvu *rvu, int blkaddr)
- 	struct rvu_hwinfo *hw = rvu->hw;
- 	u8 intf;
+diff --git a/net/socket.c b/net/socket.c
+index 888cd618a968..c656c9599a92 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -635,6 +635,7 @@ struct socket *sock_alloc(void)
+ 	inode->i_uid = current_fsuid();
+ 	inode->i_gid = current_fsgid();
+ 	inode->i_op = &sockfs_inode_ops;
++	inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
  
--	if (!hwcap->npc_hash_extract) {
--		dev_info(rvu->dev, "HW does not support secret key configuration\n");
-+	if (!hwcap->npc_hash_extract)
- 		return;
--	}
- 
- 	for (intf = 0; intf < hw->npc_intfs; intf++) {
- 		rvu_write64(rvu, blkaddr, NPC_AF_INTFX_SECRET_KEY0(intf),
-@@ -221,10 +219,8 @@ void npc_program_mkex_hash(struct rvu *rvu, int blkaddr)
- 	struct rvu_hwinfo *hw = rvu->hw;
- 	u8 intf;
- 
--	if (!hwcap->npc_hash_extract) {
--		dev_dbg(rvu->dev, "Field hash extract feature is not supported\n");
-+	if (!hwcap->npc_hash_extract)
- 		return;
--	}
- 
- 	for (intf = 0; intf < hw->npc_intfs; intf++) {
- 		npc_program_mkex_hash_rx(rvu, blkaddr, intf);
-@@ -1853,19 +1849,13 @@ int rvu_npc_exact_init(struct rvu *rvu)
- 
- 	/* Check exact match feature is supported */
- 	npc_const3 = rvu_read64(rvu, blkaddr, NPC_AF_CONST3);
--	if (!(npc_const3 & BIT_ULL(62))) {
--		dev_info(rvu->dev, "%s: No support for exact match support\n",
--			 __func__);
-+	if (!(npc_const3 & BIT_ULL(62)))
- 		return 0;
--	}
- 
- 	/* Check if kex profile has enabled EXACT match nibble */
- 	cfg = rvu_read64(rvu, blkaddr, NPC_AF_INTFX_KEX_CFG(NIX_INTF_RX));
--	if (!(cfg & NPC_EXACT_NIBBLE_HIT)) {
--		dev_info(rvu->dev, "%s: NPC exact match nibble not enabled in KEX profile\n",
--			 __func__);
-+	if (!(cfg & NPC_EXACT_NIBBLE_HIT))
- 		return 0;
--	}
- 
- 	/* Set capability to true */
- 	rvu->hw->cap.npc_exact_match_enabled = true;
+ 	return sock;
+ }
 -- 
-2.25.1
+2.39.1
 
