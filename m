@@ -2,99 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EE59686DAF
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 19:10:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A9ED686DB6
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 19:13:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231524AbjBASKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 13:10:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53012 "EHLO
+        id S231491AbjBASNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 13:13:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbjBASKY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 13:10:24 -0500
-Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 369221CF44;
-        Wed,  1 Feb 2023 10:10:23 -0800 (PST)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailout.west.internal (Postfix) with ESMTP id 3073532009A4;
-        Wed,  1 Feb 2023 13:10:17 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute6.internal (MEProxy); Wed, 01 Feb 2023 13:10:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1675275016; x=1675361416; bh=wZVarq9wJ5kZO9X2EgYSaB6n3mMF
-        V5UjT+9T/Nr3jsU=; b=Td6xyFKYYh4elevf9+Mw/pA8go+44leCjtjeWZklrO1+
-        4BrZXCstdlGJDdZu/SAeJh3nbzrXAnBKx0YT39lLJj2+L6yc5xAGQPpk+9idNTiv
-        5Qw7hx1DILUzjA1W8Ei0jI3Ckam/V4Vua82q+qedXNCvYKRnKSMqLiaZmD+PkRp6
-        5pCpGZJ55AzYnrCvwBdZsla4sekjsutMsCgCbpp97fXzImo9trUHzk2nHW8ejqjR
-        XIiqWxpIFWSwhsjwi/a7XoOi3GItxG7x30lq8WRXm1sOeu//YH5nZOpzHmjm+ZTS
-        EeNYIQ/3dvjqmEDln+fmhLFu+lpYH4nINVYayVzl4Q==
-X-ME-Sender: <xms:B6vaYxSD-nV-pt_zeRp-FTtw9kuMRvlre1p3m0P37WyaOr5sbyI15g>
-    <xme:B6vaY6zj08MRF5BSmYEgChj3EXEMMSnknzzbgSeC1dFiaKbIGuunY0Tj8NgUmSuuR
-    XATRxHvgqKCsJU>
-X-ME-Received: <xmr:B6vaY23QtMFusVrpOn0sNr8gvJMDxocCt6BKZPifO2v_-X0cgOAWQUN3C1t3_7eUubIwaIppiXF7iQDYWZ6p_uNKy8E>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudefiedgudduudcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkugho
-    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
-    htthgvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeej
-    geeghfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:B6vaY5AYntxM3JbCGrkiTY-SP8l93nuMf2GkowdIYRdNUlwvWOaVJA>
-    <xmx:B6vaY6iZZbp7lwPGG_VorYF8uWUp7WlbS9x3Rw2EITUz0rCL-6PWXQ>
-    <xmx:B6vaY9r4FX1IU69Yon0ybTRpxOauT8yDm_Jmr_Zhw-Ch40rI1JG2nQ>
-    <xmx:CKvaY4PX6Rn369eXdfF4yXYFbMjpjA7tUeNmXPlgeYMduC9ybtiV1Q>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 1 Feb 2023 13:10:14 -0500 (EST)
-Date:   Wed, 1 Feb 2023 20:10:10 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     "Hans J. Schultz" <netdev@kapio-technology.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
-        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>
-Subject: Re: [PATCH net-next 1/5] net: bridge: add dynamic flag to switchdev
- notifier
-Message-ID: <Y9qrAup9Xt/ZDEG0@shredder>
-References: <20230130173429.3577450-1-netdev@kapio-technology.com>
- <20230130173429.3577450-2-netdev@kapio-technology.com>
+        with ESMTP id S229454AbjBASNs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 13:13:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4351124C83
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 10:13:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675275182;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=aBiZv6kgolXZRi0uzRYeVBHuWMhXVUDzRvu/mO7RexM=;
+        b=PdxxF95kaLD8e2DDE+kdYfvyFZFQgSR1RWGipjYMvVpH+Iki8OWIScG4tmADxfzvyN9Z/N
+        ZQMy6JM0M+NiYq8/XMk7j5DnZkU8qz3flaQifjKD55BGWH/GHN+1AZYYI8Whozr7WU3j2y
+        FvrMB61pfuwgYeyeHZ4s/g5FIfvLuZo=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-114-0RFGbqu5NZOl6jNmgqUKWQ-1; Wed, 01 Feb 2023 13:12:57 -0500
+X-MC-Unique: 0RFGbqu5NZOl6jNmgqUKWQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2BC2B855308;
+        Wed,  1 Feb 2023 18:12:56 +0000 (UTC)
+Received: from firesoul.localdomain (ovpn-208-9.brq.redhat.com [10.40.208.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D93A82026D4B;
+        Wed,  1 Feb 2023 18:12:55 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id B44AD300005EE;
+        Wed,  1 Feb 2023 19:12:54 +0100 (CET)
+Subject: [PATCH bpf-next V1] selftests/bpf: fix unmap bug in
+ prog_tests/xdp_metadata.c
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org, Stanislav Fomichev <sdf@google.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        martin.lau@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, dsahern@gmail.com,
+        willemb@google.com, void@manifault.com, kuba@kernel.org,
+        xdp-hints@xdp-project.net
+Date:   Wed, 01 Feb 2023 19:12:54 +0100
+Message-ID: <167527517464.938135.13750760520577765269.stgit@firesoul>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230130173429.3577450-2-netdev@kapio-technology.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -102,53 +66,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 06:34:25PM +0100, Hans J. Schultz wrote:
-> To be able to add dynamic FDB entries to drivers from userspace, the
-> dynamic flag must be added when sending RTM_NEWNEIGH events down.
-> 
-> Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
-> ---
->  include/net/switchdev.h   | 1 +
->  net/bridge/br_switchdev.c | 2 ++
->  2 files changed, 3 insertions(+)
-> 
-> diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-> index ca0312b78294..aaf918d4ba67 100644
-> --- a/include/net/switchdev.h
-> +++ b/include/net/switchdev.h
-> @@ -249,6 +249,7 @@ struct switchdev_notifier_fdb_info {
->  	u8 added_by_user:1,
->  	   is_local:1,
->  	   locked:1,
-> +	   is_dyn:1,
->  	   offloaded:1;
->  };
->  
-> diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
-> index 7eb6fd5bb917..4420fcbbfdb2 100644
-> --- a/net/bridge/br_switchdev.c
-> +++ b/net/bridge/br_switchdev.c
-> @@ -136,6 +136,8 @@ static void br_switchdev_fdb_populate(struct net_bridge *br,
->  	item->added_by_user = test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags);
->  	item->offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags);
->  	item->is_local = test_bit(BR_FDB_LOCAL, &fdb->flags);
-> +	item->is_dyn = !test_bit(BR_FDB_STATIC, &fdb->flags) &&
+The function close_xsk() unmap via munmap() the wrong memory pointer.
 
-Why not 'is_static' and be consistent with the bridge flag like all the
-other fields?
+The call xsk_umem__delete(xsk->umem) have already freed xsk->umem.
+Thus the call to munmap(xsk->umem, UMEM_SIZE) will have unpredictable
+behavior that can lead to Segmentation fault elsewhere, as man page
+explain subsequent references to these pages will generate SIGSEGV.
 
-Regardless of how you name this field, it is irrelevant for
-'SWITCHDEV_FDB_ADD_TO_BRIDGE' notifications that all add FDB entries
-with the 'BR_FDB_ADDED_BY_EXT_LEARN' flag set, which makes
-'BR_FDB_STATIC' irrelevant.
+Fixes: e2a46d54d7a1 ("selftests/bpf: Verify xdp_metadata xdp->af_xdp path")
+Reported-by: Martin KaFai Lau <martin.lau@kernel.org>
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+---
+ .../selftests/bpf/prog_tests/xdp_metadata.c        |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +		item->added_by_user;
+diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_metadata.c b/tools/testing/selftests/bpf/prog_tests/xdp_metadata.c
+index e033d48288c0..241909d71c7e 100644
+--- a/tools/testing/selftests/bpf/prog_tests/xdp_metadata.c
++++ b/tools/testing/selftests/bpf/prog_tests/xdp_metadata.c
+@@ -121,7 +121,7 @@ static void close_xsk(struct xsk *xsk)
+ 		xsk_umem__delete(xsk->umem);
+ 	if (xsk->socket)
+ 		xsk_socket__delete(xsk->socket);
+-	munmap(xsk->umem, UMEM_SIZE);
++	munmap(xsk->umem_area, UMEM_SIZE);
+ }
+ 
+ static void ip_csum(struct iphdr *iph)
 
-Unclear why this is needed...
 
->  	item->locked = false;
->  	item->info.dev = (!p || item->is_local) ? br->dev : p->dev;
->  	item->info.ctx = ctx;
-> -- 
-> 2.34.1
-> 
