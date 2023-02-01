@@ -2,129 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91982686D70
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 18:54:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4625686D7F
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 18:58:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231297AbjBARyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 12:54:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43812 "EHLO
+        id S231614AbjBAR6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 12:58:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229851AbjBARye (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 12:54:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B308F1EBF3
-        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 09:53:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675274029;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Y3C/jKpTygMNBKacLgOlja89rzh1jqDZR0L6gDa+JpI=;
-        b=WwoDIHq+bKeALx13ah4SAYQYpEKWNZXVMxUjxutBSHyLfBzjIswpzS5nSj7eOgvd2VhE5J
-        8azGX9xo7jwKloOvalT5msF4DFdLYbJ6EUnPaFRRAIRpJf7F9l7NmC96hxx3aPxX8S3nn1
-        M1Rgz4yYNRaOT0E8HDxWxFEXiUtliOo=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-50-YcaZEndgP3SoRCKXo_Hq-g-1; Wed, 01 Feb 2023 12:53:47 -0500
-X-MC-Unique: YcaZEndgP3SoRCKXo_Hq-g-1
-Received: by mail-ej1-f71.google.com with SMTP id ti11-20020a170907c20b00b00886244203fcso7451972ejc.2
-        for <netdev@vger.kernel.org>; Wed, 01 Feb 2023 09:53:47 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :to:subject:cc:user-agent:mime-version:date:message-id:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Y3C/jKpTygMNBKacLgOlja89rzh1jqDZR0L6gDa+JpI=;
-        b=21H4qYIB5Jxb+tZlVOnu69cNh5G9kuAUSAQXgmoDxbCnoefDkhfl6pqxTu+MOxqwP6
-         9UNUmT2LmOBTG7MkJyfpc+yGJUH9iyz3egiga2Eya1xB9NZOKYVOpG3cYncGAb2J4wZA
-         kebmBqlESuwHrG2KSxbgHb3fyG1cenUvdT9banJrcE9eyiQK/MZAmTxeXPp6rsROd+Wy
-         4mig1ZFJAgP5cdNc9nq3Y/X7QpFB41XGrSbYYGuCtWbtCjBf6yY1c67yq4K+gUMhtqE/
-         ShAY8d25ljJ0bFRiBYvoyUJlMhE8NmCv+HoM69bBK5rb9fh8iX7ojYELWe32d3omVC2T
-         RiKw==
-X-Gm-Message-State: AO0yUKWKDjT3nQViYzE4UGf1nOna3af5K+79gdtTzVGRxZX0rTqWrX0d
-        m8o7QUrNz9MbEj10NI4aqv9PHKi+6/u7qII7bl1EUYfNx+dntEVINYsosuX7JJSPomqJ1j7PZPX
-        ioG4sqetIYuD7ALjo
-X-Received: by 2002:a17:907:9914:b0:878:8237:7abb with SMTP id ka20-20020a170907991400b0087882377abbmr4047797ejc.35.1675274026736;
-        Wed, 01 Feb 2023 09:53:46 -0800 (PST)
-X-Google-Smtp-Source: AK7set9iaHy0dAJGKxRMQzkfuhvMi3UlE3SQOtU6bDESavzDpTPXmKddwsC1a4XXH1ARn7hHErTIlg==
-X-Received: by 2002:a17:907:9914:b0:878:8237:7abb with SMTP id ka20-20020a170907991400b0087882377abbmr4047778ejc.35.1675274026560;
-        Wed, 01 Feb 2023 09:53:46 -0800 (PST)
-Received: from [192.168.42.222] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
-        by smtp.gmail.com with ESMTPSA id o18-20020a170906359200b0088dc98e4510sm1279111ejb.112.2023.02.01.09.53.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Feb 2023 09:53:46 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <73d3e5c5-a38b-6f83-3022-b0442203ad6b@redhat.com>
-Date:   Wed, 1 Feb 2023 18:53:44 +0100
+        with ESMTP id S229609AbjBAR6c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 12:58:32 -0500
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7287E4C0DB;
+        Wed,  1 Feb 2023 09:58:30 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1675274285; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=Lo9Ml/vQ1/Wtky7jkidoReeOE45KTxClPo73lvQK5Raa38x9za6Hnuur4fVXwlevNoxbGxZaxv+P/UBTLzgMnm9zCehw65xiYN8ok9H3xWfP4qJFf/97GhUBFq7k1dpa6k9dMLcGfJ2xTtLzyPKo8O1C5s4jI77h1AK/2lpIsxo=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1675274285; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=sanDwlKMu1XJbvPWqtzhQXrv5xMEUsJJgfXxkqVcqSs=; 
+        b=bT82x/CIcO360OZamHyzcf4moNj2281Bgg8vjBYchmM1vAafvM2+DDXjx4sSi2hmaHEX4lquAGOIj5SNiVNAKJHKiADr0FLCwRaLI7diQwCqpTUejGWNm0wMh1XLZ+BxZMnyKJDcJCOvWdNumVyLx82/nJAO+/xGAy2taCII+X8=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1675274285;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=sanDwlKMu1XJbvPWqtzhQXrv5xMEUsJJgfXxkqVcqSs=;
+        b=WkazmVmtMlgzQ71boLbgGpKLQSsv8JGB50U9Nyq7hbIgESX0tGeF7ObJmjUDLtUW
+        KupOLmo5hR3fjutejuQ+ehhW3zKQFvIVRytr2geV0URikSZXQ2OzbLSK08br6rbAjPZ
+        SDHBcotATnx23WsZmPfJL0QbojheL+BJ1qi4FYFA=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 167527428298987.0552013678548; Wed, 1 Feb 2023 09:58:02 -0800 (PST)
+Message-ID: <5968fa14-e894-7592-c2a4-d3aeaa14174d@arinc9.com>
+Date:   Wed, 1 Feb 2023 20:57:58 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, martin.lau@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        dsahern@gmail.com, willemb@google.com, void@manifault.com,
-        kuba@kernel.org, xdp-hints@xdp-project.net, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next V2 2/4] selftests/bpf: xdp_hw_metadata cleanup
- cause segfault
-To:     Martin KaFai Lau <martin.lau@linux.dev>,
-        Stanislav Fomichev <sdf@google.com>
-References: <167527267453.937063.6000918625343592629.stgit@firesoul>
- <167527271533.937063.5717065138099679142.stgit@firesoul>
- <484ca75b-d5f0-31db-6f81-2fb17ce0702e@linux.dev>
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net] net: ethernet: mtk_eth_soc: disable hardware DSA
+ untagging for second MAC
 Content-Language: en-US
-In-Reply-To: <484ca75b-d5f0-31db-6f81-2fb17ce0702e@linux.dev>
+To:     Paolo Abeni <pabeni@redhat.com>, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        erkin.bozoglu@xeront.com,
+        Frank Wunderlich <frank-w@public-files.de>
+References: <20230128094232.2451947-1-arinc.unal@arinc9.com>
+ <f753ad2b0c19e085867698f7bbbe37f6d172772e.camel@redhat.com>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <f753ad2b0c19e085867698f7bbbe37f6d172772e.camel@redhat.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 01/02/2023 18.46, Martin KaFai Lau wrote:
-> On 2/1/23 9:31 AM, Jesper Dangaard Brouer wrote:
->> diff --git a/tools/testing/selftests/bpf/xdp_hw_metadata.c 
->> b/tools/testing/selftests/bpf/xdp_hw_metadata.c
->> index 3823b1c499cc..438083e34cce 100644
->> --- a/tools/testing/selftests/bpf/xdp_hw_metadata.c
->> +++ b/tools/testing/selftests/bpf/xdp_hw_metadata.c
->> @@ -121,7 +121,7 @@ static void close_xsk(struct xsk *xsk)
->>           xsk_umem__delete(xsk->umem);
->>       if (xsk->socket)
->>           xsk_socket__delete(xsk->socket);
->> -    munmap(xsk->umem, UMEM_SIZE);
->> +    munmap(xsk->umem_area, UMEM_SIZE);
+On 31.01.2023 16:00, Paolo Abeni wrote:
+> On Sat, 2023-01-28 at 12:42 +0300, arinc9.unal@gmail.com wrote:
+>> From: Arınç ÜNAL <arinc.unal@arinc9.com>
+>>
+>> According to my tests on MT7621AT and MT7623NI SoCs, hardware DSA untagging
+>> won't work on the second MAC. Therefore, disable this feature when the
+>> second MAC of the MT7621 and MT7623 SoCs is being used.
+>>
+>> Fixes: 2d7605a72906 ("net: ethernet: mtk_eth_soc: enable hardware DSA untagging")
+>> Link: https://lore.kernel.org/netdev/6249fc14-b38a-c770-36b4-5af6d41c21d3@arinc9.com/
+>> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+>> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+>> ---
+>>
+>> Final send which should end up on the list. I tested this with Felix's
+>> upcoming patch series. This fix is still needed on top of it.
+>>
+>> https://lore.kernel.org/netdev/20221230073145.53386-1-nbd@nbd.name/
+>>
+>> The MTK_GMAC1_TRGMII capability is only on the MT7621 and MT7623 SoCs which
+>> I see this problem on. I'm new to coding so I took an educated guess from
+>> the use of MTK_NETSYS_V2 to disable this feature altogether for MT7986 SoC.
 > 
-> Ah. Good catch. This should also explain a similar issue that CI is 
-> seeing in the prog_tests/xdp_metadata.c.
+> Keeping this one a little more on pw. It would be great is someone else
+> could validate the above on the relevant H/W.
 
-Yes, very likely same bug in prog_tests/xdp_metadata.c.
+CC'ing Frank. Frank, could you test this on your Bananapi BPI-R2?
 
-It was super tricky (and time consuming) to find as I was debugging in
-GDB and it didn't make sense that checking a value against NULL would
-cause a segfault.  Plus, sometimes it worked without issues.
-
-We also need this fix:
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_metadata.c 
-b/tools/testing/selftests/bpf/prog_tests/xdp_metadata.c
-index e033d48288c0..241909d71c7e 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_metadata.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_metadata.c
-@@ -121,7 +121,7 @@ static void close_xsk(struct xsk *xsk)
-                 xsk_umem__delete(xsk->umem);
-         if (xsk->socket)
-                 xsk_socket__delete(xsk->socket);
--       munmap(xsk->umem, UMEM_SIZE);
-+       munmap(xsk->umem_area, UMEM_SIZE);
-  }
-
+Arınç
