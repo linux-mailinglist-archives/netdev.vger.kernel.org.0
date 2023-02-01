@@ -2,66 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8ADC1686D20
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 18:34:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B676686D44
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 18:43:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231551AbjBAReY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 12:34:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56826 "EHLO
+        id S231737AbjBARn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 12:43:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231630AbjBAReQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 12:34:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E028C171
-        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 09:33:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675272753;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PM+cJWN8nqTtyXDobjfXnOOJBoI+UmCw0CJPEQIXEpA=;
-        b=RY/RWFc5QKRnFpA8mXNKtP6sOzWCKk1eUDUETUPfMp5q4qJv/s1qcGXZHsjHoQYPMEa9hT
-        afD1/lxY0X1g8C8FkYvumxMsyypQCmIiFDCY7/rc5CkJkD4z+B5vbCw1oXeD1YHZh2dOMP
-        nJmC86GYfGhvb6BFKLRrtfB/v8GuFiA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-121-lsa-gwieOzaUruCJ6FDLnw-1; Wed, 01 Feb 2023 12:32:16 -0500
-X-MC-Unique: lsa-gwieOzaUruCJ6FDLnw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AA804281DE77;
-        Wed,  1 Feb 2023 17:32:06 +0000 (UTC)
-Received: from firesoul.localdomain (ovpn-208-9.brq.redhat.com [10.40.208.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 65EF12166B33;
-        Wed,  1 Feb 2023 17:32:06 +0000 (UTC)
-Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 726083000061C;
-        Wed,  1 Feb 2023 18:32:05 +0100 (CET)
-Subject: [PATCH bpf-next V2 4/4] selftests/bpf: xdp_hw_metadata use strncpy
- for ifname
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     bpf@vger.kernel.org, Stanislav Fomichev <sdf@google.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        martin.lau@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, dsahern@gmail.com,
-        willemb@google.com, void@manifault.com, kuba@kernel.org,
-        xdp-hints@xdp-project.net
-Date:   Wed, 01 Feb 2023 18:32:05 +0100
-Message-ID: <167527272543.937063.16993147790832546209.stgit@firesoul>
-In-Reply-To: <167527267453.937063.6000918625343592629.stgit@firesoul>
-References: <167527267453.937063.6000918625343592629.stgit@firesoul>
-User-Agent: StGit/1.4
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        with ESMTP id S231789AbjBARnt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 12:43:49 -0500
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0144EA5DC
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 09:43:47 -0800 (PST)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-4fee82718afso207224787b3.5
+        for <netdev@vger.kernel.org>; Wed, 01 Feb 2023 09:43:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=as/KFYcbQVX5Tub93SFUNSqZVlakPNUtP2+hNalMTTI=;
+        b=ezamLb8Kq9KRixxzGnuEbkqi4YYc89HytMSWSruneRstwNl3qfwxmaWh095UKdOOrf
+         l0KizB58obbDCARU7YYwMcQ15vcjgFe/XeVd9nw16sDJjHkZI8VRm58CJ8Cxp8wU/hSi
+         u+8yKeLKshghIQclkkxIWdQbHzQgPzxV5wPoj2U/0KAPPEz3wH2bYJhBus1DolCP8AbJ
+         3GzqHXY9kgJ0RGdgIFr79yEzDQAW5I6PdreIhvMEry/oliifYIlBJYfOtUclFQ73f3Yh
+         PiSfucawdLLT9bEd8WzDmlG/zn5EHCC5dLQuUVnd3dSHUFwDXdFpMJ/hcBqFTvNLa83R
+         pSww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=as/KFYcbQVX5Tub93SFUNSqZVlakPNUtP2+hNalMTTI=;
+        b=gMUs69zTL3XgW/WR7O8FTm5HH7eDrAfi4M0ZMJtEtDCWfGYi11//NRvsuL2m+eiuvT
+         Un1nBcQiNqjcQ5mErotnCwMbQMx/MqS8qxpeUO1SS/WBW1OwmxRlLTmwpJ/flaJw7SPF
+         X+gXIlUwCf3ttRuhQnRIj/00OluDpQhNYRZbGbWIymechXOlzZs8+3A4rzjZo3f7cQrt
+         /Y4o9HPX/KMOxQUROy7J+yJgNcuEj+pFKb+EPSJDJKDhipu6dmhY171zSddKn72Vqt7u
+         Q+TOSNCEYRBaJWRUQsrn78grS3Vi9mi9cFDLl1Hm2dfziVjYAXzG7KIeXScr8oOaMJ12
+         co7w==
+X-Gm-Message-State: AO0yUKV4DBpfQV1mWlCZ31SOWoQHLLuVNZWjBfoIFgqO+VALNfOxEUX3
+        H3FkbrXh++7h1vC0fFuplGwemtHawyvahw==
+X-Google-Smtp-Source: AK7set97BH/cFR7JQRmiMp/ksiI40u10t9LSIH0eYK8cZ6D/eXP9rlpzAG6N4g/gKaWuohN5U+xN2JTWyRUdFg==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a25:cfcb:0:b0:827:8002:1dba with SMTP id
+ f194-20020a25cfcb000000b0082780021dbamr405812ybg.229.1675273427298; Wed, 01
+ Feb 2023 09:43:47 -0800 (PST)
+Date:   Wed,  1 Feb 2023 17:43:45 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.39.1.456.gfc5497dd1b-goog
+Message-ID: <20230201174345.2708943-1-edumazet@google.com>
+Subject: [PATCH net-next] tcp: add TCP_MINTTL drop reason
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,45 +67,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ifname char pointer is taken directly from the command line
-as input and the string is copied directly into struct ifreq
-via strcpy. This makes it easy to corrupt other members of ifreq
-and generally do stack overflows.
+In the unlikely case incoming packets are dropped because
+of IP_MINTTL / IPV6_MINHOPCOUNT contraints...
 
-Most often the ioctl will fail with:
- ./xdp_hw_metadata: ioctl(SIOCETHTOOL): Bad address
-
-As people will likely copy-paste code for getting NIC queue
-channels (rxq_num) and enabling HW timestamping (hwtstamp_ioctl)
-lets make this code a bit more secure by using strncpy.
-
-Fixes: 297a3f124155 ("selftests/bpf: Simple program to dump XDP RX metadata")
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- tools/testing/selftests/bpf/xdp_hw_metadata.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/net/dropreason.h | 6 ++++++
+ net/ipv4/tcp_ipv4.c      | 1 +
+ net/ipv6/tcp_ipv6.c      | 3 ++-
+ 3 files changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/xdp_hw_metadata.c b/tools/testing/selftests/bpf/xdp_hw_metadata.c
-index 58fde35abad7..2a66bd3f2c9f 100644
---- a/tools/testing/selftests/bpf/xdp_hw_metadata.c
-+++ b/tools/testing/selftests/bpf/xdp_hw_metadata.c
-@@ -270,7 +270,7 @@ static int rxq_num(const char *ifname)
- 	struct ifreq ifr = {
- 		.ifr_data = (void *)&ch,
- 	};
--	strcpy(ifr.ifr_name, ifname);
-+	strncpy(ifr.ifr_name, ifname, IF_NAMESIZE - 1);
- 	int fd, ret;
+diff --git a/include/net/dropreason.h b/include/net/dropreason.h
+index 70539288f9958716f9164cac3435cce34bd21f51..94bc3d5d880305a8c968a1801dabef83d995c567 100644
+--- a/include/net/dropreason.h
++++ b/include/net/dropreason.h
+@@ -71,6 +71,7 @@
+ 	FN(DUP_FRAG)			\
+ 	FN(FRAG_REASM_TIMEOUT)		\
+ 	FN(FRAG_TOO_FAR)		\
++	FN(TCP_MINTTL)			\
+ 	FNe(MAX)
  
- 	fd = socket(AF_UNIX, SOCK_DGRAM, 0);
-@@ -291,7 +291,7 @@ static void hwtstamp_ioctl(int op, const char *ifname, struct hwtstamp_config *c
- 	struct ifreq ifr = {
- 		.ifr_data = (void *)cfg,
- 	};
--	strcpy(ifr.ifr_name, ifname);
-+	strncpy(ifr.ifr_name, ifname, IF_NAMESIZE - 1);
- 	int fd, ret;
+ /**
+@@ -312,6 +313,11 @@ enum skb_drop_reason {
+ 	 * (/proc/sys/net/ipv4/ipfrag_max_dist)
+ 	 */
+ 	SKB_DROP_REASON_FRAG_TOO_FAR,
++	/**
++	 * @SKB_DROP_REASON_TCP_MINTTL: ipv4 ttl or ipv6 hoplimit below
++	 * the threshold (IP_MINTTL or IPV6_MINHOPCOUNT).
++	 */
++	SKB_DROP_REASON_TCP_MINTTL,
+ 	/**
+ 	 * @SKB_DROP_REASON_MAX: the maximum of drop reason, which shouldn't be
+ 	 * used as a real 'reason'
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 8320d0ecb13ae1e3e259f3c13a4c2797fbd984a5..ea370afa70ed979266dbeea474b034e833b15db4 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -2102,6 +2102,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
+ 		/* min_ttl can be changed concurrently from do_ip_setsockopt() */
+ 		if (unlikely(iph->ttl < READ_ONCE(inet_sk(sk)->min_ttl))) {
+ 			__NET_INC_STATS(net, LINUX_MIB_TCPMINTTLDROP);
++			drop_reason = SKB_DROP_REASON_TCP_MINTTL;
+ 			goto discard_and_relse;
+ 		}
+ 	}
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index 11b736a76bd7e46c8f521d5cfef74be5ae9deee0..543ee216772080d61800436a3eb31fa8d43d16c0 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -1708,8 +1708,9 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
  
- 	fd = socket(AF_UNIX, SOCK_DGRAM, 0);
-
+ 	if (static_branch_unlikely(&ip6_min_hopcount)) {
+ 		/* min_hopcount can be changed concurrently from do_ipv6_setsockopt() */
+-		if (hdr->hop_limit < READ_ONCE(tcp_inet6_sk(sk)->min_hopcount)) {
++		if (unlikely(hdr->hop_limit < READ_ONCE(tcp_inet6_sk(sk)->min_hopcount))) {
+ 			__NET_INC_STATS(net, LINUX_MIB_TCPMINTTLDROP);
++			drop_reason = SKB_DROP_REASON_TCP_MINTTL;
+ 			goto discard_and_relse;
+ 		}
+ 	}
+-- 
+2.39.1.456.gfc5497dd1b-goog
 
