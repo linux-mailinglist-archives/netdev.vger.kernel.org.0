@@ -2,96 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A9ED686DB6
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 19:13:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7825B686DC8
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 19:19:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231491AbjBASNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 13:13:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
+        id S230208AbjBASTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 13:19:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbjBASNs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 13:13:48 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4351124C83
-        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 10:13:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675275182;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=aBiZv6kgolXZRi0uzRYeVBHuWMhXVUDzRvu/mO7RexM=;
-        b=PdxxF95kaLD8e2DDE+kdYfvyFZFQgSR1RWGipjYMvVpH+Iki8OWIScG4tmADxfzvyN9Z/N
-        ZQMy6JM0M+NiYq8/XMk7j5DnZkU8qz3flaQifjKD55BGWH/GHN+1AZYYI8Whozr7WU3j2y
-        FvrMB61pfuwgYeyeHZ4s/g5FIfvLuZo=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-114-0RFGbqu5NZOl6jNmgqUKWQ-1; Wed, 01 Feb 2023 13:12:57 -0500
-X-MC-Unique: 0RFGbqu5NZOl6jNmgqUKWQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S231899AbjBASTq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 13:19:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B29C7BE7F
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 10:19:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2BC2B855308;
-        Wed,  1 Feb 2023 18:12:56 +0000 (UTC)
-Received: from firesoul.localdomain (ovpn-208-9.brq.redhat.com [10.40.208.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D93A82026D4B;
-        Wed,  1 Feb 2023 18:12:55 +0000 (UTC)
-Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id B44AD300005EE;
-        Wed,  1 Feb 2023 19:12:54 +0100 (CET)
-Subject: [PATCH bpf-next V1] selftests/bpf: fix unmap bug in
- prog_tests/xdp_metadata.c
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     bpf@vger.kernel.org, Stanislav Fomichev <sdf@google.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        martin.lau@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, dsahern@gmail.com,
-        willemb@google.com, void@manifault.com, kuba@kernel.org,
-        xdp-hints@xdp-project.net
-Date:   Wed, 01 Feb 2023 19:12:54 +0100
-Message-ID: <167527517464.938135.13750760520577765269.stgit@firesoul>
-User-Agent: StGit/1.4
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB62461901
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 18:19:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 497E3C433D2;
+        Wed,  1 Feb 2023 18:19:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675275584;
+        bh=bIqbhkmAbN2p5NrwVAVOI6GdXj+9elvsIc+dmN8IT2w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KehwuUyhZiJiPw/tHAedvzYKfQemUyWNrBHy+x3WFAcy9soCAb5S5u0kTM0aK9YdQ
+         iJ35rnjDvC8gHjUdGqlrKKZHyCqdb/IiixGvnTTxS7GxZhnWVTMqHwJlgGcV4hbqUR
+         OKMCg7MMZoyDbxYkNCyuZudIxOGHsyAW2Wz5lnr/yHepa02Es9dz02s6393k6ebdge
+         krR1U2WxMVCB9ZkV9Ndm3wX7dzEV2sXtl89hOh+mZMvN6/phin+AQqFPHYTOxZnOD6
+         T4VPX6/9HtaHBNcDzaSqfk7n3Bv4Vz1FHaEpynYgb5/UuBUJCY8/jCvMz3buCv8068
+         CywrzTEwvJGWQ==
+Date:   Wed, 1 Feb 2023 10:19:42 -0800
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Vadim Fedorenko <vadfed@meta.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
+        Rahul Rameshbabu <rrameshbabu@nvidia.com>,
+        Tariq Toukan <ttoukan.linux@gmail.com>,
+        Gal Pressman <gal@nvidia.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH net v4 2/2] mlx5: fix possible ptp queue fifo
+ use-after-free
+Message-ID: <Y9qtPtTMvZUWtRso@x130>
+References: <20230201122605.1350664-1-vadfed@meta.com>
+ <20230201122605.1350664-3-vadfed@meta.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20230201122605.1350664-3-vadfed@meta.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function close_xsk() unmap via munmap() the wrong memory pointer.
+On 01 Feb 04:26, Vadim Fedorenko wrote:
+>Fifo indexes were not checked during pop operations and it leads to
+>potential use-after-free when poping from empty queue. Such case was
+>possible during re-sync action.
+>
+>There were out-of-order cqe spotted which lead to drain of the queue and
+>use-after-free because of lack of fifo pointers check. Special check
+>is added to avoid resync operation if SKB could not exist in the fifo
+>because of OOO cqe (skb_id must be between consumer and producer index).
+>
+>Fixes: 58a518948f60 ("net/mlx5e: Add resiliency for PTP TX port timestamp")
+>Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
+>---
+> .../net/ethernet/mellanox/mlx5/core/en/ptp.c  | 23 ++++++++++++++-----
+> .../net/ethernet/mellanox/mlx5/core/en/txrx.h |  4 +++-
+> 2 files changed, 20 insertions(+), 7 deletions(-)
+>
+>diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+>index b72de2b520ec..5df726185192 100644
+>--- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+>+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+>@@ -86,7 +86,7 @@ static bool mlx5e_ptp_ts_cqe_drop(struct mlx5e_ptpsq *ptpsq, u16 skb_cc, u16 skb
+> 	return (ptpsq->ts_cqe_ctr_mask && (skb_cc != skb_id));
+> }
+>
+>-static void mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq *ptpsq, u16 skb_cc,
+>+static bool mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq *ptpsq, u16 skb_cc,
+> 					     u16 skb_id, int budget)
+> {
+> 	struct skb_shared_hwtstamps hwts = {};
+>@@ -94,14 +94,23 @@ static void mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq *ptpsq, u16 skb_
+>
+> 	ptpsq->cq_stats->resync_event++;
+>
+>-	while (skb_cc != skb_id) {
+>-		skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo);
+>+	if (skb_cc > skb_id || PTP_WQE_CTR2IDX(ptpsq->skb_fifo_pc) < skb_id) {
 
-The call xsk_umem__delete(xsk->umem) have already freed xsk->umem.
-Thus the call to munmap(xsk->umem, UMEM_SIZE) will have unpredictable
-behavior that can lead to Segmentation fault elsewhere, as man page
-explain subsequent references to these pages will generate SIGSEGV.
+To avoid returning boolean and add more functionality to this function,
+I prefer to put this check in mlx5e_ptp_handle_ts_cqe(), see below.
 
-Fixes: e2a46d54d7a1 ("selftests/bpf: Verify xdp_metadata xdp->af_xdp path")
-Reported-by: Martin KaFai Lau <martin.lau@kernel.org>
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- .../selftests/bpf/prog_tests/xdp_metadata.c        |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+>+		mlx5_core_err_rl(ptpsq->txqsq.mdev, "out-of-order ptp cqe\n");
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_metadata.c b/tools/testing/selftests/bpf/prog_tests/xdp_metadata.c
-index e033d48288c0..241909d71c7e 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_metadata.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_metadata.c
-@@ -121,7 +121,7 @@ static void close_xsk(struct xsk *xsk)
- 		xsk_umem__delete(xsk->umem);
- 	if (xsk->socket)
- 		xsk_socket__delete(xsk->socket);
--	munmap(xsk->umem, UMEM_SIZE);
-+	munmap(xsk->umem_area, UMEM_SIZE);
- }
- 
- static void ip_csum(struct iphdr *iph)
+it's better to add a counter for this, eg: ptpsq->cq_stats->ooo_cqe_drop++;
 
+>+		return false;
+>+	}
+>+
+>+	while (skb_cc != skb_id && (skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo))) {
+> 		hwts.hwtstamp = mlx5e_skb_cb_get_hwts(skb)->cqe_hwtstamp;
+> 		skb_tstamp_tx(skb, &hwts);
+> 		ptpsq->cq_stats->resync_cqe++;
+> 		napi_consume_skb(skb, budget);
+> 		skb_cc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
+> 	}
+>+
+>+	if (!skb)
+>+		return false;
+>+
+>+	return true;
+> }
+>
+> static void mlx5e_ptp_handle_ts_cqe(struct mlx5e_ptpsq *ptpsq,
+>@@ -111,7 +120,7 @@ static void mlx5e_ptp_handle_ts_cqe(struct mlx5e_ptpsq *ptpsq,
+> 	u16 skb_id = PTP_WQE_CTR2IDX(be16_to_cpu(cqe->wqe_counter));
+> 	u16 skb_cc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
+> 	struct mlx5e_txqsq *sq = &ptpsq->txqsq;
+>-	struct sk_buff *skb;
+>+	struct sk_buff *skb = NULL;
+> 	ktime_t hwtstamp;
+>
+> 	if (unlikely(MLX5E_RX_ERR_CQE(cqe))) {
+>@@ -120,8 +129,10 @@ static void mlx5e_ptp_handle_ts_cqe(struct mlx5e_ptpsq *ptpsq,
+> 		goto out;
+> 	}
+>
+>-	if (mlx5e_ptp_ts_cqe_drop(ptpsq, skb_cc, skb_id))
+>-		mlx5e_ptp_skb_fifo_ts_cqe_resync(ptpsq, skb_cc, skb_id, budget);
 
+you can check here:
+	/* ignore ooo cqe as it was already handled by a previous resync */
+	if (ooo_cqe(cqe))
+		return; 
+
+>+	if (mlx5e_ptp_ts_cqe_drop(ptpsq, skb_cc, skb_id) &&
+>+	    !mlx5e_ptp_skb_fifo_ts_cqe_resync(ptpsq, skb_cc, skb_id, budget)) {
+>+		goto out;
+>+	}
+>
+> 	skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo);
+> 	hwtstamp = mlx5e_cqe_ts_to_ns(sq->ptp_cyc2time, sq->clock, get_cqe_ts(cqe));
+>diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+>index d5afad368a69..e599b86d94b5 100644
+>--- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+>+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+>@@ -295,13 +295,15 @@ static inline
+> void mlx5e_skb_fifo_push(struct mlx5e_skb_fifo *fifo, struct sk_buff *skb)
+> {
+> 	struct sk_buff **skb_item = mlx5e_skb_fifo_get(fifo, (*fifo->pc)++);
+>-
+
+redundant change.
+
+> 	*skb_item = skb;
+> }
+>
+> static inline
+> struct sk_buff *mlx5e_skb_fifo_pop(struct mlx5e_skb_fifo *fifo)
+> {
+>+	if (*fifo->pc == *fifo->cc)
+>+		return NULL;
+>+
+
+I think this won't be necessary if you check for ooo early on
+mlx5e_ptp_handle_ts_cqe() like i suggested above.
+
+> 	return *mlx5e_skb_fifo_get(fifo, (*fifo->cc)++);
+> }
+>
+>-- 
+>2.30.2
+>
