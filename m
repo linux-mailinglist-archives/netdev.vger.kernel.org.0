@@ -2,244 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6744D686E96
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 20:03:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D12C686E9F
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 20:05:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231520AbjBATDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 14:03:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33858 "EHLO
+        id S231552AbjBATFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 14:05:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231576AbjBATDB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 14:03:01 -0500
-Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F3851BE5;
-        Wed,  1 Feb 2023 11:02:56 -0800 (PST)
-Received: by mail-oi1-f169.google.com with SMTP id r205so16552003oib.9;
-        Wed, 01 Feb 2023 11:02:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4b+yi8Fp+1mASD/1pRhb3B7vF/VozFmSyqUmTVg4Bn4=;
-        b=VRVPfC6qtuQtFKHmVv+Q8Y1f+7TAhPpt27R3HlPk78v7Zf/jdl9rmh/RyXWgCtrQqk
-         scvwvwb6qIkLwgR+p7CeeBpc+wA1YIfyNJ3WFalvTNxlXq24YnNFjtvjTLz/yLYMg4CT
-         Vzemxm8sqOfT57a6b28NewEmyXgOjjG3WoeVn0Hcij5eI4lAhh6mbU4/uZ/DXRLKpeE+
-         9AdMBUW34Pdq4bcjR483c1WbFGahL6qIZbbRgmmaYpi7cRm7aBYWeVhFx0L7UgL8F3ew
-         0g62ZyHJyCXY5JbW314jY3dUBxUiFqczMieCK6T+B4ZmGSCTVcAjUMbrxgVG60tUG2nC
-         t3YQ==
-X-Gm-Message-State: AO0yUKWsx4j+669tgGNJ1jdGS5rwg8TltrUt2QES80nzQLmyYKk0Afmv
-        1QJSZYRPZWYTQusKntqEtA==
-X-Google-Smtp-Source: AK7set8b+PiYc6pLpzShiNd7msMWXoM09d/RSoo18jeec+ms7gx9k7OzvS1mK3PNrrfp7cLTFiJDBQ==
-X-Received: by 2002:a54:4619:0:b0:378:373e:e371 with SMTP id p25-20020a544619000000b00378373ee371mr1582023oip.50.1675278175131;
-        Wed, 01 Feb 2023 11:02:55 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id m16-20020a9d7e90000000b0068bd5af9b82sm3515200otp.43.2023.02.01.11.02.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Feb 2023 11:02:54 -0800 (PST)
-Received: (nullmailer pid 4155631 invoked by uid 1000);
-        Wed, 01 Feb 2023 19:02:53 -0000
-Date:   Wed, 1 Feb 2023 13:02:53 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Frank Sae <Frank.Sae@motor-comm.com>
-Cc:     Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        yanhong.wang@starfivetech.com, xiaogang.fan@motor-comm.com,
-        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v4 1/5] dt-bindings: net: Add Motorcomm yt8xxx
- ethernet phy
-Message-ID: <20230201190253.GA4148490-robh@kernel.org>
-References: <20230201065811.3650-1-Frank.Sae@motor-comm.com>
- <20230201065811.3650-2-Frank.Sae@motor-comm.com>
+        with ESMTP id S231302AbjBATFs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 14:05:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84CA461D40
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 11:05:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E9BAB8227A
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 19:05:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 835A1C433EF;
+        Wed,  1 Feb 2023 19:05:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675278343;
+        bh=3IZ235BCKpZ3eA7Ye1OKKS1ziteKwwsUCNGmhvg7flU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ezLGze41LUBuGO9l/QeKajgCXijknNiRLQxewaMr4TDL4Pw0HK2ZQcILZ+WHA3DM5
+         kVjrNeScD0nHKN3oPI95xnw8EugIbPOKobKBbfmeN5KZbS1eJ5i3Hj1PtBEiJ4d1BK
+         5PKNFYmxipsyeCh965C1emB6q6lkR36gTLd2KVNNknYpGAcYx+lQUkdpRD7dc4mwYa
+         mpGAszCwk6w9YR26x16g86ZXaToXkVWV0Jjj5FA+tjCHJRmbuNnlV5TtyMRys/atRr
+         VG77+Wu+ijs9b1PY9LOQ59XHCP6ltm6qUYOZ1z+fZwYX/hPLP+2v57pLb9oJ6qOcel
+         kDn5Bo1+2Xl0g==
+Date:   Wed, 1 Feb 2023 11:05:41 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     =?UTF-8?B?w43DsWlnbw==?= Huguet <ihuguet@redhat.com>
+Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        richardcochran@gmail.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        Yalin Li <yalli@redhat.com>, kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH net-next v2 0/4] sfc: support unicast PTP
+Message-ID: <20230201110541.1cf6ba7f@kernel.org>
+In-Reply-To: <20230201080849.10482-1-ihuguet@redhat.com>
+References: <20230131160506.47552-1-ihuguet@redhat.com>
+        <20230201080849.10482-1-ihuguet@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230201065811.3650-2-Frank.Sae@motor-comm.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 01, 2023 at 02:58:07PM +0800, Frank Sae wrote:
->  Add a YAML binding document for the Motorcomm yt8xxx Ethernet phy.
->  
-> Signed-off-by: Frank Sae <Frank.Sae@motor-comm.com>
-> ---
->  .../bindings/net/motorcomm,yt8xxx.yaml        | 119 ++++++++++++++++++
->  .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
->  MAINTAINERS                                   |   1 +
->  3 files changed, 122 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
-> new file mode 100644
-> index 000000000000..6ce93404e1f1
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
-> @@ -0,0 +1,119 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/motorcomm,yt8xxx.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: MotorComm yt8xxx Ethernet PHY
-> +
-> +maintainers:
-> +  - frank sae <frank.sae@motor-comm.com>
+On Wed,  1 Feb 2023 09:08:45 +0100 =C3=8D=C3=B1igo Huguet wrote:
+> v2: fixed missing IS_ERR
+>     added doc of missing fields in efx_ptp_rxfilter
 
-Frank Sae
+1. don't repost within 24h, *especially* if you're reposting
+because of compilation problems
 
-> +
-> +allOf:
-> +  - $ref: ethernet-phy.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - const: ethernet-phy-id4f51.e91a
-> +        description: Only needed for DT lint tools, yt8531s phy
+https://www.kernel.org/doc/html/next/process/maintainer-netdev.html
 
-linting doesn't care, validation does. But just drop the description.
+2. please don't repost in a thread, it makes it harder for me=20
+to maintain a review queue
 
-> +      - const: ethernet-phy-id4f51.e91b
-> +        description: Only needed for DT lint tools, yt8531 phy
-> +
-> +  rx-internal-delay-ps:
-> +    description: |
-> +      RGMII RX Clock Delay used only when PHY operates in RGMII mode with
-> +      internal delay (phy-mode is 'rgmii-id' or 'rgmii-rxid') in pico-seconds.
-> +    enum: [ 0, 150, 300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650,
-> +            1800, 1900, 1950, 2050, 2100, 2200, 2250, 2350, 2500, 2650, 2800,
-> +            2950, 3100, 3250, 3400, 3550, 3700, 3850, 4000, 4150 ]
-> +    default: 1950
-> +
-> +  tx-internal-delay-ps:
-> +    description: |
-> +      RGMII TX Clock Delay used only when PHY operates in RGMII mode with
-> +      internal delay (phy-mode is 'rgmii-id' or 'rgmii-txid') in pico-seconds.
-> +    enum: [ 0, 150, 300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800,
-> +            1950, 2100, 2250 ]
-> +    default: 1950
-> +
-> +  motorcomm,clk-out-frequency-hz:
-> +    description: clock output on clock output pin.
-> +    enum: [0, 25000000, 125000000]
-> +    default: 0
-> +
-> +  motorcomm,keep-pll-enabled:
-> +    description: |
-> +      If set, keep the PLL enabled even if there is no link. Useful if you
-> +      want to use the clock output without an ethernet link.
-> +    type: boolean
-> +
-> +  motorcomm,auto-sleep-disabled:
-> +    description: |
-> +      If set, PHY will not enter sleep mode and close AFE after unplug cable
-> +      for a timer.
-> +    type: boolean
-> +
-> +  motorcomm,tx-clk-adj-enabled:
-> +    description: |
-> +      This configuration is mainly to adapt to VF2 with JH7110 SoC.
-> +      Useful if you want to use tx-clk-xxxx-inverted to adj the delay of tx clk.
-> +    type: boolean
-> +
-> +  motorcomm,tx-clk-10-inverted:
-> +    description: |
-> +      Use original or inverted RGMII Transmit PHY Clock to drive the RGMII
-> +      Transmit PHY Clock delay train configuration when speed is 10Mbps.
-> +    type: boolean
-> +
-> +  motorcomm,tx-clk-100-inverted:
-> +    description: |
-> +      Use original or inverted RGMII Transmit PHY Clock to drive the RGMII
-> +      Transmit PHY Clock delay train configuration when speed is 100Mbps.
-> +    type: boolean
-> +
-> +  motorcomm,tx-clk-1000-inverted:
-> +    description: |
-> +      Use original or inverted RGMII Transmit PHY Clock to drive the RGMII
-> +      Transmit PHY Clock delay train configuration when speed is 1000Mbps.
-> +    type: boolean
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    mdio {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +        phy-mode = "rgmii-id";
-> +        ethernet-phy@4 {
-> +            /*  Only needed to make DT lint tools work. Do not copy/paste
-> +             *  into real DTS files.
-> +             */
-> +            compatible = "ethernet-phy-id4f51.e91a";
-> +
-> +            reg = <4>;
-> +            rx-internal-delay-ps = <2100>;
-> +            tx-internal-delay-ps = <150>;
-> +            motorcomm,clk-out-frequency-hz = <0>;
-> +            motorcomm,keep-pll-enabled;
-> +            motorcomm,auto-sleep-disabled;
-> +        };
-> +    };
-> +  - |
-> +    mdio {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +        phy-mode = "rgmii";
-> +        ethernet-phy@5 {
-> +            /*  Only needed to make DT lint tools work. Do not copy/paste
-> +             *  into real DTS files.
-> +             */
-> +            compatible = "ethernet-phy-id4f51.e91a";
-> +
-> +            reg = <5>;
-> +            motorcomm,clk-out-frequency-hz = <125000000>;
-> +            motorcomm,keep-pll-enabled;
-> +            motorcomm,auto-sleep-disabled;
-> +        };
-> +    };
-> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> index 161766b1de50..99bb8594753c 100644
-> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> @@ -847,6 +847,8 @@ patternProperties:
->      description: Moortec Semiconductor Ltd.
->    "^mosaixtech,.*":
->      description: Mosaix Technologies, Inc.
-> +  "^motorcomm,.*":
-> +    description: MotorComm, Inc.
->    "^motorola,.*":
->      description: Motorola, Inc.
->    "^moxa,.*":
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 8cdba0580cb8..1da8c3b52108 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -14161,6 +14161,7 @@ M:	Peter Geis <pgwipeout@gmail.com>
->  M:	Frank <Frank.Sae@motor-comm.com>
->  L:	netdev@vger.kernel.org
->  S:	Maintained
-> +F:	Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
->  F:	drivers/net/phy/motorcomm.c
->  
->  MOXA SMARTIO/INDUSTIO/INTELLIO SERIAL CARD
-> -- 
-> 2.34.1
-> 
+3. drop the pointless inline in the source file in patch 4
+
++static inline void efx_ptp_remove_one_filter(struct efx_nic *efx,
++					     struct efx_ptp_rxfilter *rxfilter)
+
