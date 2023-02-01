@@ -2,119 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24D7E6870DF
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 23:14:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48513687115
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 23:40:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231737AbjBAWOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 17:14:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46478 "EHLO
+        id S229940AbjBAWkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 17:40:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbjBAWOi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 17:14:38 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711825CD2F;
-        Wed,  1 Feb 2023 14:14:36 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4P6bn62ypXz4x1h;
-        Thu,  2 Feb 2023 09:14:34 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1675289675;
-        bh=YFfw2YwVG8nBLtq3SvzjgJr1V9bmJFsi8jJYV90rfEU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=T4NoxU8m3nDM0jiDl6X+ASE0dWQrg+xiU6SM00u3c+mSshN39JmXtHPc+OeltQ+GM
-         ZvpLfekx8lgMiW7OIroFbTu+iKdq5kz0sUQ3tS3qBLW4NALY6Bg5AMXTMWqys+aaqK
-         Mc1Lt/7NZ3ifzgGv3hu41EuzvPP2WdWG6sX3iEdwJZo5mlg/kcMrnVcqL5lLkOmsmr
-         fKfoX9sjx5gonMK00/0hsVjTfZUsKOkICeIDTq0apjb0isP4Qp5g3zxynkq9bssDxg
-         fLkWsCVmc4TlaWak6Jlw1vckpfzao13xPR9SjvwnAflJFnwG7BGcoPTRZCuW8SIGoP
-         tLXyB7SjHcY1Q==
-Date:   Thu, 2 Feb 2023 09:14:33 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Leon Romanovsky <leon@kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Jianbo Liu <jianbol@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: linux-next: manual merge of the mlx5-next tree with the net-next
- tree
-Message-ID: <20230202091433.7fb9d936@canb.auug.org.au>
+        with ESMTP id S231653AbjBAWkP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 17:40:15 -0500
+Received: from 66-220-144-178.mail-mxout.facebook.com (66-220-144-178.mail-mxout.facebook.com [66.220.144.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37472CC60
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 14:40:11 -0800 (PST)
+Received: by dev0134.prn3.facebook.com (Postfix, from userid 425415)
+        id C32D860FCAB6; Wed,  1 Feb 2023 14:23:25 -0800 (PST)
+From:   Stefan Roesch <shr@devkernel.io>
+To:     kernel-team@fb.com
+Cc:     shr@devkernel.io, axboe@kernel.dk, olivier@trillion01.com,
+        netdev@vger.kernel.org, io-uring@vger.kernel.org, kuba@kernel.org,
+        Stefan Roesch <shr@meta.com>
+Subject: [PATCH v6 0/3] io_uring: add napi busy polling support 
+Date:   Wed,  1 Feb 2023 14:22:51 -0800
+Message-Id: <20230201222254.744422-1-shr@devkernel.io>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_//TZsRvBpt4GevlMgNASltMA";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,RDNS_DYNAMIC,
+        SPF_HELO_PASS,SPF_NEUTRAL,TVD_RCVD_IP autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_//TZsRvBpt4GevlMgNASltMA
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Stefan Roesch <shr@meta.com>
 
-Hi all,
+This adds the napi busy polling support in io_uring.c. It adds a new
+napi_list to the io_ring_ctx structure. This list contains the list of
+napi_id's that are currently enabled for busy polling. This list is
+used to determine which napi id's enabled busy polling. For faster
+access it also adds a hash table.
 
-Today's linux-next merge of the mlx5-next tree got a conflict in:
+When a new napi id is added, the hash table is used to locate if
+the napi id has already been added. When processing the busy poll
+loop the list is used to process the individual elements.
 
-  include/linux/mlx5/driver.h
+io-uring allows specifying two parameters:
+- busy poll timeout and
+- prefer busy poll to call of io_napi_busy_loop()
+This sets the above parameters for the ring. The settings are passed
+with a new structure io_uring_napi.
 
-between commit:
+There is also a corresponding liburing patch series, which enables this
+feature. The name of the series is "liburing: add add api for napi busy
+poll timeout". It also contains two programs to test the this.
 
-  fe298bdf6f65 ("net/mlx5: Prepare for fast crypto key update if hardware s=
-upports it")
+Testing has shown that the round-trip times are reduced to 38us from
+55us by enabling napi busy polling with a busy poll timeout of 100us.
+More detailled results are part of the commit message of the first
+patch.
 
-from the net-next tree and commit:
 
-  2fd0e75727a8 ("net/mlx5e: Propagate an internal event in case uplink netd=
-ev changes")
+Changes:
+- V6:
+  - Add a hash table on top of the list for faster access during the
+    add operation. The linked list and the hash table use the same
+    data structure
+- V5:
+  - Refreshed to 6.1-rc6
+  - Use copy_from_user instead of memdup/kfree
+  - Removed the moving of napi_busy_poll_to
+  - Return -EINVAL if any of the reserved or padded fields are not 0.
+- V4:
+  - Pass structure for napi config, instead of individual parameters
+- V3:
+  - Refreshed to 6.1-rc5
+  - Added a new io-uring api for the prefer napi busy poll api and wire
+    it to io_napi_busy_loop().
+  - Removed the unregister (implemented as register)
+  - Added more performance results to the first commit message.
+- V2:
+  - Add missing defines if CONFIG_NET_RX_BUSY_POLL is not defined
+  - Changes signature of function io_napi_add_list to static inline
+    if CONFIG_NET_RX_BUSY_POLL is not defined
+  - define some functions as static
 
-from the mlx5-next tree.
 
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
 
+Stefan Roesch (3):
+  io_uring: add napi busy polling support
+  io_uring: add api to set / get napi configuration.
+  io_uring: add api to set napi prefer busy poll
+
+ include/linux/io_uring_types.h |  10 ++
+ include/uapi/linux/io_uring.h  |  12 ++
+ io_uring/io_uring.c            | 300 +++++++++++++++++++++++++++++++++
+ io_uring/napi.h                |  23 +++
+ io_uring/poll.c                |   2 +
+ io_uring/sqpoll.c              |  17 ++
+ 6 files changed, 364 insertions(+)
+ create mode 100644 io_uring/napi.h
+
+
+base-commit: c0b67534c95c537f7a506a06b98e5e85d72e2b7d
 --=20
-Cheers,
-Stephen Rothwell
+2.30.2
 
-diff --cc include/linux/mlx5/driver.h
-index 234334194b38,cc48aa308269..000000000000
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@@ -674,7 -675,7 +675,8 @@@ struct mlx5e_resources=20
-  	} hw_objs;
-  	struct devlink_port dl_port;
-  	struct net_device *uplink_netdev;
- +	struct mlx5_crypto_dek_priv *dek_priv;
-+ 	struct mutex uplink_netdev_lock;
-  };
- =20
-  enum mlx5_sw_icm_type {
-
---Sig_//TZsRvBpt4GevlMgNASltMA
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmPa5EkACgkQAVBC80lX
-0Gx2aAf9EmcWb9zoKSWQDjcdqOiQk4eGpofA4UCbDhqlSCPT6xwBGVQ7V2vd9eDc
-3kSBzUz5Fx+CT/Q6z30nWZr5uhq1EXniJi9kwD7u+aSMn61wuMFMWlipP3mvg57E
-3R9UETrs804ZKAq6RgYsgoDlVign9e28PEMS/MpxytN//CCT0v8MBRyguNTrcUHx
-5fcUIx/bePk51034MoxhhafoTghyDqejw6pO0RNoQn4Un6jEhfDMOiJRT1wlYzzb
-so875RkJYNkAsqrVfY53UhFazHlUcetUYLf+gOfH1XxRvMtlbTppENY0zAST2h5p
-UT0mvxql6TexsUBEMx/rkZuVVUDvUA==
-=mtXb
------END PGP SIGNATURE-----
-
---Sig_//TZsRvBpt4GevlMgNASltMA--
