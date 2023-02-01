@@ -2,97 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A257686926
-	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 15:56:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AB2B686939
+	for <lists+netdev@lfdr.de>; Wed,  1 Feb 2023 15:58:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232680AbjBAO4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 09:56:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59236 "EHLO
+        id S231678AbjBAO6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 09:58:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232628AbjBAO4U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 09:56:20 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CBBE6601E
-        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 06:56:19 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id a1so3246802ybj.9
-        for <netdev@vger.kernel.org>; Wed, 01 Feb 2023 06:56:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mYdj0ILPpMedwbtUGABQIEM0n6F/k6nMPhbqeDqBAa4=;
-        b=GwOzyQ6/wV/wUCf4bpGgaONXoq/C3OoXugJbdwTvTju13aVvN3dxuGc7+FZvpVdpKT
-         jfoGGPLxTTvSIY3HgOk1RqlDY+24+OD/up1cvLv2Io/uBXiM+fiwbpqGwMiNFXy6D3I7
-         CUAkoHuPbUR3h0cm76K5hSAE8MrS+E3rNwFnCtzzPOc13fooRRPcoTkfMFM7S8esZ0WN
-         6TC5v3BBUVJ+wcxL+KFRJsvPIwoWr3XqQILKOulaQPNPLKFgB8sgoAiEvh+NOZGFV/K1
-         kk96vi8wDU03c7T9WB+HER/IT5YR0rJ+Z1uSs0hYUyUtZBlaj1+W7eekV7P5pOgUAXRi
-         NuiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mYdj0ILPpMedwbtUGABQIEM0n6F/k6nMPhbqeDqBAa4=;
-        b=HPirlAeYDYIsJBhGbquD9UFn+P6Soz8Oimtje8QlmInaUJfko1JkXOlBoS9f96MN/C
-         i4SzSudFO0Lr70op8cc5UqOaXfUe/YlFzVySiBRaAdzuaON1plvTWVryVdcwvtlPxcBV
-         KXGU6j67G35FxZnkDQ10V7AZY3OaEZFTOhKPWeGG6qrB658Q38VRz8uTPhBV454JPV+5
-         ifommRtjt1NdFwx19TPC3KDpPk4xsb7HrCcRYOI7yQg0BGe3q3zXtlQAK3I9eFf43pzu
-         K1unyJk/UOq2NADv2ycyMXPxp7QT7oMniypf+Wqleg5W4SOmN9GjFRYFd3aYhnu5Nh5h
-         Fyww==
-X-Gm-Message-State: AO0yUKV0E6gcWXcNeFqY9RgzZt5BKPTe4Xo9JCRFYkOEEkuMPQa9laCo
-        yQ1gt5U7fH14GXpQosxhHJatGN94LdhMRYdZCp5iLw==
-X-Google-Smtp-Source: AK7set8IMK4aEihsTu1bOqtwwwkrq/v0ps1tZwl9PjUSiW9IOEB2A5spS8nZWmc2y8Lraf/n+Q9eORUYxOJI/tcXa8Q=
-X-Received: by 2002:a5b:d02:0:b0:7b7:c7ed:eee9 with SMTP id
- y2-20020a5b0d02000000b007b7c7edeee9mr317233ybp.334.1675263378595; Wed, 01 Feb
- 2023 06:56:18 -0800 (PST)
+        with ESMTP id S230046AbjBAO6f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 09:58:35 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0724365EF9;
+        Wed,  1 Feb 2023 06:58:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675263514; x=1706799514;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=y7lIjMgMVtPV5bm6OW/RddCvD8S3NDjqYUBxTdcVV5w=;
+  b=oAvhkJPyBeNkg0NeDeSoM5sy5dWFGsgjREPE2c5Dvvzae7hh/R/GMwb4
+   rqcpeY4II0Y160K1bJkG5aVfI0995bo2aKQo1+qK5BSUMOXUqHRfuk16N
+   EJGwClD9BLDmnDyaP/RTEbBL2PNbTB1Ddk5B7QlS66R8MRBzz2VdIV+0/
+   HcigVnI1iYEhGrHhRIAD+wxNeDhMv8vhuCW238T9V2EhCjYJOnbU81g3I
+   cot1e5aWj0MD29QsTFKHHVJzseSo30565Av4sEdzm+HvF6UWdMIUedSIa
+   IH1HyvQJ5ArVlmc2raNrsjf8NKkyEVIXA87XqkBekJv9H/zRmDKHZ9+hR
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10608"; a="308502812"
+X-IronPort-AV: E=Sophos;i="5.97,263,1669104000"; 
+   d="scan'208";a="308502812"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2023 06:58:33 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10608"; a="910343874"
+X-IronPort-AV: E=Sophos;i="5.97,263,1669104000"; 
+   d="scan'208";a="910343874"
+Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 01 Feb 2023 06:58:30 -0800
+Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pNEZB-0005Vw-2Y;
+        Wed, 01 Feb 2023 14:58:29 +0000
+Date:   Wed, 1 Feb 2023 22:57:43 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     alejandro.lucero-palau@amd.com, netdev@vger.kernel.org,
+        linux-net-drivers@amd.com
+Cc:     oe-kbuild-all@lists.linux.dev, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        habetsm.xilinx@gmail.com, ecree.xilinx@gmail.com,
+        linux-doc@vger.kernel.org, corbet@lwn.net, jiri@nvidia.com,
+        Alejandro Lucero <alejandro.lucero-palau@amd.com>
+Subject: Re: [PATCH v4 net-next 5/8] sfc: add devlink port support for ef100
+Message-ID: <202302012256.duJZ1JQ7-lkp@intel.com>
+References: <20230131145822.36208-6-alejandro.lucero-palau@amd.com>
 MIME-Version: 1.0
-References: <20230201001612.515730-1-andrei.gherzan@canonical.com>
-In-Reply-To: <20230201001612.515730-1-andrei.gherzan@canonical.com>
-From:   Willem de Bruijn <willemb@google.com>
-Date:   Wed, 1 Feb 2023 09:55:42 -0500
-Message-ID: <CA+FuTSc_v+SiHsQdQA6b1J+-_ws=0F-6817O6wWadVpbHTWg9g@mail.gmail.com>
-Subject: Re: [PATCH net v4 1/4] selftests: net: udpgso_bench_rx: Fix 'used
- uninitialized' compiler warning
-To:     Andrei Gherzan <andrei.gherzan@canonical.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230131145822.36208-6-alejandro.lucero-palau@amd.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 7:18 PM Andrei Gherzan
-<andrei.gherzan@canonical.com> wrote:
->
-> This change fixes the following compiler warning:
->
-> /usr/include/x86_64-linux-gnu/bits/error.h:40:5: warning: =E2=80=98gso_si=
-ze=E2=80=99 may
-> be used uninitialized [-Wmaybe-uninitialized]
->    40 |     __error_noreturn (__status, __errnum, __format,
->    __va_arg_pack ());
->          |
->          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
-~
->          udpgso_bench_rx.c: In function =E2=80=98main=E2=80=99:
->          udpgso_bench_rx.c:253:23: note: =E2=80=98gso_size=E2=80=99 was d=
-eclared here
->            253 |         int ret, len, gso_size, budget =3D 256;
->
-> Fixes: 3327a9c46352 ("selftests: add functionals test for UDP GRO")
-> Signed-off-by: Andrei Gherzan <andrei.gherzan@canonical.com>
+Hi,
 
-Reviewed-by: Willem de Bruijn <willemb@google.com>
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on net-next/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230131-230245
+patch link:    https://lore.kernel.org/r/20230131145822.36208-6-alejandro.lucero-palau%40amd.com
+patch subject: [PATCH v4 net-next 5/8] sfc: add devlink port support for ef100
+config: ia64-randconfig-c031-20230129 (https://download.01.org/0day-ci/archive/20230201/202302012256.duJZ1JQ7-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/b74c06500aff0021c9aaa6edf390252c3e5de2cf
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230131-230245
+        git checkout b74c06500aff0021c9aaa6edf390252c3e5de2cf
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   ia64-linux-ld: drivers/net/ethernet/sfc/ef100_nic.o: in function `ef100_remove':
+   ef100_nic.c:(.text+0x2e82): undefined reference to `efx_ef100_fini_reps'
+   ia64-linux-ld: ef100_nic.c:(.text+0x2e92): undefined reference to `efx_fini_mae'
+   ia64-linux-ld: drivers/net/ethernet/sfc/efx_devlink.o: in function `ef100_set_devlink_port':
+>> efx_devlink.c:(.text+0x32): undefined reference to `efx_mae_lookup_mport'
+>> ia64-linux-ld: efx_devlink.c:(.text+0x72): undefined reference to `efx_mae_get_mport'
+>> ia64-linux-ld: efx_devlink.c:(.text+0xa2): undefined reference to `ef100_mport_on_local_intf'
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
