@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0674F687B3F
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 12:01:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96B44687B36
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 12:01:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232640AbjBBLBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 06:01:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58388 "EHLO
+        id S231897AbjBBLBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 06:01:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232504AbjBBLBX (ORCPT
+        with ESMTP id S232607AbjBBLBX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 06:01:23 -0500
-Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC02B8717A;
+Received: from out30-119.freemail.mail.aliyun.com (out30-119.freemail.mail.aliyun.com [115.124.30.119])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED43387D2A;
         Thu,  2 Feb 2023 03:01:16 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R301e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VakkM2s_1675335670;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VakkM2s_1675335670)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VakpyCA_1675335671;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VakpyCA_1675335671)
           by smtp.aliyun-inc.com;
-          Thu, 02 Feb 2023 19:01:11 +0800
+          Thu, 02 Feb 2023 19:01:12 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -39,9 +39,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Kuniyuki Iwashima <kuniyu@amazon.com>,
         Petr Machata <petrm@nvidia.com>,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH 10/33] xsk: support virtio DMA map
-Date:   Thu,  2 Feb 2023 19:00:35 +0800
-Message-Id: <20230202110058.130695-11-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH 11/33] virtio_net: rename free_old_xmit_skbs to free_old_xmit
+Date:   Thu,  2 Feb 2023 19:00:36 +0800
+Message-Id: <20230202110058.130695-12-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.32.0.3.g01195cf9f
 In-Reply-To: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
 References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
@@ -57,118 +57,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When device is a virtio device, use virtio's DMA interface.
+Since free_old_xmit_skbs not only deals with skb, but also xdp frame and
+subsequent added xsk, so change the name of this function to
+free_old_xmit.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- net/xdp/xsk_buff_pool.c | 59 +++++++++++++++++++++++++++++++----------
- 1 file changed, 45 insertions(+), 14 deletions(-)
+ drivers/net/virtio_net.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-index 78e325e195fa..e2785aca8396 100644
---- a/net/xdp/xsk_buff_pool.c
-+++ b/net/xdp/xsk_buff_pool.c
-@@ -3,6 +3,7 @@
- #include <net/xsk_buff_pool.h>
- #include <net/xdp_sock.h>
- #include <net/xdp_sock_drv.h>
-+#include <linux/virtio.h>
- 
- #include "xsk_queue.h"
- #include "xdp_umem.h"
-@@ -334,8 +335,12 @@ static void __xp_dma_unmap(struct xsk_dma_map *dma_map, unsigned long attrs)
- 		dma = &dma_map->dma_pages[i];
- 		if (*dma) {
- 			*dma &= ~XSK_NEXT_PG_CONTIG_MASK;
--			dma_unmap_page_attrs(dma_map->dev, *dma, PAGE_SIZE,
--					     DMA_BIDIRECTIONAL, attrs);
-+			if (is_virtio_device(dma_map->dev))
-+				virtio_dma_unmap(dma_map->dev, *dma, PAGE_SIZE,
-+						 DMA_BIDIRECTIONAL);
-+			else
-+				dma_unmap_page_attrs(dma_map->dev, *dma, PAGE_SIZE,
-+						     DMA_BIDIRECTIONAL, attrs);
- 			*dma = 0;
- 		}
- 	}
-@@ -435,22 +440,40 @@ int xp_dma_map(struct xsk_buff_pool *pool, struct device *dev,
- 		return 0;
- 	}
- 
--	pool->dma_sync_for_cpu = dma_sync_for_cpu;
--	pool->dma_sync_for_device = dma_sync_for_device;
-+	if (is_virtio_device(dev)) {
-+		pool->dma_sync_for_cpu = virtio_dma_sync_signle_range_for_cpu;
-+		pool->dma_sync_for_device = virtio_dma_sync_signle_range_for_device;
-+
-+	} else {
-+		pool->dma_sync_for_cpu = dma_sync_for_cpu;
-+		pool->dma_sync_for_device = dma_sync_for_device;
-+	}
- 
- 	dma_map = xp_create_dma_map(dev, pool->netdev, nr_pages, pool->umem);
- 	if (!dma_map)
- 		return -ENOMEM;
- 
- 	for (i = 0; i < dma_map->dma_pages_cnt; i++) {
--		dma = dma_map_page_attrs(dev, pages[i], 0, PAGE_SIZE,
--					 DMA_BIDIRECTIONAL, attrs);
--		if (dma_mapping_error(dev, dma)) {
--			__xp_dma_unmap(dma_map, attrs);
--			return -ENOMEM;
-+		if (is_virtio_device(dev)) {
-+			dma = virtio_dma_map_page(dev, pages[i], 0, PAGE_SIZE,
-+						  DMA_BIDIRECTIONAL);
-+
-+			if (virtio_dma_mapping_error(dev, dma))
-+				goto err;
-+
-+			if (virtio_dma_need_sync(dev, dma))
-+				dma_map->dma_need_sync = true;
-+
-+		} else {
-+			dma = dma_map_page_attrs(dev, pages[i], 0, PAGE_SIZE,
-+						 DMA_BIDIRECTIONAL, attrs);
-+
-+			if (dma_mapping_error(dev, dma))
-+				goto err;
-+
-+			if (dma_need_sync(dev, dma))
-+				dma_map->dma_need_sync = true;
- 		}
--		if (dma_need_sync(dev, dma))
--			dma_map->dma_need_sync = true;
- 		dma_map->dma_pages[i] = dma;
- 	}
- 
-@@ -464,6 +487,9 @@ int xp_dma_map(struct xsk_buff_pool *pool, struct device *dev,
- 	}
- 
- 	return 0;
-+err:
-+	__xp_dma_unmap(dma_map, attrs);
-+	return -ENOMEM;
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 0f0036b1514d..bc7b9ccb325a 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -1714,7 +1714,7 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
+ 	return stats.packets;
  }
- EXPORT_SYMBOL(xp_dma_map);
  
-@@ -546,9 +572,14 @@ struct xdp_buff *xp_alloc(struct xsk_buff_pool *pool)
- 	xskb->xdp.data_meta = xskb->xdp.data;
+-static void free_old_xmit_skbs(struct send_queue *sq, bool in_napi)
++static void free_old_xmit(struct send_queue *sq, bool in_napi)
+ {
+ 	unsigned int len;
+ 	unsigned int packets = 0;
+@@ -1778,7 +1778,7 @@ static void virtnet_poll_cleantx(struct receive_queue *rq)
  
- 	if (pool->dma_need_sync) {
--		dma_sync_single_range_for_device(pool->dev, xskb->dma, 0,
--						 pool->frame_len,
--						 DMA_BIDIRECTIONAL);
-+		if (is_virtio_device(pool->dev))
-+			virtio_dma_sync_signle_range_for_device(pool->dev, xskb->dma, 0,
-+								pool->frame_len,
-+								DMA_BIDIRECTIONAL);
-+		else
-+			dma_sync_single_range_for_device(pool->dev, xskb->dma, 0,
-+							 pool->frame_len,
-+							 DMA_BIDIRECTIONAL);
- 	}
- 	return &xskb->xdp;
- }
+ 		do {
+ 			virtqueue_disable_cb(sq->vq);
+-			free_old_xmit_skbs(sq, true);
++			free_old_xmit(sq, true);
+ 		} while (unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
+ 
+ 		if (sq->vq->num_free >= 2 + MAX_SKB_FRAGS)
+@@ -1870,7 +1870,7 @@ static int virtnet_poll_tx(struct napi_struct *napi, int budget)
+ 	txq = netdev_get_tx_queue(vi->dev, index);
+ 	__netif_tx_lock(txq, raw_smp_processor_id());
+ 	virtqueue_disable_cb(sq->vq);
+-	free_old_xmit_skbs(sq, true);
++	free_old_xmit(sq, true);
+ 
+ 	if (sq->vq->num_free >= 2 + MAX_SKB_FRAGS)
+ 		netif_tx_wake_queue(txq);
+@@ -1960,7 +1960,7 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		if (use_napi)
+ 			virtqueue_disable_cb(sq->vq);
+ 
+-		free_old_xmit_skbs(sq, false);
++		free_old_xmit(sq, false);
+ 
+ 	} while (use_napi && kick &&
+ 	       unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
+@@ -2006,7 +2006,7 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 				virtqueue_napi_schedule(&sq->napi, sq->vq);
+ 		} else if (unlikely(!virtqueue_enable_cb_delayed(sq->vq))) {
+ 			/* More just got used, free them then recheck. */
+-			free_old_xmit_skbs(sq, false);
++			free_old_xmit(sq, false);
+ 			if (sq->vq->num_free >= 2+MAX_SKB_FRAGS) {
+ 				netif_start_subqueue(dev, qnum);
+ 				virtqueue_disable_cb(sq->vq);
 -- 
 2.32.0.3.g01195cf9f
 
