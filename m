@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D86AC687BBE
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 12:10:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D63A5687BCB
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 12:12:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231997AbjBBLKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 06:10:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40442 "EHLO
+        id S232063AbjBBLMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 06:12:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232120AbjBBLKV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 06:10:21 -0500
+        with ESMTP id S232273AbjBBLMN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 06:12:13 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0BE49754;
-        Thu,  2 Feb 2023 03:10:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 820B812596
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 03:12:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4109761AE4;
-        Thu,  2 Feb 2023 11:10:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 98283C4339C;
-        Thu,  2 Feb 2023 11:10:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E24A61ADA
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 11:12:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B80B8C433A4;
+        Thu,  2 Feb 2023 11:12:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675336217;
-        bh=i1XmpH5nFD5KatiJd8PdfMED3WBVaS8RfChHbqKsLq8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uDRejtrbeDiNTQ/ZGplqCfS5zDJxYXOWI03wW8o5MosfAkGHU444SKC1zaWkX3m7l
-         hjofhYHR6KBVDCYxBTAo+2ECwX7a0Qw5iCyakdvKamHESwSEHczfe4MxpFIN0oZICP
-         DjMCOw1Sf06SNDJTPFLh68aHOBKZq04/gFV3GR+28Ej6IuhHW1dG3Zx88sshZ1INVc
-         4eEoXZd+gRP6LmhlgRYg8wfS9nttzfimKoBK98rAfZ4Oo+vnA3EjlAAVDQGdRls2FZ
-         vAREUfnhCc6guZ7YRffetldFa7sddnl/s/UE9YwdzLNZ+XCxdaJt6IB9wqXrvGosUl
-         ApHFCVRA/S+MQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 75FA5E50D67;
-        Thu,  2 Feb 2023 11:10:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1675336322;
+        bh=SDbKFBzTPLybvoUMPF2tzTClvG/DsLOpABSl9IK8/O0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NoLgYVS9UEgb7wwy+PpN0yiFDDFKd3Uo9ZJmQRvTXfdB/9i0ysA9RZgq5Fpx8zKr/
+         yd5bWe3ZzwNd3jiL3LxRp0SNgReaVKNyHy8K1g2bmgoGD49duZ10nAvYyOL+r2871X
+         Otw/mSG38VydyLLCyUd790W6dyGanA0sZ9QZbNTrZU6/9pHeiRGfsqO1TZCtJwfY6a
+         d7k5bmU+MEHGQGhxt2R5/Kg4vjq4Yq6Ekfg8MI6IBfIGRKBfbx+QaoJKxzkN4ggeyk
+         YWYTvLr4gS1AODbJCDIyq4iIeHXjqgQPZIQv7+ugbgc0H+u+NkiFN28WE77wtB8AiV
+         YE+pP4q4h8caw==
+Date:   Thu, 2 Feb 2023 13:11:57 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Paul Blakey <paulb@nvidia.com>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
+Subject: Re: [PATCH net-next v7 6/6] net/mlx5e: TC, Set CT miss to the
+ specific ct action instance
+Message-ID: <Y9uafQ+6gyZFS8Wl@unreal>
+References: <20230131091027.8093-1-paulb@nvidia.com>
+ <20230131091027.8093-7-paulb@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: =?utf-8?q?=5BPATCH=5D_selftests/bpf=3A_remove_duplicate_include_hea?=
-        =?utf-8?q?der_in_files?=
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167533621747.1751.226846406285857027.git-patchwork-notify@kernel.org>
-Date:   Thu, 02 Feb 2023 11:10:17 +0000
-References: <202301311440516312161@zte.com.cn>
-In-Reply-To: <202301311440516312161@zte.com.cn>
-To:     <ye.xingchen@zte.com.cn>
-Cc:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
-        jolsa@kernel.org, mykolal@fb.com, shuah@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230131091027.8093-7-paulb@nvidia.com>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,28 +61,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
-
-On Tue, 31 Jan 2023 14:40:51 +0800 (CST) you wrote:
-> From: ye xingchen <ye.xingchen@zte.com.cn>
+On Tue, Jan 31, 2023 at 11:10:27AM +0200, Paul Blakey wrote:
+> Currently, CT misses restore the missed chain on the tc skb extension so
+> tc will continue from the relevant chain. Instead, restore the CT action's
+> miss cookie on the extension, which will instruct tc to continue from the
+> this specific CT action instance on the relevant filter's action list.
 > 
-> linux/net_tstamp.h is included more than once.
+> Map the CT action's miss_cookie to a new miss object (ACT_MISS), and use
+> this miss mapping instead of the current chain miss object (CHAIN_MISS)
+> for CT action misses.
 > 
-> Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+> To restore this new miss mapping value, add a RX restore rule for each
+> such mapping value.
+> 
+> Signed-off-by: Paul Blakey <paulb@nvidia.com>
+> Reviewed-by: Roi Dayan <roid@nvidia.com>
+> Reviewed-by: Oz Sholmo <ozsh@nvidia.com>
 > ---
->  tools/testing/selftests/bpf/xdp_hw_metadata.c | 1 -
->  1 file changed, 1 deletion(-)
+>  .../ethernet/mellanox/mlx5/core/en/tc_ct.c    | 32 +++++-----
+>  .../ethernet/mellanox/mlx5/core/en/tc_ct.h    |  2 +
+>  .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 61 ++++++++++++++++---
+>  .../net/ethernet/mellanox/mlx5/core/en_tc.h   |  6 ++
+>  .../net/ethernet/mellanox/mlx5/core/eswitch.h |  2 +
+>  5 files changed, 79 insertions(+), 24 deletions(-)
 
-Here is the summary with links:
-  - selftests/bpf: remove duplicate include header in files
-    https://git.kernel.org/bpf/bpf-next/c/4bc32df7a9c3
+<...>
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> -static bool mlx5e_tc_restore_skb_chain(struct sk_buff *skb, struct mlx5_tc_ct_priv *ct_priv,
+> -				       u32 chain, u32 zone_restore_id,
+> -				       u32 tunnel_id,  struct mlx5e_tc_update_priv *tc_priv)
+> +static bool mlx5e_tc_restore_skb_tc_meta(struct sk_buff *skb, struct mlx5_tc_ct_priv *ct_priv,
+> +					 struct mlx5_mapped_obj *mapped_obj, u32 zone_restore_id,
+> +					 u32 tunnel_id,  struct mlx5e_tc_update_priv *tc_priv)
+>  {
+> +	u32 chain = mapped_obj->type == MLX5_MAPPED_OBJ_CHAIN ? mapped_obj->chain : 0;
+> +	u64 act_miss_cookie = mapped_obj->type == MLX5_MAPPED_OBJ_ACT_MISS ?
+> +			      mapped_obj->act_miss_cookie : 0;
 
+It will be easier for reader if such assignment is separated from
+variables declarations.
 
+>  	struct mlx5e_priv *priv = netdev_priv(skb->dev);
+>  	struct tc_skb_ext *tc_skb_ext;
+
+<...>
+
+> +void mlx5e_tc_action_miss_mapping_put(struct mlx5e_priv *priv, struct mlx5_flow_attr *attr,
+> +				      u32 act_miss_mapping)
+> +{
+> +	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
+> +	struct mapping_ctx *ctx = esw->offloads.reg_c0_obj_pool;
+
+Reversed Christmas tree, please.
+
+Thanks
