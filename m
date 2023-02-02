@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4439468852F
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 18:16:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 122D5688530
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 18:16:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231737AbjBBRQ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 12:16:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42952 "EHLO
+        id S232084AbjBBRQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 12:16:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbjBBRQZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 12:16:25 -0500
+        with ESMTP id S229595AbjBBRQa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 12:16:30 -0500
 Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF56C65F3B
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 09:16:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4393A6FD31
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 09:16:29 -0800 (PST)
 Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 312Ff7kY007666;
-        Thu, 2 Feb 2023 09:14:08 -0800
+        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 312FGeCr013227;
+        Thu, 2 Feb 2023 09:14:10 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=s2048-2021-q4;
- bh=NkifTK+roL0eklMpOA8QqaD+53oLCZHsqpmpnODYbxg=;
- b=Ntn3PYVggwjIXGD7vy6jWsOuAwKjvOo29Nj4Kamj+T/byhCXMWap/nVpAh+BdyiY4DPZ
- eR+FlhOZeKBSZg7hSZUATxQBzBQWOG7xVCrzn5S8h2zSLEZhJHChdzwdXMoimlBC5qrS
- IvkweeeTSnNIrSaXbjus96WdmWYNrrQfgSE8bkTUNuNKjvdl6vJbYBxPFYZvH+ru70fI
- OmSvJB7gOKCmTakSHOkE6Ls2z/r8qrEbl0PryiQV1Z+UATQxNt8yugIz7wYm0ZA7baAS
- nNlZ4S1g2t+2v5Z35aYRPLKomlfyuzDPa5II2DMCxZw/rTZTjMapb2Wu6Pm2E/r5uf5A wA== 
+ bh=DtnJKakrtbqp+JKZhxZt+LdBBi8hBrQa+oIdPgGbaAI=;
+ b=nJYLZXoqvDSt/8mIZbrGYKk6ljuKVNB0V7Rjx58z8+ixSOGdGvaZk2vQo2f3XwkXmNwV
+ 5XY5O6YzR9WCgPJuXET386Fq8ixXxqVPeTb7AdcgbJ1NpP2Ej5iSaHnOxnQVdrnhVLaY
+ WsNG6bM+VVpBsbhe6p9C7DIAtL8Gr+nUXKgLtVsYv1cjNHx1++SMR2iqaeGXGLwjfy4u
+ qR7Wl5Cipt3KaDSz9e+52jkxBwaJ/IFF3RLZEvEvLIXLfEJ5fiH4zu9zmGi9pznuRlrw
+ f2erDBFEzizbjfUcvAyufQ3fDWaOeRXiTIhnBC2cTRZ9o08ZrLjKe4SiC0H+WoUubxkX ZA== 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3ngfp4rusy-1
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3ngfp4rut4-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 02 Feb 2023 09:14:08 -0800
+        Thu, 02 Feb 2023 09:14:09 -0800
 Received: from devvm1736.cln0.facebook.com (2620:10d:c085:108::4) by
  mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server id
- 15.1.2507.17; Thu, 2 Feb 2023 09:14:05 -0800
+ 15.1.2507.17; Thu, 2 Feb 2023 09:14:07 -0800
 From:   Vadim Fedorenko <vadfed@meta.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         Vadim Fedorenko <vadim.fedorenko@linux.dev>,
@@ -40,11 +40,10 @@ To:     Jakub Kicinski <kuba@kernel.org>,
         "Tariq Toukan" <ttoukan.linux@gmail.com>,
         Gal Pressman <gal@nvidia.com>,
         "Saeed Mahameed" <saeed@kernel.org>
-CC:     Vadim Fedorenko <vadfed@meta.com>, <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [PATCH net v5 1/2] mlx5: fix skb leak while fifo resync and push
-Date:   Thu, 2 Feb 2023 09:13:54 -0800
-Message-ID: <20230202171355.548529-2-vadfed@meta.com>
+CC:     Vadim Fedorenko <vadfed@meta.com>, <netdev@vger.kernel.org>
+Subject: [PATCH net v5 2/2] mlx5: fix possible ptp queue fifo use-after-free
+Date:   Thu, 2 Feb 2023 09:13:55 -0800
+Message-ID: <20230202171355.548529-3-vadfed@meta.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230202171355.548529-1-vadfed@meta.com>
 References: <20230202171355.548529-1-vadfed@meta.com>
@@ -52,8 +51,8 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [2620:10d:c085:108::4]
-X-Proofpoint-GUID: lKhp9gwS_MbU1yKH59LbOXspIMIB4X2y
-X-Proofpoint-ORIG-GUID: lKhp9gwS_MbU1yKH59LbOXspIMIB4X2y
+X-Proofpoint-GUID: RByU-kVaDL34FMyqSxO1y2HBn7hTbejo
+X-Proofpoint-ORIG-GUID: RByU-kVaDL34FMyqSxO1y2HBn7hTbejo
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
  definitions=2023-02-02_11,2023-02-02_01,2022-06-22_01
@@ -67,70 +66,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During ptp resync operation SKBs were poped from the fifo but were never
-freed neither by napi_consume nor by dev_kfree_skb_any. Add call to
-napi_consume_skb to properly free SKBs.
+Fifo indexes are not checked during pop operations and it leads to
+potential use-after-free when poping from empty queue. Such case was
+possible during re-sync action. WARN_ON_ONCE covers future cases.
 
-Another leak was happening because mlx5e_skb_fifo_has_room() had an error
-in the check. Comparing free running counters works well unless C promotes
-the types to something wider than the counter. In this case counters are
-u16 but the result of the substraction is promouted to int and it causes
-wrong result (negative value) of the check when producer have already
-overlapped but consumer haven't yet. Explicit cast to u16 fixes the issue.
+There were out-of-order cqe spotted which lead to drain of the queue and
+use-after-free because of lack of fifo pointers check. Special check and
+counter are added to avoid resync operation if SKB could not exist in the
+fifo because of OOO cqe (skb_id must be between consumer and producer
+index).
 
 Fixes: 58a518948f60 ("net/mlx5e: Add resiliency for PTP TX port timestamp")
-Reviewed-by: Gal Pressman <gal@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c  | 6 ++++--
- drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h | 2 +-
- 2 files changed, 5 insertions(+), 3 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en/ptp.c  | 19 ++++++++++++++++++-
+ .../net/ethernet/mellanox/mlx5/core/en/txrx.h |  2 ++
+ .../ethernet/mellanox/mlx5/core/en_stats.c    |  1 +
+ .../ethernet/mellanox/mlx5/core/en_stats.h    |  1 +
+ 4 files changed, 22 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
-index 8469e9c38670..b72de2b520ec 100644
+index b72de2b520ec..ae75e230170b 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
-@@ -86,7 +86,8 @@ static bool mlx5e_ptp_ts_cqe_drop(struct mlx5e_ptpsq *ptpsq, u16 skb_cc, u16 skb
+@@ -86,6 +86,17 @@ static bool mlx5e_ptp_ts_cqe_drop(struct mlx5e_ptpsq *ptpsq, u16 skb_cc, u16 skb
  	return (ptpsq->ts_cqe_ctr_mask && (skb_cc != skb_id));
  }
  
--static void mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq *ptpsq, u16 skb_cc, u16 skb_id)
-+static void mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq *ptpsq, u16 skb_cc,
-+					     u16 skb_id, int budget)
++static bool mlx5e_ptp_ts_cqe_ooo(struct mlx5e_ptpsq *ptpsq, u16 skb_id)
++{
++	u16 skb_cc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
++	u16 skb_pc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_pc);
++
++	if (PTP_WQE_CTR2IDX(skb_id - skb_cc) >= PTP_WQE_CTR2IDX(skb_pc - skb_cc))
++		return true;
++
++	return false;
++}
++
+ static void mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq *ptpsq, u16 skb_cc,
+ 					     u16 skb_id, int budget)
  {
- 	struct skb_shared_hwtstamps hwts = {};
- 	struct sk_buff *skb;
-@@ -98,6 +99,7 @@ static void mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq *ptpsq, u16 skb_
- 		hwts.hwtstamp = mlx5e_skb_cb_get_hwts(skb)->cqe_hwtstamp;
- 		skb_tstamp_tx(skb, &hwts);
- 		ptpsq->cq_stats->resync_cqe++;
-+		napi_consume_skb(skb, budget);
- 		skb_cc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
- 	}
- }
-@@ -119,7 +121,7 @@ static void mlx5e_ptp_handle_ts_cqe(struct mlx5e_ptpsq *ptpsq,
+@@ -120,8 +131,14 @@ static void mlx5e_ptp_handle_ts_cqe(struct mlx5e_ptpsq *ptpsq,
+ 		goto out;
  	}
  
- 	if (mlx5e_ptp_ts_cqe_drop(ptpsq, skb_cc, skb_id))
--		mlx5e_ptp_skb_fifo_ts_cqe_resync(ptpsq, skb_cc, skb_id);
-+		mlx5e_ptp_skb_fifo_ts_cqe_resync(ptpsq, skb_cc, skb_id, budget);
+-	if (mlx5e_ptp_ts_cqe_drop(ptpsq, skb_cc, skb_id))
++	if (mlx5e_ptp_ts_cqe_drop(ptpsq, skb_cc, skb_id)) {
++		if (mlx5e_ptp_ts_cqe_ooo(ptpsq, skb_id)) {
++			/* already handled by a previous resync */
++			ptpsq->cq_stats->ooo_cqe_drop++;
++			return;
++		}
+ 		mlx5e_ptp_skb_fifo_ts_cqe_resync(ptpsq, skb_cc, skb_id, budget);
++	}
  
  	skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo);
  	hwtstamp = mlx5e_cqe_ts_to_ns(sq->ptp_cyc2time, sq->clock, get_cqe_ts(cqe));
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-index c10c6ab2e7bc..d5afad368a69 100644
+index d5afad368a69..5646f0687f65 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-@@ -86,7 +86,7 @@ void mlx5e_free_txqsq_descs(struct mlx5e_txqsq *sq);
- static inline bool
- mlx5e_skb_fifo_has_room(struct mlx5e_skb_fifo *fifo)
+@@ -302,6 +302,8 @@ void mlx5e_skb_fifo_push(struct mlx5e_skb_fifo *fifo, struct sk_buff *skb)
+ static inline
+ struct sk_buff *mlx5e_skb_fifo_pop(struct mlx5e_skb_fifo *fifo)
  {
--	return (*fifo->pc - *fifo->cc) < fifo->mask;
-+	return (u16)(*fifo->pc - *fifo->cc) < fifo->mask;
++	WARN_ON_ONCE(*fifo->pc == *fifo->cc);
++
+ 	return *mlx5e_skb_fifo_get(fifo, (*fifo->cc)++);
  }
  
- static inline bool
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+index 6687b8136e44..4478223c1720 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+@@ -2138,6 +2138,7 @@ static const struct counter_desc ptp_cq_stats_desc[] = {
+ 	{ MLX5E_DECLARE_PTP_CQ_STAT(struct mlx5e_ptp_cq_stats, abort_abs_diff_ns) },
+ 	{ MLX5E_DECLARE_PTP_CQ_STAT(struct mlx5e_ptp_cq_stats, resync_cqe) },
+ 	{ MLX5E_DECLARE_PTP_CQ_STAT(struct mlx5e_ptp_cq_stats, resync_event) },
++	{ MLX5E_DECLARE_PTP_CQ_STAT(struct mlx5e_ptp_cq_stats, ooo_cqe_drop) },
+ };
+ 
+ static const struct counter_desc ptp_rq_stats_desc[] = {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
+index 375752d6546d..b77100b60b50 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
+@@ -461,6 +461,7 @@ struct mlx5e_ptp_cq_stats {
+ 	u64 abort_abs_diff_ns;
+ 	u64 resync_cqe;
+ 	u64 resync_event;
++	u64 ooo_cqe_drop;
+ };
+ 
+ struct mlx5e_rep_stats {
 -- 
 2.30.2
 
