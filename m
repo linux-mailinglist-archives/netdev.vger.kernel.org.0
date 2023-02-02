@@ -2,120 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C88C1687314
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 02:35:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEDA0687340
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 03:08:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231576AbjBBBfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 20:35:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45404 "EHLO
+        id S229662AbjBBCIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 21:08:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbjBBBfG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 20:35:06 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F3866F217;
-        Wed,  1 Feb 2023 17:35:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675301705; x=1706837705;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=J/ZbnOOWGQyaltpY5ZXjym/QBf6OsO4SuT5wCLUEGkg=;
-  b=aNXu8Rb+ddH5uQFHrMGPuXtdErRAISZq87h1K4hM8I5IvDIf0FeWdQpc
-   Xjsb6+Su+Q+gtuzUf2IlrEeguC6EZsCjw4BDHgEsJFp6F3UKdoa5SKoMS
-   b0f+UAGueMTFbim4rJ+XCCiVanTbMygtRXXo6fjTvDLbbCsA+IsZpmzwC
-   K3TgXK3TTkprj3CBnKaFuGT5e1cZK9KfuXQ1O0hvJUPTZiPe5xfXwZq7+
-   DpFJedL+q6dLt/d+0DNhg6xN5yiB0MVNR+ZJlJ6YNhTScCAs/ZJxQ+mon
-   KUn/RmKwUMhWMX3dHePe/1/1uFeEcl+bjiSJ7jGu6sl/J/iDjBp1jqpT1
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10608"; a="355658942"
-X-IronPort-AV: E=Sophos;i="5.97,266,1669104000"; 
-   d="scan'208";a="355658942"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2023 17:35:05 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10608"; a="728647972"
-X-IronPort-AV: E=Sophos;i="5.97,266,1669104000"; 
-   d="scan'208";a="728647972"
-Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 01 Feb 2023 17:35:01 -0800
-Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pNOVB-0005zs-0I;
-        Thu, 02 Feb 2023 01:35:01 +0000
-Date:   Thu, 2 Feb 2023 09:34:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ajit Khaparde <ajit.khaparde@broadcom.com>
-Cc:     oe-kbuild-all@lists.linux.dev, andrew.gospodarek@broadcom.com,
-        davem@davemloft.net, edumazet@google.com, jgg@ziepe.ca,
-        kuba@kernel.org, leon@kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, michael.chan@broadcom.com,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        selvin.xavier@broadcom.com, gregkh@linuxfoundation.org,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: Re: [PATCH net-next v10 1/8] bnxt_en: Add auxiliary driver support
-Message-ID: <202302020909.KDHYiYu4-lkp@intel.com>
-References: <20230201204500.19420-2-ajit.khaparde@broadcom.com>
+        with ESMTP id S229731AbjBBCID (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 21:08:03 -0500
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33AB83ABB
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 18:07:58 -0800 (PST)
+Received: by mail-il1-x12f.google.com with SMTP id x6so253001ilv.7
+        for <netdev@vger.kernel.org>; Wed, 01 Feb 2023 18:07:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3+BzeSJVfgrSPd0MbuqsjRM9bEzGlx7ixViHWjjvE7s=;
+        b=LzWodT1eb5DCcVhR8b+EzMloXXDPgbgfg5yAdRijbYs5VrwQKJ5b4Xn3BrOcQv6ZHm
+         j/bfvWWLI1MwoyyRBH16YFEsS/RLHZmYDtrOK68OuhisrVKoWYrz8AY7DIZEDOe1gDZx
+         4OF2YnlUs2qkyWJbriJ9+QAh5N1DZRxJo+pdc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3+BzeSJVfgrSPd0MbuqsjRM9bEzGlx7ixViHWjjvE7s=;
+        b=li5fQs/3IbM+qfJ9MpBei71XOI2+Hb7ZkVhOsLQqtLE2G79cNWSeCI9Mu+fpdOa+dN
+         rK0I6SZoaw6GtwEOY7DV+lU5aJ8TedvTDKzk4LUgYPGjsRUG9c0JMuoTLcgDD/goVSl7
+         t9DlZhzL1A2tH5EvITWDPi1aqsfOGSrQD4Lif7tBMT/B06hNWxmaalPKorhPAX7lwt0W
+         57hA0RI1S+6+6fGrdvn9jbKMDhHnd+V7js+w6DKErmHj3xfexw3zjEzj+LU9h3XeS4/u
+         0xiz0g2rd39WbrFWaa7BgyhzzooOlJ3aQtnOCQFPavxOdgqUjvZ92mLhMN6YvukmTNhK
+         BHAg==
+X-Gm-Message-State: AO0yUKUGxS21rIjPjo5bECrmzCswg8mMwHbI18ghE7e9rvr37P6K7Aum
+        xlwwhwq+nZ+Afbn8PV4ivJUUPX8UdXoxpeV0
+X-Google-Smtp-Source: AK7set885G9fsVi6nyk8fZGA4Ca40+OFghSuF3kmr1dqRUTOmqFNraoAAvKt0LfXBjQfFbwgGTGQkA==
+X-Received: by 2002:a92:d341:0:b0:310:a904:33ed with SMTP id a1-20020a92d341000000b00310a90433edmr2899734ilh.0.1675303677369;
+        Wed, 01 Feb 2023 18:07:57 -0800 (PST)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id d26-20020a05663802ba00b0039ea2dfebb3sm7259077jaq.24.2023.02.01.18.07.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Feb 2023 18:07:56 -0800 (PST)
+Message-ID: <799b87d9-af19-0e6a-01b7-419b4893a0df@linuxfoundation.org>
+Date:   Wed, 1 Feb 2023 19:07:55 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230201204500.19420-2-ajit.khaparde@broadcom.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH 00/34] selftests: Fix incorrect kernel headers search path
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
+        Ingo Molnar <mingo@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20230127135755.79929-1-mathieu.desnoyers@efficios.com>
+ <560824bd-da2d-044c-4f71-578fc34a47cd@linuxfoundation.org>
+Content-Language: en-US
+From:   Shuah Khan <skhan@linuxfoundation.org>
+In-Reply-To: <560824bd-da2d-044c-4f71-578fc34a47cd@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ajit,
+Hi Mathieu,
 
-I love your patch! Perhaps something to improve:
+On 1/30/23 15:29, Shuah Khan wrote:
+> On 1/27/23 06:57, Mathieu Desnoyers wrote:
+>> Hi,
+>>
+>> This series fixes incorrect kernel header search path in kernel
+>> selftests.
+>>
+>> Near the end of the series, a few changes are not tagged as "Fixes"
+>> because the current behavior is to rely on the kernel sources uapi files
+>> rather than on the installed kernel header files. Nevertheless, those
+>> are updated for consistency.
+>>
+>> There are situations where "../../../../include/" was added to -I search
+>> path, which is bogus for userspace tests and caused issues with types.h.
+>> Those are removed.
+>>
 
-[auto build test WARNING on net-next/master]
+Thanks again for taking care of this. I did out of tree build testing on
+x86 on linux-kselftest next with these patches below. I haven't seen
+any problems introduced by the patch set.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Ajit-Khaparde/bnxt_en-Add-auxiliary-driver-support/20230202-044848
-patch link:    https://lore.kernel.org/r/20230201204500.19420-2-ajit.khaparde%40broadcom.com
-patch subject: [PATCH net-next v10 1/8] bnxt_en: Add auxiliary driver support
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20230202/202302020909.KDHYiYu4-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-8) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/896eba0b6cd806dd11640cafa66d35f8b483f550
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Ajit-Khaparde/bnxt_en-Add-auxiliary-driver-support/20230202-044848
-        git checkout 896eba0b6cd806dd11640cafa66d35f8b483f550
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 olddefconfig
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/ethernet/broadcom/bnxt/
+>>    selftests: dma: Fix incorrect kernel headers search path
+This one needs a change and I will send a patch on top of yours.
+Even with that this test depends on unexported header from the
+repo and won't build out of tree. This is not related to your
+change.
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
+>>    selftests: mount_setattr: Fix incorrect kernel headers search path
+This one fails to build with our without patch - an existing error.
 
-All warnings (new ones prefixed by >>):
+I have to do cross-build tests on arm64 and other arch patches still.
+This will happen later this week.
 
-   drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c: In function 'bnxt_aux_dev_release':
->> drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c:483:22: warning: unused variable 'bp' [-Wunused-variable]
-     483 |         struct bnxt *bp = netdev_priv(aux_priv->edev->net);
-         |                      ^~
+>>    selftests: arm64: Fix incorrect kernel headers search path
 
+drivers patch below had arch specific tests - testing todo
 
-vim +/bp +483 drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+The rest looks good. I will try to run bpf patches on my system.
+I do have clang, llvm installed on mine. TODO
 
-   478	
-   479	static void bnxt_aux_dev_release(struct device *dev)
-   480	{
-   481		struct bnxt_aux_priv *aux_priv =
-   482			container_of(dev, struct bnxt_aux_priv, aux_dev.dev);
- > 483		struct bnxt *bp = netdev_priv(aux_priv->edev->net);
-   484	
-   485		ida_free(&bnxt_aux_dev_ids, aux_priv->id);
-   486		kfree(aux_priv->edev);
-   487		kfree(aux_priv);
-   488	}
-   489	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+thanks,
+-- Shuah
