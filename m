@@ -2,73 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 184B76885BA
+	by mail.lfdr.de (Postfix) with ESMTP id 64FAC6885BB
 	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 18:53:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230463AbjBBRxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 12:53:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39666 "EHLO
+        id S231542AbjBBRxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 12:53:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbjBBRxf (ORCPT
+        with ESMTP id S229714AbjBBRxf (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 12:53:35 -0500
 Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F676603F;
-        Thu,  2 Feb 2023 09:53:32 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 41BDA5C00BF;
-        Thu,  2 Feb 2023 12:53:31 -0500 (EST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E0E68115;
+        Thu,  2 Feb 2023 09:53:33 -0800 (PST)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.nyi.internal (Postfix) with ESMTP id 1FF6D5C009B;
+        Thu,  2 Feb 2023 12:53:33 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Thu, 02 Feb 2023 12:53:31 -0500
+  by compute6.internal (MEProxy); Thu, 02 Feb 2023 12:53:33 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pjd.dev; h=cc:cc
         :content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm2; t=1675360411; x=1675446811; bh=oSkfZNQQwoV+/rKhBg7ZigxrN
-        283hdkWNlr1BY9UCL8=; b=SrVRHFysZIvbAlXGNKYX+cXJQY7ItsDGtFzOxvqs7
-        c9C7/S4xjU7qmFgWVg8UrlZDJiDSjbnF+rxSmlm08wMioESSDTymNqGj7C7we2xt
-        xbpQJMo6MteGIIHWIfvQOR8STHsbUHnIb5UKTX+oxdUpciEgwAFBcVHU89bcjpO8
-        PGYQVAOGAOrbYI78k1JppBBKA2/0+8HHH50oRwtUZn7QruaRPLjNRVPWuVZZINvu
-        6fD2I/f4++2dh3zKNlpb4ND/XRm5+pOdTpTKOM9G8N4snW5S87MZdxunhtlVxlrC
-        hxTrl85w9s/umdrO1wbXdhpj0RO9Y/E/mAa940kO9Napw==
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1675360413; x=1675446813; bh=AD
+        A0MfB2Bn8m0MF+9M36B7RFkDED4j6UmA2ZzwFFajY=; b=tE6IRNo7k0Ex54roZ7
+        qUiLhRfRqSizJoQETkz232SF/yy7r2PaMRGRPdASo9F3PHkzqmz/FpmfdSsK0dag
+        WtO0X5yTsTJlnUSlHZpXuZbGoaVPw56F655GSMmXKSOSwN79Isw2W+khu/teVBrR
+        NS2R2Ypcgql1ZXBJ0rNTXBOcpckXuPwt7BWphk+aIczsw9l5UtmJ0dNksgnZtlJm
+        2SZLM2TDyRJluC2OWbQ+t2zznWHdy1Vtz8q3SgCB7a+IM+0H5NZgofa2HPZw8h4c
+        TXr9XZko5XNyhKreaUhjJPBfEUwG2sWF2PhdIjNiPRkxcRdCvC+lFF8hSmBlnwq1
+        2dMw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
-        1675360411; x=1675446811; bh=oSkfZNQQwoV+/rKhBg7ZigxrN283hdkWNlr
-        1BY9UCL8=; b=SuXuiNkFui0iymVtXyrqn3D4WyDP2e0/ChnwtidwhFDCI9xq9c+
-        Qc7EqEysj9yJIKfmrwjXDhCFOpVodulzdl1EM2kIyply8AgVq+3ICc/TwLBXw+Yi
-        7OJhDkl5TbTEjFqXNM2JjrF3kFUZC3k+gUTWcBm8bdMdk/FpagEwMilzWtko37Ib
-        5mywno31WSr5zXQwDak3NzLchjFI9hsfgpvRfSQogtnOaPBN1zJEVqeaG/UyuOB8
-        CA3l7/uEQVsRa/64XTjtRemtig1Spwv8axK9l6mJkI9EP8Xh8sDi+Kmr7LAOvci2
-        pEPnh1yqmimZosKxsUK10V5ZMBU0YvwFpUQ==
-X-ME-Sender: <xms:mvjbY1sq76KetRtHUvq0cBm4S9ZboGYNH1TnD0CVz40Gai2KvSmlWw>
-    <xme:mvjbY-fmvH2JJty0_tUew5tatgyQPWZHBrSy21Q2Nk_-ZgBbq8UBCPQYqPfbzKw7W
-    vtTPenDUpmT0vyy74o>
-X-ME-Received: <xmr:mvjbY4wyNmf2TAnvKO7NlpingUUogctuYvHGRC6De5p8nkw8PfTLhY9vJ0KUJInku_H6eQilWB2A9JxU6g>
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm3; t=1675360413; x=1675446813; bh=ADA0MfB2Bn8m0
+        MF+9M36B7RFkDED4j6UmA2ZzwFFajY=; b=coK1d3OkHU50gxO+/sCtMYYFOwtd6
+        P4jCB3rBTI+ApGkvHXwl4/X7nPAYzEn2wSI/AhCgZw0UxDMnrdYH7ozUjo3KYPRF
+        jNz93dsu3deTXBYkva/GXgL2QEnPMG0W3ggRyJ2+bQ1FYS9R6hgbXcanEyVPiugy
+        3/jqrMMRgf9R724lDx2LAwYurgoDOy5+8Dv+JcT65dkjtEXtwp8ou67QoXiZV+3A
+        kvo0Hz1cTTEZIW5Ss4pVRbYEuewLiDgeQIfo6E6CLlquJaLL2U99Y+q9YlxdwYIv
+        5ZQ6tQmeWV3CoCowbkPh3qBCKxW8j4l/PB4ZSboT5zmDBR7iu0h8WNdcw==
+X-ME-Sender: <xms:nPjbYxWLseu764yKcwTK0ieu4ng-M-3laAhXXoe9aih01E6hbhyk0Q>
+    <xme:nPjbYxky35Jc3Htd5hcMq_UqfX6s6-JXXOm6bbap2L83TT00o4pefgfN61_v_h3xd
+    3wLcNwWTCJBR4xxw_w>
+X-ME-Received: <xmr:nPjbY9Yid-R_8OGfyEgExXQXjUtuAtPiOlY-oTxkORJOqg31gjUAkFayyibxh87-riuPdIJze92rMTP8pQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudefkedguddtvdcutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecumhhishhsihhnghcuvffquchfihgvlhguucdlfe
-    dtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefrvght
-    vghrucffvghlvghvohhrhigrshcuoehpvghtvghrsehpjhgurdguvghvqeenucggtffrrg
-    htthgvrhhnpeetleelgfduleefieekjedvtdeiieffkeehkeelkeetheevffeijeffieeg
-    veekheenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
-    epudenucfrrghrrghmpehmrghilhhfrhhomhepphgvthgvrhesphhjugdruggvvh
-X-ME-Proxy: <xmx:mvjbY8O5cOlHJptwVdwTtrIvZL1S94wlb2Lze17GnOH1lmBqGqZsRA>
-    <xmx:mvjbY18O7EHLyL4rLXGyMqjPV0Axe5BDBNNR6pQxqsXu_oXb4qe_wQ>
-    <xmx:mvjbY8UU5khzcDJJ9y4_MbdoEyWNe1926KkPeGEBPp4Vd_nfkDOc1A>
-    <xmx:m_jbY-P42ZlmE_3085_Aarxb6cFSI6BDoKW_-6I5HrC3sJ7CYXM2kA>
+    dtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefr
+    vghtvghrucffvghlvghvohhrhigrshcuoehpvghtvghrsehpjhgurdguvghvqeenucggtf
+    frrghtthgvrhhnpeeliedvteeuieekuefhieeghfehueffheeutdduueejiedvfedtudev
+    geevhfffhfenucffohhmrghinhepughmthhfrdhorhhgpdifihhkihhpvgguihgrrdhorh
+    hgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepphgv
+    thgvrhesphhjugdruggvvh
+X-ME-Proxy: <xmx:nfjbY0WFMUYkrP986ln5-U3En49yAS1laCLAIXHTGQrEiPmkyKQTXA>
+    <xmx:nfjbY7mAsU6ES8WQ0H0nrGxR7MbbFkzINlW_MsaW_1QECcp-Rq9VBg>
+    <xmx:nfjbYxehrJQ0GnkBkKHtoY_pS79EgDjwipOr5bX67_RhVjwFhfVWMQ>
+    <xmx:nfjbY5V0zQ7P0FKJDmiSLCg5HtT5GJgK72ylIxONxPH17UyJ2SCluw>
 Feedback-ID: i9e814621:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 2 Feb 2023 12:53:29 -0500 (EST)
+ 2 Feb 2023 12:53:31 -0500 (EST)
 From:   Peter Delevoryas <peter@pjd.dev>
 Cc:     sam@mendozajonas.com, davem@davemloft.net, edumazet@google.com,
         kuba@kernel.org, pabeni@redhat.com, joel@jms.id.au,
         gwshan@linux.vnet.ibm.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [net-next PATCH 0/1] net/ncsi: Fix netlink major/minor version numbers
-Date:   Thu,  2 Feb 2023 09:53:26 -0800
-Message-Id: <20230202175327.23429-1-peter@pjd.dev>
+Subject: [net-next PATCH 1/1] net/ncsi: Fix netlink major/minor version numbers
+Date:   Thu,  2 Feb 2023 09:53:27 -0800
+Message-Id: <20230202175327.23429-2-peter@pjd.dev>
 X-Mailer: git-send-email 2.39.0
+In-Reply-To: <20230202175327.23429-1-peter@pjd.dev>
+References: <20230202175327.23429-1-peter@pjd.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -81,48 +85,194 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Background:
+The netlink interface for major and minor version numbers doesn't actually
+return the major and minor version numbers.
 
-This fixes some nonsensical behavior with the NCSI version numbers that has
-existed since the NCSI driver was introduced. Details in the commit message.
+It reports a u32 that contains the (major, minor, update, alpha1)
+components as the major version number, and then alpha2 as the minor
+version number.
 
-Functionally, this is only visible through the netlink interface, so I've
-titled this commit as "fixing netlink".
+For whatever reason, the u32 byte order was reversed (ntohl): maybe it was
+assumed that the encoded value was a single big-endian u32, and alpha2 was
+the minor version.
 
-But actually, the real reason I care about this is to provide a proper mechanism
-for using the network card's NCSI version in the driver state machine.
+The correct way to get the supported NC-SI version from the network
+controller is to parse the Get Version ID response as described in 8.4.44
+of the NC-SI spec[1].
 
-With the major and minor versions parsed correctly here, the state machine can
-decide to send NCSI 1.1 or 1.2 commands when the card supports it.
+    Get Version ID Response Packet Format
 
-I submitted this patch previously[1] with two other changes, but that series
-was ignored (wrong time to submit, invalid subject prefix, and the last patch
-is controversial until hardware propagates).
+              Bits
+            +--------+--------+--------+--------+
+     Bytes  | 31..24 | 23..16 | 15..8  | 7..0   |
+    +-------+--------+--------+--------+--------+
+    | 0..15 | NC-SI Header                      |
+    +-------+--------+--------+--------+--------+
+    | 16..19| Response code   | Reason code     |
+    +-------+--------+--------+--------+--------+
+    |20..23 | Major  | Minor  | Update | Alpha1 |
+    +-------+--------+--------+--------+--------+
+    |24..27 |         reserved         | Alpha2 |
+    +-------+--------+--------+--------+--------+
+    |            .... other stuff ....          |
 
-I decided to just resubmit this first patch, since I think it's valuable on its
-own. I'll follow up with the other ones later.
+The major, minor, and update fields are all binary-coded decimal (BCD)
+encoded [2]. The spec provides examples below the Get Version ID response
+format in section 8.4.44.1, but for practical purposes, this is an example
+from a live network card:
 
-[1] https://lore.kernel.org/lkml/20221221052246.519674-1-peter@pjd.dev/
+    root@bmc:~# ncsi-util 0x15
+    NC-SI Command Response:
+    cmd: GET_VERSION_ID(0x15)
+    Response: COMMAND_COMPLETED(0x0000)  Reason: NO_ERROR(0x0000)
+    Payload length = 40
 
-Implementation notes:
+    20: 0xf1 0xf1 0xf0 0x00 <<<<<<<<< (major, minor, update, alpha1)
+    24: 0x00 0x00 0x00 0x00 <<<<<<<<< (_, _, _, alpha2)
 
-I found that "include/linux/bcd.h" doesn't actually do what we would want, so I
-added a local static function. Perhaps I actually should have added that to
-"include/linux/bcd.h" so other people can use it in the future? Let me know
-what you guys think.
+    28: 0x6d 0x6c 0x78 0x30
+    32: 0x2e 0x31 0x00 0x00
+    36: 0x00 0x00 0x00 0x00
+    40: 0x16 0x1d 0x07 0xd2
+    44: 0x10 0x1d 0x15 0xb3
+    48: 0x00 0x17 0x15 0xb3
+    52: 0x00 0x00 0x81 0x19
 
-Thanks,
-Peter
+This should be parsed as "1.1.0".
 
-Peter Delevoryas (1):
-  net/ncsi: Fix netlink major/minor version numbers
+"f" in the upper-nibble means to ignore it, contributing zero.
 
+If both nibbles are "f", I think the whole field is supposed to be ignored.
+Major and minor are "required", meaning they're not supposed to be "ff",
+but the update field is "optional" so I think it can be ff. I think the
+simplest thing to do is just set the major and minor to zero instead of
+juggling some conditional logic or something.
+
+bcd2bin() from "include/linux/bcd.h" seems to assume both nibbles are 0-9,
+so I've provided a custom BCD decoding function.
+
+Alpha1 and alpha2 are ISO/IEC 8859-1 encoded, which just means ASCII
+characters as far as I can tell, although the full encoding table for
+non-alphabetic characters is slightly different (I think).
+
+I imagine the alpha fields are just supposed to be alphabetic characters,
+but I haven't seen any network cards actually report a non-zero value for
+either.
+
+If people wrote software against this netlink behavior, and were parsing
+the major and minor versions themselves from the u32, then this would
+definitely break their code.
+
+[1] https://www.dmtf.org/sites/default/files/standards/documents/DSP0222_1.0.0.pdf
+[2] https://en.wikipedia.org/wiki/Binary-coded_decimal
+[2] https://en.wikipedia.org/wiki/ISO/IEC_8859-1
+
+Fixes: 138635cc27c9 ("net/ncsi: NCSI response packet handler")
+Signed-off-by: Peter Delevoryas <peter@pjd.dev>
+---
  net/ncsi/internal.h     |  7 +++++--
  net/ncsi/ncsi-netlink.c |  4 ++--
  net/ncsi/ncsi-pkt.h     |  7 +++++--
  net/ncsi/ncsi-rsp.c     | 26 ++++++++++++++++++++++++--
  4 files changed, 36 insertions(+), 8 deletions(-)
 
+diff --git a/net/ncsi/internal.h b/net/ncsi/internal.h
+index 03757e76bb6b..374412ed780b 100644
+--- a/net/ncsi/internal.h
++++ b/net/ncsi/internal.h
+@@ -105,8 +105,11 @@ enum {
+ 
+ 
+ struct ncsi_channel_version {
+-	u32 version;		/* Supported BCD encoded NCSI version */
+-	u32 alpha2;		/* Supported BCD encoded NCSI version */
++	u8   major;		/* NCSI version major */
++	u8   minor;		/* NCSI version minor */
++	u8   update;		/* NCSI version update */
++	char alpha1;		/* NCSI version alpha1 */
++	char alpha2;		/* NCSI version alpha2 */
+ 	u8  fw_name[12];	/* Firmware name string                */
+ 	u32 fw_version;		/* Firmware version                   */
+ 	u16 pci_ids[4];		/* PCI identification                 */
+diff --git a/net/ncsi/ncsi-netlink.c b/net/ncsi/ncsi-netlink.c
+index d27f4eccce6d..fe681680b5d9 100644
+--- a/net/ncsi/ncsi-netlink.c
++++ b/net/ncsi/ncsi-netlink.c
+@@ -71,8 +71,8 @@ static int ncsi_write_channel_info(struct sk_buff *skb,
+ 	if (nc == nc->package->preferred_channel)
+ 		nla_put_flag(skb, NCSI_CHANNEL_ATTR_FORCED);
+ 
+-	nla_put_u32(skb, NCSI_CHANNEL_ATTR_VERSION_MAJOR, nc->version.version);
+-	nla_put_u32(skb, NCSI_CHANNEL_ATTR_VERSION_MINOR, nc->version.alpha2);
++	nla_put_u32(skb, NCSI_CHANNEL_ATTR_VERSION_MAJOR, nc->version.major);
++	nla_put_u32(skb, NCSI_CHANNEL_ATTR_VERSION_MINOR, nc->version.minor);
+ 	nla_put_string(skb, NCSI_CHANNEL_ATTR_VERSION_STR, nc->version.fw_name);
+ 
+ 	vid_nest = nla_nest_start_noflag(skb, NCSI_CHANNEL_ATTR_VLAN_LIST);
+diff --git a/net/ncsi/ncsi-pkt.h b/net/ncsi/ncsi-pkt.h
+index ba66c7dc3a21..c9d1da34dc4d 100644
+--- a/net/ncsi/ncsi-pkt.h
++++ b/net/ncsi/ncsi-pkt.h
+@@ -197,9 +197,12 @@ struct ncsi_rsp_gls_pkt {
+ /* Get Version ID */
+ struct ncsi_rsp_gvi_pkt {
+ 	struct ncsi_rsp_pkt_hdr rsp;          /* Response header */
+-	__be32                  ncsi_version; /* NCSI version    */
++	unsigned char           major;        /* NCSI version major */
++	unsigned char           minor;        /* NCSI version minor */
++	unsigned char           update;       /* NCSI version update */
++	unsigned char           alpha1;       /* NCSI version alpha1 */
+ 	unsigned char           reserved[3];  /* Reserved        */
+-	unsigned char           alpha2;       /* NCSI version    */
++	unsigned char           alpha2;       /* NCSI version alpha2 */
+ 	unsigned char           fw_name[12];  /* f/w name string */
+ 	__be32                  fw_version;   /* f/w version     */
+ 	__be16                  pci_ids[4];   /* PCI IDs         */
+diff --git a/net/ncsi/ncsi-rsp.c b/net/ncsi/ncsi-rsp.c
+index 6447a09932f5..7a805b86a12d 100644
+--- a/net/ncsi/ncsi-rsp.c
++++ b/net/ncsi/ncsi-rsp.c
+@@ -19,6 +19,19 @@
+ #include "ncsi-pkt.h"
+ #include "ncsi-netlink.h"
+ 
++/* Nibbles within [0xA, 0xF] add zero "0" to the returned value.
++ * Optional fields (encoded as 0xFF) will default to zero.
++ */
++static u8 decode_bcd_u8(u8 x)
++{
++	int lo = x & 0xF;
++	int hi = x >> 4;
++
++	lo = lo < 0xA ? lo : 0;
++	hi = hi < 0xA ? hi : 0;
++	return lo + hi * 10;
++}
++
+ static int ncsi_validate_rsp_pkt(struct ncsi_request *nr,
+ 				 unsigned short payload)
+ {
+@@ -804,9 +817,18 @@ static int ncsi_rsp_handler_gvi(struct ncsi_request *nr)
+ 	if (!nc)
+ 		return -ENODEV;
+ 
+-	/* Update to channel's version info */
++	/* Update channel's version info
++	 *
++	 * Major, minor, and update fields are supposed to be
++	 * unsigned integers encoded as packed BCD.
++	 *
++	 * Alpha1 and alpha2 are ISO/IEC 8859-1 characters.
++	 */
+ 	ncv = &nc->version;
+-	ncv->version = ntohl(rsp->ncsi_version);
++	ncv->major = decode_bcd_u8(rsp->major);
++	ncv->minor = decode_bcd_u8(rsp->minor);
++	ncv->update = decode_bcd_u8(rsp->update);
++	ncv->alpha1 = rsp->alpha1;
+ 	ncv->alpha2 = rsp->alpha2;
+ 	memcpy(ncv->fw_name, rsp->fw_name, 12);
+ 	ncv->fw_version = ntohl(rsp->fw_version);
 -- 
 2.30.2
 
