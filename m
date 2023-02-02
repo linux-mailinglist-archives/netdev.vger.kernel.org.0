@@ -2,51 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94DE0687318
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 02:40:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C88C1687314
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 02:35:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbjBBBkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 20:40:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46472 "EHLO
+        id S231576AbjBBBfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 20:35:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229551AbjBBBka (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 20:40:30 -0500
-X-Greylist: delayed 348 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 01 Feb 2023 17:40:28 PST
-Received: from out-50.mta1.migadu.com (out-50.mta1.migadu.com [IPv6:2001:41d0:203:375::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86466E405
-        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 17:40:28 -0800 (PST)
-Message-ID: <39126b10-c22f-5393-b7bd-d699b8b8eed5@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1675301676;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5mLfTL5MFIzgJ7S9PUC2Qg4fwlPj5+EkK3g1WSIRwBQ=;
-        b=M8WRBKfb/r58fSzOeYKUxIzSqJbXeJBm+CrhIU+O/MkrihULxG4CIqc/mE6Wc3YMpI+UnT
-        Z6Twmwr3uYboqk0waEc0n0qUXcYW4g+OWCZ28Dfvt4iQ98kKeLVFoBteJxNIoK/UpV8w2H
-        /jPyBxJb59Ka23Q9M5F7Jpk8XSlcBqo=
-Date:   Thu, 2 Feb 2023 01:34:32 +0000
+        with ESMTP id S229563AbjBBBfG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 20:35:06 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F3866F217;
+        Wed,  1 Feb 2023 17:35:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675301705; x=1706837705;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=J/ZbnOOWGQyaltpY5ZXjym/QBf6OsO4SuT5wCLUEGkg=;
+  b=aNXu8Rb+ddH5uQFHrMGPuXtdErRAISZq87h1K4hM8I5IvDIf0FeWdQpc
+   Xjsb6+Su+Q+gtuzUf2IlrEeguC6EZsCjw4BDHgEsJFp6F3UKdoa5SKoMS
+   b0f+UAGueMTFbim4rJ+XCCiVanTbMygtRXXo6fjTvDLbbCsA+IsZpmzwC
+   K3TgXK3TTkprj3CBnKaFuGT5e1cZK9KfuXQ1O0hvJUPTZiPe5xfXwZq7+
+   DpFJedL+q6dLt/d+0DNhg6xN5yiB0MVNR+ZJlJ6YNhTScCAs/ZJxQ+mon
+   KUn/RmKwUMhWMX3dHePe/1/1uFeEcl+bjiSJ7jGu6sl/J/iDjBp1jqpT1
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10608"; a="355658942"
+X-IronPort-AV: E=Sophos;i="5.97,266,1669104000"; 
+   d="scan'208";a="355658942"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2023 17:35:05 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10608"; a="728647972"
+X-IronPort-AV: E=Sophos;i="5.97,266,1669104000"; 
+   d="scan'208";a="728647972"
+Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 01 Feb 2023 17:35:01 -0800
+Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pNOVB-0005zs-0I;
+        Thu, 02 Feb 2023 01:35:01 +0000
+Date:   Thu, 2 Feb 2023 09:34:56 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ajit Khaparde <ajit.khaparde@broadcom.com>
+Cc:     oe-kbuild-all@lists.linux.dev, andrew.gospodarek@broadcom.com,
+        davem@davemloft.net, edumazet@google.com, jgg@ziepe.ca,
+        kuba@kernel.org, leon@kernel.org, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, michael.chan@broadcom.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        selvin.xavier@broadcom.com, gregkh@linuxfoundation.org,
+        Leon Romanovsky <leonro@nvidia.com>
+Subject: Re: [PATCH net-next v10 1/8] bnxt_en: Add auxiliary driver support
+Message-ID: <202302020909.KDHYiYu4-lkp@intel.com>
+References: <20230201204500.19420-2-ajit.khaparde@broadcom.com>
 MIME-Version: 1.0
-Subject: Re: [PATCH net v4 2/2] mlx5: fix possible ptp queue fifo
- use-after-free
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Vadim Fedorenko <vadfed@meta.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rahul Rameshbabu <rrameshbabu@nvidia.com>,
-        Tariq Toukan <ttoukan.linux@gmail.com>,
-        Gal Pressman <gal@nvidia.com>, netdev@vger.kernel.org
-References: <20230201122605.1350664-1-vadfed@meta.com>
- <20230201122605.1350664-3-vadfed@meta.com> <Y9qtPtTMvZUWtRso@x130>
- <56a2ea34-7730-3794-d2df-53c94b4d9a60@linux.dev> <Y9r4UHZUUAdYdTPp@x130>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Vadim Fedorenko <vadim.fedorenko@linux.dev>
-In-Reply-To: <Y9r4UHZUUAdYdTPp@x130>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230201204500.19420-2-ajit.khaparde@broadcom.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,202 +69,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/02/2023 23:40, Saeed Mahameed wrote:
-> On 01 Feb 21:36, Vadim Fedorenko wrote:
->> On 01/02/2023 18:19, Saeed Mahameed wrote:
->>> On 01 Feb 04:26, Vadim Fedorenko wrote:
->>>> Fifo indexes were not checked during pop operations and it leads to
->>>> potential use-after-free when poping from empty queue. Such case was
->>>> possible during re-sync action.
->>>>
->>>> There were out-of-order cqe spotted which lead to drain of the queue 
->>>> and
->>>> use-after-free because of lack of fifo pointers check. Special check
->>>> is added to avoid resync operation if SKB could not exist in the fifo
->>>> because of OOO cqe (skb_id must be between consumer and producer 
->>>> index).
->>>>
->>>> Fixes: 58a518948f60 ("net/mlx5e: Add resiliency for PTP TX port 
->>>> timestamp")
->>>> Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
->>>> ---
->>>> .../net/ethernet/mellanox/mlx5/core/en/ptp.c  | 23 ++++++++++++++-----
->>>> .../net/ethernet/mellanox/mlx5/core/en/txrx.h |  4 +++-
->>>> 2 files changed, 20 insertions(+), 7 deletions(-)
->>>>
->>>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c 
->>>> b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
->>>> index b72de2b520ec..5df726185192 100644
->>>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
->>>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
->>>> @@ -86,7 +86,7 @@ static bool mlx5e_ptp_ts_cqe_drop(struct 
->>>> mlx5e_ptpsq *ptpsq, u16 skb_cc, u16 skb
->>>>     return (ptpsq->ts_cqe_ctr_mask && (skb_cc != skb_id));
->>>> }
->>>>
->>>> -static void mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq 
->>>> *ptpsq, u16 skb_cc,
->>>> +static bool mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq 
->>>> *ptpsq, u16 skb_cc,
->>>>                          u16 skb_id, int budget)
->>>> {
->>>>     struct skb_shared_hwtstamps hwts = {};
->>>> @@ -94,14 +94,23 @@ static void 
->>>> mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq *ptpsq, u16 skb_
->>>>
->>>>     ptpsq->cq_stats->resync_event++;
->>>>
->>>> -    while (skb_cc != skb_id) {
->>>> -        skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo);
->>>> +    if (skb_cc > skb_id || PTP_WQE_CTR2IDX(ptpsq->skb_fifo_pc) < 
->>>> skb_id) {
->>>
->>> To avoid returning boolean and add more functionality to this function,
->>> I prefer to put this check in mlx5e_ptp_handle_ts_cqe(), see below.
->>>
->>
->> Let's discuss this point, see comments below.
->>
->>>> +        mlx5_core_err_rl(ptpsq->txqsq.mdev, "out-of-order ptp cqe\n");
->>>
->>> it's better to add a counter for this, eg: 
->>> ptpsq->cq_stats->ooo_cqe_drop++;
->>
->> Sure, will do.
->>
->>>
->>>> +        return false;
->>>> +    }
->>>> +
->>>> +    while (skb_cc != skb_id && (skb = 
->>>> mlx5e_skb_fifo_pop(&ptpsq->skb_fifo))) {
->>>>         hwts.hwtstamp = mlx5e_skb_cb_get_hwts(skb)->cqe_hwtstamp;
->>>>         skb_tstamp_tx(skb, &hwts);
->>>>         ptpsq->cq_stats->resync_cqe++;
->>>>         napi_consume_skb(skb, budget);
->>>>         skb_cc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
->>>>     }
->>>> +
->>>> +    if (!skb)
->>>> +        return false;
->>>> +
->>>> +    return true;
->>>> }
->>>>
->>>> static void mlx5e_ptp_handle_ts_cqe(struct mlx5e_ptpsq *ptpsq,
->>>> @@ -111,7 +120,7 @@ static void mlx5e_ptp_handle_ts_cqe(struct 
->>>> mlx5e_ptpsq *ptpsq,
->>>>     u16 skb_id = PTP_WQE_CTR2IDX(be16_to_cpu(cqe->wqe_counter));
->>>>     u16 skb_cc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
->>>>     struct mlx5e_txqsq *sq = &ptpsq->txqsq;
->>>> -    struct sk_buff *skb;
->>>> +    struct sk_buff *skb = NULL;
->>>>     ktime_t hwtstamp;
->>>>
->>>>     if (unlikely(MLX5E_RX_ERR_CQE(cqe))) {
->>>> @@ -120,8 +129,10 @@ static void mlx5e_ptp_handle_ts_cqe(struct 
->>>> mlx5e_ptpsq *ptpsq,
->>>>         goto out;
->>>>     }
->>>>
->>>> -    if (mlx5e_ptp_ts_cqe_drop(ptpsq, skb_cc, skb_id))
->>>> -        mlx5e_ptp_skb_fifo_ts_cqe_resync(ptpsq, skb_cc, skb_id, 
->>>> budget);
->>>
->>> you can check here:
->>>     /* ignore ooo cqe as it was already handled by a previous resync */
->>>     if (ooo_cqe(cqe))
->>>         return;
->>
->> I assume that mlx5e_ptp_skb_fifo_ts_cqe_resync() is error-recovery 
->> path and should not happen frequently. If we move this check to 
->> mlx5e_ptp_handle_ts_cqe() we will have additional if with 2 checks for 
->> every cqe coming from ptp queue - the fast path. With our load of 
-> 
-> we could do:
-> 
-> if (mlx5e_ptp_ts_cqe_drop(ptpsq, skb_cc, skb_id))
-> {
->     if (ooo_cqe) /* already handled by a previous resync */
->           return;
->     mlx5e_ptp_skb_fifo_ts_cqe_resync(..);
-> }
-> 
-Yep, that's one of the options I suggested. Ok, let's do it this way.
+Hi Ajit,
 
->> 1+Mpps it could be countable. Another point is that 
->> mlx5e_ptp_skb_fifo_ts_cqe_resync() will assume that skb_id must always 
->> be within fifo indexes and any other (future?) code has to implement 
->> this check. Otherwise it will cause use-after-free, double-free and 
->> then crash, especially if we remove check in mlx5e_skb_fifo_pop() that 
->> you commented below. I think it's ok to have additional check in error 
->> path to prevent anything like that in the future.
->>
->> If you stongly against converting mlx5e_ptp_skb_fifo_ts_cqe_resync() 
->> to return bool, I can add the check to 'if mlx5e_ptp_ts_cqe_drop()' 
->> scope before calling resync(), but it will not remove problems from my 
->> second point and I just would like to see explicit 'yes, we agree to 
->> have dangerous code in our driver' from you or other maintainers in
-> 
-> what do you mean ? define dangerous..
-> we don't willingly push dangerous code :) the code is built and designed
-> for the current HW spec under the assumption that HW/FW is bug free,
-> otherwise what's the point of the spec if we are going to write doubtful,
-> inefficient, paranoid driver code..
+I love your patch! Perhaps something to improve:
 
-If FW/HW is bug free - yes, I agree. But the real world is not that 
-perfect. And I believe that's the reason why kfifo implementation has 
-all these checks in place.
+[auto build test WARNING on net-next/master]
 
-> I understand your concern but we don't design data path code to be future
-> proof.
-> 
-> This patch is just a temporary fix for another underlying issue that
-> we need to continue debug. so let's keep it minimal until we find the
-> real issue.
-> 
-Yeah, with minimal changes we will definitely revisit this code once we 
-find a root cause of the issue.
+url:    https://github.com/intel-lab-lkp/linux/commits/Ajit-Khaparde/bnxt_en-Add-auxiliary-driver-support/20230202-044848
+patch link:    https://lore.kernel.org/r/20230201204500.19420-2-ajit.khaparde%40broadcom.com
+patch subject: [PATCH net-next v10 1/8] bnxt_en: Add auxiliary driver support
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20230202/202302020909.KDHYiYu4-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-8) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/896eba0b6cd806dd11640cafa66d35f8b483f550
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Ajit-Khaparde/bnxt_en-Add-auxiliary-driver-support/20230202-044848
+        git checkout 896eba0b6cd806dd11640cafa66d35f8b483f550
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 olddefconfig
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/ethernet/broadcom/bnxt/
 
-> keep in mind that the whole code is designed with fifos and only in-order
-> queues guaranteed by both HW and Firmware, so there's no reason to be
-> too-paranoid .. just fix the known bugs :).
-> 
-TBH, I simply don't want to spend more days debugging unclear kernel 
-crashes if/once we hit another FW/HW bug. It easier to debug issue when 
-kernel continues to run. But anyway, let's re-think it once we have root 
-cause of the issue.
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
 
-I'll publish v5 next day, thanks for the review!
+All warnings (new ones prefixed by >>):
+
+   drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c: In function 'bnxt_aux_dev_release':
+>> drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c:483:22: warning: unused variable 'bp' [-Wunused-variable]
+     483 |         struct bnxt *bp = netdev_priv(aux_priv->edev->net);
+         |                      ^~
 
 
->>> static inline
->>>> struct sk_buff *mlx5e_skb_fifo_pop(struct mlx5e_skb_fifo *fifo)
->>>> {
->>>> +    if (*fifo->pc == *fifo->cc)
->>>> +        return NULL;
->>>> +
->>>
->>> I think this won't be necessary if you check for ooo early on
->>> mlx5e_ptp_handle_ts_cqe() like i suggested above.
->>>
->> And again the only concern here is that we don't have any checks 
->> whether FIFO has anything to pop before actually poping the value. 
->> That can easily bring use-after-free in the futuee, especially because 
->> the function is not ptp specific and is already used for other fifos. 
->> I can add unlikely() for this check if it helps, but I would like to 
->> have this check in the code.
->>
-> 
-> you shouldn't access the fifo if by design it's guaranteed nothing is 
-> there.
-> We don't build for a future/fool proof code, the fifo is only accessed
-> when we know there's something there by design, this is not a general
-> purpose fifo, it's a fifo used by mlx5 ordered cqs..
+vim +/bp +483 drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
 
-Got it.
+   478	
+   479	static void bnxt_aux_dev_release(struct device *dev)
+   480	{
+   481		struct bnxt_aux_priv *aux_priv =
+   482			container_of(dev, struct bnxt_aux_priv, aux_dev.dev);
+ > 483		struct bnxt *bp = netdev_priv(aux_priv->edev->net);
+   484	
+   485		ida_free(&bnxt_aux_dev_ids, aux_priv->id);
+   486		kfree(aux_priv->edev);
+   487		kfree(aux_priv);
+   488	}
+   489	
 
-> According to your logic, kfree should also check for double free.. ? :)
-
-Such kfree will have unacceptable performance regressions, but I believe 
-we have something like this in debug kernels :)
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
