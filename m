@@ -2,148 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 773F168823C
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 16:29:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67D556882C9
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 16:37:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233094AbjBBP3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 10:29:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47702 "EHLO
+        id S232159AbjBBPhn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 10:37:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233057AbjBBP26 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 10:28:58 -0500
-Received: from mg.ssi.bg (mg.ssi.bg [193.238.174.37])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D68C56F717
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 07:28:24 -0800 (PST)
-Received: from mg.ssi.bg (localhost [127.0.0.1])
-        by mg.ssi.bg (Proxmox) with ESMTP id 3911B52B7E;
-        Thu,  2 Feb 2023 17:27:21 +0200 (EET)
-Received: from ink.ssi.bg (unknown [193.238.174.40])
-        by mg.ssi.bg (Proxmox) with ESMTP id 1340552A76;
-        Thu,  2 Feb 2023 17:27:18 +0200 (EET)
-Received: from ja.ssi.bg (unknown [178.16.129.10])
-        by ink.ssi.bg (Postfix) with ESMTPS id DAC083C0435;
-        Thu,  2 Feb 2023 17:27:14 +0200 (EET)
-Received: from ja.home.ssi.bg (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.17.1/8.16.1) with ESMTP id 312FREHI056617;
-        Thu, 2 Feb 2023 17:27:14 +0200
-Received: (from root@localhost)
-        by ja.home.ssi.bg (8.17.1/8.17.1/Submit) id 312FREDK056616;
-        Thu, 2 Feb 2023 17:27:14 +0200
-From:   Julian Anastasov <ja@ssi.bg>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Zhang Changzhong <zhangchangzhong@huawei.com>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH net] neigh: make sure used and confirmed times are valid
-Date:   Thu,  2 Feb 2023 17:25:51 +0200
-Message-Id: <20230202152551.56390-1-ja@ssi.bg>
-X-Mailer: git-send-email 2.39.1
+        with ESMTP id S233401AbjBBPhJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 10:37:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BB980025;
+        Thu,  2 Feb 2023 07:36:42 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6340CB82686;
+        Thu,  2 Feb 2023 15:35:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EC41C433EF;
+        Thu,  2 Feb 2023 15:35:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1675352143;
+        bh=CUkACK2HdhrbT9JJSVOy6ZjSUjRIl9SuwgXFjsN3DTQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EFwcsxv21LoqcrgA6sf/+ExloW3CW4aRCPO6D6aJ1xMra9JYEoeRYwa7+ewVHKXxY
+         QChxREN1BgXVrBXYIWdxUY1QDOn6WrJO+uwOR2HRI7j60NbqMpvJ9PCxq1aLdbIUPL
+         rB75Z+WzqxpbvFFksuoTNl28vRJSujT7ECZFclGU=
+Date:   Thu, 2 Feb 2023 16:35:40 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] can: etas_es58x: do not send disable channel command if
+ device is unplugged
+Message-ID: <Y9vYTPURT4hDSH4n@kroah.com>
+References: <20230128133815.1796221-1-mailhol.vincent@wanadoo.fr>
+ <20230202151622.sotqfwmgwwtgv4dl@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230202151622.sotqfwmgwwtgv4dl@pengutronix.de>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Entries can linger in cache without timer for days, thanks to
-the gc_thresh1 limit. As result, without traffic, the confirmed
-time can be outdated and to appear to be in the future. Later,
-on traffic, NUD_STALE entries can switch to NUD_DELAY and start
-the timer which can see the invalid confirmed time and wrongly
-switch to NUD_REACHABLE state instead of NUD_PROBE. As result,
-timer is set many days in the future. This is more visible on
-32-bit platforms, with higher HZ value.
+On Thu, Feb 02, 2023 at 04:16:22PM +0100, Marc Kleine-Budde wrote:
+> On 28.01.2023 22:38:15, Vincent Mailhol wrote:
+> > When turning the network interface down, es58x_stop() is called and
+> > will send a command to the ES58x device to disable the channel
+> > c.f. es58x_ops::disable_channel().
+> > 
+> > However, if the device gets unplugged while the network interface is
+> > still up, es58x_ops::disable_channel() will obviously fail to send the
+> > URB command and the driver emits below error message:
+> > 
+> >   es58x_submit_urb: USB send urb failure: -ENODEV
+> > 
+> > Check the usb device state before sending the disable channel command
+> > in order to silence above error message.
+> > 
+> > Update the documentation of es58x_stop() accordingly.
+> > 
+> > The check being added in es58x_stop() is:
+> > 
+> >   	if (es58x_dev->udev->state >= USB_STATE_UNAUTHENTICATED)
+> > 
+> > This is just the negation of the check done in usb_submit_urb()[1].
+> > 
+> > [1] usb_submit_urb(), verify usb device's state.
+> > Link: https://elixir.bootlin.com/linux/v6.1/source/drivers/usb/core/urb.c#L384
+> > 
+> > Fixes: 8537257874e9 ("can: etas_es58x: add core support for ETAS ES58X CAN USB interfaces")
+> > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> > ---
+> > As far as I know, there doesn't seem to be an helper function to check
+> > udev->state values. If anyone is aware of such helper function, let me
+> > know..
+> 
+> The constant USB_STATE_UNAUTHENTICATED is not used very often in the
+> kernel. Maybe Greg can point out what is best to do here.
 
-Why this is a problem? While we expect unused entries to expire,
-such entries stay in REACHABLE state for too long, locked in
-cache. They are not expired normally, only when cache is full.
+Don't do anything in the driver here, except maybe turn off that useless
+"error message" in the urb submission function?  A USB driver shouldn't
+be poking around in the state of the device at all, as it's about to go
+away if it's been physically removed.
 
-Problem and the wrong state change reported by Zhang Changzhong:
+The urb submission will fail if the device is removed, handle the error
+and move on, that's a totally normal situation as you say it happens a
+lot :)
 
-172.16.1.18 dev bond0 lladdr 0a:0e:0f:01:12:01 ref 1 used 350521/15994171/350520 probes 4 REACHABLE
+Don't spam error logs for common things please.
 
-350520 seconds have elapsed since this entry was last updated, but it is
-still in the REACHABLE state (base_reachable_time_ms is 30000),
-preventing lladdr from being updated through probe.
+thanks,
 
-Fix it by ensuring timer is started with valid used/confirmed
-times. Considering the valid time range is LONG_MAX jiffies,
-we try not to go too much in the past while we are in
-DELAY/PROBE state. There are also places that need
-used/updated times to be validated while timer is not running.
-
-Reported-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-Signed-off-by: Julian Anastasov <ja@ssi.bg>
-Tested-by: Zhang Changzhong <zhangchangzhong@huawei.com>
----
- net/core/neighbour.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
-
- This solution prefers to add code in neigh_add_timer()
- assuming it is less used than the timer code. The
- alternative would be to add time_in_range* calls in
- neigh_timer_handler() to be more safe.
- Another solution would be to add the time correction
- only in __neigh_event_send() where we switch from
- STALE to DELAY as it looks to be the only path that
- is affected and where we switch to states that
- consider the confirmed time. OTOH, NUD_INCOMPLETE
- is not affected from invalid times.
-
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index f00a79fc301b..4edd2176e238 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -269,7 +269,7 @@ static int neigh_forced_gc(struct neigh_table *tbl)
- 			    (n->nud_state == NUD_NOARP) ||
- 			    (tbl->is_multicast &&
- 			     tbl->is_multicast(n->primary_key)) ||
--			    time_after(tref, n->updated))
-+			    !time_in_range(n->updated, tref, jiffies))
- 				remove = true;
- 			write_unlock(&n->lock);
- 
-@@ -289,7 +289,17 @@ static int neigh_forced_gc(struct neigh_table *tbl)
- 
- static void neigh_add_timer(struct neighbour *n, unsigned long when)
- {
-+	/* Use safe distance from the jiffies - LONG_MAX point while timer
-+	 * is running in DELAY/PROBE state but still show to user space
-+	 * large times in the past.
-+	 */
-+	unsigned long mint = jiffies - (LONG_MAX - 86400 * HZ);
-+
- 	neigh_hold(n);
-+	if (!time_in_range(n->confirmed, mint, jiffies))
-+		n->confirmed = mint;
-+	if (time_before(n->used, n->confirmed))
-+		n->used = n->confirmed;
- 	if (unlikely(mod_timer(&n->timer, when))) {
- 		printk("NEIGH: BUG, double timer add, state is %x\n",
- 		       n->nud_state);
-@@ -1001,12 +1011,14 @@ static void neigh_periodic_work(struct work_struct *work)
- 				goto next_elt;
- 			}
- 
--			if (time_before(n->used, n->confirmed))
-+			if (time_before(n->used, n->confirmed) &&
-+			    time_is_before_eq_jiffies(n->confirmed))
- 				n->used = n->confirmed;
- 
- 			if (refcount_read(&n->refcnt) == 1 &&
- 			    (state == NUD_FAILED ||
--			     time_after(jiffies, n->used + NEIGH_VAR(n->parms, GC_STALETIME)))) {
-+			     !time_in_range_open(jiffies, n->used,
-+						 n->used + NEIGH_VAR(n->parms, GC_STALETIME)))) {
- 				*np = n->next;
- 				neigh_mark_dead(n);
- 				write_unlock(&n->lock);
--- 
-2.39.1
-
-
+greg k-h
